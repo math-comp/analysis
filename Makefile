@@ -4,7 +4,9 @@
 NAME     := SsrReals
 SUBDIRS  :=
 INCFLAGS := -R src $(NAME)
-COQFILES := src/reals.v
+COQFILES := \
+	src/funtype.v \
+	src/reals.v
 
 include Makefile.common
 
