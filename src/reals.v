@@ -13,6 +13,7 @@
 (* -------------------------------------------------------------------- *)
 Require Import ssreflect ssrfun ssrbool eqtype funtype ssrnat div.
 Require Import ssralg ssrnum ssrint rat intdiv bigop.
+Require Import Setoid SetoidClass.
 
 Import Monoid.
 Import GRing.Theory Num.Theory.
@@ -35,6 +36,47 @@ Local Open Scope real_scope.
 Notation "n %:Z" := n%N%:Z%R (only parsing).
 Notation "n %:R" := n%N%:R%R (only parsing).
 Notation "m %:Q" := m%:Q%R%N (only parsing).
+
+(* -------------------------------------------------------------------- *)
+Module Equiv.
+  Inductive equiv (P Q : Prop) : Prop :=
+  | Iff of P -> Q & Q -> P.
+
+  Implicit Types P Q R : Prop.
+
+  Lemma equivP P Q: (equiv P Q) <-> (P <-> Q).
+  Proof. by []. Qed.
+
+  Lemma iffLR P Q: equiv P Q -> (P -> Q). Proof. by []. Qed.
+  Lemma iffRL P Q: equiv P Q -> (Q -> P). Proof. by []. Qed.
+
+  Lemma iffLRn P Q: equiv P Q -> (~P -> ~Q). Proof. by []. Qed.
+  Lemma iffRLn P Q: equiv P Q -> (~Q -> ~P). Proof. by []. Qed.
+
+  Lemma iff_refl: Reflexive equiv.
+  Proof. by rewrite /Reflexive. Qed.
+
+  Lemma iff_sym: Symmetric equiv.
+  Proof. by rewrite /Symmetric. Qed.
+
+  Lemma iff_trans: Transitive equiv.
+  Proof. by rewrite /Transitive. Qed.
+
+  Instance equiv_Reflexive  : Reflexive  equiv := iff_refl.
+  Instance equiv_Symmetric  : Symmetric  equiv := iff_sym.
+  Instance equiv_Transitive : Transitive equiv := iff_trans.
+
+  Program Instance equiv_equivalence : Equivalence equiv.
+  Program Instance equiv_Rewrite: RewriteRelation equiv.
+
+  Program Instance iff_setoid : Setoid Prop :=
+    { equiv := equiv ; setoid_equiv := equiv_equivalence }.
+End Equiv.
+
+Notation "P <~> Q" := (Equiv.equiv P Q) (at level 95, no associativity).
+
+Hint View for move/  Equiv.iffLRn|2 Equiv.iffRLn|2 Equiv.iffLR|2 Equiv.iffRL|2.
+Hint View for apply/ Equiv.iffRLn|2 Equiv.iffLRn|2 Equiv.iffRL|2 Equiv.iffLR|2.
 
 (* -------------------------------------------------------------------- *)
 Module Real.
