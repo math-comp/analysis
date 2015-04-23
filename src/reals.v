@@ -172,7 +172,6 @@ Definition has_sup  {R : realType} := @Real.has_sup R.
 Lemma sup_upper_bound {R : realType} (E : Real.sort R -> Prop) :
   has_sup E -> ub E (sup E).
 Proof. (* does not work *) Admitted.
-
 (* -------------------------------------------------------------------- *)
 Section RealDerivedOps.
 
@@ -216,8 +215,8 @@ Section RealLemmas.
 
 Variables (R : realType) (E : R -> Prop).
 
-Lemma sup_ub : has_ub E -> ub E (sup E).
-Proof.
+(* Lemma sup_ub : has_ub E -> ub E (sup E). *)
+(* Proof. *)
 (* move=> ubE x E_x; apply: (sup_upper_bound R) (E_x). *)
 (* by split; first by exists x. *)
 (* Qed. *)
