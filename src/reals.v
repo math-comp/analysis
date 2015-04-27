@@ -2,8 +2,11 @@
 (* A very classical axiomatization of real numbers: a discrete real     *)
 (* archimedean field with a least upper bound operator.                 *)
 (* -------------------------------------------------------------------- *)
+
 Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
 Require Import bigop ssralg ssrnum ssrint rat.
+
+Require Import Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -20,43 +23,40 @@ Delimit Scope realset_scope with Rset.
 
 Local Open Scope real_scope.
 Local Open Scope ring_scope.
+
 (* -------------------------------------------------------------------- *)
 Module Real.
-
 Section Mixin.
 
 Variable (R : archiFieldType).
-Variable (Rsup : (R -> Prop) -> R).
 
 Local Notation "{ x | P }" := (fun x : R => P : Prop) : realset_scope.
 
 (* Real set non-emptyness. *)
-
 Definition nonempty (E :  R -> Prop) :=
   exists x : R, E x.
 
 (* Real upper bound set. *)
 Definition ub  (E : R -> Prop) : R -> Prop :=
   { z | forall y : R, E y -> y <= z }%Rset.
+
 (* Real down set (i.e., generated order ideal) *)
 (* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
 Definition down  (E : R -> Prop) : R -> Prop :=
   { x | exists2 y : R, E y & x <= y }%Rset.
 
-Set Printing All.
-
 (* Real set supremum existence condition. *)
-Definition has_ub (E : R -> Prop) := nonempty (ub E).
-Definition has_sup (E : R -> Prop) :=
-  nonempty E /\ has_ub E.
-
+Definition has_ub  (E : R -> Prop) := nonempty (ub E).
+Definition has_sup (E : R -> Prop) := nonempty E /\ has_ub E.
 
 Record mixin_of : Type := Mixin {
   sup : (R -> Prop) -> R;
-   _  : forall E :  Num.ArchimedeanField.sort R -> Prop, has_sup E -> ub E (sup E);
    _  :
-    forall (E :  Num.ArchimedeanField.sort R -> Prop) (eps : R), has_sup E -> 0 < eps ->
-      exists2 e : R, E e & (sup E - eps) < e
+    forall E :  Num.ArchimedeanField.sort R -> Prop,
+      has_sup E -> ub E (sup E);
+   _  :
+    forall (E :  Num.ArchimedeanField.sort R -> Prop) (eps : R),
+      has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e
 }.
 
 End Mixin.
@@ -65,7 +65,6 @@ Definition EtaMixin R sup sup_upper_bound sup_adherent :=
   let _ := @Mixin R sup sup_upper_bound sup_adherent in
   @Mixin (Num.ArchimedeanField.Pack (Num.ArchimedeanField.class R) R)
          sup sup_upper_bound sup_adherent.
-
 
 Global Arguments ub      {R}%type _%realset_scope _%real_scope.
 Global Arguments has_ub  {R}%type _%realset_scope.
@@ -156,22 +155,52 @@ Notation "[ 'ringType' 'of' T ]" := (@clone T _ _ id)
   (at level 0, format "[ 'ringType'  'of'  T ]") : form_scope.
 
 End Exports.
-
 End Real.
+
 Import Real.Exports.
 
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} : (R -> Prop) -> R := Real.sup (Real.class R).
 
 Definition nonempty {R : realType} := @Real.nonempty R.
-Definition ub {R : realType} := @Real.ub R.
-Definition down  {R : realType} := @Real.down R.
-Definition has_ub  {R : realType} := @Real.has_ub R.
+Definition ub       {R : realType} := @Real.ub R.
+Definition down     {R : realType} := @Real.down R.
+Definition has_ub   {R : realType} := @Real.has_ub R.
 Definition has_sup  {R : realType} := @Real.has_sup R.
 
-Lemma sup_upper_bound {R : realType} (E : Real.sort R -> Prop) :
+(* -------------------------------------------------------------------- *)
+Section BaseReflect.
+
+Context {R : realType}.
+
+Implicit Types E : R -> Prop.
+Implicit Types x : R.
+
+Lemma nonemptyP E : nonempty E <-> exists x, E x.
+Proof. by []. Qed.
+
+Lemma ubP E x : ub E x <-> (forall y, E y -> y <= x).
+Proof. by []. Qed.
+
+Lemma downP E x : down E x <-> exists2 y, E y & x <= y.
+Proof. by []. Qed.
+
+Lemma has_ubP E : has_ub E <-> nonempty (ub E).
+Proof. by []. Qed.
+
+Lemma has_supP E : has_sup E <-> (nonempty E /\ nonempty (ub E)).
+Proof. by []. Qed.
+End BaseReflect.
+
+(* -------------------------------------------------------------------- *)
+Lemma sup_upper_bound {R : realType} (E : R -> Prop) :
   has_sup E -> ub E (sup E).
-Proof. (* does not work *) Admitted.
+Proof. by case: R E=> ? [? []]. Qed.
+
+Lemma sup_adherent {R : realType} (E : R -> Prop) (eps : R) :
+  has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e.
+Proof. by case: R E eps=> ? [? []]. Qed.
+
 (* -------------------------------------------------------------------- *)
 Section RealDerivedOps.
 
@@ -197,9 +226,7 @@ Definition floor x := sup (floor_set x).
 
 Definition range1 (x y : R) := x <= y < x + 1.
 
-
 End RealDerivedOps.
-
 
 Notation "'select' { x1 'if' P1 , x2 'if' P2 }" := (pickR P1 P2 x1 x2)
    (at level 10, x1, x2, P1, P2 at level 100,
@@ -210,28 +237,32 @@ Notation "'select' { x1 'if' P , 'else' x2 }" := (selectR P x1 x2)
     format "'select'  { x1  'if'  P ,  'else'  x2 }") : real_scope.
 
 Prenex Implicits min max.
+
 (*-------------------------------------------------------------------- *)
 Section RealLemmas.
 
-Variables (R : realType) (E : R -> Prop).
+Variables (R : realType).
 
-(* Lemma sup_ub : has_ub E -> ub E (sup E). *)
-(* Proof. *)
-(* move=> ubE x E_x; apply: (sup_upper_bound R) (E_x). *)
-(* by split; first by exists x. *)
-(* Qed. *)
+Implicit Types E : R -> Prop.
+Implicit Types x : R.
 
-(* Lemma sup_total E x : has_sup E -> down E x \/ sup E <= x. *)
-(* Proof. *)
-(* move=> has_supE; case: (le_total R (sup E) x) => hx //; left. *)
-(* have /(sup_adherent R has_supE) : 0 < sup E - x by apply/subR_gt0. *)
-(* case=> e Ee hlte; exists e => //. *)
-(* by move: hlte; rewrite oppRB addRCA subRR addR0 => /ltRW. *)
-(* Qed. *)
+Lemma sup_ub E : has_ub E -> ub E (sup E).
+Proof.
+move=> ubE x x_in_E; apply: sup_upper_bound=> //.
+by apply/has_supP; split; first by exists x.
+Qed.
+
+Lemma sup_total E x : has_sup E -> down E x \/ sup E <= x.
+Proof.
+move=> has_supE; case: (lerP (sup E) x)=> hx //; left.
+have /(sup_adherent has_supE) : 0 < sup E - x by rewrite subr_gt0.
+case=> e Ee hlte; exists e => //; move: hlte.
+by rewrite opprB addrCA subrr addr0 => /ltrW.
+Qed.
 
 End RealLemmas.
-(* -------------------------------------------------------------------- *)
 
+(* -------------------------------------------------------------------- *)
 Section RealInstancesTheory.
 
 Variables (R R' : realType).
