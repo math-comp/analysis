@@ -3,10 +3,17 @@
 # --------------------------------------------------------------------
 NAME     := SsrReals
 SUBDIRS  :=
-INCFLAGS := -R src $(NAME)
+INCFLAGS := -R 3rdparty $(NAME) -R src $(NAME)
 COQFILES := \
+	3rdparty/bigenough.v \
+	3rdparty/polyorder.v \
+	3rdparty/polyrcf.v \
+	3rdparty/cauchyreals.v \
+	3rdparty/realalg.v \
+	3rdparty/complex.v \
 	src/funtype.v \
-	src/reals.v
+	src/reals.v \
+	src/sandbox.v
 
 include Makefile.common
 

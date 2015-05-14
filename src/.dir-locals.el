@@ -1,4 +1,5 @@
 ((coq-mode .
    ((coq-load-path .
-       (("." "SsrReals"))))
+       (("../3rdparty" "SsrReals")
+        ("."           "SsrReals"))))
 ))
