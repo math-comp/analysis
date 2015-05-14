@@ -179,7 +179,7 @@ Notation "[ 'ringType' 'of' T ]" := (@clone T _ _ id)
 End Exports.
 End Real.
 
-Import Real.Exports.
+Export Real.Exports.
 
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := Real.sup (Real.class R).
