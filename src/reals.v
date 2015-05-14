@@ -24,38 +24,60 @@ Delimit Scope realset_scope with Rset.
 Local Open Scope real_scope.
 Local Open Scope ring_scope.
 
+Reserved Notation "{ 'fset' R }"
+  (at level 2, format "{ 'fset'  R }").
+Reserved Notation "x \mem A"
+  (at level 70, format "'[hv' x '/ '  \mem  A ']'", no associativity).
+Reserved Notation "x \notmem A"
+  (at level 70, format "'[hv' x '/ '  \notmem  A ']'", no associativity).
+
+(* -------------------------------------------------------------------- *)
+Section Collection.
+
+Variable (T : Type).
+
+Inductive collection : Type := Collection of (T -> Prop).
+
+Definition topred (E : collection) := let: Collection p := E in p.
+Definition mem    (E : collection) := fun x => topred E x.
+
+Coercion topred : collection >-> Funclass.
+End Collection.
+
+Local Notation "{ x | P }"    := (Collection (fun x => P)) : realset_scope.
+Local Notation "x \mem E"     := (mem E x) : form_scope.
+Local Notation "{ 'fset' R }" := (collection R) : form_scope.
+
 (* -------------------------------------------------------------------- *)
 Module Real.
 Section Mixin.
 
 Variable (R : archiFieldType).
 
-Local Notation "{ x | P }" := (fun x : R => P : Prop) : realset_scope.
-
 (* Real set non-emptyness. *)
-Definition nonempty (E :  R -> Prop) :=
-  exists x : R, E x.
+Definition nonempty (E : {fset R}) :=
+  exists x : R, x \mem E.
 
 (* Real upper bound set. *)
-Definition ub  (E : R -> Prop) : R -> Prop :=
+Definition ub  (E : {fset R}) :=
   { z | forall y : R, E y -> y <= z }%Rset.
 
 (* Real down set (i.e., generated order ideal) *)
 (* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
-Definition down  (E : R -> Prop) : R -> Prop :=
+Definition down  (E : {fset R}) :=
   { x | exists2 y : R, E y & x <= y }%Rset.
 
 (* Real set supremum existence condition. *)
-Definition has_ub  (E : R -> Prop) := nonempty (ub E).
-Definition has_sup (E : R -> Prop) := nonempty E /\ has_ub E.
+Definition has_ub  (E : {fset R}) := nonempty (ub E).
+Definition has_sup (E : {fset R}) := nonempty E /\ has_ub E.
 
 Record mixin_of : Type := Mixin {
-  sup : (R -> Prop) -> R;
+  sup : {fset R} -> R;
    _  :
-    forall E :  Num.ArchimedeanField.sort R -> Prop,
+    forall E : {fset Num.ArchimedeanField.sort R},
       has_sup E -> ub E (sup E);
    _  :
-    forall (E :  Num.ArchimedeanField.sort R -> Prop) (eps : R),
+    forall (E : {fset Num.ArchimedeanField.sort R}) (eps : R),
       has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e
 }.
 
@@ -66,10 +88,10 @@ Definition EtaMixin R sup sup_upper_bound sup_adherent :=
   @Mixin (Num.ArchimedeanField.Pack (Num.ArchimedeanField.class R) R)
          sup sup_upper_bound sup_adherent.
 
-Global Arguments ub      {R}%type _%realset_scope _%real_scope.
+Global Arguments ub      {R}%type _%realset_scope.
 Global Arguments has_ub  {R}%type _%realset_scope.
 Global Arguments has_sup {R}%type _%realset_scope.
-Global Arguments down    {R}%type _%realset_scope _%real_scope.
+Global Arguments down    {R}%type _%realset_scope.
 
 Section ClassDef.
 
@@ -160,7 +182,7 @@ End Real.
 Import Real.Exports.
 
 (* -------------------------------------------------------------------- *)
-Definition sup {R : realType} : (R -> Prop) -> R := Real.sup (Real.class R).
+Definition sup {R : realType} := Real.sup (Real.class R).
 
 Definition nonempty {R : realType} := @Real.nonempty R.
 Definition ub       {R : realType} := @Real.ub R.
@@ -173,7 +195,7 @@ Section BaseReflect.
 
 Context {R : realType}.
 
-Implicit Types E : R -> Prop.
+Implicit Types E : {fset R}.
 Implicit Types x : R.
 
 Lemma nonemptyP E : nonempty E <-> exists x, E x.
@@ -193,11 +215,11 @@ Proof. by []. Qed.
 End BaseReflect.
 
 (* -------------------------------------------------------------------- *)
-Lemma sup_upper_bound {R : realType} (E : R -> Prop) :
+Lemma sup_upper_bound {R : realType} (E : {fset R}) :
   has_sup E -> ub E (sup E).
 Proof. by case: R E=> ? [? []]. Qed.
 
-Lemma sup_adherent {R : realType} (E : R -> Prop) (eps : R) :
+Lemma sup_adherent {R : realType} (E : {fset R}) (eps : R) :
   has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e.
 Proof. by case: R E eps=> ? [? []]. Qed.
 
@@ -205,8 +227,6 @@ Proof. by case: R E eps=> ? [? []]. Qed.
 Section RealDerivedOps.
 
 Variable R : realType.
-
-Local Notation "{ x | P }" := (fun x : R => P : Prop) : realset_scope.
 
 Definition pickR_set P1 P2 (x1 x2 : R) :=
   { y | P1 /\ y = x1 \/ P2 /\ y = x2 }%Rset.
@@ -222,7 +242,7 @@ Definition max x1 x2 := pickR (x1 <= x2) (x2 <= x1) x2 x1.
 Inductive floor_set (x : R) : R -> Prop :=
   FloorSet (m : int) of m%:~R <= x : floor_set x m%:~R.
 
-Definition floor x := sup (floor_set x).
+Definition floor x := sup (Collection (floor_set x)).
 
 Definition range1 (x y : R) := x <= y < x + 1.
 
@@ -243,7 +263,7 @@ Section RealLemmas.
 
 Variables (R : realType).
 
-Implicit Types E : R -> Prop.
+Implicit Types E : {fset R}.
 Implicit Types x : R.
 
 Lemma sup_ub E : has_ub E -> ub E (sup E).
@@ -267,12 +287,12 @@ Section RealInstancesTheory.
 
 Variables (R R' : realType).
 
-Definition image (phi : R -> R') (E : R -> Prop) (x' : R') :=
-  exists2 x : R, E x & x' = (phi x).
+Definition image (phi : R -> R') (E : {fset R}) :=
+  { x' | exists2 x : R, E x & x' = (phi x) }%Rset.
 
 Record morphism (phi : R -> R') : Prop := Morphism {
   morph_le   : forall x y, phi x <= phi y <-> x <= y;
-  morph_sup  : forall (E : R -> Prop),
+  morph_sup  : forall (E : {fset R}),
                  has_sup E -> phi (sup E) = (sup (image phi E));
   morph_add  : forall x y, phi (x + y) = phi x + phi y;
   morph_zero : phi 0 = 0;
