@@ -47,6 +47,9 @@ Proof. by case: (dec _). Qed.
 Lemma decF {T : Type} (P : Prop) (x y : T):
   ~P -> (if dec P then x else y) = y.
 Proof. by case: (dec _). Qed.
+
+Lemma classical (P : Prop): P \/ ~P.
+Proof. by case: (dec P). Qed.
 End Classical.
 
 Import Classical.
@@ -148,6 +151,9 @@ Definition ltc (c : cut) (a : rat) := nosimpl (c a).
 Local Notation "x < a"  := (ltc x a) : real_scope.
 Local Notation "x >= b" := (~ ltc x b) : real_scope.
 
+Lemma ltcE X (h : is_cutb (RatX X)) a : (Cut h < a) = X a.
+Proof. by []. Qed.
+
 Lemma ltcP x a : x < a \/ x >= a.
 Proof. by case: (lpo x a). Qed.
 
@@ -176,6 +182,20 @@ Lemma lt_gec_trans a b x : (a < b)%R -> x >= b -> x >= a.
 Proof. by move/ltrW; apply: le_gec_trans. Qed.
 
 (* -------------------------------------------------------------------- *)
+Definition leR x y := forall a, y < a -> x < a.
+
+Local Notation "x <= y" := (leR x y) : real_scope.
+
+Lemma leR_ltc_trans x y a : x <= y -> y < a -> x < a.
+Proof. exact. Qed.
+
+Lemma gec_leR_trans a x y : x >= a -> x <= y -> y >= a.
+Proof. by move=> leax lexy /lexy. Qed.
+
+Lemma leR_trans x y z : x <= y -> y <= z -> x <= z.
+Proof. by move=> le_xy le_yz a /le_yz/le_xy. Qed.
+
+(* -------------------------------------------------------------------- *)
 Fact lt_is_cut a : is_cut (Num.lt a).
 Proof.
 split=> [||b c /ltr_trans| b /midf_lt[ltac ltcb]]; last 2 [exact].
@@ -188,3 +208,32 @@ Local Coercion ratR a := mkcut (lt_is_cut a).
 
 Local Notation "0" := (ratR 0) : real_scope.
 Local Notation "1" := (ratR 1) : real_scope.
+
+(* -------------------------------------------------------------------- *)
+Definition has E := exists x, E x.
+
+Definition ub E z := forall y, E y -> y <= z.
+
+Definition down E x := exists2 y, E y & x <= y.
+
+Definition has_sup E := has E /\ has (ub E).
+
+Definition lt_sup E a := exists2 b, forall x, E x -> x < b & b < a.
+
+Fact sup_is_cut E : is_cut (fun a => IF has_sup E then lt_sup E a else 0 < a).
+Proof.
+split=> [||a b ltEa ltab| a].
+- have [supE|] := classical (has_sup E); last by exists 1%R; right.
+  have [_ [x ubEx]] := supE; have [a /open[b ltab ltbx]] := cut_ub x.
+  by exists a; left; split; last by exists b => // y /ubEx/leR_ltc_trans; apply.
+- have [supE|] := classical (has_sup E); last by exists 0%R => -[][].
+  have [[y Ey] _] := supE; have [a leay] := cut_lb y.
+  by exists a => -[][] // _ [b ltEb /lt_gec_trans/(_ leay)[]]; apply: ltEb.
+- case: ltEa => -[supE ltEa]; last by right; rewrite ltcE (ltr_trans ltEa).
+  by have [c] := ltEa; left; split=> //; exists c; last apply: ltr_trans ltab.
+case=> -[supE]  => [supEa | /open[c]]; last by exists c; first right.
+have [c ltEc /open[b ltcb ltba]] := supEa.
+by exists b; first by left; split; last exists c.
+Qed.
+
+Definition sup E := mkcut (sup_is_cut E).
