@@ -15,6 +15,13 @@ Import GRing.Theory Num.Theory.
 
 Local Ltac done := solve [intuition] || ssreflect.done.
 
+Delimit Scope real_scope with RR.
+
+Local Open Scope real_scope.
+
+(* -------------------------------------------------------------------- *)
+Implicit Types a b c : rat.
+
 (* -------------------------------------------------------------------- *)
 Module Classical.
 Parameter lpo : forall {T : countType} (P : T -> Prop),
@@ -105,11 +112,17 @@ CoInductive is_cut (X : rat -> Prop) : Prop :=
 Definition is_cutb (X : rat -> Prop) :=
   if dec (is_cut X) then true else false.
 
-CoInductive cut : predArgType := Cut (ltc : ratx) of is_cutb ltc.
+Lemma is_cutP X : reflect (is_cut X) (is_cutb X).
+Proof. by rewrite /is_cutb; case: (dec _)=> /= h; constructor. Qed.
 
-Coercion ltc x := let: Cut ltc_x _ := x in ltc_x.
+CoInductive cut : predArgType := Cut (ratx : ratx) of is_cutb ratx.
 
-Canonical cut_subType := Eval hnf in [subType for ltc].
+Coercion cut_val x := let: Cut x _ := x in x.
+
+Canonical cut_subType := Eval hnf in [subType for cut_val].
+
+Definition mkcut (X : rat -> Prop) (h : is_cut X) :=
+  @Cut (RatX X) (introT (is_cutP X) h).
 
 (* -------------------------------------------------------------------- *)
 Definition cut_eqMixin := Eval hnf in [eqMixin of cut by <:].
@@ -118,3 +131,60 @@ Canonical  cut_eqType  := Eval hnf in EqType cut cut_eqMixin.
 (* -------------------------------------------------------------------- *)
 Definition cut_choiceMixin := [choiceMixin of cut by <:].
 Canonical  cut_choiceType  := Eval hnf in ChoiceType cut cut_choiceMixin.
+
+(* -------------------------------------------------------------------- *)
+Implicit Types x y : cut.
+
+Bind Scope real_scope with cut.
+
+Lemma cutW (P : cut -> Prop):
+     (forall (E : rat -> Prop) (h : is_cutb (RatX E)), is_cut E -> P (Cut h))
+  -> forall x, P x.
+Proof. by move=> ih [[x] h]; apply/ih/is_cutP. Qed.
+
+(* -------------------------------------------------------------------- *)
+Definition ltc (c : cut) (a : rat) := nosimpl (c a).
+
+Local Notation "x < a"  := (ltc x a) : real_scope.
+Local Notation "x >= b" := (~ ltc x b) : real_scope.
+
+Lemma ltcP x a : x < a \/ x >= a.
+Proof. by case: (lpo x a). Qed.
+
+Lemma cut_ub x : exists a, x < a.
+Proof. by elim/cutW: x => x h []. Qed.
+
+Lemma cut_lb x : exists b, x >= b.
+Proof. by elim/cutW: x => x h []. Qed.
+
+Lemma ltc_trans x a b : x < a -> (a < b)%R -> x < b.
+Proof. by elim/cutW: x a b => x h []. Qed.
+
+Lemma open x a : x < a -> exists2 b, x < b & (b < a)%R.
+Proof. by elim/cutW: x a => x h []. Qed.
+
+Lemma ltc_le_trans x a b : x < a -> (a <= b)%R -> x < b.
+Proof. by rewrite ler_eqVlt => ltxa /predU1P[<-//| /(ltc_trans ltxa)]. Qed.
+
+Lemma gec_lt_trans a x b : x >= a -> x < b -> (a < b)%R.
+Proof. by case: ltrP => // /ltc_le_trans-leba leax /leba. Qed.
+
+Lemma le_gec_trans a b x : (a <= b)%R -> x >= b -> x >= a.
+Proof. by move=> leab lebx ltxa; apply: lebx (ltc_le_trans ltxa leab). Qed.
+
+Lemma lt_gec_trans a b x : (a < b)%R -> x >= b -> x >= a.
+Proof. by move/ltrW; apply: le_gec_trans. Qed.
+
+(* -------------------------------------------------------------------- *)
+Fact lt_is_cut a : is_cut (Num.lt a).
+Proof.
+split=> [||b c /ltr_trans| b /midf_lt[ltac ltcb]]; last 2 [exact].
+- by exists (a + 1)%R; rewrite ltr_addl.
+- by exists a; rewrite ltrr.
+by exists ((a + b) / 2%:R)%R.
+Qed.
+
+Local Coercion ratR a := mkcut (lt_is_cut a).
+
+Local Notation "0" := (ratR 0) : real_scope.
+Local Notation "1" := (ratR 1) : real_scope.
