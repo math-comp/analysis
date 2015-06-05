@@ -13,6 +13,7 @@ COQFILES := \
 	3rdparty/complex.v \
 	src/funtype.v \
 	src/reals.v \
+	src/dedekind.v \
 	src/sandbox.v
 
 include Makefile.common
