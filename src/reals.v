@@ -17,18 +17,10 @@ Import GRing.Theory Num.Theory BigEnough.
 Local Ltac idone := solve [intuition] || ssreflect.done.
 
 (* -------------------------------------------------------------------- *)
-Delimit Scope real_scope    with RR.
-Delimit Scope realset_scope with Rset.
+Delimit Scope real_scope with real.
 
 Local Open Scope real_scope.
 Local Open Scope ring_scope.
-
-Reserved Notation "c %:F"
-  (at level 2, format "c %:F").
-Reserved Notation "f \* g"
-  (at level 45, left associativity).
-Reserved Notation "f \^+ n"
-  (at level 29, left associativity).
 
 (* -------------------------------------------------------------------- *)
 Module Real.
@@ -70,10 +62,10 @@ Definition EtaMixin R sup sup_upper_bound sup_adherent :=
   @Mixin (Num.ArchimedeanField.Pack (Num.ArchimedeanField.class R) R)
          sup sup_upper_bound sup_adherent.
 
-Global Arguments ub      {R}%type _%realset_scope.
-Global Arguments has_ub  {R}%type _%realset_scope.
-Global Arguments has_sup {R}%type _%realset_scope.
-Global Arguments down    {R}%type _%realset_scope.
+Global Arguments ub      {R}%type _%rset_scope.
+Global Arguments has_ub  {R}%type _%rset_scope.
+Global Arguments has_sup {R}%type _%rset_scope.
+Global Arguments down    {R}%type _%rset_scope.
 
 Section ClassDef.
 
@@ -225,7 +217,7 @@ Inductive floor_set (x : R) : R -> Prop :=
 
 Definition floor x : R := sup (Collection (floor_set x)).
 
-Definition range1 (x : R) := { y | x <= y < x + 1 }%Rset.
+Definition range1 (x : R) := {{ y | x <= y < x + 1 }}.
 End RealDerivedOps.
 
 Notation "'select' { x1 'if' P1 , x2 'if' P2 }" := (pickR P1 P2 x1 x2)
