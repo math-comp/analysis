@@ -1,5 +1,6 @@
 ((coq-mode .
    ((coq-load-path .
-       (("../3rdparty" "SsrReals")
-        ("."           "SsrReals"))))
+       (("../collections/src" "SsrCollections")
+        ("../3rdparty" "SsrReals")
+        ("." "SsrReals"))))
 ))

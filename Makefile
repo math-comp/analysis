@@ -2,8 +2,9 @@
 
 # --------------------------------------------------------------------
 NAME     := SsrReals
-SUBDIRS  :=
+SUBDIRS  := collections
 INCFLAGS := -R 3rdparty $(NAME) -R src $(NAME)
+INCFLAGS += -R collections/src SsrCollections -R 3rdparty $(NAME) -R src $(NAME)
 COQFILES := \
 	3rdparty/bigenough.v \
 	3rdparty/polyorder.v \
