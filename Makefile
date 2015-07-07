@@ -15,6 +15,7 @@ COQFILES := \
 	src/funtype.v \
 	src/reals.v \
 	src/dedekind.v \
+	src/realanalysis.v \
 	src/sandbox.v
 
 include Makefile.common

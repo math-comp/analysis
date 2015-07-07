@@ -121,3 +121,39 @@ have gt0_r : 0 < r by rewrite ltr_minr !gt0_radius.
 by split=> x; rewrite !mem_mknbh // mem_nbh ltr_minr=> /andP[].
 Qed.
 End NbhTheory.
+
+(* -------------------------------------------------------------------- *)
+Section Sequence.
+Variable R : realType.
+
+Implicit Types c x y z : R.
+Implicit Types u v : nat -> R.
+
+
+Definition slim u c :=
+  forall (v : 'V_c), exists N,
+    forall n, (N < n)%N -> u n \mem v.
+
+Notation "[ 'slim' u --> c ]" := (slim u c) : form_scope.
+
+Lemma eq_slim u v c :
+     (exists N, forall n, (N < n)%N -> u n = v n)
+  -> [slim v --> c]
+  -> [slim u --> c].
+Proof.
+case=> [N eq_uv limvc vc]; case: (limvc vc)=> N' lv.
+pose_big_enough i; first exists i=> n lt_in.
+  by rewrite eq_uv; first apply/lv; apply/(ltn_trans _ lt_in).
+by close.
+Qed.
+
+Lemma uniq_slim u c1 c2 :
+  [slim u --> c1] -> [slim u --> c2] -> c1 = c2.
+Proof.
+move=> lim1 lim2; apply/eqP/contraT => /separable.
+case=> [[v1 v2]] /=; move: (lim1 v1) (lim2 v2).
+case=> [N1 limv1] [N2 limv2]; pose_big_enough i.
+  by case/(_ (u i)); [apply/limv1 | apply/limv2].
+by close.
+Qed.
+End Sequence.
