@@ -3,7 +3,9 @@
 # --------------------------------------------------------------------
 NAME     := SsrReals
 SUBDIRS  := collections
-INCFLAGS := -R collections/src SsrCollections -R 3rdparty $(NAME) -R src $(NAME)
+INCFLAGS :=
+INCFLAGS += -R collections/src SsrCollections
+INCFLAGS += -R 3rdparty $(NAME) -R finmap $(NAME) -R src $(NAME)
 COQFILES := \
 	3rdparty/bigenough.v \
 	3rdparty/polyorder.v \
@@ -11,6 +13,7 @@ COQFILES := \
 	3rdparty/cauchyreals.v \
 	3rdparty/realalg.v \
 	3rdparty/complex.v \
+	finmap/finmap.v \
 	src/funtype.v \
 	src/reals.v \
 	src/dedekind.v \
