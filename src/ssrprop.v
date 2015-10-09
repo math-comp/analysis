@@ -9,6 +9,9 @@ Unset Printing Implicit Defensive.
 
 Local Ltac done := solve [intuition] || ssreflect.done.
 
+Local Hint Constructors  or3  or4.
+Local Hint Constructors and3 and4.
+
 (* -------------------------------------------------------------------- *)
 Definition classical := forall P, P \/ ~P.
 
@@ -22,7 +25,7 @@ End Classical.
 
 (*--------------------------------------------------------------------- *)
 Section Props.
-Variable A B C : Prop.
+Variable A B C D : Prop.
 
 Lemma orpC : A \/ B <-> B \/ A.                   Proof. by []. Qed.
 Lemma orpA : A \/ (B \/ C) <-> (A \/ B) \/ C.     Proof. by []. Qed.
@@ -67,6 +70,18 @@ Lemma orp_id2l : (B <-> C) -> (A \/ B <-> A \/ C).
 Proof. by []. Qed.
 Lemma orp_id2r : (B <-> C) -> (A \/ B <-> A \/ C).
 Proof. by []. Qed.
+
+Lemma orp3P : (A \/ B \/ C) <-> [\/ A, B | C].
+Proof. by split=> [|[]//]; case=> [h|[h|h]]. Qed.
+
+Lemma orp4P : (A \/ B \/ C \/ D) <-> [\/ A, B, C | D].
+Proof. by split=> [|[]//]; case=> [h|[h|[h|h]]]. Qed.
+
+Lemma andp3P : (A /\ B /\ C) <-> [/\ A, B & C].
+Proof. by split=> //; case. Qed.
+
+Lemma andp4P : (A /\ B /\ C /\ D) <-> [/\ A, B, C & D].
+Proof. by split=> //; case. Qed.
 
 Section Classical.
 Hypothesis lem : classical.
