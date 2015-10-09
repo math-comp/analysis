@@ -351,3 +351,28 @@ Proof.
 move=> f0 fop feq; elim/big_ind2: _ => //.
 by move=> A B C D; rewrite fop => /feq; apply.
 Qed.
+
+(* -------------------------------------------------------------------- *)
+Section RImset.
+Variables (T U : Type) (f : T -> U).
+
+Definition rimset (F : {rset T}) : {rset U} :=
+  {{ y | exists2 x : T, x \mem F & y = f x }}.
+
+Lemma rimsetP F y :
+  (y \mem rimset F) <-> (exists2 x, x \mem F & y = f x).
+Proof. by rewrite in_rset. Qed.
+End RImset.
+
+Notation "f @: A" := (rimset f A) (at level 24) : rset_scope.
+
+Notation "[ 'rset' E | x 'in' A ]" := ((fun x => E) @: A)
+  (at level 0, E, x at level 99,
+     format "[ '[hv' 'rset'  E '/ '  |  x  'in'  A ] ']'") : rset_scope.
+
+Notation "[ 'rset' E | x : T ]" := ((fun x : T => E) @: rsetT)
+  (at level 0, E, x at level 99,
+   format "[ '[hv' 'rset'  E '/ '  |  x  :  T ] ']'") : rset_scope.
+
+Notation "[ 'rset' E | x : T 'in' A ]" := ((fun x : T => E) @: A)
+  (at level 0, E, x at level 99, only parsing) : rset_scope.
