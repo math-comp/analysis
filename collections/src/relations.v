@@ -275,8 +275,12 @@ Lemma in_relD {T} (R S : {rel T}) x y :
   x ~_[R :\: S] y <-> (x ~_[R] y /\ ~ x ~_[S] y).
 Proof. by rewrite in_rel. Qed.
 
-Lemma in_relS {T} (R : {rel T}) x y :
+Lemma in_relV {T} (R : {rel T}) x y :
   x ~_[R^-1] y <-> y ~_[R] x.
+Proof. by rewrite in_rel. Qed.
+
+Lemma in_relS {T} (R1 R2:rel T) x y :
+  x ~_[R1 :.: R2] y <-> exists z, x ~_[R1] z /\ z ~_[R2] y.
 Proof. by rewrite in_rel. Qed.
 
 Lemma in_relBU {T} (R : seq {rel T}) x y :
@@ -327,6 +331,19 @@ Proof. by move=> x y Rxy; rewrite in_rel; left. Qed.
 
 Lemma relUr {T} (R S : {rel T}) : (S <= R :|: S)%rel.
 Proof. by move=> x y Rxy; rewrite in_rel; right. Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma relU31 T (R1 R2 R3 : {rel T}) x y :
+  x ~_[R1] y -> x ~_[R1 :|: R2 :|: R3] y.
+Proof. by move=> xR1y; apply/in_rel3U; apply/Or31. Qed.
+
+Lemma relU32 T (R1 R2 R3 : {rel T}) x y :
+  x ~_[R2] y -> x ~_[R1 :|: R2 :|: R3] y.
+Proof. by move=> xR2y; apply/in_rel3U; apply/Or32. Qed.
+
+Lemma relU33 T (R1 R2 R3 : {rel T}) x y :
+  x ~_[R3] y -> x ~_[R1 :|: R2 :|: R3] y.
+Proof. by move=> xR3y; apply/in_rel3U; apply/Or33. Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma rbigUE {T} (s : seq (rel T)) :
@@ -403,6 +420,26 @@ Proof. by move=> x y; rewrite !in_rel andpT. Qed.
 Lemma rel1I {T} (R : {rel T}) : (relT :&: R == R)%rel.
 Proof. by move=> x y; rewrite relIC relI1. Qed.
 
+(* -------------------------------------------------------------------- *)
+Lemma relSA {T} (R S V : {rel T}) : (R :.: (S :.: V) == R :.: S :.: V)%rel.
+Proof.
+move=> x z; rewrite !in_rel; split.
+  case=> y [xRy /in_relS [w] [yRw wRz]]; exists w.
+  by split=> //; apply/in_relS; exists y; split.
+case=> y [/in_relS [w] [xRw wRy] yRz]; exists w.
+by split=> //; apply/in_relS; exists y; split.
+Qed.
+
+Lemma relS0 {T} (R : {rel T}) : (R :.: rel0 == rel0)%rel.
+Proof. by move=> x y; rewrite !in_rel; split=> //; case=> z [_ /in_rel]. Qed.
+
+Lemma rel0S {T} (R : {rel T}) : (rel0 :.: R == rel0)%rel.
+Proof. by move=> x y; rewrite !in_rel; split=> //; case=> z [/in_rel]. Qed.
+
+Lemma relSc {T} (R S : {rel T}) x y z :
+  x ~_[R] y -> y ~_[S] z -> x ~_[R :.: S] z.
+Proof. by move=> xRy yRz; apply/in_relS; exists y; split. Qed.
+
 (*--------------------------------------------------------------------- *)
 Lemma relD0 {T} (R : {rel T}) : (R :\: rel0 == R)%rel.
 Proof. move=> x y; rewrite !in_rel; tauto. Qed.
@@ -414,17 +451,17 @@ Lemma relDRR {T} (R : {rel T}) : (R :\: R == rel0)%rel.
 Proof. move=> x y; rewrite !in_rel; tauto. Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma relS0 {T} : ((@rel0 T)^-1 == rel0)%rel.
+Lemma relV0 {T} : ((@rel0 T)^-1 == rel0)%rel.
 Proof. by move=> x y; rewrite !in_rel. Qed.
 
-Lemma relSU {T} (R S : rel T) : ((R :|: S)^-1 == (R^-1 :|: S^-1))%rel.
+Lemma relVU {T} (R S : rel T) : ((R :|: S)^-1 == (R^-1 :|: S^-1))%rel.
 Proof. by move=> x y; rewrite !in_rel. Qed.
 
-Lemma relSBU {T} (s : seq {rel T}) :
+Lemma relVBU {T} (s : seq {rel T}) :
   ((rbigU s)^-1 == \big[relU/rel0]_(R <- s) R^-1)%rel.
 Proof.
 rewrite rbigUE; apply/big_endo_rel => [|A B|????->->//].
-  by rewrite relS0. by rewrite relSU.
+  by rewrite relV0. by rewrite relVU.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -453,11 +490,38 @@ Proof. by move=> trans_R y z x; rewrite !in_rmap; apply/trans_R. Qed.
 Lemma leRR {T} (R : {rel T}) : (R <= R)%rel.
 Proof. by []. Qed.
 
+Lemma leR_trans {T} (R1 R2 R3 : {rel T}) :
+  (R1 <= R2)%rel -> (R2 <= R3)%rel -> (R1 <= R3)%rel.
+Proof. by move=> le_12 le_23 x y /le_12 /le_23. Qed.
+
 Lemma eqR_le {T} (R S : {rel T}) : (R == S)%rel <-> (R <= S <= R)%rel.
 Proof.
 split=> [eq_RS|[le_RS le_SR]].
   by rewrite eq_RS; split; apply/leRR.
 by move=> x y; split=> [/le_RS|/le_SR].
+Qed.
+
+Add Parametric Relation T : {rel T} (@subrel T)
+  reflexivity  proved by (@leRR T)
+  transitivity proved by (@leR_trans T)
+  as subrel_order.
+
+(* -------------------------------------------------------------------- *)
+Lemma leUR {T} (R S V : {rel T}) :
+  (R <= V)%rel -> (S <= V)%rel -> (R :|: S <= V)%rel.
+Proof. by move=> le_RV le_SV x y /in_relU [/le_RV|/le_SV]. Qed.
+
+Lemma le0R {T} (R : {rel T}) : (rel0 <= R)%rel.
+Proof. by move=> x y /in_rel0. Qed.
+
+Lemma leR_rbigU {T} R (s : seq {rel T}) :
+     (forall i, i < size s -> nth rel0 s i <= R)%rel
+  -> (rbigU s <= R)%rel.
+Proof.
+rewrite rbigUE; elim: s => [|S s ih] le.
+  by rewrite big_nil; apply/le0R.
+rewrite big_cons; apply/leUR; first by apply/(le 0).
+by apply/ih=> i; apply/(le i.+1).
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -471,12 +535,18 @@ Lemma relCRE {T} (R : {rel T}) : (R^? == [rel x y | x = y] :|: R)%rel.
 Proof. by move=> x y; rewrite !in_rel. Qed.
 
 Lemma relCR_min {T} (R S : {rel T}) :
-  reflexive S -> (R <= S <= R^?)%rel -> (S == R^?)%rel.
+  reflexive S -> (R <= S <= R^?)%rel -> (R^? == S)%rel.
 Proof.
 move=> refl_S [le_RS le_SRR]; rewrite eqR_le; split=> //.
 move=> x y; rewrite relCRE !in_rel; case=> [->|].
   by apply/refl_S. by move/le_RS.
 Qed.
+
+Lemma relCR_id {T} (R : {rel T}) : reflexive R -> (R^? == R)%rel.
+Proof. by move=> refl_R; apply/relCR_min=> //; split=> //; apply/relCR1. Qed.
+
+Lemma relCRK {T} (R : {rel T}) : (R^?^? == R^?)%rel.
+Proof. by rewrite relCR_id //; apply/relCRxx. Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma relCTW T (R : {rel T}) (P : T -> T -> Prop) :
@@ -510,11 +580,38 @@ by move=> y x t Rxy _ ih /ih; apply/(relCT1l Rxy).
 Qed.
 
 Lemma relCT_min {T} (R S : {rel T}) :
-  transitive S -> (R <= S <= R^+)%rel -> (S == R^+)%rel.
+  transitive S -> (R <= S <= R^+)%rel -> (R^+ == S)%rel.
 Proof.
 move=> trans_S [le_RS le_SRT]; rewrite eqR_le; split=> //.
 move=> x y /in_rel; elim=> {x y} [x y | y x z /le_RS Sxy _ Syz].
   by move/le_RS. by apply/(trans_S y).
+Qed.
+
+Lemma relCT_id {T} (R : {rel T}) : transitive R -> (R^+ == R)%rel.
+Proof. by move=> trans_R; apply/relCT_min=> //; split=> //; apply/relCT1. Qed.
+
+Lemma relCTK {T} (R : {rel T}) : (R^+^+ == R^+)%rel.
+Proof. by rewrite relCT_id //; apply/trans_relCT. Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma leR_relS_mono {T} (R1 R2 S1 S2 : rel T) :
+  (R1 <= R2 -> S1 <= S2 -> R1 :.: S1 <= R2 :.: S2)%rel.
+Proof.
+move=> le_R le_S x y; rewrite !in_relS.
+by case=> z [/le_R R2_xz /le_S S2_yz]; exists z.
+Qed.
+
+Lemma leR_relSS_trans {T} (R : {rel T}) : (R :.: R <= R^+)%rel.
+Proof.
+move=> x y /in_relS [z [Rxz Rzy]].
+by apply/(trans_relCT (relCT1 Rxz))/relCT1.
+Qed.
+
+Lemma leR_relS_trans_mono {T} (R1 R2 S : rel T) :
+  (R1 <= S -> R2 <= S -> R1 :.: R2 <= S^+)%rel.
+Proof.
+move=> le_R1S le_R2S; transitivity (S :.: S)%rel.
+  by apply/leR_relS_mono. by apply/leR_relSS_trans.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -534,7 +631,7 @@ Implicit Types R S : {rel T}.
 Lemma range_domain R : (range R == domain R^-1)%rset.
 Proof.
 move=> x; rewrite !in_rset; split=> [] [y Rxy];
-  by exists y; rewrite (in_relS, =^~ in_relS).
+  by exists y; rewrite (in_relV, =^~ in_relV).
 Qed.
 
 Lemma domain0 : (domain rel0 == @rset0 T)%rset.
@@ -550,6 +647,18 @@ Qed.
 Lemma domainI R S : (domain (R :&: S) <= domain R :&: domain S)%rset.
 move=> x; rewrite in_rsetI !in_rset; case=> y.
 by case/in_relI=> [Rxy Sxy]; split; exists y.
+Qed.
+
+Lemma domainS R S : (domain (R :.: S) <= domain R)%rset.
+Proof.
+move=> a /in_rset [_] /in_relS [x] [aSx _].
+by apply/in_rset; exists x.
+Qed.
+
+Lemma rangeS R S : (range (R :.: S) <= range S)%rset.
+Proof.
+move=> a /in_rset [_] /in_relS [x] [_ xSa].
+by apply/in_rset; exists x.
 Qed.
 
 Lemma domainBU (s : seq {rel T}) :
@@ -601,6 +710,13 @@ Variable T : Type.
 
 Implicit Types R S : rel T.
 
+Lemma relI_trans R S :
+  transitive R -> transitive S -> transitive (R :&: S).
+Proof.
+move=> trR trS y x z /in_relI [xRy xSy] /in_relI [yRz ySz].
+by apply/in_relI; split; [apply/(trR y) | apply/(trS y)].
+Qed.
+
 Lemma relU_trans R S :
   transitive R -> transitive S ->
     (forall x, x \mem range R -> ~ x \mem domain S) ->
@@ -633,7 +749,7 @@ move=> y z x; rewrite !rbigUE big_cons; apply/relU_trans.
   rewrite -(big_map domain predT idfun) => /mem_bigU.
   case=> i; rewrite size_map => lt_i_szs.
   by rewrite map_id (nth_map rel0) //; apply/(ne_s 0 i.+1).
-move=> {y z x} x; rewrite range_domain -rbigUE relSBU.
+move=> {y z x} x; rewrite range_domain -rbigUE relVBU.
 rewrite -(big_map relCS predT idfun) /=.
 rewrite -rbigUE domainBU; case/mem_bigU=> i.
 rewrite size_map -map_comp => lt_i_szs.
