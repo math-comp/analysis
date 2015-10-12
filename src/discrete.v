@@ -59,4 +59,10 @@ Structure distr := Distr {
   _  : summable mu;
   _  : sum mu <= 1
 }.
+
+Definition distr_of of phant T & phant R := distr.
 End Distribution.
+
+Notation "{ 'distr' T / R }" := (distr_of (Phant T) (Phant R))
+  (at level 0, T at level 2, format "{ 'distr'  T  /  R }")
+  : type_scope.
