@@ -18,23 +18,79 @@ Local Open Scope real_scope.
 Local Ltac idone := solve [intuition] || ssreflect.done.
 
 (* -------------------------------------------------------------------- *)
-Inductive countable (R : Type) (E : {rset R}) : Type :=
-  Countable (pick : R -> option nat) (unpick : nat -> R) of
-      pcancel unpick pick
-    & (forall x, (x \mem E) <-> (exists y, unpick y = x)).
+Record mclassic := {
+  _ : forall (P : Prop), {P}+{~P};
+  _ : forall (P : Prop), P = True \/ P = False
+}.
+
+Axiom classic : mclassic.
+
+(* -------------------------------------------------------------------- *)
+Lemma pselect (P : Prop): {P}+{~P}.
+Proof. by case classic. Qed.
+
+Lemma pdegen (P : Prop): P = True \/ P = False.
+Proof. by case classic. Qed.
+
+Lemma lem (P : Prop): P \/ ~P.
+Proof. by case: (pselect P); tauto. Qed.
+
+(* -------------------------------------------------------------------- *)
+Definition asbool (P : Prop) :=
+  if pselect P then true else false.
+
+Lemma asboolP (P : Prop): reflect P (asbool P).
+Proof. by rewrite /asbool; case: pselect=> h; constructor. Qed.
+
+(* -------------------------------------------------------------------- *)
+Section RSetSubtype.
+Section Def.
+Variable T : Type.
+Variable E : {rset T}.
+
+Record rset_sub : Type :=
+  RSetSub { rsval : T; rsvalP : asbool (rsval \mem E) }.
+
+Coercion rsval : rset_sub >-> T. 
+
+Canonical rset_sub_subType := Eval hnf in [subType for rsval].
+End Def.
+
+Definition rset_sub_eqMixin (T : eqType) (E : {rset T}) :=
+  Eval hnf in [eqMixin of rset_sub E by <:].
+Canonical rset_sub_eqType (T : eqType) (E : {rset T}) :=
+  Eval hnf in EqType (@rset_sub T E) (rset_sub_eqMixin E).
+
+Definition rset_sub_choiceMixin (T : choiceType) (E : {rset T}) :=
+  Eval hnf in [choiceMixin of rset_sub E by <:].
+Canonical rset_sub_choiceType (T : choiceType) (E : {rset T}) :=
+  Eval hnf in ChoiceType (@rset_sub T E) (rset_sub_choiceMixin E).
+
+Definition rset_sub_countMixin (T : countType) (E : {rset T}) :=
+  Eval hnf in [countMixin of rset_sub E by <:].
+Canonical rset_sub_countType (T : countType) (E : {rset T}) :=
+  Eval hnf in CountType (@rset_sub T E) (rset_sub_countMixin E).
+End RSetSubtype.
+
+Notation "[ 'rsub' E ]" := (@rset_sub _ E).
+
+(* -------------------------------------------------------------------- *)
+Section Countable.
+Variable (T : Type) (E : {rset T}).
+
+CoInductive countable : Type :=
+  Countable
+    (rpickle   : [rsub E] -> nat)
+    (runpickle : nat -> option [rsub E])
+    of pcancel rpickle runpickle.
+End Countable.
 
 (* -------------------------------------------------------------------- *)
 Section CountableTheory.
-Variables (R : Type) (E : {rset R}) (cE : countable E).
+Variable (T : countType) (E : {rset T}).
 
-Definition pick   := let: Countable f _ _ _ := cE in f.
-Definition unpick := let: Countable _ f _ _ := cE in f.
-
-Lemma unpickK : pcancel unpick pick.
-Proof. by rewrite /unpick /pick; case cE. Qed.
-
-Lemma unpickP : forall x, (x \mem E) <-> (exists y, unpick y = x).
-Proof. by rewrite /unpick /pick; case cE. Qed.
+Lemma countable_countable : countable E.
+Proof. by exists pickle unpickle; apply/pickleK. Qed.
 End CountableTheory.
 
 (* -------------------------------------------------------------------- *)
