@@ -1,7 +1,7 @@
 (* -------------------------------------------------------------------- *)
 Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
 Require Import finfun finset finmap bigop ssralg ssrnum ssrint.
-Require Import tuple bigenough ssrprop collections reals.
+Require Import tuple bigenough ssrprop collections boolp reals.
 Require (*--*) Setoid.
 
 (* -------------------------------------------------------------------- *)
@@ -18,35 +18,7 @@ Local Open Scope real_scope.
 Local Ltac idone := solve [intuition] || ssreflect.done.
 
 (* -------------------------------------------------------------------- *)
-Record mclassic := {
-  _ : forall (P : Prop), {P}+{~P};
-  _ : forall (P : Prop), P = True \/ P = False
-}.
-
-Axiom classic : mclassic.
-
-(* -------------------------------------------------------------------- *)
-Lemma pselect (P : Prop): {P}+{~P}.
-Proof. by case classic. Qed.
-
-Lemma pdegen (P : Prop): P = True \/ P = False.
-Proof. by case classic. Qed.
-
-Lemma lem (P : Prop): P \/ ~P.
-Proof. by case: (pselect P); tauto. Qed.
-
-(* -------------------------------------------------------------------- *)
-Definition asbool (P : Prop) :=
-  if pselect P then true else false.
-
-Lemma asboolP (P : Prop): reflect P (asbool P).
-Proof. by rewrite /asbool; case: pselect=> h; constructor. Qed.
-
-Lemma asboolE (P : Prop) : asbool P -> P.
-Proof. by case: asboolP. Qed.
-
-(* -------------------------------------------------------------------- *)
-Lemma in_rsetE {T : Type} (P : T -> Prop) x :
+Lemma in_rsetE {T : Type} {P : T -> Prop} x :
   x \mem {{ y | P y }} -> P x.
 Proof. by move/in_rset. Qed.
 
@@ -59,7 +31,7 @@ Variable E : {rset T}.
 Record rset_sub : Type :=
   RSetSub { rsval : T; rsvalP : asbool (rsval \mem E) }.
 
-Coercion rsval : rset_sub >-> T. 
+Coercion rsval : rset_sub >-> T.
 
 Canonical rset_sub_subType := Eval hnf in [subType for rsval].
 End Def.
@@ -143,18 +115,25 @@ Variables (T : eqType) (E : nat -> {rset T}).
 
 Hypothesis cE : forall i, countable (E i).
 
+(* Is this reasonable? *)
+Arguments in_rset {T P x}.
+
 Lemma cunion_countable : countable {{ x | exists i, x \mem E i }}.
 Proof.
 pose S := { i : nat & [countable of cE i] }; set F := {{ x | _ }}.
 have H: forall (x : [rsub F]), exists i : nat, asbool (val x \mem E i).
-  by case=> /= x /asboolP /in_rset [i xEi]; exists i; apply/asboolP.
+  by case=> /= x /(asbool_equiv in_rset) /exists_asboolP.
+  (* by case=> /= x /asboolP /in_rset [i xEi]; exists i; apply/asboolP. *)
 have G: forall (x : S), asbool (val (tagged x) \mem F).
-  by case=> i [] /= x /asboolP xEi; apply/asboolP/in_rset; exists i.
+ case=> i [] /= x Eix; apply/(asbool_equiv in_rset)/exists_asboolP.
+ by exists i.
+  (* by case=> i [] /= x /asboolP xEi; apply/asboolP/in_rset; exists i. *)
 pose f (x : [rsub F]) : S :=
   Tagged (fun i => [rsub E i]) (RSetSub (xchooseP (H x))).
 pose g (x : S) := RSetSub (G x).
 by have /can_countable: cancel f g by case=> x hx; apply/val_inj.
 Qed.
+
 End CountableUnion.
 
 (* -------------------------------------------------------------------- *)
