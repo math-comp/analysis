@@ -76,12 +76,13 @@ case: (pselect P) => [hP | hnP] PQ.
 by move/asboolPn/negbTE: (hnP) => ->; move/PQ/asboolPn/negbTE: hnP->.
 Qed.
 
-Lemma asbool_equiv {P Q : Prop} : (P <-> Q) -> ((`[P]) <-> (`[Q])).
+Lemma asbool_equiv {P Q : Prop} : (P <-> Q) -> (`[P] <-> `[Q]).
 Proof. by move/asbool_equiv_eq->. Qed.
+
 
 (* -------------------------------------------------------------------- *)
 
-Lemma contrap (c b : Prop) : (c -> b) -> ~ b -> ~ c.
+Lemma contrap (Q P : Prop) : (Q -> P) -> ~ P -> ~ Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolPn.
 by apply: contra nb => /asboolP /cb /asboolP.
@@ -89,7 +90,7 @@ Qed.
 
 Definition contrapNN := contra.
 
-Lemma contrapL (c b : Prop) : (c -> ~ b) -> b -> ~ c.
+Lemma contrapL (Q P : Prop) : (Q -> ~ P) -> P -> ~ Q.
 Proof.
 move=> cb /asboolP hb; apply/asboolPn.
 by apply: contraL hb => /asboolP /cb /asboolPn.
@@ -97,7 +98,7 @@ Qed.
 
 Definition contrapTN := contrapL.
 
-Lemma contrapR (c b : Prop) : (~ c -> b) -> ~ b -> c.
+Lemma contrapR (Q P : Prop) : (~ Q -> P) -> ~ P -> Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolP.
 by apply: contraR nb => /asboolP /cb /asboolP.
@@ -105,7 +106,7 @@ Qed.
 
 Definition contrapNT := contrapR.
 
-Lemma contrapLR (c b : Prop) : (~ c -> ~ b) -> b -> c.
+Lemma contrapLR (Q P : Prop) : (~ Q -> ~ P) -> P -> Q.
 Proof.
 move=> cb /asboolP hb; apply/asboolP.
 by apply: contraLR hb => /asboolP /cb /asboolPn.
@@ -113,20 +114,59 @@ Qed.
 
 Definition contrapTT := contrapLR.
 
-Lemma contrapT b : ~ ~ b -> b.
+Lemma contrapT P : ~ ~ P -> P.
 Proof.
 by move/asboolPn=> nnb; apply/asboolP; apply: contraR nnb => /asboolPn /asboolP.
 Qed.
 
-Lemma wlog_neg b : (~ b -> b) -> b.
-Proof. by move=> ?; case: (pselect b). Qed.
+Lemma wlog_neg P : (~ P -> P) -> P.
+Proof. by move=> ?; case: (pselect P). Qed.
+
+Lemma notT (P : Prop) : P = False -> ~ P. Proof. by move->. Qed.
+
+Lemma notTE (P : Prop) : (~ P) -> P = False. Proof. by case: (pdegen P)=> ->. Qed.
+Lemma notFE (P : Prop) : (~ P) = False -> P.
+Proof. move/notT; exact: contrapT. Qed.
+
+Lemma notK : involutive not.
+Proof.
+move=> P; case: (pdegen P)=> ->; last by apply: notTE; intuition.
+by rewrite [~ True]notTE //; case: (pdegen (~ False)) => // /notFE.
+Qed.
+
+Lemma not_inj : injective not. Proof. exact: can_inj notK. Qed.
+Lemma notLR P Q : (P = ~ Q) -> (~ P) = Q. Proof. exact: canLR notK. Qed.
+
+Lemma notRL P Q : (~ P) = Q -> P = ~ Q. Proof. exact: canRL notK. Qed.
+
+(* -------------------------------------------------------------------- *)
+(* assia : let's see if we need the simplpred machinery. In any case, we sould
+   first try definitions + appropriate Arguments setting to see whether these
+   can replace the canonical structures machinery. *)
+
+Definition predp T := T -> Prop.
+
+Identity Coercion fun_of_pred : predp >-> Funclass.
+
+Definition relp T := T -> predp T.
+
+Identity Coercion fun_of_rel : rel >-> Funclass.
+
+Notation xpredp0 := (fun _ => False).
+Notation xpredpT := (fun _ => True).
+Notation xpredpI := (fun (p1 p2 : predp _) x => p1 x /\ p2 x).
+Notation xpredpU := (fun (p1 p2 : predp _) x => p1 x \/ p2 x).
+Notation xpredpC := (fun (p : predp _) x => ~ p x).
+Notation xpredpD := (fun (p1 p2 : predp _) x => ~ p2 x /\ p1 x).
+Notation xpreimp := (fun f (p : predp _) x => p (f x)).
+Notation xrelpU := (fun (r1 r2 : relp _) x y => r1 x y \/ r2 x y).
 
 (* -------------------------------------------------------------------- *)
 
-Definition pred0p (T : Type) (P : rset T) : bool := `[(P == rset0)%rset].
+Definition pred0p (T : Type) (P : predp T) : bool := `[P =1 xpredp0].
 Prenex Implicits pred0p.
 
-Lemma pred0pP  (T : Type) (P : rset T) : reflect (P == rset0)%rset (pred0p P).
+Lemma pred0pP  (T : Type) (P : predp T) : reflect (P =1 xpredp0) (pred0p P).
 Proof. by apply: (iffP (asboolP _)). Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -151,7 +191,7 @@ Section Definitions.
 Variable T : Type.
 Implicit Types (B : box) (x y : T).
 
-Definition quant0p Bp := pred0p {{x : T | let: F^* := Bp x x in F}}.
+Definition quant0p Bp := pred0p (fun x : T => let: F^* := Bp x x in F).
 (* The first redundant argument protects the notation from  Coq's K-term      *)
 (* display kludge; the second protects it from simpl and /=.                  *)
 Definition ex B x y := B.
@@ -248,26 +288,23 @@ Open Scope quant_scope.
 
 Section QuantifierCombinators.
 
-Variables (T : Type) (P : pred T) (PP : rset T).
+Variables (T : Type) (P : pred T) (PP : predp T).
 Hypothesis viewP : forall x, reflect (PP x) (P x).
 
-Lemma existsPP : reflect (exists x, x \mem PP) `[exists x, P x].
+Lemma existsPP : reflect (exists x, PP x) `[exists x, P x].
 Proof.
 apply: (iffP idP).
-  move/asboolP; (* oops notation! *) apply: contrapR => nh x.
-  rewrite in_rset0 (* mem_rset0 ? *); split=> //.
-  by apply: contrap nh => /in_rset Px; exists x; apply/viewP.
-case=> x PPx; apply/asboolP=> /(_ x) []; rewrite in_rset0 => h _; apply: h.
-by apply/in_rset/viewP.
+  move/asboolP; (* oops notation! *) apply: contrapR => nh x /=; apply: notTE.
+  by apply: contrap nh => /viewP Px; exists x.
+case=> x PPx; apply/asboolP=> /(_ x) [] /notT /=; rewrite -/(not (~ P x)) notK.
+exact/viewP.
 Qed.
 
 Lemma forallPP : reflect (forall x, PP x) `[forall x, P x].
 Proof.
 apply: (iffP idP).
-  move/asboolP=> h x; move: (h x); rewrite in_rset0 in_rset; case=> /negP.
-  by rewrite negbK => /viewP.
-move=> h; apply/asboolP=> x; rewrite in_rset0 in_rset; split => //; apply/negP.
-by rewrite negbK; apply/viewP.
+  by move/asboolP=> h x; move/notT: (h x)=> /= /negP; rewrite negbK => /viewP.
+move=> h; apply/asboolP=> x; apply/notTE/negP; rewrite negbK; exact/viewP.
 Qed.
 
 End QuantifierCombinators.
@@ -277,8 +314,10 @@ Section PredQuantifierCombinators.
 Variables (T : Type) (P : pred T).
 
 Lemma existsbP : reflect (exists x, P x) `[exists x, P x].
-Proof.
-Admitted.
+Proof. exact: existsPP (fun x => @idP (P x)). Qed.
+
+Lemma forallbP : reflect (forall x, P x) `[forall x, P x].
+Proof. exact: forallPP (fun x => @idP (P x)). Qed.
 
 End PredQuantifierCombinators.
 
