@@ -1,5 +1,5 @@
 (* -------------------------------------------------------------------- *)
-Require Import ssreflect ssrfun ssrbool eqtype collections.
+Require Import ssreflect ssrfun ssrbool eqtype choice collections.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -321,6 +321,12 @@ Proof. exact: forallPP (fun x => @idP (P x)). Qed.
 
 End PredQuantifierCombinators.
 
+Definition xchooseb {T : choiceType} (P : pred T) (h : `[exists x, P x]) :=
+  xchoose (existsbP P h).
+
+Lemma xchoosebP {T : choiceType} (P : pred T) (h : `[exists x, P x]) :
+  P (xchooseb h).
+Proof. exact/xchooseP. Qed.
 
 (* Notation "'exists_ view" := (existsPP (fun _ => view)) *)
 (*   (at level 4, right associativity, format "''exists_' view"). *)

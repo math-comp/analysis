@@ -5,7 +5,7 @@
 
 Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
 Require Import finset bigop ssralg ssrnum ssrint rat poly bigenough.
-Require Import ssrprop collections Setoid.
+Require Import boolp ssrprop collections Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -197,9 +197,74 @@ Lemma sup_adherent {R : realType} (E : {rset R}) (eps : R) :
 Proof. by case: R E eps=> ? [? []]. Qed.
 
 (* -------------------------------------------------------------------- *)
-Section RealDerivedOps.
+Section IsInt.
+Context {R : realType}.
 
+Definition Rint := [qualify a x : R | `[exists z, x == z%:~R]].
+Fact Rint_key : pred_key Rint. Proof. by []. Qed.
+Canonical Rint_keyed := KeyedQualifier Rint_key.
+
+Lemma Rint_def x : (x \is a Rint) = (`[exists z, x == z%:~R]).
+Proof. by []. Qed.
+
+Lemma RintP x : reflect (exists z, x = z%:~R) (x \in Rint).
+Proof. exact/(iffP (existsPP (fun x => eqP (y := x%:~R)))). Qed.
+
+Lemma RintC z : z%:~R \is a Rint.
+Proof. by apply/RintP; exists z. Qed.
+
+Lemma Rint0 : 0 \is a Rint.
+Proof. by rewrite -[0](mulr0z 1) RintC. Qed.
+
+Lemma Rint1 : 1 \is a Rint.
+Proof. by rewrite -[1]mulr1z RintC. Qed.
+
+Hint Resolve Rint0 Rint1 RintC.
+
+Lemma Rint_subring_closed : subring_closed Rint.
+Proof.
+split=> // _ _ /RintP[x ->] /RintP[y ->]; apply/RintP.
+by exists (x - y); rewrite rmorphB. by exists (x * y); rewrite rmorphM.
+Qed.
+
+Canonical Rint_opprPred := OpprPred Rint_subring_closed.
+Canonical Rint_addrPred := AddrPred Rint_subring_closed.
+Canonical Rint_mulrPred := MulrPred Rint_subring_closed.
+Canonical Rint_zmodPred := ZmodPred Rint_subring_closed.
+Canonical Rint_semiringPred := SemiringPred Rint_subring_closed.
+Canonical Rint_smulrPred := SmulrPred Rint_subring_closed.
+Canonical Rint_subringPred := SubringPred Rint_subring_closed.
+End IsInt.
+
+(* -------------------------------------------------------------------- *)
+Section ToInt.
+Context {R : realType}.
+
+Implicit Types x y : R.
+
+Definition Rtoint (x : R) : int :=
+  if insub x : {? x | x \is a Rint} is Some Px then
+    xchooseb (tagged Px)
+  else 0.
+
+Lemma RtointK (x : R): x \is a Rint -> (Rtoint x)%:~R = x.
+Proof. by move=> Ix; rewrite /Rtoint insubT /= [RHS](eqP (xchoosebP Ix)). Qed.
+
+Lemma Rtointz (z : int): Rtoint z%:~R = z.
+Proof. by apply/eqP; rewrite -(@eqr_int R) RtointK ?rpred_int. Qed.
+
+Lemma Rtointn (n : nat): Rtoint n%:R = n%:~R.
+Proof. by rewrite -{1}mulrz_nat Rtointz. Qed.
+
+Lemma inj_Rtoint : {in Rint &, injective Rtoint}.
+Proof. by move=> x y Ix Iy /= /(congr1 (@intmul R 1)); rewrite !RtointK. Qed.
+End ToInt.
+
+(* -------------------------------------------------------------------- *)
+Section RealDerivedOps.
 Variable R : realType.
+
+Implicit Types x y : R.
 
 Definition pickR_set P1 P2 (x1 x2 : R) :=
   {{ y | P1 /\ y = x1 \/ P2 /\ y = x2 }}.
@@ -212,10 +277,11 @@ Definition min x1 x2 := pickR (x1 <= x2) (x2 <= x1) x1 x2.
 
 Definition max x1 x2 := pickR (x1 <= x2) (x2 <= x1) x2 x1.
 
-Inductive floor_set (x : R) : R -> Prop :=
-  FloorSet (m : int) of m%:~R <= x : floor_set x m%:~R.
+Definition floor_set x := {{ y | (y \is a Rint) && (y <= x) }}.
 
-Definition floor x : R := sup (Collection (floor_set x)).
+Definition floor x : R := sup (floor_set x).
+
+Definition ifloor x : int := Rtoint (floor x).
 
 Definition range1 (x : R) := {{ y | x <= y < x + 1 }}.
 End RealDerivedOps.
@@ -265,3 +331,44 @@ rewrite -(ler_add2r y) -Dz -mulr2n -[X in X<=_]mulr_natl.
 by rewrite ler_pmul2l ?ltr0Sn.
 Qed.
 End RealLemmas.
+
+(* -------------------------------------------------------------------- *)
+Section FloorTheory.
+Variable R : realType.
+
+Implicit Types x y : R.
+
+Lemma has_sup_floor_set : forall x, has_sup (floor_set x).
+Proof.
+move=> x; split; [exists (- (Num.bound (-x))%:~R) | exists (Num.bound x)%:~R].
+  apply/in_rset; rewrite rpredN rpred_int /= ler_oppl.
+  case: (ger0P (-x)) => [/archi_boundP/ltrW//|].
+  by move/ltrW/ler_trans; apply; rewrite ler0z.
+apply/in_rset=> y /in_rset /andP[_] /ler_trans; apply.
+case: (ger0P x)=> [/archi_boundP/ltrW|] //.
+by move/ltrW/ler_trans; apply; rewrite ler0z.
+Qed.
+
+Lemma isint_floor : forall x, floor x \is a Rint.
+Proof.
+move=> x; suff: sup (floor_set x) \mem floor_set x.
+  by case/in_rset/andP.
+have /sup_adherent /(_ ltr01) [y Fy] := has_sup_floor_set x.
+have /sup_upper_bound /(_ _ Fy) := has_sup_floor_set x.
+rewrite ler_eqVlt=> /orP[/eqP<-//| lt_yFx].
+rewrite ltr_subl_addr -ltr_subl_addl => lt1_FxBy.
+pose e := sup (floor_set x) - y; have := has_sup_floor_set x.
+move/sup_adherent=> -/(_ e) []; first by rewrite subr_gt0.
+move=> z Fz; rewrite /e opprB addrCA subrr addr0 => lt_yz.
+have /sup_upper_bound /(_ _ Fz) := has_sup_floor_set x.
+rewrite -(ler_add2r (-y)) => /ler_lt_trans /(_ lt1_FxBy).
+case/in_rset/andP: Fy Fz lt_yz=> /RintP[yi -> _]. 
+case/in_rset/andP=> /RintP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
+rewrite ltr_neqAle => /andP[ne_yz le_yz].
+rewrite -[_-_]gez0_abs ?subr_ge0 // ltz_nat ltnS leqn0.
+by rewrite absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
+Qed.
+
+Lemma floorE x : floor x = (ifloor x)%:~R.
+Proof. by rewrite /ifloor RtointK ?isint_floor. Qed.
+End FloorTheory.
