@@ -5,7 +5,7 @@
 
 Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
 Require Import finset bigop ssralg ssrnum ssrint rat poly bigenough.
-Require Import boolp ssrprop Setoid.
+Require Import boolp Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
