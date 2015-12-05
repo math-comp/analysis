@@ -16,10 +16,7 @@ COQFILES := \
 	finmap/finmap.v \
 	src/funtype.v \
 	src/reals.v \
-	src/dedekind.v \
-	src/realanalysis.v \
-	src/discrete.v \
-	src/sandbox.v
+	src/dedekind.v
 
 include Makefile.common
 

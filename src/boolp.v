@@ -1,5 +1,5 @@
 (* -------------------------------------------------------------------- *)
-Require Import ssreflect ssrfun ssrbool eqtype choice collections.
+Require Import ssreflect ssrfun ssrbool eqtype choice.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -162,7 +162,6 @@ Notation xpreimp := (fun f (p : predp _) x => p (f x)).
 Notation xrelpU := (fun (r1 r2 : relp _) x y => r1 x y \/ r2 x y).
 
 (* -------------------------------------------------------------------- *)
-
 Definition pred0p (T : Type) (P : predp T) : bool := `[P =1 xpredp0].
 Prenex Implicits pred0p.
 
@@ -170,7 +169,6 @@ Lemma pred0pP  (T : Type) (P : predp T) : reflect (P =1 xpredp0) (pred0p P).
 Proof. by apply: (iffP (asboolP _)). Qed.
 
 (* -------------------------------------------------------------------- *)
-
 Module BoolQuant.
 
 Inductive box := Box of bool.

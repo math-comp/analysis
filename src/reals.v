@@ -5,7 +5,7 @@
 
 Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
 Require Import finset bigop ssralg ssrnum ssrint rat poly bigenough.
-Require Import boolp ssrprop collections Setoid.
+Require Import boolp ssrprop Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -13,8 +13,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import GRing.Theory Num.Theory BigEnough.
-
-Local Ltac idone := solve [intuition] || ssreflect.done.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -29,29 +27,29 @@ Section Mixin.
 Variable (R : archiFieldType).
 
 (* Real set non-emptyness. *)
-Definition nonempty (E : {rset R}) :=
-  exists x : R, x \mem E.
+Definition nonempty (E : pred R) :=
+  exists x : R, x \in E.
 
 (* Real upper bound set. *)
-Definition ub  (E : {rset R}) :=
-  {{ z | forall y : R, E y -> y <= z }}.
+Definition ub (E : pred R) : pred R :=
+  [pred z | `[forall y, (y \in E) ==> (y <= z)]].
 
 (* Real down set (i.e., generated order ideal) *)
 (* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
-Definition down  (E : {rset R}) :=
-  {{ x | exists2 y : R, E y & x <= y }}.
+Definition down (E : pred R) : pred R :=
+  [pred x | `[exists y, (y \in E) && (x <= y)]].
 
 (* Real set supremum existence condition. *)
-Definition has_ub  (E : {rset R}) := nonempty (ub E).
-Definition has_sup (E : {rset R}) := nonempty E /\ has_ub E.
+Definition has_ub  (E : pred R) := nonempty (ub E).
+Definition has_sup (E : pred R) := nonempty E /\ has_ub E.
 
 Record mixin_of : Type := Mixin {
-  sup : {rset R} -> R;
+  sup : pred R -> R;
    _  :
-    forall E : {rset Num.ArchimedeanField.sort R},
-      has_sup E -> sup E \mem ub E;
+    forall E : pred (Num.ArchimedeanField.sort R),
+      has_sup E -> sup E \in ub E;
    _  :
-    forall (E : {rset Num.ArchimedeanField.sort R}) (eps : R),
+    forall (E : pred (Num.ArchimedeanField.sort R)) (eps : R),
       has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e
 }.
 
@@ -61,12 +59,6 @@ Definition EtaMixin R sup sup_upper_bound sup_adherent :=
   let _ := @Mixin R sup sup_upper_bound sup_adherent in
   @Mixin (Num.ArchimedeanField.Pack (Num.ArchimedeanField.class R) R)
          sup sup_upper_bound sup_adherent.
-
-Global Arguments ub      {R}%type _%rset_scope.
-Global Arguments has_ub  {R}%type _%rset_scope.
-Global Arguments has_sup {R}%type _%rset_scope.
-Global Arguments down    {R}%type _%rset_scope.
-
 Section ClassDef.
 
 Record class_of (R : Type) : Type := Class {
@@ -168,17 +160,20 @@ Definition has_sup  {R : realType} := @Real.has_sup R.
 Section BaseReflect.
 Context {R : realType}.
 
-Implicit Types E : {rset R}.
+Implicit Types E : pred R.
 Implicit Types x : R.
 
-Lemma nonemptyP E : nonempty E <-> exists x, E x.
+Lemma nonemptyP E : nonempty E <-> exists x, x \in E.
 Proof. by []. Qed.
 
-Lemma ubP E x : x \mem ub E <-> (forall y, y \mem E -> y <= x).
-Proof. by rewrite !in_rset. Qed.
+Lemma ubP E x : reflect (forall y, y \in E -> y <= x) (x \in ub E).
+Proof. by apply: (iffP (forallbP _))=> h y; apply/implyP/h. Qed.
 
-Lemma downP E x : x \mem down E <-> exists2 y, y \mem E & x <= y.
-Proof. by rewrite !in_rset. Qed.
+Lemma downP E x : reflect (exists2 y, y \in E & x <= y) (x \in down E).
+Proof.
+apply: (iffP (existsbP _))=> [[y /andP[]]|[y]].
+  by exists y. by exists y; apply/andP; split.
+Qed.
 
 Lemma has_ubP E : has_ub E <-> nonempty (ub E).
 Proof. by []. Qed.
@@ -188,12 +183,12 @@ Proof. by []. Qed.
 End BaseReflect.
 
 (* -------------------------------------------------------------------- *)
-Lemma sup_upper_bound {R : realType} (E : {rset R}) :
-  has_sup E -> (forall x, x \mem E -> x <= sup E).
+Lemma sup_upper_bound {R : realType} (E : pred R):
+  has_sup E -> (forall x, x \in E -> x <= sup E).
 Proof. by move=> supE; apply/ubP; case: R E supE=> ? [? []]. Qed.
 
-Lemma sup_adherent {R : realType} (E : {rset R}) (eps : R) :
-  has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e.
+Lemma sup_adherent {R : realType} (E : pred R) (eps : R) :
+  has_sup E -> 0 < eps -> exists2 e : R, e \in E & (sup E - eps) < e.
 Proof. by case: R E eps=> ? [? []]. Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -266,65 +261,44 @@ Variable R : realType.
 
 Implicit Types x y : R.
 
-Definition pickR_set P1 P2 (x1 x2 : R) :=
-  {{ y | P1 /\ y = x1 \/ P2 /\ y = x2 }}.
-
-Definition pickR P1 P2 x1 x2 := sup (pickR_set P1 P2 x1 x2).
-
-Definition selectR P : R -> R -> R := pickR P (~ P).
-
-Definition min x1 x2 := pickR (x1 <= x2) (x2 <= x1) x1 x2.
-
-Definition max x1 x2 := pickR (x1 <= x2) (x2 <= x1) x2 x1.
-
-Definition floor_set x := {{ y | (y \is a Rint) && (y <= x) }}.
+Definition floor_set x := [pred y | (y \is a Rint) && (y <= x)].
 
 Definition floor x : R := sup (floor_set x).
 
 Definition ifloor x : int := Rtoint (floor x).
 
-Definition range1 (x : R) := {{ y | x <= y < x + 1 }}.
+Definition range1 (x : R) := [pred y | x <= y < x + 1].
 End RealDerivedOps.
-
-Notation "'select' { x1 'if' P1 , x2 'if' P2 }" := (pickR P1 P2 x1 x2)
-   (at level 10, x1, x2, P1, P2 at level 100,
-    format "'select'  { x1  'if'  P1 ,  x2  'if'  P2 }") : real_scope.
-
-Notation "'select' { x1 'if' P , 'else' x2 }" := (selectR P x1 x2)
-   (at level 10, x1, x2, P at level 100,
-    format "'select'  { x1  'if'  P ,  'else'  x2 }") : real_scope.
-
-Prenex Implicits min max.
 
 (*-------------------------------------------------------------------- *)
 Section RealLemmas.
 
 Variables (R : realType).
 
-Implicit Types E : {rset R}.
+Implicit Types E : pred R.
 Implicit Types x : R.
 
-Lemma sup_ub E : has_ub E -> sup E \mem ub E.
+Lemma sup_ub E : has_ub E -> sup E \in ub E.
 Proof.
 move=> ubE; apply/ubP=> x x_in_E; apply/sup_upper_bound=> //.
 by apply/has_supP; split; first by exists x.
 Qed.
 
-Lemma sup_total E x : has_sup E -> x \mem down E \/ sup E <= x.
+Lemma sup_total E x : has_sup E -> (x \in down E) || (sup E <= x).
 Proof.
-move=> has_supE; case: (lerP (sup E) x)=> hx; [idone|left].
+move=> has_supE; rewrite orbC; case: (lerP (sup E) x)=> hx //=.
 have /(sup_adherent has_supE) : 0 < sup E - x by rewrite subr_gt0.
 case=> e Ee hlte; apply/downP; exists e => //; move: hlte.
 by rewrite opprB addrCA subrr addr0 => /ltrW.
 Qed.
 
-Lemma sup_le_ub E x : nonempty E -> x \mem ub E -> sup E <= x.
+Lemma sup_le_ub E x : nonempty E -> x \in ub E -> sup E <= x.
 Proof.
 move=> hasE /ubP leEx; set y := sup E; pose z := (x + y) / 2%:R.
 have Dz: 2%:R * z = x + y.
   by rewrite mulrCA divff ?mulr1 // pnatr_eq0.
 have ubE: has_sup E by split; last by exists x; apply/ubP.
-have [/in_rset [t Et lezt] | leyz] := sup_total z ubE.
+have /orP [/downP [t Et lezt] | leyz] := sup_total z ubE.
   rewrite -(ler_add2l x) -Dz -mulr2n -[X in _<=X]mulr_natl.
   rewrite ler_pmul2l ?ltr0Sn //; exact/(ler_trans lezt)/leEx.
 rewrite -(ler_add2r y) -Dz -mulr2n -[X in X<=_]mulr_natl.
@@ -338,21 +312,19 @@ Variable R : realType.
 
 Implicit Types x y : R.
 
-Lemma has_sup_floor_set : forall x, has_sup (floor_set x).
+Lemma has_sup_floor_set x: has_sup (floor_set x).
 Proof.
-move=> x; split; [exists (- (Num.bound (-x))%:~R) | exists (Num.bound x)%:~R].
-  apply/in_rset; rewrite rpredN rpred_int /= ler_oppl.
+split; [exists (- (Num.bound (-x))%:~R) | exists (Num.bound x)%:~R].
+  rewrite inE rpredN rpred_int /= ler_oppl.
   case: (ger0P (-x)) => [/archi_boundP/ltrW//|].
   by move/ltrW/ler_trans; apply; rewrite ler0z.
-apply/in_rset=> y /in_rset /andP[_] /ler_trans; apply.
+apply/ubP=> y /andP[_] /ler_trans; apply.
 case: (ger0P x)=> [/archi_boundP/ltrW|] //.
 by move/ltrW/ler_trans; apply; rewrite ler0z.
 Qed.
 
-Lemma isint_floor : forall x, floor x \is a Rint.
+Lemma sup_in_floor_set x : sup (floor_set x) \in floor_set x.
 Proof.
-move=> x; suff: sup (floor_set x) \mem floor_set x.
-  by case/in_rset/andP.
 have /sup_adherent /(_ ltr01) [y Fy] := has_sup_floor_set x.
 have /sup_upper_bound /(_ _ Fy) := has_sup_floor_set x.
 rewrite ler_eqVlt=> /orP[/eqP<-//| lt_yFx].
@@ -362,12 +334,15 @@ move/sup_adherent=> -/(_ e) []; first by rewrite subr_gt0.
 move=> z Fz; rewrite /e opprB addrCA subrr addr0 => lt_yz.
 have /sup_upper_bound /(_ _ Fz) := has_sup_floor_set x.
 rewrite -(ler_add2r (-y)) => /ler_lt_trans /(_ lt1_FxBy).
-case/in_rset/andP: Fy Fz lt_yz=> /RintP[yi -> _]. 
-case/in_rset/andP=> /RintP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
+case/andP: Fy Fz lt_yz=> /RintP[yi -> _]. 
+case/andP=> /RintP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
 rewrite ltr_neqAle => /andP[ne_yz le_yz].
 rewrite -[_-_]gez0_abs ?subr_ge0 // ltz_nat ltnS leqn0.
 by rewrite absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
 Qed.
+
+Lemma isint_floor x: floor x \is a Rint.
+Proof. by case/andP: (sup_in_floor_set x). Qed.
 
 Lemma floorE x : floor x = (ifloor x)%:~R.
 Proof. by rewrite /ifloor RtointK ?isint_floor. Qed.
