@@ -2,7 +2,7 @@
 
 # --------------------------------------------------------------------
 NAME     := SsrReals
-SUBDIRS  := collections
+SUBDIRS  :=
 INCFLAGS :=
 INCFLAGS += -R collections/src SsrCollections
 INCFLAGS += -R 3rdparty $(NAME) -R finmap $(NAME) -R src $(NAME)
