@@ -1,7 +1,7 @@
 (* -------------------------------------------------------------------- *)
 Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
 Require Import finfun finset finmap bigop ssralg ssrnum ssrint.
-Require Import tuple bigenough ssrprop collections boolp reals.
+Require Import tuple bigenough boolp reals.
 Require (*--*) Setoid.
 
 (* -------------------------------------------------------------------- *)
@@ -11,58 +11,50 @@ Unset Printing Implicit Defensive.
 
 Import GRing.Theory Num.Theory BigEnough.
 
-Local Open Scope rset_scope.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
-Local Ltac idone := solve [intuition] || ssreflect.done.
-
 (* -------------------------------------------------------------------- *)
-Lemma in_rsetE {T : Type} {P : T -> Prop} x :
-  x \mem {{ y | P y }} -> P x.
-Proof. by move/in_rset. Qed.
-
-(* -------------------------------------------------------------------- *)
-Section RSetSubtype.
+Section PredSubtype.
 Section Def.
 Variable T : Type.
-Variable E : {rset T}.
+Variable E : pred T.
 
-Record rset_sub : Type :=
-  RSetSub { rsval : T; rsvalP : asbool (rsval \mem E) }.
+Record pred_sub : Type :=
+  PSubSub { rsval : T; rsvalP : rsval \in E }.
 
-Coercion rsval : rset_sub >-> T.
+Coercion rsval : pred_sub >-> T.
 
-Canonical rset_sub_subType := Eval hnf in [subType for rsval].
+Canonical pred_sub_subType := Eval hnf in [subType for rsval].
 End Def.
 
-Definition rset_sub_eqMixin (T : eqType) (E : {rset T}) :=
-  Eval hnf in [eqMixin of rset_sub E by <:].
-Canonical rset_sub_eqType (T : eqType) (E : {rset T}) :=
-  Eval hnf in EqType (@rset_sub T E) (rset_sub_eqMixin E).
+Definition pred_sub_eqMixin (T : eqType) (E : pred T) :=
+  Eval hnf in [eqMixin of pred_sub E by <:].
+Canonical pred_sub_eqType (T : eqType) (E : pred T) :=
+  Eval hnf in EqType (@pred_sub T E) (pred_sub_eqMixin E).
 
-Definition rset_sub_choiceMixin (T : choiceType) (E : {rset T}) :=
-  Eval hnf in [choiceMixin of rset_sub E by <:].
-Canonical rset_sub_choiceType (T : choiceType) (E : {rset T}) :=
-  Eval hnf in ChoiceType (@rset_sub T E) (rset_sub_choiceMixin E).
+Definition pred_sub_choiceMixin (T : choiceType) (E : pred T) :=
+  Eval hnf in [choiceMixin of pred_sub E by <:].
+Canonical pred_sub_choiceType (T : choiceType) (E : pred T) :=
+  Eval hnf in ChoiceType (@pred_sub T E) (pred_sub_choiceMixin E).
 
-Definition rset_sub_countMixin (T : countType) (E : {rset T}) :=
-  Eval hnf in [countMixin of rset_sub E by <:].
-Canonical rset_sub_countType (T : countType) (E : {rset T}) :=
-  Eval hnf in CountType (@rset_sub T E) (rset_sub_countMixin E).
-End RSetSubtype.
+Definition pred_sub_countMixin (T : countType) (E : pred T) :=
+  Eval hnf in [countMixin of pred_sub E by <:].
+Canonical pred_sub_countType (T : countType) (E : pred T) :=
+  Eval hnf in CountType (@pred_sub T E) (pred_sub_countMixin E).
+End PredSubtype.
 
-Notation "[ 'rsub' E ]" := (@rset_sub _ E)
-  (format "[ 'rsub'  E ]").
+Notation "[ 'psub' E ]" := (@pred_sub _ E)
+  (format "[ 'psub'  E ]").
 
 (* -------------------------------------------------------------------- *)
 Section Countable.
-Variable (T : Type) (E : {rset T}).
+Variable (T : Type) (E : pred T).
 
 CoInductive countable : Type :=
   Countable
-    (rpickle : [rsub E] -> nat)
-    (runpickle : nat -> option [rsub E])
+    (rpickle : [psub E] -> nat)
+    (runpickle : nat -> option [psub E])
     of pcancel rpickle runpickle.
 
 Definition rpickle (c : countable) :=
@@ -77,12 +69,12 @@ End Countable.
 
 (* -------------------------------------------------------------------- *)
 Section CountableTheory.
-Lemma countable_countable (T : countType) (E : {rset T}) : countable E.
+Lemma countable_countable (T : countType) (E : pred T) : countable E.
 Proof. by exists pickle unpickle; apply/pickleK. Qed.
 
 Section CanCountable.
-Variables (T : Type) (U : countType) (E : {rset T}).
-Variables (f : [rsub E] -> U) (g : U -> [rsub E]).
+Variables (T : Type) (U : countType) (E : pred T).
+Variables (f : [psub E] -> U) (g : U -> [psub E]).
 
 Lemma can_countable : cancel f g -> countable E.
 Proof.
@@ -93,13 +85,13 @@ Qed.
 End CanCountable.
 
 Section CountType.
-Variables (T : eqType) (E : {rset T}) (c : countable E).
+Variables (T : eqType) (E : pred T) (c : countable E).
 
 Definition countable_countMixin  := CountMixin (rpickleK c).
 Definition countable_choiceMixin := CountChoiceMixin countable_countMixin.
 
 Definition countable_choiceType :=
-  ChoiceType [rsub E] countable_choiceMixin.
+  ChoiceType [psub E] countable_choiceMixin.
 
 Definition countable_countType :=
   CountType countable_choiceType countable_countMixin.
@@ -111,29 +103,22 @@ Notation "[ 'countable' 'of' c ]" := (countable_countType c)
 
 (* -------------------------------------------------------------------- *)
 Section CountableUnion.
-Variables (T : eqType) (E : nat -> {rset T}).
+Variables (T : eqType) (E : nat -> pred T).
 
 Hypothesis cE : forall i, countable (E i).
 
-(* Is this reasonable? *)
-Arguments in_rset {T P x}.
-
-Lemma cunion_countable : countable {{ x | exists i, x \mem E i }}.
+Lemma cunion_countable : countable [pred x | `[exists i, x \in E i]].
 Proof.
-pose S := { i : nat & [countable of cE i] }; set F := {{ x | _ }}.
-have H: forall (x : [rsub F]), exists i : nat, asbool (val x \mem E i).
-  by case=> /= x /(asbool_equiv in_rset) /exists_asboolP.
-  (* by case=> /= x /asboolP /in_rset [i xEi]; exists i; apply/asboolP. *)
-have G: forall (x : S), asbool (val (tagged x) \mem F).
- case=> i [] /= x Eix; apply/(asbool_equiv in_rset)/exists_asboolP.
- by exists i.
-  (* by case=> i [] /= x /asboolP xEi; apply/asboolP/in_rset; exists i. *)
-pose f (x : [rsub F]) : S :=
-  Tagged (fun i => [rsub E i]) (RSetSub (xchooseP (H x))).
-pose g (x : S) := RSetSub (G x).
+pose S := { i : nat & [countable of cE i] }; set F := [pred x | _].
+have H: forall (x : [psub F]), exists i : nat, val x \in E i.
+  by case=> x /= /existsbP[i] Eix; exists i.
+have G: forall (x : S), val (tagged x) \in F.
+  by case=> i [x /= Eix]; apply/existsbP; exists i.
+pose f (x : [psub F]) : S := Tagged (fun i => [psub E i])
+  (PSubSub (xchooseP (H x))).
+pose g (x : S) := PSubSub (G x).
 by have /can_countable: cancel f g by case=> x hx; apply/val_inj.
 Qed.
-
 End CountableUnion.
 
 (* -------------------------------------------------------------------- *)
@@ -144,8 +129,9 @@ Definition summable := exists (M : R), forall (J : {fset T}),
   \sum_(x : J) `|f (val x)| <= M.
 
 Definition sum : R :=
-  let S := [rset \sum_(x : J) `|f (val x)| | J : {fset T}] in
-  select { sup S if summable, else 0 }.
+  (* We need some ticked `image` operator *)
+  let S := [pred x | `[exists J : {fset T}, x == \sum_(x : J) `|f (val x)|]] in
+  if `[summable] then sup S else 0.
 End Summable.
 
 (* -------------------------------------------------------------------- *)
