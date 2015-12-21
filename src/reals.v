@@ -229,6 +229,20 @@ Canonical Rint_zmodPred := ZmodPred Rint_subring_closed.
 Canonical Rint_semiringPred := SemiringPred Rint_subring_closed.
 Canonical Rint_smulrPred := SmulrPred Rint_subring_closed.
 Canonical Rint_subringPred := SubringPred Rint_subring_closed.
+
+Lemma Rint_ler_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
+  (x + 1 <= y) = (x < y).
+Proof.
+move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{2}[1]mulr1z.
+by rewrite -intrD !(ltr_int, ler_int) lez_addr1.
+Qed.
+
+Lemma Rint_ltr_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
+  (x < y + 1) = (x <= y).
+move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{3}[1]mulr1z.
+by rewrite -intrD !(ltr_int, ler_int) ltz_addr1.
+Qed.
+
 End IsInt.
 
 (* -------------------------------------------------------------------- *)
@@ -346,4 +360,64 @@ Proof. by case/andP: (sup_in_floor_set x). Qed.
 
 Lemma floorE x : floor x = (ifloor x)%:~R.
 Proof. by rewrite /ifloor RtointK ?isint_floor. Qed.
+
+Lemma mem_rg1_floor (x : R) : x \in range1 (floor x).
+Proof.
+rewrite inE; have /andP[_ ->] /= := sup_in_floor_set x.
+case: (boolP (floor x + 1 \in floor_set x)); last first.
+  by rewrite inE negb_and -ltrNge rpredD // ?(Rint1, isint_floor).
+by move/sup_upper_bound=> -/(_ (has_sup_floor_set x)); rewrite ger_addl ler10.
+Qed.
+
+Lemma floor_ler (x : R) : floor x <= x.
+Proof. by case/andP: (mem_rg1_floor x). Qed.
+
+Lemma floorS_gtr (x : R) : x < floor x + 1.
+Proof. by case/andP: (mem_rg1_floor x). Qed.
+
+Lemma range1z_inj (x : R) (m1 m2 : int) :
+  x \in range1 m1%:~R -> x \in range1 m2%:~R -> m1 = m2.
+Proof.
+move=> /andP[m1x x_m1] /andP[m2x x_m2].
+wlog suffices: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 <= m2)%R.
+  by move=> ih; apply/eqP; rewrite eqr_le !ih.
+rewrite -(ler_add2r 1) lez_addr1 -(@ltr_int R) intrD.
+by apply/(ler_lt_trans m1x).
+Qed.
+
+Lemma range1rr (x : R) : x \in range1 x.
+Proof. by rewrite inE lerr /= ltr_addl ltr01. Qed.
+
+Lemma range1zP (m : int) (x : R) :
+  reflect (floor x = m%:~R) (x \in range1 m%:~R).
+Proof.
+apply: (iffP idP)=> [h|<-]; [apply/eqP | by apply/mem_rg1_floor].
+rewrite floorE eqr_int; apply/eqP/(@range1z_inj x) => //.
+by rewrite -floorE mem_rg1_floor.
+Qed.
+
+Lemma floor_natz (x : int) : floor x%:~R = x%:~R :> R.
+Proof. by apply/range1zP/range1rr. Qed.
+
+Lemma floor0 : floor 0 = 0 :> R.
+Proof. by rewrite -{1}(mulr0z 1) floor_natz. Qed.
+
+Lemma floor1 : floor 1 = 1 :> R.
+Proof. by rewrite -{1}(mulr1z 1) floor_natz. Qed.
+
+Lemma ler_floor (x y : R) : x <= y -> floor x <= floor y.
+Proof.
+move=> le_xy; case: lerP=> //=; rewrite -Rint_ler_addr1 ?isint_floor //.
+move/(ltr_le_trans (floorS_gtr y))/ltr_le_trans/(_ (floor_ler x)).
+by rewrite ltrNge le_xy.
+Qed.
+
+Lemma floor_ge0 (x : R) : (0 <= floor x) = (0 <= x).
+Proof.
+apply/idP/idP; last by move/ler_floor; rewrite floor0.
+by move/ler_trans=> -/(_ _ (floor_ler x)).
+Qed.
+
+Lemma ifloor_ge0 (x : R) : (0 <= ifloor x) = (0 <= x).
+Proof. by rewrite -(@ler_int R) -floorE floor_ge0. Qed.
 End FloorTheory.

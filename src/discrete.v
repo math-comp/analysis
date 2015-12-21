@@ -15,6 +15,16 @@ Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
 (* -------------------------------------------------------------------- *)
+Lemma existsTP {T : choiceType} (P : T -> Prop) :
+  { x : T | P x } + (forall x, ~ P x).
+Proof.
+case: (boolP (asbool (exists x : T, `[<P x>]))).
+  move/exists_asboolP=> h; have/asboolP/asboolP := (xchooseP h).
+  by move=> Ph; left; exists (xchoose h).
+by move/asboolPn=> h; right=> x Px; apply/h; exists x; apply/asboolP.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Section PredSubtype.
 Section Def.
 Variable T : Type.
@@ -110,16 +120,45 @@ Notation "[ 'countable' 'of' c ]" := (countable_countType c)
   (format "[ 'countable'  'of'  c ]").
 
 (* -------------------------------------------------------------------- *)
-Section FiniteCountable.
-Variables (T : eqType) (E : pred T) (s : seq T).
+Section Finite.
+Variables (T : eqType).
 
-Hypothesis Es : forall x, x \in E -> x \in s.
+CoInductive finite (E : pred T) : Type :=
+| Finite s of uniq s & {subset E <= s}.
+End Finite.
 
-Lemma finite_countable : countable E.
+(* -------------------------------------------------------------------- *)
+Section FiniteTheory.
+Context {T : choiceType}.
+
+Lemma finiteP (E : pred T) : (exists s : seq T, {subset E <= s}) -> finite E.
 Proof.
-pose t := pmap (fun x => (insub x : option [psub E])) s.
-pose f x := index x t.
-pose g i := nth None [seq Some x | x <- t] i.
+move/asboolP/exists_asboolP=> h; have/asboolP := (xchooseP h).
+move=> le_Eh; exists (undup (xchoose h)); rewrite ?undup_uniq //.
+by move=> x /le_Eh; rewrite mem_undup.
+Qed.
+
+Lemma finiteNP (E : pred T): (forall s : seq T, ~ {subset E <= s}) ->
+  (forall n, exists s : seq T, [/\ size s = n, uniq s & {subset s <= E}]).
+Proof.
+move=> finN n; have h: forall s : seq T, exists2 x, x \notin s & x \in E.
+  move=> s; have /asboolPn/existsp_asboolPn := finN (filter (mem E) s).
+  case=> x; rewrite mem_filter => /asboolPn/imply_asboolPn.
+  by case=> xE /negP; rewrite topredE xE /= => Nxs; exists x.
+elim: n => [|n [s] [<- uq_s sE]]; first by exists [::].
+case: (h s)=> x sxN xE; exists (x :: s) => /=; rewrite sxN; split=> //.
+by move=> y; rewrite in_cons => /orP[/eqP->//|/sE].
+Qed.
+End FiniteTheory.
+
+(* -------------------------------------------------------------------- *)
+Section FiniteCountable.
+Variables (T : eqType) (E : pred T).
+
+Lemma finite_countable : finite E -> countable E.
+Proof.
+case=> s uqs Es; pose t := pmap (fun x => (insub x : option [psub E])) s.
+pose f x := index x t; pose g i := nth None [seq Some x | x <- t] i.
 apply (@Countable _ E f g) => x; rewrite {}/f {}/g /=.
 have x_in_t: x \in t; first case: x => x h.
   by rewrite {}/t mem_pmap_sub /= Es.
@@ -169,7 +208,15 @@ Definition summable := exists (M : R), forall (J : {fset T}),
 Definition sum : R :=
   (* We need some ticked `image` operator *)
   let S := [pred x | `[exists J : {fset T}, x == \sum_(x : J) `|f (val x)|]] in
-  if `[summable] then sup S else 0.
+  if `[<summable>] then sup S else 0.
+
+Lemma summableP : summable ->
+  { M | 0 <= M & forall (J : {fset T}), \sum_(x : J) `|f (val x)| <= M }.
+Proof.
+move/asboolP/exists_asboolP=> h; have := (xchooseP h).
+move: (xchoose _)=> {h} M /asboolP h; exists M => //.
+by have := h fset0; rewrite big_pred0 // => -[x]; rewrite in_fset0.
+Qed.
 End Summable.
 
 (* -------------------------------------------------------------------- *)
@@ -177,7 +224,32 @@ Section SummableCountable.
 Variable (T : choiceType) (R : realType) (f : T -> R).
 
 Goal summable f -> countable [pred x | f x != 0].
-Proof. admit. Qed.
+Proof.
+case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > 1 / p.+1%:~R].
+set F := [pred x | _]; have le: {subset F <= [pred x | `[exists p, x \in E p]]}.
+  move=> x; rewrite !inE => nz_fx; apply/existsbP.
+  case: (ltrP 1 `|f x|) => [lt_1Afx|]; first by exists 0%N; rewrite inE divr1.
+  pose j := `|ifloor (1 / `|f x|)|%N; exists j; rewrite inE.
+  rewrite ltr_pdivr_mulr ?ltr0z // -ltr_pdivr_mull ?normr_gt0 //.
+  rewrite mulr1 /j div1r -addn1 /= PoszD intrD mulr1z.
+  rewrite gez0_abs ?ifloor_ge0 ?invr_ge0 ?normr_ge0 //.
+  by rewrite -floorE; apply floorS_gtr.
+apply/(countable_sub le)/cunion_countable=> i /=.
+case: (existsTP (fun s : seq T => {subset E i <= s}))=> /= [[s le_Eis]|].
+  by apply/finite_countable/finiteP; exists s => x /le_Eis.
+move/finiteNP; pose j := `|ifloor (M / i.+1%:R)|.+1.
+pose K := (`|ifloor M|.+1 * i.+1)%N; move/(_ K)/existsp_asboolP/existsbP.
+move=> h; have /asboolP[] := xchooseP h.
+set s := xchoose h=> eq_si uq_s le_sEi; pose J := seq_fset s.
+suff: \sum_(x : J) `|f (val x)| > M by rewrite ltrNge bM.
+apply/(@ltr_le_trans _ (\sum_(x : J) 1 / i.+1%:~R)); last first.
+  apply/ler_sum=> /= m _; apply/ltrW; suff: (val m \in E i) by apply.
+  by apply/le_sEi/in_seq_fset/fsvalP.
+rewrite sumr_const cardfsE undup_id // eq_si -mulr_natr -pmulrn.
+rewrite mul1r natrM mulrCA mulVf ?mulr1 ?pnatr_eq0 //.
+have /andP[_] := mem_rg1_floor M; rewrite floorE -addn1.
+by rewrite natrD /= mulr1n pmulrn -{1}[ifloor _]gez0_abs // ifloor_ge0.
+Qed.
 End SummableCountable.
 
 (* -------------------------------------------------------------------- *)
