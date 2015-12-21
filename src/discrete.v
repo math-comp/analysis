@@ -228,7 +228,6 @@ Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > 1 / p.+1%:~R].
 set F := [pred x | _]; have le: {subset F <= [pred x | `[exists p, x \in E p]]}.
   move=> x; rewrite !inE => nz_fx; apply/existsbP.
-  case: (ltrP 1 `|f x|) => [lt_1Afx|]; first by exists 0%N; rewrite inE divr1.
   pose j := `|ifloor (1 / `|f x|)|%N; exists j; rewrite inE.
   rewrite ltr_pdivr_mulr ?ltr0z // -ltr_pdivr_mull ?normr_gt0 //.
   rewrite mulr1 /j div1r -addn1 /= PoszD intrD mulr1z.
