@@ -14,7 +14,6 @@ COQFILES := \
 	3rdparty/realalg.v \
 	3rdparty/complex.v \
 	finmap/finmap.v \
-	src/funtype.v \
 	src/reals.v \
 	src/dedekind.v \
 	src/discrete.v
