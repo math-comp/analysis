@@ -18,10 +18,10 @@ Local Open Scope real_scope.
 Lemma existsTP {T : choiceType} (P : T -> Prop) :
   { x : T | P x } + (forall x, ~ P x).
 Proof.
-case: (boolP (asbool (exists x : T, `[<P x>]))).
-  move/exists_asboolP=> h; have/asboolP/asboolP := (xchooseP h).
-  by move=> Ph; left; exists (xchoose h).
-by move/asboolPn=> h; right=> x Px; apply/h; exists x; apply/asboolP.
+case: (boolP `[<exists x : T, P x>]) => [/exists_asboolP | /asboolPn] h.
+  have/asboolP/asboolP Ph := xchooseP h.
+  left; exists (xchoose h); exact/asboolP.
+by right=> x Px; apply/h; exists x.
 Qed.
 
 (* -------------------------------------------------------------------- *)
