@@ -34,7 +34,7 @@ Reserved Notation "[ 'slim' u --> c ]"
   (at level 0, u, c at level 10, format "[ 'slim'  u  -->  c ]").
 
 (* -------------------------------------------------------------------- *)
-Section Neiborhood.
+Section Neighbourhood.
 Variable R : realType.
 
 Implicit Types c x y z : R.
@@ -67,7 +67,7 @@ Proof. by rewrite mem_nbh subrr normr0 gt0_radius. Qed.
 
 Lemma radius_mknbh c r : 0 < r -> radius (mknbh c r) = r.
 Proof. by move=> gt0_r; rewrite /mknbh /insubd insubT. Qed.
-End Neiborhood.
+End Neighbourhood.
 
 Local Notation inE := (mem_nbh, mem_mknbh, inE).
 
