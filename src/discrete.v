@@ -1,6 +1,6 @@
 (* -------------------------------------------------------------------- *)
-Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
-Require Import finfun finset finmap bigop ssralg ssrnum ssrint.
+Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice (* fintype *).
+Require Import finfun (* finset *) finmap bigop ssralg ssrnum ssrint.
 Require Import tuple bigenough boolp reals.
 Require (*--*) Setoid.
 
@@ -130,6 +130,24 @@ End Finite.
 (* -------------------------------------------------------------------- *)
 Section FiniteTheory.
 Context {T : choiceType}.
+
+Section MoreChoice.
+
+Variable C : choiceType.
+Lemma existsP (P : C -> Prop) : (exists x, P x) -> {x : C | P x}.
+Proof.
+move/asboolP/exists_asboolP=> h; have/asboolP hxh := (xchooseP h).
+by exists (xchoose h).
+Qed.
+
+End MoreChoice.
+
+Lemma finiteP (E : pred T) : (exists s : seq T, {subset E <= s}) -> finite E.
+Proof.
+case/existsP=> s sEs; exists (undup s); first by rewrite undup_uniq.
+by move=> x /sEs; rewrite mem_undup.
+Qed.
+
 
 Lemma finiteP (E : pred T) : (exists s : seq T, {subset E <= s}) -> finite E.
 Proof.
