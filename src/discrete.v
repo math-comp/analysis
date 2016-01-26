@@ -14,15 +14,56 @@ Import GRing.Theory Num.Theory BigEnough.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
+
+Section ToBeEventuallyMovedToBoolP.
+
+Context {T : Type} {P Q : T -> Prop}.
+
+Lemma asboolb (b : bool) : `[< b >] = b.
+Proof. by apply/asboolP/idP. Qed.
+
+(* TODO : add its friends... *)
+Lemma neg_or (A B : Prop) : ~ (A \/ B) <-> ~ A /\ ~ B.
+Proof.
+split.
+  move/asboolP; rewrite asbool_neg asbool_or negb_or -!asbool_neg; case/andP.
+  by move/asboolP=> nA /asboolP nB.
+move/asboolP; rewrite asbool_and !asbool_neg -negb_or; move/negP; apply: contrap.
+by case=> /asboolP->; rewrite ?orbT.
+Qed.
+
+Lemma existsNP : ~ (exists x, P x) -> forall x, ~ P x.
+Proof. by move/asboolPn/forallp_asboolPn. Qed.
+
+Lemma exists2NP : ~ (exists2 x, P x & Q x) -> forall x, ~ P x \/ ~ Q x.
+Proof.
+apply: contrapR; case/asboolPn/existsp_asboolPn=> [x].
+by case/neg_or => /contrapT Px /contrapT Qx; exists x.
+Qed.
+
+End ToBeEventuallyMovedToBoolP.
+
 (* -------------------------------------------------------------------- *)
-Lemma existsTP {T : choiceType} (P : T -> Prop) :
-  { x : T | P x } + (forall x, ~ P x).
+
+Section ProofIrrelevantChoice.
+
+Context {T : choiceType}.
+
+Lemma existsP  (P : T -> Prop) : (exists x, P x) -> {x : T | P x}.
+Proof.
+move/asboolP/exists_asboolP=> h; have/asboolP hxh := (xchooseP h).
+by exists (xchoose h).
+Qed.
+
+Lemma existsTP (P : T -> Prop) : { x : T | P x } + (forall x, ~ P x).
 Proof.
 case: (boolP `[<exists x : T, P x>]) => [/exists_asboolP | /asboolPn] h.
-  have/asboolP/asboolP Ph := xchooseP h.
-  left; exists (xchoose h); exact/asboolP.
+  by case/existsP: h => w Pw; left; exists w; apply/asboolP.
 by right=> x Px; apply/h; exists x.
 Qed.
+
+
+End ProofIrrelevantChoice.
 
 (* -------------------------------------------------------------------- *)
 Section PredSubtype.
@@ -131,42 +172,26 @@ End Finite.
 Section FiniteTheory.
 Context {T : choiceType}.
 
-Section MoreChoice.
-
-Variable C : choiceType.
-Lemma existsP (P : C -> Prop) : (exists x, P x) -> {x : C | P x}.
-Proof.
-move/asboolP/exists_asboolP=> h; have/asboolP hxh := (xchooseP h).
-by exists (xchoose h).
-Qed.
-
-End MoreChoice.
 
 Lemma finiteP (E : pred T) : (exists s : seq T, {subset E <= s}) -> finite E.
 Proof.
 case/existsP=> s sEs; exists (undup s); first by rewrite undup_uniq.
-by move=> x /sEs; rewrite mem_undup.
+by move=> x; rewrite mem_undup; exact: sEs.
 Qed.
 
-
-Lemma finiteP (E : pred T) : (exists s : seq T, {subset E <= s}) -> finite E.
-Proof.
-move/asboolP/exists_asboolP=> h; have/asboolP := (xchooseP h).
-move=> le_Eh; exists (undup (xchoose h)); rewrite ?undup_uniq //.
-by move=> x /le_Eh; rewrite mem_undup.
-Qed.
 
 Lemma finiteNP (E : pred T): (forall s : seq T, ~ {subset E <= s}) ->
-  (forall n, exists s : seq T, [/\ size s = n, uniq s & {subset s <= E}]).
+  forall n, exists s : seq T, [/\ size s = n, uniq s & {subset s <= E}].
 Proof.
-move=> finN n; have h: forall s : seq T, exists2 x, x \notin s & x \in E.
-  move=> s; have /asboolPn/existsp_asboolPn := finN (filter (mem E) s).
-  case=> x; rewrite mem_filter => /asboolPn/imply_asboolPn.
-  by case=> xE /negP; rewrite topredE xE /= => Nxs; exists x.
-elim: n => [|n [s] [<- uq_s sE]]; first by exists [::].
-case: (h s)=> x sxN xE; exists (x :: s) => /=; rewrite sxN; split=> //.
-by move=> y; rewrite in_cons => /orP[/eqP->//|/sE].
+move=> finN; elim=> [|n [s] [<- uq_s sE]]; first by exists [::].
+have [x sxN xE]: exists2 x, x \notin s & x \in E.
+  apply: contrapR (finN (filter (mem E) s)) => /exists2NP finE x Ex.
+  move/or_asboolP: (finE x).
+  by rewrite !asbool_neg !asboolb negbK Ex mem_filter orbF [(mem E) x]Ex.
+exists (x :: s) => /=; rewrite sxN; split=> // y.
+by rewrite in_cons => /orP[/eqP->//|/sE].
 Qed.
+
 End FiniteTheory.
 
 (* -------------------------------------------------------------------- *)
@@ -241,7 +266,7 @@ End Summable.
 Section SummableCountable.
 Variable (T : choiceType) (R : realType) (f : T -> R).
 
-Goal summable f -> countable [pred x | f x != 0].
+Lemma summable_countn0 : summable f -> countable [pred x | f x != 0].
 Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > 1 / p.+1%:~R].
 set F := [pred x | _]; have le: {subset F <= [pred x | `[exists p, x \in E p]]}.
