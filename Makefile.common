@@ -34,7 +34,7 @@ this-distclean:: this-clean
 	rm -f Makefile.coq
 
 this-clean::
-	@if [ -f Makefile.coq ]; then $(COQMAKE) clean; fi
+	@if [ -f Makefile.coq ]; then $(COQMAKE) cleanall; fi
 
 # --------------------------------------------------------------------
 ifdef SUBDIRS

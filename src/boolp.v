@@ -1,5 +1,5 @@
 (* -------------------------------------------------------------------- *)
-Require Import ssreflect ssrfun ssrbool eqtype choice.
+From mathcomp Require Import all_ssreflect.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.

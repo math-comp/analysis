@@ -4,19 +4,14 @@
 NAME     := SsrReals
 SUBDIRS  :=
 INCFLAGS :=
-INCFLAGS += -R collections/src SsrCollections
-INCFLAGS += -R 3rdparty $(NAME) -R finmap $(NAME) -R src $(NAME)
+INCFLAGS += -R finmap $(NAME) -R src $(NAME)
 COQFILES := \
-	3rdparty/bigenough.v \
-	3rdparty/polyorder.v \
-	3rdparty/polyrcf.v \
-	3rdparty/cauchyreals.v \
-	3rdparty/realalg.v \
-	3rdparty/complex.v \
 	finmap/finmap.v \
+	src/boolp.v \
 	src/reals.v \
 	src/dedekind.v \
-	src/discrete.v
+	src/discrete.v \
+	src/sandbox.v
 
 include Makefile.common
 
@@ -39,8 +34,5 @@ dist:
 	rm -rf $(DISTDIR)
 
 # --------------------------------------------------------------------
-this-clean::
-	rm -f src/*.vo src/*.d src/*.glob
-
 this-distclean::
 	rm -f $(shell find . -name '*~')

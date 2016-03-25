@@ -1,9 +1,6 @@
 (* -------------------------------------------------------------------- *)
-Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
-Require Import tuple bigop ssralg ssrnum ssrint matrix mxalgebra vector.
-Require Import zmodp rat reals complex.
+From mathcomp Require Import all_ssreflect all_algebra all_real_closed.
 
-(* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -14,8 +11,8 @@ Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
 (* complex.v requires that R is a rcfType for constructing R[i]         *)
-
 (* -------------------------------------------------------------------- *)
+
 Section ComplexLModType.
 Variable R : rcfType.
 

@@ -1,5 +1,7 @@
 (* (c) Copyright Microsoft Corporation and Inria. All rights reserved. *)
+From mathcomp
 Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
+From mathcomp
 Require Import ssralg poly ssrnum zmodp polydiv interval.
 
 Import GRing.Theory.

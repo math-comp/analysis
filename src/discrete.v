@@ -1,8 +1,7 @@
 (* -------------------------------------------------------------------- *)
-Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice (* fintype *).
-Require Import finfun (* finset *) finmap bigop ssralg ssrnum ssrint.
-Require Import tuple bigenough boolp reals.
-Require (*--*) Setoid.
+From mathcomp Require Import all_ssreflect all_algebra bigenough.
+(* ------- *) Require Import finmap boolp reals.
+(* ------- *) Require (*--*) Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -14,7 +13,7 @@ Import GRing.Theory Num.Theory BigEnough.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
-
+(* -------------------------------------------------------------------- *)
 Section ToBeEventuallyMovedToBoolP.
 
 Context {T : Type} {P Q : T -> Prop}.

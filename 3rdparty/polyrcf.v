@@ -1,6 +1,9 @@
 (* (c) Copyright Microsoft Corporation and Inria. All rights reserved. *)
+From mathcomp
 Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
+From mathcomp
 Require Import bigop ssralg poly polydiv ssrnum zmodp.
+From mathcomp
 Require Import polyorder path interval ssrint.
 
 (****************************************************************************)

@@ -2,9 +2,8 @@
 (* SSReflect hierarchy (see reals.v)                                    *)
 
 (* -------------------------------------------------------------------- *)
-Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
-Require Import bigop ssralg ssrnum ssrint rat.
-Require Import Setoid.
+From mathcomp Require Import all_ssreflect all_algebra.
+(* ------- *) Require Import Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.

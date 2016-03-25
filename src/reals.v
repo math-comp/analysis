@@ -3,9 +3,8 @@
 (* archimedean field with a least upper bound operator.                 *)
 (* -------------------------------------------------------------------- *)
 
-Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
-Require Import finset bigop ssralg ssrnum ssrint rat poly bigenough.
-Require Import boolp Setoid.
+From mathcomp Require Import all_ssreflect all_algebra bigenough.
+(* ------- *) Require Import boolp Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -257,7 +256,10 @@ Definition Rtoint (x : R) : int :=
   else 0.
 
 Lemma RtointK (x : R): x \is a Rint -> (Rtoint x)%:~R = x.
-Proof. by move=> Ix; rewrite /Rtoint insubT /= [RHS](eqP (xchoosebP Ix)). Qed.
+Proof.
+move=> Ix; rewrite /Rtoint insubT /= [RHS](eqP (xchoosebP Ix)).
+by congr _%:~R; apply/eq_xchoose.
+Qed.
 
 Lemma Rtointz (z : int): Rtoint z%:~R = z.
 Proof. by apply/eqP; rewrite -(@eqr_int R) RtointK ?rpred_int. Qed.
