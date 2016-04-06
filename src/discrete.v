@@ -24,11 +24,8 @@ Proof. by apply/asboolP/idP. Qed.
 (* TODO : add its friends... *)
 Lemma neg_or (A B : Prop) : ~ (A \/ B) <-> ~ A /\ ~ B.
 Proof.
-split.
-  move/asboolP; rewrite asbool_neg asbool_or negb_or -!asbool_neg; case/andP.
-  by move/asboolP=> nA /asboolP nB.
-move/asboolP; rewrite asbool_and !asbool_neg -negb_or; move/negP; apply: contrap.
-by case=> /asboolP->; rewrite ?orbT.
+split; last by case=> [nA nB]; case.
+by move=> nAoB; split => ?; apply: nAoB; [left| right].
 Qed.
 
 Lemma existsNP : ~ (exists x, P x) -> forall x, ~ P x.
