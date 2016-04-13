@@ -49,7 +49,10 @@ Record mixin_of : Type := Mixin {
       has_sup E -> sup E \in ub E;
    _  :
     forall (E : pred (Num.ArchimedeanField.sort R)) (eps : R),
-      has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e
+      has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e;
+   _  :
+    forall E : pred (Num.ArchimedeanField.sort R),
+      ~ has_sup E -> sup E = 0
 }.
 
 End Mixin.
@@ -189,6 +192,9 @@ Proof. by move=> supE; apply/ubP; case: R E supE=> ? [? []]. Qed.
 Lemma sup_adherent {R : realType} (E : pred R) (eps : R) :
   has_sup E -> 0 < eps -> exists2 e : R, e \in E & (sup E - eps) < e.
 Proof. by case: R E eps=> ? [? []]. Qed.
+
+Lemma sup_out {R : realType} (E : pred R) : ~ has_sup E -> sup E = 0.
+Proof. by case: R E => ? [? []]. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section IsInt.
