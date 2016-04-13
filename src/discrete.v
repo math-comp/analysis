@@ -244,11 +244,6 @@ Variables (T : choiceType) (R : realType) (f : T -> R).
 Definition summable := exists (M : R), forall (J : {fset T}),
   \sum_(x : J) `|f (val x)| <= M.
 
-Definition sum : R :=
-  (* We need some ticked `image` operator *)
-  let S := [pred x | `[exists J : {fset T}, x == \sum_(x : J) `|f (val x)|]] in
-  if `[<summable>] then sup S else 0.
-
 Lemma summableP : summable ->
   { M | 0 <= M & forall (J : {fset T}), \sum_(x : J) `|f (val x)| <= M }.
 Proof.
@@ -257,6 +252,23 @@ move: (xchoose _)=> {h} M /asboolP h; exists M => //.
 by have := h fset0; rewrite big_pred0 // => -[x]; rewrite in_fset0.
 Qed.
 End Summable.
+
+(* -------------------------------------------------------------------- *)
+Section Sum.
+Variables (T : choiceType) (R : realType).
+
+Implicit Types f : T -> R.
+
+Definition fpos f := fun x => `|Num.max 0 (f x)|.
+Definition fneg f := fun x => `|Num.min 0 (f x)|.
+
+Definition psum f : R :=
+  (* We need some ticked `image` operator *)
+  let S := [pred x | `[exists J : {fset T}, x == \sum_(x : J) `|f (val x)|]] in
+  if `[<summable f>] then sup S else 0.
+
+Definition sum f : R := psum (fpos f) - psum (fneg f).
+End Sum.
 
 (* -------------------------------------------------------------------- *)
 Section SummableCountable.
