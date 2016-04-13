@@ -289,21 +289,3 @@ have /andP[_] := mem_rg1_floor M; rewrite floorE -addn1.
 by rewrite natrD /= mulr1n pmulrn -{1}[ifloor _]gez0_abs // ifloor_ge0.
 Qed.
 End SummableCountable.
-
-(* -------------------------------------------------------------------- *)
-Section Distribution.
-Variables (T : choiceType) (R : realType).
-
-Structure distr := Distr {
-  mu : T -> R;
-  _  : forall x, 0 <= mu x;
-  _  : summable mu;
-  _  : sum mu <= 1
-}.
-
-Definition distr_of of phant T & phant R := distr.
-End Distribution.
-
-Notation "{ 'distr' T / R }" := (distr_of (Phant T) (Phant R))
-  (at level 0, T at level 2, format "{ 'distr'  T  /  R }")
-  : type_scope.
