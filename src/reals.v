@@ -431,6 +431,50 @@ Proof. by rewrite -(@ler_int R) -floorE floor_ge0. Qed.
 End FloorTheory.
 
 (* -------------------------------------------------------------------- *)
+Section Sup.
+Context {R : realType}.
+
+Lemma eq_ub (S1 S2 : pred R) : S2 =i S1 -> ub S2 =i ub S1.
+Proof.
+move=> eq_12 x; apply/ubP/ubP=> h y yS; apply/h;
+  by rewrite (eq_12, =^~ eq_12).
+Qed.
+
+Lemma eq_has_sup (S1 S2 : pred R) :
+  S2 =i S1 -> has_sup S2 -> has_sup S1.
+Proof.
+move=> eq_12 /has_supP[[x xS2] [u uS2]]; apply/has_supP; split.
+  by exists x; rewrite -eq_12. by exists u; rewrite (@eq_ub S2).
+Qed.
+
+Lemma eq_has_supb (S1 S2 : pred R) :
+  S2 =i S1 -> `[< has_sup S2 >] = `[< has_sup S1 >].
+Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_has_sup. Qed.
+
+Lemma eq_sup (S1 S2 : pred R) : S2 =i S1 -> sup S2 = sup S1.
+Proof.
+wlog: S1 S2 / (sup S1 <= sup S2) => [wlog|le_S1S2] eq_12.
+  by case: (lerP (sup S1) (sup S2)) => [|/ltrW] /wlog ->.
+move: le_S1S2; rewrite ler_eqVlt => /orP[/eqP->//|lt_S1S2].
+case/boolP: `[< has_sup S2 >] => [/asboolP|] h2; last first.
+  by rewrite !sup_out // => /asboolPn; rewrite -?(eq_has_supb eq_12).
+pose x : R := sup S2 - sup S1; have gt0_x: 0 < x by rewrite subr_gt0.
+have [e eS2] := sup_adherent h2 gt0_x; rewrite subKr => lt_S1e.
+have /(eq_has_sup eq_12) h1 := h2; have := eS2; rewrite eq_12.
+by move/sup_upper_bound=> -/(_ h1); rewrite lerNgt lt_S1e.
+Qed.
+
+Lemma sup1 (c : R) : sup (pred1 c) = c.
+Proof.
+have hs: has_sup (pred1 c); first (apply/has_supP; split; exists c).
+  by rewrite inE eqxx. by apply/ubP => y; rewrite inE => /eqP->.
+apply/eqP; rewrite eqr_le sup_upper_bound ?inE // andbT.
+apply/sup_le_ub; first by exists c; rewrite inE eqxx.
+by apply/ubP=> y; rewrite inE => /eqP ->.
+Qed.
+End Sup.
+
+(* -------------------------------------------------------------------- *)
 Section ExtendedReals.
 Variable (R : realType).
 
