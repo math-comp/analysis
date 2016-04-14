@@ -429,3 +429,112 @@ Qed.
 Lemma ifloor_ge0 (x : R) : (0 <= ifloor x) = (0 <= x).
 Proof. by rewrite -(@ler_int R) -floorE floor_ge0. Qed.
 End FloorTheory.
+
+(* -------------------------------------------------------------------- *)
+Section ExtendedReals.
+Variable (R : realType).
+
+Inductive er := ERFin of R | ERPInf | ERNInf.
+
+Coercion real_of_er (x : er) :=
+  if x is ERFin v then v else 0.
+End ExtendedReals.
+
+Notation "\+inf" := (@ERPInf _).
+Notation "\-inf" := (@ERNInf _).
+Notation "x %:E" := (@ERFin _ x) (at level 2, format "x %:E").
+
+Notation "{ 'ereal' R }" := (er R) (format "{ 'ereal'  R }").
+
+Bind    Scope ereal_scope with er.
+Delimit Scope ereal_scope with E.
+
+(* -------------------------------------------------------------------- *)
+Section ERealCode.
+Variable (R : realType).
+
+Definition code (x : {ereal R}) :=
+  match x with
+  | x%:E  => GenTree.Node 0 [:: GenTree.Leaf x]
+  | \+inf => GenTree.Node 1 [::]
+  | \-inf => GenTree.Node 2 [::]
+  end.
+
+Definition decode (x : GenTree.tree R) : option {ereal R} :=
+  match x with
+  | GenTree.Node 0 [:: GenTree.Leaf x] => Some x%:E
+  | GenTree.Node 1 [::] => Some \+inf
+  | GenTree.Node 2 [::] => Some \-inf
+  | _ => None
+  end.
+
+Lemma codeK : pcancel code decode.
+Proof. by case. Qed.
+
+Definition ereal_eqMixin := PcanEqMixin codeK.
+Canonical  ereal_eqType  := EqType {ereal R} ereal_eqMixin.
+Definition ereal_choiceMixin := PcanChoiceMixin codeK.
+Canonical  ereal_choiceType  := ChoiceType {ereal R} ereal_choiceMixin.
+End ERealCode.
+
+Lemma eqe {R : realType} (x1 x2 : R) :
+  (x1%:E == x2%:E) = (x1 == x2).
+Proof. by apply/eqP/eqP=> [[]|->]. Qed.
+
+(* -------------------------------------------------------------------- *)
+Section ERealOrder.
+Context {R : realType}.
+
+Definition lee (x1 x2 : {ereal R}) :=
+  match x1, x2 with
+  | \-inf, _ | _, \+inf => true
+  | \+inf, _ | _, \-inf => false
+
+  | x1%:E, x2%:E => (x1 <= x2)
+  end.
+
+Definition lte (x1 x2 : {ereal R}) :=
+  match x1, x2 with
+  | \-inf, \-inf | \+inf, \+inf => false
+  | \-inf, _     | _    , \+inf => true
+  | \+inf, _     | _    , \-inf => false
+
+  | x1%:E, x2%:E => (x1 < x2)
+  end.
+End ERealOrder.
+
+Notation "x <= y" := (lee x y) : ereal_scope.
+Notation "x < y"  := (lte x y) : ereal_scope.
+
+(* -------------------------------------------------------------------- *)
+Section ERealOrderTheory.
+Context {R : realType}.
+
+Local Open Scope ereal_scope.
+
+Implicit Types x y z : {ereal R}.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
+  by case: x => [?||]; first by rewrite ?eqe; apply: lm.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
+  by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
+Lemma leee x : x <= x.
+Proof. by elift lerr: x. Qed.
+
+Lemma lteW x y : x < y -> x <= y.
+Proof. by elift ltrW: x y. Qed.
+
+Lemma leeNgt x y : (x <= y) = ~~ (y < x).
+Proof. by elift lerNgt: x y. Qed.
+
+Lemma lteNgt x y : (x < y) = ~~ (y <= x).
+Proof. by elift ltrNge: x y. Qed.
+
+Lemma lee_eqVlt x y : (x <= y) = ((x == y) || (x < y)).
+Proof. by elift ler_eqVlt: x y. Qed.
+
+Lemma lte_neqAle x y : (x < y) = ((x != y) && (x <= y)).
+Proof. by elift ltr_neqAle: x y. Qed.
+End ERealOrderTheory.
