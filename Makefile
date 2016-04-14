@@ -13,6 +13,8 @@ COQFILES := \
 	src/dedekind.v \
 	src/discrete.v \
 	src/realseq.v \
+	src/realsum.v \
+	src/distr.v \
 	src/sandbox.v
 
 include Makefile.common
