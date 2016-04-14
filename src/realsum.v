@@ -1,6 +1,6 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-From SsrReals Require Import finmap boolp reals discrete.
+From SsrReals Require Import xfinmap boolp reals discrete realseq.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -75,3 +75,123 @@ have /andP[_] := mem_rg1_floor M; rewrite floorE -addn1.
 by rewrite natrD /= mulr1n pmulrn -{1}[ifloor _]gez0_abs // ifloor_ge0.
 Qed.
 End SummableCountable.
+
+(* -------------------------------------------------------------------- *)
+Section SummableAlg.
+Context {R : realType} (T : choiceType).
+
+Lemma eq_summable (S1 S2 : T -> R) :
+  (S1 =1 S2) -> summable S1 -> summable S2.
+Proof.
+move=> eq_12 [M h]; exists M => J; rewrite (ler_trans _ (h J)) //.
+rewrite ler_eqVlt; apply/orP; left; apply/eqP/eq_bigr.
+by move=> /= K _; rewrite eq_12.
+Qed.
+
+Lemma eq_summableb (S1 S2 : T -> R) :
+  (S1 =1 S2) -> `[< summable S2 >] = `[< summable S1 >].
+Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_summable. Qed.
+
+Lemma summable0 : summable (fun _ : T => 0 : R).
+Proof. by exists 0 => J; rewrite big1 ?normr0. Qed.
+
+Lemma summableD (S1 S2 : T -> R) :
+  summable S1 -> summable S2 -> summable (S1 \+ S2).
+Proof.
+case=> [M1 h1] [M2 h2]; exists (M1 + M2) => J /=.
+pose M := \sum_(x : J) (`|S1 (val x)| + `|S2 (val x)|).
+rewrite (@ler_trans _ M) // ?ler_sum // => [K _|].
+  by rewrite ler_norm_add.
+by rewrite /M big_split ler_add ?(h1, h2).
+Qed.
+
+Lemma summableN (S : T -> R) : summable S -> summable (\- S).
+Proof.
+case=> [M h]; exists M => J; rewrite (ler_trans _ (h J)) //.
+rewrite ler_eqVlt; apply/orP; left; apply/eqP/eq_bigr.
+by move=> /= K _; rewrite normrN.
+Qed.
+
+Lemma summablebN (S : T -> R) :
+  `[< summable (\- S)>] = `[< summable S >].
+Proof.
+apply/asboolP/asboolP => /summableN //.
+by apply/eq_summable => x /=; rewrite opprK.
+Qed.
+
+Lemma summablebDl (S1 S2 : T -> R) : summable S1 ->
+  `[< summable (S1 \+ S2) >] = `[< summable S2 >].
+Proof.
+move=> sm1; apply/asboolP/asboolP; last by apply/(summableD sm1).
+move=> sm12; apply/(@eq_summable ((S1 \+ S2) \- S1)).
+  by move=> x /=; rewrite addrC addKr.
+by apply/summableD/summableN.
+Qed.
+
+Lemma summablebDr (S1 S2 : T -> R) : summable S2 ->
+  `[< summable (S1 \+ S2) >] = `[< summable S1 >].
+Proof.
+move=> sm1; rewrite (@eq_summableb (S2 \+ S1)) ?summablebDl //.
+by move=> x /=; rewrite addrC.
+Qed.
+End SummableAlg.
+
+(* -------------------------------------------------------------------- *)
+Section StdSum.
+Context {R : realType} (T : choiceType).
+
+Implicit Type S : T -> R.
+
+Lemma eq_ppsum (F1 F2 : {fset T} -> R) : F1 =1 F2 ->
+  sup [pred x | `[exists J, x == F1 J]] = sup [pred x | `[exists J, x == F2 J]].
+Proof.
+move=> eq_12; apply/eq_sup=> x; rewrite !inE.
+by apply/existsbP/existsbP=> -[J /eqP->]; exists J; apply/eqP.
+Qed.
+
+Lemma summable_sup (S : T -> R) : summable S -> has_sup
+  [pred x | `[exists J : {fset T}, x == \sum_(j : J) `|S (val j)|]].
+Proof.
+case/summableP=> M _ hbd; apply/has_supP; split.
+  by exists 0; apply/existsbP; exists fset0; rewrite big_fset0.
+by exists M; apply/ubP=> y /existsbP[J /eqP->].
+Qed.
+
+Lemma psum_out S : ~ summable S -> psum S = 0.
+Proof. by move/asboolPn/negbTE=> smN; rewrite /psum smN. Qed.
+
+Lemma psumE S : (forall x, 0 <= S x) -> summable S -> psum S =
+  sup [pred x | `[exists J : {fset T}, x == \sum_(j : J) S (val j)]].
+Proof.
+move=> gt0_S smS; rewrite /psum (asboolT smS); apply/eq_ppsum=> /=.
+by move=> J; apply/eq_bigr=> j _; rewrite ger0_norm.
+Qed.
+
+Lemma psum0 : psum (fun _ : T => 0) = 0 :> R.
+Proof.
+rewrite /psum asboolT; last by apply/summable0.
+set S := [pred x | _]; suff: S =1 (pred1 0).
+  by move/eq_sup => ->; rewrite sup1.
+move=> x; rewrite {}/S inE; apply/idP/idP => /=.
+  by case/existsbP=> J /eqP-> /=; rewrite big1 // normr0.
+by move=> /eqP->; apply/existsbP; exists fset0; rewrite big_fset0.
+Qed.
+
+Lemma psumN (S : T -> R) : psum (\- S) = psum S.
+Proof.
+case/boolP: `[< summable S >] => h; last first.
+  by rewrite !psum_out ?oppr0 //; apply/asboolPn; rewrite ?summablebN.
+rewrite /psum summablebN h; apply/eq_ppsum=> J /=.
+by apply/eq_bigr=> j _; rewrite normrN.
+Qed.
+
+Lemma psumD S1 S2 :
+    (forall x, 0 <= S1 x) -> (forall x, 0 <= S2 x)
+  -> summable S1 -> summable S2
+  -> psum (S1 \+ S2) = psum S1 + psum S2.
+Proof.
+(* Should use <-> with convergence *)
+move=> ge0_S1 ge0_S2 sm1 sm2; have smD := summableD sm1 sm2.
+rewrite !psumE //=; last by move=> x; rewrite addr_ge0.
+Abort.
+End StdSum.
