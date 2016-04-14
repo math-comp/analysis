@@ -11,6 +11,7 @@ COQFILES := \
 	src/reals.v \
 	src/dedekind.v \
 	src/discrete.v \
+	src/realseq.v \
 	src/sandbox.v
 
 include Makefile.common
