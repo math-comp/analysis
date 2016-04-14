@@ -7,6 +7,7 @@ INCFLAGS :=
 INCFLAGS += -R finmap $(NAME) -R src $(NAME)
 COQFILES := \
 	finmap/finmap.v \
+	finmap/xfinmap.v \
 	src/boolp.v \
 	src/reals.v \
 	src/dedekind.v \
