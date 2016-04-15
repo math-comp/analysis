@@ -77,6 +77,41 @@ Qed.
 End SummableCountable.
 
 (* -------------------------------------------------------------------- *)
+Section PosCnv.
+Context {R : realType}.
+
+Lemma ncvg_mono (u : nat -> R) :
+    (* {mono u : x y / (x <= y)%N >-> u x <= u y *)
+    (forall x y, (x <= y)%N -> u x <= u y)
+  -> exists2 l, (\-inf < l)%E & ncvg u l.
+Proof.
+move=> mono_u; pose E := [pred x | `[exists n, x == u n]].
+have nzE: nonempty E by exists (u 0%N); apply/imsetbP; exists 0%N.
+case/boolP: `[< has_sup E >] => /asboolP; last first.
+  move/has_supPn=> -/(_ nzE) h; exists \+inf => //; elim/nbh_pinfW => M /=.
+  case/(_ M): h=> x /imsetbP[K -> lt_MuK]; exists K=> n le_Kn; rewrite inE.
+  by apply/(ltr_le_trans lt_MuK)/mono_u.
+move=> supE; exists (sup E)%:E => //; elim/nbh_finW=>e /= gt0_e.
+case: (sup_adherent supE gt0_e)=> x /imsetbP[K ->] lt_uK.
+exists K=> n le_Kn; rewrite inE distrC ger0_norm ?subr_ge0; last first.
+  by apply/sup_upper_bound/imsetbP=> //; exists n.
+rewrite ltr_subl_addr addrC -ltr_subl_addr.
+by rewrite (ltr_le_trans lt_uK) //; apply/mono_u.
+Qed.
+
+Lemma ncvg_mono_bnd (u : nat -> R) :
+    (* {mono u : x y / (x <= y)%N >-> u x <= u y *)
+    (forall x y, (x <= y)%N -> u x <= u y)
+  -> nbounded u -> exists l, ncvg u l%:E.
+Proof.
+case/ncvg_mono=> -[x||] // _ cu bdu; first by exists x.
+case/asboolP/nboundedP: bdu=> M gt0_M bdu.
+case/(_ (NPInf M)): cu => K /= /(_ K (leqnn _)).
+rewrite inE /= => /ltrW /ler_trans /(_ (ler_norm _)).
+by move/ler_lt_trans/(_ (bdu _)); rewrite ltrr.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Section SummableAlg.
 Context {R : realType} (T : choiceType).
 

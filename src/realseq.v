@@ -33,15 +33,38 @@ Coercion pred_of_nbh l (v : nbh l) :=
   | @NPInf M     => [pred x : R | x > M]
   | @NNInf M     => [pred x : R | x < M]
   end.
+End Nbh.
+
+(* -------------------------------------------------------------------- *)
+Section NbhElim.
+Context {R : realType}.
 
 Lemma nbh_finW c (P : forall x, nbh x -> Prop) :
-    (forall e (h : 0 < e), P _ (@NFin c e h))
+    (forall e (h : 0 < e), P _ (@NFin R c e h))
   -> forall (v : nbh c%:E), P _ v.
 Proof.
 move=> ih; move: {-2}c%:E (erefl c%:E).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
-End Nbh.
+
+Lemma nbh_pinfW (P : forall x, nbh x -> Prop) :
+  (forall M, P _ (@NPInf R M)) -> forall (v : nbh \+inf), P _ v.
+Proof.
+move=> ih ; move: {-2}\+inf (erefl (@ERPInf R)).
+by move=> e eE v; case: v eE => // c' e' h [->].
+Qed.
+
+Lemma nbh_ninfW (P : forall x, nbh x -> Prop) :
+  (forall M, P _ (@NNInf R M)) -> forall (v : nbh \-inf), P _ v.
+Proof.
+move=> ih ; move: {-2}\-inf (erefl (@ERNInf R)).
+by move=> e eE v; case: v eE => // c' e' h [->].
+Qed.
+End NbhElim.
+
+Arguments nbh_finW  : clear implicits.
+Arguments nbh_pinfW : clear implicits.
+Arguments nbh_ninfW : clear implicits.
 
 (* -------------------------------------------------------------------- *)
 Definition eclamp {R : realType} (e : R) :=
@@ -101,7 +124,7 @@ Definition nbounded u :=
 Lemma nboundedP u :
   reflect (exists2 M, 0 < M & forall n, `|u n| < M) `[< nbounded u >].
 Proof.
-apply: (iffP idP) => [/asboolP[]|]; first elim/(@nbh_finW R).
+apply: (iffP idP) => [/asboolP[]|]; first elim/nbh_finW.
   move=> M /= gt0_M cv; exists M => [|n] //.
   by have := cv n; rewrite inE subr0.
 case=> M _ cv; apply/asboolP; exists (B 0 M) => n; rewrite inE subr0.
@@ -164,14 +187,14 @@ Qed.
 
 Lemma ncvgC c : ncvg c%:S c%:E.
 Proof.
-elim/(@nbh_finW R) => e /= gt0_e; exists 0%N => n _.
+elim/nbh_finW => e /= gt0_e; exists 0%N => n _.
 by rewrite inE subrr normr0.
 Qed.
 
 Lemma ncvgD u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
   ncvg (u \+ v) (lu + lv)%:E.
 Proof.
-move=> cu cv; elim/(@nbh_finW R) => e /= gt0_e; pose z := e / 2%:R.
+move=> cu cv; elim/nbh_finW => e /= gt0_e; pose z := e / 2%:R.
 case: (cu (B lu z)) (cv (B lv z)) => [ku {cu}cu] [kv {cv}cv].
 exists (maxn ku kv) => n; rewrite geq_max => /andP[leu lev].
 rewrite inE opprD addrACA (ler_lt_trans (ler_norm_add _ _)) //.
@@ -183,7 +206,7 @@ Qed.
 
 Lemma ncvgN u lu : ncvg u lu%:E -> ncvg (\- u) (- lu)%:E.
 Proof.
-move=> cu; elim/(@nbh_finW R) => e /= gt0_e; case: (cu (B lu e)).
+move=> cu; elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
 by move=> K {cu}cu; exists K=> n /cu; rewrite !inE -opprD normrN eclamp_id.
 Qed.
 
@@ -193,19 +216,19 @@ Proof. by move=> cu cv; apply/ncvgD/ncvgN. Qed.
 
 Lemma ncvg_abs u lu : ncvg u lu%:E -> ncvg (fun n => `|u n|) `|lu|%:E.
 Proof.
-move=> cu; elim/(@nbh_finW R) => e /= gt0_e; case: (cu (B lu e)).
+move=> cu; elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
 move=> K {cu}cu; exists K=> n /cu; rewrite !inE eclamp_id //.
 by move/(ler_lt_trans (ler_dist_dist _ _)).
 Qed.
 
 Lemma ncvg_abs0 u : ncvg (fun n => `|u n|) 0%:E -> ncvg u 0%:E.
 Proof.
-move=> cu; elim/(@nbh_finW R) => e /= gt0_e; case: (cu (B 0 e)).
+move=> cu; elim/nbh_finW => e /= gt0_e; case: (cu (B 0 e)).
 by move=> K {cu}cu; exists K=> n /cu; rewrite !inE !subr0 eclamp_id // normr_id.
 Qed.
 
 Lemma ncvgMl u v : ncvg u 0%:E -> nbounded v -> ncvg (u \* v) 0%:E.
-move=> cu /asboolP/nboundedP [M gt0_M ltM]; elim/(@nbh_finW R) => e /= gt0_e.
+move=> cu /asboolP/nboundedP [M gt0_M ltM]; elim/nbh_finW => e /= gt0_e.
 case: (cu (B 0 (e / (M + 1)))) => K {cu}cu; exists K => n le_Kn.
 rewrite inE subr0 normrM; apply/(@ltr_trans _ (e / (M + 1) * M)).
   apply/ltr_pmul => //; have /cu := le_Kn; rewrite inE subr0 eclamp_id //.
