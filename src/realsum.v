@@ -113,6 +113,126 @@ Qed.
 End PosCnv.
 
 (* -------------------------------------------------------------------- *)
+Section SumTh.
+Context {R : realType} (T : choiceType).
+
+Implicit Type S : T -> R.
+
+Lemma eq_ppsum (F1 F2 : {fset T} -> R) : F1 =1 F2 ->
+  sup [pred x | `[exists J, x == F1 J]] = sup [pred x | `[exists J, x == F2 J]].
+Proof.
+move=> eq_12; apply/eq_sup=> x; rewrite !inE.
+by apply/existsbP/existsbP=> -[J /eqP->]; exists J; apply/eqP.
+Qed.
+
+Lemma summable_sup (S : T -> R) : summable S -> has_sup
+  [pred x | `[exists J : {fset T}, x == \sum_(j : J) `|S (val j)|]].
+Proof.
+case/summableP=> M _ hbd; apply/has_supP; split.
+  by exists 0; apply/existsbP; exists fset0; rewrite big_fset0.
+by exists M; apply/ubP=> y /existsbP[J /eqP->].
+Qed.
+
+Lemma psum_out S : ~ summable S -> psum S = 0.
+Proof. by move/asboolPn/negbTE=> smN; rewrite /psum smN. Qed.
+
+Lemma psumE S : (forall x, 0 <= S x) -> summable S -> psum S =
+  sup [pred x | `[exists J : {fset T}, x == \sum_(j : J) S (val j)]].
+Proof.
+move=> gt0_S smS; rewrite /psum (asboolT smS); apply/eq_ppsum=> /=.
+by move=> J; apply/eq_bigr=> j _; rewrite ger0_norm.
+Qed.
+End SumTh.
+
+(* -------------------------------------------------------------------- *)
+Section BigFSet.
+Variable (R : Type) (idx : R) (op : Monoid.law idx).
+
+Lemma big_seq_fset (T : choiceType) (F : T -> R) r : uniq r ->
+    \big[op/idx]_(i : seq_fset r) F (val i)
+  = \big[op/idx]_(i <- r) F i.
+Proof. Admitted.
+
+Lemma big_fset1 (T : choiceType) (F : T -> R) c :
+  \big[op/idx]_(i : seq_fset [:: c]) F (val i) = F c.
+Proof. by rewrite big_seq_fset // big_seq1. Qed.
+End BigFSet.
+
+Arguments big_seq_fset [R idx op T] F r _.
+Arguments big_fset1    [R idx op T] F c.
+
+(* -------------------------------------------------------------------- *)
+Section PSumGe.
+Context {R : realType} (T : choiceType).
+
+Variable (S : T -> R) (smS : summable S).
+
+Lemma ger_big_psum r : uniq r -> \sum_(x <- r) `|S x| <= psum S.
+Proof.
+move=> uq_r; rewrite /psum (asboolT smS) sup_upper_bound //.
+  by apply/summable_sup. apply/imsetbP; exists (seq_fset r).
+by rewrite (big_seq_fset (fun i => `|S i|)).
+Qed.
+
+Lemma ger1_psum x : `|S x| <= psum S.
+Proof.
+by apply/(ler_trans _ (@ger_big_psum [:: x] _)) => //; rewrite big_seq1.
+Qed.
+End PSumGe.
+
+(* -------------------------------------------------------------------- *)
+Section PSumNatGe.
+Context {R : realType}.
+
+Variable (S : nat -> R) (smS : summable S).
+
+Lemma ger_big_ord_psum n : \sum_(i < n) `|S i| <= psum S.
+Proof.
+rewrite -(big_mkord predT (fun i => `|S i|)) /=.
+by apply/ger_big_psum => //; rewrite iota_uniq.
+Qed.
+End PSumNatGe.
+
+(* -------------------------------------------------------------------- *)
+Section PSumCnv.
+Context {R : realType}.
+
+Variable (S : nat -> R).
+
+Hypothesis ge0_S : (forall n, 0 <= S n).
+Hypothesis smS   : summable S.
+
+Lemma ptsum_mono x y : (x <= y)%N -> (\sum_(i < x) S i <= \sum_(i < y) S i).
+Proof.
+move=> le_xy; rewrite -!(big_mkord predT) -(subnKC le_xy) /=.
+by rewrite /index_iota !subn0 iota_add big_cat /= ler_addl sumr_ge0.
+Qed.
+
+Lemma psummable_ptbounded : nbounded (fun n => \sum_(i < n) S i).
+Proof.
+apply/asboolP/nboundedP; exists (psum S + 1).
+  rewrite ltr_spaddr ?ltr01 1?(ler_trans (normr_ge0 (S 0%N))) //.
+  by apply/ger1_psum.
+move=> n; rewrite ltr_spaddr ?ltr01 // ger0_norm ?sumr_ge0 //.
+apply/(ler_trans _ (ger_big_ord_psum _ n)) => //.
+by apply/ler_sum=> /= i _; apply/ler_norm.
+Qed.
+
+Lemma ncvg_sum : ncvg (fun n => \sum_(i < n) S i) (psum S)%:E.
+Proof.
+set u := (fun n => _); apply: contrapLR smS => ncv _.
+case: (ncvg_mono_bnd (u := u)) => //.
+  by apply/ptsum_mono. by apply/psummable_ptbounded.
+move=> x cvux; suff xE: x = (psum S) by rewrite xE in cvux.
+apply/eqP; case: (x =P _) => // /eqP /ltr_total /orP[].
++ admit.
+rewrite -lte_fin => /ncvg_lt /(_ cvux) [K /(_ _ (leqnn _))] /=.
+rewrite ltrNge (ler_trans _ (ger_big_ord_psum _ K)) //.
+by apply/ler_sum=> /= i _; apply/ler_norm.
+Admitted.
+End PSumCnv.
+
+(* -------------------------------------------------------------------- *)
 Section SummableAlg.
 Context {R : realType} (T : choiceType).
 
@@ -177,31 +297,6 @@ Section StdSum.
 Context {R : realType} (T : choiceType).
 
 Implicit Type S : T -> R.
-
-Lemma eq_ppsum (F1 F2 : {fset T} -> R) : F1 =1 F2 ->
-  sup [pred x | `[exists J, x == F1 J]] = sup [pred x | `[exists J, x == F2 J]].
-Proof.
-move=> eq_12; apply/eq_sup=> x; rewrite !inE.
-by apply/existsbP/existsbP=> -[J /eqP->]; exists J; apply/eqP.
-Qed.
-
-Lemma summable_sup (S : T -> R) : summable S -> has_sup
-  [pred x | `[exists J : {fset T}, x == \sum_(j : J) `|S (val j)|]].
-Proof.
-case/summableP=> M _ hbd; apply/has_supP; split.
-  by exists 0; apply/existsbP; exists fset0; rewrite big_fset0.
-by exists M; apply/ubP=> y /existsbP[J /eqP->].
-Qed.
-
-Lemma psum_out S : ~ summable S -> psum S = 0.
-Proof. by move/asboolPn/negbTE=> smN; rewrite /psum smN. Qed.
-
-Lemma psumE S : (forall x, 0 <= S x) -> summable S -> psum S =
-  sup [pred x | `[exists J : {fset T}, x == \sum_(j : J) S (val j)]].
-Proof.
-move=> gt0_S smS; rewrite /psum (asboolT smS); apply/eq_ppsum=> /=.
-by move=> J; apply/eq_bigr=> j _; rewrite ger0_norm.
-Qed.
 
 Lemma psum0 : psum (fun _ : T => 0) = 0 :> R.
 Proof.

@@ -612,4 +612,10 @@ Proof. by elift ler_eqVlt: x y. Qed.
 
 Lemma lte_neqAle x y : (x < y) = ((x != y) && (x <= y)).
 Proof. by elift ltr_neqAle: x y. Qed.
+
+Lemma lee_fin (x y : R) : (x%:E <= y%:E)%E = (x <= y)%R.
+Proof. by []. Qed.
+
+Lemma lte_fin (x y : R) : (x%:E < y%:E)%E = (x < y)%R.
+Proof. by []. Qed.
 End ERealOrderTheory.
