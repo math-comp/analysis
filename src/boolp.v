@@ -60,6 +60,11 @@ Qed.
 Lemma asbool_equiv {P Q : Prop} : (P <-> Q) -> (`[<P>] <-> `[<Q>]).
 Proof. by move/asbool_equiv_eq->. Qed.
 
+Lemma asbool_eq_equiv {P Q : Prop} : `[<P>] = `[<Q>] -> (P <-> Q).
+Proof.
+by move=> eq; split=> /asboolP; rewrite (eq, =^~ eq) => /asboolP.
+Qed.
+
 (* -------------------------------------------------------------------- *)
 Lemma and_asboolP (P Q : Prop) : reflect (P /\ Q) (`[<P>] && `[<Q>]).
 Proof.
@@ -375,6 +380,20 @@ move/asboolPn=> NP; apply/asboolP/negbNE/asboolPn=> h.
 by apply/NP=> x; apply/asboolP/negbNE/asboolPn=> NPx; apply/h; exists x.
 Qed.
 
+Lemma asbool_forallNb {T : Type} (P : pred T) :
+  `[< forall x : T, ~~ (P x) >] = ~~ `[< exists x : T, P x >].
+Proof.
+apply: (asbool_equiv_eqP forallp_asboolPn);
+  by split=> h x; apply/negP/h.
+Qed.
+
+Lemma asbool_existsNb {T : Type} (P : pred T) :
+  `[< exists x : T, ~~ (P x) >] = ~~ `[< forall x : T, P x >].
+Proof.
+apply: (asbool_equiv_eqP existsp_asboolPn);
+  by split=> -[x h]; exists x; apply/negP.
+Qed.
+
 (* -------------------------------------------------------------------- *)
 Definition xchooseb {T : choiceType} (P : pred T) (h : `[exists x, P x]) :=
   xchoose (existsbP P h).
@@ -459,3 +478,9 @@ Proof. exact/xchooseP. Qed.
 (* Proof. by rewrite negb_exists; apply/eq_forallb => x; rewrite [~~ _]fun_if. Qed. *)
 
 (* End Quantifiers. *)
+
+(* -------------------------------------------------------------------- *)
+(* FIXME: to be moved                                                   *)
+Lemma imsetbP (T : Type) (U : eqType) (f : T -> U) v :
+  reflect (exists x, v = f x) (v \in [pred y | `[exists x, y == f x]]).
+Proof. by apply: (iffP (existsbP _))=> -[x] => [/eqP|] ->; exists x. Qed.

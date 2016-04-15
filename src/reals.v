@@ -177,10 +177,10 @@ apply: (iffP (existsbP _))=> [[y /andP[]]|[y]].
   by exists y. by exists y; apply/andP; split.
 Qed.
 
-Lemma has_ubP E : has_ub E <-> nonempty (ub E).
+Lemma has_ubP {E} : has_ub E <-> nonempty (ub E).
 Proof. by []. Qed.
 
-Lemma has_supP E : has_sup E <-> (nonempty E /\ nonempty (ub E)).
+Lemma has_supP {E} : has_sup E <-> (nonempty E /\ nonempty (ub E)).
 Proof. by []. Qed.
 End BaseReflect.
 
@@ -300,13 +300,13 @@ Variables (R : realType).
 Implicit Types E : pred R.
 Implicit Types x : R.
 
-Lemma sup_ub E : has_ub E -> sup E \in ub E.
+Lemma sup_ub {E} : has_ub E -> sup E \in ub E.
 Proof.
 move=> ubE; apply/ubP=> x x_in_E; apply/sup_upper_bound=> //.
 by apply/has_supP; split; first by exists x.
 Qed.
 
-Lemma sup_total E x : has_sup E -> (x \in down E) || (sup E <= x).
+Lemma sup_total {E} x : has_sup E -> (x \in down E) || (sup E <= x).
 Proof.
 move=> has_supE; rewrite orbC; case: (lerP (sup E) x)=> hx //=.
 have /(sup_adherent has_supE) : 0 < sup E - x by rewrite subr_gt0.
@@ -314,7 +314,7 @@ case=> e Ee hlte; apply/downP; exists e => //; move: hlte.
 by rewrite opprB addrCA subrr addr0 => /ltrW.
 Qed.
 
-Lemma sup_le_ub E x : nonempty E -> x \in ub E -> sup E <= x.
+Lemma sup_le_ub {E} x : nonempty E -> x \in ub E -> sup E <= x.
 Proof.
 move=> hasE /ubP leEx; set y := sup E; pose z := (x + y) / 2%:R.
 have Dz: 2%:R * z = x + y.
@@ -326,6 +326,36 @@ have /orP [/downP [t Et lezt] | leyz] := sup_total z ubE.
 rewrite -(ler_add2r y) -Dz -mulr2n -[X in X<=_]mulr_natl.
 by rewrite ler_pmul2l ?ltr0Sn.
 Qed.
+
+Lemma nonemptybP {E} :
+  `[< nonempty E >] = `[< exists x : R, x \in E >].
+Proof. by apply: (asbool_equiv_eq (nonemptyP _)). Qed.
+
+Lemma nonemptyPn {E} :
+  ~ nonempty E <-> (forall x, x \notin E).
+Proof.
+by apply: asbool_eq_equiv; rewrite asbool_neg nonemptybP asbool_forallNb.
+Qed.
+
+Lemma has_ubPn {E} :
+  ~ has_ub E <-> (forall x, exists2 y, y \in E & x < y).
+Proof. split; last first.
++ move=> h /has_ubP [x /ubP] hle; case/(_ x): h => y /hle.
+  by rewrite lerNgt => /negbTE ->.
+move/asboolPn; rewrite (asbool_equiv_eq has_ubP).
+move/asboolPn/nonemptyPn=> h x; have /ubP {h} := h x.
+case/asboolPn/existsp_asboolPn=> y /asboolPn /imply_asboolPn.
+by case=> [yE /negP]; rewrite -ltrNge => ltx; exists y.
+Qed.
+
+Lemma has_supPn {E} : nonempty E ->
+  ~ has_sup E <-> (forall x, exists2 y, y \in E & x < y).
+Proof.
+move=> nzE; split=> [/asboolPn|]; rewrite ?(asbool_equiv_eq has_supP).
+  by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_ubPn.
+by move/has_ubPn=> h /has_supP [_].
+Qed.
+
 End RealLemmas.
 
 (* -------------------------------------------------------------------- *)
