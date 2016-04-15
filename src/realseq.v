@@ -5,7 +5,7 @@ From SsrReals Require Import finmap boolp reals discrete.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Set Asymmetric Patterns.
+Unset SsrOldRewriteGoalsOrder.
 
 Import GRing.Theory Num.Theory.
 
@@ -106,7 +106,7 @@ rewrite invr_gt0 ltr0n /=; apply/negP=> /andP[le1 le2].
 have := ltr_add le1 le2; rewrite -mulrDl -mulr2n -mulr_natr.
 rewrite mulfK ?pnatr_eq0 // distrC => /(ler_lt_trans (ler_norm_add _ _)).
 rewrite [x-_]addrC addrACA addNr addr0 ltr0_norm.
-  by rewrite opprB ltrr. by rewrite subr_lt0.
+  by rewrite subr_lt0. by rewrite opprB ltrr.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -146,7 +146,7 @@ move=> cv1 cv2; apply/eqP; case: (l1 =P l2) => // /eqP.
 case/separable=> [n1] [n2] h; move: (cv1 n1) (cv2 n2).
 case=> [K1 c1] [K2 c2]; pose K := maxn K1 K2.
 move/(_ (u K)): h; rewrite !inE /= !(c1, c2) //.
-  by apply/leq_maxr. by apply/leq_maxl.
+  by apply/leq_maxl. by apply/leq_maxr.
 Qed.
 
 Lemma ncvg_eq_from K v u l :
@@ -198,7 +198,7 @@ move=> cu cv; elim/nbh_finW => e /= gt0_e; pose z := e / 2%:R.
 case: (cu (B lu z)) (cv (B lv z)) => [ku {cu}cu] [kv {cv}cv].
 exists (maxn ku kv) => n; rewrite geq_max => /andP[leu lev].
 rewrite inE opprD addrACA (ler_lt_trans (ler_norm_add _ _)) //.
-move: (cu _ leu) (cv _ lev); rewrite !inE eclamp_id; last first.
+move: (cu _ leu) (cv _ lev); rewrite !inE eclamp_id.
   by rewrite mulr_gt0 // invr_gt0 ltr0Sn.
 move=> cu' cv'; suff ->: e = z + z by rewrite ltr_add.
 by rewrite -mulrDl -mulr2n -mulr_natr mulfK ?pnatr_eq0.

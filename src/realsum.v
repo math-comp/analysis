@@ -5,7 +5,7 @@ From SsrReals Require Import xfinmap boolp reals discrete realseq.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Set Asymmetric Patterns.
+Unset SsrOldRewriteGoalsOrder.
 
 Import GRing.Theory Num.Theory.
 
@@ -93,7 +93,7 @@ case/boolP: `[< has_sup E >] => /asboolP; last first.
   by apply/(ltr_le_trans lt_MuK)/mono_u.
 move=> supE; exists (sup E)%:E => //; elim/nbh_finW=>e /= gt0_e.
 case: (sup_adherent supE gt0_e)=> x /imsetbP[K ->] lt_uK.
-exists K=> n le_Kn; rewrite inE distrC ger0_norm ?subr_ge0; last first.
+exists K=> n le_Kn; rewrite inE distrC ger0_norm ?subr_ge0.
   by apply/sup_upper_bound/imsetbP=> //; exists n.
 rewrite ltr_subl_addr addrC -ltr_subl_addr.
 by rewrite (ltr_le_trans lt_uK) //; apply/mono_u.
@@ -110,6 +110,7 @@ case/(_ (NPInf M)): cu => K /= /(_ K (leqnn _)).
 rewrite inE /= => /ltrW /ler_trans /(_ (ler_norm _)).
 by move/ler_lt_trans/(_ (bdu _)); rewrite ltrr.
 Qed.
+End PosCnv.
 
 (* -------------------------------------------------------------------- *)
 Section SummableAlg.
@@ -204,7 +205,7 @@ Qed.
 
 Lemma psum0 : psum (fun _ : T => 0) = 0 :> R.
 Proof.
-rewrite /psum asboolT; last by apply/summable0.
+rewrite /psum asboolT; first by apply/summable0.
 set S := [pred x | _]; suff: S =1 (pred1 0).
   by move/eq_sup => ->; rewrite sup1.
 move=> x; rewrite {}/S inE; apply/idP/idP => /=.
@@ -227,6 +228,6 @@ Lemma psumD S1 S2 :
 Proof.
 (* Should use <-> with convergence *)
 move=> ge0_S1 ge0_S2 sm1 sm2; have smD := summableD sm1 sm2.
-rewrite !psumE //=; last by move=> x; rewrite addr_ge0.
+rewrite !psumE //=; first by move=> x; rewrite addr_ge0.
 Abort.
 End StdSum.

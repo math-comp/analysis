@@ -4,6 +4,7 @@ From mathcomp Require Import all_ssreflect all_algebra all_real_closed.
 Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+Unset SsrOldRewriteGoalsOrder.
 
 Import GRing.Theory Num.Theory.
 
@@ -53,17 +54,17 @@ Variable R : rcfType.
 Implicit Types c x y : R.
 Implicit Types z e   : R[i].
 
-Lemma complex_vectAxiom: Vector.axiom 2 R[i].
+Lemma complex_vectAxiom : Vector.axiom 2 R[i].
 Proof.
-  exists (fun z => \row_(i < 2) (tnth [tuple (Re z); (Im z)] i)).
-  + move=> /= c [a1 b1] [a2 b2]; apply/matrixP=> /= i j.
-    by rewrite !mxE {i}!(tnth_nth 0) /=; case: j=> [] [|[|]].
-  + exists (fun (v : 'rV[R]_2) => v 0 0 +i* v 0 1).
-      by case=> [a b]; rewrite !mxE !(tnth_nth 0).
-    move=> v /=; apply/matrixP=> i j; rewrite !mxE.
-    rewrite !(tnth_nth 0) !ord1; case: j=> [] [|[|]] //= lt.
-      have /eqP->//: Ordinal lt == 0 by rewrite eqE.
-      have /eqP->//: Ordinal lt == 1 by rewrite eqE.
+exists (fun z => \row_(i < 2) (tnth [tuple (Re z); (Im z)] i)).
++ move=> /= c [a1 b1] [a2 b2]; apply/matrixP=> /= i j.
+  by rewrite !mxE {i}!(tnth_nth 0) /=; case: j=> [] [|[|]].
++ exists (fun (v : 'rV[R]_2) => v 0 0 +i* v 0 1).
+    by case=> [a b]; rewrite !mxE !(tnth_nth 0).
+  move=> v /=; apply/matrixP=> i j; rewrite !mxE.
+  rewrite !(tnth_nth 0) !ord1; case: j=> [] [|[|]] //= lt.
+    have /eqP->//: Ordinal lt == 0 by rewrite eqE.
+    have /eqP->//: Ordinal lt == 1 by rewrite eqE.
 Qed.
 
 Definition complex_vectMixin :=

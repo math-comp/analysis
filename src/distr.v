@@ -6,7 +6,7 @@ From SsrReals Require Import realseq realsum.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Set Asymmetric Patterns.
+Unset SsrOldRewriteGoalsOrder.
 
 Import GRing.Theory Num.Theory.
 
