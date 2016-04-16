@@ -142,6 +142,10 @@ Proof.
 move=> gt0_S smS; rewrite /psum (asboolT smS); apply/eq_ppsum=> /=.
 by move=> J; apply/eq_bigr=> j _; rewrite ger0_norm.
 Qed.
+
+Lemma psum_absE S : summable S -> psum S =
+  sup [pred x | `[exists J : {fset T}, x == \sum_(j : J) `|S (val j)|]].
+Proof. by move=> smS; rewrite /psum (asboolT smS). Qed.
 End SumTh.
 
 (* -------------------------------------------------------------------- *)
