@@ -267,3 +267,6 @@ Lemma ncvg_lt (u : nat -> R) (l1 l2 : {ereal R}) :
     exists K, forall n, (K <= n)%N -> (l1 < (u n)%:E)%E.
 Proof. Admitted.
 End SeqLimTh.
+
+(* -------------------------------------------------------------------- *)
+Axiom nlim : forall {R : realType} (u : nat -> R), {ereal R}.

@@ -19,6 +19,61 @@ Local Notation simpm := Monoid.simpm.
 Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
 
 (* -------------------------------------------------------------------- *)
+Require Import xfinmap.
+
+Section BigFSet.
+Variable (R : Type) (idx : R).
+
+Local Notation "1" := idx.
+
+Variable op : Monoid.com_law 1.
+
+Notation Local "'*%M'" := op (at level 0).
+Notation Local "x * y" := (op x y).
+
+Lemma big_fset_seq_cond (T : choiceType) (J : {fset T}) P F :
+    \big[*%M/1]_(x : J | P (val x)) F (val x)
+  = \big[*%M/1]_(x <- fset_keys J | P x) F x.
+Proof.
+case: J=> J c; rewrite -(big_map val) /index_enum.
+by rewrite !unlock val_fset_sub_enum ?canonical_uniq.
+Qed.
+
+Lemma big_fset_seq (T : choiceType) (J : {fset T}) F :
+    \big[*%M/1]_(x : J) F (val x)
+  = \big[*%M/1]_(x <- fset_keys J) F x.
+Proof. by apply/big_fset_seq_cond. Qed.
+
+Lemma big_seq_fset_cond (T : choiceType) (s : seq T) P F : uniq s ->
+    \big[*%M/1]_(x : seq_fset s | P (val x)) F (val x)
+  = \big[*%M/1]_(x <- s | P x) F x.
+Proof.
+move=> eq_s; rewrite big_fset_seq_cond; apply/eq_big_perm.
+by apply/uniq_perm_eq=> //=; apply/sort_keysE.
+Qed.
+
+Lemma big_seq_fset (T : choiceType) (s : seq T) F : uniq s ->
+    \big[*%M/1]_(x : seq_fset s) F (val x)
+  = \big[*%M/1]_(x <- s) F x.
+Proof. by apply/big_seq_fset_cond. Qed.
+End BigFSet.
+
+Arguments big_fset_seq_cond [R idx op T J] P F.
+Arguments big_fset_seq [R idx op T J] F.
+Arguments big_seq_fset_cond [R idx op T s] P F _.
+Arguments big_seq_fset [R idx op T s] F _.
+
+(* -------------------------------------------------------------------- *)
+Lemma summable_seqP {R : realType} (T : choiceType) (f : T -> R) :
+  summable f <-> (exists2 M, 0 <= M &
+    forall s : seq T, uniq s -> \sum_(x <- s) `|f x| <= M).
+Proof.
+split=> [/summableP|] [M gt0_M h]; exists M => //.
+  by move=> s uq_s; have := h (seq_fset s); rewrite (big_seq_fset \`|f|).
+by case=> J cJ; rewrite (big_fset_seq \`|_|) /=; apply/h/canonical_uniq.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Section Distribution.
 Variables (R : realType) (T : choiceType).
 
@@ -79,77 +134,51 @@ Definition pr (mu : {distr T / R}) (E : pred T) :=
 End StdDefs.
 
 (* -------------------------------------------------------------------- *)
+Lemma gerfin_psum {R : realType} {T : choiceType} (f : T -> R) (J : {fset T}) :
+  summable f -> \sum_(j : J) `|f (val j)| <= psum f.
+Proof. Admitted.
+
+Lemma gerfinseq_psum {R : realType} {T : choiceType} (f : T -> R) (r : seq T) :
+  uniq r -> summable f -> \sum_(j <- r) `|f j| <= psum f.
+Proof. Admitted.
+
+(* -------------------------------------------------------------------- *)
 Section DistrTheory.
-Context {R : realType}.
+Context {R : realType} {T : choiceType} (mu : T -> R).
 
-Definition isdistr {T : choiceType} (mu : T -> R) :=
-  [/\ forall x, 0 <= mu x, summable mu & psum mu <= 1].
+Definition isdistr :=
+  (forall x, 0 <= mu x) /\ (forall J, uniq J -> \sum_(j <- J) mu j <= 1).
 
-Definition mkdistr {T : choiceType} (mu : T -> R) :=
-  fun (h : isdistr mu) =>
-    let: And3 h1 h2 h3 := h in @Distr R T mu h1 h2 h3.
+Hypothesis isd : isdistr.
 
-Lemma mkdistrE {T : choiceType} (mu : T -> R) (h : isdistr mu) :
-  mkdistr h =1 mu.
-Proof. by case: h. Qed.
+Local Lemma isd1 : forall x, 0 <= mu x.
+Proof. by case: isd. Qed.
+
+Local Lemma isd2 : summable mu.
+Proof.
+case: isd=> _ h; apply/summable_seqP; exists 1=> //.
+move=> s /h /(ler_trans _); apply; rewrite ler_eqVlt; apply/orP.
+by left; apply/eqP/eq_bigr=> i _; rewrite ger0_norm ?isd1.
+Qed.
+
+Local Lemma isd3 : psum mu <= 1.
+Proof. Admitted.
+
+Definition mkdistr := @Distr R T mu isd1 isd2 isd3.
+
+Lemma mkdistrE : mkdistr =1 mu.
+Proof. by []. Qed.
 
 Definition ispredistr {T : choiceType} (mu : T -> R) :=
   [/\ forall x, 0 <= mu x & summable mu].
 End DistrTheory.
 
-(* -------------------------------------------------------------------- *)
-Require Import xfinmap.
-
-Section BigFSet.
-Variable (R : Type) (idx : R).
-
-Local Notation "1" := idx.
-
-Variable op : Monoid.com_law 1.
-
-Notation Local "'*%M'" := op (at level 0).
-Notation Local "x * y" := (op x y).
-
-Lemma big_fset_seq_cond (T : choiceType) (J : {fset T}) P F :
-    \big[*%M/1]_(x : J | P (val x)) F (val x)
-  = \big[*%M/1]_(x <- fset_keys J | P x) F x.
-Proof.
-case: J=> J c; rewrite -(big_map val) /index_enum.
-by rewrite !unlock val_fset_sub_enum ?canonical_uniq.
-Qed.
-
-Lemma big_fset_seq (T : choiceType) (J : {fset T}) F :
-    \big[*%M/1]_(x : J) F (val x)
-  = \big[*%M/1]_(x <- fset_keys J) F x.
-Proof. by apply/big_fset_seq_cond. Qed.
-
-Lemma big_seq_fset_cond (T : choiceType) (s : seq T) P F : uniq s ->
-    \big[*%M/1]_(x : seq_fset s | P (val x)) F (val x)
-  = \big[*%M/1]_(x <- s | P x) F x.
-Proof.
-move=> eq_s; rewrite big_fset_seq_cond; apply/eq_big_perm.
-by apply/uniq_perm_eq=> //=; apply/sort_keysE.
-Qed.
-
-Lemma big_seq_fset (T : choiceType) (s : seq T) F : uniq s ->
-    \big[*%M/1]_(x : seq_fset s) F (val x)
-  = \big[*%M/1]_(x <- s) F x.
-Proof. by apply/big_seq_fset_cond. Qed.
-End BigFSet.
-
-Arguments big_fset_seq_cond [R idx op T J] P F.
-Arguments big_fset_seq [R idx op T J] F.
-Arguments big_seq_fset_cond [R idx op T s] P F _.
-Arguments big_seq_fset [R idx op T s] F _.
-
-(* -------------------------------------------------------------------- *)
-Lemma summable_seqP {R : realType} (T : choiceType) (f : T -> R) :
-  summable f <-> (exists2 M, 0 <= M &
-    forall s : seq T, uniq s -> \sum_(x <- s) `|f x| <= M).
-Proof.
-split=> [/summableP|] [M gt0_M h]; exists M => //.
-  by move=> s uq_s; have := h (seq_fset s); rewrite (big_seq_fset \`|f|).
-by case=> J cJ; rewrite (big_fset_seq \`|_|) /=; apply/h/canonical_uniq.
+Lemma isdistr_finP {R : realType} {I : finType} (mu : I -> R) :
+  (isdistr mu) <-> (forall x, 0 <= mu x) /\ (\sum_j mu j <= 1).
+Proof. split=> -[ge0_mu le1]; split=> //.
++ by apply/le1; rewrite /index_enum -enumT enum_uniq.
++ move=> J uqJ; rewrite big_uniq 1?(ler_trans _ le1) //=.
+  by rewrite [X in _<=X](bigID (mem J)) /= ler_addl sumr_ge0.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -218,12 +247,9 @@ Definition mflip (xt : R) :=
   fun b => if b then clamp xt else 1 - clamp xt.
 
 Lemma isd_mflip xt : isdistr (mflip xt).
-Proof. split=> [b||].
+Proof. apply/isdistr_finP; split=> [b|].
 + by case: b; rewrite ?subr_ge0 cp01_clamp.
-+ by apply/summable_fin.
-rewrite psum_fin /index_enum !unlock /= addr0.
-rewrite !ger0_norm ?subr_ge0 ?cp01_clamp //=.
-by rewrite addrCA subrr addr0.
++ by rewrite /index_enum !unlock /= addr0 addrCA subrr addr0.
 Qed.
 
 Definition dflip (xt : R) := locked (mkdistr (isd_mflip xt)).
@@ -240,10 +266,45 @@ Local Notation distr T := {distr T / R}.
 
 Implicit Types (T U : choiceType).
 
-Axiom dlet  : forall T U, (T -> distr U) -> distr T -> distr U.
-Axiom dlim  : forall T, (nat -> distr T) -> distr T.
-Axiom dfst  : forall T U, distr (T * U) -> distr T.
-Axiom dsnd  : forall T U, distr (T * U) -> distr U.
+(* -------------------------------------------------------------------- *)
+Section Bind.
+Variables (T U : choiceType) (f : T -> distr U) (mu : distr T).
+
+Definition mlet := fun y : U =>
+  psum (fun x => mu x * f x y).
+
+Lemma isd_mlet : isdistr mlet.
+Proof. Admitted.
+
+Definition dlet := locked (mkdistr isd_mlet).
+End Bind.
+
+(* -------------------------------------------------------------------- *)
+Definition mlim T (f : nat -> distr T) :=
+  fun x => nlim (fun n => f n x).
+
+Lemma isd_mlim T (f : nat -> distr T) : isdistr (mlim f).
+Proof. Admitted.  
+
+Definition dlim T (f : nat -> distr T) :=
+  locked (mkdistr (isd_mlim f)).
+
+(* -------------------------------------------------------------------- *)
+Section Marginals.
+Variable (T U : choiceType) (mu : distr (T * U)).
+
+Definition mfst := fun x => psum (fun y => mu (x, y)).
+Definition msnd := fun y => psum (fun x => mu (x, y)).
+
+Lemma isd_mfst : isdistr mfst.
+Proof. Admitted.
+
+Lemma isd_msnd : isdistr msnd.
+Proof. Admitted.
+
+Definition dfst := locked (mkdistr isd_mfst).
+Definition dsnd := locked (mkdistr isd_msnd).
+End Marginals.
 End Std.
 
 (* -------------------------------------------------------------------- *)
