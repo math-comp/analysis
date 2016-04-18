@@ -290,6 +290,10 @@ Definition dlim T (f : nat -> distr T) :=
   locked (mkdistr (isd_mlim f)).
 
 (* -------------------------------------------------------------------- *)
+Lemma ge0_psum (T : choiceType) (f : T -> R) : 0 <= psum f.
+Proof. Admitted.
+
+(* -------------------------------------------------------------------- *)
 Section Marginals.
 Variable (T U : choiceType) (mu : distr (T * U)).
 
@@ -306,5 +310,14 @@ Definition dfst := locked (mkdistr isd_mfst).
 Definition dsnd := locked (mkdistr isd_msnd).
 End Marginals.
 End Std.
+
+(* -------------------------------------------------------------------- *)
+Section PrTheory.
+Context {R : realType} (T : choiceType).
+
+Lemma pr_dunit (E : pred T) (x : T) :
+  pr (R := R) (dunit x) E = (E x)%:R.
+Proof. Admitted.
+End PrTheory.
 
 (* -------------------------------------------------------------------- *)
