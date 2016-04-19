@@ -123,15 +123,32 @@ Proof. by rewrite clamp_in01 // lerr ler01. Qed.
 End Clamp.
 
 (* -------------------------------------------------------------------- *)
+Reserved Notation "\P_[ mu ] E" (at level 2, format "\P_[ mu ]  E").
+Reserved Notation "\P_[ mu , A ] E" (at level 2, format "\P_[ mu ,  A ]  E").
+Reserved Notation "\E?_[ mu ] f" (at level 2, format "\E?_[ mu ]  f").
+Reserved Notation "\E_[ mu ] f" (at level 2, format "\E_[ mu ]  f").
+Reserved Notation "\E_[ mu , A ] f" (at level 2, format "\E_[ mu ,  A ]  f").
+
 Section StdDefs.
 Context {R : realType} (T : choiceType).
 
-Definition dinsupp (mu : {distr T / R}) :=
-  fun x => mu x != 0 :> R.
+Implicit Types (mu : {distr T / R}) (A B E : pred T) (f : T -> R).
 
-Definition pr (mu : {distr T / R}) (E : pred T) :=
-  psum (fun x => (E x)%:R * mu x).
+Definition dinsupp mu := fun x => mu x != 0 :> R.
+
+Definition pr   mu E   := psum (fun x => (E x)%:R * mu x).
+Definition prc  mu E A := pr mu [predI E & A] / pr mu A.
+Definition esp  mu f   := sum (fun x => f x * mu x).
+Definition espc mu f A := sum (fun x => f x * prc mu (pred1 x) A).
+
+Definition has_esp mu f := summable (fun x => f x * mu x).
 End StdDefs.
+
+Notation "\P_[ mu ] E"     := (pr mu E).
+Notation "\P_[ mu , A ] E" := (prc mu E A).
+Notation "\E_[ mu ] f"     := (esp mu f).
+Notation "\E_[ mu , A ] f" := (espc mu f A).
+Notation "\E?_[ mu ] f"    := (has_esp mu f).
 
 (* -------------------------------------------------------------------- *)
 Lemma gerfin_psum {R : realType} {T : choiceType} (f : T -> R) (J : {fset T}) :
@@ -315,39 +332,55 @@ End Std.
 Section PrTheory.
 Context {R : realType} (T : choiceType).
 
-Lemma pr_dunit (E : pred T) (x : T) :
-  pr (R := R) (dunit x) E = (E x)%:R.
+Implicit Types (mu : {distr T / R}) (A B E : pred T).
+
+Lemma pr_dunit E x : \P_[dunit x] E = (E x)%:R :> R.
 Proof. Admitted.
 
-Lemma ge0_pr (A : pred T) (mu : {distr T / R}) : 0 <= pr mu A.
+Lemma pr_dlet E f mu : \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
+Proof. Admitted.
+
+Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
 
-Lemma le1_pr (A : pred T) (mu : {distr T / R}) : pr mu A <= 1.
+Lemma le1_pr A mu : \P_[mu] A <= 1.
 Proof. Admitted.
 
-Lemma eq_pr (A B : pred T) (mu : {distr T / R}) :
-  A =i B -> pr mu A = pr mu B.
+Lemma eq_pr A B mu : A =i B -> \P_[mu] A = \P_[mu] B.
 Proof. Admitted.
 
-Lemma subset_pr (A B : pred T) (mu : {distr T / R}) :
-  {subset B <= A} -> pr mu B <= pr mu A.
+Lemma subset_pr A B mu : {subset B <= A} -> \P_[mu] B <= \P_[mu] A.
 Proof. Admitted.
 
-Lemma pr_or (A B : pred T) (mu : {distr T / R}) :
-  pr mu [predU A & B] = pr mu A + pr mu B - pr mu [predI A & B].
+Lemma pr_or A B mu : \P_[mu] [predU A & B] =
+  \P_[mu] A + \P_[mu] B - \P_[mu] [predI A & B].
 Proof. Admitted.
 
-Lemma pr_and (A B : pred T) (mu : {distr T / R}) :
-  pr mu [predI A & B] = pr mu A + pr mu B - pr mu [predU A & B].
+Lemma pr_and A B mu : \P_[mu] [predI A & B] =
+  \P_[mu] A + \P_[mu] B - \P_[mu] [predU A & B].
 Proof. by rewrite pr_or opprB addrCA subrr addr0. Qed.
 
-Lemma ler_pr_or (A B : pred T) (mu : {distr T / R}) :
-  pr mu [predU A & B] <= pr mu A + pr mu B.
+Lemma ler_pr_or A B mu :
+  \P_[mu] [predU A & B] <= \P_[mu] A + \P_[mu] B.
 Proof. by rewrite pr_or ler_subl_addr ler_addl ge0_pr. Qed.
 
-Lemma ler_pr_and (A B : pred T) (mu : {distr T / R}) :
-  pr mu [predI A & B] <= pr mu A + pr mu B.
+Lemma ler_pr_and A B mu :
+  \P_[mu] [predI A & B] <= \P_[mu] A + \P_[mu] B.
 Proof. by rewrite pr_and ler_subl_addr ler_addl ge0_pr. Qed.
+
+Lemma pr_split B A mu : \P_[mu] A =
+    \P_[mu]        B  * \P_[mu,       B] A
+  + \P_[mu] (predC B) * \P_[mu, predC B] A.
+Proof. Admitted.
+
+Lemma eps_split A f mu : \E?_[mu] f -> \E_[mu] f =
+    \P_[mu]        A  * \E_[mu,       A] f
+  + \P_[mu] (predC A) * \E_[mu, predC A] f.
+Proof. Admitted.
+
+Lemma has_esp_bounded f mu :
+  (exists M, forall x, `|f x| < M) -> \E?_[mu] f.
+Proof. Admitted.
 End PrTheory.
 
 (* -------------------------------------------------------------------- *)
