@@ -19,6 +19,10 @@ Local Notation simpm := Monoid.simpm.
 Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
 
 (* -------------------------------------------------------------------- *)
+Lemma ge0_psum {R : realType} (T : choiceType) (f : T -> R) : 0 <= psum f.
+Proof. Admitted.
+
+(* -------------------------------------------------------------------- *)
 Require Import xfinmap.
 
 Section BigFSet.
@@ -199,6 +203,23 @@ Proof. split=> -[ge0_mu le1]; split=> //.
 Qed.
 
 (* -------------------------------------------------------------------- *)
+Section DistrD.
+Context {R : realType} {T : choiceType} (mu : T -> R).
+
+Definition mnull := fun x : T => (0 : R).
+
+Lemma isd_mnull : isdistr mnull.
+Proof. by split=> // J _; rewrite big1 ?ler01. Qed.
+
+Definition dnull := locked (mkdistr isd_mnull).
+
+Definition mkdistrd : {distr T / R} :=
+  if @idP `[< isdistr mu >] is ReflectT Px then
+    mkdistr (asboolE Px)
+  else dnull.
+End DistrD.
+
+(* -------------------------------------------------------------------- *)
 Section DRat.
 Context {R : realType} (T : choiceType).
 
@@ -232,12 +253,8 @@ Lemma drat1E s x :
   drat s x = (count_mem x s)%:R / (size s)%:R.
 Proof. by unlock drat; rewrite mkdistrE. Qed.
 
-Definition dnull   := locked (drat [::]).
 Definition dunit x := locked (drat [:: x]).
 Definition duni  s := locked (drat (undup s)).
-
-Lemma dnull1E x : dnull x = 0.
-Proof. by unlock dnull; rewrite drat1E invr0 mulr0. Qed.
 
 Lemma dunit1E x y : (dunit x) y = (x == y)%:R.
 Proof. by unlock dunit; rewrite drat1E /= !(simpm, invr1). Qed.
@@ -307,25 +324,23 @@ Definition dlim T (f : nat -> distr T) :=
   locked (mkdistr (isd_mlim f)).
 
 (* -------------------------------------------------------------------- *)
-Lemma ge0_psum (T : choiceType) (f : T -> R) : 0 <= psum f.
-Proof. Admitted.
-
-(* -------------------------------------------------------------------- *)
 Section Marginals.
-Variable (T U : choiceType) (mu : distr (T * U)).
+Variable (T U : choiceType) (h : T -> U) (mu : distr T).
 
-Definition mfst := fun x => psum (fun y => mu (x, y)).
-Definition msnd := fun y => psum (fun x => mu (x, y)).
+Definition mmargin :=
+  fun x : U => psum (fun y => (x == h y)%:R * mu y).
 
-Lemma isd_mfst : isdistr mfst.
+Lemma isd_mmargin : isdistr mmargin.
 Proof. Admitted.
 
-Lemma isd_msnd : isdistr msnd.
-Proof. Admitted.
-
-Definition dfst := locked (mkdistr isd_mfst).
-Definition dsnd := locked (mkdistr isd_msnd).
+Definition dmargin : distr U := locked (mkdistr isd_mmargin).
 End Marginals.
+
+Definition dfst (T U : choiceType) (mu : distr (T * U)) :=
+  dmargin fst mu.
+
+Definition dsnd (T U : choiceType) (mu : distr (T * U)) :=
+  dmargin snd mu.
 End Std.
 
 (* -------------------------------------------------------------------- *)

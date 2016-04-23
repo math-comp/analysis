@@ -15,6 +15,7 @@ COQFILES := \
 	src/realseq.v \
 	src/realsum.v \
 	src/distr.v \
+	src/coupling.v \
 	src/sandbox.v
 
 include Makefile.common

@@ -18,7 +18,7 @@ Section IsCoupling.
 Context {R : realType} (T1 T2 : choiceType).
 
 Definition iscoupling mu1 mu2 (mu : {distr (T1 * T2) / R}) :=
-  [/\ mfst mu =1 mu1 & msnd mu =1 mu2].
+  [/\ dfst mu =1 mu1 & dsnd mu =1 mu2].
 End IsCoupling.
 
 (* -------------------------------------------------------------------- *)
@@ -78,8 +78,32 @@ Hypothesis F_esp1 :
   forall s1 s2, d s1 s2 = 1%N ->
     \E_[F s1 s2] (fun xy => (d xy.1 xy.2)%:R) < b * (d s1 s2)%:R.
 
+Fixpoint Fx_r (n : nat) (s1 s2 : T) : {distr (T * T) / R} :=
+  if n is n.+1 then
+    match d s1 s2 with
+    | 0 => mkdistrd (fun r => (r.1 == r.2)%:R * f s1 r.1)
+    | 1 => F s1 s2
+    | _ =>
+       if @idP `[exists s, [&& d s1 s == 1 & d s1 s2 == d s1 s + d s s2]%N]
+          is ReflectT Px
+       then
+         let s   := xchooseb Px in
+         let mu1 := Fx_r n s1 s in
+         let mu2 := Fx_r n s s2 in
+
+         mkdistrd (fun r => psum (fun v =>
+           (mu1 (r.1, v) * mu2 (v, r.2)) / f s v))
+
+       else dnull
+    end
+  else dnull.
+
+Definition Fx    s1 s2 := Fx_r D s1 s2.
+Definition Fxk k r1 r2 := klift (fun r => Fx r.1 r.2) k (r1, r2).
+
 Goal forall s1 s2 k, tv (klift f k s1) (klift f k s2) < b^+k * D%:R.
 Proof. Admitted.
+
 End PathCoupling.
 
 (* -------------------------------------------------------------------- *)
