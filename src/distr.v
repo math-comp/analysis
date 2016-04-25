@@ -37,6 +37,22 @@ Notation "{ 'distr' T / R }" := (distr_of (Phant R) (Phant T))
   : type_scope.
 
 (* -------------------------------------------------------------------- *)
+Section DistrCoreTh.
+Context {R : realType} (T : choiceType) (mu : {distr T / R}).
+
+Lemma ge0_mu : forall x, 0 <= mu x.
+Proof. by case: mu. Qed.
+
+Lemma le1_mu : psum mu <= 1.
+Proof. by case: mu. Qed.
+
+Lemma summable_mu : summable mu.
+Proof. by case: mu. Qed.
+End DistrCoreTh.
+
+Hint Resolve ge0_mu le1_mu summable_mu.
+
+(* -------------------------------------------------------------------- *)
 Section Clamp.
 Context {R : realType}.
 
@@ -280,6 +296,9 @@ Context {R : realType} (T : choiceType).
 
 Implicit Types (mu : {distr T / R}) (A B E : pred T).
 
+Lemma pr_predT mu : \P_[mu] predT = psum mu.
+Proof. by apply/eq_psum=> x; rewrite mul1r. Qed.
+
 Lemma pr_dunit E x : \P_[dunit x] E = (E x)%:R :> R.
 Proof. Admitted.
 
@@ -289,14 +308,27 @@ Proof. Admitted.
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
 
-Lemma le1_pr A mu : \P_[mu] A <= 1.
-Proof. Admitted.
-
 Lemma eq_pr A B mu : A =i B -> \P_[mu] A = \P_[mu] B.
-Proof. Admitted.
+Proof.
+move=> eq_AB; apply/eq_psum => x; congr ((_ _)%:R * _).
+by have := eq_AB x; rewrite -!topredE.
+Qed.
 
 Lemma subset_pr A B mu : {subset B <= A} -> \P_[mu] B <= \P_[mu] A.
-Proof. Admitted.
+Proof.
+move=> le_BA; apply/le_psum; last first.
+  apply/summableMl => //; exists 1=> // x.
+  by rewrite ger0_norm ?(ler0n, lern1) ?leq_b1.
+move=> x; rewrite mulr_ge0 ?ler0n ?ler_wpmul2r //.
+rewrite ler_nat; have := le_BA x; rewrite -!topredE /=.
+by case: (B x) => // ->.
+Qed.
+
+Lemma le1_pr A mu : \P_[mu] A <= 1.
+Proof.
+apply/(@ler_trans _ \P_[mu] predT).
+  by apply/subset_pr. by rewrite pr_predT le1_mu.
+Qed.
 
 Lemma pr_or A B mu : \P_[mu] [predU A & B] =
   \P_[mu] A + \P_[mu] B - \P_[mu] [predI A & B].
