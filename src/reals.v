@@ -465,6 +465,16 @@ End FloorTheory.
 Section Sup.
 Context {R : realType}.
 
+Lemma le_down (S : pred R) : {subset S <= down S}.
+Proof. by move=> x xS; apply/downP; exists x. Qed.
+
+Lemma downK (S : pred R) : down (down S) =i down S.
+Proof.
+move=> x; apply/downP/downP=> -[y yS le_xy]; last first.
+  by exists y=> //; apply/le_down.
+by case/downP: yS => z zS le_yz; exists z => //; apply/(ler_trans le_xy).
+Qed.
+
 Lemma eq_ub (S1 S2 : pred R) : S2 =i S1 -> ub S2 =i ub S1.
 Proof.
 move=> eq_12 x; apply/ubP/ubP=> h y yS; apply/h;
@@ -493,6 +503,42 @@ pose x : R := sup S2 - sup S1; have gt0_x: 0 < x by rewrite subr_gt0.
 have [e eS2] := sup_adherent h2 gt0_x; rewrite subKr => lt_S1e.
 have /(eq_has_sup eq_12) h1 := h2; have := eS2; rewrite eq_12.
 by move/sup_upper_bound=> -/(_ h1); rewrite lerNgt lt_S1e.
+Qed.
+
+Lemma has_sup_down (S : pred R) : has_sup (down S) <-> has_sup S.
+Proof.
+split=> /has_supP [nzS nzubS]; apply/has_supP.
+  case: nzS=> x /downP[y yS le_xy]; split; first by exists y.
+  case: nzubS=> u /ubP ubS; exists u; apply/ubP=> z zS.
+  by apply/ubS; apply/downP; exists z.
+case: nzS=> x xS; split; first by exists x; apply/le_down.
+case: nzubS=> u /ubP ubS; exists u; apply/ubP=> y /downP [].
+by move=> z zS /ler_trans; apply; apply/ubS.
+Qed.
+
+Lemma le_sup (S1 S2 : pred R) :
+  {subset S1 <= down S2} -> nonempty S1 -> has_sup S2
+    -> sup S1 <= sup S2.
+Proof.
+move=> le_S12 nz_S1 hs_S2; have hs_S1: has_sup S1.
+  apply/has_supP; split=> //; case/has_supP: hs_S2=> _ [x ubx].
+  exists x; apply/ubP=> y /le_S12 /downP[z zS2 le_yz].
+  by apply/(ler_trans le_yz); move/ubP: ubx; apply.
+rewrite lerNgt -subr_gt0; apply/negP => lt_sup.
+case: (sup_adherent hs_S1 lt_sup)=> x /le_S12 xdS2.
+rewrite subKr => lt_S2x; case/downP: xdS2=> z zS2.
+by move/(ltr_le_trans lt_S2x); rewrite ltrNge sup_upper_bound.
+Qed.
+
+Lemma sup_down (S : pred R) : sup (down S) = sup S.
+Proof.
+case/boolP: `[< has_sup S >] => [/asboolP|/asboolPn]; last first.
+  by move=> supNS; rewrite !sup_out // => /has_sup_down.
+move=> supS; have supDS: has_sup (down S) by apply/has_sup_down.
+apply/eqP; rewrite eqr_le !le_sup //.
+  by case/has_supP: supS => -[x xS] _; exists x; apply/le_down.
+  by move=> x xS; rewrite downK le_down.
+  by case/has_supP: supS.
 Qed.
 
 Lemma sup1 (c : R) : sup (pred1 c) = c.

@@ -262,10 +262,22 @@ Qed.
 Lemma ncvgZ c u lu : ncvg u lu%:E -> ncvg (c \*o u) (c * lu)%:E.
 Proof. by move=> cu; apply/ncvgM => //; apply/ncvgC. Qed.
 
+Lemma ncvg_extract h u lu :
+    {mono h : x y / (x < y)%N}
+  -> ncvg u lu -> ncvg (fun n => u (h n)) lu.
+Proof.
+move=> mono_h cvu v; case: (cvu v)=> K {cvu}cvu; exists K.
+move=> n le_Kn; apply/cvu; apply/(leq_trans le_Kn).
+elim: {le_Kn} n => [|n ih] //; apply/(leq_ltn_trans ih).
+by rewrite mono_h.
+Qed.
+
 Lemma ncvg_lt (u : nat -> R) (l1 l2 : {ereal R}) :
   (l1 < l2)%E -> ncvg u l2 ->
     exists K, forall n, (K <= n)%N -> (l1 < (u n)%:E)%E.
 Proof. Admitted.
+
+
 End SeqLimTh.
 
 (* -------------------------------------------------------------------- *)

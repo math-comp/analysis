@@ -16,66 +16,7 @@ Local Open Scope ring_scope.
 Local Notation simpm := Monoid.simpm.
 
 (* -------------------------------------------------------------------- *)
-Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
-
-(* -------------------------------------------------------------------- *)
-Lemma ge0_psum {R : realType} (T : choiceType) (f : T -> R) : 0 <= psum f.
-Proof. Admitted.
-
-(* -------------------------------------------------------------------- *)
 Require Import xfinmap.
-
-Section BigFSet.
-Variable (R : Type) (idx : R).
-
-Local Notation "1" := idx.
-
-Variable op : Monoid.com_law 1.
-
-Notation Local "'*%M'" := op (at level 0).
-Notation Local "x * y" := (op x y).
-
-Lemma big_fset_seq_cond (T : choiceType) (J : {fset T}) P F :
-    \big[*%M/1]_(x : J | P (val x)) F (val x)
-  = \big[*%M/1]_(x <- fset_keys J | P x) F x.
-Proof.
-case: J=> J c; rewrite -(big_map val) /index_enum.
-by rewrite !unlock val_fset_sub_enum ?canonical_uniq.
-Qed.
-
-Lemma big_fset_seq (T : choiceType) (J : {fset T}) F :
-    \big[*%M/1]_(x : J) F (val x)
-  = \big[*%M/1]_(x <- fset_keys J) F x.
-Proof. by apply/big_fset_seq_cond. Qed.
-
-Lemma big_seq_fset_cond (T : choiceType) (s : seq T) P F : uniq s ->
-    \big[*%M/1]_(x : seq_fset s | P (val x)) F (val x)
-  = \big[*%M/1]_(x <- s | P x) F x.
-Proof.
-move=> eq_s; rewrite big_fset_seq_cond; apply/eq_big_perm.
-by apply/uniq_perm_eq=> //=; apply/sort_keysE.
-Qed.
-
-Lemma big_seq_fset (T : choiceType) (s : seq T) F : uniq s ->
-    \big[*%M/1]_(x : seq_fset s) F (val x)
-  = \big[*%M/1]_(x <- s) F x.
-Proof. by apply/big_seq_fset_cond. Qed.
-End BigFSet.
-
-Arguments big_fset_seq_cond [R idx op T J] P F.
-Arguments big_fset_seq [R idx op T J] F.
-Arguments big_seq_fset_cond [R idx op T s] P F _.
-Arguments big_seq_fset [R idx op T s] F _.
-
-(* -------------------------------------------------------------------- *)
-Lemma summable_seqP {R : realType} (T : choiceType) (f : T -> R) :
-  summable f <-> (exists2 M, 0 <= M &
-    forall s : seq T, uniq s -> \sum_(x <- s) `|f x| <= M).
-Proof.
-split=> [/summableP|] [M gt0_M h]; exists M => //.
-  by move=> s uq_s; have := h (seq_fset s); rewrite (big_seq_fset \`|f|).
-by case=> J cJ; rewrite (big_fset_seq \`|_|) /=; apply/h/canonical_uniq.
-Qed.
 
 (* -------------------------------------------------------------------- *)
 Section Distribution.
@@ -155,15 +96,6 @@ Notation "\E_[ mu , A ] f" := (espc mu f A).
 Notation "\E?_[ mu ] f"    := (has_esp mu f).
 
 (* -------------------------------------------------------------------- *)
-Lemma gerfin_psum {R : realType} {T : choiceType} (f : T -> R) (J : {fset T}) :
-  summable f -> \sum_(j : J) `|f (val j)| <= psum f.
-Proof. Admitted.
-
-Lemma gerfinseq_psum {R : realType} {T : choiceType} (f : T -> R) (r : seq T) :
-  uniq r -> summable f -> \sum_(j <- r) `|f j| <= psum f.
-Proof. Admitted.
-
-(* -------------------------------------------------------------------- *)
 Section DistrTheory.
 Context {R : realType} {T : choiceType} (mu : T -> R).
 
@@ -183,7 +115,12 @@ by left; apply/eqP/eq_bigr=> i _; rewrite ger0_norm ?isd1.
 Qed.
 
 Local Lemma isd3 : psum mu <= 1.
-Proof. Admitted.
+Proof.
+rewrite psumE; [apply/isd1 | apply/isd2 | apply/sup_le_ub].
+  by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
+apply/ubP=> y /imsetbP[x ->]; rewrite big_fset_seq /=.
+by case: isd => _; apply; case: x => x /= /canonical_uniq.
+Qed.
 
 Definition mkdistr := @Distr R T mu isd1 isd2 isd3.
 
@@ -266,14 +203,6 @@ Qed.
 End DRat.
 
 (* -------------------------------------------------------------------- *)
-Lemma summable_fin {R : realType} (I : finType) (f : I -> R) : summable f.
-Proof. Admitted.
-
-Lemma psum_fin {R : realType} (I : finType) (f : I -> R) :
-  psum f = \sum_i `|f i|.
-Proof. Admitted.
-
-(* -------------------------------------------------------------------- *)
 Section Flip.
 Context {R : realType}.
 
@@ -314,7 +243,7 @@ Definition dlet := locked (mkdistr isd_mlet).
 End Bind.
 
 (* -------------------------------------------------------------------- *)
-Definition mlim T (f : nat -> distr T) :=
+Definition mlim T (f : nat -> distr T) : T -> R :=
   fun x => nlim (fun n => f n x).
 
 Lemma isd_mlim T (f : nat -> distr T) : isdistr (mlim f).
@@ -331,7 +260,9 @@ Definition mmargin :=
   fun x : U => psum (fun y => (x == h y)%:R * mu y).
 
 Lemma isd_mmargin : isdistr mmargin.
-Proof. Admitted.
+Proof.
+split => [x|J]; rewrite /mmargin; first by apply/ge0_psum.
+Admitted.
 
 Definition dmargin : distr U := locked (mkdistr isd_mmargin).
 End Marginals.

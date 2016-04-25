@@ -12,6 +12,9 @@ Import GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
+Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
+
+(* -------------------------------------------------------------------- *)
 Section Summable.
 Variables (T : choiceType) (R : realType) (f : T -> R).
 
@@ -146,41 +149,68 @@ Qed.
 Lemma psum_absE S : summable S -> psum S =
   sup [pred x | `[exists J : {fset T}, x == \sum_(j : J) `|S (val j)|]].
 Proof. by move=> smS; rewrite /psum (asboolT smS). Qed.
+
+Lemma summable_seqP S :
+  summable S <-> (exists2 M, 0 <= M &
+    forall s : seq T, uniq s -> \sum_(x <- s) `|S x| <= M).
+Proof.
+split=> [/summableP|] [M gt0_M h]; exists M => //.
+  by move=> s uq_s; have := h (seq_fset s); rewrite (big_seq_fset \`|S|).
+by case=> J cJ; rewrite (big_fset_seq \`|_|) /=; apply/h/canonical_uniq.
+Qed.
+
+Lemma gerfin_psum S (J : {fset T}) :
+  summable S -> \sum_(j : J) `|S (val j)| <= psum S.
+Proof.
+move=> smS; rewrite /psum (asboolT smS); apply/sup_upper_bound.
+  by apply/summable_sup. by apply/imsetbP; exists J.
+Qed.
+
+Lemma gerfinseq_psum S (r : seq T) :
+  uniq r -> summable S -> \sum_(j <- r) `|S j| <= psum S.
+Proof.
+move=> uq_r /gerfin_psum -/(_ (seq_fset r));
+  by rewrite (big_seq_fset \`|S|).
+Qed.
 End SumTh.
 
 (* -------------------------------------------------------------------- *)
-Section BigFSet.
-Variable (R : Type) (idx : R) (op : Monoid.law idx).
+Section FinSumTh.
+Context {R : realType} (I : finType).
 
-Lemma big_seq_fset (T : choiceType) (F : T -> R) r : uniq r ->
-    \big[op/idx]_(i : seq_fset r) F (val i)
-  = \big[op/idx]_(i <- r) F i.
+Lemma summable_fin (f : I -> R) : summable f.
 Proof. Admitted.
 
-Lemma big_fset1 (T : choiceType) (F : T -> R) c :
-  \big[op/idx]_(i : seq_fset [:: c]) F (val i) = F c.
-Proof. by rewrite big_seq_fset // big_seq1. Qed.
-End BigFSet.
-
-Arguments big_seq_fset [R idx op T] F r _.
-Arguments big_fset1    [R idx op T] F c.
+Lemma psum_fin (f : I -> R) :
+  psum f = \sum_i `|f i|.
+Proof. Admitted.
+End FinSumTh.
 
 (* -------------------------------------------------------------------- *)
 Section PSumGe.
 Context {R : realType} (T : choiceType).
 
-Variable (S : T -> R) (smS : summable S).
+Variable (S : T -> R).
 
-Lemma ger_big_psum r : uniq r -> \sum_(x <- r) `|S x| <= psum S.
+Lemma ger_big_psum r : uniq r -> summable S ->
+  \sum_(x <- r) `|S x| <= psum S.
 Proof.
-move=> uq_r; rewrite /psum (asboolT smS) sup_upper_bound //.
+move=> uq_r smS; rewrite /psum (asboolT smS) sup_upper_bound //.
   by apply/summable_sup. apply/imsetbP; exists (seq_fset r).
 by rewrite (big_seq_fset (fun i => `|S i|)).
 Qed.
 
-Lemma ger1_psum x : `|S x| <= psum S.
+Lemma ger1_psum x : summable S -> `|S x| <= psum S.
 Proof.
-by apply/(ler_trans _ (@ger_big_psum [:: x] _)) => //; rewrite big_seq1.
+move=> smS; have h := @ger_big_psum [:: x] _ smS.
+by rewrite (ler_trans _ (h _)) ?big_seq1.
+Qed.
+
+Lemma ge0_psum : 0 <= psum S.
+Proof.                          (* FIXME: asbool_spec *)
+case/boolP: `[< summable S >] => [|/asboolPn/psum_out ->//].
+move/asboolP=> smS; have h := @ger_big_psum [::] _ smS.
+by rewrite (ler_trans _ (h _)) ?big_nil.
 Qed.
 End PSumGe.
 
