@@ -277,7 +277,7 @@ Variable (S : nat -> R).
 Hypothesis ge0_S : (forall n, 0 <= S n).
 Hypothesis smS   : summable S.
 
-Lemma ptsum_mono x y : (x <= y)%N -> (\sum_(i < x) S i <= \sum_(i < y) S i).
+Lemma ptsum_homo x y : (x <= y)%N -> (\sum_(i < x) S i <= \sum_(i < y) S i).
 Proof.
 move=> le_xy; rewrite -!(big_mkord predT) -(subnKC le_xy) /=.
 by rewrite /index_iota !subn0 iota_add big_cat /= ler_addl sumr_ge0.
@@ -297,14 +297,35 @@ Lemma ncvg_sum : ncvg (fun n => \sum_(i < n) S i) (psum S)%:E.
 Proof.
 set u := (fun n => _); apply: contrapLR smS => ncv _.
 case: (ncvg_mono_bnd (u := u)) => //.
-  by apply/ptsum_mono. by apply/psummable_ptbounded.
+  by apply/ptsum_homo. by apply/psummable_ptbounded.
 move=> x cvux; suff xE: x = (psum S) by rewrite xE in cvux.
-apply/eqP; case: (x =P _) => // /eqP /ltr_total /orP[].
-+ admit.
-rewrite -lte_fin => /ncvg_lt /(_ cvux) [K /(_ _ (leqnn _))] /=.
-rewrite ltrNge (ler_trans _ (ger_big_ord_psum _ K)) //.
-by apply/ler_sum=> /= i _; apply/ler_norm.
-Admitted.
+apply/eqP; case: (x =P _) => // /eqP /ltr_total /orP[]; last first.
++ rewrite -lte_fin => /ncvg_gt /(_ cvux) [K /(_ _ (leqnn _))] /=.
+  rewrite ltrNge (ler_trans _ (ger_big_ord_psum _ K)) //.
+  by apply/ler_sum=> /= i _; apply/ler_norm.
+move=> lt_xS; pose e := psum S - x.
+  have ge0_e: 0 < e by rewrite subr_gt0.
+case: (sup_adherent (summable_sup smS) ge0_e) => y.
+case/imsetbP=> /= J ->; rewrite /e /psum (asboolT smS).
+rewrite opprB addrCA subrr addr0 => lt_xSJ.
+pose k := \max_(j : J) (val j); have lt_x_uSk: x < u k.+1.
+  apply/(ltr_le_trans lt_xSJ); rewrite /u.
+  rewrite (eq_bigr (S \o val)) => [i|]; first by rewrite ger0_norm.
+  rewrite big_fset_seq (bigID [pred j : 'I_k.+1 | val j \in J]) /=.
+  rewrite ler_paddr ?sumr_ge0 //= -(big_map val) -[X in _<=X]big_filter.
+  rewrite ler_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
+  apply/uniq_perm_eq; first by case: {+}J => /= K /canonical_uniq.
+    rewrite filter_uniq ?map_inj_uniq //; first by apply/val_inj.
+    by rewrite /index_enum -enumT enum_uniq.
+  move=> /= z; rewrite mem_filter -pred_of_finsetE topredE /=.
+  case/boolP: (z \in J) => //= zJ; apply/esym; have: (z < k.+1)%N.
+    by apply/(leq_bigmax (FSetSub zJ)).
+  move=> lt; rewrite -[z]/(val (Ordinal lt)) mem_map //=.
+    by apply/val_inj.
+    by rewrite /index_enum -enumT mem_enum.
+have /= := ncvg_homo_le ptsum_homo cvux k.+1; rewrite -/(u _).
+by move/ler_lt_trans/(_ lt_x_uSk); rewrite ltrr.
+Qed.
 End PSumCnv.
 
 (* -------------------------------------------------------------------- *)
