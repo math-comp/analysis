@@ -204,15 +204,23 @@ move=> cu' cv'; suff ->: e = z + z by rewrite ltr_add.
 by rewrite -mulrDl -mulr2n -mulr_natr mulfK ?pnatr_eq0.
 Qed.
 
-Lemma ncvgN u lu : ncvg u lu%:E -> ncvg (\- u) (- lu)%:E.
+Lemma ncvgN u lu : ncvg u lu -> ncvg (\- u) (- lu).
 Proof.
-move=> cu; elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
+case: lu => [lu||] cu /=; first last.
++ elim/nbh_pinfW=> M; case: (cu (NNInf (-M))) => K {cu}cu.
+  by exists K => n /cu; rewrite !inE ltr_oppr.
++ elim/nbh_ninfW=> M; case: (cu (NPInf (-M))) => K {cu}cu.
+  by exists K => n /cu; rewrite !inE ltr_oppl.
+elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
 by move=> K {cu}cu; exists K=> n /cu; rewrite !inE -opprD normrN eclamp_id.
 Qed.
 
+Lemma ncvgN_fin u lu : ncvg u lu%:E -> ncvg (\- u) (- lu)%:E.
+Proof. by apply/ncvgN. Qed.
+
 Lemma ncvgB u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
   ncvg (u \- v) (lu - lv)%:E.
-Proof. by move=> cu cv; apply/ncvgD/ncvgN. Qed.
+Proof. by move=> cu cv; apply/ncvgD/ncvgN_fin. Qed.
 
 Lemma ncvg_abs u lu : ncvg u lu%:E -> ncvg (fun n => `|u n|) `|lu|%:E.
 Proof.
@@ -272,13 +280,69 @@ elim: {le_Kn} n => [|n ih] //; apply/(leq_ltn_trans ih).
 by rewrite mono_h.
 Qed.
 
-Lemma ncvg_lt (u : nat -> R) (l1 l2 : {ereal R}) :
+Lemma ncvg_gt (u : nat -> R) (l1 l2 : {ereal R}) :
   (l1 < l2)%E -> ncvg u l2 ->
     exists K, forall n, (K <= n)%N -> (l1 < (u n)%:E)%E.
-Proof. Admitted.
+Proof.
+case: l1 l2 => [l1||] [l2||] //=; first last.
++ by move=> _ _; exists 0%N. + by move=> _ _; exists 0%N.
++ by move=> _ /(_ (NPInf l1)) [K cv]; exists K => n /cv.
+move=> lt_12; pose e := l2 - l1 => /(_ (B l2 e)).
+case=> K cv; exists K => n /cv; rewrite !inE eclamp_id ?subr_gt0 //.
+rewrite ltr_distl => /andP[] /(ler_lt_trans _) h _; apply: h.
+by rewrite {cv}/e opprB addrCA subrr addr0.
+Qed.
 
+Lemma ncvg_lt (u : nat -> R) (l1 l2 : {ereal R}) :
+  (l1 < l2)%E -> ncvg u l1 ->
+    exists K, forall n, (K <= n)%N -> ((u n)%:E < l2)%E.
+Proof.
+move=> lt_12 cv_u_l1; case: (@ncvg_gt (\- u) (-l2) (-l1)).
+  by rewrite lte_opp2. by apply/ncvgN.
+by move=> K cv; exists K => n /cv; rewrite (@lte_opp2 _ _ (u n)%:E).
+Qed.
 
+Lemma ncvg_homo_lt (u : nat -> R) (l1 l2 : {ereal R}) :
+    (forall m n, (m <= n)%N -> u m <= u n)
+  -> (l1 < l2)%E -> ncvg u l1 -> forall n, ((u n)%:E < l2)%E.
+Proof.
+move=> homo_u lt_12 cvu n; have [K {cvu}cv] := ncvg_lt lt_12 cvu.
+case: (leqP n K) => [/homo_u|/ltnW /cv //].
+by move/lee_tofin/lee_lt_trans; apply; apply/cv.
+Qed.
+
+Lemma ncvg_homo_le (u : nat -> R) (l : {ereal R}) :
+    (forall m n, (m <= n)%N -> u m <= u n)
+  -> ncvg u l -> forall n, ((u n)%:E <= l)%E.
+Proof.
+move=> homo_u cvu n; case/boolP: (_ <= _)%E => //; rewrite -lteNgt.
+by move/ncvg_homo_lt/(_ cvu) => -/(_ homo_u n); rewrite ltee.
+Qed.
 End SeqLimTh.
 
 (* -------------------------------------------------------------------- *)
-Axiom nlim : forall {R : realType} (u : nat -> R), {ereal R}.
+Section LimOp.
+Context {R : realType}.
+
+Implicit Types (u v : nat -> R).
+
+Definition nlim u : {ereal R} :=
+  if @idP `[exists l, `[< ncvg u l >]] is ReflectT Px then
+    xchooseb Px else \-inf.
+
+Lemma nlim_ncvg u : (exists l, ncvg u l) -> ncvg u (nlim u).
+Proof.
+case=> l cv_u_l; rewrite /nlim; case: {-}_ / idP; last first.
+  by case; apply/existsbP; exists l; apply/asboolP.
+move=> p; rewrite -[xchooseb _](ncvg_uniq cv_u_l) //.
+by apply/asboolP/(xchoosebP p).
+Qed.
+
+Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = \-inf.
+Proof.
+move=> h; rewrite /nlim; case: {-}_ / idP => // p.
+by case: h; case/existsbP: p => l /asboolP; exists l.
+Qed.
+End LimOp.
+
+(* -------------------------------------------------------------------- *)
