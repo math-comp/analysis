@@ -220,10 +220,14 @@ Section FinSumTh.
 Context {R : realType} (I : finType).
 
 Lemma summable_fin (f : I -> R) : summable f.
-Proof. Admitted.
+Proof.
+exists (\sum_(i : [fset i | i : I]%fset) `|f (val i)|).
+move=> J; apply: (big_fset_subset (F := \`|_|)).
+  by move=> x; rewrite normr_ge0.
+by move=> i _; apply/imfsetP; exists i.
+Qed.
 
-Lemma psum_fin (f : I -> R) :
-  psum f = \sum_i `|f i|.
+Lemma psum_fin (f : I -> R) : psum f = \sum_i `|f i|.
 Proof. Admitted.
 End FinSumTh.
 
@@ -309,20 +313,10 @@ case: (sup_adherent (summable_sup smS) ge0_e) => y.
 case/imsetbP=> /= J ->; rewrite /e /psum (asboolT smS).
 rewrite opprB addrCA subrr addr0 => lt_xSJ.
 pose k := \max_(j : J) (val j); have lt_x_uSk: x < u k.+1.
-  apply/(ltr_le_trans lt_xSJ); rewrite /u.
-  rewrite (eq_bigr (S \o val)) => [i|]; first by rewrite ger0_norm.
-  rewrite big_fset_seq (bigID [pred j : 'I_k.+1 | val j \in J]) /=.
-  rewrite ler_paddr ?sumr_ge0 //= -(big_map val) -[X in _<=X]big_filter.
-  rewrite ler_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
-  apply/uniq_perm_eq; first by case: {+}J => /= K /canonical_uniq.
-    rewrite filter_uniq ?map_inj_uniq //; first by apply/val_inj.
-    by rewrite /index_enum -enumT enum_uniq.
-  move=> /= z; rewrite mem_filter -pred_of_finsetE topredE /=.
-  case/boolP: (z \in J) => //= zJ; apply/esym; have: (z < k.+1)%N.
-    by apply/(leq_bigmax (FSetSub zJ)).
-  move=> lt; rewrite -[z]/(val (Ordinal lt)) mem_map //=.
-    by apply/val_inj.
-    by rewrite /index_enum -enumT mem_enum.
+  apply/(ltr_le_trans lt_xSJ); rewrite /u big_ord_mkfset.
+  rewrite (eq_bigr (S \o val)) => /= [j _|]; first by rewrite ger0_norm.
+  apply/big_fset_subset=> // j jJ; rewrite in_fsetT //.
+  by rewrite (mem_iota _ k.+1) /= add0n ltnS (leq_bigmax (FSetSub jJ)).
 have /= := ncvg_homo_le ptsum_homo cvux k.+1; rewrite -/(u _).
 by move/ler_lt_trans/(_ lt_x_uSk); rewrite ltrr.
 Qed.
