@@ -1,11 +1,15 @@
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect all_algebra.
 From SsrReals Require Export finmap.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Set Asymmetric Patterns.
+
+Import GRing.Theory Num.Theory.
+
+Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
 Section BigFSet.
@@ -71,3 +75,43 @@ Arguments big_fset_seq_cond [R idx op T J] P F.
 Arguments big_fset_seq [R idx op T J] F.
 Arguments big_seq_fset_cond [R idx op T s] P F _.
 Arguments big_seq_fset [R idx op T s] F _.
+
+(* -------------------------------------------------------------------- *)
+Section BigFSetOrder.
+Variable (R : realDomainType) (T : choiceType).
+
+Lemma big_fset_subset (I J : {fset T}) (F : T -> R) :
+  (forall x, (0 <= F x)%R) -> {subset I <= J} ->
+    \sum_(i : I) F (val i) <= \sum_(j : J) F (val j).
+Proof.
+move=> ge0_F le_IJ; rewrite !big_fset_seq /=.
+rewrite [X in _<=X](bigID [pred j : T | j \in I]) /=.
+rewrite ler_paddr ?sumr_ge0 // -[X in _<=X]big_filter.
+rewrite ler_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
+apply/uniq_perm_eq; rewrite ?filter_uniq //; last move=> i.
+  by case: {+}I => K /= /canonical_uniq.
+  by case: {+}J => K /= /canonical_uniq.
+rewrite mem_filter -!pred_of_finsetE; case/boolP: (_ \in _) => //=.
+by move/le_IJ => ->.
+Qed.
+
+Lemma big_nat_mkfset (F : nat -> R) n :
+  \sum_(0 <= i < n) F i =
+    \sum_(i : seq_fset (iota 0 n)) F (val i).
+Proof.
+rewrite -(big_map val xpredT) /=; apply/eq_big_perm.
+apply/uniq_perm_eq; rewrite ?iota_uniq //.
+  rewrite map_inj_uniq /=; last apply/val_inj.
+  by rewrite /index_enum -enumT enum_uniq.
+move=> i; rewrite /index_enum unlock val_fset_sub_enum /=.
+  by rewrite sort_keysE /index_iota subn0.
+  by apply/sort_keys_uniq.
+Qed.
+
+Lemma big_ord_mkfset (F : nat -> R) n :
+  \sum_(i < n) F i =
+    \sum_(i : seq_fset (iota 0 n)) F (val i).
+Proof. by rewrite -(big_mkord xpredT) big_nat_mkfset. Qed.
+End BigFSetOrder.
+
+(* -------------------------------------------------------------------- *)
