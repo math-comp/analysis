@@ -628,6 +628,65 @@ Notation "x <= y" := (lee x y) : ereal_scope.
 Notation "x < y"  := (lte x y) : ereal_scope.
 
 (* -------------------------------------------------------------------- *)
+Section ERealArith.
+Context {R : realType}.
+
+Implicit Types (x y z : {ereal R}).
+
+Definition eadd x y :=
+  match x, y with
+  | x%:E , y%:E  => (x + y)%:E
+  | \-inf, _     => \-inf
+  | _    , \-inf => \-inf
+  | \+inf, _     => \+inf
+  | _    , \+inf => \+inf
+  end.
+
+Definition eopp x :=
+  match x with
+  | x%:E  => (-x)%:E
+  | \-inf => \+inf
+  | \+inf => \-inf
+  end.
+End ERealArith.
+
+Notation "+%E"   := eadd : ereal_scope.
+Notation "-%E"   := eopp : ereal_scope.
+Notation "x + y" := (eadd x y) : ereal_scope.
+Notation "x - y" := (eadd x (eopp y)) : ereal_scope.
+Notation "- x"   := (eopp x) : ereal_scope.
+
+Local Open Scope ereal_scope.
+
+(* -------------------------------------------------------------------- *)
+Section ERealArithTh.
+Context {R : realType}.
+
+Implicit Types (x y z : {ereal R}).
+
+Lemma adde0 : right_id (0%:E : {ereal R}) +%E.
+Proof. by case=> //= x; rewrite addr0. Qed.
+
+Lemma add0e : left_id (S := {ereal R}) 0%:E +%E.
+Proof. by case=> //= x; rewrite add0r. Qed.
+
+Lemma addeC : commutative (S := {ereal R}) +%E.
+Proof. by case=> [x||] [y||] //=; rewrite addrC. Qed.
+
+Lemma addeA : associative (S := {ereal R}) +%E.
+Proof. by case=> [x||] [y||] [z||] //=; rewrite addrA. Qed.
+
+Canonical adde_monoid := Monoid.Law addeA add0e adde0.
+Canonical adde_comoid := Monoid.ComLaw addeC.
+
+Lemma oppe0 : - (0%:E) = 0%:E :> {ereal R}.
+Proof. by rewrite /= oppr0. Qed.
+
+Lemma oppeK : involutive (A := {ereal R}) -%E.
+Proof. by case=> [x||] //=; rewrite opprK. Qed.
+End ERealArithTh.
+
+(* -------------------------------------------------------------------- *)
 Section ERealOrderTheory.
 Context {R : realType}.
 
@@ -641,8 +700,14 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
   by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
+Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
+  by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
 Lemma leee x : x <= x.
 Proof. by elift lerr: x. Qed.
+
+Lemma ltee x : (x < x) = false.
+Proof. by elift ltrr: x. Qed.
 
 Lemma lteW x y : x < y -> x <= y.
 Proof. by elift ltrW: x y. Qed.
@@ -664,4 +729,28 @@ Proof. by []. Qed.
 
 Lemma lte_fin (x y : R) : (x%:E < y%:E)%E = (x < y)%R.
 Proof. by []. Qed.
+
+Lemma lee_tofin (x y : R) : (x <= y)%R -> (x%:E <= y%:E)%E.
+Proof. by []. Qed.
+
+Lemma lte_tofin (x y : R) : (x < y)%R -> (x%:E < y%:E)%E.
+Proof. by []. Qed.
+
+Lemma lee_trans : transitive _ (@lee R).
+Proof. by move=> x y z; elift ler_trans : x y z. Qed.
+
+Lemma lte_trans : transitive _ (@lte R).
+Proof. by move=> x y z; elift ltr_trans : x y z. Qed.
+
+Lemma lee_lt_trans y x z : (x <= y) -> (y < z) -> (x < z).
+Proof. by elift ler_lt_trans : x y z. Qed.
+
+Lemma lte_le_trans y x z : (x < y) -> (y <= z) -> (x < z).
+Proof. by elift ltr_le_trans : x y z. Qed.
+
+Lemma lee_opp2 : {mono @eopp R : x y /~ (x <= y)}.
+Proof. by move=> x y; elift ler_opp2 : x y. Qed.
+
+Lemma lte_opp2 : {mono @eopp R : x y /~ (x < y)}.
+Proof. by move=> x y; elift ltr_opp2 : x y. Qed.
 End ERealOrderTheory.
