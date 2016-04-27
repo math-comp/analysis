@@ -10,6 +10,7 @@ Set Asymmetric Patterns.
 Import GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
+Local Open Scope fset_scope.
 
 (* -------------------------------------------------------------------- *)
 Section BigFSet.
@@ -113,5 +114,13 @@ Lemma big_ord_mkfset (F : nat -> R) n :
     \sum_(i : seq_fset (iota 0 n)) F (val i).
 Proof. by rewrite -(big_mkord xpredT) big_nat_mkfset. Qed.
 End BigFSetOrder.
+
+(* -------------------------------------------------------------------- *)
+Lemma enum_fsetT {I : finType} :
+  perm_eq (enum [fset i | i in I]) (enum I).
+Proof.
+apply/uniq_perm_eq; rewrite ?enum_uniq //.
+by move=> i /=; rewrite !mem_enum in_imfset.
+Qed.
 
 (* -------------------------------------------------------------------- *)

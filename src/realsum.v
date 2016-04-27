@@ -10,6 +10,7 @@ Unset SsrOldRewriteGoalsOrder.
 Import GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
+Local Open Scope fset_scope.
 
 (* -------------------------------------------------------------------- *)
 Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
@@ -216,19 +217,43 @@ Qed.
 End SumTh.
 
 (* -------------------------------------------------------------------- *)
+Lemma max_sup {R : realType} x (E : pred R) :
+  x \in [predI E & ub E] -> sup E = x.
+Proof.
+case/andP=> /= xE xubE; have nzE: nonempty E by exists x.
+apply/eqP; rewrite eqr_le sup_le_ub ?sup_upper_bound //.
+by apply/has_supP; split; exists x.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Section FinSumTh.
 Context {R : realType} (I : finType).
 
 Lemma summable_fin (f : I -> R) : summable f.
 Proof.
-exists (\sum_(i : [fset i | i : I]%fset) `|f (val i)|).
+exists (\sum_(i : [fset i | i : I]) `|f (val i)|).
 move=> J; apply: (big_fset_subset (F := \`|_|)).
   by move=> x; rewrite normr_ge0.
 by move=> i _; apply/imfsetP; exists i.
 Qed.
 
 Lemma psum_fin (f : I -> R) : psum f = \sum_i `|f i|.
-Proof. Admitted.
+Proof.                          (* FIXME *)
+pose S := \sum_(i : [fset i | i : I]) `|f (val i)|.
+rewrite /psum (asboolT (summable_fin f)) (@max_sup _ S).
+  rewrite inE /=; apply/andP; split; first apply/imsetbP.
+    by exists [fset i | i : I]%fset.
+  apply/ubP=> y /imsetbP[J ->]; apply/(big_fset_subset (F := \`|_|)).
+    by move=> i; rewrite normr_ge0.
+  by move=> j jJ; apply/in_imfset.
+rewrite /S -(big_map val xpredT \`|f|); apply/eq_big_perm.
+rewrite /index_enum -!enumT; apply/(perm_eq_trans _ enum_fsetT).
+apply/uniq_perm_eq; rewrite ?map_inj_uniq ?enum_uniq //=.
+  by apply/val_inj. by rewrite -enumT enum_uniq.
+move=> i /=; rewrite mem_enum in_imfset //; apply/mapP.
+have h: i \in [fset j | j : I] by rewrite in_imfset.
+by exists (FSetSub h) => //; rewrite mem_enum.
+Qed.
 End FinSumTh.
 
 (* -------------------------------------------------------------------- *)
@@ -289,7 +314,7 @@ Qed.
 
 Lemma psummable_ptbounded : nbounded (fun n => \sum_(i < n) S i).
 Proof.
-apply/asboolP/nboundedP; exists (psum S + 1).
+apply/asboolP/nboundedP; exists (psum S + 1)%R.
   rewrite ltr_spaddr ?ltr01 1?(ler_trans (normr_ge0 (S 0%N))) //.
   by apply/ger1_psum.
 move=> n; rewrite ltr_spaddr ?ltr01 // ger0_norm ?sumr_ge0 //.
@@ -320,6 +345,10 @@ pose k := \max_(j : J) (val j); have lt_x_uSk: x < u k.+1.
 have /= := ncvg_homo_le ptsum_homo cvux k.+1; rewrite -/(u _).
 by move/ler_lt_trans/(_ lt_x_uSk); rewrite ltrr.
 Qed.
+
+Lemma sum_ncvg l :
+  ncvg (fun n => \sum_(i < n) S i) l%:E -> summable S.
+Proof using ge0_S. Abort.
 End PSumCnv.
 
 (* -------------------------------------------------------------------- *)
@@ -332,7 +361,7 @@ Proof. by exists 0 => J; rewrite big1 ?normr0. Qed.
 Lemma summableD (S1 S2 : T -> R) :
   summable S1 -> summable S2 -> summable (S1 \+ S2).
 Proof.
-case=> [M1 h1] [M2 h2]; exists (M1 + M2) => J /=.
+case=> [M1 h1] [M2 h2]; exists (M1 + M2)%R => J /=.
 pose M := \sum_(x : J) (`|S1 (val x)| + `|S2 (val x)|).
 rewrite (@ler_trans _ M) // ?ler_sum // => [K _|].
   by rewrite ler_norm_add.
@@ -427,7 +456,7 @@ Qed.
 Lemma psumD S1 S2 :
     (forall x, 0 <= S1 x) -> (forall x, 0 <= S2 x)
   -> summable S1 -> summable S2
-  -> psum (S1 \+ S2) = psum S1 + psum S2.
+  -> psum (S1 \+ S2) = (psum S1 + psum S2)%R.
 Proof.
 (* Should use <-> with convergence *)
 move=> ge0_S1 ge0_S2 sm1 sm2; have smD := summableD sm1 sm2.
