@@ -19,6 +19,40 @@ Local Notation simpm := Monoid.simpm.
 Require Import xfinmap.
 
 (* -------------------------------------------------------------------- *)
+Reserved Notation "\dlet_ ( i <- d ) E"
+  (at level 36, E at level 36, i, d at level 50,
+     format "'[' \dlet_ ( i  <-  d ) '/  '  E ']'").
+
+Reserved Notation "\dlim_ ( n ) E"
+  (at level 36, E at level 36, n at level 50,
+     format "'[' \dlim_ ( n ) '/  '  E ']'").
+
+Reserved Notation "\P_[ mu ] E" (at level 2, format "\P_[ mu ]  E").
+Reserved Notation "\P_[ mu , A ] E" (at level 2, format "\P_[ mu ,  A ]  E").
+Reserved Notation "\E?_[ mu ] f" (at level 2, format "\E?_[ mu ]  f").
+Reserved Notation "\E_[ mu ] f" (at level 2, format "\E_[ mu ]  f").
+Reserved Notation "\E_[ mu , A ] f" (at level 2, format "\E_[ mu ,  A ]  f").
+
+(* -------------------------------------------------------------------- *)
+Notation "f '<=1' g" := (forall x, f x <= g x)
+  (at level 70, no associativity).
+
+Notation "f '<=2' g" := (forall x y, f x y <= g x y)
+  (at level 70, no associativity).
+
+Section FFTheory.
+Context {R : realDomainType} (T : Type).
+
+Implicit Types (f g h : T -> R).
+
+Lemma leff f : f <=1 f. 
+Proof. by []. Qed.
+
+Lemma lef_trans g f h : f <=1 g -> g <=1 h -> f <=1 h.
+Proof. by move=> h1 h2 x; apply/(ler_trans (h1 x)). Qed.
+End FFTheory.
+
+(* -------------------------------------------------------------------- *)
 Section Distribution.
 Variables (R : realType) (T : choiceType).
 
@@ -84,12 +118,6 @@ Proof. by rewrite clamp_in01 // lerr ler01. Qed.
 End Clamp.
 
 (* -------------------------------------------------------------------- *)
-Reserved Notation "\P_[ mu ] E" (at level 2, format "\P_[ mu ]  E").
-Reserved Notation "\P_[ mu , A ] E" (at level 2, format "\P_[ mu ,  A ]  E").
-Reserved Notation "\E?_[ mu ] f" (at level 2, format "\E?_[ mu ]  f").
-Reserved Notation "\E_[ mu ] f" (at level 2, format "\E_[ mu ]  f").
-Reserved Notation "\E_[ mu , A ] f" (at level 2, format "\E_[ mu ,  A ]  f").
-
 Section StdDefs.
 Context {R : realType} (T : choiceType).
 
@@ -166,11 +194,19 @@ Proof. by split=> // J _; rewrite big1 ?ler01. Qed.
 
 Definition dnull := locked (mkdistr isd_mnull).
 
+Lemma dnullE x : dnull x = 0.
+Proof. by unlock dnull. Qed.
+
 Definition mkdistrd : {distr T / R} :=
   if @idP `[< isdistr mu >] is ReflectT Px then
     mkdistr (asboolE Px)
   else dnull.
 End DistrD.
+
+(* -------------------------------------------------------------------- *)
+Lemma lef_dnull {R : realType} {T : choiceType} (mu : {distr T / R}) :
+  dnull <=1 mu.
+Proof. by move=> x; rewrite dnullE ge0_mu. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section DRat.
@@ -258,6 +294,33 @@ Proof. Admitted.
 Definition dlet := locked (mkdistr isd_mlet).
 End Bind.
 
+Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
+
+(* -------------------------------------------------------------------- *)
+Section BindTheory.
+Variables (T U : choiceType) (f g : T -> distr U) (mu nu : distr T).
+
+Lemma dlet_null : dlet f dnull =1 dnull.
+Proof using Type. Admitted.
+
+Lemma dlet_unit v : \dlet_(y <- dunit v) f y = f v.
+Proof using Type. Admitted.
+
+Lemma eq_in_dlet : {in dinsupp mu, f =2 g} -> mu =1 nu ->
+  dlet f mu =1 dlet g nu.
+Proof using Type. Admitted.
+
+Lemma le_in_dlet : {in dinsupp mu, f <=2 g} ->
+  dlet f mu <=1 dlet g nu.
+Proof using Type. Admitted.
+End BindTheory.
+
+Lemma dlet_dlet (T U V:choiceType) (mu : {distr T / R}) :
+  forall (f1 : T -> distr U) (f2 : U -> distr V),
+    \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x =
+    \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
+Proof. Admitted.
+
 (* -------------------------------------------------------------------- *)
 Definition mlim T (f : nat -> distr T) : T -> R :=
   fun x => nlim (fun n => f n x).
@@ -268,19 +331,37 @@ Proof. Admitted.
 Definition dlim T (f : nat -> distr T) :=
   locked (mkdistr (isd_mlim f)).
 
+Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
+
+(* -------------------------------------------------------------------- *)
+Section DLimTheory.
+Variables (T U : choiceType) (f g : nat -> distr T) (h : T -> {distr U / R}).
+
+Lemma eq_dlim : f =1 g -> dlim f = dlim g.
+Proof using Type. Admitted.
+
+Lemma le_dlim : (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
+Proof using Type. Admitted.
+
+Lemma leub_dlim (mu : {distr T / R}) : (forall n, f n <=1 mu) -> dlim f <=1 mu.
+Proof using Type. Admitted.
+
+Lemma dlim_ub k :
+  (forall n m, (n <= m)%N -> f n <=1 f m) -> f k <=1 dlim f.
+Proof using Type. Admitted.
+
+Lemma dlet_lim : \dlet_(x <- dlim f) h x = \dlim_(n) \dlet_(x <- f n) h x.
+Proof using Type. Admitted.
+End DLimTheory.
+
 (* -------------------------------------------------------------------- *)
 Section Marginals.
 Variable (T U : choiceType) (h : T -> U) (mu : distr T).
 
-Definition mmargin :=
-  fun x : U => psum (fun y => (x == h y)%:R * mu y).
+Definition dmargin := \dlet_(x <- mu) (dunit (h x)).
 
-Lemma isd_mmargin : isdistr mmargin.
-Proof.
-split => [x|J]; rewrite /mmargin; first by apply/ge0_psum.
-Admitted.
-
-Definition dmargin : distr U := locked (mkdistr isd_mmargin).
+Lemma dmarginE : dmargin = \dlet_(y <- mu) (dunit (h y)).
+Proof. by unlock dmargin. Qed.
 End Marginals.
 
 Definition dfst (T U : choiceType) (mu : distr (T * U)) :=
@@ -289,6 +370,10 @@ Definition dfst (T U : choiceType) (mu : distr (T * U)) :=
 Definition dsnd (T U : choiceType) (mu : distr (T * U)) :=
   dmargin snd mu.
 End Std.
+
+(* -------------------------------------------------------------------- *)
+Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
+Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
 (* -------------------------------------------------------------------- *)
 Section PrTheory.
