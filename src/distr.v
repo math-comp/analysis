@@ -381,7 +381,7 @@ by apply/eq_nlim => n; rewrite eq_f.
 Qed.
 
 Lemma le_dlim f g : (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
-Proof. Admitted.
+Proof using Type. Admitted.
 
 Lemma leub_dlim f mu : (forall n, f n <=1 mu) -> dlim f <=1 mu.
 Proof.
