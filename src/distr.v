@@ -106,6 +106,12 @@ Implicit Types (mu : {distr T / R}) (A B E : pred T) (f : T -> R).
 
 Definition dinsupp mu := fun x => mu x != 0 :> R.
 
+Lemma dinsuppP mu x : reflect (mu x <> 0) (x \in dinsupp mu).
+Proof. by apply: (iffP idP) => /eqP. Qed.
+
+Lemma dinsuppPn mu x : reflect (mu x = 0) (x \notin dinsupp mu).
+Proof. by rewrite -topredE /dinsupp /= negbK; apply/eqP. Qed.
+
 Definition pr   mu E   := psum (fun x => (E x)%:R * mu x).
 Definition prc  mu E A := pr mu [predI E & A] / pr mu A.
 Definition esp  mu f   := sum (fun x => f x * mu x).
@@ -162,6 +168,13 @@ Proof. split=> -[ge0_mu le1]; split=> //.
 + by apply/le1; rewrite /index_enum -enumT enum_uniq.
 + move=> J uqJ; rewrite big_uniq 1?(ler_trans _ le1) //=.
   by rewrite [X in _<=X](bigID (mem J)) /= ler_addl sumr_ge0.
+Qed.
+
+Lemma le1_mu1
+  {R : realType} {T : choiceType} (mu : {distr T / R}) x : mu x <= 1.
+Proof.
+apply/(@ler_trans _ (psum mu)) => //; rewrite -[mu x]ger0_norm //.
+by apply/ger1_psum.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -270,7 +283,9 @@ Definition mlet := fun y : U =>
   psum (fun x => mu x * f x y).
 
 Lemma isd_mlet : isdistr mlet.
-Proof. Admitted.
+Proof.
+split=> [x|J uqJ]; first by apply/ge0_psum.
+Admitted.
 
 Definition dlet := locked (mkdistr isd_mlet).
 End Bind.
@@ -289,11 +304,25 @@ Proof using Type. Admitted.
 
 Lemma eq_in_dlet : {in dinsupp mu, f =2 g} -> mu =1 nu ->
   dlet f mu =1 dlet g nu.
-Proof using Type. Admitted.
+Proof.
+move=> eq_f eq_mu; unlock dlet=> y /=; apply/eq_psum=> x.
+rewrite -eq_mu; case/boolP: (x \in dinsupp mu) => [/eq_f ->//|].
+by move/dinsuppPn=> ->; rewrite !mul0r.
+Qed.
 
 Lemma le_in_dlet : {in dinsupp mu, f <=2 g} ->
-  dlet f mu <=1 dlet g nu.
-Proof using Type. Admitted.
+  dlet f mu <=1 dlet g mu.
+Proof.                          (* summable -> refactor *)
+move=> le_f; unlock dlet=> y /=; apply/le_psum; last first.
+  case/summable_seqP: (summable_mu mu)=> M ge0_M h.
+  apply/summable_seqP; exists M => // J uqJ.
+  apply/(@ler_trans _ (\sum_(j <- J) `|mu j|))/h => //.
+  apply/ler_sum=> j _; rewrite normrM ger0_norm //.
+  by apply/ler_pimulr=> //; rewrite ger0_norm ?le1_mu1.
+move=> x; rewrite mulr_ge0 //=; case: (mu x =P 0).
+  by move=> ->; rewrite !mul0r.
+by move/dinsuppPn/le_f/(_ y) => h; rewrite ler_pmul.
+Qed.
 End BindTheory.
 
 Lemma dlet_dlet (T U V:choiceType) (mu : {distr T / R}) :
@@ -340,22 +369,32 @@ Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
 (* -------------------------------------------------------------------- *)
 Section DLimTheory.
-Variables (T U : choiceType) (f g : nat -> distr T) (h : T -> {distr U / R}).
+Variables (T U : choiceType).
 
-Lemma eq_dlim : f =1 g -> dlim f = dlim g.
-Proof using Type. Admitted.
+Implicit Types (f g : nat -> distr T) (h : T -> {distr U / R}).
+Implicit Types (mu : {distr T / R}).
 
-Lemma le_dlim : (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
-Proof using Type. Admitted.
+Lemma eq_dlim f g : f =1 g -> dlim f =1 dlim g.
+Proof.
+move=> eq_f; unlock dlim=> x /=; rewrite /mlim; congr (_ _).
+by apply/eq_nlim => n; rewrite eq_f.
+Qed.
 
-Lemma leub_dlim (mu : {distr T / R}) : (forall n, f n <=1 mu) -> dlim f <=1 mu.
-Proof using Type. Admitted.
+Lemma le_dlim f g : (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
+Proof. Admitted.
 
-Lemma dlim_ub k :
+Lemma leub_dlim f mu : (forall n, f n <=1 mu) -> dlim f <=1 mu.
+Proof.
+move=> le x; apply/(@ler_trans _ ((\dlim_(n) mu) x)).
+  by apply/le_dlim. by unlock dlim; rewrite /mlim /= nlimC.
+Qed.
+
+Lemma dlim_ub f k :
   (forall n m, (n <= m)%N -> f n <=1 f m) -> f k <=1 dlim f.
 Proof using Type. Admitted.
 
-Lemma dlet_lim : \dlet_(x <- dlim f) h x = \dlim_(n) \dlet_(x <- f n) h x.
+Lemma dlet_lim f h :
+  \dlet_(x <- dlim f) h x = \dlim_(n) \dlet_(x <- f n) h x.
 Proof using Type. Admitted.
 End DLimTheory.
 
