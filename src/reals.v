@@ -627,6 +627,11 @@ End ERealOrder.
 Notation "x <= y" := (lee x y) : ereal_scope.
 Notation "x < y"  := (lte x y) : ereal_scope.
 
+Notation "x <= y <= z" := ((lee x y) && (lee y z)) : ereal_scope.
+Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
+Notation "x <= y < z"  := ((lee x y) && (lte y z)) : ereal_scope.
+Notation "x < y < z"   := ((lte x y) && (lte y z)) : ereal_scope.
+
 (* -------------------------------------------------------------------- *)
 Section ERealArith.
 Context {R : realType}.
@@ -650,11 +655,36 @@ Definition eopp x :=
   end.
 End ERealArith.
 
-Notation "+%E"   := eadd : ereal_scope.
-Notation "-%E"   := eopp : ereal_scope.
+Notation "+%E"   := eadd.
+Notation "-%E"   := eopp.
 Notation "x + y" := (eadd x y) : ereal_scope.
 Notation "x - y" := (eadd x (eopp y)) : ereal_scope.
 Notation "- x"   := (eopp x) : ereal_scope.
+
+Notation "\sum_ ( i <- r | P ) F" :=
+  (\big[+%E/0%:E]_(i <- r | P%B) F%R) : ereal_scope.
+Notation "\sum_ ( i <- r ) F" :=
+  (\big[+%E/0%:E]_(i <- r) F%R) : ereal_scope.
+Notation "\sum_ ( m <= i < n | P ) F" :=
+  (\big[+%E/0%:E]_(m <= i < n | P%B) F%R) : ereal_scope.
+Notation "\sum_ ( m <= i < n ) F" :=
+  (\big[+%E/0%:E]_(m <= i < n) F%R) : ereal_scope.
+Notation "\sum_ ( i | P ) F" :=
+  (\big[+%E/0%:E]_(i | P%B) F%R) : ereal_scope.
+Notation "\sum_ i F" :=
+  (\big[+%E/0%:E]_i F%R) : ereal_scope.
+Notation "\sum_ ( i : t | P ) F" :=
+  (\big[+%E/0%:E]_(i : t | P%B) F%R) (only parsing) : ereal_scope.
+Notation "\sum_ ( i : t ) F" :=
+  (\big[+%E/0%:E]_(i : t) F%R) (only parsing) : ereal_scope.
+Notation "\sum_ ( i < n | P ) F" :=
+  (\big[+%E/0%:E]_(i < n | P%B) F%R) : ereal_scope.
+Notation "\sum_ ( i < n ) F" :=
+  (\big[+%E/0%:E]_(i < n) F%R) : ereal_scope.
+Notation "\sum_ ( i 'in' A | P ) F" :=
+  (\big[+%E/0%:E]_(i in A | P%B) F%R) : ereal_scope.
+Notation "\sum_ ( i 'in' A ) F" :=
+  (\big[+%E/0%:E]_(i in A) F%R) : ereal_scope.
 
 Local Open Scope ereal_scope.
 
@@ -703,6 +733,9 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
+Lemma le0R (l : {ereal R}) : (0%:E <= l)%E -> (0 <= l :> R).
+Proof. by case: l. Qed.
+
 Lemma leee x : x <= x.
 Proof. by elift lerr: x. Qed.
 
@@ -711,6 +744,9 @@ Proof. by elift ltrr: x. Qed.
 
 Lemma lteW x y : x < y -> x <= y.
 Proof. by elift ltrW: x y. Qed.
+
+Lemma eqe_le x y : (x == y) = (x <= y <= x).
+Proof. by elift eqr_le: x y. Qed.
 
 Lemma leeNgt x y : (x <= y) = ~~ (y < x).
 Proof. by elift lerNgt: x y. Qed.

@@ -34,25 +34,6 @@ Reserved Notation "\E_[ mu ] f" (at level 2, format "\E_[ mu ]  f").
 Reserved Notation "\E_[ mu , A ] f" (at level 2, format "\E_[ mu ,  A ]  f").
 
 (* -------------------------------------------------------------------- *)
-Notation "f '<=1' g" := (forall x, f x <= g x)
-  (at level 70, no associativity).
-
-Notation "f '<=2' g" := (forall x y, f x y <= g x y)
-  (at level 70, no associativity).
-
-Section FFTheory.
-Context {R : realDomainType} (T : Type).
-
-Implicit Types (f g h : T -> R).
-
-Lemma leff f : f <=1 f. 
-Proof. by []. Qed.
-
-Lemma lef_trans g f h : f <=1 g -> g <=1 h -> f <=1 h.
-Proof. by move=> h1 h2 x; apply/(ler_trans (h1 x)). Qed.
-End FFTheory.
-
-(* -------------------------------------------------------------------- *)
 Section Distribution.
 Variables (R : realType) (T : choiceType).
 
@@ -326,7 +307,31 @@ Definition mlim T (f : nat -> distr T) : T -> R :=
   fun x => nlim (fun n => f n x).
 
 Lemma isd_mlim T (f : nat -> distr T) : isdistr (mlim f).
-Proof. Admitted.  
+Proof. split=> [x|J]; rewrite /mlim.
++ case: nlimP=> // l cvSl; apply/le0R/(ncvg_geC _ cvSl).
+  by move=> n; apply/ge0_mu.
+move=> uqJ; pose F j :=
+  if `[< iscvg (fun n => f n j) >] then fun n => f n j else 0%:S.
+apply/(@ler_trans _ (\sum_(j <- J) (nlim (F j) : R))).
+  apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >] => //.
+  move/asboolPn=> h; rewrite nlimC; case: nlimP=> //.
+  by case=> // l cf; case: h; exists l.
+rewrite -lee_fin -nlim_sumR => [i _|].
+  rewrite /F; case/boolP: `[< _ >] => [/asboolP //|].
+  by move=> _; apply/iscvgC.
+rewrite leeNgt; apply/negP; pose s n := \sum_(j <- J) F j n.
+move/ncvg_gt=> -/(_ s (nlim_ncvg _)) [].
+  suff: iscvg s by case=> l cs; exists l%:E.
+  apply/iscvg_sum=> j _; rewrite /F; case/boolP: `[< _ >].
+    by move/asboolP. by move=> _; apply/iscvgC.
+move=> K /(_ _ (leqnn K)) /=; apply/negP; rewrite -lerNgt.
+apply/(@ler_trans _ (\sum_(j <- J) f K j)); last first.
+  have /(gerfinseq_psum uqJ) := summable_mu (f K).
+  move/ler_trans=> -/(_ _ (le1_mu (f K)))=> h.
+  by apply/(ler_trans _ h)/ler_sum=> i _; apply/ler_norm.
+apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >] => //.
+by move=> _; apply/ge0_mu.
+Qed.
 
 Definition dlim T (f : nat -> distr T) :=
   locked (mkdistr (isd_mlim f)).

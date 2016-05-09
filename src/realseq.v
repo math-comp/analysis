@@ -1,5 +1,5 @@
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect all_algebra bigenough.
 From SsrReals Require Import finmap boolp reals discrete.
 
 Set Implicit Arguments.
@@ -7,7 +7,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import GRing.Theory Num.Theory.
+Import GRing.Theory Num.Theory BigEnough.
 
 Local Open Scope ring_scope.
 
@@ -17,6 +17,25 @@ Notation "\- f" := (fun x => -(f x))
 
 Notation "f \* g" := (fun x => f x * g x)
   (at level 40, left associativity) : ring_scope.
+
+Notation "f '<=1' g" := (forall x, f x <= g x)
+  (at level 70, no associativity).
+
+Notation "f '<=2' g" := (forall x y, f x y <= g x y)
+  (at level 70, no associativity).
+
+(* -------------------------------------------------------------------- *)
+Section FFTheory.
+Context {R : realDomainType} (T : Type).
+
+Implicit Types (f g h : T -> R).
+
+Lemma leff f : f <=1 f. 
+Proof. by []. Qed.
+
+Lemma lef_trans g f h : f <=1 g -> g <=1 h -> f <=1 h.
+Proof. by move=> h1 h2 x; apply/(ler_trans (h1 x)). Qed.
+End FFTheory.
 
 (* -------------------------------------------------------------------- *)
 Section Nbh.
@@ -83,6 +102,28 @@ Definition B {R : realType} (x e : R) :=
   @NFin R x (eclamp e) (gt0_clamp e).
 
 (* -------------------------------------------------------------------- *)
+Lemma separable_le {R : realType} (l1 l2 : {ereal R}) :
+  (l1 < l2)%E -> exists (v1 : nbh l1) (v2 : nbh l2),
+    forall x y, x \in v1 -> y \in v2 -> x < y.
+Proof.
+case: l1 l2 => [l1||] [l2||] //= lt_l12; last first.
++ exists (NNInf 0), (NPInf 1) => x y; rewrite !inE => lt1 lt2.
+  by apply/(ltr_trans lt1)/(ltr_trans ltr01).
++ exists (NNInf (l2-1)), (B1 l2) => x y; rewrite !inE.
+  rewrite ltr_norml [-1 < _]ltr_subr_addl.
+  by move => lt1 /andP[lt2 _]; apply/(ltr_trans lt1).
++ exists (B1 l1), (NPInf (l1+1)) => x y; rewrite !inE.
+  rewrite ltr_norml ltr_subl_addr [1+_]addrC => /andP[_].
+  by move=> lt1 lt2; apply/(ltr_trans lt1).
+pose e := l2 - l1; exists (B l1 (e/2%:R)), (B l2 (e/2%:R)).
+have gt0_e: 0 < e by rewrite subr_gt0.
+move=> x y; rewrite !inE /= /eclamp pmulr_rle0 // invr_le0.
+rewrite lern0 /= !ltr_distl => /andP[_ lt1] /andP[lt2 _].
+apply/(ltr_trans lt1)/(ler_lt_trans _ lt2).
+rewrite ler_subr_addl addrCA -mulrDl -mulr2n -mulr_natr.
+by rewrite mulfK ?pnatr_eq0 //= /e addrCA subrr addr0.
+Qed.
+
 Lemma separable {R : realType} (l1 l2 : {ereal R}) :
   l1 != l2 -> exists (v1 : nbh l1) (v2 : nbh l2),
     forall x, x \notin [predI v1 & v2].
@@ -92,21 +133,9 @@ wlog: l1 l2 / (l1 < l2)%E => [wlog ne_l12|le_l12 _].
   rewrite -leeNgt lee_eqVlt eq_sym (negbTE ne_l12) /=.
   case/wlog=> [|x [y h]]; first by rewrite eq_sym.
   by exists y, x=> z; rewrite inE andbC /= (h z).
-case: l1 l2 le_l12 => [l1||] [l2||] //= lt_l12; last first.
-+ exists (NNInf 0), (NPInf 1) => x; rewrite !inE andbC.
-  by apply/negP=> /andP[/ltr_trans h/h]; rewrite ltr10.
-+ exists (NNInf (l2-1)), (B1 l2) => x; rewrite !inE.
-  by rewrite ltr_norml [-1<_]ltr_subr_addl; case: (ltrgtP x).
-+ exists (B1 l1), (NPInf (l1+1)) => x; rewrite !inE.
-  rewrite ltr_norml ltr_subl_addr [1+_]addrC.
-  by case: (ltrgtP x)=> //=; rewrite !andbF.
-pose e := l2 - l1; exists (B l1 (e/2%:R)), (B l2 (e/2%:R)).
-move=> x; rewrite !inE /= /eclamp lerNgt pmulr_rgt0 ?subr_gt0 //.
-rewrite invr_gt0 ltr0n /=; apply/negP=> /andP[le1 le2].
-have := ltr_add le1 le2; rewrite -mulrDl -mulr2n -mulr_natr.
-rewrite mulfK ?pnatr_eq0 // distrC => /(ler_lt_trans (ler_norm_add _ _)).
-rewrite [x-_]addrC addrACA addNr addr0 ltr0_norm.
-  by rewrite subr_lt0. by rewrite opprB ltrr.
+case/separable_le: le_l12 => [v1] [v2] h; exists v1, v2.
+move=> x; apply/negP; rewrite inE /= => /andP[] xv1 xv2.
+by have := h _ _ xv1 xv2; rewrite ltrr.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -117,6 +146,8 @@ Implicit Types (u v : nat -> R).
 
 Definition ncvg u l :=
   forall v : nbh l, exists K, forall n, (K <= n)%N -> u n \in v.
+
+Definition iscvg (u : nat -> R) := exists l, ncvg u l%:E.
 
 Definition nbounded u :=
   exists v : nbh 0%:E, forall n, u n \in v.
@@ -133,7 +164,7 @@ Qed.
 End SequenceLim.
 
 (* -------------------------------------------------------------------- *)
-Local Notation "c %:S" := (fun _ : nat => c) (at level 2, format "c %:S").
+Notation "c %:S" := (fun _ : nat => c) (at level 2, format "c %:S").
 
 Section SeqLimTh.
 Variable (R : realType).
@@ -158,6 +189,20 @@ Qed.
 
 Lemma ncvg_eq v u l : u =1 v -> ncvg v l -> ncvg u l.
 Proof. by move=> eq; apply: (@ncvg_eq_from 0). Qed.
+
+Lemma ncvg_le_from K v u (lv lu : {ereal R}) :
+  (forall n, (K <= n)%N -> u n <= v n) -> ncvg v lv -> ncvg u lu -> (lu <= lv)%E.
+Proof.
+move=> le_uv cv cu; rewrite leeNgt; apply/negP=> /separable_le.
+case=> [v1] [v2] h; have [] := (cv v1, cu v2).
+case=> [K1 vv1] [K2 uv2]; pose_big_enough K'.
+have []// := And3 (le_uv K' _) (vv1 K' _) (uv2 K' _). 2: by close.
+by move=> le h1 h2; have := h _ _ h1 h2; rewrite ltrNge le.
+Qed.
+
+Lemma ncvg_le v u (lv lu : {ereal R}) :
+  u <=1 v -> ncvg v lv -> ncvg u lu -> (lu <= lv)%E.
+Proof. by move=> le_uv; apply/(@ncvg_le_from 0). Qed.
 
 Lemma ncvg_nbounded u x : ncvg u x%:E -> nbounded u.
 Proof.                   (* FIXME: factor out `sup` of a finite set *)
@@ -270,6 +315,34 @@ Qed.
 Lemma ncvgZ c u lu : ncvg u lu%:E -> ncvg (c \*o u) (c * lu)%:E.
 Proof. by move=> cu; apply/ncvgM => //; apply/ncvgC. Qed.
 
+Lemma ncvg_leC c u (lu : {ereal R}) :
+  (forall n, u n <= c) -> ncvg u lu -> (lu <= c%:E)%E.
+Proof. by move=> le cu; apply/(@ncvg_le c%:S u)=> //; apply/ncvgC. Qed.
+
+Lemma ncvg_geC c u (lu : {ereal R}) :
+  (forall n, c <= u n) -> ncvg u lu -> (c%:E <= lu)%E.
+Proof. by move=> le cu; apply/(@ncvg_le u c%:S)=> //; apply/ncvgC. Qed.
+
+Lemma iscvgC c : iscvg c%:S.
+Proof. by exists c; apply/ncvgC. Qed.
+
+Hint Resolve iscvgC.
+
+Lemma iscvgD (u v : nat -> R) : iscvg u -> iscvg v -> iscvg (u \+ v).
+Proof. by case=> [lu cu] [lv cv]; exists (lu + lv); apply/ncvgD. Qed.
+
+Lemma iscvg_sum {I : eqType} (u : I -> nat -> R) r :
+  (forall i, i \in r -> iscvg (u i)) ->
+    iscvg (fun n => \sum_(i <- r) u i n).
+Proof.
+elim: r => [|i r ih] h.
+  by exists 0; apply/(@ncvg_eq 0%:S)/ncvgC => n; rewrite big_nil.
+case: ih => [j jr|c cv]; first by apply/h; rewrite inE jr orbT.
+have [l cl]: iscvg (u i) by apply/h; rewrite inE eqxx.
+exists (c + l); have := ncvgD cv cl; apply/ncvg_eq.
+by move=> n; rewrite big_cons addrC.
+Qed.
+
 Lemma ncvg_extract h u lu :
     {mono h : x y / (x < y)%N}
   -> ncvg u lu -> ncvg (fun n => u (h n)) lu.
@@ -342,6 +415,67 @@ Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = \-inf.
 Proof.
 move=> h; rewrite /nlim; case: {-}_ / idP => // p.
 by case: h; case/existsbP: p => l /asboolP; exists l.
+Qed.
+
+CoInductive nlim_spec (u : nat -> R) : R -> Type :=
+| NLimCvg l : ncvg u l -> nlim_spec u l
+| NLimOut   : ~ (exists l, ncvg u l) -> nlim_spec u 0.
+
+Lemma nlimP u : nlim_spec u (nlim u).
+Proof.
+case/boolP: `[exists l, `[< ncvg u l >]] => /existsp_asboolP.
+  by move/nlim_ncvg=> h; apply/NLimCvg.
+by move=> h; rewrite nlim_out //; apply/NLimOut.
+Qed.
+
+Lemma nlimE (u : nat -> R) (l : {ereal R}) : ncvg u l -> nlim u = l.
+Proof.
+move=> cu; have: (ncvg u (nlim u)).
+  by apply/nlim_ncvg; exists l. by move/(ncvg_uniq cu) => ->.
+Qed.
+
+Lemma nlimC c : nlim c%:S = c%:E :> {ereal R}.
+Proof. by move/nlimE: (@ncvgC R c). Qed.
+
+Lemma nlimD (u v : nat -> R) : iscvg u -> iscvg v ->
+  nlim (u \+ v) = (nlim u + nlim v)%E.
+Proof.
+case=> [lu cu] [lv cv]; rewrite (nlimE cu) (nlimE cv) /=.
+by rewrite (nlimE (ncvgD cu cv)).
+Qed.
+
+Lemma eq_nlim (v u : nat -> R) : u =1 v -> nlim u = nlim v.
+Proof.
+move=> eq; have h := ncvg_eq eq; case: (nlimP v).
+  by move=> l cv; have cu := h _ cv; rewrite (nlimE cu) (nlimE cv).
+move=> Ncv; rewrite (nlim_out Ncv) nlim_out //.
+by case=> l cu; apply: Ncv; exists l; apply/(@ncvg_eq _ u).
+Qed.
+
+Lemma nlim_sum {I : eqType} (u : I -> nat -> R) (r : seq I) :
+  (forall i, i \in r -> iscvg (u i)) ->
+      nlim (fun n => \sum_(i <- r) (u i) n)
+    = (\sum_(i <- r) nlim (u i))%E.
+Proof.
+elim: r => /= [|i r ih] h; first rewrite big_nil.
+  by rewrite (@eq_nlim 0%:S) ?nlimC //= => n; rewrite big_nil.
+rewrite big_cons -ih -?nlimD.
+  by move=> j jr; apply/h; rewrite inE jr orbT.
+  by apply/h; rewrite inE eqxx.
+  by apply/iscvg_sum=> j jr; apply/h; rewrite inE jr orbT.
+by apply/eq_nlim=> n /=; rewrite big_cons.
+Qed.
+
+Lemma nlim_sumR {I : eqType} (u : I -> nat -> R) (r : seq I) :
+  (forall i, i \in r -> iscvg (u i)) ->
+      nlim (fun n => \sum_(i <- r) (u i) n)
+    = (\sum_(i <- r) (nlim (u i) : R))%:E.
+Proof.
+move=> h; rewrite nlim_sum //; elim: r h => [|i r ih] h.
+  by rewrite !big_nil.
+rewrite !big_cons; case: (h i); first by rewrite inE eqxx.
+move=> c /nlimE ->; rewrite ih // => j jr.
+by apply/h; rewrite inE jr orbT.
 Qed.
 End LimOp.
 
