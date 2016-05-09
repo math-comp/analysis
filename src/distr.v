@@ -421,18 +421,28 @@ Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
 (* -------------------------------------------------------------------- *)
 Section PrTheory.
-Context {R : realType} (T : choiceType).
+Context {R : realType} (T U : choiceType).
 
 Implicit Types (mu : {distr T / R}) (A B E : pred T).
+
+Lemma pr_pred1 mu x : mu x = \P_[mu] (pred1 x).
+Proof using Type. Admitted.
+
+Lemma pr_exp mu (E : pred T) : \P_[mu] E = \E_[mu] (fun m => (E m)%:R).
+Proof using Type. Admitted.
 
 Lemma pr_predT mu : \P_[mu] predT = psum mu.
 Proof. by apply/eq_psum=> x; rewrite mul1r. Qed.
 
 Lemma pr_dunit E x : \P_[dunit x] E = (E x)%:R :> R.
-Proof. Admitted.
+Proof using Type. Admitted.
 
-Lemma pr_dlet E f mu : \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
-Proof. Admitted.
+Lemma exp_dunit (f : T -> R) (x : T) : \E_[dunit x] f = f x.
+Proof using Type. Admitted.
+
+Lemma pr_dlet E f (mu : {distr U / R}) :
+  \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
+Proof using Type. Admitted.
 
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
@@ -459,9 +469,13 @@ apply/(@ler_trans _ \P_[mu] predT).
   by apply/subset_pr. by rewrite pr_predT le1_mu.
 Qed.
 
+Lemma le_exp mu f1 f2:
+  f1 <=1 f2 -> \E_[mu] f1 <= \E_[mu] f2.
+Proof using Type. Admitted.
+
 Lemma pr_or A B mu : \P_[mu] [predU A & B] =
   \P_[mu] A + \P_[mu] B - \P_[mu] [predI A & B].
-Proof. Admitted.
+Proof using Type. Admitted.
 
 Lemma pr_and A B mu : \P_[mu] [predI A & B] =
   \P_[mu] A + \P_[mu] B - \P_[mu] [predU A & B].
@@ -478,16 +492,16 @@ Proof. by rewrite pr_and ler_subl_addr ler_addl ge0_pr. Qed.
 Lemma pr_split B A mu : \P_[mu] A =
     \P_[mu]        B  * \P_[mu,       B] A
   + \P_[mu] (predC B) * \P_[mu, predC B] A.
-Proof. Admitted.
+Proof using Type. Admitted.
 
-Lemma eps_split A f mu : \E?_[mu] f -> \E_[mu] f =
+Lemma exp_split A f mu : \E?_[mu] f -> \E_[mu] f =
     \P_[mu]        A  * \E_[mu,       A] f
   + \P_[mu] (predC A) * \E_[mu, predC A] f.
-Proof. Admitted.
+Proof using Type. Admitted.
 
 Lemma has_esp_bounded f mu :
   (exists M, forall x, `|f x| < M) -> \E?_[mu] f.
-Proof. Admitted.
+Proof using Type. Admitted.
 End PrTheory.
 
 (* -------------------------------------------------------------------- *)
