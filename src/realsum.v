@@ -445,6 +445,9 @@ move=> x; rewrite {}/S inE; apply/idP/idP => /=.
 by move=> /eqP->; apply/existsbP; exists fset0; rewrite big_fset0.
 Qed.
 
+Lemma psum_eq0 (f : T -> R) : (forall x, f x = 0) -> psum f = 0.
+Proof. by move=> eq; rewrite (eq_psum eq) psum0. Qed.
+
 Lemma psumN (S : T -> R) : psum (\- S) = psum S.
 Proof.
 case/boolP: `[< summable S >] => h; last first.

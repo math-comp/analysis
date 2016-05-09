@@ -297,7 +297,10 @@ Section BindTheory.
 Variables (T U : choiceType) (f g : T -> distr U) (mu nu : distr T).
 
 Lemma dlet_null : dlet f dnull =1 dnull.
-Proof using Type. Admitted.
+Proof.
+move=> x; unlock dlet; rewrite dnullE /= /mlet psum_eq0 //.
+by move=> y; rewrite dnullE mul0r.
+Qed.
 
 Lemma dlet_unit v : \dlet_(y <- dunit v) f y = f v.
 Proof using Type. Admitted.
