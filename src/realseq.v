@@ -444,13 +444,18 @@ case=> [lu cu] [lv cv]; rewrite (nlimE cu) (nlimE cv) /=.
 by rewrite (nlimE (ncvgD cu cv)).
 Qed.
 
-Lemma eq_nlim (v u : nat -> R) : u =1 v -> nlim u = nlim v.
+Lemma eq_from_nlim K (v u : nat -> R) :
+  (forall n, (K <= n)%N -> u n = v n) -> nlim u = nlim v.
 Proof.
-move=> eq; have h := ncvg_eq eq; case: (nlimP v).
+move=> eq; have h := ncvg_eq_from eq; case: (nlimP v).
   by move=> l cv; have cu := h _ cv; rewrite (nlimE cu) (nlimE cv).
 move=> Ncv; rewrite (nlim_out Ncv) nlim_out //.
-by case=> l cu; apply: Ncv; exists l; apply/(@ncvg_eq _ u).
+case=> l cu; apply: Ncv; exists l; apply/(@ncvg_eq_from _ K u).
+  by move=> n /eq /esym. by done.
 Qed.
+
+Lemma eq_nlim (v u : nat -> R) : u =1 v -> nlim u = nlim v.
+Proof. by move=> eq; apply/(@eq_from_nlim 0) => n _; apply/eq. Qed.
 
 Lemma nlim_sum {I : eqType} (u : I -> nat -> R) (r : seq I) :
   (forall i, i \in r -> iscvg (u i)) ->

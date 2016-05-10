@@ -370,6 +370,10 @@ Definition dlim T (f : nat -> distr T) :=
 
 Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
+Lemma dlimE T (f : nat -> distr T) x :
+  (\dlim_(n) f n) x = nlim (fun n => f n x).
+Proof. by unlock dlim. Qed.
+
 (* -------------------------------------------------------------------- *)
 Section DLimTheory.
 Variables (T U : choiceType).
@@ -377,7 +381,7 @@ Variables (T U : choiceType).
 Implicit Types (f g : nat -> distr T) (h : T -> {distr U / R}).
 Implicit Types (mu : {distr T / R}).
 
-Lemma eq_dlim f g : f =1 g -> dlim f =1 dlim g.
+Lemma eq_dlim f g : f =2 g -> dlim f =1 dlim g.
 Proof.
 move=> eq_f; unlock dlim=> x /=; rewrite /mlim; congr (_ _).
 by apply/eq_nlim => n; rewrite eq_f.
