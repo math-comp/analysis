@@ -457,6 +457,16 @@ Qed.
 Lemma eq_nlim (v u : nat -> R) : u =1 v -> nlim u = nlim v.
 Proof. by move=> eq; apply/(@eq_from_nlim 0) => n _; apply/eq. Qed.
 
+Lemma nlim_bump (u : nat -> R) : nlim (fun n => u n.+1) = nlim u.
+Proof. Admitted.
+
+Lemma nlim_lift (u : nat -> R) p : nlim (fun n => u (n + p)%N) = nlim u.
+Proof.
+elim: p => [|p ih]; first by apply/eq_nlim=> k; rewrite addn0.
+rewrite -ih -[in RHS]nlim_bump; apply/eq_nlim=> k /=.
+by rewrite addSnnS.
+Qed.
+
 Lemma nlim_sum {I : eqType} (u : I -> nat -> R) (r : seq I) :
   (forall i, i \in r -> iscvg (u i)) ->
       nlim (fun n => \sum_(i <- r) (u i) n)
