@@ -294,18 +294,20 @@ Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
 
 (* -------------------------------------------------------------------- *)
 Section BindTheory.
-Variables (T U : choiceType) (f g : T -> distr U) (mu nu : distr T).
+Variables (T U : choiceType).
 
-Lemma dlet_null : dlet f dnull =1 dnull.
+Implicit Types (f g : T -> distr U) (mu nu : distr T).
+
+Lemma dlet_null f : dlet f dnull =1 dnull.
 Proof.
 move=> x; unlock dlet; rewrite dnullE /= /mlet psum_eq0 //.
 by move=> y; rewrite dnullE mul0r.
 Qed.
 
-Lemma dlet_unit v : \dlet_(y <- dunit v) f y = f v.
+Lemma dlet_unit f v : \dlet_(y <- dunit v) f y = f v.
 Proof using Type. Admitted.
 
-Lemma eq_in_dlet : {in dinsupp mu, f =2 g} -> mu =1 nu ->
+Lemma eq_in_dlet f g mu nu : {in dinsupp mu, f =2 g} -> mu =1 nu ->
   dlet f mu =1 dlet g nu.
 Proof.
 move=> eq_f eq_mu; unlock dlet=> y /=; apply/eq_psum=> x.
@@ -313,18 +315,31 @@ rewrite -eq_mu; case/boolP: (x \in dinsupp mu) => [/eq_f ->//|].
 by move/dinsuppPn=> ->; rewrite !mul0r.
 Qed.
 
-Lemma le_in_dlet : {in dinsupp mu, f <=2 g} ->
+Local Lemma summable_mlet f mu y :
+  summable (fun x : T => mu x * (f x) y).
+Proof.
+case/summable_seqP: (summable_mu mu)=> M ge0_M h.
+apply/summable_seqP; exists M => // J uqJ.
+apply/(@ler_trans _ (\sum_(j <- J) `|mu j|))/h => //.
+apply/ler_sum=> j _; rewrite normrM ger0_norm //.
+by apply/ler_pimulr=> //; rewrite ger0_norm ?le1_mu1.
+Qed.
+
+Lemma le_in_dlet f g mu : {in dinsupp mu, f <=2 g} ->
   dlet f mu <=1 dlet g mu.
 Proof.                          (* summable -> refactor *)
-move=> le_f; unlock dlet=> y /=; apply/le_psum; last first.
-  case/summable_seqP: (summable_mu mu)=> M ge0_M h.
-  apply/summable_seqP; exists M => // J uqJ.
-  apply/(@ler_trans _ (\sum_(j <- J) `|mu j|))/h => //.
-  apply/ler_sum=> j _; rewrite normrM ger0_norm //.
-  by apply/ler_pimulr=> //; rewrite ger0_norm ?le1_mu1.
+move=> le_f; unlock dlet=> y /=; apply/le_psum/summable_mlet.
 move=> x; rewrite mulr_ge0 //=; case: (mu x =P 0).
   by move=> ->; rewrite !mul0r.
 by move/dinsuppPn/le_f/(_ y) => h; rewrite ler_pmul.
+Qed.
+
+Lemma le_mu_dlet f mu nu : mu <=1 nu -> dlet f mu <=1 dlet f nu.
+Proof.
+move=> le_mu x; unlock dlet; rewrite /= /mlet.
+apply/le_psum/summable_mlet => y; rewrite mulr_ge0 //=.
+case: (mu y =P 0) => [->|]; first by rewrite mul0r mulr_ge0.
+by move=>/dinsuppPn=> h; rewrite ler_pmul.
 Qed.
 End BindTheory.
 
