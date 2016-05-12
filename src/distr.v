@@ -430,12 +430,10 @@ Lemma dmarginE : dmargin = \dlet_(y <- mu) (dunit (h y)).
 Proof. by unlock dmargin. Qed.
 End Marginals.
 
-Definition dfst (T U : choiceType) (mu : distr (T * U)) :=
-  dmargin fst mu.
-
-Definition dsnd (T U : choiceType) (mu : distr (T * U)) :=
-  dmargin snd mu.
 End Std.
+
+Notation dfst mu := (dmargin fst mu).
+Notation dsnd mu := (dmargin snd mu).
 
 (* -------------------------------------------------------------------- *)
 Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
