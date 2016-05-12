@@ -106,6 +106,10 @@ Implicit Types (mu : {distr T / R}) (A B E : pred T) (f : T -> R).
 
 Definition dinsupp mu := fun x => mu x != 0 :> R.
 
+Lemma in_dinsupp x (mu : {distr T / R}) :
+  (x \in dinsupp mu) = (mu x != 0).
+Proof. by []. Qed.
+
 Lemma dinsuppP mu x : reflect (mu x <> 0) (x \in dinsupp mu).
 Proof. by apply: (iffP idP) => /eqP. Qed.
 
@@ -246,6 +250,12 @@ Lemma duni1E s x : (duni s) x = (x \in s)%:R / (size (undup s))%:R.
 Proof.
 by unlock duni; rewrite drat1E count_uniq_mem ?(mem_undup, undup_uniq).
 Qed.
+
+Lemma in_dunit t t' :
+  t' \in dinsupp (dunit t) -> t' = t :> T.
+Proof.
+by rewrite in_dinsupp dunit1E pnatr_eq0 eqb0 negbK => /eqP.
+Qed.
 End DRat.
 
 (* -------------------------------------------------------------------- *)
@@ -304,7 +314,7 @@ move=> x; unlock dlet; rewrite dnullE /= /mlet psum_eq0 //.
 by move=> y; rewrite dnullE mul0r.
 Qed.
 
-Lemma dlet_unit f v : \dlet_(y <- dunit v) f y = f v.
+Lemma dlet_unit f v : \dlet_(y <- dunit v) f y =1 f v.
 Proof using Type. Admitted.
 
 Lemma eq_in_dlet f g mu nu : {in dinsupp mu, f =2 g} -> mu =1 nu ->
@@ -345,9 +355,9 @@ End BindTheory.
 
 Lemma dlet_dlet (T U V:choiceType) (mu : {distr T / R}) :
   forall (f1 : T -> distr U) (f2 : U -> distr V),
-    \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x =
-    \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
-Proof. Admitted.
+       \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x
+    =1 \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
+Proof using Type. Admitted.
 
 (* -------------------------------------------------------------------- *)
 Definition mlim T (f : nat -> distr T) : T -> R :=
@@ -430,6 +440,25 @@ Lemma dmarginE : dmargin = \dlet_(y <- mu) (dunit (h y)).
 Proof. by unlock dmargin. Qed.
 End Marginals.
 
+(* -------------------------------------------------------------------- *)
+Section MarginalsTh.
+Variable (T U V : choiceType).
+
+Lemma dlet_dmargin (mu : {distr T / R}) (f : T -> U) (g : U -> {distr V / R}):
+  \dlet_(u <- dmargin f mu) g u =1 \dlet_(t <- mu) (g (f t)).
+Proof.
+move=> x; rewrite dlet_dlet; apply: eq_in_dlet=> //.
+by move=> y _ z; rewrite dlet_unit.
+Qed.
+
+Lemma dmargin_dlet (mu : {distr T / R}) (f : U -> V) (g : T -> {distr U / R}):
+  dmargin f (\dlet_(t <- mu) g t) =1 \dlet_(t <- mu) (dmargin f (g t)).
+Proof. by apply/dlet_dlet. Qed.
+
+Lemma dmargin_dunit (t : T) (f : T -> U):
+  dmargin f (dunit t) =1 dunit (f t) :> {distr U / R}.
+Proof. by apply/dlet_unit. Qed.
+End MarginalsTh.
 End Std.
 
 Notation dfst mu := (dmargin fst mu).
