@@ -351,6 +351,12 @@ apply/le_psum/summable_mlet => y; rewrite mulr_ge0 //=.
 case: (mu y =P 0) => [->|]; first by rewrite mul0r mulr_ge0.
 by move=>/dinsuppPn=> h; rewrite ler_pmul.
 Qed.
+
+Lemma dinsupp_dlet f mu y :
+  y \in dinsupp (\dlet_(x <- mu) f x) ->
+    exists2 x, x \in dinsupp mu & f x y != 0.
+Proof using Type. Admitted.
+
 End BindTheory.
 
 Lemma dlet_dlet (T U V:choiceType) (mu : {distr T / R}) :
@@ -530,6 +536,9 @@ Qed.
 
 Lemma le_exp mu f1 f2:
   f1 <=1 f2 -> \E_[mu] f1 <= \E_[mu] f2.
+Proof using Type. Admitted.
+
+Lemma pr_eq0 mu E : \P_[mu] E = 0 -> forall x, x \in E -> mu x = 0.
 Proof using Type. Admitted.
 
 Lemma pr_or A B mu : \P_[mu] [predU A & B] =
