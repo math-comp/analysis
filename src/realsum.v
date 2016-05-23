@@ -35,10 +35,19 @@ End Summable.
 Section Sum.
 Variables (T : choiceType) (R : realType).
 
-Implicit Types f : T -> R.
+Implicit Types f g : T -> R.
 
 Definition fpos f := fun x => `|Num.max 0 (f x)|.
 Definition fneg f := fun x => `|Num.min 0 (f x)|.
+
+Lemma fneg_fpos f : fneg f =1 fpos (\- f).
+Proof. by move=> x; rewrite /fpos /fneg -{2}oppr0 -oppr_min normrN. Qed.
+
+Lemma eq_fpos f g : f =1 g -> fpos f =1 fpos g.
+Proof. by move=> eq_fg x; rewrite /fpos eq_fg. Qed.
+
+Lemma eq_fneg f g : f =1 g -> fneg f =1 fneg g.
+Proof. by move=> eq_fg x; rewrite /fneg eq_fg. Qed.
 
 Definition psum f : R :=
   (* We need some ticked `image` operator *)
@@ -155,6 +164,12 @@ move=> eq_12; rewrite /psum (eq_summableb eq_12).
 case: `[< summable F1 >] => //; apply/eq_sup.
 move=> x; apply/imsetbP/imsetbP=> -[J ->]; exists J;
   by apply/eq_bigr=> /= K _; rewrite eq_12.
+Qed.
+
+Lemma eq_sum (F1 F2 : T -> R) : F1 =1 F2 -> sum F1 = sum F2.
+Proof.
+move=> eq_fg; rewrite /sum; congr (_ - _); apply/eq_psum.
+  by apply/eq_fpos. by apply/eq_fneg.
 Qed.
 
 Lemma le_summable (F1 F2 : T -> R) :

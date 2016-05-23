@@ -43,6 +43,9 @@ Proof. by case: asboolP. Qed.
 Lemma asboolT (P : Prop) : P -> `[<P>].
 Proof. by case: asboolP. Qed.
 
+Lemma asboolF (P : Prop) : ~ P -> `[<P>] = false.
+Proof. by apply/introF/asboolP. Qed.
+
 (* -------------------------------------------------------------------- *)
 Lemma asbool_equiv_eq {P Q : Prop} : (P <-> Q) -> `[<P>] = `[<Q>].
 Proof.

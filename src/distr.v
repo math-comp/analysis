@@ -474,6 +474,9 @@ Context {R : realType} (T U : choiceType).
 
 Implicit Types (mu : {distr T / R}) (A B E : pred T).
 
+Lemma pr_pred0 mu : \P_[mu] pred0 = 0.
+Proof. by rewrite /pr psum_eq0 // => x /=; rewrite mul0r. Qed.
+
 Lemma pr_pred1 mu x : mu x = \P_[mu] (pred1 x).
 Proof using Type. Admitted.
 
@@ -493,6 +496,9 @@ Lemma pr_dlet E f (mu : {distr U / R}) :
   \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
 Proof using Type. Admitted.
 
+Lemma dlet_dunit_id mu : \dlet_(t <- mu) (dunit t) =1 mu.
+Proof using Type. Admitted.
+
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
 
@@ -501,6 +507,10 @@ Proof.
 move=> eq_AB; apply/eq_psum => x; congr ((_ _)%:R * _).
 by have := eq_AB x; rewrite -!topredE.
 Qed.
+
+Lemma pr_pred0_eq (mu : {distr T / R}) (E : pred T) :
+  E =1 pred0 -> \P_[mu] E = 0.
+Proof. by move=> eq; rewrite -(pr_pred0 mu); apply/eq_pr. Qed.
 
 Lemma subset_pr A B mu : {subset B <= A} -> \P_[mu] B <= \P_[mu] A.
 Proof.
@@ -530,6 +540,15 @@ Lemma pr_and A B mu : \P_[mu] [predI A & B] =
   \P_[mu] A + \P_[mu] B - \P_[mu] [predU A & B].
 Proof. by rewrite pr_or opprB addrCA subrr addr0. Qed.
 
+Lemma pr_or_indep (A B : pred T) (mu : {distr T / R}) :
+  (forall x, x \in A -> x \notin B) ->
+    \P_[mu] [predU A & B] = \P_[mu] A + \P_[mu] B.
+Proof.
+move=> dsj; rewrite pr_or -[RHS]subr0; congr (_ - _).
+apply/pr_pred0_eq=> x /=; apply/negbTE.
+by case/boolP: (x \in A) => //= xA; apply/dsj.
+Qed.
+
 Lemma ler_pr_or A B mu :
   \P_[mu] [predU A & B] <= \P_[mu] A + \P_[mu] B.
 Proof. by rewrite pr_or ler_subl_addr ler_addl ge0_pr. Qed.
@@ -537,6 +556,12 @@ Proof. by rewrite pr_or ler_subl_addr ler_addl ge0_pr. Qed.
 Lemma ler_pr_and A B mu :
   \P_[mu] [predI A & B] <= \P_[mu] A + \P_[mu] B.
 Proof. by rewrite pr_and ler_subl_addr ler_addl ge0_pr. Qed.
+
+Lemma pr_predC E mu: \P_[mu](predC E) = \P_[mu] predT - \P_[mu] E.
+Proof.
+apply/esym/eqP; rewrite subr_eq -pr_or_indep //.
+by apply/eqP/eq_pr=> x; rewrite !inE orNb.
+Qed.
 
 Lemma pr_split B A mu : \P_[mu] A =
     \P_[mu]        B  * \P_[mu,       B] A
