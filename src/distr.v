@@ -317,6 +317,9 @@ Qed.
 Lemma dlet_unit f v : \dlet_(y <- dunit v) f y =1 f v.
 Proof using Type. Admitted.
 
+Lemma dlet_dunit_id mu : \dlet_(t <- mu) (dunit t) =1 mu.
+Proof using Type. Admitted.
+
 Lemma eq_in_dlet f g mu nu : {in dinsupp mu, f =2 g} -> mu =1 nu ->
   dlet f mu =1 dlet g nu.
 Proof.
@@ -475,6 +478,44 @@ Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
 Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
 (* -------------------------------------------------------------------- *)
+Section DSwap.
+Context {R : realType} {A B : choiceType} (mu : {distr (A * B) / R}).
+
+Definition dswap : {distr (B * A) / R} :=
+  dmargin (fun xy => (xy.2, xy.1)) mu.
+End DSwap.
+
+Lemma dswapE {R : realType} {A B : choiceType} (mu : {distr (A * B) / R}) xy :
+  dswap mu xy = mu (xy.2, xy.1).
+Proof. Admitted.
+
+(* -------------------------------------------------------------------- *)
+Section DSwapTheory.
+Context {R : realType} {A B : choiceType} (mu : {distr (A * B) / R}).
+
+Lemma dswapK : dswap (dswap mu) =1 mu.
+Proof. by case=> x y; rewrite !dswapE. Qed.
+
+Lemma dinsupp_swap xy : (xy.2, xy.1) \in dinsupp mu ->
+  xy \in dinsupp (dswap mu).
+Proof.
+by move=> h; apply/dinsuppP; rewrite dswapE; apply/dinsuppPn.
+Qed.
+
+Lemma dfst_dswap : dfst (dswap mu) =1 dsnd mu.
+Proof.
+move=> z; rewrite dlet_dlet; apply/eq_in_dlet => // -[x y].
+by move=> _ t /=; rewrite dlet_unit /=.
+Qed.
+
+Lemma dsnd_dswap : dsnd (dswap mu) =1 dfst mu.
+Proof.
+move=> z; rewrite dlet_dlet; apply/eq_in_dlet => // -[x y].
+by move=> _ t /=; rewrite dlet_unit /=.
+Qed.
+End DSwapTheory.
+
+(* -------------------------------------------------------------------- *)
 Section PrTheory.
 Context {R : realType} (T U : choiceType).
 
@@ -500,9 +541,6 @@ Proof using Type. Admitted.
 
 Lemma pr_dlet E f (mu : {distr U / R}) :
   \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
-Proof using Type. Admitted.
-
-Lemma dlet_dunit_id mu : \dlet_(t <- mu) (dunit t) =1 mu.
 Proof using Type. Admitted.
 
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
