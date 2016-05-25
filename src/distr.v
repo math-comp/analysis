@@ -220,19 +220,44 @@ Definition mrat (s : seq T) : T -> R :=
 Lemma ge0_mrat s : forall x, 0 <= mrat s x.
 Proof. by move=> x; rewrite mulr_ge0 ?invr_ge0 // ler0n. Qed.
 
-Lemma summable_mrat s: summable (mrat s).
+Local Lemma has_sup_mrat s J : uniq J -> \sum_(i <- J) mrat s i <= 1.
 Proof.
-apply/summable_seqP; exists 1=> // J uqJ; rewrite (eq_bigr (mrat s)).
-  by move=> j _; rewrite ger0_norm ?ge0_mrat.
-rewrite -mulr_suml /= -natr_sum; case: (size s =P 0%N).
+move=> uqJ; rewrite -mulr_suml /= -natr_sum; case: (size s =P 0%N).
   by move=> ->; rewrite invr0 mulr0 ler01.
 move=> /eqP nz_s; rewrite ler_pdivr_mulr ?ltr0n ?lt0n // mul1r.
 rewrite ler_nat (bigID (mem s)) /= [X in (_+X)%N]big1 ?addn0.
    by move=> i /count_memPn.
-Admitted.
+have ->: (size s = \sum_(i <- undup s) count_mem i s)%N.
+  rewrite -sum1_size -(eq_big_perm _ (perm_undup_count s)) /=.
+  rewrite big_flatten /= big_map; apply/eq_bigr => x _.
+  by rewrite big_nseq iter_addn !simpm.
+rewrite [X in (_<=X)%N](bigID (mem J)) /= -ltnS -addSn.
+rewrite ltn_addr //= ltnS -big_filter -[X in (_<=X)%N]big_filter.
+rewrite leq_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
+apply/uniq_perm_eq; rewrite ?filter_uniq ?undup_uniq //.
+by move=> x; rewrite !mem_filter mem_undup andbC.
+Qed.
+
+Local Lemma mrat_sup s : (0 < size s)%N ->
+  \sum_(i <- undup s) mrat s i = 1.
+Proof.
+move=> gt0_s; rewrite -mulr_suml -natr_sum.
+apply/(mulIf (x := (size s)%:R)); first by rewrite pnatr_eq0 -lt0n.
+rewrite mul1r -mulrA mulVf ?mulr1 ?pnatr_eq0 -?lt0n //.
+rewrite -sum1_size -(eq_big_perm _ (perm_undup_count s)) /=.
+rewrite big_flatten big_map /=; congr _%:R.
+by apply/eq_bigr=> x _; rewrite big_nseq iter_addn !simpm.
+Qed.
+
+Local Lemma summable_mrat s: summable (mrat s).
+Proof.
+apply/summable_seqP; exists 1=> // J uqJ; rewrite (eq_bigr (mrat s)).
+  by move=> j _; rewrite ger0_norm ?ge0_mrat.
+by apply/has_sup_mrat.
+Qed.
 
 Lemma isd_mrat s : isdistr (mrat s).
-Proof. Admitted.
+Proof. by split; [apply/ge0_mrat | apply/has_sup_mrat]. Qed.
 
 Definition drat s := locked (mkdistr (isd_mrat s)).
 
