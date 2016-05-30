@@ -129,6 +129,7 @@ Notation "\P_[ mu , A ] E" := (prc mu E A).
 Notation "\E_[ mu ] f"     := (esp mu f).
 Notation "\E_[ mu , A ] f" := (espc mu f A).
 Notation "\E?_[ mu ] f"    := (has_esp mu f).
+Notation dweight mu        := (\P_[mu] predT).
 
 (* -------------------------------------------------------------------- *)
 Section DistrTheory.
@@ -327,6 +328,12 @@ End Bind.
 
 Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
 
+Definition dlift {A : choiceType} (f : A -> {distr A / R}) :=
+  fun d => \dlet_(x <- d) f x.
+
+Fixpoint diter {A : choiceType} n (f : A -> {distr A / R}) :=
+  fun a => (iter n (dlift f) (dunit a)).
+
 (* -------------------------------------------------------------------- *)
 Section BindTheory.
 Variables (T U : choiceType).
@@ -380,11 +387,26 @@ case: (mu y =P 0) => [->|]; first by rewrite mul0r mulr_ge0.
 by move=>/dinsuppPn=> h; rewrite ler_pmul.
 Qed.
 
+Lemma le_dlet f g mu nu :
+    mu <=1 nu
+  -> {in dinsupp mu, forall x, f x <=1 g x}
+  -> \dlet_(x <- mu) f x <=1 \dlet_(x <- nu) g x.
+Proof.
+by move=> le_mu le_fg x; apply/(ler_trans (le_in_dlet le_fg _))/le_mu_dlet.
+Qed.
+
+Lemma dletC (mu : {distr T / R}) (nu : {distr U / R}) x :
+  (\dlet_(_ <- mu) nu) x = (dweight mu) * (nu x).
+Proof using Type. Admitted.
+
 Lemma dinsupp_dlet f mu y :
   y \in dinsupp (\dlet_(x <- mu) f x) ->
     exists2 x, x \in dinsupp mu & f x y != 0.
 Proof using Type. Admitted.
 
+Lemma dlet_dinsupp f mu x y :
+  x \in dinsupp mu -> f x y != 0 -> y \in dinsupp (dlet f mu).
+Proof using Type. Admitted.
 End BindTheory.
 
 Lemma dlet_dlet (T U V:choiceType) (mu : {distr T / R}) :
@@ -440,11 +462,25 @@ Variables (T U : choiceType).
 Implicit Types (f g : nat -> distr T) (h : T -> {distr U / R}).
 Implicit Types (mu : {distr T / R}).
 
+Lemma dlimC mu : \dlim_(n) mu =1 mu.
+Proof. by move=> x; rewrite !dlimE; rewrite nlimC. Qed.
+
 Lemma eq_dlim f g : f =2 g -> dlim f =1 dlim g.
 Proof.
 move=> eq_f; unlock dlim=> x /=; rewrite /mlim; congr (_ _).
 by apply/eq_nlim => n; rewrite eq_f.
 Qed.
+
+Lemma eq_from_dlim K f g :
+  (forall n, (K <= n)%N -> f n =1 g n) -> dlim f =1 dlim g.
+Proof.
+move=> eq_fg x; rewrite !dlimE; congr (_ _).
+by apply/(eq_from_nlim (K := K)); move=> n /eq_fg /(_ x).
+Qed.
+
+Definition dlim_bump (mu : nat -> {distr T / R}) :
+  dlim (fun n => mu n.+1) =1 dlim mu.
+Proof. by move=> x; rewrite !dlimE -[in RHS]nlim_bump. Qed.
 
 Lemma le_dlim f g : (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
 Proof using Type. Admitted.
@@ -461,6 +497,10 @@ Proof using Type. Admitted.
 
 Lemma dlet_lim f h :
   \dlet_(x <- dlim f) h x = \dlim_(n) \dlet_(x <- f n) h x.
+Proof using Type. Admitted.
+
+Lemma dlim_let (f : nat -> T -> {distr U / R}) (mu : {distr T / R}) :
+  \dlim_(n) \dlet_(x <- mu) (f n x) =1 \dlet_(x <- mu) \dlim_(n) (f n x).
 Proof using Type. Admitted.
 End DLimTheory.
 
@@ -510,9 +550,13 @@ Definition dswap : {distr (B * A) / R} :=
   dmargin (fun xy => (xy.2, xy.1)) mu.
 End DSwap.
 
-Lemma dswapE {R : realType} {A B : choiceType} (mu : {distr (A * B) / R}) xy :
-  dswap mu xy = mu (xy.2, xy.1).
+(* -------------------------------------------------------------------- *)
+Section DSwapCoreTheory.
+Context {R : realType} {A B : choiceType} (mu : {distr (A * B) / R}).
+
+Lemma dswapE xy : dswap mu xy = mu (xy.2, xy.1).
 Proof. Admitted.
+End DSwapCoreTheory.
 
 (* -------------------------------------------------------------------- *)
 Section DSwapTheory.

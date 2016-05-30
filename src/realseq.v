@@ -417,9 +417,9 @@ move=> h; rewrite /nlim; case: {-}_ / idP => // p.
 by case: h; case/existsbP: p => l /asboolP; exists l.
 Qed.
 
-CoInductive nlim_spec (u : nat -> R) : R -> Type :=
+CoInductive nlim_spec (u : nat -> R) : er R -> Type :=
 | NLimCvg l : ncvg u l -> nlim_spec u l
-| NLimOut   : ~ (exists l, ncvg u l) -> nlim_spec u 0.
+| NLimOut   : ~ (exists l, ncvg u l) -> nlim_spec u \-inf.
 
 Lemma nlimP u : nlim_spec u (nlim u).
 Proof.
@@ -448,17 +448,26 @@ Lemma eq_from_nlim K (v u : nat -> R) :
   (forall n, (K <= n)%N -> u n = v n) -> nlim u = nlim v.
 Proof.
 move=> eq; have h := ncvg_eq_from eq; case: (nlimP v).
-  by move=> l cv; have cu := h _ cv; rewrite (nlimE cu) (nlimE cv).
-move=> Ncv; rewrite (nlim_out Ncv) nlim_out //.
-case=> l cu; apply: Ncv; exists l; apply/(@ncvg_eq_from _ K u).
-  by move=> n /eq /esym. by done.
+  by move=> l cv; have cu := h _ cv; rewrite (nlimE cu).
+move=> Ncv; rewrite nlim_out //; case=> l cu.
+apply: Ncv; exists l; apply/(@ncvg_eq_from _ K u) => //.
+by move=> n /eq /esym.
 Qed.
 
 Lemma eq_nlim (v u : nat -> R) : u =1 v -> nlim u = nlim v.
 Proof. by move=> eq; apply/(@eq_from_nlim 0) => n _; apply/eq. Qed.
 
 Lemma nlim_bump (u : nat -> R) : nlim (fun n => u n.+1) = nlim u.
-Proof. Admitted.
+Proof.
+case: (nlimP u) => [l cu|Ncu].
+  suff: ncvg (fun n => u n.+1) l by move/nlimE.
+  move=> v; case/(_ v): cu => K cu; exists K => n le_Kn.
+  by apply/cu; apply/(leq_trans le_Kn).
+rewrite nlim_out //; case=> l cu; apply/Ncu; exists l.
+move=> v; case/(_ v): cu => K cu; exists K.+1 => n le_Kn.
+rewrite -[n]prednK; first by apply/(leq_trans _ le_Kn).
+by apply/cu; rewrite -ltnS prednK ?(leq_trans _ le_Kn).
+Qed.
 
 Lemma nlim_lift (u : nat -> R) p : nlim (fun n => u (n + p)%N) = nlim u.
 Proof.
