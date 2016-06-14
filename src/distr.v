@@ -608,6 +608,9 @@ Proof using Type. Admitted.
 Lemma exp_dunit (f : T -> R) (x : T) : \E_[dunit x] f = f x.
 Proof using Type. Admitted.
 
+Lemma exp_cst mu r : \E_[mu] (fun _ => r) = \P_[mu] predT * r.
+Proof using Type. Admitted.
+
 Lemma pr_dlet E f (mu : {distr U / R}) :
   \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
 Proof using Type. Admitted.
@@ -619,6 +622,13 @@ Lemma eq_pr A B mu : A =i B -> \P_[mu] A = \P_[mu] B.
 Proof.
 move=> eq_AB; apply/eq_psum => x; congr ((_ _)%:R * _).
 by have := eq_AB x; rewrite -!topredE.
+Qed.
+
+Lemma eq_exp mu (f1 f2 : T -> R):
+   {in dinsupp mu, f1 =1 f2} -> \E_[mu] f1 = \E_[mu] f2.
+Proof.
+move=> eq_f; apply/eq_sum => x; case/boolP: (x \in dinsupp mu).
+  by move/eq_f=> ->. by move/dinsuppPn=> ->; rewrite !mulr0.
 Qed.
 
 Lemma pr_pred0_eq (mu : {distr T / R}) (E : pred T) :
