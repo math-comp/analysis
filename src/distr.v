@@ -482,6 +482,10 @@ Definition dlim_bump (mu : nat -> {distr T / R}) :
   dlim (fun n => mu n.+1) =1 dlim mu.
 Proof. by move=> x; rewrite !dlimE -[in RHS]nlim_bump. Qed.
 
+Definition dlim_lift (mu : nat -> {distr T / R}) p :
+  dlim (fun n => mu (n + p)%N) =1 dlim mu.
+Proof. by move=> x; rewrite !dlimE (nlim_lift (fun n => (mu n) x)). Qed.
+
 Lemma le_dlim f g : (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
 Proof using Type. Admitted.
 
