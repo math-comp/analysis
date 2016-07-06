@@ -5,6 +5,9 @@ MANIFEST
 Makefile
 Makefile.common
 src/*.v
+finmap/*.v
+finmap/README
+finmap/CeCILL-B
 
 # Build scripts
 scripts/install-sh
