@@ -409,10 +409,17 @@ Lemma dlet_dinsupp f mu x y :
 Proof using Type. Admitted.
 End BindTheory.
 
-Lemma dlet_dlet (T U V:choiceType) (mu : {distr T / R}) :
+Lemma dlet_dlet (T U V : choiceType) (mu : {distr T / R}) :
   forall (f1 : T -> distr U) (f2 : U -> distr V),
        \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x
     =1 \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
+Proof using Type. Admitted.
+
+Lemma dlet_additive
+  (T U : choiceType) (mu mu1 mu2 : {distr T / R}) (f : T -> {distr U / R}) z
+:
+  (forall x, mu x = mu1 x + mu2 x) -> (\dlet_(x <- mu) f x) z =
+    (\dlet_(x <- mu1) f x) z + (\dlet_(x <- mu2) f x) z.
 Proof using Type. Admitted.
 
 (* -------------------------------------------------------------------- *)
