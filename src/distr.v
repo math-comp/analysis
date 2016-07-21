@@ -422,6 +422,15 @@ Lemma dlet_additive
     (\dlet_(x <- mu1) f x) z + (\dlet_(x <- mu2) f x) z.
 Proof using Type. Admitted.
 
+Lemma dlet_eq0 (T U : choiceType) mu (f : T -> U) y :
+  {in dinsupp mu, forall x, f x != y} -> (\dlet_(x <- mu) dunit (f x)) y = 0.
+Proof.
+move=> h; unlock dlet => /=; apply/psum_eq0 => x.
+case/boolP: (x \in dinsupp mu) => [|/dinsuppPn->];
+  last by rewrite mul0r.
+by move/h; rewrite dunit1E => /negbTE ->; rewrite mulr0.
+Qed.
+
 (* -------------------------------------------------------------------- *)
 Definition mlim T (f : nat -> distr T) : T -> R :=
   fun x => nlim (fun n => f n x).
@@ -596,10 +605,16 @@ Qed.
 End DSwapTheory.
 
 (* -------------------------------------------------------------------- *)
-Section PrTheory.
-Context {R : realType} (T U : choiceType).
+Section PrCoreTheory.
+Context {R : realType} {T : choiceType}.
 
 Implicit Types (mu : {distr T / R}) (A B E : pred T).
+
+Lemma summable_pr E mu : summable (fun x => (E x)%:R * mu x).
+Proof.
+apply/(le_summable (F2 := mu)) => [x|]; last by apply/summable_mu.
+  by rewrite mulr_ge0 ?ler0n //= ler_pimull // lern1 leq_b1.
+Qed.
 
 Lemma pr_pred0 mu : \P_[mu] pred0 = 0.
 Proof. by rewrite /pr psum_eq0 // => x /=; rewrite mul0r. Qed.
@@ -622,10 +637,6 @@ Proof using Type. Admitted.
 Lemma exp_cst mu r : \E_[mu] (fun _ => r) = \P_[mu] predT * r.
 Proof using Type. Admitted.
 
-Lemma pr_dlet E f (mu : {distr U / R}) :
-  \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
-Proof using Type. Admitted.
-
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
 
@@ -645,6 +656,39 @@ Qed.
 Lemma pr_pred0_eq (mu : {distr T / R}) (E : pred T) :
   E =1 pred0 -> \P_[mu] E = 0.
 Proof. by move=> eq; rewrite -(pr_pred0 mu); apply/eq_pr. Qed.
+End PrCoreTheory.
+
+(* -------------------------------------------------------------------- *)
+Section PrTheory.
+Context {R : realType} {T U : choiceType}.
+
+Implicit Types (mu : {distr T / R}) (A B E : pred T).
+
+Lemma pr_dlet E f (mu : {distr U / R}) :
+  \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
+Proof using Type. Admitted.
+
+Lemma pr_dmargin E f (mu : {distr U / R}) :
+  \P_[dmargin f mu] E = \P_[mu] [pred x | f x \in E].
+Proof.
+by rewrite /dmargin pr_dlet pr_exp; apply/eq_exp=> x _; rewrite pr_dunit.
+Qed.
+
+Lemma eq0_pr A mu :
+  (forall x, x \in dinsupp mu -> x \notin A) -> \P_[mu] A = 0.
+Proof.
+move=> h; apply/psum_eq0=> x; apply/eqP.
+rewrite mulf_eq0 orbC; case/boolP: (mu x == 0) => //=.
+by move/h; rewrite -topredE /= => /negbTE->.
+Qed.
+
+Lemma eq0_prc A B mu :
+    (forall x, x \in dinsupp mu -> x \in B -> x \notin A)
+  -> \P_[mu, B] A = 0.
+Proof.
+move=> h; rewrite /prc eq0_pr ?mul0r // => x /h {h} /orb_idl.
+by rewrite negb_and /= => <-; rewrite orbAC orbN.
+Qed.
 
 Lemma subset_pr A B mu : {subset B <= A} -> \P_[mu] B <= \P_[mu] A.
 Proof.
@@ -666,6 +710,35 @@ Lemma le_exp mu f1 f2:
   f1 <=1 f2 -> \E_[mu] f1 <= \E_[mu] f2.
 Proof using Type. Admitted.
 
+Lemma le_in_pr E1 E2 mu :
+  (forall x, x \in dinsupp mu -> x \in E1 -> x \in E2) ->
+    \P_[mu] E1 <= \P_[mu] E2.
+Proof.
+move=> le; rewrite /pr; apply/le_psum; last by apply/summable_pr.
+move=> x; rewrite mulr_ge0 ?ler0n //=; case/boolP: (x \in dinsupp mu).
+  move/le; rewrite -!topredE /= => E12; rewrite ler_wpmul2r //.
+  by rewrite ler_nat; case: (E1 x) E12 => // ->.
+by move/dinsuppPn=> ->; rewrite !mulr0.
+Qed.
+
+Lemma le_mu_pr A mu nu :
+    (forall x, x \in dinsupp nu -> x \in A -> nu x <= mu x)
+  -> \P_[nu] A <= \P_[mu] A.
+Proof.
+move=> h; apply/le_psum; last by apply/summable_pr.
+move=> x; rewrite mulr_ge0 ?ler0n //=.
+case/boolP: (x \in dinsupp nu) => [/h {h}h|]; last first.
+  by move/dinsuppPn=> ->; rewrite mulr0 mulr_ge0 ?ler0n.
+by case/boolP: (A x) => [/h|]; rewrite ?(mul0r, mul1r).
+Qed.
+
+Lemma le1_prc A B mu : \P_[mu, B] A <= 1.
+Proof.
+have := ge0_pr B mu; rewrite /prc ler_eqVlt.
+case/orP=> [/eqP<-|]; first by rewrite invr0 mulr0 ler01.
+by move/ler_pdivr_mulr=> ->; rewrite mul1r le_in_pr // => x _ /andP[].
+Qed.
+
 Lemma pr_eq0 mu E : \P_[mu] E = 0 -> forall x, x \in E -> mu x = 0.
 Proof using Type. Admitted.
 
@@ -684,6 +757,14 @@ Proof.
 move=> dsj; rewrite pr_or -[RHS]subr0; congr (_ - _).
 apply/pr_pred0_eq=> x /=; apply/negbTE.
 by case/boolP: (x \in A) => //= xA; apply/dsj.
+Qed.
+
+Lemma prID A B mu :
+  \P_[mu] A = \P_[mu] [predI A & B] + \P_[mu] [predI A & predC B].
+Proof.
+rewrite -pr_or_indep => [x|]; last apply/eq_pr => x.
+  by case/andP=> [Ax Bx]; rewrite inE Ax /= negbK.
+by rewrite !inE -!topredE /=; case: (A x) (B x) => -[].
 Qed.
 
 Lemma ler_pr_or A B mu :
