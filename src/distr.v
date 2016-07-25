@@ -640,11 +640,16 @@ Proof using Type. Admitted.
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
 
-Lemma eq_pr A B mu : A =i B -> \P_[mu] A = \P_[mu] B.
+Lemma eq_in_pr A B mu :
+  {in dinsupp mu, A =i B} -> \P_[mu] A = \P_[mu] B.
 Proof.
-move=> eq_AB; apply/eq_psum => x; congr ((_ _)%:R * _).
-by have := eq_AB x; rewrite -!topredE.
+move=> eq_AB; apply/eq_psum => x; case/boolP: (x \in dinsupp mu).
+  by move/eq_AB; rewrite -!topredE => /= ->.
+by move/dinsuppPn=> ->; rewrite !mulr0.
 Qed.
+
+Lemma eq_pr A B mu : A =i B -> \P_[mu] A = \P_[mu] B.
+Proof. by move=> eq_AB; apply/eq_in_pr=> x _; apply/eq_AB. Qed.
 
 Lemma eq_exp mu (f1 f2 : T -> R):
    {in dinsupp mu, f1 =1 f2} -> \E_[mu] f1 = \E_[mu] f2.
