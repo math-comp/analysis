@@ -324,6 +324,9 @@ split=> [x|J uqJ]; first by apply/ge0_psum.
 Admitted.
 
 Definition dlet := locked (mkdistr isd_mlet).
+
+Lemma dletE y : dlet y = psum (fun x => mu x * f x y).
+Proof. by unlock dlet. Qed.
 End Bind.
 
 Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
@@ -342,15 +345,25 @@ Implicit Types (f g : T -> distr U) (mu nu : distr T).
 
 Lemma dlet_null f : dlet f dnull =1 dnull.
 Proof.
-move=> x; unlock dlet; rewrite dnullE /= /mlet psum_eq0 //.
+move=> x; rewrite dletE dnullE /= /mlet psum_eq0 //.
 by move=> y; rewrite dnullE mul0r.
 Qed.
 
 Lemma dlet_unit f v : \dlet_(y <- dunit v) f y =1 f v.
-Proof using Type. Admitted.
+Proof.
+move=> y; rewrite dletE (psum_finseq (r := [:: v])) //.
+  move=> x; rewrite !inE dunit1E mulf_eq0 => /norP[].
+  by rewrite pnatr_eq0 eqb0 negbK => /eqP->.
+by rewrite big_seq1 dunit1E eqxx mul1r ger0_norm.
+Qed.
 
 Lemma dlet_dunit_id mu : \dlet_(t <- mu) (dunit t) =1 mu.
-Proof using Type. Admitted.
+Proof.
+move=> x; rewrite dletE (psum_finseq (r := [:: x])) //.
+  move=> y; rewrite !inE dunit1E mulf_eq0 pnatr_eq0.
+  by case/norP; rewrite eqb0 negbK.
+by rewrite big_seq1 dunit1E eqxx mulr1 ger0_norm.
+Qed.
 
 Lemma eq_in_dlet f g mu nu : {in dinsupp mu, f =2 g} -> mu =1 nu ->
   dlet f mu =1 dlet g nu.
@@ -360,7 +373,7 @@ rewrite -eq_mu; case/boolP: (x \in dinsupp mu) => [/eq_f ->//|].
 by move/dinsuppPn=> ->; rewrite !mul0r.
 Qed.
 
-Local Lemma summable_mlet f mu y :
+Lemma summable_mlet f mu y :
   summable (fun x : T => mu x * (f x) y).
 Proof.
 case/summable_seqP: (summable_mu mu)=> M ge0_M h.
@@ -391,22 +404,32 @@ Lemma le_dlet f g mu nu :
     mu <=1 nu
   -> {in dinsupp mu, forall x, f x <=1 g x}
   -> \dlet_(x <- mu) f x <=1 \dlet_(x <- nu) g x.
-Proof.
-by move=> le_mu le_fg x; apply/(ler_trans (le_in_dlet le_fg _))/le_mu_dlet.
+Proof. move=> le_mu le_fg x.
+by apply/(ler_trans (le_in_dlet le_fg _))/le_mu_dlet.
 Qed.
 
-Lemma dletC (mu : {distr T / R}) (nu : {distr U / R}) x :
-  (\dlet_(_ <- mu) nu) x = (dweight mu) * (nu x).
-Proof using Type. Admitted.
+Lemma dletC (mu : {distr T / R}) (nu : {distr U / R}) y :
+  (\dlet_(_ <- mu) nu) y = (dweight mu) * (nu y).
+Proof.
+rewrite dletE /pr [_ * nu y]mulrC -psumZ //=; apply/eq_psum.
+by move=> /= x; rewrite mul1r mulrC.
+Qed.
 
 Lemma dinsupp_dlet f mu y :
   y \in dinsupp (\dlet_(x <- mu) f x) ->
     exists2 x, x \in dinsupp mu & f x y != 0.
-Proof using Type. Admitted.
+Proof.
+move/dinsuppP; rewrite dletE => /neq0_psum [x /eqP]; rewrite mulf_eq0.
+by case/norP=> /eqP/dinsuppPn mux nz_fxy; exists x.
+Qed.
 
 Lemma dlet_dinsupp f mu x y :
   x \in dinsupp mu -> f x y != 0 -> y \in dinsupp (dlet f mu).
-Proof using Type. Admitted.
+Proof.
+move=> /dinsuppP /eqP mux nz_fxy; apply/dinsuppP; rewrite dletE.
+move/eq0_psum => /(_ (summable_mlet _ _ _) x) => /eqP.
+by rewrite mulf_eq0 (negbTE mux) (negbTE nz_fxy).
+Qed.
 End BindTheory.
 
 Lemma dlet_dlet (T U V : choiceType) (mu : {distr T / R}) :
@@ -620,16 +643,28 @@ Lemma pr_pred0 mu : \P_[mu] pred0 = 0.
 Proof. by rewrite /pr psum_eq0 // => x /=; rewrite mul0r. Qed.
 
 Lemma pr_pred1 mu x : mu x = \P_[mu] (pred1 x).
+Proof.
+rewrite /pr (psum_finseq (r := [:: x])) // => [y|].
+  by rewrite !inE; case: (y =P x); rewrite ?(mul0r, eqxx).
+by rewrite big_seq1 /= eqxx mul1r ger0_norm.
+Qed.
+
+Lemma psum_sum (S : T -> R) : (forall x, 0 <= S x) -> psum S = sum S.
 Proof using Type. Admitted.
 
 Lemma pr_exp mu (E : pred T) : \P_[mu] E = \E_[mu] (fun m => (E m)%:R).
-Proof using Type. Admitted.
+Proof. by rewrite /pr psum_sum // => x; rewrite mulr_ge0 // ler0n. Qed.
 
 Lemma pr_predT mu : \P_[mu] predT = psum mu.
 Proof. by apply/eq_psum=> x; rewrite mul1r. Qed.
 
 Lemma pr_dunit E x : \P_[dunit x] E = (E x)%:R :> R.
-Proof using Type. Admitted.
+Proof.
+rewrite /pr (psum_finseq (r := [:: x])) //.
+  move=> y; rewrite !inE dunit1E [x==_]eq_sym.
+  by case: (y =P x) => //; rewrite mulr0 eqxx.
+by rewrite big_seq1 dunit1E eqxx mulr1 ger0_norm ?ler0n.
+Qed.
 
 Lemma exp_dunit (f : T -> R) (x : T) : \E_[dunit x] f = f x.
 Proof using Type. Admitted.
@@ -745,32 +780,44 @@ by move/ler_pdivr_mulr=> ->; rewrite mul1r le_in_pr // => x _ /andP[].
 Qed.
 
 Lemma pr_eq0 mu E : \P_[mu] E = 0 -> forall x, x \in E -> mu x = 0.
-Proof using Type. Admitted.
-
-Lemma pr_or A B mu : \P_[mu] [predU A & B] =
-  \P_[mu] A + \P_[mu] B - \P_[mu] [predI A & B].
-Proof using Type. Admitted.
-
-Lemma pr_and A B mu : \P_[mu] [predI A & B] =
-  \P_[mu] A + \P_[mu] B - \P_[mu] [predU A & B].
-Proof. by rewrite pr_or opprB addrCA subrr addr0. Qed.
-
-Lemma pr_or_indep (A B : pred T) (mu : {distr T / R}) :
-  (forall x, x \in A -> x \notin B) ->
-    \P_[mu] [predU A & B] = \P_[mu] A + \P_[mu] B.
 Proof.
-move=> dsj; rewrite pr_or -[RHS]subr0; congr (_ - _).
-apply/pr_pred0_eq=> x /=; apply/negbTE.
-by case/boolP: (x \in A) => //= xA; apply/dsj.
+move/eq0_psum=> /(_ (summable_pr _ _)) => h x xE; move/(_ x): h.
+by move: xE; rewrite -topredE /= => ->; rewrite mul1r.
 Qed.
 
 Lemma prID A B mu :
   \P_[mu] A = \P_[mu] [predI A & B] + \P_[mu] [predI A & predC B].
 Proof.
-rewrite -pr_or_indep => [x|]; last apply/eq_pr => x.
-  by case/andP=> [Ax Bx]; rewrite inE Ax /= negbK.
-by rewrite !inE -!topredE /=; case: (A x) (B x) => -[].
+rewrite {1}/pr (psumID B); first by apply/summable_pr.
+congr (_ + _); apply/eq_psum => x; rewrite !inE -!topredE /=;
+  by rewrite mulrA -natrM mulnb andbC.
 Qed.
+
+Lemma pr_or_indep (A B : pred T) (mu : {distr T / R}) :
+  (forall x, x \in A -> x \notin B) ->
+    \P_[mu] [predU A & B] = \P_[mu] A + \P_[mu] B.
+Proof.
+move=> dsj; rewrite /pr -psumD; try solve [
+  by apply/summable_pr | by move=> x; rewrite mulr_ge0 ?ler0n
+].
+apply/eq_psum=> x /=; rewrite -mulrDl -!topredE /= -natrD.
+case/boolP: (A x) => Ax; case/boolP: (B x) => Bx //=.
+by move/dsj: Ax; rewrite -topredE /= Bx.
+Qed.
+
+Lemma pr_or A B mu : \P_[mu] [predU A & B] =
+  \P_[mu] A + \P_[mu] B - \P_[mu] [predI A & B].
+Proof.
+apply/eqP; rewrite eq_sym subr_eq [in X in _==X]addrC; apply/eqP.
+rewrite (prID _ B) -addrA -pr_or_indep => [x|].
+  by rewrite !inE => /andP[].
+congr (_ + _); apply/eq_pr => x; rewrite !inE -!topredE /=.
+by apply/orb_id2r => /negbTE ->; rewrite andbT.
+Qed.
+
+Lemma pr_and A B mu : \P_[mu] [predI A & B] =
+  \P_[mu] A + \P_[mu] B - \P_[mu] [predU A & B].
+Proof. by rewrite pr_or opprB addrCA subrr addr0. Qed.
 
 Lemma ler_pr_or A B mu :
   \P_[mu] [predU A & B] <= \P_[mu] A + \P_[mu] B.
@@ -789,7 +836,15 @@ Qed.
 Lemma pr_split B A mu : \P_[mu] A =
     \P_[mu]        B  * \P_[mu,       B] A
   + \P_[mu] (predC B) * \P_[mu, predC B] A.
-Proof using Type. Admitted.
+Proof.
+suff h A' B': \P_[mu] [predI A' & B'] = \P_[mu] B' * \P_[mu, B'] A'.
+  by rewrite (prID _ B); congr (_ + _); apply/h.
+rewrite /prc mulrCA; have [] := eqVneq (\P_[mu] B') 0; last first.
+  by move=> nzPB'; rewrite divff // mulr1.
+move=> zPB'; rewrite zPB' invr0 !mulr0; apply/eq0_pr.
+move=> x mux; move/pr_eq0: zPB' => /(_ x) h; rewrite !inE.
+by apply/negP=> /andP[_ /h] /dinsuppP.
+Qed.
 
 Lemma exp_split A f mu : \E?_[mu] f -> \E_[mu] f =
     \P_[mu]        A  * \E_[mu,       A] f

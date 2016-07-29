@@ -9,8 +9,8 @@ Unset SsrOldRewriteGoalsOrder.
 
 Import GRing.Theory Num.Theory.
 
-Local Open Scope ring_scope.
 Local Open Scope fset_scope.
+Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
 Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
@@ -373,6 +373,7 @@ Context {R : realType} (T : choiceType).
 Lemma summable0 : summable (fun _ : T => 0 : R).
 Proof. by exists 0 => J; rewrite big1 ?normr0. Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma summableD (S1 S2 : T -> R) :
   summable S1 -> summable S2 -> summable (S1 \+ S2).
 Proof.
@@ -383,6 +384,7 @@ rewrite (@ler_trans _ M) // ?ler_sum // => [K _|].
 by rewrite /M big_split ler_add ?(h1, h2).
 Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma summableN (S : T -> R) : summable S -> summable (\- S).
 Proof.
 case=> [M h]; exists M => J; rewrite (ler_trans _ (h J)) //.
@@ -390,6 +392,7 @@ rewrite ler_eqVlt; apply/orP; left; apply/eqP/eq_bigr.
 by move=> /= K _; rewrite normrN.
 Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma summablebN (S : T -> R) :
   `[< summable (\- S)>] = `[< summable S >].
 Proof.
@@ -397,6 +400,7 @@ apply/asboolP/asboolP => /summableN //.
 by apply/eq_summable => x /=; rewrite opprK.
 Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma summablebDl (S1 S2 : T -> R) : summable S1 ->
   `[< summable (S1 \+ S2) >] = `[< summable S2 >].
 Proof.
@@ -406,6 +410,7 @@ move=> sm12; apply/(@eq_summable _ _ ((S1 \+ S2) \- S1)).
 by apply/summableD/summableN.
 Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma summablebDr (S1 S2 : T -> R) : summable S2 ->
   `[< summable (S1 \+ S2) >] = `[< summable S1 >].
 Proof.
@@ -413,6 +418,7 @@ move=> sm1; rewrite (@eq_summableb _ _ (S2 \+ S1)) ?summablebDl //.
 by move=> x /=; rewrite addrC.
 Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma summableMl (S1 S2 : T -> R) :
   (exists2 M, 0 <= M & forall x, `|S1 x| <= M) -> summable S2 -> summable (S1 \* S2).
 Proof.
@@ -435,6 +441,7 @@ rewrite (bigD1 j) //= => /(ler_trans _).
 by apply; rewrite ler_addl sumr_ge0.
 Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma summableZ (S : T -> R) c : summable S -> summable (c \*o S).
 Proof.
 case=> [M h]; exists (`|c| * M) => J; move/(_ J): h => /=.
@@ -442,6 +449,48 @@ move/(ler_wpmul2l (normr_ge0 c)); rewrite mulr_sumr.
 move/(ler_trans _); apply; rewrite ler_eqVlt; apply/orP.
 by left; apply/eqP/eq_bigr=> j _; rewrite normrM.
 Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summable_abs (S : T -> R) : summable \`|S| <-> summable S.
+Proof.
+have h J: \sum_(j <- J) `| `|S j| | = \sum_(j <- J) `|S j|.
+  by apply/eq_bigr=> j _; rewrite normr_id.
+split=> /summable_seqP[M ge0_M leM]; apply/summable_seqP;
+  by exists M=> // => J /leM; rewrite h.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summable_condl (S : T -> R) (P : pred T) :
+  summable S -> summable (fun x => (P x)%:R * S x).
+Proof.
+case/summable_seqP=> M ge0_M leM; apply/summable_seqP.
+exists M => //; move=> J /leM /(ler_trans _); apply.
+apply/ler_sum=> x _; case: (P x); rewrite (mul1r, mul0r) //.
+by rewrite normr0 normr_ge0.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summable_condr (S : T -> R) (P : pred T) :
+  summable S -> summable (fun x => S x * (P x)%:R).
+Proof.
+move=> /(summable_condl P) /eq_summable; apply.
+by move=> x /=; rewrite mulrC.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summable_of_bd (S : T -> R) (d : R) :
+  (forall J, uniq J -> \sum_(x <- J) `|S x| <= d) ->
+    summable S /\ psum S <= d.
+Proof.
+move=> leS; have ge0_d: 0 <= d.
+  by apply/(ler_trans _ (leS [::] _)); rewrite // big_nil.
+have smS: summable S by apply/summable_seqP; exists d.
+split=> //; rewrite /psum (asboolT smS); apply/sup_le_ub.
+  by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
+apply/ubP=> _ /imsetbP[J ->]; rewrite (big_fset_seq \`|_|) /=.
+by apply/leS; case: J => J /= /canonical_uniq.
+Qed.
+
 End SummableAlg.
 
 (* -------------------------------------------------------------------- *)
@@ -450,6 +499,7 @@ Context {R : realType} (T : choiceType).
 
 Implicit Type S : T -> R.
 
+(* -------------------------------------------------------------------- *)
 Lemma psum0 : psum (fun _ : T => 0) = 0 :> R.
 Proof.
 rewrite /psum asboolT; first by apply/summable0.
@@ -460,9 +510,72 @@ move=> x; rewrite {}/S inE; apply/idP/idP => /=.
 by move=> /eqP->; apply/existsbP; exists fset0; rewrite big_fset0.
 Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma psum_eq0 (f : T -> R) : (forall x, f x = 0) -> psum f = 0.
 Proof. by move=> eq; rewrite (eq_psum eq) psum0. Qed.
 
+(* -------------------------------------------------------------------- *)
+Lemma eq0_psum (f : T -> R) :
+  summable f -> psum f = 0 -> (forall x : T, f x = 0).
+Proof.
+move=> sm psum_eq0 x; apply/eqP; rewrite -normr_eq0.
+rewrite eqr_le normr_ge0 andbT -psum_eq0.
+apply/(ler_trans _ (gerfinseq_psum (r := [:: x]) _ sm)) => //.
+by rewrite big_seq1.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma neq0_psum (f : T -> R) : psum f <> 0 -> exists x : T, f x <> 0.
+Proof.
+by move=> nz_psum; apply/existsp_asboolPn/asboolPn => /psum_eq0.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma psum_abs (S : T -> R) : psum \`|S| = psum S.
+Proof.
+rewrite /psum; do 2! case: ifPn => //; first last.
++ by move/asboolP/summable_abs/asboolP=> ->.
++ by move/asboolPn/summable_abs/asboolPn=> /negbTE->.
+move=> _ _; apply/eq_sup=> x; rewrite !inE; apply/idP/idP.
+  case/existsbP=> J /eqP->; apply/existsbP; exists J.
+  by apply/eqP/eq_bigr=> /= j _; rewrite normr_id.
+case/existsbP=> J /eqP->; apply/existsbP; exists J.
+by apply/eqP/eq_bigr=> /= j _; rewrite normr_id.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma eq_psum_abs (S1 S2 : T -> R) :
+  \`|S1| =1 \`|S2| -> psum S1 = psum S2.
+Proof.
+by move=> eqS; rewrite -[LHS]psum_abs -[RHS]psum_abs; apply/eq_psum.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma le_psum_abs (S1 S2 : T -> R) :
+  (forall x, `|S1 x| <= `|S2 x|) -> summable S2 -> psum S1 <= psum S2.
+Proof.
+move=> leS smS2; rewrite -[X in X<=_]psum_abs -[X in _<=X]psum_abs.
+by apply/le_psum/summable_abs => // x; rewrite normr_ge0 leS.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma le_psum_condl (S : T -> R) (P : pred T) :
+  summable S -> psum (fun x => (P x)%:R * S x) <= psum S.
+Proof.
+move=> smS; apply/le_psum_abs=> // x; rewrite normrM.
+by apply/ler_pimull => //; rewrite normr_nat lern1 leq_b1.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma le_psum_condr (S : T -> R) (P : pred T) :
+  summable S -> psum (fun x => S x * (P x)%:R) <= psum S.
+Proof.
+move=> smS; apply/(ler_trans _ (le_psum_condl P smS)).
+rewrite ler_eqVlt -(rwP orP); left; apply/eqP/eq_psum.
+by move=> x /=; rewrite mulrC.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Lemma psumN (S : T -> R) : psum (\- S) = psum S.
 Proof.
 case/boolP: `[< summable S >] => h; last first.
@@ -471,13 +584,50 @@ rewrite /psum summablebN h; apply/eq_ppsum=> J /=.
 by apply/eq_bigr=> j _; rewrite normrN.
 Qed.
 
+(* -------------------------------------------------------------------- *)
 Lemma psumD S1 S2 :
     (forall x, 0 <= S1 x) -> (forall x, 0 <= S2 x)
   -> summable S1 -> summable S2
   -> psum (S1 \+ S2) = (psum S1 + psum S2)%R.
+Proof using Type. Admitted.
+
+(* -------------------------------------------------------------------- *)
+Lemma psumZ S c : 0 <= c -> psum (c \*o S) = c * psum S.
+Proof using Type. Admitted.
+
+(* -------------------------------------------------------------------- *)
+Lemma psumID S (P : pred T) :
+  summable S -> psum S =
+    psum (fun x => (P x)%:R * S x) + psum (fun x => (~~P x)%:R * S x).
 Proof.
-(* Should use <-> with convergence *)
-move=> ge0_S1 ge0_S2 sm1 sm2; have smD := summableD sm1 sm2.
-rewrite !psumE //=; first by move=> x; rewrite addr_ge0.
-Abort.
+have h x: `|S x| = (P x)%:R * `|S x| + (~~P x)%:R * `|S x|.
+  by case: (P x); rewrite !Monoid.simpm.
+move=> smS; rewrite -[LHS]psum_abs (eq_psum h) psumD.
+  by move=> x; rewrite mulr_ge0. by move=> x; rewrite mulr_ge0.
+  by apply/summable_condl/summable_abs.
+  by apply/summable_condl/summable_abs.
+congr (_ + _); apply/eq_psum_abs=> x /=.
+  by rewrite !normrM normr_nat normr_id.
+  by rewrite !normrM normr_nat normr_id.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma psum_finseq S (r : seq.seq T) :
+    uniq r -> {subset [pred x | S x != 0] <= r}
+  -> psum S = \sum_(x <- r) `|S x|.
+Proof.
+move=> eq_r ler; set s := RHS; have h J: uniq J -> \sum_(x <- J) `|S x| <= s.
+  move=> uqJ; rewrite (bigID (ssrbool.mem r)) /= addrC big1.
+    move=> x xNr; apply/eqP; apply/contraR: xNr.
+    by rewrite normr_eq0 => /ler.
+  rewrite add0r {}/s -big_filter; set s := filter _ _.
+  rewrite [X in _<=X](bigID (ssrbool.mem J)) /=.
+  rewrite (eq_big_perm [seq x <- r | x \in J]) /=.
+    apply/uniq_perm_eq; rewrite ?filter_uniq // => x.
+    by rewrite !mem_filter andbC.
+  by rewrite big_filter ler_addl sumr_ge0.
+case/summable_of_bd: h => smS le_psum; apply/eqP.
+by rewrite eqr_le le_psum /=; apply/gerfinseq_psum.
+Qed.
+
 End StdSum.
