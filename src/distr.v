@@ -525,21 +525,50 @@ Definition dlim_lift (mu : nat -> {distr T / R}) p :
   dlim (fun n => mu (n + p)%N) =1 dlim mu.
 Proof. by move=> x; rewrite !dlimE (nlim_lift (fun n => (mu n) x)). Qed.
 
-Lemma le_dlim f g : (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
-Proof using Type. Admitted.
+Definition dcvg f := forall x, exists l, ncvg (fun n => f n x) l.
+
+CoInductive dlim_spec f (x : T) : R -> Type :=
+| DLimCvg : forall l : R, 0 <= l -> l <= 1 ->
+    ncvg (fun n => f n x) l%:E -> dlim_spec f x l
+
+| DLimOut : ~ (exists l : {ereal R}, ncvg (fun n => f n x) l) ->
+    dlim_spec f x 0.
+
+Lemma dlimP f x : dlim_spec f x (dlim f x).
+Proof.
+rewrite dlimE; case: nlimP => [l h|?] /=; last by apply/DLimOut.
+have: (0%:E <= l)%E by apply/ncvg_geC: h => n; apply/ge0_mu.
+have: (l <= 1%:E)%E by apply/ncvg_leC: h => n; apply/le1_mu1.
+by case: l h => // l h /= ge0_l ge1_; apply/DLimCvg.
+Qed.
+
+Lemma ge0_dlim f : forall x, 0 <= dlim f x.
+Proof. by move=> x; case: dlimP. Qed.
+
+Lemma le1_dlim f : forall x, dlim f x <= 1.
+Proof. by move=> x; case: dlimP => // _; apply/ler01. Qed.
+
+Lemma le_dlim f g :
+  (forall n, f n <=1 g n) -> dcvg g -> dlim f <=1 dlim g.
+Proof.
+move=> le dcvg_g x; case: dlimP => [|_]; last by apply/ge0_dlim.
+move=> l _ _ h; case: dlimP => [l' _ _ h'|]; last by case.
+by rewrite -lee_fin; apply/(ncvg_le _ h' h).
+Qed.
 
 Lemma leub_dlim f mu : (forall n, f n <=1 mu) -> dlim f <=1 mu.
 Proof.
 move=> le x; apply/(@ler_trans _ ((\dlim_(n) mu) x)).
-  by apply/le_dlim. by unlock dlim; rewrite /mlim /= nlimC.
+  by apply/le_dlim => // y; exists (mu y)%:E; apply/ncvgC.
+by rewrite dlimE nlimC.
 Qed.
 
 Lemma dlim_ub f k :
   (forall n m, (n <= m)%N -> f n <=1 f m) -> f k <=1 dlim f.
 Proof using Type. Admitted.
 
-Lemma dlet_lim f h :
-  \dlet_(x <- dlim f) h x = \dlim_(n) \dlet_(x <- f n) h x.
+Lemma dlet_lim f h : dcvg f ->
+  \dlet_(x <- dlim f) h x =1 \dlim_(n) \dlet_(x <- f n) h x.
 Proof using Type. Admitted.
 
 Lemma dlim_let (f : nat -> T -> {distr U / R}) (mu : {distr T / R}) :
@@ -554,7 +583,7 @@ Variable (T U : choiceType) (h : T -> U) (mu : distr T).
 Definition dmargin := \dlet_(x <- mu) (dunit (h x)).
 
 Lemma dmarginE : dmargin = \dlet_(y <- mu) (dunit (h y)).
-Proof. by unlock dmargin. Qed.
+Proof. by []. Qed.
 End Marginals.
 
 (* -------------------------------------------------------------------- *)
@@ -598,7 +627,12 @@ Section DSwapCoreTheory.
 Context {R : realType} {A B : choiceType} (mu : {distr (A * B) / R}).
 
 Lemma dswapE xy : dswap mu xy = mu (xy.2, xy.1).
-Proof. Admitted.
+Proof.
+rewrite dletE /= (psum_finseq (r := [:: (xy.2, xy.1)])) //.
+  case=> a b; rewrite !inE dunit1E /= mulf_eq0.
+  by case/norP=> _; rewrite pnatr_eq0 eqb0 negbK=> /eqP <-.
+by case: xy=> x y; rewrite big_seq1 dunit1E /= eqxx mulr1 ger0_norm.
+Qed.
 End DSwapCoreTheory.
 
 (* -------------------------------------------------------------------- *)
