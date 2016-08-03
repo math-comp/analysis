@@ -596,6 +596,14 @@ Lemma psumZ S c : 0 <= c -> psum (c \*o S) = c * psum S.
 Proof using Type. Admitted.
 
 (* -------------------------------------------------------------------- *)
+Lemma psumZr S c :
+  0 <= c -> psum (c \o* S) = psum S * c.
+Proof.
+move=> ge0_c; rewrite [RHS]mulrC -psumZ //.
+by apply/eq_psum => x /=; rewrite mulrC.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Lemma psumID S (P : pred T) :
   summable S -> psum S =
     psum (fun x => (P x)%:R * S x) + psum (fun x => (~~P x)%:R * S x).

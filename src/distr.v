@@ -924,6 +924,18 @@ case/orP=> [/eqP<-|]; first by rewrite invr0 mulr0 ler01.
 by move/ler_pdivr_mulr=> ->; rewrite mul1r le_in_pr // => x _ /andP[].
 Qed.
 
+Lemma prc_sum A mu : 0 < \P_[mu] A ->
+  psum (fun x => \P_[mu, A] (pred1 x)) = 1.
+Proof.
+move=> gt0_pE; rewrite psumZr ?(invr_ge0, ge0_pr) //.
+rewrite (eq_psum (F2 := (fun x => (A x)%:R * mu x))); last first.
+  by rewrite divff // gtr_eqF.
+move=> x /=; rewrite /pr (psum_finseq (r := [:: x])) ?big_seq1 //=.
+  move=> y; rewrite !inE; case: (y == x) => //=.
+  by rewrite mul0r eqxx.
+by rewrite !inE eqxx -topredE ger0_norm ?mulr_ge0 ?ler0n.
+Qed. 
+
 Lemma pr_eq0 mu E : \P_[mu] E = 0 -> forall x, x \in E -> mu x = 0.
 Proof.
 move/eq0_psum=> /(_ (summable_pr _ _)) => h x xE; move/(_ x): h.
