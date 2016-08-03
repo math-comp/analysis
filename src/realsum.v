@@ -629,5 +629,51 @@ move=> eq_r ler; set s := RHS; have h J: uniq J -> \sum_(x <- J) `|S x| <= s.
 case/summable_of_bd: h => smS le_psum; apply/eqP.
 by rewrite eqr_le le_psum /=; apply/gerfinseq_psum.
 Qed.
-
 End StdSum.
+
+(* -------------------------------------------------------------------- *)
+Section PSumPartition.
+Context {R : realType} {T U : choiceType} (f : T -> U).
+
+Let C y := `[exists x : T, f x == y].
+
+Lemma partition_psum (S : T -> R) : summable S ->
+  psum S = psum (fun y => (C y)%:R * psum (fun x => S x * (f x == y)%:R)).
+Proof using Type. Admitted.
+End PSumPartition.
+
+(* -------------------------------------------------------------------- *)
+Section PSumReindex.
+Context {R : realType} {T U : choiceType}.
+Context (S : T -> R) (P : pred T) (h : U -> T).
+
+Lemma reindex_psum :
+    (forall x, S x != 0 -> x \in P)
+  -> {on P, bijective h}
+  -> psum S = psum (fun x : U => S (h x)).
+Proof using Type. Admitted.
+End PSumReindex.
+
+(* -------------------------------------------------------------------- *)
+(* FIXME: MOVE ME                                                       *)
+Section SupInterchange.
+Context {R : realType} {T U : Type}.
+
+Lemma interchange_sup (S : T -> U -> R) :
+    (forall x, has_sup [pred r | `[exists y, r == S x y]])
+  -> has_sup [pred r | `[exists x, r == sup [pred r | `[exists y, r == S x y]]]]
+  -> sup [pred r | `[exists x, r == sup [pred r | `[exists y, r == S x y]]]]
+  = sup [pred r | `[exists y, r == sup [pred r | `[exists x, r == S x y]]]].
+Proof using Type. Admitted.
+End SupInterchange.
+
+(* -------------------------------------------------------------------- *)
+Section PSumInterchange.
+Context {R : realType} {T U : choiceType}.
+
+Lemma interchange_psum (S : T -> U -> R) :
+    (forall x, summable (S x))
+  -> summable (fun x => psum (fun y => S x y))
+  -> psum (fun x => psum (fun y => S x y)) = psum (fun y => psum (fun x => S x y)).
+Proof using Type. Admitted.
+End PSumInterchange.

@@ -603,6 +603,13 @@ End Marginals.
 Section MarginalsTh.
 Variable (T U V : choiceType).
 
+Lemma dmargin_psumE (mu : {distr T / R}) (f : T -> U) y :
+  (dmargin f mu) y = psum (fun x => (f x == y)%:R * mu x).
+Proof.
+rewrite dmarginE dletE; apply/eq_psum => x //=.
+by rewrite mulrC dunit1E.
+Qed.
+
 Lemma dlet_dmargin (mu : {distr T / R}) (f : T -> U) (g : U -> {distr V / R}):
   \dlet_(u <- dmargin f mu) g u =1 \dlet_(t <- mu) (g (f t)).
 Proof.
@@ -675,27 +682,45 @@ Qed.
 End DSwapTheory.
 
 (* -------------------------------------------------------------------- *)
-Section SupInterchange.
-Context {R : realType} {T U : Type}.
-
-Lemma interchange_sup (S : T -> U -> R) :
-    (forall x, has_sup [pred r | `[exists y, r == S x y]])
-  -> has_sup [pred r | `[exists x, r == sup [pred r | `[exists y, r == S x y]]]]
-  -> sup [pred r | `[exists x, r == sup [pred r | `[exists y, r == S x y]]]]
-  = sup [pred r | `[exists y, r == sup [pred r | `[exists x, r == S x y]]]].
-Proof using Type. Admitted.
-End SupInterchange.
-
-(* -------------------------------------------------------------------- *)
-Section PSumInterchange.
+Section DFst.
 Context {R : realType} {T U : choiceType}.
 
-Lemma interchange_psum (S : T -> U -> R) :
-    (forall x, summable (S x))
-  -> summable (fun x => psum (fun y => S x y))
-  -> psum (fun x => psum (fun y => S x y)) = psum (fun y => psum (fun x => S x y)).
-Proof using Type. Admitted.
-End PSumInterchange.
+Lemma dfstE (mu : {distr (T * U) /  R}) x :
+  dfst mu x = psum (fun y => mu (x, y)).
+Proof.
+rewrite dmargin_psumE /=; pose h y : T * U := (x, y).
+rewrite (reindex_psum (P := [pred z | z.1 == x]) (h := h)) /=.
++ case=> a b; rewrite !inE /= mulf_eq0 => /norP[].
+  by rewrite pnatr_eq0 eqb0 negbK.
++ by exists snd => [z|[z1 z2]]; rewrite !inE //= => /eqP ->.
+by apply/eq_psum => y; rewrite eqxx mul1r.
+Qed.
+
+Lemma summable_fst (mu : {distr (T * U) / R}) x :
+  summable (fun y => mu (x, y)).
+Proof.
+have /summable_seqP /= := summable_mu mu => -[M ge0_M h].
+apply/summable_seqP; exists M => // J uqJ; pose X := [seq (x, y) | y <- J].
+apply/(ler_trans _ (h X _)); last by rewrite map_inj_uniq // => y1 y2 [].
+by rewrite ler_eqVlt big_map eqxx.
+Qed.
+End DFst.
+
+(* -------------------------------------------------------------------- *)
+Section DSnd.
+Context {R : realType} {T U : choiceType}.
+
+Lemma dsndE (mu : {distr (T * U) / R}) y :
+  dsnd mu y = psum (fun x => mu (x, y)).
+Proof. by rewrite -dfst_dswap dfstE; apply/eq_psum=> x; rewrite dswapE. Qed.
+
+Lemma summable_snd (mu : {distr (T * U) / R}) y :
+  summable (fun x => mu (x, y)).
+Proof.
+have := summable_fst (dswap mu) y; apply/eq_summable.
+by move=> x /=; rewrite dswapE.
+Qed.
+End DSnd.
 
 (* -------------------------------------------------------------------- *)
 Section PrCoreTheory.
@@ -780,6 +805,9 @@ Proof. Admitted.
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
 
+Lemma ge0_prc A B mu : 0 <= \P_[mu, B] A.
+Proof. by rewrite /prc mulr_ge0 ?invr_ge0 // ge0_pr. Qed.
+
 Lemma eq_in_pr A B mu :
   {in dinsupp mu, A =i B} -> \P_[mu] A = \P_[mu] B.
 Proof.
@@ -805,7 +833,7 @@ End PrCoreTheory.
 
 (* -------------------------------------------------------------------- *)
 Section PrTheory.
-Context {R : realType} {T U : choiceType}.
+Context {R : realType} {T U : choiceType} {I : eqType}.
 
 Implicit Types (mu : {distr T / R}) (A B E : pred T).
 
@@ -920,6 +948,42 @@ move=> dsj; rewrite /pr -psumD; try solve [
 apply/eq_psum=> x /=; rewrite -mulrDl -!topredE /= -natrD.
 case/boolP: (A x) => Ax; case/boolP: (B x) => Bx //=.
 by move/dsj: Ax; rewrite -topredE /= Bx.
+Qed.
+
+Lemma pr_mem_map f mu (r : seq U) : uniq r ->
+    \P_[mu] [pred x | f x \in r]
+  = \sum_(y <- r) \P_[mu] [pred x | f x == y].
+Proof.
+elim: r => [_|y r ih]; first by rewrite big_nil pr_pred0_eq //.
+case/andP=> yNr /ih {ih}h; rewrite big_cons -h -pr_or_indep.
+  by move=> x; rewrite !inE => /eqP->. by apply/eq_pr.
+Qed.
+
+Lemma pr_mem mu (r : seq T) : uniq r ->
+  \P_[mu] [pred x | x \in r] = \sum_(x <- r) mu x.
+Proof.
+elim: r => [_|y r ih]; first by rewrite big_nil pr_pred0_eq //.
+case/andP=> yNr /ih {ih}h; rewrite big_cons /= pr_pred1.
+by rewrite -h -pr_or_indep // => x /eqP ->.
+Qed.
+
+Lemma pr_bigor_indep mu (P : I -> pred T) (r : seq I) :
+    uniq r
+  -> (forall p1 p2 x, p1 != p2 -> p1 \in r -> p2 \in r -> x \in P p1 -> x \notin P p2)
+  -> \P_[mu] [pred x | has [pred p | x \in P p] r]
+  = \sum_(p <- r) \P_[mu] (P p).
+Proof.
+move=> uq_r dj; pose S x := \big[orb/false]_(p <- r) (x \in P p).
+rewrite (eq_pr (B := S)) => [x|]; first by rewrite !inE -big_has.
+rewrite {}/S; elim: r uq_r dj => [_|p r ih /andP[pNr /ih {ih}h]] dj.
+  by rewrite big_nil pr_pred0_eq // => x; rewrite big_nil.
+rewrite big_cons -h => [p1 p2 x ne_p p1r p2r|].
+  by apply/dj=> //; rewrite in_cons (p1r, p2r) orbT.
+rewrite -pr_or_indep => [x xNPp|].
+  rewrite -topredE /= big_has; apply/hasPn => y y_in_r.
+  apply/(dj p); rewrite ?in_cons ?(eqxx, y_in_r, orbT) //.
+  by apply/contra: pNr=> /eqP->.
+by apply/eq_pr=> x; rewrite -!topredE /= big_cons.
 Qed.
 
 Lemma pr_or A B mu : \P_[mu] [predU A & B] =
