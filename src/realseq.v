@@ -501,6 +501,25 @@ rewrite !big_cons; case: (h i); first by rewrite inE eqxx.
 move=> c /nlimE ->; rewrite ih // => j jr.
 by apply/h; rewrite inE jr orbT.
 Qed.
+
+Lemma nlim_sup (u : nat -> R) l :
+    (forall n m, (n <= m)%N -> u n <= u m)
+  -> ncvg u l%:E
+  -> sup [pred r | `[exists n, r == u n]] = l.
+Proof.
+move=> mn_u cv_ul; set S := (X in sup X); suff: ncvg u (sup S)%:E.
+  by move/nlimE; move/nlimE: cv_ul => -> [->].
+elim/nbh_finW=> /= e gt0_e; have sS: has_sup S.
+  apply/has_supP; split; first exists (u 0%N).
+    by apply/imsetbP; exists 0%N.
+  exists l; apply/ubP => _ /imsetbP[n ->].
+  by rewrite -lee_fin; apply/ncvg_homo_le.
+have /sup_adherent := sS => /(_ _ gt0_e) [r /imsetbP] [N ->] lt_uN.
+exists N => n le_Nn; rewrite !inE distrC ger0_norm ?subr_ge0.
+  by apply/sup_upper_bound => //; apply/imsetbP; exists n.
+by rewrite ltr_subl_addr -ltr_subl_addl (ltr_le_trans lt_uN) ?mn_u.
+Qed.
+
 End LimOp.
 
 (* -------------------------------------------------------------------- *)

@@ -554,6 +554,17 @@ move=> cv_f x; case: (dlimP f x) => [l ge0_l le1_l cv|].
 by case; case: (cv_f x).
 Qed.
 
+Lemma dcvg_homo f :
+  (forall n m, (n <= m)%N -> f n <=1 f m) -> dcvg f.
+Proof.
+move=> mn_f x; have: forall n m, (n <= m)%N -> f n x <= f m x.
+  by move=> n m /mn_f; apply.
+case/ncvg_mono_bnd => {mn_f}; first apply/asboolP/nboundedP.
+  exists 2%:R => // n; apply/(@ler_lt_trans _ 1%:R)/ltr_nat.
+  by rewrite ger0_norm // le1_mu1.
+by move=> y h; exists y%:E.
+Qed.
+
 Lemma ge0_dlim f : forall x, 0 <= dlim f x.
 Proof. by move=> x; case: dlimP. Qed.
 
@@ -577,14 +588,20 @@ Qed.
 
 Lemma dlim_ub f k :
   (forall n m, (n <= m)%N -> f n <=1 f m) -> f k <=1 dlim f.
-Proof using Type. Admitted.
+Proof.
+move=> mn_f x; rewrite dlimE -lee_fin; pose u n := f n x.
+apply/(ncvg_homo_le (u := u))=> [m n /mn_f|]; first by apply.
+move/dcvg_homo: mn_f => /dcvgP /(_ x) [l _].
+by move=> cv; rewrite (nlimE cv).
+Qed.
 
-Lemma dlet_lim f h : ducvg f ->
+Lemma dlet_lim f h : (forall n m, (n <= m)%N -> f n <=1 f m) ->
   \dlet_(x <- dlim f) h x =1 \dlim_(n) \dlet_(x <- f n) h x.
 Proof using. Admitted.
 
 Lemma dlim_let (f : nat -> T -> {distr U / R}) (mu : {distr T / R}) :
-  (forall x, ducvg (f^~ x)) -> \dlim_(n) \dlet_(x <- mu) (f n x) =1
+  (forall x n m, (n <= m)%N -> f n x <=1 f m x) ->
+  \dlim_(n) \dlet_(x <- mu) (f n x) =1
     \dlet_(x <- mu) \dlim_(n) (f n x).
 Proof using Type. Admitted.
 End DLimTheory.
