@@ -525,7 +525,11 @@ Definition dlim_lift (mu : nat -> {distr T / R}) p :
   dlim (fun n => mu (n + p)%N) =1 dlim mu.
 Proof. by move=> x; rewrite !dlimE (nlim_lift (fun n => (mu n) x)). Qed.
 
-Definition dcvg f := forall x, exists l, ncvg (fun n => f n x) l.
+Definition dcvg {T : choiceType} (f : nat -> {distr T / R}) :=
+  forall x, exists l, ncvg (fun n => f n x) l.
+
+Definition ducvg {T : choiceType} (f : nat -> {distr T / R}) :=
+  exists l, forall x, ncvg (fun n => f n x) l.
 
 CoInductive dlim_spec f (x : T) : R -> Type :=
 | DLimCvg : forall l : R, 0 <= l -> l <= 1 ->
@@ -540,6 +544,14 @@ rewrite dlimE; case: nlimP => [l h|?] /=; last by apply/DLimOut.
 have: (0%:E <= l)%E by apply/ncvg_geC: h => n; apply/ge0_mu.
 have: (l <= 1%:E)%E by apply/ncvg_leC: h => n; apply/le1_mu1.
 by case: l h => // l h /= ge0_l ge1_; apply/DLimCvg.
+Qed.
+
+Lemma dcvgP f : dcvg f -> forall x,
+  exists2 l, (0 <= l <= 1) & ncvg (f^~ x) l%:E.
+Proof.
+move=> cv_f x; case: (dlimP f x) => [l ge0_l le1_l cv|].
+  by exists l => //; apply/andP; split.
+by case; case: (cv_f x).
 Qed.
 
 Lemma ge0_dlim f : forall x, 0 <= dlim f x.
@@ -567,12 +579,13 @@ Lemma dlim_ub f k :
   (forall n m, (n <= m)%N -> f n <=1 f m) -> f k <=1 dlim f.
 Proof using Type. Admitted.
 
-Lemma dlet_lim f h : dcvg f ->
+Lemma dlet_lim f h : ducvg f ->
   \dlet_(x <- dlim f) h x =1 \dlim_(n) \dlet_(x <- f n) h x.
-Proof using Type. Admitted.
+Proof using. Admitted.
 
 Lemma dlim_let (f : nat -> T -> {distr U / R}) (mu : {distr T / R}) :
-  \dlim_(n) \dlet_(x <- mu) (f n x) =1 \dlet_(x <- mu) \dlim_(n) (f n x).
+  (forall x, ducvg (f^~ x)) -> \dlim_(n) \dlet_(x <- mu) (f n x) =1
+    \dlet_(x <- mu) \dlim_(n) (f n x).
 Proof using Type. Admitted.
 End DLimTheory.
 
@@ -662,6 +675,29 @@ Qed.
 End DSwapTheory.
 
 (* -------------------------------------------------------------------- *)
+Section SupInterchange.
+Context {R : realType} {T U : Type}.
+
+Lemma interchange_sup (S : T -> U -> R) :
+    (forall x, has_sup [pred r | `[exists y, r == S x y]])
+  -> has_sup [pred r | `[exists x, r == sup [pred r | `[exists y, r == S x y]]]]
+  -> sup [pred r | `[exists x, r == sup [pred r | `[exists y, r == S x y]]]]
+  = sup [pred r | `[exists y, r == sup [pred r | `[exists x, r == S x y]]]].
+Proof using Type. Admitted.
+End SupInterchange.
+
+(* -------------------------------------------------------------------- *)
+Section PSumInterchange.
+Context {R : realType} {T U : choiceType}.
+
+Lemma interchange_psum (S : T -> U -> R) :
+    (forall x, summable (S x))
+  -> summable (fun x => psum (fun y => S x y))
+  -> psum (fun x => psum (fun y => S x y)) = psum (fun y => psum (fun x => S x y)).
+Proof using Type. Admitted.
+End PSumInterchange.
+
+(* -------------------------------------------------------------------- *)
 Section PrCoreTheory.
 Context {R : realType} {T : choiceType}.
 
@@ -683,8 +719,39 @@ rewrite /pr (psum_finseq (r := [:: x])) // => [y|].
 by rewrite big_seq1 /= eqxx mul1r ger0_norm.
 Qed.
 
-Lemma psum_sum (S : T -> R) : (forall x, 0 <= S x) -> psum S = sum S.
+(* -------------------------------------------------------------------- *)
+Section Sum.
+Variables (S : T -> R).
+
+Section FPos.
+Variables (f: T -> R).
+
+Hypothesis ge0_f : forall x, 0 <= f x.
+
+Lemma fneg_ge0 x : fneg f x = 0.
+Proof. by rewrite /fneg minr_l ?normr0. Qed.
+
+Lemma fpos_ge0 x : fpos f x = f x.
+Proof. by rewrite /fpos maxr_r ?ger0_norm. Qed.
+End FPos.
+
+Lemma psum_sum : (forall x, 0 <= S x) -> psum S = sum S.
+Proof.
+move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
+  by move=> x; rewrite fneg_ge0 //. 
+by apply/eq_psum=> x; rewrite fpos_ge0.
+Qed.
+
+Lemma sum_finseq (r : seq T) :
+  uniq r -> {subset [pred x | S x != 0] <= r} ->
+    sum S = \sum_(x <- r) S x.
 Proof using Type. Admitted.
+
+Lemma sum_seq1 x : (forall y, S y != 0 -> x == y) -> sum S = S x.
+Proof using Type. Admitted.
+End Sum.
+
+Arguments sum_seq1 [S] x _.
 
 Lemma pr_exp mu (E : pred T) : \P_[mu] E = \E_[mu] (fun m => (E m)%:R).
 Proof. by rewrite /pr psum_sum // => x; rewrite mulr_ge0 // ler0n. Qed.
@@ -701,10 +768,14 @@ by rewrite big_seq1 dunit1E eqxx mulr1 ger0_norm ?ler0n.
 Qed.
 
 Lemma exp_dunit (f : T -> R) (x : T) : \E_[dunit x] f = f x.
-Proof using Type. Admitted.
+Proof.
+rewrite /esp (sum_seq1 x) => [y|]; rewrite dunit1E.
+  by case: (x == y) => //; rewrite mulr0 eqxx.
+by rewrite eqxx mulr1.
+Qed.
 
 Lemma exp_cst mu r : \E_[mu] (fun _ => r) = \P_[mu] predT * r.
-Proof using Type. Admitted.
+Proof. Admitted.
 
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
@@ -740,7 +811,19 @@ Implicit Types (mu : {distr T / R}) (A B E : pred T).
 
 Lemma pr_dlet E f (mu : {distr U / R}) :
   \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
-Proof using Type. Admitted.
+Proof.
+rewrite /esp -psum_sum => [x|]; first by rewrite mulr_ge0 ?ge0_pr.
+rewrite /pr; unlock dlet => /=; rewrite /mlet /=.
+pose F x y := (E x)%:R * (mu y * f y x).
+transitivity (psum (fun x => psum (fun y => F x y))); rewrite {}/F.
+  by apply/eq_psum => x; rewrite -psumZ ?ler0n.
+rewrite interchange_psum /=; last first.
+  apply/eq_psum=> y /=; rewrite mulrC -psumZ //.
+  by apply/eq_psum=> x /=; rewrite mulrCA.
++ have := summable_pr E (dlet f mu); apply/eq_summable.
+  by move=> x; rewrite dletE psumZ ?ler0n.
++ by move=> y; apply/summable_condl/summable_mlet.
+Qed.
 
 Lemma pr_dmargin E f (mu : {distr U / R}) :
   \P_[dmargin f mu] E = \P_[mu] [pred x | f x \in E].
