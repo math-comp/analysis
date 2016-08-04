@@ -38,6 +38,10 @@ dist:
 	BZIP2=-9 tar $(TAROPT) -cjf $(DISTDIR).tar.bz2 $(TAROPT) $(DISTDIR)
 	rm -rf $(DISTDIR)
 
+count:
+	@coqwc $(COQFILES) | tail -1 | \
+	  awk '{printf ("%d (spec=%d+proof=%d)\n", $$1+$$2, $$1, $$2)}'
+
 # --------------------------------------------------------------------
 this-distclean::
 	rm -f $(shell find . -name '*~')
