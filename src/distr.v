@@ -823,7 +823,9 @@ by rewrite eqxx mulr1.
 Qed.
 
 Lemma exp_cst mu r : \E_[mu] (fun _ => r) = \P_[mu] predT * r.
-Proof. Admitted.
+Proof.
+by rewrite pr_predT psum_sum // [RHS]mulrC -sumZ; apply/eq_sum.
+Qed.
 
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.

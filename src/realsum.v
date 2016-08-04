@@ -33,21 +33,42 @@ End Summable.
 
 (* -------------------------------------------------------------------- *)
 Section Sum.
-Variables (T : choiceType) (R : realType).
+Context {R : realType} {T : choiceType}.
 
 Implicit Types f g : T -> R.
 
 Definition fpos f := fun x => `|Num.max 0 (f x)|.
 Definition fneg f := fun x => `|Num.min 0 (f x)|.
 
-Lemma fneg_fpos f : fneg f =1 fpos (\- f).
-Proof. by move=> x; rewrite /fpos /fneg -{2}oppr0 -oppr_min normrN. Qed.
-
 Lemma eq_fpos f g : f =1 g -> fpos f =1 fpos g.
 Proof. by move=> eq_fg x; rewrite /fpos eq_fg. Qed.
 
 Lemma eq_fneg f g : f =1 g -> fneg f =1 fneg g.
 Proof. by move=> eq_fg x; rewrite /fneg eq_fg. Qed.
+
+Lemma fpos0 x : fpos (fun _ : T => 0) x = 0 :> R.
+Proof. by rewrite /fpos maxrr normr0. Qed.
+
+Lemma fneg0 x : fneg (fun _ : T => 0) x = 0 :> R.
+Proof. by rewrite /fneg minrr normr0. Qed.
+
+Lemma fnegN f : fneg (\- f) =1 fpos f.
+Proof. by move=> x; rewrite /fpos /fneg -{1}oppr0 -oppr_max normrN. Qed.
+
+Lemma fposN f : fpos (\- f) =1 fneg f.
+Proof. by move=> x; rewrite /fpos /fneg -{1}oppr0 -oppr_min normrN. Qed.
+
+Lemma fposZ f c : 0 <= c -> fpos (c \*o f) =1 c \*o fpos f.
+Proof.
+move=> ge0_c x; rewrite /fpos /= -{1}(mulr0 c).
+by rewrite -maxr_pmulr // normrM ger0_norm.
+Qed.
+
+Lemma fnegZ f c : 0 <= c -> fneg (c \*o f) =1 c \*o fneg f.
+Proof.
+move=> ge0_c x; rewrite /= -!fposN; have /=<- := (fposZ (\- f) ge0_c x).
+by apply/eq_fpos=> y /=; rewrite mulrN.
+Qed.
 
 Lemma fneg_ge0 f x : (forall x, 0 <= f x) -> fneg f x = 0.
 Proof. by move=> ?; rewrite /fneg minr_l ?normr0. Qed.
@@ -724,23 +745,43 @@ End PSumInterchange.
 
 (* -------------------------------------------------------------------- *)
 Section SumTheory.
-Context {R : realType} {T : choiceType} (S : T -> R).
+Context {R : realType} {T : choiceType}.
 
-Lemma psum_sum : (forall x, 0 <= S x) -> psum S = sum S.
+Implicit Types (S : T -> R).
+
+Lemma psum_sum S : (forall x, 0 <= S x) -> psum S = sum S.
 Proof.
 move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
   by move=> x; rewrite fneg_ge0 //. 
 by apply/eq_psum=> x; rewrite fpos_ge0.
 Qed.
 
-Lemma sum_finseq (r : seq T) :
+Lemma sum0 : sum (fun _ : T => 0) = 0 :> R.
+Proof. by rewrite /sum !(eq_psum fpos0, eq_psum fneg0) !psum0 subr0. Qed.
+
+Lemma sumN S : sum (\- S) = - sum S.
+Proof. by rewrite /sum (eq_psum (fnegN _)) (eq_psum (fposN _)) opprB. Qed.
+
+Lemma sumZ S c : sum (c \*o S) = c * sum S.
+Proof.
+rewrite (eq_sum (F2 := fun x => Num.sg c * (`|c| * S x))).
+  by move=> x; rewrite mulrA -numEsg.
+transitivity (Num.sg c * sum (`|c| \*o S)).
+  case: sgrP => [_|gt0_c|lt0_c]; rewrite ?Monoid.simpm.
+  + by rewrite (eq_sum (F2 := fun _ => 0)) ?sum0 // => x; rewrite !mul0r.
+  + by apply/eq_sum=> x; rewrite mul1r.
+  by rewrite mulN1r -sumN; apply/eq_sum=> x; rewrite !mulN1r.
+rewrite {1}/sum !(eq_psum (fposZ _ _), eq_psum (fnegZ _ _)) //.
+by rewrite !psumZ // -mulrBr mulrA -numEsg.
+Qed.
+
+Lemma sum_finseq S (r : seq T) :
   uniq r -> {subset [pred x | S x != 0] <= r} ->
     sum S = \sum_(x <- r) S x.
 Proof using Type. Admitted.
 
-Lemma sum_seq1 x : (forall y, S y != 0 -> x == y) -> sum S = S x.
+Lemma sum_seq1 S x : (forall y, S y != 0 -> x == y) -> sum S = S x.
 Proof using Type. Admitted.
 End SumTheory.
 
 Arguments sum_seq1 {R T} [S] x _.
-
