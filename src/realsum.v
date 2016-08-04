@@ -70,11 +70,40 @@ move=> ge0_c x; rewrite /= -!fposN; have /=<- := (fposZ (\- f) ge0_c x).
 by apply/eq_fpos=> y /=; rewrite mulrN.
 Qed.
 
+Lemma fpos_natrM f (n : T -> nat) x :
+  fpos (fun x => (n x)%:R * f x) x = (n x)%:R * fpos f x.
+Proof.
+rewrite /fpos -[in RHS]normr_nat -normrM.
+by rewrite maxr_pmulr ?ler0n // mulr0.
+Qed.
+
+Lemma fneg_natrM f (n : T -> nat) x :
+  fneg (fun x => (n x)%:R * f x) x = (n x)%:R * fneg f x.
+Proof.
+rewrite -[in RHS]fposN -fpos_natrM -fposN.
+by apply/eq_fpos=> y; rewrite mulrN.
+Qed.
+
 Lemma fneg_ge0 f x : (forall x, 0 <= f x) -> fneg f x = 0.
 Proof. by move=> ?; rewrite /fneg minr_l ?normr0. Qed.
 
 Lemma fpos_ge0 f x : (forall x, 0 <= f x ) -> fpos f x = f x.
 Proof. by move=> ?; rewrite /fpos maxr_r ?ger0_norm. Qed.
+
+Lemma ge0_fpos f x : 0 <= fpos f x.
+Proof. by apply/normr_ge0. Qed.
+
+Lemma le_fpos_norm f x : fpos f x <= `|f x|.
+Proof.
+rewrite /fpos ger0_norm ?(ler_maxr, lerr) //.
+by rewrite ler_maxl normr_ge0 ler_norm.
+Qed.
+
+Lemma le_fpos f1 f2 : f1 <=1 f2 -> fpos f1 <=1 fpos f2.
+Proof.
+move=> le_f x; rewrite /fpos !ger0_norm ?ler_maxr ?lerr //.
+by rewrite /Num.max; case: ifP => [|->/=]; first rewrite lerr.
+Qed.
 
 Definition psum f : R :=
   (* We need some ticked `image` operator *)
@@ -487,6 +516,19 @@ split=> /summable_seqP[M ge0_M leM]; apply/summable_seqP;
 Qed.
 
 (* -------------------------------------------------------------------- *)
+Lemma summable_fpos (f : T -> R) :
+  summable f -> summable (fpos f).
+Proof.
+move/summable_abs; apply/le_summable=> x.
+by rewrite ge0_fpos /= le_fpos_norm.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summable_fneg (f : T -> R) :
+  summable f -> summable (fneg f).
+Proof. by move/summableN/summable_fpos/(eq_summable (fposN _)). Qed.
+
+(* -------------------------------------------------------------------- *)
 Lemma summable_condl (S : T -> R) (P : pred T) :
   summable S -> summable (fun x => (P x)%:R * S x).
 Proof.
@@ -756,6 +798,18 @@ move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
 by apply/eq_psum=> x; rewrite fpos_ge0.
 Qed.
 
+Lemma le_sum S1 S2 :
+  summable S1 -> summable S2 -> (S1 <=1 S2) ->
+    sum S1 <= sum S2.
+Proof.
+move=> smS1 smS2 leS; rewrite /sum ler_sub //.
+  apply/le_psum/summable_fpos => // x.
+  by rewrite ge0_fpos /= le_fpos.
+apply/le_psum/summable_fneg => // x.
+rewrite -!fposN ge0_fpos le_fpos // => y.
+by rewrite ler_opp2.
+Qed.
+
 Lemma sum0 : sum (fun _ : T => 0) = 0 :> R.
 Proof. by rewrite /sum !(eq_psum fpos0, eq_psum fneg0) !psum0 subr0. Qed.
 
@@ -773,6 +827,17 @@ transitivity (Num.sg c * sum (`|c| \*o S)).
   by rewrite mulN1r -sumN; apply/eq_sum=> x; rewrite !mulN1r.
 rewrite {1}/sum !(eq_psum (fposZ _ _), eq_psum (fnegZ _ _)) //.
 by rewrite !psumZ // -mulrBr mulrA -numEsg.
+Qed.
+
+Lemma sumID S (P : pred T) :
+  summable S -> sum S =
+    sum (fun x => (P x)%:R * S x) + sum (fun x => (~~ P x)%:R * S x).
+Proof.
+move=> sm_S; rewrite /sum addrACA -[in RHS]opprD; congr (_ - _).
++ rewrite (psumID P); first by apply/summable_fpos.
+  by congr (_ + _); apply/eq_psum => x; rewrite fpos_natrM.
++ rewrite (psumID P); first by apply/summable_fneg.
+  by congr (_ + _); apply/eq_psum => x; rewrite fneg_natrM.
 Qed.
 
 Lemma sum_finseq S (r : seq T) :

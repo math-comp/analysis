@@ -916,9 +916,12 @@ apply/(@ler_trans _ \P_[mu] predT).
   by apply/subset_pr. by rewrite pr_predT le1_mu.
 Qed.
 
-Lemma le_exp mu f1 f2:
+Lemma le_exp mu f1 f2: \E?_[mu] f1 -> \E?_[mu] f2 ->
   f1 <=1 f2 -> \E_[mu] f1 <= \E_[mu] f2.
-Proof using Type. Admitted.
+Proof.
+move=> sm1 sm2 le_f; apply/le_sum => //.
+by move=> x; rewrite ler_wpmul2r.
+Qed.
 
 Lemma le_in_pr E1 E2 mu :
   (forall x, x \in dinsupp mu -> x \in E1 -> x \in E2) ->
@@ -1071,7 +1074,18 @@ Proof using Type. Admitted.
 
 Lemma has_esp_bounded f mu :
   (exists M, forall x, `|f x| < M) -> \E?_[mu] f.
-Proof using Type. Admitted.
+Proof.
+case=> M ltM; rewrite /has_esp; apply/summable_seqP.
+exists (Num.max M 0); first by rewrite ler_maxr lerr orbT.
+move=> J uqJ; apply/(@ler_trans _ (\sum_(j <- J) M * mu j)).
+  apply/ler_sum=> j _; rewrite normrM [X in _*X]ger0_norm //.
+  by apply/ler_wpmul2r=> //; apply/ltrW.
+case: (ltrP M 0) => [lt0_M|ge0_M].
+  rewrite maxr_r ?(ltrW lt0_M) // -mulr_sumr.
+  by rewrite nmulr_rle0 //; apply/sumr_ge0.
+by rewrite maxr_l // -mulr_sumr ler_pimulr // -pr_mem ?le1_pr.
+Qed.
+
 End PrTheory.
 
 (* -------------------------------------------------------------------- *)
