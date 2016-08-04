@@ -93,6 +93,9 @@ Proof. by move=> ?; rewrite /fpos maxr_r ?ger0_norm. Qed.
 Lemma ge0_fpos f x : 0 <= fpos f x.
 Proof. by apply/normr_ge0. Qed.
 
+Lemma ge0_fneg f x : 0 <= fneg f x.
+Proof. by apply/normr_ge0. Qed.
+
 Lemma le_fpos_norm f x : fpos f x <= `|f x|.
 Proof.
 rewrite /fpos ger0_norm ?(ler_maxr, lerr) //.
@@ -103,6 +106,14 @@ Lemma le_fpos f1 f2 : f1 <=1 f2 -> fpos f1 <=1 fpos f2.
 Proof.
 move=> le_f x; rewrite /fpos !ger0_norm ?ler_maxr ?lerr //.
 by rewrite /Num.max; case: ifP => [|->/=]; first rewrite lerr.
+Qed.
+
+Lemma fposBfneg f x : fpos f x - fneg f x = f x.
+Proof.
+rewrite /fpos /fneg maxrC /Num.max /Num.min.
+case: ifPn; rewrite normr0 (subr0, sub0r).
+  by move/ger0_norm.
+by rewrite -ltrNge => /ltr0_norm ->; rewrite opprK.
 Qed.
 
 Definition psum f : R :=
@@ -193,6 +204,27 @@ Proof.
 case/summableP=> M _ hbd; apply/has_supP; split.
   by exists 0; apply/existsbP; exists fset0; rewrite big_fset0.
 by exists M; apply/ubP=> y /existsbP[J /eqP->].
+Qed.
+
+Lemma psum_sup S : psum S =
+  sup [pred x | `[exists J : {fset T}, x == \sum_(x : J) `|S (val x)|]].
+Proof.
+rewrite /psum; case: ifPn => // /asboolPn h.
+rewrite sup_out //; set X := [pred r | _] => hs.
+apply: h; exists (sup X) => J; apply/sup_upper_bound => //.
+by apply/imsetbP; exists J.
+Qed.
+
+Lemma psum_sup_seq S : psum S =
+  sup [pred x | `[<exists2 J : seq T,
+    uniq J & x == \sum_(x <- J) `|S x|>]].
+Proof.
+rewrite psum_sup; apply/eq_sup => x; rewrite !inE; apply/imsetbP/idP.
+  case=> J ->; apply/asboolP; exists (fset_keys J).
+    by case: J => /= J /canonical_uniq.
+  by rewrite (big_fset_seq \`|_|) /=.
+case/asboolP=> J uqJ /eqP->; exists (seq_fset J).
+by rewrite (big_seq_fset \`|_|).
 Qed.
 
 Lemma eq_summable (S1 S2 : T -> R) :
@@ -739,17 +771,6 @@ Qed.
 End StdSum.
 
 (* -------------------------------------------------------------------- *)
-Section PSumPartition.
-Context {R : realType} {T U : choiceType} (f : T -> U).
-
-Let C y := `[exists x : T, f x == y].
-
-Lemma partition_psum (S : T -> R) : summable S ->
-  psum S = psum (fun y => (C y)%:R * psum (fun x => S x * (f x == y)%:R)).
-Proof using Type. Admitted.
-End PSumPartition.
-
-(* -------------------------------------------------------------------- *)
 Section PSumReindex.
 Context {R : realType} {T U : choiceType}.
 Context (S : T -> R) (P : pred T) (h : U -> T).
@@ -758,8 +779,37 @@ Lemma reindex_psum :
     (forall x, S x != 0 -> x \in P)
   -> {on P, bijective h}
   -> psum S = psum (fun x : U => S (h x)).
-Proof using Type. Admitted.
+Proof.                          (* FIXME: reindex_onto *)
+move=> PS [hI] h1 h2; rewrite !psum_sup_seq; apply/eq_sup=> x.
+rewrite !inE; apply/asboolP/asboolP=> -[J uqJ /eqP->]; last first.
+  exists [seq h j | j <- J & S (h j) != 0].
+    rewrite map_inj_in_uniq ?filter_uniq // => y1 y2.
+    rewrite !mem_filter => /andP[nz_S1 _] /andP[nz_S2 _].
+    by move/(can_in_inj h1) => -> //=; apply/PS.
+  apply/eqP; rewrite big_map big_filter.
+  rewrite (bigID (fun i => S (h i) == 0)) /= big1 ?add0r //.
+  by move=> y /eqP->; rewrite normr0.
+exists [seq hI j | j <- J & S j != 0].
+rewrite map_inj_in_uniq ?filter_uniq // => y1 y2.
+  rewrite !mem_filter => /andP[nz_S1 _] /andP[nz_S2 _].
+  by move/(can_in_inj h2) => ->//; apply/PS.
+apply/eqP; rewrite big_map big_filter.
+rewrite (bigID (fun i => S i == 0)) /= big1 ?add0r.
+  by move=> y /eqP->; rewrite normr0.
+by apply/eq_bigr=> i /PS Pi; rewrite h2.
+Qed.
 End PSumReindex.
+
+(* -------------------------------------------------------------------- *)
+Section PSumPartition.
+Context {R : realType} {T U : choiceType} (f : T -> U).
+
+Let C y := `[exists x : T, f x == y].
+
+Lemma partition_psum (S : T -> R) : summable S ->
+  psum S = psum (fun y => (C y)%:R * psum (fun x => S x * (f x == y)%:R)).
+Proof. Admitted.
+End PSumPartition.
 
 (* -------------------------------------------------------------------- *)
 (* FIXME: MOVE ME                                                       *)
@@ -843,10 +893,24 @@ Qed.
 Lemma sum_finseq S (r : seq T) :
   uniq r -> {subset [pred x | S x != 0] <= r} ->
     sum S = \sum_(x <- r) S x.
-Proof using Type. Admitted.
+Proof.
+move=> eqr domS; rewrite /sum !(psum_finseq eqr).
++ move=> x; rewrite !inE => xPS; apply/domS; rewrite !inE.
+  move: xPS; rewrite /fpos normr_eq0 /Num.max.
+  by case: ifPn => //; rewrite eqxx.
++ move=> x; rewrite !inE => xPS; apply/domS; rewrite !inE.
+  move: xPS; rewrite /fneg normr_eq0 /Num.min.
+  by case: ifPn => //; rewrite eqxx.
+rewrite -sumrB; apply/eq_bigr=> i _.
+by rewrite !ger0_norm ?(ge0_fpos, ge0_fneg) ?fposBfneg.
+Qed.
 
 Lemma sum_seq1 S x : (forall y, S y != 0 -> x == y) -> sum S = S x.
-Proof using Type. Admitted.
+Proof.
+move=> domS; rewrite (sum_finseq (r := [:: x])) //.
+  by move=> y; rewrite !inE => /domS /eqP->.
+by rewrite big_seq1.
+Qed.
 End SumTheory.
 
 Arguments sum_seq1 {R T} [S] x _.
