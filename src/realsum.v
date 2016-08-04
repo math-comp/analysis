@@ -49,6 +49,12 @@ Proof. by move=> eq_fg x; rewrite /fpos eq_fg. Qed.
 Lemma eq_fneg f g : f =1 g -> fneg f =1 fneg g.
 Proof. by move=> eq_fg x; rewrite /fneg eq_fg. Qed.
 
+Lemma fneg_ge0 f x : (forall x, 0 <= f x) -> fneg f x = 0.
+Proof. by move=> ?; rewrite /fneg minr_l ?normr0. Qed.
+
+Lemma fpos_ge0 f x : (forall x, 0 <= f x ) -> fpos f x = f x.
+Proof. by move=> ?; rewrite /fpos maxr_r ?ger0_norm. Qed.
+
 Definition psum f : R :=
   (* We need some ticked `image` operator *)
   let S := [pred x | `[exists J : {fset T}, x == \sum_(x : J) `|f (val x)|]] in
@@ -368,7 +374,7 @@ End PSumCnv.
 
 (* -------------------------------------------------------------------- *)
 Section SummableAlg.
-Context {R : realType} (T : choiceType).
+Context {R : realType} (T : choiceType) (I : Type).
 
 Lemma summable0 : summable (fun _ : T => 0 : R).
 Proof. by exists 0 => J; rewrite big1 ?normr0. Qed.
@@ -491,11 +497,26 @@ apply/ubP=> _ /imsetbP[J ->]; rewrite (big_fset_seq \`|_|) /=.
 by apply/leS; case: J => J /= /canonical_uniq.
 Qed.
 
+(* -------------------------------------------------------------------- *)
+Lemma summable_sum (F : I -> T -> R) (P : pred I) r :
+    (forall i, P i -> summable (F i))
+  -> summable (fun x => \sum_(i <- r | P i) F i x).
+Proof.
+move=> sm_F; elim: r => [|i r ih].
+  by apply/(eq_summable _ summable0) => x; rewrite big_nil.
+pose G x := (F i x) * (P i)%:R + \sum_(i <- r | P i) F i x.
+apply/(eq_summable (S1 := G)) => [x|].
+  by rewrite {}/G big_cons; case: ifP=> Pi; rewrite !Monoid.simpm.
+apply/summableD => //; case/boolP: (P i) => [|_].
+  by move/sm_F; apply/eq_summable => x; rewrite mulr1.
+by apply/(eq_summable _ summable0) => x; rewrite mulr0.
+Qed.
+
 End SummableAlg.
 
 (* -------------------------------------------------------------------- *)
 Section StdSum.
-Context {R : realType} (T : choiceType).
+Context {R : realType} (T : choiceType) (I : Type).
 
 Implicit Type S : T -> R.
 
@@ -604,6 +625,21 @@ by apply/eq_psum => x /=; rewrite mulrC.
 Qed.
 
 (* -------------------------------------------------------------------- *)
+Lemma psum_bigop (F : I -> T -> R) P r :
+    (forall i x, 0 <= F i x) -> (forall i, summable (F i)) ->
+  \sum_(i <- r | P i) psum (F i) =
+    psum (fun x => \sum_(i <- r | P i) F i x).
+Proof.
+move=> ge0_F sm_F; elim: r => [|i r ih].
+  by rewrite big_nil; apply/esym/psum_eq0 => x; rewrite big_nil.
+rewrite big_cons ih; case: ifP => Pi; last first.
+  by apply/eq_psum=> x /=; rewrite big_cons Pi.
+rewrite -psumD //; first by move=> x; apply/sumr_ge0.
+  by apply/summable_sum.
+by apply/eq_psum=> x /=; rewrite big_cons Pi.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Lemma psumID S (P : pred T) :
   summable S -> psum S =
     psum (fun x => (P x)%:R * S x) + psum (fun x => (~~P x)%:R * S x).
@@ -685,3 +721,26 @@ Lemma interchange_psum (S : T -> U -> R) :
   -> psum (fun x => psum (fun y => S x y)) = psum (fun y => psum (fun x => S x y)).
 Proof using Type. Admitted.
 End PSumInterchange.
+
+(* -------------------------------------------------------------------- *)
+Section SumTheory.
+Context {R : realType} {T : choiceType} (S : T -> R).
+
+Lemma psum_sum : (forall x, 0 <= S x) -> psum S = sum S.
+Proof.
+move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
+  by move=> x; rewrite fneg_ge0 //. 
+by apply/eq_psum=> x; rewrite fpos_ge0.
+Qed.
+
+Lemma sum_finseq (r : seq T) :
+  uniq r -> {subset [pred x | S x != 0] <= r} ->
+    sum S = \sum_(x <- r) S x.
+Proof using Type. Admitted.
+
+Lemma sum_seq1 x : (forall y, S y != 0 -> x == y) -> sum S = S x.
+Proof using Type. Admitted.
+End SumTheory.
+
+Arguments sum_seq1 {R T} [S] x _.
+

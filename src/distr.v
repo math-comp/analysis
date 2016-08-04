@@ -313,15 +313,22 @@ Implicit Types (T U : choiceType).
 
 (* -------------------------------------------------------------------- *)
 Section Bind.
-Variables (T U : choiceType) (f : T -> distr U) (mu : distr T).
+Context {T U : choiceType} (f : T -> distr U) (mu : distr T).
 
-Definition mlet := fun y : U =>
-  psum (fun x => mu x * f x y).
+Definition mlet := fun y : U => psum (fun x => mu x * f x y).
 
 Lemma isd_mlet : isdistr mlet.
 Proof.
 split=> [x|J uqJ]; first by apply/ge0_psum.
-Admitted.
+rewrite /mlet psum_bigop; first by move=> y x; rewrite mulr_ge0.
+  move=> u; apply/(le_summable (F2 := mu)) => //.
+  by move=> x; rewrite mulr_ge0 //= ler_pimulr ?le1_mu1.
+apply/(ler_trans _ (le1_mu mu))/le_psum => //.
+move=> x; rewrite sumr_ge0 /= => [y _|]; first by rewrite mulr_ge0.
+rewrite -mulr_sumr ler_pimulr //; apply/(ler_trans _ (le1_mu (f x))).
+have := summable_mu (f x) => /gerfinseq_psum => /(_ _ uqJ).
+by apply/(ler_trans _)/ler_sum=> y _; apply/ler_norm.
+Qed.
 
 Definition dlet := locked (mkdistr isd_mlet).
 
@@ -373,15 +380,22 @@ rewrite -eq_mu; case/boolP: (x \in dinsupp mu) => [/eq_f ->//|].
 by move/dinsuppPn=> ->; rewrite !mul0r.
 Qed.
 
-Lemma summable_mlet f mu y :
-  summable (fun x : T => mu x * (f x) y).
+Lemma summable_wgtd (f : T -> R) S :
+  (forall x, 0 <= f x <= 1) -> (forall x, 0 <= S x) ->
+    summable S -> summable (S \* f).
 Proof.
-case/summable_seqP: (summable_mu mu)=> M ge0_M h.
-apply/summable_seqP; exists M => // J uqJ.
-apply/(@ler_trans _ (\sum_(j <- J) `|mu j|))/h => //.
-apply/ler_sum=> j _; rewrite normrM ger0_norm //.
-by apply/ler_pimulr=> //; rewrite ger0_norm ?le1_mu1.
+move=> in01_f ge0_S smS; apply/(le_summable (F2 := S)) => // x.
+rewrite mulr_ge0 //=; first by case/andP: (in01_f x).
+by rewrite ler_pimulr //; by case/andP: (in01_f x).
 Qed.
+
+Lemma summable_mu_wgtd (f : T -> R) mu :
+  (forall x, 0 <= f x <= 1) -> summable (fun x => mu x * f x).
+Proof. by move=> in01_f; apply/summable_wgtd. Qed.
+
+
+Lemma summable_mlet f mu y : summable (fun x : T => mu x * (f x) y).
+Proof. by apply/summable_mu_wgtd=> x; rewrite ge0_mu le1_mu1. Qed.
 
 Lemma le_in_dlet f g mu : {in dinsupp mu, f <=2 g} ->
   dlet f mu <=1 dlet g mu.
@@ -430,22 +444,8 @@ move=> /dinsuppP /eqP mux nz_fxy; apply/dinsuppP; rewrite dletE.
 move/eq0_psum => /(_ (summable_mlet _ _ _) x) => /eqP.
 by rewrite mulf_eq0 (negbTE mux) (negbTE nz_fxy).
 Qed.
-End BindTheory.
 
-Lemma dlet_dlet (T U V : choiceType) (mu : {distr T / R}) :
-  forall (f1 : T -> distr U) (f2 : U -> distr V),
-       \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x
-    =1 \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
-Proof using Type. Admitted.
-
-Lemma dlet_additive
-  (T U : choiceType) (mu mu1 mu2 : {distr T / R}) (f : T -> {distr U / R}) z
-:
-  (forall x, mu x = mu1 x + mu2 x) -> (\dlet_(x <- mu) f x) z =
-    (\dlet_(x <- mu1) f x) z + (\dlet_(x <- mu2) f x) z.
-Proof using Type. Admitted.
-
-Lemma dlet_eq0 (T U : choiceType) mu (f : T -> U) y :
+Lemma dlet_eq0 (f : T -> U) mu y :
   {in dinsupp mu, forall x, f x != y} -> (\dlet_(x <- mu) dunit (f x)) y = 0.
 Proof.
 move=> h; unlock dlet => /=; apply/psum_eq0 => x.
@@ -453,6 +453,45 @@ case/boolP: (x \in dinsupp mu) => [|/dinsuppPn->];
   last by rewrite mul0r.
 by move/h; rewrite dunit1E => /negbTE ->; rewrite mulr0.
 Qed.
+End BindTheory.
+
+(* -------------------------------------------------------------------- *)
+Section DLetDLet.
+Context {T U V : choiceType} (f1 : T -> distr U) (f2 : U -> distr V).
+
+Lemma dlet_dlet (mu : {distr T / R}) :
+     \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x
+  =1 \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
+Proof.
+move=> z; unlock dlet => /=; rewrite /mlet /=.
+pose S y x := mu x * (f1 x y * f2 y z).
+rewrite (eq_psum (F2 := fun y => psum (S^~ y))) => [x|].
+  by rewrite -psumZ //; apply/eq_psum => y /=.
+rewrite interchange_psum.
++ by move=> x; apply/summableZ/summable_mlet.
++ rewrite {}/S; apply/(le_summable (F2 := mu)) => //.
+  move=> x; rewrite ge0_psum /= psumZ ?ler_pimulr //.
+  apply/(ler_trans _ (le1_mu (f1 x)))/le_psum => //.
+  by move=> y; rewrite mulr_ge0 //= ler_pimulr ?le1_mu1.
+apply/eq_psum=> y /=; rewrite -psumZr //.
+by apply/eq_psum=> x /=; rewrite {}/S mulrA.
+Qed.
+End DLetDLet.
+
+(* -------------------------------------------------------------------- *)
+Section DLetAlg.
+Context {T U : choiceType} (mu mu1 mu2 : {distr T / R}).
+
+Lemma dlet_additive (f : T -> {distr U / R}) z :
+  (forall x, mu x = mu1 x + mu2 x) -> (\dlet_(x <- mu) f x) z =
+    (\dlet_(x <- mu1) f x) z + (\dlet_(x <- mu2) f x) z.
+Proof.
+move=> muD; rewrite !dletE -psumD /=.
+  by move=> x; rewrite mulr_ge0. by move=> x; rewrite mulr_ge0.
+  by apply/summable_mlet. by apply/summable_mlet.
+by apply/eq_psum=> x /=; rewrite -mulrDl -muD.
+Qed.
+End DLetAlg.
 
 (* -------------------------------------------------------------------- *)
 Definition mlim T (f : nat -> distr T) : T -> R :=
@@ -597,7 +636,7 @@ Qed.
 
 Lemma dlet_lim f h : (forall n m, (n <= m)%N -> f n <=1 f m) ->
   \dlet_(x <- dlim f) h x =1 \dlim_(n) \dlet_(x <- f n) h x.
-Proof using. Admitted.
+Proof. Admitted.
 
 Lemma dlim_let (f : nat -> T -> {distr U / R}) (mu : {distr T / R}) :
   (forall x n m, (n <= m)%N -> f n x <=1 f m x) ->
@@ -762,39 +801,6 @@ by rewrite big_seq1 /= eqxx mul1r ger0_norm.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Section Sum.
-Variables (S : T -> R).
-
-Section FPos.
-Variables (f: T -> R).
-
-Hypothesis ge0_f : forall x, 0 <= f x.
-
-Lemma fneg_ge0 x : fneg f x = 0.
-Proof. by rewrite /fneg minr_l ?normr0. Qed.
-
-Lemma fpos_ge0 x : fpos f x = f x.
-Proof. by rewrite /fpos maxr_r ?ger0_norm. Qed.
-End FPos.
-
-Lemma psum_sum : (forall x, 0 <= S x) -> psum S = sum S.
-Proof.
-move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
-  by move=> x; rewrite fneg_ge0 //. 
-by apply/eq_psum=> x; rewrite fpos_ge0.
-Qed.
-
-Lemma sum_finseq (r : seq T) :
-  uniq r -> {subset [pred x | S x != 0] <= r} ->
-    sum S = \sum_(x <- r) S x.
-Proof using Type. Admitted.
-
-Lemma sum_seq1 x : (forall y, S y != 0 -> x == y) -> sum S = S x.
-Proof using Type. Admitted.
-End Sum.
-
-Arguments sum_seq1 [S] x _.
-
 Lemma pr_exp mu (E : pred T) : \P_[mu] E = \E_[mu] (fun m => (E m)%:R).
 Proof. by rewrite /pr psum_sum // => x; rewrite mulr_ge0 // ler0n. Qed.
 
