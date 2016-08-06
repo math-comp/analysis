@@ -14,6 +14,7 @@ Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
 Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
+Local Notation simpm := Monoid.simpm.
 
 (* -------------------------------------------------------------------- *)
 Section Summable.
@@ -316,6 +317,17 @@ Lemma gerfinseq_psum S (r : seq T) :
 Proof.
 move=> uq_r /gerfin_psum -/(_ (seq_fset r));
   by rewrite (big_seq_fset \`|S|).
+Qed.
+
+Lemma psum_le S z :
+  (forall J, uniq J -> \sum_(j <- J) `|S j| <= z) -> psum S <= z.
+Proof.
+move=> le_z; have: summable S; first (apply/summable_seqP; exists z).
++ by apply/(ler_trans _ (le_z [::] _)) => //; rewrite big_nil.
++ by move=> J uqJ; apply/le_z.
+move/summable_sup=> [neS hsS]; rewrite psum_sup.
+apply/sup_le_ub => //; apply/ubP=> r /imsetbP [J ->].
+by rewrite (big_fset_seq \`|_|) le_z /=; case: J => J /= /canonical_uniq.
 Qed.
 End SumTh.
 
@@ -807,8 +819,89 @@ Context {R : realType} {T U : choiceType} (f : T -> U).
 Let C y := `[exists x : T, f x == y].
 
 Lemma partition_psum (S : T -> R) : summable S ->
+  psum S = psum (fun y => psum (fun x => S x * (f x == y)%:R)).
+Proof.                          (* FIXME: this proof is a joke *)
+move=> smS; rewrite (rwP eqP) eqr_le -(rwP andP); split.
+  pose F x y := `|S x| * (f x == y :> U)%:R.
+  have smFy y: summable (F^~ y).
+    by apply/summable_condr/summable_abs.
+  set G := fun y : U => _; have: summable G.
+    case/summable_seqP: smS => M ge0_M leM.
+    apply/summable_seqP; exists M => // J uqJ; rewrite {}/G.
+    rewrite (eq_bigr (fun y => psum (F^~ y))) => [y _|].
+      rewrite ger0_norm ?ge0_psum //; apply/eq_psum_abs => x.
+      by rewrite !normrM [`|_%:R|]ger0_norm ?(normr_id, ler0n).
+    rewrite psum_bigop // => [y x|].
+      by rewrite mulr_ge0 ?(normr_ge0, ler0n).
+    apply/psum_le=> L uqL; pose G x := \sum_(j <- J | f x == j) `|S x|.
+    rewrite (eq_bigr G) => [x _|]; first rewrite ger0_norm //.
+    + by rewrite sumr_ge0 // => y _; rewrite mulr_ge0.
+    + rewrite /G [RHS]big_mkcond /F /=; apply/eq_bigr=> y _.
+      by case: ifPn => //; rewrite !simpm.
+    rewrite {}/G /F; pose K := [seq x <- L | f x \in J].
+    apply/(ler_trans _ (leM K _)); rewrite ?filter_uniq //.
+    rewrite ler_eqVlt -(rwP orP); left; apply/eqP.
+    rewrite /K big_filter [RHS]big_mkcond /=; apply/eq_bigr.
+    move=> x _; case: ifPn => [fxJ|fxNJ].
+      rewrite big_mkcond (bigD1_seq _ fxJ uqJ) /= eqxx.
+      by rewrite big1 ?addr0 // => y; rewrite eq_sym => /negbTE=> ->.
+    rewrite big_seq_cond big1 // => y; rewrite andbC.
+    by case/andP=> /eqP<-; rewrite (negbTE fxNJ).
+  move=> smG; apply/psum_le => J uqJ; pose K := undup (map f J).
+  move/gerfinseq_psum: smG => /(_ K (undup_uniq _)).
+  move/(ler_trans _); apply; rewrite {}/G.
+  pose G x y := `|S x| * (f x == y)%:R.
+  rewrite (eq_bigr (fun y => psum (G^~ y))).
+    move=> y _; rewrite ger0_norm ?ge0_psum //.
+    rewrite -psum_abs; apply/eq_psum=> x.
+    by rewrite normrM [`|_%:R|]ger0_norm ?ler0n.
+  rewrite psum_bigop => [y x|y|]; first by rewrite mulr_ge0.
+    by apply/summable_condr/summable_abs.
+  rewrite (eq_psum (F2 := fun x => `|S x * (f x \in K)%:R|)).
+    move=> x; rewrite {}/G normrM [`|_%:R|]ger0_norm //.
+    case/boolP: (f x \in K); last first.
+      move=> fxNK; rewrite mulr0 big_seq big1 // => y.
+      apply/contraTeq; rewrite mulf_eq0 pnatr_eq0 eqb0.
+      by rewrite negb_or negbK => /andP[_ /eqP<-].
+    move=> fxK; rewrite (bigD1_seq (f x)) ?undup_uniq //=.
+    rewrite eqxx !mulr1 big1 ?addr0 // => y; rewrite eq_sym.
+    by move/negbTE=> ->; rewrite mulr0.
+  rewrite big_seq (eq_bigr (fun j => `|S j * (f j \in K)%:R|)) {}/G.
+    by move=> x /(map_f f); rewrite -mem_undup => ->; rewrite mulr1.
+  rewrite psum_abs; set G := (fun x : T => _ in X in _<=X).
+  have: summable G by apply/summable_condr.
+  move/gerfinseq_psum => /(_ _ uqJ) /(ler_trans _); apply.
+  by rewrite -big_seq; apply/ler_sum => x _; rewrite normrM.
+apply/psum_le=> J uqJ; pose F j := psum (fun x => `|S x| * (f x == j)%:R).
+rewrite (eq_bigr F) => [y _|]; first rewrite ger0_norm ?ge0_psum //.
++ rewrite -psum_abs; apply/eq_psum => x; rewrite normrM.
+  by rewrite [`|_%:R|]ger0_norm ?ler0n.
+rewrite psum_bigop => [y x|y|].
++ by rewrite mulr_ge0 ?(normr_ge0, ler0n).
++ by apply/summable_condr/summable_abs.
+apply/psum_le=> L uqL; pose K := [seq x <- L | f x \in J].
+have /gerfinseq_psum: uniq K by rewrite filter_uniq.
+move=> /(_ _ _ smS) /(ler_trans _); apply; rewrite big_filter.
+rewrite ler_eqVlt -(rwP orP); left; apply/eqP.
+rewrite [RHS]big_mkcond /=; apply/eq_bigr=> x _.
+rewrite big_seq; case: ifPn => [fx_in_J|fx_Nin_J].
+  rewrite -big_seq (bigD1_seq _ fx_in_J uqJ) /= eqxx mulr1.
+  rewrite big1 ?addr0 ?normr_id // => y; rewrite eq_sym.
+  by move/negbTE=> ->; rewrite mulr0.
+rewrite big1 ?normr0 // => y; apply/contraTeq.
+rewrite mulf_eq0 pnatr_eq0 eqb0 negb_or negbK.
+by case/andP => _ /eqP<-.
+Qed.
+
+Lemma partition_psum_cond (S : T -> R) : summable S ->
   psum S = psum (fun y => (C y)%:R * psum (fun x => S x * (f x == y)%:R)).
-Proof. Admitted.
+Proof.
+move=> smS; apply/(eq_trans (partition_psum smS)).
+apply/eq_psum => y; case/boolP: (C y); rewrite !simpm //.
+move=> NCy; rewrite psum_eq0 // => x; case: (_ =P y).
+  by move/eqP=> fxE; move/existsbP: NCy; case; exists x.
+by rewrite mulr0.
+Qed.
 End PSumPartition.
 
 (* -------------------------------------------------------------------- *)
