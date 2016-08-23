@@ -66,11 +66,14 @@ Section ClassDef.
 
 Record class_of (R : Type) : Type := Class {
   base : Num.ArchimedeanField.class_of R;
+  mixin_rcf : Num.real_closed_axiom (Num.NumDomain.Pack base R);
   mixin : mixin_of (Num.ArchimedeanField.Pack base R)
 }.
 
 Local Coercion base : class_of >-> Num.ArchimedeanField.class_of.
-
+Local Coercion base_rcf R (c : class_of R) : Num.RealClosedField.class_of R :=
+  @Num.RealClosedField.Class _ c (@mixin_rcf _ c). 
+  
 Structure type := Pack {sort; _ : class_of sort; _ : Type}.
 Local Coercion sort : type >-> Sortclass.
 Variables (T : Type) (cT : type).
@@ -81,7 +84,8 @@ Notation xclass := (class : class_of xT).
 
 Definition pack b0 (m0 : mixin_of (@Num.ArchimedeanField.Pack T b0 T)) :=
   fun bT b & phant_id (Num.ArchimedeanField.class bT) b =>
-  fun    m & phant_id m0 m => Pack (@Class T b m) T.
+  fun bTr br & phant_id (Num.NumDomain.class bTr) br =>
+  fun    m & phant_id m0 m => Pack (@Class T b br m) T.
 
 Definition eqType := @Equality.Pack cT xclass xT.
 Definition choiceType := @Choice.Pack cT xclass xT.
@@ -99,11 +103,14 @@ Definition numFieldType := @Num.NumField.Pack cT xclass xT.
 Definition join_realDomainType := @Num.RealDomain.Pack numFieldType xclass xT.
 Definition realFieldType := @Num.RealField.Pack cT xclass xT.
 Definition archimedeanFieldType := @Num.ArchimedeanField.Pack cT xclass xT.
+Definition rcfType := @Num.RealClosedField.Pack cT xclass xT.
+Definition join_rcfType := @Num.RealClosedField.Pack archimedeanFieldType xclass xT.
 
 End ClassDef.
 
 Module Exports.
 Coercion base : class_of >-> Num.ArchimedeanField.class_of.
+Coercion base_rcf : class_of >-> Num.RealClosedField.class_of.
 Coercion mixin : class_of >-> mixin_of.
 Coercion sort : type >-> Sortclass.
 Bind Scope ring_scope with sort.
@@ -136,9 +143,12 @@ Coercion realFieldType : type >-> Num.RealField.type.
 Canonical realFieldType.
 Coercion archimedeanFieldType : type >-> Num.ArchimedeanField.type.
 Canonical archimedeanFieldType.
+Coercion rcfType : type >-> Num.RealClosedField.type.
+Canonical rcfType.
+Canonical join_rcfType.
 
 Notation realType := type.
-Notation RealType T m := (@pack T _ m _ _ id _ id).
+Notation RealType T m := (@pack T _ m _ _ id _ _ id _ id).
 Notation RealMixin := EtaMixin.
 Notation "[ 'ringType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
   (at level 0, format "[ 'ringType'  'of'  T  'for'  cT ]") : form_scope.
@@ -188,14 +198,14 @@ End BaseReflect.
 (* -------------------------------------------------------------------- *)
 Lemma sup_upper_bound {R : realType} (E : pred R):
   has_sup E -> (forall x, x \in E -> x <= sup E).
-Proof. by move=> supE; apply/ubP; case: R E supE=> ? [? []]. Qed.
+Proof. by move=> supE; apply/ubP; case: R E supE=> ? [? ? []]. Qed.
 
 Lemma sup_adherent {R : realType} (E : pred R) (eps : R) :
   has_sup E -> 0 < eps -> exists2 e : R, e \in E & (sup E - eps) < e.
-Proof. by case: R E eps=> ? [? []]. Qed.
+Proof. by case: R E eps=> ? [? ? []]. Qed.
 
 Lemma sup_out {R : realType} (E : pred R) : ~ has_sup E -> sup E = 0.
-Proof. by case: R E => ? [? []]. Qed.
+Proof. by case: R E => ? [? ? []]. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section IsInt.
