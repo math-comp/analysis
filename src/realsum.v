@@ -717,11 +717,52 @@ Lemma psumD S1 S2 :
     (forall x, 0 <= S1 x) -> (forall x, 0 <= S2 x)
   -> summable S1 -> summable S2
   -> psum (S1 \+ S2) = (psum S1 + psum S2)%R.
-Proof using Type. Admitted.
+Proof.
+move=> ge0_S1 ge0_S2 smS1 smS2; have smD := summableD smS1 smS2.
+have ge0D: forall x, 0 <= S1 x + S2 x by move=> x; rewrite addr_ge0.
+rewrite !psumE // (rwP eqP) eqr_le -(rwP andP); split.
+  apply/sup_le_ub.
+  + by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
+  apply/ubP=> _ /imsetbP[J ->]; rewrite big_split /=.
+  apply/ler_add; rewrite -psumE 1?(ler_trans _ (gerfin_psum J _)) //.
+  + by apply/ler_sum=> j _ /=; apply/ler_norm.
+  + by apply/ler_sum=> j _ /=; apply/ler_norm.
+rewrite -ler_subr_addr; apply/sup_le_ub.
++ by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
+apply/ubP=> _ /imsetbP[J1 ->]; rewrite ler_subr_addr addrC.
+rewrite -ler_subr_addr; apply/sup_le_ub.
++ by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
+apply/ubP=> _ /imsetbP[J2 ->]; rewrite ler_subr_addr addrC.
+pose J := J1 `|` J2; rewrite -psumE ?(ler_trans _ (gerfin_psum J _)) //.
+pose D := \sum_(j : J) (S1 (val j) + S2 (val j)).
+apply/(@ler_trans _ D); last by apply/ler_sum=> i _; apply/ler_norm.
+rewrite /D big_split /=; apply/ler_add; apply/big_fset_subset=> //.
++ by apply/fsubsetP/fsubsetUl. + by apply/fsubsetP/fsubsetUr.
+Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma psumZ S c : 0 <= c -> psum (c \*o S) = c * psum S.
-Proof using Type. Admitted.
+Proof.
+rewrite ler_eqVlt => /orP[/eqP<-|gt0_c].
+  by rewrite mul0r psum_eq0 // => x /=; rewrite mul0r.
+case/asboolP: (summable S) => [smS|NsmS]; last first.
+  rewrite !psum_out ?mulr0 // => smZ; apply/NsmS.
+  move/(summableZ c^-1): smZ; apply/eq_summable=> x /=.
+  by rewrite mulKf // gtr_eqF.
+have smZ := summableZ c smS; rewrite (rwP eqP) eqr_le.
+apply/andP; split; first rewrite {1}/psum asboolT //.
+  apply/sup_le_ub.
+  + by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
+  apply/ubP=> _ /imsetbP[J ->]; rewrite -ler_pdivr_mull //.
+  rewrite mulr_sumr (ler_trans _ (gerfin_psum J _)) //.
+  apply/ler_sum=> /= j _; rewrite normrM.
+  by rewrite gtr0_norm // mulKf ?gtr_eqF.
+rewrite -ler_pdivl_mull // {1}/psum asboolT //; apply/sup_le_ub.
++ by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
+apply/ubP=> _ /imsetbP[J ->]; rewrite ler_pdivl_mull //.
+rewrite mulr_sumr; apply/(ler_trans _ (gerfin_psum J _))=> //.
+by apply/ler_sum=> /= j _; rewrite normrM (gtr0_norm gt0_c).
+Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma psumZr S c :
