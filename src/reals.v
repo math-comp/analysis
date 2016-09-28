@@ -559,6 +559,17 @@ apply/eqP; rewrite eqr_le sup_upper_bound ?inE // andbT.
 apply/sup_le_ub; first by exists c; rewrite inE eqxx.
 by apply/ubP=> y; rewrite inE => /eqP ->.
 Qed.
+
+Lemma lt_sup_imfset {T : Type} (F : T -> R) l :
+  has_sup [pred y | `[exists x, y == F x]] ->
+  l < sup [pred y | `[exists x, y == F x]] ->
+  exists2 x, l < F x & F x <= sup [pred y | `[exists x, y == F x]].
+Proof.
+set P := [pred y | _]; move=> hs; rewrite -subr_gt0.
+case/(sup_adherent hs)=> _ /imsetbP[x ->]; rewrite subKr => lt_lFx.
+exists x=> //; apply/sup_upper_bound => //.
+by apply/imsetbP; exists x.
+Qed.
 End Sup.
 
 (* -------------------------------------------------------------------- *)

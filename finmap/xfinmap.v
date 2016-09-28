@@ -13,6 +13,12 @@ Local Open Scope ring_scope.
 Local Open Scope fset_scope.
 
 (* -------------------------------------------------------------------- *)
+Lemma uniq_fset_keys {K : choiceType} (J : {fset K}) : uniq (fset_keys J).
+Proof. by case: J => J /= /canonical_uniq. Qed.
+
+Hint Resolve uniq_fset_keys.
+
+(* -------------------------------------------------------------------- *)
 Section BigFSet.
 Variable (R : Type) (idx : R) (op : Monoid.law idx).
 
@@ -78,6 +84,23 @@ Arguments big_seq_fset_cond [R idx op T s] P F _.
 Arguments big_seq_fset [R idx op T s] F _.
 
 (* -------------------------------------------------------------------- *)
+Section BigFSetU.
+Context {R : Type} {T : choiceType} (idx : R) (op : Monoid.com_law idx).
+
+Lemma big_fsetU (A B : {fset T}) F : [disjoint A & B] ->
+  \big[op/idx]_(j : A `|` B) F (val j) =
+    op (\big[op/idx]_(j : A) F (val j))
+       (\big[op/idx]_(j : B) F (val j)).
+Proof.
+move=> dj_AB; rewrite !big_fset_seq -big_cat; apply/eq_big_perm.
+apply/uniq_perm_eq=> //.
++ rewrite cat_uniq ?uniq_fset_keys !(andbT, andTb); apply/hasPn => x /=.
+  by rewrite -!pred_of_finsetE; apply/fdisjointP; rewrite fdisjoint_sym.
++ by move=> x; rewrite mem_cat -!pred_of_finsetE in_fsetE.
+Qed.
+End BigFSetU.
+
+(* -------------------------------------------------------------------- *)
 Section BigFSetOrder.
 Variable (R : realDomainType) (T : choiceType).
 
@@ -90,8 +113,6 @@ rewrite [X in _<=X](bigID [pred j : T | j \in I]) /=.
 rewrite ler_paddr ?sumr_ge0 // -[X in _<=X]big_filter.
 rewrite ler_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
 apply/uniq_perm_eq; rewrite ?filter_uniq //; last move=> i.
-  by case: {+}I => K /= /canonical_uniq.
-  by case: {+}J => K /= /canonical_uniq.
 rewrite mem_filter -!pred_of_finsetE; case/boolP: (_ \in _) => //=.
 by move/le_IJ => ->.
 Qed.

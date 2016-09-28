@@ -329,6 +329,14 @@ move/summable_sup=> [neS hsS]; rewrite psum_sup.
 apply/sup_le_ub => //; apply/ubP=> r /imsetbP [J ->].
 by rewrite (big_fset_seq \`|_|) le_z /=; case: J => J /= /canonical_uniq.
 Qed.
+
+Lemma lt_psum (F : T -> R) l :
+  summable F -> l < psum F ->
+    exists J : {fset T}, l < \sum_(j : J) `|F (val j)|.
+Proof.
+move=> smF; rewrite /psum (asboolT smF) => /lt_sup_imfset.
+by case=> /= [|J lt_lJ _]; [apply/summable_sup | exists J].
+Qed.
 End SumTh.
 
 (* -------------------------------------------------------------------- *)
@@ -465,6 +473,50 @@ Lemma sum_ncvg l :
   ncvg (fun n => \sum_(i < n) S i) l%:E -> summable S.
 Proof using ge0_S. Abort.
 End PSumCnv.
+
+(* -------------------------------------------------------------------- *)
+Section PSumAsLim.
+Context {R : realType} {T : choiceType}.
+
+Variable (S : T -> R) (P : nat -> {fset T}).
+
+Hypothesis ge0_S   : (forall x, 0 <= S x).
+Hypothesis smS     : summable S.
+Hypothesis homo_P  : forall n m, (n <= m)%N -> (P n `<=` P m).
+Hypothesis cover_P : forall x, S x != 0 -> exists n, x \in P n.
+
+Lemma psum_as_lim : psum S = nlim (fun n => \sum_(j : P n) (S (val j))).
+Proof.
+set v := fun n => _; have hm_v m n: (m <= n)%N -> v m <= v n.
+  by move=> le_mn; apply/big_fset_subset/fsubsetP/homo_P.
+have bd_v n : v n <= psum S.
+  apply/(ler_trans _ (gerfin_psum _ smS))/ler_sum.
+  by move=> J _; apply/ler_norm.
+case: (ncvg_mono_bnd hm_v) => [|l cv].
+  apply/asboolP/nboundedP; exists (psum S + 1) => //.
+    by apply/(ler_lt_trans (ge0_psum S)); rewrite ltr_addl ltr01.
+  move=> n; rewrite ger0_norm ?sumr_ge0 //.
+  by rewrite (ler_lt_trans (bd_v n)) // ltr_addl ltr01.
+have le_lS: l <= psum S by rewrite -lee_fin (ncvg_leC _ cv).
+rewrite (nlimE cv) /= (rwP eqP) eqr_le le_lS andbT.
+rewrite lerNgt; apply/negP=> {le_lS} /(lt_psum smS)[J].
+rewrite (big_fset_seq \`|_|) /=; case: J => /= J.
+move/canonical_uniq=> uqJ lt_jS; pose K := [seq x <- J | S x != 0].
+have [n]: exists n, {subset K <= P n}; first rewrite {}/K.
+  elim: {uqJ lt_jS} J => /= [|x J [n ih]]; first by exists 0%N.
+  case: (S x =P 0) => /=; first by move=> _; exists n.
+  move/eqP/cover_P=> [k Pk_x]; exists (maxn n k)=> y.
+  rewrite inE => /orP[/eqP->|/=].
+    by apply/fsubsetP/homo_P/leq_maxr: x Pk_x.
+  by move/ih; apply/fsubsetP/homo_P/leq_maxl: y.
+move=> le_K_Pn; have: l < v n; first apply/(ltr_le_trans lt_jS).
+  rewrite (eq_bigr S) => [x _|]; first by rewrite ger0_norm.
+  rewrite /v (bigID (fun x => S x == 0)) /= big1 => [x /eqP|] //.
+  rewrite add0r -big_filter -/K -big_seq_fset ?filter_uniq //=.
+  by apply/big_fset_subset => // x /in_seq_fset /le_K_Pn.
+by apply/negP; rewrite -lerNgt -lee_fin ncvg_homo_le.
+Qed.
+End PSumAsLim.
 
 (* -------------------------------------------------------------------- *)
 Section SummableAlg.
