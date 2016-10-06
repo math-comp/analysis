@@ -522,6 +522,26 @@ End PSumAsLim.
 Section SummableAlg.
 Context {R : realType} (T : choiceType) (I : Type).
 
+(* -------------------------------------------------------------------- *)
+Lemma summable_addrC (S1 S2 : T -> R) :
+  summable (S1 \+ S2) -> summable (S2 \+ S1).
+Proof. by apply/eq_summable => x; rewrite /= addrC. Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summable_mulrC (S1 S2 : T -> R) :
+  summable (S1 \* S2) -> summable (S2 \* S1).
+Proof. by apply/eq_summable => x; rewrite /= mulrC. Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summable_abs (S : T -> R) : summable \`|S| <-> summable S.
+Proof.
+have h J: \sum_(j <- J) `| `|S j| | = \sum_(j <- J) `|S j|.
+  by apply/eq_bigr=> j _; rewrite normr_id.
+split=> /summable_seqP[M ge0_M leM]; apply/summable_seqP;
+  by exists M=> // => J /leM; rewrite h.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Lemma summable0 : summable (fun _ : T => 0 : R).
 Proof. by exists 0 => J; rewrite big1 ?normr0. Qed.
 
@@ -571,29 +591,6 @@ by move=> x /=; rewrite addrC.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma summableMl (S1 S2 : T -> R) :
-  (exists2 M, 0 <= M & forall x, `|S1 x| <= M) -> summable S2 -> summable (S1 \* S2).
-Proof.
-case=> [M1 ge0_M1 h1] /summableP[M2 ge0_M2 h2].
-exists (M1 * M2) => J; pose E := M1 * \sum_(j : J) `|S2 (val j)|.
-rewrite (@ler_trans _ E) // {}/E 1?ler_wpmul2l //.
-by rewrite mulr_sumr ler_sum => //= j _; rewrite normrM ler_wpmul2r.
-Qed.
-
-Lemma summableM (S1 S2 : T -> R) :
-  summable S1 -> summable S2 -> summable (S1 \* S2).
-Proof.                          (* FIXME: summableMl *)
-move=> /summableP[M1 ge0_M1 h1] /summableP[M2 ge0_M2 h2].
-exists (M1 * M2) => J; pose E := (\sum_(j : J) `|S1 (val j)|) * M2.
-rewrite (@ler_trans _ E) //; last first.
-  by rewrite /E ler_wpmul2r ?h1.
-rewrite /E mulr_suml ler_sum => //= j _.
-rewrite normrM ler_wpmul2l //; move/(_ J): h2.
-rewrite (bigD1 j) //= => /(ler_trans _).
-by apply; rewrite ler_addl sumr_ge0.
-Qed.
-
-(* -------------------------------------------------------------------- *)
 Lemma summableZ (S : T -> R) c : summable S -> summable (c \*o S).
 Proof.
 case=> [M h]; exists (`|c| * M) => J; move/(_ J): h => /=.
@@ -603,12 +600,31 @@ by left; apply/eqP/eq_bigr=> j _; rewrite normrM.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma summable_abs (S : T -> R) : summable \`|S| <-> summable S.
+Lemma summableZr (S : T -> R) (c : R) :
+  summable S -> summable (c \o* S).
+Proof. by move=> smS; apply/summable_mulrC/summableZ. Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summableMl (S1 S2 : T -> R) :
+  (exists M, forall x, `|S1 x| <= M) -> summable S2 -> summable (S1 \* S2).
 Proof.
-have h J: \sum_(j <- J) `| `|S j| | = \sum_(j <- J) `|S j|.
-  by apply/eq_bigr=> j _; rewrite normr_id.
-split=> /summable_seqP[M ge0_M leM]; apply/summable_seqP;
-  by exists M=> // => J /leM; rewrite h.
+case=> M leM smS2; apply/summable_abs.
+apply/(le_summable (F2 := M \*o \`|S2|)).
++ by move=> x /=; rewrite normr_ge0 /= normrM ler_wpmul2r.
++ by apply/summableZ/summable_abs.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summableMr (S1 S2 : T -> R) :
+  (exists M, forall x, `|S2 x| <= M) -> summable S1 -> summable (S1 \* S2).
+Proof. by move=> bd sm; apply/summable_mulrC/summableMl. Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma summableM (S1 S2 : T -> R) :
+  summable S1 -> summable S2 -> summable (S1 \* S2).
+Proof.
+move=> smS1 smS2; apply/summableMl => //; exists (psum S1).
+by move=> x; apply/ger1_psum.
 Qed.
 
 (* -------------------------------------------------------------------- *)

@@ -33,6 +33,8 @@ Reserved Notation "\E?_[ mu ] f" (at level 2, format "\E?_[ mu ]  f").
 Reserved Notation "\E_[ mu ] f" (at level 2, format "\E_[ mu ]  f").
 Reserved Notation "\E_[ mu , A ] f" (at level 2, format "\E_[ mu ,  A ]  f").
 
+Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
+
 (* -------------------------------------------------------------------- *)
 Section Distribution.
 Variables (R : realType) (T : choiceType).
@@ -380,19 +382,13 @@ rewrite -eq_mu; case/boolP: (x \in dinsupp mu) => [/eq_f ->//|].
 by move/dinsuppPn=> ->; rewrite !mul0r.
 Qed.
 
-Lemma summable_wgtd (f : T -> R) S :
-  (forall x, 0 <= f x <= 1) -> (forall x, 0 <= S x) ->
-    summable S -> summable (S \* f).
-Proof.
-move=> in01_f ge0_S smS; apply/(le_summable (F2 := S)) => // x.
-rewrite mulr_ge0 //=; first by case/andP: (in01_f x).
-by rewrite ler_pimulr //; by case/andP: (in01_f x).
-Qed.
-
 Lemma summable_mu_wgtd (f : T -> R) mu :
   (forall x, 0 <= f x <= 1) -> summable (fun x => mu x * f x).
-Proof. by move=> in01_f; apply/summable_wgtd. Qed.
-
+Proof.
+move=> in01_f; apply/summableMr=> //.
+exists 1 => x; case/andP: (in01_f x) => ge0_fx le1_fx.
+by rewrite ger0_norm.
+Qed.
 
 Lemma summable_mlet f mu y : summable (fun x : T => mu x * (f x) y).
 Proof. by apply/summable_mu_wgtd=> x; rewrite ge0_mu le1_mu1. Qed.
@@ -827,6 +823,27 @@ Proof.
 by rewrite pr_predT psum_sum // [RHS]mulrC -sumZ; apply/eq_sum.
 Qed.
 
+Lemma exp0 mu : \E_[mu] (fun _ => 0) = 0.
+Proof. by rewrite exp_cst mulr0. Qed.
+
+Lemma has_expC mu c : \E?_[mu] (fun _ => c).
+Proof. by apply/summableMl => //; exists `|c|. Qed.
+
+Lemma has_exp0 mu : \E?_[mu] (fun _ => 0).
+Proof. by apply/(has_expC mu 0). Qed.
+
+Lemma has_exp1 mu : \E?_[mu] (fun _ => 1).
+Proof. by apply/(has_expC mu 1). Qed.
+
+Lemma has_expZ mu c F : \E?_[mu] F -> \E?_[mu] (c \*o F).
+Proof.
+move=> heF; have: summable (c \*o (F \* mu)) by apply/summableZ.
+by apply/eq_summable => x /=; rewrite mulrA.
+Qed.
+
+Lemma expZ mu F c : \E_[mu] (c \*o F) = c * \E_[mu] F.
+Proof. by rewrite -sumZ; apply/eq_sum=> x /=; rewrite mulrA. Qed.
+
 Lemma ge0_pr A mu : 0 <= \P_[mu] A.
 Proof. by apply/ge0_psum. Qed.
 
@@ -1074,7 +1091,7 @@ Proof using Type. Admitted.
 
 Lemma has_esp_bounded f mu :
   (exists M, forall x, `|f x| < M) -> \E?_[mu] f.
-Proof.
+Proof.                          (* TO BE REMOVED *)
 case=> M ltM; rewrite /has_esp; apply/summable_seqP.
 exists (Num.max M 0); first by rewrite ler_maxr lerr orbT.
 move=> J uqJ; apply/(@ler_trans _ (\sum_(j <- J) M * mu j)).
@@ -1086,6 +1103,31 @@ case: (ltrP M 0) => [lt0_M|ge0_M].
 by rewrite maxr_l // -mulr_sumr ler_pimulr // -pr_mem ?le1_pr.
 Qed.
 
+Lemma bounded_has_exp mu F :
+  (exists M, forall x, `|F x| <= M) -> \E?_[mu] F.
+Proof. by move=> leM; apply/summableMl. Qed.
+
+Lemma summable_has_exp mu F : summable F -> \E?_[mu] F.
+Proof.
+move=> smF; apply/summableMr => //; exists 1.
+by move=> x; rewrite ger0_norm // le1_mu1.
+Qed.
+
+Lemma exp_le_bd mu F (M : R) :
+  0 <= M -> (forall x, `|F x| <= M) -> \E_[mu] F <= M.
+Proof.
+move=> ge0M bd; apply/(@ler_trans _ (\E_[mu] (fun _ => M))).
++ apply/le_exp.
+  + by apply/bounded_has_exp; exists M.
+  + by apply/has_expC.
+  + by move=> x; apply/(ler_trans _ (bd x))/ler_norm.
+by rewrite exp_cst ler_pimull // le1_pr.
+Qed.
+
+Lemma exp_dlet mu (nu : T -> {distr U / R}) F :
+  (forall eta, \E?_[eta] F) ->
+    \E_[dlet nu mu] F = \E_[mu] (fun x => \E_[nu x] F).
+Proof using Type*. Admitted.
 End PrTheory.
 
 (* -------------------------------------------------------------------- *)
