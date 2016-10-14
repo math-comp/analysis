@@ -1131,3 +1131,50 @@ Proof using Type*. Admitted.
 End PrTheory.
 
 (* -------------------------------------------------------------------- *)
+Section Jensen.
+Context {R : realType} {I : finType}.
+
+Definition convexon (a b : {ereal R}) (f : R -> R) :=
+  forall x y, (a <= x%:E <= b)%E -> (a <= y%:E <= b)%E ->
+    forall t, 0 <= t <= 1 ->
+      f (t * x + (1 - t) * y) <= t * (f x) + (1 - t) * (f y).
+
+Notation convex f := (convexon \-inf \+inf f).
+
+Section Jensen.
+Context (f : R -> R) (x l : I -> R).
+
+Hypothesis cvx_f : convex f.
+Hypothesis ge0_l : forall x, 0 <= l x.
+Hypothesis eq1_l : \sum_i (l i) = 1.
+
+Lemma Jensen : f (\sum_i (l i * x i)) <= \sum_i (l i * f (x i)).
+Proof.
+case: (index_enum I) eq1_l => [|i s]; rewrite ?(big_nil, big_cons).
+  by move/esym/eqP; rewrite oner_eq0.
+elim: {i} s (l i) (ge0_l i) (x i) => [|j s ih] li ge0_li xi.
+  by rewrite !big_nil !addr0 => ->; rewrite !mul1r.
+rewrite !big_cons; have := ge0_l j; rewrite ler_eqVlt.
+case/orP => [/eqP<-|gt0_lj].
+  by rewrite !Monoid.simpm /=; apply/ih.
+rewrite !addrA => eq1; pose z := (li * xi + l j * x j) / (li + l j).
+have nz_lij: li + l j != 0 by rewrite gtr_eqF ?ltr_paddl.
+have/ih := eq1 => -/(_ _ z); rewrite [_ * (_ / _)]mulrC.
+rewrite mulfVK // => {ih}ih; apply/(ler_trans (ih _)).
+  by rewrite addr_ge0 ?ge0_l.
+rewrite ler_add2r {ih}/z mulrDl ![_*_/_]mulrAC.
+set c1 : R := _ / _; set c2 : R := _ / _; have eqc2: c2 = 1 - c1.
+  apply/(mulfI nz_lij); rewrite mulrBr mulr1 ![(li + l j)*_]mulrC.
+  by apply/eqP; rewrite !mulfVK // eq_sym subr_eq addrC.
+set c := (li + l j); pose z := (c * c1 * f xi + c * c2 * f (x j)).
+apply/(@ler_trans _ z); last by rewrite /z ![_*(_/_)]mulrC !mulfVK.
+rewrite {}/z -![c * _ * _]mulrA -mulrDr ler_wpmul2l ?addr_ge0 //.
+rewrite eqc2 cvx_f // divr_ge0 ?addr_ge0 //=.
+by rewrite ler_pdivr_mulr ?mul1r ?ler_addl ?ltr_paddl.
+Qed.
+End Jensen.
+End Jensen.
+
+Notation convex f := (convexon \-inf \+inf f).
+
+(* -------------------------------------------------------------------- *)
