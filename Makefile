@@ -16,7 +16,7 @@ COQFILES := \
 	src/realsum.v \
 	src/distr.v \
 	src/coupling.v \
-	src/sandbox.v
+	src/filters.v
 
 include Makefile.common
 
