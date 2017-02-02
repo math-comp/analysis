@@ -4,10 +4,9 @@
 NAME     := SsrReals
 SUBDIRS  :=
 INCFLAGS :=
-INCFLAGS += -R finmap $(NAME) -R src $(NAME)
+INCFLAGS += -R src $(NAME)
 COQFILES := \
-	finmap/finmap.v \
-	finmap/xfinmap.v \
+	src/xfinmap.v \
 	src/boolp.v \
 	src/reals.v \
 	src/dedekind.v \

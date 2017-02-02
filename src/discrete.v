@@ -1,6 +1,6 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra bigenough.
-(* ------- *) Require Import finmap boolp reals.
+(* ------- *) Require Import xfinmap boolp reals.
 (* ------- *) Require (*--*) Setoid.
 
 (* -------------------------------------------------------------------- *)

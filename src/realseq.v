@@ -1,6 +1,6 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra bigenough.
-From SsrReals Require Import finmap boolp reals discrete.
+From SsrReals Require Import xfinmap boolp reals discrete.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
