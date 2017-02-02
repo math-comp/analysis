@@ -8,6 +8,7 @@ INCFLAGS += -R src $(NAME)
 COQFILES := \
 	src/xfinmap.v \
 	src/boolp.v \
+	src/xsets.v \
 	src/reals.v \
 	src/dedekind.v \
 	src/discrete.v \

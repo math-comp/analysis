@@ -9,7 +9,9 @@ Unset Printing Implicit Defensive.
 (* -------------------------------------------------------------------- *)
 Record mclassic := {
   _ : forall (P : Prop), {P}+{~P};
-  _ : forall (P : Prop), P = True \/ P = False
+  _ : forall (P : Prop), P = True \/ P = False;
+  _ : forall {T U : Type} (f g : T -> U),
+        (forall x, f x = g x) -> f = g;
 }.
 
 Axiom classic : mclassic.
@@ -23,6 +25,10 @@ Proof. by case classic. Qed.
 
 Lemma lem (P : Prop): P \/ ~P.
 Proof. by case: (pselect P); tauto. Qed.
+
+Lemma funext {T U : Type} (f g : T -> U):
+  (forall x, f x = g x) -> f = g.
+Proof. by case: classic=> _ _; apply. Qed.
 
 (* -------------------------------------------------------------------- *)
 Definition asbool (P : Prop) :=
