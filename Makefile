@@ -4,8 +4,12 @@
 NAME     := SsrReals
 SUBDIRS  :=
 INCFLAGS :=
-INCFLAGS += -R src $(NAME)
+INCFLAGS += -R src $(NAME) -R ../finmap $(NAME) 
 COQFILES := \
+	../finmap/finmap.v \
+	../finmap/multiset.v \
+	../finmap/order.v \
+	../finmap/set.v \
 	src/xfinmap.v \
 	src/boolp.v \
 	src/xsets.v \

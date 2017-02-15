@@ -1,5 +1,6 @@
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect order set.
+From mathcomp Require Import all_ssreflect.
+(* ------- *) Require Import order set.
 (* ------- *) Require Import boolp.
 
 Import Order.Def Order.Syntax Order.Theory SET.SetSyntax.
