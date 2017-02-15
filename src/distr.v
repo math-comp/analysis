@@ -210,6 +210,46 @@ Lemma lef_dnull {R : realType} {T : choiceType} (mu : {distr T / R}) :
 Proof. by move=> x; rewrite dnullE ge0_mu. Qed.
 
 (* -------------------------------------------------------------------- *)
+Section Restr.
+Context {R : realType} {T : choiceType} (p : pred T).
+
+Definition mrestr (mu : {distr T / R}) :=
+  fun x => if p x then mu x else 0.
+
+Lemma isd_mrestr (mu : {distr T / R}) : isdistr (mrestr mu).
+Proof.
+split=> [x|J]; first by rewrite /mrestr; case: ifP.
+move=> eqJ; apply/(@ler_trans _ (\sum_(j <- J) `|mu j|)).
++ apply/ler_sum=> i _; rewrite /mrestr; case: ifPn=> _.
+  by apply/ler_norm. by apply/normr_ge0.
++ by apply/(ler_trans _ (le1_mu mu))/gerfinseq_psum.
+Qed.
+
+Definition drestr (mu : {distr T / R}) := locked (mkdistr (isd_mrestr mu)).
+
+Lemma drestrE (mu : {distr T / R}) x :
+  drestr mu x = if p x then mu x else 0.
+Proof. by unlock drestr. Qed.
+End Restr.
+
+(* -------------------------------------------------------------------- *)
+Section RestrTheory.
+Context {R : realType} {T : choiceType}.
+
+Lemma drestrD (mu : {distr T / R}) (p : pred T) x :
+  mu x = drestr p mu x + drestr (predC p) mu x.
+Proof. by rewrite !drestrE !inE; case: ifPn; rewrite /= (addr0, add0r). Qed.
+
+Lemma dinsupp_restr (mu : {distr T / R}) (p : pred T) x :
+  (x \in dinsupp (drestr p mu)) = (x \in dinsupp mu) && p x.
+Proof.
+apply/dinsuppP/idP.
+- by rewrite drestrE; case: ifP=> // _ /dinsuppP ->.
+- by case/andP; rewrite drestrE => /dinsuppP ? ->.
+Qed.
+End RestrTheory.
+
+(* -------------------------------------------------------------------- *)
 Section DRat.
 Context {R : realType} (T : choiceType).
 
