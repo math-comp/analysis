@@ -489,6 +489,17 @@ case/boolP: (x \in dinsupp mu) => [|/dinsuppPn->];
   last by rewrite mul0r.
 by move/h; rewrite dunit1E => /negbTE ->; rewrite mulr0.
 Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma eq0_dlet (mu : {distr T / R}) (F : T -> {distr U / R}) y :
+  (\dlet_(x <- mu) F x) y = 0 -> forall x, x \in dinsupp mu -> F x y = 0.
+Proof.
+unlock dlet; rewrite /= /mlet => /eq0_psum h x /dinsuppP /eqP mu_x.
+have {h}/h: summable (fun x => mu x * F x y).
+  apply/(le_summable (F2 := mu)) => // z.
+  by rewrite mulr_ge0 //= ler_pimulr // le1_mu1.
+by move/(_ x)/eqP; rewrite mulf_eq0 (negbTE mu_x) /= => /eqP.
+Qed.
 End BindTheory.
 
 (* -------------------------------------------------------------------- *)
