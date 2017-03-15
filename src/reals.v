@@ -4,7 +4,9 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra bigenough.
-(* ------- *) Require Import boolp Setoid.
+From SsrReals Require Import boolp.
+
+Require Import Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.

@@ -2,14 +2,8 @@
 
 # --------------------------------------------------------------------
 NAME     := SsrReals
-SUBDIRS  :=
-INCFLAGS :=
-INCFLAGS += -R src $(NAME) -R ../finmap $(NAME) 
+INCFLAGS := -R src $(NAME)
 COQFILES := \
-	../finmap/finmap.v \
-	../finmap/multiset.v \
-	../finmap/order.v \
-	../finmap/set.v \
 	src/xfinmap.v \
 	src/boolp.v \
 	src/xsets.v \
@@ -47,5 +41,8 @@ count:
 	  awk '{printf ("%d (spec=%d+proof=%d)\n", $$1+$$2, $$1, $$2)}'
 
 # --------------------------------------------------------------------
+this-clean::
+	rm -f $(COQFILES:%.v=%.aux)
+
 this-distclean::
 	rm -f $(shell find . -name '*~')
