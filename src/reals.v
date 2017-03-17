@@ -152,10 +152,10 @@ Canonical join_rcfType.
 Notation realType := type.
 Notation RealType T m := (@pack T _ m _ _ id _ _ id _ id).
 Notation RealMixin := EtaMixin.
-Notation "[ 'ringType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
-  (at level 0, format "[ 'ringType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'ringType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'ringType'  'of'  T ]") : form_scope.
+Notation "[ 'realType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
+  (at level 0, format "[ 'realType'  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'realType' 'of' T ]" := (@clone T _ _ id)
+  (at level 0, format "[ 'realType'  'of'  T ]") : form_scope.
 
 End Exports.
 End Real.
