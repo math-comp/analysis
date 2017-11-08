@@ -30,7 +30,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import GRing.Theory Num.Def Num.Theory.
 
-
 Local Open Scope R_scope.
 
 Lemma Req_EM_T (r1 r2 : R) : {r1 = r2} + {r1 <> r2}.
@@ -49,8 +48,8 @@ Proof.
 by move=> r1 r2; rewrite /eqr; case: Req_EM_T=> H; apply: (iffP idP).
 Qed.
 
-Canonical Structure R_eqMixin := EqMixin eqrP.
-Canonical Structure R_eqType := Eval hnf in EqType R R_eqMixin.
+Canonical R_eqMixin := EqMixin eqrP.
+Canonical R_eqType := Eval hnf in EqType R R_eqMixin.
 
 Fact inhR : inhabited R.
 Proof. exact: (inhabits 0). Qed.
@@ -82,7 +81,7 @@ Proof. by move=> *; rewrite Rplus_assoc. Qed.
 
 Definition R_zmodMixin := ZmodMixin RplusA Rplus_comm Rplus_0_l Rplus_opp_l.
 
-Canonical Structure R_zmodType := Eval hnf in ZmodType R R_zmodMixin.
+Canonical R_zmodType := Eval hnf in ZmodType R R_zmodMixin.
 
 Fact RmultA : associative (Rmult).
 Proof. by move=> *; rewrite Rmult_assoc. Qed.
@@ -93,8 +92,8 @@ Proof. by apply/eqP/R1_neq_R0. Qed.
 Definition R_ringMixin := RingMixin RmultA Rmult_1_l Rmult_1_r
   Rmult_plus_distr_r Rmult_plus_distr_l R1_neq_0.
 
-Canonical Structure R_ringType := Eval hnf in RingType R R_ringMixin.
-Canonical Structure R_comRingType := Eval hnf in ComRingType R Rmult_comm.
+Canonical R_ringType := Eval hnf in RingType R R_ringMixin.
+Canonical R_comRingType := Eval hnf in ComRingType R Rmult_comm.
 
 Import Monoid.
 
@@ -125,8 +124,8 @@ Qed.
 
 Lemma intro_unit_R x y : y * x = 1 /\ x * y = 1 -> unit_R x.
 Proof.
-move=> [yxE1 xyE1]; apply/eqP=> xZ.
-by case/eqP: R1_neq_0; rewrite -yxE1 xZ Rmult_0_r.
+move=> [yx_eq1 _]; apply: contra_eqN yx_eq1 => /eqP->.
+by rewrite Rmult_0_r eq_sym R1_neq_0.
 Qed.
 
 Lemma Rinvx_out : {in predC unit_R, Rinvx =1 id}.
@@ -135,10 +134,10 @@ Proof. by move=> x; rewrite inE /= /Rinvx -if_neg => ->. Qed.
 Definition R_unitRingMixin :=
   UnitRingMixin RmultRinvx RinvxRmult intro_unit_R Rinvx_out.
 
-Canonical Structure R_unitRing :=
+Canonical R_unitRing :=
   Eval hnf in UnitRingType R R_unitRingMixin.
 
-Canonical Structure R_comUnitRingType :=
+Canonical R_comUnitRingType :=
   Eval hnf in [comUnitRingType of R].
 
 Lemma R_idomainMixin x y : x * y = 0 -> (x == 0) || (y == 0).
@@ -147,7 +146,7 @@ Proof.
 by case: (Rmult_integral_contrapositive_currified _ _ xNZ yNZ).
 Qed.
 
-Canonical Structure R_idomainType :=
+Canonical R_idomainType :=
    Eval hnf in IdomainType R R_idomainMixin.
 
 Lemma R_fieldMixin : GRing.Field.mixin_of [unitRingType of R].
@@ -155,7 +154,7 @@ Proof. by done. Qed.
 
 Definition R_fieldIdomainMixin := FieldIdomainMixin R_fieldMixin.
 
-Canonical Structure R_fieldType := FieldType R R_fieldMixin.
+Canonical R_fieldType := FieldType R R_fieldMixin.
 
 (** Reflect the order on the reals to bool *)
 
@@ -173,19 +172,6 @@ rewrite /Rltb /Rleb; apply: (iffP idP); case: Rle_dec=> //=.
 - by case=> // r1Er2 /eqP[].
 - by move=> _ r1Lr2; apply/eqP/Rlt_not_eq.
 by move=> Nr1Lr2 r1Lr2; case: Nr1Lr2; left.
-Qed.
-
-Lemma RgebP r1 r2 : reflect (r1 >= r2) (Rgeb r1 r2).
-Proof.
-rewrite /Rgeb /Rleb; apply: (iffP idP); case: Rle_dec=> //=.
-  by move=> r2Lr1 _; apply: Rle_ge.
-by move=> Nr2Lr1 r1Gr2; case: Nr2Lr1; apply: Rge_le.
-Qed.
-
-Lemma RgtbP r1 r2 : reflect (r1 > r2) (Rgtb r1 r2).
-Proof.
-rewrite /Rleb; apply: (iffP idP) => r1Hr2; first by apply: Rlt_gt; apply/RltbP.
-by apply/RltbP; apply: Rgt_lt.
 Qed.
 
 (*
@@ -240,25 +226,29 @@ exact: Rlt_le.
 Qed.
  
 Definition R_numMixin := NumMixin Rleb_norm_add addr_Rgtb0 Rnorm0_eq0
-Rleb_leVge RnormM Rleb_def Rltb_def.
-Canonical Structure R_numDomainType := NumDomainType R R_numMixin.
+                                  Rleb_leVge RnormM Rleb_def Rltb_def.
+Canonical R_numDomainType := NumDomainType R R_numMixin.
 
-Lemma RleP : forall x y, reflect (Rle x y) (Num.le x y).
+Lemma RleP : forall x y, reflect (Rle x y) (x <= y)%R.
 Proof. exact: RlebP. Qed.
- 
-Lemma RltP : forall x y, reflect (Rlt x y) (Num.lt x y).
+Lemma RltP : forall x y, reflect (Rlt x y) (x < y)%R.
 Proof. exact: RltbP. Qed.
+(* :TODO: *)
+(* Lemma RgeP : forall x y, reflect (Rge x y) (x >= y)%R. *)
+(* Proof. exact: RlebP. Qed. *)
+(* Lemma RgtP : forall x y, reflect (Rgt x y) (x > y)%R. *)
+(* Proof. exact: RltbP. Qed. *)
  
-Canonical Structure R_numFieldType := [numFieldType of R].
+Canonical R_numFieldType := [numFieldType of R].
  
-Lemma Rreal_axiom (x : R) : (Rleb 0 x) || (Rleb x 0).
+Lemma Rreal_axiom (x : R) : (0 <= x)%R || (x <= 0)%R.
 Proof.
-case: (Rle_dec 0 x)=> [/RlebP ->|] //.
-by move/Rnot_le_lt/Rlt_le/RlebP=> ->; rewrite orbT.
+case: (Rle_dec 0 x)=> [/RleP ->|] //.
+by move/Rnot_le_lt/Rlt_le/RleP=> ->; rewrite orbT.
 Qed.
 
-Canonical Structure R_realDomainType := RealDomainType R Rreal_axiom.
-Canonical Structure R_realFieldType := [realFieldType of R].
+Canonical R_realDomainType := RealDomainType R Rreal_axiom.
+Canonical R_realFieldType := [realFieldType of R].
 
 Lemma Rarchimedean_axiom : Num.archimedean_axiom R_numDomainType.
 Proof.
@@ -302,12 +292,11 @@ rewrite /Rminus Rplus_assoc [- _ + _]Rplus_comm -Rplus_assoc -!/(Rminus _ _).
 exact: Rle_minus.
 Qed.
 
-Canonical Structure R_numArchiDomainType := NumArchiDomainType R Rarchimedean_axiom.
-Canonical Structure R_numArchiFieldType := [numArchiFieldType of R].
-Canonical Structure R_realArchiDomainType := [realArchiDomainType of R].
-Canonical Structure R_realArchiFieldType := [realArchiFieldType of R].
+(* Canonical R_numArchiDomainType := ArchiDomainType R Rarchimedean_axiom. *)
+(* (* Canonical R_numArchiFieldType := [numArchiFieldType of R]. *) *)
+(* Canonical R_realArchiDomainType := [realArchiDomainType of R]. *)
+Canonical R_realArchiFieldType := ArchiFieldType R Rarchimedean_axiom. 
 
- 
 (** Here are the lemmas that we will use to prove that R has
 the rcfType structure. *)
  
@@ -369,13 +358,32 @@ apply:continuity_scal; apply: continuity_exp=> x esp Hesp.
 by exists esp; split=> // y [].
 Qed.
  
-Canonical Structure R_rcfType := RcfType R Rreal_closed_axiom.
-Canonical Structure R_realClosedArchiFieldType := [realClosedArchiFieldType of R].
+Canonical R_rcfType := RcfType R Rreal_closed_axiom.
+(* Canonical R_realClosedArchiFieldType := [realClosedArchiFieldType of R]. *)
 
+Open Scope ring_scope.
+From SsrReals Require Import reals.
+
+Definition real_sup : pred R -> R := fun=> 0.
+Print Canonical Projections.
+Lemma real_sup_ub (E : pred R) : Real.has_sup E -> real_sup E \in Real.ub E.
+Admitted.
+Lemma real_sup_adherent (E : pred R) (eps : R) :
+      Real.has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
+Admitted.
+Lemma real_sup_out (E : pred R) : ~ Real.has_sup E -> real_sup E = 0.
+Admitted.
+
+Coercion rcf_axiom R (cR : Num.RealClosedField.class_of R) :
+   Num.real_closed_axiom (Num.NumDomain.Pack cR R) :=
+  match cR with Num.RealClosedField.Class _ ax => ax end.
+
+Definition real_realMixin : Real.mixin_of _ :=
+  RealMixin real_sup_ub real_sup_adherent real_sup_out.
+Canonical real_realType := (@Real.pack R _ real_realMixin _ _ id _ _ id _ id).
 
 (* proprietes utiles de l'exp *)
 
-Open Scope ring_scope.
 
 Lemma expR0 :
     exp(GRing.zero R_zmodType) = 1.
