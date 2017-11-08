@@ -84,10 +84,17 @@ Definition clone c of phant_id class c := @Pack T c T.
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 
+Definition rcf_axiom {R} (cR : Num.RealClosedField.class_of R) :
+   Num.real_closed_axiom (Num.NumDomain.Pack cR R) :=
+  match cR with Num.RealClosedField.Class _ ax => ax end.
+Coercion rcf_axiom : Num.RealClosedField.class_of >-> Num.real_closed_axiom.
+
 Definition pack b0 (m0 : mixin_of (@Num.ArchimedeanField.Pack T b0 T)) :=
   fun bT b & phant_id (Num.ArchimedeanField.class bT) b =>
-  fun bTr br & phant_id (Num.NumDomain.class bTr) br =>
-  fun    m & phant_id m0 m => Pack (@Class T b br m) T.
+  fun (bTr : rcfType) (br : Num.RealClosedField.class_of bTr) &
+      phant_id (Num.RealClosedField.class bTr) br =>
+  fun  cra & phant_id (@rcf_axiom bTr br) cra =>
+  fun    m & phant_id m0 m => Pack (@Class T b cra m) T.
 
 Definition eqType := @Equality.Pack cT xclass xT.
 Definition choiceType := @Choice.Pack cT xclass xT.
@@ -150,7 +157,7 @@ Canonical rcfType.
 Canonical join_rcfType.
 
 Notation realType := type.
-Notation RealType T m := (@pack T _ m _ _ id _ _ id _ id).
+Notation RealType T m := (@pack T _ m _ _ id _ _ id _ id _ id).
 Notation RealMixin := EtaMixin.
 Notation "[ 'realType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
   (at level 0, format "[ 'realType'  'of'  T  'for'  cT ]") : form_scope.
