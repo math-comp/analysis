@@ -200,7 +200,7 @@ Proof. by unlock dnull. Qed.
 
 Definition mkdistrd : {distr T / R} :=
   if @idP `[< isdistr mu >] is ReflectT Px then
-    mkdistr (asboolE Px)
+    mkdistr (asboolW Px)
   else dnull.
 End DistrD.
 
