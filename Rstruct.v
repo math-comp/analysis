@@ -364,16 +364,6 @@ Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 Open Scope ring_scope.
 From SsrReals Require Import reals boolp.
 
-Lemma eq_forall T (U V : T -> Prop) :
-  (forall x : T, U x = V x) -> (forall x, U x) = (forall x, V x).
-Proof. by move=> e; rewrite propeqE; split=> ??; rewrite (e,=^~e). Qed.
-
-Lemma eq_exists T (U V : T -> Prop) :
-  (forall x : T, U x = V x) -> (exists x, U x) = (exists x, V x).
-Proof.
-by move=> e; rewrite propeqE; split=> - [] x ?; exists x; rewrite (e,=^~e).
-Qed.
-
 Lemma is_upper_boundE (E : pred R) x : is_upper_bound E x = (x \in ub E).
 Proof.
 rewrite /is_upper_bound inE forallbE asboolE /=; apply/eq_forall=> y.
