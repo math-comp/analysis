@@ -362,12 +362,29 @@ Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 (* Canonical R_realClosedArchiFieldType := [realClosedArchiFieldType of R]. *)
 
 Open Scope ring_scope.
-From SsrReals Require Import reals.
+From SsrReals Require Import reals boolp.
 
-Definition real_sup : pred R -> R := fun=> 0.
-Print Canonical Projections.
+Definition real_sup (E : pred R) : R :=
+  if pselect (bound E) is left bE then
+    if pselect (exists x, E x) is left eE then
+      match completeness _ bE eE with exist x Px => x end
+    else 0
+  else 0.
+
 Lemma real_sup_ub (E : pred R) : Real.has_sup E -> real_sup E \in Real.ub E.
-Admitted.
+Proof.
+case=> empE ubE; rewrite inE.
+apply/forallbP => /= x; apply/implyP => xE.
+rewrite /real_sup; case: pselect => [bE|abs]; last first.
+  exfalso; apply: abs.
+  case: ubE => /= y yE; exists y.
+  rewrite /is_upper_bound => z Ez.
+  move: yE; by rewrite inE => /forallbP/(_ z)/implyP/(_ Ez)/RleP.
+case: pselect => // eE.
+case: completeness => y [Ey _].
+by apply/RleP/Ey.
+Qed.
+
 Lemma real_sup_adherent (E : pred R) (eps : R) :
       Real.has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
 Admitted.
