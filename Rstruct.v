@@ -364,47 +364,55 @@ Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 Open Scope ring_scope.
 From SsrReals Require Import reals boolp.
 
-Definition real_sup (E : pred R) : R :=
-  if pselect (bound E) isn't left bE then 0 else
-  if pselect (exists x, E x) isn't left eE then 0 else
-  projT1 (completeness _ bE eE).
+Lemma eq_forall T (U V : T -> Prop) :
+  (forall x : T, U x = V x) -> (forall x, U x) = (forall x, V x).
+Proof. by move=> e; rewrite propeqE; split=> ??; rewrite (e,=^~e). Qed.
 
-Lemma has_ub_bound (E : pred R) : has_ub E -> bound (fun x => E x).
+Lemma eq_exists T (U V : T -> Prop) :
+  (forall x : T, U x = V x) -> (exists x, U x) = (exists x, V x).
 Proof.
-case => /= y yE; exists y; rewrite /is_upper_bound => z Ez.
-move: yE; by rewrite inE => /forallbP/(_ z)/implyP/(_ Ez)/RleP.
+by move=> e; rewrite propeqE; split=> - [] x ?; exists x; rewrite (e,=^~e).
+Qed.
+
+Lemma is_upper_boundE (E : pred R) x : is_upper_bound E x = (x \in ub E).
+Proof.
+rewrite /is_upper_bound inE forallbE asboolE /=; apply/eq_forall=> y.
+by rewrite -(reflect_eq implyP) (reflect_eq (RleP _ _)).
+Qed.
+
+Lemma boundE (E : pred R) : bound E = has_ub E.
+Proof. by apply/eq_exists=> x; rewrite is_upper_boundE. Qed.
+
+Lemma completeness' (E : pred R) : has_sup E -> {m : R | is_lub E m}.
+Proof. by move=> [eE bE]; rewrite -boundE in bE; apply: completeness. Qed.
+
+Definition real_sup (E : pred R) : R :=
+  if pselect (has_sup E) isn't left hsE then 0 else projT1 (completeness' hsE).
+
+Lemma real_sup_is_lub (E : pred R) : has_sup E -> is_lub E (real_sup E).
+Proof.
+by move=> hsE; rewrite /real_sup; case: pselect=> // ?; case: completeness'.
 Qed.
 
 Lemma real_sup_ub (E : pred R) : has_sup E -> real_sup E \in ub E.
-Proof.
-case=> empE ubE; rewrite inE.
-apply/forallbP => /= x; apply/implyP => xE.
-rewrite /real_sup; case: pselect => [bE|abs]; last by move/has_ub_bound : ubE.
-case: pselect => // eE.
-case: completeness => y [Ey ?].
-by apply/RleP/Ey.
-Qed.
+Proof. by move=> /real_sup_is_lub []; rewrite is_upper_boundE. Qed.
 
-Lemma is_lub_real_sup (E : pred R) (bE : bound (fun x => E x)) (eE : exists x, x \in E) :
-  is_lub E (real_sup E).
-Proof.
-rewrite /real_sup.
-case: pselect => // bE'.
-case: pselect => // eE'; by case: completeness.
-Qed.
-
-Lemma real_sup_adherent (E : pred R) (eps : R) :
-      has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
-Proof.
-move=> supE eps_gt0.
-rewrite /real_sup.
-case: pselect => [bE|]; last by case: supE => _ /has_ub_bound.
-case: pselect => [eE|eE]; last first.
-  exfalso; apply: eE; by case: supE.
-move: (is_lub_real_sup bE eE) => lubE.
-Admitted.
 Lemma real_sup_out (E : pred R) : ~ has_sup E -> real_sup E = 0.
-Admitted.
+Proof. by move=> nosup; rewrite /real_sup; case: pselect. Qed.
+
+(* :TODO: rewrite like this using (a fork of?) Coquelicot *)
+(* Lemma real_sup_adherent (E : pred R) : real_sup E \in closure E. *)
+Lemma real_sup_adherent (E : pred R) (eps : R) :
+  has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
+Proof.
+move=> supE eps_gt0; set m := _ - eps; apply: contrapT=> mNsmall.
+have: m \in ub E.
+  apply/ubP=> y Ey; have /negP := mNsmall (ex_intro2 _ _ y Ey _).
+  by rewrite -lerNgt.
+have [_ /(_ m)] := real_sup_is_lub supE.
+rewrite is_upper_boundE => m_big /m_big /RleP.
+by rewrite -subr_ge0 addrC addKr oppr_ge0 lerNgt eps_gt0.
+Qed.
 
 Definition real_realMixin : Real.mixin_of _ :=
   RealMixin real_sup_ub real_sup_adherent real_sup_out.
