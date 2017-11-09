@@ -408,13 +408,9 @@ Admitted.
 Lemma real_sup_out (E : pred R) : ~ Real.has_sup E -> real_sup E = 0.
 Admitted.
 
-Coercion rcf_axiom R (cR : Num.RealClosedField.class_of R) :
-   Num.real_closed_axiom (Num.NumDomain.Pack cR R) :=
-  match cR with Num.RealClosedField.Class _ ax => ax end.
-
 Definition real_realMixin : Real.mixin_of _ :=
   RealMixin real_sup_ub real_sup_adherent real_sup_out.
-Canonical real_realType := (@Real.pack R _ real_realMixin _ _ id _ _ id _ id).
+Canonical real_realType := RealType R real_realMixin.
 
 (* proprietes utiles de l'exp *)
 
