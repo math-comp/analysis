@@ -7,42 +7,67 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 (* -------------------------------------------------------------------- *)
-Record mclassic := {
-  _ : forall (P : Prop), {P}+{~P};
+Record mextentionality := {
   _ : forall (P : Prop), P = True \/ P = False;
   _ : forall {T U : Type} (f g : T -> U),
         (forall x, f x = g x) -> f = g;
 }.
+Record mclassic := {
+  _ : forall (P : Prop), {P} + {~P};
+}.
 
 Axiom classic : mclassic.
+Axiom extentionality : mextentionality.
 
 (* -------------------------------------------------------------------- *)
 Lemma pselect (P : Prop): {P}+{~P}.
-Proof. by case classic. Qed.
+Proof. by case: classic. Qed.
 
 Lemma pdegen (P : Prop): P = True \/ P = False.
-Proof. by case classic. Qed.
+Proof. by case: extentionality. Qed.
+
+Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
+Proof.
+gen have wpropext: P Q / (P <-> Q) -> (P = Q); last first.
+  by apply: (wpropext); split=> [->|/wpropext].
+by have [[]-> []->] // := (pdegen P, pdegen Q); tauto.
+Qed.
 
 Lemma lem (P : Prop): P \/ ~P.
 Proof. by case: (pselect P); tauto. Qed.
 
 Lemma funext {T U : Type} (f g : T -> U):
   (forall x, f x = g x) -> f = g.
-Proof. by case: classic=> _ _; apply. Qed.
+Proof. by case: extentionality=> _; apply. Qed.
+
+Lemma funeqE {T U : Type} (f g : T -> U) : (f = g) = (forall x, f x = g x).
+Proof. by rewrite propeqE; split=> [->//|/funext]. Qed.
 
 (* -------------------------------------------------------------------- *)
+Lemma trueE : true = True :> Prop.
+Proof. by rewrite propeqE; split. Qed.
+
+Lemma falseE : false = False :> Prop.
+Proof. by rewrite propeqE; split. Qed.
+
+Lemma reflect_eq (P : Prop) (b : bool) : reflect P b -> P = b.
+Proof. by rewrite propeqE; exact: rwP. Qed.
+
 Definition asbool (P : Prop) :=
   if pselect P then true else false.
 
 Notation "`[< P >]" := (asbool P) : bool_scope.
 
+Lemma asboolE (P : Prop) : `[<P>] = P :> Prop.
+Proof. by rewrite propeqE /asbool; case: pselect; split. Qed.
+
 Lemma asboolP (P : Prop) : reflect P `[<P>].
-Proof. by rewrite /asbool; case: pselect=> h; constructor. Qed.
+Proof. by apply: (equivP idP); rewrite asboolE. Qed.
 
 Lemma asboolPn (P : Prop) : reflect (~ P) (~~ `[<P>]).
 Proof. by rewrite /asbool; case: pselect=> h; constructor. Qed.
 
-Lemma asboolE (P : Prop) : `[<P>] -> P.
+Lemma asboolW (P : Prop) : `[<P>] -> P.
 Proof. by case: asboolP. Qed.
 
 (* Shall this be a coercion ?*)
@@ -52,13 +77,12 @@ Proof. by case: asboolP. Qed.
 Lemma asboolF (P : Prop) : ~ P -> `[<P>] = false.
 Proof. by apply/introF/asboolP. Qed.
 
+Lemma is_true_inj : injective is_true.
+Proof. by move=> [] []; rewrite ?(trueE, falseE) ?propeqE; tauto. Qed.
+
 (* -------------------------------------------------------------------- *)
 Lemma asbool_equiv_eq {P Q : Prop} : (P <-> Q) -> `[<P>] = `[<Q>].
-Proof.
-case: (pselect P) => [hP | hnP] PQ.
-  by move/asboolP: (hP)->; move/PQ/asboolP: (hP)->.
-by move/asboolPn/negbTE: (hnP) => ->; move/PQ/asboolPn/negbTE: hnP->.
-Qed.
+Proof. by rewrite -propeqE => ->. Qed.
 
 Lemma asbool_equiv_eqP {P Q : Prop} QQ : reflect Q QQ -> (P <-> Q) -> `[<P>] = QQ.
 Proof.
@@ -99,7 +123,7 @@ Proof. exact: (asbool_equiv_eqP (and_asboolP _ _)). Qed.
 (* -------------------------------------------------------------------- *)
 Lemma imply_asboolP {P Q : Prop} : reflect (P -> Q) (`[<P>] ==> `[<Q>]).
 Proof.
-apply: (iffP implyP)=> [PQb /asboolP/PQb/asboolE //|].
+apply: (iffP implyP)=> [PQb /asboolP/PQb/asboolW //|].
 by move=> PQ /asboolP/PQ/asboolT.
 Qed.
 
