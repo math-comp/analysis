@@ -365,25 +365,23 @@ Open Scope ring_scope.
 From SsrReals Require Import reals boolp.
 
 Definition real_sup (E : pred R) : R :=
-  if pselect (bound E) is left bE then
-    if pselect (exists x, E x) is left eE then
-      match completeness _ bE eE with exist x Px => x end
-    else 0
-  else 0.
+  if pselect (bound E) isn't left bE then 0 else
+  if pselect (exists x, E x) isn't left eE then 0 else
+  projT1 (completeness _ bE eE).
 
-Lemma has_ub_bound (E : pred R) : Real.has_ub E -> bound (fun x => E x).
+Lemma has_ub_bound (E : pred R) : has_ub E -> bound (fun x => E x).
 Proof.
 case => /= y yE; exists y; rewrite /is_upper_bound => z Ez.
 move: yE; by rewrite inE => /forallbP/(_ z)/implyP/(_ Ez)/RleP.
 Qed.
 
-Lemma real_sup_ub (E : pred R) : Real.has_sup E -> real_sup E \in Real.ub E.
+Lemma real_sup_ub (E : pred R) : has_sup E -> real_sup E \in ub E.
 Proof.
 case=> empE ubE; rewrite inE.
 apply/forallbP => /= x; apply/implyP => xE.
 rewrite /real_sup; case: pselect => [bE|abs]; last by move/has_ub_bound : ubE.
 case: pselect => // eE.
-case: completeness => y [Ey _].
+case: completeness => y [Ey ?].
 by apply/RleP/Ey.
 Qed.
 
@@ -396,7 +394,7 @@ case: pselect => // eE'; by case: completeness.
 Qed.
 
 Lemma real_sup_adherent (E : pred R) (eps : R) :
-      Real.has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
+      has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
 Proof.
 move=> supE eps_gt0.
 rewrite /real_sup.
@@ -405,7 +403,7 @@ case: pselect => [eE|eE]; last first.
   exfalso; apply: eE; by case: supE.
 move: (is_lub_real_sup bE eE) => lubE.
 Admitted.
-Lemma real_sup_out (E : pred R) : ~ Real.has_sup E -> real_sup E = 0.
+Lemma real_sup_out (E : pred R) : ~ has_sup E -> real_sup E = 0.
 Admitted.
 
 Definition real_realMixin : Real.mixin_of _ :=
