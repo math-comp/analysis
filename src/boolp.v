@@ -50,6 +50,16 @@ Proof. by rewrite propeqE; split. Qed.
 Lemma falseE : false = False :> Prop.
 Proof. by rewrite propeqE; split. Qed.
 
+Lemma eq_forall T (U V : T -> Prop) :
+  (forall x : T, U x = V x) -> (forall x, U x) = (forall x, V x).
+Proof. by move=> e; rewrite propeqE; split=> ??; rewrite (e,=^~e). Qed.
+
+Lemma eq_exists T (U V : T -> Prop) :
+  (forall x : T, U x = V x) -> (exists x, U x) = (exists x, V x).
+Proof.
+by move=> e; rewrite propeqE; split=> - [] x ?; exists x; rewrite (e,=^~e).
+Qed.
+
 Lemma reflect_eq (P : Prop) (b : bool) : reflect P b -> P = b.
 Proof. by rewrite propeqE; exact: rwP. Qed.
 
@@ -384,8 +394,18 @@ Variables (T : Type) (P : pred T).
 Lemma existsbP : reflect (exists x, P x) `[exists x, P x].
 Proof. exact: existsPP (fun x => @idP (P x)). Qed.
 
+Lemma existsbE : `[exists x, P x] = `[<exists x, P x>].
+Proof.
+apply/esym/is_true_inj; rewrite asboolE propeqE; apply: rwP; exact: existsbP.
+Qed.
+
 Lemma forallbP : reflect (forall x, P x) `[forall x, P x].
 Proof. exact: forallPP (fun x => @idP (P x)). Qed.
+
+Lemma forallbE : `[forall x, P x] = `[<forall x, P x>].
+Proof.
+apply/esym/is_true_inj; rewrite asboolE propeqE; apply: rwP; exact: forallbP.
+Qed.
 
 End PredQuantifierCombinators.
 
