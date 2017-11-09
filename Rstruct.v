@@ -180,32 +180,32 @@ Ltac toR := rewrite /GRing.add /GRing.opp /GRing.zero /GRing.mul /GRing.inv
 *)
 
 Section ssreal_struct.
- 
+
 Import GRing.Theory.
 Import Num.Theory.
 Import Num.Def.
- 
+
 Local Open Scope R_scope.
- 
+
 Lemma Rleb_norm_add x y : Rleb (Rabs (x + y)) (Rabs x + Rabs y).
 Proof. by apply/RlebP/Rabs_triang. Qed.
- 
+
 Lemma addr_Rgtb0 x y : Rltb 0 x -> Rltb 0 y -> Rltb 0 (x + y).
 Proof. by move/RltbP=> Hx /RltbP Hy; apply/RltbP/Rplus_lt_0_compat. Qed.
- 
+
 Lemma Rnorm0_eq0 x : Rabs x = 0 -> x = 0.
 Proof. by move=> H; case: (x == 0) /eqP=> // /Rabs_no_R0. Qed.
- 
+
 Lemma Rleb_leVge x y : Rleb 0 x -> Rleb 0 y -> (Rleb x y) || (Rleb y x).
 Proof.
 move/RlebP=> Hx /RlebP Hy; case: (Rlt_le_dec x y).
 by move/Rlt_le/RlebP=> ->.
 by move/RlebP=> ->; rewrite orbT.
 Qed.
- 
+
 Lemma RnormM : {morph Rabs : x y / x * y}.
 exact: Rabs_mult. Qed.
- 
+
 Lemma Rleb_def x y : (Rleb x y) = (Rabs (y - x) == y - x).
 apply/(sameP (RlebP x y))/(iffP idP)=> [/eqP H| /Rle_minus H].
   apply: Rminus_le; rewrite -Ropp_minus_distr.
@@ -215,7 +215,7 @@ apply/eqP/Rabs_pos_eq.
 rewrite -Ropp_minus_distr.
 by apply/Ropp_0_ge_le_contravar/Rle_ge.
 Qed.
- 
+
 Lemma Rltb_def x y : (Rltb x y) = (y != x) && (Rleb x y).
 apply/(sameP (RltbP x y))/(iffP idP).
   case/andP=> /eqP H /RlebP/Rle_not_gt H2.
@@ -224,7 +224,7 @@ move=> H; apply/andP; split; [apply/eqP|apply/RlebP].
   exact: Rgt_not_eq.
 exact: Rlt_le.
 Qed.
- 
+
 Definition R_numMixin := NumMixin Rleb_norm_add addr_Rgtb0 Rnorm0_eq0
                                   Rleb_leVge RnormM Rleb_def Rltb_def.
 Canonical R_numDomainType := NumDomainType R R_numMixin.
@@ -238,9 +238,9 @@ Proof. exact: RltbP. Qed.
 (* Proof. exact: RlebP. Qed. *)
 (* Lemma RgtP : forall x y, reflect (Rgt x y) (x > y)%R. *)
 (* Proof. exact: RltbP. Qed. *)
- 
+
 Canonical R_numFieldType := [numFieldType of R].
- 
+
 Lemma Rreal_axiom (x : R) : (0 <= x)%R || (x <= 0)%R.
 Proof.
 case: (Rle_dec 0 x)=> [/RleP ->|] //.
@@ -295,18 +295,18 @@ Qed.
 (* Canonical R_numArchiDomainType := ArchiDomainType R Rarchimedean_axiom. *)
 (* (* Canonical R_numArchiFieldType := [numArchiFieldType of R]. *) *)
 (* Canonical R_realArchiDomainType := [realArchiDomainType of R]. *)
-Canonical R_realArchiFieldType := ArchiFieldType R Rarchimedean_axiom. 
+Canonical R_realArchiFieldType := ArchiFieldType R Rarchimedean_axiom.
 
 (** Here are the lemmas that we will use to prove that R has
 the rcfType structure. *)
- 
+
 Lemma continuity_eq f g : f =1 g -> continuity f -> continuity g.
 Proof.
 move=> Hfg Hf x eps Heps.
 have [y [Hy1 Hy2]]:= Hf x eps Heps.
 by exists y; split=> // z; rewrite -!Hfg; exact: Hy2.
 Qed.
- 
+
 Lemma continuity_sum (I : finType) F (P : pred I):
 (forall i, P i -> continuity (F i)) ->
 continuity (fun x => (\sum_(i | P i) ((F i) x)))%R.
@@ -325,7 +325,7 @@ have Hf: (fun x => \sum_(i <- l | P i) F i x)%R =1 f.
   by move=> x; rewrite /f big_cons Hpa.
 exact: (continuity_eq Hf).
 Qed.
- 
+
 Lemma continuity_exp f n: continuity f -> continuity (fun x => (f x)^+ n)%R.
 Proof.
 move=> Hf; elim: n=> [|n IHn]; first exact: continuity_const.
@@ -334,7 +334,7 @@ have Hg: (fun x=> f x * f x ^+ n)%R =1 g.
   by move=> x; rewrite /g exprS.
 by apply: (continuity_eq Hg); exact: continuity_mult.
 Qed.
- 
+
 Lemma Rreal_closed_axiom : Num.real_closed_axiom R_numDomainType.
 Proof.
 move=> p a b; rewrite !ler_eqVlt.
@@ -357,7 +357,7 @@ apply: (continuity_eq Hf); apply: continuity_sum=> i _.
 apply:continuity_scal; apply: continuity_exp=> x esp Hesp.
 by exists esp; split=> // y [].
 Qed.
- 
+
 Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 (* Canonical R_realClosedArchiFieldType := [realClosedArchiFieldType of R]. *)
 
@@ -408,72 +408,57 @@ Definition real_realMixin : Real.mixin_of _ :=
   RealMixin real_sup_ub real_sup_adherent real_sup_out.
 Canonical real_realType := RealType R real_realMixin.
 
-(* proprietes utiles de l'exp *)
+Implicit Types (x y : R) (m n : nat).
 
+(* equational lemmas about exp, sin and cos for mathcomp compat *)
 
-Lemma expR0 :
-    exp(GRing.zero R_zmodType) = 1.
+(* From SsrReals Require Import realsum. *)
+
+(* :TODO: One day, do this *)
+(* Notation "\Sum_ i E" := (psum (fun i => E)) *)
+(*  (at level 100, i ident, format "\Sum_ i  E") : ring_scope. *)
+
+(* Definition exp x := \Sum_n (n`!)%:R^-1 * x ^ n. *)
+
+Lemma expR0 : exp (0 : R) = 1.
 Proof. by rewrite exp_0. Qed.
 
-Lemma expRD x y :
-    exp(x) * exp(y) = exp(GRing.add x y).
+Lemma expRD x y : exp x * exp y = exp (x + y).
 Proof. by rewrite exp_plus. Qed.
 
-Lemma expRX x :
-  forall n : nat,
-    exp(x) ^+ n = exp(x *+ n).
+Lemma expRX x n : exp x ^+ n = exp (x *+ n).
 Proof.
-elim => [|n Ihn].
-  by rewrite expr0 mulr0n exp_0.
+elim: n => [|n Ihn]; first by rewrite expr0 mulr0n exp_0.
 by rewrite exprS Ihn mulrS expRD.
 Qed.
 
- Lemma Rplus_add x y :
-  Rplus x y = GRing.add x y.
-Proof. by done. Qed.
+Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
+Proof. by rewrite sin_plus. Qed.
 
-Lemma Rmult_mul x y :
-  Rmult x y = GRing.mul x y.
-Proof. by done. Qed.
+Lemma cosD x y : cos (x + y) = (cos x * cos y - sin x * sin y).
+Proof. by rewrite cos_plus. Qed.
 
-Lemma Ropp_opp x :
-  Ropp x = GRing.opp x.
-Proof. by done. Qed.
+Lemma RplusE x y : Rplus x y = x + y. Proof. by []. Qed.
 
-Lemma Rdiv_div x y :
-  y != 0 -> Rdiv x y = x / y.
-Proof.
-move=> Hneq0.
-apply: (@mulIr _ y).
-  by rewrite unitfE.
-rewrite -!mulrA.
-rewrite mulVr;
-  last by rewrite unitfE.
-rewrite -[X in _*X]Rmult_mul.
-rewrite Rinv_l //.
-by apply: (elimN eqP Hneq0).
-Qed.
+Lemma RmultE x y : Rmult x y = x * y. Proof. by []. Qed.
 
-Lemma sin_add x y : 
-   sin (GRing.add x y) = sin x * cos y + cos x * sin y.
-Proof. by rewrite sin_plus. Qed. 
+Lemma RoppE x : Ropp x = - x. Proof. by []. Qed.
 
-Lemma cos_add x y : 
-   cos (GRing.add x y) = (cos x * cos y - sin x * sin y).
-Proof. by rewrite cos_plus. Qed. 
+Lemma RinvE x : x != 0 -> Rinv x = x^-1.
+Proof. by move=> x_neq0; rewrite -[RHS]/(if _ then _ else _) x_neq0. Qed.
 
-Lemma sqrt_R x : 0 <= x -> Num.sqrt x = sqrt x.
+Lemma RdivE x y : y != 0 -> Rdiv x y = x / y.
+Proof. by move=> y_neq0; rewrite /Rdiv RinvE. Qed.
+
+Lemma RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
 move => x0; apply/eqP; have [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
-have two0 : (0 < 2)%N by [].
-rewrite -(@eqr_expn2 _ 2%nat _ _ two0 t1); last by apply /RleP.
-rewrite sqr_sqrtr // !exprS expr0 mulr1 -Rmult_mul ?sqrt_sqrt //; by apply/RleP.
+rewrite eq_sym -(eqr_expn2 (_: 0 < 2)%N t1) //; last by apply /RleP.
+rewrite sqr_sqrtr // !exprS expr0 mulr1 -RmultE ?sqrt_sqrt //; by apply/RleP.
 Qed.
 
-Lemma exp_R x n : pow x n = x ^+ n.
-Proof. by elim: n => [ | n In] //=; rewrite exprS In Rmult_mul. Qed.
-
-
+Lemma RpowE x n : pow x n = x ^+ n.
+Proof. by elim: n => [ | n In] //=; rewrite exprS In RmultE. Qed.
 
 (* bigop pour le max pour des listes non vides ? *)
 Definition bigmaxr (x0 : R) lr :=
@@ -482,15 +467,13 @@ Definition bigmaxr (x0 : R) lr :=
 Lemma bigmaxr_nil x0 : bigmaxr x0 [::] = x0.
 Proof. by rewrite /bigmaxr. Qed.
 
-Lemma bigmaxr_un x0 x :
-  bigmaxr x0 [:: x] = x.
+Lemma bigmaxr_un x0 x : bigmaxr x0 [:: x] = x.
 Proof. by rewrite /bigmaxr. Qed.
 
 Lemma bigmaxr_cons x0 x y lr :
   bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
 Proof.
-rewrite /bigmaxr /=; elim: lr => [/= | a lr /=].
-  by rewrite maxrC.
+rewrite /bigmaxr /=; elim: lr => [/= | a lr /=]; first by rewrite maxrC.
 set b := foldr _ _ _; set c := foldr _ _ _ => H.
 by rewrite [Num.max a b]maxrC maxrA H -maxrA (maxrC c a).
 Qed.
@@ -501,7 +484,7 @@ Proof.
 case: lr i => [i | x lr]; first by rewrite nth_nil bigmaxr_nil lerr.
 elim: lr x => [x i /= | x lr /= ihlr y i i_size].
   by rewrite ltnS leqn0 => /eqP ->; rewrite nth0 bigmaxr_un /=.
-rewrite bigmaxr_cons /=; case: i i_size => [_ /= | i]. 
+rewrite bigmaxr_cons /=; case: i i_size => [_ /= | i].
   by rewrite ler_maxr lerr.
 rewrite ltnS /=; move/(ihlr x); move/(ler_trans)=> H; apply: H.
 by rewrite ler_maxr lerr orbT.
@@ -547,7 +530,7 @@ move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: ler_asym; apply/andP; split
 by rewrite -j_nth (bigmaxr_ler _ j_size).
 Qed.
 
-(* surement à supprimer à la fin 
+(* surement à supprimer à la fin
 Lemma bigmaxc_lttc x0 lc :
   uniq lc -> forall i, (i < size lc)%N -> (i != index (bigmaxc x0 lc) lc)
     -> lttc (nth x0 lc i) (bigmaxc x0 lc).
@@ -592,8 +575,7 @@ Qed.
 
 Definition index_bmaxrf n f := Ordinal (@bmaxrf_index n f).
 
-Lemma ordnat i n (ord_i : (i < n)%N) :
-  i = nat_of_ord (Ordinal ord_i).
+Lemma ordnat i n (ord_i : (i < n)%N) : i = Ordinal ord_i :> nat.
 Proof. by []. Qed.
 
 Lemma eq_index_bmaxrf n (f : {ffun 'I_n.+1 -> R}) :
@@ -612,7 +594,5 @@ Lemma bmaxrf_lerif n (f : {ffun 'I_n.+1 -> R}) :
 Proof.
 by move=> inj_f i; rewrite /lerif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
 Qed.
-
-
 
 End ssreal_struct.
