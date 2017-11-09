@@ -181,7 +181,7 @@ Definition sup {R : realType} := Real.sup (Real.class R).
 
 (* -------------------------------------------------------------------- *)
 Section BaseReflect.
-Context {R : realType}.
+Context {R : archiFieldType}.
 
 Implicit Types E : pred R.
 Implicit Types x : R.
