@@ -23,8 +23,7 @@ Local Open Scope real_scope.
 Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
-Module Real.
-Section Mixin.
+Section ArchiBound.
 
 Variable (R : archiFieldType).
 
@@ -44,6 +43,14 @@ Definition down (E : pred R) : pred R :=
 (* Real set supremum existence condition. *)
 Definition has_ub  (E : pred R) := nonempty (ub E).
 Definition has_sup (E : pred R) := nonempty E /\ has_ub E.
+
+End ArchiBound.
+
+(* -------------------------------------------------------------------- *)
+Module Real.
+Section Mixin.
+
+Variable (R : archiFieldType).
 
 Record mixin_of : Type := Mixin {
   sup : pred R -> R;
@@ -171,12 +178,6 @@ Export Real.Exports.
 
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := Real.sup (Real.class R).
-
-Definition nonempty {R : realType} := @Real.nonempty R.
-Definition ub       {R : realType} := @Real.ub R.
-Definition down     {R : realType} := @Real.down R.
-Definition has_ub   {R : realType} := @Real.has_ub R.
-Definition has_sup  {R : realType} := @Real.has_sup R.
 
 (* -------------------------------------------------------------------- *)
 Section BaseReflect.
