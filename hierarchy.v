@@ -2064,14 +2064,9 @@ Qed.
 
 Lemma absrX x n : abs (x ^+ n) <= (abs x) ^+ n.
 Proof.
-(* induction n. *)
-(* apply Req_le, abs_one. *)
-(* simpl. *)
-(* apply: Rle_trans (abs_mult _ _) _. *)
-(* apply Rmult_le_compat_l with (2 := IHn). *)
-(* apply abs_ge_0. *)
-(* Qed. *)
-Admitted.
+elim: n => [|n IH]; first  by rewrite !expr0 absr1.
+by rewrite !exprS (ler_trans (absrM _ _)) // ler_pmul // absr_ge0.
+Qed.
 
 End AbsRing1.
 
