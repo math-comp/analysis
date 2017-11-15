@@ -40,6 +40,11 @@ Reserved Notation "A `\` B" (at level 50, left associativity).
 Reserved Notation "A `\ b" (at level 50, left associativity).
 
 Definition set A := A -> Prop.
+Definition in_set T (P : set T) : pred T := [pred x | `[<P x>]].
+Canonical set_predType T := @mkPredType T (set T) (@in_set T).
+
+Lemma in_setE T (P : set T) x : x \in P = P x :> Prop.
+Proof. by rewrite propeqE; split => [] /asboolP. Qed.
 
 Bind Scope classical_set_scope with set.
 Local Open Scope classical_set_scope.
@@ -60,19 +65,12 @@ Definition preimage {A B} (f : A -> B) (X : set B) : set A := [set a | X (f a)].
 Arguments preimage A B f X / a.
 
 Definition setT {A} := [set _ : A | True].
-
 Definition set0 {A} := [set _ : A | False].
-
 Definition set1 {A} (x : A) := [set a : A | a = x].
-
 Definition setI {A} (X Y : set A) := [set a | X a /\ Y a].
-
 Definition setU {A} (X Y : set A) := [set a | X a \/ Y a].
-
 Definition nonempty {A} (X : set A) := exists x, X x.
-
 Definition setC {A} (X : set A) := [set a | ~ X a].
-
 Definition setD {A} (X Y : set A) := [set a | X a /\ ~ Y a].
 
 Notation "[ 'set' a ]" := (set1 a)
