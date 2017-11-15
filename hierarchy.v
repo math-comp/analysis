@@ -3,6 +3,7 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 Require Import Rcomplements Rbar Markov Iter Lub.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
 From SsrReals Require Import boolp.
+Require Import Rstruct.
 
 (** ADD HEADER HERE !! *)
 
@@ -736,7 +737,7 @@ Record mixin_of (M : Type) := Mixin {
   point : M ;
   ball : M -> R -> M -> Prop ;
   ax1 : forall x (e : posreal), ball x e x ;
-  ax2 : forall x y e, ball x e y -> ball y e x ;
+  ax2 : forall x y (e : R), ball x e y -> ball y e x ;
   ax3 : forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z
 }.
 
@@ -1551,9 +1552,9 @@ Definition clone c of phant_id class c := @Pack T c T.
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 
-Definition pack :=
+Definition pack b0 (m0 : mixin_of (@Uniform.Pack T b0 T)) :=
   fun bT b of phant_id (Uniform.class bT) b =>
-  fun m => @Pack T (@Class T b m) T.
+  fun m of phant_id m m0 => @Pack T (@Class T b m) T.
 
 Definition eqType := @Equality.Pack cT xclass xT.
 Definition choiceType := @Choice.Pack cT xclass xT.
@@ -1580,7 +1581,7 @@ Notation "[ 'completeType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
   (at level 0, format "[ 'completeType'  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'completeType' 'of' T ]" := (@clone T _ _ id)
   (at level 0, format "[ 'completeType'  'of'  T ]") : form_scope.
-Notation CompleteType T m := (@pack T _ _ idfun m).
+Notation CompleteType T m := (@pack T _ m _ _ idfun _ idfun).
 
 End Exports.
 
@@ -1935,32 +1936,191 @@ End Filterlim_switch.
 
 (** ** Modules with a norm *)
 
+Module AbsRing.
+
+Close Scope R_scope.
+
+Record mixin_of (D : numDomainType) := Mixin {
+  abs : D -> R;
+  ax1 : abs 0 = 0 ;
+  ax2 : abs (- 1) = 1 ;
+  ax3 : forall x y : D, abs (x + y) <= abs x + abs y ;
+  ax4 : forall x y : D, abs (x * y) <= abs x * abs y ;
+  ax5 : forall x : D, abs x = 0 -> x = 0
+}.
+
+Section ClassDef.
+
+Record class_of (K : Type) := Class {
+  base : Num.NumDomain.class_of K ;
+  mixin : mixin_of (Num.NumDomain.Pack base K)
+}.
+Local Coercion base : class_of >-> Num.NumDomain.class_of.
+Local Coercion mixin : class_of >-> mixin_of.
+
+Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Local Coercion sort : type >-> Sortclass.
+
+Variables (T : Type) (cT : type).
+Definition class := let: Pack _ c _ := cT return class_of cT in c.
+Let xT := let: Pack T _ _ := cT in T.
+Notation xclass := (class : class_of xT).
+Definition clone c of phant_id class c := @Pack T c T.
+Definition pack b0 (m0 : mixin_of (@Num.NumDomain.Pack T b0 T)) :=
+  fun bT b & phant_id (Num.NumDomain.class bT) b =>
+  fun    m & phant_id m0 m => Pack (@Class T b m) T.
+
+Definition eqType := @Equality.Pack cT xclass xT.
+Definition choiceType := @Choice.Pack cT xclass xT.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
+Definition ringType := @GRing.Ring.Pack cT xclass xT.
+Definition comRingType := @GRing.ComRing.Pack cT xclass xT.
+Definition unitRingType := @GRing.UnitRing.Pack cT xclass xT.
+Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass xT.
+Definition idomainType := @GRing.IntegralDomain.Pack cT xclass xT.
+Definition numDomainType := @Num.NumDomain.Pack cT xclass xT.
+
+End ClassDef.
+
+Module Exports.
+
+Coercion base : class_of >-> Num.NumDomain.class_of.
+Coercion mixin : class_of >-> mixin_of.
+Coercion sort : type >-> Sortclass.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion zmodType : type >-> GRing.Zmodule.type.
+Canonical zmodType.
+Coercion ringType : type >-> GRing.Ring.type.
+Canonical ringType.
+Coercion comRingType : type >-> GRing.ComRing.type.
+Canonical comRingType.
+Coercion unitRingType : type >-> GRing.UnitRing.type.
+Canonical unitRingType.
+Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
+Canonical comUnitRingType.
+Coercion idomainType : type >-> GRing.IntegralDomain.type.
+Canonical idomainType.
+Coercion numDomainType : type >-> Num.NumDomain.type.
+Canonical numDomainType.
+Notation AbsRingMixin := Mixin.
+Notation AbsRingType T m := (@pack T _ m _ _ id _ id).
+Notation "[ 'absRingType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
+  (at level 0, format "[ 'absRingType'  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'absRingType' 'of' T ]" := (@clone T _ _ id)
+  (at level 0, format "[ 'absRingType'  'of'  T ]") : form_scope.
+Notation absRingType := type.
+
+End Exports.
+
+End AbsRing.
+
+Export AbsRing.Exports.
+
+Section AbsRing1.
+
+Close Scope R_scope.
+
+Context {K : absRingType}.
+
+(* :TODO: provide notation*)
+Definition abs : K -> R := @AbsRing.abs _ (AbsRing.class K).
+
+Lemma absr0 : abs 0 = 0. Proof. exact: AbsRing.ax1. Qed.
+Definition abs_zero := absr0. (*compat*)
+
+Lemma absrN1: abs (- 1) = 1.
+Proof. exact: AbsRing.ax2. Qed.
+Definition abs_opp_one := absrN1. (*compat*)
+
+Lemma ler_abs_add (x y : K) :  abs (x + y) <= abs x + abs y.
+Proof. exact: AbsRing.ax3. Qed.
+Definition abs_triangle := ler_abs_add. (*compat*)
+
+Lemma absrM (x y : K) : abs (x * y) <= abs x * abs y.
+Proof. exact: AbsRing.ax4. Qed.
+Definition abs_mult := absrM. (*compat*)
+
+Lemma absr0_eq0 (x : K) : abs x = 0 -> x = 0.
+Proof. exact: AbsRing.ax5. Qed.
+Definition abs_eq_zero := absr0_eq0. (*compat*)
+
+Lemma absrN x : abs (- x)%R = abs x.
+Proof.
+gen have le_absN1 : x / abs (- x) <= abs x.
+  by rewrite -mulN1r (ler_trans (abs_mult _ _)) //= absrN1 mul1r.
+by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
+Qed.
+Definition abs_opp := absrN. (*compat*)
+
+Lemma absrB (x y : K) : abs (x - y) = abs (y - x).
+Proof. by rewrite -absrN opprB. Qed.
+Definition abs_minus := absrB.
+
+Lemma absr1 : abs 1 = 1. Proof. by rewrite -absrN absrN1. Qed.
+Definition abs_one := absr1. (*compat*)
+
+Lemma absr_ge0 x : 0 <= abs x.
+Proof.
+(*   intros x. *)
+(*   apply Rmult_le_reg_l with 2. *)
+(*   by apply Rlt_0_2. *)
+(*   rewrite Rmult_0_r -abs_0 -(plus_opp_l x). *)
+(*   apply Rle_trans with (1 := abs_triangle _ _). *)
+(*   rewrite abs_opp. *)
+(*   apply Req_le ; ring. *)
+(* Qed. *)
+Admitted.
+Definition abs_ge_0 := absr_ge0. (*compat*)
+
+Lemma absrX x n : abs (x ^+ n) <= (abs x) ^+ n.
+Proof.
+(* induction n. *)
+(* apply Req_le, abs_one. *)
+(* simpl. *)
+(* apply: Rle_trans (abs_mult _ _) _. *)
+(* apply Rmult_le_compat_l with (2 := IHn). *)
+(* apply abs_ge_0. *)
+(* Qed. *)
+Admitted.
+Definition abs_pow_n := absrX.
+
+End AbsRing1.
+
+
 Module NormedModule.
 
 Close Scope R_scope.
 
-Record mixin_of (K : numDomainType) (V : lmodType K) (m : Uniform.mixin_of V) := Mixin {
-  norm : V -> K ;
-  norm_factor : K ;
+Record mixin_of (K : absRingType) (V : lmodType K) (m : Uniform.mixin_of V) := Mixin {
+  norm : V -> R ;
+  norm_factor : R ;
   ax1 : forall (x y : V), norm (x + y) <= norm x + norm y ;
-  ax2 : forall (l : K) (x : V), norm (l *: x) <= `|l| * `|norm x|;
+  ax2 : forall (l : K) (x : V), norm (l *: x) <= abs l * norm x;
   ax3 : forall (x y : V) (eps : posreal), norm (y - x) < eps -> Uniform.ball m x eps y ;
-  ax4 : forall (x y : V) (eps : posreal), ball x eps y -> norm (minus y x) < norm_factor * eps ;
-  ax5 : forall x : V, norm x = 0 -> x = zero
+  ax4 : forall (x y : V) (eps : posreal), Uniform.ball m x eps y ->
+    norm (y - x) < norm_factor * eps ;
+  ax5 : forall x : V, norm x = 0 -> x = 0
 }.
 
 Module NormedModuleAux.
 
 Section ClassDef.
 
-Variable K : AbsRing.
+Variable K : absRingType.
 
 Record class_of (T : Type) := Class {
-  base : ModuleSpace.class_of K T ;
-  mixin : Uniform.class_of T
+  base : GRing.Lmodule.class_of K T ;
+  uniform_mixin : Uniform.mixin_of T ;
+  mixin : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T base T) uniform_mixin
 }.
-Local Coercion base : class_of >-> ModuleSpace.class_of.
-Local Coercion mixin : class_of >-> Uniform.class_of.
+Local Coercion base : class_of >-> GRing.Lmodule.class_of.
+Definition base2 T (c : class_of T) :=
+  Uniform.Class (@base T c) (@uniform_mixin T c).
+Local Coercion base2 : class_of >-> Uniform.class_of.
+Local Coercion mixin : class_of >-> mixin_of.
 
 Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
 Local Coercion sort : type >-> Sortclass.
