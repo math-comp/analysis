@@ -17,7 +17,9 @@ Local Open Scope ring_scope.
 Definition dep_arrow_eq (T : eqType) (T' : T -> eqType)
    (f g : forall x : T, T' x) := `[<forall x, f x == g x>].
 Lemma dep_arrow_eqP (T : eqType) (T' : T -> eqType) : Equality.axiom (@dep_arrow_eq T T').
-Proof. move=> f g. Admitted.
+Proof.
+move=> f g; apply: (iffP idP) => [H|->]; last by apply/asboolP.
+Admitted.
 Definition dep_arrow_eqMixin (T : eqType) (T' : T -> eqType) := EqMixin (@dep_arrow_eqP T T').
 Definition dep_arrow_eqType  (T : eqType) (T' : T -> eqType) :=
   EqType (forall x : T, T' x) (@dep_arrow_eqMixin T T').
@@ -2056,15 +2058,9 @@ Lemma absr1 : abs 1 = 1. Proof. by rewrite -absrN absrN1. Qed.
 
 Lemma absr_ge0 x : 0 <= abs x.
 Proof.
-(*   intros x. *)
-(*   apply Rmult_le_reg_l with 2. *)
-(*   by apply Rlt_0_2. *)
-(*   rewrite Rmult_0_r -abs_0 -(plus_opp_l x). *)
-(*   apply Rle_trans with (1 := abs_triangle _ _). *)
-(*   rewrite abs_opp. *)
-(*   apply Req_le ; ring. *)
-(* Qed. *)
-Admitted.
+rewrite -(@pmulr_rge0 _ 2%:R) // mulr2n mulrDl !mul1r.
+by rewrite -{2}absrN (ler_trans _ (ler_abs_add _ _)) // subrr absr0.
+Qed.
 
 Lemma absrX x n : abs (x ^+ n) <= (abs x) ^+ n.
 Proof.
