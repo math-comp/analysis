@@ -2029,38 +2029,30 @@ Context {K : absRingType}.
 Definition abs : K -> R := @AbsRing.abs _ (AbsRing.class K).
 
 Lemma absr0 : abs 0 = 0. Proof. exact: AbsRing.ax1. Qed.
-Definition abs_zero := absr0. (*compat*)
 
 Lemma absrN1: abs (- 1) = 1.
 Proof. exact: AbsRing.ax2. Qed.
-Definition abs_opp_one := absrN1. (*compat*)
 
 Lemma ler_abs_add (x y : K) :  abs (x + y) <= abs x + abs y.
 Proof. exact: AbsRing.ax3. Qed.
-Definition abs_triangle := ler_abs_add. (*compat*)
 
 Lemma absrM (x y : K) : abs (x * y) <= abs x * abs y.
 Proof. exact: AbsRing.ax4. Qed.
-Definition abs_mult := absrM. (*compat*)
 
 Lemma absr0_eq0 (x : K) : abs x = 0 -> x = 0.
 Proof. exact: AbsRing.ax5. Qed.
-Definition abs_eq_zero := absr0_eq0. (*compat*)
 
 Lemma absrN x : abs (- x)%R = abs x.
 Proof.
 gen have le_absN1 : x / abs (- x) <= abs x.
-  by rewrite -mulN1r (ler_trans (abs_mult _ _)) //= absrN1 mul1r.
+  by rewrite -mulN1r (ler_trans (absrM _ _)) //= absrN1 mul1r.
 by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
 Qed.
-Definition abs_opp := absrN. (*compat*)
 
 Lemma absrB (x y : K) : abs (x - y) = abs (y - x).
 Proof. by rewrite -absrN opprB. Qed.
-Definition abs_minus := absrB.
 
 Lemma absr1 : abs 1 = 1. Proof. by rewrite -absrN absrN1. Qed.
-Definition abs_one := absr1. (*compat*)
 
 Lemma absr_ge0 x : 0 <= abs x.
 Proof.
@@ -2073,7 +2065,6 @@ Proof.
 (*   apply Req_le ; ring. *)
 (* Qed. *)
 Admitted.
-Definition abs_ge_0 := absr_ge0. (*compat*)
 
 Lemma absrX x n : abs (x ^+ n) <= (abs x) ^+ n.
 Proof.
@@ -2085,9 +2076,45 @@ Proof.
 (* apply abs_ge_0. *)
 (* Qed. *)
 Admitted.
-Definition abs_pow_n := absrX.
 
 End AbsRing1.
+
+(* EVIL HACK *)
+Module TOTO.
+Module A.
+Definition a := 0.
+End A.
+End TOTO.
+Module TITI.
+Module A.
+Definition b := 1%N.
+End A.
+End TITI.
+Import TOTO.
+Import TITI.
+Print A.a.
+Print A.b.
+
+(* We should have compatilibity modules for every lemma in Hierarchy
+that we deleted (and replaced by mathcomp's ones) so that the rest of
+Coquelicot compiles just with a import of The compatibility modules *)
+Module AbsRingCompat.
+Notation AbsRing := absRingType.
+Module AbsRing.
+  Notation Pack := AbsRing.
+End AbsRing.
+Context {K : absRingType}.
+Definition abs_zero  := @absr0 K. (*compat*)
+Definition abs_opp_one := @absrN1 K. (*compat*)
+Definition abs_triangle := @ler_abs_add K. (*compat*)
+Definition abs_mult := @absrM K. (*compat*)
+Definition abs_eq_zero := @absr0_eq0 K. (*compat*)
+Definition abs_opp := @absrN K. (*compat*)
+Definition abs_minus := @absrB K. (*compat*)
+Definition abs_one := @absr1 K. (*compat*)
+Definition abs_pow_n := @absrX K. (*compat*)
+End AbsRingCompat.
+Import AbsRingCompat.
 
 
 Module NormedModule.
