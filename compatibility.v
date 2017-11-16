@@ -84,59 +84,66 @@ Notation minus := (fun a b => GRing.add a (GRing.opp b)).
 
 Import GRing.Theory.
 
-Definition sum_n_m (a : nat -> G) n m := (\sum_(n <= i < m.+1) (a i))%R.
-(*  iter_nat plus zero a n m.*)
+Definition sum_n_m (a : nat -> G) n m := Iter.iter_nat plus zero a n m.
+
+Lemma sum_n_mE a n m : sum_n_m a n m = (\sum_(n <= i < m.+1) (a i))%R.
+Proof.
+rewrite /sum_n_m /Iter.iter_nat BigOp.bigopE /reducebig /index_iota.
+move Hs : (iota _ _) => s {Hs n m}.
+by elim: s => // h t IH /=; rewrite IH.
+Qed.
+
 Definition sum_n (a : nat -> G) n := sum_n_m a O n.
 
 Lemma sum_n_m_Chasles (a : nat -> G) (n m k : nat) :
   (n <= S m)%nat -> (m <= k)%nat
     -> sum_n_m a n k = plus (sum_n_m a n m) (sum_n_m a (S m) k).
 Proof.
-move=> nm mk; rewrite -big_cat /=; apply congr_big => //.
+move=> nm mk; rewrite !sum_n_mE -big_cat /=; apply congr_big => //.
 rewrite /index_iota (_ : k.+1 - n = m.+1 - n + (k.+1 - m.+1))%N; last first.
   by rewrite addnC addnBA // subnK.
 by rewrite iota_add subnKC.
 Qed.
 
 Lemma sum_n_n (a : nat -> G) (n : nat) : sum_n_m a n n = a n.
-Proof. by rewrite /sum_n_m big_nat1. Qed.
+Proof. by rewrite sum_n_mE big_nat1. Qed.
 
 Lemma sum_O (a : nat -> G) : sum_n a 0 = a O.
-Proof. by rewrite /sum_n /sum_n_m big_nat_recr //= big_nil add0r. Qed.
+Proof. by rewrite /sum_n sum_n_mE big_nat_recr //= big_nil add0r. Qed.
 
 Lemma sum_n_Sm (a : nat -> G) (n m : nat) :
   (n <= S m)%nat -> sum_n_m a n (S m) = plus (sum_n_m a n m) (a (S m)).
-Proof. by move=> nm; rewrite /sum_n_m big_nat_recr. Qed.
+Proof. by move=> nm; rewrite !sum_n_mE big_nat_recr. Qed.
 
 Lemma sum_Sn_m (a : nat -> G) (n m : nat) :
   (n <= m)%nat -> sum_n_m a n m = plus (a n) (sum_n_m a (S n) m).
-Proof. by move=> nm; rewrite /sum_n_m big_nat_recl // big_add1. Qed.
+Proof. by move=> nm; rewrite !sum_n_mE big_nat_recl // big_add1. Qed.
 
 Lemma sum_n_m_S (a : nat -> G) (n m : nat) :
   sum_n_m (fun n => a (S n)) n m = sum_n_m a (S n) (S m).
-Proof. by rewrite /sum_n_m big_add1. Qed.
+Proof. by rewrite !sum_n_mE big_add1. Qed.
 
 Lemma sum_Sn (a : nat -> G) (n : nat) :
   sum_n a (S n) = plus (sum_n a n) (a (S n)).
-Proof. by rewrite /sum_n /sum_n_m big_nat_recr. Qed.
+Proof. by rewrite /sum_n !sum_n_mE big_nat_recr. Qed.
 
 Lemma sum_n_m_zero (a : nat -> G) (n m : nat) :
   (m < n)%nat -> sum_n_m a n m = zero.
 Proof.
-move=> mn; rewrite /sum_n_m big_seq_cond (eq_bigl xpred0) ?big_pred0 // => i.
+move=> mn; rewrite !sum_n_mE big_seq_cond (eq_bigl xpred0) ?big_pred0 // => i.
 move: mn; rewrite mem_iota; rewrite -subn_eq0 => /eqP ->; rewrite addn0 andbT.
 by apply/negbTE; rewrite negb_and leqNgt negbK orbN.
 Qed.
 
 Lemma sum_n_m_const_zero (n m : nat) : sum_n_m (fun _ => zero) n m = zero.
-Proof. by rewrite /sum_n_m big1. Qed.
+Proof. by rewrite sum_n_mE big1. Qed.
 
 Lemma sum_n_m_ext_loc (a b : nat -> G) (n m : nat) :
   (forall k, (n <= k <= m)%nat -> a k = b k) ->
   sum_n_m a n m = sum_n_m b n m.
 Proof.
 move=> k.
-rewrite /sum_n_m big_seq_cond [in RHS]big_seq_cond; apply eq_bigr => i /=.
+rewrite !sum_n_mE big_seq_cond [in RHS]big_seq_cond; apply eq_bigr => i /=.
 rewrite andbT mem_iota; case/boolP : (m.+1 - n == 0)%N => [/eqP->|].
   rewrite addn0; case/andP => ni /leq_trans/(_ ni); by rewrite ltnn.
 rewrite subn_eq0 -leqNgt => ?; rewrite subnKC; last by rewrite ltnW.
@@ -145,7 +152,7 @@ Qed.
 
 Lemma sum_n_m_ext (a b : nat -> G) n m : (forall n, a n = b n) ->
   sum_n_m a n m = sum_n_m b n m.
-Proof. move=> ?; by apply eq_bigr. Qed.
+Proof. move=> ?; rewrite !sum_n_mE; by apply eq_bigr. Qed.
 
 Lemma sum_n_ext_loc : forall (a b : nat -> G) N,
   (forall n, (n <= N)%nat -> a n = b n) ->
@@ -160,7 +167,7 @@ Proof. intros a b N H; by apply sum_n_ext_loc. Qed.
 
 Lemma sum_n_m_plus : forall (u v : nat -> G) (n m : nat),
   sum_n_m (fun k => plus (u k) (v k)) n m = plus (sum_n_m u n m) (sum_n_m v n m).
-Proof. move=> u v n m; by rewrite /sum_n_m big_split. Qed.
+Proof. move=> u v n m; by rewrite !sum_n_mE big_split. Qed.
 
 Lemma sum_n_plus : forall (u v : nat -> G) (n : nat),
   sum_n (fun k => plus (u k) (v k)) n = plus (sum_n u n) (sum_n v n).
@@ -168,12 +175,17 @@ Proof. move=> u v n; apply sum_n_m_plus. Qed.
 
 Lemma sum_n_switch : forall (u : nat -> nat -> G) (m n : nat),
   sum_n (fun i => sum_n (u i) n) m = sum_n (fun j => sum_n (fun i => u i j) m) n.
-Proof. move=> u m n; by rewrite /sum_n /sum_n_m exchange_big. Qed.
+Proof.
+move=> u m n; rewrite /sum_n !sum_n_mE.
+rewrite (eq_bigr (fun i : nat => (\sum_(O <= j < n.+1) (u i j))%R)); last first.
+  move=> i _; by rewrite sum_n_mE.
+rewrite exchange_big; apply eq_bigr => i _l; by rewrite sum_n_mE.
+Qed.
 
 Lemma sum_n_m_sum_n (a:nat -> G) (n m : nat) :
   (n <= m)%nat -> sum_n_m a (S n) m = minus (sum_n a m) (sum_n a n).
 Proof.
-move=> nm; apply/eqP.
+move=> nm; apply/eqP; rewrite !/sum_n !sum_n_mE.
 rewrite -subr_eq opprK /sum_n /sum_n_m addrC -big_cat.
 by rewrite -{2}(add0n n.+1) -iota_add subn0 add0n subnKC.
 Qed.
@@ -227,55 +239,40 @@ Proof. by move=> *; rewrite -mulN1r. Qed.
 
 Lemma sum_n_m_mult_r : forall (a : K) (u : nat -> K) (n m : nat),
   sum_n_m (fun k => mult (u k) a) n m = mult (sum_n_m u n m) a.
-Proof. by move=> a u n m; rewrite /sum_n_m -big_distrl. Qed.
+Proof. by move=> a u n m; rewrite !sum_n_mE -big_distrl. Qed.
 
 Lemma sum_n_m_mult_l : forall (a : K) (u : nat -> K) (n m : nat),
   sum_n_m (fun k => mult a (u k)) n m = mult a (sum_n_m u n m).
-Proof. by move=> a u n m; rewrite /sum_n_m -big_distrr. Qed.
+Proof. by move=> a u n m; rewrite !sum_n_mE -big_distrr. Qed.
 
 Lemma sum_n_mult_r : forall (a : K) (u : nat -> K) (n : nat),
   sum_n (fun k => mult (u k) a) n = mult (sum_n u n) a.
 Proof. intros ; by apply sum_n_m_mult_r. Qed.
 
-Lemma sum_n_mult_l :
- forall (a : K) (u : nat -> K) (n : nat),
+Lemma sum_n_mult_l : forall (a : K) (u : nat -> K) (n : nat),
   sum_n (fun k => mult a (u k)) n = mult a (sum_n u n).
-Proof.
-  intros ; by apply sum_n_m_mult_l.
-Qed.
+Proof. intros ; by apply sum_n_m_mult_l. Qed.
 
 (** pow_n *)
 
-Fixpoint pow_n (x : K) (N : nat) {struct N} : K :=
+Definition pow_n (x : K) (N : nat) : K := (x ^+ N).
+
+(*Fixpoint pow_n (x : K) (N : nat) {struct N} : K :=
   match N with
    | 0%nat => one
    | S i => mult x (pow_n x i)
-  end.
+  end.*)
 
-Lemma pow_n_plus :
-  forall (x : K) (n m : nat), pow_n x (n+m) = mult (pow_n x n) (pow_n x m).
+Lemma pow_n_plus : forall (x : K) (n m : nat), pow_n x (n+m) = mult (pow_n x n) (pow_n x m).
+Proof. exact: exprD. Qed.
+
+Lemma pow_n_comm_1 : forall (x : K) (n : nat), mult (pow_n x n) x = mult x (pow_n x n).
 Proof.
-  intros x.
-  elim => /= [ | n IH] m.
-  by rewrite mult_one_l.
-  by rewrite IH mult_assoc.
+move=> x; elim=> /= => [|n]; first by rewrite /pow_n expr0 /mult mulr1 mul1r.
+rewrite /mult /pow_n; by rewrite !exprS -mulrA => ->.
 Qed.
 
-Lemma pow_n_comm_1 :
-  forall (x : K) (n : nat), mult (pow_n x n) x = mult x (pow_n x n).
-Proof.
-  intros x n.
-  elim: n => /= [ | n IH].
-  by rewrite mult_one_l mult_one_r.
-  by rewrite -(mult_assoc _ (pow_n x n)) IH.
-Qed.
-
-Lemma pow_n_comm :
-  forall (x : K) n m, mult (pow_n x n) (pow_n x m) = mult (pow_n x m) (pow_n x n).
-Proof.
-  intros x n m.
-  rewrite -2!pow_n_plus.
-  by apply f_equal, Plus.plus_comm.
-Qed.
+Lemma pow_n_comm : forall (x : K) n m, mult (pow_n x n) (pow_n x m) = mult (pow_n x m) (pow_n x n).
+Proof. move=> x n m; by rewrite /mult -exprD addnC exprD. Qed.
 
 End Ring1.
