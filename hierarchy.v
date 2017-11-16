@@ -2093,6 +2093,7 @@ Definition abs_pow_n := @absrX K. (*compat*)
 End AbsRingCompat.
 Import AbsRingCompat.
 
+Reserved Notation  "`|| x ||" (at level 0, x at level 99, format "`|| x ||").
 
 Module NormedModule.
 
@@ -2109,8 +2110,6 @@ Record mixin_of (K : absRingType) (V : lmodType K) (m : Uniform.mixin_of V) := M
   ax5 : forall x : V, norm x = 0 -> x = 0
 }.
 
-Module NormedModuleAux.
-
 Section ClassDef.
 
 Variable K : absRingType.
@@ -2126,43 +2125,50 @@ Definition base2 T (c : class_of T) :=
 Local Coercion base2 : class_of >-> Uniform.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
 
-Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Structure type (phK : phant K) :=
+  Pack { sort; _ : class_of sort ; _ : Type }.
 Local Coercion sort : type >-> Sortclass.
 
-Variable cT : type.
+Variables (T : Type) (phK : phant K) (cT : type phK).
 
 Definition class := let: Pack _ c _ := cT return class_of cT in c.
 
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 
-Definition AbelianGroup := AbelianGroup.Pack cT xclass xT.
-Definition ModuleSpace := ModuleSpace.Pack _ cT xclass xT.
-Definition uniformType := Uniform.Pack cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass xT.
+Definition choiceType := @Choice.Pack cT xclass xT.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
+Definition lmodType := @GRing.Lmodule.Pack K (phK) cT xclass xT.
+Definition uniformType := @Uniform.Pack cT xclass xT.
 
 End ClassDef.
 
 Module Exports.
 
-Coercion base : class_of >-> ModuleSpace.class_of.
-Coercion mixin : class_of >-> Uniform.class_of.
+Coercion base : class_of >-> GRing.Lmodule.class_of.
+Coercion base2 : class_of >-> Uniform.class_of.
+Coercion mixin : class_of >-> mixin_of.
 Coercion sort : type >-> Sortclass.
-Coercion AbelianGroup : type >-> AbelianGroup.type.
-Canonical AbelianGroup.
-Coercion ModuleSpace : type >-> ModuleSpace.type.
-Canonical ModuleSpace.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion zmodType : type >-> GRing.Zmodule.type.
+Canonical zmodType.
 Coercion uniformType : type >-> Uniform.type.
-Canonical Uniform.
-Definition type_canonical_filter R (T : type R):= CanonicalFilter T T locally.
+Canonical uniformType.
+Definition type_canonical_filter
+   (K : absRingType) (phK : phant K) (T : type phK) :=
+  @CanonicalFilter T T locally.
 Coercion type_canonical_filter : type >-> canonical_filter.
 Canonical type_canonical_filter.
-Notation NormedModuleAux := type.
 
 End Exports.
 
-End NormedModuleAux.
+End NormedModule.
 
-Export NormedModuleAux.Exports.
+Export NormedModule.Exports.
 
 Module NormedModule.
 
