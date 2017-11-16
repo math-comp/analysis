@@ -2166,9 +2166,9 @@ Record mixin_of (K : absRingType) (V : lmodType K) (m : Uniform.mixin_of V) := M
   norm_factor : R ;
   ax1 : forall (x y : V), norm (x + y) <= norm x + norm y ;
   ax2 : forall (l : K) (x : V), norm (l *: x) <= abs l * norm x;
-  ax3 : forall (x y : V) (eps : posreal), norm (y - x) < eps -> Uniform.ball m x eps y ;
+  ax3 : forall (x y : V) (eps : posreal), norm (x - y) < eps -> Uniform.ball m x eps y ;
   ax4 : forall (x y : V) (eps : posreal), Uniform.ball m x eps y ->
-    norm (y - x) < norm_factor * eps ;
+    norm (x - y) < norm_factor * eps ;
   ax5 : forall x : V, norm x = 0 -> x = 0
 }.
 
@@ -2290,7 +2290,7 @@ Definition norm_scal := ler_normmZ. (*compat*)
 (* Proof. *)
 (* apply: NormedModule.ax4. *)
 (* Qed. *)
-Definition ball_norm x (eps : R) y := `|[y - x]| < eps.
+Definition ball_norm x (eps : R) y := `|[x - y]| < eps.
 Arguments ball_norm x eps%R y /.
 
 Lemma sub_norm_ball_pos (x : V) (eps : posreal) : ball_norm x eps `<=` ball x eps.
@@ -2372,7 +2372,7 @@ Proof. by move=> y /sub_ball_norm_pos /=; rewrite mulVKf. Qed.
 Lemma closeE x y : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
-have dxy_gt0 : `|[y - x]| > 0 by rewrite normm_gt0 subr_eq0 eq_sym.
+have dxy_gt0 : `|[x - y]| > 0 by rewrite normm_gt0 subr_eq0.
 have dxy_ge0 := ltrW dxy_gt0.
 have /sub_ball_norm_pos/= := cl_xy
   [posreal of ((norm_factor V)^-1 * (((PosReal dxy_gt0) : R) / 2%:R))%R].
@@ -2409,8 +2409,8 @@ Proof. rewrite -locally_locally_norm; apply locally_norm_ball_norm. Qed.
 Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
 Proof.
-rewrite /ball_norm => H1 H2; rewrite [e1 + e2]addrC.
-by rewrite (subr_trans y) (ler_lt_trans (ler_normm_add _ _)) ?ltr_add.
+rewrite /ball_norm => H1 H2; rewrite (subr_trans y).
+by rewrite (ler_lt_trans (ler_normm_add _ _)) ?ltr_add.
 Qed.
 
 (* COMPILES UNTIL HERE *)
