@@ -2422,66 +2422,38 @@ Proof. exact: pselect. Qed.
 Lemma ball_norm_sym x y (e : posreal) : ball_norm x e y -> ball_norm y e x.
 Proof. by rewrite /ball_norm -opprB normmN. Qed.
 
-(* COMPILES UNTIL HERE *)
-(*
-
-Lemma ball_norm_le x (e1 e2 : posreal) : e1 <= e2 ->
+Lemma ball_norm_le x (e1 e2 : posreal) : pos e1 <= pos e2 ->
   forall y, ball_norm x e1 y -> ball_norm x e2 y.
-Proof.
-  intros x e1 e2 He y H1.
-  now apply Rlt_le_trans with e1.
-Qed.
+Proof. move=> e1e2 y He1; by apply: ltr_le_trans e1e2. Qed.
 
-Lemma ball_norm_eq :
-  forall x y : V,
-  (forall eps : posreal, ball_norm x eps y) -> x = y.
+Lemma ball_norm_eq x y : (forall eps : posreal, ball_norm x eps y) -> x = y.
 Proof.
-intros x y H.
-apply plus_reg_r with (opp x).
-rewrite plus_opp_r.
-apply eq_sym, norm_eq_zero.
-apply Rle_antisym.
-2: apply norm_ge_0.
-apply prop_eps.
-intros eps He.
-exact (H (mkposreal eps He)).
+move=> H; apply/eqP; rewrite -subr_eq0; apply/eqP.
+apply/norm_eq_zero; apply/eqP; rewrite eqr_le normm_ge0 andbT.
+apply/Rstruct.RlebP/prop_eps(* TODO *) => e He.
+by move: (H (mkposreal _ He)) => /Rstruct.RltbP.
 Qed.
 
 Lemma is_filter_lim_unique {F} {FF : ProperFilter' F} (x y : V) :
   F --> x -> F --> y -> x = y.
 Proof.
-intros Hx Hy.
-apply ball_norm_eq => eps.
-assert (Hx': F (ball_norm x [posreal of eps / 2])).
-  apply Hx.
-  apply locally_ball_norm.
-assert (Hy': F (ball_norm y [posreal of eps / 2])).
-  apply Hy.
-  apply locally_ball_norm.
-apply Rnot_le_lt.
-intros H.
-apply (@filter_not_empty V F FF).
-apply: filter_imp (filter_and _ _ Hx' Hy').
-clear -H.
-intros z [Bx By].
-revert H.
-apply Rlt_not_le.
-rewrite (double_var eps).
-change (eps / 2) with (pos [posreal of eps / 2]).
-apply ball_norm_triangle with (1 := Bx).
-now apply ball_norm_sym.
+move=> Hx Hy; apply ball_norm_eq => eps.
+have Hx' : F (ball_norm x [posreal of eps / 2]) by apply/Hx/locally_ball_norm.
+have Hy' : F (ball_norm y [posreal of eps / 2]) by apply/Hy/locally_ball_norm.
+apply/Rstruct.RltbP/Rnot_le_lt => H; apply/(@filter_not_empty V _ FF).
+apply: filter_imp (filter_and Hx' Hy') => x0 [Bx /ball_norm_sym By].
+move: H; apply Rlt_not_le; rewrite (double_var eps).
+rewrite (_ : (eps / 2)%coqR = pos [posreal of eps / 2]) //.
+by move/Rstruct.RltbP : (ball_norm_triangle Bx By).
 Qed.
 
-Lemma is_filter_lim_locally_unique :
-  forall (x y : V),
-  x --> y -> x = y.
-Proof.
-intros x y H.
-apply eq_close.
-now apply is_filter_lim_locally_close.
-Qed.
-*)
+Lemma is_filter_lim_locally_unique (x y : V) : x --> y -> x = y.
+Proof. move=> H; rewrite -closeE; by apply/is_filter_lim_locally_close. Qed.
+
 End NormedModule1.
+
+(* COMPILES UNTIL HERE *)
+
 (*
 Section NormedModule2.
 
