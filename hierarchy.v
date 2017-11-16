@@ -2409,9 +2409,8 @@ Proof. rewrite -locally_locally_norm; apply locally_norm_ball_norm. Qed.
 Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
 Proof.
-rewrite /ball_norm => H1 H2; move: (ler_normm_add (y - x) (z - y)).
-rewrite addrCA (addrC y) addrK => /ler_lt_trans; apply.
-by rewrite -(addrC y) ltr_add.
+rewrite /ball_norm => H1 H2; rewrite [e1 + e2]addrC.
+by rewrite (subr_trans y) (ler_lt_trans (ler_normm_add _ _)) ?ltr_add.
 Qed.
 
 (* COMPILES UNTIL HERE *)
