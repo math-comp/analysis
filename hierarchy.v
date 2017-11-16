@@ -2099,7 +2099,6 @@ Qed.
 
 End AbsRing1.
 
-
 Section AbsRing_UniformSpace.
 
 Context (K : absRingType).
@@ -2132,7 +2131,6 @@ Canonical absRing_UniformType := UniformType K AbsRingUniformMixin.
 Canonical AbsRingcanonical_filter := @CanonicalFilter K K locally.
 
 End AbsRing_UniformSpace.
-
 
 (* We should have compatilibity modules for every lemma in Hierarchy
 that we deleted (and replaced by mathcomp's ones) so that the rest of
@@ -2452,12 +2450,9 @@ Proof. move=> H; rewrite -closeE; by apply/is_filter_lim_locally_close. Qed.
 
 End NormedModule1.
 
-(* COMPILES UNTIL HERE *)
-
-(*
 Section NormedModule2.
 
-Context {T : Type} {K : AbsRing} {V : NormedModule K}.
+Context {T : Type} {K : absRingType} {V : normedModType K}.
 
 Lemma filterlim_locally_unique :
   forall {F} {FF : ProperFilter' F} (f : T -> V) (x y : V),
@@ -2478,23 +2473,25 @@ apply ball_norm_eq => eps.
 specialize (Hx (ball_norm x [posreal of eps / 2]) (locally_ball_norm _ _)).
 specialize (Hy (ball_norm y [posreal of eps / 2]) (locally_ball_norm _ _)).
 unfold filtermapi in Hx, Hy.
-apply Rnot_le_lt.
-intros H.
+apply/Rstruct.RltbP/Rnot_le_lt => H.
 apply (@filter_not_empty _ F FF).
 rewrite /filter_of /= in Hx Hy.
-apply: filter_imp (filter_and _ _ (filter_and _ _ Hx Hy) Hf).
+apply: filter_imp (filter_and (filter_and Hx Hy) Hf).
 clear -H.
 intros z [[[x' [Hx Bx]] [y' [Hy By]]] Hf].
 apply: Rlt_not_le H.
-rewrite (double_var eps).
-change (eps / 2) with (pos [posreal of eps / 2]).
-apply ball_norm_triangle with (1 := Bx).
-apply ball_norm_sym.
-now rewrite (Hf _ _ Hx Hy).
+rewrite (double_var eps) (_ : (eps / 2)%coqR = (pos [posreal of eps / 2])) //.
+move: (Hf _ _ Hx Hy) => xy.
+rewrite -!{}xy in By.
+apply ball_norm_sym in By.
+by move/Rstruct.RltbP: (ball_norm_triangle Bx By).
 Qed.
 
 End NormedModule2.
 
+(* COMPILES UNTIL HERE *)
+
+(*
 (** Rings with absolute values are normed modules *)
 
 Section AbsRing_NormedModule.
