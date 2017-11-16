@@ -2359,11 +2359,16 @@ Qed.
 Definition norm_triangle_inv := ler_distm_dist.
 
 Lemma sub_norm_ball (x : V) (eps : R) : ball_norm x eps `<=` ball x eps.
-Proof. 
+Proof.
 move=> y /=; have [/ltr_le_trans lt /lt|eps_gt0] := ler0P eps.
   by rewrite normm_lt0.
 by apply: (@sub_norm_ball_pos _ (PosReal eps_gt0)).
 Qed.
+
+Lemma sub_ball_norm_rev (x : V) (eps : posreal) :
+  ball x ((norm_factor V)^-1 * eps) `<=` ball_norm x eps.
+Proof. by move=> y /sub_ball_norm_pos /=; rewrite mulVKf. Qed.
+
 Lemma closeE x y : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
@@ -2380,23 +2385,16 @@ Definition locally_norm (x : V) (P : V -> Prop) :=
   exists eps : posreal, forall y, ball_norm x eps y -> P y.
 
 Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
-Proof.
-move=> P [e H].
-have /RltbP He : 0 < (norm_factor V)^-1 * e by rewrite pmulr_rgt0.
-exists (mkposreal _ He) => y Hy; apply H.
-have ? : norm_factor V <> 0 by apply/Rgt_not_eq/Rlt_gt/RltbP/norm_factor_gt_0.
-rewrite -(Rmult_1_l e) -(Rinv_r (norm_factor V)) // Rmult_assoc RinvE //.
-exact: norm_compat2 Hy.
-Qed.
+Proof. by move=> P [e H]; eexists=> y Py; apply/H/sub_ball_norm_rev/Py. Qed.
 
 Lemma locally_norm_le_locally x : filter_le (locally_norm x) (locally x).
-Proof. move=> P [eps H]; exists eps => y By; apply H; exact: norm_compat1. Qed.
+Proof. by move=> P [e Pxe]; exists e => y /sub_norm_ball /Pxe. Qed.
 
 (* NB: this lemmas was not here before *)
-Lemma locally_locally_norm x : locally_norm x = locally x.
+Lemma locally_locally_norm : locally_norm = locally.
 Proof.
-rewrite funeqE => s; rewrite propeqE ; split;
- [apply locally_le_locally_norm | apply locally_norm_le_locally].
+rewrite funeqE => x; rewrite funeqE => s; rewrite propeqE; split;
+by [apply locally_le_locally_norm | apply locally_norm_le_locally].
 Qed.
 
 Lemma locally_norm_ball_norm x (e : posreal) : locally_norm x (ball_norm x e).
