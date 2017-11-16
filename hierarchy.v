@@ -2364,52 +2364,35 @@ Definition locally_norm (x : V) (P : V -> Prop) :=
 
 Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
 Proof.
-move=> P [eps H].
-have /RltbP He : 0 < (norm_factor V)^-1 * eps by rewrite pmulr_rgt0.
+move=> P [e H].
+have /RltbP He : 0 < (norm_factor V)^-1 * e by rewrite pmulr_rgt0.
 exists (mkposreal _ He) => y Hy; apply H.
 have ? : norm_factor V <> 0 by apply/Rgt_not_eq/Rlt_gt/RltbP/norm_factor_gt_0.
-rewrite -(Rmult_1_l eps) -(Rinv_r (norm_factor V)) // Rmult_assoc RinvE //.
+rewrite -(Rmult_1_l e) -(Rinv_r (norm_factor V)) // Rmult_assoc RinvE //.
 exact: norm_compat2 Hy.
 Qed.
 
 Lemma locally_norm_le_locally x : filter_le (locally_norm x) (locally x).
 Proof. move=> P [eps H]; exists eps => y By; apply H; exact: norm_compat1. Qed.
 
-(* NB: new *)
+(* NB: this lemmas was not here before *)
 Lemma locally_locally_norm x : locally_norm x = locally x.
 Proof.
 rewrite funeqE => s; rewrite propeqE ; split;
  [apply locally_le_locally_norm | apply locally_norm_le_locally].
 Qed.
 
+Lemma locally_norm_ball_norm x (e : posreal) : locally_norm x (ball_norm x e).
+Proof. by exists e. Qed.
+
+Lemma locally_norm_ball x (eps : posreal) : locally_norm x (ball x eps).
+Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
+
+Lemma locally_ball_norm (x : V) (eps : posreal) : locally x (ball_norm x eps).
+Proof. rewrite -locally_locally_norm; apply locally_norm_ball_norm. Qed.
+
 (* COMPILES UNTIL HERE *)
 (*
-
-Lemma locally_norm_ball_norm :
-  forall (x : V) (eps : posreal),
-  locally_norm x (ball_norm x eps).
-Proof.
-intros x eps.
-now exists eps.
-Qed.
-
-Lemma locally_norm_ball :
-  forall (x : V) (eps : posreal),
-  locally_norm x (ball x eps).
-Proof.
-intros x eps.
-apply locally_norm_le_locally.
-by apply: locally_ball.
-Qed.
-
-Lemma locally_ball_norm :
-  forall (x : V) (eps : posreal),
-  locally x (ball_norm x eps).
-Proof.
-intros x eps.
-apply locally_le_locally_norm.
-apply locally_norm_ball_norm.
-Qed.
 
 Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
