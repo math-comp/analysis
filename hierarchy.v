@@ -2362,35 +2362,28 @@ Qed.
 Definition locally_norm (x : V) (P : V -> Prop) :=
   exists eps : posreal, forall y, ball_norm x eps y -> P y.
 
-(* COMPILES UNTIL HERE *)
-(*
-
 Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
 Proof.
-intros P [eps H].
-have He : 0 < / norm_factor * eps.
-  apply Rmult_lt_0_compat.
-  by apply/Rinv_0_lt_compat/norm_factor_gt_0.
-  by apply cond_pos.
-exists (mkposreal _ He).
-intros y By.
-apply H.
-unfold ball_norm.
-rewrite -(Rmult_1_l eps) -(Rinv_r norm_factor).
-rewrite Rmult_assoc.
-apply norm_compat2 with (1 := By).
-apply Rgt_not_eq.
-apply norm_factor_gt_0.
+move=> P [eps H].
+have /RltbP He : 0 < (norm_factor V)^-1 * eps by rewrite pmulr_rgt0.
+exists (mkposreal _ He) => y Hy; apply H.
+have ? : norm_factor V <> 0 by apply/Rgt_not_eq/Rlt_gt/RltbP/norm_factor_gt_0.
+rewrite -(Rmult_1_l eps) -(Rinv_r (norm_factor V)) // Rmult_assoc RinvE //.
+exact: norm_compat2 Hy.
 Qed.
 
 Lemma locally_norm_le_locally x : filter_le (locally_norm x) (locally x).
+Proof. move=> P [eps H]; exists eps => y By; apply H; exact: norm_compat1. Qed.
+
+(* NB: new *)
+Lemma locally_locally_norm x : locally_norm x = locally x.
 Proof.
-move=> P [eps H].
-exists eps.
-intros y By.
-apply H.
-now apply norm_compat1.
+rewrite funeqE => s; rewrite propeqE ; split;
+ [apply locally_le_locally_norm | apply locally_norm_le_locally].
 Qed.
+
+(* COMPILES UNTIL HERE *)
+(*
 
 Lemma locally_norm_ball_norm :
   forall (x : V) (eps : posreal),
