@@ -2413,33 +2413,17 @@ rewrite /ball_norm => H1 H2; rewrite (subr_trans y).
 by rewrite (ler_lt_trans (ler_normm_add _ _)) ?ltr_add.
 Qed.
 
+Lemma ball_norm_center (x : V) (e : posreal) : ball_norm x e x.
+Proof. apply/RltbP; rewrite subrr normm0; exact: cond_pos. Qed.
+
+Lemma ball_norm_dec x y (e : posreal) : {ball_norm x e y} + {~ ball_norm x e y}.
+Proof. exact: pselect. Qed.
+
+Lemma ball_norm_sym x y (e : posreal) : ball_norm x e y -> ball_norm y e x.
+Proof. by rewrite /ball_norm -opprB normmN. Qed.
+
 (* COMPILES UNTIL HERE *)
 (*
-
-Lemma ball_norm_center (x : V) (e : posreal) :
-  ball_norm x e x.
-Proof.
-  eapply Rle_lt_trans, e.
-  rewrite minus_eq_zero norm_zero.
-  by apply Req_le.
-Qed.
-
-Lemma ball_norm_dec : forall (x y : V) (eps : posreal),
-  {ball_norm x eps y} + {~ ball_norm x eps y}.
-Proof.
-  intros x y eps.
-  apply Rlt_dec.
-Qed.
-
-Lemma ball_norm_sym :
-  forall (x y : V) (eps : posreal), ball_norm x eps y -> ball_norm y eps x.
-Proof.
-  intros x y eps Hxy.
-  unfold ball_norm.
-  rewrite <- norm_opp.
-  rewrite opp_minus.
-  apply Hxy.
-Qed.
 
 Lemma ball_norm_le :
   forall (x : V) (e1 e2 : posreal), e1 <= e2 ->
