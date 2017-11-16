@@ -777,11 +777,12 @@ Canonical eqType.
 Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Notation uniformType := type.
+Notation UniformType T m := (@pack T m _ _ idfun).
+Notation UniformMixin := Mixin.
 Notation "[ 'uniformType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
   (at level 0, format "[ 'uniformType'  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'uniformType' 'of' T ]" := (@clone T _ _ id)
   (at level 0, format "[ 'uniformType'  'of'  T ]") : form_scope.
-Notation UniformType T m := (@pack T m _ _ idfun).
 
 End Exports.
 
@@ -1913,7 +1914,7 @@ Module AbsRing.
 
 Close Scope R_scope.
 
-Record mixin_of (D : numDomainType) := Mixin {
+Record mixin_of (D : ringType) := Mixin {
   abs : D -> R;
   ax1 : abs 0 = 0 ;
   ax2 : abs (- 1) = 1 ;
@@ -1997,17 +1998,20 @@ Delimit Scope real_scope with real.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
-Section AbsRing1.
-
 Context {K : absRingType}.
-(* :TODO: provide notation*)
-Definition abs : K -> R := @AbsRing.abs _ (AbsRing.class K).
+
+Definition abs {K : absRingType} : K -> R := @AbsRing.abs _ (AbsRing.class K).
 Notation "`| x |" := (abs x%R) : R_scope.
 Notation "`| x |" := (abs x%R) : real_scope.
 
-Lemma absr0 : `|0| = 0. Proof. exact: AbsRing.ax1. Qed.
+Section AbsRing1.
 
-Lemma absrN1: `|- 1| = 1.
+Context {K : absRingType}.
+Implicit Types x : K.
+
+Lemma absr0 : `|0 : K| = 0. Proof. exact: AbsRing.ax1. Qed.
+
+Lemma absrN1: `|- 1 : K| = 1.
 Proof. exact: AbsRing.ax2. Qed.
 
 Lemma ler_abs_add (x y : K) :  `|x + y| <= `|x|%real + `|y|%real.
@@ -2029,7 +2033,7 @@ Qed.
 Lemma absrB (x y : K) : `|x - y| = `|y - x|.
 Proof. by rewrite -absrN opprB. Qed.
 
-Lemma absr1 : `|1| = 1. Proof. by rewrite -absrN absrN1. Qed.
+Lemma absr1 : `|1 : K| = 1. Proof. by rewrite -absrN absrN1. Qed.
 
 Lemma absr_ge0 x : 0 <= `|x|.
 Proof.
@@ -2044,6 +2048,82 @@ by rewrite !exprS (ler_trans (absrM _ _)) // ler_pmul // absr_ge0.
 Qed.
 
 End AbsRing1.
+
+Hint Resolve cond_pos.
+Definition PosReal (x : R) (p : 0 < x) := mkposreal x (RltP _ _ p).
+
+Section PosReal.
+Implicit Types x y : posreal.
+
+Lemma posreal_gt0 x : x > 0 :> R. Proof. by apply/RltP. Qed.
+Hint Resolve posreal_gt0.
+Lemma posreal_eq0 x : (x == 0 :> R) = false. Proof. by rewrite gtr_eqF. Qed.
+Lemma posreal_neq0 x : (x != 0 :> R). Proof. by rewrite gtr_eqF. Qed.
+Hint Resolve posreal_neq0.
+
+Lemma min_pos_gt0 x y : 0 < minr (x : R) (y : R).
+Proof. by rewrite ltr_minr !posreal_gt0. Qed.
+Canonical minr_posreal x y := PosReal (@min_pos_gt0 x y).
+
+Lemma add_pos_gt0 x y : 0 < (x : R) + (y : R).
+Proof. by rewrite addr_gt0. Qed.
+Canonical addr_posreal x y := PosReal (add_pos_gt0 x y).
+
+Lemma mul_pos_posreal x y : 0 < (x : R) * (y : R).
+Proof. by rewrite mulr_gt0. Qed.
+Canonical mulr_posreal x y := PosReal (mul_pos_posreal x y).
+
+Lemma muln_pos_posreal x n : 0 < (x : R) *+ n.+1.
+Proof. by rewrite pmulrn_lgt0. Qed.
+Canonical mulrn_posreal x n := PosReal (muln_pos_posreal x n).
+
+Lemma inv_pos_gt0 x : 0 < (x : R)^-1. Proof. by rewrite invr_gt0. Qed.
+Canonical invr_posreal x := PosReal (inv_pos_gt0 x).
+
+Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
+Canonical oner_posreal := PosReal (@ltr01 _).
+
+Definition posreal_of (x : R) y of x = y := y.
+End PosReal.
+
+Hint Resolve posreal_gt0.
+Hint Resolve posreal_neq0.
+Notation "[ 'posreal' 'of' x ]" := (@posreal_of x _ erefl)
+  (format "[ 'posreal'  'of'  x ]") : ring_scope.
+
+Section AbsRing_UniformSpace.
+
+Context (K : absRingType).
+
+Definition AbsRing_ball (x : K) (eps : R) (y : K) := `|x - y| < eps.
+
+Lemma AbsRing_ball_center (x : K) (e : posreal) : AbsRing_ball x e x.
+Proof. by rewrite /AbsRing_ball subrr absr0. Qed.
+
+Lemma AbsRing_ball_sym (x y : K) (e : R) :
+  AbsRing_ball x e y -> AbsRing_ball y e x.
+Proof. by rewrite /AbsRing_ball absrB. Qed.
+
+(* :TODO: to math-comp *)
+Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
+Proof. by rewrite addrA addrNK. Qed.
+
+Lemma AbsRing_ball_triangle (x y z : K) (e1 e2 : R) :
+  AbsRing_ball x e1 y -> AbsRing_ball y e2 z -> AbsRing_ball x (e1 + e2) z.
+Proof.
+rewrite /AbsRing_ball => xy yz.
+by rewrite (subr_trans y) (ler_lt_trans (ler_abs_add _ _)) ?ltr_add.
+Qed.
+
+Definition AbsRingUniformMixin :=
+  UniformMixin 0 AbsRing_ball_center AbsRing_ball_sym AbsRing_ball_triangle.
+
+(* :TODO: DANGEROUS ! Must change this to include uniform type inside absring *)
+Canonical absRing_UniformType := UniformType K AbsRingUniformMixin.
+Canonical AbsRingcanonical_filter := @CanonicalFilter K K locally.
+
+End AbsRing_UniformSpace.
+
 
 (* We should have compatilibity modules for every lemma in Hierarchy
 that we deleted (and replaced by mathcomp's ones) so that the rest of
@@ -2066,7 +2146,7 @@ Definition abs_pow_n := @absrX K. (*compat*)
 End AbsRingCompat.
 Import AbsRingCompat.
 
-Reserved Notation  "`|| x ||" (at level 0, x at level 99, format "`|| x ||").
+Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").
 
 Module NormedModule.
 
@@ -2102,19 +2182,25 @@ Structure type (phK : phant K) :=
   Pack { sort; _ : class_of sort ; _ : Type }.
 Local Coercion sort : type >-> Sortclass.
 
-Variables (T : Type) (phK : phant K) (cT : type phK).
+Variables (phK : phant K) (T : Type) (cT : type phK).
 
 Definition class := let: Pack _ c _ := cT return class_of cT in c.
-
+Definition clone c of phant_id class c := @Pack phK T c T.
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
+
+Definition pack b0 um0 (m0 : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T b0 T) um0) :=
+  fun bT b & phant_id (@GRing.Lalgebra.class K phK bT) b =>
+  fun ubT (ub : Uniform.class_of _) & phant_id (@Uniform.class ubT) ub =>
+  fun   m & phant_id m0 m => Pack phK (@Class T b ub m) T.
 
 Definition eqType := @Equality.Pack cT xclass xT.
 Definition choiceType := @Choice.Pack cT xclass xT.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
-Definition lmodType := @GRing.Lmodule.Pack K (phK) cT xclass xT.
+Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass xT.
 Definition uniformType := @Uniform.Pack cT xclass xT.
-
+Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass xT.
+Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass xT.
 End ClassDef.
 
 Module Exports.
@@ -2129,222 +2215,154 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
+Coercion lmodType : type >-> GRing.Lmodule.type.
+Canonical lmodType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
+Canonical join_zmodType.
+Canonical join_lmodType.
 Definition type_canonical_filter
    (K : absRingType) (phK : phant K) (T : type phK) :=
   @CanonicalFilter T T locally.
 Coercion type_canonical_filter : type >-> canonical_filter.
 Canonical type_canonical_filter.
 
-End Exports.
-
-End NormedModule.
-
-Export NormedModule.Exports.
-
-(*
-
-Module NormedModule.
-
-Record mixin_of (K : AbsRing) (V : NormedModuleAux K) := Mixin {
-  norm : V -> R ;
-  norm_factor : R ;
-  ax1 : forall (x y : V), norm (plus x y) <= norm x + norm y ;
-  ax2 : forall (l : K) (x : V), norm (scal l x) <= abs l * norm x ;
-  ax3 : forall (x y : V) (eps : R), norm (minus y x) < eps -> ball x eps y ;
-  ax4 : forall (x y : V) (eps : posreal), ball x eps y -> norm (minus y x) < norm_factor * eps ;
-  ax5 : forall x : V, norm x = 0 -> x = zero
-}.
-
-Section ClassDef.
-
-Variable K : AbsRing.
-
-Record class_of (T : Type) := Class {
-  base : NormedModuleAux.class_of K T ;
-  mixin : mixin_of K (NormedModuleAux.Pack K T base T)
-}.
-Local Coercion base : class_of >-> NormedModuleAux.class_of.
-
-Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
-Local Coercion sort : type >-> Sortclass.
-
-Variable cT : type.
-
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
-
-Let xT := let: Pack T _ _ := cT in T.
-Notation xclass := (class : class_of xT).
-
-Definition AbelianGroup := AbelianGroup.Pack cT xclass xT.
-Definition ModuleSpace := ModuleSpace.Pack _ cT xclass xT.
-Definition uniformType := Uniform.Pack cT xclass xT.
-Definition NormedModuleAux := NormedModuleAux.Pack _ cT xclass xT.
-
-End ClassDef.
-
-Module Exports.
-
-Coercion base : class_of >-> NormedModuleAux.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion sort : type >-> Sortclass.
-Coercion AbelianGroup : type >-> AbelianGroup.type.
-Canonical AbelianGroup.
-Coercion ModuleSpace : type >-> ModuleSpace.type.
-Canonical ModuleSpace.
-Coercion uniformType : type >-> Uniform.type.
-Canonical Uniform.
-Coercion NormedModuleAux : type >-> NormedModuleAux.type.
-Canonical NormedModuleAux.
-Definition type_canonical_filter R (T : type R):= CanonicalFilter T T locally.
-Coercion type_canonical_filter : type >-> canonical_filter.
-Canonical type_canonical_filter.
-
-Notation NormedModule := type.
+Notation normedModType K := (type (Phant K)).
+Notation NormedModType K T m := (@pack _ (Phant K) T _ _ m _ _ id _ _ id _ id).
+Notation NormedModMixin := Mixin.
+Notation "[ 'normedModType' K 'of' T 'for' cT ]" := (@clone _ (Phant K) T cT _ idfun)
+  (at level 0, format "[ 'normedModType'  K  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'normedModType' K 'of' T ]" := (@clone _ (Phant K) T _ _ id)
+  (at level 0, format "[ 'normedModType'  K  'of'  T ]") : form_scope.
 
 End Exports.
 
 End NormedModule.
 
 Export NormedModule.Exports.
+
+Program Definition R_AbsRingMixin :=
+ @AbsRing.Mixin _ normr (normr0 _) (normrN1 _) (@ler_norm_add _) _ (@normr0_eq0 _).
+Next Obligation. by rewrite normrM. Qed.
+Canonical R_absRingType := AbsRingType R R_AbsRingMixin.
+
+Definition R_UniformSpace_mixin := @AbsRingUniformMixin R_absRingType.
+Canonical R_UniformSpace := UniformType R R_UniformSpace_mixin.
+Canonical R_canonical_filter := @CanonicalFilter R R locally.
+
+
+Definition norm {K : absRingType} {V : normedModType K} : V -> R :=
+  NormedModule.norm (NormedModule.class _).
+Definition norm_factor {K : absRingType} (V : normedModType K) : R :=
+ @NormedModule.norm_factor _ _ _ (@NormedModule.class _ _ V).
+Notation "`|[ x ]|" := (norm x) : ring_scope.
 
 Section NormedModule1.
+Context {K : absRingType} {V : normedModType K}.
+Implicit Types (l : K) (x y : V) (eps : posreal).
 
-Context {K : AbsRing} {V : NormedModule K}.
+Close Scope R_scope.
 
-Definition norm : V -> R := NormedModule.norm K _ (NormedModule.class K V).
+Lemma ler_normm_add x y : `|[x + y]| <= `|[x]| + `|[y]|.
+Proof. exact: NormedModule.ax1. Qed.
+Definition norm_triangle := ler_normm_add. (*compat*)
 
-Definition norm_factor : R := NormedModule.norm_factor K _ (NormedModule.class K V).
+Lemma ler_normmZ l x : `|[l *: x]| <= `|l|%real * `|[x]|.
+Proof. exact: NormedModule.ax2. Qed.
+Definition norm_scal := ler_normmZ. (*compat*)
 
-Lemma norm_triangle :
-  forall x y : V,
-  norm (plus x y) <= norm x + norm y.
+(* Lemma norm_compat1 (x y : V) (eps : R) :  `|[y - x < eps -> ball x eps y. *)
+(* Proof. *)
+(* apply NormedModule.ax3. *)
+(* Qed. *)
+
+(* Lemma norm_compat2 : *)
+(*   forall (x y : V) (eps : posreal), ball x eps y -> norm (minus y x) < norm_factor * eps. *)
+(* Proof. *)
+(* apply: NormedModule.ax4. *)
+(* Qed. *)
+Definition ball_norm x (eps : R) y := `|[y - x]| < eps.
+Arguments ball_norm x eps%R y /.
+
+Lemma sub_norm_ball_pos (x : V) (eps : posreal) : ball_norm x eps `<=` ball x eps.
+Proof. move=> y; exact: NormedModule.ax3. Qed.
+Definition norm_compat1 := sub_norm_ball_pos.
+
+Lemma sub_ball_norm_pos (x : V) (eps : posreal) : ball x eps `<=` ball_norm x (norm_factor V * eps).
+Proof. move=> y; exact: NormedModule.ax4. Qed.
+Definition norm_compat2 := sub_ball_norm_pos.
+
+Lemma normm0_eq0 x : `|[x]| = 0 -> x = 0.
+Proof. exact: NormedModule.ax5. Qed.
+Definition norm_eq_zero := normm0_eq0.
+
+Lemma normmN x : `|[- x]| = `|[x]|.
 Proof.
-apply NormedModule.ax1.
+gen have le_absN1 : x / `|[- x]| <= `|[x]|.
+  by rewrite -scaleN1r (ler_trans (ler_normmZ _ _)) //= absrN1 mul1r.
+by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
 Qed.
 
-Lemma norm_scal :
-  forall (l : K) (x : V),
-  norm (scal l x) <= abs l * norm x.
+Lemma normmB x y : `|[x - y]| = `|[y - x]|.
+Proof. by rewrite -normmN opprB. Qed.
+
+Lemma normm0 : `|[0 : V]| = 0.
 Proof.
-apply NormedModule.ax2.
+apply/eqP; rewrite eqr_le; apply/andP; split.
+  by rewrite -{1}(scale0r 0) (ler_trans (ler_normmZ _ _)) ?absr0 ?mul0r.
+by rewrite -(ler_add2r `|[0 : V]|) add0r -{1}[0 : V]add0r ler_normm_add.
+Qed.
+Definition norm_zero := normm0.
+Hint Resolve normm0.
+
+Lemma normm_eq0 x : (`|[x]| == 0) = (x == 0).
+Proof. by apply/eqP/eqP=> [/normm0_eq0|->//]. Qed.
+
+Lemma normm_ge0 x : 0 <= `|[x]|.
+Proof.
+rewrite -(@pmulr_rge0 _ 2%:R) // mulr2n mulrDl !mul1r.
+by rewrite -{2}normmN (ler_trans _ (ler_normm_add _ _)) // subrr normm0.
 Qed.
 
-Lemma norm_compat1 :
-  forall (x y : V) (eps : R),
-  norm (minus y x) < eps -> ball x eps y.
-Proof.
-apply NormedModule.ax3.
-Qed.
+Lemma normm_gt0 x : (0 < `|[x]|) = (x != 0).
+Proof. by rewrite ltr_def normm_eq0 normm_ge0 andbT. Qed.
 
-Lemma norm_compat2 :
-  forall (x y : V) (eps : posreal), ball x eps y -> norm (minus y x) < norm_factor * eps.
+Lemma norm_factor_gt_0 : 0 < norm_factor V.
 Proof.
-apply: NormedModule.ax4.
+have /= := @sub_ball_norm_pos 0 [posreal of (1 : R)].
+by move=> /(_ 0 (ball_center _ _)) /=; rewrite subrr normm0 mulr1.
 Qed.
+Canonical norm_factor_posreal := PosReal norm_factor_gt_0.
 
-Lemma norm_eq_zero :
-  forall x : V, norm x = 0 -> x = zero.
+Lemma absRE (x : R) : `|x|%real = `|x|%R.
+Proof. by []. Qed.
+
+Lemma ler_distm_dist x y : `| `|[x]| - `|[y]| | <= `|[x - y]|.
 Proof.
-apply NormedModule.ax5.
+wlog gt_xy : x y / `|[x]| >= `|[y]| => [hw|].
+  by have [/hw//|/ltrW/hw] := lerP `|[y]| `|[x]|; rewrite absRE distrC normmB.
+rewrite absRE ger0_norm ?subr_ge0 // ler_subl_addr.
+by rewrite -{1}[x](addrNK y) ler_normm_add.
 Qed.
+Definition norm_triangle_inv := ler_distm_dist.
 
-Lemma norm_zero :
-  norm zero = 0.
+Lemma closeE x y : close x y = (x = y).
 Proof.
-apply Rle_antisym.
-- rewrite -(scal_zero_l zero).
-  rewrite -(Rmult_0_l (norm zero)).
-  rewrite -(@abs_zero K).
-  apply norm_scal.
-- apply Rplus_le_reg_r with (norm zero).
-  rewrite Rplus_0_l.
-  rewrite -{1}[zero]plus_zero_r.
-  exact (norm_triangle zero zero).
+rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
+have dxy_gt0 : `|[y - x]| > 0 by rewrite normm_gt0 subr_eq0 eq_sym.
+have dxy_ge0 := ltrW dxy_gt0.
+have /sub_ball_norm_pos/= := cl_xy
+  [posreal of ((norm_factor V)^-1 * (((PosReal dxy_gt0) : R) / 2%:R))%R].
+rewrite mulVKf // -subr_lt0 ler_gtF //.
+rewrite -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
+by rewrite subr_ge0 -(@ler_pmul2r _ 2%:R) // mulVf // mul1r ler1n.
 Qed.
-
-Lemma norm_factor_gt_0 :
-  0 < norm_factor.
-Proof.
-rewrite <- (Rmult_1_r norm_factor).
-rewrite <- norm_zero.
-rewrite <- (plus_opp_r zero).
-apply (norm_compat2 _ _ [posreal of 1]).
-apply ball_center.
-Qed.
-
-Lemma norm_opp :
-  forall x : V,
-  norm (opp x) = norm x.
-Proof.
-intros x.
-apply Rle_antisym.
-- rewrite -scal_opp_one.
-  rewrite -(Rmult_1_l (norm x)) -(@abs_opp_one K).
-  apply norm_scal.
-- rewrite -{1}[x]opp_opp -scal_opp_one.
-  rewrite -(Rmult_1_l (norm (opp x))) -(@abs_opp_one K).
-  apply norm_scal.
-Qed.
-
-Lemma norm_ge_0 :
-  forall x : V,
-  0 <= norm x.
-Proof.
-  intros x.
-  apply Rmult_le_reg_l with 2.
-  by apply Rlt_0_2.
-  rewrite Rmult_0_r -norm_zero -(plus_opp_r x).
-  apply Rle_trans with (norm x + norm (opp x)).
-  apply norm_triangle.
-  apply Req_le ; rewrite norm_opp.
-  ring.
-Qed.
-
-Lemma norm_triangle_inv :
-  forall x y : V,
-  Rabs (norm x - norm y) <= norm (minus x y).
-Proof.
-  intros x y.
-  apply Rabs_le_between' ; split.
-  rewrite -(norm_opp (minus _ _)).
-  apply Rle_minus_l ; eapply Rle_trans.
-  2 : apply norm_triangle.
-  apply Req_le, f_equal.
-  by rewrite /minus opp_plus plus_assoc plus_opp_r plus_zero_l opp_opp.
-  eapply Rle_trans.
-  2 : apply norm_triangle.
-  apply Req_le, f_equal.
-  by rewrite /minus plus_comm -plus_assoc plus_opp_l plus_zero_r.
-Qed.
-
-Lemma eq_close :
-  forall x y : V,
-  close x y -> x = y.
-Proof.
-intros x y H.
-apply plus_reg_r with (opp x).
-rewrite plus_opp_r.
-apply eq_sym, norm_eq_zero.
-apply Rle_antisym.
-2: apply norm_ge_0.
-apply prop_eps.
-intros eps He.
-assert (He' : 0 < eps / norm_factor).
-  apply Rdiv_lt_0_compat with (1 := He).
-  apply norm_factor_gt_0.
-specialize (H (mkposreal _ He')).
-replace eps with (norm_factor * (eps / norm_factor)).
-apply norm_compat2 with (1 := H).
-field.
-apply Rgt_not_eq, norm_factor_gt_0.
-Qed.
-
-Definition ball_norm (x : V) (eps : R) (y : V) := norm (minus y x) < eps.
 
 Definition locally_norm (x : V) (P : V -> Prop) :=
   exists eps : posreal, forall y, ball_norm x eps y -> P y.
+
+(* COMPILES UNTIL HERE *)
+(*
 
 Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
 Proof.
@@ -2495,9 +2513,9 @@ intros x y H.
 apply eq_close.
 now apply is_filter_lim_locally_close.
 Qed.
-
+*)
 End NormedModule1.
-
+(*
 Section NormedModule2.
 
 Context {T : Type} {K : AbsRing} {V : NormedModule K}.
