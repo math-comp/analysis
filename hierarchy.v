@@ -14,6 +14,55 @@ Import GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope ring_scope.
 
+Hint Resolve cond_pos.
+Definition PosReal (x : R) (p : 0 < x) := mkposreal x (RltP _ _ p).
+
+Section PosReal.
+Implicit Types x y : posreal.
+
+Lemma posreal_gt0 x : x > 0 :> R. Proof. by apply/RltP. Qed.
+Hint Resolve posreal_gt0.
+Lemma posreal_ge0 x : x >= 0 :> R. Proof. by apply: ltrW. Qed.
+Hint Resolve posreal_ge0.
+Lemma posreal_eq0 x : (x == 0 :> R) = false. Proof. by rewrite gtr_eqF. Qed.
+Lemma posreal_neq0 x : (x != 0 :> R). Proof. by rewrite gtr_eqF. Qed.
+Hint Resolve posreal_neq0.
+Lemma posreal_le0 x : (x <= 0 :> R) = false.
+Proof. by rewrite lerNgt posreal_gt0. Qed.
+Lemma posreal_lt0 x : (x < 0 :> R) = false.
+Proof. by rewrite ltrNge posreal_ge0. Qed.
+
+Lemma min_pos_gt0 x y : 0 < minr (x : R) (y : R).
+Proof. by rewrite ltr_minr !posreal_gt0. Qed.
+Canonical minr_posreal x y := PosReal (@min_pos_gt0 x y).
+
+Lemma add_pos_gt0 x y : 0 < (x : R) + (y : R).
+Proof. by rewrite addr_gt0. Qed.
+Canonical addr_posreal x y := PosReal (add_pos_gt0 x y).
+
+Lemma mul_pos_posreal x y : 0 < (x : R) * (y : R).
+Proof. by rewrite mulr_gt0. Qed.
+Canonical mulr_posreal x y := PosReal (mul_pos_posreal x y).
+
+Lemma muln_pos_posreal x n : 0 < (x : R) *+ n.+1.
+Proof. by rewrite pmulrn_lgt0. Qed.
+Canonical mulrn_posreal x n := PosReal (muln_pos_posreal x n).
+
+Lemma inv_pos_gt0 x : 0 < (x : R)^-1. Proof. by rewrite invr_gt0. Qed.
+Canonical invr_posreal x := PosReal (inv_pos_gt0 x).
+
+Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
+Canonical oner_posreal := PosReal (@ltr01 _).
+
+Definition posreal_of (x : R) y of x = y := y.
+End PosReal.
+
+Hint Resolve posreal_gt0.
+Hint Resolve posreal_ge0.
+Hint Resolve posreal_neq0.
+Notation "[ 'posreal' 'of' x ]" := (@posreal_of x _ erefl)
+  (format "[ 'posreal'  'of'  x ]") : ring_scope.
+
 Definition dep_arrow_eq (T : eqType) (T' : T -> eqType)
    (f g : forall x : T, T' x) := `[<f = g>].
 Lemma dep_arrow_eqP (T : eqType) (T' : T -> eqType) : Equality.axiom (@dep_arrow_eq T T').
@@ -2050,47 +2099,6 @@ Qed.
 
 End AbsRing1.
 
-Hint Resolve cond_pos.
-Definition PosReal (x : R) (p : 0 < x) := mkposreal x (RltP _ _ p).
-
-Section PosReal.
-Implicit Types x y : posreal.
-
-Lemma posreal_gt0 x : x > 0 :> R. Proof. by apply/RltP. Qed.
-Hint Resolve posreal_gt0.
-Lemma posreal_eq0 x : (x == 0 :> R) = false. Proof. by rewrite gtr_eqF. Qed.
-Lemma posreal_neq0 x : (x != 0 :> R). Proof. by rewrite gtr_eqF. Qed.
-Hint Resolve posreal_neq0.
-
-Lemma min_pos_gt0 x y : 0 < minr (x : R) (y : R).
-Proof. by rewrite ltr_minr !posreal_gt0. Qed.
-Canonical minr_posreal x y := PosReal (@min_pos_gt0 x y).
-
-Lemma add_pos_gt0 x y : 0 < (x : R) + (y : R).
-Proof. by rewrite addr_gt0. Qed.
-Canonical addr_posreal x y := PosReal (add_pos_gt0 x y).
-
-Lemma mul_pos_posreal x y : 0 < (x : R) * (y : R).
-Proof. by rewrite mulr_gt0. Qed.
-Canonical mulr_posreal x y := PosReal (mul_pos_posreal x y).
-
-Lemma muln_pos_posreal x n : 0 < (x : R) *+ n.+1.
-Proof. by rewrite pmulrn_lgt0. Qed.
-Canonical mulrn_posreal x n := PosReal (muln_pos_posreal x n).
-
-Lemma inv_pos_gt0 x : 0 < (x : R)^-1. Proof. by rewrite invr_gt0. Qed.
-Canonical invr_posreal x := PosReal (inv_pos_gt0 x).
-
-Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
-Canonical oner_posreal := PosReal (@ltr01 _).
-
-Definition posreal_of (x : R) y of x = y := y.
-End PosReal.
-
-Hint Resolve posreal_gt0.
-Hint Resolve posreal_neq0.
-Notation "[ 'posreal' 'of' x ]" := (@posreal_of x _ erefl)
-  (format "[ 'posreal'  'of'  x ]") : ring_scope.
 
 Section AbsRing_UniformSpace.
 
