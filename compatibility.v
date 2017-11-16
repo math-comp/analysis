@@ -3,8 +3,13 @@ Require Import mathcomp.ssreflect.ssreflect.
 Require Import Rcomplements.
 Require Import Rbar Lub Markov hierarchy.
 
+Require Rstruct.
 From mathcomp Require Import ssrbool eqtype ssrnat choice fintype ssralg.
-From mathcomp Require Import ssrfun seq bigop.
+From mathcomp Require Import ssrfun seq bigop ssrnum.
+
+(* We should have compatilibity modules for every lemma in Hierarchy
+that we deleted (and replaced by mathcomp's ones) so that the rest of
+Coquelicot compiles just with a import of The compatibility modules *)
 
 Section AbelianGroup1.
 
@@ -276,3 +281,52 @@ Lemma pow_n_comm : forall (x : K) n m, mult (pow_n x n) (pow_n x m) = mult (pow_
 Proof. move=> x n m; by rewrite /mult -exprD addnC exprD. Qed.
 
 End Ring1.
+
+Module AbsRing1.
+
+Notation AbsRing := absRingType.
+
+Context {K : AbsRing}.
+
+Notation abs := (@abs K).
+Notation zero := 0%R.
+Notation opp := GRing.opp.
+Notation plus := +%R.
+Notation minus := (fun a b => GRing.add a (GRing.opp b)).
+
+Lemma abs_zero : abs zero = 0.
+Proof. exact: absr0. Qed.
+
+Lemma abs_opp_one : abs (opp one) = 1.
+Proof. exact: @absrN1 K. Qed.
+
+Lemma abs_triangle : forall x y : K, abs (plus x y) <= abs x + abs y.
+Proof. move=> x y; by move/Rstruct.RlebP: (@ler_abs_add K x y). Qed.
+
+Lemma abs_mult : forall x y : K, abs (mult x y) <= abs x * abs y.
+Proof. move=> x y; by move/Rstruct.RlebP : (absrM x y). Qed.
+
+Lemma abs_eq_zero : forall x : K, abs x = 0 -> x = zero.
+Proof. exact: absr0_eq0. Qed.
+
+Lemma abs_opp : forall x, abs (opp x) = abs x.
+Proof. exact: absrN. Qed.
+
+Lemma abs_minus : forall x y : K, abs (minus x y) = abs (minus y x).
+Proof. exact: absrB. Qed.
+
+Lemma abs_one : abs one = 1.
+Proof. exact: absr1. Qed.
+
+Lemma abs_ge_0 : forall x, 0 <= abs x.
+Proof. move=> x; by move/Rstruct.RlebP : (absr_ge0 x). Qed.
+
+Lemma abs_pow_n : forall (x : K) n, abs (pow_n x n) <= (abs x)^n.
+Proof.
+move=> x n; move/Rstruct.RlebP : (absrX x n) => /Rle_trans; apply.
+rewrite Rstruct.RpowE; by apply Rle_refl.
+Qed.
+
+End AbsRing1.
+
+(*Import AbsRingCompat.*)
