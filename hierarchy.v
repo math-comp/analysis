@@ -2072,22 +2072,6 @@ Qed.
 
 End AbsRing1.
 
-(* EVIL HACK *)
-Module TOTO.
-Module A.
-Definition a := 0.
-End A.
-End TOTO.
-Module TITI.
-Module A.
-Definition b := 1%N.
-End A.
-End TITI.
-Import TOTO.
-Import TITI.
-Print A.a.
-Print A.b.
-
 (* We should have compatilibity modules for every lemma in Hierarchy
 that we deleted (and replaced by mathcomp's ones) so that the rest of
 Coquelicot compiles just with a import of The compatibility modules *)
