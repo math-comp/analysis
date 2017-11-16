@@ -386,29 +386,8 @@ Proof. by move=> x; move: (normm_ge0 x) => /Rstruct.RlebP. Qed.
 Lemma norm_triangle_inv : forall x y : V, Rabs (norm x - norm y) <= norm (minus x y).
 Proof. move=> x y; by move: (ler_distm_dist x y) => /= => /Rstruct.RlebP. Qed.
 
-(* TODO
-
-Lemma eq_close :
-  forall x y : V,
-  close x y -> x = y.
-Proof.
-intros x y H.
-apply plus_reg_r with (opp x).
-rewrite plus_opp_r.
-apply eq_sym, norm_eq_zero.
-apply Rle_antisym.
-2: apply norm_ge_0.
-apply prop_eps.
-intros eps He.
-assert (He' : 0 < eps / norm_factor).
-  apply Rdiv_lt_0_compat with (1 := He).
-  apply norm_factor_gt_0.
-specialize (H (mkposreal _ He')).
-replace eps with (norm_factor * (eps / norm_factor)).
-apply norm_compat2 with (1 := H).
-field.
-apply Rgt_not_eq, norm_factor_gt_0.
-Qed.
+Lemma eq_close : forall x y : V, close x y -> x = y.
+Proof. by move=> x y; rewrite closeE. Qed.
 
 Definition ball_norm (x : V) (eps : R) (y : V) := norm (minus y x) < eps.
 
@@ -417,96 +396,50 @@ Definition locally_norm (x : V) (P : V -> Prop) :=
 
 Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
 Proof.
-intros P [eps H].
-have He : 0 < / norm_factor * eps.
-  apply Rmult_lt_0_compat.
-  by apply/Rinv_0_lt_compat/norm_factor_gt_0.
-  by apply cond_pos.
-exists (mkposreal _ He).
-intros y By.
-apply H.
-unfold ball_norm.
-rewrite -(Rmult_1_l eps) -(Rinv_r norm_factor).
-rewrite Rmult_assoc.
-apply norm_compat2 with (1 := By).
-apply Rgt_not_eq.
-apply norm_factor_gt_0.
+rewrite -locally_locally_norm /filter_le => P [e He].
+exists e => y /Rstruct.RltbP Hy; apply He.
+by rewrite /hierarchy.ball_norm normmB in Hy.
 Qed.
 
 Lemma locally_norm_le_locally x : filter_le (locally_norm x) (locally x).
 Proof.
-move=> P [eps H].
-exists eps.
-intros y By.
-apply H.
-now apply norm_compat1.
+rewrite -locally_locally_norm /filter_le => P [e He].
+exists e => y /Rstruct.RltbP Hy; apply He.
+by rewrite /hierarchy.ball_norm normmB.
 Qed.
 
-Lemma locally_norm_ball_norm :
-  forall (x : V) (eps : posreal),
-  locally_norm x (ball_norm x eps).
-Proof.
-intros x eps.
-now exists eps.
-Qed.
+Lemma locally_norm_ball_norm x (e : posreal) : locally_norm x (ball_norm x e).
+Proof. by exists e. Qed.
 
-Lemma locally_norm_ball :
-  forall (x : V) (eps : posreal),
-  locally_norm x (ball x eps).
-Proof.
-intros x eps.
-apply locally_norm_le_locally.
-by apply: locally_ball.
-Qed.
+Lemma locally_norm_ball : forall x (eps : posreal), locally_norm x (ball x eps).
+Proof. move=> x e; by apply/locally_norm_le_locally/locally_ball. Qed.
 
-Lemma locally_ball_norm :
-  forall (x : V) (eps : posreal),
-  locally x (ball_norm x eps).
-Proof.
-intros x eps.
-apply locally_le_locally_norm.
-apply locally_norm_ball_norm.
-Qed.
+Lemma locally_ball_norm x (eps : posreal) : locally x (ball_norm x eps).
+Proof. by apply/locally_le_locally_norm/locally_norm_ball_norm. Qed.
 
 Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
 Proof.
-  intros H1 H2.
-  eapply Rle_lt_trans, Rplus_lt_compat.
-  2: by apply H1.
-  2: by apply H2.
-  rewrite Rplus_comm.
-  eapply Rle_trans, norm_triangle.
-  apply Req_le, f_equal.
-  rewrite /minus -!plus_assoc.
-  apply f_equal.
-  by rewrite plus_assoc plus_opp_l plus_zero_l.
+move: (@ball_norm_triangle _ _ x y z e1 e2); rewrite /ball_norm.
+rewrite /hierarchy.ball_norm normmB (normmB _ z) (normmB x) => H.
+by move/Rstruct.RltbP => ? /Rstruct.RltbP ?; apply/Rstruct.RltbP/H.
 Qed.
 
-Lemma ball_norm_center (x : V) (e : posreal) :
-  ball_norm x e x.
-Proof.
-  eapply Rle_lt_trans, e.
-  rewrite minus_eq_zero norm_zero.
-  by apply Req_le.
-Qed.
+Lemma ball_norm_center (x : V) (e : posreal) : ball_norm x e x.
+Proof. by move: (ball_norm_center x e) => /Rstruct.RltbP. Qed.
 
 Lemma ball_norm_dec : forall (x y : V) (eps : posreal),
   {ball_norm x eps y} + {~ ball_norm x eps y}.
 Proof.
-  intros x y eps.
-  apply Rlt_dec.
+move=> x y e; move: (ball_norm_dec x y e).
+rewrite /hierarchy.ball_norm (normmB x) /ball_norm.
+case; by [move=> /Rstruct.RltbP; left | right; apply/Rstruct.RltbP/negP].
 Qed.
 
-Lemma ball_norm_sym :
-  forall (x y : V) (eps : posreal), ball_norm x eps y -> ball_norm y eps x.
-Proof.
-  intros x y eps Hxy.
-  unfold ball_norm.
-  rewrite <- norm_opp.
-  rewrite opp_minus.
-  apply Hxy.
-Qed.
+Lemma ball_norm_sym x y (e : posreal) : ball_norm x e y -> ball_norm y e x.
+Proof. by rewrite /ball_norm -opp_minus norm_opp. Qed.
+
+(* TODO
 
 Lemma ball_norm_le :
   forall (x : V) (e1 e2 : posreal), e1 <= e2 ->
