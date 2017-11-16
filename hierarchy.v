@@ -15,11 +15,12 @@ Import GRing.Theory Num.Def Num.Theory.
 Local Open Scope ring_scope.
 
 Definition dep_arrow_eq (T : eqType) (T' : T -> eqType)
-   (f g : forall x : T, T' x) := `[<forall x, f x == g x>].
+   (f g : forall x : T, T' x) := `[<f = g>].
 Lemma dep_arrow_eqP (T : eqType) (T' : T -> eqType) : Equality.axiom (@dep_arrow_eq T T').
 Proof.
-move=> f g; apply: (iffP idP) => [H|->]; last by apply/asboolP.
-Admitted.
+by move=> f g; apply: (iffP idP) => [/asboolP|->]; last by apply/asboolP.
+Qed.
+
 Definition dep_arrow_eqMixin (T : eqType) (T' : T -> eqType) := EqMixin (@dep_arrow_eqP T T').
 Definition dep_arrow_eqType  (T : eqType) (T' : T -> eqType) :=
   EqType (forall x : T, T' x) (@dep_arrow_eqMixin T T').
