@@ -2355,6 +2355,12 @@ by rewrite -{1}[x](addrNK y) ler_normm_add.
 Qed.
 Definition norm_triangle_inv := ler_distm_dist.
 
+Lemma sub_norm_ball (x : V) (eps : R) : ball_norm x eps `<=` ball x eps.
+Proof. 
+move=> y /=; have [/ltr_le_trans lt /lt|eps_gt0] := ler0P eps.
+  by rewrite normm_lt0.
+by apply: (@sub_norm_ball_pos _ (PosReal eps_gt0)).
+Qed.
 Lemma closeE x y : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
