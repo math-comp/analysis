@@ -2019,48 +2019,52 @@ End AbsRing.
 
 Export AbsRing.Exports.
 
+Delimit Scope R_scope with coqR.
+Delimit Scope real_scope with real.
+Local Open Scope ring_scope.
+Local Open Scope real_scope.
+
 Section AbsRing1.
 
-Close Scope R_scope.
-
 Context {K : absRingType}.
-
 (* :TODO: provide notation*)
 Definition abs : K -> R := @AbsRing.abs _ (AbsRing.class K).
+Notation "`| x |" := (abs x%R) : R_scope.
+Notation "`| x |" := (abs x%R) : real_scope.
 
-Lemma absr0 : abs 0 = 0. Proof. exact: AbsRing.ax1. Qed.
+Lemma absr0 : `|0| = 0. Proof. exact: AbsRing.ax1. Qed.
 
-Lemma absrN1: abs (- 1) = 1.
+Lemma absrN1: `|- 1| = 1.
 Proof. exact: AbsRing.ax2. Qed.
 
-Lemma ler_abs_add (x y : K) :  abs (x + y) <= abs x + abs y.
+Lemma ler_abs_add (x y : K) :  `|x + y| <= `|x|%real + `|y|%real.
 Proof. exact: AbsRing.ax3. Qed.
 
-Lemma absrM (x y : K) : abs (x * y) <= abs x * abs y.
+Lemma absrM (x y : K) : `|x * y| <= `|x|%real * `|y|%real.
 Proof. exact: AbsRing.ax4. Qed.
 
-Lemma absr0_eq0 (x : K) : abs x = 0 -> x = 0.
+Lemma absr0_eq0 (x : K) : `|x| = 0 -> x = 0.
 Proof. exact: AbsRing.ax5. Qed.
 
-Lemma absrN x : abs (- x)%R = abs x.
+Lemma absrN x : `|- x| = `|x|.
 Proof.
-gen have le_absN1 : x / abs (- x) <= abs x.
+gen have le_absN1 : x / `|- x| <= `|x|.
   by rewrite -mulN1r (ler_trans (absrM _ _)) //= absrN1 mul1r.
 by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
 Qed.
 
-Lemma absrB (x y : K) : abs (x - y) = abs (y - x).
+Lemma absrB (x y : K) : `|x - y| = `|y - x|.
 Proof. by rewrite -absrN opprB. Qed.
 
-Lemma absr1 : abs 1 = 1. Proof. by rewrite -absrN absrN1. Qed.
+Lemma absr1 : `|1| = 1. Proof. by rewrite -absrN absrN1. Qed.
 
-Lemma absr_ge0 x : 0 <= abs x.
+Lemma absr_ge0 x : 0 <= `|x|.
 Proof.
 rewrite -(@pmulr_rge0 _ 2%:R) // mulr2n mulrDl !mul1r.
 by rewrite -{2}absrN (ler_trans _ (ler_abs_add _ _)) // subrr absr0.
 Qed.
 
-Lemma absrX x n : abs (x ^+ n) <= (abs x) ^+ n.
+Lemma absrX x n : `|x ^+ n| <= `|x|%real ^+ n.
 Proof.
 elim: n => [|n IH]; first  by rewrite !expr0 absr1.
 by rewrite !exprS (ler_trans (absrM _ _)) // ler_pmul // absr_ge0.
