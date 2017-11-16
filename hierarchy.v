@@ -2336,6 +2336,9 @@ Qed.
 Lemma normm_gt0 x : (0 < `|[x]|) = (x != 0).
 Proof. by rewrite ltr_def normm_eq0 normm_ge0 andbT. Qed.
 
+Lemma normm_lt0 x : (`|[x]| < 0) = false.
+Proof. by rewrite ltrNge normm_ge0. Qed.
+
 Lemma norm_factor_gt_0 : 0 < norm_factor V.
 Proof.
 have /= := @sub_ball_norm_pos 0 [posreal of (1 : R)].
