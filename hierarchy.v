@@ -2425,8 +2425,7 @@ Proof. by rewrite /ball_norm -opprB normmN. Qed.
 (* COMPILES UNTIL HERE *)
 (*
 
-Lemma ball_norm_le :
-  forall (x : V) (e1 e2 : posreal), e1 <= e2 ->
+Lemma ball_norm_le x (e1 e2 : posreal) : e1 <= e2 ->
   forall y, ball_norm x e1 y -> ball_norm x e2 y.
 Proof.
   intros x e1 e2 He y H1.

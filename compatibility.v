@@ -282,7 +282,7 @@ Proof. move=> x n m; by rewrite /mult -exprD addnC exprD. Qed.
 
 End Ring1.
 
-Module AbsRing1.
+Section AbsRing1.
 
 Notation AbsRing := absRingType.
 
@@ -330,3 +330,296 @@ Qed.
 End AbsRing1.
 
 (*Import AbsRingCompat.*)
+
+Section NormedModule1.
+
+Notation AbsRing := absRingType.
+Notation NormedModule K := (normedModType K).
+
+Context {K : AbsRing} {V : NormedModule K}.
+
+Notation plus := +%R.
+Notation scal := *:%R.
+Notation minus := (fun a b => GRing.add a (GRing.opp b)).
+
+Definition norm : V -> R := NormedModule.norm (NormedModule.class V).
+
+Definition norm_factor : R := NormedModule.norm_factor (NormedModule.class V).
+
+Lemma norm_triangle : forall x y : V, norm (plus x y) <= norm x + norm y.
+Proof. by move=> x y; move/Rstruct.RlebP: (ler_normm_add x y). Qed.
+
+Lemma norm_scal : forall (l : K) (x : V), norm (scal l x) <= abs l * norm x.
+Proof. by move=> l k; move/Rstruct.RlebP: (ler_normmZ l k). Qed.
+
+Lemma norm_compat1 : forall (x y : V) (eps : R), norm (minus y x) < eps -> ball x eps y.
+Proof.
+move=> x y e yxe.
+have He : 0 < e by apply/(Rle_lt_trans _ _ _ _ yxe)/Rstruct.RlebP/normm_ge0.
+suff : ball y (mkposreal _ He) x by apply ball_sym.
+by apply/(@NormedModule.ax3 _ _ _ (NormedModule.class V))/Rstruct.RltbP.
+Qed.
+
+(* TODO
+
+Lemma norm_compat2 :
+  forall (x y : V) (eps : posreal), ball x eps y -> norm (minus y x) < norm_factor * eps.
+Proof.
+apply: NormedModule.ax4.
+Qed.
+
+Lemma norm_eq_zero :
+  forall x : V, norm x = 0 -> x = zero.
+Proof.
+apply NormedModule.ax5.
+Qed.
+
+Lemma norm_zero :
+  norm zero = 0.
+Proof.
+apply Rle_antisym.
+- rewrite -(scal_zero_l zero).
+  rewrite -(Rmult_0_l (norm zero)).
+  rewrite -(@abs_zero K).
+  apply norm_scal.
+- apply Rplus_le_reg_r with (norm zero).
+  rewrite Rplus_0_l.
+  rewrite -{1}[zero]plus_zero_r.
+  exact (norm_triangle zero zero).
+Qed.
+
+Lemma norm_factor_gt_0 :
+  0 < norm_factor.
+Proof.
+rewrite <- (Rmult_1_r norm_factor).
+rewrite <- norm_zero.
+rewrite <- (plus_opp_r zero).
+apply (norm_compat2 _ _ [posreal of 1]).
+apply ball_center.
+Qed.
+
+Lemma norm_opp :
+  forall x : V,
+  norm (opp x) = norm x.
+Proof.
+intros x.
+apply Rle_antisym.
+- rewrite -scal_opp_one.
+  rewrite -(Rmult_1_l (norm x)) -(@abs_opp_one K).
+  apply norm_scal.
+- rewrite -{1}[x]opp_opp -scal_opp_one.
+  rewrite -(Rmult_1_l (norm (opp x))) -(@abs_opp_one K).
+  apply norm_scal.
+Qed.
+
+Lemma norm_ge_0 :
+  forall x : V,
+  0 <= norm x.
+Proof.
+  intros x.
+  apply Rmult_le_reg_l with 2.
+  by apply Rlt_0_2.
+  rewrite Rmult_0_r -norm_zero -(plus_opp_r x).
+  apply Rle_trans with (norm x + norm (opp x)).
+  apply norm_triangle.
+  apply Req_le ; rewrite norm_opp.
+  ring.
+Qed.
+
+Lemma norm_triangle_inv :
+  forall x y : V,
+  Rabs (norm x - norm y) <= norm (minus x y).
+Proof.
+  intros x y.
+  apply Rabs_le_between' ; split.
+  rewrite -(norm_opp (minus _ _)).
+  apply Rle_minus_l ; eapply Rle_trans.
+  2 : apply norm_triangle.
+  apply Req_le, f_equal.
+  by rewrite /minus opp_plus plus_assoc plus_opp_r plus_zero_l opp_opp.
+  eapply Rle_trans.
+  2 : apply norm_triangle.
+  apply Req_le, f_equal.
+  by rewrite /minus plus_comm -plus_assoc plus_opp_l plus_zero_r.
+Qed.
+
+Lemma eq_close :
+  forall x y : V,
+  close x y -> x = y.
+Proof.
+intros x y H.
+apply plus_reg_r with (opp x).
+rewrite plus_opp_r.
+apply eq_sym, norm_eq_zero.
+apply Rle_antisym.
+2: apply norm_ge_0.
+apply prop_eps.
+intros eps He.
+assert (He' : 0 < eps / norm_factor).
+  apply Rdiv_lt_0_compat with (1 := He).
+  apply norm_factor_gt_0.
+specialize (H (mkposreal _ He')).
+replace eps with (norm_factor * (eps / norm_factor)).
+apply norm_compat2 with (1 := H).
+field.
+apply Rgt_not_eq, norm_factor_gt_0.
+Qed.
+
+Definition ball_norm (x : V) (eps : R) (y : V) := norm (minus y x) < eps.
+
+Definition locally_norm (x : V) (P : V -> Prop) :=
+  exists eps : posreal, forall y, ball_norm x eps y -> P y.
+
+Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
+Proof.
+intros P [eps H].
+have He : 0 < / norm_factor * eps.
+  apply Rmult_lt_0_compat.
+  by apply/Rinv_0_lt_compat/norm_factor_gt_0.
+  by apply cond_pos.
+exists (mkposreal _ He).
+intros y By.
+apply H.
+unfold ball_norm.
+rewrite -(Rmult_1_l eps) -(Rinv_r norm_factor).
+rewrite Rmult_assoc.
+apply norm_compat2 with (1 := By).
+apply Rgt_not_eq.
+apply norm_factor_gt_0.
+Qed.
+
+Lemma locally_norm_le_locally x : filter_le (locally_norm x) (locally x).
+Proof.
+move=> P [eps H].
+exists eps.
+intros y By.
+apply H.
+now apply norm_compat1.
+Qed.
+
+Lemma locally_norm_ball_norm :
+  forall (x : V) (eps : posreal),
+  locally_norm x (ball_norm x eps).
+Proof.
+intros x eps.
+now exists eps.
+Qed.
+
+Lemma locally_norm_ball :
+  forall (x : V) (eps : posreal),
+  locally_norm x (ball x eps).
+Proof.
+intros x eps.
+apply locally_norm_le_locally.
+by apply: locally_ball.
+Qed.
+
+Lemma locally_ball_norm :
+  forall (x : V) (eps : posreal),
+  locally x (ball_norm x eps).
+Proof.
+intros x eps.
+apply locally_le_locally_norm.
+apply locally_norm_ball_norm.
+Qed.
+
+Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
+  ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
+Proof.
+  intros H1 H2.
+  eapply Rle_lt_trans, Rplus_lt_compat.
+  2: by apply H1.
+  2: by apply H2.
+  rewrite Rplus_comm.
+  eapply Rle_trans, norm_triangle.
+  apply Req_le, f_equal.
+  rewrite /minus -!plus_assoc.
+  apply f_equal.
+  by rewrite plus_assoc plus_opp_l plus_zero_l.
+Qed.
+
+Lemma ball_norm_center (x : V) (e : posreal) :
+  ball_norm x e x.
+Proof.
+  eapply Rle_lt_trans, e.
+  rewrite minus_eq_zero norm_zero.
+  by apply Req_le.
+Qed.
+
+Lemma ball_norm_dec : forall (x y : V) (eps : posreal),
+  {ball_norm x eps y} + {~ ball_norm x eps y}.
+Proof.
+  intros x y eps.
+  apply Rlt_dec.
+Qed.
+
+Lemma ball_norm_sym :
+  forall (x y : V) (eps : posreal), ball_norm x eps y -> ball_norm y eps x.
+Proof.
+  intros x y eps Hxy.
+  unfold ball_norm.
+  rewrite <- norm_opp.
+  rewrite opp_minus.
+  apply Hxy.
+Qed.
+
+Lemma ball_norm_le :
+  forall (x : V) (e1 e2 : posreal), e1 <= e2 ->
+  forall y, ball_norm x e1 y -> ball_norm x e2 y.
+Proof.
+  intros x e1 e2 He y H1.
+  now apply Rlt_le_trans with e1.
+Qed.
+
+Lemma ball_norm_eq :
+  forall x y : V,
+  (forall eps : posreal, ball_norm x eps y) -> x = y.
+Proof.
+intros x y H.
+apply plus_reg_r with (opp x).
+rewrite plus_opp_r.
+apply eq_sym, norm_eq_zero.
+apply Rle_antisym.
+2: apply norm_ge_0.
+apply prop_eps.
+intros eps He.
+exact (H (mkposreal eps He)).
+Qed.
+
+Lemma is_filter_lim_unique {F} {FF : ProperFilter' F} (x y : V) :
+  F --> x -> F --> y -> x = y.
+Proof.
+intros Hx Hy.
+apply ball_norm_eq => eps.
+assert (Hx': F (ball_norm x [posreal of eps / 2])).
+  apply Hx.
+  apply locally_ball_norm.
+assert (Hy': F (ball_norm y [posreal of eps / 2])).
+  apply Hy.
+  apply locally_ball_norm.
+apply Rnot_le_lt.
+intros H.
+apply (@filter_not_empty V F FF).
+apply: filter_imp (filter_and _ _ Hx' Hy').
+clear -H.
+intros z [Bx By].
+revert H.
+apply Rlt_not_le.
+rewrite (double_var eps).
+change (eps / 2) with (pos [posreal of eps / 2]).
+apply ball_norm_triangle with (1 := Bx).
+now apply ball_norm_sym.
+Qed.
+
+Lemma is_filter_lim_locally_unique :
+  forall (x y : V),
+  x --> y -> x = y.
+Proof.
+intros x y H.
+apply eq_close.
+now apply is_filter_lim_locally_close.
+Qed.
+
+*)
+
+End NormedModule1.
