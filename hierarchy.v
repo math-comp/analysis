@@ -1218,7 +1218,20 @@ have [cvg|dvg] := pselect [cvg F in U].
 by rewrite (propF dvg) (dvgP _) //; apply: HasNoLim.
 Qed.
 
+Lemma close_lim (F1 F2 : set (set U)) (FF2 : ProperFilter F2):
+  F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
+Proof.
+have [l F1l _|dvgF1]:= cvgP F1.
+  move=> /filter_le_trans /(_ F1l) F2l.
+  apply: (@is_filter_lim_close _ F2) => //.
+  by rewrite -cvgE; exists l.
+have [l F2l|//]:= cvgP F2.
+move=> /filter_le_trans /(_ F2l) F1l _.
+by have := dvgF1 (ex_intro _ l F1l).
+Qed.
+
 End Cvg.
+Arguments close_lim {U} F1 F2 {FF2} _.
 
 Section Locally_fct.
 
@@ -1597,18 +1610,6 @@ Lemma complete_cauchy (F : set (set T)) (FF : ProperFilter F) :
   cauchy F -> F --> lim F.
 Proof. by case: T F FF => [? [? []]]. Qed.
 
-Lemma close_lim (F1 F2 : set (set T)) (FF2 : ProperFilter F2):
-  F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
-Proof.
-have [l F1l _|dvgF1]:= cvgP F1.
-  move=> /filter_le_trans /(_ F1l) F2l.
-  apply: (@is_filter_lim_close _ F2) => //.
-  by rewrite -cvgE; exists l.
-have [l F2l|//]:= cvgP F2.
-move=> /filter_le_trans /(_ F2l) F1l _.
-by have := dvgF1 (ex_intro _ l F1l).
-Qed.
-
 Lemma iota_correct_weak (P : T -> Prop) :
   (forall x y, P x -> P y -> close x y) ->
   forall x, P x -> close (iota P) x.
@@ -1620,7 +1621,6 @@ Proof. by move=> ?; rewrite (_ : P = Q) // funeqE => x; rewrite propeqE. Qed.
 
 End completeType1.
 Arguments complete_cauchy {T} F {FF} _.
-Arguments close_lim {T} F1 F2 {FF2} _.
 
 Lemma cauchy_distance  {T : uniformType} {F} {FF : ProperFilter F} :
   (forall eps : posreal, exists x, F (ball x eps)) <->
