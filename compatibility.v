@@ -338,6 +338,8 @@ Notation NormedModule K := (normedModType K).
 
 Context {K : AbsRing} {V : NormedModule K}.
 
+Notation zero := 0%R.
+Notation opp := GRing.opp.
 Notation plus := +%R.
 Notation scal := *:%R.
 Notation minus := (fun a b => GRing.add a (GRing.opp b)).
@@ -360,88 +362,31 @@ suff : ball y (mkposreal _ He) x by apply ball_sym.
 by apply/(@NormedModule.ax3 _ _ _ (NormedModule.class V))/Rstruct.RltbP.
 Qed.
 
+Lemma norm_compat2 : forall (x y : V) (eps : posreal), ball x eps y ->
+  norm (minus y x) < norm_factor * eps.
+Proof.
+by move=> x y e /ball_sym/(@NormedModule.ax4 _ _ _ (NormedModule.class V))/Rstruct.RltbP.
+Qed.
+
+Lemma norm_eq_zero : forall x : V, norm x = 0 -> x = zero.
+Proof. exact: NormedModule.ax5. Qed.
+
+Lemma norm_zero : norm zero = 0.
+Proof. move: (@normm_eq0 K V zero); by rewrite eqxx => /eqP. Qed.
+
+Lemma norm_factor_gt_0 : 0 < norm_factor.
+Proof. by move: (@norm_factor_gt_0 K V) => /Rstruct.RltbP. Qed.
+
+Lemma norm_opp : forall x : V, norm (opp x) = norm x.
+Proof. exact: normmN. Qed.
+
+Lemma norm_ge_0 : forall x : V, 0 <= norm x.
+Proof. by move=> x; move: (normm_ge0 x) => /Rstruct.RlebP. Qed.
+
+Lemma norm_triangle_inv : forall x y : V, Rabs (norm x - norm y) <= norm (minus x y).
+Proof. move=> x y; by move: (ler_distm_dist x y) => /= => /Rstruct.RlebP. Qed.
+
 (* TODO
-
-Lemma norm_compat2 :
-  forall (x y : V) (eps : posreal), ball x eps y -> norm (minus y x) < norm_factor * eps.
-Proof.
-apply: NormedModule.ax4.
-Qed.
-
-Lemma norm_eq_zero :
-  forall x : V, norm x = 0 -> x = zero.
-Proof.
-apply NormedModule.ax5.
-Qed.
-
-Lemma norm_zero :
-  norm zero = 0.
-Proof.
-apply Rle_antisym.
-- rewrite -(scal_zero_l zero).
-  rewrite -(Rmult_0_l (norm zero)).
-  rewrite -(@abs_zero K).
-  apply norm_scal.
-- apply Rplus_le_reg_r with (norm zero).
-  rewrite Rplus_0_l.
-  rewrite -{1}[zero]plus_zero_r.
-  exact (norm_triangle zero zero).
-Qed.
-
-Lemma norm_factor_gt_0 :
-  0 < norm_factor.
-Proof.
-rewrite <- (Rmult_1_r norm_factor).
-rewrite <- norm_zero.
-rewrite <- (plus_opp_r zero).
-apply (norm_compat2 _ _ [posreal of 1]).
-apply ball_center.
-Qed.
-
-Lemma norm_opp :
-  forall x : V,
-  norm (opp x) = norm x.
-Proof.
-intros x.
-apply Rle_antisym.
-- rewrite -scal_opp_one.
-  rewrite -(Rmult_1_l (norm x)) -(@abs_opp_one K).
-  apply norm_scal.
-- rewrite -{1}[x]opp_opp -scal_opp_one.
-  rewrite -(Rmult_1_l (norm (opp x))) -(@abs_opp_one K).
-  apply norm_scal.
-Qed.
-
-Lemma norm_ge_0 :
-  forall x : V,
-  0 <= norm x.
-Proof.
-  intros x.
-  apply Rmult_le_reg_l with 2.
-  by apply Rlt_0_2.
-  rewrite Rmult_0_r -norm_zero -(plus_opp_r x).
-  apply Rle_trans with (norm x + norm (opp x)).
-  apply norm_triangle.
-  apply Req_le ; rewrite norm_opp.
-  ring.
-Qed.
-
-Lemma norm_triangle_inv :
-  forall x y : V,
-  Rabs (norm x - norm y) <= norm (minus x y).
-Proof.
-  intros x y.
-  apply Rabs_le_between' ; split.
-  rewrite -(norm_opp (minus _ _)).
-  apply Rle_minus_l ; eapply Rle_trans.
-  2 : apply norm_triangle.
-  apply Req_le, f_equal.
-  by rewrite /minus opp_plus plus_assoc plus_opp_r plus_zero_l opp_opp.
-  eapply Rle_trans.
-  2 : apply norm_triangle.
-  apply Req_le, f_equal.
-  by rewrite /minus plus_comm -plus_assoc plus_opp_l plus_zero_r.
-Qed.
 
 Lemma eq_close :
   forall x y : V,
