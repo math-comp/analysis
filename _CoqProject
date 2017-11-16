@@ -4,5 +4,6 @@ Lub.v
 Iter.v
 Markov.v
 Rbar.v
+hierarchy.v
 
 -R . cara

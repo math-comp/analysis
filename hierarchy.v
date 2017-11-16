@@ -2143,6 +2143,8 @@ End NormedModule.
 
 Export NormedModule.Exports.
 
+(*
+
 Module NormedModule.
 
 Record mixin_of (K : AbsRing) (V : NormedModuleAux K) := Mixin {
@@ -3566,41 +3568,31 @@ Canonical matrix_ModuleSpace {m n} :=
 
 End MatrixRing.
 
+*)
+
 (** * The topology on natural numbers *)
 
 Definition eventually (P : nat -> Prop) :=
-  exists N : nat, forall n, (N <= n)%nat -> P n.
+  exists N : nat, forall n, (N <= n)%coq_nat -> P n.
 
 Notation "'\oo'" := eventually : classical_set_scope.
 
 Global Instance eventually_filter : ProperFilter eventually.
 Proof.
 constructor.
-  intros P [N H].
-  exists N.
-  apply H.
-  apply le_refl.
+  move=> P [N H]; exists N; exact (H _ (le_refl _)).
 constructor.
-- now exists 0%nat.
-- intros P Q [NP HP] [NQ HQ].
-  exists (max NP NQ).
-  intros n Hn.
-  split.
-  apply HP.
-  apply le_trans with (2 := Hn).
-  apply Max.le_max_l.
-  apply HQ.
-  apply le_trans with (2 := Hn).
-  apply Max.le_max_r.
-- intros P Q H [NP HP].
-  exists NP.
-  intros n Hn.
-  apply H.
-  now apply HP.
+- by exists O.
+- move=> P Q [NP HP] [NQ HQ].
+  exists (max NP NQ) => n Hn; split.
+  by apply/HP/(le_trans _ _ _ _ Hn)/Max.le_max_l.
+  by apply/HQ/(le_trans _ _ _ _ Hn)/Max.le_max_r.
+- by move=> P Q H [NP HP]; exists NP => n Hn; apply/H/HP.
 Qed.
 
 (** * The topology on real numbers *)
 
+(*
 Definition R_AbelianGroup_mixin :=
   AbelianGroup.Mixin _ _ _ _ Rplus_comm (fun x y z => sym_eq (Rplus_assoc x y z)) Rplus_0_r Rplus_opp_r.
 
@@ -4564,3 +4556,4 @@ intros Lf Cf.
 apply continuity_pt_filterlim in Cf.
 now apply Cf.
 Qed.
+*)
