@@ -1734,52 +1734,25 @@ Lemma complete_cauchy_fct :
   forall (F : ((T -> U) -> Prop) -> Prop),
   ProperFilter F -> cauchy F -> F --> lim F.
 Proof.
-  move => F FF HFc.
-
-  set Fr := fun (t : T) (P : U -> Prop) => F (fun g => P (g t)).
-  have FFr : forall t, ProperFilter (Fr t).
-    case: FF => HF FF t.
-    split.
-    - move => P Hp.
-      case: (HF _ Hp) => f Hf.
-      by exists (f t).
-    - split.
-      + by apply FF.
-      + move => P P' Hp Hp'.
-      by apply FF.
-      + move => P P' Hpp'.
-      apply FF.
-      move => f ; by apply Hpp'.
-  assert (HFrc : forall t, forall eps : posreal, exists x : U, Fr t (ball x eps)).
-    move => t eps.
-    case: (HFc eps) => f Hf.
-    exists (f t).
-    move: Hf ; apply FF => g.
-    by [].
-  (* assert (forall t (eps : posreal), (Fr t) (fun x => ball (lim F t) eps x)). *)
-  (*   move => t. *)
-  (*   apply/filterlim_locally. *)
-  (*   apply complete_cauchy. *)
-  (*   apply FFr. *)
-  (*   exact (HFrc t). *)
-
-  (* move => eps. *)
-
-  (* generalize (proj1 cauchy_distance HFc) => {HFc} HFc. *)
-
-  (* case: (HFc [posreal of eps / 2]) => {HFc} P ; simpl ; case => HP H0. *)
-  (* apply filter_imp with (2 := HP). *)
-  (* move => g Hg t. *)
-  (* move: (fun h => H0 g h Hg) => {H0} H0. *)
-  (* move: (H t [posreal of eps / 2]) ; simpl => {H} H. *)
-  (* unfold Fr in H ; generalize (filter_and H HP) => {H} H. *)
-  (* apply filter_ex in H ; case: H => h H. *)
-  (* rewrite (double_var eps). *)
-  (* apply ball_triangle with (h t). *)
-  (* by apply H. *)
-  (* apply ball_sym, H0. *)
-  (* by apply H. *)
-Admitted.
+move=> F FF Fc.
+set Fr := fun (t : T) (P : U -> Prop) => F (fun g => P (g t)).
+have FFr t : ProperFilter (Fr t).
+  split; first by move=> ? /filter_ex.
+  by split; [apply: filter_true|apply: filter_and|apply: filter_imp].
+have Frc t : cauchy (Fr t).
+  move=> e; have [f Ffe] := Fc e; exists (f t).
+  by rewrite /Fr; apply: filter_imp Ffe.
+apply/limP; exists (fun t => lim (Fr t)).
+apply/filterlim_locally => e.
+have /cauchy_distance /(_ [posreal of e / 2]) [A [FA diamA_he]] := Fc.
+apply: (filter_imp _ FA) => f Af t.
+have [g [Ag limFte_gt]] :
+  exists g, A g /\ ball (lim (Fr t)) [posreal of e / 2] (g t).
+  apply/filter_ex/filter_and => //; apply: complete_cauchy => //.
+  exact: locally_ball.
+rewrite (double_var e); apply: ball_triangle limFte_gt _.
+exact: diamA_he.
+Qed.
 
 Definition fct_completeType_mixin := @Complete.Mixin _ complete_cauchy_fct.
 Canonical fct_completeType := CompleteType (T -> U) fct_completeType_mixin.
