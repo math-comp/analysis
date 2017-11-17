@@ -2408,7 +2408,6 @@ Proof. exact: locally_filter. Qed.
 
 (** Normed vector spaces have some continuous functions *)
 
-(* COMPILES UNTIL HERE *)
 Section NVS_continuity.
 
 Context {K : AbsRing} {V : normedModType K}.
@@ -2643,11 +2642,12 @@ End CompleteNormedModule1.
 (** * Extended Types *)
 
 (** ** Pairs *)
+(* TODO a prouver dans Rstruct pour prouver norm_compat1 and norm_compat2 *)
 Lemma sqrt_plus_sqr :
   forall x y : R, Rmax (Rabs x) (Rabs y) <= sqrt (x ^ 2 + y ^ 2) <= sqrt 2 * Rmax (Rabs x) (Rabs y).
 Proof.
 intros x y.
-split.
+(*split.
 - rewrite -!sqrt_Rsqr_abs.
   apply Rmax_case ; apply sqrt_le_1_alt, Rminus_le_0 ;
   rewrite /Rsqr /= ; ring_simplify ; by apply pow2_ge_0.
@@ -2659,21 +2659,44 @@ split.
   apply sqrt_le_1_alt ; simpl ; [ rewrite Rplus_comm | ] ;
   rewrite /Rsqr ; apply Rle_minus_r ; ring_simplify ;
   apply Rsqr_le_abs_1 in H0 ; by rewrite /pow !Rmult_1_r.
-Qed.
+Qed.*) Abort.
+
+Lemma sqrt_plus_sqr (x y : R) :
+  (maxr `| x | `| y | <= Num.sqrt (x ^+ 2 + y ^+ 2) <= Num.sqrt 2%:R * maxr `| x | `| y |)%R.
+Proof.
+apply/andP; split.
+- (* elever au carre et utiliser sqrrD *)
+  (*rewrite -!sqrt_Rsqr_abs.
+  apply Rmax_case ; apply sqrt_le_1_alt, Rminus_le_0 ;
+  rewrite /Rsqr /= ; ring_simplify ; by apply pow2_ge_0.*)
+  admit.
+- (* elever au carre et ... *)
+  (*apply Rmax_case_strong ; intros H0 ;
+  rewrite -!sqrt_Rsqr_abs ;
+  rewrite -?sqrt_mult ;
+  try (by apply Rle_0_sqr) ;
+  try (by apply Rlt_le, Rlt_0_2) ;
+  apply sqrt_le_1_alt ; simpl ; [ rewrite Rplus_comm | ] ;
+  rewrite /Rsqr ; apply Rle_minus_r ; ring_simplify ;
+  apply Rsqr_le_abs_1 in H0 ; by rewrite /pow !Rmult_1_r.*)
+  admit.
+Admitted.
 
 Section prod_NormedModule.
 
-Context {K : AbsRing} {U V : NormedModule K}.
+Context {K : absRingType} {U V : normedModType K}.
+
+Local Close Scope R_scope.
 
 Definition prod_norm (x : U * V) :=
-  sqrt (norm (fst x) ^ 2 + norm (snd x) ^ 2).
+  Num.sqrt (`|[x.1]| ^+ 2 + `|[x.2]| ^+ 2).
 
 Lemma prod_norm_triangle :
   forall x y : U * V,
-  prod_norm (plus x y) <= prod_norm x + prod_norm y.
+  prod_norm (x + y) <= prod_norm x + prod_norm y.
 Proof.
 intros [xu xv] [yu yv].
-rewrite /prod_norm /= !Rmult_1_r.
+(*rewrite /prod_norm /= !Rmult_1_r.
 apply Rle_trans with (sqrt (Rsqr (norm xu + norm yu) + Rsqr (norm xv + norm yv))).
 - apply sqrt_le_1_alt.
   apply Rplus_le_compat.
@@ -2715,15 +2738,15 @@ apply Rle_trans with (sqrt (Rsqr (norm xu + norm yu) + Rsqr (norm xv + norm yv))
   apply Rplus_le_le_0_compat ; apply pow2_ge_0.
   apply Rplus_le_le_0_compat ; apply pow2_ge_0.
   apply Rplus_le_le_0_compat ; apply sqrt_pos.
-Qed.
+Qed.*) Admitted.
 
 Lemma prod_norm_scal :
   forall (l : K) (x : U * V),
-  prod_norm (scal l x) <= abs l * prod_norm x.
+  (prod_norm (l *: x) <= abs l * prod_norm x).
 Proof.
 intros l [xu xv].
 rewrite /prod_norm /= -(sqrt_Rsqr (abs l)).
-2: apply abs_ge_0.
+(*2: apply abs_ge_0.
 rewrite !Rmult_1_r.
 rewrite -sqrt_mult.
 2: apply Rle_0_sqr.
@@ -2744,14 +2767,14 @@ apply norm_ge_0.
 exact (norm_scal l xv).
 exact (norm_scal l xv).
 apply Rplus_le_le_0_compat ; apply Rle_0_sqr.
-Qed.
+Qed.*) Admitted.
 
 Lemma prod_norm_compat1 :
   forall (x y : U * V) (eps : R),
-  prod_norm (minus y x) < eps -> ball x eps y.
+  (prod_norm (x - y) < eps -> ball x eps y).
 Proof.
 intros [xu xv] [yu yv] eps H.
-generalize (Rle_lt_trans _ _ _ (proj1 (sqrt_plus_sqr _ _)) H).
+(*generalize (Rle_lt_trans _ _ _ (proj1 (sqrt_plus_sqr _ _)) H).
 rewrite -> !Rabs_pos_eq by apply norm_ge_0.
 intros H'.
 split ;
@@ -2759,17 +2782,18 @@ split ;
   apply Rle_lt_trans with (2 := H').
 apply Rmax_l.
 apply Rmax_r.
-Qed.
+Qed.*) Admitted.
 
 Definition prod_norm_factor :=
-  sqrt 2 * Rmax (@norm_factor K U) (@norm_factor K V).
+  (Num.sqrt 2%:R * maxr (@norm_factor K U) (@norm_factor K V)).
 
 Lemma prod_norm_compat2 :
   forall (x y : U * V) (eps : posreal),
   ball x eps y ->
-  prod_norm (minus y x) < prod_norm_factor * eps.
+  (prod_norm (x - y) < prod_norm_factor * eps).
 Proof.
 intros [xu xv] [yu yv] eps [Bu Bv].
+(*
 apply Rle_lt_trans with (1 := proj2 (sqrt_plus_sqr _ _)).
 simpl.
 rewrite Rmult_assoc.
@@ -2785,14 +2809,14 @@ apply Rlt_le_trans with (2 := Rmax_r _ _).
 now apply norm_compat2.
 apply Rlt_le.
 apply cond_pos.
-Qed.
+Qed.*) Admitted.
 
 Lemma prod_norm_eq_zero :
   forall x : U * V,
-  prod_norm x = 0 -> x = zero.
+  prod_norm x = 0 -> x = 0.
 Proof.
 intros [xu xv] H.
-apply sqrt_eq_0 in H.
+(*apply sqrt_eq_0 in H.
 rewrite !(pow_Rsqr _ 1) !pow_1 in H.
 apply Rplus_sqr_eq_0 in H.
 destruct H as [H1 H2].
@@ -2801,27 +2825,27 @@ apply norm_eq_zero in H2.
 simpl in H1, H2.
 now rewrite H1 H2.
 apply Rplus_le_le_0_compat ; apply pow2_ge_0.
-Qed.
+Qed.*)Admitted.
 
 End prod_NormedModule.
 
-Definition prod_NormedModule_mixin (K : AbsRing) (U V : NormedModule K) :=
-  NormedModule.Mixin K _ (@prod_norm K U V) prod_norm_factor prod_norm_triangle
+Definition prod_NormedModule_mixin (K : absRingType) (U V : normedModType K) :=
+  @NormedModMixin K _ _ (@prod_norm K U V) prod_norm_factor prod_norm_triangle
   prod_norm_scal prod_norm_compat1 prod_norm_compat2 prod_norm_eq_zero.
 
-Canonical prod_NormedModule (K : AbsRing) (U V : NormedModule K) :=
-  NormedModule.Pack K (U * V) (NormedModule.Class K (U * V) _ (prod_NormedModule_mixin K U V)) (U * V).
+Canonical prod_NormedModule (K : absRingType) (U V : normedModType K) :=
+  NormedModType K (U * V) (@prod_NormedModule_mixin K U V).
 
-Lemma norm_prod {K : AbsRing}
-  {U : NormedModule K} {V : NormedModule K}
+Lemma norm_prod {K : absRingType}
+  {U : normedModType K} {V : normedModType K}
   (x : U) (y : V) :
-  Rmax (norm x) (norm y) <= norm (x,y) <= sqrt 2 * Rmax (norm x) (norm y).
+  maxr `|[ x ]| `|[ y ]| <= `|[ (x,y) ]| <= Num.sqrt 2%:R * maxr `|[ x ]| `|[ y ]|.
 Proof.
   rewrite -(Rabs_pos_eq (norm x)).
   rewrite -(Rabs_pos_eq (norm y)).
   apply sqrt_plus_sqr.
-  by apply norm_ge_0.
-  by apply norm_ge_0.
+  apply/RlebP; by apply normm_ge0.
+  apply/RlebP; by apply normm_ge0.
 Qed.
 
 (** ** Iterated Products *)
@@ -2855,7 +2879,7 @@ Proof.
   rewrite IHn ; by destruct v.
 Qed.
 Lemma coeff_Tn_bij {T} {n : nat} (x0 : T) (u : nat -> T) :
-  forall i, (i < n)%nat -> coeff_Tn x0 (mk_Tn n u) i = u i.
+  forall i, (i < n)%coq_nat -> coeff_Tn x0 (mk_Tn n u) i = u i.
 Proof.
   revert u ; induction n => /= u i Hi.
   by apply lt_n_O in Hi.
@@ -2864,7 +2888,7 @@ Proof.
   now apply (IHn (fun n => u (S n))), lt_S_n.
 Qed.
 Lemma coeff_Tn_ext {T} {n : nat} (x1 x2 : T) (v1 v2 : Tn n T) :
-  v1 = v2 <-> forall i, (i < n)%nat -> coeff_Tn x1 v1 i = coeff_Tn x2 v2 i.
+  v1 = v2 <-> forall i, (i < n)%coq_nat -> coeff_Tn x1 v1 i = coeff_Tn x2 v2 i.
 Proof.
   split.
   + move => -> {v1}.
@@ -2881,7 +2905,7 @@ Proof.
     by apply (H (S i)), lt_n_S.
 Qed.
 Lemma mk_Tn_ext {T} (n : nat) (u1 u2 : nat -> T) :
-  (forall i, (i < n)%nat -> (u1 i) = (u2 i))
+  (forall i, (i < n)%coq_nat -> (u1 i) = (u2 i))
     <-> (mk_Tn n u1) = (mk_Tn n u2).
 Proof.
   move: u1 u2 ; induction n ; simpl ; split ; intros.
@@ -3002,7 +3026,7 @@ Proof.
 Qed.
 
 Lemma coeff_mat_bij {m n : nat} (x0 : T) (u : nat -> nat -> T) :
-  forall i j, (i < m)%nat -> (j < n)%nat -> coeff_mat x0 (mk_matrix m n u) i j = u i j.
+  forall i j, (i < m)%coq_nat -> (j < n)%coq_nat -> coeff_mat x0 (mk_matrix m n u) i j = u i j.
 Proof.
   intros i j Hi Hj.
   unfold mk_matrix, coeff_mat.
@@ -3010,7 +3034,7 @@ Proof.
 Qed.
 
 Lemma coeff_mat_ext_aux {m n : nat} (x1 x2 : T) (v1 v2 : matrix m n) :
-  v1 = v2 <-> forall i j, (i < m)%nat -> (j < n)%nat -> (coeff_mat x1 v1 i j) = (coeff_mat x2 v2 i j).
+  v1 = v2 <-> forall i j, (i < m)%coq_nat -> (j < n)%coq_nat -> (coeff_mat x1 v1 i j) = (coeff_mat x2 v2 i j).
 Proof.
   split => Hv.
   + move => i j Hi Hj.
@@ -3033,7 +3057,7 @@ Proof.
 Qed.
 
 Lemma mk_matrix_ext (m n : nat) (u1 u2 : nat -> nat -> T) :
-  (forall i j, (i < m)%nat -> (j < n)%nat -> (u1 i j) = (u2 i j))
+  (forall i j, (i < m)%coq_nat -> (j < n)%coq_nat -> (u1 i j) = (u2 i j))
     <-> (mk_matrix m n u1) = (mk_matrix m n u2).
 Proof.
   split => H.
@@ -3049,6 +3073,8 @@ Proof.
 Qed.
 
 End Matrices.
+
+(*
 
 Section MatrixGroup.
 
@@ -3317,7 +3343,7 @@ Notation "'\oo'" := eventually : classical_set_scope.
 
 Global Instance eventually_filter : ProperFilter eventually.
 Proof.
-constructor.
+(*constructor.
   move=> P [N H]; exists N; exact (H _ (le_refl _)).
 constructor.
 - by exists O.
@@ -3326,42 +3352,21 @@ constructor.
   by apply/HP/(le_trans _ _ _ _ Hn)/Max.le_max_l.
   by apply/HQ/(le_trans _ _ _ _ Hn)/Max.le_max_r.
 - by move=> P Q H [NP HP]; exists NP => n Hn; apply/H/HP.
-Qed.
+Qed.*) Admitted.
+
+(* COMPILES UNTIL HERE *)
 
 (** * The topology on real numbers *)
 
-(*
-Definition R_AbelianGroup_mixin :=
-  AbelianGroup.Mixin _ _ _ _ Rplus_comm (fun x y z => sym_eq (Rplus_assoc x y z)) Rplus_0_r Rplus_opp_r.
-
-Canonical R_AbelianGroup :=
-  AbelianGroup.Pack _ R_AbelianGroup_mixin R.
-
-Definition R_Ring_mixin :=
-  Ring.Mixin _ _ _ (fun x y z => sym_eq (Rmult_assoc x y z)) Rmult_1_r Rmult_1_l Rmult_plus_distr_r Rmult_plus_distr_l.
-
-Canonical R_Ring :=
-  Ring.Pack R (Ring.Class _ _ R_Ring_mixin) R.
-
-Lemma Rabs_m1 :
-  Rabs (-1) = 1.
-Proof.
-  rewrite Rabs_Ropp.
-  exact Rabs_R1.
-Qed.
-
 Definition R_AbsRing_mixin :=
-  AbsRing.Mixin _ _ Rabs_R0 Rabs_m1 Rabs_triang (fun x y => Req_le _ _ (Rabs_mult x y)) Rabs_eq_0.
+  @AbsRingMixin [ringType of R] _ absr0 absrN1 ler_abs_add absrM absr0_eq0.
 
-Canonical R_AbsRing :=
-  AbsRing.Pack R (AbsRing.Class _ _ R_AbsRing_mixin) R.
+Canonical R_AbsRing := @AbsRingType R R_AbsRing_mixin.
 
-Definition R_uniformType_mixin :=
-  AbsRing_uniformType_mixin R_AbsRing.
+Definition R_uniformType_mixin := AbsRingUniformMixin R_AbsRing.
 
-Canonical R_uniformType :=
-  UniformType R R_uniformType_mixin.
-Canonical R_canonical_filter := CanonicalFilter R R locally.
+Canonical R_uniformType := UniformType R R_uniformType_mixin.
+(*NB: already exists Canonical R_canonical_filter := @CanonicalFilter R R locally.*)
 
 Definition R_complete_lim (F : (R -> Prop) -> Prop) : R :=
   real (Lub_Rbar (fun x : R => F (ball (x + 1) [posreal of 1]))).
@@ -3381,7 +3386,7 @@ intros [x| |] [Hx1 Hx2].
 set (eps' := [posreal of Rmin 2 eps / 2]).
 destruct (HF eps') as [z Hz].
 assert (H1 : z - Rmin 2 eps / 2 + 1 <= x + 1).
-  apply Rplus_le_compat_r.
+(*  apply Rplus_le_compat_r.
   apply Hx1.
   revert Hz.
   apply filter_imp.
@@ -3443,7 +3448,7 @@ split ; Fourier.fourier.
   destruct (HF [posreal of 1]) as [y Fy].
   elim (Hx1 (y - 1)).
   now replace (y - 1 + 1) with y by ring.
-Qed.
+Qed.*) Admitted.
 
 Lemma R_complete :
   forall F : (R -> Prop) -> Prop,
@@ -3452,8 +3457,7 @@ Lemma R_complete :
   forall eps : posreal, F (ball (R_complete_lim F) eps).
 Proof.
 intros F FF.
-apply R_complete_ax1.
-by apply Proper_StrongProper.
+by apply R_complete_ax1.
 Qed.
 
 Lemma R_complete_ax2 :
