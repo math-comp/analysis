@@ -2052,27 +2052,6 @@ Canonical AbsRingcanonical_filter := @CanonicalFilter K K locally.
 
 End AbsRing_UniformSpace.
 
-(* We should have compatilibity modules for every lemma in Hierarchy
-that we deleted (and replaced by mathcomp's ones) so that the rest of
-Coquelicot compiles just with a import of The compatibility modules *)
-Module AbsRingCompat.
-Notation AbsRing := absRingType.
-Module AbsRing.
-  Notation Pack := AbsRing.
-End AbsRing.
-Context {K : absRingType}.
-Definition abs_zero  := @absr0 K. (*compat*)
-Definition abs_opp_one := @absrN1 K. (*compat*)
-Definition abs_triangle := @ler_abs_add K. (*compat*)
-Definition abs_mult := @absrM K. (*compat*)
-Definition abs_eq_zero := @absr0_eq0 K. (*compat*)
-Definition abs_opp := @absrN K. (*compat*)
-Definition abs_minus := @absrB K. (*compat*)
-Definition abs_one := @absr1 K. (*compat*)
-Definition abs_pow_n := @absrX K. (*compat*)
-End AbsRingCompat.
-Import AbsRingCompat.
-
 Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").
 
 Module NormedModule.
@@ -2393,7 +2372,7 @@ End AbsRing_NormedModule.
 
 (* Quick fix for non inferred instances *)
 (* This does not fix everything, see below *)
-Instance NormedModule_locally_filter (K : AbsRing) (V : normedModType K)
+Instance NormedModule_locally_filter (K : absRingType) (V : normedModType K)
   (p : V) :
   @ProperFilter (@NormedModule.sort K (Phant K) V)
   (@locally (@NormedModule.uniformType K (Phant K) V) p).
@@ -2403,7 +2382,7 @@ Proof. exact: locally_filter. Qed.
 
 Section NVS_continuity.
 
-Context {K : AbsRing} {V : normedModType K}.
+Context {K : absRingType} {V : normedModType K}.
 
 (* :TODO: put again filter inside uniform type and prove this instead: *)
 (* Lemma filterlim_plus (x y : V) : continuous (fun z : V * V => z.1 + z.2). *)
@@ -2429,6 +2408,7 @@ Qed.
 
 Lemma filterlim_scal (k : K) (x : V) : z.1 *: z.2 @[z --> (k, x)] --> k *: x.
 Proof.
+
 apply/filterlim_locally => /= eps.
 set P := (fun u : K * V => (abs (u.1 - k) < pos eps / 2 / (norm x + 1) /\
            abs (u.1 - k) < 1) /\
@@ -2505,10 +2485,11 @@ Qed.
 
 End NVS_continuity.
 
-Lemma filterlim_mult {K : AbsRing} (x y : K) : z.1 * z.2 @[z --> (x, y)] --> x * y.
+Lemma filterlim_mult {K : absRingType} (x y : K) :
+   z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof. exact: (@filterlim_scal _ (AbsRing_NormedModType K)). Qed.
 
-Lemma filterlim_locally_ball_norm {K : AbsRing} {T} {U : normedModType K}
+Lemma filterlim_locally_ball_norm {K : absRingType} {T} {U : normedModType K}
   {F : set (set T)} {FF : Filter F} (f : T -> U) (y : U) :
   f @ F --> y <-> forall eps : posreal, F (fun x => ball_norm y eps (f x)).
 Proof.
@@ -2529,7 +2510,7 @@ Module CompleteNormedModule.
 
 Section ClassDef.
 
-Variable K : AbsRing.
+Variable K : absRingType.
 
 Record class_of (T : Type) := Class {
   base : NormedModule.class_of K T ;
@@ -2875,7 +2856,7 @@ Proof.
   now apply VectorSpace_mixin_Tn, VV.
 Defined.
 
-Global Instance NormedVectorSpace_Tn {T} {K} {FK : AbsRing K} :
+Global Instance NormedVectorSpace_Tn {T} {K} {FK : absRingType K} :
   NormedVectorSpace T K ->
   forall n, NormedVectorSpace (Tn n T) K | 10.
 Proof.
