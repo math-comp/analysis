@@ -222,6 +222,49 @@ Proof. by move=> sXZ sYZ a; apply: or_ind; [apply: sXZ|apply: sYZ]. Qed.
 Lemma setDE {A} (X Y : set A) : X `\` Y = X `&` ~` Y.
 Proof. by []. Qed.
 
+Definition is_prop {A} (X : set A) := forall x y, X x -> X y -> x = y.
+Definition is_fun {A B} (f : A -> B -> Prop) := all (is_prop \o f).
+Definition is_total {A B} (f : A -> B -> Prop) := all (nonempty \o f).
+
+Definition xget {T : choiceType} x0 (P : set T) : T :=
+  if pselect (exists x : T, `[<P x>]) isn't left exP then x0
+  else projT1 (sigW exP).
+
+Lemma xgetPex {T : choiceType} x0 (P : set T) : (exists x, P x) -> P (xget x0 P).
+Proof.
+rewrite /xget; case: pselect => [|nexP [x Px]]; last first.
+  by exfalso; apply: nexP; exists x; apply/asboolP.
+by move=> p; case: sigW=> {p} /= x /asboolP.
+Qed.
+
+Lemma xgetP {T : choiceType} x0 (P : set T) (x : T): P x -> P (xget x0 P).
+Proof. by move=> Px; apply: xgetPex; exists x. Qed.
+
+Lemma xget_prop {T : choiceType} x0 (P : set T) (x : T) :
+  P x -> is_prop P -> xget x0 P = x.
+Proof. by move=> Px /(_ _ _ (xgetP x0 Px) Px). Qed.
+
+Lemma xget_unique  {T : choiceType} x0 (P : set T) (x : T) :
+  P x -> (forall y, P y -> y = x) -> xget x0 P = x.
+Proof. by move=> /xget_prop gPx eqx; apply: gPx=> y z /eqx-> /eqx. Qed.
+
+Lemma xgetPN {T : choiceType} x0 (P : set T) : (forall x, ~ P x) -> xget x0 P = x0.
+Proof.
+rewrite /xget; case: pselect => //= - [x p /(_ x)].
+by have /asboolP q := p => /(_ q).
+Qed.
+
+Definition fun_of_rel {A} {B : choiceType} (f0 : A -> B) (f : A -> B -> Prop) :=
+  fun x => xget (f0 x) (f x).
+
+Lemma fun_of_relP {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
+  nonempty (f a) ->  f a (fun_of_rel f0 f a).
+Proof. by move=> [b fab]; rewrite /fun_of_rel; apply: xgetP fab. Qed.
+
+Lemma fun_of_rel_uniq {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
+  is_prop (f a) -> forall b, f a b ->  fun_of_rel f0 f a = b.
+Proof. by move=> fa_prop b /xget_prop xgeteq; rewrite /fun_of_rel xgeteq. Qed.
+
 (* Index the filter (2nd proj) on a term (1st proj) *)
 Structure canonical_filter_on X Y := CanonicalFilterOn {
   canonical_filter_term : X;
@@ -390,7 +433,7 @@ Lemma filtermapiE {U V : Type} (f : U -> set V)
 Proof. by []. Qed.
 
 Global Instance filtermapi_filter T U (f : T -> U -> Prop) (F : set (set T)) :
-  F [set x | (exists y, f x y) /\ forall y1 y2, f x y1 -> f x y2 -> y1 = y2] ->
+  F [set x | nonempty (f x) /\ is_prop (f x)] ->
   Filter F -> Filter (f `@ F).
 Proof.
 move=> FP FF; rewrite /filtermapi; apply: Build_Filter.
@@ -415,7 +458,7 @@ Qed.
 
 Global Instance filtermapi_proper_filter
   T U (f : T -> U -> Prop) (F : set (set T)) :
-  F [set x | (exists y, f x y) /\ forall y1 y2, f x y1 -> f x y2 -> y1 = y2] ->
+  F [set x | nonempty (f x) /\ is_prop (f x)] ->
   ProperFilter F -> ProperFilter (f `@ F).
 Proof.
 intros HF FF.
@@ -790,31 +833,35 @@ Definition uniformType_is_canonical_filter {M : uniformType} :=
 Coercion uniformType_is_canonical_filter : uniformType >-> canonical_filter.
 Canonical uniformType_is_canonical_filter.
 
+Section UniformGet.
+
+Context {T : uniformType}.
 (* move to boolP *)
-Definition get {T : uniformType} (P : set T) : T :=
-  if pselect (exists x : T, `[<P x>]) isn't left exP then point
-  else projT1 (sigW exP).
+Definition get : set T -> T := xget point.
+
+Lemma getPex (P : set T) : (exists x, P x) -> P (get P).
+Proof. exact: (xgetPex point). Qed.
+
+Lemma getP (P : set T) (x : T): P x -> P (get P).
+Proof. exact: (xgetP point). Qed.
+
+Lemma get_prop (P : set T) (x : T) : P x -> is_prop P -> get P = x.
+Proof. exact: (xget_prop point). Qed.
+
+Lemma get_unique (P : set T) (x : T) :
+   P x -> (forall y, P y -> y = x) -> get P = x.
+Proof. exact: (xget_unique point). Qed.
+Definition iota_unique := @get_unique.
+
+Lemma getPN (P : set T) : (forall x, ~ P x) -> get P = point.
+Proof. exact: (xgetPN point). Qed.
+
+Definition lim (F : set (set T)) : T := get [set x | F --> x].
+
+End UniformGet.
 
 (* Unique Choice for compatilibility reasons *)
-Definition iota {T : uniformType} := @get T.
-
-Lemma getPex {T : uniformType} (P : set T) : (exists x, P x) -> P (get P).
-Proof.
-rewrite /get; case: pselect => [|nexP [x Px]]; last first.
-  by exfalso; apply: nexP; exists x; apply/asboolP.
-by move=> p; case: sigW=> {p} /= x /asboolP.
-Qed.
-
-Lemma getP {T : uniformType} (P : set T) (x : T): P x -> P (get P).
-Proof. by move=> Px; apply: getPex; exists x. Qed.
-
-Lemma getPN {T : uniformType} (P : set T) : (forall x, ~ P x) -> get P = point.
-Proof.
-rewrite /get; case: pselect => //= - [x p /(_ x)].
-by have /asboolP q := p => /(_ q).
-Qed.
-
-Definition lim {M : uniformType} (F : set (set M)) : M := get (fun x : M => F --> x).
+Notation iota := get.
 
 Section uniformType1.
 Context {M : uniformType}.
@@ -1228,7 +1275,7 @@ Proof. exact: is_filter_lim_close. Qed.
 (* :TODO: refactor *)
 Lemma filterlimi_locally_close
   {F} {FF: ProperFilter F} (f : T -> U -> Prop) (l l' : U) :
-  F [set x | forall y1 y2, f x y1 -> f x y2 -> y1 = y2] ->
+  F [set x | is_prop (f x)] ->
   f `@ F --> l ->  f `@ F --> l' -> close l l'.
 Proof.
 (* move=> Fmem; suff fFp : ProperFilter (f `@ F) by exact: @is_filter_lim_close. *)
@@ -1259,13 +1306,10 @@ Qed.
 
 End Locally_fct.
 
-Lemma is_filter_lim_filtermap {T: uniformType} {U : uniformType} :
-  forall (F : set (set T)) x (f : T -> U), {for x, continuous f} -> F --> x -> f @ F --> f x.
-Proof.
-  intros F x f Cf Fx P HP.
-  apply Cf in HP.
-  now apply Fx.
-Qed.
+Lemma is_filter_lim_filtermap {T: uniformType} {U : uniformType}
+  (F : set (set T)) x (f : T -> U) :
+   {for x, continuous f} -> F --> x -> f @ F --> f x.
+Proof. by move=> cf fx P /cf /fx. Qed.
 
 (** locally' *)
 
@@ -2252,6 +2296,7 @@ rewrite mulVKf // -subr_lt0 ler_gtF //.
 rewrite -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
 by rewrite subr_ge0 -(@ler_pmul2r _ 2%:R) // mulVf // mul1r ler1n.
 Qed.
+Lemma eq_close x y : close x y -> x = y. by rewrite closeE. Qed.
 
 Definition locally_norm (x : V) (P : V -> Prop) :=
   exists eps : posreal, forall y, ball_norm x eps y -> P y.
@@ -2307,8 +2352,8 @@ Qed.
 Lemma ball_norm_eq x y : (forall eps : posreal, ball_norm x eps y) -> x = y.
 Proof. by rewrite -norm_close closeE. Qed.
 
-Lemma is_filter_lim_unique {F} {FF : ProperFilter F} (x y : V) :
-  F --> x -> F --> y -> x = y.
+Lemma is_filter_lim_unique {F} {FF : ProperFilter F} :
+  is_prop [set x : V | F --> x].
 Proof. by move=> Fx Fy; rewrite -closeE; apply: is_filter_lim_close. Qed.
 
 Lemma is_filter_lim_locally_unique (x y : V) : x --> y -> x = y.
@@ -2320,13 +2365,12 @@ Section NormedModule2.
 
 Context {T : Type} {K : absRingType} {V : normedModType K}.
 
-Lemma filterlim_locally_unique {F} {FF : ProperFilter F} (f : T -> V) (x y : V) :
-  f @ F --> x -> f @ F --> y -> x = y.
+Lemma filterlim_locally_unique {F} {FF : ProperFilter F} (f : T -> V) :
+  is_prop [set x : V | f @ F --> x].
 Proof. exact: is_filter_lim_unique. Qed.
 
-Lemma filterlimi_locally_unique {F} {FF : ProperFilter F} (f : T -> V -> Prop) (x y : V) :
-  F (fun x => forall y1 y2, f x y1 -> f x y2 -> y1 = y2) ->
-  f `@ F --> x -> f `@ F --> y -> x = y.
+Lemma filterlimi_locally_unique {F} {FF : ProperFilter F} (f : T -> V -> Prop) :
+  F (fun x => is_prop (f x)) -> is_prop [set x : V | f `@ F --> x].
 Proof.
 move=> ffun fx fy; rewrite -closeE.
 exact: (@filterlimi_locally_close _ _ _ _ f).
@@ -2515,54 +2559,66 @@ Variable K : AbsRing.
 
 Record class_of (T : Type) := Class {
   base : NormedModule.class_of K T ;
-  mixin : Complete.mixin_of (Uniform.Pack T base T)
+  mixin : Complete.mixin_of (Uniform.Pack base T)
 }.
 Local Coercion base : class_of >-> NormedModule.class_of.
 Definition base2 T (cT : class_of T) : Complete.class_of T :=
-  Complete.Class _ (base T cT) (mixin T cT).
+  @Complete.Class _ (@base T cT) (@mixin T cT).
 Local Coercion base2 : class_of >-> Complete.class_of.
 
-Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Structure type (phK : phant K) := Pack { sort; _ : class_of sort ; _ : Type }.
 Local Coercion sort : type >-> Sortclass.
 
-Variable cT : type.
+Variables (phK : phant K) (cT : type phK) (T : Type).
 
 Definition class := let: Pack _ c _ := cT return class_of cT in c.
 
+Definition pack :=
+  fun bT b & phant_id (@NormedModule.class K phK bT) (b : NormedModule.class_of K T) =>
+  fun mT m & phant_id (@Complete.class mT) (@Complete.Class T b m) =>
+    Pack phK (@Class T b m) T.
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 
-Definition AbelianGroup := AbelianGroup.Pack cT xclass xT.
-Definition ModuleSpace := ModuleSpace.Pack _ cT xclass xT.
-Definition NormedModuleAux := NormedModuleAux.Pack _ cT xclass xT.
-Definition NormedModule := NormedModule.Pack _ cT xclass xT.
-Definition uniformType := Uniform.Pack cT xclass xT.
-Definition completeType := Complete.Pack cT xclass xT.
-
+Definition eqType := @Equality.Pack cT xclass xT.
+Definition choiceType := @Choice.Pack cT xclass xT.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
+Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass xT.
+Definition uniformType := @Uniform.Pack cT xclass xT.
+Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass xT.
+Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass xT.
+Definition normedModType := @NormedModule.Pack K phK cT xclass xT.
+Definition join_uniformType := @Uniform.Pack normedModType xclass xT.
 End ClassDef.
 
 Module Exports.
 
 Coercion base : class_of >-> NormedModule.class_of.
-Coercion mixin : class_of >-> Complete.mixin_of.
 Coercion base2 : class_of >-> Complete.class_of.
 Coercion sort : type >-> Sortclass.
-Coercion AbelianGroup : type >-> AbelianGroup.type.
-Canonical AbelianGroup.
-Coercion ModuleSpace : type >-> ModuleSpace.type.
-Canonical ModuleSpace.
-Coercion NormedModuleAux : type >-> NormedModuleAux.type.
-Canonical NormedModuleAux.
-Coercion NormedModule : type >-> NormedModule.type.
-Canonical NormedModule.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion zmodType : type >-> GRing.Zmodule.type.
+Canonical zmodType.
+Coercion lmodType : type >-> GRing.Lmodule.type.
+Canonical lmodType.
 Coercion uniformType : type >-> Uniform.type.
-Canonical Uniform.
-Coercion completeType : type >-> Complete.type.
-Canonical Complete.
-Definition type_canonical_filter R (T : type R):= CanonicalFilter T T locally.
+Canonical uniformType.
+Canonical join_zmodType.
+Canonical join_lmodType.
+Coercion normedModType : type >-> NormedModule.type.
+Canonical normedModType.
+Canonical join_uniformType.
+Definition type_canonical_filter
+   (K : absRingType) (phK : phant K) (T : type phK) :=
+  @CanonicalFilter T T locally.
 Coercion type_canonical_filter : type >-> canonical_filter.
 Canonical type_canonical_filter.
-Notation CompleteNormedModule := type.
+Notation completeNormedModType K := (type (Phant K)).
+Notation "[ 'completeNormedModuleType' K 'of' T ]" := (@pack _ (Phant K) T _ _ id _ _ id)
+  (at level 0, format "[ 'completeNormedModuleType'  K  'of'  T ]") : form_scope.
 
 End Exports.
 
@@ -2572,58 +2628,32 @@ Export CompleteNormedModule.Exports.
 
 Section CompleteNormedModule1.
 
-Context {K : AbsRing} {V : CompleteNormedModule K}.
+Context {K : absRingType} {V : completeNormedModType K}.
 
-Lemma iota_unique :
-  forall (P : V -> Prop) (x : V),
-  (forall y, P y -> y = x) ->
-  P x ->
-  iota P = x.
-Proof.
-intros P x HP Px.
-apply eq_close.
-intros eps.
-apply: iota_correct_weak Px eps.
-intros x' y Px' Py eps.
-rewrite (HP _ Py) -(HP _ Px').
-apply ball_center.
-Qed.
+Lemma get_correct (P : V -> Prop) :
+  (exists! x : V, P x) -> P (get P).
+Proof. by move=> [x [Px _]]; exact: getP Px. Qed.
+Definition iota_correct := get_correct.
 
-Lemma iota_correct :
-  forall P : V -> Prop,
-  (exists! x : V, P x) ->
-  P (iota P).
+Lemma get_is_filter_lim {F} {FF : ProperFilter F} (l : V) :
+  F --> l -> lim F = l.
 Proof.
-intros P [x [Px HP]].
-rewrite (iota_unique _ x) ; try exact Px.
-intros y Py.
-now apply sym_eq, HP.
-Qed.
-
-Lemma iota_is_filter_lim {F} {FF : ProperFilter F} (l : V) :
-  F --> l -> iota [set l | F --> l] = l.
-Proof.
-intros Hl.
-apply: iota_unique (Hl) => l' Hl'.
-exact: is_filter_lim_unique Hl' Hl.
+move=> Fl; have FlF : F --> lim F by rewrite -cvgE; exists l.
+by apply: is_filter_lim_unique.
 Qed.
 
 Context {T : Type}.
 
-Lemma iota_filterlim_locally {F} {FF : ProperFilter F} (f : T -> V) l :
-  f @ F --> l -> iota (fun x => f @ F --> x) = l.
-Proof.
-apply iota_is_filter_lim.
-Qed.
+Lemma get_filterlim_locally {F} {FF : ProperFilter F} (f : T -> V) l :
+  f @ F --> l -> lim (f @ F) = l.
+Proof. exact: get_is_filter_lim. Qed.
 
-Lemma iota_filterlimi_locally {F} {FF : ProperFilter F} (f : T -> V -> Prop) l :
-  F (fun x => forall y1 y2, f x y1 -> f x y2 -> y1 = y2) ->
-  f `@ F --> l ->
-  iota (fun x => f `@ F --> x) = l.
+Lemma get_filterlimi_locally {F} {FF : ProperFilter F} (f : T -> V -> Prop) l :
+  F (fun x => is_prop (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
 Proof.
-intros Hf Hl.
-apply: iota_unique (Hl) => l' Hl'.
-exact: filterlimi_locally_unique Hf Hl' Hl.
+move=> f_prop f_l; apply: get_unique => // l' f_l'.
+exact: filterlimi_locally_unique _ f_l' f_l.
 Qed.
 
 End CompleteNormedModule1.
@@ -3611,7 +3641,7 @@ Lemma sum_n_m_const (n m : nat) (a : R) :
   sum_n_m (fun _ => a) n m = INR (S m - n) * a.
 Proof.
   rewrite /sum_n_m /iter_nat (iter_const _ a).
-  by rewrite -{2}(seq.size_iota n (S m - n)).
+  by rewrite -{2}(seq.size_get n (S m - n)).
 Qed.
 Lemma sum_n_const (n : nat) (a : R) :
   sum_n (fun _ => a) n = INR (S n) * a.
@@ -3720,7 +3750,7 @@ Proof.
   assert (H := proj1 (filterlim_locally (F := eventually) _ l) Hl [posreal of 1]).
   clear Hl ; simpl in H ; rewrite /ball /= /AbsRing_ball in H.
   destruct H as [N HN].
-  specialize (HM (seq.foldr Rmax (1 + norm l) (seq.map (fun n => norm (a n)) (seq.iota 0 N)))).
+  specialize (HM (seq.foldr Rmax (1 + norm l) (seq.map (fun n => norm (a n)) (iota 0 N)))).
   destruct HM as [n Hn].
   revert Hn.
   apply Rle_not_lt.
