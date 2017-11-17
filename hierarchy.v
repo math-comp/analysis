@@ -3683,6 +3683,9 @@ Admitted.
 
 (** * Topology on [R]² *)
 
+(* ALTERNATIVE: *)
+(* Definition locally_2d x y (P : R -> R -> Prop) := locally (x, y) (fun z => P z.1 z.2). *)
+
 Definition locally_2d (P : R -> R -> Prop) x y :=
   exists delta : posreal, forall u v, Rabs (u - x) < delta -> Rabs (v - y) < delta -> P u v.
 
