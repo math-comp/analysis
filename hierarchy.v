@@ -2643,58 +2643,6 @@ End CompleteNormedModule1.
 (** * Extended Types *)
 
 (** ** Pairs *)
-
-
-Section prod_ModuleSpace.
-
-Context {K : Ring} {U V : ModuleSpace K}.
-
-Definition prod_scal (x : K) (u : U * V) :=
-  (scal x (fst u), scal x (snd u)).
-
-Lemma prod_scal_assoc :
-  forall (x y : K) (u : U * V),
-  prod_scal x (prod_scal y u) = prod_scal (mult x y) u.
-Proof.
-intros x y u.
-apply (f_equal2 pair) ; apply scal_assoc.
-Qed.
-
-Lemma prod_scal_one :
-  forall u : U * V,
-  prod_scal one u = u.
-Proof.
-intros [u v].
-apply (f_equal2 pair) ; apply scal_one.
-Qed.
-
-Lemma prod_scal_distr_l :
-  forall (x : K) (u v : U * V),
-  prod_scal x (prod_plus u v) = prod_plus (prod_scal x u) (prod_scal x v).
-Proof.
-intros x u v.
-apply (f_equal2 pair) ; apply scal_distr_l.
-Qed.
-
-Lemma prod_scal_distr_r :
-  forall (x y : K) (u : U * V),
-  prod_scal (plus x y) u = prod_plus (prod_scal x u) (prod_scal y u).
-Proof.
-intros x y u.
-apply (f_equal2 pair) ; apply scal_distr_r.
-Qed.
-
-End prod_ModuleSpace.
-
-Definition prod_ModuleSpace_mixin (K : Ring) (U V : ModuleSpace K) :=
-  ModuleSpace.Mixin K _ _ (@prod_scal_assoc K U V) prod_scal_one prod_scal_distr_l prod_scal_distr_r.
-
-Canonical prod_ModuleSpace (K : Ring) (U V : ModuleSpace K) :=
-  ModuleSpace.Pack K (U * V) (ModuleSpace.Class _ _ _ (prod_ModuleSpace_mixin K U V)) (U * V).
-
-Canonical prod_NormedModuleAux (K : AbsRing) (U V : NormedModuleAux K) :=
-  NormedModuleAux.Pack K (U * V) (NormedModuleAux.Class _ _ (ModuleSpace.class K _) (Uniform.class (prod_uniformType U V))) (U * V).
-
 Lemma sqrt_plus_sqr :
   forall x y : R, Rmax (Rabs x) (Rabs y) <= sqrt (x ^ 2 + y ^ 2) <= sqrt 2 * Rmax (Rabs x) (Rabs y).
 Proof.
