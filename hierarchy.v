@@ -2513,12 +2513,8 @@ Qed.
 
 End NVS_continuity.
 
-Lemma filterlim_mult {K : AbsRing} (x y : K) :
-  z.1 * z.2 @[z --> (x, y)] --> x * y.
-Proof.
-(* by apply: @filterlim_scal. *)
-(* Qed. *)
-Admitted.
+Lemma filterlim_mult {K : AbsRing} (x y : K) : z.1 * z.2 @[z --> (x, y)] --> x * y.
+Proof. exact: (@filterlim_scal _ (AbsRing_NormedModType K)). Qed.
 
 Lemma filterlim_locally_ball_norm {K : AbsRing} {T} {U : normedModType K}
   {F : set (set T)} {FF : Filter F} (f : T -> U) (y : U) :
@@ -2528,16 +2524,13 @@ Proof.
 split.
 - intros Cf eps.
   apply (Cf (fun x => ball_norm y eps x)).
-  apply locally_le_locally_norm.
-  apply locally_norm_ball_norm.
+  by apply/locally_le_locally_norm/locally_norm_ball_norm.
 - intros Cf.
-  (* apply (filterlim_filter_le_2 _ (locally_norm_le_locally y)). *)
-  (* intros P [eps He]. *)
-  (* apply: filter_imp (Cf eps). *)
-  (* intros t. *)
-  (* apply He. *)
-(* Qed. *)
-Admitted.
+  apply: filterlim_filter_le_2; first by apply: locally_norm_le_locally.
+  move=> P [eps He].
+  apply: filter_imp (Cf eps) => t; by apply He.
+Qed.
+
 (** ** Complete Normed Modules *)
 
 Module CompleteNormedModule.
