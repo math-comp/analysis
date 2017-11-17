@@ -2080,7 +2080,7 @@ Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 
 Definition pack b0 um0 (m0 : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T b0 T) um0) :=
-  fun bT b & phant_id (@GRing.Lalgebra.class K phK bT) b =>
+  fun bT b & phant_id (@GRing.Lmodule.class K phK bT) b =>
   fun ubT (ub : Uniform.class_of _) & phant_id (@Uniform.class ubT) ub =>
   fun   m & phant_id m0 m => Pack phK (@Class T b ub m) T.
 
@@ -2139,7 +2139,8 @@ Canonical R_absRingType := AbsRingType R R_AbsRingMixin.
 Definition R_UniformSpace_mixin := @AbsRingUniformMixin R_absRingType.
 Canonical R_UniformSpace := UniformType R R_UniformSpace_mixin.
 Canonical R_canonical_filter := @CanonicalFilter R R locally.
-
+Canonical Ro_UniformSpace := UniformType R^o R_UniformSpace_mixin.
+Canonical Ro_canonical_filter := @CanonicalFilter R R^o locally.
 
 Definition norm {K : absRingType} {V : normedModType K} : V -> R :=
   NormedModule.norm (NormedModule.class _).
@@ -2338,30 +2339,18 @@ End NormedModule2.
 Section AbsRing_NormedModule.
 
 Variable (K : absRingType).
+Implicit Types (x y : K) (eps : posreal).
 
-(*Canonical AbsRing_NormedModuleAux :=
-  NormedModuleAux.Pack K K (NormedModuleAux.Class _ _ (ModuleSpace.class _ (AbsRing_ModuleSpace K)) (Uniform.class (AbsRing_uniformType K))) K.*)
+Lemma sub_abs_ball x y eps : `|x - y| < eps -> ball x eps y.
+Proof. by []. Qed.
 
-Lemma tmp (x y : [lmodType K of K^o]) (eps : posreal) :
- `|x - y| < eps -> Uniform.ball (Uniform.class (absRing_UniformType K)) x eps y.
-Proof.
-move=> H.
-(* TODO: should not call ax3 *)
-move: (@NormedModule.ax3 K [lmodType K of K^o] (Uniform.class (absRing_UniformType K))).
-apply.
-Admitted.
+Lemma sub_ball_abs x y eps : ball x eps y -> `|x - y| < 1 * pos eps.
+Proof. by rewrite mul1r. Qed.
 
-Lemma tmp2 (x y : [lmodType K of K^o]) (eps : posreal) :
- Uniform.ball (Uniform.class (absRing_UniformType K)) x eps y -> `|x - y| < 1 * pos eps.
-Proof.
-move=> H.
-Admitted.
+Definition AbsRing_NormedModMixin := @NormedModule.Mixin K _ _
+  (abs : K^o -> R) 1 ler_abs_add absrM sub_abs_ball sub_ball_abs absr0_eq0.
 
-Definition AbsRing_NormedModule_mixin :=
-  @NormedModule.Mixin K [lmodType K of K^o] (Uniform.class _) abs 1 ler_abs_add absrM tmp tmp2 absr0_eq0.
-
-Canonical AbsRing_NormedModule :=
-  NormedModule.Pack (*K*) _ (NormedModule.Class (*_ _ _*) AbsRing_NormedModule_mixin) K.
+Canonical AbsRing_NormedModType := NormedModType K K^o AbsRing_NormedModMixin.
 
 End AbsRing_NormedModule.
 
