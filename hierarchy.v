@@ -2665,59 +2665,42 @@ Proof.
 intros [xu xv] [yu yv].
 rewrite /prod_norm /=.
 apply (@ler_trans _ (Num.sqrt ((`|[xu]| + `|[yu]|)^+2 + (`|[xv]| + `|[yv]|)^+2))).
-- by rewrite ler_wsqrtr // ler_add // ler_pexpn2r //
+  by rewrite ler_wsqrtr // ler_add // ler_pexpn2r //
      ?nnegrE ?addr_ge0 // ?normm_ge0 // ?norm_triangle.
-- set a := `|[xu]|. set b := `|[yu]|. set c := `|[xv]|. set d := `|[yv]|.
-  rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?ler_add ?addr_ge0 // ?sqrtr_ge0 //.
-  rewrite sqr_sqrtr ?addr_ge0 // ?sqr_ge0 // [in X in _ <= X]sqrrD.
-  rewrite !sqr_sqrtr // ?addr_ge0 // ?sqr_ge0 //.
-  rewrite 2!sqrrD -!addrA ler_add //.
-  rewrite (addrCA _ (c^+2)) 2!addrCA ler_add //.
-  rewrite 2!addrCA 2!(addrCA _ (b^+2)) ler_add //.
-  rewrite !addrA ler_add //.
-  rewrite -mulr2n -addrA -mulr2n -mulr2n -mulrnDl ler_muln2r /=.
-  rewrite -sqrtrM ?addr_ge0 // ?sqr_ge0 //.
-  rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?sqrtr_ge0 ?addr_ge0 ?mulr_ge0 ?normm_ge0 //.
-  rewrite sqr_sqrtr ?mulr_ge0 ?addr_ge0 ?sqr_ge0 //.
-  rewrite sqrrD [in X in _ <= X]mulrDr 2![in X in _ <= X]mulrDl.
-  rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
-  rewrite -!addrA ler_add //.
-  rewrite -(@exprMn_comm _ c d) ?/GRing.comm; last by rewrite mulrC.
-  rewrite !addrA ler_add // -mulr2n.
-  rewrite -(@exprMn_comm _ c b) ?/GRing.comm; last by rewrite mulrC.
-  rewrite -(@exprMn_comm _ a d) ?/GRing.comm; last by rewrite mulrC.
-  rewrite -subr_ge0 addrAC.
-  by rewrite mulrCA (mulrC a b) -mulrA mulrA -sqrrB ?sqr_ge0.
+set a := `|[xu]|. set b := `|[yu]|. set c := `|[xv]|. set d := `|[yv]|.
+rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?ler_add ?addr_ge0 // ?sqrtr_ge0 //.
+rewrite sqr_sqrtr ?addr_ge0 // ?sqr_ge0 // [in X in _ <= X]sqrrD.
+rewrite !sqr_sqrtr // ?addr_ge0 // ?sqr_ge0 //.
+rewrite 2!sqrrD -!addrA ler_add //.
+rewrite (addrCA _ (c^+2)) 2!addrCA ler_add //.
+rewrite 2!addrCA 2!(addrCA _ (b^+2)) ler_add //.
+rewrite !addrA ler_add //.
+rewrite -mulr2n -addrA -mulr2n -mulr2n -mulrnDl ler_muln2r /=.
+rewrite -sqrtrM ?addr_ge0 // ?sqr_ge0 //.
+rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?sqrtr_ge0 ?addr_ge0 ?mulr_ge0 ?normm_ge0 //.
+rewrite sqr_sqrtr ?mulr_ge0 ?addr_ge0 ?sqr_ge0 //.
+rewrite sqrrD [in X in _ <= X]mulrDr 2![in X in _ <= X]mulrDl.
+rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
+rewrite -!addrA ler_add //.
+rewrite -(@exprMn_comm _ c d) ?/GRing.comm; last by rewrite mulrC.
+rewrite !addrA ler_add // -mulr2n.
+rewrite -(@exprMn_comm _ c b) ?/GRing.comm; last by rewrite mulrC.
+rewrite -(@exprMn_comm _ a d) ?/GRing.comm; last by rewrite mulrC.
+rewrite -subr_ge0 addrAC.
+by rewrite mulrCA (mulrC a b) -mulrA mulrA -sqrrB ?sqr_ge0.
 Qed.
 
-Lemma prod_norm_scal :
-  forall (l : K) (x : U * V),
-  (prod_norm (l *: x) <= abs l * prod_norm x).
+Lemma prod_norm_scal (l : K) : forall (x : U * V), prod_norm (l *: x) <= abs l * prod_norm x.
 Proof.
-intros l [xu xv].
-rewrite /prod_norm /= -(sqrt_Rsqr (abs l)).
-(*2: apply abs_ge_0.
-rewrite !Rmult_1_r.
-rewrite -sqrt_mult.
-2: apply Rle_0_sqr.
-apply sqrt_le_1_alt.
-rewrite Rmult_plus_distr_l.
-unfold Rsqr.
-apply Rplus_le_compat.
-replace (abs l * abs l * (norm xu * norm xu)) with ((abs l * norm xu) * (abs l * norm xu)) by ring.
-apply Rmult_le_compat.
-apply norm_ge_0.
-apply norm_ge_0.
-exact (norm_scal l xu).
-exact (norm_scal l xu).
-replace (abs l * abs l * (norm xv * norm xv)) with ((abs l * norm xv) * (abs l * norm xv)) by ring.
-apply Rmult_le_compat.
-apply norm_ge_0.
-apply norm_ge_0.
-exact (norm_scal l xv).
-exact (norm_scal l xv).
-apply Rplus_le_le_0_compat ; apply Rle_0_sqr.
-Qed.*) Admitted.
+case=> xu xv; rewrite /prod_norm /=.
+rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?mulr_ge0 ?sqrtr_ge0 ?absr_ge0 //.
+rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 //.
+rewrite exprMn_comm ?/GRing.comm; last by rewrite mulrC.
+rewrite sqr_sqrtr ?addr_ge0 // ?sqr_ge0 // mulrDr.
+rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
+rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
+by rewrite ler_add // ler_pexpn2r // ?nnegrE ?mulr_ge0 ?absr_ge0 ?normm_ge0 // ?ler_normmZ.
+Qed.
 
 Lemma prod_norm_compat1 :
   forall (x y : U * V) (eps : R),
@@ -2735,7 +2718,7 @@ apply Rmax_r.
 Qed.*) Admitted.
 
 Definition prod_norm_factor :=
-  (Num.sqrt 2%:R * maxr (@norm_factor K U) (@norm_factor K V)).
+  Num.sqrt 2%:R * maxr (@norm_factor K U) (@norm_factor K V).
 
 Lemma prod_norm_compat2 :
   forall (x y : U * V) (eps : posreal),
