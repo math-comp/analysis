@@ -2489,6 +2489,32 @@ Qed.
 
 End NormedModule2.
 
+(** Rings with absolute values are normed modules *)
+
+Section AbsRing_NormedModule.
+
+Variable (K : AbsRing).
+
+(*Canonical AbsRing_NormedModuleAux :=
+  NormedModuleAux.Pack K K (NormedModuleAux.Class _ _ (ModuleSpace.class _ (AbsRing_ModuleSpace K)) (Uniform.class (AbsRing_uniformType K))) K.*)
+
+Lemma AbsRing_norm_compat2 (V : normedModType K) :
+  forall (x y : V) (eps : posreal),
+    Uniform.ball (NormedModule.class V) x eps y -> `|[x - y]| < (1 * pos eps).
+Proof.
+move=> x y e.
+rewrite mul1r.
+Admitted.
+
+Definition AbsRing_NormedModule_mixin (V : normedModType K) :=
+  @NormedModule.Mixin K V (NormedModule.class _) norm 1 ler_normm_add ler_normmZ
+  (@NormedModule.ax3 _ _ _ _) (@AbsRing_norm_compat2 V) normm0_eq0.
+
+Canonical AbsRing_NormedModule :=
+  NormedModule.Pack K _ (NormedModule.Class _ _ _ AbsRing_NormedModule_mixin) K.
+
+End AbsRing_NormedModule.
+
 (* COMPILES UNTIL HERE *)
 
 (*
