@@ -2635,45 +2635,22 @@ End CompleteNormedModule1.
 (** * Extended Types *)
 
 (** ** Pairs *)
-(* TODO a prouver dans Rstruct pour prouver norm_compat1 and norm_compat2 *)
-Lemma sqrt_plus_sqr :
-  forall x y : R, Rmax (Rabs x) (Rabs y) <= sqrt (x ^ 2 + y ^ 2) <= sqrt 2 * Rmax (Rabs x) (Rabs y).
-Proof.
-intros x y.
-(*split.
-- rewrite -!sqrt_Rsqr_abs.
-  apply Rmax_case ; apply sqrt_le_1_alt, Rminus_le_0 ;
-  rewrite /Rsqr /= ; ring_simplify ; by apply pow2_ge_0.
-- apply Rmax_case_strong ; intros H0 ;
-  rewrite -!sqrt_Rsqr_abs ;
-  rewrite -?sqrt_mult ;
-  try (by apply Rle_0_sqr) ;
-  try (by apply Rlt_le, Rlt_0_2) ;
-  apply sqrt_le_1_alt ; simpl ; [ rewrite Rplus_comm | ] ;
-  rewrite /Rsqr ; apply Rle_minus_r ; ring_simplify ;
-  apply Rsqr_le_abs_1 in H0 ; by rewrite /pow !Rmult_1_r.
-Qed.*) Abort.
 
+(* TODO a prouver dans Rstruct pour prouver norm_compat1 and norm_compat2 *)
 Lemma sqrt_plus_sqr (x y : R) :
-  (maxr `| x | `| y | <= Num.sqrt (x ^+ 2 + y ^+ 2) <= Num.sqrt 2%:R * maxr `| x | `| y |)%R.
+  maxr `|x| `|y| <= Num.sqrt (x^+2 + y^+2) <= Num.sqrt 2%:R * maxr `|x| `|y|.
 Proof.
-apply/andP; split.
-- (* elever au carre et utiliser sqrrD *)
-  (*rewrite -!sqrt_Rsqr_abs.
-  apply Rmax_case ; apply sqrt_le_1_alt, Rminus_le_0 ;
-  rewrite /Rsqr /= ; ring_simplify ; by apply pow2_ge_0.*)
-  admit.
-- (* elever au carre et ... *)
-  (*apply Rmax_case_strong ; intros H0 ;
-  rewrite -!sqrt_Rsqr_abs ;
-  rewrite -?sqrt_mult ;
-  try (by apply Rle_0_sqr) ;
-  try (by apply Rlt_le, Rlt_0_2) ;
-  apply sqrt_le_1_alt ; simpl ; [ rewrite Rplus_comm | ] ;
-  rewrite /Rsqr ; apply Rle_minus_r ; ring_simplify ;
-  apply Rsqr_le_abs_1 in H0 ; by rewrite /pow !Rmult_1_r.*)
-  admit.
-Admitted.
+rewrite -(@ler_pexpn2r _ 2) ?nnegrE ?sqrtr_ge0 ?ler_maxr ?normr_ge0 // andbC.
+rewrite -(@ler_pexpn2r _ 2) ?nnegrE ?mulr_ge0 ?sqrtr_ge0 ?ler_maxr ?normr_ge0 //.
+rewrite sqr_sqrtr ?addr_ge0 // ?sqr_ge0 //.
+wlog : x y / `|x| <= `|y| => H.
+  case: (lerP `|x| `|y|) => yx; first by rewrite H.
+  by rewrite maxrC addrC H // ltrW.
+rewrite maxr_r ?real_normK ?num_real ?ler_addr ?sqr_ge0 // andbT.
+rewrite exprMn_comm ?sqr_sqrtr //; last by rewrite /GRing.comm mulrC.
+rewrite -(@real_normK _ x) ?num_real // -{1}(@real_normK _ y) ?num_real //.
+by rewrite mulr_natl mulr2n ler_add // ler_pexpn2r // ?num_real ?nnegrE.
+Qed.
 
 Section prod_NormedModule.
 
@@ -4194,4 +4171,3 @@ intros Lf Cf.
 apply continuity_pt_filterlim in Cf.
 now apply Cf.
 Qed.
-
