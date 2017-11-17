@@ -2506,18 +2506,17 @@ Qed.
 
 Lemma filterlim_opp (x : V) : (@GRing.opp V) @ x --> - x.
 Proof.
-(* rewrite -scal_opp_one. *)
-(* apply filterlim_ext with (2 := filterlim_scal_r _ _). *)
-(* apply: scal_opp_one. *)
-(* Qed. *)
-Admitted.
+rewrite -scaleN1r.
+apply filterlim_ext with (2 := @filterlim_scal_r _ _) => /= x0.
+by rewrite scaleN1r.
+Qed.
 
 End NVS_continuity.
 
 Lemma filterlim_mult {K : AbsRing} (x y : K) :
   z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof.
-  (* by apply: @filterlim_scal. *)
+(* by apply: @filterlim_scal. *)
 (* Qed. *)
 Admitted.
 
