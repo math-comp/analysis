@@ -1975,8 +1975,6 @@ Delimit Scope real_scope with real.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
-Context {K : absRingType}.
-
 Definition abs {K : absRingType} : K -> R := @AbsRing.abs _ (AbsRing.class K).
 Notation "`| x |" := (abs x%R) : R_scope.
 Notation "`| x |" := (abs x%R) : real_scope.
