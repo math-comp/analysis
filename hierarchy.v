@@ -2493,25 +2493,31 @@ End NormedModule2.
 
 Section AbsRing_NormedModule.
 
-Variable (K : AbsRing).
+Variable (K : absRingType).
 
 (*Canonical AbsRing_NormedModuleAux :=
   NormedModuleAux.Pack K K (NormedModuleAux.Class _ _ (ModuleSpace.class _ (AbsRing_ModuleSpace K)) (Uniform.class (AbsRing_uniformType K))) K.*)
 
-Lemma AbsRing_norm_compat2 (V : normedModType K) :
-  forall (x y : V) (eps : posreal),
-    Uniform.ball (NormedModule.class V) x eps y -> `|[x - y]| < (1 * pos eps).
+Lemma tmp (x y : [lmodType K of K^o]) (eps : posreal) :
+ `|x - y| < eps -> Uniform.ball (Uniform.class (absRing_UniformType K)) x eps y.
 Proof.
-move=> x y e.
-rewrite mul1r.
+move=> H.
+(* TODO: should not call ax3 *)
+move: (@NormedModule.ax3 K [lmodType K of K^o] (Uniform.class (absRing_UniformType K))).
+apply.
 Admitted.
 
-Definition AbsRing_NormedModule_mixin (V : normedModType K) :=
-  @NormedModule.Mixin K V (NormedModule.class _) norm 1 ler_normm_add ler_normmZ
-  (@NormedModule.ax3 _ _ _ _) (@AbsRing_norm_compat2 V) normm0_eq0.
+Lemma tmp2 (x y : [lmodType K of K^o]) (eps : posreal) :
+ Uniform.ball (Uniform.class (absRing_UniformType K)) x eps y -> `|x - y| < 1 * pos eps.
+Proof.
+move=> H.
+Admitted.
+
+Definition AbsRing_NormedModule_mixin :=
+  @NormedModule.Mixin K [lmodType K of K^o] (Uniform.class _) abs 1 ler_abs_add absrM tmp tmp2 absr0_eq0.
 
 Canonical AbsRing_NormedModule :=
-  NormedModule.Pack K _ (NormedModule.Class _ _ _ AbsRing_NormedModule_mixin) K.
+  NormedModule.Pack (*K*) _ (NormedModule.Class (*_ _ _*) AbsRing_NormedModule_mixin) K.
 
 End AbsRing_NormedModule.
 
