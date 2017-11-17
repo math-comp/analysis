@@ -6,5 +6,6 @@ Markov.v
 Rbar.v
 hierarchy.v
 compatibility.v
+Lim_seq.v
 
 -R . cara

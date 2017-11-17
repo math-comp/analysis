@@ -22,11 +22,13 @@ COPYING file for more details.
 Require Import Reals Psatz.
 Require Import mathcomp.ssreflect.ssreflect.
 Require Import Rcomplements.
-Require Import Rbar Lub Markov hierarchy compatibility.
+Require Import Rbar Lub Markov hierarchy.
 
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
 From SsrReals Require Import boolp.
 Require Import Rstruct.
+
+Require Import compatibility.
 
 (** This file describes properties and definitions about limits of
 real sequences. This includes properties about the predicates
