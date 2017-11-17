@@ -2658,57 +2658,37 @@ Context {K : absRingType} {U V : normedModType K}.
 
 Local Close Scope R_scope.
 
-Definition prod_norm (x : U * V) :=
-  Num.sqrt (`|[x.1]| ^+ 2 + `|[x.2]| ^+ 2).
+Definition prod_norm (x : U * V) := Num.sqrt (`|[x.1]| ^+ 2 + `|[x.2]| ^+ 2).
 
-Lemma prod_norm_triangle :
-  forall x y : U * V,
-  prod_norm (x + y) <= prod_norm x + prod_norm y.
+Lemma prod_norm_triangle : forall x y : U * V, prod_norm (x + y) <= prod_norm x + prod_norm y.
 Proof.
 intros [xu xv] [yu yv].
-(*rewrite /prod_norm /= !Rmult_1_r.
-apply Rle_trans with (sqrt (Rsqr (norm xu + norm yu) + Rsqr (norm xv + norm yv))).
-- apply sqrt_le_1_alt.
-  apply Rplus_le_compat.
-  apply Rsqr_le_abs_1.
-  rewrite -> 2!Rabs_pos_eq.
-  apply: norm_triangle.
-  apply Rplus_le_le_0_compat ; apply norm_ge_0.
-  apply norm_ge_0.
-  apply Rsqr_le_abs_1.
-  rewrite -> 2!Rabs_pos_eq.
-  apply: norm_triangle.
-  apply Rplus_le_le_0_compat ; apply norm_ge_0.
-  apply norm_ge_0.
-- apply Rsqr_incr_0_var.
-  apply Rminus_le_0.
-  unfold Rsqr ; simpl ; ring_simplify.
-  rewrite /pow ?Rmult_1_r.
-  rewrite ?sqrt_sqrt ; ring_simplify.
-  replace (-2 * norm xu * norm yu - 2 * norm xv * norm yv)
-    with (-(2 * (norm xu * norm yu + norm xv * norm yv))) by ring.
-  rewrite Rmult_assoc -sqrt_mult.
-  rewrite Rplus_comm.
-  apply -> Rminus_le_0.
-  apply Rmult_le_compat_l.
-  apply Rlt_le, Rlt_0_2.
-  apply Rsqr_incr_0_var.
-  apply Rminus_le_0.
-  rewrite /Rsqr ?sqrt_sqrt ; ring_simplify.
-  replace (norm xu ^ 2 * norm yv ^ 2 - 2 * norm xu * norm xv * norm yu * norm yv + norm xv ^ 2 * norm yu ^ 2)
-    with ((norm xu * norm yv - norm xv * norm yu) ^ 2) by ring.
-  apply pow2_ge_0.
-  repeat apply Rplus_le_le_0_compat ; apply Rmult_le_pos ; apply pow2_ge_0.
-  apply sqrt_pos.
-  apply Rplus_le_le_0_compat ; apply Rle_0_sqr.
-  apply Rplus_le_le_0_compat ; apply Rle_0_sqr.
-  replace (norm xu ^ 2 + 2 * norm xu * norm yu + norm yu ^ 2 + norm xv ^ 2 + 2 * norm xv * norm yv + norm yv ^ 2)
-    with ((norm xu + norm yu) ^ 2 + (norm xv + norm yv) ^ 2) by ring.
-  apply Rplus_le_le_0_compat ; apply pow2_ge_0.
-  apply Rplus_le_le_0_compat ; apply pow2_ge_0.
-  apply Rplus_le_le_0_compat ; apply pow2_ge_0.
-  apply Rplus_le_le_0_compat ; apply sqrt_pos.
-Qed.*) Admitted.
+rewrite /prod_norm /=.
+apply (@ler_trans _ (Num.sqrt ((`|[xu]| + `|[yu]|)^+2 + (`|[xv]| + `|[yv]|)^+2))).
+- by rewrite ler_wsqrtr // ler_add // ler_pexpn2r //
+     ?nnegrE ?addr_ge0 // ?normm_ge0 // ?norm_triangle.
+- set a := `|[xu]|. set b := `|[yu]|. set c := `|[xv]|. set d := `|[yv]|.
+  rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?ler_add ?addr_ge0 // ?sqrtr_ge0 //.
+  rewrite sqr_sqrtr ?addr_ge0 // ?sqr_ge0 // [in X in _ <= X]sqrrD.
+  rewrite !sqr_sqrtr // ?addr_ge0 // ?sqr_ge0 //.
+  rewrite 2!sqrrD -!addrA ler_add //.
+  rewrite (addrCA _ (c^+2)) 2!addrCA ler_add //.
+  rewrite 2!addrCA 2!(addrCA _ (b^+2)) ler_add //.
+  rewrite !addrA ler_add //.
+  rewrite -mulr2n -addrA -mulr2n -mulr2n -mulrnDl ler_muln2r /=.
+  rewrite -sqrtrM ?addr_ge0 // ?sqr_ge0 //.
+  rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?sqrtr_ge0 ?addr_ge0 ?mulr_ge0 ?normm_ge0 //.
+  rewrite sqr_sqrtr ?mulr_ge0 ?addr_ge0 ?sqr_ge0 //.
+  rewrite sqrrD [in X in _ <= X]mulrDr 2![in X in _ <= X]mulrDl.
+  rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
+  rewrite -!addrA ler_add //.
+  rewrite -(@exprMn_comm _ c d) ?/GRing.comm; last by rewrite mulrC.
+  rewrite !addrA ler_add // -mulr2n.
+  rewrite -(@exprMn_comm _ c b) ?/GRing.comm; last by rewrite mulrC.
+  rewrite -(@exprMn_comm _ a d) ?/GRing.comm; last by rewrite mulrC.
+  rewrite -subr_ge0 addrAC.
+  by rewrite mulrCA (mulrC a b) -mulrA mulrA -sqrrB ?sqr_ge0.
+Qed.
 
 Lemma prod_norm_scal :
   forall (l : K) (x : U * V),
