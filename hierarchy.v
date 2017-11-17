@@ -2354,68 +2354,32 @@ Canonical AbsRing_NormedModType := NormedModType K K^o AbsRing_NormedModMixin.
 
 End AbsRing_NormedModule.
 
-(* COMPILES UNTIL HERE *)
-
-(*
-(** Rings with absolute values are normed modules *)
-
-Section AbsRing_NormedModule.
-
-Variable (K : AbsRing).
-
-Canonical AbsRing_NormedModuleAux :=
-  NormedModuleAux.Pack K K (NormedModuleAux.Class _ _ (ModuleSpace.class _ (AbsRing_ModuleSpace K)) (Uniform.class (AbsRing_uniformType K))) K.
-
-Lemma AbsRing_norm_compat2 :
-  forall (x y : AbsRing_NormedModuleAux) (eps : posreal),
-  ball x eps y -> abs (minus y x) < 1 * eps.
-Proof.
-  intros x y eps H.
-  now rewrite Rmult_1_l.
-Qed.
-
-Definition AbsRing_NormedModule_mixin :=
-  NormedModule.Mixin K _ abs 1 abs_triangle abs_mult (fun x y e H => H) AbsRing_norm_compat2 abs_eq_zero.
-
-Canonical AbsRing_NormedModule :=
-  NormedModule.Pack K _ (NormedModule.Class _ _ _ AbsRing_NormedModule_mixin) K.
-
-End AbsRing_NormedModule.
-
 (* Quick fix for non inferred instances *)
 (* This does not fix everything, see below *)
-Instance NormedModule_locally_filter (K : AbsRing) (V : NormedModule K)
+Instance NormedModule_locally_filter (K : AbsRing) (V : normedModType K)
   (p : V) :
-  @ProperFilter (NormedModule.sort K V)
-  (@locally (NormedModule.uniformType _ _)  p).
+  @ProperFilter (@NormedModule.sort K (Phant K) V)
+  (@locally (@NormedModule.uniformType K (Phant K) V) p).
 Proof. exact: locally_filter. Qed.
-
-(* Lemma bla (K : AbsRing) (x : K) : *)
-(*   @ProperFilter (NormedModuleAux.sort K (AbsRing_NormedModuleAux K)) *)
-(*   (@locally (AbsRing_uniformType K) x). *)
-(* Proof. *)
-(* Fail typeclasses eauto. *)
-(* exact: locally_filter. *)
-(* Abort. *)
 
 (** Normed vector spaces have some continuous functions *)
 
+(* COMPILES UNTIL HERE *)
 Section NVS_continuity.
 
-Context {K : AbsRing} {V : NormedModule K}.
+Context {K : AbsRing} {V : normedModType K}.
 
-Lemma filterlim_plus :
-  forall x y : V,
-  (fun z : V * V => plus (fst z) (snd z)) @ (x, y) --> (plus x y).
+(* :TODO: put again filter inside uniform type and prove this instead: *)
+(* Lemma filterlim_plus (x y : V) : continuous (fun z : V * V => z.1 + z.2). *)
+Lemma filterlim_plus (x y : V) : z.1 + z.2 @[z --> (x, y)] --> x + y.
 Proof.
-intros x y.
 apply (filterlim_filter_le_1 (F := filter_prod (locally_norm x) (locally_norm y))).
   intros P [Q R LQ LR H].
   exists Q R.
   now apply locally_le_locally_norm.
   now apply locally_le_locally_norm.
   exact H.
-apply (filterlim_filter_le_2 (G := locally_norm (plus x y))).
+apply (filterlim_filter_le_2 (G := locally_norm (x + y))).
   apply locally_norm_le_locally.
 intros P [eps HP].
 exists (ball_norm x [posreal of eps / 2]) (ball_norm y [posreal of eps / 2]).
@@ -2424,89 +2388,81 @@ by apply locally_norm_ball_norm.
 intros u v Hu Hv.
 apply HP.
 rewrite /ball_norm /= (double_var eps).
-apply Rle_lt_trans with (2 := Rplus_lt_compat _ _ _ _ Hu Hv).
-apply Rle_trans with (2 := norm_triangle _ _).
-apply Req_le, f_equal.
-rewrite /minus /= opp_plus -2!plus_assoc.
-apply f_equal.
-rewrite 2!plus_assoc.
-apply f_equal2.
-by apply plus_comm.
-by [].
+by rewrite opprD addrACA (ler_lt_trans (ler_normm_add _ _)) ?ltr_add.
 Qed.
 
 Lemma filterlim_scal (k : K) (x : V) :
-  (fun z => scal (fst z) (snd z)) @ (k, x) --> (scal k x).
+ z.1 *: z.2 @[z --> (k, x)] --> k *: x.
 Proof.
-apply/filterlim_locally => /= eps.
-eapply filter_imp.
-move => /= u Hu.
-rewrite (double_var eps).
-apply ball_triangle with (scal (fst u) x).
-apply norm_compat1.
-rewrite -scal_minus_distr_r.
-eapply Rle_lt_trans.
-apply norm_scal.
-eapply Rle_lt_trans.
-apply Rmult_le_compat_l.
-by apply abs_ge_0.
-apply Rlt_le, Rlt_plus_1.
-apply <- Rlt_div_r.
-2: apply Rle_lt_0_plus_1, norm_ge_0.
-by eapply (proj1 Hu).
-apply norm_compat1.
-rewrite -scal_minus_distr_l.
-eapply Rle_lt_trans.
-apply norm_scal.
-eapply Rle_lt_trans.
-apply Rmult_le_compat_r.
-by apply norm_ge_0.
-replace (fst u) with (plus k (minus (fst u) k)).
-eapply Rle_trans.
-apply abs_triangle.
-apply Rplus_le_compat_l.
-apply Rlt_le.
-instantiate (1 := 1).
-eapply (proj1 (proj2 Hu)).
-by rewrite plus_comm -plus_assoc plus_opp_l plus_zero_r.
-rewrite Rmult_comm.
-apply <- Rlt_div_r.
-2: apply Rle_lt_0_plus_1, abs_ge_0.
-by apply (proj2 (proj2 Hu)).
+(* apply/filterlim_locally => /= eps. *)
+(* eapply filter_imp. *)
+(* move => /= u Hu. *)
+(* rewrite (double_var eps). *)
+(* apply ball_triangle with (scal (fst u) x). *)
+(* apply norm_compat1. *)
+(* rewrite -scal_minus_distr_r. *)
+(* eapply Rle_lt_trans. *)
+(* apply norm_scal. *)
+(* eapply Rle_lt_trans. *)
+(* apply Rmult_le_compat_l. *)
+(* by apply abs_ge_0. *)
+(* apply Rlt_le, Rlt_plus_1. *)
+(* apply <- Rlt_div_r. *)
+(* 2: apply Rle_lt_0_plus_1, norm_ge_0. *)
+(* by eapply (proj1 Hu). *)
+(* apply norm_compat1. *)
+(* rewrite -scal_minus_distr_l. *)
+(* eapply Rle_lt_trans. *)
+(* apply norm_scal. *)
+(* eapply Rle_lt_trans. *)
+(* apply Rmult_le_compat_r. *)
+(* by apply norm_ge_0. *)
+(* replace (fst u) with (plus k (minus (fst u) k)). *)
+(* eapply Rle_trans. *)
+(* apply abs_triangle. *)
+(* apply Rplus_le_compat_l. *)
+(* apply Rlt_le. *)
+(* instantiate (1 := 1). *)
+(* eapply (proj1 (proj2 Hu)). *)
+(* by rewrite plus_comm -plus_assoc plus_opp_l plus_zero_r. *)
+(* rewrite Rmult_comm. *)
+(* apply <- Rlt_div_r. *)
+(* 2: apply Rle_lt_0_plus_1, abs_ge_0. *)
+(* by apply (proj2 (proj2 Hu)). *)
 
-repeat apply filter_and.
-assert (Hd : 0 < eps / 2 / (norm x + 1)).
-  apply: Rdiv_lt_0_compat => //.
-  apply Rle_lt_0_plus_1, norm_ge_0.
-eexists.
-apply (locally_ball_norm (V := AbsRing_NormedModule K) _ (mkposreal _ Hd)).
-apply: filter_true.
-by [].
+(* repeat apply filter_and. *)
+(* assert (Hd : 0 < eps / 2 / (norm x + 1)). *)
+(*   apply: Rdiv_lt_0_compat => //. *)
+(*   apply Rle_lt_0_plus_1, norm_ge_0. *)
+(* eexists. *)
+(* apply (locally_ball_norm (V := AbsRing_NormedModule K) _ (mkposreal _ Hd)). *)
+(* apply: filter_true. *)
+(* by []. *)
 
-eexists.
-apply (locally_ball_norm (V := AbsRing_NormedModule K) _ [posreal of 1]).
-apply: filter_true.
-by [].
+(* eexists. *)
+(* apply (locally_ball_norm (V := AbsRing_NormedModule K) _ [posreal of 1]). *)
+(* apply: filter_true. *)
+(* by []. *)
 
-assert (Hd : 0 < eps / 2 / (abs k + 1)).
-  apply: Rdiv_lt_0_compat => //.
-  apply Rle_lt_0_plus_1, abs_ge_0.
-eexists.
-apply: filter_true.
-apply (locally_ball_norm _ (mkposreal _ Hd)).
-by [].
-Qed.
+(* assert (Hd : 0 < eps / 2 / (abs k + 1)). *)
+(*   apply: Rdiv_lt_0_compat => //. *)
+(*   apply Rle_lt_0_plus_1, abs_ge_0. *)
+(* eexists. *)
+(* apply: filter_true. *)
+(* apply (locally_ball_norm _ (mkposreal _ Hd)). *)
+(* by []. *)
+(* Qed. *)
+Admitted.
 
-Lemma filterlim_scal_r (k : K) (x : V) :
-  (fun z : V => scal k z) @ x --> (scal k x).
+Lemma filterlim_scal_r (k : K) (x : V) : k *: z @[z --> x] --> k *: x.
 Proof.
   eapply filterlim_comp_2.
   by apply filterlim_const.
   by apply filterlim_id.
   by apply filterlim_scal.
 Qed.
-Lemma filterlim_scal_l (k : K) (x : V) :
-  (fun z => scal z x) @ k --> (scal k x).
+
+Lemma filterlim_scal_l (l : K) (x : V) : k *: x @[k --> l] --> l *: x.
 Proof.
   eapply filterlim_comp_2.
   by apply filterlim_id.
@@ -2514,38 +2470,41 @@ Proof.
   by apply filterlim_scal.
 Qed.
 
-Lemma filterlim_opp (x : V) : opp @ x --> (opp x).
+Lemma filterlim_opp (x : V) : (@GRing.opp V) @ x --> - x.
 Proof.
-rewrite -scal_opp_one.
-apply filterlim_ext with (2 := filterlim_scal_r _ _).
-apply: scal_opp_one.
-Qed.
+(* rewrite -scal_opp_one. *)
+(* apply filterlim_ext with (2 := filterlim_scal_r _ _). *)
+(* apply: scal_opp_one. *)
+(* Qed. *)
+Admitted.
 
 End NVS_continuity.
 
 Lemma filterlim_mult {K : AbsRing} (x y : K) :
-  (fun z => mult (fst z) (snd z)) @ (x , y) --> (mult x y).
+  z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof.
-  by apply @filterlim_scal.
-Qed.
+  (* by apply: @filterlim_scal. *)
+(* Qed. *)
+Admitted.
 
-Lemma filterlim_locally_ball_norm {K : AbsRing} {T} {U : NormedModule K}
+Lemma filterlim_locally_ball_norm {K : AbsRing} {T} {U : normedModType K}
   {F : set (set T)} {FF : Filter F} (f : T -> U) (y : U) :
   f @ F --> y <-> forall eps : posreal, F (fun x => ball_norm y eps (f x)).
 Proof.
+(* use locally = locally_norm *)
 split.
 - intros Cf eps.
   apply (Cf (fun x => ball_norm y eps x)).
   apply locally_le_locally_norm.
   apply locally_norm_ball_norm.
 - intros Cf.
-  apply (filterlim_filter_le_2 _ (locally_norm_le_locally y)).
-  intros P [eps He].
-  apply: filter_imp (Cf eps).
-  intros t.
-  apply He.
-Qed.
-
+  (* apply (filterlim_filter_le_2 _ (locally_norm_le_locally y)). *)
+  (* intros P [eps He]. *)
+  (* apply: filter_imp (Cf eps). *)
+  (* intros t. *)
+  (* apply He. *)
+(* Qed. *)
+Admitted.
 (** ** Complete Normed Modules *)
 
 Module CompleteNormedModule.
