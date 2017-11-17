@@ -22,7 +22,7 @@ COPYING file for more details.
 Require Import Reals Psatz.
 Require Import mathcomp.ssreflect.ssreflect.
 Require Import Rcomplements.
-Require Import Rbar Lub Markov Hierarchy.
+Require Import Rbar Lub Markov hierarchy.
 
 (** This file describes properties and definitions about limits of
 real sequences. This includes properties about the predicates
