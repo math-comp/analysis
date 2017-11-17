@@ -2702,20 +2702,19 @@ rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
 by rewrite ler_add // ler_pexpn2r // ?nnegrE ?mulr_ge0 ?absr_ge0 ?normm_ge0 // ?ler_normmZ.
 Qed.
 
-Lemma prod_norm_compat1 :
-  forall (x y : U * V) (eps : R),
-  (prod_norm (x - y) < eps -> ball x eps y).
+Lemma prod_norm_compat1 : forall (x y : U * V) (eps : R),
+  prod_norm (x - y) < eps -> ball x eps y.
 Proof.
-intros [xu xv] [yu yv] eps H.
-(*generalize (Rle_lt_trans _ _ _ (proj1 (sqrt_plus_sqr _ _)) H).
-rewrite -> !Rabs_pos_eq by apply norm_ge_0.
-intros H'.
-split ;
-  apply norm_compat1 ;
-  apply Rle_lt_trans with (2 := H').
-apply Rmax_l.
-apply Rmax_r.
-Qed.*) Admitted.
+move=> [xu xv] [yu yv] eps H.
+set x := `|[((yu, yv) - (xu, xv)).1]|. set y := `|[((yu, yv) - (xu, xv)).2]|.
+rewrite /prod_norm normmB (normmB xv) in H.
+case/andP: (sqrt_plus_sqr x y) => /ler_lt_trans/(_ H) => H1.
+have /RltbP He : 0 < eps by apply: (ler_lt_trans _ H); rewrite sqrtr_ge0.
+rewrite (_ : eps = mkposreal _ He) // => H2.
+split; apply: norm_compat1; apply: (ler_lt_trans _ H1).
+by rewrite ler_maxr /x normmB real_ler_norm // ger0_real // normm_ge0.
+by rewrite ler_maxr orbC /y normmB real_ler_norm // ger0_real // normm_ge0.
+Qed.
 
 Definition prod_norm_factor :=
   Num.sqrt 2%:R * maxr (@norm_factor K U) (@norm_factor K V).
