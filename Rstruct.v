@@ -440,6 +440,8 @@ Proof. by rewrite cos_plus. Qed.
 
 Lemma RplusE x y : Rplus x y = x + y. Proof. by []. Qed.
 
+Lemma RminusE x y : Rminus x y = x - y. Proof. by []. Qed.
+
 Lemma RmultE x y : Rmult x y = x * y. Proof. by []. Qed.
 
 Lemma RoppE x : Ropp x = - x. Proof. by []. Qed.
