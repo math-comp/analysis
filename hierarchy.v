@@ -2736,21 +2736,13 @@ rewrite (@ltr_le_trans _ (norm_factor V * eps)) // ?ler_maxr ?lerr ?orbT //.
 rewrite ger0_norm ?normm_ge0 //; exact: norm_compat2.
 Qed.
 
-Lemma prod_norm_eq_zero :
-  forall x : U * V,
-  prod_norm x = 0 -> x = 0.
+Lemma prod_norm_eq_zero : forall x : U * V, prod_norm x = 0 -> x = 0.
 Proof.
-intros [xu xv] H.
-(*apply sqrt_eq_0 in H.
-rewrite !(pow_Rsqr _ 1) !pow_1 in H.
-apply Rplus_sqr_eq_0 in H.
-destruct H as [H1 H2].
-apply norm_eq_zero in H1.
-apply norm_eq_zero in H2.
-simpl in H1, H2.
-now rewrite H1 H2.
-apply Rplus_le_le_0_compat ; apply pow2_ge_0.
-Qed.*)Admitted.
+move=> [xu xv] /eqP H.
+rewrite sqrtr_eq0 ler_eqVlt ltrNge addr_ge0  ?sqr_ge0 // orbF in H.
+rewrite paddr_eq0 ?sqr_ge0 // 2!sqrf_eq0 /= 2!normm_eq0 in H.
+by case/andP : H => /eqP -> /eqP ->.
+Qed.
 
 End prod_NormedModule.
 
@@ -2761,16 +2753,13 @@ Definition prod_NormedModule_mixin (K : absRingType) (U V : normedModType K) :=
 Canonical prod_NormedModule (K : absRingType) (U V : normedModType K) :=
   NormedModType K (U * V) (@prod_NormedModule_mixin K U V).
 
-Lemma norm_prod {K : absRingType}
-  {U : normedModType K} {V : normedModType K}
+Lemma norm_prod {K : absRingType} {U : normedModType K} {V : normedModType K}
   (x : U) (y : V) :
-  maxr `|[ x ]| `|[ y ]| <= `|[ (x,y) ]| <= Num.sqrt 2%:R * maxr `|[ x ]| `|[ y ]|.
+  maxr `|[ x ]| `|[ y ]| <= `|[(x, y)]| <= Num.sqrt 2%:R * maxr `|[x]| `|[y]|.
 Proof.
-  rewrite -(Rabs_pos_eq (norm x)).
-  rewrite -(Rabs_pos_eq (norm y)).
-  apply sqrt_plus_sqr.
-  apply/RlebP; by apply normm_ge0.
-  apply/RlebP; by apply normm_ge0.
+rewrite -(Rabs_pos_eq (norm x)); last by apply/RlebP/normm_ge0.
+rewrite -(Rabs_pos_eq (norm y)); last by apply/RlebP/normm_ge0.
+by apply sqrt_plus_sqr.
 Qed.
 
 (** ** Iterated Products *)
@@ -2925,340 +2914,6 @@ Proof.
 Defined.
 *)
 
-(** ** Matrices *)
-(* :TODO: REMOVE *)
-(* Section Matrices. *)
-
-(* Context {T : Type}. *)
-
-(* Definition matrix (m n : nat) := Tn m (Tn n T). *)
-
-(* Definition coeff_mat {m n : nat} (x0 : T) (A : matrix m n) (i j : nat) := *)
-(*   coeff_Tn x0 (coeff_Tn (mk_Tn _ (fun _ => x0)) A i) j. *)
-
-(* Definition mk_matrix (m n : nat) (U : nat -> nat -> T) : matrix m n := *)
-(*   mk_Tn m (fun i => (mk_Tn n (U i))). *)
-
-(* Lemma mk_matrix_bij {m n : nat} (x0 : T) (A : matrix m n) : *)
-(*   mk_matrix m n (coeff_mat x0 A) = A. *)
-(* Proof. *)
-(*   unfold mk_matrix, coeff_mat. *)
-(*   unfold matrix in A. *)
-(*   rewrite -{2}(mk_Tn_bij (mk_Tn _ (fun _ => x0)) A). *)
-(*   apply mk_Tn_ext. *)
-(*   intros i Hi. *)
-(*   by rewrite mk_Tn_bij. *)
-(* Qed. *)
-
-(* Lemma coeff_mat_bij {m n : nat} (x0 : T) (u : nat -> nat -> T) : *)
-(*   forall i j, (i < m)%coq_nat -> (j < n)%coq_nat -> coeff_mat x0 (mk_matrix m n u) i j = u i j. *)
-(* Proof. *)
-(*   intros i j Hi Hj. *)
-(*   unfold mk_matrix, coeff_mat. *)
-(*   by rewrite 2?coeff_Tn_bij . *)
-(* Qed. *)
-
-(* Lemma coeff_mat_ext_aux {m n : nat} (x1 x2 : T) (v1 v2 : matrix m n) : *)
-(*   v1 = v2 <-> forall i j, (i < m)%coq_nat -> (j < n)%coq_nat -> (coeff_mat x1 v1 i j) = (coeff_mat x2 v2 i j). *)
-(* Proof. *)
-(*   split => Hv. *)
-(*   + move => i j Hi Hj. *)
-(*     by repeat apply coeff_Tn_ext. *)
-(*   + unfold matrix in v1, v2. *)
-(*     rewrite -(mk_matrix_bij x1 v1) -(mk_matrix_bij x2 v2). *)
-(*     unfold mk_matrix. *)
-(*     apply mk_Tn_ext => i Hi. *)
-(*     apply mk_Tn_ext => j Hj. *)
-(*     by apply Hv. *)
-(* Qed. *)
-
-(* Lemma coeff_mat_ext {m n : nat} (x0 : T) (v1 v2 : matrix m n) : *)
-(*   v1 = v2 <-> forall i j, (coeff_mat x0 v1 i j) = (coeff_mat x0 v2 i j). *)
-(* Proof. *)
-(*   split. *)
-(*   by move => ->. *)
-(*   intro H. *)
-(*   now apply (coeff_mat_ext_aux x0 x0 v1 v2). *)
-(* Qed. *)
-
-(* Lemma mk_matrix_ext (m n : nat) (u1 u2 : nat -> nat -> T) : *)
-(*   (forall i j, (i < m)%coq_nat -> (j < n)%coq_nat -> (u1 i j) = (u2 i j)) *)
-(*     <-> (mk_matrix m n u1) = (mk_matrix m n u2). *)
-(* Proof. *)
-(*   split => H. *)
-(*   + apply (mk_Tn_ext m) => i Hi. *)
-(*     apply (mk_Tn_ext n) => j Hj. *)
-(*     by apply H. *)
-(*   + intros i j Hi Hj. *)
-(*     apply (mk_Tn_ext n). *)
-(*     apply (mk_Tn_ext m (fun i => mk_Tn n (u1 i)) (fun i => mk_Tn n (u2 i))). *)
-(*     apply H. *)
-(*     by []. *)
-(*     by []. *)
-(* Qed. *)
-
-(* End Matrices. *)
-
-(*
-
-Section MatrixGroup.
-
-Context {G : AbelianGroup} {m n : nat}.
-
-Definition Mzero := mk_matrix m n (fun i j => @zero G).
-
-Definition Mplus (A B : @matrix G m n) :=
-  mk_matrix m n (fun i j => plus (coeff_mat zero A i j) (coeff_mat zero B i j)).
-
-Definition Mopp (A : @matrix G m n) :=
-  mk_matrix m n (fun i j => opp (coeff_mat zero A i j)).
-
-Lemma Mplus_comm :
-  forall A B : @matrix G m n,
-  Mplus A B = Mplus B A.
-Proof.
-  intros A B.
-  apply mk_matrix_ext => i j Hi Hj.
-  by apply plus_comm.
-Qed.
-
-Lemma Mplus_assoc :
-  forall A B C : @matrix G m n,
-  Mplus A (Mplus B C) = Mplus (Mplus A B) C.
-Proof.
-  intros A B C.
-  apply mk_matrix_ext => /= i j Hi Hj.
-  rewrite ?coeff_mat_bij => //.
-  by apply plus_assoc.
-Qed.
-
-Lemma Mplus_zero_r :
-  forall A : @matrix G m n,
-  Mplus A Mzero = A.
-Proof.
-  intros A.
-  apply (coeff_mat_ext_aux zero zero) => i j Hi Hj.
-  rewrite ?coeff_mat_bij => //=.
-  by apply plus_zero_r.
-Qed.
-
-Lemma Mplus_opp_r :
-  forall A : @matrix G m n,
-  Mplus A (Mopp A) = Mzero.
-Proof.
-  intros A.
-  apply (coeff_mat_ext_aux zero zero) => i j Hi Hj.
-  rewrite ?coeff_mat_bij => //=.
-  by apply plus_opp_r.
-Qed.
-
-Definition matrix_AbelianGroup_mixin :=
-  AbelianGroup.Mixin _ _ _ _ Mplus_comm Mplus_assoc Mplus_zero_r Mplus_opp_r.
-
-Canonical matrix_AbelianGroup :=
-  AbelianGroup.Pack _ matrix_AbelianGroup_mixin (@matrix G m n).
-
-End MatrixGroup.
-
-Section MatrixRing.
-
-Context {T : Ring}.
-
-Fixpoint Mone_seq i j : T :=
-  match i,j with
-    | O, O => one
-    | O, S _ | S _, O => zero
-    | S i, S j => Mone_seq i j end.
-
-Definition Mone {n} : matrix n n :=
-  mk_matrix n n Mone_seq.
-
-Lemma Mone_seq_diag :
-  forall i j : nat, i = j -> Mone_seq i j = @one T.
-Proof.
-  move => i j <- {j}.
-  by induction i.
-Qed.
-Lemma Mone_seq_not_diag :
-  forall i j : nat, i <> j -> Mone_seq i j = @zero T.
-Proof.
-  elim => //= [ | i IHi] j Hij ;
-  destruct j => //=.
-  apply IHi.
-  contradict Hij.
-  by rewrite Hij.
-Qed.
-
-Definition Mmult {n m k} (A : @matrix T n m) (B : @matrix T m k) :=
-  mk_matrix n k (fun i j => sum_n (fun l => mult (coeff_mat zero A i l) (coeff_mat zero B l j)) (Nat.pred m)).
-
-Lemma Mmult_assoc {n m k l} :
-  forall (A : matrix n m) (B : matrix m k) (C : matrix k l),
-  Mmult A (Mmult B C) = Mmult (Mmult A B) C.
-Proof.
-  intros A B C.
-  apply mk_matrix_ext => n' l' Hn' Hl'.
-  unfold Mmult at 1.
-  - transitivity (sum_n (fun l0 : nat => mult (coeff_mat zero A n' l0)
-      (sum_n (fun l1 : nat => mult (coeff_mat zero B l0 l1) (coeff_mat zero C l1 l')) (Nat.pred k))) (Nat.pred m)).
-    destruct m ; simpl.
-    unfold coeff_mat ; simpl.
-    by rewrite 2!mult_zero_l.
-    apply sum_n_m_ext_loc ; simpl => m' [ _ Hm'].
-    apply f_equal.
-    rewrite coeff_mat_bij //.
-    by apply le_lt_n_Sm, Hm'.
-  - transitivity (sum_n (fun l0 : nat => sum_n
-      (fun l1 : nat => mult (coeff_mat zero A n' l0) (mult (coeff_mat zero B l0 l1) (coeff_mat zero C l1 l'))) (Nat.pred k)) (Nat.pred m)).
-    destruct m ; simpl.
-    rewrite /sum_n !sum_n_n.
-    unfold coeff_mat ; simpl.
-    rewrite mult_zero_l.
-    rewrite sum_n_m_mult_l.
-    by rewrite mult_zero_l.
-    apply sum_n_m_ext_loc ; simpl => m' [_ Hm'].
-    apply sym_eq, sum_n_m_mult_l.
-  rewrite sum_n_switch.
-  destruct k ; simpl.
-  unfold coeff_mat ; simpl.
-  rewrite mult_zero_l.
-  rewrite /sum_n sum_n_m_mult_r.
-  by rewrite mult_zero_r.
-  apply sum_n_m_ext_loc => k' [_ Hk'].
-  transitivity (mult (sum_n (fun l1 : nat => mult (coeff_mat zero A n' l1) (coeff_mat zero B l1 k')) (Nat.pred m))
-    (coeff_mat zero C k' l')).
-  rewrite -sum_n_m_mult_r.
-  apply sum_n_m_ext_loc => m' [_ Hm'].
-  apply mult_assoc.
-  apply f_equal2.
-  unfold Mmult ; rewrite coeff_mat_bij //.
-  by apply le_lt_n_Sm.
-  by [].
-Qed.
-
-Lemma Mmult_one_r {m n} :
-  forall x : matrix m n, Mmult x Mone = x.
-Proof.
-  intros A.
-  rewrite -{2}(mk_matrix_bij zero A).
-  apply mk_matrix_ext => /= i j Hi Hj.
-  destruct n ; simpl.
-  by apply lt_n_O in Hj.
-  move: (coeff_mat zero A) => {A} A.
-  erewrite sum_n_ext_loc ; last first.
-  move => /= k Hk.
-  rewrite /Mone coeff_mat_bij //.
-  by apply le_lt_n_Sm.
-  rewrite /sum_n (sum_n_m_Chasles _ _ j) //.
-  2: by apply le_O_n.
-  2: by apply lt_n_Sm_le.
-  rewrite (sum_n_m_ext_loc _ (fun _ => zero) (S j)).
-  rewrite sum_n_m_const_zero plus_zero_r.
-  rewrite -/(sum_n _ _).
-  destruct j => //.
-  by rewrite sum_O Mone_seq_diag // mult_one_r.
-  rewrite sum_Sn.
-  rewrite (sum_n_ext_loc _ (fun _ => zero)).
-  rewrite /sum_n sum_n_m_const_zero plus_zero_l.
-  by rewrite Mone_seq_diag // mult_one_r.
-  move => k Hk.
-  rewrite Mone_seq_not_diag.
-  by apply mult_zero_r.
-  by apply MyNat.lt_neq, le_lt_n_Sm.
-  move => k [Hk _].
-  rewrite Mone_seq_not_diag.
-  by apply mult_zero_r.
-  by apply sym_not_eq, MyNat.lt_neq.
-Qed.
-
-Lemma Mmult_one_l {m n} :
-  forall x : matrix m n, Mmult Mone x = x.
-Proof.
-  intros A.
-  rewrite -{2}(mk_matrix_bij zero A).
-  apply mk_matrix_ext => /= i j Hi Hj.
-  destruct m ; simpl.
-  by apply lt_n_O in Hi.
-  move: (coeff_mat zero A) => {A} A.
-  erewrite sum_n_ext_loc ; last first.
-  move => /= k Hk.
-  rewrite /Mone coeff_mat_bij //.
-  by apply le_lt_n_Sm.
-  rewrite /sum_n (sum_n_m_Chasles _ _ i) //.
-  2: by apply le_O_n.
-  2: by apply lt_n_Sm_le.
-  rewrite (sum_n_m_ext_loc _ (fun _ => zero) (S i)).
-  rewrite sum_n_m_const_zero plus_zero_r.
-  rewrite -/(sum_n _ _).
-  destruct i => //.
-  by rewrite sum_O Mone_seq_diag // mult_one_l.
-  rewrite sum_Sn.
-  rewrite (sum_n_ext_loc _ (fun _ => zero)).
-  rewrite /sum_n sum_n_m_const_zero plus_zero_l.
-  by rewrite Mone_seq_diag // mult_one_l.
-  move => k Hk.
-  rewrite Mone_seq_not_diag.
-  by apply mult_zero_l.
-  by apply sym_not_eq, MyNat.lt_neq, le_lt_n_Sm.
-  move => k [Hk _].
-  rewrite Mone_seq_not_diag.
-  by apply mult_zero_l.
-  by apply MyNat.lt_neq.
-Qed.
-
-Lemma Mmult_distr_r {m n k} :
-  forall (A B : @matrix T m n) (C : @matrix T n k),
-  Mmult (Mplus A B) C = Mplus (Mmult A C) (Mmult B C).
-Proof.
-  intros A B C.
-  unfold Mmult, plus ; simpl ; unfold Mplus.
-  apply mk_matrix_ext => i j Hi Hj.
-  rewrite ?coeff_mat_bij => //=.
-  rewrite -sum_n_m_plus.
-  destruct n ; simpl.
-  unfold coeff_mat ; simpl.
-  by rewrite ?mult_zero_l plus_zero_l.
-  apply sum_n_m_ext_loc => l [_ Hl].
-  rewrite ?coeff_mat_bij => //=.
-  by apply mult_distr_r.
-  by apply le_lt_n_Sm.
-Qed.
-
-Lemma Mmult_distr_l {m n k} :
-  forall (A : @matrix T m n) (B C : @matrix T n k),
-  Mmult A (Mplus B C) = Mplus (Mmult A B) (Mmult A C).
-Proof.
-  intros A B C.
-  unfold Mmult, plus ; simpl ; unfold Mplus.
-  apply mk_matrix_ext => i j Hi Hj.
-  rewrite ?coeff_mat_bij => //=.
-  rewrite -sum_n_m_plus.
-  destruct n ; simpl.
-  unfold coeff_mat ; simpl.
-  by rewrite ?mult_zero_l plus_zero_l.
-  apply sum_n_m_ext_loc => l [_ Hl].
-  rewrite ?coeff_mat_bij => //=.
-  by apply mult_distr_l.
-  by apply le_lt_n_Sm.
-Qed.
-
-Definition matrix_Ring_mixin {n} :=
-  Ring.Mixin _ _ _ (@Mmult_assoc n n n n) Mmult_one_r Mmult_one_l Mmult_distr_r Mmult_distr_l.
-
-Canonical matrix_Ring {n} :=
-  Ring.Pack (@matrix T n n) (Ring.Class _ _ matrix_Ring_mixin) (@matrix T n n).
-
-Definition matrix_ModuleSpace_mixin {m n} :=
-  ModuleSpace.Mixin (@matrix_Ring m) (@matrix_AbelianGroup T m n) Mmult
-    Mmult_assoc Mmult_one_l Mmult_distr_l Mmult_distr_r.
-
-Canonical matrix_ModuleSpace {m n} :=
-  ModuleSpace.Pack _ (@matrix T m n) (ModuleSpace.Class _ _ _ matrix_ModuleSpace_mixin) (@matrix T m n).
-
-End MatrixRing.
-
-*)
-
 (** * The topology on natural numbers *)
 
 Definition eventually (P : nat -> Prop) :=
@@ -3268,8 +2923,8 @@ Notation "'\oo'" := eventually : classical_set_scope.
 
 Global Instance eventually_filter : ProperFilter eventually.
 Proof.
-(*constructor.
-  move=> P [N H]; exists N; exact (H _ (le_refl _)).
+constructor.
+  by case => n; apply; apply le_refl.
 constructor.
 - by exists O.
 - move=> P Q [NP HP] [NQ HQ].
@@ -3277,9 +2932,7 @@ constructor.
   by apply/HP/(le_trans _ _ _ _ Hn)/Max.le_max_l.
   by apply/HQ/(le_trans _ _ _ _ Hn)/Max.le_max_r.
 - by move=> P Q H [NP HP]; exists NP => n Hn; apply/H/HP.
-Qed.*) Admitted.
-
-(* COMPILES UNTIL HERE *)
+Qed.
 
 (** * The topology on real numbers *)
 
@@ -3296,6 +2949,8 @@ Canonical R_uniformType := UniformType R R_uniformType_mixin.
 (* TODO: Remove R_complete_lim and use lim instead *)
 Definition R_complete_lim (F : (R -> Prop) -> Prop) : R :=
   real (Lub_Rbar (fun x : R => F (ball (x + 1) [posreal of 1]))).
+
+(* COMPILES UNTIL HERE *)
 
 Lemma R_complete_ax1 :
   forall F : (R -> Prop) -> Prop,
