@@ -2706,7 +2706,7 @@ Lemma prod_norm_compat1 : forall (x y : U * V) (eps : R),
   prod_norm (x - y) < eps -> ball x eps y.
 Proof.
 move=> [xu xv] [yu yv] eps H.
-set x := `|[((yu, yv) - (xu, xv)).1]|. set y := `|[((yu, yv) - (xu, xv)).2]|.
+set x := `|[yu - xu]|. set y := `|[yv - xv]|.
 rewrite /prod_norm normmB (normmB xv) in H.
 case/andP: (sqrt_plus_sqr x y) => /ler_lt_trans/(_ H) => H1.
 have /RltbP He : 0 < eps by apply: (ler_lt_trans _ H); rewrite sqrtr_ge0.
@@ -2719,29 +2719,22 @@ Qed.
 Definition prod_norm_factor :=
   Num.sqrt 2%:R * maxr (@norm_factor K U) (@norm_factor K V).
 
-Lemma prod_norm_compat2 :
-  forall (x y : U * V) (eps : posreal),
-  ball x eps y ->
-  (prod_norm (x - y) < prod_norm_factor * eps).
+Lemma prod_norm_compat2 : forall (x y : U * V) (eps : posreal),
+  ball x eps y -> (prod_norm (x - y) < prod_norm_factor * eps).
 Proof.
-intros [xu xv] [yu yv] eps [Bu Bv].
-(*
-apply Rle_lt_trans with (1 := proj2 (sqrt_plus_sqr _ _)).
-simpl.
-rewrite Rmult_assoc.
-apply Rmult_lt_compat_l.
-apply sqrt_lt_R0.
-apply Rlt_0_2.
-rewrite -> !Rabs_pos_eq by apply norm_ge_0.
-rewrite Rmax_mult.
-apply Rmax_case.
-apply Rlt_le_trans with (2 := Rmax_l _ _).
-now apply norm_compat2.
-apply Rlt_le_trans with (2 := Rmax_r _ _).
-now apply norm_compat2.
-apply Rlt_le.
-apply cond_pos.
-Qed.*) Admitted.
+move=> [xu xv] [yu yv] eps [Bu Bv].
+set x := `|[xu - yu]|. set y := `|[xv - yv]|.
+case/andP: (sqrt_plus_sqr x y) => H1 H2; apply: (ler_lt_trans H2).
+rewrite /prod_norm_factor -mulrA.
+rewrite -subr_gt0 -mulrBr pmulr_rgt0 // ?sqrtr_gt0 // subr_gt0 maxr_pmull //.
+case: (lerP `|y| `|x|) => yx.
+  rewrite [in X in X < _]maxr_l //.
+  rewrite (@ltr_le_trans _ (norm_factor U * eps)) ?ler_maxr ?lerr //.
+  rewrite ger0_norm ?normm_ge0 //; exact: norm_compat2.
+rewrite (@maxr_r _ _ `|y|%R); last by rewrite ltrW.
+rewrite (@ltr_le_trans _ (norm_factor V * eps)) // ?ler_maxr ?lerr ?orbT //.
+rewrite ger0_norm ?normm_ge0 //; exact: norm_compat2.
+Qed.
 
 Lemma prod_norm_eq_zero :
   forall x : U * V,
