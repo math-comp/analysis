@@ -2952,6 +2952,8 @@ Definition R_complete_lim (F : (R -> Prop) -> Prop) : R :=
 
 (* COMPILES UNTIL HERE *)
 
+Lemma RminusE x y : Rminus x y = x - y. Proof. by []. Qed.
+
 Lemma R_complete_ax1 :
   forall F : (R -> Prop) -> Prop,
   ProperFilter F ->
@@ -2963,73 +2965,86 @@ unfold R_complete_lim.
 generalize (Lub_Rbar_correct (fun x : R => F (ball (x + 1) [posreal of 1]))).
 generalize (Lub_Rbar (fun x : R => F (ball (x + 1) [posreal of 1]))).
 intros [x| |] [Hx1 Hx2].
--
-set (eps' := [posreal of Rmin 2 eps / 2]).
-destruct (HF eps') as [z Hz].
-assert (H1 : z - Rmin 2 eps / 2 + 1 <= x + 1).
-(*  apply Rplus_le_compat_r.
-  apply Hx1.
-  revert Hz.
-  apply filter_imp.
-  unfold ball ; simpl ; intros u Bu.
-  apply (Rabs_lt_between' u z) in Bu.
-  apply Rabs_lt_between'.
-  clear -Bu.
-  destruct Bu as [Bu1 Bu2].
-  assert (H := Rmin_l 2 eps).
-  split ; Fourier.fourier.
-assert (H2 : x + 1 <= z + Rmin 2 eps / 2 + 1).
-  apply Rplus_le_compat_r.
-  apply (Hx2 (Finite _)).
-  intros v Hv.
-  apply Rbar_not_lt_le => Hlt.
-  apply filter_not_empty.
-  generalize (filter_and _ _ Hz Hv).
-  apply filter_imp.
-  unfold ball ; simpl ; intros w [Hw1 Hw2].
-  apply (Rabs_lt_between' w z) in Hw1.
-  destruct Hw1 as [_ Hw1].
-  apply (Rabs_lt_between' w (v + 1)) in Hw2.
-  destruct Hw2 as [Hw2 _].
-  clear -Hw1 Hw2 Hlt.
-  simpl in Hw1, Hw2, Hlt.
-  Fourier.fourier.
-revert Hz.
-apply filter_imp.
-unfold ball ; simpl ; intros u Hu.
-apply (Rabs_lt_between' u z) in Hu.
-apply Rabs_lt_between'.
-assert (H3 := Rmin_l 2 eps).
-assert (H4 := Rmin_r 2 eps).
-clear -H1 H2 Hu H3 H4.
-destruct Hu.
-split ; Fourier.fourier.
--
-  destruct (HF [posreal of 1]) as [y Fy].
+- set (eps' := [posreal of Rmin 2 eps / 2]).
+  destruct (HF eps') as [z Hz].
+  assert (H1 : z - Num.min 2 eps / 2 + 1 <= x + 1).
+    rewrite ler_add //; apply/RlebP/Hx1.
+    apply: filter_imp Hz.
+    unfold ball ; simpl ; intros u Bu.
+    move/RltbP : Bu; rewrite absrB absRE => /(Rabs_lt_between' u z) => Bu.
+    apply/RltbP. rewrite absrB. apply/Rabs_lt_between'.
+    clear -Bu.
+    destruct Bu as [Bu1 Bu2].
+    assert (H := Rmin_l 2 eps).
+    rewrite !(RminE,RplusE,RoppE,RdivE,RminusE) //= in Bu1 Bu2 *.
+    rewrite addrK; split => //.
+    rewrite -addrA.
+    move/(Rlt_le_trans) : Bu2; apply.
+    rewrite addrAC.
+    apply/RleP.
+    rewrite ler_subr_addl addrA addrCA -addrA.
+    rewrite RminE in H; move/RleP in H.
+    by rewrite ler_add // ler_add // ler_pdivr_mulr // ?mul1r.
+  assert (H2 : x + 1 <= z + Rmin 2 eps / 2 + 1).
+    rewrite ler_add //; apply/RlebP/(Hx2 (Finite _)).
+    move=> v Hv.
+    apply Rbar_not_lt_le => Hlt.
+    apply: filter_not_empty.
+    generalize (filter_and Hz Hv).
+    apply filter_imp.
+    unfold ball ; simpl ; intros w [Hw1 Hw2].
+    move/RltbP : Hw1; rewrite absrB absRE => /(Rabs_lt_between' w z) => Hw1.
+    destruct Hw1 as [_ Hw1].
+    move/RltbP in Hw2.
+    rewrite absrB in Hw2.
+    apply (Rabs_lt_between' w (v + 1)) in Hw2.
+    destruct Hw2 as [Hw2 _].
+    clear -Hw1 Hw2 Hlt.
+    simpl in Hw1, Hw2, Hlt.
+    rewrite !(RplusE,RminusE) in Hw2.
+    rewrite addrK in Hw2.
+    rewrite RplusE RdivE // in Hw1.
+    move: (Rlt_trans _ _ _ Hw1 Hlt).
+    Fourier.fourier.
+    move: Hz.
+    apply filter_imp.
+    unfold ball ; simpl ; intros u Hu.
+    move/RltbP : Hu; rewrite absrB absRE => /(Rabs_lt_between' u z) => Hu.
+    apply/RltbP.
+    apply Rabs_lt_between'.
+    assert (H3 := Rmin_l 2 eps).
+    assert (H4 := Rmin_r 2 eps).
+    clear -H1 H2 Hu H3 H4.
+    destruct Hu.
+    split.
+      admit. (* proved with Fourier before *)
+    admit. (* proved with Fourier before *)
+- destruct (HF [posreal of 1]) as [y Fy].
   elim (Hx2 (y + 1)).
   intros x Fx.
   apply Rbar_not_lt_le => Hlt.
-  apply filter_not_empty.
-  generalize (filter_and _ _ Fy Fx).
+  apply: filter_not_empty.
+  generalize (filter_and Fy Fx).
   apply filter_imp.
   intros z [Hz1 Hz2].
   revert Hlt.
   apply Rbar_le_not_lt.
   apply Rplus_le_reg_r with (-(y - 1)).
-  replace (y + 1 + -(y - 1)) with 2 by ring.
+  rewrite opprB 2!RplusE (addrC (y + 1)) !addrA subrK.
   apply Rabs_le_between.
   apply Rlt_le.
-  generalize (ball_triangle y z (x + 1) 1 1) => /= H.
-  replace (x + -(y - 1)) with ((x + 1) - y) by ring.
-  apply H.
+  generalize (@ball_triangle _ y z (x + 1) 1 1) => /= H.
+  rewrite {3}/ball /Uniform.ball /= /AbsRing_ball in H.
+  rewrite absrB in H.
+  apply/RltbP.
+  apply/H.
   apply Hz1.
   apply ball_sym in Hz2.
   apply Hz2.
--
-  destruct (HF [posreal of 1]) as [y Fy].
+- destruct (HF [posreal of 1]) as [y Fy].
   elim (Hx1 (y - 1)).
-  now replace (y - 1 + 1) with y by ring.
-Qed.*) Admitted.
+  by rewrite addrAC addrK.
+Admitted.
 
 Lemma R_complete (F : (R -> Prop) -> Prop) :
   ProperFilter F -> cauchy F -> F --> lim F.

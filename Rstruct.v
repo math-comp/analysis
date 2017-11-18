@@ -460,6 +460,18 @@ Qed.
 Lemma RpowE x n : pow x n = x ^+ n.
 Proof. by elim: n => [ | n In] //=; rewrite exprS In RmultE. Qed.
 
+Lemma RmaxE x y : Rmax x y = Num.max x y.
+Proof.
+case: (lerP x y) => H; first by rewrite maxr_r // Rmax_right //; apply: RlebP.
+by rewrite maxr_l ?ltrW // Rmax_left //;  apply/RlebP; move/ltrW : H.
+Qed.
+
+Lemma RminE x y : Rmin x y = Num.min x y.
+Proof.
+case: (lerP x y) => H; first by rewrite minr_l // Rmin_left //; apply: RlebP.
+by rewrite minr_r ?ltrW // Rmin_right //;  apply/RlebP; move/ltrW : H.
+Qed.
+
 (* bigop pour le max pour des listes non vides ? *)
 Definition bigmaxr (x0 : R) lr :=
   foldr Num.max (head x0 lr) (behead lr).
