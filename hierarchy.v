@@ -3362,42 +3362,38 @@ case/orP : Zm => Zm.
     by rewrite (_ : 2 = 2%:R) // -mulrA mulrV ?mulr1 ?unitfE // subrK.
 Qed.
 
-(* COMPILES UNTIL HERE *)
-
 Lemma locally_2d_1d (P : R -> R -> Prop) x y :
-  locally_2d P x y ->
-  locally_2d (fun u v => forall t, 0 <= t <= 1 -> locally_2d P (x + t * (u - x)) (y + t * (v - y))) x y.
+  locally_2d x y P ->
+  locally_2d x y (fun u v => forall t, 0 <= t <= 1 -> locally_2d (x + t * (u - x)) (y + t * (v - y)) P).
 Proof.
 move/locally_2d_1d_strong.
 apply: locally_2d_impl.
 apply locally_2d_forall => u v H t Ht.
 specialize (H t Ht).
-have : locally t (fun z => locally_2d P (x + z * (u - x)) (y + z * (v - y))) by [].
+have : locally t (fun z => locally_2d (x + z * (u - x)) (y + z * (v - y)) P) by [].
 by apply: locally_singleton.
 Qed.
 
 Lemma locally_2d_ex_dec :
   forall P x y,
   (forall x y, P x y \/ ~P x y) ->
-  locally_2d P x y ->
-  {d : posreal | forall u v, Rabs (u-x) < d -> Rabs (v-y) < d -> P u v}.
+  locally_2d x y P ->
+  {d : posreal | forall u v, `|u - x| < d -> `|v - y| < d -> P u v}.
 Proof.
-(* intros P x y P_dec H. *)
-(* destruct (locally_ex_dec (x, y) (fun z => P (fst z) (snd z))) as [d Hd]. *)
-(* - now intros [u v]. *)
-(* - destruct H as [e H]. *)
-(*   exists e. *)
-(*   intros [u v] Huv. *)
-(*   apply H. *)
-(*   apply Huv. *)
-(*   apply Huv. *)
-(* exists d. *)
-(* intros u v Hu Hv. *)
-(* apply (Hd (u, v)). *)
-(* simpl. *)
-(* now split. *)
-(* Qed. *)
-Admitted.
+intros P x y P_dec H.
+destruct (@locally_ex_dec _ (x, y) (fun z => P (fst z) (snd z))) as [d Hd].
+- now intros [u v].
+- destruct H as [e H].
+  exists e.
+  intros [u v] Huv.
+  apply H.
+  apply Huv.
+exists d.
+intros u v Hu Hv.
+apply (Hd (u, v)).
+simpl.
+by split; apply sub_abs_ball; rewrite absrB.
+Qed.
 
 (** * Some Topology on [Rbar] *)
 
@@ -3416,79 +3412,80 @@ Definition Rbar_locally (a : Rbar) (P : R -> Prop) :=
 
 Canonical Rbar_canonical_filter := @CanonicalFilter R Rbar (Rbar_locally).
 
-Global Instance Rbar_locally'_filter :
-  forall x, ProperFilter (Rbar_locally' x).
+Global Instance Rbar_locally'_filter : forall x, ProperFilter (Rbar_locally' x).
 Proof.
-(* intros [x| |] ; (constructor ; [idtac | constructor]). *)
-(* - intros P [eps HP]. *)
-(*   exists (x + eps / 2). *)
-(*   apply HP. *)
-(*     rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=. *)
-(*     ring_simplify (x + eps / 2 + - x). *)
-(*     rewrite Rabs_pos_eq. *)
-(*       apply Rminus_lt_0. *)
-(*       by rewrite (_ : _ - _ = eps / 2)//; field. *)
-(*     exact: Rlt_le. *)
-(*   apply Rgt_not_eq, Rminus_lt_0 ; ring_simplify => //. *)
-(* - now exists [posreal of 1]. *)
-(* - intros P Q [dP HP] [dQ HQ]. *)
-(*   exists [posreal of Rmin dP dQ]. *)
-(*   simpl. *)
-(*   intros y Hy H. *)
-(*   split. *)
-(*   apply HP with (2 := H). *)
-(*   apply Rlt_le_trans with (1 := Hy). *)
-(*   apply Rmin_l. *)
-(*   apply HQ with (2 := H). *)
-(*   apply Rlt_le_trans with (1 := Hy). *)
-(*   apply Rmin_r. *)
-(* - intros P Q H [dP HP]. *)
-(*   exists dP. *)
-(*   intros y Hy H'. *)
-(*   apply H. *)
-(*   now apply HP. *)
-(* - intros P [N HP]. *)
-(*   exists (N + 1). *)
-(*   apply HP. *)
-(*   apply Rlt_plus_1. *)
-(* - now exists 0. *)
-(* - intros P Q [MP HP] [MQ HQ]. *)
-(*   exists (Rmax MP MQ). *)
-(*   intros y Hy. *)
-(*   split. *)
-(*   apply HP. *)
-(*   apply Rle_lt_trans with (2 := Hy). *)
-(*   apply Rmax_l. *)
-(*   apply HQ. *)
-(*   apply Rle_lt_trans with (2 := Hy). *)
-(*   apply Rmax_r. *)
-(* - intros P Q H [dP HP]. *)
-(*   exists dP. *)
-(*   intros y Hy. *)
-(*   apply H. *)
-(*   now apply HP. *)
-(* - intros P [N HP]. *)
-(*   exists (N - 1). *)
-(*   apply HP. *)
-(*   apply Rlt_minus_l, Rlt_plus_1. *)
-(* - now exists 0. *)
-(* - intros P Q [MP HP] [MQ HQ]. *)
-(*   exists (Rmin MP MQ). *)
-(*   intros y Hy. *)
-(*   split. *)
-(*   apply HP. *)
-(*   apply Rlt_le_trans with (1 := Hy). *)
-(*   apply Rmin_l. *)
-(*   apply HQ. *)
-(*   apply Rlt_le_trans with (1 := Hy). *)
-(*   apply Rmin_r. *)
-(* - intros P Q H [dP HP]. *)
-(*   exists dP. *)
-(*   intros y Hy. *)
-(*   apply H. *)
-(*   now apply HP. *)
-(* Qed. *)
-Admitted.
+intros [x| |] ; (constructor ; [idtac | constructor]).
+- case => eps HP.
+  apply (HP (x + pos eps / 2)).
+    rewrite /ball /= /AbsRing_ball opprD addrA subrr add0r absrN.
+    rewrite !absRE normf_div !ger0_norm // ltr_pdivr_mulr //.
+    by rewrite (_ : 2 = 2%:R) // mulr_natr mulr2n ltr_addr.
+  move/eqP; rewrite eq_sym addrC -subr_eq subrr => /eqP.
+  by apply/eqP; rewrite ltr_eqF.
+- now exists [posreal of 1].
+- intros P Q [dP HP] [dQ HQ].
+  exists [posreal of Rmin dP dQ].
+  simpl.
+  intros y Hy H.
+  split.
+  + apply HP with (2 := H).
+    apply/sub_abs_ball; move/sub_ball_abs in Hy.
+    rewrite mul1r /= RminE in Hy.
+    apply ltr_le_trans with (1 := Hy).
+    by rewrite ler_minl lerr.
+  + apply HQ with (2 := H).
+    apply/sub_abs_ball; move/sub_ball_abs in Hy.
+    rewrite mul1r /= RminE in Hy.
+    apply ltr_le_trans with (1 := Hy).
+    by rewrite ler_minl lerr orbT.
+- intros P Q H [dP HP].
+  exists dP.
+  intros y Hy H'.
+  apply H.
+  now apply HP.
+- case=> N HP.
+  apply (HP (N + 1)).
+  by rewrite ltr_addl.
+- now exists 0.
+- intros P Q [MP HP] [MQ HQ].
+  exists (Rmax MP MQ).
+  intros y Hy.
+  split.
+  + apply HP.
+    rewrite RmaxE in Hy.
+    apply ler_lt_trans with (2 := Hy).
+    by rewrite ler_maxr lerr.
+  + apply HQ.
+    rewrite RmaxE in Hy.
+    apply ler_lt_trans with (2 := Hy).
+    by rewrite ler_maxr lerr orbT.
+- intros P Q H [dP HP].
+  exists dP.
+  intros y Hy.
+  apply H.
+  now apply HP.
+- case=> N HP.
+  apply (HP (N - 1)).
+  by rewrite ltr_subl_addl ltr_addr.
+- now exists 0.
+- intros P Q [MP HP] [MQ HQ].
+  exists (Rmin MP MQ).
+  intros y Hy.
+  split.
+  + apply HP.
+    rewrite RminE in Hy.
+    apply ltr_le_trans with (1 := Hy).
+    by rewrite ler_minl lerr.
+  + apply HQ.
+    rewrite RminE in Hy.
+    apply ltr_le_trans with (1 := Hy).
+    by rewrite ler_minl lerr orbT.
+- intros P Q H [dP HP].
+  exists dP.
+  intros y Hy.
+  apply H.
+  now apply HP.
+Qed.
 
 Global Instance Rbar_locally_filter :
   forall x, ProperFilter (Rbar_locally x).
@@ -3504,12 +3501,15 @@ Qed.
 Lemma open_Rbar_lt :
   forall y, open (fun u : R => Rbar_lt u y).
 Proof.
-(* intros [y| |]. *)
-(* - apply open_lt. *)
-(* - apply open_true. *)
-(* - apply open_false. *)
-(* Qed. *)
-Admitted.
+intros [y| |].
+- rewrite /Rbar_lt (_ : Rlt^~ y = fun x => x < y).
+  by eapply open_lt.
+  rewrite funeqE => x //; rewrite propeqE; split => [/RltP //| ?]; by apply/RltP.
+- apply open_true.
+- apply open_false.
+Qed.
+
+(* COMPILES UNTIL HERE *)
 
 Lemma open_Rbar_gt :
   forall y, open (fun u : R => Rbar_lt y u).
@@ -3520,6 +3520,8 @@ Proof.
 (* - apply open_true. *)
 (* Qed. *)
 Admitted.
+
+
 
 Lemma open_Rbar_lt' :
   forall x y, Rbar_lt x y -> Rbar_locally x (fun u => Rbar_lt u y).
