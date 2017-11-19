@@ -3205,79 +3205,50 @@ apply Hp ; apply Hd; apply/RltP => //; move/sub_ball_abs : Hy;
   by rewrite mul1r absrB.
 Qed.
 
-(* COMPILES UNTIL HERE *)
-
 (** * Topology on [R]² *)
 
 (* ALTERNATIVE: *)
-(* Definition locally_2d x y (P : R -> R -> Prop) := locally (x, y) (fun z => P z.1 z.2). *)
+Definition locally_2d (x y : R) (P : R -> R -> Prop) := locally (x, y) (fun z => P z.1 z.2).
 
-Definition locally_2d (P : R -> R -> Prop) x y :=
-  exists delta : posreal, forall u v, Rabs (u - x) < delta -> Rabs (v - y) < delta -> P u v.
+(*Definition locally_2d (P : R -> R -> Prop) x y :=
+  exists delta : posreal, forall u v, Rabs (u - x) < delta -> Rabs (v - y) < delta -> P u v.*)
 
-Lemma locally_2d_locally :
-  forall P x y,
-  locally_2d P x y <-> locally (x,y) (fun z => P (fst z) (snd z)).
+Lemma locally_2d_locally P x y :
+  locally_2d x y P <-> locally (x,y) (fun z => P (fst z) (snd z)).
+Proof. split; move=> [d H]; exists d; exact H. Qed.
+
+Lemma locally_2d_impl_strong (P Q : R -> R -> Prop) x y :
+  locally_2d x y (fun u v => locally_2d u v P -> Q u v) ->
+  locally_2d x y P -> locally_2d x y Q.
 Proof.
-(* intros P x y. *)
-(* split ; intros [d H] ; exists d. *)
-(* - simpl. *)
-(*   intros [u v] H'. *)
-(*   now apply H ; apply H'. *)
-(* - intros u v Hu Hv. *)
-(*   apply (H (u,v)). *)
-(*   by split. *)
-(* Qed. *)
-Admitted.
-
-Lemma locally_2d_impl_strong :
-  forall (P Q : R -> R -> Prop) x y, locally_2d (fun u v => locally_2d P u v -> Q u v) x y ->
-  locally_2d P x y -> locally_2d Q x y.
-Proof.
-(* intros P Q x y Li LP. *)
-(* apply locally_2d_locally in Li. *)
-(* apply locally_2d_locally in LP. *)
-(* apply locally_locally in LP. *)
-(* apply locally_2d_locally. *)
-(* generalize (filter_and _ _ Li LP). *)
-(* apply filter_imp. *)
-(* intros [u v] [H1 H2]. *)
-(* apply H1. *)
-(* now apply locally_2d_locally. *)
-(* Qed. *)
-Admitted.
-
-Lemma locally_2d_singleton (P : R -> R -> Prop) x y : locally_2d P x y -> P x y.
-Proof.
-(* move/locally_2d_locally => LP. *)
-(* by apply locally_singleton with (1 := LP). *)
-(* Qed. *)
-Admitted.
-
-Lemma locally_2d_impl :
-  forall (P Q : R -> R -> Prop) x y, locally_2d (fun u v => P u v -> Q u v) x y ->
-  locally_2d P x y -> locally_2d Q x y.
-Proof.
-(* intros P Q x y (d,H). *)
-(* apply locally_2d_impl_strong. *)
-(* exists d => u v Hu Hv Hp. *)
-(* apply H => //. *)
-(* now apply locally_2d_singleton. *)
-(* Qed. *)
-Admitted.
-
-Lemma locally_2d_forall :
-  forall (P : R -> R -> Prop) x y, (forall u v, P u v) -> locally_2d P x y.
-Proof.
-intros P x y Hp.
-now exists [posreal of 1] => u v _ _.
+move=> /locally_2d_locally Li /locally_2d_locally/locally_locally LP.
+apply locally_2d_locally.
+apply: filter_imp (filter_and Li LP) => uv -[H1 H2].
+by apply/H1/locally_2d_locally.
 Qed.
 
-Lemma locally_2d_and :
-  forall (P Q : R -> R -> Prop) x y, locally_2d P x y -> locally_2d Q x y ->
-  locally_2d (fun u v => P u v /\ Q u v) x y.
+Lemma locally_2d_singleton (P : R -> R -> Prop) x y : locally_2d x y P -> P x y.
+Proof. by move/locally_2d_locally => /locally_singleton. Qed.
+
+Lemma locally_2d_impl (P Q : R -> R -> Prop) x y :
+  locally_2d x y (fun u v => P u v -> Q u v) ->
+  locally_2d x y P -> locally_2d x y Q.
 Proof.
-intros P Q x y H.
+move=> H.
+apply locally_2d_impl_strong.
+case : H => d Hd.
+exists d => /= z Hz HP.
+by apply/(Hd _ Hz); apply locally_2d_singleton.
+Qed.
+
+Lemma locally_2d_forall (P : R -> R -> Prop) x y :
+  (forall u v, P u v) -> locally_2d x y P.
+Proof. move=> Hp; by exists [posreal of 1]. Qed.
+
+Lemma locally_2d_and (P Q : R -> R -> Prop) x y :
+  locally_2d x y P -> locally_2d x y Q -> locally_2d x y (fun u v => P u v /\ Q u v).
+Proof.
+intros H.
 apply: locally_2d_impl.
 apply: locally_2d_impl H.
 apply locally_2d_forall.
@@ -3286,122 +3257,131 @@ Qed.
 
 Lemma locally_2d_align :
   forall (P Q : R -> R -> Prop) x y,
-  ( forall eps : posreal, (forall u v, Rabs (u - x) < eps -> Rabs (v - y) < eps -> P u v) ->
-    forall u v, Rabs (u - x) < eps -> Rabs (v - y) < eps -> Q u v ) ->
-  locally_2d P x y -> locally_2d Q x y.
+  ( forall eps : posreal, (forall uv, ball (x, y) eps uv -> P uv.1 uv.2) ->
+    forall uv, ball (x, y) eps uv -> Q uv.1 uv.2 ) ->
+  locally_2d x y P -> locally_2d x y Q.
 Proof.
 intros P Q x y K (d,H).
-exists d => u v Hu Hv.
-now apply (K d).
+exists d => uv Huv.
+by apply (K d) => //.
 Qed.
 
 Lemma locally_2d_1d_const_x :
   forall (P : R -> R -> Prop) x y,
-  locally_2d P x y ->
+  locally_2d x y P ->
   locally y (fun t => P x t).
 Proof.
-(* intros P x y (d,Hd). *)
-(* exists d; intros z Hz. *)
-(* apply Hd. *)
-(* rewrite Rminus_eq_0 Rabs_R0; apply cond_pos. *)
-(* exact Hz. *)
-(* Qed. *)
-Admitted.
+intros P x y (d,Hd).
+exists d; intros z Hz.
+by apply (Hd (x, z)).
+Qed.
 
 Lemma locally_2d_1d_const_y :
   forall (P : R -> R -> Prop) x y,
-  locally_2d P x y ->
+  locally_2d x y P ->
   locally x (fun t => P t y).
 Proof.
-(* intros P x y (d,Hd). *)
-(* exists d; intros z Hz. *)
-(* apply Hd. *)
-(* exact Hz. *)
-(* rewrite Rminus_eq_0 Rabs_R0; apply cond_pos. *)
-(* Qed. *)
-Admitted.
+intros P x y (d,Hd).
+exists d; intros z Hz.
+by apply (Hd (z, y)).
+Qed.
 
 Lemma locally_2d_1d_strong :
   forall (P : R -> R -> Prop) x y,
-  locally_2d P x y ->
-  locally_2d (fun u v => forall (t : R), 0 <= t <= 1 ->
-    locally t (fun z => locally_2d P (x + z * (u - x)) (y + z * (v - y)))) x y.
+  locally_2d x y P ->
+  locally_2d x y (fun u v => forall (t : R), 0 <= t <= 1 ->
+    locally t (fun z => locally_2d (x + z * (u - x)) (y + z * (v - y)) P)).
 Proof.
-(* intros P x y. *)
-(* apply locally_2d_align => eps HP u v Hu Hv t Ht. *)
-(* assert (Zm: 0 <= Rmax (Rabs (u - x)) (Rabs (v - y))). *)
-(* apply Rmax_case ; apply Rabs_pos. *)
-(* destruct Zm as [Zm|Zm]. *)
-(* (* *) *)
-(* assert (H1: Rmax (Rabs (u - x)) (Rabs (v - y)) < eps). *)
-(* now apply Rmax_case. *)
-(* set (d1 := mkposreal _ (Rlt_Rminus _ _ H1)). *)
-(* assert (H2: 0 < d1 / 2 / Rmax (Rabs (u - x)) (Rabs (v - y))). *)
-(* apply Rmult_lt_0_compat => //. *)
-(* now apply Rinv_0_lt_compat. *)
-(* set (d2 := mkposreal _ H2). *)
-(* exists d2 => z Hz. *)
-(* exists [posreal of d1 / 2] => p q Hp Hq. *)
-(* apply HP. *)
-(* (* . *) *)
-(* replace (p - x) with (p - (x + z * (u - x)) + (z - t + t) * (u - x)) by ring. *)
-(* apply Rle_lt_trans with (1 := Rabs_triang _ _). *)
-(* replace (pos eps) with (d1 / 2 + (eps - d1 / 2)) by ring. *)
-(* apply Rplus_lt_le_compat with (1 := Hp). *)
-(* rewrite Rabs_mult. *)
-(* apply Rle_trans with ((d2 + 1) * Rmax (Rabs (u - x)) (Rabs (v - y))). *)
-(* apply Rmult_le_compat. *)
-(* apply Rabs_pos. *)
-(* apply Rabs_pos. *)
-(* apply Rle_trans with (1 := Rabs_triang _ _). *)
-(* apply Rplus_le_compat. *)
-(* now apply Rlt_le. *)
-(* now rewrite Rabs_pos_eq. *)
-(* apply Rmax_l. *)
-(* rewrite /d2 /d1 /=. *)
-(* field_simplify. *)
-(* apply Rle_refl. *)
-(* now apply Rgt_not_eq. *)
-(* (* . *) *)
-(* replace (q - y) with (q - (y + z * (v - y)) + (z - t + t) * (v - y)) by ring. *)
-(* apply Rle_lt_trans with (1 := Rabs_triang _ _). *)
-(* replace (pos eps) with (d1 / 2 + (eps - d1 / 2)) by ring. *)
-(* apply Rplus_lt_le_compat with (1 := Hq). *)
-(* rewrite Rabs_mult. *)
-(* apply Rle_trans with ((d2 + 1) * Rmax (Rabs (u - x)) (Rabs (v - y))). *)
-(* apply Rmult_le_compat. *)
-(* apply Rabs_pos. *)
-(* apply Rabs_pos. *)
-(* apply Rle_trans with (1 := Rabs_triang _ _). *)
-(* apply Rplus_le_compat. *)
-(* now apply Rlt_le. *)
-(* now rewrite Rabs_pos_eq. *)
-(* apply Rmax_r. *)
-(* rewrite /d2 /d1 /=. *)
-(* field_simplify. *)
-(* apply Rle_refl. *)
-(* now apply Rgt_not_eq. *)
-(* (* *) *)
-(* apply filter_forall => z. *)
-(* exists eps => p q. *)
-(* replace (u - x) with 0. *)
-(* replace (v - y) with 0. *)
-(* rewrite Rmult_0_r 2!Rplus_0_r. *)
-(* apply HP. *)
-(* apply sym_eq. *)
-(* apply Rabs_eq_0. *)
-(* apply Rle_antisym. *)
-(* rewrite Zm. *)
-(* apply Rmax_r. *)
-(* apply Rabs_pos. *)
-(* apply sym_eq. *)
-(* apply Rabs_eq_0. *)
-(* apply Rle_antisym. *)
-(* rewrite Zm. *)
-(* apply Rmax_l. *)
-(* apply Rabs_pos. *)
-(* Qed. *)
-Admitted.
+move=> P x y.
+apply locally_2d_align => eps HP uv Huv t Ht.
+set u := uv.1. set v := uv.2.
+have Zm : 0 <= Num.max `|u - x| `|v - y| by rewrite ler_maxr 2!normr_ge0.
+rewrite ler_eqVlt in Zm.
+case/orP : Zm => Zm.
+- apply filter_forall => z.
+  exists eps => pq.
+  rewrite !(RminusE,RmultE,RplusE).
+  move: (Zm).
+  have : Num.max `|u - x| `|v - y| <= 0 by rewrite -(eqP Zm).
+  rewrite ler_maxl => /andP[H1 H2] _.
+  rewrite (_ : u - x = 0); last by apply/eqP; rewrite -normr_le0.
+  rewrite (_ : v - y = 0); last by apply/eqP; rewrite -normr_le0.
+  rewrite !(mulr0,addr0); by apply HP.
+- have H1: Num.max (`|u - x|) (`|v - y|) < eps.
+    rewrite ltr_maxl; apply/andP; split.
+    - case: Huv => /sub_ball_abs /=; by rewrite mul1r absrB.
+    - case: Huv => _ /sub_ball_abs /=; by rewrite mul1r absrB.
+  rewrite -subr_gt0 in H1.
+  move/RltP in H1.
+  set (d1 := mkposreal _ H1).
+  have H2 : 0 < pos d1 / 2 / Num.max `|u - x| `|v - y| by rewrite mulr_gt0 // invr_gt0.
+  move/RltP in H2.
+  set (d2 := mkposreal _ H2).
+  exists d2 => z Hz.
+  exists [posreal of d1 / 2] => /= pq Hpq.
+  apply HP.
+  set p := pq.1.
+  set q := pq.2.
+  split.
+  + apply/sub_abs_ball => /=.
+    rewrite absrB.
+    rewrite (_ : p - x = p - (x + z * (u - x)) + (z - t + t) * (u - x)); last first.
+      by rewrite subrK opprD addrA subrK.
+    apply: (ler_lt_trans (ler_abs_add _ _)).
+    rewrite (_ : pos eps = pos d1 / 2 + (pos eps - pos d1 / 2)); last first.
+      by rewrite addrCA subrr addr0.
+    rewrite (_ : pos eps - _ = d1) // in Hpq.
+    case: Hpq => /sub_ball_abs Hp /sub_ball_abs Hq.
+    rewrite mul1r /= (_ : pos eps - _ = d1) // !(RminusE,RplusE,RmultE,RdivE) // in Hp, Hq.
+    rewrite absrB in Hp.
+    rewrite absrB in Hq.
+    rewrite (ltr_le_add Hp) //.
+    apply: (ler_trans (absrM _ _)).
+    apply (@ler_trans _ ((pos d2 + 1) * Num.max `|u - x| `|v - y|)).
+    apply ler_pmul => //.
+    by rewrite normr_ge0.
+    by rewrite normr_ge0.
+    apply: (ler_trans (ler_abs_add _ _)).
+    rewrite ler_add //.
+    move/sub_ball_abs : Hz; rewrite mul1r => tzd2; by rewrite absrB ltrW.
+    rewrite absRE ger0_norm //; by case/andP: Ht.
+    by rewrite ler_maxr lerr.
+    rewrite /d2 /d1 /=.
+    set n := Num.max _ _.
+    rewrite mulrDl mul1r -mulrA mulVr ?unitfE ?lt0r_neq0 // mulr1.
+    rewrite ler_sub_addr addrAC -mulrDl -mulr2n -mulr_natr.
+    by rewrite (_ : 2 = 2%:R) // -mulrA mulrV ?mulr1 ?unitfE // subrK.
+  + apply/sub_abs_ball => /=.
+    rewrite absrB.
+    rewrite (_ : (q - y) = (q - (y + z * (v - y)) + (z - t + t) * (v - y))); last first.
+      by rewrite subrK opprD addrA subrK.
+    apply: (ler_lt_trans (ler_abs_add _ _)).
+    rewrite (_ : pos eps = pos d1 / 2 + (pos eps - pos d1 / 2)); last first.
+      by rewrite addrCA subrr addr0.
+    rewrite (_ : pos eps - _ = d1) // in Hpq.
+    case: Hpq => /sub_ball_abs Hp /sub_ball_abs Hq.
+    rewrite mul1r /= (_ : pos eps - _ = d1) // !(RminusE,RplusE,RmultE,RdivE) // in Hp, Hq.
+    rewrite absrB in Hp.
+    rewrite absrB in Hq.
+    rewrite (ltr_le_add Hq) //.
+    apply: (ler_trans (absrM _ _)).
+    apply (@ler_trans _ ((pos d2 + 1) * Num.max `|u - x| `|v - y|)).
+    apply ler_pmul => //.
+    by rewrite normr_ge0.
+    by rewrite normr_ge0.
+    apply: (ler_trans (ler_abs_add _ _)).
+    rewrite ler_add //.
+    move/sub_ball_abs : Hz; rewrite mul1r => tzd2; by rewrite absrB ltrW.
+    rewrite absRE ger0_norm //; by case/andP: Ht.
+    by rewrite ler_maxr lerr orbT.
+    rewrite /d2 /d1 /=.
+    set n := Num.max _ _.
+    rewrite mulrDl mul1r -mulrA mulVr ?unitfE ?lt0r_neq0 // mulr1.
+    rewrite ler_sub_addr addrAC -mulrDl -mulr2n -mulr_natr.
+    by rewrite (_ : 2 = 2%:R) // -mulrA mulrV ?mulr1 ?unitfE // subrK.
+Qed.
+
+(* COMPILES UNTIL HERE *)
 
 Lemma locally_2d_1d (P : R -> R -> Prop) x y :
   locally_2d P x y ->
