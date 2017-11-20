@@ -7,6 +7,8 @@ Copyright (C) 2011-2015 Sylvie Boldo
 Copyright (C) 2011-2015 Catherine Lelay
 #<br />#
 Copyright (C) 2011-2015 Guillaume Melquiond
+Require Import 
+
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -705,7 +707,7 @@ Proof.
 Qed.
 
 Lemma is_LimSup_infSup_seq (u : nat -> R) (l : Rbar) :
-  is_LimSup_seq u l <-> is_inf_seq (fun m => Sup_seq (fun n => u (n + m)%nat)) l.
+  is_LimSup_seq u l <-> is_inf_seq (fun m => Sup_seq (fun n => u (n + m)%coq_nat)) l.
 Proof.
   case: l => [l | | ] ;
   rewrite /is_LimSup_seq /is_inf_seq ;
@@ -716,67 +718,67 @@ Proof.
   move => N.
   apply Sup_seq_minor_lt.
   case: (proj1 (Hl eps) N) => {Hl} n Hl.
+  exists (n - N)%coq_nat.
+  rewrite MyNat.sub_add ; intuition.
+  case: (proj2 (Hl [posreal of eps / 2])) => /= {Hl} N Hl.
+  exists N ; rewrite /Sup_seq ; case: ex_sup_seq => un Hun ; simpl proj1_sig.
+  case: un Hun => [un | | ] /= Hun.
+  case: (proj2 (Hun [posreal of eps / 2])) => {Hun} /= n Hun.
+  apply Rlt_minus_l in Hun.
+  apply Rlt_trans with (1 := Hun).
+  apply Rlt_minus_r.
+  apply Rlt_le_trans with (1 := Hl _ (le_plus_r _ _)) ; right ; field.
+  case: (Hun (l + eps / 2)) => {Hun} n.
+  apply Rle_not_lt, Rlt_le, Hl, le_plus_r.
+  by [].
+(* * <- *)
+  split.
+  move => N.
+  move: (proj1 (Hl eps) N) => {Hl} Hl.
+  apply Sup_seq_minor_lt in Hl.
+  case: Hl => /= n Hl.
+  exists (n + N)%nat ; intuition.
+  case: (proj2 (Hl eps)) => {Hl} N Hl.
+  exists N => n Hn.
+  apply (Rbar_not_le_lt (l + eps) (u n)).
+  contradict Hl.
+  apply Rbar_le_not_lt.
+  apply Sup_seq_minor_le with (n - N)%nat.
+  by rewrite MyNat.sub_add.
+(* l = +oo *)
+  move => M N.
+  case: (Hl M N) => {Hl} n Hl.
+  apply Sup_seq_minor_lt.
   exists (n - N)%nat.
-  (* rewrite MyNat.sub_add ; intuition. *)
-(*   case: (proj2 (Hl [posreal of eps / 2])) => /= {Hl} N Hl. *)
-(*   exists N ; rewrite /Sup_seq ; case: ex_sup_seq => un Hun ; simpl proj1_sig. *)
-(*   case: un Hun => [un | | ] /= Hun. *)
-(*   case: (proj2 (Hun [posreal of eps / 2])) => {Hun} /= n Hun. *)
-(*   apply Rlt_minus_l in Hun. *)
-(*   apply Rlt_trans with (1 := Hun). *)
-(*   apply Rlt_minus_r. *)
-(*   apply Rlt_le_trans with (1 := Hl _ (le_plus_r _ _)) ; right ; field. *)
-(*   case: (Hun (l + eps / 2)) => {Hun} n. *)
-(*   apply Rle_not_lt, Rlt_le, Hl, le_plus_r. *)
-(*   by []. *)
-(* (* * <- *) *)
-(*   split. *)
-(*   move => N. *)
-(*   move: (proj1 (Hl eps) N) => {Hl} Hl. *)
-(*   apply Sup_seq_minor_lt in Hl. *)
-(*   case: Hl => /= n Hl. *)
-(*   exists (n + N)%nat ; intuition. *)
-(*   case: (proj2 (Hl eps)) => {Hl} N Hl. *)
-(*   exists N => n Hn. *)
-(*   apply (Rbar_not_le_lt (l + eps) (u n)). *)
-(*   contradict Hl. *)
-(*   apply Rbar_le_not_lt. *)
-(*   apply Sup_seq_minor_le with (n - N)%nat. *)
-(*   by rewrite MyNat.sub_add. *)
-(* (* l = +oo *) *)
-(*   move => M N. *)
-(*   case: (Hl M N) => {Hl} n Hl. *)
-(*   apply Sup_seq_minor_lt. *)
-(*   exists (n - N)%nat. *)
-(*   rewrite MyNat.sub_add ; intuition. *)
-(*   move => M N. *)
-(*   move: (Hl M N) => {Hl} Hl. *)
-(*   apply Sup_seq_minor_lt in Hl. *)
-(*   case: Hl => /= n Hl. *)
-(*   exists (n + N)%nat ; intuition. *)
-(* (* l = -oo *) *)
-(*   move => M. *)
-(*   case: (Hl (M-1)) => {Hl} N Hl. *)
-(*   exists N ; rewrite /Sup_seq ; case: ex_sup_seq => un Hun ; simpl proj1_sig. *)
-(*   case: un Hun => [un | | ] /= Hun. *)
-(*   case: (proj2 (Hun [posreal of 1])) => {Hun} /= n Hun. *)
-(*   apply Rlt_minus_l in Hun. *)
-(*   apply Rlt_trans with (1 := Hun). *)
-(*   apply Rlt_minus_r. *)
-(*   apply Hl ; intuition. *)
-(*   case: (Hun (M-1)) => {Hun} n. *)
-(*   apply Rle_not_lt, Rlt_le, Hl, le_plus_r. *)
-(*   by []. *)
-(*   move => M. *)
-(*   case: (Hl M) => {Hl} N Hl. *)
-(*   exists N => n Hn. *)
-(*   apply (Rbar_not_le_lt M (u n)). *)
-(*   contradict Hl. *)
-(*   apply Rbar_le_not_lt. *)
-(*   apply Sup_seq_minor_le with (n - N)%nat. *)
-(*   by rewrite MyNat.sub_add. *)
-(* Qed. *)
-Admitted.
+  rewrite MyNat.sub_add ; intuition.
+  move => M N.
+  move: (Hl M N) => {Hl} Hl.
+  apply Sup_seq_minor_lt in Hl.
+  case: Hl => /= n Hl.
+  exists (n + N)%nat ; intuition.
+(* l = -oo *)
+  move => M.
+  case: (Hl (M-1)) => {Hl} N Hl.
+  exists N ; rewrite /Sup_seq ; case: ex_sup_seq => un Hun ; simpl proj1_sig.
+  case: un Hun => [un | | ] /= Hun.
+  case: (proj2 (Hun [posreal of 1])) => {Hun} /= n Hun.
+  apply Rlt_minus_l in Hun.
+  apply Rlt_trans with (1 := Hun).
+  apply Rlt_minus_r.
+  apply Hl ; intuition.
+  case: (Hun (M-1)) => {Hun} n.
+  apply Rle_not_lt, Rlt_le, Hl, le_plus_r.
+  by [].
+  move => M.
+  case: (Hl M) => {Hl} N Hl.
+  exists N => n Hn.
+  apply (Rbar_not_le_lt M (u n)).
+  contradict Hl.
+  apply Rbar_le_not_lt.
+  apply Sup_seq_minor_le with (n - N)%nat.
+  by rewrite MyNat.sub_add.
+Qed.
+
 Lemma is_LimInf_supInf_seq (u : nat -> R) (l : Rbar) :
   is_LimInf_seq u l <-> is_sup_seq (fun m => Inf_seq (fun n => u (n + m)%nat)) l.
 Proof.
@@ -794,24 +796,24 @@ Lemma is_LimSup_seq_ext_loc (u v : nat -> R) (l : Rbar) :
   eventually (fun n => u n = v n) ->
   is_LimSup_seq u l -> is_LimSup_seq v l.
 Proof.
-(*   case: l => [l | | ] /= [Next Hext] Hu. *)
-(*   move => eps. *)
-(*   case: (Hu eps) => {Hu} H1 H2 ; split. *)
-(*   move => N. *)
-(*   case: (H1 (N + Next)%nat) => {H1} n [Hn H1]. *)
-(*   exists n ; rewrite -Hext ; intuition. *)
-(*   case: H2 => N H2. *)
-(*   exists (N + Next)%nat => n Hn. *)
-(*   rewrite -Hext ; intuition. *)
-(*   move => M N. *)
-(*   case: (Hu M (N + Next)%nat) => {Hu} n [Hn Hu]. *)
-(*   exists n ; rewrite -Hext ; intuition. *)
-(*   move => M. *)
-(*   case: (Hu M) => {Hu} N Hu. *)
-(*   exists (N + Next)%nat => n Hn. *)
-(*   rewrite -Hext ; intuition. *)
-(* Qed. *)
-Admitted.
+  case: l => [l | | ] /= [Next Hext] Hu.
+  move => eps.
+  case: (Hu eps) => {Hu} H1 H2 ; split.
+  move => N.
+  case: (H1 (N + Next)%coq_nat) => {H1} n [Hn H1].
+  exists n ; rewrite -Hext ; intuition.
+  case: H2 => N H2.
+  exists (N + Next)%coq_nat => n Hn.
+  rewrite -Hext ; intuition.
+  move => M N.
+  case: (Hu M (N + Next)%coq_nat) => {Hu} n [Hn Hu].
+  exists n ; rewrite -Hext ; intuition.
+  move => M.
+  case: (Hu M) => {Hu} N Hu.
+  exists (N + Next)%coq_nat => n Hn.
+  rewrite -Hext ; intuition.
+Qed.
+
 Lemma is_LimSup_seq_ext (u v : nat -> R) (l : Rbar) :
   (forall n, u n = v n)
   -> is_LimSup_seq u l -> is_LimSup_seq v l.
@@ -1185,15 +1187,15 @@ Qed.
 
 Lemma is_LimSup_seq_ind_k (u : nat -> R) (k : nat) (l : Rbar) :
   is_LimSup_seq u l <->
-    is_LimSup_seq (fun n => u (n + k)%nat) l.
+    is_LimSup_seq (fun n => u (n + k)%coq_nat) l.
 Proof.
-(*   elim: k u => [ | k IH] /= u. *)
-(*   split ; apply is_LimSup_seq_ext => n ; by rewrite -plus_n_O. *)
-(*   rewrite is_LimSup_seq_ind_1. *)
-(*   rewrite (IH (fun n => u (S n))). *)
-(*   split ; apply is_LimSup_seq_ext => n ; by rewrite plus_n_Sm. *)
-(* Qed. *)
-Admitted.
+  elim: k u => [ | k IH] /= u.
+  split ; apply is_LimSup_seq_ext => n ; by rewrite -plus_n_O.
+  rewrite is_LimSup_seq_ind_1.
+  rewrite (IH (fun n => u (S n))).
+  split ; apply is_LimSup_seq_ext => n ; by rewrite plus_n_Sm.
+Qed.
+
 Lemma is_LimInf_seq_ind_k (u : nat -> R) (k : nat) (l : Rbar) :
   is_LimInf_seq u l <->
     is_LimInf_seq (fun n => u (n + k)%nat) l.
@@ -1218,53 +1220,57 @@ Definition Lim_seq (u : nat -> R) : Rbar :=
 Lemma is_lim_seq_Reals (u : nat -> R) (l : R) :
   u --> l <-> Un_cv u l.
 Proof.
-(*   split => Hl. *)
-(*   move => e He. *)
-(*   apply (Hl (fun y => R_dist y l < e)). *)
-(*   now exists (mkposreal _ He). *)
-(*   change (Rbar_locally l) with (locally l). *)
-(*   apply/filterlim_locally => -[e He]. *)
-(*   case: (Hl e He) => {Hl} /= N Hl. *)
-(*   exists N => n Hn. *)
-(*   by apply (Hl n Hn). *)
-(* Qed. *)
-Admitted.
+  split => Hl.
+  move => e He.
+  apply (Hl (fun y => R_dist y l < e)).
+  by exists (mkposreal _ He) => y /= /ball_R_dist.
+  change (Rbar_locally l) with (locally l).
+  apply/filterlim_locally => -[e He].
+  case: (Hl e He) => {Hl} /= N Hl.
+  exists N => n Hn.
+  by move: (Hl n Hn) => /ball_R_dist.
+Qed.
+
+Import ssrbool.
 
 Lemma is_lim_seq_p_infty_Reals (u : nat -> R) :
   u --> +oo <-> cv_infty u.
 Proof.
-(*   split => Hl. *)
-(*   move => M. *)
-(*   case: (Hl (fun x => M < x)) => {Hl} [ | N Hl]. *)
-(*   by exists M. *)
-(*   by exists N. *)
-(*   move => P [M HP]. *)
-(*   eapply filter_imp. *)
-(*   by apply HP. *)
-(*   case: (Hl M) => {Hl} N HN. *)
-(*   by exists N. *)
-(* Qed. *)
-Admitted.
+  split => Hl.
+  move => M.
+  case: (Hl (fun x => M < x)) => {Hl} [ | N Hl].
+  by exists M => xa /Rstruct.RltP.
+  by exists N.
+  move => P [M HP].
+  eapply filter_imp.
+  by apply: HP.
+  case: (Hl M) => {Hl} N HN.
+  by exists N => ? ?; apply/Rstruct.RltP/HN.
+Qed.
 
 Lemma is_lim_LimSup_seq (u : nat -> R) (l : Rbar) :
   u --> l -> is_LimSup_seq u l.
 Proof.
-(*   move /is_lim_seq_spec. *)
-(*   case: l => [l | | ] /= Hu. *)
-(*   move => eps ; case: (Hu eps) => {Hu} N Hu ; split. *)
-(*   move => N0. *)
-(*   exists (N + N0)%nat ; split. *)
-(*   by apply le_plus_r. *)
-(*   by apply Rabs_lt_between', Hu, le_plus_l. *)
-(*   exists N => n Hn. *)
-(*   by apply Rabs_lt_between', Hu. *)
-(*   move => M N0. *)
-(*   case: (Hu M) => {Hu} N Hu. *)
-(*   exists (N + N0)%nat ; split. *)
-(*   by apply le_plus_r. *)
-(*   by apply Hu, le_plus_l. *)
-(*   by []. *)
-(* Qed. *)
+(*  move /is_lim_seq_spec.*)
+  case: l => [l | | ] /= Hu.
+  move => eps.
+  (* ; case: (Hu eps) => {Hu} N Hu; split*)
+  move/filterlim_locally : Hu => /(_ eps) [N Hu]; split.
+  move => N0.
+  exists (N + N0)%nat ; split.
+  by apply le_plus_r.
+  by apply Rabs_lt_between', ball_R_dist, Hu, le_plus_l.
+  exists N => n Hn.
+  by apply Rabs_lt_between', ball_R_dist, Hu.
+  move => M N0.
+  (*case: (Hu M) => {Hu} N Hu.*)
+  move/is_lim_seq_p_infty_Reals : Hu => /(_ M) [N Hu].
+  exists (N + N0)%nat ; split.
+  by apply le_plus_r.
+  by apply Hu, le_plus_l.
+  move=> M.
+  admit.
+  (*by [].*)
 Admitted.
 Lemma is_lim_LimInf_seq (u : nat -> R) (l : Rbar) :
   u --> l -> is_LimInf_seq u l.

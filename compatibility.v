@@ -550,3 +550,10 @@ End NormedModule1.
 (* Qed. *)
 
 (* End RealSums. *)
+
+Require Import Rstruct.
+
+Lemma ball_R_dist (l e : R) (y : R) : ball l e y <-> R_dist y l < e.
+Proof.
+rewrite /ball /= /AbsRing_ball absrB; split => [/RltP //| ?]; by apply/RltP.
+Qed.
