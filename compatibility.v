@@ -284,7 +284,7 @@ End Ring1.
 
 Section AbsRing1.
 
-Notation AbsRing := absRingType.
+Local Notation AbsRing := absRingType.
 
 Context {K : AbsRing}.
 
@@ -329,12 +329,14 @@ Qed.
 
 End AbsRing1.
 
+Notation AbsRing := absRingType.
+
 (*Import AbsRingCompat.*)
 
 Section NormedModule1.
 
 Notation AbsRing := absRingType.
-Notation NormedModule K := (normedModType K).
+Local Notation NormedModule K := (normedModType K).
 
 Context {K : AbsRing} {V : NormedModule K}.
 
@@ -460,6 +462,8 @@ Lemma is_filter_lim_locally_unique (x y : V) : x --> y -> x = y.
 Proof. move=> H; rewrite -closeE; exact: is_filter_lim_locally_close. Qed.
 
 End NormedModule1.
+
+Notation NormedModule K := (normedModType K).
 
 (* TODO *)
 (* Section RealSums. *)

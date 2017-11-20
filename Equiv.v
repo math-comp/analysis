@@ -21,11 +21,17 @@ COPYING file for more details.
 
 Require Import Reals Psatz.
 Require Import mathcomp.ssreflect.ssreflect.
-Require Import Rbar Rcomplements Hierarchy.
+Require Import Rbar Rcomplements (*H*)hierarchy.
 
 (** This file gives definitions of equivalent (g ~ f) and dominant (g
 = o(f)). This is used for defining differentiability on a
 [NormedModule]. *)
+
+From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
+From SsrReals Require Import boolp.
+Require Import Rstruct.
+
+Require Import compatibility.
 
 Definition is_domin {T} {Ku Kv : AbsRing}
   {U : NormedModule Ku} {V : NormedModule Kv}
