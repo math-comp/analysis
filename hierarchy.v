@@ -3487,67 +3487,50 @@ intros [x| |] ; (constructor ; [idtac | constructor]).
   now apply HP.
 Qed.
 
-Global Instance Rbar_locally_filter :
-  forall x, ProperFilter (Rbar_locally x).
+Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
 Proof.
-intros [x| |].
-- apply locally_filter.
-- exact (Rbar_locally'_filter +oo).
-- exact (Rbar_locally'_filter -oo).
+case=> [x||].
+by apply locally_filter.
+exact (Rbar_locally'_filter +oo).
+exact (Rbar_locally'_filter -oo).
 Qed.
 
 (** Open sets in [Rbar] *)
 
-Lemma open_Rbar_lt :
-  forall y, open (fun u : R => Rbar_lt u y).
+Lemma open_Rbar_lt y : open (fun u : R => Rbar_lt u y).
 Proof.
-intros [y| |].
-- rewrite /Rbar_lt (_ : Rlt^~ y = fun x => x < y).
-  by eapply open_lt.
-  rewrite funeqE => x //; rewrite propeqE; split => [/RltP //| ?]; by apply/RltP.
-- apply open_true.
-- apply open_false.
+case: y => [y||].
+rewrite /Rbar_lt (_ : Rlt^~ y = fun x => x < y); first by eapply open_lt.
+rewrite funeqE => x //; rewrite propeqE; split => [/RltP //| ?]; by apply/RltP.
+by apply open_true.
+by apply open_false.
 Qed.
 
-(* COMPILES UNTIL HERE *)
-
-Lemma open_Rbar_gt :
-  forall y, open (fun u : R => Rbar_lt y u).
+Lemma open_Rbar_gt y : open (fun u : R => Rbar_lt y u).
 Proof.
-(* intros [y| |]. *)
-(* - apply open_gt. *)
-(* - apply open_false. *)
-(* - apply open_true. *)
-(* Qed. *)
-Admitted.
+case: y => [y||].
+rewrite /Rbar_lt (_ : [eta Rlt y] = fun x => y < x); first by apply: open_gt.
+rewrite funeqE => x //; rewrite propeqE; split => [/RltP //| ?]; by apply/RltP.
+by apply open_false.
+by apply open_true.
+Qed.
 
-
-
-Lemma open_Rbar_lt' :
-  forall x y, Rbar_lt x y -> Rbar_locally x (fun u => Rbar_lt u y).
+Lemma open_Rbar_lt' x y : Rbar_lt x y -> Rbar_locally x (fun u => Rbar_lt u y).
 Proof.
-(* intros [x| |] y Hxy. *)
-(* - now apply open_Rbar_lt. *)
-(* - easy. *)
-(* - destruct y as [y| |]. *)
-(*   now exists y. *)
-(*   now apply filter_forall. *)
-(*   easy. *)
-(* Qed. *)
-Admitted.
+case: x => [x|//|] xy; first by apply open_Rbar_lt.
+case: y => [y||//] in xy *.
+exists y => /= x ?; by apply/RltP.
+by apply filter_forall.
+Qed.
 
-Lemma open_Rbar_gt' :
-  forall x y, Rbar_lt y x -> Rbar_locally x (fun u => Rbar_lt y u).
+Lemma open_Rbar_gt' x y : Rbar_lt y x -> Rbar_locally x (fun u => Rbar_lt y u).
 Proof.
-(* intros [x| |] y Hxy. *)
-(* - now apply open_Rbar_gt. *)
-(* - destruct y as [y| |]. *)
-(*   now exists y. *)
-(*   easy. *)
-(*   now apply filter_forall. *)
-(* - now destruct y as [y| |]. *)
-(* Qed. *)
-Admitted.
+case: x => [x||] xy; first by apply open_Rbar_gt.
+case: y => [y|//|] in xy *.
+exists y => x yx; by apply/RltP.
+by apply filter_forall.
+by case: y xy.
+Qed.
 
 Lemma Rbar_locally'_le x : Rbar_locally' x --> Rbar_locally x.
 Proof. by move: x; move=> [x| | ] P [eps HP]; exists eps => *; apply: HP. Qed.
@@ -3563,86 +3546,90 @@ Definition Rbar_loc_seq (x : Rbar) (n : nat) := match x with
     | -oo => - INR n
   end.
 
-Lemma filterlim_Rbar_loc_seq  x : Rbar_loc_seq x --> Rbar_locally' x.
+Lemma filterlim_Rbar_loc_seq x : Rbar_loc_seq x --> Rbar_locally' x.
 Proof.
-(*   intros P. *)
-(*   unfold Rbar_loc_seq. *)
-(*   case: x => /= [x | | ] [delta Hp]. *)
-(* (* x \in R *) *)
-(*   case: (nfloor_ex (/delta)) => [ | N [_ HN]]. *)
-(*   by apply Rlt_le, Rinv_0_lt_compat, delta. *)
-(*   exists N => n Hn. *)
-(*   apply Hp ; simpl. *)
-(*   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=. *)
-(*   ring_simplify (x + / (INR n + 1) + - x). *)
-(*   rewrite Rabs_pos_eq. *)
-(*   rewrite -(Rinv_involutive delta). *)
-(*   apply Rinv_lt_contravar. *)
-(*   apply Rmult_lt_0_compat. *)
-(*   apply Rinv_0_lt_compat. *)
-(*   by apply delta. *)
-(*   exact: INRp1_pos. *)
-(*   apply Rlt_le_trans with (1 := HN). *)
-(*   by apply Rplus_le_compat_r, le_INR. *)
-(*   by apply Rgt_not_eq, delta. *)
-(*   by apply Rlt_le, RinvN_pos. *)
-(*   apply Rgt_not_eq, Rminus_lt_0. *)
-(*   ring_simplify. *)
-(*   by apply RinvN_pos. *)
-(* (* x = +oo *) *)
-(*   case: (nfloor_ex (Rmax 0 delta)) => [ | N [_ HN]]. *)
-(*   by apply Rmax_l. *)
-(*   exists (S N) => n Hn. *)
-(*   apply Hp. *)
-(*   apply Rle_lt_trans with (1 := Rmax_r 0 _). *)
-(*   apply Rlt_le_trans with (1 := HN). *)
-(*   rewrite -S_INR ; by apply le_INR. *)
-(* (* x = -oo *) *)
-(*   case: (nfloor_ex (Rmax 0 (-delta))) => [ | N [_ HN]]. *)
-(*   by apply Rmax_l. *)
-(*   exists (S N) => n Hn. *)
-(*   apply Hp. *)
-(*   rewrite -(Ropp_involutive delta). *)
-(*   apply Ropp_lt_contravar. *)
-(*   apply Rle_lt_trans with (1 := Rmax_r 0 _). *)
-(*   apply Rlt_le_trans with (1 := HN). *)
-(*   rewrite -S_INR ; by apply le_INR. *)
-(* Qed. *)
-Admitted.
+  intros P.
+  unfold Rbar_loc_seq.
+  case: x => /= [x | | ] [delta Hp].
+(* x \in R *)
+  case: (nfloor_ex (/delta)) => [ | N [_ HN]].
+  by apply Rlt_le, Rinv_0_lt_compat, delta.
+  exists N => n Hn.
+  apply Hp ; simpl.
+  rewrite /ball /= /AbsRing_ball.
+  rewrite INRE RplusE (_ : n%:R + _ = n.+1%:R); last by rewrite -addn1 natrD.
+  rewrite opprD addrA subrr add0r absrN absRE ger0_norm; last by rewrite RinvE.
+  rewrite RinvE // -(invrK (pos delta)) ltr_pinv; last 2 first.
+    by rewrite inE ltr0n andbT unitfE.
+    by rewrite !inE unitfE gtr_eqF /= invr_gt0.
+  move/RltP : HN.
+  rewrite RinvE // RplusE => /ltr_le_trans; apply.
+  rewrite -addn1 natrD ler_add // INRE // ler_nat; by apply/leP.
+  move/eqP.
+  rewrite eq_sym addrC -subr_eq subrr eq_sym INRE RplusE.
+  rewrite (_ : n%:R + 1 = n.+1%:R); last by rewrite -addn1 natrD.
+  by rewrite RinvE // invr_eq0 pnatr_eq0.
+(* x = +oo *)
+  case: (nfloor_ex (Rmax 0 delta)) => [ | N [_ HN]].
+  by apply Rmax_l.
+  exists N.+1 => n Hn.
+  apply Hp.
+  move/leP : Hn; rewrite -(@ler_nat [numDomainType of R]) => Hn.
+  move/RltP : HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN.
+  move: (ltr_le_trans HN Hn); rewrite INRE RmaxE; apply ler_lt_trans.
+  by rewrite ler_maxr lerr orbT.
+(* x = -oo *)
+  case: (nfloor_ex (Rmax 0 (-delta))) => [ | N [_ HN]].
+  by apply Rmax_l.
+  exists N.+1 => n Hn.
+  apply Hp.
+  move/leP : Hn; rewrite -(@ler_nat [numDomainType of R]) => Hn.
+  move/RltP : HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN.
+  rewrite lter_oppl.
+  move: (ltr_le_trans HN Hn); rewrite INRE RmaxE; apply ler_lt_trans.
+  by rewrite ler_maxr RoppE lerr orbT.
+Qed.
 
-
-Lemma continuity_pt_locally f x :
-  continuity_pt f x <->
-  forall eps : posreal, locally x (fun u => Rabs (f u - f x) < eps).
+Lemma continuity_pt_locally f x : continuity_pt f x <->
+  forall eps : posreal, locally x (fun u => Rabs (f u - f x) < eps (* TODO: express using ball?*)).
 Proof.
-(* split. *)
-(* intros H eps. *)
-(* move: (H eps (cond_pos eps)) => {H} [d [H1 H2]]. *)
-(* rewrite /= /R_dist /D_x /no_cond in H2. *)
-(* exists (mkposreal d H1) => y H. *)
-(* destruct (Req_dec x y) as [<-|Hxy]. *)
-(* rewrite /Rminus Rplus_opp_r Rabs_R0. *)
-(* apply cond_pos. *)
-(* by apply H2. *)
-(* intros H eps He. *)
-(* move: (H (mkposreal _ He)) => {H} [d H]. *)
-(* exists d. *)
-(* split. *)
-(* apply cond_pos. *)
-(* intros h [Zh Hh]. *)
-(* exact: H. *)
-(* Qed. *)
-Admitted.
+split.
+- move=> H eps.
+  move: (H eps (cond_pos eps)) => {H} [d [H1 H2]].
+  rewrite /= /R_dist /D_x /no_cond in H2.
+  exists (mkposreal _ H1) => y H.
+  destruct (Req_dec x y) as [<-|Hxy].
+  + by rewrite /Rminus Rplus_opp_r Rabs_R0.
+  + apply/RltP/H2; split => //.
+    apply/RltP.
+    move/sub_ball_abs : H; by rewrite mul1r /= absrB.
+- move=> H eps He.
+  move: (H (mkposreal _ He)) => {H} [d H].
+  exists d; split; first by apply cond_pos.
+  move=> h [Zh Hh].
+  apply/RltP/H.
+  apply/(@sub_norm_ball_pos _ [normedModType R of R^o] x d)/RltP.
+  by rewrite /ball_norm -normmB.
+Qed.
+
+(* COMPILES UNTIL HERE *)
 
 Lemma continuity_pt_filterlim (f : R -> R) (x : R) :
   continuity_pt f x <-> f @ x --> f x.
 Proof.
-(* eapply iff_trans. *)
-(* apply continuity_pt_locally. *)
-(* apply iff_sym. *)
-(* exact (filterlim_locally f (f x)). *)
-(* Qed. *)
-Admitted.
+eapply iff_trans; first by apply continuity_pt_locally.
+apply iff_sym.
+have FF : Filter (f @ x) by typeclasses eauto.
+case: (@filterlim_locally _ (f @ x) FF (f x)) => {FF}H1 H2.
+(* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
+split => [{H2} /H1{H1} H1 eps|{H1} H].
+- move: (H1 eps) => {H1} [x0 Hx0].
+  exists x0 => Hx0' /Hx0 /= /sub_ball_abs.
+  by rewrite mul1r absrB.
+- apply H2 => eps; move: (H eps) => {H} [x0 Hx0].
+  exists x0 => y /Hx0 /= {Hx0}Hx0.
+  apply/sub_abs_ball; by rewrite absrB.
+Qed.
 
 Lemma continuity_ptE (f : R -> R) (x : R) :
  continuity_pt f x <-> {for x, continuous f}.
@@ -3665,15 +3652,23 @@ Lemma continuity_pt_filterlim' f x :
    continuity_pt f x <-> f @ locally' x --> f x.
 Proof. by rewrite continuity_ptE continuous_withinNx //; exact: Req_dec. Qed.
 
-
 Lemma continuity_pt_locally' f x :
   continuity_pt f x <->
   forall eps : posreal, locally' x (fun u => `|f u - f x| < eps)%R.
 Proof.
-(* rewrite continuity_ptE continuous_withinNx; last exact: Req_dec. *)
-(* exact: filterlim_locally. *)
-(* Qed. *)
-Admitted.
+rewrite continuity_ptE continuous_withinNx; last exact: Req_dec.
+have FF : Filter (f @ locally' x) by typeclasses eauto.
+case: (@filterlim_locally _ (f @ locally' x) FF (f x)) => {FF}H1 H2.
+(* TODO: refactoring  *)
+split => [{H2} /H1{H1} H1 eps|{H1} H].
+- move: (H1 eps) => {H1} [x0 Hx0].
+  exists x0 => y /Hx0 /= H yx.
+  move: (H yx) => {H yx} /sub_ball_abs.
+  by rewrite mul1r absrB.
+- apply H2 => eps; move: (H eps) => {H} [x0 Hx0].
+  exists x0 => y /Hx0 /= {Hx0}Hx0 yx; move: (Hx0 yx) => {Hx0 yx} H.
+  apply/sub_abs_ball; by rewrite absrB.
+ Qed.
 
 Lemma locally_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
   locally (f x) P -> continuity_pt f x ->

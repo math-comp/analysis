@@ -452,6 +452,9 @@ Proof. by move=> x_neq0; rewrite -[RHS]/(if _ then _ else _) x_neq0. Qed.
 Lemma RdivE x y : y != 0 -> Rdiv x y = x / y.
 Proof. by move=> y_neq0; rewrite /Rdiv RinvE. Qed.
 
+Lemma INRE n : INR n = n%:R.
+Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
+
 Lemma RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
 move => x0; apply/eqP; have [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
