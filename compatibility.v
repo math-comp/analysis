@@ -11,16 +11,20 @@ From mathcomp Require Import ssrfun seq bigop ssrnum.
 that we deleted (and replaced by mathcomp's ones) so that the rest of
 Coquelicot compiles just with a import of The compatibility modules *)
 
-Section AbelianGroup1.
-
 Notation AbelianGroup := zmodType.
-
-Context {G : AbelianGroup}.
-
-Notation zero := (0%R : G).
+Notation AbsRing := absRingType.
+Notation Ring := ringType.
+Notation NormedModule K := (normedModType K).
+Notation zero := (GRing.zero _).
 Notation plus := +%R.
 Notation opp := GRing.opp.
 Notation minus := (fun a b => GRing.add a (GRing.opp b)).
+Notation abs := (@abs _).
+Notation scal := *:%R.
+
+Section AbelianGroup1.
+
+Context {G : AbelianGroup}.
 
 Import GRing.Theory.
 
@@ -42,7 +46,7 @@ Proof. exact: add0r. Qed.
 Lemma plus_opp_l : forall x : G, plus (opp x) x = zero.
 Proof. exact: addNr. Qed.
 
-Lemma opp_zero : opp zero = zero.
+Lemma opp_zero : opp zero = zero :> G.
 Proof. exact: oppr0. Qed.
 
 Lemma minus_zero_r : forall x : G, minus x zero = x.
@@ -78,14 +82,7 @@ End AbelianGroup1.
 
 Section Sums.
 
-Notation AbelianGroup := zmodType.
-
 Context {G : AbelianGroup}.
-
-Notation zero := (0%R : G).
-Notation plus := +%R.
-Notation opp := GRing.opp.
-Notation minus := (fun a b => GRing.add a (GRing.opp b)).
 
 Import GRing.Theory.
 
@@ -199,16 +196,10 @@ End Sums.
 
 Section Ring1.
 
-Notation Ring := ringType.
-
 Context {K : Ring}.
 
 Definition mult : K -> K -> K := *%R.
 Definition one : K := 1%R.
-
-Notation zero := 0%R.
-Notation opp := GRing.opp.
-Notation plus := +%R.
 
 Import GRing.Theory.
 
@@ -284,20 +275,12 @@ End Ring1.
 
 Section AbsRing1.
 
-Local Notation AbsRing := absRingType.
-
 Context {K : AbsRing}.
 
-Notation abs := (@abs K).
-Notation zero := 0%R.
-Notation opp := GRing.opp.
-Notation plus := +%R.
-Notation minus := (fun a b => GRing.add a (GRing.opp b)).
-
-Lemma abs_zero : abs zero = 0.
+Lemma abs_zero : abs (zero : K) = 0.
 Proof. exact: absr0. Qed.
 
-Lemma abs_opp_one : abs (opp one) = 1.
+Lemma abs_opp_one : abs (opp one : K) = 1.
 Proof. exact: @absrN1 K. Qed.
 
 Lemma abs_triangle : forall x y : K, abs (plus x y) <= abs x + abs y.
@@ -309,16 +292,16 @@ Proof. move=> x y; by move/Rstruct.RlebP : (absrM x y). Qed.
 Lemma abs_eq_zero : forall x : K, abs x = 0 -> x = zero.
 Proof. exact: absr0_eq0. Qed.
 
-Lemma abs_opp : forall x, abs (opp x) = abs x.
+Lemma abs_opp : forall x : K, abs (opp x) = abs x.
 Proof. exact: absrN. Qed.
 
 Lemma abs_minus : forall x y : K, abs (minus x y) = abs (minus y x).
 Proof. exact: absrB. Qed.
 
-Lemma abs_one : abs one = 1.
+Lemma abs_one : abs (one : K) = 1.
 Proof. exact: absr1. Qed.
 
-Lemma abs_ge_0 : forall x, 0 <= abs x.
+Lemma abs_ge_0 : forall x : K, 0 <= abs x.
 Proof. move=> x; by move/Rstruct.RlebP : (absr_ge0 x). Qed.
 
 Lemma abs_pow_n : forall (x : K) n, abs (pow_n x n) <= (abs x)^n.
@@ -329,22 +312,11 @@ Qed.
 
 End AbsRing1.
 
-Notation AbsRing := absRingType.
-
 (*Import AbsRingCompat.*)
 
 Section NormedModule1.
 
-Notation AbsRing := absRingType.
-Local Notation NormedModule K := (normedModType K).
-
 Context {K : AbsRing} {V : NormedModule K}.
-
-Notation zero := 0%R.
-Notation opp := GRing.opp.
-Notation plus := +%R.
-Notation scal := *:%R.
-Notation minus := (fun a b => GRing.add a (GRing.opp b)).
 
 Definition norm : V -> R := NormedModule.norm (NormedModule.class V).
 
@@ -462,8 +434,6 @@ Lemma is_filter_lim_locally_unique (x y : V) : x --> y -> x = y.
 Proof. move=> H; rewrite -closeE; exact: is_filter_lim_locally_close. Qed.
 
 End NormedModule1.
-
-Notation NormedModule K := (normedModType K).
 
 (* TODO *)
 (* Section RealSums. *)

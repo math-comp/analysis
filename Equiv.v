@@ -51,7 +51,7 @@ Proof.
 intros F FF f Hf H.
 move: (H [posreal of /2]) => {H} /= H.
 apply filter_const.
-generalize (filter_and _ _ H Hf) => {H Hf}.
+generalize (filter_and H Hf) => {H Hf}.
 apply filter_imp.
 intros x [H1 H2].
 generalize (norm_ge_0 (f x)).
