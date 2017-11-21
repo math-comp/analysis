@@ -314,6 +314,56 @@ End AbsRing1.
 
 (*Import AbsRingCompat.*)
 
+Notation ModuleSpace K := (lmodType K).
+
+Section ModuleSpace1.
+
+Context {K : Ring} {V : ModuleSpace K}.
+
+Lemma scal_assoc (x y : K) (u : V) : scal x (scal y u) = scal (mult x y) u.
+Proof. exact: GRing.scalerA. Qed.
+
+Lemma scal_one (u : V) : scal one u = u.
+Proof. exact: GRing.scale1r. Qed.
+
+Lemma scal_distr_l (x : K) (u v : V) : scal x (plus u v) = plus (scal x u) (scal x v).
+Proof. exact: GRing.scalerDr. Qed.
+
+Lemma scal_distr_r (x y : K) (u : V) : scal (plus x y) u = plus (scal x u) (scal y u).
+Proof. exact: GRing.scalerDl. Qed.
+
+Lemma scal_zero_r (x : K) : scal x (zero : V) = zero.
+Proof. exact: GRing.scaler0. Qed.
+
+Lemma scal_zero_l (u : V) : scal zero u = zero.
+Proof.
+Proof. exact: GRing.scale0r. Qed.
+
+Lemma scal_opp_l (x : K) (u : V) : scal (opp x) u = opp (scal x u).
+Proof. exact: GRing.scaleNr. Qed.
+
+Lemma scal_opp_r (x : K) (u : V) : scal x (opp u) = opp (scal x u).
+Proof. exact: GRing.scalerN. Qed.
+
+Lemma scal_opp_one (u : V) : scal (opp one) u = opp u.
+Proof. exact: GRing.scaleN1r. Qed.
+
+Lemma scal_minus_distr_l (x : K) (u v : V) : scal x (minus u v) = minus (scal x u) (scal x v).
+Proof. exact: GRing.scalerBr. Qed.
+
+Lemma scal_minus_distr_r (x y : K) (u : V) : scal (minus x y) u = minus (scal x u) (scal y u).
+Proof. exact: GRing.scalerBl. Qed.
+
+Lemma sum_n_m_scal_l (a : K) (u : nat -> V) (n m : nat) :
+  sum_n_m (fun k => scal a (u k)) n m = scal a (sum_n_m u n m).
+Proof. by rewrite sum_n_mE -GRing.scaler_sumr -sum_n_mE. Qed.
+
+Lemma sum_n_scal_l (a : K) (u : nat -> V) (n : nat) :
+  sum_n (fun k => scal a (u k)) n = scal a (sum_n u n).
+Proof. by rewrite /sum_n sum_n_m_scal_l. Qed.
+
+End ModuleSpace1.
+
 Section NormedModule1.
 
 Context {K : AbsRing} {V : NormedModule K}.
@@ -531,3 +581,6 @@ Lemma ball_R_dist (l e : R) (y : R) : ball l e y <-> R_dist y l < e.
 Proof.
 rewrite /ball /= /AbsRing_ball absrB; split => [/RltP //| ?]; by apply/RltP.
 Qed.
+
+Lemma RabsE x : Rabs x = `| x |%R.
+Proof. by []. Qed.
