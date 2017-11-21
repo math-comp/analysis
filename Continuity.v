@@ -21,8 +21,15 @@ COPYING file for more details.
 
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
-Require Import Rcomplements Rbar Hierarchy.
+Require Import Rcomplements Rbar (*H*)hierarchy.
 Require Import Compactness Lim_seq.
+
+From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
+From SsrReals Require Import boolp.
+Require Import Rstruct.
+
+Import ssrbool.
+Require Import compatibility.
 
 (** This file describes defineitions and properties of continuity on
 [R] and on uniform spaces. It also contains many results about the
@@ -60,28 +67,31 @@ destruct l as [l| |] ; split.
   generalize (H eps).
   apply: filter_imp.
   intros u.
+  move/ball_R_dist.
   by apply LP.
 - intros H eps.
   apply (H (fun y => Rabs (y - l) < eps)).
-  now exists eps.
+  by exists eps => ? /ball_R_dist.
 - intros H P [M LP].
   unfold filtermap.
   generalize (H M).
   apply: filter_imp.
   intros u.
+  move/Rstruct.RltP.
   by apply LP.
 - intros H M.
   apply (H (fun y => M < y)).
-  now exists M.
+  by exists M => ? /Rstruct.RltP.
 - intros H P [M LP].
   unfold filtermap.
   generalize (H M).
   apply: filter_imp.
   intros u.
+  move/Rstruct.RltP.
   by apply LP.
 - intros H M.
   apply (H (fun y => y < M)).
-  now exists M.
+  by exists M => ? /Rstruct.RltP.
 Qed.
 
 (** Equivalence with standard library Reals *)
@@ -95,7 +105,7 @@ Proof.
   exists d ; split.
   apply cond_pos.
   intros y [H1 H2].
-  now apply (Hd y).
+  apply (Hd y) => //; by apply/ball_R_dist.
 Qed.
 Lemma is_lim_Reals_1 (f : R -> R) (x l : R) :
   limit1_in f (fun y => y <> x) l x -> is_lim f x l.
@@ -107,7 +117,7 @@ Proof.
   exists (mkposreal d Hd).
   intros y Hy Hxy.
   apply (H' y).
-  now split.
+  split => //; by apply/ball_R_dist.
 Qed.
 Lemma is_lim_Reals (f : R -> R) (x l : R) :
   is_lim f x l <-> limit1_in f (fun y => y <> x) l x.
@@ -130,7 +140,7 @@ intros P HP.
 destruct x as [x| |] ; try now apply Lf.
 specialize (Lf _ HP).
 rewrite /filtermap /filter_of /= in Lf |- *.
-generalize (filter_and _ _ Hf Lf).
+generalize (filter_and Hf Lf).
 apply filter_imp.
 intros y [H Hi].
 apply Hi.
@@ -159,6 +169,7 @@ Proof.
   exists 1%nat => n Hn.
   case: x {H} => [x | | ] //=.
   apply Rbar_finite_neq, Rgt_not_eq, Rminus_lt_0.
+  rewrite -RplusE.
   ring_simplify.
   by apply RinvN_pos.
   by apply is_lim_seq_Rbar_loc_seq.
@@ -701,14 +712,14 @@ Proof.
     rewrite Gb.
     2: by apply Rle_refl.
     apply filterlim_locally => eps /= {H}.
-    destruct (proj1 (filterlim_locally _ _) H0 eps) as [d Hd].
+    destruct (proj1 (@filterlim_locally _ _ _ _) H0 eps) as [d Hd].
     simpl in Hd.
     exists d => x Hx.
-    case: (Rlt_le_dec x b) => Hxb.
+    case: (Rlt_le_dec x b) => Hxb /=.
     rewrite Gab //.
     by apply Hd.
     rewrite Gb //.
-    by apply ball_center.
+(*    by apply ball_center.*)
   - split.
     by apply Gab.
     apply Gb ; by apply Rle_refl.
@@ -720,6 +731,7 @@ Proof.
   exists d => y /= Hy Hy'.
   apply Hd.
   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
+  rewrite -!RabsE.
   rewrite -Ropp_plus_distr Rabs_Ropp.
   by apply Hy.
   by apply Ropp_lt_contravar.
@@ -731,7 +743,7 @@ Proof.
   exists d => y /= Hy Hy'.
   apply Hd.
   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
-  rewrite -Ropp_plus_distr Rabs_Ropp.
+  rewrite -!RabsE -Ropp_plus_distr Rabs_Ropp.
   by apply Hy.
   by apply Ropp_lt_contravar.
 Qed.
@@ -748,7 +760,7 @@ Proof.
   by apply Ropp_lt_contravar.
   intros.
   eapply filterlim_comp.
-  apply (filterlim_opp c).
+  apply (@filterlim_opp _ R_NormedModule c).
   apply H0.
   split ; apply Ropp_lt_cancel ; rewrite Ropp_involutive ; by apply H2.
   eapply filterlim_comp.
@@ -757,7 +769,7 @@ Proof.
   exists (fun x => g (- x)) ; split.
   intros c Hc.
   eapply filterlim_comp.
-  apply (filterlim_opp c).
+  apply (@filterlim_opp _ R_NormedModule c).
   by apply Hg, Ropp_lt_contravar.
   split.
   intros c Hc.
@@ -786,8 +798,10 @@ Proof.
   exists (mkposreal _ H) => y /= Hy Hy'.
   apply sym_eq, Gab.
   apply Ropp_lt_cancel, (Rplus_lt_reg_l b).
+  move/ball_R_dist in Hy.
   eapply Rle_lt_trans, Hy.
-  rewrite -abs_opp opp_minus.
+  rewrite /R_dist Rabs_minus_sym.
+(*  rewrite -abs_opp opp_minus.*)
   apply Rle_abs.
   exists h ; repeat split.
   intros c.
@@ -869,14 +883,16 @@ Proof.
     intro x.
     generalize (proj1 (filterlim_locally_ball_norm _ _) (Cf x)) => {Cf} Cf.
     apply: filter_imp (Cf [posreal of 1]) => y Hy.
+    move/Rstruct.RltP in Hy.
     apply Rle_lt_trans with (2 := Hy).
-    apply norm_triangle_inv.
+    rewrite Rabs_minus_sym.
+    apply: norm_triangle_inv.
   assert (forall x y : R, Rabs (norm (f y) - norm (f x)) < 1 \/ ~ Rabs (norm (f y) - norm (f x)) < 1).
     intros x y ; edestruct Rlt_dec.
     left ; by apply r.
     by right.
 
-  set delta := (fun (x : R) => proj1_sig (locally_ex_dec x _ (H0 x) (H x))).
+  set delta := (fun (x : R) => proj1_sig (@locally_ex_dec _ x _ (H0 x) (H x))).
   destruct (compactness_value_1d a b delta) as [d Hd].
   destruct (nfloor_ex ((b - a) / d)) as [N HN].
     apply Rdiv_le_0_compat.
@@ -889,10 +905,11 @@ Proof.
   unfold delta.
   case: locally_ex_dec => e /= He [Ht [Hxt Hde]].
   contradict H2 ; apply Rlt_not_le.
-  move: (fun (y : R) Hy => He y (norm_compat1 _ _ _ Hy)) => {He} He.
+  move: (fun (y : R) Hy => He y (@norm_compat1 _ R_NormedModule _ _ _ Hy)) => {He} He.
   apply He in Hxt.
   rewrite -(Rabs_pos_eq (norm _) (norm_ge_0 _)).
-  replace (norm (f x)) with ((norm (f x) - norm (f t)) + norm (f t))%R by ring.
+  replace (norm (f x)) with ((norm (f x) - norm (f t)) + norm (f t))%R; last first.
+    by rewrite -!RplusE Rplus_assoc Rplus_opp_l Rplus_0_r.
   eapply Rle_lt_trans.
   apply Rabs_triang.
   eapply Rlt_trans.
@@ -906,7 +923,8 @@ Proof.
     now ring_simplify.
     apply cond_pos.
   set (y := a + INR n * d).
-  replace (norm (f t)) with (-(norm (f y) - norm (f t)) + norm (f y))%R by ring.
+  replace (norm (f t)) with (-(norm (f y) - norm (f t)) + norm (f y))%R; last first.
+    by rewrite -!RplusE -!RoppE Ropp_plus_distr Ropp_involutive Rplus_comm -Rplus_assoc Rplus_opp_r Rplus_0_l.
   eapply Rle_lt_trans.
 
   apply Rabs_triang.
@@ -932,7 +950,7 @@ Proof.
   apply Rplus_lt_reg_l with 1.
   ring_simplify.
   rewrite -> Rabs_pos_eq by apply norm_ge_0.
-  assert (n < S N)%nat.
+  assert (n < S N)%coq_nat.
   apply INR_lt.
   apply Rle_lt_trans with (1 := proj1 Hn).
   rewrite S_INR.
@@ -1057,7 +1075,7 @@ assert (Hb' : exists b' : R, Rbar_lt b' b /\
         is_upper_bound (fun x => Rbar_lt a x /\ Rbar_lt x b /\ f x <= y) b').
 { assert (Hfb' : Rbar_locally' b (fun x => y < f x)).
     apply Hfb.
-    now apply (open_Rbar_gt' _ y).
+    now apply (@open_Rbar_gt' _ y).
   clear -Hab Hfb'.
   destruct b as [b| |].
   - destruct Hfb' as [eps He].
@@ -1071,6 +1089,7 @@ assert (Hb' : exists b' : R, Rbar_lt b' b /\
     intros Hu.
     apply Rle_not_lt with (1 := H2).
     apply He.
+    apply/ball_R_dist.
     apply Rabs_lt_between'.
     split.
     exact Hu.
@@ -1087,7 +1106,7 @@ assert (Hb' : exists b' : R, Rbar_lt b' b /\
     apply Rnot_lt_le.
     intros Hu.
     apply Rle_not_lt with (1 := H2).
-    now apply HM.
+    apply HM; by apply/Rstruct.RltP.
   - now destruct a. }
 assert (Hex : exists x : R, Rbar_lt a x /\ Rbar_lt x b /\ f x <= y).
 { assert (Hfa' : Rbar_locally' a (fun x => Rbar_lt x b /\ f x < y)).
@@ -1095,7 +1114,7 @@ assert (Hex : exists x : R, Rbar_lt a x /\ Rbar_lt x b /\ f x <= y).
     apply Rbar_locally'_le.
     now apply open_Rbar_lt'.
     apply (Hfa (fun u => u < y)).
-    now apply (open_Rbar_lt' _ y).
+    now apply (@open_Rbar_lt' _ y).
   clear -Hab Hfa'.
   destruct a as [a| |].
   - destruct Hfa' as [eps He].
@@ -1108,8 +1127,11 @@ assert (Hex : exists x : R, Rbar_lt a x /\ Rbar_lt x b /\ f x <= y).
     assert (H : Rbar_lt (a + eps / 2) b /\ (f (a + eps / 2) < y)).
       apply He.
       rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
-      replace (a + eps / 2 + - a) with (eps / 2) by ring.
+      rewrite Ropp_plus_distr -Rplus_assoc Rplus_opp_r Rplus_0_l -RabsE Rabs_Ropp.
+(*      replace (a + eps / 2 + - a) with (eps / 2); last first.
+        by rewrite Rplus_comm -Rplus_assoc Rplus_opp_l Rplus_0_l.*)
       rewrite Rabs_pos_eq.
+      apply/RltP.
       apply Rlt_eps2_eps.
       apply cond_pos.
       by apply Rlt_le.
@@ -1123,6 +1145,7 @@ assert (Hex : exists x : R, Rbar_lt a x /\ Rbar_lt x b /\ f x <= y).
     exists (M - 1).
     assert (H : Rbar_lt (M - 1) b /\ f (M - 1) < y).
       apply HM.
+      apply/RltP.
       apply Rminus_lt_0.
       replace (M - (M - 1)) with 1 by ring.
       apply Rlt_0_1.
@@ -1148,20 +1171,25 @@ assert (Hxb : Rbar_lt x b).
 repeat split ; try assumption.
 specialize (Cf _ Hax Hxb).
 apply continuity_pt_filterlim in Cf.
-destruct (total_order_T (f x) y) as [[H|H]|H].
+destruct (total_order_T (f x) y) as [[H|H] |H].
 - assert (H': locally x (fun u => (Rbar_lt a u /\ Rbar_lt u b) /\ f u < y)).
     apply filter_and.
     apply filter_and.
     now apply open_Rbar_gt.
     now apply open_Rbar_lt.
     apply (Cf (fun u => u < y)).
-    now apply open_lt.
+    rewrite (_ : Rlt^~ y = fun x => (x < y)%R); last first.
+      rewrite funeqE => x0; rewrite propeqE; by split => /RltP.
+    apply open_lt.
+    by apply/RltP.
   destruct H' as [eps H'].
   elim Rle_not_lt with x (x + eps / 2).
   apply Hub.
   destruct (H' (x + eps / 2)) as [[H1 H2] H3].
   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
-  replace (x + eps / 2 + - x) with (eps / 2) by ring.
+(*  replace (x + eps / 2 + - x) with (eps / 2) by ring.*)
+  rewrite Ropp_plus_distr -Rplus_assoc Rplus_opp_r Rplus_0_l -RabsE Rabs_Ropp.
+  apply/RltP.
   rewrite Rabs_pos_eq.
   apply Rlt_eps2_eps.
   apply cond_pos.
@@ -1176,7 +1204,10 @@ destruct (total_order_T (f x) y) as [[H|H]|H].
 - exact H.
 - assert (H': locally x (fun u => y < f u)).
     apply (Cf (fun u => y < u)).
-    now apply open_gt.
+    rewrite (_ : Rlt y = fun x => (y < x)%R); last first.
+      rewrite funeqE => x0; rewrite propeqE; by split => /RltP.
+    apply open_gt.
+    by apply/RltP.
   destruct H' as [eps H'].
   elim Rle_not_lt with (x - eps) x.
   apply Hlub.
@@ -1185,6 +1216,7 @@ destruct (total_order_T (f x) y) as [[H|H]|H].
   intros Hu.
   apply Rle_not_lt with (1 := proj2 (proj2 Hfu)).
   apply H'.
+  apply/ball_R_dist.
   apply Rabs_lt_between'.
   split.
   exact Hu.
@@ -1223,7 +1255,7 @@ Qed.
 (** ** Definitions *)
 
 Definition continuity_2d_pt f x y :=
-  forall eps : posreal, locally_2d (fun u v => Rabs (f u v - f x y) < eps) x y.
+  forall eps : posreal, locally_2d x y (fun u v => Rabs (f u v - f x y) < eps).
 
 Lemma continuity_2d_pt_filterlim :
   forall f x y,
@@ -1234,15 +1266,18 @@ split.
 - intros Cf P [eps He].
   specialize (Cf eps).
   apply: filter_imp.
-  apply He.
+  apply: He.
   move/locally_2d_locally : Cf.
+  rewrite /=.
+  rewrite (_ : ball (f x y) eps = (fun z => Rabs (z - f x y) < eps)); last first.
+    by rewrite funeqE => x0; rewrite propeqE; split => /ball_R_dist.
   by apply.
 - intros Cf eps.
   apply locally_2d_locally.
   specialize (Cf (fun z => Rabs (z - f x y) < eps)).
   unfold filtermap in Cf.
   apply Cf.
-  now exists eps.
+  by exists eps => y0 /ball_R_dist.
 Qed.
 
 Lemma uniform_continuity_2d :
@@ -1257,7 +1292,7 @@ Lemma uniform_continuity_2d :
 Proof.
 intros f a b c d Cf eps.
 set (P x y u v := Rabs (f u v - f x y) < eps / 2).
-refine (_ (fun x y Hx Hy => locally_2d_ex_dec (P x y) x y _ (Cf x y Hx Hy _))).
+refine (_ (fun x y Hx Hy => @locally_2d_ex_dec (P x y) x y _ (Cf x y Hx Hy _))).
 intros delta1.
 set (delta2 x y := match Rle_dec a x, Rle_dec x b, Rle_dec c y, Rle_dec y d with
   left Ha, left Hb, left Hc, left Hd => [posreal of proj1_sig (delta1 x y (conj Ha Hb) (conj Hc Hd)) / 2] |
@@ -1282,7 +1317,10 @@ clear delta2.
 case delta1 => /= r Hr Hxp Hyq Hd.
 apply Rplus_lt_compat.
 apply Hr.
-replace (u - p) with (u - x + (x - p)) by ring.
+rewrite -RplusE -RoppE.
+replace (u + - p)%coqR with (u - x + (x - p)); last first.
+  by rewrite Rplus_assoc -(Rplus_assoc (- x)) Rplus_opp_l Rplus_0_l.
+apply/RltP.
 apply Rle_lt_trans with (1 := Rabs_triang _ _).
 rewrite (double_var r).
 apply Rplus_lt_compat with (2 := Hxp).
@@ -1290,7 +1328,10 @@ apply Rlt_le_trans with (2 := Hd).
 apply Rlt_trans with (1 := Hux).
 apply: Rlt_eps2_eps.
 apply cond_pos.
-replace (v - q) with (v - y + (y - q)) by ring.
+rewrite -RplusE -RoppE.
+replace (v + - q)%coqR with (v - y + (y - q)); last first.
+  by rewrite Rplus_assoc -(Rplus_assoc (- y)) Rplus_opp_l Rplus_0_l.
+apply/RltP.
 apply Rle_lt_trans with (1 := Rabs_triang _ _).
 rewrite (double_var r).
 apply Rplus_lt_compat with (2 := Hyq).
@@ -1299,7 +1340,7 @@ apply Rlt_trans with (1 := Hvy).
 apply: Rlt_eps2_eps.
 apply cond_pos.
 rewrite Rabs_minus_sym.
-apply Hr.
+apply Hr; rewrite -RplusE -RoppE; apply/RltP.
 apply Rlt_trans with (1 := Hxp).
 apply Rlt_eps2_eps.
 apply cond_pos.
@@ -1323,7 +1364,7 @@ Lemma uniform_continuity_2d_1d :
 Proof.
 intros f a b c Cf eps.
 set (P x y u v := Rabs (f u v - f x y) < eps / 2).
-refine (_ (fun x Hx => locally_2d_ex_dec (P x c) x c _ (Cf x Hx _))).
+refine (_ (fun x Hx => @locally_2d_ex_dec (P x c) x c _ (Cf x Hx _))).
 intros delta1.
 set (delta2 x := match Rle_dec a x, Rle_dec x b with
   left Ha, left Hb => [posreal of proj1_sig (delta1 x (conj Ha Hb)) / 2] |
@@ -1346,7 +1387,8 @@ clear delta2.
 case delta1 => /= r Hr Hxp Hd.
 apply Rplus_lt_compat.
 apply Hr.
-replace (u - p) with (u - x + (x - p)) by ring.
+rewrite -!RplusE -!RoppE; apply/RltP.
+replace (u + - p) with (u - x + (x - p)) by ring.
 apply Rle_lt_trans with (1 := Rabs_triang _ _).
 rewrite (double_var r).
 apply Rplus_lt_compat with (2 := Hxp).
@@ -1354,6 +1396,7 @@ apply Rlt_le_trans with (2 := Hd).
 apply Rlt_trans with (1 := Hux).
 apply: Rlt_eps2_eps.
 apply cond_pos.
+apply/RltP.
 apply Rle_lt_trans with [posreal of delta / 2].
 now apply Rabs_le_between'.
 apply Rlt_le_trans with(1 := Rlt_eps2_eps _ (cond_pos delta)).
@@ -1362,7 +1405,7 @@ apply Rlt_le.
 apply Rlt_eps2_eps.
 apply cond_pos.
 rewrite Rabs_minus_sym.
-apply Hr.
+apply Hr; rewrite -!RplusE -!RoppE; apply/RltP.
 apply Rlt_trans with (1 := Hxp).
 apply Rlt_eps2_eps.
 apply cond_pos.
@@ -1393,16 +1436,16 @@ assert (T:(forall x : R, a <= x <= b -> continuity_2d_pt (fun x0 y : R => f y x0
 intros x Hx e.
 destruct (Cf x Hx e) as (d,Hd).
 exists d.
-intros; now apply Hd.
+(*intros; now apply Hd.
 destruct (uniform_continuity_2d_1d (fun x y => f y x) a b c T eps) as (d,Hd).
 exists d; intros.
 now apply Hd.
-Qed.
+Qed.*) Abort. (* not used in Coquelicot *)
 
 Lemma continuity_2d_pt_neq_0 :
   forall f x y,
   continuity_2d_pt f x y -> f x y <> 0 ->
-  locally_2d (fun u v => f u v <> 0) x y.
+  locally_2d x y (fun u v => f u v <> 0).
 Proof.
 intros f x y Cf H.
 apply continuity_2d_pt_filterlim in Cf.
@@ -1426,14 +1469,14 @@ Qed.
 Lemma continuity_2d_pt_id1 :
   forall x y, continuity_2d_pt (fun u v => u) x y.
 Proof.
-  intros x y eps; exists eps; tauto.
-Qed.
+  intros x y eps; exists eps(*; tauto*). (* TODO *)
+Abort.
 
 Lemma continuity_2d_pt_id2 :
   forall x y, continuity_2d_pt (fun u v => v) x y.
 Proof.
-  intros x y eps; exists eps; tauto.
-Qed.
+  intros x y eps; exists eps(*; tauto*). (* TODO *)
+Abort.
 
 (** Constant functions *)
 
@@ -1454,7 +1497,7 @@ Proof.
 intros f g x Heq Cf.
 apply continuity_pt_filterlim in Cf.
 apply continuity_pt_filterlim.
-rewrite -(locally_singleton _ _ Heq).
+rewrite -(locally_singleton Heq).
 by apply filterlim_ext_loc with f.
 Qed.
 
@@ -1470,14 +1513,14 @@ Qed.
 
 Lemma continuity_2d_pt_ext_loc :
   forall f g x y,
-  locally_2d (fun u v => f u v = g u v) x y ->
+  locally_2d x y (fun u v => f u v = g u v) ->
   continuity_2d_pt f x y -> continuity_2d_pt g x y.
 Proof.
 intros f g x y Heq Cf.
 apply locally_2d_locally in Heq.
 apply continuity_2d_pt_filterlim in Cf.
 apply continuity_2d_pt_filterlim.
-rewrite -(locally_singleton _ _ Heq).
+rewrite -(locally_singleton Heq).
 apply filterlim_ext_loc with (2 := Cf).
 by apply Heq.
 Qed.
@@ -1532,7 +1575,8 @@ apply continuity_2d_pt_filterlim.
 eapply filterlim_comp_2.
 apply Cf.
 apply Cg.
-apply: filterlim_plus.
+rewrite /=.
+apply: (@filterlim_plus _ R_NormedModule).
 Qed.
 
 Lemma continuity_2d_pt_minus (f g : R -> R -> R) (x y : R) :
@@ -1595,8 +1639,8 @@ Lemma continuous_continuous_on :
   {for x, continuous f}.
 Proof.
 intros D f x Dx CD P Pfx.
-assert (Dx' := locally_singleton _ _ Dx).
-generalize (filter_and _ _ Dx (CD x Dx' P Pfx)).
+assert (Dx' := locally_singleton Dx).
+generalize (filter_and Dx (CD x Dx' P Pfx)).
 unfold filtermap, within.
 apply: filter_imp.
 intros t [H1 H2].
@@ -1635,7 +1679,7 @@ Proof.
   intros.
   eapply filterlim_ext_loc.
   by apply H.
-  by rewrite -(locally_singleton _ _ H).
+  by rewrite -(locally_singleton H).
 Qed.
 Lemma continuous_ext :
   forall (f g : T -> U) (x : T),
@@ -1679,7 +1723,7 @@ Proof.
   by apply Cf.
   by apply Cg.
   apply filterlim_locally => eps.
-  case: (proj1 (filterlim_locally _ _) Ch eps) => /= del Hdel.
+  case: (proj1 (filterlim_locally _) Ch eps) => /= del Hdel.
   rewrite {1}/ball /= /prod_ball /= in Hdel.
   exists (fun y => ball (f x) (pos del) y) (fun y => ball (g x) (pos del) y).
   apply locally_ball.
@@ -1695,12 +1739,12 @@ Lemma is_lim_comp_continuous (f g : R -> R) (x : Rbar) (l : R) :
 Proof.
   intros Hf Hg.
   apply filterlim_locally => eps.
-  destruct (proj1 (filterlim_locally _ _) Hg eps) as [e He] ; clear Hg.
+  destruct (proj1 (filterlim_locally _) Hg eps) as [e He] ; clear Hg.
   eapply filter_imp.
   intros y Hy.
-  apply He, Hy.
+(*  apply He, Hy.
   by apply/Hf/locally_ball.
-Qed.
+Qed.*) Abort.
 
 Lemma continuous_fst {U V : UniformSpace} (x : U) (y : V) :
   {for (x, y), continuous (fst (B:=V))}.
@@ -1735,7 +1779,7 @@ Proof.
   intros.
   eapply filterlim_comp.
   by apply H.
-  apply (filterlim_opp (f x)).
+  apply (@filterlim_opp _ _ (f x)).
 Qed.
 
 Lemma continuous_plus (f g : U -> V) (x : U) :
@@ -1746,7 +1790,7 @@ Proof.
   eapply filterlim_comp_2.
   by apply H.
   by apply H0.
-  apply (filterlim_plus (f x) (g x)).
+  apply (@filterlim_plus _ _ (f x) (g x)).
 Qed.
 
 Lemma continuous_minus (f g : U -> V) (x : U) :
@@ -1817,7 +1861,7 @@ Proof.
     assert (Rbar_lt 0 (Lub.Lub_Rbar (fun d => forall y : R, ball x d y -> ball (f x) eps (f y)))).
       case: (Lub.Lub_Rbar_correct (fun d => forall y : R, ball x d y -> ball (f x) eps (f y))).
       move: (Lub.Lub_Rbar _) => l H1 H2.
-      case: (proj1 (filterlim_locally _ _) (Cf x) eps) => d Hd.
+      case: (proj1 (filterlim_locally _) (Cf x) eps) => d Hd.
       eapply Rbar_lt_le_trans, H1.
       by apply d.
       by apply Hd.
@@ -1830,20 +1874,23 @@ Proof.
     case: (Lub.Lub_Rbar_correct (fun d => forall y : R, ball x d y -> ball (f x) eps (f y))).
     move: (Lub.Lub_Rbar (fun d => forall y : R, ball x d y -> ball (f x) eps (f y))) H => {H0} l H0 H1 H2 y Hy.
     contradict Hy.
+    apply/ball_R_dist.
     apply Rle_not_lt.
     apply (Rbar_le_trans (Finite _) l (Finite _)).
     case: (l) H0 => [r | | ] //= H0.
     apply Rmin_r.
     apply H2 => d /= Hd.
     apply Rnot_lt_le ; contradict Hy.
-    by apply Hd.
+    by apply Hd, ball_R_dist.
   destruct (compactness_value_1d a b (fun x => [posreal of proj1_sig (H x) / 2])) as [d Hd].
   exists d => x y Hx Hy Hxy Hf.
   apply (Hd x Hx).
   case => {Hd} t [Ht].
   case: H => /= delta Hdelta [Htx Hdt].
   apply (Hdelta x).
-    eapply ball_le, Htx.
+    eapply ball_le; last first.
+      apply/ball_R_dist.
+      apply Htx.
     rewrite {2}(double_var delta).
     apply Rminus_le_0 ; ring_simplify.
     by apply Rlt_le.
@@ -1851,6 +1898,7 @@ Proof.
   apply (Hdelta y).
     rewrite (double_var delta).
     apply ball_triangle with x.
+    apply ball_R_dist.
     apply Htx.
     by eapply ball_le, Hxy.
   contradict Hf.

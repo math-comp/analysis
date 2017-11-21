@@ -1560,28 +1560,28 @@ rewrite Arith.Plus.plus_comm ; apply le_trans with (1:=Hn).
 apply le_trans with (1:=le_plus_r (phi M) _).
 assert (H:(forall x, M+phi M + x <= M+phi (x+M))%coq_nat).
 induction x as [|x IH].
-(* rewrite plus_0_l plus_0_r. *)
-(* apply le_refl. *)
-(* rewrite <- plus_n_Sm. *)
-(* apply lt_le_S. *)
-(* apply le_lt_trans with (1:=IH). *)
-(* apply plus_lt_compat_l. *)
-(* apply Hphi. *)
-(* apply le_plus_r. *)
-(* assert (M <= n)%nat. *)
-(* apply le_trans with (2:=Hn); apply le_plus_r. *)
-(* specialize (H (n-M)%nat). *)
-(* replace (n-M+M)%nat with n in H. *)
-(* apply le_trans with (2:=H). *)
-(* rewrite (Arith.Plus.plus_comm _ (phi M)) -Arith.Plus.plus_assoc. *)
-(* apply plus_le_compat_l. *)
-(* rewrite le_plus_minus_r. *)
-(* apply le_refl. *)
-(* exact H0. *)
-(* rewrite Arith.Plus.plus_comm. *)
-(* now apply sym_eq, le_plus_minus_r. *)
-(* Qed. *)
-Admitted.
+rewrite plus_0_l -plusE plus_0_r.
+apply le_refl.
+rewrite <- plus_n_Sm.
+apply lt_le_S.
+apply le_lt_trans with (1:=IH).
+apply plus_lt_compat_l.
+apply Hphi.
+apply le_plus_r.
+assert (M <= n)%coq_nat.
+apply le_trans with (2:=Hn); apply le_plus_r.
+specialize (H (n-M)%nat).
+replace (n-M+M)%coq_nat with n in H.
+apply le_trans with (2:=H).
+rewrite -!plusE.
+rewrite (Arith.Plus.plus_comm _ (phi M)) -Arith.Plus.plus_assoc.
+apply plus_le_compat_l.
+rewrite le_plus_minus_r.
+apply le_refl.
+exact H0.
+rewrite Arith.Plus.plus_comm.
+now apply sym_eq, le_plus_minus_r.
+Qed.
 Lemma eventually_subseq :
   forall phi,
   (forall n, (phi n < phi (S n))%coq_nat) ->
@@ -1777,17 +1777,16 @@ Qed.
 Lemma is_lim_seq_incr_n (u : nat -> R) (N : nat) (l : Rbar) :
   u --> l <-> (fun n => u (n + N)%nat) --> l.
 Proof.
-(*   split. *)
-(*   elim: N u => [ | N IH] u. *)
-(*     apply is_lim_seq_ext => n ; by rewrite plus_0_r. *)
-(*   move=> /is_lim_seq_incr_1 /IH. *)
-(*   by apply is_lim_seq_ext => n ; by rewrite plus_n_Sm. *)
-(*   elim: N u => [ | N IH] u. *)
-(*     apply is_lim_seq_ext => n ; by rewrite plus_0_r. *)
-(*   move=> Hu; apply/is_lim_seq_incr_1/IH. *)
-(*   move: Hu ; by apply is_lim_seq_ext => n ; by rewrite plus_n_Sm. *)
-(* Qed. *)
-Admitted.
+  split.
+  elim: N u => [ | N IH] u.
+    apply is_lim_seq_ext => n ; by rewrite -plusE plus_0_r.
+  move=> /is_lim_seq_incr_1 /IH.
+  by apply is_lim_seq_ext => n ; by rewrite plus_n_Sm.
+  elim: N u => [ | N IH] u.
+    apply is_lim_seq_ext => n ; by rewrite -plusE plus_0_r.
+  move=> Hu; apply/is_lim_seq_incr_1/IH.
+  move: Hu ; by apply is_lim_seq_ext => n ; by rewrite plus_n_Sm.
+Qed.
 Lemma ex_lim_seq_incr_n (u : nat -> R) (N : nat) :
   [cvg u in Rbar] <-> [cvg (fun n => u (n + N)%nat) in Rbar].
 Proof.
@@ -1799,11 +1798,10 @@ Lemma Lim_seq_incr_n (u : nat -> R) (N : nat) :
   Lim_seq (fun n => u (n + N)%nat) = Lim_seq u.
 Proof.
   elim: N u => [ | N IH] u.
-(*   apply Lim_seq_ext => n ; by rewrite plus_0_r. *)
-(*   rewrite -(Lim_seq_incr_1 u) -(IH (fun n => u (S n))). *)
-(*   apply Lim_seq_ext => n ; by rewrite plus_n_Sm. *)
-(* Qed. *)
-Admitted.
+  apply Lim_seq_ext => n ; by rewrite -plusE plus_0_r.
+  rewrite -(Lim_seq_incr_1 u) -(IH (fun n => u (S n))).
+  apply Lim_seq_ext => n ; by rewrite plus_n_Sm.
+Qed.
 
 (** *** Order *)
 
@@ -1823,68 +1821,73 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
     apply Rdiv_lt_0_compat.
     now apply -> Rminus_lt_0.
     apply Rlt_R0_R2.
-(*   assert (Hlf : locally lf (fun y => (lf + lg) / 2 < y)). *)
-(*     apply open_gt. *)
-(*     replace ((lf + lg) / 2) with (lf - (lf - lg) / 2) by field. *)
-(*     apply Rabs_lt_between'. *)
-(*     by rewrite /Rminus Rplus_opp_r Rabs_R0. *)
-(*   assert (Hlg : locally lg (fun y => y < (lf + lg) / 2)). *)
-(*     apply open_lt. *)
-(*     replace ((lf + lg) / 2) with (lg + (lf - lg) / 2) by field. *)
-(*     apply Rabs_lt_between'. *)
-(*     by rewrite /Rminus Rplus_opp_r Rabs_R0. *)
-(*   specialize (Hf _ Hlf). *)
-(*   specialize (Hg _ Hlg). *)
-(*   rewrite /filtermap /filter_of /= in Hf, Hg. *)
-(*   generalize (filter_and _ _ (filter_and _ _ Hf Hg) H). *)
-(*   apply filter_imp. *)
-(*   intros x [[H1 H2] H3]. *)
-(*   apply Rle_not_lt with (1 := H3). *)
-(*   now apply Rlt_trans with ((lf + lg) / 2). *)
-(* - assert (Hlf : locally lf (fun y => lf - 1 < y)). *)
-(*     apply open_gt. *)
-(*     apply Rabs_lt_between'. *)
-(*     rewrite /Rminus Rplus_opp_r Rabs_R0. *)
-(*     apply Rlt_0_1. *)
-(*   assert (Hlg : Rbar_locally -oo (fun y => Rbar_lt y (lf - 1))). *)
-(*     now apply open_Rbar_lt'. *)
-(*   specialize (Hf _ Hlf). *)
-(*   specialize (Hg _ Hlg). *)
-(*   rewrite /filtermap /filter_of /= in Hf, Hg. *)
-(*   generalize (filter_and _ _ (filter_and _ _ Hf Hg) H). *)
-(*   apply filter_imp. *)
-(*   intros x [[H1 H2] H3]. *)
-(*   apply Rle_not_lt with (1 := H3). *)
-(*   now apply Rlt_trans with (lf - 1). *)
-(* - assert (Hlf : Rbar_locally +oo (fun y => Rbar_lt (lg + 1) y)). *)
-(*     now apply open_Rbar_gt'. *)
-(*   assert (Hlg : locally lg (fun y => y < lg + 1)). *)
-(*     apply open_lt. *)
-(*     apply Rabs_lt_between'. *)
-(*     rewrite /Rminus Rplus_opp_r Rabs_R0. *)
-(*     apply Rlt_0_1. *)
-(*   specialize (Hf _ Hlf). *)
-(*   specialize (Hg _ Hlg). *)
-(*   rewrite /filtermap /filter_of /= in Hf, Hg. *)
-(*   generalize (filter_and _ _ (filter_and _ _ Hf Hg) H). *)
-(*   apply filter_imp. *)
-(*   intros x [[H1 H2] H3]. *)
-(*   apply Rle_not_lt with (1 := H3). *)
-(*   now apply Rlt_trans with (lg + 1). *)
-(* - assert (Hlf : Rbar_locally +oo (fun y => Rbar_lt 0 y)). *)
-(*     now apply open_Rbar_gt'. *)
-(*   assert (Hlg : Rbar_locally -oo (fun y => Rbar_lt y 0)). *)
-(*     now apply open_Rbar_lt'. *)
-(*   specialize (Hf _ Hlf). *)
-(*   specialize (Hg _ Hlg). *)
-(*   rewrite /filtermap /filter_of /= in Hf, Hg. *)
-(*   generalize (filter_and _ _ (filter_and _ _ Hf Hg) H). *)
-(*   apply filter_imp. *)
-(*   intros x [[H1 H2] H3]. *)
-(*   apply Rle_not_lt with (1 := H3). *)
-(*   now apply Rlt_trans with 0. *)
-(* Qed. *)
-Admitted.
+  assert (Hlf : locally lf (fun y => (lf + lg) / 2 < y)%R).
+    apply open_gt.
+    replace ((lf + lg) / 2)%R with (lf - (lf - lg) / 2); last first.
+      rewrite -RdivE // /plus /=; field.
+    apply/RltP.
+    apply Rabs_lt_between'.
+    by rewrite /Rminus Rplus_opp_r Rabs_R0.
+  assert (Hlg : locally lg (fun y => y < (lf + lg) / 2)%R).
+    apply open_lt.
+    replace ((lf + lg) / 2)%R with (lg + (lf - lg) / 2); last first.
+      rewrite -RdivE // /plus /=; field.
+    apply/RltP.
+    apply Rabs_lt_between'.
+    by rewrite /Rminus Rplus_opp_r Rabs_R0.
+  specialize (Hf _ Hlf).
+  specialize (Hg _ Hlg).
+  rewrite /filtermap /filter_of /= in Hf, Hg.
+  generalize (filter_and (filter_and Hf Hg) H).
+  apply filter_imp.
+  intros x [[H1 H2] H3].
+  apply Rle_not_lt with (1 := H3).
+  apply Rlt_trans with ((lf + lg) / 2)%R => //; by apply/RltP.
+- assert (Hlf : locally lf (fun y => lf - 1 < y)%R).
+    apply open_gt.
+    apply/RltP.
+    apply Rabs_lt_between'.
+    rewrite /Rminus Rplus_opp_r Rabs_R0.
+    apply Rlt_0_1.
+  assert (Hlg : Rbar_locally -oo (fun y => Rbar_lt y (lf - 1))).
+    now apply open_Rbar_lt'.
+  specialize (Hf _ Hlf).
+  specialize (Hg _ Hlg).
+  rewrite /filtermap /filter_of /= in Hf, Hg.
+  generalize (filter_and (filter_and Hf Hg) H).
+  apply filter_imp.
+  intros x [[H1 H2] H3].
+  apply Rle_not_lt with (1 := H3).
+  apply Rlt_trans with (lf - 1) => //; by apply/RltP.
+- assert (Hlf : Rbar_locally +oo (fun y => Rbar_lt (lg + 1) y)).
+    now apply open_Rbar_gt'.
+  assert (Hlg : locally lg (fun y => y < lg + 1)%R).
+    apply open_lt.
+    apply/RltP.
+    apply Rabs_lt_between'.
+    rewrite /Rminus Rplus_opp_r Rabs_R0.
+    apply Rlt_0_1.
+  specialize (Hf _ Hlf).
+  specialize (Hg _ Hlg).
+  rewrite /filtermap /filter_of /= in Hf, Hg.
+  generalize (filter_and (filter_and Hf Hg) H).
+  apply filter_imp.
+  intros x [[H1 H2] H3].
+  apply Rle_not_lt with (1 := H3).
+  apply Rlt_trans with (lg + 1) => //; by apply/RltP.
+- assert (Hlf : Rbar_locally +oo (fun y => Rbar_lt 0 y)).
+    now apply open_Rbar_gt'.
+  assert (Hlg : Rbar_locally -oo (fun y => Rbar_lt y 0)).
+    now apply open_Rbar_lt'.
+  specialize (Hf _ Hlf).
+  specialize (Hg _ Hlg).
+  rewrite /filtermap /filter_of /= in Hf, Hg.
+  generalize (filter_and (filter_and Hf Hg) H).
+  apply filter_imp.
+  intros x [[H1 H2] H3].
+  apply Rle_not_lt with (1 := H3).
+  now apply Rlt_trans with 0.
+Qed.
 
 Lemma is_lim_seq_le_loc (u v : nat -> R) (l1 l2 : Rbar) :
   eventually (fun n => u n <= v n) ->
@@ -1968,29 +1971,29 @@ intros T F FF f g h l H Hf Hh.
 destruct l as [l| |].
 - intros P [eps He].
   assert (H' : Rbar_locally l (fun y => Rabs (y - l) < eps)).
-(*     now exists eps. *)
-(*   unfold filter_le, filtermap in Hf, Hh |- *. *)
-(*   specialize (Hf _ H'). *)
-(*   specialize (Hh _ H'). *)
-(*   rewrite /filter_of /= in Hf Hh *. *)
-(*   generalize (filter_and _ _ H (filter_and _ _ Hf Hh)). *)
-(*   apply: filter_imp. *)
-(*   intros x [H1 [H2 H3]]. *)
-(*   apply He. *)
-(*   apply Rabs_lt_between'. *)
-(*   split. *)
-(*   apply Rlt_le_trans with (2 := proj1 H1). *)
-(*   now apply Rabs_lt_between'. *)
-(*   apply Rle_lt_trans with (1 := proj2 H1). *)
-(*   now apply Rabs_lt_between'. *)
-(* - apply filterlim_ge_p_infty with (2 := Hf). *)
-(*   apply: filter_imp H. *)
-(*   now intros x [H _]. *)
-(* - apply filterlim_le_m_infty with (2 := Hh). *)
-(*   apply: filter_imp H. *)
-(*   now intros x [_ H]. *)
-(* Qed. *)
-Admitted.
+    by exists eps => ? /ball_R_dist.
+  unfold filter_le, filtermap in Hf, Hh |- *.
+  specialize (Hf _ H').
+  specialize (Hh _ H').
+  rewrite /filter_of /= in Hf Hh *.
+  generalize (filter_and H (filter_and Hf Hh)).
+  apply: filter_imp.
+  intros x [H1 [H2 H3]].
+  apply He.
+  apply/ball_R_dist.
+  apply Rabs_lt_between'.
+  split.
+  apply Rlt_le_trans with (2 := proj1 H1).
+  now apply Rabs_lt_between'.
+  apply Rle_lt_trans with (1 := proj2 H1).
+  now apply Rabs_lt_between'.
+- apply filterlim_ge_p_infty with (2 := Hf).
+  apply: filter_imp H.
+  now intros x [H _].
+- apply filterlim_le_m_infty with (2 := Hh).
+  apply: filter_imp H.
+  now intros x [_ H].
+Qed.
 
 Lemma is_lim_seq_le_le_loc (u v w : nat -> R) (l : Rbar) :
   eventually (fun n => u n <= v n <= w n) -> u --> l -> w --> l -> v --> l.
@@ -2195,20 +2198,25 @@ intros [x| |] P [eps He].
 - exists eps.
   intros y Hy.
   apply He.
-(*   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=. *)
-(*   by rewrite Ropp_involutive Rplus_comm Rabs_minus_sym. *)
-(* - exists (-eps). *)
-(*   intros y Hy. *)
-(*   apply He. *)
-(*   apply Ropp_lt_cancel. *)
-(*   by rewrite Ropp_involutive. *)
-(* - exists (-eps). *)
-(*   intros y Hy. *)
-(*   apply He. *)
-(*   apply Ropp_lt_cancel. *)
-(*   by rewrite Ropp_involutive. *)
-(* Qed. *)
-Admitted.
+  rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
+  rewrite Rplus_comm Ropp_involutive.
+  move/ball_R_dist in Hy.
+  by apply/RltP.
+- exists (-eps).
+  intros y Hy.
+  apply He.
+  apply/RltP.
+  apply Ropp_lt_cancel.
+  rewrite Ropp_involutive.
+  by apply/RltP.
+- exists (-eps).
+  intros y Hy.
+  apply He.
+  apply/RltP.
+  apply Ropp_lt_cancel.
+  apply/RltP.
+  by rewrite Ropp_involutive.
+Qed.
 
 Lemma is_lim_seq_opp (u : nat -> R) (l : Rbar) :
   u --> l <-> (fun n => -u n) --> (Rbar_opp l).
@@ -2258,91 +2266,96 @@ Proof.
     intros Hw.
     case: (Rbar_le_lt_dec 0 z) => Hz Hp.
     by apply Hw.
-(*     apply (filterlim_ext (fun z => - (- fst z + - snd z))). *)
-(*     intros t. *)
-(*     ring. *)
-(*     rewrite -(Rbar_opp_involutive z). *)
-(*     eapply filterlim_comp. *)
-(*     2: apply filterlim_Rbar_opp. *)
-(*     assert (Hw' : (fun z => fst z + snd z) @ (filter_prod (Rbar_locally (Rbar_opp x)) (Rbar_locally (Rbar_opp y))) --> (Rbar_opp z)). *)
-(*     apply Hw. *)
-(*     rewrite -Ropp_0 -/(Rbar_opp 0). *)
-(*     apply <- Rbar_opp_le. *)
-(*     now apply Rbar_lt_le. *)
-(*     revert Hp. *)
-(*     clear. *)
-(*     destruct x as [x| |] ; destruct y as [y| |] ; destruct z as [z| |] => //=. *)
-(*     unfold is_Rbar_plus ; simpl => H. *)
-(*     injection H => <-. *)
-(*     apply f_equal, f_equal ; ring. *)
-(*     clear Hw. *)
-(*     intros P HP. *)
-(*     specialize (Hw' P HP). *)
-(*     destruct Hw' as [Q R H1 H2 H3]. *)
-(*     exists (fun x => Q (- x)) (fun x => R (- x)). *)
-(*     now apply filterlim_Rbar_opp. *)
-(*     now apply filterlim_Rbar_opp. *)
-(*     intros u v HQ HR. *)
-(*     exact (H3 _ _ HQ HR). *)
+    apply (@filterlim_ext _ _ _ _ _ (fun z => - (- fst z + - snd z))).
+    intros t.
+    ring.
+    rewrite -(Rbar_opp_involutive z).
+    eapply filterlim_comp.
+    2: apply filterlim_Rbar_opp.
+    assert (Hw' : (fun z => fst z + snd z) @ (filter_prod (Rbar_locally (Rbar_opp x)) (Rbar_locally (Rbar_opp y))) --> (Rbar_opp z)).
+    apply Hw.
+    rewrite -Ropp_0 -/(Rbar_opp 0).
+    apply <- Rbar_opp_le.
+    now apply Rbar_lt_le.
+    revert Hp.
+    clear.
+    destruct x as [x| |] ; destruct y as [y| |] ; destruct z as [z| |] => //=.
+    unfold is_Rbar_plus ; simpl => H.
+    injection H => <-.
+    apply f_equal, f_equal ; ring.
+    clear Hw.
+    intros P HP.
+    specialize (Hw' P HP).
+    destruct Hw' as [Q R H1 H2 H3].
+    exists (fun x => Q (- x)) (fun x => R (- x)).
+    now apply filterlim_Rbar_opp.
+    now apply filterlim_Rbar_opp.
+    intros u v HQ HR.
+    exact (H3 _ _ HQ HR).
 
-(*   unfold is_Rbar_plus. *)
-(*   case: z => [z| |] Hz Hp ; *)
-(*   try by case: Hz. *)
+  unfold is_Rbar_plus.
+  case: z => [z| |] Hz Hp ;
+  try by case: Hz.
 
-(* (* x + y \in R *) *)
-(*   case: x y Hp Hz => [x| |] ; case => [y| |] //= ; case => <- Hz. *)
-(*   intros P [eps He]. *)
-(*   exists (fun u => Rabs (u - x) < eps / 2) (fun v => Rabs (v - y) < eps / 2). *)
-(*   now exists [posreal of eps / 2]. *)
-(*   now exists [posreal of eps / 2]. *)
-(*   intros u v Hu Hv. *)
-(*   apply He. *)
-(*   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=. *)
-(*   replace (u + v + - (x + y)) with ((u - x) + (v - y)) by ring. *)
-(*   rewrite (double_var eps) ; *)
-(*   apply Rle_lt_trans with (1 := Rabs_triang _ _), Rplus_lt_compat. *)
-(*   now apply Hu. *)
-(*   now apply Hv. *)
+(* x + y \in R *)
+  case: x y Hp Hz => [x| |] ; case => [y| |] //= ; case => <- Hz.
+  intros P [eps He].
+  exists (fun u => Rabs (u - x) < eps / 2) (fun v => Rabs (v - y) < eps / 2).
+  by exists [posreal of eps / 2] => y0 /ball_R_dist.
+  by exists [posreal of eps / 2] => y0 /ball_R_dist.
+  intros u v Hu Hv.
+  apply He.
+  rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
+  rewrite -RabsE Rabs_minus_sym.
+  rewrite (_ : _ - _ = (u - x) + (v - y)); last first.
+    rewrite !Rplus_assoc -(Rplus_comm (v - y)) !Rplus_assoc.
+    by rewrite -Ropp_plus_distr -Rplus_assoc (Rplus_comm y).
+  apply/RltP.
+  rewrite (double_var eps) ;
+  apply Rle_lt_trans with (1 := Rabs_triang _ _), Rplus_lt_compat.
+  now apply Hu.
+  now apply Hv.
 
 (* (* x + y = +oo *) *)
-(*   wlog: x y Hp {Hz} / (is_finite x) => [Hw|Hx]. *)
-(*     case: x y Hp {Hz} => [x| |] ; *)
-(*     case => [y| |] // _. *)
-(*     now apply (Hw x +oo). *)
-(*     assert (Hw': (fun z => fst z + snd z) @ (filter_prod (Rbar_locally y) (Rbar_locally +oo)) --> +oo). *)
-(*     exact: Hw. *)
-(*     intros P HP. *)
-(*     specialize (Hw' P HP). *)
-(*     destruct Hw' as [Q R H1 H2 H3]. *)
-(*     exists R Q ; try assumption. *)
-(*     intros u v Hu Hv. *)
-(*     rewrite /= Rplus_comm. *)
-(*     now apply (H3 v u). *)
-(*     clear Hw. *)
-(*     intros P [N HN]. *)
-(*     exists (fun x => N/2 < x) (fun x => N/2 < x). *)
-(*     now exists (N/2). *)
-(*     now exists (N/2). *)
-(*     intros x y Hx Hy. *)
-(*     simpl. *)
-(*     apply HN. *)
-(*     rewrite (double_var N). *)
-(*     now apply Rplus_lt_compat. *)
-(*   case: x y Hp Hx => [x| |] ; *)
-(*   case => [y| | ] //= _ _. *)
-(*   intros P [N HN]. *)
-(*   exists (fun u => Rabs (u - x) < 1) (fun v => N - x + 1 < v). *)
-(*   now exists [posreal of 1]. *)
-(*   now exists (N - x + 1). *)
-(*   intros u v Hu Hv. *)
-(*   simpl. *)
-(*   apply HN. *)
-(*   replace N with (x - 1 + (N - x + 1)) by ring. *)
-(*   apply Rplus_lt_compat. *)
-(*   now apply Rabs_lt_between'. *)
-(*   exact Hv. *)
-(* Qed. *)
-Admitted.
+  wlog: x y Hp {Hz} / (is_finite x) => [Hw|Hx].
+    case: x y Hp {Hz} => [x| |] ;
+    case => [y| |] // _.
+    now apply (Hw x +oo).
+    assert (Hw': (fun z => fst z + snd z) @ (filter_prod (Rbar_locally y) (Rbar_locally +oo)) --> +oo).
+    exact: Hw.
+    intros P HP.
+    specialize (Hw' P HP).
+    destruct Hw' as [Q R H1 H2 H3].
+    exists R Q ; try assumption.
+    intros u v Hu Hv.
+    rewrite /= Rplus_comm.
+    now apply (H3 v u).
+    clear Hw.
+    intros P [N HN].
+    exists (fun x => N/2 < x) (fun x => N/2 < x).
+    by exists (N/2) => x /RltP.
+    by exists (N/2) => x /RltP.
+    intros x y Hx Hy.
+    simpl.
+    apply HN.
+    rewrite (double_var N).
+    apply/RltP.
+    now apply Rplus_lt_compat.
+  case: x y Hp Hx => [x| |] ;
+  case => [y| | ] //= _ _.
+  intros P [N HN].
+  exists (fun u => Rabs (u - x) < 1) (fun v => N - x + 1 < v).
+  by exists [posreal of 1] => y /ball_R_dist.
+  by exists (N - x + 1) => x0 /RltP.
+  intros u v Hu Hv.
+  simpl.
+  apply HN.
+  replace N with (x - 1 + (N - x + 1)); last by ring.
+  apply/RltP.
+  apply Rplus_lt_compat.
+  now apply Rabs_lt_between'.
+  exact Hv.
+Qed.
 
 Lemma is_lim_seq_plus (u v : nat -> R) (l1 l2 l : Rbar) :
   u --> l1 -> v --> l2 ->
