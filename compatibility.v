@@ -15,6 +15,7 @@ Notation AbelianGroup := zmodType.
 Notation AbsRing := absRingType.
 Notation Ring := ringType.
 Notation NormedModule K := (normedModType K).
+Notation UniformSpace := uniformType.
 Notation zero := (GRing.zero _).
 Notation plus := +%R.
 Notation opp := GRing.opp.
