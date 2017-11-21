@@ -387,16 +387,50 @@ Definition filter_ex {T : Type} (F : set (set T)) {FF : ProperFilter F} :=
   filter_ex_subproof (filter_not_empty F).
 Arguments filter_ex {T F FF _}.
 
+Definition phantom_near {T} (F : set (set T)) := T.
+Arguments phantom_near : simpl never.
+
 Lemma filterP T (F : set (set T)) {FF : Filter F} (P : set T) :
-  (exists2 Q : set T, F Q & forall x, Q x -> P x) <-> F P.
+  (exists2 Q : set T, F Q & forall x : phantom_near F, Q x -> P x) <-> F P.
 Proof.
 split; last by exists P.
 by move=> [Q FQ QP]; apply: (filter_imp QP).
 Qed.
 
+Ltac near :=
+  let P := fresh "precise" in
+  let R := fresh "locally_true" in
+  let FR := fresh "locally_trueP" in
+  apply/filterP;
+  match goal with |- exists2 Q : set ?T, ?F Q & _ =>
+                  evar (R : set T); evar (FR : F R);
+                  exists R; [exact: FR|] end.
+
+Ltac have_near x FP :=
+  match (type of x) with phantom_near ?F =>
+  match goal with U : F ?R  |- _ =>
+  match goal with Rx : ?R x |- _ =>
+    instantiate (1 := filter_and _ FP) in (Value of U);
+    case: Rx => [Rx]
+  end end end.
+
+Ltac end_near x :=
+  match (type of x) with phantom_near ?F =>
+  match goal with U : F ?R  |- _ =>
+    instantiate (1 := filter_true) in (Value of U)
+  end
+  end.
+
 Lemma filter_forall {T : Type} {F} {FF: @Filter T F} (P : T -> Prop) :
   (forall x, P x) -> F P.
 Proof. by move=> ?; apply/filterP; exists setT => //; apply: filter_true. Qed.
+
+Lemma filter_bind (T : Type) (F : set (set T)) :
+  Filter F -> forall P Q : set T, {near F, P `<=` Q} -> F P -> F Q.
+Proof.
+move=> FF P Q subPQ FP; near => x ?.
+by have_near x subPQ; apply; have_near x FP; end_near x.
+Qed.
 
 Lemma filter_const {T : Type} {F} {FF: @ProperFilter T F} (P : Prop) :
   F (fun=> P) -> P.
@@ -406,6 +440,8 @@ Proof. by move=> FP; case: (filter_ex FP). Qed.
 
 Definition filter_le {T : Type} (F G : set (set T)) := G `<=` F.
 
+Notation "F `=>` G" := (filter_le [filter of F] [filter of G])
+  (at level 70, format "F  `=>`  G") : classical_set_scope.
 Notation "F --> G" := (filter_le [filter of F] [filter of G])
   (at level 70, format "F  -->  G") : classical_set_scope.
 
@@ -458,86 +494,82 @@ Lemma filtermapiE {U V : Type} (f : U -> set V)
   filtermapi f F P = {near F, forall x, exists y, f x y /\ P y}.
 Proof. by []. Qed.
 
+Class infer (P : Prop) := Infer : P.
+
 Global Instance filtermapi_filter T U (f : T -> U -> Prop) (F : set (set T)) :
-  {near F, is_totalfun f} -> Filter F -> Filter (f `@ F).
+  infer {near F, is_totalfun f} -> Filter F -> Filter (f `@ F).
 Proof.
-move=> f_total FF; rewrite /filtermapi; apply: Build_Filter.
-- by apply: filter_imp f_total => x [[y Hy] H]; exists y.
- intros P Q HP HQ.
-  apply: filter_imp (filter_and (filter_and HP HQ) f_total).
-  intros x [[[y1 [Hy1 Py]] [y2 [Hy2 Qy]]] [[y Hy] Hf]].
-  exists y.
-  apply (conj Hy).
-  split.
-  now rewrite (Hf y y1).
-  now rewrite (Hf y y2).
-- intros P Q HPQ HP.
-  apply: filter_imp HP.
-  intros x [y [Hf Py]].
-  exists y.
-  apply (conj Hf).
-  now apply HPQ.
+move=> f_totalfun FF; rewrite /filtermapi; apply: Build_Filter. (* bug *)
+- by apply: filter_imp f_totalfun => x [[y Hy] H]; exists y.
+- move=> P Q FP FQ; near => x Rx.
+  have_near x FP => -[y [fxy Py]].
+  have_near x FQ => -[z [fxz Qy]].
+  have_near x f_totalfun => -[_ fx_prop]; end_near x.
+  by exists y; split => //; split => //; rewrite [y](fx_prop _ z).
+- move=> P Q subPQ FP; near=> x Rx.
+  by have_near x FP => -[y [fxy /subPQ Qy]]; end_near x; exists y.
 Qed.
 
 Global Instance filtermapi_proper_filter
   T U (f : T -> U -> Prop) (F : set (set T)) :
-  {near F, is_totalfun f} ->
+  infer {near F, is_totalfun f} ->
   ProperFilter F -> ProperFilter (f `@ F).
 Proof.
-intros HF FF.
-unfold filtermapi.
-split.
-- intro H.
-  apply: filter_not_empty.
-  apply filter_imp with (2 := H).
-  now intros x [y [_ Hy]].
-- apply: filtermapi_filter.
-  exact: HF.
+move=> f_totalfun FF; apply: Build_ProperFilter.
+by move=> P; rewrite /filtermapi => /filter_ex [x [y [??]]]; exists y.
 Qed.
 Definition filter_map_proper_filter' := filtermapi_proper_filter.
 
 Lemma filterlim_id T (F : set (set T)) : x @[x --> F] --> F.
 Proof. exact. Qed.
 
+Lemma appfilter U V (f : U -> V) (F : set (set U)) :
+  f @ F = [set P | F (f @^-1` P)].
+Proof. by []. Qed.
+
+Lemma filterlim_app U V (F G : set (set U)) (f : U -> V) :
+  F --> G -> f @ F --> f @ G.
+Proof. by move=> FG P /=; exact: FG. Qed.
+
+Lemma filter_comp T U V (f : T -> U) (g : U -> V) (F : set (set T)) :
+  g \o f @ F = g @ (f @ F).
+Proof. by []. Qed.
+
 Lemma filterlim_comp T U V (f : T -> U) (g : U -> V)
   (F : set (set T)) (G : set (set U)) (H : set (set V)) :
-  f @ F --> G -> g @ G --> H -> g (f x) @[x --> F] --> H.
+  f @ F --> G -> g @ G --> H -> g \o f @ F --> H.
 Proof.
-intros FG GH P HP.
-apply (FG (fun x => P (g x))).
-now apply GH.
+move=> fFG gGH; apply: filter_le_trans gGH.
+by rewrite filter_comp; apply: filterlim_app.
+Qed.
+
+Lemma filterlim_eq_loc {T U} {F : set (set T)}
+  {FF : Filter F} (f g : T -> U) :
+  {near F, f =1 g} -> g @ F --> f @ F.
+Proof.
+move=> eq_fg P /=; rewrite !appfilter => /= FP.
+near=> x Rx /=; have_near x eq_fg => <-.
+by have_near x FP => Pgx; end_near x.
 Qed.
 
 Lemma filterlim_ext_loc {T U} {F : set (set T)} {G : set (set U)}
   {FF : Filter F} (f g : T -> U) :
-  F (fun x => f x = g x) -> f @ F --> G -> g @ F --> G.
+  {near F, f =1 g} -> f @ F --> G -> g @ F --> G.
 Proof.
-intros  Efg Lf P GP.
-specialize (Lf P GP).
-generalize (@filter_and _ _ _ _ (fun x : T => P (f x)) Efg Lf).
-apply: filter_imp.
-now intros x [-> H].
+by move=> eq_fg; apply: filter_le_trans; apply: filterlim_eq_loc.
 Qed.
 
 Lemma filterlim_ext {T U} {F : set (set T)} {G : set (set U)}
   {FF : Filter F} (f g : T -> U) :
   (forall x, f x = g x) -> f @ F --> G -> g @ F --> G.
-Proof.
-intros Efg.
-apply filterlim_ext_loc.
-now apply filter_forall.
-Qed.
+Proof. by move=> /(@filter_forall _ F) => eq_fg; apply: filterlim_ext_loc. Qed.
 
 Lemma filterlim_trans {T} {F G H : set (set T)} : F --> G -> G --> H -> F --> H.
-Proof. by move=> FG GH P /GH /FG. Qed.
+Proof. exact: filter_le_trans. Qed.
 
 Lemma filterlim_filter_le_1 {T U} {F G : set (set T)} {H : set (set U)}
   (f : T -> U) : G --> F -> f @ F --> H -> f @ G --> H.
-Proof.
-intros K Hf P HP.
-apply K.
-now apply Hf.
-Qed.
+Proof. by move=> /filterlim_app /filter_le_trans; apply. Qed.
 
 Lemma filterlim_filter_le_2 {T U} {F : set (set T)} {G H : set (set U)}
   (f : T -> U) : G --> H -> f @ F --> G -> f @ F --> H.
@@ -712,34 +744,19 @@ Qed.
 Definition within {T : Type} (D : set T) (F : set (set T)) (P : set T) :=
   {near F, D `<=` P}.
 
-Global Instance within_filter :
-  forall T D F, Filter F -> Filter (@within T D F).
+Global Instance within_filter T D F : Filter F -> Filter (@within T D F).
 Proof.
-intros T D F FF.
-unfold within.
-constructor.
-- now apply: filter_forall.
-- intros P Q WP WQ.
-  apply: (@filter_imp _ _ _ (fun x => (D x -> P x) /\ (D x -> Q x))).
-  intros x [HP HQ] HD.
-  split.
-  now apply HP.
-  now apply HQ.
-  now apply filter_and.
-- intros P Q H FP.
-  apply: (@filter_imp _ _ _ (fun x => (D x -> P x) /\ (P x -> Q x))).
-  intros x [H1 H2] HD.
-  apply H2, H1, HD.
-  apply filter_and.
-  exact FP.
-  now apply filter_forall.
+move=> FF; rewrite /within; constructor.
+- by apply: filter_forall.
+- move=> P Q FP; apply: filter_bind; apply: filter_bind FP.
+  by apply: filter_forall => x DP DQ Dx; split; [apply: DP|apply: DQ].
+- move=> P Q subPQ; apply: filter_bind; apply: filter_forall.
+  by move=> x DP /DP /subPQ.
 Qed.
 
 Lemma filter_le_within {T} {F : set (set T)} {FF : Filter F} D :
   within D F --> F.
-Proof.
-now intros P; apply: filter_imp.
-Qed.
+Proof. by move=> P; apply: filter_imp. Qed.
 
 Lemma filterlim_within_ext {T U F} {G : set (set U)}
   {FF : Filter F} (D : set T) (f g : T -> U) :
@@ -747,10 +764,8 @@ Lemma filterlim_within_ext {T U F} {G : set (set U)}
   f @ within D F --> G ->
   g @ within D F --> G.
 Proof.
-intros Efg.
-apply filterlim_ext_loc.
-unfold within.
-now apply: filter_forall.
+move=> eq_fg; apply: filter_le_trans; apply: filterlim_eq_loc.
+by rewrite /within /=; apply: filter_forall.
 Qed.
 
 Definition subset_filter {T} (F : set (set T))
@@ -1205,8 +1220,6 @@ Notation "[ 'cvg' F 'in' T ]" :=
   (format "[ 'cvg'  F  'in'  T ]") : classical_set_scope.
 Notation continuous f := (forall x, f%function @ locally x --> f%function x).
 
-Lemma appfilter U V (f : U -> V) (F : set (set U)) : f @ F = [set P | F (f @^-1` P)].
-Proof. by []. Qed.
 
 Lemma filterlim_const {T} {U : uniformType} {F : set (set T)} {FF : Filter F} (a : U) :
   a @[_ --> F] --> a.
@@ -2432,14 +2445,14 @@ Qed.
 Lemma filterlim_plus (x y : V) : z.1 + z.2 @[z --> (x, y)] --> x + y.
 Proof.
 apply/filterlim_locally_norm=> e; rewrite /ball_norm appfilter /=.
-apply/filterP.
-evar (Q : set (V * V)).
-evar (FQ : filter_prod (locally x) (locally y) Q).
-exists Q => // z Qz.
+near=> z ?.
 rewrite opprD addrACA (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
 rewrite ltr_add //.
+have_near x (@filterlim_fst _ _ _ _ _).
 have /filterlim_locally_norm /(_ [posreal of e / 2]%coqR) :=
    !! @filterlim_fst _ _ (locally x) (locally y) _.
+  move=> H.
+  have_near x H.
 move=> /filterP [Q1].
 rewrite appfilter /= => A.
 apply.
@@ -2472,12 +2485,7 @@ Admitted.
 Lemma filterlim_scal (k : K) (x : V) : z.1 *: z.2 @[z --> (k, x)] --> k *: x.
 Proof.
 apply/filterlim_locally_norm=> /= eps; rewrite appfilter /=.
-apply/filterP.
-pose F := filter_prod (locally k) (locally x).
-evar (Q : set (K * V)).
-evar (FQ : F Q).
-exists Q => // z Qz.
-rewrite /ball_norm /= (@subr_trans _ (k *: z.2)).
+near => z ?; rewrite /ball_norm /= (@subr_trans _ (k *: z.2)).
 rewrite (double_var eps) (ler_lt_trans (ler_normm_add _ _)) //.
 rewrite ltr_add // -?(scalerBr, scalerBl).
   rewrite (ler_lt_trans (ler_normmZ _ _)) //.
@@ -2485,6 +2493,7 @@ rewrite ltr_add // -?(scalerBr, scalerBl).
     by rewrite ler_addl.
   rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //.
   rewrite -/(ball_norm _ _ _).
+  have_near x
   instantiate (FQ := filter_and _ _).
   exact: proj1 Qz.
 rewrite (ler_lt_trans (ler_normmZ _ _)) //.
