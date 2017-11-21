@@ -2,7 +2,7 @@ Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 Require Import Rcomplements Rbar Markov Iter Lub.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
-From SsrReals Require Import boolp.
+From SsrReals Require Import boolp reals.
 Require Import Rstruct.
 
 (** ADD HEADER HERE !! *)
@@ -12,10 +12,24 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import GRing.Theory Num.Def Num.Theory.
 
+Delimit Scope R_scope with coqR.
+Delimit Scope real_scope with real.
+Local Close Scope R_scope.
 Local Open Scope ring_scope.
+Local Open Scope real_scope.
+
+(* :TODO: move to boolp *)
+Lemma propT (P : Prop) : P -> P = True.
+Proof. by move=> p; rewrite propeqE; tauto. Qed.
+
+(* :TODO: move to boolp *)
+Lemma propF (P : Prop) : ~ P -> P = False.
+Proof. by move=> p; rewrite propeqE; tauto. Qed.
 
 (* Enrico's trick for tc resolution in have *)
 Notation "!! x" := (ltac:(refine x)) (at level 100, only parsing).
+Class infer (P : Prop) := Infer : P.
+Hint Mode infer ! : typeclass_instances.
 
 Hint Resolve cond_pos.
 Definition PosReal (x : R) (p : 0 < x) := mkposreal x (RltP _ _ p).
@@ -110,6 +124,9 @@ Notation "[ 'set' x | P ]" := [set x : _ | P]
 Notation "[ 'set' E | x 'in' A ]" := [set y | exists2 x, A x & E = y]
   (at level 0, E, x at level 99,
    format "[ '[hv' 'set'  E '/ '  |  x  'in'  A ] ']'") : classical_set_scope.
+Notation "[ 'set' E | x 'in' A & y 'in' B ]" := [set z | exists2 x, A x & exists2 y, B y & E = z]
+  (at level 0, E, x at level 99,
+   format "[ '[hv' 'set'  E '/ '  |  x  'in'  A  &  y  'in'  B ] ']'") : classical_set_scope.
 
 Definition image {A B} (f : A -> B) (X : set A) : set B :=
   [set f a | a in X].
@@ -125,6 +142,13 @@ Definition setU {A} (X Y : set A) := [set a | X a \/ Y a].
 Definition nonempty {A} (X : set A) := exists x, X x.
 Definition setC {A} (X : set A) := [set a | ~ X a].
 Definition setD {A} (X Y : set A) := [set a | X a /\ ~ Y a].
+Definition setM {A B} (X : set A) (Y : set B) := [set x | X x.1 /\ Y x.2].
+Definition fst_set {A B} (X : set (A * B)) := [set x | exists y, X (x, y)].
+Definition snd_set {A B} (X : set (A * B)) := [set y | exists x, X (x, y)].
+
+Notation "[ 'set' 'of' F ]" := [set F i | i in setT]
+  (at level 0,
+   format "[ 'set'  'of'  F ]") : classical_set_scope.
 
 Notation "[ 'set' a ]" := (set1 a)
   (at level 0, a at level 99, format "[ 'set'  a ]") : classical_set_scope.
@@ -136,6 +160,11 @@ Notation "[ 'set' a1 ; a2 ; .. ; an ]" := (setU .. (a1 |` [set a2]) .. [set an])
   (at level 0, a1 at level 99,
    format "[ 'set'  a1 ;  a2 ;  .. ;  an ]") : classical_set_scope.
 Notation "A `&` B" := (setI A B) : classical_set_scope.
+Notation "A `*` B" := (setM A B) : classical_set_scope.
+Notation "A .`1" := (fst_set A)
+  (at level 2, left associativity, format "A .`1") : classical_set_scope.
+Notation "A .`2" := (snd_set A)
+  (at level 2, left associativity, format "A .`2") : classical_set_scope.
 Notation "~` A" := (setC A) (at level 35, right associativity) : classical_set_scope.
 Notation "[ 'set' ~ a ]" := (~` [set a])
   (at level 0, format "[ 'set' ~  a ]") : classical_set_scope.
@@ -183,6 +212,8 @@ Definition subset {A} (X Y : set A) := forall a, X a -> Y a.
 
 Notation "A `<=` B" := (subset A B) (at level 70, no associativity)
  : classical_set_scope.
+Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) (at level 70, no associativity)
+ : classical_set_scope.
 Notation "f @^-1` A" := (preimage f A) (at level 24) : classical_set_scope.
 Notation "f @` A" := (image f A) (at level 24) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) (at level 80) : classical_set_scope.
@@ -225,6 +256,8 @@ Proof. by []. Qed.
 Definition is_prop {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := all (is_prop \o f).
 Definition is_total {A B} (f : A -> B -> Prop) := all (nonempty \o f).
+Definition is_totalfun {A B} (f : A -> B -> Prop) :=
+  forall x, nonempty (f x) /\ is_prop (f x).
 
 Definition xget {T : choiceType} x0 (P : set T) : T :=
   if pselect (exists x : T, `[<P x>]) isn't left exP then x0
@@ -317,19 +350,50 @@ Notation "[ 'filter' 'of' x ]" := (@filter_of _ _ _ x erefl)
   (format "[ 'filter'  'of'  x ]").
 Arguments filter_of _ _ _ _ _ _ /.
 
-Lemma filter_ofE  T (F : set (set T)) : [filter of F] = F.
+Lemma filter_of_filterE T (F : set (set T)) : [filter of F] = F.
 Proof. by []. Qed.
 
-Open Scope R_scope.
+Lemma filter_of_genericE X T (F : canonical_filter_on X T) :
+  [filter of canonical_filter_term F] = canonical_term_filter F.
+Proof. by []. Qed.
+
+Definition filter_ofE := (filter_of_filterE, filter_of_genericE).
+
+Section Near.
+
+Local Notation "{ 'all1' P }" := (forall x, P x : Prop) (at level 0).
+Local Notation "{ 'all2' P }" := (forall x y, P x y : Prop) (at level 0).
+Local Notation "{ 'all3' P }" := (forall x y z, P x y z: Prop) (at level 0).
+Local Notation ph := (phantom _).
+
+Definition prop_near1 {X Y} (F : canonical_filter_on X Y) (x : X)
+  (eq_x : x = canonical_filter_term F) P (phP : ph {all1 P}) :=
+  (canonical_term_filter F) P.
+
+Definition prop_near2 {X X' Y Y'} :=
+ fun (F : canonical_filter_on X Y) (x : X) of x = canonical_filter_term F =>
+ fun (F' : canonical_filter_on X' Y') (x' : X')
+     of x' = canonical_filter_term F' =>
+  fun P of ph {all2 P} =>
+  (canonical_term_filter F) (fun x => canonical_term_filter F' (P x)).
+
+End Near.
+
+Notation "{ 'near' x , P }" :=
+  (@prop_near1 _ _ _ x erefl _ (inPhantom P))
+  (at level 0, format "{ 'near'  x ,  P }") : type_scope.
+Notation "{ 'near' x & y , P }" :=
+  (@prop_near2 _ _ _ _ _ x erefl _ y erefl _ (inPhantom P))
+  (at level 0, format "{ 'near'  x  &  y ,  P }") : type_scope.
 
 (** * Filters *)
 
 (** ** Definitions *)
 
 Class Filter {T : Type} (F : set (set T)) := {
-  filter_true : F setT ;
-  filter_and : forall P Q : set T, F P -> F Q -> F (P `&` Q) ;
-  filter_imp : forall P Q : set T, P `<=` Q -> F P -> F Q
+  filterT : F setT ;
+  filterI : forall P Q : set T, F P -> F Q -> F (P `&` Q) ;
+  filterS : forall P Q : set T, P `<=` Q -> F P -> F Q
 }.
 Global Hint Mode Filter - ! : typeclass_instances.
 
@@ -362,37 +426,197 @@ Definition filter_ex {T : Type} (F : set (set T)) {FF : ProperFilter F} :=
   filter_ex_subproof (filter_not_empty F).
 Arguments filter_ex {T F FF _}.
 
+(* Near Tactic *)
+
 Lemma filterP T (F : set (set T)) {FF : Filter F} (P : set T) :
-  (exists2 Q : set T, F Q & forall x, Q x -> P x) <-> F P.
+  (exists2 Q : set T, F Q & forall x : T, Q x -> P x) <-> F P.
 Proof.
 split; last by exists P.
-by move=> [Q FQ QP]; apply: (filter_imp QP).
+by move=> [Q FQ QP]; apply: (filterS QP).
 Qed.
+
+Definition extensible_property T (x : T) (P : Prop) := P.
+Lemma extensible_propertyI T (x : T) (P : Prop) :
+  P -> extensible_property x P.
+Proof. by []. Qed.
+
+Record in_filter T (F : set (set T)) := InFilter {
+  prop_in_filter_proj : T -> Prop;
+  prop_in_filterP_proj : F prop_in_filter_proj
+}.
+
+Module Type PropInFilterSig.
+Axiom t : forall (T : Type) (F : set (set T)), in_filter F -> T -> Prop.
+Axiom tE : t = prop_in_filter_proj.
+End PropInFilterSig.
+Module PropInFilter : PropInFilterSig.
+Definition t := prop_in_filter_proj.
+Lemma tE : t = prop_in_filter_proj. Proof. by []. Qed.
+End PropInFilter.
+Coercion PropInFilter.t : in_filter >-> Funclass.
+Definition prop_in_filterE := PropInFilter.tE.
+
+Lemma prop_in_filterP T F (iF : @in_filter T F) : F iF.
+Proof. by rewrite prop_in_filterE; apply: prop_in_filterP_proj. Qed.
+
+Ltac near x :=
+apply/filterP;
+let R := fresh "around" in
+match goal with |- exists2 Q : set ?T, ?F Q & _ =>
+  evar (R : set T);
+  exists R; [rewrite /R {R}|move=> x /(extensible_propertyI x) ?]; last first
+end.
+
+Ltac have_near F x :=
+match (type of [filter of F]) with set (set ?T) =>
+  let R := fresh "around" in
+  evar (R : set T);
+  have [|x /(extensible_propertyI x) ?] := @filter_ex _ [filter of F] _ R;
+  [rewrite /R {R}|]; last first
+end.
+
+Ltac assume_near x :=
+match goal with Hx : extensible_property x _ |- _ =>
+  eapply proj1; do 10?[by apply: Hx|eapply proj2] end.
+
+Ltac end_near := do !
+  [exact: prop_in_filterP|exact: filterT|by []|apply: filterI].
+
+Ltac done :=
+  trivial; hnf; intros; solve
+   [ do ![solve [trivial | apply: sym_equal; trivial]
+         | discriminate | contradiction | split]
+   | case not_locked_false_eq_true; assumption
+   | match goal with H : ~ _ |- _ => solve [case H; trivial] end
+   | match goal with |- PropInFilter.t _ ?x => assume_near x end ].
+
+Lemma near T (F : set (set T)) P (FP : F P) (x : T) : (InFilter FP) x -> P x.
+Proof. by rewrite prop_in_filterE. Qed.
+Arguments near {T F P} FP _ _.
+
+Notation "[ 'valid_near' F ]" := (@InFilter _ F _ _) (format "[ 'valid_near'  F ]").
+Definition valid_nearE := prop_in_filterE.
 
 Lemma filter_forall {T : Type} {F} {FF: @Filter T F} (P : T -> Prop) :
   (forall x, P x) -> F P.
-Proof. by move=> ?; apply/filterP; exists setT => //; apply: filter_true. Qed.
+Proof. by move=> ?; apply/filterP; exists setT => //; apply: filterT. Qed.
+
+Lemma filter_bind (T : Type) (F : set (set T)) :
+  Filter F -> forall P Q : set T, {near F, P `<=` Q} -> F P -> F Q.
+Proof.
+move=> FF P Q subPQ FP; near x.
+  by apply: (near subPQ) => //; assume_near x.
+by end_near.
+Qed.
+
+Lemma filter_bind2 (T : Type) (F : set (set T)) :
+  Filter F -> forall P Q R : set T, {near F, forall x, P x -> Q x -> R x} ->
+  F P -> F Q -> F R.
+Proof. by move=> ???? PQR FP; apply: filter_bind; apply: filter_bind FP. Qed.
+
+Lemma filter_bind3 (T : Type) (F : set (set T)) :
+  Filter F -> forall P Q R S : set T, {near F, forall x, P x -> Q x -> R x -> S x} ->
+  F P -> F Q -> F R -> F S.
+Proof. by move=> ????? PQR FP; apply: filter_bind2; apply: filter_bind FP. Qed.
+
+Lemma filterS2 (T : Type) (F : set (set T)) :
+  Filter F -> forall P Q R : set T, (forall x, P x -> Q x -> R x) ->
+  F P -> F Q -> F R.
+Proof. by move=> ???? /filter_forall; apply: filter_bind2. Qed.
+
+Lemma filterS3 (T : Type) (F : set (set T)) :
+  Filter F -> forall P Q R S : set T, (forall x, P x -> Q x -> R x -> S x) ->
+  F P -> F Q -> F R -> F S.
+Proof. by move=> ????? /filter_forall; apply: filter_bind3. Qed.
 
 Lemma filter_const {T : Type} {F} {FF: @ProperFilter T F} (P : Prop) :
   F (fun=> P) -> P.
 Proof. by move=> FP; case: (filter_ex FP). Qed.
 
-(** ** Limits expressed with filters *)
+Definition filter_from {I T : Type} (B : I -> set T) : set (set T) :=
+  [set P | exists i, B i `<=` P].
+Definition filter_from_base {T : Type} (B : set (set T)) : set (set T) :=
+  [set P | exists2 b, B b & b `<=` P].
 
-Definition filter_le {T : Type} (F G : set (set T)) := G `<=` F.
+Lemma filter_from_family {I T : Type} (B : I -> set T) :
+  filter_from_base [set of B] `<=>` filter_from B.
+Proof.
+split=> [P [b [i _ <- BiP]]|P [i BiP]]; first by exists i.
+by exists (B i) => //; exists i.
+Qed.
 
-Notation "F --> G" := (filter_le [filter of F] [filter of G])
-  (at level 70, format "F  -->  G") : classical_set_scope.
+Lemma in_filter_from {I T : Type} (B : I -> set T) (i : I) :
+   filter_from B (B i).
+Proof. by exists i. Qed.
 
-Lemma filter_le_refl T (F : set (set T)) : F --> F.
+Lemma in_filter_from_base {T : Type} (B : set (set T)) b : B b ->
+   filter_from_base B b.
+Proof. by exists b. Qed.
+
+Definition flim {T : Type} (F G : set (set T)) := G `<=` F.
+Definition filter_le {T} := @flim T. (*compat*)
+Notation "F `=>` G" := (flim F G)
+  (at level 70, format "F  `=>`  G") : classical_set_scope.
+
+Lemma flim_refl T (F : set (set T)) : F `=>` F.
 Proof. exact. Qed.
 
-Lemma filter_le_trans T (F G H : set (set T)) :
-  (F --> G) -> (G --> H) -> (F --> H).
+Lemma flim_trans T (F G H : set (set T)) :
+  (F `=>` G) -> (G `=>` H) -> (F `=>` H).
 Proof. by move=> FG GH P /GH /FG. Qed.
+
+Lemma filter_fromP {I T : Type} (B : I -> set T) (F : set (set T)) :
+  Filter F ->
+  F `=>` filter_from B <-> forall i, F (B i).
+Proof.
+split; first by move=> FB i; apply/FB/in_filter_from.
+by move=> FB P [i BjP]; apply: (filterS BjP).
+Qed.
+
+Lemma filter_from_filter  {I T : Type} (B : I -> set T) :
+  (exists _ : I, True) -> (forall i j, exists k, B k `<=` B i `&` B j) ->
+  Filter (filter_from B).
+Proof.
+move=> [i0 _] Binter; constructor; first by exists i0.
+- move=> P Q [i BiP] [j BjQ]; have [k BkPQ]:= Binter i j.
+  by exists k => x /BkPQ [/BiP ? /BjQ].
+- by move=> P Q subPQ [i BiP]; exists i; apply: subset_trans subPQ.
+Qed.
+
+Lemma filter_from_baseP {T : Type} (B : set (set T)) (F : set (set T)) :
+  Filter F ->
+  F `=>` filter_from_base B <-> forall b, B b -> F b.
+Proof.
+split; first by move=> FB b Bb; apply/FB/in_filter_from_base.
+by move=> FB P [b Bb bP]; apply: (filterS bP); apply: FB.
+Qed.
+
+Lemma filter_from_base_filter {T : Type} (B : set (set T)) :
+  (exists b, B b) ->
+  (forall b1 b2, B b1 -> B b2 -> exists2 b, B b & b `<=` b1 `&` b2) ->
+  Filter (filter_from_base B).
+Proof.
+move=> [b0 Bb0] Binter; constructor; first by exists b0.
+  move=> P Q [b1 Bb1 b1P] [b2 Bb2 b2Q]; have [||b Bb b_sub] // := Binter b1 b2.
+  by exists b => // R /b_sub [/b1P PR /b2Q QR].
+by move=> P Q subPQ [b Bb bP]; exists b; apply: subset_trans subPQ.
+Qed.
+
+(** ** Limits expressed with filters *)
+
+Notation "F --> G" := (flim [filter of F] [filter of G])
+  (at level 70, format "F  -->  G") : classical_set_scope.
+
+Lemma filter_le_refl T (F : set (set T)) : F --> F. (*compat*)
+Proof. exact. Qed.
+
+Lemma filter_le_trans T (F G H : set (set T)) : (*compat*)
+  (F --> G) -> (G --> H) -> (F --> H).
+Proof. exact: flim_trans. Qed.
 
 Definition filtermap {T U : Type} (f : T -> U) (F : set (set T)) :=
   [set P | F (f @^-1` P)].
+Arguments filtermap _ _ _ _ _ /.
 
 Lemma filtermapE {U V : Type} (f : U -> V)
   (F : set (set U)) (P : set V) : filtermap f F P = F (f @^-1` P).
@@ -407,9 +631,9 @@ Global Instance filtermap_filter T U (f : T -> U) (F : set (set T)) :
   Filter F -> Filter (f @ F).
 Proof.
 move=> FF; constructor => [|P Q|P Q PQ]; rewrite ?filtermapE ?filter_ofE //=.
-- exact: filter_true.
-- exact: filter_and.
-- by apply: filter_imp=> ?/PQ.
+- exact: filterT.
+- exact: filterI.
+- by apply: filterS=> ?/PQ.
 Qed.
 
 Global Instance filtermap_proper_filter T U (f : T -> U) (F : set (set T)) :
@@ -421,200 +645,176 @@ Qed.
 Definition filtermap_proper_filter' := filtermap_proper_filter.
 
 Definition filtermapi {T U : Type} (f : T -> set U) (F : set (set T)) :=
-  [set P | F [set x | exists y, f x y /\ P y]].
+  [set P | {near F, forall x, exists y, f x y /\ P y}].
 
-Notation "E `@[ x --> F ]" := (filtermapi (fun x => E) F)
+Notation "E `@[ x --> F ]" := (filtermapi (fun x => E) [filter of F])
   (at level 60, x ident, format "E  `@[ x  -->  F ]") : classical_set_scope.
 Notation "f `@ F" := (filtermapi f [filter of F])
   (at level 60, format "f  `@  F") : classical_set_scope.
 
 Lemma filtermapiE {U V : Type} (f : U -> set V)
-  (F : set (set U)) (P : set V) : filtermapi f F P = F [set x | exists y, f x y /\ P y].
+  (F : set (set U)) (P : set V) :
+  filtermapi f F P = {near F, forall x, exists y, f x y /\ P y}.
 Proof. by []. Qed.
 
 Global Instance filtermapi_filter T U (f : T -> U -> Prop) (F : set (set T)) :
-  F [set x | nonempty (f x) /\ is_prop (f x)] ->
-  Filter F -> Filter (f `@ F).
+  infer {near F, is_totalfun f} -> Filter F -> Filter (f `@ F).
 Proof.
-move=> FP FF; rewrite /filtermapi; apply: Build_Filter.
-- apply: filter_imp FP => x [[y Hy] H].
-  exists y.
-  exact (conj Hy I).
-- intros P Q HP HQ.
-  apply: filter_imp (filter_and (filter_and HP HQ) FP).
-  intros x [[[y1 [Hy1 Py]] [y2 [Hy2 Qy]]] [[y Hy] Hf]].
-  exists y.
-  apply (conj Hy).
-  split.
-  now rewrite (Hf y y1).
-  now rewrite (Hf y y2).
-- intros P Q HPQ HP.
-  apply: filter_imp HP.
-  intros x [y [Hf Py]].
-  exists y.
-  apply (conj Hf).
-  now apply HPQ.
+move=> f_totalfun FF; rewrite /filtermapi; apply: Build_Filter. (* bug *)
+- by apply: filterS f_totalfun => x [[y Hy] H]; exists y.
+- move=> P Q FP FQ; near x.
+    have [//|y [fxy Py]] := near FP x.
+    have [//|z [fxz Qz]] := near FQ x.
+    have [//|_ fx_prop] := near f_totalfun x.
+    by exists y; split => //; split => //; rewrite [y](fx_prop _ z).
+  by end_near.
+- move=> P Q subPQ FP; near x.
+    by have [//|y [fxy /subPQ Qy]] := near FP x; exists y.
+  by end_near.
 Qed.
 
 Global Instance filtermapi_proper_filter
   T U (f : T -> U -> Prop) (F : set (set T)) :
-  F [set x | nonempty (f x) /\ is_prop (f x)] ->
+  infer {near F, is_totalfun f} ->
   ProperFilter F -> ProperFilter (f `@ F).
 Proof.
-intros HF FF.
-unfold filtermapi.
-split.
-- intro H.
-  apply: filter_not_empty.
-  apply filter_imp with (2 := H).
-  now intros x [y [_ Hy]].
-- apply filtermapi_filter.
-  exact HF.
-  apply filter_filter'.
+move=> f_totalfun FF; apply: Build_ProperFilter.
+by move=> P; rewrite /filtermapi => /filter_ex [x [y [??]]]; exists y.
 Qed.
 Definition filter_map_proper_filter' := filtermapi_proper_filter.
 
-Lemma filterlim_id T (F : set (set T)) : x @[x --> F] --> F.
+Lemma flim_id T (F : set (set T)) : x @[x --> F] --> F.
+Proof. exact. Qed.
+Arguments flim_id {T F}.
+
+Lemma filterlim_id T (F : set (set T)) : x @[x --> F] --> F. (*compat*)
 Proof. exact. Qed.
 
-Lemma filterlim_comp T U V (f : T -> U) (g : U -> V)
+Lemma appfilter U V (f : U -> V) (F : set (set U)) :
+  f @ F = [set P : _ -> Prop | {near F, forall x, P (f x)}].
+Proof. by []. Qed.
+
+Lemma flim_app U V (F G : set (set U)) (f : U -> V) :
+  F --> G -> f @ F --> f @ G.
+Proof. by move=> FG P /=; exact: FG. Qed.
+Lemma filterlim_app U V (F G : set (set U)) (f : U -> V) : (*compat*)
+  F --> G -> f @ F --> f @ G.
+Proof. by move=> FG P /=; exact: FG. Qed.
+
+Lemma flimi_app U V (F G : set (set U)) (f : U -> set V) :
+  F --> G -> f `@ F --> f `@ G.
+Proof. by move=> FG P /=; exact: FG. Qed.
+
+Lemma filter_comp T U V (f : T -> U) (g : U -> V) (F : set (set T)) : (*compat*)
+  g \o f @ F = g @ (f @ F).
+Proof. by []. Qed.
+
+Lemma flim_comp T U V (f : T -> U) (g : U -> V)
   (F : set (set T)) (G : set (set U)) (H : set (set V)) :
-  f @ F --> G -> g @ G --> H -> g (f x) @[x --> F] --> H.
+  f @ F `=>` G -> g @ G `=>` H -> g \o f @ F `=>` H.
+Proof. by move=> fFG gGH; apply: filter_le_trans gGH => P /fFG. Qed.
+
+Lemma flimi_comp T U V (f : T -> U) (g : U -> set V)
+  (F : set (set T)) (G : set (set U)) (H : set (set V)) :
+  f @ F `=>` G -> g `@ G `=>` H -> g \o f `@ F `=>` H.
+Proof. by move=> fFG gGH; apply: filter_le_trans gGH => P /fFG. Qed.
+
+Lemma filterlim_comp T U V (f : T -> U) (g : U -> V)
+  (F : set (set T)) (G : set (set U)) (H : set (set V)) : (*compat*)
+  f @ F `=>` G -> g @ G `=>` H -> g \o f @ F `=>` H.
+Proof. exact: flim_comp. Qed.
+
+Lemma flim_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> U) :
+  {near F, f =1 g} -> g @ F `=>` f @ F.
+Proof. by move=> eq_fg P /=; apply: filterS2 eq_fg => x <-. Qed.
+
+Lemma flimi_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> set U) :
+  {near F, f =2 g} -> g `@ F `=>` f `@ F.
 Proof.
-intros FG GH P HP.
-apply (FG (fun x => P (g x))).
-now apply GH.
+move=> eq_fg P /=; apply: filterS2 eq_fg => x eq_fg [y [fxy Py]].
+by exists y; rewrite -eq_fg.
 Qed.
+
+Lemma filterlim_eq_loc {T U} {F : set (set T)}
+  {FF : Filter F} (f g : T -> U) : (*compat*)
+  {near F, f =1 g} -> g @ F `=>` f @ F.
+Proof. exact: flim_eq_loc. Qed.
 
 Lemma filterlim_ext_loc {T U} {F : set (set T)} {G : set (set U)}
-  {FF : Filter F} (f g : T -> U) :
-  F (fun x => f x = g x) -> f @ F --> G -> g @ F --> G.
-Proof.
-intros  Efg Lf P GP.
-specialize (Lf P GP).
-generalize (@filter_and _ _ _ _ (fun x : T => P (f x)) Efg Lf).
-apply: filter_imp.
-now intros x [-> H].
-Qed.
+  {FF : Filter F} (f g : T -> U) : (*compat*)
+  {near F, f =1 g} -> f @ F `=>` G -> g @ F `=>` G.
+Proof. by move=> /flim_eq_loc/flim_trans; apply. Qed.
 
 Lemma filterlim_ext {T U} {F : set (set T)} {G : set (set U)}
-  {FF : Filter F} (f g : T -> U) :
+  {FF : Filter F} (f g : T -> U) : (*compat*)
   (forall x, f x = g x) -> f @ F --> G -> g @ F --> G.
-Proof.
-intros Efg.
-apply filterlim_ext_loc.
-now apply filter_forall.
-Qed.
+Proof. by move=> /(@filter_forall _ F) /filterlim_ext_loc; apply. Qed.
 
 Lemma filterlim_trans {T} {F G H : set (set T)} : F --> G -> G --> H -> F --> H.
-Proof. by move=> FG GH P /GH /FG. Qed.
+Proof. exact: flim_trans. Qed.
 
 Lemma filterlim_filter_le_1 {T U} {F G : set (set T)} {H : set (set U)}
-  (f : T -> U) : G --> F -> f @ F --> H -> f @ G --> H.
-Proof.
-intros K Hf P HP.
-apply K.
-now apply Hf.
-Qed.
+  (f : T -> U) : G --> F -> f @ F --> H -> f @ G --> H. (*compat*)
+Proof. by move=> /filterlim_app /filter_le_trans; apply. Qed.
 
 Lemma filterlim_filter_le_2 {T U} {F : set (set T)} {G H : set (set U)}
-  (f : T -> U) : G --> H -> f @ F --> G -> f @ F --> H.
-Proof.
-intros K Hf P HP.
-apply Hf.
-now apply K.
-Qed.
+  (f : T -> U) : G --> H -> f @ F --> G -> f @ F --> H. (*compat*)
+Proof. by move=> GH ?; apply: filter_le_trans GH. Qed.
 
 Lemma filterlimi_comp T U V (f : T -> U) (g : U -> set V)
   (F : set (set T)) (G : set (set U)) (H : set (set V)) :
-  f @ F --> G -> g `@ G --> H -> g (f x) `@[x --> F] --> H.
-Proof.
-intros FG GH P HP.
-apply (FG (fun x => exists y, g x y /\ P y)).
-now apply GH.
-Qed.
+  f @ F --> G -> g `@ G --> H -> g (f x) `@[x --> F] --> H. (*compat*)
+Proof. exact: flimi_comp. Qed.
 
 Lemma filterlimi_ext_loc {T U} {F : set (set T)} {G : set (set U)}
   {FF : Filter F} (f g : T -> set U) :
-  F [set x : T | forall y, f x y <-> g x y] ->
-  f `@ F --> G -> g `@ F --> G.
+  {near F, forall x y, f x y <-> g x y} ->
+  f `@ F --> G -> g `@ F --> G. (* compat *)
 Proof.
-intros Efg Lf P GP.
-specialize (Lf P GP).
-generalize (filter_and Efg Lf).
-apply: filter_imp.
-intros x [H [y [Hy1 Hy2]]].
-exists y.
-apply: conj Hy2.
-now apply H.
+move=> eq_fg; apply: flim_trans => P /=; apply flimi_eq_loc.
+by apply: filterS eq_fg => Q eq_fg y; rewrite propeqE.
 Qed.
 
 Lemma filterlimi_ext  {T U} {F : set (set T)} {G : set (set U)}
   {FF : Filter F} (f g : T -> set U) :
   (forall x y, f x y <-> g x y) ->
   f `@ F --> G -> g `@ F --> G.
-Proof.
-intros Efg.
-apply filterlimi_ext_loc.
-now apply filter_forall.
-Qed.
+Proof. by move=> /filter_forall; apply: filterlimi_ext_loc. Qed.
 
 Lemma filterlimi_filter_le_1 {T U} {F G : set (set T)} {H : set (set U)}
-  (f : T -> set U) : G --> F -> f `@ F --> H -> f `@ G --> H.
-Proof.
-intros K Hf P HP.
-apply K.
-now apply Hf.
-Qed.
+  (f : T -> set U) : G --> F -> f `@ F --> H -> f `@ G --> H. (* compat *)
+Proof. by move=> /flimi_app /flim_trans GF /GF. Qed.
 
 Lemma filterlimi_filter_le_2  {T U} {F : set (set T)} {G H : set (set U)}
-  (f : T -> set U) : G --> H -> f `@ F --> G -> f `@ F --> H.
-Proof.
-intros K Hf P HP.
-apply Hf.
-now apply K.
-Qed.
+  (f : T -> set U) : G --> H -> f `@ F --> G -> f `@ F --> H. (* compat *)
+Proof. by move=> /(flim_trans _) GH /GH. Qed.
 
 (** ** Specific filters *)
 
 (** Filters for pairs *)
 
-Inductive filter_prod {T U : Type} (F G : _ -> Prop) (P : T * U -> Prop) : Prop :=
-  Filter_prod (Q : T -> Prop) (R : U -> Prop) :
-    F Q -> G R -> (forall x y, Q x -> R y -> P (x, y)) -> filter_prod F G P.
+Definition filter_prod {T U : Type}
+  (F : set (set T)) (G : set (set U)) : set (set (T * U)) :=
+  filter_from_base [set P `*` Q | P in F & Q in G].
 
 Definition apply_filter_prod {X1 X2 Y1 Y2} (f : Y1 -> set (set X1))
   (g : Y2 -> set (set X2)) (y1 : Y1) (y2 : Y2) : set (set (X1 * X2)) :=
   filter_prod (f y1) (g y2).
+Arguments apply_filter_prod /.
 
 Canonical canonical_filter_prod X1 X2 (Z1 : canonical_filter X1)
   (Z2 : canonical_filter X2) : canonical_filter (X1 * X2) :=
   @CanonicalFilter _ _ (fun x => apply_filter_prod
   (@canonical_type_filter _ Z1) (@canonical_type_filter _ Z2) x.1 x.2).
 
-Global Instance filter_prod_filter :
-  forall T U (F : set (set T)) (G : set (set U)),
+Global Instance filter_prod_filter  T U (F : set (set T)) (G : set (set U)) :
   Filter F -> Filter G -> Filter (filter_prod F G).
 Proof.
-intros T U F G FF FG.
-constructor.
-- exists (fun _ => True) (fun _ => True).
-  apply filter_true.
-  apply filter_true.
-  easy.
-- intros P Q [AP BP P1 P2 P3] [AQ BQ Q1 Q2 Q3].
-  exists (fun x => AP x /\ AQ x) (fun x => BP x /\ BQ x).
-  now apply filter_and.
-  now apply filter_and.
-  intros x y [Px Qx] [Py Qy].
-  split.
-  now apply P3.
-  now apply Q3.
-- intros P Q HI [AP BP P1 P2 P3].
-  exists AP BP ; try easy.
-  intros x y Hx Hy.
-  apply HI.
-  now apply P3.
+move=> FF FG; apply: filter_from_base_filter.
+  by exists (setT `*` setT); do 2?exists setT =>//; apply: filterT.
+move=> _ _ [P FP [Q FQ <-]] [P' FP' [Q' FQ' <-]].
+exists ((P `&` P') `*` (Q `&` Q')); first by do?eexists; apply: filterI.
+by move=> [x y] [/= [??] [??]]; do !split.
 Qed.
 
 Global Instance filter_prod_proper {T1 T2 : Type}
@@ -622,144 +822,125 @@ Global Instance filter_prod_proper {T1 T2 : Type}
   {FF : ProperFilter F} {FG : ProperFilter G} :
   ProperFilter (filter_prod F G).
 Proof.
-apply: Build_ProperFilter'.
-apply: filter_prod_ind => Q R FQ GR QRF.
-apply: (filter_not_empty F); apply: filter_imp FQ => x Qx.
-apply: (filter_not_empty G); apply: filter_imp GR => y Ry.
-exact: QRF Qx Ry.
+apply: Build_ProperFilter'; rewrite /filter_prod=> - [_ [P FP [Q GQ <-]]].
+move=> PQsub0; suff Psub0: P `<=` set0.
+  by apply: (filter_not_empty F); apply: filterS FP.
+move=> x Px; suff Qsub0: Q `<=` set0.
+  by apply: (filter_not_empty G); apply: filterS GQ.
+by move=> y Qy; apply: (PQsub0 (x, y)); do ?eexists.
 Qed.
 Definition filter_prod_proper' := @filter_prod_proper.
 
-Lemma filterlim_fst {T U F G} {FG : Filter G} :
+Lemma filter_prod1 {T U} {F : set (set T)} {G : set (set U)}
+  {FG : Filter G} (P : set T) :
+  {near F, forall x, P x} -> {near (F, G), forall x, P x.1}.
+Proof.
+move=> FP; exists (P `*` setT); last by move=> ? [].
+by do ![eexists]=> //; apply: filterT.
+Qed.
+
+Lemma filter_prod2 {T U} {F : set (set T)} {G : set (set U)}
+  {FF : Filter F} (P : set U) :
+  {near G, forall x, P x} -> {near (F, G), forall x, P x.2}.
+Proof.
+move=> GP; exists (setT `*` P); last by move=> ? [].
+by do ![eexists]=> //; apply: filterT.
+Qed.
+
+Lemma flim_fst {T U F G} {FG : Filter G} :
   (@fst T U) @ filter_prod F G --> F.
-Proof.
-intros P HP.
-exists P (fun _ => True) ; try easy.
-apply filter_true.
-Qed.
+Proof. by move=> P; apply: filter_prod1. Qed.
 
-Lemma filterlim_snd {T U F G} {FF : Filter F} :
+Lemma flim_snd {T U F G} {FF : Filter F} :
   (@snd T U) @ filter_prod F G --> G.
-Proof.
-intros P HP.
-exists (fun _ => True) P ; try easy.
-apply filter_true.
-Qed.
+Proof. by move=> P; apply: filter_prod2. Qed.
 
-Lemma filterlim_pair {T U V F G H} {FF : Filter F} (f : T -> U) (g : T -> V) :
+Lemma extensible_propertyE (T : Type) (x : T) (P : Prop) :
+  extensible_property x P -> P.
+Proof. by []. Qed.
+Arguments extensible_propertyE {T} x {P}.
+
+Lemma filterlim_pair {T U V F} {G : set (set U)} {H : set (set V)}
+  {FF : Filter F} {FG : Filter G} {FH : Filter H} (f : T -> U) (g : T -> V) :
   f @ F --> G -> g @ F --> H ->
-  (f x, g x) @[x --> F] --> filter_prod G H.
+  (f x, g x) @[x --> F] --> (G, H).
 Proof.
-intros Cf Cg P [A B GA HB HP].
-unfold filtermap.
-apply: (@filter_imp _ _ _ (fun x => A (f x) /\ B (g x))).
-intros x [Af Bg].
-now apply HP.
-apply filter_and.
-now apply Cf.
-now apply Cg.
+move=> fFG gFH P /= [_ [A GA [B GB <-]] subP]; near x.
+  by apply: subP; split=> /=; assume_near x.
+by end_near; [apply: fFG|apply: gFH].
 Qed.
 
-Lemma filterlim_comp_2 {T U V W}
+Lemma flim_comp2 {T U V W}
   {F : set (set T)} {G : set (set U)} {H : set (set V)} {I : set (set W)}
-  {FF : Filter F}
+  {FF : Filter F} {FG : Filter G} {FH : Filter H}
   (f : T -> U) (g : T -> V) (h : U -> V -> W) :
   f @ F --> G -> g @ F --> H ->
   h (fst x) (snd x) @[x --> (G, H)] --> I ->
   h (f x) (g x) @[x --> F] --> I.
-Proof.
-intros Cf Cg Ch.
-change (fun x => h (f x) (g x)) with (fun x => h (fst (f x, g x)) (snd (f x, g x))).
-apply: filterlim_comp Ch.
-now apply filterlim_pair.
-Qed.
+Proof. by move=> fFG gFH hGHI P /= IP; apply: filterlim_pair (hGHI _ IP). Qed.
+Arguments flim_comp2 {T U V W F G H I FF FG FH f g h} _ _ _.
+Definition filterlim_comp_2 := @flim_comp2.
 
-Lemma filterlimi_comp_2 {T U V W F G H} {I : set (set W)} {FF : Filter F}
-  (f : T -> U) (g : T -> V) (h : U -> V -> set W) :
-  f @ F --> G -> g @ F --> H ->
-  h (fst x) (snd x) `@[x --> filter_prod G H] --> I ->
-  h (f x) (g x) `@[x --> F] --> I.
-Proof.
-intros Cf Cg Ch.
-change (fun x => h (f x) (g x)) with (fun x => h (fst (f x, g x)) (snd (f x, g x))).
-apply: filterlimi_comp Ch.
-now apply filterlim_pair.
-Qed.
+(* Lemma filterlimi_comp_2 {T U V W} *)
+(*   {F : set (set T)} {G : set (set U)} {H : set (set V)} {I : set (set W)} *)
+(*   {FF : Filter F} *)
+(*   (f : T -> U) (g : T -> V) (h : U -> V -> set W) : *)
+(*   f @ F --> G -> g @ F --> H -> *)
+(*   h (fst x) (snd x) `@[x --> (G, H)] --> I -> *)
+(*   h (f x) (g x) `@[x --> F] --> I. *)
+(* Proof. *)
+(* intros Cf Cg Ch. *)
+(* change (fun x => h (f x) (g x)) with (fun x => h (fst (f x, g x)) (snd (f x, g x))). *)
+(* apply: filterlimi_comp Ch. *)
+(* now apply filterlim_pair. *)
+(* Qed. *)
 
 (** Restriction of a filter to a domain *)
 
-Definition within {T : Type} D (F : set (set T)) (P : T -> Prop) :=
-  F [set x | D x -> P x].
+Definition within {T : Type} (D : set T) (F : set (set T)) (P : set T) :=
+  {near F, D `<=` P}.
 
-Global Instance within_filter :
-  forall T D F, Filter F -> Filter (@within T D F).
+Global Instance within_filter T D F : Filter F -> Filter (@within T D F).
 Proof.
-intros T D F FF.
-unfold within.
-constructor.
-- now apply filter_forall.
-- intros P Q WP WQ.
-  apply filter_imp with (fun x => (D x -> P x) /\ (D x -> Q x)).
-  intros x [HP HQ] HD.
-  split.
-  now apply HP.
-  now apply HQ.
-  now apply filter_and.
-- intros P Q H FP.
-  apply filter_imp with (fun x => (D x -> P x) /\ (P x -> Q x)).
-  intros x [H1 H2] HD.
-  apply H2, H1, HD.
-  apply filter_and.
-  exact FP.
-  now apply filter_forall.
+move=> FF; rewrite /within; constructor.
+- by apply: filter_forall.
+- by move=> P Q; apply: filterS2 => x DP DQ Dx; split; [apply: DP|apply: DQ].
+- by move=> P Q subPQ; apply: filterS => x DP /DP /subPQ.
 Qed.
 
 Lemma filter_le_within {T} {F : set (set T)} {FF : Filter F} D :
   within D F --> F.
-Proof.
-now intros P; apply: filter_imp.
-Qed.
+Proof. by move=> P; apply: filterS. Qed.
 
 Lemma filterlim_within_ext {T U F} {G : set (set U)}
-  {FF : Filter F} D (f g : T -> U) :
+  {FF : Filter F} (D : set T) (f g : T -> U) :
   (forall x, D x -> f x = g x) ->
   f @ within D F --> G ->
   g @ within D F --> G.
 Proof.
-intros Efg.
-apply filterlim_ext_loc.
-unfold within.
-now apply filter_forall.
+move=> eq_fg; apply: filter_le_trans; apply: filterlim_eq_loc.
+by rewrite /within /prop_near1 /=; apply: filter_forall.
 Qed.
 
-Definition subset_filter {T} (F : set (set T))
-  (dom : T -> Prop) (P : {x|dom x} -> Prop) : Prop :=
-  F [set x | forall H : dom x, P (exist _ x H)].
-Arguments subset_filter {T} F dom _.
+Definition subset_filter {T} (F : set (set T)) (D : set T) :=
+  [set P : set {x | D x} | F [set x | forall Dx : D x, P (exist _ x Dx)]].
+Arguments subset_filter {T} F D _.
 
-Global Instance subset_filter_filter T F (dom : T -> Prop) :
-  Filter F -> Filter (subset_filter F dom).
+Global Instance subset_filter_filter T F (D : set T) :
+  Filter F -> Filter (subset_filter F D).
 Proof.
-move=> FF.
-constructor ; unfold subset_filter.
-- now apply filter_imp with (2 := filter_true).
-- intros P Q HP HQ.
-  generalize (filter_and HP HQ).
-  apply filter_imp.
-  intros x [H1 H2] H.
-  now split.
-- intros P Q H.
-  apply filter_imp.
-  intros x H' H0.
-  now apply H.
+move=> FF; constructor; rewrite /subset_filter.
+- exact: filter_forall.
+- by move=> P Q; apply: filterS2 => x PD QD Dx; split.
+- by move=> P Q subPQ; apply: filterS => R PD Dx; apply: subPQ.
 Qed.
 
-Lemma subset_filter_proper {T F} {FF : Filter F} (dom : T -> Prop) :
-  (forall P, F P -> ~ ~ exists x, dom x /\ P x) ->
-  ProperFilter (subset_filter F dom).
+Lemma subset_filter_proper {T F} {FF : Filter F} (D : set T) :
+  (forall P, F P -> ~ ~ exists x, D x /\ P x) ->
+  ProperFilter (subset_filter F D).
 Proof.
-move=> domAP; apply: Build_ProperFilter'; rewrite /subset_filter => subF_dom.
-by have /(_ subF_dom) := domAP (~` dom); apply => -[x [dx /(_ dx)]].
+move=> DAP; apply: Build_ProperFilter'; rewrite /subset_filter => subFD.
+by have /(_ subFD) := DAP (~` D); apply => -[x [dx /(_ dx)]].
 Qed.
 Definition subset_filter_proper' := @subset_filter_proper.
 
@@ -826,8 +1007,8 @@ Export Uniform.Exports.
 
 Definition point {M : uniformType} := Uniform.point (Uniform.class M).
 Definition ball {M : uniformType} := Uniform.ball (Uniform.class M).
-Definition locally {M : uniformType} : M -> set (set M) :=
-  fun (x : M) P => exists eps : posreal, forall y, ball x eps y -> P y.
+Definition locally {M : uniformType} (x : M) : set (set M) :=
+  @filter_from posreal _ (ball x).
 Definition uniformType_is_canonical_filter {M : uniformType} :=
    @CanonicalFilter M M locally.
 Coercion uniformType_is_canonical_filter : uniformType >-> canonical_filter.
@@ -858,10 +1039,193 @@ Proof. exact: (xgetPN point). Qed.
 
 Definition lim (F : set (set T)) : T := get [set x | F --> x].
 
+(* Definition lim_in {M : uniformType} (F : set (set M)) T : T := *)
+(*    get (fun x : T => F --> x). *)
+(* Notation "[ 'lim' F 'in' T ]" := (lim_in F T). *)
+(* Definition type_of_filter {M : uniformType} (F : set (set M)) := M. *)
+(* Notation lim F := [lim F in type_of_filter F]. *)
+
 End UniformGet.
 
 (* Unique Choice for compatilibility reasons *)
 Notation iota := get.
+
+Module AbsRing.
+
+Record mixin_of (D : ringType) := Mixin {
+  abs : D -> R;
+  ax1 : abs 0 = 0 ;
+  ax2 : abs (- 1) = 1 ;
+  ax3 : forall x y : D, abs (x + y) <= abs x + abs y ;
+  ax4 : forall x y : D, abs (x * y) <= abs x * abs y ;
+  ax5 : forall x : D, abs x = 0 -> x = 0
+}.
+
+Section ClassDef.
+
+Record class_of (K : Type) := Class {
+  base : Num.NumDomain.class_of K ;
+  mixin : mixin_of (Num.NumDomain.Pack base K)
+}.
+Local Coercion base : class_of >-> Num.NumDomain.class_of.
+Local Coercion mixin : class_of >-> mixin_of.
+
+Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Local Coercion sort : type >-> Sortclass.
+
+Variables (T : Type) (cT : type).
+Definition class := let: Pack _ c _ := cT return class_of cT in c.
+Let xT := let: Pack T _ _ := cT in T.
+Notation xclass := (class : class_of xT).
+Definition clone c of phant_id class c := @Pack T c T.
+Definition pack b0 (m0 : mixin_of (@Num.NumDomain.Pack T b0 T)) :=
+  fun bT b & phant_id (Num.NumDomain.class bT) b =>
+  fun    m & phant_id m0 m => Pack (@Class T b m) T.
+
+Definition eqType := @Equality.Pack cT xclass xT.
+Definition choiceType := @Choice.Pack cT xclass xT.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
+Definition ringType := @GRing.Ring.Pack cT xclass xT.
+Definition comRingType := @GRing.ComRing.Pack cT xclass xT.
+Definition unitRingType := @GRing.UnitRing.Pack cT xclass xT.
+Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass xT.
+Definition idomainType := @GRing.IntegralDomain.Pack cT xclass xT.
+Definition numDomainType := @Num.NumDomain.Pack cT xclass xT.
+
+End ClassDef.
+
+Module Exports.
+
+Coercion base : class_of >-> Num.NumDomain.class_of.
+Coercion mixin : class_of >-> mixin_of.
+Coercion sort : type >-> Sortclass.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion zmodType : type >-> GRing.Zmodule.type.
+Canonical zmodType.
+Coercion ringType : type >-> GRing.Ring.type.
+Canonical ringType.
+Coercion comRingType : type >-> GRing.ComRing.type.
+Canonical comRingType.
+Coercion unitRingType : type >-> GRing.UnitRing.type.
+Canonical unitRingType.
+Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
+Canonical comUnitRingType.
+Coercion idomainType : type >-> GRing.IntegralDomain.type.
+Canonical idomainType.
+Coercion numDomainType : type >-> Num.NumDomain.type.
+Canonical numDomainType.
+Notation AbsRingMixin := Mixin.
+Notation AbsRingType T m := (@pack T _ m _ _ id _ id).
+Notation "[ 'absRingType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
+  (at level 0, format "[ 'absRingType'  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'absRingType' 'of' T ]" := (@clone T _ _ id)
+  (at level 0, format "[ 'absRingType'  'of'  T ]") : form_scope.
+Notation absRingType := type.
+
+End Exports.
+
+End AbsRing.
+
+Export AbsRing.Exports.
+
+Definition abs {K : absRingType} : K -> R := @AbsRing.abs _ (AbsRing.class K).
+Notation "`| x |" := (abs x%R) : R_scope.
+Notation "`| x |" := (abs x%R) : real_scope.
+
+Section AbsRing1.
+
+Context {K : absRingType}.
+Implicit Types x : K.
+
+Lemma absr0 : `|0 : K| = 0. Proof. exact: AbsRing.ax1. Qed.
+
+Lemma absrN1: `|- 1 : K| = 1.
+Proof. exact: AbsRing.ax2. Qed.
+
+Lemma ler_abs_add (x y : K) :  `|x + y| <= `|x|%real + `|y|%real.
+Proof. exact: AbsRing.ax3. Qed.
+
+Lemma absrM (x y : K) : `|x * y| <= `|x|%real * `|y|%real.
+Proof. exact: AbsRing.ax4. Qed.
+
+Lemma absr0_eq0 (x : K) : `|x| = 0 -> x = 0.
+Proof. exact: AbsRing.ax5. Qed.
+
+Lemma absrN x : `|- x| = `|x|.
+Proof.
+gen have le_absN1 : x / `|- x| <= `|x|.
+  by rewrite -mulN1r (ler_trans (absrM _ _)) //= absrN1 mul1r.
+by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
+Qed.
+
+Lemma absrB (x y : K) : `|x - y| = `|y - x|.
+Proof. by rewrite -absrN opprB. Qed.
+
+Lemma absr1 : `|1 : K| = 1. Proof. by rewrite -absrN absrN1. Qed.
+
+Lemma absr_ge0 x : 0 <= `|x|.
+Proof.
+rewrite -(@pmulr_rge0 _ 2%:R) // mulr2n mulrDl !mul1r.
+by rewrite -{2}absrN (ler_trans _ (ler_abs_add _ _)) // subrr absr0.
+Qed.
+
+Lemma absrX x n : `|x ^+ n| <= `|x|%real ^+ n.
+Proof.
+elim: n => [|n IH]; first  by rewrite !expr0 absr1.
+by rewrite !exprS (ler_trans (absrM _ _)) // ler_pmul // absr_ge0.
+Qed.
+
+End AbsRing1.
+Hint Resolve absr_ge0.
+
+Section AbsRing_UniformSpace.
+
+Context (K : absRingType).
+
+Definition AbsRing_ball (x : K) (eps : R) (y : K) := `|x - y| < eps.
+
+Lemma AbsRing_ball_center (x : K) (e : posreal) : AbsRing_ball x e x.
+Proof. by rewrite /AbsRing_ball subrr absr0. Qed.
+
+Lemma AbsRing_ball_sym (x y : K) (e : R) :
+  AbsRing_ball x e y -> AbsRing_ball y e x.
+Proof. by rewrite /AbsRing_ball absrB. Qed.
+
+(* :TODO: to math-comp *)
+Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
+Proof. by rewrite addrA addrNK. Qed.
+
+Lemma AbsRing_ball_triangle (x y z : K) (e1 e2 : R) :
+  AbsRing_ball x e1 y -> AbsRing_ball y e2 z -> AbsRing_ball x (e1 + e2) z.
+Proof.
+rewrite /AbsRing_ball => xy yz.
+by rewrite (subr_trans y) (ler_lt_trans (ler_abs_add _ _)) ?ltr_add.
+Qed.
+
+Definition AbsRingUniformMixin :=
+  UniformMixin 0 AbsRing_ball_center AbsRing_ball_sym AbsRing_ball_triangle.
+
+(* :TODO: DANGEROUS ! Must change this to include uniform type inside absring *)
+Canonical absRing_UniformType := UniformType K AbsRingUniformMixin.
+Canonical AbsRingcanonical_filter := @CanonicalFilter K K locally.
+
+End AbsRing_UniformSpace.
+
+Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").
+
+Program Definition R_AbsRingMixin :=
+ @AbsRing.Mixin _ normr (normr0 _) (normrN1 _) (@ler_norm_add _) _ (@normr0_eq0 _).
+Next Obligation. by rewrite normrM. Qed.
+Canonical R_absRingType := AbsRingType R R_AbsRingMixin.
+
+Definition R_UniformSpace_mixin := @AbsRingUniformMixin R_absRingType.
+Canonical R_UniformSpace := UniformType R R_UniformSpace_mixin.
+Canonical R_canonical_filter := @CanonicalFilter R R locally.
+Canonical Ro_UniformSpace := UniformType R^o R_UniformSpace_mixin.
+Canonical Ro_canonical_filter := @CanonicalFilter R R^o locally.
 
 Section uniformType1.
 Context {M : uniformType}.
@@ -876,17 +1240,30 @@ Proof. by move=> e_gt0; apply: ball_center (PosReal e_gt0). Qed.
 Lemma ball_sym (x y : M) (e : R) : ball x e y -> ball y e x.
 Proof. exact: Uniform.ax2. Qed.
 
-Lemma ball_triangle (x y z : M) (e1 e2 : R) :
+Lemma ball_triangle (y x z : M) (e1 e2 : R) :
   ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z.
 Proof. exact: Uniform.ax3. Qed.
 
-Lemma ball_ler (x : M) (e1 e2 : R) : (e1 <= e2)%R -> ball x e1 `<=` ball x e2.
+Lemma ball_split (z x y : M) (e : R) :
+  ball x (e / 2) z -> ball z (e / 2) y -> ball x e y.
+Proof. by move=> /ball_triangle h /h; rewrite -double_var. Qed.
+
+Lemma ball_splitr (z x y : M) (e : R) :
+  ball z (e / 2) x -> ball z (e / 2) y -> ball x e y.
+Proof. by move=> /ball_sym /ball_split; apply. Qed.
+
+Lemma ball_splitl (z x y : M) (e : R) :
+  ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
+Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
+
+Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
 Proof.
 move=> le12 y; case: ltrgtP le12 => [//|lte12 _|->//].
 by rewrite -[e2](subrK e1); apply/ball_triangle/ballxx; rewrite subr_gt0.
 Qed.
 
-Lemma ball_le (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
+Lemma ball_le (x : M) (e1 e2 : R) :
+  (e1 <= e2)%coqR -> ball x e1 `<=` ball x e2.
 Proof. by move=> /RleP/ball_ler. Qed.
 
 Definition close (x y : M) : Prop := forall eps : posreal, ball x eps y.
@@ -897,7 +1274,13 @@ Lemma close_sym (x y : M) : close x y -> close y x.
 Proof. by move=> ??; apply: ball_sym. Qed.
 
 Lemma close_trans (x y z : M) : close x y -> close y z -> close x z.
-Proof. by move=> ?? eps; rewrite (double_var eps); apply: ball_triangle. Qed.
+Proof. by move=> ?? eps; apply: ball_split. Qed.
+
+Lemma close_limxx (x y : M) : close x y -> x --> y.
+Proof.
+move=> cxy P /= [eps epsP]; exists [posreal of eps / 2] => z bxz.
+by apply: epsP; apply: ball_splitr (cxy _) bxz.
+Qed.
 
 End uniformType1.
 
@@ -905,9 +1288,6 @@ Hint Resolve ball_center.
 Hint Resolve close_refl.
 
 (** ** Specific uniform spaces *)
-
-(** Rings with absolute value *)
-
 
 Section prod_Uniform.
 
@@ -934,7 +1314,8 @@ Qed.
 End prod_Uniform.
 
 Definition prod_uniformType_mixin (U V : uniformType) :=
-  @Uniform.Mixin (U * V) prod_point _ prod_ball_center prod_ball_sym prod_ball_triangle.
+  @Uniform.Mixin (U * V) prod_point _ prod_ball_center
+                 prod_ball_sym prod_ball_triangle.
 
 Canonical prod_uniformType (U V : uniformType) :=
   UniformType (U * V) (prod_uniformType_mixin U V).
@@ -950,29 +1331,15 @@ Definition fct_point : T -> U := fun=> point.
 Definition fct_ball (x : T -> U) (eps : R) (y : T -> U) :=
   forall t : T, ball (x t) eps (y t).
 
-Lemma fct_ball_center :
-  forall (x : T -> U) (e : posreal),
-  fct_ball x e x.
-Proof.
-  intros x e t.
-  exact: ball_center.
-Qed.
+Lemma fct_ball_center (x : T -> U) (e : posreal) : fct_ball x e x.
+Proof. by move=> t; apply: ball_center. Qed.
 
-Lemma fct_ball_sym :
-  forall (x y : T -> U) (e : R),
-  fct_ball x e y -> fct_ball y e x.
-Proof.
-  intros x y e H t.
-  exact: ball_sym.
-Qed.
+Lemma fct_ball_sym (x y : T -> U) (e : R) : fct_ball x e y -> fct_ball y e x.
+Proof. by move=> P t; apply: ball_sym. Qed.
 
-Lemma fct_ball_triangle :
-  forall (x y z : T -> U) (e1 e2 : R),
+Lemma fct_ball_triangle (x y z : T -> U) (e1 e2 : R) :
   fct_ball x e1 y -> fct_ball y e2 z -> fct_ball x (e1 + e2) z.
-Proof.
-  intros x y z e1 e2 H1 H2 t.
-  now apply ball_triangle with (y t).
-Qed.
+Proof. by move=> xy yz t; apply: (@ball_triangle _ (y t)). Qed.
 
 Definition fct_uniformType_mixin :=
   @Uniform.Mixin _ fct_point _ fct_ball_center fct_ball_sym fct_ball_triangle.
@@ -985,29 +1352,14 @@ End fct_Uniform.
 (** ** Local predicates *)
 (** locally_dist *)
 
-Definition locally_dist {T : Type} (d : T -> R) (P : T -> Prop) :=
-  exists delta : posreal, forall y, d y < delta -> P y.
+Definition locally_dist {T : Type} (d : T -> R) :=
+  filter_from (fun delta : posreal => [set y | (d y < delta)%R]).
 
-Global Instance locally_dist_filter :
-  forall T (d : T -> R), Filter (locally_dist d).
+Global Instance locally_dist_filter T (d : T -> R) : Filter (locally_dist d).
 Proof.
-intros T d.
-constructor.
-- now exists [posreal of 1].
-- intros P Q [dP HP] [dQ HQ].
-  exists [posreal of (Rmin dP dQ)] => y /= Hy.
-  split.
-  apply HP.
-  apply Rlt_le_trans with (1 := Hy).
-  apply Rmin_l.
-  apply HQ.
-  apply Rlt_le_trans with (1 := Hy).
-  apply Rmin_r.
-- intros P Q H [dP HP].
-  exists dP.
-  intros y Hy.
-  apply H.
-  now apply HP.
+apply: filter_from_filter; first by exists [posreal of 1].
+move=> e1 e2; exists [posreal of minr (e1 : R) (e2 : R)].
+by move=> P /=; rewrite ltr_minr => /andP [dPe1 dPe2].
 Qed.
 
 (** locally *)
@@ -1023,13 +1375,9 @@ Implicit Types x y : T.
 Global Instance locally_filter (x : T) : ProperFilter (locally x).
 Proof.
 constructor => [[eps /(_ _ (ball_center _ _))] //|].
-constructor => [|P Q [dP xP] [dQ xQ]|P Q subPQ [dP xP]]; last 1 first.
-- by exists dP => y /xP /subPQ.
-- by exists [posreal of 1]%R.
-pose m := [posreal of minr (dP : R) (dQ : R)]%R.
-exists m => /= y bxy; split.
-  by apply/xP/(@ball_ler _ _ m); rewrite // ler_minl lerr.
-by apply/xQ/(@ball_ler _ _ m); rewrite // ler_minl lerr orbT.
+apply: filter_from_filter; first by exists [posreal of 1].
+move=> e1 e2; exists [posreal of minr (e1 : R) (e2 : R)].
+by move=> P /= xP; split; apply: ball_ler xP; rewrite ler_minl lerr ?orbT.
 Qed.
 
 End LocallyDef.
@@ -1042,19 +1390,18 @@ move=> FG; suff <- : F = G by [].
 by rewrite funeqE => P; rewrite propeqE.
 Qed.
 
-
 Section Locally.
 Context {T : uniformType}.
 
 Typeclasses Transparent filter_of.
 
 Lemma locally_locally (x : T) (P : T -> Prop) :
-  locally x P -> locally x (fun y => locally y P).
+  locally x P -> locally x (locally^~ P).
 Proof.
 move=> [dp Hp].
 exists [posreal of dp / 2] => y xy.
 exists [posreal of dp / 2] => z yz.
-by apply Hp; rewrite (double_var dp); apply: ball_triangle xy yz.
+by apply: Hp; apply: ball_split yz.
 Qed.
 
 Lemma locally_singleton (x : T) (P : T -> Prop) : locally x P -> P x.
@@ -1062,104 +1409,67 @@ Proof. move=> [dp H]; by apply/H/ball_center. Qed.
 
 Lemma locally_ball (x : T) (eps : posreal) : locally x (ball x eps).
 Proof. by exists eps. Qed.
+Hint Resolve locally_ball.
 
-Lemma locally_not' :
-  forall (x : T) (P : T -> Prop),
-  not (forall eps : posreal, not (forall y, ball x eps y -> not (P y))) ->
-  {d : posreal | forall y, ball x d y -> not (P y)}.
+Lemma forallN {U} (P : set U) : (forall x, ~ P x) = ~ exists x, P x.
 Proof.
-intros x P H.
-set (Q := fun z => z <= 1 /\ forall y, ball x z y -> not (P y)).
-destruct (completeness Q) as [d [H1 H2]].
-- exists 1.
-  now intros y [Hy _].
-- exists 0.
-  split.
-  apply Rle_0_1.
-  intros y Hy Py.
-  apply H.
-  intros eps He.
-  apply He with (2 := Py).
-  apply ball_le with (2 := Hy).
-  apply Rlt_le, eps.
-assert (Zd : 0 < d).
-  apply Rnot_le_lt.
-  intros Hd.
-  apply H.
-  intros eps He.
-  apply (Rlt_irrefl (Rmin 1 eps)).
-  apply Rle_lt_trans with d.
-  apply H1.
-  split.
-  apply Rmin_l.
-  intros y By.
-  apply He.
-  apply ball_le with (2 := By).
-  apply Rmin_r.
-  apply Rle_lt_trans with (1 := Hd).
-  apply Rmin_case.
-  apply Rlt_0_1.
-  apply cond_pos.
-exists [posreal of mkposreal _ Zd / 2].
-simpl.
-intros y Hy HP.
-apply (Rlt_not_le _ _ (Rlt_eps2_eps _ Zd)).
-apply H2.
-intros z Hz.
-apply Rnot_lt_le.
-contradict HP.
-apply Hz.
-apply ball_le with (2 := Hy).
-now apply Rlt_le.
+rewrite propeqE; split; first by move=> fP [x /fP].
+by move=> nexP x Px; apply: nexP; exists x.
 Qed.
 
-Lemma locally_not (x : T) (P : T -> Prop) :
-  not (forall eps : posreal, not (forall y, ball x eps y -> not (P y))) ->
-  locally x (fun y => not (P y)).
+Lemma NNP (P : Prop) : (~ ~ P) <-> P.
+Proof. by split=> [nnp|p /(_ p)//]; have [//|/nnp] := asboolP P. Qed.
+
+Lemma eqNNP (P : Prop) : (~ ~ P) = P.
+Proof. by rewrite propeqE NNP. Qed.
+
+Lemma existsN {U} (P : set U) : (exists x, ~ P x) = ~ forall x, P x.
 Proof.
-move=> H.
-case: (locally_not' H) => eps He; by exists eps.
+rewrite propeqE; split=> [[x Px] Nall|Nall]; first by apply: Px.
+by apply/NNP; rewrite -forallN => allP; apply: Nall => x; apply/NNP.
 Qed.
 
-Lemma locally_ex_not (x : T) (P : T -> Prop) :
-  locally x (fun y => not (P y)) ->
-  {d : posreal | forall y, ball x d y -> not (P y)}.
+Lemma ex_ball_sig (x : T) (P : set T) :
+  ~ (forall eps : posreal, ~ (ball x eps `<=` ~` P)) ->
+    {d : posreal | ball x d `<=` ~` P}.
 Proof.
-move=> H.
-apply locally_not'.
-case: H => eps He.
-by move/(_ eps).
+rewrite forallN eqNNP => exNP.
+pose D := [set d : R | d > 0 /\ ball x d `<=` ~` P].
+have [|d_gt0] := @getPex _ D; last by exists (PosReal d_gt0). 
+by move: exNP => [e eP]; exists (e : R).
 Qed.
 
-Lemma locally_ex_dec (x : T) (P : T -> Prop) :
-  (forall x, P x \/ ~ P x) ->
-  locally x P ->
+Lemma locallyN (x : T) (P : set T) :
+  ~ (forall eps : posreal, ~ (ball x eps `<=` ~` P)) ->
+  locally x (~` P).
+Proof. by move=> /ex_ball_sig [e]; exists e. Qed.
+
+Lemma locallyN_ball (x : T) (P : set T) :
+  locally x (~` P) -> {d : posreal | ball x d `<=` ~` P}.
+Proof. by move=> xNP; apply: ex_ball_sig; have [e eP /(_ _ eP)] := xNP. Qed.
+
+Lemma locally_ex (x : T) (P : T -> Prop) : locally x P ->
   {d : posreal | forall y, ball x d y -> P y}.
 Proof.
-move=> P_dec H; have [|d Hd] := @locally_ex_not x (fun y => not (P y)).
-  by apply: filter_imp H => y Py /(_ Py).
-by exists d => y Hy; have [|/(Hd y)] := P_dec y.
+move=> xP; pose D := [set d : R | d > 0 /\ forall y, ball x d y -> P y].
+have [|d_gt0 dP] := @getPex _ D; last by exists (PosReal d_gt0).
+by move: xP => [e bP]; exists (e : R).
 Qed.
 
-Lemma is_filter_lim_close {F} {FF : ProperFilter F} (x y : T) :
+Lemma flim_close {F} {FF : ProperFilter F} (x y : T) :
   F --> x -> F --> y -> close x y.
 Proof.
-intros Fx Fy eps.
-specialize (Fy _ (locally_ball y [posreal of eps / 2])).
-specialize (Fx _ (locally_ball x [posreal of eps / 2])).
-generalize (filter_and Fx Fy) => {Fx Fy} Fxy.
-rewrite (double_var eps).
-destruct (filter_ex Fxy) as [z Fz].
-apply ball_triangle with z.
-apply Fz.
-apply ball_sym, Fz.
+move=> Fx Fy e; have_near F z; [by apply: (@ball_splitl _ z); assume_near z|].
+by end_near; [apply/Fx/locally_ball|apply/Fy/locally_ball].
 Qed.
+Definition is_filter_lim_close := @flim_close. (*compat*)
 
-Lemma is_filter_lim_locally_close (x y : T) :
-  x --> y -> close x y.
-Proof. exact: is_filter_lim_close. Qed.
+Lemma flimx_close (x y : T) : x --> y -> close x y.
+Proof. exact: flim_close. Qed.
+Definition is_filter_lim_locally_close := @flimx_close.  (*compat*)
 
 End Locally.
+Hint Resolve locally_ball.
 
 Definition cvg (U : Type) (T : canonical_filter U) :=
   fun (T' : Type) & canonical_filter_type T = T' =>
@@ -1170,16 +1480,17 @@ Notation "[ 'cvg' F 'in' T ]" :=
   (format "[ 'cvg'  F  'in'  T ]") : classical_set_scope.
 Notation continuous f := (forall x, f%function @ locally x --> f%function x).
 
-Lemma appfilter U V (f : U -> V) (F : set (set U)) : f @ F = [set P | F (f @^-1` P)].
-Proof. by []. Qed.
-
-Lemma filterlim_const {T} {U : uniformType} {F : set (set T)} {FF : Filter F} (a : U) :
-  a @[_ --> F] --> a.
+Lemma flim_const {T} {U : uniformType} {F : set (set T)}
+   {FF : Filter F} (a : U) : a @[_ --> F] --> a.
 Proof.
-move=> P [eps HP].
-rewrite /filter_of /= appfilter /=.
+move=> P [eps HP]; rewrite appfilter /=.
 by apply: filter_forall=> ?; apply/HP/ball_center.
 Qed.
+Arguments flim_const {T U F FF} a.
+
+Lemma filterlim_const {T} {U : uniformType} {F : set (set T)} (*compat*)
+   {FF : Filter F} (a : U) : a @[_ --> F] --> a.
+Proof. exact: flim_const. Qed.
 
 Section Cvg.
 
@@ -1200,14 +1511,6 @@ CoInductive cvg_spec (F : set (set U)) : U -> Prop -> Type :=
 | HasLim (l : U) of F --> l : cvg_spec F l True
 | HasNoLim of ~ [cvg F in U] : cvg_spec F point False.
 
-(* :TODO: move to boolp *)
-Lemma propT (P : Prop) : P -> P = True.
-Proof. by move=> p; rewrite propeqE; tauto. Qed.
-
-(* :TODO: move to boolp *)
-Lemma propF (P : Prop) : ~ P -> P = False.
-Proof. by move=> p; rewrite propeqE; tauto. Qed.
-
 Lemma cvgP (F : set (set U)) : cvg_spec F (lim F) [cvg F in U].
 Proof.
 have [cvg|dvg] := pselect [cvg F in U].
@@ -1215,16 +1518,29 @@ have [cvg|dvg] := pselect [cvg F in U].
 by rewrite (propF dvg) (dvgP _) //; apply: HasNoLim.
 Qed.
 
-Lemma close_lim (F1 F2 : set (set U)) (FF2 : ProperFilter F2):
+Lemma cvgI (F : set (set U)) (l : U) : F --> l -> [cvg F in U].
+Proof. by exists l. Qed.
+
+Lemma close_lim (F1 F2 : set (set U)) {FF2 : ProperFilter F2} :
   F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
 Proof.
 have [l F1l _|dvgF1]:= cvgP F1.
   move=> /filter_le_trans /(_ F1l) F2l.
-  apply: (@is_filter_lim_close _ F2) => //.
+  apply: (@flim_close _ F2) => //.
   by rewrite -cvgE; exists l.
 have [l F2l|//]:= cvgP F2.
 move=> /filter_le_trans /(_ F2l) F1l _.
 by have := dvgF1 (ex_intro _ l F1l).
+Qed.
+
+Lemma filterlim_closeP (F : set (set U)) (l : U) :
+  ProperFilter F ->
+  F --> l <-> ([cvg F in U] /\ close (lim F) l).
+Proof.
+rewrite cvgE; split=> [Fl|[FlF cl]].
+  have FlF: F --> lim F by rewrite -cvgE; exists l.
+  by split=> //; apply: flim_close.
+by apply: filter_le_trans (close_limxx cl).
 Qed.
 
 End Cvg.
@@ -1234,38 +1550,35 @@ Section Locally_fct.
 
 Context {T : Type} {U : uniformType}.
 
-Lemma filterlim_locally {F} {FF : Filter F} (y : U) :
+Lemma flim_ballP {F} {FF : Filter F} (y : U) :
   F --> y <-> forall eps : posreal, F [set x | ball y eps x].
-Proof.
-split.
-- move=> Cf eps.
-  apply: (Cf (fun x => ball y eps x)).
-  by exists eps.
-- move=> Cf P [eps He].
-  apply: filter_imp (Cf eps) => t.
-  exact: He.
-Qed.
+Proof. exact: filter_fromP. Qed.
+Definition filterlim_locally := @flim_ballP.
+
+Lemma flim_ball {F} {FF : Filter F} (y : U) :
+  F --> y -> forall eps : posreal, F [set x | ball y eps x].
+Proof. by move/flim_ballP. Qed.
 
 Lemma app_filterlim_locally {F} {FF : Filter F} (f : T -> U) y :
   f @ F --> y <-> forall eps : posreal, F [set x | ball y eps (f x)].
-Proof. exact: filterlim_locally. Qed.
+Proof. exact: flim_ballP. Qed.
 
-Lemma filterlimi_locally {F} {FF : Filter F} (f : T -> U -> Prop) y :
+Lemma flimi_ballP {F} {FF : Filter F} (f : T -> U -> Prop) y :
   f `@ F --> y <->
   forall eps : posreal, F [set x | exists z, f x z /\ ball y eps z].
 Proof.
-split.
-- intros Cf eps.
-  apply (Cf (ball y eps)).
-  by exists eps.
-- move=> Cf P [eps He].
-  rewrite /filtermapi /filter_of /=.
-  apply: filter_imp (Cf eps).
-  intros t [z [Hz1 Hz2]].
-  exists z.
-  apply (conj Hz1).
-  now apply He.
+split=> [Fy eps|Fy P [eps subP]]; first exact/Fy/locally_ball.
+rewrite /filtermapi /=; near x.
+  have [//|z [fxz yz]] := near (Fy eps) x.
+  by exists z => //; split => //; apply: subP.
+by end_near.
 Qed.
+Definition filterlimi_locally := @flimi_ballP.
+
+Lemma flimi_ball {F} {FF : Filter F} (f : T -> U -> Prop) y :
+  f `@ F --> y ->
+  forall eps : posreal, F [set x | exists z, f x z /\ ball y eps z].
+Proof. by move/flimi_ballP. Qed.
 
 (* :TODO: remove *)
 Lemma filterlim_locally_close {F} {FF: ProperFilter F} (f : T -> U) (l l' : U) :
@@ -1273,36 +1586,17 @@ Lemma filterlim_locally_close {F} {FF: ProperFilter F} (f : T -> U) (l l' : U) :
 Proof. exact: is_filter_lim_close. Qed.
 
 (* :TODO: refactor *)
-Lemma filterlimi_locally_close
-  {F} {FF: ProperFilter F} (f : T -> U -> Prop) (l l' : U) :
-  F [set x | is_prop (f x)] ->
-  f `@ F --> l ->  f `@ F --> l' -> close l l'.
+Lemma flimi_close {F} {FF: ProperFilter F} (f : T -> set U) (l l' : U) :
+  {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> close l l'.
 Proof.
-(* move=> Fmem; suff fFp : ProperFilter (f `@ F) by exact: @is_filter_lim_close. *)
-(* apply: filtermapi_proper_filter. *)
-(* apply: filter_imp Fmem. *)
-intros Hf Hl Hl' eps.
-(* have half_l := Hl (ball l ([posreal of eps / 2])) (locally_ball _ _). *)
-(* have half_l' := Hl' (ball l' ([posreal of eps / 2])) (locally_ball _ _). *)
-(* have := (filter_and _ _ half_l half_l'). *)
-(* move=> /filter_ex [fx [fxl /ball_sym fxl']]. *)
-(* by rewrite (double_var eps); eapply (ball_triangle _ fx). *)
-have H := locally_ball l [posreal of eps / 2].
-specialize (Hl (ball l [posreal of eps / 2]) H).
-have H' := locally_ball l' [posreal of eps / 2].
-specialize (Hl' (ball l' [posreal of eps / 2]) H').
-unfold filtermapi in Hl, Hl'.
-rewrite /filter_of /= in Hl Hl'.
-generalize (filter_and Hf (filter_and Hl Hl')) => {H H' Hl Hl' Hf} H.
-apply filter_ex in H.
-destruct H as [x [Hf [[y [H1 H1']] [y' [H2 H2']]]]].
-rewrite (double_var eps).
-apply ball_triangle with y.
-exact H1'.
-apply ball_sym.
-rewrite (Hf _ _ H1 H2).
-exact H2'.
+move=> f_prop fFl fFl'.
+suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
+near x => /=.
+  split; last exact: (near f_prop).
+  by have [//|y [fxy _]] := near (flimi_ball fFl [posreal of 1]) x; exists y.
+by end_near.
 Qed.
+Definition filterlimi_locally_close := @flimi_close.
 
 End Locally_fct.
 
@@ -1316,86 +1610,74 @@ Proof. by move=> cf fx P /cf /fx. Qed.
 Definition locally' {T : uniformType} (x : T) :=
   within (fun y => y <> x) (locally x).
 
-Global Instance locally'_filter :
-  forall {T : uniformType} (x : T), Filter (locally' x).
-Proof.
-intros T x.
-apply within_filter.
-apply locally_filter.
-Qed.
+Global Instance locally'_filter {T : uniformType} (x : T) :
+  Filter (locally' x).
+Proof. exact: within_filter. Qed.
 
 Section at_point.
 
 Context {T : uniformType}.
 
-Definition at_point (a : T) (P : T -> Prop) : Prop := P a.
+Definition at_point (a : T) (P : set T) : Prop := P a.
 
 Global Instance at_point_filter (a : T) : ProperFilter (at_point a).
-Proof. by constructor => //; constructor => // P Q subPQ /subPQ. Qed.
+Proof. by constructor=> //; constructor=> // P Q subPQ /subPQ. Qed.
 
 End at_point.
 
-(** ** Open sets in uniform spaces *)
+(** ** Topology in uniform spaces *)
 
 Section Open.
 
 Context {T : uniformType}.
 
-Definition open (D : T -> Prop) := forall x, D x -> locally x D.
+Notation "D ^o" := (locally^~ D).
+Definition open (D : set T) := D `<=` D^o.
 
-Lemma locally_open (D E : T -> Prop) (OD : open D) :
-  (forall x : T, D x -> E x) ->
-  forall x : T, D x ->
-  locally x E.
+Lemma openP (D E : set T) : open D -> (D `<=` E) -> (D `<=` E^o).
 Proof.
-intros H x Dx.
-apply filter_imp with (1 := H).
-now apply OD.
+move=> D_open DE x Dx; near y; first by apply: DE; assume_near y.
+by end_near; apply: D_open.
+Qed.
+Definition locally_open := @openP.
+
+Lemma open_ext (D E : set T) : (D `<=>` E) -> open D -> open E.
+Proof.
+move=> DE D_open x Ex; near y; first by apply DE; assume_near y.
+by end_near; apply: D_open; apply DE.
 Qed.
 
-Lemma open_ext (D E : T -> Prop) : (forall x, D x <-> E x) ->
-  open D -> open E.
+Lemma openI (D E : set T) : open D -> open E -> open (D `&` E).
 Proof.
-intros H OD x Ex.
-move: (OD x (proj2 (H x) Ex)).
-apply filter_imp => y.
-by apply H.
+move=> D_open E_open x [Dx Ex]; near y; first by split; assume_near y.
+by end_near; [apply: D_open|apply E_open].
 Qed.
 
-Lemma open_and (D E : T -> Prop) : open D -> open E ->
-  open (fun x => D x /\ E x).
+Lemma open_bigU {I : Type} (D : I -> set T) :
+  (forall i, open (D i)) -> open (\bigcup_i D i).
 Proof.
-intros OD OE x [Dx Ex].
-apply filter_and.
-now apply OD.
-now apply OE.
+move=> D_open x [i _ Dix]; near y; first by exists i => //; assume_near y.
+by end_near; apply: D_open.
 Qed.
 
-Lemma open_or (D E : T -> Prop) : open D -> open E ->
-  open (fun x => D x \/ E x).
+Lemma openU (D E : set T) : open D -> open E -> open (D `|` E).
 Proof.
-move=> OD OE x [Dx|Ex].
-- move/filter_imp : (OD x Dx); apply; by left.
-- move/filter_imp : (OE x Ex); apply; by right.
+move=> D_open E_open x [Dx|Ex].
+- by move/filterS : (D_open x Dx); apply; left.
+- by move/filterS : (E_open x Ex); apply; right.
 Qed.
 
-Lemma open_true : open (fun x : T => True).
-Proof. intros x _; by apply filter_true. Qed.
-
-Lemma open_false : open (fun x : T => False).
-Proof. by []. Qed.
+Lemma openT : open setT. Proof. by move=> *; apply: filterT. Qed.
+Lemma open0 : open set0. Proof. by []. Qed.
 
 End Open.
 
-Lemma open_comp :
-  forall {T U : uniformType} (f : T -> U) (D : U -> Prop),
-  (forall x, D (f x) -> {for x, continuous f}) ->
-  open D -> open (fun x : T => D (f x)).
+Lemma open_comp  {T U : uniformType} (f : T -> U) (D : set U) :
+  {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
 Proof.
-intros T U f D Cf OD x Dfx.
-apply Cf.
-exact Dfx.
-now apply OD.
+move=> f_continous open_D x /= Dfx.
+apply: f_continous => //=; first by rewrite in_setE.
+exact: open_D.
 Qed.
 
 (** ** Closed sets in uniform spaces *)
@@ -1404,123 +1686,87 @@ Section Closed.
 
 Context {T : uniformType}.
 
-Definition closed (D : T -> Prop) :=
-  forall x, not ((locally x) (fun x : T => not (D x))) -> D x.
+Definition closed (D : set T) :=
+  forall x, ~ {near x, forall x, ~ D x} -> D x.
 
-Lemma open_not (D : T -> Prop) : closed D -> open (fun x => not (D x)).
+Lemma openN (D : set T) : closed D -> open (~` D).
 Proof.
-intros CD x Dx.
-apply locally_not.
-intros H.
-apply Dx, CD.
-move=> [eps He].
-by apply (H eps).
+move=> D_close x Dx; apply: locallyN => subD.
+by apply/Dx/D_close => -[eps /subD].
 Qed.
 
-Lemma closed_not (D : T -> Prop) : open D -> closed (fun x => not (D x)).
+Lemma closedN (D : set T) : open D -> closed (~` D).
 Proof.
-intros OD x Lx Dx.
-apply Lx.
-apply: filter_imp (OD _ Dx).
-intros t Dt nDt.
-now apply nDt.
+move=> D_open x /= Lx Dx; apply: Lx.
+by apply: filterS (D_open _ Dx) => y Dy /(_ Dy).
 Qed.
 
-Lemma closed_ext (D E : T -> Prop) : (forall x, D x <-> E x) ->
+Lemma closed_ext (D E : set T) : (forall x, D x <-> E x) ->
   closed D -> closed E.
 Proof.
-intros DE CD x Hx.
-apply DE, CD.
-contradict Hx.
-apply: filter_imp Hx.
-move => {x} x Dx Ex.
-now apply Dx, DE.
+move=> DE D_closed x Ex; apply/DE/D_closed => Dx; apply: Ex.
+by apply: filterS Dx => y /DE.
 Qed.
 
-Lemma closed_and (D E : T -> Prop) : closed D -> closed E ->
-  closed (fun x => D x /\ E x).
+Lemma closed_bigI {I} (D : I -> set T) :
+  (forall i, closed (D i)) -> closed (\bigcap_i D i).
 Proof.
-intros CD CE x Hx; split.
-- apply CD.
-  contradict Hx.
-  apply: filter_imp Hx.
-  move => {x} x nDx [Dx _].
-  now apply nDx.
-- apply CE.
-  contradict Hx.
-  apply: filter_imp Hx.
-  move => {x} x nEx [_ Ex].
-  now apply nEx.
+move=> D_closed x Dx i _; apply/D_closed=> Dix; apply: Dx.
+by apply: filterS Dix => y NDiy /(_ i _) /NDiy; apply.
 Qed.
 
-(*
-Lemma closed_or :
-  forall D E : T -> Prop,
-  closed D -> closed E ->
-  closed (fun x => D x \/ E x).
+Lemma closedI (D E : set T) : closed D -> closed E -> closed (D `&` E).
 Proof.
-intros D E CD CE x Hx.
-generalize (open_and _ _ CD CE).
-apply open_ext.
-clear ; intuition.
+move=> D_closed E_closed x DEx; split.
+  by apply/D_closed=> Dx; apply: DEx; apply: filterS Dx=> y NDy [/NDy].
+by apply/E_closed=> Ex; apply: DEx; apply: filterS Ex=> y NEy [_ /NEy].
 Qed.
-*)
 
-Lemma closed_true : closed (fun x : T => True).
-Proof. by []. Qed.
+(* Lemma closedU (D E : set T) : closed D -> closed E -> closed (D `|` E). *)
+(* Proof. *)
+(* move=> /openN ND_open /openN NE_open x DEx. *)
+(* have := openI ND_open NE_open. *)
+(* Qed. *)
 
-Lemma closed_false : closed (fun x : T => False).
-Proof.
-intros x Hx.
-apply: Hx.
-now exists [posreal of 1].
-Qed.
+Lemma closedT : closed setT. Proof. by []. Qed.
+
+Lemma closed0 : closed set0.
+Proof. by move=> x x0; apply: x0; exists [posreal of 1] => ???. Qed.
 
 End Closed.
 
-Lemma closed_comp :
-  forall {T U : uniformType} (f : T -> U) (D : U -> Prop),
-  continuous f ->
-  closed D -> closed (fun x : T => D (f x)).
+Lemma closed_comp {T U : uniformType} (f : T -> U) (D : set U) :
+  {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
-intros T U f D Cf CD x Dfx.
-apply CD.
-contradict Dfx.
-exact: Cf Dfx.
+move=> f_cont D_closed x /= xDf; apply: D_closed; apply: contrap xDf => fxD.
+have NDfx: ~ D (f x) by move: fxD => [e]; apply.
+by apply: f_cont fxD; rewrite in_setE.
 Qed.
 
-Lemma closed_filterlim_loc :
-  forall {T} {U : uniformType} {F} {FF : ProperFilter F} (f : T -> U) (D : U -> Prop),
-  forall y, f @ F --> y ->
-  F (fun x => D (f x)) ->
-  closed D -> D y.
+Lemma closed_filterlim_loc {T} {U : uniformType} {F} {FF : ProperFilter F}
+  (f : T -> U) (D : U -> Prop) :
+  forall y, f @ F --> y -> F (f @^-1` D) -> closed D -> D y.
 Proof.
-intros T U F FF f D y Ffy Df CD.
-apply CD.
-intros LD.
-apply: filter_not_empty.
-specialize (Ffy _ LD).
-unfold filtermap in Ffy.
-set P := [set x | D (f x) /\ ~ D (f x)].
-suff : F P by apply filter_imp => x [].
-by apply: filter_and.
+move=> y Ffy Df CD; apply: CD => yND; apply: filter_not_empty; near x.
+  suff [//] : D (f x) /\ ~ D (f x); split; assume_near x.
+by end_near; exact: (Ffy _ yND).
 Qed.
 
-Lemma closed_filterlim :
-  forall {T} {U : uniformType} {F} {FF : ProperFilter F} (f : T -> U) (D : U -> Prop),
-  forall y, f @ F --> y ->
-  (forall x, D (f x)) ->
-  closed D -> D y.
+Lemma closed_filterlim {T} {U : uniformType} {F} {FF : ProperFilter F}
+  (f : T -> U) (D : U -> Prop) :
+  forall y, f @ F --> y -> (forall x, D (f x)) -> closed D -> D y.
 Proof.
-intros T U F FF f D y Ffy Df.
-apply: closed_filterlim_loc Ffy _.
-now apply filter_forall.
+by move=> y fy FDf; apply: (closed_filterlim_loc fy); apply: filter_forall.
 Qed.
 
 (** ** Complete uniform spaces *)
 
 Definition cauchy {T : uniformType} (F : set (set T)) :=
   forall eps : posreal, exists x, F (ball x eps).
+
+Lemma cvg_cauchy {T : uniformType} (F : set (set T)) :
+  [cvg F in T] -> cauchy F.
+Proof. by move=> [l /= Fl] eps; exists l; apply/Fl/locally_ball. Qed.
 
 Module Complete.
 
@@ -1604,135 +1850,26 @@ Proof. by move=> ?; rewrite (_ : P = Q) // funeqE => x; rewrite propeqE. Qed.
 End completeType1.
 Arguments complete_cauchy {T} F {FF} _.
 
-Lemma cauchy_distance  {T : uniformType} {F} {FF : ProperFilter F} :
-  (forall eps : posreal, exists x, F (ball x eps)) <->
-  (forall eps : posreal, exists P, F P /\ forall u v : T, P u -> P v -> ball u eps v).
-Proof.
-split.
-- intros H eps.
-  case: (H [posreal of eps / 2]) => {H} x Hx.
-  exists (ball x [posreal of eps / 2]).
-  split.
-  by [].
-  move => u v Hu Hv.
-  rewrite (double_var eps).
-  apply ball_triangle with x.
-  by apply ball_sym.
-  exact Hv.
-- intros H eps.
-  case: (H eps) => {H} P [HP H].
-  destruct (filter_ex HP) as [x Hx].
-  exists x.
-  move: (fun v => H x v Hx) => {H} H.
-  apply filter_imp with (1 := H).
-  by [].
-Qed.
-
 Section fct_Complete.
 
 Context {T : choiceType} {U : completeType}.
 
-Lemma filterlim_locally_cauchy :
-  forall {F} {FF : ProperFilter F} (f : T -> U),
-  (forall eps : posreal, exists P, F P /\ forall u v : T, P u -> P v -> ball (f u) eps (f v)) <->
-  exists y : U, f @ F --> y.
-Proof.
-intros F FF f.
-split.
-- intros H.
-  exists (lim (f @ F)).
-  move=> P [eps HP] /=.
-  refine (_ (complete_cauchy (f @ F) _ _)).
-  + by apply => /=; exists eps.
-  + clear eps P HP.
-    intros eps.
-    destruct (H eps) as [P [FP H']].
-    destruct (filter_ex FP) as [x Hx].
-    exists (f x).
-    unfold filtermap.
-    generalize FP.
-    apply filter_imp.
-    intros x' Hx'.
-    now apply H'.
-- intros [y Hy] eps.
-  exists (fun x => ball y [posreal of eps / 2] (f x)).
-  split.
-  apply Hy.
-  now exists [posreal of eps / 2].
-- intros u v Hu Hv.
-  rewrite (double_var eps).
-  apply ball_triangle with y.
-  apply ball_sym.
-  exact Hu.
-  exact Hv.
-Qed.
-
-Lemma filterlimi_locally_cauchy :
-  forall {F} {FF : ProperFilter F} (f : T -> set U),
-  F (fun x => (exists y, f x y) /\
-    (forall y1 y2, f x y1 -> f x y2 -> y1 = y2)) ->
-  ((forall eps : posreal, exists P, F P /\
-   forall u v : T, P u -> P v -> forall u' v': U, f u u' -> f v v' -> ball u' eps v') <->
-  exists y : U, f `@ F --> y).
-Proof.
-intros F FF f Hf.
-assert (FF': ProperFilter (filtermapi f F)).
-  apply filtermapi_proper_filter.
-  exact: filter_imp Hf.
-  exact FF.
-split.
-- intros H.
-  exists (lim (f `@ F)) => P [eps HP].
-  refine (_ (complete_cauchy (filtermapi f F) _ _)).
-  + by apply; exists eps.
-  + clear eps P HP.
-    intros eps.
-    case: (H eps) => {H} [P [FP H]].
-    assert (FfP := filter_and Hf FP).
-    destruct (filter_ex FfP) as [x [[[fx Hfx] _] Px]].
-    exists fx.
-    unfold filtermapi.
-    apply: filter_imp FfP.
-    intros x' [[[fx' Hfx'] _] Px'].
-    exists fx'.
-    apply (conj Hfx').
-    exact: H Hfx Hfx'.
-- intros [y Hy] eps.
-  exists (fun x => forall fx, f x fx -> ball y [posreal of eps / 2] fx).
-  split.
-    have Hb := locally_ball y [posreal of eps / 2].
-    assert (H := filter_and Hf (Hy _ Hb)).
-    apply: filter_imp H.
-    intros x [[_ H] [fx2 [Hfx2 H']]] fx Hfx.
-    now rewrite <- (H fx2).
-  intros u v Hu Hv fu fv Hfu Hfv.
-  rewrite (double_var eps).
-  apply ball_triangle with y.
-  by apply/ball_sym/Hu.
-  by apply Hv.
-Qed.
-
-Lemma complete_cauchy_fct :
-  forall (F : ((T -> U) -> Prop) -> Prop),
+Lemma complete_cauchy_fct (F : set (set (T -> U))) :
   ProperFilter F -> cauchy F -> F --> lim F.
 Proof.
-move=> F FF Fc.
-set Fr := fun (t : T) (P : U -> Prop) => F (fun g => P (g t)).
-have FFr t : ProperFilter (Fr t).
-  by apply: Build_ProperFilter'; apply: filter_not_empty.
-have Frc t : cauchy (Fr t).
-  move=> e; have [f Ffe] := Fc e; exists (f t).
-  by rewrite /Fr; apply: filter_imp Ffe.
-apply/limP; exists (fun t => lim (Fr t)).
-apply/filterlim_locally => e.
-have /cauchy_distance /(_ [posreal of e / 2]) [A [FA diamA_he]] := Fc.
-apply: (filter_imp _ FA) => f Af t.
-have [g [Ag limFte_gt]] :
-  exists g, A g /\ ball (lim (Fr t)) [posreal of e / 2] (g t).
-  apply/filter_ex/filter_and => //; apply: complete_cauchy => //.
-  exact: locally_ball.
-rewrite (double_var e); apply: ball_triangle limFte_gt _.
-exact: diamA_he.
+move=> FF Fcauchy; pose G t P := F [set g | P (g t)].
+have FG t : ProperFilter (G t).
+   by apply: Build_ProperFilter'; apply: filter_not_empty.
+have /(_ _) /complete_cauchy Gl : forall t, cauchy (G t).
+  by move=> t e; have [f /filterS Ff] := Fcauchy e; exists (f t); apply: Ff.
+apply/limP; exists (fun t => lim (G t)); apply/flim_ballP => e /=.
+(* TODO: find a way not to pose e / 2 / 2 explicitly *)
+have [/= f Ff] := Fcauchy [posreal of e / 2 / 2]; near g.
+  apply: (@ball_split _ f); last exact: ball_split (near Ff g _).
+  move=> t; have_near (G t) x.
+    by apply: (ball_splitl (near (flim_ball (Gl t) _) x _)); assume_near x.
+  by end_near; rewrite /G /=; apply: filterS (Ff).
+by end_near.
 Qed.
 
 Canonical fct_completeType := CompleteType (T -> U) complete_cauchy_fct.
@@ -1745,94 +1882,47 @@ Section Filterlim_switch.
 
 Context {T1 T2 : choiceType}.
 
+Lemma near2P {T U} {F : set (set T)} {G : set (set U)}
+   {FF : Filter F} {FG : Filter G} (P : T -> U -> Prop) :
+  {near (F, G), forall x, P x.1 x.2} -> {near F & G, forall x y, P x y}.
+Proof.
+move=> [_ /= [Q1 FQ1 [Q2 GQ2 <-]] Qsub].
+apply: filterS FQ1 => x Q1x; apply: filterS GQ2 => y Q2y.
+by rewrite -[P _ _]/(P (x, y).1 (x, y).2); apply: Qsub.
+Qed.
+
 (* :TODO: Use bigenough reasonning here *)
 Lemma filterlim_switch_1 {U : uniformType}
-  F1 (FF1 : ProperFilter F1) F2 (FF2 : Filter F2) (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
-  f @ F1 --> g ->
-  (forall x, f x @ F2 --> h x) ->
-  h @ F1 --> l ->
+  F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
+  (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
+  f @ F1 --> g -> (forall x, f x @ F2 --> h x) -> h @ F1 --> l ->
   g @ F2 --> l.
 Proof.
-  move=> Hfg Hfh Hhl P.
-  have HF1 := !! @filter_ex _ F1 _.
-
-  apply filterlim_locally.
-  move => eps.
-
-  have {Hfg}Hfg : [filter of (F1, F2)] [set x | ball (g x.2) (eps / 2 / 2) (f x.1 x.2)].
-    exists [set x | ball g (eps / 2 / 2) (f x)] setT => //=; last first.
-      exact: filter_true.
-      exact: (proj1 (@app_filterlim_locally _ _ F1 _ f g) _).
-
-  have {Hhl} Hhl : [filter of (F1, F2)] [set x | ball l (eps / 2) (h x.1)].
-    exists [set x | ball l (eps / 2) (h x)] setT => //=; last first.
-      exact: filter_true.
-    exact: (proj1 (@app_filterlim_locally _ _ F1 _ h l) _).
-
-  have [Q R /= F1Q F2R Hfghl] := filter_and Hhl Hfg.
-
-  move: (fun x => proj1 (@app_filterlim_locally _ _ F2 FF2 (f x) (h x)) (Hfh x) ([posreal of eps / 2 / 2])) => {Hfh} /= Hfh.
-  have [x Qx] := HF1 Q F1Q.
-
-  have {Hfh} := !! filter_and (Hfh x) F2R.
-  rewrite appfilter.
-  apply filter_imp => y Hy.
-  rewrite (double_var eps) /=.
-  apply ball_triangle with (h x).
-     apply (Hfghl x y) => //.
-     by apply Hy.
-  rewrite (double_var (eps / 2)).
-  apply ball_triangle with (f x y).
-  by apply Hy.
-  apply ball_sym, Hfghl.
-  by [].
-  by apply Hy.
+move=> fg fh hl; apply/filterlim_locally => eps /=.
+have_near F1 x; first near y.
++ apply: (@ball_split _ (h x)); first by assume_near x.
+  apply: (@ball_split _ (f x y)); first by assume_near y.
+  by apply/ball_sym; move: (y); assume_near x.
++ by end_near; apply/fh/locally_ball.
+end_near; first by apply/hl/locally_ball.
+by have /filterlim_locally /= := fg; apply.
 Qed.
 
 (* :TODO: Use bigenough reasonning here *)
 Lemma filterlim_switch_2 {U : completeType}
-  F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2) (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
-  f @ F1 --> g ->
-  (forall x, f x @ F2 --> h x) ->
+  F1 {FF1 : ProperFilter F1} F2 {FF2 : ProperFilter F2}
+  (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
+  f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
   [cvg h @ F1 in U].
-
 Proof.
-  move => Hfg Hfh.
-  case : (proj1 (filterlim_locally_cauchy h)).
-  move => eps.
-  generalize (proj2 (filterlim_locally_cauchy f)) => Hf.
-  assert (exists y : T2 -> U, f @ F1 --> y).
-    exists g => P Hp.
-    apply Hfg.
-    case: Hp => d Hp.
-    exists d => y Hy.
-    apply: Hp.
-    by apply Hy.
-
-  move: H => {Hfg} Hfg.
-  move: (Hf Hfg [posreal of eps / 2]) => {Hf Hfg} /= Hf.
-
-  have HF2 := !! @filter_ex _ F2 _.
-  generalize (fun x => proj1 (app_filterlim_locally (f x) (h x)) (Hfh x) ([posreal of eps / 2 / 2]))
-    => {Hfh} Hfh.
-
-  case: Hf => P [Hp Hf].
-  exists P ; split.
-  by [].
-  move => u v Hu Hv.
-  move: (Hfh u) => /= Hu'.
-  move: (Hfh v) => /= Hv'.
-  move: (!! (@filter_and _ F2 _ _ _ Hu' Hv')) => {Hu' Hv' Hfh} Hfh.
-  case: (HF2 _ Hfh) => {Hfh} y Hy.
-  replace (pos eps) with (eps / 2 / 2 + (eps / 2 + eps / 2 / 2)) by field.
-  apply ball_triangle with (f u y).
-  by apply Hy.
-  apply ball_triangle with (f v y).
-  by apply Hf.
-    apply ball_sym.
-    by apply Hy.
-  move => l Hl.
-  by exists l.
+move=> fg fh; rewrite cvgE; apply: complete_cauchy => e /=.
+have_near F1 x; [exists (h x); near x'; [have_near F2 y| ] |].
++ apply: (@ball_splitl _ (f x y)); first by assume_near y.
+  apply: (@ball_split _ (f x' y)); first by assume_near y.
+  by apply: (@ball_splitr _ (g y)); move: (y); [assume_near x'|assume_near x].
++ by end_near; apply/fh/locally_ball.
++ by end_near; have /filterlim_locally /= := fg; apply.
++ by end_near; have /filterlim_locally /= := fg; apply.
 Qed.
 
 (* Alternative version *)
@@ -1842,221 +1932,20 @@ Qed.
 (*   [/\ [cvg [lim f @ F1] @ F2 in U], [cvg (fun x => [lim f x @ F2]) @ F1 in U] *)
 (*   & [lim [lim f @ F1] @ F2] = [lim (fun x => [lim f x @ F2]) @ F1]]. *)
 Lemma filterlim_switch {U : completeType}
-  F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2) (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
-  f @ F1 --> g ->
-  (forall x, f x @ F2 --> h x) ->
+  F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2)
+  (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
+  f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
   exists l : U, h @ F1 --> l /\ g @ F2 --> l.
 Proof.
-  move => Hfg Hfh.
-  destruct (filterlim_switch_2 FF1 FF2 Hfg Hfh) as [l Hhl].
-  exists l ; split.
-  exact Hhl.
-  case: FF2 => HF2 FF2.
-  now apply (@filterlim_switch_1 _ F1 FF1 F2 FF2 f g h l).
+move=> Hfg Hfh; have [l hl] := filterlim_switch_2 Hfg Hfh.
+by exists l; split=> //; apply: filterlim_switch_1 Hfg Hfh hl.
 Qed.
 
 End Filterlim_switch.
 
-(* TODO: fix this later by instanciating a choicetype on sig *)
-(* Lemma filterlim_switch_dom {T1 T2 : choiceType} {U : completeType} *)
-(*   F1 (FF1 : ProperFilter F1) F2 (FF2 : Filter F2) *)
-(*   (dom : T2 -> Prop) (HF2 : forall P, F2 P -> exists x, dom x /\ P x) *)
-(*   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) : *)
-(*   (fun x (y : {z : T2 | dom z}) => f x (proj1_sig y)) @ F1 *)
-(*      --> (fun y : {z : T2 | dom z} => g (proj1_sig y)) -> *)
-(*   (forall x, (f x) @ (within dom F2) --> h x) -> *)
-(*   exists l : U, h @ F1 --> l /\ g @ within dom F2 --> l. *)
-(* Proof. *)
-(* set (T2' := { y : T2 | dom y }). *)
-(* set (f' := fun x (y : T2') => f x (proj1_sig y)). *)
-(* set (F2' := fun P : T2' -> Prop => F2 (fun x => forall (H:dom x), P (exist _ x H))). *)
-(* set (g' := fun y : T2' => g (proj1_sig y)). *)
-(* intros Hfg Hfh. *)
-(* refine (filterlim_switch F1 FF1 F2' _ f' g' h _ _). *)
-(* now apply subset_filter_proper. *)
-(* intros H P. *)
-(* now apply Hfg. *)
-(* intros x P HP. *)
-(* now apply Hfh. *)
-(* Qed. *)
-
 (** ** Modules with a norm *)
 
-Module AbsRing.
-
-Close Scope R_scope.
-
-Record mixin_of (D : ringType) := Mixin {
-  abs : D -> R;
-  ax1 : abs 0 = 0 ;
-  ax2 : abs (- 1) = 1 ;
-  ax3 : forall x y : D, abs (x + y) <= abs x + abs y ;
-  ax4 : forall x y : D, abs (x * y) <= abs x * abs y ;
-  ax5 : forall x : D, abs x = 0 -> x = 0
-}.
-
-Section ClassDef.
-
-Record class_of (K : Type) := Class {
-  base : Num.NumDomain.class_of K ;
-  mixin : mixin_of (Num.NumDomain.Pack base K)
-}.
-Local Coercion base : class_of >-> Num.NumDomain.class_of.
-Local Coercion mixin : class_of >-> mixin_of.
-
-Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
-Local Coercion sort : type >-> Sortclass.
-
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
-Let xT := let: Pack T _ _ := cT in T.
-Notation xclass := (class : class_of xT).
-Definition clone c of phant_id class c := @Pack T c T.
-Definition pack b0 (m0 : mixin_of (@Num.NumDomain.Pack T b0 T)) :=
-  fun bT b & phant_id (Num.NumDomain.class bT) b =>
-  fun    m & phant_id m0 m => Pack (@Class T b m) T.
-
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
-Definition ringType := @GRing.Ring.Pack cT xclass xT.
-Definition comRingType := @GRing.ComRing.Pack cT xclass xT.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass xT.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass xT.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass xT.
-Definition numDomainType := @Num.NumDomain.Pack cT xclass xT.
-
-End ClassDef.
-
-Module Exports.
-
-Coercion base : class_of >-> Num.NumDomain.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion sort : type >-> Sortclass.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion zmodType : type >-> GRing.Zmodule.type.
-Canonical zmodType.
-Coercion ringType : type >-> GRing.Ring.type.
-Canonical ringType.
-Coercion comRingType : type >-> GRing.ComRing.type.
-Canonical comRingType.
-Coercion unitRingType : type >-> GRing.UnitRing.type.
-Canonical unitRingType.
-Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
-Canonical comUnitRingType.
-Coercion idomainType : type >-> GRing.IntegralDomain.type.
-Canonical idomainType.
-Coercion numDomainType : type >-> Num.NumDomain.type.
-Canonical numDomainType.
-Notation AbsRingMixin := Mixin.
-Notation AbsRingType T m := (@pack T _ m _ _ id _ id).
-Notation "[ 'absRingType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
-  (at level 0, format "[ 'absRingType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'absRingType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'absRingType'  'of'  T ]") : form_scope.
-Notation absRingType := type.
-
-End Exports.
-
-End AbsRing.
-
-Export AbsRing.Exports.
-
-Delimit Scope R_scope with coqR.
-Delimit Scope real_scope with real.
-Local Open Scope ring_scope.
-Local Open Scope real_scope.
-
-Definition abs {K : absRingType} : K -> R := @AbsRing.abs _ (AbsRing.class K).
-Notation "`| x |" := (abs x%R) : R_scope.
-Notation "`| x |" := (abs x%R) : real_scope.
-
-Section AbsRing1.
-
-Context {K : absRingType}.
-Implicit Types x : K.
-
-Lemma absr0 : `|0 : K| = 0. Proof. exact: AbsRing.ax1. Qed.
-
-Lemma absrN1: `|- 1 : K| = 1.
-Proof. exact: AbsRing.ax2. Qed.
-
-Lemma ler_abs_add (x y : K) :  `|x + y| <= `|x|%real + `|y|%real.
-Proof. exact: AbsRing.ax3. Qed.
-
-Lemma absrM (x y : K) : `|x * y| <= `|x|%real * `|y|%real.
-Proof. exact: AbsRing.ax4. Qed.
-
-Lemma absr0_eq0 (x : K) : `|x| = 0 -> x = 0.
-Proof. exact: AbsRing.ax5. Qed.
-
-Lemma absrN x : `|- x| = `|x|.
-Proof.
-gen have le_absN1 : x / `|- x| <= `|x|.
-  by rewrite -mulN1r (ler_trans (absrM _ _)) //= absrN1 mul1r.
-by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
-Qed.
-
-Lemma absrB (x y : K) : `|x - y| = `|y - x|.
-Proof. by rewrite -absrN opprB. Qed.
-
-Lemma absr1 : `|1 : K| = 1. Proof. by rewrite -absrN absrN1. Qed.
-
-Lemma absr_ge0 x : 0 <= `|x|.
-Proof.
-rewrite -(@pmulr_rge0 _ 2%:R) // mulr2n mulrDl !mul1r.
-by rewrite -{2}absrN (ler_trans _ (ler_abs_add _ _)) // subrr absr0.
-Qed.
-
-Lemma absrX x n : `|x ^+ n| <= `|x|%real ^+ n.
-Proof.
-elim: n => [|n IH]; first  by rewrite !expr0 absr1.
-by rewrite !exprS (ler_trans (absrM _ _)) // ler_pmul // absr_ge0.
-Qed.
-
-End AbsRing1.
-
-Section AbsRing_UniformSpace.
-
-Context (K : absRingType).
-
-Definition AbsRing_ball (x : K) (eps : R) (y : K) := `|x - y| < eps.
-
-Lemma AbsRing_ball_center (x : K) (e : posreal) : AbsRing_ball x e x.
-Proof. by rewrite /AbsRing_ball subrr absr0. Qed.
-
-Lemma AbsRing_ball_sym (x y : K) (e : R) :
-  AbsRing_ball x e y -> AbsRing_ball y e x.
-Proof. by rewrite /AbsRing_ball absrB. Qed.
-
-(* :TODO: to math-comp *)
-Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
-Proof. by rewrite addrA addrNK. Qed.
-
-Lemma AbsRing_ball_triangle (x y z : K) (e1 e2 : R) :
-  AbsRing_ball x e1 y -> AbsRing_ball y e2 z -> AbsRing_ball x (e1 + e2) z.
-Proof.
-rewrite /AbsRing_ball => xy yz.
-by rewrite (subr_trans y) (ler_lt_trans (ler_abs_add _ _)) ?ltr_add.
-Qed.
-
-Definition AbsRingUniformMixin :=
-  UniformMixin 0 AbsRing_ball_center AbsRing_ball_sym AbsRing_ball_triangle.
-
-(* :TODO: DANGEROUS ! Must change this to include uniform type inside absring *)
-Canonical absRing_UniformType := UniformType K AbsRingUniformMixin.
-Canonical AbsRingcanonical_filter := @CanonicalFilter K K locally.
-
-End AbsRing_UniformSpace.
-
-Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").
-
 Module NormedModule.
-
-Close Scope R_scope.
 
 Record mixin_of (K : absRingType) (V : lmodType K) (m : Uniform.mixin_of V) := Mixin {
   norm : V -> R ;
@@ -2147,17 +2036,6 @@ End NormedModule.
 
 Export NormedModule.Exports.
 
-Program Definition R_AbsRingMixin :=
- @AbsRing.Mixin _ normr (normr0 _) (normrN1 _) (@ler_norm_add _) _ (@normr0_eq0 _).
-Next Obligation. by rewrite normrM. Qed.
-Canonical R_absRingType := AbsRingType R R_AbsRingMixin.
-
-Definition R_UniformSpace_mixin := @AbsRingUniformMixin R_absRingType.
-Canonical R_UniformSpace := UniformType R R_UniformSpace_mixin.
-Canonical R_canonical_filter := @CanonicalFilter R R locally.
-Canonical Ro_UniformSpace := UniformType R^o R_UniformSpace_mixin.
-Canonical Ro_canonical_filter := @CanonicalFilter R R^o locally.
-
 Definition norm {K : absRingType} {V : normedModType K} : V -> R :=
   NormedModule.norm (NormedModule.class _).
 Definition norm_factor {K : absRingType} (V : normedModType K) : R :=
@@ -2167,8 +2045,6 @@ Notation "`|[ x ]|" := (norm x) : ring_scope.
 Section NormedModule1.
 Context {K : absRingType} {V : normedModType K}.
 Implicit Types (l : K) (x y : V) (eps : posreal).
-
-Close Scope R_scope.
 
 Lemma ler_normm_add x y : `|[x + y]| <= `|[x]| + `|[y]|.
 Proof. exact: NormedModule.ax1. Qed.
@@ -2324,7 +2200,7 @@ Qed.
 Lemma ball_norm_eq x y : (forall eps : posreal, ball_norm x eps y) -> x = y.
 Proof. by rewrite -norm_close closeE. Qed.
 
-Lemma is_filter_lim_unique {F} {FF : ProperFilter F} :
+Lemma flim_unique {F} {FF : ProperFilter F} :
   is_prop [set x : V | F --> x].
 Proof. by move=> Fx Fy; rewrite -closeE; apply: is_filter_lim_close. Qed.
 
@@ -2338,18 +2214,37 @@ Section NormedModule2.
 Context {T : Type} {K : absRingType} {V : normedModType K}.
 
 Lemma filterlim_locally_unique {F} {FF : ProperFilter F} (f : T -> V) :
-  is_prop [set x : V | f @ F --> x].
-Proof. exact: is_filter_lim_unique. Qed.
+  is_prop [set x : V | f @ F --> x]. (* compat *)
+Proof. exact: flim_unique. Qed.
 
-Lemma filterlimi_locally_unique {F} {FF : ProperFilter F} (f : T -> V -> Prop) :
-  F (fun x => is_prop (f x)) -> is_prop [set x : V | f `@ F --> x].
+Lemma flimi_unique {F} {FF : ProperFilter F} (f : T -> set V) :
+  {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
+Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
+Definition filterlimi_locally_unique := @flimi_unique.
+
+Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y <-> forall eps : posreal, {near F, forall y', `|[y - y']| < eps}.
 Proof.
-move=> ffun fx fy; rewrite -closeE.
-exact: (@filterlimi_locally_close _ _ _ _ f).
+by rewrite !filter_ofE /= -locally_locally_norm; apply: filter_fromP.
+Qed.
+
+Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> forall eps, eps > 0 -> {near F, forall y', `|[y - y']| < eps}.
+Proof. by move=> /flim_normP /(_ (PosReal _)). Qed.
+
+Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> forall M, M > `|[y]| -> {near F, forall y', `|[y']|%real < M}.
+Proof.
+move=> /flim_norm Fy M; rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
+apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
+rewrite (ler_lt_trans _ yy') //.
+by rewrite (ler_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
 Qed.
 
 End NormedModule2.
-
+Hint Resolve normm_ge0.
+Arguments flim_norm {_ _ F FF}.
+Arguments flim_bounded {_ _ F FF}.
 (** Rings with absolute values are normed modules *)
 
 Section AbsRing_NormedModule.
@@ -2384,125 +2279,72 @@ Section NVS_continuity.
 
 Context {K : absRingType} {V : normedModType K}.
 
+Lemma locally_pair {U1 U2 : uniformType} (x : U1) (y : U2) :
+  locally (x, y) = filter_prod (locally x) (locally y).
+Proof.
+rewrite funeqE => /= P; rewrite propeqE; split=> /=.
+  move=> [e bP]; exists (ball x e `*` ball y e)=> //; last first.
+  by exists (ball x e) => //; exists (ball y e) => //.
+move=> [? [A [e subA [B [e' subB] <-]]] subP].
+exists [posreal of minr (e : R) (e' : R)]%R.
+move=> [a b] [/= xa yb]; apply: subP; split => /=.
+  by apply: subA; apply: ball_ler xa; rewrite ler_minl lerr.
+by apply: subB; apply: ball_ler yb; rewrite ler_minl lerr orbT.
+Qed.
+
 (* :TODO: put again filter inside uniform type and prove this instead: *)
-(* Lemma filterlim_plus (x y : V) : continuous (fun z : V * V => z.1 + z.2). *)
-Lemma filterlim_plus (x y : V) : z.1 + z.2 @[z --> (x, y)] --> x + y.
+(* Lemma filterlim_plus : continuous (fun z : V * V => z.1 + z.2). *)
+Lemma flim_add (x y : V) : z.1 + z.2 @[z --> (x, y)] --> x + y.
 Proof.
-apply (filterlim_filter_le_1 (F := filter_prod (locally_norm x) (locally_norm y))).
-  intros P [Q R LQ LR H].
-  exists Q R.
-  now apply locally_le_locally_norm.
-  now apply locally_le_locally_norm.
-  exact H.
-apply (filterlim_filter_le_2 (G := locally_norm (x + y))).
-  apply locally_norm_le_locally.
-intros P [eps HP].
-exists (ball_norm x [posreal of eps / 2]) (ball_norm y [posreal of eps / 2]).
-by apply locally_norm_ball_norm.
-by apply locally_norm_ball_norm.
-intros u v Hu Hv.
-apply HP.
-rewrite /ball_norm /= (double_var eps).
-by rewrite opprD addrACA (ler_lt_trans (ler_normm_add _ _)) ?ltr_add.
+apply/flim_normP=> e; rewrite /=; near z.
+  rewrite opprD addrACA (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
+  by rewrite ltr_add //; assume_near z.
+by end_near; [apply (flim_norm _ flim_fst)|apply (flim_norm _ flim_snd)].
 Qed.
 
-Lemma filterlim_scal (k : K) (x : V) : z.1 *: z.2 @[z --> (k, x)] --> k *: x.
+(* Lemma filterlim_scal : continuous (fun z : K * V => z.1 *: z.2). *)
+Lemma flim_scal (k : K) (x : V) : z.1 *: z.2 @[z --> (k, x)] --> k *: x.
 Proof.
-
-apply/filterlim_locally => /= eps.
-set P := (fun u : K * V => (abs (u.1 - k) < pos eps / 2 / (norm x + 1) /\
-           abs (u.1 - k) < 1) /\
-         (norm (u.2 - x) < pos eps / 2 / (abs k + 1))).
-apply: (@filter_imp _ _ _ P).
-- move => /= u Hu.
-  rewrite (double_var eps).
-  apply (@ball_triangle _ _ (u.1 *: x)).
-  + apply norm_compat1.
-    rewrite /ball_norm -scalerBl.
-    apply: ler_lt_trans; first by apply norm_scal.
-    apply (@ler_lt_trans _ (`|k - u.1|%real * (`|[x]| + 1))).
-    by rewrite ler_pmul // ?absr_ge0 // ?normm_ge0 // ler_addl.
-    rewrite -ltr_pdivl_mulr; last by rewrite ltr_paddl // normm_ge0.
-    move: (proj1 (proj1 Hu)).
-    by rewrite absrB /= RdivE.
-  + apply norm_compat1.
-    rewrite /ball_norm -scalerBr.
-    apply: ler_lt_trans; first by apply norm_scal.
-    apply (@ler_lt_trans _ ((`|k|%real + 1) * `|[x - u.2]|)).
-      rewrite ler_pmul // ?absr_ge0 // ?normm_ge0 //.
-      rewrite (_ : `|u.1| = `|k + ((u.1) - k)|); last by rewrite addrCA subrr addr0.
-      apply: (@ler_trans _ _); first by apply ler_abs_add.
-      rewrite ler_add // ltrW //; exact: (proj2 (proj1 Hu)).
-    rewrite mulrC -ltr_pdivl_mulr; last by rewrite ltr_paddl // absr_ge0.
-    by rewrite /= RdivE // normmB; exact: (proj2 Hu).
-- have x1 : `|[x]| + 1 != 0 by rewrite lt0r_neq0 // ltr_paddl // normm_ge0.
-  have k1 : `|k|%real + 1 != 0 by rewrite lt0r_neq0 // ltr_paddl // absr_ge0.
-  repeat apply filter_and.
-  + have Hd : (0 < pos eps / 2 / (norm x + 1))%coqR.
-      apply/RltP; rewrite RdivE RplusE //.
-      by rewrite divr_gt0 // ltr_paddl // normm_ge0.
-    eexists => /=.
-    * exact: (@locally_ball_norm _ (AbsRing_NormedModType K) _ (mkposreal _ Hd)).
-    * by apply: filter_true.
-    * move=> x0 y /= x0y _; move: x0y.
-      by rewrite /ball_norm -RplusE absrB RdivE // RdivE.
-  + eexists => /=.
-    * exact (@locally_ball_norm _ (AbsRing_NormedModType K) _ [posreal of 1]).
-    * by apply: filter_true.
-    * move=> x0 y /=; by rewrite /ball_norm -absrB.
-  + have Hd : (0 < eps / 2 / (abs k + 1))%coqR.
-      apply/RltP.
-      rewrite RdivE; last by rewrite lt0r_neq0 // RplusE // ltr_paddl // absr_ge0.
-      by rewrite divr_gt0 // ltr_paddl // absr_ge0.
-    eexists.
-    * by apply: filter_true.
-    * by apply (locally_ball_norm _ (mkposreal _ Hd)).
-    * move=> x0 y /= _; by rewrite /ball_norm RplusE RdivE // RdivE // normmB.
+apply/flim_normP=> /= e; rewrite /ball_norm /=; near z.
+  rewrite (@subr_trans _ (k *: z.2)).
+  rewrite (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
+  rewrite ltr_add // -?(scalerBr, scalerBl).
+    rewrite (ler_lt_trans (ler_normmZ _ _)) //.
+    rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
+            ?ler_addl//.
+    rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //.
+    by assume_near z.
+  rewrite (ler_lt_trans (ler_normmZ _ _)) //.
+  rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) //.
+    by rewrite ltrW //; assume_near z.
+  rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //.
+  by assume_near z.
+end_near.
+- by apply (flim_norm _ flim_snd); rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
+- by apply (flim_bounded _ flim_snd); rewrite ltr_addl.
+- apply (flim_norm (_ : K^o) flim_fst).
+  by rewrite mulr_gt0// ?invr_gt0 ltr_paddl.
 Qed.
+Arguments flim_scal k x : clear implicits.
 
-Lemma filterlim_scal_r (k : K) (x : V) : k *: z @[z --> x] --> k *: x.
-Proof.
-eapply filterlim_comp_2.
-by apply filterlim_const.
-by apply filterlim_id.
-by apply filterlim_scal.
-Qed.
+Lemma flim_scalr (k : K) (x : V) : k *: z @[z --> x] --> k *: x.
+Proof. exact: (flim_comp2 (flim_const _) flim_id (flim_scal _ _)). Qed.
 
-Lemma filterlim_scal_l (l : K) (x : V) : k *: x @[k --> l] --> l *: x.
-Proof.
-eapply filterlim_comp_2.
-by apply filterlim_id.
-by apply filterlim_const.
-by apply filterlim_scal.
-Qed.
+Lemma flim_scall (l : K) (x : V) : k *: x @[k --> l] --> l *: x.
+Proof. exact: (flim_comp2 flim_id (flim_const _) (flim_scal _ _)). Qed.
 
-Lemma filterlim_opp (x : V) : (@GRing.opp V) @ x --> - x.
+Lemma flim_opp (x : V) : (@GRing.opp V) @ x --> - x.
 Proof.
-rewrite -scaleN1r.
-apply filterlim_ext with (2 := @filterlim_scal_r _ _) => /= x0.
-by rewrite scaleN1r.
+rewrite -scaleN1r => P /flim_scalr /=.
+by apply: filterS => x'; rewrite scaleN1r.
 Qed.
 
 End NVS_continuity.
 
 Lemma filterlim_mult {K : absRingType} (x y : K) :
    z.1 * z.2 @[z --> (x, y)] --> x * y.
-Proof. exact: (@filterlim_scal _ (AbsRing_NormedModType K)). Qed.
+Proof. exact: (@flim_scal _ (AbsRing_NormedModType K)). Qed.
 
-Lemma filterlim_locally_ball_norm {K : absRingType} {T} {U : normedModType K}
-  {F : set (set T)} {FF : Filter F} (f : T -> U) (y : U) :
-  f @ F --> y <-> forall eps : posreal, F (fun x => ball_norm y eps (f x)).
-Proof.
-(* use locally = locally_norm *)
-split.
-- intros Cf eps.
-  apply (Cf (fun x => ball_norm y eps x)).
-  by apply/locally_le_locally_norm/locally_norm_ball_norm.
-- intros Cf.
-  apply: filterlim_filter_le_2; first by apply: locally_norm_le_locally.
-  move=> P [eps He].
-  apply: filter_imp (Cf eps) => t; by apply He.
-Qed.
 
 (** ** Complete Normed Modules *)
 
@@ -2594,7 +2436,7 @@ Lemma get_is_filter_lim {F} {FF : ProperFilter F} (l : V) :
   F --> l -> lim F = l.
 Proof.
 move=> Fl; have FlF : F --> lim F by rewrite -cvgE; exists l.
-by apply: is_filter_lim_unique.
+by apply: flim_unique.
 Qed.
 
 Context {T : Type}.
@@ -2636,8 +2478,6 @@ Qed.
 Section prod_NormedModule.
 
 Context {K : absRingType} {U V : normedModType K}.
-
-Local Close Scope R_scope.
 
 Definition prod_norm (x : U * V) := Num.sqrt (`|[x.1]| ^+ 2 + `|[x.2]| ^+ 2).
 
@@ -2919,9 +2759,7 @@ Qed.
 
 Definition R_AbsRing_mixin :=
   @AbsRingMixin [ringType of R] _ absr0 absrN1 ler_abs_add absrM absr0_eq0.
-
 Canonical R_AbsRing := @AbsRingType R R_AbsRing_mixin.
-
 Definition R_uniformType_mixin := AbsRingUniformMixin R_AbsRing.
 
 Canonical R_uniformType := UniformType R R_uniformType_mixin.
@@ -2942,7 +2780,7 @@ move Hl : (Lub_Rbar _) => l{Hl}; move: l => [x| |] [Hx1 Hx2].
 - case: (HF [posreal of Rmin 2 eps / 2]) => z Hz.
   have H1 : z - Num.min 2 eps / 2 + 1 <= x + 1.
     rewrite ler_add //; apply/RlebP/Hx1.
-    apply: filter_imp Hz.
+    apply: filterS Hz.
     rewrite /ball /= => u /RltbP.
     rewrite absrB absRE => /(Rabs_lt_between' u z) => Bu.
     apply/RltbP; rewrite absrB; apply/Rabs_lt_between'.
@@ -2958,7 +2796,7 @@ move Hl : (Lub_Rbar _) => l{Hl}; move: l => [x| |] [Hx1 Hx2].
     rewrite ler_add //; apply/RlebP/(Hx2 (Finite _)) => v Hv.
     apply Rbar_not_lt_le => Hlt.
     apply: filter_not_empty.
-    apply: filter_imp (filter_and Hz Hv).
+    apply: filterS (filterI Hz Hv).
     rewrite /ball /= => w [/RltbP Hw1 /RltbP Hw2].
     move: Hw1; rewrite absrB absRE => /(Rabs_lt_between' w z) => -[_ Hw1].
     move: Hw2; rewrite absrB => /(Rabs_lt_between' w (v + 1)) => -[Hw2 _].
@@ -2967,7 +2805,7 @@ move Hl : (Lub_Rbar _) => l{Hl}; move: l => [x| |] [Hx1 Hx2].
     rewrite addrK in Hw2.
     move/RltP in Hw1. move/RltP in Hlt. move/RltP in Hw2.
     move: (ltr_trans (ltr_trans Hw1 Hlt) Hw2); by rewrite ltrr.
-  apply: filter_imp Hz.
+  apply: filterS Hz.
   rewrite /ball /= => u.
   move/RltbP; rewrite absrB absRE => /(Rabs_lt_between' u z) => Hu.
   apply/RltbP/Rabs_lt_between'.
@@ -2993,7 +2831,7 @@ move Hl : (Lub_Rbar _) => l{Hl}; move: l => [x| |] [Hx1 Hx2].
   case: (Hx2 (y + 1)) => x Fx.
   apply Rbar_not_lt_le => Hlt.
   apply: filter_not_empty.
-  apply: filter_imp (filter_and Fy Fx) => z [Hz1 Hz2].
+  apply: filterS (filterI Fy Fx) => z [Hz1 Hz2].
   apply: Rbar_le_not_lt Hlt.
   apply Rplus_le_reg_r with (-(y - 1)).
   rewrite opprB 2!RplusE (addrC (y + 1)) !addrA subrK.
@@ -3078,7 +2916,7 @@ Proof.
   (* apply filterlim_locally_ball_norm => eps. *)
   (* generalize (proj1 (filterlim_locally_ball_norm _ _) Hf eps) ; *)
   (* unfold ball_norm ; simpl. *)
-  (* apply filter_imp => /= x. *)
+  (* apply filterS => /= x. *)
   (* rewrite !minus_zero_r {1}/norm /= /abs /= Rabs_pos_eq //. *)
   (* by apply norm_ge_0. *)
 (*Qed.*)
@@ -3204,7 +3042,7 @@ Lemma locally_2d_impl_strong (P Q : R -> R -> Prop) x y :
 Proof.
 move=> /locally_2d_locally Li /locally_2d_locally/locally_locally LP.
 apply locally_2d_locally.
-apply: filter_imp (filter_and Li LP) => uv -[H1 H2].
+apply: filterS (filterI Li LP) => uv -[H1 H2].
 by apply/H1/locally_2d_locally.
 Qed.
 
@@ -3681,3 +3519,7 @@ intros Lf Cf.
 apply continuity_pt_filterlim in Cf.
 now apply Cf.
 Qed.
+
+
+
+
