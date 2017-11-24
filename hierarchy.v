@@ -2,7 +2,7 @@ Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 Require Import Rcomplements Rbar Markov Iter Lub.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
-From SsrReals Require Import boolp.
+From SsrReals Require Import boolp reals.
 Require Import Rstruct.
 
 (** ADD HEADER HERE !! *)
@@ -416,6 +416,11 @@ split; last by exists P.
 by move=> [Q FQ QP]; apply: (filter_imp QP).
 Qed.
 
+Definition extensible_property T (x : T) (P : Prop) := P.
+Lemma extensible_propertyI T (x : T) (P : Prop) :
+  P -> extensible_property x P.
+Proof. by []. Qed.
+
 Fact near_lock : unit. Proof. exact: tt. Qed.
 Definition near {T} (F : set (set T)) (x : T) := locked_with near_lock True.
 Lemma solve_near {T} F (x : T) : near F x.
@@ -433,21 +438,21 @@ Ltac near x :=
   match goal with |- exists2 Q : set ?T, ?F Q & _ =>
                   evar (R : set T); evar (FR : F R);
                   exists R; [exact: FR|];
-  move=> x ?; suff ? : near F x
+  move=> x /(extensible_propertyI x) ?; suff ? : near F x
   end.
 
 Ltac have_near x FP :=
   match goal with _ : near ?F x |- _ =>
   match goal with U : F ?R  |- _ =>
-  match goal with Rx : ?R x |- _ =>
+  match goal with Rx : extensible_property x _  |- _ =>
     instantiate (1 := filter_and _ FP) in (Value of U);
-    case: Rx => [Rx]
+    case: Rx => [/(extensible_propertyI x) Rx]
   end end end.
 
 Ltac end_near :=
   match goal with |- @near _ ?F ?x =>
   match goal with U : F ?R  |- _ =>
-   match goal with Rx : ?R x |- _ =>
+   match goal with Rx : extensible_property x _ |- _ =>
     instantiate (1 := filter_true) in (Value of U);
     exact: solve_near
   end
@@ -461,10 +466,15 @@ Proof. by move=> ?; apply/filterP; exists setT => //; apply: filter_true. Qed.
 Lemma filter_bind (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, {near F, P `<=` Q} -> F P -> F Q.
 Proof.
-move=> FF P Q subPQ FP; near x;
-  first by have_near x subPQ; apply; have_near x FP.
+move=> FF P Q subPQ FP; near x.
+  by have_near x subPQ; apply; have_near x FP.
 by end_near.
 Qed.
+
+Lemma filter_bind2 (T : Type) (F : set (set T)) :
+  Filter F -> forall P Q R : set T, {near F, forall x, P x -> Q x -> R x} ->
+  F P -> F Q -> F R.
+Proof. by move=> ???? PQR FP; apply: filter_bind; apply: filter_bind FP. Qed.
 
 Lemma filter_const {T : Type} {F} {FF: @ProperFilter T F} (P : Prop) :
   F (fun=> P) -> P.
@@ -522,6 +532,7 @@ Proof. exact: flim_trans. Qed.
 
 Definition filtermap {T U : Type} (f : T -> U) (F : set (set T)) :=
   [set P | F (f @^-1` P)].
+Arguments filtermap _ _ _ _ _ /.
 
 Lemma filtermapE {U V : Type} (f : U -> V)
   (F : set (set U)) (P : set V) : filtermap f F P = F (f @^-1` P).
@@ -625,8 +636,8 @@ Lemma flim_eq_loc {T U} {F : set (set T)}
   {FF : Filter F} (f g : T -> U) :
   {near F, f =1 g} -> g @ F `=>` f @ F.
 Proof.
-move=> eq_fg P /=; rewrite !appfilter => FP.
-near x; first by have_near x eq_fg => <-; have_near x FP => Pgx.
+move=> eq_fg P /= FP.
+  near x; first by have_near x eq_fg => <-; have_near x FP => Pgx.
 by end_near.
 Qed.
 Lemma filterlim_eq_loc {T U} {F : set (set T)}
@@ -714,7 +725,7 @@ Qed.
 Definition filter_prod {T U : Type} (F : set (set T)) (G : set (set U)) :
    set (set (T * U)) :=
   [set P : set (T * U) | {near F & G, forall x y, P (x, y)}].
-
+Arguments filter_prod /.
 (* Inductive filter_prod {T U : Type} (F G : _ -> Prop) (P : T * U -> Prop) : Prop := *)
 (*   Filter_prod (Q : T -> Prop) (R : U -> Prop) : *)
 (*     F Q -> G R -> (forall x y, Q x -> R y -> P (x, y)) -> filter_prod F G P. *)
@@ -722,6 +733,7 @@ Definition filter_prod {T U : Type} (F : set (set T)) (G : set (set U)) :
 Definition apply_filter_prod {X1 X2 Y1 Y2} (f : Y1 -> set (set X1))
   (g : Y2 -> set (set X2)) (y1 : Y1) (y2 : Y2) : set (set (X1 * X2)) :=
   filter_prod (f y1) (g y2).
+Arguments apply_filter_prod /.
 
 Canonical canonical_filter_prod X1 X2 (Z1 : canonical_filter X1)
   (Z2 : canonical_filter X2) : canonical_filter (X1 * X2) :=
@@ -731,45 +743,11 @@ Canonical canonical_filter_prod X1 X2 (Z1 : canonical_filter X1)
 Global Instance filter_prod_filter  T U (F : set (set T)) (G : set (set U)) :
   Filter F -> Filter G -> Filter (filter_prod F G).
 Proof.
-move=>  FF FG; constructor.
+rewrite /filter_prod => FF FG; constructor.
 - by near x; [near y; [|end_near]|end_near].
-- move=> P Q FGP FGQ.
-  
-  
-  match goal with |- @near _ ?F ?x =>
-  match goal with U : F ?R  |- _ =>
-   match goal with Rx : ?R x |- _ =>
-    instantiate (1 := filter_true) in (Value of U);
-    exact: solve_near
-  end
-  end
-  end.
-
-forall
-by end_near.
-
-  apply/filterP.
-  near y => /=.
-   apply/filterP.  intros T U F G FF FG.
-
-constructor.
-- exists (fun _ => True) (fun _ => True).
-  apply filter_true.
-  apply filter_true.
-  easy.
-- intros P Q [AP BP P1 P2 P3] [AQ BQ Q1 Q2 Q3].
-  exists (fun x => AP x /\ AQ x) (fun x => BP x /\ BQ x).
-  now apply filter_and.
-  now apply filter_and.
-  intros x y [Px Qx] [Py Qy].
-  split.
-  now apply P3.
-  now apply Q3.
-- intros P Q HI [AP BP P1 P2 P3].
-  exists AP BP ; try easy.
-  intros x y Hx Hy.
-  apply HI.
-  now apply P3.
+- move=> P Q; apply: filter_bind2; apply: filter_forall => /= x.
+  by apply: filter_bind2; apply: filter_forall.
+- by move=> P Q subPQ; apply: filter_imp => x; apply: filter_imp => y /subPQ.
 Qed.
 
 Global Instance filter_prod_proper {T1 T2 : Type}
@@ -777,35 +755,32 @@ Global Instance filter_prod_proper {T1 T2 : Type}
   {FF : ProperFilter F} {FG : ProperFilter G} :
   ProperFilter (filter_prod F G).
 Proof.
-apply: Build_ProperFilter'.
-apply: filter_prod_ind => Q R FQ GR QRF.
-apply: (filter_not_empty F); apply: filter_imp FQ => x Qx.
-apply: (filter_not_empty G); apply: filter_imp GR => y Ry.
-exact: QRF Qx Ry.
+apply: Build_ProperFilter'; rewrite /filter_prod=> FGN0.
+apply: (filter_not_empty F); apply: filter_imp FGN0 => x.
+exact: filter_not_empty.
 Qed.
 Definition filter_prod_proper' := @filter_prod_proper.
 
-Lemma filterlim_fst {T U F G} {FG : Filter G} :
+Lemma filterlim_fst {T U F G} {FF : Filter F} {FG : Filter G} :
   (@fst T U) @ filter_prod F G --> F.
 Proof.
-intros P HP.
-exists P (fun _ => True) ; try easy.
-apply filter_true.
+by move=> P /= FP; apply: filter_imp FP => x /= Px; apply: filter_forall.
 Qed.
 
 Lemma filterlim_snd {T U F G} {FF : Filter F} :
   (@snd T U) @ filter_prod F G --> G.
-Proof.
-intros P HP.
-exists (fun _ => True) P ; try easy.
-apply filter_true.
-Qed.
+Proof. by move=> P /= FP; apply: filter_forall. Qed.
 
 Lemma filterlim_pair {T U V F} {G : set (set U)} {H : set (set V)}
-  {FF : Filter F} (f : T -> U) (g : T -> V) :
+  {FF : Filter F} {FG : Filter G} {FH : Filter H} (f : T -> U) (g : T -> V) :
   f @ F --> G -> g @ F --> H ->
   (f x, g x) @[x --> F] --> (G, H).
 Proof.
+move=> fFG gFH P /= GHP.
+have /= := fFG _ GHP; apply: filter_imp => /= x HP.
+have /= := gFH _ HP. apply: filter_imp.
+  
+
 intros Cf Cg P [A B GA HB HP].
 unfold filtermap.
 apply: (@filter_imp _ _ _ (fun x => A (f x) /\ B (g x))).
@@ -998,6 +973,12 @@ Lemma getPN (P : set T) : (forall x, ~ P x) -> get P = point.
 Proof. exact: (xgetPN point). Qed.
 
 Definition lim (F : set (set T)) : T := get [set x | F --> x].
+
+(* Definition lim_in {M : uniformType} (F : set (set M)) T : T := *)
+(*    get (fun x : T => F --> x). *)
+(* Notation "[ 'lim' F 'in' T ]" := (lim_in F T). *)
+(* Definition type_of_filter {M : uniformType} (F : set (set M)) := M. *)
+(* Notation lim F := [lim F in type_of_filter F]. *)
 
 End UniformGet.
 
@@ -3862,3 +3843,4 @@ intros Lf Cf.
 apply continuity_pt_filterlim in Cf.
 now apply Cf.
 Qed.
+
