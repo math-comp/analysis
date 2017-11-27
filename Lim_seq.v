@@ -1223,12 +1223,12 @@ Proof.
   split => Hl.
   move => e He.
   apply (Hl (fun y => R_dist y l < e)).
-  by exists (mkposreal _ He) => y /= /ball_R_dist.
+  by exists (mkposreal _ He) => ?; rewrite ballE.
   change (Rbar_locally l) with (locally l).
   apply/filterlim_locally => -[e He].
   case: (Hl e He) => {Hl} /= N Hl.
   exists N => n Hn.
-  by move: (Hl n Hn) => /ball_R_dist.
+  by move: (Hl n Hn); rewrite (_ : e = pos (mkposreal _ He)) // ballE.
 Qed.
 
 Import ssrbool.
@@ -1255,13 +1255,13 @@ Proof.
   case: l => [l | | ] /= Hu.
   move => eps.
   (* ; case: (Hu eps) => {Hu} N Hu; split*)
-  move/filterlim_locally : Hu => /(_ eps) [N Hu]; split.
+  move/filterlim_locally : Hu => /(_ eps) [N Hu]; split; rewrite ballE in Hu.
   move => N0.
   exists (N + N0)%nat ; split.
   by apply le_plus_r.
-  by apply Rabs_lt_between', ball_R_dist, Hu, le_plus_l.
+  by apply Rabs_lt_between', Hu, le_plus_l.
   exists N => n Hn.
-  by apply Rabs_lt_between', ball_R_dist, Hu.
+  by apply Rabs_lt_between', Hu.
   move => M N0.
   (*case: (Hu M) => {Hu} N Hu.*)
   move/is_lim_seq_p_infty_Reals : Hu => /(_ M) [N Hu].
@@ -1822,14 +1822,14 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
     now apply -> Rminus_lt_0.
     apply Rlt_R0_R2.
   assert (Hlf : locally lf (fun y => (lf + lg) / 2 < y)%R).
-    apply open_gt.
+    apply hierarchy.open_gt.
     replace ((lf + lg) / 2)%R with (lf - (lf - lg) / 2); last first.
       rewrite -RdivE // /plus /=; field.
     apply/RltP.
     apply Rabs_lt_between'.
     by rewrite /Rminus Rplus_opp_r Rabs_R0.
   assert (Hlg : locally lg (fun y => y < (lf + lg) / 2)%R).
-    apply open_lt.
+    apply hierarchy.open_lt.
     replace ((lf + lg) / 2)%R with (lg + (lf - lg) / 2); last first.
       rewrite -RdivE // /plus /=; field.
     apply/RltP.
@@ -1838,13 +1838,13 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
   specialize (Hf _ Hlf).
   specialize (Hg _ Hlg).
   rewrite /filtermap /filter_of /= in Hf, Hg.
-  generalize (filter_and (filter_and Hf Hg) H).
+  generalize (filter_and _ _ (filter_and _ _ Hf Hg) H).
   apply filter_imp.
   intros x [[H1 H2] H3].
   apply Rle_not_lt with (1 := H3).
   apply Rlt_trans with ((lf + lg) / 2)%R => //; by apply/RltP.
 - assert (Hlf : locally lf (fun y => lf - 1 < y)%R).
-    apply open_gt.
+    apply hierarchy.open_gt.
     apply/RltP.
     apply Rabs_lt_between'.
     rewrite /Rminus Rplus_opp_r Rabs_R0.
@@ -1854,7 +1854,7 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
   specialize (Hf _ Hlf).
   specialize (Hg _ Hlg).
   rewrite /filtermap /filter_of /= in Hf, Hg.
-  generalize (filter_and (filter_and Hf Hg) H).
+  generalize (filter_and _ _ (filter_and _ _ Hf Hg) H).
   apply filter_imp.
   intros x [[H1 H2] H3].
   apply Rle_not_lt with (1 := H3).
@@ -1862,7 +1862,7 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
 - assert (Hlf : Rbar_locally +oo (fun y => Rbar_lt (lg + 1) y)).
     now apply open_Rbar_gt'.
   assert (Hlg : locally lg (fun y => y < lg + 1)%R).
-    apply open_lt.
+    apply hierarchy.open_lt.
     apply/RltP.
     apply Rabs_lt_between'.
     rewrite /Rminus Rplus_opp_r Rabs_R0.
@@ -1870,7 +1870,7 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
   specialize (Hf _ Hlf).
   specialize (Hg _ Hlg).
   rewrite /filtermap /filter_of /= in Hf, Hg.
-  generalize (filter_and (filter_and Hf Hg) H).
+  generalize (filter_and _ _ (filter_and _ _ Hf Hg) H).
   apply filter_imp.
   intros x [[H1 H2] H3].
   apply Rle_not_lt with (1 := H3).
@@ -1882,7 +1882,7 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
   specialize (Hf _ Hlf).
   specialize (Hg _ Hlg).
   rewrite /filtermap /filter_of /= in Hf, Hg.
-  generalize (filter_and (filter_and Hf Hg) H).
+  generalize (filter_and _ _ (filter_and _ _ Hf Hg) H).
   apply filter_imp.
   intros x [[H1 H2] H3].
   apply Rle_not_lt with (1 := H3).
@@ -1971,16 +1971,16 @@ intros T F FF f g h l H Hf Hh.
 destruct l as [l| |].
 - intros P [eps He].
   assert (H' : Rbar_locally l (fun y => Rabs (y - l) < eps)).
-    by exists eps => ? /ball_R_dist.
+    by exists eps => ?; rewrite ballE.
   unfold filter_le, filtermap in Hf, Hh |- *.
   specialize (Hf _ H').
   specialize (Hh _ H').
   rewrite /filter_of /= in Hf Hh *.
-  generalize (filter_and H (filter_and Hf Hh)).
+  generalize (filter_and _ _ H (filter_and _ _ Hf Hh)).
   apply: filter_imp.
   intros x [H1 [H2 H3]].
   apply He.
-  apply/ball_R_dist.
+  rewrite ballE.
   apply Rabs_lt_between'.
   split.
   apply Rlt_le_trans with (2 := proj1 H1).
@@ -2200,7 +2200,7 @@ intros [x| |] P [eps He].
   apply He.
   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
   rewrite Rplus_comm Ropp_involutive.
-  move/ball_R_dist in Hy.
+  rewrite ballE in Hy.
   by apply/RltP.
 - exists (-eps).
   intros y Hy.
@@ -2301,8 +2301,8 @@ Proof.
   case: x y Hp Hz => [x| |] ; case => [y| |] //= ; case => <- Hz.
   intros P [eps He].
   exists (fun u => Rabs (u - x) < eps / 2) (fun v => Rabs (v - y) < eps / 2).
-  by exists [posreal of eps / 2] => y0 /ball_R_dist.
-  by exists [posreal of eps / 2] => y0 /ball_R_dist.
+  by exists [posreal of eps / 2] => y0; rewrite ballE.
+  by exists [posreal of eps / 2] => y0; rewrite ballE.
   intros u v Hu Hv.
   apply He.
   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
@@ -2345,7 +2345,7 @@ Proof.
   case => [y| | ] //= _ _.
   intros P [N HN].
   exists (fun u => Rabs (u - x) < 1) (fun v => N - x + 1 < v).
-  by exists [posreal of 1] => y /ball_R_dist.
+  by exists [posreal of 1] => ?; rewrite ballE.
   by exists (N - x + 1) => x0 /RltP.
   intros u v Hu Hv.
   simpl.

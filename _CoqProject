@@ -9,5 +9,6 @@ compatibility.v
 Equiv.v
 Compactness.v
 Lim_seq.v
+Continuity.v
 
 -R . cara

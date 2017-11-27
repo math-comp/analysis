@@ -22,17 +22,12 @@ COPYING file for more details.
 Require Import Reals Psatz.
 Require Import mathcomp.ssreflect.ssreflect.
 Require Import Rbar Rcomplements (*H*)hierarchy.
+Import ssrbool.
+Require Import compatibility.
 
 (** This file gives definitions of equivalent (g ~ f) and dominant (g
 = o(f)). This is used for defining differentiability on a
 [NormedModule]. *)
-
-From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
-From SsrReals Require Import boolp.
-Require Import Rstruct.
-
-Import ssrbool.
-Require Import compatibility.
 
 Definition is_domin {T} {Ku Kv : AbsRing}
   {U : NormedModule Ku} {V : NormedModule Kv}
@@ -52,7 +47,7 @@ Proof.
 intros F FF f Hf H.
 move: (H [posreal of /2]) => {H} /= H.
 apply filter_const.
-generalize (filter_and H Hf) => {H Hf}.
+generalize (filter_and _ _ H Hf) => {H Hf}.
 apply filter_imp.
 intros x [H1 H2].
 generalize (norm_ge_0 (f x)).
@@ -65,7 +60,7 @@ Lemma domin_trans {T} {Ku Kv Kw : AbsRing}
   is_domin F f g -> is_domin F g h -> is_domin F f h.
 Proof.
   intros F FF f g h Hfg Hgh eps.
-  apply (@filter_imp _ _ _ (fun x => (norm (h x) <= sqrt eps * norm (g x)) /\ (norm (g x) <= sqrt eps * norm (f x)))).
+  apply (filter_imp (fun x => (norm (h x) <= sqrt eps * norm (g x)) /\ (norm (g x) <= sqrt eps * norm (f x)))).
   intros x [H0 H1].
   apply Rle_trans with (1 := H0).
   rewrite -{2}(sqrt_sqrt eps).
@@ -120,7 +115,7 @@ Proof.
     by apply Hx.
   clear Hf ; rename H into Hf.
   specialize (Hg [posreal of eps / 2]).
-  generalize (filter_and Hf Hg) ; clear -FF.
+  generalize (filter_and _ _ Hf Hg) ; clear -FF.
   apply filter_imp => x /= [Hf Hg].
   apply Rle_trans with (1 := Hg).
   rewrite /Rdiv Rmult_assoc.
@@ -144,7 +139,7 @@ Proof.
     by apply Hx.
   clear Hg ; rename H into Hg.
   specialize (Hf [posreal of eps / 2]).
-  generalize (filter_and Hf Hg) ; clear -FF.
+  generalize (filter_and _ _ Hf Hg) ; clear -FF.
   apply filter_imp => x /= [Hf Hg].
   apply Rle_trans with (1 := Hg).
   rewrite Rmult_comm Rle_div_r.
@@ -178,7 +173,7 @@ Proof.
   intros F FF f g H eps.
   assert (H0 := equiv_le_2 _ _ _ H).
   specialize (H [posreal of eps / 2]).
-  generalize (filter_and H H0) ; apply filter_imp ;
+  generalize (filter_and _ _ H H0) ; apply filter_imp ;
   clear => x [H [H0 H1]].
   rewrite -norm_opp /minus opp_plus opp_opp plus_comm.
   apply Rle_trans with (1 := H) ; simpl.
@@ -197,7 +192,7 @@ Proof.
   apply (fun c => domin_rw_l _ _ c Hgh).
   intros eps.
   apply equiv_sym in Hgh.
-  generalize (filter_and (Hfg [posreal of eps / 2]) (Hgh [posreal of eps / 2])) => {Hfg Hgh}.
+  generalize (filter_and _ _ (Hfg [posreal of eps / 2]) (Hgh [posreal of eps / 2])) => {Hfg Hgh}.
   apply filter_imp => x /= [Hfg Hgh].
   replace (minus (h x) (f x)) with (plus (minus (g x) (f x)) (opp (minus (g x) (h x)))).
   eapply Rle_trans. 1 : by apply @norm_triangle.
@@ -336,7 +331,7 @@ Proof.
   apply Rmult_le_compat_l.
   by apply Rlt_le, Rinv_0_lt_compat.
   apply @norm_scal.
-  apply Req_le (*; field*).
+  apply Req_le(* ; field*).
   rewrite -Rmult_assoc -Rinv_l_sym ?Rmult_1_l //. (* added to replace "field" *)
   by apply Rgt_not_eq.
 Qed.
@@ -346,7 +341,7 @@ Lemma domin_plus :
   is_domin F f g1 -> is_domin F f g2 -> is_domin F f (fun x => plus (g1 x) (g2 x)).
 Proof.
   intros F FF f g1 g2 Hg1 Hg2 eps.
-  generalize (filter_and (Hg1 [posreal of eps / 2]) (Hg2 [posreal of eps / 2]))
+  generalize (filter_and _ _ (Hg1 [posreal of eps / 2]) (Hg2 [posreal of eps / 2]))
     => /= {Hg1 Hg2}.
   apply filter_imp => x [Hg1 Hg2].
   eapply Rle_trans.
@@ -398,8 +393,8 @@ End Equiv_VS.
 (** Domination *)
 
 Lemma domin_mult_r :
-  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g h : T -> R_NormedModule (*R*)),
-  is_domin F f g -> is_domin F (fun x => f x * h x : R_NormedModule) (fun x => g x * h x : R_NormedModule).
+  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g h : T -> R),
+  is_domin F f g -> is_domin F (fun x => f x * h x) (fun x => g x * h x).
 Proof.
   intros T F FF f g h H eps.
   move: (H eps) => {H}.
@@ -412,8 +407,8 @@ Proof.
 Qed.
 
 Lemma domin_mult_l :
-  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g h : T -> R_NormedModule (*R*)),
-  is_domin F f g -> is_domin F (fun x => h x * f x : R_NormedModule) (fun x => h x * g x : R_NormedModule).
+  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g h : T -> R),
+  is_domin F f g -> is_domin F (fun x => h x * f x) (fun x => h x * g x).
 Proof.
   intros T F FF f g h H eps.
   generalize (domin_mult_r f g h H eps).
@@ -422,14 +417,14 @@ Proof.
 Qed.
 
 Lemma domin_mult :
-  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f1 f2 g1 g2 : T -> R_NormedModule (*R*)),
+  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f1 f2 g1 g2 : T -> R),
   is_domin F f1 g1 -> is_domin F f2 g2 ->
-  is_domin F (fun x => f1 x * f2 x : R_NormedModule) (fun x => g1 x * g2 x : R_NormedModule).
+  is_domin F (fun x => f1 x * f2 x) (fun x => g1 x * g2 x).
 Proof.
   intros T F FF f1 f2 g1 g2 H1 H2 eps.
   move: (H1 (mkposreal _ (sqrt_lt_R0 _ (cond_pos eps))))
     (H2 (mkposreal _ (sqrt_lt_R0 _ (cond_pos eps)))) => {H1 H2} /= H1 H2.
-  generalize (filter_and H1 H2) => {H1 H2}.
+  generalize (filter_and _ _ H1 H2) => {H1 H2}.
   apply filter_imp => x [H1 H2].
   rewrite /norm /= /abs /= -!RabsE ?Rabs_mult.
   rewrite -(sqrt_sqrt _ (Rlt_le _ _ (cond_pos eps))).
@@ -443,13 +438,13 @@ Proof.
 Qed.
 
 Lemma domin_inv :
-  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g : T -> R_NormedModule (*R*)),
+  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g : T -> R),
   F (fun x => g x <> 0) -> is_domin F f g ->
-  is_domin F (fun x => / g x : R_NormedModule) (fun x => / f x : R_NormedModule).
+  is_domin F (fun x => / g x) (fun x => / f x).
 Proof.
   intros T F FF f g Hg H eps.
   have Hf : F (fun x => f x <> 0).
-    generalize (filter_and Hg (H [posreal of 1])) => /=.
+    generalize (filter_and _ _ Hg (H [posreal of 1])) => /=.
     apply filter_imp => x {Hg H} [Hg H].
     case: (Req_dec (f x) 0) => Hf.
     rewrite /norm /= /abs /= -!RabsE Hf Rabs_R0 Rmult_0_r in H.
@@ -457,7 +452,7 @@ Proof.
     move => _ ; apply H.
     by apply Rabs_pos_lt.
     by [].
-  generalize (filter_and (H eps) (filter_and Hf Hg)) => {H Hf Hg}.
+  generalize (filter_and _ _ (H eps) (filter_and _ _ Hf Hg)) => {H Hf Hg}.
   apply filter_imp => x [H [Hf Hg]].
   rewrite /norm /= /abs /= -!RabsE ?Rabs_Rinv => //.
   replace (/ Rabs (f x))
@@ -474,16 +469,15 @@ Qed.
 (** Equivalence *)
 
 Lemma equiv_mult :
-  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f1 f2 g1 g2 : T -> R_NormedModule (*R*)),
+  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f1 f2 g1 g2 : T -> R),
   is_equiv F f1 g1 -> is_equiv F f2 g2 ->
-  is_equiv F (fun x => f1 x * f2 x : R_NormedModule) (fun x => g1 x * g2 x).
+  is_equiv F (fun x => f1 x * f2 x) (fun x => g1 x * g2 x).
 Proof.
   intros T F FF f1 f2 g1 g2 H1 H2.
   case: (equiv_carac_0 _ _ H1) => {H1} o1 [H1 Ho1].
   case: (equiv_carac_0 _ _ H2) => {H2} o2 [H2 Ho2].
   apply equiv_carac_1 with (fun x => o1 x * g2 x + g1 x * o2 x + o1 x * o2 x).
-  move => x ; rewrite H1 H2 /plus /= (*; ring*).
-  by rewrite Rplus_assoc (Rplus_comm (o1 x * _)) Rplus_assoc (Rplus_comm (o1 x * _)) -Rmult_plus_distr_l -Rplus_assoc -Rmult_plus_distr_l -Rmult_plus_distr_r.
+  move => x ; rewrite H1 H2 /plus /= ; ring.
   repeat apply @domin_plus => //.
   by apply domin_mult_r.
   by apply domin_mult_l.
@@ -491,13 +485,13 @@ Proof.
 Qed.
 
 Lemma equiv_inv :
-  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g : T -> R_NormedModule (* R *)),
+  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g : T -> R),
   F (fun x => g x <> 0) -> is_equiv F f g ->
-  is_equiv F (fun x => / f x : R_NormedModule) (fun x => / g x).
+  is_equiv F (fun x => / f x) (fun x => / g x).
 Proof.
   intros T F FF f g Hg H.
   have Hf : F (fun x => f x <> 0).
-    generalize (filter_and Hg (H [posreal of /2])) => /=.
+    generalize (filter_and _ _ Hg (H [posreal of /2])) => /=.
     apply filter_imp => x {Hg H} [Hg H].
     case: (Req_dec (f x) 0) => Hf //.
     rewrite /minus /plus /opp /= Hf Ropp_0 Rplus_0_r in H.
@@ -506,14 +500,14 @@ Proof.
     lra.
   apply equiv_sym in H.
   move => eps.
-  generalize (filter_and (filter_and Hf Hg) (H eps)).
+  generalize (filter_and _ _ (filter_and _ _ Hf Hg) (H eps)).
   clear -FF.
   apply filter_imp.
   intros x [[Hf Hg] H].
-  rewrite /norm /= /abs /minus /plus /opp /=.
+  rewrite /norm /= /abs /minus /plus /opp /= -!RabsE.
   replace (/ g x + - / f x)
     with ((f x - g x) / (f x * g x)).
-  rewrite -!RabsE Rabs_div ?Rabs_Rinv ?Rabs_mult //.
+  rewrite Rabs_div ?Rabs_Rinv ?Rabs_mult //.
   apply Rle_div_l.
   apply Rmult_lt_0_compat ; by apply Rabs_pos_lt.
   field_simplify ; rewrite ?Rdiv_1.
@@ -548,7 +542,7 @@ End Domin_comp.
 (** * Equivalence and limits *)
 
 Lemma filterlim_equiv :
-  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g : T -> R_NormedModule (* R *)) (l : Rbar),
+  forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g : T -> R) (l : Rbar),
   is_equiv F f g ->
   f @ F --> (Rbar_locally l) ->
   g @ F --> (Rbar_locally l).
@@ -567,24 +561,22 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   simpl.
   intros x Hx.
   split.
-  move/ball_R_dist in Hx.
+  rewrite ballE in Hx.
   apply Rlt_le_trans with (1 := Hx).
   apply Rmin_l.
   apply Rabs_le_between'.
   apply Rle_trans with (1 := Rabs_triang_inv2 _ _).
   apply Rlt_le.
-  move/ball_R_dist in Hx.
+  rewrite ballE in Hx.
   apply Rlt_le_trans with (1 := Hx).
   apply Rmin_r.
-  generalize (@filter_and  _  _ _ _ (fun (x : T) =>  ineqs (f x))  (Hfg (mkposreal _ He))  (Hf _ Hl)).
+  generalize (filter_and  _  (fun (x : T) =>  ineqs (f x))  (Hfg (mkposreal _ He))  (Hf _ Hl)).
   apply: filter_imp.
   simpl.
   intros x [H1 [H2 H3]].
   apply HP.
-  rewrite /ball /= /AbsRing_ball /= /abs /minus /plus /opp /=.
-  rewrite -!RabsE Rabs_minus_sym.
+  rewrite (*/ball*) ballE /R_dist /= /AbsRing_ball /= /abs /minus /plus /opp /=.
   replace (g x (*+*) - l) with ((f x - l) + -(f x - g x)) by ring.
-  apply/Rstruct.RltP.
   apply Rle_lt_trans with (1 := Rabs_triang _ _).
   replace (pos eps) with (eps / 2 + eps / 2 / (Rabs l + 1) * (Rabs l + 1)).
   apply Rplus_lt_le_compat with (1 := H2).
@@ -599,8 +591,8 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   apply Rlt_0_1.
 - pose ineq (y : R) := Rmax 0 (2 * eps) < y.
   assert (Hl: Rbar_locally' +oo ineq).
-  by exists (Rmax 0 (2 * eps)) => x /Rstruct.RltP.
-  generalize (@filter_and _ _ _ _ (fun (x : T) => ineq (f x)) (Hfg (mkposreal _ pos_half_prf)) (Hf _ Hl)).
+  by exists (Rmax 0 (2 * eps)) => ? /Rstruct.RltP.
+  generalize (filter_and _ (fun (x : T) => ineq (f x)) (Hfg (mkposreal _ pos_half_prf)) (Hf _ Hl)).
   apply: filter_imp.
   simpl.
   intros x [H1 H2].
@@ -609,15 +601,11 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   apply Rabs_le_between' in H1.
   generalize (Rplus_le_compat_l (- /2 * Rabs (f x)) _ _ (proj2 H1)).
   rewrite /norm /= /abs /= -!RabsE.
-  replace (- / 2 * Rabs (f x) + (g x + / 2 * Rabs (f x))) with (g x); last first.
-    by rewrite Rplus_comm -Ropp_mult_distr_l Rplus_assoc Rplus_opp_r Rplus_0_r.
+  replace (- / 2 * Rabs (f x) + (g x + / 2 * Rabs (f x))) with (g x) by ring.
   apply Rlt_le_trans.
   rewrite Rabs_pos_eq.
   apply Rmult_lt_reg_l with (1 := Rlt_R0_R2).
-  replace (2 * (- / 2 * f x + f x)) with (f x); last first.
-    rewrite Rmult_plus_distr_l -Rmult_assoc -Ropp_mult_distr_r Rinv_r //.
-    rewrite -Ropp_mult_distr_l Rmult_1_l Rmult_plus_distr_r !Rmult_1_l.
-    by rewrite Rplus_comm Rplus_assoc Rplus_opp_r Rplus_0_r.
+  replace (2 * (- / 2 * f x + f x)) with (f x) by field.
   apply Rle_lt_trans with (2 := H2).
   apply Rmax_r.
   apply Rlt_le.
@@ -625,8 +613,8 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   apply Rmax_l.
 - pose ineq (y : R) := y < Rmin 0 (2 * eps).
   assert (Hl: Rbar_locally' -oo ineq).
-  by exists (Rmin 0 (2 * eps)) => x /Rstruct.RltP.
-  generalize (@filter_and _ _ _ _ (fun (x : T) => ineq (f x)) (Hfg (mkposreal _ pos_half_prf)) (Hf _ Hl)).
+  by exists (Rmin 0 (2 * eps)) => ? /Rstruct.RltP.
+  generalize (filter_and _ (fun (x : T) => ineq (f x)) (Hfg (mkposreal _ pos_half_prf)) (Hf _ Hl)).
   apply: filter_imp.
   simpl.
   intros x [H1 H2].
@@ -634,17 +622,13 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   apply Rabs_le_between' in H1.
   generalize (Rplus_le_compat_l (/2 * Rabs (f x)) _ _ (proj1 H1)).
   rewrite /norm /= /abs /= -!RabsE.
-  replace (/ 2 * Rabs (f x) + (g x - / 2 * Rabs (f x))) with (g x); last first.
-    by rewrite Rplus_comm Rplus_assoc Rplus_opp_l Rplus_0_r.
+  replace (/ 2 * Rabs (f x) + (g x - / 2 * Rabs (f x))) with (g x) by ring.
   intros H.
   apply/Rstruct.RltP.
   apply Rle_lt_trans with (1 := H).
   rewrite Rabs_left.
   apply Rmult_lt_reg_l with (1 := Rlt_R0_R2).
-  replace (2 * (/ 2 * - f x + f x)) with (f x); last first.
-    rewrite Rmult_plus_distr_l -Rmult_assoc -Ropp_mult_distr_r Rinv_r //.
-    rewrite Rmult_1_l Rmult_plus_distr_r !Rmult_1_l.
-    by rewrite Rplus_comm Rplus_assoc Rplus_opp_r Rplus_0_r.
+  replace (2 * (/ 2 * - f x + f x)) with (f x) by field.
   apply Rlt_le_trans with (1 := H2).
   apply Rmin_r.
   apply Rlt_le_trans with (1 := H2).

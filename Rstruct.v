@@ -471,6 +471,7 @@ case: (lerP x y) => H; first by rewrite maxr_r // Rmax_right //; apply: RlebP.
 by rewrite maxr_l ?ltrW // Rmax_left //;  apply/RlebP; move/ltrW : H.
 Qed.
 
+(* useful? *)
 Lemma RminE x y : Rmin x y = Num.min x y.
 Proof.
 case: (lerP x y) => H; first by rewrite minr_l // Rmin_left //; apply: RlebP.

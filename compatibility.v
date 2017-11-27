@@ -576,12 +576,91 @@ End NormedModule1.
 
 (* End RealSums. *)
 
-Require Import Rstruct.
+Local Open Scope classical_set_scope.
 
-Lemma ball_R_dist (l e : R) (y : R) : ball l e y <-> R_dist y l < e.
+Definition filter_and {T : Type} {F : set (set T)} {FF : Filter F} :
+  forall P Q : set T, F P -> F Q -> F (P `&` Q) := @filter_and T F FF.
+
+Definition filter_imp {T : Type} {F : set (set T)} {FF : Filter F} :
+  forall P Q : set T, P `<=` Q -> F P -> F Q := @filter_imp T F FF.
+
+Lemma filterlim_locally {U : uniformType} {F} {FF : Filter F} (y : U) :
+  F --> y <-> forall eps : posreal, F [set x | ball y eps x].
+Proof. exact: @filterlim_locally _ F FF y. Qed.
+
+Lemma filterlim_opp {K : absRingType} {V : normedModType K} (x : V) : (@GRing.opp V) @ x --> (- x)%R.
+Proof. exact: filterlim_opp. Qed.
+
+Lemma filterlim_plus (K : absRingType) (V : normedModType K) (x y : V) : (z.1 + z.2)%R @[z --> (x, y)] --> (x + y)%R.
+Proof. exact: filterlim_plus. Qed.
+
+Lemma ballE (l : R) (e : R(*posreal*)) : ball l e = (fun y => R_dist y l < e).
 Proof.
-rewrite /ball /= /AbsRing_ball absrB; split => [/RltP //| ?]; by apply/RltP.
+rewrite boolp.funeqE => x; rewrite boolp.propeqE.
+rewrite /ball /= /AbsRing_ball absrB; split => [/Rstruct.RltP //| ?]; by apply/Rstruct.RltP.
 Qed.
 
-Lemma RabsE x : Rabs x = `| x |%R.
+Lemma locally_ex_dec {T : uniformType} (x : T) (P : T -> Prop) :
+  (forall x, P x \/ ~ P x) ->
+  locally x P ->
+  {d : posreal | forall y, ball x d y -> P y}.
+Proof. exact: locally_ex_dec. Qed.
+
+Lemma normE {K : absRingType} {U : normedModType K} (x : U) : norm x = (`|[ x ]|)%R.
 Proof. by []. Qed.
+
+Lemma filterlim_locally_ball_norm {K : absRingType} {T} {U : normedModType K}
+  {F : set (set T)} {FF : Filter F} (f : T -> U) (y : U) :
+  f @ F --> y <-> forall eps : posreal, F (fun x => ball_norm y eps (f x)).
+Proof.
+split => [fFy e|H].
+  move: (proj1 (@filterlim_locally_ball_norm K T U F FF f y) fFy e).
+  rewrite /ball_norm /hierarchy.ball_norm.
+  set g := fun x : T => _. set g' := fun x : T => _.
+  suff : g = g' by move=> ->.
+  rewrite boolp.funeqE => x.
+  by rewrite /g /g' normmB -normE boolp.propeqE; split => /Rstruct.RltP.
+apply (proj2 (@filterlim_locally_ball_norm K T U F FF f y)) => e.
+rewrite /ball_norm /hierarchy.ball_norm.
+move: {H}(H e).
+set g := fun x : T => _. set g' := fun x : T => _.
+suff : g = g' by move=> ->.
+rewrite boolp.funeqE => x.
+by rewrite /g /g' normmB -normE boolp.propeqE; split => /Rstruct.RltP.
+Qed.
+
+Lemma locally_singleton {T : UniformSpace} (x : T) (P : T -> Prop) : locally x P -> P x.
+Proof. exact: locally_singleton. Qed.
+
+Require Import Rstruct.
+
+Canonical R_lmodtype := LmodType R R (GRing.Lmodule.class [lmodType R of R^o]).
+Canonical R_NormedModule := NormedModType R R (NormedModule.class [normedModType R of R^o]).
+Canonical R_completeNormedModule := [completeNormedModType R of R].
+
+Lemma RabsE (a : R) : Rabs a = `| a |%R.
+Proof. exact: absRE. Qed.
+
+Lemma open_lt (y : R) : open (fun u : R => (u < y)%coqR).
+Proof.
+rewrite (_ : Rlt^~y = fun x => (x < y)%R); first by apply open_lt.
+by rewrite boolp.funeqE => x; rewrite boolp.propeqE; split => /RltP.
+Qed.
+
+Lemma open_gt (y : R) : open (fun u : R => (y < u)%coqR).
+Proof.
+rewrite (_ : Rlt y = fun x => (y < x)%R); first by apply open_gt.
+by rewrite boolp.funeqE => x; rewrite boolp.propeqE; split => /RltP.
+Qed.
+
+Lemma open_Rbar_lt' x y : Rbar_lt x y -> Rbar_locally x (fun u => Rbar_lt u y).
+Proof. exact: open_Rbar_lt'. Qed.
+
+Lemma open_Rbar_gt' x y : Rbar_lt y x -> Rbar_locally x (fun u => Rbar_lt y u).
+Proof. exact: open_Rbar_gt'. Qed.
+
+Import Num.Def.
+
+Lemma sqrt_plus_sqr (x y : R) :
+  Rmax `|x|%R `|y|%R <= Num.sqrt (x^+2 + y^+2) <= Num.sqrt 2%:R * Rmax `|x|%R `|y|%R.
+Proof. case/andP: (sqrt_plus_sqr x y) => /RleP ? /RleP ?; by rewrite RmaxE. Qed.
