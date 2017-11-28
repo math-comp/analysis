@@ -704,3 +704,155 @@ Import Num.Def.
 Lemma sqrt_plus_sqr (x y : R) :
   Rmax `|x|%R `|y|%R <= Num.sqrt (x^+2 + y^+2) <= Num.sqrt 2%:R * Rmax `|x|%R `|y|%R.
 Proof. case/andP: (sqrt_plus_sqr x y) => /RleP ? /RleP ?; by rewrite RmaxE. Qed.
+
+(** ** Iterated Products *)
+
+Fixpoint Tn (n : nat) (T : Type) : Type :=
+  match n with
+  | O => unit
+  | S n => prod T (Tn n T)
+  end.
+
+Notation "[ x1 , .. , xn ]" := (pair x1 .. (pair xn tt) .. ).
+
+Fixpoint mk_Tn {T} (n : nat) (u : nat -> T) : Tn n T :=
+  match n with
+    | O => (tt : Tn O T)
+    | S n => (u O, mk_Tn n (fun n => u (S n)))
+  end.
+Fixpoint coeff_Tn {T} {n : nat} (x0 : T) : (Tn n T) -> nat -> T :=
+  match n with
+  | O => fun (_ : Tn O T) (_ : nat) => x0
+  | S n' => fun (v : Tn (S n') T) (i : nat) => match i with
+           | O => fst v
+           | S i => coeff_Tn x0 (snd v) i
+           end
+  end.
+Lemma mk_Tn_bij {T} {n : nat} (x0 : T) (v : Tn n T) :
+  mk_Tn n (coeff_Tn x0 v) = v.
+Proof.
+  induction n ; simpl.
+  now apply unit_ind.
+  rewrite IHn ; by destruct v.
+Qed.
+Lemma coeff_Tn_bij {T} {n : nat} (x0 : T) (u : nat -> T) :
+  forall i, (i < n)%coq_nat -> coeff_Tn x0 (mk_Tn n u) i = u i.
+Proof.
+  revert u ; induction n => /= u i Hi.
+  by apply lt_n_O in Hi.
+  destruct i.
+  by [].
+  now apply (IHn (fun n => u (S n))), lt_S_n.
+Qed.
+Lemma coeff_Tn_ext {T} {n : nat} (x1 x2 : T) (v1 v2 : Tn n T) :
+  v1 = v2 <-> forall i, (i < n)%coq_nat -> coeff_Tn x1 v1 i = coeff_Tn x2 v2 i.
+Proof.
+  split.
+  + move => -> {v1}.
+    induction n => i Hi.
+    by apply lt_n_O in Hi.
+    destruct i ; simpl.
+    by [].
+    by apply IHn, lt_S_n.
+  + induction n => H.
+    apply unit_ind ; move: (v1) ; now apply unit_ind.
+    apply injective_projections.
+    by apply (H O), lt_O_Sn.
+    apply IHn => i Hi.
+    by apply (H (S i)), lt_n_S.
+Qed.
+Lemma mk_Tn_ext {T} (n : nat) (u1 u2 : nat -> T) :
+  (forall i, (i < n)%coq_nat -> (u1 i) = (u2 i))
+    <-> (mk_Tn n u1) = (mk_Tn n u2).
+Proof.
+  move: u1 u2 ; induction n ; simpl ; split ; intros.
+  by [].
+  by apply lt_n_O in H0.
+  apply f_equal2.
+  by apply H, lt_O_Sn.
+  apply IHn => i Hi.
+  by apply H, lt_n_S.
+  destruct i.
+  by apply (f_equal (@fst _ _)) in H.
+  move: i {H0} (lt_S_n _ _ H0).
+  apply IHn.
+  by apply (f_equal (@snd _ _)) in H.
+Qed.
+
+
+(*
+Global Instance AbelianGroup_Tn {T} :
+  AbelianGroup T -> forall n, AbelianGroup (Tn n T) | 10.
+Proof.
+  intro GT.
+  elim => /= [ | n IH].
+  - apply Build_AbelianGroup with (fun _ _ => tt) (fun _ => tt) tt ; auto.
+    by apply unit_ind.
+  - by apply AbelianGroup_prod.
+Defined.
+
+Global Instance MetricBall_Tn :
+  forall T, MetricBall T -> forall n, MetricBall (Tn n T) | 10.
+Proof.
+intros T MT n.
+elim: n => [ | n MTn].
+by apply Build_MetricBall with (fun _ _ _ => True).
+by apply MetricBall_prod.
+Defined.
+
+Global Instance VectorSpace_mixin_Tn {T} {K} {FK : Ring K} :
+  forall GT : AbelianGroup T,
+  VectorSpace_mixin T K GT ->
+  forall n, VectorSpace_mixin (Tn n T) K (AbelianGroup_Tn GT n) | 10.
+Proof.
+  intros GT VV.
+  elim => [ | n VVn].
+  apply Build_VectorSpace_mixin with (fun _ _ => tt) ; by apply unit_ind.
+  by apply VectorSpace_mixin_prod.
+Defined.
+
+Global Instance VectorSpace_Tn {T} {K} {FK : Ring K} :
+  VectorSpace T K -> forall n, VectorSpace (Tn n T) K | 10.
+Proof.
+  intros VV n.
+  apply Build_VectorSpace with (AbelianGroup_Tn _ n).
+  now apply VectorSpace_mixin_Tn, VV.
+Defined.
+
+Global Instance NormedVectorSpace_Tn {T} {K} {FK : absRingType K} :
+  NormedVectorSpace T K ->
+  forall n, NormedVectorSpace (Tn n T) K | 10.
+Proof.
+  move => VT.
+  elim => [ | n NVTn].
+  - econstructor.
+    apply Build_NormedVectorSpace_mixin with (fun _ => 0).
+    move => _ _.
+    rewrite Rplus_0_l ; by apply Rle_refl.
+    move => l _ ; rewrite Rmult_0_r ; by apply Rle_refl.
+    easy.
+    exists [posreal of 1].
+    intros x y eps _.
+    rewrite Rmult_1_l.
+    apply cond_pos.
+  - by apply NormedVectorSpace_prod.
+Defined.
+*)
+
+
+Fixpoint Fn (n : nat) (T U : Type) : Type :=
+  match n with
+  | O => U
+  | S n => T -> Fn n T U
+  end.
+
+(*
+Global Instance MetricBall_Fn {T M} (n : nat) :
+  MetricBall M -> MetricBall (Fn n T M) | 10.
+Proof.
+  intros MM.
+  elim: n => /= [ | n IHn].
+  exact MM.
+  exact (MetricBall_fct IHn).
+Defined.
+*)
