@@ -499,13 +499,17 @@ Ltac near x :=
 apply/filterP;
 let R := fresh "around" in
 match goal with |- exists2 Q : set ?T, ?F Q & _ =>
-  evar (R : set T); exists R => [|x /(extensible_propertyI x) ?]; last first end.
+  evar (R : set T);
+  exists R; [rewrite /R {R}|move=> x /(extensible_propertyI x) ?]; last first
+end.
 
 Ltac have_near F x :=
 match (type of [filter of F]) with set (set ?T) =>
   let R := fresh "around" in
   evar (R : set T);
-  have [|x /(extensible_propertyI x) ?] := @filter_ex _ [filter of F] _ R; last first end.
+  have [|x /(extensible_propertyI x) ?] := @filter_ex _ [filter of F] _ R;
+  [rewrite /R {R}|]; last first
+end.
 
 Ltac assume_near x :=
 match goal with Hx : extensible_property x _ |- _ =>
@@ -717,6 +721,8 @@ Definition filter_map_proper_filter' := filtermapi_proper_filter.
 
 Lemma flim_id T (F : set (set T)) : x @[x --> F] --> F.
 Proof. exact. Qed.
+Arguments flim_id {T F}.
+
 Lemma filterlim_id T (F : set (set T)) : x @[x --> F] --> F. (*compat*)
 Proof. exact. Qed.
 
@@ -896,19 +902,29 @@ by move=> y Qy; apply: (PQsub0 (x, y)); do ?eexists.
 Qed.
 Definition filter_prod_proper' := @filter_prod_proper.
 
-Lemma filterlim_fst {T U F G} {FF : Filter F} {FG : Filter G} :
-  (@fst T U) @ filter_prod F G --> F.
+Lemma filter_prod1 {T U} {F : set (set T)} {G : set (set U)}
+  {FG : Filter G} (P : set T) :
+  {near F, forall x, P x} -> {near (F, G), forall x, P x.1}.
 Proof.
-move=> P FP; exists (P `*` setT); last by move=> ? [].
+move=> FP; exists (P `*` setT); last by move=> ? [].
 by do ![eexists]=> //; apply: filterT.
 Qed.
 
-Lemma filterlim_snd {T U F G} {FF : Filter F} :
-  (@snd T U) @ filter_prod F G --> G.
+Lemma filter_prod2 {T U} {F : set (set T)} {G : set (set U)}
+  {FF : Filter F} (P : set U) :
+  {near G, forall x, P x} -> {near (F, G), forall x, P x.2}.
 Proof.
-move=> P FP; exists (setT `*` P); last by move=> ? [].
+move=> GP; exists (setT `*` P); last by move=> ? [].
 by do ![eexists]=> //; apply: filterT.
 Qed.
+
+Lemma flim_fst {T U F G} {FG : Filter G} :
+  (@fst T U) @ filter_prod F G --> F.
+Proof. by move=> P; apply: filter_prod1. Qed.
+
+Lemma flim_snd {T U F G} {FF : Filter F} :
+  (@snd T U) @ filter_prod F G --> G.
+Proof. by move=> P; apply: filter_prod2. Qed.
 
 Lemma extensible_propertyE (T : Type) (x : T) (P : Prop) :
   extensible_property x P -> P.
@@ -925,7 +941,7 @@ move=> fFG gFH P /= [_ [A GA [B GB <-]] subP]; near x.
 by end_near; [apply: fFG|apply: gFH].
 Qed.
 
-Lemma filterlim_comp_2 {T U V W}
+Lemma flim_comp2 {T U V W}
   {F : set (set T)} {G : set (set U)} {H : set (set V)} {I : set (set W)}
   {FF : Filter F} {FG : Filter G} {FH : Filter H}
   (f : T -> U) (g : T -> V) (h : U -> V -> W) :
@@ -933,6 +949,8 @@ Lemma filterlim_comp_2 {T U V W}
   h (fst x) (snd x) @[x --> (G, H)] --> I ->
   h (f x) (g x) @[x --> F] --> I.
 Proof. by move=> fFG gFH hGHI P /= IP; apply: filterlim_pair (hGHI _ IP). Qed.
+Arguments flim_comp2 {T U V W F G H I FF FG FH f g h} _ _ _.
+Definition filterlim_comp_2 := @flim_comp2.
 
 (* Lemma filterlimi_comp_2 {T U V W} *)
 (*   {F : set (set T)} {G : set (set U)} {H : set (set V)} {I : set (set W)} *)
@@ -1539,6 +1557,7 @@ Proof.
 move=> P [eps HP]; rewrite appfilter /=.
 by apply: filter_forall=> ?; apply/HP/ball_center.
 Qed.
+Arguments flim_const {T U F FF} a.
 
 Lemma filterlim_const {T} {U : uniformType} {F : set (set T)} (*compat*)
    {FF : Filter F} (a : U) : a @[_ --> F] --> a.
@@ -1604,10 +1623,7 @@ Context {T : Type} {U : uniformType}.
 
 Lemma flim_ballP {F} {FF : Filter F} (y : U) :
   F --> y <-> forall eps : posreal, F [set x | ball y eps x].
-Proof.
-split=> [Fy eps|Fy P [eps /filterS]]; last exact.
-exact/Fy/locally_ball.
-Qed.
+Proof. exact: filter_fromP. Qed.
 Definition filterlim_locally := @flim_ballP.
 
 Lemma flim_ball {F} {FF : Filter F} (y : U) :
@@ -2033,22 +2049,23 @@ Proof.
 (* end_near => /=. *)
 (*   admit. *)
 (* apply: cauchymodP. *)
-set Fr := fun (t : T) (P : U -> Prop) => F (fun g => P (g t)).
+move=> FF Fauchy.
+set Fr := fun (t : T) (P : set U) => F [set g | P (g t)].
 have FFr t : ProperFilter (Fr t).
-(*   by apply: Build_ProperFilter'; apply: filter_not_empty. *)
-(* have Frc t : cauchy (Fr t). *)
-(*   move=> e; have [f Ffe] := Fc e; exists (f t). *)
-(*   by rewrite /Fr; apply: filterS Ffe. *)
-(* apply/limP; exists (fun t => lim (Fr t)). *)
-(* apply/filterlim_locally => e. *)
-(* have /cauchy_distance /(_ [posreal of e / 2]) [A [FA diamA_he]] := Fc. *)
-(* apply: (filterS _ FA) => f Af t. *)
-(* have [g [Ag limFte_gt]] : *)
-(*   exists g, A g /\ ball (lim (Fr t)) [posreal of e / 2] (g t). *)
-(*   apply/filter_ex/filterI => //; apply: complete_cauchy => //. *)
-(*   exact: locally_ball. *)
-(* by apply: ball_split limFte_gt _; apply: diamA_he. *)
-(* Qed. *)
+   apply: Build_ProperFilter'. apply: filter_not_empty.
+have Frc t : cauchy (Fr t).
+  move=> e; have [f Ffe] := Fc e; exists (f t).
+  by rewrite /Fr; apply: filterS Ffe.
+apply/limP; exists (fun t => lim (Fr t)).
+apply/filterlim_locally => e.
+have /cauchy_distance /(_ [posreal of e / 2]) [A [FA diamA_he]] := Fc.
+apply: (filterS _ FA) => f Af t.
+have [g [Ag limFte_gt]] :
+  exists g, A g /\ ball (lim (Fr t)) [posreal of e / 2] (g t).
+  apply/filter_ex/filterI => //; apply: complete_cauchy => //.
+  exact: locally_ball.
+by apply: ball_split limFte_gt _; apply: diamA_he.
+Qed.
 Admitted.
 
 Canonical fct_completeType := CompleteType (T -> U) complete_cauchy_fct.
@@ -2404,7 +2421,7 @@ Qed.
 Lemma ball_norm_eq x y : (forall eps : posreal, ball_norm x eps y) -> x = y.
 Proof. by rewrite -norm_close closeE. Qed.
 
-Lemma is_filter_lim_unique {F} {FF : ProperFilter F} :
+Lemma flim_unique {F} {FF : ProperFilter F} :
   is_prop [set x : V | F --> x].
 Proof. by move=> Fx Fy; rewrite -closeE; apply: is_filter_lim_close. Qed.
 
@@ -2418,19 +2435,37 @@ Section NormedModule2.
 Context {T : Type} {K : absRingType} {V : normedModType K}.
 
 Lemma filterlim_locally_unique {F} {FF : ProperFilter F} (f : T -> V) :
-  is_prop [set x : V | f @ F --> x].
-Proof. exact: is_filter_lim_unique. Qed.
+  is_prop [set x : V | f @ F --> x]. (* compat *)
+Proof. exact: flim_unique. Qed.
 
-Lemma filterlimi_locally_unique {F} {FF : ProperFilter F} (f : T -> V -> Prop) :
-  F (fun x => is_prop (f x)) -> is_prop [set x : V | f `@ F --> x].
+Lemma flimi_unique {F} {FF : ProperFilter F} (f : T -> set V) :
+  {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
+Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
+Definition filterlimi_locally_unique := @flimi_unique.
+
+Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y <-> forall eps : posreal, {near F, forall y', `|[y - y']| < eps}.
 Proof.
-move=> ffun fx fy; rewrite -closeE.
-exact: (@filterlimi_locally_close _ _ _ _ f).
+by rewrite !filter_ofE /= -locally_locally_norm; apply: filter_fromP.
+Qed.
+
+Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> forall eps, eps > 0 -> {near F, forall y', `|[y - y']| < eps}.
+Proof. by move=> /flim_normP /(_ (PosReal _)). Qed.
+
+Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> forall M, M > `|[y]| -> {near F, forall y', `|[y']|%real < M}.
+Proof.
+move=> /flim_norm Fy M; rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
+apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
+rewrite (ler_lt_trans _ yy') //.
+by rewrite (ler_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
 Qed.
 
 End NormedModule2.
 Hint Resolve normm_ge0.
-
+Arguments flim_norm {_ _ F FF}.
+Arguments flim_bounded {_ _ F FF}.
 (** Rings with absolute values are normed modules *)
 
 Section AbsRing_NormedModule.
@@ -2465,23 +2500,6 @@ Section NVS_continuity.
 
 Context {K : absRingType} {V : normedModType K}.
 
-Lemma filterlim_locally_norm
-  {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y <-> forall eps : posreal, F (ball_norm y eps).
-Proof.
-rewrite /filter_of /= -locally_locally_norm.
-split => [Fy eps|Fy P [e yP]]; first by apply: Fy; exists eps.
-exact: filterS (Fy e).
-Qed.
-
-Lemma filterlim_locally_norm'
-  {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> forall eps : posreal, F (ball_norm y eps).
-Proof.
-rewrite /filter_of /= -locally_locally_norm.
-by move=> Fy eps; apply: Fy; exists eps.
-Qed.
-
 Lemma locally_pair {U1 U2 : uniformType} (x : U1) (y : U2) :
   locally (x, y) = filter_prod (locally x) (locally y).
 Proof.
@@ -2497,83 +2515,57 @@ Qed.
 
 (* :TODO: put again filter inside uniform type and prove this instead: *)
 (* Lemma filterlim_plus : continuous (fun z : V * V => z.1 + z.2). *)
-Lemma filterlim_plus (x y : V) : z.1 + z.2 @[z --> (x, y)] --> x + y.
+Lemma flim_add (x y : V) : z.1 + z.2 @[z --> (x, y)] --> x + y.
 Proof.
-apply/filterlim_locally_norm=> e; rewrite /ball_norm /=; near z.
+apply/flim_normP=> e; rewrite /=; near z.
   rewrite opprD addrACA (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
   by rewrite ltr_add //; assume_near z.
-end_near; first exact: (filterlim_locally_norm' filterlim_fst).
-exact: (filterlim_locally_norm' filterlim_snd).
+by end_near; [apply (flim_norm _ flim_fst)|apply (flim_norm _ flim_snd)].
 Qed.
 
 (* Lemma filterlim_scal : continuous (fun z : K * V => z.1 *: z.2). *)
-Lemma filterlim_scal (k : K) (x : V) : z.1 *: z.2 @[z --> (k, x)] --> k *: x.
+Lemma flim_scal (k : K) (x : V) : z.1 *: z.2 @[z --> (k, x)] --> k *: x.
 Proof.
-apply/filterlim_locally_norm=> /= e; rewrite /ball_norm /=; near z.
+apply/flim_normP=> /= e; rewrite /ball_norm /=; near z.
   rewrite (@subr_trans _ (k *: z.2)).
   rewrite (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
   rewrite ltr_add // -?(scalerBr, scalerBl).
     rewrite (ler_lt_trans (ler_normmZ _ _)) //.
-    rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1)  (lerr _))) //.
-      by rewrite ler_addl.
+    rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
+            ?ler_addl//.
     rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //.
     by assume_near z.
   rewrite (ler_lt_trans (ler_normmZ _ _)) //.
   rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) //.
-    by assume_near z.
+    by rewrite ltrW //; assume_near z.
   rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //.
   by assume_near z.
 end_near.
-- admit.
-- admit.
-  (* apply: (filterlim_locally_norm' filterlim_fst). *)
-- admit.
-Admitted.
-
-Lemma filterlim_scal_r (k : K) (x : V) : k *: z @[z --> x] --> k *: x.
-Proof.
-eapply filterlim_comp_2.
-by apply filterlim_const.
-by apply filterlim_id.
-by apply filterlim_scal.
+- by apply (flim_norm _ flim_snd); rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
+- by apply (flim_bounded _ flim_snd); rewrite ltr_addl.
+- apply (flim_norm (_ : K^o) flim_fst).
+  by rewrite mulr_gt0// ?invr_gt0 ltr_paddl.
 Qed.
+Arguments flim_scal k x : clear implicits.
 
-Lemma filterlim_scal_l (l : K) (x : V) : k *: x @[k --> l] --> l *: x.
-Proof.
-eapply filterlim_comp_2.
-by apply filterlim_id.
-by apply filterlim_const.
-by apply filterlim_scal.
-Qed.
+Lemma flim_scalr (k : K) (x : V) : k *: z @[z --> x] --> k *: x.
+Proof. exact: (flim_comp2 (flim_const _) flim_id (flim_scal _ _)). Qed.
 
-Lemma filterlim_opp (x : V) : (@GRing.opp V) @ x --> - x.
+Lemma flim_scall (l : K) (x : V) : k *: x @[k --> l] --> l *: x.
+Proof. exact: (flim_comp2 flim_id (flim_const _) (flim_scal _ _)). Qed.
+
+Lemma flim_opp (x : V) : (@GRing.opp V) @ x --> - x.
 Proof.
-rewrite -scaleN1r.
-apply filterlim_ext with (2 := @filterlim_scal_r _ _) => /= x0.
-by rewrite scaleN1r.
+rewrite -scaleN1r => P /flim_scalr /=.
+by apply: filterS => x'; rewrite scaleN1r.
 Qed.
 
 End NVS_continuity.
 
 Lemma filterlim_mult {K : absRingType} (x y : K) :
    z.1 * z.2 @[z --> (x, y)] --> x * y.
-Proof. exact: (@filterlim_scal _ (AbsRing_NormedModType K)). Qed.
+Proof. exact: (@flim_scal _ (AbsRing_NormedModType K)). Qed.
 
-
-Lemma filterlim_locally_ball_norm {K : absRingType} {T} {U : normedModType K}
-  {F : set (set T)} {FF : Filter F} (f : T -> U) (y : U) :
-  f @ F --> y <-> forall eps : posreal, F (fun x => ball_norm y eps (f x)).
-Proof.
-(* use locally = locally_norm *)
-split.
-- intros Cf eps.
-  apply (Cf (fun x => ball_norm y eps x)).
-  by apply/locally_le_locally_norm/locally_norm_ball_norm.
-- intros Cf.
-  apply: filterlim_filter_le_2; first by apply: locally_norm_le_locally.
-  move=> P [eps He].
-  apply: filterS (Cf eps) => t; by apply He.
-Qed.
 
 (** ** Complete Normed Modules *)
 
@@ -2665,7 +2657,7 @@ Lemma get_is_filter_lim {F} {FF : ProperFilter F} (l : V) :
   F --> l -> lim F = l.
 Proof.
 move=> Fl; have FlF : F --> lim F by rewrite -cvgE; exists l.
-by apply: is_filter_lim_unique.
+by apply: flim_unique.
 Qed.
 
 Context {T : Type}.
