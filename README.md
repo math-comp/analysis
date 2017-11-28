@@ -14,7 +14,8 @@ uses a well-known file (Rstruct.v) from the CoqApprox library
 
 ## License
 
-The license for cara's original contents is CeCILL-C.
+The license for cara's original contents is CeCILL-C
+(http://www.cecill.info/index.en.html).
 
 ## Authors
 
@@ -35,6 +36,6 @@ see cara_files.txt
 
 ## Installation Procedure
 
-see make
+see Makefile
 
 
