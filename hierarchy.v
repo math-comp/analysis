@@ -2022,51 +2022,39 @@ Context {T : choiceType} {U : completeType}.
 (*   by apply: ball_splitr; [exact: Hu|exact: Hv]. *)
 (* Qed. *)
 
-(* Lemma cauchymod_subproof {V : uniformType} (F : set (set V)) : *)
-(*   forall eps, {x : V | cauchy F -> 0 < eps -> F (ball x eps)}. *)
-(* Proof. *)
-(* move=> e; set D := [set x | cauchy F -> 0 < e -> F (ball x e)]. *)
-(* exists (get D); apply: getPex; have [e_gt0|e_le0] := ltrP 0 e; last first. *)
-(*   by exists point => _; rewrite ltrNge e_le0. *)
-(* have [F_cauchy|FNC] := asboolP (cauchy F); last by exists point=> /FNC. *)
-(* by have [x] := (F_cauchy (PosReal e_gt0)); exists x. *)
-(* Qed. *)
+Lemma cauchymod_subproof {V : uniformType} (F : set (set V)) :
+  forall eps, {x : V | cauchy F -> 0 < eps -> F (ball x eps)}.
+Proof.
+move=> e; set D := [set x | cauchy F -> 0 < e -> F (ball x e)].
+exists (get D); apply: getPex; have [e_gt0|e_le0] := ltrP 0 e; last first.
+  by exists point => _; rewrite ltrNge e_le0.
+have [F_cauchy|FNC] := asboolP (cauchy F); last by exists point=> /FNC.
+by have [x] := (F_cauchy (PosReal e_gt0)); exists x.
+Qed.
 
-(* Definition cauchymod {V : uniformType} (F : set (set V)) := *)
-(*   fun eps => projT1 (@cauchymod_subproof V F eps). *)
+Definition cauchymod {V : uniformType} (F : set (set V)) :=
+  fun eps => projT1 (@cauchymod_subproof V F eps).
 
-(* Lemma cauchymodP {V : uniformType} (F : set (set V)) eps : *)
-(*   cauchy F -> 0 < eps -> F (ball (cauchymod F eps) eps). *)
-(* Proof. by rewrite /cauchymod; case: cauchymod_subproof. Qed. *)
+Lemma cauchymodP {V : uniformType} (F : set (set V)) eps :
+  cauchy F -> 0 < eps -> F (ball (cauchymod F eps) eps).
+Proof. by rewrite /cauchymod; case: cauchymod_subproof. Qed.
 
 Lemma complete_cauchy_fct (F : set (set (T -> U))) :
   ProperFilter F -> cauchy F -> F --> lim F.
 Proof.
-(* move=> FF Fcauchy; apply/flim_ballP => eps. *)
-(*   near g. *)
-(*     move=> x; apply: (@ball_splitr _ (cauchymod F )); *)
-(*     by assume_near g. *)
-(* end_near => /=. *)
-(*   admit. *)
-(* apply: cauchymodP. *)
-move=> FF Fauchy.
-set Fr := fun (t : T) (P : set U) => F [set g | P (g t)].
-have FFr t : ProperFilter (Fr t).
-   apply: Build_ProperFilter'. apply: filter_not_empty.
-have Frc t : cauchy (Fr t).
-  move=> e; have [f Ffe] := Fc e; exists (f t).
-  by rewrite /Fr; apply: filterS Ffe.
-apply/limP; exists (fun t => lim (Fr t)).
-apply/filterlim_locally => e.
-have /cauchy_distance /(_ [posreal of e / 2]) [A [FA diamA_he]] := Fc.
-apply: (filterS _ FA) => f Af t.
-have [g [Ag limFte_gt]] :
-  exists g, A g /\ ball (lim (Fr t)) [posreal of e / 2] (g t).
-  apply/filter_ex/filterI => //; apply: complete_cauchy => //.
-  exact: locally_ball.
-by apply: ball_split limFte_gt _; apply: diamA_he.
+move=> FF Fcauchy; pose G t P := F [set g | P (g t)].
+have FG t : ProperFilter (G t).
+   by apply: Build_ProperFilter'; apply: filter_not_empty.
+have /(_ _) /complete_cauchy Gl : forall t, cauchy (G t).
+  by move=> t e; have [f /filterS Ff] := Fcauchy e; exists (f t); apply: Ff.
+apply/limP; exists (fun t => lim (G t)); apply/flim_ballP => e /=.
+have [/= f Ff] := Fcauchy [posreal of e / 2 / 2]; near g.
+  apply: (@ball_split _ f); last exact: ball_split (near Ff g _).
+  move=> t; have_near (G t) x.
+    by apply: (ball_splitl (near (flim_ball (Gl t) _) x _)); assume_near x.
+  by end_near; rewrite /G /=; apply: filterS (Ff).
+by end_near.
 Qed.
-Admitted.
 
 Canonical fct_completeType := CompleteType (T -> U) complete_cauchy_fct.
 
