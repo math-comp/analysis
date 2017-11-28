@@ -1,5 +1,5 @@
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -36,12 +36,39 @@ Qed.
 Lemma lem (P : Prop): P \/ ~P.
 Proof. by case: (pselect P); tauto. Qed.
 
-Lemma funext {T U : Type} (f g : T -> U):
-  (forall x, f x = g x) -> f = g.
+Lemma funext {T U : Type} (f g : T -> U) : (f =1 g) -> f = g.
 Proof. by case: extentionality=> _; apply. Qed.
 
-Lemma funeqE {T U : Type} (f g : T -> U) : (f = g) = (forall x, f x = g x).
+Lemma funeqE {T U : Type} (f g : T -> U) : (f = g) = (f =1 g).
 Proof. by rewrite propeqE; split=> [->//|/funext]. Qed.
+
+Lemma funeq2E {T U V : Type} (f g : T -> U -> V) : (f = g) = (f =2 g).
+Proof.
+by rewrite propeqE; split=> [->//|?]; rewrite funeqE=> x; rewrite funeqE.
+Qed.
+
+Lemma funeq3E {T U V W : Type} (f g : T -> U -> V -> W) :
+  (f = g) = (forall x y z, f x y z = g x y z).
+Proof.
+by rewrite propeqE; split=> [->//|?]; rewrite funeq2E=> x y; rewrite funeqE.
+Qed.
+
+Lemma predeqE {T} (P Q : T -> Prop) : (P = Q) = (forall x, P x <-> Q x).
+Proof.
+by rewrite propeqE; split=> [->//|?]; rewrite funeqE=> x; rewrite propeqE.
+Qed.
+
+Lemma predeq2E {T U} (P Q : T -> U -> Prop) :
+   (P = Q) = (forall x y, P x y <-> Q x y).
+Proof.
+by rewrite propeqE; split=> [->//|?]; rewrite funeq2E=> ??; rewrite propeqE.
+Qed.
+
+Lemma predeq3E {T U V} (P Q : T -> U -> V -> Prop) :
+   (P = Q) = (forall x y z, P x y z <-> Q x y z).
+Proof.
+by rewrite propeqE; split=> [->//|?]; rewrite funeq3E=> ???; rewrite propeqE.
+Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma trueE : true = True :> Prop.
@@ -49,6 +76,12 @@ Proof. by rewrite propeqE; split. Qed.
 
 Lemma falseE : false = False :> Prop.
 Proof. by rewrite propeqE; split. Qed.
+
+Lemma propT (P : Prop) : P -> P = True.
+Proof. by move=> p; rewrite propeqE; tauto. Qed.
+
+Lemma propF (P : Prop) : ~ P -> P = False.
+Proof. by move=> p; rewrite propeqE; tauto. Qed.
 
 Lemma eq_forall T (U V : T -> Prop) :
   (forall x : T, U x = V x) -> (forall x, U x) = (forall x, V x).
