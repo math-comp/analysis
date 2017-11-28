@@ -19,11 +19,11 @@ The license for cara's original contents is CeCILL-C
 
 ## Authors
 
-see cara_authors.txt
+see AUTHORS.md
 
 ## Files
 
-see cara_files.txt
+see FILES.txt
 
 ## Requirements
 
@@ -36,6 +36,6 @@ see cara_files.txt
 
 ## Installation Procedure
 
-see Makefile
+see INSTALL.md
 
 

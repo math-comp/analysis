@@ -1,8 +1,0 @@
-Cyril Cohen, Inria
-Reynald Affeldt, AIST
-Damien Rouhling, Inria
-
-Acknowledgments:
-- hierarchy.v is a reimplementation of file Hierarchy.v from the
-  library Coquelicot by Sylvie Boldo, Catherine Lelay, and Guillaume
-  Melquiond (http://coquelicot.saclay.inria.fr/)
