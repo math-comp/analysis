@@ -2496,9 +2496,9 @@ by apply: subB; apply: ball_ler yb; rewrite ler_minl lerr orbT.
 Qed.
 
 (* :TODO: put again filter inside uniform type and prove this instead: *)
-Lemma filterlim_plus : continuous (fun z : V * V => z.1 + z.2).
+(* Lemma filterlim_plus : continuous (fun z : V * V => z.1 + z.2). *)
+Lemma filterlim_plus (x y : V) : z.1 + z.2 @[z --> (x, y)] --> x + y.
 Proof.
-move=> [x y]; rewrite locally_pair.
 apply/filterlim_locally_norm=> e; rewrite /ball_norm /=; near z.
   rewrite opprD addrACA (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
   by rewrite ltr_add //; assume_near z.
@@ -2506,86 +2506,29 @@ end_near; first exact: (filterlim_locally_norm' filterlim_fst).
 exact: (filterlim_locally_norm' filterlim_snd).
 Qed.
 
+(* Lemma filterlim_scal : continuous (fun z : K * V => z.1 *: z.2). *)
 Lemma filterlim_scal (k : K) (x : V) : z.1 *: z.2 @[z --> (k, x)] --> k *: x.
 Proof.
-apply/filterlim_locally_norm=> /= eps; rewrite appfilter /=.
-near => z ?; rewrite /ball_norm /= (@subr_trans _ (k *: z.2)).
-rewrite (double_var eps) (ler_lt_trans (ler_normm_add _ _)) //.
-rewrite ltr_add // -?(scalerBr, scalerBl).
+apply/filterlim_locally_norm=> /= e; rewrite /ball_norm /=; near z.
+  rewrite (@subr_trans _ (k *: z.2)).
+  rewrite (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
+  rewrite ltr_add // -?(scalerBr, scalerBl).
+    rewrite (ler_lt_trans (ler_normmZ _ _)) //.
+    rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1)  (lerr _))) //.
+      by rewrite ler_addl.
+    rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //.
+    by assume_near z.
   rewrite (ler_lt_trans (ler_normmZ _ _)) //.
-  rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1)  (lerr _))) //.
-    by rewrite ler_addl.
-  rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //.
-  rewrite -/(ball_norm _ _ _).
-  have_near x
-  instantiate (FQ := filterI _ _).
-  exact: proj1 Qz.
-rewrite (ler_lt_trans (ler_normmZ _ _)) //.
-rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) //.
-  admit.
-rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //.
-rewrite -/(ball_norm (k : K^o) _ z.1).
-apply: proj2 Qz.
-Unshelve.
-  by rewrite /F; typeclasses eauto.
-
-
+  rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) //.
+    by assume_near z.
+  rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //.
+  by assume_near z.
+end_near.
+- admit.
+- admit.
+  (* apply: (filterlim_locally_norm' filterlim_fst). *)
+- admit.
 Admitted.
-
-
-
-pose Q :=
-
-apply/filterlim_locally => /= eps.
-set P := (fun u : K * V => (abs (u.1 - k) < pos eps / 2 / (norm x + 1) /\
-           abs (u.1 - k) < 1) /\
-         (norm (u.2 - x) < pos eps / 2 / (abs k + 1))).
-apply: (@filterS _ _ _ P).
-- move => /= u Hu.
-  rewrite (double_var eps).
-  apply (@ball_triangle _ _ (u.1 *: x)).
-  + apply norm_compat1.
-    rewrite /ball_norm -scalerBl.
-    apply: ler_lt_trans; first by apply norm_scal.
-    apply (@ler_lt_trans _ (`|k - u.1|%real * (`|[x]| + 1))).
-    by rewrite ler_pmul // ?absr_ge0 // ?normm_ge0 // ler_addl.
-    rewrite -ltr_pdivl_mulr; last by rewrite ltr_paddl // normm_ge0.
-    move: (proj1 (proj1 Hu)).
-    by rewrite absrB /= RdivE.
-  + apply norm_compat1.
-    rewrite /ball_norm -scalerBr.
-    apply: ler_lt_trans; first by apply norm_scal.
-    apply (@ler_lt_trans _ ((`|k|%real + 1) * `|[x - u.2]|)).
-      rewrite ler_pmul // ?absr_ge0 // ?normm_ge0 //.
-      rewrite (_ : `|u.1| = `|k + ((u.1) - k)|); last by rewrite addrCA subrr addr0.
-      apply: (@ler_trans _ _); first by apply ler_abs_add.
-      rewrite ler_add // ltrW //; exact: (proj2 (proj1 Hu)).
-    rewrite mulrC -ltr_pdivl_mulr; last by rewrite ltr_paddl // absr_ge0.
-    by rewrite /= RdivE // normmB; exact: (proj2 Hu).
-- have x1 : `|[x]| + 1 != 0 by rewrite lt0r_neq0 // ltr_paddl // normm_ge0.
-  have k1 : `|k|%real + 1 != 0 by rewrite lt0r_neq0 // ltr_paddl // absr_ge0.
-  repeat apply filterI.
-  + have Hd : (0 < pos eps / 2 / (norm x + 1))%coqR.
-      apply/RltP; rewrite RdivE RplusE //.
-      by rewrite divr_gt0 // ltr_paddl // normm_ge0.
-    eexists => /=.
-    * exact: (@locally_ball_norm _ (AbsRing_NormedModType K) _ (mkposreal _ Hd)).
-    * by apply: filterT.
-    * move=> x0 y /= x0y _; move: x0y.
-      by rewrite /ball_norm -RplusE absrB RdivE // RdivE.
-  + eexists => /=.
-    * exact (@locally_ball_norm _ (AbsRing_NormedModType K) _ [posreal of 1]).
-    * by apply: filterT.
-    * move=> x0 y /=; by rewrite /ball_norm -absrB.
-  + have Hd : (0 < eps / 2 / (abs k + 1))%coqR.
-      apply/RltP.
-      rewrite RdivE; last by rewrite lt0r_neq0 // RplusE // ltr_paddl // absr_ge0.
-      by rewrite divr_gt0 // ltr_paddl // absr_ge0.
-    eexists.
-    * by apply: filterT.
-    * by apply (locally_ball_norm _ (mkposreal _ Hd)).
-    * move=> x0 y /= _; by rewrite /ball_norm RplusE RdivE // RdivE // normmB.
-Qed.
 
 Lemma filterlim_scal_r (k : K) (x : V) : k *: z @[z --> x] --> k *: x.
 Proof.
