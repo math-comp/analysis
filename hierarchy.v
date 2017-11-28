@@ -1,11 +1,10 @@
+(* cara (c) 2017 Inria and AIST. License: CeCILL-C.                           *)
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 Require Import Rcomplements Rbar Markov Iter Lub.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
 From SsrReals Require Import boolp.
 Require Import Rstruct.
-
-(** ADD HEADER HERE !! *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.

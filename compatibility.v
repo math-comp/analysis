@@ -1,3 +1,4 @@
+(* cara (c) 2017 Inria and AIST. License: CeCILL-C.                           *)
 Require Import Reals Psatz.
 Require Import mathcomp.ssreflect.ssreflect.
 Require Import Rcomplements.

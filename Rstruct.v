@@ -1,9 +1,12 @@
+(* This file is a modification of an eponymous file from the CoqApprox        *)
+(* library. The header of the original file is reproduced below. Changes are  *)
+(* part of the cara library and enjoy the same licence as cara.               *)
 (**
-This file is originally part of the CoqApprox formalization of rigorous
+This file is part of the CoqApprox formalization of rigorous
 polynomial approximation in Coq:
 http://tamadi.gforge.inria.fr/CoqApprox/
 
-Copyright (c) 2010-2017, ENS de Lyon and Inria.
+Copyright (c) 2010-2013, ENS de Lyon and Inria.
 
 This library is governed by the CeCILL-C license under French law and
 abiding by the rules of distribution of free software. You can use,
