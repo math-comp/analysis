@@ -1,29 +1,41 @@
-# README #
+cara
+====
 
-This README would normally document whatever steps are necessary to get your application up and running.
+## Contents
 
-### What is this repository for? ###
+This repository contains a library for real *A*nalysis based on
+*A*lternate version of *R*eal numbers for the *C*oq proof-assistant
+using the Mathematical Components library. It is inspired by the
+Coquelicot library (http://coquelicot.saclay.inria.fr/). The
+instantiation of the mathematical structures of the Mathematical
+Components library with the real numbers of the standard Coq library
+uses a well-known file (Rstruct.v) from the CoqApprox library
+(http://tamadi.gforge.inria.fr/CoqApprox/).
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## License
 
-### How do I get set up? ###
+The license for cara's original contents is CeCILL-C
+(http://www.cecill.info/index.en.html).
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+## Authors
 
-### Contribution guidelines ###
+see cara_authors.txt
 
-* Writing tests
-* Code review
-* Other guidelines
+## Files
 
-### Who do I talk to? ###
+see cara_files.txt
 
-* Repo owner or admin
-* Other community or team contact
+## Requirements
+
+* The Coq proof-assistant
+  https://coq.inria.fr/
+* The Mathematical Components library
+  https://github.com/math-comp/math-comp
+* The coq-alternate-reals library
+  https://github.com/strub/coq-alternate-reals
+
+## Installation Procedure
+
+see Makefile
+
+

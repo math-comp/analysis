@@ -1,26 +1,89 @@
+(* cara (c) 2017 Inria and AIST. License: CeCILL-C.                           *)
 Require Import Reals Psatz.
 Require Import mathcomp.ssreflect.ssreflect.
 Require Import Rcomplements.
-Require Import Rbar Lub Markov hierarchy.
+Require Import Rbar Lub Markov hierarchy set.
+Local Open Scope classical_set_scope.
 
 Require Rstruct.
 From mathcomp Require Import ssrbool eqtype ssrnat choice fintype ssralg.
 From mathcomp Require Import ssrfun seq bigop ssrnum.
 
+From SsrReals Require Import boolp.
 (* We should have compatilibity modules for every lemma in Hierarchy
 that we deleted (and replaced by mathcomp's ones) so that the rest of
 Coquelicot compiles just with a import of The compatibility modules *)
 
-Section AbelianGroup1.
+(* Filter renamings *)
+Notation filter_le := flim.
 
+Lemma filter_le_refl T (F : set (set T)) : filter_le F F.
+Proof. exact. Qed.
+
+Lemma filter_le_trans T (F G H : set (set T)) :
+  (filter_le F G) -> (filter_le G H) -> (filter_le F H).
+Proof. exact: flim_trans. Qed.
+
+Definition filter_true := @filterT.
+Arguments filter_true {T F Filter}.
+Definition filter_and := @filterI.
+Arguments filter_and {T F Filter}.
+Definition filter_imp := @filterS.
+Arguments filter_imp {T F Filter}.
+
+Inductive filter_prod {T U : Type} (F G : _ -> Prop) (P : T * U -> Prop) : Prop :=
+  Filter_prod (Q : T -> Prop) (R : U -> Prop) :
+    F Q -> G R -> (forall x y, Q x -> R y -> P (x, y)) -> filter_prod F G P.
+
+Lemma filter_prodE {T U : Type} : @filter_prod T U = @hierarchy.filter_prod T U.
+Proof.
+rewrite predeq3E=> F G P; split=> [[Q R FQ GR QRP] | [_ [Q FQ [R GR <-]]] QRP].
+  by exists (Q `*` R); do ?eexists; move=> // [??] [/=??]; apply: QRP.
+by exists Q R => // ????; apply: QRP.
+Qed.
+
+Global Instance filter_prod_filter  T U (F : set (set T)) (G : set (set U)) :
+  Filter F -> Filter G -> Filter (filter_prod F G).
+Proof. by rewrite filter_prodE; typeclasses eauto. Qed.
+
+Global Instance filter_prod_proper {T1 T2 : Type}
+  {F : (T1 -> Prop) -> Prop} {G : (T2 -> Prop) -> Prop}
+  {FF : ProperFilter F} {FG : ProperFilter G} :
+  ProperFilter (filter_prod F G).
+Proof. by rewrite filter_prodE; typeclasses eauto. Qed.
+Definition filter_prod_proper' := @filter_prod_proper.
+
+Lemma filterlim_pair {T U V F} {G : set (set U)} {H : set (set V)}
+  {FF : Filter F} {FG : Filter G} {FH : Filter H} (f : T -> U) (g : T -> V) :
+  f @ F `=>` G -> g @ F `=>` H ->
+  (fun x => (f x, g x)) @ F `=>` filter_prod G H.
+Proof. by rewrite filter_prodE; exact: filterlim_pair. Qed.
+
+Lemma filterlim_comp_2 {T U V W}
+  {F : set (set T)} {G : set (set U)} {H : set (set V)} {I : set (set W)}
+  {FF : Filter F} {FG : Filter G} {FH : Filter H}
+  (f : T -> U) (g : T -> V) (h : U -> V -> W) :
+  f @ F `=>` G -> g @ F `=>` H ->
+  (fun x => h (fst x) (snd x)) @ (filter_prod G H) `=>` I ->
+  (fun x => h (f x) (g x)) @ F `=>` I.
+Proof. by rewrite filter_prodE; exact: flim_comp2. Qed.
+
+(* Algebraic structures renamings *)
 Notation AbelianGroup := zmodType.
-
-Context {G : AbelianGroup}.
-
-Notation zero := (0%R : G).
+Notation AbsRing := absRingType.
+Notation Ring := ringType.
+Notation NormedModule K := (normedModType K).
+Notation UniformSpace := uniformType.
+Notation zero := (GRing.zero _).
 Notation plus := +%R.
 Notation opp := GRing.opp.
 Notation minus := (fun a b => GRing.add a (GRing.opp b)).
+Notation abs := (@abs _).
+Notation scal := *:%R.
+
+Section AbelianGroup1.
+
+Context {G : AbelianGroup}.
 
 Import GRing.Theory.
 
@@ -42,7 +105,7 @@ Proof. exact: add0r. Qed.
 Lemma plus_opp_l : forall x : G, plus (opp x) x = zero.
 Proof. exact: addNr. Qed.
 
-Lemma opp_zero : opp zero = zero.
+Lemma opp_zero : opp zero = zero :> G.
 Proof. exact: oppr0. Qed.
 
 Lemma minus_zero_r : forall x : G, minus x zero = x.
@@ -78,14 +141,7 @@ End AbelianGroup1.
 
 Section Sums.
 
-Notation AbelianGroup := zmodType.
-
 Context {G : AbelianGroup}.
-
-Notation zero := (0%R : G).
-Notation plus := +%R.
-Notation opp := GRing.opp.
-Notation minus := (fun a b => GRing.add a (GRing.opp b)).
 
 Import GRing.Theory.
 
@@ -199,16 +255,10 @@ End Sums.
 
 Section Ring1.
 
-Notation Ring := ringType.
-
 Context {K : Ring}.
 
 Definition mult : K -> K -> K := *%R.
 Definition one : K := 1%R.
-
-Notation zero := 0%R.
-Notation opp := GRing.opp.
-Notation plus := +%R.
 
 Import GRing.Theory.
 
@@ -284,20 +334,12 @@ End Ring1.
 
 Section AbsRing1.
 
-Notation AbsRing := absRingType.
-
 Context {K : AbsRing}.
 
-Notation abs := (@abs K).
-Notation zero := 0%R.
-Notation opp := GRing.opp.
-Notation plus := +%R.
-Notation minus := (fun a b => GRing.add a (GRing.opp b)).
-
-Lemma abs_zero : abs zero = 0.
+Lemma abs_zero : abs (zero : K) = 0.
 Proof. exact: absr0. Qed.
 
-Lemma abs_opp_one : abs (opp one) = 1.
+Lemma abs_opp_one : abs (opp one : K) = 1.
 Proof. exact: @absrN1 K. Qed.
 
 Lemma abs_triangle : forall x y : K, abs (plus x y) <= abs x + abs y.
@@ -309,16 +351,16 @@ Proof. move=> x y; by move/Rstruct.RlebP : (absrM x y). Qed.
 Lemma abs_eq_zero : forall x : K, abs x = 0 -> x = zero.
 Proof. exact: absr0_eq0. Qed.
 
-Lemma abs_opp : forall x, abs (opp x) = abs x.
+Lemma abs_opp : forall x : K, abs (opp x) = abs x.
 Proof. exact: absrN. Qed.
 
 Lemma abs_minus : forall x y : K, abs (minus x y) = abs (minus y x).
 Proof. exact: absrB. Qed.
 
-Lemma abs_one : abs one = 1.
+Lemma abs_one : abs (one : K) = 1.
 Proof. exact: absr1. Qed.
 
-Lemma abs_ge_0 : forall x, 0 <= abs x.
+Lemma abs_ge_0 : forall x : K, 0 <= abs x.
 Proof. move=> x; by move/Rstruct.RlebP : (absr_ge0 x). Qed.
 
 Lemma abs_pow_n : forall (x : K) n, abs (pow_n x n) <= (abs x)^n.
@@ -331,18 +373,59 @@ End AbsRing1.
 
 (*Import AbsRingCompat.*)
 
+Notation ModuleSpace K := (lmodType K).
+
+Section ModuleSpace1.
+
+Context {K : Ring} {V : ModuleSpace K}.
+
+Lemma scal_assoc (x y : K) (u : V) : scal x (scal y u) = scal (mult x y) u.
+Proof. exact: GRing.scalerA. Qed.
+
+Lemma scal_one (u : V) : scal one u = u.
+Proof. exact: GRing.scale1r. Qed.
+
+Lemma scal_distr_l (x : K) (u v : V) : scal x (plus u v) = plus (scal x u) (scal x v).
+Proof. exact: GRing.scalerDr. Qed.
+
+Lemma scal_distr_r (x y : K) (u : V) : scal (plus x y) u = plus (scal x u) (scal y u).
+Proof. exact: GRing.scalerDl. Qed.
+
+Lemma scal_zero_r (x : K) : scal x (zero : V) = zero.
+Proof. exact: GRing.scaler0. Qed.
+
+Lemma scal_zero_l (u : V) : scal zero u = zero.
+Proof.
+Proof. exact: GRing.scale0r. Qed.
+
+Lemma scal_opp_l (x : K) (u : V) : scal (opp x) u = opp (scal x u).
+Proof. exact: GRing.scaleNr. Qed.
+
+Lemma scal_opp_r (x : K) (u : V) : scal x (opp u) = opp (scal x u).
+Proof. exact: GRing.scalerN. Qed.
+
+Lemma scal_opp_one (u : V) : scal (opp one) u = opp u.
+Proof. exact: GRing.scaleN1r. Qed.
+
+Lemma scal_minus_distr_l (x : K) (u v : V) : scal x (minus u v) = minus (scal x u) (scal x v).
+Proof. exact: GRing.scalerBr. Qed.
+
+Lemma scal_minus_distr_r (x y : K) (u : V) : scal (minus x y) u = minus (scal x u) (scal y u).
+Proof. exact: GRing.scalerBl. Qed.
+
+Lemma sum_n_m_scal_l (a : K) (u : nat -> V) (n m : nat) :
+  sum_n_m (fun k => scal a (u k)) n m = scal a (sum_n_m u n m).
+Proof. by rewrite sum_n_mE -GRing.scaler_sumr -sum_n_mE. Qed.
+
+Lemma sum_n_scal_l (a : K) (u : nat -> V) (n : nat) :
+  sum_n (fun k => scal a (u k)) n = scal a (sum_n u n).
+Proof. by rewrite /sum_n sum_n_m_scal_l. Qed.
+
+End ModuleSpace1.
+
 Section NormedModule1.
 
-Notation AbsRing := absRingType.
-Notation NormedModule K := (normedModType K).
-
 Context {K : AbsRing} {V : NormedModule K}.
-
-Notation zero := 0%R.
-Notation opp := GRing.opp.
-Notation plus := +%R.
-Notation scal := *:%R.
-Notation minus := (fun a b => GRing.add a (GRing.opp b)).
 
 Definition norm : V -> R := NormedModule.norm (NormedModule.class V).
 
@@ -454,7 +537,7 @@ Local Open Scope classical_set_scope.
 
 Lemma is_filter_lim_unique {F} {FF : ProperFilter' F} (x y : V) :
   F --> x -> F --> y -> x = y.
-Proof. exact: is_filter_lim_unique. Qed.
+Proof. exact: flim_unique. Qed.
 
 Lemma is_filter_lim_locally_unique (x y : V) : x --> y -> x = y.
 Proof. move=> H; rewrite -closeE; exact: is_filter_lim_locally_close. Qed.
@@ -550,3 +633,74 @@ End NormedModule1.
 (* Qed. *)
 
 (* End RealSums. *)
+
+Local Open Scope classical_set_scope.
+
+Lemma filterlim_locally {U : uniformType} {F} {FF : Filter F} (y : U) :
+  F --> y <-> forall eps : posreal, F [set x | ball y eps x].
+Proof. exact: @filterlim_locally _ F FF y. Qed.
+
+Lemma filterlim_opp {K : absRingType} {V : normedModType K} (x : V) : (@GRing.opp V) @ x --> (- x)%R.
+Proof. exact: filterlim_opp. Qed.
+
+Lemma filterlim_plus (K : absRingType) (V : normedModType K) (x y : V) : (z.1 + z.2)%R @[z --> (x, y)] --> (x + y)%R.
+Proof. exact: filterlim_plus. Qed.
+
+Lemma ballE (l : R) (e : R(*posreal*)) : ball l e = (fun y => R_dist y l < e).
+Proof.
+rewrite funeqE => x; rewrite propeqE.
+rewrite /ball /= /AbsRing_ball absrB; split => [/Rstruct.RltP //| ?]; by apply/Rstruct.RltP.
+Qed.
+
+Lemma locally_ex_dec {T : uniformType} (x : T) (P : T -> Prop) :
+  (forall x, P x \/ ~ P x) ->
+  locally x P ->
+  {d : posreal | forall y, ball x d y -> P y}.
+Proof. move=> _; exact: locally_ex. Qed.
+
+Lemma normE {K : absRingType} {U : normedModType K} (x : U) : norm x = (`|[ x ]|)%R.
+Proof. by []. Qed.
+
+Lemma filterlim_locally_ball_norm {K : absRingType} {T} {U : normedModType K}
+  {F : set (set T)} {FF : Filter F} (f : T -> U) (y : U) :
+  f @ F --> y <-> forall eps : posreal, F (fun x => ball_norm y eps (f x)).
+Proof.
+rewrite flim_normP; split => /= Ff eps; have := Ff eps;
+by apply: filterS => P; move=> /Rstruct.RltP; rewrite normmB.
+Qed.
+
+Lemma locally_singleton {T : UniformSpace} (x : T) (P : T -> Prop) : locally x P -> P x.
+Proof. exact: locally_singleton. Qed.
+
+Require Import Rstruct.
+
+Canonical R_lmodtype := LmodType R R (GRing.Lmodule.class [lmodType R of R^o]).
+Canonical R_NormedModule := NormedModType R R (NormedModule.class [normedModType R of R^o]).
+Canonical R_completeNormedModule := [completeNormedModType R of R].
+
+Lemma RabsE (a : R) : Rabs a = `| a |%R.
+Proof. exact: absRE. Qed.
+
+Lemma open_lt (y : R) : open (fun u : R => (u < y)%coqR).
+Proof.
+rewrite (_ : Rlt^~y = fun x => (x < y)%R); first by apply open_lt.
+by rewrite funeqE => x; rewrite propeqE; split => /RltP.
+Qed.
+
+Lemma open_gt (y : R) : open (fun u : R => (y < u)%coqR).
+Proof.
+rewrite (_ : Rlt y = fun x => (y < x)%R); first by apply open_gt.
+by rewrite funeqE => x; rewrite propeqE; split => /RltP.
+Qed.
+
+Lemma open_Rbar_lt' x y : Rbar_lt x y -> Rbar_locally x (fun u => Rbar_lt u y).
+Proof. exact: open_Rbar_lt'. Qed.
+
+Lemma open_Rbar_gt' x y : Rbar_lt y x -> Rbar_locally x (fun u => Rbar_lt y u).
+Proof. exact: open_Rbar_gt'. Qed.
+
+Import Num.Def.
+
+Lemma sqrt_plus_sqr (x y : R) :
+  Rmax `|x|%R `|y|%R <= Num.sqrt (x^+2 + y^+2) <= Num.sqrt 2%:R * Rmax `|x|%R `|y|%R.
+Proof. case/andP: (sqrt_plus_sqr x y) => /RleP ? /RleP ?; by rewrite RmaxE. Qed.

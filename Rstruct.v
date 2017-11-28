@@ -1,9 +1,12 @@
+(* This file is a modification of an eponymous file from the CoqApprox        *)
+(* library. The header of the original file is reproduced below. Changes are  *)
+(* part of the cara library and enjoy the same licence as cara.               *)
 (**
-This file is originally part of the CoqApprox formalization of rigorous
+This file is part of the CoqApprox formalization of rigorous
 polynomial approximation in Coq:
 http://tamadi.gforge.inria.fr/CoqApprox/
 
-Copyright (c) 2010-2017, ENS de Lyon and Inria.
+Copyright (c) 2010-2013, ENS de Lyon and Inria.
 
 This library is governed by the CeCILL-C license under French law and
 abiding by the rules of distribution of free software. You can use,
@@ -452,6 +455,9 @@ Proof. by move=> x_neq0; rewrite -[RHS]/(if _ then _ else _) x_neq0. Qed.
 Lemma RdivE x y : y != 0 -> Rdiv x y = x / y.
 Proof. by move=> y_neq0; rewrite /Rdiv RinvE. Qed.
 
+Lemma INRE n : INR n = n%:R.
+Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
+
 Lemma RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
 move => x0; apply/eqP; have [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
@@ -468,6 +474,7 @@ case: (lerP x y) => H; first by rewrite maxr_r // Rmax_right //; apply: RlebP.
 by rewrite maxr_l ?ltrW // Rmax_left //;  apply/RlebP; move/ltrW : H.
 Qed.
 
+(* useful? *)
 Lemma RminE x y : Rmin x y = Num.min x y.
 Proof.
 case: (lerP x y) => H; first by rewrite minr_l // Rmin_left //; apply: RlebP.

@@ -1,3 +1,4 @@
+set.v
 Rstruct.v
 Rcomplements.v
 Lub.v
@@ -6,6 +7,9 @@ Markov.v
 Rbar.v
 hierarchy.v
 compatibility.v
+Equiv.v
+Compactness.v
 Lim_seq.v
+Continuity.v
 
 -R . cara
