@@ -3023,10 +3023,8 @@ split.
   by rewrite /ball_norm -normmB.
 Qed.
 
-(* COMPILES UNTIL HERE *)
-
 Lemma continuity_pt_filterlim (f : R -> R) (x : R) :
-  continuity_pt f x <-> f @ x --> f x.
+  continuity_pt f x <-> {for x, continuous f}.
 Proof.
 eapply iff_trans; first by apply continuity_pt_locally.
 apply iff_sym.
@@ -3065,27 +3063,12 @@ Proof. by rewrite continuity_ptE continuous_withinNx //; exact: Req_dec. Qed.
 
 Lemma continuity_pt_locally' f x :
   continuity_pt f x <->
-  forall eps : posreal, locally' x (fun u => `|f u - f x| < eps)%R.
+  forall eps : posreal, locally' x (fun u => `|f x - f u| < eps)%R.
 Proof.
-rewrite continuity_ptE continuous_withinNx; last exact: Req_dec.
-have FF : Filter (f @ locally' x) by typeclasses eauto.
-case: (@filterlim_locally _ (f @ locally' x) FF (f x)) => {FF}H1 H2.
-(* TODO: refactoring  *)
-split => [{H2} /H1{H1} H1 eps|{H1} H].
-- move: (H1 eps) => {H1} [x0 Hx0].
-  exists x0 => y /Hx0 /= H yx.
-  move: (H yx) => {H yx} /sub_ball_abs.
-  by rewrite mul1r absrB.
-- apply H2 => eps; move: (H eps) => {H} [x0 Hx0].
-  exists x0 => y /Hx0 /= {Hx0}Hx0 yx; move: (Hx0 yx) => {Hx0 yx} H.
-  apply/sub_abs_ball; by rewrite absrB.
- Qed.
+by rewrite continuity_pt_filterlim' (@flim_normP _ [normedModType R of R^o]).
+Qed.
 
 Lemma locally_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
   locally (f x) P -> continuity_pt f x ->
-  locally x (fun x => P (f x)).
-Proof.
-intros Lf Cf.
-apply continuity_pt_filterlim in Cf.
-now apply Cf.
-Qed.
+  {near x, forall x, P (f x)}.
+Proof. by move=> Lf /continuity_pt_filterlim; apply. Qed.
