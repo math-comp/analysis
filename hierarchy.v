@@ -812,8 +812,7 @@ Definition iota_unique := @get_unique.
 Lemma getPN (P : set T) : (forall x, ~ P x) -> get P = point.
 Proof. exact: (xgetPN point). Qed.
 
-Definition lim (F : set (set T)) : T := get [set x | F --> x].
-
+Definition lim_of (F : set (set T)) : T := get [set x | F --> x].
 (* Definition lim_in {M : uniformType} (F : set (set M)) T : T := *)
 (*    get (fun x : T => F --> x). *)
 (* Notation "[ 'lim' F 'in' T ]" := (lim_in F T). *)
@@ -821,6 +820,8 @@ Definition lim (F : set (set T)) : T := get [set x | F --> x].
 (* Notation lim F := [lim F in type_of_filter F]. *)
 
 End UniformGet.
+
+Notation lim F := (lim_of [filter of F]).
 
 (* Unique Choice for compatilibility reasons *)
 Notation iota := get.
@@ -1209,7 +1210,7 @@ Lemma ex_ball_sig (x : T) (P : set T) :
 Proof.
 rewrite forallN eqNNP => exNP.
 pose D := [set d : R | d > 0 /\ ball x d `<=` ~` P].
-have [|d_gt0] := @getPex _ D; last by exists (PosReal d_gt0). 
+have [|d_gt0] := @getPex _ D; last by exists (PosReal d_gt0).
 by move: exNP => [e eP]; exists (e : R).
 Qed.
 Definition locally_not' := ex_ball_sig. (*compat*)
@@ -3073,18 +3074,24 @@ Lemma locally_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
   {near x, forall x, P (f x)}.
 Proof. by move=> Lf /continuity_pt_filterlim; apply. Qed.
 
+(** For Pierre-Yves : definition of sums *)
+
 From mathcomp Require Import fintype bigop finmap.
 Local Open Scope fset_scope.
-
-Definition sum {I : choiceType} {R : zmodType} 
-  (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
 
 Definition totally {I : choiceType} : set (set {fset I}) :=
   filter_from (fun A : {fset I} => [set B | A `<=` B]).
 Canonical totally_filter_source {I : choiceType} X :=
   @CanonicalFilterSource X _ {fset I} (fun f => f @ totally).
 
-Definition psum (I : choiceType) {K : absRingType} {R : normedModType K} (x : I -> R) := lim [filter of sum x].
+Instance totally_filter {I : choiceType} : Filter (@totally I).
+Proof.
+apply: filter_from_filter; first by exists fset0.
+by move=> A B /=; exists (A `|` B) => P /=; rewrite fsubUset => /andP[].
+Qed.
 
+Definition partial_sum {I : choiceType} {R : zmodType}
+  (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
 
-
+Definition sum (I : choiceType) {K : absRingType} {R : normedModType K}
+   (x : I -> R) := lim (partial_sum x).
