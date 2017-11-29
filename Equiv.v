@@ -26,7 +26,7 @@ Require Import Reals Psatz.
 Require Import mathcomp.ssreflect.ssreflect.
 Require Import Rbar Rcomplements (*H*)hierarchy.
 Import ssrbool.
-Require Import compatibility.
+Require Import compatibility R_ext.
 
 (** This file gives definitions of equivalent (g ~ f) and dominant (g
 = o(f)). This is used for defining differentiability on a

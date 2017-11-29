@@ -27,7 +27,7 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 Require Import Rcomplements Rbar (*H*)hierarchy.
 Require Import Compactness Lim_seq.
 Import ssrbool.
-Require Import compatibility set.
+Require Import compatibility set R_ext.
 
 (** This file describes defineitions and properties of continuity on
 [R] and on uniform spaces. It also contains many results about the

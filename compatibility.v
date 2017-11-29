@@ -887,3 +887,7 @@ constructor => // P Q.
 by move: (H2 P Q); rewrite !eventuallyE.
 by move: (H3 P Q); rewrite !eventuallyE.
 Qed.
+
+Definition at_left x := within (fun u : R => Rlt u x) (locally x).
+
+Definition at_right x := within (fun u : R => Rlt x u) (locally x).

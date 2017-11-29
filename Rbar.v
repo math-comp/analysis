@@ -40,16 +40,13 @@ Inductive Rbar :=
   | Finite : R -> Rbar
   | p_infty : Rbar
   | m_infty : Rbar.
-
-Notation "'+oo'" := p_infty : R_scope.
-Notation "'-oo'" := m_infty : R_scope.
-
 Definition real (x : Rbar) :=
   match x with
     | Finite x => x
     | _ => 0
   end.
 Coercion Finite : R >-> Rbar.
+Coercion real : Rbar >-> R.
 
 Definition is_finite (x : Rbar) := Finite (real x) = x.
 Lemma is_finite_correct (x : Rbar) :
@@ -66,15 +63,15 @@ Qed.
 
 Definition Rbar_lt (x y : Rbar) : Prop :=
   match x,y with
-    | +oo, _ | _, -oo => False
-    | -oo, _ | _, +oo => True
+    | p_infty, _ | _, m_infty => False
+    | m_infty, _ | _, p_infty => True
     | Finite x, Finite y => Rlt x y
   end.
 
 Definition Rbar_le (x y : Rbar) : Prop :=
   match x,y with
-    | -oo, _ | _, +oo => True
-    | +oo, _ | _, -oo => False
+    | m_infty, _ | _, p_infty => True
+    | p_infty, _ | _, m_infty => False
     | Finite x, Finite y => Rle x y
   end.
 
@@ -84,15 +81,15 @@ Definition Rbar_le (x y : Rbar) : Prop :=
 Definition Rbar_opp (x : Rbar) :=
   match x with
     | Finite x => Finite (-x)
-    | +oo => -oo
-    | -oo => +oo
+    | p_infty => m_infty
+    | m_infty => p_infty
   end.
 
 Definition Rbar_plus' (x y : Rbar) :=
   match x,y with
-    | +oo, -oo | -oo, +oo => None
-    | +oo, _ | _, +oo => Some +oo
-    | -oo, _ | _, -oo => Some -oo
+    | p_infty, m_infty | m_infty, p_infty => None
+    | p_infty, _ | _, p_infty => Some p_infty
+    | m_infty, _ | _, m_infty => Some m_infty
     | Finite x', Finite y' => Some (Finite (x' + y'))
   end.
 Definition Rbar_plus (x y : Rbar) :=
@@ -138,30 +135,30 @@ Definition Rbar_mult' (x y : Rbar) :=
   match x with
     | Finite x => match y with
       | Finite y => Some (Finite (x * y))
-      | +oo => match (Rle_dec 0 x) with
-        | left H => match Rle_lt_or_eq_dec _ _ H with left _ => Some +oo | right _ => None end
-        | right _ => Some -oo
+      | p_infty => match (Rle_dec 0 x) with
+        | left H => match Rle_lt_or_eq_dec _ _ H with left _ => Some p_infty | right _ => None end
+        | right _ => Some m_infty
       end
-      | -oo => match (Rle_dec 0 x) with
-        | left H => match Rle_lt_or_eq_dec _ _ H with left _ => Some -oo | right _ => None end
-        | right _ => Some +oo
+      | m_infty => match (Rle_dec 0 x) with
+        | left H => match Rle_lt_or_eq_dec _ _ H with left _ => Some m_infty | right _ => None end
+        | right _ => Some p_infty
       end
     end
-    | +oo => match y with
+    | p_infty => match y with
       | Finite y => match (Rle_dec 0 y) with
-        | left H => match Rle_lt_or_eq_dec _ _ H with left _ => Some +oo | right _ => None end
-        | right _ => Some -oo
+        | left H => match Rle_lt_or_eq_dec _ _ H with left _ => Some p_infty | right _ => None end
+        | right _ => Some m_infty
       end
-      | +oo => Some +oo
-      | -oo => Some -oo
+      | p_infty => Some p_infty
+      | m_infty => Some m_infty
     end
-    | -oo => match y with
+    | m_infty => match y with
       | Finite y => match (Rle_dec 0 y) with
-        | left H => match Rle_lt_or_eq_dec _ _ H with left _ => Some -oo | right _ => None end
-        | right _ => Some +oo
+        | left H => match Rle_lt_or_eq_dec _ _ H with left _ => Some m_infty | right _ => None end
+        | right _ => Some p_infty
       end
-      | +oo => Some -oo
-      | -oo => Some +oo
+      | p_infty => Some m_infty
+      | m_infty => Some p_infty
     end
   end.
 Definition Rbar_mult (x y : Rbar) :=
@@ -174,18 +171,18 @@ Definition ex_Rbar_mult (x y : Rbar) : Prop :=
   match x with
     | Finite x => match y with
       | Finite y => True
-      | +oo => x <> 0
-      | -oo => x <> 0
+      | p_infty => x <> 0
+      | m_infty => x <> 0
     end
-    | +oo => match y with
+    | p_infty => match y with
       | Finite y => y <> 0
-      | +oo => True
-      | -oo => True
+      | p_infty => True
+      | m_infty => True
     end
-    | -oo => match y with
+    | m_infty => match y with
       | Finite y => y <> 0
-      | +oo => True
-      | -oo => True
+      | p_infty => True
+      | m_infty => True
     end
   end.
 Arguments ex_Rbar_mult !x !y /.
@@ -761,7 +758,7 @@ Proof.
 Qed.
 
 Lemma is_Rbar_mult_p_infty_pos (x : Rbar) :
-  Rbar_lt 0 x -> is_Rbar_mult +oo x +oo.
+  Rbar_lt 0 x -> is_Rbar_mult p_infty x p_infty.
 Proof.
   case: x => [x | | ] // Hx.
   unfold is_Rbar_mult, Rbar_mult'.
@@ -769,14 +766,14 @@ Proof.
   now case: Rle_lt_or_eq_dec (Rlt_not_eq _ _ Hx).
 Qed.
 Lemma is_Rbar_mult_p_infty_neg (x : Rbar) :
-  Rbar_lt x 0 -> is_Rbar_mult +oo x -oo.
+  Rbar_lt x 0 -> is_Rbar_mult p_infty x m_infty.
 Proof.
   case: x => [x | | ] // Hx.
   unfold is_Rbar_mult, Rbar_mult'.
   case: Rle_dec (Rlt_not_le _ _ Hx) => // Hx' _.
 Qed.
 Lemma is_Rbar_mult_m_infty_pos (x : Rbar) :
-  Rbar_lt 0 x -> is_Rbar_mult -oo x -oo.
+  Rbar_lt 0 x -> is_Rbar_mult m_infty x m_infty.
 Proof.
   case: x => [x | | ] // Hx.
   unfold is_Rbar_mult, Rbar_mult'.
@@ -784,7 +781,7 @@ Proof.
   now case: Rle_lt_or_eq_dec (Rlt_not_eq _ _ Hx).
 Qed.
 Lemma is_Rbar_mult_m_infty_neg (x : Rbar) :
-  Rbar_lt x 0 -> is_Rbar_mult -oo x +oo.
+  Rbar_lt x 0 -> is_Rbar_mult m_infty x p_infty.
 Proof.
   case: x => [x | | ] // Hx.
   unfold is_Rbar_mult, Rbar_mult'.
@@ -794,13 +791,13 @@ Qed.
 (** Rbar_div *)
 
 Lemma is_Rbar_div_p_infty (x : R) :
-  is_Rbar_div x +oo 0.
+  is_Rbar_div x p_infty 0.
 Proof.
   apply (f_equal (@Some _)).
   by rewrite Rmult_0_r.
 Qed.
 Lemma is_Rbar_div_m_infty (x : R) :
-  is_Rbar_div x -oo 0.
+  is_Rbar_div x m_infty 0.
 Proof.
   apply (f_equal (@Some _)).
   by rewrite Rmult_0_r.
@@ -873,8 +870,8 @@ Qed.
 
 Definition Rbar_min (x y : Rbar) : Rbar :=
   match x, y with
-  | z, +oo | +oo, z => z
-  | _ , -oo | -oo, _ => -oo
+  | z, p_infty | p_infty, z => z
+  | _ , m_infty | m_infty, _ => m_infty
   | Finite x, Finite y => Rmin x y
   end.
 
@@ -904,7 +901,7 @@ Proof.
   exists (mkposreal _ Hb) => y /= Hy ; split => //.
   apply Rplus_lt_reg_r with (-x).
   by apply (Rabs_lt_between (y - x)).
-  exists [posreal of 1] ; by split.
+  exists (mkposreal _ Rlt_0_1) ; by split.
 Qed.
 
 Lemma Rbar_min_comm (x y : Rbar) : Rbar_min x y = Rbar_min y x.
@@ -950,7 +947,7 @@ Qed.
 Definition Rbar_abs (x : Rbar) :=
   match x with
     | Finite x => Finite (Rabs x)
-    | _ => +oo
+    | _ => p_infty
   end.
 
 Lemma Rbar_abs_lt_between (x y : Rbar) :

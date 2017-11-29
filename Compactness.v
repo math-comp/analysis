@@ -176,7 +176,7 @@ specialize (IHn a' b' (fun x' => delta (y,x'))).
 contradict IHn.
 contradict IHn.
 destruct IHn as (l, Hl).
-set (d := fold_right (fun t acc => mkposreal _ (Rmin_stable_in_posreal (delta (y,t)) acc)) [posreal of 1] l).
+set (d := fold_right (fun t acc => mkposreal _ (Rmin_stable_in_posreal (delta (y,t)) acc)) (mkposreal _ Rlt_0_1) l).
 assert (Hd: 0 < d/2).
 apply Fourier_util.Rlt_mult_inv_pos.
 apply cond_pos.
@@ -318,7 +318,7 @@ apply Rnot_le_lt.
 intros Hd3.
 apply (compactness_list n a b delta).
 intros (l,Hl).
-set (v := fold_right (fun t acc => mkposreal _ (Rmin_stable_in_posreal (delta t) acc)) [posreal of 1] l).
+set (v := fold_right (fun t acc => mkposreal _ (Rmin_stable_in_posreal (delta t) acc)) (mkposreal _ Rlt_0_1) l).
 apply (Rlt_not_le _ _ (cond_pos v)).
 apply Rle_trans with (2 := Hd3).
 apply Hd1.

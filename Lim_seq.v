@@ -33,7 +33,7 @@ From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
 From SsrReals Require Import boolp.
 Require Import Rstruct.
 
-Require Import compatibility set.
+Require Import compatibility set R_ext.
 
 (** This file describes properties and definitions about limits of
 real sequences. This includes properties about the predicates

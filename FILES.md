@@ -18,7 +18,7 @@
 - `Derive.v`
 - `Lim_seq`.v
 
-## Files from Coquelicot (unchanged, provided for convenience):
+## Files from Coquelicot 3.0.1 (unchanged, provided for convenience):
 - `Compactness.v`
 - `Iter.v`
 - `Lub.v`

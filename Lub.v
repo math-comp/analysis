@@ -92,10 +92,10 @@ Lemma is_lb_Rbar_dec (E : R -> Prop) :
   {l : R | is_lb_Rbar E l} + {(forall l : R, ~is_lb_Rbar E l)}.
 Proof.
   destruct (is_ub_Rbar_dec (fun x => E (- x))) as [ [l Hl] | Hl ].
-  left ; exists (real (Rbar_opp l)).
+  left ; exists (Rbar_opp l).
   by apply is_ub_Rbar_opp ; rewrite (Rbar_opp_involutive l).
   right => l.
-  specialize (Hl (real (Rbar_opp l))).
+  specialize (Hl (Rbar_opp l)).
   contradict Hl.
   by apply (is_ub_Rbar_opp E l).
 Qed.
@@ -154,8 +154,8 @@ Qed.
 Lemma ex_lub_Rbar (E : R -> Prop) : {l : Rbar | is_lub_Rbar E l}.
 Proof.
   destruct (is_ub_Rbar_dec E)  as [[M HM] | HM] ; first last.
-(* sup = +oo *)
-  exists +oo ; split.
+(* sup = p_infty *)
+  exists p_infty ; split.
   by [].
   case => [l | | ] // Hl.
   by specialize (HM l).
@@ -221,7 +221,7 @@ rename E into F.
     specialize (Hn n).
     case: (Req_dec (u n) (- INR n)) => // H.
     clear Hn.
-  exists -oo ; split => // x Hx.
+  exists m_infty ; split => // x Hx.
   destruct (nfloor_ex (Rmax 0 (- x))) as [n Hn].
   by apply Rmax_l.
   specialize (H (S n)).
@@ -359,13 +359,13 @@ Proof.
 Qed.
 
 Lemma is_ub_Rbar_correct (E : R -> Prop) (l : Rbar) :
-  is_ub_Rbar E l <-> Rbar_is_upper_bound (fun x => is_finite x /\ E (real x)) l.
+  is_ub_Rbar E l <-> Rbar_is_upper_bound (fun x => is_finite x /\ E x) l.
 Proof.
   split => [H x [<- Hx] | H x Hx] ; apply H => // ;
   by exists x.
 Qed.
 Lemma is_lb_Rbar_correct (E : R -> Prop) (l : Rbar) :
-  is_lb_Rbar E l <-> Rbar_is_lower_bound (fun x => is_finite x /\ E (real x)) l.
+  is_lb_Rbar E l <-> Rbar_is_lower_bound (fun x => is_finite x /\ E x) l.
 Proof.
   split => [H x [<- Hx] | H x Hx] ; apply H => // ;
   by exists x.
@@ -374,12 +374,12 @@ Qed.
 (** Basic properties *)
 
 Lemma Rbar_ub_p_infty (E : Rbar -> Prop) :
-  Rbar_is_upper_bound E +oo.
+  Rbar_is_upper_bound E p_infty.
 Proof.
   now intros [x| |] Hx.
 Qed.
 Lemma Rbar_lb_m_infty (E : Rbar -> Prop) :
-  Rbar_is_lower_bound E -oo.
+  Rbar_is_lower_bound E m_infty.
 Proof.
   easy.
 Qed.
@@ -401,13 +401,13 @@ Proof.
 Qed.
 
 Lemma Rbar_ub_m_infty (E : Rbar -> Prop) :
-  Rbar_is_upper_bound E -oo -> forall x, E x -> x = -oo.
+  Rbar_is_upper_bound E m_infty -> forall x, E x -> x = m_infty.
 Proof.
   intros H [x| |] Hx ;
   now specialize (H _ Hx).
 Qed.
 Lemma Rbar_lb_p_infty (E : Rbar -> Prop) :
-  Rbar_is_lower_bound E +oo -> (forall x, E x -> x = +oo).
+  Rbar_is_lower_bound E p_infty -> (forall x, E x -> x = p_infty).
 Proof.
   intros H x ;
   case x ; auto ; clear x ; [intros x| ] ; intros Hx.
@@ -430,7 +430,7 @@ Qed.
 
 (** Decidability *)
 
-Lemma Rbar_ub_dec (E : Rbar -> Prop) (Hp : ~ E +oo) :
+Lemma Rbar_ub_dec (E : Rbar -> Prop) (Hp : ~ E p_infty) :
   {M : R | Rbar_is_upper_bound E M}
     + {(forall (M : R), ~Rbar_is_upper_bound E M)}.
 Proof.
@@ -442,7 +442,7 @@ Proof.
   contradict HM => x Hx.
   by apply HM.
 Qed.
-Lemma Rbar_lb_dec (E : Rbar -> Prop) (Hm : ~ E -oo) :
+Lemma Rbar_lb_dec (E : Rbar -> Prop) (Hm : ~ E m_infty) :
   {M : R | Rbar_is_lower_bound E (Finite M)}
     + {(forall M, ~Rbar_is_lower_bound E (Finite M))}.
 Proof.
@@ -501,14 +501,14 @@ Proof.
 Qed.
 
 Lemma is_lub_Rbar_correct (E : R -> Prop) (l : Rbar) :
-  is_lub_Rbar E l <-> Rbar_is_lub (fun x => is_finite x /\ E (real x)) l.
+  is_lub_Rbar E l <-> Rbar_is_lub (fun x => is_finite x /\ E x) l.
 Proof.
   split => [[Hub Hlub]|[Hub Hlub]].
   split ; [ | move => b Hb ; apply Hlub ] ; by apply is_ub_Rbar_correct.
   split ; [ | move => b Hb ; apply Hlub ] ; by apply is_ub_Rbar_correct.
 Qed.
 Lemma is_glb_Rbar_correct (E : R -> Prop) (l : Rbar) :
-  is_glb_Rbar E l <-> Rbar_is_glb (fun x => is_finite x /\ E (real x)) l.
+  is_glb_Rbar E l <-> Rbar_is_glb (fun x => is_finite x /\ E x) l.
 Proof.
   split => [[Hub Hlub]|[Hub Hlub]].
   split ; [ | move => b Hb ; apply Hlub ] ; by apply is_lb_Rbar_correct.
@@ -518,8 +518,8 @@ Qed.
 Lemma Rbar_ex_lub (E : Rbar -> Prop) :
   {l : Rbar | Rbar_is_lub E l}.
 Proof.
-  destruct (EM_dec (E +oo)) as [Hp|Hp].
-  exists +oo ; split.
+  destruct (EM_dec (E p_infty)) as [Hp|Hp].
+  exists p_infty ; split.
   by case.
   intros b Hb.
   apply Rbar_not_lt_le.
@@ -766,7 +766,7 @@ Qed.
 Lemma uniqueness_dec P : (exists ! x : R, P x) -> {x : R | P x}.
 Proof.
   move => H.
-  exists (real (Lub_Rbar P)).
+  exists (Lub_Rbar P).
   case: H => x Hx.
   replace (real (Lub_Rbar P)) with (real (Finite x)).
   by apply Hx.

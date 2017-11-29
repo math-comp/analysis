@@ -4,7 +4,7 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 Require Import Rcomplements Rbar Markov Iter Lub.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
 From SsrReals Require Import boolp reals.
-Require Import Rstruct set.
+Require Import Rstruct set R_ext.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -2475,9 +2475,8 @@ Canonical R_completeType := CompleteType R R_complete.
 Canonical R_NormedModule := [normedModType R of R^o].
 Canonical R_CompleteNormedModule := [completeNormedModType R of R^o].
 
-(* :TODO: FIXME Rlt *)
-Definition at_left x := within (fun u : R => Rlt u x) (locally x).
-Definition at_right x := within (fun u : R => Rlt x u) (locally x).
+Definition at_left x := within (fun u : R => u < x) (locally x).
+Definition at_right x := within (fun u : R => x < u) (locally x).
 (* :TODO: We should have filter notation ^- and ^+ for these *)
 
 Global Instance at_right_proper_filter : forall (x : R),
@@ -2486,12 +2485,10 @@ Proof.
 move=> x.
 constructor; last by apply within_filter, locally_filter.
 case=> d /(_ (x + pos d / 2%:R)).
-apply; last by apply/RltP; rewrite ltr_addl.
+apply; last by rewrite ltr_addl.
 apply sub_abs_ball.
-rewrite opprD !addrA subrr add0r absrN.
-rewrite absRE normf_div !ger0_norm //.
-rewrite ltr_pdivr_mulr // ltr_pmulr //.
-by rewrite (_ : 1 = 1%:R) // ltr_nat.
+rewrite opprD !addrA subrr add0r absrN absRE normf_div !ger0_norm //.
+by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
 
 Global Instance at_left_proper_filter : forall (x : R),
@@ -2499,12 +2496,10 @@ Global Instance at_left_proper_filter : forall (x : R),
 move=> x.
 constructor; last by apply within_filter, locally_filter.
 case=> d /(_ (x - pos d / 2%:R)).
-apply; last by apply/RltP; rewrite ltr_subl_addl ltr_addr.
+apply; last by rewrite ltr_subl_addl ltr_addr.
 apply sub_abs_ball.
-rewrite opprD !addrA subrr add0r opprK.
-rewrite absRE normf_div !ger0_norm //.
-rewrite ltr_pdivr_mulr // ltr_pmulr //.
-by rewrite (_ : 1 = 1%:R) // ltr_nat.
+rewrite opprD !addrA subrr add0r opprK absRE normf_div !ger0_norm //.
+by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
 
 (** Continuity of norm *)
