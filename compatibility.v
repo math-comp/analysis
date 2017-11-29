@@ -649,6 +649,22 @@ Proof. exact: filterlim_plus. Qed.
 Definition filterlim {T U : Type} (f : T -> U) (F : set (set T)) (G : set (set U)) :=
   f @ F --> G.
 
+Lemma filterlim_ext_loc : forall {T U F G} {FF : Filter F} (f g : T -> U),
+  F (fun x => f x = g x) ->
+  filterlim f F G ->
+  filterlim g F G.
+Proof.
+move=> T U F G FF f g HF H1 H2; exact: (@filterlim_ext_loc T U F G FF f g).
+Qed.
+
+Lemma filterlim_ext : forall {T U F G} {FF : Filter F} (f g : T -> U),
+  (forall x, f x = g x) ->
+  filterlim f F G ->
+  filterlim g F G.
+Proof.
+move=> T U F G FF f g HF H1 H2; exact: (@filterlim_ext T U F G FF f g).
+Qed.
+
 Definition is_lim_seq (u : nat -> R) (x : Rbar) := u --> x.
 
 Lemma ballE (l : R) (e : R(*posreal*)) : ball l e = (fun y => R_dist y l < e).
