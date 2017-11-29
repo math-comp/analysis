@@ -2,7 +2,7 @@
 
 ## Requirements
 - [Mathematical Components development version](https://github.com/math-comp/math-comp)
-- [Coq Alternate Reals library](https://github.com/strub/coq-alternate-reals)
+- Our fork of [Coq Alternate Reals library](https://github.com/CohenCyril/coq-alternate-reals)
 
 ## Instructions
 Type `make` to use the provided `Makefile`.
