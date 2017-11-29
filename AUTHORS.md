@@ -1,6 +1,6 @@
 # Authors of the cara library
 
-- Reynald Affeldt, AIST
+- Reynald Affeldt, AIST (National Institute of Advanced Industrial Science and Technology, Japan)
 - Cyril Cohen, Inria
 - Damien Rouhling, Inria
 
