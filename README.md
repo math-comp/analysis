@@ -31,8 +31,9 @@ see FILES.txt
   https://coq.inria.fr/
 * The Mathematical Components library
   https://github.com/math-comp/math-comp
-* The coq-alternate-reals library
-  https://github.com/strub/coq-alternate-reals
+* Our fork of the coq-alternate-reals library 
+  https://github.com/CohenCyril/coq-alternate-reals
+  (forked from https://github.com/strub/coq-alternate-reals)
 
 ## Installation Procedure
 
