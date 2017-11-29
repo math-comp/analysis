@@ -649,6 +649,8 @@ Proof. exact: filterlim_plus. Qed.
 Definition filterlim {T U : Type} (f : T -> U) (F : set (set T)) (G : set (set U)) :=
   f @ F --> G.
 
+Definition is_lim_seq (u : nat -> R) (x : Rbar) := u --> x.
+
 Lemma ballE (l : R) (e : R(*posreal*)) : ball l e = (fun y => R_dist y l < e).
 Proof.
 rewrite funeqE => x; rewrite propeqE.
