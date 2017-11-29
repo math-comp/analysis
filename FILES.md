@@ -28,6 +28,6 @@
 - `Rcomplements.v`
 
 ## Other files
-- `Rstruct.v` from CoqApprox, with contributions from Sophie Bernard, from her repository (https://github.com/Sobernard/Struct/blob/master/Rstruct.v).
+- `Rstruct.v` from CoqApprox, with contributions from Sophie Bernard, from her repository (https://github.com/Sobernard/Struct/blob/master/Rstruct.v), and modified to instanciate structures from coq-alternate-reals.
 
 
