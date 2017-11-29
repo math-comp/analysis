@@ -856,3 +856,34 @@ Proof.
   exact (MetricBall_fct IHn).
 Defined.
 *)
+
+(* NB: eventually already defined in hierarchy.v with scope %N *)
+Definition eventually (P : nat -> Prop) :=
+  exists N : nat, forall n, (N <= n)%coq_nat -> P n.
+
+Lemma eventuallyE (P : nat -> Prop) : eventually P = hierarchy.eventually P.
+Proof. rewrite propeqE; split => -[n Hn]; exists n => m /leP; by apply Hn. Qed.
+
+Global Instance eventually_filter_compat : ProperFilter eventually.
+Proof.
+case: (eventually_filter) => H [H1 H2 H3]; constructor.
+by rewrite eventuallyE.
+constructor.
+by rewrite eventuallyE.
+move=> P Q; rewrite !eventuallyE; by apply H2.
+move=> P Q; rewrite !eventuallyE; by apply H3.
+Qed.
+
+Canonical eventually_filter_source_compat X :=
+  @CanonicalFilterSource X _ nat (fun f => f @ eventually).
+(* TODO: projection ignored because redundant with eventually_filter_source from hierarchy *)
+
+Global Instance filtermap_eventually_filter_compat (u : nat -> R) : Filter (fun P : set R =>
+  exists N : nat, forall n : nat, is_true (N <= n)%N -> (u @^-1` P) n).
+Proof.
+move: (@filtermap_filter _ _ u _ (@filter_filter' _ _ eventually_filter_compat)).
+case => /=; rewrite !eventuallyE => H1 H2 H3.
+constructor => // P Q.
+by move: (H2 P Q); rewrite !eventuallyE.
+by move: (H3 P Q); rewrite !eventuallyE.
+Qed.

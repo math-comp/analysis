@@ -1225,11 +1225,25 @@ Lemma is_lim_seq_Reals (u : nat -> R) (l : R) :
 Proof.
   split => Hl.
   move => e He.
+  rewrite -/(eventually _) eventuallyE.
+(* TODO:
+I added this to get back to the eventually defined in %coq_nat.
+Without this, we have the following error message:
+
+Unable to unify "[filter of u] (fun y : R => R_dist y l < e)" with
+"exists N : nat, forall n : nat, (n >= N)%coq_nat -> R_dist (u n) l < e".
+
+This seems to be because Coq uses the Canonical structure
+"eventually_filter_source" from hierarchy.v (for eventually defined in %N),
+the one defined in compatibility.v is not taken into account because of redundancy.
+
+*)
   apply (Hl (fun y => R_dist y l < e)).
   by exists (mkposreal _ He) => ?; rewrite ballE.
   change (Rbar_locally l) with (locally l).
   apply/filterlim_locally => -[e He].
   case: (Hl e He) => {Hl} /= N Hl.
+  rewrite -eventuallyE.
   exists N => n Hn.
   by move: (Hl n Hn); rewrite (_ : e = pos (mkposreal _ He)) // ballE.
 Qed.
@@ -1242,12 +1256,13 @@ Proof.
   split => Hl.
   move => M.
   case: (Hl (fun x => M < x)) => {Hl} [ | N Hl].
-  by exists M => xa /Rstruct.RltP.
-  by exists N.
+  by exists M => ? /Rstruct.RltP.
+  by exists N => n /ssrnat.leP; apply Hl.
   move => P [M HP].
   eapply filter_imp.
   by apply: HP.
   case: (Hl M) => {Hl} N HN.
+  rewrite /= -eventuallyE.
   by exists N => ? ?; apply/Rstruct.RltP/HN.
 Qed.
 
@@ -1262,9 +1277,9 @@ Proof.
   move => N0.
   exists (N + N0)%nat ; split.
   by apply le_plus_r.
-  by apply Rabs_lt_between', Hu, le_plus_l.
+  apply Rabs_lt_between', Hu(*, le_plus_l,*); by rewrite leq_addr.
   exists N => n Hn.
-  by apply Rabs_lt_between', Hu.
+  apply Rabs_lt_between', Hu; by apply/leP.
   move => M N0.
   (*case: (Hu M) => {Hu} N Hu.*)
   move/is_lim_seq_p_infty_Reals : Hu => /(_ M) [N Hu].
@@ -1332,7 +1347,7 @@ Qed.
 Lemma is_lim_seq_ext_loc (u v : nat -> R) (l : Rbar) :
   eventually (fun n => u n = v n) ->
   u --> l -> v --> l.
-Proof. exact: filterlim_ext_loc. Qed.
+Proof. rewrite eventuallyE; exact: filterlim_ext_loc. Qed.
 
 Lemma ex_lim_seq_ext_loc (u v : nat -> R) :
   eventually (fun n => u n = v n) ->
@@ -1554,12 +1569,15 @@ Lemma eventually_subseq_loc :
   eventually (fun n => (phi n < phi (S n))%coq_nat) ->
   phi --> \oo.
 Proof.
-intros phi [M Hphi] P [N HP].
+intros phi.
+rewrite eventuallyE.
+intros [M Hphi] P [N HP].
 exists (N+M)%nat.
 intros n Hn.
 apply HP.
+apply/leP.
 apply plus_le_reg_l with M.
-rewrite Arith.Plus.plus_comm ; apply le_trans with (1:=Hn).
+rewrite Arith.Plus.plus_comm ; move/leP in Hn; apply le_trans with (1:=Hn).
 apply le_trans with (1:=le_plus_r (phi M) _).
 assert (H:(forall x, M+phi M + x <= M+phi (x+M))%coq_nat).
 induction x as [|x IH].
@@ -1570,6 +1588,7 @@ apply lt_le_S.
 apply le_lt_trans with (1:=IH).
 apply plus_lt_compat_l.
 apply Hphi.
+apply/leP.
 apply le_plus_r.
 assert (M <= n)%coq_nat.
 apply le_trans with (2:=Hn); apply le_plus_r.
@@ -1629,11 +1648,15 @@ split ; intros H P HP ; destruct (H P HP) as [N HN].
 - exists N.
   intros n Hn.
   apply HN.
+  move/leP in Hn.
+  apply/leP.
   now apply le_S.
 - exists (S N).
   intros n Hn.
   destruct n as [|n] ; try easy.
   apply HN.
+  apply/leP.
+  move/ltP in Hn.
   now apply le_S_n.
 Qed.
 Lemma ex_lim_seq_incr_1 (u : nat -> R) :
@@ -1896,7 +1919,7 @@ Lemma is_lim_seq_le_loc (u v : nat -> R) (l1 l2 : Rbar) :
   eventually (fun n => u n <= v n) ->
   u --> l1 -> v --> l2 ->
   Rbar_le l1 l2.
-Proof. exact: filterlim_le. Qed.
+Proof. rewrite eventuallyE; exact: filterlim_le. Qed.
 Lemma Lim_seq_le_loc (u v : nat -> R) :
   eventually (fun n => u n <= v n) ->
   Rbar_le (Lim_seq u) (Lim_seq v).
@@ -2000,7 +2023,7 @@ Qed.
 
 Lemma is_lim_seq_le_le_loc (u v w : nat -> R) (l : Rbar) :
   eventually (fun n => u n <= v n <= w n) -> u --> l -> w --> l -> v --> l.
-Proof. exact: filterlim_le_le. Qed.
+Proof. rewrite eventuallyE; exact: filterlim_le_le. Qed.
 
 Lemma is_lim_seq_le_le (u v w : nat -> R) (l : Rbar) :
   (forall n, u n <= v n <= w n) -> u --> l -> w --> l -> v --> l.
@@ -2014,13 +2037,13 @@ Lemma is_lim_seq_le_p_loc (u v : nat -> R) :
   eventually (fun n => u n <= v n) ->
   u --> +oo ->
   v --> +oo.
-Proof. exact: filterlim_ge_p_infty. Qed.
+Proof. rewrite eventuallyE; exact: filterlim_ge_p_infty. Qed.
 
 Lemma is_lim_seq_le_m_loc (u v : nat -> R) :
   eventually (fun n => v n <= u n) ->
   u --> -oo ->
   v --> -oo.
-Proof. exact: filterlim_le_m_infty. Qed.
+Proof. rewrite eventuallyE; exact: filterlim_le_m_infty. Qed.
 
 Lemma is_lim_seq_decr_compare (u : nat -> R) (l : R) :
   u --> l ->

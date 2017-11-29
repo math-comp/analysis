@@ -2370,20 +2370,19 @@ Qed.
 
 (* :TODO: FIXME *)
 Definition eventually (P : nat -> Prop) :=
-  exists N : nat, forall n, (N <= n)%coq_nat -> P n.
+  exists N : nat, forall n, (N <= n)%N -> P n.
 
 Notation "'\oo'" := eventually : classical_set_scope.
 
 Global Instance eventually_filter : ProperFilter eventually.
 Proof.
-constructor.
-  by case => n; apply; apply le_refl.
+constructor; first by case=> n; apply; apply leqnn.
 constructor.
 - by exists O.
 - move=> P Q [NP HP] [NQ HQ].
-  exists (max NP NQ) => n Hn; split.
-  by apply/HP/(le_trans _ _ _ _ Hn)/Max.le_max_l.
-  by apply/HQ/(le_trans _ _ _ _ Hn)/Max.le_max_r.
+  exists (maxn NP NQ) => n Hn; split.
+  by apply/HP/(leq_trans _ Hn)/leq_maxl.
+  by apply/HQ/(leq_trans _ Hn)/leq_maxr.
 - by move=> P Q H [NP HP]; exists NP => n Hn; apply/H/HP.
 Qed.
 
@@ -2556,7 +2555,7 @@ have {Ha}H : exists x : R, (fun n => `|[a n]|) --> x.
   case: Ha => [l Hl].
   exists `|[ l ]|; exact: (filterlim_comp Hl (@filterlim_norm _ _ _)).
 case: (LPO_ub_dec (fun n => norm (a n))) => [[M HM] | HM].
-exists M => n; by apply/RleP.
+  exists M => n; by apply/RleP.
 exfalso.
 case: H => l Hl.
 have {Hl} := proj1 (@filterlim_locally _ _ _ l) Hl [posreal of 1].
@@ -2565,13 +2564,13 @@ move: (HM (seq.foldr Num.max (1 + l) (seq.map (fun n => `|[a n]|) (seq.iota 0 N)
 case => [n].
 move/RltP; apply/negP; rewrite -lerNgt.
 elim: N a n HN => /=[ |N IH] a n HN.
-  move: (HN n (le_0_n _)).
+  move: (HN n (leq0n _)).
   rewrite ltr_distl => /andP[].
   by rewrite ltr_subl_addl => ? _; apply/ltrW.
 case: n => [ | n]; first by rewrite ler_maxr lerr.
 rewrite ler_maxr; apply/orP; right.
 eapply ler_trans.
-  apply (IH (fun n => a n.+1)) => k Hk; by apply/HN/le_n_S.
+  apply (IH (fun n => a n.+1)) => k Hk; by apply/HN.
 rewrite {HN n IH}.
 rewrite ler_eqVlt; apply/orP; left; apply/eqP.
 by elim: N 0%nat => /=[// |N IH] n0; rewrite IH.
@@ -2972,25 +2971,25 @@ move=> P; rewrite /Rbar_loc_seq.
 case: x => /= [x | | ] [delta Hp].
 - (* x \in R *)
   case: (nfloor_ex (/delta)) => [ | N [_ /RltP HN]].
-  by apply Rlt_le, Rinv_0_lt_compat, delta.
+    by apply Rlt_le, Rinv_0_lt_compat, delta.
   exists N => n Hn.
   apply Hp => /=.
-  rewrite /ball /= /AbsRing_ball.
-  rewrite INRE (_ : n%:R + _ = n.+1%:R); last by rewrite -addn1 natrD.
-  rewrite opprD addrA subrr add0r absrN absRE ger0_norm //.
-  rewrite -(invrK (pos delta)) ltr_pinv; last 2 first.
-    by rewrite inE ltr0n andbT unitfE.
-    by rewrite !inE unitfE gtr_eqF /= invr_gt0.
-  move: HN; rewrite RinvE // RplusE => /ltr_le_trans; apply.
-  rewrite -addn1 natrD ler_add // INRE // ler_nat; by apply/leP.
+    rewrite /ball /= /AbsRing_ball.
+    rewrite INRE (_ : n%:R + _ = n.+1%:R); last by rewrite -addn1 natrD.
+    rewrite opprD addrA subrr add0r absrN absRE ger0_norm //.
+    rewrite -(invrK (pos delta)) ltr_pinv; last 2 first.
+      by rewrite inE ltr0n andbT unitfE.
+      by rewrite !inE unitfE gtr_eqF /= invr_gt0.
+    move: HN; rewrite RinvE // RplusE => /ltr_le_trans; apply.
+    by rewrite -addn1 natrD ler_add // INRE // ler_nat.
   move/eqP.
   rewrite eq_sym addrC -subr_eq subrr eq_sym INRE.
   rewrite (_ : n%:R + 1 = n.+1%:R); last by rewrite -addn1 natrD.
   by rewrite invr_eq0 pnatr_eq0.
 - (* x = +oo *)
   case: (nfloor_ex (Num.max 0 delta)) => [ | N [_ /RltP HN]].
-  by apply/RleP; rewrite ler_maxr lerr.
-  exists N.+1 => n /leP.
+    by apply/RleP; rewrite ler_maxr lerr.
+  exists N.+1 => n.
   rewrite -(@ler_nat [numDomainType of R]) => Hn.
   apply Hp.
   move: HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN.
@@ -2998,8 +2997,8 @@ case: x => /= [x | | ] [delta Hp].
   by rewrite ler_maxr lerr orbT.
 - (* x = -oo *)
   case: (nfloor_ex (Num.max 0 (-delta))) => [ | N [_ /RltP HN]].
-  by apply/RleP; rewrite ler_maxr lerr.
-  exists N.+1 => n /leP.
+    by apply/RleP; rewrite ler_maxr lerr.
+  exists N.+1 => n.
   rewrite -(@ler_nat [numDomainType of R]) => Hn.
   apply Hp.
   move: HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN.

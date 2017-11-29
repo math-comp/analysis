@@ -152,6 +152,7 @@ Lemma is_lim_comp_seq (f : R -> R) (u : nat -> R) (x l : Rbar) :
   u --> x -> (fun n => f (u n)) --> l.
 Proof.
 intros Lf Hu Lu.
+rewrite eventuallyE in Hu.
 exact (is_lim_comp' u f x l Lu Lf Hu).
 Qed.
 
@@ -230,6 +231,7 @@ Proof.
   move => H.
   apply sym_eq.
   apply Lim_seq_ext_loc.
+  rewrite eventuallyE.
   apply: filterlim_Rbar_loc_seq H.
 Qed.
 
