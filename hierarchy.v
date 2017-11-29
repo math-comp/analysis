@@ -3072,3 +3072,19 @@ Lemma locally_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
   locally (f x) P -> continuity_pt f x ->
   {near x, forall x, P (f x)}.
 Proof. by move=> Lf /continuity_pt_filterlim; apply. Qed.
+
+From mathcomp Require Import fintype bigop finmap.
+Local Open Scope fset_scope.
+
+Definition sum {I : choiceType} {R : zmodType} 
+  (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
+
+Definition totally {I : choiceType} : set (set {fset I}) :=
+  filter_from (fun A : {fset I} => [set B | A `<=` B]).
+Canonical totally_filter_source {I : choiceType} X :=
+  @CanonicalFilterSource X _ {fset I} (fun f => f @ totally).
+
+Definition psum (I : choiceType) {K : absRingType} {R : normedModType K} (x : I -> R) := lim [filter of sum x].
+
+
+
