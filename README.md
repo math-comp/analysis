@@ -22,7 +22,7 @@ see [AUTHORS.md](AUTHORS.md)
 
 ## Files
 
-see [FILES.txt](FILES.txt)
+see [FILES.txt](FILES.md)
 
 ## Requirements
 
