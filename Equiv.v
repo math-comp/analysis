@@ -48,7 +48,7 @@ Lemma domin_antisym {T} {K : AbsRing} {V : NormedModule K} :
   F (fun x => norm (f x) <> 0) -> ~ is_domin F f f.
 Proof.
 intros F FF f Hf H.
-move: (H [posreal of /2]) => {H} /= H.
+move: (H (pos_div_2 (mkposreal _ Rlt_0_1))) => {H} /= H.
 apply filter_const.
 generalize (filter_and _ _ H Hf) => {H Hf}.
 apply filter_imp.
@@ -86,7 +86,7 @@ Lemma equiv_le_2 {T} {K : AbsRing} {V : NormedModule K}
 Proof.
   intros H.
   apply filter_and.
-  - move: (H [posreal of /2]) => {H}.
+  - move: (H (pos_div_2 (mkposreal _ Rlt_0_1))) => {H}.
     apply filter_imp => x /= H.
     apply Rle_trans with (1 := norm_triangle_inv _ _) in H.
     rewrite -Ropp_minus_distr Rabs_Ropp in H.
@@ -96,7 +96,7 @@ Proof.
     apply Rle_div_l in H.
     by rewrite Rmult_comm.
     by apply Rlt_0_2.
-  - move: (H [posreal of 1]) => {H}.
+  - move: (H (mkposreal _ Rlt_0_1)) => {H}.
     apply filter_imp => x /= H.
     apply Rle_trans with (1 := norm_triangle_inv _ _) in H.
     rewrite -Ropp_minus_distr Rabs_Ropp in H.
@@ -117,7 +117,7 @@ Proof.
     move => /= x Hx.
     by apply Hx.
   clear Hf ; rename H into Hf.
-  specialize (Hg [posreal of eps / 2]).
+  specialize (Hg (pos_div_2 eps)).
   generalize (filter_and _ _ Hf Hg) ; clear -FF.
   apply filter_imp => x /= [Hf Hg].
   apply Rle_trans with (1 := Hg).
@@ -141,7 +141,7 @@ Proof.
     move => /= x Hx.
     by apply Hx.
   clear Hg ; rename H into Hg.
-  specialize (Hf [posreal of eps / 2]).
+  specialize (Hf (pos_div_2 eps)).
   generalize (filter_and _ _ Hf Hg) ; clear -FF.
   apply filter_imp => x /= [Hf Hg].
   apply Rle_trans with (1 := Hg).
@@ -175,14 +175,14 @@ Lemma equiv_sym :
 Proof.
   intros F FF f g H eps.
   assert (H0 := equiv_le_2 _ _ _ H).
-  specialize (H [posreal of eps / 2]).
+  specialize (H (pos_div_2 eps)).
   generalize (filter_and _ _ H H0) ; apply filter_imp ;
   clear => x [H [H0 H1]].
   rewrite -norm_opp /minus opp_plus opp_opp plus_comm.
   apply Rle_trans with (1 := H) ; simpl.
   eapply Rle_trans.
   apply Rmult_le_compat_l.
-  by apply Rlt_le.
+  by apply Rlt_le, is_pos_div_2.
   by apply H0.
   apply Req_le ; field.
 Qed.
@@ -195,7 +195,7 @@ Proof.
   apply (fun c => domin_rw_l _ _ c Hgh).
   intros eps.
   apply equiv_sym in Hgh.
-  generalize (filter_and _ _ (Hfg [posreal of eps / 2]) (Hgh [posreal of eps / 2])) => {Hfg Hgh}.
+  generalize (filter_and _ _ (Hfg (pos_div_2 eps)) (Hgh (pos_div_2 eps))) => {Hfg Hgh}.
   apply filter_imp => x /= [Hfg Hgh].
   replace (minus (h x) (f x)) with (plus (minus (g x) (f x)) (opp (minus (g x) (h x)))).
   eapply Rle_trans. 1 : by apply @norm_triangle.
@@ -344,7 +344,7 @@ Lemma domin_plus :
   is_domin F f g1 -> is_domin F f g2 -> is_domin F f (fun x => plus (g1 x) (g2 x)).
 Proof.
   intros F FF f g1 g2 Hg1 Hg2 eps.
-  generalize (filter_and _ _ (Hg1 [posreal of eps / 2]) (Hg2 [posreal of eps / 2]))
+  generalize (filter_and _ _ (Hg1 (pos_div_2 eps)) (Hg2 (pos_div_2 eps)))
     => /= {Hg1 Hg2}.
   apply filter_imp => x [Hg1 Hg2].
   eapply Rle_trans.
@@ -447,7 +447,7 @@ Lemma domin_inv :
 Proof.
   intros T F FF f g Hg H eps.
   have Hf : F (fun x => f x <> 0).
-    generalize (filter_and _ _ Hg (H [posreal of 1])) => /=.
+    generalize (filter_and _ _ Hg (H (mkposreal _ Rlt_0_1))) => /=.
     apply filter_imp => x {Hg H} [Hg H].
     case: (Req_dec (f x) 0) => Hf.
     rewrite /norm /= /abs /= -!RabsE Hf Rabs_R0 Rmult_0_r in H.
@@ -494,7 +494,7 @@ Lemma equiv_inv :
 Proof.
   intros T F FF f g Hg H.
   have Hf : F (fun x => f x <> 0).
-    generalize (filter_and _ _ Hg (H [posreal of /2])) => /=.
+    generalize (filter_and _ _ Hg (H (pos_div_2 (mkposreal _ Rlt_0_1)))) => /=.
     apply filter_imp => x {Hg H} [Hg H].
     case: (Req_dec (f x) 0) => Hf //.
     rewrite /minus /plus /opp /= Hf Ropp_0 Rplus_0_r in H.
@@ -522,8 +522,6 @@ Qed.
 
 (** * Domination and composition *)
 
-Local Open Scope classical_set_scope.
-
 Section Domin_comp.
 
 Context {T1 T2 : Type} {Ku Kv : AbsRing}
@@ -532,7 +530,7 @@ Context {T1 T2 : Type} {Ku Kv : AbsRing}
   (G : (T2 -> Prop) -> Prop) {FG : Filter G}.
 
 Lemma domin_comp (f : T2 -> U) (g : T2 -> V) (l : T1 -> T2) :
-  l @ F --> G -> is_domin G f g
+  filterlim l F G -> is_domin G f g
     -> is_domin F (fun t => f (l t)) (fun t => g (l t)).
 Proof.
   intros Hl Hg eps.
@@ -547,20 +545,25 @@ End Domin_comp.
 Lemma filterlim_equiv :
   forall {T} {F : (T -> Prop) -> Prop} {FF : Filter F} (f g : T -> R) (l : Rbar),
   is_equiv F f g ->
-  f @ F --> (Rbar_locally l) ->
-  g @ F --> (Rbar_locally l).
+  filterlim f F (Rbar_locally l) ->
+  filterlim g F (Rbar_locally l).
 Proof.
 intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   apply equiv_sym in Hfg ;
   unfold filtermap.
 - assert (He: 0 < eps / 2 / (Rabs l + 1)).
-  apply Rdiv_lt_0_compat => //.
+  apply Rdiv_lt_0_compat.
+  apply is_pos_div_2.
   apply Rplus_le_lt_0_compat.
   apply Rabs_pos.
   apply Rlt_0_1.
   pose ineqs (y : R) := Rabs (y - l) < eps/2 /\ Rabs y <= Rabs l + 1.
   assert (Hl: Rbar_locally l ineqs).
-  exists [posreal of Rmin (eps / 2) 1].
+  assert (H: 0 < Rmin (eps / 2) 1).
+  apply Rmin_case.
+  apply is_pos_div_2.
+  apply Rlt_0_1.
+  exists (mkposreal _ H).
   simpl.
   intros x Hx.
   split.
@@ -593,8 +596,8 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   apply Rabs_pos.
   apply Rlt_0_1.
 - pose ineq (y : R) := Rmax 0 (2 * eps) < y.
-  assert (Hl: Rbar_locally' +oo ineq).
-  by exists (Rmax 0 (2 * eps)) => ? /Rstruct.RltP.
+  assert (Hl: Rbar_locally' p_infty ineq).
+  now exists (Rmax 0 (2 * eps)) => ? /Rstruct.RltP.
   generalize (filter_and _ (fun (x : T) => ineq (f x)) (Hfg (mkposreal _ pos_half_prf)) (Hf _ Hl)).
   apply: filter_imp.
   simpl.
@@ -615,8 +618,8 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   apply Rle_lt_trans with (2 := H2).
   apply Rmax_l.
 - pose ineq (y : R) := y < Rmin 0 (2 * eps).
-  assert (Hl: Rbar_locally' -oo ineq).
-  by exists (Rmin 0 (2 * eps)) => ? /Rstruct.RltP.
+  assert (Hl: Rbar_locally' m_infty ineq).
+  now exists (Rmin 0 (2 * eps)) => ? /Rstruct.RltP.
   generalize (filter_and _ (fun (x : T) => ineq (f x)) (Hfg (mkposreal _ pos_half_prf)) (Hf _ Hl)).
   apply: filter_imp.
   simpl.

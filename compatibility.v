@@ -646,6 +646,9 @@ Proof. exact: filterlim_opp. Qed.
 Lemma filterlim_plus (K : absRingType) (V : normedModType K) (x y : V) : (z.1 + z.2)%R @[z --> (x, y)] --> (x + y)%R.
 Proof. exact: filterlim_plus. Qed.
 
+Definition filterlim {T U : Type} (f : T -> U) (F : set (set T)) (G : set (set U)) :=
+  f @ F --> G.
+
 Lemma ballE (l : R) (e : R(*posreal*)) : ball l e = (fun y => R_dist y l < e).
 Proof.
 rewrite funeqE => x; rewrite propeqE.
