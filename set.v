@@ -5,22 +5,22 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Definition dep_arrow_eq (T : eqType) (T' : T -> eqType)
-   (f g : forall x : T, T' x) := `[<f = g>].
-Lemma dep_arrow_eqP (T : eqType) (T' : T -> eqType) : Equality.axiom (@dep_arrow_eq T T').
-Proof.
-by move=> f g; apply: (iffP idP) => [/asboolP|->]; last by apply/asboolP.
-Qed.
+Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
+Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
+Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
+Definition gen_eqMixin (T : Type) := EqMixin (@gen_eqP T).
 
-Definition dep_arrow_eqMixin (T : eqType) (T' : T -> eqType) := EqMixin (@dep_arrow_eqP T T').
-Definition dep_arrow_eqType  (T : eqType) (T' : T -> eqType) :=
-  EqType (forall x : T, T' x) (@dep_arrow_eqMixin T T').
-Canonical arrow_eqType (T : eqType) (T' : eqType) :=
-  EqType (T -> T') (@dep_arrow_eqMixin T _).
+Axiom gen_choiceMixin : forall T : Type, Choice.mixin_of T.
 
-Axiom arrow_choiceMixin : forall T T' : Type, Choice.mixin_of (T -> T').
-Canonical arrow_choiceType (T : choiceType) (T' : choiceType) :=
-  ChoiceType (T -> T') (@arrow_choiceMixin T T').
+Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
+  EqType (forall x : T, T' x) (gen_eqMixin _).
+Canonical arrow_eqType (T : Type) (T' : eqType) :=
+  EqType (T -> T') (gen_eqMixin _).
+Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
+  ChoiceType (T -> T') (gen_choiceMixin _).
+
+Canonical Prop_eqType := EqType Prop (gen_eqMixin _).
+Canonical Prop_choiceType := ChoiceType Prop (gen_choiceMixin _).
 
 Reserved Notation "A `&` B"  (at level 48, left associativity).
 Reserved Notation "A `*` B"  (at level 46, left associativity).
@@ -40,6 +40,7 @@ Proof. by rewrite propeqE; split => [] /asboolP. Qed.
 
 Bind Scope classical_set_scope with set.
 Local Open Scope classical_set_scope.
+Delimit Scope classical_set_scope with classic.
 
 Notation "[ 'set' x : T | P ]" := ((fun x => P) : set T)
   (at level 0, x at level 99, only parsing) : classical_set_scope.
@@ -188,36 +189,42 @@ Definition xget {T : choiceType} x0 (P : set T) : T :=
   if pselect (exists x : T, `[<P x>]) isn't left exP then x0
   else projT1 (sigW exP).
 
-Lemma xgetPex {T : choiceType} x0 (P : set T) : (exists x, P x) -> P (xget x0 P).
+CoInductive xget_spec {T : choiceType} x0 (P : set T) : T -> Prop -> Type :=
+| XGetSome x of x = xget x0 P & P x : xget_spec x0 P x True
+| XGetNone of (forall x, ~ P x) : xget_spec x0 P x0 False.
+
+Lemma xgetP {T : choiceType} x0 (P : set T) : xget_spec x0 P (xget x0 P) (P (xget x0 P)).
 Proof.
-rewrite /xget; case: pselect => [|nexP [x Px]]; last first.
-  by exfalso; apply: nexP; exists x; apply/asboolP.
-by move=> p; case: sigW=> {p} /= x /asboolP.
+move: (erefl (xget x0 P)); set y := {2}(xget x0 P).
+rewrite /xget; case: pselect => /= [?|neqP _].
+  by case: sigW => x /= /asboolP Px; rewrite [P x]propT //; constructor.
+suff NP x : ~ P x by rewrite [P x0]propF //; constructor.
+by apply: contrap neqP => Px; exists x; apply/asboolP.
 Qed.
 
-Lemma xgetP {T : choiceType} x0 (P : set T) (x : T): P x -> P (xget x0 P).
+Lemma xgetPex {T : choiceType} x0 (P : set T) : (exists x, P x) -> P (xget x0 P).
+Proof. by case: xgetP=> // NP [x /NP]. Qed.
+
+Lemma xgetI {T : choiceType} x0 (P : set T) (x : T): P x -> P (xget x0 P).
 Proof. by move=> Px; apply: xgetPex; exists x. Qed.
 
 Lemma xget_prop {T : choiceType} x0 (P : set T) (x : T) :
   P x -> is_prop P -> xget x0 P = x.
-Proof. by move=> Px /(_ _ _ (xgetP x0 Px) Px). Qed.
+Proof. by move=> Px /(_ _ _ (xgetI x0 Px) Px). Qed.
 
 Lemma xget_unique  {T : choiceType} x0 (P : set T) (x : T) :
   P x -> (forall y, P y -> y = x) -> xget x0 P = x.
 Proof. by move=> /xget_prop gPx eqx; apply: gPx=> y z /eqx-> /eqx. Qed.
 
 Lemma xgetPN {T : choiceType} x0 (P : set T) : (forall x, ~ P x) -> xget x0 P = x0.
-Proof.
-rewrite /xget; case: pselect => //= - [x p /(_ x)].
-by have /asboolP q := p => /(_ q).
-Qed.
+Proof. by case: xgetP => // x _ Px /(_ x). Qed.
 
 Definition fun_of_rel {A} {B : choiceType} (f0 : A -> B) (f : A -> B -> Prop) :=
   fun x => xget (f0 x) (f x).
 
 Lemma fun_of_relP {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
   nonempty (f a) ->  f a (fun_of_rel f0 f a).
-Proof. by move=> [b fab]; rewrite /fun_of_rel; apply: xgetP fab. Qed.
+Proof. by move=> [b fab]; rewrite /fun_of_rel; apply: xgetI fab. Qed.
 
 Lemma fun_of_rel_uniq {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
   is_prop (f a) -> forall b, f a b ->  fun_of_rel f0 f a = b.
