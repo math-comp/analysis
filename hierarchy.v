@@ -1661,13 +1661,10 @@ Context {T : choiceType} {U : completeType}.
 Lemma complete_cauchy_fct (F : set (set (T -> U))) :
   ProperFilter F -> cauchy F -> F --> lim F.
 Proof.
-move=> FF Fcauchy; pose G t P := F [set g | P (g t)].
-have FG t : ProperFilter (G t).
-   by apply: Build_ProperFilter'; apply: filter_not_empty.
-have /(_ _) /complete_cauchy Gl : forall t, cauchy (G t).
-  by move=> t e; have [f /filterS Ff] := Fcauchy e; exists (f t); apply: Ff.
-apply/limP; exists (fun t => lim (G t)); apply/flim_ballP => e /=; near g.
-  move=> t; have_near F h.
+move=> FF Fc; have /(_ _) /complete_cauchy Gl : cauchy (@^~ _ @ F).
+  by move=> t e; have [f /filterS Ff] := Fc e; exists (f t); apply: Ff=> ? /=.
+apply/limP; exists (fun t => lim (@^~t @ F)); apply/flim_ballP => e; near g.
+  move=> t; have_near F h => /=.
     by apply: (@ball_splitl _ (h t)); last move: (t); assume_near h.
   by end_near; [exact/Gl/locally_ball|assume_near g].
 by end_near; apply: (@near2P _ _ F F); apply: cauchy2.
