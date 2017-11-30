@@ -220,6 +220,7 @@ Record in_filter T (F : set (set T)) := InFilter {
   prop_in_filter_proj : T -> Prop;
   prop_in_filterP_proj : F prop_in_filter_proj
 }.
+(* add ball x e as a canonical instance of locally x *)
 
 Module Type PropInFilterSig.
 Axiom t : forall (T : Type) (F : set (set T)), in_filter F -> T -> Prop.
@@ -280,9 +281,7 @@ Proof. by move=> ?; apply/filterP; exists setT => //; apply: filterT. Qed.
 Lemma filter_bind (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, {near F, P `<=` Q} -> F P -> F Q.
 Proof.
-move=> FF P Q subPQ FP; near x.
-  by apply: (near subPQ) => //; assume_near x.
-by end_near.
+by move=> FF P Q subPQ FP; near x; [suff: P x; assume_near x|end_near].
 Qed.
 
 Lemma filter_bind2 (T : Type) (F : set (set T)) :
@@ -433,7 +432,7 @@ Lemma filtermapiE {U V : Type} (f : U -> set V)
   filtermapi f F P = {near F, forall x, exists y, f x y /\ P y}.
 Proof. by []. Qed.
 
-Global Instance filtermapi_filter T U (f : T -> U -> Prop) (F : set (set T)) :
+Global Instance filtermapi_filter T U (f : T -> set U) (F : set (set T)) :
   infer {near F, is_totalfun f} -> Filter F -> Filter (f `@ F).
 Proof.
 move=> f_totalfun FF; rewrite /filtermapi; apply: Build_Filter. (* bug *)
@@ -707,7 +706,7 @@ Global Instance subset_filter_filter T F (D : set T) :
 Proof.
 move=> FF; constructor; rewrite /subset_filter.
 - exact: filter_forall.
-- by move=> P Q; apply: filterS2 => x PD QD Dx; split.
+- by move=> P Q; apply: filterS2=> x PD QD Dx; split.
 - by move=> P Q subPQ; apply: filterS => R PD Dx; apply: subPQ.
 Qed.
 
@@ -1368,8 +1367,7 @@ Lemma flimi_close {F} {FF: ProperFilter F} (f : T -> set U) (l l' : U) :
 Proof.
 move=> f_prop fFl fFl'.
 suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
-near x => /=.
-  split; last exact: (near f_prop).
+apply: filter_bind f_prop; near x; first split=> //=.
   by have [//|y [fxy _]] := near (flimi_ball fFl [posreal of 1]) x; exists y.
 by end_near.
 Qed.
@@ -1539,12 +1537,39 @@ Qed.
 
 (** ** Complete uniform spaces *)
 
+(* :TODO: Use cauchy2 alternative to define cauchy? *)
+(* Or not: is the fact that cauchy F -/> ProperFilter F a problem? *)
 Definition cauchy {T : uniformType} (F : set (set T)) :=
   forall eps : posreal, exists x, F (ball x eps).
 
 Lemma cvg_cauchy {T : uniformType} (F : set (set T)) :
   [cvg F in T] -> cauchy F.
 Proof. by move=> [l /= Fl] eps; exists l; apply/Fl/locally_ball. Qed.
+
+Lemma cauchy2 (T : uniformType) (F : set (set T)) : Filter F ->
+  cauchy F -> forall e, e > 0 -> {near (F, F), forall x, ball x.1 e x.2}.
+Proof.
+move=> FF Fcauchy /= e e_gt0.
+have [x /= Fbx] := Fcauchy [posreal of PosReal e_gt0 / 2]%coqR.
+exists ((ball x (e / 2)%coqR) `*` (ball x (e / 2)%coqR)) => //; first by do !eexists.
+by move=> [y z] [/=] /ball_splitr; apply.
+Qed.
+
+Lemma near2P {T U} {F : set (set T)} {G : set (set U)}
+   {FF : Filter F} {FG : Filter G} (P : T -> U -> Prop) :
+  {near (F, G), forall x, P x.1 x.2} -> {near F & G, forall x y, P x y}.
+Proof.
+move=> [_ /= [Q1 FQ1 [Q2 GQ2 <-]] Qsub].
+apply: filterS FQ1 => x Q1x; apply: filterS GQ2 => y Q2y.
+by rewrite -[P _ _]/(P (x, y).1 (x, y).2); apply: Qsub.
+Qed.
+
+Lemma cauchy2E (T : uniformType) (F : set (set T)) : ProperFilter F ->
+  (forall e, e > 0 -> {near (F, F), forall x, ball x.1 e x.2}) -> cauchy F.
+Proof.
+move=> FF Fcauchy e; have_near F x; first by exists x; assume_near x.
+by end_near; apply: (@near2P _ _ F F); apply: Fcauchy.
+Qed.
 
 Module Complete.
 
@@ -1630,6 +1655,7 @@ Arguments complete_cauchy {T} F {FF} _.
 
 Section fct_Complete.
 
+
 Context {T : choiceType} {U : completeType}.
 
 Lemma complete_cauchy_fct (F : set (set (T -> U))) :
@@ -1640,14 +1666,11 @@ have FG t : ProperFilter (G t).
    by apply: Build_ProperFilter'; apply: filter_not_empty.
 have /(_ _) /complete_cauchy Gl : forall t, cauchy (G t).
   by move=> t e; have [f /filterS Ff] := Fcauchy e; exists (f t); apply: Ff.
-apply/limP; exists (fun t => lim (G t)); apply/flim_ballP => e /=.
-(* TODO: find a way not to pose e / 2 / 2 explicitly *)
-have [/= f Ff] := Fcauchy [posreal of e / 2 / 2]; near g.
-  apply: (@ball_split _ f); last exact: ball_split (near Ff g _).
-  move=> t; have_near (G t) x.
-    by apply: (ball_splitl (near (flim_ball (Gl t) _) x _)); assume_near x.
-  by end_near; rewrite /G /=; apply: filterS (Ff).
-by end_near.
+apply/limP; exists (fun t => lim (G t)); apply/flim_ballP => e /=; near g.
+  move=> t; have_near F h.
+    by apply: (@ball_splitl _ (h t)); last move: (t); assume_near h.
+  by end_near; [exact/Gl/locally_ball|assume_near g].
+by end_near; apply: (@near2P _ _ F F); apply: cauchy2.
 Qed.
 
 Canonical fct_completeType := CompleteType (T -> U) complete_cauchy_fct.
@@ -1660,14 +1683,6 @@ Section Filterlim_switch.
 
 Context {T1 T2 : choiceType}.
 
-Lemma near2P {T U} {F : set (set T)} {G : set (set U)}
-   {FF : Filter F} {FG : Filter G} (P : T -> U -> Prop) :
-  {near (F, G), forall x, P x.1 x.2} -> {near F & G, forall x y, P x y}.
-Proof.
-move=> [_ /= [Q1 FQ1 [Q2 GQ2 <-]] Qsub].
-apply: filterS FQ1 => x Q1x; apply: filterS GQ2 => y Q2y.
-by rewrite -[P _ _]/(P (x, y).1 (x, y).2); apply: Qsub.
-Qed.
 
 (* :TODO: Use bigenough reasonning here *)
 Lemma filterlim_switch_1 {U : uniformType}
@@ -2076,7 +2091,7 @@ Lemma flim_add (x y : V) : z.1 + z.2 @[z --> (x, y)] --> x + y.
 Proof.
 apply/flim_normP=> e; rewrite /=; near z.
   rewrite opprD addrACA (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
-  by rewrite ltr_add //; assume_near z.
+  rewrite ltr_add //; assume_near z.
 by end_near; [apply (flim_norm _ flim_fst)|apply (flim_norm _ flim_snd)].
 Qed.
 
@@ -3080,7 +3095,7 @@ From mathcomp Require Import fintype bigop finmap.
 Local Open Scope fset_scope.
 
 Definition totally {I : choiceType} : set (set {fset I}) :=
-  filter_from (fun A : {fset I} => [set B | A `<=` B]).
+  filter_from (fun A => [set B | A `<=` B]).
 Canonical totally_filter_source {I : choiceType} X :=
   @CanonicalFilterSource X _ {fset I} (fun f => f @ totally).
 
