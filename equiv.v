@@ -26,7 +26,7 @@ Section Domination.
 Context {K : absRingType} {T : Type} {V W : normedModType K}.
 
 Definition littleo (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  forall eps, eps > 0 -> \near x in F, `|[f x]| <= eps * `|[g x]|.
+  forall (eps : posreal), \near x in F, `|[f x]| <= pos eps * `|[g x]|.
 
 Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
   littleo_fun :> T -> V;
@@ -52,7 +52,7 @@ Proof. by case: F T. Qed.
 
 Lemma littleo0 F g : Filter F -> littleo F \0 g.
 Proof.
-move=> FF eps /= eps_gt0 ; apply: filter_forall => x; rewrite normm0.
+move=> FF eps /=; apply: filter_forall => x; rewrite normm0.
 by rewrite mulr_ge0 // ltrW.
 Qed.
 
@@ -60,7 +60,9 @@ Canonical little0 (F : filterType T) g := Littleo (asboolT (@littleo0 F g _)).
 
 Lemma littleoP (F : set (set T)) (g : T -> W) (f : 'o_F g) :
   forall eps, eps > 0 -> \near x in F, `|[f x]| <= eps * `|[g x]|.
-Proof. by case: f => ? /= /asboolP. Qed.
+Proof.
+by case: f => ? /= /asboolP Fg eps eps_gt0; apply: (Fg (PosReal eps_gt0)).
+Qed.
 
 Definition the_littleo (F : filterType T) h (d : 'o_F h) f := insubd d f.
 Arguments the_littleo : simpl never.
@@ -77,7 +79,12 @@ Notation "f '=o_' F h" := (f = \0 +o_ F h)
 
 Lemma add_littleo_subproof (F : filterType T) e (df dg :'o_F e) :
   littleo F (df \+ dg) e.
-Proof. Admitted.
+Proof.
+move=> eps; near x => /=.
+  rewrite (double_var eps) mulrDl.
+  rewrite (ler_trans (ler_normm_add _ _)) // ler_add //; assume_near x.
+by end_near; apply: littleoP.
+Qed.
 
 Canonical add_littleo (F : filterType T) e (df dg :'o_F e) :=
   Littleo (asboolT (add_littleo_subproof df dg)).
@@ -87,7 +94,8 @@ Lemma funaddo (F : filterType T) e (df dg :'o_F e) (f g: T -> V) :
   @the_littleo F e (@little0 F e)
                    (add_littleo (@the_littleo F e df f) (@the_littleo F e dg g)).
 Proof.
-by rewrite {3}/the_littleo /insubd insubT //; apply/asboolP; apply: littleoP.
+rewrite {3}/the_littleo /insubd insubT //; apply/asboolP.
+by move=> eps; apply: littleoP.
 Qed.
 
 Lemma addo (F : filterType T) e (df dg :'o_F e) (f g: T -> V) x :
@@ -105,7 +113,7 @@ Lemma eqaddoP (F : filterType T) (e : T -> W) (f g : T -> V) dh h :
   f = g \+ @the_littleo F e dh h -> littleo F (f \- g) e.
 Proof.
 rewrite /the_littleo /insubd=> ->.
-case: insubP => /= [u /asboolP fg_o_e ->|_] eps eps_gt0 /=.
+case: insubP => /= [u /asboolP fg_o_e ->|_] eps  /=.
   near x; first by rewrite /= addrAC subrr add0r; assume_near x.
   by end_near; apply: fg_o_e.
 near x => /=; first by rewrite addrC addKr; assume_near x.
