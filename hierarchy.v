@@ -2713,15 +2713,10 @@ End CompleteNormedModule1.
 
 (** * Extended Types *)
 
-
-(** *)
-
 (** * The topology on natural numbers *)
 
 (* :TODO: ultimately nat could be replaced by any lattice *)
-Definition eventually (P : nat -> Prop) :=
-  exists N : nat, forall n, (N <= n)%N -> P n.
-
+Definition eventually := filter_from setT (fun N => [set n | (N <= n)%N]).
 Notation "'\oo'" := eventually : classical_set_scope.
 
 Canonical eventually_filter_source X :=
@@ -2729,14 +2724,10 @@ Canonical eventually_filter_source X :=
 
 Global Instance eventually_filter : ProperFilter eventually.
 Proof.
-constructor; first by case=> n; apply; apply leqnn.
-constructor.
-- by exists O.
-- move=> P Q [NP HP] [NQ HQ].
-  exists (maxn NP NQ) => n Hn; split.
-  by apply/HP/(leq_trans _ Hn)/leq_maxl.
-  by apply/HQ/(leq_trans _ Hn)/leq_maxr.
-- by move=> P Q H [NP HP]; exists NP => n Hn; apply/H/HP.
+eapply @filter_from_proper; last by move=> i _; exists i.
+apply: filter_fromT_filter; first by exists 0%N.
+move=> i j; exists (maxn i j) => n //=.
+by rewrite geq_max => /andP[ltin ltjn].
 Qed.
 
 (** * The topology on real numbers *)
@@ -3242,7 +3233,7 @@ case: x => /= [x [delta _ Hp] |[delta Hp] |[delta Hp]].
 - (* x \in R *)
   case: (nfloor_ex (/delta)) => [ | N [_ /RltP HN]].
     by apply Rlt_le, Rinv_0_lt_compat, delta.
-  exists N => n Hn.
+  exists N => // n Hn.
   apply: Hp => /=.
     rewrite /ball /= /AbsRing_ball.
     rewrite INRE (_ : n%:R + _ = n.+1%:R); last by rewrite -addn1 natrD.
@@ -3259,7 +3250,7 @@ case: x => /= [x [delta _ Hp] |[delta Hp] |[delta Hp]].
 - (* x = +oo *)
   case: (nfloor_ex (Num.max 0 delta)) => [ | N [_ /RltP HN]].
     by apply/RleP; rewrite ler_maxr lerr.
-  exists N.+1 => n.
+  exists N.+1 => // n.
   rewrite -(@ler_nat [numDomainType of R]) => Hn.
   apply Hp.
   move: HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN.
@@ -3268,7 +3259,7 @@ case: x => /= [x [delta _ Hp] |[delta Hp] |[delta Hp]].
 - (* x = -oo *)
   case: (nfloor_ex (Num.max 0 (-delta))) => [ | N [_ /RltP HN]].
     by apply/RleP; rewrite ler_maxr lerr.
-  exists N.+1 => n.
+  exists N.+1 => // n.
   rewrite -(@ler_nat [numDomainType of R]) => Hn.
   apply Hp.
   move: HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN.
@@ -3355,13 +3346,17 @@ Proof. by move=> Lf /continuity_pt_filterlim; apply. Qed.
 From mathcomp Require Import fintype bigop finmap.
 Local Open Scope fset_scope.
 
+(* :TODO: when eventually is generalized to any lattice  by any lattice *)
+(* totally can just be replaced by eventually *)
 Definition totally {I : choiceType} : set (set {fset I}) :=
   filter_from setT (fun A => [set B | A `<=` B]).
+
 Canonical totally_filter_source {I : choiceType} X :=
   @Filtered.Source X _ {fset I} (fun f => f @ totally).
 
-Instance totally_filter {I : choiceType} : Filter (@totally I).
+Instance totally_filter {I : choiceType} : ProperFilter (@totally I).
 Proof.
+eapply filter_from_proper; last by move=> A _; exists A; rewrite fsubset_refl.
 apply: filter_fromT_filter; first by exists fset0.
 by move=> A B /=; exists (A `|` B) => P /=; rewrite fsubUset => /andP[].
 Qed.
