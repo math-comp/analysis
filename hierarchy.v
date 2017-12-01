@@ -3343,9 +3343,12 @@ Proof. by move=> Lf /continuity_pt_filterlim; apply. Qed.
 
 (** For Pierre-Yves : definition of sums *)
 
-From mathcomp Require Import fintype bigop finmap.
-Local Open Scope fset_scope.
+From mathcomp Require fintype bigop finmap.
 
+Section totally.
+
+Import fintype bigop finmap.
+Local Open Scope fset_scope.
 (* :TODO: when eventually is generalized to any lattice  by any lattice *)
 (* totally can just be replaced by eventually *)
 Definition totally {I : choiceType} : set (set {fset I}) :=
@@ -3365,4 +3368,6 @@ Definition partial_sum {I : choiceType} {R : zmodType}
   (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
 
 Definition sum (I : choiceType) {K : absRingType} {R : normedModType K}
-   (x : I -> R) := lim (partial_sum x).
+   (x : I -> R) : R := lim (partial_sum x).
+
+End totally.
