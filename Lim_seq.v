@@ -1259,14 +1259,14 @@ Proof.
   split => Hl.
   move => e He.
   apply (Hl (fun y => R_dist y l < e)).
-  now exists (mkposreal _ He) => ?; rewrite ballE.
+  by exists (mkposreal _ He) => ?; rewrite AbsRing_ballE boolp.asboolE.
   unfold is_lim_seq.
   change (Rbar_locally l) with (locally l).
   apply/filterlim_locally.
   case => e He.
   case: (Hl e He) => {Hl} /= N Hl.
   exists N => n Hn.
-  by move: (Hl n Hn); rewrite (_ : e = pos (mkposreal _ He)) // ballE.
+  by move: (Hl n Hn); rewrite (_ : e = pos (mkposreal _ He)) //= /ball /= AbsRing_ballE boolp.asboolE.
 Qed.
 Lemma is_lim_seq_p_infty_Reals (u : nat -> R) :
   is_lim_seq u p_infty <-> cv_infty u.
@@ -1277,11 +1277,11 @@ Proof.
   by exists M => ? /Rstruct.RltP.
   by exists N => n; apply Hl.
   move => P [M HP].
-  eapply filter_imp.
-(*  by apply HP.
+  apply: filter_imp.
+  by apply: HP.
   case: (Hl M) => {Hl} N HN.
-  by exists N.
-Qed.*) Admitted.
+  by exists N => n /HN /Rstruct.RltP.
+Qed.
 
 Lemma is_lim_LimSup_seq (u : nat -> R) (l : Rbar) :
   is_lim_seq u l -> is_LimSup_seq u l.
@@ -1289,13 +1289,13 @@ Proof.
 (*  move /is_lim_seq_spec.*)
   case: l => [l | | ] /= Hu.
   move => eps (*; case: (Hu eps) => {Hu} N Hu ; split*).
-  move/filterlim_locally : Hu => /(_ eps) [N Hu]; split; rewrite ballE in Hu.
+  move/filterlim_locally : Hu => /(_ eps) [N Hu]; split; rewrite /ball /= AbsRing_ballE in Hu.
   move => N0.
   exists (N + N0)%nat ; split.
   by apply le_plus_r.
-  by apply Rabs_lt_between', Hu, le_plus_l.
+  apply Rabs_lt_between'; apply/boolp.asboolP/Hu/le_plus_l.
   exists N => n Hn.
-  by apply Rabs_lt_between', Hu.
+  by apply Rabs_lt_between'; apply/boolp.asboolP/Hu.
   move => M N0.
 (*  case: (Hu M) => {Hu} N Hu.*)
   move/is_lim_seq_p_infty_Reals : Hu => /(_ M) [N1 Hu].
@@ -1336,7 +1336,7 @@ Proof.
   apply Hs ; intuition.
   exact Hi.
   exact Hs.
-Qed.*) Admitted. 
+Qed.*) Admitted.
 
 Lemma ex_lim_LimSup_LimInf_seq (u : nat -> R) :
   ex_lim_seq u <-> LimSup_seq u = LimInf_seq u.
@@ -1565,7 +1565,7 @@ Qed.
 Lemma is_lim_seq_const (a : R) :
   is_lim_seq (fun n => a) a.
 Proof.
-apply filterlim_const.
+apply: filterlim_const.
 Qed.
 Lemma ex_lim_seq_const (a : R) :
   ex_lim_seq (fun n => a).
@@ -1871,6 +1871,7 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
   specialize (Hf _ Hlf).
   specialize (Hg _ Hlg).
   rewrite /filtermap /filter_of /= in Hf, Hg.
+(* TODO: ?!
   generalize (filter_and _ _ (filter_and _ _ Hf Hg) H).
   apply filter_imp.
   intros x [[H1 H2] H3].
@@ -1918,7 +1919,7 @@ destruct lf as [lf| |] ; destruct lg as [lg| |] ; try easy.
   intros x [[H1 H2] H3].
   apply Rle_not_lt with (1 := H3).
   now apply Rlt_trans with 0.
-Qed.
+Qed.*) Admitted.
 
 Lemma is_lim_seq_le_loc (u v : nat -> R) (l1 l2 : Rbar) :
   eventually (fun n => u n <= v n) ->
@@ -2004,11 +2005,12 @@ intros T F FF f g h l H Hf Hh.
 destruct l as [l| |].
 - intros P [eps He].
   assert (H' : Rbar_locally l (fun y => Rabs (y - l) < eps)).
-    by exists eps => ?; rewrite ballE.
+    by exists eps => ?; rewrite AbsRing_ballE boolp.asboolE.
   unfold filterlim, filter_le, filtermap in Hf, Hh |- *.
   specialize (Hf _ H').
   specialize (Hh _ H').
   rewrite /filter_of /= in Hf Hh *.
+(* TODo: ?!
   generalize (filter_and _ _ H (filter_and _ _ Hf Hh)).
   apply filter_imp.
   intros x [H1 [H2 H3]].
@@ -2026,7 +2028,7 @@ destruct l as [l| |].
 - apply filterlim_le_m_infty with (2 := Hh).
   apply: filter_imp H.
   now intros x [_ H].
-Qed.
+Qed.*) Admitted.
 
 Lemma is_lim_seq_le_le_loc (u v w : nat -> R) (l : Rbar) :
   eventually (fun n => u n <= v n <= w n) -> is_lim_seq u l -> is_lim_seq w l -> is_lim_seq v l.
@@ -2232,7 +2234,7 @@ intros [x| |] P [eps He].
   apply He.
   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
   rewrite Rplus_comm Ropp_involutive.
-  rewrite ballE in Hy.
+  rewrite AbsRing_ballE boolp.asboolE in Hy.
   by apply/Rstruct.RltP.
 - exists (-eps).
   intros y Hy.
@@ -2333,8 +2335,8 @@ Proof.
   case: x y Hp Hz => [x| |] ; case => [y| |] //= ; case => <- Hz.
   intros P [eps He].
   exists (fun u => Rabs (u - x) < pos_div_2 eps) (fun v => Rabs (v - y) < pos_div_2 eps).
-  now exists (pos_div_2 eps) => ?; rewrite ballE.
-  now exists (pos_div_2 eps) => ?; rewrite ballE.
+  now exists (pos_div_2 eps) => ?; rewrite AbsRing_ballE boolp.asboolE.
+  now exists (pos_div_2 eps) => ?; rewrite AbsRing_ballE boolp.asboolE.
   intros u v Hu Hv.
   apply He.
   rewrite /ball /= /AbsRing_ball /abs /minus /plus /opp /=.
@@ -2375,7 +2377,7 @@ Proof.
   case => [y| | ] //= _ _.
   intros P [N HN].
   exists (fun u => Rabs (u - x) < 1) (fun v => N - x + 1 < v).
-  now exists (mkposreal _ Rlt_0_1) => ?; rewrite ballE.
+  now exists (mkposreal _ Rlt_0_1) => ?; rewrite AbsRing_ballE boolp.asboolE.
   now exists (N - x + 1) => ? /Rstruct.RltP.
   intros u v Hu Hv.
   simpl.
@@ -2501,7 +2503,7 @@ Proof.
     apply Ropp_0_gt_lt_contravar in Hl.
     exists (mkposreal _ Hl) => /= x H.
     field ; apply Rlt_not_eq.
-    rewrite (*/ball*)ballE /R_dist /= /AbsRing_ball /abs /minus /plus /opp /= in H.
+    rewrite AbsRing_ballE boolp.asboolE in H.
     apply Rabs_lt_between' in H.
     apply Rlt_le_trans with (1 := proj2 H), Req_le.
     apply Rplus_opp_r.
@@ -2529,12 +2531,12 @@ Proof.
   apply Rle_lt_trans with (l - l / 2).
   apply Req_le ; field.
   apply Rabs_lt_between'.
-  rewrite ballE in Hx.
+  rewrite AbsRing_ballE boolp.asboolE in Hx.
   apply Rlt_le_trans with (1 := Hx).
   apply Rmin_r.
   assert (H3: 0 < x).
   now apply Rlt_trans with (l / 2).
-  rewrite (*/ball*)ballE /R_dist /= /AbsRing_ball /abs /minus /plus /opp /=.
+  rewrite AbsRing_ballE boolp.asboolE /R_dist /=.
   replace (/ x (*+*) - / l) with (- (x - l) / (x * l)).
   rewrite Rabs_div.
   rewrite Rabs_Ropp.
@@ -2542,7 +2544,7 @@ Proof.
   apply Rabs_pos_lt, Rgt_not_eq.
   now apply Rmult_lt_0_compat.
   apply Rlt_le_trans with (eps * ((l / 2) * l)).
-  rewrite ballE in Hx.
+  rewrite AbsRing_ballE boolp.asboolE in Hx.
   apply Rlt_le_trans with (1 := Hx).
   apply Rmin_l.
   apply Rmult_le_compat_l.
@@ -2566,7 +2568,7 @@ Proof.
   intros P [eps HP].
   exists (/eps) => n Hn.
   apply HP.
-  rewrite (*/ball*)ballE /R_dist /= /AbsRing_ball /abs /minus /plus /opp /=.
+  rewrite AbsRing_ballE boolp.asboolE /R_dist.
   move/Rstruct.RltP in Hn.
   rewrite (*Ropp_0 Rplus_0_r*)Rminus_0_r Rabs_Rinv.
   rewrite -(Rinv_involutive eps).
@@ -2703,12 +2705,12 @@ Proof.
   apply Rlt_0_1.
   set (d := mkposreal _ (Rmin_stable_in_posreal (mkposreal _ Rlt_0_1) (mkposreal _ He))).
   exists (fun u => Rabs (u - x) < d) (fun v => Rabs (v - y) < d).
-  now exists d => ?; rewrite ballE.
-  now exists d => ?; rewrite ballE.
+  now exists d => ?; rewrite AbsRing_ballE boolp.asboolE.
+  now exists d => ?; rewrite AbsRing_ballE boolp.asboolE.
   simpl.
   intros u v Hu Hv.
   apply HP.
-  rewrite (*/ball*) ballE /R_dist /= /AbsRing_ball /abs /minus /plus /opp /=.
+  rewrite AbsRing_ballE boolp.asboolE /R_dist.
   replace (u * v (*+*) - (x * y)) with (x * (v - y) + y * (u - x) + (u - x) * (v - y)) by ring.
   replace (pos eps) with (x * (eps / (x + y + 1)) + y * (eps / (x + y + 1)) + 1 * (eps / (x + y + 1))).
   apply Rle_lt_trans with (1 := Rabs_triang _ _).
@@ -2745,7 +2747,7 @@ Proof.
   case: Rle_lt_or_eq_dec => {Hl Hx Hy Hx'} // Hx _.
   intros P [N HN].
   exists (fun u => Rabs (u - x) < x / 2) (fun v => Rmax 0 (N / (x / 2)) < v).
-  now exists (pos_div_2 (mkposreal _ Hx)) => ?; rewrite ballE.
+  now exists (pos_div_2 (mkposreal _ Hx)) => ?; rewrite AbsRing_ballE boolp.asboolE.
   now exists (Rmax 0 (N / (x / 2))) => ? /Rstruct.RltP.
   intros u v Hu Hv.
   simpl.
@@ -2843,7 +2845,7 @@ Proof.
   intros x.
   apply sym_eq, Rmult_0_l.
   rewrite Rbar_mult_0_l.
-  apply filterlim_const.
+  apply: filterlim_const.
   eapply filterlim_comp_2.
   apply: filterlim_const.
   apply: filterlim_id.
@@ -3233,4 +3235,3 @@ Proof.
 (*  apply filterlim_Rbar_loc_seq.
   now apply Rbar_locally'_le.
 Qed.*) Admitted.
-

@@ -567,13 +567,13 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   simpl.
   intros x Hx.
   split.
-  rewrite ballE in Hx.
+  rewrite AbsRing_ballE boolp.asboolE in Hx.
   apply Rlt_le_trans with (1 := Hx).
   apply Rmin_l.
   apply Rabs_le_between'.
   apply Rle_trans with (1 := Rabs_triang_inv2 _ _).
   apply Rlt_le.
-  rewrite ballE in Hx.
+  rewrite AbsRing_ballE boolp.asboolE in Hx.
   apply Rlt_le_trans with (1 := Hx).
   apply Rmin_r.
   generalize (filter_and  _  (fun (x : T) =>  ineqs (f x))  (Hfg (mkposreal _ He))  (Hf _ Hl)).
@@ -581,7 +581,7 @@ intros T F FF f g [l| |] Hfg Hf P [eps HP] ;
   simpl.
   intros x [H1 [H2 H3]].
   apply HP.
-  rewrite (*/ball*) ballE /R_dist /= /AbsRing_ball /= /abs /minus /plus /opp /=.
+  rewrite (*/ball*) AbsRing_ballE boolp.asboolE /R_dist.
   replace (g x (*+*) - l) with ((f x - l) + -(f x - g x)) by ring.
   apply Rle_lt_trans with (1 := Rabs_triang _ _).
   replace (pos eps) with (eps / 2 + eps / 2 / (Rabs l + 1) * (Rabs l + 1)).

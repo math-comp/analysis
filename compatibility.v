@@ -442,13 +442,13 @@ Proof.
 move=> x y e yxe.
 have He : 0 < e by apply/(Rle_lt_trans _ _ _ _ yxe)/Rstruct.RlebP/normm_ge0.
 suff : ball y (mkposreal _ He) x by apply ball_sym.
-by apply/(@NormedModule.ax3 _ _ _ (NormedModule.class V))/Rstruct.RltbP.
+by apply/(@NormedModule.ax3 _ _ _ _ (NormedModule.class V))/Rstruct.RltP.
 Qed.
 
 Lemma norm_compat2 : forall (x y : V) (eps : posreal), ball x eps y ->
   norm (minus y x) < norm_factor * eps.
 Proof.
-by move=> x y e /ball_sym/(@NormedModule.ax4 _ _ _ (NormedModule.class V))/Rstruct.RltbP.
+by move=> x y e /ball_sym/(@NormedModule.ax4 _ _ _ _ (NormedModule.class V))/Rstruct.RltP.
 Qed.
 
 Lemma norm_eq_zero : forall x : V, norm x = 0 -> x = zero.
@@ -458,7 +458,7 @@ Lemma norm_zero : norm zero = 0.
 Proof. move: (@normm_eq0 K V zero); by rewrite eqxx => /eqP. Qed.
 
 Lemma norm_factor_gt_0 : 0 < norm_factor.
-Proof. by move: (@norm_factor_gt_0 K V) => /Rstruct.RltbP. Qed.
+Proof. by move: (@norm_factor_gt_0 K V) => /Rstruct.RltP. Qed.
 
 Lemma norm_opp : forall x : V, norm (opp x) = norm x.
 Proof. exact: normmN. Qed.
@@ -480,14 +480,14 @@ Definition locally_norm (x : V) (P : V -> Prop) :=
 Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
 Proof.
 rewrite -locally_locally_norm /filter_le => P [e He].
-exists e => y /Rstruct.RltbP Hy; apply He.
+exists e => y /Rstruct.RltP Hy; apply He.
 by rewrite /hierarchy.ball_norm normmB in Hy.
 Qed.
 
 Lemma locally_norm_le_locally x : filter_le (locally_norm x) (locally x).
 Proof.
 rewrite -locally_locally_norm /filter_le => P [e He].
-exists e => y /Rstruct.RltbP Hy; apply He.
+exists e => y /Rstruct.RltP Hy; apply He.
 by rewrite /hierarchy.ball_norm normmB.
 Qed.
 
@@ -505,18 +505,18 @@ Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
 Proof.
 move: (@ball_norm_triangle _ _ x y z e1 e2); rewrite /ball_norm.
 rewrite /hierarchy.ball_norm normmB (normmB _ z) (normmB x) => H.
-by move/Rstruct.RltbP => ? /Rstruct.RltbP ?; apply/Rstruct.RltbP/H.
+by move/Rstruct.RltP => ? /Rstruct.RltP ?; apply/Rstruct.RltP/H.
 Qed.
 
 Lemma ball_norm_center (x : V) (e : posreal) : ball_norm x e x.
-Proof. by move: (ball_norm_center x e) => /Rstruct.RltbP. Qed.
+Proof. by move: (ball_norm_center x e) => /Rstruct.RltP. Qed.
 
 Lemma ball_norm_dec : forall (x y : V) (eps : posreal),
   {ball_norm x eps y} + {~ ball_norm x eps y}.
 Proof.
 move=> x y e; move: (ball_norm_dec x y e).
 rewrite /hierarchy.ball_norm (normmB x) /ball_norm.
-case; by [move=> /Rstruct.RltbP; left | right; apply/Rstruct.RltbP/negP].
+case; by [move=> /Rstruct.RltP; left | right; apply/Rstruct.RltP/negP].
 Qed.
 
 Lemma ball_norm_sym x y (e : posreal) : ball_norm x e y -> ball_norm y e x.
@@ -530,7 +530,7 @@ Lemma ball_norm_eq : forall x y : V,
   (forall eps : posreal, ball_norm x eps y) -> x = y.
 Proof.
 move=> x y H; apply: (@ball_norm_eq K V x y) => e; move: (H e).
-by rewrite /ball_norm /hierarchy.ball_norm -opp_minus norm_opp => /Rstruct.RltbP.
+by rewrite /ball_norm /hierarchy.ball_norm -opp_minus norm_opp => /Rstruct.RltP.
 Qed.
 
 Local Open Scope classical_set_scope.
@@ -667,10 +667,17 @@ Qed.
 
 Definition is_lim_seq (u : nat -> R) (x : Rbar) := u --> x.
 
-Lemma ballE (l : R) (e : R(*posreal*)) : ball l e = (fun y => R_dist y l < e).
+(*Lemma ballE (l : R) (e : R(*posreal*)) : ball l e = (fun y => R_dist y l < e).
 Proof.
 rewrite funeqE => x; rewrite propeqE.
 rewrite /ball /= /AbsRing_ball absrB; split => [/Rstruct.RltP //| ?]; by apply/Rstruct.RltP.
+Qed.*)
+
+Lemma AbsRing_ballE (l : R) (e : R(*posreal*)) :
+  AbsRing_ball l e = (fun y => `[< R_dist y l < e >]).
+Proof.
+by rewrite funeqE => x; apply/idP/asboolP;
+  rewrite /AbsRing_ball absrB => /Rstruct.RltP.
 Qed.
 
 Lemma locally_ex_dec {T : uniformType} (x : T) (P : T -> Prop) :
@@ -895,18 +902,22 @@ move=> P Q; rewrite !eventuallyE; by apply H2.
 move=> P Q; rewrite !eventuallyE; by apply H3.
 Qed.
 
-Canonical eventually_filter_source_compat X :=
-  @CanonicalFilterSource X _ nat (fun f => f @ eventually).
-(* TODO: projection ignored because redundant with eventually_filter_source from hierarchy *)
+Canonical eventually_filter_source X :=
+   @Filtered.Source X _ nat (fun f => f @ eventually).
+(*
+Warning: Ignoring canonical projection to nat by Filtered.source_type in
+eventually_filter_source: redundant with hierarchy.eventually_filter_source
+[redundant-canonical-projection,typechecker]
+*)
 
 Global Instance filtermap_eventually_filter_compat (u : nat -> R) : Filter (fun P : set R =>
   exists N : nat, forall n : nat, is_true (N <= n)%N -> (u @^-1` P) n).
 Proof.
 move: (@filtermap_filter _ _ u _ (@filter_filter' _ _ eventually_filter_compat)).
-case => /=; rewrite !eventuallyE => H1 H2 H3.
+case => /=; rewrite /locally /= !eventuallyE => H1 H2 H3.
 constructor => // P Q.
-by move: (H2 P Q); rewrite !eventuallyE.
-by move: (H3 P Q); rewrite !eventuallyE.
+by move: (H2 P Q); rewrite /locally /= !eventuallyE.
+by move: (H3 P Q); rewrite /locally /= !eventuallyE.
 Qed.
 
 Definition at_left x := within (fun u : R => Rlt u x) (locally x).
