@@ -1,4 +1,5 @@
 R_ext.v
+equiv.v
 set.v
 Rstruct.v
 Rcomplements.v
