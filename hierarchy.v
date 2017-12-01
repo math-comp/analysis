@@ -3295,7 +3295,7 @@ Proof.
 eapply iff_trans; first by apply continuity_pt_locally.
 apply iff_sym.
 have FF : Filter (f @ x) by typeclasses eauto.
-case: (@filterlim_locally _ (f @ x) FF (f x)) => {FF}H1 H2.
+case: (@flim_ballP _ (f @ x) FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
 split => [{H2} /H1{H1} H1 eps|{H1} H].
 - move: (H1 eps) => {H1} [x0 _ Hx0].
@@ -3321,7 +3321,7 @@ split=> - cfx P /= fxP.
 rewrite !locally_nearE !near_map !near_locally in fxP *.
 have /= := cfx P fxP.
 (* TODO: make things appear in canonical form i.e. {near x, ...} *)
-rewrite locally_nearE near_map => /filterP [//= Q Qx QP].
+rewrite !near_simpl => /filterP [//= Q Qx QP].
 apply/filterP; exists (fun y => y <> x -> Q y) => // y Qy.
 by have [->|/Qy /QP //] := Ueqdec y x; apply: locally_singleton.
 Qed.
