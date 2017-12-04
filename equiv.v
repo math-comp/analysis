@@ -259,9 +259,12 @@ Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
 
 Notation "''d_' F" := (@diff _ (Phantom _ [filter of F]))
   (at level 0, F at level 0, format "''d_' F").
-Notation differentiable x f :=
-  (f = cst (lim (f @ x)) + 'd_x f \o center (lim x)
-       +o_(x%function) (center (lim x%function))).
+
+
+Definition differentiable_def (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
+   f = cst (lim (f @ F)) + 'd_F f \o center (lim F) +o_F (center (lim F)).
+
+Notation differentiable F := (@differentiable_def _ (Phantom _ [filter of F])).
 
 Lemma lim_id (x : V) : lim x = x.
 Proof.
