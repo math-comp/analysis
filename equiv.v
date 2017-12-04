@@ -269,7 +269,7 @@ symmetry; apply: is_filter_lim_locally_unique.
 by apply/cvg_ex; exists x.
 Qed.
 
-Lemma littleo_addP (y x : V) (f : V -> W) (e : V -> V) :
+Lemma littleo_shift (y x : V) (f : V -> W) (e : V -> V) :
   littleo (locally y) (f \o shift (x - y)) (e \o shift (x - y)) ->
   littleo (locally x) f e.
 Proof.
@@ -279,15 +279,15 @@ have /= := de (z + y - x); rewrite -!addrA addKr subrr addr0; apply.
 by rewrite /ball_norm addrA opprB addrC opprD -addrA addrNK.
 Qed.
 
-Lemma littleo_add (x : V) (f : V -> W) (e : V -> V) :
+Lemma littleo_center0 (x : V) (f : V -> W) (e : V -> V) :
   littleo_fun (mklittleo x f e) =
   (mklittleo (0 : V) (f \o shift x) (e \o shift x)) \o center x.
 Proof.
 rewrite /the_littleo /insubd /=; have [g /= _ <-{f}|/asboolP Nfe] /= := insubP.
-  rewrite insubT //= ?comp_shiftK //; apply/asboolP; apply: (@littleo_addP x).
+  rewrite insubT //= ?comp_shiftK //; apply/asboolP; apply: (@littleo_shift x).
   by rewrite sub0r !comp_shiftK => ?; apply: littleoP.
 rewrite insubF //; apply/asboolP => fe; apply: Nfe.
-by apply: (@littleo_addP 0); rewrite subr0.
+by apply: (@littleo_shift 0); rewrite subr0.
 Qed.
 
 Lemma diff_locally (x : V) (f : V -> W) : differentiable x f ->
@@ -295,7 +295,7 @@ Lemma diff_locally (x : V) (f : V -> W) : differentiable x f ->
 Proof.
 move=> dxf; apply: eqoE; rewrite funeqE {1}dxf {dxf} => h /=.
 congr (_ + _ + _); rewrite ?lim_id ?addrK //=.
-rewrite littleo_add /= ?addrK; congr (the_littleo _ _ _ _ _).
+rewrite littleo_center0 /= ?addrK; congr (the_littleo _ _ _ _ _).
 by rewrite funeqE => k /=; rewrite addrK.
 Qed.
 
