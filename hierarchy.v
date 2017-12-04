@@ -234,7 +234,7 @@ Canonical source_filter_filter' Y :=
 
 Notation filter_term := term.
 Notation term_filter := term_filter.
-Notation filter_on := on.
+Notation filter_on_term := on.
 
 End Exports.
 End Filtered.
@@ -261,13 +261,13 @@ Local Notation "{ 'all2' P }" := (forall x y, P x y : Prop) (at level 0).
 Local Notation "{ 'all3' P }" := (forall x y z, P x y z: Prop) (at level 0).
 Local Notation ph := (phantom _).
 
-Definition prop_near1 {X Y} (F : filter_on X Y) (x : X)
+Definition prop_near1 {X Y} (F : filter_on_term X Y) (x : X)
   (eq_x : x = filter_term F) P (phP : ph {all1 P}) :=
   (term_filter F) P.
 
 Definition prop_near2 {X X' Y Y'} :=
- fun (F : filter_on X Y) (x : X) of x = filter_term F =>
- fun (F' : filter_on X' Y') (x' : X') of x' = filter_term F' =>
+ fun (F : filter_on_term X Y) (x : X) of x = filter_term F =>
+ fun (F' : filter_on_term X' Y') (x' : X') of x' = filter_term F' =>
  fun P of ph {all2 P} =>
   filter_prod (term_filter F) (term_filter F') (fun x => P x.1 x.2).
 
@@ -294,10 +294,10 @@ Arguments prop_near2 : simpl never.
 Lemma nearE {T} {F : set (set T)} (P : set T) : (\near x in F, P x) = F P.
 Proof. by []. Qed.
 
-Definition filter_of X Y (F : filter_on X Y)
+Definition filter_of X Y (F : filter_on_term X Y)
   (x : X) (_ : x = filter_term F) := term_filter F.
 Notation "[ 'filter' 'of' x ]" := (@filter_of _ _ _ x erefl)
-  (format "[ 'filter'  'of'  x ]").
+  (format "[ 'filter'  'of'  x ]") : classical_set_scope.
 Arguments filter_of _ _ _ _ _ _ /.
 
 Lemma filter_of_filterE {T : Type} (F : set (set T)) :
@@ -307,7 +307,7 @@ Proof. by []. Qed.
 Lemma locally_filterE {T : Type} (F : set (set T)) : locally F = F.
 Proof. by []. Qed.
 
-Lemma filter_of_genericE X T (F : filter_on X T) :
+Lemma filter_of_genericE X T (F : filter_on_term X T) :
   [filter of filter_term F] = term_filter F.
 Proof. by []. Qed.
 
@@ -387,7 +387,7 @@ Proof. by []. Qed.
 (*   {near (F, G), forall x, P x} <-> {near F & G, forall x y, P (x, y)}. *)
 (* Proof. by rewrite near2I. Qed. *)
 
-Lemma filter_of_nearI (X Y : Type) (F : filter_on X Y) (x : X) (e : x = filter_term F) P :
+Lemma filter_of_nearI (X Y : Type) (F : filter_on_term X Y) (x : X) (e : x = filter_term F) P :
   @filter_of X Y F x e P = @prop_near1 X Y F x e P (inPhantom (forall x, P x)).
 Proof. by []. Qed.
 
@@ -423,8 +423,46 @@ Arguments filter_not_empty {T} F {_}.
 
 Notation ProperFilter := ProperFilter'.
 
-Lemma filter_locallyT {T : Type} (F : set (set T)) : Filter F ->
-  locally F setT.
+Lemma filter_setT (T' : Type) : Filter (@setT (set T')).
+Proof. by constructor. Qed.
+
+Structure filter_on T := FilterType {
+  filter :> (T -> Prop) -> Prop;
+  filter_class : Filter filter
+}.
+Arguments FilterType {T} _ _.
+Existing Instance filter_class.
+Coercion filter_filter' : ProperFilter >-> Filter.
+
+Structure pfilter_on T := PFilterPack {
+  pfilter :> (T -> Prop) -> Prop;
+  pfilter_class : ProperFilter pfilter
+}.
+Arguments PFilterPack {T} _ _.
+Existing Instance pfilter_class.
+Canonical pfilter_filter_on T (F : pfilter_on T) :=
+  FilterType F (pfilter_class F).
+Coercion pfilter_filter_on : pfilter_on >-> filter_on.
+Definition PFilterType {T} (F : (T -> Prop) -> Prop)
+  {fF : Filter F} (fN0 : not (F set0)) :=
+  PFilterPack F (Build_ProperFilter' fN0 fF).
+Arguments PFilterType {T} F {fF} fN0.
+
+Canonical filter_on_eqType T := EqType (filter_on T) (gen_eqMixin _).
+Canonical filter_on_choiceType T :=
+  ChoiceType (filter_on T) (gen_choiceMixin _).
+Canonical filter_on_PointedType T :=
+  PointedType (filter_on T) (FilterType _ (filter_setT T)).
+Canonical filter_on_FilteredType T :=
+  FilteredType T (filter_on T) (@filter T).
+
+Global Instance filter_on_Filter T (F : filter_on T) : Filter F.
+Proof. by case: F. Qed.
+Global Instance pfilter_on_ProperFilter T (F : pfilter_on T) : ProperFilter F.
+Proof. by case: F. Qed.
+
+Lemma filter_locallyT {T : Type} (F : set (set T)) :
+   Filter F -> locally F setT.
 Proof. by move=> FF; apply: filterT. Qed.
 Hint Resolve filter_locallyT.
 
@@ -1358,6 +1396,9 @@ move=> e1 e2; exists [posreal of minr (e1 : R) (e2 : R)] => //.
 by move=> P /= xP; split; apply: ball_ler xP; rewrite ler_minl lerr ?orbT.
 Qed.
 
+Canonical locally_filter_on (x : T) :=
+  FilterType (locally x) (@filter_filter' _ _ (locally_filter x)).
+
 End LocallyDef.
 
 (*compat*)
@@ -1687,7 +1728,7 @@ Section Open.
 
 Context {T : uniformType}.
 
-Notation "D ^o" := (locally^~ D).
+Notation "D ^o" := (locally^~ D) : classical_set_scope.
 Definition open (D : set T) := D `<=` D^o.
 
 Lemma openP (D E : set T) : open D -> (D `<=` E) -> (D `<=` E^o).

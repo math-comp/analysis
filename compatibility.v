@@ -37,8 +37,8 @@ Inductive filter_prod {T U : Type} (F G : _ -> Prop) (P : T * U -> Prop) : Prop 
 
 Lemma filter_prodE {T U : Type} : @filter_prod T U = @hierarchy.filter_prod T U.
 Proof.
-rewrite predeq3E=> F G P; split=> [[Q R FQ GR QRP] | [_ [Q FQ [R GR <-]]] QRP].
-  by exists (Q `*` R); do ?eexists; move=> // [??] [/=??]; apply: QRP.
+rewrite predeq3E=> F G P; split=> [[Q R FQ GR QRP] | [[Q R] [/=FQ GR] QRP]].
+  by exists (Q, R) => -//=[??] [??]; apply: QRP.
 by exists Q R => // ????; apply: QRP.
 Qed.
 
@@ -480,14 +480,14 @@ Definition locally_norm (x : V) (P : V -> Prop) :=
 Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
 Proof.
 rewrite -locally_locally_norm /filter_le => P [e He].
-exists e => y /Rstruct.RltP Hy; apply He.
+exists e => // y /Rstruct.RltP Hy; apply He.
 by rewrite /hierarchy.ball_norm normmB in Hy.
 Qed.
 
 Lemma locally_norm_le_locally x : filter_le (locally_norm x) (locally x).
 Proof.
-rewrite -locally_locally_norm /filter_le => P [e He].
-exists e => y /Rstruct.RltP Hy; apply He.
+rewrite -locally_locally_norm /filter_le => P [e _ He].
+exists e => // y /Rstruct.RltP Hy; apply He.
 by rewrite /hierarchy.ball_norm normmB.
 Qed.
 
@@ -890,7 +890,10 @@ Definition eventually (P : nat -> Prop) :=
   exists N : nat, forall n, (N <= n)%coq_nat -> P n.
 
 Lemma eventuallyE (P : nat -> Prop) : eventually P = hierarchy.eventually P.
-Proof. rewrite propeqE; split => -[n Hn]; exists n => m /leP; by apply Hn. Qed.
+Proof.
+rewrite propeqE; split=> [[n Hn] |[n _ Hn]];
+by exists n => //m /leP; apply: Hn.
+Qed.
 
 Global Instance eventually_filter_compat : ProperFilter eventually.
 Proof.
@@ -910,16 +913,16 @@ eventually_filter_source: redundant with hierarchy.eventually_filter_source
 [redundant-canonical-projection,typechecker]
 *)
 
-Global Instance filtermap_eventually_filter_compat (u : nat -> R) : Filter (fun P : set R =>
-  exists N : nat, forall n : nat, is_true (N <= n)%N -> (u @^-1` P) n).
-Proof.
-move: (@filtermap_filter _ _ u _ (@filter_filter' _ _ eventually_filter_compat)).
-case => /=; rewrite /locally /= !eventuallyE => H1 H2 H3.
-constructor => // P Q.
-by move: (H2 P Q); rewrite /locally /= !eventuallyE.
-by move: (H3 P Q); rewrite /locally /= !eventuallyE.
-Qed.
+(* Global Instance filtermap_eventually_filter_compat (u : nat -> R) : Filter (fun P : set R => *)
+(*   exists N : nat, forall n : nat, is_true (N <= n)%N -> (u @^-1` P) n). *)
+(* Proof. *)
+(* move: (@filtermap_filter _ _ u _ (@filter_filter' _ _ eventually_filter_compat)). *)
+(* case => /=; rewrite /locally /= !eventuallyE => -[N _ ?] H2 H3. *)
+(* constructor => // [|P Q|P Q]; first by exists N. *)
+(* move: (H2 P Q); rewrite !eventuallyE. rewrite /locally /= !eventuallyE. *)
+(* by move: (H3 P Q); rewrite /locally /= !eventuallyE. *)
+(* Qed. *)
 
-Definition at_left x := within (fun u : R => Rlt u x) (locally x).
+(* Definition at_left x := within (fun u : R => Rlt u x) (locally x). *)
 
-Definition at_right x := within (fun u : R => Rlt x u) (locally x).
+(* Definition at_right x := within (fun u : R => Rlt x u) (locally x). *)
