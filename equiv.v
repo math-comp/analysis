@@ -168,10 +168,104 @@ Lemma eqo_trans (F : filter_on T) (f g h : T -> V) (e : T -> W):
   f = g +o_ F e -> g = h +o_F e -> f = h +o_F e.
 Proof. by move=> -> ->; apply: eqoE; rewrite -addrA addo. Qed.
 
-(* mostly to prevent problems with dependent types *)
-
 Definition bigo (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  exists k, \near x in F, `|[f x]| < k * `|[g x]|.
+  exists k, \near x in F, `|[f x]| <= k * `|[g x]|.
+
+Structure bigo_type (F : set (set T)) (g : T -> W) := Bigo {
+  bigo_fun :> T -> V;
+  _ : `[< bigo F bigo_fun g >]
+}.
+Notation "''O_' F" := (bigo_type F)
+  (at level 0, F at level 0, format "''O_' F").
+
+Canonical bigo_subtype (F : set (set T)) (g : T -> W) :=
+  [subType for (@bigo_fun F g)].
+
+Lemma bigo0 F g : Filter F -> bigo F 0 g.
+Proof.
+by move=> FF; exists 0; apply: filter_forall=> x; rewrite normm0 mul0r.
+Qed.
+
+Canonical big0 (F : filter_on T) g := Bigo (asboolT (@bigo0 F g _)).
+
+Lemma bigoP (F : set (set T)) (g : T -> W) (f : 'O_F g) : bigo F f g.
+Proof. by case: f => ? /= /asboolP. Qed.
+
+Definition the_bigo (F : filter_on T) (phF : phantom (set (set T)) F) f h :=
+   insubd (big0 F h) f.
+Arguments the_bigo : simpl never, clear implicits.
+
+Notation mkbigo x := (the_bigo _ (Phantom _ [filter of x])).
+
+Notation "f = g '+O_' F h" :=
+  (f%function = g%function + mkbigo F (f \- g) h)
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  =  g  '+O_' F  h").
+Notation "f '=O_' F h" := (f = \0 +O_ F h)
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '=O_' F  h").
+
+Lemma add_bigo_subproof (F : filter_on T) e (df dg :'O_F e) :
+  bigo F (df \+ dg) e.
+Proof.
+have [[kf xkf] [kg xkg]] := (bigoP df, bigoP dg).
+exists (kf + kg); apply: filterS2 xkf xkg => x /ler_add fD/fD{fD}.
+by rewrite mulrDl; apply: ler_trans; apply: ler_normm_add.
+Qed.
+
+Canonical add_bigo (F : filter_on T) e (df dg :'O_F e) :=
+  Bigo (asboolT (add_bigo_subproof df dg)).
+
+Lemma addO (F : filter_on T) (f g: T -> V) e :
+  (mkbigo F f e : T -> V) + (mkbigo F g e : T -> V) =
+  mkbigo F
+    (add_bigo (mkbigo F f e) (mkbigo F g e)) e.
+Proof.
+rewrite {3}/the_bigo /insubd insubT //; apply/asboolP.
+by case: (add_bigo _ _) => ? /= /asboolP.
+Qed.
+
+Lemma addOx (F : filter_on T) (f g: T -> V) e x :
+  mkbigo F f e x + mkbigo F g e x =
+  mkbigo F ((add_bigo (mkbigo F f e) (mkbigo F g e))) e x.
+Proof. by move: x; rewrite -/(_ + _ =1 _) {1}addO. Qed.
+
+(* This notation is printing only in order to display 'O
+   without looking at the contents *)
+Notation "''O' '_' F" := (mkbigo F _ _)
+  (at level 0, F at level 0, format "''O' '_' F").
+
+Lemma eqadd_some_OP (F : filter_on T) (f g : T -> V) (e : T -> W) h :
+  f = g + mkbigo F h e -> bigo F (f - g) e.
+Proof.
+rewrite /the_bigo /insubd=> ->.
+case: insubP => /= [u /asboolP fg_o_e ->|_].
+  by rewrite addrAC subrr add0r; apply: fg_o_e.
+by rewrite addrC addKr; apply: bigoP.
+Qed.
+
+Lemma eqaddOP (F : filter_on T) (f g : T -> V) (e : T -> W) :
+   (f = g +O_ F e) <-> (bigo F (f - g) e).
+Proof.
+split=> [/eqadd_some_OP//|/asboolP fg_O_e].
+by rewrite /the_bigo /insubd insubT /= addrC addrNK.
+Qed.
+
+Lemma eqOP (F : filter_on T) (e : T -> W) (f : T -> V) :
+   (f =O_ F e) <-> (bigo F f e).
+Proof. by rewrite eqaddOP subr0. Qed.
+
+(* replaces a 'O_F e by a "canonical one" *)
+(* mostly to prevent problems with dependent types *)
+Lemma eqOE (F : filter_on T) (f g : T -> V) h (e : T -> W) :
+  f = g + mkbigo F h e -> f = g +O_ F e.
+Proof. by move=> /eqadd_some_OP /eqaddOP. Qed.
+
+Lemma eqO_trans (F : filter_on T) (f g h : T -> V) (e : T -> W):
+  f = g +O_ F e -> g = h +O_F e -> f = h +O_F e.
+Proof. by move=> -> ->; apply: eqOE; rewrite -addrA addO. Qed.
 
 End Domination.
 
@@ -194,6 +288,26 @@ Notation "f '=o_' F h" := (f = \0 +o_ F h)
 
 Notation "''o' '_' F" := (mklittleo F _)
   (at level 0, F at level 0, format "''o' '_' F").
+
+Notation "''o_' F" := (@littleo_type _ _ _ _ F)
+  (at level 0, F at level 0, format "''o_' F").
+
+Arguments the_bigo {_ _ _ _} _ _ _ _ : simpl never.
+Notation mkbigo x := (the_bigo _ (Phantom _ [filter of x])).
+
+Notation "f = g '+O_' F h" :=
+  (f%function = g%function +
+     mkbigo F (f \- g : _ -> _) h)
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  =  g  '+O_' F  h").
+Notation "f '=O_' F h" := (f = \0 +O_ F h)
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '=O_' F  h").
+
+Notation "''O' '_' F" := (mkbigo F _)
+  (at level 0, F at level 0, format "''O' '_' F").
 
 Section Limit.
 
