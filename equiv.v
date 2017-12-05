@@ -396,6 +396,40 @@ Proof.
 rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
 by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
+
+Section Linear3.
+Context (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
+        (s_law : GRing.Scale.law s).
+
+Lemma linear_continuous (f: {linear U -> V | GRing.Scale.op s_law}) (k : V) :
+  k != 0 -> (f : _ -> _) =O_(0 : U) (cst k) -> continuous f.
+Proof.
+move=> k_neq0 /eqaddOP [l]; rewrite subr0 /= => /locally_normP [_/posrealP[d]].
+rewrite /cst /=; move: (_ * _) => {l k k_neq0}l fl.
+have [{l fl}l f_lipshitz] : exists l, forall x , `|[f x]| <= l * `|[x]|.
+  exists (l / ((d : R) / 2)%coqR).
+  move=> x; have := fl ((pos d / 2)%coqR * `|[x]| ^-1 *: x).
+  rewrite /ball_norm sub0r normmN.
+  (** BUG! in a vector space, the normm is totally scalable : normmZ *)
+  admit.
+have [l_gt0|l_le0] := ltrP 0 l; last first.
+  suff ->: (f : U -> V) = (0 : U -> V).
+    by move=> x; apply: (flim_trans (flim_const 0)).
+  rewrite funeqE => x /=; apply/eqP; rewrite -normm_eq0.
+  by rewrite eqr_le normm_ge0 andbT (ler_trans (f_lipshitz _)) // mulr_le0_ge0.
+move: l_gt0 => /posrealP[{l}l] in f_lipshitz *.
+move=> x; apply/flim_normP => _/posrealP[eps]; rewrite !near_simpl.
+rewrite (near_shift 0) /= subr0; near y => /=.
+  rewrite -linearB opprD addrC addrNK linearN normmN.
+  by rewrite (ler_lt_trans (f_lipshitz _)) // -ltr_pdivl_mull //; assume_near y.
+end_near.
+apply/locally_normP.
+by eexists; last by move=> ?; rewrite /ball_norm sub0r normmN; apply.
+Admitted.
+
+End Linear3.
+
+
 Section Differential.
 
 Context {K : absRingType} {V W : normedModType K}.
@@ -448,3 +482,30 @@ by rewrite funeqE => k /=; rewrite addrK.
 Qed.
 
 End Differential.
+
+Notation "''d_' F" := (@diff _ _ _ _ (Phantom _ [filter of F]))
+  (at level 0, F at level 0, format "''d_' F").
+Notation differentiable F := (@differentiable_def _ _ _ _ (Phantom _ [filter of F])).
+
+Section DifferentialR.
+
+Context {V W : normedModType R}.
+
+Lemma diff_continuous (x : V) (f : V -> W) (k : W) : k != 0 ->
+  differentiable x f -> ('d_x f : _ -> _) =O_(0 : V) (cst k) -> {for x, continuous f}.
+Proof.
+move=> kn0 dxf dxfO; have /diff_locally := dxf; rewrite -addrA.
+rewrite (@littleo_littleo _ _ _ _ _ _ _ (cst k)); last first.
+  apply/eqaddoP=> _/posrealP[eps] /=; rewrite !near_simpl subr0 /cst.
+  near y; [rewrite ltrW //; assume_near y|end_near].
+  apply/locally_normP; eexists=> [|?]; last first.
+    by rewrite /ball_norm ?sub0r ?normmN; apply.
+  by rewrite mulr_gt0 // normm_gt0.
+rewrite add0r addfo; last first.
+  apply/eqolimP => //.
+  apply: flim_trans (@linear_continuous _ _ _ _ _ k _ _ _) _ => //.
+  by rewrite linear0.
+by rewrite add0r => /eqoE /eqolimP -/(_ kn0); rewrite flim_shift add0r.
+Qed.
+
+End DifferentialR.
