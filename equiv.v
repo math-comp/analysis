@@ -68,7 +68,7 @@ Section Domination.
 Context {K : absRingType} {T : Type} {V W : normedModType K}.
 
 Definition littleo (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  forall (eps : posreal), \near x in F, `|[f x]| <= pos eps * `|[g x]|.
+  forall eps : R, 0 < eps -> \near x in F, `|[f x]| <= eps * `|[g x]|.
 
 Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
   littleo_fun :> T -> V;
@@ -82,19 +82,17 @@ Canonical littleo_subtype (F : set (set T)) (g : T -> W) :=
 
 Lemma littleo0 F g : Filter F -> littleo F 0 g.
 Proof.
-move=> FF eps /=; apply: filter_forall => x; rewrite normm0.
+move=> FF _/posrealP[eps] /=; apply: filter_forall => x; rewrite normm0.
 by rewrite mulr_ge0 // ltrW.
 Qed.
 
 Canonical little0 (F : filter_on T) g := Littleo (asboolT (@littleo0 F g _)).
 
-Lemma littleoP (F : set (set T)) (g : T -> W) (f : 'o_F g) :
-  forall eps, eps > 0 -> \near x in F, `|[f x]| <= eps * `|[g x]|.
-Proof.
-by case: f => ? /= /asboolP Fg eps eps_gt0; apply: (Fg (PosReal eps_gt0)).
-Qed.
+Lemma littleoP (F : set (set T)) (g : T -> W) (f : 'o_F g) : littleo F f g.
+Proof. by case: f => ? /= /asboolP. Qed.
 
-Definition the_littleo (F : filter_on T) (phF : phantom (set (set T)) F) f h := insubd (little0 F h) f.
+Definition the_littleo (F : filter_on T) (phF : phantom (set (set T)) F) f h :=
+   insubd (little0 F h) f.
 Arguments the_littleo : simpl never, clear implicits.
 
 Notation mklittleo x := (the_littleo _ (Phantom _ [filter of x])).
@@ -112,7 +110,7 @@ Notation "f '=o_' F h" := (f = \0 +o_ F h)
 Lemma add_littleo_subproof (F : filter_on T) e (df dg :'o_F e) :
   littleo F (df \+ dg) e.
 Proof.
-move=> eps; near x => /=.
+move=> _/posrealP[eps]; near x => /=.
   rewrite (double_var eps) mulrDl.
   rewrite (ler_trans (ler_normm_add _ _)) // ler_add //; assume_near x.
 by end_near; apply: littleoP.
@@ -160,6 +158,8 @@ Lemma eqoP (F : filter_on T) (e : T -> W) (f : T -> V) :
    (f =o_ F e) <-> (littleo F f e).
 Proof. by rewrite eqaddoP subr0. Qed.
 
+(* replaces a 'o_F e by a "canonical one" *)
+(* mostly to prevent problems with dependent types *)
 Lemma eqoE (F : filter_on T) (f g : T -> V) h (e : T -> W) :
   f = g + mklittleo F h e -> f = g +o_ F e.
 Proof. by move=> /eqadd_some_oP /eqaddoP. Qed.
@@ -168,7 +168,6 @@ Lemma eqo_trans (F : filter_on T) (f g h : T -> V) (e : T -> W):
   f = g +o_ F e -> g = h +o_F e -> f = h +o_F e.
 Proof. by move=> -> ->; apply: eqoE; rewrite -addrA addo. Qed.
 
-(* :TODO: add a spec to replace a 'o_F e by a "canonical one" *)
 (* mostly to prevent problems with dependent types *)
 
 Definition bigo (F : set (set T)) (f : T -> V) (g : T -> W) :=
@@ -200,14 +199,14 @@ Section Limit.
 
 Context {K : absRingType} {T : Type} {V W X : normedModType K}.
 
-Lemma eqolimP (F : filter_on T) (f : T -> V) (k : W) : k != 0 ->
-  cvg (f @ F) <-> f = cst (lim (f @ F)) +o_F (cst k).
+Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) (k : W) : k != 0 ->
+  f @ F --> l <-> f = cst l +o_F (cst k).
 Proof.
 move=> k_gt0; split=> fF.
-  apply/eqaddoP => eps; near x.
+  apply/eqaddoP => _/posrealP[eps]; near x.
     by rewrite /cst ltrW //= normmB; assume_near x.
   by end_near; apply: (flim_norm _ fF); rewrite mulr_gt0 ?normm_gt0.
-apply/flim_normP=> eps; rewrite !near_simpl.
+apply/flim_normP=> _/posrealP[eps]; rewrite !near_simpl.
 have lt_eps x : x <= (pos eps / (`|[k]| + 1)) * `|[k]| -> x < pos eps.
   rewrite -mulrA => /ler_lt_trans; apply; rewrite -ltr_pdivl_mull ?mulVf //.
   by rewrite ltr_pdivr_mull ?mulr1 ?ltr_addl ?addr_gt0 ?normm_gt0.
@@ -217,24 +216,28 @@ end_near; rewrite /= !near_simpl.
 by apply: littleoP; rewrite divr_gt0 ?addr_gt0 ?normm_gt0.
 Qed.
 
+Lemma sqrt_pos_gt0 (x : posreal) : 0 < Num.sqrt (x : R).
+Proof. by rewrite sqrtr_gt0. Qed.
+Canonical sqrt_posreal x := PosReal (sqrt_pos_gt0 x).
+
+Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
+  f =o_F g -> ((mklittleo F h f) : _ -> _) =o_F g.
+Proof.
+move=> /eqaddoP; rewrite subr0 => f_eq_og; apply/eqaddoP.
+rewrite subr0 => _/posrealP[eps].
+set k := the_littleo _ _ _ _; have kf := littleoP k.
+near x.
+  apply: (@ler_trans _ (Num.sqrt (eps : R) * `|[f x]|)); first by assume_near x.
+  rewrite -{2}[eps : R]sqr_sqrtr // -mulrA ler_pmul ?sqrtr_ge0 //.
+  by assume_near x.
+by end_near; [apply: kf|apply: f_eq_og].
+Qed.
+
+Lemma addfo (F : filter_on T) (h f : T -> V) (e : T -> W) :
+  f =o_F e -> f + mklittleo F h e =o_F e.
+Proof. by move->; apply/eqoE; rewrite !add0r addo. Qed.
+
 End Limit.
-
-Section Domination2.
-(* Context {K : absRingType} {T : Type} {V W X : normedModType K}. *)
-
-
-(* Context {K : absRingType} {T : Type} {V W X : normedModType K}. *)
-
-(* Lemma eqo_transo (F : filter_on T) f g :  *)
-(*    @the_littleo _ _ _ *)
-
-(*   f ='o_F g -> 'o_F f = 'o_F g *)
-(* Proof. *)
-(* by move=> -> ->; apply: eqoE; rewrite funeqE=> x; rewrite /= -addrA addo. *)
-(* Qed. *)
-  (*
- *)
-End Domination2.
 
 Section Shift.
 
@@ -260,21 +263,39 @@ End Shift.
 Arguments shift {R} x / y.
 Notation center c := (shift (- c)).
 
+Lemma near_shift {K : absRingType} {R : normedModType K}
+   (y x : R) (P : set R) :
+   (\near x, P x) = (\near z in y, (P \o shift (x - y)) z).
+Proof.
+rewrite propeqE; split=> /= /locally_normP [_/posrealP[e] ye];
+apply/locally_normP; exists e=> // t /= et.
+  apply: ye; rewrite /ball_norm !opprD addrA addrACA subrr add0r.
+  by rewrite opprK addrC.
+have /= := ye (t - (x - y)); rewrite addrNK; apply.
+by rewrite /ball_norm !opprB addrA addrCA subrr addr0.
+Qed.
+
+Lemma flim_shift {T : Type}  {K : absRingType} {R : normedModType K}
+  (x y : R) (f : R -> T) :
+  (f \o shift x) @ y = f @ (y + x).
+Proof.
+rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
+by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
+Qed.
 Section Differential.
 
 Context {K : absRingType} {V W : normedModType K}.
 
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
-  get (fun (df : V -> W) =>
-       f = cst (lim (f @ F)) + df \o center (lim F)
+  get (fun (df : {linear V -> W}) =>
+       f = cst (f (lim F)) + df \o center (lim F)
            +o_F (center (lim F))).
 
 Notation "''d_' F" := (@diff _ (Phantom _ [filter of F]))
   (at level 0, F at level 0, format "''d_' F").
 
-
 Definition differentiable_def (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
-   f = cst (lim (f @ F)) + 'd_F f \o center (lim F) +o_F (center (lim F)).
+   f = cst (f (lim F)) + 'd_F f \o center (lim F) +o_F (center (lim F)).
 
 Notation differentiable F := (@differentiable_def _ (Phantom _ [filter of F])).
 
@@ -288,10 +309,8 @@ Lemma littleo_shift (y x : V) (f : V -> W) (e : V -> V) :
   littleo (locally y) (f \o shift (x - y)) (e \o shift (x - y)) ->
   littleo (locally x) f e.
 Proof.
-rewrite /=; move=> fe eps; have /locally_normP [d _ de] := fe eps.
-apply/locally_normP; exists d => // z xdz.
-have /= := de (z + y - x); rewrite -!addrA addKr subrr addr0; apply.
-by rewrite /ball_norm addrA opprB addrC opprD -addrA addrNK.
+move=> fe _/posrealP[eps]; rewrite near_simpl (near_shift y).
+exact: filterS (fe _ [gt0 of eps]).
 Qed.
 
 Lemma littleo_center0 (x : V) (f : V -> W) (e : V -> V) :
@@ -306,7 +325,7 @@ by apply: (@littleo_shift 0); rewrite subr0.
 Qed.
 
 Lemma diff_locally (x : V) (f : V -> W) : differentiable x f ->
-  f \o shift x = cst (lim (f @ x)) + 'd_x f +o_(0 : V) id.
+  f \o shift x = cst (f x) + 'd_x f +o_(0 : V) id.
 Proof.
 move=> dxf; apply: eqoE; rewrite funeqE {1}dxf {dxf} => h /=.
 congr (_ + _ + _); rewrite ?lim_id ?addrK //=.
