@@ -448,9 +448,9 @@ Definition PFilterType {T} (F : (T -> Prop) -> Prop)
   PFilterPack F (Build_ProperFilter' fN0 fF).
 Arguments PFilterType {T} F {fF} fN0.
 
-Canonical filter_on_eqType T := EqType (filter_on T) (gen_eqMixin _).
+Canonical filter_on_eqType T := EqType (filter_on T) gen_eqMixin.
 Canonical filter_on_choiceType T :=
-  ChoiceType (filter_on T) (gen_choiceMixin _).
+  ChoiceType (filter_on T) gen_choiceMixin.
 Canonical filter_on_PointedType T :=
   PointedType (filter_on T) (FilterType _ (filter_setT T)).
 Canonical filter_on_FilteredType T :=
@@ -3155,8 +3155,8 @@ Definition Rbar_locally (a : Rbar) (P : R -> Prop) :=
     | -oo => exists M : R, forall x, x < M -> P x
   end.
 
-Canonical Rbar_eqType := EqType Rbar (gen_eqMixin _).
-Canonical Rbar_choiceType := ChoiceType Rbar (gen_choiceMixin _).
+Canonical Rbar_eqType := EqType Rbar gen_eqMixin.
+Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.
 Canonical Rbar_pointed := PointedType Rbar (+oo).
 Canonical Rbar_filter := FilteredType R Rbar (Rbar_locally).
 

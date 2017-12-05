@@ -50,6 +50,18 @@ Next Obligation. by move=> f g; rewrite funeqE => x; rewrite mulrC. Qed.
 
 End function_space.
 
+Section Linear1.
+Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
+Canonical linear_eqType := EqType {linear U -> V | s} gen_eqMixin.
+Canonical linear_choiceType := ChoiceType {linear U -> V | s} gen_choiceMixin.
+End Linear1.
+Section Linear2.
+Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V)
+        (s_law : GRing.Scale.law s).
+Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_law}
+                                            (@GRing.null_fun_linear R U V s s_law).
+End Linear2.
+
 (* Tentative to handle small o and big O notations *)
 Section Domination.
 
