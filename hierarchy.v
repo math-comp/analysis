@@ -1057,27 +1057,20 @@ by have /(_ subFD) := DAP (~` D); apply => -[x [dx /(_ dx)]].
 Qed.
 Definition subset_filter_proper' := @subset_filter_proper.
 
-(** * Uniform spaces defined using balls *)
+(** * Topological spaces *)
 
-Definition locally_ {T T'} (ball : T -> R -> set T') (x : T) :=
-   @filter_from R _ [set x | 0 < x] (ball x).
+Module Topological.
 
-Lemma locally_E {T T'} (ball : T -> R -> set T') x :
-  locally_ ball x = @filter_from R _ [set x : R | 0 < x] (ball x).
-Proof. by []. Qed.
-
-Module Uniform.
-
-Record mixin_of (M : Type) (locally : M -> set (set M)) := Mixin {
-  ball : M -> R -> M -> Prop ;
-  ax1 : forall x (e : posreal), ball x e x ;
-  ax2 : forall x y (e : R), ball x e y -> ball y e x ;
-  ax3 : forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
-  ax4 : locally = locally_ ball
+Record mixin_of (T : Type) (locally : T -> set (set T)) := Mixin {
+  open : set (set T) ;
+  ax1 : forall p : T, ProperFilter (locally p) ;
+  ax2 : forall p : T, locally p =
+    [set A : set T | exists B : set T, open B /\ B p /\ B `<=` A] ;
+  ax3 : open = [set A : set T | A `<=` locally^~ A ]
 }.
 
-Record class_of (M : Type) := Class {
-  base : Filtered.class_of M M;
+Record class_of (T : Type) := Class {
+  base : Filtered.class_of T T;
   mixin : mixin_of (Filtered.locally_op base)
 }.
 
@@ -1119,6 +1112,262 @@ Coercion pointedType : type >-> Pointed.type.
 Canonical pointedType.
 Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
+Notation topologicalType := type.
+Notation TopologicalType T m := (@pack T _ m _ _ idfun _ idfun).
+Notation TopologicalMixin := Mixin.
+Notation "[ 'topologicalType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
+  (at level 0, format "[ 'topologicalType'  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'topologicalType' 'of' T ]" := (@clone T _ _ id)
+  (at level 0, format "[ 'topologicalType'  'of'  T ]") : form_scope.
+
+End Exports.
+
+End Topological.
+
+Export Topological.Exports.
+
+Section Topological1.
+
+Context {T : topologicalType}.
+
+Definition open := Topological.open (Topological.class T).
+
+Definition neigh (p : T) (A : set T) := open A /\ A p.
+
+Global Instance locally_filter (p : T) : ProperFilter (locally p).
+Proof. by apply: Topological.ax1; case: T p => ? []. Qed.
+
+Canonical locally_filter_on (x : T) :=
+  FilterType (locally x) (@filter_filter' _ _ (locally_filter x)).
+
+Lemma locallyE (p : T) :
+  locally p = [set A : set T | exists B : set T, neigh p B /\ B `<=` A].
+Proof.
+have -> : locally p = [set A : set T | exists B, open B /\ B p /\ B `<=` A].
+  exact: Topological.ax2.
+by rewrite predeqE => A; split=> [[B [? []]]|[B [[]]]]; exists B.
+Qed.
+
+Notation "D ^o" := (locally^~ D) : classical_set_scope.
+
+Lemma openE : open = [set A : set T | A `<=` A^o].
+Proof. exact: Topological.ax3. Qed.
+
+Lemma locally_singleton (p : T) (A : set T) : locally p A -> A p.
+Proof. by rewrite locallyE => - [? [[_ ?]]]; apply. Qed.
+
+Lemma locally_locally (p : T) (A : set T) : locally p A -> locally p A^o.
+Proof.
+rewrite locallyE /neigh openE => - [B [[Bop Bp] sBA]].
+by exists B; split=> // q Bq; apply: filterS sBA _; apply: Bop.
+Qed.
+
+Lemma open0 : open set0.
+Proof. by rewrite openE. Qed.
+
+Lemma openT : open setT.
+Proof. by rewrite openE => ??; apply: filterT. Qed.
+
+Lemma openI (A B : set T) : open A -> open B -> open (A `&` B).
+Proof.
+rewrite openE => Aop Bop p [Ap Bp].
+by apply: filterI; [apply: Aop|apply: Bop].
+Qed.
+
+Lemma open_bigU (I : Type) (f : I -> set T) :
+  (forall i, open (f i)) -> open (\bigcup_i f i).
+Proof.
+by rewrite openE => fop p [i _ /fop]; apply: filterS => ??; exists i.
+Qed.
+
+Lemma openU (A B : set T) : open A -> open B -> open (A `|` B).
+Proof.
+by rewrite openE => Aop Bop p [/Aop|/Bop]; apply: filterS => ??; [left|right].
+Qed.
+
+Lemma open_ext (A B : set T) : (A `<=>` B) -> open A -> open B.
+Proof.
+by rewrite openE => AB Aop p /(proj2 AB)/Aop; apply: filterS => ? /(proj1 AB).
+Qed.
+
+Lemma openP (A B : set T) : open A -> (A `<=` B) -> (A `<=` B^o).
+Proof.
+by rewrite openE => Aop sAB p Ap; apply: filterS sAB _; apply: Aop.
+Qed.
+Definition locally_open := @openP.
+
+Lemma neighT (p : T) : neigh p setT.
+Proof. by split=> //; apply: openT. Qed.
+
+Lemma neighI (p : T) (A B : set T) :
+  neigh p A -> neigh p B -> neigh p (A `&` B).
+Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
+
+Lemma neigh_locally (p : T) (A : set T) : neigh p A -> locally p A.
+Proof. by rewrite locallyE => p_A; exists A; split. Qed.
+
+End Topological1.
+
+Section TopologyOfFilter.
+
+Context {T : Type} {loc : T -> set (set T)}.
+Hypothesis (loc_filter : forall p : T, ProperFilter (loc p)).
+Hypothesis (loc_singleton : forall (p : T) (A : set T), loc p A -> A p).
+Hypothesis (loc_loc : forall (p : T) (A : set T), loc p A -> loc p (loc^~ A)).
+
+Definition open_of_locally := [set A : set T | A `<=` loc^~ A].
+
+Program Definition topologyOfFilterMixin : Topological.mixin_of loc :=
+  @Topological.Mixin T loc open_of_locally _ _ _.
+Next Obligation.
+rewrite predeqE => A; split=> [p_A|]; last first.
+  by move=> [B [Bop [Bp sBA]]]; apply: filterS sBA _; apply: Bop.
+exists (loc^~ A); split; first by move=> ?; apply: loc_loc.
+by split => // q /loc_singleton.
+Qed.
+
+End TopologyOfFilter.
+
+Section TopologyOfOpen.
+
+Variable (T : Type) (op : set T -> Prop).
+Hypothesis (opT : op setT).
+Hypothesis (opI : forall (A B : set T), op A -> op B -> op (A `&` B)).
+Hypothesis (op_bigU : forall (I : Type) (f : I -> set T),
+  (forall i, op (f i)) -> op (\bigcup_i f i)).
+
+Definition locally_of_open (p : T) (A : set T) :=
+  exists B, op B /\ B p /\ B `<=` A.
+
+Program Definition topologyOfOpenMixin : Topological.mixin_of locally_of_open :=
+  @Topological.Mixin T locally_of_open op _ _ _.
+Next Obligation.
+apply Build_ProperFilter.
+  by move=> A [B [_ [Bp sBA]]]; exists p; apply: sBA.
+split; first by exists setT.
+  move=> A B [C [Cop [Cp sCA]]] [D [Dop [Dp sDB]]].
+  exists (C `&` D); split; first exact: opI.
+  by split=> // q [/sCA Aq /sDB Bq].
+move=> A B sAB [C [Cop [p_C sCA]]].
+by exists C; split=> //; split=> //; apply: subset_trans sAB.
+Qed.
+Next Obligation.
+rewrite predeqE => A; split=> [Aop p Ap|Aop].
+  by exists A; split=> //; split.
+suff -> : A = \bigcup_(B : {B : set T & op B /\ B `<=` A}) projT1 B.
+  by apply: op_bigU => B; have [] := projT2 B.
+rewrite predeqE => p; split=> [|[B _ Bp]]; last by have [_] := projT2 B; apply.
+by move=> /Aop [B [Bop [Bp sBA]]]; exists (existT _ B (conj Bop sBA)).
+Qed.
+
+End TopologyOfOpen.
+
+Lemma near_join (T : topologicalType) (x : T) (P : set T) :
+  (\near x, P x) -> \near x, \near x, P x.
+Proof. exact: locally_locally. Qed.
+
+Lemma near_bind (T : topologicalType) (P Q : set T) (x : T) :
+  (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
+Proof.
+move=> PQ xP; near y.
+  by apply: (near PQ y) => //; apply: (near (near_join xP) y).
+by end_near.
+Qed.
+
+Section Prod_Topology.
+
+Context {T U : topologicalType}.
+
+Let prod_loc (p : T * U) := filter_prod (locally p.1) (locally p.2).
+
+Lemma prod_loc_filter (p : T * U) : ProperFilter (prod_loc p).
+Proof. exact: filter_prod_proper. Qed.
+
+Lemma prod_loc_singleton (p : T * U) (A : set (T * U)) : prod_loc p A -> A p.
+Proof.
+by move=> [QR [/locally_singleton Qp1 /locally_singleton Rp2]]; apply.
+Qed.
+
+Lemma prod_loc_loc (p : T * U) (A : set (T * U)) :
+  prod_loc p A -> prod_loc p (prod_loc^~ A).
+Proof.
+move=> [QR [/locally_locally p1_Q /locally_locally p2_R] sQRA].
+by exists (locally^~ QR.1, locally^~ QR.2) => // ??; exists QR.
+Qed.
+
+Definition prod_topologicalTypeMixin :=
+  topologyOfFilterMixin prod_loc_filter prod_loc_singleton prod_loc_loc.
+
+Canonical prod_topologicalType :=
+  TopologicalType (T * U) prod_topologicalTypeMixin.
+
+End Prod_Topology.
+
+(** * Uniform spaces defined using balls *)
+
+Definition locally_ {T T'} (ball : T -> R -> set T') (x : T) :=
+   @filter_from R _ [set x | 0 < x] (ball x).
+
+Lemma locally_E {T T'} (ball : T -> R -> set T') x :
+  locally_ ball x = @filter_from R _ [set x : R | 0 < x] (ball x).
+Proof. by []. Qed.
+
+Module Uniform.
+
+Record mixin_of (M : Type) (locally : M -> set (set M)) := Mixin {
+  ball : M -> R -> M -> Prop ;
+  ax1 : forall x (e : posreal), ball x e x ;
+  ax2 : forall x y (e : R), ball x e y -> ball y e x ;
+  ax3 : forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
+  ax4 : locally = locally_ ball
+}.
+
+Record class_of (M : Type) := Class {
+  base : Topological.class_of M;
+  mixin : mixin_of (Filtered.locally_op base)
+}.
+
+Section ClassDef.
+
+Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Local Coercion sort : type >-> Sortclass.
+Variables (T : Type) (cT : type).
+Definition class := let: Pack _ c _ := cT return class_of cT in c.
+
+Definition clone c of phant_id class c := @Pack T c T.
+Let xT := let: Pack T _ _ := cT in T.
+Notation xclass := (class : class_of xT).
+Local Coercion base : class_of >-> Topological.class_of.
+Local Coercion mixin : class_of >-> mixin_of.
+
+Definition pack loc (m : @mixin_of T loc) :=
+  fun bT (b : Topological.class_of T) of phant_id (@Topological.class bT) b =>
+  fun m'   of phant_id m (m' : @mixin_of T (Filtered.locally_op b)) =>
+  @Pack T (@Class _ b m') T.
+
+Definition eqType := @Equality.Pack cT xclass xT.
+Definition choiceType := @Choice.Pack cT xclass xT.
+Definition pointedType := @Pointed.Pack cT xclass xT.
+Definition filteredType := @Filtered.Pack cT cT xclass xT.
+Definition topologicalType := @Topological.Pack cT xclass xT.
+
+End ClassDef.
+
+Module Exports.
+
+Coercion sort : type >-> Sortclass.
+Coercion base : class_of >-> Topological.class_of.
+Coercion mixin : class_of >-> mixin_of.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion pointedType : type >-> Pointed.type.
+Canonical pointedType.
+Coercion filteredType : type >-> Filtered.type.
+Canonical filteredType.
+Coercion topologicalType : type >-> Topological.type.
+Canonical topologicalType.
 Notation uniformType := type.
 Notation UniformType T m := (@pack T _ m _ _ idfun _ idfun).
 Notation UniformMixin := Mixin.
@@ -1132,6 +1381,47 @@ End Exports.
 End Uniform.
 
 Export Uniform.Exports.
+
+Section UniformTopology.
+
+Lemma my_ball_le (M : Type) (loc : M -> set (set M))
+  (m : Uniform.mixin_of loc) :
+  forall (x : M) (e1 e2 : R), e1 <= e2 ->
+  forall (y : M), Uniform.ball m x e1 y -> Uniform.ball m x e2 y.
+Proof.
+move=> x e1 e2 le12 y xe1_y.
+move: le12; rewrite ler_eqVlt => /orP [/eqP <- //|].
+rewrite -subr_gt0 => lt12.
+rewrite -[e2](subrK e1); apply: Uniform.ax3 xe1_y.
+suff : Uniform.ball m x (PosReal lt12) x by [].
+exact: Uniform.ax1.
+Qed.
+
+Program Definition uniform_TopologicalTypeMixin (T : Type)
+  (loc : T -> set (set T)) (m : Uniform.mixin_of loc) :
+  Topological.mixin_of loc := topologyOfFilterMixin _ _ _.
+Next Obligation.
+rewrite (Uniform.ax4 m) locally_E; apply filter_from_proper; last first.
+  move=> e egt0; exists p; suff : Uniform.ball m p (PosReal egt0) p by [].
+  exact: Uniform.ax1.
+apply: filter_from_filter; first by exists 1.
+move=> e1 e2 e1gt0 e2gt0; exists (Num.min e1 e2).
+  by have := min_pos_gt0 (PosReal e1gt0) (PosReal e2gt0).
+by move=> q pmin_q; split; apply: my_ball_le pmin_q;
+  rewrite ler_minl lerr // orbC.
+Qed.
+Next Obligation.
+move: H; rewrite (Uniform.ax4 m) locally_E => - [e egt0]; apply.
+by have : Uniform.ball m p (PosReal egt0) p by exact: Uniform.ax1.
+Qed.
+Next Obligation.
+move: H; rewrite (Uniform.ax4 m) locally_E => - [e egt0 pe_A].
+exists [posreal of (PosReal egt0) / 2] => // q phe_q.
+rewrite locally_E; exists [posreal of (PosReal egt0) / 2] => // r qhe_r.
+by apply: pe_A; rewrite [e]double_var; apply: Uniform.ax3 qhe_r.
+Qed.
+
+End UniformTopology.
 
 Definition ball {M : uniformType} := Uniform.ball (Uniform.class M).
 
@@ -1319,6 +1609,9 @@ Canonical absRing_pointedType.
 Coercion absRing_filteredType (K : absRingType) :=
    FilteredType K K (locally_ AbsRing_ball).
 Canonical absRing_filteredType.
+Coercion absRing_topologicalType (K : absRingType) :=
+  TopologicalType K (uniform_TopologicalTypeMixin AbsRingUniformMixin).
+Canonical absRing_topologicalType.
 Coercion absRing_UniformType (K : absRingType) := UniformType K AbsRingUniformMixin.
 Canonical absRing_UniformType.
 
@@ -1331,9 +1624,11 @@ Canonical R_absRingType := AbsRingType R R_AbsRingMixin.
 
 Canonical R_pointedType := [pointedType of R for R_absRingType].
 Canonical R_filteredType := [filteredType R of R for R_absRingType].
+Canonical R_topologicalType := [topologicalType of R for R_absRingType].
 Canonical R_UniformSpace := [uniformType of R for R_absRingType].
 Canonical Ro_pointedType := [pointedType of R^o for R_absRingType].
 Canonical Ro_filteredType := [filteredType R^o of R^o for R_absRingType].
+Canonical Ro_topologicalType := [topologicalType of R^o for R_absRingType].
 Canonical Ro_UniformSpace := [uniformType of R^o for R_absRingType].
 
 Section uniformType1.
@@ -1403,25 +1698,6 @@ Hint Resolve close_refl.
 (*Require Import FunctionalExtensionality.
 Notation funext := functional_extensionality.*)
 
-Section LocallyDef.
-
-Context {T : uniformType}.
-Implicit Types x y : T.
-
-Global Instance locally_filter (x : T) : ProperFilter (locally x).
-Proof.
-rewrite -locally_ballE; constructor =>
-  [[_/posrealP[eps] /(_ _ (ball_center _ _))] //|].
-apply: filter_from_filter; first by exists [posreal of 1].
-move=> _ _ /posrealP[e1] /posrealP[e2]; exists (minr (e1 : R) (e2 : R)) => //.
-by move=> P /= xP; split; apply: ball_ler xP; rewrite ler_minl lerr ?orbT.
-Qed.
-
-Canonical locally_filter_on (x : T) :=
-  FilterType (locally x) (@filter_filter' _ _ (locally_filter x)).
-
-End LocallyDef.
-
 (*compat*)
 Lemma ProperFilter_ext {T} (F G : set (set T)) : (forall P, F P <-> G P) ->
   ProperFilter F -> ProperFilter G.
@@ -1432,29 +1708,6 @@ Qed.
 
 Section Locally.
 Context {T : uniformType}.
-
-Lemma locally_locally (x : T) (P : set T) :
-  locally x P -> locally x (locally^~ P).
-Proof.
-move=> /locallyP [_/posrealP[dp] Hp].
-apply/locallyP; exists (dp / 2)%coqR => // y xy.
-apply/locallyP; exists (dp / 2)%coqR => // z yz.
-by apply: Hp; apply: ball_split yz.
-Qed.
-
-Lemma near_join (x : T) (P : set T) : (\near x, P x) -> \near x, \near x, P x.
-Proof. exact: locally_locally. Qed.
-
-Lemma near_bind (P Q : set T) (x : T) :
-  (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
-Proof.
-move=> PQ xP; near y.
-  by apply: (near PQ y) => //; apply: (near (near_join xP) y).
-by end_near.
-Qed.
-
-Lemma locally_singleton (x : T) (P : set T) : locally x P -> P x.
-Proof. by move=> /locallyP [_ /posrealP[dp] H]; apply/H/ball_center. Qed.
 
 Lemma locally_ball (x : T) (eps : posreal) : locally x (ball x eps).
 Proof. by apply/locallyP; exists eps. Qed.
@@ -1589,7 +1842,12 @@ Proof. by move=> xy yz t; apply: (@ball_triangle _ (y t)). Qed.
 Definition fct_uniformType_mixin :=
   UniformMixin fct_ball_center fct_ball_sym fct_ball_triangle erefl.
 
+Definition fct_topologicalTypeMixin :=
+  uniform_TopologicalTypeMixin fct_uniformType_mixin.
+
 Canonical generic_source_filter := @Filtered.Source _ _ _ (locally_ fct_ball).
+Canonical fct_topologicalType :=
+  TopologicalType (T -> U) fct_topologicalTypeMixin.
 Canonical fct_uniformType := UniformType (T -> U) fct_uniformType_mixin.
 
 End fct_Uniform.
@@ -1609,6 +1867,13 @@ by move=> P /=; rewrite ltr_minr => /andP [dPe1 dPe2].
 Qed.
 
 Notation continuous f := (forall x, f%function @ x --> f%function x).
+
+Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
+  {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
+Proof.
+rewrite !openE => fcont Dop x /= Dfx.
+by apply: fcont; [rewrite in_setE|apply: Dop].
+Qed.
 
 Section Locally_fct.
 
@@ -1715,7 +1980,7 @@ Qed.
 End Cvg.
 Arguments close_lim {U} F1 F2 {FF2} _.
 
-Lemma is_filter_lim_filtermap {T: uniformType} {U : uniformType}
+Lemma is_filter_lim_filtermap {T: topologicalType} {U : topologicalType}
   (F : set (set T)) x (f : T -> U) :
    {for x, continuous f} -> F --> x -> f @ F --> f x.
 Proof. by move=> cf fx P /cf /fx. Qed.
@@ -1723,16 +1988,16 @@ Proof. by move=> cf fx P /cf /fx. Qed.
 (** locally' *)
 
 (* Should have a generic ^' operator *)
-Definition locally' {T : uniformType} (x : T) :=
+Definition locally' {T : topologicalType} (x : T) :=
   within (fun y => y <> x) (locally x).
 
-Global Instance locally'_filter {T : uniformType} (x : T) :
+Global Instance locally'_filter {T : topologicalType} (x : T) :
   Filter (locally' x).
 Proof. exact: within_filter. Qed.
 
 Section at_point.
 
-Context {T : uniformType}.
+Context {T : Type}.
 
 Definition at_point (a : T) (P : set T) : Prop := P a.
 
@@ -1741,79 +2006,18 @@ Proof. by constructor=> //; constructor=> // P Q subPQ /subPQ. Qed.
 
 End at_point.
 
-(** ** Topology in uniform spaces *)
-
-Section Open.
-
-Context {T : uniformType}.
-
-Notation "D ^o" := (locally^~ D) : classical_set_scope.
-Definition open (D : set T) := D `<=` D^o.
-
-Lemma openP (D E : set T) : open D -> (D `<=` E) -> (D `<=` E^o).
-Proof.
-move=> D_open DE x Dx; near y; first by apply: DE; assume_near y.
-by end_near; apply: D_open.
-Qed.
-Definition locally_open := @openP.
-
-Lemma open_ext (D E : set T) : (D `<=>` E) -> open D -> open E.
-Proof.
-move=> DE D_open x Ex; near y; first by apply DE; assume_near y.
-by end_near; apply: D_open; apply DE.
-Qed.
-
-Lemma openI (D E : set T) : open D -> open E -> open (D `&` E).
-Proof.
-move=> D_open E_open x [Dx Ex]; near y; first by split; assume_near y.
-by end_near; [apply: D_open|apply E_open].
-Qed.
-
-Lemma open_bigU {I : Type} (D : I -> set T) :
-  (forall i, open (D i)) -> open (\bigcup_i D i).
-Proof.
-move=> D_open x [i _ Dix]; near y; first by exists i => //; assume_near y.
-by end_near; apply: D_open.
-Qed.
-
-Lemma openU (D E : set T) : open D -> open E -> open (D `|` E).
-Proof.
-move=> D_open E_open x [Dx|Ex].
-- by move/filterS : (D_open x Dx); apply; left.
-- by move/filterS : (E_open x Ex); apply; right.
-Qed.
-
-Lemma openT : open setT. Proof. by move=> *; apply: filterT. Qed.
-Lemma open0 : open set0. Proof. by []. Qed.
-
-End Open.
-
-Lemma open_comp  {T U : uniformType} (f : T -> U) (D : set U) :
-  {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
-Proof.
-move=> f_continous open_D x /= Dfx.
-apply: f_continous => //=; first by rewrite in_setE.
-exact: open_D.
-Qed.
-
-(** ** Closed sets in uniform spaces *)
+(** ** Closed sets in topological spaces *)
 
 Section Closed.
 
-Context {T : uniformType}.
+Context {T : topologicalType}.
 
 Definition closed (D : set T) :=
   forall x, ~ (\near x, ~ D x) -> D x.
 
-Lemma openN (D : set T) : closed D -> open (~` D).
-Proof.
-move=> D_close x Dx; apply: locallyN => subD.
-by apply/Dx/D_close; apply/locallyP => -[_ /posrealP[eps] /subD].
-Qed.
-
 Lemma closedN (D : set T) : open D -> closed (~` D).
 Proof.
-move=> D_open x /= Lx Dx; apply: Lx.
+rewrite openE => D_open x /= Lx Dx; apply: Lx.
 by apply: filterS (D_open _ Dx) => y Dy /(_ Dy).
 Qed.
 
@@ -1847,22 +2051,26 @@ Qed.
 Lemma closedT : closed setT. Proof. by []. Qed.
 
 Lemma closed0 : closed set0.
-Proof.
-move=> x x0; apply: x0.
-by apply/locallyP; exists [posreal of 1] => // ???.
-Qed.
+Proof. by apply: closed_ext (closedN openT) => ?; split=> //; apply. Qed.
 
 End Closed.
 
-Lemma closed_comp {T U : uniformType} (f : T -> U) (D : set U) :
+Lemma openN (T : uniformType) (D : set T) : closed D -> open (~` D).
+Proof.
+rewrite openE => D_close x Dx; apply: locallyN => subD.
+by apply/Dx/D_close; apply/locallyP => -[_ /posrealP[eps] /subD].
+Qed.
+
+Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
 move=> f_cont D_cl x /= xDf; apply: D_cl; apply: contrap xDf => fxD.
-have NDfx: ~ D (f x) by move: fxD => /locallyP [_ /posrealP[e]]; apply.
+have NDfx : ~ D (f x).
+  by move: fxD; rewrite -locally_nearE locallyE => - [A [[??]]]; apply.
 by apply: f_cont fxD; rewrite in_setE.
 Qed.
 
-Lemma closed_filterlim_loc {T} {U : uniformType} {F} {FF : ProperFilter F}
+Lemma closed_filterlim_loc {T} {U : topologicalType} {F} {FF : ProperFilter F}
   (f : T -> U) (D : U -> Prop) :
   forall y, f @ F --> y -> F (f @^-1` D) -> closed D -> D y.
 Proof.
@@ -1871,7 +2079,7 @@ move=> y Ffy Df CD; apply: CD => yND; apply: filter_not_empty; near x.
 by end_near; exact: (Ffy _ yND).
 Qed.
 
-Lemma closed_filterlim {T} {U : uniformType} {F} {FF : ProperFilter F}
+Lemma closed_filterlim {T} {U : topologicalType} {F} {FF : ProperFilter F}
   (f : T -> U) (D : U -> Prop) :
   forall y, f @ F --> y -> (forall x, D (f x)) -> closed D -> D y.
 Proof.
@@ -1938,6 +2146,7 @@ Definition eqType := @Equality.Pack cT xclass xT.
 Definition choiceType := @Choice.Pack cT xclass xT.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
+Definition topologicalType := @Topological.Pack cT xclass xT.
 Definition uniformType := @Uniform.Pack cT xclass xT.
 
 End ClassDef.
@@ -1955,6 +2164,8 @@ Coercion pointedType : type >-> Pointed.type.
 Canonical pointedType.
 Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
+Coercion topologicalType : type >-> Topological.type.
+Canonical topologicalType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
 Notation completeType := type.
@@ -2092,15 +2303,18 @@ Record class_of (T : Type) := Class {
   base : GRing.Lmodule.class_of K T ;
   pointed_mixin : Pointed.point_of T ;
   locally_mixin : Filtered.locally_of T T ;
+  topological_mixin : @Topological.mixin_of T locally_mixin ;
   uniform_mixin : @Uniform.mixin_of T locally_mixin;
   mixin : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T base T) _ uniform_mixin
 }.
 Local Coercion base : class_of >-> GRing.Lmodule.class_of.
 Definition base2 T (c : class_of T) :=
   @Uniform.Class _
-    (Filtered.Class
-     (Pointed.Class (@base T c) (pointed_mixin c))
-     (locally_mixin c))
+    (@Topological.Class _
+      (Filtered.Class
+       (Pointed.Class (@base T c) (pointed_mixin c))
+       (locally_mixin c))
+      (topological_mixin c))
     (uniform_mixin c).
 Local Coercion base2 : class_of >-> Uniform.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
@@ -2119,7 +2333,7 @@ Notation xclass := (class : class_of xT).
 Definition pack b0 l0 um0 (m0 : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T b0 T) l0 um0) :=
   fun bT b & phant_id (@GRing.Lmodule.class K phK bT) b =>
   fun ubT (ub : Uniform.class_of _) & phant_id (@Uniform.class ubT) ub =>
-  fun   m & phant_id m0 m => Pack phK (@Class T b ub ub ub m) T.
+  fun   m & phant_id m0 m => Pack phK (@Class T b ub ub ub ub m) T.
 
 Definition eqType := @Equality.Pack cT xclass xT.
 Definition choiceType := @Choice.Pack cT xclass xT.
@@ -2127,6 +2341,7 @@ Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass xT.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
+Definition topologicalType := @Topological.Pack cT xclass xT.
 Definition uniformType := @Uniform.Pack cT xclass xT.
 Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass xT.
 Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass xT.
@@ -2150,6 +2365,8 @@ Coercion pointedType : type >-> Pointed.type.
 Canonical pointedType.
 Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
+Coercion topologicalType : type >-> Topological.type.
+Canonical topologicalType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
 Canonical join_zmodType.
@@ -2703,6 +2920,7 @@ Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass xT.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
+Definition topologicalType := @Topological.Pack cT xclass xT.
 Definition uniformType := @Uniform.Pack cT xclass xT.
 Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass xT.
 Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass xT.
@@ -2727,6 +2945,8 @@ Coercion pointedType : type >-> Pointed.type.
 Canonical pointedType.
 Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
+Coercion topologicalType : type >-> Topological.type.
+Canonical topologicalType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
 Canonical join_zmodType.
@@ -2794,12 +3014,12 @@ Qed.
 
 (** * The topology on real numbers *)
 
-Definition R_AbsRing_mixin :=
-  @AbsRingMixin [ringType of R] _ absr0 absrN1 ler_abs_add absrM absr0_eq0.
-Canonical R_AbsRing := @AbsRingType R R_AbsRing_mixin.
-Definition R_uniformType_mixin := @AbsRingUniformMixin R_AbsRing.
+(* Definition R_AbsRing_mixin := *)
+(*   @AbsRingMixin [ringType of R] _ absr0 absrN1 ler_abs_add absrM absr0_eq0. *)
+(* Canonical R_AbsRing := @AbsRingType R R_AbsRing_mixin. *)
+(* Definition R_uniformType_mixin := @AbsRingUniformMixin R_AbsRing. *)
 
-Canonical R_uniformType := UniformType R R_uniformType_mixin.
+(* Canonical R_uniformType := UniformType R R_uniformType_mixin. *)
 (*NB: already exists Canonical R_filter := @CanonicalFilter R R locally.*)
 
 (* TODO: Remove R_complete_lim and use lim instead *)
