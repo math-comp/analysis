@@ -67,6 +67,10 @@ Canonical invr_posreal x := PosReal (inv_pos_gt0 x).
 Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
 Canonical oner_posreal := PosReal (@ltr01 _).
 
+Lemma sqrt_pos_gt0 (x : posreal) : 0 < Num.sqrt (x : R).
+Proof. by rewrite sqrtr_gt0. Qed.
+Canonical sqrt_posreal x := PosReal (sqrt_pos_gt0 x).
+
 Definition posreal_of (x : R) y of x = y := y.
 
 CoInductive posreal_spec (x : R) : R -> bool -> bool -> bool -> Type :=

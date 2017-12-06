@@ -330,10 +330,6 @@ end_near; rewrite /= !near_simpl.
 by apply: littleoP; rewrite divr_gt0 ?addr_gt0 ?normm_gt0.
 Qed.
 
-Lemma sqrt_pos_gt0 (x : posreal) : 0 < Num.sqrt (x : R).
-Proof. by rewrite sqrtr_gt0. Qed.
-Canonical sqrt_posreal x := PosReal (sqrt_pos_gt0 x).
-
 Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
   f =o_F g -> ((mklittleo F h f) : _ -> _) =o_F g.
 Proof.
