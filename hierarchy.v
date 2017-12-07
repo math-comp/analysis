@@ -2012,34 +2012,31 @@ Section Closed.
 
 Context {T : topologicalType}.
 
-Definition closed (D : set T) :=
-  forall x, ~ (\near x, ~ D x) -> D x.
+Definition closure (A : set T) :=
+  [set p : T | forall B, locally p B -> A `&` B !=set0].
+
+Definition closed (D : set T) := closure D `<=` D.
 
 Lemma closedN (D : set T) : open D -> closed (~` D).
-Proof.
-rewrite openE => D_open x /= Lx Dx; apply: Lx.
-by apply: filterS (D_open _ Dx) => y Dy /(_ Dy).
-Qed.
+Proof. by rewrite openE => Dop p clNDp /Dop /clNDp [? []]. Qed.
 
 Lemma closed_ext (D E : set T) : (forall x, D x <-> E x) ->
   closed D -> closed E.
 Proof.
-move=> DE D_closed x Ex; apply/DE/D_closed => Dx; apply: Ex.
-by apply: filterS Dx => y /DE.
+by move=> DE Dcl p clEp; apply/DE/Dcl => ? /clEp [q [/DE ??]]; exists q.
 Qed.
 
 Lemma closed_bigI {I} (D : I -> set T) :
   (forall i, closed (D i)) -> closed (\bigcap_i D i).
 Proof.
-move=> D_closed x Dx i _; apply/D_closed=> Dix; apply: Dx.
-by apply: filterS Dix => y NDiy /(_ i _) /NDiy; apply.
+move=> Dcl p clDp i _; apply/Dcl => A /clDp [q [Dq Aq]].
+by exists q; split=> //; apply: Dq.
 Qed.
 
 Lemma closedI (D E : set T) : closed D -> closed E -> closed (D `&` E).
 Proof.
-move=> D_closed E_closed x DEx; split.
-  by apply/D_closed=> Dx; apply: DEx; apply: filterS Dx=> y NDy [/NDy].
-by apply/E_closed=> Ex; apply: DEx; apply: filterS Ex=> y NEy [_ /NEy].
+by move=> Dcl Ecl p clDEp; split; [apply: Dcl|apply: Ecl];
+  move=> A /clDEp [q [[]]]; exists q.
 Qed.
 
 (* Lemma closedU (D E : set T) : closed D -> closed E -> closed (D `|` E). *)
@@ -2051,20 +2048,36 @@ Qed.
 Lemma closedT : closed setT. Proof. by []. Qed.
 
 Lemma closed0 : closed set0.
-Proof. by apply: closed_ext (closedN openT) => ?; split=> //; apply. Qed.
+Proof. by move=> ? /(_ setT) [|? []] //; apply: filterT. Qed.
+
+Lemma closedE : closed = [set A : set T | forall p, ~ (\near p, ~ A p) -> A p].
+Proof.
+rewrite predeqE => A; split=> Acl p; last first.
+  by move=> clAp; apply: Acl; rewrite -locally_nearE => /clAp [? []].
+rewrite -locally_nearE locallyE => /asboolP.
+rewrite asbool_neg => /forallp_asboolPn clAp.
+apply: Acl => B; rewrite locallyE => - [C [p_C sCB]].
+have /asboolP := clAp C.
+rewrite asbool_neg asbool_and => /nandP [/asboolP//|/existsp_asboolPn [q]].
+move/asboolP; rewrite asbool_neg => /imply_asboolPn [/sCB Bq /contrapT Aq].
+by exists q.
+Qed.
+
+Lemma closed_closure (A : set T) : closed (closure A).
+Proof. by move=> p clclAp B /locally_locally /clclAp [q [clAq /clAq]]. Qed.
 
 End Closed.
 
 Lemma openN (T : uniformType) (D : set T) : closed D -> open (~` D).
 Proof.
-rewrite openE => D_close x Dx; apply: locallyN => subD.
+rewrite closedE openE => D_close x Dx; apply: locallyN => subD.
 by apply/Dx/D_close; apply/locallyP => -[_ /posrealP[eps] /subD].
 Qed.
 
 Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
-move=> f_cont D_cl x /= xDf; apply: D_cl; apply: contrap xDf => fxD.
+rewrite !closedE=> f_cont D_cl x /= xDf; apply: D_cl; apply: contrap xDf => fxD.
 have NDfx : ~ D (f x).
   by move: fxD; rewrite -locally_nearE locallyE => - [A [[??]]]; apply.
 by apply: f_cont fxD; rewrite in_setE.
@@ -2074,9 +2087,8 @@ Lemma closed_filterlim_loc {T} {U : topologicalType} {F} {FF : ProperFilter F}
   (f : T -> U) (D : U -> Prop) :
   forall y, f @ F --> y -> F (f @^-1` D) -> closed D -> D y.
 Proof.
-move=> y Ffy Df CD; apply: CD => yND; apply: filter_not_empty; near x.
-  suff [//] : D (f x) /\ ~ D (f x); split; assume_near x.
-by end_near; exact: (Ffy _ yND).
+move=> y Ffy Df; apply => A /Ffy /=; rewrite locally_filterE.
+by move=> /(filterI Df); apply: filter_ex.
 Qed.
 
 Lemma closed_filterlim {T} {U : topologicalType} {F} {FF : ProperFilter F}
