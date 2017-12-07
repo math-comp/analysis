@@ -380,21 +380,20 @@ Section Limit.
 
 Context {K : absRingType} {T : Type} {V W X : normedModType K}.
 
-Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) (k : W) : k != 0 ->
-  f @ F --> l <-> f = cst l +o_F (cst k).
+Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
+  f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
 Proof.
-move=> k_gt0; split=> fF.
+split=> fFl.
   apply/eqaddoP => _/posrealP[eps]; near x.
     by rewrite /cst ltrW //= normmB; assume_near x.
-  by end_near; apply: (flim_norm _ fF); rewrite mulr_gt0 ?normm_gt0.
+  by end_near; apply: (flim_norm _ fFl); rewrite mulr_gt0 // ?absr1_gt0.
 apply/flim_normP=> _/posrealP[eps]; rewrite !near_simpl.
-have lt_eps x : x <= (pos eps / (`|[k]| + 1)) * `|[k]| -> x < pos eps.
-  rewrite -mulrA => /ler_lt_trans; apply; rewrite -ltr_pdivl_mull ?mulVf //.
-  by rewrite ltr_pdivr_mull ?mulr1 ?ltr_addl ?addr_gt0 ?normm_gt0.
+have lt_eps x : x <= (pos eps / 2%:R) * `|1 : K^o|%real -> x < pos eps.
+  rewrite absr1 mulr1 => /ler_lt_trans; apply.
+  by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
 near x.
-  rewrite [X in X x]fF opprD addNKr normmN lt_eps //; assume_near x.
-end_near; rewrite /= !near_simpl.
-by apply: littleoP; rewrite divr_gt0 ?addr_gt0 ?normm_gt0.
+  by rewrite [X in X x]fFl opprD addNKr normmN lt_eps //; assume_near x.
+by end_near; rewrite /= !near_simpl; apply: littleoP; rewrite divr_gt0.
 Qed.
 
 (* should be generalized with a bigO in the hypothesis *)
@@ -464,11 +463,11 @@ Section Linear3.
 Context (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
         (s_law : GRing.Scale.law s).
 
-Lemma linear_continuous (f: {linear U -> V | GRing.Scale.op s_law}) (k : V) :
-  k != 0 -> (f : _ -> _) =O_(0 : U) (cst k) -> continuous f.
+Lemma linear_continuous (f: {linear U -> V | GRing.Scale.op s_law}) :
+  (f : _ -> _) =O_(0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
-move=> k_neq0 /eqaddOP [l]; rewrite subr0 /= => /locally_normP [_/posrealP[d]].
-rewrite /cst /=; move: (_ * _) => {l k k_neq0}l fl.
+move=> /eqaddOP [l]; rewrite subr0 /= => /locally_normP [_/posrealP[d]].
+rewrite /cst /=; move: (_ * _) => {l}l fl.
 have [{l fl}l f_lipshitz] : exists l, forall x , `|[f x]| <= l * `|[x]|.
   exists (l / ((d : R) / 2)%coqR).
   move=> x; have := fl ((pos d / 2)%coqR * `|[x]| ^-1 *: x).
@@ -554,21 +553,20 @@ Section DifferentialR.
 
 Context {V W : normedModType R}.
 
-Lemma diff_continuous (x : V) (f : V -> W) (k : W) : k != 0 ->
-  differentiable x f -> ('d_x f : _ -> _) =O_(0 : V) (cst k) -> {for x, continuous f}.
+Lemma diff_continuous (x : V) (f : V -> W) :
+  differentiable x f -> ('d_x f : _ -> _) =O_(0 : V) (cst (1 : R^o)) -> {for x, continuous f}.
 Proof.
-move=> kn0 dxf dxfO; have /diff_locally := dxf; rewrite -addrA.
-rewrite (@littleo_littleo _ _ _ _ _ _ _ (cst k)); last first.
+move=> dxf dxfO; have /diff_locally := dxf; rewrite -addrA.
+rewrite (@littleo_littleo _ _ _ _ _ _ _ (cst (1 : R^o))); last first.
   apply/eqaddoP=> _/posrealP[eps] /=; rewrite !near_simpl subr0 /cst.
   near y; [rewrite ltrW //; assume_near y|end_near].
   apply/locally_normP; eexists=> [|?]; last first.
     by rewrite /ball_norm ?sub0r ?normmN; apply.
   by rewrite mulr_gt0 // normm_gt0.
 rewrite add0r addfo; last first.
-  apply/eqolimP => //.
-  apply: flim_trans (@linear_continuous _ _ _ _ _ k _ _ _) _ => //.
+  apply/eqolimP; apply: flim_trans (@linear_continuous _ _ _ _ _ _ _) _ => //.
   by rewrite linear0.
-by rewrite add0r => /eqoE /eqolimP -/(_ kn0); rewrite flim_shift add0r.
+by rewrite add0r => /eqoE /eqolimP; rewrite flim_shift add0r.
 Qed.
 
 End DifferentialR.

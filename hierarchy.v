@@ -1580,6 +1580,9 @@ Qed.
 Lemma absr_eq0 x : (`|x| == 0) = (x == 0).
 Proof. by apply/eqP/eqP=> [/absr0_eq0//|->]; rewrite absr0. Qed.
 
+Lemma absr1_gt0 : `|1 : K| > 0.
+Proof. by rewrite ltr_def absr1 oner_eq0 /=. Qed.
+
 Lemma absrX x n : `|x ^+ n| <= `|x|%real ^+ n.
 Proof.
 elim: n => [|n IH]; first  by rewrite !expr0 absr1.
@@ -1588,6 +1591,7 @@ Qed.
 
 End AbsRing1.
 Hint Resolve absr_ge0.
+Hint Resolve absr1_gt0.
 
 Section AbsRing_UniformSpace.
 
@@ -2592,7 +2596,7 @@ Lemma eq_close x y : close x y -> x = y. by rewrite closeE. Qed.
 Lemma locally_le_locally_norm x : filter_le (locally x) (locally_norm x).
 Proof.
 move=> P [_ /posrealP[e] subP]; apply/locallyP.
-by eexists=> // y Py; apply/subP/sub_ball_norm_rev/Py.
+by eexists; last (move=> y Py; apply/subP/sub_ball_norm_rev/Py).
 Qed.
 
 Lemma locally_norm_le_locally x : filter_le (locally_norm x) (locally x).
