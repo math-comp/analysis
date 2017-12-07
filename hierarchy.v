@@ -20,8 +20,10 @@ Local Open Scope classical_set_scope.
 
 (* Enrico's trick for tc resolution in have *)
 Notation "!! x" := (ltac:(refine x)) (at level 100, only parsing).
+(* infer class to help typeclass inference on the fly *)
 Class infer (P : Prop) := Infer : P.
 Hint Mode infer ! : typeclass_instances.
+Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Hint Resolve cond_pos.
 Definition PosReal (x : R) (p : 0 < x) := mkposreal x (RltP _ _ p).
@@ -587,7 +589,7 @@ Arguments near {T F P} FP _ _.
 Notation "[ 'valid_near' F ]" := (@InFilter _ F _ _) (format "[ 'valid_near'  F ]").
 Definition valid_nearE := prop_in_filterE.
 
-Lemma filter_forall {T : Type} {F} {FF: @Filter T F} (P : T -> Prop) :
+Lemma filterE {T : Type} {F} {FF: @Filter T F} (P : T -> Prop) :
   (forall x, P x) -> F P.
 Proof. by move=> ?; apply/filterP; exists setT => //; apply: filterT. Qed.
 
@@ -610,12 +612,12 @@ Proof. by move=> ????? PQR FP; apply: filter_app2; apply: filter_app FP. Qed.
 Lemma filterS2 (T : Type) (F : set (set T)) :
   Filter F -> forall P Q R : set T, (forall x, P x -> Q x -> R x) ->
   F P -> F Q -> F R.
-Proof. by move=> ???? /filter_forall; apply: filter_app2. Qed.
+Proof. by move=> ???? /filterE; apply: filter_app2. Qed.
 
 Lemma filterS3 (T : Type) (F : set (set T)) :
   Filter F -> forall P Q R S : set T, (forall x, P x -> Q x -> R x -> S x) ->
   F P -> F Q -> F R -> F S.
-Proof. by move=> ????? /filter_forall; apply: filter_app3. Qed.
+Proof. by move=> ????? /filterE; apply: filter_app3. Qed.
 
 Lemma filter_const {T : Type} {F} {FF: @ProperFilter T F} (P : Prop) :
   F (fun=> P) -> P.
@@ -860,7 +862,7 @@ Proof. by move=> /flim_eq_loc/flim_trans; apply. Qed.
 Lemma filterlim_ext {T U} {F : set (set T)} {G : set (set U)}
   {FF : Filter F} (f g : T -> U) : (*compat*)
   (forall x, f x = g x) -> f @ F --> G -> g @ F --> G.
-Proof. by move=> /(@filter_forall _ F) /filterlim_ext_loc; apply. Qed.
+Proof. by move=> /(@filterE _ F) /filterlim_ext_loc; apply. Qed.
 
 Lemma filterlim_trans {T} {F G H : set (set T)} : F --> G -> G --> H -> F --> H.
 Proof. exact: flim_trans. Qed.
@@ -891,7 +893,7 @@ Lemma filterlimi_ext  {T U} {F : set (set T)} {G : set (set U)}
   {FF : Filter F} (f g : T -> set U) :
   (forall x y, f x y <-> g x y) ->
   f `@ F --> G -> g `@ F --> G.
-Proof. by move=> /filter_forall; apply: filterlimi_ext_loc. Qed.
+Proof. by move=> /filterE; apply: filterlimi_ext_loc. Qed.
 
 Lemma filterlimi_filter_le_1 {T U} {F G : set (set T)} {H : set (set U)}
   (f : T -> set U) : G --> F -> f `@ F --> H -> f `@ G --> H. (* compat *)
@@ -1012,13 +1014,23 @@ Lemma near_withinE {T : Type} (D : set T) (F : set (set T)) (P : set T) :
   (\near x in within D F, P x) = {near F, D `<=` P}.
 Proof. by []. Qed.
 
+Lemma withinT  {T : Type} (F : set (set T)) (A : set T) : Filter F -> within A F A.
+Proof. by move=> FF; rewrite /within; apply: filterE. Qed.
+
+Lemma near_withinT  {T : Type} (F : set (set T)) (A : set T) : Filter F ->
+  (\near x in within A F, A x).
+Proof. exact: withinT. Qed.
+
 Global Instance within_filter T D F : Filter F -> Filter (@within T D F).
 Proof.
 move=> FF; rewrite /within; constructor.
-- by apply: filter_forall.
+- by apply: filterE.
 - by move=> P Q; apply: filterS2 => x DP DQ Dx; split; [apply: DP|apply: DQ].
 - by move=> P Q subPQ; apply: filterS => x DP /DP /subPQ.
 Qed.
+
+Lemma within_dom T (F : set (set T)) (A : set T) : Filter F -> within A F A.
+Proof. by move=> FF; rewrite /within; apply: filterE. Qed.
 
 Lemma filter_le_within {T} {F : set (set T)} {FF : Filter F} D :
   within D F --> F.
@@ -1032,7 +1044,7 @@ Lemma filterlim_within_ext {T U F} {G : set (set U)}
 Proof.
 move=> eq_fg; apply: filter_le_trans.
 apply: @filterlim_eq_loc.
-by rewrite near_withinE; apply: filter_forall.
+by rewrite near_withinE; apply: filterE.
 Qed.
 
 Definition subset_filter {T} (F : set (set T)) (D : set T) :=
@@ -1043,7 +1055,7 @@ Global Instance subset_filter_filter T F (D : set T) :
   Filter F -> Filter (subset_filter F D).
 Proof.
 move=> FF; constructor; rewrite /subset_filter.
-- exact: filter_forall.
+- exact: filterE.
 - by move=> P Q; apply: filterS2=> x PD QD Dx; split.
 - by move=> P Q subPQ; apply: filterS => R PD Dx; apply: subPQ.
 Qed.
@@ -1727,7 +1739,7 @@ Proof. by rewrite propeqE NNP. Qed.
 
 Lemma existsN {U} (P : set U) : (exists x, ~ P x) = ~ forall x, P x. (*boolP*)
 Proof.
-rewrite propeqE; split=> [[x Px] Nall|Nall]; first by apply: Px.
+rewrite propeqE; split=> [[x Px] Nall|Nall]; first exact: Px.
 by apply/NNP; rewrite -forallN => allP; apply: Nall => x; apply/NNP.
 Qed.
 
@@ -1948,7 +1960,7 @@ Lemma flim_const {T} {U : uniformType} {F : set (set T)}
    {FF : Filter F} (a : U) : a @[_ --> F] --> a.
 Proof.
 move=> P /locallyP[_ /posrealP[eps] subP]; rewrite !near_simpl /=.
-by apply: filter_forall=> ?; apply/subP.
+by apply: filterE=> ?; apply/subP.
 Qed.
 Arguments flim_const {T U F FF} a.
 
@@ -2095,7 +2107,7 @@ Lemma closed_filterlim {T} {U : topologicalType} {F} {FF : ProperFilter F}
   (f : T -> U) (D : U -> Prop) :
   forall y, f @ F --> y -> (forall x, D (f x)) -> closed D -> D y.
 Proof.
-by move=> y fy FDf; apply: (closed_filterlim_loc fy); apply: filter_forall.
+by move=> y fy FDf; apply: (closed_filterlim_loc fy); apply: filterE.
 Qed.
 
 (** ** Compact sets *)
@@ -2113,38 +2125,34 @@ Proof. by rewrite predeqE => p; split=> cF ????; apply: cF. Qed.
 Lemma filter_le_cluster F G : F --> G -> cluster F `<=` cluster G.
 Proof. by move=> sGF p Fp P Q GP Qp; apply: Fp Qp; apply: sGF. Qed.
 
-Definition compact A := forall (F : set (set T)), F A ->
-  ProperFilter F -> A `&` cluster F !=set0.
+Definition compact A := forall (F : set (set T)),
+  ProperFilter F -> F A -> A `&` cluster F !=set0.
 
 Lemma compact0 : compact set0.
-Proof. by move=> F Fset0 Fproper; have /filter_ex [] := Fset0. Qed.
+Proof. by move=> F FF /filter_ex []. Qed.
 
 Lemma subclosed_compact (A B : set T) :
   closed A -> compact B -> A `<=` B -> compact A.
 Proof.
-move=> Acl Bco sAB F FA Fproper.
+move=> Acl Bco sAB F Fproper FA.
 have [|p [Bp Fp]] := Bco F; first exact: filterS FA.
 by exists p; split=> //; apply: Acl=> C Cp; apply: Fp.
 Qed.
 
 Definition hausdorff := forall p q : T, cluster (locally p) q -> p = q.
 
-Lemma within_locally_proper (A : set T) p :
-  closure A p -> ProperFilter (within A (locally p)).
+Typeclasses Opaque within.
+Global Instance within_locally_proper (A : set T) p :
+  infer (closure A p) -> ProperFilter (within A (locally p)).
 Proof.
 move=> clAp; apply: Build_ProperFilter => B.
 by move=> /clAp [q [Aq AqsoBq]]; exists q; apply: AqsoBq.
 Qed.
 
-Lemma within_dom (F : set (set T)) (A : set T) : Filter F -> within A F A.
-Proof. by move=> FF; rewrite /within nearE; apply: filterS filterT. Qed.
-
 Lemma compact_closed (A : set T) : hausdorff -> compact A -> closed A.
 Proof.
-move=> hT Aco p clAp.
-have pA : within A (locally p) A by apply: within_dom.
-have [q [Aq clsAp_q]] := Aco _ pA (within_locally_proper clAp).
-rewrite (hT p q) //.
+move=> hT Aco p /inferP clAp; have pA := !! @within_dom _ (locally p) A _.
+have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
 by apply: filter_le_cluster clsAp_q; apply: filter_le_within.
 Qed.
 
@@ -2153,19 +2161,14 @@ End Compact.
 Lemma continuous_compact (T U : topologicalType) (f : T -> U) A :
   {in A, continuous f} -> compact A -> compact (f @` A).
 Proof.
-move=> fcont Aco F FfA FF.
-set G := [set B | exists2 C, F C & A `&` f @^-1` C `<=` B].
+move=> fcont Aco F FF FfA; set G := filter_from F (fun C => A `&` f @^-1` C).
 have GF : ProperFilter G.
-  split.
-    move=> [B /(filterI FfA) FfAB ABf0]; apply: filter_not_empty.
-    by apply: filterS FfAB => _ [[p Ap <-] Bfp]; apply: (ABf0 p).
-  split; [by exists (f @` A)|idtac|idtac]; last first.
-    by move=> B B' sBB' [C FC ACf_B]; exists C => //; apply: subset_trans sBB'.
-  move=> B1 B2 [C1 FC1 AC1f_B1] [C2 FC2 AC2f_B2].
-  exists (C1 `&` C2); first by apply: filterI.
-  by move=> p [Ap [C1fp C2fp]]; split; [apply: AC1f_B1 | apply: AC2f_B2].
-case: (Aco _ _ GF); first by exists (f @` A) => // ? [].
-move=> p [Ap clsGp]; exists (f p); split; first by apply/imageP.
+  apply: (filter_from_proper (filter_from_filter _ _)); first by exists (f @` A).
+    move=> C1 C2 F1 F2; exists (C1 `&` C2); first exact: filterI.
+    by move=> ?[?[]]; split; split.
+  by move=> C /(filterI FfA) /filter_ex [_ [[p ? <-]]]; eexists p.
+case: Aco; first by exists (f @` A) => // ? [].
+move=> p [Ap clsGp]; exists (f p); split; first exact/imageP.
 move=> B C FB /fcont; rewrite in_setE /= locally_filterE => /(_ Ap) p_Cf.
 have : G (A `&` f @^-1` B) by exists B.
 by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
@@ -2326,7 +2329,7 @@ have_near F1 x; first near y.
   apply: (@ball_split _ (f x y)); first by assume_near y.
   by apply/ball_sym; move: (y); assume_near x.
 + by end_near; apply/fh/locally_ball.
-end_near; first by apply/hl/locally_ball.
+end_near; first exact/hl/locally_ball.
 by have /filterlim_locally /= := fg; apply.
 Qed.
 
@@ -2598,7 +2601,7 @@ Qed.
 Lemma locally_locally_norm : locally_norm = locally.
 Proof.
 rewrite funeqE => x; rewrite funeqE => s; rewrite propeqE; split;
-by [apply locally_le_locally_norm | apply locally_norm_le_locally].
+by [apply: locally_le_locally_norm | apply: locally_norm_le_locally].
 Qed.
 
 Lemma locally_normP x P : locally x P <-> locally_norm x P.
@@ -2627,7 +2630,7 @@ Lemma locally_norm_ball x (eps : posreal) : locally_norm x (ball x eps).
 Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
 
 Lemma locally_ball_norm (x : V) (eps : posreal) : locally x (ball_norm x eps).
-Proof. rewrite -locally_locally_norm; apply locally_norm_ball_norm. Qed.
+Proof. rewrite -locally_locally_norm; apply: locally_norm_ball_norm. Qed.
 
 Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
@@ -2741,7 +2744,7 @@ Lemma prod_norm_triangle : forall x y : U * V, prod_norm (x + y) <= prod_norm x 
 Proof.
 intros [xu xv] [yu yv].
 rewrite /prod_norm /=.
-apply (@ler_trans _ (Num.sqrt ((`|[xu]| + `|[yu]|)^+2 + (`|[xv]| + `|[yv]|)^+2))).
+apply: (@ler_trans _ (Num.sqrt ((`|[xu]| + `|[yu]|)^+2 + (`|[xv]| + `|[yv]|)^+2))).
   by rewrite ler_wsqrtr // ler_add // ler_pexpn2r //
      ?nnegrE ?addr_ge0 // ?normm_ge0 // ?norm_triangle.
 set a := `|[xu]|. set b := `|[yu]|. set c := `|[xv]|. set d := `|[yv]|.
@@ -3132,7 +3135,7 @@ move Hl : (Lub_Rbar _) => l{Hl}; move: l => [x| |] [Hx1 Hx2].
     by rewrite ler_add // ler_pdivr_mulr // ?mul1r.
   have H2 : x + 1 <= z + Num.min 2%:R (pos eps) / 2%:R + 1.
     rewrite ler_add //; apply/RleP/(Hx2 (Finite _)) => v Hv.
-    apply Rbar_not_lt_le => /RltP Hlt.
+    apply: Rbar_not_lt_le => /RltP Hlt.
     apply: filter_not_empty.
     apply: filterS (filterI Hz Hv).
     rewrite /ball /= => w []; rewrite /AbsRing_ball.
@@ -3159,7 +3162,7 @@ move Hl : (Lub_Rbar _) => l{Hl}; move: l => [x| |] [Hx1 Hx2].
     by rewrite mulrC ler_pmul.
 - case (HF [posreal of 1]) => y Fy.
   case: (Hx2 (y + 1)) => x Fx.
-  apply Rbar_not_lt_le => Hlt.
+  apply: Rbar_not_lt_le => Hlt.
   apply: filter_not_empty.
   apply: filterS (filterI Fy Fx) => z [Hz1 Hz2].
   apply: Rbar_le_not_lt Hlt;  apply/RleP.
@@ -3270,32 +3273,32 @@ Definition closed_not := @closedN. (*compat*)
 
 Lemma open_neq (y : R) : open (fun u : R => u <> y).
 Proof.
-apply (@open_ext _ (fun u : R => u < y \/ y < u)).
+apply: (@open_ext _ (fun u : R => u < y \/ y < u)).
   split => u.
   by move/orP; rewrite -neqr_lt => /eqP.
   by move/eqP; rewrite neqr_lt => /orP.
-apply open_or; by [apply open_lt | apply open_gt].
+apply: open_or; by [apply: open_lt | apply: open_gt].
 Qed.
 
 (** Some closed sets of [R] *)
 
 Lemma closed_le (y : R) : closed (fun u : R => u <= y).
 Proof.
-apply (@closed_ext _ (fun u => not (y < u))) => x.
+apply: (@closed_ext _ (fun u => not (y < u))) => x.
   by rewrite lerNgt; split => /negP.
 apply: closed_not; exact: open_gt.
 Qed.
 
 Lemma closed_ge (y : R) : closed (fun u : R => y <= u).
 Proof.
-apply (@closed_ext _ (fun u : R => not (u < y))) => x.
+apply: (@closed_ext _ (fun u : R => not (u < y))) => x.
   by rewrite lerNgt; split => /negP.
 apply: closed_not; exact: open_lt.
 Qed.
 
 Lemma closed_eq (y : R) : closed (fun u : R => u = y).
 Proof.
-apply (@closed_ext _ (fun u => not (u <> y))) => x.
+apply: (@closed_ext _ (fun u => not (u <> y))) => x.
   destruct (Req_dec x y); by tauto.
 apply: closed_not; exact: open_neq.
 Qed.
@@ -3310,7 +3313,7 @@ Proof.
 move => Hax Hxb Hp.
 case: (Rbar_lt_locally _ _ _ Hax Hxb) => d Hd.
 exists d => // y Hy.
-apply Hp ; apply Hd; apply/RltP => //; move/sub_ball_abs : Hy;
+apply: Hp ; apply Hd; apply/RltP => //; move/sub_ball_abs : Hy;
   by rewrite mul1r absrB.
 Qed.
 
@@ -3361,7 +3364,7 @@ Proof.
 (* have Zm : 0 <= Num.max `|u - x| `|v - y| by rewrite ler_maxr 2!normr_ge0. *)
 (* rewrite ler_eqVlt in Zm. *)
 (* case/orP : Zm => Zm. *)
-(* - apply filter_forall => z. *)
+(* - apply filterE => z. *)
 (*   apply/locallyP. *)
 (*   exists eps => // pq. *)
 (*   rewrite !(RminusE,RmultE,RplusE). *)
@@ -3490,7 +3493,7 @@ Global Instance Rbar_locally'_filter : forall x, ProperFilter (Rbar_locally' x).
 Proof.
 move=> [x| |] ; (constructor ; [idtac | constructor]).
 - case => _/posrealP[eps] HP.
-  apply (HP (x + (eps : R) / 2%:R)).
+  apply: (HP (x + (eps : R) / 2%:R)).
     rewrite /ball /= /AbsRing_ball opprD addrA subrr add0r absrN.
     rewrite !absRE normf_div !ger0_norm // ltr_pdivr_mulr //.
     by rewrite mulr_natr mulr2n ltr_addr.
@@ -3506,17 +3509,17 @@ move=> [x| |] ; (constructor ; [idtac | constructor]).
 - move=> P Q H [_ /posrealP[dP] HP].
   exists dP => // y Hy H'; by apply/H/HP.
 - case=> N HP.
-  apply (HP (N + 1)).
+  apply: (HP (N + 1)).
   by rewrite ltr_addl.
 - now exists 0.
 - move=> P Q [MP HP] [MQ HQ].
   exists (Num.max MP MQ) => y Hy; split.
-  + apply HP; by rewrite (ler_lt_trans _ Hy) // ler_maxr lerr.
-  + apply HQ; by rewrite (ler_lt_trans _ Hy) // ler_maxr lerr orbT.
+  + apply: HP; by rewrite (ler_lt_trans _ Hy) // ler_maxr lerr.
+  + apply: HQ; by rewrite (ler_lt_trans _ Hy) // ler_maxr lerr orbT.
 - move=> P Q H [dP HP].
   exists dP => y Hy; by apply/H/HP.
 - case=> N HP.
-  apply (HP (N - 1)).
+  apply: (HP (N - 1)).
   by rewrite ltr_subl_addl ltr_addr.
 - now exists 0.
 - move=> P Q [MP HP] [MQ HQ].
@@ -3531,8 +3534,8 @@ Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
 Proof.
 case=> [x||].
 by apply/locally_filter.
-exact (Rbar_locally'_filter +oo).
-exact (Rbar_locally'_filter -oo).
+exact: (Rbar_locally'_filter +oo).
+exact: (Rbar_locally'_filter -oo).
 Qed.
 
 (** Open sets in [Rbar] *)
@@ -3547,33 +3550,33 @@ Proof.
 case: y => [y||].
 rewrite /Rbar_lt (_ : Rlt^~ y = fun x => x < y); first by eapply open_lt.
 rewrite funeqE => x //; rewrite propeqE; split => [/RltP //| ?]; by apply/RltP.
-by apply open_true.
-by apply open_false.
+by apply: open_true.
+by apply: open_false.
 Qed.
 
 Lemma open_Rbar_gt y : open (fun u : R => Rbar_lt y u).
 Proof.
 case: y => [y||].
-rewrite /Rbar_lt (_ : [eta Rlt y] = fun x => y < x); first by apply: open_gt.
+rewrite /Rbar_lt (_ : [eta Rlt y] = fun x => y < x); first exact: open_gt.
 rewrite funeqE => x //; rewrite propeqE; split => [/RltP //| ?]; by apply/RltP.
-by apply open_false.
-by apply open_true.
+by apply: open_false.
+by apply: open_true.
 Qed.
 
 Lemma open_Rbar_lt' x y : Rbar_lt x y -> Rbar_locally x (fun u => Rbar_lt u y).
 Proof.
-case: x => [x|//|] xy; first by apply open_Rbar_lt.
+case: x => [x|//|] xy; first exact: open_Rbar_lt.
 case: y => [y||//] in xy *.
 exists y => /= x ?; by apply/RltP.
-by apply filter_forall.
+by apply: filterE.
 Qed.
 
 Lemma open_Rbar_gt' x y : Rbar_lt y x -> Rbar_locally x (fun u => Rbar_lt y u).
 Proof.
-case: x => [x||] xy; first by apply open_Rbar_gt.
+case: x => [x||] xy; first exact: open_Rbar_gt.
 case: y => [y|//|] in xy *.
 exists y => x yx; by apply/RltP.
-by apply filter_forall.
+by apply: filterE.
 by case: y xy.
 Qed.
 
@@ -3620,19 +3623,19 @@ case: x => /= [x [_/posrealP[delta] Hp] |[delta Hp] |[delta Hp]].
     by apply/RleP; rewrite ler_maxr lerr.
   exists N.+1 => // n.
   rewrite -(@ler_nat [numDomainType of R]) => Hn.
-  apply Hp.
+  apply: Hp.
   move: HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN.
-  move: (ltr_le_trans HN Hn); rewrite INRE; apply ler_lt_trans.
+  move: (ltr_le_trans HN Hn); rewrite INRE; apply: ler_lt_trans.
   by rewrite ler_maxr lerr orbT.
 - (* x = -oo *)
   case: (nfloor_ex (Num.max 0 (-delta))) => [ | N [_ /RltP HN]].
     by apply/RleP; rewrite ler_maxr lerr.
   exists N.+1 => // n.
   rewrite -(@ler_nat [numDomainType of R]) => Hn.
-  apply Hp.
+  apply: Hp.
   move: HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN.
   rewrite lter_oppl.
-  move: (ltr_le_trans HN Hn); rewrite INRE; apply ler_lt_trans.
+  move: (ltr_le_trans HN Hn); rewrite INRE; apply: ler_lt_trans.
   by rewrite ler_maxr lerr orbT.
 Qed.
 
@@ -3660,7 +3663,7 @@ Qed.
 Lemma continuity_pt_filterlim (f : R -> R) (x : R) :
   continuity_pt f x <-> {for x, continuous f}.
 Proof.
-eapply iff_trans; first by apply continuity_pt_locally.
+eapply iff_trans; first exact: continuity_pt_locally.
 apply iff_sym.
 have FF : Filter (f @ x) by typeclasses eauto.
 case: (@flim_ballP _ (f @ x) FF (f x)) => {FF}H1 H2.
@@ -3683,7 +3686,7 @@ Lemma continuous_withinNx {U V : uniformType} (Ueqdec : forall x y : U, x = y \/
   {for x, continuous f} <-> f @ locally' x --> f x.
 Proof.
 split=> - cfx P /= fxP.
-  by rewrite /locally'; apply filter_le_within; apply/cfx.
+  by rewrite /locally'; apply: filter_le_within; apply/cfx.
  (* :BUG: ssr apply: does not work,
     because the type of the filter is not infered *)
 rewrite !locally_nearE !near_map !near_locally in fxP *.
