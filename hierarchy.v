@@ -2098,6 +2098,79 @@ Proof.
 by move=> y fy FDf; apply: (closed_filterlim_loc fy); apply: filter_forall.
 Qed.
 
+(** ** Compact sets *)
+
+Section Compact.
+
+Context {T : topologicalType}.
+
+Definition cluster (F : set (set T)) (p : T) :=
+  forall A B, F A -> locally p B -> A `&` B !=set0.
+
+Lemma clusterE F : cluster F = \bigcap_(A in F) (closure A).
+Proof. by rewrite predeqE => p; split=> cF ????; apply: cF. Qed.
+
+Lemma filter_le_cluster F G : F --> G -> cluster F `<=` cluster G.
+Proof. by move=> sGF p Fp P Q GP Qp; apply: Fp Qp; apply: sGF. Qed.
+
+Definition compact A := forall (F : set (set T)), F A ->
+  ProperFilter F -> A `&` cluster F !=set0.
+
+Lemma compact0 : compact set0.
+Proof. by move=> F Fset0 Fproper; have /filter_ex [] := Fset0. Qed.
+
+Lemma subclosed_compact (A B : set T) :
+  closed A -> compact B -> A `<=` B -> compact A.
+Proof.
+move=> Acl Bco sAB F FA Fproper.
+have [|p [Bp Fp]] := Bco F; first exact: filterS FA.
+by exists p; split=> //; apply: Acl=> C Cp; apply: Fp.
+Qed.
+
+Definition hausdorff := forall p q : T, cluster (locally p) q -> p = q.
+
+Lemma within_locally_proper (A : set T) p :
+  closure A p -> ProperFilter (within A (locally p)).
+Proof.
+move=> clAp; apply: Build_ProperFilter => B.
+by move=> /clAp [q [Aq AqsoBq]]; exists q; apply: AqsoBq.
+Qed.
+
+Lemma within_dom (F : set (set T)) (A : set T) : Filter F -> within A F A.
+Proof. by move=> FF; rewrite /within nearE; apply: filterS filterT. Qed.
+
+Lemma compact_closed (A : set T) : hausdorff -> compact A -> closed A.
+Proof.
+move=> hT Aco p clAp.
+have pA : within A (locally p) A by apply: within_dom.
+have [q [Aq clsAp_q]] := Aco _ pA (within_locally_proper clAp).
+rewrite (hT p q) //.
+by apply: filter_le_cluster clsAp_q; apply: filter_le_within.
+Qed.
+
+End Compact.
+
+Lemma continuous_compact (T U : topologicalType) (f : T -> U) A :
+  {in A, continuous f} -> compact A -> compact (f @` A).
+Proof.
+move=> fcont Aco F FfA FF.
+set G := [set B | exists2 C, F C & A `&` f @^-1` C `<=` B].
+have GF : ProperFilter G.
+  split.
+    move=> [B /(filterI FfA) FfAB ABf0]; apply: filter_not_empty.
+    by apply: filterS FfAB => _ [[p Ap <-] Bfp]; apply: (ABf0 p).
+  split; [by exists (f @` A)|idtac|idtac]; last first.
+    by move=> B B' sBB' [C FC ACf_B]; exists C => //; apply: subset_trans sBB'.
+  move=> B1 B2 [C1 FC1 AC1f_B1] [C2 FC2 AC2f_B2].
+  exists (C1 `&` C2); first by apply: filterI.
+  by move=> p [Ap [C1fp C2fp]]; split; [apply: AC1f_B1 | apply: AC2f_B2].
+case: (Aco _ _ GF); first by exists (f @` A) => // ? [].
+move=> p [Ap clsGp]; exists (f p); split; first by apply/imageP.
+move=> B C FB /fcont; rewrite in_setE /= locally_filterE => /(_ Ap) p_Cf.
+have : G (A `&` f @^-1` B) by exists B.
+by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
+Qed.
+
 (** ** Complete uniform spaces *)
 
 (* :TODO: Use cauchy2 alternative to define cauchy? *)
