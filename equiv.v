@@ -123,7 +123,8 @@ Notation "f = g '+o_' F h" :=
   (at level 70, no associativity,
    g at next level, F at level 0, h at next level,
    format "f  =  g  '+o_' F  h").
-Notation "f '=o_' F h" := (f = \0 +o_ F h)
+Notation "f '=o_' F h" :=
+  ((f%function : _ -> _)= [o_F h of f])
   (at level 70, no associativity,
    F at level 0, h at next level,
    format "f  '=o_' F  h").
@@ -172,24 +173,28 @@ Qed.
 
 Lemma eqoP (F : filter_on T) (e : T -> W) (f : T -> V) :
    (f =o_ F e) <-> (littleo F f e).
-Proof. by rewrite eqaddoP subr0. Qed.
+Proof. by rewrite -[f]subr0 -eqaddoP -[f \- 0]/(f - 0) subr0 add0r. Qed.
 
-Lemma eqo_littleo (F : filter_on T) (e : T -> W) (f : T -> V) :
-   f =o_ F e -> littleo F f e.
-Proof. by rewrite eqaddoP subr0. Qed.
+Lemma eq_some_oP (F : filter_on T) (e : T -> W) (f : T -> V) h :
+   f = [o_F e of h] -> littleo F f e.
+Proof. by have := @eqadd_some_oP F f 0 e h; rewrite add0r subr0. Qed.
 
 (* replaces a 'o_F e by a "canonical one" *)
 (* mostly to prevent problems with dependent types *)
-Lemma eqoE (F : filter_on T) (f g : T -> V) h (e : T -> W) :
+Lemma eqaddoE (F : filter_on T) (f g : T -> V) h (e : T -> W) :
   f = g + [o_F e of h] -> f = g +o_ F e.
 Proof. by move=> /eqadd_some_oP /eqaddoP. Qed.
 
-Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) : f =o_F g.
-Proof. by apply/eqaddoP; rewrite subr0; apply: littleoP. Qed.
+Lemma eqoE (F : filter_on T) (f : T -> V) h (e : T -> W) :
+  f = [o_F e of h] -> f =o_ F e.
+Proof. by move=> /eq_some_oP /eqoP. Qed.
 
-Lemma eqo_trans (F : filter_on T) (f g h : T -> V) (e : T -> W):
-  f = g +o_ F e -> g = h +o_F e -> f = h +o_F e.
-Proof. by move=> -> ->; apply: eqoE; rewrite -addrA addo. Qed.
+Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) : f =o_F g.
+Proof. by apply/eqoP; apply: littleoP. Qed.
+
+Lemma eqo_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
+  f = g + [o_ F e of fg] -> g = h + [o_F e of gh] -> f = h +o_F e.
+Proof. by move=> -> ->; apply: eqaddoE; rewrite -addrA addo. Qed.
 
 Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
   littleo F (a *: (df : _ -> _)) e.
@@ -209,8 +214,24 @@ Lemma scaleo (F : filter_on T) a (f : T -> V) e :
   [o_F e of scale_littleo a [o_F e of f]].
 Proof. by rewrite [RHS]littleoE. Qed.
 
-Definition bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Definition bigOW (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists k, \near x in F, `|[f x]| <= k * `|[g x]|.
+
+Definition bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
+  exists2 k, k > 0 & \near x in F, `|[f x]| <= k * `|[g x]|.
+
+Lemma bigOWE (F : set (set T)) : Filter F -> bigOW F = bigO F.
+Proof.
+rewrite predeq2E => f g; split=> [[k] | [k k_gt0]] kP; last by exists k.
+exists (maxr k 1); first by rewrite ltr_maxr ltr01 orbT.
+by apply: filterS kP => x /ler_trans; apply; rewrite ler_wpmul2r // ler_maxr lerr.
+Qed.
+
+Lemma bigOWP (F : set (set T)) f g : Filter F -> bigOW F f g -> bigO F f g.
+Proof. by move=> /bigOWE->. Qed.
+
+Lemma bigOWI (F : set (set T)) f g : Filter F -> bigO F f g -> bigOW F f g.
+Proof. by move=> /bigOWE->. Qed.
 
 Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
   bigO_fun :> T -> V;
@@ -223,7 +244,10 @@ Canonical bigO_subtype (F : set (set T)) (g : T -> W) :=
   [subType for (@bigO_fun F g)].
 
 Lemma bigO0_subproof F g : Filter F -> bigO F 0 g.
-Proof. by move=> FF; exists 0; apply: filterE=> x; rewrite normm0 mul0r. Qed.
+Proof.
+move=> FF; apply/bigOWP.
+by exists 0 => //; apply: filterE=> x; rewrite normm0 mul0r.
+Qed.
 
 Canonical bigO0 (F : filter_on T) g :=
  BigO (asboolT (@bigO0_subproof F g _)).
@@ -235,6 +259,10 @@ Hint Resolve bigO_boolP.
 Lemma bigOP (F : set (set T)) (g : T -> W) (f : {O_F g}) : bigO F f g.
 Proof. exact/asboolP. Qed.
 Hint Resolve bigOP.
+
+Lemma bigOW_hint (F : filter_on T) (g : T -> W) (f : {O_F g}) : bigOW F f g.
+Proof. exact/bigOWI. Qed.
+Hint Resolve bigOW_hint.
 
 Definition the_bigO (F : filter_on T) (phF : phantom (set (set T)) F) f h :=
    insubd (bigO0 F h) f.
@@ -253,7 +281,8 @@ Notation "f = g '+O_' F h" :=
   (at level 70, no associativity,
    g at next level, F at level 0, h at next level,
    format "f  =  g  '+O_' F  h").
-Notation "f '=O_' F h" := (f = \0 +O_ F h)
+Notation "f '=O_' F h" :=
+  ((f%function : _ -> _) = [O_F h of f])
   (at level 70, no associativity,
    F at level 0, h at next level,
    format "f  '=O_' F  h").
@@ -261,8 +290,8 @@ Notation "f '=O_' F h" := (f = \0 +O_ F h)
 Lemma add_bigO_subproof (F : filter_on T) e (df dg : {O_F e}) :
   bigO F (df \+ dg) e.
 Proof.
-have [[kf xkf] [kg xkg]] := (bigOP df, bigOP dg).
-exists (kf + kg); apply: filterS2 xkf xkg => x /ler_add fD/fD{fD}.
+have [[_/posrealP[kf] xkf] [_ /posrealP[kg] xkg]] := (bigOP df, bigOP dg).
+exists (pos kf + kg) => //; apply: filterS2 xkf xkg => x /ler_add fD/fD{fD}.
 by rewrite mulrDl; apply: ler_trans; apply: ler_normm_add.
 Qed.
 
@@ -299,37 +328,45 @@ Proof. by split=> [/eqadd_some_OP|fg_O_e]; rewrite ?bigOE // addrC addrNK. Qed.
 
 Lemma eqOP (F : filter_on T) (e : T -> W) (f : T -> V) :
    (f =O_ F e) <-> (bigO F f e).
-Proof. by rewrite eqaddOP subr0. Qed.
+Proof. by rewrite -[f]subr0 -eqaddOP -[f \- 0]/(f - 0) subr0 add0r. Qed.
+
+Lemma eq_some_OP (F : filter_on T) (e : T -> W) (f : T -> V) h :
+   f = [O_F e of h] -> bigO F f e.
+Proof. by have := @eqadd_some_OP F f 0 e h; rewrite add0r subr0. Qed.
 
 Lemma bigO_eqO (F : filter_on T) (g : T -> W) (f : {O_F g}) : f =O_F g.
-Proof. by apply/eqaddOP; rewrite subr0; apply: bigOP. Qed.
+Proof. by apply/eqOP; apply: bigOP. Qed.
 
 Lemma eqO_bigO (F : filter_on T) (e : T -> W) (f : T -> V) :
    f =O_ F e -> bigO F f e.
-Proof. by rewrite eqaddOP subr0. Qed.
+Proof. by rewrite eqOP. Qed.
 
 (* replaces a 'O_F e by a "canonical one" *)
 (* mostly to prevent problems with dependent types *)
-Lemma eqOE (F : filter_on T) (f g : T -> V) h (e : T -> W) :
+Lemma eqaddOE (F : filter_on T) (f g : T -> V) h (e : T -> W) :
   f = g +[O_F e of h] -> f = g +O_ F e.
 Proof. by move=> /eqadd_some_OP /eqaddOP. Qed.
+
+Lemma eqOE (F : filter_on T) (f : T -> V) h (e : T -> W) :
+  f = [O_F e of h] -> f =O_F e.
+Proof. by move=> /eq_some_OP /eqOP. Qed.
 
 Lemma littleo_bigO (F : filter_on T) (f : T -> V) (e : T -> W) :
   ([o_F e of f] : _ -> _) =O_F e.
 Proof.
-apply/eqaddOP; rewrite subr0; exists 1.
-by case: the_littleo => g /= /asboolP; apply.
+by apply/eqOP; exists 1 => //; case: the_littleo => g /= /asboolP; apply.
 Qed.
+Hint Resolve littleo_bigO.
 
 Lemma littleo_eqO (F : filter_on T) (e : T -> W) (f : {o_F e}) : f =O_F e.
-Proof. by apply: eqOE; rewrite littleo_eqo littleo_bigO addrA add0r. Qed.
+Proof. by apply: eqOE; rewrite littleo_eqo littleo_bigO. Qed.
 
 Canonical littleo_is_bigO (F : filter_on T) (e : T -> W) (f : {o_F e}) :=
   BigO (asboolT (eqO_bigO (littleo_eqO f))).
 
-Lemma eqO_trans (F : filter_on T) (f g h : T -> V) (e : T -> W):
-  f = g +O_ F e -> g = h +O_F e -> f = h +O_F e.
-Proof. by move=> -> ->; apply: eqOE; rewrite -addrA addO. Qed.
+Lemma eqO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
+  f = g + [O_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
+Proof. by move=> -> ->; apply: eqaddOE; rewrite -addrA addO. Qed.
 
 End Domination.
 
@@ -346,7 +383,8 @@ Notation "f = g '+o_' F h" :=
   (at level 70, no associativity,
    g at next level, F at level 0, h at next level,
    format "f  =  g  '+o_' F  h").
-Notation "f '=o_' F h" := (f = \0 +o_ F h)
+Notation "f '=o_' F h" :=
+  ((f%function : _ -> _) = [o_F h of f])
   (at level 70, no associativity,
    F at level 0, h at next level,
    format "f  '=o_' F  h").
@@ -368,13 +406,23 @@ Notation "f = g '+O_' F h" :=
   (at level 70, no associativity,
    g at next level, F at level 0, h at next level,
    format "f  =  g  '+O_' F  h").
-Notation "f '=O_' F h" := (f = \0 +O_ F h)
+Notation "f '=O_' F h" :=
+  (f%function = mkbigO F (f%function : _ -> _) h)
   (at level 70, no associativity,
    F at level 0, h at next level,
    format "f  '=O_' F  h").
 
 Notation "''O' '_' F" := (mkbigO F _)
   (at level 0, F at level 0, format "''O' '_' F").
+
+Hint Resolve littleoP.
+Hint Resolve littleo_boolP.
+Hint Resolve bigOP.
+Hint Resolve bigO_boolP.
+Hint Resolve bigOP.
+Hint Resolve bigOW_hint.
+Hint Resolve littleo_bigO.
+Hint Resolve littleo_eqO.
 
 Section Limit.
 
@@ -396,24 +444,41 @@ near x.
 by end_near; rewrite /= !near_simpl; apply: littleoP; rewrite divr_gt0.
 Qed.
 
-(* should be generalized with a bigO in the hypothesis *)
-Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
-  f =o_F g -> [o_F f of h] =o_F g.
+Lemma eqolim (F : filter_on T) (f : T -> V) (l : V) e :
+  f = cst l + [o_F (cst (1 : K^o)) of e] -> f @ F --> l.
+Proof. by move=> /eqaddoE /eqolimP. Qed.
+
+Lemma eqolim0P (F : filter_on T) (f : T -> V) :
+  f @ F --> (0 : V) <-> f =o_F (cst (1 : K^o)).
+Proof. by rewrite eqolimP add0r -[f \- cst 0]/(f - 0) subr0. Qed.
+
+Lemma eqolim0 (F : filter_on T) (f : T -> V) :
+  f =o_F (cst (1 : K^o)) -> f @ F --> (0 : V).
+Proof. by move=> /eqoE /eqolim0P. Qed.
+
+Lemma bigO_littleo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
+  f =O_F g -> [o_F f of h] =o_F g.
 Proof.
-move=> /eqaddoP; rewrite subr0 => f_eq_og; apply/eqaddoP.
-rewrite subr0 => _/posrealP[eps]; set k := the_littleo _ _ _ _.
-near x.
-  apply: (@ler_trans _ (Num.sqrt (eps : R) * `|[f x]|)); first by assume_near x.
-  rewrite -{2}[eps : R]sqr_sqrtr // -mulrA ler_pmul ?sqrtr_ge0 //.
-  by assume_near x.
-by end_near; [apply: littleoP|apply: f_eq_og].
+move->; apply/eqoP => _/posrealP[eps].
+set k := [O_F g of _]; have [/= _/posrealP[c]] := bigOP k.
+apply: filter_app; near x.
+  rewrite -!ler_pdivr_mull //; apply: ler_trans.
+  by rewrite ler_pdivr_mull // mulrA; assume_near x.
+by end_near; rewrite /= !near_simpl; apply: littleoP.
 Qed.
+Arguments bigO_littleo {F}.
 
 Lemma addfo (F : filter_on T) (h f : T -> V) (e : T -> W) :
   f =o_F e -> f + [o_F e of h] =o_F e.
-Proof. by move->; apply/eqoE; rewrite !add0r addo. Qed.
+Proof. by move->; apply/eqoE; rewrite addo. Qed.
+
+Example littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) g' (h : T -> X) :
+  f = [o_F g of g'] -> [o_F f of h] =o_F g.
+Proof. by move=> ->; apply: eqoE; rewrite (bigO_littleo g). Qed.
 
 End Limit.
+
+Arguments bigO_littleo {K T V W X F}.
 
 Section Shift.
 
@@ -466,20 +531,16 @@ Context (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
 Lemma linear_continuous (f: {linear U -> V | GRing.Scale.op s_law}) :
   (f : _ -> _) =O_(0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
-move=> /eqaddOP [l]; rewrite subr0 /= => /locally_normP [_/posrealP[d]].
-rewrite /cst /=; move: (_ * _) => {l}l fl.
-have [{l fl}l f_lipshitz] : exists l, forall x , `|[f x]| <= l * `|[x]|.
-  exists (l / ((d : R) / 2)%coqR).
+move=> /eqOP [_/posrealP[l]].
+rewrite /= => /locally_normP [_/posrealP[d]]; rewrite /cst /=.
+rewrite [`|[1 : R^o]|]absr1 mulr1 => fl.
+have [{l fl}_ /posrealP[l] f_lipshitz] :
+  exists2 l, l > 0 & forall x , `|[f x]| <= l * `|[x]|.
+  exists (pos l / ((d : R) / 2)%coqR) => //.
   move=> x; have := fl ((pos d / 2)%coqR * `|[x]| ^-1 *: x).
   rewrite /ball_norm sub0r normmN.
   (** BUG! in a vector space, the normm should be totally scalable : normmZ *)
   admit.
-have [l_gt0|l_le0] := ltrP 0 l; last first.
-  suff ->: (f : U -> V) = (0 : U -> V).
-    by move=> x; apply: (flim_trans (flim_const 0)).
-  rewrite funeqE => x /=; apply/eqP; rewrite -normm_eq0.
-  by rewrite eqr_le normm_ge0 andbT (ler_trans (f_lipshitz _)) // mulr_le0_ge0.
-move: l_gt0 => /posrealP[{l}l] in f_lipshitz *.
 move=> x; apply/flim_normP => _/posrealP[eps]; rewrite !near_simpl.
 rewrite (near_shift 0) /= subr0; near y => /=.
   rewrite -linearB opprD addrC addrNK linearN normmN.
@@ -491,6 +552,7 @@ Admitted.
 
 End Linear3.
 
+Arguments linear_continuous {U V s s_law} f _.
 
 Section Differential.
 
@@ -537,7 +599,7 @@ Qed.
 Lemma diff_locally (x : V) (f : V -> W) : differentiable x f ->
   f \o shift x = cst (f x) + 'd_x f +o_(0 : V) id.
 Proof.
-move=> dxf; apply: eqoE; rewrite funeqE {1}dxf {dxf} => h /=.
+move=> dxf; apply: eqaddoE; rewrite funeqE {1}dxf {dxf} => h /=.
 congr (_ + _ + _); rewrite ?lim_id ?addrK //=.
 rewrite littleo_center0 /= ?addrK; congr (the_littleo _ _ _ _ _).
 by rewrite funeqE => k /=; rewrite addrK.
@@ -557,16 +619,14 @@ Lemma diff_continuous (x : V) (f : V -> W) :
   differentiable x f -> ('d_x f : _ -> _) =O_(0 : V) (cst (1 : R^o)) -> {for x, continuous f}.
 Proof.
 move=> dxf dxfO; have /diff_locally := dxf; rewrite -addrA.
-rewrite (@littleo_littleo _ _ _ _ _ _ _ (cst (1 : R^o))); last first.
-  apply/eqaddoP=> _/posrealP[eps] /=; rewrite !near_simpl subr0 /cst.
+rewrite (bigO_littleo (cst (1 : R^o))); last first.
+  apply/eqOP; exists 1 => //; rewrite /cst mul1r [`|[1 : R^o]|]absr1.
   near y; [rewrite ltrW //; assume_near y|end_near].
-  apply/locally_normP; eexists=> [|?]; last first.
-    by rewrite /ball_norm ?sub0r ?normmN; apply.
-  by rewrite mulr_gt0 // normm_gt0.
-rewrite add0r addfo; last first.
-  apply/eqolimP; apply: flim_trans (@linear_continuous _ _ _ _ _ _ _) _ => //.
-  by rewrite linear0.
-by rewrite add0r => /eqoE /eqolimP; rewrite flim_shift add0r.
+  by apply/locally_normP; eexists=> [|?];
+    last (rewrite /ball_norm ?sub0r ?normmN; apply).
+rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
+apply/eqolim0P; apply: (flim_trans (linear_continuous _ _ _)) => //.
+by rewrite linear0.
 Qed.
 
 End DifferentialR.
