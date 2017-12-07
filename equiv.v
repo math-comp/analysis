@@ -48,6 +48,15 @@ Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
   ComRingType (T -> M) _.
 Next Obligation. by move=> f g; rewrite funeqE => x; rewrite mulrC. Qed.
 
+Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
+  := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
+Next Obligation. rewrite funeqE => x; exact: scalerA. Qed.
+Next Obligation. by move=> f; rewrite funeqE => x /=; rewrite scale1r. Qed.
+Next Obligation. by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. Qed.
+Next Obligation. by move=> f g; rewrite funeqE => x /=; rewrite scalerDl. Qed.
+Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
+  LmodType _ (U -> V) (fct_lmodMixin U V).
+
 End function_space.
 
 Section Linear1.
@@ -175,6 +184,34 @@ Proof. by apply/eqaddoP; rewrite subr0; apply: littleoP. Qed.
 Lemma eqo_trans (F : filter_on T) (f g h : T -> V) (e : T -> W):
   f = g +o_ F e -> g = h +o_F e -> f = h +o_F e.
 Proof. by move=> -> ->; apply: eqoE; rewrite -addrA addo. Qed.
+
+Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
+  littleo F (a \*: df) e.
+Proof.
+move=> _ /posrealP[eps].
+have [/eqP ->|a0] := boolP (a == 0).
+- near x => /=; last by end_near.
+  by rewrite scale0r normm0 pmulr_rge0.
+- have {a0}a0 : `| a | != 0 by apply: contra a0 => /eqP/absr0_eq0 ->.
+  near x => /=.
+  + rewrite (_ : _ eps = `|a| * (eps / `|a|))%coqR; last first.
+      by rewrite RmultE RdivE // mulrCA mulrV // mulr1.
+    rewrite (ler_trans (ler_normmZ _ _)) // -mulrA ler_pmul //.
+    by assume_near x.
+  + end_near; apply: littleoP.
+    by rewrite RdivE // divr_gt0 // ltr_neqAle absr_ge0 andbT eq_sym.
+Qed.
+
+Canonical scale_littleo (F : filter_on T) e a (df : {o_F e}) :=
+  Littleo (asboolT (scale_littleo_subproof df a)).
+
+Lemma scaleo (F : filter_on T) a (f : T -> V) e :
+  a *: ([o_F e of f] : _ -> _) =
+  [o_F e of scale_littleo a [o_F e of f]].
+Proof.
+rewrite {2}/the_littleo /insubd insubT //; apply/asboolP.
+by move=> eps; apply littleoP.
+Qed.
 
 Definition bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists k, \near x in F, `|[f x]| <= k * `|[g x]|.
