@@ -8,8 +8,5 @@ Iter.v
 Markov.v
 Rbar.v
 hierarchy.v
-Compactness.v
-Lim_seq.v
-Continuity.v
 
 -R . cara
