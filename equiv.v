@@ -89,24 +89,34 @@ Notation "{o_ F f }" := (littleo_type F f)
 Canonical littleo_subtype (F : set (set T)) (g : T -> W) :=
   [subType for (@littleo_fun F g)].
 
-Lemma littleo0 F g : Filter F -> littleo F 0 g.
+Lemma littleo0_subproof F g : Filter F -> littleo F 0 g.
 Proof.
-move=> FF _/posrealP[eps] /=; apply: filter_forall => x; rewrite normm0.
+move=> FF _/posrealP[eps] /=; apply: filterE => x; rewrite normm0.
 by rewrite mulr_ge0 // ltrW.
 Qed.
 
-Canonical little0 (F : filter_on T) g := Littleo (asboolT (@littleo0 F g _)).
+Canonical littleo0 (F : filter_on T) g :=
+  Littleo (asboolT (@littleo0_subproof F g _)).
+
+Lemma littleo_boolP (F : set (set T)) (g : T -> W) (f : {o_F g}) : `[<littleo F f g>].
+Proof. by case: f => ?. Qed.
+Hint Resolve littleo_boolP.
 
 Lemma littleoP (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo F f g.
-Proof. by case: f => ? /= /asboolP. Qed.
+Proof. exact/asboolP. Qed.
+Hint Resolve littleoP.
 
 Definition the_littleo (F : filter_on T) (phF : phantom (set (set T)) F) f h :=
-   insubd (little0 F h) f.
+   insubd (littleo0 F h) f.
 Arguments the_littleo : simpl never, clear implicits.
 
 Notation mklittleo x := (the_littleo _ (Phantom _ [filter of x])).
 Notation "[o_ x e 'of' f ]" := (mklittleo x f e)
   (at level 0, x, e at level 0, format "[o_ x  e  'of'  f ]").
+
+Lemma littleoE (F : filter_on T) f h : littleo F f h ->
+  ([o_F h of f] : _ -> _) = f.
+Proof. by move=> /asboolP?; rewrite /the_littleo /insubd insubT. Qed.
 
 Notation "f = g '+o_' F h" :=
   ((f%function : _ -> _)= (g%function : _ -> _) + [o_F h of f \- g])
@@ -133,10 +143,7 @@ Canonical add_littleo (F : filter_on T) e (df dg : {o_F e}) :=
 Lemma addo (F : filter_on T) (f g: T -> V) e :
   ([o_F e of f] : _ -> _) + [o_F e of g] =
   [o_F e of add_littleo [o_F e of f] [o_F e of g]].
-Proof.
-rewrite {3}/the_littleo /insubd insubT //; apply/asboolP.
-by move=> eps; apply: littleoP.
-Qed.
+Proof. by rewrite [RHS]littleoE. Qed.
 
 Lemma addox (F : filter_on T) (f g: T -> V) e x :
   [o_F e of f] x + [o_F e of g] x =
@@ -160,8 +167,7 @@ Qed.
 Lemma eqaddoP (F : filter_on T) (f g : T -> V) (e : T -> W) :
    (f = g +o_ F e) <-> (littleo F (f - g) e).
 Proof.
-split=> [/eqadd_some_oP//|/asboolP fg_o_e].
-by rewrite /the_littleo /insubd insubT /= addrC addrNK.
+by split=> [/eqadd_some_oP|fg_o_e]; rewrite ?littleoE // addrC addrNK.
 Qed.
 
 Lemma eqoP (F : filter_on T) (e : T -> W) (f : T -> V) :
@@ -186,20 +192,13 @@ Lemma eqo_trans (F : filter_on T) (f g h : T -> V) (e : T -> W):
 Proof. by move=> -> ->; apply: eqoE; rewrite -addrA addo. Qed.
 
 Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
-  littleo F (a \*: df) e.
+  littleo F (a *: (df : _ -> _)) e.
 Proof.
-move=> _ /posrealP[eps].
-have [/eqP ->|a0] := boolP (a == 0).
-- near x => /=; last by end_near.
-  by rewrite scale0r normm0 pmulr_rge0.
-- have {a0}a0 : `| a | != 0 by apply: contra a0 => /eqP/absr0_eq0 ->.
-  near x => /=.
-  + rewrite (_ : _ eps = `|a| * (eps / `|a|))%coqR; last first.
-      by rewrite RmultE RdivE // mulrCA mulrV // mulr1.
-    rewrite (ler_trans (ler_normmZ _ _)) // -mulrA ler_pmul //.
-    by assume_near x.
-  + end_near; apply: littleoP.
-    by rewrite RdivE // divr_gt0 // ltr_neqAle absr_ge0 andbT eq_sym.
+have [->|a0] := eqVneq a 0; first by rewrite scale0r.
+move=> _ /posrealP[eps]; have aa := absr_eq0 a; near x => /=.
+  rewrite (ler_trans (ler_normmZ _ _)) //.
+  by rewrite -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; assume_near x.
+by end_near; apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?ltr_def ?aa ?a0 /=.
 Qed.
 
 Canonical scale_littleo (F : filter_on T) e a (df : {o_F e}) :=
@@ -208,10 +207,7 @@ Canonical scale_littleo (F : filter_on T) e a (df : {o_F e}) :=
 Lemma scaleo (F : filter_on T) a (f : T -> V) e :
   a *: ([o_F e of f] : _ -> _) =
   [o_F e of scale_littleo a [o_F e of f]].
-Proof.
-rewrite {2}/the_littleo /insubd insubT //; apply/asboolP.
-by move=> eps; apply littleoP.
-Qed.
+Proof. by rewrite [RHS]littleoE. Qed.
 
 Definition bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists k, \near x in F, `|[f x]| <= k * `|[g x]|.
@@ -226,23 +222,31 @@ Notation "{O_ F f }" := (bigO_type F f)
 Canonical bigO_subtype (F : set (set T)) (g : T -> W) :=
   [subType for (@bigO_fun F g)].
 
-Lemma bigO0 F g : Filter F -> bigO F 0 g.
-Proof.
-by move=> FF; exists 0; apply: filter_forall=> x; rewrite normm0 mul0r.
-Qed.
+Lemma bigO0_subproof F g : Filter F -> bigO F 0 g.
+Proof. by move=> FF; exists 0; apply: filterE=> x; rewrite normm0 mul0r. Qed.
 
-Canonical big0 (F : filter_on T) g := BigO (asboolT (@bigO0 F g _)).
+Canonical bigO0 (F : filter_on T) g :=
+ BigO (asboolT (@bigO0_subproof F g _)).
+
+Lemma bigO_boolP (F : set (set T)) (g : T -> W) (f : {O_F g}) : `[<bigO F f g>].
+Proof. by case: f => ?. Qed.
+Hint Resolve bigO_boolP.
 
 Lemma bigOP (F : set (set T)) (g : T -> W) (f : {O_F g}) : bigO F f g.
-Proof. by case: f => ? /= /asboolP. Qed.
+Proof. exact/asboolP. Qed.
+Hint Resolve bigOP.
 
 Definition the_bigO (F : filter_on T) (phF : phantom (set (set T)) F) f h :=
-   insubd (big0 F h) f.
+   insubd (bigO0 F h) f.
 Arguments the_bigO : simpl never, clear implicits.
 
 Notation mkbigO x := (the_bigO _ (Phantom _ [filter of x])).
 Notation "[O_ x e 'of' f ]" := (mkbigO x f e)
   (at level 0, x, e at level 0, format "[O_ x  e  'of'  f ]").
+
+Lemma bigOE (F : filter_on T) f h : bigO F f h ->
+  ([O_F h of f] : _ -> _) = f.
+Proof. by move=> /asboolP?; rewrite /the_bigO /insubd insubT. Qed.
 
 Notation "f = g '+O_' F h" :=
   ((f%function : _ -> _) = (g%function : _ -> _) + [O_F h of f \- g])
@@ -268,10 +272,7 @@ Canonical add_bigO (F : filter_on T) e (df dg : {O_F e}) :=
 Lemma addO (F : filter_on T) (f g: T -> V) e :
   ([O_F e of f] : T -> V) + [O_F e of g] =
   [O_F e of add_bigO [O_F e of f] [O_F e of g]].
-Proof.
-rewrite {3}/the_bigO /insubd insubT //; apply/asboolP.
-by case: (add_bigO _ _) => ? /= /asboolP.
-Qed.
+Proof. by rewrite [RHS]bigOE //; case: (add_bigO _ _) => ? /= /asboolP. Qed.
 
 Lemma addOx (F : filter_on T) (f g: T -> V) e x :
   [O_F e of f] x + [O_F e of g] x =
@@ -294,10 +295,7 @@ Qed.
 
 Lemma eqaddOP (F : filter_on T) (f g : T -> V) (e : T -> W) :
    (f = g +O_ F e) <-> (bigO F (f - g) e).
-Proof.
-split=> [/eqadd_some_OP//|/asboolP fg_O_e].
-by rewrite /the_bigO /insubd insubT /= addrC addrNK.
-Qed.
+Proof. by split=> [/eqadd_some_OP|fg_O_e]; rewrite ?bigOE // addrC addrNK. Qed.
 
 Lemma eqOP (F : filter_on T) (e : T -> W) (f : T -> V) :
    (f =O_ F e) <-> (bigO F f e).
@@ -399,17 +397,17 @@ end_near; rewrite /= !near_simpl.
 by apply: littleoP; rewrite divr_gt0 ?addr_gt0 ?normm_gt0.
 Qed.
 
+(* should be generalized with a bigO in the hypothesis *)
 Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
   f =o_F g -> [o_F f of h] =o_F g.
 Proof.
 move=> /eqaddoP; rewrite subr0 => f_eq_og; apply/eqaddoP.
-rewrite subr0 => _/posrealP[eps].
-set k := the_littleo _ _ _ _; have kf := littleoP k.
+rewrite subr0 => _/posrealP[eps]; set k := the_littleo _ _ _ _.
 near x.
   apply: (@ler_trans _ (Num.sqrt (eps : R) * `|[f x]|)); first by assume_near x.
   rewrite -{2}[eps : R]sqr_sqrtr // -mulrA ler_pmul ?sqrtr_ge0 //.
   by assume_near x.
-by end_near; [apply: kf|apply: f_eq_og].
+by end_near; [apply: littleoP|apply: f_eq_og].
 Qed.
 
 Lemma addfo (F : filter_on T) (h f : T -> V) (e : T -> W) :

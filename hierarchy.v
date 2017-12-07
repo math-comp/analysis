@@ -1577,6 +1577,9 @@ rewrite -(@pmulr_rge0 _ 2%:R) // mulr2n mulrDl !mul1r.
 by rewrite -{2}absrN (ler_trans _ (ler_abs_add _ _)) // subrr absr0.
 Qed.
 
+Lemma absr_eq0 x : (`|x| == 0) = (x == 0).
+Proof. by apply/eqP/eqP=> [/absr0_eq0//|->]; rewrite absr0. Qed.
+
 Lemma absrX x n : `|x ^+ n| <= `|x|%real ^+ n.
 Proof.
 elim: n => [|n IH]; first  by rewrite !expr0 absr1.
