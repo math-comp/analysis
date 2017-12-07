@@ -298,22 +298,25 @@ End Near.
 Notation "{ 'near' F , P }" :=
   (@prop_near1 _ _ _ F erefl _ (inPhantom P))
   (at level 0, format "{ 'near'  F ,  P }") : type_scope.
-Notation "'\near' x 'in' F , P" := {near F, forall x, P}
-  (at level 200, x at level 99, P at level 200, format "'\near'  x  'in'  F ,  P") : type_scope.
-Notation "'\near' x , P" := (\near x in x, P)
+Notation "'\forall' x '\near' F , P" := {near F, forall x, P}
+  (at level 200, x ident, P at level 200, format "'\forall'  x  '\near'  F ,  P") : type_scope.
+Notation "'\near' x , P" := (\forall x \near x, P)
   (at level 200, x at level 99, P at level 200, format "'\near'  x ,  P", only parsing) : type_scope.
 Notation "{ 'near' F & G , P }" :=
   (@prop_near2 _ _ _ _ _ F erefl _ G erefl _ (inPhantom P))
   (at level 0, format "{ 'near'  F  &  G ,  P }") : type_scope.
-Notation "'\near' x 'in' F & y 'in' G , P" :=
+Notation "'\forall' x '\near' F & y '\near' G , P" :=
   {near F & G, forall x y, P}
-  (at level 200, x, y at level 99, P at level 200, format "'\near'  x  'in'  F  &  y  'in'  G ,  P") : type_scope.
-Notation "'\near' x & y , P" := (\near x in x & y in y, P)
+  (at level 200, x ident, y ident, P at level 200, format "'\forall'  x  '\near'  F  &  y  '\near'  G ,  P") : type_scope.
+Notation "'\forall' x & y '\near' F , P" :=
+  {near F & F, forall x y, P}
+  (at level 200, x ident, y ident, P at level 200, format "'\forall'  x  &  y  '\near'  F ,  P") : type_scope.
+Notation "'\near' x & y , P" := (\forall x \near x & y \near y, P)
   (at level 200, x, y at level 99, P at level 200, format "'\near'  x  &  y ,  P", only parsing) : type_scope.
 Arguments prop_near1 : simpl never.
 Arguments prop_near2 : simpl never.
 
-Lemma nearE {T} {F : set (set T)} (P : set T) : (\near x in F, P x) = F P.
+Lemma nearE {T} {F : set (set T)} (P : set T) : (\forall x \near F, P x) = F P.
 Proof. by []. Qed.
 
 Definition filter_of X Y (F : filter_on_term X Y)
@@ -402,7 +405,7 @@ Lemma locally_nearE {U} {T : filteredType U} (x : T) (P : set U) :
 Proof. by []. Qed.
 
 Lemma near_locally {U} {T : filteredType U} (x : T) (P : set U) :
-  (\near x in locally x, P x) = \near x, P x.
+  (\forall x \near locally x, P x) = \near x, P x.
 Proof. by []. Qed.
 
 (* Lemma near2P  {U V} (F : set (set U)) (G : set (set V)) (P : set (U * V)) : *)
@@ -419,7 +422,7 @@ Ltac near_simpl := rewrite ?near_simpl.
 End NearLocally.
 
 Lemma near_swap {U V} (F : set (set U)) (G : set (set V)) (P : U -> set V) :
-  (\near x in F & y in G, P x y) = (\near y in G & x in F, P x y).
+  (\forall x \near F & y \near G, P x y) = (\forall y \near G & x \near F, P x y).
 Proof.
 rewrite propeqE; split => -[[/=A B] [FA FB] ABP];
 by exists (B, A) => // -[x y] [/=Bx Ay]; apply: (ABP (y, x)).
@@ -631,7 +634,8 @@ Definition filter_le {T} := @flim T. (*compat*)
 
 Lemma nearP_dep {T U} {F : set (set T)} {G : set (set U)}
    {FF : Filter F} {FG : Filter G} (P : T -> U -> Prop) :
-  (\near x in F & y in G, P x y) -> \near x in F, \near y in G, P x y.
+  (\forall x \near F & y \near G, P x y) ->
+  \forall x \near F, \forall y \near G, P x y.
 Proof.
 move=> [[Q R] [/=FQ GR]] QRP.
 by apply: filterS FQ => x Q1x; apply: filterS GR => y Q2y; apply: (QRP (_, _)).
@@ -641,7 +645,7 @@ Lemma filter2P T U (F : set (set T)) (G : set (set U))
   {FF : Filter F} {FG : Filter G} (P : set (T * U)) :
   (exists2 Q : set T * set U, F Q.1 /\ G Q.2
      & forall (x : T) (y : U), Q.1 x -> Q.2 y -> P (x, y))
-   <-> \near x in (F, G), P x.
+   <-> \forall x \near (F, G), P x.
 Proof.
 split=> [][[A B] /=[FA GB] ABP]; exists (A, B) => //=.
   by move=> [a b] [/=Aa Bb]; apply: ABP.
@@ -759,7 +763,7 @@ Qed.
 Definition filtermap_proper_filter' := filtermap_proper_filter.
 
 Definition filtermapi {T U : Type} (f : T -> set U) (F : set (set T)) :=
-  [set P | \near x in F, exists y, f x y /\ P y].
+  [set P | \forall x \near F, exists y, f x y /\ P y].
 
 Notation "E `@[ x --> F ]" := (filtermapi (fun x => E) [filter of F])
   (at level 60, x ident, format "E  `@[ x  -->  F ]") : classical_set_scope.
@@ -768,7 +772,7 @@ Notation "f `@ F" := (filtermapi f [filter of F])
 
 Lemma filtermapiE {U V : Type} (f : U -> set V)
   (F : set (set U)) (P : set V) :
-  filtermapi f F P = \near x in F, exists y, f x y /\ P y.
+  filtermapi f F P = \forall x \near F, exists y, f x y /\ P y.
 Proof. by []. Qed.
 
 Global Instance filtermapi_filter T U (f : T -> set U) (F : set (set T)) :
@@ -805,7 +809,7 @@ Lemma filterlim_id T (F : set (set T)) : x @[x --> F] --> F. (*compat*)
 Proof. exact. Qed.
 
 Lemma appfilter U V (f : U -> V) (F : set (set U)) :
-  f @ F = [set P : set _ | \near x in F, P (f x)].
+  f @ F = [set P : set _ | \forall x \near F, P (f x)].
 Proof. by []. Qed.
 
 Lemma flim_app U V (F G : set (set U)) (f : U -> V) :
@@ -882,7 +886,7 @@ Proof. exact: flimi_comp. Qed.
 
 Lemma filterlimi_ext_loc {T U} {F : set (set T)} {G : set (set U)}
   {FF : Filter F} (f g : T -> set U) :
-  (\near x in F, forall y, f x y <-> g x y) ->
+  (\forall x \near F, forall y, f x y <-> g x y) ->
   f `@ F --> G -> g `@ F --> G. (* compat *)
 Proof.
 move=> eq_fg; apply: flim_trans => P /=; apply: flimi_eq_loc.
@@ -929,14 +933,14 @@ Definition filter_prod_proper' := @filter_prod_proper.
 
 Lemma filter_prod1 {T U} {F : set (set T)} {G : set (set U)}
   {FG : Filter G} (P : set T) :
-  (\near x in F, P x) -> \near x in F & _ in G, P x.
+  (\forall x \near F, P x) -> \forall x \near F & _ \near G, P x.
 Proof.
 move=> FP; exists (P, setT)=> //= [|[?? []//]].
 by split=> //; apply: filterT.
 Qed.
 Lemma filter_prod2 {T U} {F : set (set T)} {G : set (set U)}
   {FF : Filter F} (P : set U) :
-  (\near y in G, P y) -> \near _ in F & y in G, P y.
+  (\forall y \near G, P y) -> \forall _ \near F & y \near G, P y.
 Proof.
 move=> FP; exists (setT, P)=> //= [|[?? []//]].
 by split=> //; apply: filterT.
@@ -956,11 +960,11 @@ Proof. by []. Qed.
 Arguments extensible_propertyE {T} x {P}.
 
 Lemma near_map {T U} (f : T -> U) (F : set (set T)) (P : set U) :
-  (\near y in f @ F, P y) = (\near x in F, P (f x)).
+  (\forall y \near f @ F, P y) = (\forall x \near F, P (f x)).
 Proof. by []. Qed.
 
 Lemma near_mapi {T U} (f : T -> set U) (F : set (set T)) (P : set U) :
-  (\near y in f `@ F, P y) = (\near x in F, exists y, f x y /\ P y).
+  (\forall y \near f `@ F, P y) = (\forall x \near F, exists y, f x y /\ P y).
 Proof. by []. Qed.
 
 Module Export NearMap.
@@ -1011,14 +1015,14 @@ Definition within {T : Type} (D : set T) (F : set (set T)) (P : set T) :=
 Arguments within : simpl never.
 
 Lemma near_withinE {T : Type} (D : set T) (F : set (set T)) (P : set T) :
-  (\near x in within D F, P x) = {near F, D `<=` P}.
+  (\forall x \near within D F, P x) = {near F, D `<=` P}.
 Proof. by []. Qed.
 
 Lemma withinT  {T : Type} (F : set (set T)) (A : set T) : Filter F -> within A F A.
 Proof. by move=> FF; rewrite /within; apply: filterE. Qed.
 
 Lemma near_withinT  {T : Type} (F : set (set T)) (A : set T) : Filter F ->
-  (\near x in within A F, A x).
+  (\forall x \near within A F, A x).
 Proof. exact: withinT. Qed.
 
 Global Instance within_filter T D F : Filter F -> Filter (@within T D F).
@@ -1898,25 +1902,25 @@ Section Locally_fct.
 
 Context {T : Type} {U : uniformType}.
 
-Lemma near_ball (y : U) (eps : posreal) : \near y' in y, ball y eps y'.
+Lemma near_ball (y : U) (eps : posreal) : \forall y' \near y, ball y eps y'.
 Proof. exact: locally_ball. Qed.
 
 Lemma flim_ballP {F} {FF : Filter F} (y : U) :
-  F --> y <-> forall eps : R, 0 < eps -> \near y' in F, ball y eps y'.
+  F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by rewrite -filter_fromP !locally_simpl /=. Qed.
 Definition filterlim_locally := @flim_ballP.
 
 Lemma flim_ball {F} {FF : Filter F} (y : U) :
-  F --> y -> forall eps : R, 0 < eps -> \near y' in F, ball y eps y'.
+  F --> y -> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by move/flim_ballP. Qed.
 
 Lemma app_filterlim_locally {F} {FF : Filter F} (f : T -> U) y :
-  f @ F --> y <-> forall eps : R, 0 < eps -> \near x in F, ball y eps (f x).
+  f @ F --> y <-> forall eps : R, 0 < eps -> \forall x \near F, ball y eps (f x).
 Proof. exact: flim_ballP. Qed.
 
 Lemma flimi_ballP {F} {FF : Filter F} (f : T -> U -> Prop) y :
   f `@ F --> y <->
-  forall eps : R, 0 < eps -> \near x in F, exists z, f x z /\ ball y eps z.
+  forall eps : R, 0 < eps -> \forall x \near F, exists z, f x z /\ ball y eps z.
 Proof.
 split=> [Fy _/posrealP[eps] |Fy P] /=; first exact/Fy/locally_ball.
 move=> /locallyP[_ /posrealP[eps] subP]; rewrite near_simpl near_mapi; near x.
@@ -1957,7 +1961,7 @@ Context {T : Type} {U V : uniformType}.
 Lemma flim_ball2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
-  forall eps : R, eps > 0 -> \near y' in F & z' in G,
+  forall eps : R, eps > 0 -> \forall y' \near F & z' \near G,
                 ball y eps y' /\ ball z eps z'.
 Proof. exact: flim_ballP. Qed.
 
@@ -2193,7 +2197,7 @@ Lemma cvg_cauchy {T : uniformType} (F : set (set T)) :
 Proof. by move=> Fl eps; exists (lim F); apply/Fl/locally_ball. Qed.
 
 Lemma cauchy2 (T : uniformType) (F : set (set T)) : Filter F ->
-  cauchy F -> forall e, e > 0 -> \near x in F & y in F, ball x e y.
+  cauchy F -> forall e, e > 0 -> \forall x & y \near F, ball x e y.
 Proof.
 move=> FF Fcauchy /= e e_gt0.
 have [x /= Fbx] := Fcauchy [posreal of PosReal e_gt0 / 2]%coqR.
@@ -2202,7 +2206,7 @@ by move=> [y z] [/=] /ball_splitr; apply.
 Qed.
 
 Lemma cauchy2E (T : uniformType) (F : set (set T)) : ProperFilter F ->
-  (forall e, e > 0 -> \near x in F & y in F, ball x e y) -> cauchy F.
+  (forall e, e > 0 -> \forall x & y \near F, ball x e y) -> cauchy F.
 Proof.
 move=> FF Fcauchy e; have_near F x; first by exists x; assume_near x.
 by end_near; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
@@ -2627,7 +2631,7 @@ Lemma filter_from_normE (x : V) (P : set V) :
 Proof. by rewrite filter_from_norm_locally. Qed.
 
 Lemma near_locally_norm (x : V) (P : set V) :
-  (\near x in locally_norm x, P x) = \near x, P x.
+  (\forall x \near locally_norm x, P x) = \near x, P x.
 Proof. exact: locally_normE. Qed.
 
 Lemma locally_norm_ball_norm x (e : posreal) : locally_norm x (ball_norm x e).
@@ -2701,15 +2705,15 @@ Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
 Definition filterlimi_locally_unique := @flimi_unique.
 
 Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y <-> forall eps : R, 0 < eps -> \near y' in F, `|[y - y']| < eps.
+  F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, `|[y - y']| < eps.
 Proof. by rewrite -filter_fromP /= !locally_simpl. Qed.
 
 Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> forall eps, eps > 0 -> \near y' in F, `|[y - y']| < eps.
+  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|[y - y']| < eps.
 Proof. by move=> /flim_normP. Qed.
 
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> forall M, M > `|[y]| -> \near y' in F, `|[y']|%real < M.
+  F --> y -> forall M, M > `|[y]| -> \forall y' \near F, `|[y']|%real < M.
 Proof.
 move=> /flim_norm Fy M; rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
@@ -2856,7 +2860,7 @@ Lemma flim_norm2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
   forall eps : R, 0 < eps ->
-   \near y' in F & z' in G, `|[(y, z) - (y', z')]| < eps.
+   \forall y' \near F & z' \near G, `|[(y, z) - (y', z')]| < eps.
 Proof. exact: flim_normP. Qed.
 
 (* Lemma flim_norm_supP {F : set (set U)} {G : set (set V)} *)
@@ -2874,7 +2878,7 @@ Lemma flim_norm2 {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) ->
   forall eps : R, 0 < eps ->
-   \near y' in F & z' in G, `|[(y, z) - (y', z')]| < eps.
+   \forall y' \near F & z' \near G, `|[(y, z) - (y', z')]| < eps.
 Proof. by rewrite flim_normP. Qed.
 
 End NormedModule3.
@@ -3360,10 +3364,10 @@ Qed.
 
 Lemma locally_2d_1d_strong (P : R -> R -> Prop) (x y : R):
   (\near x & y, P x y) ->
-  \near u in x & v in y,
+  \forall u \near x & v \near y,
       forall (t : R), 0 <= t <= 1 ->
-      \near z in t, \near a in (x + z * (u - x))
-                        & b in (y + z * (v - y)), P a b.
+      \forall z \near t, \forall a \near (x + z * (u - x))
+                               & b \near (y + z * (v - y)), P a b.
 Proof.
 (* move=> P x y. *)
 (* apply locally_2d_align => eps HP uv Huv t Ht. *)

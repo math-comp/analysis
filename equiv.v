@@ -77,7 +77,7 @@ Section Domination.
 Context {K : absRingType} {T : Type} {V W : normedModType K}.
 
 Definition littleo (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  forall eps : R, 0 < eps -> \near x in F, `|[f x]| <= eps * `|[g x]|.
+  forall eps : R, 0 < eps -> \forall x \near F, `|[f x]| <= eps * `|[g x]|.
 
 Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
   littleo_fun :> T -> V;
@@ -215,10 +215,10 @@ Lemma scaleo (F : filter_on T) a (f : T -> V) e :
 Proof. by rewrite [RHS]littleoE. Qed.
 
 Definition bigOW (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  exists k, \near x in F, `|[f x]| <= k * `|[g x]|.
+  exists k, \forall x \near F, `|[f x]| <= k * `|[g x]|.
 
 Definition bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  exists2 k, k > 0 & \near x in F, `|[f x]| <= k * `|[g x]|.
+  exists2 k, k > 0 & \forall x \near F, `|[f x]| <= k * `|[g x]|.
 
 Lemma bigOWE (F : set (set T)) : Filter F -> bigOW F = bigO F.
 Proof.
@@ -506,7 +506,7 @@ Notation center c := (shift (- c)).
 
 Lemma near_shift {K : absRingType} {R : normedModType K}
    (y x : R) (P : set R) :
-   (\near x, P x) = (\near z in y, (P \o shift (x - y)) z).
+   (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
 rewrite propeqE; split=> /= /locally_normP [_/posrealP[e] ye];
 apply/locally_normP; exists e=> // t /= et.
