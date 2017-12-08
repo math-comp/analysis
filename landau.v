@@ -805,12 +805,6 @@ Definition differentiable_def (F : filter_on V) (_ : phantom (set (set V)) F) (f
 
 Notation differentiable F := (@differentiable_def _ (Phantom _ [filter of F])).
 
-Lemma lim_id (x : V) : lim x = x.
-Proof.
-symmetry; apply: is_filter_lim_locally_unique.
-by apply/cvg_ex; exists x.
-Qed.
-
 Lemma littleo_shift (y x : V) (f : V -> W) (e : V -> V) :
   littleo (locally y) (f \o shift (x - y)) (e \o shift (x - y)) ->
   littleo (locally x) f e.

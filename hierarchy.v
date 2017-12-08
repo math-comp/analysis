@@ -2680,6 +2680,12 @@ Proof. by move=> Fx Fy; rewrite -closeE; apply: is_filter_lim_close. Qed.
 Lemma is_filter_lim_locally_unique (x y : V) : x --> y -> x = y.
 Proof. move=> H; rewrite -closeE; by apply/is_filter_lim_locally_close. Qed.
 
+Lemma lim_id (x : V) : lim x = x.
+Proof.
+symmetry; apply: is_filter_lim_locally_unique.
+by apply/cvg_ex; exists x.
+Qed.
+
 End NormedModule1.
 
 Module Export LocallyNorm.
