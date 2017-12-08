@@ -7,7 +7,7 @@ From SsrReals Require Import boolp reals.
 Require Import Rstruct set R_ext hierarchy.
 
 (******************************************************************************)
-(*   This files deals with the theory of small and big o (Landau notation).   *)
+(*              BACHMANN-LANDAU NOTATIONS : BIG AND LITTLE O                  *)
 (******************************************************************************)
 (******************************************************************************)
 (* F is a filter, K is an absRingType and V W X Y Z are normed spaces over K  *)

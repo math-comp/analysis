@@ -1,5 +1,5 @@
 R_ext.v
-equiv.v
+landau.v
 set.v
 Rstruct.v
 Rcomplements.v
