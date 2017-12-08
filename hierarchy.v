@@ -23,6 +23,7 @@ Notation "!! x" := (ltac:(refine x)) (at level 100, only parsing).
 (* infer class to help typeclass inference on the fly *)
 Class infer (P : Prop) := Infer : P.
 Hint Mode infer ! : typeclass_instances.
+Hint Extern 0 (infer _) => (exact) : typeclass_instances.
 Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Hint Resolve cond_pos.
@@ -2162,7 +2163,7 @@ Qed.
 
 Lemma compact_closed (A : set T) : hausdorff -> compact A -> closed A.
 Proof.
-move=> hT Aco p /inferP clAp; have pA := !! @within_dom _ (locally p) A _.
+move=> hT Aco p clAp; have pA := !! @within_dom _ (locally p) A _.
 have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
 by apply: filter_le_cluster clsAp_q; apply: filter_le_within.
 Qed.
