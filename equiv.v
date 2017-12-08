@@ -199,10 +199,6 @@ Proof. by move=> /eq_some_oP /eqoP. Qed.
 Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) : f =o_F g.
 Proof. by apply/eqoP; apply: littleoP. Qed.
 
-Lemma eqo_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
-  f = g + [o_ F e of fg] -> g = h + [o_F e of gh] -> f = h +o_F e.
-Proof. by move=> -> ->; apply: eqaddoE; rewrite -addrA addo. Qed.
-
 Lemma littleo_scale (F : filter_on T) e (f : T -> V) a :
   f \is a `o_F e -> a *: f \is a `o_F e.
 Proof.
@@ -357,6 +353,10 @@ Lemma eqOP (F : filter_on T) (e : T -> W) (f : T -> V) :
    (f =O_ F e) <-> (bigO F f e).
 Proof. by rewrite -[f]subr0 -eqaddOP -[f \- 0]/(f - 0) subr0 add0r. Qed.
 
+Lemma eqOWP (F : filter_on T) (e : T -> W) (f : T -> V) :
+   (f =O_ F e) <-> (bigOW F f e).
+Proof. by rewrite bigOWE; apply: eqOP. Qed.
+
 Lemma eq_some_OP (F : filter_on T) (e : T -> W) (f : T -> V) h :
    f = [O_F e of h] -> bigO F f e.
 Proof. by have := @eqadd_some_OP F f 0 e h; rewrite add0r subr0. Qed.
@@ -390,10 +390,6 @@ Proof. by apply: eqOE; rewrite littleo_eqo littleo_bigO. Qed.
 
 Canonical littleo_is_bigO (F : filter_on T) (e : T -> W) (f : {o_F e}) :=
   BigO (asboolT (eqO_bigO (littleo_eqO f))).
-
-Lemma eqO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
-  f = g + [O_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
-Proof. by move=> -> ->; apply: eqaddOE; rewrite -addrA addO. Qed.
 
 End Domination.
 
@@ -456,37 +452,6 @@ Notation "`o_ F g" := (qlittleo F g)
 Notation "`O_ F g" := (qbigO F g)
   (at level 0, F at level 0, format "`O_ F  g").
 
-Section Domination_test.
-
-Context {K : absRingType} {T : Type} {V W Z : normedModType K}.
-
-Lemma eqOoo_trans (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> Z) :
-  f \is a `O_F g -> g \is a `o_F h -> f \is a `o_F h.
-Proof.
-case/asboolP => e e0 Hf; rewrite qualifE => /asboolP Hg.
-rewrite qualifE; apply/asboolP => eps eps0.
-have /Hg{Hg}? : 0 < e^-1 * eps by rewrite pmulr_rgt0 // invr_gt0.
-near x.
-  rewrite (@ler_trans _ (e * `|[ g x ]|)) //; first by assume_near x.
-  by rewrite -ler_pdivl_mull // mulrA; assume_near x.
-end_near.
-Qed.
-
-Lemma eqoOo_trans (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> Z) :
-  f \is a `o_F g -> g \is a `O_F h -> f \is a `o_F h.
-Proof.
-rewrite qualifE => /asboolP Hf /asboolP[e e0 Hg].
-rewrite qualifE; apply/asboolP => eps eps0.
-have /Hf{Hf}? : 0 < e^-1 * eps by rewrite pmulr_rgt0 // invr_gt0.
-near x.
-  rewrite (@ler_trans _ (e^-1 * eps * `|[ g x ]|)) //; first by assume_near x.
-  rewrite -mulrA ler_pdivr_mull // mulrCA ler_pmul //; first by rewrite ltrW.
-  by assume_near x.
-end_near.
-Qed.
-
-End Domination_test.
-
 Section Limit.
 
 Context {K : absRingType} {T : Type} {V W X : normedModType K}.
@@ -519,7 +484,7 @@ Lemma eqolim0 (F : filter_on T) (f : T -> V) :
   f =o_F (cst (1 : K^o)) -> f @ F --> (0 : V).
 Proof. by move=> /eqoE /eqolim0P. Qed.
 
-Lemma bigO_littleo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
+Lemma littleo_bigO_eqo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> [o_F f of h] =o_F g.
 Proof.
 move->; apply/eqoP => _/posrealP[eps].
@@ -529,19 +494,85 @@ apply: filter_app; near x.
   by rewrite ler_pdivr_mull // mulrA; assume_near x.
 by end_near; rewrite /= !near_simpl; apply: littleoP.
 Qed.
-Arguments bigO_littleo {F}.
+Arguments littleo_bigO_eqo {F}.
+
+Lemma bigO_littleo_eqo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
+  f =o_F g -> [O_F f of h] =o_F g.
+Proof.
+move->; apply/eqoP => _/posrealP[eps].
+set k := [O_F _ of _]; have [/= _/posrealP[c]] := bigOP k.
+apply: filter_app; near x.
+  by move=> /ler_trans; apply; rewrite -ler_pdivl_mull // mulrA; assume_near x.
+by end_near; rewrite /= !near_simpl; apply: littleoP.
+Qed.
+Arguments bigO_littleo_eqo {F}.
+
+Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
+  f =O_F g -> ([O_F f of h] : _ -> _) =O_F g.
+Proof.
+move->; apply/eqOWP.
+set k := [O_F _ of _]; have [c c_gt0 kP] := bigOP k.
+set k' := [O_F k of _]; have [c' c'_gt0 k'P] := bigOP k'.
+exists (c' * c) => //; apply: filterS2 kP k'P => x.
+by rewrite -(ler_pmul2l c'_gt0) mulrA => /(ler_trans _); apply.
+Qed.
+Arguments bigO_bigO_eqO {F}.
 
 Lemma addfo (F : filter_on T) (h f : T -> V) (e : T -> W) :
   f =o_F e -> f + [o_F e of h] =o_F e.
 Proof. by move->; apply/eqoE; rewrite addo. Qed.
 
+Lemma addfO (F : filter_on T) (h f : T -> V) (e : T -> W) :
+  f =O_F e -> f + [O_F e of h] =O_F e.
+Proof. by move->; apply/eqOE; rewrite addO. Qed.
+
 Example littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) g' (h : T -> X) :
   f = [o_F g of g'] -> [o_F f of h] =o_F g.
-Proof. by move=> ->; apply: eqoE; rewrite (bigO_littleo g). Qed.
+Proof. by move=> ->; apply: eqoE; rewrite (littleo_bigO_eqo g). Qed.
 
 End Limit.
 
-Arguments bigO_littleo {K T V W X F}.
+Arguments littleo_bigO_eqo {K T V W X F}.
+Arguments bigO_littleo_eqo {K T V W X F}.
+Arguments bigO_bigO_eqO {K T V W X F}.
+
+Section Domination_test.
+
+Context {K : absRingType} {T : Type} {V W Z : normedModType K}.
+
+Lemma eqaddo_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
+  f = g + [o_ F e of fg] -> g = h + [o_F e of gh] -> f = h +o_F e.
+Proof. by move=> -> ->; apply: eqaddoE; rewrite -addrA addo. Qed.
+
+Lemma eqaddO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
+  f = g + [O_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
+Proof. by move=> -> ->; apply: eqaddOE; rewrite -addrA addO. Qed.
+
+Lemma eqaddoO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
+  f = g + [o_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
+Proof. by move=> -> ->; apply: eqaddOE; rewrite addrAC -addrA addfO. Qed.
+
+Lemma eqaddOo_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
+  f = g + [O_ F e of fg] -> g = h + [o_F e of gh] -> f = h +O_F e.
+Proof. by move=> -> ->; apply: eqaddOE; rewrite -addrA addfO. Qed.
+
+Lemma eqo_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
+  f = [o_F g of f'] -> g = [o_F h of g'] -> f =o_F h.
+Proof. by move=> -> ->; apply: eqoE; apply: littleo_bigO_eqo. Qed.
+
+Lemma eqO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
+  f = [O_F g of f'] -> g = [O_F h of g'] -> f =O_F h.
+Proof. by move=> -> ->; apply: eqOE; apply: bigO_bigO_eqO; apply: eqOE. Qed.
+
+Lemma eqOo_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
+  f = [O_F g of f'] -> g = [o_F h of g'] -> f =o_F h.
+Proof. by move=> -> ->; apply: eqoE; apply: bigO_littleo_eqo; apply: eqoE. Qed.
+
+Lemma eqoO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
+  f = [o_F g of f'] -> g = [O_F h of g'] -> f =o_F h.
+Proof. by move=> -> ->; apply: eqoE; apply: littleo_bigO_eqo; apply: eqOE. Qed.
+
+End Domination_test.
 
 Section Shift.
 
@@ -682,7 +713,7 @@ Lemma diff_continuous (x : V) (f : V -> W) :
   differentiable x f -> ('d_x f : _ -> _) =O_(0 : V) (cst (1 : R^o)) -> {for x, continuous f}.
 Proof.
 move=> dxf dxfO; have /diff_locally := dxf; rewrite -addrA.
-rewrite (bigO_littleo (cst (1 : R^o))); last first.
+rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; exists 1 => //; rewrite /cst mul1r [`|[1 : R^o]|]absr1.
   near y; [rewrite ltrW //; assume_near y|end_near].
   by apply/locally_normP; eexists=> [|?];
