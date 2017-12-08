@@ -79,9 +79,16 @@ Context {K : absRingType} {T : Type} {V W : normedModType K}.
 Definition littleo (F : set (set T)) (f : T -> V) (g : T -> W) :=
   forall eps : R, 0 < eps -> \forall x \near F, `|[f x]| <= eps * `|[g x]|.
 
+Definition qlittleo (F : set (set T)) (g : T -> W) :=
+  [qualify a f : T -> V | `[< littleo F f g >] ].
+Fact qlittleo_key F g : pred_key (@qlittleo F g). Proof. by []. Qed.
+Canonical qlittleo_keyed F g := KeyedQualifier (@qlittleo_key F g).
+Notation "`o_ F g" := (qlittleo F g)
+  (at level 0, F at level 0, format "`o_ F  g").
+
 Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
   littleo_fun :> T -> V;
-  _ : `[< littleo F littleo_fun g >]
+  _ : littleo_fun \is a `o_ F g (*`[< littleo F littleo_fun g >]*)
 }.
 Notation "{o_ F f }" := (littleo_type F f)
   (at level 0, F at level 0, format "{o_ F  f }").
@@ -196,15 +203,28 @@ Lemma eqo_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [o_ F e of fg] -> g = h + [o_F e of gh] -> f = h +o_F e.
 Proof. by move=> -> ->; apply: eqaddoE; rewrite -addrA addo. Qed.
 
-Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
-  littleo F (a *: (df : _ -> _)) e.
+Lemma littleo_scale (F : filter_on T) e (f : T -> V) a :
+  f \is a `o_F e -> a *: f \is a `o_F e.
 Proof.
-have [->|a0] := eqVneq a 0; first by rewrite scale0r.
-move=> _ /posrealP[eps]; have aa := absr_eq0 a; near x => /=.
+move=> fe.
+have [->|a0] := eqVneq a 0; first by rewrite scale0r; apply/asboolP.
+apply/asboolP => _ /posrealP[eps]; have aa := absr_eq0 a; near x => /=.
   rewrite (ler_trans (ler_normmZ _ _)) //.
   by rewrite -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; assume_near x.
-by end_near; apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?ltr_def ?aa ?a0 /=.
+end_near; apply: (littleoP (Littleo fe)).
+by rewrite mulr_gt0 // invr_gt0 ?ltr_def ?aa ?a0 /=.
 Qed.
+
+Lemma littleo_scaleE (F : filter_on T) g (f : T -> V) a :
+  a \is a GRing.unit -> (a *: f \is a `o_F g) = (f \is a `o_F g).
+Proof.
+move=> a0; apply/idP/idP; last by apply littleo_scale.
+move=> /littleo_scale => /(_ a^-1); by rewrite scalerA mulVr ?scale1r.
+Qed.
+
+Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
+  littleo F (a *: (df : _ -> _)) e.
+Proof. by case: df => f /= /littleo_scale => /(_ a) /asboolP. Qed.
 
 Canonical scale_littleo (F : filter_on T) e a (df : {o_F e}) :=
   Littleo (asboolT (scale_littleo_subproof df a)).
@@ -219,6 +239,13 @@ Definition bigOW (F : set (set T)) (f : T -> V) (g : T -> W) :=
 
 Definition bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|[f x]| <= k * `|[g x]|.
+
+Definition qbigO (F : set (set T)) (g : T -> W) :=
+  [qualify a f : T -> V | `[< bigO F f g >] ].
+Fact qbigO_key F g : pred_key (@qbigO F g). Proof. by []. Qed.
+Canonical qbigO_keyed F g := KeyedQualifier (@qbigO_key F g).
+Notation "`O_ F g" := (qbigO F g)
+  (at level 0, F at level 0, format "`O_ F  g").
 
 Lemma bigOWE (F : set (set T)) : Filter F -> bigOW F = bigO F.
 Proof.
@@ -423,6 +450,42 @@ Hint Resolve bigOP.
 Hint Resolve bigOW_hint.
 Hint Resolve littleo_bigO.
 Hint Resolve littleo_eqO.
+
+Notation "`o_ F g" := (qlittleo F g)
+  (at level 0, F at level 0, format "`o_ F  g").
+Notation "`O_ F g" := (qbigO F g)
+  (at level 0, F at level 0, format "`O_ F  g").
+
+Section Domination_test.
+
+Context {K : absRingType} {T : Type} {V W Z : normedModType K}.
+
+Lemma eqOoo_trans (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> Z) :
+  f \is a `O_F g -> g \is a `o_F h -> f \is a `o_F h.
+Proof.
+case/asboolP => e e0 Hf; rewrite qualifE => /asboolP Hg.
+rewrite qualifE; apply/asboolP => eps eps0.
+have /Hg{Hg}? : 0 < e^-1 * eps by rewrite pmulr_rgt0 // invr_gt0.
+near x.
+  rewrite (@ler_trans _ (e * `|[ g x ]|)) //; first by assume_near x.
+  by rewrite -ler_pdivl_mull // mulrA; assume_near x.
+end_near.
+Qed.
+
+Lemma eqoOo_trans (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> Z) :
+  f \is a `o_F g -> g \is a `O_F h -> f \is a `o_F h.
+Proof.
+rewrite qualifE => /asboolP Hf /asboolP[e e0 Hg].
+rewrite qualifE; apply/asboolP => eps eps0.
+have /Hf{Hf}? : 0 < e^-1 * eps by rewrite pmulr_rgt0 // invr_gt0.
+near x.
+  rewrite (@ler_trans _ (e^-1 * eps * `|[ g x ]|)) //; first by assume_near x.
+  rewrite -mulrA ler_pdivr_mull // mulrCA ler_pmul //; first by rewrite ltrW.
+  by assume_near x.
+end_near.
+Qed.
+
+End Domination_test.
 
 Section Limit.
 
