@@ -554,12 +554,13 @@ Definition prop_in_filterE := PropInFilter.tE.
 Lemma prop_in_filterP T F (iF : @in_filter T F) : F iF.
 Proof. by rewrite prop_in_filterE; apply: prop_in_filterP_proj. Qed.
 
-Ltac near x :=
+Ltac begin_near x :=
 apply/filterP;
 let R := fresh "around" in
-match goal with |- exists2 Q : set ?T, ?F Q & _ =>
+match goal with |- exists2 _ : set ?T, ?F _ & _ =>
   evar (R : set T);
-  exists R; [rewrite /R {R}|move=> x /(extensible_propertyI x) ?]; last first
+  exists R; [rewrite /R {R}|
+             move=> x /(extensible_propertyI x) ?]; last first
 end.
 
 Ltac have_near F x :=
@@ -571,7 +572,7 @@ match (type of ([filter of F] : (_ -> Prop) -> Prop))
   [rewrite /R {R}|]; last first
 end.
 
-Ltac assume_near x :=
+Ltac near x :=
 match goal with Hx : extensible_property x _ |- _ =>
   eapply proj1; do 10?[by apply: Hx|eapply proj2] end.
 
@@ -584,7 +585,7 @@ Ltac done :=
          | discriminate | contradiction | split]
    | case not_locked_false_eq_true; assumption
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end
-   | match goal with |- PropInFilter.t _ ?x => assume_near x end ].
+   | match goal with |- PropInFilter.t _ ?x => near x end ].
 
 Lemma near T (F : set (set T)) P (FP : F P) (x : T) : (InFilter FP) x -> P x.
 Proof. by rewrite prop_in_filterE. Qed.
@@ -600,7 +601,7 @@ Proof. by move=> ?; apply/filterP; exists setT => //; apply: filterT. Qed.
 Lemma filter_app (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, F (fun x => P x -> Q x) -> F P -> F Q.
 Proof.
-by move=> FF P Q subPQ FP; near x; [suff: P x; assume_near x|end_near].
+by move=> FF P Q subPQ FP; begin_near x; [suff: P x; near x|end_near].
 Qed.
 
 Lemma filter_app2 (T : Type) (F : set (set T)) :
@@ -657,6 +658,7 @@ Ltac near2 x y :=
 apply/filter2P;
 let R1 := fresh "around1" in
 let R2 := fresh "around2" in
+let Q := fresh "Q" in
 match goal with |- exists2 Q : set ?T * set ?U, ?F Q.1 /\ ?G Q.2 & _ =>
   evar (R1 : set T); evar (R2 : set U); exists (R1, R2);
   [rewrite /R1 {R1} /R2 {R2}
@@ -781,13 +783,13 @@ Global Instance filtermapi_filter T U (f : T -> set U) (F : set (set T)) :
 Proof.
 move=> f_totalfun FF; rewrite /filtermapi; apply: Build_Filter. (* bug *)
 - by apply: filterS f_totalfun => x [[y Hy] H]; exists y.
-- move=> P Q FP FQ; near x.
+- move=> P Q FP FQ; begin_near x.
     have [//|y [fxy Py]] := near FP x.
     have [//|z [fxz Qz]] := near FQ x.
     have [//|_ fx_prop] := near f_totalfun x.
     by exists y; split => //; split => //; rewrite [y](fx_prop _ z).
   by end_near.
-- move=> P Q subPQ FP; near x.
+- move=> P Q subPQ FP; begin_near x.
     by have [//|y [fxy /subPQ Qy]] := near FP x; exists y.
   by end_near.
 Qed.
@@ -978,9 +980,8 @@ Lemma filterlim_pair {T U V F} {G : set (set U)} {H : set (set V)}
   f @ F --> G -> g @ F --> H ->
   (f x, g x) @[x --> F] --> (G, H).
 Proof.
-move=> fFG gFH P; rewrite !near_simpl =>
-   -[[A B] /=[GA HB] ABP]; near x.
-  by apply: (ABP (_, _)); split=> //=; assume_near x.
+move=> fFG gFH P; rewrite !near_simpl => -[[A B] /=[GA HB] ABP]; begin_near x.
+  by apply: (ABP (_, _)); split=> //=; near x.
 by end_near; [apply: fFG|apply: gFH].
 Qed.
 
@@ -1286,7 +1287,7 @@ Proof. exact: locally_locally. Qed.
 Lemma near_bind (T : topologicalType) (P Q : set T) (x : T) :
   (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
 Proof.
-move=> PQ xP; near y.
+move=> PQ xP; begin_near y.
   by apply: (near PQ y) => //; apply: (near (near_join xP) y).
 by end_near.
 Qed.
@@ -1791,7 +1792,7 @@ Qed.
 Lemma flim_close {F} {FF : ProperFilter F} (x y : T) :
   F --> x -> F --> y -> close x y.
 Proof.
-move=> Fx Fy e; have_near F z; [by apply: (@ball_splitl _ z); assume_near z|].
+move=> Fx Fy e; have_near F z; [by apply: (@ball_splitl _ z); near z|].
 by end_near; [apply/Fx/locally_ball|apply/Fy/locally_ball].
 Qed.
 Definition is_filter_lim_close := @flim_close. (*compat*)
@@ -1924,7 +1925,8 @@ Lemma flimi_ballP {F} {FF : Filter F} (f : T -> U -> Prop) y :
   forall eps : R, 0 < eps -> \forall x \near F, exists z, f x z /\ ball y eps z.
 Proof.
 split=> [Fy _/posrealP[eps] |Fy P] /=; first exact/Fy/locally_ball.
-move=> /locallyP[_ /posrealP[eps] subP]; rewrite near_simpl near_mapi; near x.
+move=> /locallyP[_ /posrealP[eps] subP].
+rewrite near_simpl near_mapi; begin_near x.
   have [//|z [fxz yz]] := near (Fy _ [gt0 of eps]) x.
   by exists z => //; split => //; apply: subP.
 by end_near.
@@ -1947,7 +1949,7 @@ Lemma flimi_close {F} {FF: ProperFilter F} (f : T -> set U) (l l' : U) :
 Proof.
 move=> f_prop fFl fFl'.
 suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
-apply: filter_app f_prop; near x; first split=> //=.
+apply: filter_app f_prop; begin_near x; first split=> //=.
   by have [//|y [fxy _]] := near (flimi_ball fFl [gt0 of 1]) x; exists y.
 by end_near.
 Qed.
@@ -2209,7 +2211,7 @@ Qed.
 Lemma cauchy2E (T : uniformType) (F : set (set T)) : ProperFilter F ->
   (forall e, e > 0 -> \forall x & y \near F, ball x e y) -> cauchy F.
 Proof.
-move=> FF Fcauchy e; have_near F x; first by exists x; assume_near x.
+move=> FF Fcauchy e; have_near F x; first by exists x; near x.
 by end_near; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
 Qed.
 
@@ -2311,10 +2313,10 @@ Proof.
 move=> FF Fc; have /(_ _) /complete_cauchy Gl : cauchy (@^~ _ @ F).
   by move=> t e; have [f /filterS Ff] := Fc e; exists (f t); apply: Ff=> ? /=.
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/flim_ballP => _ /posrealP[e]; near g.
+apply/flim_ballP => _ /posrealP[e]; begin_near g.
   move=> t; have_near F h => /=.
-    by apply: (@ball_splitl _ (h t)); last move: (t); assume_near h.
-  by end_near; [exact/Gl/locally_ball|assume_near g].
+    by apply: (@ball_splitl _ (h t)); last move: (t); near h.
+  by end_near; [exact/Gl/locally_ball|near g].
 by end_near; apply: (@nearP_dep _ _ F F); apply: cauchy2.
 Qed.
 
@@ -2336,10 +2338,10 @@ Lemma filterlim_switch_1 {U : uniformType}
   g @ F2 --> l.
 Proof.
 move=> fg fh hl; apply/flim_ballP => _ /posrealP[eps]; rewrite !near_simpl.
-have_near F1 x; first near y.
-+ apply: (@ball_split _ (h x)); first by assume_near x.
-  apply: (@ball_split _ (f x y)); first by assume_near y.
-  by apply/ball_sym; move: (y); assume_near x.
+have_near F1 x; first begin_near y.
++ apply: (@ball_split _ (h x)); first by near x.
+  apply: (@ball_split _ (f x y)); first by near y.
+  by apply/ball_sym; move: (y); near x.
 + by end_near; apply/fh/locally_ball.
 end_near; first exact/hl/locally_ball.
 by have /filterlim_locally /= := fg; apply.
@@ -2353,10 +2355,10 @@ Lemma filterlim_switch_2 {U : completeType}
   [cvg h @ F1 in U].
 Proof.
 move=> fg fh; apply: complete_cauchy => e /=.
-have_near F1 x; [exists (h x); near x'; [have_near F2 y| ] |].
-+ apply: (@ball_splitl _ (f x y)); first by assume_near y.
-  apply: (@ball_split _ (f x' y)); first by assume_near y.
-  by apply: (@ball_splitr _ (g y)); move: (y); [assume_near x'|assume_near x].
+have_near F1 x; [exists (h x); begin_near x'; [have_near F2 y| ] |].
++ apply: (@ball_splitl _ (f x y)); first by near y.
+  apply: (@ball_split _ (f x' y)); first by near y.
+  by apply: (@ball_splitr _ (g y)); move: (y); [near x'|near x].
 + by end_near; apply/fh/locally_ball.
 + by end_near; have /filterlim_locally /= := fg; apply.
 + by end_near; have /filterlim_locally /= := fg; apply.
@@ -2930,27 +2932,27 @@ Proof.
 move=> [/=x y]; apply/flim_normP=> _/posrealP[e].
 rewrite !near_simpl /=; near2 a b.
   rewrite opprD addrACA (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
-  by rewrite ltr_add //=; [assume_near a|assume_near b].
+  by rewrite ltr_add //=; [near a|near b].
 by split; end_near=> /=; apply: flim_norm.
 Qed.
 
 
 Lemma flim_scal : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
-move=> [k x]; apply/flim_normP=> _/posrealP[e]; rewrite !near_simpl /=; near z.
+move=> [k x]; apply/flim_normP=> _/posrealP[e].
+rewrite !near_simpl /=; begin_near z.
   rewrite (@subr_trans _ (k *: z.2)).
   rewrite (double_var e) (ler_lt_trans (ler_normm_add _ _)) //.
   rewrite ltr_add // -?(scalerBr, scalerBl).
     rewrite (ler_lt_trans (ler_normmZ _ _)) //.
     rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
             ?ler_addl//.
-    rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //.
-    by assume_near z.
+    by rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near z.
   rewrite (ler_lt_trans (ler_normmZ _ _)) //.
   rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) //.
-    by rewrite ltrW //; assume_near z.
+    by rewrite ltrW //; near z.
   rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //.
-  by assume_near z.
+  by near z.
 end_near; rewrite /= ?near_simpl.
 - by apply: (flim_norm _ flim_snd); rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
 - by apply: (flim_bounded _ flim_snd); rewrite ltr_addl.

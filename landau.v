@@ -225,9 +225,9 @@ Canonical the_littleo_littelo (tag : unit) (F : filter_on T)
 Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
   littleo F (df \+ dg) e.
 Proof.
-move=> _/posrealP[eps]; near x => /=.
+move=> _/posrealP[eps]; begin_near x => /=.
   rewrite (double_var eps) mulrDl.
-  rewrite (ler_trans (ler_normm_add _ _)) // ler_add //; assume_near x.
+  rewrite (ler_trans (ler_normm_add _ _)) // ler_add //; near x.
 by end_near; apply: littleoP.
 Qed.
 
@@ -285,9 +285,9 @@ Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
   littleo F (a *: (df : _ -> _)) e.
 Proof.
 have [->|a0] := eqVneq a 0; first by rewrite scale0r.
-move=> _ /posrealP[eps]; have aa := absr_eq0 a; near x => /=.
+move=> _ /posrealP[eps]; have aa := absr_eq0 a; begin_near x => /=.
   rewrite (ler_trans (ler_normmZ _ _)) //.
-  by rewrite -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; assume_near x.
+  by rewrite -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; near x.
 by end_near; apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?ltr_def ?aa ?a0 /=.
 Qed.
 
@@ -594,15 +594,15 @@ Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
   f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
 Proof.
 split=> fFl.
-  apply/eqaddoP => _/posrealP[eps]; near x.
-    by rewrite /cst ltrW //= normmB; assume_near x.
+  apply/eqaddoP => _/posrealP[eps]; begin_near x.
+    by rewrite /cst ltrW //= normmB; near x.
   by end_near; apply: (flim_norm _ fFl); rewrite mulr_gt0 // ?absr1_gt0.
 apply/flim_normP=> _/posrealP[eps]; rewrite !near_simpl.
 have lt_eps x : x <= (pos eps / 2%:R) * `|1 : K^o|%real -> x < pos eps.
   rewrite absr1 mulr1 => /ler_lt_trans; apply.
   by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
-near x.
-  by rewrite [X in X x]fFl opprD addNKr normmN lt_eps //; assume_near x.
+begin_near x.
+  by rewrite [X in X x]fFl opprD addNKr normmN lt_eps //; near x.
 by end_near; rewrite /= !near_simpl; apply: littleoP; rewrite divr_gt0.
 Qed.
 
@@ -627,9 +627,9 @@ Lemma littleo_bigO_eqo {F : filter_on T}
 Proof.
 move->; apply/eqoP => _/posrealP[eps] /=.
 set k := 'O g; have [/= _/posrealP[c]] := bigOP [bigO of k].
-apply: filter_app; near x.
+apply: filter_app; begin_near x.
   rewrite -!ler_pdivr_mull //; apply: ler_trans.
-  by rewrite ler_pdivr_mull // mulrA; assume_near x.
+  by rewrite ler_pdivr_mull // mulrA; near x.
 by end_near; rewrite /= !near_simpl; apply: littleoP.
 Qed.
 Arguments littleo_bigO_eqo {F}.
@@ -639,8 +639,8 @@ Lemma bigO_littleo_eqo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) 
 Proof.
 move->; apply/eqoP => _/posrealP[eps].
 set k := 'O _; have [/= _/posrealP[c]] := bigOP [bigO of k].
-apply: filter_app; near x.
-  by move=> /ler_trans; apply; rewrite -ler_pdivl_mull // mulrA; assume_near x.
+apply: filter_app; begin_near x.
+  by move=> /ler_trans; apply; rewrite -ler_pdivl_mull // mulrA; near x.
 by end_near; rewrite /= !near_simpl; apply: littleoP.
 Qed.
 Arguments bigO_littleo_eqo {F}.
@@ -774,9 +774,9 @@ have [{l fl}_ /posrealP[l] f_lipshitz] :
   (** BUG! in a vector space, the normm should be totally scalable : normmZ *)
   admit.
 move=> x; apply/flim_normP => _/posrealP[eps]; rewrite !near_simpl.
-rewrite (near_shift 0) /= subr0; near y => /=.
+rewrite (near_shift 0) /= subr0; begin_near y => /=.
   rewrite -linearB opprD addrC addrNK linearN normmN.
-  by rewrite (ler_lt_trans (f_lipshitz _)) // -ltr_pdivl_mull //; assume_near y.
+  by rewrite (ler_lt_trans (f_lipshitz _)) // -ltr_pdivl_mull //; near y.
 end_near.
 apply/locally_normP.
 by eexists; last by move=> ?; rewrite /ball_norm sub0r normmN; apply.
@@ -849,7 +849,7 @@ Proof.
 move=> dxf dxfO; have /diff_locally := dxf; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; exists 1 => //; rewrite /cst mul1r [`|[1 : R^o]|]absr1.
-  near y; [rewrite ltrW //; assume_near y|end_near].
+  begin_near y; [rewrite ltrW //; near y|end_near].
   by apply/locally_normP; eexists=> [|?];
     last (rewrite /ball_norm ?sub0r ?normmN; apply).
 rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
