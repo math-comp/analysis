@@ -1047,11 +1047,6 @@ Proof.
 by rewrite openE => Aop Bop p [/Aop|/Bop]; apply: filterS => ??; [left|right].
 Qed.
 
-Lemma open_ext (A B : set T) : (A `<=>` B) -> open A -> open B.
-Proof.
-by rewrite openE => AB Aop p /(proj2 AB)/Aop; apply: filterS => ? /(proj1 AB).
-Qed.
-
 Lemma openP (A B : set T) : open A -> (A `<=` B) -> (A `<=` B^o).
 Proof.
 by rewrite openE => Aop sAB p Ap; apply: filterS sAB _; apply: Aop.
@@ -1863,12 +1858,6 @@ Definition closed (D : set T) := closure D `<=` D.
 Lemma closedN (D : set T) : open D -> closed (~` D).
 Proof. by rewrite openE => Dop p clNDp /Dop /clNDp [? []]. Qed.
 
-Lemma closed_ext (D E : set T) : (forall x, D x <-> E x) ->
-  closed D -> closed E.
-Proof.
-by move=> DE Dcl p clEp; apply/DE/Dcl => ? /clEp [q [/DE ??]]; exists q.
-Qed.
-
 Lemma closed_bigI {I} (D : I -> set T) :
   (forall i, closed (D i)) -> closed (\bigcap_i D i).
 Proof.
@@ -1881,12 +1870,6 @@ Proof.
 by move=> Dcl Ecl p clDEp; split; [apply: Dcl|apply: Ecl];
   move=> A /clDEp [q [[]]]; exists q.
 Qed.
-
-(* Lemma closedU (D E : set T) : closed D -> closed E -> closed (D `|` E). *)
-(* Proof. *)
-(* move=> /openN ND_open /openN NE_open x DEx. *)
-(* have := openI ND_open NE_open. *)
-(* Qed. *)
 
 Lemma closedT : closed setT. Proof. by []. Qed.
 
@@ -3003,22 +2986,12 @@ split; last by exists P.
 by move=> [Q [FQ QP]]; apply: (filterS QP).
 Qed.
 
-(* Ltac begin_near x := *)
-(* apply/filterP_strong; *)
-(* let R := fresh "around" in *)
-(* let A := fresh "is_around" in *)
-(* match goal with |- exists _ : set ?T, _ => evar (R : set T); exists R; *)
-(*   match goal with |- exists _ : ?FQ, _ => evar (A : FQ); *)
-(*     suff  *)
-(*  exists A; *)
-(*     exists R; [rewrite /R {R}| *)
-(*                move=> x /(extensible_propertyI x) ?]; last first *)
-(* end. *)
-
+(* :TODO: add to mathcomp *)
 Lemma ltr_distW (R : realDomainType) (x y e : R):
    (`|x - y|%R < e) -> y - e < x.
 Proof. by rewrite ltr_distl => /andP[]. Qed.
 
+(* :TODO: add to mathcomp *)
 Lemma ler_distW (R : realDomainType) (x y e : R):
    (`|x - y|%R <= e) -> y - e <= x.
 Proof. by rewrite ler_distl => /andP[]. Qed.
@@ -3120,50 +3093,51 @@ Admitted.
 
 (** Some open sets of [R] *)
 
-Lemma open_lt (y : R) : open (fun u : R => u < y).
+Lemma open_lt (y : R) : open (< y).
 Proof.
-move=> x; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
+move=> x /=; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
 have /sub_ball_abs subyx := yDx_gt0 => /subyx.
 by rewrite mul1r absrB ltr_distl addrCA subrr addr0 => /andP[].
 Qed.
+Hint Resolve open_lt.
 
-Lemma open_gt (y : R) : open (fun u : R => y < u).
+Lemma open_gt (y : R) : open (> y).
 Proof.
-move=> x; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
+move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
 have /sub_ball_abs subyx := xDy_gt0 => /subyx.
 by rewrite mul1r absrB ltr_distl opprB addrCA subrr addr0 => /andP[].
 Qed.
+Hint Resolve open_gt.
 
-Lemma open_neq (y : R) : open (fun u : R => u <> y).
+Lemma open_neq (y : R) : open (xpredC (eq_op^~ y)).
 Proof.
-apply: (@open_ext _ (fun u : R => u < y \/ y < u)).
-  split => u.
-  by move/orP; rewrite -neqr_lt => /eqP.
-  by move/eqP; rewrite neqr_lt => /orP.
-apply: openU; by [apply: open_lt | apply: open_gt].
+rewrite (_ : xpredC _ = (< y) `|` (> y) :> set _) /=.
+  by apply: openU => //; apply: open_lt.
+rewrite predeqE => x /=; rewrite eqr_le !lerNgt negb_and !negbK orbC.
+by symmetry; apply (rwP orP).
 Qed.
 
 (** Some closed sets of [R] *)
 
-Lemma closed_le (y : R) : closed (fun u : R => u <= y).
+Lemma closed_le (y : R) : closed (<= y).
 Proof.
-apply: (@closed_ext _ (fun u => not (y < u))) => x.
-  by rewrite lerNgt; split => /negP.
-apply: closedN; exact: open_gt.
+rewrite (_ : (<= _) = ~` (> y) :> set _).
+  by apply: closedN; exact: open_gt.
+by rewrite predeqE => x /=; rewrite lerNgt; split => /negP.
 Qed.
 
-Lemma closed_ge (y : R) : closed (fun u : R => y <= u).
+Lemma closed_ge (y : R) : closed (>= y).
 Proof.
-apply: (@closed_ext _ (fun u : R => not (u < y))) => x.
-  by rewrite lerNgt; split => /negP.
-apply: closedN; exact: open_lt.
+rewrite (_ : (>= _) = ~` (< y) :> set _).
+  by apply: closedN; exact: open_lt.
+by rewrite predeqE => x /=; rewrite lerNgt; split => /negP.
 Qed.
 
-Lemma closed_eq (y : R) : closed (fun u : R => u = y).
+Lemma closed_eq (y : R) : closed (eq^~ y).
 Proof.
-apply: (@closed_ext _ (fun u => not (u <> y))) => x.
-  destruct (Req_dec x y); by tauto.
-apply: closedN; exact: open_neq.
+rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
+  by apply: closedN; exact: open_neq.
+by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
 Qed.
 
 (** Local properties in [R] *)
