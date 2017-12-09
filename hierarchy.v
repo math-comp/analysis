@@ -1,7 +1,7 @@
 (* cara (c) 2017 Inria and AIST. License: CeCILL-C.                           *)
 Require Import Reals.
-From Coq Require Import ssreflect ssrfun ssrbool.
-From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
+From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
+From mathcomp Require Import seq fintype bigop ssralg ssrnum.
 From SsrReals Require Import boolp reals.
 Require Import Rstruct Rbar set posnum.
 
@@ -2335,7 +2335,6 @@ apply/eqP; rewrite eqr_le; apply/andP; split.
   by rewrite -{1}(scale0r 0) (ler_trans (ler_normmZ _ _)) ?absr0 ?mul0r.
 by rewrite -(ler_add2r `|[0 : V]|) add0r -{1}[0 : V]add0r ler_normm_add.
 Qed.
-Definition norm_zero := normm0.
 Hint Resolve normm0.
 
 Lemma normm_eq0 x : (`|[x]| == 0) = (x == 0).
@@ -2634,7 +2633,7 @@ rewrite (@ltr_le_trans _ (norm_factor V * eps%:num)) // ?ler_maxr ?lerr ?orbT //
 by rewrite ger0_norm ?normm_ge0 //; exact: sub_ball_norm_pos.
 Qed.
 
-Lemma prod_norm_eq_zero (x : U * V) : prod_norm x = 0 -> x = 0.
+Lemma prod_norm_eq0 (x : U * V) : prod_norm x = 0 -> x = 0.
 Proof.
 move: x => [xu xv] /eqP H.
 rewrite sqrtr_eq0 ler_eqVlt ltrNge addr_ge0  ?sqr_ge0 // orbF in H.
@@ -2646,7 +2645,7 @@ End prod_NormedModule.
 
 Definition prod_NormedModule_mixin (K : absRingType) (U V : normedModType K) :=
   @NormedModMixin K _ _ _ (@prod_norm K U V) prod_norm_factor prod_norm_triangle
-  prod_norm_scal prod_norm_compat1 prod_norm_compat2 prod_norm_eq_zero.
+  prod_norm_scal prod_norm_compat1 prod_norm_compat2 prod_norm_eq0.
 
 Canonical prod_NormedModule (K : absRingType) (U V : normedModType K) :=
   NormedModType K (U * V) (@prod_NormedModule_mixin K U V).
@@ -3063,23 +3062,16 @@ by apply/sub_abs_ball/(ler_lt_trans (ler_distm_dist _ _)).
 Qed.
 
 (* :TODO: yet, not used anywhere?! *)
-Lemma flim_norm_zero {U} {K : absRingType} {V : normedModType K}
+Lemma flim_norm0 {U} {K : absRingType} {V : normedModType K}
   {F : set (set U)} {FF : Filter F} (f : U -> V) :
   (fun x => `|[f x]|) @ F --> (0 : R)
   -> f @ F --> (0 : V).
 Proof.
-  (* intros Hf. *)
-  (* apply flim_locally_ball_norm => eps. *)
-  (* generalize (proj1 (flim_locally_ball_norm _ _) Hf eps) ; *)
-  (* unfold ball_norm ; simpl. *)
-  (* apply filterS => /= x. *)
-  (* rewrite !minus_zero_r {1}/norm /= /abs /= Rabs_pos_eq //. *)
-  (* by apply norm_ge_0. *)
-(*Qed.*)
-Admitted.
+move=> /(flim_norm (_ : R^o)) fx0; apply/flim_normP => _/posnumP[e].
+rewrite near_simpl; have := fx0 _ [gt0 of e%:num]; rewrite near_simpl.
+by apply: filterS => x; rewrite !sub0r !normmN [`|[_]|]ger0_norm.
+Qed.
 
-(* :TODO: finish the commented proof to derive the result from
-          flim_bound and change names *)
 Lemma cvg_seq_bounded {K : absRingType} {V : normedModType K} (a : nat -> V) :
   [cvg a in V] -> {M : R | forall n, norm (a n) <= M}.
 Proof.
@@ -3087,9 +3079,13 @@ move=> a_cvg; suff: exists M, forall n, norm (a n) <= M.
   by move=> /getPex; set M := get _; exists M.
 pose M := `|[lim (a @ \oo)]| + 1.
 have [] := !! flim_bounded _ a_cvg M; first by rewrite ltr_addl.
-move=> N /= ltM; pose X := [set a n | n in [set n | (n < N)%N]].
-(* Qed. *)
-Admitted.
+move=> N /= _ /(_ _ _) /ltrW a_leM.
+exists (maxr M (\big[maxr/M]_(n < N) `|[a (val (rev_ord n))]|)) => /= n.
+rewrite ler_maxr; have [nN|nN] := leqP N n; first by rewrite a_leM.
+apply/orP; right => {a_leM}; elim: N n nN=> //= N IHN n.
+rewrite leq_eqVlt => /orP[/eqP[->] |/IHN a_le];
+by rewrite big_ord_recl subn1 /= ler_maxr ?a_le ?lerr ?orbT.
+Qed.
 
 (** Some open sets of [R] *)
 
