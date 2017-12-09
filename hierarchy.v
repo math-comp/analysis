@@ -809,12 +809,6 @@ Lemma near_map {T U} (f : T -> U) (F : set (set T)) (P : set U) :
   (\forall y \near f @ F, P y) = (\forall x \near F, P (f x)).
 Proof. by []. Qed.
 
-(* Lemma setVK {T T'} (f : T -> T') (A : set T) : f @^-1` (f @` A) = A. *)
-(* Proof. *)
-(* rewrite predeqE => x /=; split => [[]|Ax]; last by exists x. *)
-(*   admit. *)
-(* by exists x. *)
-
 Lemma near_map2 {T T' U U'} (f : T -> U) (g : T' -> U')
       (F : set (set T)) (G : set (set T')) (P : U -> set U') :
   Filter F -> Filter G ->
@@ -900,23 +894,9 @@ move=> FF; rewrite /within; constructor.
 - by move=> P Q subPQ; apply: filterS => x DP /DP /subPQ.
 Qed.
 
-Lemma within_dom T (F : set (set T)) (A : set T) : Filter F -> within A F A.
-Proof. by move=> FF; rewrite /within; apply: filterE. Qed.
-
 Lemma flim_within {T} {F : set (set T)} {FF : Filter F} D :
   within D F --> F.
 Proof. by move=> P; apply: filterS. Qed.
-
-Lemma flim_within_ext {T U F} {G : set (set U)}
-  {FF : Filter F} (D : set T) (f g : T -> U) :
-  (forall x, D x -> f x = g x) ->
-  f @ within D F --> G ->
-  g @ within D F --> G.
-Proof.
-move=> eq_fg; apply: flim_trans.
-apply: @flim_eq_loc.
-by rewrite near_withinE; apply: filterE.
-Qed.
 
 Definition subset_filter {T} (F : set (set T)) (D : set T) :=
   [set P : set {x | D x} | F [set x | forall Dx : D x, P (exist _ x Dx)]].
@@ -938,7 +918,6 @@ Proof.
 move=> DAP; apply: Build_ProperFilter'; rewrite /subset_filter => subFD.
 by have /(_ subFD) := DAP (~` D); apply => -[x [dx /(_ dx)]].
 Qed.
-Definition subset_filter_proper' := @subset_filter_proper.
 
 (** * Topological spaces *)
 
@@ -2003,7 +1982,7 @@ Qed.
 
 Lemma compact_closed (A : set T) : hausdorff -> compact A -> closed A.
 Proof.
-move=> hT Aco p clAp; have pA := !! @within_dom _ (locally p) A _.
+move=> hT Aco p clAp; have pA := !! @withinT _ (locally p) A _.
 have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
 by apply: flim_cluster clsAp_q; apply: flim_within.
 Qed.
