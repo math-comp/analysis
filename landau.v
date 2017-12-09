@@ -1,10 +1,9 @@
 (* cara (c) 2017 Inria and AIST. License: CeCILL-C.                           *)
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
-Require Import Rcomplements Rbar Markov Iter Lub.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
 From SsrReals Require Import boolp reals.
-Require Import Rstruct set R_ext hierarchy.
+Require Import Rstruct Rbar set posnum hierarchy.
 
 (******************************************************************************)
 (*              BACHMANN-LANDAU NOTATIONS : BIG AND LITTLE O                  *)
@@ -169,7 +168,7 @@ Notation "[littleo 'of' f ]" := (@littleo_clone _ _ f _ _ idfun)
 
 Lemma littleo0_subproof F g : Filter F -> littleo F 0 g.
 Proof.
-move=> FF _/posrealP[eps] /=; apply: filterE => x; rewrite normm0.
+move=> FF _/posnumP[eps] /=; apply: filterE => x; rewrite normm0.
 by rewrite mulr_ge0 // ltrW.
 Qed.
 
@@ -225,8 +224,8 @@ Canonical the_littleo_littelo (tag : unit) (F : filter_on T)
 Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
   littleo F (df \+ dg) e.
 Proof.
-move=> _/posrealP[eps]; begin_near x => /=.
-  rewrite (double_var eps) mulrDl.
+move=> _/posnumP[eps]; begin_near x => /=.
+  rewrite [eps%:num]splitr mulrDl.
   rewrite (ler_trans (ler_normm_add _ _)) // ler_add //; near x.
 by end_near; apply: littleoP.
 Qed.
@@ -285,7 +284,7 @@ Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
   littleo F (a *: (df : _ -> _)) e.
 Proof.
 have [->|a0] := eqVneq a 0; first by rewrite scale0r.
-move=> _ /posrealP[eps]; have aa := absr_eq0 a; begin_near x => /=.
+move=> _ /posnumP[eps]; have aa := absr_eq0 a; begin_near x => /=.
   rewrite (ler_trans (ler_normmZ _ _)) //.
   by rewrite -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; near x.
 by end_near; apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?ltr_def ?aa ?a0 /=.
@@ -400,8 +399,8 @@ Canonical the_bigO_bigO (tag : unit) (F : filter_on T)
 Lemma add_bigO_subproof (F : filter_on T) e (df dg : {O_F e}) :
   bigO F (df \+ dg) e.
 Proof.
-have [[_/posrealP[kf] xkf] [_ /posrealP[kg] xkg]] := (bigOP df, bigOP dg).
-exists (pos kf + kg) => //; apply: filterS2 xkf xkg => x /ler_add fD/fD{fD}.
+have [[_/posnumP[kf] xkf] [_ /posnumP[kg] xkg]] := (bigOP df, bigOP dg).
+exists (kf%:num + kg%:num) => //; apply: filterS2 xkf xkg => x /ler_add fD/fD{fD}.
 by rewrite mulrDl; apply: ler_trans; apply: ler_normm_add.
 Qed.
 
@@ -594,11 +593,11 @@ Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
   f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
 Proof.
 split=> fFl.
-  apply/eqaddoP => _/posrealP[eps]; begin_near x.
+  apply/eqaddoP => _/posnumP[eps]; begin_near x.
     by rewrite /cst ltrW //= normmB; near x.
   by end_near; apply: (flim_norm _ fFl); rewrite mulr_gt0 // ?absr1_gt0.
-apply/flim_normP=> _/posrealP[eps]; rewrite !near_simpl.
-have lt_eps x : x <= (pos eps / 2%:R) * `|1 : K^o|%real -> x < pos eps.
+apply/flim_normP=> _/posnumP[eps]; rewrite !near_simpl.
+have lt_eps x : x <= (eps%:num / 2%:R) * `|1 : K^o|%real -> x < eps.
   rewrite absr1 mulr1 => /ler_lt_trans; apply.
   by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
 begin_near x.
@@ -625,8 +624,8 @@ Lemma littleo_bigO_eqo {F : filter_on T}
   (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> [o_F f of h] =o_F g.
 Proof.
-move->; apply/eqoP => _/posrealP[eps] /=.
-set k := 'O g; have [/= _/posrealP[c]] := bigOP [bigO of k].
+move->; apply/eqoP => _/posnumP[eps] /=.
+set k := 'O g; have [/= _/posnumP[c]] := bigOP [bigO of k].
 apply: filter_app; begin_near x.
   rewrite -!ler_pdivr_mull //; apply: ler_trans.
   by rewrite ler_pdivr_mull // mulrA; near x.
@@ -637,8 +636,8 @@ Arguments littleo_bigO_eqo {F}.
 Lemma bigO_littleo_eqo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =o_F g -> [O_F f of h] =o_F g.
 Proof.
-move->; apply/eqoP => _/posrealP[eps].
-set k := 'O _; have [/= _/posrealP[c]] := bigOP [bigO of k].
+move->; apply/eqoP => _/posnumP[eps].
+set k := 'O _; have [/= _/posnumP[c]] := bigOP [bigO of k].
 apply: filter_app; begin_near x.
   by move=> /ler_trans; apply; rewrite -ler_pdivl_mull // mulrA; near x.
 by end_near; rewrite /= !near_simpl; apply: littleoP.
@@ -740,8 +739,8 @@ Lemma near_shift {K : absRingType} {R : normedModType K}
    (y x : R) (P : set R) :
    (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
-rewrite propeqE; split=> /= /locally_normP [_/posrealP[e] ye];
-apply/locally_normP; exists e=> // t /= et.
+rewrite propeqE; split=> /= /locally_normP [_/posnumP[e] ye];
+apply/locally_normP; exists e%:num => // t /= et.
   apply: ye; rewrite /ball_norm !opprD addrA addrACA subrr add0r.
   by rewrite opprK addrC.
 have /= := ye (t - (x - y)); rewrite addrNK; apply.
@@ -763,17 +762,17 @@ Context (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
 Lemma linear_continuous (f: {linear U -> V | GRing.Scale.op s_law}) :
   (f : _ -> _) =O_(0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
-move=> /eqOP [_/posrealP[l]].
-rewrite /= => /locally_normP [_/posrealP[d]]; rewrite /cst /=.
+move=> /eqOP [_/posnumP[l]].
+rewrite /= => /locally_normP [_/posnumP[d]]; rewrite /cst /=.
 rewrite [`|[1 : R^o]|]absr1 mulr1 => fl.
-have [{l fl}_ /posrealP[l] f_lipshitz] :
+have [{l fl}_ /posnumP[l] f_lipshitz] :
   exists2 l, l > 0 & forall x , `|[f x]| <= l * `|[x]|.
-  exists (pos l / ((d : R) / 2)%coqR) => //.
-  move=> x; have := fl ((pos d / 2)%coqR * `|[x]| ^-1 *: x).
+  exists (l%:num / (d%:num / 2)) => //.
+  move=> x; have := fl ((d%:num / 2) * `|[x]| ^-1 *: x).
   rewrite /ball_norm sub0r normmN.
   (** BUG! in a vector space, the normm should be totally scalable : normmZ *)
   admit.
-move=> x; apply/flim_normP => _/posrealP[eps]; rewrite !near_simpl.
+move=> x; apply/flim_normP => _/posnumP[eps]; rewrite !near_simpl.
 rewrite (near_shift 0) /= subr0; begin_near y => /=.
   rewrite -linearB opprD addrC addrNK linearN normmN.
   by rewrite (ler_lt_trans (f_lipshitz _)) // -ltr_pdivl_mull //; near y.
@@ -809,8 +808,8 @@ Lemma littleo_shift (y x : V) (f : V -> W) (e : V -> V) :
   littleo (locally y) (f \o shift (x - y)) (e \o shift (x - y)) ->
   littleo (locally x) f e.
 Proof.
-move=> fe _/posrealP[eps]; rewrite near_simpl (near_shift y).
-exact: filterS (fe _ [gt0 of eps]).
+move=> fe _/posnumP[eps]; rewrite near_simpl (near_shift y).
+exact: filterS (fe _ [gt0 of eps%:num]).
 Qed.
 
 Lemma littleo_center0 (x : V) (f : V -> W) (e : V -> V) :
