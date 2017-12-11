@@ -13,7 +13,7 @@ Require Import Rstruct Rbar set posnum hierarchy.
 (* alternatively, K can be equal to the reals R (from the standard library    *)
 (* for now)                                                                   *)
 (* This libary is very assymetric, in multiple respects:                      *)
-(* - most rewrite rules can only be rewriten from left to right.              *)
+(* - most rewrite rules can only be rewritten from left to right.             *)
 (*   more precisely, the pattern 'the_O_F f as few chances to match           *)
 (*             while the pattern 'O_F f     should be ok                      *)
 (*   e.g. an equation 'o_F f = 'the_O_G g can be used only from LEFT TO RIGHT *)
@@ -38,15 +38,15 @@ Require Import Rstruct Rbar set posnum hierarchy.
 (*    [bigO of f] == recovers the canonical structure of big-o of f           *)
 (*                   expands to itself                                        *)
 (*       f =O_F h == f is a bigO of h near F,                                 *)
-(*                   this is the prefered way for statements.                 *)
-(*                   expands to the equation (f = 'the_o_F h)                 *)
+(*                   this is the preferred way for statements.                *)
+(*                   expands to the equation (f = 'the_O_F h)                 *)
 (*                   rewrite from LEFT to RIGHT only                          *)
 (*   f = g +O_F h == f is equal to g plus a bigO near F,                      *)
-(*                   this is the prefered way for statements.                 *)
-(*                   expands to the equation (f = g + 'the_o_F h)             *)
+(*                   this is the preferred way for statements.                *)
+(*                   expands to the equation (f = g + 'the_O_F h)             *)
 (*                   rewrite from LEFT to RIGHT only                          *)
 (*   [O_F h of f] == returns a function with a bigO canonical structure       *)
-(*                   provably equal to f is f is indeed a bigO of h           *)
+(*                   provably equal to f if f is indeed a bigO of h           *)
 (*                   provably equal to 0 otherwise                            *)
 (*                   expands to ('o_F h)                                      *)
 (*           'O_F == pattern to match a bigO with a specific F                *)
@@ -357,7 +357,7 @@ Notation "[O_ x e 'of' f ]" := (mkbigO gen_tag x f e)
 Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (PhantomF x) f e)
   (at level 0, x, e at level 0, format "[O '_' x  e  'of'  f ]").
 (* These notation is printing only in order to display 'o
-   without looking at the contents, use showo to dispaly *)
+   without looking at the contents, use showo to display *)
 Notation "''the_O_' x e " := (the_bigO the_tag _ (PhantomF x) _ e)
   (at level 0, x, e at level 0, format "''the_O_' x  e ").
 Notation "''a_O_' x e " := (the_bigO a_tag _ (PhantomF x) _ e)
@@ -857,3 +857,99 @@ by rewrite linear0.
 Qed.
 
 End DifferentialR.
+
+Section big_omega.
+
+Context {K : absRingType} {T : Type} {V : normedModType K}.
+Implicit Types W : normedModType K.
+
+Definition bigOmega W (F : set (set T)) (f : T -> V) (g : T -> W) :=
+  exists2 k, k > 0 & \forall x \near F, `|[f x]| >= k * `|[g x]|.
+
+Structure bigOmega_type W (F : set (set T)) (g : T -> W) := BigOmega {
+  bigOmega_fun :> T -> V;
+  _ : `[< bigOmega F bigOmega_fun g >]
+}.
+
+Notation "{Omega_ F f }" := (@bigOmega_type _ F f)
+  (at level 0, F at level 0, format "{Omega_  F  f }").
+
+Canonical bigOmega_subtype W (F : set (set T)) (g : T -> W) :=
+  [subType for (@bigOmega_fun W F g)].
+
+Lemma bigOmega_class W (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
+  `[<bigOmega F f g>].
+Proof. by case: f => ?. Qed.
+Hint Resolve bigOmega_class.
+
+Definition bigOmega_clone W (F : set (set T)) (g : T -> W) (f : T -> V) (fT : {Omega_F g}) c
+  of phant_id (bigOmega_class fT) c := @BigOmega _ F g f c.
+Notation "[bigOmega 'of' f 'for' fT ]" := (@bigOmega_clone _ _ _ f fT _ idfun)
+  (at level 0, f at level 0, format "[bigOmega  'of'  f  'for'  fT ]").
+Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ f _ _ idfun)
+  (at level 0, f at level 0, format "[bigOmega  'of'  f ]").
+
+Lemma bigOmegaP (F : set (set T)) (g : T -> V) (f : {Omega_F g}) :
+  bigOmega F f g.
+Proof. exact/asboolP. Qed.
+
+End big_omega.
+
+Section big_omega_prop.
+
+Context {K : absRingType} {T : Type} {V W : normedModType K}.
+
+Lemma bigO_bigOmega (F : filter_on T) (f : T -> V) (g : T -> W) :
+  (f =O_F g) = bigOmega F g f.
+Proof.
+rewrite propeqE eqOP; split => -[e ??]; exists e^-1; rewrite ?invr_gt0 //;
+  begin_near x; [ rewrite ler_pdivr_mull //; near x | end_near
+                | rewrite ler_pdivl_mull //; near x | end_near ].
+Qed.
+
+End big_omega_prop.
+
+Section temporary.
+
+Context {T : Type}.
+
+Lemma locallyI (F : filter_on T) P Q : locally F (fun x : T => P x /\ Q x) <->
+  locally F P /\ locally F Q.
+Proof.
+split; last by case=> ??; by apply/filterP; exists (P`&`Q) => //; apply filterI.
+case/filterP=>s ? H; split; apply/filterP; exists s => // x; move: (H x); tauto.
+Qed.
+
+Lemma nearIP (F : filter_on T) (b1 b2 : _ -> Prop) :
+  (\forall x \near F, b1 x /\ b2 x) <->
+    (\forall x \near F, b1 x) /\ (\forall x \near F, b2 x).
+Proof.
+split => H;[split|case: H => H1 H2]; last by begin_near x; [near x |end_near].
+- begin_near x; [by near x | end_near].
+  by move: H; rewrite -locally_nearE /= => /locallyI[].
+- begin_near x; [by near x | end_near].
+  by move: H; rewrite -locally_nearE /= => /locallyI[].
+Qed.
+
+End temporary.
+
+Section big_theta.
+
+Context {K : absRingType} {T : Type} {V W : normedModType K}.
+
+Definition bigTheta (F : set (set T)) (f : T -> V) (g : T -> W) :=
+  exists2 k, ((k.1 > 0) && (k.2 > 0)) &
+    \forall x \near F, k.1 * `|[g x]| <= `|[f x]| /\ `|[f x]| <= k.2 * `|[g x]|.
+
+Lemma bigThetaE (F : filter_on T) (f : T -> V) (g : T -> W) :
+  bigTheta F f g <-> (f =O_F g) /\ bigOmega F f g.
+Proof.
+split.
+- case=> -[k1 k2] /= /andP[k10 k20] /nearIP[Hx1 Hx2].
+  by split; [rewrite eqOP; exists k2 | exists k1].
+- case; rewrite eqOP => -[k1 k10 H1] [k2 k20 H2].
+  exists (k2, k1) => /=; first by rewrite k20.
+  apply/nearIP; split; by begin_near x; [near x | end_near].
+Qed.
+
+End big_theta.
