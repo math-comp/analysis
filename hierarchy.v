@@ -1,7 +1,7 @@
 (* cara (c) 2017 Inria and AIST. License: CeCILL-C.                           *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrnum.
+From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap.
 From SsrReals Require Import boolp reals.
 Require Import Rstruct Rbar set posnum.
 
@@ -1139,50 +1139,51 @@ End TopologyOfOpen.
 
 Section TopologyOfBase.
 
-Variable (T : pointedType) (b : set (set T)).
-Hypothesis (b_cover : \bigcup_(A in b) A = setT).
-Hypothesis (b_join : forall A B t, b A -> b B -> (A `&` B) t ->
-  exists C, b C /\ C t /\ C `<=` A `&` B).
+Definition open_from I T (D : set I) (b : I -> set T) :=
+  [set \bigcup_(i in D') b i | D' in subset^~ D].
 
-(* Definition open_from I T (D : set I) (B : I -> set T) := *)
-(*   [set \bigcup_(i in D') B i | D' in subset^~ D]. *)
+Lemma open_fromT I T (D : set I) (b : I -> set T) :
+  \bigcup_(i in D) b i = setT -> open_from D b setT.
+Proof. by move=> ?; exists D. Qed.
 
-Definition open_of_base :=
-  [set \bigcup_(A in b') A | b' in subset^~ b].
+Variable (I : pointedType) (T : Type) (D : set I) (b : I -> (set T)).
+Hypothesis (b_cover : \bigcup_(i in D) b i = setT).
+Hypothesis (b_join : forall i j t, D i -> D j -> b i t -> b j t ->
+  exists k, D k /\ b k t /\ b k `<=` b i `&` b j).
 
 Program Definition topologyOfBaseMixin :=
-  @topologyOfOpenMixin _ open_of_base _ _ _.
-Next Obligation. by exists b. Qed.
+  @topologyOfOpenMixin _ (open_from D b) (open_fromT b_cover) _ _.
 Next Obligation.
-have [bA sbAb AeUbA] := H; have [bB sbBb BeUbB] := H0.
-have ABU : forall t, (A `&` B) t -> exists Ut, b Ut /\ Ut t /\ Ut `<=` A `&` B.
+have [DA sDAD AeUbA] := H; have [DB sDBD BeUbB] := H0.
+have ABU : forall t, (A `&` B) t ->
+  exists it, D it /\ b it t /\ b it `<=` A `&` B.
   move=> t [At Bt].
-  have [UA [bUA [UAt sUA]]] : exists U, b U /\ U t /\ U `<=` A.
-    move: At; rewrite -AeUbA => - [U bAU Ut]; exists U.
-    by split; [apply: sbAb|split=> // ?; exists U].
-  have [UB [bUB [UBt sUB]]] : exists U, b U /\ U t /\ U `<=` B.
-    move: Bt; rewrite -BeUbB => - [U bBU Ut]; exists U.
-    by split; [apply: sbBb|split=> // ?; exists U].
-  have /(_ t) [|U [bU [Ut sUAB]]] := b_join bUA bUB; first by [].
-  by exists U; split=> //; split=> // s /sUAB [/sUA ? /sUB].
-set U := fun t => [set Ut | b Ut /\ Ut t /\ Ut `<=` A `&` B].
-exists [set get (U t) | t in A `&` B].
+  have [iA [DiA [biAt sbiA]]] : exists i, D i /\ b i t /\ b i `<=` A.
+    move: At; rewrite -AeUbA => - [i DAi bit]; exists i.
+    by split; [apply: sDAD|split=> // ?; exists i].
+  have [iB [DiB [biBt sbiB]]] : exists i, D i /\ b i t /\ b i `<=` B.
+    move: Bt; rewrite -BeUbB => - [i DBi bit]; exists i.
+    by split; [apply: sDBD|split=> // ?; exists i].
+  have [i [Di [bit sbiAB]]] := b_join DiA DiB biAt biBt.
+  by exists i; split=> //; split=> // s /sbiAB [/sbiA ? /sbiB].
+set Dt := fun t => [set it | D it /\ b it t /\ b it `<=` A `&` B].
+exists [set get (Dt t) | t in A `&` B].
   by move=> _ [t ABt <-]; have /ABU/getPex [] := ABt.
-rewrite predeqE => t; split=> [[_ [s ABs <-] Ust]|ABt].
+rewrite predeqE => t; split=> [[_ [s ABs <-] bDtst]|ABt].
   by have /ABU/getPex [_ [_]] := ABs; apply.
-by exists (get (U t)); [exists t| have /ABU/getPex [? []]:= ABt].
+by exists (get (Dt t)); [exists t| have /ABU/getPex [? []]:= ABt].
 Qed.
 Next Obligation.
-set fop := fun i => [set bi | bi `<=` b /\ f i = \bigcup_(A in bi) A].
-exists (\bigcup_i get (fop i)).
-  move=> A [i _ biA].
-  suff /getPex [/(_ _ biA)] : exists bi, fop i bi by [].
-  by have [bi] := H i; exists bi.
-rewrite predeqE => t; split=> [[A [i _ biA At]]|[i _]].
-  exists i => //; suff /getPex [_ ->] : exists bi, fop i bi by exists A.
-  by have [bi] := H i; exists bi.
-have /getPex [_ ->] : exists bi, fop i bi by have [bi] := H i; exists bi.
-by move=> [A]; exists A => //; exists i.
+set fop := fun j => [set Dj | Dj `<=` D /\ f j = \bigcup_(i in Dj) b i].
+exists (\bigcup_j get (fop j)).
+  move=> i [j _ fopji].
+  suff /getPex [/(_ _ fopji)] : exists Dj, fop j Dj by [].
+  by have [Dj] := H j; exists Dj.
+rewrite predeqE => t; split=> [[i [j _ fopji bit]]|[j _]].
+  exists j => //; suff /getPex [_ ->] : exists Dj, fop j Dj by exists i.
+  by have [Dj] := H j; exists Dj.
+have /getPex [_ ->] : exists Dj, fop j Dj by have [Dj] := H j; exists Dj.
+by move=> [i]; exists i => //; exists j.
 Qed.
 
 End TopologyOfBase.
@@ -1191,46 +1192,33 @@ End TopologyOfBase.
 
 Section TopologyOfSubbase.
 
-Variable (T : pointedType) (b : set (set T)).
+Local Open Scope fset_scope.
+Local Open Scope classical_set_scope.
 
-(* From mathcomp Require Import finmap. *)
-(* Local Open Scope fset_scope. *)
-(* Definition base_from (I : choiceType) T (D : set I) (B : I -> set T) := *)
-(*   [set \bigcap_(i in [set i | i \in D']) B i | D' in [set A : {fset I} | {subset A <= D}]]. *)
+Definition base_from (I : choiceType) T (D : set I) (b : I -> set T) :=
+  [set \bigcap_(i in [set i | i \in D']) b i |
+    D' in [set A : {fset I} | {subset A <= D}]].
 
-Definition base_of_subbase (b : set (set T)) :=
-  [set \bigcap_j f j | n in (@setT nat) &
-    f in [set f : 'I_n -> set T | forall j, b (f j)]].
-
-Lemma base_of_subbase_cover (B : set (set T)) :
-  \bigcup_(A in base_of_subbase B) A = setT.
+Lemma base_from_cover (I : choiceType) T (D : set I) (b : I -> set T) :
+  \bigcup_(A in base_from D b) A = setT.
 Proof.
 rewrite predeqE => t; split=> // _; exists setT => //.
-by exists 0%N => //; exists (fun _ => setT) => [[]|] //; rewrite predeqE.
+by exists fset0 => //; rewrite predeqE.
 Qed.
 
+Variable (I : pointedType) (T : Type) (D : set I) (b : I -> set T).
+
 Program Definition topologyOfSubbaseMixin :=
-  @topologyOfBaseMixin _ (base_of_subbase b) (base_of_subbase_cover b) _.
+  @topologyOfBaseMixin _ _ (base_from D b) id (base_from_cover D b) _.
 Next Obligation.
+move: i j t H H0 H1 H2 => A B t [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
 exists (A `&` B); split; last by split.
-have [nA _ [fA bfA AeIfA]] := H; have [nB _ [fB bfB BeIfB]] := H0.
-set f := fun i => match split i with
-                  | inl iA => fA iA
-                  | inr iB => fB iB
-                  end.
-exists (nA + nB)%N => //; exists f.
-  by move=> i; rewrite /f; case: (split i) => [iA|iB]; [apply: bfA|apply: bfB].
-rewrite predeqE => s; split=> [Ifs|[As Bs]]; last first.
-  move=> i; rewrite /f; case: (split i) => [iA _|iB _].
-    by have := As; rewrite -AeIfA; apply.
-  by have := Bs; rewrite -BeIfB; apply.
-split.
-  rewrite -AeIfA => iA _.
-  have -> : fA iA s = f (unsplit (inl iA)) s by rewrite /f unsplitK.
-  exact: Ifs.
-rewrite -BeIfB => iB _.
-have -> : fB iB s = f (unsplit (inr iB)) s by rewrite /f unsplitK.
-exact: Ifs.
+exists (DA `|` DB)%fset; first by move=> i /fsetUP [/sDAD|/sDBD].
+rewrite predeqE => s; split=> [Ifs|[As Bs] i /fsetUP].
+  split; first by rewrite -AeIbA => i DAi; apply: Ifs; rewrite in_fsetE DAi.
+  by rewrite -BeIbB => i DBi; apply: Ifs; rewrite in_fsetE DBi orbC.
+by move=> [DAi|DBi];
+  [have := As; rewrite -AeIbA; apply|have := Bs; rewrite -BeIbB; apply].
 Qed.
 
 End TopologyOfSubbase.
@@ -1315,7 +1303,7 @@ Let TS := fun i => Topological.Pack (Tc i) T.
 
 Definition sup_subbase := \bigcup_i (@open (TS i) : set (set T)).
 
-Definition sup_topologicalTypeMixin := topologyOfSubbaseMixin sup_subbase.
+Definition sup_topologicalTypeMixin := topologyOfSubbaseMixin sup_subbase id.
 
 Definition sup_topologicalType :=
   Topological.Pack (@Topological.Class _ (Filtered.Class (Pointed.class T) _)
@@ -3251,7 +3239,7 @@ Lemma flim_norm0 {U} {K : absRingType} {V : normedModType K}
 Proof.
 move=> /(flim_norm (_ : R^o)) fx0; apply/flim_normP => _/posnumP[e].
 rewrite near_simpl; have := fx0 _ [gt0 of e%:num]; rewrite near_simpl.
-by apply: filterS => x; rewrite !sub0r !normmN [`|[_]|]ger0_norm.
+by apply: filterS => x; rewrite !sub0r !normmN [ `|[_]| ]ger0_norm.
 Qed.
 
 Lemma cvg_seq_bounded {K : absRingType} {V : normedModType K} (a : nat -> V) :
