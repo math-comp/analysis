@@ -1065,6 +1065,20 @@ Proof. by rewrite locallyE => p_A; exists A; split. Qed.
 
 End Topological1.
 
+Lemma near_join (T : topologicalType) (x : T) (P : set T) :
+  (\near x, P x) -> \near x, \near x, P x.
+Proof. exact: locally_locally. Qed.
+
+Lemma near_bind (T : topologicalType) (P Q : set T) (x : T) :
+  (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
+Proof.
+move=> PQ xP; begin_near y.
+  by apply: (near PQ y) => //; apply: (near (near_join xP) y).
+by end_near.
+Qed.
+
+(** ** Topology defined by a filter *)
+
 Section TopologyOfFilter.
 
 Context {T : Type} {loc : T -> set (set T)}.
@@ -1084,6 +1098,8 @@ by split => // q /loc_singleton.
 Qed.
 
 End TopologyOfFilter.
+
+(** ** Topology defined by open sets *)
 
 Section TopologyOfOpen.
 
@@ -1119,17 +1135,107 @@ Qed.
 
 End TopologyOfOpen.
 
-Lemma near_join (T : topologicalType) (x : T) (P : set T) :
-  (\near x, P x) -> \near x, \near x, P x.
-Proof. exact: locally_locally. Qed.
+(** ** Topology defined by a base of open sets *)
 
-Lemma near_bind (T : topologicalType) (P Q : set T) (x : T) :
-  (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
-Proof.
-move=> PQ xP; begin_near y.
-  by apply: (near PQ y) => //; apply: (near (near_join xP) y).
-by end_near.
+Section TopologyOfBase.
+
+Variable (T : pointedType) (b : set (set T)).
+Hypothesis (b_cover : \bigcup_(A in b) A = setT).
+Hypothesis (b_join : forall A B t, b A -> b B -> (A `&` B) t ->
+  exists C, b C /\ C t /\ C `<=` A `&` B).
+
+(* Definition open_from I T (D : set I) (B : I -> set T) := *)
+(*   [set \bigcup_(i in D') B i | D' in subset^~ D]. *)
+
+Definition open_of_base :=
+  [set \bigcup_(A in b') A | b' in subset^~ b].
+
+Program Definition topologyOfBaseMixin :=
+  @topologyOfOpenMixin _ open_of_base _ _ _.
+Next Obligation. by exists b. Qed.
+Next Obligation.
+have [bA sbAb AeUbA] := H; have [bB sbBb BeUbB] := H0.
+have ABU : forall t, (A `&` B) t -> exists Ut, b Ut /\ Ut t /\ Ut `<=` A `&` B.
+  move=> t [At Bt].
+  have [UA [bUA [UAt sUA]]] : exists U, b U /\ U t /\ U `<=` A.
+    move: At; rewrite -AeUbA => - [U bAU Ut]; exists U.
+    by split; [apply: sbAb|split=> // ?; exists U].
+  have [UB [bUB [UBt sUB]]] : exists U, b U /\ U t /\ U `<=` B.
+    move: Bt; rewrite -BeUbB => - [U bBU Ut]; exists U.
+    by split; [apply: sbBb|split=> // ?; exists U].
+  have /(_ t) [|U [bU [Ut sUAB]]] := b_join bUA bUB; first by [].
+  by exists U; split=> //; split=> // s /sUAB [/sUA ? /sUB].
+set U := fun t => [set Ut | b Ut /\ Ut t /\ Ut `<=` A `&` B].
+exists [set get (U t) | t in A `&` B].
+  by move=> _ [t ABt <-]; have /ABU/getPex [] := ABt.
+rewrite predeqE => t; split=> [[_ [s ABs <-] Ust]|ABt].
+  by have /ABU/getPex [_ [_]] := ABs; apply.
+by exists (get (U t)); [exists t| have /ABU/getPex [? []]:= ABt].
 Qed.
+Next Obligation.
+set fop := fun i => [set bi | bi `<=` b /\ f i = \bigcup_(A in bi) A].
+exists (\bigcup_i get (fop i)).
+  move=> A [i _ biA].
+  suff /getPex [/(_ _ biA)] : exists bi, fop i bi by [].
+  by have [bi] := H i; exists bi.
+rewrite predeqE => t; split=> [[A [i _ biA At]]|[i _]].
+  exists i => //; suff /getPex [_ ->] : exists bi, fop i bi by exists A.
+  by have [bi] := H i; exists bi.
+have /getPex [_ ->] : exists bi, fop i bi by have [bi] := H i; exists bi.
+by move=> [A]; exists A => //; exists i.
+Qed.
+
+End TopologyOfBase.
+
+(** ** Topology defined by a subbase of open sets *)
+
+Section TopologyOfSubbase.
+
+Variable (T : pointedType) (b : set (set T)).
+
+(* From mathcomp Require Import finmap. *)
+(* Local Open Scope fset_scope. *)
+(* Definition base_from (I : choiceType) T (D : set I) (B : I -> set T) := *)
+(*   [set \bigcap_(i in [set i | i \in D']) B i | D' in [set A : {fset I} | {subset A <= D}]]. *)
+
+Definition base_of_subbase (b : set (set T)) :=
+  [set \bigcap_j f j | n in (@setT nat) &
+    f in [set f : 'I_n -> set T | forall j, b (f j)]].
+
+Lemma base_of_subbase_cover (B : set (set T)) :
+  \bigcup_(A in base_of_subbase B) A = setT.
+Proof.
+rewrite predeqE => t; split=> // _; exists setT => //.
+by exists 0%N => //; exists (fun _ => setT) => [[]|] //; rewrite predeqE.
+Qed.
+
+Program Definition topologyOfSubbaseMixin :=
+  @topologyOfBaseMixin _ (base_of_subbase b) (base_of_subbase_cover b) _.
+Next Obligation.
+exists (A `&` B); split; last by split.
+have [nA _ [fA bfA AeIfA]] := H; have [nB _ [fB bfB BeIfB]] := H0.
+set f := fun i => match split i with
+                  | inl iA => fA iA
+                  | inr iB => fB iB
+                  end.
+exists (nA + nB)%N => //; exists f.
+  by move=> i; rewrite /f; case: (split i) => [iA|iB]; [apply: bfA|apply: bfB].
+rewrite predeqE => s; split=> [Ifs|[As Bs]]; last first.
+  move=> i; rewrite /f; case: (split i) => [iA _|iB _].
+    by have := As; rewrite -AeIfA; apply.
+  by have := Bs; rewrite -BeIfB; apply.
+split.
+  rewrite -AeIfA => iA _.
+  have -> : fA iA s = f (unsplit (inl iA)) s by rewrite /f unsplitK.
+  exact: Ifs.
+rewrite -BeIfB => iB _.
+have -> : fB iB s = f (unsplit (inr iB)) s by rewrite /f unsplitK.
+exact: Ifs.
+Qed.
+
+End TopologyOfSubbase.
+
+(** ** Topology on the product of two spaces *)
 
 Section Prod_Topology.
 
@@ -1159,6 +1265,82 @@ Canonical prod_topologicalType :=
   TopologicalType (T * U) prod_topologicalTypeMixin.
 
 End Prod_Topology.
+
+(** ** Weak topology by a function *)
+
+Section Weak_Topology.
+
+Variable (S : pointedType) (T : topologicalType) (f : S -> T).
+
+Definition wopen := [set f @^-1` A | A in open].
+
+Lemma wopT : wopen setT.
+Proof. by exists setT => //; apply: openT. Qed.
+
+Lemma wopI (A B : set S) : wopen A -> wopen B -> wopen (A `&` B).
+Proof.
+by move=> [C Cop <-] [D Dop <-]; exists (C `&` D) => //; apply: openI.
+Qed.
+
+Lemma wop_bigU (I : Type) (g : I -> set S) :
+  (forall i, wopen (g i)) -> wopen (\bigcup_i g i).
+Proof.
+move=> gop.
+set opi := fun i => [set Ui | open Ui /\ g i = f @^-1` Ui].
+exists (\bigcup_i get (opi i)).
+  apply: open_bigU => i.
+  by have /getPex [] : exists U, opi i U by have [U] := gop i; exists U.
+have g_preim i : g i = f @^-1` (get (opi i)).
+  by have /getPex [] : exists U, opi i U by have [U] := gop i; exists U.
+rewrite predeqE => s; split=> [[i _]|[i _]]; last by rewrite g_preim; exists i.
+by rewrite -[_ _]/((f @^-1` _) _) -g_preim; exists i.
+Qed.
+
+Definition weak_topologicalTypeMixin := topologyOfOpenMixin wopT wopI wop_bigU.
+
+Let S_filteredClass := Filtered.Class (Pointed.class S) (locally_of_open wopen).
+Definition weak_topologicalType :=
+  Topological.Pack (@Topological.Class _ S_filteredClass
+    weak_topologicalTypeMixin) S.
+
+End Weak_Topology.
+
+(** ** Supremum of a family of topologies *)
+
+Section Sup_Topology.
+
+Variable (T : pointedType) (I : Type) (Tc : I -> Topological.class_of T).
+
+Let TS := fun i => Topological.Pack (Tc i) T.
+
+Definition sup_subbase := \bigcup_i (@open (TS i) : set (set T)).
+
+Definition sup_topologicalTypeMixin := topologyOfSubbaseMixin sup_subbase.
+
+Definition sup_topologicalType :=
+  Topological.Pack (@Topological.Class _ (Filtered.Class (Pointed.class T) _)
+  sup_topologicalTypeMixin) T.
+
+End Sup_Topology.
+
+(** ** Product topology *)
+
+Section Product_Topology.
+
+Variable (I : Type) (T : I -> topologicalType).
+
+Definition dep_arrow_choiceClass :=
+  Choice.Class (Equality.class (dep_arrow_eqType T)) gen_choiceMixin.
+
+Definition dep_arrow_pointedType :=
+  Pointed.Pack (Pointed.Class dep_arrow_choiceClass (fun i => @point (T i)))
+  (forall i, T i).
+
+Definition product_topologicalType :=
+  sup_topologicalType (fun i => Topological.class
+    (weak_topologicalType (fun f : dep_arrow_pointedType => f i))).
+
+End Product_Topology.
 
 (** * Uniform spaces defined using balls *)
 
