@@ -1605,18 +1605,22 @@ End AbsRing1.
 Hint Resolve absr_ge0.
 Hint Resolve absr1_gt0.
 
+Definition ball_ (V : zmodType) (norm : V -> R) (x : V)
+  (e : R) := [set y | norm (x - y) < e].
+Arguments ball_ {V} norm x e%R y /.
+
 Section AbsRing_UniformSpace.
 
 Context {K : absRingType}.
 
-Definition AbsRing_ball (x : K) (eps : R) (y : K) := `|x - y| < eps.
+Definition AbsRing_ball := ball_ (@abs K).
 
 Lemma AbsRing_ball_center (x : K) (e : R) : 0 < e -> AbsRing_ball x e x.
-Proof. by rewrite /AbsRing_ball subrr absr0. Qed.
+Proof. by rewrite /AbsRing_ball /= subrr absr0. Qed.
 
 Lemma AbsRing_ball_sym (x y : K) (e : R) :
   AbsRing_ball x e y -> AbsRing_ball y e x.
-Proof. by rewrite /AbsRing_ball absrB. Qed.
+Proof. by rewrite /AbsRing_ball /= absrB. Qed.
 
 (* :TODO: to math-comp *)
 Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
@@ -1625,7 +1629,7 @@ Proof. by rewrite addrA addrNK. Qed.
 Lemma AbsRing_ball_triangle (x y z : K) (e1 e2 : R) :
   AbsRing_ball x e1 y -> AbsRing_ball y e2 z -> AbsRing_ball x (e1 + e2) z.
 Proof.
-rewrite /AbsRing_ball => xy yz.
+rewrite /AbsRing_ball /= => xy yz.
 by rewrite (subr_trans y) (ler_lt_trans (ler_abs_add _ _)) ?ltr_add.
 Qed.
 
@@ -2356,14 +2360,10 @@ Module NormedModule.
 
 Record mixin_of (K : absRingType) (V : lmodType K) loc (m : @Uniform.mixin_of V loc) := Mixin {
   norm : V -> R ;
-  norm_factor : R ;
   ax1 : forall (x y : V), norm (x + y) <= norm x + norm y ;
   ax2 : forall (l : K) (x : V), norm (l *: x) <= abs l * norm x;
-  ax3 : forall (x y : V) (eps : R), 0 < eps -> norm (x - y) < eps ->
-                                    Uniform.ball m x eps y ;
-  ax4 : forall (x y : V) (eps : R), 0 < eps -> Uniform.ball m x eps y ->
-    norm (x - y) < norm_factor * eps ;
-  ax5 : forall x : V, norm x = 0 -> x = 0
+  ax3 : Uniform.ball m = ball_ norm;
+  ax4 : forall x : V, norm x = 0 -> x = 0
 }.
 
 Section ClassDef.
@@ -2459,8 +2459,6 @@ Export NormedModule.Exports.
 
 Definition norm {K : absRingType} {V : normedModType K} : V -> R :=
   NormedModule.norm (NormedModule.class _).
-Definition norm_factor {K : absRingType} (V : normedModType K) : R :=
- @NormedModule.norm_factor _ _ _ _ (@NormedModule.class _ _ V).
 Notation "`|[ x ]|" := (norm x) : ring_scope.
 
 Section NormedModule1.
@@ -2473,21 +2471,15 @@ Proof. exact: NormedModule.ax1. Qed.
 Lemma ler_normmZ l x : `|[l *: x]| <= `|l|%real * `|[x]|.
 Proof. exact: NormedModule.ax2. Qed.
 
-Definition ball_norm x (eps : R) y := `|[x - y]| < eps.
-Arguments ball_norm x eps%R y /.
+Notation ball_norm := (ball_ (@norm K V)).
 
 Notation locally_norm := (locally_ ball_norm).
 
-Lemma sub_norm_ball_pos (x : V) (eps : posreal) :
-  ball_norm x eps%:num `<=` ball x eps%:num.
-Proof. move=> y; exact: NormedModule.ax3. Qed.
-
-Lemma sub_ball_norm_pos (x : V) (eps : posreal) :
-  ball x eps%:num `<=` ball_norm x (norm_factor V * eps%:num).
-Proof. move=> y; exact: NormedModule.ax4. Qed.
+Lemma ball_normE : ball_norm = ball.
+Proof. by rewrite -NormedModule.ax3. Qed.
 
 Lemma normm0_eq0 x : `|[x]| = 0 -> x = 0.
-Proof. exact: NormedModule.ax5. Qed.
+Proof. exact: NormedModule.ax4. Qed.
 
 Lemma normmN x : `|[- x]| = `|[x]|.
 Proof.
@@ -2522,13 +2514,6 @@ Proof. by rewrite ltr_def normm_eq0 normm_ge0 andbT. Qed.
 Lemma normm_lt0 x : (`|[x]| < 0) = false.
 Proof. by rewrite ltrNge normm_ge0. Qed.
 
-Lemma norm_factor_gt_0 : 0 < norm_factor V.
-Proof.
-have /= := @sub_ball_norm_pos 0 1%:pos.
-by move=> /(_ 0 (ball_center _ _)) /=; rewrite subrr normm0 mulr1.
-Qed.
-Canonical norm_factor_posreal := PosNum norm_factor_gt_0.
-
 Lemma absRE (x : R) : `|x|%real = `|x|%R.
 Proof. by []. Qed.
 
@@ -2540,25 +2525,13 @@ rewrite absRE ger0_norm ?subr_ge0 // ler_subl_addr.
 by rewrite -{1}[x](addrNK y) ler_normm_add.
 Qed.
 
-Lemma sub_norm_ball (x : V) (eps : R) : ball_norm x eps `<=` ball x eps.
-Proof.
-move=> y /=; have [/ltr_le_trans lt /lt|eps_gt0] := ler0P eps.
-  by rewrite normm_lt0.
-by apply: (@sub_norm_ball_pos _ (PosNum eps_gt0)).
-Qed.
-
-Lemma sub_ball_norm_rev (x : V) (eps : posreal) :
-  ball x ((norm_factor V)^-1 * eps%:num) `<=` ball_norm x eps%:num.
-Proof. by move=> y /sub_ball_norm_pos /=; rewrite mulVKf. Qed.
-
 Lemma closeE x y : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
 have dxy_gt0 : `|[x - y]| > 0 by rewrite normm_gt0 subr_eq0.
 have dxy_ge0 := ltrW dxy_gt0.
-have /sub_ball_norm_pos/= := cl_xy
-  ((norm_factor V)^-1 * ((PosNum dxy_gt0)%:num / 2))%:pos.
-rewrite mulVKf // -subr_lt0 ler_gtF //.
+have := cl_xy ((PosNum dxy_gt0)%:num / 2)%:pos.
+rewrite -ball_normE /= -subr_lt0 ler_gtF //.
 rewrite -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
 by rewrite subr_ge0 -(@ler_pmul2r _ 2) // mulVf // mul1r ler1n.
 Qed.
@@ -2567,20 +2540,19 @@ Lemma eq_close x y : close x y -> x = y. by rewrite closeE. Qed.
 Lemma locally_le_locally_norm x : flim (locally x) (locally_norm x).
 Proof.
 move=> P [_ /posnumP[e] subP]; apply/locallyP.
-by eexists; last (move=> y Py; apply/subP/sub_ball_norm_rev/Py).
+by eexists; last (move=> y Py; apply/subP; rewrite ball_normE; apply/Py).
 Qed.
 
 Lemma locally_norm_le_locally x : flim (locally_norm x) (locally x).
 Proof.
 move=> P /locallyP [_ /posnumP[e] Pxe].
-by exists e%:num => // y /sub_norm_ball /Pxe.
+by exists e%:num => // y; rewrite ball_normE; apply/Pxe.
 Qed.
 
 (* NB: this lemmas was not here before *)
 Lemma locally_locally_norm : locally_norm = locally.
 Proof.
-rewrite funeqE => x; rewrite funeqE => s; rewrite propeqE; split;
-by [apply: locally_le_locally_norm | apply: locally_norm_le_locally].
+by rewrite funeqE => x; rewrite /locally_norm ball_normE filter_from_ballE.
 Qed.
 
 Lemma locally_normP x P : locally x P <-> locally_norm x P.
@@ -2633,10 +2605,7 @@ Lemma ball_norm_le x (e1 e2 : R) :
 Proof. by move=> e1e2 y /ltr_le_trans; apply. Qed.
 
 Lemma norm_close x y : close x y = (forall eps : posreal, ball_norm x eps%:num y).
-Proof.
-rewrite propeqE; split=> [cxy eps|cxy eps]; last exact: sub_norm_ball.
-exact/sub_ball_norm_rev/cxy.
-Qed.
+Proof. by rewrite propeqE ball_normE. Qed.
 
 Lemma ball_norm_eq x y : (forall eps : posreal, ball_norm x eps%:num y) -> x = y.
 Proof. by rewrite -norm_close closeE. Qed.
@@ -2705,127 +2674,49 @@ Arguments flim_bounded {_ _ F FF}.
 
 (** ** Pairs *)
 
-(* TODO a prouver dans Rstruct pour prouver norm_compat1 and norm_compat2 *)
-Lemma sqrt_plus_sqr (x y : R) :
-  maxr `|x| `|y| <= Num.sqrt (x^+2 + y^+2) <= Num.sqrt 2 * maxr `|x| `|y|.
-Proof.
-rewrite -(@ler_pexpn2r _ 2) ?nnegrE ?sqrtr_ge0 ?ler_maxr ?normr_ge0 // andbC.
-rewrite -(@ler_pexpn2r _ 2) ?nnegrE ?mulr_ge0 ?sqrtr_ge0 ?ler_maxr ?normr_ge0 //.
-rewrite sqr_sqrtr ?addr_ge0 // ?sqr_ge0 //.
-wlog : x y / `|x| <= `|y| => H.
-  case: (lerP `|x| `|y|) => yx; first by rewrite H.
-  by rewrite maxrC addrC H // ltrW.
-rewrite maxr_r ?real_normK ?num_real ?ler_addr ?sqr_ge0 // andbT.
-rewrite exprMn_comm ?sqr_sqrtr //; last by rewrite /GRing.comm mulrC.
-rewrite -(@real_normK _ x) ?num_real // -{1}(@real_normK _ y) ?num_real //.
-by rewrite mulr_natl mulr2n ler_add // ler_pexpn2r // ?num_real ?nnegrE.
-Qed.
-
 Section prod_NormedModule.
 
 Context {K : absRingType} {U V : normedModType K}.
 
-Definition prod_norm (x : U * V) := Num.sqrt (`|[x.1]| ^+ 2 + `|[x.2]| ^+ 2).
+Definition prod_norm (x : U * V) := maxr `|[x.1]| `|[x.2]|.
 
 Lemma prod_norm_triangle : forall x y : U * V, prod_norm (x + y) <= prod_norm x + prod_norm y.
 Proof.
-intros [xu xv] [yu yv].
-rewrite /prod_norm /=.
-apply: (@ler_trans _ (Num.sqrt ((`|[xu]| + `|[yu]|)^+2 + (`|[xv]| + `|[yv]|)^+2))).
-  by rewrite ler_wsqrtr // ler_add // ler_pexpn2r //
-     ?nnegrE ?addr_ge0 // ?normm_ge0 // ?ler_normm_add.
-set a := `|[xu]|. set b := `|[yu]|. set c := `|[xv]|. set d := `|[yv]|.
-rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?ler_add ?addr_ge0 // ?sqrtr_ge0 //.
-rewrite sqr_sqrtr ?addr_ge0 // ?sqr_ge0 // [in X in _ <= X]sqrrD.
-rewrite !sqr_sqrtr // ?addr_ge0 // ?sqr_ge0 //.
-rewrite 2!sqrrD -!addrA ler_add //.
-rewrite (addrCA _ (c^+2)) 2!addrCA ler_add //.
-rewrite 2!addrCA 2!(addrCA _ (b^+2)) ler_add //.
-rewrite !addrA ler_add //.
-rewrite -mulr2n -addrA -mulr2n -mulr2n -mulrnDl ler_muln2r /=.
-rewrite -sqrtrM ?addr_ge0 // ?sqr_ge0 //.
-rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?sqrtr_ge0 ?addr_ge0 ?mulr_ge0 ?normm_ge0 //.
-rewrite sqr_sqrtr ?mulr_ge0 ?addr_ge0 ?sqr_ge0 //.
-rewrite sqrrD [in X in _ <= X]mulrDr 2![in X in _ <= X]mulrDl.
-rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
-rewrite -!addrA ler_add //.
-rewrite -(@exprMn_comm _ c d) ?/GRing.comm; last by rewrite mulrC.
-rewrite !addrA ler_add // -mulr2n.
-rewrite -(@exprMn_comm _ c b) ?/GRing.comm; last by rewrite mulrC.
-rewrite -(@exprMn_comm _ a d) ?/GRing.comm; last by rewrite mulrC.
-rewrite -subr_ge0 addrAC.
-by rewrite mulrCA (mulrC a b) -mulrA mulrA -sqrrB ?sqr_ge0.
+by move=> [xu xv] [yu yv]; rewrite ler_maxl /=; apply/andP; split;
+  apply: ler_trans (ler_normm_add _ _) _; apply: ler_add;
+  rewrite ler_maxr lerr // orbC.
 Qed.
 
 Lemma prod_norm_scal (l : K) : forall (x : U * V), prod_norm (l *: x) <= abs l * prod_norm x.
 Proof.
-case=> xu xv; rewrite /prod_norm /=.
-rewrite -(@ler_pexpn2r _ 2) // ?nnegrE ?mulr_ge0 ?sqrtr_ge0 ?absr_ge0 //.
-rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 //.
-rewrite exprMn_comm ?/GRing.comm; last by rewrite mulrC.
-rewrite sqr_sqrtr ?addr_ge0 // ?sqr_ge0 // mulrDr.
-rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
-rewrite -exprMn_comm ?/GRing.comm; last by rewrite mulrC.
-by rewrite ler_add // ler_pexpn2r // ?nnegrE ?mulr_ge0 ?absr_ge0 ?normm_ge0 // ?ler_normmZ.
+by move=> [xu xv]; rewrite /prod_norm /= ler_maxl; apply/andP; split;
+  apply: ler_trans (ler_normmZ _ _) _; apply: ler_wpmul2l => //;
+  rewrite ler_maxr lerr // orbC.
 Qed.
 
-Lemma prod_norm_compat1 : forall (x y : U * V) (eps : R), 0 < eps ->
-  prod_norm (x - y) < eps -> ball x eps y.
+Lemma ball_prod_normE : ball = ball_ prod_norm.
 Proof.
-move=> [xu xv] [yu yv] _/posnumP[eps] H.
-set x := `|[yu - xu]|. set y := `|[yv - xv]|.
-rewrite /prod_norm normmB (normmB xv) in H.
-case/andP: (sqrt_plus_sqr x y) => /ler_lt_trans/(_ H) => H1.
-have  He : 0 < eps by apply: (ler_lt_trans _ H); rewrite sqrtr_ge0.
-rewrite (_ : eps%:num = (PosNum He)%:num) // => H2.
-split; apply: sub_norm_ball; apply: (ler_lt_trans _ H1).
-by rewrite ler_maxr /x normmB real_ler_norm // ger0_real // normm_ge0.
-by rewrite ler_maxr orbC /y normmB real_ler_norm // ger0_real // normm_ge0.
-Qed.
-
-Definition prod_norm_factor :=
-  Num.sqrt 2 * maxr (@norm_factor K U) (@norm_factor K V).
-
-Lemma prod_norm_compat2 : forall (x y : U * V) (eps : R), 0 < eps ->
-  ball x eps y -> (prod_norm (x - y) < prod_norm_factor * eps).
-Proof.
-move=> [xu xv] [yu yv] _/posnumP[eps] [Bu Bv].
-set x := `|[xu - yu]|. set y := `|[xv - yv]|.
-case/andP: (sqrt_plus_sqr x y) => H1 H2; apply: (ler_lt_trans H2).
-rewrite /prod_norm_factor -mulrA.
-rewrite -subr_gt0 -mulrBr pmulr_rgt0 // ?sqrtr_gt0 // subr_gt0 maxr_pmull //.
-case: (lerP `|y| `|x|) => yx.
-  rewrite [in X in X < _]maxr_l //.
-  rewrite (@ltr_le_trans _ (norm_factor U * eps%:num)) ?ler_maxr ?lerr //.
-  by rewrite ger0_norm ?normm_ge0 //; exact: sub_ball_norm_pos.
-rewrite (@maxr_r _ _ `|y|%R); last by rewrite ltrW.
-rewrite (@ltr_le_trans _ (norm_factor V * eps%:num)) // ?ler_maxr ?lerr ?orbT //.
-by rewrite ger0_norm ?normm_ge0 //; exact: sub_ball_norm_pos.
+rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
+by rewrite /ball /= /prod_ball -!ball_normE /ball_ ltr_maxl; split=> /andP.
 Qed.
 
 Lemma prod_norm_eq0 (x : U * V) : prod_norm x = 0 -> x = 0.
 Proof.
-move: x => [xu xv] /eqP H.
-rewrite sqrtr_eq0 ler_eqVlt ltrNge addr_ge0  ?sqr_ge0 // orbF in H.
-rewrite paddr_eq0 ?sqr_ge0 // 2!sqrf_eq0 /= 2!normm_eq0 in H.
-by case/andP : H => /eqP -> /eqP ->.
+case: x => [xu xv]; rewrite /prod_norm /= => nx0.
+suff /andP [/eqP -> /eqP ->] : (xu == 0) && (xv == 0) by [].
+rewrite -!normm_eq0 !eqr_le !normm_ge0.
+have : maxr `|[xu]| `|[xv]| <= 0 by rewrite nx0 lerr.
+by rewrite ler_maxl => /andP [-> ->].
 Qed.
 
 End prod_NormedModule.
 
 Definition prod_NormedModule_mixin (K : absRingType) (U V : normedModType K) :=
-  @NormedModMixin K _ _ _ (@prod_norm K U V) prod_norm_factor prod_norm_triangle
-  prod_norm_scal prod_norm_compat1 prod_norm_compat2 prod_norm_eq0.
+  @NormedModMixin K _ _ _ (@prod_norm K U V) prod_norm_triangle
+  prod_norm_scal ball_prod_normE prod_norm_eq0.
 
 Canonical prod_NormedModule (K : absRingType) (U V : normedModType K) :=
   NormedModType K (U * V) (@prod_NormedModule_mixin K U V).
-
-Lemma norm_prod {K : absRingType} {U : normedModType K} {V : normedModType K}
-  (x : U) (y : V) :
-  maxr `|[ x ]| `|[ y ]| <= `|[(x, y)]| <= Num.sqrt 2 * maxr `|[x]| `|[y]|.
-Proof.
-by rewrite -(ger0_norm (normm_ge0 _)) -(ger0_norm (normm_ge0 y)) sqrt_plus_sqr.
-Qed.
 
 Section NormedModule3.
 
@@ -2867,14 +2758,11 @@ Section AbsRing_NormedModule.
 Variable (K : absRingType).
 Implicit Types (x y : K) (eps : R).
 
-Lemma sub_abs_ball x y eps : 0 < eps -> `|x - y| < eps -> ball x eps y.
+Lemma ball_absE : ball = ball_ (@abs K).
 Proof. by []. Qed.
 
-Lemma sub_ball_abs x y eps : 0 < eps -> ball x eps y -> `|x - y| < 1 * eps.
-Proof. by rewrite mul1r. Qed.
-
 Definition AbsRing_NormedModMixin := @NormedModule.Mixin K _ _ _
-  (abs : K^o -> R) 1 ler_abs_add absrM sub_abs_ball sub_ball_abs absr0_eq0.
+  (abs : K^o -> R) ler_abs_add absrM ball_absE absr0_eq0.
 
 Canonical AbsRing_NormedModType := NormedModType K K^o AbsRing_NormedModMixin.
 
@@ -3184,8 +3072,8 @@ apply: (flim_normW (_ : R^o)) => /= _ /posnumP[eps]; begin_near x.
   rewrite ler_distl sup_upper_bound //=.
     apply: sup_le_ub => //; first by case: D_has_sup.
     apply/forallbP => y; apply/implyP; rewrite in_setE.
-    move=> /(_ (ball_norm x eps%:num) _) /existsbP []; first by near x.
-    move=> z /andP[]; rewrite in_setE /ball_norm ltr_distl ltr_subl_addr.
+    move=> /(_ (ball_ norm x eps%:num) _) /existsbP []; first by near x.
+    move=> z /andP[]; rewrite in_setE /ball_ ltr_distl ltr_subl_addr.
     by move=> /andP [/ltrW /(ler_trans _) le_xeps _ /le_xeps].
   rewrite in_setE /D /= => A FA; have_near F y.
     apply/existsbP; exists y; apply/andP; split.
@@ -3208,7 +3096,7 @@ Definition at_right x := within (fun u : R => x < u) (locally x).
 Global Instance at_right_proper_filter (x : R) : ProperFilter (at_right x).
 Proof.
 apply: Build_ProperFilter' => -[_ /posnumP[d] /(_ (x + d%:num / 2))].
-apply; last (by rewrite ltr_addl); apply: sub_abs_ball => //.
+apply; last (by rewrite ltr_addl); rewrite /AbsRing_ball /=.
 rewrite opprD !addrA subrr add0r absrN absRE normf_div !ger0_norm //.
 by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
@@ -3216,7 +3104,7 @@ Qed.
 Global Instance at_left_proper_filter (x : R) : ProperFilter (at_left x).
 Proof.
 apply: Build_ProperFilter' => -[_ /posnumP[d] /(_ (x - d%:num / 2))].
-apply; last (by rewrite ltr_subl_addl ltr_addr); apply: sub_abs_ball => //.
+apply; last (by rewrite ltr_subl_addl ltr_addr); rewrite /AbsRing_ball /=.
 rewrite opprD !addrA subrr add0r opprK absRE normf_div !ger0_norm //.
 by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
@@ -3228,7 +3116,7 @@ Lemma continuous_norm {K : absRingType} {V : normedModType K} :
 Proof.
 move=> x; apply/(@flim_normP _ [normedModType R of R^o]) => _/posnumP[e] /=.
 rewrite !near_simpl; apply/locally_normP; exists e%:num => // y Hy.
-by apply/sub_abs_ball/(ler_lt_trans (ler_distm_dist _ _)).
+exact/(ler_lt_trans (ler_distm_dist _ _)).
 Qed.
 
 (* :TODO: yet, not used anywhere?! *)
@@ -3262,16 +3150,14 @@ Qed.
 Lemma open_lt (y : R) : open (< y).
 Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
-have /sub_ball_abs subyx := yDx_gt0 => /subyx.
-by rewrite mul1r absrB ltr_distl addrCA subrr addr0 => /andP[].
+by rewrite /AbsRing_ball /= absrB ltr_distl addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_lt.
 
 Lemma open_gt (y : R) : open (> y).
 Proof.
 move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
-have /sub_ball_abs subyx := xDy_gt0 => /subyx.
-by rewrite mul1r absrB ltr_distl opprB addrCA subrr addr0 => /andP[].
+by rewrite /AbsRing_ball /= absrB ltr_distl opprB addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_gt.
 
@@ -3314,7 +3200,7 @@ Lemma locally_interval (P : R -> Prop) (x : R) (a b : Rbar) :
   locally x P.
 Proof.
 move => Hax Hxb Hp; case: (Rbar_lt_locally _ _ _ Hax Hxb) => d Hd.
-exists d%:num => //= y; rewrite /AbsRing_ball absrB.
+exists d%:num => //= y; rewrite /AbsRing_ball /= absrB.
 by move=> /Hd /andP[??]; apply: Hp.
 Qed.
 
@@ -3666,11 +3552,11 @@ case: (@flim_ballP _ (f @ x) FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
 split => [{H2} /H1{H1} H1 eps|{H1} H].
 - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
-  exists x0%:num => // Hx0' /Hx0 /= /sub_ball_abs.
-  by rewrite mul1r absrB; apply.
+  exists x0%:num => // Hx0' /Hx0 /=.
+  by rewrite ball_absE /= absrB; apply.
 - apply H2 => _ /posnumP[eps]; move: (H eps) => {H} [_ /posnumP[x0] Hx0].
   exists x0%:num => // y /Hx0 /= {Hx0}Hx0.
-  by apply/sub_abs_ball; rewrite // absrB.
+  by rewrite ball_absE /= absrB.
 Qed.
 
 Lemma continuity_ptE (f : R -> R) (x : R) :

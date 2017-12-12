@@ -741,10 +741,10 @@ Lemma near_shift {K : absRingType} {R : normedModType K}
 Proof.
 rewrite propeqE; split=> /= /locally_normP [_/posnumP[e] ye];
 apply/locally_normP; exists e%:num => // t /= et.
-  apply: ye; rewrite /ball_norm !opprD addrA addrACA subrr add0r.
+  apply: ye; rewrite /= !opprD addrA addrACA subrr add0r.
   by rewrite opprK addrC.
 have /= := ye (t - (x - y)); rewrite addrNK; apply.
-by rewrite /ball_norm !opprB addrA addrCA subrr addr0.
+by rewrite /= !opprB addrA addrCA subrr addr0.
 Qed.
 
 Lemma flim_shift {T : Type}  {K : absRingType} {R : normedModType K}
@@ -769,7 +769,7 @@ have [{l fl}_ /posnumP[l] f_lipshitz] :
   exists2 l, l > 0 & forall x , `|[f x]| <= l * `|[x]|.
   exists (l%:num / (d%:num / 2)) => //.
   move=> x; have := fl ((d%:num / 2) * `|[x]| ^-1 *: x).
-  rewrite /ball_norm sub0r normmN.
+  rewrite /= sub0r normmN.
   (** BUG! in a vector space, the normm should be totally scalable : normmZ *)
   admit.
 move=> x; apply/flim_normP => _/posnumP[eps]; rewrite !near_simpl.
@@ -778,7 +778,7 @@ rewrite (near_shift 0) /= subr0; begin_near y => /=.
   by rewrite (ler_lt_trans (f_lipshitz _)) // -ltr_pdivl_mull //; near y.
 end_near.
 apply/locally_normP.
-by eexists; last by move=> ?; rewrite /ball_norm sub0r normmN; apply.
+by eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
 Admitted.
 
 End Linear3.
@@ -850,7 +850,7 @@ rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; exists 1 => //; rewrite /cst mul1r [`|[1 : R^o]|]absr1.
   begin_near y; [rewrite ltrW //; near y|end_near].
   by apply/locally_normP; eexists=> [|?];
-    last (rewrite /ball_norm ?sub0r ?normmN; apply).
+    last (rewrite /= ?sub0r ?normmN; apply).
 rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
 apply/eqolim0P; apply: (flim_trans (linear_continuous _ _ _)) => //.
 by rewrite linear0.
