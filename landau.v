@@ -875,7 +875,7 @@ Notation "{Omega_ F f }" := (@bigOmega_type _ F f)
   (at level 0, F at level 0, format "{Omega_  F  f }").
 
 Canonical bigOmega_subtype W (F : set (set T)) (g : T -> W) :=
-  [subType for (@bigOmega_fun W F g)].
+  [subType for (@bigOmega_fun _ F g)].
 
 Lemma bigOmega_class W (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
   `[<bigOmega F f g>].
@@ -889,9 +889,53 @@ Notation "[bigOmega 'of' f 'for' fT ]" := (@bigOmega_clone _ _ _ f fT _ idfun)
 Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ f _ _ idfun)
   (at level 0, f at level 0, format "[bigOmega  'of'  f ]").
 
+Lemma bigOmega_self_subproof F f : Filter F -> bigOmega F f f.
+Proof. by move=> FF; exists 1 => //; apply: filterE => x; rewrite mul1r. Qed.
+
+Canonical bigOmega_self (F : filter_on T) f := BigOmega (asboolT (@bigOmega_self_subproof F f _)).
+
+Definition the_bigOmega (u : unit) (F : filter_on T)
+  (phF : phantom (set (set T)) F) f h := bigOmega_fun (insubd (bigOmega_self F h) f).
+Arguments the_bigOmega : simpl never, clear implicits.
+
+Notation mkbigOmega tag x := (the_bigOmega tag _ (PhantomF x)).
+(* Parsing *)
+Notation "[Omega_ x e 'of' f]" := (mkbigOmega gen_tag x f e)
+  (at level 0, x, e at level 0, only parsing).
+(* Printing *)
+Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e)
+  (at level 0, x, e at level 0, format "[Omega '_' x  e  'of'  f ]").
+
+Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h)
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '=Omega_' F  h").
+
 Lemma bigOmegaP (F : set (set T)) (g : T -> V) (f : {Omega_F g}) :
   bigOmega F f g.
 Proof. exact/asboolP. Qed.
+Hint Extern 0 (bigOmega _ _ _) => solve[apply: bigOmegaP] : core.
+Hint Extern 0 (locally _ _) => solve[apply: bigOmegaP] : core.
+Hint Extern 0 (prop_near1 _) => solve[apply: bigOmegaP] : core.
+Hint Extern 0 (prop_near2 _) => solve[apply: bigOmegaP] : core.
+
+Lemma bigOmegaE (tag : unit) (F : filter_on T) (phF : phantom (set (set T)) F) f h :
+   bigOmega F f h -> the_bigOmega tag F phF f h = f.
+Proof. by move=> /asboolP?; rewrite /the_bigOmega /insubd insubT. Qed.
+
+Canonical the_bigOmega_bigOmega (tag : unit) (F : filter_on T)
+  (phF : phantom (set (set T)) F) (f h : T -> V) :=
+    (*[bigOmega of (the_bigOmega tag F phF f h)]*)
+    (@bigOmega_clone _ F _ (the_bigOmega tag F phF f h) _ _ idfun).
+
+Lemma eqOmegaP (F : filter_on T) (e : T -> V) (f : T -> V) :
+   (f =Omega_ F e) <-> (bigOmega F f e).
+Proof.
+split => Hf; last by rewrite bigOmegaE.
+case/boolP : (`[< bigOmega F f e >]) => H; first by apply/asboolP.
+exists 1 => //; apply: filterE => x.
+rewrite mul1r /= Hf /the_bigOmega /insubd insubF //; by apply/negbTE.
+Qed.
 
 End big_omega.
 
