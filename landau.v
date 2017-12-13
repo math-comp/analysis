@@ -221,6 +221,15 @@ Proof. by move=> /asboolP?; rewrite /the_littleo /insubd insubT. Qed.
 Canonical the_littleo_littelo (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [littleo of the_littleo tag F phF f h].
 
+Lemma opp_littleo (f : T -> V) (g : T -> W) (F : filter_on T) : littleo F (- f) g = littleo F f g.
+Proof.
+rewrite propeqE; move: f.
+wlog H : / forall f : T -> V, littleo F (- f) g -> littleo F f g; last first.
+  move=> f; split; [exact: H|rewrite -{1}(opprK f); exact: H].
+apply => f H e e0; move: (H _ e0) => {H}H.
+begin_near x; [rewrite -normmN; near x | end_near].
+Qed.
+
 Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
   littleo F (df \+ dg) e.
 Proof.
@@ -279,6 +288,24 @@ Proof. by move=> /eq_some_oP /eqoP. Qed.
 Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) :
    (f : _ -> _) =o_F g.
 Proof. by apply/eqoP; apply: littleoP. Qed.
+
+Lemma littleoN (F : filter_on T) (f : T -> V) (g : T -> W) :
+  - f =o_F g -> f =o_F g.
+Proof.
+move/eqoE => ofg; apply: (@eqoE  _ _ f).
+move/eqP : (ofg); rewrite eqr_oppLR => /eqP fog.
+rewrite {1}fog /the_littleo funeqE => x.
+by rewrite val_insubd ofg ifT // -fog val_insubd ifT // -opp_littleo ofg.
+Qed.
+
+Lemma littleoNE (F : filter_on T) (f : T -> V) (g : T -> W) :
+  (- f =o_F g) = (f =o_F g).
+Proof.
+rewrite propeqE; move: f.
+wlog H : / forall f : T -> V, - f =o_F g -> f =o_F g; last first.
+  move=> f; split; [exact: H|by move: (H (- f)); rewrite opprK].
+apply => f; exact: littleoN.
+Qed.
 
 Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
   littleo F (a *: (df : _ -> _)) e.

@@ -1,5 +1,6 @@
 posnum.v
 landau.v
+equiv.v
 set.v
 Rstruct.v
 Rbar.v
