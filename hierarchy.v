@@ -374,6 +374,21 @@ Notation ProperFilter := ProperFilter'.
 Lemma filter_setT (T' : Type) : Filter (@setT (set T')).
 Proof. by constructor. Qed.
 
+Lemma filter_bigI T (I : choiceType) (D : {fset I}) (f : I -> set T)
+  (F : set (set T)) :
+  Filter F -> (forall i, i \in D -> F (f i)) ->
+  F (\bigcap_(i in [set i | i \in D]) f i).
+Proof.
+move=> FF FfD.
+suff: F [set p | forall i, i \in enum_fset D -> f i p] by [].
+have {FfD} : forall i, i \in enum_fset D -> F (f i) by move=> ? /FfD.
+elim: (enum_fset D) => [|i s ihs] FfD; first exact: filterS filterT.
+apply: (@filterS _ _ _ (f i `&` [set p | forall i, i \in s -> f i p])).
+  by move=> p [fip fsp] j; rewrite inE => /orP [/eqP->|] //; apply: fsp.
+apply: filterI; first by apply: FfD; rewrite inE eq_refl.
+by apply: ihs => j sj; apply: FfD; rewrite inE sj orbC.
+Qed.
+
 Structure filter_on T := FilterType {
   filter :> (T -> Prop) -> Prop;
   filter_class : Filter filter
@@ -1065,6 +1080,16 @@ Proof. by rewrite locallyE => p_A; exists A; split. Qed.
 
 End Topological1.
 
+Notation continuous f := (forall x, f%function @ x --> f%function x).
+
+Lemma continuousP (S T : topologicalType) (f : S -> T) :
+  continuous f <-> forall A, open A -> open (f @^-1` A).
+Proof.
+split=> fcont; first by rewrite !openE => A Aop ? /Aop /fcont.
+move=> s A; rewrite locally_simpl /= !locallyE => - [B [[Bop Bfs] sBA]].
+by exists (f @^-1` B); split; [split=> //; apply/fcont|move=> ? /sBA].
+Qed.
+
 Lemma near_join (T : topologicalType) (x : T) (P : set T) :
   (\near x, P x) -> \near x, \near x, P x.
 Proof. exact: locally_locally. Qed.
@@ -1291,6 +1316,24 @@ Definition weak_topologicalType :=
   Topological.Pack (@Topological.Class _ S_filteredClass
     weak_topologicalTypeMixin) S.
 
+Lemma weak_continuous : continuous (f : weak_topologicalType -> T).
+Proof. by apply/continuousP => A ?; exists A. Qed.
+
+Lemma flim_image (F : set (set S)) (s : S) :
+  Filter F -> f @` setT = setT ->
+  F --> (s : weak_topologicalType) <-> [set f @` A | A in F] --> (f s).
+Proof.
+move=> FF fsurj; split=> [cvFs|cvfFfs].
+  move=> A /weak_continuous [B [Bop [Bs sBAf]]].
+  have /cvFs FB: locally (s : weak_topologicalType) B by apply: neigh_locally.
+  rewrite locally_simpl; exists (f @^-1` A); first exact: filterS FB.
+  exact: image_preimage.
+move=> A /= [_ [[B Bop <-] [Bfs sBfA]]].
+have /cvfFfs [C FC fCeB] : locally (f s) B by rewrite locallyE; exists B; split.
+rewrite locally_filterE; apply: filterS FC.
+by apply: subset_trans sBfA; rewrite -fCeB; apply: preimage_image.
+Qed.
+
 End Weak_Topology.
 
 (** ** Supremum of a family of topologies *)
@@ -1308,6 +1351,25 @@ Definition sup_topologicalTypeMixin := topologyOfSubbaseMixin sup_subbase id.
 Definition sup_topologicalType :=
   Topological.Pack (@Topological.Class _ (Filtered.Class (Pointed.class T) _)
   sup_topologicalTypeMixin) T.
+
+Lemma flim_sup (F : set (set T)) (t : T) :
+  Filter F -> F --> (t : sup_topologicalType) <-> forall i, F --> (t : TS i).
+Proof.
+move=> Ffilt; split=> cvFt.
+  move=> i A /=; rewrite (@locallyE (TS i)) => - [B [[Bop Bt] sBA]].
+  apply: cvFt; exists B; split=> //; exists [set B]; last first.
+    by rewrite predeqE => ?; split=> [[_ ->]|] //; exists B.
+  move=> _ ->; exists [fset B]%fset.
+    by move=> ?; rewrite in_fsetE in_setE => /eqP->; exists i.
+  by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite in_fsetE // =>/eqP->.
+move=> A /=; rewrite (@locallyE sup_topologicalType).
+move=> [_ [[[B sB <-] [C BC Ct]] sUBA]].
+rewrite locally_filterE; apply: filterS sUBA _; apply: (@filterS _ _ _ C).
+  by move=> ??; exists C.
+have /sB [D sD IDeC] := BC; rewrite -IDeC; apply: filter_bigI => E DE.
+have /sD := DE; rewrite in_setE => - [i _]; rewrite openE => Eop.
+by apply: (cvFt i); apply: Eop; move: Ct; rewrite -IDeC => /(_ _ DE).
+Qed.
 
 End Sup_Topology.
 
@@ -1886,8 +1948,6 @@ move=> _ _ /posnumP[e1] /posnumP[e2]; exists (minr e1%:num e2%:num) => //.
 by move=> P /=; rewrite ltr_minr => /andP [dPe1 dPe2].
 Qed.
 
-Notation continuous f := (forall x, f%function @ x --> f%function x).
-
 Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
 Proof.
@@ -2112,6 +2172,30 @@ Proof. by rewrite predeqE => p; split=> cF ????; apply: cF. Qed.
 
 Lemma flim_cluster F G : F --> G -> cluster F `<=` cluster G.
 Proof. by move=> sGF p Fp P Q GP Qp; apply: Fp Qp; apply: sGF. Qed.
+
+Lemma cluster_flimP F :
+  ProperFilter F ->
+  cluster F = [set p | exists2 G, ProperFilter G & G --> p /\ F `<=` G].
+Proof.
+move=> FF; rewrite predeqE => p.
+split=> [clFp|[G Gproper [cvGp sFG]] A B]; last first.
+  by move=> /sFG GA /cvGp GB; apply/filter_ex/filterI.
+exists (filter_from (\bigcup_(A in F) [set A `&` B | B in locally p]) id).
+  apply filter_from_proper; last first.
+    by move=> _ [A FA [B p_B <-]]; have := clFp _ _ FA p_B.
+  apply: filter_from_filter.
+    exists setT; exists setT; first exact: filterT.
+    by exists setT; [apply: filterT|rewrite setIT].
+  move=> _ _ [A1 FA1 [B1 p_B1 <-]] [A2 FA2 [B2 p_B2 <-]].
+  exists (A1 `&` B1 `&` (A2 `&` B2)) => //; exists (A1 `&` A2).
+    exact: filterI.
+  by exists (B1 `&` B2); [apply: filterI|rewrite setIACA].
+split.
+  move=> A p_A; exists A => //; exists setT; first exact: filterT.
+  by exists A => //; rewrite setIC setIT.
+move=> A FA; exists A => //; exists A => //; exists setT; first exact: filterT.
+by rewrite setIT.
+Qed.
 
 Definition compact A := forall (F : set (set T)),
   ProperFilter F -> F A -> A `&` cluster F !=set0.

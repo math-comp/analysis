@@ -160,6 +160,17 @@ Lemma nonempty_preimage {A B} (f : A -> B) (X : set B) :
   f @^-1` X !=set0 -> X !=set0.
 Proof. by case=> [a ?]; exists (f a). Qed.
 
+Lemma preimage_image A B (f : A -> B) (X : set A) : X `<=` f@^-1` (f @` X).
+Proof. by move=> a Xa; exists a. Qed.
+
+Lemma image_preimage A B (f : A -> B) (X : set B) :
+  f @` setT = setT -> f @` (f @^-1` X) = X.
+Proof.
+move=> fsurj; rewrite predeqE => x; split; first by move=> [?? <-].
+move=> Xx; have : setT x by [].
+by rewrite -fsurj => - [y _ fy_eqx]; exists y => //; rewrite /preimage fy_eqx.
+Qed.
+
 Lemma subset_empty {A} (X Y : set A) : X `<=` Y -> X !=set0 -> Y !=set0.
 Proof. by move=> sXY [x Xx]; exists x; apply: sXY. Qed.
 
@@ -178,6 +189,25 @@ Proof. by move=> sXZ sYZ a; apply: or_ind; [apply: sXZ|apply: sYZ]. Qed.
 
 Lemma setDE {A} (X Y : set A) : X `\` Y = X `&` ~` Y.
 Proof. by []. Qed.
+
+Lemma setIC {A} (X Y : set A) : X `&` Y = Y `&` X.
+Proof. by rewrite predeqE => ?; split=> [[]|[]]. Qed.
+
+Lemma setIT {A} (X : set A) : X `&` setT = X.
+Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
+
+Lemma setIA {A} (X Y Z : set A) : X `&` (Y `&` Z) = X `&` Y `&` Z.
+Proof. by rewrite predeqE => ?; split=> [[? []]|[[]]]. Qed.
+
+Lemma setICA {A} (X Y Z : set A) : X `&` (Y `&` Z) = Y `&` (X `&` Z).
+Proof. by rewrite setIA [X `&` _]setIC -setIA. Qed.
+
+Lemma setIAC {A} (X Y Z : set A) : X `&` Y `&` Z = X `&` Z `&` Y.
+Proof. by rewrite setIC setICA setIA. Qed.
+
+Lemma setIACA {A} (X Y Z T : set A) :
+  X `&` Y `&` (Z `&` T) = X `&` Z `&` (Y `&` T).
+Proof. by rewrite -setIA [Y `&` _]setICA setIA. Qed.
 
 Definition is_prop {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := all (is_prop \o f).
