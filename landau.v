@@ -700,7 +700,7 @@ Arguments littleo_bigO_eqo {K T V W X F}.
 Arguments bigO_littleo_eqo {K T V W X F}.
 Arguments bigO_bigO_eqO {K T V W X F}.
 
-Section Domination_test.
+Section littleo_bigO_transitivity.
 
 Context {K : absRingType} {T : Type} {V W Z : normedModType K}.
 
@@ -736,7 +736,50 @@ Lemma eqoO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) 
   f = [o_F g of f'] -> g = [O_F h of g'] -> f =o_F h.
 Proof. by move=> -> ->; rewrite (littleo_bigO_eqo h). Qed.
 
-End Domination_test.
+End littleo_bigO_transitivity.
+
+Section rule_of_products.
+
+Variable pT : pointedType.
+
+Lemma mul_littleo_subproof (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
+  littleo F f h1 -> littleo F g h2 -> littleo F (f * g) (h1 * h2).
+Proof.
+move=> fh gh e e0.
+have se0 : 0 < Num.sqrt e by rewrite sqrtr_gt0.
+move/fh : (se0) => {fh}fh; move/gh : (se0) => {gh}gh.
+begin_near x.
+  rewrite (ler_trans (absrM _ _)) // -(sqr_sqrtr (ltrW e0)) expr2.
+  rewrite (_ : `|[_]| = `|h1 x| * `|h2 x|); last by rewrite -RmultE -Rabs_mult.
+  rewrite -mulrA (mulrCA _ `|h1 x|) !mulrA -(mulrA (_ * _)) ler_pmul //; near x.
+end_near.
+Qed.
+
+Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
+  [o_F h1 of f] * [o_F h2 of g] =
+  [o_F (h1 * h2) of [o_F h1 of f] * [o_F h2 of g]].
+Proof. rewrite [in RHS]littleoE //; by apply mul_littleo_subproof. Qed.
+
+Lemma mul_bigO_subproof (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
+  bigO F f h1 -> bigO F g h2 -> bigO F (f * g) (h1 * h2).
+Proof.
+move=> [e1 e10 fh] [e2 e20 gh].
+exists (e1 * e2); first by rewrite pmulr_rgt0.
+begin_near x.
+  rewrite (ler_trans (absrM _ _)) //.
+  rewrite (_ : `|[_]| = `|h1 x| * `|h2 x|); last by rewrite -RmultE -Rabs_mult.
+  rewrite -mulrA (mulrCA _ `|h1 x|) !mulrA -(mulrA (_ * _)) ler_pmul //; near x.
+end_near.
+Qed.
+
+Lemma mulO (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
+  [O_F h1 of f] * [O_F h2 of g] =
+  [O_F (h1 * h2) of [O_F h1 of f] * [O_F h2 of g]].
+Proof. rewrite [in RHS]bigOE //; by apply mul_bigO_subproof. Qed.
+
+(* NB: also enjoyed by bigOmega *)
+
+End rule_of_products.
 
 Section Shift.
 

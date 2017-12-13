@@ -17,10 +17,10 @@ Local Open Scope ring_scope.
 Local Open Scope real_scope.
 Local Open Scope classical_set_scope.
 
-Section equivalence.
-
 Notation "f '~_' F g" := (f = g +o_ F f)
   (at level 70, F at level 0, g at next level, format "f  '~_' F  g").
+
+Section equivalence.
 
 Context {K : absRingType} {T : Type} {V W : normedModType K}.
 Implicit Types  F : filter_on T.
@@ -76,4 +76,3 @@ by apply/equiv_trans/equiv_sym.
 Qed.
 
 End equivalence.
-
