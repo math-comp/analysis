@@ -171,6 +171,10 @@ move=> Xx; have : setT x by [].
 by rewrite -fsurj => - [y _ fy_eqx]; exists y => //; rewrite /preimage fy_eqx.
 Qed.
 
+Lemma preimage_setC A B (f : A -> B) (X : set B) :
+  ~` (f @^-1` X) = f @^-1` (~` X).
+Proof. by rewrite predeqE => a; split=> nXfa ?; apply: nXfa. Qed.
+
 Lemma subset_empty {A} (X Y : set A) : X `<=` Y -> X !=set0 -> Y !=set0.
 Proof. by move=> sXY [x Xx]; exists x; apply: sXY. Qed.
 
