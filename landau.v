@@ -206,6 +206,16 @@ Notation "f '=o_' F h" :=
   (at level 70, no associativity,
    F at level 0, h at next level,
    format "f  '=o_' F  h").
+Notation "f == g '+o_' F h" :=
+  (f%function == g%function + mklittleo the_tag F (f \- g) h)
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  ==  g  '+o_' F  h").
+Notation "f '==o_' F h" :=
+  (f%function == (mklittleo the_tag F f h))
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '==o_' F  h").
 
 Lemma littleoP (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo F f g.
 Proof. exact/asboolP. Qed.
@@ -214,21 +224,30 @@ Hint Extern 0 (locally _ _) => solve[apply: littleoP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: littleoP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: littleoP] : core.
 
-Lemma littleoE (tag : unit) (F : filter_on T) (phF : phantom (set (set T)) F) f h :
+Lemma littleoE (tag : unit) (F : filter_on T)
+   (phF : phantom (set (set T)) F) f h :
    littleo F f h -> the_littleo tag F phF f h = f.
 Proof. by move=> /asboolP?; rewrite /the_littleo /insubd insubT. Qed.
 
 Canonical the_littleo_littelo (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [littleo of the_littleo tag F phF f h].
 
-Lemma opp_littleo (f : T -> V) (g : T -> W) (F : filter_on T) : littleo F (- f) g = littleo F f g.
+Lemma opp_littleo_subproof (F : filter_on T) e (df : {o_F e}) :
+   littleo F (- (df : _ -> _)) e.
 Proof.
-rewrite propeqE; move: f.
-wlog H : / forall f : T -> V, littleo F (- f) g -> littleo F f g; last first.
-  move=> f; split; [exact: H|rewrite -{1}(opprK f); exact: H].
-apply => f H e e0; move: (H _ e0) => {H}H.
-begin_near x; [rewrite -normmN; near x | end_near].
+move=> _/posnumP[eps]; begin_near x; [rewrite normmN; near x|end_near].
+by apply: littleoP.
 Qed.
+
+Canonical opp_littleo (F : filter_on T) e (df : {o_F e}) :=
+  Littleo (asboolT (opp_littleo_subproof df)).
+
+Lemma oppo (F : filter_on T) (f : T -> V) e : - [o_F e of f] =o_F e.
+Proof. by rewrite [RHS]littleoE. Qed.
+
+Lemma oppox (F : filter_on T) (f : T -> V) e x :
+  - [o_F e of f] x = [o_F e of - [o_F e of f]] x.
+Proof. by move: x; rewrite -/(- _ =1 _) {1}oppo. Qed.
 
 Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
   littleo F (df \+ dg) e.
@@ -240,11 +259,12 @@ by end_near; apply: littleoP.
 Qed.
 
 Canonical add_littleo (F : filter_on T) e (df dg : {o_F e}) :=
-  Littleo (asboolT (add_littleo_subproof df dg)).
+  @Littleo _ _ (_ + _) (asboolT (add_littleo_subproof df dg)).
+Canonical addfun_littleo (F : filter_on T) e (df dg : {o_F e}) :=
+  @Littleo _ _ (_ \+ _) (asboolT (add_littleo_subproof df dg)).
 
 Lemma addo (F : filter_on T) (f g: T -> V) e :
-  [o_F e of f] + [o_F e of g] =
-  [o_F e of [o_F e of f] + [o_F e of g]].
+  [o_F e of f] + [o_F e of g] =o_F e.
 Proof. by rewrite [RHS]littleoE. Qed.
 
 Lemma addox (F : filter_on T) (f g: T -> V) e x :
@@ -278,7 +298,7 @@ Proof. by have := @eqadd_some_oP F f 0 e h; rewrite add0r subr0. Qed.
 (* replaces a 'o_F e by a "canonical one" *)
 (* mostly to prevent problems with dependent types *)
 Lemma eqaddoE (F : filter_on T) (f g : T -> V) h (e : T -> W) :
-  f = g + [o_F e of h] -> f = g +o_ F e.
+  f = g + mklittleo a_tag F h e -> f = g +o_ F e.
 Proof. by move=> /eqadd_some_oP /eqaddoP. Qed.
 
 Lemma eqoE (F : filter_on T) (f : T -> V) h (e : T -> W) :
@@ -288,24 +308,6 @@ Proof. by move=> /eq_some_oP /eqoP. Qed.
 Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) :
    (f : _ -> _) =o_F g.
 Proof. by apply/eqoP; apply: littleoP. Qed.
-
-Lemma littleoN (F : filter_on T) (f : T -> V) (g : T -> W) :
-  - f =o_F g -> f =o_F g.
-Proof.
-move/eqoE => ofg; apply: (@eqoE  _ _ f).
-move/eqP : (ofg); rewrite eqr_oppLR => /eqP fog.
-rewrite {1}fog /the_littleo funeqE => x.
-by rewrite val_insubd ofg ifT // -fog val_insubd ifT // -opp_littleo ofg.
-Qed.
-
-Lemma littleoNE (F : filter_on T) (f : T -> V) (g : T -> W) :
-  (- f =o_F g) = (f =o_F g).
-Proof.
-rewrite propeqE; move: f.
-wlog H : / forall f : T -> V, - f =o_F g -> f =o_F g; last first.
-  move=> f; split; [exact: H|by move: (H (- f)); rewrite opprK].
-apply => f; exact: littleoN.
-Qed.
 
 Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
   littleo F (a *: (df : _ -> _)) e.
@@ -401,6 +403,15 @@ Notation "f '=O_' F h" := (f%function = mkbigO the_tag F f h)
   (at level 70, no associativity,
    F at level 0, h at next level,
    format "f  '=O_' F  h").
+Notation "f == g '+O_' F h" :=
+  (f%function == g%function + mkbigO the_tag F (f \- g) h)
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  ==  g  '+O_' F  h").
+Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h)
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '==O_' F  h").
 
 Lemma bigOP (F : set (set T)) (g : T -> W) (f : {O_F g}) : bigO F f g.
 Proof. exact/asboolP. Qed.
@@ -423,20 +434,39 @@ Proof. by move=> /asboolP?; rewrite /the_bigO /insubd insubT. Qed.
 Canonical the_bigO_bigO (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [bigO of the_bigO tag F phF f h].
 
+Lemma opp_bigO_subproof (F : filter_on T) e (df : {O_F e}) :
+   bigO F (- (df : _ -> _)) e.
+Proof.
+have [_/posnumP[k] kP] := bigOP [bigO of df]; apply: bigOWP; exists k%:num.
+by begin_near x; [rewrite normmN; near x|end_near].
+Qed.
+
+Canonical Opp_bigO (F : filter_on T) e (df : {O_F e}) :=
+  BigO (asboolT (opp_bigO_subproof df)).
+
+Lemma oppO (F : filter_on T) (f : T -> V) e : - [O_F e of f] =O_F e.
+Proof. by rewrite [RHS]bigOE. Qed.
+
+Lemma oppOx (F : filter_on T) (f : T -> V) e x :
+  - [O_F e of f] x = [O_F e of - [O_F e of f]] x.
+Proof. by move: x; rewrite -/(- _ =1 _) {1}oppO. Qed.
+
 Lemma add_bigO_subproof (F : filter_on T) e (df dg : {O_F e}) :
   bigO F (df \+ dg) e.
 Proof.
 have [[_/posnumP[kf] xkf] [_ /posnumP[kg] xkg]] := (bigOP df, bigOP dg).
-exists (kf%:num + kg%:num) => //; apply: filterS2 xkf xkg => x /ler_add fD/fD{fD}.
+exists (kf%:num + kg%:num) => //.
+apply: filterS2 xkf xkg => x /ler_add fD/fD{fD}.
 by rewrite mulrDl; apply: ler_trans; apply: ler_normm_add.
 Qed.
 
 Canonical add_bigO (F : filter_on T) e (df dg : {O_F e}) :=
+  @BigO _ _ (_ + _) (asboolT (add_bigO_subproof df dg)).
+Canonical addfun_bigO (F : filter_on T) e (df dg : {O_F e}) :=
   BigO (asboolT (add_bigO_subproof df dg)).
 
 Lemma addO (F : filter_on T) (f g: T -> V) e :
-  [O_F e of f] + [O_F e of g] =
-  [O_F e of [O_F e of f] + [O_F e of g]].
+  [O_F e of f] + [O_F e of g] =O_F e.
 Proof. by rewrite [RHS]bigOE. Qed.
 
 Lemma addOx (F : filter_on T) (f g: T -> V) e x :
@@ -480,7 +510,7 @@ Proof. by rewrite eqOP. Qed.
 (* replaces a 'O_F e by a "canonical one" *)
 (* mostly to prevent problems with dependent types *)
 Lemma eqaddOE (F : filter_on T) (f g : T -> V) h (e : T -> W) :
-  f = g +[O_F e of h] -> f = g +O_ F e.
+  f = g + mkbigO a_tag F h e -> f = g +O_ F e.
 Proof.  by move=> /eqadd_some_OP /eqaddOP. Qed.
 
 Lemma eqOE (F : filter_on T) (f : T -> V) h (e : T -> W) :
@@ -591,6 +621,31 @@ Notation "f '=O_' F h" := (f%function = mkbigO the_tag F f h)
    format "f  '=O_' F  h",
    only parsing).
 
+Notation "f == g '+o_' F h" :=
+  (f%function == g%function + mklittleo the_tag F (f \- g) h)
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  ==  g  '+o_' F  h",
+   only parsing).
+Notation "f '==o_' F h" :=
+  (f%function == (mklittleo the_tag F f h))
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '==o_' F  h",
+   only parsing).
+
+Notation "f == g '+O_' F h" :=
+  (f%function == g%function + mkbigO the_tag F (f \- g) h)
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  ==  g  '+O_' F  h",
+   only parsing).
+Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h)
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '==O_' F  h",
+   only parsing).
+
 Hint Extern 0 (_ = 'the_o__ _) => apply: eqoE; reflexivity : core.
 Hint Extern 0 (_ = 'the_O__ _) => apply: eqOE; reflexivity : core.
 Hint Extern 0 (_ = 'the_O__ _) => apply: eqoO; reflexivity : core.
@@ -682,17 +737,36 @@ by rewrite -(ler_pmul2l c'_gt0) mulrA => /(ler_trans _); apply.
 Qed.
 Arguments bigO_bigO_eqO {F}.
 
+Lemma add2o (F : filter_on T) (f g : T -> V) (e : T -> W) :
+  f =o_F e -> g =o_F e -> f + g =o_F e.
+Proof. by move=> -> ->; rewrite addo. Qed.
+
 Lemma addfo (F : filter_on T) (h f : T -> V) (e : T -> W) :
   f =o_F e -> f + [o_F e of h] =o_F e.
 Proof. by move->; rewrite addo. Qed.
+
+Lemma oppfo (F : filter_on T) (h f : T -> V) (e : T -> W) :
+  f =o_F e -> - f =o_F e.
+Proof. by move->; rewrite oppo. Qed.
+
+Lemma add2O (F : filter_on T) (f g : T -> V) (e : T -> W) :
+  f =O_F e -> g =O_F e -> f + g =O_F e.
+Proof. by move=> -> ->; rewrite addO. Qed.
 
 Lemma addfO (F : filter_on T) (h f : T -> V) (e : T -> W) :
   f =O_F e -> f + [O_F e of h] =O_F e.
 Proof. by move->; rewrite addO. Qed.
 
-Example littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) g' (h : T -> X) :
-  f = [o_F g of g'] -> [o_F f of h] =o_F g.
-Proof. by move=> ->; apply: eqoE; rewrite (littleo_bigO_eqo g) 1?littleo_eqO. Qed.
+Lemma oppfO (F : filter_on T) (h f : T -> V) (e : T -> W) :
+  f =O_F e -> - f =O_F e.
+Proof. by move->; rewrite oppO. Qed.
+
+Lemma idO (F : filter_on T) (e : T -> W) : e =O_F e.
+Proof. by apply/eqOWP; exists 1; apply: filterE => x; rewrite mul1r. Qed.
+
+Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
+  f =o_F g -> [o_F f of h] =o_F g.
+Proof. by move=> ->; apply: eqoE; rewrite (littleo_bigO_eqo g). Qed.
 
 End Limit.
 
