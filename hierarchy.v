@@ -2261,9 +2261,50 @@ move=> FU; rewrite predeqE => p; split.
 by move=> cvFp; rewrite cluster_flimE; exists F; [apply: ultra_proper|split].
 Qed.
 
-(* todo: prove this using Zorn's Lemma *)
-Axiom ultraFilterLemma : forall T (F : set (set T)),
+Definition premaximal T (R : T -> T -> Prop) (t : T) :=
+  forall s, R t s -> R s t.
+
+Definition total_on T (A : set T) (R : T -> T -> Prop) :=
+  forall s t, A s -> A t -> R s t \/ R t s.
+
+Axiom ZL_preorder : forall T (R : T -> T -> Prop),
+  (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
+  (forall A : set T, total_on A R -> exists t, forall s, A s -> R s t) ->
+  exists t, premaximal R t.
+
+Lemma ultraFilterLemma T (F : set (set T)) :
   ProperFilter F -> exists G, UltraFilter G /\ F `<=` G.
+Proof.
+move=> FF.
+set filter_preordset := ({G : set (set T) & ProperFilter G /\ F `<=` G}).
+set preorder := fun G1 G2 : filter_preordset => projT1 G1 `<=` projT1 G2.
+suff [G Gmax] : exists G : filter_preordset, premaximal preorder G.
+  have [GF sFG] := projT2 G; exists (projT1 G); split=> //; split=> // H HF sGH.
+  have sFH : F `<=` H by apply: subset_trans sGH.
+  have sHG : preorder (existT _ H (conj HF sFH)) G by apply: Gmax.
+  by rewrite predeqE => ?; split=> [/sHG|/sGH].
+apply: ZL_preorder => [?|G H I sGH sHI ? /sGH /sHI|A Atot] //.
+case: (pselect (A !=set0)) => [[G AG] | A0]; last first.
+  have sFF : F `<=` F by [].
+  exists (existT _ F (conj FF sFF)) => G AG.
+  by have /asboolP := A0; rewrite asbool_neg => /forallp_asboolPn /(_ G).
+have [GF sFG] := projT2 G.
+have UAF : ProperFilter (\bigcup_(H in A) projT1 H).
+  apply Build_ProperFilter.
+    by move=> B [H AH HB]; have [HF _] := projT2 H; apply: filter_ex.
+  split; first by exists G => //; apply: filterT.
+    move=> B C [HB AHB HBB] [HC AHC HCC]; have [sHBC|sHCB] := Atot _ _ AHB AHC.
+      exists HC => //; have [HCF _] := projT2 HC; apply: filterI HCC.
+      exact: sHBC.
+    exists HB => //; have [HBF _] := projT2 HB; apply: filterI HBB _.
+    exact: sHCB.
+  move=> B C SBC [H AH HB]; exists H => //; have [HF _] := projT2 H.
+  exact: filterS HB.
+have sFUA : F `<=` \bigcup_(H in A) projT1 H.
+  by move=> B FB; exists G => //; apply: sFG.
+exists (existT _ (\bigcup_(H in A) projT1 H) (conj UAF sFUA)) => H AH B HB /=.
+by exists H.
+Qed.
 
 Lemma compact_ultra (T : topologicalType) A :
   compact A <-> forall F : set (set T),
@@ -2299,74 +2340,29 @@ move=> FF fsurj; apply Build_ProperFilter; last exact: filter_image.
 by move=> _ [A FA <-]; have /filter_ex [p Ap] := FA; exists (f p); exists p.
 Qed.
 
-Definition finI T (I : choiceType) (D : set I) (f : I -> set T) :=
-  forall D' : {fset I}, {subset D' <= D} ->
-    \bigcap_(i in [set i | i \in D']) f i !=set0.
-
-Lemma filter_finI T (F : set (set T)) (I : choiceType) (D : set I)
-  (f: I -> set T) :
-  ProperFilter F -> (forall i, D i -> F (f i)) -> finI D f.
-Proof.
-move=> FF FfD D' sD; apply: filter_ex; apply: filter_bigI => i /sD.
-by rewrite in_setE => /FfD.
-Qed.
-
-Lemma finI_filter T (I : choiceType) (D : set I) (f : I -> set T) :
-  finI D f ->
-  Filter (filter_from [set \bigcap_(i in [set i | i \in D']) f i |
-    D' in [set A : {fset I} | {subset A <= D}]] id).
-Proof.
-move=> ffinI; apply: filter_from_filter.
-  by exists setT; exists fset0 => //; rewrite predeqE.
-move=> A1 A2 [D1 sD1 IDA1] [D2 sD2 IDA2]; exists (A1 `&` A2) => //.
-exists (D1 `|` D2)%fset.
-  by move=> ?; rewrite in_fsetU => /orP [/sD1|/sD2].
-rewrite -IDA1 -IDA2 predeqE => p; split=> [Ifp|[If1p If2p]].
-  by split=> i Di; apply: Ifp; rewrite in_fsetU Di // orbC.
-by move=> i; rewrite in_fsetU => /orP []; [apply: If1p|apply: If2p].
-Qed.
-
-Lemma finI_proper T (I : choiceType) (D : set I) (f : I -> set T) :
-  finI D f ->
-  ProperFilter (filter_from [set \bigcap_(i in [set i | i \in D']) f i |
-    D' in [set A : {fset I} | {subset A <= D}]] id).
-Proof.
-move=> ffinI; apply Build_ProperFilter; last exact: finI_filter.
-by move=> A [_ [DA sD <-] sIfA]; have /ffinI [p /sIfA] := sD; exists p.
-Qed.
-
-Lemma subset_finI_ultra T (I : choiceType) (D : set I) (f : I -> set T) :
-  finI D f -> exists2 F, UltraFilter F & forall i, D i -> F (f i).
-Proof.
-move=> /finI_proper /ultraFilterLemma [F [Fultra sfF]].
-exists F => // i Di; apply: sfF; exists (f i) => //; exists [fset i]%fset.
-  by move=> ?; rewrite in_fsetE => /eqP->; rewrite in_setE.
-rewrite predeqE => p; split; first by apply; rewrite in_fsetE.
-by move=> fip j; rewrite in_fsetE => /eqP->.
-Qed.
 
 Lemma in_ultra_setVsetC T (F : set (set T)) (A : set T) :
   UltraFilter F -> F A \/ F (~` A).
 Proof.
 move=> FU; case: (pselect (F (~` A))) => [|nFnA]; first by right.
-left; have AIFn0 : forall B, F B -> A `&` B !=set0.
-  move=> B FB; apply: contrapT => /asboolP; rewrite asbool_neg.
-  move=> /forallp_asboolPn AB0; apply: nFnA; apply: filterS FB.
-  by move=> p Bp Ap; apply: (AB0 p).
-suff /subset_finI_ultra [G GU sFAG] : finI (F `|` [set A]) id.
-  have -> : F = G by apply/Logic.eq_sym/max_filter => B FB; apply: sFAG; left.
-  by apply: sFAG; right.
-move=> D sDFA; have [DA|nDA] := boolP (A \in D); last first.
-  apply: (@filter_finI _ F _ [set B | B \in D]); last first.
-    by move=> ?; rewrite in_setE.
-  move=> B DB; have /sDFA := DB; rewrite in_setE => - [] // BeqA.
-  by rewrite -BeqA DB in nDA.
-suff [p [Ap IDnAp]] :
-  A `&` \bigcap_(B in [set B | B \in (D `\ A)%fset]) B !=set0.
-  exists p => B DB; case: (eqVneq B A)=> [->|BneA] //.
-  by apply: IDnAp; rewrite !in_fsetE BneA.
-apply/AIFn0/filter_bigI => B; rewrite !in_fsetE => /andP [/negP BneA /sDFA].
-by rewrite in_setE=> - [] ///eqP.
+left; suff : ProperFilter (filter_from (F `|` [set A `&` B | B in F]) id).
+  move=> /max_filter <-; last by move=> B FB; exists B => //; left.
+  by exists A => //; right; exists setT; [apply: filterT|rewrite setIT].
+apply filter_from_proper; last first.
+  move=> B [|[C FC <-]]; first exact: filter_ex.
+  apply: contrapT => /asboolP; rewrite asbool_neg => /forallp_asboolPn AC0.
+  by apply: nFnA; apply: filterS FC => p Cp Ap; apply: (AC0 p).
+apply: filter_from_filter.
+  by exists A; right; exists setT; [apply: filterT|rewrite setIT].
+move=> B C [FB|[DB FDB <-]].
+  move=> [FC|[DC FDC <-]]; first by exists (B `&` C)=> //; left; apply: filterI.
+  exists (A `&` (B `&` DC)); last by rewrite setICA.
+  by right; exists (B `&` DC) => //; apply: filterI.
+move=> [FC|[DC FDC <-]].
+  exists (A `&` (DB `&` C)); last by rewrite setIA.
+  by right; exists (DB `&` C) => //; apply: filterI.
+exists (A `&` (DB `&` DC)); last by move=> ??; rewrite setIACA setIid.
+by right; exists (DB `&` DC) => //; apply: filterI.
 Qed.
 
 Lemma ultra_image (T U : Type) (f : T -> U) (F : set (set T)) :

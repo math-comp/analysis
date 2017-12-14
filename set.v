@@ -194,6 +194,9 @@ Proof. by move=> sXZ sYZ a; apply: or_ind; [apply: sXZ|apply: sYZ]. Qed.
 Lemma setDE {A} (X Y : set A) : X `\` Y = X `&` ~` Y.
 Proof. by []. Qed.
 
+Lemma setIid {A} (X : set A) : X `&` X = X.
+Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
+
 Lemma setIC {A} (X Y : set A) : X `&` Y = Y `&` X.
 Proof. by rewrite predeqE => ?; split=> [[]|[]]. Qed.
 
