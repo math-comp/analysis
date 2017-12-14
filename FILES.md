@@ -6,6 +6,7 @@
 - `set.v`
 - `hierarchy.v`
 - `landau.v`
+- `equiv.v`
 - `README.md`
 - `AUTHORS.md`
 - `FILES.md`
