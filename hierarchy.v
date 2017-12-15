@@ -2770,6 +2770,9 @@ Proof. by rewrite ltr_def normm_eq0 normm_ge0 andbT. Qed.
 Lemma normm_lt0 x : (`|[x]| < 0) = false.
 Proof. by rewrite ltrNge normm_ge0. Qed.
 
+Lemma normm_le0 x : (`|[x]| <= 0) = (x == 0).
+Proof. by rewrite lerNgt normm_gt0 negbK. Qed.
+
 Lemma absRE (x : R) : `|x|%real = `|x|%R.
 Proof. by []. Qed.
 
