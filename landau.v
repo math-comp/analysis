@@ -981,6 +981,45 @@ Notation "''d_' F" := (@diff _ _ _ _ (Phantom _ [filter of F]))
   (at level 0, F at level 0, format "''d_' F").
 Notation differentiable F := (@differentiable_def _ _ _ _ (Phantom _ [filter of F])).
 
+Section diff_locally_converse_wip.
+
+Lemma addo_x {K : absRingType} (V W : normedModType K)
+  (f : V -> W) (F: filter_on V) (g : V -> W) h x : h =o_F g ->
+  (f + [o_F g of h]) x = f x + [o_F g of h] x.
+Proof. by move=> ->. Qed.
+
+Lemma littleo_id_apply : let V := [normedModType R of R^o] in
+  forall h : _ -> V,
+  h =o_[filter of 0 : V] id -> [o_[filter of 0: V] id of h] 0 = 0.
+Proof.
+move=> V h /eqoE/eqoP H.
+have /H Hnear : 0 < (1 : V) by [].
+move/eqoP in H; rewrite -{}H //.
+case: Hnear => x x0 /(_ 0).
+rewrite mul1r /AbsRing_ball /ball_ subrr absr0 => /(_ x0).
+by rewrite normm0 normr_le0 => /eqP.
+Qed.
+
+Let V := [normedModType R of R^o].
+
+Lemma diff_locally_converse_part1 (x : V) (f : V -> V) A B :
+  f \o shift x = cst A \+ B \*: id +o_(0 : V) id -> A = f x.
+Proof.
+rewrite funeqE => H.
+move: (H 0) => /=.
+rewrite add0r => -> [:hidden_is_littleo].
+rewrite addo_x; last first.
+  abstract: hidden_is_littleo.
+  apply: eqoE.
+  move: H; rewrite -funeqE; move/eqP; rewrite -subr_eq; move/eqP => <-.
+  set a := f \o shift _.
+  set b := (X in _ \- (_ - X)).
+  by rewrite (_ : a \- (a - b) = a - (a - b)) // opprB addrCA subrr addr0.
+by rewrite littleo_id_apply // addr0 /= scaler0 addr0.
+Qed.
+
+End diff_locally_converse_wip.
+
 Section DifferentialR.
 
 Context {V W : normedModType R}.
@@ -1044,7 +1083,7 @@ Arguments the_bigOmega : simpl never, clear implicits.
 
 Notation mkbigOmega tag x := (the_bigOmega tag _ (PhantomF x)).
 (* Parsing *)
-Notation "[Omega_ x e 'of' f]" := (mkbigOmega gen_tag x f e)
+Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e)
   (at level 0, x, e at level 0, only parsing).
 (* Printing *)
 Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e)
@@ -1073,7 +1112,7 @@ Canonical the_bigOmega_bigOmega (tag : unit) (F : filter_on T)
     (@bigOmega_clone _ F _ (the_bigOmega tag F phF f h) _ _ idfun).
 
 Lemma eqOmegaP (F : filter_on T) (e : T -> V) (f : T -> V) :
-   (f =Omega_ F e) <-> (bigOmega F f e).
+   (f =Omega_F e) <-> (bigOmega F f e).
 Proof.
 split => Hf; last by rewrite bigOmegaE.
 case/boolP : (`[< bigOmega F f e >]) => H; first by apply/asboolP.
@@ -1094,6 +1133,11 @@ rewrite propeqE eqOP; split => -[e ??]; exists e^-1; rewrite ?invr_gt0 //;
   begin_near x; [ rewrite ler_pdivr_mull //; near x | end_near
                 | rewrite ler_pdivl_mull //; near x | end_near ].
 Qed.
+
+(* TODO? other properties about Omega
+   f = Omega(h) -> f + g = Omega(h)
+   [Omega f1 of g1] * [Omega f2 of g2] = [Omega f1f2 of g1g2]
+   f = Omega g -> g = Omega h -> f = Omega h *)
 
 End big_omega_prop.
 
@@ -1139,5 +1183,12 @@ split.
   exists (k2, k1) => /=; first by rewrite k20.
   apply/nearIP; split; by begin_near x; [near x | end_near].
 Qed.
+
+(* TODO: properties about Theta
+   [Theta h of f] + [O h of g] = [Theta h of f + g]
+   [Theta f1 of g1] * [Theta f2 of g2] = [Theta f1f2 of g1g2]
+   f = Omega g -> g = Omega h -> f = Omega h
+   g =Theta f <-> f = Theta g
+   f =Theta f *)
 
 End big_theta.
