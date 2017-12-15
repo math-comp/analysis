@@ -903,6 +903,11 @@ Section Linear3.
 Context (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
         (s_law : GRing.Scale.law s).
 
+(* Split in multiple bits *)
+(* - Locally bounded => locally lipshitz *)
+(* - locally lipshitz + linear => lipshitz *)
+(* - locally lipshitz => continuous at a point *)
+(* - lipizhitz => uniformly continous *)
 Lemma linear_continuous (f: {linear U -> V | GRing.Scale.op s_law}) :
   (f : _ -> _) =O_(0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
@@ -983,39 +988,22 @@ Notation differentiable F := (@differentiable_def _ _ _ _ (Phantom _ [filter of 
 
 Section diff_locally_converse_wip.
 
-Lemma addo_x {K : absRingType} (V W : normedModType K)
-  (f : V -> W) (F: filter_on V) (g : V -> W) h x : h =o_F g ->
-  (f + [o_F g of h]) x = f x + [o_F g of h] x.
-Proof. by move=> ->. Qed.
-
-Lemma littleo_id_apply : let V := [normedModType R of R^o] in
-  forall h : _ -> V,
-  h =o_[filter of 0 : V] id -> [o_[filter of 0: V] id of h] 0 = 0.
+(* Prove more generally that if f @ x --> 0 then 'O_x f x = 0. *)
+Lemma littleo_id0 (h : _ -> R^o) : [o_(0 : R^o) id of h] 0 = 0.
 Proof.
-move=> V h /eqoE/eqoP H.
-have /H Hnear : 0 < (1 : V) by [].
-move/eqoP in H; rewrite -{}H //.
-case: Hnear => x x0 /(_ 0).
-rewrite mul1r /AbsRing_ball /ball_ subrr absr0 => /(_ x0).
-by rewrite normm0 normr_le0 => /eqP.
+set k := 'o _; have /(_ _ [gt0 of 1])/= := littleoP [littleo of k].
+by move=> /locally_singleton; rewrite mul1r normm0 normm_le0 => /eqP.
 Qed.
 
-Let V := [normedModType R of R^o].
-
-Lemma diff_locally_converse_part1 (x : V) (f : V -> V) A B :
-  f \o shift x = cst A \+ B \*: id +o_(0 : V) id -> A = f x.
+(* this is a consequence of diff_continuous and eqolim0 *)
+(* indeed the differential beeing b *: idfun is locally bounded *)
+(* and thus a littleo of 1, and so is id *)
+(* This can be generalized to any dimension *)
+Lemma diff_locally_converse_part1 (f : R^o -> R^o) (a b : R^o) (x : R^o) :
+  f \o shift x = cst a + b *: idfun +o_(0 : R^o) id -> f x = a.
 Proof.
-rewrite funeqE => H.
-move: (H 0) => /=.
-rewrite add0r => -> [:hidden_is_littleo].
-rewrite addo_x; last first.
-  abstract: hidden_is_littleo.
-  apply: eqoE.
-  move: H; rewrite -funeqE; move/eqP; rewrite -subr_eq; move/eqP => <-.
-  set a := f \o shift _.
-  set b := (X in _ \- (_ - X)).
-  by rewrite (_ : a \- (a - b) = a - (a - b)) // opprB addrCA subrr addr0.
-by rewrite littleo_id_apply // addr0 /= scaler0 addr0.
+rewrite funeqE => /(_ 0) /=; rewrite add0r => ->.
+by rewrite -[LHS]/(_ 0 + _ 0 + _ 0) /cst [X in a + X]scaler0 littleo_id0 !addr0.
 Qed.
 
 End diff_locally_converse_wip.
@@ -1024,6 +1012,10 @@ Section DifferentialR.
 
 Context {V W : normedModType R}.
 
+(* split in multiple bits:
+- a linear map which is locally bounded is a little o of 1
+- the identity is a littleo of 1
+*)
 Lemma diff_continuous (x : V) (f : V -> W) :
   differentiable x f -> 'd_x f =O_(0 : V) (cst (1 : R^o)) ->
   {for x, continuous f}.
