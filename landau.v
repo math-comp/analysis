@@ -48,7 +48,7 @@ Require Import Rstruct Rbar set posnum hierarchy.
 (*   [O_F h of f] == returns a function with a bigO canonical structure       *)
 (*                   provably equal to f if f is indeed a bigO of h           *)
 (*                   provably equal to 0 otherwise                            *)
-(*                   expands to ('o_F h)                                      *)
+(*                   expands to ('O_F h)                                      *)
 (*           'O_F == pattern to match a bigO with a specific F                *)
 (*             'O == pattern to match a bigO with a generic F                 *)
 (*                                                                            *)
@@ -63,7 +63,7 @@ Require Import Rstruct Rbar set posnum hierarchy.
 (*        'O_F f == a generic bigO, with a function you should not rely on,   *)
 (*                  but there is no way you can use eqOE on it.               *)
 (*                                                                            *)
-(* The following works exactly the same by with littleo instead of bigO.      *)
+(* The former works exactly the same by with littleo instead of bigO.         *)
 (******************************************************************************)
 
 Set Implicit Arguments.
