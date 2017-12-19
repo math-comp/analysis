@@ -989,6 +989,8 @@ Notation differentiable F := (@differentiable_def _ _ _ _ (Phantom _ [filter of 
 Section diff_locally_converse_wip.
 
 (* Prove more generally that if f @ x --> 0 then 'O_x f x = 0. *)
+(* statement: Lemma littleo_id (f : R^o -> R^o) (h : _ -> R^o) (x : R^o) :
+  f @ x --> (0 : R^o) -> [O_(x : R^o) f of h] x = 0.*)
 Lemma littleo_id0 (h : _ -> R^o) : [o_(0 : R^o) id of h] 0 = 0.
 Proof.
 set k := 'o _; have /(_ _ [gt0 of 1])/= := littleoP [littleo of k].
@@ -1004,6 +1006,78 @@ Lemma diff_locally_converse_part1 (f : R^o -> R^o) (a b : R^o) (x : R^o) :
 Proof.
 rewrite funeqE => /(_ 0) /=; rewrite add0r => ->.
 by rewrite -[LHS]/(_ 0 + _ 0 + _ 0) /cst [X in a + X]scaler0 littleo_id0 !addr0.
+Qed.
+
+Lemma lim_littleo_div h : let f := [o_(0 : R^o) id of h] : _-> R^o in
+  (fun y => f y / y) @ (0 : R^o) --> (0 : R^o).
+Proof.
+move=> f; apply/flim_ballP => _/posnumP[e]; rewrite !near_simpl.
+have e20 : 0 < e%:num / 2 by rewrite divr_gt0.
+have /(_ _ e20) H : littleo [filter of 0:R^o] f id by [].
+begin_near x.
+  case/boolP : (x == 0) => [/eqP x0|x0].
+    rewrite x0 invr0 mulr0 //; exact: ball_center e.
+  rewrite -ball_normE /ball_ add0r normmN.
+  suff : `|[f x]| <= e%:num / 2 * `|[x]|.
+    rewrite -ler_pdivr_mulr ?normm_gt0 // => H'.
+    apply: ler_lt_trans; [by apply: absrM|].
+    rewrite !absRE normrV ?unitfE //; apply: ler_lt_trans; [by apply: H'|].
+    by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
+  near x.
+end_near.
+Qed.
+
+Lemma littleo_id_div h : forall e, 0 < e ->
+  let f := [o_(0 : R^o) id of h] : _-> R^o in
+  exists e', 0 < e' /\ e' < e /\ \forall y \near (0:R^o), `| f y / y | < e'.
+Proof.
+move=> e e0.
+move/flim_ballP : (lim_littleo_div h).
+set f := [o_(0 : R^o) id of h] => H.
+have e20 : 0 < e / 2 by rewrite divr_gt0.
+exists (e / 2); split => //; split.
+  by rewrite ltr_pdivr_mulr // ltr_pmulr // {1}(_ : 1 = 1%:R) // ltr_nat.
+move: {H}(H _ e20); rewrite !near_simpl => H.
+begin_near x.
+  suff : ball 0 (e / 2) (f x / x) by rewrite -ball_normE /ball_ add0r normmN.
+  near x.
+end_near.
+Qed.
+
+Definition derivative f a := lim ((fun h => (f (a + h) - f a) / h) @ (0 : R^o)).
+
+Lemma derivativeE f a : differentiable a f ->
+  derivative f a = lim ((fun x => ('d_a f x) / x) @ (0 : R^o)).
+Proof.
+move=> fa /=; congr get.
+(* bad practice? *)
+set h := f \o shift a \- (cst (f a) + 'd_a f).
+set g := [o_(0:R^o) id of h].
+have /= H : (fun y => 'd_a f y / y) = (fun y => (f (a + y) - f a) / y - g y * y^-1).
+  rewrite funeqE => y; rewrite (addrC a) -[f (y + a)]/((f \o shift a) y).
+  rewrite (diff_locally fa) -addrA addrAC subrr add0r mulrDl.
+  by apply/eqP; rewrite -subr_eq; apply/eqP; rewrite opprK.
+rewrite funeqE => /= x; rewrite propeqE; rewrite funeqE in H; split.
+- move/app_flim_locally => K; apply/app_flim_locally => e e0.
+  rewrite !near_simpl.
+  have [e' [? [? ?]]] := littleo_id_div h e0.
+  have /K{K}K : 0 < e - e' by rewrite subr_gt0.
+  begin_near y.
+    rewrite (H y) -ball_normE /ball_ opprB addrCA.
+    rewrite (ler_lt_trans (ler_abs_add _ _)) //.
+    rewrite (_ : e = e' + (e - e')); last by rewrite addrCA subrr addr0.
+    by rewrite ltr_add //; near y.
+  end_near.
+- move/app_flim_locally => K; apply/app_flim_locally => e e0.
+  rewrite !near_simpl.
+  have [e' [? [? ?]]] := littleo_id_div h e0.
+  have /K{K}K : 0 < e - e' by rewrite subr_gt0.
+  begin_near y.
+    move: (H y) => /esym/eqP; rewrite subr_eq => /eqP ->.
+    rewrite -ball_normE /ball_ opprD addrA (ler_lt_trans (ler_abs_add _ _)) //.
+    rewrite (_ : e = (e - e') + e'); last by rewrite addrNK.
+    by rewrite absrN ltr_add //; near y.
+  end_near.
 Qed.
 
 End diff_locally_converse_wip.

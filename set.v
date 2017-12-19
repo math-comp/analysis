@@ -144,6 +144,9 @@ Notation "f @^-1` A" := (preimage f A) (at level 24) : classical_set_scope.
 Notation "f @` A" := (image f A) (at level 24) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) (at level 80) : classical_set_scope.
 
+Lemma eqEsubset T (F G : set T) : F `<=` G -> G `<=` F -> F = G.
+Proof. by move=> H K; rewrite funeqE=> s; rewrite propeqE; split=> [/H|/K]. Qed.
+
 Lemma imageP {A B} (f : A -> B) (X : set A) a : X a -> (f @` X) (f a).
 Proof. by exists a. Qed.
 
