@@ -1215,26 +1215,35 @@ End TopologyOfBase.
 
 (** ** Topology defined by a subbase of open sets *)
 
-Section TopologyOfSubbase.
-
-Local Open Scope fset_scope.
-Local Open Scope classical_set_scope.
-
-Definition base_from (I : choiceType) T (D : set I) (b : I -> set T) :=
-  [set \bigcap_(i in [set i | i \in D']) b i |
+Definition finI_from (I : choiceType) T (D : set I) (f : I -> set T) :=
+  [set \bigcap_(i in [set i | i \in D']) f i |
     D' in [set A : {fset I} | {subset A <= D}]].
 
-Lemma base_from_cover (I : choiceType) T (D : set I) (b : I -> set T) :
-  \bigcup_(A in base_from D b) A = setT.
+Lemma finI_from_cover (I : choiceType) T (D : set I) (f : I -> set T) :
+  \bigcup_(A in finI_from D f) A = setT.
 Proof.
 rewrite predeqE => t; split=> // _; exists setT => //.
 by exists fset0 => //; rewrite predeqE.
 Qed.
 
+Lemma finI_from1 (I : choiceType) T (D : set I) (f : I -> set T) i :
+  D i -> finI_from D f (f i).
+Proof.
+move=> Di; exists [fset i]%fset.
+  by move=> ?; rewrite in_fsetE in_setE => /eqP->.
+rewrite predeqE => t; split=> [|fit]; first by apply; rewrite in_fsetE.
+by move=> ?; rewrite in_fsetE => /eqP->.
+Qed.
+
+Section TopologyOfSubbase.
+
+Local Open Scope fset_scope.
+Local Open Scope classical_set_scope.
+
 Variable (I : pointedType) (T : Type) (D : set I) (b : I -> set T).
 
 Program Definition topologyOfSubbaseMixin :=
-  @topologyOfBaseMixin _ _ (base_from D b) id (base_from_cover D b) _.
+  @topologyOfBaseMixin _ _ (finI_from D b) id (finI_from_cover D b) _.
 Next Obligation.
 move: i j t H H0 H1 H2 => A B t [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
 exists (A `&` B); split; last by split.
@@ -2087,6 +2096,9 @@ Context {T : topologicalType}.
 Definition closure (A : set T) :=
   [set p : T | forall B, locally p B -> A `&` B !=set0].
 
+Lemma subset_closure (A : set T) : A `<=` closure A.
+Proof. by move=> p ??; exists p; split=> //; apply: locally_singleton. Qed.
+
 Definition closed (D : set T) := closure D `<=` D.
 
 Lemma closedN (D : set T) : open D -> closed (~` D).
@@ -2123,16 +2135,16 @@ move/asboolP; rewrite asbool_neg => /imply_asboolPn [/sCB Bq /contrapT Aq].
 by exists q.
 Qed.
 
+Lemma openN (D : set T) : closed D -> open (~` D).
+Proof.
+rewrite closedE openE => Dcl t nDt; apply: contrapT.
+by rewrite locally_nearE => /Dcl.
+Qed.
+
 Lemma closed_closure (A : set T) : closed (closure A).
 Proof. by move=> p clclAp B /locally_locally /clclAp [q [clAq /clAq]]. Qed.
 
 End Closed.
-
-Lemma openN (T : uniformType) (D : set T) : closed D -> open (~` D).
-Proof.
-rewrite closedE openE => D_close x Dx; apply: locallyN => subD.
-by apply/Dx/D_close; apply/locallyP => -[_ /posnumP[eps] /subD].
-Qed.
 
 Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
@@ -2474,11 +2486,11 @@ move=> B C SBC [H AH HB]; exists H => //; have [HF _] := projT2 H.
 exact: filterS HB.
 Qed.
 
-Lemma compact_ultra (T : topologicalType) A :
-  compact A <-> forall F : set (set T),
-  UltraFilter F -> F A -> A `&` [set p | F --> p] !=set0.
+Lemma compact_ultra (T : topologicalType) :
+  compact = [set A | forall F : set (set T),
+  UltraFilter F -> F A -> A `&` [set p | F --> p] !=set0].
 Proof.
-split=> Aco F FF FA.
+rewrite predeqE => A; split=> Aco F FF FA.
   by have /Aco [p [?]] := FA; rewrite ultra_flim_clusterE; exists p.
 have [G [GU sFG]] := ultraFilterLemma FF.
 have /Aco [p [Ap]] : G A by apply: sFG.
@@ -2552,7 +2564,7 @@ Lemma tychonoff (I : eqType) (T : I -> topologicalType)
   @compact (product_topologicalType T)
     [set f : forall i, T i | forall i, A i (f i)].
 Proof.
-move=> Aco; apply/compact_ultra => F FU FA.
+move=> Aco; rewrite compact_ultra => F FU FA.
 set subst_coord := fun i pi f j =>
   match eqVneq i j with
   | left e => eq_rect i T pi _ e
@@ -2585,6 +2597,142 @@ by apply/flim_sup => i; apply/flim_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
 End Tychonoff.
+
+Definition finI (I : choiceType) T (D : set I) (f : I -> set T) :=
+  forall D' : {fset I}, {subset D' <= D} ->
+  \bigcap_(i in [set i | i \in D']) f i !=set0.
+
+Lemma finI_filter (I : choiceType) T (D : set I) (f : I -> set T) :
+  finI D f -> ProperFilter (filter_from (finI_from D f) id).
+Proof.
+move=> finIf; apply: (filter_from_proper (filter_from_filter _ _)).
+- by exists setT; exists fset0 => //; rewrite predeqE.
+- move=> A B [DA sDA IfA] [DB sDB IfB]; exists (A `&` B) => //.
+  exists (DA `|` DB)%fset.
+    by move=> ?; rewrite in_fsetE => /orP [/sDA|/sDB].
+  rewrite -IfA -IfB predeqE => p; split=> [Ifp|[IfAp IfBp] i].
+    by split=> i Di; apply: Ifp; rewrite in_fsetE Di // orbC.
+  by rewrite in_fsetE => /orP []; [apply: IfAp|apply: IfBp].
+- by move=> _ [?? <-]; apply: finIf.
+Qed.
+
+Lemma filter_finI (T : pointedType) (F : set (set T)) (D : set (set T))
+  (f : set T -> set T) :
+  ProperFilter F -> (forall A, D A -> F (f A)) -> finI D f.
+Proof.
+move=> FF sDFf D' sD; apply/filter_ex/filter_bigI.
+by move=> A /sD; rewrite in_setE => /sDFf.
+Qed.
+
+Section Covers.
+
+Variable T : topologicalType.
+
+Definition cover_compact (A : set T) :=
+  forall (I : choiceType) (D : set I) (f : I -> set T),
+  (forall i, D i -> open (f i)) -> A `<=` \bigcup_(i in D) f i ->
+  exists2 D' : {fset I}, {subset D' <= D} &
+    A `<=` \bigcup_(i in [set i | i \in D']) f i.
+
+Definition open_fam_of (A : set T) I (D : set I) (f : I -> set T) :=
+  exists2 g : I -> set T, (forall i, D i -> open (g i)) &
+    forall i, D i -> f i = A `&` g i.
+
+Lemma cover_compactE :
+  cover_compact =
+  [set A | forall (I : choiceType) (D : set I) (f : I -> set T),
+    open_fam_of A D f -> A `<=` \bigcup_(i in D) f i ->
+    exists2 D' : {fset I}, {subset D' <= D} &
+      A `<=` \bigcup_(i in [set i | i \in D']) f i].
+Proof.
+rewrite predeqE => A; split=> [Aco I D f [g gop feAg] fcov|Aco I D f fop fcov].
+  have gcov : A `<=` \bigcup_(i in D) g i.
+    by move=> p /fcov [i Di]; rewrite feAg // => - []; exists i.
+  have [D' sD sgcov] := Aco _ _ _ gop gcov.
+  exists D' => // p Ap; have /sgcov [i D'i gip] := Ap.
+  by exists i => //; rewrite feAg //; have /sD := D'i; rewrite in_setE.
+have Afcov : A `<=` \bigcup_(i in D) (A `&` f i).
+  by move=> p Ap; have /fcov [i ??] := Ap; exists i.
+have Afop : open_fam_of A D (fun i => A `&` f i) by exists f.
+have [D' sD sAfcov] := Aco _ _ _ Afop Afcov.
+by exists D' => // p /sAfcov [i ? []]; exists i.
+Qed.
+
+Definition closed_fam_of (A : set T) I (D : set I) (f : I -> set T) :=
+  exists2 g : I -> set T, (forall i, D i -> closed (g i)) &
+    forall i, D i -> f i = A `&` g i.
+
+Lemma compact_In0 :
+  compact = [set A | forall (I : choiceType) (D : set I) (f : I -> set T),
+    closed_fam_of A D f -> finI D f -> \bigcap_(i in D) f i !=set0].
+Proof.
+rewrite predeqE => A; split=> [Aco I D f [g gcl feAg] finIf|Aco F FF FA].
+  case: (pselect (exists i, D i)) => [[i Di] | /asboolP]; last first.
+    by rewrite asbool_neg => /forallp_asboolPn D0; exists point => ? /D0.
+  have [|p [Ap clfinIfp]] := Aco _ (finI_filter finIf).
+    by exists (f i); [apply: finI_from1|rewrite feAg // => ? []].
+  exists p => j Dj; rewrite feAg //; split=> //; apply: gcl => // B.
+  by apply: clfinIfp; exists (f j); [apply: finI_from1|rewrite feAg // => ? []].
+have finIAclF : finI F (fun B => A `&` closure B).
+  apply: filter_finI => B FB; apply: filterI => //; apply: filterS FB.
+  exact: subset_closure.
+have [|p AclFIp] := Aco _ _ _ _ finIAclF.
+  by exists closure=> //; move=> ??; apply: closed_closure.
+exists p; split=> [|B C FB p_C]; first by have /AclFIp [] := FA.
+by have /AclFIp [_] := FB; move=> /(_ _ p_C).
+Qed.
+
+Lemma exists2P A (P Q : A -> Prop) :
+  (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
+Proof. by split=> [[x ??] | [x []]]; exists x. Qed.
+
+Lemma compact_cover : compact = cover_compact.
+Proof.
+rewrite compact_In0 cover_compactE predeqE => A.
+split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
+  case: (pselect (exists i, D i)) => [[j Dj] | /asboolP]; last first.
+    rewrite asbool_neg => /forallp_asboolPn D0.
+    by exists fset0 => // ? /fcov [? /D0].
+  apply/exists2P; apply: contrapT.
+  move=> /asboolP; rewrite asbool_neg => /forallp_asboolPn sfncov.
+  suff [p IAnfp] : \bigcap_(i in D) (A `\` f i) !=set0.
+    by have /IAnfp [Ap _] := Dj; have /fcov [k /IAnfp [_]] := Ap.
+  apply: Aco.
+    exists (fun i => ~` g i) => i Di; first exact/closedN/gop.
+    rewrite predeqE => p; split=> [[Ap nfip] | [Ap ngip]]; split=> //.
+      by move=> gip; apply: nfip; rewrite feAg.
+    by rewrite feAg // => - [].
+  move=> D' sD.
+  have /asboolP : ~ A `<=` \bigcup_(i in [set i | i \in D']) f i.
+    by move=> sAIf; apply: (sfncov D').
+  rewrite asbool_neg => /existsp_asboolPn [p /asboolP].
+  rewrite asbool_neg => /imply_asboolPn [Ap nUfp].
+  by exists p => i D'i; split=> // fip; apply: nUfp; exists i.
+case: (pselect (exists i, D i)) => [[j Dj] | /asboolP]; last first.
+  by rewrite asbool_neg => /forallp_asboolPn D0 => _; exists point => ? /D0.
+apply: contrapTT => /asboolP; rewrite asbool_neg => /forallp_asboolPn If0.
+apply/asboolP; rewrite asbool_neg; apply/existsp_asboolPn.
+have Anfcov : A `<=` \bigcup_(i in D) (A `\` f i).
+  move=> p Ap; have /asboolP := If0 p; rewrite asbool_neg => /existsp_asboolPn.
+  move=> [i /asboolP]; rewrite asbool_neg => /imply_asboolPn [Di nfip].
+  by exists i.
+have Anfop : open_fam_of A D (fun i => A `\` f i).
+  exists (fun i => ~` g i) => i Di; first exact/openN/gcl.
+  rewrite predeqE => p; split=> [[Ap nfip] | [Ap ngip]]; split=> //.
+    by move=> gip; apply: nfip; rewrite feAg.
+  by rewrite feAg // => - [].
+have [D' sD sAnfcov] := Aco _ _ _ Anfop Anfcov.
+wlog [k D'k] : D' sD sAnfcov / exists i, i \in D'.
+  move=> /(_ (D' `|` [fset j])%fset); apply.
+  - by move=> k; rewrite !in_fsetE => /orP [/sD|/eqP->] //; rewrite in_setE.
+  - by move=> p /sAnfcov [i D'i Anfip]; exists i => //; rewrite !in_fsetE D'i.
+  - by exists j; rewrite !in_fsetE orbC eq_refl.
+exists D' => /(_ sD) [p Ifp].
+have /Ifp := D'k; rewrite feAg; last by have /sD := D'k; rewrite in_setE.
+by move=> [/sAnfcov [i D'i [_ nfip]] _]; have /Ifp := D'i.
+Qed.
+
+End Covers.
 
 (** ** Complete uniform spaces *)
 
