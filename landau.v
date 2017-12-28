@@ -986,6 +986,74 @@ Notation "''d_' F" := (@diff _ _ _ _ (Phantom _ [filter of F]))
   (at level 0, F at level 0, format "''d_' F").
 Notation differentiable F := (@differentiable_def _ _ _ _ (Phantom _ [filter of F])).
 
+From mathcomp Require Import fintype matrix.
+
+Section jacobian_tentative.
+
+Canonical rV_pointedType n (T : pointedType) :=
+  PointedType 'rV[T]_n (\row_i point).
+Definition filter_rV n {T : Type} (F : set (set T)) : set (set 'rV[T]_n).
+Admitted.
+Canonical filtered_rV n' X (Z : filteredType X) : filteredType 'rV[X]_n'.+1 :=
+  FilteredType 'rV[X]_n'.+1 'rV[Z]_n'.+1
+    (fun x => @filter_rV n'.+1 X (locally (x ord0 ord0))).
+
+Section rV_Topology.
+Variables (n' : nat) (T : topologicalType).
+Let n := n'.+1.
+Implicit Types p : 'rV[T]_n.
+Let rV_loc p := @filter_rV n T (@locally T _ (p ord0 ord0)).
+Lemma rV_loc_filter p : ProperFilter (rV_loc p). Admitted.
+Lemma rV_loc_singleton p (A : set 'rV[T]_n) : rV_loc p A -> A p. Admitted.
+Lemma rV_loc_loc p (A : set 'rV[T]_n) : rV_loc p A -> rV_loc p (rV_loc^~ A).
+Admitted.
+Definition rV_topologicalTypeMixin :=
+  topologyOfFilterMixin rV_loc_filter rV_loc_singleton rV_loc_loc.
+Canonical rV_topologicalType :=
+  TopologicalType 'rV[T]_n rV_topologicalTypeMixin.
+End rV_Topology.
+
+Section rV_Uniform.
+Variables (n' : nat) (T : uniformType).
+Let n := n'.+1.
+Implicit Types x y : 'rV[T]_n.
+Definition rV_ball x (e : R) y : Prop. Admitted.
+Lemma rV_ball_center x (e : R) : 0 < e -> rV_ball x e x. Admitted.
+Lemma rV_ball_sym x y (e : R) : rV_ball x e y -> rV_ball y e x. Admitted.
+Lemma rV_ball_triangle x y z (e1 e2 : R) :
+  rV_ball x e1 y -> rV_ball y e2 z -> rV_ball x (e1 + e2) z. Admitted.
+Lemma rV_locally : @locally _ _ = @locally_ 'rV[T]_n _ rV_ball. Admitted.
+Definition rV_uniformType_mixin :=
+  Uniform.Mixin rV_ball_center rV_ball_sym rV_ball_triangle rV_locally.
+Canonical rV_uniformType := UniformType 'rV[T]_n rV_uniformType_mixin.
+End rV_Uniform.
+
+Section rV_normedMod.
+Variables (n' : nat).
+Let n := n'.+1.
+Let T := [normedModType R of R^o].
+Implicit Types x y : 'rV[T]_n.
+Definition rV_norm x : R. Admitted.
+Lemma rV_ax1 : forall x y, rV_norm (x + y) <= rV_norm x + rV_norm y. Admitted.
+Lemma rV_ax2 : forall (l : R) x, rV_norm (l *: x) <= abs l * rV_norm x.
+Admitted.
+Lemma rV_ax3 : ball = ball_ rV_norm. Admitted.
+Lemma rV_ax4 : forall x : 'rV[T]_n, rV_norm x = 0 -> x = 0. Admitted.
+End rV_normedMod.
+
+Definition rV_NormedModMixin n' :=
+  @NormedModMixin [absRingType of R] _ _ _ (@rV_norm n') (@rV_ax1 n')
+    (@rV_ax2 n') (@rV_ax3 n') (@rV_ax4 n').
+
+Canonical rV_NormedType n' := NormedModType R _ (@rV_NormedModMixin n').
+
+Notation "''RV_' n" := (rV_NormedType n.-1)
+  (at level 8, n at level 2, format "''RV_' n").
+
+Definition jacobian n m (f : 'RV_n -> 'RV_m) p := lin1_mx ('d_p f).
+
+End jacobian_tentative.
+
 Section diff_locally_converse_wip.
 
 (* Prove more generally that if f @ x --> 0 then 'O_x f x = 0. *)
@@ -1044,10 +1112,10 @@ begin_near x.
 end_near.
 Qed.
 
-Definition derivative f a := lim ((fun h => (f (a + h) - f a) / h) @ (0 : R^o)).
+Definition derivative1 f a := lim ((fun h => (f (a + h) - f a) / h) @ (0 : R^o)).
 
-Lemma derivativeE f a : differentiable a f ->
-  derivative f a = lim ((fun x => ('d_a f x) / x) @ (0 : R^o)).
+Lemma derivative1E f a : differentiable a f ->
+  derivative1 f a = lim ((fun x => ('d_a f x) / x) @ (0 : R^o)).
 Proof.
 move=> fa /=; congr get.
 (* bad practice? *)
