@@ -1,9 +1,9 @@
-Mathematical Components Analaysis
+UNSTABLE/DRAFT Analysis library compatible with Mathematical Components
 ====
 
 ## Contents
 
-This repository contains a library for real analysis based on
+This repository contains an experiment of a library for real analysis based on
 an interface of real numbers](https://github.com/strub/coq-alternate-reals) for the *C*oq proof-assistant
 using the Mathematical Components library. It is inspired by the
 [Coquelicot library](http://coquelicot.saclay.inria.fr/). The
