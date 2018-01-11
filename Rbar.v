@@ -1,6 +1,6 @@
 (* This file is a major modification of an eponymous file from the Coquelicot *)
 (* library. The header of the original file is reproduced below. Changes are  *)
-(* part of the cara library and enjoy the same licence as cara.               *)
+(* part of the analysis library and enjoy the same licence as this library.   *)
 (**
 This file is part of the Coquelicot formalization of real
 analysis in Coq: http://coquelicot.saclay.inria.fr/

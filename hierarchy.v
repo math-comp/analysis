@@ -1,4 +1,4 @@
-(* cara (c) 2017 Inria and AIST. License: CeCILL-C.                           *)
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap.

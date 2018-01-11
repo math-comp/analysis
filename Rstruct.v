@@ -1,6 +1,6 @@
 (* This file is a modification of an eponymous file from the CoqApprox        *)
 (* library. The header of the original file is reproduced below. Changes are  *)
-(* part of the cara library and enjoy the same licence as cara.               *)
+(* part of the analysis library and enjoy the same licence as this library.   *)
 (**
 This file is part of the CoqApprox formalization of rigorous
 polynomial approximation in Coq:
