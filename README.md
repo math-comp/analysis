@@ -1,10 +1,10 @@
-cara
+Mathematical Components Analaysis
 ====
 
 ## Contents
 
-This repository contains a library for real *A*nalysis based on
-an [*A*lternate version of *R*eal numbers](https://github.com/strub/coq-alternate-reals) for the *C*oq proof-assistant
+This repository contains a library for real analysis based on
+an interface of real numbers](https://github.com/strub/coq-alternate-reals) for the *C*oq proof-assistant
 using the Mathematical Components library. It is inspired by the
 [Coquelicot library](http://coquelicot.saclay.inria.fr/). The
 instantiation of the mathematical structures of the Mathematical
@@ -13,7 +13,7 @@ uses a well-known file (Rstruct.v) from the [CoqApprox library](http://tamadi.gf
 
 ## License
 
-The license for cara's original contents is CeCILL-C
+The license for this library's original contents is CeCILL-C
 (http://www.cecill.info/index.en.html).
 
 ## Authors
