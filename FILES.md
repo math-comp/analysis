@@ -7,6 +7,7 @@
 - `hierarchy.v`
 - `landau.v`
 - `equiv.v`
+- `derive.v`
 - `README.md`
 - `AUTHORS.md`
 - `FILES.md`
