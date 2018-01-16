@@ -1,7 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap.
+From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap matrix.
+From mathcomp Require Import zmodp.
 From SsrReals Require Import boolp reals.
 Require Import Rstruct Rbar set posnum.
 
@@ -103,6 +104,13 @@ Canonical default_filter_on_term Y (X : filteredType Y) (x : X) :=
 
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) : set (set T) :=
   [set P | exists2 i, D i & B i `<=` P].
+
+(* the canonical filter on matrices on X is the product of the canonical filter
+   on X *)
+Canonical matrix_filtered m n X (Z : filteredType X) : filteredType 'M[X]_(m, n) :=
+  FilteredType 'M[X]_(m, n) 'M[Z]_(m, n) (fun mx => filter_from
+    [set P | forall i j, locally (mx i j) (P i j)]
+    (fun P => [set my : 'M[X]_(m, n) | forall i j, P i j (my i j)])).
 
 Definition filter_prod {T U : Type}
   (F : set (set T)) (G : set (set U)) : set (set (T * U)) :=
@@ -1172,6 +1180,43 @@ Qed.
 
 End TopologyOfSubbase.
 
+(** ** Topology on matrices *)
+
+Section matrix_Topology.
+
+Variables (m n : nat) (T : topologicalType).
+
+Implicit Types M : 'M[T]_(m, n).
+
+Lemma mx_loc_filter M : ProperFilter (locally M).
+Proof.
+apply: (filter_from_proper (filter_from_filter _ _)) => [|P Q M_P M_Q|P M_P].
+- by exists (fun i j => setT) => ??; apply: filterT.
+- exists (fun i j => P i j `&` Q i j) => [??|mx PQmx]; first exact: filterI.
+  by split=> i j; have [] := PQmx i j.
+- exists (\matrix_(i, j) get (P i j)) => i j; rewrite mxE; apply: getPex.
+  exact: filter_ex (M_P i j).
+Qed.
+
+Lemma mx_loc_singleton M (A : set 'M[T]_(m, n)) : locally M A -> A M.
+Proof. by move=> [P M_P]; apply=> ??; apply: locally_singleton. Qed.
+
+Lemma mx_loc_loc M (A : set 'M[T]_(m, n)) :
+  locally M A -> locally M (locally^~ A).
+Proof.
+move=> [P M_P sPA]; exists (fun i j => locally^~ (P i j)).
+  by move=> ??; apply: locally_locally.
+by move=> ??; exists P.
+Qed.
+
+Definition matrix_topologicalTypeMixin :=
+  topologyOfFilterMixin mx_loc_filter mx_loc_singleton mx_loc_loc.
+
+Canonical matrix_topologicalType :=
+  TopologicalType 'M[T]_(m, n) matrix_topologicalTypeMixin.
+
+End matrix_Topology.
+
 (** ** Topology on the product of two spaces *)
 
 Section Prod_Topology.
@@ -1784,6 +1829,67 @@ Proof. exact: flim_close. Qed.
 
 End Locally.
 Hint Resolve locally_ball.
+
+Section matrix_Uniform.
+
+Variables (m n : nat) (T : uniformType).
+
+Implicit Types x y : 'M[T]_(m, n).
+
+Definition mx_ball x (e : R) y := forall i j, ball (x i j) e (y i j).
+
+Lemma mx_ball_center x (e : R) : 0 < e -> mx_ball x e x.
+Proof. by move=> ???; apply: ballxx. Qed.
+
+Lemma mx_ball_sym x y (e : R) : mx_ball x e y -> mx_ball y e x.
+Proof. by move=> xe_y ??; apply/ball_sym/xe_y. Qed.
+
+Lemma mx_ball_triangle x y z (e1 e2 : R) :
+  mx_ball x e1 y -> mx_ball y e2 z -> mx_ball x (e1 + e2) z.
+Proof.
+by move=> xe1_y ye2_z ??; apply: ball_triangle; [apply: xe1_y| apply: ye2_z].
+Qed.
+
+Lemma ltr_bigminr (I : finType) (R : realDomainType) (f : I -> R) (x0 x : R) :
+  x < x0 -> (forall i, x < f i) -> x < \big[minr/x0]_i f i.
+Proof.
+move=> ltx0 ltxf; elim/big_ind: _ => // y z ltxy ltxz.
+by rewrite ltr_minr ltxy ltxz.
+Qed.
+
+Lemma bigminr_ler (I : finType) (R : realDomainType) (f : I -> R) (x0 : R) i :
+  \big[minr/x0]_j f j <= f i.
+Proof.
+have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
+by rewrite inE => /orP [/eqP->|/ihl leminlfi];
+  rewrite ler_minl ?lerr // leminlfi orbC.
+Qed.
+
+Lemma exists2P A (P Q : A -> Prop) :
+  (exists2 a, P a & Q a) <-> exists a, P a /\ Q a.
+Proof. by split=> [[a ??] | [a []]]; exists a. Qed.
+
+Lemma mx_locally : locally = locally_ mx_ball.
+Proof.
+rewrite predeq2E => x A; split; last first.
+  by move=> [e egt0 xe_A]; exists (fun i j => ball (x i j) (PosNum egt0)%:num).
+move=> [P]; rewrite -locally_ballE => x_P sPA.
+exists (\big[minr/1]_i \big[minr/1]_j
+  get (fun e : R => 0 < e /\ ball (x i j) e `<=` P i j)).
+  apply: ltr_bigminr => // i; apply: ltr_bigminr => // j.
+  by have /exists2P/getPex [] := x_P i j.
+move=> y xmin_y; apply: sPA => i j; have /exists2P/getPex [_] := x_P i j; apply.
+apply: ball_ler (xmin_y i j).
+by apply: ler_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
+Qed.
+
+Definition matrix_uniformType_mixin :=
+  Uniform.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_locally.
+
+Canonical matrix_uniformType :=
+  UniformType 'M[T]_(m, n) matrix_uniformType_mixin.
+
+End matrix_Uniform.
 
 Section prod_Uniform.
 
@@ -2418,10 +2524,6 @@ exists p; split=> [|B C FB p_C]; first by have /AclFIp [] := FA.
 by have /AclFIp [_] := FB; move=> /(_ _ p_C).
 Qed.
 
-Lemma exists2P A (P Q : A -> Prop) :
-  (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
-Proof. by split=> [[x ??] | [x []]]; exists x. Qed.
-
 Lemma compact_cover : compact = cover_compact.
 Proof.
 rewrite compact_In0 cover_compactE predeqE => A.
@@ -2583,6 +2685,30 @@ Proof. by case: T F FF => [? [?]]. Qed.
 
 End completeType1.
 Arguments complete_cauchy {T} F {FF} _.
+
+Section matrix_Complete.
+
+Variables (T : completeType) (m n : nat).
+
+Lemma mx_complete_cauchy (F : set (set 'M[T]_(m, n))) :
+  ProperFilter F -> cauchy F -> cvg F.
+Proof.
+move=> FF Fc.
+have /(_ _ _) /complete_cauchy cvF :
+  cauchy ((fun M : 'M[T]_(m, n) => M _ _) @ F).
+  by move=> ?? _ /posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
+apply/cvg_ex.
+exists (\matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T)).
+apply/flim_ballP => _ /posnumP[e]; begin_near M.
+  move=> i j; rewrite mxE; have_near F M' => /=.
+    by apply: (@ball_splitl _ (M' i j)); last move: (i) (j); near M'.
+  by end_near; [apply/cvF/locally_ball|near M].
+by end_near; apply: nearP_dep; apply: filterS (Fc _ _).
+Qed.
+
+Canonical matrix_completeType := CompleteType 'M[T]_(m, n) mx_complete_cauchy.
+
+End matrix_Complete.
 
 Section fct_Complete.
 
@@ -2981,7 +3107,65 @@ End NormedModule2.
 Hint Resolve normm_ge0.
 Arguments flim_norm {_ _ F FF}.
 Arguments flim_bounded {_ _ F FF}.
-(** Rings with absolute values are normed modules *)
+
+(** ** Matrices *)
+
+Section matrix_normedMod.
+
+Variables (K : absRingType) (m n : nat).
+
+(* take m.+1, n.+1 because ball_normE is not provable for m = 0 or n = 0 *)
+Definition mx_norm (x : 'M[K]_(m.+1, n.+1)) :=
+  bigmaxr 0 [seq `|x ij.1 ij.2| | ij : 'I_m.+1 * 'I_n.+1].
+
+Program Definition matrix_NormedModMixin :=
+  @NormedModMixin _ _
+    (@locally _ [filteredType 'M[K]_(m.+1, n.+1) of 'M[K]_(m.+1, n.+1)])
+    (Uniform.mixin (Uniform.class _)) mx_norm _ _ _ _.
+Next Obligation.
+apply/bigmaxr_lerP=> [|i]; rewrite size_map -cardT mxvec_cast // => ltimn.
+rewrite (nth_map (ord0, ord0)); last by rewrite -cardT mxvec_cast.
+rewrite mxE; apply: ler_trans (ler_abs_add _ _) _.
+do 2 ?[rewrite -(nth_map _ 0 (fun p => `|_ p.1 p.2|)) -?cardT ?mxvec_cast //].
+by apply: ler_add; apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
+Qed.
+Next Obligation.
+apply/bigmaxr_lerP => [|i]; rewrite size_map -cardT mxvec_cast // => ltimn.
+rewrite (nth_map (ord0, ord0)); last by rewrite -cardT mxvec_cast.
+rewrite mxE; apply: ler_trans (absrM _ _) _; apply: ler_pmul => //.
+rewrite -(nth_map _ 0 (fun p => `|x p.1 p.2|)).
+  by apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
+by rewrite -cardT mxvec_cast.
+Qed.
+Next Obligation.
+rewrite predeq3E => x e y; split.
+  move=> xe_y; apply/bigmaxr_ltrP; rewrite size_map -cardT mxvec_cast //.
+  move=> i iltmn; rewrite (nth_map (ord0, ord0)).
+    by rewrite !mxE; apply: xe_y.
+  by rewrite -cardT mxvec_cast.
+move=> /bigmaxr_ltrP; rewrite size_map -cardT mxvec_cast => xe_y i j.
+have := xe_y _ (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1])).
+have memij : (i, j) \in enum [finType of 'I_m.+1 * 'I_n.+1].
+  by rewrite mem_enum.
+rewrite (nth_map (ord0, ord0)); last by rewrite index_mem.
+by rewrite !mxE !nth_index //=; apply=> //; rewrite -mxvec_cast cardT index_mem.
+Qed.
+Next Obligation.
+apply/matrixP => i j; rewrite mxE; apply/eqP.
+rewrite -absr_eq0 eqr_le; apply/andP; split; last exact: absr_ge0.
+have /(bigmaxr_ler 0) :
+  (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
+   size [seq `|x ij.1 ij.2| | ij : 'I_m.+1 * 'I_n.+1])%N.
+  by rewrite size_map index_mem mem_enum.
+rewrite -{3}H; apply: ler_trans.
+rewrite (nth_map (ord0, ord0)); last by rewrite index_mem mem_enum.
+by rewrite nth_index // mem_enum.
+Qed.
+
+Canonical matrix_normedModType :=
+  NormedModType K 'M[K]_(m.+1, n.+1) matrix_NormedModMixin.
+
+End matrix_normedMod.
 
 (** ** Pairs *)
 
@@ -3190,6 +3374,7 @@ Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
 Definition topologicalType := @Topological.Pack cT xclass xT.
 Definition uniformType := @Uniform.Pack cT xclass xT.
+Definition completeType := @Complete.Pack cT xclass xT.
 Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass xT.
 Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass xT.
 Definition normedModType := @NormedModule.Pack K phK cT xclass xT.
@@ -3219,6 +3404,8 @@ Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
 Canonical join_zmodType.
 Canonical join_lmodType.
+Coercion completeType : type >-> Complete.type.
+Canonical completeType.
 Coercion normedModType : type >-> NormedModule.type.
 Canonical normedModType.
 Canonical join_uniformType.
