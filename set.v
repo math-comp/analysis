@@ -1,4 +1,5 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
+From mathcomp Require Import ssralg matrix.
 From SsrReals Require Import boolp.
 
 Set Implicit Arguments.
@@ -330,6 +331,8 @@ Canonical Prop_pointedType := PointedType Prop False.
 Canonical nat_pointedType := PointedType nat 0%N.
 Canonical prod_pointedType (T T' : pointedType) :=
   PointedType (T * T') (point, point).
+Canonical matrix_pointedType m n (T : pointedType) :=
+  PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
 
 Notation get := (xget point).
 

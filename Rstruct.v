@@ -543,6 +543,15 @@ move=> lr_size; apply: (iffP idP) => [le_x i i_size | H].
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
+Lemma bigmaxr_ltrP x0 lr x :
+  (0 < size lr)%N ->
+  reflect (forall i, (i < size lr)%N -> (nth x0 lr i) < x) ((bigmaxr x0 lr) < x).
+Proof.
+move=> lr_size; apply: (iffP idP) => [lt_x i i_size | H].
+  by apply: ler_lt_trans lt_x; apply: bigmaxr_ler.
+by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
+Qed.
+
 Lemma bigmaxrP x0 lr x :
   (x \in lr /\ forall i, (i < size lr) %N -> (nth x0 lr i) <= x) -> (bigmaxr x0 lr = x).
 Proof.
