@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
-From Coq Require Import ssreflect ssrfun ssrbool.
-From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
+From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
+From mathcomp Require Import ssralg ssrnum fintype matrix.
 From SsrReals Require Import boolp reals.
 Require Import Rstruct Rbar set posnum hierarchy landau.
 
@@ -167,19 +167,6 @@ Qed.
 
 End derivative_univariate.
 
-From mathcomp Require Import fintype matrix.
-
-(* sketch definition of "jacobian f p" as "lin1_mx ('d_p f)"
-   to see what are the mathematical structures needed *)
-Section jacobian_tentative.
-
-Notation "''RV_' n" := (matrix_normedModType [absRingType of R] 0 n.-1)
-  (at level 8, n at level 2, format "''RV_' n").
-
-Definition jacobian n m (f : 'RV_n -> 'RV_m) p := lin1_mx ('d_p f).
-
-End jacobian_tentative.
-
 Section DifferentialR.
 
 Context {V W : normedModType R}.
@@ -204,3 +191,9 @@ by rewrite linear0.
 Qed.
 
 End DifferentialR.
+
+Section jacobian.
+
+Definition jacobian n m (f : 'rV[R]_n.+1 -> 'rV[R]_m.+1) p := lin1_mx ('d_p f).
+
+End jacobian.
