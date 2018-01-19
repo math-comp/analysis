@@ -4,6 +4,7 @@
 
 - `posnum.v`
 - `set.v`
+- `topology.v`
 - `hierarchy.v`
 - `landau.v`
 - `equiv.v`

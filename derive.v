@@ -3,7 +3,7 @@ Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype matrix.
 From SsrReals Require Import boolp reals.
-Require Import Rstruct Rbar set posnum hierarchy landau.
+Require Import Rstruct Rbar set posnum topology hierarchy landau.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

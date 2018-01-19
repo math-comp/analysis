@@ -4,6 +4,7 @@ equiv.v
 set.v
 Rstruct.v
 Rbar.v
+topology.v
 hierarchy.v
 derive.v
 
