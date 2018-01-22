@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean install
 
 all: Makefile.coq
 	make -f Makefile.coq
@@ -8,3 +8,6 @@ Makefile.coq: _CoqProject
 
 clean: Makefile.coq
 	make -f Makefile.coq clean
+
+install: Makefile.coq
+	make -f Makefile.coq install
