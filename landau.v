@@ -14,9 +14,7 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (* for now)                                                                   *)
 (* This libary is very assymetric, in multiple respects:                      *)
 (* - most rewrite rules can only be rewritten from left to right.             *)
-(*   more precisely, the pattern 'the_O_F f as few chances to match           *)
-(*             while the pattern 'O_F f     should be ok                      *)
-(*   e.g. an equation 'o_F f = 'the_O_G g can be used only from LEFT TO RIGHT *)
+(*   e.g. an equation 'o_F f = 'O_G g can be used only from LEFT TO RIGHT     *)
 (* - conversely most small 'o_F f in your goal are very specific,             *)
 (*     only 'a_F f is mutable                                                 *)
 (*                                                                            *)
@@ -27,8 +25,8 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (*   - In order to have a look at the hidden function, rewrite showo.         *)
 (*   - Do not use showo during a normal proof.                                *)
 (*   - All theorems should be stated so that when an impossible reflexivity   *)
-(*     is encounterd, it is of the form 'O_F g = 'the_O_F g so that you       *)
-(*     know you should use eqOE in order to generalize your 'the_O_F g        *)
+(*     is encounterd, it is of the form 'O_F g = 'O_F g so that you       *)
+(*     know you should use eqOE in order to generalize your 'O_F g        *)
 (*     to an arbitrary 'O_F g                                                 *)
 (*                                                                            *)
 (*  bigO F f g == f is a bigO of g near F,                                    *)
@@ -39,12 +37,17 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (*                   expands to itself                                        *)
 (*       f =O_F h == f is a bigO of h near F,                                 *)
 (*                   this is the preferred way for statements.                *)
-(*                   expands to the equation (f = 'the_O_F h)                 *)
+(*                   expands to the equation (f = 'O_F h)                     *)
 (*                   rewrite from LEFT to RIGHT only                          *)
 (*   f = g +O_F h == f is equal to g plus a bigO near F,                      *)
 (*                   this is the preferred way for statements.                *)
-(*                   expands to the equation (f = g + 'the_O_F h)             *)
+(*                   expands to the equation (f = g + 'O_F h)                 *)
 (*                   rewrite from LEFT to RIGHT only                          *)
+(*                   /!\ When you have to prove                               *)
+(*                   (f =O_F h) or (f = g +O_F h).                            *)
+(*                   you must (apply: eqOE) as soon as possible in a proof    *)
+(*                   in order to turn it into 'a_O_F f with a shelved content *)
+(*                   /!\ under rare circumstances, a hint may do that for you *)
 (*   [O_F h of f] == returns a function with a bigO canonical structure       *)
 (*                   provably equal to f if f is indeed a bigO of h           *)
 (*                   provably equal to 0 otherwise                            *)
@@ -54,11 +57,6 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (*                                                                            *)
 (*   Printing only notations:                                                 *)
 (*       {O_F f} == the type of functions that are a bigO of f near F         *)
-(*    'the_O_F f == a very specific bigO, must come from an equation          *)
-(*                  (f =O_F h) of (f = g +O_F h).                             *)
-(*                  you must (apply: eqOE) as soon as possible in a proof     *)
-(*                  in order to turn it into 'a_O_F f with a shelved content  *)
-(*                  /!\ under rare circumstances, a hint may do that for you  *)
 (*      'a_O_F f == an existential bigO, must come from (apply: eqOE)         *)
 (*        'O_F f == a generic bigO, with a function you should not rely on,   *)
 (*                  but there is no way you can use eqOE on it.               *)
@@ -189,8 +187,8 @@ Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (PhantomF x) f e)
   (at level 0, x, e at level 0, format "[o '_' x  e  'of'  f ]").
 (* These notation is printing only in order to display 'o
    without looking at the contents, use showo to dispaly *)
-Notation "''the_o_' x e " := (the_littleo the_tag _ (PhantomF x) _ e)
-  (at level 0, x, e at level 0, format "''the_o_' x  e ").
+Notation "''o_' x e " := (the_littleo the_tag _ (PhantomF x) _ e)
+  (at level 0, x, e at level 0, format "''o_' x  e ").
 Notation "''a_o_' x e " := (the_littleo a_tag _ (PhantomF x) _ e)
   (at level 0, x, e at level 0, format "''a_o_' x  e ").
 Notation "''o' '_' x" := (the_littleo gen_tag _ (PhantomF x) _)
@@ -387,8 +385,8 @@ Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (PhantomF x) f e)
   (at level 0, x, e at level 0, format "[O '_' x  e  'of'  f ]").
 (* These notation is printing only in order to display 'o
    without looking at the contents, use showo to display *)
-Notation "''the_O_' x e " := (the_bigO the_tag _ (PhantomF x) _ e)
-  (at level 0, x, e at level 0, format "''the_O_' x  e ").
+Notation "''O_' x e " := (the_bigO the_tag _ (PhantomF x) _ e)
+  (at level 0, x, e at level 0, format "''O_' x  e ").
 Notation "''a_O_' x e " := (the_bigO a_tag _ (PhantomF x) _ e)
   (at level 0, x, e at level 0, format "''a_O_' x  e ").
 Notation "''O' '_' x" := (the_bigO gen_tag _ (PhantomF x) _)
@@ -569,8 +567,8 @@ Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (Phantom _ x) f e)
   (at level 0, x, e at level 0, format "[o '_' x  e  'of'  f ]").
 (* These notation is printing only in order to display 'o
    without looking at the contents, use showo to dispaly *)
-Notation "''the_o_' x e " := (the_littleo the_tag _ (Phantom _ x) _ e)
-  (at level 0, x, e at level 0, format "''the_o_' x  e ").
+Notation "''o_' x e " := (the_littleo the_tag _ (Phantom _ x) _ e)
+  (at level 0, x, e at level 0, format "''o_' x  e ").
 Notation "''a_o_' x e " := (the_littleo a_tag _ (Phantom _ x) _ e)
   (at level 0, x, e at level 0, format "''a_o_' x  e ").
 Notation "''o' '_' x" := (the_littleo gen_tag _ (Phantom _ x) _)
@@ -588,8 +586,8 @@ Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (Phantom _ x) f e)
   (at level 0, x, e at level 0, format "[O '_' x  e  'of'  f ]").
 (* These notation is printing only in order to display 'o
    without looking at the contents, use showo to dispaly *)
-Notation "''the_O_' x e " := (the_bigO the_tag _ (Phantom _ x) _ e)
-  (at level 0, x, e at level 0, format "''the_O_' x  e ").
+Notation "''O_' x e " := (the_bigO the_tag _ (Phantom _ x) _ e)
+  (at level 0, x, e at level 0, format "''O_' x  e ").
 Notation "''a_O_' x e " := (the_bigO a_tag _ (Phantom _ x) _ e)
   (at level 0, x, e at level 0, format "''a_O_' x  e ").
 Notation "''O' '_' x" := (the_bigO gen_tag _ (Phantom _ x) _)
@@ -646,11 +644,11 @@ Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h)
    format "f  '==O_' F  h",
    only parsing).
 
-Hint Extern 0 (_ = 'the_o__ _) => apply: eqoE; reflexivity : core.
-Hint Extern 0 (_ = 'the_O__ _) => apply: eqOE; reflexivity : core.
-Hint Extern 0 (_ = 'the_O__ _) => apply: eqoO; reflexivity : core.
-Hint Extern 0 (_ = _ + 'the_o__ _) => apply: eqaddoE; reflexivity : core.
-Hint Extern 0 (_ = _ + 'the_O__ _) => apply: eqaddOE; reflexivity : core.
+Hint Extern 0 (_ = 'o__ _) => apply: eqoE; reflexivity : core.
+Hint Extern 0 (_ = 'O__ _) => apply: eqOE; reflexivity : core.
+Hint Extern 0 (_ = 'O__ _) => apply: eqoO; reflexivity : core.
+Hint Extern 0 (_ = _ + 'o__ _) => apply: eqaddoE; reflexivity : core.
+Hint Extern 0 (_ = _ + 'O__ _) => apply: eqaddOE; reflexivity : core.
 Hint Extern 0 (bigO _ _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (locally _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: bigOP] : core.
