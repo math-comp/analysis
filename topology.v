@@ -428,9 +428,13 @@ match (type of ([filter of F] : (_ -> Prop) -> Prop))
   [rewrite /R {R}|]; last first
 end.
 
-Ltac near x :=
+Ltac close_near x :=
 match goal with Hx : extensible_property x _ |- _ =>
   eapply proj1; do 10?[by apply: Hx|eapply proj2] end.
+
+Tactic Notation "near=>" ident(x) := (begin_near x).
+Tactic Notation "near:" ident(x) := (close_near x).
+Tactic Notation "near" constr(F) "have" ident(x) := have_near F x.
 
 Ltac end_near := do !
   [exact: prop_in_filterP|exact: filterT|by []|apply: filterI].
@@ -441,7 +445,7 @@ Ltac done :=
          | discriminate | contradiction | split]
    | case not_locked_false_eq_true; assumption
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end
-   | match goal with |- PropInFilter.t _ ?x => near x end ].
+   | match goal with |- PropInFilter.t _ ?x => near: x end ].
 
 Lemma near T (F : set (set T)) P (FP : F P) (x : T) : (InFilter FP) x -> P x.
 Proof. by rewrite prop_in_filterE. Qed.
@@ -457,7 +461,7 @@ Proof. by move=> ?; apply/filterP; exists setT => //; apply: filterT. Qed.
 Lemma filter_app (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, F (fun x => P x -> Q x) -> F P -> F Q.
 Proof.
-by move=> FF P Q subPQ FP; begin_near x; [suff: P x; near x|end_near].
+by move=> FF P Q subPQ FP; near=> x; [suff: P x; near: x|end_near].
 Qed.
 
 Lemma filter_app2 (T : Type) (F : set (set T)) :
@@ -518,6 +522,7 @@ match goal with |- exists2 _ : set ?T * set ?U, ?F _.1 /\ ?G _.2 & _ =>
   |move=> x y /(extensible_propertyI x) ? /(extensible_propertyI y) ?];
   last first
 end.
+Tactic Notation "near=>" ident(x) ident(y) := (begin_near2 x y).
 
 Lemma filter_ex2 {T U : Type} (F : set (set T)) (G : set (set U))
   {FF : ProperFilter F} {FG : ProperFilter G} (P : set T) (Q : set U) :
@@ -538,6 +543,8 @@ let R2 := fresh "around2" in
   [rewrite /R1 {R1} /R2 {R2}|rewrite /R1 {R1} /R2 {R2}|]; last first
 end
 end.
+Tactic Notation "near" constr(F) "&" constr(G) "have" ident(x) "&" ident(y) :=
+   (have_near2 F G x y).
 
 Lemma filter_fromP {I T : Type} (D : set I) (B : I -> set T) (F : set (set T)) :
   Filter F -> F `=>` filter_from D B <-> forall i, D i -> F (B i).
@@ -629,13 +636,13 @@ Global Instance filtermapi_filter T U (f : T -> set U) (F : set (set T)) :
 Proof.
 move=> f_totalfun FF; rewrite /filtermapi; apply: Build_Filter. (* bug *)
 - by apply: filterS f_totalfun => x [[y Hy] H]; exists y.
-- move=> P Q FP FQ; begin_near x.
+- move=> P Q FP FQ; near=> x.
     have [//|y [fxy Py]] := near FP x.
     have [//|z [fxz Qz]] := near FQ x.
     have [//|_ fx_prop] := near f_totalfun x.
     by exists y; split => //; split => //; rewrite [y](fx_prop _ z).
   by end_near.
-- move=> P Q subPQ FP; begin_near x.
+- move=> P Q subPQ FP; near=> x.
     by have [//|y [fxy /subPQ Qy]] := near FP x; exists y.
   by end_near.
 Qed.
@@ -784,8 +791,8 @@ Lemma flim_pair {T U V F} {G : set (set U)} {H : set (set V)}
   f @ F --> G -> g @ F --> H ->
   (f x, g x) @[x --> F] --> (G, H).
 Proof.
-move=> fFG gFH P; rewrite !near_simpl => -[[A B] /=[GA HB] ABP]; begin_near x.
-  by apply: (ABP (_, _)); split=> //=; near x.
+move=> fFG gFH P; rewrite !near_simpl => -[[A B] /=[GA HB] ABP]; near=> x.
+  by apply: (ABP (_, _)); split=> //=; near: x.
 by end_near; [apply: fFG|apply: gFH].
 Qed.
 
@@ -1039,7 +1046,7 @@ Proof. exact: locally_locally. Qed.
 Lemma near_bind (T : topologicalType) (P Q : set T) (x : T) :
   (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
 Proof.
-move=> PQ xP; begin_near y.
+move=> PQ xP; near=> y.
   by apply: (near PQ y) => //; apply: (near (near_join xP) y).
 by end_near.
 Qed.

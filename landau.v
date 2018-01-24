@@ -233,7 +233,7 @@ Canonical the_littleo_littelo (tag : unit) (F : filter_on T)
 Lemma opp_littleo_subproof (F : filter_on T) e (df : {o_F e}) :
    littleo F (- (df : _ -> _)) e.
 Proof.
-move=> _/posnumP[eps]; begin_near x; [rewrite normmN; near x|end_near].
+move=> _/posnumP[eps]; near=> x; [rewrite normmN; near: x|end_near].
 by apply: littleoP.
 Qed.
 
@@ -250,9 +250,9 @@ Proof. by move: x; rewrite -/(- _ =1 _) {1}oppo. Qed.
 Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
   littleo F (df \+ dg) e.
 Proof.
-move=> _/posnumP[eps]; begin_near x => /=.
+move=> _/posnumP[eps]; near=> x => /=.
   rewrite [eps%:num]splitr mulrDl.
-  rewrite (ler_trans (ler_normm_add _ _)) // ler_add //; near x.
+  rewrite (ler_trans (ler_normm_add _ _)) // ler_add //; near: x.
 by end_near; apply: littleoP.
 Qed.
 
@@ -311,9 +311,9 @@ Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
   littleo F (a *: (df : _ -> _)) e.
 Proof.
 have [->|a0] := eqVneq a 0; first by rewrite scale0r.
-move=> _ /posnumP[eps]; have aa := absr_eq0 a; begin_near x => /=.
+move=> _ /posnumP[eps]; have aa := absr_eq0 a; near=> x => /=.
   rewrite (ler_trans (ler_normmZ _ _)) //.
-  by rewrite -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; near x.
+  by rewrite -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; near: x.
 by end_near; apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?ltr_def ?aa ?a0 /=.
 Qed.
 
@@ -436,7 +436,7 @@ Lemma opp_bigO_subproof (F : filter_on T) e (df : {O_F e}) :
    bigO F (- (df : _ -> _)) e.
 Proof.
 have [_/posnumP[k] kP] := bigOP [bigO of df]; apply: bigOWP; exists k%:num.
-by begin_near x; [rewrite normmN; near x|end_near].
+by near=> x; [rewrite normmN; near: x|end_near].
 Qed.
 
 Canonical Opp_bigO (F : filter_on T) e (df : {O_F e}) :=
@@ -673,15 +673,15 @@ Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
   f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
 Proof.
 split=> fFl.
-  apply/eqaddoP => _/posnumP[eps]; begin_near x.
-    by rewrite /cst ltrW //= normmB; near x.
+  apply/eqaddoP => _/posnumP[eps]; near=> x.
+    by rewrite /cst ltrW //= normmB; near: x.
   by end_near; apply: (flim_norm _ fFl); rewrite mulr_gt0 // ?absr1_gt0.
 apply/flim_normP=> _/posnumP[eps]; rewrite !near_simpl.
 have lt_eps x : x <= (eps%:num / 2%:R) * `|1 : K^o|%real -> x < eps.
   rewrite absr1 mulr1 => /ler_lt_trans; apply.
   by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
-begin_near x.
-  by rewrite [X in X x]fFl opprD addNKr normmN lt_eps //; near x.
+near=> x.
+  by rewrite [X in X x]fFl opprD addNKr normmN lt_eps //; near: x.
 by end_near; rewrite /= !near_simpl; apply: littleoP; rewrite divr_gt0.
 Qed.
 
@@ -706,9 +706,9 @@ Lemma littleo_bigO_eqo {F : filter_on T}
 Proof.
 move->; apply/eqoP => _/posnumP[eps] /=.
 set k := 'O g; have [/= _/posnumP[c]] := bigOP [bigO of k].
-apply: filter_app; begin_near x.
+apply: filter_app; near=> x.
   rewrite -!ler_pdivr_mull //; apply: ler_trans.
-  by rewrite ler_pdivr_mull // mulrA; near x.
+  by rewrite ler_pdivr_mull // mulrA; near: x.
 by end_near; rewrite /= !near_simpl; apply: littleoP.
 Qed.
 Arguments littleo_bigO_eqo {F}.
@@ -718,8 +718,8 @@ Lemma bigO_littleo_eqo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) 
 Proof.
 move->; apply/eqoP => _/posnumP[eps].
 set k := 'O _; have [/= _/posnumP[c]] := bigOP [bigO of k].
-apply: filter_app; begin_near x.
-  by move=> /ler_trans; apply; rewrite -ler_pdivl_mull // mulrA; near x.
+apply: filter_app; near=> x.
+  by move=> /ler_trans; apply; rewrite -ler_pdivl_mull // mulrA; near: x.
 by end_near; rewrite /= !near_simpl; apply: littleoP.
 Qed.
 Arguments bigO_littleo_eqo {F}.
@@ -820,10 +820,10 @@ Proof.
 move=> fh gh e e0.
 have se0 : 0 < Num.sqrt e by rewrite sqrtr_gt0.
 move/fh : (se0) => {fh}fh; move/gh : (se0) => {gh}gh.
-begin_near x.
+near=> x.
   rewrite (ler_trans (absrM _ _)) // -(sqr_sqrtr (ltrW e0)) expr2.
   rewrite (_ : `|[_]| = `|h1 x| * `|h2 x|); last by rewrite -RmultE -Rabs_mult.
-  rewrite -mulrA (mulrCA _ `|h1 x|) !mulrA -(mulrA (_ * _)) ler_pmul //; near x.
+  rewrite -mulrA (mulrCA _ `|h1 x|) !mulrA -(mulrA (_ * _)) ler_pmul //; near: x.
 end_near.
 Qed.
 
@@ -837,10 +837,10 @@ Lemma mul_bigO_subproof (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R o
 Proof.
 move=> [e1 e10 fh] [e2 e20 gh].
 exists (e1 * e2); first by rewrite pmulr_rgt0.
-begin_near x.
+near=> x.
   rewrite (ler_trans (absrM _ _)) //.
   rewrite (_ : `|[_]| = `|h1 x| * `|h2 x|); last by rewrite -RmultE -Rabs_mult.
-  rewrite -mulrA (mulrCA _ `|h1 x|) !mulrA -(mulrA (_ * _)) ler_pmul //; near x.
+  rewrite -mulrA (mulrCA _ `|h1 x|) !mulrA -(mulrA (_ * _)) ler_pmul //; near: x.
 end_near.
 Qed.
 
@@ -920,9 +920,9 @@ have [{l fl}_ /posnumP[l] f_lipshitz] :
   (** BUG! in a vector space, the normm should be totally scalable : normmZ *)
   admit.
 move=> x; apply/flim_normP => _/posnumP[eps]; rewrite !near_simpl.
-rewrite (near_shift 0) /= subr0; begin_near y => /=.
+rewrite (near_shift 0) /= subr0; near=> y => /=.
   rewrite -linearB opprD addrC addrNK linearN normmN.
-  by rewrite (ler_lt_trans (f_lipshitz _)) // -ltr_pdivl_mull //; near y.
+  by rewrite (ler_lt_trans (f_lipshitz _)) // -ltr_pdivl_mull //; near: y.
 end_near.
 apply/locally_normP.
 by eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
@@ -986,8 +986,8 @@ split => [| /eqOP[x x0 Hx] ];
   [rewrite qualifE => /asboolP[x x0 Hx]; apply/eqOP |
    rewrite qualifE; apply/asboolP];
   exists x^-1; rewrite ?invr_gt0 //.
-- begin_near y; [by rewrite ler_pdivl_mull //; near y | end_near].
-- begin_near y; [by rewrite ler_pdivr_mull //; near y | end_near].
+- near=> y; [by rewrite ler_pdivl_mull //; near: y | end_near].
+- near=> y; [by rewrite ler_pdivr_mull //; near: y | end_near].
 Qed.
 
 (* TODO? other properties about Omega
@@ -1015,10 +1015,10 @@ Lemma nearIP (F : filter_on T) (b1 b2 : _ -> Prop) :
   (\forall x \near F, b1 x /\ b2 x) <->
     (\forall x \near F, b1 x) /\ (\forall x \near F, b2 x).
 Proof.
-split => H;[split|case: H => H1 H2]; last by begin_near x; [near x |end_near].
-- begin_near x; [by near x | end_near].
+split => H;[split|case: H => H1 H2]; last by near=> x; [near: x|end_near].
+- near=> x; [by near: x|end_near].
   by move: H; rewrite -locally_nearE /= => /locallyI[].
-- begin_near x; [by near x | end_near].
+- near=> x; [by near: x|end_near].
   by move: H; rewrite -locally_nearE /= => /locallyI[].
 Qed.
 
@@ -1049,7 +1049,7 @@ split.
   split; by [rewrite eqOP; exists k2|rewrite qualifE; apply/asboolP; exists k1].
 - case; rewrite eqOP qualifE => -[k1 k10 H1] /asboolP[k2 k20 H2].
   rewrite qualifE; apply/asboolP; exists (k2, k1) => /=; first by rewrite k20.
-  apply/nearIP; split; by begin_near x; [near x | end_near].
+  apply/nearIP; split; by near=> x; [near: x|end_near].
 Qed.
 
 (* TODO: properties about Theta
