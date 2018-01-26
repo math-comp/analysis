@@ -473,7 +473,7 @@ Qed.
 Lemma flim_close {F} {FF : ProperFilter F} (x y : T) :
   F --> x -> F --> y -> close x y.
 Proof.
-move=> Fx Fy e; have_near F z; [by apply: (@ball_splitl _ z); near z|].
+move=> Fx Fy e; near F have z; [by apply: (@ball_splitl _ z); near: z|].
 by end_near; [apply/Fx/locally_ball|apply/Fy/locally_ball].
 Qed.
 
@@ -662,7 +662,7 @@ Lemma flimi_ballP {F} {FF : Filter F} (f : T -> U -> Prop) y :
 Proof.
 split=> [Fy _/posnumP[eps] |Fy P] /=; first exact/Fy/locally_ball.
 move=> /locallyP[_ /posnumP[eps] subP].
-rewrite near_simpl near_mapi; begin_near x.
+rewrite near_simpl near_mapi; near=> x.
   have [//|z [fxz yz]] := near (Fy _ (posnum_gt0 eps)) x.
   by exists z => //; split => //; apply: subP.
 by end_near.
@@ -679,7 +679,7 @@ Lemma flimi_close {F} {FF: ProperFilter F} (f : T -> set U) (l l' : U) :
 Proof.
 move=> f_prop fFl fFl'.
 suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
-apply: filter_app f_prop; begin_near x; first split=> //=.
+apply: filter_app f_prop; near=> x; first split=> //=.
   by have [//|y [fxy _]] := near (flimi_ball fFl [gt0 of 1]) x; exists y.
 by end_near.
 Qed.
@@ -759,7 +759,7 @@ Lemma cauchyP (T : uniformType) (F : set (set T)) : ProperFilter F ->
   cauchy F <-> cauchy_ex F.
 Proof.
 move=> FF; split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
-have_near F x; first by exists x; near x.
+near F have x; first by exists x; near: x.
 by end_near; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
 Qed.
 
@@ -859,10 +859,10 @@ have /(_ _ _) /complete_cauchy cvF :
   by move=> ?? _ /posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex.
 exists (\matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T)).
-apply/flim_ballP => _ /posnumP[e]; begin_near M.
-  move=> i j; rewrite mxE; have_near F M' => /=.
-    by apply: (@ball_splitl _ (M' i j)); last move: (i) (j); near M'.
-  by end_near; [apply/cvF/locally_ball|near M].
+apply/flim_ballP => _ /posnumP[e]; near=> M.
+  move=> i j; rewrite mxE; near F have M' => /=.
+    by apply: (@ball_splitl _ (M' i j)); last move: (i) (j); near: M'.
+  by end_near; [apply/cvF/locally_ball|near: M].
 by end_near; apply: nearP_dep; apply: filterS (Fc _ _).
 Qed.
 
@@ -880,10 +880,10 @@ Proof.
 move=> FF Fc; have /(_ _) /complete_cauchy Gl : cauchy (@^~ _ @ F).
   by move=> t _/posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/flim_ballP => _ /posnumP[e]; begin_near g.
-  move=> t; have_near F h => /=.
-    by apply: (@ball_splitl _ (h t)); last move: (t); near h.
-  by end_near; [exact/Gl/locally_ball|near g].
+apply/flim_ballP => _ /posnumP[e]; near=> g.
+  move=> t; near F have h => /=.
+    by apply: (@ball_splitl _ (h t)); last move: (t); near: h.
+  by end_near; [exact/Gl/locally_ball|near: g].
 by end_near; apply: nearP_dep; apply: filterS (Fc _ _).
 Qed.
 
@@ -905,10 +905,10 @@ Lemma flim_switch_1 {U : uniformType}
   g @ F2 --> l.
 Proof.
 move=> fg fh hl; apply/flim_ballP => _ /posnumP[eps]; rewrite !near_simpl.
-have_near F1 x; first begin_near y.
-+ apply: (@ball_split _ (h x)); first by near x.
-  apply: (@ball_split _ (f x y)); first by near y.
-  by apply/ball_sym; move: (y); near x.
+near F1 have x; first near=> y.
++ apply: (@ball_split _ (h x)); first by near: x.
+  apply: (@ball_split _ (f x y)); first by near: y.
+  by apply/ball_sym; move: (y); near: x.
 + by end_near; apply/fh/locally_ball.
 end_near; first exact/hl/locally_ball.
 by have /flim_locally /= := fg; apply.
@@ -922,10 +922,10 @@ Lemma flim_switch_2 {U : completeType}
   [cvg h @ F1 in U].
 Proof.
 move=> fg fh; apply: complete_cauchy => _/posnumP[e] /=; rewrite !near_simpl.
-begin_near2 x x'=> /=; [have_near F2 y|].
-+ apply: (@ball_splitl _ (f x y)); first by near y.
-  apply: (@ball_split _ (f x' y)); first by near y.
-  by apply: (@ball_splitr _ (g y)); move: (y); [near x'|near x].
+near=> x x'=> /=; [near F2 have y|].
++ apply: (@ball_splitl _ (f x y)); first by near: y.
+  apply: (@ball_split _ (f x' y)); first by near: y.
+  by apply: (@ball_splitr _ (g y)); move: (y); [near: x'|near: x].
 + by end_near; apply/fh/locally_ball.
 by split; end_near; have /flim_locally /= := fg; apply.
 Qed.
@@ -1247,8 +1247,8 @@ Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
   (forall eps : R, 0 < eps -> \forall y' \near F, `|[y - y']| <= eps) ->
   F --> y.
 Proof.
-move=> cv; apply/flim_normP => _/posnumP[e]; begin_near x.
-  by rewrite [e%:num]splitr ltr_spaddl //; near x.
+move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
+  by rewrite [e%:num]splitr ltr_spaddl //; near: x.
 by end_near; apply: cv.
 Qed.
 
@@ -1442,9 +1442,9 @@ Context {K : absRingType} {V : normedModType K}.
 Lemma flim_add : continuous (fun z : V * V => z.1 + z.2).
 Proof.
 move=> [/=x y]; apply/flim_normP=> _/posnumP[e].
-rewrite !near_simpl /=; begin_near2 a b.
+rewrite !near_simpl /=; near=> a b.
   rewrite opprD addrACA [e%:num]splitr (ler_lt_trans (ler_normm_add _ _)) //.
-  by rewrite ltr_add //=; [near a|near b].
+  by rewrite ltr_add //=; [near: a|near: b].
 by split; end_near=> /=; apply: flim_norm.
 Qed.
 
@@ -1452,19 +1452,19 @@ Qed.
 Lemma flim_scal : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
-rewrite !near_simpl /=; begin_near z.
+rewrite !near_simpl /=; near=> z.
   rewrite (@subr_trans _ (k *: z.2)).
   rewrite (splitr e%:num) (ler_lt_trans (ler_normm_add _ _)) //.
   rewrite ltr_add // -?(scalerBr, scalerBl).
     rewrite (ler_lt_trans (ler_normmZ _ _)) //.
     rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
             ?ler_addl//.
-    by rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near z.
+    by rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
   rewrite (ler_lt_trans (ler_normmZ _ _)) //.
   rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) //.
-    by rewrite ltrW //; near z.
+    by rewrite ltrW //; near: z.
   rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //.
-  by near z.
+  by near: z.
 end_near; rewrite /= ?near_simpl.
 - by apply: (flim_norm _ flim_snd); rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
 - by apply: (flim_bounded _ flim_snd); rewrite ltr_addl.
@@ -1712,27 +1712,27 @@ pose D := \bigcap_(A in F) (down (mem A)).
 have /cauchyP /(_ 1) [//|x0 x01] := F_cauchy.
 have D_has_sup : has_sup (mem D); first split.
 - exists (x0 - 1); rewrite in_setE => A FA.
-  apply/existsbP; have_near F x; first exists x.
-    by rewrite ler_distW 1?distrC 1?ltrW ?andbT ?in_setE //; near x.
+  apply/existsbP; near F have x; first exists x.
+    by rewrite ler_distW 1?distrC 1?ltrW ?andbT ?in_setE //; near: x.
   end_near.
 - exists (x0 + 1); apply/forallbP => x; apply/implyP; rewrite in_setE.
   move=> /(_ _ x01) /existsbP [y /andP[]]; rewrite in_setE.
   rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltrW].
   by move=> /(ler_trans _) yx01 _ /yx01.
 exists (sup (mem D)).
-apply: (flim_normW (_ : R^o)) => /= _ /posnumP[eps]; begin_near x.
+apply: (flim_normW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
   rewrite ler_distl sup_upper_bound //=.
     apply: sup_le_ub => //; first by case: D_has_sup.
     apply/forallbP => y; apply/implyP; rewrite in_setE.
-    move=> /(_ (ball_ norm x eps%:num) _) /existsbP []; first by near x.
+    move=> /(_ (ball_ norm x eps%:num) _) /existsbP []; first by near: x.
     move=> z /andP[]; rewrite in_setE /ball_ ltr_distl ltr_subl_addr.
     by move=> /andP [/ltrW /(ler_trans _) le_xeps _ /le_xeps].
-  rewrite in_setE /D /= => A FA; have_near F y.
+  rewrite in_setE /D /= => A FA; near F have y.
     apply/existsbP; exists y; apply/andP; split.
-      by rewrite in_setE; near y.
+      by rewrite in_setE; near: y.
     rewrite ler_subl_addl -ler_subl_addr ltrW //.
-    by suff: `|x - y| < eps%:num; [by rewrite ltr_norml => /andP[_] | near y].
-  end_near; near x.
+    by suff: `|x - y| < eps%:num; [by rewrite ltr_norml => /andP[_] | near: y].
+  end_near; near: x.
 by end_near; rewrite /= !near_simpl; apply: nearP_dep; apply: F_cauchy.
 Qed.
 

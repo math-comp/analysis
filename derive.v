@@ -86,7 +86,7 @@ Proof.
 move=> dxf dxfO; have /diff_locally := dxf; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; exists 1 => //; rewrite /cst mul1r [`|[1 : R^o]|]absr1.
-  begin_near y; [rewrite ltrW //; near y|end_near].
+  near=> y; [rewrite ltrW //; near: y|end_near].
   by apply/locally_normP; eexists=> [|?];
     last (rewrite /= ?sub0r ?normmN; apply).
 rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.

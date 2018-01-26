@@ -36,13 +36,13 @@ Proof. by apply/eqaddoP; rewrite subrr. Qed.
 Lemma equivoRL (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
   f ~_F g -> [o_F g of h] =o_F f.
 Proof.
-move=> ->; apply/eqoP; move=> _/posnumP[eps]; begin_near x.
+move=> ->; apply/eqoP; move=> _/posnumP[eps]; near=> x.
   rewrite -ler_pdivr_mull // -[X in g + X]opprK oppo.
   rewrite (ler_trans _ (ler_distm_dist _ _)) //.
   rewrite [X in _ <= X]ger0_norm ?ler_subr_addr ?add0r; last first.
-    by rewrite -[X in _ <= X]mul1r; near x.
+    by rewrite -[X in _ <= X]mul1r; near: x.
   rewrite [X in _ <= X]splitr [_ / 2]mulrC.
-  rewrite ler_add ?ler_pdivr_mull ?mulrA //; near x.
+  rewrite ler_add ?ler_pdivr_mull ?mulrA //; near: x.
 by end_near; apply: littleoP.
 Qed.
 
