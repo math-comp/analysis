@@ -134,6 +134,10 @@ End UniformTopology.
 
 Definition ball {M : uniformType} := Uniform.ball (Uniform.class M).
 
+Definition entourages {T : uniformType} : set (set (T * T)):=
+  filter_from [set eps : R | eps > 0]
+              (fun eps => [set xy | ball xy.1 eps xy.2]).
+
 Lemma locally_ballE {M : uniformType} : locally_ (@ball M) = locally.
 Proof. by case: M=> [?[?[]]]. Qed.
 
@@ -741,6 +745,15 @@ Definition cauchy_ex {T : uniformType} (F : set (set T)) :=
 
 Definition cauchy {T : uniformType} (F : set (set T)) :=
   forall e, e > 0 -> \forall x & y \near F, ball x e y.
+
+Lemma cauchy_entouragesP (T  : uniformType) (F : set (set T)) :
+  Filter F -> cauchy F <-> (F, F) --> entourages.
+Proof.
+move=> FF; split=> cauchyF; last first.
+  by move=> _/posnumP[eps]; apply: cauchyF; exists eps%:num.
+move=> U [_/posnumP[eps] xyepsU].
+by near=> x; [by apply: xyepsU; near: x|end_near; apply: cauchyF].
+Qed.
 
 Lemma cvg_cauchy_ex {T : uniformType} (F : set (set T)) :
   [cvg F in T] -> cauchy_ex F.
