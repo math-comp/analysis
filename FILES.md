@@ -17,6 +17,20 @@
 - `Makefile`
 - `Licence_CeCILL-C_V1-en.txt`
 
+## Files from the former library coq-alternate-reals are now here and should be merged at some point:
+- boolp.v
+- coupling.v
+- dedekind.v
+- discrete.v
+- distr.v
+- filters.v
+- reals.v
+- realseq.v
+- realsum.v
+- sandbox.v
+- xfinmap.v
+- xsets.v
+
 ## Files modified from Coquelicot 3.0.1
 - `Rbar.v`
 
