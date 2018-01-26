@@ -887,16 +887,16 @@ Section fct_Complete.
 
 Context {T : choiceType} {U : completeType}.
 
-Lemma complete_cauchy_fct (F : set (set (T -> U))) :
-  ProperFilter F -> cauchy F -> cvg F.
+Lemma complete_cauchy_fct (F : set (set (T -> U)))
+  {FF :  ProperFilter F} : cauchy F -> cvg F.
 Proof.
-move=> FF Fc; have /(_ _) /complete_cauchy Gl : cauchy (@^~ _ @ F).
-  by move=> t _/posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
+move=> Fc; have /(_ _) /complete_cauchy Ft_cvg : cauchy (@^~_ @ F).
+  by move=> t e ?; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/flim_ballP => _ /posnumP[e]; near=> g.
-  move=> t; near F have h => /=.
-    by apply: (@ball_splitl _ (h t)); last move: (t); near: h.
-  by end_near; [exact/Gl/locally_ball|near: g].
+apply/flim_ballP => _ /posnumP[e]; near=> f => [t|].
+  near F have g => /=.
+    by apply: (@ball_splitl _ (g t)); last move: (t); near: g.
+  by end_near; [exact/Ft_cvg/locally_ball|near: f].
 by end_near; apply: nearP_dep; apply: filterS (Fc _ _).
 Qed.
 
