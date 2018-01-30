@@ -485,6 +485,14 @@ Lemma in_filter_from {I T : Type} (D : set I) (B : I -> set T) (i : I) :
    D i -> filter_from D B (B i).
 Proof. by exists i. Qed.
 
+Lemma near_andP {T : Type} F (b1 b2 : T -> Prop) : Filter F ->
+  (\forall x \near F, b1 x /\ b2 x) <->
+    (\forall x \near F, b1 x) /\ (\forall x \near F, b2 x).
+Proof.
+move=> FF; split=> [H|[H1 H2]]; first by split; apply: filterS H => ? [].
+by apply: filterS2 H1 H2.
+Qed.
+
 Lemma nearP_dep {T U} {F : set (set T)} {G : set (set U)}
    {FF : Filter F} {FG : Filter G} (P : T -> U -> Prop) :
   (\forall x \near F & y \near G, P x y) ->

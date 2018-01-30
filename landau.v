@@ -324,8 +324,22 @@ Lemma scaleo (F : filter_on T) a (f : T -> V) e :
   a *: [o_F e of f] = [o_F e of a *: [o_F e of f]].
 Proof. by rewrite [RHS]littleoE. Qed.
 
+Definition bigOF (F : set (set T)) (f : T -> V) (g : T -> W) :=
+  \forall k \near +oo, \forall x \near F, `|[f x]| <= k * `|[g x]|.
+
 Definition bigOW (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists k, \forall x \near F, `|[f x]| <= k * `|[g x]|.
+
+Lemma bigOWFE (F : set (set T)) : Filter F -> bigOW F = bigOF F.
+Proof.
+rewrite predeq2E => FF f g; split=> [[k] |] kP; last first.
+  by near +oo have k; [exists k; near: k|end_near].
+near=> k'.
+  near=> x.
+    by rewrite (ler_trans (near kP _ _)) // ler_wpmul2r // ltrW //; near: k'.
+  end_near.
+by end_near; exists k.
+Qed.
 
 Definition bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|[f x]| <= k * `|[g x]|.
@@ -337,11 +351,20 @@ exists (maxr k 1); first by rewrite ltr_maxr ltr01 orbT.
 by apply: filterS kP => x /ler_trans; apply; rewrite ler_wpmul2r // ler_maxr lerr.
 Qed.
 
+Lemma bigOFE (F : set (set T)) : Filter F -> bigOF F = bigO F.
+Proof. by move=> FF; rewrite -bigOWE bigOWFE. Qed.
+
 Lemma bigOWP (F : set (set T)) f g : Filter F -> bigOW F f g -> bigO F f g.
 Proof. by move=> /bigOWE->. Qed.
 
 Lemma bigOWI (F : set (set T)) f g : Filter F -> bigO F f g -> bigOW F f g.
 Proof. by move=> /bigOWE->. Qed.
+
+Lemma bigOFP (F : set (set T)) f g : Filter F -> bigOF F f g -> bigO F f g.
+Proof. by move=> /bigOFE->. Qed.
+
+Lemma bigOFI (F : set (set T)) f g : Filter F -> bigO F f g -> bigOF F f g.
+Proof. by move=> /bigOFE->. Qed.
 
 Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
   bigO_fun :> T -> V;
@@ -492,6 +515,10 @@ Proof. by rewrite -[f]subr0 -eqaddOP -[f \- 0]/(f - 0) subr0 add0r. Qed.
 Lemma eqOWP (F : filter_on T) (e : T -> W) (f : T -> V) :
    (f =O_ F e) <-> (bigOW F f e).
 Proof. by rewrite bigOWE; apply: eqOP. Qed.
+
+Lemma eqOFP (F : filter_on T) (e : T -> W) (f : T -> V) :
+   (f =O_ F e) <-> (bigOF F f e).
+Proof. by rewrite bigOFE; apply: eqOP. Qed.
 
 Lemma eq_some_OP (F : filter_on T) (e : T -> W) (f : T -> V) h :
    f = [O_F e of h] -> bigO F f e.
@@ -810,46 +837,36 @@ Proof. by move=> -> ->; rewrite (littleo_bigO_eqo h). Qed.
 
 End littleo_bigO_transitivity.
 
-Section rule_of_products.
+Section rule_of_products_in_R.
 
 Variable pT : pointedType.
 
-Lemma mul_littleo_subproof (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
-  littleo F f h1 -> littleo F g h2 -> littleo F (f * g) (h1 * h2).
-Proof.
-move=> fh gh e e0.
-have se0 : 0 < Num.sqrt e by rewrite sqrtr_gt0.
-move/fh : (se0) => {fh}fh; move/gh : (se0) => {gh}gh.
-near=> x.
-  rewrite (ler_trans (absrM _ _)) // -(sqr_sqrtr (ltrW e0)) expr2.
-  rewrite (_ : `|[_]| = `|h1 x| * `|h2 x|); last by rewrite -RmultE -Rabs_mult.
-  rewrite -mulrA (mulrCA _ `|h1 x|) !mulrA -(mulrA (_ * _)) ler_pmul //; near: x.
-end_near.
-Qed.
-
-Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
+Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
-Proof. by rewrite [in RHS]littleoE //; apply mul_littleo_subproof. Qed.
-
-Lemma mul_bigO_subproof (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
-  bigO F f h1 -> bigO F g h2 -> bigO F (f * g) (h1 * h2).
 Proof.
-move=> [e1 e10 fh] [e2 e20 gh].
-exists (e1 * e2); first by rewrite pmulr_rgt0.
-near=> x.
-  rewrite (ler_trans (absrM _ _)) //.
-  rewrite (_ : `|[_]| = `|h1 x| * `|h2 x|); last by rewrite -RmultE -Rabs_mult.
-  rewrite -mulrA (mulrCA _ `|h1 x|) !mulrA -(mulrA (_ * _)) ler_pmul //; near: x.
-end_near.
+rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
+  rewrite (ler_trans (absrM _ _)) // -(sqr_sqrtr (ltrW [gt0 of e%:num])) expr2.
+  rewrite [`|[_]|]normrM mulrACA ler_pmul //; near: x.
+by end_near=> /=; set h := 'o _; apply: (littleoP [littleo of h]).
 Qed.
 
-Lemma mulO (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
+Lemma mulO (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [O_F h1 of f] * [O_F h2 of g] =O_F (h1 * h2).
-Proof. by rewrite [in RHS]bigOE //; apply mul_bigO_subproof. Qed.
+Proof.
+rewrite [in RHS]bigOE // -bigOFE; set O1 := 'O _; set O2 := 'O _.
+have [k1 _ k1P] := bigOP [bigO of O1]; have [k2 _ k2P] := bigOP [bigO of O2].
+near=> k; first near=> x.
+- rewrite (ler_trans (absrM _ _)) //.
+  rewrite (@ler_trans _ ((k1 * k2) * `|[(h1 * h2) x]|)) //.
+    by rewrite [`|[_]|]normrM mulrACA ler_pmul //; near: x.
+  by rewrite ler_wpmul2r // ltrW //; near: k.
+- by end_near.
+- by end_near; exists (k1 * k2).
+Qed.
 
 (* NB: also enjoyed by bigOmega *)
 
-End rule_of_products.
+End rule_of_products_in_R.
 
 Section Shift.
 
@@ -998,30 +1015,6 @@ End big_omega.
 Notation "`Omega_ F g" := (is_bigOmega F g)
   (at level 0, F at level 0, format "`Omega_ F g").
 
-Section is_this_useful.
-
-Context {T : Type}.
-
-Lemma locallyI (F : filter_on T) P Q : locally F (fun x : T => P x /\ Q x) <->
-  locally F P /\ locally F Q.
-Proof.
-split; last by case=> ??; by apply/filterP; exists (P`&`Q) => //; apply filterI.
-case/filterP=>s ? H; split; apply/filterP; exists s => // x; move: (H x); tauto.
-Qed.
-
-Lemma nearIP (F : filter_on T) (b1 b2 : _ -> Prop) :
-  (\forall x \near F, b1 x /\ b2 x) <->
-    (\forall x \near F, b1 x) /\ (\forall x \near F, b2 x).
-Proof.
-split => H;[split|case: H => H1 H2]; last by near=> x; [near: x|end_near].
-- near=> x; [by near: x|end_near].
-  by move: H; rewrite -locally_nearE /= => /locallyI[].
-- near=> x; [by near: x|end_near].
-  by move: H; rewrite -locally_nearE /= => /locallyI[].
-Qed.
-
-End is_this_useful.
-
 Section big_theta.
 
 Context {K : absRingType} {T : Type} {V W : normedModType K}.
@@ -1034,6 +1027,7 @@ Definition is_bigTheta (F : set (set T)) (g : T -> W) :=
   [qualify f : T -> V | `[<bigTheta F f g>] ].
 Fact is_bigTheta_key (F : set (set T)) (g : T -> W) : pred_key (is_bigTheta F g).
 Proof. by []. Qed.
+
 Canonical is_bigTheta_keyed (F : set (set T)) (g : T -> W) :=
   KeyedQualifier (is_bigTheta_key F g).
 Notation "`Theta_ F g" := (is_bigTheta F g)
@@ -1043,11 +1037,11 @@ Lemma bigThetaE (F : filter_on T) (f : T -> V) (g : T -> W) :
   f \is `Theta_F(g) <-> f =O_F g /\ f \is `Omega_F(g).
 Proof.
 split.
-- rewrite qualifE => /asboolP[[k1 k2] /andP[k10 k20]] /nearIP[Hx1 Hx2].
+- rewrite qualifE => /asboolP[[/= k1 k2] /andP[k10 k20]] /near_andP[Hx1 Hx2].
   split; by [rewrite eqOP; exists k2|rewrite qualifE; apply/asboolP; exists k1].
 - case; rewrite eqOP qualifE => -[k1 k10 H1] /asboolP[k2 k20 H2].
   rewrite qualifE; apply/asboolP; exists (k2, k1) => /=; first by rewrite k20.
-  apply/nearIP; split; by near=> x; [near: x|end_near].
+  apply/near_andP; split; by near=> x; [near: x|end_near].
 Qed.
 
 (* TODO: properties about Theta
