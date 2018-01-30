@@ -910,7 +910,6 @@ Section Flim_switch.
 
 Context {T1 T2 : choiceType}.
 
-(* :TODO: Use bigenough reasonning here *)
 Lemma flim_switch_1 {U : uniformType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
@@ -927,7 +926,6 @@ end_near; first exact/hl/locally_ball.
 by have /flim_locally /= := fg; apply.
 Qed.
 
-(* :TODO: Use bigenough reasonning here *)
 Lemma flim_switch_2 {U : completeType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : ProperFilter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :

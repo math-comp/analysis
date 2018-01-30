@@ -828,9 +828,8 @@ end_near.
 Qed.
 
 Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
-  [o_F h1 of f] * [o_F h2 of g] =
-  [o_F (h1 * h2) of [o_F h1 of f] * [o_F h2 of g]].
-Proof. rewrite [in RHS]littleoE //; by apply mul_littleo_subproof. Qed.
+  [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
+Proof. by rewrite [in RHS]littleoE //; apply mul_littleo_subproof. Qed.
 
 Lemma mul_bigO_subproof (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
   bigO F f h1 -> bigO F g h2 -> bigO F (f * g) (h1 * h2).
@@ -845,9 +844,8 @@ end_near.
 Qed.
 
 Lemma mulO (F : filter_on pT) (h1 h2 f g : pT -> [normedModType R of R^o]) :
-  [O_F h1 of f] * [O_F h2 of g] =
-  [O_F (h1 * h2) of [O_F h1 of f] * [O_F h2 of g]].
-Proof. rewrite [in RHS]bigOE //; by apply mul_bigO_subproof. Qed.
+  [O_F h1 of f] * [O_F h2 of g] =O_F (h1 * h2).
+Proof. by rewrite [in RHS]bigOE //; apply mul_bigO_subproof. Qed.
 
 (* NB: also enjoyed by bigOmega *)
 
