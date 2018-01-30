@@ -385,9 +385,9 @@ split; last by exists P.
 by move=> [Q FQ QP]; apply: (filterS QP).
 Qed.
 
-Definition extensible_property T (x : T) (P : Prop) := P.
-Lemma extensible_propertyI T (x : T) (P : Prop) :
-  P -> extensible_property x P.
+Definition tag_near T (x : T) (P : Prop) := P.
+Lemma tag_nearI T (x : T) (P : Prop) :
+  P -> tag_near x P.
 Proof. by []. Qed.
 
 Record in_filter T (F : set (set T)) := InFilter {
@@ -410,29 +410,22 @@ Definition prop_in_filterE := PropInFilter.tE.
 Lemma prop_in_filterP T F (iF : @in_filter T F) : F iF.
 Proof. by rewrite prop_in_filterE; apply: prop_in_filterP_proj. Qed.
 
-Ltac begin_near x :=
-apply/filterP;
-let R := fresh "around" in
-match goal with |- exists2 _ : set ?T, ?F _ & _ =>
-  evar (R : set T);
-  exists R; [rewrite /R {R}|
-             move=> x /(extensible_propertyI x) ?]; last first
-end.
+Tactic Notation "near=>" ident(x) :=
+  (apply/filterP; eexists=> [|x /(tag_nearI x) ?]; last first).
 
 Ltac have_near F x :=
 match (type of ([filter of F] : (_ -> Prop) -> Prop))
   with (?T -> Prop) -> Prop =>
   let R := fresh "around" in
   evar (R : set T);
-  have [|x /(extensible_propertyI x) ?] := @filter_ex _ [filter of F] _ R;
+  have [|x /(tag_nearI x) ?] := @filter_ex _ [filter of F] _ R;
   [rewrite /R {R}|]; last first
 end.
 
 Ltac close_near x :=
-match goal with Hx : extensible_property x _ |- _ =>
+match goal with Hx : tag_near x _ |- _ =>
   eapply proj1; do 10?[by apply: Hx|eapply proj2] end.
 
-Tactic Notation "near=>" ident(x) := (begin_near x).
 Tactic Notation "near:" ident(x) := (close_near x).
 Tactic Notation "near" constr(F) "have" ident(x) := have_near F x.
 
@@ -454,14 +447,14 @@ Arguments near {T F P} FP _ _.
 Notation "[ 'valid_near' F ]" := (@InFilter _ F _ _) (format "[ 'valid_near'  F ]").
 Definition valid_nearE := prop_in_filterE.
 
-Lemma filterE {T : Type} {F} {FF: @Filter T F} (P : T -> Prop) :
-  (forall x, P x) -> F P.
-Proof. by move=> ?; apply/filterP; exists setT => //; apply: filterT. Qed.
+Lemma filterE {T : Type} {F : set (set T)} :
+  Filter F -> forall P : set T, (forall x, P x) -> F P.
+Proof. by move=> ???; apply/filterP; exists setT => //; apply: filterT. Qed.
 
 Lemma filter_app (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, F (fun x => P x -> Q x) -> F P -> F Q.
 Proof.
-by move=> FF P Q subPQ FP; near=> x; [suff: P x; near: x|end_near].
+move=> FF P Q subPQ FP. near=> x; [suff: P x; near: x|end_near].
 Qed.
 
 Lemma filter_app2 (T : Type) (F : set (set T)) :
@@ -519,7 +512,7 @@ let R2 := fresh "around2" in
 match goal with |- exists2 _ : set ?T * set ?U, ?F _.1 /\ ?G _.2 & _ =>
   evar (R1 : set T); evar (R2 : set U); exists (R1, R2);
   [rewrite /R1 {R1} /R2 {R2}
-  |move=> x y /(extensible_propertyI x) ? /(extensible_propertyI y) ?];
+  |move=> x y /(tag_nearI x) ? /(tag_nearI y) ?];
   last first
 end.
 Tactic Notation "near=>" ident(x) ident(y) := (begin_near2 x y).
@@ -538,7 +531,7 @@ match (type of ([filter of G] : (_ -> Prop) -> Prop))
 let R1 := fresh "around1" in
 let R2 := fresh "around2" in
   evar (R1 : set T); evar (R2 : set U); exists (R1, R2);
-  have [||x [y /(extensible_propertyI x) ? /(extensible_propertyI y) ?]] :=
+  have [||x [y /(tag_nearI x) ? /(tag_nearI y) ?]] :=
     @filter_ex2 _ _ [filter of F] [filter of G] _ _ R1 R2;
   [rewrite /R1 {R1} /R2 {R2}|rewrite /R1 {R1} /R2 {R2}|]; last first
 end
@@ -752,10 +745,10 @@ Lemma flim_snd {T U F G} {FF : Filter F} :
   (@snd T U) @ filter_prod F G --> G.
 Proof. by move=> P; apply: filter_prod2. Qed.
 
-Lemma extensible_propertyE (T : Type) (x : T) (P : Prop) :
-  extensible_property x P -> P.
+Lemma tag_nearE (T : Type) (x : T) (P : Prop) :
+  tag_near x P -> P.
 Proof. by []. Qed.
-Arguments extensible_propertyE {T} x {P}.
+Arguments tag_nearE {T} x {P}.
 
 Lemma near_map {T U} (f : T -> U) (F : set (set T)) (P : set U) :
   (\forall y \near f @ F, P y) = (\forall x \near F, P (f x)).
