@@ -1251,6 +1251,14 @@ Proof. by rewrite -closeE; apply: flim_close. Qed.
 Lemma lim_id (x : V) : lim x = x.
 Proof. by symmetry; apply: locally_flim_unique; apply/cvg_ex; exists x. Qed.
 
+Lemma flim_lim {F} {FF : ProperFilter F} (l : V) :
+  F --> l -> lim F = l.
+Proof. by move=> Fl; have Fcv := cvgP Fl; apply: flim_unique. Qed.
+
+Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
+  f @ F --> l -> lim (f @ F) = l.
+Proof. exact: flim_lim. Qed.
+
 End NormedModule1.
 
 Module Export LocallyNorm.
@@ -1295,6 +1303,14 @@ move=> /flim_norm Fy M; rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
 rewrite (ler_lt_trans _ yy') //.
 by rewrite (ler_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
+Qed.
+
+Lemma flimi_map_lim {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
+  F (fun x : T => is_prop (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
+Proof.
+move=> f_prop f_l; apply: get_unique => // l' f_l'.
+exact: flimi_unique _ f_l' f_l.
 Qed.
 
 End NormedModule2.
@@ -1617,23 +1633,6 @@ Section CompleteNormedModule1.
 
 Context {K : absRingType} {V : completeNormedModType K}.
 
-Lemma flim_lim {F} {FF : ProperFilter F} (l : V) :
-  F --> l -> lim F = l.
-Proof. by move=> Fl; have Fcv := cvgP Fl; apply: flim_unique. Qed.
-
-Context {T : Type}.
-
-Lemma flim_map_lim {F} {FF : ProperFilter F} (f : T -> V) l :
-  f @ F --> l -> lim (f @ F) = l.
-Proof. exact: flim_lim. Qed.
-
-Lemma flimi_map_lim {F} {FF : ProperFilter F} (f : T -> V -> Prop) l :
-  F (fun x => is_prop (f x)) ->
-  f `@ F --> l -> lim (f `@ F) = l.
-Proof.
-move=> f_prop f_l; apply: get_unique => // l' f_l'.
-exact: flimi_unique _ f_l' f_l.
-Qed.
 
 End CompleteNormedModule1.
 
