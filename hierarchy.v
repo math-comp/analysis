@@ -863,7 +863,7 @@ Section matrix_Complete.
 
 Variables (T : completeType) (m n : nat).
 
-Lemma mx_complete_cauchy (F : set (set 'M[T]_(m, n))) :
+Lemma mx_complete (F : set (set 'M[T]_(m, n))) :
   ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF Fc.
@@ -879,15 +879,15 @@ apply/flim_ballP => _ /posnumP[e]; near=> M.
 by end_near; apply: nearP_dep; apply: filterS (Fc _ _).
 Qed.
 
-Canonical matrix_completeType := CompleteType 'M[T]_(m, n) mx_complete_cauchy.
+Canonical matrix_completeType := CompleteType 'M[T]_(m, n) mx_complete.
 
 End matrix_Complete.
 
-Section fct_Complete.
+Section fun_Complete.
 
 Context {T : choiceType} {U : completeType}.
 
-Lemma complete_cauchy_fct (F : set (set (T -> U)))
+Lemma fun_complete (F : set (set (T -> U)))
   {FF :  ProperFilter F} : cauchy F -> cvg F.
 Proof.
 move=> Fc; have /(_ _) /complete_cauchy Ft_cvg : cauchy (@^~_ @ F).
@@ -900,9 +900,9 @@ apply/flim_ballP => _ /posnumP[e]; near=> f => [t|].
 by end_near; apply: nearP_dep; apply: filterS (Fc _ _).
 Qed.
 
-Canonical fct_completeType := CompleteType (T -> U) complete_cauchy_fct.
+Canonical fun_completeType := CompleteType (T -> U) fun_complete.
 
-End fct_Complete.
+End fun_Complete.
 
 (** ** Limit switching *)
 
