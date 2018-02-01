@@ -2308,3 +2308,67 @@ Definition sum (I : choiceType) {K : absRingType} {R : normedModType K}
    (x : I -> R) : R := lim (partial_sum x).
 
 End totally.
+
+Section NormedModule4.
+
+Context {T : Type} {K : absRingType} {V : normedModType K}.
+
+Definition bounded (A : set V) :=
+   \forall k \near +oo, A `<=` [set x | `|[x]| < k].
+
+Definition sets {T : Type} (F : set (set T)) : set (set (set T)) :=
+   filter_from F (fun A => [set B | F B /\ B `<=` A]).
+
+Global Instance sets_filter {T : Type} (F : set (set T)) :
+   Filter F -> Filter (sets F).
+Proof.
+move=> FF; apply: filter_from_filter.
+  by exists setT; apply: filterT.
+move=> A B FA FB; exists (A `&` B); first by apply: filterI.
+by move=> C [FC CAB]; split; split => // x /CAB[].
+Qed.
+
+Lemma test {F G : set (set V)} {FF : Filter F} {FG : Filter G} R :
+  (\forall P \near sets F, \forall x \near G, P `<=` R x)
+  <-> \forall x \near G, \forall y \near F, R x y.
+Proof.
+split=> [bounded_setsF|boundedF].
+  have [A FA Abnd] := bounded_setsF.
+  have /filterP[/= B GB Ax] := Abnd A (conj FA (fun _ x => x)).
+  near=> x; first by apply: filterS (FA); apply: Ax; near: x.
+  by end_near; exists x.
+have /filterP [A /= GA AR] := boundedF.
+near=> B.
+  near=> x.
+    move=> y Bt.
+    have Ax : A x by near: x.
+    have /filterP [C /= FC] := AR x Ax; apply.
+    suff: B `<=` C by apply.
+    admit.
+  end_near.
+end_near.
+Abort.
+
+Lemma test {F : set (set V)} {FF : Filter F} (y : V) :
+  (\forall P \near sets F, bounded P)
+  <-> \forall k \near +oo, \forall x \near F, `|[x]| < k.
+Proof.
+split=> [bounded_setsF|boundedF].
+  have [A FA Abnd] := bounded_setsF.
+  have [|x Ax] := Abnd A; first by split.
+  near=> k; first by apply: filterS (FA); apply: Ax; near: k.
+  by end_near; exists x.
+rewrite /bounded.
+near=> A.
+  near=> k.
+    have: F A by near: A.
+    have := near boundedF _ _.
+    admit.
+  by end_near.
+end_near => /=; rewrite near_simpl.
+exists setT.
+  apply: filterT.
+by move=> B [].
+Abort.
+
+End NormedModule4.
