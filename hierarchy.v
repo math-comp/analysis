@@ -134,24 +134,6 @@ End UniformTopology.
 
 Definition ball {M : uniformType} := Uniform.ball (Uniform.class M).
 
-Definition entourages {T : uniformType} : set (set (T * T)):=
-  filter_from [set eps : R | eps > 0]
-              (fun eps => [set xy | ball xy.1 eps xy.2]).
-
-Definition unif_cont (U V : uniformType) (f : U -> V) :=
-  (fun xy => (f xy.1, f xy.2)) @ entourages --> entourages.
-
-Lemma unif_contP (U V : uniformType) (f : U -> V) :
-  unif_cont f <-> forall e, e > 0 -> exists2 d, d > 0 &
-    forall x y, ball x d y -> ball (f x) e (f y).
-Proof.
-split=> fcont=> [e egt0|A [e egt0 e_A]]; last first.
-  by have /fcont [d ? fde] := egt0; exists d => // ? /fde ?; apply: e_A.
-have [|d dgt0 fde] := fcont [set xy | ball xy.1 e xy.2].
-  by rewrite near_simpl; exists e.
-by exists d => // x y ?; rewrite -[y]/((x, y).2) -{1}[x]/((x, y).1); apply: fde.
-Qed.
-
 Lemma locally_ballE {M : uniformType} : locally_ (@ball M) = locally.
 Proof. by case: M=> [?[?[]]]. Qed.
 
@@ -222,7 +204,31 @@ apply/locallyP; exists (eps%:num / 2) => // z bxz.
 by apply: epsP; apply: ball_splitr (cxy _) bxz.
 Qed.
 
+Definition entourages : set (set (M * M)):=
+  filter_from [set eps : R | eps > 0]
+              (fun eps => [set xy | ball xy.1 eps xy.2]).
+
+Global Instance entourages_filter : Filter entourages.
+Proof.
+apply: filter_from_filter; first by exists 1; rewrite ltr01.
+move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i j) => // [[/= x y]] bxy.
+by eexists => /=; apply: ball_ler bxy; rewrite ler_minl lerr ?orbT.
+Qed.
+
 End uniformType1.
+
+Section entoutages.
+
+Definition unif_cont (U V : uniformType) (f : U -> V) :=
+  (fun xy => (f xy.1, f xy.2)) @ entourages --> entourages.
+
+Lemma unif_contP (U V : uniformType) (f : U -> V) :
+  unif_cont f <->
+  forall e, e > 0 -> exists2 d, d > 0 &
+    forall x, ball x.1 d x.2 -> ball (f x.1) e (f x.2).
+Proof. exact: filter_fromP. Qed.
+
+End entourages.
 
 Hint Resolve ball_center.
 Hint Resolve close_refl.
