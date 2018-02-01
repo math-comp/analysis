@@ -338,7 +338,7 @@ rewrite predeq2E => FF f g; split=> [[k] |] kP; last first.
 near=> k'.
   near=> x.
     by rewrite (ler_trans (near kP _ _)) // ler_wpmul2r // ltrW //; near: k'.
-  end_near.
+  by end_near.
 by end_near; exists k.
 Qed.
 
