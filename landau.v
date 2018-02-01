@@ -324,6 +324,7 @@ Lemma scaleo (F : filter_on T) a (f : T -> V) e :
   a *: [o_F e of f] = [o_F e of a *: [o_F e of f]].
 Proof. by rewrite [RHS]littleoE. Qed.
 
+(* This should actually be bigO *)
 Definition bigOF (F : set (set T)) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|[f x]| <= k * `|[g x]|.
 
