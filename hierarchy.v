@@ -218,7 +218,7 @@ Qed.
 
 End uniformType1.
 
-Section entoutages.
+Section entourages.
 
 Definition unif_cont (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourages --> entourages.
