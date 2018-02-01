@@ -208,8 +208,9 @@ Definition entourages : set (set (M * M)):=
   filter_from [set eps : R | eps > 0]
               (fun eps => [set xy | ball xy.1 eps xy.2]).
 
-Global Instance entourages_filter : Filter entourages.
+Global Instance entourages_filter : ProperFilter entourages.
 Proof.
+apply filter_from_proper; last by exists (point,point); apply: ballxx.
 apply: filter_from_filter; first by exists 1; rewrite ltr01.
 move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i j) => // [[/= x y]] bxy.
 by eexists => /=; apply: ball_ler bxy; rewrite ler_minl lerr ?orbT.
