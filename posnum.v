@@ -36,7 +36,7 @@ Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
 Definition posnum_of (R : numDomainType) (phR : phant R) := posnum_def R.
 Identity Coercion posnum_of_id : posnum_of >-> posnum_def.
 Notation "'{posnum' R }" := (posnum_of (@Phant R))
-  (at level 0, format "'{posnum'  R }"). 
+  (at level 0, format "'{posnum'  R }").
 Definition PosNum (R : numDomainType) x x_gt0 : {posnum R} :=
   @PosNumDef _ x x_gt0.
 
