@@ -76,6 +76,136 @@ Local Open Scope ring_scope.
 Local Open Scope real_scope.
 Local Open Scope classical_set_scope.
 
+Reserved Notation "'o_ x" (at level 200, x at level 0, only parsing).
+Reserved Notation "'o" (at level 200, only parsing).
+(* Parsing *)
+Reserved Notation "[o_ x e 'of' f ]" (at level 0, x, e at level 0, only parsing).
+(*Printing*)
+Reserved Notation "[o '_' x e 'of' f ]"
+  (at level 0, x, e at level 0, format "[o '_' x  e  'of'  f ]").
+(* These notation are printing only in order to display 'o
+   without looking at the contents, use showo to dispaly *)
+Reserved Notation "''o_' x e "
+  (at level 0, x, e at level 0, format "''o_' x  e ").
+Reserved Notation "''a_o_' x e "
+  (at level 0, x, e at level 0, format "''a_o_' x  e ").
+Reserved Notation "''o' '_' x"
+  (at level 0, x at level 0, format "''o' '_' x").
+
+Reserved Notation "f = g '+o_' F h"
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  =  g  '+o_' F  h").
+Reserved Notation "f '=o_' F h"
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '=o_' F  h").
+Reserved Notation "f == g '+o_' F h"
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  ==  g  '+o_' F  h").
+Reserved Notation "f '==o_' F h"
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '==o_' F  h").
+
+Reserved Notation "[o_( x \near F ) ex 'of' fx ]"
+  (at level 0, x, ex at level 0, only parsing).
+(*Printing*)
+Reserved Notation "[o '_(' x \near F ')' ex 'of' fx ]"
+  (at level 0, x, ex at level 0,
+   format "[o '_(' x  \near  F ')'  ex  'of'  fx ]").
+(* These notation are printing only in order to display 'o
+   without looking at the contents, use showo to dispaly *)
+Reserved Notation "''o_(' x \near F ')' ex"
+  (at level 0, x, ex at level 0, format "''o_(' x  \near  F ')'  ex").
+Reserved Notation "''a_o_(' x \near F ')' ex"
+  (at level 0, x, ex at level 0, format "''a_o_(' x  \near  F ')'  ex").
+Reserved Notation "''o' '_(' x \near F ')' ex"
+  (at level 0, x, ex at level 0, format "''o' '_(' x  \near  F ')'  ex").
+
+Reserved Notation "fx = gx '+o_(' x \near F ')' hx"
+  (at level 70, no associativity,
+   gx at next level, F at level 0, hx at next level,
+   format "fx  =  gx  '+o_(' x  \near  F ')'  hx").
+Reserved Notation "fx '=o_(' x \near F ')' hx"
+  (at level 70, no associativity,
+   F at level 0, hx at next level,
+   format "fx  '=o_(' x  \near  F ')'  hx").
+Reserved Notation "fx == gx '+o_(' x \near F ')' hx"
+  (at level 70, no associativity,
+   gx at next level, F at level 0, hx at next level,
+   format "fx  ==  gx  '+o_(' x  \near  F ')'  hx").
+Reserved Notation "fx '==o_(' x \near F ')' hx"
+  (at level 70, no associativity,
+   F at level 0, hx at next level,
+   format "fx  '==o_(' x  \near  F ')'  hx").
+
+Reserved Notation "'O_ x" (at level 200, x at level 0, only parsing).
+Reserved Notation "'O" (at level 200, only parsing).
+(* Parsing *)
+Reserved Notation "[O_ x e 'of' f ]" (at level 0, x, e at level 0, only parsing).
+(*Printing*)
+Reserved Notation "[O '_' x e 'of' f ]"
+  (at level 0, x, e at level 0, format "[O '_' x  e  'of'  f ]").
+(* These notation are printing only in order to display 'O
+   without looking at the contents, use showo to dispaly *)
+Reserved Notation "''O_' x e "
+  (at level 0, x, e at level 0, format "''O_' x  e ").
+Reserved Notation "''a_O_' x e "
+  (at level 0, x, e at level 0, format "''a_O_' x  e ").
+Reserved Notation "''O' '_' x"
+  (at level 0, x at level 0, format "''O' '_' x").
+
+Reserved Notation "f = g '+O_' F h"
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  =  g  '+O_' F  h").
+Reserved Notation "f '=O_' F h"
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '=O_' F  h").
+Reserved Notation "f == g '+O_' F h"
+  (at level 70, no associativity,
+   g at next level, F at level 0, h at next level,
+   format "f  ==  g  '+O_' F  h").
+Reserved Notation "f '==O_' F h"
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '==O_' F  h").
+
+Reserved Notation "[O_( x \near F ) ex 'of' fx ]"
+  (at level 0, x, ex at level 0, only parsing).
+(*Printing*)
+Reserved Notation "[O '_(' x \near F ')' ex 'of' fx ]"
+  (at level 0, x, ex at level 0,
+   format "[O '_(' x  \near  F ')'  ex  'of'  fx ]").
+(* These notation are printing only in order to display 'o
+   without looking at the contents, use showo to dispaly *)
+Reserved Notation "''O_(' x \near F ')' ex"
+  (at level 0, x, ex at level 0, format "''O_(' x  \near  F ')'  ex").
+Reserved Notation "''a_O_(' x \near F ')' ex"
+  (at level 0, x, ex at level 0, format "''a_O_(' x  \near  F ')'  ex").
+Reserved Notation "''O' '_(' x \near F ')' ex"
+  (at level 0, x, ex at level 0, format "''O' '_(' x  \near  F ')'  ex").
+
+Reserved Notation "fx = gx '+O_(' x \near F ')' hx"
+  (at level 70, no associativity,
+   gx at next level, F at level 0, hx at next level,
+   format "fx  =  gx  '+O_(' x  \near  F ')'  hx").
+Reserved Notation "fx '=O_(' x \near F ')' hx"
+  (at level 70, no associativity,
+   F at level 0, hx at next level,
+   format "fx  '=O_(' x  \near  F ')'  hx").
+Reserved Notation "fx == gx '+O_(' x \near F ')' hx"
+  (at level 70, no associativity,
+   gx at next level, F at level 0, hx at next level,
+   format "fx  ==  gx  '+O_(' x  \near  F ')'  hx").
+Reserved Notation "fx '==O_(' x \near F ')' hx"
+  (at level 70, no associativity,
+   F at level 0, hx at next level,
+   format "fx  '==O_(' x  \near  F ')'  hx").
+
 Section function_space.
 
 Definition cst {T T' : Type} (x : T') : T -> T' := fun=> x.
@@ -180,40 +310,43 @@ Arguments the_littleo : simpl never, clear implicits.
 
 Notation mklittleo tag x := (the_littleo tag _ (PhantomF x)).
 (* Parsing *)
-Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e)
-  (at level 0, x, e at level 0, only parsing).
+Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e).
 (*Printing*)
-Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (PhantomF x) f e)
-  (at level 0, x, e at level 0, format "[o '_' x  e  'of'  f ]").
-(* These notation is printing only in order to display 'o
+Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (PhantomF x) f e).
+(* These notation are printing only in order to display 'o
    without looking at the contents, use showo to dispaly *)
-Notation "''o_' x e " := (the_littleo the_tag _ (PhantomF x) _ e)
-  (at level 0, x, e at level 0, format "''o_' x  e ").
-Notation "''a_o_' x e " := (the_littleo a_tag _ (PhantomF x) _ e)
-  (at level 0, x, e at level 0, format "''a_o_' x  e ").
-Notation "''o' '_' x" := (the_littleo gen_tag _ (PhantomF x) _)
-  (at level 0, x at level 0, format "''o' '_' x").
+Notation "''o_' x e " := (the_littleo the_tag _ (PhantomF x) _ e).
+Notation "''a_o_' x e " := (the_littleo a_tag _ (PhantomF x) _ e).
+Notation "''o' '_' x" := (the_littleo gen_tag _ (PhantomF x) _).
 
 Notation "f = g '+o_' F h" :=
-  (f%function = g%function + mklittleo the_tag F (f \- g) h)
-  (at level 70, no associativity,
-   g at next level, F at level 0, h at next level,
-   format "f  =  g  '+o_' F  h").
-Notation "f '=o_' F h" :=
-  (f%function = (mklittleo the_tag F f h))
-  (at level 70, no associativity,
-   F at level 0, h at next level,
-   format "f  '=o_' F  h").
+  (f%function = g%function + mklittleo the_tag F (f \- g) h).
+Notation "f '=o_' F h" := (f%function = (mklittleo the_tag F f h)).
 Notation "f == g '+o_' F h" :=
-  (f%function == g%function + mklittleo the_tag F (f \- g) h)
-  (at level 70, no associativity,
-   g at next level, F at level 0, h at next level,
-   format "f  ==  g  '+o_' F  h").
-Notation "f '==o_' F h" :=
-  (f%function == (mklittleo the_tag F f h))
-  (at level 70, no associativity,
-   F at level 0, h at next level,
-   format "f  '==o_' F  h").
+  (f%function == g%function + mklittleo the_tag F (f \- g) h).
+Notation "f '==o_' F h" := (f%function == (mklittleo the_tag F f h)).
+
+Notation "[o_( x \near F ) ex 'of' f ]" :=
+  (mklittleo gen_tag F (fun x => f) (fun x => ex) x).
+Notation "[o '_(' x \near F ')' ex 'of' f ]" :=
+  (the_littleo _ _ (PhantomF F) (fun x => f) (fun x => ex) x).
+Notation "''o_(' x \near F ')' ex" :=
+  (the_littleo the_tag _ (PhantomF F) _ (fun x => ex) x).
+Notation "''a_o_(' x \near F ')' ex" :=
+  (the_littleo a_tag _ (PhantomF F) _ (fun x => ex) x).
+Notation "''o' '_(' x \near F ')' ex" :=
+  (the_littleo gen_tag _ (PhantomF F) _ (fun x => ex) x).
+
+Notation "fx = gx '+o_(' x \near F ')' hx" :=
+  (forall x, fx = gx + mklittleo the_tag F
+                  ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
+Notation "fx '=o_(' x \near F ')' hx" :=
+  (forall x, fx = (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
+Notation "fx == gx '+o_(' x \near F ')' hx" :=
+  (forall x, fx == gx + mklittleo the_tag F
+                  ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
+Notation "fx '==o_(' x \near F ')' hx" :=
+  (forall x, fx == (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
 
 Lemma littleoP (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo F f g.
 Proof. exact/asboolP. Qed.
@@ -302,6 +435,16 @@ Proof. by move=> /eqadd_some_oP /eqaddoP. Qed.
 Lemma eqoE (F : filter_on T) (f : T -> V) h (e : T -> W) :
   f = mklittleo a_tag F h e -> f =o_F e.
 Proof. by move=> /eq_some_oP /eqoP. Qed.
+
+Lemma eqoEx (F : filter_on T) (f : T -> V) h (e : T -> W) :
+  (forall x, f x = mklittleo a_tag F h e x) ->
+  (f x =o_(x \near F) e x).
+Proof. by have := @eqoE F f h e; rewrite !funeqE. Qed.
+
+Lemma eqaddoEx (F : filter_on T) (f g : T -> V) h (e : T -> W) :
+  (forall x, f x = g x + mklittleo a_tag F h e x) ->
+  f x = g x +o_(x \near F) (e x).
+Proof. by have := @eqaddoE F f g h e; rewrite !funeqE. Qed.
 
 Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) :
    (f : _ -> _) =o_F g.
@@ -402,38 +545,43 @@ Arguments the_bigO : simpl never, clear implicits.
 
 Notation mkbigO tag x := (the_bigO tag _ (PhantomF x)).
 (* Parsing *)
-Notation "[O_ x e 'of' f ]" := (mkbigO gen_tag x f e)
-  (at level 0, x, e at level 0, only parsing).
+Notation "[O_ x e 'of' f ]" := (mkbigO gen_tag x f e).
 (*Printing*)
-Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (PhantomF x) f e)
-  (at level 0, x, e at level 0, format "[O '_' x  e  'of'  f ]").
-(* These notation is printing only in order to display 'o
+Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (PhantomF x) f e).
+(* These notation are printing only in order to display 'o
    without looking at the contents, use showo to display *)
-Notation "''O_' x e " := (the_bigO the_tag _ (PhantomF x) _ e)
-  (at level 0, x, e at level 0, format "''O_' x  e ").
-Notation "''a_O_' x e " := (the_bigO a_tag _ (PhantomF x) _ e)
-  (at level 0, x, e at level 0, format "''a_O_' x  e ").
-Notation "''O' '_' x" := (the_bigO gen_tag _ (PhantomF x) _)
-  (at level 0, x at level 0, format "''O' '_' x").
+Notation "''O_' x e " := (the_bigO the_tag _ (PhantomF x) _ e).
+Notation "''a_O_' x e " := (the_bigO a_tag _ (PhantomF x) _ e).
+Notation "''O' '_' x" := (the_bigO gen_tag _ (PhantomF x) _).
+
+Notation "[O_( x \near F ) e 'of' f ]" :=
+  (mkbigO gen_tag F (fun x => f) (fun x => e) x).
+Notation "[O '_(' x \near F ')' e 'of' f ]" :=
+  (the_bigO _ _ (PhantomF F) (fun x => f) (fun x => e) x).
+Notation "''O_(' x \near F ')' e" :=
+  (the_bigO the_tag _ (PhantomF F) _ (fun x => e) x).
+Notation "''a_O_(' x \near F ')' e" :=
+  (the_bigO a_tag _ (PhantomF F) _ (fun x => e) x).
+Notation "''O' '_(' x \near F ')' e" :=
+  (the_bigO gen_tag _ (PhantomF F) _ (fun x => e) x).
 
 Notation "f = g '+O_' F h" :=
-  (f%function = g%function + mkbigO the_tag F (f \- g) h)
-  (at level 70, no associativity,
-   g at next level, F at level 0, h at next level,
-   format "f  =  g  '+O_' F  h").
-Notation "f '=O_' F h" := (f%function = mkbigO the_tag F f h)
-  (at level 70, no associativity,
-   F at level 0, h at next level,
-   format "f  '=O_' F  h").
+  (f%function = g%function + mkbigO the_tag F (f \- g) h).
+Notation "f '=O_' F h" := (f%function = mkbigO the_tag F f h).
 Notation "f == g '+O_' F h" :=
-  (f%function == g%function + mkbigO the_tag F (f \- g) h)
-  (at level 70, no associativity,
-   g at next level, F at level 0, h at next level,
-   format "f  ==  g  '+O_' F  h").
-Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h)
-  (at level 70, no associativity,
-   F at level 0, h at next level,
-   format "f  '==O_' F  h").
+  (f%function == g%function + mkbigO the_tag F (f \- g) h).
+Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h).
+
+Notation "fx = gx '+O_(' x \near F ')' hx" :=
+  (forall x, fx = gx + mkbigO the_tag F
+                  ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
+Notation "fx '=O_(' x \near F ')' hx" :=
+  (forall x, fx = (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
+Notation "fx == gx '+O_(' x \near F ')' hx" :=
+  (forall x, fx == gx + mkbigO the_tag F
+                  ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
+Notation "fx '==O_(' x \near F ')' hx" :=
+  (forall x, fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 
 Lemma bigOP (F : set (set T)) (g : T -> W) (f : {O_F g}) : bigO F f g.
 Proof. exact/asboolP. Qed.
@@ -543,6 +691,16 @@ Lemma eqOE (F : filter_on T) (f : T -> V) h (e : T -> W) :
   f = mkbigO a_tag F h e -> f =O_F e.
 Proof. by move=> /eq_some_OP /eqOP. Qed.
 
+Lemma eqOEx (F : filter_on T) (f : T -> V) h (e : T -> W) :
+  (forall x, f x = mkbigO a_tag F h e x) ->
+  (f x =O_(x \near F) e x).
+Proof. by have := @eqOE F f h e; rewrite !funeqE. Qed.
+
+Lemma eqaddOEx (F : filter_on T) (f g : T -> V) h (e : T -> W) :
+  (forall x, f x = g x + mkbigO a_tag F h e x) ->
+  f x = g x +O_(x \near F) (e x).
+Proof. by have := @eqaddOE F f g h e; rewrite !funeqE. Qed.
+
 Lemma eqoO (F : filter_on T) (f : T -> V) (e : T -> W) :
   [o_F e of f] =O_F e.
 Proof. by apply/eqOP; exists 1 => //; apply: littleoP. Qed.
@@ -585,92 +743,85 @@ Local Notation PhantomF x := (Phantom _ [filter of x]).
 
 Notation mklittleo tag x := (the_littleo tag _ (PhantomF x)).
 (* Parsing *)
-Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e)
-  (at level 0, x, e at level 0, only parsing).
-Notation "'o_ x" := (the_littleo _ _ (PhantomF x) _)
-  (at level 200, x at level 0, only parsing).
-Notation "'o" := (the_littleo _ _ _ _) (at level 200, only parsing).
+Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e).
+Notation "[o_( x \near F ) e 'of' f ]" :=
+  (mklittleo gen_tag F (fun x => f) (fun x => e) x).
+Notation "'o_ x" := (the_littleo _ _ (PhantomF x) _).
+Notation "'o" := (the_littleo _ _ _ _).
 (*Printing*)
-Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (Phantom _ x) f e)
-  (at level 0, x, e at level 0, format "[o '_' x  e  'of'  f ]").
-(* These notation is printing only in order to display 'o
+Notation "[o '_(' x \near F ')' e 'of' f ]" :=
+  (the_littleo _ _ (PhantomF F) (fun x => f) (fun x => e) x).
+Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (Phantom _ x) f e).
+(* These notation are printing only in order to display 'o
    without looking at the contents, use showo to dispaly *)
-Notation "''o_' x e " := (the_littleo the_tag _ (Phantom _ x) _ e)
-  (at level 0, x, e at level 0, format "''o_' x  e ").
-Notation "''a_o_' x e " := (the_littleo a_tag _ (Phantom _ x) _ e)
-  (at level 0, x, e at level 0, format "''a_o_' x  e ").
-Notation "''o' '_' x" := (the_littleo gen_tag _ (Phantom _ x) _)
-  (at level 0, x at level 0, format "''o' '_' x").
+Notation "''o_' x e " := (the_littleo the_tag _ (Phantom _ x) _ e).
+Notation "''a_o_' x e " := (the_littleo a_tag _ (Phantom _ x) _ e).
+Notation "''o' '_' x" := (the_littleo gen_tag _ (Phantom _ x) _).
+
+Notation "''o_(' x \near F ')' e" :=
+  (the_littleo the_tag _ (PhantomF F) _ (fun x => e) x).
+Notation "''a_o_(' x \near F ')' e" :=
+  (the_littleo a_tag _ (PhantomF F) _ (fun x => e) x).
+Notation "''o' '_(' x \near F ')' e" :=
+  (the_littleo gen_tag _ (PhantomF F) _ (fun x => e) x).
 
 Notation mkbigO tag x := (the_bigO tag _ (PhantomF x)).
 (* Parsing *)
-Notation "[O_ x e 'of' f ]" := (mkbigO gen_tag x f e)
-  (at level 0, x, e at level 0, only parsing).
-Notation "'O_ x" := (the_bigO _ _ (PhantomF x) _)
-  (at level 200, x at level 0, only parsing).
-Notation "'O" := (the_bigO _ _ _ _) (at level 200, only parsing).
+Notation "[O_ x e 'of' f ]" := (mkbigO gen_tag x f e).
+Notation "[O_( x \near F ) e 'of' f ]" :=
+  (mkbigO gen_tag F (fun x => f) (fun x => e) x).
+Notation "'O_ x" := (the_bigO _ _ (PhantomF x) _).
+Notation "'O" := (the_bigO _ _ _ _).
 (*Printing*)
-Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (Phantom _ x) f e)
-  (at level 0, x, e at level 0, format "[O '_' x  e  'of'  f ]").
-(* These notation is printing only in order to display 'o
+Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (Phantom _ x) f e).
+Notation "[O '_(' x \near F ')' e 'of' f ]" :=
+  (the_bigO _ _ (PhantomF F) (fun x => f) (fun x => e) x).
+(* These notation are printing only in order to display 'o
    without looking at the contents, use showo to dispaly *)
-Notation "''O_' x e " := (the_bigO the_tag _ (Phantom _ x) _ e)
-  (at level 0, x, e at level 0, format "''O_' x  e ").
-Notation "''a_O_' x e " := (the_bigO a_tag _ (Phantom _ x) _ e)
-  (at level 0, x, e at level 0, format "''a_O_' x  e ").
-Notation "''O' '_' x" := (the_bigO gen_tag _ (Phantom _ x) _)
-  (at level 0, x at level 0, format "''O' '_' x").
+Notation "''O_' x e " := (the_bigO the_tag _ (Phantom _ x) _ e).
+Notation "''a_O_' x e " := (the_bigO a_tag _ (Phantom _ x) _ e).
+Notation "''O' '_' x" := (the_bigO gen_tag _ (Phantom _ x) _).
 
+Notation "''O_(' x \near F ')' e" :=
+  (the_bigO the_tag _ (PhantomF F) _ (fun x => e) x).
+Notation "''a_O_(' x \near F ')' e" :=
+  (the_bigO a_tag _ (PhantomF F) _ (fun x => e) x).
+Notation "''O' '_(' x \near F ')' e" :=
+  (the_bigO gen_tag _ (PhantomF F) _ (fun x => e) x).
 
 Notation "f = g '+o_' F h" :=
-  (f%function = g%function + mklittleo the_tag F (f \- g) h)
-  (at level 70, no associativity,
-   g at next level, F at level 0, h at next level,
-   format "f  =  g  '+o_' F  h",
-   only parsing).
-Notation "f '=o_' F h" :=
-  (f%function = (mklittleo the_tag F f h))
-  (at level 70, no associativity,
-   F at level 0, h at next level,
-   format "f  '=o_' F  h",
-   only parsing).
+  (f%function = g%function + mklittleo the_tag F (f \- g) h).
+Notation "f '=o_' F h" := (f%function = (mklittleo the_tag F f h)).
+Notation "f == g '+o_' F h" :=
+  (f%function == g%function + mklittleo the_tag F (f \- g) h).
+Notation "f '==o_' F h" := (f%function == (mklittleo the_tag F f h)).
+Notation "fx = gx '+o_(' x \near F ')' hx" :=
+  (forall x, fx = gx + mklittleo the_tag F
+                  ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
+Notation "fx '=o_(' x \near F ')' hx" :=
+  (forall x, fx = (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
+Notation "fx == gx '+o_(' x \near F ')' hx" :=
+  (forall x, fx == gx + mklittleo the_tag F
+                  ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
+Notation "fx '==o_(' x \near F ')' hx" :=
+  (forall x, fx == (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
 
 Notation "f = g '+O_' F h" :=
-  (f%function = g%function + mkbigO the_tag F (f \- g) h)
-  (at level 70, no associativity,
-   g at next level, F at level 0, h at next level,
-   format "f  =  g  '+O_' F  h",
-   only parsing).
-Notation "f '=O_' F h" := (f%function = mkbigO the_tag F f h)
-  (at level 70, no associativity,
-   F at level 0, h at next level,
-   format "f  '=O_' F  h",
-   only parsing).
-
-Notation "f == g '+o_' F h" :=
-  (f%function == g%function + mklittleo the_tag F (f \- g) h)
-  (at level 70, no associativity,
-   g at next level, F at level 0, h at next level,
-   format "f  ==  g  '+o_' F  h",
-   only parsing).
-Notation "f '==o_' F h" :=
-  (f%function == (mklittleo the_tag F f h))
-  (at level 70, no associativity,
-   F at level 0, h at next level,
-   format "f  '==o_' F  h",
-   only parsing).
-
+  (f%function = g%function + mkbigO the_tag F (f \- g) h).
+Notation "f '=O_' F h" := (f%function = mkbigO the_tag F f h).
 Notation "f == g '+O_' F h" :=
-  (f%function == g%function + mkbigO the_tag F (f \- g) h)
-  (at level 70, no associativity,
-   g at next level, F at level 0, h at next level,
-   format "f  ==  g  '+O_' F  h",
-   only parsing).
-Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h)
-  (at level 70, no associativity,
-   F at level 0, h at next level,
-   format "f  '==O_' F  h",
-   only parsing).
+  (f%function == g%function + mkbigO the_tag F (f \- g) h).
+Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h).
+Notation "fx = gx '+O_(' x \near F ')' hx" :=
+  (forall x, fx = gx + mkbigO the_tag F
+                  ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
+Notation "fx '=O_(' x \near F ')' hx" :=
+  (forall x, fx = (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
+Notation "fx == gx '+O_(' x \near F ')' hx" :=
+  (forall x, fx == gx + mkbigO the_tag F
+                  ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
+Notation "fx '==O_(' x \near F ')' hx" :=
+  (forall x, fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 
 Hint Extern 0 (_ = 'o__ _) => apply: eqoE; reflexivity : core.
 Hint Extern 0 (_ = 'O__ _) => apply: eqOE; reflexivity : core.
@@ -923,7 +1074,7 @@ Context (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
 (* - locally lipshitz => continuous at a point *)
 (* - lipizhitz => uniformly continous *)
 Lemma linear_continuous (f: {linear U -> V | GRing.Scale.op s_law}) :
-  (f : _ -> _) =O_(0 : U) (cst (1 : R^o)) -> continuous f.
+  (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
 move=> /eqOP [_/posnumP[l]].
 rewrite /= => /locally_normP [_/posnumP[d]]; rewrite /cst /=.

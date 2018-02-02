@@ -18,18 +18,22 @@ Context {K : absRingType} {V W : normedModType K}.
 
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) =>
-       f = cst (f (lim F)) + df \o center (lim F)
-           +o_F (center (lim F))) : _ -> _).
+      f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
 Canonical diff_linear F phF f := [linear of @diff F phF f].
 Canonical diff_raddf F phF f := [additive of @diff F phF f].
 
 Notation "''d_' F" := (@diff _ (Phantom _ [filter of F]))
   (at level 0, F at level 0, format "''d_' F").
 
-Definition differentiable_def (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
-   f = cst (f (lim F)) + 'd_F f \o center (lim F) +o_F (center (lim F)).
+Definition differentiable_def (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) := (f = cst (f (lim F)) + 'd_F f \o center (lim F) +o_F (center (lim F))).
+
 
 Notation differentiable F := (@differentiable_def _ (Phantom _ [filter of F])).
+
+Lemma diffP (F : filter_on V) (f : V -> W) :
+  differentiable F f <->
+  (f x = f (lim F) + 'd_F f (x - lim F) +o_(x \near F) (x - lim F)).
+Proof. by rewrite /differentiable_def funeqE. Qed.
 
 Lemma littleo_shift (y x : V) (f : V -> W) (e : V -> V) :
   littleo (locally y) (f \o shift (x - y)) (e \o shift (x - y)) ->
@@ -40,7 +44,7 @@ exact: filterS (fe _ [gt0 of eps%:num]).
 Qed.
 
 Lemma littleo_center0 (x : V) (f : V -> W) (e : V -> V) :
-  [o_x e of f] = [o_(0 : V) (e \o shift x) of f \o shift x] \o center x.
+  [o_x e of f] = [o_ (0 : V) (e \o shift x) of f \o shift x] \o center x.
 Proof.
 rewrite /the_littleo /insubd /=; have [g /= _ <-{f}|/asboolP Nfe] /= := insubP.
   rewrite insubT //= ?comp_shiftK //; apply/asboolP; apply: (@littleo_shift x).
@@ -49,14 +53,17 @@ rewrite insubF //; apply/asboolP => fe; apply: Nfe.
 by apply: (@littleo_shift 0); rewrite subr0.
 Qed.
 
-Lemma diff_locally (x : V) (f : V -> W) : differentiable x f ->
-  f \o shift x = cst (f x) + 'd_x f +o_(0 : V) id.
+Lemma diff_locallyx (x : V) (f : V -> W) : differentiable x f ->
+  f (h + x) = f x + 'd_x f h +o_(h \near 0 : V) h.
 Proof.
-move=> dxf; apply: eqaddoE; rewrite funeqE {1}dxf {dxf} => h /=.
-congr (_ + _ + _); rewrite ?lim_id ?addrK //=.
-rewrite littleo_center0 /= ?addrK; congr (the_littleo _ _ _ _ _).
-by rewrite funeqE => k /=; rewrite addrK.
+move=> /diffP dxf; apply: eqaddoEx => h /=; rewrite dxf lim_id addrK /=.
+congr (_ + _ + _); rewrite littleo_center0 /= addrK.
+by congr ('o); rewrite funeqE => k /=; rewrite addrK.
 Qed.
+
+Lemma diff_locally  (x : V) (f : V -> W) : differentiable x f ->
+  (f \o shift x = cst (f x) + 'd_x f +o_ (0 : V) id).
+Proof. by move=> /diff_locallyx fhx; rewrite funeqE. Qed.
 
 End Differential.
 
@@ -80,7 +87,7 @@ Context {V W : normedModType R}.
 - the identity is a littleo of 1
 *)
 Lemma diff_continuous (x : V) (f : V -> W) :
-  differentiable x f -> 'd_x f =O_(0 : V) (cst (1 : R^o)) ->
+  differentiable x f -> ('d_x f : _ -> _) =O_ (0 : V) (cst (1 : R^o)) ->
   {for x, continuous f}.
 Proof.
 move=> dxf dxfO; have /diff_locally := dxf; rewrite -addrA.
@@ -101,7 +108,7 @@ Section diff_locally_converse_tentative.
 (* Prove more generally that if f @ x --> 0 then 'O_x f x = 0. *)
 (* statement: Lemma littleo_id (f : R^o -> R^o) (h : _ -> R^o) (x : R^o) :
   f @ x --> (0 : R^o) -> [O_(x : R^o) f of h] x = 0.*)
-Lemma littleo_id0 (h : _ -> R^o) : [o_(0 : R^o) id of h] 0 = 0.
+Lemma littleo_id0 (h : _ -> R^o) : [o_ (0 : R^o) id of h] 0 = 0.
 Proof.
 set k := 'o _; have /(_ _ [gt0 of 1])/= := littleoP [littleo of k].
 by move=> /locally_singleton; rewrite mul1r normm0 normm_le0 => /eqP.
@@ -112,7 +119,7 @@ Qed.
 (* and thus a littleo of 1, and so is id *)
 (* This can be generalized to any dimension *)
 Lemma diff_locally_converse_part1 (f : R^o -> R^o) (a b : R^o) (x : R^o) :
-  f \o shift x = cst a + b *: idfun +o_(0 : R^o) id -> f x = a.
+  f \o shift x = cst a + b *: idfun +o_ (0 : R^o) id -> f x = a.
 Proof.
 rewrite funeqE => /(_ 0) /=; rewrite add0r => ->.
 by rewrite -[LHS]/(_ 0 + _ 0 + _ 0) /cst [X in a + X]scaler0 littleo_id0 !addr0.
@@ -120,19 +127,35 @@ Qed.
 
 End diff_locally_converse_tentative.
 
+Definition derive (f : V -> W) a v :=
+  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ (0 : R^o)).
 
-Section derivative_univariate.
-(* high-school definition of univariate derivative *)
-
-Definition derivative1 f a := lim ((fun h => (f (a + h) - f a) / h) @ (0 : R^o)).
-
-Lemma derivative1E f a : differentiable a f ->
-  derivative1 f a =
-  @jacobian 0 0 _ (fun x => (f (x ord0 ord0))%:M) a%:M ord0 ord0.
+Lemma deriveE (f : V -> W) (a v : V) :
+  differentiable a f -> derive f a v = 'd_a f v.
 Proof.
+rewrite /derive /jacobian => /diff_locally -> /=; set k := 'o _.
+evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
+  rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
+  by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
 Admitted.
-
-End derivative_univariate.
 
 End DifferentialR.
 
+Section DifferentialR2.
+
+Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
+  differentiable a f -> derive f a v = v *m jacobian f a.
+Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
+
+Definition derivative1 f (a : R) := lim ((fun h => (f (h + a) - f a) / h) @ (0 : R^o)).
+
+Lemma derivative1E f a : differentiable a (f : R^o -> R^o) ->
+  derivative1 f a = 'd_a f 1.
+Proof.
+move=> /deriveE <-; rewrite /derivative1 /derive.
+set d := (fun _ : R => _); set d' := (fun _ : R => _).
+suff -> : d = d' by []; rewrite funeqE=> h; rewrite /d /d' /=.
+by rewrite mulrC [h%:A](mulr1).
+Qed.
+
+End DifferentialR2.
