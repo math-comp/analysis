@@ -338,15 +338,15 @@ Notation "''o' '_(' x \near F ')' ex" :=
   (the_littleo gen_tag _ (PhantomF F) _ (fun x => ex) x).
 
 Notation "fx = gx '+o_(' x \near F ')' hx" :=
-  (forall x, fx = gx + mklittleo the_tag F
+  (fx = gx + mklittleo the_tag F
                   ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
 Notation "fx '=o_(' x \near F ')' hx" :=
-  (forall x, fx = (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
+  (fx = (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
 Notation "fx == gx '+o_(' x \near F ')' hx" :=
-  (forall x, fx == gx + mklittleo the_tag F
+  (fx == gx + mklittleo the_tag F
                   ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
 Notation "fx '==o_(' x \near F ')' hx" :=
-  (forall x, fx == (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
+  (fx == (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
 
 Lemma littleoP (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo F f g.
 Proof. exact/asboolP. Qed.
@@ -438,12 +438,12 @@ Proof. by move=> /eq_some_oP /eqoP. Qed.
 
 Lemma eqoEx (F : filter_on T) (f : T -> V) h (e : T -> W) :
   (forall x, f x = mklittleo a_tag F h e x) ->
-  (f x =o_(x \near F) e x).
+  (forall x, f x =o_(x \near F) e x).
 Proof. by have := @eqoE F f h e; rewrite !funeqE. Qed.
 
 Lemma eqaddoEx (F : filter_on T) (f g : T -> V) h (e : T -> W) :
   (forall x, f x = g x + mklittleo a_tag F h e x) ->
-  f x = g x +o_(x \near F) (e x).
+  (forall x, f x = g x +o_(x \near F) (e x)).
 Proof. by have := @eqaddoE F f g h e; rewrite !funeqE. Qed.
 
 Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) :
@@ -573,15 +573,15 @@ Notation "f == g '+O_' F h" :=
 Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h).
 
 Notation "fx = gx '+O_(' x \near F ')' hx" :=
-  (forall x, fx = gx + mkbigO the_tag F
+  (fx = gx + mkbigO the_tag F
                   ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
 Notation "fx '=O_(' x \near F ')' hx" :=
-  (forall x, fx = (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
+  (fx = (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 Notation "fx == gx '+O_(' x \near F ')' hx" :=
-  (forall x, fx == gx + mkbigO the_tag F
+  (fx == gx + mkbigO the_tag F
                   ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
 Notation "fx '==O_(' x \near F ')' hx" :=
-  (forall x, fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
+  (fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 
 Lemma bigOP (F : set (set T)) (g : T -> W) (f : {O_F g}) : bigO F f g.
 Proof. exact/asboolP. Qed.
@@ -693,12 +693,12 @@ Proof. by move=> /eq_some_OP /eqOP. Qed.
 
 Lemma eqOEx (F : filter_on T) (f : T -> V) h (e : T -> W) :
   (forall x, f x = mkbigO a_tag F h e x) ->
-  (f x =O_(x \near F) e x).
+  (forall x, f x =O_(x \near F) e x).
 Proof. by have := @eqOE F f h e; rewrite !funeqE. Qed.
 
 Lemma eqaddOEx (F : filter_on T) (f g : T -> V) h (e : T -> W) :
   (forall x, f x = g x + mkbigO a_tag F h e x) ->
-  f x = g x +O_(x \near F) (e x).
+  (forall x, f x = g x +O_(x \near F) (e x)).
 Proof. by have := @eqaddOE F f g h e; rewrite !funeqE. Qed.
 
 Lemma eqoO (F : filter_on T) (f : T -> V) (e : T -> W) :
@@ -796,15 +796,15 @@ Notation "f == g '+o_' F h" :=
   (f%function == g%function + mklittleo the_tag F (f \- g) h).
 Notation "f '==o_' F h" := (f%function == (mklittleo the_tag F f h)).
 Notation "fx = gx '+o_(' x \near F ')' hx" :=
-  (forall x, fx = gx + mklittleo the_tag F
+  (fx = gx + mklittleo the_tag F
                   ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
 Notation "fx '=o_(' x \near F ')' hx" :=
-  (forall x, fx = (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
+  (fx = (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
 Notation "fx == gx '+o_(' x \near F ')' hx" :=
-  (forall x, fx == gx + mklittleo the_tag F
+  (fx == gx + mklittleo the_tag F
                   ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
 Notation "fx '==o_(' x \near F ')' hx" :=
-  (forall x, fx == (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
+  (fx == (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
 
 Notation "f = g '+O_' F h" :=
   (f%function = g%function + mkbigO the_tag F (f \- g) h).
@@ -813,15 +813,15 @@ Notation "f == g '+O_' F h" :=
   (f%function == g%function + mkbigO the_tag F (f \- g) h).
 Notation "f '==O_' F h" := (f%function == mkbigO the_tag F f h).
 Notation "fx = gx '+O_(' x \near F ')' hx" :=
-  (forall x, fx = gx + mkbigO the_tag F
+  (fx = gx + mkbigO the_tag F
                   ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
 Notation "fx '=O_(' x \near F ')' hx" :=
-  (forall x, fx = (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
+  (fx = (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 Notation "fx == gx '+O_(' x \near F ')' hx" :=
-  (forall x, fx == gx + mkbigO the_tag F
+  (fx == gx + mkbigO the_tag F
                   ((fun x => fx) \- (fun x => gx%R)) (fun x => hx) x).
 Notation "fx '==O_(' x \near F ')' hx" :=
-  (forall x, fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
+  (fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 
 Hint Extern 0 (_ = 'o__ _) => apply: eqoE; reflexivity : core.
 Hint Extern 0 (_ = 'O__ _) => apply: eqOE; reflexivity : core.

@@ -17,7 +17,7 @@ Section Differential.
 Context {K : absRingType} {V W : normedModType K}.
 
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
-  (get (fun (df : {linear V -> W}) =>
+  (get (fun (df : {linear V -> W}) => forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
 Canonical diff_linear F phF f := [linear of @diff F phF f].
 Canonical diff_raddf F phF f := [additive of @diff F phF f].
@@ -25,14 +25,16 @@ Canonical diff_raddf F phF f := [additive of @diff F phF f].
 Notation "''d_' F" := (@diff _ (Phantom _ [filter of F]))
   (at level 0, F at level 0, format "''d_' F").
 
-Definition differentiable_def (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) := (f = cst (f (lim F)) + 'd_F f \o center (lim F) +o_F (center (lim F))).
+Definition differentiable_def (F : filter_on V) (_ : phantom (set (set V)) F)
+  (f : V -> W) :=
+  f = cst (f (lim F)) + 'd_F f \o center (lim F) +o_F (center (lim F)).
 
 
 Notation differentiable F := (@differentiable_def _ (Phantom _ [filter of F])).
 
 Lemma diffP (F : filter_on V) (f : V -> W) :
   differentiable F f <->
-  (f x = f (lim F) + 'd_F f (x - lim F) +o_(x \near F) (x - lim F)).
+  (forall x, f x = f (lim F) + 'd_F f (x - lim F) +o_(x \near F) (x - lim F)).
 Proof. by rewrite /differentiable_def funeqE. Qed.
 
 Lemma littleo_shift (y x : V) (f : V -> W) (e : V -> V) :
@@ -54,7 +56,7 @@ by apply: (@littleo_shift 0); rewrite subr0.
 Qed.
 
 Lemma diff_locallyx (x : V) (f : V -> W) : differentiable x f ->
-  f (h + x) = f x + 'd_x f h +o_(h \near 0 : V) h.
+  forall h, f (h + x) = f x + 'd_x f h +o_(h \near 0 : V) h.
 Proof.
 move=> /diffP dxf; apply: eqaddoEx => h /=; rewrite dxf lim_id addrK /=.
 congr (_ + _ + _); rewrite littleo_center0 /= addrK.
