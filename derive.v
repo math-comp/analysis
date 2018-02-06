@@ -233,7 +233,37 @@ rewrite /derive /jacobian => /diff_locally -> /=; set k := 'o _.
 evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
   by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
-Admitted.
+apply: flim_map_lim.
+pose g1 : R -> W := fun h => (h^-1 * h) *: 'd_a f v.
+pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
+rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: lim_add.
+  rewrite -(scale1r (_ _ v)); apply: lim_scalel => /= X [e e0].
+  rewrite /AbsRing_ball /ball_ /= => eX.
+  apply/locallyP; rewrite locally_E.
+  exists e => //= x _ /eqP x0.
+  apply eX; by rewrite mulVr // subrr absr0.
+rewrite /g2.
+have [/eqP ->|v0] := boolP (v == 0).
+  rewrite (_ : (fun _ => _) = cst 0); first exact: lim_cst.
+  rewrite funeqE => ?; by rewrite /cst /= scaler0 /k littleo_lim0 // scaler0.
+apply/flim_normP => e e0.
+rewrite nearE /=; apply/locallyP; rewrite locally_E.
+have /(littleoP [littleo of k]) /locallyP[i i0 Hi] : 0 < e / (2 * `|[v]|).
+  by rewrite divr_gt0 // pmulr_rgt0 // normm_gt0.
+exists (i / `|[v]|); first by rewrite divr_gt0 // normm_gt0.
+move=> /= j; rewrite /ball /= /AbsRing_ball /ball_ add0r absrN.
+rewrite ltr_pdivl_mulr ?normm_gt0 // => jvi /eqP j0.
+rewrite add0r normmN (ler_lt_trans (ler_normmZ _ _)) //.
+rewrite -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
+have /Hi/ler_lt_trans -> // : ball 0 i (j *: v).
+  by rewrite -ball_normE /ball_ add0r normmN (ler_lt_trans _ jvi) // ler_normmZ.
+rewrite -(mulrC e) -mulrA -ltr_pdivl_mull // mulrA mulVr ?unitfE ?gtr_eqF //.
+have -> : `|j^-1| = (/ `|j|)%coqR by rewrite -RinvE // -Rabs_Rinv; exact/eqP.
+rewrite RinvE ?absr_eq0 // invrK mul1r.
+rewrite -ltr_pdivl_mull ?invrK ?invr_gt0 ?pmulr_rgt0 // ?normm_gt0 //.
+rewrite (ler_lt_trans (ler_normmZ _ _)) // mulrC -mulrA.
+by rewrite ltr_pmull // ?pmulr_rgt0 ?normm_gt0 // ?normr_gt0 // ltr1n.
+Qed.
 
 End DifferentialR.
 
@@ -279,6 +309,7 @@ Lemma littleo_linear0 (V' W' : normedModType R) (f : {linear V' -> W'})
 Proof.
 rewrite littleo_center0 comp_centerK (comp_centerK x id).
 suff -> : [o_ (0 : V') id of f] = cst 0 by [].
+(* NB(rei): should this be a lemma? *)
 rewrite /the_littleo /insubd; case: (insubP _) => // _ /asboolP lino -> {x}.
 rewrite /littleo in lino.
 suff f0 : forall e, e > 0 -> forall x, `|[x]| > 0 -> `|[f x]| <= e * `|[x]|.
