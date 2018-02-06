@@ -146,6 +146,41 @@ Qed.
 
 End diff_locally_converse_tentative.
 
+Section lim_lemmas.
+
+Variables X Y : normedModType R.
+
+Lemma lim_add (F : filter_on X) (f g : X -> Y) (a b : Y) :
+  f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
+Proof.
+move=> fa fb; apply/flim_normP => _/posnumP[e].
+rewrite !near_simpl; near=> x.
+  rewrite opprD addrAC addrA -(addrA _ _ b) (addrC _ b) (splitr e%:num).
+  rewrite (ler_lt_trans (ler_normm_add _ _)) // ltr_add // ?normmN; near: x.
+end_near; by [move/flim_normP : fa; apply | move/flim_normP : fb; apply].
+Qed.
+
+Lemma lim_cst (F : filter_on X) (k : Y) : cst k @ F --> k.
+Proof.
+apply/flim_normP => _/posnumP[e].
+rewrite nearE /cst /= subrr normm0; apply: (filterS _ filterT); by move=> *.
+Qed.
+
+Lemma lim_scalel (F : filter_on X) (f : X -> R^o) (k : Y) (a : R^o) :
+  f @ F --> a -> (fun x => (f x) *: k) @ F --> a *: k.
+Proof.
+move=> /flim_normP fa.
+have [/eqP ->|k0] := boolP (k == 0).
+  rewrite scaler0 (_ : (fun x : _ => _) = cst 0); first exact: lim_cst.
+  by rewrite funeqE => x; rewrite /cst scaler0.
+apply/flim_normP => _/posnumP[e]; rewrite !near_simpl; near=> x.
+  rewrite -scalerBl (ler_lt_trans (ler_normmZ _ _)) //.
+  rewrite -ltr_pdivl_mulr ?normm_gt0 //; near: x.
+end_near; by move: fa; apply; rewrite divr_gt0 // normm_gt0.
+Qed.
+
+End lim_lemmas.
+
 Definition derive (f : V -> W) a v :=
   lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ (0 : R^o)).
 
@@ -156,6 +191,12 @@ rewrite /derive /jacobian => /diff_locally -> /=; set k := 'o _.
 evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
   by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
+apply: (@flim_map_lim _ _ _ (locally (0: R))).
+pose g1 : R -> W := fun h => (h^-1 * h) *: 'd_a f v.
+pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
+rewrite (_ : g = g1 + g2) ?funeqE //.
+rewrite -(addr0 (_ _ v)); apply: (@lim_add _ _ (locally_filter_on (0 : R^o))).
+  rewrite -(scale1r (_ _ v)); apply: lim_scalel => /=.
 Admitted.
 
 End DifferentialR.
