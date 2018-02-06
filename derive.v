@@ -129,7 +129,6 @@ End littleo_lemmas.
 Section diff_locally_converse_tentative.
 (* if there exist A and B s.t. f(a + h) = A + B h + o(h) then
    f is differentiable at a, A = f(a) and B = f'(a) *)
-
 (* this is a consequence of diff_continuous and eqolim0 *)
 (* indeed the differential beeing b *: idfun is locally bounded *)
 (* and thus a littleo of 1, and so is id *)
@@ -199,20 +198,24 @@ Admitted.
 End DifferentialR.
 
 Section DifferentialR2.
+Implicit Type (V : normedModType R).
 
 Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
   differentiable a f -> derive f a v = v *m jacobian f a.
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
-Definition derivative1 f (a : R) := lim ((fun h => (f (h + a) - f a) / h) @ (0 : R^o)).
+Definition derive1 V (f : R -> V) (a : R) :=
+   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ (0 : R^o)).
 
-Lemma derivative1E f a : differentiable a (f : R^o -> R^o) ->
-  derivative1 f a = 'd_a f 1.
+Lemma derive1E V (f : R -> V) a : derive1 f a = derive (f : R^o -> _) a 1.
 Proof.
-move=> /deriveE <-; rewrite /derivative1 /derive.
-set d := (fun _ : R => _); set d' := (fun _ : R => _).
-suff -> : d = d' by []; rewrite funeqE=> h; rewrite /d /d' /=.
-by rewrite mulrC [h%:A](mulr1).
+rewrite /derive1 /derive; set d := (fun _ : R => _); set d' := (fun _ : R => _).
+by suff -> : d = d' by []; rewrite funeqE=> h; rewrite /d /d' /= [h%:A](mulr1).
 Qed.
+
+(* Is it necessary? *)
+Lemma derive1E' V f a : differentiable a (f : R^o -> V) ->
+  derive1 f a = 'd_a f 1.
+Proof. by move=> ?; rewrite derive1E deriveE. Qed.
 
 End DifferentialR2.
