@@ -103,12 +103,11 @@ apply/eqolim0P; apply: (flim_trans (linear_continuous _ _ _)) => //.
 by rewrite linear0.
 Qed.
 
-Section diff_locally_converse_tentative.
-(* if there exist A and B s.t. f(a + h) = A + B h + o(h) then
-   f is differentiable at a, A = f(a) and B = f'(a) *)
+Section littleo_lemmas.
 
-Lemma normm_littleo x (f : _ -> R^o) :
-  `|[ [o_x (cst 1 : R^o -> R^o) of f] x ]| = 0.
+Variables X Y Z : normedModType R.
+
+Lemma normm_littleo x (f : X -> Y) : `|[ [o_x (cst 1 : X -> R^o) of f] x ]| = 0.
 Proof.
 rewrite /the_littleo val_insubd; case: ifPn => [/asboolP H|*]; last first.
   by rewrite normm0.
@@ -120,19 +119,19 @@ rewrite invrM ?unitfE ?normm_eq0 // -2!mulrA mulVr ?unitfE ?normm_eq0 // mulr1.
 by rewrite ler_pmulr // invr_ge1 // ?unitfE // (@ler_nat _ _ 1).
 Qed.
 
-Lemma littleo_lim0 (f : R^o -> R^o) (h : _ -> R^o) (x : R^o) :
-  f @ x --> (0 : R^o) -> [o_ (x : R^o) f of h] x = 0.
+Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :
+  f @ x --> (0 : Y) -> [o_x f of h] x = 0.
 Proof.
 move/eqolim0P => ->.
 set k := 'o _; have /(_ _ [gt0 of 1])/= := littleoP [littleo of k].
 by move=> /locally_singleton; rewrite mul1r normm_littleo normm_le0 => /eqP.
 Qed.
 
-(*Lemma littleo_id0 (h : _ -> R^o) : [o_ (0 : R^o) id of h] 0 = 0.
-Proof.
-set k := 'o _; have /(_ _ [gt0 of 1])/= := littleoP [littleo of k].
-by move=> /locally_singleton; rewrite mul1r normm0 normm_le0 => /eqP.
-Qed.*)
+End littleo_lemmas.
+
+Section diff_locally_converse_tentative.
+(* if there exist A and B s.t. f(a + h) = A + B h + o(h) then
+   f is differentiable at a, A = f(a) and B = f'(a) *)
 
 (* this is a consequence of diff_continuous and eqolim0 *)
 (* indeed the differential beeing b *: idfun is locally bounded *)
