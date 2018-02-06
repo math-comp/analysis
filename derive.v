@@ -107,17 +107,14 @@ Section littleo_lemmas.
 
 Variables X Y Z : normedModType R.
 
-Lemma normm_littleo x (f : X -> Y) : `|[ [o_x (cst 1 : X -> R^o) of f] x ]| = 0.
+Lemma normm_littleo x (f : X -> Y) : `|[ [o_(x \near x) (1 : R^o) of f x]]| = 0.
 Proof.
-rewrite /the_littleo val_insubd; case: ifPn => [/asboolP H|*]; last first.
-  by rewrite normm0.
-case : (ltrP 0 `|[f x]|) => [fx0|]; last first.
-  by rewrite normm_le0 => /eqP ->; rewrite normm0.
-have {H}/H/locally_singleton : 0 < `|[f x]| / (`|[ 1 : R^o ]| * 2%:R).
-  by rewrite divr_gt0 // mulr_gt0 // normm_gt0.
-rewrite invrM ?unitfE ?normm_eq0 // -2!mulrA mulVr ?unitfE ?normm_eq0 // mulr1.
-by rewrite ler_pmulr // invr_ge1 // ?unitfE // (@ler_nat _ _ 1).
+rewrite /cst /=; set e := 'o _; apply/eqP.
+have /(_  (`|[e x]|/2) _)/locally_singleton /= := littleoP [littleo of e].
+rewrite pmulr_lgt0 // [`|[1 : R^o]|]normr1 mulr1 [X in X <= _]splitr.
+by rewrite ger_addr pmulr_lle0 // => /implyP; case: ltrgtP; rewrite ?normm_lt0.
 Qed.
+
 
 Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :
   f @ x --> (0 : Y) -> [o_x f of h] x = 0.
