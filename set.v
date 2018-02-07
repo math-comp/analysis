@@ -58,7 +58,7 @@ From SsrReals Require Import boolp.
 (*                  A `<=>` B <-> double inclusion A `<=` B and B `<=` A.     *)
 (*                   f @^-1` A == preimage of A by f.                         *)
 (*                      f @` A == image of A by f.                            *)
-(*                   A !=set0 <-> exists x, A x.                              *)
+(*                    A !=set0 := exists x, A x.                              *)
 (*                  is_prop X <-> X contains only 1 element.                  *)
 (*                   is_fun f <-> for each a, f a contains only 1 element.    *)
 (*                 is_total f <-> for each a, f a is non empty.               *)
