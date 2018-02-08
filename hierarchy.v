@@ -1520,7 +1520,7 @@ Section NVS_continuity.
 
 Context {K : absRingType} {V : normedModType K}.
 
-Lemma flim_add : continuous (fun z : V * V => z.1 + z.2).
+Lemma continuousD : continuous (fun z : V * V => z.1 + z.2).
 Proof.
 move=> [/=x y]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> a b.
@@ -1529,8 +1529,7 @@ rewrite !near_simpl /=; near=> a b.
 by split; end_near=> /=; apply: flim_norm.
 Qed.
 
-
-Lemma flim_scal : continuous (fun z : K * V => z.1 *: z.2).
+Lemma continuousZ : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> z.
@@ -1539,44 +1538,64 @@ rewrite !near_simpl /=; near=> z.
   rewrite ltr_add // -?(scalerBr, scalerBl).
     rewrite (ler_lt_trans (ler_normmZ _ _)) //.
     rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
-            ?ler_addl//.
+            ?ler_addl //.
     by rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
   rewrite (ler_lt_trans (ler_normmZ _ _)) //.
   rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) //.
     by rewrite ltrW //; near: z.
-  rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //.
-  by near: z.
+  by rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
 end_near; rewrite /= ?near_simpl.
 - by apply: (flim_norm _ flim_snd); rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
 - by apply: (flim_bounded _ flim_snd); rewrite ltr_addl.
 - apply: (flim_norm (_ : K^o) flim_fst).
-  by rewrite mulr_gt0// ?invr_gt0 ltr_paddl.
+  by rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
 Qed.
-Arguments flim_scal _ _ : clear implicits.
+Arguments continuousZ _ _ : clear implicits.
 
-Lemma flim_scalr k : continuous (fun x : V => k *: x).
+Lemma continuousZr k : continuous (fun x : V => k *: x).
 Proof.
-by move=> x; apply: (flim_comp2 (flim_const _) flim_id (flim_scal (_, _))).
-Qed.
-
-Lemma flim_scall (x : V) : continuous (fun k : K => k *: x).
-Proof.
-by move=> k; apply: (flim_comp2 flim_id (flim_const _) (flim_scal (_, _))).
+by move=> x; apply: (flim_comp2 (flim_const _) flim_id (continuousZ (_, _))).
 Qed.
 
-Lemma flim_opp : continuous (@GRing.opp V).
+Lemma continuousZl (x : V) : continuous (fun k : K => k *: x).
 Proof.
-move=> x; rewrite -scaleN1r => P /flim_scalr /=.
+by move=> k; apply: (flim_comp2 flim_id (flim_const _) (continuousZ (_, _))).
+Qed.
+
+Lemma continuousN : continuous (@GRing.opp V).
+Proof.
+move=> x; rewrite -scaleN1r => P /continuousZr /=.
 rewrite !locally_nearE near_map.
 by apply: filterS => x'; rewrite scaleN1r.
 Qed.
 
 End NVS_continuity.
 
-Lemma flim_mult {K : absRingType} (x y : K) :
-   z.1 * z.2 @[z --> (x, y)] --> x * y.
-Proof. exact: (@flim_scal _ (AbsRing_NormedModType K)). Qed.
+Section limit_composition.
 
+Context {K : absRingType} {V W : normedModType K}.
+
+Lemma limD (F : set (set W)) (FF : Filter F) (f g : W -> V) (a b : V) :
+  f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
+Proof.
+move=> fa fb.
+apply: (flim_trans _ (@continuousD K V (a, b))).
+exact: (@flim_comp _ _ _ _ (fun x => x.1 + x.2) _ _ _ (flim_pair fa fb)).
+Qed.
+
+Lemma limZl (F : set (set W)) (FF : Filter F) (f : W -> K) (k : V) (a : K) :
+  f @ F --> a -> (fun x => (f x) *: k) @ F --> a *: k.
+Proof.
+move=> fa.
+apply: (flim_trans _ (@continuousZl K V k a)).
+exact: (@flim_comp _ _ _ f (fun x : K => x *: k) _ _ _ fa).
+Qed.
+
+Lemma limM (x y : K) :
+   z.1 * z.2 @[z --> (x, y)] --> x * y.
+Proof. exact: (@continuousZ _ (AbsRing_NormedModType K)). Qed.
+
+End limit_composition.
 
 (** ** Complete Normed Modules *)
 
