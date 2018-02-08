@@ -92,6 +92,9 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
+Proof. by move: x (x) y => /propT-> [] []. Qed.
+
 Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
 Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
 Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
@@ -515,14 +518,9 @@ Qed.
 
 End ZL.
 
-Require ClassicalFacts.
-
 Lemma exist_congr T (P : T -> Prop) (s t : T) (p : P s) (q : P t) :
   s = t -> exist P s p = exist P t q.
-Proof.
-move=> seqt; case: _ / seqt q => q.
-exact/congr1/ClassicalFacts.proof_irrelevance_cci/lem.
-Qed.
+Proof. by move=> st; case: _ / st in q *; apply/congr1/Prop_irrelevance. Qed.
 
 Lemma Zorn T (R : T -> T -> Prop) :
   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
@@ -595,7 +593,7 @@ have ceqRP t : ceqRs (ceqR t) by exists t.
 set lift := fun t => exist _ (ceqR t) (ceqRP t).
 have lift_surj (A : quotR) : exists t : Tp, lift t = A.
   case: A => A [t Tt ctA]; exists t; rewrite /lift; case : _ / ctA.
-  exact/congr1/ClassicalFacts.proof_irrelevance_cci/lem.
+  exact/congr1/Prop_irrelevance.
 have lift_inj s t : eqR s t -> lift s = lift t.
   by move=> eqRst; apply/exist_congr/ceqR_uniq.
 have lift_eqR s t : lift s = lift t -> eqR s t.
