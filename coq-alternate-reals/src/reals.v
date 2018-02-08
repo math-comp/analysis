@@ -31,18 +31,22 @@ Variable (R : archiFieldType).
 Definition nonempty (E : pred R) :=
   exists x : R, x \in E.
 
-(* Real upper bound set. *)
+(* Real upper bound and lower bound sets. *)
 Definition ub (E : pred R) : pred R :=
   [pred z | `[forall y, (y \in E) ==> (y <= z)]].
+Definition lb (E : pred R) : pred R :=
+  [pred z | `[forall y, (y \in E) ==> (z <= y)]].
 
 (* Real down set (i.e., generated order ideal) *)
 (* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
 Definition down (E : pred R) : pred R :=
   [pred x | `[exists y, (y \in E) && (x <= y)]].
 
-(* Real set supremum existence condition. *)
+(* Real set supremum and infimum existence condition. *)
 Definition has_ub  (E : pred R) := nonempty (ub E).
 Definition has_sup (E : pred R) := nonempty E /\ has_ub E.
+Definition has_lb  (E : pred R) := nonempty (lb E).
+Definition has_inf (E : pred R) := nonempty E /\ has_lb E.
 
 End ArchiBound.
 
@@ -178,6 +182,9 @@ Export Real.Exports.
 
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := Real.sup (Real.class R).
+Local Notation "-` E" := [pred x | - x \in E]
+  (at level 35, right associativity) : fun_scope.
+Definition inf {R : realType} (E : pred R) := - sup (-` E).
 
 (* -------------------------------------------------------------------- *)
 Section BaseReflect.
@@ -192,6 +199,9 @@ Proof. by []. Qed.
 Lemma ubP E x : reflect (forall y, y \in E -> y <= x) (x \in ub E).
 Proof. by apply: (iffP (forallbP _))=> h y; apply/implyP/h. Qed.
 
+Lemma lbP E x : reflect (forall y, y \in E -> x <= y) (x \in lb E).
+Proof. by apply: (iffP (forallbP _))=> h y; apply/implyP/h. Qed.
+
 Lemma downP E x : reflect (exists2 y, y \in E & x <= y) (x \in down E).
 Proof.
 apply: (iffP (existsbP _))=> [[y /andP[]]|[y]].
@@ -201,8 +211,15 @@ Qed.
 Lemma has_ubP {E} : has_ub E <-> nonempty (ub E).
 Proof. by []. Qed.
 
+Lemma has_lbP {E} : has_lb E <-> nonempty (lb E).
+Proof. by []. Qed.
+
 Lemma has_supP {E} : has_sup E <-> (nonempty E /\ nonempty (ub E)).
 Proof. by []. Qed.
+
+Lemma has_infP {E} : has_inf E <-> (nonempty E /\ nonempty (lb E)).
+Proof. by []. Qed.
+
 End BaseReflect.
 
 (* -------------------------------------------------------------------- *)
@@ -380,6 +397,96 @@ Qed.
 End RealLemmas.
 
 (* -------------------------------------------------------------------- *)
+Section InfTheory.
+
+Variables (R : realType).
+
+Implicit Types E : pred R.
+Implicit Types x : R.
+
+Lemma setZK : involutive (fun E => -` E).
+Proof. by move=> E; rewrite funeqE => ?; rewrite !inE opprK. Qed.
+
+Lemma memZE E x : (x \in E) = (- x \in -` E).
+Proof. by rewrite inE opprK. Qed.
+
+Lemma lb_ubZ E x : (x \in lb E) <-> - x \in ub (-` E).
+Proof.
+split=> [/lbP|/ubP] xlbE; first by apply/ubP => ? /xlbE; rewrite ler_oppr.
+by apply/lbP => y; rewrite memZE => /xlbE; rewrite ler_oppr opprK.
+Qed.
+
+Lemma ub_lbZ E x : (x \in ub E) <-> - x \in lb (-` E).
+Proof.
+split; first by move=> ?; apply/lb_ubZ; rewrite opprK setZK.
+by move/lb_ubZ; rewrite opprK setZK.
+Qed.
+
+Lemma nonemptyZ E : nonempty (-` E) <-> nonempty E.
+Proof. by split=> [[x EZx]|[x Ex]]; exists (- x) => //; rewrite -memZE. Qed.
+
+Lemma has_inf_supZ E : has_inf E <-> has_sup (-` E).
+Proof.
+split=> [/has_infP [En0 [x /lb_ubZ xlbe]]|/has_supP [ZEn0 [x /ub_lbZ xubE]]].
+  by apply/has_supP; split; [apply/nonemptyZ|exists (- x)].
+by apply/has_infP; split; [apply/nonemptyZ|rewrite -[E]setZK; exists (- x)].
+Qed.
+
+Lemma inf_lower_bound E :
+  has_inf E -> (forall x, x \in E -> inf E <= x).
+Proof.
+move=> /has_inf_supZ /sup_upper_bound inflb x.
+by rewrite memZE => /inflb; rewrite ler_oppl.
+Qed.
+
+Lemma inf_adherent E (eps : R) :
+  has_inf E -> 0 < eps -> exists2 e, e \in E & e < inf E + eps.
+Proof.
+move=> /has_inf_supZ supZE /(sup_adherent supZE) [e ZEx egtsup].
+by exists (- e) => //; rewrite ltr_oppl -mulN1r mulrDr !mulN1r opprK.
+Qed.
+
+Lemma inf_out E : ~ has_inf E -> inf E = 0.
+Proof.
+move=> ninfE; rewrite -oppr0 -(@sup_out _ (-` E)) => // supZE; apply: ninfE.
+exact/has_inf_supZ.
+Qed.
+
+Lemma has_lb_ubZ E : has_lb E <-> has_ub (-` E).
+Proof.
+by split=> [/has_lbP [x /lb_ubZ]|/has_ubP [x /ub_lbZ]]; [|rewrite setZK];
+  exists (- x).
+Qed.
+
+Lemma inf_lb E : has_lb E -> inf E \in lb E.
+Proof. by move/has_lb_ubZ/sup_ub/ub_lbZ; rewrite setZK. Qed.
+
+Lemma lb_le_inf E x : nonempty E -> x \in lb E -> x <= inf E.
+Proof.
+by move=> /(nonemptyZ E) En0 /lb_ubZ /(sup_le_ub En0); rewrite ler_oppr.
+Qed.
+
+Lemma has_lbPn E :
+  ~ has_lb E <-> (forall x, exists2 y, y \in E & y < x).
+Proof.
+split=> [/has_lb_ubZ /has_ubPn ZEnub x|Enlb /has_lb_ubZ].
+  by have [y EZy ltxy] := ZEnub (- x); exists (- y) => //; rewrite ltr_oppl.
+apply/has_ubPn => x; have [y Ey ltyx] := Enlb (- x); exists (- y).
+  by rewrite inE opprK.
+by rewrite ltr_oppr.
+Qed.
+
+Lemma has_infPn E : nonempty E ->
+  ~ has_inf E <-> (forall x, exists2 y, y \in E & y < x).
+Proof.
+move=> nzE; split=> [/asboolPn|]; rewrite ?(asbool_equiv_eq has_infP).
+  by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_lbPn.
+by move/has_lbPn=> h /has_infP [_].
+Qed.
+
+End InfTheory.
+
+(* -------------------------------------------------------------------- *)
 Section FloorTheory.
 Variable R : realType.
 
@@ -501,6 +608,11 @@ move=> eq_12 x; apply/ubP/ubP=> h y yS; apply/h;
   by rewrite (eq_12, =^~ eq_12).
 Qed.
 
+Lemma eq_lb (S1 S2 : pred R) : S2 =i S1 -> lb S2 =i lb S1.
+Proof.
+by move=> eq_12 x; apply/lbP/lbP=> h y yS; apply/h; rewrite (eq_12, =^~ eq_12).
+Qed.
+
 Lemma eq_has_sup (S1 S2 : pred R) :
   S2 =i S1 -> has_sup S2 -> has_sup S1.
 Proof.
@@ -508,9 +620,20 @@ move=> eq_12 /has_supP[[x xS2] [u uS2]]; apply/has_supP; split.
   by exists x; rewrite -eq_12. by exists u; rewrite (@eq_ub S2).
 Qed.
 
+Lemma eq_has_inf (S1 S2 : pred R) :
+  S2 =i S1 -> has_inf S2 -> has_inf S1.
+Proof.
+move=> eq_12 /has_inf_supZ infS1; apply/has_inf_supZ; apply: eq_has_sup infS1.
+by move=> ?; rewrite inE eq_12.
+Qed.
+
 Lemma eq_has_supb (S1 S2 : pred R) :
   S2 =i S1 -> `[< has_sup S2 >] = `[< has_sup S1 >].
 Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_has_sup. Qed.
+
+Lemma eq_has_infb (S1 S2 : pred R) :
+  S2 =i S1 -> `[< has_inf S2 >] = `[< has_inf S1 >].
+Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_has_inf. Qed.
 
 Lemma eq_sup (S1 S2 : pred R) : S2 =i S1 -> sup S2 = sup S1.
 Proof.
@@ -523,6 +646,11 @@ pose x : R := sup S2 - sup S1; have gt0_x: 0 < x by rewrite subr_gt0.
 have [e eS2] := sup_adherent h2 gt0_x; rewrite subKr => lt_S1e.
 have /(eq_has_sup eq_12) h1 := h2; have := eS2; rewrite eq_12.
 by move/sup_upper_bound=> -/(_ h1); rewrite lerNgt lt_S1e.
+Qed.
+
+Lemma eq_inf (S1 S2 : pred R) : S2 =i S1 -> inf S2 = inf S1.
+Proof.
+by move=> eq_12; rewrite /inf; apply/congr1/eq_sup => ?; rewrite inE eq_12.
 Qed.
 
 Lemma has_sup_down (S : pred R) : has_sup (down S) <-> has_sup S.
@@ -570,6 +698,13 @@ apply/sup_le_ub; first by exists c; rewrite inE eqxx.
 by apply/ubP=> y; rewrite inE => /eqP ->.
 Qed.
 
+Lemma inf1 (c : R) : inf (pred1 c) = c.
+Proof.
+rewrite /inf; have /eq_sup -> : -` (pred1 c) =i pred1 (- c).
+  by move=> ?; rewrite !inE eqr_oppLR.
+by rewrite sup1 opprK.
+Qed.
+
 Lemma lt_sup_imfset {T : Type} (F : T -> R) l :
   has_sup [pred y | `[exists x, y == F x]] ->
   l < sup [pred y | `[exists x, y == F x]] ->
@@ -580,6 +715,18 @@ case/(sup_adherent hs)=> _ /imsetbP[x ->]; rewrite subKr => lt_lFx.
 exists x=> //; apply/sup_upper_bound => //.
 by apply/imsetbP; exists x.
 Qed.
+
+Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
+  has_inf [pred y | `[exists x, y == F x]] ->
+  inf [pred y | `[exists x, y == F x]] < l ->
+  exists2 x, F x < l & inf [pred y | `[exists x, y == F x]] <= F x.
+Proof.
+set P := [pred y | _]; move=> hs; rewrite -subr_gt0.
+case/(inf_adherent hs)=> _ /imsetbP[x ->]; rewrite addrA [_ + l]addrC addrK.
+move=> ltFxl; exists x=> //; apply/inf_lower_bound => //.
+by apply/imsetbP; exists x.
+Qed.
+
 End Sup.
 
 (* -------------------------------------------------------------------- *)
