@@ -1,3 +1,8 @@
+(* -------------------------------------------------------------------- *)
+(* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
+(* Copyright (c) - 2015--2018 - Inria                                   *)
+(* Copyright (c) - 2016--2018 - Polytechnique                           *)
+
 (* We follow the 4CT dedekind construction of reals, but adapted to the *)
 (* SSReflect hierarchy (see reals.v)                                    *)
 

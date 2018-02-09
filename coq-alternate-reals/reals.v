@@ -1,4 +1,9 @@
 (* -------------------------------------------------------------------- *)
+(* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
+(* Copyright (c) - 2015--2018 - Inria                                   *)
+(* Copyright (c) - 2016--2018 - Polytechnique                           *)
+
+(* -------------------------------------------------------------------- *)
 (* A very classical axiomatization of real numbers: a discrete real     *)
 (* archimedean field with a least upper bound operator.                 *)
 (* -------------------------------------------------------------------- *)
