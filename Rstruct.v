@@ -365,7 +365,7 @@ Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 (* Canonical R_realClosedArchiFieldType := [realClosedArchiFieldType of R]. *)
 
 Open Scope ring_scope.
-From SsrReals Require Import reals boolp.
+Require Import reals boolp.
 
 Lemma is_upper_boundE (E : pred R) x : is_upper_bound E x = (x \in ub E).
 Proof.
@@ -415,7 +415,7 @@ Implicit Types (x y : R) (m n : nat).
 
 (* equational lemmas about exp, sin and cos for mathcomp compat *)
 
-(* From SsrReals Require Import realsum. *)
+(* Require Import realsum. *)
 
 (* :TODO: One day, do this *)
 (* Notation "\Sum_ i E" := (psum (fun i => E)) *)

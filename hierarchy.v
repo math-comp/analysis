@@ -2,7 +2,7 @@
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap matrix.
-From SsrReals Require Import boolp reals.
+Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology.
 
 Set Implicit Arguments.

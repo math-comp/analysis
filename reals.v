@@ -9,7 +9,7 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra bigenough.
-From SsrReals Require Import boolp.
+(* ------- *) Require Import boolp.
 
 Require Import Setoid.
 
