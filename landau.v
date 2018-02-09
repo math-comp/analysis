@@ -2,7 +2,7 @@
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
-From SsrReals Require Import boolp reals.
+Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology hierarchy.
 
 (******************************************************************************)

@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg matrix.
-From SsrReals Require Import boolp.
+Require Import boolp.
 
 (******************************************************************************)
 (* This file develops a basic theory of sets and types equipped with a        *)
