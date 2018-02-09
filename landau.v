@@ -12,11 +12,11 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (* F is a filter, K is an absRingType and V W X Y Z are normed spaces over K  *)
 (* alternatively, K can be equal to the reals R (from the standard library    *)
 (* for now)                                                                   *)
-(* This libary is very assymetric, in multiple respects:                      *)
+(* This libary is very asymmetric, in multiple respects:                      *)
 (* - most rewrite rules can only be rewritten from left to right.             *)
 (*   e.g. an equation 'o_F f = 'O_G g can be used only from LEFT TO RIGHT     *)
 (* - conversely most small 'o_F f in your goal are very specific,             *)
-(*     only 'a_F f is mutable                                                 *)
+(*   only 'a_F f is mutable                                                   *)
 (*                                                                            *)
 (* - most notations are either parse only or print only.                      *)
 (*   Indeed all the 'O_F notations contain a function which is NOT displayed. *)
@@ -25,14 +25,14 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (*   - In order to have a look at the hidden function, rewrite showo.         *)
 (*   - Do not use showo during a normal proof.                                *)
 (*   - All theorems should be stated so that when an impossible reflexivity   *)
-(*     is encounterd, it is of the form 'O_F g = 'O_F g so that you       *)
-(*     know you should use eqOE in order to generalize your 'O_F g        *)
+(*     is encountered, it is of the form 'O_F g = 'O_F g so that you          *)
+(*     know you should use eqOE in order to generalize your 'O_F g            *)
 (*     to an arbitrary 'O_F g                                                 *)
 (*                                                                            *)
-(*  bigO F f g == f is a bigO of g near F,                                    *)
-(*                use only if you want to go back to filter reasoning.        *)
+(*     bigO F f g == f is a bigO of g near F,                                 *)
+(*                   use only if you want to go back to filter reasoning.     *)
 (*                                                                            *)
-(*  Parsable notations:                                                       *)
+(* Parsable notations:                                                        *)
 (*    [bigO of f] == recovers the canonical structure of big-o of f           *)
 (*                   expands to itself                                        *)
 (*       f =O_F h == f is a bigO of h near F,                                 *)
@@ -55,13 +55,20 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (*           'O_F == pattern to match a bigO with a specific F                *)
 (*             'O == pattern to match a bigO with a generic F                 *)
 (*                                                                            *)
-(*   Printing only notations:                                                 *)
-(*       {O_F f} == the type of functions that are a bigO of f near F         *)
-(*      'a_O_F f == an existential bigO, must come from (apply: eqOE)         *)
-(*        'O_F f == a generic bigO, with a function you should not rely on,   *)
-(*                  but there is no way you can use eqOE on it.               *)
+(* Printing only notations:                                                   *)
+(*        {O_F f} == the type of functions that are a bigO of f near F        *)
+(*       'a_O_F f == an existential bigO, must come from (apply: eqOE)        *)
+(*         'O_F f == a generic bigO, with a function you should not rely on,  *)
+(*                   but there is no way you can use eqOE on it.              *)
 (*                                                                            *)
 (* The former works exactly the same by with littleo instead of bigO.         *)
+(*                                                                            *)
+(* Asymptotic equivalence:                                                    *)
+(*       f ~_ F g == function f is asymptotically equivalent to               *)
+(*                   function g for filter F, i.e., f = g +o_ F g             *)
+(*      f ~~_ F g == f == g +o_ F g (i.e., as a boolean relation)             *)
+(* --> asymptotic equivalence proved to be an equivalence relation            *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -1098,6 +1105,64 @@ Admitted.
 End Linear3.
 
 Arguments linear_continuous {U V s s_law} f _.
+
+Notation "f '~_' F g" := (f = g +o_ F g)
+  (at level 70, F at level 0, g at next level, format "f  '~_' F  g").
+Notation "f '~~_' F g" := (f == g +o_ F g)
+  (at level 70, F at level 0, g at next level, format "f  '~~_' F  g").
+
+Section asymptotic_equivalence.
+
+Context {K : absRingType} {T : Type} {V W : normedModType K}.
+Implicit Types F : filter_on T.
+
+Lemma equivOLR F (f g : T -> V) : f ~_F g -> f =O_F g.
+Proof. by move=> ->; apply: eqOE; rewrite {1}[g](idO F) addrC addfO. Qed.
+
+Lemma equiv_refl F (f : T -> V) : f ~_F f.
+Proof. by apply/eqaddoP; rewrite subrr. Qed.
+
+Lemma equivoRL (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+  f ~_F g -> [o_F g of h] =o_F f.
+Proof.
+move=> ->; apply/eqoP; move=> _/posnumP[eps]; near=> x.
+  rewrite -ler_pdivr_mull // -[X in g + X]opprK oppo.
+  rewrite (ler_trans _ (ler_distm_dist _ _)) //.
+  rewrite [X in _ <= X]ger0_norm ?ler_subr_addr ?add0r; last first.
+    by rewrite -[X in _ <= X]mul1r; near: x.
+  rewrite [X in _ <= X]splitr [_ / 2]mulrC.
+  rewrite ler_add ?ler_pdivr_mull ?mulrA //; near: x.
+by end_near; apply: littleoP.
+Qed.
+
+Lemma equiv_sym F (f g : T -> V) : f ~_F g -> g ~_F f.
+Proof.
+move=> fg; have /(canLR (addrK _))<- := fg.
+by apply:eqaddoE; rewrite oppo (equivoRL _ fg).
+Qed.
+
+Lemma equivoLR (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+  f ~_F g -> [o_F f of h] =o_F g.
+Proof. by move/equiv_sym/equivoRL. Qed.
+
+Lemma equivORL F (f g : T -> V) : f ~_F g -> g =O_F f.
+Proof. by move/equiv_sym/equivOLR. Qed.
+
+Lemma eqoaddo (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+  [o_F f + [o_F f of g] of h] =o_F f.
+Proof. by apply: equivoLR. Qed.
+
+Lemma equiv_trans F (f g h : T -> V) : f ~_F g -> g ~_F h -> f ~_F h.
+Proof. by move=> -> ->; apply: eqaddoE; rewrite eqoaddo -addrA addo. Qed.
+
+Lemma equivalence_rel_equiv F :
+  equivalence_rel [rel f g : T -> V | f ~~_F g].
+Proof.
+move=> f g h; split; first by apply/eqP/equiv_refl.
+by move=> /eqP fg /=; apply/eqP/eqP; apply/equiv_trans => //; apply/equiv_sym.
+Qed.
+
+End asymptotic_equivalence.
 
 Section big_omega.
 

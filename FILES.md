@@ -7,7 +7,6 @@
 - `topology.v`
 - `hierarchy.v`
 - `landau.v`
-- `equiv.v`
 - `derive.v`
 - `README.md`
 - `AUTHORS.md`
