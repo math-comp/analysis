@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype ssralg finmap matrix.
-From SsrReals Require Import boolp.
+Require Import boolp.
 Require Import set posnum.
 
 (******************************************************************************)
