@@ -1,0 +1,18 @@
+# This MANIFEST
+MANIFEST
+
+# LICENCE, ...
+AUTHORS.md
+FILES.md
+README.md
+Licence_CeCILL-C_V1-en.txt
+
+# Dev
+Makefile
+Makefile.common
+_CoqProject
+*.v
+
+# Build scripts
+scripts/install-sh
+scripts/distribution
