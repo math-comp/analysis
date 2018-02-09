@@ -1,3 +1,6 @@
+-arg -w
+-arg -parsing
+
 boolp.v
 reals.v
 posnum.v
