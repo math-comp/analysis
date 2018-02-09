@@ -1,0 +1,49 @@
+# -*- Makefile -*-
+
+# --------------------------------------------------------------------
+.PHONY: all config build clean distclean __always__
+.SUFFIXES:
+
+TOP     = $(dir $(lastword $(MAKEFILE_LIST)))
+COQMAKE = $(MAKE) -f Makefile.coq
+
+# --------------------------------------------------------------------
+all: config build
+
+# --------------------------------------------------------------------
+Makefile.coq: Makefile
+	coq_makefile -f _CoqProject -o Makefile.coq
+
+# --------------------------------------------------------------------
+config: sub-config this-config Makefile.coq
+
+build: sub-build this-build
+
+clean: sub-clean this-clean
+
+distclean: sub-distclean this-distclean
+
+# --------------------------------------------------------------------
+.PHONY: this-config this-build this-distclean this-clean
+
+this-build::
+	+$(COQMAKE)
+
+this-distclean:: this-clean
+	rm -f Makefile.coq Makefile.coq.conf
+
+this-clean::
+	@if [ -f Makefile.coq ]; then $(COQMAKE) cleanall; fi
+
+# --------------------------------------------------------------------
+ifdef SUBDIRS
+sub-%: __always__
+	@set -e; for d in $(SUBDIRS); do $(MAKE) -C $$d $(@:sub-%=%); done
+else
+sub-%: __always__
+	@true
+endif
+
+# --------------------------------------------------------------------
+%.vo: __always__
+	+$(COQMAKE) $@
