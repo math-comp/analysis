@@ -304,6 +304,9 @@ Proof. by rewrite predeqE => ?; split=> [[]|[]]. Qed.
 Lemma setIT {A} (X : set A) : X `&` setT = X.
 Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
 
+Lemma setI0 {A} (X : set A) : X `&` set0 = set0.
+Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
+
 Lemma setIA {A} (X Y Z : set A) : X `&` (Y `&` Z) = X `&` Y `&` Z.
 Proof. by rewrite predeqE => ?; split=> [[? []]|[[]]]. Qed.
 
