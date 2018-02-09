@@ -180,6 +180,8 @@ Require Import set posnum.
 (*                     hausdorff T <-> T is a Hausdorff space (T_2).          *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
+(*                     connected A <-> the only non empty subset of A which   *)
+(*                                     is both open and closed in A is A.     *)
 (*                                                                            *)
 (* --> We used these topological notions to prove Tychonoff's Theorem, which  *)
 (*     states that any product of compact sets is compact according to the    *)
@@ -1589,6 +1591,9 @@ Definition closure (A : set T) :=
 Lemma subset_closure (A : set T) : A `<=` closure A.
 Proof. by move=> p ??; exists p; split=> //; apply: locally_singleton. Qed.
 
+Lemma closureI (A B : set T) : closure (A `&` B) `<=` closure A `&` closure B.
+Proof. by move=> p clABp; split=> ? /clABp [q [[]]]; exists q. Qed.
+
 Definition closed (D : set T) := closure D `<=` D.
 
 Lemma closedN (D : set T) : open D -> closed (~` D).
@@ -2044,3 +2049,9 @@ by move=> [/sAnfcov [i D'i [_ nfip]] _]; have /Ifp := D'i.
 Qed.
 
 End Covers.
+
+(* connected sets *)
+
+Definition connected (T : topologicalType) (A : set T) :=
+  forall B : set T, B !=set0 -> (exists2 C, open C & B = A `&` C) ->
+  (exists2 C, closed C & B = A `&` C) -> B = A.
