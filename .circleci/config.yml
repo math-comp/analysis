@@ -1,0 +1,100 @@
+defaults:
+  params: &params
+    working_directory: ~/build
+    docker:
+      - image: ocaml/opam:ubuntu
+        environment:
+          OPAMJOBS: 2
+          OPAMVERBOSE: y
+          OPAMYES: true
+          OPAMSTATUSLINE: never
+          OPAMSWITCH: ci
+          TERM: xterm
+
+version: 2
+
+before_script: &before_script
+  name: Configure Base System
+  command: |
+    printenv
+
+.opam-boot-template: &opam-boot-template
+  <<: *params
+  steps:
+    - checkout
+    - run: *before_script
+    - run:
+        name: Install opam remotes
+        command: |
+          env -u OPAMSWITCH opam remote add coq-released  http://coq.inria.fr/opam/released
+          env -u OPAMSWITCH opam remote add coq-core-dev  http://coq.inria.fr/opam/core-dev
+          env -u OPAMSWITCH opam remote add coq-extra-dev http://coq.inria.fr/opam/extra-dev
+    - run:
+        name: Cache selection
+        command: |
+          git ls-remote https://github.com/math-comp/math-comp.git HEAD > "mathcomp.ver"
+    - restore_cache:
+        keys:
+          - opam-cache-v1-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
+    - run:
+        name: Install opam switch
+        command: |
+          env -u OPAMSWITCH opam switch -A ${COMPILER} ${OPAMSWITCH}
+    - run:
+        name: Update opam remotes
+        command: |
+          opam update
+    - run:
+        name: Install Coq
+        command: |
+          opam pin add -n coq ${COQVERSION}
+          opam install coq
+    - run:
+        name: Install MathComp
+        command: |
+          opam install coq-mathcomp-ssreflect.dev ${MATHCOMPPKG}
+    - run:
+        name: Clean cache
+        command: |
+          rm -rf ~/.opam/log/
+    - save_cache:
+        key: opam-cache-v1-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
+        paths:
+          - ~/.opam
+    - persist_to_workspace:
+        root: &workspace ~/
+        paths:
+          - .opam/
+
+jobs:
+  opam-boot:
+    <<: *opam-boot-template
+    environment:
+      COMPILER: 4.05.0
+      COQVERSION: 8.7.0
+      MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field coq-mathcomp-real_closed coq-mathcomp-finmap
+
+  build:
+    <<: *params
+    steps:
+      - checkout
+      - run: *before_script
+      - attach_workspace: &attach_workspace
+          at: *workspace
+      - run:
+          name: Building
+          command: |
+             opam config exec make
+      - persist_to_workspace:
+          root: *workspace
+          paths:
+            - build/
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - opam-boot
+      - build:
+         requires:
+           - opam-boot
