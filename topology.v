@@ -1596,7 +1596,7 @@ Proof. by move=> p clABp; split=> ? /clABp [q [[]]]; exists q. Qed.
 
 Definition closed (D : set T) := closure D `<=` D.
 
-Lemma closedN (D : set T) : open D -> closed (~` D).
+Lemma closedC (D : set T) : open D -> closed (~` D).
 Proof. by rewrite openE => Dop p clNDp /Dop /clNDp [? []]. Qed.
 
 Lemma closed_bigI {I} (D : I -> set T) :
@@ -1630,7 +1630,7 @@ move/asboolP; rewrite asbool_neg => /imply_asboolPn [/sCB Bq /contrapT Aq].
 by exists q.
 Qed.
 
-Lemma openN (D : set T) : closed D -> open (~` D).
+Lemma openC (D : set T) : closed D -> open (~` D).
 Proof.
 rewrite closedE openE => Dcl t nDt; apply: contrapT.
 by rewrite locally_nearE => /Dcl.
@@ -2014,7 +2014,7 @@ split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
   suff [p IAnfp] : \bigcap_(i in D) (A `\` f i) !=set0.
     by have /IAnfp [Ap _] := Dj; have /fcov [k /IAnfp [_]] := Ap.
   apply: Aco.
-    exists (fun i => ~` g i) => i Di; first exact/closedN/gop.
+    exists (fun i => ~` g i) => i Di; first exact/closedC/gop.
     rewrite predeqE => p; split=> [[Ap nfip] | [Ap ngip]]; split=> //.
       by move=> gip; apply: nfip; rewrite feAg.
     by rewrite feAg // => - [].
@@ -2033,7 +2033,7 @@ have Anfcov : A `<=` \bigcup_(i in D) (A `\` f i).
   move=> [i /asboolP]; rewrite asbool_neg => /imply_asboolPn [Di nfip].
   by exists i.
 have Anfop : open_fam_of A D (fun i => A `\` f i).
-  exists (fun i => ~` g i) => i Di; first exact/openN/gcl.
+  exists (fun i => ~` g i) => i Di; first exact/openC/gcl.
   rewrite predeqE => p; split=> [[Ap nfip] | [Ap ngip]]; split=> //.
     by move=> gip; apply: nfip; rewrite feAg.
   by rewrite feAg // => - [].
