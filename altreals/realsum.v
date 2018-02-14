@@ -5,7 +5,7 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-From SsrReals Require Import xfinmap boolp reals discrete realseq.
+Require Import xfinmap boolp reals discrete realseq.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
