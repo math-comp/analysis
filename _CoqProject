@@ -12,5 +12,10 @@ Rbar.v
 topology.v
 hierarchy.v
 derive.v
+altreals/xfinmap.v
+altreals/discrete.v
+altreals/realseq.v
+altreals/realsum.v
+altreals/distr.v
 
 -R . mathcomp.analysis
