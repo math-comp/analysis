@@ -1,0 +1,25 @@
+opam-version: "1.2"
+maintainer: "pierre-yves@strub.nu"
+homepage: "https://github.com/math-comp/analysis"
+bug-reports: "https://github.com/math-comp/analysis/issues"
+license: "CeCILL-C"
+authors: [
+  "Reynald Affeldt"
+  "Cyril Cohen"
+  "Assia Mahboubi"
+  "Damien Rouhling"
+  "Pierre-Yves Strub"
+]
+build: [
+  [make "INSTMODE=global" "config"]
+  [make "-j%{jobs}%"]
+  [make "install"]
+]
+remove: ["rm" "-R" "%{lib}%/coq/user-contrib/mathcomp/analysis"]
+depends: [
+  "coq" {>= "8.7"}
+  "coq-mathcomp-ssreflect"   {= "dev"}
+  "coq-mathcomp-algebra"     {= "dev"}
+  "coq-mathcomp-real_closed" {= "dev"}
+  "coq-mathcomp-finmap"      {= "dev"}
+]
