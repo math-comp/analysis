@@ -5,8 +5,8 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-From SsrReals Require Import xfinmap boolp reals discrete.
-From SsrReals Require Import realseq realsum.
+Require Import xfinmap boolp reals discrete.
+Require Import realseq realsum.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -19,9 +19,6 @@ Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
 Local Notation simpm := Monoid.simpm.
-
-(* -------------------------------------------------------------------- *)
-Require Import xfinmap.
 
 (* -------------------------------------------------------------------- *)
 Reserved Notation "\dlet_ ( i <- d ) E"

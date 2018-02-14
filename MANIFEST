@@ -12,6 +12,7 @@ Makefile
 Makefile.common
 _CoqProject
 *.v
+altreals/*.v
 
 # Build scripts
 scripts/install-sh
