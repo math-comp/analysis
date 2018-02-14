@@ -348,8 +348,12 @@ exists (c + l); have := ncvgD cv cl; apply/ncvg_eq.
 by move=> n; rewrite big_cons addrC.
 Qed.
 
-Lemma ncvg_extract h u lu :
-    {mono h : x y / (x < y)%N}
+Lemma iscvg_eq (u v : nat -> R) :
+  u =1 v -> iscvg v -> iscvg u.
+Proof. by move=> equv [l h]; exists l; apply/(ncvg_eq equv). Qed.
+
+Lemma ncvg_sub h u lu :
+     {homo h : x y / (x < y)%N}
   -> ncvg u lu -> ncvg (fun n => u (h n)) lu.
 Proof.
 move=> mono_h cvu v; case: (cvu v)=> K {cvu}cvu; exists K.
@@ -357,6 +361,24 @@ move=> n le_Kn; apply/cvu; apply/(leq_trans le_Kn).
 elim: {le_Kn} n => [|n ih] //; apply/(leq_ltn_trans ih).
 by rewrite mono_h.
 Qed.
+
+Lemma iscvg_sub σ u :
+  {homo σ : x y / (x < y)%N} -> iscvg u -> iscvg (u \o σ).
+Proof. by move=> homoσ [l h]; exists l; apply/ncvg_sub. Qed.
+
+Lemma ncvg_shift k (u : nat -> R) l :
+  ncvg u l <-> ncvg (fun n => u (n + k)%N) l.
+Proof. split => h v; move/(_ v): h => [K h].
++ by exists K => n leKn; apply/h/(leq_trans leKn)/leq_addr.
++ exists (K + k)%N => n leKkn; rewrite -[n](@subnK k).
+  * by apply/(leq_trans _ leKkn)/leq_addl.
+  apply/h/(@leq_trans ((K+k) - k))/leq_sub2r => //.
+  by rewrite addnK.
+Qed.
+
+Lemma iscvg_shift k (u : nat -> R) :
+  iscvg u <-> iscvg (fun n => u (n + k)%N).
+Proof. by split=> -[l h]; exists l; apply/(ncvg_shift _ u). Qed.
 
 Lemma ncvg_gt (u : nat -> R) (l1 l2 : {ereal R}) :
   (l1 < l2)%E -> ncvg u l2 ->
