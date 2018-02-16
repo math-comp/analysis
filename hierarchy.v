@@ -1569,13 +1569,17 @@ rewrite !locally_nearE near_map.
 by apply: filterS => x'; rewrite scaleN1r.
 Qed.
 
+Lemma continuousN (T : topologicalType) (f : T -> V) x :
+  {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
+Proof. by move=> ?; apply: continuous_comp (@opp_continuous _). Qed.
+
 End NVS_continuity.
 
 Section limit_composition.
 
-Context {K : absRingType} {V W : normedModType K}.
+Context {K : absRingType} {V : normedModType K} {T : topologicalType}.
 
-Lemma lim_add (F : set (set W)) (FF : Filter F) (f g : W -> V) (a b : V) :
+Lemma lim_add (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
 Proof.
 move=> fa fb.
@@ -1583,7 +1587,12 @@ apply: (flim_trans _ (@add_continuous K V (a, b))).
 exact: (@flim_comp _ _ _ _ (fun x => x.1 + x.2) _ _ _ (flim_pair fa fb)).
 Qed.
 
-Lemma lim_scalel (F : set (set W)) (FF : Filter F) (f : W -> K) (k : V) (a : K) :
+Lemma continuousD (f g : T -> V) x :
+  {for x, continuous f} -> {for x, continuous g} ->
+  {for x, continuous (fun x => f x + g x)}.
+Proof. by move=> ??; apply: lim_add. Qed.
+
+Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (k : V) (a : K) :
   f @ F --> a -> (fun x => (f x) *: k) @ F --> a *: k.
 Proof.
 move=> fa.
@@ -1591,9 +1600,25 @@ apply: (flim_trans _ (@scalel_continuous K V k a)).
 exact: (@flim_comp _ _ _ f (fun x : K => x *: k) _ _ _ fa).
 Qed.
 
+Lemma lim_scaler (F : set (set T)) (FF : Filter F) (f : T -> V) (k : K) (a : V) :
+  f @ F --> a -> k \*: f  @ F --> k *: a.
+Proof.
+move=> fa; apply: (flim_trans _ (@scaler_continuous _ _ _ _)).
+exact: (@flim_comp _ _ _ f ( *:%R k) _ _ _ fa).
+Qed.
+
+Lemma continuousZ (f : T -> V) k x :
+  {for x, continuous f} -> {for x, continuous (k \*: f)}.
+Proof. by move=> ?; apply: lim_scaler. Qed.
+
 Lemma lim_mult (x y : K) :
    z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof. exact: (@scale_continuous _ (AbsRing_NormedModType K)). Qed.
+
+Lemma continuousM (f g : T -> K) x :
+  {for x, continuous f} -> {for x, continuous g} ->
+  {for x, continuous (fun x => f x * g x)}.
+Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
 
 End limit_composition.
 
