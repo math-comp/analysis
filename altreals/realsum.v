@@ -814,6 +814,12 @@ rewrite /D big_split /=; apply/ler_add; apply/big_fset_subset=> //.
 Qed.
 
 (* -------------------------------------------------------------------- *)
+Lemma psumB S1 S2 :
+    (forall x, 0 <= S2 x <= S1 x) -> summable S1
+  -> psum (S1 \- S2) = (psum S1 - psum S2)%R.
+Proof using Type. Admitted.
+
+(* -------------------------------------------------------------------- *)
 Lemma psumZ S c : 0 <= c -> psum (c \*o S) = c * psum S.
 Proof.
 rewrite ler_eqVlt => /orP[/eqP<-|gt0_c].
@@ -901,28 +907,60 @@ Section PSumReindex.
 Context {R : realType} {T U : choiceType}.
 Context (S : T -> R) (P : pred T) (h : U -> T).
 
-Lemma reindex_psum :
-    (forall x, S x != 0 -> x \in P)
-  -> {on P, bijective h}
+
+Lemma reindex_psum_onto h' :
+     (forall x, S x != 0 -> x \in P)
+  -> (forall i, i \in P -> omap h (h' i) = Some i)
+  -> (forall i, h i \in P -> h' (h i) = Some i)
   -> psum S = psum (fun x : U => S (h x)).
-Proof.                          (* FIXME: reindex_onto *)
-move=> PS [hI] h1 h2; rewrite !psum_sup_seq; apply/eq_sup=> x.
-rewrite !inE; apply/asboolP/asboolP=> -[J uqJ /eqP->]; last first.
+Proof.
+move=> PS hO hP; rewrite !psum_sup_seq; apply/eq_sup=> x.
+rewrite !inE; apply/asboolP/asboolP=> -[J uqJ /eqP->] {x}; last first.
   exists [seq h j | j <- J & S (h j) != 0].
     rewrite map_inj_in_uniq ?filter_uniq // => y1 y2.
     rewrite !mem_filter => /andP[nz_S1 _] /andP[nz_S2 _].
-    by move/(can_in_inj h1) => -> //=; apply/PS.
+    by move/(congr1 h'); rewrite !hP ?PS // => -[].
   apply/eqP; rewrite big_map big_filter.
   rewrite (bigID (fun i => S (h i) == 0)) /= big1 ?add0r //.
   by move=> y /eqP->; rewrite normr0.
-exists [seq hI j | j <- J & S j != 0].
-rewrite map_inj_in_uniq ?filter_uniq // => y1 y2.
-  rewrite !mem_filter => /andP[nz_S1 _] /andP[nz_S2 _].
-  by move/(can_in_inj h2) => ->//; apply/PS.
-apply/eqP; rewrite big_map big_filter.
-rewrite (bigID (fun i => S i == 0)) /= big1 ?add0r.
-  by move=> y /eqP->; rewrite normr0.
-by apply/eq_bigr=> i /PS Pi; rewrite h2.
+have uqpJ: uniq (pmap h' [seq j | j <- J & S j != 0]).
+  apply/(map_uniq (f := some)); rewrite pmapS_filter.
+  rewrite map_inj_in_uniq ?filter_uniq // => [y1 y2|]; last first.
+    by rewrite map_id filter_uniq.
+  rewrite !map_id !mem_filter => /andP[h'1 h1] /andP[h'2 h2].
+  case/andP: h1 => h1 _; case/andP: h2 => h2 _.
+  by move/(congr1 (omap h)); rewrite !hO ?PS // => -[].
+exists (pmap h' [seq j | j <- J & S j != 0]) => //.
+apply/eqP; rewrite -(big_map h predT \`|S|) (bigID [pred j | S j == 0]) /=.
+rewrite big1 ?add0r => [i /eqP->|]; first by rewrite normr0.
+rewrite -big_filter; apply/eq_big_perm/uniq_perm_eq.
++ by rewrite filter_uniq.
++ rewrite map_inj_in_uniq // !map_id => y1 y2 h1 h2.
+  move/(congr1 h'); rewrite !hP ?PS //; last by case.
+  * move: h1; rewrite mem_pmap => /mapP[x1].
+    rewrite mem_filter => /andP[nz_Sx1 _] /(congr1 (omap h)) /=.
+    by rewrite hO ?PS // => -[->].
+  * move: h2; rewrite mem_pmap => /mapP[x2].
+    rewrite mem_filter => /andP[nz_Sx2 _] /(congr1 (omap h)) /=.
+    by rewrite hO ?PS // => -[->].
+move=> x; rewrite !mem_filter; apply/andP/idP.
++ case=> nzSx Jx; apply/mapP; move/(_ x (PS _ nzSx)): hO.
+  case E: (h' x) => [u|] //= -[xE]; exists u => //.
+  rewrite mem_pmap; apply/mapP; exists x => //.
+  by rewrite map_id mem_filter nzSx.
++ case/mapP=> u; rewrite mem_pmap => /mapP[t]; rewrite map_id.
+  rewrite mem_filter=> /andP[h1 h2] /(congr1 (omap h)) /=.
+  by rewrite hO ?PS // => -[->] ->; split.
+Qed.
+
+Lemma reindex_psum :
+     (forall x, S x != 0 -> x \in P)
+  -> {on P, bijective h}
+  -> psum S = psum (fun x : U => S (h x)).
+Proof.
+move=> hP [hI h1 h2]; apply/(@reindex_psum_onto (some \o hI)) => //.
++ by move=> x Px /=; rewrite h2.
++ by move=> x Px /=; rewrite h1.
 Qed.
 End PSumReindex.
 
@@ -1017,6 +1055,23 @@ move=> NCy; rewrite psum_eq0 // => x; case: (_ =P y).
 by rewrite mulr0.
 Qed.
 End PSumPartition.
+
+(* -------------------------------------------------------------------- *)
+Section PSumPair.
+Context {R : realType} {T U : choiceType}.
+
+Lemma psum_pair (S : T * U -> R) : summable S ->
+  psum S = psum (fun x => psum (fun y => S (x, y))).
+Proof.
+move=> sblS; rewrite (partition_psum fst) //; apply/eq_psum.
+move=> x /=; pose P := [pred xy : T * U | xy.1 == x].
+rewrite (reindex_psum (h := [eta pair x]) (P := P)) //=.
++ case=> x' y' /=; rewrite mulf_eq0 => /norP[_].
+  by rewrite pnatr_eq0 eqb0 negbK /P inE => /eqP->.
++ by exists snd => // -[x' y'] /eqP /= <-.
+by apply/eq_psum=> y /=; rewrite eqxx mulr1.
+Qed.
+End PSumPair.
 
 (* -------------------------------------------------------------------- *)
 (* FIXME: MOVE ME                                                       *)
