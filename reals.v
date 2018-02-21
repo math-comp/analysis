@@ -409,73 +409,73 @@ Variables (R : realType).
 Implicit Types E : pred R.
 Implicit Types x : R.
 
-Lemma setZK : involutive (fun E => -` E).
+Lemma setNK : involutive (fun E => -` E).
 Proof. by move=> E; rewrite funeqE => ?; rewrite !inE opprK. Qed.
 
-Lemma memZE E x : (x \in E) = (- x \in -` E).
+Lemma memNE E x : (x \in E) = (- x \in -` E).
 Proof. by rewrite inE opprK. Qed.
 
-Lemma lb_ubZ E x : (x \in lb E) <-> - x \in ub (-` E).
+Lemma lb_ubN E x : (x \in lb E) <-> - x \in ub (-` E).
 Proof.
 split=> [/lbP|/ubP] xlbE; first by apply/ubP => ? /xlbE; rewrite ler_oppr.
-by apply/lbP => y; rewrite memZE => /xlbE; rewrite ler_oppr opprK.
+by apply/lbP => y; rewrite memNE => /xlbE; rewrite ler_oppr opprK.
 Qed.
 
-Lemma ub_lbZ E x : (x \in ub E) <-> - x \in lb (-` E).
+Lemma ub_lbN E x : (x \in ub E) <-> - x \in lb (-` E).
 Proof.
-split; first by move=> ?; apply/lb_ubZ; rewrite opprK setZK.
-by move/lb_ubZ; rewrite opprK setZK.
+split; first by move=> ?; apply/lb_ubN; rewrite opprK setNK.
+by move/lb_ubN; rewrite opprK setNK.
 Qed.
 
-Lemma nonemptyZ E : nonempty (-` E) <-> nonempty E.
-Proof. by split=> [[x EZx]|[x Ex]]; exists (- x) => //; rewrite -memZE. Qed.
+Lemma nonemptyN E : nonempty (-` E) <-> nonempty E.
+Proof. by split=> [[x ENx]|[x Ex]]; exists (- x) => //; rewrite -memNE. Qed.
 
-Lemma has_inf_supZ E : has_inf E <-> has_sup (-` E).
+Lemma has_inf_supN E : has_inf E <-> has_sup (-` E).
 Proof.
-split=> [/has_infP [En0 [x /lb_ubZ xlbe]]|/has_supP [ZEn0 [x /ub_lbZ xubE]]].
-  by apply/has_supP; split; [apply/nonemptyZ|exists (- x)].
-by apply/has_infP; split; [apply/nonemptyZ|rewrite -[E]setZK; exists (- x)].
+split=> [/has_infP [En0 [x /lb_ubN xlbe]]|/has_supP [NEn0 [x /ub_lbN xubE]]].
+  by apply/has_supP; split; [apply/nonemptyN|exists (- x)].
+by apply/has_infP; split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
 Qed.
 
 Lemma inf_lower_bound E :
   has_inf E -> (forall x, x \in E -> inf E <= x).
 Proof.
-move=> /has_inf_supZ /sup_upper_bound inflb x.
-by rewrite memZE => /inflb; rewrite ler_oppl.
+move=> /has_inf_supN /sup_upper_bound inflb x.
+by rewrite memNE => /inflb; rewrite ler_oppl.
 Qed.
 
 Lemma inf_adherent E (eps : R) :
   has_inf E -> 0 < eps -> exists2 e, e \in E & e < inf E + eps.
 Proof.
-move=> /has_inf_supZ supZE /(sup_adherent supZE) [e ZEx egtsup].
+move=> /has_inf_supN supNE /(sup_adherent supNE) [e NEx egtsup].
 by exists (- e) => //; rewrite ltr_oppl -mulN1r mulrDr !mulN1r opprK.
 Qed.
 
 Lemma inf_out E : ~ has_inf E -> inf E = 0.
 Proof.
-move=> ninfE; rewrite -oppr0 -(@sup_out _ (-` E)) => // supZE; apply: ninfE.
-exact/has_inf_supZ.
+move=> ninfE; rewrite -oppr0 -(@sup_out _ (-` E)) => // supNE; apply: ninfE.
+exact/has_inf_supN.
 Qed.
 
-Lemma has_lb_ubZ E : has_lb E <-> has_ub (-` E).
+Lemma has_lb_ubN E : has_lb E <-> has_ub (-` E).
 Proof.
-by split=> [/has_lbP [x /lb_ubZ]|/has_ubP [x /ub_lbZ]]; [|rewrite setZK];
+by split=> [/has_lbP [x /lb_ubN]|/has_ubP [x /ub_lbN]]; [|rewrite setNK];
   exists (- x).
 Qed.
 
 Lemma inf_lb E : has_lb E -> inf E \in lb E.
-Proof. by move/has_lb_ubZ/sup_ub/ub_lbZ; rewrite setZK. Qed.
+Proof. by move/has_lb_ubN/sup_ub/ub_lbN; rewrite setNK. Qed.
 
 Lemma lb_le_inf E x : nonempty E -> x \in lb E -> x <= inf E.
 Proof.
-by move=> /(nonemptyZ E) En0 /lb_ubZ /(sup_le_ub En0); rewrite ler_oppr.
+by move=> /(nonemptyN E) En0 /lb_ubN /(sup_le_ub En0); rewrite ler_oppr.
 Qed.
 
 Lemma has_lbPn E :
   ~ has_lb E <-> (forall x, exists2 y, y \in E & y < x).
 Proof.
-split=> [/has_lb_ubZ /has_ubPn ZEnub x|Enlb /has_lb_ubZ].
-  by have [y EZy ltxy] := ZEnub (- x); exists (- y) => //; rewrite ltr_oppl.
+split=> [/has_lb_ubN /has_ubPn NEnub x|Enlb /has_lb_ubN].
+  by have [y ENy ltxy] := NEnub (- x); exists (- y) => //; rewrite ltr_oppl.
 apply/has_ubPn => x; have [y Ey ltyx] := Enlb (- x); exists (- y).
   by rewrite inE opprK.
 by rewrite ltr_oppr.
@@ -628,7 +628,7 @@ Qed.
 Lemma eq_has_inf (S1 S2 : pred R) :
   S2 =i S1 -> has_inf S2 -> has_inf S1.
 Proof.
-move=> eq_12 /has_inf_supZ infS1; apply/has_inf_supZ; apply: eq_has_sup infS1.
+move=> eq_12 /has_inf_supN infS1; apply/has_inf_supN; apply: eq_has_sup infS1.
 by move=> ?; rewrite inE eq_12.
 Qed.
 

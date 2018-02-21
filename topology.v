@@ -180,6 +180,8 @@ Require Import set posnum.
 (*                     hausdorff T <-> T is a Hausdorff space (T_2).          *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
+(*                     connected A <-> the only non empty subset of A which   *)
+(*                                     is both open and closed in A is A.     *)
 (*                                                                            *)
 (* --> We used these topological notions to prove Tychonoff's Theorem, which  *)
 (*     states that any product of compact sets is compact according to the    *)
@@ -1589,9 +1591,12 @@ Definition closure (A : set T) :=
 Lemma subset_closure (A : set T) : A `<=` closure A.
 Proof. by move=> p ??; exists p; split=> //; apply: locally_singleton. Qed.
 
+Lemma closureI (A B : set T) : closure (A `&` B) `<=` closure A `&` closure B.
+Proof. by move=> p clABp; split=> ? /clABp [q [[]]]; exists q. Qed.
+
 Definition closed (D : set T) := closure D `<=` D.
 
-Lemma closedN (D : set T) : open D -> closed (~` D).
+Lemma closedC (D : set T) : open D -> closed (~` D).
 Proof. by rewrite openE => Dop p clNDp /Dop /clNDp [? []]. Qed.
 
 Lemma closed_bigI {I} (D : I -> set T) :
@@ -1625,7 +1630,7 @@ move/asboolP; rewrite asbool_neg => /imply_asboolPn [/sCB Bq /contrapT Aq].
 by exists q.
 Qed.
 
-Lemma openN (D : set T) : closed D -> open (~` D).
+Lemma openC (D : set T) : closed D -> open (~` D).
 Proof.
 rewrite closedE openE => Dcl t nDt; apply: contrapT.
 by rewrite locally_nearE => /Dcl.
@@ -2009,7 +2014,7 @@ split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
   suff [p IAnfp] : \bigcap_(i in D) (A `\` f i) !=set0.
     by have /IAnfp [Ap _] := Dj; have /fcov [k /IAnfp [_]] := Ap.
   apply: Aco.
-    exists (fun i => ~` g i) => i Di; first exact/closedN/gop.
+    exists (fun i => ~` g i) => i Di; first exact/closedC/gop.
     rewrite predeqE => p; split=> [[Ap nfip] | [Ap ngip]]; split=> //.
       by move=> gip; apply: nfip; rewrite feAg.
     by rewrite feAg // => - [].
@@ -2028,7 +2033,7 @@ have Anfcov : A `<=` \bigcup_(i in D) (A `\` f i).
   move=> [i /asboolP]; rewrite asbool_neg => /imply_asboolPn [Di nfip].
   by exists i.
 have Anfop : open_fam_of A D (fun i => A `\` f i).
-  exists (fun i => ~` g i) => i Di; first exact/openN/gcl.
+  exists (fun i => ~` g i) => i Di; first exact/openC/gcl.
   rewrite predeqE => p; split=> [[Ap nfip] | [Ap ngip]]; split=> //.
     by move=> gip; apply: nfip; rewrite feAg.
   by rewrite feAg // => - [].
@@ -2044,3 +2049,9 @@ by move=> [/sAnfcov [i D'i [_ nfip]] _]; have /Ifp := D'i.
 Qed.
 
 End Covers.
+
+(* connected sets *)
+
+Definition connected (T : topologicalType) (A : set T) :=
+  forall B : set T, B !=set0 -> (exists2 C, open C & B = A `&` C) ->
+  (exists2 C, closed C & B = A `&` C) -> B = A.
