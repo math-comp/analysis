@@ -12,11 +12,11 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (* F is a filter, K is an absRingType and V W X Y Z are normed spaces over K  *)
 (* alternatively, K can be equal to the reals R (from the standard library    *)
 (* for now)                                                                   *)
-(* This libary is very assymetric, in multiple respects:                      *)
+(* This libary is very asymmetric, in multiple respects:                      *)
 (* - most rewrite rules can only be rewritten from left to right.             *)
 (*   e.g. an equation 'o_F f = 'O_G g can be used only from LEFT TO RIGHT     *)
 (* - conversely most small 'o_F f in your goal are very specific,             *)
-(*     only 'a_F f is mutable                                                 *)
+(*   only 'a_F f is mutable                                                   *)
 (*                                                                            *)
 (* - most notations are either parse only or print only.                      *)
 (*   Indeed all the 'O_F notations contain a function which is NOT displayed. *)
@@ -25,14 +25,14 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (*   - In order to have a look at the hidden function, rewrite showo.         *)
 (*   - Do not use showo during a normal proof.                                *)
 (*   - All theorems should be stated so that when an impossible reflexivity   *)
-(*     is encounterd, it is of the form 'O_F g = 'O_F g so that you       *)
-(*     know you should use eqOE in order to generalize your 'O_F g        *)
+(*     is encountered, it is of the form 'O_F g = 'O_F g so that you          *)
+(*     know you should use eqOE in order to generalize your 'O_F g            *)
 (*     to an arbitrary 'O_F g                                                 *)
 (*                                                                            *)
-(*  bigO F f g == f is a bigO of g near F,                                    *)
-(*                use only if you want to go back to filter reasoning.        *)
+(*     bigO F f g == f is a bigO of g near F,                                 *)
+(*                   use only if you want to go back to filter reasoning.     *)
 (*                                                                            *)
-(*  Parsable notations:                                                       *)
+(* Parsable notations:                                                        *)
 (*    [bigO of f] == recovers the canonical structure of big-o of f           *)
 (*                   expands to itself                                        *)
 (*       f =O_F h == f is a bigO of h near F,                                 *)
@@ -55,13 +55,30 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (*           'O_F == pattern to match a bigO with a specific F                *)
 (*             'O == pattern to match a bigO with a generic F                 *)
 (*                                                                            *)
-(*   Printing only notations:                                                 *)
-(*       {O_F f} == the type of functions that are a bigO of f near F         *)
-(*      'a_O_F f == an existential bigO, must come from (apply: eqOE)         *)
-(*        'O_F f == a generic bigO, with a function you should not rely on,   *)
-(*                  but there is no way you can use eqOE on it.               *)
+(* Printing only notations:                                                   *)
+(*        {O_F f} == the type of functions that are a bigO of f near F        *)
+(*       'a_O_F f == an existential bigO, must come from (apply: eqOE)        *)
+(*         'O_F f == a generic bigO, with a function you should not rely on,  *)
+(*                   but there is no way you can use eqOE on it.              *)
 (*                                                                            *)
 (* The former works exactly the same by with littleo instead of bigO.         *)
+(*                                                                            *)
+(* Asymptotic equivalence:                                                    *)
+(*       f ~_ F g == function f is asymptotically equivalent to               *)
+(*                   function g for filter F, i.e., f = g +o_ F g             *)
+(*      f ~~_ F g == f == g +o_ F g (i.e., as a boolean relation)             *)
+(* --> asymptotic equivalence proved to be an equivalence relation            *)
+(*                                                                            *)
+(* The last part of this file is work in progress about the big-Omega and     *)
+(* big-Theta notations:                                                       *)
+(*                                                                            *)
+(* {Omega_F f} == the type of functions that are a big Omega of f near F      *)
+(* [Omega_F e of f] == returns a function with a bigOmega canonical structure *)
+(*                     provably equal to f if f is indeed a bigOmega of e     *)
+(*                     or e otherwise                                         *)
+(* f \is `Omega_F(e) == f : T -> eV is a bigOmega of e : T -> W               *)
+(* f =Omega_F h == f is a bigOmega of h near F                                *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -1099,46 +1116,128 @@ End Linear3.
 
 Arguments linear_continuous {U V s s_law} f _.
 
-Section big_omega.
+Notation "f '~_' F g" := (f = g +o_ F g)
+  (at level 70, F at level 0, g at next level, format "f  '~_' F  g").
+Notation "f '~~_' F g" := (f == g +o_ F g)
+  (at level 70, F at level 0, g at next level, format "f  '~~_' F  g").
+
+Section asymptotic_equivalence.
 
 Context {K : absRingType} {T : Type} {V W : normedModType K}.
+Implicit Types F : filter_on T.
 
-Definition bigOmega (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Lemma equivOLR F (f g : T -> V) : f ~_F g -> f =O_F g.
+Proof. by move=> ->; apply: eqOE; rewrite {1}[g](idO F) addrC addfO. Qed.
+
+Lemma equiv_refl F (f : T -> V) : f ~_F f.
+Proof. by apply/eqaddoP; rewrite subrr. Qed.
+
+Lemma equivoRL (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+  f ~_F g -> [o_F g of h] =o_F f.
+Proof.
+move=> ->; apply/eqoP; move=> _/posnumP[eps]; near=> x.
+  rewrite -ler_pdivr_mull // -[X in g + X]opprK oppo.
+  rewrite (ler_trans _ (ler_distm_dist _ _)) //.
+  rewrite [X in _ <= X]ger0_norm ?ler_subr_addr ?add0r; last first.
+    by rewrite -[X in _ <= X]mul1r; near: x.
+  rewrite [X in _ <= X]splitr [_ / 2]mulrC.
+  rewrite ler_add ?ler_pdivr_mull ?mulrA //; near: x.
+by end_near; apply: littleoP.
+Qed.
+
+Lemma equiv_sym F (f g : T -> V) : f ~_F g -> g ~_F f.
+Proof.
+move=> fg; have /(canLR (addrK _))<- := fg.
+by apply:eqaddoE; rewrite oppo (equivoRL _ fg).
+Qed.
+
+Lemma equivoLR (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+  f ~_F g -> [o_F f of h] =o_F g.
+Proof. by move/equiv_sym/equivoRL. Qed.
+
+Lemma equivORL F (f g : T -> V) : f ~_F g -> g =O_F f.
+Proof. by move/equiv_sym/equivOLR. Qed.
+
+Lemma eqoaddo (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+  [o_F f + [o_F f of g] of h] =o_F f.
+Proof. by apply: equivoLR. Qed.
+
+Lemma equiv_trans F (f g h : T -> V) : f ~_F g -> g ~_F h -> f ~_F h.
+Proof. by move=> -> ->; apply: eqaddoE; rewrite eqoaddo -addrA addo. Qed.
+
+Lemma equivalence_rel_equiv F :
+  equivalence_rel [rel f g : T -> V | f ~~_F g].
+Proof.
+move=> f g h; split; first by apply/eqP/equiv_refl.
+by move=> /eqP fg /=; apply/eqP/eqP; apply/equiv_trans => //; apply/equiv_sym.
+Qed.
+
+End asymptotic_equivalence.
+
+Reserved Notation "f '=Omega_' F h"
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '=Omega_' F  h").
+Reserved Notation "[Omega_ x e 'of' f ]" (at level 0, x, e at level 0, only parsing).
+(*Printing*)
+Reserved Notation "[Omega '_' x e 'of' f ]"
+  (at level 0, x, e at level 0, format "[Omega '_' x  e  'of'  f ]").
+
+Section big_omega.
+
+Context {K : absRingType} {T : Type} {V : normedModType K}.
+
+Definition bigOmega {W : normedModType K} (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|[f x]| >= k * `|[g x]|.
 
-Structure bigOmega_type (F : set (set T)) (g : T -> W) := BigOmega {
+Structure bigOmega_type {W : normedModType K} (F : set (set T)) (g : T -> W) := BigOmega {
   bigOmega_fun :> T -> V;
   _ : `[< bigOmega F bigOmega_fun g >]
 }.
 
-Notation "{Omega_ F f }" := (@bigOmega_type F f)
+Notation "{Omega_ F f }" := (@bigOmega_type _ F f)
   (at level 0, F at level 0, format "{Omega_  F  f }").
 
-Canonical bigOmega_subtype (F : set (set T)) (g : T -> W) :=
-  [subType for (@bigOmega_fun F g)].
+Canonical bigOmega_subtype {W : normedModType K} (F : set (set T)) (g : T -> W) :=
+  [subType for (@bigOmega_fun W F g)].
 
-Lemma bigOmega_class (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
+Lemma bigOmega_class {W : normedModType K} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
   `[<bigOmega F f g>].
 Proof. by case: f => ?. Qed.
 Hint Resolve bigOmega_class.
 
-Definition bigOmega_clone (F : set (set T)) (g : T -> W) (f : T -> V) (fT : {Omega_F g}) c
-  of phant_id (bigOmega_class fT) c := @BigOmega F g f c.
-Notation "[bigOmega 'of' f 'for' fT ]" := (@bigOmega_clone _ _ f fT _ idfun)
+Definition bigOmega_clone {W : normedModType K} (F : set (set T)) (g : T -> W) (f : T -> V) (fT : {Omega_F g}) c
+  of phant_id (bigOmega_class fT) c := @BigOmega W F g f c.
+Notation "[bigOmega 'of' f 'for' fT ]" := (@bigOmega_clone _ _ _ f fT _ idfun)
   (at level 0, f at level 0, format "[bigOmega  'of'  f  'for'  fT ]").
-Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ f _ _ idfun)
+Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ f _ _ idfun)
   (at level 0, f at level 0, format "[bigOmega  'of'  f ]").
 
-Definition is_bigOmega (F : set (set T)) (g : T -> W) :=
+Lemma bigOmega_self_subproof F g : Filter F -> bigOmega F g g.
+Proof. move=> FF; exists 1 => //; near=> x; by [rewrite mul1r|end_near]. Qed.
+
+Canonical bigOmega_self (F : filter_on T) g := BigOmega (asboolT (@bigOmega_self_subproof F g _)).
+
+Definition the_bigOmega (u : unit) (F : filter_on T)
+  (phF : phantom (set (set T)) F) f h := bigOmega_fun (insubd (bigOmega_self F h) f).
+Arguments the_bigOmega : simpl never, clear implicits.
+
+Notation mkbigOmega tag x := (the_bigOmega tag _ (PhantomF x)).
+(* Parsing *)
+Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e).
+(*Printing*)
+Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
+
+Definition is_bigOmega {W : normedModType K} (F : set (set T)) (g : T -> W) :=
   [qualify f : T -> V | `[<bigOmega F f g>] ].
-Fact is_bigOmega_key (F : set (set T)) (g : T -> W) : pred_key (is_bigOmega F g).
+Fact is_bigOmega_key {W : normedModType K} (F : set (set T)) (g : T -> W) : pred_key (is_bigOmega F g).
 Proof. by []. Qed.
-Canonical is_bigOmega_keyed (F : set (set T)) (g : T -> W) :=
+Canonical is_bigOmega_keyed {W : normedModType K} (F : set (set T)) (g : T -> W) :=
   KeyedQualifier (is_bigOmega_key F g).
 Notation "`Omega_ F g" := (is_bigOmega F g)
   (at level 0, F at level 0, format "`Omega_ F g").
 
-Lemma bigOmegaP (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
+Lemma bigOmegaP {W : normedModType K} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
   bigOmega F f g.
 Proof. exact/asboolP. Qed.
 Hint Extern 0 (bigOmega _ _ _) => solve[apply: bigOmegaP] : core.
@@ -1146,10 +1245,10 @@ Hint Extern 0 (locally _ _) => solve[apply: bigOmegaP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: bigOmegaP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: bigOmegaP] : core.
 
-Lemma eqOmegaO (F : filter_on T) (f : T -> V) (e : T -> W) :
-  f \is `Omega_F(e) <-> e =O_F f.
+Lemma eqOmegaO {W : normedModType K} (F : filter_on T) (f : T -> V) (e : T -> W) :
+  (f \is `Omega_F(e)) = (e =O_F f) :> Prop.
 Proof.
-split => [| /eqOP[x x0 Hx] ];
+rewrite propeqE; split => [| /eqOP[x x0 Hx] ];
   [rewrite qualifE => /asboolP[x x0 Hx]; apply/eqOP |
    rewrite qualifE; apply/asboolP];
   exists x^-1; rewrite ?invr_gt0 //.
@@ -1157,15 +1256,55 @@ split => [| /eqOP[x x0 Hx] ];
 - near=> y; [by rewrite ler_pdivr_mull //; near: y | end_near].
 Qed.
 
-(* TODO? other properties about Omega
-   f = Omega(h) -> f + g = Omega(h)
-   [Omega f1 of g1] * [Omega f2 of g2] = [Omega f1f2 of g1g2]
-   f = Omega g -> g = Omega h -> f = Omega h *)
+Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
+
+Lemma eqOmegaOE (F : filter_on T) (f e : T -> V) :
+  (f =Omega_F(e)) = (f \is `Omega_F(e)).
+Proof.
+rewrite propeqE; split=> [->|]; rewrite qualifE; last first.
+  by move=> H; rewrite /the_bigOmega val_insubd H.
+apply/asboolP; by rewrite /the_bigOmega val_insubd; case: ifPn => // /asboolP.
+Qed.
+
+Lemma eqOmega_trans (F : filter_on T) (f g h : T -> V) :
+  f =Omega_F(g) -> g =Omega_F(h) -> f =Omega_F(h).
+Proof. rewrite !eqOmegaOE !eqOmegaO => fg gh; exact: (eqO_trans gh fg). Qed.
 
 End big_omega.
 
+Notation mkbigOmega tag x := (the_bigOmega tag (PhantomF x)).
+(* Parsing *)
+Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e).
+(*Printing*)
+Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
 Notation "`Omega_ F g" := (is_bigOmega F g)
   (at level 0, F at level 0, format "`Omega_ F g").
+Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
+
+Section big_omega_in_R.
+
+Variable pT : pointedType.
+
+Lemma inOmega_add (F : filter_on pT) (f g h : _ -> R^o)
+  (f_nonneg : forall x, 0 <= f x) (g_nonneg : forall x, 0 <= g x) :
+  f =Omega_F h -> f + g =Omega_F h.
+Proof.
+rewrite 2!eqOmegaOE !eqOmegaO => /eqOP[k k0 hOf].
+apply/eqOP; exists k => //; near=> x.
+  rewrite (@ler_trans _ (k * `|[f x]|)) //; first by near: x.
+  rewrite ler_pmul //; first by rewrite ltrW.
+  rewrite [X in X <= _]absRE [X in _ <= X]absRE ger0_norm //.
+  by rewrite ger0_norm ?addr_ge0 // ler_addl.
+end_near.
+Qed.
+
+Lemma mulbigOmega (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
+  [Omega_F h1 of f] * [Omega_F h2 of g] =Omega_F (h1 * h2).
+Proof.
+(* TODO *)
+Abort.
+
+End big_omega_in_R.
 
 Section big_theta.
 
@@ -1196,14 +1335,34 @@ split.
   apply/near_andP; split; by near=> x; [near: x|end_near].
 Qed.
 
-(* TODO: properties about Theta
-   [Theta h of f] + [O h of g] = [Theta h of f + g]
-   [Theta f1 of g1] * [Theta f2 of g2] = [Theta f1f2 of g1g2]
-   f = Omega g -> g = Omega h -> f = Omega h
-   g =Theta f <-> f = Theta g
-   f =Theta f *)
-
 End big_theta.
 
 Notation "`Theta_ F g" := (is_bigTheta F g)
   (at level 0, F at level 0, format "`Theta_ F g").
+
+Section big_theta_prop.
+
+Context {K : absRingType} {T : Type} {V W : normedModType K}.
+
+Lemma bigTheta_sym (F : filter_on T) (f : T -> V) (g : T -> W) :
+  (f \is `Theta_F(g)) = (g \is `Theta_F(f)).
+Proof.
+(* TODO *)
+Abort.
+
+Lemma bigTheta_self (F : filter_on T) (f : T -> V) : f \is `Theta_F f.
+Proof.
+(* TODO *)
+Abort.
+
+Lemma eqTheta_trans (F : filter_on T) (f g h : T -> V) :
+  f \is `Theta_F(g) -> g \is `Theta_F(h) -> f \is `Theta_F(h).
+Proof.
+(* TODO *)
+Abort.
+
+(* TODO:
+   [Theta h of f] + [O h of g] = [Theta h of f + g]
+   [Theta f1 of g1] * [Theta f2 of g2] = [Theta f1f2 of g1g2] *)
+
+End big_theta_prop.
