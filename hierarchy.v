@@ -1520,7 +1520,7 @@ Section NVS_continuity.
 
 Context {K : absRingType} {V : normedModType K}.
 
-Lemma continuousD : continuous (fun z : V * V => z.1 + z.2).
+Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
 Proof.
 move=> [/=x y]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> a b.
@@ -1529,7 +1529,7 @@ rewrite !near_simpl /=; near=> a b.
 by split; end_near=> /=; apply: flim_norm.
 Qed.
 
-Lemma continuousZ : continuous (fun z : K * V => z.1 *: z.2).
+Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> z.
@@ -1550,21 +1550,21 @@ end_near; rewrite /= ?near_simpl.
 - apply: (flim_norm (_ : K^o) flim_fst).
   by rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
 Qed.
-Arguments continuousZ _ _ : clear implicits.
+Arguments scale_continuous _ _ : clear implicits.
 
-Lemma continuousZr k : continuous (fun x : V => k *: x).
+Lemma scaler_continuous k : continuous (fun x : V => k *: x).
 Proof.
-by move=> x; apply: (flim_comp2 (flim_const _) flim_id (continuousZ (_, _))).
+by move=> x; apply: (flim_comp2 (flim_const _) flim_id (scale_continuous (_, _))).
 Qed.
 
-Lemma continuousZl (x : V) : continuous (fun k : K => k *: x).
+Lemma scalel_continuous (x : V) : continuous (fun k : K => k *: x).
 Proof.
-by move=> k; apply: (flim_comp2 flim_id (flim_const _) (continuousZ (_, _))).
+by move=> k; apply: (flim_comp2 flim_id (flim_const _) (scale_continuous (_, _))).
 Qed.
 
-Lemma continuousN : continuous (@GRing.opp V).
+Lemma opp_continuous : continuous (@GRing.opp V).
 Proof.
-move=> x; rewrite -scaleN1r => P /continuousZr /=.
+move=> x; rewrite -scaleN1r => P /scaler_continuous /=.
 rewrite !locally_nearE near_map.
 by apply: filterS => x'; rewrite scaleN1r.
 Qed.
@@ -1575,25 +1575,25 @@ Section limit_composition.
 
 Context {K : absRingType} {V W : normedModType K}.
 
-Lemma limD (F : set (set W)) (FF : Filter F) (f g : W -> V) (a b : V) :
+Lemma lim_add (F : set (set W)) (FF : Filter F) (f g : W -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
 Proof.
 move=> fa fb.
-apply: (flim_trans _ (@continuousD K V (a, b))).
+apply: (flim_trans _ (@add_continuous K V (a, b))).
 exact: (@flim_comp _ _ _ _ (fun x => x.1 + x.2) _ _ _ (flim_pair fa fb)).
 Qed.
 
-Lemma limZl (F : set (set W)) (FF : Filter F) (f : W -> K) (k : V) (a : K) :
+Lemma lim_scalel (F : set (set W)) (FF : Filter F) (f : W -> K) (k : V) (a : K) :
   f @ F --> a -> (fun x => (f x) *: k) @ F --> a *: k.
 Proof.
 move=> fa.
-apply: (flim_trans _ (@continuousZl K V k a)).
+apply: (flim_trans _ (@scalel_continuous K V k a)).
 exact: (@flim_comp _ _ _ f (fun x : K => x *: k) _ _ _ fa).
 Qed.
 
-Lemma limM (x y : K) :
+Lemma lim_mult (x y : K) :
    z.1 * z.2 @[z --> (x, y)] --> x * y.
-Proof. exact: (@continuousZ _ (AbsRing_NormedModType K)). Qed.
+Proof. exact: (@scale_continuous _ (AbsRing_NormedModType K)). Qed.
 
 End limit_composition.
 
