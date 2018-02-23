@@ -178,7 +178,7 @@ Qed.
 End lim_lemmas.
 
 Definition derive (f : V -> W) a v :=
-  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ (0 : R^o)).
+  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
 
 Lemma deriveE (f : V -> W) (a v : V) :
   differentiable a f -> derive f a v = 'd_a f v.
@@ -205,7 +205,7 @@ Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
 Definition derive1 V (f : R -> V) (a : R) :=
-   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ (0 : R^o)).
+   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ locally' (0 : R^o)).
 
 Lemma derive1E V (f : R -> V) a : derive1 f a = derive (f : R^o -> _) a 1.
 Proof.
