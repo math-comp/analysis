@@ -1071,6 +1071,18 @@ rewrite (reindex_psum (h := [eta pair x]) (P := P)) //=.
 + by exists snd => // -[x' y'] /eqP /= <-.
 by apply/eq_psum=> y /=; rewrite eqxx mulr1.
 Qed.
+
+Lemma psum_pair_swap (S : T * U -> R) : summable S ->
+  psum S = psum (fun y => psum (fun x => S (x, y))).
+Proof.
+move=> sblS; rewrite (partition_psum snd) //; apply/eq_psum.
+move=> y /=; pose P := [pred xy : T * U | xy.2 == y].
+rewrite (reindex_psum (h := [eta pair^~ y]) (P := P)) //=.
++ case=> x' y' /=; rewrite mulf_eq0 => /norP[_].
+  by rewrite pnatr_eq0 eqb0 negbK /P inE => /eqP->.
++ by exists fst => // -[x' y'] /eqP /= <-.
+by apply/eq_psum=> x /=; rewrite eqxx mulr1.
+Qed.
 End PSumPair.
 
 (* -------------------------------------------------------------------- *)
