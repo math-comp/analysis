@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import ssralg ssrnum fintype matrix.
+From mathcomp Require Import ssralg ssrnum fintype matrix forms.
 Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology hierarchy landau.
 
@@ -167,6 +167,9 @@ End diff_locally_converse_tentative.
 
 Definition derive (f : V -> W) a v :=
   lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
+
+Definition derivable (f : V -> W) a v :=
+  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
 
 Lemma deriveE (f : V -> W) (a v : V) :
   differentiable a f -> derive f a v = 'd_a f v.
@@ -392,6 +395,18 @@ Qed.
 
 End DifferentialR3.
 
+Lemma diff1E (V : normedModType R) (f : R^o -> V) x :
+  differentiable x f -> 'd_x f = (fun h => h *: derive1 f x) :> (R^o -> V).
+Proof.
+move=> df; have lin_scal : linear (fun h : R^o => h *: 'd_x f 1).
+  by move=> ???; rewrite scalerDl scalerA.
+have -> : (fun h : R^o => h *: derive1 f x) = Linear lin_scal.
+  by rewrite derive1E'.
+apply: diff_unique; first exact: scalel_continuous.
+apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).
+by rewrite funeqE => h /=; rewrite -{1}[h]mulr1 linearZ.
+Qed.
+
 Lemma linear_lipschitz (V W : normedModType R) (f : {linear V -> W}) :
   continuous f -> exists2 k, k > 0 & forall x, `|[f x]| <= k * `|[x]|.
 Proof.
@@ -485,4 +500,282 @@ Lemma differentiable_comp (U V W : normedModType R) (f : U -> V) (g : V -> W)
   x : differentiable x f -> differentiable (f x) g -> differentiable x (g \o f).
 Proof.
 by move=> df dg; apply/diff_locallyP; rewrite diff_comp //; have := dcomp df dg.
+Qed.
+
+Lemma bilinear_schwarz (U V W : normedModType R) (f : {bilinear U -> V -> W}) :
+  continuous (fun p => f p.1 p.2) ->
+  exists2 k, k > 0 & forall u v, `|[f u v]| <= k * `|[u]| * `|[v]|.
+Proof.
+move=> /(_ 0); rewrite linear0r => /(_ _ (locally_ball 0 1%:pos)).
+move=> /locallyP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
+case: (lerP `|[u]| 0) => [|un0].
+  by rewrite normm_le0 => /eqP->; rewrite linear0l !normm0 mulr0 mul0r.
+case: (lerP `|[v]| 0) => [|vn0].
+  by rewrite normm_le0 => /eqP->; rewrite linear0r !normm0 mulr0.
+rewrite -[`|[u]|]/((PosNum un0)%:num) -[`|[v]|]/((PosNum vn0)%:num).
+set ku := 2 / e%:num * (PosNum un0)%:num.
+set kv := 2 / e%:num * (PosNum vn0)%:num.
+rewrite -[X in f X](@scalerKV _ _ ku) // linearZl_LR.
+apply: ler_trans (ler_normmZ _ _) _.
+rewrite absRE gtr0_norm // -ler_pdivl_mull //.
+rewrite -[X in f _ X](@scalerKV _ _ kv) // linearZr_LR.
+apply: ler_trans (ler_normmZ _ _) _.
+rewrite absRE gtr0_norm // -ler_pdivl_mull //.
+suff /he : ball 0 e%:num (ku^-1 *: u, kv^-1 *: v).
+  rewrite -ball_normE /= normmB subr0 => /ltrW /ler_trans; apply.
+  rewrite ler_pdivl_mull // mulr1 ler_pdivl_mull //.
+  by rewrite mulrA [ku * _]mulrAC expr2.
+rewrite -ball_normE /= normmB subr0.
+have -> : (ku^-1 *: u, kv^-1 *: v) =
+  (e%:num / 2) *: ((PosNum un0)%:num ^-1 *: u, (PosNum vn0)%:num ^-1 *: v).
+  rewrite invrM ?unitfE // [kv ^-1]invrM ?unitfE //.
+  rewrite mulrC -[_ *: u]scalerA [X in X *: v]mulrC -[_ *: v]scalerA.
+  by rewrite invf_div.
+apply: ler_lt_trans (ler_normmZ _ _) _.
+rewrite absRE ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
+by rewrite ltr_maxl; apply/andP; split;
+  apply: ler_lt_trans (ler_normmZ _ _) _;
+  rewrite absRE ger0_norm // mulVf // ltr1n.
+Qed.
+
+Lemma bilinear_eqo (U V W : normedModType R) (f : {bilinear U -> V -> W}) :
+  continuous (fun p => f p.1 p.2) -> (fun p => f p.1 p.2) =o_ (0 : U * V) id.
+Proof.
+move=> fc; have [_ /posnumP[k] fschwarz] := bilinear_schwarz fc.
+apply/eqoP=> _ /posnumP[e]; near=> x.
+  apply: ler_trans (fschwarz _ _) _.
+  apply: ler_pmul => //; last by rewrite ler_maxr orbC lerr.
+    by rewrite pmulr_rge0.
+  rewrite -ler_pdivl_mull //; have : `|[x]| <= k%:num ^-1 * e%:num by near: x.
+  by apply: ler_trans; rewrite ler_maxr lerr.
+end_near; rewrite /= locally_filterE; apply/locally_le_locally_norm.
+by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite normmB subr0 => /ltrW.
+Qed.
+
+Let dbilin (U V W : normedModType R) (f : {bilinear U -> V -> W}) p :
+  continuous (fun p => f p.1 p.2) ->
+  continuous (fun q => (f p.1 q.2 + f q.1 p.2)) /\
+  (fun q => f q.1 q.2) \o shift p = cst (f p.1 p.2) +
+    (fun q => f p.1 q.2 + f q.1 p.2) +o_ (0 : U * V) id.
+Proof.
+move=> fc; split=> [q|].
+  by apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
+    move=> A /(fc (_.1, _.2)) /= /locallyP [_ /posnumP[e] fpqe_A];
+    apply/locallyP; exists e%:num => // r [??]; apply: (fpqe_A (_.1, _.2)).
+apply/eqaddoE; rewrite funeqE => q /=.
+rewrite linearDl !linearDr addrA addrC.
+rewrite -[f q.1 _ + _ + _]addrA [f q.1 _ + _]addrC addrA [f q.1 _ + _]addrC.
+by congr (_ + _); rewrite -[LHS]/((fun p => f p.1 p.2) q) bilinear_eqo.
+Qed.
+
+Lemma diff_bilin (U V W : normedModType R) (f : {bilinear U -> V -> W}) p :
+  continuous (fun p => f p.1 p.2) ->
+  'd_p (fun q => f q.1 q.2) = (fun q => f p.1 q.2 + f q.1 p.2) :> (U * V -> W).
+Proof.
+move=> fc; have lind : linear (fun q => f p.1 q.2 + f q.1 p.2).
+  by move=> ???; rewrite linearPr linearPl scalerDr addrACA.
+have -> : (fun q => f p.1 q.2 + f q.1 p.2) = Linear lind by [].
+by apply/diff_unique; have [] := dbilin p fc.
+Qed.
+
+Lemma differentiable_bilin (U V W : normedModType R)
+  (f : {bilinear U -> V -> W}) p :
+  continuous (fun p => f p.1 p.2) -> differentiable p (fun p => f p.1 p.2).
+Proof.
+by move=> fc; apply/diff_locallyP; rewrite diff_bilin //; apply: dbilin p fc.
+Qed.
+
+(* the following is a bit long *)
+Definition Rmult_rev (y x : R) := x * y.
+Canonical rev_Rmult := @RevOp _ _ _ Rmult_rev (@GRing.mul [ringType of R])
+  (fun _ _ => erefl).
+
+Lemma Rmult_is_linear x : linear (@GRing.mul [ringType of R] x : R^o -> R^o).
+Proof. by move=> ???; rewrite mulrDr scalerAr. Qed.
+Canonical Rmult_linear x := Linear (Rmult_is_linear x).
+
+Lemma Rmult_rev_is_linear y : linear (Rmult_rev y : R^o -> R^o).
+Proof. by move=> ???; rewrite /Rmult_rev mulrDl scalerAl. Qed.
+Canonical Rmult_rev_linear y := Linear (Rmult_rev_is_linear y).
+
+Canonical Rmult_bilinear :=
+  [bilinear of (@GRing.mul [ringType of [lmodType R of R^o]])].
+
+(* why not instead :*)
+(* Lemma Rmult_is_bilinear : *)
+(*   bilinear (@GRing.mul [ringType of [lmodType R of R^o]]). *)
+(* Proof. *)
+(* by split=> ????; [rewrite mulrDl scalerAl|rewrite mulrDr scalerAr]. *)
+(* Qed. *)
+(* Canonical Rmult_bilinear := Bilinear Rmult_is_bilinear. *)
+
+Lemma diff_Rmult (p : R^o * R^o) :
+  'd_p (fun q => q.1 * q.2) = (fun q => p.1 * q.2 + q.1 * p.2) :> (R * R -> R).
+Proof. by rewrite diff_bilin //= => ?; apply: lim_mult. Qed.
+
+Lemma differentiable_Rmult (p : R^o * R^o) :
+  differentiable p (fun q => q.1 * q.2).
+Proof. by apply: differentiable_bilin => ?; apply: lim_mult. Qed.
+
+Lemma eqo_pair (K : absRingType) (U V W : normedModType K) (F : filter_on U)
+  (f : U -> V) (g : U -> W) :
+  (fun t => ([o_F id of f] t, [o_F id of g] t)) =o_F id.
+Proof.
+apply/eqoP => e egt0; near=> x.
+  by rewrite ler_maxl /=; apply/andP; split; near: x.
+by end_near; move: e egt0 => /=; apply/eqoP.
+Qed.
+
+Let dpair (U V W : normedModType R) (f : U -> V) (g : U -> W) x :
+  differentiable x f -> differentiable x g ->
+  continuous (fun y => ('d_x f y, 'd_x g y)) /\
+  (fun y => (f y, g y)) \o shift x = cst (f x, g x) +
+  (fun y => ('d_x f y, 'd_x g y)) +o_ (0 : U) id.
+Proof.
+move=> df dg; split=> [?|]; first by apply: flim_pair; apply: diff_continuous.
+apply/eqaddoE; rewrite funeqE => y /=.
+rewrite (diff_locallyx df) (diff_locallyx dg).
+have -> : forall h e, (f x + 'd_x f y + [o_ (0 : U) id of h] y,
+  g x + 'd_x g y + [o_ (0 : U) id of e] y) =
+  (f x, g x) + ('d_x f y, 'd_x g y) +
+  ([o_ (0 : U) id of h] y, [o_ (0 : U) id of e] y) by [].
+by congr (_ + _); rewrite -[LHS]/((fun y => (_ y, _ y)) y) eqo_pair.
+Qed.
+
+Lemma diff_pair (U V W : normedModType R) (f : U -> V) (g : U -> W) x :
+  differentiable x f -> differentiable x g ->
+  'd_x (fun y => (f y, g y)) = (fun y => ('d_x f y, 'd_x g y)) :> (U -> V * W).
+Proof.
+move=> df dg.
+have lin_pair : linear (fun y => ('d_x f y, 'd_x g y)).
+  by move=> ???; rewrite !linearPZ.
+have -> : (fun y => ('d_x f y, 'd_x g y)) = Linear lin_pair by [].
+by apply: diff_unique; have [] := dpair df dg.
+Qed.
+
+Lemma differentiable_pair (U V W : normedModType R) (f : U -> V) (g : U -> W)
+  x : differentiable x f -> differentiable x g ->
+  differentiable x (fun y => (f y, g y)).
+Proof.
+by move=> df dg; apply/diff_locallyP; rewrite diff_pair //; apply: dpair.
+Qed.
+
+Lemma diffM (V : normedModType R) (f g : V -> R^o) x :
+  differentiable x f -> differentiable x g ->
+  'd_x (f * g) = f x \*: 'd_x g + g x \*: 'd_x f :> (V -> R).
+Proof.
+move=> df dg.
+rewrite [LHS](diff_comp (differentiable_pair _ _) (differentiable_Rmult _)) //.
+by rewrite diff_pair // diff_Rmult /= funeqE => ?; rewrite /= [_ * g _]mulrC.
+Qed.
+
+Lemma differentiableM (V : normedModType R) (f g : V -> R^o) x :
+  differentiable x f -> differentiable x g -> differentiable x (f * g).
+Proof.
+move=> df dg.
+exact: differentiable_comp (differentiable_pair _ _) (differentiable_Rmult _).
+Qed.
+
+Let dinv (x : R) :
+  x != 0 -> continuous (fun h : R^o => - (1 / x) ^+ 2 *: h) /\
+  (fun x => 1 / x : R^o) \o shift x = cst (1 / x) +
+  (fun h : R^o => - (1 / x) ^+ 2 *: h) +o_ (0 : R^o) id.
+Proof.
+move=> xn0; split; first by move=> ?; apply: continuousZ.
+apply/eqaddoP => _ /posnumP[e]; near=> h.
+  rewrite -[(_ + _ : R -> R) h]/(_ + _) -[(- _ : R -> R) h]/(- _) /=.
+  rewrite opprD scaleNr opprK /cst /=.
+  rewrite -[- _]mulr1 -[X in - _ * X](mulfVK xn0) mulrA mulNr -expr2 mulNr.
+  rewrite [- _ + _]addrC -mulrBr.
+  rewrite -[X in X + _]mulr1 -[X in 1 / _ * X](@mulfVK _ (x ^+ 2)); last first.
+    by rewrite sqrf_eq0.
+  rewrite mulrA mulf_div mulr1.
+  rewrite addrC -[X in X * _]mulr1 -{2}[1](@mulfVK _ (h + x)); last by near: h.
+  rewrite mulrA expr_div_n expr1n mulf_div mulr1 [_ ^+ 2 * _]mulrC -mulrA.
+  rewrite -mulrDr mulrBr [1 / _ * _]mulrC [`|[ _ ]|]absRE normrM.
+  rewrite mulrDl mulrDl opprD addrACA addrA [x * _]mulrC expr2.
+  do 2 ?[rewrite -addrA [- _ + _]addrC subrr addr0].
+  rewrite div1r normfV [X in _ / X]normrM invrM; last 2 first.
+      by rewrite unitfE normr_eq0; near: h.
+    by rewrite unitfE normr_eq0 mulf_neq0.
+  rewrite mulrA mulrAC ler_pdivr_mulr; last by rewrite normr_gt0 mulf_neq0.
+  rewrite mulrAC ler_pdivr_mulr; last by rewrite normr_gt0; near: h.
+  have : `|h * h| <= `|x / 2| * (e%:num * `|x * x| * `|[h : R^o]|).
+    by rewrite !mulrA; near: h.
+  move/ler_trans; apply; rewrite [X in X <= _]mulrC; apply: ler_pmul => //.
+    by rewrite !mulr_ge0.
+  by near: h.
+end_near; rewrite /= locally_filterE; apply/locally_normP.
+- exists `|x|; first by rewrite normr_gt0.
+  move=> h /=; rewrite normmB subr0 -subr_gt0 => lthx.
+  rewrite -(normm_gt0 (h + x : R^o)) addrC -[h]opprK.
+  apply: ltr_le_trans (ler_distm_dist _ _).
+  by rewrite absRE ger0_norm normmN //; apply: ltrW.
+- exists (`|x / 2| * e%:num * `|x * x|).
+    by rewrite !pmulr_rgt0 // normr_gt0 mulf_neq0.
+  by move=> h /ltrW; rewrite normmB subr0 [`|h * _|]normrM => /ler_pmul; apply.
+- exists (`|x| / 2); first by apply/divr_gt0 => //; rewrite normr_gt0.
+  move=> h /=; rewrite normmB subr0 => lthhx; rewrite addrC -[h]opprK.
+  apply: ler_trans (@ler_distm_dist _ [normedModType R of R^o] _ _).
+  rewrite absRE normmN [X in _ <= X]ger0_norm; last first.
+    rewrite subr_ge0; apply: ltrW; apply: ltr_le_trans lthhx _.
+    by rewrite [`|[_]|]splitr ler_addl; apply: divr_ge0.
+  rewrite ler_subr_addr -ler_subr_addl (splitr `|[x : R^o]|).
+  by rewrite normrM normfV (@ger0_norm _ 2) // -addrA subrr addr0; apply: ltrW.
+Qed.
+
+Lemma diff_Rinv (x : R^o) :
+  x != 0 ->
+  'd_x (fun y => 1 / y) = (fun h => - (1 / x) ^+ 2 *: h) :> (R^o -> R^o).
+Proof.
+move=> xn0; have -> : (fun h : R^o => - (1 / x) ^+2 *: h) =
+  GRing.scale_linear _ (- (1 / x) ^+2) by [].
+by apply: diff_unique; have [] := dinv xn0.
+Qed.
+
+Lemma differentiable_Rinv (x : R^o) :
+  x != 0 -> differentiable x (fun y => 1 / y).
+Proof.
+by move=> xn0; apply/diff_locallyP; rewrite diff_Rinv //; apply: dinv.
+Qed.
+
+Lemma diffV (V : normedModType R) (f : V -> R^o) x :
+  differentiable x f -> f x != 0 ->
+  'd_x (fun y => 1 / f y) = - (1 / f x) ^+ 2 \*: 'd_x f :> (V -> R).
+Proof.
+move=> df fxn0.
+by rewrite [LHS](diff_comp df (differentiable_Rinv fxn0)) diff_Rinv.
+Qed.
+
+Lemma differentiableV (V : normedModType R) (f : V -> R^o) x :
+  differentiable x f -> f x != 0 -> differentiable x (fun y => 1 / f y).
+Proof.
+by move=> df fxn0; apply: differentiable_comp _ (differentiable_Rinv fxn0).
+Qed.
+
+Lemma differentiableX (V : normedModType R) (f : V -> R^o) n x :
+  differentiable x f -> differentiable x (f ^+ n).
+Proof.
+move=> df; elim: n => [|n ihn].
+  by rewrite expr0; apply: differentiable_cst.
+by rewrite exprS; apply: differentiableM.
+Qed.
+
+Lemma exprfunE (T : pointedType) (R : ringType) (f : T -> R) n :
+  f ^+ n = (fun x => f x ^+ n).
+Proof.
+by elim: n => [|n ihn]; rewrite funeqE=> ?; [rewrite !expr0|rewrite !exprS ihn].
+Qed.
+
+Lemma diffX (V : normedModType R) (f : V -> R^o) n x :
+  differentiable x f ->
+  'd_x (f ^+ n.+1) = n.+1%:R * f x ^+ n \*: 'd_x f :> (V -> R).
+Proof.
+move=> df; elim: n => [|n ihn].
+  by rewrite funeqE => ?; rewrite expr1 expr0 mulr1 [RHS]scale1r.
+have /(differentiableX n.+1) dfX := df.
+rewrite exprSr [LHS]diffM // [X in f x \*: X]ihn funeqE => y.
+rewrite -![(_ + _ : V -> R) _]/(_ + _) -![(_ \*: _) _]/(_ *: _).
+rewrite scalerA -(scalerDl ('d_x f y)) mulrCA -exprS.
+by rewrite -[_ x]mul1r exprfunE -mulrDl -{1}[1]/1%:R -natrD add1n.
 Qed.
