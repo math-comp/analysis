@@ -146,7 +146,7 @@ Section lim_lemmas.
 
 Variables X Y : normedModType R.
 
-Lemma lim_add (F : filter_on X) (f g : X -> Y) (a b : Y) :
+Lemma lim_add_filter_on (F : filter_on X) (f g : X -> Y) (a b : Y) :
   f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
 Proof.
 move=> fa fb; apply/flim_normP => _/posnumP[e].
@@ -156,18 +156,47 @@ rewrite !near_simpl; near=> x.
 end_near; by [move/flim_normP : fa; apply | move/flim_normP : fb; apply].
 Qed.
 
-Lemma lim_cst (F : filter_on X) (k : Y) : cst k @ F --> k.
+Lemma lim_cst_filter_on (F : filter_on X) (k : Y) : cst k @ F --> k.
 Proof.
 apply/flim_normP => _/posnumP[e].
 rewrite nearE /cst /= subrr normm0; apply: (filterS _ filterT); by move=> *.
 Qed.
 
-Lemma lim_scalel (F : filter_on X) (f : X -> R^o) (k : Y) (a : R^o) :
+Lemma lim_scalel_filter_on (F : filter_on X) (f : X -> R^o) (k : Y) (a : R^o) :
   f @ F --> a -> (fun x => (f x) *: k) @ F --> a *: k.
 Proof.
 move=> /flim_normP fa.
 have [/eqP ->|k0] := boolP (k == 0).
-  rewrite scaler0 (_ : (fun x : _ => _) = cst 0); first exact: lim_cst.
+rewrite scaler0 (_ : (fun x : _ => _) = cst 0); first exact: lim_cst_filter_on.
+  by rewrite funeqE => x; rewrite /cst scaler0.
+apply/flim_normP => _/posnumP[e]; rewrite !near_simpl; near=> x.
+  rewrite -scalerBl (ler_lt_trans (ler_normmZ _ _)) //.
+  rewrite -ltr_pdivl_mulr ?normm_gt0 //; near: x.
+end_near; by move: fa; apply; rewrite divr_gt0 // normm_gt0.
+Qed.
+
+Lemma lim_add_locally' F (f g : X -> Y) (a b : Y) :
+  f @ locally' F --> a -> g @ locally' F --> b -> (f + g) @ locally' F --> a + b.
+Proof.
+move=> fa fb; apply/flim_normP => _/posnumP[e].
+rewrite !near_simpl; near=> x.
+  rewrite opprD addrAC addrA -(addrA _ _ b) (addrC _ b) (splitr e%:num).
+  rewrite (ler_lt_trans (ler_normm_add _ _)) // ltr_add // ?normmN; near: x.
+end_near; by [move/flim_normP : fa; apply | move/flim_normP : fb; apply].
+Qed.
+
+Lemma lim_cst_locally' (F : X) (k : Y) : cst k @ locally' F --> k.
+Proof.
+apply/flim_normP => _/posnumP[e].
+rewrite nearE /cst /= subrr normm0; apply: (filterS _ filterT); by move=> *.
+Qed.
+
+Lemma lim_scalel_locally' F (f : X -> R^o) (k : Y) (a : R^o) :
+  f @ (locally' F) --> a -> (fun x => (f x) *: k) @ (locally' F) --> a *: k.
+Proof.
+move=> /flim_normP fa.
+have [/eqP ->|k0] := boolP (k == 0).
+  rewrite scaler0 (_ : (fun x : _ => _) = cst 0); first exact: lim_cst_locally'.
   by rewrite funeqE => x; rewrite /cst scaler0.
 apply/flim_normP => _/posnumP[e]; rewrite !near_simpl; near=> x.
   rewrite -scalerBl (ler_lt_trans (ler_normmZ _ _)) //.
@@ -180,6 +209,20 @@ End lim_lemmas.
 Definition derive (f : V -> W) a v :=
   lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
 
+Lemma ProperFilter_locally' x : ProperFilter (locally' (x : R^o)).
+Proof.
+apply Build_ProperFilter'; last exact: locally'_filter.
+rewrite /locally' /within nearE /locally /= locally_E.
+case=> y y0 /(_ (x - y / 2)); apply; last first.
+  by apply/eqP; rewrite ltr_eqF // ltr_subl_addr cpr_add divr_gt0.
+rewrite /AbsRing_ball /ball_ opprB addrCA subrr addr0 absRE.
+by rewrite gtr0_norm ?divr_gt0 // ltr_pdivr_mulr // ltr_pmulr // ltr1n.
+Qed.
+
+Lemma x_over_x : (fun x : R^o => x^-1 * x) @ locally' (0 : R^o) --> (1 : R^o).
+Proof.
+Abort.
+
 Lemma deriveE (f : V -> W) (a v : V) :
   differentiable a f -> derive f a v = 'd_a f v.
 Proof.
@@ -187,12 +230,14 @@ rewrite /derive /jacobian => /diff_locally -> /=; set k := 'o _.
 evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
   by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
-apply: (@flim_map_lim _ _ _ (locally (0: R))).
+apply: (@flim_map_lim R_absRingType _ _ (locally' (0 : R^o)) (ProperFilter_locally' _)).
 pose g1 : R -> W := fun h => (h^-1 * h) *: 'd_a f v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE //.
-rewrite -(addr0 (_ _ v)); apply: (@lim_add _ _ (locally_filter_on (0 : R^o))).
-  rewrite -(scale1r (_ _ v)); apply: lim_scalel => /=.
+rewrite -(addr0 (_ _ v)); apply: (@lim_add_locally' _ _ (0:R^o) g1 g2 ('d_a f v) 0).
+  rewrite -(scale1r (_ _ v)); apply: lim_scalel_locally' => /=.
+  admit.
+rewrite /g2.
 Admitted.
 
 End DifferentialR.
