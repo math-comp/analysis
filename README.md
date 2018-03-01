@@ -33,10 +33,10 @@ see [FILES.md](FILES.md)
 ## Requirements
 
 * The Coq proof-assistant
-  
+
     https://coq.inria.fr/
 
-* The Mathematical Components library
+* The 'forms' branch of the Mathematical Components library
 
     https://github.com/math-comp/math-comp
 
