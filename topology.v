@@ -1591,6 +1591,9 @@ Global Instance locally'_filter {T : topologicalType} (x : T) :
   Filter (locally' x).
 Proof. exact: within_filter. Qed.
 
+Canonical locally'_filter_on (T : topologicalType)  (x : T) :=
+  FilterType (locally' x) (locally'_filter _).
+
 (** ** Closed sets in topological spaces *)
 
 Section Closed.
