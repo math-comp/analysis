@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap matrix.
-From mathcomp Require Import interval.
+From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
+From mathcomp Require Import matrix interval.
 Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology.
 
@@ -1398,7 +1398,7 @@ apply/matrixP => i j; rewrite mxE; apply/eqP.
 rewrite -absr_eq0 eqr_le; apply/andP; split; last exact: absr_ge0.
 have /(bigmaxr_ler 0) :
   (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
-   size [seq `|x ij.1 ij.2| | ij : 'I_m.+1 * 'I_n.+1])%N.
+   size [seq (`|x ij.1 ij.2|)%real | ij : 'I_m.+1 * 'I_n.+1])%N.
   by rewrite size_map index_mem mem_enum.
 rewrite -{3}H; apply: ler_trans.
 rewrite (nth_map (ord0, ord0)); last by rewrite index_mem mem_enum.
@@ -1855,6 +1855,15 @@ Qed.
 Canonical R_completeType := CompleteType R R_complete.
 Canonical R_NormedModule := [normedModType R of R^o].
 Canonical R_CompleteNormedModule := [completeNormedModType R of R^o].
+
+Global Instance Rlocally'_proper (x : R) : ProperFilter (locally' x).
+Proof.
+apply: Build_ProperFilter => A [_/posnumP[e] Ae].
+exists (x + e%:num / 2); apply: Ae; last first.
+  by apply/eqP; rewrite eq_sym addrC -subr_eq subrr eq_sym.
+rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0 absRE ger0_norm //.
+by rewrite {2}(splitr e%:num) ltr_spaddl.
+Qed.
 
 Definition at_left x := within (fun u : R => u < x) (locally x).
 Definition at_right x := within (fun u : R => x < u) (locally x).
@@ -2328,6 +2337,29 @@ case=> [x||].
 by apply/locally_filter.
 exact: (Rbar_locally'_filter +oo).
 exact: (Rbar_locally'_filter -oo).
+Qed.
+
+Definition bounded (K : absRingType) (V : normedModType K) (A : set V) :=
+  \forall M \near +oo, A `<=` [set x | `|[x]| < M].
+
+Lemma compact_bounded (K : absRingType) (V : normedModType K) (A : set V) :
+  compact A -> bounded A.
+Proof.
+rewrite compact_cover => Aco.
+have covA : A `<=` \bigcup_(n : int) [set p | `|[p]| < n%:~R].
+  move=> p Ap; exists (ifloor `|[p]| + 1) => //.
+  by rewrite rmorphD /= -floorE floorS_gtr.
+have /Aco [] := covA.
+  move=> n _; rewrite openE => p; rewrite -subr_gt0 => ltpn.
+  apply/locallyP; exists (n%:~R - `|[p]|) => // q.
+  rewrite -ball_normE /= ltr_subr_addr normmB; apply: ler_lt_trans.
+  by rewrite -{1}(subrK p q) ler_normm_add.
+move=> D _ DcovA.
+exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]).
+move=> x ltmaxx p /DcovA [n Dn /ltr_trans]; apply; apply: ler_lt_trans ltmaxx.
+have ltin : (index n (enum_fset D) < size (enum_fset D))%N by rewrite index_mem.
+rewrite -(nth_index 0 Dn) -(nth_map _ 0) //; apply: bigmaxr_ler.
+by rewrite size_map.
 Qed.
 
 (** Open sets in [Rbar] *)

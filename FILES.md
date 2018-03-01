@@ -32,5 +32,4 @@
 
 ## Other files
 - `Rstruct.v` from CoqApprox, with contributions from Sophie Bernard, from her repository (https://github.com/Sobernard/Struct/blob/master/Rstruct.v), and modified to instanciate structures from coq-alternate-reals.
-
-
+- `forms.v` by Cyril Cohen and Laurence Rideau, temporarily added to this repository until it is merged in the Mathematical Components library
