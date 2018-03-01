@@ -1569,10 +1569,6 @@ rewrite !locally_nearE near_map.
 by apply: filterS => x'; rewrite scaleN1r.
 Qed.
 
-Lemma continuousN (T : topologicalType) (f : T -> V) x :
-  {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
-Proof. by move=> ?; apply: continuous_comp (@opp_continuous _). Qed.
-
 End NVS_continuity.
 
 Section limit_composition.
@@ -1610,6 +1606,18 @@ Qed.
 Lemma continuousZ (f : T -> V) k x :
   {for x, continuous f} -> {for x, continuous (k \*: f)}.
 Proof. by move=> ?; apply: lim_scaler. Qed.
+
+Lemma lim_opp (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
+  f @ F --> a -> (fun x => - f x) @ F --> - a.
+Proof.
+move=> fa; have -> : (fun x => - f x) = (- 1) \*: f.
+  by rewrite funeqE => ? /=; rewrite scaleN1r.
+by rewrite -scaleN1r; apply: lim_scaler.
+Qed.
+
+Lemma continuousN (f : T -> V) x :
+  {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
+Proof. by move=> ?; apply: lim_opp. Qed.
 
 Lemma lim_mult (x y : K) :
    z.1 * z.2 @[z --> (x, y)] --> x * y.
@@ -2459,7 +2467,7 @@ Lemma continuity_ptE (f : R -> R) (x : R) :
   continuity_pt f x <-> {for x, continuous f}.
 Proof. exact: continuity_pt_flim. Qed.
 
-Lemma continuous_withinNx {U V : uniformType} (Ueqdec : forall x y : U, x = y \/ x <> y)
+Lemma continuous_withinNx {U V : uniformType}
   (f : U -> V) x :
   {for x, continuous f} <-> f @ locally' x --> f x.
 Proof.
@@ -2473,12 +2481,12 @@ have /= := cfx P fxP.
 (* TODO: make things appear in canonical form i.e. {near x, ...} *)
 rewrite !near_simpl => /filterP [//= Q Qx QP].
 apply/filterP; exists (fun y => y <> x -> Q y) => // y Qy.
-by have [->|/Qy /QP //] := Ueqdec y x; apply: locally_singleton.
+by have [->|/eqP /Qy /QP //] := eqVneq y x; apply: locally_singleton.
 Qed.
 
 Lemma continuity_pt_flim' f x :
   continuity_pt f x <-> f @ locally' x --> f x.
-Proof. by rewrite continuity_ptE continuous_withinNx //; exact: Req_dec. Qed.
+Proof. by rewrite continuity_ptE continuous_withinNx. Qed.
 
 Lemma continuity_pt_locally' f x :
   continuity_pt f x <->
