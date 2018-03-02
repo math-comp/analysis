@@ -10,6 +10,7 @@ Rstruct.v
 Rbar.v
 topology.v
 hierarchy.v
+forms.v
 derive.v
 altreals/xfinmap.v
 altreals/discrete.v

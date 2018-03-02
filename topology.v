@@ -1204,6 +1204,13 @@ End Topological1.
 
 Notation continuous f := (forall x, f%function @ x --> f%function x).
 
+Lemma continuous_cst (S T : topologicalType) (a : T) :
+  continuous (fun _ : S => a).
+Proof.
+move=> x A; rewrite !locally_simpl /= !locallyE => - [B [[_ Ba] sBA]].
+by exists setT; split; [apply: neighT|move=> ??; apply: sBA].
+Qed.
+
 Lemma continuousP (S T : topologicalType) (f : S -> T) :
   continuous f <-> forall A, open A -> open (f @^-1` A).
 Proof.
@@ -1211,6 +1218,11 @@ split=> fcont; first by rewrite !openE => A Aop ? /Aop /fcont.
 move=> s A; rewrite locally_simpl /= !locallyE => - [B [[Bop Bfs] sBA]].
 by exists (f @^-1` B); split; [split=> //; apply/fcont|move=> ? /sBA].
 Qed.
+
+Lemma continuous_comp (R S T : topologicalType) (f : R -> S) (g : S -> T) x :
+  {for x, continuous f} -> {for (f x), continuous g} ->
+  {for x, continuous (g \o f)}.
+Proof. exact: flim_comp. Qed.
 
 Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
@@ -1578,6 +1590,9 @@ Definition locally' {T : topologicalType} (x : T) :=
 Global Instance locally'_filter {T : topologicalType} (x : T) :
   Filter (locally' x).
 Proof. exact: within_filter. Qed.
+
+Canonical locally'_filter_on (T : topologicalType)  (x : T) :=
+  FilterType (locally' x) (locally'_filter _).
 
 (** ** Closed sets in topological spaces *)
 

@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap matrix.
-From mathcomp Require Import interval.
+From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
+From mathcomp Require Import matrix interval.
 Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology.
 
@@ -1398,7 +1398,7 @@ apply/matrixP => i j; rewrite mxE; apply/eqP.
 rewrite -absr_eq0 eqr_le; apply/andP; split; last exact: absr_ge0.
 have /(bigmaxr_ler 0) :
   (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
-   size [seq `|x ij.1 ij.2| | ij : 'I_m.+1 * 'I_n.+1])%N.
+   size [seq (`|x ij.1 ij.2|)%real | ij : 'I_m.+1 * 'I_n.+1])%N.
   by rewrite size_map index_mem mem_enum.
 rewrite -{3}H; apply: ler_trans.
 rewrite (nth_map (ord0, ord0)); last by rewrite index_mem mem_enum.
@@ -1573,9 +1573,9 @@ End NVS_continuity.
 
 Section limit_composition.
 
-Context {K : absRingType} {V W : normedModType K}.
+Context {K : absRingType} {V : normedModType K} {T : topologicalType}.
 
-Lemma lim_add (F : set (set W)) (FF : Filter F) (f g : W -> V) (a b : V) :
+Lemma lim_add (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
 Proof.
 move=> fa fb.
@@ -1583,7 +1583,12 @@ apply: (flim_trans _ (@add_continuous K V (a, b))).
 exact: (@flim_comp _ _ _ _ (fun x => x.1 + x.2) _ _ _ (flim_pair fa fb)).
 Qed.
 
-Lemma lim_scalel (F : set (set W)) (FF : Filter F) (f : W -> K) (k : V) (a : K) :
+Lemma continuousD (f g : T -> V) x :
+  {for x, continuous f} -> {for x, continuous g} ->
+  {for x, continuous (fun x => f x + g x)}.
+Proof. by move=> ??; apply: lim_add. Qed.
+
+Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (k : V) (a : K) :
   f @ F --> a -> (fun x => (f x) *: k) @ F --> a *: k.
 Proof.
 move=> fa.
@@ -1591,9 +1596,37 @@ apply: (flim_trans _ (@scalel_continuous K V k a)).
 exact: (@flim_comp _ _ _ f (fun x : K => x *: k) _ _ _ fa).
 Qed.
 
+Lemma lim_scaler (F : set (set T)) (FF : Filter F) (f : T -> V) (k : K) (a : V) :
+  f @ F --> a -> k \*: f  @ F --> k *: a.
+Proof.
+move=> fa; apply: (flim_trans _ (@scaler_continuous _ _ _ _)).
+exact: (@flim_comp _ _ _ f ( *:%R k) _ _ _ fa).
+Qed.
+
+Lemma continuousZ (f : T -> V) k x :
+  {for x, continuous f} -> {for x, continuous (k \*: f)}.
+Proof. by move=> ?; apply: lim_scaler. Qed.
+
+Lemma lim_opp (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
+  f @ F --> a -> (fun x => - f x) @ F --> - a.
+Proof.
+move=> fa; have -> : (fun x => - f x) = (- 1) \*: f.
+  by rewrite funeqE => ? /=; rewrite scaleN1r.
+by rewrite -scaleN1r; apply: lim_scaler.
+Qed.
+
+Lemma continuousN (f : T -> V) x :
+  {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
+Proof. by move=> ?; apply: lim_opp. Qed.
+
 Lemma lim_mult (x y : K) :
    z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof. exact: (@scale_continuous _ (AbsRing_NormedModType K)). Qed.
+
+Lemma continuousM (f g : T -> K) x :
+  {for x, continuous f} -> {for x, continuous g} ->
+  {for x, continuous (fun x => f x * g x)}.
+Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
 
 End limit_composition.
 
@@ -1822,6 +1855,15 @@ Qed.
 Canonical R_completeType := CompleteType R R_complete.
 Canonical R_NormedModule := [normedModType R of R^o].
 Canonical R_CompleteNormedModule := [completeNormedModType R of R^o].
+
+Global Instance Rlocally'_proper (x : R) : ProperFilter (locally' x).
+Proof.
+apply: Build_ProperFilter => A [_/posnumP[e] Ae].
+exists (x + e%:num / 2); apply: Ae; last first.
+  by apply/eqP; rewrite eq_sym addrC -subr_eq subrr eq_sym.
+rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0 absRE ger0_norm //.
+by rewrite {2}(splitr e%:num) ltr_spaddl.
+Qed.
 
 Definition at_left x := within (fun u : R => u < x) (locally x).
 Definition at_right x := within (fun u : R => x < u) (locally x).
@@ -2297,6 +2339,29 @@ exact: (Rbar_locally'_filter +oo).
 exact: (Rbar_locally'_filter -oo).
 Qed.
 
+Definition bounded (K : absRingType) (V : normedModType K) (A : set V) :=
+  \forall M \near +oo, A `<=` [set x | `|[x]| < M].
+
+Lemma compact_bounded (K : absRingType) (V : normedModType K) (A : set V) :
+  compact A -> bounded A.
+Proof.
+rewrite compact_cover => Aco.
+have covA : A `<=` \bigcup_(n : int) [set p | `|[p]| < n%:~R].
+  move=> p Ap; exists (ifloor `|[p]| + 1) => //.
+  by rewrite rmorphD /= -floorE floorS_gtr.
+have /Aco [] := covA.
+  move=> n _; rewrite openE => p; rewrite -subr_gt0 => ltpn.
+  apply/locallyP; exists (n%:~R - `|[p]|) => // q.
+  rewrite -ball_normE /= ltr_subr_addr normmB; apply: ler_lt_trans.
+  by rewrite -{1}(subrK p q) ler_normm_add.
+move=> D _ DcovA.
+exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]).
+move=> x ltmaxx p /DcovA [n Dn /ltr_trans]; apply; apply: ler_lt_trans ltmaxx.
+have ltin : (index n (enum_fset D) < size (enum_fset D))%N by rewrite index_mem.
+rewrite -(nth_index 0 Dn) -(nth_map _ 0) //; apply: bigmaxr_ler.
+by rewrite size_map.
+Qed.
+
 (** Open sets in [Rbar] *)
 
 Lemma open_Rbar_lt y : open (fun u : R => Rbar_lt u y).
@@ -2434,7 +2499,7 @@ Lemma continuity_ptE (f : R -> R) (x : R) :
   continuity_pt f x <-> {for x, continuous f}.
 Proof. exact: continuity_pt_flim. Qed.
 
-Lemma continuous_withinNx {U V : uniformType} (Ueqdec : forall x y : U, x = y \/ x <> y)
+Lemma continuous_withinNx {U V : uniformType}
   (f : U -> V) x :
   {for x, continuous f} <-> f @ locally' x --> f x.
 Proof.
@@ -2448,12 +2513,12 @@ have /= := cfx P fxP.
 (* TODO: make things appear in canonical form i.e. {near x, ...} *)
 rewrite !near_simpl => /filterP [//= Q Qx QP].
 apply/filterP; exists (fun y => y <> x -> Q y) => // y Qy.
-by have [->|/Qy /QP //] := Ueqdec y x; apply: locally_singleton.
+by have [->|/eqP /Qy /QP //] := eqVneq y x; apply: locally_singleton.
 Qed.
 
 Lemma continuity_pt_flim' f x :
   continuity_pt f x <-> f @ locally' x --> f x.
-Proof. by rewrite continuity_ptE continuous_withinNx //; exact: Req_dec. Qed.
+Proof. by rewrite continuity_ptE continuous_withinNx. Qed.
 
 Lemma continuity_pt_locally' f x :
   continuity_pt f x <->
