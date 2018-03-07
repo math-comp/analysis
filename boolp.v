@@ -3,6 +3,24 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
+(* Quoting Coq'standard library:
+"This file provides classical logic and indefinite description under
+the form of Hilbert's epsilon operator":
+
+Axiom constructive_indefinite_description :
+  forall (A : Type) (P : A->Prop),
+    (exists x, P x) -> { x : A | P x }
+
+In fact it also derives the consequences of this axiom, which include
+informative excluded middle, choice, etc.                               *)
+Require Import ClassicalEpsilon.
+
+(* We also want functional extensionality *)
+Require Import FunctionalExtensionality.
+
+(* We also want propositional extensionality *)
+Require Import PropExtensionality PropExtensionalityFacts.
+
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice.
 
@@ -15,24 +33,33 @@ Require Import FunctionalExtensionality PropExtensionality.
 Require Import ClassicalEpsilon.
 
 (* -------------------------------------------------------------------- *)
-Record mextentionality := {
-  _ : forall (P Q : Prop), (P <-> Q) -> (P = Q);
-  _ : forall {T U : Type} (f g : T -> U),
-        (forall x, f x = g x) -> f = g;
-}.
+(* Record mextentionality := { *)
+(*   _ : forall (P : Prop), P = True \/ P = False; *)
+(*   _ : forall {T U : Type} (f g : T -> U), *)
+(*         (forall x, f x = g x) -> f = g; *)
+(* }. *)
+(* Record mclassic := { *)
+(*   _ : forall (P : Prop), {P} + {~P}; *)
+(* }. *)
 
-Fact extentionality : mextentionality.
+(* Axiom classic : mclassic. *)
+(* Axiom extentionality : mextentionality. *)
+
+(* -------------------------------------------------------------------- *)
+Lemma pselect (P : Prop) : {P} + {~P}.
+Proof. exact: excluded_middle_informative P. Qed.
+
+Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
 Proof.
-split.
-- exact: propositional_extensionality.
-- by move=> T U f g; apply: functional_extensionality_dep.
+apply: propositional_extensionality; split => [-> // |].
+exact: propositional_extensionality.
 Qed.
 
 Lemma propext (P Q : Prop) : (P <-> Q) -> (P = Q).
 Proof. by have [propext _] := extentionality; apply: propext. Qed.
 
 Lemma funext {T U : Type} (f g : T -> U) : (f =1 g) -> f = g.
-Proof. by case: extentionality=> _; apply. Qed.
+Proof. exact: functional_extensionality. Qed.
 
 Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
 Proof. by apply: propext; split=> [->|/propext]. Qed.
@@ -47,6 +74,7 @@ by rewrite propeqE; split=> [->//|?]; rewrite funeqE=> x; rewrite funeqE.
 Qed.
 
 Lemma funeq3E {T U V W : Type} (f g : T -> U -> V -> W) :
+
   (f = g) = (forall x y z, f x y z = g x y z).
 Proof.
 by rewrite propeqE; split=> [->//|?]; rewrite funeq2E=> x y; rewrite funeqE.
@@ -268,14 +296,16 @@ Proof. by move=> ?; case: (pselect P). Qed.
 
 Lemma notT (P : Prop) : P = False -> ~ P. Proof. by move->. Qed.
 
-Lemma notTE (P : Prop) : (~ P) -> P = False. Proof. by case: (pdegen P)=> ->. Qed.
+Lemma notTE (P : Prop) : (~ P) -> P = False.
+Proof. by move=> nP; rewrite propeqE; split. Qed.
+
 Lemma notFE (P : Prop) : (~ P) = False -> P.
 Proof. move/notT; exact: contrapT. Qed.
 
 Lemma notK : involutive not.
 Proof.
-move=> P; case: (pdegen P)=> ->; last by apply: notTE; intuition.
-by rewrite [~ True]notTE //; case: (pdegen (~ False)) => // /notFE.
+move=> P; rewrite propeqE; split; first exact: contrapT.
+by move=> ? ?.
 Qed.
 
 Lemma not_inj : injective not. Proof. exact: can_inj notK. Qed.
