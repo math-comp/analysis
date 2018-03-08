@@ -1575,6 +1575,12 @@ Section limit_composition.
 
 Context {K : absRingType} {V : normedModType K} {T : topologicalType}.
 
+Lemma lim_cst (F : set (set T)) (FF : Filter F) (k : V) : (fun=> k) @ F --> k.
+Proof.
+apply/flim_normP => _/posnumP[e].
+rewrite nearE /= subrr normm0; apply: (filterS _ filterT); by move=> *.
+Qed.
+
 Lemma lim_add (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
 Proof.
