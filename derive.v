@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import ssralg ssrnum fintype matrix interval.
+From mathcomp Require Import ssralg ssrnum fintype bigop matrix interval.
 Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology hierarchy landau forms.
 
@@ -987,6 +987,23 @@ Lemma derivableD (f g : V -> W) (x v : V) :
 Proof.
 move=> df dg; apply/cvg_ex; exists (derive f x v + derive g x v).
 exact: der_add.
+Qed.
+
+Lemma derivable_sum n (f : 'I_n -> V -> W) (x v : V) :
+  (forall i, derivable (f i) x v) -> derivable (\sum_(i < n) f i) x v.
+Proof.
+elim: n f => [f _|n IH f H].
+  rewrite big_ord0 (_ : 0 = cst 0) //; exact: derivable_cst.
+rewrite big_ord_recr /=; exact: derivableD (IH _ _) (H _).
+Qed.
+
+Lemma derive_sum n (f : 'I_n -> V -> W) (x v : V) :
+  (forall i, derivable (f i) x v) ->
+  derive (\sum_(i < n) f i) x v = \sum_(i < n) derive (f i) x v.
+Proof.
+elim: n f => [f _|n IH f H].
+  by rewrite 2!big_ord0 (_ : 0 = cst 0) // derive_cst.
+rewrite big_ord_recr deriveD // ?IH // ?big_ord_recr //; exact: derivable_sum.
 Qed.
 
 Let der_opp (f : V -> W) (x v : V) : derivable f x v ->
