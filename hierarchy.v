@@ -1351,6 +1351,18 @@ Hint Resolve normm_ge0.
 Arguments flim_norm {_ _ F FF}.
 Arguments flim_bounded {_ _ F FF}.
 
+Lemma continuous_flim_norm {K : absRingType} (V W : normedModType K) (f : V -> W) x l :
+  continuous f -> x --> l -> forall e : posreal, `|[f l - f x]| < e.
+Proof.
+move=> cf xl e.
+move/flim_norm: (cf l) => /(_ _ (posnum_gt0 e)).
+rewrite nearE /= => /locallyP; rewrite locally_E => -[i i0]; apply.
+have /@flim_norm : Filter [filter of x] by apply: filter_on_Filter.
+move/(_ _ xl _ i0).
+rewrite nearE /= => /locallyP; rewrite locally_E => -[j j0].
+move/(_ _ (ballxx _ j0)); by rewrite -ball_normE.
+Qed.
+
 (** ** Matrices *)
 
 Section matrix_normedMod.
@@ -1571,9 +1583,44 @@ Qed.
 
 End NVS_continuity.
 
+Section limit_combinator.
+
+Lemma lim_combinator {K : absRingType} (V W : normedModType K) (f : W -> V) x l :
+  continuous f -> x --> l -> f x --> f l.
+Proof.
+move=> cf xl.
+apply/flim_normP => _/posnumP[/= e].
+rewrite near_simpl.
+near=> v.
+  rewrite [e%:num]splitr -(subrK (f x) v) opprD addrCA addrC opprB.
+  rewrite (ler_lt_trans (ler_normm_add _ _)) // ltr_add //; [|near: v].
+  exact: continuous_flim_norm.
+end_near.
+apply/locallyP; rewrite locally_E.
+exists (e%:num / 2) => // ?; by rewrite -ball_normE.
+Qed.
+
+Lemma lim_combinator_pair {K : absRingType} (W V V' : normedModType K)
+  (f : W * W -> V * V') x y lx ly :
+  continuous (fun xy => f (xy.1, xy.2)) -> x --> lx -> y --> ly ->
+  f (x, y) --> f (lx, ly).
+Proof.
+move=> cf xlx yly.
+apply: lim_combinator; last exact: flim_prod.
+by rewrite (_ : f = fun xy : W * W => f (xy.1, xy.2)) // funeqE => -[a b].
+Qed.
+
+End limit_combinator.
+
 Section limit_composition.
 
 Context {K : absRingType} {V : normedModType K} {T : topologicalType}.
+
+Lemma lim_cst (F : set (set T)) (FF : Filter F) (k : V) : (fun=> k) @ F --> k.
+Proof.
+apply/flim_normP => _/posnumP[e].
+rewrite nearE /= subrr normm0; apply: (filterS _ filterT); by move=> *.
+Qed.
 
 Lemma lim_add (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.

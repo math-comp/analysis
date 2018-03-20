@@ -394,6 +394,13 @@ Canonical filtered_prod X1 X2 (Z1 : filteredType X1)
   FilteredType (X1 * X2) (Z1 * Z2)
     (fun x => filter_prod (locally x.1) (locally x.2)).
 
+Lemma flim_prod T {U U' V V' : filteredType T} (x : U) (l : U') (y : V) (k : V') :
+  x --> l -> y --> k -> (x, y) --> (l, k).
+Proof.
+move=> xl yk X [[X1 X2] /= [HX1 HX2] H]; exists (X1, X2) => //=.
+split; [exact: xl | exact: yk].
+Qed.
+
 Lemma cvg_ex {U : Type} (T : filteredType U) (F : set (set U)) :
   [cvg F in T] <-> (exists l : T, F --> l).
 Proof. by split=> [cvg|/getPex//]; exists [lim F in T]. Qed.
