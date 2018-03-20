@@ -139,6 +139,7 @@ rewrite pmulr_lgt0 // [`|[1 : R^o]|]normr1 mulr1 [X in X <= _]splitr.
 by rewrite ger_addr pmulr_lle0 // => /implyP; case: ltrgtP; rewrite ?normm_lt0.
 Qed.
 
+
 Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :
   f @ x --> (0 : Y) -> [o_x f of h] x = 0.
 Proof.
@@ -164,6 +165,70 @@ by rewrite -[LHS]/(_ 0 + _ 0 + _ 0) /cst [X in a + X]scaler0 littleo_lim0 ?addr0
 Qed.
 
 End diff_locally_converse_tentative.
+
+Section lim_lemmas.
+
+Variables X Y : normedModType R.
+
+Lemma lim_add_filter_on (F : filter_on X) (f g : X -> Y) (a b : Y) :
+  f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
+Proof.
+move=> fa fb; apply/flim_normP => _/posnumP[e].
+rewrite !near_simpl; near=> x.
+  rewrite opprD addrAC addrA -(addrA _ _ b) (addrC _ b) (splitr e%:num).
+  rewrite (ler_lt_trans (ler_normm_add _ _)) // ltr_add // ?normmN; near: x.
+end_near; by [move/flim_normP : fa; apply | move/flim_normP : fb; apply].
+Qed.
+
+Lemma lim_cst_filter_on (F : filter_on X) (k : Y) : cst k @ F --> k.
+Proof.
+apply/flim_normP => _/posnumP[e].
+rewrite nearE /cst /= subrr normm0; apply: (filterS _ filterT); by move=> *.
+Qed.
+
+Lemma lim_scalel_filter_on (F : filter_on X) (f : X -> R^o) (k : Y) (a : R^o) :
+  f @ F --> a -> (fun x => (f x) *: k) @ F --> a *: k.
+Proof.
+move=> /flim_normP fa.
+have [/eqP ->|k0] := boolP (k == 0).
+rewrite scaler0 (_ : (fun x : _ => _) = cst 0); first exact: lim_cst_filter_on.
+  by rewrite funeqE => x; rewrite /cst scaler0.
+apply/flim_normP => _/posnumP[e]; rewrite !near_simpl; near=> x.
+  rewrite -scalerBl (ler_lt_trans (ler_normmZ _ _)) //.
+  rewrite -ltr_pdivl_mulr ?normm_gt0 //; near: x.
+end_near; by move: fa; apply; rewrite divr_gt0 // normm_gt0.
+Qed.
+
+Lemma lim_add_locally' F (f g : X -> Y) (a b : Y) :
+  f @ locally' F --> a -> g @ locally' F --> b -> (f + g) @ locally' F --> a + b.
+Proof.
+move=> fa fb; apply/flim_normP => _/posnumP[e].
+rewrite !near_simpl; near=> x.
+  rewrite opprD addrAC addrA -(addrA _ _ b) (addrC _ b) (splitr e%:num).
+  rewrite (ler_lt_trans (ler_normm_add _ _)) // ltr_add // ?normmN; near: x.
+end_near; by [move/flim_normP : fa; apply | move/flim_normP : fb; apply].
+Qed.
+
+Lemma lim_cst_locally' (F : X) (k : Y) : cst k @ locally' F --> k.
+Proof.
+apply/flim_normP => _/posnumP[e].
+rewrite nearE /cst /= subrr normm0; apply: (filterS _ filterT); by move=> *.
+Qed.
+
+Lemma lim_scalel_locally' F (f : X -> R^o) (k : Y) (a : R^o) :
+  f @ (locally' F) --> a -> (fun x => (f x) *: k) @ (locally' F) --> a *: k.
+Proof.
+move=> /flim_normP fa.
+have [/eqP ->|k0] := boolP (k == 0).
+  rewrite scaler0 (_ : (fun x : _ => _) = cst 0); first exact: lim_cst_locally'.
+  by rewrite funeqE => x; rewrite /cst scaler0.
+apply/flim_normP => _/posnumP[e]; rewrite !near_simpl; near=> x.
+  rewrite -scalerBl (ler_lt_trans (ler_normmZ _ _)) //.
+  rewrite -ltr_pdivl_mulr ?normm_gt0 //; near: x.
+end_near; by move: fa; apply; rewrite divr_gt0 // normm_gt0.
+Qed.
+
+End lim_lemmas.
 
 Definition derive (f : V -> W) a v :=
   lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
@@ -309,6 +374,7 @@ Lemma littleo_linear0 (V' W' : normedModType R) (f : {linear V' -> W'})
 Proof.
 rewrite littleo_center0 comp_centerK (comp_centerK x id).
 suff -> : [o_ (0 : V') id of f] = cst 0 by [].
+(* NB(rei): should this be a lemma? *)
 rewrite /the_littleo /insubd; case: (insubP _) => // _ /asboolP lino -> {x}.
 rewrite /littleo in lino.
 suff f0 : forall e, e > 0 -> forall x, `|[x]| > 0 -> `|[f x]| <= e * `|[x]|.
