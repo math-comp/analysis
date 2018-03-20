@@ -11,4 +11,4 @@ These requirements can be installed in a custom way or through opam using the re
 - Custom:
   + Type `make` to use the provided `Makefile`.
 - Through opam (assuming `opam` has been properly configured and `extra-dev` repository is added):
-  + `opam pin add coq-mathcomp-analysis .`
+  + Type `opam pin add coq-mathcomp-analysis .`
