@@ -2105,6 +2105,90 @@ rewrite ltr_subl_addl -ltr_subl_addr; apply: ltr_trans ltyz.
 by apply: ltr_distW; rewrite -absRE absrB.
 Qed.
 
+Lemma ler0P' (R : realFieldType) (x : R) :
+  reflect (forall e, e > 0 -> x <= e) (x <= 0).
+Proof.
+apply: (iffP idP) => [lex0 e egt0|lex0].
+  by apply: ler_trans lex0 _; apply: ltrW.
+case: (lerP x 0) => // lt0x.
+have /midf_lt [_] := lt0x; rewrite ltrNge -eqbF_neg => /eqP<-.
+by rewrite add0r; apply: lex0; rewrite -[x]/((PosNum lt0x)%:num).
+Qed.
+
+Lemma IVT (f : R -> R) (a b v : R) :
+  let l := minr a b in let r := maxr a b in
+  {in `[l, r], continuous f} -> minr (f a) (f b) <= v <= maxr (f a) (f b) ->
+  exists2 c, c \in `[l, r] & f c = v.
+Proof.
+move=> l r; wlog : f v / f l <= f r.
+  move=> ivt; case: (lerP (f l) (f r)) => [|/ltrW lefrl].
+    exact: ivt.
+  move=> fcont flrv; have [] := ivt (fun x => - f x) (- v).
+  - by rewrite ler_oppr opprK.
+  - by move=> x /fcont; apply: (@continuousN _ [normedModType R of R^o]).
+  - by rewrite -oppr_max -oppr_min ler_oppr opprK ler_oppr opprK andbC.
+  by move=> c cab /eqP; rewrite eqr_opp => /eqP; exists c.
+move=> leflr fcont; have -> : minr (f a) (f b) = f l.
+  case: (minrP (f a) (f b)) => [lefab|/ltrW lefba].
+    rewrite /l; case: (minrP a b) => // /ltrW leba.
+    apply/eqP; rewrite eqr_le lefab andTb.
+    by move: leflr; rewrite /l minr_r // /r maxr_l.
+  rewrite /l; case: (minrP a b) => // leab.
+  apply/eqP; rewrite eqr_le lefba andTb.
+  by move: leflr; rewrite /l minr_l // /r maxr_r.
+have -> : maxr (f a) (f b) = f r.
+  case: (maxrP (f a) (f b)) => [lefba|/ltrW lefab].
+    rewrite /r; case: (maxrP a b) => // /ltrW leab.
+    apply/eqP; rewrite eqr_le lefba andbT.
+    by move: leflr; rewrite /l minr_l // /r maxr_r.
+  rewrite /r; case: (maxrP a b) => // leba.
+  apply/eqP; rewrite eqr_le lefab andbT.
+  by move: leflr; rewrite /l minr_r // /r maxr_l.
+have lelr : l <= r by rewrite ler_maxr ler_minl lerr.
+move=> /andP []; rewrite ler_eqVlt => /orP [/eqP<- _|ltflv].
+  by exists l => //; rewrite inE lerr lelr.
+rewrite ler_eqVlt => /orP [/eqP->|ltvfr].
+  by exists r => //; rewrite inE lerr lelr.
+set A := [pred c | (c <= r) && (f c <= v)].
+have An0 : reals.nonempty A by exists l; apply/andP; split=> //; apply: ltrW.
+have supA : has_sup A.
+  by apply/has_supP; split=> //; exists r; apply/ubP => ? /andP [].
+have supAlr : sup A \in `[l, r].
+  rewrite inE; apply/andP; split; last first.
+    by apply: sup_le_ub => //; apply/ubP => ? /andP [].
+  by apply: sup_upper_bound => //; rewrite inE lelr andTb ltrW.
+exists (sup A) => //; have lefsupv : f (sup A) <= v.
+  rewrite lerNgt; apply/negP => ltvfsup.
+  have vltfsup : 0 < f (sup A) - v by rewrite subr_gt0.
+  have /fcont /(_ _ (locally_ball _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
+    := supAlr.
+  have [t At supd_t] := sup_adherent supA [gt0 of d%:num].
+  suff /supdfe : ball (sup A) d%:num t.
+    rewrite ball_absE /= absRE ltr_norml => /andP [_].
+    by rewrite ltr_add2l ltr_oppr opprK ltrNge; have /andP [_ ->] := At.
+  rewrite ball_absE /= absRE ger0_norm.
+    by rewrite ltr_subl_addr -ltr_subl_addl.
+  by rewrite subr_ge0 sup_upper_bound.
+apply/eqP; rewrite eqr_le; apply/andP; split=> //.
+rewrite -subr_le0; apply/ler0P' => _/posnumP[e].
+rewrite ler_subl_addr -ler_subl_addl ltrW //.
+have /fcont /(_ _ (locally_ball _ e)) [_/posnumP[d] supdfe] := supAlr.
+have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) have x.
+  have /supdfe /= : ball (sup A) d%:num x by near: x.
+  rewrite ball_absE /= absRE => /ltr_distW; apply: ler_lt_trans.
+  rewrite ler_add2r ltrW //; suff : forall t, t \in `](sup A), r] -> v < f t.
+    by apply; rewrite inE; apply/andP; split; near: x.
+  move=> t /andP [ltsupt letr]; rewrite ltrNge; apply/negP => leftv.
+  move: ltsupt; rewrite ltrNge => /negP; apply; apply: sup_upper_bound => //.
+  by rewrite inE letr leftv.
+end_near; rewrite /= locally_simpl; [exists d%:num|exists 1|] => //.
+exists (r - sup A).
+  rewrite subr_gt0 ltr_def (itvP supAlr) andbT; apply/negP => /eqP resup.
+  by move: lefsupv; rewrite lerNgt -resup ltvfr.
+move=> t lttr ltsupt; move: lttr; rewrite /AbsRing_ball /= absrB absRE.
+by rewrite gtr0_norm ?subr_gt0 // ltr_add2r; apply: ltrW.
+Qed.
+
 (** Local properties in [R] *)
 
 Lemma locally_interval (P : R -> Prop) (x : R) (a b : Rbar) :
