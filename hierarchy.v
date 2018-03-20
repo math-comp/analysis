@@ -2,7 +2,7 @@
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
-From mathcomp Require Import matrix interval.
+From mathcomp Require Import matrix interval zmodp.
 Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology.
 
@@ -2407,6 +2407,80 @@ move=> x ltmaxx p /DcovA [n Dn /ltr_trans]; apply; apply: ler_lt_trans ltmaxx.
 have ltin : (index n (enum_fset D) < size (enum_fset D))%N by rewrite index_mem.
 rewrite -(nth_index 0 Dn) -(nth_map _ 0) //; apply: bigmaxr_ler.
 by rewrite size_map.
+Qed.
+
+Lemma vect_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
+  (forall i, compact (A i)) ->
+  compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
+Proof.
+move=> Aico.
+have : @compact (product_topologicalType _) [set f | forall i, A i (f i)].
+  by apply: tychonoff.
+move=> Aco F FF FA.
+set G := [set [set f : 'I_n.+1 -> T | B (\row_j f j)] | B in F].
+have row_simpl (v : 'rV[T]_n.+1) : \row_j (v ord0 j) = v.
+  by apply/rowP => ?; rewrite mxE.
+have row_simpl' (f : 'I_n.+1 -> T) : (\row_j f j) ord0 = f.
+  by rewrite funeqE=> ?; rewrite mxE.
+have [f [Af clGf]] : [set f | forall i, A i (f i)] `&`
+  @cluster (product_topologicalType _) G !=set0.
+  suff GF : ProperFilter G.
+    apply: Aco; exists [set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)] => //.
+    by rewrite predeqE => f; split => Af i; [have := Af i|]; rewrite row_simpl'.
+  apply Build_ProperFilter.
+    move=> _ [C FC <-]; have /filter_ex [v Cv] := FC.
+    by exists (v ord0); rewrite row_simpl.
+  split.
+  - by exists setT => //; apply: filterT.
+  - by move=> _ _ [C FC <-] [D FD <-]; exists (C `&` D) => //; apply: filterI.
+  move=> C D sCD [E FE EeqC]; exists [set v : 'rV[T]_n.+1 | D (v ord0)].
+    by apply: filterS FE => v Ev; apply/sCD; rewrite -EeqC row_simpl.
+  by rewrite predeqE => ?; rewrite row_simpl'.
+exists (\row_j f j); split; first by move=> i; rewrite mxE; apply: Af.
+move=> C D FC f_D; have {f_D} f_D :
+  locally (f : product_topologicalType _) [set g | D (\row_j g j)].
+  have [E f_E sED] := f_D; rewrite locallyE.
+  set Pj := fun j Bj => neigh (f j) Bj /\ Bj `<=` E ord0 j.
+  have exPj : forall j, exists Bj, neigh (f j) Bj /\ Bj `<=` E ord0 j.
+    move=> j; have := f_E ord0 j; rewrite locallyE => - [Bj].
+    by rewrite row_simpl'; exists Bj.
+  exists [set g | forall j, (get (Pj j)) (g j)]; split; last first.
+    move=> g Pg; apply: sED => i j; rewrite ord1 row_simpl'.
+    by have /getPex [_ /(_ _ (Pg j))] := exPj j.
+  split; last by move=> j; have /getPex [[]] := exPj j.
+  exists [set [set g | forall j, get (Pj j) (g j)] | k in 'I_n.+1];
+    last first.
+    rewrite predeqE => g; split; first by move=> [_ [_ _ <-]].
+    move=> Pg; exists [set g | forall j, get (Pj j) (g j)] => //.
+    by exists ord0.
+  move=> _ [_ _ <-].
+  exists (seq_fset [seq (@^~ j) @^-1` (get (Pj j)) | j : 'I_n.+1]).
+    move=> B'; rewrite seq_fsetE => /mapP [j _ ->]; rewrite inE.
+    apply/asboolP; exists j => //; exists (get (Pj j)) => //.
+    by have /getPex [[]] := exPj j.
+  rewrite predeqE => g; split=> [Ig j|Ig B'].
+    apply: (Ig ((@^~ j) @^-1` (get (Pj j)))).
+    by rewrite seq_fsetE; apply/mapP; exists j => //; rewrite mem_enum.
+  by rewrite seq_fsetE => /mapP [j _ ->]; apply: Ig.
+have GC : G [set g | C (\row_j g j)] by exists C.
+by have [g []] := clGf _ _ GC f_D; exists (\row_j (g j : T)).
+Qed.
+
+Lemma bounded_closed_compact n (A : set 'rV[R]_n.+1) :
+  bounded A -> closed A -> compact A.
+Proof.
+move=> [M normAltM] Acl.
+have Mnco : compact
+  [set v : 'rV[R]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
+  apply: (@vect_compact _ _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
+  by move=> _; apply: segment_compact.
+apply: subclosed_compact Acl Mnco _ => v /normAltM normvltM i.
+suff /ltrW : `|[v ord0 i : R^o]| < M + 1 by rewrite [ `|[_]| ]absRE ler_norml.
+apply: ler_lt_trans (normvltM _ _); last by rewrite ltr_addl.
+have vinseq : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
+  by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
+rewrite -[X in X <= _](nth_index 0 vinseq); apply: bigmaxr_ler.
+by rewrite index_mem.
 Qed.
 
 (** Open sets in [Rbar] *)
