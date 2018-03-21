@@ -1,9 +1,9 @@
 # Installing
 
 ## Requirements
-- [Coq version ≥ 8.7](https://coq.inria.fr)
+- [The Coq Proof Assistant version ≥ 8.7](https://coq.inria.fr)
 - [Mathematical Components development version](https://github.com/math-comp/math-comp)
-- [Finmap development library](https://github.com/math-comp/finmap)
+- [Finmap library development version](https://github.com/math-comp/finmap)
 
 These requirements can be installed in a custom way or through [opam 1.2](https://opam.ocaml.org/) using the repository https://coq.inria.fr/opam/extra-dev, which you can add by typing `opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev`.
 
