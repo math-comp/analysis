@@ -2406,45 +2406,18 @@ Canonical Rbar_filter := FilteredType R Rbar (Rbar_locally).
 
 Global Instance Rbar_locally'_filter : forall x, ProperFilter (Rbar_locally' x).
 Proof.
-(* move=> [x| |] ; (constructor ; [idtac | constructor]). *)
-(* - case => _/posnumP[eps] HP. *)
-(*   apply: (HP (x + (eps : R) / 2)). *)
-(*     rewrite /ball /= /AbsRing_ball opprD addrA subrr add0r absrN. *)
-(*     rewrite !absRE normf_div !ger0_norm // ltr_pdivr_mulr //. *)
-(*     by rewrite mulr_natr mulr2n ltr_addr. *)
-(*   move/eqP; rewrite eq_sym addrC -subr_eq subrr => /eqP. *)
-(*   by apply/eqP; rewrite ltr_eqF. *)
-(* - now exists 1. *)
-(* - move=> P Q [_/posnumP[dP] HP] [_/posnumP[dQ] HQ]. *)
-(*   exists (Num.min (dP : R) (dQ : R)) => // y Hy H; split. *)
-(*   + apply/(HP _ _ H)/sub_abs_ball; move/sub_ball_abs : Hy; rewrite mul1r /=. *)
-(*     move/ltr_le_trans; apply; by rewrite ler_minl lerr. *)
-(*   + apply/(HQ _ _ H)/sub_abs_ball; move/sub_ball_abs : Hy. *)
-(*     rewrite mul1r /= => /ltr_le_trans; apply;  by rewrite ler_minl lerr orbT. *)
-(* - move=> P Q H [_ /posnumP[dP] HP]. *)
-(*   exists dP => // y Hy H'; by apply/H/HP. *)
-(* - case=> N HP. *)
-(*   apply: (HP (N + 1)). *)
-(*   by rewrite ltr_addl. *)
-(* - now exists 0. *)
-(* - move=> P Q [MP HP] [MQ HQ]. *)
-(*   exists (Num.max MP MQ) => y Hy; split. *)
-(*   + apply: HP; by rewrite (ler_lt_trans _ Hy) // ler_maxr lerr. *)
-(*   + apply: HQ; by rewrite (ler_lt_trans _ Hy) // ler_maxr lerr orbT. *)
-(* - move=> P Q H [dP HP]. *)
-(*   exists dP => y Hy; by apply/H/HP. *)
-(* - case=> N HP. *)
-(*   apply: (HP (N - 1)). *)
-(*   by rewrite ltr_subl_addl ltr_addr. *)
-(* - now exists 0. *)
-(* - move=> P Q [MP HP] [MQ HQ]. *)
-(*   exists (Num.min MP MQ) => y Hy; split. *)
-(*   + apply/HP/(ltr_le_trans Hy); by rewrite ler_minl lerr. *)
-(*   + apply/HQ/(ltr_le_trans Hy); by rewrite ler_minl lerr orbT. *)
-(* - move=> P Q H [dP HP]. *)
-(*   exists dP => y Hy; by apply/H/HP. *)
-(* Qed. *)
-Admitted.
+case=> [x||]; first exact: Rlocally'_proper.
+  apply Build_ProperFilter.
+    by move=> P [M gtMP]; exists (M + 1); apply: gtMP; rewrite ltr_addl.
+  split=> /= [|P Q [MP gtMP] [MQ gtMQ] |P Q sPQ [M gtMP]]; first by exists 0.
+    by exists (maxr MP MQ) => ?; rewrite ltr_maxl => /andP [/gtMP ? /gtMQ].
+  by exists M => ? /gtMP /sPQ.
+apply Build_ProperFilter.
+  by move=> P [M ltMP]; exists (M - 1); apply: ltMP; rewrite gtr_addl oppr_lt0.
+split=> /= [|P Q [MP ltMP] [MQ ltMQ] |P Q sPQ [M ltMP]]; first by exists 0.
+  by exists (minr MP MQ) => ?; rewrite ltr_minr => /andP [/ltMP ? /ltMQ].
+by exists M => ? /ltMP /sPQ.
+Qed.
 
 Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
 Proof.
@@ -2606,66 +2579,48 @@ Definition Rbar_loc_seq (x : Rbar) (n : nat) := match x with
 Lemma flim_Rbar_loc_seq x : Rbar_loc_seq x --> Rbar_locally' x.
 Proof.
 move=> P; rewrite /Rbar_loc_seq.
-case: x => /= [x [_/posnumP[delta] Hp] |[delta Hp] |[delta Hp]].
-(* - (* x \in R *) *)
-(*   case: (nfloor_ex (delta^-1)) => [ | N [_ /RltP HN]]. *)
-(*     by apply Rlt_le, Rinv_0_lt_compat, delta. *)
-(*   exists N => // n Hn. *)
-(*   apply: Hp => /=. *)
-(*     rewrite /ball /= /AbsRing_ball. *)
-(*     rewrite INRE (_ : n%:R + _ = n.+1%:R); last by rewrite -addn1 natrD. *)
-(*     rewrite opprD addrA subrr add0r absrN absRE ger0_norm //. *)
-(*     rewrite -(invrK (pos delta)) ltr_pinv; last 2 first. *)
-(*       by rewrite inE ltr0n andbT unitfE. *)
-(*       by rewrite !inE unitfE gtr_eqF /= invr_gt0. *)
-(*     move: HN; rewrite RinvE // RplusE => /ltr_le_trans; apply. *)
-(*     by rewrite -addn1 natrD ler_add // INRE // ler_nat. *)
-(*   move/eqP. *)
-(*   rewrite eq_sym addrC -subr_eq subrr eq_sym INRE. *)
-(*   rewrite (_ : n%:R + 1 = n.+1%:R); last by rewrite -addn1 natrD. *)
-(*   by rewrite invr_eq0 pnatr_eq0. *)
-(* - (* x = +oo *) *)
-(*   case: (nfloor_ex (Num.max 0 delta)) => [ | N [_ /RltP HN]]. *)
-(*     by apply/RleP; rewrite ler_maxr lerr. *)
-(*   exists N.+1 => // n. *)
-(*   rewrite -(@ler_nat [numDomainType of R]) => Hn. *)
-(*   apply: Hp. *)
-(*   move: HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN. *)
-(*   move: (ltr_le_trans HN Hn); rewrite INRE; apply: ler_lt_trans. *)
-(*   by rewrite ler_maxr lerr orbT. *)
-(* - (* x = -oo *) *)
-(*   case: (nfloor_ex (Num.max 0 (-delta))) => [ | N [_ /RltP HN]]. *)
-(*     by apply/RleP; rewrite ler_maxr lerr. *)
-(*   exists N.+1 => // n. *)
-(*   rewrite -(@ler_nat [numDomainType of R]) => Hn. *)
-(*   apply: Hp. *)
-(*   move: HN; rewrite RplusE INRE (_ : _ + 1 = N%:R + 1%:R) // -natrD addn1 => HN. *)
-(*   rewrite lter_oppl. *)
-(*   move: (ltr_le_trans HN Hn); rewrite INRE; apply: ler_lt_trans. *)
-(*   by rewrite ler_maxr lerr orbT. *)
-(* Qed. *)
-Admitted.
+case: x => /= [x [_/posnumP[delta] Hp] |[delta Hp] |[delta Hp]]; last 2 first.
+    have /ZnatP [N Nfloor] : ifloor (maxr delta 0) \is a Znat.
+      by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC.
+    exists N.+1 => // n ltNn; apply: Hp.
+    have /ler_lt_trans : delta <= maxr delta 0 by rewrite ler_maxr lerr.
+    apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
+    by rewrite -(@natrD [ringType of R] N 1) INRE ler_nat addn1.
+  have /ZnatP [N Nfloor] : ifloor (maxr (- delta) 0) \is a Znat.
+    by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC.
+  exists N.+1 => // n ltNn; apply: Hp; rewrite ltr_oppl.
+  have /ler_lt_trans : - delta <= maxr (- delta) 0 by rewrite ler_maxr lerr.
+  apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
+  by rewrite -(@natrD [ringType of R] N 1) INRE ler_nat addn1.
+have /ZnatP [N Nfloor] : ifloor (delta%:num^-1) \is a Znat.
+  by rewrite Znat_def ifloor_ge0.
+exists N => // n leNn; have gt0Sn : 0 < INR n + 1.
+  by apply: ltr_spaddr => //; apply/RleP/pos_INR.
+apply: Hp; last first.
+  apply/eqP; rewrite eq_sym addrC -subr_eq subrr eq_sym.
+  by apply/invr_neq0/lt0r_neq0.
+rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0.
+rewrite absRE gtr0_norm; last by rewrite invr_gt0.
+rewrite -[X in X < _]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
+apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor ler_add //.
+by rewrite INRE ler_nat.
+Qed.
 
+(* TODO: express using ball?*)
 Lemma continuity_pt_locally f x : continuity_pt f x <->
-  forall eps : posreal, locally x (fun u => Rabs (f u - f x) < eps (* TODO: express using ball?*)).
+  forall eps : posreal, locally x (fun u => `|f u - f x| < eps).
 Proof.
-(* split. *)
-(* - move=> H eps. *)
-(*   move: (H eps%:num [gt0 of eps%:num]) => {H} [d [H1 H2]]. *)
-(*   rewrite /= /R_dist /D_x /no_cond in H2. *)
-(*   exists (mkposreal _ H1) => // y H. *)
-(*   case/boolP: (x == y) => [/eqP <-|xy]. *)
-(*   + by rewrite RminusE subrr Rabs_R0. *)
-(*   + apply/RltP/H2; split; [split => //; by apply/eqP|]. *)
-(*     by move/sub_ball_abs : H; rewrite mul1r /= absrB => /RltP. *)
-(* - move=> H eps He. *)
-(*   move: (H (mkposreal _ He)) => {H} [_/posnumP[d] H]. *)
-(*   exists d; split=>//. *)
-(*   move=> h [Zh Hh]. *)
-(*   apply/RltP/H. *)
-(*   apply/(@sub_norm_ball_pos _ [normedModType R of R^o] x d)/RltP. *)
-(*   by rewrite /ball_norm -normmB. *)
-Admitted.
+split=> [fcont e|fcont _/RltP/posnumP[e]]; last first.
+  have [_/posnumP[d] xd_fxe] := fcont e.
+  exists d%:num; split; first by apply/RltP; have := [gt0 of d%:num].
+  by move=> y [_ /RltP yxd]; apply/RltP/xd_fxe; rewrite /AbsRing_ball /= absrB.
+have /RltP egt0 := [gt0 of e%:num].
+have [_ [/RltP/posnumP[d] dx_fxe]] := fcont e%:num egt0.
+exists d%:num => // y xyd; case: (eqVneq x y) => [->|xney].
+  by rewrite subrr absr0.
+apply/RltP/dx_fxe; split; first by split=> //; apply/eqP.
+by have /RltP := xyd; rewrite absrB.
+Qed.
 
 Lemma continuity_pt_flim (f : R -> R) (x : R) :
   continuity_pt f x <-> {for x, continuous f}.
