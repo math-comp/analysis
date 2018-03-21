@@ -17,7 +17,7 @@ build: [
 ]
 remove: ["rm" "-R" "%{lib}%/coq/user-contrib/mathcomp/analysis"]
 depends: [
-  "coq" {>= "8.7"}
+  "coq" { (>= "8.7" & < "8.8~") }
   "coq-mathcomp-ssreflect"   {= "dev"}
   "coq-mathcomp-algebra"     {= "dev"}
   "coq-mathcomp-real_closed" {= "dev"}
