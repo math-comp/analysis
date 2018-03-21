@@ -2362,7 +2362,7 @@ rewrite -(nth_index 0 Dn) -(nth_map _ 0) //; apply: bigmaxr_ler.
 by rewrite size_map.
 Qed.
 
-Lemma vect_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
+Lemma rV_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
   (forall i, compact (A i)) ->
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
 Proof.
@@ -2425,7 +2425,7 @@ Proof.
 move=> [M normAltM] Acl.
 have Mnco : compact
   [set v : 'rV[R]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
-  apply: (@vect_compact _ _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
+  apply: (@rV_compact _ _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvltM i.
 suff /ltrW : `|[v ord0 i : R^o]| < M + 1 by rewrite [ `|[_]| ]absRE ler_norml.
