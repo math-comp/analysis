@@ -50,11 +50,16 @@ $ opam install coq.8.7.2
 ```
 3. Install Mathematical Components development version 
 ```
+$ opam install coq-mathcomp-ssreflect.dev
+$ opam install coq-mathcomp-fingroup.dev
+$ opam install coq-mathcomp-algebra.dev
+$ opam install coq-mathcomp-solvable.dev
+$ opam install coq-mathcomp-field.dev
 $ opam install coq-mathcomp-real_closed.dev
 ```
 4. Install Finite maps library
 ```
-$ opam install coq-mathcomp-finmap
+$ opam install coq-mathcomp-finmap.dev
 ```
 5. Download and install `coq-mathcomp-analysis`
 ```
