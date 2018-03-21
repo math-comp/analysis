@@ -44,13 +44,19 @@ $ opam init -j4 # adapt to the number of cores you have
 $ eval `opam config env`
 $ opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
 ```
-1. Install Coq 8.7.2
-`$ opam install coq.8.7.2`
-1. Install Mathematical Components development version 
-`$ opam install coq-mathcomp-real_closed.dev`
-1. Install Finite maps library
-`$ opam install coq-mathcomp-finmap`
-1. Download and install `coq-mathcomp-analysis`
+2. Install Coq 8.7.2
+```
+$ opam install coq.8.7.2
+```
+3. Install Mathematical Components development version 
+```
+$ opam install coq-mathcomp-real_closed.dev
+```
+4. Install Finite maps library
+```
+$ opam install coq-mathcomp-finmap
+```
+5. Download and install `coq-mathcomp-analysis`
 ```
 $ git clone https://github.com/math-comp/analysis
 $ cd analysis
