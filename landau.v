@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
-From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
+From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
 Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology hierarchy.
 
@@ -261,6 +261,13 @@ Next Obligation. by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. Qed.
 Next Obligation. by move=> f g; rewrite funeqE => x /=; rewrite scalerDl. Qed.
 Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
   LmodType _ (U -> V) (fct_lmodMixin U V).
+
+Lemma fct_sumE (T : Type) (M : zmodType) n (f : 'I_n -> T -> M) (x : T) :
+  (\sum_(i < n) f i) x = \sum_(i < n) f i x.
+Proof.
+elim: n f => [|n H] f;
+  by rewrite !(big_ord0,big_ord_recr) //= -[LHS]/(_ x + _ x) H.
+Qed.
 
 End function_space.
 
