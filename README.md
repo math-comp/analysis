@@ -30,16 +30,6 @@ see [AUTHORS.md](AUTHORS.md)
 
 see [FILES.md](FILES.md)
 
-## Requirements
-
-* The Coq proof-assistant
-  
-    https://coq.inria.fr/
-
-* The Mathematical Components library
-
-    https://github.com/math-comp/math-comp
-
-## Installation Procedure
+## Requirements and Installation Procedure
 
 see [INSTALL.md](INSTALL.md)
