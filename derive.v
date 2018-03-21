@@ -294,16 +294,6 @@ Section DifferentialR3.
 
 Variables (V W : normedModType R).
 
-Lemma ler0P' (R : realFieldType) (x : R) :
-  reflect (forall e, e > 0 -> x <= e) (x <= 0).
-Proof.
-apply: (iffP idP) => [lex0 e egt0|lex0].
-  by apply: ler_trans lex0 _; apply: ltrW.
-case: (lerP x 0) => // lt0x.
-have /midf_lt [_] := lt0x; rewrite ltrNge -eqbF_neg => /eqP<-.
-by rewrite add0r; apply: lex0; rewrite -[x]/((PosNum lt0x)%:num).
-Qed.
-
 Lemma littleo_linear0 (V' W' : normedModType R) (f : {linear V' -> W'})
   (x : V') : [o_x (center x) of f \o center x] = cst 0.
 Proof.
@@ -315,7 +305,7 @@ suff f0 : forall e, e > 0 -> forall x, `|[x]| > 0 -> `|[f x]| <= e * `|[x]|.
   rewrite funeqE => x; apply/eqP; rewrite -normm_le0.
   case: (lerP `|[x]| 0) => [|xn0].
     by rewrite !normm_le0 => /eqP ->; rewrite linear0.
-  rewrite -(mul0r `|[x]|) -ler_pdivr_mulr //; apply/ler0P' => e egt0.
+  rewrite -(mul0r `|[x]|) -ler_pdivr_mulr //; apply/ler_gt0P => e egt0.
   by rewrite ler_pdivr_mulr //; apply: f0.
 move=> _ /posnumP[e] x xn0.
 have /lino /locallyP [_ /posnumP[d] dfe] := posnum_gt0 e.
