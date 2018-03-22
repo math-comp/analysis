@@ -75,7 +75,7 @@ Require Import Rstruct Rbar set posnum topology hierarchy.
 (* [Omega_F e of f] == returns a function with a bigOmega canonical structure *)
 (*                     provably equal to f if f is indeed a bigOmega of e     *)
 (*                     or e otherwise                                         *)
-(* f \is `Omega_F(e) == f : T -> V is a bigOmega of e : T -> W near F         *)
+(* f \is 'Omega_F(e) == f : T -> V is a bigOmega of e : T -> W near F         *)
 (* f =Omega_F h      == f : T -> V is a bigOmega of h : T -> V near F         *)
 (* --> lemmas: relation with big-O, transitivity, product of functions, etc.  *)
 (*                                                                            *)
@@ -96,6 +96,72 @@ Local Close Scope R_scope.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 Local Open Scope classical_set_scope.
+
+Section function_space.
+
+Definition cst {T T' : Type} (x : T') : T -> T' := fun=> x.
+
+Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
+  @ZmodMixin (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g) _ _ _ _.
+Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
+Next Obligation. by move=> f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite add0r. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite addNr. Qed.
+Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
+
+Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
+  @RingMixin [zmodType of T -> M] (cst 1) (fun f g x => f x * g x)
+             _ _ _ _ _ _.
+Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
+Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDl. Qed.
+Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDr. Qed.
+Next Obligation.
+by apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
+Qed.
+Canonical fct_ringType (T : pointedType) (M : ringType) :=
+  RingType (T -> M) (fct_ringMixin T M).
+
+Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
+  ComRingType (T -> M) _.
+Next Obligation. by move=> f g; rewrite funeqE => x; rewrite mulrC. Qed.
+
+Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
+  := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
+Next Obligation. rewrite funeqE => x; exact: scalerA. Qed.
+Next Obligation. by move=> f; rewrite funeqE => x /=; rewrite scale1r. Qed.
+Next Obligation. by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. Qed.
+Next Obligation. by move=> f g; rewrite funeqE => x /=; rewrite scalerDl. Qed.
+Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
+  LmodType _ (U -> V) (fct_lmodMixin U V).
+
+Lemma fct_sumE (T : Type) (M : zmodType) n (f : 'I_n -> T -> M) (x : T) :
+  (\sum_(i < n) f i) x = \sum_(i < n) f i x.
+Proof.
+elim: n f => [|n H] f;
+  by rewrite !(big_ord0,big_ord_recr) //= -[LHS]/(_ x + _ x) H.
+Qed.
+
+End function_space.
+
+Section Linear1.
+Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
+Canonical linear_eqType := EqType {linear U -> V | s} gen_eqMixin.
+Canonical linear_choiceType := ChoiceType {linear U -> V | s} gen_choiceMixin.
+End Linear1.
+Section Linear2.
+Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V)
+        (s_law : GRing.Scale.law s).
+Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_law}
+                                            (@GRing.null_fun_linear R U V s s_law).
+End Linear2.
+
+Reserved Notation "{o_ F f }" (at level 0, F at level 0, format "{o_ F  f }").
+Reserved Notation "[littleo 'of' f 'for' fT ]" (at level 0, f at level 0,
+  format "[littleo  'of'  f  'for'  fT ]").
+Reserved Notation "[littleo 'of' f ]" (at level 0, f at level 0,
+  format "[littleo  'of'  f ]").
 
 Reserved Notation "'o_ x" (at level 200, x at level 0, only parsing).
 Reserved Notation "'o" (at level 200, only parsing).
@@ -162,6 +228,12 @@ Reserved Notation "fx '==o_(' x \near F ')' hx"
    F at level 0, hx at next level,
    format "fx  '==o_(' x  \near  F ')'  hx").
 
+Reserved Notation "{O_ F f }" (at level 0, F at level 0, format "{O_ F  f }").
+Reserved Notation "[bigO 'of' f 'for' fT ]" (at level 0, f at level 0,
+  format "[bigO  'of'  f  'for'  fT ]").
+Reserved Notation "[bigO 'of' f ]" (at level 0, f at level 0,
+  format "[bigO  'of'  f ]").
+
 Reserved Notation "'O_ x" (at level 200, x at level 0, only parsing).
 Reserved Notation "'O" (at level 200, only parsing).
 (* Parsing *)
@@ -227,82 +299,11 @@ Reserved Notation "fx '==O_(' x \near F ')' hx"
    F at level 0, hx at next level,
    format "fx  '==O_(' x  \near  F ')'  hx").
 
-Section function_space.
-
-Definition cst {T T' : Type} (x : T') : T -> T' := fun=> x.
-
-Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
-  @ZmodMixin (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g) _ _ _ _.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
-Next Obligation. by move=> f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite add0r. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite addNr. Qed.
-Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
-
-Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
-  @RingMixin [zmodType of T -> M] (cst 1) (fun f g x => f x * g x)
-             _ _ _ _ _ _.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDl. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDr. Qed.
-Next Obligation.
-by apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
-Qed.
-Canonical fct_ringType (T : pointedType) (M : ringType) :=
-  RingType (T -> M) (fct_ringMixin T M).
-
-Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
-  ComRingType (T -> M) _.
-Next Obligation. by move=> f g; rewrite funeqE => x; rewrite mulrC. Qed.
-
-Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
-  := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
-Next Obligation. rewrite funeqE => x; exact: scalerA. Qed.
-Next Obligation. by move=> f; rewrite funeqE => x /=; rewrite scale1r. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. Qed.
-Next Obligation. by move=> f g; rewrite funeqE => x /=; rewrite scalerDl. Qed.
-Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
-  LmodType _ (U -> V) (fct_lmodMixin U V).
-
-Lemma fct_sumE (T : Type) (M : zmodType) n (f : 'I_n -> T -> M) (x : T) :
-  (\sum_(i < n) f i) x = \sum_(i < n) f i x.
-Proof.
-elim: n f => [|n H] f;
-  by rewrite !(big_ord0,big_ord_recr) //= -[LHS]/(_ x + _ x) H.
-Qed.
-
-End function_space.
-
-Section Linear1.
-Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
-Canonical linear_eqType := EqType {linear U -> V | s} gen_eqMixin.
-Canonical linear_choiceType := ChoiceType {linear U -> V | s} gen_choiceMixin.
-End Linear1.
-Section Linear2.
-Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V)
-        (s_law : GRing.Scale.law s).
-Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_law}
-                                            (@GRing.null_fun_linear R U V s s_law).
-End Linear2.
-
 (* tags for littleo and bigO notations *)
 Definition the_tag : unit := tt.
 Definition gen_tag : unit := tt.
 Definition a_tag : unit := tt.
 Lemma showo : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). Proof. by []. Qed.
-
-Reserved Notation "{o_ F f }" (at level 0, F at level 0, format "{o_ F  f }").
-Reserved Notation "{O_ F f }" (at level 0, F at level 0, format "{O_ F  f }").
-Reserved Notation "[littleo 'of' f 'for' fT ]" (at level 0, f at level 0,
-  format "[littleo  'of'  f  'for'  fT ]").
-Reserved Notation "[littleo 'of' f ]" (at level 0, f at level 0,
-  format "[littleo  'of'  f ]").
-Reserved Notation "[bigO 'of' f 'for' fT ]" (at level 0, f at level 0,
-  format "[bigO  'of'  f  'for'  fT ]").
-Reserved Notation "[bigO 'of' f ]" (at level 0, f at level 0,
-  format "[bigO  'of'  f ]").
 
 (* Tentative to handle small o and big O notations *)
 Section Domination.
@@ -1193,8 +1194,8 @@ Reserved Notation "[Omega_ x e 'of' f ]"
 (* Printing *)
 Reserved Notation "[Omega '_' x e 'of' f ]"
   (at level 0, x, e at level 0, format "[Omega '_' x  e  'of'  f ]").
-Reserved Notation "`Omega_ F g"
-  (at level 0, F at level 0, format "`Omega_ F g").
+Reserved Notation "'Omega_ F g"
+  (at level 0, F at level 0, format "''Omega_' F g").
 Reserved Notation "f '=Omega_' F h" (at level 70, no associativity,
   F at level 0, h at next level, format "f  '=Omega_' F  h").
 
@@ -1247,7 +1248,7 @@ Fact is_bigOmega_key {W} (F : set (set T)) (g : T -> W) : pred_key (is_bigOmega 
 Proof. by []. Qed.
 Canonical is_bigOmega_keyed {W} (F : set (set T)) (g : T -> W) :=
   KeyedQualifier (is_bigOmega_key F g).
-Notation "`Omega_ F g" := (is_bigOmega F g).
+Notation "'Omega_ F g" := (is_bigOmega F g).
 
 Lemma bigOmegaP {W} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
   bigOmega F f g.
@@ -1262,7 +1263,7 @@ Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
 (* properties of big Omega *)
 
 Lemma eqOmegaO {W} (F : filter_on T) (f : T -> V) (e : T -> W) :
-  (f \is `Omega_F(e)) = (e =O_F f) :> Prop.
+  (f \is 'Omega_F(e)) = (e =O_F f) :> Prop.
 Proof.
 rewrite propeqE; split => [| /eqOP[x x0 Hx] ];
   [rewrite qualifE => /asboolP[x x0 Hx]; apply/eqOP |
@@ -1273,7 +1274,7 @@ rewrite propeqE; split => [| /eqOP[x x0 Hx] ];
 Qed.
 
 Lemma eqOmegaE (F : filter_on T) (f e : T -> V) :
-  (f =Omega_F(e)) = (f \is `Omega_F(e)).
+  (f =Omega_F(e)) = (f \is 'Omega_F(e)).
 Proof.
 rewrite propeqE; split=> [->|]; rewrite qualifE; last first.
   by move=> H; rewrite /the_bigOmega val_insubd H.
@@ -1291,7 +1292,7 @@ Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ _ _ _ f _ _ idfun).
 Notation mkbigOmega tag x := (the_bigOmega tag (PhantomF x)).
 Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e).
 Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
-Notation "`Omega_ F g" := (is_bigOmega F g).
+Notation "'Omega_ F g" := (is_bigOmega F g).
 Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
 
 Section big_omega_in_R.
@@ -1346,8 +1347,8 @@ Reserved Notation "[Theta_ x e 'of' f ]"
 (*Printing*)
 Reserved Notation "[Theta '_' x e 'of' f ]"
   (at level 0, x, e at level 0, format "[Theta '_' x  e  'of'  f ]").
-Reserved Notation "`Theta_ F g"
-  (at level 0, F at level 0, format "`Theta_ F g").
+Reserved Notation "'Theta_ F g"
+  (at level 0, F at level 0, format "''Theta_' F g").
 Reserved Notation "f '=Theta_' F h" (at level 70, no associativity,
   F at level 0, h at next level, format "f  '=Theta_' F  h").
 
@@ -1404,7 +1405,7 @@ Fact is_bigTheta_key {W} (F : set (set T)) (g : T -> W) : pred_key (is_bigTheta 
 Proof. by []. Qed.
 Canonical is_bigTheta_keyed {W} (F : set (set T)) (g : T -> W) :=
   KeyedQualifier (is_bigTheta_key F g).
-Notation "`Theta_ F g" := (@is_bigTheta _ F g).
+Notation "'Theta_ F g" := (@is_bigTheta _ F g).
 
 Lemma bigThetaP {W} (F : set (set T)) (g : T -> W) (f : {Theta_F g}) :
   bigTheta F f g.
@@ -1419,9 +1420,9 @@ Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
 (* properties of big Theta *)
 
 Lemma bigThetaE {W} (F : filter_on T) (f : T -> V) (g : T -> W) :
-  f \is `Theta_F(g) <-> f =O_F g /\ f \is `Omega_F(g).
+  (f \is 'Theta_F(g)) = (f =O_F g /\ f \is 'Omega_F(g)) :> Prop.
 Proof.
-split.
+rewrite propeqE; split.
 - rewrite qualifE => /asboolP[[/= k1 k2] /andP[k10 k20]] /near_andP[Hx1 Hx2].
   split; by [rewrite eqOP; exists k2|rewrite qualifE; apply/asboolP; exists k1].
 - case; rewrite eqOP qualifE => -[k1 k10 H1] /asboolP[k2 k20 H2].
@@ -1430,7 +1431,7 @@ split.
 Qed.
 
 Lemma eqThetaE (F : filter_on T) (f e : T -> V) :
-  (f =Theta_F(e)) = (f \is `Theta_F(e)).
+  (f =Theta_F(e)) = (f \is 'Theta_F(e)).
 Proof.
 rewrite propeqE; split=> [->|]; rewrite qualifE; last first.
   by move=> H; rewrite /the_bigTheta val_insubd H.
@@ -1466,7 +1467,7 @@ Notation "[bigTheta 'of' f ]" := (@bigTheta_clone _ _ _ _ _ _ f _ _ idfun).
 Notation mkbigTheta tag x := (the_bigTheta tag (PhantomF x)).
 Notation "[Theta_ x e 'of' f ]" := (mkbigTheta gen_tag x f e).
 Notation "[Theta '_' x e 'of' f ]" := (the_bigTheta _ _ (PhantomF x) f e).
-Notation "`Theta_ F g" := (is_bigTheta F g).
+Notation "'Theta_ F g" := (is_bigTheta F g).
 Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
 
 Section big_theta_in_R.
@@ -1477,7 +1478,7 @@ Lemma addTheta (F : filter_on pT) (f g h : _ -> R^o)
   (f0 : forall x, 0 <= f x) (g0 : forall x, 0 <= g x) (h0 : forall x, 0 <= h x) :
   [Theta_F h of f] + [O_F h of g] =Theta_F h.
 Proof.
-rewrite eqThetaE; apply/bigThetaE; split; first by rewrite eqThetaO addO.
+rewrite eqThetaE bigThetaE; split; first by rewrite eqThetaO addO.
 rewrite -eqOmegaE; apply: addOmega.
 - by move=> ?; rewrite /the_bigTheta val_insubd /=; case: ifP.
 - by move=> ?; rewrite /the_bigO val_insubd /=; case: ifP.
