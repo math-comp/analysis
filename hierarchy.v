@@ -6,6 +6,121 @@ From mathcomp Require Import matrix interval zmodp.
 Require Import boolp reals.
 Require Import Rstruct Rbar set posnum topology.
 
+(******************************************************************************)
+(* This file extends the topological hierarchy with metric-related notions:   *)
+(* balls, absolute values, norms.                                             *)
+(*                                                                            *)
+(* * Uniform spaces :                                                         *)
+(*                  locally_ ball == neighbourhoods defined using balls       *)
+(*                    uniformType == interface type for uniform space         *)
+(*                                   structure. We use here a pseudo-metric   *)
+(*                                   definition of uniform space: a type      *)
+(*                                   equipped with balls.                     *)
+(*      UniformMixin brefl bsym btriangle locb == builds the mixin for a      *)
+(*                                   uniform space from the properties of     *)
+(*                                   balls and the compatibility between      *)
+(*                                   balls and locally.                       *)
+(*                UniformType T m == packs the uniform space mixin into a     *)
+(*                                   uniformType. T must have a canonical     *)
+(*                                   topologicalType structure.               *)
+(*      [uniformType of T for cT] == T-clone of the uniformType structure cT. *)
+(*             [uniformType of T] == clone of a canonical uniformType         *)
+(*                                   structure on T.                          *)
+(*     topologyOfBallMixin umixin == builds the mixin for a topological space *)
+(*                                   from a mixin for a uniform space.        *)
+(*                       ball x e == ball of center x and radius e.           *)
+(*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
+(*                                   balls.                                   *)
+(*                     entourages == set of entourages defined by balls. An   *)
+(*                                   entourage can be seen as a               *)
+(*                                   "neighbourhood" of the diagonal set      *)
+(*                                   D = {(x, x) | x in T}.                   *)
+(*                   unif_cont f <-> f is uniformly continuous.               *)
+(*                                                                            *)
+(* * Rings with absolute value :                                              *)
+(*                    absRingType == interface type for a ring with absolute  *)
+(*                                   value structure.                         *)
+(*     AbsRingMixin abs0 absN1 absD absM abseq0 == builds the mixin for a     *)
+(*                                   ring with absolute value from the        *)
+(*                                   algebraic properties of the absolute     *)
+(*                                   value; the carrier type must have a      *)
+(*                                   ringType structure.                      *)
+(*      [absRingType of T for cT] == T-clone of the absRingType structure cT. *)
+(*             [absRingType of T] == clone of a canonical absRingType         *)
+(*                                   structure on T.                          *)
+(*                           `|x| == the absolute value of x.                 *)
+(*                        ball_ N == balls defined by the norm/absolute value *)
+(*                                   N.                                       *)
+(*                   locally_dist == neighbourhoods defined by a "distance"   *)
+(*                                   function                                 *)
+(*                                                                            *)
+(* * Complete spaces :                                                        *)
+(*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
+(*                                   (epsilon-delta definition).              *)
+(*                      cauchy F <-> the set of sets F is a cauchy filter     *)
+(*                                   (using the near notations).              *)
+(*                   completeType == interface type for a complete uniform    *)
+(*                                   space structure.                         *)
+(*       CompleteType T cvgCauchy == packs the proof that every proper cauchy *)
+(*                                   filter on T converges into a             *)
+(*                                   completeType structure; T must have a    *)
+(*                                   canonical uniformType structure.         *)
+(*     [completeType of T for cT] == T-clone of the completeType structure    *)
+(*                                   cT.                                      *)
+(*            [completeType of T] == clone of a canonical completeType        *)
+(*                                   structure on T.                          *)
+(*                                                                            *)
+(* * Normed modules :                                                         *)
+(*                normedModType K == interface type for a normed module       *)
+(*                                   structure over the ring with absolute    *)
+(*                                   value K.                                 *)
+(*     NormedModMixin normD normZ balln normeq0 == builds the mixin for a     *)
+(*                                   normed module from the algebraic         *)
+(*                                   properties of the norm and the           *)
+(*                                   compatibility between the norm and       *)
+(*                                   balls; the carrier type must have a      *)
+(*                                   lmodType K structure for K an            *)
+(*                                   absRingType.                             *)
+(*            NormedModType K T m == packs the mixin m to build a             *)
+(*                                   normedModType K; T must have canonical   *)
+(*                                   lmodType K and uniformType structures.   *)
+(*  [normedModType K of T for cT] == T-clone of the normedModType K structure *)
+(*                                   cT.                                      *)
+(*         [normedModType K of T] == clone of a canonical normedModType K     *)
+(*                                   structure on T.                          *)
+(*                         `|[x]| == the norm of x.                           *)
+(*                      ball_norm == balls defined by the norm.               *)
+(*                   locally_norm == neighbourhoods defined by the norm.      *)
+(*                        bounded == set of bounded sets.                     *)
+(*                                                                            *)
+(* * Complete normed modules :                                                *)
+(*        completeNormedModType K == interface type for a complete normed     *)
+(*                                   module structure over the ring with      *)
+(*                                   absolute value K.                        *)
+(* [completeNormedModType K of T] == clone of a canonical complete normed     *)
+(*                                   module structure over K on T.            *)
+(*                                                                            *)
+(* * Filters :                                                                *)
+(*                            \oo == "eventually" filter on nat: set of       *)
+(*                                   predicates on natural numbers that are   *)
+(*                                   eventually true.                         *)
+(*          at_left x, at_right x == filters on real numbers for predicates   *)
+(*                                   that locally hold on the left/right of   *)
+(*                                   x.                                       *)
+(*                Rbar_locally' x == filter on extended real numbers that     *)
+(*                                   corresponds to locally' x if x is a real *)
+(*                                   number and to predicates that are        *)
+(*                                   eventually true if x is +oo/-oo.         *)
+(*                 Rbar_locally x == same as Rbar_locally' where locally' is  *)
+(*                                   replaced with locally.                   *)
+(*                 Rbar_loc_seq x == sequence that converges to x in the set  *)
+(*                                   of extended real numbers.                *)
+(*                                                                            *)
+(* --> We used these definitions to prove the intermediate value theorem and  *)
+(*     the Heine-Borel theorem, which states that the compact sets of R^n are *)
+(*     the closed and bounded sets.                                           *)
+(******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -107,7 +222,7 @@ suff : Uniform.ball m x (PosNum lt12)%:num x by [].
 exact: Uniform.ax1.
 Qed.
 
-Program Definition uniform_TopologicalTypeMixin (T : Type)
+Program Definition topologyOfBallMixin (T : Type)
   (loc : T -> set (set T)) (m : Uniform.mixin_of loc) :
   Topological.mixin_of loc := topologyOfFilterMixin _ _ _.
 Next Obligation.
@@ -417,7 +532,7 @@ Coercion absRing_filteredType (K : absRingType) :=
    FilteredType K K (locally_ AbsRing_ball).
 Canonical absRing_filteredType.
 Coercion absRing_topologicalType (K : absRingType) :=
-  TopologicalType K (uniform_TopologicalTypeMixin AbsRingUniformMixin).
+  TopologicalType K (topologyOfBallMixin AbsRingUniformMixin).
 Canonical absRing_topologicalType.
 Coercion absRing_UniformType (K : absRingType) := UniformType K AbsRingUniformMixin.
 Canonical absRing_UniformType.
@@ -670,7 +785,7 @@ Definition fct_uniformType_mixin :=
   UniformMixin fct_ball_center fct_ball_sym fct_ball_triangle erefl.
 
 Definition fct_topologicalTypeMixin :=
-  uniform_TopologicalTypeMixin fct_uniformType_mixin.
+  topologyOfBallMixin fct_uniformType_mixin.
 
 Canonical generic_source_filter := @Filtered.Source _ _ _ (locally_ fct_ball).
 Canonical fct_topologicalType :=
