@@ -43,7 +43,7 @@ $ git clone https://github.com/math-comp/analysis
 $ cd analysis
 $ make
 ```
-You may then browse the files using `coqide` (you might want to "opam install coqide") or using [proof general for emacs](https://github.com/ProofGeneral/PG)
+You may then browse the files using `coqide` (you might want to `opam install coqide`) or using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## From scratch instructions break-down (Debian based)
 1. Install and configure opam
