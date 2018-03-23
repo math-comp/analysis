@@ -13,7 +13,7 @@ Detailed instructions for possible installations of Mathematical Components are 
 - Custom (assuming Coq ≥ 8.7 and Mathematical Components `master` branch have been installed):
   + Type `make` to use the provided `Makefile`.
 - Through opam (assuming `opam` has been properly configured and `extra-dev` repository is added):
-  + Type `opam pin add coq-mathcomp-analysis .`
+  + Type `opam install coq-mathcomp-analysis` (all dependencies should be automatically installed)
 
 ## From scratch instructions (assuming Debian based distribution)
 ### How to install as a package
