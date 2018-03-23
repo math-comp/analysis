@@ -16,6 +16,7 @@ Detailed instructions for possible installations of Mathematical Components are 
   + Type `opam pin add coq-mathcomp-analysis .`
 
 ## From scratch instructions (assuming Debian based distribution)
+### How to install as a package
 From scratch with a Debian based linux distribution, here is what you should type:
 ```
 $ sudo apt-get install opam
@@ -34,6 +35,15 @@ $ export OPAMROOT=~/.opam_mathcomp_analysis
 $ eval `opam config env`
 ```
 everytime you want to work in the same context
+
+### How to edit and test the source code
+If you would rather edit and test the files than intalling them, we suggest that you replace the `opam pin add coq-mathcomp-analysis .` command with the following
+```
+$ opam pin add coq-mathcomp-analysis . -n
+$ opam install coq-mathcomp-analaysis --deps-only
+$ make
+```
+You may then browse the files using `coqide` (you might want to "opam install coqide") or using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## From scratch instructions break-down (Debian based)
 1. Install and configure opam
