@@ -71,9 +71,18 @@ $ opam install coq-mathcomp-real_closed.dev
 ```
 $ opam install coq-mathcomp-finmap.dev
 ```
-5. Download and install `coq-mathcomp-analysis`
+5. Download and compile `coq-mathcomp-analysis` without installing
 ```
 $ git clone https://github.com/math-comp/analysis
 $ cd analysis
 $ make
+```
+## How to clean you computer
+- If you installed the package `coq-mathcomp-analysis` and wish to get rid of it, just type
+```
+$ opam remove coq-mathcomp-analysis
+```
+- However if you wish to clean the entire installation (including `coq` and `mathcomp` dependencies) you should remove the opam root we created for this purpose:
+```
+$ rm -rf ~/.opam_mathcomp_analysis
 ```
