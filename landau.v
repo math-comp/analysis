@@ -90,73 +90,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import GRing.Theory Num.Def Num.Theory.
 
-Delimit Scope R_scope with coqR.
-Delimit Scope real_scope with real.
-Local Close Scope R_scope.
-Local Open Scope ring_scope.
-Local Open Scope real_scope.
-Local Open Scope classical_set_scope.
-
-Section function_space.
-
-Definition cst {T T' : Type} (x : T') : T -> T' := fun=> x.
-
-Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
-  @ZmodMixin (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g) _ _ _ _.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
-Next Obligation. by move=> f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite add0r. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite addNr. Qed.
-Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
-
-Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
-  @RingMixin [zmodType of T -> M] (cst 1) (fun f g x => f x * g x)
-             _ _ _ _ _ _.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDl. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDr. Qed.
-Next Obligation.
-by apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
-Qed.
-Canonical fct_ringType (T : pointedType) (M : ringType) :=
-  RingType (T -> M) (fct_ringMixin T M).
-
-Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
-  ComRingType (T -> M) _.
-Next Obligation. by move=> f g; rewrite funeqE => x; rewrite mulrC. Qed.
-
-Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
-  := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
-Next Obligation. rewrite funeqE => x; exact: scalerA. Qed.
-Next Obligation. by move=> f; rewrite funeqE => x /=; rewrite scale1r. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. Qed.
-Next Obligation. by move=> f g; rewrite funeqE => x /=; rewrite scalerDl. Qed.
-Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
-  LmodType _ (U -> V) (fct_lmodMixin U V).
-
-Lemma fct_sumE (T : Type) (M : zmodType) n (f : 'I_n -> T -> M) (x : T) :
-  (\sum_(i < n) f i) x = \sum_(i < n) f i x.
-Proof.
-elim: n f => [|n H] f;
-  by rewrite !(big_ord0,big_ord_recr) //= -[LHS]/(_ x + _ x) H.
-Qed.
-
-End function_space.
-
-Section Linear1.
-Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
-Canonical linear_eqType := EqType {linear U -> V | s} gen_eqMixin.
-Canonical linear_choiceType := ChoiceType {linear U -> V | s} gen_choiceMixin.
-End Linear1.
-Section Linear2.
-Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V)
-        (s_law : GRing.Scale.law s).
-Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_law}
-                                            (@GRing.null_fun_linear R U V s s_law).
-End Linear2.
-
 Reserved Notation "{o_ F f }" (at level 0, F at level 0, format "{o_ F  f }").
 Reserved Notation "[littleo 'of' f 'for' fT ]" (at level 0, f at level 0,
   format "[littleo  'of'  f  'for'  fT ]").
@@ -298,6 +231,109 @@ Reserved Notation "fx '==O_(' x \near F ')' hx"
   (at level 70, no associativity,
    F at level 0, hx at next level,
    format "fx  '==O_(' x  \near  F ')'  hx").
+
+Reserved Notation "{Omega_ F f }"
+  (at level 0, F at level 0, format "{Omega_ F  f }").
+Reserved Notation "[bigOmega 'of' f 'for' fT ]"
+  (at level 0, f at level 0, format "[bigOmega  'of'  f  'for'  fT ]").
+Reserved Notation "[bigOmega 'of' f ]"
+  (at level 0, f at level 0, format "[bigOmega  'of'  f ]").
+Reserved Notation "[Omega_ x e 'of' f ]"
+  (at level 0, x, e at level 0, only parsing).
+(* Printing *)
+Reserved Notation "[Omega '_' x e 'of' f ]"
+  (at level 0, x, e at level 0, format "[Omega '_' x  e  'of'  f ]").
+Reserved Notation "'Omega_ F g"
+  (at level 0, F at level 0, format "''Omega_' F g").
+Reserved Notation "f '=Omega_' F h"
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '=Omega_' F  h").
+
+Reserved Notation "{Theta_ F g }"
+  (at level 0, F at level 0, format "{Theta_  F  g }").
+Reserved Notation "[bigTheta 'of' f 'for' fT ]"
+  (at level 0, f at level 0, format "[bigTheta  'of'  f  'for'  fT ]").
+Reserved Notation "[bigTheta 'of' f ]"
+  (at level 0, f at level 0, format "[bigTheta  'of'  f ]").
+Reserved Notation "[Theta_ x e 'of' f ]"
+  (at level 0, x, e at level 0, only parsing).
+(*Printing*)
+Reserved Notation "[Theta '_' x e 'of' f ]"
+  (at level 0, x, e at level 0, format "[Theta '_' x  e  'of'  f ]").
+Reserved Notation "'Theta_ F g"
+  (at level 0, F at level 0, format "''Theta_' F g").
+Reserved Notation "f '=Theta_' F h"
+  (at level 70, no associativity,
+   F at level 0, h at next level,
+   format "f  '=Theta_' F  h").
+
+Delimit Scope R_scope with coqR.
+Delimit Scope real_scope with real.
+Local Close Scope R_scope.
+Local Open Scope ring_scope.
+Local Open Scope real_scope.
+Local Open Scope classical_set_scope.
+
+Section function_space.
+
+Definition cst {T T' : Type} (x : T') : T -> T' := fun=> x.
+
+Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
+  @ZmodMixin (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g) _ _ _ _.
+Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
+Next Obligation. by move=> f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite add0r. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite addNr. Qed.
+Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
+
+Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
+  @RingMixin [zmodType of T -> M] (cst 1) (fun f g x => f x * g x)
+             _ _ _ _ _ _.
+Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
+Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDl. Qed.
+Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDr. Qed.
+Next Obligation.
+by apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
+Qed.
+Canonical fct_ringType (T : pointedType) (M : ringType) :=
+  RingType (T -> M) (fct_ringMixin T M).
+
+Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
+  ComRingType (T -> M) _.
+Next Obligation. by move=> f g; rewrite funeqE => x; rewrite mulrC. Qed.
+
+Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
+  := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
+Next Obligation. rewrite funeqE => x; exact: scalerA. Qed.
+Next Obligation. by move=> f; rewrite funeqE => x /=; rewrite scale1r. Qed.
+Next Obligation. by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. Qed.
+Next Obligation. by move=> f g; rewrite funeqE => x /=; rewrite scalerDl. Qed.
+Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
+  LmodType _ (U -> V) (fct_lmodMixin U V).
+
+Lemma fct_sumE (T : Type) (M : zmodType) n (f : 'I_n -> T -> M) (x : T) :
+  (\sum_(i < n) f i) x = \sum_(i < n) f i x.
+Proof.
+elim: n f => [|n H] f;
+  by rewrite !(big_ord0,big_ord_recr) //= -[LHS]/(_ x + _ x) H.
+Qed.
+
+End function_space.
+
+Section Linear1.
+Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
+Canonical linear_eqType := EqType {linear U -> V | s} gen_eqMixin.
+Canonical linear_choiceType := ChoiceType {linear U -> V | s} gen_choiceMixin.
+End Linear1.
+Section Linear2.
+Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V)
+        (s_law : GRing.Scale.law s).
+Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_law}
+                                            (@GRing.null_fun_linear R U V s s_law).
+End Linear2.
 
 (* tags for littleo and bigO notations *)
 Definition the_tag : unit := tt.
@@ -1183,22 +1219,6 @@ Qed.
 
 End asymptotic_equivalence.
 
-Reserved Notation "{Omega_ F f }"
-  (at level 0, F at level 0, format "{Omega_ F  f }").
-Reserved Notation "[bigOmega 'of' f 'for' fT ]" (at level 0, f at level 0,
-  format "[bigOmega  'of'  f  'for'  fT ]").
-Reserved Notation "[bigOmega 'of' f ]" (at level 0, f at level 0,
-  format "[bigOmega  'of'  f ]").
-Reserved Notation "[Omega_ x e 'of' f ]"
-  (at level 0, x, e at level 0, only parsing).
-(* Printing *)
-Reserved Notation "[Omega '_' x e 'of' f ]"
-  (at level 0, x, e at level 0, format "[Omega '_' x  e  'of'  f ]").
-Reserved Notation "'Omega_ F g"
-  (at level 0, F at level 0, format "''Omega_' F g").
-Reserved Notation "f '=Omega_' F h" (at level 70, no associativity,
-  F at level 0, h at next level, format "f  '=Omega_' F  h").
-
 Section big_omega.
 
 Context {K : absRingType} {T : Type} {V : normedModType K}.
@@ -1336,21 +1356,6 @@ Qed.
 
 End big_omega_in_R.
 
-Reserved Notation "{Theta_ F g }"
-  (at level 0, F at level 0, format "{Theta_  F  g }").
-Reserved Notation "[bigTheta 'of' f 'for' fT ]" (at level 0, f at level 0,
-  format "[bigTheta  'of'  f  'for'  fT ]").
-Reserved Notation "[bigTheta 'of' f ]" (at level 0, f at level 0,
-  format "[bigTheta  'of'  f ]").
-Reserved Notation "[Theta_ x e 'of' f ]"
-  (at level 0, x, e at level 0, only parsing).
-(*Printing*)
-Reserved Notation "[Theta '_' x e 'of' f ]"
-  (at level 0, x, e at level 0, format "[Theta '_' x  e  'of'  f ]").
-Reserved Notation "'Theta_ F g"
-  (at level 0, F at level 0, format "''Theta_' F g").
-Reserved Notation "f '=Theta_' F h" (at level 70, no associativity,
-  F at level 0, h at next level, format "f  '=Theta_' F  h").
 
 Section big_theta.
 

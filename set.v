@@ -92,6 +92,15 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Reserved Notation "A `&` B"  (at level 48, left associativity).
+Reserved Notation "A `*` B"  (at level 46, left associativity).
+Reserved Notation "A `+` B"  (at level 54, left associativity).
+Reserved Notation "A +` B"  (at level 54, left associativity).
+Reserved Notation "A `|` B" (at level 52, left associativity).
+Reserved Notation "a |` A" (at level 52, left associativity).
+Reserved Notation "A `\` B" (at level 50, left associativity).
+Reserved Notation "A `\ b" (at level 50, left associativity).
+
 Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
 Proof. by move: x (x) y => /propT-> [] []. Qed.
 
@@ -111,15 +120,6 @@ Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
 
 Canonical Prop_eqType := EqType Prop gen_eqMixin.
 Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
-
-Reserved Notation "A `&` B"  (at level 48, left associativity).
-Reserved Notation "A `*` B"  (at level 46, left associativity).
-Reserved Notation "A `+` B"  (at level 54, left associativity).
-Reserved Notation "A +` B"  (at level 54, left associativity).
-Reserved Notation "A `|` B" (at level 52, left associativity).
-Reserved Notation "a |` A" (at level 52, left associativity).
-Reserved Notation "A `\` B" (at level 50, left associativity).
-Reserved Notation "A `\ b" (at level 50, left associativity).
 
 Definition set A := A -> Prop.
 Definition in_set T (P : set T) : pred T := [pred x | `[<P x>]].
