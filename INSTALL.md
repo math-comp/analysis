@@ -38,7 +38,7 @@ everytime you want to work in the same context
 ### How to edit and test the source code
 If you would rather edit and test the files than intalling them, we suggest that you replace the `opam install coq-mathcomp-analysis` command with the following
 ```
-$ opam install coq-mathcomp-analaysis --deps-only
+$ opam install coq-mathcomp-analysis --deps-only
 $ git clone https://github.com/math-comp/analysis
 $ cd analysis
 $ make
