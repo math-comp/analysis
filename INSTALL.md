@@ -19,11 +19,11 @@ Detailed instructions for possible installations of Mathematical Components are 
 ## From scratch instructions
 ### How to install as a package
 1. Install opam
-- with Debian/Ubuntu
+- with Debian/Ubuntu:
 ```
 $ sudo apt-get install opam
 ```
-- any system:
+- any linux system:
 ```
 $ wget https://raw.github.com/ocaml/opam/master/shell/opam_installer.sh -O - | sh -s /usr/local/bin
 ```
