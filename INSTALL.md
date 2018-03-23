@@ -16,27 +16,37 @@ Detailed instructions for possible installations of Mathematical Components are 
   + Type `opam install coq-mathcomp-analysis`
   (all the dependencies should be automatically installed, assuming `opam` has been properly configured and `extra-dev` repository is added)
 
-## From scratch instructions (assuming Debian based distribution)
+## From scratch instructions
 ### How to install as a package
-From scratch with a Debian based linux distribution, here is what you should type:
+1. Install opam
+- with Debian/Ubuntu
 ```
 $ sudo apt-get install opam
+```
+- any system:
+```
+$ wget https://raw.github.com/ocaml/opam/master/shell/opam_installer.sh -O - | sh -s /usr/local/bin
+```
+
+2. Configure opam
+```
 $ export OPAMROOT=~/.opam_mathcomp_analysis
 $ opam init -j4 # adapt to the number of cores you have
 $ eval `opam config env`
 $ opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
+```
+3. Install our package (and all its dependencies)
+```
 $ opam install coq-mathcomp-analysis
 ```
-
-Then you need to type
+4. Everytime you want to work in this same context, you need to type
 ```
 $ export OPAMROOT=~/.opam_mathcomp_analysis 
 $ eval `opam config env`
 ```
-everytime you want to work in the same context
 
 ### How to edit and test the source code
-If you would rather edit and test the files than intalling them, we suggest that you replace the `opam install coq-mathcomp-analysis` command with the following
+If you would rather edit and test the files than intalling them, we suggest that you replace `opam install coq-mathcomp-analysis` command with the following
 ```
 $ opam install coq-mathcomp-analysis --deps-only
 $ git clone https://github.com/math-comp/analysis
@@ -45,20 +55,12 @@ $ make
 ```
 You may then browse the files using `coqide` (you might want to `opam install coqide`) or using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
-## From scratch instructions break-down (Debian based)
-1. Install and configure opam
-```
-$ sudo apt-get install opam
-$ export OPAMROOT=~/.opam_mathcomp_analysis
-$ opam init -j4 # adapt to the number of cores you have
-$ eval `opam config env`
-$ opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
-```
-2. Install Coq 8.7.2
+## Break-down of phase 3 of the installation procedure step by step
+1. Install Coq 8.7.2
 ```
 $ opam install coq.8.7.2
 ```
-3. Install Mathematical Components development version 
+2. Install Mathematical Components development version 
 ```
 $ opam install coq-mathcomp-ssreflect.dev
 $ opam install coq-mathcomp-fingroup.dev
@@ -67,11 +69,11 @@ $ opam install coq-mathcomp-solvable.dev
 $ opam install coq-mathcomp-field.dev
 $ opam install coq-mathcomp-real_closed.dev
 ```
-4. Install Finite maps library
+3. Install Finite maps library
 ```
 $ opam install coq-mathcomp-finmap.dev
 ```
-5. Download and compile `coq-mathcomp-analysis` without installing
+4. Download and compile `coq-mathcomp-analysis` without installing
 ```
 $ git clone https://github.com/math-comp/analysis
 $ cd analysis
