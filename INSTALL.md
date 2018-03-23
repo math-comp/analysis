@@ -24,9 +24,7 @@ $ export OPAMROOT=~/.opam_mathcomp_analysis
 $ opam init -j4 # adapt to the number of cores you have
 $ eval `opam config env`
 $ opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
-$ git clone https://github.com/math-comp/analysis
-$ cd analysis
-$ opam pin add coq-mathcomp-analysis .
+$ opam install coq-mathcomp-analysis
 ```
 
 Then you need to type
@@ -37,10 +35,11 @@ $ eval `opam config env`
 everytime you want to work in the same context
 
 ### How to edit and test the source code
-If you would rather edit and test the files than intalling them, we suggest that you replace the `opam pin add coq-mathcomp-analysis .` command with the following
+If you would rather edit and test the files than intalling them, we suggest that you replace the `opam install coq-mathcomp-analysis` command with the following
 ```
-$ opam pin add coq-mathcomp-analysis . -n
 $ opam install coq-mathcomp-analaysis --deps-only
+$ git clone https://github.com/math-comp/analysis
+$ cd analysis
 $ make
 ```
 You may then browse the files using `coqide` (you might want to "opam install coqide") or using [proof general for emacs](https://github.com/ProofGeneral/PG)
