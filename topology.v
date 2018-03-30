@@ -1795,6 +1795,7 @@ by apply: flim_cluster clsAp_q; apply: flim_within.
 Qed.
 
 End Compact.
+Arguments hausdorff : clear implicits.
 
 Lemma continuous_compact (T U : topologicalType) (f : T -> U) A :
   {in A, continuous f} -> compact A -> compact (f @` A).

@@ -328,7 +328,7 @@ suff f0 : forall e, e > 0 -> forall x, `|[x]| > 0 -> `|[f x]| <= e * `|[x]|.
   rewrite funeqE => x; apply/eqP; rewrite -normm_le0.
   case: (lerP `|[x]| 0) => [|xn0].
     by rewrite !normm_le0 => /eqP ->; rewrite linear0.
-  rewrite -(mul0r `|[x]|) -ler_pdivr_mulr //; apply/ler_gt0P => e egt0.
+  rewrite -(mul0r `|[x]|) -ler_pdivr_mulr //; apply/ler0_addgt0P => e egt0.
   by rewrite ler_pdivr_mulr //; apply: f0.
 move=> _ /posnumP[e] x xn0.
 have /lino /locallyP [_ /posnumP[d] dfe] := posnum_gt0 e.
