@@ -1592,7 +1592,7 @@ End Product_Topology.
 
 (* Should have a generic ^' operator *)
 Definition locally' {T : topologicalType} (x : T) :=
-  within (fun y => y <> x) (locally x).
+  within (fun y => y != x) (locally x).
 
 Lemma locallyE' (T : topologicalType) (x : T) :
   locally x = locally' x `&` at_point x.
@@ -1602,7 +1602,7 @@ rewrite predeqE => A; split=> [x_A|[x_A Ax]].
   move: x_A; rewrite locallyE => -[B [x_B sBA]]; rewrite /locally' locallyE.
   by exists B; split=> // ? /sBA.
 move: x_A; rewrite /locally' !locallyE => -[B [x_B sBA]]; exists B.
-by split=> // y /sBA Ay; case: (eqVneq y x) => [->|/eqP].
+by split=> // y /sBA Ay; case: (eqVneq y x) => [->|].
 Qed.
 
 Global Instance locally'_filter {T : topologicalType} (x : T) :

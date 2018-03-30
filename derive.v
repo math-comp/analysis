@@ -263,29 +263,27 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: lim_add.
   rewrite -(scale1r (_ _ v)); apply: lim_scalel => /= X [e e0].
   rewrite /AbsRing_ball /ball_ /= => eX.
   apply/locallyP; rewrite locally_E.
-  exists e => //= x _ /eqP x0.
-  apply eX; by rewrite mulVr // subrr absr0.
+  by exists e => //= x _ x0; apply eX; rewrite mulVr // subrr absr0.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
   rewrite (_ : (fun _ => _) = cst 0); first exact: lim_cst.
-  rewrite funeqE => ?; by rewrite /cst /= scaler0 /k littleo_lim0 // scaler0.
+  by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
 apply/flim_normP => e e0.
 rewrite nearE /=; apply/locallyP; rewrite locally_E.
 have /(littleoP [littleo of k]) /locallyP[i i0 Hi] : 0 < e / (2 * `|[v]|).
   by rewrite divr_gt0 // pmulr_rgt0 // normm_gt0.
 exists (i / `|[v]|); first by rewrite divr_gt0 // normm_gt0.
 move=> /= j; rewrite /ball /= /AbsRing_ball /ball_ add0r absrN.
-rewrite ltr_pdivl_mulr ?normm_gt0 // => jvi /eqP j0.
+rewrite ltr_pdivl_mulr ?normm_gt0 // => jvi j0.
 rewrite add0r normmN (ler_lt_trans (ler_normmZ _ _)) //.
 rewrite -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
 have /Hi/ler_lt_trans -> // : ball 0 i (j *: v).
   by rewrite -ball_normE /ball_ add0r normmN (ler_lt_trans _ jvi) // ler_normmZ.
 rewrite -(mulrC e) -mulrA -ltr_pdivl_mull // mulrA mulVr ?unitfE ?gtr_eqF //.
-have -> : `|j^-1| = (/ `|j|)%coqR by rewrite -RinvE // -Rabs_Rinv; exact/eqP.
-rewrite RinvE ?absr_eq0 // invrK mul1r.
-rewrite -ltr_pdivl_mull ?invrK ?invr_gt0 ?pmulr_rgt0 // ?normm_gt0 //.
-rewrite (ler_lt_trans (ler_normmZ _ _)) // mulrC -mulrA.
-by rewrite ltr_pmull // ?pmulr_rgt0 ?normm_gt0 // ?normr_gt0 // ltr1n.
+rewrite absRE normrV ?unitfE // div1r invrK ltr_pdivr_mull; last first.
+  by rewrite pmulr_rgt0 // normm_gt0.
+apply: (ler_lt_trans (ler_normmZ _ _)); rewrite absRE mulrC -mulrA.
+by rewrite ltr_pmull ?ltr1n // pmulr_rgt0 ?normm_gt0 // normr_gt0.
 Qed.
 
 End DifferentialR.
@@ -1206,7 +1204,7 @@ have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
 apply: flim_trans => A [_/posnumP[e] /= Ae].
 move: fn0; rewrite !near_simpl; apply: filter_app; near=> h.
   move=> fhvxn0; have he : AbsRing_ball 0 e%:num h by near: h.
-  have hn0 : h <> 0 by near: h.
+  have hn0 : h != 0 by near: h.
   suff <- :
     - ((1 / f x) * (1 / f (h *: v + x))) *: (h^-1 *: (f (h *: v + x) - f x)) =
     h^-1 *: (1 / f (h *: v + x) - 1 / f x).
@@ -1294,8 +1292,7 @@ move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_right_proper_filter x.
 apply: flim_map_lim => A /cvfx /locallyP [_ /posnumP[e] xe_A].
-exists e%:num => // y xe_y; rewrite ltr_def => /andP [/eqP xney _].
-exact: xe_A.
+by exists e%:num => // y xe_y; rewrite ltr_def => /andP [xney _]; apply: xe_A.
 Qed.
 
 Lemma cvg_at_leftE (V : normedModType R) (f : R -> V) x :
@@ -1305,8 +1302,8 @@ move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_left_proper_filter x.
 apply: flim_map_lim => A /cvfx /locallyP [_ /posnumP[e] xe_A].
-exists e%:num => // y xe_y; rewrite ltr_def => /andP [/eqP xney _].
-by apply: xe_A => // /eqP; rewrite eq_sym => /eqP.
+exists e%:num => // y xe_y; rewrite ltr_def => /andP [xney _].
+by apply: xe_A => //; rewrite eq_sym.
 Qed.
 
 Lemma le0r_flim_map (T : topologicalType) (F : set (set T))
@@ -1362,7 +1359,7 @@ apply/eqP; rewrite eqr_le; apply/andP; split.
     have /fdrvbl dfc := cab; rewrite -cvg_at_rightE //.
     apply: flim_trans dfc; apply: flim_app.
     move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.
-    exact/eqP/lt0r_neq0.
+    exact/lt0r_neq0.
   near=> h.
     apply: mulr_ge0_le0; first by rewrite invr_ge0; apply: ltrW; near: h.
     by rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
@@ -1376,7 +1373,7 @@ apply: le0r_flim_map; last first.
   have /fdrvbl dfc := cab; rewrite -cvg_at_leftE //.
   apply: flim_trans dfc; apply: flim_app.
   move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.
-  exact/eqP/ltr0_neq0.
+  exact/ltr0_neq0.
 near=> h.
   apply: mulr_le0; first by rewrite invr_le0; apply: ltrW; near: h.
   by rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
