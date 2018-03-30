@@ -537,6 +537,9 @@ Canonical absRing_topologicalType.
 Coercion absRing_UniformType (K : absRingType) := UniformType K AbsRingUniformMixin.
 Canonical absRing_UniformType.
 
+Lemma ball_absE (K : absRingType) : ball = ball_ (@abs K).
+Proof. by []. Qed.
+
 Lemma locallyN (R : absRingType) (x : R) :
   locally (- x) = [set [set - y | y in A] | A in locally x].
 Proof.
@@ -655,6 +658,55 @@ Proof. exact: flim_close. Qed.
 
 End Locally.
 Hint Resolve locally_ball.
+
+Lemma ler_addgt0Pr (R : realFieldType) (x y : R) :
+  reflect (forall e, e > 0 -> x <= y + e) (x <= y).
+Proof.
+apply/(iffP idP)=> [lexy _/posnumP[e] | lexye]; first by rewrite ler_paddr.
+case: (lerP x y) => // ltyx.
+have /midf_lt [_] := ltyx; rewrite ltrNge -eqbF_neg => /eqP<-.
+suff -> : (y + x) / 2 = y + (x - y) / 2.
+  by apply/lexye/divr_gt0 => //; rewrite subr_gt0.
+by rewrite !mulrDl addrC -mulN1r -mulrA mulN1r [RHS]addrC {3}(splitr y)
+  [RHS]GRing.subrKA.
+Qed.
+
+Lemma ler_addgt0Pl (R : realFieldType) (x y : R) :
+  reflect (forall e, e > 0 -> x <= e + y) (x <= y).
+Proof.
+by apply/(equivP (ler_addgt0Pr x y)); split=> lexy e /lexy; rewrite addrC.
+Qed.
+
+Lemma in_segment_addgt0Pr (R : realFieldType) (x y z : R) :
+  reflect (forall e, e > 0 -> y \in `[(x - e), (z + e)]) (y \in `[x, z]).
+Proof.
+apply/(iffP idP)=> [xyz _/posnumP[e] | xyz_e].
+  rewrite inE; apply/andP; split; last by rewrite ler_paddr // (itvP xyz).
+  by rewrite ler_subl_addr ler_paddr // (itvP xyz).
+rewrite inE; apply/andP.
+by split; apply/ler_addgt0Pr => ? /xyz_e /andP []; rewrite ler_subl_addr.
+Qed.
+
+Lemma in_segment_addgt0Pl (R : realFieldType) (x y z : R) :
+  reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]) (y \in `[x, z]).
+Proof.
+apply/(equivP (in_segment_addgt0Pr x y z)).
+by split=> zxy e /zxy; rewrite [z + _]addrC [_ + x]addrC.
+Qed.
+
+Lemma absRE (x : R) : `|x|%real = `|x|%R.
+Proof. by []. Qed.
+
+Lemma Rhausdorff : hausdorff [topologicalType of R].
+Proof.
+move=> x y clxy.
+apply/eqP; rewrite eqr_le; apply/in_segment_addgt0Pr => _ /posnumP[e].
+rewrite inE -ler_distl -absRE; set he := (e%:num / 2)%:pos.
+have [z []] := clxy _ _ (locally_ball x he) (locally_ball y he).
+rewrite ball_absE /ball_ absrB => zx_he yz_he.
+rewrite (subr_trans z); apply: ler_trans (ler_abs_add _ _) _; apply/ltrW.
+by rewrite (splitr e%:num); apply: ltr_add.
+Qed.
 
 (** matrices *)
 
@@ -1293,9 +1345,6 @@ Proof. by rewrite ltrNge normm_ge0. Qed.
 Lemma normm_le0 x : (`|[x]| <= 0) = (x == 0).
 Proof. by rewrite lerNgt normm_gt0 negbK. Qed.
 
-Lemma absRE (x : R) : `|x|%real = `|x|%R.
-Proof. by []. Qed.
-
 Lemma ler_distm_dist x y : `| `|[x]| - `|[y]| | <= `|[x - y]|.
 Proof.
 wlog gt_xy : x y / `|[x]| >= `|[y]| => [hw|].
@@ -1406,6 +1455,19 @@ Proof. by move=> Fl; have Fcv := cvgP Fl; apply: flim_unique. Qed.
 Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
   f @ F --> l -> lim (f @ F) = l.
 Proof. exact: flim_lim. Qed.
+
+Lemma normedModType_hausdorff : hausdorff V.
+Proof.
+move=> p q clp_q; apply/subr0_eq/normm0_eq0/Rhausdorff => A B pq_A.
+rewrite -normm0 -(subrr p) => pp_B.
+suff loc_preim r C :
+  locally `|[p - r]| C -> locally r ((fun r => `|[p - r]|) @^-1` C).
+  have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
+  by exists `|[p - r]|.
+move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
+apply: pre_C; apply: ler_lt_trans (ler_distm_dist _ _) _.
+by rewrite opprB addrC -subr_trans normmB.
+Qed.
 
 End NormedModule1.
 
@@ -1618,28 +1680,11 @@ Arguments flim_norm2 {_ _ _ F G FF FG}.
 
 (** Rings with absolute values are normed modules *)
 
-Section AbsRing_NormedModule.
-
-Variable (K : absRingType).
-Implicit Types (x y : K) (eps : R).
-
-Lemma ball_absE : ball = ball_ (@abs K).
-Proof. by []. Qed.
-
-Definition AbsRing_NormedModMixin := @NormedModule.Mixin K _ _ _
-  (abs : K^o -> R) ler_abs_add absrM ball_absE absr0_eq0.
-
-Canonical AbsRing_NormedModType := NormedModType K K^o AbsRing_NormedModMixin.
-
-End AbsRing_NormedModule.
-
-(* Quick fix for non inferred instances *)
-(* This does not fix everything, see below *)
-Instance NormedModule_locally_filter (K : absRingType) (V : normedModType K)
-  (p : V) :
-  @ProperFilter (@NormedModule.sort K (Phant K) V)
-  (@locally (@NormedModule.uniformType K (Phant K) V) _ p).
-Proof. exact: locally_filter. Qed.
+Definition AbsRing_NormedModMixin (K : absRingType) :=
+  @NormedModule.Mixin K _ _ _ (abs : K^o -> R) ler_abs_add absrM (ball_absE K)
+  absr0_eq0.
+Canonical AbsRing_NormedModType (K : absRingType) :=
+  NormedModType K K^o (AbsRing_NormedModMixin _).
 
 (** Normed vector spaces have some continuous functions *)
 
@@ -2267,7 +2312,7 @@ rewrite ltr_subl_addl -ltr_subl_addr; apply: ltr_trans ltyz.
 by apply: ltr_distW; rewrite -absRE absrB.
 Qed.
 
-Lemma ler_gt0P (R : realFieldType) (x : R) :
+Lemma ler0_addgt0P (R : realFieldType) (x : R) :
   reflect (forall e, e > 0 -> x <= e) (x <= 0).
 Proof.
 apply: (iffP idP) => [lex0 e egt0|lex0].
@@ -2316,7 +2361,7 @@ exists (sup A) => //; have lefsupv : f (sup A) <= v.
     by rewrite ltr_subl_addr -ltr_subl_addl.
   by rewrite subr_ge0 sup_upper_bound.
 apply/eqP; rewrite eqr_le; apply/andP; split=> //.
-rewrite -subr_le0; apply/ler_gt0P => _/posnumP[e].
+rewrite -subr_le0; apply/ler0_addgt0P => _/posnumP[e].
 rewrite ler_subl_addr -ler_subl_addl ltrW //.
 have /fcont /(_ _ (locally_ball _ e)) [_/posnumP[d] supdfe] := supAab.
 have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) have x.
