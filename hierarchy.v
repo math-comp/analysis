@@ -2022,7 +2022,7 @@ Global Instance Rlocally'_proper (x : R) : ProperFilter (locally' x).
 Proof.
 apply: Build_ProperFilter => A [_/posnumP[e] Ae].
 exists (x + e%:num / 2); apply: Ae; last first.
-  by apply/eqP; rewrite eq_sym addrC -subr_eq subrr eq_sym.
+  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
 rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0 absRE ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
@@ -2712,8 +2712,7 @@ have /ZnatP [N Nfloor] : ifloor (delta%:num^-1) \is a Znat.
 exists N => // n leNn; have gt0Sn : 0 < INR n + 1.
   by apply: ltr_spaddr => //; apply/RleP/pos_INR.
 apply: Hp; last first.
-  apply/eqP; rewrite eq_sym addrC -subr_eq subrr eq_sym.
-  by apply/invr_neq0/lt0r_neq0.
+  by rewrite eq_sym addrC -subr_eq subrr eq_sym; apply/invr_neq0/lt0r_neq0.
 rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0.
 rewrite absRE gtr0_norm; last by rewrite invr_gt0.
 rewrite -[X in X < _]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
@@ -2771,8 +2770,8 @@ rewrite !locally_nearE !near_map !near_locally in fxP *.
 have /= := cfx P fxP.
 (* TODO: make things appear in canonical form i.e. {near x, ...} *)
 rewrite !near_simpl => /filterP [//= Q Qx QP].
-apply/filterP; exists (fun y => y <> x -> Q y) => // y Qy.
-by have [->|/eqP /Qy /QP //] := eqVneq y x; apply: locally_singleton.
+apply/filterP; exists (fun y => y != x -> Q y) => // y Qy.
+by have [->|/Qy /QP //] := eqVneq y x; apply: locally_singleton.
 Qed.
 
 Lemma continuity_pt_flim' f x :
