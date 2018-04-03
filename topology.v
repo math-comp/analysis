@@ -1197,6 +1197,12 @@ by rewrite openE => Aop sAB p Ap; apply: filterS sAB _; apply: Aop.
 Qed.
 Definition locally_open := @openP.
 
+Lemma open_locally (A : set T) : open A^o.
+Proof.
+rewrite openE => p; rewrite locallyE => - [B [[Bop Bp]]].
+by move=> /locally_open - /(_ Bop); exists B.
+Qed.
+
 Lemma neighT (p : T) : neigh p setT.
 Proof. by split=> //; apply: openT. Qed.
 
@@ -1632,11 +1638,11 @@ Definition closed (D : set T) := closure D `<=` D.
 Lemma closedC (D : set T) : open D -> closed (~` D).
 Proof. by rewrite openE => Dop p clNDp /Dop /clNDp [? []]. Qed.
 
-Lemma closed_bigI {I} (D : I -> set T) :
-  (forall i, closed (D i)) -> closed (\bigcap_i D i).
+Lemma closed_bigI {I} (D : set I) (f : I -> set T) :
+  (forall i, D i -> closed (f i)) -> closed (\bigcap_(i in D) f i).
 Proof.
-move=> Dcl p clDp i _; apply/Dcl => A /clDp [q [Dq Aq]].
-by exists q; split=> //; apply: Dq.
+move=> fcl t clft i Di; have /fcl := Di; apply.
+by move=> A /clft [s [/(_ i Di)]]; exists s.
 Qed.
 
 Lemma closedI (D E : set T) : closed D -> closed E -> closed (D `&` E).
