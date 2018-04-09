@@ -11,38 +11,32 @@ Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Require Import FunctionalExtensionality PropExtensionality.
+Require Import ClassicalEpsilon.
+
 (* -------------------------------------------------------------------- *)
 Record mextentionality := {
-  _ : forall (P : Prop), P = True \/ P = False;
+  _ : forall (P Q : Prop), (P <-> Q) -> (P = Q);
   _ : forall {T U : Type} (f g : T -> U),
         (forall x, f x = g x) -> f = g;
 }.
-Record mclassic := {
-  _ : forall (P : Prop), {P} + {~P};
-}.
 
-Axiom classic : mclassic.
-Axiom extentionality : mextentionality.
-
-(* -------------------------------------------------------------------- *)
-Lemma pselect (P : Prop): {P}+{~P}.
-Proof. by case: classic. Qed.
-
-Lemma pdegen (P : Prop): P = True \/ P = False.
-Proof. by case: extentionality. Qed.
-
-Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
+Fact extentionality : mextentionality.
 Proof.
-gen have wpropext: P Q / (P <-> Q) -> (P = Q); last first.
-  by apply: (wpropext); split=> [->|/wpropext].
-by have [[]-> []->] // := (pdegen P, pdegen Q); tauto.
+split.
+- exact: propositional_extensionality.
+- by move=> T U f g; apply: functional_extensionality_dep.
 Qed.
 
-Lemma lem (P : Prop): P \/ ~P.
-Proof. by case: (pselect P); tauto. Qed.
+Lemma propext (P Q : Prop) : (P <-> Q) -> (P = Q).
+Proof. by have [propext _] := extentionality; apply: propext. Qed.
 
 Lemma funext {T U : Type} (f g : T -> U) : (f =1 g) -> f = g.
 Proof. by case: extentionality=> _; apply. Qed.
+
+Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
+Proof. by apply: propext; split=> [->|/propext]. Qed.
+
 
 Lemma funeqE {T U : Type} (f g : T -> U) : (f = g) = (f =1 g).
 Proof. by rewrite propeqE; split=> [->//|/funext]. Qed.
@@ -74,6 +68,37 @@ Lemma predeq3E {T U V} (P Q : T -> U -> V -> Prop) :
 Proof.
 by rewrite propeqE; split=> [->//|?]; rewrite funeq3E=> ???; rewrite propeqE.
 Qed.
+
+
+(* -------------------------------------------------------------------- *)
+Record mclassic := {
+  _ : forall (P : Prop), {P} + {~P};
+  _ : forall T, Choice.mixin_of T
+}.
+
+Lemma classic : mclassic.
+Proof.
+split=> [|T]; first exact: excluded_middle_informative.
+exists (fun (P : pred T) (n : nat) =>
+  if excluded_middle_informative (exists x, P x) isn't left ex then None
+  else Some (projT1 (constructive_indefinite_description _ ex)))
+  => [P n x|P [x Px]|P Q /funext -> //].
+  case: excluded_middle_informative => // ex [<- ];
+  by case: constructive_indefinite_description.
+by exists 0; case: excluded_middle_informative => // -[]; exists x.
+Qed.
+
+Lemma gen_choiceMixin {T : Type} : Choice.mixin_of T.
+Proof. by case: classic. Qed.
+
+Lemma pselect (P : Prop): {P}+{~P}.
+Proof. by case: classic. Qed.
+
+Lemma pdegen (P : Prop): P = True \/ P = False.
+Proof. by have [p|Np] := pselect P; [left|right]; rewrite propeqE. Qed.
+
+Lemma lem (P : Prop): P \/ ~P.
+Proof. by case: (pselect P); tauto. Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma trueE : true = True :> Prop.

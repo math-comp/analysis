@@ -109,8 +109,6 @@ Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
 Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
 Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
 
-Axiom gen_choiceMixin : forall {T : Type}, Choice.mixin_of T.
-
 Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
   EqType (forall x : T, T' x) gen_eqMixin.
 Canonical arrow_eqType (T : Type) (T' : eqType) :=
