@@ -560,7 +560,8 @@ Qed.
 Lemma openN (R : absRingType) (A : set R) :
   open A -> open [set - x | x in A].
 Proof.
-by move=> Aop; rewrite openE => _ [x /Aop x_A <-]; rewrite locallyN; exists A.
+move=> Aop; rewrite openE => _ [x /Aop x_A <-].
+by rewrite /interior locallyN; exists A.
 Qed.
 
 Lemma closedN (R : absRingType) (A : set R) :
