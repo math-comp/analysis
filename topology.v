@@ -1154,15 +1154,23 @@ have -> : locally p = [set A : set T | exists B, open B /\ B p /\ B `<=` A].
 by rewrite predeqE => A; split=> [[B [? []]]|[B [[]]]]; exists B.
 Qed.
 
-Notation "D ^o" := (locally^~ D) : classical_set_scope.
+Definition interior (A : set T) := (@locally _ [filteredType T of T])^~ A.
 
-Lemma openE : open = [set A : set T | A `<=` A^o].
+Notation "A ^°" := (interior A)
+  (at level 1, format "A ^°") : classical_set_scope.
+
+Lemma interior_subset (A : set T) : A^° `<=` A.
+Proof.
+by move=> p; rewrite /interior locallyE => -[? [[??]]]; apply.
+Qed.
+
+Lemma openE : open = [set A : set T | A `<=` A^°].
 Proof. exact: Topological.ax3. Qed.
 
 Lemma locally_singleton (p : T) (A : set T) : locally p A -> A p.
 Proof. by rewrite locallyE => - [? [[_ ?]]]; apply. Qed.
 
-Lemma locally_locally (p : T) (A : set T) : locally p A -> locally p A^o.
+Lemma locally_interior (p : T) (A : set T) : locally p A -> locally p A^°.
 Proof.
 rewrite locallyE /neigh openE => - [B [[Bop Bp] sBA]].
 by exists B; split=> // q Bq; apply: filterS sBA _; apply: Bop.
@@ -1180,10 +1188,11 @@ rewrite openE => Aop Bop p [Ap Bp].
 by apply: filterI; [apply: Aop|apply: Bop].
 Qed.
 
-Lemma open_bigU (I : Type) (f : I -> set T) :
-  (forall i, open (f i)) -> open (\bigcup_i f i).
+Lemma open_bigU (I : Type) (D : set I) (f : I -> set T) :
+  (forall i, D i -> open (f i)) -> open (\bigcup_(i in D) f i).
 Proof.
-by rewrite openE => fop p [i _ /fop]; apply: filterS => ??; exists i.
+rewrite openE => fop p [i Di].
+by have /fop fiop := Di; move/fiop; apply: filterS => ??; exists i.
 Qed.
 
 Lemma openU (A B : set T) : open A -> open B -> open (A `|` B).
@@ -1191,16 +1200,24 @@ Proof.
 by rewrite openE => Aop Bop p [/Aop|/Bop]; apply: filterS => ??; [left|right].
 Qed.
 
-Lemma openP (A B : set T) : open A -> (A `<=` B) -> (A `<=` B^o).
+Lemma open_subsetE (A B : set T) : open A -> (A `<=` B) = (A `<=` B^°).
 Proof.
-by rewrite openE => Aop sAB p Ap; apply: filterS sAB _; apply: Aop.
+rewrite openE => Aop; rewrite propeqE; split.
+  by move=> sAB p Ap; apply: filterS sAB _; apply: Aop.
+by move=> sAB p /sAB /interior_subset.
 Qed.
-Definition locally_open := @openP.
 
-Lemma open_interior (A : set T) : open A^o.
+Lemma open_interior (A : set T) : open A^°.
 Proof.
-rewrite openE => p; rewrite locallyE => - [B [[Bop Bp]]].
-by move=> /locally_open - /(_ Bop); exists B.
+rewrite openE => p; rewrite /interior locallyE => - [B [[Bop Bp]]].
+by rewrite open_subsetE //; exists B.
+Qed.
+
+Lemma interior_bigcup I (D : set I) (f : I -> set T) :
+  \bigcup_(i in D) (f i)^° `<=` (\bigcup_(i in D) f i)^°.
+Proof.
+move=> p [i Di]; rewrite /interior locallyE => - [B [[Bop Bp] sBfi]].
+by exists B; split=> // ? /sBfi; exists i.
 Qed.
 
 Lemma neighT (p : T) : neigh p setT.
@@ -1214,6 +1231,9 @@ Lemma neigh_locally (p : T) (A : set T) : neigh p A -> locally p A.
 Proof. by rewrite locallyE => p_A; exists A; split. Qed.
 
 End Topological1.
+
+Notation "A ^°" := (interior A)
+  (at level 1, format "A ^°") : classical_set_scope.
 
 Notation continuous f := (forall x, f%function @ x --> f%function x).
 
@@ -1251,7 +1271,7 @@ Proof. by move=> cf fx P /cf /fx. Qed.
 
 Lemma near_join (T : topologicalType) (x : T) (P : set T) :
   (\near x, P x) -> \near x, \near x, P x.
-Proof. exact: locally_locally. Qed.
+Proof. exact: locally_interior. Qed.
 
 Lemma near_bind (T : topologicalType) (P Q : set T) (x : T) :
   (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
@@ -1432,8 +1452,8 @@ Qed.
 Lemma prod_loc_loc (p : T * U) (A : set (T * U)) :
   prod_loc p A -> prod_loc p (prod_loc^~ A).
 Proof.
-move=> [QR [/locally_locally p1_Q /locally_locally p2_R] sQRA].
-by exists (locally^~ QR.1, locally^~ QR.2) => // ??; exists QR.
+move=> [QR [/locally_interior p1_Q /locally_interior p2_R] sQRA].
+by exists (QR.1^°, QR.2^°) => // ??; exists QR.
 Qed.
 
 Definition prod_topologicalTypeMixin :=
@@ -1468,8 +1488,8 @@ Proof. by move=> [P M_P]; apply=> ??; apply: locally_singleton. Qed.
 Lemma mx_loc_loc M (A : set 'M[T]_(m, n)) :
   locally M A -> locally M (locally^~ A).
 Proof.
-move=> [P M_P sPA]; exists (fun i j => locally^~ (P i j)).
-  by move=> ??; apply: locally_locally.
+move=> [P M_P sPA]; exists (fun i j => (P i j)^°).
+  by move=> ??; apply: locally_interior.
 by move=> ??; exists P.
 Qed.
 
@@ -1672,11 +1692,11 @@ Qed.
 Lemma openC (D : set T) : closed D -> open (~` D).
 Proof.
 rewrite closedE openE => Dcl t nDt; apply: contrapT.
-by rewrite locally_nearE => /Dcl.
+by rewrite /interior locally_nearE => /Dcl.
 Qed.
 
 Lemma closed_closure (A : set T) : closed (closure A).
-Proof. by move=> p clclAp B /locally_locally /clclAp [q [clAq /clAq]]. Qed.
+Proof. by move=> p clclAp B /locally_interior /clclAp [q [clAq /clAq]]. Qed.
 
 End Closed.
 
