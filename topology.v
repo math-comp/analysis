@@ -1197,7 +1197,7 @@ by rewrite openE => Aop sAB p Ap; apply: filterS sAB _; apply: Aop.
 Qed.
 Definition locally_open := @openP.
 
-Lemma open_locally (A : set T) : open A^o.
+Lemma open_interior (A : set T) : open A^o.
 Proof.
 rewrite openE => p; rewrite locallyE => - [B [[Bop Bp]]].
 by move=> /locally_open - /(_ Bop); exists B.
