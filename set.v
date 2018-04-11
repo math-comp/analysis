@@ -290,6 +290,13 @@ Qed.
 Lemma subIset {A} (X Y Z : set A) : X `<=` Z \/ Y `<=` Z -> X `&` Y `<=` Z.
 Proof. case => H a; by [move=> [/H] | move=> [_ /H]]. Qed.
 
+Lemma setD_eq0 A (X Y : set A) : (X `\` Y = set0) = (X `<=` Y).
+Proof.
+rewrite propeqE; split=> [XDY0 a|sXY].
+  by apply: contrapTT => nYa xA; rewrite -[False]/(set0 a) -XDY0.
+by rewrite predeqE => ?; split=> // - [?]; apply; apply: sXY.
+Qed.
+
 Lemma setDE {A} (X Y : set A) : X `\` Y = X `&` ~` Y.
 Proof. by []. Qed.
 
@@ -305,6 +312,9 @@ Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
 Lemma setI0 {A} (X : set A) : X `&` set0 = set0.
 Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
 
+Lemma set0I A (Y : set A) : set0 `&` Y = set0.
+Proof. by rewrite setIC setI0. Qed.
+
 Lemma setIA {A} (X Y Z : set A) : X `&` (Y `&` Z) = X `&` Y `&` Z.
 Proof. by rewrite predeqE => ?; split=> [[? []]|[[]]]. Qed.
 
@@ -317,6 +327,14 @@ Proof. by rewrite setIC setICA setIA. Qed.
 Lemma setIACA {A} (X Y Z T : set A) :
   X `&` Y `&` (Z `&` T) = X `&` Z `&` (Y `&` T).
 Proof. by rewrite -setIA [Y `&` _]setICA setIA. Qed.
+
+Lemma setI_bigcapl A I (D : set I) (f : I -> set A) (X : set A) :
+  D !=set0 -> \bigcap_(i in D) f i `&` X = \bigcap_(i in D) (f i `&` X).
+Proof.
+move=> [i Di]; rewrite predeqE => a; split=> [[Ifa Xa] j Dj|IfIXa].
+  by split=> //; apply: Ifa.
+by split=> [j /IfIXa [] | ] //; have /IfIXa [] := Di.
+Qed.
 
 Definition is_prop {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := all (is_prop \o f).

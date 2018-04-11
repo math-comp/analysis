@@ -35,6 +35,7 @@ Require Import Rstruct Rbar set posnum topology.
 (*                                   entourage can be seen as a               *)
 (*                                   "neighbourhood" of the diagonal set      *)
 (*                                   D = {(x, x) | x in T}.                   *)
+(*                   ball_set A e == set A extended with a band of width e    *)
 (*                   unif_cont f <-> f is uniformly continuous.               *)
 (*                                                                            *)
 (* * Rings with absolute value :                                              *)
@@ -332,6 +333,10 @@ move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i j) => // [[/= x y]] bxy.
 by eexists => /=; apply: ball_ler bxy; rewrite ler_minl lerr ?orbT.
 Qed.
 
+Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
+Canonical set_filter_source :=
+  @Filtered.Source Prop _ M (fun A => locally_ ball_set A).
+
 End uniformType1.
 
 Section entourages.
@@ -555,7 +560,8 @@ Qed.
 Lemma openN (R : absRingType) (A : set R) :
   open A -> open [set - x | x in A].
 Proof.
-by move=> Aop; rewrite openE => _ [x /Aop x_A <-]; rewrite locallyN; exists A.
+move=> Aop; rewrite openE => _ [x /Aop x_A <-].
+by rewrite /interior locallyN; exists A.
 Qed.
 
 Lemma closedN (R : absRingType) (A : set R) :
