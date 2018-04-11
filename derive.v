@@ -133,6 +133,8 @@ Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F]))
 Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
 Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
 
+Notation "g \is 'D_v(f)" := (is_diff  f f) (at level 10).
+
 Lemma differentiableP (V W : normedModType R) (f : V -> W) x :
   differentiable x f -> is_diff x f ('d_x f).
 Proof. by move=> ?; apply: DiffDef. Qed.
@@ -312,6 +314,10 @@ Notation "'D_ v [ f ]" := (derive f ^~ v).
 Notation "'D '_' v [ f ] c" := (derive f c v). (* printing *)
 
 Hint Extern 0 (derivable _ _ _) => solve[apply: ex_derive] : core.
+
+Notation "'D_ v [ f ]" := (derive f ^~ v).
+Notation "'D '_' v [ f ] c" := (derive f c v). (* printing *)
+
 
 Section DifferentialR2.
 Implicit Type (V : normedModType R).
