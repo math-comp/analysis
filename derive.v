@@ -12,6 +12,32 @@ Import GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope classical_set_scope.
 
+(******************************************************************************)
+(* This file provides a theory of differentiation. It includes the standard   *)
+(* rules of differentiation (differential of a sum, of a product, of          *)
+(* exponentiation, of the inverse, etc.) as well standard theorems (the       *)
+(* Extreme Value Theorem, Rolle's theorem, the Mean Value Theorem).           *)
+(*                                                                            *)
+(* Parsable notations:                                                        *)
+(*               'd_x f == the differential of a function f at a point x      *)
+(*   differentiable x f == the function f is differentiable at a point x      *)
+(*              'J_x[f] == the Jacobian of f at a point x                     *)
+(*              'D_v[f] == the directional derivative of f along v            *)
+(*                f^`() == the derivative of f of domain R                    *)
+(******************************************************************************)
+
+Reserved Notation "''d_' F" (at level 0, F at level 0, format "''d_' F").
+Reserved Notation "'is_diff' F" (at level 0,
+  F at level 0, format "'is_diff'  F").
+Reserved Notation "'J_ p [ f ]" (at level 10,
+  p, f at next level, format "''J_' p [ f ]").
+Reserved Notation "'D_ v [ f ]" (at level 10,
+  v, f at next level, format "''D_' v [ f ]").
+Reserved Notation "'D '_' v [ f ] c" (at level 10,
+  v, f at next level, format "''D' '_' v [ f ]  c"). (* printing *)
+Reserved Notation "f ^` ()" (at level 8, format "f ^` ()").
+Reserved Notation "f ^` ( n )" (at level 8, format "f ^` ( n )").
+
 Section Differential.
 
 Context {K : absRingType} {V W : normedModType K}.
@@ -22,15 +48,14 @@ Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
 Canonical diff_linear F phF f := [linear of @diff F phF f].
 Canonical diff_raddf F phF f := [additive of @diff F phF f].
 
-Notation "''d_' F" := (@diff _ (Phantom _ [filter of F]))
-  (at level 0, F at level 0, format "''d_' F").
+Local Notation "''d_' F" := (@diff _ (Phantom _ [filter of F])).
 
 Definition differentiable_def (F : filter_on V) (_ : phantom (set (set V)) F)
   (f : V -> W) :=
   continuous ('d_F f) /\
   f = cst (f (lim F)) + 'd_F f \o center (lim F) +o_F (center (lim F)).
 
-Notation differentiable F := (@differentiable_def _ (Phantom _ [filter of F])).
+Local Notation differentiable F := (@differentiable_def _ (Phantom _ [filter of F])).
 
 Class is_diff_def (F : filter_on V) (Fph : phantom (set (set V)) F) (f : V -> W)
   (df : V -> W) := DiffDef {
@@ -101,13 +126,13 @@ Proof. by move=> /diff_locallyP []. Qed.
 
 End Differential.
 
-Notation "''d_' F" := (@diff _ _ _ _ (Phantom _ [filter of F]))
-  (at level 0, F at level 0, format "''d_' F").
+Notation "''d_' F" := (@diff _ _ _ _ (Phantom _ [filter of F])).
 Notation differentiable F := (@differentiable_def _ _ _ _ (Phantom _ [filter of F])).
 
-Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F]))
-  (at level 0, F at level 0, format "'is_diff'  F").
+Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F])).
 Hint Extern 0 (differentiable _ _) => exact: ex_diff : core.
+
+Notation "g \is 'D_v(f)" := (is_diff  f f) (at level 10).
 
 Lemma differentiableP (V W : normedModType R) (f : V -> W) x :
   differentiable x f -> is_diff x f ('d_x f).
@@ -119,6 +144,8 @@ Definition jacobian n m (R : absRingType) (f : 'rV[R]_n.+1 -> 'rV[R]_m.+1) p :=
   lin1_mx ('d_p f).
 
 End jacobian.
+
+Notation "'J_ p [ f ]" := (jacobian f p).
 
 Section DifferentialR.
 
@@ -182,18 +209,21 @@ End diff_locally_converse_tentative.
 Definition derive (f : V -> W) a v :=
   lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
 
+Local Notation "'D_ v [ f ]" := (derive f ^~ v).
+Local Notation "'D '_' v [ f ] c" := (derive f c v). (* printing *)
+
 Definition derivable (f : V -> W) a v :=
   cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
 
 Class is_derive (a v : V) (f : V -> W) (df : W) := DeriveDef {
   ex_derive : derivable f a v;
-  derive_val : derive f a v = df
+  derive_val : 'D_v[f] a = df
 }.
 
 Lemma derivable_locally (f : V -> W) a v :
   derivable f a v ->
   (fun h => (f \o shift a) (h *: v)) = (cst (f a)) +
-    (fun h => h *: (derive f a v)) +o_ (locally (0 : R^o)) id.
+    (fun h => h *: ('D_v[f] a)) +o_ (locally (0 : R^o)) id.
 Proof.
 move=> df; apply/eqaddoP => _/posnumP[e].
 rewrite -locally_nearE locally_simpl /= locallyE'; split; last first.
@@ -215,10 +245,10 @@ Qed.
 Lemma derivable_locallyP (f : V -> W) a v :
   derivable f a v <->
   (fun h => (f \o shift a) (h *: v)) = (cst (f a)) +
-    (fun h => h *: (derive f a v)) +o_ (locally (0 : R^o)) id.
+    (fun h => h *: ('D_v[f] a)) +o_ (locally (0 : R^o)) id.
 Proof.
 split; first exact: derivable_locally.
-move=> df; apply/cvg_ex; exists (derive f a v).
+move=> df; apply/cvg_ex; exists ('D_v[f] a).
 apply/(@eqolimP _ _ _ (locally'_filter_on _))/eqaddoP => _/posnumP[e].
 have /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]) := df.
 rewrite -locally_nearE locally_simpl /= locallyE' => -[dfa _]; move: dfa.
@@ -233,7 +263,7 @@ by end_near; exists 1 => // ?? /eqP.
 Qed.
 
 Lemma derivable_locallyx (f : V -> W) a v :
-  derivable f a v -> forall h, f (a + h *: v) = f a + h *: derive f a v
+  derivable f a v -> forall h, f (a + h *: v) = f a + h *: 'D_v[f] a
   +o_(h \near (locally (0 : R^o))) h.
 Proof.
 move=> /derivable_locally; rewrite funeqE => df.
@@ -241,7 +271,7 @@ by apply: eqaddoEx => h; have /= := (df h); rewrite addrC => ->.
 Qed.
 
 Lemma derivable_locallyxP (f : V -> W) a v :
-  derivable f a v <-> forall h, f (a + h *: v) = f a + h *: derive f a v
+  derivable f a v <-> forall h, f (a + h *: v) = f a + h *: 'D_v[f] a
   +o_(h \near (locally (0 : R^o))) h.
 Proof.
 split; first exact: derivable_locallyx.
@@ -250,9 +280,9 @@ by rewrite /= addrC df.
 Qed.
 
 Lemma deriveE (f : V -> W) (a v : V) :
-  differentiable a f -> derive f a v = 'd_a f v.
+  differentiable a f -> 'D_v[f] a = 'd_a f v.
 Proof.
-rewrite /derive /jacobian => /diff_locally -> /=; set k := 'o _.
+rewrite /derive => /diff_locally -> /=; set k := 'o _.
 evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
   by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
@@ -288,19 +318,24 @@ Qed.
 
 End DifferentialR.
 
+Notation "'D_ v [ f ]" := (derive f ^~ v).
+Notation "'D '_' v [ f ] c" := (derive f c v). (* printing *)
+
 Hint Extern 0 (derivable _ _ _) => exact: ex_derive : core.
 
 Section DifferentialR2.
 Implicit Type (V : normedModType R).
 
 Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
-  differentiable a f -> derive f a v = v *m jacobian f a.
+  differentiable a f -> 'D_v[f] a = v *m jacobian f a.
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
 Definition derive1 V (f : R -> V) (a : R) :=
    lim ((fun h => h^-1 *: (f (h + a) - f a)) @ locally' (0 : R^o)).
 
-Lemma derive1E V (f : R -> V) a : derive1 f a = derive (f : R^o -> _) a 1.
+Local Notation "f ^` ()" := (derive1 f).
+
+Lemma derive1E V (f : R -> V) a : f^`() a = 'D_1[f : R^o -> _] a.
 Proof.
 rewrite /derive1 /derive; set d := (fun _ : R => _); set d' := (fun _ : R => _).
 by suff -> : d = d' by []; rewrite funeqE=> h; rewrite /d /d' /= [h%:A](mulr1).
@@ -308,10 +343,17 @@ Qed.
 
 (* Is it necessary? *)
 Lemma derive1E' V f a : differentiable a (f : R^o -> V) ->
-  derive1 f a = 'd_a f 1.
+  f^`() a = 'd_a f 1.
 Proof. by move=> ?; rewrite derive1E deriveE. Qed.
 
+Definition derive1n V n (f : R -> V) (a : R) := iter n (@derive1 V) f.
+
+Local Notation "f ^` ( n )" := (derive1n n f).
+
 End DifferentialR2.
+
+Notation "f ^` ()" := (derive1 f).
+Notation "f ^` ( n )" := (derive1n n f).
 
 Section DifferentialR3.
 
@@ -928,7 +970,7 @@ Section Derive.
 Variable (V W : normedModType R).
 
 Let der1 (U : normedModType R) (f : R^o -> U) x : derivable f x 1 ->
-  f \o shift x = cst (f x) + ( *:%R^~ (derive1 f x)) +o_ (0 : R^o) id.
+  f \o shift x = cst (f x) + ( *:%R^~ (f^`() x)) +o_ (0 : R^o) id.
 Proof.
 move=> df; apply/eqaddoE; have /derivable_locallyP := df.
 have -> : (fun h => (f \o shift x) h%:A) = f \o shift x.
@@ -937,20 +979,20 @@ by rewrite derive1E =>->.
 Qed.
 
 Lemma deriv1E (U : normedModType R) (f : R^o -> U) x :
-  derivable f x 1 -> 'd_x f = ( *:%R^~ (derive1 f x)) :> (R^o -> U).
+  derivable f x 1 -> 'd_x f = ( *:%R^~ (f^`() x)) :> (R^o -> U).
 Proof.
-move=> df; have lin_scal : linear (fun h : R^o => h *: derive1 f x).
+move=> df; have lin_scal : linear (fun h : R^o => h *: f^`() x).
   by move=> ???; rewrite scalerDl scalerA.
-have -> : (fun h : R^o => h *: derive1 f x) = Linear lin_scal by [].
+have -> : (fun h : R^o => h *: f^`() x) = Linear lin_scal by [].
 by apply: diff_unique; [apply: scalel_continuous|apply: der1].
 Qed.
 
 Lemma diff1E (U : normedModType R) (f : R^o -> U) x :
-  differentiable x f -> 'd_x f = (fun h => h *: derive1 f x) :> (R^o -> U).
+  differentiable x f -> 'd_x f = (fun h => h *: f^`() x) :> (R^o -> U).
 Proof.
 move=> df; have lin_scal : linear (fun h : R^o => h *: 'd_x f 1).
   by move=> ???; rewrite scalerDl scalerA.
-have -> : (fun h : R^o => h *: derive1 f x) = Linear lin_scal.
+have -> : (fun h : R^o => h *: f^`() x) = Linear lin_scal.
   by rewrite derive1E'.
 apply: diff_unique; first exact: scalel_continuous.
 apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).
@@ -978,7 +1020,7 @@ by rewrite funeqE /g1 /g2 => h /=; rewrite addr0 scale0r add0r [_%:A]mulr1.
 Qed.
 
 Lemma derivableP (U : normedModType R) (f : V -> U) x v :
-  derivable f x v -> is_derive x v f (derive f x v).
+  derivable f x v -> is_derive x v f ('D_v[f] x).
 Proof. by move=> df; apply: DeriveDef. Qed.
 
 Global Instance is_derive_cst (U : normedModType R) (a : U) (x v : V) :
@@ -991,7 +1033,7 @@ Qed.
 
 Let der_add (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f + g) \o shift x) (h *: v) - (f + g) x)) @
-  locally' (0 : R^o) --> derive f x v + derive g x v.
+  locally' (0 : R^o) --> 'D_v[f] x + 'D_v[g] x.
 Proof.
 move=> df dg.
 evar (fg : R -> W); rewrite [X in X @ _](_ : _ = fg) /=; last first.
@@ -1001,7 +1043,7 @@ exact: lim_add.
 Qed.
 
 Lemma deriveD (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
-  derive (f + g) x v = derive f x v + derive g x v.
+  'D_v[f + g] x = 'D_v[f] x + 'D_v[g] x.
 Proof. by move=> df dg; apply: flim_map_lim (der_add df dg). Qed.
 
 Lemma derivableD (f g : V -> W) (x v : V) :
@@ -1030,22 +1072,22 @@ Qed.
 Lemma derivable_sum n (f : 'I_n -> V -> W) (x v : V) :
   (forall i, derivable (f i) x v) -> derivable (\sum_(i < n) f i) x v.
 Proof.
-move=> df; suff : forall i, is_derive x v (f i) (derive (f i) x v) by [].
+move=> df; suff : forall i, is_derive x v (f i) ('D_v[f i] x) by [].
 by move=> ?; apply: derivableP.
 Qed.
 
 Lemma derive_sum n (f : 'I_n -> V -> W) (x v : V) :
   (forall i, derivable (f i) x v) ->
-  derive (\sum_(i < n) f i) x v = \sum_(i < n) derive (f i) x v.
+  'D_v[\sum_(i < n) f i] x = \sum_(i < n) 'D_v[f i] x.
 Proof.
-move=> df; suff dfx : forall i, is_derive x v (f i) (derive (f i) x v).
+move=> df; suff dfx : forall i, is_derive x v (f i) ('D_v[f i] x).
   by rewrite derive_val.
 by move=> ?; apply: derivableP.
 Qed.
 
 Let der_opp (f : V -> W) (x v : V) : derivable f x v ->
   (fun h => h^-1 *: (((- f) \o shift x) (h *: v) - (- f) x)) @
-  locally' (0 : R^o) --> - derive f x v.
+  locally' (0 : R^o) --> - 'D_v[f] x.
 Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   by rewrite funeqE => h; rewrite !scalerDr !scalerN -opprD -scalerBr /g.
@@ -1053,12 +1095,12 @@ exact: lim_opp.
 Qed.
 
 Lemma deriveN (f : V -> W) (x v : V) : derivable f x v ->
-  derive (- f) x v = - derive f x v.
+  'D_v[- f] x = - 'D_v[f] x.
 Proof. by move=> df; apply: flim_map_lim (der_opp df). Qed.
 
 Lemma derivableN (f : V -> W) (x v : V) :
   derivable f x v -> derivable (- f) x v.
-Proof. by move=> df; apply/cvg_ex; exists (- derive f x v); apply: der_opp. Qed.
+Proof. by move=> df; apply/cvg_ex; exists (- 'D_v[f] x); apply: der_opp. Qed.
 
 Global Instance is_deriveN (f : V -> W) (x v : V) (df : W) :
   is_derive x v f df -> is_derive x v (- f) (- df).
@@ -1076,7 +1118,7 @@ Global Instance is_deriveB (f g : V -> W) (x v : V) (df dg : W) :
 Proof. by move=> ??; apply: is_derive_eq. Qed.
 
 Lemma deriveB (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
-  derive (f - g) x v = derive f x v - derive g x v.
+  'D_v[f - g] x = 'D_v[f] x - 'D_v[g] x.
 Proof. by move=> /derivableP df /derivableP dg; rewrite derive_val. Qed.
 
 Lemma derivableB (f g : V -> W) (x v : V) :
@@ -1085,7 +1127,7 @@ Proof. by move=> /derivableP df /derivableP dg. Qed.
 
 Let der_scal (f : V -> W) (k : R) (x v : V) : derivable f x v ->
   (fun h => h^-1 *: ((k \*: f \o shift x) (h *: v) - (k \*: f) x)) @
-  locally' (0 : R^o) --> k *: derive f x v.
+  locally' (0 : R^o) --> k *: 'D_v[f] x.
 Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE => h.
@@ -1094,13 +1136,13 @@ exact: lim_scaler.
 Qed.
 
 Lemma deriveZ (f : V -> W) (k : R) (x v : V) : derivable f x v ->
-  derive (k \*: f) x v = k *: derive f x v.
+  'D_v[k \*: f] x = k *: 'D_v[f] x.
 Proof. by move=> df; apply: flim_map_lim (der_scal df). Qed.
 
 Lemma derivableZ (f : V -> W) (k : R) (x v : V) :
   derivable f x v -> derivable (k \*: f) x v.
 Proof.
-by move=> df; apply/cvg_ex; exists (k *: derive f x v); apply: der_scal.
+by move=> df; apply/cvg_ex; exists (k *: 'D_v[f] x); apply: der_scal.
 Qed.
 
 Global Instance is_deriveZ (f : V -> W) (k : R) (x v : V) (df : W) :
@@ -1113,7 +1155,7 @@ Qed.
 Let der_mult (f g : V -> R^o) (x v : V) :
   derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f * g) \o shift x) (h *: v) - (f * g) x)) @
-  locally' (0 : R^o) --> f x *: derive g x v + g x *: derive f x v.
+  locally' (0 : R^o) --> f x *: 'D_v[g] x + g x *: 'D_v[f] x.
 Proof.
 move=> df dg.
 evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
@@ -1132,13 +1174,13 @@ Qed.
 
 Lemma deriveM (f g : V -> R^o) (x v : V) :
   derivable f x v -> derivable g x v ->
-  derive (f * g) x v = f x *: derive g x v + g x *: derive f x v.
+  'D_v[f * g] x = f x *: 'D_v[g] x + g x *: 'D_v[f] x.
 Proof. by move=> df dg; apply: flim_map_lim (der_mult df dg). Qed.
 
 Lemma derivableM (f g : V -> R^o) (x v : V) :
   derivable f x v -> derivable g x v -> derivable (f * g) x v.
 Proof.
-move=> df dg; apply/cvg_ex; exists (f x *: derive g x v + g x *: derive f x v).
+move=> df dg; apply/cvg_ex; exists (f x *: 'D_v[g] x + g x *: 'D_v[f] x).
 exact: der_mult.
 Qed.
 
@@ -1166,13 +1208,13 @@ Proof. by move/derivableP. Qed.
 
 Lemma deriveX (f : V -> R^o) n (x v : V) :
   derivable f x v ->
-  derive (f ^+ n.+1) x v = (n.+1%:R * f x ^+ n) *: derive f x v.
+  'D_v[f ^+ n.+1] x = (n.+1%:R * f x ^+ n) *: 'D_v[f] x.
 Proof. by move=> /derivableP df; rewrite derive_val. Qed.
 
 Let der_inv (f : V -> R^o) (x v : V) :
   f x != 0 -> derivable f x v ->
   (fun h => h^-1 *: (((fun y => 1 / f y) \o shift x) (h *: v) - 1 / f x)) @
-  locally' (0 : R^o) --> - (1 / f x) ^+2 *: derive f x v.
+  locally' (0 : R^o) --> - (1 / f x) ^+2 *: 'D_v[f] x.
 Proof.
 move=> fxn0 df.
 have /derivable1P/derivable1_diffP/differentiable_continuous := df.
@@ -1183,7 +1225,7 @@ have fn0 : locally' (0 : R^o) [set h | f (h *: v + x) != 0].
   by apply/eqP => y0; move: yltfx; rewrite y0 subr0 ltrr.
 have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
   (h^-1 *: (f (h *: v + x) - f x))) @ locally' (0 : R^o) -->
-  - (1 / f x) ^+2 *: derive f x v.
+  - (1 / f x) ^+2 *: 'D_v[f] x.
   apply: flim_comp2 (@lim_mult _ _ _) => //=.
   apply: (@lim_opp _ [normedModType R of R^o]); rewrite expr2.
   exact/lim_scaler/lim_inv.
@@ -1203,13 +1245,13 @@ by end_near; exists e%:num.
 Qed.
 
 Lemma deriveV (f : V -> R^o) x v : f x != 0 -> derivable f x v ->
-  derive (fun y => 1 / f y) x v = - (1 / f x) ^+2 *: derive f x v.
+  'D_v[fun y => 1 / f y] x = - (1 / f x) ^+2 *: 'D_v[f] x.
 Proof. by move=> fxn0 df; apply: flim_map_lim (der_inv fxn0 df). Qed.
 
 Lemma derivableV (f : V -> R^o) (x v : V) :
   f x != 0 -> derivable f x v -> derivable (fun y => 1 / f y) x v.
 Proof.
-move=> df dg; apply/cvg_ex; exists (- (1 / f x) ^+2 *: derive f x v).
+move=> df dg; apply/cvg_ex; exists (- (1 / f x) ^+2 *: 'D_v[f] x).
 exact: der_inv.
 Qed.
 
@@ -1340,7 +1382,7 @@ Lemma derive1_at_max (f : R^o -> R^o) (a b c : R) :
 Proof.
 move=> leab fdrvbl cab cmax; apply: DeriveDef; first exact: fdrvbl.
 apply/eqP; rewrite eqr_le; apply/andP; split.
-  rewrite [derive _ _ _]cvg_at_rightE; last exact: fdrvbl.
+  rewrite ['D_1[f] c]cvg_at_rightE; last exact: fdrvbl.
   apply: ler0_flim_map; last first.
     have /fdrvbl dfc := cab; rewrite -cvg_at_rightE //.
     apply: flim_trans dfc; apply: flim_app.
@@ -1354,7 +1396,7 @@ apply/eqP; rewrite eqr_le; apply/andP; split.
   move=> h; rewrite /AbsRing_ball /= absrB subr0 absRE.
   move=> /(ler_lt_trans (ler_norm _)); rewrite ltr_subr_addr inE => ->.
   by move=> /ltr_spsaddl -> //; rewrite (itvP cab).
-rewrite [derive _ _ _]cvg_at_leftE; last exact: fdrvbl.
+rewrite ['D_1[f] c]cvg_at_leftE; last exact: fdrvbl.
 apply: le0r_flim_map; last first.
   have /fdrvbl dfc := cab; rewrite -cvg_at_leftE //.
   apply: flim_trans dfc; apply: flim_app.
@@ -1444,17 +1486,17 @@ Qed.
 
 Lemma ler0_derive1_nincr (f : R^o -> R^o) (a b : R) :
   (forall x, x \in `[a, b] -> derivable f x 1) ->
-  (forall x, x \in `[a, b] -> derive1 f x <= 0) ->
+  (forall x, x \in `[a, b] -> f^`() x <= 0) ->
   forall x y, a <= x -> x <= y -> y <= b -> f y <= f x.
 Proof.
 move=> fdrvbl dfle0 x y leax lexy leyb; rewrite -subr_ge0.
 have itvW : {subset `[x, y] <= `[a, b]} by apply/subitvP; rewrite /= leyb leax.
-have fdrv z : z \in `]x, y[ -> is_derive (z : R^o) 1 f (derive1 f z).
+have fdrv z : z \in `]x, y[ -> is_derive (z : R^o) 1 f (f^`()z).
   rewrite inE => /andP [/ltrW lexz /ltrW lezy].
   apply: DeriveDef; last by rewrite derive1E.
   apply: fdrvbl; rewrite inE; apply/andP; split; first exact: ler_trans lexz.
   exact: ler_trans leyb.
-have [] := @MVT f (derive1 f) x y lexy fdrv.
+have [] := @MVT f (f^`()) x y lexy fdrv.
   by move=> ? /itvW /fdrvbl /derivable1_diffP /differentiable_continuous.
 move=> t /itvW /dfle0 dft dftxy; rewrite -oppr_le0 opprB dftxy.
 by apply: mulr_le0_ge0 => //; rewrite subr_ge0.
@@ -1462,7 +1504,7 @@ Qed.
 
 Lemma le0r_derive1_ndecr (f : R^o -> R^o) (a b : R) :
   (forall x, x \in `[a, b] -> derivable f x 1) ->
-  (forall x, x \in `[a, b] -> 0 <= derive1 f x) ->
+  (forall x, x \in `[a, b] -> 0 <= f^`() x) ->
   forall x y, a <= x -> x <= y -> y <= b -> f x <= f y.
 Proof.
 move=> fdrvbl dfge0 x y; rewrite -[f _ <= _]ler_opp2.
