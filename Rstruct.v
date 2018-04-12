@@ -365,8 +365,7 @@ Require Import reals boolp.
 
 Lemma is_upper_boundE (E : pred R) x : is_upper_bound E x = (x \in ub E).
 Proof.
-rewrite /is_upper_bound inE forallbE asboolE /=; apply/eq_forall=> y.
-by rewrite -(reflect_eq implyP) (reflect_eq (RleP _ _)).
+by rewrite asboolE; apply: eq_forall => y; move/reflect_eq: (RleP y x)=>->.
 Qed.
 
 Lemma boundE (E : pred R) : bound E = has_ub E.

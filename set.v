@@ -104,7 +104,7 @@ Reserved Notation "A `\ b" (at level 50, left associativity).
 Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
 Proof. by move: x (x) y => /propT-> [] []. Qed.
 
-Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
+Definition gen_eq (T : Type) (u v : T) := [u = v as bool].
 Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
 Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
 Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
