@@ -303,3 +303,102 @@ apply: notLR; rewrite not_forall; rewrite propeqE; split; case=> x.
 move=> hx; exists x; first exact: contrapR hx.
 exact: contrapR hx.
 Qed.
+
+(* -------------------------------------------------------------------- *)
+
+
+Section GenericChoice.
+
+Variable T : Type.
+
+
+Definition gen_pick (P : pred T) (_ : nat) :=
+  if (pselect (inhabited T)) is left inhT then
+    let x := epsilon inhT P in
+    if P x then Some x else None
+    else None.
+
+Fact gen_pick_some P n x : gen_pick P n = Some x -> P x.
+Proof.
+by rewrite /gen_pick; case: (pselect _) => p //; case: ifP=> // Px [<-].
+Qed.
+
+Fact gen_pick_ex (P : pred T) :
+  (exists x : T, P x) -> exists n, gen_pick P n.
+Proof.
+move=> exP.
+have inhT : inhabited T by case: exP => x _; constructor; exact: x.
+move/(epsilon_spec inhT): (exP) => Peps; exists 0; rewrite /gen_pick.
+case: (pselect _) => p //; case: ifP=> //.
+by rewrite -(epsilon_inh_irrelevance inhT) // Peps.
+Qed.
+
+Fact gen_pick_ext (P Q : pred T) : P =1 Q -> gen_pick P =1 gen_pick Q.
+Proof.
+move=> PEQ n; rewrite /gen_pick; case: (pselect _) => p //.
+set u := epsilon _ _; set v := epsilon _ _.
+suff->: u = v by rewrite PEQ.
+by congr epsilon; apply: functional_extensionality=> x; rewrite PEQ.
+Qed.
+
+Definition T_choiceMixin : choiceMixin T :=
+  Choice.Mixin gen_pick_some gen_pick_ex gen_pick_ext.
+
+End GenericChoice.
+
+
+
+
+
+
+
+
+
+
+
+
+Definition fresh  (U : Type) : option U :=
+  if (pselect (exists x : U, True)) is left p
+  then Some (sval (constructive_indefinite_description _ p)) else None.
+
+About epsilon.
+Definition gen_find (P : pred T) (n : nat) : option T :=
+let l :=
+
+Definition gen_find (P : pred T) (_ : nat) :=
+  if (pselect (exists x, P x)) is left p
+  then Some (sval (constructive_indefinite_description _ p))
+  else None.
+
+Lemma gen_find_Some P n x : gen_find P n = Some x -> P x.
+Proof.
+rewrite /gen_find; case: (pselect _) => [p | np]; last by [].
+case=> /= <-.
+exact: (svalP (constructive_indefinite_description _ p)).
+Qed.
+
+Lemma gen_find_ex (P : pred T) : (exists x, P x) -> exists n, gen_find P n.
+Proof.
+by move=> hx; exists 0; rewrite /gen_find; case: (pselect _).
+Qed.
+
+Lemma gen_find_ext P Q : P =1 Q -> gen_find P =1 gen_find Q.
+Proof.
+move=> ePQ x; rewrite /gen_find.
+case: (pselect _) => [p | np];case: (pselect _) => [q | nq] //.
+have eexPQ : (exists x : T, P x) = (exists x : T, Q x).
+  by rewrite propeqE; split; case=> y hy; exists y; rewrite ?ePQ // -ePQ.
+
+  Search _ (sval _ = sval _).
+Record mixin_of (T : Type) : Type := Mixin
+  { find : forall (_ : pred T) (_ : nat), option T;
+    _ : forall (P : pred T) (n : nat) (x : T) (_ : eq (find P n) (Some x)), P x;
+    _ : forall (P : pred T) (_ : ex (fun x : T => P x)), ex (fun n : nat => find P n);
+    _ : forall (P Q : pred T) (_ : eqfun P Q), eqfun (find P) (find Q) }
+
+
+
+
+  Lemma gen_choiceMixin {T : Type} : Choice.mixin_of T.
+Proof.
+  Unset Printing Notations. Print Choice.mixin_of.
