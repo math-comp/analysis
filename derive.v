@@ -132,8 +132,6 @@ Notation differentiable F := (@differentiable_def _ _ _ _ (Phantom _ [filter of 
 Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F])).
 Hint Extern 0 (differentiable _ _) => exact: ex_diff : core.
 
-Notation "g \is 'D_v(f)" := (is_diff  f f) (at level 10).
-
 Lemma differentiableP (V W : normedModType R) (f : V -> W) x :
   differentiable x f -> is_diff x f ('d_x f).
 Proof. by move=> ?; apply: DiffDef. Qed.
@@ -346,9 +344,21 @@ Lemma derive1E' V f a : differentiable a (f : R^o -> V) ->
   f^`() a = 'd_a f 1.
 Proof. by move=> ?; rewrite derive1E deriveE. Qed.
 
-Definition derive1n V n (f : R -> V) (a : R) := iter n (@derive1 V) f.
+Definition derive1n V n (f : R -> V) := iter n (@derive1 V) f.
 
 Local Notation "f ^` ( n )" := (derive1n n f).
+
+Lemma derive1n0 V (f : R -> V) : f^`(0) = f.
+Proof. by []. Qed.
+
+Lemma derive1n1 V (f : R -> V) : f^`(1) = f^`().
+Proof. by []. Qed.
+
+Lemma derive1nS V (f : R -> V) n : f^`(n.+1) = f^`(n)^`().
+Proof. by []. Qed.
+
+Lemma derive1Sn V (f : R -> V) n : f^`(n.+1) = f^`()^`(n).
+Proof. exact: iterSr. Qed.
 
 End DifferentialR2.
 
