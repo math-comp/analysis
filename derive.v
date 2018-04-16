@@ -339,13 +339,13 @@ Proof.
 rewrite /the_littleo /insubd; case: (insubP _) => // u /asboolP lino ->.
 rewrite funeqE => x; apply/eqP; case: (ler0P `|[x]|) => [|xn0].
   by rewrite normm_le0 => /eqP ->; rewrite linear0.
-rewrite -normm_le0 -(mul0r `|[x]|) -ler_pdivr_mulr //; apply/ler_gt0P => e egt0.
+rewrite -normm_le0 -(mul0r `|[x]|) -ler_pdivr_mulr //; apply/ler0_addgt0P => e egt0.
 by rewrite ler_pdivr_mulr // littleo_linear_id.
 Qed.
 
 Lemma littleo_center (V W : normedModType R) (f : V -> W) (x : V) :
-  [o_x center x of f \o center x] = [o_ (0 : V) id of f] \o center x.
-Proof. by rewrite littleo_center0 comp_centerK (comp_centerK x id). Qed.
+  [o_x center x of f] = [o_ (0 : V) id of f \o shift x] \o center x.
+Proof. by rewrite littleo_center0 -(comp_centerK x id). Qed.
 
 Lemma diff_unique (V W : normedModType R) (f : V -> W)
   (df : {linear V -> W}) x :
