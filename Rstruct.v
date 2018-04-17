@@ -145,8 +145,8 @@ Canonical R_comUnitRingType :=
 
 Lemma R_idomainMixin x y : x * y = 0 -> (x == 0) || (y == 0).
 Proof.
-(do 2 case: (boolP (_ == _))=> // /eqP)=> yNZ xNZ xyZ.
-by case: (Rmult_integral_contrapositive_currified _ _ xNZ yNZ).
+(do 2 case: (boolP (_ == _))=> // /eqP)=> yNZ xNZ /Rmult_integral.
+by case.
 Qed.
 
 Canonical R_idomainType :=
