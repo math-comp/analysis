@@ -144,13 +144,9 @@ Canonical R_comUnitRingType :=
   Eval hnf in [comUnitRingType of R].
 
 Lemma R_idomainMixin x y : x * y = 0 -> (x == 0) || (y == 0).
-Proof.
-(do 2 case: (boolP (_ == _))=> // /eqP)=> yNZ xNZ xyZ.
-by case: (Rmult_integral_contrapositive_currified _ _ xNZ yNZ).
-Qed.
+Proof. by move=> /Rmult_integral []->; rewrite eqxx ?orbT. Qed.
 
-Canonical R_idomainType :=
-   Eval hnf in IdomainType R R_idomainMixin.
+Canonical R_idomainType := Eval hnf in IdomainType R R_idomainMixin.
 
 Lemma R_fieldMixin : GRing.Field.mixin_of [unitRingType of R].
 Proof. by done. Qed.
