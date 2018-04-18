@@ -315,47 +315,33 @@ End DifferentialR2.
 
 Section DifferentialR3.
 
-Lemma littleo_linear_id (V W : normedModType R) (f : {linear V -> W}) :
-  littleo (locally (0 : V)) f id ->
-  forall e, 0 < e -> forall x, 0 < `|[x]| -> `|[f x]| <= e * `|[x]|.
+Lemma littleo_linear0 (V W : normedModType R) (f : {linear V -> W}) :
+  (f : V -> W) =o_ (0 : V) id -> f = cst 0 :> (V -> W).
 Proof.
-move=> oid _ /posnumP[e] x xn0.
+move/eqoP => oid.
+rewrite funeqE => x; apply/eqP; case: (ler0P `|[x]|) => [|xn0].
+  by rewrite normm_le0 => /eqP ->; rewrite linear0.
+rewrite -normm_le0 -(mul0r `|[x]|) -ler_pdivr_mulr //.
+apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
 have /oid /locallyP [_ /posnumP[d] dfe] := posnum_gt0 e.
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
 rewrite -{1}(@scalerKV _ _ k _ x) // linearZZ (ler_trans (ler_normmZ _ _)) //.
 rewrite -ler_pdivl_mull; last by rewrite absRE gtr0_norm.
-suff /dfe /ler_trans : ball 0 d%:num (k^-1 *: x).
-  apply.
-  by rewrite mulrCA ler_pmul // (ler_trans (ler_normmZ _ _)) // absRE normfV.
-rewrite -ball_normE /ball_ normmB subr0 invrK.
-rewrite (ler_lt_trans (ler_normmZ _ _)) // -ltr_pdivl_mulr // absRE.
-rewrite ger0_norm // ltr_pdivr_mulr // -mulrA mulVf; last exact: lt0r_neq0.
-by rewrite mulr1 [X in _ < X]splitr ltr_addl.
+rewrite mulrCA (@ler_trans _ (e%:num * `|[k^-1 *: x]|)) //; last first.
+  by rewrite ler_pmul // (ler_trans (ler_normmZ _ _)) // absRE normfV.
+apply dfe.
+rewrite -ball_normE /ball_ sub0r normmN (ler_lt_trans (ler_normmZ _ _)) //.
+rewrite invrK -ltr_pdivl_mulr // absRE ger0_norm // ltr_pdivr_mulr //.
+by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [X in _ < X]splitr ltr_addl.
 Qed.
-
-Lemma littleo_linear0 (V W : normedModType R) (f : {linear V -> W}) :
-  [o_ (0 : V) id of f] = cst 0.
-Proof.
-rewrite /the_littleo /insubd; case: (insubP _) => // u /asboolP lino ->.
-rewrite funeqE => x; apply/eqP; case: (ler0P `|[x]|) => [|xn0].
-  by rewrite normm_le0 => /eqP ->; rewrite linear0.
-rewrite -normm_le0 -(mul0r `|[x]|) -ler_pdivr_mulr //; apply/ler0_addgt0P => e egt0.
-by rewrite ler_pdivr_mulr // littleo_linear_id.
-Qed.
-
-Lemma littleo_center (V W : normedModType R) (f : V -> W) (x : V) :
-  [o_x center x of f] = [o_ (0 : V) id of f \o shift x] \o center x.
-Proof. by rewrite littleo_center0 -(comp_centerK x id). Qed.
 
 Lemma diff_unique (V W : normedModType R) (f : V -> W)
   (df : {linear V -> W}) x :
   continuous df -> f \o shift x = cst (f x) + df +o_ (0 : V) id ->
   'd_x f = df :> (V -> W).
 Proof.
-move=> dfc dxf; suff dfef' : 'd_x f \- df =o_ (0 : V) id.
-  rewrite funeqE => y; apply/subr0_eq.
-  by rewrite -[0]/(cst 0 y) -(littleo_linear0 [linear of 'd_x f \- df]) -dfef'.
-rewrite littleoE => //; apply/eq_some_oP; rewrite funeqE => y /=.
+move=> dfc dxf; apply/subr0_eq; rewrite -[LHS]/(_ \- _).
+apply/littleo_linear0/eqoP/eq_some_oP => /=; rewrite funeqE => y /=.
 have hdf h :
   (f \o shift x = cst (f x) + h +o_ (0 : V) id) ->
   h = f \o shift x - cst (f x) +o_ (0 : V) id.
