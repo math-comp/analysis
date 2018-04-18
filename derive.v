@@ -24,6 +24,7 @@ Local Open Scope classical_set_scope.
 (*              'J_x[f] == the Jacobian of f at a point x                     *)
 (*              'D_v[f] == the directional derivative of f along v            *)
 (*                f^`() == the derivative of f of domain R                    *)
+(*               f^`(n) == the nth derivative of f of domain R                *)
 (******************************************************************************)
 
 Reserved Notation "''d_' F" (at level 0, F at level 0, format "''d_' F").
