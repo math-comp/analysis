@@ -305,6 +305,7 @@ exact: contrapR hx.
 Qed.
 
 (* -------------------------------------------------------------------- *)
+(* Any type can be equipped with a choiceType structure.*)
 
 
 Section GenericChoice.
@@ -312,26 +313,51 @@ Section GenericChoice.
 Variable T : Type.
 
 
+(* Didn't find this one??? *)
+Fact eq_imply b1 b2 : (b1 ==> b2) && (b2 ==> b1) = (b1 == b2).
+Proof. by case: b1; case: b2. Qed.
+
+Fact Peps (P : pred T) (i1 i2 : inhabited T) :
+  P (epsilon i1 P) = P (epsilon i2 P).
+Proof.
+suff {i1 i2} hi x1 x2: P (epsilon x1 P) -> P  (epsilon x2 P).
+  apply/eqP; rewrite -eq_imply; apply/andP; split; apply/implyP; exact: hi.
+by move=> P1; rewrite (epsilon_inh_irrelevance _ x1) //; exists (epsilon x1 P).
+Qed.
+
 Definition gen_pick (P : pred T) (_ : nat) :=
   if (pselect (inhabited T)) is left inhT then
     let x := epsilon inhT P in
     if P x then Some x else None
-    else None.
+  else None.
+
+Fact gen_pick_inhab P n (i : inhabited T) :
+  gen_pick P n = let x := epsilon i P in if P x then Some x else None.
+Proof.
+rewrite /gen_pick; case: (pselect _) => p //; rewrite !(Peps _ p i).
+case: ifP=> // Pei; rewrite (epsilon_inh_irrelevance _ i) //.
+by exists (epsilon i P).
+Qed.
 
 Fact gen_pick_some P n x : gen_pick P n = Some x -> P x.
 Proof.
 by rewrite /gen_pick; case: (pselect _) => p //; case: ifP=> // Px [<-].
 Qed.
 
+(* epsilon : forall A : Type, inhabited A -> (A -> Prop) -> A
+Why not just epsilon: forall A : Type, A -> (A -> Prop) -> A ?
+or may be epsilon: forall A : Type, (A -> Prop), A -> A ?*)
+
 Fact gen_pick_ex (P : pred T) :
   (exists x : T, P x) -> exists n, gen_pick P n.
 Proof.
-move=> exP.
-have inhT : inhabited T by case: exP => x _; constructor; exact: x.
-move/(epsilon_spec inhT): (exP) => Peps; exists 0; rewrite /gen_pick.
-case: (pselect _) => p //; case: ifP=> //.
+move=> exP; case: (exP) => x Px; exists 0.
+have inhT : inhabited T := inhabits x.
+have Peps: P (epsilon inhT P) := (epsilon_spec inhT _ exP).
+rewrite /gen_pick; case: (pselect _) => p //; case: ifP=> //.
 by rewrite -(epsilon_inh_irrelevance inhT) // Peps.
 Qed.
+
 
 Fact gen_pick_ext (P Q : pred T) : P =1 Q -> gen_pick P =1 gen_pick Q.
 Proof.
@@ -345,60 +371,3 @@ Definition T_choiceMixin : choiceMixin T :=
   Choice.Mixin gen_pick_some gen_pick_ex gen_pick_ext.
 
 End GenericChoice.
-
-
-
-
-
-
-
-
-
-
-
-
-Definition fresh  (U : Type) : option U :=
-  if (pselect (exists x : U, True)) is left p
-  then Some (sval (constructive_indefinite_description _ p)) else None.
-
-About epsilon.
-Definition gen_find (P : pred T) (n : nat) : option T :=
-let l :=
-
-Definition gen_find (P : pred T) (_ : nat) :=
-  if (pselect (exists x, P x)) is left p
-  then Some (sval (constructive_indefinite_description _ p))
-  else None.
-
-Lemma gen_find_Some P n x : gen_find P n = Some x -> P x.
-Proof.
-rewrite /gen_find; case: (pselect _) => [p | np]; last by [].
-case=> /= <-.
-exact: (svalP (constructive_indefinite_description _ p)).
-Qed.
-
-Lemma gen_find_ex (P : pred T) : (exists x, P x) -> exists n, gen_find P n.
-Proof.
-by move=> hx; exists 0; rewrite /gen_find; case: (pselect _).
-Qed.
-
-Lemma gen_find_ext P Q : P =1 Q -> gen_find P =1 gen_find Q.
-Proof.
-move=> ePQ x; rewrite /gen_find.
-case: (pselect _) => [p | np];case: (pselect _) => [q | nq] //.
-have eexPQ : (exists x : T, P x) = (exists x : T, Q x).
-  by rewrite propeqE; split; case=> y hy; exists y; rewrite ?ePQ // -ePQ.
-
-  Search _ (sval _ = sval _).
-Record mixin_of (T : Type) : Type := Mixin
-  { find : forall (_ : pred T) (_ : nat), option T;
-    _ : forall (P : pred T) (n : nat) (x : T) (_ : eq (find P n) (Some x)), P x;
-    _ : forall (P : pred T) (_ : ex (fun x : T => P x)), ex (fun n : nat => find P n);
-    _ : forall (P Q : pred T) (_ : eqfun P Q), eqfun (find P) (find Q) }
-
-
-
-
-  Lemma gen_choiceMixin {T : Type} : Choice.mixin_of T.
-Proof.
-  Unset Printing Notations. Print Choice.mixin_of.
