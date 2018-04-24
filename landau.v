@@ -908,6 +908,25 @@ Hint Resolve littleo_class.
 Hint Resolve bigO_class.
 Hint Resolve littleo_eqO.
 
+(* NB: see also scaleox *)
+Lemma scaleolx (K : absRingType) (V W : normedModType K) {T : Type}
+  (F : filter_on T) (a : W) (k : T -> K^o) (e : T -> V) (x : T) :
+  ([o_F e of k] x) *: a = [o_F e of (fun y => [o_F e of k] y *: a)] x.
+Proof.
+rewrite [in RHS]littleoE //.
+have [->|a0] := eqVneq a 0.
+  by rewrite (_ : (fun _ => _) = 0 :> (_ -> _)) // funeqE => ?; rewrite scaler0.
+move=> _/posnumP[eps].
+have ea : 0 < eps%:num / `|[ a ]| by rewrite divr_gt0 // normm_gt0.
+set g := 'o _.
+have /(_ _ ea) ? := littleoP [littleo of g].
+near=> y.
+  rewrite (ler_trans (ler_normmZ _ _)) //.
+  rewrite -ler_pdivl_mulr ?ltr_def ?normm_eq0 ?a0 ?normm_ge0 // mulrAC.
+  by near: y.
+end_near.
+Qed.
+
 Section Limit.
 
 Context {K : absRingType} {T : Type} {V W X : normedModType K}.
