@@ -63,8 +63,8 @@ Local Notation "1" := idx.
 
 Variable op : Monoid.com_law 1.
 
-Notation Local "'*%M'" := op (at level 0).
-Notation Local "x * y" := (op x y).
+Local Notation "'*%M'" := op (at level 0).
+Local Notation "x * y" := (op x y).
 
 Lemma big_fset_seq_cond (T : choiceType) (J : {fset T}) P F :
     \big[*%M/1]_(x : J | P (val x)) F (val x)
