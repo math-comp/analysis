@@ -41,7 +41,6 @@ Reserved Notation "f ^` ( n )" (at level 8, format "f ^` ( n )").
 Section Differential.
 
 Context {K : absRingType} {V W : normedModType K}.
-
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
@@ -466,6 +465,13 @@ move=> dfx dgx; apply: DiffDef; first exact: differentiableD.
 by rewrite diffD // !diff_val.
 Qed.
 
+Lemma differentiable_sum n (f : 'I_n -> V -> W) (x : V) :
+  (forall i, differentiable x (f i)) -> differentiable x (\sum_(i < n) f i).
+Proof.
+elim: n f => [f _| n IH f H]; first by rewrite big_ord0.
+rewrite big_ord_recr /=; apply/differentiableD; [apply/IH => ? |]; exact: H.
+Qed.
+
 Let dopp (f : V -> W) x :
   differentiable x f -> continuous (- ('d_x f : V -> W)) /\
   (- f) \o shift x = cst (- f x) \- 'd_x f +o_ (0 : V) id.
@@ -541,6 +547,35 @@ Global Instance is_diffZ (f df : V -> W) k x :
 Proof.
 move=> dfx; apply: DiffDef; first exact: differentiableZ.
 by rewrite diffZ // diff_val.
+Qed.
+
+(* NB: could be generalized with K : absRingType instead of R *)
+Let dscalel (k : V -> R^o) (f : W) x :
+  differentiable x k ->
+  continuous (fun z : V => 'd_x k z *: f) /\
+  (fun z => k z *: f) \o shift x =
+    cst (k x *: f) + (fun z => 'd_x k z *: f) +o_ (0 : V) id.
+Proof.
+move=> df; split.
+  move=> ?; exact/continuousZl/(@diff_continuous _ _ [normedModType R of R^o]).
+apply/eqaddoE; rewrite funeqE => y /=; have /diff_locallyx dfx := df.
+by rewrite dfx /= !scalerDl -[RHS]/(_ y + _ y + _ y) /cst scaleolx.
+Qed.
+
+Lemma diffZl (k : V -> R^o) (f : W) x : differentiable x k ->
+  'd_x (fun z => k z *: f) = (fun z => 'd_ x k z *: f) :> (_ -> _).
+Proof.
+move=> df; set g := RHS.
+have addg : additive g by move=> a b; rewrite /g linearB scalerBl.
+have scag : scalable g by move=> l a; rewrite /g linearZ /= scalerA.
+have @g' : {linear V -> W} by exists g; eexists; [exact: addg | exact: scag].
+rewrite (_ : g = g') //; by apply: diff_unique => //; have [] := dscalel f df.
+Qed.
+
+Lemma differentiableZl (k : V -> R^o) (f : W) x :
+  differentiable x k -> differentiable x (fun z => k z *: f).
+Proof.
+by move=> df; apply/diff_locallyP; rewrite diffZl //; have [] := dscalel f df.
 Qed.
 
 Let dlin (V' W' : normedModType R) (f : {linear V' -> W'}) x :
