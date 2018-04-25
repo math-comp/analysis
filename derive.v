@@ -566,6 +566,14 @@ apply: DiffDef; first exact/linear_differentiable/scaler_continuous.
 by rewrite diff_lin //; apply: scaler_continuous.
 Qed.
 
+Lemma differentiable_coord m n (M : 'M[R]_(m.+1, n.+1)) i j :
+  (differentiable M) (fun N : 'M[R]_(m.+1, n.+1) => N i j : R^o).
+Proof.
+have @f : {linear 'M[R]_(m.+1, n.+1) -> R^o}.
+  by exists (fun N : 'M[R]_(_, _) => N i j); eexists; move=> ? ?; rewrite !mxE.
+rewrite (_ : (fun _ => _) = f) //; exact/linear_differentiable/coord_continuous.
+Qed.
+
 Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
   continuous f -> exists2 k, k > 0 & forall x, `|[f x]| <= k * `|[x]|.
 Proof.
