@@ -777,6 +777,13 @@ Canonical matrix_uniformType :=
 
 End matrix_Uniform.
 
+Lemma coord_continuous {K : absRingType} m n i j :
+  continuous (fun M : 'M[K]_(m.+1, n.+1) => M i j).
+Proof.
+move=> /= M s /= /locallyP; rewrite locally_E => -[e e0 es].
+apply/locallyP; rewrite locally_E; exists e => //= N MN; exact/es/MN.
+Qed.
+
 (** product of two uniform spaces *)
 
 Section prod_Uniform.
