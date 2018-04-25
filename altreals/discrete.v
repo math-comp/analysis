@@ -4,8 +4,8 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra bigenough.
-Require Import xfinmap boolp reals.
+From mathcomp Require Import all_ssreflect all_algebra.
+Require Import xfinmap boolp set reals.
 (* ------- *) Require (*--*) Setoid.
 
 (* -------------------------------------------------------------------- *)
@@ -13,60 +13,11 @@ Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory Num.Theory BigEnough.
+Import GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
-(* -------------------------------------------------------------------- *)
-Section ToBeEventuallyMovedToBoolP.
-
-Context {T : Type} {P Q : T -> Prop}.
-
-Lemma asboolb (b : bool) : `[< b >] = b.
-Proof. by apply/asboolP/idP. Qed.
-
-(* TODO : add its friends... *)
-Lemma neg_or (A B : Prop) : ~ (A \/ B) <-> ~ A /\ ~ B.
-Proof.
-split; last by case=> [nA nB]; case.
-by move=> nAoB; split => ?; apply: nAoB; [left| right].
-Qed.
-
-Lemma existsNP : ~ (exists x, P x) -> forall x, ~ P x.
-Proof. by move/asboolPn/forallp_asboolPn. Qed.
-
-Lemma exists2NP : ~ (exists2 x, P x & Q x) -> forall x, ~ P x \/ ~ Q x.
-Proof.
-apply: contrapR; case/asboolPn/existsp_asboolPn=> [x].
-by case/neg_or => /contrapT Px /contrapT Qx; exists x.
-Qed.
-
-End ToBeEventuallyMovedToBoolP.
-
-(* -------------------------------------------------------------------- *)
-
-Section ProofIrrelevantChoice.
-
-Context {T : choiceType}.
-
-Lemma existsP  (P : T -> Prop) : (exists x, P x) -> {x : T | P x}.
-Proof.
-move/asboolP/exists_asboolP=> h; have/asboolP hxh := (xchooseP h).
-by exists (xchoose h).
-Qed.
-
-Lemma existsTP (P : T -> Prop) : { x : T | P x } + (forall x, ~ P x).
-Proof.
-case: (boolP `[<exists x : T, P x>]) => [/exists_asboolP | /asboolPn] h.
-  by case/existsP: h => w Pw; left; exists w; apply/asboolP.
-by right=> x Px; apply/h; exists x.
-Qed.
-
-
-End ProofIrrelevantChoice.
-
-(* -------------------------------------------------------------------- *)
 Section PredSubtype.
 Section Def.
 Variable T : Type.
@@ -108,107 +59,75 @@ Definition pincl (x : [psub E]) : [psub F] :=
 End PIncl.
 
 (* -------------------------------------------------------------------- *)
+Definition countable {T : Type} (E : pred T) := (Countable.mixin_of [psub E]).
+
 Section Countable.
-Variable (T : Type) (E : pred T).
+Context {T : Type} {E : pred T}.
 
-CoInductive countable : Type :=
-  Countable
-    (rpickle : [psub E] -> nat)
-    (runpickle : nat -> option [psub E])
-    of pcancel rpickle runpickle.
+Definition countable_sort (c : countable E) := [psub E].
 
-Definition rpickle (c : countable) :=
-  let: Countable p _ _ := c in p.
+Variable (c : countable E).
 
-Definition runpickle (c : countable) :=
-  let: Countable _ p _ := c in p.
+Canonical countable_eqType := EqType (countable_sort c) (Countable.EqMixin c).
+Canonical countable_choiceType := ChoiceType (countable_sort c) (CountChoiceMixin c).
+Canonical countable_countType := CountType (countable_sort c) c.
 
-Lemma rpickleK c: pcancel (rpickle c) (runpickle c).
-Proof. by case: c. Qed.
 End Countable.
 
-(* -------------------------------------------------------------------- *)
-Section CountableTheory.
-Lemma countable_countable (T : countType) (E : pred T) : countable E.
+Coercion countable_sort : countable >-> Sortclass.
+
+Lemma countType_countable (T : countType) (E : pred T) : countable E.
 Proof. by exists pickle unpickle; apply/pickleK. Qed.
 
-Section CanCountable.
-Variables (T : Type) (U : countType) (E : pred T).
-Variables (f : [psub E] -> U) (g : U -> [psub E]).
+Local Open Scope classical_set_scope.
 
-Lemma can_countable : cancel f g -> countable E.
+Lemma classic_countable (T : choiceType) (E : pred T) :
+  (exists p, forall x : T, x \in E -> exists n : nat, p n = some x) -> countable E.
 Proof.
-pose p := pickle \o f; pose u n := omap g (unpickle n).
-move=> can_fg; apply (@Countable _ E p u) => x.
-by rewrite {}/u {}/p /= pickleK /= can_fg.
+move=> /(xgetPex ((fun=> None) : _ -> _)); set f := xget _ _ => fP.
+pose pickle (e : [psub E]) := projT1 (sig_eqW (fP (val e) (valP e))).
+exists pickle (obind insub \o f); rewrite /pickle => -[x xP] /=.
+by case: sig_eqW => //= n -> /=; rewrite insubT.
 Qed.
-End CanCountable.
 
-Section CountType.
-Variables (T : eqType) (E : pred T) (c : countable E).
+CoInductive finite {T : Type} (E : pred T) :=
+  Finite (n : nat) (fpickle : [psub E] -> 'I_n)
+(* Cyril: maybe put an enumeration instead, for conversion purposes *)
+         (unfpickle : nat -> option [psub E])
+         of pcancel fpickle unfpickle.
 
-Definition countable_countMixin  := CountMixin (rpickleK c).
-Definition countable_choiceMixin := CountChoiceMixin countable_countMixin.
-
-Definition countable_choiceType :=
-  ChoiceType [psub E] countable_choiceMixin.
-
-Definition countable_countType :=
-  CountType countable_choiceType countable_countMixin.
-End CountType.
-End CountableTheory.
-
-Notation "[ 'countable' 'of' c ]" := (countable_countType c)
-  (format "[ 'countable'  'of'  c ]").
-
-(* -------------------------------------------------------------------- *)
 Section Finite.
-Variables (T : eqType).
+Context {T : Type} {E : pred T}.
 
-CoInductive finite (E : pred T) : Type :=
-| Finite s of uniq s & {subset E <= s}.
+Definition finite_sort (f : finite E) := [psub E].
+
+Variable (f : finite E).
+
+Lemma finite_countable : countable E.
+Proof. by case: f => n p up pK; exists p up. Qed.
+
+Canonical finite_eqType :=
+  EqType (finite_sort f) (Countable.EqMixin finite_countable).
+Canonical finite_choiceType :=
+  ChoiceType (finite_sort f) (CountChoiceMixin finite_countable).
+Canonical finite_countType := CountType (finite_sort f) finite_countable.
+
+Local Coercion list_of_option T : option T -> seq T :=
+  fun x => if x is Some t then [:: t] else [::].
+
+Lemma finite_finMixin : {s : seq (finite_sort f) & Finite.axiom s}.
+Proof.
+case: f => n p up pK.
+exists (undup (flatten [seq (up (val i) : seq (finite_sort f)) | i in 'I_n])).
+move=> x; rewrite count_uniq_mem ?undup_uniq // mem_undup; apply/eqP.
+by rewrite eqb1; apply/flatten_imageP; exists (p x); rewrite // pK mem_head.
+Qed.
+
+Canonical finite_finType := FinType (finite_sort f)
+  (Finite.Mixin (finite_countable : Countable.mixin_of (finite_sort f))
+                (projT2 finite_finMixin)).
+
 End Finite.
-
-(* -------------------------------------------------------------------- *)
-Section FiniteTheory.
-Context {T : choiceType}.
-
-
-Lemma finiteP (E : pred T) : (exists s : seq T, {subset E <= s}) -> finite E.
-Proof.
-case/existsP=> s sEs; exists (undup s); first by rewrite undup_uniq.
-by move=> x; rewrite mem_undup; exact: sEs.
-Qed.
-
-
-Lemma finiteNP (E : pred T): (forall s : seq T, ~ {subset E <= s}) ->
-  forall n, exists s : seq T, [/\ size s = n, uniq s & {subset s <= E}].
-Proof.
-move=> finN; elim=> [|n [s] [<- uq_s sE]]; first by exists [::].
-have [x sxN xE]: exists2 x, x \notin s & x \in E.
-  apply: contrapR (finN (filter (mem E) s)) => /exists2NP finE x Ex.
-  move/or_asboolP: (finE x).
-  by rewrite !asbool_neg !asboolb negbK Ex mem_filter orbF [(mem E) x]Ex.
-exists (x :: s) => /=; rewrite sxN; split=> // y.
-by rewrite in_cons => /orP[/eqP->//|/sE].
-Qed.
-
-End FiniteTheory.
-
-(* -------------------------------------------------------------------- *)
-Section FiniteCountable.
-Variables (T : eqType) (E : pred T).
-
-Lemma finite_countable : finite E -> countable E.
-Proof.
-case=> s uqs Es; pose t := pmap (fun x => (insub x : option [psub E])) s.
-pose f x := index x t; pose g i := nth None [seq Some x | x <- t] i.
-apply (@Countable _ E f g) => x; rewrite {}/f {}/g /=.
-have x_in_t: x \in t; first case: x => x h.
-  by rewrite {}/t mem_pmap_sub /= Es.
-by rewrite (nth_map x) ?index_mem ?nth_index.
-Qed.
-End FiniteCountable.
 
 (* -------------------------------------------------------------------- *)
 Section CountSub.
@@ -230,7 +149,7 @@ Hypothesis cE : forall i, countable (E i).
 
 Lemma cunion_countable : countable [pred x | `[exists i, x \in E i]].
 Proof.
-pose S := { i : nat & [countable of cE i] }; set F := [pred x | _].
+pose S := { i : nat & cE i }; set F := [pred x | _].
 have H: forall (x : [psub F]), exists i : nat, val x \in E i.
   by case=> x /= /existsbP[i] Eix; exists i.
 have G: forall (x : S), val (tagged x) \in F.
@@ -238,6 +157,62 @@ have G: forall (x : S), val (tagged x) \in F.
 pose f (x : [psub F]) : S := Tagged (fun i => [psub E i])
   (PSubSub (xchooseP (H x))).
 pose g (x : S) := PSubSub (G x).
-by have /can_countable: cancel f g by case=> x hx; apply/val_inj.
+by have /CanCountMixin: cancel f g by case=> x hx; apply/val_inj.
 Qed.
+
 End CountableUnion.
+
+CoInductive infinite (T : Type) (E : pred T) :=
+  Infinite enum of forall n : nat, enum n \in E & injective enum.
+
+(* -------------------------------------------------------------------- *)
+Section FiniteTheory.
+
+Lemma choice_finite {T : eqType} (E : pred T) :
+  (exists s : seq T, {subset E <= s}) -> finite E.
+Proof.
+Admitted.
+
+Lemma finiteVinfinite {T : Type} (E : pred T) : finite E + infinite E.
+Admitted.
+
+Lemma not_finite {T : Type} (E : pred T) : (finite E -> False) -> infinite E.
+Proof. by have [] := finiteVinfinite E. Qed.
+
+Lemma not_infinite {T : Type} (E : pred T) : (infinite E -> False) -> finite E.
+Proof. by have [] := finiteVinfinite E. Qed.
+
+End FiniteTheory.
+
+Lemma big_infinite (T : Type) (E : pred T) :
+  (forall n, exists f : 'I_n -> [psub E], injective f) -> infinite E.
+Admitted.
+
+Lemma infinite_itv (R : numFieldType) (a b : R) : a < b ->
+  infinite [pred x | a < x < b].
+Proof.
+move=> lt_ab; apply: big_infinite => n.
+pose f i := ((b - a) * (i%:R / n.+1%:R) + a).
+have f_mono : {mono f : i j / (i <= j)%N >-> i <= j}.
+  apply: homo_leq_mono => i j lt_ij; rewrite /f ltr_add2r.
+  by rewrite ltr_pmul2l ?ltr_pmul2r ?subr_gt0 ?ltr_nat ?invr_gt0 ?ltr0Sn.
+have fP (i : 'I_n) : f i.+1 \in [pred x | a < x < b].
+have -> : a = f 0%N by rewrite /f mul0r mulr0 add0r.
+have -> : b = f n.+1 by rewrite /f divff ?pnatr_eq0 // mulr1 addrNK.
+  by rewrite inE !(leq_lerW_mono f_mono) // !ltnS leq0n ltn_ord.
+exists (fun i => PSubSub (fP i)) => i j /= [].
+by move=> /(leq_mono_inj f_mono) [] /val_inj.
+Qed.
+
+Lemma infiniteIfinite (T : Type) (E F : pred T) :
+  infinite E -> finite F -> finite (predI E F).
+Admitted.
+
+Notation cofinite E := (finite (predC E)).
+
+Lemma infiniteIcofinite (T : Type) (E F : pred T) :
+  infinite E -> cofinite F -> infinite (predI E F).
+Admitted.
+
+Lemma finite_seq (T : eqType) (s : seq T) : finite (mem s).
+Admitted.
