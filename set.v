@@ -451,10 +451,41 @@ Proof. exact: (xgetPN point). Qed.
 
 End PointedTheory.
 
-Definition total_on T (A : set T) (R : T -> T -> Prop) :=
+
+Section ZornVariants.
+
+
+Section OrderRelatedFacts.
+
+Variables (T : Type) (R : T -> T -> Prop).
+
+Definition upper (A : set T) x := forall a, A a -> R a x.
+Definition lower (A : set T) x := forall a, A a -> R x a.
+Definition lub (A : set T) x := (upper A x) /\ (lower (upper A) x).
+
+Fact lub_upper A x : lub A x -> upper A x. Proof. by case. Qed.
+Fact lub_lower A x : lub A x -> lower (upper A) x. Proof. by case. Qed.
+
+Definition total_on (A : set T) (R : T -> T -> Prop) :=
   forall s t, A s -> A t -> R s t \/ R t s.
 
-Section ZL.
+(* And ad hoc inductive type? a subtype? *)
+Definition rset := {A : set T | total_on A R}.
+Coercion Rset_val  (A : rset) : set T := sval A.
+
+Definition is_rsucc (s t : T) :=
+  [/\ R s t, s <> t & (forall r, R s r -> R r t -> r = s \/ r = t)].
+
+End OrderRelatedFacts.
+
+
+Section ZornLemmaPreparation.
+
+(* Let T be a pointed type equipped with R an order relation.
+   The two following facts are incompatible:
+   - any totally ordered collection of elements has a lub (tot_Rlub)
+   - any inhabitant of T has a successor (tot_Rsucc)
+*)
 
 Variable (T : Type) (t0 : T) (R : T -> T -> Prop).
 
@@ -466,41 +497,26 @@ Hypothesis (Rrefl : forall t, R t t).
 Hypothesis (Rtrans : forall r s t, R r s -> R s t -> R r t).
 Hypothesis (Rantisym : forall s t, R s t -> R t s -> s = t).
 
-Let upper (A : set T) x := forall a, A a -> R a x.
-Let lower (A : set T) x := forall a, A a -> R x a.
-Let lub (A : set T) x := (upper A x) /\ (lower (upper A) x).
+Let Rsucc s := get (is_rsucc R s).
+Let Rlub (A : rset R) := get (lub R A).
 
-Fact lub_upper A x : lub A x -> upper A x. Proof. by case. Qed.
-Fact lub_lower A x : lub A x -> lower (upper A) x. Proof. by case. Qed.
+Hypothesis (tot_succ : forall s : T, exists t, is_rsucc R s t).
 
-Hypothesis (tot_Rlub : forall (A : set T), total_on A R -> exists t, lub A t).
+Local Fact RsuccP s : is_rsucc R s (Rsucc s). Proof. by apply: getPex. Qed.
 
-Let is_succ (s t : T) :=
-  [/\ R s t, s <> t & (forall r, R s r -> R r t -> r = s \/ r = t)].
+Hypothesis (tot_lub : forall (A : rset R), exists t, lub R A t).
 
-Hypothesis (tot_Rsucc : forall s : T, exists t, is_succ s t).
+Local Fact RlubP (A : rset R) : lub R A (Rlub A).
+Proof. by apply: getPex; apply: tot_lub. Qed.
 
-Let Rsucc s := get (is_succ s).
-
-Fact RsuccP s : is_succ s (Rsucc s). Proof. by apply: getPex. Qed.
-
-Let Rset := {A : set T | total_on A R}.
-Local Coercion Rset_sval (A : Rset) : set T := sval A.
-
-Let Rlub (A : Rset) := get (lub A).
-
-Fact RlubP (A : Rset) : lub A (Rlub A).
-Proof. by apply: getPex; apply: tot_Rlub; case: A. Qed.
-
-Inductive tower : set T :=
-  | RLub : forall A : Rset, A `<=` tower -> tower (Rlub A)
+Local Inductive tower : set T :=
+  | RLub : forall A : rset R, A `<=` tower -> tower (Rlub A)
   | Succ : forall t, tower t -> tower (Rsucc t).
-
 
 Lemma ZL' : False.
 Proof.
 suff Twtot : total_on tower R.
-  pose A : Rset := @exist _ _ tower Twtot.
+  pose A : rset R := @exist _ _ tower Twtot.
   have [R_lub_suc hneq _] := RsuccP (Rlub A); have [hub hlub] := RlubP A.
   suff : Rlub A = Rsucc (Rlub A) by [].
   by apply: Rantisym=> //; apply/hub/Succ/RLub.
@@ -525,9 +541,144 @@ move=> s t Tws; elim: Tws t => {s} [A sATw ihA|s Tws ihs] t Twt.
     by left.
 Qed.
 
-End ZL.
+End ZornLemmaPreparation.
 
 
+Variables (T : Type) (R : T -> T -> Prop).
+
+Hypothesis (Rrefl : forall t, R t t).
+Hypothesis (Rtrans : forall r s t, R r s -> R s t -> R r t).
+
+Section ZornLemma.
+(* Every chain has an upper bound *)
+
+Hypothesis (Rantisym : forall s t, R s t -> R t s -> s = t).
+
+Hypothesis (tot_upper : forall A : rset R, exists t, upper R A t).
+
+Lemma Zorn :  exists t, forall s, R t s -> s = t.
+Proof.
+pose S (A B : rset R) :=  A `<=` B.
+have Srefl A : S A A by [].
+have Strans A B C : S A B -> S B C -> S A C by apply: subset_trans.
+have Santisym A B : S A B -> S B A -> A = B.
+  rewrite /S; case: A; case: B => /= B totB A totA sAB sBA.
+  by apply: exist_congr; rewrite predeqE=> ?; split=> [/sAB|/sBA].
+have Stot_lub X : exists A, lub S X A. admit.
+  (* have AUtot : total_on (\bigcup_(B in X) (sval B)) R. *)
+  (*   move=> s t [B AB Bs] [C AC Ct]. *)
+  (*   have [/(_ _ Bs) Cs|/(_ _ Ct) Bt] := Atot _ _ AB AC. *)
+  (*     by have /(_ _ _ Cs Ct) := svalP C. *)
+  (*   by have /(_ _ _ Bs Bt) := svalP B. *)
+  (* exists (exist _ (\bigcup_(B in A) sval B) AUtot); split. *)
+  (*   by move=> B ???; exists B. *)
+  (* by move=> B Bub ? /= [? /Bub]; apply. *)
+apply: contrapT => nomax.
+suff Ssucc X : exists Y, is_rsucc S X Y.
+  have tot0 : total_on set0 R by [].
+  pose rset0 : rset R := exist _ set0 tot0.
+  by elim: (ZL' rset0 _ _ _ Ssucc Stot_lub).
+have {nomax} nomax t : exists s, R t s /\ s <> t.
+  move: nomax; rewrite not_exists => /(_ t); rewrite not_forall=> [[s]].
+  by rewrite not_imply => ?; exists s.
+have [t tupperX] := tot_upper X; have [s [Rts snet]] := nomax t.
+have Xstot : total_on (X `|` [set s]) R. admit.
+pose Xs : rset R := exist _ (X `|` [set s]) Xstot.
+have subXXs : X `<=` Xs. admit.
+have XneqXs : X <> Xs. admit.
+have /Stot_lub [t tub] := svalP X; have [s [Rts snet]] := nomax t.
+have Astot : total_on (sval A `|` [set s]) R.
+  move=> u v [Au|->]; last first.
+    by move=> [/tub Rvt|->]; right=> //; apply: Rtrans Rts.
+  move=> [Av|->]; [apply: (svalP A)|left] => //.
+  by apply: Rtrans Rts; apply: tub.
+exists (exist _ (sval A `|` [set s]) Astot); split; first by move=> ??; left.
+split=> [AeAs|[B Btot] sAB sBAs].
+  case: (pselect (sval A s)); first by move=> /tub Rst; apply/snet/Rantisym.
+  by rewrite AeAs /=; apply; right.
+case: (pselect (B s)) => [Bs|nBs].
+  by right; apply: exist_congr; rewrite predeqE => r; split=> [/sBAs|[/sAB|->]].
+left; case: A tub Astot sBAs sAB => A Atot /= tub Astot sBAs sAB.
+apply: exist_congr; rewrite predeqE => r; split=> [Br|/sAB] //.
+by have /sBAs [|ser] // := Br; rewrite ser in Br.
+Qed.
+
+End ZornLemma.
+
+
+
+End ZornVariants.
+
+
+
+
+
+Section ZornVariants.
+
+
+Variables (T : Type) (R : T -> T -> Prop).
+
+Hypothesis (Rrefl : forall t, R t t).
+Hypothesis (Rtrans : forall r s t, R r s -> R s t -> R r t).
+Hypothesis (Rantisym : forall s t, R s t -> R t s -> s = t).
+
+
+Let upper (A : set T) x := forall a, A a -> R a x.
+Let lower (A : set T) x := forall a, A a -> R x a.
+Let lub (A : set T) x := (upper A x) /\ (lower (upper A) x).
+
+(* Fact lub_upper A x : lub A x -> upper A x. Proof. by case. Qed. *)
+(* Fact lub_lower A x : lub A x -> lower (upper A) x. Proof. by case. Qed. *)
+
+Let Rset := {A : set T | total_on A R}.
+Local Coercion Rset_sval_doublon (A : Rset) : set T := sval A.
+
+(* Every chain has an upper bound *)
+Hypothesis (tot_Rupper : forall A : set T, total_on A R -> exists t, upper A t).
+
+Lemma Zorn :  exists t, forall s, R t s -> s = t.
+Proof.
+pose S (A B : Rset) :=  A `<=` B.
+have Srefl A : S A A by [].
+have Strans A B C : S A B -> S B C -> S A C by apply: subset_trans.
+have Santisym A B : S A B -> S B A -> A = B.
+  rewrite /S; case: A; case: B => /= B totB A totA sAB sBA.
+  by apply: exist_congr; rewrite predeqE=> ?; split=> [/sAB|/sBA].
+have Stot_Rlub X : total_on X S -> exists A, lub X A.
+  move=> Atot.
+  have AUtot : total_on (\bigcup_(B in A) (sval B)) R.
+    move=> s t [B AB Bs] [C AC Ct].
+    have [/(_ _ Bs) Cs|/(_ _ Ct) Bt] := Atot _ _ AB AC.
+      by have /(_ _ _ Cs Ct) := svalP C.
+    by have /(_ _ _ Bs Bt) := svalP B.
+  exists (exist _ (\bigcup_(B in A) sval B) AUtot); split.
+    by move=> B ???; exists B.
+  by move=> B Bub ? /= [? /Bub]; apply.
+apply: contrapT => nomax.
+have {nomax} nomax t : exists s, R t s /\ s <> t.
+  have /asboolP := nomax; rewrite asbool_neg => /forallp_asboolPn /(_ t).
+  move=> /asboolP; rewrite asbool_neg => /existsp_asboolPn [s].
+  by move=> /asboolP; rewrite asbool_neg => /imply_asboolPn []; exists s.
+have tot0 : total_on set0 R by [].
+apply: (ZL' (exist _ set0 tot0)) Stot_Rlub _ => // A.
+have /Rtot_max [t tub] := svalP A; have [s [Rts snet]] := nomax t.
+have Astot : total_on (sval A `|` [set s]) R.
+  move=> u v [Au|->]; last first.
+    by move=> [/tub Rvt|->]; right=> //; apply: Rtrans Rts.
+  move=> [Av|->]; [apply: (svalP A)|left] => //.
+  by apply: Rtrans Rts; apply: tub.
+exists (exist _ (sval A `|` [set s]) Astot); split; first by move=> ??; left.
+split=> [AeAs|[B Btot] sAB sBAs].
+  case: (pselect (sval A s)); first by move=> /tub Rst; apply/snet/Rantisym.
+  by rewrite AeAs /=; apply; right.
+case: (pselect (B s)) => [Bs|nBs].
+  by right; apply: exist_congr; rewrite predeqE => r; split=> [/sBAs|[/sAB|->]].
+left; case: A tub Astot sBAs sAB => A Atot /= tub Astot sBAs sAB.
+apply: exist_congr; rewrite predeqE => r; split=> [Br|/sAB] //.
+by have /sBAs [|ser] // := Br; rewrite ser in Br.
+Qed.
+
+End ZornVariants.
 (* Lemma Zorn T (R : T -> T -> Prop) : *)
 (*   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) -> *)
 (*   (forall s t, R s t -> R t s -> s = t) -> *)

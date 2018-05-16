@@ -3,6 +3,14 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
+
+(* --> This file adds the possibility to define a choiceType structure for    *)
+(*     any type thanks to a generic  choice mixin gen_choiceMixin.            *)
+(* --> We chose to have generic mixins and no global instances of the eqType  *)
+(*     and choiceType structures to let the user choose which definition of   *)
+(*     equality to use and to avoid conflict with already declared instances. *)
+
+
 (* Quoting Coq'standard library:
 "This file provides classical logic and indefinite description under
 the form of Hilbert's epsilon operator":
@@ -106,6 +114,13 @@ Proof. by rewrite propeqE; exact: rwP. Qed.
 Lemma notb (b : bool) : (~ b) = ~~ b.
 Proof. apply: reflect_eq; exact: negP. Qed.
 
+
+Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
+Proof. by move: x (x) y => /propT-> [] []. Qed.
+
+Lemma exist_congr T (U : T -> Prop) (s t : T) (p : U s) (q : U t) :
+  s = t -> exist U s p = exist U t q.
+Proof. by move=> st; case: _ / st in q *; apply/congr1/Prop_irrelevance. Qed.
 
 (* -------------------------------------------------------------------- *)
 (* Informative excluded middle *)
@@ -216,6 +231,8 @@ Qed.
 
 
 (* -------------------------------------------------------------------- *)
+(* Contraposition and friends. *)
+
 Lemma contrap (Q P : Prop) : (Q -> P) -> ~ P -> ~ Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolPn.
@@ -277,6 +294,7 @@ Lemma notLR P Q : (P = ~ Q) -> (~ P) = Q. Proof. exact: canLR notK. Qed.
 Lemma notRL P Q : (~ P) = Q -> P = ~ Q. Proof. exact: canRL notK. Qed.
 
 (* -------------------------------------------------------------------- *)
+(* De Morgan laws for quantifiers *)
 
 Lemma not_forall {T} (P : T -> Prop) : (~ forall x, P x) = exists y, ~ P y.
 Proof.
@@ -304,9 +322,36 @@ move=> hx; exists x; first exact: contrapR hx.
 exact: contrapR hx.
 Qed.
 
+
+Lemma lem_forall U (P : U -> Prop) : (forall u, P u) \/ (exists u, ~ P u).
+Proof.
+case: (pselect (forall u : U, P u)) => h; first by left.
+by right; move: h; rewrite not_forall.
+Qed.
+
+Lemma lem_exists U (P : U -> Prop) : (exists u, P u) \/ (forall u, ~ P u).
+Proof.
+case: (pselect (exists u : U, P u)) => h; first by left.
+by right; move: h; rewrite not_exists.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma not_imply (A B : Prop) : (~ (A -> B)) = (A /\ ~ B).
+Proof.
+rewrite propeqE; split; last by case=> hA hnB iAB; intuition.
+move=> niAB; case: (lem A) => [hA | hnA]; intuition.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+(* Any time can be equipped with an eqType structure. *)
+
+Definition gen_eq (T : Type) (u v : T) := [u = v as bool].
+Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
+Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
+Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
+
 (* -------------------------------------------------------------------- *)
 (* Any type can be equipped with a choiceType structure.*)
-
 
 Section GenericChoice.
 
@@ -344,7 +389,8 @@ Proof.
 by rewrite /gen_pick; case: (pselect _) => p //; case: ifP=> // Px [<-].
 Qed.
 
-(* epsilon : forall A : Type, inhabited A -> (A -> Prop) -> A
+(* In std lib:
+epsilon : forall A : Type, inhabited A -> (A -> Prop) -> A
 Why not just epsilon: forall A : Type, A -> (A -> Prop) -> A ?
 or may be epsilon: forall A : Type, (A -> Prop), A -> A ?*)
 
@@ -367,7 +413,26 @@ suff->: u = v by rewrite PEQ.
 by congr epsilon; apply: functional_extensionality=> x; rewrite PEQ.
 Qed.
 
-Definition T_choiceMixin : choiceMixin T :=
+Definition gen_choiceMixin : choiceMixin T :=
   Choice.Mixin gen_pick_some gen_pick_ex gen_pick_ext.
 
 End GenericChoice.
+
+(* -------------------------------------------------------------------- *)
+(* The preceeding generic constructions are used as the canonical ones
+ in a few cases: *)
+
+
+(* For Prop, which is from now on an eqType and a choiceType, canonically. *)
+
+Canonical Prop_eqType := EqType Prop gen_eqMixin.
+Canonical Prop_choiceType := ChoiceType Prop (gen_choiceMixin _).
+
+(* For an arrow type with a canonical structure on the codomain type. *)
+
+Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
+  EqType (forall x : T, T' x) gen_eqMixin.
+Canonical arrow_eqType (T : Type) (T' : eqType) :=
+  EqType (T -> T') gen_eqMixin.
+Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
+  ChoiceType (T -> T') (gen_choiceMixin _).
