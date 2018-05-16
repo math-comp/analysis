@@ -2,7 +2,7 @@
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
-Require Import boolp reals.
+(* Require Import boolp reals. *)
 
 (******************************************************************************)
 (* This file develops tools to make the manipulation of positive numbers      *)
