@@ -32,7 +32,10 @@ before_script: &before_script
     - run:
         name: Cache selection
         command: |
-          git ls-remote https://github.com/math-comp/math-comp.git HEAD > "mathcomp.ver"
+          rm -f mathcomp.ver
+          git ls-remote https://github.com/math-comp/math-comp.git HEAD >> "mathcomp.ver"
+          echo "${COMPILER}" > "mathcomp.ver"
+          echo "${COQVERSION}" > "mathcomp.ver"
     - restore_cache:
         keys:
           - opam-cache-v1-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
@@ -58,7 +61,7 @@ before_script: &before_script
         command: |
           rm -rf ~/.opam/log/
     - save_cache:
-        key: opam-cache-v1-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
+        key: opam-cache-v2-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
         paths:
           - ~/.opam
     - persist_to_workspace:
