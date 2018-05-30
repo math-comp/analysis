@@ -8,7 +8,7 @@
 (* archimedean field with a least upper bound operator.                 *)
 (* -------------------------------------------------------------------- *)
 
-From mathcomp Require Import all_ssreflect all_algebra bigenough.
+From mathcomp Require Import all_ssreflect all_algebra.
 (* ------- *) Require Import boolp.
 
 Require Import Setoid.
@@ -19,7 +19,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import GRing.Theory Num.Theory BigEnough.
+Import GRing.Theory Num.Theory.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
