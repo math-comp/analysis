@@ -576,9 +576,8 @@ split; last by exists P.
 by move=> [Q FQ QP]; apply: (filterS QP).
 Qed.
 
-Definition tag_near T (x : T) (P : Prop) := P.
-Lemma tag_nearI T (x : T) (P : Prop) :
-  P -> tag_near x P.
+Definition near_enough T (x : T) {P : Prop} := P.
+Lemma near_enoughI T (x : T) (P : Prop) : P -> @near_enough x P.
 Proof. by []. Qed.
 
 Record in_filter T (F : set (set T)) := InFilter {
@@ -602,19 +601,19 @@ Lemma prop_in_filterP T F (iF : @in_filter T F) : F iF.
 Proof. by rewrite prop_in_filterE; apply: prop_in_filterP_proj. Qed.
 
 Tactic Notation "near=>" ident(x) :=
-  (apply/filterP; eexists=> [|x /(tag_nearI x) ?]; last first).
+  (apply/filterP; eexists=> [|x /(near_enoughI x) ?]; last first).
 
 Ltac have_near F x :=
 match (type of ([filter of F] : (_ -> Prop) -> Prop))
   with (?T -> Prop) -> Prop =>
   let R := fresh "around" in
   evar (R : set T);
-  have [|x /(tag_nearI x) ?] := @filter_ex _ [filter of F] _ R;
+  have [|x /(near_enoughI x) ?] := @filter_ex _ [filter of F] _ R;
   [rewrite /R {R}|]; last first
 end.
 
 Ltac close_near x :=
-match goal with Hx : tag_near x _ |- _ =>
+match goal with Hx : @near_enough x _ |- _ =>
   eapply proj1; do 10?[by apply: Hx|eapply proj2] end.
 
 Tactic Notation "near:" ident(x) := (close_near x).
@@ -711,7 +710,7 @@ let R2 := fresh "around2" in
 match goal with |- exists2 _ : set ?T * set ?U, ?F _.1 /\ ?G _.2 & _ =>
   evar (R1 : set T); evar (R2 : set U); exists (R1, R2);
   [rewrite /R1 {R1} /R2 {R2}
-  |move=> x y /(tag_nearI x) ? /(tag_nearI y) ?];
+  |move=> x y /(near_enoughI x) ? /(near_enoughI y) ?];
   last first
 end.
 Tactic Notation "near=>" ident(x) ident(y) := (begin_near2 x y).
@@ -730,7 +729,7 @@ match (type of ([filter of G] : (_ -> Prop) -> Prop))
 let R1 := fresh "around1" in
 let R2 := fresh "around2" in
   evar (R1 : set T); evar (R2 : set U); exists (R1, R2);
-  have [||x [y /(tag_nearI x) ? /(tag_nearI y) ?]] :=
+  have [||x [y /(near_enoughI x) ? /(near_enoughI y) ?]] :=
     @filter_ex2 _ _ [filter of F] [filter of G] _ _ R1 R2;
   [rewrite /R1 {R1} /R2 {R2}|rewrite /R1 {R1} /R2 {R2}|]; last first
 end
@@ -944,10 +943,10 @@ Lemma flim_snd {T U F G} {FF : Filter F} :
   (@snd T U) @ filter_prod F G --> G.
 Proof. by move=> P; apply: filter_prod2. Qed.
 
-Lemma tag_nearE (T : Type) (x : T) (P : Prop) :
-  tag_near x P -> P.
+Lemma near_enoughE (T : Type) (x : T) (P : Prop) :
+  @near_enough x P -> P.
 Proof. by []. Qed.
-Arguments tag_nearE {T} x {P}.
+Arguments near_enoughE {T} x {P}.
 
 Lemma near_map {T U} (f : T -> U) (F : set (set T)) (P : set U) :
   (\forall y \near f @ F, P y) = (\forall x \near F, P (f x)).
