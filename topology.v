@@ -577,7 +577,7 @@ by move=> [Q FQ QP]; apply: (filterS QP).
 Qed.
 
 Definition near_enough T (x : T) {P : Prop} := P.
-Lemma near_enoughI T (x : T) (P : Prop) : P -> @near_enough x P.
+Lemma near_enoughI T (x : T) (P : Prop) : P -> @near_enough _ x P.
 Proof. by []. Qed.
 
 Record in_filter T (F : set (set T)) := InFilter {
@@ -613,7 +613,7 @@ match (type of ([filter of F] : (_ -> Prop) -> Prop))
 end.
 
 Ltac close_near x :=
-match goal with Hx : @near_enough x _ |- _ =>
+match goal with Hx : @near_enough _ x _ |- _ =>
   eapply proj1; do 10?[by apply: Hx|eapply proj2] end.
 
 Tactic Notation "near:" ident(x) := (close_near x).
@@ -944,7 +944,7 @@ Lemma flim_snd {T U F G} {FF : Filter F} :
 Proof. by move=> P; apply: filter_prod2. Qed.
 
 Lemma near_enoughE (T : Type) (x : T) (P : Prop) :
-  @near_enough x P -> P.
+  @near_enough _ x P -> P.
 Proof. by []. Qed.
 Arguments near_enoughE {T} x {P}.
 
