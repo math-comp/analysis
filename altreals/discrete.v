@@ -4,7 +4,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra bigenough.
+From mathcomp Require Import all_ssreflect all_algebra.
 Require Import xfinmap boolp reals.
 (* ------- *) Require (*--*) Setoid.
 
@@ -13,7 +13,7 @@ Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory Num.Theory BigEnough.
+Import GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
