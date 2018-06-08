@@ -75,7 +75,7 @@ jobs:
     environment:
       COMPILER: 4.05.0
       COQVERSION: 8.7.0
-      MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field coq-mathcomp-real_closed coq-mathcomp-finmap
+      MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field coq-mathcomp-real-closed coq-mathcomp-finmap
 
   build:
     <<: *params
