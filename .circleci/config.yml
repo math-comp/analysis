@@ -52,17 +52,17 @@ before_script: &before_script
     - run:
         name: Update opam remotes
         command: |
-          opam update
+          env -u OPAMSWITCH opam update
     - run:
         name: Install Coq
         command: |
-          opam pin add -n coq ${COQVERSION}
-          opam install coq
+          env -u OPAMSWITCH opam pin add -n coq ${COQVERSION}
+          env -u OPAMSWITCH opam install coq
     - run:
         name: Install MathComp
         command: |
-          opam pin add -n coq-mathcomp-ssreflect ${MATHCOMPVERSION}
-          opam install coq-mathcomp-ssreflect ${MATHCOMPPKG}
+          env -u OPAMSWITCH opam pin add -n coq-mathcomp-ssreflect ${MATHCOMPVERSION}
+          env -u OPAMSWITCH opam install coq-mathcomp-ssreflect ${MATHCOMPPKG}
     - run:
         name: Clean cache
         command: |
