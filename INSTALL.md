@@ -2,7 +2,8 @@
 
 ## Requirements
 - [The Coq Proof Assistant version ≥ 8.7](https://coq.inria.fr)
-- [Mathematical Components development version](https://github.com/math-comp/math-comp)
+- [Mathematical Components version 1.7.0](https://github.com/math-comp/math-comp)
+- [Real Closed Fields development version](https://github.com/math-comp/real-closed)
 - [Finmap library development version](https://github.com/math-comp/finmap)
 
 These requirements can be installed in a custom way or through [opam 1.2](https://opam.ocaml.org/) using the repository https://coq.inria.fr/opam/extra-dev, which you can add by typing `opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev`.
@@ -10,7 +11,7 @@ These requirements can be installed in a custom way or through [opam 1.2](https:
 Detailed instructions for possible installations of Mathematical Components are located [here](https://github.com/math-comp/math-comp/blob/master/INSTALL.md).
 
 ## Short Instructions
-- Custom (assuming Coq ≥ 8.7 and Mathematical Components `master` branch have been installed):
+- Custom (assuming Coq ≥ 8.7, Mathematical Components version 1.7.0, Real Closed Fields and Finmap development versions have been installed):
   + Type `make` to use the provided `Makefile`.
 - Through opam:
   + Type `opam install coq-mathcomp-analysis`
@@ -56,18 +57,18 @@ $ make
 You may then browse the files using `coqide` (you might want to `opam install coqide`) or using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
-1. Install Coq 8.7.2
+1. Install Coq 8.8.0
 ```
-$ opam install coq.8.7.2
+$ opam install coq.8.8.0
 ```
 2. Install Mathematical Components development version 
 ```
-$ opam install coq-mathcomp-ssreflect.dev
-$ opam install coq-mathcomp-fingroup.dev
-$ opam install coq-mathcomp-algebra.dev
-$ opam install coq-mathcomp-solvable.dev
-$ opam install coq-mathcomp-field.dev
-$ opam install coq-mathcomp-real_closed.dev
+$ opam install coq-mathcomp-ssreflect.1.7.0
+$ opam install coq-mathcomp-fingroup.1.7.0
+$ opam install coq-mathcomp-algebra.1.7.0
+$ opam install coq-mathcomp-solvable.1.7.0
+$ opam install coq-mathcomp-field.1.7.0
+$ opam install coq-mathcomp-real-closed.dev
 ```
 3. Install Finite maps library
 ```
