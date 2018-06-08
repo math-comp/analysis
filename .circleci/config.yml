@@ -32,14 +32,19 @@ before_script: &before_script
     - run:
         name: Cache selection
         command: |
-          git ls-remote https://github.com/math-comp/real-closed.git HEAD > "real-closed.ver"
-          git ls-remote https://github.com/math-comp/finmap.git HEAD > "finmap.ver"
-          rm -f coqversion.ver
-          echo "${COMPILER}" > "coqversion.ver"
-          echo "${COQVERSION}" > "coqversion.ver"
+          rm -f deps.ver
+          echo "compiler.${COMPILER}-" > "deps.ver"
+          echo "coq.${COQVERSION}-" >> "deps.ver"
+          echo "mathcomp.${MATHCOMPVERSION}-" >> "deps.ver"
+          echo "real-closed#" >> "deps.ver"
+          git ls-remote https://github.com/math-comp/real-closed.git HEAD >> "deps.ver"
+          echo "-" >> "deps.ver"
+          echo "finmap#" >> "deps.ver"
+          git ls-remote https://github.com/math-comp/finmap.git HEAD >> "deps.ver"
+          cat deps.ver
     - restore_cache:
         keys:
-          - opam-cache-v3-{{ checksum ".circleci/config.yml" }}-${ checksum "coqversion.ver" }-${MATHCOMPVERSION}-{{ checksum "real-closed.ver" }}-{{ checksum "finmap.ver" }}-
+          - opam-cache-v4-{{ checksum ".circleci/config.yml" }}-${{ checksum "deps.ver" }}-
     - run:
         name: Install opam switch
         command: |
@@ -56,14 +61,14 @@ before_script: &before_script
     - run:
         name: Install MathComp
         command: |
-          opam pin add -n coq-mathcomp-ssreflect.${MATHCOMPVERSION}
+          opam pin add -n coq-mathcomp-ssreflect ${MATHCOMPVERSION}
           opam install coq-mathcomp-ssreflect ${MATHCOMPPKG}
     - run:
         name: Clean cache
         command: |
           rm -rf ~/.opam/log/
     - save_cache:
-        key: opam-cache-v3-{{ checksum ".circleci/config.yml" }}-${ checksum "coqversion.ver" }-${MATHCOMPVERSION}-{{ checksum "real-closed.ver" }}-{{ checksum "finmap.ver" }}-
+        key: opam-cache-v4-{{ checksum ".circleci/config.yml" }}-${{ checksum "deps.ver" }}-
         paths:
           - ~/.opam
     - persist_to_workspace:
