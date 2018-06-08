@@ -32,13 +32,14 @@ before_script: &before_script
     - run:
         name: Cache selection
         command: |
-          rm -f mathcomp.ver
-          git ls-remote https://github.com/math-comp/math-comp.git HEAD >> "mathcomp.ver"
-          echo "${COMPILER}" > "mathcomp.ver"
-          echo "${COQVERSION}" > "mathcomp.ver"
+          git ls-remote https://github.com/math-comp/real-closed.git HEAD > "real-closed.ver"
+          git ls-remote https://github.com/math-comp/finmap.git HEAD > "finmap.ver"
+          rm -f coqversion.ver
+          echo "${COMPILER}" > "coqversion.ver"
+          echo "${COQVERSION}" > "coqversion.ver"
     - restore_cache:
         keys:
-          - opam-cache-v1-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
+          - opam-cache-v3-{{ checksum ".circleci/config.yml" }}-${ checksum "coqversion.ver" }-${MATHCOMPVERSION}-{{ checksum "real-closed.ver" }}-{{ checksum "finmap.ver" }}-
     - run:
         name: Install opam switch
         command: |
@@ -55,13 +56,14 @@ before_script: &before_script
     - run:
         name: Install MathComp
         command: |
-          opam install coq-mathcomp-ssreflect.dev ${MATHCOMPPKG}
+          opam pin add -n coq-mathcomp-ssreflect.${MATHCOMPVERSION}
+          opam install coq-mathcomp-ssreflect ${MATHCOMPPKG}
     - run:
         name: Clean cache
         command: |
           rm -rf ~/.opam/log/
     - save_cache:
-        key: opam-cache-v2-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
+        key: opam-cache-v3-{{ checksum ".circleci/config.yml" }}-${ checksum "coqversion.ver" }-${MATHCOMPVERSION}-{{ checksum "real-closed.ver" }}-{{ checksum "finmap.ver" }}-
         paths:
           - ~/.opam
     - persist_to_workspace:
@@ -74,7 +76,8 @@ jobs:
     <<: *opam-boot-template
     environment:
       COMPILER: 4.05.0
-      COQVERSION: 8.7.0
+      COQVERSION: 8.8.0
+      MATHCOMPVERSION: 1.7.0
       MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field coq-mathcomp-real-closed coq-mathcomp-finmap
 
   build:
