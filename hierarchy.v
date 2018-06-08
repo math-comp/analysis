@@ -1147,17 +1147,15 @@ Context {T1 T2 : choiceType}.
 Lemma flim_switch_1 {U : uniformType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
-  f @ F1 --> g -> (forall x, f x @ F2 --> h x) -> h @ F1 --> l ->
+  f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) -> h @ F1 --> l ->
   g @ F2 --> l.
 Proof.
-move=> fg fh hl; apply/flim_ballP => _ /posnumP[eps]; rewrite !near_simpl.
-near F1 have x; first near=> y.
-+ apply: (@ball_split _ (h x)); first by near: x.
-  apply: (@ball_split _ (f x y)); first by near: y.
-  by apply/ball_sym; move: (y); near: x.
-+ by end_near; apply/fh/locally_ball.
-end_near; first exact/hl/locally_ball.
-by have /flim_locally /= := fg; apply.
+move=> fg fh hl; apply/flim_ballP => _/posnumP[e]; rewrite !near_simpl.
+near F1 have x1; first near=> x2.
+- apply: (@ball_split _ (h x1)); first by near: x1.
+  by apply: (@ball_splitl _ (f x1 x2)); [near: x2|move: (x2); near: x1].
+- by end_near; apply/fh/locally_ball.
+- by end_near; [exact/hl/locally_ball|exact/(flim_ball fg)].
 Qed.
 
 Lemma flim_switch_2 {U : completeType}
@@ -1166,13 +1164,13 @@ Lemma flim_switch_2 {U : completeType}
   f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
   [cvg h @ F1 in U].
 Proof.
-move=> fg fh; apply: complete_cauchy => _/posnumP[e] /=; rewrite !near_simpl.
-near=> x x'=> /=; [near F2 have y|].
-+ apply: (@ball_splitl _ (f x y)); first by near: y.
-  apply: (@ball_split _ (f x' y)); first by near: y.
-  by apply: (@ball_splitr _ (g y)); move: (y); [near: x'|near: x].
-+ by end_near; apply/fh/locally_ball.
-by split; end_near; have /flim_locally /= := fg; apply.
+move=> fg fh; apply: complete_cauchy => _/posnumP[e]; rewrite !near_simpl.
+near=> x1 y1=> /=; [near F2 have x2|].
+- apply: (@ball_splitl _ (f x1 x2)); first by near: x2.
+  apply: (@ball_split _ (f y1 x2)); first by near: x2.
+  by apply: (@ball_splitr _ (g x2)); move: (x2); [near: y1|near: x1].
+- by end_near; apply/fh/locally_ball.
+- by split; end_near; exact/(flim_ball fg).
 Qed.
 
 (* Alternative version *)
@@ -1184,7 +1182,7 @@ Qed.
 Lemma flim_switch {U : completeType}
   F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2)
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
-  f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
+  f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) ->
   exists l : U, h @ F1 --> l /\ g @ F2 --> l.
 Proof.
 move=> Hfg Hfh; have hcv := !! flim_switch_2 Hfg Hfh.
