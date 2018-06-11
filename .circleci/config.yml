@@ -26,6 +26,7 @@ before_script: &before_script
     - run:
         name: Install opam remotes
         command: |
+          env -u OPAMSWITCH opam remote add dist-default  https://opam.ocaml.org
           env -u OPAMSWITCH opam remote add coq-released  http://coq.inria.fr/opam/released
           env -u OPAMSWITCH opam remote add coq-core-dev  http://coq.inria.fr/opam/core-dev
           env -u OPAMSWITCH opam remote add coq-extra-dev http://coq.inria.fr/opam/extra-dev
@@ -44,7 +45,7 @@ before_script: &before_script
           cat deps.ver
     - restore_cache:
         keys:
-          - opam-cache-v4-{{ checksum ".circleci/config.yml" }}-${{ checksum "deps.ver" }}-
+          - opam-cache-v5-{{ checksum ".circleci/config.yml" }}-${{ checksum "deps.ver" }}-
     - run:
         name: Install opam switch
         command: |
@@ -68,7 +69,7 @@ before_script: &before_script
         command: |
           rm -rf ~/.opam/log/
     - save_cache:
-        key: opam-cache-v4-{{ checksum ".circleci/config.yml" }}-${{ checksum "deps.ver" }}-
+        key: opam-cache-v5-{{ checksum ".circleci/config.yml" }}-${{ checksum "deps.ver" }}-
         paths:
           - ~/.opam
     - persist_to_workspace:
