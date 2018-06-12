@@ -26,19 +26,26 @@ before_script: &before_script
     - run:
         name: Install opam remotes
         command: |
+          env -u OPAMSWITCH opam remote add dist-default  https://opam.ocaml.org
           env -u OPAMSWITCH opam remote add coq-released  http://coq.inria.fr/opam/released
           env -u OPAMSWITCH opam remote add coq-core-dev  http://coq.inria.fr/opam/core-dev
           env -u OPAMSWITCH opam remote add coq-extra-dev http://coq.inria.fr/opam/extra-dev
     - run:
         name: Cache selection
         command: |
-          rm -f mathcomp.ver
-          git ls-remote https://github.com/math-comp/math-comp.git HEAD >> "mathcomp.ver"
-          echo "${COMPILER}" > "mathcomp.ver"
-          echo "${COQVERSION}" > "mathcomp.ver"
+          rm -f deps.ver
+          echo "compiler.${COMPILER}-" > "deps.ver"
+          echo "coq.${COQVERSION}-" >> "deps.ver"
+          echo "mathcomp.${MATHCOMPVERSION}-" >> "deps.ver"
+          echo "real-closed#" >> "deps.ver"
+          git ls-remote https://github.com/math-comp/real-closed.git HEAD >> "deps.ver"
+          echo "-" >> "deps.ver"
+          echo "finmap#" >> "deps.ver"
+          git ls-remote https://github.com/math-comp/finmap.git HEAD >> "deps.ver"
+          cat deps.ver
     - restore_cache:
         keys:
-          - opam-cache-v1-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
+          - opam-cache-v5-{{ checksum ".circleci/config.yml" }}-${{ checksum "deps.ver" }}-
     - run:
         name: Install opam switch
         command: |
@@ -46,22 +53,23 @@ before_script: &before_script
     - run:
         name: Update opam remotes
         command: |
-          opam update
+          env -u OPAMSWITCH opam update
     - run:
         name: Install Coq
         command: |
-          opam pin add -n coq ${COQVERSION}
-          opam install coq
+          env -u OPAMSWITCH opam pin add -n coq ${COQVERSION}
+          env -u OPAMSWITCH opam install coq
     - run:
         name: Install MathComp
         command: |
-          opam install coq-mathcomp-ssreflect.dev ${MATHCOMPPKG}
+          env -u OPAMSWITCH opam pin add -n coq-mathcomp-ssreflect ${MATHCOMPVERSION}
+          env -u OPAMSWITCH opam install coq-mathcomp-ssreflect ${MATHCOMPPKG}
     - run:
         name: Clean cache
         command: |
           rm -rf ~/.opam/log/
     - save_cache:
-        key: opam-cache-v2-{{ checksum ".circleci/config.yml" }}-{{ checksum "mathcomp.ver" }}-
+        key: opam-cache-v5-{{ checksum ".circleci/config.yml" }}-${{ checksum "deps.ver" }}-
         paths:
           - ~/.opam
     - persist_to_workspace:
@@ -74,7 +82,8 @@ jobs:
     <<: *opam-boot-template
     environment:
       COMPILER: 4.05.0
-      COQVERSION: 8.7.0
+      COQVERSION: 8.8.0
+      MATHCOMPVERSION: 1.7.0
       MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field coq-mathcomp-real-closed coq-mathcomp-finmap
 
   build:
