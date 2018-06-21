@@ -603,21 +603,16 @@ Proof. by rewrite prop_in_filterE; apply: prop_in_filterP_proj. Qed.
 Tactic Notation "near=>" ident(x) :=
   (apply/filterP; eexists=> [|x /(near_enoughI x) ?]; last first).
 
-Ltac have_near F x :=
-match (type of ([filter of F] : (_ -> Prop) -> Prop))
-  with (?T -> Prop) -> Prop =>
-  let R := fresh "around" in
-  evar (R : set T);
-  have [|x /(near_enoughI x) ?] := @filter_ex _ [filter of F] _ R;
-  [rewrite /R {R}|]; last first
-end.
+Lemma have_near (U : Type) (fT : filteredType U) (x : fT) (P : Prop) :
+   ProperFilter (locally x) -> (\forall x \near x, P) -> P.
+Proof. by move=> FF nP; have [] := @filter_ex _ _ FF (fun=> P). Qed.
+Arguments have_near {U fT} x.
 
-Ltac close_near x :=
+Ltac discharge_near x :=
 match goal with Hx : @near_enough _ x _ |- _ =>
   eapply proj1; do 10?[by apply: Hx|eapply proj2] end.
 
-Tactic Notation "near:" ident(x) := (close_near x).
-Tactic Notation "near" constr(F) "have" ident(x) := have_near F x.
+Tactic Notation "near:" ident(x) := (discharge_near x).
 
 Ltac end_near := do !
   [exact: prop_in_filterP|exact: filterT|by []|apply: filterI].
@@ -720,22 +715,6 @@ Lemma filter_ex2 {T U : Type} (F : set (set T)) (G : set (set U))
    F P -> G Q -> exists x : T, exists2 y : U, P x & Q y.
 Proof. by move=> /filter_ex [x Px] /filter_ex [y Qy]; exists x, y. Qed.
 Arguments filter_ex2 {T U F G FF FG _ _}.
-
-Ltac have_near2 F G x y :=
-match (type of ([filter of F] : (_ -> Prop) -> Prop))
-  with (?T -> Prop) -> Prop =>
-match (type of ([filter of G] : (_ -> Prop) -> Prop))
-  with (?U -> Prop) -> Prop =>
-let R1 := fresh "around1" in
-let R2 := fresh "around2" in
-  evar (R1 : set T); evar (R2 : set U); exists (R1, R2);
-  have [||x [y /(near_enoughI x) ? /(near_enoughI y) ?]] :=
-    @filter_ex2 _ _ [filter of F] [filter of G] _ _ R1 R2;
-  [rewrite /R1 {R1} /R2 {R2}|rewrite /R1 {R1} /R2 {R2}|]; last first
-end
-end.
-Tactic Notation "near" constr(F) "&" constr(G) "have" ident(x) "&" ident(y) :=
-   (have_near2 F G x y).
 
 Lemma filter_fromP {I T : Type} (D : set I) (B : I -> set T) (F : set (set T)) :
   Filter F -> F `=>` filter_from D B <-> forall i, D i -> F (B i).
