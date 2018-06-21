@@ -569,13 +569,6 @@ Proof. by move=> /filter_ex /getPex. Qed.
 
 (* Near Tactic *)
 
-Lemma filterP T (F : set (set T)) {FF : Filter F} (P : set T) :
-  (exists2 Q : set T, F Q & forall x : T, Q x -> P x) <-> F P.
-Proof.
-split; last by exists P.
-by move=> [Q FQ QP]; apply: (filterS QP).
-Qed.
-
 Definition near_enough T (x : T) {P : Prop} := P.
 Lemma near_enoughI T (x : T) (P : Prop) : P -> @near_enough _ x P.
 Proof. by []. Qed.
@@ -601,12 +594,7 @@ Lemma prop_in_filterP T F (iF : @in_filter T F) : F iF.
 Proof. by rewrite prop_in_filterE; apply: prop_in_filterP_proj. Qed.
 
 Tactic Notation "near=>" ident(x) :=
-  (apply/filterP; eexists=> [|x /(near_enoughI x) ?]; last first).
-
-Lemma have_near (U : Type) (fT : filteredType U) (x : fT) (P : Prop) :
-   ProperFilter (locally x) -> (\forall x \near x, P) -> P.
-Proof. by move=> FF nP; have [] := @filter_ex _ _ FF (fun=> P). Qed.
-Arguments have_near {U fT} x.
+   apply: filterS => [x /(near_enoughI x) ?|].
 
 Ltac discharge_near x :=
 match goal with Hx : @near_enough _ x _ |- _ =>
@@ -616,6 +604,14 @@ Tactic Notation "near:" ident(x) := (discharge_near x).
 
 Ltac end_near := do !
   [exact: prop_in_filterP|exact: filterT|by []|apply: filterI].
+
+Lemma have_near (U : Type) (fT : filteredType U) (x : fT) (P : Prop) :
+   ProperFilter (locally x) -> (\forall x \near x, P) -> P.
+Proof. by move=> FF nP; have [] := @filter_ex _ _ FF (fun=> P). Qed.
+Arguments have_near {U fT} x.
+
+Tactic Notation "near" constr(F) "=>" ident(x) :=
+  apply: (have_near F); near=> x.
 
 Ltac done :=
   trivial; hnf; intros; solve
@@ -634,13 +630,11 @@ Definition valid_nearE := prop_in_filterE.
 
 Lemma filterE {T : Type} {F : set (set T)} :
   Filter F -> forall P : set T, (forall x, P x) -> F P.
-Proof. by move=> ???; apply/filterP; exists setT => //; apply: filterT. Qed.
+Proof. by move=> ???; near=> x => //; end_near. Qed.
 
 Lemma filter_app (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, F (fun x => P x -> Q x) -> F P -> F Q.
-Proof.
-move=> FF P Q subPQ FP. near=> x; [suff: P x; near: x|end_near].
-Qed.
+Proof. by move=> FF P Q subPQ FP; near=> x; [suff: P x; near: x|end_near]. Qed.
 
 Lemma filter_app2 (T : Type) (F : set (set T)) :
   Filter F -> forall P Q R : set T,  F (fun x => P x -> Q x -> R x) ->
@@ -697,18 +691,6 @@ split=> [][[A B] /=[FA GB] ABP]; exists (A, B) => //=.
   by move=> [a b] [/=Aa Bb]; apply: ABP.
 by move=> a b Aa Bb; apply: (ABP (_, _)).
 Qed.
-
-Ltac begin_near2 x y :=
-apply/filter2P;
-let R1 := fresh "around1" in
-let R2 := fresh "around2" in
-match goal with |- exists2 _ : set ?T * set ?U, ?F _.1 /\ ?G _.2 & _ =>
-  evar (R1 : set T); evar (R2 : set U); exists (R1, R2);
-  [rewrite /R1 {R1} /R2 {R2}
-  |move=> x y /(near_enoughI x) ? /(near_enoughI y) ?];
-  last first
-end.
-Tactic Notation "near=>" ident(x) ident(y) := (begin_near2 x y).
 
 Lemma filter_ex2 {T U : Type} (F : set (set T)) (G : set (set U))
   {FF : ProperFilter F} {FG : ProperFilter G} (P : set T) (Q : set U) :
@@ -950,6 +932,22 @@ Qed.
 Lemma near_mapi {T U} (f : T -> set U) (F : set (set T)) (P : set U) :
   (\forall y \near f `@ F, P y) = (\forall x \near F, exists y, f x y /\ P y).
 Proof. by []. Qed.
+
+Lemma filterSpair (T T' : Type) (F : set (set T)) (F' : set (set T')) :
+   Filter F -> Filter F' ->
+   forall (P : set T) (P' : set T') (Q : set (T * T')),
+   (forall x x', P x -> P' x' -> Q (x, x')) -> F P /\ F' P' ->
+   filter_prod F F' Q.
+Proof.
+move=> FF FF' P P' Q PQ [FP FP']; near=> x.
+  by have := PQ x.1 x.2; rewrite -surjective_pairing; apply; near: x.
+by end_near; [apply: flim_fst|apply: flim_snd].
+Qed.
+
+Tactic Notation "near=>" ident(x) ident(y) :=
+  (apply: filterSpair => [x y /(near_enoughI x) ? /(near_enoughI y) ?|]).
+Tactic Notation "near" constr(F) "=>" ident(x) ident(y) :=
+  apply: (have_near F); near=> x y.
 
 Module Export NearMap.
 Definition near_simpl := (@near_simpl, @near_map, @near_mapi, @near_map2).
