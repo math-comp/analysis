@@ -554,7 +554,7 @@ Definition bigOW (F : set (set T)) (f : T -> V) (g : T -> W) :=
 Lemma bigOWFE (F : set (set T)) : Filter F -> bigOW F = bigOF F.
 Proof.
 rewrite predeq2E => FF f g; split=> [[k] |] kP; last first.
-  by apply: (have_near +oo); near=> k; [exists k; near: k|end_near].
+  by near +oo => k; [exists k; near: k|end_near].
 near=> k'.
   near=> x.
     by rewrite (ler_trans (near kP _ _)) // ler_wpmul2r // ltrW //; near: k'.

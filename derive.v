@@ -1339,10 +1339,8 @@ Lemma le0r_flim_map (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R^o) :
   (\forall x \near F, 0 <= f x) -> cvg (f @ F) -> 0 <= lim (f @ F).
 Proof.
-move=> fge0 fcv; case: (lerP 0 (lim (f @ F))) => // limlt0.
-apply: (have_near F); near=> x.
-  have : 0 <= f x by near: x.
-  rewrite lerNgt => /negbTE<-; near: x.
+move=> fge0 fcv; case: (lerP 0 (lim (f @ F))) => // limlt0; near F => x.
+  by have := near fge0 x; rewrite lerNgt => /(_ _) /negbTE<-; near: x.
 end_near.
 have normlimgt0 : `|[lim (f @ F)]| > 0 by rewrite normm_gt0 ltr0_neq0.
 have /fcv := locally_ball_norm (lim (f @ F)) (PosNum normlimgt0).
