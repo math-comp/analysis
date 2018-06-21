@@ -1392,7 +1392,7 @@ Lemma le0r_flim_map (T : topologicalType) (F : set (set T))
   (\forall x \near F, 0 <= f x) -> cvg (f @ F) -> 0 <= lim (f @ F).
 Proof.
 move=> fge0 fcv; case: (lerP 0 (lim (f @ F))) => // limlt0.
-near F have x.
+apply: (have_near F); near=> x.
   have : 0 <= f x by near: x.
   rewrite lerNgt => /negbTE<-; near: x.
 end_near.
