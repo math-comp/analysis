@@ -886,6 +886,12 @@ Lemma flim_ballP {F} {FF : Filter F} (y : U) :
 Proof. by rewrite -filter_fromP !locally_simpl /=. Qed.
 Definition flim_locally := @flim_ballP.
 
+Lemma flim_ballPpos {F} {FF : Filter F} (y : U) :
+  F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
+Proof.
+by split => [/flim_ballP|] pos; [case|apply/flim_ballP=> _/posnumP[eps] //].
+Qed.
+
 Lemma flim_ball {F} {FF : Filter F} (y : U) :
   F --> y -> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by move/flim_ballP. Qed.
@@ -1127,7 +1133,7 @@ Proof.
 move=> Fc; have /(_ _) /complete_cauchy Ft_cvg : cauchy (@^~_ @ F).
   by move=> t e ?; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/flim_ballP => _ /posnumP[e]; near=> f => [t|].
+apply/flim_ballPpos => e; near=> f => [t|].
   near F => g => /=.
     by apply: (@ball_splitl _ (g t)); last move: (t); near: g.
   by end_near; [exact/Ft_cvg/locally_ball|near: f].
@@ -1150,7 +1156,7 @@ Lemma flim_switch_1 {U : uniformType}
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) -> h @ F1 --> l ->
   g @ F2 --> l.
 Proof.
-move=> fg fh hl; apply/flim_ballP => _/posnumP[e]; rewrite !near_simpl.
+move=> fg fh hl; apply/flim_ballPpos => e; rewrite near_simpl.
 near F1 => x1; first near=> x2.
 - apply: (@ball_split _ (h x1)); first by near: x1.
   by apply: (@ball_splitl _ (f x1 x2)); [near: x2|move: (x2); near: x1].
