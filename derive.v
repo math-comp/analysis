@@ -116,7 +116,7 @@ Lemma diff_locallyx (x : V) (f : V -> W) : differentiable x f ->
   forall h, f (h + x) = f x + 'd_x f h +o_(h \near 0 : V) h.
 Proof. by move=> /diff_locallyxP []. Qed.
 
-Lemma diff_locallyDx (x : V) (f : V -> W) : differentiable x f ->
+Lemma diff_locallyxC (x : V) (f : V -> W) : differentiable x f ->
   forall h, f (x + h) = f x + 'd_x f h +o_(h \near 0 : V) h.
 Proof. by move=> ?; apply/eqaddoEx => h; rewrite [x + h]addrC diff_locallyx. Qed.
 
@@ -709,7 +709,7 @@ Fact dcomp (U V' W' : normedModType R) (f : U -> V') (g : V' -> W') x :
   g (f (y + x)) = g (f x) + ('d_(f x) g \o 'd_x f) y +o_(y \near 0 : U) y.
 Proof.
 move=> df dg; split; first by move=> ?; apply: continuous_comp.
-apply: eqaddoEx => y; rewrite diff_locallyx// -addrA diff_locallyDx// linearD.
+apply: eqaddoEx => y; rewrite diff_locallyx// -addrA diff_locallyxC// linearD.
 rewrite addrA -addrA; congr (_ + _ + _).
 rewrite diff_eqO // ['d_x f : _ -> _]diff_eqO //.
 by rewrite {2}eqoO addOx compOo_eqox compoO_eqox addox.
