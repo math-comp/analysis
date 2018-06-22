@@ -1158,8 +1158,6 @@ near F1 => x1; first near=> x2.
 - by end_near; [exact/hl/locally_ball|exact/(flim_ball fg)].
 Qed.
 
-Tactic Notation "near=>" ident(x) ident(y) :=
-  (apply: filterSpair => [x y /(near_enoughI x) ? /(near_enoughI y) ?|]).
 Lemma flim_switch_2 {U : completeType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : ProperFilter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
