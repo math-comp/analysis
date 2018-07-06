@@ -711,7 +711,7 @@ apply/eqP; rewrite eqr_le; apply/in_segment_addgt0Pr => _ /posnumP[e].
 rewrite inE -ler_distl -absRE; set he := (e%:num / 2)%:pos.
 have [z []] := clxy _ _ (locally_ball x he) (locally_ball y he).
 rewrite ball_absE /ball_ absrB => zx_he yz_he.
-rewrite (subr_trans z); apply: ler_trans (ler_abs_add _ _) _; apply/ltrW.
+rewrite (subr_trans z) (ler_trans (ler_abs_add _ _) _)// ltrW//.
 by rewrite (splitr e%:num); apply: ltr_add.
 Qed.
 
@@ -1190,6 +1190,65 @@ Qed.
 
 End Flim_switch.
 
+(** * Some Topology on [Rbar] *)
+
+(* NB: already defined in R_scope in Rbar.v *)
+
+Notation "'+oo'" := p_infty : real_scope.
+Notation "'-oo'" := m_infty : real_scope.
+Definition Rbar_locally' (a : Rbar) (P : R -> Prop) :=
+  match a with
+    | Finite a => locally' a P
+    | +oo => exists M : R, forall x, M < x -> P x
+    | -oo => exists M : R, forall x, x < M -> P x
+  end.
+Definition Rbar_locally (a : Rbar) (P : R -> Prop) :=
+  match a with
+    | Finite a => locally a P
+    | +oo => exists M : R, forall x, M < x -> P x
+    | -oo => exists M : R, forall x, x < M -> P x
+  end.
+
+Canonical Rbar_eqType := EqType Rbar gen_eqMixin.
+Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.
+Canonical Rbar_pointed := PointedType Rbar (+oo).
+Canonical Rbar_filter := FilteredType R Rbar (Rbar_locally).
+
+Global Instance Rlocally'_proper (x : R) : ProperFilter (locally' x).
+Proof.
+apply: Build_ProperFilter => A [_/posnumP[e] Ae].
+exists (x + e%:num / 2); apply: Ae; last first.
+  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
+rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0 absRE ger0_norm //.
+by rewrite {2}(splitr e%:num) ltr_spaddl.
+Qed.
+
+Global Instance Rbar_locally'_filter : forall x, ProperFilter (Rbar_locally' x).
+Proof.
+case=> [x||]; first exact: Rlocally'_proper.
+  apply Build_ProperFilter.
+    by move=> P [M gtMP]; exists (M + 1); apply: gtMP; rewrite ltr_addl.
+  split=> /= [|P Q [MP gtMP] [MQ gtMQ] |P Q sPQ [M gtMP]]; first by exists 0.
+    by exists (maxr MP MQ) => ?; rewrite ltr_maxl => /andP [/gtMP ? /gtMQ].
+  by exists M => ? /gtMP /sPQ.
+apply Build_ProperFilter.
+  by move=> P [M ltMP]; exists (M - 1); apply: ltMP; rewrite gtr_addl oppr_lt0.
+split=> /= [|P Q [MP ltMP] [MQ ltMQ] |P Q sPQ [M ltMP]]; first by exists 0.
+  by exists (minr MP MQ) => ?; rewrite ltr_minr => /andP [/ltMP ? /ltMQ].
+by exists M => ? /ltMP /sPQ.
+Qed.
+Typeclasses Opaque Rbar_locally'.
+
+
+Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
+Proof.
+case=> [x||].
+by apply/locally_filter.
+exact: (Rbar_locally'_filter +oo).
+exact: (Rbar_locally'_filter -oo).
+Qed.
+Typeclasses Opaque Rbar_locally.
+
 (** ** Modules with a norm *)
 
 Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").
@@ -1363,6 +1422,30 @@ rewrite absRE ger0_norm ?subr_ge0 // ler_subl_addr.
 by rewrite -{1}[x](addrNK y) ler_normm_add.
 Qed.
 
+Lemma distm_lt_split z x y (e : R) :
+  `|[x - z]| < (e / 2)%R -> `|[z - y]| < (e / 2)%R -> `|[x - y]| < e.
+Proof. by have := @ball_split _ z x y e; rewrite -ball_normE. Qed.
+
+Lemma distm_lt_splitr z x y (e : R) :
+  `|[z - x]| < (e / 2)%R -> `|[z - y]| < (e / 2)%R -> `|[x - y]| < e.
+Proof. by have := @ball_splitr _ z x y e; rewrite -ball_normE. Qed.
+
+Lemma distm_lt_splitl z x y (e : R) :
+  `|[x - z]| < (e / 2)%R -> `|[y - z]| < (e / 2)%R -> `|[x - y]| < e.
+Proof. by have := @ball_splitl _ z x y e; rewrite -ball_normE. Qed.
+
+Lemma normm_leW x (e : R) : e > 0 -> `|[x]| <= (e / 2)%R -> `|[x]| < e.
+Proof.
+move=> /posnumP[{e}e] /ler_lt_trans ->//.
+by rewrite [X in _ < X]splitr ltr_spaddl.
+Qed.
+
+Lemma normm_lt_split  x y (e : R) :
+  `|[x]| < (e / 2)%R -> `|[y]| < (e / 2)%R -> `|[x + y]| < e.
+Proof.
+by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
+Qed.
+
 Lemma closeE x y : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
@@ -1508,7 +1591,7 @@ Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y.
 Proof.
 move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
-by rewrite [e%:num]splitr ltr_spaddl //; near: x; apply: cv.
+by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
@@ -1516,9 +1599,10 @@ Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
 Proof. by move=> /flim_normP. Qed.
 
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> forall M, M > `|[y]| -> \forall y' \near F, `|[y']|%real < M.
+  F --> y -> \forall M \near +oo, \forall y' \near F, `|[y']|%real < M.
 Proof.
-move=> /flim_norm Fy M; rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
+move=> /flim_norm Fy; exists `|[y]| => M.
+rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
 rewrite (ler_lt_trans _ yy') //.
 by rewrite (ler_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
@@ -1704,29 +1788,26 @@ Context {K : absRingType} {V : normedModType K}.
 Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
 Proof.
 move=> [/=x y]; apply/flim_normP=> _/posnumP[e].
-rewrite !near_simpl /=; near=> a b => /=.
-rewrite opprD addrACA [e%:num]splitr (ler_lt_trans (ler_normm_add _ _)) //.
-by rewrite ltr_add //=; [near: a|near: b]; apply: flim_norm.
+rewrite !near_simpl /=; near=> a b => /=; rewrite opprD addrACA.
+by rewrite normm_lt_split //; [near: a|near: b]; apply: flim_norm.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
-rewrite !near_simpl /=; near=> z.
-rewrite (@subr_trans _ (k *: z.2)).
-rewrite (splitr e%:num) (ler_lt_trans (ler_normm_add _ _)) //.
-rewrite ltr_add // -?(scalerBr, scalerBl).
+rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
+rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl).
   rewrite (ler_lt_trans (ler_normmZ _ _)) //.
   rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
           ?ler_addl //.
   rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
-  by apply: (flim_norm _ flim_snd); rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
+  by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
 rewrite (ler_lt_trans (ler_normmZ _ _)) //.
-rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) // ?ltrW//.
-  by near: z; apply: (flim_bounded _ flim_snd); rewrite ltr_addl.
-rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
-apply: (flim_norm (_ : K^o) flim_fst).
-by rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
+have zM: `|[z]| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
+rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= M))) // ?ltrW//.
+rewrite -ltr_pdivl_mulr //; last by rewrite (ler_lt_trans _ zM).
+near: l; apply: (flim_norm (_ : K^o)) => //; rewrite mulr_gt0 ?invr_gt0 //.
+by near: M; exists 1 => ? /(ler_lt_trans ler01).
 Grab Existential Variables. all: end_near. Qed.
 
 Arguments scale_continuous _ _ : clear implicits.
@@ -2045,15 +2126,6 @@ Canonical R_completeType := CompleteType R R_complete.
 Canonical R_NormedModule := [normedModType R of R^o].
 Canonical R_CompleteNormedModule := [completeNormedModType R of R^o].
 
-Global Instance Rlocally'_proper (x : R) : ProperFilter (locally' x).
-Proof.
-apply: Build_ProperFilter => A [_/posnumP[e] Ae].
-exists (x + e%:num / 2); apply: Ae; last first.
-  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0 absRE ger0_norm //.
-by rewrite {2}(splitr e%:num) ltr_spaddl.
-Qed.
-
 Definition at_left x := within (fun u : R => u < x) (locally x).
 Definition at_right x := within (fun u : R => x < u) (locally x).
 (* :TODO: We should have filter notation ^- and ^+ for these *)
@@ -2096,20 +2168,20 @@ rewrite near_simpl; have := fx0 _ [gt0 of e%:num]; rewrite near_simpl.
 by apply: filterS => x; rewrite !sub0r !normmN [ `|[_]| ]ger0_norm.
 Qed.
 
+(* TODO: simplify using extremumP when PR merged in mathcomp *)
 Lemma cvg_seq_bounded {K : absRingType} {V : normedModType K} (a : nat -> V) :
   [cvg a in V] -> {M : R | forall n, norm (a n) <= M}.
 Proof.
 move=> a_cvg; suff: exists M, forall n, norm (a n) <= M.
   by move=> /getPex; set M := get _; exists M.
-pose M := `|[lim (a @ \oo)]| + 1.
-have [] := !! flim_bounded _ a_cvg M; first by rewrite ltr_addl.
-move=> N /= _ /(_ _ _) /ltrW a_leM.
+near +oo => M.
+have [//|N _ /(_ _ _) /ltrW a_leM] := !! near (flim_bounded _ a_cvg) M.
 exists (maxr M (\big[maxr/M]_(n < N) `|[a (val (rev_ord n))]|)) => /= n.
 rewrite ler_maxr; have [nN|nN] := leqP N n; first by rewrite a_leM.
 apply/orP; right => {a_leM}; elim: N n nN=> //= N IHN n.
 rewrite leq_eqVlt => /orP[/eqP[->] |/IHN a_le];
 by rewrite big_ord_recl subn1 /= ler_maxr ?a_le ?lerr ?orbT.
-Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 (** Some open sets of [R] *)
 
@@ -2522,56 +2594,6 @@ Admitted.
 (* exists d=>  u v Hu Hv. *)
 (* by apply (Hd (u, v)) => /=; split; apply sub_abs_ball; rewrite absrB. *)
 (* Qed. *)
-
-(** * Some Topology on [Rbar] *)
-
-(* NB: already defined in R_scope in Rbar.v *)
-Notation "'+oo'" := p_infty : real_scope.
-Notation "'-oo'" := m_infty : real_scope.
-
-Definition Rbar_locally' (a : Rbar) (P : R -> Prop) :=
-  match a with
-    | Finite a => locally' a P
-    | +oo => exists M : R, forall x, M < x -> P x
-    | -oo => exists M : R, forall x, x < M -> P x
-  end.
-Definition Rbar_locally (a : Rbar) (P : R -> Prop) :=
-  match a with
-    | Finite a => locally a P
-    | +oo => exists M : R, forall x, M < x -> P x
-    | -oo => exists M : R, forall x, x < M -> P x
-  end.
-
-Canonical Rbar_eqType := EqType Rbar gen_eqMixin.
-Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.
-Canonical Rbar_pointed := PointedType Rbar (+oo).
-Canonical Rbar_filter := FilteredType R Rbar (Rbar_locally).
-
-Global Instance Rbar_locally'_filter : forall x, ProperFilter (Rbar_locally' x).
-Proof.
-case=> [x||]; first exact: Rlocally'_proper.
-  apply Build_ProperFilter.
-    by move=> P [M gtMP]; exists (M + 1); apply: gtMP; rewrite ltr_addl.
-  split=> /= [|P Q [MP gtMP] [MQ gtMQ] |P Q sPQ [M gtMP]]; first by exists 0.
-    by exists (maxr MP MQ) => ?; rewrite ltr_maxl => /andP [/gtMP ? /gtMQ].
-  by exists M => ? /gtMP /sPQ.
-apply Build_ProperFilter.
-  by move=> P [M ltMP]; exists (M - 1); apply: ltMP; rewrite gtr_addl oppr_lt0.
-split=> /= [|P Q [MP ltMP] [MQ ltMQ] |P Q sPQ [M ltMP]]; first by exists 0.
-  by exists (minr MP MQ) => ?; rewrite ltr_minr => /andP [/ltMP ? /ltMQ].
-by exists M => ? /ltMP /sPQ.
-Qed.
-Typeclasses Opaque Rbar_locally'.
-
-
-Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
-Proof.
-case=> [x||].
-by apply/locally_filter.
-exact: (Rbar_locally'_filter +oo).
-exact: (Rbar_locally'_filter -oo).
-Qed.
-Typeclasses Opaque Rbar_locally.
 
 Definition bounded (K : absRingType) (V : normedModType K) (A : set V) :=
   \forall M \near +oo, A `<=` [set x | `|[x]| < M].
