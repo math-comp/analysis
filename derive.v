@@ -268,7 +268,7 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: lim_add.
   by exists e => //= x _ x0; apply eX; rewrite mulVr // subrr absr0.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
-  rewrite (_ : (fun _ => _) = cst 0); first exact: lim_cst.
+  rewrite (_ : (fun _ => _) = cst 0); first exact: cst_continuous.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
 apply/flim_normP => e e0.
 rewrite nearE /=; apply/locallyP; rewrite locally_E.
