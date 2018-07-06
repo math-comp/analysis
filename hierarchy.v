@@ -1833,41 +1833,62 @@ End NVS_continuity.
 
 Section limit_composition.
 
+Lemma lim_cont {T V U : topologicalType}
+  (F : set (set T)) (FF : Filter F)
+  (f : T -> V) (h : V -> U) (a : V) :
+  {for a, continuous h} ->
+  f @ F --> a -> (h \o f) @ F --> h a.
+Proof.
+move=> h_cont fa fb; apply: (flim_trans _ h_cont).
+exact: (@flim_comp _ _ _ _ h _ _ _ fa).
+Qed.
+
+Lemma lim_cont2 {T V W U : topologicalType}
+  (F : set (set T)) (FF : Filter F)
+  (f : T -> V) (g : T -> W) (h : V -> W -> U) (a : V) (b : W) :
+  h z.1 z.2 @[z --> (a, b)] --> h a b ->
+  f @ F --> a -> g @ F --> b -> (fun x => h (f x) (g x)) @ F --> h a b.
+Proof.
+move=> h_cont fa fb; apply: (flim_trans _ h_cont).
+exact: (@flim_comp _ _ _ _ (fun x => h x.1 x.2) _ _ _ (flim_pair fa fb)).
+Qed.
+
+Lemma cst_continuous {T T' : topologicalType} (k : T')
+  (F : set (set T)) {FF : Filter F} :
+  (fun _ : T => k) @ F --> k.
+Proof.
+by move=> x; rewrite !near_simpl => /locally_singleton ?; apply: filterE.
+Qed.
+Arguments cst_continuous {T T'} k F {FF}.
+Hint Resolve cst_continuous.
+
 Context {K : absRingType} {V : normedModType K} {T : topologicalType}.
 
-Lemma lim_cst (F : set (set T)) (FF : Filter F) (k : V) : (fun=> k) @ F --> k.
-Proof.
-apply/flim_normP => _/posnumP[e].
-rewrite nearE /= subrr normm0; apply: (filterS _ filterT); by move=> *.
-Qed.
+Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
+Proof. exact: cst_continuous. Qed.
+Hint Resolve lim_cst.
 
 Lemma lim_add (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
-Proof.
-move=> fa fb.
-apply: (flim_trans _ (@add_continuous K V (a, b))).
-exact: (@flim_comp _ _ _ _ (fun x => x.1 + x.2) _ _ _ (flim_pair fa fb)).
-Qed.
+Proof. by move=> ??; apply: lim_cont2 => //; exact: add_continuous. Qed.
 
 Lemma continuousD (f g : T -> V) x :
   {for x, continuous f} -> {for x, continuous g} ->
   {for x, continuous (fun x => f x + g x)}.
 Proof. by move=> ??; apply: lim_add. Qed.
 
-Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (k : V) (a : K) :
-  f @ F --> a -> (fun x => (f x) *: k) @ F --> a *: k.
-Proof.
-move=> fa.
-apply: (flim_trans _ (@scalel_continuous K V k a)).
-exact: (@flim_comp _ _ _ f (fun x : K => x *: k) _ _ _ fa).
-Qed.
+Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
+  (k : K) (a : V) :
+  f @ F --> k -> g @ F --> a -> (fun x => (f x) *: (g x)) @ F --> k *: a.
+Proof. by move=> ??; apply: lim_cont2 => //; exact: scale_continuous. Qed.
+
+Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (a : V) (k : K) :
+  f @ F --> k -> (fun x => (f x) *: a) @ F --> k *: a.
+Proof. by move=> ?; apply: lim_scale => //; exact: cst_continuous. Qed.
 
 Lemma lim_scaler (F : set (set T)) (FF : Filter F) (f : T -> V) (k : K) (a : V) :
   f @ F --> a -> k \*: f  @ F --> k *: a.
-Proof.
-move=> fa; apply: (flim_trans _ (@scaler_continuous _ _ _ _)).
-exact: (@flim_comp _ _ _ f ( *:%R k) _ _ _ fa).
-Qed.
+Proof. by apply: lim_scale => //; exact: cst_continuous. Qed.
 
 Lemma continuousZ (f : T -> V) k x :
   {for x, continuous f} -> {for x, continuous (k \*: f)}.
@@ -1879,18 +1900,13 @@ Proof. by move=> ?; apply: lim_scalel. Qed.
 
 Lemma lim_opp (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
   f @ F --> a -> (fun x => - f x) @ F --> - a.
-Proof.
-move=> fa; have -> : (fun x => - f x) = (- 1) \*: f.
-  by rewrite funeqE => ? /=; rewrite scaleN1r.
-by rewrite -scaleN1r; apply: lim_scaler.
-Qed.
+Proof. by move=> ?; apply: lim_cont => //; apply: opp_continuous. Qed.
 
 Lemma continuousN (f : T -> V) x :
   {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
 Proof. by move=> ?; apply: lim_opp. Qed.
 
-Lemma lim_mult (x y : K) :
-   z.1 * z.2 @[z --> (x, y)] --> x * y.
+Lemma lim_mult (x y : K) : z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof. exact: (@scale_continuous _ (AbsRing_NormedModType K)). Qed.
 
 Lemma continuousM (f g : T -> K) x :
