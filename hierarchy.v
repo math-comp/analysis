@@ -3,8 +3,8 @@ Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
-Require Import boolp reals.
-Require Import Rstruct Rbar set posnum topology.
+Require Import boolp reals Rstruct Rbar.
+Require Import classical_sets posnum topology.
 
 (******************************************************************************)
 (* This file extends the topological hierarchy with metric-related notions:   *)

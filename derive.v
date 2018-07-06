@@ -2,8 +2,8 @@
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop matrix interval.
-Require Import boolp reals.
-Require Import Rstruct Rbar set posnum topology hierarchy landau forms.
+Require Import boolp reals Rstruct Rbar.
+Require Import classical_sets posnum topology hierarchy landau forms.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
