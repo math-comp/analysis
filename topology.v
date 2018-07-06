@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype ssralg finmap matrix.
 Require Import boolp.
-Require Import set posnum.
+Require Import classical_sets posnum.
 
 (******************************************************************************)
 (* This file develops tools for the manipulation of filters and basic         *)

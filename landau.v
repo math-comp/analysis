@@ -2,8 +2,8 @@
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
-Require Import boolp reals.
-Require Import Rstruct Rbar set posnum topology hierarchy.
+Require Import boolp reals Rstruct Rbar.
+Require Import classical_sets posnum topology hierarchy.
 
 (******************************************************************************)
 (*              BACHMANN-LANDAU NOTATIONS : BIG AND LITTLE O                  *)
