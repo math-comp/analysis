@@ -332,6 +332,7 @@ apply: filter_from_filter; first by exists 1; rewrite ltr01.
 move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i j) => // [[/= x y]] bxy.
 by eexists => /=; apply: ball_ler bxy; rewrite ler_minl lerr ?orbT.
 Qed.
+Typeclasses Opaque entourages.
 
 Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
 Canonical set_filter_source :=
@@ -655,9 +656,9 @@ Qed.
 Lemma flim_close {F} {FF : ProperFilter F} (x y : T) :
   F --> x -> F --> y -> close x y.
 Proof.
-move=> Fx Fy e; near F => z; first by apply: (@ball_splitl _ z); near: z.
-by end_near; [apply/Fx/locally_ball|apply/Fy/locally_ball].
-Qed.
+move=> Fx Fy e; near F => z; apply: (@ball_splitl _ z); near: z;
+by [apply/Fx/locally_ball|apply/Fy/locally_ball].
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma flimx_close (x y : T) : x --> y -> close x y.
 Proof. exact: flim_close. Qed.
@@ -907,10 +908,9 @@ Proof.
 split=> [Fy _/posnumP[eps] |Fy P] /=; first exact/Fy/locally_ball.
 move=> /locallyP[_ /posnumP[eps] subP].
 rewrite near_simpl near_mapi; near=> x.
-  have [//|z [fxz yz]] := near (Fy _ (posnum_gt0 eps)) x.
-  by exists z => //; split => //; apply: subP.
-by end_near.
-Qed.
+have [//|z [fxz yz]] := near (Fy _ (posnum_gt0 eps)) x.
+by exists z => //; split => //; apply: subP.
+Unshelve. all: end_near. Qed.
 Definition flimi_locally := @flimi_ballP.
 
 Lemma flimi_ball {F} {FF : Filter F} (f : T -> U -> Prop) y :
@@ -923,10 +923,9 @@ Lemma flimi_close {F} {FF: ProperFilter F} (f : T -> set U) (l l' : U) :
 Proof.
 move=> f_prop fFl fFl'.
 suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
-apply: filter_app f_prop; near=> x; first split=> //=.
-  by have [//|y [fxy _]] := near (flimi_ball fFl [gt0 of 1]) x; exists y.
-by end_near.
-Qed.
+apply: filter_app f_prop; near=> x; split=> //=.
+by have [//|y [fxy _]] := near (flimi_ball fFl [gt0 of 1]) x; exists y.
+Grab Existential Variables. all: end_near. Qed.
 Definition flimi_locally_close := @flimi_close.
 
 End Locally_fct.
@@ -992,8 +991,8 @@ Proof.
 move=> FF; split=> cauchyF; last first.
   by move=> _/posnumP[eps]; apply: cauchyF; exists eps%:num.
 move=> U [_/posnumP[eps] xyepsU].
-by near=> x; [by apply: xyepsU; near: x|end_near; apply: cauchyF].
-Qed.
+by near=> x; apply: xyepsU; near: x; apply: cauchyF.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma cvg_cauchy_ex {T : uniformType} (F : set (set T)) :
   [cvg F in T] -> cauchy_ex F.
@@ -1012,9 +1011,8 @@ Lemma cauchyP (T : uniformType) (F : set (set T)) : ProperFilter F ->
   cauchy F <-> cauchy_ex F.
 Proof.
 move=> FF; split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
-near F => x; first by exists x; near: x.
-by end_near; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
-Qed.
+by near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma cvg_cauchy {T : uniformType} (F : set (set T)) : Filter F ->
   [cvg F in T] -> cauchy F.
@@ -1112,12 +1110,11 @@ have /(_ _ _) /complete_cauchy cvF :
   by move=> ?? _ /posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex.
 exists (\matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T)).
-apply/flim_ballP => _ /posnumP[e]; near=> M.
-  move=> i j; rewrite mxE; near F => M' => /=.
-    by apply: (@ball_splitl _ (M' i j)); last move: (i) (j); near: M'.
-  by end_near; [apply/cvF/locally_ball|near: M].
-by end_near; apply: nearP_dep; apply: filterS (Fc _ _).
-Qed.
+apply/flim_ballP => _ /posnumP[e]; near=> M => i j.
+rewrite mxE; near F => M' => /=; apply: (@ball_splitl _ (M' i j)).
+  by near: M'; apply/cvF/locally_ball.
+by move: (i) (j); near: M'; near: M; apply: nearP_dep; apply: filterS (Fc _ _).
+Grab Existential Variables. all: end_near. Qed.
 
 Canonical matrix_completeType := CompleteType 'M[T]_(m, n) mx_complete.
 
@@ -1133,12 +1130,10 @@ Proof.
 move=> Fc; have /(_ _) /complete_cauchy Ft_cvg : cauchy (@^~_ @ F).
   by move=> t e ?; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/flim_ballPpos => e; near=> f => [t|].
-  near F => g => /=.
-    by apply: (@ball_splitl _ (g t)); last move: (t); near: g.
-  by end_near; [exact/Ft_cvg/locally_ball|near: f].
-by end_near; apply: nearP_dep; apply: filterS (Fc _ _).
-Qed.
+apply/flim_ballPpos => e; near=> f => t; near F => g => /=.
+apply: (@ball_splitl _ (g t)); first by near: g; exact/Ft_cvg/locally_ball.
+by move: (t); near: g; near: f; apply: nearP_dep; apply: filterS (Fc _ _).
+Grab Existential Variables. all: end_near. Qed.
 
 Canonical fun_completeType := CompleteType (T -> U) fun_complete.
 
@@ -1156,13 +1151,12 @@ Lemma flim_switch_1 {U : uniformType}
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) -> h @ F1 --> l ->
   g @ F2 --> l.
 Proof.
-move=> fg fh hl; apply/flim_ballPpos => e; rewrite near_simpl.
-near F1 => x1; first near=> x2.
-- apply: (@ball_split _ (h x1)); first by near: x1.
-  by apply: (@ball_splitl _ (f x1 x2)); [near: x2|move: (x2); near: x1].
-- by end_near; apply/fh/locally_ball.
-- by end_near; [exact/hl/locally_ball|exact/(flim_ball fg)].
-Qed.
+move=> fg fh hl; apply/flim_ballPpos => e.
+rewrite near_simpl; near F1 => x1; near=> x2.
+apply: (@ball_split _ (h x1)); first by near: x1; apply/hl/locally_ball.
+apply: (@ball_splitl _ (f x1 x2)); first by near: x2; apply/fh/locally_ball.
+by move: (x2); near: x1; apply/(flim_ball fg).
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma flim_switch_2 {U : completeType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : ProperFilter F2}
@@ -1170,14 +1164,13 @@ Lemma flim_switch_2 {U : completeType}
   f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
   [cvg h @ F1 in U].
 Proof.
-move=> fg fh; apply: complete_cauchy => _/posnumP[e]; rewrite !near_simpl.
-near=> x1 y1=> /=; first near F2 => x2.
-- apply: (@ball_splitl _ (f x1 x2)); first by near: x2.
-  apply: (@ball_split _ (f y1 x2)); first by near: x2.
-  apply: (@ball_splitr _ (g x2)); move: (x2); [near: y1|near: x1].
-- by end_near; apply/fh/locally_ball.
-- by split; end_near; apply/(flim_ball fg).
-Qed.
+move=> fg fh; apply: complete_cauchy => _/posnumP[e].
+rewrite !near_simpl; near=> x1 y1=> /=; near F2 => x2.
+apply: (@ball_splitl _ (f x1 x2)); first by near: x2; apply/fh/locally_ball.
+apply: (@ball_split _ (f y1 x2)); first by near: x2; apply/fh/locally_ball.
+apply: (@ball_splitr _ (g x2)); move: (x2); [near: y1|near: x1];
+by apply/(flim_ball fg).
+Grab Existential Variables. all: end_near. Qed.
 
 (* Alternative version *)
 (* Lemma flim_switch {U : completeType} *)
@@ -1515,9 +1508,8 @@ Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y.
 Proof.
 move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
-  by rewrite [e%:num]splitr ltr_spaddl //; near: x.
-by end_near; apply: cv.
-Qed.
+by rewrite [e%:num]splitr ltr_spaddl //; near: x; apply: cv.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|[y - y']| < eps.
@@ -1713,32 +1705,30 @@ Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
 Proof.
 move=> [/=x y]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> a b => /=.
-  rewrite opprD addrACA [e%:num]splitr (ler_lt_trans (ler_normm_add _ _)) //.
-  by rewrite ltr_add //=; [near: a|near: b].
-by split; end_near=> /=; apply: flim_norm.
-Qed.
+rewrite opprD addrACA [e%:num]splitr (ler_lt_trans (ler_normm_add _ _)) //.
+by rewrite ltr_add //=; [near: a|near: b]; apply: flim_norm.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> z.
-  rewrite (@subr_trans _ (k *: z.2)).
-  rewrite (splitr e%:num) (ler_lt_trans (ler_normm_add _ _)) //.
-  rewrite ltr_add // -?(scalerBr, scalerBl).
-    rewrite (ler_lt_trans (ler_normmZ _ _)) //.
-    rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
-            ?ler_addl //.
-    by rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
+rewrite (@subr_trans _ (k *: z.2)).
+rewrite (splitr e%:num) (ler_lt_trans (ler_normm_add _ _)) //.
+rewrite ltr_add // -?(scalerBr, scalerBl).
   rewrite (ler_lt_trans (ler_normmZ _ _)) //.
-  rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) //.
-    by rewrite ltrW //; near: z.
-  by rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
-end_near; rewrite /= ?near_simpl.
-- by apply: (flim_norm _ flim_snd); rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
-- by apply: (flim_bounded _ flim_snd); rewrite ltr_addl.
-- apply: (flim_norm (_ : K^o) flim_fst).
-  by rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
-Qed.
+  rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
+          ?ler_addl //.
+  rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
+  by apply: (flim_norm _ flim_snd); rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
+rewrite (ler_lt_trans (ler_normmZ _ _)) //.
+rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= `|[x]| + 1))) // ?ltrW//.
+  by near: z; apply: (flim_bounded _ flim_snd); rewrite ltr_addl.
+rewrite -ltr_pdivl_mulr // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
+apply: (flim_norm (_ : K^o) flim_fst).
+by rewrite mulr_gt0 // ?invr_gt0 ltr_paddl.
+Grab Existential Variables. all: end_near. Qed.
+
 Arguments scale_continuous _ _ : clear implicits.
 
 Lemma scaler_continuous k : continuous (fun x : V => k *: x).
@@ -2036,20 +2026,20 @@ have D_has_sup : has_sup (mem D); first split.
   by move=> /(ler_trans _) yx01 _ /yx01.
 exists (sup (mem D)).
 apply: (flim_normW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
-  rewrite ler_distl sup_upper_bound //=.
-    apply: sup_le_ub => //; first by case: D_has_sup.
-    apply/forallbP => y; apply/implyP; rewrite in_setE.
-    move=> /(_ (ball_ norm x eps%:num) _) /existsbP []; first by near: x.
-    move=> z /andP[]; rewrite in_setE /ball_ ltr_distl ltr_subl_addr.
-    by move=> /andP [/ltrW /(ler_trans _) le_xeps _ /le_xeps].
-  rewrite in_setE /D /= => A FA; near F => y.
-    apply/existsbP; exists y; apply/andP; split.
-      by rewrite in_setE; near: y.
-    rewrite ler_subl_addl -ler_subl_addr ltrW //.
-    by suff: `|x - y| < eps%:num; [by rewrite ltr_norml => /andP[_] | near: y].
-  end_near; near: x.
-by end_near; rewrite /= !near_simpl; apply: nearP_dep; apply: F_cauchy.
-Qed.
+rewrite ler_distl sup_upper_bound //=.
+  apply: sup_le_ub => //; first by case: D_has_sup.
+  apply/forallbP => y; apply/implyP; rewrite in_setE.
+  move=> /(_ (ball_ norm x eps%:num) _) /existsbP [].
+    by near: x; apply: nearP_dep; apply: F_cauchy.
+  move=> z /andP[]; rewrite in_setE /ball_ ltr_distl ltr_subl_addr.
+  by move=> /andP [/ltrW /(ler_trans _) le_xeps _ /le_xeps].
+rewrite in_setE /D /= => A FA; near F => y.
+apply/existsbP; exists y; apply/andP; split.
+  by rewrite in_setE; near: y.
+rewrite ler_subl_addl -ler_subl_addr ltrW //.
+suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
+by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
+Grab Existential Variables. all: end_near. Qed.
 
 Canonical R_completeType := CompleteType R R_complete.
 Canonical R_NormedModule := [normedModType R of R^o].
@@ -2083,6 +2073,7 @@ apply; last (by rewrite ltr_subl_addl ltr_addr); rewrite /AbsRing_ball /=.
 rewrite opprD !addrA subrr add0r opprK absRE normf_div !ger0_norm //.
 by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
+Typeclasses Opaque at_left at_right.
 
 (** Continuity of norm *)
 
@@ -2357,20 +2348,20 @@ rewrite -subr_le0; apply/ler0_addgt0P => _/posnumP[e].
 rewrite ler_subl_addr -ler_subl_addl ltrW //.
 have /fcont /(_ _ (locally_ball _ e)) [_/posnumP[d] supdfe] := supAab.
 have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
-  have /supdfe /= : ball (sup A) d%:num x by near: x.
-  rewrite ball_absE /= absRE => /ltr_distW; apply: ler_lt_trans.
-  rewrite ler_add2r ltrW //; suff : forall t, t \in `](sup A), b] -> v < f t.
-    by apply; rewrite inE; apply/andP; split; near: x.
-  move=> t /andP [ltsupt letb]; rewrite ltrNge; apply/negP => leftv.
-  move: ltsupt; rewrite ltrNge => /negP; apply; apply: sup_upper_bound => //.
-  by rewrite inE letb leftv.
-end_near; rewrite /= locally_simpl; [exists d%:num|exists 1|] => //.
-exists (b - sup A).
-  rewrite subr_gt0 ltr_def (itvP supAab) andbT; apply/negP => /eqP besup.
-  by move: lefsupv; rewrite lerNgt -besup ltvfb.
-move=> t lttb ltsupt; move: lttb; rewrite /AbsRing_ball /= absrB absRE.
-by rewrite gtr0_norm ?subr_gt0 // ltr_add2r; apply: ltrW.
-Qed.
+have /supdfe /= : ball (sup A) d%:num x.
+  by near: x; rewrite /= locally_simpl; exists d%:num => //.
+rewrite ball_absE /= absRE => /ltr_distW; apply: ler_lt_trans.
+rewrite ler_add2r ltrW //; suff : forall t, t \in `](sup A), b] -> v < f t.
+  apply; rewrite inE; apply/andP; split; first by near: x; exists 1.
+  near: x; exists (b - sup A).
+    rewrite subr_gt0 ltr_def (itvP supAab) andbT; apply/negP => /eqP besup.
+    by move: lefsupv; rewrite lerNgt -besup ltvfb.
+  move=> t lttb ltsupt; move: lttb; rewrite /AbsRing_ball /= absrB absRE.
+  by rewrite gtr0_norm ?subr_gt0 // ltr_add2r; apply: ltrW.
+move=> t /andP [ltsupt letb]; rewrite ltrNge; apply/negP => leftv.
+move: ltsupt; rewrite ltrNge => /negP; apply; apply: sup_upper_bound => //.
+by rewrite inE letb leftv.
+Grab Existential Variables. all: end_near. Qed.
 
 (** Local properties in [R] *)
 
@@ -2570,6 +2561,8 @@ split=> /= [|P Q [MP ltMP] [MQ ltMQ] |P Q sPQ [M ltMP]]; first by exists 0.
   by exists (minr MP MQ) => ?; rewrite ltr_minr => /andP [/ltMP ? /ltMQ].
 by exists M => ? /ltMP /sPQ.
 Qed.
+Typeclasses Opaque Rbar_locally'.
+
 
 Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
 Proof.
@@ -2578,6 +2571,7 @@ by apply/locally_filter.
 exact: (Rbar_locally'_filter +oo).
 exact: (Rbar_locally'_filter -oo).
 Qed.
+Typeclasses Opaque Rbar_locally.
 
 Definition bounded (K : absRingType) (V : normedModType K) (A : set V) :=
   \forall M \near +oo, A `<=` [set x | `|[x]| < M].
@@ -2805,9 +2799,8 @@ split=> - cfx P /= fxP.
     because the type of the filter is not infered *)
 rewrite !locally_nearE !near_map !near_locally in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
-  by have [->|] := eqVneq y x; [apply: locally_singleton|near: y].
-by end_near.
-Qed.
+by have [->|] := eqVneq y x; [by apply: locally_singleton|near: y].
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma continuity_pt_flim' f x :
   continuity_pt f x <-> f @ locally' x --> f x.
