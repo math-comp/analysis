@@ -587,13 +587,13 @@ Lemma tE : t = prop_in_filter_proj. Proof. by []. Qed.
 End PropInFilter.
 (* Coercion PropInFilter.t : in_filter >-> Funclass. *)
 Notation prop_of := PropInFilter.t.
-Definition prop_in_filterE := PropInFilter.tE.
+Definition prop_ofE := PropInFilter.tE.
 Notation "x \is_near F" :=
    (@PropInFilter.t _ F _ x) (at level 10, format "x  \is_near  F").
-Definition is_nearE := prop_in_filterE.
+Definition is_nearE := prop_ofE.
 
-Lemma prop_in_filterP T F (iF : @in_filter T F) : F (prop_of iF).
-Proof. by rewrite prop_in_filterE; apply: prop_in_filterP_proj. Qed.
+Lemma prop_ofP T F (iF : @in_filter T F) : F (prop_of iF).
+Proof. by rewrite prop_ofE; apply: prop_in_filterP_proj. Qed.
 
 Definition in_filterT T F (FF : Filter F) : @in_filter T F :=
   InFilter (filterT).
@@ -603,29 +603,29 @@ Canonical in_filterI T F (FF : Filter F) (P Q : @in_filter T F) :=
 Lemma filter_near_of T F (P : @in_filter T F) (Q : set T) : Filter F ->
   (forall x, prop_of P x -> Q x) -> F Q.
 Proof.
-by move: P => [P FP] FF /=; rewrite prop_in_filterE /= => /filterS; apply.
+by move: P => [P FP] FF /=; rewrite prop_ofE /= => /filterS; apply.
 Qed.
 
 Lemma near_acc T F (P : @in_filter T F) (Q : set T) (FF : Filter F)
    (FQ : \forall x \near F, Q x) :
    (forall x, prop_of (in_filterI FF P (InFilter FQ)) x -> Q x).
-Proof. by move=> x /=; rewrite !prop_in_filterE /= => -[Px]. Qed.
+Proof. by move=> x /=; rewrite !prop_ofE /= => -[Px]. Qed.
 
 Lemma nearW T F (P Q : @in_filter T F) (G : set T) (FF : Filter F) :
    (forall x, prop_of P x -> G x) ->
    (forall x, prop_of (in_filterI FF P Q) x -> G x).
 Proof.
-move=> FG x /=; rewrite !prop_in_filterE /= => -[Px Qx].
-by have /= := FG x; apply; rewrite prop_in_filterE.
+move=> FG x /=; rewrite !prop_ofE /= => -[Px Qx].
+by have /= := FG x; apply; rewrite prop_ofE.
 Qed.
 
 Tactic Notation "near=>" ident(x) := apply: filter_near_of => x ?.
 
-Ltac discharge_near x :=
-  match goal with Hx : x \is_near _ |- _ =>
-    move: (x) Hx; do ![ apply: near_acc; first shelve|apply: nearW]
-  end.
-Tactic Notation "near:" ident(x) := discharge_near x.
+Ltac just_discharge_near x :=
+  match goal with Hx : x \is_near _ |- _ => move: (x) Hx end.
+Tactic Notation "near:" ident(x) :=
+  just_discharge_near x; do [apply: near_acc; first shelve|apply: nearW];
+  do 30?[apply: near_acc; first shelve|apply: nearW].
 
 Ltac end_near := do ?exact: in_filterT.
 
@@ -635,7 +635,7 @@ Ltac done :=
          | discriminate | contradiction | split]
    | case not_locked_false_eq_true; assumption
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end
-   | match goal with |- ?x \is_near _ => near: x; apply: prop_in_filterP end ].
+   | match goal with |- ?x \is_near _ => near: x; apply: prop_ofP end ].
 
 Lemma have_near (U : Type) (fT : filteredType U) (x : fT) (P : Prop) :
    ProperFilter (locally x) -> (\forall x \near x, P) -> P.
@@ -647,7 +647,7 @@ Tactic Notation "near" constr(F) "=>" ident(x) :=
 
 Lemma near T (F : set (set T)) P (FP : F P) (x : T)
   (Px : prop_of (InFilter FP) x) : P x.
-Proof. by move: Px; rewrite prop_in_filterE. Qed.
+Proof. by move: Px; rewrite prop_ofE. Qed.
 Arguments near {T F P} FP x Px.
 
 Lemma filterE {T : Type} {F : set (set T)} :
@@ -922,6 +922,19 @@ move=> FP; exists (setT, P)=> //= [|[?? []//]].
 by split=> //; apply: filterT.
 Qed.
 
+Program Definition in_filter_prod {T U} {F : set (set T)} {G : set (set U)}
+  (P : in_filter F) (Q : in_filter G) : in_filter (filter_prod F G) :=
+  @InFilter _ _ (fun x => prop_of P x.1 /\ prop_of Q x.2) _.
+Next Obligation.
+by exists (prop_of P, prop_of Q) => //=; split; apply: prop_ofP.
+Qed.
+
+Lemma near_pair {T U} {F : set (set T)} {G : set (set U)}
+      {FF : Filter F} {FG : Filter G}
+      (P : in_filter F) (Q : in_filter G) x :
+       prop_of P x.1 -> prop_of Q x.2 -> prop_of (in_filter_prod P Q) x.
+Proof. by case: x=> x y; do ?rewrite prop_ofE /=; split. Qed.
+
 Lemma flim_fst {T U F G} {FG : Filter G} :
   (@fst T U) @ filter_prod F G --> F.
 Proof. by move=> P; apply: filter_prod1. Qed.
@@ -971,7 +984,7 @@ Lemma filter_pair_near_of (T T' : Type) (F : set (set T)) (F' : set (set T')) :
    (forall x x', prop_of P x -> prop_of P' x' -> Q (x, x')) ->
    filter_prod F F' Q.
 Proof.
-move=> FF FF' [P FP] [P' FP'] Q PQ; rewrite prop_in_filterE in FP FP' PQ.
+move=> FF FF' [P FP] [P' FP'] Q PQ; rewrite prop_ofE in FP FP' PQ.
 near=> x; have := PQ x.1 x.2; rewrite -surjective_pairing; apply; near: x;
 by [apply: flim_fst|apply: flim_snd].
 Grab Existential Variables. all: end_near. Qed.
