@@ -2,8 +2,8 @@
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop matrix interval.
-Require Import boolp reals.
-Require Import Rstruct Rbar set posnum topology hierarchy landau forms.
+Require Import boolp reals Rstruct Rbar.
+Require Import classical_sets posnum topology hierarchy landau forms.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -268,7 +268,7 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: lim_add.
   by exists e => //= x _ x0; apply eX; rewrite mulVr // subrr absr0.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
-  rewrite (_ : (fun _ => _) = cst 0); first exact: lim_cst.
+  rewrite (_ : (fun _ => _) = cst 0); first exact: cst_continuous.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
 apply/flim_normP => e e0.
 rewrite nearE /=; apply/locallyP; rewrite locally_E.
