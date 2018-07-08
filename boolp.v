@@ -11,8 +11,16 @@ Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Require Import FunctionalExtensionality PropExtensionality.
-Require Import ClassicalEpsilon.
+Axiom functional_extensionality_dep :
+       forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+       (forall x : A, f x = g x) -> f = g.
+Axiom propositional_extensionality :
+       forall P Q : Prop, P <-> Q -> P = Q.
+
+Axiom constructive_indefinite_description :
+  forall (A : Type) (P : A -> Prop),
+  (exists x : A, P x) -> {x : A | P x}.
+Notation cid := constructive_indefinite_description.
 
 (* -------------------------------------------------------------------- *)
 Record mextentionality := {
@@ -69,6 +77,11 @@ Proof.
 by rewrite propeqE; split=> [->//|?]; rewrite funeq3E=> ???; rewrite propeqE.
 Qed.
 
+Lemma propT (P : Prop) : P -> P = True.
+Proof. by move=> p; rewrite propeqE; tauto. Qed.
+
+Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
+Proof. by move: x (x) y => /propT-> [] []. Qed.
 
 (* -------------------------------------------------------------------- *)
 Record mclassic := {
@@ -76,23 +89,47 @@ Record mclassic := {
   _ : forall T, Choice.mixin_of T
 }.
 
+Lemma choice X Y (P : X -> Y -> Prop) :
+  (forall x, exists y, P x y) -> {f & forall x, P x (f x)}.
+Proof. by move=> /(_ _)/constructive_indefinite_description -/all_tag. Qed.
+
+(* Diaconescu Theorem *)
+Theorem EM P : P \/ ~ P.
+Proof.
+pose U val := fun Q : bool => Q = val \/ P.
+have Uex val : exists b, U val b by exists val; left.
+pose f val := projT1 (cid (Uex val)).
+pose Uf val : U val (f val) := projT2 (cid (Uex val)).
+have : f true != f false \/ P.
+  have [] := (Uf true, Uf false); rewrite /U.
+  by move=> [->|?] [->|?] ; do ?[by right]; left.
+move=> [/eqP fTFN|]; [right=> p|by left]; apply: fTFN.
+have UTF : U true = U false by rewrite predeqE /U => b; split=> _; right.
+rewrite /f; move: (Uex true) (Uex false); rewrite UTF => p1 p2.
+by congr (projT1 (cid _)); apply: Prop_irrelevance.
+Qed.
+
+Lemma pselect (P : Prop): {P} + {~P}.
+Proof.
+have : exists b, if b then P else ~ P.
+  by case: (EM P); [exists true|exists false].
+by move=> /cid [[]]; [left|right].
+Qed.
+
 Lemma classic : mclassic.
 Proof.
-split=> [|T]; first exact: excluded_middle_informative.
+split=> [|T]; first exact: pselect.
 exists (fun (P : pred T) (n : nat) =>
-  if excluded_middle_informative (exists x, P x) isn't left ex then None
-  else Some (projT1 (constructive_indefinite_description _ ex)))
+  if pselect (exists x, P x) isn't left ex then None
+  else Some (projT1 (cid ex)))
   => [P n x|P [x Px]|P Q /funext -> //].
-  case: excluded_middle_informative => // ex [<- ];
-  by case: constructive_indefinite_description.
-by exists 0; case: excluded_middle_informative => // -[]; exists x.
+  by case: pselect => // ex [<- ]; case: cid.
+by exists 0; case: pselect => // -[]; exists x.
 Qed.
 
 Lemma gen_choiceMixin {T : Type} : Choice.mixin_of T.
 Proof. by case: classic. Qed.
 
-Lemma pselect (P : Prop): {P}+{~P}.
-Proof. by case: classic. Qed.
 
 Lemma pdegen (P : Prop): P = True \/ P = False.
 Proof. by have [p|Np] := pselect P; [left|right]; rewrite propeqE. Qed.
@@ -106,9 +143,6 @@ Proof. by rewrite propeqE; split. Qed.
 
 Lemma falseE : false = False :> Prop.
 Proof. by rewrite propeqE; split. Qed.
-
-Lemma propT (P : Prop) : P -> P = True.
-Proof. by move=> p; rewrite propeqE; tauto. Qed.
 
 Lemma propF (P : Prop) : ~ P -> P = False.
 Proof. by move=> p; rewrite propeqE; tauto. Qed.
