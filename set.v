@@ -101,8 +101,6 @@ Reserved Notation "a |` A" (at level 52, left associativity).
 Reserved Notation "A `\` B" (at level 50, left associativity).
 Reserved Notation "A `\ b" (at level 50, left associativity).
 
-Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
-Proof. by move: x (x) y => /propT-> [] []. Qed.
 
 Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
 Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
