@@ -12,6 +12,7 @@ topology.v
 hierarchy.v
 forms.v
 derive.v
+summability.v
 altreals/xfinmap.v
 altreals/discrete.v
 altreals/realseq.v
