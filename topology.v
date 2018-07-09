@@ -110,25 +110,24 @@ Require Import classical_sets posnum.
 (*     \forall x & y \near F, P x y == same as before, with G = F.            *)
 (*               \near x & y, P x y := \forall z \near x & t \near y, P x y.  *)
 (*   --> Tactics:                                                             *)
-(*     - near=> x : on the goal \forall x \near F, G x, introduces the        *)
-(*       variable x and an existential variable ?H together with the          *)
-(*       hypothesis ?H x, delays the proof of F ?H and asks the user to       *)
-(*       prove G x. ?H is tagged with x in order to know when to instantiate  *)
-(*       it.                                                                  *)
+(*     - near=> x    introduces x:                                            *)
+(*       On the goal \forall x \near F, G x, introduces the variable x and an *)
+(*       "existential", and unaccessible hypothesis ?H x and asks the user to *)
+(*       prove (G x) in this context.                                         *)
+(*       Under the hood delays the proof of F ?H and waits for near: x        *)
 (*       Also exists under the form near=> x y.                               *)
-(*     - near: x : on the goal H_i x, refines the existential variable ?H     *)
-(*       tagged with x by intersection with H_i and closes the goal. H_i must *)
-(*       contain only variables introduced before x was. The proof that H_i   *)
-(*       holds near F is delayed.                                             *)
-(*     - end_near : when every main subgoal has been proved, the user has to  *)
-(*       prove that the intersection of some finite family (H_i)_i is in F.   *)
-(*       The tactic end_near replaces this goal with several subgoals of the  *)
-(*       form \forall x \near F, H_i x. Ideally, these subgoals should be     *)
-(*       trivial.                                                             *)
-(*     - near F have x : adds to the context a variable x that is near F,     *)
-(*       i.e. one may assume H x for any H in F. Requires F to be a proper    *)
-(*       filter. Statements on x that may appear can be dealt with using      *)
-(*       near: x and end_near, as for variables introduced by near=>.         *)
+(*     - near: x     discharges x:                                            *)
+(*       On the goal H_i x, and where x \is_near F, it asks the user to prove *)
+(*       that (\forall x \near F, H_i x), provided that H_i x does not depend *)
+(*       on variables introduced after x.                                     *)
+(*       Under the hood, it refines by intersection the existential variable  *)
+(*       ?H attached to x, commutes the intersection with F, and asks the     *)
+(*       user to prove F H_i, right now                                       *)
+(*     - end_near should be used to close remaining existentials trivially    *)
+(*     - near F => x     poses a variable near F, where F is a proper filter  *)
+(*       adds to the context a variable x that \is_near F, i.e. one may       *)
+(*       assume H x for any H in F. This new variable xcan be dealt with      *)
+(*       using  near: x, as for variables introduced by near=>.               *)
 (*                                                                            *)
 (* * Topology :                                                               *)
 (*                  topologicalType == interface type for topological space   *)
@@ -622,10 +621,14 @@ Qed.
 Tactic Notation "near=>" ident(x) := apply: filter_near_of => x ?.
 
 Ltac just_discharge_near x :=
-  match goal with Hx : x \is_near _ |- _ => move: (x) Hx end.
+  tryif match goal with Hx : x \is_near _ |- _ => move: (x) Hx end
+        then idtac else fail "the variable" x "is not a ""near"" variable".
 Tactic Notation "near:" ident(x) :=
-  just_discharge_near x; do [apply: near_acc; first shelve|apply: nearW];
-  do 30?[apply: near_acc; first shelve|apply: nearW].
+  just_discharge_near x;
+  tryif do ![apply: near_acc; first shelve
+            |apply: nearW; [move] (* ensures only one goal is created *)]
+  then idtac
+  else fail "the goal depends on variables introduced after" x.
 
 Ltac end_near := do ?exact: in_filterT.
 
