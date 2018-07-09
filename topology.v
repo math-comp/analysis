@@ -224,15 +224,6 @@ Definition fpointedType := @Pointed.Pack cT xclass xT.
 
 End ClassDef.
 
-(* Index the filter (2nd proj) on a term (1st proj) *)
-Structure on X Y := On {term : X; _ : set (set Y)}.
-
-(* Defining the 2nd proj, not named before to prevent Warnings *)
-(* when adding a canonical instance of canonical_filter_on *)
-Definition term_filter {X Y} (F : on X Y) := let: On x f := F in f.
-(* Coercion canonical_term_filter : canonical_filter_on >-> set. *)
-Identity Coercion set_fun : set >-> Funclass.
-
 (* filter on arrow sources *)
 Structure source Z Y := Source {
   source_type :> Type;
@@ -267,10 +258,6 @@ Canonical source_filter_filter Y :=
 Canonical source_filter_filter' Y :=
   @Source Prop _ (set _) (fun x : (set (set Y)) => x).
 
-Notation filter_term := term.
-Notation term_filter := term_filter.
-Notation filter_on_term := on.
-
 End Exports.
 End Filtered.
 Export Filtered.Exports.
@@ -278,9 +265,6 @@ Export Filtered.Exports.
 Definition locally {U} {T : filteredType U} : T -> set (set U) :=
   Filtered.locally_op (Filtered.class T).
 Arguments locally {U T} _ _ : simpl never.
-
-Canonical default_filter_on_term Y (X : filteredType Y) (x : X) :=
-   @Filtered.On X Y x (locally x).
 
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) : set (set T) :=
   [set P | exists2 i, D i & B i `<=` P].
@@ -303,34 +287,31 @@ Local Notation "{ 'all2' P }" := (forall x y, P x y : Prop) (at level 0).
 Local Notation "{ 'all3' P }" := (forall x y z, P x y z: Prop) (at level 0).
 Local Notation ph := (phantom _).
 
-Definition prop_near1 {X Y} (F : filter_on_term X Y) (x : X)
-  (eq_x : x = filter_term F) P (phP : ph {all1 P}) :=
-  (term_filter F) P.
+Definition prop_near1 {X} {fX : filteredType X} (x : fX)
+   P (phP : ph {all1 P}) := locally x P.
 
-Definition prop_near2 {X X' Y Y'} :=
- fun (F : filter_on_term X Y) (x : X) of x = filter_term F =>
- fun (F' : filter_on_term X' Y') (x' : X') of x' = filter_term F' =>
- fun P of ph {all2 P} =>
-  filter_prod (term_filter F) (term_filter F') (fun x => P x.1 x.2).
+Definition prop_near2 {X X'} {fX : filteredType X} {fX' : filteredType X'}
+  (x : fX) (x' : fX') := fun P of ph {all2 P} =>
+  filter_prod (locally x) (locally x') (fun x => P x.1 x.2).
 
 End Near.
 
-Notation "{ 'near' F , P }" :=
-  (@prop_near1 _ _ _ F erefl _ (inPhantom P))
-  (at level 0, format "{ 'near'  F ,  P }") : type_scope.
-Notation "'\forall' x '\near' F , P" := {near F, forall x, P}
-  (at level 200, x ident, P at level 200, format "'\forall'  x  '\near'  F ,  P") : type_scope.
+Notation "{ 'near' x , P }" := (@prop_near1 _ _ x _ (inPhantom P))
+  (at level 0, format "{ 'near'  x ,  P }") : type_scope.
+Notation "'\forall' x '\near' x_0 , P" := {near x_0, forall x, P}
+  (at level 200, x ident, P at level 200, format "'\forall'  x  '\near'  x_0 ,  P") : type_scope.
 Notation "'\near' x , P" := (\forall x \near x, P)
   (at level 200, x at level 99, P at level 200, format "'\near'  x ,  P", only parsing) : type_scope.
-Notation "{ 'near' F & G , P }" :=
-  (@prop_near2 _ _ _ _ _ F erefl _ G erefl _ (inPhantom P))
-  (at level 0, format "{ 'near'  F  &  G ,  P }") : type_scope.
-Notation "'\forall' x '\near' F & y '\near' G , P" :=
-  {near F & G, forall x y, P}
-  (at level 200, x ident, y ident, P at level 200, format "'\forall'  x  '\near'  F  &  y  '\near'  G ,  P") : type_scope.
-Notation "'\forall' x & y '\near' F , P" :=
-  {near F & F, forall x y, P}
-  (at level 200, x ident, y ident, P at level 200, format "'\forall'  x  &  y  '\near'  F ,  P") : type_scope.
+Notation "{ 'near' x & y , P }" := (@prop_near2 _ _ _ _ x y _ (inPhantom P))
+  (at level 0, format "{ 'near'  x  &  y ,  P }") : type_scope.
+Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P" :=
+  {near x_0 & y_0, forall x y, P}
+  (at level 200, x ident, y ident, P at level 200,
+   format "'\forall'  x  '\near'  x_0  &  y  '\near'  y_0 ,  P") : type_scope.
+Notation "'\forall' x & y '\near' z , P" :=
+  {near z & z, forall x y, P}
+  (at level 200, x ident, y ident, P at level 200,
+   format "'\forall'  x  &  y  '\near'  z ,  P") : type_scope.
 Notation "'\near' x & y , P" := (\forall x \near x & y \near y, P)
   (at level 200, x, y at level 99, P at level 200, format "'\near'  x  &  y ,  P", only parsing) : type_scope.
 Arguments prop_near1 : simpl never.
@@ -339,26 +320,20 @@ Arguments prop_near2 : simpl never.
 Lemma nearE {T} {F : set (set T)} (P : set T) : (\forall x \near F, P x) = F P.
 Proof. by []. Qed.
 
-Definition filter_of X Y (F : filter_on_term X Y)
-  (x : X) (_ : x = filter_term F) := term_filter F.
-Notation "[ 'filter' 'of' x ]" := (@filter_of _ _ _ x erefl)
+Definition filter_of X (fX : filteredType X) (x : fX) of phantom fX x :=
+   locally x.
+Notation "[ 'filter' 'of' x ]" := (@filter_of _ _ _ (Phantom _ x))
   (format "[ 'filter'  'of'  x ]") : classical_set_scope.
-Arguments filter_of _ _ _ _ _ _ /.
+Arguments filter_of _ _ _ _ _ /.
 
-Lemma filter_of_filterE {T : Type} (F : set (set T)) :
-  [filter of F] = F.
+Lemma filter_of_filterE {T : Type} (F : set (set T)) : [filter of F] = F.
 Proof. by []. Qed.
 
 Lemma locally_filterE {T : Type} (F : set (set T)) : locally F = F.
 Proof. by []. Qed.
 
-Lemma filter_of_genericE X T (F : filter_on_term X T) :
-  [filter of filter_term F] = term_filter F.
-Proof. by []. Qed.
-
 Module Export LocallyFilter.
-Definition locally_simpl :=
-  (@filter_of_filterE, @locally_filterE, @filter_of_genericE).
+Definition locally_simpl := (@filter_of_filterE, @locally_filterE).
 End LocallyFilter.
 
 Definition flim {T : Type} (F G : set (set T)) := G `<=` F.
@@ -444,8 +419,9 @@ Proof. by symmetry; congr (locally _); rewrite predeqE => -[]. Qed.
 
 Definition near2E := (@near2_curry, @near2_pair).
 
-Lemma filter_of_nearI (X Y : Type) (F : filter_on_term X Y) (x : X) (e : x = filter_term F) P :
-  @filter_of X Y F x e P = @prop_near1 X Y F x e P (inPhantom (forall x, P x)).
+Lemma filter_of_nearI (X : Type) (fX : filteredType X)
+  (x : fX) (ph : phantom fX x) : forall P,
+  @filter_of X fX x ph P = @prop_near1 X fX x P (inPhantom (forall x, P x)).
 Proof. by []. Qed.
 
 Module Export NearLocally.
