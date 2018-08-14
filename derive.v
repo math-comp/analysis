@@ -174,7 +174,7 @@ Section diff_locally_converse_tentative.
 (* if there exist A and B s.t. f(a + h) = A + B h + o(h) then
    f is differentiable at a, A = f(a) and B = f'(a) *)
 (* this is a consequence of diff_continuous and eqolim0 *)
-(* indeed the differential beeing b *: idfun is locally bounded *)
+(* indeed the differential being b *: idfun is locally bounded *)
 (* and thus a littleo of 1, and so is id *)
 (* This can be generalized to any dimension *)
 Lemma diff_locally_converse_part1 (f : R^o -> R^o) (a b : R^o) (x : R^o) :

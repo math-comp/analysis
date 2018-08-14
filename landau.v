@@ -12,7 +12,7 @@ Require Import classical_sets posnum topology hierarchy.
 (* F is a filter, K is an absRingType and V W X Y Z are normed spaces over K  *)
 (* alternatively, K can be equal to the reals R (from the standard library    *)
 (* for now)                                                                   *)
-(* This libary is very asymmetric, in multiple respects:                      *)
+(* This library is very asymmetric, in multiple respects:                      *)
 (* - most rewrite rules can only be rewritten from left to right.             *)
 (*   e.g. an equation 'o_F f = 'O_G g can be used only from LEFT TO RIGHT     *)
 (* - conversely most small 'o_F f in your goal are very specific,             *)
@@ -103,8 +103,8 @@ Reserved Notation "[o_ x e 'of' f ]" (at level 0, x, e at level 0, only parsing)
 (*Printing*)
 Reserved Notation "[o '_' x e 'of' f ]"
   (at level 0, x, e at level 0, format "[o '_' x  e  'of'  f ]").
-(* These notation are printing only in order to display 'o
-   without looking at the contents, use showo to dispaly *)
+(* These notations are printing only in order to display 'o
+   without looking at the contents, use showo to display *)
 Reserved Notation "''o_' x e "
   (at level 0, x, e at level 0, format "''o_' x  e ").
 Reserved Notation "''a_o_' x e "
@@ -135,8 +135,8 @@ Reserved Notation "[o_( x \near F ) ex 'of' fx ]"
 Reserved Notation "[o '_(' x \near F ')' ex 'of' fx ]"
   (at level 0, x, ex at level 0,
    format "[o '_(' x  \near  F ')'  ex  'of'  fx ]").
-(* These notation are printing only in order to display 'o
-   without looking at the contents, use showo to dispaly *)
+(* These notations are printing only in order to display 'o
+   without looking at the contents, use showo to display *)
 Reserved Notation "''o_(' x \near F ')' ex"
   (at level 0, x, ex at level 0, format "''o_(' x  \near  F ')'  ex").
 Reserved Notation "''a_o_(' x \near F ')' ex"
@@ -174,8 +174,8 @@ Reserved Notation "[O_ x e 'of' f ]" (at level 0, x, e at level 0, only parsing)
 (*Printing*)
 Reserved Notation "[O '_' x e 'of' f ]"
   (at level 0, x, e at level 0, format "[O '_' x  e  'of'  f ]").
-(* These notation are printing only in order to display 'O
-   without looking at the contents, use showo to dispaly *)
+(* These notations are printing only in order to display 'O
+   without looking at the contents, use showo to display *)
 Reserved Notation "''O_' x e "
   (at level 0, x, e at level 0, format "''O_' x  e ").
 Reserved Notation "''a_O_' x e "
@@ -206,8 +206,8 @@ Reserved Notation "[O_( x \near F ) ex 'of' fx ]"
 Reserved Notation "[O '_(' x \near F ')' ex 'of' fx ]"
   (at level 0, x, ex at level 0,
    format "[O '_(' x  \near  F ')'  ex  'of'  fx ]").
-(* These notation are printing only in order to display 'o
-   without looking at the contents, use showo to dispaly *)
+(* These notations are printing only in order to display 'o
+   without looking at the contents, use showo to display *)
 Reserved Notation "''O_(' x \near F ')' ex"
   (at level 0, x, ex at level 0, format "''O_(' x  \near  F ')'  ex").
 Reserved Notation "''a_O_(' x \near F ')' ex"
@@ -386,8 +386,8 @@ Notation mklittleo tag x := (the_littleo tag _ (PhantomF x)).
 Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e).
 (*Printing*)
 Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (PhantomF x) f e).
-(* These notation are printing only in order to display 'o
-   without looking at the contents, use showo to dispaly *)
+(* These notations are printing only in order to display 'o
+   without looking at the contents, use showo to display *)
 Notation "''o_' x e " := (the_littleo the_tag _ (PhantomF x) _ e).
 Notation "''a_o_' x e " := (the_littleo a_tag _ (PhantomF x) _ e).
 Notation "''o' '_' x" := (the_littleo gen_tag _ (PhantomF x) _).
@@ -619,7 +619,7 @@ Notation mkbigO tag x := (the_bigO tag _ (PhantomF x)).
 Notation "[O_ x e 'of' f ]" := (mkbigO gen_tag x f e).
 (*Printing*)
 Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (PhantomF x) f e).
-(* These notation are printing only in order to display 'o
+(* These notations are printing only in order to display 'o
    without looking at the contents, use showo to display *)
 Notation "''O_' x e " := (the_bigO the_tag _ (PhantomF x) _ e).
 Notation "''a_O_' x e " := (the_bigO a_tag _ (PhantomF x) _ e).
@@ -813,8 +813,8 @@ Notation "'o" := (the_littleo _ _ _ _).
 Notation "[o '_(' x \near F ')' e 'of' f ]" :=
   (the_littleo _ _ (PhantomF F) (fun x => f) (fun x => e) x).
 Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (Phantom _ x) f e).
-(* These notation are printing only in order to display 'o
-   without looking at the contents, use showo to dispaly *)
+(* These notations are printing only in order to display 'o
+   without looking at the contents, use showo to display *)
 Notation "''o_' x e " := (the_littleo the_tag _ (Phantom _ x) _ e).
 Notation "''a_o_' x e " := (the_littleo a_tag _ (Phantom _ x) _ e).
 Notation "''o' '_' x" := (the_littleo gen_tag _ (Phantom _ x) _).
@@ -837,8 +837,8 @@ Notation "'O" := (the_bigO _ _ _ _).
 Notation "[O '_' x e 'of' f ]" := (the_bigO _ _ (Phantom _ x) f e).
 Notation "[O '_(' x \near F ')' e 'of' f ]" :=
   (the_bigO _ _ (PhantomF F) (fun x => f) (fun x => e) x).
-(* These notation are printing only in order to display 'o
-   without looking at the contents, use showo to dispaly *)
+(* These notations are printing only in order to display 'o
+   without looking at the contents, use showo to display *)
 Notation "''O_' x e " := (the_bigO the_tag _ (Phantom _ x) _ e).
 Notation "''a_O_' x e " := (the_bigO a_tag _ (Phantom _ x) _ e).
 Notation "''O' '_' x" := (the_bigO gen_tag _ (Phantom _ x) _).

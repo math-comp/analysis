@@ -471,7 +471,7 @@ Proof.
 apply: (iffP idP).
   move/asboolP; (* oops notation! *) apply: contrapR => nh x /=; apply: notTE.
   by apply: contrap nh => /viewP Px; exists x.
-case=> x PPx; apply/asboolP=> /(_ x) [] /notT /=; rewrite -/(not (~ P x)) notK.
+case=> x PPx; apply/asboolP=> /(_ x) /notT /=; rewrite -/(not (~ P x)) notK.
 exact/viewP.
 Qed.
 
