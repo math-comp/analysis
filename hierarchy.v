@@ -2834,7 +2834,7 @@ split=> - cfx P /= fxP.
   rewrite /locally' !near_simpl near_withinE.
   by rewrite /locally'; apply: flim_within; apply/cfx.
  (* :BUG: ssr apply: does not work,
-    because the type of the filter is not infered *)
+    because the type of the filter is not inferred *)
 rewrite !locally_nearE !near_map !near_locally in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: locally_singleton|near: y].
