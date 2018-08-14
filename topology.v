@@ -9,7 +9,7 @@ Require Import classical_sets posnum.
 (* topological notions.                                                       *)
 (*                                                                            *)
 (* * Filters :                                                                *)
-(*                   filteredType U == interface type for types whoses        *)
+(*                   filteredType U == interface type for types whose        *)
 (*                                     elements represent sets of sets on U.  *)
 (*                                     These sets are intended to be filters  *)
 (*                                     on U but this is not enforced yet.     *)
