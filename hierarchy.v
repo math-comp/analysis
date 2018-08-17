@@ -1249,6 +1249,22 @@ exact: (Rbar_locally'_filter -oo).
 Qed.
 Typeclasses Opaque Rbar_locally.
 
+Lemma near_pinfty_div2 (A : set R) :
+  (\forall k \near +oo, A k) -> (\forall k \near +oo, A (k / 2)).
+Proof.
+by move=> [M AM]; exists (M * 2) => x; rewrite -ltr_pdivl_mulr //; apply: AM.
+Qed.
+
+Lemma locally_pinfty_gt c : \forall x \near +oo, c < x.
+Proof. by exists c. Qed.
+
+Lemma locally_pinfty_ge c : \forall x \near +oo, c <= x.
+Proof. by exists c; apply: ltrW. Qed.
+
+Hint Extern 0 (is_true (0 < _)) => match goal with
+  H : ?x \is_near (locally +oo) |- _ =>
+    solve[near: x; exists 0 => _/posnumP[x] //] end : core.
+
 (** ** Modules with a norm *)
 
 Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").
@@ -1805,9 +1821,7 @@ rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl).
 rewrite (ler_lt_trans (ler_normmZ _ _)) //.
 have zM: `|[z]| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
 rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= M))) // ?ltrW//.
-rewrite -ltr_pdivl_mulr //; last by rewrite (ler_lt_trans _ zM).
-near: l; apply: (flim_norm (_ : K^o)) => //; rewrite mulr_gt0 ?invr_gt0 //.
-by near: M; exists 1 => ? /(ler_lt_trans ler01).
+by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
 Grab Existential Variables. all: end_near. Qed.
 
 Arguments scale_continuous _ _ : clear implicits.
