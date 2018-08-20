@@ -2692,15 +2692,15 @@ move=> C D FC f_D; have {f_D} f_D :
     rewrite predeqE => g; split; first by move=> [_ [_ _ <-]].
     move=> Pg; exists [set g | forall j, get (Pj j) (g j)] => //.
     by exists ord0.
-  move=> _ [_ _ <-].
-  exists (seq_fset [seq (@^~ j) @^-1` (get (Pj j)) | j : 'I_n.+1]).
-    move=> B'; rewrite seq_fsetE => /mapP [j _ ->]; rewrite inE.
+  move=> _ [_ _ <-]; set s := [seq (@^~ j) @^-1` (get (Pj j)) | j : 'I_n.+1].
+  exists [fset x in s]%fset.
+    move=> B'; rewrite in_fset => /mapP [j _ ->]; rewrite inE.
     apply/asboolP; exists j => //; exists (get (Pj j)) => //.
     by have /getPex [[]] := exPj j.
   rewrite predeqE => g; split=> [Ig j|Ig B'].
     apply: (Ig ((@^~ j) @^-1` (get (Pj j)))).
-    by rewrite seq_fsetE; apply/mapP; exists j => //; rewrite mem_enum.
-  by rewrite seq_fsetE => /mapP [j _ ->]; apply: Ig.
+    by rewrite in_fset; apply/mapP; exists j => //; rewrite mem_enum.
+  by rewrite in_fset => /mapP [j _ ->]; apply: Ig.
 have GC : G [set g | C (\row_j g j)] by exists C.
 by have [g []] := clGf _ _ GC f_D; exists (\row_j (g j : T)).
 Qed.

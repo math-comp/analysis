@@ -4,14 +4,14 @@
 - [The Coq Proof Assistant version ≥ 8.7](https://coq.inria.fr)
 - [Mathematical Components version 1.7.0](https://github.com/math-comp/math-comp)
 - [Bigenough version 1.0.0](https://github.com/math-comp/bigenough)
-- [Finmap library version 1.0.0](https://github.com/math-comp/finmap)
+- [Finmap library version 1.1.0](https://github.com/math-comp/finmap)
 
 These requirements can be installed in a custom way or through [opam 1.2](https://opam.ocaml.org/) using the repository https://coq.inria.fr/opam/extra-dev, which you can add by typing `opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev`.
 
 Detailed instructions for possible installations of Mathematical Components are located [here](https://github.com/math-comp/math-comp/blob/master/INSTALL.md).
 
 ## Short Instructions
-- Custom (assuming Coq ≥ 8.7, Mathematical Components version 1.7.0, Bigenough version 1.0.0 and Finmap version 1.0.0 have been installed):
+- Custom (assuming Coq ≥ 8.7, Mathematical Components version 1.7.0, Bigenough version 1.0.0 and Finmap version 1.1.0 have been installed):
   + Type `make` to use the provided `Makefile`.
 - Through opam:
   + Type `opam install coq-mathcomp-analysis`
@@ -72,7 +72,7 @@ $ opam install coq-mathcomp-bigenough.1.0.0
 ```
 3. Install Finite maps library
 ```
-$ opam install coq-mathcomp-finmap.1.0.0
+$ opam install coq-mathcomp-finmap.1.1.0
 ```
 4. Download and compile `coq-mathcomp-analysis` without installing
 ```

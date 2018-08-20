@@ -80,15 +80,15 @@ Lemma big_fset_seq (T : choiceType) (J : {fset T}) F :
 Proof. by apply/big_fset_seq_cond. Qed.
 
 Lemma big_seq_fset_cond (T : choiceType) (s : seq T) P F : uniq s ->
-    \big[*%M/1]_(x : seq_fset s | P (val x)) F (val x)
+    \big[*%M/1]_(x : [fset x in s] | P (val x)) F (val x)
   = \big[*%M/1]_(x <- s | P x) F x.
 Proof.
 move=> eq_s; rewrite big_fset_seq_cond; apply/eq_big_perm.
-by apply/uniq_perm_eq=> //= x; rewrite seq_fsetE.
+by apply/uniq_perm_eq=> //= x; rewrite in_fset.
 Qed.
 
 Lemma big_seq_fset (T : choiceType) (s : seq T) F : uniq s ->
-    \big[*%M/1]_(x : seq_fset s) F (val x)
+    \big[*%M/1]_(x : [fset x in s]) F (val x)
   = \big[*%M/1]_(x <- s) F x.
 Proof. by apply/big_seq_fset_cond. Qed.
 End BigFSetCom.
@@ -134,20 +134,18 @@ Qed.
 
 Lemma big_nat_mkfset (F : nat -> R) n :
   \sum_(0 <= i < n) F i =
-    \sum_(i : seq_fset (iota 0 n)) F (val i).
+    \sum_(i : [fset x in (iota 0 n)]) F (val i).
 Proof.
 rewrite -(big_map val xpredT) /=; apply/eq_big_perm.
 apply/uniq_perm_eq; rewrite ?iota_uniq //.
   rewrite map_inj_uniq /=; last apply/val_inj.
   by rewrite /index_enum -enumT enum_uniq.
-move=> i; rewrite /index_enum unlock val_fset_sub_enum /=.
-  by rewrite seq_fsetE /index_iota subn0.
-  by apply/enum_fset_uniq.
+by move=> i; rewrite /index_enum -enumT -enum_fsetE in_fset /index_iota subn0.
 Qed.
 
 Lemma big_ord_mkfset (F : nat -> R) n :
   \sum_(i < n) F i =
-    \sum_(i : seq_fset (iota 0 n)) F (val i).
+    \sum_(i : [fset x in (iota 0 n)]) F (val i).
 Proof. by rewrite -(big_mkord xpredT) big_nat_mkfset. Qed.
 End BigFSetOrder.
 
