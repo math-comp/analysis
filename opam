@@ -22,5 +22,5 @@ depends: [
   "coq-mathcomp-algebra"     {= "1.7.0"}
   "coq-mathcomp-field"       {= "1.7.0"}
   "coq-mathcomp-bigenough"   {(>= "1.0.0" & < "1.1.0~")}
-  "coq-mathcomp-finmap"      {(>= "1.0.0" & < "1.1.0~")}
+  "coq-mathcomp-finmap"      {(>= "1.1.0" & < "1.2.0~")}
 ]

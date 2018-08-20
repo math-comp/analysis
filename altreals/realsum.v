@@ -150,12 +150,12 @@ case: (existsTP (fun s : seq T => {subset E i <= s}))=> /= [[s le_Eis]|].
 move/finiteNP; pose j := `|ifloor (M / i.+1%:R)|.+1.
 pose K := (`|ifloor M|.+1 * i.+1)%N; move/(_ K)/existsp_asboolP/existsbP.
 move=> h; have /asboolP[] := xchooseP h.
-set s := xchoose h=> eq_si uq_s le_sEi; pose J := seq_fset s.
+set s := xchoose h=> eq_si uq_s le_sEi; pose J := [fset x in s].
 suff: \sum_(x : J) `|f (val x)| > M by rewrite ltrNge bM.
 apply/(@ltr_le_trans _ (\sum_(x : J) 1 / i.+1%:~R)); last first.
-  apply/ler_sum=> /= m _; apply/ltrW; suff: (val m \in E i) by apply.
-  by apply/le_sEi; rewrite -seq_fsetE; apply/fsvalP.
-rewrite sumr_const cardfsE undup_id // eq_si -mulr_natr -pmulrn.
+  apply/ler_sum=> /= m _; apply/ltrW.
+  by have:= fsvalP m; rewrite in_fset => /le_sEi.
+rewrite sumr_const -cardfE card_fseq undup_id // eq_si -mulr_natr -pmulrn.
 rewrite mul1r natrM mulrCA mulVf ?mulr1 ?pnatr_eq0 //.
 have /andP[_] := mem_rg1_floor M; rewrite floorE -addn1.
 by rewrite natrD /= mulr1n pmulrn -{1}[ifloor _]gez0_abs // ifloor_ge0.
@@ -229,7 +229,7 @@ rewrite psum_sup; apply/eq_sup => x; rewrite !inE; apply/imsetbP/idP.
   case=> J ->; apply/asboolP; exists (enum_fset J).
     by case: J => /= J /canonical_uniq.
   by rewrite (big_fset_seq \`|_|) /=.
-case/asboolP=> J uqJ /eqP->; exists (seq_fset J).
+case/asboolP=> J uqJ /eqP->; exists [fset x in J].
 by rewrite (big_seq_fset \`|_|).
 Qed.
 
@@ -306,7 +306,7 @@ Lemma summable_seqP S :
     forall s : seq T, uniq s -> \sum_(x <- s) `|S x| <= M).
 Proof.
 split=> [/summableP|] [M gt0_M h]; exists M => //.
-  by move=> s uq_s; have := h (seq_fset s); rewrite (big_seq_fset \`|S|).
+  by move=> s uq_s; have := h [fset x in s]; rewrite (big_seq_fset \`|S|).
 by case=> J cJ; rewrite (big_fset_seq \`|_|) /=; apply/h/canonical_uniq.
 Qed.
 
@@ -320,7 +320,7 @@ Qed.
 Lemma gerfinseq_psum S (r : seq T) :
   uniq r -> summable S -> \sum_(j <- r) `|S j| <= psum S.
 Proof.
-move=> uq_r /gerfin_psum -/(_ (seq_fset r));
+move=> uq_r /gerfin_psum -/(_ [fset x in r]);
   by rewrite (big_seq_fset \`|S|).
 Qed.
 
@@ -394,7 +394,7 @@ Lemma ger_big_psum r : uniq r -> summable S ->
   \sum_(x <- r) `|S x| <= psum S.
 Proof.
 move=> uq_r smS; rewrite /psum (asboolT smS) sup_upper_bound //.
-  by apply/summable_sup. apply/imsetbP; exists (seq_fset r).
+  by apply/summable_sup. apply/imsetbP; exists [fset x in r].
 by rewrite (big_seq_fset (fun i => `|S i|)).
 Qed.
 
@@ -468,7 +468,7 @@ rewrite opprB addrCA subrr addr0 => lt_xSJ.
 pose k := \max_(j : J) (val j); have lt_x_uSk: x < u k.+1.
   apply/(ltr_le_trans lt_xSJ); rewrite /u big_ord_mkfset.
   rewrite (eq_bigr (S \o val)) => /= [j _|]; first by rewrite ger0_norm.
-  apply/big_fset_subset=> // j jJ; rewrite seq_fsetE //.
+  apply/big_fset_subset=> // j jJ; rewrite in_fset //.
   by rewrite (mem_iota _ k.+1) /= add0n ltnS (leq_bigmax (FSetSub jJ)).
 have /= := ncvg_homo_le ptsum_homo cvux k.+1; rewrite -/(u _).
 by move/ler_lt_trans/(_ lt_x_uSk); rewrite ltrr.
@@ -518,7 +518,7 @@ move=> le_K_Pn; have: l < v n; first apply/(ltr_le_trans lt_jS).
   rewrite (eq_bigr S) => [x _|]; first by rewrite ger0_norm.
   rewrite /v (bigID (fun x => S x == 0)) /= big1 => [x /eqP|] //.
   rewrite add0r -big_filter -/K -big_seq_fset ?filter_uniq //=.
-  by apply/big_fset_subset => // x; rewrite seq_fsetE => /le_K_Pn.
+  by apply/big_fset_subset => // x; rewrite in_fset => /le_K_Pn.
 by apply/negP; rewrite -lerNgt -lee_fin ncvg_homo_le.
 Qed.
 End PSumAsLim.
