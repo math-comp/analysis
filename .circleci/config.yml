@@ -40,8 +40,7 @@ before_script: &before_script
           echo "real-closed#" >> "deps.ver"
           git ls-remote https://github.com/math-comp/real-closed.git HEAD >> "deps.ver"
           echo "-" >> "deps.ver"
-          echo "finmap#" >> "deps.ver"
-          git ls-remote https://github.com/math-comp/finmap.git HEAD >> "deps.ver"
+          echo "finmap.${FINMAPVERSION}-" >> "deps.ver"
           cat deps.ver
     - restore_cache:
         keys:
@@ -63,7 +62,8 @@ before_script: &before_script
         name: Install MathComp
         command: |
           env -u OPAMSWITCH opam pin add -n coq-mathcomp-ssreflect ${MATHCOMPVERSION}
-          env -u OPAMSWITCH opam install coq-mathcomp-ssreflect ${MATHCOMPPKG}
+          env -u OPAMSWITCH opam pin add -n coq-mathcomp-finmap ${FINMAPVERSION}
+          env -u OPAMSWITCH opam install coq-mathcomp-ssreflect coq-mathcomp-finmap ${MATHCOMPPKG}
     - run:
         name: Clean cache
         command: |
@@ -84,7 +84,8 @@ jobs:
       COMPILER: 4.05.0
       COQVERSION: 8.8.0
       MATHCOMPVERSION: 1.7.0
-      MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field coq-mathcomp-real-closed coq-mathcomp-finmap
+      FINMAPVERSION: 1.0.0
+      MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field coq-mathcomp-real-closed
 
   build:
     <<: *params
