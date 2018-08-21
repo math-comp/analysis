@@ -140,10 +140,9 @@ Lemma differentiable_continuous (x : V) (f : V -> W) :
 Proof.
 move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
-  apply/eqOP; exists 1 => //; rewrite /cst mul1r [`|[1 : R^o]|]absr1.
-  near=> y; rewrite ltrW //; near: y.
-  by apply/locally_normP; eexists=> [|?];
-    last (rewrite /= ?sub0r ?normmN; apply).
+  apply/eqOP; near=> k; rewrite /cst [`|[1 : R^o]|]absr1 mulr1.
+  near=> y; rewrite ltrW //; near: y; apply/locally_normP.
+  by exists k; [near: k; exists 0|move=> ? /=; rewrite sub0r normmN].
 rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
 by apply/eqolim0P; apply: (flim_trans (dfc 0)); rewrite linear0.
 Grab Existential Variables. all: end_near. Qed.
@@ -588,7 +587,7 @@ Qed.
 Lemma linear_eqO (V' W' : normedModType R) (f : {linear V' -> W'}) :
   continuous f -> (f : V' -> W') =O_ (0 : V') id.
 Proof.
-move=> /linear_lipschitz [k kgt0 flip]; apply/eqOP; exists k => //.
+move=> /linear_lipschitz [k kgt0 flip]; apply/eqOFP; exists k => //.
 exact: filterS filterT.
 Qed.
 
@@ -602,8 +601,8 @@ Lemma compoO_eqo (K : absRingType) (U V' W' : normedModType K) (f : U -> V')
   [o_ (0 : V') id of g] \o [O_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
 apply/eqoP => _ /posnumP[e].
-have /eqO_bigO [_ /posnumP[k]] : [O_ (0 : U) id of f] =O_ (0 : U) id by [].
-have /eq_some_oP : [o_ (0 : V') id of g] =o_ (0 : V') id by [].
+have /bigOFI [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
+have := littleoP [littleo of [o_ (0 : V') id of g]].
 move=>  /(_ (e%:num / k%:num)) /(_ _) /locallyP [//|_ /posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: ler_trans (hd _ _) _; last first.
   rewrite -ler_pdivl_mull //; apply: ler_trans leOxkx _.
@@ -625,12 +624,11 @@ Lemma compOo_eqo (K : absRingType) (U V' W' : normedModType K) (f : U -> V')
   [O_ (0 : V') id of g] \o [o_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
 apply/eqoP => _ /posnumP[e].
-have /eqO_bigO [_ /posnumP[k]] : [O_ (0 : V') id of g] =O_ (0 : V') id by [].
+have /bigOFI [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
 move=> /locallyP [_ /posnumP[d] hd].
-have /eq_some_oP : [o_ (0 : U) id of f] =o_ (0 : U) id by [].
 have ekgt0 : e%:num / k%:num > 0 by [].
-move=> /(_ _ ekgt0); apply: filter_app; near=> x.
-move=> leoxekx; apply: ler_trans (hd _ _) _; last first.
+have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
+apply: filter_app; near=> x => leoxekx; apply: ler_trans (hd _ _) _; last first.
   by rewrite -ler_pdivl_mull // mulrA [_^-1 * _]mulrC.
 rewrite -ball_normE /= normmB subr0; apply: ler_lt_trans leoxekx _.
 rewrite -ltr_pdivl_mull //; near: x; rewrite /= locally_simpl.
