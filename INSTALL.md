@@ -3,15 +3,15 @@
 ## Requirements
 - [The Coq Proof Assistant version ≥ 8.7](https://coq.inria.fr)
 - [Mathematical Components version 1.7.0](https://github.com/math-comp/math-comp)
-- [Real Closed Fields development version](https://github.com/math-comp/real-closed)
-- [Finmap library development version](https://github.com/math-comp/finmap)
+- [Bigenough version 1.0.0](https://github.com/math-comp/bigenough)
+- [Finmap library version 1.0.0](https://github.com/math-comp/finmap)
 
 These requirements can be installed in a custom way or through [opam 1.2](https://opam.ocaml.org/) using the repository https://coq.inria.fr/opam/extra-dev, which you can add by typing `opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev`.
 
 Detailed instructions for possible installations of Mathematical Components are located [here](https://github.com/math-comp/math-comp/blob/master/INSTALL.md).
 
 ## Short Instructions
-- Custom (assuming Coq ≥ 8.7, Mathematical Components version 1.7.0, Real Closed Fields and Finmap development versions have been installed):
+- Custom (assuming Coq ≥ 8.7, Mathematical Components version 1.7.0, Bigenough version 1.0.0 and Finmap version 1.0.0 have been installed):
   + Type `make` to use the provided `Makefile`.
 - Through opam:
   + Type `opam install coq-mathcomp-analysis`
@@ -57,9 +57,9 @@ $ make
 You may then browse the files using `coqide` (you might want to `opam install coqide`) or using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
-1. Install Coq 8.8.0
+1. Install Coq 8.8.1
 ```
-$ opam install coq.8.8.0
+$ opam install coq.8.8.1
 ```
 2. Install Mathematical Components development version 
 ```
@@ -68,11 +68,11 @@ $ opam install coq-mathcomp-fingroup.1.7.0
 $ opam install coq-mathcomp-algebra.1.7.0
 $ opam install coq-mathcomp-solvable.1.7.0
 $ opam install coq-mathcomp-field.1.7.0
-$ opam install coq-mathcomp-real-closed.dev
+$ opam install coq-mathcomp-bigenough.1.0.0
 ```
 3. Install Finite maps library
 ```
-$ opam install coq-mathcomp-finmap.dev
+$ opam install coq-mathcomp-finmap.1.0.0
 ```
 4. Download and compile `coq-mathcomp-analysis` without installing
 ```
