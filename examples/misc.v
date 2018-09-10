@@ -76,21 +76,6 @@ Qed.
 
 (* then we replace the epsilon/delta definition with bigO *)
 
-Local Open Scope classical_set_scope.
-
-Canonical prod_filter_on T U (F : filter_on T) (G : filter_on U) :=
-  FilterType (filter_prod F G) (filter_prod_filter _ _).
-
-Program Definition trivial_filter_on T := FilterType [set setT : set T] _.
-Next Obligation.
-split=> // [_ _ -> ->|Q R sQR QT]; first by rewrite setIT.
-by apply: eqEsubset => // ? _; apply/sQR; rewrite QT.
-Qed.
-Canonical trivial_filter_on.
-
-Canonical within_filter_on T D (F : filter_on T) :=
-  FilterType (within D F) (within_filter _ _).
-
 Definition OuO (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
   (fun x => f x.1 x.2) =O_ (filter_prod [set setT]
   (within P [filter of 0 : R^o * R^o])) (fun x => g x.2).

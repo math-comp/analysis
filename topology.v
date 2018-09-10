@@ -511,6 +511,13 @@ Proof. by case: F. Qed.
 Global Instance pfilter_on_ProperFilter T (F : pfilter_on T) : ProperFilter F.
 Proof. by case: F. Qed.
 
+Program Definition trivial_filter_on T := FilterType [set setT : set T] _.
+Next Obligation.
+split=> // [_ _ -> ->|Q R sQR QT]; first by rewrite setIT.
+by apply: eqEsubset => // ? _; apply/sQR; rewrite QT.
+Qed.
+Canonical trivial_filter_on.
+
 Lemma filter_locallyT {T : Type} (F : set (set T)) :
    Filter F -> locally F setT.
 Proof. by move=> FF; apply: filterT. Qed.
@@ -884,6 +891,9 @@ exists (P `&` P', Q `&` Q') => /=; first by split; apply: filterI.
 by move=> [x y] [/= [??] []].
 Qed.
 
+Canonical prod_filter_on T U (F : filter_on T) (G : filter_on U) :=
+  FilterType (filter_prod F G) (filter_prod_filter _ _).
+
 Global Instance filter_prod_proper {T1 T2 : Type}
   {F : (T1 -> Prop) -> Prop} {G : (T2 -> Prop) -> Prop}
   {FF : ProperFilter F} {FG : ProperFilter G} :
@@ -1045,6 +1055,9 @@ move=> FF; rewrite /within; constructor.
 - by move=> P Q subPQ; apply: filterS => x DP /DP /subPQ.
 Qed.
 Typeclasses Opaque within.
+
+Canonical within_filter_on T D (F : filter_on T) :=
+  FilterType (within D F) (within_filter _ _).
 
 Lemma flim_within {T} {F : set (set T)} {FF : Filter F} D :
   within D F --> F.
