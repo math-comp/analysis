@@ -547,35 +547,17 @@ Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
 Definition bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|[f x]| <= k * `|[g x]|.
 
-Definition bigOW (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  exists k, \forall x \near F, `|[f x]| <= k * `|[g x]|.
-
-Lemma bigOWE (F : set (set T)) : Filter F -> bigOW F = bigO F.
-Proof.
-rewrite predeq2E => FF f g; split=> [[k] |] kP; last first.
-  by near +oo => k; exists k; near: k.
-near=> k'; near=> x; rewrite (ler_trans (near kP _ _)) // ler_wpmul2r //.
-by rewrite ltrW //; near: k'; exists k.
-Grab Existential Variables. all: end_near. Qed.
-
 Definition bigOF (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|[f x]| <= k * `|[g x]|.
 
-Lemma bigOWFE (F : set (set T)) : Filter F -> bigOW F = bigOF F.
-Proof.
-rewrite predeq2E => f g; split=> [[k] | [k k_gt0]] kP; last by exists k.
-exists (maxr k 1); first by rewrite ltr_maxr ltr01 orbT.
-by apply: filterS kP => x /ler_trans; apply; rewrite ler_wpmul2r // ler_maxr lerr.
-Qed.
-
 Lemma bigOFE (F : set (set T)) : Filter F -> bigOF F = bigO F.
-Proof. by move=> FF; rewrite -bigOWE bigOWFE. Qed.
-
-Lemma bigOWP (F : set (set T)) f g : Filter F -> bigOW F f g -> bigO F f g.
-Proof. by move=> /bigOWE->. Qed.
-
-Lemma bigOWI (F : set (set T)) f g : Filter F -> bigO F f g -> bigOW F f g.
-Proof. by move=> /bigOWE->. Qed.
+Proof.
+rewrite predeq2E => FF f g; split=> [[k _ fOg] | [k fOg]].
+  exists k => l ltkl; move: fOg; apply: filter_app; near=> x.
+  by move/ler_trans; apply; rewrite ler_wpmul2r // ltrW.
+exists (maxr 1 (k + 1)); first by rewrite ltr_maxr ltr01.
+by apply: fOg; rewrite ltr_maxr orbC ltr_addl ltr01.
+Unshelve. end_near. Qed.
 
 Lemma bigOFP (F : set (set T)) f g : Filter F -> bigOF F f g -> bigO F f g.
 Proof. by move=> /bigOFE->. Qed.
@@ -603,9 +585,8 @@ Notation "[bigO 'of' f ]" := (@bigO_clone _ _ f _ _ idfun).
 
 Lemma bigO0_subproof F g : Filter F -> bigO F 0 g.
 Proof.
-move=> FF; apply/bigOWP.
-by exists 0 => //; apply: filterE=> x; rewrite normm0 mul0r.
-Qed.
+by move=> FF; near=> k; apply: filterE => x; rewrite normm0 pmulr_rge0.
+Grab Existential Variables. end_near. Qed.
 
 Canonical bigO0 (F : filter_on T) g := BigO (asboolT (@bigO0_subproof F g _)).
 
@@ -659,13 +640,6 @@ Hint Extern 0 (bigO _ _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (locally _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: bigOP] : core.
-
-Lemma bigOW_hint (F : filter_on T) (g : T -> W) (f : {O_F g}) : bigOW F f g.
-Proof. exact/bigOWI. Qed.
-Hint Extern 0 (bigOW _ _ _) => solve[apply: bigOW_hint] : core.
-Hint Extern 0 (locally _ _) => solve[apply: bigOW_hint] : core.
-Hint Extern 0 (prop_near1 _) => solve[apply: bigOW_hint] : core.
-Hint Extern 0 (prop_near2 _) => solve[apply: bigOW_hint] : core.
 
 Lemma bigOE (tag : unit) (F : filter_on T) (phF : phantom (set (set T)) F) f h :
    bigO F f h -> the_bigO tag F phF f h = f.
@@ -729,10 +703,6 @@ Proof. by split=> [/eqadd_some_OP|fg_O_e]; rewrite ?bigOE // addrC addrNK. Qed.
 Lemma eqOP (F : filter_on T) (e : T -> W) (f : T -> V) :
    (f =O_ F e) <-> (bigO F f e).
 Proof. by rewrite -[f]subr0 -eqaddOP -[f \- 0]/(f - 0) subr0 add0r. Qed.
-
-Lemma eqOWP (F : filter_on T) (e : T -> W) (f : T -> V) :
-   (f =O_ F e) <-> (bigOW F f e).
-Proof. by rewrite bigOWE; apply: eqOP. Qed.
 
 Lemma eqOFP (F : filter_on T) (e : T -> W) (f : T -> V) :
    (f =O_ F e) <-> (bigOF F f e).
@@ -891,10 +861,6 @@ Hint Extern 0 (bigO _ _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (locally _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: bigOP] : core.
-Hint Extern 0 (bigOW _ _ _) => solve[apply: bigOW_hint] : core.
-Hint Extern 0 (locally _ _) => solve[apply: bigOW_hint] : core.
-Hint Extern 0 (prop_near1 _) => solve[apply: bigOW_hint] : core.
-Hint Extern 0 (prop_near2 _) => solve[apply: bigOW_hint] : core.
 Hint Extern 0 (littleo _ _ _) => solve[apply: littleoP] : core.
 Hint Extern 0 (locally _ _) => solve[apply: littleoP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: littleoP] : core.
@@ -958,18 +924,19 @@ Lemma littleo_bigO_eqo {F : filter_on T}
   (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> [o_F f of h] =o_F g.
 Proof.
-move->; apply/eqoP => _/posnumP[eps] /=; set k := 'O g; near +oo => c.
-apply: (near_app (bigOP [bigO of k]) c) => //; near=> x.
-rewrite -!ler_pdivr_mull //; apply: ler_trans; rewrite ler_pdivr_mull // mulrA.
-by near: x; apply: littleoP.
+move->; apply/eqoP => _/posnumP[e]; set k := 'O g.
+have /bigOFI [_/posnumP[c]] := bigOP [bigO of k].
+apply: filter_app; near=> x; rewrite -!ler_pdivr_mull //; apply: ler_trans.
+by rewrite ler_pdivr_mull // mulrA; near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
 Arguments littleo_bigO_eqo {F}.
 
 Lemma bigO_littleo_eqo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =o_F g -> [O_F f of h] =o_F g.
 Proof.
-move->; apply/eqoP => _/posnumP[eps]; set k := 'O _; near +oo => c.
-apply: (near_app (bigOP [bigO of k]) c) => //; near=> x => /ler_trans; apply.
+move->; apply/eqoP => _/posnumP[e]; set k := 'O _.
+have /bigOFI [_/posnumP[c]] := bigOP [bigO of k].
+apply: filter_app; near=> x => /ler_trans; apply.
 by rewrite -ler_pdivl_mull // mulrA; near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
 Arguments bigO_littleo_eqo {F}.
@@ -977,11 +944,12 @@ Arguments bigO_littleo_eqo {F}.
 Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> ([O_F f of h] : _ -> _) =O_F g.
 Proof.
-move->; apply/eqOP; near +oo => c; set k := 'O g; set k' := 'O k; near=> c'.
-apply: (near_app (bigOP [bigO of k]) c) => //.
-apply: (near_app (bigOP [bigO of k']) c) => //; near=> x => lek'ck.
-rewrite -(@ler_pmul2l _ c) // mulrA => /(ler_trans lek'ck) /ler_trans; apply.
-by rewrite ler_pmul //; [rewrite ltrW|near: c'; apply: locally_pinfty_ge].
+move->; apply/eqOP; set k := 'O g; set k' := 'O k.
+have /bigOFI [_/posnumP[c1] kOg] := bigOP [bigO of k].
+have /bigOFI [_/posnumP[c2] k'Ok] := bigOP [bigO of k'].
+near=> c; move: k'Ok kOg; apply: filter_app2; near=> x => lek'c2k.
+rewrite -(@ler_pmul2l _ c2) // mulrA => /(ler_trans lek'c2k) /ler_trans; apply.
+by rewrite ler_pmul //; near: c; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. all: end_near. Qed.
 Arguments bigO_bigO_eqO {F}.
 
@@ -1010,7 +978,7 @@ Lemma oppfO (F : filter_on T) (h f : T -> V) (e : T -> W) :
 Proof. by move->; rewrite oppO. Qed.
 
 Lemma idO (F : filter_on T) (e : T -> W) : e =O_F e.
-Proof. by apply/eqOWP; exists 1; apply: filterE => x; rewrite mul1r. Qed.
+Proof. by apply/eqOFP; exists 1 => //; apply: filterE => x; rewrite mul1r. Qed.
 
 Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
   f =o_F g -> [o_F f of h] =o_F g.
@@ -1076,13 +1044,14 @@ Grab Existential Variables. all: end_near. Qed.
 Lemma mulO (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [O_F h1 of f] * [O_F h2 of g] =O_F (h1 * h2).
 Proof.
-rewrite [RHS]bigOE //; set O1 := 'O _; set O2 := 'O _; near +oo => c; near=> c'.
-apply: (near_app (bigOP [bigO of O1]) c) => //.
-apply: (near_app (bigOP [bigO of O2]) c) => //; near=> x => leOh2 leOh1.
+rewrite [RHS]bigOE //; set O1 := 'O _; set O2 := 'O _.
+have /bigOFI [_/posnumP[k1] Oh1] := bigOP [bigO of O1].
+have /bigOFI [_/posnumP[k2] Oh2] := bigOP [bigO of O2].
+near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite (ler_trans (absrM _ _)) // (ler_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|[_]| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
-by near: c'; apply: locally_pinfty_ge.
-Unshelve. end_near. Grab Existential Variables. all: end_near. Qed.
+by near: k; apply: locally_pinfty_ge.
+Unshelve. end_near. Grab Existential Variables. end_near. Qed.
 
 End rule_of_products_in_R.
 
