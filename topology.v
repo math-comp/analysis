@@ -646,14 +646,6 @@ Proof.
 by move=> FF P Q subPQ FP; near=> x; suff: P x; near: x.
 Grab Existential Variables. by end_near. Qed.
 
-Lemma near_app (T U : Type) (F : set (set T)) (G : set (set U))
-  (GF : Filter G) (P : T -> set U) (Q : set U)
-  (FGP : \forall t \near F, \forall u \near G, P t u) (t : T) :
-  prop_of (InFilter FGP) t -> (\forall u \near G, P t u -> Q u) ->
-  \forall u \near G, Q u.
-Proof. by move=> GPt ?; apply: filter_app (near FGP t GPt). Qed.
-Arguments near_app {T U F G GF P Q} FGP t.
-
 Lemma filter_app2 (T : Type) (F : set (set T)) :
   Filter F -> forall P Q R : set T,  F (fun x => P x -> Q x -> R x) ->
   F P -> F Q -> F R.
