@@ -1001,11 +1001,10 @@ Proof. by move=> Fl _/posnumP[eps]; exists (lim F); apply/Fl/locally_ball. Qed.
 Lemma cauchy_exP (T : uniformType) (F : set (set T)) : Filter F ->
   cauchy_ex F -> cauchy F.
 Proof.
-move=> FF Fcauchy /= _/posnumP[e].
-have [//|x /= Fbx] := Fcauchy (e%:num / 2).
-exists ((ball x (e%:num / 2)), (ball x (e%:num / 2))) => //.
-by move=> [y z] [/=] /ball_splitr; apply.
-Qed.
+move=> FF Fc; apply/cauchy_entouragesP => A [_/posnumP[e] sdeA].
+have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sdeA => /=.
+by apply: (@ball_splitr _ z); [near: x|near: y].
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma cauchyP (T : uniformType) (F : set (set T)) : ProperFilter F ->
   cauchy F <-> cauchy_ex F.
