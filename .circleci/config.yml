@@ -37,9 +37,6 @@ before_script: &before_script
           echo "compiler.${COMPILER}-" > "deps.ver"
           echo "coq.${COQVERSION}-" >> "deps.ver"
           echo "mathcomp.${MATHCOMPVERSION}-" >> "deps.ver"
-          echo "real-closed#" >> "deps.ver"
-          git ls-remote https://github.com/math-comp/real-closed.git HEAD >> "deps.ver"
-          echo "-" >> "deps.ver"
           echo "finmap.${FINMAPVERSION}-" >> "deps.ver"
           cat deps.ver
     - restore_cache:
@@ -85,7 +82,7 @@ jobs:
       COQVERSION: 8.8.0
       MATHCOMPVERSION: 1.7.0
       FINMAPVERSION: 1.0.0
-      MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field coq-mathcomp-real-closed
+      MATHCOMPPKG: coq-mathcomp-algebra coq-mathcomp-field
 
   build:
     <<: *params
