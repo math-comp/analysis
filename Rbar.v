@@ -299,7 +299,7 @@ Lemma Rbar_le_antisym (x y : Rbar) :
   Rbar_le x y -> Rbar_le y x -> x = y.
 Proof.
 case: x y => [x||] [y||] //=.
-by move=> xy /(conj xy) /andP; rewrite -eqr_le => /eqP[->].
+by move=> xy /(conj xy) /andP; rewrite -eqr_le => /eqP->.
 Qed.
 
 (** * Properties of operations *)
@@ -577,9 +577,8 @@ Proof. by case: x => [x||] //=; rewrite normrN. Qed.
 
 Lemma Rbar_abs_pos (x : Rbar) :
   Rbar_le (Finite 0) x -> Rbar_abs x = x.
-Proof. by case: x => [x||] //= [/ger0_norm->]. Qed.
+Proof. by case: x => [x||] //= /ger0_norm->. Qed.
 
 Lemma Rbar_abs_neg (x : Rbar) :
   Rbar_le x (Finite 0) -> Rbar_abs x = Rbar_opp x.
-Proof. by case: x => [x||] //= [/ler0_norm->]. Qed.
-
+Proof. by case: x => [x||] //= /ler0_norm->. Qed.
