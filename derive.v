@@ -81,23 +81,16 @@ Lemma diffE (F : filter_on V) (f : V -> W) :
   forall x, f x = f (lim F) + 'd_F f (x - lim F) +o_(x \near F) (x - lim F).
 Proof. by move=> /diffP []. Qed.
 
-Lemma littleo_shift (y x : V) (f : V -> W) (e : V -> V) :
-  littleo (locally y) (f \o shift (x - y)) (e \o shift (x - y)) ->
-  littleo (locally x) f e.
-Proof.
-move=> fe _/posnumP[eps]; rewrite near_simpl (near_shift y).
-exact: filterS (fe _ [gt0 of eps%:num]).
-Qed.
-
 Lemma littleo_center0 (x : V) (f : V -> W) (e : V -> V) :
   [o_x e of f] = [o_ (0 : V) (e \o shift x) of f \o shift x] \o center x.
 Proof.
 rewrite /the_littleo /insubd /=; have [g /= _ <-{f}|/asboolP Nfe] /= := insubP.
-  rewrite insubT //= ?comp_shiftK //; apply/asboolP; apply: (@littleo_shift x).
-  by rewrite sub0r !comp_shiftK => ?; apply: littleoP.
-rewrite insubF //; apply/asboolP => fe; apply: Nfe.
-by apply: (@littleo_shift 0); rewrite subr0.
-Qed.
+  rewrite insubT //= ?comp_shiftK //; apply/asboolP => _/posnumP[eps].
+  rewrite [\forall x \near _, _ <= _](near_shift x) sub0r; near=> y.
+  by rewrite /= subrK; near: y; have /eqoP := littleo_eqo g; apply.
+rewrite insubF //; apply/asboolP => fe; apply: Nfe => _/posnumP[eps].
+by rewrite [\forall x \near _, _ <= _](near_shift 0) subr0; apply: fe.
+Grab Existential Variables. end_near. Qed.
 
 Lemma diff_locallyxP (x : V) (f : V -> W) :
   differentiable x f <-> continuous ('d_x f) /\
@@ -654,7 +647,7 @@ Lemma compoO_eqo (K : absRingType) (U V' W' : normedModType K) (f : U -> V')
   [o_ (0 : V') id of g] \o [O_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
 apply/eqoP => _ /posnumP[e].
-have /bigOFI [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
+have /bigOFP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
 have := littleoP [littleo of [o_ (0 : V') id of g]].
 move=>  /(_ (e%:num / k%:num)) /(_ _) /locallyP [//|_ /posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: ler_trans (hd _ _) _; last first.
@@ -677,7 +670,7 @@ Lemma compOo_eqo (K : absRingType) (U V' W' : normedModType K) (f : U -> V')
   [O_ (0 : V') id of g] \o [o_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
 apply/eqoP => _ /posnumP[e].
-have /bigOFI [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
+have /bigOFP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
 move=> /locallyP [_ /posnumP[d] hd].
 have ekgt0 : e%:num / k%:num > 0 by [].
 have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
@@ -771,7 +764,7 @@ apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (ler_trans (fschwarz _ _))//.
 rewrite ler_pmul ?pmulr_rge0 //; last by rewrite ler_maxr orbC lerr.
 rewrite -ler_pdivl_mull //.
 suff : `|[x]| <= k%:num ^-1 * e%:num by apply: ler_trans; rewrite ler_maxr lerr.
-near: x; rewrite /= locally_filterE; apply/locally_le_locally_norm.
+near: x; rewrite !near_simpl; apply/locally_le_locally_norm.
 by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite normmB subr0 => /ltrW.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -915,7 +908,7 @@ rewrite -[X in X + _]mulr1 -[X in 1 / _ * X](@mulfVK _ (x ^+ 2)); last first.
   by rewrite sqrf_eq0.
 rewrite mulrA mulf_div mulr1.
 have hDx_neq0 : h + x != 0.
-  near: h; rewrite /= locally_filterE; apply/locally_normP.
+  near: h; rewrite !locally_simpl; apply/locally_normP.
   exists `|x|; first by rewrite normr_gt0.
   move=> h /=; rewrite normmB subr0 -subr_gt0 => lthx.
   rewrite -(normm_gt0 (h + x : R^o)) addrC -[h]opprK.

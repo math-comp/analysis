@@ -511,6 +511,15 @@ Proof. by case: F. Qed.
 Global Instance pfilter_on_ProperFilter T (F : pfilter_on T) : ProperFilter F.
 Proof. by case: F. Qed.
 
+Lemma locally_filter_onE T (F : filter_on T) : locally F = locally (filter F).
+Proof. by []. Qed.
+Definition locally_simpl := (@locally_simpl, @locally_filter_onE).
+
+Lemma near_filter_onE T (F : filter_on T) (P : set T) :
+  (\forall x \near F, P x) = \forall x \near filter F, P x.
+Proof. by []. Qed.
+Definition near_simpl := (@near_simpl, @near_filter_onE).
+
 Program Definition trivial_filter_on T := FilterType [set setT : set T] _.
 Next Obligation.
 split=> // [_ _ -> ->|Q R sQR QT]; first by rewrite setIT.
