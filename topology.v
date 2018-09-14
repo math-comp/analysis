@@ -511,6 +511,15 @@ Proof. by case: F. Qed.
 Global Instance pfilter_on_ProperFilter T (F : pfilter_on T) : ProperFilter F.
 Proof. by case: F. Qed.
 
+Lemma locally_filter_onE T (F : filter_on T) : locally F = locally (filter F).
+Proof. by []. Qed.
+Definition locally_simpl := (@locally_simpl, @locally_filter_onE).
+
+Lemma near_filter_onE T (F : filter_on T) (P : set T) :
+  (\forall x \near F, P x) = \forall x \near filter F, P x.
+Proof. by []. Qed.
+Definition near_simpl := (@near_simpl, @near_filter_onE).
+
 Program Definition trivial_filter_on T := FilterType [set setT : set T] _.
 Next Obligation.
 split=> // [_ _ -> ->|Q R sQR QT]; first by rewrite setIT.
@@ -645,14 +654,6 @@ Lemma filter_app (T : Type) (F : set (set T)) :
 Proof.
 by move=> FF P Q subPQ FP; near=> x; suff: P x; near: x.
 Grab Existential Variables. by end_near. Qed.
-
-Lemma near_app (T U : Type) (F : set (set T)) (G : set (set U))
-  (GF : Filter G) (P : T -> set U) (Q : set U)
-  (FGP : \forall t \near F, \forall u \near G, P t u) (t : T) :
-  prop_of (InFilter FGP) t -> (\forall u \near G, P t u -> Q u) ->
-  \forall u \near G, Q u.
-Proof. by move=> GPt ?; apply: filter_app (near FGP t GPt). Qed.
-Arguments near_app {T U F G GF P Q} FGP t.
 
 Lemma filter_app2 (T : Type) (F : set (set T)) :
   Filter F -> forall P Q R : set T,  F (fun x => P x -> Q x -> R x) ->
