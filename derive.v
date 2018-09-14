@@ -633,8 +633,8 @@ Qed.
 Lemma linear_eqO (V' W' : normedModType R) (f : {linear V' -> W'}) :
   continuous f -> (f : V' -> W') =O_ (0 : V') id.
 Proof.
-move=> /linear_lipschitz [k kgt0 flip]; apply/eqOFP; exists k => //.
-exact: filterS filterT.
+move=> /linear_lipschitz [k kgt0 flip]; apply/eqO_exP; exists k => //.
+exact: filterE.
 Qed.
 
 Lemma diff_eqO (V' W' : normedModType R) (F : filter_on V') (f : V' -> W') :
@@ -647,7 +647,7 @@ Lemma compoO_eqo (K : absRingType) (U V' W' : normedModType K) (f : U -> V')
   [o_ (0 : V') id of g] \o [O_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
 apply/eqoP => _ /posnumP[e].
-have /bigOFP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
+have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
 have := littleoP [littleo of [o_ (0 : V') id of g]].
 move=>  /(_ (e%:num / k%:num)) /(_ _) /locallyP [//|_ /posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: ler_trans (hd _ _) _; last first.
@@ -670,7 +670,7 @@ Lemma compOo_eqo (K : absRingType) (U V' W' : normedModType K) (f : U -> V')
   [O_ (0 : V') id of g] \o [o_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
 apply/eqoP => _ /posnumP[e].
-have /bigOFP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
+have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
 move=> /locallyP [_ /posnumP[d] hd].
 have ekgt0 : e%:num / k%:num > 0 by [].
 have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
