@@ -13,6 +13,8 @@ authors: [
 build: [
   [make "INSTMODE=global" "config"]
   [make "-j%{jobs}%"]
+]
+install: [
   [make "install"]
 ]
 remove: ["rm" "-R" "%{lib}%/coq/user-contrib/mathcomp/analysis"]
