@@ -533,8 +533,7 @@ Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
 Proof.
 have [->|a0] := eqVneq a 0; first by rewrite scale0r.
 move=> _ /posnumP[eps]; have aa := absr_eq0 a; near=> x => /=.
-rewrite (ler_trans (ler_normmZ _ _)) //.
-rewrite -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; near: x.
+rewrite normmZ -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; near: x.
 by apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?ltr_def ?aa ?a0 /=.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -884,8 +883,8 @@ move=> _/posnumP[eps].
 have ea : 0 < eps%:num / `|[ a ]| by rewrite divr_gt0 // normm_gt0.
 set g := 'o _.
 have /(_ _ ea) ? := littleoP [littleo of g]; near=> y.
-rewrite (ler_trans (ler_normmZ _ _)) //.
-by rewrite -ler_pdivl_mulr ?ltr_def ?normm_eq0 ?a0 ?normm_ge0// mulrAC; near: y.
+rewrite normmZ -ler_pdivl_mulr; first by rewrite mulrAC; near: y.
+by rewrite ltr_def normm_eq0 a0 normm_ge0.
 Grab Existential Variables. all: end_near. Qed.
 
 Section Limit.
@@ -1039,7 +1038,7 @@ Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
 Proof.
 rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
-rewrite (ler_trans (absrM _ _)) // -(sqr_sqrtr (ltrW [gt0 of e%:num])) expr2.
+rewrite [`|[_]|]absrM -(sqr_sqrtr (ltrW [gt0 of e%:num])) expr2.
 rewrite [`|[_]|]normrM mulrACA ler_pmul //; near: x;
 by set h := 'o _; apply: (littleoP [littleo of h]).
 Grab Existential Variables. all: end_near. Qed.
@@ -1051,7 +1050,7 @@ rewrite [RHS]bigOE //; set O1 := 'O _; set O2 := 'O _.
 have /bigO_exP [_/posnumP[k1] Oh1] := bigOP [bigO of O1].
 have /bigO_exP [_/posnumP[k2] Oh2] := bigOP [bigO of O2].
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
-rewrite (ler_trans (absrM _ _)) // (ler_trans (ler_pmul _ _ leOh1 leOh2)) //.
+rewrite [`|[_]|]absrM (ler_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|[_]| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
@@ -1105,17 +1104,19 @@ Qed.
 Section Linear3.
 Context (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
         (s_law : GRing.Scale.law s).
+Hypothesis (normm_s : forall k x, `|[s k x]| = `|k| * `|[x]|).
 
 (* Split in multiple bits *)
-(* - Locally bounded => locally lipshitz *)
-(* - locally lipshitz + linear => lipshitz *)
-(* - locally lipshitz => continuous at a point *)
-(* - lipizhitz => uniformly continous *)
+(* - Locally bounded => locally lipschitz *)
+(* - locally lipschitz + linear => lipschitz *)
+(* - locally lipschitz => continuous at a point *)
+(* - lipschitz => uniformly continous *)
 
-Lemma linear_continuous (f: {linear U -> V | GRing.Scale.op s_law}) :
+Lemma linear_for_continuous (f: {linear U -> V | GRing.Scale.op s_law}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
-move=> /eqOP Of1 x; apply/flim_normP => _/posnumP[e]; rewrite !near_simpl.
+move=> /eqO_exP [_/posnumP[k0] Of1] x.
+apply/flim_normP => _/posnumP[e]; rewrite !near_simpl.
 rewrite (near_shift 0) /= subr0; near=> y => /=.
 rewrite -linearB opprD addrC addrNK linearN normmN; near: y.
 suff flip : \forall k \near +oo, forall x, `|[f x]| <= k * `|[x]|.
@@ -1123,19 +1124,34 @@ suff flip : \forall k \near +oo, forall x, `|[f x]| <= k * `|[x]|.
   rewrite (ler_lt_trans (near flip k _ _)) // -ltr_pdivl_mull //.
   near: y; apply/locally_normP.
   by eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
-near +oo => k; have /(_ _) /locally_normP [//|_/posnumP[d]] := near Of1 k.
-rewrite /cst [X in _ * X]absr1 mulr1 => fk; near=> l => y.
-(** BUG! in a vector space, the normm should be totally scalable : normmZ *)
-(* see below for an idea on how to finish the proof *)
-have : k / (d%:num / 2) <= l by near: l; apply: locally_pinfty_ge.
-move=> /(@ler_pmul _ _ _ `|[y]| `|[y]|) /(_ _) /(ler_trans _); apply=> //.
-have := fk ((d%:num / 2) * `|[y]| ^-1 *: y).
-(* here the missing normmZ blocks us *)
-Admitted.
+have /locally_normP [_/posnumP[d]] := Of1.
+rewrite /cst [X in _ * X]absr1 mulr1 => fk; near=> k => y.
+case: (ler0P `|[y]|) => [|y0].
+  by rewrite normm_le0 => /eqP->; rewrite linear0 !normm0 mulr0.
+have ky0 : 0 <= k0%:num / (k * `|[y]|).
+  by rewrite pmulr_rge0 // invr_ge0 mulr_ge0 // ltrW.
+rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //.
+rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
+rewrite -normm_s.
+have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
+rewrite -linearZ fk //= normmB subr0 normmZ absRE ger0_norm //.
+rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //.
+by rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: locally_pinfty_gt.
+Grab Existential Variables. all: end_near. Qed.
 
 End Linear3.
 
-Arguments linear_continuous {U V s s_law} f _.
+Arguments linear_for_continuous {U V s s_law normm_s} f _.
+
+Lemma linear_continuous (U : normedModType R) (V : normedModType R)
+  (f : {linear U -> V}) :
+  (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
+Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
+
+Lemma linear_for_mul_continuous (U : normedModType R)
+  (f : {linear U -> R | (@GRing.mul [ringType of R^o])}) :
+  (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
+Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
 
 Notation "f '~_' F g" := (f = g +o_ F g)
   (at level 70, F at level 0, g at next level, format "f  '~_' F  g").
@@ -1314,7 +1330,7 @@ rewrite eqOmegaE eqOmegaO [in RHS]bigOE //.
 set W1 := [Omega_F _ of _]; set W2 := [Omega_F _ of _].
 have [_/posnumP[k1] ?] := bigOmegaP [bigOmega of W1].
 have [_/posnumP[k2] ?] := bigOmegaP [bigOmega of W2].
-near=> k; near=> x; rewrite (ler_trans (absrM _ _)) //.
+near=> k; near=> x; rewrite [`|[_]|]absrM.
 rewrite (@ler_trans _ ((k2%:num * k1%:num)^-1 * `|[(W1 * W2) x]|)) //.
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
   rewrite ler_pdivl_mull // (mulrA k1%:num) mulrCA [`|[_]|]normrM.
@@ -1472,8 +1488,7 @@ set T1 := [Theta_F _ of _]; set T2 := [Theta_F _ of _].
 have [[k1 l1] /andP[k10 _] /near_andP[/= P1 _]] := bigThetaP [bigTheta of T1].
 have [[k2 l2] /andP[k20 _] /near_andP[/= P2 _]] := bigThetaP [bigTheta of T2].
 near=> k; first near=> x.
-rewrite (ler_trans (absrM _ _)) //.
-rewrite (@ler_trans _ ((k2 * k1)^-1 * `|[(T1 * T2) x]|)) //.
+rewrite [`|[_]|]absrM (@ler_trans _ ((k2 * k1)^-1 * `|[(T1 * T2) x]|)) //.
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
   rewrite ler_pdivl_mull // (mulrA k1) mulrCA [`|[_]|]normrM ler_pmul //;
   by [rewrite mulr_ge0 // ltrW|near: x].
