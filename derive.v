@@ -233,7 +233,7 @@ apply: filter_app; rewrite /= !near_simpl near_withinE; near=> h => hN0.
 rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
 rewrite /cst /= [`|[1 : R^o]|]absr1 mulr1 => dfv.
 rewrite addrA -[X in X + _]scale1r -(@mulVf _ h) //.
-rewrite mulrC -scalerA -scalerBr; apply: ler_trans (ler_normmZ _ _) _.
+rewrite mulrC -scalerA -scalerBr normmZ.
 rewrite -ler_pdivl_mull; last by rewrite absRE normr_gt0.
 by rewrite mulrCA mulVf ?mulr1; last by rewrite absr_eq0.
 Grab Existential Variables. all: end_near. Qed.
@@ -251,8 +251,8 @@ rewrite /= !(near_simpl, near_withinE); apply: filter_app; near=> h.
 rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
 rewrite /cst /= [`|[1 : R^o]|]absr1 mulr1 addrA => dfv hN0.
 rewrite -[X in _ - X]scale1r -(@mulVf _ h) //.
-rewrite -scalerA -scalerBr (ler_trans (ler_normmZ _ _)) //.
-by rewrite absRE normfV ler_pdivr_mull ?normr_gt0 // mulrC -absRE.
+rewrite -scalerA -scalerBr normmZ absRE normfV ler_pdivr_mull ?normr_gt0 //.
+by rewrite mulrC.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma derivable_locallyx (f : V -> W) a v :
@@ -298,14 +298,13 @@ have /(littleoP [littleo of k]) /locallyP[i i0 Hi] : 0 < e / (2 * `|[v]|).
 exists (i / `|[v]|); first by rewrite divr_gt0 // normm_gt0.
 move=> /= j; rewrite /ball /= /AbsRing_ball /ball_ add0r absrN.
 rewrite ltr_pdivl_mulr ?normm_gt0 // => jvi j0.
-rewrite add0r normmN (ler_lt_trans (ler_normmZ _ _)) //.
-rewrite -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
+rewrite add0r normmN normmZ -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
 have /Hi/ler_lt_trans -> // : ball 0 i (j *: v).
-  by rewrite -ball_normE /ball_ add0r normmN (ler_lt_trans _ jvi) // ler_normmZ.
+  by rewrite -ball_normE /ball_ add0r normmN (ler_lt_trans _ jvi) // normmZ.
 rewrite -(mulrC e) -mulrA -ltr_pdivl_mull // mulrA mulVr ?unitfE ?gtr_eqF //.
 rewrite absRE normrV ?unitfE // div1r invrK ltr_pdivr_mull; last first.
   by rewrite pmulr_rgt0 // normm_gt0.
-apply: (ler_lt_trans (ler_normmZ _ _)); rewrite absRE mulrC -mulrA.
+rewrite normmZ absRE mulrC -mulrA.
 by rewrite ltr_pmull ?ltr1n // pmulr_rgt0 ?normm_gt0 // normr_gt0.
 Qed.
 
@@ -372,12 +371,12 @@ rewrite -normm_le0 -(mul0r `|[x]|) -ler_pdivr_mulr //.
 apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
 have /oid /locallyP [_ /posnumP[d] dfe] := posnum_gt0 e.
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
-rewrite -{1}(@scalerKV _ _ k _ x) // linearZZ (ler_trans (ler_normmZ _ _)) //.
+rewrite -{1}(@scalerKV _ _ k _ x) // linearZZ normmZ.
 rewrite -ler_pdivl_mull; last by rewrite absRE gtr0_norm.
 rewrite mulrCA (@ler_trans _ (e%:num * `|[k^-1 *: x]|)) //; last first.
-  by rewrite ler_pmul // (ler_trans (ler_normmZ _ _)) // absRE normfV.
+  by rewrite ler_pmul // normmZ absRE normfV.
 apply dfe.
-rewrite -ball_normE /ball_ sub0r normmN (ler_lt_trans (ler_normmZ _ _)) //.
+rewrite -ball_normE /ball_ sub0r normmN normmZ.
 rewrite invrK -ltr_pdivl_mulr // absRE ger0_norm // ltr_pdivr_mulr //.
 by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [X in _ < X]splitr ltr_addl.
 Qed.
@@ -620,12 +619,11 @@ case: (lerP `|[x]| 0) => [|xn0].
 set k := 2 / e%:num * (PosNum xn0)%:num.
 have kn0 : k != 0 by [].
 have abskgt0 : `|k| > 0 by rewrite normr_gt0.
-rewrite -[x in X in X <= _](scalerKV kn0) linearZZ.
-apply: ler_trans (ler_normmZ _ _) _; rewrite -ler_pdivl_mull //.
+rewrite -[x in X in X <= _](scalerKV kn0) linearZZ normmZ -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (k^-1 *: x).
   rewrite -ball_normE /= normmB subr0 => /ltrW /ler_trans; apply.
   by rewrite absRE ger0_norm // mulVf.
-rewrite -ball_normE /= normmB subr0; apply: ler_lt_trans (ler_normmZ _ _) _.
+rewrite -ball_normE /= normmB subr0 normmZ.
 rewrite absRE normfV ger0_norm // invrM ?unitfE // mulrAC mulVf //.
 by rewrite invf_div mul1r [X in _ < X]splitr; apply: ltr_spaddr.
 Qed.
@@ -733,11 +731,9 @@ case: (lerP `|[v]| 0) => [|vn0].
 rewrite -[`|[u]|]/((PosNum un0)%:num) -[`|[v]|]/((PosNum vn0)%:num).
 set ku := 2 / e%:num * (PosNum un0)%:num.
 set kv := 2 / e%:num * (PosNum vn0)%:num.
-rewrite -[X in f X](@scalerKV _ _ ku) // linearZl_LR.
-apply: ler_trans (ler_normmZ _ _) _.
+rewrite -[X in f X](@scalerKV _ _ ku) // linearZl_LR normmZ.
 rewrite absRE gtr0_norm // -ler_pdivl_mull //.
-rewrite -[X in f _ X](@scalerKV _ _ kv) // linearZr_LR.
-apply: ler_trans (ler_normmZ _ _) _.
+rewrite -[X in f _ X](@scalerKV _ _ kv) // linearZr_LR normmZ.
 rewrite absRE gtr0_norm // -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (ku^-1 *: u, kv^-1 *: v).
   rewrite -ball_normE /= normmB subr0 => /ltrW /ler_trans; apply.
@@ -749,11 +745,8 @@ have -> : (ku^-1 *: u, kv^-1 *: v) =
   rewrite invrM ?unitfE // [kv ^-1]invrM ?unitfE //.
   rewrite mulrC -[_ *: u]scalerA [X in X *: v]mulrC -[_ *: v]scalerA.
   by rewrite invf_div.
-apply: ler_lt_trans (ler_normmZ _ _) _.
-rewrite absRE ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
-by rewrite ltr_maxl; apply/andP; split;
-  apply: ler_lt_trans (ler_normmZ _ _) _;
-  rewrite absRE ger0_norm // mulVf // ltr1n.
+rewrite normmZ absRE ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
+by rewrite ltr_maxl !normmZ !absRE !ger0_norm // !mulVf // ltr1n.
 Qed.
 
 Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :

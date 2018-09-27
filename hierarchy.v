@@ -367,7 +367,7 @@ Record mixin_of (D : ringType) := Mixin {
   ax1 : abs 0 = 0 ;
   ax2 : abs (- 1) = 1 ;
   ax3 : forall x y : D, abs (x + y) <= abs x + abs y ;
-  ax4 : forall x y : D, abs (x * y) <= abs x * abs y ;
+  ax4 : forall x y : D, abs (x * y) = abs x * abs y ;
   ax5 : forall x : D, abs x = 0 -> x = 0
 }.
 
@@ -458,7 +458,7 @@ Proof. exact: AbsRing.ax2. Qed.
 Lemma ler_abs_add (x y : K) :  `|x + y| <= `|x|%real + `|y|%real.
 Proof. exact: AbsRing.ax3. Qed.
 
-Lemma absrM (x y : K) : `|x * y| <= `|x|%real * `|y|%real.
+Lemma absrM (x y : K) : `|x * y| = `|x|%real * `|y|%real.
 Proof. exact: AbsRing.ax4. Qed.
 
 Lemma absr0_eq0 (x : K) : `|x| = 0 -> x = 0.
@@ -467,7 +467,7 @@ Proof. exact: AbsRing.ax5. Qed.
 Lemma absrN x : `|- x| = `|x|.
 Proof.
 gen have le_absN1 : x / `|- x| <= `|x|.
-  by rewrite -mulN1r (ler_trans (absrM _ _)) //= absrN1 mul1r.
+  by rewrite -mulN1r absrM absrN1 mul1r.
 by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
 Qed.
 
@@ -491,7 +491,7 @@ Proof. by rewrite ltr_def absr1 oner_eq0 /=. Qed.
 Lemma absrX x n : `|x ^+ n| <= `|x|%real ^+ n.
 Proof.
 elim: n => [|n IH]; first  by rewrite !expr0 absr1.
-by rewrite !exprS (ler_trans (absrM _ _)) // ler_pmul // absr_ge0.
+by rewrite !exprS absrM ler_pmul // absr_ge0.
 Qed.
 
 End AbsRing1.
@@ -1273,7 +1273,7 @@ Module NormedModule.
 Record mixin_of (K : absRingType) (V : lmodType K) loc (m : @Uniform.mixin_of V loc) := Mixin {
   norm : V -> R ;
   ax1 : forall (x y : V), norm (x + y) <= norm x + norm y ;
-  ax2 : forall (l : K) (x : V), norm (l *: x) <= abs l * norm x;
+  ax2 : forall (l : K) (x : V), norm (l *: x) = abs l * norm x;
   ax3 : Uniform.ball m = ball_ norm;
   ax4 : forall x : V, norm x = 0 -> x = 0
 }.
@@ -1380,7 +1380,7 @@ Implicit Types (l : K) (x y : V) (eps : posreal).
 Lemma ler_normm_add x y : `|[x + y]| <= `|[x]| + `|[y]|.
 Proof. exact: NormedModule.ax1. Qed.
 
-Lemma ler_normmZ l x : `|[l *: x]| <= `|l|%real * `|[x]|.
+Lemma normmZ l x : `|[l *: x]| = `|l|%real * `|[x]|.
 Proof. exact: NormedModule.ax2. Qed.
 
 Notation ball_norm := (ball_ (@norm K V)).
@@ -1396,7 +1396,7 @@ Proof. exact: NormedModule.ax4. Qed.
 Lemma normmN x : `|[- x]| = `|[x]|.
 Proof.
 gen have le_absN1 : x / `|[- x]| <= `|[x]|.
-  by rewrite -scaleN1r (ler_trans (ler_normmZ _ _)) //= absrN1 mul1r.
+  by rewrite -scaleN1r normmZ absrN1 mul1r.
 by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
 Qed.
 
@@ -1406,7 +1406,7 @@ Proof. by rewrite -normmN opprB. Qed.
 Lemma normm0 : `|[0 : V]| = 0.
 Proof.
 apply/eqP; rewrite eqr_le; apply/andP; split.
-  by rewrite -{1}(scale0r 0) (ler_trans (ler_normmZ _ _)) ?absr0 ?mul0r.
+  by rewrite -{1}(scale0r 0) normmZ absr0 mul0r.
 by rewrite -(ler_add2r `|[0 : V]|) add0r -{1}[0 : V]add0r ler_normm_add.
 Qed.
 Hint Resolve normm0.
@@ -1670,10 +1670,14 @@ do 2 ?[rewrite -(nth_map _ 0 (fun p => `|_ p.1 p.2|)) -?cardT ?mxvec_cast //].
 by apply: ler_add; apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
 Qed.
 Next Obligation.
-apply/bigmaxr_lerP => [|i]; rewrite size_map -cardT mxvec_cast // => ltimn.
+apply/bigmaxrP; split=> [|i].
+  have : (0 < size [seq `|x ij.1 ij.2|%real | ij : 'I_m.+1 * 'I_n.+1])%N.
+    by rewrite size_map -cardT mxvec_cast.
+  move=> /bigmaxr_mem - /(_ 0) /mapP [ij ijP normx]; rewrite [mx_norm _]normx.
+  by apply/mapP; exists ij => //; rewrite mxE absrM.
+rewrite size_map -cardT mxvec_cast // => ltimn.
 rewrite (nth_map (ord0, ord0)); last by rewrite -cardT mxvec_cast.
-rewrite mxE; apply: ler_trans (absrM _ _) _; apply: ler_pmul => //.
-rewrite -(nth_map _ 0 (fun p => `|x p.1 p.2|)).
+rewrite mxE absrM ler_pmul // -(nth_map _ 0 (fun p => `|x p.1 p.2|)).
   by apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
 by rewrite -cardT mxvec_cast.
 Qed.
@@ -1722,12 +1726,9 @@ by move=> [xu xv] [yu yv]; rewrite ler_maxl /=; apply/andP; split;
   rewrite ler_maxr lerr // orbC.
 Qed.
 
-Lemma prod_norm_scal (l : K) : forall (x : U * V), prod_norm (l *: x) <= abs l * prod_norm x.
-Proof.
-by move=> [xu xv]; rewrite /prod_norm /= ler_maxl; apply/andP; split;
-  apply: ler_trans (ler_normmZ _ _) _; apply: ler_wpmul2l => //;
-  rewrite ler_maxr lerr // orbC.
-Qed.
+Lemma prod_norm_scal (l : K) (x : U * V) :
+  prod_norm (l *: x) = abs l * prod_norm x.
+Proof. by rewrite /prod_norm !normmZ maxr_pmulr. Qed.
 
 Lemma ball_prod_normE : ball = ball_ prod_norm.
 Proof.
@@ -1811,13 +1812,11 @@ Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
-rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl).
-  rewrite (ler_lt_trans (ler_normmZ _ _)) //.
+rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
   rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
           ?ler_addl //.
   rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
-rewrite (ler_lt_trans (ler_normmZ _ _)) //.
 have zM: `|[z]| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
 rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= M))) // ?ltrW//.
 by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
@@ -2510,13 +2509,13 @@ Qed.
 (* by apply (Hd (z, y)). *)
 (* Qed. *)
 
-Lemma locally_2d_1d_strong (P : R -> R -> Prop) (x y : R):
-  (\near x & y, P x y) ->
-  \forall u \near x & v \near y,
-      forall (t : R), 0 <= t <= 1 ->
-      \forall z \near t, \forall a \near (x + z * (u - x))
-                               & b \near (y + z * (v - y)), P a b.
-Proof.
+(* Lemma locally_2d_1d_strong (P : R -> R -> Prop) (x y : R): *)
+(*   (\near x & y, P x y) -> *)
+(*   \forall u \near x & v \near y, *)
+(*       forall (t : R), 0 <= t <= 1 -> *)
+(*       \forall z \near t, \forall a \near (x + z * (u - x)) *)
+(*                                & b \near (y + z * (v - y)), P a b. *)
+(* Proof. *)
 (* move=> P x y. *)
 (* apply locally_2d_align => eps HP uv Huv t Ht. *)
 (* set u := uv.1. set v := uv.2. *)
@@ -2594,7 +2593,7 @@ Proof.
 (*     rewrite ler_sub_addr addrAC -mulrDl -mulr2n -mulr_natr. *)
 (*     by rewrite -mulrA mulrV ?mulr1 ?unitfE // subrK. *)
 (* Qed. *)
-Admitted.
+(* Admitted. *)
 
 (* TODO redo *)
 (* Lemma locally_2d_1d (P : R -> R -> Prop) x y : *)
