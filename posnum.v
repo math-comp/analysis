@@ -1,5 +1,4 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice ssralg ssrnum.
 Require Import boolp reals.
@@ -36,12 +35,9 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import GRing.Theory Num.Def Num.Theory.
 
-Delimit Scope R_scope with coqR.
 Delimit Scope real_scope with real.
-Close Scope R_scope.
 Open Scope ring_scope.
 Open Scope real_scope.
-Bind Scope ring_scope with R.
 
 (* Enrico's trick for tc resolution in have *)
 Notation "!! x" := (ltac:(refine x)) (at level 100, only parsing).
@@ -73,7 +69,6 @@ Notation "x %:pos" := (pos_of_num (Phantom _ x))
   (at level 0, format "x %:pos") : ring_scope.
 Notation "x %:num" := (num_of_pos x)
   (at level 0, format "x %:num") : ring_scope.
-Notation posreal := {posnum R}.
 Notation "2" := 2%:R : ring_scope.
 
 Section PosNum.
@@ -140,5 +135,5 @@ Qed.
 Hint Resolve posnum_gt0.
 Hint Resolve posnum_ge0.
 Hint Resolve posnum_neq0.
-Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom R x))
+Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom _ x))
  (format "[gt0 'of'  x ]").

@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import ssralg matrix.
-Require Import boolp.
+From mathcomp Require Import ssralg matrix ssrnum.
+Require Import boolp reals.
 
 (******************************************************************************)
 (* This file develops a basic theory of sets and types equipped with a        *)
@@ -447,6 +447,47 @@ Canonical prod_pointedType (T T' : pointedType) :=
   PointedType (T * T') (point, point).
 Canonical matrix_pointedType m n (T : pointedType) :=
   PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
+Canonical zmod_pointedType (V : zmodType) := PointedType V 0%R.
+Canonical ring_pointedType (R : ringType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical lmod_pointedType (R : ringType) (V : lmodType R) :=
+  [pointedType of V for zmod_pointedType V].
+Canonical lalg_pointedType (R : ringType) (A : lalgType R) :=
+  [pointedType of A for zmod_pointedType A].
+Canonical comRing_pointedType (R : comRingType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical alg_pointedType (R : comRingType) (A : algType R) :=
+  [pointedType of A for zmod_pointedType A].
+Canonical unitRing_pointedType (R : unitRingType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical comUnitRing_pointedType (R : comUnitRingType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical unitAlg_pointedType (R : comUnitRingType) (A : unitAlgType R) :=
+  [pointedType of A for zmod_pointedType A].
+Canonical idomain_pointedType (R : idomainType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical field_pointedType (F : fieldType) :=
+  [pointedType of F for zmod_pointedType F].
+Canonical decField_pointedType (F : decFieldType) :=
+  [pointedType of F for zmod_pointedType F].
+Canonical closedField_pointedType (F : closedFieldType) :=
+  [pointedType of F for zmod_pointedType F].
+Canonical numDomain_pointedType (R : numDomainType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical numField_pointedType (R : numFieldType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical numClosedField_pointedType (R : numClosedFieldType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical realDomain_pointedType (R : realDomainType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical realField_pointedType (R : realFieldType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical archiField_pointedType (R : archiFieldType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical rcf_pointedType (R : rcfType) :=
+  [pointedType of R for zmod_pointedType R].
+Canonical real_pointedType (R : realType) :=
+  [pointedType of R for zmod_pointedType R].
 
 Notation get := (xget point).
 

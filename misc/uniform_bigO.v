@@ -2,7 +2,7 @@
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
-Require Import boolp reals Rstruct Rbar.
+Require Import boolp reals Rstruct.
 Require Import classical_sets posnum topology hierarchy landau.
 
 Set Implicit Arguments.
@@ -42,7 +42,7 @@ Definition OuPex (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
     `|[f X dX]| <= C * `|[g dX]|.
 
 Lemma ler_norm2 (x : R^o * R^o) :
-  `|[x]| <= sqrt (Rsqr (fst x) + Rsqr (snd x)) <= Num.sqrt 2 * `|[x]|.
+  `|[x]| <= sqrt (Rsqr (fst x) + Rsqr (snd x))%R <= Num.sqrt 2 * `|[x]|.
 Proof.
 rewrite RsqrtE; last by rewrite addr_ge0 //; apply/RleP/Rle_0_sqr.
 rewrite !Rsqr_pow2 !RpowE; apply/andP; split.
@@ -51,7 +51,7 @@ rewrite !Rsqr_pow2 !RpowE; apply/andP; split.
 wlog lex12 : x / (`|x.1| <= `|x.2|).
   move=> ler_norm; case: (lerP `|x.1| `|x.2|) => [/ler_norm|/ltrW lex21] //.
   by rewrite addrC [`|[_]|]maxrC (ler_norm (x.2, x.1)).
-rewrite [`|[_]|]maxr_r // [`|[_]|]absRE -[X in X * _]ger0_norm // -normrM.
+rewrite [`|[_]|]maxr_r // -[X in X * _]ger0_norm // -normrM.
 rewrite -sqrtr_sqr ler_wsqrtr // exprMn sqr_sqrtr // mulr_natl mulr2n ler_add2r.
 rewrite -[_ ^+ 2]ger0_norm ?sqr_ge0 // -[X in _ <=X]ger0_norm ?sqr_ge0 //.
 by rewrite !normrX ler_expn2r // nnegrE normr_ge0.
@@ -76,6 +76,15 @@ Qed.
 
 (* then we replace the epsilon/delta definition with bigO *)
 
+Canonical R_filteredType :=
+  [filteredType R of R for realField_filteredType R_realFieldType].
+Canonical R_topologicalType :=
+  [topologicalType of R for realField_topologicalType R_realFieldType].
+Canonical R_uniformType :=
+  [uniformType of R for realField_uniformType R_realFieldType].
+Canonical R_normedModType :=
+  [normedModType R of R for realField_normedModType R_realFieldType].
+
 Definition OuO (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
   (fun x => f x.1 x.2) =O_ (filter_prod [set setT]
   (within P [filter of 0 : R^o * R^o])) (fun x => g x.2).
@@ -86,23 +95,19 @@ move=> /OuP_to_ex [_/posnumP[a] [_/posnumP[C] fOg]].
 apply/eqOP; near=> k; near=> x; apply: ler_trans (fOg _ _ _ _) _; last 2 first.
 - by near: x; exists (setT, P); [split=> //=; apply: withinT|move=> ? []].
 - by rewrite ler_pmul => //; near: k; exists C%:num => ? /ltrW.
-- near: x; exists (setT, ball (0 : R^o * R^o) a%:num).
+- near: x; exists (setT, ball norm (0 : R^o * R^o) a%:num).
     by split=> //=; rewrite /within; near=> x =>_; near: x; apply: locally_ball.
-  move=> x [_ [/=]]; rewrite -ball_normE /= normmB subr0 normmB subr0.
-  by move=> ??; rewrite ltr_maxl; apply/andP.
+  by move=> x [_ /=]; rewrite normmB subr0.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma OuO_to_P f g : OuO f g -> OuP f g.
 Proof.
 move=> fOg; apply/Ouex_to_P; move: fOg => /eqOP [k hk].
 have /hk [Q [->]] : k < maxr 1 (k + 1) by rewrite ltr_maxr ltr_addl orbC ltr01.
-move=> [R [[_/posnumP[e1] Re1] [_/posnumP[e2] Re2]] sRQ] fOg.
-exists (minr e1%:num e2%:num) => //.
-exists (maxr 1 (k + 1)); first by rewrite ltr_maxr ltr01.
+rewrite /= -filter_from_norm_locally => -[_/posnumP[e] seQ] fOg.
+exists e%:num => //; exists (maxr 1 (k + 1)); first by rewrite ltr_maxr ltr01.
 move=> x dx dxe Pdx; apply: (fOg (x, dx)); split=> //=.
-move: dxe; rewrite ltr_maxl !ltr_minr => /andP[/andP [dxe11 _] /andP [_ dxe22]].
-by apply/sRQ => //; split; [apply/Re1|apply/Re2];
-  rewrite /AbsRing_ball /= absrB subr0.
+by apply: seQ => //; rewrite /ball normmB subr0.
 Qed.
 
 End UniformBigO.

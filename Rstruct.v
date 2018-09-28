@@ -481,17 +481,21 @@ case: (lerP x y) => H; first by rewrite minr_l // Rmin_left //; apply: RlebP.
 by rewrite minr_r ?ltrW // Rmin_right //;  apply/RlebP; move/ltrW : H.
 Qed.
 
+Section Max.
+
+Context (R : realDomainType).
+
 (* bigop pour le max pour des listes non vides ? *)
 Definition bigmaxr (x0 : R) lr :=
   foldr Num.max (head x0 lr) (behead lr).
 
-Lemma bigmaxr_nil x0 : bigmaxr x0 [::] = x0.
+Lemma bigmaxr_nil (x0 : R) : bigmaxr x0 [::] = x0.
 Proof. by rewrite /bigmaxr. Qed.
 
-Lemma bigmaxr_un x0 x : bigmaxr x0 [:: x] = x.
+Lemma bigmaxr_un (x0 x : R) : bigmaxr x0 [:: x] = x.
 Proof. by rewrite /bigmaxr. Qed.
 
-Lemma bigmaxr_cons x0 x y lr :
+Lemma bigmaxr_cons (x0 x y : R) lr :
   bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
 Proof.
 rewrite /bigmaxr /=; elim: lr => [/= | a lr /=]; first by rewrite maxrC.
@@ -499,7 +503,7 @@ set b := foldr _ _ _; set c := foldr _ _ _ => H.
 by rewrite [Num.max a b]maxrC maxrA H -maxrA (maxrC c a).
 Qed.
 
-Lemma bigmaxr_ler x0 lr i :
+Lemma bigmaxr_ler (x0 : R) lr i :
   (i < size lr)%N -> (nth x0 lr i) <= (bigmaxr x0 lr).
 Proof.
 case: lr i => [i | x lr]; first by rewrite nth_nil bigmaxr_nil lerr.
@@ -512,15 +516,15 @@ by rewrite ler_maxr lerr orbT.
 Qed.
 
 (* Compatibilité avec l'addition *)
-Lemma bigmaxr_addr x0 lr x :
-  bigmaxr (x0 + x) (map (fun y => y + x) lr) = (bigmaxr x0 lr) + x.
+Lemma bigmaxr_addr (x0 : R) lr (x : R) :
+  bigmaxr (x0 + x) (map (fun y : R => y + x) lr) = (bigmaxr x0 lr) + x.
 Proof.
 case: lr => [/= | y lr]; first by rewrite bigmaxr_nil.
 elim: lr y => [y | y lr ihlr z]; first by rewrite /= !bigmaxr_un.
 by rewrite map_cons !bigmaxr_cons ihlr addr_maxl.
 Qed.
 
-Lemma bigmaxr_index x0 lr :
+Lemma bigmaxr_index (x0 : R) lr :
   (0 < size lr)%N -> (index (bigmaxr x0 lr) lr < size lr)%N.
 Proof.
 case: lr => [//= | x l _].
@@ -530,11 +534,11 @@ case: (z <= y); first by rewrite eq_refl.
 by case: (y == z); rewrite //.
 Qed.
 
-Lemma bigmaxr_mem x0 lr :
+Lemma bigmaxr_mem (x0 : R) lr :
   (0 < size lr)%N -> bigmaxr x0 lr \in lr.
 Proof. by move/(bigmaxr_index x0); rewrite index_mem. Qed.
 
-Lemma bigmaxr_lerP x0 lr x :
+Lemma bigmaxr_lerP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
   reflect (forall i, (i < size lr)%N -> (nth x0 lr i) <= x) ((bigmaxr x0 lr) <= x).
 Proof.
@@ -543,7 +547,7 @@ move=> lr_size; apply: (iffP idP) => [le_x i i_size | H].
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-Lemma bigmaxr_ltrP x0 lr x :
+Lemma bigmaxr_ltrP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
   reflect (forall i, (i < size lr)%N -> (nth x0 lr i) < x) ((bigmaxr x0 lr) < x).
 Proof.
@@ -552,7 +556,7 @@ move=> lr_size; apply: (iffP idP) => [lt_x i i_size | H].
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-Lemma bigmaxrP x0 lr x :
+Lemma bigmaxrP (x0 : R) lr (x : R) :
   (x \in lr /\ forall i, (i < size lr) %N -> (nth x0 lr i) <= x) -> (bigmaxr x0 lr = x).
 Proof.
 move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: ler_asym; apply/andP; split.
@@ -571,7 +575,7 @@ apply/negP => /eqP H; apply: neq_i; rewrite -H eq_sym; apply/eqP.
 by apply: index_uniq.
 Qed. *)
 
-Lemma bigmaxr_lerif x0 lr :
+Lemma bigmaxr_lerif (x0 : R) lr :
   uniq lr -> forall i, (i < size lr)%N ->
      (nth x0 lr i) <= (bigmaxr x0 lr) ?= iff (i == index (bigmaxr x0 lr) lr).
 Proof.
@@ -624,5 +628,7 @@ Lemma bmaxrf_lerif n (f : {ffun 'I_n.+1 -> R}) :
 Proof.
 by move=> inj_f i; rewrite /lerif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
 Qed.
+
+End Max.
 
 End ssreal_struct_contd.

@@ -1,9 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
-Require Import boolp reals Rstruct Rbar.
-Require Import classical_sets posnum topology hierarchy.
+Require Import boolp reals classical_sets posnum topology hierarchy.
 
 (******************************************************************************)
 (*              BACHMANN-LANDAU NOTATIONS : BIG AND LITTLE O                  *)
@@ -270,12 +268,11 @@ Reserved Notation "f '=Theta_' F h"
    F at level 0, h at next level,
    format "f  '=Theta_' F  h").
 
-Delimit Scope R_scope with coqR.
 Delimit Scope real_scope with real.
-Local Close Scope R_scope.
+Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
-Local Open Scope classical_set_scope.
+Local Open Scope fun_scope.
 
 Section function_space.
 
@@ -346,10 +343,10 @@ Lemma showo : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). Proof. by []. Qed.
 (* Tentative to handle small o and big O notations *)
 Section Domination.
 
-Context {K : absRingType} {T : Type} {V W : normedModType K}.
+Context {K : realFieldType} {T : Type} {V W : normedModType K}.
 
 Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  forall eps : R, 0 < eps -> \forall x \near F, `|[f x]| <= eps * `|[g x]|.
+  forall eps, 0 < eps -> \forall x \near F, `|[f x]| <= eps * `|[g x]|.
 
 Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
   littleo_fun :> T -> V;
@@ -535,7 +532,7 @@ Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
   littleo_def F (a *: (df : _ -> _)) e.
 Proof.
 have [->|a0] := eqVneq a 0; first by rewrite scale0r.
-move=> _ /posnumP[eps]; have aa := absr_eq0 a; near=> x => /=.
+move=> _ /posnumP[eps]; have aa := normr_eq0 a; near=> x => /=.
 rewrite normmZ -ler_pdivl_mull ?ltr_def ?aa ?a0 //= mulrA; near: x.
 by apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?ltr_def ?aa ?a0 /=.
 Grab Existential Variables. all: end_near. Qed.
@@ -652,7 +649,7 @@ Canonical the_bigO_bigO (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [bigO of the_bigO tag F phF f h].
 
 Variant bigO_spec (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
-  BigOSpec f (k : posreal)
+  BigOSpec f (k : {posnum K})
     of (\forall x \near F, `|[f x]| <= k%:num * `|[g x]|) :
       bigO_spec F g f.
 
@@ -885,7 +882,7 @@ Hint Resolve littleo_eqO.
 Arguments bigO {_ _ _ _}.
 
 (* NB: see also scaleox *)
-Lemma scaleolx (K : absRingType) (V W : normedModType K) {T : Type}
+Lemma scaleolx (K : realFieldType) (V W : normedModType K) {T : Type}
   (F : filter_on T) (a : W) (k : T -> K^o) (e : T -> V) (x : T) :
   ([o_F e of k] x) *: a = [o_F e of (fun y => [o_F e of k] y *: a)] x.
 Proof.
@@ -901,7 +898,7 @@ Grab Existential Variables. all: end_near. Qed.
 
 Section Limit.
 
-Context {K : absRingType} {T : Type} {V W X : normedModType K}.
+Context {K : realFieldType} {T : Type} {V W X : normedModType K}.
 
 Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
   f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
@@ -909,10 +906,10 @@ Proof.
 split=> fFl.
   apply/eqaddoP => _/posnumP[eps]; near=> x.
   rewrite /cst ltrW //= normmB; near: x.
-  by apply: (flim_norm _ fFl); rewrite mulr_gt0 // ?absr1_gt0.
+  by apply: (flim_norm _ fFl); rewrite mulr_gt0 // [ `|[_]|]normr1.
 apply/flim_normP=> _/posnumP[eps]; rewrite /= near_simpl.
 have lt_eps x : x <= (eps%:num / 2%:R) * `|1 : K^o|%real -> x < eps.
-  rewrite absr1 mulr1 => /ler_lt_trans; apply.
+  rewrite normr1 mulr1 => /ler_lt_trans; apply.
   by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
 near=> x; rewrite [X in X x]fFl opprD addNKr normmN lt_eps //; near: x.
 by rewrite /= !near_simpl; apply: littleoP; rewrite divr_gt0.
@@ -1003,7 +1000,7 @@ Arguments bigO_bigO_eqO {K T V W X F}.
 
 Section littleo_bigO_transitivity.
 
-Context {K : absRingType} {T : Type} {V W Z : normedModType K}.
+Context {K : realFieldType} {T : Type} {V W Z : normedModType K}.
 
 Lemma eqaddo_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [o_ F e of fg] -> g = h + [o_F e of gh] -> f = h +o_F e.
@@ -1041,13 +1038,13 @@ End littleo_bigO_transitivity.
 
 Section rule_of_products_in_R.
 
-Variable pT : pointedType.
+Variable (pT : pointedType) (R : rcfType).
 
-Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
+Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
 Proof.
 rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
-rewrite [`|[_]|]absrM -(sqr_sqrtr (ltrW [gt0 of e%:num])) expr2.
+rewrite [`|[_]|]normrM -(sqr_sqrtr (ltrW [gt0 of e%:num])) expr2.
 rewrite [`|[_]|]normrM mulrACA ler_pmul //; near: x;
 by have [/= h] := littleo; apply.
 Grab Existential Variables. all: end_near. Qed.
@@ -1057,7 +1054,7 @@ Lemma mulO (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
 Proof.
 rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
-rewrite [`|[_]|]absrM (ler_trans (ler_pmul _ _ leOh1 leOh2)) //.
+rewrite [`|[_]|]normrM // (ler_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|[_]| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
@@ -1088,19 +1085,20 @@ End Shift.
 Arguments shift {R} x / y.
 Notation center c := (shift (- c)).
 
-Lemma near_shift {K : absRingType} {R : normedModType K}
+Lemma near_shift {K : realFieldType} {R : normedModType K}
    (y x : R) (P : set R) :
    (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
-rewrite propeqE; split=> /= /locally_normP [_/posnumP[e] ye];
-apply/locally_normP; exists e%:num => // t /= et.
+rewrite propeqE; split;
+  rewrite -!locally_nearE -!filter_from_norm_locally => -[_/posnumP[e] ye];
+  exists e%:num => // t /= et.
   apply: ye; rewrite /= !opprD addrA addrACA subrr add0r.
   by rewrite opprK addrC.
 have /= := ye (t - (x - y)); rewrite addrNK; apply.
 by rewrite /= !opprB addrA addrCA subrr addr0.
 Qed.
 
-Lemma flim_shift {T : Type}  {K : absRingType} {R : normedModType K}
+Lemma flim_shift {T : Type}  {K : realFieldType} {R : normedModType K}
   (x y : R) (f : R -> T) :
   (f \o shift x) @ y = f @ (y + x).
 Proof.
@@ -1109,8 +1107,8 @@ by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
 
 Section Linear3.
-Context (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
-        (s_law : GRing.Scale.law s).
+Context (R : realFieldType) (U : normedModType R) (V : normedModType R)
+        (s : R -> V -> V) (s_law : GRing.Scale.law s).
 Hypothesis (normm_s : forall k x, `|[s k x]| = `|k| * `|[x]|).
 
 (* Split in multiple bits *)
@@ -1127,13 +1125,13 @@ apply/flim_normP => _/posnumP[e]; rewrite !near_simpl.
 rewrite (near_shift 0) /= subr0; near=> y => /=.
 rewrite -linearB opprD addrC addrNK linearN normmN; near: y.
 suff flip : \forall k \near +oo, forall x, `|[f x]| <= k * `|[x]|.
-  near +oo => k; near=> y.
+  near +oo in R => k; near=> y.
   rewrite (ler_lt_trans (near flip k _ _)) // -ltr_pdivl_mull //.
-  near: y; apply/locally_normP.
+  near: y; rewrite -locally_nearE -filter_from_norm_locally.
   by eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
-have /locally_normP [_/posnumP[d]] := Of1.
-rewrite /cst [X in _ * X]absr1 mulr1 => fk; near=> k => y.
-case: (ler0P `|[y]|) => [|y0].
+move: Of1; rewrite near_simpl -locally_nearE -filter_from_norm_locally.
+move=> [_/posnumP[d]]; rewrite /cst [X in _ * X]normr1 mulr1 => fk.
+near=> k => y; case: (ler0P `|[y]|) => [|y0].
   by rewrite normm_le0 => /eqP->; rewrite linear0 !normm0 mulr0.
 have ky0 : 0 <= k0%:num / (k * `|[y]|).
   by rewrite pmulr_rge0 // invr_ge0 mulr_ge0 // ltrW.
@@ -1141,21 +1139,21 @@ rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //.
 rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
 have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
-rewrite -linearZ fk //= normmB subr0 normmZ absRE ger0_norm //.
+rewrite -linearZ fk //= normmB subr0 normmZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //.
 by rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: locally_pinfty_gt.
 Grab Existential Variables. all: end_near. Qed.
 
 End Linear3.
 
-Arguments linear_for_continuous {U V s s_law normm_s} f _.
+Arguments linear_for_continuous {R U V s s_law normm_s} f _.
 
-Lemma linear_continuous (U : normedModType R) (V : normedModType R)
-  (f : {linear U -> V}) :
+Lemma linear_continuous (R : realFieldType) (U : normedModType R)
+  (V : normedModType R) (f : {linear U -> V}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
 
-Lemma linear_for_mul_continuous (U : normedModType R)
+Lemma linear_for_mul_continuous (R : realFieldType) (U : normedModType R)
   (f : {linear U -> R | (@GRing.mul [ringType of R^o])}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
@@ -1167,7 +1165,7 @@ Notation "f '~~_' F g" := (f == g +o_ F g)
 
 Section asymptotic_equivalence.
 
-Context {K : absRingType} {T : Type} {V W : normedModType K}.
+Context {K : realFieldType} {T : Type} {V W : normedModType K}.
 Implicit Types F : filter_on T.
 
 Lemma equivOLR F (f g : T -> V) : f ~_F g -> f =O_F g.
@@ -1219,7 +1217,7 @@ End asymptotic_equivalence.
 
 Section big_omega.
 
-Context {K : absRingType} {T : Type} {V : normedModType K}.
+Context {K : realFieldType} {T : Type} {V : normedModType K}.
 Implicit Types W : normedModType K.
 
 Let bigOmega_def W (F : set (set T)) (f : T -> V) (g : T -> W) :=
@@ -1284,7 +1282,7 @@ Canonical the_bigOmega_bigOmega (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [bigOmega of the_bigOmega tag F phF f h].
 
 Variant bigOmega_spec {W} (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
-  BigOmegaSpec f (k : posreal) of 
+  BigOmegaSpec f (k : {posnum K}) of
     (\forall x \near F, `|[f x]| >= k%:num * `|[g x]|) :
   bigOmega_spec F g f.
 
@@ -1330,7 +1328,7 @@ Arguments bigOmega {_ _ _ _}.
 
 Section big_omega_in_R.
 
-Variable pT : pointedType.
+Variable (pT : pointedType) (R : realFieldType).
 
 Lemma addOmega (F : filter_on pT) (f g h : _ -> R^o)
   (f_nonneg : forall x, 0 <= f x) (g_nonneg : forall x, 0 <= g x) :
@@ -1338,7 +1336,7 @@ Lemma addOmega (F : filter_on pT) (f g h : _ -> R^o)
 Proof.
 rewrite 2!eqOmegaE !eqOmegaO => /eqOP hOf; apply/eqOP.
 apply: filter_app hOf; near=> k; apply: filter_app; near=> x => /ler_trans.
-by apply; rewrite ler_pmul2l // ![`|[_]|]absRE !ger0_norm // ?addr_ge0 //
+by apply; rewrite ler_pmul2l // ![`|[_]|]ger0_norm // ?addr_ge0 //
   ler_addl.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
 
@@ -1347,7 +1345,7 @@ Lemma mulOmega (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
 Proof.
 rewrite eqOmegaE eqOmegaO [in RHS]bigOE //.
 have [W1 k1 ?] := bigOmega; have [W2 k2 ?] := bigOmega.
-near=> k; near=> x; rewrite [`|[_]|]absrM.
+near=> k; near=> x; rewrite [`|[_]|]normrM.
 rewrite (@ler_trans _ ((k2%:num * k1%:num)^-1 * `|[(W1 * W2) x]|)) //.
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
   rewrite ler_pdivl_mull // (mulrA k1%:num) mulrCA [`|[_]|]normrM.
@@ -1360,7 +1358,7 @@ End big_omega_in_R.
 
 Section big_theta.
 
-Context {K : absRingType} {T : Type} {V : normedModType K}.
+Context {K : realFieldType} {T : Type} {V : normedModType K}.
 Implicit Types W : normedModType K.
 
 Let bigTheta_def W (F : set (set T)) (f : T -> V) (g : T -> W) :=
@@ -1424,7 +1422,7 @@ Canonical the_bigTheta_bigTheta (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [bigTheta of @the_bigTheta tag F phF f h].
 
 Variant bigTheta_spec {W} (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
-    BigThetaSpec f (k1 : posreal) (k2 : posreal) of
+    BigThetaSpec f (k1 : {posnum K}) (k2 : {posnum K}) of
       (\forall x \near F, k1%:num * `|[g x]| <= `|[f x]|) &
       (\forall x \near F, `|[f x]| <= k2%:num * `|[g x]|) :
   bigTheta_spec F g f.
@@ -1490,7 +1488,7 @@ Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
 
 Section big_theta_in_R.
 
-Variable pT : pointedType.
+Variable (pT : pointedType) (R : rcfType).
 
 Lemma addTheta (F : filter_on pT) (f g h : _ -> R^o)
   (f0 : forall x, 0 <= f x) (g0 : forall x, 0 <= g x) (h0 : forall x, 0 <= h x) :
@@ -1512,8 +1510,8 @@ rewrite eqThetaE bigThetaE; split.
   by rewrite (eqThetaO _ f) (eqThetaO _ g) mulO.
 rewrite eqOmegaO [in RHS]bigOE //.
 have [T1 k1 l1 P1 ?] := bigTheta; have [T2 k2 l2 P2 ?] := bigTheta.
-near=> k; first near=> x.
-rewrite [`|[_]|]absrM (@ler_trans _ ((k2%:num * k1%:num)^-1 * `|[(T1 * T2) x]|)) //.
+near=> k; first near=> x; rewrite [`|[_]|]normrM.
+rewrite (@ler_trans _ ((k2%:num * k1%:num)^-1 * `|[(T1 * T2) x]|)) //.
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
   rewrite ler_pdivl_mull // (mulrA k1%:num) mulrCA [`|[_]|]normrM ler_pmul //;
   by [rewrite mulr_ge0 // ltrW|near: x].

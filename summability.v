@@ -1,10 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
-Require Import boolp reals.
-Require Import Rstruct Rbar classical_sets posnum topology hierarchy.
+Require Import boolp reals classical_sets posnum topology hierarchy.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -15,11 +13,8 @@ Local Open Scope classical_set_scope.
 
 (** For Pierre-Yves : definition of sums *)
 
-From mathcomp Require fintype bigop finmap.
-
 Section totally.
 
-Import fintype bigop finmap.
 Local Open Scope fset_scope.
 (* :TODO: when eventually is generalized to any lattice *)
 (* totally can just be replaced by eventually *)
@@ -39,10 +34,10 @@ Qed.
 Definition partial_sum {I : choiceType} {R : zmodType}
   (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
 
-Definition sum (I : choiceType) {K : absRingType} {R : normedModType K}
+Definition sum (I : choiceType) {K : numDomainType} {R : normedModType K}
    (x : I -> R) : R := lim (partial_sum x).
 
-Definition summable (I : choiceType) {K : absRingType} {R : normedModType K}
+Definition summable (I : choiceType) {K : realFieldType} {R : normedModType K}
    (x : I -> R) :=
    \forall M \near +oo, \forall J \near totally,
    partial_sum (fun i => `|[x i]|) J <= M.
