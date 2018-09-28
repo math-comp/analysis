@@ -172,8 +172,7 @@ Variables X Y Z : normedModType R.
 
 Lemma normm_littleo x (f : X -> Y) : `|[ [o_(x \near x) (1 : R^o) of f x]]| = 0.
 Proof.
-rewrite /cst /=; set e := 'o _; apply/eqP.
-have /(_  (`|[e x]|/2) _)/locally_singleton /= := littleoP [littleo of e].
+rewrite /cst /=; have [e /(_ (`|[e x]|/2) _)/locally_singleton /=] := littleo.
 rewrite pmulr_lgt0 // [`|[1 : R^o]|]normr1 mulr1 [X in X <= _]splitr.
 by rewrite ger_addr pmulr_lle0 // => /implyP; case: ltrgtP; rewrite ?normm_lt0.
 Qed.
@@ -181,8 +180,7 @@ Qed.
 Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :
   f @ x --> (0 : Y) -> [o_x f of h] x = 0.
 Proof.
-move/eqolim0P => ->.
-set k := 'o _; have /(_ _ [gt0 of 1])/= := littleoP [littleo of k].
+move/eqolim0P => ->; have [k /(_ _ [gt0 of 1])/=] := littleo.
 by move=> /locally_singleton; rewrite mul1r normm_littleo normm_le0 => /eqP.
 Qed.
 
