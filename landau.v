@@ -939,8 +939,9 @@ Lemma littleo_bigO_eqo {F : filter_on T}
   f =O_F g -> [o_F f of h] =o_F g.
 Proof.
 move->; apply/eqoP => _/posnumP[e]; have [k c] := bigO _ g.
-apply: filter_app; near=> x; rewrite -!ler_pdivr_mull //; apply: ler_trans.
-by rewrite ler_pdivr_mull // mulrA; near: x; apply: littleoP.
+apply: filter_app; near=> x.
+rewrite -!ler_pdivr_mull //; apply: ler_trans; rewrite ler_pdivr_mull // mulrA.
+by near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
 Arguments littleo_bigO_eqo {F}.
 
