@@ -1,5 +1,12 @@
-UNSTABLE/DRAFT Analysis library compatible with Mathematical Components
-=======================================================================
+Analysis library compatible with Mathematical Components
+========================================================
+
+## Disclaimer
+
+This library is still at an early and experimental stage.
+Contents may change, definitions and theorems may be renamed,
+and inference mechanisms may be replaced at any major version bump.
+Use at your own risk.
 
 ## Contents
 
