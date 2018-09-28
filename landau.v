@@ -348,12 +348,12 @@ Section Domination.
 
 Context {K : absRingType} {T : Type} {V W : normedModType K}.
 
-Let littleo (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   forall eps : R, 0 < eps -> \forall x \near F, `|[f x]| <= eps * `|[g x]|.
 
 Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
   littleo_fun :> T -> V;
-  _ : `[< littleo F littleo_fun g >]
+  _ : `[< littleo_def F littleo_fun g >]
 }.
 Notation "{o_ F f }" := (littleo_type F f).
 
@@ -361,7 +361,7 @@ Canonical littleo_subtype (F : set (set T)) (g : T -> W) :=
   [subType for (@littleo_fun F g)].
 
 Lemma littleo_class (F : set (set T)) (g : T -> W) (f : {o_F g}) :
-  `[< littleo F f g >].
+  `[< littleo_def F f g >].
 Proof. by case: f => ?. Qed.
 Hint Resolve littleo_class.
 
@@ -371,7 +371,7 @@ Notation "[littleo 'of' f 'for' fT ]" := (@littleo_clone _ _ f fT _ idfun).
 Notation "[littleo 'of' f ]" := (@littleo_clone _ _ f _ _ idfun).
 
 Lemma littleo0_subproof F (g : T -> W) :
-  Filter F -> littleo F (0 : T -> V) g.
+  Filter F -> littleo_def F (0 : T -> V) g.
 Proof.
 move=> FF _/posnumP[eps] /=; apply: filterE => x; rewrite normm0.
 by rewrite mulr_ge0 // ltrW.
@@ -425,27 +425,32 @@ Notation "fx == gx '+o_(' x \near F ')' hx" :=
 Notation "fx '==o_(' x \near F ')' hx" :=
   (fx == (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
 
-Lemma littleoP (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo F f g.
+Lemma littleoP (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo_def F f g.
 Proof. exact/asboolP. Qed.
-Hint Extern 0 (littleo _ _ _) => solve[apply: littleoP] : core.
+Hint Extern 0 (littleo_def _ _ _) => solve[apply: littleoP] : core.
 Hint Extern 0 (locally _ _) => solve[apply: littleoP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: littleoP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: littleoP] : core.
 
 Lemma littleoE (tag : unit) (F : filter_on T)
    (phF : phantom (set (set T)) F) f h :
-   littleo F f h -> the_littleo tag F phF f h = f.
+   littleo_def F f h -> the_littleo tag F phF f h = f.
 Proof. by move=> /asboolP?; rewrite /the_littleo /insubd insubT. Qed.
 
 Canonical the_littleo_littleo (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [littleo of the_littleo tag F phF f h].
 
+Variant littleo_spec (F : set (set T)) (g : T -> W) : (T -> V) -> Type :=
+  LittleoSpec f of littleo_def F f g : littleo_spec F g f.
+
+Lemma littleo (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo_spec F g f.
+Proof. by constructor; apply/(@littleoP F). Qed.
+
 Lemma opp_littleo_subproof (F : filter_on T) e (df : {o_F e}) :
-   littleo F (- (df : _ -> _)) e.
+   littleo_def F (- (df : _ -> _)) e.
 Proof.
 by move=> _/posnumP[eps]; near=> x; rewrite normmN; near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
-
 
 Canonical opp_littleo (F : filter_on T) e (df : {o_F e}) :=
   Littleo (asboolT (opp_littleo_subproof df)).
@@ -458,13 +463,12 @@ Lemma oppox (F : filter_on T) (f : T -> V) e x :
 Proof. by move: x; rewrite -/(- _ =1 _) {1}oppo. Qed.
 
 Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
-  littleo F (df \+ dg) e.
+  littleo_def F (df \+ dg) e.
 Proof.
 move=> _/posnumP[eps]; near=> x => /=.
 rewrite [eps%:num]splitr mulrDl (ler_trans (ler_normm_add _ _)) // ler_add //;
 by near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
-
 
 Canonical add_littleo (F : filter_on T) e (df dg : {o_F e}) :=
   @Littleo _ _ (_ + _) (asboolT (add_littleo_subproof df dg)).
@@ -481,7 +485,7 @@ Lemma addox (F : filter_on T) (f g: T -> V) e x :
 Proof. by move: x; rewrite -/(_ + _ =1 _) {1}addo. Qed.
 
 Lemma eqadd_some_oP (F : filter_on T) (f g : T -> V) (e : T -> W) h :
-  f = g + [o_F e of h] -> littleo F (f - g) e.
+  f = g + [o_F e of h] -> littleo_def F (f - g) e.
 Proof.
 rewrite /the_littleo /insubd=> ->.
 case: insubP => /= [u /asboolP fg_o_e ->|_] eps  /=.
@@ -490,17 +494,17 @@ by rewrite addrC addKr; apply: littleoP.
 Qed.
 
 Lemma eqaddoP (F : filter_on T) (f g : T -> V) (e : T -> W) :
-   (f = g +o_ F e) <-> (littleo F (f - g) e).
+   (f = g +o_ F e) <-> (littleo_def F (f - g) e).
 Proof.
 by split=> [/eqadd_some_oP|fg_o_e]; rewrite ?littleoE // addrC addrNK.
 Qed.
 
 Lemma eqoP (F : filter_on T) (e : T -> W) (f : T -> V) :
-   (f =o_ F e) <-> (littleo F f e).
+   (f =o_ F e) <-> (littleo_def F f e).
 Proof. by rewrite -[f]subr0 -eqaddoP -[f \- 0]/(f - 0) subr0 add0r. Qed.
 
 Lemma eq_some_oP (F : filter_on T) (e : T -> W) (f : T -> V) h :
-   f = [o_F e of h] -> littleo F f e.
+   f = [o_F e of h] -> littleo_def F f e.
 Proof. by have := @eqadd_some_oP F f 0 e h; rewrite add0r subr0. Qed.
 
 (* replaces a 'o_F e by a "canonical one" *)
@@ -528,7 +532,7 @@ Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) :
 Proof. by apply/eqoP. Qed.
 
 Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
-  littleo F (a *: (df : _ -> _)) e.
+  littleo_def F (a *: (df : _ -> _)) e.
 Proof.
 have [->|a0] := eqVneq a 0; first by rewrite scale0r.
 move=> _ /posnumP[eps]; have aa := absr_eq0 a; near=> x => /=.
@@ -547,14 +551,14 @@ Lemma scaleox (F : filter_on T) a (f : T -> V) e x :
   a *: ([o_F e of f] x) = [o_F e of a *: [o_F e of f]] x.
 Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
 
-Let bigO (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|[f x]| <= k * `|[g x]|.
 
-Let bigO_ex (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let bigO_ex_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|[f x]| <= k * `|[g x]|.
 
 Lemma bigO_exP (F : set (set T)) (f : T -> V) (g : T -> W) :
-  Filter F -> bigO_ex F f g <-> bigO F f g.
+  Filter F -> bigO_ex_def F f g <-> bigO_def F f g.
 Proof.
 split=> [[k _ fOg] | [k fOg]].
   exists k => l ltkl; move: fOg; apply: filter_app; near=> x.
@@ -565,7 +569,7 @@ Unshelve. end_near. Qed.
 
 Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
   bigO_fun :> T -> V;
-  _ : `[< bigO F bigO_fun g >]
+  _ : `[< bigO_def F bigO_fun g >]
 }.
 Notation "{O_ F f }" := (bigO_type F f).
 
@@ -573,7 +577,7 @@ Canonical bigO_subtype (F : set (set T)) (g : T -> W) :=
   [subType for (@bigO_fun F g)].
 
 Lemma bigO_class (F : set (set T)) (g : T -> W) (f : {O_F g}) :
-  `[< bigO F f g >].
+  `[< bigO_def F f g >].
 Proof. by case: f => ?. Qed.
 Hint Resolve bigO_class.
 
@@ -582,7 +586,7 @@ Definition bigO_clone (F : set (set T)) (g : T -> W) (f : T -> V) (fT : {O_F g})
 Notation "[bigO 'of' f 'for' fT ]" := (@bigO_clone _ _ f fT _ idfun).
 Notation "[bigO 'of' f ]" := (@bigO_clone _ _ f _ _ idfun).
 
-Lemma bigO0_subproof F (g : T -> W) : Filter F -> bigO F (0 : T -> V) g.
+Lemma bigO0_subproof F (g : T -> W) : Filter F -> bigO_def F (0 : T -> V) g.
 Proof.
 by move=> FF; near=> k; apply: filterE => x; rewrite normm0 pmulr_rge0.
 Grab Existential Variables. end_near. Qed.
@@ -633,22 +637,30 @@ Notation "fx == gx '+O_(' x \near F ')' hx" :=
 Notation "fx '==O_(' x \near F ')' hx" :=
   (fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 
-Lemma bigOP (F : set (set T)) (g : T -> W) (f : {O_F g}) : bigO F f g.
+Lemma bigOP (F : set (set T)) (g : T -> W) (f : {O_F g}) : bigO_def F f g.
 Proof. exact/asboolP. Qed.
-Hint Extern 0 (bigO _ _ _) => solve[apply: bigOP] : core.
+Hint Extern 0 (bigO_def _ _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (locally _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: bigOP] : core.
 
 Lemma bigOE (tag : unit) (F : filter_on T) (phF : phantom (set (set T)) F) f h :
-   bigO F f h -> the_bigO tag F phF f h = f.
+   bigO_def F f h -> the_bigO tag F phF f h = f.
 Proof. by move=> /asboolP?; rewrite /the_bigO /insubd insubT. Qed.
 
 Canonical the_bigO_bigO (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [bigO of the_bigO tag F phF f h].
 
+Variant bigO_spec (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
+  BigOSpec f (k : posreal)
+    of (\forall x \near F, `|[f x]| <= k%:num * `|[g x]|) :
+      bigO_spec F g f.
+
+Lemma bigO (F : filter_on T) (g : T -> W) (f : {O_F g}) : bigO_spec F g f.
+Proof. by have /bigO_exP [_/posnumP[k] kP] := bigOP f; exists k. Qed.
+
 Lemma opp_bigO_subproof (F : filter_on T) e (df : {O_F e}) :
-   bigO F (- (df : _ -> _)) e.
+   bigO_def F (- (df : _ -> _)) e.
 Proof.
 have := bigOP [bigO of df]; apply: filter_app; near=> k.
 by apply: filter_app; near=> x; rewrite normmN.
@@ -665,7 +677,7 @@ Lemma oppOx (F : filter_on T) (f : T -> V) e x :
 Proof. by move: x; rewrite -/(- _ =1 _) {1}oppO. Qed.
 
 Lemma add_bigO_subproof (F : filter_on T) e (df dg : {O_F e}) :
-  bigO F (df \+ dg) e.
+  bigO_def F (df \+ dg) e.
 Proof.
 near=> k; near=> x; apply: ler_trans (ler_normm_add _ _) _.
 by rewrite (splitr k) mulrDl ler_add //; near: x; near: k;
@@ -687,7 +699,7 @@ Lemma addOx (F : filter_on T) (f g: T -> V) e x :
 Proof. by move: x; rewrite -/(_ + _ =1 _) {1}addO. Qed.
 
 Lemma eqadd_some_OP (F : filter_on T) (f g : T -> V) (e : T -> W) h :
-  f = g + [O_F e of h] -> bigO F (f - g) e.
+  f = g + [O_F e of h] -> bigO_def F (f - g) e.
 Proof.
 rewrite /the_bigO /insubd=> ->.
 case: insubP => /= [u /asboolP fg_o_e ->|_].
@@ -696,19 +708,19 @@ by rewrite addrC addKr; apply: bigOP.
 Qed.
 
 Lemma eqaddOP (F : filter_on T) (f g : T -> V) (e : T -> W) :
-   (f = g +O_ F e) <-> (bigO F (f - g) e).
+   (f = g +O_ F e) <-> (bigO_def F (f - g) e).
 Proof. by split=> [/eqadd_some_OP|fg_O_e]; rewrite ?bigOE // addrC addrNK. Qed.
 
 Lemma eqOP (F : filter_on T) (e : T -> W) (f : T -> V) :
-   (f =O_ F e) <-> (bigO F f e).
+   (f =O_ F e) <-> (bigO_def F f e).
 Proof. by rewrite -[f]subr0 -eqaddOP -[f \- 0]/(f - 0) subr0 add0r. Qed.
 
 Lemma eqO_exP (F : filter_on T) (e : T -> W) (f : T -> V) :
-   (f =O_ F e) <-> (bigO_ex F f e).
+   (f =O_ F e) <-> (bigO_ex_def F f e).
 Proof. apply: iff_trans (iff_sym (bigO_exP _ _ _)); apply: eqOP. Qed.
 
 Lemma eq_some_OP (F : filter_on T) (e : T -> W) (f : T -> V) h :
-   f = [O_F e of h] -> bigO F f e.
+   f = [O_F e of h] -> bigO_def F f e.
 Proof. by have := @eqadd_some_OP F f 0 e h; rewrite add0r subr0. Qed.
 
 Lemma bigO_eqO (F : filter_on T) (g : T -> W) (f : {O_F g}) :
@@ -716,7 +728,7 @@ Lemma bigO_eqO (F : filter_on T) (g : T -> W) (f : {O_F g}) :
 Proof. by apply/eqOP; apply: bigOP. Qed.
 
 Lemma eqO_bigO (F : filter_on T) (e : T -> W) (f : T -> V) :
-   f =O_ F e -> bigO F f e.
+   f =O_ F e -> bigO_def F f e.
 Proof. by rewrite eqOP. Qed.
 
 (* replaces a 'O_F e by a "canonical one" *)
@@ -870,6 +882,8 @@ Hint Resolve littleo_class.
 Hint Resolve bigO_class.
 Hint Resolve littleo_eqO.
 
+Arguments bigO {_ _ _ _}.
+
 (* NB: see also scaleox *)
 Lemma scaleolx (K : absRingType) (V W : normedModType K) {T : Type}
   (F : filter_on T) (a : W) (k : T -> K^o) (e : T -> V) (x : T) :
@@ -880,8 +894,7 @@ have [->|a0] := eqVneq a 0.
   by move=> ??; apply: filterE => ?; rewrite scaler0 normm0 pmulr_rge0.
 move=> _/posnumP[eps].
 have ea : 0 < eps%:num / `|[ a ]| by rewrite divr_gt0 // normm_gt0.
-set g := 'o _.
-have /(_ _ ea) ? := littleoP [littleo of g]; near=> y.
+have [g /(_ _ ea) ?] := littleo; near=> y.
 rewrite normmZ -ler_pdivl_mulr; first by rewrite mulrAC; near: y.
 by rewrite ltr_def normm_eq0 a0 normm_ge0.
 Grab Existential Variables. all: end_near. Qed.
@@ -925,8 +938,7 @@ Lemma littleo_bigO_eqo {F : filter_on T}
   (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> [o_F f of h] =o_F g.
 Proof.
-move->; apply/eqoP => _/posnumP[e]; set k := 'O g.
-have /bigO_exP [_/posnumP[c]] := bigOP [bigO of k].
+move->; apply/eqoP => _/posnumP[e]; have [k c] := bigO _ g.
 apply: filter_app; near=> x; rewrite -!ler_pdivr_mull //; apply: ler_trans.
 by rewrite ler_pdivr_mull // mulrA; near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
@@ -935,8 +947,7 @@ Arguments littleo_bigO_eqo {F}.
 Lemma bigO_littleo_eqo {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =o_F g -> [O_F f of h] =o_F g.
 Proof.
-move->; apply/eqoP => _/posnumP[e]; set k := 'O _.
-have /bigO_exP [_/posnumP[c]] := bigOP [bigO of k].
+move->; apply/eqoP => _/posnumP[e]; have [k c] := bigO.
 apply: filter_app; near=> x => /ler_trans; apply.
 by rewrite -ler_pdivl_mull // mulrA; near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
@@ -945,9 +956,7 @@ Arguments bigO_littleo_eqo {F}.
 Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> ([O_F f of h] : _ -> _) =O_F g.
 Proof.
-move->; apply/eqOP; set k := 'O g; set k' := 'O k.
-have /bigO_exP [_/posnumP[c1] kOg] := bigOP [bigO of k].
-have /bigO_exP [_/posnumP[c2] k'Ok] := bigOP [bigO of k'].
+move->; apply/eqOP; have [k c1 kOg] := bigO _ g. have [k' c2 k'Ok] := bigO _ k.
 near=> c; move: k'Ok kOg; apply: filter_app2; near=> x => lek'c2k.
 rewrite -(@ler_pmul2l _ c2) // mulrA => /(ler_trans lek'c2k) /ler_trans; apply.
 by rewrite ler_pmul //; near: c; apply: locally_pinfty_ge.
@@ -1039,15 +1048,13 @@ Proof.
 rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
 rewrite [`|[_]|]absrM -(sqr_sqrtr (ltrW [gt0 of e%:num])) expr2.
 rewrite [`|[_]|]normrM mulrACA ler_pmul //; near: x;
-by set h := 'o _; apply: (littleoP [littleo of h]).
+by have [/= h] := littleo; apply.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma mulO (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [O_F h1 of f] * [O_F h2 of g] =O_F (h1 * h2).
 Proof.
-rewrite [RHS]bigOE //; set O1 := 'O _; set O2 := 'O _.
-have /bigO_exP [_/posnumP[k1] Oh1] := bigOP [bigO of O1].
-have /bigO_exP [_/posnumP[k2] Oh2] := bigOP [bigO of O2].
+rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|[_]|]absrM (ler_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|[_]| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
@@ -1214,12 +1221,12 @@ Section big_omega.
 Context {K : absRingType} {T : Type} {V : normedModType K}.
 Implicit Types W : normedModType K.
 
-Let bigOmega W (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let bigOmega_def W (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|[f x]| >= k * `|[g x]|.
 
 Structure bigOmega_type {W} (F : set (set T)) (g : T -> W) := BigOmega {
   bigOmega_fun :> T -> V;
-  _ : `[< bigOmega F bigOmega_fun g >]
+  _ : `[< bigOmega_def F bigOmega_fun g >]
 }.
 
 Notation "{Omega_ F g }" := (@bigOmega_type _ F g).
@@ -1228,7 +1235,7 @@ Canonical bigOmega_subtype {W} (F : set (set T)) (g : T -> W) :=
   [subType for (@bigOmega_fun W F g)].
 
 Lemma bigOmega_class {W} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
-  `[< bigOmega F f g >].
+  `[< bigOmega_def F f g >].
 Proof. by case: f => ?. Qed.
 Hint Resolve bigOmega_class.
 
@@ -1237,7 +1244,7 @@ Definition bigOmega_clone {W} (F : set (set T)) (g : T -> W) (f : T -> V)
 Notation "[bigOmega 'of' f 'for' fT ]" := (@bigOmega_clone _ _ _ f fT _ idfun).
 Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ f _ _ idfun).
 
-Lemma bigOmega_refl_subproof F (g : T -> V) : Filter F -> bigOmega F g g.
+Lemma bigOmega_refl_subproof F (g : T -> V) : Filter F -> bigOmega_def F g g.
 Proof.
 by move=> FF; exists 1 => //; near=> x; rewrite mul1r.
 Grab Existential Variables. all: end_near. Qed.
@@ -1255,7 +1262,7 @@ Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e). (* parsing *)
 Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
 
 Definition is_bigOmega {W} (F : set (set T)) (g : T -> W) :=
-  [qualify f : T -> V | `[< bigOmega F f g >] ].
+  [qualify f : T -> V | `[< bigOmega_def F f g >] ].
 Fact is_bigOmega_key {W} (F : set (set T)) (g : T -> W) : pred_key (is_bigOmega F g).
 Proof. by []. Qed.
 Canonical is_bigOmega_keyed {W} (F : set (set T)) (g : T -> W) :=
@@ -1263,14 +1270,26 @@ Canonical is_bigOmega_keyed {W} (F : set (set T)) (g : T -> W) :=
 Notation "'Omega_ F g" := (is_bigOmega F g).
 
 Lemma bigOmegaP {W} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
-  bigOmega F f g.
+  bigOmega_def F f g.
 Proof. exact/asboolP. Qed.
-Hint Extern 0 (bigOmega _ _ _) => solve[apply: bigOmegaP] : core.
+Hint Extern 0 (bigOmega_def _ _ _) => solve[apply: bigOmegaP] : core.
 Hint Extern 0 (locally _ _) => solve[apply: bigOmegaP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: bigOmegaP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: bigOmegaP] : core.
 
 Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
+
+Canonical the_bigOmega_bigOmega (tag : unit) (F : filter_on T)
+  (phF : phantom (set (set T)) F) f h := [bigOmega of the_bigOmega tag F phF f h].
+
+Variant bigOmega_spec {W} (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
+  BigOmegaSpec f (k : posreal) of 
+    (\forall x \near F, `|[f x]| >= k%:num * `|[g x]|) :
+  bigOmega_spec F g f.
+
+Lemma bigOmega {W} (F : filter_on T) (g : T -> W) (f : {Omega_F g}) :
+  bigOmega_spec F g f.
+Proof. by have [_/posnumP[k]] := bigOmegaP f; exists k. Qed.
 
 (* properties of big Omega *)
 
@@ -1306,6 +1325,7 @@ Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e).
 Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
 Notation "'Omega_ F g" := (is_bigOmega F g).
 Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
+Arguments bigOmega {_ _ _ _}.
 
 Section big_omega_in_R.
 
@@ -1325,9 +1345,7 @@ Lemma mulOmega (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [Omega_F h1 of f] * [Omega_F h2 of g] =Omega_F (h1 * h2).
 Proof.
 rewrite eqOmegaE eqOmegaO [in RHS]bigOE //.
-set W1 := [Omega_F _ of _]; set W2 := [Omega_F _ of _].
-have [_/posnumP[k1] ?] := bigOmegaP [bigOmega of W1].
-have [_/posnumP[k2] ?] := bigOmegaP [bigOmega of W2].
+have [W1 k1 ?] := bigOmega; have [W2 k2 ?] := bigOmega.
 near=> k; near=> x; rewrite [`|[_]|]absrM.
 rewrite (@ler_trans _ ((k2%:num * k1%:num)^-1 * `|[(W1 * W2) x]|)) //.
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
@@ -1344,13 +1362,13 @@ Section big_theta.
 Context {K : absRingType} {T : Type} {V : normedModType K}.
 Implicit Types W : normedModType K.
 
-Let bigTheta W (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let bigTheta_def W (F : set (set T)) (f : T -> V) (g : T -> W) :=
   exists2 k, (k.1 > 0) && (k.2 > 0) &
   \forall x \near F, k.1 * `|[g x]| <= `|[f x]| /\ `|[f x]| <= k.2 * `|[g x]|.
 
 Structure bigTheta_type {W} (F : set (set T)) (g : T -> W) := BigTheta {
   bigTheta_fun :> T -> V;
-  _ : `[< bigTheta F bigTheta_fun g >]
+  _ : `[< bigTheta_def F bigTheta_fun g >]
 }.
 
 Notation "{Theta_ F g }" := (@bigTheta_type _ F g).
@@ -1359,7 +1377,7 @@ Canonical bigTheta_subtype {W} (F : set (set T)) (g : T -> W) :=
   [subType for (@bigTheta_fun W F g)].
 
 Lemma bigTheta_class {W} (F : set (set T)) (g : T -> W) (f : {Theta_F g}) :
-  `[< bigTheta F f g >].
+  `[< bigTheta_def F f g >].
 Proof. by case: f => ?. Qed.
 Hint Resolve bigTheta_class.
 
@@ -1368,7 +1386,7 @@ Definition bigTheta_clone {W} (F : set (set T)) (g : T -> W) (f : T -> V)
 Notation "[bigTheta 'of' f 'for' fT ]" := (@bigTheta_clone _ _ _ f fT _ idfun).
 Notation "[bigTheta 'of' f ]" := (@bigTheta_clone _ _ _ f _ _ idfun).
 
-Lemma bigTheta_refl_subproof F (g : T -> V) : Filter F -> bigTheta F g g.
+Lemma bigTheta_refl_subproof F (g : T -> V) : Filter F -> bigTheta_def F g g.
 Proof.
 by move=> FF; exists 1 => /=; rewrite ?ltr01 //; near=> x; by rewrite mul1r.
 Grab Existential Variables. all: end_near. Qed.
@@ -1386,7 +1404,7 @@ Notation "[Theta_ x e 'of' f ]" := (mkbigTheta gen_tag x f e). (* parsing *)
 Notation "[Theta '_' x e 'of' f ]" := (the_bigTheta _ _ (PhantomF x) f e).
 
 Definition is_bigTheta {W} (F : set (set T)) (g : T -> W) :=
-  [qualify f : T -> V | `[< bigTheta F f g >] ].
+  [qualify f : T -> V | `[< bigTheta_def F f g >] ].
 Fact is_bigTheta_key {W} (F : set (set T)) (g : T -> W) : pred_key (is_bigTheta F g).
 Proof. by []. Qed.
 Canonical is_bigTheta_keyed {W} (F : set (set T)) (g : T -> W) :=
@@ -1394,12 +1412,28 @@ Canonical is_bigTheta_keyed {W} (F : set (set T)) (g : T -> W) :=
 Notation "'Theta_ F g" := (@is_bigTheta _ F g).
 
 Lemma bigThetaP {W} (F : set (set T)) (g : T -> W) (f : {Theta_F g}) :
-  bigTheta F f g.
+  bigTheta_def F f g.
 Proof. exact/asboolP. Qed.
-Hint Extern 0 (bigTheta _ _ _) => solve[apply: bigThetaP] : core.
+Hint Extern 0 (bigTheta_def _ _ _) => solve[apply: bigThetaP] : core.
 Hint Extern 0 (locally _ _) => solve[apply: bigThetaP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: bigThetaP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: bigThetaP] : core.
+
+Canonical the_bigTheta_bigTheta (tag : unit) (F : filter_on T)
+  (phF : phantom (set (set T)) F) f h := [bigTheta of @the_bigTheta tag F phF f h].
+
+Variant bigTheta_spec {W} (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
+    BigThetaSpec f (k1 : posreal) (k2 : posreal) of
+      (\forall x \near F, k1%:num * `|[g x]| <= `|[f x]|) &
+      (\forall x \near F, `|[f x]| <= k2%:num * `|[g x]|) :
+  bigTheta_spec F g f.
+
+Lemma bigTheta {W} (F : filter_on T) (g : T -> W) (f : {Theta_F g}) :
+  bigTheta_spec F g f.
+Proof.
+have [[_ _] /andP[/posnumP[k] /posnumP[k']]] := bigThetaP f.
+by move=> /near_andP[]; exists k k'.
+Qed.
 
 Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
 
@@ -1426,11 +1460,7 @@ by apply/asboolP; rewrite /the_bigTheta val_insubd; case: ifPn => // /asboolP.
 Qed.
 
 Lemma eqThetaO (F : filter_on T) (f g : T -> V) : [Theta_F g of f] =O_F g.
-Proof.
-set T1 := [Theta_F _ of _].
-have [/= -[_ k2] /andP[/= _ ?] /near_andP[_ ?]] := bigThetaP [bigTheta of T1].
-apply/eqO_exP; by exists k2.
-Qed.
+Proof. by have [T1 k1 k2 ? ?] := bigTheta; apply/eqO_exP; exists k2%:num. Qed.
 
 Lemma idTheta (F : filter_on T) (f : T -> V) : f =Theta_F f.
 Proof. rewrite eqThetaE bigThetaE eqOmegaO; split; exact/idO. Qed.
@@ -1469,9 +1499,8 @@ rewrite eqThetaE bigThetaE; split; first by rewrite eqThetaO addO.
 rewrite -eqOmegaE; apply: addOmega.
 - by move=> ?; rewrite /the_bigTheta val_insubd /=; case: ifP.
 - by move=> ?; rewrite /the_bigO val_insubd /=; case: ifP.
-- rewrite eqOmegaE eqOmegaO. set T1 := [Theta_F _ of _].
-  have [/= -[k1 _] /= /andP[? _] /near_andP[? _]] := bigThetaP [bigTheta of T1].
-  rewrite bigOE //; apply/bigO_exP; exists k1^-1 => //; first by rewrite invr_gt0.
+- rewrite eqOmegaE eqOmegaO; have [T1 k1 k2 ? ?] := bigTheta.
+  rewrite bigOE //; apply/bigO_exP; exists k1%:num^-1 => //.
   by near=> x; rewrite ler_pdivl_mull //; near: x.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1481,15 +1510,13 @@ Proof.
 rewrite eqThetaE bigThetaE; split.
   by rewrite (eqThetaO _ f) (eqThetaO _ g) mulO.
 rewrite eqOmegaO [in RHS]bigOE //.
-set T1 := [Theta_F _ of _]; set T2 := [Theta_F _ of _].
-have [[k1 l1] /andP[k10 _] /near_andP[/= P1 _]] := bigThetaP [bigTheta of T1].
-have [[k2 l2] /andP[k20 _] /near_andP[/= P2 _]] := bigThetaP [bigTheta of T2].
+have [T1 k1 l1 P1 ?] := bigTheta; have [T2 k2 l2 P2 ?] := bigTheta.
 near=> k; first near=> x.
-rewrite [`|[_]|]absrM (@ler_trans _ ((k2 * k1)^-1 * `|[(T1 * T2) x]|)) //.
+rewrite [`|[_]|]absrM (@ler_trans _ ((k2%:num * k1%:num)^-1 * `|[(T1 * T2) x]|)) //.
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
-  rewrite ler_pdivl_mull // (mulrA k1) mulrCA [`|[_]|]normrM ler_pmul //;
+  rewrite ler_pdivl_mull // (mulrA k1%:num) mulrCA [`|[_]|]normrM ler_pmul //;
   by [rewrite mulr_ge0 // ltrW|near: x].
-by rewrite ler_wpmul2r // ltrW //; near: k; exists (k2 * k1)^-1.
+by rewrite ler_wpmul2r // ltrW //; near: k; exists (k2%:num * k1%:num)^-1.
 Grab Existential Variables. all: end_near. Qed.
 
 End big_theta_in_R.
