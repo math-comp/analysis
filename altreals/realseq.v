@@ -4,7 +4,8 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra bigenough.
+From mathcomp Require Import all_ssreflect all_algebra.
+Require Import mathcomp.bigenough.bigenough.
 Require Import xfinmap boolp reals discrete.
 
 Set Implicit Arguments.
