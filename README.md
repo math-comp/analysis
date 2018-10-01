@@ -23,6 +23,11 @@ authors).
 [Coquelicot library]: http://coquelicot.saclay.inria.fr/
 [CoqApprox library]: http://tamadi.gforge.inria.fr/CoqApprox/
 
+## Contributing
+
+Always submit a pull request for code and wait for the CI to pass before merging.
+Text markup files may be edited directly though, should you have commit rights.
+
 ## License
 
 The license for this library's original contents is [CeCILL-C].
