@@ -2,6 +2,7 @@ opam-version: "1.2"
 maintainer: "pierre-yves@strub.nu"
 homepage: "https://github.com/math-comp/analysis"
 bug-reports: "https://github.com/math-comp/analysis/issues"
+dev-repo: "https://github.com/math-comp/analysis.git"
 license: "CeCILL-C"
 authors: [
   "Reynald Affeldt"
