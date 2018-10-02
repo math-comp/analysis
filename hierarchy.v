@@ -332,9 +332,6 @@ by rewrite funeqE => x; rewrite /locally_norm entourages_normE
   filter_from_entourageE.
 Qed.
 
-Lemma locally_normP x P : locally x P <-> locally_norm x P.
-Proof. by rewrite locally_locally_norm. Qed.
-
 Lemma filter_from_norm_locally x :
   @filter_from K _ [set x : K | 0 < x] (ball norm x) = locally x.
 Proof.
@@ -344,6 +341,10 @@ rewrite predeqE => A; split=> [[_/posnumP[e] sxeA] |].
 rewrite -locally_locally_norm => - [B [_/posnumP[e] seB] sBA].
 by exists e%:num => // y xye; apply/sBA/seB.
 Qed.
+
+Lemma locally_normP x P :
+  locally x P <-> @filter_from K _ [set x : K | 0 < x] (ball norm x) P.
+Proof. by rewrite filter_from_norm_locally. Qed.
 
 Lemma locally_normE (x : V) (P : set V) :
   locally_norm x P = \near x, P x.
@@ -400,6 +401,7 @@ Qed.
 End NormedModule1.
 
 Hint Resolve normm_ge0.
+Hint Resolve ball_center.
 
 Module Export LocallyNorm.
 Definition locally_simpl := (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
@@ -427,13 +429,9 @@ Lemma continuous_flim_norm {K : numDomainType} (V W : normedModType K)
   continuous f -> x --> l -> forall e : {posnum K}, `|[f l - f x]| < e.
 Proof.
 move=> cf xl e.
-move/flim_norm: (cf l) => /(_ _ (posnum_gt0 e)).
-rewrite nearE => /locallyP; rewrite -entourages_normE => -[A [i i0 sA]].
-apply; apply: sA.
-have /@flim_norm : Filter [filter of x] by apply: filter_on_Filter.
-move/(_ _ xl _ i0).
-rewrite nearE => /locallyP; rewrite -entourages_normE => -[B [j j0 sB]].
-by apply; apply: sB => /=; rewrite subrr normm0.
+have /flim_norm /(_ _ [gt0 of e%:num]) /locally_normP [_/posnumP[d]] := (cf l).
+apply; have /flim_norm /(_ _ [gt0 of d%:num]) := xl.
+by move=> /locally_normP [_/posnumP[d']]; apply.
 Qed.
 
 Section NormedModuleField.
@@ -656,10 +654,8 @@ suff loc_preim r C :
   locally `|[p - r]| C -> locally r ((fun r => `|[p - r]|) @^-1` C).
   have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
   by exists `|[p - r]|.
-move=> [D [_/posnumP[e] seD] sDC]; apply: locally_le_locally_norm.
-exists [set pq | `|[pq.1 - pq.2]| < e%:num].
-  by rewrite entourages_normE; apply: entourages_ball.
-move=> s re_s; apply/sDC/seD => /=; apply: ler_lt_trans (ler_distm_dist _ _) _.
+move=> /locally_normP [_/posnumP[e] sC]; apply/locally_normP.
+exists e%:num=> // s re_s; apply/sC; apply: ler_lt_trans (ler_distm_dist _ _) _.
 by rewrite opprB addrC -subr_trans normmB.
 Qed.
 
@@ -697,11 +693,10 @@ Canonical realFieldBar_filteredType :=
 
 Global Instance realField_locally'_proper (x : K) : ProperFilter (locally' x).
 Proof.
-apply: Build_ProperFilter => A; rewrite /locally' -locally_locally_norm.
-move=> [B [_/posnumP[e] seB] sBA].
-exists (x + e%:num / 2); apply: sBA; last first.
+apply: Build_ProperFilter => A; rewrite /locally' -filter_from_norm_locally.
+move=> [_/posnumP[e] sA]; exists (x + e%:num / 2); apply: sA; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-apply: seB; rewrite opprD addrA subrr sub0r normmN [ `|[_]| ]ger0_norm //.
+rewrite /= opprD addrA subrr sub0r normmN [ `|[_]| ]ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
@@ -852,9 +847,8 @@ End matrix_normedMod.
 Lemma coord_continuous {R : realFieldType} m n i j :
   continuous (fun M : 'M[R]_(m.+1, n.+1) => M i j).
 Proof.
-move=> M s /=; rewrite -filter_from_norm_locally => -[e e0 es].
-apply/locallyP; rewrite locally_entourageE -filter_from_norm_locally.
-exists e => // N MN; apply/es; have /bigmaxr_ltrP MeN := MN.
+move=> M A /= /locally_normP [_/posnumP[e] sA]; apply/locally_normP.
+exists e%:num => // N MN; apply/sA; have /bigmaxr_ltrP MeN := MN.
 have /(MeN _) :
   (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
    size [seq (`|(M - N) ij.1 ij.2|)%R | ij : 'I_m.+1 * 'I_n.+1])%N.
@@ -872,9 +866,9 @@ Context {K : realDomainType} {U V : normedModType K}.
 
 Definition prod_norm (x : U * V) := maxr `|[x.1]| `|[x.2]|.
 
-Lemma prod_norm_triangle : forall x y : U * V, prod_norm (x + y) <= prod_norm x + prod_norm y.
+Lemma prod_norm_triangle x y : prod_norm (x + y) <= prod_norm x + prod_norm y.
 Proof.
-by move=> [xu xv] [yu yv]; rewrite ler_maxl /=; apply/andP; split;
+by rewrite ler_maxl /=; apply/andP; split;
   apply: ler_trans (ler_normm_add _ _) _; apply: ler_add;
   rewrite ler_maxr lerr // orbC.
 Qed.
@@ -1063,9 +1057,8 @@ Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
 
 Lemma continuous_norm : continuous (@norm _ V).
 Proof.
-move=> x; apply/flim_normP => _/posnumP[e] /=.
-rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-by exists e%:num => // y Hy; apply/(ler_lt_trans (ler_distm_dist _ _)).
+move=> x A /= /locally_normP [_/posnumP[e] sA]; apply/locally_normP.
+by exists e%:num => // ??; apply/sA; apply/(ler_lt_trans (ler_distm_dist _ _)).
 Qed.
 
 (* :TODO: yet, not used anywhere?! *)
@@ -1241,9 +1234,9 @@ Definition at_right x := within (fun u : R => x < u) (locally x).
 
 Global Instance at_right_proper_filter (x : R) : ProperFilter (at_right x).
 Proof.
-apply: Build_ProperFilter' => -[A [_/posnumP[d] sA]] /(_ (x + d%:num / 2)).
-apply; last by rewrite ltr_addl.
-apply: sA; rewrite /= opprD !addrA subrr add0r normrN normf_div !ger0_norm //.
+apply: Build_ProperFilter'; rewrite /at_right -filter_from_norm_locally.
+move=> [_/posnumP[e] /(_ (x + e%:num / 2))]; apply; last by rewrite ltr_addl.
+rewrite /= opprD addrA subrr add0r [ `|[_]|]normrN normf_div !ger0_norm //.
 by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
 
@@ -1260,19 +1253,17 @@ Typeclasses Opaque at_left at_right.
 
 Lemma open_lt (y : R) : open (< y).
 Proof.
-move=> x /=; rewrite -subr_gt0 => yDx_gt0.
-rewrite entourages_normE locally_entourageE -filter_from_norm_locally.
-exists (y - x) => // z.
-by rewrite /ball /= normmB ltr_distl addrCA subrr addr0 => /andP[].
+rewrite openE => x /= ltxy; apply/locally_normP; exists (y - x).
+  by rewrite subr_gt0.
+by move=> ?; rewrite /= normmB ltr_distl addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_lt.
 
 Lemma open_gt (y : R) : open (> y).
 Proof.
-move=> x /=; rewrite -subr_gt0 => xDy_gt0.
-rewrite entourages_normE locally_entourageE -filter_from_norm_locally.
-exists (x - y) => // z.
-by rewrite /ball /= normmB ltr_distl opprB addrCA subrr addr0 => /andP[].
+rewrite openE => x /= gtxy; apply/locally_normP; exists (x - y).
+  by rewrite subr_gt0.
+by move=> ?; rewrite /= normmB ltr_distl opprB addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_gt.
 
@@ -1372,7 +1363,7 @@ wlog ltyx : a b (* leab *) A y Ay Acl x / y < x.
 move: Acl => [B Bcl AeabB].
 have sAab : A `<=` [set x | x \in `[a, b]] by rewrite AeabB => ? [].
 move=> /asboolPn; rewrite asbool_and => /nandP [/asboolPn /(_ (sAab _))|] //.
-move=> /imply_asboolPn [abx nAx] [C Cop AeabC].
+move=> /imply_asboolPn [abx nAx] [C]; rewrite openE => Cop AeabC.
 set Altx := fun y => y \in A `&` (< x).
 have Altxn0 : reals.nonempty Altx by exists y; rewrite in_setE.
 have xub_Altx : x \in ub Altx.
@@ -1386,8 +1377,8 @@ have Az : A z.
   rewrite AeabB; split.
     suff : {subset `[y, x] <= `[a, b]} by apply.
     by apply/subitvP; rewrite /= (itvP abx); have /sAab/itvP-> := Ay.
-  apply: Bcl => D; rewrite -filter_from_norm_locally => -[_/posnumP[e] ze_D].
-  have [t] := sup_adherent Altxsup (posnum_gt0 e).
+  apply: Bcl => D /locally_normP [_/posnumP[e] ze_D].
+  have [t] := sup_adherent Altxsup [gt0 of e%:num].
   rewrite in_setE => - [At lttx] ltzet.
   exists t; split; first by move: At; rewrite AeabB => - [].
   apply/ze_D; rewrite /ball /= ltr_distl.
@@ -1397,9 +1388,7 @@ have Az : A z.
 have ltzx : 0 < x - z.
   have : z <= x by rewrite (itvP yxz).
   by rewrite subr_gt0 ler_eqVlt => /orP [/eqP zex|] //; move: nAx; rewrite -zex.
-have := Az; rewrite AeabC => -[_ /Cop].
-rewrite entourages_normE locally_entourageE -filter_from_norm_locally.
-move => [_ /posnumP[e] ze_C].
+have := Az; rewrite AeabC => -[_ /Cop /(locally_normP _ C) [_/posnumP[e] ze_C]].
 suff [t Altxt] : exists2 t, Altx t & z < t.
   by rewrite ltrNge => /negP; apply; apply/sup_upper_bound.
 exists (z + (minr (e%:num / 2) ((PosNum ltzx)%:num / 2))); last first.
@@ -1465,9 +1454,7 @@ have /fop := Di; rewrite openE => /(_ _ fx).
 rewrite /(_^°) -filter_from_norm_locally => - [_ /posnumP[e] xe_fi].
 have /clAx [y [[aby [D' sD [sayUf _]]] xe_y]] := locally_ball x e.
 exists (i |` D')%fset; first by move=> j /fset1UP[->|/sD] //; rewrite in_setE.
-split=> [z axz|]; last first.
-  exists i; first by rewrite !inE eq_refl.
-  exact/xe_fi/ball_center.
+split=> [z axz|]; last by exists i; [rewrite !inE eq_refl|apply/xe_fi].
 case: (lerP z y) => [lezy|ltyz].
   have /sayUf [j Dj fjz] : z \in `[a, y] by rewrite inE (itvP axz) lezy.
   by exists j => //; rewrite inE orbC Dj.
@@ -1518,9 +1505,8 @@ exists (sup A) => //; have lefsupv : f (sup A) <= v.
   rewrite lerNgt; apply/negP => ltvfsup.
   have vltfsup : 0 < f (sup A) - v by rewrite subr_gt0.
   have /fcont /(_ _ (locally_ball _ (PosNum vltfsup))) := supAab.
-  rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-  move=> [_/posnumP[d] supdfe].
-  have [t At supd_t] := sup_adherent supA (posnum_gt0 d).
+  rewrite locally_simpl => /= /locally_normP [_/posnumP[d] supdfe].
+  have [t At supd_t] := sup_adherent supA [gt0 of d%:num].
   suff /supdfe : ball norm (sup A) d%:num t.
     rewrite /ball ltr_norml => /andP [_].
     by rewrite ltr_add2l ltr_oppr opprK ltrNge; have /andP [_ ->] := At.
@@ -1531,19 +1517,15 @@ apply/eqP; rewrite eqr_le; apply/andP; split=> //.
 rewrite -subr_le0; apply/ler0_addgt0P => _/posnumP[e].
 rewrite ler_subl_addr -ler_subl_addl ltrW //.
 have /fcont /(_ _ (locally_ball _ e)) := supAab.
-rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-move=> [_/posnumP[d] supdfe].
+rewrite locally_simpl /= => /locally_normP [_/posnumP[d] supdfe].
 have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
 have /supdfe /= : ball norm (sup A) d%:num x.
-  near: x; rewrite /at_right !near_simpl -locally_nearE.
-  by rewrite -filter_from_norm_locally; exists d%:num.
+  by near: x; apply/locally_normP; exists d%:num.
 move/ltr_distW; apply: ler_lt_trans.
 rewrite ler_add2r ltrW //; suff : forall t, t \in `](sup A), b] -> v < f t.
   apply; rewrite inE; apply/andP; split.
-    near: x; rewrite /at_right !near_simpl -locally_nearE.
-    by rewrite -filter_from_norm_locally; exists 1.
-  near: x; rewrite /at_right !near_simpl -locally_nearE.
-  rewrite -filter_from_norm_locally; exists (b - sup A).
+    by near: x; apply/locally_normP; exists 1.
+  near: x; apply/locally_normP; exists (b - sup A).
     rewrite subr_gt0 ltr_def (itvP supAab) andbT; apply/negP => /eqP besup.
     by move: lefsupv; rewrite lerNgt -besup ltvfb.
   move=> t lttb ltsupt; move: lttb; rewrite /ball normmB.
@@ -1730,8 +1712,7 @@ have covA : A `<=` \bigcup_(n : int) [set p | `|[p]| < n%:~R].
   by rewrite rmorphD /= -floorE floorS_gtr.
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite -subr_gt0 => ltpn.
-  apply/locallyP; rewrite locally_entourageE -filter_from_norm_locally.
-  exists (n%:~R - `|[p]|) => // q.
+  apply/locally_normP; exists (n%:~R - `|[p]|) => // q.
   rewrite /ball ltr_subr_addr normmB; apply: ler_lt_trans.
   by rewrite -{1}(subrK p q) ler_normm_add.
 move=> D _ DcovA.

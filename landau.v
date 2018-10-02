@@ -1089,8 +1089,7 @@ Lemma near_shift {K : realFieldType} {R : normedModType K}
    (y x : R) (P : set R) :
    (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
-rewrite propeqE; split;
-  rewrite -!locally_nearE -!filter_from_norm_locally => -[_/posnumP[e] ye];
+rewrite -!filter_from_normE propeqE; split=> -[_/posnumP[e] ye];
   exists e%:num => // t /= et.
   apply: ye; rewrite /= !opprD addrA addrACA subrr add0r.
   by rewrite opprK addrC.
@@ -1120,17 +1119,16 @@ Hypothesis (normm_s : forall k x, `|[s k x]| = `|k| * `|[x]|).
 Lemma linear_for_continuous (f: {linear U -> V | GRing.Scale.op s_law}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
-move=> /eqO_exP [_/posnumP[k0] Of1] x.
+move=> /eqO_exP [_/posnumP[k0] /locally_normP [_/posnumP[d]]].
+rewrite /cst [X in _ * X]normr1 mulr1 => fk0 x.
 apply/flim_normP => _/posnumP[e]; rewrite !near_simpl.
 rewrite (near_shift 0) /= subr0; near=> y => /=.
 rewrite -linearB opprD addrC addrNK linearN normmN; near: y.
 suff flip : \forall k \near +oo, forall x, `|[f x]| <= k * `|[x]|.
   near +oo in R => k; near=> y.
   rewrite (ler_lt_trans (near flip k _ _)) // -ltr_pdivl_mull //.
-  near: y; rewrite -locally_nearE -filter_from_norm_locally.
+  near: y; apply/locally_normP.
   by eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
-move: Of1; rewrite near_simpl -locally_nearE -filter_from_norm_locally.
-move=> [_/posnumP[d]]; rewrite /cst [X in _ * X]normr1 mulr1 => fk.
 near=> k => y; case: (ler0P `|[y]|) => [|y0].
   by rewrite normm_le0 => /eqP->; rewrite linear0 !normm0 mulr0.
 have ky0 : 0 <= k0%:num / (k * `|[y]|).
@@ -1139,7 +1137,7 @@ rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //.
 rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
 have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
-rewrite -linearZ fk //= normmB subr0 normmZ ger0_norm //.
+rewrite -linearZ fk0 //= normmB subr0 normmZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //.
 by rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: locally_pinfty_gt.
 Grab Existential Variables. all: end_near. Qed.

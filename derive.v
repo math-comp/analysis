@@ -163,8 +163,7 @@ Proof.
 move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; near=> k; rewrite /cst [`|[_]|]normr1 mulr1.
-  near=> y; rewrite ltrW //; near: y.
-  rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
+  near=> y; rewrite ltrW //; near: y; apply/locally_normP.
   by exists k; [near: k; exists 0|move=> ? /=; rewrite sub0r normmN].
 rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
 by apply/eqolim0P; apply: (flim_trans (dfc 0)); rewrite linear0.
@@ -292,11 +291,9 @@ rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
   rewrite (_ : (fun _ => _) = cst 0); first exact: cst_continuous.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
-apply/flim_normP => e e0.
-rewrite nearE /= locally_simpl /locally' -filter_from_norm_locally.
-have /(littleoP [littleo of k]) : 0 < e / (2 * `|[v]|).
+apply/flim_normP => e e0; rewrite /locally' -filter_from_norm_locally.
+have /(littleoP [littleo of k]) /locally_normP [i i0 Hi] : 0 < e / (2 * `|[v]|).
   by rewrite divr_gt0 // pmulr_rgt0 // normm_gt0.
-rewrite near_simpl -locally_nearE -filter_from_norm_locally => -[i i0 Hi].
 exists (i / `|[v]|); first by rewrite divr_gt0 // normm_gt0.
 move=> /= j; rewrite normmB subr0 ltr_pdivl_mulr ?normm_gt0 // => jvi j0.
 rewrite normmB subr0 normmZ -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
@@ -371,9 +368,8 @@ rewrite funeqE => x; apply/eqP; case: (ler0P `|[x]|) => [|xn0].
   by rewrite normm_le0 => /eqP ->; rewrite linear0.
 rewrite -normm_le0 -(mul0r `|[x]|) -ler_pdivr_mulr //.
 apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
-have /oid := posnum_gt0 e.
-rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-move=> [_ /posnumP[d] dfe]; set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
+have /oid /locally_normP [_/posnumP[d] dfe] := [gt0 of e%:num].
+set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
 rewrite -{1}(@scalerKV _ _ k _ x) // linearZZ normmZ.
 rewrite -ler_pdivl_mull ?gtr0_norm // mulrCA.
 rewrite (@ler_trans _ (e%:num * `|[k^-1 *: x]|)) //; last first.
@@ -613,8 +609,7 @@ Qed.
 Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
   continuous f -> exists2 k, k > 0 & forall x, `|[f x]| <= k * `|[x]|.
 Proof.
-move=> /(_ 0); rewrite linear0 => /(_ _ (locally_ball 0 1%:pos)).
-rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
+move=> /(_ 0); rewrite linear0 => /(_ _ (locally_ball 0 1%:pos)) /locally_normP.
 move=> [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
 case: (lerP `|[x]| 0) => [|xn0].
   by rewrite normm_le0 => /eqP->; rewrite linear0 !normm0 mulr0.
@@ -623,9 +618,9 @@ have kn0 : k != 0 by [].
 have abskgt0 : `|k| > 0 by rewrite normr_gt0.
 rewrite -[x in X in X <= _](scalerKV kn0) linearZZ normmZ -ler_pdivl_mull //.
 suff /he : ball norm 0 e%:num (k^-1 *: x).
-  rewrite /ball normmB subr0 => /ltrW /ler_trans; apply.
+  rewrite /= normmB subr0 => /ltrW /ler_trans; apply.
   by rewrite ger0_norm // mulVf.
-rewrite /ball /= normmB subr0 normmZ normfV ger0_norm // invfM -mulrA mulVf //.
+rewrite /= normmB subr0 normmZ normfV ger0_norm // invfM -mulrA mulVf //.
 by rewrite invf_div mulr1 [X in _ < X]splitr; apply: ltr_spaddr.
 Qed.
 
@@ -648,15 +643,13 @@ Proof.
 apply/eqoP => _ /posnumP[e].
 have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
 have /(_ (e%:num / k%:num)) := littleoP [littleo of [o_ (0 : V') id of g]].
-rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-move=> /(_ _) [//|_/posnumP[d] hd].
+move=> /(_ _) /locally_normP [//|_/posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: ler_trans (hd _ _) _; last first.
   rewrite -ler_pdivl_mull //; apply: ler_trans leOxkx _.
   by rewrite invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
-rewrite /ball normmB subr0 (ler_lt_trans leOxkx) //.
-rewrite -ltr_pdivl_mull //; near: x.
-rewrite -locally_nearE -filter_from_norm_locally.
-by exists (k%:num ^-1 * d%:num) => // x; rewrite /ball normmB subr0.
+rewrite /= normmB subr0 (ler_lt_trans leOxkx) // -ltr_pdivl_mull //; near: x.
+apply/locally_normP; exists (k%:num ^-1 * d%:num) => // x.
+by rewrite /= normmB subr0.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma compoO_eqox (K : realFieldType) (U V' W' : normedModType K) (f : U -> V')
@@ -671,14 +664,12 @@ Lemma compOo_eqo (K : realFieldType) (U V' W' : normedModType K) (f : U -> V')
 Proof.
 apply/eqoP => _ /posnumP[e].
 have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
-rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-move=> [_/posnumP[d] hd]; have ekgt0 : e%:num / k%:num > 0 by [].
+move=> /locally_normP [_/posnumP[d] hd]; have ekgt0 : e%:num / k%:num > 0 by [].
 have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
 apply: filter_app; near=> x => leoxekx; apply: ler_trans (hd _ _) _; last first.
   by rewrite -ler_pdivl_mull // mulrA [_^-1 * _]mulrC.
 rewrite /ball normmB subr0; apply: ler_lt_trans leoxekx _.
-rewrite -ltr_pdivl_mull //; near: x.
-rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
+rewrite -ltr_pdivl_mull //; near: x; apply/locally_normP.
 by exists ((e%:num / k%:num) ^-1 * d%:num)=> // x; rewrite /ball normmB subr0.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -724,9 +715,9 @@ Lemma bilinear_schwarz (U V' W' : normedModType R)
   (f : {bilinear U -> V' -> W'}) : continuous (fun p => f p.1 p.2) ->
   exists2 k, k > 0 & forall u v, `|[f u v]| <= k * `|[u]| * `|[v]|.
 Proof.
-move=> /(_ 0); rewrite linear0r => /(_ _ (locally_ball 0 1%:pos)).
-rewrite !near_simpl -locally_nearE -!filter_from_norm_locally.
-move=> [[A B] /= [[_/posnumP[eA] sA] [_/posnumP[eB] sB]] sAB].
+move=> /(_ (0, 0)); rewrite linear0r => /(_ _ (locally_ball 0 1%:pos)).
+move=> [[A B] [/locally_normP /= [_/posnumP[eA] sA]]].
+move=> /locally_normP [_/posnumP[eB] sB] sAB.
 set e := minr eA%:num eB%:num; exists ((2 / e) ^+2) => // u v.
 case: (lerP `|[u]| 0) => [|un0].
   by rewrite normm_le0 => /eqP->; rewrite linear0l !normm0 mulr0 mul0r.
@@ -760,8 +751,8 @@ apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (ler_trans (fschwarz _ _))//.
 rewrite ler_pmul ?pmulr_rge0 //; last by rewrite ler_maxr orbC lerr.
 rewrite -ler_pdivl_mull //.
 suff : `|[x]| <= k%:num ^-1 * e%:num by apply: ler_trans; rewrite ler_maxr lerr.
-near: x; rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite normmB subr0 => /ltrW.
+near: x; apply/locally_normP; exists (k%:num ^-1 * e%:num) => //.
+by move=> ? /=; rewrite normmB subr0 => /ltrW.
 Grab Existential Variables. all: end_near. Qed.
 
 Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
@@ -771,19 +762,13 @@ Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
     (fun q => f p.1 q.2 + f q.1 p.2) +o_ (0 : U * V') id.
 Proof.
 move=> fc; split=> [q|].
-  apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2)).
-    move=> A /(fc (_.1, _.2)).
-    rewrite !near_simpl -!locally_nearE -!filter_from_norm_locally /=.
-    move=> [PQ [[_/posnumP[eP] sP] [_/posnumP[eQ] sQ]] sPQ].
-    exists (setT, PQ.2); first by split; [exists 1|exists eQ%:num].
-    move=> xy [_ /= Qy]; apply: (sPQ (_.1,_.2)); split=> //=.
-    exact/sP/ball_center.
-  move=> A /(fc (_.1, _.2)).
-  rewrite !near_simpl -!locally_nearE -!filter_from_norm_locally /=.
-  move=> [PQ [[_/posnumP[eP] sP] [_/posnumP[eQ] sQ]] sPQ].
-  exists (PQ.1, setT); first by split; [exists eP%:num|exists 1].
-  move=> xy [/= Px _]; apply: (sPQ (_.1,_.2)); split=> //=.
-  exact/sQ/ball_center.
+  apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
+    move=> A /(fc (_.1, _.2)) [PQ [/locally_normP [_/posnumP[eP] sP]]];
+    move=> /locally_normP [_/posnumP[eQ] sQ] sPQ /=; apply/locally_normP.
+    exists eQ%:num => // xy; rewrite /= ltr_maxl => /andP [_ /sQ Qy].
+    by apply: (sPQ (_,_)); split=> //=; apply/sP.
+  exists eP%:num => // xy; rewrite /= ltr_maxl => /andP [/sP Px _].
+  by apply: (sPQ (_,_)); split=> //=; apply/sQ.
 apply/eqaddoE; rewrite funeqE => q /=.
 rewrite linearDl !linearDr addrA addrC.
 rewrite -[f q.1 _ + _ + _]addrA [f q.1 _ + _]addrC addrA [f q.1 _ + _]addrC.
@@ -912,8 +897,7 @@ rewrite -[X in X + _]mulr1 -[X in 1 / _ * X](@mulfVK _ (x ^+ 2)); last first.
   by rewrite sqrf_eq0.
 rewrite mulrA mulf_div mulr1.
 have hDx_neq0 : h + x != 0.
-  near: h; rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-  exists `|x|; first by rewrite normr_gt0.
+  near: h; apply/locally_normP; exists `|x|; first by rewrite normr_gt0.
   move=> h /=; rewrite normmB subr0 -subr_gt0 => lthx.
   rewrite -(normm_gt0 (h + x : R^o)) addrC -[h]opprK.
   apply: ltr_le_trans (ler_distm_dist _ _).
@@ -927,14 +911,13 @@ rewrite div1r normfV [X in _ / X]normrM invfM [X in _ * X]mulrC.
 rewrite mulrA mulrAC ler_pdivr_mulr ?normr_gt0 ?mulf_neq0 //.
 rewrite mulrAC ler_pdivr_mulr ?normr_gt0 //.
 have : `|h * h| <= `|x / 2| * (e%:num * `|x * x| * `|[h : R^o]|).
-  rewrite !mulrA; near: h.
-  rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
+  rewrite !mulrA; near: h; apply/locally_normP.
   exists (`|x / 2| * e%:num * `|x * x|).
     by rewrite !pmulr_rgt0 // normr_gt0 mulf_neq0.
   by move=> h /ltrW; rewrite normmB subr0 [`|h * _|]normrM => /ler_pmul; apply.
 move=> /ler_trans-> //; rewrite [X in X <= _]mulrC ler_pmul ?mulr_ge0 //.
-near: h; rewrite !near_simpl -locally_nearE -filter_from_norm_locally.
-exists (`|x| / 2); first by rewrite divr_gt0 ?normr_gt0.
+near: h; apply/locally_normP; exists (`|x| / 2).
+  by rewrite divr_gt0 ?normr_gt0.
 move=> h; rewrite /ball normmB subr0 => lthhx; rewrite addrC -[h]opprK.
 apply: ler_trans (ler_distm_dist _ _); rewrite normmN [X in _ <= X]ger0_norm.
   rewrite ler_subr_addr -ler_subr_addl (splitr `|[x : R^o]|).
@@ -1275,15 +1258,10 @@ have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
   apply: flim_comp2 (@lim_mult _ _ _) => //=.
   apply: (@lim_opp _ [normedModType R of R^o]); rewrite expr2.
   exact/lim_scaler/lim_inv.
-apply: flim_trans => A.
-rewrite {1}/locally' !near_simpl -locally_nearE -filter_from_norm_locally.
-move=> [_/posnumP[e] /= Ae]; move: fn0; apply: filter_app; near=> h => /=.
-move=> fhvxn0; have he : ball norm 0 e%:num h.
-  near: h; rewrite /locally' -locally_nearE -filter_from_norm_locally.
-  by exists e%:num.
-have hn0 : h != 0.
-  near: h; rewrite /locally' -locally_nearE -filter_from_norm_locally.
-  by exists e%:num.
+apply: flim_trans; rewrite [in X in _ --> X]/locally' -filter_from_norm_locally.
+move=> A [_/posnumP[e] Ae]; move: fn0; apply: filter_app; near=> h => /= fhvxn0.
+have he : ball norm 0 e%:num h by near: h; apply/locally_normP; exists e%:num.
+have hn0 : h != 0 by near: h; apply/locally_normP; exists e%:num.
 suff <- :
   - ((1 / f x) * (1 / f (h *: v + x))) *: (h^-1 *: (f (h *: v + x) - f x)) =
   h^-1 *: (1 / f (h *: v + x) - 1 / f x) by exact: Ae.
@@ -1432,10 +1410,8 @@ apply/eqP; rewrite eqr_le; apply/andP; split.
     move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.
     exact/lt0r_neq0.
   near=> h; apply: mulr_ge0_le0.
-    rewrite invr_ge0; apply: ltrW; near: h.
-    by rewrite /at_right -filter_from_norm_locally; exists 1.
-  rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
-  rewrite /at_right -filter_from_norm_locally.
+    by rewrite invr_ge0; apply: ltrW; near: h; apply/locally_normP; exists 1.
+  rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h; apply/locally_normP.
   exists (b - c); first by rewrite subr_gt0 (itvP cab).
   move=> h; rewrite /ball normmB subr0.
   move=> /(ler_lt_trans (ler_norm _)); rewrite ltr_subr_addr inE => ->.
@@ -1447,10 +1423,8 @@ apply: le0r_flim_map; last first.
   move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.
   exact/ltr0_neq0.
 near=> h; apply: mulr_le0.
-  rewrite invr_le0; apply: ltrW; near: h.
-  by rewrite /at_left -filter_from_norm_locally; exists 1.
-rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
-rewrite /at_left -filter_from_norm_locally.
+  by rewrite invr_le0; apply: ltrW; near: h; apply/locally_normP; exists 1.
+rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h; apply/locally_normP.
 exists (c - a); first by rewrite subr_gt0 (itvP cab).
 move=> h; rewrite /ball normmB subr0.
 move=> /ltr_normlP []; rewrite ltr_subr_addl ltr_subl_addl inE => -> _.
