@@ -310,13 +310,9 @@ Qed.
 
 End DifferentialR.
 
-Notation "'D_ v f" := (derive f ^~ v).
-Notation "'D_ v f c" := (derive f c v). (* printing *)
-
-Hint Extern 0 (derivable _ _ _) => solve[apply: ex_derive] : core.
-
 Notation "''D_' v f" := (derive f ^~ v).
 Notation "''D_' v f c" := (derive f c v). (* printing *)
+Hint Extern 0 (derivable _ _ _) => solve[apply: ex_derive] : core.
 
 Section DifferentialR2.
 Implicit Type (V : normedModType R).
