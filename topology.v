@@ -187,6 +187,8 @@ Require Import classical_sets posnum.
 (*     product topology.                                                      *)
 (******************************************************************************)
 
+Reserved Notation "A ^°" (at level 1, format "A ^°").
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -1180,8 +1182,7 @@ Qed.
 
 Definition interior (A : set T) := (@locally _ [filteredType T of T])^~ A.
 
-Notation "A ^°" := (interior A)
-  (at level 1, format "A ^°") : classical_set_scope.
+Local Notation "A ^°" := (interior A).
 
 Lemma interior_subset (A : set T) : A^° `<=` A.
 Proof.
@@ -1256,8 +1257,7 @@ Proof. by rewrite locallyE => p_A; exists A; split. Qed.
 
 End Topological1.
 
-Notation "A ^°" := (interior A)
-  (at level 1, format "A ^°") : classical_set_scope.
+Notation "A ^°" := (interior A) : classical_set_scope.
 
 Notation continuous f := (forall x, f%function @ x --> f%function x).
 
