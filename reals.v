@@ -736,7 +736,7 @@ End Sup.
 
 (* -------------------------------------------------------------------- *)
 Section ExtendedReals.
-Variable (R : realType).
+Variable (R : numDomainType).
 
 Inductive er := ERFin of R | ERPInf | ERNInf.
 
@@ -744,8 +744,10 @@ Coercion real_of_er (x : er) :=
   if x is ERFin v then v else 0.
 End ExtendedReals.
 
-Notation "\+inf" := (@ERPInf _).
-Notation "\-inf" := (@ERNInf _).
+Notation "'+oo'" := (@ERPInf _).
+Notation "'-oo'" := (@ERNInf _).
+Notation "'+oo' 'in' R" := (@ERPInf R) (at level 0).
+Notation "'-oo' 'in' R" := (@ERNInf R) (at level 0).
 Notation "x %:E" := (@ERFin _ x) (at level 2, format "x %:E").
 
 Notation "{ 'ereal' R }" := (er R) (format "{ 'ereal'  R }").
@@ -755,20 +757,20 @@ Delimit Scope ereal_scope with E.
 
 (* -------------------------------------------------------------------- *)
 Section ERealCode.
-Variable (R : realType).
+Variable (R : numDomainType).
 
 Definition code (x : {ereal R}) :=
   match x with
   | x%:E  => GenTree.Node 0 [:: GenTree.Leaf x]
-  | \+inf => GenTree.Node 1 [::]
-  | \-inf => GenTree.Node 2 [::]
+  | +oo => GenTree.Node 1 [::]
+  | -oo => GenTree.Node 2 [::]
   end.
 
 Definition decode (x : GenTree.tree R) : option {ereal R} :=
   match x with
   | GenTree.Node 0 [:: GenTree.Leaf x] => Some x%:E
-  | GenTree.Node 1 [::] => Some \+inf
-  | GenTree.Node 2 [::] => Some \-inf
+  | GenTree.Node 1 [::] => Some +oo
+  | GenTree.Node 2 [::] => Some -oo
   | _ => None
   end.
 
@@ -781,27 +783,27 @@ Definition ereal_choiceMixin := PcanChoiceMixin codeK.
 Canonical  ereal_choiceType  := ChoiceType {ereal R} ereal_choiceMixin.
 End ERealCode.
 
-Lemma eqe {R : realType} (x1 x2 : R) :
+Lemma eqe {R : numDomainType} (x1 x2 : R) :
   (x1%:E == x2%:E) = (x1 == x2).
 Proof. by apply/eqP/eqP=> [[]|->]. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section ERealOrder.
-Context {R : realType}.
+Context {R : numDomainType}.
 
 Definition lee (x1 x2 : {ereal R}) :=
   match x1, x2 with
-  | \-inf, _ | _, \+inf => true
-  | \+inf, _ | _, \-inf => false
+  | -oo, _ | _, +oo => true
+  | +oo, _ | _, -oo => false
 
   | x1%:E, x2%:E => (x1 <= x2)
   end.
 
 Definition lte (x1 x2 : {ereal R}) :=
   match x1, x2 with
-  | \-inf, \-inf | \+inf, \+inf => false
-  | \-inf, _     | _    , \+inf => true
-  | \+inf, _     | _    , \-inf => false
+  | -oo, -oo | +oo, +oo => false
+  | -oo, _     | _    , +oo => true
+  | +oo, _     | _    , -oo => false
 
   | x1%:E, x2%:E => (x1 < x2)
   end.
@@ -817,24 +819,24 @@ Notation "x < y < z"   := ((lte x y) && (lte y z)) : ereal_scope.
 
 (* -------------------------------------------------------------------- *)
 Section ERealArith.
-Context {R : realType}.
+Context {R : numDomainType}.
 
 Implicit Types (x y z : {ereal R}).
 
 Definition eadd x y :=
   match x, y with
   | x%:E , y%:E  => (x + y)%:E
-  | \-inf, _     => \-inf
-  | _    , \-inf => \-inf
-  | \+inf, _     => \+inf
-  | _    , \+inf => \+inf
+  | -oo, _     => -oo
+  | _    , -oo => -oo
+  | +oo, _     => +oo
+  | _    , +oo => +oo
   end.
 
 Definition eopp x :=
   match x with
   | x%:E  => (-x)%:E
-  | \-inf => \+inf
-  | \+inf => \-inf
+  | -oo => +oo
+  | +oo => -oo
   end.
 End ERealArith.
 
@@ -873,7 +875,7 @@ Local Open Scope ereal_scope.
 
 (* -------------------------------------------------------------------- *)
 Section ERealArithTh.
-Context {R : realType}.
+Context {R : numDomainType}.
 
 Implicit Types (x y z : {ereal R}).
 
@@ -901,7 +903,7 @@ End ERealArithTh.
 
 (* -------------------------------------------------------------------- *)
 Section ERealOrderTheory.
-Context {R : realType}.
+Context {R : numDomainType}.
 
 Local Open Scope ereal_scope.
 
@@ -931,10 +933,10 @@ Proof. by elift ltrW: x y. Qed.
 Lemma eqe_le x y : (x == y) = (x <= y <= x).
 Proof. by elift eqr_le: x y. Qed.
 
-Lemma leeNgt x y : (x <= y) = ~~ (y < x).
+Lemma leeNgt (K : realDomainType) (x y : {ereal K}) : (x <= y) = ~~ (y < x).
 Proof. by elift lerNgt: x y. Qed.
 
-Lemma lteNgt x y : (x < y) = ~~ (y <= x).
+Lemma lteNgt (K : realDomainType) (x y : {ereal K}) : (x < y) = ~~ (y <= x).
 Proof. by elift ltrNge: x y. Qed.
 
 Lemma lee_eqVlt x y : (x <= y) = ((x == y) || (x < y)).

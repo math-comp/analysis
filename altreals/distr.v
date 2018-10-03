@@ -544,7 +544,7 @@ End DLetAlg.
 
 (* -------------------------------------------------------------------- *)
 Definition mlim T (f : nat -> distr T) : T -> R :=
-  fun x => nlim (fun n => f n x).
+  fun x => (nlim (fun n => f n x) : [numDomainType of R]).
 
 Lemma isd_mlim T (f : nat -> distr T) : isdistr (mlim f).
 Proof. split=> [x|J]; rewrite /mlim.
@@ -552,7 +552,7 @@ Proof. split=> [x|J]; rewrite /mlim.
   by move=> n; apply/ge0_mu.
 move=> uqJ; pose F j :=
   if `[< iscvg (fun n => f n j) >] then fun n => f n j else 0%:S.
-apply/(@ler_trans _ (\sum_(j <- J) (nlim (F j) : R))).
+apply/(@ler_trans _ (\sum_(j <- J) (nlim (F j) : [numDomainType of R]))).
   apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >] => //.
   move/asboolPn=> h; rewrite nlimC; case: nlimP=> //.
   by case=> // l cf; case: h; exists l.
@@ -579,7 +579,7 @@ Definition dlim T (f : nat -> distr T) :=
 Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
 Lemma dlimE T (f : nat -> distr T) x :
-  (\dlim_(n) f n) x = nlim (fun n => f n x).
+  (\dlim_(n) f n) x = (nlim (fun n => f n x) : [numDomainType of R]).
 Proof. by unlock dlim. Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -1192,7 +1192,7 @@ Definition convexon (a b : {ereal R}) (f : R -> R) :=
     forall t, 0 <= t <= 1 ->
       f (t * x + (1 - t) * y) <= t * (f x) + (1 - t) * (f y).
 
-Notation convex f := (convexon \-inf \+inf f).
+Notation convex f := (convexon -oo +oo f).
 
 Section Jensen.
 Context (f : R -> R) (x l : I -> R).
@@ -1228,6 +1228,6 @@ Qed.
 End Jensen.
 End Jensen.
 
-Notation convex f := (convexon \-inf \+inf f).
+Notation convex f := (convexon -oo +oo f).
 
 (* -------------------------------------------------------------------- *)

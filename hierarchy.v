@@ -661,37 +661,29 @@ Qed.
 
 End NormedModuleRealField.
 
-(** * Adding infinities to realFieldTypes *)
+(** * Filters on extended reals *)
 
-Section RealFieldBar.
+Section ExtendedReals.
 
-Context {K : realFieldType}.
+Context {R : realFieldType}.
 
-Inductive realFieldBar := | Finite of K | p_infty | m_infty.
-
-Notation "'+oo'" := p_infty : real_scope.
-Notation "'-oo'" := m_infty : real_scope.
-
-Definition realFieldBar_locally' (a : realFieldBar) (A : set K) :=
+Definition ereal_locally' (a : {ereal R}) (A : set R) :=
   match a with
-    | Finite a => locally' a A
-    | +oo => exists M : K, forall x, M < x -> A x
-    | -oo => exists M : K, forall x, x < M -> A x
+    | a%:E => locally' a A
+    | +oo => exists M : R, forall x, M < x -> A x
+    | -oo => exists M : R, forall x, x < M -> A x
   end.
-Definition realFieldBar_locally (a : realFieldBar) (A : set K) :=
+Definition ereal_locally (a : {ereal R}) (A : set R) :=
   match a with
-    | Finite a => locally a A
-    | +oo => exists M : K, forall x, M < x -> A x
-    | -oo => exists M : K, forall x, x < M -> A x
+    | a%:E => locally a A
+    | +oo => exists M : R, forall x, M < x -> A x
+    | -oo => exists M : R, forall x, x < M -> A x
   end.
 
-Canonical realFieldBar_eqType := EqType realFieldBar gen_eqMixin.
-Canonical realFieldBar_choiceType := ChoiceType realFieldBar gen_choiceMixin.
-Canonical realFieldBar_pointedType := PointedType realFieldBar (+oo).
-Canonical realFieldBar_filteredType :=
-  FilteredType K realFieldBar (realFieldBar_locally).
+Canonical ereal_pointedType := PointedType {ereal R} (+oo).
+Canonical ereal_filteredType := FilteredType R {ereal R} (ereal_locally).
 
-Global Instance realField_locally'_proper (x : K) : ProperFilter (locally' x).
+Global Instance realField_locally'_proper (x : R) : ProperFilter (locally' x).
 Proof.
 apply: Build_ProperFilter => A; rewrite /locally' -filter_from_norm_locally.
 move=> [_/posnumP[e] sA]; exists (x + e%:num / 2); apply: sA; last first.
@@ -700,8 +692,8 @@ rewrite /= opprD addrA subrr sub0r normmN [ `|[_]| ]ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
-Global Instance realFieldBar_locally'_filter :
-  forall x, ProperFilter (realFieldBar_locally' x).
+Global Instance ereal_locally'_filter :
+  forall x, ProperFilter (ereal_locally' x).
 Proof.
 case=> [x||]; first exact: realField_locally'_proper.
   apply Build_ProperFilter.
@@ -715,18 +707,18 @@ split=> /= [|P Q [MP ltMP] [MQ ltMQ] |P Q sPQ [M ltMP]]; first by exists 0.
   by exists (minr MP MQ) => ?; rewrite ltr_minr => /andP [/ltMP ? /ltMQ].
 by exists M => ? /ltMP /sPQ.
 Qed.
-Typeclasses Opaque realFieldBar_locally'.
+Typeclasses Opaque ereal_locally'.
 
-Global Instance realFieldBar_locally_filter :
-  forall x, ProperFilter (realFieldBar_locally x).
+Global Instance ereal_locally_filter :
+  forall x, ProperFilter (ereal_locally x).
 Proof.
 case=> [x||]; first exact/locally_filter.
-  exact: (realFieldBar_locally'_filter +oo).
-exact: (realFieldBar_locally'_filter -oo).
+  exact: (ereal_locally'_filter +oo).
+exact: (ereal_locally'_filter -oo).
 Qed.
-Typeclasses Opaque realFieldBar_locally.
+Typeclasses Opaque ereal_locally.
 
-Lemma near_pinfty_div2 (A : set K) :
+Lemma near_pinfty_div2 (A : set R) :
   (\forall k \near +oo, A k) -> (\forall k \near +oo, A (k / 2)).
 Proof.
 by move=> [M AM]; exists (M * 2) => x; rewrite -ltr_pdivl_mulr //; apply: AM.
@@ -738,12 +730,8 @@ Proof. by exists c. Qed.
 Lemma locally_pinfty_ge c : \forall x \near +oo, c <= x.
 Proof. by exists c; apply: ltrW. Qed.
 
-End RealFieldBar.
+End ExtendedReals.
 
-Notation "'+oo'" := p_infty : real_scope.
-Notation "'-oo'" := m_infty : real_scope.
-Notation "'+oo' 'in' K" := (@p_infty K) (at level 0) : real_scope.
-Notation "'-oo' 'in' K" := (@m_infty K) (at level 0) : real_scope.
 Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
     solve[near: x; exists 0 => _/posnumP[x] //] end : core.
