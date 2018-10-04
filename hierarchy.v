@@ -1180,7 +1180,7 @@ Lemma ler_distW (R : realDomainType) (x y e : R):
    (`|x - y|%R <= e) -> y - e <= x.
 Proof. by rewrite ler_distl => /andP[]. Qed.
 
-Section real_topology.
+Section realComplete.
 
 Context {R : realType}.
 
@@ -1215,6 +1215,12 @@ Grab Existential Variables. all: end_near. Qed.
 
 Canonical real_completeType := CompleteType R real_complete.
 Canonical real_completeNormedModType := [completeNormedModType R of R].
+
+End realComplete.
+
+Section real_topology.
+
+Variable (R : realFieldType).
 
 Definition at_left x := within (fun u : R => u < x) (locally x).
 Definition at_right x := within (fun u : R => x < u) (locally x).
@@ -1318,7 +1324,59 @@ move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
 by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
 Qed.
 
-Lemma segment_connected (a b : R) : connected [set x | x \in `[a, b]].
+Lemma segment_closed (a b : R) : closed [set x | x \in `[a, b]].
+Proof.
+have -> : [set x | x \in `[a, b]] = (>= a) `&` (<= b).
+  by rewrite predeqE => ?; rewrite inE; split=> [/andP [] | /= [->]].
+exact: closedI (@closed_ge _) (@closed_le _).
+Qed.
+
+Lemma ler0_addgt0P (x : R) : reflect (forall e, e > 0 -> x <= e) (x <= 0).
+Proof.
+apply: (iffP idP) => [lex0 e egt0|lex0].
+  by apply: ler_trans lex0 _; apply: ltrW.
+case: (lerP x 0) => // lt0x.
+have /midf_lt [_] := lt0x; rewrite ltrNge -eqbF_neg => /eqP<-.
+by rewrite add0r; apply: lex0; rewrite -[x]/((PosNum lt0x)%:num).
+Qed.
+
+(** Local properties in [R] *)
+
+Lemma lte_locally (a b : {ereal R}) (x : R) :
+  (a < x%:E < b)%E -> exists e : {posnum R},
+  forall y, `|y - x| < e -> (a < y%:E < b)%E.
+Proof.
+move=> /andP []; move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
+- move: a b ltax ltxb; abstract: wlog. (*BUG*)
+  move=> {a b} a b ltxa ltxb.
+  have m_gt0 : minr ((x - a) / 2) ((b - x) / 2) > 0.
+    by rewrite ltr_minr !divr_gt0 ?subr_gt0.
+  exists (PosNum m_gt0) => y //=; rewrite ltr_minr !ltr_distl.
+  move=> /andP[/andP[ay _] /andP[_ yb]].
+  rewrite (ltr_trans _ ay) ?(ltr_trans yb) //=.
+    by rewrite -subr_gt0 opprD addrA {1}[b - x]splitr addrK divr_gt0 ?subr_gt0.
+  by rewrite -subr_gt0 addrAC {1}[x - a]splitr addrK divr_gt0 ?subr_gt0.
+- have [//||d dP] := wlog a (x + 1); rewrite ?ltr_addl //.
+  by exists d => y /dP /andP[->].
+- have [//||d dP] := wlog (x - 1) b; rewrite ?gtr_addl ?ltrN10 //.
+  by exists d => y /dP /andP[_ ->].
+- by exists 1%:pos.
+Qed.
+
+Lemma locally_interval (P : R -> Prop) (x : R) (a b : {ereal R}) :
+  (a < x%:E < b)%E -> (forall (y : R), (a < y%:E < b)%E -> P y) -> locally x P.
+Proof.
+move=> axb Pab; have /lte_locally [d dab] := axb; apply/locally_normP.
+by exists d%:num => // y /=; rewrite normmB => /dab; apply: Pab.
+Qed.
+
+End real_topology.
+
+Hint Resolve open_lt.
+Hint Resolve open_gt.
+
+Lemma segment_connected (R : realType) (a b : R) :
+  connected [set x | x \in `[a, b]].
 Proof.
 move=> A [y Ay] Aop Acl.
 move: Aop; apply: contrapTT; rewrite predeqE => /asboolPn /existsp_asboolPn [x].
@@ -1396,14 +1454,8 @@ apply: ler_trans; rewrite -ler_subr_addl ler_minl; apply/orP; right.
 by rewrite ler_pdivr_mulr // mulrDr mulr1 ler_addl; apply: ltrW.
 Qed.
 
-Lemma segment_closed (a b : R) : closed [set x | x \in `[a, b]].
-Proof.
-have -> : [set x | x \in `[a, b]] = (>= a) `&` (<= b).
-  by rewrite predeqE => ?; rewrite inE; split=> [/andP [] | /= [->]].
-exact: closedI (@closed_ge _) (@closed_le _).
-Qed.
-
-Lemma segment_compact (a b : R) : compact [set x | x \in `[a, b]].
+Lemma segment_compact (R : realType) (a b : R) :
+  compact [set x | x \in `[a, b]].
 Proof.
 case: (lerP a b) => [leab|ltba]; last first.
   by move=> F FF /filter_ex [x abx]; move: ltba; rewrite (itvP abx).
@@ -1453,17 +1505,7 @@ rewrite ltr_subl_addl -ltr_subl_addr; apply: ltr_trans ltyz.
 by apply: ltr_distW; rewrite distrC.
 Qed.
 
-Lemma ler0_addgt0P (K : realFieldType) (x : K) :
-  reflect (forall e, e > 0 -> x <= e) (x <= 0).
-Proof.
-apply: (iffP idP) => [lex0 e egt0|lex0].
-  by apply: ler_trans lex0 _; apply: ltrW.
-case: (lerP x 0) => // lt0x.
-have /midf_lt [_] := lt0x; rewrite ltrNge -eqbF_neg => /eqP<-.
-by rewrite add0r; apply: lex0; rewrite -[x]/((PosNum lt0x)%:num).
-Qed.
-
-Lemma IVT (f : R -> R) (a b v : R) :
+Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
   a <= b -> {in `[a, b], continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
   exists2 c, c \in `[a, b] & f c = v.
@@ -1522,23 +1564,6 @@ move=> t /andP [ltsupt letb]; rewrite ltrNge; apply/negP => leftv.
 move: ltsupt; rewrite ltrNge => /negP; apply; apply: sup_upper_bound => //.
 by rewrite inE letb leftv.
 Grab Existential Variables. all: end_near. Qed.
-
-(** Local properties in [R] *)
-
-(* Lemma locally_interval (P : R -> Prop) (x : R) (a b : Rbar) : *)
-(*   Rbar_lt a x -> Rbar_lt x b -> *)
-(*   (forall (y : R), Rbar_lt a y -> Rbar_lt y b -> P y) -> *)
-(*   locally x P. *)
-(* Proof. *)
-(* move => Hax Hxb Hp; case: (Rbar_lt_locally _ _ _ Hax Hxb) => d Hd. *)
-(* exists d%:num => //= y; rewrite /AbsRing_ball /= absrB. *)
-(* by move=> /Hd /andP[??]; apply: Hp. *)
-(* Qed. *)
-
-End real_topology.
-
-Hint Resolve open_lt.
-Hint Resolve open_gt.
 
 (** * Topology on [R]² *)
 
@@ -1785,123 +1810,86 @@ rewrite -[X in X <= _](nth_index 0 vinseq); apply: bigmaxr_ler.
 by rewrite index_mem.
 Qed.
 
-(** Open sets in [Rbar] *)
+(** Open sets in extended reals *)
 
-(* Lemma open_Rbar_lt y : open (fun u : R => Rbar_lt u y). *)
-(* Proof. *)
-(* case: y => [y||] /=. *)
-(* exact: open_lt. *)
-(* by rewrite trueE; apply: openT. *)
-(* by rewrite falseE; apply: open0. *)
-(* Qed. *)
+Section ErealOpen.
 
-(* Lemma open_Rbar_gt y : open (fun u : R => Rbar_lt y u). *)
-(* Proof. *)
-(* case: y => [y||] /=. *)
-(* exact: open_gt. *)
-(* by rewrite falseE; apply: open0. *)
-(* by rewrite trueE; apply: openT. *)
-(* Qed. *)
+Variable (R : realFieldType).
 
-(* Lemma open_Rbar_lt' x y : Rbar_lt x y -> Rbar_locally x (fun u => Rbar_lt u y). *)
-(* Proof. *)
-(* case: x => [x|//|] xy; first exact: open_Rbar_lt. *)
-(* case: y => [y||//] /= in xy *. *)
-(* exists y => /= x ? //. *)
-(* by exists 0. *)
-(* Qed. *)
+Local Open Scope ereal_scope.
 
-(* Lemma open_Rbar_gt' x y : Rbar_lt y x -> Rbar_locally x (fun u => Rbar_lt y u). *)
-(* Proof. *)
-(* case: x => [x||] //=; do ?[exact: open_Rbar_gt]; *)
-(*   case: y => [y||] //=; do ?by exists 0. *)
-(* by exists y => x yx //=. *)
-(* Qed. *)
+Lemma open_lte y : open (fun u : R => u%:E < y).
+Proof.
+by case: y => [y||] //=; [apply: open_lt|rewrite trueE; apply: openT].
+Qed.
 
-(* Lemma Rbar_locally'_le x : Rbar_locally' x --> Rbar_locally x. *)
-(* Proof. *)
-(* move: x => [x P [_/posnumP[e] HP] |x P|x P] //=. *)
-(* by exists e%:num => // ???; apply: HP. *)
-(* Qed. *)
+Lemma open_gte y : open (fun u : R => y < u%:E).
+Proof.
+by case: y => [y||] //=; [apply: open_gt|rewrite trueE; apply: openT].
+Qed.
 
-(* Lemma Rbar_locally'_le_finite (x : R) : Rbar_locally' x --> locally x. *)
-(* Proof. *)
-(* by move=> P [_/posnumP[e] HP] //=; exists e%:num => // ???; apply: HP. *)
-(* Qed. *)
+Lemma open_lte' x y : x < y -> locally x (fun u : R => u%:E < y).
+Proof.
+by case: x y => [x||] [y||] //= xy;
+ [apply: open_lt|apply/locally_normP; exists 1|exists y|exists 0].
+Qed.
+
+Lemma open_gte' x y : y < x -> locally x (fun u : R => y < u%:E).
+Proof.
+by case: x y => [x||] [y||] //= yx;
+ [apply: open_gt|apply/locally_normP; exists 1|exists y|exists 0].
+Qed.
+
+Lemma flim_locally'e_locallye (x : {ereal R}) : ereal_locally' x --> locally x.
+Proof.
+by move: x => [||] x P //=; rewrite locally_simpl /locally /= locallyE' => -[].
+Qed.
+
+Lemma flim_locally'e_locally (x : R) : ereal_locally' x%:E --> locally x.
+Proof.
+move=> P; rewrite locally_simpl => /locally_normP [_/posnumP[e] sP] /=.
+by apply/locally_normP; exists e%:num => // ? /sP.
+Qed.
+
+End ErealOpen.
 
 (** * Some limits on real functions *)
 
-(* Definition Rbar_loc_seq (x : Rbar) (n : nat) := match x with *)
-(*     | Finite x => x + (INR n + 1)^-1 *)
-(*     | +oo => INR n *)
-(*     | -oo => - INR n *)
-(*   end. *)
+Definition ereal_loc_seq (R : numDomainType) (x : {ereal R}) (n : nat) :=
+  match x with
+    | x%:E => x + (n%:R + 1)^-1
+    | +oo => n%:R
+    | -oo => - n%:R
+  end.
 
-(* Lemma flim_Rbar_loc_seq x : Rbar_loc_seq x --> Rbar_locally' x. *)
-(* Proof. *)
-(* move=> P; rewrite /Rbar_loc_seq. *)
-(* case: x => /= [x [_/posnumP[delta] Hp] |[delta Hp] |[delta Hp]]; last 2 first. *)
-(*     have /ZnatP [N Nfloor] : ifloor (maxr delta 0) \is a Znat. *)
-(*       by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC. *)
-(*     exists N.+1 => // n ltNn; apply: Hp. *)
-(*     have /ler_lt_trans : delta <= maxr delta 0 by rewrite ler_maxr lerr. *)
-(*     apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor. *)
-(*     by rewrite -(@natrD [ringType of R] N 1) INRE ler_nat addn1. *)
-(*   have /ZnatP [N Nfloor] : ifloor (maxr (- delta) 0) \is a Znat. *)
-(*     by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC. *)
-(*   exists N.+1 => // n ltNn; apply: Hp; rewrite ltr_oppl. *)
-(*   have /ler_lt_trans : - delta <= maxr (- delta) 0 by rewrite ler_maxr lerr. *)
-(*   apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor. *)
-(*   by rewrite -(@natrD [ringType of R] N 1) INRE ler_nat addn1. *)
-(* have /ZnatP [N Nfloor] : ifloor (delta%:num^-1) \is a Znat. *)
-(*   by rewrite Znat_def ifloor_ge0. *)
-(* exists N => // n leNn; have gt0Sn : 0 < INR n + 1. *)
-(*   by apply: ltr_spaddr => //; apply/RleP/pos_INR. *)
-(* apply: Hp; last first. *)
-(*   by rewrite eq_sym addrC -subr_eq subrr eq_sym; apply/invr_neq0/lt0r_neq0. *)
-(* rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0. *)
-(* rewrite absRE gtr0_norm; last by rewrite invr_gt0. *)
-(* rewrite -[X in X < _]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r. *)
-(* apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor ler_add //. *)
-(* by rewrite INRE ler_nat. *)
-(* Qed. *)
-
-(* TODO: express using ball?*)
-(* Lemma continuity_pt_locally f x : continuity_pt f x <-> *)
-(*   forall eps : posreal, locally x (fun u => `|f u - f x| < eps). *)
-(* Proof. *)
-(* split=> [fcont e|fcont _/RltP/posnumP[e]]; last first. *)
-(*   have [_/posnumP[d] xd_fxe] := fcont e. *)
-(*   exists d%:num; split; first by apply/RltP; have := [gt0 of d%:num]. *)
-(*   by move=> y [_ /RltP yxd]; apply/RltP/xd_fxe; rewrite /AbsRing_ball /= absrB. *)
-(* have /RltP egt0 := [gt0 of e%:num]. *)
-(* have [_ [/RltP/posnumP[d] dx_fxe]] := fcont e%:num egt0. *)
-(* exists d%:num => // y xyd; case: (eqVneq x y) => [->|xney]. *)
-(*   by rewrite subrr absr0. *)
-(* apply/RltP/dx_fxe; split; first by split=> //; apply/eqP. *)
-(* by have /RltP := xyd; rewrite absrB. *)
-(* Qed. *)
-
-(* Lemma continuity_pt_flim (f : R -> R) (x : R) : *)
-(*   continuity_pt f x <-> {for x, continuous f}. *)
-(* Proof. *)
-(* eapply iff_trans; first exact: continuity_pt_locally. *)
-(* apply iff_sym. *)
-(* have FF : Filter (f @ x) by typeclasses eauto. *)
-(* case: (@flim_ballP _ (f @ x) FF (f x)) => {FF}H1 H2. *)
-(* (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *) *)
-(* split => [{H2} /H1{H1} H1 eps|{H1} H]. *)
-(* - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num. *)
-(*   exists x0%:num => // Hx0' /Hx0 /=. *)
-(*   by rewrite ball_absE /= absrB; apply. *)
-(* - apply H2 => _ /posnumP[eps]; move: (H eps) => {H} [_ /posnumP[x0] Hx0]. *)
-(*   exists x0%:num => // y /Hx0 /= {Hx0}Hx0. *)
-(*   by rewrite ball_absE /= absrB. *)
-(* Qed. *)
-
-(* Lemma continuity_ptE (f : R -> R) (x : R) : *)
-(*   continuity_pt f x <-> {for x, continuous f}. *)
-(* Proof. exact: continuity_pt_flim. Qed. *)
+Lemma flim_ereal_loc_seq (R : realType) (x : {ereal R}) :
+  ereal_loc_seq x --> ereal_locally' x.
+Proof.
+move=> P; rewrite /ereal_loc_seq;
+case: x=> [x /(locally_normP x)[_/posnumP[d] sP] |[d sP] |[d sP]]; last 2 first.
+    have /ZnatP [N Nfloor] : ifloor (maxr d 0) \is a Znat.
+      by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC.
+    exists N.+1 => // n ltNn; apply: sP.
+    have /ler_lt_trans : d <= maxr d 0 by rewrite ler_maxr lerr.
+    apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
+    by rewrite -(@natrD [ringType of R] N 1) ler_nat addn1.
+  have /ZnatP [N Nfloor] : ifloor (maxr (- d) 0) \is a Znat.
+    by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC.
+  exists N.+1 => // n ltNn; apply: sP; rewrite ltr_oppl.
+  have /ler_lt_trans : - d <= maxr (- d) 0 by rewrite ler_maxr lerr.
+  apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
+  by rewrite -(@natrD [ringType of R] N 1) ler_nat addn1.
+have /ZnatP [N Nfloor] : ifloor (d%:num^-1) \is a Znat.
+  by rewrite Znat_def ifloor_ge0.
+exists N => // n leNn; have gt0Sn : 0 < (n%:R : R) + 1.
+  by apply/ltr_spaddr => //; rewrite ler0n.
+apply: sP; last first.
+  by rewrite eq_sym addrC -subr_eq subrr eq_sym; apply/invr_neq0/lt0r_neq0.
+rewrite /= opprD addrA subrr normmB subr0.
+rewrite [ `|[_]|]gtr0_norm; last by rewrite invr_gt0.
+rewrite -[X in X < _]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
+by apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor ler_add ?ler_nat.
+Qed.
 
 Lemma continuous_withinNx {U V : uniformType}
   (f : U -> V) x :
@@ -1916,18 +1904,3 @@ rewrite !locally_nearE !near_map !near_locally in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: locally_singleton|near: y].
 Grab Existential Variables. all: end_near. Qed.
-
-(* Lemma continuity_pt_flim' f x : *)
-(*   continuity_pt f x <-> f @ locally' x --> f x. *)
-(* Proof. by rewrite continuity_ptE continuous_withinNx. Qed. *)
-
-(* Lemma continuity_pt_locally' f x : *)
-(*   continuity_pt f x <-> *)
-(*   forall eps : R, 0 < eps -> locally' x (fun u => `|f x - f u| < eps)%R. *)
-(* Proof. *)
-(* by rewrite continuity_pt_flim' (@flim_normP _ [normedModType R of R^o]). *)
-(* Qed. *)
-
-(* Lemma locally_pt_comp (P : R -> Prop) (f : R -> R) (x : R) : *)
-(*   locally (f x) P -> continuity_pt f x -> \near x, P (f x). *)
-(* Proof. by move=> Lf /continuity_pt_flim; apply. Qed. *)
