@@ -234,6 +234,11 @@ Reserved Notation "fx '==O_(' x \near F ')' hx"
    F at level 0, hx at next level,
    format "fx  '==O_(' x  \near  F ')'  hx").
 
+Reserved Notation "f '~_' F g"
+  (at level 70, F at level 0, g at next level, format "f  '~_' F  g").
+Reserved Notation "f '~~_' F g"
+  (at level 70, F at level 0, g at next level, format "f  '~~_' F  g").
+
 Reserved Notation "{Omega_ F f }"
   (at level 0, F at level 0, format "{Omega_ F  f }").
 Reserved Notation "[bigOmega 'of' f 'for' fT ]"
@@ -1160,10 +1165,8 @@ Lemma linear_for_mul_continuous (U : normedModType R)
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
 
-Notation "f '~_' F g" := (f = g +o_ F g)
-  (at level 70, F at level 0, g at next level, format "f  '~_' F  g").
-Notation "f '~~_' F g" := (f == g +o_ F g)
-  (at level 70, F at level 0, g at next level, format "f  '~~_' F  g").
+Notation "f '~_' F g" := (f = g +o_ F g).
+Notation "f '~~_' F g" := (f == g +o_ F g).
 
 Section asymptotic_equivalence.
 
