@@ -496,65 +496,79 @@ Section bigmaxr.
 Context {R : realDomainType}.
 
 (* bigop pour le max pour des listes non vides ? *)
-Definition bigmaxr (x0 : R) lr :=
-  foldr Num.max (head x0 lr) (behead lr).
+Definition bigmaxr (r : R) s := \big[Num.max/head r s]_(i <- s) i.
 
 Lemma bigmaxr_nil (x0 : R) : bigmaxr x0 [::] = x0.
-Proof. by rewrite /bigmaxr. Qed.
+Proof. by rewrite /bigmaxr /= big_nil. Qed.
 
 Lemma bigmaxr_un (x0 x : R) : bigmaxr x0 [:: x] = x.
-Proof. by rewrite /bigmaxr. Qed.
+Proof. by rewrite /bigmaxr /= big_cons big_nil joinxx. Qed.
+
+(* previous definition *)
+Lemma bigmaxrE (r : R) s : bigmaxr r s = foldr Num.max (head r s) (behead s).
+Proof.
+rewrite (_ : bigmaxr _ _ = if s isn't h :: t then r else \big[Num.max/h]_(i <- s) i).
+  case: s => // ? t; rewrite big_cons /bigmaxr.
+  by elim: t => //= [|? ? <-]; [rewrite big_nil joinxx | rewrite big_cons joinCA].
+by case: s => //=; rewrite /bigmaxr big_nil.
+Qed.
+
+Lemma bigrmax_dflt (x y : R) s : Num.max x (\big[Num.max/x]_(j <- y :: s) j) =
+  Num.max x (\big[Num.max/y]_(i <- y :: s) i).
+Proof.
+elim: s => /= [|h t IH] in x y *.
+by rewrite !big_cons !big_nil joinxx joinCA joinxx joinC.
+by rewrite big_cons joinCA IH joinCA [in RHS]big_cons IH.
+Qed.
 
 Lemma bigmaxr_cons (x0 x y : R) lr :
   bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
-Proof.
-rewrite /bigmaxr /=; elim: lr => [/= | a lr /=]; first by rewrite joinC.
-set b := foldr _ _ _; set c := foldr _ _ _ => H.
-by rewrite [Num.max a b]joinC joinA H -joinA (joinC c a).
-Qed.
+Proof. by rewrite [y :: lr]lock /bigmaxr /= -lock big_cons bigrmax_dflt. Qed.
 
-Lemma bigmaxr_ler (x0 : R) (lr : seq R) i :
-  (i < size lr)%N -> (nth x0 lr i) <= (bigmaxr x0 lr).
+Lemma bigmaxr_ler (x0 : R) s i :
+  (i < size s)%N -> (nth x0 s i) <= (bigmaxr x0 s).
 Proof.
-case: lr i => [i | x lr]; first by rewrite nth_nil bigmaxr_nil lexx.
-elim: lr x => [x i /= | x lr /= ihlr y i i_size].
-  by rewrite ltnS leqn0 => /eqP ->; rewrite nth0 bigmaxr_un /=.
-rewrite bigmaxr_cons /=; case: i i_size => [_ /= | i].
-  by rewrite lexU lexx.
-rewrite ltnS /=; move/(ihlr x); move/(le_trans)=> H; apply: H.
-by rewrite lexU lexx orbT.
+rewrite /bigmaxr; elim: s i => // h t IH [_|i] /=.
+  by rewrite big_cons /= lexU lexx.
+rewrite ltnS => ti; case: t => [|h' t] // in IH ti *.
+by rewrite big_cons bigrmax_dflt lexU orbC IH.
 Qed.
 
 (* Compatibilité avec l'addition *)
 Lemma bigmaxr_addr (x0 : R) lr (x : R) :
   bigmaxr (x0 + x) (map (fun y : R => y + x) lr) = (bigmaxr x0 lr) + x.
 Proof.
-case: lr => [/= | y lr]; first by rewrite bigmaxr_nil.
-elim: lr y => [y | y lr ihlr z]; first by rewrite /= !bigmaxr_un.
-by rewrite map_cons !bigmaxr_cons ihlr addr_maxl.
+rewrite /bigmaxr; case: lr => [|h t]; first by rewrite !big_nil.
+elim: t h => /= [|h' t IH] h; first by rewrite ?(big_cons,big_nil) -addr_maxl.
+by rewrite [in RHS]big_cons bigrmax_dflt addr_maxl -IH big_cons bigrmax_dflt.
+Qed.
+
+Lemma bigmaxr_mem (x0 : R) lr : (0 < size lr)%N -> bigmaxr x0 lr \in lr.
+Proof.
+rewrite /bigmaxr; case: lr => // h t _.
+elim: t => //= [|h' t IH] in h *; first by rewrite big_cons big_nil inE joinxx.
+rewrite big_cons bigrmax_dflt inE eq_le; case: lerP => /=.
+- by rewrite lexU lexx.
+- by rewrite ltxU ltxx => ?; rewrite join_r ?IH // ltW.
 Qed.
 
 (* TODO: bigmaxr_morph? *)
 Lemma bigmaxr_mulr (A : finType) (s : seq A) (k : R) (x : A -> R) :
   0 <= k -> bigmaxr 0 (map (fun i => k * x i) s) = k * bigmaxr 0 (map x s).
 Proof.
-move=> k0; elim: s => /= [|h [//|h' t ih]]; first by rewrite bigmaxr_nil mulr0.
+move=> k0; elim: s => /= [|h [/=|h' t ih]].
+by rewrite bigmaxr_nil mulr0.
+by rewrite !bigmaxr_un.
 by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pmulr.
 Qed.
 
 Lemma bigmaxr_index (x0 : R) lr :
   (0 < size lr)%N -> (index (bigmaxr x0 lr) lr < size lr)%N.
 Proof.
-case: lr => [//= | x l _].
-elim: l x => [x | x lr]; first by rewrite bigmaxr_un /= eq_refl.
-move/(_ x); set z := bigmaxr _ _ => /= ihl y; rewrite bigmaxr_cons -/z.
-rewrite eq_sym eq_joinl.
-by case: (leP z y).
+rewrite /bigmaxr; case: lr => //= h t _; case: ifPn => // /negbTE H.
+move: (@bigmaxr_mem x0 (h :: t) isT).
+by rewrite ltnS index_mem inE /= eq_sym H.
 Qed.
-
-Lemma bigmaxr_mem (x0 : R) lr :
-  (0 < size lr)%N -> bigmaxr x0 lr \in lr.
-Proof. by move/(bigmaxr_index x0); rewrite index_mem. Qed.
 
 Lemma bigmaxr_lerP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
@@ -602,7 +616,6 @@ rewrite -(nth_uniq x0 i_size (bigmaxr_index _ (leq_trans _ i_size)) lr_uniq) //.
 rewrite nth_index //.
 by apply: bigmaxr_mem; apply: (leq_trans _ i_size).
 Qed.
-
 
 (* bigop pour le max pour des listes non vides ? *)
 Definition bmaxrf n (f : {ffun 'I_n.+1 -> R}) :=
