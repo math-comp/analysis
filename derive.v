@@ -142,7 +142,7 @@ Proof. by move=> ?; apply: DiffDef. Qed.
 
 Section jacobian.
 
-Definition jacobian n m (R : realFieldType) (f : 'rV[R]_n.+1 -> 'rV[R]_m.+1)
+Definition jacobian n m (R : realFieldType) (f : 'rV[R]_n -> 'rV[R]_m)
   p := lin1_mx ('d f p).
 
 End jacobian.
@@ -315,7 +315,7 @@ Section DifferentialR2.
 
 Variable (R : realFieldType) (V : normedModType R).
 
-Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
+Lemma derivemxE m n (f : 'rV[R]_m -> 'rV[R]_n) (a v : 'rV[R]_m) :
   differentiable f a -> 'D_ v f a = v *m jacobian f a.
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
@@ -598,10 +598,10 @@ apply: DiffDef; first exact/linear_differentiable/scaler_continuous.
 by rewrite diff_lin //; apply: scaler_continuous.
 Qed.
 
-Lemma differentiable_coord m n (M : 'M[R]_(m.+1, n.+1)) i j :
-  differentiable (fun N : 'M[R]_(m.+1, n.+1) => N i j : R^o) M.
+Lemma differentiable_coord m n (M : 'M[R]_(m, n)) i j :
+  differentiable (fun N : 'M[R]_(m, n) => N i j : R^o) M.
 Proof.
-have @f : {linear 'M[R]_(m.+1, n.+1) -> R^o}.
+have @f : {linear 'M[R]_(m, n) -> R^o}.
   by exists (fun N : 'M[R]_(_, _) => N i j); eexists; move=> ? ?; rewrite !mxE.
 rewrite (_ : (fun _ => _) = f) //; exact/linear_differentiable/coord_continuous.
 Qed.
