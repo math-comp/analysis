@@ -6,7 +6,6 @@ reals.v
 posnum.v
 landau.v
 classical_sets.v
-Rstruct.v
 # Rbar.v
 topology.v
 hierarchy.v
@@ -18,5 +17,6 @@ altreals/discrete.v
 altreals/realseq.v
 altreals/realsum.v
 altreals/distr.v
+misc/Rstruct.v
 
 -R . mathcomp.analysis

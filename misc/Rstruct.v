@@ -27,6 +27,7 @@ Require Import Rtrigo1 Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
 From mathcomp Require Import choice bigop ssralg fintype poly.
 From mathcomp Require Import mxpoly ssrnum finfun.
+Require Import classical_sets topology hierarchy.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -345,7 +346,7 @@ case Hab: (a == b).
   by move=> _; rewrite (eqP Hab) eq_sym Hpb (ltrNge 0) /=; case/andP=> /ltrW ->.
 rewrite eq_sym Hpb /=; clear=> /RltbP Hab /andP [] /RltbP Hpa /RltbP Hpb.
 suff Hcp: continuity (fun x => (p.[x])%R).
-  have [z [[Hza Hzb] /eqP Hz2]]:= IVT _ a b Hcp Hab Hpa Hpb.
+  have [z [[Hza Hzb] /eqP Hz2]]:= Rsqrt_def.IVT _ a b Hcp Hab Hpa Hpb.
   by exists z=> //; apply/andP; split; apply/RlebP.
 rewrite -[p]coefK poly_def.
 set f := fun _ => _.
@@ -632,3 +633,18 @@ Qed.
 End Max.
 
 End ssreal_struct_contd.
+
+Canonical R_pointedType :=
+  [pointedType of R for zmod_pointedType R_zmodType].
+Canonical R_filteredType :=
+  [filteredType R of R for realField_filteredType R_realFieldType].
+Canonical R_topologicalType :=
+  [topologicalType of R for realField_topologicalType R_realFieldType].
+Canonical R_uniformType :=
+  [uniformType of R for realField_uniformType R_realFieldType].
+Canonical R_completeType :=
+  [completeType of R for @real_completeType real_realType].
+Canonical R_normedModType :=
+  [normedModType R of R for realField_normedModType R_realFieldType].
+Canonical R_completeNormedModType :=
+  [completeNormedModType R of R].

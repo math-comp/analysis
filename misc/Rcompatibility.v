@@ -2,23 +2,13 @@
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
-Require Import boolp reals Rstruct.
-Require Import classical_sets posnum topology hierarchy landau derive.
+Require Import boolp reals.
+Require Import classical_sets posnum topology hierarchy landau derive Rstruct.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import GRing.Theory Num.Def Num.Theory.
-
-(* code duplication that should disappear once Rstruct.v is reworked *)
-Canonical R_filteredType :=
-  [filteredType R of R for realField_filteredType R_realFieldType].
-Canonical R_topologicalType :=
-  [topologicalType of R for realField_topologicalType R_realFieldType].
-Canonical R_uniformType :=
-  [uniformType of R for realField_uniformType R_realFieldType].
-Canonical R_normedModType :=
-  [normedModType R of R for realField_normedModType R_realFieldType].
 
 Lemma continuity_pt_locally f x : continuity_pt f x <->
   forall eps : {posnum R}, locally x (fun u => `|f u - f x| < eps%:num).

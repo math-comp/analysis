@@ -2,8 +2,8 @@
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
-Require Import boolp reals Rstruct.
-Require Import classical_sets posnum topology hierarchy landau.
+Require Import boolp reals.
+Require Import classical_sets posnum topology hierarchy landau Rstruct.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -75,15 +75,6 @@ by have /andP [] := ler_norm2 dx.
 Qed.
 
 (* then we replace the epsilon/delta definition with bigO *)
-
-Canonical R_filteredType :=
-  [filteredType R of R for realField_filteredType R_realFieldType].
-Canonical R_topologicalType :=
-  [topologicalType of R for realField_topologicalType R_realFieldType].
-Canonical R_uniformType :=
-  [uniformType of R for realField_uniformType R_realFieldType].
-Canonical R_normedModType :=
-  [normedModType R of R for realField_normedModType R_realFieldType].
 
 Definition OuO (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
   (fun x => f x.1 x.2) =O_ (filter_prod [set setT]
