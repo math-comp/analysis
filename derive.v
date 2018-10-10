@@ -10,7 +10,6 @@ Unset Printing Implicit Defensive.
 Import GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope classical_set_scope.
-Local Open Scope fun_scope.
 Local Open Scope ring_scope.
 
 (******************************************************************************)

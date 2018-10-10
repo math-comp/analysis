@@ -334,6 +334,9 @@ move=> [i Di]; rewrite predeqE => a; split=> [[Ifa Xa] j Dj|IfIXa].
 by split=> [j /IfIXa [] | ] //; have /IfIXa [] := Di.
 Qed.
 
+Lemma setMT A B : (@setT A) `*` (@setT B) = setT.
+Proof. by rewrite predeqE. Qed.
+
 Definition is_prop {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := all (is_prop \o f).
 Definition is_total {A B} (f : A -> B -> Prop) := all (nonempty \o f).

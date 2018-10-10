@@ -2189,22 +2189,19 @@ Definition connected (T : topologicalType) (A : set T) :=
 
 (** * Uniform spaces defined using entourages *)
 
-Definition comp_rel (R S T : Type) (A : set (R * S)) (B : set (S * T)) :=
-  [set xy | exists2 z, A (xy.1, z) & B (z, xy.2)].
-Notation "B \o A" := (comp_rel A B) : classical_set_scope.
+Local Notation "B \o A" :=
+  ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : classical_set_scope.
 
-Definition inv_rel (T T' : Type) (A : set (T * T')) :=
-  [set xy | A (xy.2, xy.1)].
-Notation "A ^-1" := (inv_rel A) : classical_set_scope.
+Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
 
-Definition set_of_rel (T T' : Type) (A : set (T * T')) (x : T) :=
-  [set y | A (x, y)].
+Local Notation "'to_set' A x" := ([set y | A (x, y)])
+  (at level 0, A at level 0) : classical_set_scope.
 
 Definition locally_ {T T'} (ent : set (set (T * T'))) (x : T) :=
-  filter_from ent (fun A => set_of_rel A x).
+  filter_from ent (fun A => to_set A x).
 
 Lemma locally_E {T T'} (ent : set (set (T * T'))) x :
-  locally_ ent x = filter_from ent (fun A => set_of_rel A x).
+  locally_ ent x = filter_from ent (fun A => to_set A x).
 Proof. by []. Qed.
 
 Module Uniform.
@@ -2310,7 +2307,7 @@ Lemma locally_entourageE {M : uniformType} : locally_ (@entourages M) = locally.
 Proof. by case: M=> [?[?[]]]. Qed.
 
 Lemma filter_from_entourageE {M : uniformType} x :
-  filter_from (@entourages M) (fun A => set_of_rel A x) = locally x.
+  filter_from (@entourages M) (fun A => to_set A x) = locally x.
 Proof. by rewrite -locally_entourageE. Qed.
 
 Module Export LocallyEntourage.
@@ -2387,7 +2384,7 @@ apply/locallyP; exists (split_ent B) => // z hByz; apply/sBA.
 by apply: subset_split_ent => //; exists x => //=; apply: (close_sym cxy).
 Qed.
 
-Lemma locally_entourage (x : M) A : entourages A -> locally x (set_of_rel A x).
+Lemma locally_entourage (x : M) A : entourages A -> locally x (to_set A x).
 Proof. by move=> ?; apply/locallyP; exists A. Qed.
 Hint Resolve locally_entourage.
 
@@ -2488,22 +2485,23 @@ Definition prod_ent :=
     filter_prod (@entourages U) (@entourages V)
     [set ((xy.1.1,xy.2.1),(xy.1.2,xy.2.2)) | xy in A]].
 
+Lemma prod_entP (A : set (U * U)) (B : set (V * V)) :
+  entourages A -> entourages B ->
+  prod_ent [set xy | A (xy.1.1, xy.2.1) /\ B (xy.1.2, xy.2.2)].
+Proof.
+move=> entA entB; exists (A,B) => // xy ABxy.
+by exists ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)); rewrite -!surjective_pairing.
+Qed.
+
 Lemma prod_ent_filter : Filter prod_ent.
 Proof.
 have prodF := filter_prod_filter (@entourage_filter U) (@entourage_filter V).
 split; rewrite /prod_ent; last 1 first.
-- by move=> A B sAB; apply: filterS => xy [zt /sAB Bzt ztexy]; exists zt.
-- apply: filterS filterT => xy _.
-  exists ((xy.1.1,xy.2.1),(xy.1.2,xy.2.2)) => //=.
-  by rewrite -!surjective_pairing.
+- by move=> A B sAB; apply: filterS => ? [xy /sAB ??]; exists xy.
+- rewrite -setMT; apply: prod_entP filterT filterT.
 move=> A B entA entB; apply: filterS (filterI entA entB) => xy [].
 move=> [zt Azt ztexy] [zt' Bzt' zt'exy]; exists zt => //; split=> //.
-suff -> : zt = zt' by [].
-move/eqP: ztexy; rewrite [xy]surjective_pairing.
-rewrite [xy.1]surjective_pairing [xy.2]surjective_pairing !xpair_eqE.
-rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP->.
-move/eqP: zt'exy; rewrite [xy]surjective_pairing.
-rewrite [xy.1]surjective_pairing [xy.2]surjective_pairing !xpair_eqE.
+move/eqP: ztexy; rewrite -zt'exy !xpair_eqE.
 by rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP->.
 Qed.
 
@@ -2521,21 +2519,16 @@ Qed.
 Lemma prod_ent_inv A : prod_ent A -> prod_ent A^-1.
 Proof.
 move=> [B [/entourage_inv entB1 /entourage_inv entB2] sBA].
-exists (B.1^-1,B.2^-1) => //= xy [].
-rewrite [xy.1]surjective_pairing [xy.2]surjective_pairing /inv_rel /=.
-move=> Bxy1 Bxy2.
-have /sBA : (B.1 `*` B.2) ((xy.1.2, xy.1.1),(xy.2.2, xy.2.1)) by [].
-move=> [zt Azt /eqP]; rewrite !xpair_eqE.
-rewrite [X in X && _]andbC [X in _ && X]andbC -!xpair_eqE -!surjective_pairing.
-by move/eqP<-; exists (zt.2, zt.1) => //=; rewrite -surjective_pairing.
+have:= prod_entP entB1 entB2; rewrite /prod_ent; apply: filterS.
+move=> _ [p /(sBA (_,_)) [[x y] ? xyE] <-]; exists (y,x) => //=; move/eqP: xyE.
+by rewrite !xpair_eqE => /andP[/andP[/eqP-> /eqP->] /andP[/eqP-> /eqP->]].
 Qed.
 
 Lemma prod_ent_split A : prod_ent A -> exists2 B, prod_ent B & B \o B `<=` A.
 Proof.
 move=> [B [entB1 entB2]] sBA; exists [set xy | split_ent B.1 (xy.1.1,xy.2.1) /\
   split_ent B.2 (xy.1.2,xy.2.2)].
-  exists (split_ent B.1,split_ent B.2) => //= xy hBxy.
-  by exists ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)); rewrite -!surjective_pairing.
+  by apply: prod_entP; apply: entourages_split_ent.
 move=> xy [uv /= [hB1xyuv1 hB2xyuv1] [hB1xyuv2 hB2xyuv2]].
 have /sBA : (B.1 `*` B.2) ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)).
   by split=> /=; apply: subset_split_ent => //; [exists uv.1|exists uv.2].
@@ -2545,19 +2538,16 @@ Qed.
 
 Lemma prod_ent_locallyE : locally = locally_ prod_ent.
 Proof.
-rewrite predeq2E => xy A; split.
-  move=> [B []]; rewrite -!locally_entourageE.
-  move=> [C1 entC1 sCB1] [C2 entC2 sCB2] sBA.
+rewrite predeq2E => xy A; split=> [[B []] | [B [C [entC1 entC2] sCB] sBA]].
+  rewrite -!locally_entourageE => - [C1 entC1 sCB1] [C2 entC2 sCB2] sBA.
   exists [set xy | C1 (xy.1.1, xy.2.1) /\ C2 (xy.1.2, xy.2.2)].
-    exists (C1, C2) => //= zt [Czt1 Czt2].
-    by exists ((zt.1.1, zt.2.1),(zt.1.2,zt.2.2)); rewrite -!surjective_pairing.
+    exact: prod_entP.
   by move=> uv [/= /sCB1 Buv1 /sCB2 /(conj Buv1) /sBA].
-move=> [B [C [entC1 entC2] sCB] sBA].
-exists (set_of_rel C.1 xy.1,set_of_rel C.2 xy.2).
+exists (to_set (C.1) (xy.1), to_set (C.2) (xy.2)).
   by rewrite -!locally_entourageE; split; [exists C.1|exists C.2].
 move=> uv [/= Cxyuv1 Cxyuv2]; apply: sBA.
 have /sCB : (C.1 `*` C.2) ((xy.1,uv.1),(xy.2,uv.2)) by [].
-move=> [zt Bzt /eqP]; rewrite /set_of_rel !xpair_eqE andbACA -!xpair_eqE.
+move=> [zt Bzt /eqP]; rewrite !xpair_eqE andbACA -!xpair_eqE.
 by rewrite -!surjective_pairing => /eqP<-.
 Qed.
 
@@ -2578,8 +2568,7 @@ Lemma flim_entourages2P (U V : uniformType) {F : set (set U)} {G : set (set V)}
 Proof.
 split=> [/flim_entouragesP FGyz A /FGyz|FGyz].
   by rewrite near_simpl -near2_pair.
-apply/flim_entouragesP => A /FGyz.
-by rewrite (near2_pair _ _ [set p | A ((y,z),p)]).
+by apply/flim_entouragesP => A /FGyz; rewrite (near2_pair _ _ (to_set A (y,z))).
 Qed.
 
 (** matrices *)
@@ -2635,17 +2624,14 @@ Lemma mx_ent_locallyE : locally = locally_ mx_ent.
 Proof.
 rewrite predeq2E => M A; split.
   move=> [B]; rewrite -locally_entourageE => M_B sBA.
-  have {M_B} M_B : forall i j, exists C, entourages C /\
-    set_of_rel C (M i j) `<=` B i j by move=> i j; apply/exists2P/M_B.
-  exists [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) |
-    forall i j, get [set C | entourages C /\ set_of_rel C (M i j) `<=` B i j]
-    (MN.1 i j, MN.2 i j)].
-    exists (fun i j => get [set C | entourages C /\
-      set_of_rel C (M i j) `<=` B i j]) => // i j.
-    by have /getPex [] := M_B i j.
+  set sB := fun i j => [set C | entourages C /\ to_set C (M i j) `<=` B i j].
+  have {M_B} M_B : forall i j, sB i j !=set0 by move=> ??; apply/exists2P/M_B.
+  exists [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) | forall i j,
+    get (sB i j) (MN.1 i j, MN.2 i j)].
+    by exists (fun i j => get (sB i j)) => // i j; have /getPex [] := M_B i j.
   move=> N CMN; apply/sBA => i j; have /getPex [_] := M_B i j; apply.
   exact/CMN.
-move=> [B [C entC sCB] sBA]; exists (fun i j => set_of_rel (C i j) (M i j)).
+move=> [B [C entC sCB] sBA]; exists (fun i j => to_set (C i j) (M i j)).
   by rewrite -locally_entourageE => i j; exists (C i j).
 by move=> N CMN; apply/sBA/sCB.
 Qed.
@@ -2667,7 +2653,7 @@ Lemma flim_mx_entouragesP (T : uniformType) m n (F : set (set 'M[T]_(m,n)))
 Proof.
 split.
   rewrite filter_fromP => FM A entA.
-  apply: (FM (fun i j => set_of_rel A (M i j))).
+  apply: (FM (fun i j => to_set A (M i j))).
   by move=> ??; apply: locally_entourage.
 move=> FM; apply/flim_entouragesP => A [P entP sPA]; near=> N.
 apply: sPA => /=; near: N; set Q := \bigcap_ij P ij.1 ij.2.
@@ -2758,7 +2744,7 @@ Lemma cvg_cauchy {T : uniformType} (F : set (set T)) : Filter F ->
   [cvg F in T] -> cauchy F.
 Proof.
 move=> FF cvF A entA; have /entourage_split [B entB sB2A] := entA.
-exists (set_of_rel B^-1 (lim F), set_of_rel B (lim F)).
+exists (to_set (B^-1) (lim F), to_set B (lim F)).
   split=> /=; apply: cvF; rewrite /= -locally_entourageE; last by exists B.
   by exists B^-1 => //; apply: entourage_inv.
 by move=> ab [/= Balima Blimb]; apply: sB2A; exists (lim F).
@@ -2904,9 +2890,9 @@ Lemma flim_switch_1 {U : uniformType}
 Proof.
 move=> fg fh hl; apply/app_flim_entouragesP => A entA.
 near F1 => x1; near=> x2; apply: (entourages_split (h x1)) => //.
-  by near: x1; apply/(hl (set_of_rel _ l))/locally_entourage.
+  by near: x1; apply/(hl (to_set _ l))/locally_entourage.
 apply: (entourages_split (f x1 x2)) => //.
-  by near: x2; apply/(fh x1 (set_of_rel _ _))/locally_entourage.
+  by near: x2; apply/(fh x1 (to_set _ _))/locally_entourage.
 move: (x2); near: x1; have /flim_fct_entouragesP /(_ (fun=> _^-1)):= fg; apply.
 by move=> _; apply: entourage_inv.
 Grab Existential Variables. all: end_near. Qed.
@@ -2920,9 +2906,10 @@ Proof.
 move=> fg fh; apply: complete_cauchy => A entA.
 rewrite !near_simpl -near2_pair near_map2; near=> x1 y1 => /=; near F2 => x2.
 apply: (entourages_split (f x1 x2)) => //.
-  by near: x2; apply/(fh _ (set_of_rel _ _))/locally_entourage.
+  by near: x2; apply/(fh _ (to_set _ _))/locally_entourage.
 apply: (entourages_split (f y1 x2)) => //; last first.
-  by near: x2; apply/(fh _ (set_of_rel _^-1 _))/locally_entourage/entourage_inv.
+  near: x2; apply/(fh _ (to_set (_^-1) _)).
+  exact: locally_entourage (entourage_inv _).
 apply: (entourages_split (g x2)) => //; move: (x2); [near: x1|near: y1].
   have /flim_fct_entouragesP /(_ (fun=> _^-1)) := fg; apply=> _.
   exact: entourage_inv.

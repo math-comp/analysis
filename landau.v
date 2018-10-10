@@ -269,10 +269,9 @@ Reserved Notation "f '=Theta_' F h"
    format "f  '=Theta_' F  h").
 
 Delimit Scope real_scope with real.
-Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
-Local Open Scope fun_scope.
+Local Open Scope classical_set_scope.
 
 Section function_space.
 
