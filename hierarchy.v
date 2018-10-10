@@ -993,6 +993,175 @@ Arguments bigminr_ler_cond {R I P F}.
 Arguments bigminr_ler {R I F}.
 Arguments bigminr_inf {R I} i0 {P m F}.
 
+(* tentative (start) *)
+
+Lemma map_nth_iota_id (A : eqType) (a : A) l : map (nth a l) (iota 0 (size l)) = l.
+Proof.
+apply: (@eq_from_nth _ a) => [|?]; rewrite ?size_map ?size_iota // => ?.
+by rewrite (nth_map O) // ?size_iota // nth_iota.
+Qed.
+
+Lemma sorted_of_nth (A : eqType) (r : rel A) s (Hr : transitive r) (rs : path.sorted r s) :
+  forall a n m, (n < m < size s)%N -> r (nth a s n) (nth a s m).
+Proof.
+move=> a n m /= /andP[nm ms]; set f := nth a s.
+have : subseq [:: f n ; f m] s.
+  rewrite -(map_nth_iota_id a s) -/(map f [:: n; m]); apply: map_subseq.
+  have ns : (n < size s)%N by exact/(leq_ltn_trans _ ms)/ltnW.
+  rewrite -(subnK ns) addnC iota_add add0n (_ : _ :: _ = [:: n] ++ [:: m]) //.
+  by apply cat_subseq; rewrite sub1seq mem_iota ?nm ?subnKC // ltnSn.
+by case/(path.subseq_sorted Hr)/(_ rs)/andP.
+Qed.
+
+Section ArgMinOrd.
+
+Variables (I : finType) (i0 : I) (P : pred I) (ord : rel I).
+
+Let arg_pred_min := [pred i | P i && [forall j, P j ==> ord i j]].
+Definition arg_minord := odflt i0 (pick arg_pred_min).
+
+CoInductive minimum_spec_ord : I -> Type :=
+  MinimumSpecOrd i of P i & (forall j, P j -> ord i j) : minimum_spec_ord i.
+
+Hypothesis P_not_pred0 : {i | P i}.
+Hypothesis ord_trans : transitive ord.
+Hypothesis ord_refl : reflexive ord.
+Hypothesis ord_total : total ord.
+
+Lemma in_sort i s : (i \in path.sort ord s) = (i \in s).
+Proof. rewrite -2!has_pred1; exact/eq_has_r/path.mem_sort. Qed.
+
+Lemma in_sorted i s : path.sorted ord s -> i \in s -> ord (head i s) i.
+Proof.
+case: s => [|h t Hs iht]; [by rewrite in_nil | set s := h :: t].
+rewrite -nth0 {2}(_ : i = nth i s (find (pred1 i) s)); last first.
+  by have /(nth_find i)/eqP : has (pred1 i) s by apply/hasP; exists i => //=.
+have [/eqP -> //|H] := boolP (find (pred1 i) s == O); apply sorted_of_nth => //.
+by rewrite -has_find has_pred1 iht andbT ltn_neqAle leq0n andbT eq_sym.
+Qed.
+
+Lemma all_sort s : all P (path.sort ord s) = all P s.
+Proof. exact/eq_all_r/path.mem_sort. Qed.
+
+Lemma find_ex_minord : {i | P i & forall j, P j -> ord i j}.
+Proof.
+case: P_not_pred0 => j Pj.
+exists (head j (path.sort ord (seq.filter P (enum I)))).
+- move Hs : (path.sort _ _) => s.
+  case: s Hs => // h t ht /=.
+  have /allP : all P (h :: t) by rewrite -ht all_sort filter_all.
+  apply; by rewrite mem_head.
+- move=> i Pi.
+  move Hs : (path.sort _ _) => s.
+  have si : i \in s by rewrite -Hs in_sort mem_filter Pi /= mem_enum.
+  rewrite (_ : head j s = head i s); last by case: s si {Hs} => //; by rewrite in_nil.
+  apply in_sorted => //; rewrite -Hs; exact/path.sort_sorted.
+Qed.
+
+Definition ex_minord := s2val find_ex_minord.
+
+Inductive ex_minord_spec : I -> Type :=
+  ExMinordSpec i of P i & (forall j, P j -> ord i j) : ex_minord_spec i.
+
+Lemma ex_minordP : ex_minord_spec ex_minord.
+Proof. by rewrite /ex_minord; case: find_ex_minord. Qed.
+
+Let exP j := [exists i, P i && (i == j)].
+
+Let PexP i : P i -> exP i.
+Proof. by move=> Pi; apply/existsP; exists i; rewrite Pi => /=. Qed.
+
+Lemma arg_minordP : minimum_spec_ord arg_minord.
+Proof.
+rewrite /arg_minord; case: pickP => [i /andP[Pi /forallP min_i] | no_i].
+  split=> // ? ; exact/implyP.
+case: (ex_minordP) => j /PexP ex_j min_j; case/pred0P: ex_j => i.
+apply: contraFF (no_i i) => /andP[Pi def_n]; rewrite /= Pi.
+apply/forallP => k; apply/implyP => Pk.
+rewrite (eqP def_n); exact/min_j/Pk.
+Qed.
+
+End ArgMinOrd.
+
+Section ArgMaxOrd.
+
+Variables (I : finType) (i0 : I) (P : pred I) (ord : rel I).
+Let ord_swap i j := ord j i.
+
+Definition arg_maxord := arg_minord i0 P ord_swap.
+
+CoInductive maximum_spec_ord : I -> Type :=
+  MaximumSpecOrd i of P i & (forall j, P j -> ord j i) : maximum_spec_ord i.
+
+Hypothesis P_not_pred0 : {i | P i}.
+Hypothesis ord_trans : transitive ord.
+Let ord_swap_trans : transitive ord_swap.
+Proof. move => ? ? ? H1 H2; exact: (ord_trans H2 H1). Qed.
+Hypothesis ord_refl : reflexive ord.
+Hypothesis ord_total : total ord.
+Let ord_swap_total : total ord_swap.
+Proof. move=> ? ?; exact: ord_total. Qed.
+
+Lemma arg_maxordP : maximum_spec_ord arg_maxord.
+Proof. rewrite /arg_maxord; by case: (arg_minordP i0 P_not_pred0). Qed.
+
+End ArgMaxOrd.
+
+Section RealExtrema.
+
+Variables (R : realDomainType) (I : finType) (i0 : I) (P : pred I) (F : I -> R).
+Let ordF i j := F i <= F j.
+Let ord_trans : transitive ordF.
+Proof. move=> ? ? ?; exact: ler_trans. Qed.
+Let ord_refl : reflexive ordF.
+Proof. move=> ?; exact: lerr. Qed.
+Let ord_total : total ordF.
+Proof. move=> ? ?; by rewrite real_leVge // num_real. Qed.
+
+Definition arg_rmax := arg_maxord i0 P ordF.
+
+CoInductive minimum_spec_r : I -> Type :=
+  MinimumSpecR i of P i & (forall j, P j -> ordF i j) : minimum_spec_r i.
+
+CoInductive maximum_spec_r : I -> Type :=
+  MaximumSpecR i of P i & (forall j, P j -> ordF j i) : maximum_spec_r i.
+
+Hypothesis exP : {i | P i}.
+
+Lemma arg_rmaxP : maximum_spec_r arg_rmax.
+Proof. rewrite /arg_rmax; by case: (arg_maxordP i0 exP). Qed.
+
+End RealExtrema.
+
+Notation "[ 'arg' 'maxr_' ( i > i0 | P ) F ]" :=
+     (arg_rmax i0 (fun i => P%B) (fun i => F))
+  (at level 0, i, i0 at level 10,
+   format "[ 'arg'  'maxr_' ( i  >  i0  |  P )  F ]").
+
+Section bigmaxr_mem.
+
+Variable (R : realDomainType).
+
+Lemma bigmaxr_eq_arg (I : finType) i0 (P : pred I) (F : I -> R) x :
+  P i0 -> (forall i, P i -> x <= F i) ->
+  \big[maxr/x]_(i | P i) F i = F [arg maxr_(i > i0 | P i) F i].
+Proof.
+move=> Pi0; case: arg_rmaxP; [by exists i0 | move=> //= i Pi Hx maxFi].
+apply/eqP; rewrite eqr_le ler_bigmaxr_cond // andbT.
+apply/bigmaxr_lerP; split => //; exact: maxFi.
+Qed.
+
+Lemma bigmaxr_mem (I : finType) i0 (P : pred I) (F : I -> R) x :
+  P i0 -> (forall i, P i -> x <= F i) ->
+  \big[maxr/x]_(i | P i) F i \in F @` setT.
+Proof.
+move=> Pi0 Hx; rewrite (bigmaxr_eq_arg Pi0) // inE; exact/asboolP/imageP.
+Qed.
+
+End bigmaxr_mem.
+
+(* tentative (end) *)
+
 (** ** Matrices *)
 
 Section matrix_normedMod.
