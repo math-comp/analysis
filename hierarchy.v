@@ -29,7 +29,7 @@ Require Import boolp reals classical_sets posnum topology.
 (*                       ball x e == ball of center x and radius e.           *)
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
-(*                     entourages == set of entourages defined by balls. An   *)
+(*                      entourage == set of entourages defined by balls. An   *)
 (*                                   entourage can be seen as a               *)
 (*                                   "neighbourhood" of the diagonal set      *)
 (*                                   D = {(x, x) | x in T}.                   *)
@@ -135,7 +135,7 @@ Definition ball (K : numDomainType) (V : zmodType) (norm : V -> K) (x : V)
   (e : K) := [set y | norm (x - y) < e].
 Arguments ball {K V} norm x e%R y /.
 
-Definition entourages_ (K : numDomainType) (V : zmodType) (norm : V -> K) :=
+Definition entourage_ (K : numDomainType) (V : zmodType) (norm : V -> K) :=
   filter_from [set e : K | e > 0]
               (fun e => [set xy | norm (xy.1 - xy.2) < e]).
 
@@ -146,7 +146,7 @@ Record mixin_of (K : numDomainType) (V : lmodType K) loc
   norm : V -> K ;
   ax1 : forall (x y : V), norm (x + y) <= norm x + norm y ;
   ax2 : forall (l : K) (x : V), norm (l *: x) = `|l| * norm x;
-  ax3 : Uniform.entourages m = entourages_ norm;
+  ax3 : Uniform.entourage m = entourage_ norm;
   ax4 : forall x : V, norm x = 0 -> x = 0
 }.
 
@@ -255,11 +255,11 @@ Proof. exact: NormedModule.ax1. Qed.
 Lemma normmZ l x : `|[l *: x]| = `|l| * `|[x]|.
 Proof. exact: NormedModule.ax2. Qed.
 
-Notation entourages_norm := (entourages_ (@norm K V)).
+Notation entourage_norm := (entourage_ (@norm K V)).
 
-Notation locally_norm := (locally_ entourages_norm).
+Notation locally_norm := (locally_ entourage_norm).
 
-Lemma entourages_normE : entourages_norm = entourages.
+Lemma entourage_normE : entourage_norm = entourage.
 Proof. by rewrite -NormedModule.ax3. Qed.
 
 Lemma normm0_eq0 x : `|[x]| = 0 -> x = 0.
@@ -310,25 +310,26 @@ rewrite ger0_norm ?subr_ge0 // ler_subl_addr.
 by rewrite -{1}[x](addrNK y) ler_normm_add.
 Qed.
 
-Lemma entourages_ball (e : {posnum K}) :
-  entourages [set xy : V * V | `|[xy.1 - xy.2]| < e%:num].
-Proof. by rewrite -entourages_normE; apply: in_filter_from. Qed.
+Lemma entourage_ball (e : {posnum K}) :
+  entourage [set xy : V * V | `|[xy.1 - xy.2]| < e%:num].
+Proof. by rewrite -entourage_normE; apply: in_filter_from. Qed.
+Hint Resolve entourage_ball.
 
 Lemma locally_le_locally_norm x : flim (locally x) (locally_norm x).
 Proof.
 move=> P [A entA sAB]; apply/locallyP; exists A => //.
-by rewrite -entourages_normE.
+by rewrite -entourage_normE.
 Qed.
 
 Lemma locally_norm_le_locally x : flim (locally_norm x) (locally x).
 Proof.
-by move=> P /locallyP [A entA sAP]; exists A => //; rewrite entourages_normE.
+by move=> P /locallyP [A entA sAP]; exists A => //; rewrite entourage_normE.
 Qed.
 
 (* NB: this lemmas was not here before *)
 Lemma locally_locally_norm : locally_norm = locally.
 Proof.
-by rewrite funeqE => x; rewrite /locally_norm entourages_normE
+by rewrite funeqE => x; rewrite /locally_norm entourage_normE
   filter_from_entourageE.
 Qed.
 
@@ -336,8 +337,7 @@ Lemma filter_from_norm_locally x :
   @filter_from K _ [set x : K | 0 < x] (ball norm x) = locally x.
 Proof.
 rewrite predeqE => A; split=> [[_/posnumP[e] sxeA] |].
-  by rewrite -locally_entourageE; exists [set xy | `|[xy.1 - xy.2]| < e%:num];
-    [apply: entourages_ball|move=> ? /sxeA].
+  by rewrite -locally_entourageE; exists [set xy | `|[xy.1 - xy.2]| < e%:num].
 rewrite -locally_locally_norm => - [B [_/posnumP[e] seB] sBA].
 by exists e%:num => // y xye; apply/sBA/seB.
 Qed.
@@ -394,13 +394,14 @@ Proof. by move=> e1e2 y /ltr_le_trans; apply. Qed.
 Lemma norm_close x y :
   close x y = (forall e : {posnum K}, ball norm x e%:num y).
 Proof.
-rewrite propeqE; split; first by move=> xy e; have /xy := entourages_ball e.
-by move=> xy A; rewrite -entourages_normE => - [_/posnumP[e]]; apply; apply: xy.
+rewrite propeqE; split; first by move=> xy e; have /xy := entourage_ball e.
+by move=> xy A; rewrite -entourage_normE => - [_/posnumP[e]]; apply; apply: xy.
 Qed.
 
 End NormedModule1.
 
 Hint Resolve normm_ge0.
+Hint Resolve entourage_ball.
 Hint Resolve ball_center.
 
 Module Export LocallyNorm.
@@ -471,7 +472,7 @@ Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
 have dxy_gt0 : `|[x - y]| > 0 by rewrite normm_gt0 subr_eq0.
 have dxy_ge0 := ltrW dxy_gt0.
-have /cl_xy /= := (@entourages_ball _ V ((PosNum dxy_gt0)%:num / 2)%:pos).
+have /cl_xy /= := (@entourage_ball _ V ((PosNum dxy_gt0)%:num / 2)%:pos).
 rewrite -subr_lt0 ler_gtF // -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
 by rewrite subr_ge0 -(@ler_pmul2r _ 2) // mulVf // mul1r ler1n.
 Qed.
@@ -530,7 +531,7 @@ Hypothesis (ler_dist_add : forall z x y,
   norm (x - y) <= norm (x - z) + norm (z - y)).
 
 Program Definition uniformityOfNormMixin :=
-  @Uniform.Mixin V (locally_ (entourages_ norm)) (entourages_ norm) _ _ _ _ _.
+  @Uniform.Mixin V (locally_ (entourage_ norm)) (entourage_ norm) _ _ _ _ _.
 Next Obligation.
 apply: filter_from_filter; first by exists 1.
 move=> _ _ /posnumP[e1] /posnumP[e2]; exists (minr e1%:num e2%:num) => // xy.
@@ -556,7 +557,7 @@ Definition realField_uniformMixin (R : realFieldType) :=
   uniformityOfNormMixin (@normr0 R) (@distrC _) (@ler_dist_add _).
 
 Canonical realField_filteredType (R : realFieldType) :=
-  FilteredType R R (locally_ (entourages_ normr)).
+  FilteredType R R (locally_ (entourage_ normr)).
 Canonical realField_topologicalType (R : realFieldType) :=
   TopologicalType R (topologyOfEntourageMixin (realField_uniformMixin R)).
 Canonical realField_uniformType (R : realFieldType):=
@@ -564,7 +565,7 @@ Canonical realField_uniformType (R : realFieldType):=
 
 Definition realField_normedModMixin (R : realFieldType) :=
   @NormedModule.Mixin _ (GRing.regular_lmodType R)
-  (locally_ (entourages_ normr)) (realField_uniformMixin _) normr
+  (locally_ (entourage_ normr)) (realField_uniformMixin _) normr
   (@ler_norm_add _) (@normrM _) erefl (@normr0_eq0 _).
 
 Canonical realFieldo_normedModType (R : realFieldType) :=
@@ -1077,16 +1078,15 @@ Lemma prod_norm_scal (l : K) (x : U * V) :
   prod_norm (l *: x) = `|l| * prod_norm x.
 Proof. by rewrite /prod_norm !normmZ maxr_pmulr. Qed.
 
-Lemma entourages_prod_normE : entourages = entourages_ prod_norm.
+Lemma entourage_prod_normE : entourage = entourage_ prod_norm.
 Proof.
 rewrite predeqE => A; split; last first.
-  move=> [_/posnumP[e] sA].
-  exists ([set u | `|[u.1 - u.2]| < e%:num], [set v | `|[v.1 - v.2]| < e%:num]).
-    by split=> /=; apply: entourages_ball.
+  move=> [_/posnumP[e] sA]; exists ([set u | `|[u.1 - u.2]| < e%:num],
+    [set v | `|[v.1 - v.2]| < e%:num]) => //=.
   move=> /= uv [uv1e uv2e]; exists ((uv.1.1, uv.2.1), (uv.1.2, uv.2.2)).
     by apply: sA; rewrite ltr_maxl uv1e uv2e.
   by rewrite /= -!surjective_pairing.
-move=> [PQ []]; rewrite -!entourages_normE.
+move=> [PQ []]; rewrite -!entourage_normE.
 move=> [_/posnumP[eP] sP] [_/posnumP[eQ] sQ] sPQA.
 exists (minr eP%:num eQ%:num) => // xy.
 rewrite ltr_maxl !ltr_minr => /andP [/andP [xy1P xy1Q] /andP [xy2P xy2Q]].
@@ -1113,7 +1113,7 @@ End prod_NormedModule.
 Definition prod_NormedModule_mixin (K : realDomainType)
   (U V : normedModType K) :=
   @NormedModMixin K _ _ _ (@prod_norm K U V) prod_norm_triangle
-  prod_norm_scal entourages_prod_normE prod_norm_eq0.
+  prod_norm_scal entourage_prod_normE prod_norm_eq0.
 
 Canonical prod_NormedModule (K : realDomainType) (U V : normedModType K) :=
   NormedModType K (U * V) (@prod_NormedModule_mixin K U V).
@@ -1374,11 +1374,11 @@ Export CompleteNormedModule.Exports.
 
 (** * Extended Types *)
 
-Definition entourages_set (U : uniformType) (A : set ((set U) * (set U))) :=
-  exists2 B, entourages B & forall PQ, A PQ -> forall p q,
+Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
+  exists2 B, entourage B & forall PQ, A PQ -> forall p q,
     PQ.1 p -> PQ.2 q -> B (p,q).
 Canonical set_filter_source (U : uniformType) :=
-  @Filtered.Source Prop _ U (fun A => locally_ (@entourages_set U) A).
+  @Filtered.Source Prop _ U (fun A => locally_ (@entourage_set U) A).
 
 (** * The topology on real numbers *)
 
@@ -1400,7 +1400,7 @@ Lemma real_complete (F : set (set R)) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF Fc; apply/cvg_ex.
 pose D := \bigcap_(A in F) (down (mem A)).
-have /Fc := @entourages_ball _ [normedModType R of R] 1%:pos.
+have /Fc := @entourage_ball _ [normedModType R of R] 1%:pos.
 rewrite near_simpl -near2_pair => /nearP_dep /filter_ex /= [x0 x01].
 have D_has_sup : has_sup (mem D); first split.
 - exists (x0 - 1); rewrite in_setE => A FA.
@@ -1414,7 +1414,7 @@ rewrite ler_distl sup_upper_bound //=.
   apply: sup_le_ub => //; first by case: D_has_sup.
   apply/forallbP => y; apply/implyP; rewrite in_setE.
   move=> /(_ (ball norm x eps%:num) _) /existsbP [].
-    by near: x; apply: nearP_dep; apply: Fc; apply: entourages_ball.
+    by near: x; apply: nearP_dep; apply: Fc; apply: entourage_ball.
   move=> z /andP[]; rewrite in_setE /ball ltr_distl ltr_subl_addr.
   by move=> /andP [/ltrW /(ler_trans _) le_xeps _ /le_xeps].
 rewrite in_setE /D /= => A FA; near F => y.
@@ -1422,7 +1422,7 @@ apply/existsbP; exists y; apply/andP; split.
   by rewrite in_setE; near: y.
 rewrite ler_subl_addl -ler_subl_addr ltrW //.
 suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
-by near: y; near: x; apply: nearP_dep; apply: Fc; apply: entourages_ball.
+by near: y; near: x; apply: nearP_dep; apply: Fc; apply: entourage_ball.
 Grab Existential Variables. all: end_near. Qed.
 
 Canonical real_completeType := CompleteType R real_complete.

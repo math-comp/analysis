@@ -283,7 +283,7 @@ pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: lim_add.
   rewrite -(scale1r (_ _ v)); apply: lim_scalel.
-  apply/app_flim_entouragesP => X entX; apply/locallyP.
+  apply/app_flim_entourageP => X entX; apply/locallyP.
   rewrite locally_E; exists X => // x _ x0; rewrite mulVf //.
   exact: entourage_refl.
 rewrite /g2.
