@@ -8,7 +8,7 @@ Require Import boolp classical_sets posnum.
 (* topological notions.                                                       *)
 (*                                                                            *)
 (* * Filters :                                                                *)
-(*                   filteredType U == interface type for types whose        *)
+(*                   filteredType U == interface type for types whose         *)
 (*                                     elements represent sets of sets on U.  *)
 (*                                     These sets are intended to be filters  *)
 (*                                     on U but this is not enforced yet.     *)
@@ -20,15 +20,6 @@ Require Import boolp classical_sets posnum.
 (*                                     structure cT.                          *)
 (*            [filteredType U of T] == clone of a canonical filteredType U    *)
 (*                                     structure on T.                        *)
-(*               filter_on_term X Y == structure that records terms x : X     *)
-(*                                     with a set of sets (filter) in Y.      *)
-(*                                     Allows to infer the canonical filter   *)
-(*                                     associated to a term by looking at its *)
-(*                                     type.                                  *)
-(*                    filter_term F == if F : filter_on_term X Y, outputs the *)
-(*                                     term in X contained in F.              *)
-(*                    term_filter F == if F : filter_on_term X Y, outputs the *)
-(*                                     filter on Y contained in F.            *)
 (*              Filtered.source Y Z == structure that records types X such    *)
 (*                                     that there is a function mapping       *)
 (*                                     functions of type X -> Y to filters on *)
@@ -38,7 +29,6 @@ Require Import boolp classical_sets posnum.
 (*                Filtered.Source F == if F : (X -> Y) -> set (set Z), packs  *)
 (*                                     X with F in a Filtered.source Y Z      *)
 (*                                     structure.                             *)
-(*                    [filter of x] == canonical filter associated to x.      *)
 (*                        locally p == set of sets associated to p (in a      *)
 (*                                     filtered type).                        *)
 (*                  filter_from D B == set of the supersets of the elements   *)
@@ -47,6 +37,7 @@ Require Import boolp classical_sets posnum.
 (*                                     This is a filter if (B_i)_(i in D)     *)
 (*                                     forms a filter base.                   *)
 (*                  filter_prod F G == product of the filters F and G.        *)
+(*                    [filter of x] == canonical filter associated to x.      *)
 (*                        F `=>` G <-> G is included in F; F and G are sets   *)
 (*                                     of sets.                               *)
 (*                         F --> G <-> the canonical filter associated to G   *)
@@ -68,7 +59,17 @@ Require Import boolp classical_sets posnum.
 (*                   ProperFilter F == type class proving that the set of     *)
 (*                                     sets F is a proper filter.             *)
 (*                    UltraFilter F == type class proving that the set of     *)
-(*                                     sets F is an ultrafilter               *)
+(*                                     sets F is an ultrafilter.              *)
+(*                      filter_on T == interface type for sets of sets on T   *)
+(*                                     that are filters.                      *)
+(*                  FilterType F FF == packs the set of sets F with the proof *)
+(*                                     FF of Filter F to build a filter_on T  *)
+(*                                     structure.                             *)
+(*                     pfilter_on T == interface type for sets of sets on T   *)
+(*                                     that are proper filters.               *)
+(*                 PFilterPack F FF == packs the set of sets F with the proof *)
+(*                                     FF of ProperFilter F to build a        *)
+(*                                     pfilter_on T structure.                *)
 (*                    filtermap f F == image of the filter F by the function  *)
 (*                                     f.                                     *)
 (*                     E @[x --> F] == image of the canonical filter          *)
@@ -88,6 +89,13 @@ Require Import boolp classical_sets posnum.
 (*                                     domain D.                              *)
 (*                subset_filter F D == similar to within D F, but with        *)
 (*                                     dependent types.                       *)
+(*                      in_filter F == interface type for the sets that       *)
+(*                                     belong to the set of sets F.           *)
+(*                      InFilter FP == packs a set P with a proof of F P to   *)
+(*                                     build a in_filter F structure.         *)
+(*                              \oo == "eventually" filter on nat: set of     *)
+(*                                     predicates on natural numbers that are *)
+(*                                     eventually true.                       *)
 (*                                                                            *)
 (* * Near notations and tactics:                                              *)
 (*   --> The purpose of the near notations and tactics is to make the         *)
@@ -108,6 +116,7 @@ Require Import boolp classical_sets posnum.
 (*   \forall x \near F & y \near G, P x y := {near F & G, forall x y, P x y}. *)
 (*     \forall x & y \near F, P x y == same as before, with G = F.            *)
 (*               \near x & y, P x y := \forall z \near x & t \near y, P x y.  *)
+(*                     x \is_near F == x belongs to a set P : in_filter F.    *)
 (*   --> Tactics:                                                             *)
 (*     - near=> x    introduces x:                                            *)
 (*       On the goal \forall x \near F, G x, introduces the variable x and an *)
@@ -180,10 +189,52 @@ Require Import boolp classical_sets posnum.
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
 (*                                     is both open and closed in A is A.     *)
-(*                                                                            *)
 (* --> We used these topological notions to prove Tychonoff's Theorem, which  *)
 (*     states that any product of compact sets is compact according to the    *)
 (*     product topology.                                                      *)
+(*                                                                            *)
+(* * Uniform spaces :                                                         *)
+(*                   locally_ ent == neighbourhoods defined using entourages. *)
+(*                    uniformType == interface type for uniform space         *)
+(*                                   structure. We use here the entourage     *)
+(*                                   definition of uniform space: a type      *)
+(*                                   equipped with a set of entourages, also  *)
+(*                                   called uniformity. An entourage can be   *)
+(*                                   seen as a "neighbourhood" of the         *)
+(*                                   diagonal set {(x, x) | x in T}.          *)
+(* UniformMixin entF ent_refl ent_inv ent_split loc_ent == builds the mixin   *)
+(*                                   for a uniform space from the properties  *)
+(*                                   of entourages and the compatibility      *)
+(*                                   between entourages and locally.          *)
+(*                UniformType T m == packs the uniform space mixin into a     *)
+(*                                   uniformType. T must have a canonical     *)
+(*                                   topologicalType structure.               *)
+(*      [uniformType of T for cT] == T-clone of the uniformType structure cT. *)
+(*             [uniformType of T] == clone of a canonical uniformType         *)
+(*                                   structure on T.                          *)
+(* topologyOfEntourageMixin umixin == builds the mixin for a topological      *)
+(*                                   space from a mixin for a uniform space.  *)
+(*                      entourage == set of entourages.                       *)
+(*                    split_ent A == "half entourage": entourage B such that, *)
+(*                                   when seen as a relation, B \o B `<=` A.  *)
+(*                     close x y <-> x and y are arbitrarily close, i.e. the  *)
+(*                                   pair (x,y) is in any entourage.          *)
+(*                   unif_cont f <-> f is uniformly continuous.               *)
+(*                  entourage_set == set of entourages on the parts of a      *)
+(*                                   uniform space.                           *)
+(*                                                                            *)
+(* * Complete spaces :                                                        *)
+(*                      cauchy F <-> the set of sets F is a cauchy filter     *)
+(*                   completeType == interface type for a complete uniform    *)
+(*                                   space structure.                         *)
+(*       CompleteType T cvgCauchy == packs the proof that every proper cauchy *)
+(*                                   filter on T converges into a             *)
+(*                                   completeType structure; T must have a    *)
+(*                                   canonical uniformType structure.         *)
+(*     [completeType of T for cT] == T-clone of the completeType structure    *)
+(*                                   cT.                                      *)
+(*            [completeType of T] == clone of a canonical completeType        *)
+(*                                   structure on T.                          *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -2399,6 +2450,8 @@ Grab Existential Variables. all: end_near. Qed.
 Lemma flimx_close (x y : M) : x --> y -> close x y.
 Proof. exact: flim_close. Qed.
 
+(* TODO: sections locally_fct, locally_fct2 in normed_spaces *)
+
 Lemma flim_entourageP F (FF : Filter F) (p : M) :
   F --> p <-> forall A, entourage A -> \forall q \near F, A (p, q).
 Proof. by rewrite -filter_fromP !locally_simpl. Qed.
@@ -2470,8 +2523,25 @@ Hint Resolve close_refl.
 Arguments flim_const {M T F FF} a.
 Arguments close_lim {M} F1 F2 {FF2} _.
 
+Lemma continuous_withinNx {U V : uniformType}
+  (f : U -> V) x :
+  {for x, continuous f} <-> f @ locally' x --> f x.
+Proof.
+split=> - cfx P /= fxP.
+  rewrite /locally' !near_simpl near_withinE.
+  by rewrite /locally'; apply: flim_within; apply/cfx.
+ (* :BUG: ssr apply: does not work,
+    because the type of the filter is not inferred *)
+rewrite !locally_nearE !near_map !near_locally in fxP *; have /= := cfx P fxP.
+rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
+by have [->|] := eqVneq y x; [by apply: locally_singleton|near: y].
+Grab Existential Variables. all: end_near. Qed.
+
 Definition unif_cont (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
+
+(* TODO: unif_contP in normed spaces *)
+(* Also missing: section locally, filterP_strong *)
 
 (** product of two uniform spaces *)
 
@@ -2734,9 +2804,17 @@ move=> Ff; apply/flim_entourageP => A [P entP sPA]; near=> g.
 by apply: sPA => /=; near: g; apply: Ff.
 Grab Existential Variables. all: end_near. Qed.
 
+Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
+  exists2 B, entourage B & forall PQ, A PQ -> forall p q,
+    PQ.1 p -> PQ.2 q -> B (p,q).
+Canonical set_filter_source (U : uniformType) :=
+  @Filtered.Source Prop _ U (fun A => locally_ (@entourage_set U) A).
+
 (** ** Complete uniform spaces *)
 
 Definition cauchy {T : uniformType} (F : set (set T)) := (F, F) --> entourage.
+
+(* TODO: cauchy_ex and old cauchy in normed spaces *)
 
 Lemma cvg_cauchy {T : uniformType} (F : set (set T)) : Filter F ->
   [cvg F in T] -> cauchy F.

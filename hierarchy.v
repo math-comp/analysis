@@ -5,81 +5,19 @@ From mathcomp Require Import matrix interval zmodp.
 Require Import boolp reals classical_sets posnum topology.
 
 (******************************************************************************)
-(* This file extends the topological hierarchy with metric-related notions:   *)
-(* balls, absolute values, norms.                                             *)
-(*                                                                            *)
-(* * Uniform spaces :                                                         *)
-(*                  locally_ ball == neighbourhoods defined using balls       *)
-(*                    uniformType == interface type for uniform space         *)
-(*                                   structure. We use here a pseudo-metric   *)
-(*                                   definition of uniform space: a type      *)
-(*                                   equipped with balls.                     *)
-(*      UniformMixin brefl bsym btriangle locb == builds the mixin for a      *)
-(*                                   uniform space from the properties of     *)
-(*                                   balls and the compatibility between      *)
-(*                                   balls and locally.                       *)
-(*                UniformType T m == packs the uniform space mixin into a     *)
-(*                                   uniformType. T must have a canonical     *)
-(*                                   topologicalType structure.               *)
-(*      [uniformType of T for cT] == T-clone of the uniformType structure cT. *)
-(*             [uniformType of T] == clone of a canonical uniformType         *)
-(*                                   structure on T.                          *)
-(*     topologyOfBallMixin umixin == builds the mixin for a topological space *)
-(*                                   from a mixin for a uniform space.        *)
-(*                       ball x e == ball of center x and radius e.           *)
-(*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
-(*                                   balls.                                   *)
-(*                      entourage == set of entourages defined by balls. An   *)
-(*                                   entourage can be seen as a               *)
-(*                                   "neighbourhood" of the diagonal set      *)
-(*                                   D = {(x, x) | x in T}.                   *)
-(*                   ball_set A e == set A extended with a band of width e    *)
-(*                   unif_cont f <-> f is uniformly continuous.               *)
-(*                                                                            *)
-(* * Rings with absolute value :                                              *)
-(*                    absRingType == interface type for a ring with absolute  *)
-(*                                   value structure.                         *)
-(*     AbsRingMixin abs0 absN1 absD absM abseq0 == builds the mixin for a     *)
-(*                                   ring with absolute value from the        *)
-(*                                   algebraic properties of the absolute     *)
-(*                                   value; the carrier type must have a      *)
-(*                                   ringType structure.                      *)
-(*      [absRingType of T for cT] == T-clone of the absRingType structure cT. *)
-(*             [absRingType of T] == clone of a canonical absRingType         *)
-(*                                   structure on T.                          *)
-(*                           `|x| == the absolute value of x.                 *)
-(*                        ball_ N == balls defined by the norm/absolute value *)
-(*                                   N.                                       *)
-(*                   locally_dist == neighbourhoods defined by a "distance"   *)
-(*                                   function                                 *)
-(*                                                                            *)
-(* * Complete spaces :                                                        *)
-(*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
-(*                                   (epsilon-delta definition).              *)
-(*                      cauchy F <-> the set of sets F is a cauchy filter     *)
-(*                                   (using the near notations).              *)
-(*                   completeType == interface type for a complete uniform    *)
-(*                                   space structure.                         *)
-(*       CompleteType T cvgCauchy == packs the proof that every proper cauchy *)
-(*                                   filter on T converges into a             *)
-(*                                   completeType structure; T must have a    *)
-(*                                   canonical uniformType structure.         *)
-(*     [completeType of T for cT] == T-clone of the completeType structure    *)
-(*                                   cT.                                      *)
-(*            [completeType of T] == clone of a canonical completeType        *)
-(*                                   structure on T.                          *)
+(* This file extends the topological hierarchy with norm-related notions.     *)
 (*                                                                            *)
 (* * Normed modules :                                                         *)
+(*                         ball N == balls defined by the norm N.             *)
+(*                   entourage_ N == entourages defined by the norm N.        *)
 (*                normedModType K == interface type for a normed module       *)
-(*                                   structure over the ring with absolute    *)
-(*                                   value K.                                 *)
-(*     NormedModMixin normD normZ balln normeq0 == builds the mixin for a     *)
-(*                                   normed module from the algebraic         *)
-(*                                   properties of the norm and the           *)
-(*                                   compatibility between the norm and       *)
-(*                                   balls; the carrier type must have a      *)
-(*                                   lmodType K structure for K an            *)
-(*                                   absRingType.                             *)
+(*                                   structure over the numDomainType K.      *)
+(* NormedModMixin normD normZ entn normeq0 == builds the mixin for a normed   *)
+(*                                   module from the algebraic properties of  *)
+(*                                   the norm and the compatibility between   *)
+(*                                   the norm and entourages; the carrier     *)
+(*                                   type must have a lmodType K structure    *)
+(*                                   for K a numDomaintype.                   *)
 (*            NormedModType K T m == packs the mixin m to build a             *)
 (*                                   normedModType K; T must have canonical   *)
 (*                                   lmodType K and uniformType structures.   *)
@@ -88,8 +26,6 @@ Require Import boolp reals classical_sets posnum topology.
 (*         [normedModType K of T] == clone of a canonical normedModType K     *)
 (*                                   structure on T.                          *)
 (*                         `|[x]| == the norm of x.                           *)
-(*                      ball_norm == balls defined by the norm.               *)
-(*                   locally_norm == neighbourhoods defined by the norm.      *)
 (*                        bounded == set of bounded sets.                     *)
 (*                                                                            *)
 (* * Complete normed modules :                                                *)
@@ -100,20 +36,17 @@ Require Import boolp reals classical_sets posnum topology.
 (*                                   module structure over K on T.            *)
 (*                                                                            *)
 (* * Filters :                                                                *)
-(*                            \oo == "eventually" filter on nat: set of       *)
-(*                                   predicates on natural numbers that are   *)
-(*                                   eventually true.                         *)
-(*          at_left x, at_right x == filters on real numbers for predicates   *)
-(*                                   that locally hold on the left/right of   *)
-(*                                   x.                                       *)
-(*                Rbar_locally' x == filter on extended real numbers that     *)
-(*                                   corresponds to locally' x if x is a real *)
-(*                                   number and to predicates that are        *)
-(*                                   eventually true if x is +oo/-oo.         *)
-(*                 Rbar_locally x == same as Rbar_locally' where locally' is  *)
-(*                                   replaced with locally.                   *)
-(*                 Rbar_loc_seq x == sequence that converges to x in the set  *)
-(*                                   of extended real numbers.                *)
+(*               ereal_locally' x == filter on an extended realFieldType R    *)
+(*                                   that corresponds to locally' x if x : R  *)
+(*                                   and to predicates that are eventually    *)
+(*                                   true if x is +oo/-oo.                    *)
+(*                ereal_locally x == same as ereal_locally' where locally'    *)
+(*                                   is replaced with locally.                *)
+(*          at_left x, at_right x == filters on a realFieldType for           *)
+(*                                   predicates that locally hold on the      *)
+(*                                   left/right of x.                         *)
+(*                ereal_loc_seq x == sequence that converges to x in an       *)
+(*                                   extended realType.                       *)
 (*                                                                            *)
 (* --> We used these definitions to prove the intermediate value theorem and  *)
 (*     the Heine-Borel theorem, which states that the compact sets of R^n are *)
@@ -1374,12 +1307,6 @@ Export CompleteNormedModule.Exports.
 
 (** * Extended Types *)
 
-Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
-  exists2 B, entourage B & forall PQ, A PQ -> forall p q,
-    PQ.1 p -> PQ.2 q -> B (p,q).
-Canonical set_filter_source (U : uniformType) :=
-  @Filtered.Source Prop _ U (fun A => locally_ (@entourage_set U) A).
-
 (** * The topology on real numbers *)
 
 (* :TODO: add to mathcomp *)
@@ -2099,17 +2026,3 @@ rewrite [ `|[_]|]gtr0_norm; last by rewrite invr_gt0.
 rewrite -[X in X < _]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
 by apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor ler_add ?ler_nat.
 Qed.
-
-Lemma continuous_withinNx {U V : uniformType}
-  (f : U -> V) x :
-  {for x, continuous f} <-> f @ locally' x --> f x.
-Proof.
-split=> - cfx P /= fxP.
-  rewrite /locally' !near_simpl near_withinE.
-  by rewrite /locally'; apply: flim_within; apply/cfx.
- (* :BUG: ssr apply: does not work,
-    because the type of the filter is not inferred *)
-rewrite !locally_nearE !near_map !near_locally in fxP *; have /= := cfx P fxP.
-rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
-by have [->|] := eqVneq y x; [by apply: locally_singleton|near: y].
-Grab Existential Variables. all: end_near. Qed.
