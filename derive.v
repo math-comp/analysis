@@ -283,9 +283,8 @@ pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: lim_add.
   rewrite -(scale1r (_ _ v)); apply: lim_scalel.
-  apply/app_flim_entourageP => X entX; apply/locallyP.
-  rewrite locally_E; exists X => // x _ x0; rewrite mulVf //.
-  exact: entourage_refl.
+  apply/app_flim_locally => _/posnumP[e]; apply/locally_normP.
+  by exists e%:num => // x _ x0; rewrite mulVf.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
   rewrite (_ : (fun _ => _) = cst 0); first exact: cst_continuous.
@@ -639,16 +638,14 @@ Lemma compoO_eqo (K : realFieldType) (U V' W' : normedModType K) (f : U -> V')
   (g : V' -> W') :
   [o_ (0 : V') id of g] \o [O_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
-apply/eqoP => _ /posnumP[e].
-have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
-have /(_ (e%:num / k%:num)) := littleoP [littleo of [o_ (0 : V') id of g]].
-move=> /(_ _) /locally_normP [//|_/posnumP[d] hd].
-apply: filter_app; near=> x => leOxkx; apply: ler_trans (hd _ _) _; last first.
-  rewrite -ler_pdivl_mull //; apply: ler_trans leOxkx _.
-  by rewrite invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
-rewrite /= normmB subr0 (ler_lt_trans leOxkx) // -ltr_pdivl_mull //; near: x.
-apply/locally_normP; exists (k%:num ^-1 * d%:num) => // x.
-by rewrite /= normmB subr0.
+apply/eqoP => _ /posnumP[e]; have [go] := littleo; have [fO k fOid] := bigO.
+move=> /(_ (e%:num / k%:num) _) /locally_normP [//|_/posnumP[d] hd].
+apply: filter_app fOid; near=> x => leOxkx; apply: ler_trans (hd _ _) _.
+  rewrite /= normmB subr0 (ler_lt_trans leOxkx) // -ltr_pdivl_mull //; near: x.
+  apply/locally_normP; exists (k%:num ^-1 * d%:num) => // x.
+  by rewrite /= normmB subr0.
+rewrite -ler_pdivl_mull //; apply: ler_trans leOxkx _.
+by rewrite invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma compoO_eqox (K : realFieldType) (U V' W' : normedModType K) (f : U -> V')
@@ -661,11 +658,9 @@ Lemma compOo_eqo (K : realFieldType) (U V' W' : normedModType K) (f : U -> V')
   (g : V' -> W') :
   [O_ (0 : V') id of g] \o [o_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
-apply/eqoP => _ /posnumP[e].
-have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
-move=> /locally_normP [_/posnumP[d] hd]; have ekgt0 : e%:num / k%:num > 0 by [].
-have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
-apply: filter_app; near=> x => leoxekx; apply: ler_trans (hd _ _) _; last first.
+apply/eqoP => _/posnumP[e]; have [gO k /locally_normP[_/posnumP[d] hd]] := bigO.
+have [fo /(_ _ [gt0 of e%:num / k%:num])] := littleo; apply: filter_app.
+near=> x => leoxekx; apply: ler_trans (hd _ _) _; last first.
   by rewrite -ler_pdivl_mull // mulrA [_^-1 * _]mulrC.
 rewrite /ball normmB subr0; apply: ler_lt_trans leoxekx _.
 rewrite -ltr_pdivl_mull //; near: x; apply/locally_normP.

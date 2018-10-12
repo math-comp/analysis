@@ -368,6 +368,118 @@ apply; have /flim_norm /(_ _ [gt0 of d%:num]) := xl.
 by move=> /locally_normP [_/posnumP[d']]; apply.
 Qed.
 
+Section Locally.
+
+Context {K : numDomainType} {V : normedModType K}.
+
+Lemma forallN {U} (P : set U) : (forall x, ~ P x) = ~ exists x, P x.
+Proof. (*boolP*)
+rewrite propeqE; split; first by move=> fP [x /fP].
+by move=> nexP x Px; apply: nexP; exists x.
+Qed.
+
+Lemma eqNNP (P : Prop) : (~ ~ P) = P. (*boolP*)
+Proof. by rewrite propeqE; split=> [/contrapT|?]. Qed.
+
+Lemma existsN {U} (P : set U) : (exists x, ~ P x) = ~ forall x, P x. (*boolP*)
+Proof.
+rewrite propeqE; split=> [[x Px] Nall|Nall]; first exact: Px.
+by apply: contrapT; rewrite -forallN => allP; apply: Nall => x; apply: contrapT.
+Qed.
+
+Lemma ex_ball_sig (x : V) (P : set V) :
+  ~ (forall eps : {posnum K}, ~ (ball norm x eps%:num `<=` ~` P)) ->
+    {d : {posnum K} | ball norm x d%:num `<=` ~` P}.
+Proof.
+rewrite forallN eqNNP => exNP.
+pose D := [set d : K | d > 0 /\ ball norm x d `<=` ~` P].
+have [|d_gt0] := @getPex _ D; last by exists (PosNum d_gt0).
+by move: exNP => [e eP]; exists e%:num.
+Qed.
+
+Lemma locallyC (x : V) (P : set V) :
+  ~ (forall eps : {posnum K}, ~ (ball norm x eps%:num `<=` ~` P)) ->
+  locally x (~` P).
+Proof. by move=> /ex_ball_sig [e] ?; apply/locally_normP; exists e%:num. Qed.
+
+Lemma locallyC_ball (x : V) (P : set V) :
+  locally x (~` P) -> {d : {posnum K} | ball norm x d%:num `<=` ~` P}.
+Proof.
+move=> /locally_normP xNP; apply: ex_ball_sig.
+by have [_ /posnumP[e] eP /(_ _ eP)] := xNP.
+Qed.
+
+Lemma locally_ex (x : V) (P : V -> Prop) : locally x P ->
+  {d : {posnum K} | forall y, ball norm x d%:num y -> P y}.
+Proof.
+move=> /locally_normP xP.
+pose D := [set d : K | d > 0 /\ forall y, ball norm x d y -> P y].
+have [|d_gt0 dP] := @getPex _ D; last by exists (PosNum d_gt0).
+by move: xP => [e bP]; exists e.
+Qed.
+
+End Locally.
+
+Lemma unif_contP (K K' : numDomainType) (V : normedModType K)
+  (V' : normedModType K') (f : V -> V') :
+  unif_cont f <->
+  forall e, e > 0 -> exists2 d, d > 0 &
+    forall x, ball norm x.1 d x.2 -> ball norm (f x.1) e (f x.2).
+Proof.
+have fappF : Filter ((fun xy => (f xy.1, f xy.2)) @ entourage_ norm).
+  by rewrite entourage_normE; apply: filtermap_filter.
+by rewrite /unif_cont -!entourage_normE filter_fromP.
+Qed.
+
+Section Locally_fct.
+
+Context {T : Type} {K : numDomainType} {V : normedModType K}.
+
+Lemma near_ball (y : V) (eps : {posnum K}) :
+   \forall y' \near y, ball norm y eps%:num y'.
+Proof. exact: locally_ball. Qed.
+
+Lemma flim_ballP {F} {FF : Filter F} (y : V) :
+  F --> y <-> forall eps, 0 < eps -> \forall y' \near F, ball norm y eps y'.
+Proof. exact: flim_normP. Qed.
+Definition flim_locally := @flim_ballP.
+
+Lemma flim_ballPpos {F} {FF : Filter F} (y : V) :
+  F --> y <->
+  forall eps : {posnum K}, \forall y' \near F, ball norm y eps%:num y'.
+Proof.
+by split => [/flim_ballP|] pos; [case|apply/flim_ballP=> _/posnumP[eps] //].
+Qed.
+
+Lemma flim_ball {F} {FF : Filter F} (y : V) :
+  F --> y -> forall eps, 0 < eps -> \forall y' \near F, ball norm y eps y'.
+Proof. by move/flim_ballP. Qed.
+
+Lemma app_flim_locally {F} {FF : Filter F} (f : T -> V) y :
+  f @ F --> y <->
+  forall eps, 0 < eps -> \forall x \near F, ball norm y eps (f x).
+Proof. exact: flim_ballP. Qed.
+
+Lemma flimi_ballP {F} {FF : Filter F} (f : T -> V -> Prop) y :
+  f `@ F --> y <->
+  forall eps, 0 < eps ->
+    \forall x \near F, exists z, f x z /\ ball norm y eps z.
+Proof.
+split=> [Fy _/posnumP[eps] |Fy P] /=; first exact/Fy/locally_ball.
+move=> /locally_normP[_ /posnumP[eps] subP].
+rewrite near_simpl near_mapi; near=> x.
+have [//|z [fxz yz]] := near (Fy _ (posnum_gt0 eps)) x.
+by exists z => //; split => //; apply: subP.
+Unshelve. all: end_near. Qed.
+Definition flimi_locally := @flimi_ballP.
+
+Lemma flimi_ball {F} {FF : Filter F} (f : T -> V -> Prop) y :
+  f `@ F --> y ->
+  forall eps, 0 < eps -> F [set x | exists z, f x z /\ ball norm y eps z].
+Proof. by move/flimi_ballP. Qed.
+
+End Locally_fct.
+
 Section NormedModuleField.
 
 Context {K : numFieldType} {V : normedModType K}.
@@ -962,15 +1074,14 @@ rewrite predeqE => A; split; last first.
     by move=> _ _; exists e%:num.
   move=> [x y] /= xy; apply: sA => /=.
   by apply/bigmaxr_ltrP; split=> // ij _; rewrite !mxE.
-move=> [P entP sPA]; have {entP} entP : forall i j, exists e, 0 < e /\
-  [set pq | `|pq.1 - pq.2| < e] `<=` P i j.
-  by move=> i j; have [e] := entP i j; exists e.
-set e := fun i j => get [set e | 0 < e /\
+move=> [P entP sPA]; set sP := fun i j => [set e | 0 < e /\
   [set pq | `|pq.1 - pq.2| < e] `<=` P i j].
-exists (\big[minr/1]_ij e ij.1 ij.2).
+have {entP} entP : forall i j, sP i j !=set0.
+  by move=> i j; have [e] := entP i j; exists e.
+exists (\big[minr/1]_ij get (sP ij.1 ij.2)).
   by apply/bigminr_gtrP; split=> // ij _; have /getPex [] := entP ij.1 ij.2.
 move=> [x y] /= /bigminr_gtrP [_ xy]; apply: sPA => i j /=.
-have /getPex [_] := entP i j; apply=> /=; rewrite -[get _]/(e i j).
+have /getPex [_] := entP i j; apply => /=.
 by have /bigmaxr_ltrP [_ /(_ (i,j))] := xy (i,j) erefl; rewrite !mxE; apply.
 Qed.
 Next Obligation.
@@ -1053,8 +1164,7 @@ Canonical prod_NormedModule (K : realDomainType) (U V : normedModType K) :=
 
 Section NormedModule3.
 
-Context {T : Type} {K : realDomainType} {U : normedModType K}
-                   {V : normedModType K}.
+Context {T : Type} {K : realDomainType} {U V : normedModType K}.
 
 Lemma flim_norm2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
@@ -1080,6 +1190,17 @@ Lemma flim_norm2 {F : set (set U)} {G : set (set V)}
   forall e : K, 0 < e ->
    \forall y' \near F & z' \near G, `|[(y, z) - (y', z')]| < e.
 Proof. by rewrite flim_normP. Qed.
+
+Lemma flim_ball2P {F : set (set U)} {G : set (set V)}
+  {FF : Filter F} {FG : Filter G} (y : U) (z : V):
+  (F, G) --> (y, z) <->
+  forall eps, eps > 0 -> \forall y' \near F & z' \near G,
+                ball norm y eps y' /\ ball norm z eps z'.
+Proof.
+by rewrite flim_norm2P; split=> FGyz e /FGyz;
+  apply: filter_app; apply: filterE => x; rewrite ltr_maxl;
+  [move=> /andP[] | move=> [-> ->]].
+Qed.
 
 End NormedModule3.
 Arguments flim_norm2 {_ _ _ F G FF FG}.
@@ -1222,6 +1343,46 @@ Grab Existential Variables. all: end_near. Qed.
 End limit_composition.
 
 (** ** Complete Normed Modules *)
+
+Section Cauchy.
+
+Context {K : numDomainType} {V : normedModType K}.
+
+Definition cauchy_ball (F : set (set V)) :=
+  forall e, e > 0 -> \forall x & y \near F, ball norm x e y.
+
+Lemma cauchy_cauchy_ball (F : set (set V)) : cauchy F -> cauchy_ball F.
+Proof. by move=> Fc _/posnumP[e]; apply: Fc (entourage_ball e). Qed.
+
+Lemma cauchy_ballP (F : set (set V)) : Filter F -> cauchy_ball F <-> cauchy F.
+Proof.
+move=> FF; split=> [Fc A|/cauchy_cauchy_ball] //.
+by rewrite -entourage_normE => -[_/posnumP[e] sA]; apply: filterS sA (Fc _ _).
+Qed.
+
+Definition cauchy_ex (F : set (set V)) :=
+  forall eps, 0 < eps -> exists x, F (ball norm x eps).
+
+Lemma cvg_cauchy_ex (F : set (set V)) : [cvg F in V] -> cauchy_ex F.
+Proof. by move=> Fl _/posnumP[e]; exists (lim F); apply/Fl/locally_ball. Qed.
+
+End Cauchy.
+
+Lemma cauchy_exP (K : numFieldType) (V : normedModType K) (F : set (set V)) :
+  Filter F -> cauchy_ex F -> cauchy F.
+Proof.
+move=> FF Fc A; rewrite -entourage_normE => -[_/posnumP[e] sA].
+have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sA => /=.
+by apply: (@distm_lt_splitr _ _ z); [near: x|near: y].
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma cauchyP (K : numFieldType) (V : normedModType K) (F : set (set V)) :
+  ProperFilter F -> cauchy F <-> cauchy_ex F.
+Proof.
+move=> FF; split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
+near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
+exact: entourage_ball.
+Grab Existential Variables. all: end_near. Qed.
 
 Module CompleteNormedModule.
 

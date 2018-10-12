@@ -509,6 +509,13 @@ Notation ProperFilter := ProperFilter'.
 Lemma filter_setT (T' : Type) : Filter (@setT (set T')).
 Proof. by constructor. Qed.
 
+Lemma filterP_strong T (F : set (set T)) {FF : Filter F} (P : set T) :
+  (exists Q : set T, exists FQ  : F Q, forall x : T, Q x -> P x) <-> F P.
+Proof.
+split; last by exists P.
+by move=> [Q [FQ QP]]; apply: (filterS QP).
+Qed.
+
 Lemma filter_bigI T (I : choiceType) (D : {fset I}) (f : I -> set T)
   (F : set (set T)) :
   Filter F -> (forall i, i \in D -> F (f i)) ->
@@ -2450,8 +2457,6 @@ Grab Existential Variables. all: end_near. Qed.
 Lemma flimx_close (x y : M) : x --> y -> close x y.
 Proof. exact: flim_close. Qed.
 
-(* TODO: sections locally_fct, locally_fct2 in normed_spaces *)
-
 Lemma flim_entourageP F (FF : Filter F) (p : M) :
   F --> p <-> forall A, entourage A -> \forall q \near F, A (p, q).
 Proof. by rewrite -filter_fromP !locally_simpl. Qed.
@@ -2539,9 +2544,6 @@ Grab Existential Variables. all: end_near. Qed.
 
 Definition unif_cont (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
-
-(* TODO: unif_contP in normed spaces *)
-(* Also missing: section locally, filterP_strong *)
 
 (** product of two uniform spaces *)
 
@@ -2813,8 +2815,6 @@ Canonical set_filter_source (U : uniformType) :=
 (** ** Complete uniform spaces *)
 
 Definition cauchy {T : uniformType} (F : set (set T)) := (F, F) --> entourage.
-
-(* TODO: cauchy_ex and old cauchy in normed spaces *)
 
 Lemma cvg_cauchy {T : uniformType} (F : set (set T)) : Filter F ->
   [cvg F in T] -> cauchy F.
