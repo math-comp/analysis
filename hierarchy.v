@@ -1827,10 +1827,6 @@ Lemma continuousZ (f : T -> V) k x :
   {for x, continuous f} -> {for x, continuous (k \*: f)}.
 Proof. by move=> ?; apply: lim_scaler. Qed.
 
-Lemma continuousZl (k : T -> K) (f : V) x :
-  {for x, continuous k} -> {for x, continuous (fun z => k z *: f)}.
-Proof. by move=> ?; apply: lim_scalel. Qed.
-
 Lemma lim_opp (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
   f @ F --> a -> (fun x => - f x) @ F --> - a.
 Proof.

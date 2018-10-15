@@ -96,6 +96,27 @@ Reserved Notation "a |` A" (at level 52, left associativity).
 Reserved Notation "A `\` B" (at level 50, left associativity).
 Reserved Notation "A `\ b" (at level 50, left associativity).
 
+<<<<<<< HEAD
+=======
+Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
+Proof. by move: x (x) y => /propT-> [] []. Qed.
+
+Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
+Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
+Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
+Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
+
+Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
+  EqType (forall x : T, T' x) gen_eqMixin.
+Canonical arrow_eqType (T : Type) (T' : eqType) :=
+  EqType (T -> T') gen_eqMixin.
+Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
+  ChoiceType (T -> T') gen_choiceMixin.
+
+Canonical Prop_eqType := EqType Prop gen_eqMixin.
+Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
+
+>>>>>>> master
 Definition set A := A -> Prop.
 Definition in_set T (P : set T) : pred T := [pred x | [P x as bool]].
 Canonical set_predType T := @mkPredType T (set T) (@in_set T).

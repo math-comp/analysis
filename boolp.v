@@ -41,19 +41,27 @@ Require Import FunctionalExtensionality PropExtensionality.
 Require Import ClassicalEpsilon.
 
 (* -------------------------------------------------------------------- *)
-(* Functional extensionality *)
+Record mextentionality := {
+  _ : forall (P Q : Prop), (P <-> Q) -> (P = Q);
+  _ : forall {T U : Type} (f g : T -> U),
+        (forall x, f x = g x) -> f = g;
+}.
+
+Fact extentionality : mextentionality.
+Proof.
+split.
+- exact: propositional_extensionality.
+- by move=> T U f g; apply: functional_extensionality_dep.
+Qed.
+
+Lemma propext (P Q : Prop) : (P <-> Q) -> (P = Q).
+Proof. by have [propext _] := extentionality; apply: propext. Qed.
 
 Lemma funext {T U : Type} (f g : T -> U) : (f =1 g) -> f = g.
-Proof. exact: functional_extensionality. Qed.
-
-(* -------------------------------------------------------------------- *)
-(* Propositional extensionality *)
+Proof. by case: extentionality=> _; apply. Qed.
 
 Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
-Proof.
-apply: propositional_extensionality; split => [-> // |].
-exact: propositional_extensionality.
-Qed.
+Proof. by apply: propext; split=> [->|/propext]. Qed.
 
 Lemma funeqE {T U : Type} (f g : T -> U) : (f = g) = (f =1 g).
 Proof. by rewrite propeqE; split=> [->//|/funext]. Qed.
