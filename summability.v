@@ -44,7 +44,52 @@ Definition sum (I : choiceType) {K : absRingType} {R : normedModType K}
 
 Definition summable (I : choiceType) {K : absRingType} {R : normedModType K}
    (x : I -> R) :=
-   \forall M \near +oo, \forall J \near totally,
+   \forall M \near +oo, forall J,
    partial_sum (fun i => `|[x i]|) J <= M.
+
+Lemma eq_partial_sum {I : choiceType} {R : zmodType} J (x y : I -> R) :
+  x =1 y -> partial_sum x J = partial_sum y J.
+Proof. by move=> eq_xy; apply/eq_bigr. Qed.
+
+Lemma ler_partial_sum {I : choiceType} {R : numDomainType} J (x y : I -> R) :
+  (forall i, x i <= y i) -> partial_sum x J <= partial_sum y J.
+Proof. by move=> le_xy; apply/ler_sum. Qed.
+
+Section LiftedZmod.
+Variables (U : Type) (V : zmodType).
+Definition opp_fun_head t (f : U -> V) x := let: tt := t in - f x.
+End LiftedZmod.
+
+Notation "\- f" := (opp_fun_head tt f) (at level 40) : ring_scope.
+
+Section Summable.
+Context {I : choiceType} {K : absRingType} {E : normedModType K}.
+
+Implicit Types x y : I -> E.
+
+Lemma summableN x : summable x -> summable (\- x).
+Proof.
+apply: filterS => /= v h J; apply: (ler_trans _ (h J)).
+by apply: ler_partial_sum => i; rewrite normmN.
+Qed.
+
+Lemma summableD x y : summable x -> summable y -> summable (x \+ y).
+Proof.
+move=> sx sy.
+near +oo => vx; have hx := near sx vx _.
+near +oo => vy; have hy := near sy vy _.
+near=> v; move=> J.
+pose F i := (`|[x i]| + `|[y i]|)%R.
+apply: (@ler_trans _ (partial_sum F J)).
++ by apply: ler_sum => /= i _; apply: ler_normm_add.
+rewrite /F /partial_sum big_split /=.
+apply: (@ler_trans _ (vx + vy)%R).
++ apply: ler_add; rewrite ?(hx, hy) //.
+near: v; exists (vx + vy + 1)%R => v'.
+by move/(ltr_trans _)/ltrW; apply; rewrite ltr_addl.
+Grab Existential Variables. all: end_near.
+Qed.
+
+End Summable.
 
 End totally.
