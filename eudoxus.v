@@ -16,6 +16,76 @@ Local Open Scope classical_set_scope.
 Local Open Scope quotient_scope.
 
 (* -------------------------------------------------------------------- *)
+Section PosNumMixin.
+Context {F : idomainType} (p : pred F).
+
+Hypothesis p_N0    : 0 \notin p.
+Hypothesis p_1     : 1 \in p.
+Hypothesis p_total : forall x, x != 0 -> (x \in p) || (-x \in p).
+Hypothesis p_add   : {in p &, forall u v, u + v \in p}.
+Hypothesis p_mul   : {in p &, forall u v, u * v \in p}.
+
+Definition lt   (x y : F) := (y - x) \in p.
+Definition le   (x y : F) := (x == y) || (lt x y).
+Definition norm (x   : F) := if x \notin p then -x else x.
+
+Local Lemma le0D x y : le 0 x -> le 0 y -> le 0 (x + y).
+Proof.
+rewrite /le /lt !subr0 => /orP[/eqP<-|px]; first by rewrite add0r.
+case/orP => [/eqP<-|py]; first by rewrite addr0 px orbT.
+by rewrite (p_add px py) orbT.
+Qed.
+
+Local Lemma le0M x y : le 0 x -> le 0 y -> le 0 (x * y).
+Proof.
+rewrite /le /lt !subr0 => /orP[/eqP<-|px]; first by rewrite mul0r eqxx.
+case/orP=> [/eqP<-|py]; first by rewrite mulr0 eqxx.
+by rewrite (p_mul px py) orbT.
+Qed.
+
+Local Lemma le_anti x : le 0 x -> le x 0 -> x = 0.
+Proof.
+rewrite /le /lt subr0 sub0r => /orP[/eqP<-//|px] /orP[/eqP<-//|pxN].
+by apply/contraNeq: p_N0 => _; rewrite -[0](subrr x) p_add.
+Qed.
+
+Local Lemma sub_ge0  x y : le 0 (y - x) = le x y.
+Proof. by rewrite /le /lt subr0 [0==_]eq_sym subr_eq0 eq_sym. Qed.
+
+Local Lemma le_total x : le 0 x || le x 0.
+Proof.
+rewrite /le /lt [0==_]eq_sym orbCA !orbA orbb subr0 sub0r.
+by case: eqP => //= /eqP /p_total.
+Qed.
+
+Local Lemma normN x : norm (- x) = norm x.
+Proof.
+have h v : v != 0 -> (v \in p) = (-v \notin p).
+* move=> nz_v; apply/idP/idP => [pv|Npv].
+  - by apply/contra: p_N0 => /(p_add pv); rewrite subrr.
+  - by have := p_total nz_v; rewrite (negbTE Npv) orbF.
+rewrite /norm !if_neg opprK; case: (x =P 0) => [->|/eqP nz_x].
+* by rewrite oppr0 (negbTE p_N0).
+by apply/esym; rewrite h // if_neg.
+Qed.
+
+Local Lemma ge0_norm x : le 0 x -> norm x = x.
+Proof.
+rewrite /norm /le /lt subr0.
+by case/orP=> [/eqP<-|->//]; rewrite p_N0 oppr0.
+Qed.
+
+Local Lemma lt_def x y : lt x y = (y != x) && le x y.
+Proof.
+rewrite /le /lt eq_sym; case: eqP=> //= ->.
+by rewrite subrr (negbTE p_N0).
+Qed.
+
+Definition PosNumMixin :=
+  RealLeMixin le0D le0M le_anti sub_ge0 le_total normN ge0_norm lt_def.
+End PosNumMixin.
+
+(* -------------------------------------------------------------------- *)
 Reserved Notation "\- f" (at level 40, left associativity).
 
 Section LiftedZmod.
