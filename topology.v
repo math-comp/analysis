@@ -632,10 +632,13 @@ Tactic Notation "near=>" ident(x) := apply: filter_near_of => x ?.
 Ltac just_discharge_near x :=
   tryif match goal with Hx : x \is_near _ |- _ => move: (x) (Hx) end
         then idtac else fail "the variable" x "is not a ""near"" variable".
+Ltac near_skip :=
+  match goal with |- forall _, @PropInFilter.t _ _ ?P _ -> _ =>
+    tryif is_evar P then fail "nothing to skip" else apply: nearW end.
+
 Tactic Notation "near:" ident(x) :=
   just_discharge_near x;
-  tryif do ![apply: near_acc; first shelve
-            |apply: nearW; [move] (* ensures only one goal is created *)]
+  tryif do ![apply: near_acc; first shelve|near_skip]
   then idtac
   else fail "the goal depends on variables introduced after" x.
 
@@ -668,8 +671,7 @@ Proof. by move=> ???; near=> x => //. Unshelve. end_near. Qed.
 
 Lemma filter_app (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, F (fun x => P x -> Q x) -> F P -> F Q.
-Proof.
-by move=> FF P Q subPQ FP; near=> x; suff: P x; near: x.
+Proof. by move=> FF P Q subPQ FP; near=> x; suff: P x; near: x.
 Grab Existential Variables. by end_near. Qed.
 
 Lemma filter_app2 (T : Type) (F : set (set T)) :
