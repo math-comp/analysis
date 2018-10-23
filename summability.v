@@ -75,20 +75,10 @@ Qed.
 
 Lemma summableD x y : summable x -> summable y -> summable (x \+ y).
 Proof.
-move=> sx sy.
-near +oo => vx; have hx := near sx vx _.
-near +oo => vy; have hy := near sy vy _.
-near=> v; move=> J.
-pose F i := (`|[x i]| + `|[y i]|)%R.
-apply: (@ler_trans _ (partial_sum F J)).
-+ by apply: ler_sum => /= i _; apply: ler_normm_add.
-rewrite /F /partial_sum big_split /=.
-apply: (@ler_trans _ (vx + vy)%R).
-+ apply: ler_add; rewrite ?(hx, hy) //.
-near: v; exists (vx + vy + 1)%R => v'.
-by move/(ltr_trans _)/ltrW; apply; rewrite ltr_addl.
-Grab Existential Variables. all: end_near.
-Qed.
+move=> [vx vxP] [vy vyP]; near=> v => J; rewrite (@ler_trans _ (vx + vy)%R)//=.
+rewrite (ler_trans _ (ler_add (vxP _ _ J) (vyP _ _ J)))//.
+by rewrite -big_split ler_sum => //= ? _; apply: ler_normm_add.
+Grab Existential Variables. all: end_near. Qed.
 
 End Summable.
 

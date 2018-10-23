@@ -163,7 +163,7 @@ move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; near=> k; rewrite /cst [`|[1 : R^o]|]absr1 mulr1.
   near=> y; rewrite ltrW //; near: y; apply/locally_normP.
-  by exists k; [near: k; exists 0|move=> ? /=; rewrite sub0r normmN].
+  by exists k => // ? /=; rewrite sub0r normmN.
 rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
 by apply/eqolim0P; apply: (flim_trans (dfc 0)); rewrite linear0.
 Grab Existential Variables. all: end_near. Qed.
@@ -1298,7 +1298,7 @@ have imf_sup : has_sup imf.
     apply/compact_bounded/continuous_compact; last exact: segment_compact.
     by move=> ?; rewrite inE => /asboolP /fcont.
   exists (M + 1); apply/ubP => y; rewrite !inE => /asboolP /imfltM yltM.
-  apply/ltrW; apply: ler_lt_trans (yltM _ _); last by rewrite ltr_addl.
+  apply/ltrW; apply: ler_lt_trans (yltM _ _); last by rewrite ler_addl.
   by rewrite [ `|[_]| ]absRE ler_norm.
 case: (pselect (exists2 c, c \in `[a, b] & f c = sup imf)) => [|imf_ltsup].
   move=> [c cab fceqsup]; exists c => // t tab.
@@ -1325,7 +1325,7 @@ rewrite ltr_subl_addr - ltr_subl_addl.
 suff : sup imf - f t > k^-1 by move=> /ltrW; rewrite lerNgt => /negbTE ->.
 rewrite -[X in _ < X]invrK ltr_pinv.
     rewrite -div1r; apply: ler_lt_trans (ler_norm _) _; rewrite -absRE.
-    by apply: imVfltM; [rewrite ltr_maxr ltr_addl ltr01|apply: imageP].
+    by apply: imVfltM; [rewrite ler_maxr ler_addl ler01|apply: imageP].
   by rewrite inE kgt0 unitfE lt0r_neq0.
 have invsupft_gt0 : 0 < (sup imf - f t)^-1.
   by rewrite invr_gt0 subr_gt0 imf_ltsup.
