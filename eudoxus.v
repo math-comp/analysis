@@ -21,7 +21,6 @@ Section PosNumMixin.
 Context {F : idomainType} (p : pred F).
 
 Hypothesis p_N0    : 0 \notin p.
-Hypothesis p_1     : 1 \in p.
 Hypothesis p_total : forall x, x != 0 -> (x \in p) || (-x \in p).
 Hypothesis p_add   : {in p &, forall u v, u + v \in p}.
 Hypothesis p_mul   : {in p &, forall u v, u * v \in p}.
@@ -617,17 +616,16 @@ End EudoxusFieldType.
 
 (* ==================================================================== *)
 Section EudoxusPos.
-Definition edxposf (f : qzEndo) :=
-  forall c : int, 0 < c -> exists N : int,
-    forall n : int, N < n -> c < f n.
-
-Local Lemma edxposf_spec (f : int -> int) C :
-     0 < C
-  -> f \is a eqzendo
+Local Lemma edxposf_spec (f : int -> int) (C : int) :
+     f \is a eqzendo
   -> (forall k : int, exists2 n : int, 0 < n & k < f n)
   -> exists N : int, forall p : int, N < p -> C < f p.
 Proof.
-move=> ge0_D edf posf; case/is_eqzendoPP: {+}edf => D edfD.
+move=> edf posf; wlog: C / 0 < C => [wlog|].
++ case: (ltrP 0 C) => [gt0_C|le0_C]; first by apply: wlog.
+  case: (wlog 1) => // N hN; exists N => p /hN.
+  by move/(ler_lt_trans _); apply; apply/(ler_trans le0_C).
+move=> gt0_C; case/is_eqzendoPP: {+}edf => D edfD.
 have [|M gt0_M slf] := eqzendo_suplin _ (D := D) edf posf.
 + by apply: (ler_lt_trans _ (edfD 0 0)).
 pose g (p : int) := f (p - (p %% M)%Z).
@@ -665,19 +663,29 @@ rewrite -divz_eq -[X in _ <= X]addrA ler_addl addrC subr_ge0.
 by rewrite ltrW // ltz_pmod // (ler_lt_trans _ (edfD 0 0)).
 Qed.
 
+(* -------------------------------------------------------------------- *)
+Local Lemma edxzero_spec (f : qzEndo) :
+     (exists C : int, forall n, `|f n| < C)
+  -> f ~ QZEndo (is_eqzendoC 0).
+Proof.
+case=> C hfC; apply/qzeqvP; rewrite /qzendoC.
+by exists C => n /=; rewrite mulr0 subr0.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Local Lemma edxcmp0_spec (f : int -> int) : f \is a eqzendo ->
   [\/ exists C : int, forall n, `|f n| < C
-    , forall C : int, 0 < C -> exists N : int, forall p : int, N < p -> C < f p
-    | forall C : int, 0 < C -> exists N : int, forall p : int, N < p -> f p < -C].
+    , forall C : int, exists N : int, forall p : int, N < p -> C < f p
+    | forall C : int, exists N : int, forall p : int, N < p -> f p < -C].
 Proof.
 move=> edzf; pose P := exists C : int, forall n : int, `|f n| < C.
 case/asboolP: {+}P => [hP|hNP]; first by constructor 1.
 pose Qpos := forall k : int, exists2 n : int, 0 < n & k < f n.
 pose Qneg := forall k : int, exists2 n : int, 0 < n & f n < k.
 case/asboolP: {+}Qpos => [hQpos|hNQpos].
-+ by constructor 2 => C gt0_C; apply: edxposf_spec.
++ by constructor 2 => C; apply: edxposf_spec.
 case/asboolP: {+}Qneg => [hQneg|hNQneg].
-+ constructor 3 => c gt0_C; case: (edxposf_spec (f := \- f) gt0_C).
++ constructor 3 => C; case: (edxposf_spec (f := \- f) C).
   * by apply/is_eqzendoN.
   * move=> k; case: (hQneg (-k))=> n gt0_n h.
     by exists n => //=; rewrite ltr_oppr.
@@ -715,4 +723,87 @@ rewrite [X in _ <= `|X|]addrC !addrA subrK.
 by rewrite opprD addrCA addKr normrN.
 Qed.
 
+(* -------------------------------------------------------------------- *)
+Definition edxposf (f : qzEndo) :=
+  `[<forall k : int, exists2 n : int, 0 < n & k < f n>].
+
+Definition edxpos := lift_fun1 eudoxus edxposf.
+
+(* -------------------------------------------------------------------- *)
+Lemma edxposfP (f : qzEndo) :
+  reflect
+    (forall k : int, exists2 n : int, 0 < n & k < f n)
+    (edxposf f).
+Proof. by apply/asboolP. Qed.
+
+(* -------------------------------------------------------------------- *)
+Local Lemma pi_edxpos_r (f g : qzEndo) : f ~ g -> edxposf f -> edxposf g.
+Proof.
+case/qzeqvP=> C bdC /edxposfP /edxposf_spec h.
+apply/edxposfP => k; case/(_ (C + k) (valP _)): h.
+move=> N hN; exists (maxr 0 N + 1); first by rewrite ltz_addr1 ler_maxr.
+set p : int := maxr _ _ + _; have := bdC p; rewrite distrC.
+rewrite ltr_norml => /andP[h _]; move: h.
+rewrite ltr_subr_addl => /(ltr_trans _); apply.
+rewrite ltr_subr_addl; apply: hN; rewrite ltz_addr1.
+by rewrite ler_maxr lerr orbT.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Lemma pi_edxpos : {mono \pi_eudoxus : f / edxposf f >-> edxpos f}.
+Proof.
+move=> f; unlock edxpos; apply/idP/idP; apply: pi_edxpos_r;
+  by apply/eqmodP; rewrite reprK.
+Qed.
+
+Canonical pi_edxpos_morph := PiMono1 pi_edxpos.
+
+(* -------------------------------------------------------------------- *)
+Lemma edxpos_order :
+  [/\ 0 \notin edxpos
+    , (forall x : eudoxus, x != 0 -> (x \in edxpos) || (-x \in edxpos))
+    , {in edxpos &, forall u v : eudoxus, u + v \in edxpos}
+    & {in edxpos &, forall u v : eudoxus, u * v \in edxpos} ].
+Proof. split.
++ rewrite !piE; apply/edxposfP => /(_ 1) [n _] /=.
+  by rewrite /qzendoC mulr0.
++ elim/quotW=> f; rewrite !piE /= => h.
+  case: (edxcmp0_spec (valP f)) => /= [|hf|hNf]; first last.
+  + apply/orP; right; apply/edxposfP => /= k; case: (hNf k).
+    move=> N hN; exists (`|N| + 1); first by rewrite ltz_addr1.
+    by rewrite ltr_oppr hN // ltz_addr1 ler_norm.
+  + apply/orP; left; apply/edxposfP => /= k; case: (hf k).
+    move=> N hN; exists (`|N| + 1); first by rewrite ltz_addr1.
+    by rewrite hN // ltz_addr1 ler_norm.
+  by move/edxzero_spec; rewrite (negbTE h).
++ elim/quotW=> f; elim/quotW=> g; rewrite !piE /=.
+  move=> /edxposfP hf /edxposfP hg; apply/edxposfP => k.
+  case/(edxposf_spec `|k| (valP _)): hf => /= kf hkf.
+  case/(edxposf_spec `|k| (valP _)): hg => /= kg hkg.
+  exists (maxr 0 (maxr kf kg) + 1); first by rewrite ltz_addr1 ler_maxr.
+  apply/(@ler_lt_trans _ (`|k| + `|k|)).
+  * by apply/(ler_trans (ler_norm _))/ler_addr.
+  by rewrite ltr_add ?(hkf, hkg) // ltz_addr1 !ler_maxr lerr !orbT.
++ elim/quotW=> f; elim/quotW=> g; rewrite !piE /=.
+  move=> /edxposfP hf /edxposfP hg; apply/edxposfP => k.
+  case/(edxposf_spec `|k | (valP _)): hf => /= kf hkf.
+  case/(edxposf_spec `|kf| (valP _)): hg => /= kg hkg.
+  exists (`|kg| + 1); first by rewrite ltz_addr1. 
+  apply/(ler_lt_trans (ler_norm _))/hkf.
+  apply/(ler_lt_trans (ler_norm _))/hkg.
+  by rewrite ltz_addr1 ler_norm.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Let edxpos_N0    := let: And4 h _ _ _ := edxpos_order in h.
+Let edxpos_total := let: And4 _ h _ _ := edxpos_order in h.
+Let edxpos_add   := let: And4 _ _ h _ := edxpos_order in h.
+Let edxpos_mul   := let: And4 _ _ _ h := edxpos_order in h.
+
+(* -------------------------------------------------------------------- *)
+Definition eudoxus_numMixin :=
+  PosNumMixin edxpos_N0 edxpos_total edxpos_add edxpos_mul.
+
+Canonical eudoxus_numType :=
+  Eval hnf in NumDomainType eudoxus eudoxus_numMixin.
 End EudoxusPos.
