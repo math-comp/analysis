@@ -198,6 +198,23 @@ rewrite !abszE ler_paddr ?sumr_ge0 //; case: (ger0P k) => _.
 + by rewrite opprK; apply/ler_addr.
 Qed.
 
+Lemma is_qzendo_nat k f :
+     (forall m n : nat, `|f (m + n)%:Z - (f m + f n)| < k)
+  -> (forall n : nat, - f(- n%:Z) = f n)
+  -> f \is a k.-qzendo.
+Proof.
+move=> qzf fN; have h m n: `|f (m%:Z - n%:Z) - (f m + (f (- n%:Z)))| < k.
++ rewrite -[f (-_)]opprK fN opprB addrA; case: (ltnP m n) => [lt_mn|ge_nm].
+  * have := qzf (n - m)%N m; rewrite subnK 1?ltnW // opprD addrCA addrA.
+    by rewrite -fN opprK -subzn 1?ltnW // opprB.
+  * have := qzf n (m - n)%N; rewrite addnC subnK //.
+    by rewrite opprD -distrC -opprB opprK subzn.
+apply/is_qzendoP; case=> [] m [] n; rewrite ?NegzE -?PoszD //.
++ by rewrite [_ + n%:Z]addrC [_ + f n]addrC.
++ rewrite opprD !fN -opprD -PoszD -[X in `|X + _|]opprK.
+  by rewrite fN addrC distrC.
+Qed.
+
 End QzEndoTheory.
 
 (* ==================================================================== *)
