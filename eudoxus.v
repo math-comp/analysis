@@ -794,7 +794,7 @@ Canonical eudoxus_comUnitRing :=
 Local Fact eudoxus_field_axiom : GRing.Field.mixin_of eudoxus_unitRing.
 Proof. exact. Qed.
 
-Definition RatFieldIdomainMixin :=
+Definition eudoxus_FieldIdomainMixin :=
   FieldIdomainMixin eudoxus_field_axiom.
 Canonical eudoxus_iDomain :=
   Eval hnf in IdomainType eudoxus (FieldIdomainMixin eudoxus_field_axiom).
