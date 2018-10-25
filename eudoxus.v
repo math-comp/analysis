@@ -583,36 +583,15 @@ Definition eudoxus_ringMixin :=
 
 Canonical eudoxus_ringType := Eval hnf in RingType eudoxus eudoxus_ringMixin.
 Canonical comRingType      := Eval hnf in ComRingType eudoxus edxmulC.
+
+Lemma edxnatrE n : n%:R = \pi_eudoxus (QZEndo (is_eqzendoC n)) :> eudoxus.
+Proof.
+rewrite !piE; elim: n => [|n ihn]; first by rewrite mulr0n !piE.
+rewrite mulrS ihn !piE; apply/eqmodP/qzeqv_refl_eq => /=.
+by move=> k; rewrite /qzendoC /= -mulrDr intS.
+Qed.
+
 End EudoxusComRingType.
-
-(* ==================================================================== *)
-Section EudoxusFieldType.
-
-Parameter (edxinv : eudoxus -> eudoxus).
-
-Lemma edxfield :
-     (forall x, x != 0 -> edxinv x * x = 1)
-  /\ (edxinv 0 = 0).
-Proof. Admitted.
-
-Definition eudoxus_fieldUnitMixin :=
-  FieldUnitMixin edxfield.1 edxfield.2.
-Canonical eudoxus_unitRing :=
-  Eval hnf in UnitRingType eudoxus eudoxus_fieldUnitMixin.
-Canonical eudoxus_comUnitRing :=
-  Eval hnf in [comUnitRingType of eudoxus].
-
-Local Fact eudoxus_field_axiom : GRing.Field.mixin_of eudoxus_unitRing.
-Proof. exact. Qed.
-
-Definition RatFieldIdomainMixin :=
-  FieldIdomainMixin eudoxus_field_axiom.
-Canonical eudoxus_iDomain :=
-  Eval hnf in IdomainType eudoxus (FieldIdomainMixin eudoxus_field_axiom).
-Canonical eudoxus_fieldType :=
-  Eval hnf in FieldType eudoxus eudoxus_field_axiom.
-
-End EudoxusFieldType.
 
 (* ==================================================================== *)
 Section EudoxusPos.
@@ -793,17 +772,80 @@ Proof. split.
   apply/(ler_lt_trans (ler_norm _))/hkg.
   by rewrite ltz_addr1 ler_norm.
 Qed.
+End EudoxusPos.
 
-(* -------------------------------------------------------------------- *)
+(* ==================================================================== *)
+Section EudoxusFieldType.
+
+Parameter (edxinv : eudoxus -> eudoxus).
+
+Lemma edxfield :
+     (forall x, x != 0 -> edxinv x * x = 1)
+  /\ (edxinv 0 = 0).
+Proof. Admitted.
+
+Definition eudoxus_fieldUnitMixin :=
+  FieldUnitMixin edxfield.1 edxfield.2.
+Canonical eudoxus_unitRing :=
+  Eval hnf in UnitRingType eudoxus eudoxus_fieldUnitMixin.
+Canonical eudoxus_comUnitRing :=
+  Eval hnf in [comUnitRingType of eudoxus].
+
+Local Fact eudoxus_field_axiom : GRing.Field.mixin_of eudoxus_unitRing.
+Proof. exact. Qed.
+
+Definition RatFieldIdomainMixin :=
+  FieldIdomainMixin eudoxus_field_axiom.
+Canonical eudoxus_iDomain :=
+  Eval hnf in IdomainType eudoxus (FieldIdomainMixin eudoxus_field_axiom).
+Canonical eudoxus_fieldType :=
+  Eval hnf in FieldType eudoxus eudoxus_field_axiom.
+
+End EudoxusFieldType.
+
+(* ==================================================================== *)
+Section EudoxusNum.
 Let edxpos_N0    := let: And4 h _ _ _ := edxpos_order in h.
 Let edxpos_total := let: And4 _ h _ _ := edxpos_order in h.
 Let edxpos_add   := let: And4 _ _ h _ := edxpos_order in h.
 Let edxpos_mul   := let: And4 _ _ _ h := edxpos_order in h.
 
-(* -------------------------------------------------------------------- *)
-Definition eudoxus_numMixin :=
+Definition eudoxus_numDomainMixin :=
   PosNumMixin edxpos_N0 edxpos_total edxpos_add edxpos_mul.
 
-Canonical eudoxus_numType :=
-  Eval hnf in NumDomainType eudoxus eudoxus_numMixin.
-End EudoxusPos.
+Canonical eudoxus_numDomainType :=
+  Eval hnf in NumDomainType eudoxus eudoxus_numDomainMixin.
+Canonical eudoxus_numFieldType :=
+  Eval hnf in [numFieldType of eudoxus].
+Canonical eudoxus_realDomainType :=
+  Eval hnf in RealDomainType eudoxus (le_total edxpos_total).
+Canonical eudoxus_realFieldType :=
+  Eval hnf in [realFieldType of eudoxus].
+
+Fact edx_ltrE (f g : eudoxus) : (f < g) = ((g - f) \in edxpos).
+Proof. by []. Qed.
+
+Fact eudoxus_archimedean :
+  Num.archimedean_axiom [numDomainType of eudoxus].
+Proof.
+suff: forall f : eudoxus, exists ub : nat, f < ub%:R.
++ by move=> wlog f; case: ler0P.
+elim/quotW=> /= f; have /is_eqzendoP[C /qzendo_sublin] /= := valP f.
+case=> [A] [B] ltf; exists `|A|%N.+1; rewrite edx_ltrE /=.
+rewrite edxnatrE !piE; apply/edxposfP => /=; rewrite /qzendoC => k.
+have {ltf} ltf (m : int) : 0 < m -> f m < `|A| * m + B.
++ move=> gt0_m; apply/(ler_lt_trans (ler_norm _)).
+  apply/(ltr_le_trans (ltf m)); rewrite ler_add2r.
+  by rewrite gtr0_norm // ler_pmul2r // ler_norm.
+exists (`|k + B| + 1); first by rewrite ltz_addr1.
+rewrite ltr_subr_addl -ltr_subr_addr.
+rewrite (ltr_trans (ltf _ _)) ?ltz_addr1 //.
+rewrite intS [1+_]addrC [in X in _ < X]mulrDr mulr1.
+rewrite [`|A|*_]mulrC -addrA ler_lt_add //.
+by rewrite ltr_subr_addl ltz_addr1 ler_norm.
+Qed.
+
+Canonical eudoxus_archiType :=
+  Eval hnf in ArchiFieldType eudoxus eudoxus_archimedean.
+
+End EudoxusNum.
