@@ -86,23 +86,21 @@ move=> /OuP_to_ex [_/posnumP[a] [_/posnumP[C] fOg]].
 apply/eqOP; near=> k; near=> x; apply: ler_trans (fOg _ _ _ _) _; last 2 first.
 - by near: x; exists (setT, P); [split=> //=; apply: withinT|move=> ? []].
 - by rewrite ler_pmul => //; near: k; exists C%:num => ? /ltrW.
-- near: x; exists (setT, ball (0 : R^o * R^o) a%:num).
-    by split=> //=; rewrite /within; near=> x =>_; near: x; apply: locally_ball.
-  move=> x [_ [/=]]; rewrite -ball_normE /= normmB subr0 normmB subr0.
-  by move=> ??; rewrite ltr_maxl; apply/andP.
+- near: x; exists (setT, ball norm (0 : R^o * R^o) a%:num); last first.
+    by move=> x [_ /=]; rewrite normmB subr0.
+  split=> //=; rewrite /within; near=> x =>_; near: x.
+  exact: (@locally_ball _ [normedModType R of R^o * R^o]).
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma OuO_to_P f g : OuO f g -> OuP f g.
 Proof.
 move=> fOg; apply/Ouex_to_P; move: fOg => /eqOP [k hk].
 have /hk [Q [->]] : k < maxr 1 (k + 1) by rewrite ltr_maxr ltr_addl orbC ltr01.
-move=> [R [[_/posnumP[e1] Re1] [_/posnumP[e2] Re2]] sRQ] fOg.
-exists (minr e1%:num e2%:num) => //.
-exists (maxr 1 (k + 1)); first by rewrite ltr_maxr ltr01.
+rewrite /= -(@filter_from_norm_locally _ [normedModType R of R^o * R^o]).
+move=> -[_/posnumP[e] seQ] fOg; exists e%:num => //; exists (maxr 1 (k + 1)).
+  by rewrite ltr_maxr ltr01.
 move=> x dx dxe Pdx; apply: (fOg (x, dx)); split=> //=.
-move: dxe; rewrite ltr_maxl !ltr_minr => /andP[/andP [dxe11 _] /andP [_ dxe22]].
-by apply/sRQ => //; split; [apply/Re1|apply/Re2];
-  rewrite /AbsRing_ball /= absrB subr0.
+by apply: seQ => //; rewrite /ball normmB subr0.
 Qed.
 
 End UniformBigO.

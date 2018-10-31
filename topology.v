@@ -1,8 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap matrix.
-Require Import boolp Rstruct classical_sets posnum.
+From mathcomp Require Import seq fintype ssralg finmap matrix.
+Require Import boolp classical_sets posnum.
 
 (******************************************************************************)
 (* This file develops tools for the manipulation of filters and basic         *)
@@ -195,38 +194,37 @@ Require Import boolp Rstruct classical_sets posnum.
 (*     product topology.                                                      *)
 (*                                                                            *)
 (* * Uniform spaces :                                                         *)
-(*                  locally_ ball == neighbourhoods defined using balls       *)
+(*                   locally_ ent == neighbourhoods defined using entourages. *)
 (*                    uniformType == interface type for uniform space         *)
-(*                                   structure. We use here a pseudo-metric   *)
+(*                                   structure. We use here the entourage     *)
 (*                                   definition of uniform space: a type      *)
-(*                                   equipped with balls.                     *)
-(*      UniformMixin brefl bsym btriangle locb == builds the mixin for a      *)
-(*                                   uniform space from the properties of     *)
-(*                                   balls and the compatibility between      *)
-(*                                   balls and locally.                       *)
+(*                                   equipped with a set of entourages, also  *)
+(*                                   called uniformity. An entourage can be   *)
+(*                                   seen as a "neighbourhood" of the         *)
+(*                                   diagonal set {(x, x) | x in T}.          *)
+(* UniformMixin entF ent_refl ent_inv ent_split loc_ent == builds the mixin   *)
+(*                                   for a uniform space from the properties  *)
+(*                                   of entourages and the compatibility      *)
+(*                                   between entourages and locally.          *)
 (*                UniformType T m == packs the uniform space mixin into a     *)
 (*                                   uniformType. T must have a canonical     *)
 (*                                   topologicalType structure.               *)
 (*      [uniformType of T for cT] == T-clone of the uniformType structure cT. *)
 (*             [uniformType of T] == clone of a canonical uniformType         *)
 (*                                   structure on T.                          *)
-(*     topologyOfBallMixin umixin == builds the mixin for a topological space *)
-(*                                   from a mixin for a uniform space.        *)
-(*                       ball x e == ball of center x and radius e.           *)
-(*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
-(*                                   balls.                                   *)
-(*                     entourages == set of entourages defined by balls. An   *)
-(*                                   entourage can be seen as a               *)
-(*                                   "neighbourhood" of the diagonal set      *)
-(*                                   D = {(x, x) | x in T}.                   *)
-(*                   ball_set A e == set A extended with a band of width e    *)
+(* topologyOfEntourageMixin umixin == builds the mixin for a topological      *)
+(*                                   space from a mixin for a uniform space.  *)
+(*                      entourage == set of entourages.                       *)
+(*                    split_ent A == "half entourage": entourage B such that, *)
+(*                                   when seen as a relation, B \o B `<=` A.  *)
+(*                     close x y <-> x and y are arbitrarily close, i.e. the  *)
+(*                                   pair (x,y) is in any entourage.          *)
 (*                   unif_cont f <-> f is uniformly continuous.               *)
+(*                  entourage_set == set of entourages on the parts of a      *)
+(*                                   uniform space.                           *)
 (*                                                                            *)
 (* * Complete spaces :                                                        *)
-(*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
-(*                                   (epsilon-delta definition).              *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
-(*                                   (using the near notations).              *)
 (*                   completeType == interface type for a complete uniform    *)
 (*                                   space structure.                         *)
 (*       CompleteType T cvgCauchy == packs the proof that every proper cauchy *)
@@ -275,7 +273,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory Num.Def Num.Theory.
 Local Open Scope classical_set_scope.
 
 Module Filtered.
@@ -2271,23 +2268,32 @@ Definition connected (T : topologicalType) (A : set T) :=
   forall B : set T, B !=set0 -> (exists2 C, open C & B = A `&` C) ->
   (exists2 C, closed C & B = A `&` C) -> B = A.
 
-(** * Uniform spaces defined using balls *)
+(** * Uniform spaces defined using entourages *)
 
-Definition locally_ {T T'} (ball : T -> R -> set T') (x : T) :=
-   @filter_from R _ [set x | 0 < x] (ball x).
+Local Notation "B \o A" :=
+  ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : classical_set_scope.
 
-Lemma locally_E {T T'} (ball : T -> R -> set T') x :
-  locally_ ball x = @filter_from R _ [set x : R | 0 < x] (ball x).
+Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
+
+Local Notation "'to_set' A x" := ([set y | A (x, y)])
+  (at level 0, A at level 0) : classical_set_scope.
+
+Definition locally_ {T T'} (ent : set (set (T * T'))) (x : T) :=
+  filter_from ent (fun A => to_set A x).
+
+Lemma locally_E {T T'} (ent : set (set (T * T'))) x :
+  locally_ ent x = filter_from ent (fun A => to_set A x).
 Proof. by []. Qed.
 
 Module Uniform.
 
 Record mixin_of (M : Type) (locally : M -> set (set M)) := Mixin {
-  ball : M -> R -> M -> Prop ;
-  ax1 : forall x (e : R), 0 < e -> ball x e x ;
-  ax2 : forall x y (e : R), ball x e y -> ball y e x ;
-  ax3 : forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
-  ax4 : locally = locally_ ball
+  entourage : (M * M -> Prop) -> Prop ;
+  ax1 : Filter entourage ;
+  ax2 : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A ;
+  ax3 : forall A, entourage A -> entourage A^-1 ;
+  ax4 : forall A, entourage A -> exists2 B, entourage B & B \o B `<=` A ;
+  ax5 : locally = locally_ entourage
 }.
 
 Record class_of (M : Type) := Class {
@@ -2352,183 +2358,154 @@ Export Uniform.Exports.
 
 Section UniformTopology.
 
-Lemma my_ball_le (M : Type) (loc : M -> set (set M))
-  (m : Uniform.mixin_of loc) :
-  forall (x : M) (e1 e2 : R), e1 <= e2 ->
-  forall (y : M), Uniform.ball m x e1 y -> Uniform.ball m x e2 y.
-Proof.
-move=> x e1 e2 le12 y xe1_y.
-move: le12; rewrite ler_eqVlt => /orP [/eqP <- //|].
-rewrite -subr_gt0 => lt12.
-rewrite -[e2](subrK e1); apply: Uniform.ax3 xe1_y.
-suff : Uniform.ball m x (PosNum lt12)%:num x by [].
-exact: Uniform.ax1.
-Qed.
-
-Program Definition topologyOfBallMixin (T : Type)
+Program Definition topologyOfEntourageMixin (T : Type)
   (loc : T -> set (set T)) (m : Uniform.mixin_of loc) :
   Topological.mixin_of loc := topologyOfFilterMixin _ _ _.
 Next Obligation.
-rewrite (Uniform.ax4 m) locally_E; apply filter_from_proper; last first.
-  move=> e egt0; exists p; suff : Uniform.ball m p (PosNum egt0)%:num p by [].
-  exact: Uniform.ax1.
-apply: filter_from_filter; first by exists 1%:pos%:num.
-move=> e1 e2 e1gt0 e2gt0; exists (Num.min e1 e2).
-  by have := min_pos_gt0 (PosNum e1gt0) (PosNum e2gt0).
-by move=> q pmin_q; split; apply: my_ball_le pmin_q;
-  rewrite ler_minl lerr // orbC.
+rewrite (Uniform.ax5 m) locally_E; apply filter_from_proper; last first.
+  by move=> A entA; exists p; apply: Uniform.ax2 entA _ _.
+apply: filter_from_filter.
+  by exists setT; apply: @filterT (Uniform.ax1 m).
+move=> A B entA entB; exists (A `&` B) => //.
+exact: (@filterI _ _ (Uniform.ax1 m)).
 Qed.
 Next Obligation.
-move: H; rewrite (Uniform.ax4 m) locally_E => - [e egt0]; apply.
-by have : Uniform.ball m p (PosNum egt0)%:num p by exact: Uniform.ax1.
+move: H; rewrite (Uniform.ax5 m) locally_E  => - [B entB sBpA].
+by apply: sBpA; apply: Uniform.ax2 entB _ _.
 Qed.
 Next Obligation.
-move: H; rewrite (Uniform.ax4 m) locally_E => - [e egt0 pe_A].
-exists ((PosNum egt0)%:num / 2) => // q phe_q.
-rewrite locally_E; exists ((PosNum egt0)%:num / 2) => // r qhe_r.
-by apply: pe_A; rewrite [e]splitr; apply: Uniform.ax3 qhe_r.
+move: H; rewrite (Uniform.ax5 m) locally_E => - [B entB sBpA].
+have /Uniform.ax4 [C entC sC2B] := entB.
+exists C => // q Cpq; rewrite locally_E; exists C => // r Cqr.
+by apply/sBpA/sC2B; exists q.
 Qed.
 
 End UniformTopology.
 
-Definition ball {M : uniformType} := Uniform.ball (Uniform.class M).
+Definition entourage {M : uniformType} := Uniform.entourage (Uniform.class M).
 
-Lemma locally_ballE {M : uniformType} : locally_ (@ball M) = locally.
+Lemma locally_entourageE {M : uniformType} : locally_ (@entourage M) = locally.
 Proof. by case: M=> [?[?[]]]. Qed.
 
-Lemma filter_from_ballE {M : uniformType} x :
-  @filter_from R _ [set x : R | 0 < x] (@ball M x) = locally x.
-Proof. by rewrite -locally_ballE. Qed.
+Lemma filter_from_entourageE {M : uniformType} x :
+  filter_from (@entourage M) (fun A => to_set A x) = locally x.
+Proof. by rewrite -locally_entourageE. Qed.
 
-Module Export LocallyBall.
-Definition locally_simpl := (locally_simpl,@filter_from_ballE,@locally_ballE).
-End LocallyBall.
+Module Export LocallyEntourage.
+Definition locally_simpl :=
+  (locally_simpl,@filter_from_entourageE,@locally_entourageE).
+End LocallyEntourage.
 
 Lemma locallyP {M : uniformType} (x : M) P :
-  locally x P <-> locally_ ball x P.
+  locally x P <-> locally_ entourage x P.
 Proof. by rewrite locally_simpl. Qed.
 
 Section uniformType1.
 Context {M : uniformType}.
 
-Lemma ball_center (x : M) (e : posreal) : ball x e%:num x.
-Proof. exact: Uniform.ax1. Qed.
-Hint Resolve ball_center : core.
+Lemma entourage_refl (A : set (M * M)) x :
+  entourage A -> A (x, x).
+Proof. by move=> entA; apply: Uniform.ax2 entA _ _. Qed.
 
-Lemma ballxx (x : M) (e : R) : (0 < e)%R -> ball x e x.
-Proof. by move=> e_gt0; apply: ball_center (PosNum e_gt0). Qed.
-
-Lemma ball_sym (x y : M) (e : R) : ball x e y -> ball y e x.
-Proof. exact: Uniform.ax2. Qed.
-
-Lemma ball_triangle (y x z : M) (e1 e2 : R) :
-  ball x e1 y -> ball y e2 z -> ball x (e1 + e2)%R z.
-Proof. exact: Uniform.ax3. Qed.
-
-Lemma ball_split (z x y : M) (e : R) :
-  ball x (e / 2)%R z -> ball z (e / 2)%R y -> ball x e y.
-Proof. by move=> /ball_triangle h /h; rewrite -splitr. Qed.
-
-Lemma ball_splitr (z x y : M) (e : R) :
-  ball z (e / 2)%R x -> ball z (e / 2)%R y -> ball x e y.
-Proof. by move=> /ball_sym /ball_split; apply. Qed.
-
-Lemma ball_splitl (z x y : M) (e : R) :
-  ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
-Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
-
-Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
+Global Instance entourage_filter : ProperFilter (@entourage M).
 Proof.
-move=> le12 y; case: ltrgtP le12 => [//|lte12 _|->//].
-by rewrite -[e2](subrK e1); apply/ball_triangle/ballxx; rewrite subr_gt0.
+apply Build_ProperFilter; last exact: Uniform.ax1.
+by move=> A entA; exists (point, point); apply: entourage_refl.
 Qed.
 
-Lemma ball_le (x : M) (e1 e2 : R) : (e1 <= e2)%coqR -> ball x e1 `<=` ball x e2.
-Proof. by move=> /RleP/ball_ler. Qed.
+Lemma entourageT : entourage (@setT (M * M)).
+Proof. exact: filterT. Qed.
 
-Lemma locally_ball (x : M) (eps : posreal) : locally x (ball x eps%:num).
-Proof. by apply/locallyP; exists eps%:num. Qed.
-Hint Resolve locally_ball : core.
+Lemma entourage_inv (A : set (M * M)) : entourage A -> entourage A^-1.
+Proof. exact: Uniform.ax3. Qed.
 
-Definition close (x y : M) : Prop := forall eps : posreal, ball x eps%:num y.
+Lemma entourage_split_ex (A : set (M * M)) :
+  entourage A -> exists2 B, entourage B & B \o B `<=` A.
+Proof. exact: Uniform.ax4. Qed.
 
-Lemma close_refl (x : M) : close x x. Proof. by []. Qed.
+Definition split_ent (A : set (M * M)) :=
+  get (entourage `&` [set B | B \o B `<=` A]).
+
+Lemma split_entP (A : set (M * M)) : entourage A ->
+  entourage (split_ent A) /\ split_ent A \o split_ent A `<=` A.
+Proof. by move/entourage_split_ex/exists2P/getPex. Qed.
+
+Lemma entourage_split_ent (A : set (M * M)) : entourage A ->
+  entourage (split_ent A).
+Proof. by move=> /split_entP []. Qed.
+Hint Extern 0 (entourage (split_ent _)) => exact: entourage_split_ent : core.
+Hint Extern 0 (entourage (get _)) => exact: entourage_split_ent : core.
+
+Lemma subset_split_ent (A : set (M * M)) : entourage A ->
+  split_ent A \o split_ent A `<=` A.
+Proof. by move=> /split_entP []. Qed.
+
+Lemma entourage_split (z x y : M) A : entourage A ->
+  split_ent A (x,z) -> split_ent A (z,y) -> A (x,y).
+Proof. by move=> /subset_split_ent sA ??; apply: sA; exists z. Qed.
+Arguments entourage_split z {x y A}.
+
+Definition close (x y : M) : Prop := forall A, entourage A -> A (x,y).
+
+Lemma close_refl (x : M) : close x x. Proof. by move=> ? /entourage_refl. Qed.
 
 Lemma close_sym (x y : M) : close x y -> close y x.
-Proof. by move=> ??; apply: ball_sym. Qed.
+Proof. by move=> cxy ? /entourage_inv /cxy. Qed.
 
 Lemma close_trans (x y z : M) : close x y -> close y z -> close x z.
-Proof. by move=> cxy cyz eps; apply: ball_split (cxy _) (cyz _). Qed.
+Proof.
+by move=> cxy cyz A entA; apply: (entourage_split y) => //;
+  [apply: cxy|apply: cyz].
+Qed.
 
 Lemma close_limxx (x y : M) : close x y -> x --> y.
 Proof.
-move=> cxy P /= /locallyP /= [_/posnumP [eps] epsP].
-apply/locallyP; exists (eps%:num / 2) => // z bxz.
-by apply: epsP; apply: ball_splitr (cxy _) bxz.
+move=> cxy A /= /locallyP [B entB sBA].
+apply/locallyP; exists (split_ent B) => // z hByz; apply/sBA.
+by apply: subset_split_ent => //; exists x => //=; apply: (close_sym cxy).
 Qed.
 
-Definition entourages : set (set (M * M)):=
-  filter_from [set eps : R | eps > 0]
-              (fun eps => [set xy | ball xy.1 eps xy.2]).
-
-Global Instance entourages_filter : ProperFilter entourages.
-Proof.
-apply filter_from_proper; last by exists (point,point); apply: ballxx.
-apply: filter_from_filter; first by exists 1; rewrite ltr01.
-move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i j) => // [[/= x y]] bxy.
-by eexists => /=; apply: ball_ler bxy; rewrite ler_minl lerr ?orbT.
-Qed.
-Typeclasses Opaque entourages.
+Lemma locally_entourage (x : M) A : entourage A -> locally x (to_set A x).
+Proof. by move=> ?; apply/locallyP; exists A. Qed.
+Hint Resolve locally_entourage.
 
 Lemma flim_close {F} {FF : ProperFilter F} (x y : M) :
   F --> x -> F --> y -> close x y.
 Proof.
-move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z;
-by [apply/Fx/locally_ball|apply/Fy/locally_ball].
+move=> Fx Fy A entA; apply: subset_split_ent => //.
+near F => z; exists z => /=; near: z; first exact/Fx/locally_entourage.
+by apply/Fy; apply: locally_entourage (entourage_inv _).
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma flimx_close (x y : M) : x --> y -> close x y.
 Proof. exact: flim_close. Qed.
 
-Lemma near_ball (y : M) (eps : posreal) :
-   \forall y' \near y, ball y eps%:num y'.
-Proof. exact: locally_ball. Qed.
+Lemma flim_entourageP F (FF : Filter F) (p : M) :
+  F --> p <-> forall A, entourage A -> \forall q \near F, A (p, q).
+Proof. by rewrite -filter_fromP !locally_simpl. Qed.
 
-Lemma flim_ballP {F} {FF : Filter F} (y : M) :
-  F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
-Proof. by rewrite -filter_fromP !locally_simpl /=. Qed.
-Definition flim_locally := @flim_ballP.
+Lemma flim_entourage {F} {FF : Filter F} (y : M) :
+  F --> y -> forall A, entourage A -> \forall y' \near F, A (y,y').
+Proof. by move/flim_entourageP. Qed.
 
-Lemma flim_ballPpos {F} {FF : Filter F} (y : M) :
-  F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
-Proof.
-by split => [/flim_ballP|] pos; [case|apply/flim_ballP=> _/posnumP[eps] //].
-Qed.
+Lemma app_flim_entourageP T (f : T -> M) F (FF : Filter F) p :
+  f @ F --> p <-> forall A, entourage A -> \forall t \near F, A (p, f t).
+Proof. exact: flim_entourageP. Qed.
 
-Lemma flim_ball {F} {FF : Filter F} (y : M) :
-  F --> y -> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
-Proof. by move/flim_ballP. Qed.
-
-Lemma app_flim_locally T {F} {FF : Filter F} (f : T -> M) y :
-  f @ F --> y <-> forall eps : R, 0 < eps -> \forall x \near F, ball y eps (f x).
-Proof. exact: flim_ballP. Qed.
-
-Lemma flimi_ballP T {F} {FF : Filter F} (f : T -> M -> Prop) y :
+Lemma flimi_entourageP T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   f `@ F --> y <->
-  forall eps : R, 0 < eps -> \forall x \near F, exists z, f x z /\ ball y eps z.
+  forall A, entourage A -> \forall x \near F, exists z, f x z /\ A (y,z).
 Proof.
-split=> [Fy _/posnumP[eps] |Fy P] /=; first exact/Fy/locally_ball.
-move=> /locallyP[_ /posnumP[eps] subP].
-rewrite near_simpl near_mapi; near=> x.
-have [//|z [fxz yz]] := near (Fy _ (posnum_gt0 eps)) x.
-by exists z => //; split => //; apply: subP.
+split=> [Fy A entA|Fy A] /=; first exact/Fy/locally_entourage.
+move=> /locallyP [B entB sBA]; rewrite near_simpl near_mapi; near=> x.
+by have [//|z [fxz Byz]]:= near (Fy _ entB) x; exists z; split=> //; apply: sBA.
 Unshelve. all: end_near. Qed.
-Definition flimi_locally := @flimi_ballP.
+Definition flimi_locally := @flimi_entourageP.
 
-Lemma flimi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
+Lemma flimi_entourage T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   f `@ F --> y ->
-  forall eps : R, 0 < eps -> F [set x | exists z, f x z /\ ball y eps z].
-Proof. by move/flimi_ballP. Qed.
+  forall A, entourage A -> F [set x | exists z, f x z /\ A (y,z)].
+Proof. by move/flimi_entourageP. Qed.
 
 Lemma flimi_close T {F} {FF: ProperFilter F} (f : T -> set M) (l l' : M) :
   {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> close l l'.
@@ -2536,15 +2513,15 @@ Proof.
 move=> f_prop fFl fFl'.
 suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
 apply: filter_app f_prop; near=> x; split=> //=.
-by have [//|y [fxy _]] := near (flimi_ball fFl [gt0 of 1]) x; exists y.
+by have [//|y []] := near (flimi_entourage fFl entourageT) x; exists y.
 Grab Existential Variables. all: end_near. Qed.
 Definition flimi_locally_close := @flimi_close.
 
 Lemma flim_const {T} {F : set (set T)}
    {FF : Filter F} (a : M) : a @[_ --> F] --> a.
 Proof.
-move=> P /locallyP[_ /posnumP[eps] subP]; rewrite !near_simpl /=.
-by apply: filterE=> ?; apply/subP.
+move=> A /locallyP [B entB sBA]; rewrite !near_simpl /=.
+by apply: filterE => _; apply/sBA; apply: entourage_refl.
 Qed.
 
 Lemma close_lim (F1 F2 : set (set M)) {FF2 : ProperFilter F2} :
@@ -2553,7 +2530,7 @@ Proof.
 move=> F12 F21; have [/(flim_trans F21) F2l|dvgF1] := pselect (cvg F1).
   by apply: (@flim_close F2) => //; apply: cvgP F2l.
 have [/(flim_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
-by rewrite dvgP // dvgP //.
+by rewrite dvgP // dvgP //; apply: close_refl.
 Qed.
 
 Lemma flim_closeP (F : set (set M)) (l : M) : ProperFilter F ->
@@ -2564,32 +2541,130 @@ move=> FF; split=> [Fl|[cvF]Cl].
 by apply: flim_trans (close_limxx Cl).
 Qed.
 
-Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
-Canonical set_filter_source :=
-  @Filtered.Source Prop _ M (fun A => locally_ ball_set A).
-
 End uniformType1.
 
-Hint Resolve ball_center : core.
-Hint Resolve close_refl : core.
-Hint Resolve locally_ball : core.
+Hint Extern 0 (entourage (split_ent _)) => exact: entourage_split_ent : core.
+Hint Extern 0 (entourage (get _)) => exact: entourage_split_ent : core.
+Arguments entourage_split {M} z {x y A}.
+Hint Extern 0 (locally _ (to_set _ _)) => exact: locally_entourage : core.
+Hint Resolve close_refl.
 Arguments flim_const {M T F FF} a.
 Arguments close_lim {M} F1 F2 {FF2} _.
 
-Section entourages.
+Lemma continuous_withinNx {U V : uniformType}
+  (f : U -> V) x :
+  {for x, continuous f} <-> f @ locally' x --> f x.
+Proof.
+split=> - cfx P /= fxP.
+  rewrite /locally' !near_simpl near_withinE.
+  by rewrite /locally'; apply: flim_within; apply/cfx.
+ (* :BUG: ssr apply: does not work,
+    because the type of the filter is not inferred *)
+rewrite !locally_nearE !near_map !near_locally in fxP *; have /= := cfx P fxP.
+rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
+by have [->|] := eqVneq y x; [by apply: locally_singleton|near: y].
+Grab Existential Variables. all: end_near. Qed.
 
 Definition unif_cont (U V : uniformType) (f : U -> V) :=
-  (fun xy => (f xy.1, f xy.2)) @ entourages --> entourages.
+  (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
 
-Lemma unif_contP (U V : uniformType) (f : U -> V) :
-  unif_cont f <->
-  forall e, e > 0 -> exists2 d, d > 0 &
-    forall x, ball x.1 d x.2 -> ball (f x.1) e (f x.2).
-Proof. exact: filter_fromP. Qed.
+(** product of two uniform spaces *)
 
-End entourages.
+Section prod_Uniform.
 
-(** ** Specific uniform spaces *)
+Context {U V : uniformType}.
+Implicit Types A : set ((U * V) * (U * V)).
+
+Definition prod_ent :=
+  [set A : set ((U * V) * (U * V)) |
+    filter_prod (@entourage U) (@entourage V)
+    [set ((xy.1.1,xy.2.1),(xy.1.2,xy.2.2)) | xy in A]].
+
+Lemma prod_entP (A : set (U * U)) (B : set (V * V)) :
+  entourage A -> entourage B ->
+  prod_ent [set xy | A (xy.1.1, xy.2.1) /\ B (xy.1.2, xy.2.2)].
+Proof.
+move=> entA entB; exists (A,B) => // xy ABxy.
+by exists ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)); rewrite -!surjective_pairing.
+Qed.
+
+Lemma prod_ent_filter : Filter prod_ent.
+Proof.
+have prodF := filter_prod_filter (@entourage_filter U) (@entourage_filter V).
+split; rewrite /prod_ent; last 1 first.
+- by move=> A B sAB; apply: filterS => ? [xy /sAB ??]; exists xy.
+- rewrite -setMT; apply: prod_entP filterT filterT.
+move=> A B entA entB; apply: filterS (filterI entA entB) => xy [].
+move=> [zt Azt ztexy] [zt' Bzt' zt'exy]; exists zt => //; split=> //.
+move/eqP: ztexy; rewrite -zt'exy !xpair_eqE.
+by rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP->.
+Qed.
+
+Lemma prod_ent_refl A : prod_ent A -> [set xy | xy.1 = xy.2] `<=` A.
+Proof.
+move=> [B [entB1 entB2] sBA] xy /eqP.
+rewrite [_.1]surjective_pairing [xy.2]surjective_pairing xpair_eqE.
+move=> /andP [/eqP xy1e /eqP xy2e].
+have /sBA : (B.1 `*` B.2) ((xy.1.1, xy.2.1), (xy.1.2, xy.2.2)).
+  by rewrite xy1e xy2e; split=> /=; apply: entourage_refl.
+move=> [zt Azt /eqP]; rewrite !xpair_eqE.
+by rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP<-.
+Qed.
+
+Lemma prod_ent_inv A : prod_ent A -> prod_ent A^-1.
+Proof.
+move=> [B [/entourage_inv entB1 /entourage_inv entB2] sBA].
+have:= prod_entP entB1 entB2; rewrite /prod_ent; apply: filterS.
+move=> _ [p /(sBA (_,_)) [[x y] ? xyE] <-]; exists (y,x) => //=; move/eqP: xyE.
+by rewrite !xpair_eqE => /andP[/andP[/eqP-> /eqP->] /andP[/eqP-> /eqP->]].
+Qed.
+
+Lemma prod_ent_split A : prod_ent A -> exists2 B, prod_ent B & B \o B `<=` A.
+Proof.
+move=> [B [entB1 entB2]] sBA; exists [set xy | split_ent B.1 (xy.1.1,xy.2.1) /\
+  split_ent B.2 (xy.1.2,xy.2.2)].
+  by apply: prod_entP; apply: entourage_split_ent.
+move=> xy [uv /= [hB1xyuv1 hB2xyuv1] [hB1xyuv2 hB2xyuv2]].
+have /sBA : (B.1 `*` B.2) ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)).
+  by split=> /=; apply: subset_split_ent => //; [exists uv.1|exists uv.2].
+move=> [zt Azt /eqP]; rewrite !xpair_eqE andbACA -!xpair_eqE.
+by rewrite -!surjective_pairing => /eqP<-.
+Qed.
+
+Lemma prod_ent_locallyE : locally = locally_ prod_ent.
+Proof.
+rewrite predeq2E => xy A; split=> [[B []] | [B [C [entC1 entC2] sCB] sBA]].
+  rewrite -!locally_entourageE => - [C1 entC1 sCB1] [C2 entC2 sCB2] sBA.
+  exists [set xy | C1 (xy.1.1, xy.2.1) /\ C2 (xy.1.2, xy.2.2)].
+    exact: prod_entP.
+  by move=> uv [/= /sCB1 Buv1 /sCB2 /(conj Buv1) /sBA].
+exists (to_set (C.1) (xy.1), to_set (C.2) (xy.2)).
+  by rewrite -!locally_entourageE; split; [exists C.1|exists C.2].
+move=> uv [/= Cxyuv1 Cxyuv2]; apply: sBA.
+have /sCB : (C.1 `*` C.2) ((xy.1,uv.1),(xy.2,uv.2)) by [].
+move=> [zt Bzt /eqP]; rewrite !xpair_eqE andbACA -!xpair_eqE.
+by rewrite -!surjective_pairing => /eqP<-.
+Qed.
+
+Definition prod_uniformType_mixin :=
+  Uniform.Mixin prod_ent_filter prod_ent_refl prod_ent_inv prod_ent_split
+  prod_ent_locallyE.
+
+End prod_Uniform.
+
+Canonical prod_uniformType (U V : uniformType) :=
+  UniformType (U * V) (@prod_uniformType_mixin U V).
+
+Lemma flim_entourage2P (U V : uniformType) {F : set (set U)} {G : set (set V)}
+  {FF : Filter F} {FG : Filter G} (y : U) (z : V):
+  (F, G) --> (y, z) <->
+  forall A, entourage A ->
+  \forall y' \near F & z' \near G, A ((y,z),(y',z')).
+Proof.
+split=> [/flim_entourageP FGyz A /FGyz|FGyz].
+  by rewrite near_simpl -near2_pair.
+by apply/flim_entourageP => A /FGyz; rewrite (near2_pair _ _ (to_set A (y,z))).
+Qed.
 
 (** matrices *)
 
@@ -2597,116 +2672,90 @@ Section matrix_Uniform.
 
 Variables (m n : nat) (T : uniformType).
 
-Implicit Types x y : 'M[T]_(m, n).
+Implicit Types A : set ('M[T]_(m, n) * 'M[T]_(m, n)).
 
-Definition mx_ball x (e : R) y := forall i j, ball (x i j) e (y i j).
+Definition mx_ent :=
+  filter_from
+  [set P : 'I_m -> 'I_n -> set (T * T) | forall i j, entourage (P i j)]
+  (fun P => [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) |
+    forall i j, P i j (MN.1 i j, MN.2 i j)]).
 
-Lemma mx_ball_center x (e : R) : 0 < e -> mx_ball x e x.
-Proof. by move=> ???; apply: ballxx. Qed.
-
-Lemma mx_ball_sym x y (e : R) : mx_ball x e y -> mx_ball y e x.
-Proof. by move=> xe_y ??; apply/ball_sym/xe_y. Qed.
-
-Lemma mx_ball_triangle x y z (e1 e2 : R) :
-  mx_ball x e1 y -> mx_ball y e2 z -> mx_ball x (e1 + e2) z.
+Lemma mx_ent_filter : Filter mx_ent.
 Proof.
-by move=> xe1_y ye2_z ??; apply: ball_triangle; [apply: xe1_y| apply: ye2_z].
+apply: filter_from_filter => [|A B entA entB].
+  by exists (fun _ _ => setT) => _ _; apply: filterT.
+exists (fun i j => A i j `&` B i j); first by move=> ??; apply: filterI.
+by move=> MN ABMN; split=> i j; have [] := ABMN i j.
 Qed.
 
-Lemma ltr_bigminr (I : finType) (R : realDomainType) (f : I -> R) (x0 x : R) :
-  x < x0 -> (forall i, x < f i) -> x < \big[minr/x0]_i f i.
+Lemma mx_ent_refl A : mx_ent A -> [set MN | MN.1 = MN.2] `<=` A.
 Proof.
-move=> ltx0 ltxf; elim/big_ind: _ => // y z ltxy ltxz.
-by rewrite ltr_minr ltxy ltxz.
+move=> [B entB sBA] MN MN1e2; apply: sBA => i j.
+by rewrite MN1e2; apply: entourage_refl.
 Qed.
 
-Lemma bigminr_ler (I : finType) (R : realDomainType) (f : I -> R) (x0 : R) i :
-  \big[minr/x0]_j f j <= f i.
+Lemma mx_ent_inv A : mx_ent A -> mx_ent A^-1.
 Proof.
-have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
-by rewrite inE => /orP [/eqP->|/ihl leminlfi];
-  rewrite ler_minl ?lerr // leminlfi orbC.
+move=> [B entB sBA]; exists (fun i j => (B i j)^-1).
+  by move=> i j; apply: entourage_inv.
+by move=> MN BMN; apply: sBA.
 Qed.
 
-Canonical R_pointedType := PointedType R 0.
-
-Lemma mx_locally : locally = locally_ mx_ball.
+Lemma mx_ent_split A : mx_ent A -> exists2 B, mx_ent B & B \o B `<=` A.
 Proof.
-rewrite predeq2E => x A; split; last first.
-  by move=> [e egt0 xe_A]; exists (fun i j => ball (x i j) (PosNum egt0)%:num).
-move=> [P]; rewrite -locally_ballE => x_P sPA.
-exists (\big[minr/1]_i \big[minr/1]_j
-  get (fun e : R => 0 < e /\ ball (x i j) e `<=` P i j)).
-  apply: ltr_bigminr => // i; apply: ltr_bigminr => // j.
-  by have /exists2P/getPex [] := x_P i j.
-move=> y xmin_y; apply: sPA => i j; have /exists2P/getPex [_] := x_P i j; apply.
-apply: ball_ler (xmin_y i j).
-by apply: ler_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
+move=> [B entB sBA].
+have Bsplit : forall i j, exists C, entourage C /\ C \o C `<=` B i j.
+  by move=> ??; apply/exists2P/entourage_split_ex.
+exists [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) |
+  forall i j, get [set C | entourage C /\ C \o C `<=` B i j]
+  (MN.1 i j, MN.2 i j)].
+  by exists (fun i j => get [set C | entourage C /\ C \o C `<=` B i j]).
+move=> MN [P CMN1P CPMN2]; apply/sBA => i j.
+have /getPex [_] := Bsplit i j; apply; exists (P i j); first exact: CMN1P.
+exact: CPMN2.
+Qed.
+
+Lemma mx_ent_locallyE : locally = locally_ mx_ent.
+Proof.
+rewrite predeq2E => M A; split.
+  move=> [B]; rewrite -locally_entourageE => M_B sBA.
+  set sB := fun i j => [set C | entourage C /\ to_set C (M i j) `<=` B i j].
+  have {M_B} M_B : forall i j, sB i j !=set0 by move=> ??; apply/exists2P/M_B.
+  exists [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) | forall i j,
+    get (sB i j) (MN.1 i j, MN.2 i j)].
+    by exists (fun i j => get (sB i j)) => // i j; have /getPex [] := M_B i j.
+  move=> N CMN; apply/sBA => i j; have /getPex [_] := M_B i j; apply.
+  exact/CMN.
+move=> [B [C entC sCB] sBA]; exists (fun i j => to_set (C i j) (M i j)).
+  by rewrite -locally_entourageE => i j; exists (C i j).
+by move=> N CMN; apply/sBA/sCB.
 Qed.
 
 Definition matrix_uniformType_mixin :=
-  Uniform.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_locally.
+  Uniform.Mixin mx_ent_filter mx_ent_refl mx_ent_inv mx_ent_split
+  mx_ent_locallyE.
 
 Canonical matrix_uniformType :=
   UniformType 'M[T]_(m, n) matrix_uniformType_mixin.
 
 End matrix_Uniform.
 
-(** product of two uniform spaces *)
-
-Section prod_Uniform.
-
-Context {U V : uniformType}.
-Implicit Types (x y : U * V).
-
-Definition prod_point : U * V := (point, point).
-
-Definition prod_ball x (eps : R) y :=
-  ball (fst x) eps (fst y) /\ ball (snd x) eps (snd y).
-
-Lemma prod_ball_center x (eps : R) : 0 < eps -> prod_ball x eps x.
-Proof. by move=> /posnumP[e]; split. Qed.
-
-Lemma prod_ball_sym x y (eps : R) : prod_ball x eps y -> prod_ball y eps x.
-Proof. by move=> [bxy1 bxy2]; split; apply: ball_sym. Qed.
-
-Lemma prod_ball_triangle x y z (e1 e2 : R) :
-  prod_ball x e1 y -> prod_ball y e2 z -> prod_ball x (e1 + e2) z.
+Lemma flim_mx_entourageP (T : uniformType) m n (F : set (set 'M[T]_(m,n)))
+  (FF : Filter F) (M : 'M[T]_(m,n)) :
+  F --> M <->
+  forall A, entourage A -> \forall N \near F,
+  forall i j, A (M i j, (N : 'M[T]_(m,n)) i j).
 Proof.
-by move=> [bxy1 bxy2] [byz1 byz2]; split; eapply ball_triangle; eassumption.
-Qed.
-
-Lemma prod_locally : locally = locally_ prod_ball.
-Proof.
-rewrite predeq2E => -[x y] P; split=> [[[A B] /=[xX yY] XYP] |]; last first.
-  by move=> [_ /posnumP[eps] epsP]; exists (ball x eps%:num, ball y eps%:num) => /=.
-move: xX yY => /locallyP [_ /posnumP[ex] eX] /locallyP [_ /posnumP[ey] eY].
-exists (minr ex%:num ey%:num) => // -[x' y'] [/= xx' yy'].
-apply: XYP; split=> /=.
-  by apply/eX/(ball_ler _ xx'); rewrite ler_minl lerr.
-by apply/eY/(ball_ler _ yy'); rewrite ler_minl lerr orbT.
-Qed.
-
-Definition prod_uniformType_mixin :=
-  Uniform.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_locally.
-
-End prod_Uniform.
-
-Canonical prod_uniformType (U V : uniformType) :=
-  UniformType (U * V) (@prod_uniformType_mixin U V).
-
-Section Locally_fct2.
-
-Context {T : Type} {U V : uniformType}.
-
-Lemma flim_ball2P {F : set (set U)} {G : set (set V)}
-  {FF : Filter F} {FG : Filter G} (y : U) (z : V):
-  (F, G) --> (y, z) <->
-  forall eps : R, eps > 0 -> \forall y' \near F & z' \near G,
-                ball y eps y' /\ ball z eps z'.
-Proof. exact: flim_ballP. Qed.
-
-End Locally_fct2.
+split.
+  by rewrite filter_fromP => FM A ?; apply: (FM (fun i j => to_set A (M i j))).
+move=> FM; apply/flim_entourageP => A [P entP sPA]; near=> N.
+apply: sPA => /=; near: N; set Q := \bigcap_ij P ij.1 ij.2.
+apply: filterS (FM Q _); first by move=> N QN i j; apply: (QN _ _ (i, j)).
+have -> : Q =
+  \bigcap_(ij in [set k | k \in [fset x in predT]%fset]) P ij.1 ij.2.
+  by rewrite predeqE => t; split=> Qt ij _; apply: Qt => //; rewrite !inE.
+by apply: filter_bigI => ??; apply: entP.
+Grab Existential Variables. all: end_near. Qed.
 
 (** Functional metric spaces *)
 
@@ -2714,73 +2763,91 @@ Section fct_Uniform.
 
 Variable (T : choiceType) (U : uniformType).
 
-Definition fct_ball (x : T -> U) (eps : R) (y : T -> U) :=
-  forall t : T, ball (x t) eps (y t).
+Definition fct_ent :=
+  filter_from
+  [set P : T -> set (U * U) | forall t, entourage (P t)]
+  (fun P => [set fg | forall t, P t (fg.1 t, fg.2 t)]).
 
-Lemma fct_ball_center (x : T -> U) (e : R) : 0 < e -> fct_ball x e x.
-Proof. by move=> /posnumP[{e}e] t. Qed.
+Lemma fct_ent_filter : Filter fct_ent.
+Proof.
+apply: filter_from_filter; first by exists (fun=> setT) => _; apply: filterT.
+move=> A B entA entB.
+exists (fun t => A t `&` B t); first by move=> ?; apply: filterI.
+by move=> fg ABfg; split=> t; have [] := ABfg t.
+Qed.
 
-Lemma fct_ball_sym (x y : T -> U) (e : R) : fct_ball x e y -> fct_ball y e x.
-Proof. by move=> P t; apply: ball_sym. Qed.
+Lemma fct_ent_refl A : fct_ent A -> [set fg | fg.1 =fg.2] `<=` A.
+Proof.
+move=> [B entB sBA] fg feg; apply/sBA => t; rewrite feg.
+exact: entourage_refl.
+Qed.
 
-Lemma fct_ball_triangle (x y z : T -> U) (e1 e2 : R) :
-  fct_ball x e1 y -> fct_ball y e2 z -> fct_ball x (e1 + e2) z.
-Proof. by move=> xy yz t; apply: (@ball_triangle _ (y t)). Qed.
+Lemma fct_ent_inv A : fct_ent A -> fct_ent A^-1.
+Proof.
+move=> [B entB sBA]; exists (fun t => (B t)^-1).
+  by move=> ?; apply: entourage_inv.
+by move=> fg Bgf; apply/sBA.
+Qed.
+
+Lemma fct_ent_split A : fct_ent A -> exists2 B, fct_ent B & B \o B `<=` A.
+Proof.
+move=> [B entB sBA].
+have Bsplit t : exists C, entourage C /\ C \o C `<=` B t.
+  exact/exists2P/entourage_split_ex.
+exists [set fg | forall t,
+  get [set C | entourage C /\ C \o C `<=` B t] (fg.1 t, fg.2 t)].
+  by exists (fun t => get [set C | entourage C /\ C \o C `<=` B t]).
+move=> fg [h Cfh Chg]; apply/sBA => t; have /getPex [_] := Bsplit t; apply.
+by exists (h t); [apply: Cfh|apply: Chg].
+Qed.
 
 Definition fct_uniformType_mixin :=
-  UniformMixin fct_ball_center fct_ball_sym fct_ball_triangle erefl.
+  UniformMixin fct_ent_filter fct_ent_refl fct_ent_inv fct_ent_split erefl.
 
 Definition fct_topologicalTypeMixin :=
-  topologyOfBallMixin fct_uniformType_mixin.
+  topologyOfEntourageMixin fct_uniformType_mixin.
 
-Canonical generic_source_filter := @Filtered.Source _ _ _ (locally_ fct_ball).
+Canonical generic_source_filter := @Filtered.Source _ _ _ (locally_ fct_ent).
 Canonical fct_topologicalType :=
   TopologicalType (T -> U) fct_topologicalTypeMixin.
 Canonical fct_uniformType := UniformType (T -> U) fct_uniformType_mixin.
 
 End fct_Uniform.
 
+(* TODO: is it possible to remove A's dependency in t? *)
+Lemma flim_fct_entourageP (T : choiceType) (U : uniformType)
+  (F : set (set (T -> U))) (FF : Filter F) (f : T -> U) :
+  F --> f <->
+  forall A, (forall t, entourage (A t)) ->
+  \forall g \near F, forall t, A t (f t, g t).
+Proof.
+split.
+  move=> /flim_entourageP Ff A entA.
+  apply: (Ff [set fg | forall t : T, A t (fg.1 t, fg.2 t)]).
+  by exists (fun t => A t).
+move=> Ff; apply/flim_entourageP => A [P entP sPA]; near=> g.
+by apply: sPA => /=; near: g; apply: Ff.
+Grab Existential Variables. all: end_near. Qed.
+
+Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
+  exists2 B, entourage B & forall PQ, A PQ -> forall p q,
+    PQ.1 p -> PQ.2 q -> B (p,q).
+Canonical set_filter_source (U : uniformType) :=
+  @Filtered.Source Prop _ U (fun A => locally_ (@entourage_set U) A).
+
 (** ** Complete uniform spaces *)
 
-(* :TODO: Use cauchy2 alternative to define cauchy? *)
-(* Or not: is the fact that cauchy F -/> ProperFilter F a problem? *)
-Definition cauchy_ex {T : uniformType} (F : set (set T)) :=
-  forall eps : R, 0 < eps -> exists x, F (ball x eps).
-
-Definition cauchy {T : uniformType} (F : set (set T)) :=
-  forall e, e > 0 -> \forall x & y \near F, ball x e y.
-
-Lemma cauchy_entouragesP (T  : uniformType) (F : set (set T)) :
-  Filter F -> cauchy F <-> (F, F) --> entourages.
-Proof.
-move=> FF; split=> cauchyF; last first.
-  by move=> _/posnumP[eps]; apply: cauchyF; exists eps%:num.
-move=> U [_/posnumP[eps] xyepsU].
-by near=> x; apply: xyepsU; near: x; apply: cauchyF.
-Grab Existential Variables. all: end_near. Qed.
-
-Lemma cvg_cauchy_ex {T : uniformType} (F : set (set T)) :
-  [cvg F in T] -> cauchy_ex F.
-Proof. by move=> Fl _/posnumP[eps]; exists (lim F); apply/Fl/locally_ball. Qed.
-
-Lemma cauchy_exP (T : uniformType) (F : set (set T)) : Filter F ->
-  cauchy_ex F -> cauchy F.
-Proof.
-move=> FF Fc; apply/cauchy_entouragesP => A [_/posnumP[e] sdeA].
-have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sdeA => /=.
-by apply: (@ball_splitr _ z); [near: x|near: y].
-Grab Existential Variables. all: end_near. Qed.
-
-Lemma cauchyP (T : uniformType) (F : set (set T)) : ProperFilter F ->
-  cauchy F <-> cauchy_ex F.
-Proof.
-move=> FF; split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
-by near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
-Grab Existential Variables. all: end_near. Qed.
+Definition cauchy {T : uniformType} (F : set (set T)) := (F, F) --> entourage.
 
 Lemma cvg_cauchy {T : uniformType} (F : set (set T)) : Filter F ->
   [cvg F in T] -> cauchy F.
-Proof. by move=> FF /cvg_cauchy_ex /cauchy_exP. Qed.
+Proof.
+move=> FF cvF A entA; have /entourage_split_ex [B entB sB2A] := entA.
+exists (to_set (B^-1) (lim F), to_set B (lim F)).
+  split=> /=; apply: cvF; rewrite /= -locally_entourageE; last by exists B.
+  by exists B^-1 => //; apply: entourage_inv.
+by move=> ab [/= Balima Blimb]; apply: sB2A; exists (lim F).
+Qed.
 
 Module Complete.
 
@@ -2869,15 +2936,17 @@ Lemma mx_complete (F : set (set 'M[T]_(m, n))) :
   ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF Fc.
-have /(_ _ _) /complete_cauchy cvF :
+have /(_ _ _) /complete_cauchy /app_flim_entourageP cvF :
   cauchy ((fun M : 'M[T]_(m, n) => M _ _) @ F).
-  by move=> ?? _ /posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
+  move=> i j A /= entA; rewrite near_simpl -near2E near_map2.
+  by apply: Fc; exists (fun _ _ => A).
 apply/cvg_ex.
-exists (\matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T)).
-apply/flim_ballP => _ /posnumP[e]; near=> M => i j.
-rewrite mxE; near F => M' => /=; apply: (@ball_splitl _ (M' i j)).
-  by near: M'; apply/cvF/locally_ball.
-by move: (i) (j); near: M'; near: M; apply: nearP_dep; apply: filterS (Fc _ _).
+set Mlim := \matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T).
+exists Mlim; apply/flim_mx_entourageP => A entA; near=> M => i j; near F => M'.
+apply: subset_split_ent => //; exists (M' i j) => /=.
+  by near: M'; rewrite mxE; apply: cvF.
+move: (i) (j); near: M'; near: M; apply: nearP_dep; apply: Fc.
+by exists (fun _ _ => (split_ent A)^-1) => ?? //; apply: entourage_inv.
 Grab Existential Variables. all: end_near. Qed.
 
 Canonical matrix_completeType := CompleteType 'M[T]_(m, n) mx_complete.
@@ -2891,12 +2960,15 @@ Context {T : choiceType} {U : completeType}.
 Lemma fun_complete (F : set (set (T -> U)))
   {FF :  ProperFilter F} : cauchy F -> cvg F.
 Proof.
-move=> Fc; have /(_ _) /complete_cauchy Ft_cvg : cauchy (@^~_ @ F).
-  by move=> t e ?; rewrite near_simpl; apply: filterS (Fc _ _).
+move=> Fc.
+have /(_ _) /complete_cauchy /app_flim_entourageP cvF : cauchy (@^~_ @ F).
+  move=> t A /= entA; rewrite near_simpl -near2E near_map2.
+  by apply: Fc; exists (fun=> A).
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/flim_ballPpos => e; near=> f => t; near F => g => /=.
-apply: (@ball_splitl _ (g t)); first by near: g; exact/Ft_cvg/locally_ball.
-by move: (t); near: g; near: f; apply: nearP_dep; apply: filterS (Fc _ _).
+apply/flim_fct_entourageP => A entA; near=> f => t; near F => g.
+apply: (entourage_split (g t)) => //; first by near: g; apply: cvF.
+move: (t); near: g; near: f; apply: nearP_dep; apply: Fc.
+by exists (fun t => (split_ent (A t))^-1) => ? //; apply: entourage_inv.
 Grab Existential Variables. all: end_near. Qed.
 
 Canonical fun_completeType := CompleteType (T -> U) fun_complete.
@@ -2915,11 +2987,13 @@ Lemma flim_switch_1 {U : uniformType}
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) -> h @ F1 --> l ->
   g @ F2 --> l.
 Proof.
-move=> fg fh hl; apply/flim_ballPpos => e.
-rewrite near_simpl; near F1 => x1; near=> x2.
-apply: (@ball_split _ (h x1)); first by near: x1; apply/hl/locally_ball.
-apply: (@ball_splitl _ (f x1 x2)); first by near: x2; apply/fh/locally_ball.
-by move: (x2); near: x1; apply/(flim_ball fg).
+move=> fg fh hl; apply/app_flim_entourageP => A entA.
+near F1 => x1; near=> x2; apply: (entourage_split (h x1)) => //.
+  by near: x1; apply/(hl (to_set _ l)) => /=.
+apply: (entourage_split (f x1 x2)) => //.
+  by near: x2; apply/(fh x1 (to_set _ _)) => /=.
+move: (x2); near: x1; have /flim_fct_entourageP /(_ (fun=> _^-1)):= fg; apply.
+by move=> _; apply: entourage_inv.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma flim_switch_2 {U : completeType}
@@ -2928,12 +3002,17 @@ Lemma flim_switch_2 {U : completeType}
   f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
   [cvg h @ F1 in U].
 Proof.
-move=> fg fh; apply: complete_cauchy => _/posnumP[e].
-rewrite !near_simpl; near=> x1 y1=> /=; near F2 => x2.
-apply: (@ball_splitl _ (f x1 x2)); first by near: x2; apply/fh/locally_ball.
-apply: (@ball_split _ (f y1 x2)); first by near: x2; apply/fh/locally_ball.
-apply: (@ball_splitr _ (g x2)); move: (x2); [near: y1|near: x1];
-by apply/(flim_ball fg).
+move=> fg fh; apply: complete_cauchy => A entA.
+rewrite !near_simpl -near2_pair near_map2; near=> x1 y1 => /=; near F2 => x2.
+apply: (entourage_split (f x1 x2)) => //.
+  by near: x2; apply/(fh _ (to_set _ _)) => /=.
+apply: (entourage_split (f y1 x2)) => //; last first.
+  near: x2; apply/(fh _ (to_set (_^-1) _)).
+  exact: locally_entourage (entourage_inv _).
+apply: (entourage_split (g x2)) => //; move: (x2); [near: x1|near: y1].
+  have /flim_fct_entourageP /(_ (fun=> _^-1)) := fg; apply=> _.
+  exact: entourage_inv.
+by have /flim_fct_entourageP /(_ (fun=> _)) := fg; apply.
 Grab Existential Variables. all: end_near. Qed.
 
 (* Alternative version *)
