@@ -333,6 +333,15 @@ Lemma setIACA {A} (X Y Z T : set A) :
   X `&` Y `&` (Z `&` T) = X `&` Z `&` (Y `&` T).
 Proof. by rewrite -setIA [Y `&` _]setICA setIA. Qed.
 
+Lemma setUA A : associative (@setU A).
+Proof. move=> p q r; rewrite /setU predeqE => a; tauto. Qed.
+
+Lemma setUid A : idempotent (@setU A).
+Proof. move=> p; rewrite /setU predeqE => a; tauto. Qed.
+
+Lemma setUC A : commutative (@setU A).
+Proof. move=> p q; rewrite /setU predeqE => a; tauto. Qed.
+
 Lemma setI_bigcapl A I (D : set I) (f : I -> set A) (X : set A) :
   D !=set0 -> \bigcap_(i in D) f i `&` X = \bigcap_(i in D) (f i `&` X).
 Proof.
