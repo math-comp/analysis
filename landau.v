@@ -568,8 +568,8 @@ Proof.
 split=> [[k _ fOg] | [k fOg]].
   exists k => l ltkl; move: fOg; apply: filter_app; near=> x.
   by move/ler_trans; apply; rewrite ler_wpmul2r // ltrW.
-exists (maxr 1 (k + 1)); first by rewrite ltr_maxr ltr01.
-by apply: fOg; rewrite ltr_maxr orbC ltr_addl ltr01.
+exists (maxr 1 k); first by rewrite ltr_maxr ltr01.
+by apply: fOg; rewrite ler_maxr orbC lerr.
 Unshelve. end_near. Qed.
 
 Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
@@ -758,7 +758,8 @@ Proof. by have := @eqaddOE F f g h e; rewrite !funeqE. Qed.
 
 Lemma eqoO (F : filter_on T) (f : T -> V) (e : T -> W) :
   [o_F e of f] =O_F e.
-Proof. by apply/eqOP; exists 0 => k kgt0; apply: littleoP. Qed.
+Proof. by apply/eqOP; near=> M; apply: littleoP.
+Grab Existential Variables. all: end_near. Qed.
 Hint Resolve eqoO.
 
 Lemma littleo_eqO (F : filter_on T) (e : T -> W) (f : {o_F e}) :
@@ -1063,8 +1064,7 @@ Proof.
 rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|[_]|]absrM (ler_trans (ler_pmul _ _ leOh1 leOh2)) //.
-rewrite mulrACA [`|[_]| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
-by near: k; apply: locally_pinfty_ge.
+by rewrite mulrACA [`|[_]| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
 
 End rule_of_products_in_R.
@@ -1135,7 +1135,8 @@ suff flip : \forall k \near +oo, forall x, `|[f x]| <= k * `|[x]|.
   near +oo => k; near=> y.
   rewrite (ler_lt_trans (near flip k _ _)) // -ltr_pdivl_mull //.
   near: y; apply/locally_normP.
-  by eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
+  eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
+  by rewrite mulr_gt0// ?invr_gt0.
 have /locally_normP [_/posnumP[d]] := Of1.
 rewrite /cst [X in _ * X]absr1 mulr1 => fk; near=> k => y.
 case: (ler0P `|[y]|) => [|y0].

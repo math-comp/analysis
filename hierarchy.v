@@ -1198,14 +1198,14 @@ Notation "'-oo'" := m_infty : real_scope.
 Definition Rbar_locally' (a : Rbar) (P : R -> Prop) :=
   match a with
     | Finite a => locally' a P
-    | +oo => exists M : R, forall x, M < x -> P x
-    | -oo => exists M : R, forall x, x < M -> P x
+    | +oo => exists M : R, forall x, M <= x -> P x
+    | -oo => exists M : R, forall x, x <= M -> P x
   end.
 Definition Rbar_locally (a : Rbar) (P : R -> Prop) :=
   match a with
     | Finite a => locally a P
-    | +oo => exists M : R, forall x, M < x -> P x
-    | -oo => exists M : R, forall x, x < M -> P x
+    | +oo => exists M : R, forall x, M <= x -> P x
+    | -oo => exists M : R, forall x, x <= M -> P x
   end.
 
 Canonical Rbar_eqType := EqType Rbar gen_eqMixin.
@@ -1226,18 +1226,17 @@ Global Instance Rbar_locally'_filter : forall x, ProperFilter (Rbar_locally' x).
 Proof.
 case=> [x||]; first exact: Rlocally'_proper.
   apply Build_ProperFilter.
-    by move=> P [M gtMP]; exists (M + 1); apply: gtMP; rewrite ltr_addl.
-  split=> /= [|P Q [MP gtMP] [MQ gtMQ] |P Q sPQ [M gtMP]]; first by exists 0.
-    by exists (maxr MP MQ) => ?; rewrite ltr_maxl => /andP [/gtMP ? /gtMQ].
-  by exists M => ? /gtMP /sPQ.
+    by move=> P [M geMP]; exists M; apply: geMP.
+  split=> /= [|P Q [MP geMP] [MQ geMQ] |P Q sPQ [M geMP]]; first by exists 0.
+    by exists (maxr MP MQ) => ?; rewrite ler_maxl => /andP [/geMP ? /geMQ].
+  by exists M => ? /geMP /sPQ.
 apply Build_ProperFilter.
-  by move=> P [M ltMP]; exists (M - 1); apply: ltMP; rewrite gtr_addl oppr_lt0.
-split=> /= [|P Q [MP ltMP] [MQ ltMQ] |P Q sPQ [M ltMP]]; first by exists 0.
-  by exists (minr MP MQ) => ?; rewrite ltr_minr => /andP [/ltMP ? /ltMQ].
-by exists M => ? /ltMP /sPQ.
+  by move=> P [M leMP]; exists M; apply: leMP.
+split=> /= [|P Q [MP leMP] [MQ leMQ] |P Q sPQ [M leMP]]; first by exists 0.
+  by exists (minr MP MQ) => ?; rewrite ler_minr => /andP [/leMP ? /leMQ].
+by exists M => ? /leMP /sPQ.
 Qed.
 Typeclasses Opaque Rbar_locally'.
-
 
 Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
 Proof.
@@ -1251,18 +1250,38 @@ Typeclasses Opaque Rbar_locally.
 Lemma near_pinfty_div2 (A : set R) :
   (\forall k \near +oo, A k) -> (\forall k \near +oo, A (k / 2)).
 Proof.
-by move=> [M AM]; exists (M * 2) => x; rewrite -ltr_pdivl_mulr //; apply: AM.
+by move=> [M AM]; exists (M * 2) => x; rewrite -ler_pdivl_mulr //; apply: AM.
 Qed.
 
-Lemma locally_pinfty_gt c : \forall x \near +oo, c < x.
+Lemma locally_pinfty_ge c : \forall x \near +oo, c <= x.
 Proof. by exists c. Qed.
 
-Lemma locally_pinfty_ge c : \forall x \near +oo, c <= x.
-Proof. by exists c; apply: ltrW. Qed.
+Lemma locally_pinfty_gt c : \forall x \near +oo, c < x.
+Proof. by exists (c + 1) => ? /ltr_le_trans; apply; rewrite ltr_addl. Qed.
 
-Hint Extern 0 (is_true (0 < _)) => match goal with
-  H : ?x \is_near (locally +oo) |- _ =>
-    solve[near: x; exists 0 => _/posnumP[x] //] end : core.
+Hint Extern 0 (is_true (_ <= _)) =>
+  match goal with _ : ?x \is_near (locally +oo) |- is_true (_ <= ?x) =>
+                  now (near: x; apply: locally_pinfty_ge) end : core.
+
+Hint Extern 0 (is_true (_ < _)) =>
+  match goal with _ : ?x \is_near (locally +oo) |- is_true (_ < ?x) =>
+                  now (near: x; apply: locally_pinfty_gt) end : core.
+
+Lemma locally_minfty_le c : \forall x \near -oo, x <= c.
+Proof. by exists c. Qed.
+
+Lemma locally_minfty_lt c : \forall x \near -oo, x < c.
+Proof.
+by exists (c - 1) => ? /ler_lt_trans; apply; rewrite ltr_subl_addl ltr_addr.
+Qed.
+
+Hint Extern 0 (is_true (_ <= _)) =>
+  match goal with _ : ?x \is_near (locally +oo) |- is_true (?x <= _) =>
+                  now (near: x; apply: locally_minfty_le) end : core.
+
+Hint Extern 0 (is_true (_ < _)) =>
+  match goal with _ : ?x \is_near (locally +oo) |- is_true (?x < _) =>
+                  now (near: x; apply: locally_minfty_lt) end : core.
 
 (** ** Modules with a norm *)
 
@@ -1616,12 +1635,11 @@ Proof. by move=> /flim_normP. Qed.
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|[y']|%real < M.
 Proof.
-move=> /flim_norm Fy; exists `|[y]| => M.
-rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
-apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
-rewrite (ler_lt_trans _ yy') //.
-by rewrite (ler_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
-Qed.
+move=> /flim_norm Fy; near=> M; have MP : M - `|[y]| > 0 by rewrite subr_gt0.
+near=> y'; rewrite -(@ltr_add2r _ (- `|[y]|)) (@ler_lt_trans _ `|[y - y']|)//.
+  by rewrite (ler_trans (ler_norm _)) // distrC ler_distm_dist.
+by apply: (near (Fy _ _) y').
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma flimi_map_lim {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
   F (fun x : T => is_prop (f x)) ->
@@ -1819,7 +1837,8 @@ rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
 have zM: `|[z]| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
 rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= M))) // ?ltrW//.
-by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
+rewrite -ltr_pdivl_mulr //; near: l.
+by apply: (flim_norm (_ : K^o)) => //; rewrite divr_gt0.
 Grab Existential Variables. all: end_near. Qed.
 
 Arguments scale_continuous _ _ : clear implicits.
@@ -2640,7 +2659,7 @@ have /Aco [] := covA.
   by rewrite -{1}(subrK p q) ler_normm_add.
 move=> D _ DcovA.
 exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]).
-move=> x ltmaxx p /DcovA [n Dn /ltr_trans]; apply; apply: ler_lt_trans ltmaxx.
+move=> x ltmaxx p /DcovA [n Dn /ltr_le_trans]; apply; apply: ler_trans ltmaxx.
 have ltin : (index n (enum_fset D) < size (enum_fset D))%N by rewrite index_mem.
 rewrite -(nth_index 0 Dn) -(nth_map _ 0) //; apply: bigmaxr_ler.
 by rewrite size_map.
@@ -2713,7 +2732,7 @@ have Mnco : compact
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvltM i.
 suff /ltrW : `|[v ord0 i : R^o]| < M + 1 by rewrite [ `|[_]| ]absRE ler_norml.
-apply: ler_lt_trans (normvltM _ _); last by rewrite ltr_addl.
+apply: ler_lt_trans (normvltM _ _); last by rewrite ler_addl.
 have vinseq : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
 rewrite -[X in X <= _](nth_index 0 vinseq); apply: bigmaxr_ler.
@@ -2741,8 +2760,7 @@ Qed.
 Lemma open_Rbar_lt' x y : Rbar_lt x y -> Rbar_locally x (fun u => Rbar_lt u y).
 Proof.
 case: x => [x|//|] xy; first exact: open_Rbar_lt.
-case: y => [y||//] /= in xy *.
-exists y => /= x ? //.
+case: y => [y||//] in xy *; first exact: locally_minfty_lt.
 by exists 0.
 Qed.
 
@@ -2750,7 +2768,7 @@ Lemma open_Rbar_gt' x y : Rbar_lt y x -> Rbar_locally x (fun u => Rbar_lt y u).
 Proof.
 case: x => [x||] //=; do ?[exact: open_Rbar_gt];
   case: y => [y||] //=; do ?by exists 0.
-by exists y => x yx //=.
+by move=> _; exact: locally_pinfty_gt.
 Qed.
 
 Lemma Rbar_locally'_le x : Rbar_locally' x --> Rbar_locally x.
@@ -2778,13 +2796,13 @@ move=> P; rewrite /Rbar_loc_seq.
 case: x => /= [x [_/posnumP[delta] Hp] |[delta Hp] |[delta Hp]]; last 2 first.
     have /ZnatP [N Nfloor] : ifloor (maxr delta 0) \is a Znat.
       by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC.
-    exists N.+1 => // n ltNn; apply: Hp.
+    exists N.+1 => // n ltNn; apply: Hp; apply: ltrW.
     have /ler_lt_trans : delta <= maxr delta 0 by rewrite ler_maxr lerr.
     apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
     by rewrite -(@natrD [ringType of R] N 1) INRE ler_nat addn1.
   have /ZnatP [N Nfloor] : ifloor (maxr (- delta) 0) \is a Znat.
     by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC.
-  exists N.+1 => // n ltNn; apply: Hp; rewrite ltr_oppl.
+  exists N.+1 => // n ltNn; apply: Hp; rewrite ler_oppl; apply: ltrW.
   have /ler_lt_trans : - delta <= maxr (- delta) 0 by rewrite ler_maxr lerr.
   apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
   by rewrite -(@natrD [ringType of R] N 1) INRE ler_nat addn1.
