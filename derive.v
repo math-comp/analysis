@@ -130,8 +130,7 @@ End Differential.
 Notation "''d' f F" := (@diff _ _ _ _ (Phantom _ [filter of F]) f).
 Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
 
-Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F]))
-  (at level 0, F at level 0, format "'is_diff'  F").
+Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F])).
 Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
 Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
 

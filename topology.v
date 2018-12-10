@@ -187,6 +187,38 @@ Require Import classical_sets posnum.
 (*     product topology.                                                      *)
 (******************************************************************************)
 
+Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
+Reserved Notation "'\forall' x '\near' x_0 , P"
+  (at level 200, x ident, P at level 200,
+   format "'\forall'  x  '\near'  x_0 ,  P").
+Reserved Notation "'\near' x , P"
+  (at level 200, x at level 99, P at level 200,
+   format "'\near'  x ,  P", only parsing).
+Reserved Notation "{ 'near' x & y , P }"
+  (at level 0, format "{ 'near'  x  &  y ,  P }").
+Reserved Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P"
+  (at level 200, x ident, y ident, P at level 200,
+   format "'\forall'  x  '\near'  x_0  &  y  '\near'  y_0 ,  P").
+Reserved Notation "'\forall' x & y '\near' z , P"
+  (at level 200, x ident, y ident, P at level 200,
+   format "'\forall'  x  &  y  '\near'  z ,  P").
+Reserved Notation "'\near' x & y , P"
+  (at level 200, x, y at level 99, P at level 200,
+   format "'\near'  x  &  y ,  P", only parsing).
+Reserved Notation "[ 'filter' 'of' x ]" (format "[ 'filter'  'of'  x ]").
+Reserved Notation "F `=>` G" (at level 70, format "F  `=>`  G").
+Reserved Notation "F --> G" (at level 70, format "F  -->  G").
+Reserved Notation "[ 'lim' F 'in' T ]" (format "[ 'lim'  F  'in'  T ]").
+Reserved Notation "[ 'cvg' F 'in' T ]" (format "[ 'cvg'  F  'in'  T ]").
+Reserved Notation "x \is_near F" (at level 10, format "x  \is_near  F").
+Reserved Notation "E @[ x --> F ]"
+  (at level 60, x ident, format "E  @[ x  -->  F ]").
+Reserved Notation "f @ F" (at level 60, format "f  @  F").
+Reserved Notation "E `@[ x --> F ]"
+  (at level 60, x ident, format "E  `@[ x  -->  F ]").
+Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
+Reserved Notation "A ^°" (at level 1, format "A ^°").
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -296,24 +328,16 @@ Definition prop_near2 {X X'} {fX : filteredType X} {fX' : filteredType X'}
 
 End Near.
 
-Notation "{ 'near' x , P }" := (@prop_near1 _ _ x _ (inPhantom P))
-  (at level 0, format "{ 'near'  x ,  P }") : type_scope.
-Notation "'\forall' x '\near' x_0 , P" := {near x_0, forall x, P}
-  (at level 200, x ident, P at level 200, format "'\forall'  x  '\near'  x_0 ,  P") : type_scope.
-Notation "'\near' x , P" := (\forall x \near x, P)
-  (at level 200, x at level 99, P at level 200, format "'\near'  x ,  P", only parsing) : type_scope.
-Notation "{ 'near' x & y , P }" := (@prop_near2 _ _ _ _ x y _ (inPhantom P))
-  (at level 0, format "{ 'near'  x  &  y ,  P }") : type_scope.
+Notation "{ 'near' x , P }" := (@prop_near1 _ _ x _ (inPhantom P)) : type_scope.
+Notation "'\forall' x '\near' x_0 , P" := {near x_0, forall x, P} : type_scope.
+Notation "'\near' x , P" := (\forall x \near x, P) : type_scope.
+Notation "{ 'near' x & y , P }" :=
+  (@prop_near2 _ _ _ _ x y _ (inPhantom P)) : type_scope.
 Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P" :=
-  {near x_0 & y_0, forall x y, P}
-  (at level 200, x ident, y ident, P at level 200,
-   format "'\forall'  x  '\near'  x_0  &  y  '\near'  y_0 ,  P") : type_scope.
+  {near x_0 & y_0, forall x y, P} : type_scope.
 Notation "'\forall' x & y '\near' z , P" :=
-  {near z & z, forall x y, P}
-  (at level 200, x ident, y ident, P at level 200,
-   format "'\forall'  x  &  y  '\near'  z ,  P") : type_scope.
-Notation "'\near' x & y , P" := (\forall x \near x & y \near y, P)
-  (at level 200, x, y at level 99, P at level 200, format "'\near'  x  &  y ,  P", only parsing) : type_scope.
+  {near z & z, forall x y, P} : type_scope.
+Notation "'\near' x & y , P" := (\forall x \near x & y \near y, P) : type_scope.
 Arguments prop_near1 : simpl never.
 Arguments prop_near2 : simpl never.
 
@@ -322,8 +346,8 @@ Proof. by []. Qed.
 
 Definition filter_of X (fX : filteredType X) (x : fX) of phantom fX x :=
    locally x.
-Notation "[ 'filter' 'of' x ]" := (@filter_of _ _ _ (Phantom _ x))
-  (format "[ 'filter'  'of'  x ]") : classical_set_scope.
+Notation "[ 'filter' 'of' x ]" :=
+  (@filter_of _ _ _ (Phantom _ x)) : classical_set_scope.
 Arguments filter_of _ _ _ _ _ /.
 
 Lemma filter_of_filterE {T : Type} (F : set (set T)) : [filter of F] = F.
@@ -337,9 +361,7 @@ Definition locally_simpl := (@filter_of_filterE, @locally_filterE).
 End LocallyFilter.
 
 Definition flim {T : Type} (F G : set (set T)) := G `<=` F.
-Notation "F `=>` G" := (flim F G)
-  (at level 70, format "F  `=>`  G") : classical_set_scope.
-
+Notation "F `=>` G" := (flim F G) : classical_set_scope.
 Lemma flim_refl T (F : set (set T)) : F `=>` F.
 Proof. exact. Qed.
 
@@ -347,18 +369,14 @@ Lemma flim_trans T (G F H : set (set T)) :
   (F `=>` G) -> (G `=>` H) -> (F `=>` H).
 Proof. by move=> FG GH P /GH /FG. Qed.
 
-Notation "F --> G" := (flim [filter of F] [filter of G])
-  (at level 70, format "F  -->  G") : classical_set_scope.
-
+Notation "F --> G" := (flim [filter of F] [filter of G]) : classical_set_scope.
 Definition type_of_filter {T} (F : set (set T)) := T.
+
 Definition lim_in {U : Type} (T : filteredType U) :=
   fun F : set (set U) => get (fun l : T => F --> l).
-
-Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T [filter of F])
-  (format "[ 'lim'  F  'in'  T ]") : classical_set_scope.
+Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T [filter of F]) : classical_set_scope.
 Notation lim F := [lim F in [filteredType _ of @type_of_filter _ [filter of F]]].
-Notation "[ 'cvg' F 'in' T ]" := (F --> [lim F in T])
-  (format "[ 'cvg'  F  'in'  T ]") : classical_set_scope.
+Notation "[ 'cvg' F 'in' T ]" := (F --> [lim F in T]) : classical_set_scope.
 Notation cvg F := [cvg F in [filteredType _ of @type_of_filter _ [filter of F]]].
 
 Section FilteredTheory.
@@ -579,8 +597,7 @@ End PropInFilter.
 (* Coercion PropInFilter.t : in_filter >-> Funclass. *)
 Notation prop_of := PropInFilter.t.
 Definition prop_ofE := PropInFilter.tE.
-Notation "x \is_near F" :=
-   (@PropInFilter.t _ F _ x) (at level 10, format "x  \is_near  F").
+Notation "x \is_near F" := (@PropInFilter.t _ F _ x).
 Definition is_nearE := prop_ofE.
 
 Lemma prop_ofP T F (iF : @in_filter T F) : F (prop_of iF).
@@ -767,11 +784,9 @@ Lemma filtermapE {U V : Type} (f : U -> V)
   (F : set (set U)) (P : set V) : filtermap f F P = F (f @^-1` P).
 Proof. by []. Qed.
 
-Notation "E @[ x --> F ]" := (filtermap (fun x => E) [filter of F])
-  (at level 60, x ident, format "E  @[ x  -->  F ]") : classical_set_scope.
-Notation "f @ F" := (filtermap f [filter of F])
-  (at level 60, format "f  @  F") : classical_set_scope.
-
+Notation "E @[ x --> F ]" :=
+  (filtermap (fun x => E) [filter of F]) : classical_set_scope.
+Notation "f @ F" := (filtermap f [filter of F]) : classical_set_scope.
 Global Instance filtermap_filter T U (f : T -> U) (F : set (set T)) :
   Filter F -> Filter (f @ F).
 Proof.
@@ -793,10 +808,9 @@ Definition filtermap_proper_filter' := filtermap_proper_filter.
 Definition filtermapi {T U : Type} (f : T -> set U) (F : set (set T)) :=
   [set P | \forall x \near F, exists y, f x y /\ P y].
 
-Notation "E `@[ x --> F ]" := (filtermapi (fun x => E) [filter of F])
-  (at level 60, x ident, format "E  `@[ x  -->  F ]") : classical_set_scope.
-Notation "f `@ F" := (filtermapi f [filter of F])
-  (at level 60, format "f  `@  F") : classical_set_scope.
+Notation "E `@[ x --> F ]" :=
+  (filtermapi (fun x => E) [filter of F]) : classical_set_scope.
+Notation "f `@ F" := (filtermapi f [filter of F]) : classical_set_scope.
 
 Lemma filtermapiE {U V : Type} (f : U -> set V)
   (F : set (set U)) (P : set V) :
@@ -1180,8 +1194,7 @@ Qed.
 
 Definition interior (A : set T) := (@locally _ [filteredType T of T])^~ A.
 
-Notation "A ^°" := (interior A)
-  (at level 1, format "A ^°") : classical_set_scope.
+Local Notation "A ^°" := (interior A).
 
 Lemma interior_subset (A : set T) : A^° `<=` A.
 Proof.
@@ -1256,8 +1269,7 @@ Proof. by rewrite locallyE => p_A; exists A; split. Qed.
 
 End Topological1.
 
-Notation "A ^°" := (interior A)
-  (at level 1, format "A ^°") : classical_set_scope.
+Notation "A ^°" := (interior A) : classical_set_scope.
 
 Notation continuous f := (forall x, f%function @ x --> f%function x).
 

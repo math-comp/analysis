@@ -27,6 +27,7 @@ Reserved Notation "u '``_' i"
     (at level 3, i at level 2, left associativity, format "u '``_' i").
 Reserved Notation "A ^_|_"    (at level 8, format "A ^_|_").
 Reserved Notation "A _|_ B" (at level 69, format "A  _|_  B").
+Reserved Notation "eps_theta .-sesqui" (at level 2, format "eps_theta .-sesqui").
 
 Notation "u '``_' i" := (u (GRing.zero (Zp_zmodType O)) i) : ring_scope.
 Notation "''e_' i" := (delta_mx 0 i)
@@ -342,8 +343,7 @@ Fact sesqui_key : pred_key sesqui. Proof. by []. Qed.
 Canonical sesqui_keyed := KeyedQualifier sesqui_key.
 End Def.
 
-Notation "eps_theta .-sesqui" := (sesqui eps_theta)
-  (at level 2, format "eps_theta .-sesqui") : ring_scope.
+Local Notation "eps_theta .-sesqui" := (sesqui eps_theta).
 
 Variables (eps : bool) (theta : {rmorphism R -> R}).
 Variables (M : 'M[R]_n).
@@ -520,8 +520,7 @@ Qed.
 
 End Sesquilinear.
 
-Notation "eps_theta .-sesqui" := (sesqui _ eps_theta)
-  (at level 2, format "eps_theta .-sesqui") : ring_scope.
+Notation "eps_theta .-sesqui" := (sesqui _ eps_theta) : ring_scope.
 
 Notation symmetric := (false, [rmorphism of idfun]).-sesqui.
 Notation skew := (true, [rmorphism of idfun]).-sesqui.

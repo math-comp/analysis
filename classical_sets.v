@@ -92,15 +92,59 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Reserved Notation "A `&` B"  (at level 48, left associativity).
-Reserved Notation "A `*` B"  (at level 46, left associativity).
-Reserved Notation "A `+` B"  (at level 54, left associativity).
-Reserved Notation "A +` B"  (at level 54, left associativity).
+Reserved Notation "[ 'set' x : T | P ]"
+  (at level 0, x at level 99, only parsing).
+Reserved Notation "[ 'set' x | P ]"
+  (at level 0, x, P at level 99, format "[ 'set'  x  |  P ]").
+Reserved Notation "[ 'set' E | x 'in' A ]" (at level 0, E, x at level 99,
+  format "[ '[hv' 'set'  E '/ '  |  x  'in'  A ] ']'").
+Reserved Notation "[ 'set' E | x 'in' A & y 'in' B ]"
+  (at level 0, E, x at level 99,
+  format "[ '[hv' 'set'  E '/ '  |  x  'in'  A  &  y  'in'  B ] ']'").
+Reserved Notation "[ 'set' 'of' F ]" (at level 0, format "[ 'set'  'of'  F ]").
+Reserved Notation "[ 'set' a ]"
+  (at level 0, a at level 99, format "[ 'set'  a ]").
+Reserved Notation "[ 'set' a : T ]"
+  (at level 0, a at level 99, format "[ 'set'  a   :  T ]").
 Reserved Notation "A `|` B" (at level 52, left associativity).
 Reserved Notation "a |` A" (at level 52, left associativity).
+Reserved Notation "[ 'set' a1 ; a2 ; .. ; an ]"
+  (at level 0, a1 at level 99, format "[ 'set'  a1 ;  a2 ;  .. ;  an ]").
+Reserved Notation "A `&` B"  (at level 48, left associativity).
+Reserved Notation "A `*` B"  (at level 46, left associativity).
+Reserved Notation "A .`1" (at level 2, left associativity, format "A .`1").
+Reserved Notation "A .`2" (at level 2, left associativity, format "A .`2").
+Reserved Notation "~` A" (at level 35, right associativity).
+Reserved Notation "[ 'set' ~ a ]" (at level 0, format "[ 'set' ~  a ]").
 Reserved Notation "A `\` B" (at level 50, left associativity).
 Reserved Notation "A `\ b" (at level 50, left associativity).
-
+(*
+Reserved Notation "A `+` B"  (at level 54, left associativity).
+Reserved Notation "A +` B"  (at level 54, left associativity).
+*)
+Reserved Notation "\bigcup_ ( i 'in' P ) F"
+  (at level 41, F at level 41, i, P at level 50,
+           format "'[' \bigcup_ ( i  'in'  P ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i : T ) F"
+  (at level 41, F at level 41, i at level 50,
+           format "'[' \bigcup_ ( i  :  T ) '/  '  F ']'").
+Reserved Notation "\bigcup_ i F"
+  (at level 41, F at level 41, i at level 0,
+           format "'[' \bigcup_ i '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i 'in' P ) F"
+  (at level 41, F at level 41, i, P at level 50,
+           format "'[' \bigcap_ ( i  'in'  P ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i : T ) F"
+  (at level 41, F at level 41, i at level 50,
+           format "'[' \bigcap_ ( i  :  T ) '/  '  F ']'").
+Reserved Notation "\bigcap_ i F"
+  (at level 41, F at level 41, i at level 0,
+           format "'[' \bigcap_ i '/  '  F ']'").
+Reserved Notation "A `<=` B" (at level 70, no associativity).
+Reserved Notation "A `<=>` B" (at level 70, no associativity).
+Reserved Notation "f @^-1` A" (at level 24).
+Reserved Notation "f @` A" (at level 24).
+Reserved Notation "A !=set0" (at level 80).
 
 Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
 Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
@@ -128,17 +172,12 @@ Bind Scope classical_set_scope with set.
 Local Open Scope classical_set_scope.
 Delimit Scope classical_set_scope with classic.
 
-Notation "[ 'set' x : T | P ]" := ((fun x => P) : set T)
-  (at level 0, x at level 99, only parsing) : classical_set_scope.
-Notation "[ 'set' x | P ]" := [set x : _ | P]
-  (at level 0, x, P at level 99, format "[ 'set'  x  |  P ]") : classical_set_scope.
-
-Notation "[ 'set' E | x 'in' A ]" := [set y | exists2 x, A x & E = y]
-  (at level 0, E, x at level 99,
-   format "[ '[hv' 'set'  E '/ '  |  x  'in'  A ] ']'") : classical_set_scope.
-Notation "[ 'set' E | x 'in' A & y 'in' B ]" := [set z | exists2 x, A x & exists2 y, B y & E = z]
-  (at level 0, E, x at level 99,
-   format "[ '[hv' 'set'  E '/ '  |  x  'in'  A  &  y  'in'  B ] ']'") : classical_set_scope.
+Notation "[ 'set' x : T | P ]" := ((fun x => P) : set T) : classical_set_scope.
+Notation "[ 'set' x | P ]" := [set x : _ | P] : classical_set_scope.
+Notation "[ 'set' E | x 'in' A ]" :=
+  [set y | exists2 x, A x & E = y] : classical_set_scope.
+Notation "[ 'set' E | x 'in' A & y 'in' B ]" :=
+  [set z | exists2 x, A x & exists2 y, B y & E = z] : classical_set_scope.
 
 Definition image {A B} (f : A -> B) (X : set A) : set B :=
   [set f a | a in X].
@@ -158,28 +197,19 @@ Definition setM {A B} (X : set A) (Y : set B) := [set x | X x.1 /\ Y x.2].
 Definition fst_set {A B} (X : set (A * B)) := [set x | exists y, X (x, y)].
 Definition snd_set {A B} (X : set (A * B)) := [set y | exists x, X (x, y)].
 
-Notation "[ 'set' 'of' F ]" := [set F i | i in setT]
-  (at level 0,
-   format "[ 'set'  'of'  F ]") : classical_set_scope.
-
-Notation "[ 'set' a ]" := (set1 a)
-  (at level 0, a at level 99, format "[ 'set'  a ]") : classical_set_scope.
-Notation "[ 'set' a : T ]" := [set (a : T)]
-  (at level 0, a at level 99, format "[ 'set'  a   :  T ]") : classical_set_scope.
+Notation "[ 'set' 'of' F ]" := [set F i | i in setT] : classical_set_scope.
+Notation "[ 'set' a ]" := (set1 a) : classical_set_scope.
+Notation "[ 'set' a : T ]" := [set (a : T)] : classical_set_scope.
 Notation "A `|` B" := (setU A B) : classical_set_scope.
 Notation "a |` A" := ([set a] `|` A) : classical_set_scope.
-Notation "[ 'set' a1 ; a2 ; .. ; an ]" := (setU .. (a1 |` [set a2]) .. [set an])
-  (at level 0, a1 at level 99,
-   format "[ 'set'  a1 ;  a2 ;  .. ;  an ]") : classical_set_scope.
+Notation "[ 'set' a1 ; a2 ; .. ; an ]" :=
+  (setU .. (a1 |` [set a2]) .. [set an]) : classical_set_scope.
 Notation "A `&` B" := (setI A B) : classical_set_scope.
 Notation "A `*` B" := (setM A B) : classical_set_scope.
-Notation "A .`1" := (fst_set A)
-  (at level 2, left associativity, format "A .`1") : classical_set_scope.
-Notation "A .`2" := (snd_set A)
-  (at level 2, left associativity, format "A .`2") : classical_set_scope.
-Notation "~` A" := (setC A) (at level 35, right associativity) : classical_set_scope.
-Notation "[ 'set' ~ a ]" := (~` [set a])
-  (at level 0, format "[ 'set' ~  a ]") : classical_set_scope.
+Notation "A .`1" := (fst_set A) : classical_set_scope.
+Notation "A .`2" := (snd_set A) : classical_set_scope.
+Notation "~` A" := (setC A) : classical_set_scope.
+Notation "[ 'set' ~ a ]" := (~` [set a]) : classical_set_scope.
 Notation "A `\` B" := (setD A B) : classical_set_scope.
 Notation "A `\ a" := (A `\` [set a]) : classical_set_scope.
 
@@ -189,46 +219,23 @@ Definition bigsetU A I (P : set I) (X : I -> set A) :=
   [set a | exists2 i, P i & X i a].
 
 Notation "\bigcup_ ( i 'in' P ) F" :=
-  (bigsetU P (fun i => F))
-  (at level 41, F at level 41, i, P at level 50,
-           format "'[' \bigcup_ ( i  'in'  P ) '/  '  F ']'")
- : classical_set_scope.
+  (bigsetU P (fun i => F)) : classical_set_scope.
 Notation "\bigcup_ ( i : T ) F" :=
-  (\bigcup_(i in @setT T) F)
-  (at level 41, F at level 41, i at level 50,
-           format "'[' \bigcup_ ( i  :  T ) '/  '  F ']'")
- : classical_set_scope.
-Notation "\bigcup_ i F" :=
-  (\bigcup_(i : _) F)
-  (at level 41, F at level 41, i at level 0,
-           format "'[' \bigcup_ i '/  '  F ']'")
- : classical_set_scope.
-
+  (\bigcup_(i in @setT T) F) : classical_set_scope.
+Notation "\bigcup_ i F" := (\bigcup_(i : _) F) : classical_set_scope.
 Notation "\bigcap_ ( i 'in' P ) F" :=
-  (bigsetI P (fun i => F))
-  (at level 41, F at level 41, i, P at level 50,
-           format "'[' \bigcap_ ( i  'in'  P ) '/  '  F ']'")
- : classical_set_scope.
+  (bigsetI P (fun i => F)) : classical_set_scope.
 Notation "\bigcap_ ( i : T ) F" :=
-  (\bigcap_(i in @setT T) F)
-  (at level 41, F at level 41, i at level 50,
-           format "'[' \bigcap_ ( i  :  T ) '/  '  F ']'")
- : classical_set_scope.
-Notation "\bigcap_ i F" :=
-  (\bigcap_(i : _) F)
-  (at level 41, F at level 41, i at level 0,
-           format "'[' \bigcap_ i '/  '  F ']'")
- : classical_set_scope.
+  (\bigcap_(i in @setT T) F) : classical_set_scope.
+Notation "\bigcap_ i F" := (\bigcap_(i : _) F) : classical_set_scope.
 
 Definition subset {A} (X Y : set A) := forall a, X a -> Y a.
 
-Notation "A `<=` B" := (subset A B) (at level 70, no associativity)
- : classical_set_scope.
-Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) (at level 70, no associativity)
- : classical_set_scope.
-Notation "f @^-1` A" := (preimage f A) (at level 24) : classical_set_scope.
-Notation "f @` A" := (image f A) (at level 24) : classical_set_scope.
-Notation "A !=set0" := (nonempty A) (at level 80) : classical_set_scope.
+Notation "A `<=` B" := (subset A B) : classical_set_scope.
+Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) : classical_set_scope.
+Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
+Notation "f @` A" := (image f A) : classical_set_scope.
+Notation "A !=set0" := (nonempty A) : classical_set_scope.
 
 Lemma eqEsubset T (F G : set T) : F `<=` G -> G `<=` F -> F = G.
 Proof. by move=> H K; rewrite funeqE=> s; rewrite propeqE; split=> [/H|/K]. Qed.
