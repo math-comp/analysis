@@ -240,8 +240,31 @@ Notation "A !=set0" := (nonempty A) : classical_set_scope.
 Lemma eqEsubset T (F G : set T) : F `<=` G -> G `<=` F -> F = G.
 Proof. by move=> H K; rewrite funeqE=> s; rewrite propeqE; split=> [/H|/K]. Qed.
 
+Lemma sub0set T (X : set T) : set0 `<=` X.
+Proof. by []. Qed.
+
+Lemma subset0 T (X : set T) : (X `<=` set0) = (X = set0).
+Proof. rewrite propeqE; split => [?|-> //]; exact/eqEsubset. Qed.
+
+Lemma set0P T (X : set T) : (X != set0) <-> (X !=set0).
+Proof.
+split; [move=> X_neq0|by case=> t tX; apply/negP => /eqP X0; rewrite X0 in tX].
+apply/existsp_asboolP; rewrite -(negbK `[exists _, _]); apply/negP.
+rewrite existsbE => /forallp_asboolPn H.
+move/negP : X_neq0; apply; apply/eqP; rewrite funeqE => t; rewrite propeqE.
+move: (H t); by rewrite asboolE.
+Qed.
+
 Lemma imageP {A B} (f : A -> B) (X : set A) a : X a -> (f @` X) (f a).
 Proof. by exists a. Qed.
+
+Lemma imsetP T1 T2 (D : set T1) (f : T1 -> T2) b :
+  reflect (exists2 a, a \in D & b = f a) (b \in f @` D).
+Proof.
+apply: (iffP idP) => [|[a aC ->]].
+by rewrite in_setE => -[a Ca <-{b}]; exists a => //; rewrite in_setE.
+by rewrite in_setE; apply/imageP; rewrite -in_setE.
+Qed.
 
 Lemma sub_image_setI {A B} (f : A -> B) (X Y : set A) :
   f @` (X `&` Y) `<=` f @` X `&` f @` Y.
@@ -286,6 +309,12 @@ Proof. by move=> sXY ? nYa ?; apply/nYa/sXY. Qed.
 
 Lemma subsetU {A} (X Y Z : set A) : X `<=` Z -> Y `<=` Z -> X `|` Y `<=` Z.
 Proof. by move=> sXZ sYZ a; apply: or_ind; [apply: sXZ|apply: sYZ]. Qed.
+
+Lemma subUset T (X Y Z : set T) : (Y `|` Z `<=` X) = ((Y `<=` X) /\ (Z `<=` X)).
+Proof.
+rewrite propeqE; split => [H|H]; first by split => x Hx; apply H; [left|right].
+move=> x [] Hx; [exact: (proj1 H)|exact: (proj2 H)].
+Qed.
 
 Lemma subsetI A (X Y Z : set A) : (X `<=` Y `&` Z) = ((X `<=` Y) /\ (X `<=` Z)).
 Proof.
@@ -341,6 +370,22 @@ Proof. move=> p; rewrite /setU predeqE => a; tauto. Qed.
 
 Lemma setUC A : commutative (@setU A).
 Proof. move=> p q; rewrite /setU predeqE => a; tauto. Qed.
+
+Lemma in_setU T (X Y : set T) x : (x \in X `|` Y) = (x \in X) || (x \in Y) :> Prop.
+Proof.
+rewrite propeqE; split => [ | ]; last first.
+  move/orP => -[]; rewrite 2!in_setE => ?; by [left|right].
+rewrite in_setE => -[?|?]; apply/orP; rewrite 2!in_setE; tauto.
+Qed.
+
+Lemma set0U T (X : set T) : set0 `|` X = X.
+Proof. rewrite funeqE => t; rewrite propeqE; split; by [case|right]. Qed.
+
+Lemma setU0 T (X : set T) : X `|` set0 = X.
+Proof. rewrite funeqE => t; rewrite propeqE; split; by [case|left]. Qed.
+
+Lemma setU_eq0 T (X Y : set T) : (X `|` Y = set0) = ((X = set0) /\ (Y = set0)).
+Proof. by rewrite -!subset0 subUset. Qed.
 
 Lemma setI_bigcapl A I (D : set I) (f : I -> set A) (X : set A) :
   D !=set0 -> \bigcap_(i in D) f i `&` X = \bigcap_(i in D) (f i `&` X).
