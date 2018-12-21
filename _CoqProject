@@ -2,6 +2,7 @@
 -arg -parsing
 -arg -w -arg -duplicate-clear
 
+hb.v
 boolp.v
 reals.v
 posnum.v
