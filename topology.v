@@ -250,8 +250,8 @@ Local Coercion base : class_of >-> Pointed.class_of.
 Definition pack m :=
   fun bT b of phant_id (Pointed.class bT) b => @Pack T (Class b m) T.
 
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
 Definition fpointedType := @Pointed.Pack cT xclass xT.
 
 End ClassDef.
@@ -1135,8 +1135,8 @@ Definition pack loc (m : @mixin_of T loc) :=
   fun m'   of phant_id m (m' : @mixin_of T (Filtered.locally_op b)) =>
   @Pack T (@Class _ b m') T.
 
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
 

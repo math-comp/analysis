@@ -171,8 +171,8 @@ Definition pack loc (m : @mixin_of T loc) :=
   fun m'   of phant_id m (m' : @mixin_of T (Filtered.locally_op b)) =>
   @Pack T (@Class _ b m') T.
 
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
 Definition topologicalType := @Topological.Pack cT xclass xT.
@@ -375,7 +375,7 @@ Section ClassDef.
 
 Record class_of (K : Type) := Class {
   base : Num.NumDomain.class_of K ;
-  mixin : mixin_of (Num.NumDomain.Pack base K)
+  mixin : mixin_of (Num.NumDomain.Pack base)
 }.
 Local Coercion base : class_of >-> Num.NumDomain.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
@@ -388,19 +388,19 @@ Definition class := let: Pack _ c _ := cT return class_of cT in c.
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 Definition clone c of phant_id class c := @Pack T c T.
-Definition pack b0 (m0 : mixin_of (@Num.NumDomain.Pack T b0 T)) :=
+Definition pack b0 (m0 : mixin_of (@Num.NumDomain.Pack T b0)) :=
   fun bT b & phant_id (Num.NumDomain.class bT) b =>
   fun    m & phant_id m0 m => Pack (@Class T b m) T.
 
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
-Definition ringType := @GRing.Ring.Pack cT xclass xT.
-Definition comRingType := @GRing.ComRing.Pack cT xclass xT.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass xT.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass xT.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass xT.
-Definition numDomainType := @Num.NumDomain.Pack cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass.
+Definition ringType := @GRing.Ring.Pack cT xclass.
+Definition comRingType := @GRing.ComRing.Pack cT xclass.
+Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
+Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
+Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
+Definition numDomainType := @Num.NumDomain.Pack cT xclass.
 
 End ClassDef.
 
@@ -1046,8 +1046,8 @@ Definition pack b0 (m0 : axiom (@Uniform.Pack T b0 T)) :=
   fun bT b of phant_id (Uniform.class bT) b =>
   fun m of phant_id m m0 => @Pack T (@Class T b m) T.
 
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
 Definition topologicalType := @Topological.Pack cT xclass xT.
@@ -1288,7 +1288,7 @@ Record class_of (T : Type) := Class {
   locally_mixin : Filtered.locally_of T T ;
   topological_mixin : @Topological.mixin_of T locally_mixin ;
   uniform_mixin : @Uniform.mixin_of T locally_mixin;
-  mixin : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T base T) _ uniform_mixin
+  mixin : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T base) _ uniform_mixin
 }.
 Local Coercion base : class_of >-> GRing.Lmodule.class_of.
 Definition base2 T (c : class_of T) :=
@@ -1313,21 +1313,21 @@ Definition clone c of phant_id class c := @Pack phK T c T.
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 
-Definition pack b0 l0 um0 (m0 : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T b0 T) l0 um0) :=
+Definition pack b0 l0 um0 (m0 : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T b0) l0 um0) :=
   fun bT b & phant_id (@GRing.Lmodule.class K phK bT) b =>
   fun ubT (ub : Uniform.class_of _) & phant_id (@Uniform.class ubT) ub =>
   fun   m & phant_id m0 m => Pack phK (@Class T b ub ub ub ub m) T.
 
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
-Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass.
+Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
 Definition topologicalType := @Topological.Pack cT xclass xT.
 Definition uniformType := @Uniform.Pack cT xclass xT.
-Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass xT.
-Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass xT.
+Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass.
+Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
 End ClassDef.
 
 Module Exports.
@@ -1959,17 +1959,17 @@ Definition pack :=
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass xT.
-Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass.
+Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
 Definition topologicalType := @Topological.Pack cT xclass xT.
 Definition uniformType := @Uniform.Pack cT xclass xT.
 Definition completeType := @Complete.Pack cT xclass xT.
-Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass xT.
-Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass xT.
+Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass.
+Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
 Definition normedModType := @NormedModule.Pack K phK cT xclass xT.
 Definition join_uniformType := @Uniform.Pack normedModType xclass xT.
 End ClassDef.
