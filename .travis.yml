@@ -36,6 +36,7 @@ install: |
     opam repo list
     opam list
     opam pin add -y -n coq-mathcomp-analysis .
+    # install deps only
     opam install -y -vvv --deps-only coq-mathcomp-analysis
     "
 script:
