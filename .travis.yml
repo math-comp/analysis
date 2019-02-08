@@ -14,10 +14,9 @@ env:
   - NJOBS="2"
   - CONTRIB_NAME="analysis"
   matrix:
-  - DOCKERIMAGE="mathcomp/mathcomp:1.7.0-coq-8.7"
   - DOCKERIMAGE="mathcomp/mathcomp:1.7.0-coq-8.8"
   - DOCKERIMAGE="mathcomp/mathcomp:1.7.0-coq-8.9"
-  - DOCKERIMAGE="mathcomp/mathcomp:1.7.0-coq-dev"
+  # - DOCKERIMAGE="mathcomp/mathcomp:1.7.0-coq-dev"
 
 install: |
   # Prepare the COQ container
@@ -30,11 +29,12 @@ install: |
     set -ex  # -e = exit on failure; -x = trace for debug
     # Using flambda makes sense here as we usually get ~10% faster
     # builds in math-comp.
-    eval $(opam env)
+    opam switch \$COMPILER_EDGE
     opam update -y
     opam config list
     opam repo list
     opam list
+    sudo chown -R coq:coq /home/coq/${CONTRIB_NAME}
     opam pin add -y -n coq-mathcomp-analysis .
     # install deps only
     opam install -y -vvv --deps-only coq-mathcomp-analysis
@@ -45,10 +45,8 @@ script:
   docker exec COQ /bin/bash --login -c "
     export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
     set -ex
-    sudo chown -R coq:coq /home/coq/${CONTRIB_NAME}
     eval $(opam env)
-    make -j "$NJOBS"
-    make install
+    opam install -y -vvv coq-mathcomp-analysis
     "
 - docker stop COQ  # optional
 - echo -en 'travis_fold:end:script\\r'
