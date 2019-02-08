@@ -2,6 +2,7 @@ Analysis library compatible with Mathematical Components
 ========================================================
 
 [![Join the chat at https://gitter.im/math-comp/analysis](https://badges.gitter.im/math-comp/analysis.svg)](https://gitter.im/math-comp/analysis?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/math-comp/analysis.svg?branch=master)](https://travis-ci.org/math-comp/analysis)
 
 ## Disclaimer
 
