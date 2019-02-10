@@ -332,7 +332,7 @@ Proof. by move=> le cu; apply/(@ncvg_le u c%:S)=> //; apply/ncvgC. Qed.
 Lemma iscvgC c : iscvg c%:S.
 Proof. by exists c; apply/ncvgC. Qed.
 
-Hint Resolve iscvgC.
+Hint Resolve iscvgC : core.
 
 Lemma iscvgD (u v : nat -> R) : iscvg u -> iscvg v -> iscvg (u \+ v).
 Proof. by case=> [lu cu] [lv cv]; exists (lu + lv); apply/ncvgD. Qed.

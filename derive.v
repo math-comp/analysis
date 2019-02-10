@@ -46,8 +46,6 @@ Context {K : absRingType} {V W : normedModType K}.
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
-Canonical diff_linear F phF f := [linear of @diff F phF f].
-Canonical diff_raddf F phF f := [additive of @diff F phF f].
 
 Local Notation "''d' f x" := (@diff _ (Phantom _ [filter of x]) f).
 
@@ -1258,7 +1256,7 @@ have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
   - (1 / f x) ^+2 *: 'D_v f x.
   apply: flim_comp2 (@lim_mult _ _ _) => //=.
   apply: (@lim_opp _ [normedModType R of R^o]); rewrite expr2.
-  exact/lim_scaler/lim_inv.
+  by apply: lim_scaler; apply: lim_inv.
 apply: flim_trans => A [_/posnumP[e] /= Ae].
 move: fn0; apply: filter_app; near=> h => /=.
 move=> fhvxn0; have he : AbsRing_ball 0 e%:num h by near: h; exists e%:num.
@@ -1311,7 +1309,7 @@ have {imf_ltsup} imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
 have invf_cont : {in `[a, b], continuous (fun t => 1 / (sup imf - f t))}.
   move=> t tab; apply: lim_inv.
     by rewrite neqr_lt subr_gt0 orbC imf_ltsup.
-  by apply: lim_add; [apply: continuous_cst|apply/lim_opp/fcont].
+  by apply: lim_add; [apply: continuous_cst|apply: lim_opp; apply:fcont].
 have [M imVfltM] : bounded ((fun t => 1 / (sup imf - f t)) @`
   [set x | x \in `[a, b]] : set R^o).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
@@ -1382,7 +1380,7 @@ Lemma ler0_flim_map (T : topologicalType) (F : set (set T))
 Proof.
 move=> fle0 fcv; rewrite -oppr_ge0.
 have limopp : - lim (f @ F) = lim (- f @ F).
-  exact/Logic.eq_sym/flim_map_lim/lim_opp.
+  by apply: Logic.eq_sym; apply: flim_map_lim; apply: lim_opp.
 rewrite limopp; apply: le0r_flim_map; last by rewrite -limopp; apply: lim_opp.
 by move: fle0; apply: filterS => x; rewrite oppr_ge0.
 Qed.
@@ -1394,7 +1392,7 @@ Lemma ler_flim_map (T : topologicalType) (F : set (set T)) (FF : ProperFilter F)
 Proof.
 move=> lefg fcv gcv; rewrite -subr_ge0.
 have eqlim : lim (g @ F) - lim (f @ F) = lim ((g - f) @ F).
-  by apply/Logic.eq_sym/flim_map_lim/lim_add => //; apply: lim_opp.
+  by apply: Logic.eq_sym; apply: flim_map_lim; apply: lim_add => //; apply: lim_opp.
 rewrite eqlim; apply: le0r_flim_map; last first.
   by rewrite /(cvg _) -eqlim /=; apply: lim_add => //; apply: lim_opp.
 by move: lefg; apply: filterS => x; rewrite subr_ge0.

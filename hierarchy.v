@@ -271,7 +271,7 @@ Context {M : uniformType}.
 
 Lemma ball_center (x : M) (e : posreal) : ball x e%:num x.
 Proof. exact: Uniform.ax1. Qed.
-Hint Resolve ball_center.
+Hint Resolve ball_center : core.
 
 Lemma ballxx (x : M) (e : R) : (0 < e)%R -> ball x e x.
 Proof. by move=> e_gt0; apply: ball_center (PosNum e_gt0). Qed.
@@ -353,8 +353,8 @@ Proof. exact: filter_fromP. Qed.
 
 End entourages.
 
-Hint Resolve ball_center.
-Hint Resolve close_refl.
+Hint Resolve ball_center : core.
+Hint Resolve close_refl : core.
 
 (** ** Specific uniform spaces *)
 
@@ -495,8 +495,8 @@ by rewrite !exprS absrM ler_pmul // absr_ge0.
 Qed.
 
 End AbsRing1.
-Hint Resolve absr_ge0.
-Hint Resolve absr1_gt0.
+Hint Resolve absr_ge0 : core.
+Hint Resolve absr1_gt0 : core.
 
 Definition ball_ (V : zmodType) (norm : V -> R) (x : V)
   (e : R) := [set y | norm (x - y) < e].
@@ -602,7 +602,7 @@ Context {T : uniformType}.
 
 Lemma locally_ball (x : T) (eps : posreal) : locally x (ball x eps%:num).
 Proof. by apply/locallyP; exists eps%:num. Qed.
-Hint Resolve locally_ball.
+Hint Resolve locally_ball : core.
 
 Lemma forallN {U} (P : set U) : (forall x, ~ P x) = ~ exists x, P x.
 Proof. (*boolP*)
@@ -664,7 +664,7 @@ Lemma flimx_close (x y : T) : x --> y -> close x y.
 Proof. exact: flim_close. Qed.
 
 End Locally.
-Hint Resolve locally_ball.
+Hint Resolve locally_ball : core.
 
 Lemma ler_addgt0Pr (R : realFieldType) (x y : R) :
   reflect (forall e, e > 0 -> x <= y + e) (x <= y).
@@ -1208,7 +1208,6 @@ Definition Rbar_locally (a : Rbar) (P : R -> Prop) :=
     | -oo => exists M : R, forall x, x < M -> P x
   end.
 
-Canonical Rbar_eqType := EqType Rbar gen_eqMixin.
 Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.
 Canonical Rbar_pointed := PointedType Rbar (+oo).
 Canonical Rbar_filter := FilteredType R Rbar (Rbar_locally).
@@ -1409,7 +1408,7 @@ apply/eqP; rewrite eqr_le; apply/andP; split.
   by rewrite -{1}(scale0r 0) normmZ absr0 mul0r.
 by rewrite -(ler_add2r `|[0 : V]|) add0r -{1}[0 : V]add0r ler_normm_add.
 Qed.
-Hint Resolve normm0.
+Hint Resolve normm0 : core.
 
 Lemma normm_eq0 x : (`|[x]| == 0) = (x == 0).
 Proof. by apply/eqP/eqP=> [/normm0_eq0|->//]. Qed.
@@ -1632,7 +1631,7 @@ exact: flimi_unique _ f_l' f_l.
 Qed.
 
 End NormedModule2.
-Hint Resolve normm_ge0.
+Hint Resolve normm_ge0 : core.
 Arguments flim_norm {_ _ F FF}.
 Arguments flim_bounded {_ _ F FF}.
 
@@ -1872,13 +1871,13 @@ Proof.
 by move=> x; rewrite !near_simpl => /locally_singleton ?; apply: filterE.
 Qed.
 Arguments cst_continuous {T T'} k F {FF}.
-Hint Resolve cst_continuous.
+Hint Resolve cst_continuous : core.
 
 Context {K : absRingType} {V : normedModType K} {T : topologicalType}.
 
 Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
-Hint Resolve lim_cst.
+Hint Resolve lim_cst : core.
 
 Lemma lim_add (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
@@ -1968,10 +1967,10 @@ Definition filteredType := @Filtered.Pack cT cT xclass xT.
 Definition topologicalType := @Topological.Pack cT xclass xT.
 Definition uniformType := @Uniform.Pack cT xclass xT.
 Definition completeType := @Complete.Pack cT xclass xT.
-Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass xT.
-Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass xT.
+Definition join_zmodType := @GRing.Zmodule.Pack completeType xclass xT.
+Definition join_lmodType := @GRing.Lmodule.Pack K phK completeType xclass xT.
 Definition normedModType := @NormedModule.Pack K phK cT xclass xT.
-Definition join_uniformType := @Uniform.Pack normedModType xclass xT.
+Definition join_completeType := @Complete.Pack normedModType xclass xT.
 End ClassDef.
 
 Module Exports.
@@ -2001,7 +2000,7 @@ Coercion completeType : type >-> Complete.type.
 Canonical completeType.
 Coercion normedModType : type >-> NormedModule.type.
 Canonical normedModType.
-Canonical join_uniformType.
+Canonical join_completeType.
 Notation completeNormedModType K := (type (Phant K)).
 Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ id _ _ id)
   (at level 0, format "[ 'completeNormedModType'  K  'of'  T ]") : form_scope.
@@ -2128,7 +2127,6 @@ have D_has_sup : has_sup (mem D); first split.
 - exists (x0 - 1); rewrite in_setE => A FA.
   apply/existsbP; near F => x; first exists x.
     by rewrite ler_distW 1?distrC 1?ltrW ?andbT ?in_setE //; near: x.
-  end_near.
 - exists (x0 + 1); apply/forallbP => x; apply/implyP; rewrite in_setE.
   move=> /(_ _ x01) /existsbP [y /andP[]]; rewrite in_setE.
   rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltrW].
@@ -2151,7 +2149,7 @@ by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
 Grab Existential Variables. all: end_near. Qed.
 
 Canonical R_completeType := CompleteType R R_complete.
-Canonical R_NormedModule := [normedModType R of R^o].
+(* Canonical R_NormedModule := [normedModType R of R^o]. *)
 Canonical R_CompleteNormedModule := [completeNormedModType R of R^o].
 
 Definition at_left x := within (fun u : R => u < x) (locally x).
@@ -2218,14 +2216,14 @@ Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
 by rewrite /AbsRing_ball /= absrB ltr_distl addrCA subrr addr0 => /andP[].
 Qed.
-Hint Resolve open_lt.
+Hint Resolve open_lt : core.
 
 Lemma open_gt (y : R) : open (> y).
 Proof.
 move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
 by rewrite /AbsRing_ball /= absrB ltr_distl opprB addrCA subrr addr0 => /andP[].
 Qed.
-Hint Resolve open_gt.
+Hint Resolve open_gt : core.
 
 Lemma open_neq (y : R) : open (xpredC (eq_op^~ y)).
 Proof.
@@ -2825,7 +2823,7 @@ apply iff_sym.
 have FF : Filter (f @ x) by typeclasses eauto.
 case: (@flim_ballP _ (f @ x) FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
-split => [{H2} /H1{H1} H1 eps|{H1} H].
+split => [{H2} - /H1 {H1} H1 eps|{H1} H].
 - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
   exists x0%:num => // Hx0' /Hx0 /=.
   by rewrite ball_absE /= absrB; apply.

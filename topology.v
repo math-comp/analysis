@@ -494,8 +494,10 @@ Qed.
 
 Structure filter_on T := FilterType {
   filter :> (T -> Prop) -> Prop;
-  filter_class : Filter filter
+  _ : Filter filter
 }.
+Definition filter_class T (F : filter_on T) : Filter F :=
+  let: FilterType _ class := F in class.
 Arguments FilterType {T} _ _.
 Existing Instance filter_class.
 (* Typeclasses Opaque filter. *)
@@ -503,8 +505,10 @@ Coercion filter_filter' : ProperFilter >-> Filter.
 
 Structure pfilter_on T := PFilterPack {
   pfilter :> (T -> Prop) -> Prop;
-  pfilter_class : ProperFilter pfilter
+  _ : ProperFilter pfilter
 }.
+Definition pfilter_class T (F : pfilter_on T) : ProperFilter F :=
+  let: PFilterPack _ class := F in class.
 Arguments PFilterPack {T} _ _.
 Existing Instance pfilter_class.
 (* Typeclasses Opaque pfilter. *)
@@ -548,11 +552,11 @@ Canonical trivial_filter_on.
 Lemma filter_locallyT {T : Type} (F : set (set T)) :
    Filter F -> locally F setT.
 Proof. by move=> FF; apply: filterT. Qed.
-Hint Resolve filter_locallyT.
+Hint Resolve filter_locallyT : core.
 
 Lemma nearT {T : Type} (F : set (set T)) : Filter F -> \near F, True.
 Proof. by move=> FF; apply: filterT. Qed.
-Hint Resolve nearT.
+Hint Resolve nearT : core.
 
 Lemma filter_not_empty_ex {T : Type} (F : set (set T)) :
     (forall P, F P -> exists x, P x) -> ~ F set0.
@@ -614,26 +618,31 @@ Proof.
 by move: P => [P FP] FF /=; rewrite prop_ofE /= => /filterS; apply.
 Qed.
 
+Fact near_key : unit. Proof. exact. Qed.
+
+Lemma mark_near (P : Prop) : locked_with near_key P -> P.
+Proof. by rewrite unlock. Qed.
+
 Lemma near_acc T F (P : @in_filter T F) (Q : set T) (FF : Filter F)
    (FQ : \forall x \near F, Q x) :
-   (forall x, prop_of (in_filterI FF P (InFilter FQ)) x -> Q x).
-Proof. by move=> x /=; rewrite !prop_ofE /= => -[Px]. Qed.
+   locked_with near_key (forall x, prop_of (in_filterI FF P (InFilter FQ)) x -> Q x).
+Proof. by rewrite unlock => x /=; rewrite !prop_ofE /= => -[Px]. Qed.
 
 Lemma nearW T F (P Q : @in_filter T F) (G : set T) (FF : Filter F) :
-   (forall x, prop_of P x -> G x) ->
-   (forall x, prop_of (in_filterI FF P Q) x -> G x).
+   locked_with near_key (forall x, prop_of P x -> G x) ->
+   locked_with near_key (forall x, prop_of (in_filterI FF P Q) x -> G x).
 Proof.
-move=> FG x /=; rewrite !prop_ofE /= => -[Px Qx].
+rewrite !unlock => FG x /=; rewrite !prop_ofE /= => -[Px Qx].
 by have /= := FG x; apply; rewrite prop_ofE.
 Qed.
 
 Tactic Notation "near=>" ident(x) := apply: filter_near_of => x ?.
 
 Ltac just_discharge_near x :=
-  tryif match goal with Hx : x \is_near _ |- _ => move: (x) (Hx) end
+  tryif match goal with Hx : x \is_near _ |- _ => move: (x) (Hx); apply: mark_near end
         then idtac else fail "the variable" x "is not a ""near"" variable".
 Ltac near_skip :=
-  match goal with |- forall _, @PropInFilter.t _ _ ?P _ -> _ =>
+  match goal with |- locked_with near_key (forall _, @PropInFilter.t _ _ ?P _ -> _) =>
     tryif is_evar P then fail "nothing to skip" else apply: nearW end.
 
 Tactic Notation "near:" ident(x) :=
@@ -1783,7 +1792,7 @@ Lemma cluster_flimE F :
 Proof.
 move=> FF; rewrite predeqE => p.
 split=> [clFp|[G Gproper [cvGp sFG]] A B]; last first.
-  by move=> /sFG GA /cvGp GB; apply/filter_ex/filterI.
+  by move=> /sFG GA /cvGp GB; apply/filter_ex; apply: filterI.
 exists (filter_from (\bigcup_(A in F) [set A `&` B | B in locally p]) id).
   apply filter_from_proper; last first.
     by move=> _ [A FA [B p_B <-]]; have := clFp _ _ FA p_B.
@@ -2034,7 +2043,7 @@ Lemma filter_finI (T : pointedType) (F : set (set T)) (D : set (set T))
   (f : set T -> set T) :
   ProperFilter F -> (forall A, D A -> F (f A)) -> finI D f.
 Proof.
-move=> FF sDFf D' sD; apply/filter_ex/filter_bigI.
+move=> FF sDFf D' sD; apply/filter_ex; apply: filter_bigI.
 by move=> A /sD; rewrite in_setE => /sDFf.
 Qed.
 
