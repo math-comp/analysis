@@ -1,5 +1,6 @@
 -arg -w
 -arg -parsing
+-arg -w -arg -duplicate-clear
 
 boolp.v
 reals.v

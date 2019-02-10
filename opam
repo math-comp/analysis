@@ -20,7 +20,7 @@ install: [
 ]
 remove: ["rm" "-R" "%{lib}%/coq/user-contrib/mathcomp/analysis"]
 depends: [
-  "coq" { (>= "8.8" & < "8.10~") }
+  "coq" { (>= "8.8" | = "dev") }
   "coq-mathcomp-field"       {(>= "1.7.0" & < "1.8.0~")}
   "coq-mathcomp-bigenough"   {(>= "1.0.0" & < "1.1.0~")}
   "coq-mathcomp-finmap"      {(>= "1.1.0" & < "1.2.0~")}

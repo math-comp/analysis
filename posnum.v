@@ -63,7 +63,7 @@ Record posnum_def (R : numDomainType) := PosNumDef {
   num_of_pos :> R;
   posnum_gt0 : num_of_pos > 0
 }.
-Hint Resolve posnum_gt0.
+Hint Resolve posnum_gt0 : core.
 Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
 Definition posnum_of (R : numDomainType) (phR : phant R) := posnum_def R.
 Identity Coercion posnum_of_id : posnum_of >-> posnum_def.
@@ -139,7 +139,7 @@ move=> x_gt0; case: real_ltrgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _.
 by rewrite -[x]/(PosNum x_gt0)%:num; constructor.
 Qed.
 
-Hint Resolve posnum_gt0.
-Hint Resolve posnum_ge0.
-Hint Resolve posnum_neq0.
+Hint Resolve posnum_gt0 : core.
+Hint Resolve posnum_ge0 : core.
+Hint Resolve posnum_neq0 : core.
 Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom R x)).

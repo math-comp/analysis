@@ -262,7 +262,7 @@ Proof. by rewrite -[0](mulr0z 1) RintC. Qed.
 Lemma Rint1 : 1 \is a Rint.
 Proof. by rewrite -[1]mulr1z RintC. Qed.
 
-Hint Resolve Rint0 Rint1 RintC.
+Hint Resolve Rint0 Rint1 RintC : core.
 
 Lemma Rint_subring_closed : subring_closed Rint.
 Proof.

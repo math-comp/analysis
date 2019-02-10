@@ -368,7 +368,7 @@ Canonical littleo_subtype (F : set (set T)) (g : T -> W) :=
 Lemma littleo_class (F : set (set T)) (g : T -> W) (f : {o_F g}) :
   `[< littleo_def F f g >].
 Proof. by case: f => ?. Qed.
-Hint Resolve littleo_class.
+Hint Resolve littleo_class : core.
 
 Definition littleo_clone (F : set (set T)) (g : T -> W) (f : T -> V) (fT : {o_F g}) c
   of phant_id (littleo_class fT) c := @Littleo F g f c.
@@ -584,7 +584,7 @@ Canonical bigO_subtype (F : set (set T)) (g : T -> W) :=
 Lemma bigO_class (F : set (set T)) (g : T -> W) (f : {O_F g}) :
   `[< bigO_def F f g >].
 Proof. by case: f => ?. Qed.
-Hint Resolve bigO_class.
+Hint Resolve bigO_class : core.
 
 Definition bigO_clone (F : set (set T)) (g : T -> W) (f : T -> V) (fT : {O_F g}) c
   of phant_id (bigO_class fT) c := @BigO F g f c.
@@ -759,7 +759,7 @@ Proof. by have := @eqaddOE F f g h e; rewrite !funeqE. Qed.
 Lemma eqoO (F : filter_on T) (f : T -> V) (e : T -> W) :
   [o_F e of f] =O_F e.
 Proof. by apply/eqOP; exists 0 => k kgt0; apply: littleoP. Qed.
-Hint Resolve eqoO.
+Hint Resolve eqoO : core.
 
 Lemma littleo_eqO (F : filter_on T) (e : T -> W) (f : {o_F e}) :
    (f : _ -> _) =O_F e.
@@ -883,9 +883,9 @@ Hint Extern 0 (forall e, is_true (0 < e) -> \forall x \near _,
 Hint Extern 0 (locally _ _) => solve[apply: littleoP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: littleoP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: littleoP] : core.
-Hint Resolve littleo_class.
-Hint Resolve bigO_class.
-Hint Resolve littleo_eqO.
+Hint Resolve littleo_class : core.
+Hint Resolve bigO_class : core.
+Hint Resolve littleo_eqO : core.
 
 Arguments bigO {_ _ _ _}.
 
@@ -1241,7 +1241,7 @@ Canonical bigOmega_subtype {W} (F : set (set T)) (g : T -> W) :=
 Lemma bigOmega_class {W} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
   `[< bigOmega_def F f g >].
 Proof. by case: f => ?. Qed.
-Hint Resolve bigOmega_class.
+Hint Resolve bigOmega_class : core.
 
 Definition bigOmega_clone {W} (F : set (set T)) (g : T -> W) (f : T -> V)
   (fT : {Omega_F g}) c of phant_id (bigOmega_class fT) c := @BigOmega W F g f c.
@@ -1383,7 +1383,7 @@ Canonical bigTheta_subtype {W} (F : set (set T)) (g : T -> W) :=
 Lemma bigTheta_class {W} (F : set (set T)) (g : T -> W) (f : {Theta_F g}) :
   `[< bigTheta_def F f g >].
 Proof. by case: f => ?. Qed.
-Hint Resolve bigTheta_class.
+Hint Resolve bigTheta_class : core.
 
 Definition bigTheta_clone {W} (F : set (set T)) (g : T -> W) (f : T -> V)
   (fT : {Theta_F g}) c of phant_id (bigTheta_class fT) c := @BigTheta W F g f c.
