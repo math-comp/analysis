@@ -30,6 +30,7 @@ install: |
     # Using flambda makes sense here as we usually get ~10% faster
     # builds in math-comp.
     opam switch \$COMPILER_EDGE
+    eval \$(opam env)
     opam update -y
     opam config list
     opam repo list
@@ -45,7 +46,7 @@ script:
   docker exec COQ /bin/bash --login -c "
     export PS4='+ \e[33;1m(\$0 @ line \$LINENO) \$\e[0m '
     set -ex
-    eval $(opam env)
+    eval \$(opam env)
     opam install -y -vvv coq-mathcomp-analysis
     "
 - docker stop COQ  # optional
