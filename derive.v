@@ -3,7 +3,7 @@ Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop matrix interval.
 Require Import boolp reals Rstruct Rbar.
-Require Import classical_sets posnum topology hierarchy landau forms.
+Require Import classical_sets posnum topology normedtype landau forms.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -1307,7 +1307,7 @@ have {imf_ltsup} imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
   apply/eqP; rewrite eqr_le supleft sup_upper_bound => //.
   by rewrite !inE; apply/asboolP/imageP.
 have invf_cont : {in `[a, b], continuous (fun t => 1 / (sup imf - f t))}.
-  move=> t tab; apply: lim_inv.
+  move=> t tab; apply: (@lim_inv _ [filter of t]).
     by rewrite neqr_lt subr_gt0 orbC imf_ltsup.
   by apply: lim_add; [apply: continuous_cst|apply: lim_opp; apply:fcont].
 have [M imVfltM] : bounded ((fun t => 1 / (sup imf - f t)) @`
