@@ -1252,7 +1252,7 @@ have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
   - (1 / f x) ^+2 *: 'D_v f x.
   apply: flim_comp2 (@lim_mult _ _ _) => //=.
   apply: (@lim_opp _ [normedModType R of R^o]); rewrite expr2.
-  exact/lim_scaler/lim_inv.
+  by apply: lim_scaler; apply: lim_inv.
 apply: flim_trans; rewrite [in X in _ --> X]/locally' -filter_from_norm_locally.
 move=> A [_/posnumP[e] Ae]; move: fn0; apply: filter_app; near=> h => /= fhvxn0.
 have he : ball norm 0 e%:num (h : R^o).
