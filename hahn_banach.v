@@ -399,7 +399,7 @@ Hypothesis p_cvx : convex p.
 
 Hypothesis f_bounded_by_p : forall x, F x -> f x <= p x.
 
-Theorem HahnBnach : exists g : {scalar V}, 
+Theorem HahnBanach : exists g : {scalar V}, 
   (forall x, G x -> g x <= p x) /\ (forall x, F x -> g x = f x).
 pose graphF v r := F v /\ r = f v.
 have func_graphF : functional graphF by move=> v r1 r2 [Fv ->] [_ ->].
