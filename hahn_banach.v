@@ -1,21 +1,22 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp  Require Import all_ssreflect all_algebra.
 
-
-(* Proposition de Marie : encoder la partialité dans le graphe, et
-raisonner sur le graphe. Autre facon de partir : faire une relation
-sur les sur-ensembles de F sur lesquels il y a un prolongement lineaire,
-mais là il faut traiter des constructions explicites de prolongements 
-avec passages par supplémentaires pour dire si on est dans F alors, 
-si on est x alors, et sinon. *) 
-
+(* Marie's proposal: encode the "partial" properties by reasoning on
+  the graph of functions. The other option would be to study a partial
+  order defined on subsets of the ambiant space V, on which it is possible
+  to obtain a bounded linear form extending f. But this options seems much
+  less convenient, in particular when establishing that one can extend f
+  on a space with one more dimension. Indeed, exhibiting a term of type
+  V -> R requires a case ternary analysis on F, the new line, and an 
+  explicit direct sum to ensure the definition is exhaustive. Working with
+  graphs allows to leave this argument completely implicit. *)
+ 
 Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-(* Quelques définitions et quelques conséquences des axiomes classiques, 
-fournies par boolp. On se donne ici les axiomes utilisés "tels quels", sans
-souci de minimalité. *)
+(* A handful of axioms, stated here without trying to minimize the
+   interface. *)
 
 Axiom Prop_irrelevance : forall (P : Prop) (x y : P), x = y.
 Axiom funext : forall (T U : Type) (f g : T -> U), (f =1 g) -> f = g.
@@ -150,10 +151,10 @@ Hypothesis inf : forall (A : set R) (a m : R),
 (* f is a subset of (V x R), if v is in pi_1 f, then (v, phi v) is in f.
    Otherwise said, the graph of phi restructed to pi_1 f is included in f*)
 
-Definition prol_phi f := forall v, F v -> f v (phi v).
+Definition prol f := forall v, F v -> f v (phi v).
            
 Definition spec (f : V -> R -> Prop) :=
-  [/\ functional f, linear_rel f, maj_by p f &  prol_phi f].
+  [/\ functional f, linear_rel f, maj_by p f &  prol f].
 
 Record zorn_type : Type := ZornType
   {carrier : V -> R -> Prop; specP : spec carrier}.
@@ -211,7 +212,7 @@ have g_lin : linear_rel g.
   - have {c2 sc21 Aa2 a2} c2 :  carrier a1 v2 r2 by apply: sc21.
     exists a1; split=> //; case: a1 {Aa1} c2 c1 => c /= [_ hl _ _] *; exact: hl.
 have g_majp : maj_by p g by move=> v r [[c [fs1 ls1 ms1 ps1]]] /= [_ /ms1].  
-have g_prol_phi : prol_phi g.
+have g_prol : prol g.
   move=> *; exists w; split=> //; case: w Aw => [c [_ _ _ hp]] _ //=; exact: hp.
 have spec_g : spec g by split.
 pose zg := ZornType spec_g.
@@ -306,7 +307,7 @@ have z'_extends :  extends c z'.
   move=> x r cxr; exists x; exists r; exists 0; split=> //.
   - by rewrite scale0r addr0.
   - by rewrite mul0r addr0.
-have z'_prol_phi : prol_phi z'.
+have z'_prol : prol z'.
   move=> x /ps1 cxphix; exists x; exists (phi x); exists 0; split=> //.
   - by rewrite scale0r addr0.
   - by rewrite mul0r addr0.
@@ -365,6 +366,70 @@ Qed.
 End HBPreparation.
 
 
+Section HahnBanach.
+
+(* We consider R a real (=oredered) field with supremum, and V a (left) module
+   on R. We do not make use of the 'vector' interface as the latter enforces
+   finite dimension. *)
+  
+Variables (R : realFieldType) (V : lmodType R).
+
+Hypothesis sup : forall (A : set R) (a m : R),
+    A a -> ubd A m ->
+    {s : R | ubd A s /\ forall u, ubd A u -> s <= u}. 
+
+(* This could be obtained from sup but we are lazy here *)
+Hypothesis inf : forall (A : set R) (a m : R),
+    A a ->  ibd A m ->
+    {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
+
+(* F and G are of type V -> bool, as required by the Mathematical Components
+   interfaces. f is a linear application from V to R. *)
+Variables (F G : pred V) (f : {scalar V}) (p : V -> R).
+
+(* MathComp seems to lack of an interface for submodules of V, so for now
+   we state "by hand" that F is closed under linear combinations. *)
+Hypothesis F0 : F 0.
+Hypothesis linF : forall v1 v2 l, F v1 -> F v2 -> F (v1 + l *: v2).
+
+(* In fact we do not need G to be a superset of F *)
+(* Hypothesis sFG : subpred F G. *)
+
+Hypothesis p_cvx : convex p.
+
+Hypothesis f_bounded_by_p : forall x, F x -> f x <= p x.
+
+Theorem HahnBnach : exists g : {scalar V}, 
+  (forall x, G x -> g x <= p x) /\ (forall x, F x -> g x = f x).
+pose graphF v r := F v /\ r = f v.
+have func_graphF : functional graphF by move=> v r1 r2 [Fv ->] [_ ->].
+have lin_graphF : linear_rel graphF.
+  move=> v1 v2 l r1 r2 [Fv1 ->] [Fv2 ->]; split; first exact: linF.
+  by rewrite linearD linearZ.
+have maj_graphF : maj_by p graphF by move=> v r [Fv ->]; exact: f_bounded_by_p.
+have prol_graphF : prol F f graphF by move=> v Fv; split.
+have graphFP : spec F f p graphF by split.
+have [z zmax]:= zorn_rel_ex graphFP.
+pose FP v : Prop := F v.
+have FP0 : FP 0 by [].
+have [g gP]:= hb_witness FP0 p_cvx sup inf zmax.
+have scalg : lmorphism_for *%R g.
+  have addg : additive g.
+    move=> w1 w2; apply/gP; case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
+    have -> : w1 - w2 = w1 + (-1) *: w2 by rewrite scaleNr scale1r.
+    have -> : g w1 - g w2 = g w1 + (-1) * g w2 by rewrite mulNr mul1r.
+    by apply: ls1; apply/gP.
+  suff scalg : scalable_for  *%R g by split.
+  move=> w l; apply/gP; case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
+  by apply: linrel_scale=> //; apply/gP.
+exists (Linear scalg) => /=.
+have grxtf v : F v -> g v = f v.
+  move=> Fv; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.  
+suff pmajg v : G v -> g v <= p v by split.
+  by move=> Gv; case: z {zmax} gP => [c [_ _ bp _]] /= gP; apply/bp/gP.
+Qed.
+
+End HahnBanach.
 
 
 
