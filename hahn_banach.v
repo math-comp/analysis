@@ -22,9 +22,53 @@ Axiom funext : forall (T U : Type) (f g : T -> U), (f =1 g) -> f = g.
 Axiom propext : forall (P Q : Prop), (P <-> Q) -> (P = Q).
 Axiom EM : forall (P : Prop), P \/ ~ P.
 
+
+
+Local Open Scope ring_scope.
+Import GRing.Theory.
+Import Num.Theory.
+
+Section SetPredRels.
+
+Variables T U : Type.
+Implicit Types f g : T -> U -> Prop.
+
 Definition set (A : Type) := A -> Prop.
+
 Definition total_on T (A : set T) (R : T -> T -> Prop) :=
   forall s t, A s -> A t -> R s t \/ R t s.
+
+(* Extends is just relation inclusion *)
+Definition extends f g := forall v r, f v r -> g v r.
+
+Lemma extends_refl f : extends f f. Proof. by []. Qed.
+
+Lemma extends_trans f2 f1 f3 : extends f1 f2 -> extends f2 f3 -> extends f1 f3. 
+Proof. by move=> h1 h2 v r /h1 /h2. Qed.
+
+(* We make use of funext and propext here. Idelly we would word on hprops. *)
+Lemma extends_antisym f g : extends f g -> extends g f -> f = g.
+Proof.
+move=> efg egf; apply: funext => v; apply: funext=> r; apply: propext; split.
+- exact: efg.
+- exact: egf.
+Qed.
+
+
+(* Functional (possibly empty or partial) graphs *)
+Definition functional f :=
+  forall v r1 r2, f v r1 -> f v r2 -> r1 = r2.
+
+(* Graph of a function *)
+Definition graph_of (h : T -> U) v r : Prop := r = h v.
+
+(* The relation f includes the graph of function h on set A *)
+(* the intension is that f is the graph of a function h, which
+   coincides with f on F *)
+Definition extends_fun_on (A : set T) f h := forall v, A v -> f v (h v).
+
+
+End SetPredRels.
 
 Axiom Zorn : forall T (R : T -> T -> Prop),
   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
@@ -32,22 +76,63 @@ Axiom Zorn : forall T (R : T -> T -> Prop),
   (forall A : set T, total_on A R -> exists t, forall s, A s -> R s t) ->
   exists t, forall s, R t s -> s = t.
 
+Section OrderRels.
 
-Local Open Scope ring_scope.
-Import GRing.Theory.
-Import Num.Theory.
+Variable (R : numDomainType).
+
+(* Upper bound *)
+Definition ubd (s : set R) (a : R) := forall x, s x -> x <= a.
+
+(* Lower bound *)
+Definition ibd (s : set R) (a : R) := forall x, s x -> a <= x.
+
+(* the intension is that f is the graph of a function bounded by p *)
+Definition maj_by T p (f : T -> R -> Prop) :=
+  forall v r, f v r -> r <= p v.
+
+End OrderRels.  
 
 
+Section LinAndCvx.
 
-Section Draft.
+Variables (R : numDomainType) (V : lmodType R).
+
+Definition convex (p : V -> R) :=  forall v1 v2 l m,
+    l + m = 1 -> p (l *: v1 + m *: v2) <= l * (p v1) + m * (p v2).
+  
+Definition linear_rel (f : V -> R -> Prop) :=
+  forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
+
+Variable f : V -> R -> Prop.
+Hypothesis lrf : linear_rel f.
+
+Lemma linrel_00 x r : f x r -> f 0 0.
+Proof.
+suff -> : f 0 0 = f (x + (-1) *: x) (r + (-1) * r) by move=> h; apply: lrf.
+by rewrite scaleNr mulNr mul1r scale1r !subrr.
+Qed.
+
+Lemma linrel_scale x r l : f x r -> f (l *: x) (l * r).
+Proof.
+move=> fxr.
+have -> : f (l *: x) (l * r) = f (0 + l *: x) (0 + l * r) by rewrite !add0r.
+by apply: lrf=> //; apply: linrel_00 fxr.
+Qed.
+
+End LinAndCvx.
+
+
+Section HB.
 
 
 Variables (R : realFieldType) (V : lmodType R).
 
-Definition ubd (s : set R) (a : R) := forall x, s x -> x <= a.
+Variables (F G : set V) (phi : {scalar V}) (p : V -> R).
 
-Definition ibd (s : set R) (a : R) := forall x, s x -> a <= x.
+Implicit Types (f g : V -> R -> Prop).
 
+Hypothesis F0 : F 0.
+Hypothesis p_cvx : convex p.
 
 Hypothesis sup : forall (A : set R) (a m : R),
     A a -> ubd A m ->
@@ -57,70 +142,18 @@ Hypothesis inf : forall (A : set R) (a m : R),
     A a ->  ibd A m ->
     {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
 
-Variables (F G : set V) (phi : {scalar V}) (p : V -> R).
+(* f is a subset of (V x R), if v is in pi_1 f, then (v, phi v) is in f.
+   Otherwise said, the graph of phi restructed to pi_1 f is included in f*)
 
-Hypothesis F0 : F 0.
-Hypothesis p_cvx : forall v1 v2 l m,
-    l + m = 1 -> p (l *: v1 + m *: v2) <= l * (p v1) + m * (p v2).
-  
-Implicit Types (f g : V -> R -> Prop).
-
-(* Extends is just relation inclusion *)
-
-Definition extends f g := forall v r, f v r -> g v r.
-
-Lemma extends_refl f : extends f f. Proof. by []. Qed.
-
-Lemma extends_trans f2 f1 f3 : extends f1 f2 -> extends f2 f3 -> extends f1 f3. 
-Proof. by move=> h1 h2 v r /h1 /h2. Qed.
-
-Lemma extends_antisym f g : extends f g -> extends g f -> f = g.
-Proof.
-move=> efg egf; apply: funext => v; apply: funext=> r; apply: propext; split.
-- exact: efg.
-- exact: egf.
-Qed.
-
-(* Functional (possibly empty or partial) graphs *)
-Definition functional f :=
-  forall v r1 r2, f v r1 -> f v r2 -> r1 = r2.
-
-(* Graph of a function *)
-Definition graph_of (h : V -> R) v r := r = h v.
-
-(* the intension is that f is the graph of a function, bounded by p *)
-Definition maj_by_p f := forall v r, f v r -> r <= p v.
-
-(* the intension is that f is the graph of a function, which
-   coincides with f on F *)
 Definition prol_phi f := forall v, F v -> f v (phi v).
-
-Definition linear_rel f :=
-  forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
-
-Lemma linear_rel_00  f x r : f x r -> linear_rel f -> f 0 0.
-Proof.
-by move=> h /(_ _ _ (-1) _ _ h h); rewrite scaleNr mulNr mul1r scale1r !subrr.
-Qed.
-
-Lemma linear_rel_scale f x r l :
-  f x r -> linear_rel f -> f (l *: x) (l * r).
-Proof.
-move=> fxr linf.
-have f00 : f 0 0 by exact: linear_rel_00 fxr linf.
-have := linf _ _ l _ _ f00 fxr.
-by rewrite !add0r.
-Qed.
-
+           
 Definition spec (f : V -> R -> Prop) :=
-  [/\ functional f, linear_rel f, maj_by_p f & prol_phi f].
+  [/\ functional f, linear_rel f, maj_by p f &  prol_phi f].
 
 Record zorn_type : Type := ZornType
   {carrier : V -> R -> Prop; specP : spec carrier}.
 
-Definition phi_graph v r := phi v = r.
-
-Hypothesis spec_phi : spec phi_graph.
+Hypothesis spec_phi : spec (fun v r => F v /\ r = phi v).
 
 Definition zphi := ZornType spec_phi.
 
@@ -154,8 +187,9 @@ Lemma zorn_rel_maj (A : set zorn_type) : total_on A zorn_rel ->
    exists t, forall s, A s -> zorn_rel s t.
 Proof.
 move=> htot.
-case: (EM (exists a, A a)) => [[w Aw] | eA]; last first.  
-  by exists zphi => a Aa; elim: eA; exists a.
+  case: (EM (exists a, A a)) => [[w Aw] | eA]; last first.  
+  by exists zphi => a Aa; elim: eA; exists a.  
+(* g is the union of the graphs indexed by elements in a *)
 pose g v r := exists a, A a /\ (carrier a v r).
 have g_fun : functional g.
   move=> v r1 r2 [a [Aa avr1]] [b [Ab bvr2]].
@@ -171,10 +205,9 @@ have g_lin : linear_rel g.
     exists a2; split=> //; case: a2 {Aa2} c2 c1 => c /= [_ hl _ _] *; exact: hl.
   - have {c2 sc21 Aa2 a2} c2 :  carrier a1 v2 r2 by apply: sc21.
     exists a1; split=> //; case: a1 {Aa1} c2 c1 => c /= [_ hl _ _] *; exact: hl.
-have g_majp : maj_by_p g by move=> v r [[c [fs1 ls1 ms1 ps1]]] /= [_ /ms1].  
+have g_majp : maj_by p g by move=> v r [[c [fs1 ls1 ms1 ps1]]] /= [_ /ms1].  
 have g_prol_phi : prol_phi g.
-  move=> v r; exists w; split=> //; case: w {Aw} => [c [fs1 ls1 ms1 ps1]] /=.
-  exact: ps1.
+  move=> *; exists w; split=> //; case: w Aw => [c [_ _ _ hp]] _ //=; exact: hp.
 have spec_g : spec g by split.
 pose zg := ZornType spec_g.
 by exists zg => [a Aa]; rewrite /zorn_rel /= => v r cvr; exists a.  
@@ -276,14 +309,15 @@ have z'_prol_phi : prol_phi z'.
   move=> x /ps1 cxphix; exists x; exists (phi x); exists 0; split=> //.
   - by rewrite scale0r addr0.
   - by rewrite mul0r addr0.
-- have z'_maj_by_p : maj_by_p z'.
+- have z'_maj_by_p : maj_by p z'.
   by move=> x r [w [s [l [cws -> ->]]]]; apply: aP.
 - have z'_lin : linear_rel z'.
   move=> x1 x2 l r1 r2 [w1 [s1 [m1 [cws1 -> ->]]]] [w2 [s2 [m2 [cws2 -> ->]]]].
   set w := (X in z' X _); set s := (X in z' _ X).
   have {w} -> : w = w1 + l *: w2 + (m1 + l * m2) *: v.
-    by rewrite /w scalerDr addrAC -addrA scalerA -!addrA -scalerDl [_ + m1]addrC.  have {s} -> : s = s1 + l * s2 + (m1 + l * m2) * a.
-    by rewrite /s mulrDr addrAC -addrA mulrA -!addrA -mulrDl [_ + m1]addrC.
+    by rewrite /w !scalerDr !scalerDl scalerA -!addrA [X in _ + X]addrCA.
+  have {s} -> : s = s1 + l * s2 + (m1 + l * m2) * a.
+    by rewrite /s !mulrDr !mulrDl mulrA -!addrA [X in _ + X]addrCA.
   exists (w1 + l *: w2); exists (s1 + l * s2); exists (m1 + l * m2); split=> //.
   exact: ls1.  
 - have z'_functional : functional z'.
@@ -291,7 +325,7 @@ have z'_prol_phi : prol_phi z'.
   have h1 (x : V) (r l : R) : x = l *: v ->  c x r -> x = 0 /\ l = 0.
     move=> -> cxr; case: (l =P 0) => [-> | /eqP ln0]; first by rewrite scale0r. 
     suff cvs: c v (l^-1 * r) by elim:nzv; exists (l^-1 * r).
-    suff -> : v = l ^-1 *: (l *: v) by apply: linear_rel_scale cxr ls1.
+    suff -> : v = l ^-1 *: (l *: v) by exact: linrel_scale. 
     by rewrite scalerA mulVf ?scale1r.
   have [rw12 erw12] : exists r,  c (w1 - w2) r.
     exists (s1 + (-1) * s2).
@@ -328,7 +362,7 @@ by have -> // := fg v r (h v).
 Qed.
 
 
-End Draft.
+End HB.
 
 
 
