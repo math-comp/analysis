@@ -98,6 +98,20 @@ Definition prol_phi f := forall v, F v -> f v (phi v).
 Definition linear_rel f :=
   forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
 
+Lemma linear_rel_00  f x r : f x r -> linear_rel f -> f 0 0.
+Proof.
+by move=> h /(_ _ _ (-1) _ _ h h); rewrite scaleNr mulNr mul1r scale1r !subrr.
+Qed.
+
+Lemma linear_rel_scale f x r l :
+  f x r -> linear_rel f -> f (l *: x) (l * r).
+Proof.
+move=> fxr linf.
+have f00 : f 0 0 by exact: linear_rel_00 fxr linf.
+have := linf _ _ l _ _ f00 fxr.
+by rewrite !add0r.
+Qed.
+
 Definition spec (f : V -> R -> Prop) :=
   [/\ functional f, linear_rel f, maj_by_p f & prol_phi f].
 
@@ -267,14 +281,18 @@ have z'_prol_phi : prol_phi z'.
 - have z'_lin : linear_rel z'.
   move=> x1 x2 l r1 r2 [w1 [s1 [m1 [cws1 -> ->]]]] [w2 [s2 [m2 [cws2 -> ->]]]].
   set w := (X in z' X _); set s := (X in z' _ X).
-  have {w} -> : w = w1 + l *: w2 + (m1 + l * m2) *: v by admit.
-  have {s} -> : s = s1 + l * s2 + (m1 + l * m2) * a by admit.
+  have {w} -> : w = w1 + l *: w2 + (m1 + l * m2) *: v.
+    by rewrite /w scalerDr addrAC -addrA scalerA -!addrA -scalerDl [_ + m1]addrC.  have {s} -> : s = s1 + l * s2 + (m1 + l * m2) * a.
+    by rewrite /s mulrDr addrAC -addrA mulrA -!addrA -mulrDl [_ + m1]addrC.
   exists (w1 + l *: w2); exists (s1 + l * s2); exists (m1 + l * m2); split=> //.
   exact: ls1.  
 - have z'_functional : functional z'.
   move=> w r1 r2 [w1 [s1 [m1 [cws1 -> ->]]]] [w2 [s2 [m2 [cws2 e1 ->]]]].
   have h1 (x : V) (r l : R) : x = l *: v ->  c x r -> x = 0 /\ l = 0.
-    move->. admit.
+    move=> -> cxr; case: (l =P 0) => [-> | /eqP ln0]; first by rewrite scale0r. 
+    suff cvs: c v (l^-1 * r) by elim:nzv; exists (l^-1 * r).
+    suff -> : v = l ^-1 *: (l *: v) by apply: linear_rel_scale cxr ls1.
+    by rewrite scalerA mulVf ?scale1r.
   have [rw12 erw12] : exists r,  c (w1 - w2) r.
     exists (s1 + (-1) * s2).
     have -> : w1 - w2 = w1 + (-1) *: w2 by rewrite scaleNr scale1r.
@@ -287,9 +305,8 @@ have z'_prol_phi : prol_phi z'.
 have z'_spec : spec z' by split.
 pose zz' := ZornType z'_spec.
 exists zz'; rewrite /zorn_rel => //=; exists a; exists 0; exists 0; exists 1.
-rewrite add0r mul1r scale1r add0r; split => //.
-Admitted.
-
+by rewrite add0r mul1r scale1r add0r; split.
+Qed.
 
 Lemma tot_g v : exists r, carrier g v r.
 Proof.
