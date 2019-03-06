@@ -1,5 +1,4 @@
 From mathcomp Require Import all_ssreflect all_algebra.
-From mathcomp  Require Import all_ssreflect all_algebra.
 
 (* Marie's proposal: encode the "partial" properties by reasoning on
   the graph of functions. The other option would be to study a partial
@@ -368,7 +367,7 @@ End HBPreparation.
 
 Section HahnBanach.
 
-(* We consider R a real (=oredered) field with supremum, and V a (left) module
+(* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
   
@@ -384,7 +383,7 @@ Hypothesis inf : forall (A : set R) (a m : R),
     {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
 
 (* F and G are of type V -> bool, as required by the Mathematical Components
-   interfaces. f is a linear application from V to R. *)
+   interfaces. f is a linear application from (the entire) V to R. *)
 Variables (F G : pred V) (f : {scalar V}) (p : V -> R).
 
 (* MathComp seems to lack of an interface for submodules of V, so for now
