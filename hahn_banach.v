@@ -119,10 +119,15 @@ have -> : f (l *: x) (l * r) = f (0 + l *: x) (0 + l * r) by rewrite !add0r.
 by apply: lrf=> //; apply: linrel_00 fxr.
 Qed.
 
+
+Definition add_line f w a := fun v r =>
+  exists v' : V, exists r' : R, exists lambda : R,
+        [/\ f v' r', v = v' + lambda *: w & r = r' + lambda * a].
+
 End LinAndCvx.
 
 
-Section HB.
+Section HBPreparation.
 
 
 Variables (R : realFieldType) (V : lmodType R).
@@ -225,10 +230,6 @@ Qed.
 Variable g : zorn_type.
 
 Hypothesis gP : forall z, zorn_rel g z -> z = g.
-
-Definition add_line f w a := fun v r =>
-  exists v' : V, exists r' : R, exists lambda : R,
-        [/\ f v' r', v = v' + lambda *: w & r = r' + lambda * a].
 
 Lemma domain_extend  (z : zorn_type) v :
     exists2 ze : zorn_type, (zorn_rel z ze) & (exists r, (carrier ze)  v r).
@@ -348,7 +349,6 @@ have [z /gP sgz [r zr]]:= domain_extend g v.
 by exists r; rewrite -sgz.
 Qed.
 
-
 Axiom choice : forall A B (P : A -> B -> Prop),
     (forall a : A, exists b : B,  P a b) -> (exists e, forall a,  P a (e a)).
 
@@ -362,7 +362,7 @@ by have -> // := fg v r (h v).
 Qed.
 
 
-End HB.
+End HBPreparation.
 
 
 
