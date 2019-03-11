@@ -46,7 +46,7 @@ Lemma extends_refl f : extends f f. Proof. by []. Qed.
 Lemma extends_trans f2 f1 f3 : extends f1 f2 -> extends f2 f3 -> extends f1 f3. 
 Proof. by move=> h1 h2 v r /h1 /h2. Qed.
 
-(* We make use of funext and propext here. Idelly we would word on hprops. *)
+(* We make use of funext and propext here. Ideally we would word on hprops. *)
 Lemma extends_antisym f g : extends f g -> extends g f -> f = g.
 Proof.
 move=> efg egf; apply: funext => v; apply: funext=> r; apply: propext; split.
@@ -76,6 +76,8 @@ Axiom Zorn : forall T (R : T -> T -> Prop),
   (forall A : set T, total_on A R -> exists t, forall s, A s -> R s t) ->
   exists t, forall s, R t s -> s = t.
 
+
+(* Zorn in classical sets uses xget, which uses sigW *) (*But in our case, is it enough to use dependant choice? *)
 Section OrderRels.
 
 Variable (R : numDomainType).
@@ -117,6 +119,13 @@ Proof.
 move=> fxr.
 have -> : f (l *: x) (l * r) = f (0 + l *: x) (0 + l * r) by rewrite !add0r.
 by apply: lrf=> //; apply: linrel_00 fxr.
+Qed.
+
+Lemma linrel_add x1 x2 r1 r2 : f x1 r1 -> f x2 r2 -> f (x1 - x2)(r1 - r2).
+Proof.  
+    have -> : x1 - x2 = x1 + (-1) *: x2 by rewrite scaleNr scale1r.
+    have -> : r1 - r2 = r1 + (-1) * r2 by rewrite mulNr mul1r.
+    by apply: lrf.
 Qed.
 
 
@@ -230,6 +239,9 @@ Qed.
 Variable g : zorn_type.
 
 Hypothesis gP : forall z, zorn_rel g z -> z = g.
+
+(*The next lemma proves that when z is of zorn_type, it can be extended on any
+ real line directed by an arbitrary vector v *)
 
 Lemma domain_extend  (z : zorn_type) v :
     exists2 ze : zorn_type, (zorn_rel z ze) & (exists r, (carrier ze)  v r).
@@ -349,6 +361,8 @@ have [z /gP sgz [r zr]]:= domain_extend g v.
 by exists r; rewrite -sgz.
 Qed.
 
+(*This choice axiom in Prop is weaker than the one usually considered *)
+
 Axiom choice : forall A B (P : A -> B -> Prop),
     (forall a : A, exists b : B,  P a b) -> (exists e, forall a,  P a (e a)).
 
@@ -366,7 +380,7 @@ End HBPreparation.
 
 
 Section HahnBanach.
-
+(* Now we prove HahnBanach on functions*)
 (* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
@@ -413,14 +427,14 @@ pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
 have [g gP]:= hb_witness FP0 p_cvx sup inf zmax.
 have scalg : lmorphism_for *%R g.
-  have addg : additive g.
-    move=> w1 w2; apply/gP; case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
-    have -> : w1 - w2 = w1 + (-1) *: w2 by rewrite scaleNr scale1r.
-    have -> : g w1 - g w2 = g w1 + (-1) * g w2 by rewrite mulNr mul1r.
-    by apply: ls1; apply/gP.
-  suff scalg : scalable_for  *%R g by split.
-  move=> w l; apply/gP; case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
-  by apply: linrel_scale=> //; apply/gP.
+  case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
+  have addg : additive g. 
+     move=> w1 w2;  apply/gP. 
+     apply: linrel_add.  exact ls1.  
+       by apply /gP. 
+       by apply /gP.
+suff scalg : scalable_for  *%R g by split.
+  by move=> w l; apply/gP; apply: linrel_scale=> //; apply/gP.
 exists (Linear scalg) => /=.
 have grxtf v : F v -> g v = f v.
   move=> Fv; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.  
