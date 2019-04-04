@@ -118,7 +118,8 @@ Proof.
       move => sneqt ; have lem2 : (R t s /\ t <> s) by split .
       by  have bot := H s lem2.
   by have bot := Habs t lem. 
-  pose Hchoice := choice Hsucc.   (*Comment je fais pour réecrire directement Hmajstrict en Hchoice? *) 
+  pose Hchoice := choice Hsucc.
+  (*Comment je fais pour réecrire directement Hmajstrict en Hchoice? *) 
    case : Hchoice; move => {Hsucc} f Hf ; have Hmaj := fun a => proj1 (Hf a). 
    pose Hfix := fixpoint Hmaj Hrefl Htrans Hord Hchain.   
    case : Hfix; move => t Hfix.    
@@ -158,6 +159,7 @@ Proof.
 Qed.
 
 
+
 Definition subsett ( C D : tot_subset) := subset (car C) (car D). 
   
 Lemma  Zorn : 
@@ -172,10 +174,14 @@ have subset_strict_ind :  (forall W : set (tot_subset), total_on W subsett ->
   move => W Htot. 
   pose U := fun (t : T) => exists A, (W A) /\ (car A t). 
   have tot_U : total_on U R. 
-   move => t s Ut Us. admit.
+   move => t s [[cAt tot_At] [Wt ct]] [[cAs tot_As] [Ws cs]].
+   case:  (Htot (Tot_subset tot_At) (Tot_subset tot_As) Wt Ws).
+     by  move => Ats ; exact (tot_As  t s  (Ats t ct) cs). Search  _ "or_comm". 
+     by  move => Ast ;  rewrite or_comm ;  exact  (tot_At s t (Ast s cs) ct).  
   pose Utot := Tot_subset tot_U.
   have UsupW : (maj subsett W Utot)/\(forall B, (maj subsett W B) -> subsett Utot B).
-  admit.
+    split ; first  by  move => B WB tB ctB //= ; exists B ; split.  
+    move => B majWB t //= [A [ ]] WA cAt ; exact (majWB A WA t cAt). 
   by  exists Utot. 
 have subsett_maj : exists (A : tot_subset), forall (B : tot_subset), subsett A B -> B =A. 
  apply : Zorn_strict.
@@ -196,10 +202,11 @@ have lem : total_on B R.
     by move => -> -> ; left ;apply : Rrefl s. 
 pose tot_B := Tot_subset lem.
 have HAB : subsett tot_A tot_B by move => u Au ; left. 
-have eq_A_B : (tot_B =  {| car := cA; tot := PA |} ) by apply : majA tot_B HAB.  
-have As :  cA s by admit. (*cA = B from above *) 
+have eq_A_B : (Tot_subset lem =  {| car := cA; tot := PA |} ) by apply : majA tot_B HAB. 
+have As : cA s.
+  have Bs : B s by right. admit. 
 exact : Rantis s t (t_maj s As) Rts. 
-Admitted.  
+Admitted. 
    
 End Zorn.
  
