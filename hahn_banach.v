@@ -200,13 +200,18 @@ have lem : total_on B R.
     by move => -> Av ; right ; apply :  Rtrans v t s (t_maj v Av) Rts.
     by move => Au -> ; left ; apply : Rtrans u t s (t_maj u Au) Rts.  
     by move => -> -> ; left ;apply : Rrefl s. 
-pose tot_B := Tot_subset lem.
+pose tot_B := Tot_subset lem. 
 have HAB : subsett tot_A tot_B by move => u Au ; left. 
-have eq_A_B : (Tot_subset lem =  {| car := cA; tot := PA |} ) by apply : majA tot_B HAB. 
-have As : cA s.
-  have Bs : B s by right. admit. 
+have eq_A_B : tot_B =tot_A  by apply : majA tot_B HAB. 
+have eqc_A_B : cA = B.
+  have lem1 : B = car (tot_B) by [] ; rewrite lem1.
+  have lem2 : cA = car (tot_A) by [] ; rewrite lem2 .
+  by rewrite eq_A_B ; move => {lem1} {lem2}. 
+have As : cA s. 
+   have Bs : B s by right .
+   by rewrite eqc_A_B.
 exact : Rantis s t (t_maj s As) Rts. 
-Admitted. 
+Qed. 
    
 End Zorn.
  
