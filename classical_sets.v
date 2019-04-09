@@ -240,6 +240,18 @@ Notation "A !=set0" := (nonempty A) : classical_set_scope.
 Lemma eqEsubset T (F G : set T) : F `<=` G -> G `<=` F -> F = G.
 Proof. by move=> H K; rewrite funeqE=> s; rewrite propeqE; split=> [/H|/K]. Qed.
 
+Lemma sub0set T (X : set T) : set0 `<=` X.
+Proof. by []. Qed.
+
+Lemma subset0 T (X : set T) : (X `<=` set0) = (X = set0).
+Proof. rewrite propeqE; split => [?|-> //]; exact/eqEsubset. Qed.
+
+Lemma set0P T (X : set T) : (X != set0) <-> (X !=set0).
+Proof.
+split=> [/negP X_neq0|[t tX]]; last by apply/negP => /eqP X0; rewrite X0 in tX.
+by apply: contrapT => /asboolPn/forallp_asboolPn X0; apply/X_neq0/eqP/eqEsubset.
+Qed.
+
 Lemma imageP {A B} (f : A -> B) (X : set A) a : X a -> (f @` X) (f a).
 Proof. by exists a. Qed.
 
@@ -286,6 +298,12 @@ Proof. by move=> sXY ? nYa ?; apply/nYa/sXY. Qed.
 
 Lemma subsetU {A} (X Y Z : set A) : X `<=` Z -> Y `<=` Z -> X `|` Y `<=` Z.
 Proof. by move=> sXZ sYZ a; apply: or_ind; [apply: sXZ|apply: sYZ]. Qed.
+
+Lemma subUset T (X Y Z : set T) : (Y `|` Z `<=` X) = ((Y `<=` X) /\ (Z `<=` X)).
+Proof.
+rewrite propeqE; split => [|[YX ZX] x]; last by case; [exact: YX | exact: ZX].
+by move=> sYZ_X; split=> x ?; apply sYZ_X; [left | right].
+Qed.
 
 Lemma subsetI A (X Y Z : set A) : (X `<=` Y `&` Z) = ((X `<=` Y) /\ (X `<=` Z)).
 Proof.
@@ -341,6 +359,15 @@ Proof. move=> p; rewrite /setU predeqE => a; tauto. Qed.
 
 Lemma setUC A : commutative (@setU A).
 Proof. move=> p q; rewrite /setU predeqE => a; tauto. Qed.
+
+Lemma set0U T (X : set T) : set0 `|` X = X.
+Proof. by rewrite funeqE => t; rewrite propeqE; split; [case|right]. Qed.
+
+Lemma setU0 T (X : set T) : X `|` set0 = X.
+Proof. by rewrite funeqE => t; rewrite propeqE; split; [case|left]. Qed.
+
+Lemma setU_eq0 T (X Y : set T) : (X `|` Y = set0) = ((X = set0) /\ (Y = set0)).
+Proof. by rewrite -!subset0 subUset. Qed.
 
 Lemma setI_bigcapl A I (D : set I) (f : I -> set A) (X : set A) :
   D !=set0 -> \bigcap_(i in D) f i `&` X = \bigcap_(i in D) (f i `&` X).
