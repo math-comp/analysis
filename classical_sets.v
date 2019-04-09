@@ -425,8 +425,8 @@ Local Coercion base : class_of >-> Choice.class_of.
 Definition pack m :=
   fun bT b of phant_id (Choice.class bT) b => @Pack T (Class b m) T.
 
-Definition eqType := @Equality.Pack cT xclass xT.
-Definition choiceType := @Choice.Pack cT xclass xT.
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
 
 End ClassDef.
 

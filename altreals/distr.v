@@ -795,7 +795,7 @@ Lemma dfstE (mu : {distr (T * U) /  R}) x :
 Proof.
 rewrite dmargin_psumE /=; pose h y : T * U := (x, y).
 rewrite (reindex_psum (P := [pred z | z.1 == x]) (h := h)) /=.
-+ case=> a b; rewrite !inE /= mulf_eq0 => /norP[].
++ case=> a b; rewrite !inE/= mulf_eq0 => /norP[].
   by rewrite pnatr_eq0 eqb0 negbK.
 + by exists snd => [z|[z1 z2]]; rewrite !inE //= => /eqP ->.
 by apply/eq_psum => y; rewrite eqxx mul1r.
