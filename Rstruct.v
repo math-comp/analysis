@@ -132,7 +132,7 @@ by rewrite Rmult_0_r eq_sym R1_neq_0.
 Qed.
 
 Lemma Rinvx_out : {in predC unit_R, Rinvx =1 id}.
-Proof. by move=> x; rewrite inE /= /Rinvx -if_neg => ->. Qed.
+Proof. by move=> x; rewrite inE/= /Rinvx -if_neg => ->. Qed.
 
 Definition R_unitRingMixin :=
   UnitRingMixin RmultRinvx RinvxRmult intro_unit_R Rinvx_out.

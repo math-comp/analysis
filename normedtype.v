@@ -393,9 +393,9 @@ Lemma in_segment_addgt0Pr (R : realFieldType) (x y z : R) :
   reflect (forall e, e > 0 -> y \in `[(x - e), (z + e)]) (y \in `[x, z]).
 Proof.
 apply/(iffP idP)=> [xyz _/posnumP[e] | xyz_e].
-  rewrite inE /=; apply/andP; split; last by rewrite ler_paddr // (itvP xyz).
+  rewrite inE/=; apply/andP; split; last by rewrite ler_paddr // (itvP xyz).
   by rewrite ler_subl_addr ler_paddr // (itvP xyz).
-rewrite inE /=; apply/andP.
+rewrite inE/=; apply/andP.
 by split; apply/ler_addgt0Pr => ? /xyz_e /andP /= []; rewrite ler_subl_addr.
 Qed.
 
@@ -411,8 +411,8 @@ Proof. by []. Qed.
 
 Lemma Rhausdorff : hausdorff [topologicalType of R].
 Proof.
-move=> x y clxy.
-apply/eqP; rewrite eqr_le; change (y \in `[x, x]); apply/in_segment_addgt0Pr => _ /posnumP[e].
+move=> x y clxy; apply/eqP; rewrite eqr_le.
+apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
 rewrite inE -ler_distl -absRE; set he := (e%:num / 2)%:pos.
 have [z []] := clxy _ _ (locally_ball x he) (locally_ball y he).
 rewrite ball_absE /ball_ absrB => zx_he yz_he.
@@ -1532,9 +1532,9 @@ set B := [set x | exists2 D' : {fset I}, {subset D' <= D} &
 set A := [set x | x \in `[a, b]] `&` B.
 suff Aeab : A = [set x | x \in `[a, b]].
   suff [_ [D' ? []]] : A b by exists D'.
-  by rewrite Aeab inE /=; apply/andP.
+  by rewrite Aeab inE/=; apply/andP.
 apply: segment_connected.
-- have aba : a \in `[a, b] by rewrite inE /=; apply/andP.
+- have aba : a \in `[a, b] by rewrite inE/=; apply/andP.
   exists a; split=> //; have /sabUf [i Di fia] := aba.
   exists [fset i]%fset; first by move=> ?; rewrite inE in_setE => /eqP->.
   split; last by exists i => //; rewrite inE.
@@ -1545,7 +1545,7 @@ apply: segment_connected.
   rewrite openE => /(_ _ fx) [e egt0 xe_fi]; exists e => // y xe_y.
   exists D' => //; split; last by exists i => //; apply/xe_fi.
   move=> z ayz; case: (lerP z x) => [lezx|ltxz].
-    by apply/saxUf; rewrite inE /= (itvP ayz) lezx.
+    by apply/saxUf; rewrite inE/= (itvP ayz) lezx.
   exists i=> //; apply/xe_fi; rewrite /AbsRing_ball/ball_ absrB absRE ger0_norm.
     have lezy : z <= y by rewrite (itvP ayz).
     rewrite ltr_subl_addl; apply: ler_lt_trans lezy _; rewrite -ltr_subl_addr.
@@ -1562,7 +1562,7 @@ split=> [z axz|]; last first.
   exists i; first by rewrite !inE eq_refl.
   exact/xe_fi/(@ball_center [uniformType of R]).
 case: (lerP z y) => [lezy|ltyz].
-  have /sayUf [j Dj fjz] : z \in `[a, y] by rewrite inE /= (itvP axz) lezy.
+  have /sayUf [j Dj fjz] : z \in `[a, y] by rewrite inE/= (itvP axz) lezy.
   by exists j => //; rewrite inE orbC Dj.
 exists i; first by rewrite !inE eq_refl.
 apply/xe_fi; rewrite /AbsRing_ball/ball_ absRE ger0_norm; last first.
@@ -1596,9 +1596,9 @@ move=> leab; wlog : f v / f a <= f b.
   by move=> c cab /eqP; rewrite eqr_opp => /eqP; exists c.
 move=> lefab fcont; rewrite minr_l // maxr_r // => /andP [].
 rewrite ler_eqVlt => /orP [/eqP<- _|ltfav].
-  by exists a => //; rewrite inE /= lerr leab.
+  by exists a => //; rewrite inE/= lerr leab.
 rewrite ler_eqVlt => /orP [/eqP->|ltvfb].
-  by exists b => //; rewrite inE /= lerr leab.
+  by exists b => //; rewrite inE/= lerr leab.
 set A := [pred c | (c <= b) && (f c <= v)].
 have An0 : reals.nonempty A by exists a; apply/andP; split=> //; apply: ltrW.
 have supA : has_sup A.

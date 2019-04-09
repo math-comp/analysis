@@ -193,7 +193,7 @@ Proof.
 case/ncvg_mono=> -[x||] // _ cu bdu; first by exists x.
 case/asboolP/nboundedP: bdu=> M gt0_M bdu.
 case/(_ (NPInf M)): cu => K /= /(_ K (leqnn _)).
-rewrite inE /= => /ltrW /ler_trans /(_ (ler_norm _)).
+rewrite inE/= => /ltrW /ler_trans /(_ (ler_norm _)).
 by move/ler_lt_trans/(_ (bdu _)); rewrite ltrr.
 Qed.
 End PosCnv.
@@ -369,7 +369,7 @@ Lemma psum_fin (f : I -> R) : psum f = \sum_i `|f i|.
 Proof.                          (* FIXME *)
 pose S := \sum_(i : [fset i | i : I]) `|f (val i)|.
 rewrite /psum (asboolT (summable_fin f)) (@max_sup _ S).
-  rewrite inE /=; apply/andP; split; first apply/imsetbP.
+  rewrite inE/=; apply/andP; split; first apply/imsetbP.
     by exists [fset i | i : I]%fset.
   apply/ubP=> y /imsetbP[J ->]; apply/(big_fset_subset (F := \`|_|)).
     by move=> i; rewrite normr_ge0.
