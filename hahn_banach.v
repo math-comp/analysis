@@ -77,31 +77,106 @@ Section Classical.
 
  End SetPredRels.
 
- Section Zorn.
+ Section StrictInductiveFixpoint.
 
- (*We prove the fixpoint lemma for strictly inductive sets *)
+Variable (T : Type) ( R : T -> T -> Prop)  (f : T -> T).  
    
 Definition maj ( T: Type)  (R : T -> T -> Prop) A t := forall s, A s -> R s t.
-Lemma fixpoint :  forall T (R : T -> T -> Prop) (f: T -> T) ,
-   (forall t, R t (f t)) ->  
-   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
-   (forall s t, R s t -> R t s -> s = t) ->
-   (forall A : set T, total_on A R -> exists t, (maj R A t)/\(forall r, (maj R A r) -> R t r )) ->
-   exists t, t = ( f t ).
+
+Hypothesis f_incr : forall t, R t (f t).
+
+Hypothesis R_ref : forall t, R t t.
+
+Hypothesis R_trans : forall r s t, R r s -> R s t -> R r t.
+
+Hypothesis R_antisym : forall r s, R r s -> R s r -> r=s.
+
+Definition sup A t :=  (maj R A t)/\(forall r, (maj R A r) -> R t r ).
+
+Hypothesis T_strict_induct : (forall A : set T, total_on A R -> exists t,  sup A t).
+
+Definition nonempty (A: set T) := exists x_0,  A x_0.
+
+Definition subset (A B: set T) := forall x, A x -> B x.
+
+
+(*Can we simplifiy it to "total_on B R -> exists t, B t /\ sup B t *)
+Definition adm (B :set T) :=  (forall x , B x -> (B (f x)) ) /\ (forall C : set T, subset C B -> total_on C R -> (exists t, (B t)/\ (sup C t))). 
+                                                                 
+
+(*We prove the fixpoint lemma for strictly inductive sets *)
+(*We follow again the proof in Lang and formalize its Lemmas*)
+Definition Tset := (fun x : T => True). 
+
+Lemma fixpoint_tot M : adm M ->  (total_on M R) -> exists t, f t = t.
+Proof.
+  move => [f_M sup_int_M] totM.
+  have idM : forall x,  M x -> M x  by []. 
+  case : (sup_int_M M idM totM) => t [Mt [majt supt]].
+  exists t. 
+  pose ht :=  (majt ((f t))) (f_M t Mt).
+  exact (R_antisym ht (f_incr t)) .   
+Qed.
+
+Definition extreme c := forall x, R x c -> x <> c -> R (f x) c.   
+
+Definition M := fun x => ( forall B,  adm B -> B x).
+
+Lemma adm_M : adm M. 
+Proof.
+  split. move => x Mx B  admB.
+    exact ((proj1 admB) x  (Mx B admB)). 
+    move => C MC totC.
+    pose H := T_strict_induct totC ; move : H ; move => [t tsupC].
+    (*How to do that in short *)
+    exists t ; split ; last by [].
+    move => B [f_B sup_int_B].
+    have BC : subset C B by  move => x Cx ; apply : (MC x Cx B).  
+    exact : (sup_int_B C BC totC ). (*Refaire def pour utiliser l'unicité du sup *)
+Qed.
+Admitted.  
+
+Definition extr_set c :=  fun x => ((R x c) \/ ( R (f x) c)).   
+(*Is it necessary to have M x ? *)
+  
+Lemma MextrM c : M c -> extreme c -> (forall x , M x -> extr_set c x).  
+Proof.
+Admitted.
+
+ 
+Lemma all_extr : forall c,  M c -> extreme c.  
  Proof.
-   (*should have a constructive proof *)
- Admitted.
-   
+ Admitted. 
 
-    (*This choice axiom in Prop is weaker than the one usually considered *)
+Lemma tot_M : total_on M R.
+Proof.
+  move => x y Mx My. 
+  case : (MextrM Mx (all_extr Mx) My) ; first by right.
+  by move => Rfyx ; right; exact : R_trans (f_incr y) Rfyx.    
+Qed.
 
+Lemma fixpoint : exists t, f t =  t. 
+Proof.
+  exact (fixpoint_tot adm_M tot_M).
+Qed.
+
+
+End StrictInductiveFixpoint.  
+
+
+
+Section Zorn.
+
+Variable (T : Type) ( R : T -> T -> Prop).  
+
+(*This choice axiom in Prop is weaker than the one considered in classical_set *)  
 Axiom choice : forall T U (P : T -> U -> Prop),
    (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
 
-(*This proof of Zorn using the fixpoint theorem follows Lang, Algebra, Appendix 2 *)
+(*This proof of Zorn using the fixpoint theorem follows Lang, Algebra, Appendix 2*)
 (* We first prove Zorn for strictly inductive sets*)
 
-Lemma  Zorn_strict : forall T (R : T -> T -> Prop),
+Lemma Zorn_strict : forall T (R : T -> T -> Prop),
    (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
    (forall s t, R s t -> R t s -> s = t) ->
   (forall A : set T, total_on A R -> exists t, (maj R A t)/\(forall r, (maj R A r) -> R t r )) ->
@@ -128,9 +203,7 @@ Qed.
 
 (*Then we deduce the more general Zorn Lemma for orders *)
 
-Variable (T : Type) ( R : T -> T -> Prop).
 
-Definition subset (A B: set T) := forall s, A s -> B s.
 
 Lemma subset_refl : forall A, subset A A.
 Proof. by move => A s. Qed.   
@@ -147,7 +220,7 @@ Proof.
   exact (HBA s).
 Qed. 
 
-(*We prove Zorn by applying Zorn_stric to the type of tot. ordered subsets *)
+(*We prove Zorn by applying Zorn_stric to the type of totally ordered subsets *)
 
 Record tot_subset : Type := Tot_subset
                               {car : set T ; tot : total_on car R}.
@@ -176,7 +249,7 @@ have subset_strict_ind :  (forall W : set (tot_subset), total_on W subsett ->
   have tot_U : total_on U R. 
    move => t s [[cAt tot_At] [Wt ct]] [[cAs tot_As] [Ws cs]].
    case:  (Htot (Tot_subset tot_At) (Tot_subset tot_As) Wt Ws).
-     by  move => Ats ; exact (tot_As  t s  (Ats t ct) cs). Search  _ "or_comm". 
+     by  move => Ats ; exact (tot_As  t s  (Ats t ct) cs). 
      by  move => Ast ;  rewrite or_comm ;  exact  (tot_At s t (Ast s cs) ct).  
   pose Utot := Tot_subset tot_U.
   have UsupW : (maj subsett W Utot)/\(forall B, (maj subsett W B) -> subsett Utot B).
@@ -328,12 +401,6 @@ End Zorn.
  Proof.
  rewrite /zorn_rel /= => s12 s21; apply: zorn_type_eq; exact: extends_antisym.
  Qed.
-
- (* Lemma contrap (Q P : Prop) : (Q -> P) -> ~ P -> ~ Q. *)
- (* Proof. move=> qp np q; apply: np; exact: qp. Qed. *)
-
- (* Lemma propF (P : Prop) : ~ P -> P = False. *)
- (* Proof. by move=> ?; rewrite propeqE; tauto. Qed. *)
 
  Lemma zorn_rel_maj (A : set zorn_type) : total_on A zorn_rel ->
     exists t, forall s, A s -> zorn_rel s t.
