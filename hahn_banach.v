@@ -29,13 +29,28 @@ Section Classical.
   by move => H s Ps ; have : exists s : T, P s by exists s.  
  Qed.
 
- End Classical.  
+ Lemma contrap A B : ( ~ B -> ~ A) -> ( A -> B ). 
+ Proof.
+  move => H a.  
+  case : (EM B) ; first by [].   
+  move => nB. have bot :  False by exact :((H nB)a) .  
+  by [].
+ Qed.
+ 
+ Lemma neg_forall (T : Type) (P : T -> Prop) : ~ (forall s, (P s)) -> exists s,  ~ ( P s).  
+ Admitted.
+
+ Lemma neg_impl (A B : Prop) : ~ ( A -> B) -> (A /\ ~B).  
+ Admitted.
+
+ 
+End Classical.  
 
  Local Open Scope ring_scope.
  Import GRing.Theory.
  Import Num.Theory.
 
- Section SetPredRels.
+Section SetPredRels.
 
  Variables T U : Type.
  Implicit Types f g : T -> U -> Prop.
@@ -75,9 +90,9 @@ Section Classical.
  Definition extends_fun_on (A : set T) f h := forall v, A v -> f v (h v).
 
 
- End SetPredRels.
+End SetPredRels.
 
- Section StrictInductiveFixpoint.
+Section StrictInductiveFixpoint.
 
 Variable (T : Type) ( R : T -> T -> Prop)  (f : T -> T).  
    
@@ -93,7 +108,13 @@ Hypothesis R_antisym : forall r s, R r s -> R s r -> r=s.
 
 Definition sup A t :=  (maj R A t)/\(forall r, (maj R A r) -> R t r ).
 
-Hypothesis T_strict_induct : (forall A : set T, total_on A R -> exists t,  sup A t).
+Lemma sup_uniq A r s : sup A r -> sup A s -> s  = r.
+Proof.
+  move => [majr supr] [majs sups]. 
+  exact (R_antisym (sups r  majr) (supr s majs)).
+Qed.   
+
+Hypothesis R_strind : (forall A : set T, total_on A R -> exists t,  sup A t).
 
 Definition nonempty (A: set T) := exists x_0,  A x_0.
 
@@ -101,24 +122,25 @@ Definition subset (A B: set T) := forall x, A x -> B x.
 
 
 (*Can we simplifiy it to "total_on B R -> exists t, B t /\ sup B t *)
-Definition adm (B :set T) :=  (forall x , B x -> (B (f x)) ) /\ (forall C : set T, subset C B -> total_on C R -> (exists t, (B t)/\ (sup C t))). 
+Definition adm (B :set T) :=  (forall x , B x -> (B (f x)) ) /\ (forall C : set T, subset C B -> total_on C R -> forall t, (sup C t -> B t)). 
                                                                  
 
-(*We prove the fixpoint lemma for strictly inductive sets *)
-(*We follow again the proof in Lang and formalize its Lemmas*)
+(*We prove the fixpoint lemma for strictly inductive sets    *)
+(*We follow again the proof in Lang and formalize its Lemmas *)
 Definition Tset := (fun x : T => True). 
 
 Lemma fixpoint_tot M : adm M ->  (total_on M R) -> exists t, f t = t.
 Proof.
-  move => [f_M sup_int_M] totM.
+  move => adM totM.
   have idM : forall x,  M x -> M x  by []. 
-  case : (sup_int_M M idM totM) => t [Mt [majt supt]].
-  exists t. 
-  pose ht :=  (majt ((f t))) (f_M t Mt).
+  case : (R_strind  totM) => [t supt]. 
+  exists t.
+  pose Mt := (proj2 adM) M idM totM t supt.
+  pose ht :=  ((proj1 supt) ((f t))) ( (proj1 adM) t  Mt).
   exact (R_antisym ht (f_incr t)) .   
 Qed.
 
-Definition extreme c := forall x, R x c -> x <> c -> R (f x) c.   
+Definition extreme c := forall (x:T) , R x c (*-> x <> c*) -> R (f x) c.   
 
 Definition M := fun x => ( forall B,  adm B -> B x).
 
@@ -127,21 +149,39 @@ Proof.
   split. move => x Mx B  admB.
     exact ((proj1 admB) x  (Mx B admB)). 
     move => C MC totC.
-    pose H := T_strict_induct totC ; move : H ; move => [t tsupC].
+    pose H := R_strind totC ; move : H ; move => [t tsupC].
     (*How to do that in short *)
-    exists t ; split ; last by [].
+    move => r rsupC.
+    rewrite (sup_uniq tsupC rsupC). 
     move => B [f_B sup_int_B].
     have BC : subset C B by  move => x Cx ; apply : (MC x Cx B).  
-    exact : (sup_int_B C BC totC ). (*Refaire def pour utiliser l'unicité du sup *)
+    exact : (sup_int_B C BC totC ). 
 Qed.
-Admitted.  
 
-Definition extr_set c :=  fun x => ((R x c) \/ ( R (f x) c)).   
+
+Definition extr_set c :=  fun x => ((R x c) \/ ( R (f c) x)).   
 (*Is it necessary to have M x ? *)
   
 Lemma MextrM c : M c -> extreme c -> (forall x , M x -> extr_set c x).  
-Proof.
-Admitted.
+ Proof. 
+ move => Mc extr_c x mx. 
+ have extr_adm : adm (extr_set c). 
+  split. 
+  - move => x0 extrcx0. case : extrcx0.
+     - move => Rx0c ; left ; exact : (extr_c x0 Rx0c). 
+     - move => Rfcx0 ; right; exact : (R_trans  Rfcx0 (f_incr x0)).  
+  - move => C Cextrc totC t supCt.
+    case : (EM  (maj R C c)).
+      - move => H ; left ; exact : (proj2 supCt c H).
+      - move =>  H. pose H2 := neg_forall H. move : H2 ; move => [s ps]. (*do shorter *)
+        right. have [Cs nRsc] := neg_impl ps => {ps H}.
+        have lem : R (f c) s .  case : (EM (R ( f c) s )) ; first  by [].
+        case : (Cextrc s Cs).
+           - move => H ; pose bot := nRsc H. by []. (*we need s in Mc *) 
+           - by [].   
+        exact : (R_trans lem (proj1 supCt s Cs)).    
+ by []. (* finish *)
+ Qed.
 
  
 Lemma all_extr : forall c,  M c -> extreme c.  
