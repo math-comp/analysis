@@ -33,7 +33,8 @@ Section Classical.
  Proof.
   move => H a.  
   case : (EM B) ; first by [].   
-  move => nB. have bot :  False by exact :((H nB)a) .  
+  move => nB.
+  have bot :  False by exact : ((H nB)a) .  
   by [].
  Qed.
  
@@ -120,131 +121,6 @@ Definition nonempty (A: set T) := exists x_0,  A x_0.
 
 Definition subset (A B: set T) := forall x, A x -> B x.
 
-
-(*Can we simplifiy it to "total_on B R -> exists t, B t /\ sup B t *)
-Definition adm (B :set T) :=  (forall x , B x -> (B (f x)) ) /\ (forall C : set T, subset C B -> total_on C R -> forall t, (sup C t -> B t)). 
-                                                                 
-
-(*We prove the fixpoint lemma for strictly inductive sets    *)
-(*We follow again the proof in Lang and formalize its Lemmas *)
-Definition Tset := (fun x : T => True). 
-
-Lemma fixpoint_tot M : adm M ->  (total_on M R) -> exists t, f t = t.
-Proof.
-  move => adM totM.
-  have idM : forall x,  M x -> M x  by []. 
-  case : (R_strind  totM) => [t supt]. 
-  exists t.
-  pose Mt := (proj2 adM) M idM totM t supt.
-  pose ht :=  ((proj1 supt) ((f t))) ( (proj1 adM) t  Mt).
-  exact (R_antisym ht (f_incr t)) .   
-Qed.
-
-Definition extreme c := forall (x:T) , R x c (*-> x <> c*) -> R (f x) c.   
-
-Definition M := fun x => ( forall B,  adm B -> B x).
-
-Lemma adm_M : adm M. 
-Proof.
-  split. move => x Mx B  admB.
-    exact ((proj1 admB) x  (Mx B admB)). 
-    move => C MC totC.
-    pose H := R_strind totC ; move : H ; move => [t tsupC].
-    (*How to do that in short *)
-    move => r rsupC.
-    rewrite (sup_uniq tsupC rsupC). 
-    move => B [f_B sup_int_B].
-    have BC : subset C B by  move => x Cx ; apply : (MC x Cx B).  
-    exact : (sup_int_B C BC totC ). 
-Qed.
-
-
-Definition extr_set c :=  fun x => ((R x c) \/ ( R (f c) x)).   
-(*Is it necessary to have M x ? *)
-  
-Lemma MextrM c : M c -> extreme c -> (forall x , M x -> extr_set c x).  
- Proof. 
- move => Mc extr_c x mx. 
- have extr_adm : adm (extr_set c). 
-  split. 
-  - move => x0 extrcx0. case : extrcx0.
-     - move => Rx0c ; left ; exact : (extr_c x0 Rx0c). 
-     - move => Rfcx0 ; right; exact : (R_trans  Rfcx0 (f_incr x0)).  
-  - move => C Cextrc totC t supCt.
-    case : (EM  (maj R C c)).
-      - move => H ; left ; exact : (proj2 supCt c H).
-      - move =>  H. pose H2 := neg_forall H. move : H2 ; move => [s ps]. (*do shorter *)
-        right. have [Cs nRsc] := neg_impl ps => {ps H}.
-        have lem : R (f c) s .  case : (EM (R ( f c) s )) ; first  by [].
-        case : (Cextrc s Cs).
-           - move => H ; pose bot := nRsc H. by []. (*we need s in Mc *) 
-           - by [].   
-        exact : (R_trans lem (proj1 supCt s Cs)).    
- by []. (* finish *)
- Qed.
-
- 
-Lemma all_extr : forall c,  M c -> extreme c.  
- Proof.
- Admitted. 
-
-Lemma tot_M : total_on M R.
-Proof.
-  move => x y Mx My. 
-  case : (MextrM Mx (all_extr Mx) My) ; first by right.
-  by move => Rfyx ; right; exact : R_trans (f_incr y) Rfyx.    
-Qed.
-
-Lemma fixpoint : exists t, f t =  t. 
-Proof.
-  exact (fixpoint_tot adm_M tot_M).
-Qed.
-
-
-End StrictInductiveFixpoint.  
-
-
-
-Section Zorn.
-
-Variable (T : Type) ( R : T -> T -> Prop).  
-
-(*This choice axiom in Prop is weaker than the one considered in classical_set *)  
-Axiom choice : forall T U (P : T -> U -> Prop),
-   (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
-
-(*This proof of Zorn using the fixpoint theorem follows Lang, Algebra, Appendix 2*)
-(* We first prove Zorn for strictly inductive sets*)
-
-Lemma Zorn_strict : forall T (R : T -> T -> Prop),
-   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
-   (forall s t, R s t -> R t s -> s = t) ->
-  (forall A : set T, total_on A R -> exists t, (maj R A t)/\(forall r, (maj R A r) -> R t r )) ->
-   exists t, forall s, R t s -> s = t.
-Proof.
-  move => T R Hrefl Htrans Hord Hchain.
-  case : (EM (exists t, forall s: T, R t s -> s= t)) ; first by [].
-  move => /neg_exists Habs.  
-  have Hsucc :  (forall t, exists s, R t s /\ t <> s).
-    move => t.  case : (EM ( exists s : T, R t s /\ t <> s)) ; first by [].
-    move => /neg_exists H.
-    have lem : (forall s : T, R t s -> s=t).
-      move => s Rts. case : (EM (t=s)) ; first by [].
-      move => sneqt ; have lem2 : (R t s /\ t <> s) by split .
-      by  have bot := H s lem2.
-  by have bot := Habs t lem. 
-  pose Hchoice := choice Hsucc.
-  (*Comment je fais pour réecrire directement Hmajstrict en Hchoice? *) 
-   case : Hchoice; move => {Hsucc} f Hf ; have Hmaj := fun a => proj1 (Hf a). 
-   pose Hfix := fixpoint Hmaj Hrefl Htrans Hord Hchain.   
-   case : Hfix; move => t Hfix.    
-     by   have bot := (proj2 (Hf t) Hfix).
-Qed. 
-
-(*Then we deduce the more general Zorn Lemma for orders *)
-
-
-
 Lemma subset_refl : forall A, subset A A.
 Proof. by move => A s. Qed.   
 
@@ -260,7 +136,208 @@ Proof.
   exact (HBA s).
 Qed. 
 
+
+(*Can we simplifiy it to "total_on B R -> exists t, B t /\ sup B t *)
+Definition adm (B :set T) :=  (forall x , B x -> (B (f x)) ) /\ (forall C : set T, subset C B -> total_on C R -> forall t, (sup C t -> B t)). 
+                                                                 
+
+(*We prove the fixpoint lemma for strictly inductive sets    *)
+(*We follow again the proof in Lang and formalize its Lemmas *)
+Definition Tset := (fun x : T => True). 
+
+Lemma fixpoint_tot M : adm M ->  (total_on M R) -> exists t,  t = f t.
+Proof.
+  move => adM totM.
+  have idM : forall x,  M x -> M x  by []. 
+  case : (R_strind  totM) => [t supt]. 
+  exists t.
+  pose Mt := (proj2 adM) M idM totM t supt.
+  pose ht :=  ((proj1 supt) ((f t))) ( (proj1 adM) t  Mt).
+  exact (R_antisym (f_incr t) ht) .   
+Qed.
+
+
+
+Definition M := fun x => ( forall B,  adm B -> B x).
+
+Lemma BsubsetM : forall B, adm B -> subset M B.
+Proof.
+  by move => B admB x Mx ; apply : Mx B admB.
+Qed.
+
+Lemma stabM : forall x, M x -> M (f x).
+Proof.
+  move => x Mx B admB ;  exact ((proj1 admB) x  (Mx B admB)).
+Qed.
+
+Lemma adm_M : adm M. 
+Proof.
+  split.
+  - exact : stabM.
+  - move => C MC totC.
+    pose H := R_strind totC ; move : H ; move => [t tsupC]. (* short *)
+    move => r rsupC.
+    rewrite (sup_uniq tsupC rsupC). 
+    move => B [f_B sup_int_B].
+    have BC : subset C B by  move => x Cx ; apply : (MC x Cx B).  
+    exact : (sup_int_B C BC totC ). 
+Qed.
+
+Definition extreme c :=  M c /\ (forall (x:T), M x -> ((x <> c) ->  R x c-> R (f x) c)).
+
+Lemma extrM : subset extreme M.
+ Proof. by move => x extrx ; apply : proj1 extrx. Qed.
+
+Definition extr_set c :=  fun x => (M x /\ ((R x c) \/ ( R (f c) x))).   
+
+
+Lemma subextrM (c :T) : extreme c -> subset (extr_set c) M.
+Proof.
+   move =>  extrc x  extrcx ; exact (proj1 extrcx).
+Qed.
+
+
+Lemma MextrM c :  extreme c -> (forall x , M x -> extr_set c x).  
+ Proof. 
+ move =>  [Mc extrc].
+ have extrMc : extreme c.   split . exact : Mc.  exact : extrc.  
+ have extr_adm : adm (extr_set c). 
+ split.
+ - move => x [Mx extrcx].
+   case : (EM ( x =c)).
+   - move => H ; split. exact  (stabM  Mx). by  right; rewrite H.
+   - move => neq_xc ; case : extrcx.
+      - move => Rxc ; split.
+         - exact : stabM.
+         - left ;   exact (extrc x Mx neq_xc   Rxc). 
+         - move => Rfcx ; split.
+           - exact : stabM.
+           - right; exact : (R_trans  Rfcx (f_incr x)).  
+  - move => C Cextrc totC t supCt.
+    split. 
+    - exact: (proj2 adm_M C (subset_trans Cextrc ((subextrM extrMc) )) totC t supCt).
+    - case : (EM  (maj R C c)).
+      - move => H ; left ; exact : (proj2 supCt c H).
+      - move =>  H. pose H2 := neg_forall H. move : H2 ; move => [s ps]. (*do shorter *)
+        right. have [Cs nRsc] := neg_impl ps => {ps H}.
+        have lem : R (f c) s .  case : (EM (R ( f c) s )) ; first  by [].
+        case : (proj2  (Cextrc s Cs)).
+           - move =>  H ; pose bot := nRsc H; by []. 
+           - by [].   
+        exact : (R_trans lem (proj1 supCt s Cs)).    
+ move => x mx ; exact : ( mx (extr_set c) extr_adm).
+ Qed.
+
+
+Lemma all_extr : forall c,  M c -> extreme c.  
+Proof.
+  have admE : adm extreme. 
+   have f_E : forall c,  extreme c -> extreme ( f c ). 
+     move => c  [Mc extrc]. split. by  apply : stabM.
+     have  extrec : extreme c. split. by []. by [].
+     move => x Mx neq_xfc. 
+       case : (proj2 (MextrM extrec  Mx)).
+       case : (EM (x =c )).
+        - by  move => -> .
+        - move => neq_xc Rxc Rxfc ;
+                    exact ( R_trans (extrc x Mx neq_xc Rxc) (f_incr c)).
+        - by move => Rfcx Rxfc ; pose bot := (neq_xfc (R_antisym Rxfc Rfcx)).
+   have sup_E : (forall C , subset C extreme -> total_on C R ->
+                                   forall t, (sup C t -> extreme t)). 
+     move => C subCE totC t supCt.
+     have Mt : M t
+       by apply : (proj2 adm_M) C (subset_trans subCE extrM) totC t supCt.
+     split. exact: Mt.  
+       move => x Mx neq_xt Rxt.    
+       case : (EM (forall c, C c -> R (f c) x )). 
+        - move => H.
+          have lem : maj R C x. move => c Cc ; exact : ( R_trans (f_incr c) (H c Cc)).
+          by pose bot := neq_xt (R_antisym Rxt (proj2 supCt x lem)). 
+        - move => H ; pose H0 := neg_forall H ; move : H0; move => [c H1] {H}. (*In short*)
+          move : (neg_impl H1); move => [Cc nRfcx] {H1}.
+          have extrec : extreme c by apply :subCE c Cc.
+          case : (proj2 ( MextrM  extrec  Mx)).
+            - case : (EM (x =c)).
+              - move => eq_xc ;  move => _ ; move : neq_xt ; rewrite eq_xc ; move => neq_ct.
+                move : extrec. rewrite -eq_xc ; move => extrx.
+               
+                case : (proj2 (MextrM extrx Mt)).
+                  - move : neq_ct; rewrite -eq_xc; move => neq_xt.
+                    by move => Rtx; pose bot := neq_xt (R_antisym Rxt Rtx).
+                  - by [].
+              -move => neq_xc Rxc.
+               exact : (R_trans ((proj2 extrec) x Mx neq_xc Rxc) (proj1 supCt c Cc)) .
+            - move => Rfcx ; by pose bot := nRfcx Rfcx.               
+  split. 
+    exact : f_E. 
+    exact : sup_E.     
+by move => c Mc; exact : (Mc extreme admE). 
+Qed.
+
+Lemma tot_M : total_on M R. 
+Proof.
+  move => x y Mx My.
+  case :  (proj2 (MextrM (all_extr Mx) My)).
+    by  move => Ryx ; right.
+    by move => Rfxy ; left ;  apply :  R_trans (f_incr x) Rfxy.    
+Qed.
+
+Lemma fixpoint : exists t,  t = f t. 
+Proof.
+  exact (fixpoint_tot adm_M tot_M).
+Qed.
+
+
+End StrictInductiveFixpoint.  
+
+
+
+Section Zorn.
+
+
+
+(*This choice axiom in Prop is weaker than the one considered in classical_set *)  
+Axiom choice : forall T U (P : T -> U -> Prop),
+   (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
+
+(*This proof of Zorn using the fixpoint theorem follows Lang, Algebra, Appendix 2*)
+(* We first prove Zorn for strictly inductive sets*)
+
+Lemma Zorn_strict : forall (T : Type) ( R : T -> T -> Prop), 
+   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
+   (forall s t, R s t -> R t s -> s = t) ->
+  (forall A : set T, total_on A R -> exists t, (maj R A t)/\(forall r, (maj R A r) -> R t r )) ->
+   exists t, forall s, R t s -> s = t.
+Proof.
+  move =>  T R Hrefl Htrans Hord Hchain.
+  case : (EM (exists t, forall s: T, R t s -> s= t)) ; first by [].
+  move => /neg_exists Habs.  
+  have Hsucc :  (forall t, exists s, R t s /\ t <> s).
+    move => t.  case : (EM ( exists s : T, R t s /\ t <> s)) ; first by [].
+    move => /neg_exists H.
+    have lem : (forall s : T, R t s -> s=t).
+      move => s Rts. case : (EM (t=s)) ; first by [].
+      move => sneqt ; have lem2 : (R t s /\ t <> s) by split .
+      by  have bot := H s lem2.
+  by have bot := Habs t lem. 
+  pose Hchoice := choice Hsucc.
+  (*Comment je fais pour réecrire directement Hmajstrict en Hchoice? *) 
+   case : Hchoice; move => {Hsucc} f Hf ; have Hmaj := fun a => proj1 (Hf a). 
+   pose Hfix := fixpoint Hmaj Hrefl Htrans Hord Hchain.   
+   case : Hfix; move => t Hfix. 
+     by  have bot := (proj2 (Hf t) Hfix ).
+Qed. 
+
+
+
+(*Then we deduce the more general Zorn Lemma for orders *)
+
+
+
+
 (*We prove Zorn by applying Zorn_stric to the type of totally ordered subsets *)
+
+Variable ( T : Type) ( R : T -> T -> Prop).
 
 Record tot_subset : Type := Tot_subset
                               {car : set T ; tot : total_on car R}.
@@ -296,7 +373,7 @@ have subset_strict_ind :  (forall W : set (tot_subset), total_on W subsett ->
     split ; first  by  move => B WB tB ctB //= ; exists B ; split.  
     move => B majWB t //= [A [ ]] WA cAt ; exact (majWB A WA t cAt). 
   by  exists Utot. 
-have subsett_maj : exists (A : tot_subset), forall (B : tot_subset), subsett A B -> B =A. 
+have subsett_maj : exists (A : tot_subset), forall (B : tot_subset), subsett A B -> B = A. 
  apply : Zorn_strict.
   by move => t; apply : subset_refl. 
   by move => r s t ; apply : subset_trans. 
