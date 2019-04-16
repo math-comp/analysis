@@ -112,13 +112,17 @@ Section SetPredRels.
     coincides with f on F *)
  Definition extends_fun_on (A : set T) f h := forall v, A v -> f v (h v).
 
-
 End SetPredRels.
 
-Section StrictInductiveFixpoint.
 
+Section StrictInductiveFixpoint.
+ (*We prove a fixpoint lemma for increasing functions on strictly
+  inductive sets, following ALgebra by Lang*)
+ 
+  
 Variable (T : Type) ( R : T -> T -> Prop)  (f : T -> T).  
-   
+
+ (*Beginning by lemmas on sets, least upper bounds and the subset relation *)
 Definition maj ( T: Type)  (R : T -> T -> Prop) A t := forall s, A s -> R s t.
 
 Hypothesis f_incr : forall t, R t (f t).
@@ -139,7 +143,8 @@ Qed.
 
 Hypothesis R_strind : (forall A : set T, total_on A R -> exists t,  sup A t).
 
-Definition nonempty (A: set T) := exists x_0,  A x_0.
+(* It seems that we don't need to reason on nonempy subsets, contr. to Lang*)
+(*Definition nonempty (A: set T) := exists x_0,  A x_0.*)
 
 Definition subset (A B: set T) := forall x, A x -> B x.
 
@@ -158,15 +163,17 @@ Proof.
   exact (HBA s).
 Qed. 
 
+(*An admissible subset is stable by f and contains the least upper bounds
+  of its subsets*)
 
-(*Can we simplifiy it to "total_on B R -> exists t, B t /\ sup B t *)
-Definition adm (B :set T) :=  (forall x , B x -> (B (f x)) ) /\ (forall C : set T, subset C B -> total_on C R -> forall t, (sup C t -> B t)). 
-                                                                 
+Definition adm (B :set T) :=  (forall x , B x -> (B (f x)) ) /\
+                              (forall C : set T, subset C B -> total_on C R ->
+                                                 forall t, (sup C t -> B t)). 
+(* M is the intersection of all admissible subsets *)
 
-(*We prove the fixpoint lemma for strictly inductive sets    *)
-(*We follow again the proof in Lang and formalize its Lemmas *)
-Definition Tset := (fun x : T => True). 
+Definition M := fun x => ( forall B,  adm B -> B x).
 
+(* This is how we prove the existence of a fixpoint *)
 Lemma fixpoint_tot M : adm M ->  (total_on M R) -> exists t,  t = f t.
 Proof.
   move => adM totM.
@@ -178,19 +185,19 @@ Proof.
   exact (R_antisym (f_incr t) ht) .   
 Qed.
 
+(*Now we prove that M is itself admissible, 
+by first proving that it contains it least upper bounds *)
 
-
-Definition M := fun x => ( forall B,  adm B -> B x).
+Lemma stabM : forall x, M x -> M (f x).
+Proof.
+  move => x Mx B admB ;  exact ((proj1 admB) x  (Mx B admB)).
+Qed.
 
 Lemma BsubsetM : forall B, adm B -> subset M B.
 Proof.
   by move => B admB x Mx ; apply : Mx B admB.
 Qed.
 
-Lemma stabM : forall x, M x -> M (f x).
-Proof.
-  move => x Mx B admB ;  exact ((proj1 admB) x  (Mx B admB)).
-Qed.
 
 Lemma adm_M : adm M. 
 Proof.
@@ -204,6 +211,8 @@ Proof.
     have BC : subset C B by  move => x Cx ; apply : (MC x Cx B).  
     exact : (sup_int_B C BC totC ). 
 Qed.
+
+(* To prove totality we need a few lemmas*)
 
 Definition extreme c :=  M c /\ (forall (x:T), M x -> ((x <> c) ->  R x c-> R (f x) c)).
 
@@ -239,14 +248,15 @@ Lemma MextrM c :  extreme c -> (forall x , M x -> extr_set c x).
     split. 
     - exact: (proj2 adm_M C (subset_trans Cextrc ((subextrM extrMc) )) totC t supCt).
     - case : (EM  (maj R C c)).
-      - move => H ; left ; exact : (proj2 supCt c H).
-      - move =>  H. pose H2 := neg_forall H. move : H2 ; move => [s ps]. (*do shorter *)
-        right. have [Cs nRsc] := neg_impl ps => {ps H}.
-        have lem : R (f c) s .  case : (EM (R ( f c) s )) ; first  by [].
-        case : (proj2  (Cextrc s Cs)).
+      - move => H ; left ; exact : (proj2 supCt c H). 
+      - move =>  /neg_forall-[s ps]. 
+        have [Cs nRsc] := neg_impl ps => {ps}.
+        have lem : R (f c) s .
+        case : (EM (R ( f c) s )) ; first  by [].
+         case : (proj2  (Cextrc s Cs)).
            - move =>  H ; pose bot := nRsc H; by []. 
            - by [].   
-        exact : (R_trans lem (proj1 supCt s Cs)).    
+        right. exact : (R_trans lem (proj1 supCt s Cs)).    
  move => x mx ; exact : ( mx (extr_set c) extr_adm).
  Qed.
 
@@ -275,16 +285,16 @@ Proof.
         - move => H.
           have lem : maj R C x. move => c Cc ; exact : ( R_trans (f_incr c) (H c Cc)).
           by pose bot := neq_xt (R_antisym Rxt (proj2 supCt x lem)). 
-        - move => H ; pose H0 := neg_forall H ; move : H0; move => [c H1] {H}. (*In short*)
-          move : (neg_impl H1); move => [Cc nRfcx] {H1}.
+        - move => /neg_forall-[c /H1]. 
+          move : (neg_impl H1); move => [Cc nRfcx] {H1}. (*short*) 
           have extrec : extreme c by apply :subCE c Cc.
           case : (proj2 ( MextrM  extrec  Mx)).
             - case : (EM (x =c)).
-              - move => eq_xc ;  move => _ ; move : neq_xt ; rewrite eq_xc ; move => neq_ct.
-                move : extrec. rewrite -eq_xc ; move => extrx.
-               
-                case : (proj2 (MextrM extrx Mt)).
-                  - move : neq_ct; rewrite -eq_xc; move => neq_xt.
+            - move => eq_xc .  move => _ . move : neq_xt . rewrite eq_xc . move => neq_ct.
+              (*short*)
+              move : extrec. rewrite -eq_xc ; move => extrx.
+                  case : (proj2 (MextrM extrx Mt)).
+                  - move : neq_ct; rewrite -eq_xc; move => neq_xt. (*short*)
                     by move => Rtx; pose bot := neq_xt (R_antisym Rxt Rtx).
                   - by [].
               -move => neq_xc Rxc.
@@ -296,6 +306,8 @@ Proof.
 by move => c Mc; exact : (Mc extreme admE). 
 Qed.
 
+
+(*Now we can prove totality of R on M and conclude *)
 Lemma tot_M : total_on M R. 
 Proof.
   move => x y Mx My.
@@ -303,6 +315,10 @@ Proof.
     by  move => Ryx ; right.
     by move => Rfxy ; left ;  apply :  R_trans (f_incr x) Rfxy.    
 Qed.
+
+
+
+
 
 Lemma fixpoint : exists t,  t = f t. 
 Proof.
