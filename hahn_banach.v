@@ -23,26 +23,48 @@ Unset Printing Implicit Defensive.
  Axiom EM : forall (P : Prop), P \/ ~ P.
 
 Section Classical.
-
+    
+ Lemma double_neg_elim  (P :  Prop) : ~ ( ~ P) <-> P.
+ Proof.
+   split.
+   - move => nnP. case : (EM P) ; first by [].
+     by move => nP ; pose bot :=  nnP nP.
+   - by move => p np.
+ Qed.
+ 
  Lemma neg_exists (T : Type) (P : T -> Prop) : ~ ( exists s, ( P s)) -> forall s, ~ ( P s ). 
  Proof.
   by move => H s Ps ; have : exists s : T, P s by exists s.  
  Qed.
 
- Lemma contrap A B : ( ~ B -> ~ A) -> ( A -> B ). 
+ Lemma contrap P Q : ( ~ P -> ~ Q) -> ( Q -> P ). 
  Proof.
-  move => H a.  
-  case : (EM B) ; first by [].   
-  move => nB.
-  have bot :  False by exact : ((H nB)a) .  
+  move => H p.  
+  case : (EM P) ; first by [].   
+  move => nQ.
+  have bot :  False by exact : ((H nQ)p) .  
   by [].
  Qed.
  
- Lemma neg_forall (T : Type) (P : T -> Prop) : ~ (forall s, (P s)) -> exists s,  ~ ( P s).  
- Admitted.
+ Lemma neg_forall (T : Type) (P : T -> Prop) : ~ (forall s, (P s)) -> exists s,  ~ ( P s).
+ Proof.
+   apply : contrap.
+   move => nE. apply : (proj2 (double_neg_elim (forall s, (P s)))).
+   move => s. apply : (proj1 (double_neg_elim (P s))).
+   exact :  ((neg_exists nE) s).
+ Qed.
 
- Lemma neg_impl (A B : Prop) : ~ ( A -> B) -> (A /\ ~B).  
- Admitted.
+ Lemma neg_impl (P Q : Prop) : ~ ( P -> Q) -> (P /\ ~Q).  
+ Proof.
+  move => H.
+  rewrite -(propext (double_neg_elim P)). 
+  apply : (Decidable.not_or (~ P) ( Q)).
+  case => n.
+   - have nH : (P-> Q) by move => p ; pose bot := n p.
+     by pose bot :=  H nH.
+   - have nH : ( P -> Q) by case : (EM P).
+     by pose bot := H nH.
+ Qed.
 
  
 End Classical.  
