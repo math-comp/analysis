@@ -5,7 +5,7 @@ From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
 Require Import boolp reals Rstruct Rbar.
 Require Import classical_sets posnum topology normedtype
   landau.
-  (* TODO: bouger les structures sur les fonctions en dehors de landau *)
+  (* TODO: move structures about functions out of landau *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -27,7 +27,7 @@ Parameter integrable :
 Parameter integral :
   forall (T : Type) (m : set T -> Rbar) (D : set T) (f : T -> Rbar), Rbar.
 
-(* section sur les fonctions positives ou infinies *)
+(* section about positive or finite functions *)
 Section pos_fct.
 Variable T : Type.
 Variable m : set T -> Rbar.
@@ -38,10 +38,10 @@ Axiom integral_is_linear : linear_for *%R (integral m D : (T -> R^o) -> R).
 
 Canonical integral_linear := Linear integral_is_linear.
 
-(* TODO: structure d'ordre sur les functions
+(* TODO: order structure about functions
 Axiom fct_order : forall (T : Type) (f g : T -> R), bool.
-pour pouvoir utiliser la notation {homo ...}
-pour reecrire integral_ler *)
+in order to be able to use the notation {homo ...}
+in order to rewrite the lemma integral_ler *)
 
 Axiom integral_ler : forall (f g : T -> R),
   (forall x, f x <= g x) -> integral m D f <= integral m D g :> R.
@@ -50,22 +50,21 @@ Axiom integral_ler : forall (f g : T -> R),
 Axiom cvg_monotone : forall (f_ : fct_sequence T),
   increasing D f_ ->
   let f := fun t => lim (f_ ^~ t) in
-  (* TODO: la fonction f est mesurable *)
+  (* TODO: the function f must be est measurable *)
   integral m D f = [lim (fun n => integral m D (f_ n)) in [filteredType R of Rbar]].
-(* NB: this is wrong because les fonctions en argument ne sont pas a
-valeur dans Rbar *)
+(* NB: this is wrong because functions passed as arguments do not have Rbar for range *)
 
 (* TODO: fix the lim notation so as to avoid [filteredType R of Rbar] *)
 
 (* theorem de convergence dominee *)
 Axiom cvg_domin : forall (f_ : fct_sequence T), bool.
 
-(* lemma de Fatou *)
+(* Fatou's Lemma *)
 Axiom Fatou : false.
 
 End pos_fct.
 
-(* section sur les functions quelconques a valeur finie *)
+(* section about other functions (returning finite value) *)
 Section fin_fct.
 
 End fin_fct.
