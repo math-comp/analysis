@@ -4,7 +4,7 @@ From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
 Require Import boolp reals.
-Require Import Rstruct Rbar classical_sets posnum topology hierarchy.
+Require Import Rstruct Rbar classical_sets posnum topology normedtype.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

@@ -14,9 +14,9 @@ env:
   - NJOBS="2"
   - CONTRIB_NAME="analysis"
   matrix:
-  - DOCKERIMAGE="mathcomp/mathcomp:1.7.0-coq-8.8"
-  - DOCKERIMAGE="mathcomp/mathcomp:1.7.0-coq-8.9"
-  - DOCKERIMAGE="mathcomp/mathcomp:1.7.0-coq-dev"
+  - DOCKERIMAGE="mathcomp/mathcomp:1.8.0-coq-8.8"
+  - DOCKERIMAGE="mathcomp/mathcomp:1.8.0-coq-8.9"
+  - DOCKERIMAGE="mathcomp/mathcomp:1.8.0-coq-dev"
 
 install: |
   # Prepare the COQ container

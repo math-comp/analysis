@@ -10,7 +10,7 @@ classical_sets.v
 Rstruct.v
 Rbar.v
 topology.v
-hierarchy.v
+normedtype.v
 forms.v
 derive.v
 summability.v

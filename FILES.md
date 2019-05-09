@@ -5,7 +5,7 @@
 - `posnum.v`
 - `classical_set.v`
 - `topology.v`
-- `hierarchy.v`
+- `normedtype.v`
 - `landau.v`
 - `derive.v`
 - `README.md`
