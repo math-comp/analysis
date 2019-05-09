@@ -12,6 +12,11 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import GRing.Theory Num.Def Num.Theory.
 
+Reserved Notation "{ 'ae' P }" (at level 0, format "{ 'ae'  P }").
+
+(* TODO d'ordre general:
+   1. better for the lim notation *)
+
 Local Open Scope classical_set_scope.
 
 Definition fct_sequence (T : Type) := nat -> (T -> Rbar).
@@ -27,15 +32,26 @@ Parameter integrable :
 Parameter integral :
   forall (T : Type) (m : set T -> Rbar) (D : set T) (f : T -> Rbar), Rbar.
 
-(* section about positive or finite functions *)
+Definition almost_everywhere (P : Prop) : Prop := P.
+(* TODO: imiter ssrbool l.1606
+Notation "{ 'in' d , P }" :=
+  (prop_in1 (mem d) (inPhantom P))
+  (at level 0, format "{ 'in'  d ,  P }") : type_scope.  *)
+
+Local Notation "{ 'ae' P }" := (almost_everywhere P).
+
+(* section about positive or infinite functions *)
 Section pos_fct.
 Variable T : Type.
 Variable m : set T -> Rbar.
 Variable D : set T.
 
-(* TODO: we have to restrict linearity to integrable functions *)
-Axiom integral_is_linear : linear_for *%R (integral m D : (T -> R^o) -> R).
-
+(* TODO: we have to restrict linearity to:
+   1. positive and measurable
+   2. integrable functions
+   (Need two "integral" symbols for Canonical declarations?) *)
+Axiom integral_is_linear :
+  linear_for *%R (integral m D : (T -> R^o) -> R).
 Canonical integral_linear := Linear integral_is_linear.
 
 (* TODO: order structure about functions
@@ -45,27 +61,40 @@ in order to rewrite the lemma integral_ler *)
 
 Axiom integral_ler : forall (f g : T -> R),
   (forall x, f x <= g x) -> integral m D f <= integral m D g :> R.
+(* TODO: need two variants
+   1. take into account that diverge(f) -> diverge(g)
+   2. when we talk only about measurable functions
+*)
 
-(* voir necessite de la condition de positivite (sur wikipedia) *)
-Axiom cvg_monotone : forall (f_ : fct_sequence T),
+(* monotone convergence theorem:
+   voir necessite de la condition de positivite (wikipedia.fr),
+   pas de variante pour les fonctions non-necessairement positive
+   (no variant 2., see convergence dominee) *)
+Axiom cvg_monotone :
+  forall (f_ : fct_sequence T) (*should be measurable and positive*),
   increasing D f_ ->
   let f := fun t => lim (f_ ^~ t) in
-  (* TODO: the function f must be est measurable *)
-  integral m D f = [lim (fun n => integral m D (f_ n)) in [filteredType R of Rbar]].
-(* NB: this is wrong because functions passed as arguments do not have Rbar for range *)
+  (* TODO: the function f must be measurable *)
+  integral m D f = lim (fun n => integral m D (f_ n)).
 
-(* TODO: fix the lim notation so as to avoid [filteredType R of Rbar] *)
-
-(* theorem de convergence dominee *)
-Axiom cvg_domin : forall (f_ : fct_sequence T), bool.
-
-(* Fatou's Lemma *)
-Axiom Fatou : false.
+(* TODO: Fatou's Lemma *)
 
 End pos_fct.
 
-(* section about other functions (returning finite value) *)
+(* section about other functions (returning finite values),
+   requires preconditions about integrability, etc. *)
 Section fin_fct.
+Variable T : Type.
+Variable m : set T -> R.
+Variable D : set T.
+
+(* dominated convergence theorem *)
+Axiom cvg_dominated : forall (f_ : fct_sequence T) (f : T -> R) (g : T -> R),
+  (forall n, integrable m D (f_ n)) ->
+  integrable m D g ->
+  (forall n, {ae forall x, `| f_ n x : R | <= g x}) ->
+  {ae forall x, (fun n => f_ n x) --> f x} ->
+  (fun n => integral m D (f_ n)) @ \oo --> integral m D f.
 
 End fin_fct.
 
