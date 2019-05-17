@@ -3,9 +3,7 @@ Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
 Require Import boolp reals Rstruct Rbar.
-Require Import classical_sets posnum topology normedtype
-  landau.
-  (* TODO: move structures about functions out of landau *)
+Require Import classical_sets posnum topology normedtype.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
