@@ -18,20 +18,30 @@ Import GRing.Theory Num.Def Num.Theory .
 Local Open Scope ring_scope .
 Local Open Scope classical_set_scope.
 
+
+
+Search _ ( _ <> _ ) ( _ != _ ).
+
+(* predD1P  forall (T : eqType) (x y : T) (b : bool), reflect (x <> y /\ b) ((x != y) && b)
+*)
+   
 Section LinearContinuousBounded.
 
 Variables (V W : normedModType R ) . 
 
 Definition continuous_at x (f : V -> W) :=   ( f @ x) --> (f x).
 
+Check continuousP. 
+
 Lemma continuous_atP x (f : V -> W) :
-  (continuous_at x f) <-> forall A , locally (f x) A -> locally  x ( f @^-1` A). 
+  (continuous_at x f) <-> forall eps : posreal, \forall y \near f @ x, ball (f x) eps%:num y.
 Proof.
-(*split=> fcont; first by rewrite !openE => A Aop ? /Aop /fcont.
-move=> s A; rewrite locally_simpl /= !locallyE => - [B [[Bop Bfs] sBA]].
-by exists (f @^-1` B); split; [split=> //; apply/fcont|move=> ? /sBA].
-Qed.*)
-Admitted.
+  rewrite /continuous_at. split.
+   - by move => /flim_ballPpos. 
+   - by move => /flim_ballPpos. 
+Qed.
+
+
 
 Lemma locallyP (Z : normedModType R ) (x : Z) A : (locally x A) <-> (exists r:posreal, ball x r%:num `<=` A).
 Proof.
@@ -41,30 +51,45 @@ Definition continuous_on F f :=  forall x , F x -> (continuous_at x f ).
 
 Lemma div_abs ( x y : R) : `| x^-1 * y |%real = `| x |^-1 * `| y| . 
 Proof.
-Admitted. 
+Admitted.
 
 Lemma continuous_bounded0 (f : { linear V -> W}) :
   (continuous_at 0 f) -> 
   (*( forall z, (filtermap f (locally z) `=>` ( locally (f z)))  )*)
-  ( exists  r : posreal, (forall x : V,   ( `|[f x]| ) <=   (`|[x]| ) * r%:num  )  ) . 
+  ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|[f x]| ) <=  (`|[x]| ) * r  )  ) . 
 Proof.
-  move => /continuous_atP H ; move : (H (ball_ norm 0 1)).
-  rewrite (linear0 f) ;  move => H2 {H}. 
-  move : (H2 (locally_ball_norm  0 (1%:pos))) ; rewrite /(_ @^-1`_ ) //=.
-  move => /locallyP [tp H] {H2}. 
-  pose  t := tp%:num. 
-  pose r:= t^-1.  exists (PosNum (inv_pos_gt0 tp)). 
-  move => x. case :  (boolp.EM (x=0)).
-  - move => ->. by rewrite (linear0 f) !normm0 //= mul0r. 
-  - move => xneq0.
-    have normxle0 : `|[x]| > 0 . admit. 
-    pose a := (  `|[x]|^-1 * t ) *: x.  
-    have lem : ball 0 t a . rewrite -ball_normE. unfold ball_. admit.
-    move : (H a lem).  rewrite sub0r.  rewrite normmN //= {H}.
-    have  : ( f a =  ( (`|[x]|^-1) * t ) *: ( f x))  by admit.
-    move => -> .
-    rewrite normmZ (div_abs `|[x]| t) (ger0_norm (posnum_ge0 tp)) (ger0_norm (normm_ge0 x)). 
-    Check (ltr_pdivr_mull 1  (tp%:num*`|[f x]|) normxle0 ).  (*l'associativie de la multiplicaiton*)
+  move => /continuous_atP H. have H' : (0 < 1) by []. move : (H (1%:pos))  {H'} .
+  rewrite (linear0 f) /( _ @ _ ) //=. move => H'{H}. Check (locally_ ball 0). 
+  (* H'= locally_ ball 0 (fun a => ball 0 1 (f a )).*)
+  have : exists t , (t > 0) /\  forall x , ball 0 t x -> ball 0 1 (f x ). admit. 
+ (* move : (H2 (locally_ball_norm  0 (1%:pos))) ; rewrite /(_ @^-1`_ ) //=.*)
+  move => [t [tp H]].
+  exists t^-1. split. by rewrite invr_gt0.
+  move => x ; case :  (boolp.EM (x=0)).
+  - by move => -> ; rewrite (linear0 f) !normm0 //= mul0r. 
+  - move => xneq0. 
+    have normxle0 : `|[x]| > 0 .  rewrite normm_gt0.
+    (*proving (x <> y) -> (x != y), where is it done ? *)
+    case : (boolp.EM (x==0)).
+    - move => /eqP x0. by have : False by apply : ( xneq0 x0). 
+    - by move => /negP. 
+    pose a := (  `|[x]|^-1 * t ) *: x.
+    (*going from ball to norm is done through ball_normE and unfolding ball_. 
+    I looked a long time for this *)
+    have ball0ta : ball 0 t a. 
+     apply : ball_sym ; rewrite -ball_normE /ball_ subr0.
+     rewrite normmZ . admit.
+     (* stuck with %real , search a view*)(* rewrite normedtype.R_AbsRingMixin_obligation_1. *)
+    move : (H a ball0ta) ;rewrite -ball_normE /ball_ sub0r normmN. 
+    have  : ( f a =  ( (`|[x]|^-1) * t ) *: ( f x)) .
+      have : a = (`|[x]|^-1 * t) *: x + 0 by rewrite addrC add0r.  
+      by move => -> ; rewrite (linearP f  (`|[x]|^-1 * t) x 0) (linear0 f) addrC add0r.  
+    move => -> . 
+    rewrite normmZ (div_abs `|[x]| t) (gtr0_norm tp) (ger0_norm (normm_ge0 x)).
+    rewrite mulrC mulrC -mulrA.  
+    rewrite (ltr_pdivr_mull 1  (t*`|[f x]|) normxle0 ).
+    rewrite mulrC (mulrC `|[x]| 1) mul1r -(ltr_pdivl_mulr `|[f x]| `|[x]| tp).
+    by move => Ht ; apply : ltrW. 
 Admitted.
 
 
@@ -102,17 +127,12 @@ Variable ( V : normedModType R) ( F G: pred V ) (f : {scalar V}) ( F0 : F 0).
 Variable Choice_prop :  forall T U (P : T -> U -> Prop),
     (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
 
-Search _  "sup" in Real.
-Print Real.sup. 
-About sup. 
-
-Locate real. 
 
  (* Upper bound *)
 Definition ubd (A : set R) (a : R) := forall x, A x -> x <= a.                                                                                                   (*ub in reals *)
 
  (* Lower bound *)
-Definition ibd (A : set R) (a : R) := forall x, A x -> a <= x. (*ib in reals*) Check reals.sup. 
+Definition ibd (A : set R) (a : R) := forall x, A x -> a <= x. (*ib in reals*) 
 
 (*Lemma mysup : forall (A : set R) (a m : R),
      A a -> ub (in_set A) m ->
@@ -152,10 +172,10 @@ Proof.
     have Axb : x \in in_set A by rewrite in_setE.
     by apply : (H x Axb).  
   - move => x xmajA.
-    have ubdA : is_upper_bound A x.  move => y Ay. Check (xmajA y Ay).  admit. (* cannot go in coqR*)
-    
+    have ubdA : is_upper_bound A x.  move => y Ay. Check (xmajA y Ay).  admit.
+    (* cannot go in coqR*)
     have majAmb : is_upper_bound  (fun x : R => in_set A x) m.
-      move => y ; rewrite in_setE => Ay. Check (xmajA y Ay).   admit. (* cannot go in coqR*)
+    move => y ; rewrite in_setE => Ay. Check (xmajA y Ay).   admit. (* cannot go in coqR*)
     Check proj2 (real_sup_is_lub has_sup_A) m majAmb.   admit. (* cannot go in coqR*)
 Admitted. 
  
