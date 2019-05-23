@@ -11,6 +11,16 @@ Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+(* Copy of the ssrbool shim to ensure compatibility with MathComp v1.8.0. *)
+Definition PredType : forall T pT, (pT -> pred T) -> predType T.
+exact PredType || exact mkPredType.
+Defined.
+Arguments PredType [T pT] toP.
+
+Local Notation predOfType T := (pred_of_simpl (@pred_of_argType T)).
+
+(* -------------------------------------------------------------------- *)
+
 Axiom functional_extensionality_dep :
        forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
        (forall x : A, f x = g x) -> f = g.

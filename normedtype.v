@@ -1389,14 +1389,14 @@ Grab Existential Variables. all: end_near. Qed.
 
 (** Some open sets of [R] *)
 
-Lemma open_lt (y : R) : open (< y).
+Lemma open_lt (y : R) : open [set x | x < y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
 by rewrite /AbsRing_ball /= absrB ltr_distl addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_lt : core.
 
-Lemma open_gt (y : R) : open (> y).
+Lemma open_gt (y : R) : open [set x | x > y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
 by rewrite /AbsRing_ball /= absrB ltr_distl opprB addrCA subrr addr0 => /andP[].
@@ -1405,7 +1405,7 @@ Hint Resolve open_gt : core.
 
 Lemma open_neq (y : R) : open (xpredC (eq_op^~ y)).
 Proof.
-rewrite (_ : xpredC _ = (< y) `|` (> y) :> set _) /=.
+rewrite (_ : xpredC _ = [set x | x < y] `|` [set x | x > y] :> set _) /=.
   by apply: openU => //; apply: open_lt.
 rewrite predeqE => x /=; rewrite eqr_le !lerNgt negb_and !negbK orbC.
 by symmetry; apply (rwP orP).
@@ -1413,16 +1413,16 @@ Qed.
 
 (** Some closed sets of [R] *)
 
-Lemma closed_le (y : R) : closed (<= y).
+Lemma closed_le (y : R) : closed [set x | x <= y].
 Proof.
-rewrite (_ : (<= _) = ~` (> y) :> set _).
+rewrite (_ : [set x | x <= _] = ~` (> y) :> set _).
   by apply: closedC; exact: open_gt.
 by rewrite predeqE => x /=; rewrite lerNgt; split => /negP.
 Qed.
 
 Lemma closed_ge (y : R) : closed (>= y).
 Proof.
-rewrite (_ : (>= _) = ~` (< y) :> set _).
+rewrite (_ : (>= _) = ~` [set x | x < y] :> set _).
   by apply: closedC; exact: open_lt.
 by rewrite predeqE => x /=; rewrite lerNgt; split => /negP.
 Qed.
@@ -1470,7 +1470,7 @@ move: Acl => [B Bcl AeabB].
 have sAab : A `<=` [set x | x \in `[a, b]] by rewrite AeabB => ? [].
 move=> /asboolPn; rewrite asbool_and => /nandP [/asboolPn /(_ (sAab _))|] //.
 move=> /imply_asboolPn [abx nAx] [C Cop AeabC].
-set Altx := fun y => y \in A `&` (< x).
+set Altx := fun y => y \in A `&` [set y | y < x].
 have Altxn0 : reals.nonempty Altx by exists y; rewrite in_setE.
 have xub_Altx : x \in ub Altx.
   by apply/ubP => ?; rewrite in_setE => - [_ /ltrW].
@@ -1500,7 +1500,7 @@ suff [t Altxt] : exists2 t, Altx t & z < t.
 exists (z + (minr (e%:num / 2) ((PosNum ltzx)%:num / 2))); last first.
   by rewrite ltr_addl.
 rewrite in_setE; split; last first.
-  rewrite -[(< _) _]ltr_subr_addl ltr_minl; apply/orP; right.
+  rewrite -[_ < _]ltr_subr_addl ltr_minl; apply/orP; right.
   by rewrite ltr_pdivr_mulr // mulrDr mulr1 ltr_addl.
 rewrite AeabC; split; last first.
   apply: ze_C; rewrite /AbsRing_ball /ball_ absRE ltr_distl.
@@ -1516,7 +1516,7 @@ Qed.
 
 Lemma segment_closed (a b : R) : closed [set x | x \in `[a, b]].
 Proof.
-have -> : [set x | x \in `[a, b]] = (>= a) `&` (<= b).
+have -> : [set x | x \in `[a, b]] = [set x | x >= a] `&` [set x | x <= b].
   by rewrite predeqE => ?; rewrite inE; split=> [/andP [] | /= [->]].
 exact: closedI (@closed_ge _) (@closed_le _).
 Qed.
