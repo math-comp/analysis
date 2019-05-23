@@ -163,7 +163,7 @@ Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
 
 Definition set A := A -> Prop.
 Definition in_set T (P : set T) : pred T := [pred x | `[<P x>]].
-Canonical set_predType T := @mkPredType T (set T) (@in_set T).
+Canonical set_predType T := @PredType T (set T) (@in_set T).
 
 Lemma in_setE T (P : set T) x : x \in P = P x :> Prop.
 Proof. by rewrite propeqE; split => [] /asboolP. Qed.
