@@ -397,7 +397,7 @@ suff /diff_locally /hdf -> : differentiable f x.
 apply/diffP; apply: (@getPex _ (fun (df : {linear V -> W}) => continuous df /\
   forall y, f y = f (lim x) + df (y - lim x) +o_(y \near x) (y - lim x))).
 exists df; split=> //; apply: eqaddoEx => z.
-rewrite (hdf _ dxf) !addrA lim_id /funcomp /= subrK [f _ + _]addrC addrK.
+rewrite (hdf _ dxf) !addrA lim_id /(_ \o _) /= subrK [f _ + _]addrC addrK.
 rewrite -addrA -[LHS]addr0; congr (_ + _).
 apply/eqP; rewrite eq_sym addrC addr_eq0 oppox; apply/eqP.
 by rewrite littleo_center0 (comp_centerK x id) -[- _ in RHS](comp_centerK x).
@@ -1345,7 +1345,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_right_proper_filter x.
-apply: flim_map_lim => A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@flim_map_lim _ _ _ (at_right _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
 by exists e%:num => // y xe_y; rewrite ltr_def => /andP [xney _]; apply: xe_A.
 Qed.
 
@@ -1355,7 +1355,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_left_proper_filter x.
-apply: flim_map_lim => A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@flim_map_lim _ _ _ (at_left _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
 exists e%:num => // y xe_y; rewrite ltr_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.

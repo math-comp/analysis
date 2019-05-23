@@ -795,7 +795,7 @@ Proof. by symmetry; apply: locally_flim_unique; apply/cvg_ex; exists x. Qed.
 
 Lemma flim_lim {F} {FF : ProperFilter F} (l : V) :
   F --> l -> lim F = l.
-Proof. by move=> Fl; have Fcv := cvgP Fl; apply: flim_unique. Qed.
+Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@flim_unique F). Qed.
 
 Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
   f @ F --> l -> lim (f @ F) = l.

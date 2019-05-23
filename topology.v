@@ -804,12 +804,12 @@ Proof. by move=> ????? PQR FP; apply: filter_app2; apply: filter_app FP. Qed.
 Lemma filterS2 (T : Type) (F : set (set T)) :
   Filter F -> forall P Q R : set T, (forall x, P x -> Q x -> R x) ->
   F P -> F Q -> F R.
-Proof. by move=> ???? /filterE; apply: filter_app2. Qed.
+Proof. by move=> ? ? ? ? ?; apply: filter_app2; apply: filterE. Qed.
 
 Lemma filterS3 (T : Type) (F : set (set T)) :
   Filter F -> forall P Q R S : set T, (forall x, P x -> Q x -> R x -> S x) ->
   F P -> F Q -> F R -> F S.
-Proof. by move=> ????? /filterE; apply: filter_app3. Qed.
+Proof. by move=> ? ? ? ? ? ?; apply: filter_app3; apply: filterE. Qed.
 
 Lemma filter_const {T : Type} {F} {FF: @ProperFilter T F} (P : Prop) :
   F (fun=> P) -> P.
@@ -1948,7 +1948,7 @@ Lemma cluster_flimE F :
 Proof.
 move=> FF; rewrite predeqE => p.
 split=> [clFp|[G Gproper [cvGp sFG]] A B]; last first.
-  by move=> /sFG GA /cvGp GB; apply/filter_ex; apply: filterI.
+  by move=> /sFG GA /cvGp GB; apply: (@filter_ex _ G); apply: filterI.
 exists (filter_from (\bigcup_(A in F) [set A `&` B | B in locally p]) id).
   apply filter_from_proper; last first.
     by move=> _ [A FA [B p_B <-]]; have := clFp _ _ FA p_B.
@@ -2009,7 +2009,7 @@ have GF : ProperFilter G.
     move=> C1 C2 F1 F2; exists (C1 `&` C2); first exact: filterI.
     by move=> ?[?[]]; split; split.
   by move=> C /(filterI FfA) /filter_ex [_ [[p ? <-]]]; eexists p.
-case: Aco; first by exists (f @` A) => // ? [].
+case: (Aco G); first by exists (f @` A) => // ? [].
 move=> p [Ap clsGp]; exists (f p); split; first exact/imageP.
 move=> B C FB /fcont; rewrite in_setE /= locally_filterE => /(_ Ap) p_Cf.
 have : G (A `&` f @^-1` B) by exists B.
@@ -2055,7 +2055,7 @@ suff UAF : ProperFilter (\bigcup_(H in A) projT1 H).
   exists (existT _ (\bigcup_(H in A) projT1 H) (conj UAF sFUA)) => H AH B HB /=.
   by exists H.
 apply Build_ProperFilter.
-  by move=> B [H AH HB]; have [HF _] := projT2 H; apply: filter_ex.
+  by move=> B [H AH HB]; have [HF _] := projT2 H; apply: (@filter_ex _ _ HF).
 split; first by exists G => //; apply: filterT.
   move=> B C [HB AHB HBB] [HC AHC HCC]; have [sHBC|sHCB] := Atot _ _ AHB AHC.
     exists HC => //; have [HCF _] := projT2 HC; apply: filterI HCC.
@@ -2199,7 +2199,7 @@ Lemma filter_finI (T : pointedType) (F : set (set T)) (D : set (set T))
   (f : set T -> set T) :
   ProperFilter F -> (forall A, D A -> F (f A)) -> finI D f.
 Proof.
-move=> FF sDFf D' sD; apply/filter_ex; apply: filter_bigI.
+move=> FF sDFf D' sD; apply: (@filter_ex _ F); apply: filter_bigI.
 by move=> A /sD; rewrite in_setE => /sDFf.
 Qed.
 
@@ -2253,8 +2253,8 @@ rewrite predeqE => A; split=> [Aco I D f [g gcl feAg] finIf|Aco F FF FA].
   exists p => j Dj; rewrite feAg //; split=> //; apply: gcl => // B.
   by apply: clfinIfp; exists (f j); [apply: finI_from1|rewrite feAg // => ? []].
 have finIAclF : finI F (fun B => A `&` closure B).
-  apply: filter_finI => B FB; apply: filterI => //; apply: filterS FB.
-  exact: subset_closure.
+  apply: (@filter_finI _ F) => B FB.
+  by apply: filterI => //; apply: filterS FB; apply: subset_closure.
 have [|p AclFIp] := Aco _ _ _ _ finIAclF.
   by exists closure=> //; move=> ??; apply: closed_closure.
 exists p; split=> [|B C FB p_C]; first by have /AclFIp [] := FA.
@@ -2608,7 +2608,7 @@ Lemma flim_closeP (F : set (set M)) (l : M) : ProperFilter F ->
   F --> l <-> ([cvg F in M] /\ close (lim F) l).
 Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
-  by have /cvgP := Fl; split=> //; apply: flim_close.
+  by have /cvgP := Fl; split=> //; apply: (@flim_close F).
 by apply: flim_trans (close_limxx Cl).
 Qed.
 
