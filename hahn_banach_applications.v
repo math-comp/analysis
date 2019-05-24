@@ -18,20 +18,11 @@ Import GRing.Theory Num.Def Num.Theory .
 Local Open Scope ring_scope .
 Local Open Scope classical_set_scope.
 
-
-
-Search _ ( _ <> _ ) ( _ != _ ).
-
-(* predD1P  forall (T : eqType) (x y : T) (b : bool), reflect (x <> y /\ b) ((x != y) && b)
-*)
-   
 Section LinearContinuousBounded.
 
 Variables (V W : normedModType R ) . 
 
 Definition continuous_at x (f : V -> W) :=   ( f @ x) --> (f x).
-
-Check continuousP. 
 
 Lemma continuous_atP x (f : V -> W) :
   (continuous_at x f) <-> forall eps : posreal, \forall y \near f @ x, ball (f x) eps%:num y.
@@ -43,14 +34,16 @@ Qed.
 
 
 
-Lemma locallyP (Z : normedModType R ) (x : Z) A : (locally x A) <-> (exists r:posreal, ball x r%:num `<=` A).
+(*Lemma locallyP (Z : normedModType R ) (x : Z) A : (locally x A) <-> (exists r:posreal, ball x r%:num `<=` A).
 Proof.
-Admitted.  
+Admitted.  *)
 
 Definition continuous_on F f :=  forall x , F x -> (continuous_at x f ).
 
-Lemma div_abs ( x y : R) : `| x^-1 * y |%real = `| x |^-1 * `| y| . 
+Lemma div_abs ( x y : R) : `| x^-1 * y |%real = `| x^1 | * `| y| . 
 Proof.
+  Search _ ( `| _ | * `| _ |). rewrite -normedtype.R_AbsRingMixin_obligation_1.
+ Search   (_%coqR) in reals.  
 Admitted.
 
 Lemma continuous_bounded0 (f : { linear V -> W}) :
@@ -61,8 +54,9 @@ Proof.
   move => /continuous_atP H. have H' : (0 < 1) by []. move : (H (1%:pos))  {H'} .
   rewrite (linear0 f) /( _ @ _ ) //=. move => H'{H}. Check (locally_ ball 0). 
   (* H'= locally_ ball 0 (fun a => ball 0 1 (f a )).*)
-  have : exists t , (t > 0) /\  forall x , ball 0 t x -> ball 0 1 (f x ). admit. 
- (* move : (H2 (locally_ball_norm  0 (1%:pos))) ; rewrite /(_ @^-1`_ ) //=.*)
+  have : exists t , (t > 0) /\  forall x , ball 0 t x -> ball 0 1 (f x ).
+    rewrite -!ball_normE /ball_. (*rewrite sub0r*) admit. 
+
   move => [t [tp H]].
   exists t^-1. split. by rewrite invr_gt0.
   move => x ; case :  (boolp.EM (x=0)).
