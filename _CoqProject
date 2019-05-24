@@ -12,6 +12,7 @@ Rbar.v
 topology.v
 normedtype.v
 forms.v
+hahn_banach.v
 derive.v
 summability.v
 altreals/xfinmap.v
