@@ -1,6 +1,6 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg matrix.
-Require Import boolp.
+Require Import boolp classical_preds.
 
 (******************************************************************************)
 (* This file develops a basic theory of sets and types equipped with a        *)
@@ -16,9 +16,7 @@ Require Import boolp.
 (*                                                                            *)
 (* * Sets:                                                                    *)
 (*                       set A == type of sets on A.                          *)
-(*                   (x \in P) == boolean membership predicate from ssrbool   *)
-(*                                for set P, available thanks to a canonical  *)
-(*                                predType T structure on sets on T.          *)
+(*                   (x \in P) == Prop membership predicate for set P         *)
 (*             [set x : T | P] == set of points x : T such that P holds.      *)
 (*                 [set x | P] == same as before with T left implicit.        *)
 (*            [set E | x in A] == set defined by the expression E for x in    *)
@@ -92,92 +90,38 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Reserved Notation "[ 'set' x : T | P ]"
-  (at level 0, x at level 99, only parsing).
-Reserved Notation "[ 'set' x | P ]"
-  (at level 0, x, P at level 99, format "[ 'set'  x  |  P ]").
-Reserved Notation "[ 'set' E | x 'in' A ]" (at level 0, E, x at level 99,
-  format "[ '[hv' 'set'  E '/ '  |  x  'in'  A ] ']'").
-Reserved Notation "[ 'set' E | x 'in' A & y 'in' B ]"
-  (at level 0, E, x at level 99,
-  format "[ '[hv' 'set'  E '/ '  |  x  'in'  A  &  y  'in'  B ] ']'").
-Reserved Notation "[ 'set' 'of' F ]" (at level 0, format "[ 'set'  'of'  F ]").
-Reserved Notation "[ 'set' a ]"
-  (at level 0, a at level 99, format "[ 'set'  a ]").
-Reserved Notation "[ 'set' a : T ]"
-  (at level 0, a at level 99, format "[ 'set'  a   :  T ]").
-Reserved Notation "A `|` B" (at level 52, left associativity).
-Reserved Notation "a |` A" (at level 52, left associativity).
-Reserved Notation "[ 'set' a1 ; a2 ; .. ; an ]"
-  (at level 0, a1 at level 99, format "[ 'set'  a1 ;  a2 ;  .. ;  an ]").
 Reserved Notation "A `&` B"  (at level 48, left associativity).
 Reserved Notation "A `*` B"  (at level 46, left associativity).
-Reserved Notation "A .`1" (at level 2, left associativity, format "A .`1").
-Reserved Notation "A .`2" (at level 2, left associativity, format "A .`2").
-Reserved Notation "~` A" (at level 35, right associativity).
-Reserved Notation "[ 'set' ~ a ]" (at level 0, format "[ 'set' ~  a ]").
-Reserved Notation "A `\` B" (at level 50, left associativity).
-Reserved Notation "A `\ b" (at level 50, left associativity).
-(*
 Reserved Notation "A `+` B"  (at level 54, left associativity).
 Reserved Notation "A +` B"  (at level 54, left associativity).
-*)
-Reserved Notation "\bigcup_ ( i 'in' P ) F"
-  (at level 41, F at level 41, i, P at level 50,
-           format "'[' \bigcup_ ( i  'in'  P ) '/  '  F ']'").
-Reserved Notation "\bigcup_ ( i : T ) F"
-  (at level 41, F at level 41, i at level 50,
-           format "'[' \bigcup_ ( i  :  T ) '/  '  F ']'").
-Reserved Notation "\bigcup_ i F"
-  (at level 41, F at level 41, i at level 0,
-           format "'[' \bigcup_ i '/  '  F ']'").
-Reserved Notation "\bigcap_ ( i 'in' P ) F"
-  (at level 41, F at level 41, i, P at level 50,
-           format "'[' \bigcap_ ( i  'in'  P ) '/  '  F ']'").
-Reserved Notation "\bigcap_ ( i : T ) F"
-  (at level 41, F at level 41, i at level 50,
-           format "'[' \bigcap_ ( i  :  T ) '/  '  F ']'").
-Reserved Notation "\bigcap_ i F"
-  (at level 41, F at level 41, i at level 0,
-           format "'[' \bigcap_ i '/  '  F ']'").
-Reserved Notation "A `<=` B" (at level 70, no associativity).
-Reserved Notation "A `<=>` B" (at level 70, no associativity).
-Reserved Notation "f @^-1` A" (at level 24).
-Reserved Notation "f @` A" (at level 24).
-Reserved Notation "A !=set0" (at level 80).
+Reserved Notation "A `|` B" (at level 52, left associativity).
+Reserved Notation "a |` A" (at level 52, left associativity).
+Reserved Notation "A `\` B" (at level 50, left associativity).
+Reserved Notation "A `\ b" (at level 50, left associativity).
 
-Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
-Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
-Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
-Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
-
-Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
-  EqType (forall x : T, T' x) gen_eqMixin.
-Canonical arrow_eqType (T : Type) (T' : eqType) :=
-  EqType (T -> T') gen_eqMixin.
-Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
-  ChoiceType (T -> T') gen_choiceMixin.
-
-Canonical Prop_eqType := EqType Prop gen_eqMixin.
-Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
 
 Definition set A := A -> Prop.
-Definition in_set T (P : set T) : pred T := [pred x | `[<P x>]].
-Canonical set_predType T := @PredType T (set T) (@in_set T).
+Definition in_set T (P : set T) : ppred T := [ppred x | P x].
+Canonical set_predType T := @mkPpredType T (set T) (@in_set T).
 
 Lemma in_setE T (P : set T) x : x \in P = P x :> Prop.
-Proof. by rewrite propeqE; split => [] /asboolP. Qed.
+Proof. by []. Qed.
 
 Bind Scope classical_set_scope with set.
 Local Open Scope classical_set_scope.
 Delimit Scope classical_set_scope with classic.
 
-Notation "[ 'set' x : T | P ]" := ((fun x => P) : set T) : classical_set_scope.
-Notation "[ 'set' x | P ]" := [set x : _ | P] : classical_set_scope.
-Notation "[ 'set' E | x 'in' A ]" :=
-  [set y | exists2 x, A x & E = y] : classical_set_scope.
-Notation "[ 'set' E | x 'in' A & y 'in' B ]" :=
-  [set z | exists2 x, A x & exists2 y, B y & E = z] : classical_set_scope.
+Notation "[ 'set' x : T | P ]" := ((fun x => P) : set T)
+  (at level 0, x at level 99, only parsing) : classical_set_scope.
+Notation "[ 'set' x | P ]" := [set x : _ | P]
+  (at level 0, x, P at level 99, format "[ 'set'  x  |  P ]") : classical_set_scope.
+
+Notation "[ 'set' E | x 'in' A ]" := [set y | exists2 x, A x & E = y]
+  (at level 0, E, x at level 99,
+   format "[ '[hv' 'set'  E '/ '  |  x  'in'  A ] ']'") : classical_set_scope.
+Notation "[ 'set' E | x 'in' A & y 'in' B ]" := [set z | exists2 x, A x & exists2 y, B y & E = z]
+  (at level 0, E, x at level 99,
+   format "[ '[hv' 'set'  E '/ '  |  x  'in'  A  &  y  'in'  B ] ']'") : classical_set_scope.
 
 Definition image {A B} (f : A -> B) (X : set A) : set B :=
   [set f a | a in X].
@@ -197,21 +141,45 @@ Definition setM {A B} (X : set A) (Y : set B) := [set x | X x.1 /\ Y x.2].
 Definition fst_set {A B} (X : set (A * B)) := [set x | exists y, X (x, y)].
 Definition snd_set {A B} (X : set (A * B)) := [set y | exists x, X (x, y)].
 
-Notation "[ 'set' 'of' F ]" := [set F i | i in setT] : classical_set_scope.
-Notation "[ 'set' a ]" := (set1 a) : classical_set_scope.
-Notation "[ 'set' a : T ]" := [set (a : T)] : classical_set_scope.
+Notation "[ 'set' 'of' F ]" := [set F i | i in setT]
+  (at level 0,
+   format "[ 'set'  'of'  F ]") : classical_set_scope.
+
+Notation "[ 'set' a ]" := (set1 a)
+  (at level 0, a at level 99, format "[ 'set'  a ]") : classical_set_scope.
+Notation "[ 'set' a : T ]" := [set (a : T)]
+  (at level 0, a at level 99, format "[ 'set'  a   :  T ]") : classical_set_scope.
 Notation "A `|` B" := (setU A B) : classical_set_scope.
 Notation "a |` A" := ([set a] `|` A) : classical_set_scope.
-Notation "[ 'set' a1 ; a2 ; .. ; an ]" :=
-  (setU .. (a1 |` [set a2]) .. [set an]) : classical_set_scope.
+Notation "[ 'set' a1 ; a2 ; .. ; an ]" := (setU .. (a1 |` [set a2]) .. [set an])
+  (at level 0, a1 at level 99,
+   format "[ 'set'  a1 ;  a2 ;  .. ;  an ]") : classical_set_scope.
 Notation "A `&` B" := (setI A B) : classical_set_scope.
 Notation "A `*` B" := (setM A B) : classical_set_scope.
-Notation "A .`1" := (fst_set A) : classical_set_scope.
-Notation "A .`2" := (snd_set A) : classical_set_scope.
-Notation "~` A" := (setC A) : classical_set_scope.
-Notation "[ 'set' ~ a ]" := (~` [set a]) : classical_set_scope.
+Notation "A .`1" := (fst_set A)
+  (at level 2, left associativity, format "A .`1") : classical_set_scope.
+Notation "A .`2" := (snd_set A)
+  (at level 2, left associativity, format "A .`2") : classical_set_scope.
+Notation "~` A" := (setC A) (at level 35, right associativity) : classical_set_scope.
+Notation "[ 'set' ~ a ]" := (~` [set a])
+  (at level 0, format "[ 'set' ~  a ]") : classical_set_scope.
 Notation "A `\` B" := (setD A B) : classical_set_scope.
 Notation "A `\ a" := (A `\` [set a]) : classical_set_scope.
+
+Section setOps.
+
+Variable T : Type.
+Implicit Types (a x : T) (A B C D : set T).
+
+Lemma set1P x a : (x \in [set a]) =  (x = a).
+Proof. by rewrite in_setE. Qed.
+
+Lemma set11 x : x \in [set x].
+Proof. by rewrite in_setE. Qed.
+
+
+End setOps.
+
 
 Definition bigsetI A I (P : set I) (X : I -> set A) :=
   [set a | forall i, P i -> X i a].
@@ -219,38 +187,49 @@ Definition bigsetU A I (P : set I) (X : I -> set A) :=
   [set a | exists2 i, P i & X i a].
 
 Notation "\bigcup_ ( i 'in' P ) F" :=
-  (bigsetU P (fun i => F)) : classical_set_scope.
+  (bigsetU P (fun i => F))
+  (at level 41, F at level 41, i, P at level 50,
+           format "'[' \bigcup_ ( i  'in'  P ) '/  '  F ']'")
+ : classical_set_scope.
 Notation "\bigcup_ ( i : T ) F" :=
-  (\bigcup_(i in @setT T) F) : classical_set_scope.
-Notation "\bigcup_ i F" := (\bigcup_(i : _) F) : classical_set_scope.
+  (\bigcup_(i in @setT T) F)
+  (at level 41, F at level 41, i at level 50,
+           format "'[' \bigcup_ ( i  :  T ) '/  '  F ']'")
+ : classical_set_scope.
+Notation "\bigcup_ i F" :=
+  (\bigcup_(i : _) F)
+  (at level 41, F at level 41, i at level 0,
+           format "'[' \bigcup_ i '/  '  F ']'")
+ : classical_set_scope.
+
 Notation "\bigcap_ ( i 'in' P ) F" :=
-  (bigsetI P (fun i => F)) : classical_set_scope.
+  (bigsetI P (fun i => F))
+  (at level 41, F at level 41, i, P at level 50,
+           format "'[' \bigcap_ ( i  'in'  P ) '/  '  F ']'")
+ : classical_set_scope.
 Notation "\bigcap_ ( i : T ) F" :=
-  (\bigcap_(i in @setT T) F) : classical_set_scope.
-Notation "\bigcap_ i F" := (\bigcap_(i : _) F) : classical_set_scope.
+  (\bigcap_(i in @setT T) F)
+  (at level 41, F at level 41, i at level 50,
+           format "'[' \bigcap_ ( i  :  T ) '/  '  F ']'")
+ : classical_set_scope.
+Notation "\bigcap_ i F" :=
+  (\bigcap_(i : _) F)
+  (at level 41, F at level 41, i at level 0,
+           format "'[' \bigcap_ i '/  '  F ']'")
+ : classical_set_scope.
 
 Definition subset {A} (X Y : set A) := forall a, X a -> Y a.
 
-Notation "A `<=` B" := (subset A B) : classical_set_scope.
-Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) : classical_set_scope.
-Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
-Notation "f @` A" := (image f A) : classical_set_scope.
-Notation "A !=set0" := (nonempty A) : classical_set_scope.
+Notation "A `<=` B" := (subset A B) (at level 70, no associativity)
+ : classical_set_scope.
+Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) (at level 70, no associativity)
+ : classical_set_scope.
+Notation "f @^-1` A" := (preimage f A) (at level 24) : classical_set_scope.
+Notation "f @` A" := (image f A) (at level 24) : classical_set_scope.
+Notation "A !=set0" := (nonempty A) (at level 80) : classical_set_scope.
 
 Lemma eqEsubset T (F G : set T) : F `<=` G -> G `<=` F -> F = G.
 Proof. by move=> H K; rewrite funeqE=> s; rewrite propeqE; split=> [/H|/K]. Qed.
-
-Lemma sub0set T (X : set T) : set0 `<=` X.
-Proof. by []. Qed.
-
-Lemma subset0 T (X : set T) : (X `<=` set0) = (X = set0).
-Proof. rewrite propeqE; split => [?|-> //]; exact/eqEsubset. Qed.
-
-Lemma set0P T (X : set T) : (X != set0) <-> (X !=set0).
-Proof.
-split=> [/negP X_neq0|[t tX]]; last by apply/negP => /eqP X0; rewrite X0 in tX.
-by apply: contrapT => /asboolPn/forallp_asboolPn X0; apply/X_neq0/eqP/eqEsubset.
-Qed.
 
 Lemma imageP {A B} (f : A -> B) (X : set A) a : X a -> (f @` X) (f a).
 Proof. by exists a. Qed.
@@ -299,12 +278,6 @@ Proof. by move=> sXY ? nYa ?; apply/nYa/sXY. Qed.
 Lemma subsetU {A} (X Y Z : set A) : X `<=` Z -> Y `<=` Z -> X `|` Y `<=` Z.
 Proof. by move=> sXZ sYZ a; apply: or_ind; [apply: sXZ|apply: sYZ]. Qed.
 
-Lemma subUset T (X Y Z : set T) : (Y `|` Z `<=` X) = ((Y `<=` X) /\ (Z `<=` X)).
-Proof.
-rewrite propeqE; split => [|[YX ZX] x]; last by case; [exact: YX | exact: ZX].
-by move=> sYZ_X; split=> x ?; apply sYZ_X; [left | right].
-Qed.
-
 Lemma subsetI A (X Y Z : set A) : (X `<=` Y `&` Z) = ((X `<=` Y) /\ (X `<=` Z)).
 Proof.
 rewrite propeqE; split=> [H|[y z ??]]; split; by [move=> ?/H[]|apply y|apply z].
@@ -316,7 +289,7 @@ Proof. case => H a; by [move=> [/H] | move=> [_ /H]]. Qed.
 Lemma setD_eq0 A (X Y : set A) : (X `\` Y = set0) = (X `<=` Y).
 Proof.
 rewrite propeqE; split=> [XDY0 a|sXY].
-  by apply: contrapTT => nYa xA; rewrite -[False]/(set0 a) -XDY0.
+  by apply: contrapLR => nYa xA; rewrite -[False]/(set0 a) -XDY0.
 by rewrite predeqE => ?; split=> // - [?]; apply; apply: sXY.
 Qed.
 
@@ -350,24 +323,6 @@ Proof. by rewrite setIC setICA setIA. Qed.
 Lemma setIACA {A} (X Y Z T : set A) :
   X `&` Y `&` (Z `&` T) = X `&` Z `&` (Y `&` T).
 Proof. by rewrite -setIA [Y `&` _]setICA setIA. Qed.
-
-Lemma setUA A : associative (@setU A).
-Proof. move=> p q r; rewrite /setU predeqE => a; tauto. Qed.
-
-Lemma setUid A : idempotent (@setU A).
-Proof. move=> p; rewrite /setU predeqE => a; tauto. Qed.
-
-Lemma setUC A : commutative (@setU A).
-Proof. move=> p q; rewrite /setU predeqE => a; tauto. Qed.
-
-Lemma set0U T (X : set T) : set0 `|` X = X.
-Proof. by rewrite funeqE => t; rewrite propeqE; split; [case|right]. Qed.
-
-Lemma setU0 T (X : set T) : X `|` set0 = X.
-Proof. by rewrite funeqE => t; rewrite propeqE; split; [case|left]. Qed.
-
-Lemma setU_eq0 T (X Y : set T) : (X `|` Y = set0) = ((X = set0) /\ (Y = set0)).
-Proof. by rewrite -!subset0 subUset. Qed.
 
 Lemma setI_bigcapl A I (D : set I) (f : I -> set A) (X : set A) :
   D !=set0 -> \bigcap_(i in D) f i `&` X = \bigcap_(i in D) (f i `&` X).
@@ -488,8 +443,8 @@ Canonical Prop_pointedType := PointedType Prop False.
 Canonical nat_pointedType := PointedType nat 0%N.
 Canonical prod_pointedType (T T' : pointedType) :=
   PointedType (T * T') (point, point).
-Canonical matrix_pointedType m n (T : pointedType) :=
-  PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
+(* Canonical matrix_pointedType m n (T : pointedType) := *)
+(*   PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R. *)
 
 Notation get := (xget point).
 
@@ -566,18 +521,17 @@ suff Twtot : total_on tower R.
 move=> s t Tws; elim: Tws t => {s} [A sATw ihA|s Tws ihs] t Twt.
   case: (pselect (forall s, sval A s -> R s t)).
     by move=> ?; left; apply: lub_lub.
-  move/asboolP; rewrite asbool_neg => /existsp_asboolPn [s /asboolP].
-  rewrite asbool_neg => /imply_asboolPn [As nRst]; right.
-  by have /lub_ub := As; apply: Rtrans; have [] := ihA _ As _ Twt.
+  (* cannot chain rw and intro pat... *)
+  rewrite not_forall => - [s ]; rewrite not_imply => - [] As nRst.
+  by right; have [// | Rts] := ihA _ As _ Twt; apply: Rtrans (lub_ub _ _ As).
 suff /(_ _ Twt) [Rts|RSst] : forall r, tower r -> R r s \/ R (succ s) r.
     by right; apply: Rtrans Rts _; have [] := RS s.
   by left.
 move=> r; elim=> {r} [A sATw ihA|r Twr ihr].
   case: (pselect (forall r, sval A r -> R r s)).
     by move=> ?; left; apply: lub_lub.
-  move/asboolP; rewrite asbool_neg => /existsp_asboolPn [r /asboolP].
-  rewrite asbool_neg => /imply_asboolPn [Ar nRrs]; right.
-  by have /lub_ub := Ar; apply: Rtrans; have /ihA [] := Ar.
+  rewrite not_forall => - [r ]; rewrite not_imply => - [] Ar nRst.
+  by right; have [// | ?] := ihA _ Ar; apply: Rtrans (lub_ub _ _ Ar).
 have [Rrs|RSsr] := ihr; last by right; apply: Rtrans RSsr _; have [] := RS r.
 have : tower (succ r) by apply: Succ.
 move=> /ihs [RsSr|]; last by left.
@@ -615,13 +569,11 @@ have R'tot_lub A : total_on A R' -> exists t, (forall s, A s -> R' s t) /\
   exists (exist _ (\bigcup_(B in A) sval B) AUtot); split.
     by move=> B ???; exists B.
   by move=> B Bub ? /= [? /Bub]; apply.
+have tot0 : total_on set0 R by []. 
 apply: contrapT => nomax.
-have {nomax} nomax t : exists s, R t s /\ s <> t.
-  have /asboolP := nomax; rewrite asbool_neg => /forallp_asboolPn /(_ t).
-  move=> /asboolP; rewrite asbool_neg => /existsp_asboolPn [s].
-  by move=> /asboolP; rewrite asbool_neg => /imply_asboolPn []; exists s.
-have tot0 : total_on set0 R by [].
-apply: (ZL' (exist _ set0 tot0)) R'tot_lub _ => // A.
+apply: (ZL' (exist _ set0 tot0)) R'tot_lub _ => // A.                                have {nomax} nomax t : exists s, R t s /\ s <> t.
+  move: nomax; rewrite not_exists => /(_ t); rewrite not_forall => - [s].
+  by rewrite not_imply => ?; exists s.
 have /Rtot_max [t tub] := svalP A; have [s [Rts snet]] := nomax t.
 have Astot : total_on (sval A `|` [set s]) R.
   move=> u v [Au|->]; last first.
@@ -637,7 +589,7 @@ case: (pselect (B s)) => [Bs|nBs].
 left; case: A tub Astot sBAs sAB => A Atot /= tub Astot sBAs sAB.
 apply: exist_congr; rewrite predeqE => r; split=> [Br|/sAB] //.
 by have /sBAs [|ser] // := Br; rewrite ser in Br.
-Qed.
+Qed. 
 
 Definition premaximal T (R : T -> T -> Prop) (t : T) :=
   forall s, R t s -> R s t.
