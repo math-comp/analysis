@@ -4,7 +4,7 @@ From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
 Require Import boolp reals Rstruct Rbar.
 Require Import classical_sets posnum topology normedtype landau.
-
+ 
 
 Require Import hahn_banach.
 
@@ -20,9 +20,8 @@ Local Open Scope classical_set_scope.
  
 
 Section LinearContinuousBounded.
-(* Everything in this section in stated for scalar functions.          *)
-(* Making this available for linear function into normed spaces over R *)
-  (* would just necessitate to replace normr lemmas by normm lemmas      *)
+(* Everything in this section in stated for scalar functions.                       *)
+(* They will be turned into lemmas for linear functions into normed spaces soon     *)
   
 Variables (V  : normedModType R ) . 
 
@@ -137,8 +136,8 @@ Proof.
      by  rewrite mulr_gt0.
      by []. 
      by rewrite invr_gt0.
-       apply : mulr_gt0.
-         by rewrite invr_gt0.
+     apply : mulr_gt0.
+         by rewrite invr_gt0 //=.
          by [].
   move : (H a ball0ta) ;  rewrite ball_absE /ball_ sub0r absRE normrN. 
   have  : ( f a =  ( (`|[x]|^-1) * t/2 ) * ( f x)) .
@@ -149,12 +148,12 @@ Proof.
   rewrite mulrC mulrC  -mulrA. rewrite -mulrA  ltr_pdivr_mull.  
   rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr.
   rewrite invf_div => Ht.
-   by apply : ltrW. 
-     by apply : mulr_gt0.
-     by [].
+    by   apply : ltrW.
+    by  apply : mulr_gt0 .
+    by [].   
      apply : mulr_gt0. 
-     apply : mulr_gt0.
-     by rewrite invr_gt0.
+    apply : mulr_gt0.
+       rewrite invr_gt0 //=.
      by [].  
      by []. 
 Qed.
@@ -184,7 +183,7 @@ Proof.
     by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
     by [].     
     by [].       
- 
+ Search _  ( _ <= _ ) ( _ < _ ). 
  (* going from <= to < *)
 Admitted.
 
@@ -215,7 +214,7 @@ Definition ibd (A : set R) (a : R) := forall x, A x -> a <= x.
 (*Set Printing Coercions.*)
 
 (* From the sup properties proven in bool in reals, we deduce the version in Prop 
-  that we used in our proof of hahn_banacH *)
+  that we used in our proof of hahn banach theorem in hahn_banach.v *)
 Lemma mymysup : forall (A : set R) (a m : R),
      A a -> ubd A m ->
      {s : R | ubd A s /\ forall u, ubd A u -> s <= u}.
@@ -251,8 +250,12 @@ Lemma mymyinf : forall (A : set R) (a m : R),
 Admitted.
 
 
-Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf) .
+Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf).
+Check myHB.
 
+
+
+Check normr_idP.  
 Theorem HB_geom_normed :
  continuousR_on F f ->
   exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (f x = g x) ) .  
@@ -260,14 +263,20 @@ Proof.
   move   => H.
   move : (continuousR_bounded0 (H 0 F0)) => [r [ltr0 fxrx]] {H}.
   pose p := fun x : V => `|[x]|*r.
-  have convp: convex p.
-   move => v1 v2 l m lm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
-   have l_m1 : (l = 1 - m). rewrite -lm1. (*m - m =0 *) admit.
-   rewrite l_m1. rewrite  [(1-_)*_]mulrDl -addrA. 
-   have blou : `|[(1 - m) *: v1 + m *: v2]| <= `|(1 - m)| *`|[ v1]| + `| m| *`|[v2]|.
-   rewrite -!absRE -!normmZ.  by apply : ler_normm_add.
-   admit.
- Check (myHB F F0 Flin convp ). 
+  have convp: convex p. 
+   move => v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
+   have normp : `|[l *: v1 + m *: v2]|  <= (l * `|[v1]| + m * `|[v2]|).
+    have labs : `|l| = l by apply/normr_idP.
+    have mabs: `|m| = m by apply/normr_idP.
+   rewrite -[in(_*_)]labs -[in(m*_)]mabs. rewrite -!absRE -!normmZ.
+   apply : ler_normm_add.
+   apply : ler_pmul.
+    by apply : normm_ge0.
+    by apply : ltrW.
+    by [].
+    by [].   
+  Check myHB.
+    
 Admitted. 
 
 
