@@ -602,7 +602,7 @@ Section OrderRels.
  Variables (R : numDomainType) (V : lmodType R).
 
  Definition convex (p : V -> R) :=  forall v1 v2 l m,
-   ( l > 0 /\ m > 0) ->  l + m = 1 -> p (l *: v1 + m *: v2) <= l * (p v1) + m * (p v2).
+   ( 0 <= l /\ 0 <= m) ->  l + m = 1 -> p (l *: v1 + m *: v2) <= l * (p v1) + m * (p v2).
 
  Definition linear_rel (f : V -> R -> Prop) :=
    forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
@@ -780,8 +780,12 @@ Section OrderRels.
      have step1 : p (s  / (s + t) *: y1 + t  / (s + t) *: y2) <= rhs.
        rewrite /rhs !mulrDl ![_  * _ / _]mulrAC; apply: p_cvx.
        split.
-           by rewrite divr_gt0 //= addr_gt0.
-           by rewrite divr_gt0 //= addr_gt0.
+        rewrite divr_ge0 //=.
+          by apply : ltrW.
+          by rewrite addr_ge0 //= ;  apply : ltrW.
+        rewrite divr_ge0 //=.    
+          by apply : ltrW.
+          by rewrite   addr_ge0 //= ;  apply : ltrW.    
      by rewrite -mulrDl mulfV //; apply: lt0r_neq0; rewrite addr_gt0.
      apply: ler_trans step1 => {rhs}.
      set u : V := (X in p X).
