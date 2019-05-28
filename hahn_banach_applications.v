@@ -99,7 +99,6 @@ Proof.
 Admitted.*)
 
 
-
 Lemma continuousR_bounded0 (f : {scalar V}) :
   (continuousR_at 0 f) -> 
    ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r  )  ) . 
@@ -166,32 +165,27 @@ Qed.
 
 (*  I can't manage to use bigO, as =O_0 does not typecheck                  *)
 
-Check eqO_exP.
-Check nearE. Check bigO_exP. Check linearB. 
-
 Lemma scalar_continuous (f: {scalar V }) :
   (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r)) -> continuousR_at 0 f .
 Proof.
   move => [r [lt0r H]].  
-  apply/(continuousR_atP 0). move => eps. 
-  rewrite nearE.  
-  rewrite  (linear0 f).
-  rewrite /( _ @ _). rewrite /([filter of _ ]) /(_ @^-1` _).
-  apply/locallyP.
-  (* locally is proved via an existential. Looong search *)
+  apply/(continuousR_atP 0) => eps ;  rewrite nearE  (linear0 f).
+  rewrite /( _ @ _) /([filter of _ ]) /(_ @^-1` _);  apply/locallyP.
+  (* locally is proved via an existential. Long search *)
   exists (eps%:num *2^-1*r^-1).  
    by  rewrite !divr_gt0. 
    move => a ; rewrite -ball_normE  /(ball_)  addrC addr0 normmN.
    move => na ; rewrite ball_absE /(ball_) addrC addr0 absRE normrN.
-   have na0: `|[a]| * r <= eps%:num / 2.
-    admit. 
+   have na0: `|[a]| * r <= eps%:num / 2 by  apply : ltrW ; rewrite -ltr_pdivl_mulr. 
   have faeps2 : `|f a| <= eps%:num /2 by exact : ler_trans ( H a) na0.
-  have eps2eps : eps%:num  / 2 < eps%:num  .  rewrite gtr_pmulr.
+  have eps2eps : eps%:num  / 2 < eps%:num  .
+  rewrite gtr_pmulr.
   rewrite invf_lt1 .
     by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
     by [].     
     by [].       
-(* going from <= to < *)
+ 
+ (* going from <= to < *)
 Admitted.
 
 Lemma continuousR0_continuous (f : {scalar V}):
@@ -247,7 +241,9 @@ Proof.
     move : (proj2 (real_sup_is_lub has_sup_A) x majAxb).
     by move => /RleP.
 Qed.     
- 
+
+Check normm_gt0. Check normr_gt0.
+Search _ ( 0 <= `|[_]|).
 
 Lemma mymyinf : forall (A : set R) (a m : R),
      A a ->  ibd A m ->
@@ -258,26 +254,27 @@ Admitted.
 Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf) .
 
 Theorem HB_geom_normed :
-  (forall x , F x -> continuousR_at x f)
-   -> exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (f x = g x) ) .  
+ continuousR_on F f ->
+  exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (f x = g x) ) .  
 Proof.
   move   => H.
   move : (continuousR_bounded0 (H 0 F0)) => [r [ltr0 fxrx]] {H}.
   pose p := fun x : V => `|[x]|*r.
   have convp: convex p.
-   move => v1 v2 l m lm1 //=.  rewrite !/( p _) !mulrA -mulrDl.
+   move => v1 v2 l m lm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
    have l_m1 : (l = 1 - m). rewrite -lm1. (*m - m =0 *) admit.
-   rewrite l_m1. rewrite  [(1-_)*_]mulrDl -addrA.
+   rewrite l_m1. rewrite  [(1-_)*_]mulrDl -addrA. 
    have blou : `|[(1 - m) *: v1 + m *: v2]| <= `|(1 - m)| *`|[ v1]| + `| m| *`|[v2]|.
    rewrite -!absRE -!normmZ.  by apply : ler_normm_add.
    admit.
- Check (myHB F F0 Flin convp ).  
-
-
+ Check (myHB F F0 Flin convp ). 
 Admitted. 
+
+
 
 End HBGeomNormed.
 
+Check HB_geom_normed. 
 
 Module TopVec.
  
