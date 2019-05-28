@@ -203,7 +203,7 @@ End LinearContinuousBounded.
 
 
 Section HBGeomNormed.
-Variable ( V : normedModType R) ( F G: pred V ) (f : {scalar V}) ( F0 : F 0).
+Variable ( V : normedModType R) ( F : pred V ) (f : {scalar V}) ( F0 : F 0).
 Variable (Flin : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2))).
 Variable Choice_prop :  forall T U (P : T -> U -> Prop),
     (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
@@ -214,10 +214,6 @@ Definition ubd (A : set R) (a : R) := forall x, A x -> x <= a.
 
  (* Lower bound *)
 Definition ibd (A : set R) (a : R) := forall x, A x -> a <= x. 
-
-
-(*Unset Printing Notations.*)
-(*Set Printing Coercions.*)
 
 (* From the sup properties proven in bool in reals, we deduce the version in Prop 
   that we used in our proof of hahn banach theorem in hahn_banach.v *)
@@ -253,7 +249,7 @@ Lemma mymyinf : forall (A : set R) (a m : R),
 Admitted.
 
 
-Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf G F0 Flin).
+Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 Flin).
 
 Lemma ler_abspos (t:R) : 0 <= t -> ( `|t|=t).
 Proof.
@@ -262,10 +258,10 @@ Qed.
 
 
 
-Check normr_idP.  
+
 Theorem HB_geom_normed :
  continuousR_on F f ->
-  exists g : {scalar V} , ( continuousR_on G g ) /\ ( forall x, F x -> (g x = f x) ) .  
+  exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (g x = f x) ) .  
 Proof.
   move   => H.
   move : (continuousR_bounded0 (H 0 F0)) => [r [ltr0 fxrx]] {H}.
@@ -289,10 +285,14 @@ Proof.
 move : (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
 exists g.    
 split. 
- move => x Gx ; rewrite /(continuousR_at) ; apply : (continuousRat0_continuousat ).
+ move => x ; rewrite /(continuousR_at) ; apply : (continuousRat0_continuousat ).
  apply : bounded_continuousR0 ; exists r. 
-  split; first by []. 
-  move => x0. move : (majgp x) => Gx0. Search "ler_norm". admit. 
+  split; first by [].  
+  move => x0 . rewrite ler_norml.
+  apply /andP ; split.
+   rewrite -sub0r (ler_subl_addr). 
+   move : (majgp (-1*:x0)). rewrite /(p _) normmZ absRE normrN1 //=.     
+  admit. 
   by [].      
 Admitted. 
 
