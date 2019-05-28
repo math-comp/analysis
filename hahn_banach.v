@@ -907,22 +907,19 @@ Hypothesis inf : forall (A : set R) (a m : R),
 
 (* F and G are of type V -> bool, as required by the Mathematical Components
    interfaces. f is a linear application from (the entire) V to R. *)
-Variables (F G : pred V) (f : {scalar V}) (p : V -> R).
+Variables (F : pred V) (f : {scalar V}) (p : V -> R).
 
 (* MathComp seems to lack of an interface for submodules of V, so for now
    we state "by hand" that F is closed under linear combinations. *)
 Hypothesis F0 : F 0.
 Hypothesis linF : forall v1 v2 l, F v1 -> F v2 -> F (v1 + l *: v2).
 
-(* In fact we do not need G to be a superset of F *)
-(* Hypothesis sFG : subpred F G. *)
-
 Hypothesis p_cvx : convex p.
 
 Hypothesis f_bounded_by_p : forall x, F x -> f x <= p x.
 
 Theorem HahnBanach : exists g : {scalar V}, 
-  (forall x, G x -> g x <= p x) /\ (forall x, F x -> g x = f x).
+  (forall x,  g x <= p x) /\ (forall x, F x -> g x = f x).
 pose graphF v r := F v /\ r = f v.
 have func_graphF : functional graphF by move=> v r1 r2 [Fv ->] [_ ->].
 have lin_graphF : linear_rel graphF.
@@ -947,8 +944,8 @@ suff scalg : scalable_for  *%R g by split.
 exists (Linear scalg) => /=.
 have grxtf v : F v -> g v = f v.
   move=> Fv; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.  
-suff pmajg v : G v -> g v <= p v by split.
-  by move=> Gv; case: z {zmax} gP => [c [_ _ bp _]] /= gP; apply/bp/gP.
+  suff pmajg v :  g v <= p v by split.
+    by  case: z {zmax} gP => [c [_ _ bp _]] /= gP; apply/bp/gP.
 Qed.
 
 End HahnBanach.
