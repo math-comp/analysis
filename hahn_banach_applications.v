@@ -126,21 +126,21 @@ Proof.
   pose a := (  `|[x]|^-1 * t/2 ) *: x.
   (*going from ball to norm is done through ball_normE and unfolding ball_. *)
   (* I looked a long time for this *) 
-  have ball0ta : ball 0 t a.
+  have ball0ta : ball 0 t a. 
    apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
    rewrite normmZ absRE mulrC normedtype.R_AbsRingMixin_obligation_1.
-   rewrite !gtr0_norm. rewrite mulrC.
-   rewrite -mulrA -mulrA  ltr_pdivr_mull.
-   rewrite mulrC -mulrA  gtr_pmull.
-   rewrite invr_lt1.
+   rewrite !gtr0_norm. rewrite mulrC. 
+   rewrite -mulrA -mulrA  ltr_pdivr_mull. 
+   rewrite mulrC -mulrA  gtr_pmull. 
+   rewrite invf_lt1.
      by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
-     (* 2 Gring.Unit ?*)  apply/unitrPr. exists 2^-1. (*it can't be*)  admit.
-     by [].
+     by []. 
      by  rewrite mulr_gt0.
      by []. 
      by rewrite invr_gt0.
-      apply : mulr_gt0. by rewrite invr_gt0.
-     by [].
+       apply : mulr_gt0.
+         by rewrite invr_gt0.
+         by [].
   move : (H a ball0ta) ;  rewrite ball_absE /ball_ sub0r absRE normrN. 
   have  : ( f a =  ( (`|[x]|^-1) * t/2 ) * ( f x)) .
   have : a = (`|[x]|^-1 * t/2) *: x + 0 by rewrite addrC add0r.  
@@ -158,14 +158,13 @@ Proof.
      by rewrite invr_gt0.
      by [].  
      by []. 
-Admitted.
+Qed.
 
 
 (* Unable to use linear_continuous of landau.v because I use f : {scalar V} *)
 (* instead of f : {linear V -> W } *)
 
-(* Thus I adapt the proof to scalar functions, and to notations without =0 *)
-(* that I can't manage to use, as =O_0 does not typecheck                  *)
+(*  I can't manage to use bigO, as =O_0 does not typecheck                  *)
 
 Check eqO_exP.
 Check nearE. Check bigO_exP. Check linearB. 
@@ -173,80 +172,32 @@ Check nearE. Check bigO_exP. Check linearB.
 Lemma scalar_continuous (f: {scalar V }) :
   (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r)) -> continuousR_at 0 f .
 Proof.
-  move => [r [lt0r H]]. 
-  apply/flim_ballP => eps lt0eps.  rewrite nearE (linear0 f).
-  rewrite /( _ @ _). rewrite /([filter of _ ]) /(_ @^-1` _). Search "neigh" "".
-  Print neigh. Print open. Print locally. 
-  Search _  "open".
-Admitted.  
-(*  suff ballf0 : ball 
-  rewrite -ball_normE.  Unset Printing Notations.
-  rewrite ball_normm.
-  -ball_. 
-  
-  Search "locally".
-  rewrite locallynorm.
-  Unset Printing Notations. move => //=.
-  near +oo => k .
-  Check flim_normP. Check eqO_exP.
-apply/flim_normP => _/posnumP[e]; rewrite !near_simpl.
-  rewrite (ler_lt_trans (near flip k _ _)) // -ltr_pdivl_mull //.
-  near: y; apply/locally_normP.
-    by eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
-
-    
-move=> /eqO_exP [_/posnumP[k0] Of1] x.
-apply/flim_normP => _/posnumP[e]; rewrite !near_simpl.
-rewrite (near_shift 0) /= subr0; near=> y => /=.
-rewrite -linearB opprD addrC addrNK linearN normmN; near: y.
-suff flip : \forall k \near +oo, forall x, `|[f x]| <= k * `|[x]|.
-  near +oo => k; near=> y.
-  rewrite (ler_lt_trans (near flip k _ _)) // -ltr_pdivl_mull //.
-  near: y; apply/locally_normP.
-  by eexists; last by move=> ?; rewrite /= sub0r normmN; apply.
-have /locally_normP [_/posnumP[d]] := Of1.
-rewrite /cst [X in _ * X]absr1 mulr1 => fk; near=> k => y.
-case: (ler0P `|[y]|) => [|y0].
-  by rewrite normm_le0 => /eqP->; rewrite linear0 !normm0 mulr0.
-have ky0 : 0 <= k0%:num / (k * `|[y]|).
-  by rewrite pmulr_rge0 // invr_ge0 mulr_ge0 // ltrW.
-rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //.
-rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
-rewrite -normm_s.
-have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
-rewrite -linearZ fk //= normmB subr0 normmZ absRE ger0_norm //.
-rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //.
-by rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: locally_pinfty_gt.
-Grab Existential Variables. all: end_near. Qed.
-
-Lemma bounded_continuousR  (f : { scalar V }) : 
-  ( exists  r, (0 < r) /\ (forall x : V,   ( `|f x| ) <=   (`|[x]| ) * r) ) ->
-  continuous f.  
-Proof.
-  pose lincont := (linear_continuous). move : (lincont V R^o f).
-  Check bigOP. Check bigO_exP. Check bigOE. rewrite -eqOE.  /( _ =O_(0 : V) _ ).
-  Search "eqO"  in landau.
-  Check eqOP. rewrite 
-  apply :  linear_cont0_continuous . 
-  apply : (proj2 (continuous_atP 0 f)). 
+  move => [r [lt0r H]].  
+  apply/(continuousR_atP 0). move => eps. 
+  rewrite nearE.  
+  rewrite  (linear0 f).
+  rewrite /( _ @ _). rewrite /([filter of _ ]) /(_ @^-1` _).
+  apply/locallyP.
+  (* locally is proved via an existential. Looong search *)
+  exists (eps%:num *2^-1*r^-1).  
+   by  rewrite !divr_gt0. 
+   move => a ; rewrite -ball_normE  /(ball_)  addrC addr0 normmN.
+   move => na ; rewrite ball_absE /(ball_) addrC addr0 absRE normrN.
+   have na0: `|[a]| * r <= eps%:num / 2.
+    admit. 
+  have faeps2 : `|f a| <= eps%:num /2 by exact : ler_trans ( H a) na0.
+  have eps2eps : eps%:num  / 2 < eps%:num  .  rewrite gtr_pmulr.
+  rewrite invf_lt1 .
+    by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+    by [].     
+    by [].       
+(* going from <= to < *)
 Admitted.
-
-
-
-Lemma bounded_continuousR  (f : {scalar V}) : 
-  ( exists  r : posreal, (forall x : V,   ( `|f x| ) <=   (`|[x]| ) * r%:num  )  ) ->
-  continuous f.  
-Proof.
-  (*use linear_continuous of landau and landau_cst_bounded*)
-  move => H.
-  apply :  linear_cont0_continuousR . 
-  apply : (proj2 (continuousR_atP 0 f)). 
-Admitted. *)
 
 Lemma continuousR0_continuous (f : {scalar V}):
   continuousR_at 0 f -> continuous f.
 Proof.
-  move => cont0f x. Search flim "linear".
+  move => cont0f x. Search "flim".
 Admitted.
 
 End LinearContinuousBounded.
