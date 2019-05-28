@@ -164,7 +164,7 @@ Qed.
 
 (*  I can't manage to use bigO, as =O_0 does not typecheck                  *)
 
-Lemma scalar_continuous (f: {scalar V }) :
+Lemma bounded_continuousR0 (f: {scalar V }) :
   (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r)) -> continuousR_at 0 f .
 Proof.
   move => [r [lt0r H]].  
@@ -187,10 +187,16 @@ Proof.
  (* going from <= to < *)
 Admitted.
 
-Lemma continuousR0_continuous (f : {scalar V}):
+Lemma continuousRat0_continuous (f : {scalar V}):
   continuousR_at 0 f -> continuous f.
 Proof.
   move => cont0f x. Search "flim".
+Admitted.
+
+Lemma continuousRat0_continuousat (f : {scalar V}) x:
+  continuousR_at 0 f -> continuousR_at x f.
+Proof.
+  move => cont0f. Search "flim".
 Admitted.
 
 End LinearContinuousBounded.
@@ -241,24 +247,25 @@ Proof.
     by move => /RleP.
 Qed.     
 
-Check normm_gt0. Check normr_gt0.
-Search _ ( 0 <= `|[_]|).
-
 Lemma mymyinf : forall (A : set R) (a m : R),
      A a ->  ibd A m ->
      {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
 Admitted.
 
 
-Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf).
-Check myHB.
+Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf G F0 Flin).
+
+Lemma ler_abspos (t:R) : 0 <= t -> ( `|t|=t).
+Proof.
+ by  move => H ;  apply/normr_idP.
+Qed.
 
 
 
 Check normr_idP.  
 Theorem HB_geom_normed :
  continuousR_on F f ->
-  exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (f x = g x) ) .  
+  exists g : {scalar V} , ( continuousR_on G g ) /\ ( forall x, F x -> (g x = f x) ) .  
 Proof.
   move   => H.
   move : (continuousR_bounded0 (H 0 F0)) => [r [ltr0 fxrx]] {H}.
@@ -274,9 +281,19 @@ Proof.
     by apply : normm_ge0.
     by apply : ltrW.
     by [].
-    by [].   
-  Check myHB.
-    
+      by [].
+  have majfp : forall x, F x -> f x <= p x.      
+  move => x Fx; rewrite /(p _). apply : ler_trans.
+    by apply : ler_norm (f x).
+    by [].  
+move : (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
+exists g.    
+split. 
+ move => x Gx ; rewrite /(continuousR_at) ; apply : (continuousRat0_continuousat ).
+ apply : bounded_continuousR0 ; exists r. 
+  split; first by []. 
+  move => x0. move : (majgp x) => Gx0. Search "ler_norm". admit. 
+  by [].      
 Admitted. 
 
 
