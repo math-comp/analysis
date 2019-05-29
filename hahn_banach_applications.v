@@ -97,7 +97,6 @@ Proof.
        by [].  
 Admitted.*)
 
-
 Lemma continuousR_bounded0 (f : {scalar V}) :
   (continuousR_at 0 f) -> 
    ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r  )  ) . 
@@ -182,10 +181,10 @@ Proof.
   rewrite invf_lt1 .
     by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
     by [].     
-    by [].       
- Search _  ( _ <= _ ) ( _ < _ ). 
- (* going from <= to < *)
-Admitted.
+    by [].        
+ by apply : (ler_lt_trans faeps2).
+Qed.
+
 
 Lemma continuousRat0_continuous (f : {scalar V}):
   continuousR_at 0 f -> continuous f.
@@ -205,8 +204,9 @@ End LinearContinuousBounded.
 Section HBGeomNormed.
 Variable ( V : normedModType R) ( F : pred V ) (f : {scalar V}) ( F0 : F 0).
 Variable (Flin : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2))).
-Variable Choice_prop :  forall T U (P : T -> U -> Prop),
-    (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
+
+Variable (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
+                                (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t))))) .
 
 
  (* Upper bound *)
@@ -255,10 +255,7 @@ Lemma ler_abspos (t:R) : 0 <= t -> ( `|t|=t).
 Proof.
  by  move => H ;  apply/normr_idP.
 Qed.
-
-
-
-
+ 
 Theorem HB_geom_normed :
  continuousR_on F f ->
   exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (g x = f x) ) .  
@@ -271,7 +268,8 @@ Proof.
    have normp : `|[l *: v1 + m *: v2]|  <= (l * `|[v1]| + m * `|[v2]|).
     have labs : `|l| = l by apply/normr_idP.
     have mabs: `|m| = m by apply/normr_idP.
-   rewrite -[in(_*_)]labs -[in(m*_)]mabs. rewrite -!absRE -!normmZ.
+  rewrite -[in(_*_)]labs -[in(m*_)]mabs.
+  rewrite -!absRE -!normmZ.
    apply : ler_normm_add.
    apply : ler_pmul.
     by apply : normm_ge0.
@@ -285,22 +283,20 @@ Proof.
 move : (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
 exists g.    
 split. 
- move => x ; rewrite /(continuousR_at) ; apply : (continuousRat0_continuousat ).
+ move => x ; rewrite /(continuousR_at) ; apply : (continuousRat0_continuousat).
  apply : bounded_continuousR0 ; exists r. 
   split; first by [].  
-  move => x0 . rewrite ler_norml.
+  move => x0 ; rewrite ler_norml ;
   apply /andP ; split.
-   rewrite -sub0r (ler_subl_addr). 
-   move : (majgp (-1*:x0)). rewrite /(p _) normmZ absRE normrN1 //=.     
-  admit. 
-  by [].      
-Admitted. 
-
+  rewrite -sub0r (ler_subl_addr) ; move : (majgp (-x0)) ; rewrite /(p _) normmN (linearN g).  
+  by  rewrite -sub0r ler_subl_addl.
+  by exact : majgp x0.  
+  by [].  
+Qed.
 
 
 End HBGeomNormed.
 
-Check HB_geom_normed. 
 
 Module TopVec.
  
