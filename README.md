@@ -49,3 +49,6 @@ see [FILES.md](FILES.md)
 
 see [INSTALL.md](INSTALL.md)
 
+## Developping with nix
+
+see [NIX.md](NIX.md)
