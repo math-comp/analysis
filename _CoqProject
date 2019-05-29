@@ -2,22 +2,22 @@
 -arg -parsing
 -arg -w -arg -duplicate-clear
 
-boolp.v
-reals.v
-posnum.v
-landau.v
-classical_sets.v
-Rstruct.v
-Rbar.v
-topology.v
-normedtype.v
-forms.v
-derive.v
-summability.v
-altreals/xfinmap.v
-altreals/discrete.v
-altreals/realseq.v
-altreals/realsum.v
-altreals/distr.v
+theories/boolp.v
+theories/reals.v
+theories/posnum.v
+theories/landau.v
+theories/classical_sets.v
+theories/Rstruct.v
+theories/Rbar.v
+theories/topology.v
+theories/normedtype.v
+theories/forms.v
+theories/derive.v
+theories/summability.v
+theories/altreals/xfinmap.v
+theories/altreals/discrete.v
+theories/altreals/realseq.v
+theories/altreals/realsum.v
+theories/altreals/distr.v
 
--R . mathcomp.analysis
+-R theories mathcomp.analysis
