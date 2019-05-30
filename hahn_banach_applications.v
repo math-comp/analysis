@@ -158,10 +158,6 @@ Proof.
 Qed.
 
 
-(* Unable to use linear_continuous of landau.v because I use f : {scalar V} *)
-(* instead of f : {linear V -> W } *)
-
-(*  I can't manage to use bigO, as =O_0 does not typecheck                  *)
 
 Lemma bounded_continuousR0 (f: {scalar V }) :
   (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r)) -> continuousR_at 0 f .
@@ -169,7 +165,7 @@ Proof.
   move => [r [lt0r H]].  
   apply/(continuousR_atP 0) => eps ;  rewrite nearE  (linear0 f).
   rewrite /( _ @ _) /([filter of _ ]) /(_ @^-1` _);  apply/locallyP.
-  (* locally is proved via an existential. Long search *)
+  (* locally is proved via an existential *)
   exists (eps%:num *2^-1*r^-1).  
    by  rewrite !divr_gt0. 
    move => a ; rewrite -ball_normE  /(ball_)  addrC addr0 normmN.
@@ -189,14 +185,9 @@ Qed.
 Lemma continuousRat0_continuous (f : {scalar V}):
   continuousR_at 0 f -> continuous f.
 Proof.
-  move => cont0f x. Search "flim".
+  move => cont0f x.
 Admitted.
 
-Lemma continuousRat0_continuousat (f : {scalar V}) x:
-  continuousR_at 0 f -> continuousR_at x f.
-Proof.
-  move => cont0f. Search "flim".
-Admitted.
 
 End LinearContinuousBounded.
 
@@ -297,32 +288,3 @@ Qed.
 
 End HBGeomNormed.
 
-
-Module TopVec.
- 
- Variable (R : realFieldType).
- 
- Record mixin_of1 ( V : lmodType R) : Type := Mixin { base :  Type ;  
-                     vec :  GRing.Lmodule.class_of R base ;
-                     top : Topological.class_of base}. 
- 
- Variable (T : topologicalType). 
-  
- Record mixin_of2 ( T : topologicalType) : Type := Mixin {  
-                       vec :  GRing.Lmodule.class_of R T ;
-                       _ : topology.hausdorff T ;                               
-                       (* _ : continuous  (fun t => GRing.Zmodule.add (vec) t )  ;  *)
-                       (* _ : continuous (GRing.Lmodule.scale vec )  *) }.
-                                                    }.
-
- Structure type := Pack {sort; _ : class_of sort}.
-
-End TopVec.
-
-
-
-Module convTopVec.
-
-(*Add convex. Show that they are UniformTypes. *)
-
-End convTopvec.  
