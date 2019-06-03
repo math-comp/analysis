@@ -14,23 +14,10 @@
     section of the nix
     manual](https://nixos.org/nix/manual/#ch-installing-binary).
 
-    You may experience installation errors at this stage.
-    For example, the installation may stop with the following
-    error message:
+    See [Troubleshooting](#error-when-installing-nix) in case of error.
 
-    > ...
-    > installing 'nix-2.2.2'
-    > error: cloning builder process: Operation not permitted
-    > error: unable to start build process
-    > ...
-
-    On Debian, this can be solved by the following command:
-
-    > sudo sysctl kernel.unprivileged_userns_clone=1
-
-    (Checked with Debian 9.9.)
-
-  - You need to set several environment variables before you proceed to step 2:
+  - You need to set several environment variables before you proceed to step 2.
+    As nix invites you to do, you can source the nix.sh file:
 
     > . /home/username/.nix-profile/etc/profile.d/nix.sh
 
@@ -53,16 +40,7 @@
 
    and do whatever you are accustomed to do with Coq.
 
-   This is providing that the environment variable COQBIN does not
-   point to conflicting binaries. Check with:
-
-   > echo $COQBIN
-
-   If wrongly set, do:
-
-   > which coqtop
-   /nix/store/blahblah/bin/
-   > export COQBIN=/nix/store/blahblah/bin/
+   See [Troubleshooting](#error-when-executing-make) in case of error.
 
 4. In particular, you can edit files using `emacs` or `coqide`.
 
@@ -82,3 +60,31 @@
      in order to get a temporary installation of emacs and
      proof-general.  Make sure you add `(require 'proof-site)` to your
      `$HOME/.emacs`.
+
+# Troubleshooting
+
+## Error when installing nix
+
+You may experience errors when installing nix.
+For example, the installation may stop with the following
+error message:
+
+> ...
+> installing 'nix-2.2.2'
+> error: cloning builder process: Operation not permitted
+> error: unable to start build process
+> ...
+
+On Debian, this can be solved by the following command:
+
+> sudo sysctl kernel.unprivileged_userns_clone=1
+
+Checked with Debian 9.9.
+
+## Error when executing make
+
+If the environment variable COQBIN is set, it is likely to point
+to the wrong binaries. If set, do:
+
+> export COQBIN=$(which coqtop | xargs dirname)/
+
