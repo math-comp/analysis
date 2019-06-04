@@ -182,7 +182,7 @@ Proof.
 Qed.
 
 
-
+(*Do that in term of filters*)
 Lemma normedspace_topvecspace (x : V) ( y : V) (A : set V) :
   (locally x A) <-> (locally y (fun z => A ( x + z - y))).
 Proof.
@@ -208,7 +208,13 @@ Admitted.
  Lemma continuousRat0_continuous (f : {scalar V}):
   continuousR_at 0 f -> continuous f.
 Proof.
-  move => cont0f x.  
+  rewrite /(continuousR_at _) flim_locally => cont0f x ; rewrite flim_locally => eps pos.
+  rewrite nearE.
+  rewrite /(_@_) /[filter of _]. 
+  Check (normedspace_topvecspace  x 0 (f @^-1` ball (f x) eps)).
+  move : (cont0f eps pos). rewrite nearE. 
+  rewrite /(_@_) /[filter of _]. 
+  
 Admitted.
 
 
