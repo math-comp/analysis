@@ -9,19 +9,17 @@
     You should run this under your usual user account, not as
     root. The script will invoke `sudo` as needed.
 
-    For other configurations (in particular if multiple users share
-    the machine) or for nix uninstallation, go to the [appropriate
-    section of the nix
-    manual](https://nixos.org/nix/manual/#ch-installing-binary).
-
     See [Troubleshooting](#error-when-installing-nix) in case of error.
 
+    For other configurations (in particular if multiple users share
+    the machine) or for nix uninstallation, go to the
+    [appropriate section of the nix manual](https://nixos.org/nix/manual/#ch-installing-binary).
+
   - You need to set several environment variables before you proceed to step 2.
-    As nix invites you to do, you can source the nix.sh file:
+    The simplest way to do so is to **log out from your session and log in again**.
 
-    > . /home/username/.nix-profile/etc/profile.d/nix.sh
-
-    or **log out and log in again**.
+    See [Troubleshooting](#source-without-logging-out) if you prefer
+    not to terminate your session.
 
   - Step 1. only need to be done once on a same machine.
 
@@ -65,9 +63,8 @@
 
 ## Error when installing nix
 
-You may experience errors when installing nix.
-For example, the installation may stop with the following
-error message:
+You may experience errors when installing nix.  If the installation
+stops with an error message similar to the following one
 
 > ...
 > installing 'nix-2.2.2'
@@ -75,11 +72,9 @@ error message:
 > error: unable to start build process
 > ...
 
-On Debian, this can be solved by the following command:
+it may be fixed by the following command (tested with Debian 9.9):
 
 > sudo sysctl kernel.unprivileged_userns_clone=1
-
-Checked with Debian 9.9.
 
 ## Error when executing make
 
@@ -88,3 +83,11 @@ to the wrong binaries. If set, do:
 
 > export COQBIN=$(which coqtop | xargs dirname)/
 
+## Source without Logging out
+
+Nix needs the user to set several environment variables and
+the nix installer appends a command for this purpose to the user's `.profile`.
+The Nix environment variables can actually be set from within any
+shell by sourcing the appropriate file:
+
+> . ${HOME}/.nix-profile/etc/profile.d/nix.sh
