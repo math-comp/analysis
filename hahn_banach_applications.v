@@ -164,8 +164,8 @@ Lemma bounded_continuousR0 (f: {scalar V }) :
 Proof.
   move => [r [lt0r H]].  
   apply/(continuousR_atP 0) => eps ;  rewrite nearE  (linear0 f).
-  rewrite /( _ @ _) /([filter of _ ]) /(_ @^-1` _);  apply/locallyP.
-  (* locally is proved via an existential *)
+  rewrite /( _ @ _) /([filter of _ ]) /(_ @^-1` _);  apply/locallyP. 
+  (* locally_ is proved via an existential *)
   exists (eps%:num *2^-1*r^-1).  
    by  rewrite !divr_gt0. 
    move => a ; rewrite -ball_normE  /(ball_)  addrC addr0 normmN.
@@ -182,11 +182,35 @@ Proof.
 Qed.
 
 
-Lemma continuousRat0_continuous (f : {scalar V}):
+
+Lemma normedspace_topvecspace (x : V) ( y : V) (A : set V) :
+  (locally x A) <-> (locally y (fun z => A ( x + z - y))).
+Proof.
+ split.
+ (*do we have to go through ball and norm to get transititvity ?*) 
+ - move => /locallyP [eps pos] ; rewrite -ball_normE /ball_ =>  ballxeps ;  rewrite locallyP.
+  exists eps ; first by [].  
+  rewrite -ball_normE /ball_ => z  ballyepsz.
+  suff : (`|[x - (x + z-  y)]| < eps) by apply (ballxeps).  
+  rewrite -opprB normmN. rewrite -addrA -addrA addrC  -addrA -addrA.
+  suff -> : (- x + x = 0) by rewrite [-y + 0]addrC add0r -normmN opprB. 
+  (* -x + x = 0 *) admit.
+ - move =>  /locallyP [eps pos] ; rewrite -ball_normE /ball_ =>  ballxeps ;  rewrite locallyP. 
+   exists eps ; first by [].  
+   rewrite -ball_normE /ball_ => z  ballyepsz.
+   suff : `|[y- (z-x-y)]| < eps.
+    suff <-  :  x + (z - x + y) - y = z. admit.
+    admit.
+    admit.
+Admitted.
+
+   
+ Lemma continuousRat0_continuous (f : {scalar V}):
   continuousR_at 0 f -> continuous f.
 Proof.
-  move => cont0f x.
+  move => cont0f x.  
 Admitted.
+
 
 
 End LinearContinuousBounded.
