@@ -183,39 +183,26 @@ Qed.
 
 
 (*Do that in term of filters*)
-Lemma normedspace_topvecspace (x : V) ( y : V) (A : set V) :
+(*Lemma normedspace_topvecspace (x : V) ( y : V) (A : set V) :
   (locally x A) <-> (locally y (fun z => A ( x + z - y))).
 Proof.
- split.
- (*do we have to go through ball and norm to get transititvity ?*) 
- - move => /locallyP [eps pos] ; rewrite -ball_normE /ball_ =>  ballxeps ;  rewrite locallyP.
-  exists eps ; first by [].  
-  rewrite -ball_normE /ball_ => z  ballyepsz.
-  suff : (`|[x - (x + z-  y)]| < eps) by apply (ballxeps).  
-  rewrite -opprB normmN. rewrite -addrA -addrA addrC  -addrA -addrA.
-  suff -> : (- x + x = 0) by rewrite [-y + 0]addrC add0r -normmN opprB. 
-  (* -x + x = 0 *) admit.
- - move =>  /locallyP [eps pos] ; rewrite -ball_normE /ball_ =>  ballxeps ;  rewrite locallyP. 
-   exists eps ; first by [].  
-   rewrite -ball_normE /ball_ => z  ballyepsz.
-   suff : `|[y- (z-x-y)]| < eps.
-    suff <-  :  x + (z - x + y) - y = z. admit.
-    admit.
-    admit.
-Admitted.
+Admitted.*)
 
    
- Lemma continuousRat0_continuous (f : {scalar V}):
+Lemma continuousRat0_continuous (f : {scalar V}):
   continuousR_at 0 f -> continuous f.
 Proof.
-  rewrite /(continuousR_at _) flim_locally => cont0f x ; rewrite flim_locally => eps pos.
-  rewrite nearE.
-  rewrite /(_@_) /[filter of _]. 
-  Check (normedspace_topvecspace  x 0 (f @^-1` ball (f x) eps)).
-  move : (cont0f eps pos). rewrite nearE. 
-  rewrite /(_@_) /[filter of _]. 
-  
-Admitted.
+ move => cont0f  x ; rewrite flim_locally => eps pos.
+ move : ( continuousR_bounded0 cont0f ) => [r [rpos Hr]]. 
+ rewrite nearE  ball_absE /ball_.
+ rewrite /(_@_) /[filter of _] locallyP -ball_normE /ball_.
+ exists (eps /r).
+  -  by rewrite mulr_gt0 //= invr_gt0 .
+  - move => y Hxy.
+    rewrite /(_ @^-1`_). rewrite -(linearB f) absRE.   
+    suff : `|[x - y]| * r < eps by apply : ler_lt_trans (Hr (x-y)).
+    by rewrite -ltr_pdivl_mulr.
+Qed.      
 
 
 
