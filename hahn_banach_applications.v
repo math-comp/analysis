@@ -39,122 +39,53 @@ Qed.
 Definition continuousR_on F f :=  forall x , F x -> (continuousR_at x f ).
 
 
-(* Case for linear function into normed spaces, slightly different than real functions*)
-(*Lemma continuous_bounded0 (f : { linear V -> W}) :
-  (continuous_at 0 f) -> 
-   ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|[f x]| ) <=  (`|[x]| ) * r  )  ) . 
-Proof.
-  move => /continuous_atP H. have H' : (0 < 1) by []. move : (H (1%:pos))  {H'} .
-  rewrite (linear0 f) /( _ @ _ ) //=. move => H'{H}. 
-  have : exists t , (t > 0) /\  forall x , ball 0 t x -> ball 0 1 (f x ).
-    rewrite -!ball_normE /ball_.  (*rewrite sub0r*) admit.  
-
-  move => [t [tp H]].
-  exists (2*t^-1). split.  rewrite mulr_gt0.
-    by [].
-    by [].
-    by rewrite invr_gt0.
-  move => x ; case :  (boolp.EM (x=0)).
-  - by move => -> ; rewrite (linear0 f) !normm0 //= mul0r. 
-  - move => xneq0. 
-    have normxle0 : `|[x]| > 0 .  rewrite normm_gt0.
-    (*proving (x <> y) -> (x != y), where is it done ? *)
-    case : (boolp.EM (x==0)).
-    - move => /eqP x0. by have : False by apply : ( xneq0 x0). 
-    - by move => /negP. 
-    pose a := (  `|[x]|^-1 * t/2 ) *: x.
-    (*going from ball to norm is done through ball_normE and unfolding ball_. 
-    I looked a long time for this *)
-    have ball0ta : ball 0 t a. 
-     apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
-     rewrite normmZ absRE mulrC normedtype.R_AbsRingMixin_obligation_1.
-     rewrite !gtr0_norm. rewrite mulrA mulrA divrr. 
-     rewrite mul1r mulrC ltr_pdivr_mull. rewrite ltr_pmull.   
-      (* 1 <2 ??? *) admit.
-      by [].
-      by [].  
-      (* `|[x]| \is a GRing.unit *) admit.
-      by  rewrite invr_gt0.
-      apply : mulr_gt0. 
-       by rewrite invr_gt0.
-       by [].
-    move : (H a ball0ta) ;rewrite -ball_normE /ball_ sub0r normmN {ball0ta}. 
-    have  : ( f a =  ( (`|[x]|^-1) * t/2 ) *: ( f x)) .
-      have : a = (`|[x]|^-1 * t/2) *: x + 0 by rewrite addrC add0r.  
-      by move => -> ; rewrite linearP (linear0 f) addrC add0r.   
-    move => -> . 
-    rewrite normmZ absRE. rewrite normedtype.R_AbsRingMixin_obligation_1 !(gtr0_norm). 
-    rewrite mulrC mulrC  -mulrA. rewrite -mulrA  ltr_pdivr_mull. 
-    rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr. rewrite ltr_pdivr_mull. 
-     move => Ht.  apply : ltrW ; rewrite mulrC -mulrA (mulrC t^-1). 
-      by [].
-      by [].
-      by []. 
-      by [].
-      by rewrite invr_gt0.  
-      apply : mulr_gt0. 
-       by rewrite invr_gt0.
-       by [].  
-Admitted.*)
-
 Lemma continuousR_bounded0 (f : {scalar V}) :
   (continuousR_at 0 f) -> 
    ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r  )  ) . 
 Proof.
   move => /continuousR_atP H.
-  have  H':  (0 < 1) by []. move : (H (1%:pos)) {H'}.
+  have  H':  (0 < 1) by [].
+  move : (H (1%:pos)) {H'}.
   rewrite (linear0 f) /( _ @ _ ) //= nearE => H0 {H}.
   (* I had a hard time finding nearE as it is not in the abstract *)
-  move : (locally_ex H0) => [ tp  H] {H0}.
+  move : (locally_ex H0) => [ tp  H] {H0} ;  pose t := tp%:num. 
   move : H. 
-  pose t := tp%:num. 
-  exists (2*t^-1). split.  rewrite mulr_gt0.
-    by [].
-    by [].
-    by rewrite invr_gt0.
+  exists (2*t^-1). split; first by [].
   move => x ; case :  (boolp.EM (x=0)).
   -  by move => -> ; rewrite (linear0 f) normm0 normr0 //= mul0r. 
   - move => xneq0. 
     have normxle0 : `|[x]| > 0 .
       rewrite normm_gt0 ; case : (boolp.EM (x==0)).
     (*proving (x <> y) -> (x != y), where is it done ? *)
-    - by move => /eqP x0 ; have : False by apply : ( xneq0 x0). 
-    - by move => /negP. 
+     - by move => /eqP x0 ; have : False by apply : ( xneq0 x0). 
+     - by move => /negP. 
   pose a := (  `|[x]|^-1 * t/2 ) *: x.
   (*going from ball to norm is done through ball_normE and unfolding ball_. *)
   (* I looked a long time for this *) 
   have ball0ta : ball 0 t a. 
    apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
    rewrite normmZ absRE mulrC normedtype.R_AbsRingMixin_obligation_1.
-   rewrite !gtr0_norm. rewrite mulrC. 
-   rewrite -mulrA -mulrA  ltr_pdivr_mull. 
+   rewrite !gtr0_norm //=. rewrite mulrC. 
+   rewrite -mulrA -mulrA  ltr_pdivr_mull //=. 
    rewrite mulrC -mulrA  gtr_pmull. 
-   rewrite invf_lt1.
+   rewrite invf_lt1 //=. 
      by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
-     by []. 
-     by  rewrite mulr_gt0.
-     by []. 
-     by rewrite invr_gt0.
-     apply : mulr_gt0.
-         by rewrite invr_gt0 //=.
-         by [].
+     by rewrite mulr_gt0 //=. 
+   apply : mulr_gt0 ; last by [].
+     by rewrite invr_gt0 //=.
   move : (H a ball0ta) ;  rewrite ball_absE /ball_ sub0r absRE normrN. 
-  have  : ( f a =  ( (`|[x]|^-1) * t/2 ) * ( f x)) .
-  have : a = (`|[x]|^-1 * t/2) *: x + 0 by rewrite addrC add0r.  
-   by move => -> ; rewrite linearP (linear0 f) addrC add0r.   
-  move => -> .
-  rewrite normedtype.R_AbsRingMixin_obligation_1 (gtr0_norm).  
-  rewrite mulrC mulrC  -mulrA. rewrite -mulrA  ltr_pdivr_mull.  
+  suff ->  : ( f a =  ( (`|[x]|^-1) * t/2 ) * ( f x)) .
+     rewrite normedtype.R_AbsRingMixin_obligation_1 (gtr0_norm). 
+     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //=.   
   rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr.
-  rewrite invf_div => Ht.
+  rewrite invf_div => Ht. 
     by   apply : ltrW.
-    by  apply : mulr_gt0 .
-    by [].   
-     apply : mulr_gt0. 
-    apply : mulr_gt0.
-       rewrite invr_gt0 //=.
-     by [].  
-     by []. 
+    by  apply : mulr_gt0.
+    apply : mulr_gt0 ; last by [].
+       apply : mulr_gt0 ; last by [].
+      by rewrite invr_gt0 //=.
+   suff -> : a = (`|[x]|^-1 * t/2) *: x + 0  by  rewrite linearP (linear0 f) addrC add0r.
+   by rewrite addrC add0r.  
 Qed.
 
 
@@ -165,20 +96,17 @@ Proof.
   move => [r [lt0r H]].  
   apply/(continuousR_atP 0) => eps ;  rewrite nearE  (linear0 f).
   rewrite /( _ @ _) /([filter of _ ]) /(_ @^-1` _);  apply/locallyP. 
-  (* locally_ is proved via an existential *)
+  (* locally_ is proved via an existential which gives the radius of the ball contained in locally *)
   exists (eps%:num *2^-1*r^-1).  
    by  rewrite !divr_gt0. 
    move => a ; rewrite -ball_normE  /(ball_)  addrC addr0 normmN.
    move => na ; rewrite ball_absE /(ball_) addrC addr0 absRE normrN.
+   (*beware of the antisymetry  difference between ball_normE and ball_absE *)
    have na0: `|[a]| * r <= eps%:num / 2 by  apply : ltrW ; rewrite -ltr_pdivl_mulr. 
   have faeps2 : `|f a| <= eps%:num /2 by exact : ler_trans ( H a) na0.
-  have eps2eps : eps%:num  / 2 < eps%:num  .
-  rewrite gtr_pmulr.
-  rewrite invf_lt1 .
-    by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
-    by [].     
-    by [].        
- by apply : (ler_lt_trans faeps2).
+  have eps2eps : eps%:num  / 2 < eps%:num. rewrite gtr_pmulr ; last by []. 
+    by  rewrite invf_lt1 ; have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+  by apply : (ler_lt_trans faeps2).
 Qed.
 
 
@@ -203,7 +131,6 @@ Proof.
     suff : `|[x - y]| * r < eps by apply : ler_lt_trans (Hr (x-y)).
     by rewrite -ltr_pdivl_mulr.
 Qed.      
-
 
 
 End LinearContinuousBounded.
@@ -259,47 +186,34 @@ Admitted.
 
 Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 Flin).
 
-Lemma ler_abspos (t:R) : 0 <= t -> ( `|t|=t).
-Proof.
- by  move => H ;  apply/normr_idP.
-Qed.
- 
-Theorem HB_geom_normed :
+Theorem HB_geom_normed  :
  continuousR_on F f ->
-  exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (g x = f x) ) .  
+  exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (g x = f x) ).  
 Proof.
-  move   => H.
-  move : (continuousR_bounded0 (H 0 F0)) => [r [ltr0 fxrx]] {H}.
-  pose p := fun x : V => `|[x]|*r.
-  have convp: convex p. 
+ move => H ; move : (continuousR_bounded0 (H 0 F0)) => [r [ltr0 fxrx]] {H}.
+ pose p := fun x : V => `|[x]|*r ;   have convp: convex p. 
    move => v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
-   have normp : `|[l *: v1 + m *: v2]|  <= (l * `|[v1]| + m * `|[v2]|).
-    have labs : `|l| = l by apply/normr_idP.
-    have mabs: `|m| = m by apply/normr_idP.
-  rewrite -[in(_*_)]labs -[in(m*_)]mabs.
-  rewrite -!absRE -!normmZ.
-   apply : ler_normm_add.
-   apply : ler_pmul.
-    by apply : normm_ge0.
-    by apply : ltrW.
-    by [].
-      by [].
-  have majfp : forall x, F x -> f x <= p x.      
-  move => x Fx; rewrite /(p _). apply : ler_trans.
-    by apply : ler_norm (f x).
-    by [].  
-move : (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
-exists g.    
-split. 
- move => x ; rewrite /(continuousR_at) ; apply : (continuousRat0_continuousat).
- apply : bounded_continuousR0 ; exists r. 
-  split; first by [].  
-  move => x0 ; rewrite ler_norml ;
-  apply /andP ; split.
-  rewrite -sub0r (ler_subl_addr) ; move : (majgp (-x0)) ; rewrite /(p _) normmN (linearN g).  
-  by  rewrite -sub0r ler_subl_addl.
-  by exact : majgp x0.  
-  by [].  
+   suff : `|[l *: v1 + m *: v2]|  <= (l * `|[v1]| + m * `|[v2]|).
+     move => h ; apply : ler_pmul  ; last by [].
+     by apply : normm_ge0.
+     by apply : ltrW. 
+       by [].
+   have labs : `|l| = l by apply/normr_idP.
+   have mabs: `|m| = m by apply/normr_idP.
+   rewrite -[in(_*_)]labs -[in(m*_)]mabs -!absRE -!normmZ.
+   by apply : ler_normm_add.
+ have majfp : forall x, F x -> f x <= p x.      
+  move => x Fx; rewrite /(p _) ; apply : ler_trans ; last by [].
+   by apply : ler_norm (f x).
+ move : (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}. 
+ exists g ;  split ; last by []. 
+  move => x ; rewrite /(continuousR_at) ; apply : (continuousRat0_continuous).
+  apply : bounded_continuousR0 ; exists r.  
+   split; first by [].  
+   move => x0 ; rewrite ler_norml ; apply /andP ; split.
+   rewrite -sub0r (ler_subl_addr) ; move : (majgp (-x0)) ; rewrite /(p _) normmN (linearN g).  
+   by  rewrite -sub0r ler_subl_addl.
+   by exact : majgp x0.  
 Qed.
 
 
