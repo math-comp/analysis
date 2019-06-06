@@ -647,11 +647,21 @@ Section OrderRels.
  
  Variables (R : realFieldType) (V : lmodType R).
 
- Variables (F G : set V) (phi : {scalar V}) (p : V -> R).
+ Variables (F G : set V) (phi : V -> R) (p : V -> R).
+
+Hypothesis linphiF : forall v1 v2 l, F v1 -> F v2 -> 
+                              phi (v1 + l *: v2) = phi v1 + l * (phi v2).
 
  Implicit Types (f g : V -> R -> Prop).
 
  Hypothesis F0 : F 0.
+
+Fact phi0 : phi 0 = 0.
+Proof.
+have -> : 0 = 0 + (-1) *: 0 :> V by rewrite scaler0 addr0.
+by rewrite linphiF // mulN1r addrN.
+Qed.
+
  Hypothesis p_cvx : convex p.
 
  Hypothesis sup : forall (A : set R) (a m : R),
@@ -752,8 +762,7 @@ Section OrderRels.
    by case=> r rP; exists z => //; exists r.
  case: z => [c [fs1 ls1 ms1 ps1]] /= nzv.
  have c00 : c 0 0.
-   have -> : 0 = phi 0 by rewrite linear0. 
-   exact: ps1.
+   rewrite -phi0; exact: ps1.
  have [a aP] : exists a,  forall (x : V) (r lambda : R),
        c x r -> r + lambda * a <= p (x + lambda *: v).
    suff [a aP] : exists a,  forall (x : V) (r lambda : R),
@@ -907,12 +916,18 @@ Hypothesis inf : forall (A : set R) (a m : R),
 
 (* F and G are of type V -> bool, as required by the Mathematical Components
    interfaces. f is a linear application from (the entire) V to R. *)
-Variables (F : pred V) (f : {scalar V}) (p : V -> R).
+Variables (F G : pred V) (f : V -> R) (p : V -> R).
 
 (* MathComp seems to lack of an interface for submodules of V, so for now
    we state "by hand" that F is closed under linear combinations. *)
 Hypothesis F0 : F 0.
 Hypothesis linF : forall v1 v2 l, F v1 -> F v2 -> F (v1 + l *: v2).
+
+Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
+                              f (v1 + l *: v2) = f v1 + l * (f v2).
+
+(* In fact we do not need G to be a superset of F *)
+(* Hypothesis sFG : subpred F G. *)
 
 Hypothesis p_cvx : convex p.
 
@@ -924,14 +939,15 @@ pose graphF v r := F v /\ r = f v.
 have func_graphF : functional graphF by move=> v r1 r2 [Fv ->] [_ ->].
 have lin_graphF : linear_rel graphF.
   move=> v1 v2 l r1 r2 [Fv1 ->] [Fv2 ->]; split; first exact: linF.
-  by rewrite linearD linearZ.
+  by rewrite linfF.
 have maj_graphF : maj_by p graphF by move=> v r [Fv ->]; exact: f_bounded_by_p.
+
 have prol_graphF : prol F f graphF by move=> v Fv; split.
 have graphFP : spec F f p graphF by split.
 have [z zmax]:= zorn_rel_ex EM Choice_prop graphFP.
 pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
-have [g gP]:= hb_witness EM Choice_prop FP0 p_cvx sup inf zmax.
+have [g gP]:= hb_witness EM Choice_prop linfF FP0 p_cvx sup inf zmax.
 have scalg : lmorphism_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g. 
