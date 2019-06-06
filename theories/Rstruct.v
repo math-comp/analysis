@@ -363,47 +363,47 @@ Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 End ssreal_struct.
 
 Open Scope ring_scope.
-Require Import reals boolp.
+Require Import reals boolp classical_preds classical_sets.
 
 Section ssreal_struct_contd.
 
-Lemma is_upper_boundE (E : pred R) x : is_upper_bound E x = (x \in ub E).
-Proof.
-rewrite /is_upper_bound inE forallbE asboolE /=; apply/eq_forall=> y.
-by rewrite -(reflect_eq implyP) (reflect_eq (RleP _ _)).
-Qed.
+Lemma is_upper_boundE (E : set R) x : is_upper_bound E x = (x \in ub E).
+Proof. by apply/eq_forall=> y; rewrite in_setE (reflect_eq (RleP _ _)). Qed.
 
-Lemma boundE (E : pred R) : bound E = has_ub E.
+Lemma boundE (E : set R) : bound E = has_ub E.
 Proof. by apply/eq_exists=> x; rewrite is_upper_boundE. Qed.
 
-Lemma completeness' (E : pred R) : has_sup E -> {m : R | is_lub E m}.
-Proof. by move=> [eE bE]; rewrite -boundE in bE; apply: completeness. Qed.
+(* completeness stated with has_ub *)
+Lemma completeness' (E : set R) : has_sup E -> {m : R | is_lub E m}.
+Proof. by move=> [eE bE]; apply: completeness; rewrite // boundE. Qed.
 
-Definition real_sup (E : pred R) : R :=
+Definition real_sup (E : set R) : R :=
   if pselect (has_sup E) isn't left hsE then 0 else projT1 (completeness' hsE).
 
-Lemma real_sup_is_lub (E : pred R) : has_sup E -> is_lub E (real_sup E).
+Lemma real_sup_is_lub (E : set R) : has_sup E -> is_lub E (real_sup E).
 Proof.
 by move=> hsE; rewrite /real_sup; case: pselect=> // ?; case: completeness'.
 Qed.
 
-Lemma real_sup_ub (E : pred R) : has_sup E -> real_sup E \in ub E.
+Lemma real_sup_ub (E : set R) : has_sup E -> real_sup E \in ub E.
 Proof. by move=> /real_sup_is_lub []; rewrite is_upper_boundE. Qed.
 
-Lemma real_sup_out (E : pred R) : ~ has_sup E -> real_sup E = 0.
+Lemma real_sup_out (E : set R) : ~ has_sup E -> real_sup E = 0.
 Proof. by move=> nosup; rewrite /real_sup; case: pselect. Qed.
 
 (* :TODO: rewrite like this using (a fork of?) Coquelicot *)
 (* Lemma real_sup_adherent (E : pred R) : real_sup E \in closure E. *)
-Lemma real_sup_adherent (E : pred R) (eps : R) :
+Lemma real_sup_adherent (E : set R) (eps : R) :
   has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
 Proof.
 move=> supE eps_gt0; set m := _ - eps; apply: contrapT=> mNsmall.
 have: m \in ub E.
-  apply/ubP=> y Ey; have /negP := mNsmall (ex_intro2 _ _ y Ey _).
+  move=> y Ey; have /negP := mNsmall (ex_intro2 _ _ y Ey _).
   by rewrite -lerNgt.
 have [_ /(_ m)] := real_sup_is_lub supE.
 rewrite is_upper_boundE => m_big /m_big /RleP.
+
+
 by rewrite -subr_ge0 addrC addKr oppr_ge0 lerNgt eps_gt0.
 Qed.
 
@@ -531,7 +531,7 @@ by case: (y == z); rewrite //.
 Qed.
 
 Lemma bigmaxr_mem x0 lr :
-  (0 < size lr)%N -> bigmaxr x0 lr \in lr.
+  (0 < size lr)%N -> (bigmaxr x0 lr \in lr)%bool.
 Proof. by move/(bigmaxr_index x0); rewrite index_mem. Qed.
 
 Lemma bigmaxr_lerP x0 lr x :
@@ -552,8 +552,8 @@ move=> lr_size; apply: (iffP idP) => [lt_x i i_size | H].
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-Lemma bigmaxrP x0 lr x :
-  (x \in lr /\ forall i, (i < size lr) %N -> (nth x0 lr i) <= x) -> (bigmaxr x0 lr = x).
+Lemma bigmaxrP x0 (lr : seq R) x :
+  ((x \in lr)%bool /\ forall i, (i < size lr)%bool %N -> (nth x0 lr i) <= x) -> (bigmaxr x0 lr = x).
 Proof.
 move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: ler_asym; apply/andP; split.
   by apply/bigmaxr_lerP => //; apply: (leq_trans _ j_size).
