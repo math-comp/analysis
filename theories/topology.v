@@ -2,7 +2,7 @@
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap matrix.
-Require Import boolp Rstruct classical_sets posnum.
+Require Import boolp Rstruct classical_preds classical_sets posnum.
 
 (******************************************************************************)
 (* This file develops tools for the manipulation of filters and basic         *)
@@ -377,7 +377,7 @@ Structure source Z Y := Source {
 Definition source_filter Z Y (F : source Z Y) : (F -> Z) -> set (set Y) :=
   let: Source X f := F in f.
 
-Module Exports.
+ Module Exports.
 Coercion sort : type >-> Sortclass.
 Coercion base : class_of >-> Pointed.class_of.
 Coercion locally_op : class_of >-> locally_of.
@@ -386,7 +386,7 @@ Canonical eqType.
 Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion fpointedType : type >-> Pointed.type.
-Canonical fpointedType.
+Canonical fpointedType. 
 Notation filteredType := type.
 Notation FilteredType U T m := (@pack U T m _ _ idfun).
 Notation "[ 'filteredType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
@@ -415,7 +415,7 @@ Definition filter_from {I T : Type} (D : set I) (B : I -> set T) : set (set T) :
   [set P | exists2 i, D i & B i `<=` P].
 
 (* the canonical filter on matrices on X is the product of the canonical filter
-   on X *)
+ on X *)
 Canonical matrix_filtered m n X (Z : filteredType X) : filteredType 'M[X]_(m, n) :=
   FilteredType 'M[X]_(m, n) 'M[Z]_(m, n) (fun mx => filter_from
     [set P | forall i j, locally (mx i j) (P i j)]
@@ -599,14 +599,14 @@ Qed.
 
 Lemma filter_bigI T (I : choiceType) (D : {fset I}) (f : I -> set T)
   (F : set (set T)) :
-  Filter F -> (forall i, i \in D -> F (f i)) ->
-  F (\bigcap_(i in [set i | i \in D]) f i).
+  Filter F -> (forall i, (i \in D)%bool -> F (f i)) ->
+  F (\bigcap_(i in [set i | (i \in D)%bool]) f i).
 Proof.
 move=> FF FfD.
-suff: F [set p | forall i, i \in enum_fset D -> f i p] by [].
-have {FfD} : forall i, i \in enum_fset D -> F (f i) by move=> ? /FfD.
+suff: F [set p | forall i, (i \in enum_fset D)%bool -> f i p] by [].
+have {FfD} : forall i, (i \in enum_fset D)%bool -> F (f i) by move=> ? /FfD.
 elim: (enum_fset D) => [|i s ihs] FfD; first exact: filterS filterT.
-apply: (@filterS _ _ _ (f i `&` [set p | forall i, i \in s -> f i p])).
+apply: (@filterS _ _ _ (f i `&` [set p | forall i, (i \in s)%bool -> f i p])).
   by move=> p [fip fsp] j; rewrite inE => /orP [/eqP->|] //; apply: fsp.
 apply: filterI; first by apply: FfD; rewrite inE eq_refl.
 by apply: ihs => j sj; apply: FfD; rewrite inE sj orbC.
@@ -690,7 +690,7 @@ Definition Build_ProperFilter {T : Type} (F : set (set T))
 Lemma filter_ex_subproof {T : Type} (F : set (set T)) :
      ~ F set0 -> (forall P, F P -> exists x, P x).
 Proof.
-move=> NFset0 P FP; apply: contrapNT NFset0 => nex; suff <- : P = set0 by [].
+move=> NFset0 P FP; apply: contrapR NFset0 => nex; suff <- : P = set0 by [].
 by rewrite funeqE => x; rewrite propeqE; split=> // Px; apply: nex; exists x.
 Qed.
 
@@ -1425,7 +1425,7 @@ Lemma continuous_comp (R S T : topologicalType) (f : R -> S) (g : S -> T) x :
 Proof. exact: flim_comp. Qed.
 
 Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
-  {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
+  ({in f @^-1` D, continuous f})%classic -> open D -> open (f @^-1` D).
 Proof.
 rewrite !openE => fcont Dop x /= Dfx.
 by apply: fcont; [rewrite in_setE|apply: Dop].

@@ -102,7 +102,10 @@ Reserved Notation "A `\ b" (at level 50, left associativity).
 
 Definition set A := A -> Prop.
 Definition in_set T (P : set T) : ppred T := [ppred x | P x].
-Canonical set_predType T := @mkPpredType T (set T) (@in_set T).
+Canonical set_ppredType T := @mkPpredType T (set T) (@in_set T).
+
+Definition bin_set T (P : set T) : pred T := [pred x | asbool (P x)].
+Canonical set_predType T := @mkPredType T (set T) (@bin_set T).
 
 Lemma in_setE T (P : set T) x : x \in P = P x :> Prop.
 Proof. by []. Qed.
@@ -443,8 +446,8 @@ Canonical Prop_pointedType := PointedType Prop False.
 Canonical nat_pointedType := PointedType nat 0%N.
 Canonical prod_pointedType (T T' : pointedType) :=
   PointedType (T * T') (point, point).
-(* Canonical matrix_pointedType m n (T : pointedType) := *)
-(*   PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R. *)
+Canonical matrix_pointedType m n (T : pointedType) :=
+  PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
 
 Notation get := (xget point).
 
@@ -540,10 +543,6 @@ Qed.
 
 End ZL.
 
-Lemma exist_congr T (P : T -> Prop) (s t : T) (p : P s) (q : P t) :
-  s = t -> exist P s p = exist P t q.
-Proof. by move=> st; case: _ / st in q *; apply/congr1/Prop_irrelevance. Qed.
-
 Lemma Zorn T (R : T -> T -> Prop) :
   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
   (forall s t, R s t -> R t s -> s = t) ->
@@ -571,7 +570,8 @@ have R'tot_lub A : total_on A R' -> exists t, (forall s, A s -> R' s t) /\
   by move=> B Bub ? /= [? /Bub]; apply.
 have tot0 : total_on set0 R by []. 
 apply: contrapT => nomax.
-apply: (ZL' (exist _ set0 tot0)) R'tot_lub _ => // A.                                have {nomax} nomax t : exists s, R t s /\ s <> t.
+apply: (ZL' (exist _ set0 tot0)) R'tot_lub _ => // A.
+have {nomax} nomax t : exists s, R t s /\ s <> t.
   move: nomax; rewrite not_exists => /(_ t); rewrite not_forall => - [s].
   by rewrite not_imply => ?; exists s.
 have /Rtot_max [t tub] := svalP A; have [s [Rts snet]] := nomax t.
