@@ -239,7 +239,7 @@ Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 ->
 Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
                                 (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t))))) .
 
-
+ 
 (*The following should be generalized to any topological space *)
 
 (* How do you define induced topologies*)
