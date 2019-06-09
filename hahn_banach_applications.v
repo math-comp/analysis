@@ -27,26 +27,26 @@ Variables (V  : normedModType R ) .
 
 Definition continuousR_at x (f : V -> R) :=   ( f @ x) --> (f x).
 
+Definition continuousR_on ( F : set V) ( f : V -> R) := forall x, F x ->  ( f @ x) --> (f x).
+
 Lemma continuousR_atP x (f : V -> R) :
   (continuousR_at x f) <-> forall eps : posreal, \forall y \near f @ x, ball (f x) eps%:num y.
 Proof.
-  rewrite /continuousR_at. split.
-   - by move => /flim_ballPpos. 
-   - by move => /flim_ballPpos. 
+  rewrite /continuousR_at. split ; by move => /flim_ballPpos.  
 Qed.
 
 
-Definition continuousR_on F f :=  forall x , F x -> (continuousR_at x f ).
+
 
 
 Lemma continuousR_bounded0 (f : {scalar V}) :
   (continuousR_at 0 f) -> 
    ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r  )  ) . 
 Proof.
-  move => /continuousR_atP H.
+  move => /continuousR_atP H. 
   have  H':  (0 < 1) by [].
   move : (H (1%:pos)) {H'}.
-  rewrite (linear0 f) /( _ @ _ ) //= nearE => H0 {H}.
+  rewrite (linear0 f) /( _ @ _ ) //= nearE => H0 {H}. 
   (* I had a hard time finding nearE as it is not in the abstract *)
   move : (locally_ex H0) => [ tp  H] {H0} ;  pose t := tp%:num. 
   move : H. 
@@ -137,10 +137,15 @@ End LinearContinuousBounded.
 
 
 Section HBGeomNormed.
+(*We study the case where f can be defined as a scalar function on V, and the above tjemmas don´t 
+need to be stated for functions continuous on sub-vector spaces *)  
 Variable ( V : normedModType R) ( F : pred V ) (f : {scalar V}) ( F0 : F 0).
-Variable (Flin : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2))).
+Hypothesis (linF : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2))).
+Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
+                              f (v1 + l *: v2) = f v1 + l * (f v2).
 
-Variable (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
+
+Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
                                 (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t))))) .
 
 
@@ -184,12 +189,14 @@ Lemma mymyinf : forall (A : set R) (a m : R),
 Admitted.
 
 
-Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 Flin).
+Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 linF linfF).
+Check myHB. 
 
-Theorem HB_geom_normed  :
+Theorem HB_geom_normed :
  continuousR_on F f ->
   exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (g x = f x) ).  
 Proof.
+ Locate lmodType. 
  move => H ; move : (continuousR_bounded0 (H 0 F0)) => [r [ltr0 fxrx]] {H}.
  pose p := fun x : V => `|[x]|*r ;   have convp: convex p. 
    move => v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
@@ -216,6 +223,113 @@ Proof.
    by exact : majgp x0.  
 Qed.
 
-
 End HBGeomNormed.
+
+Section WIP.
+
+  (*Extending functions which cannot already be defined as linear functions everywhere. This needs a theory for supplementary or the following definiton of induced topology *)
+
+
+  Variable ( V : normedModType R) ( F : pred V ) (f : {scalar V}) ( F0 : F 0).
+Hypothesis (linF : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2))).
+Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
+                              f (v1 + l *: v2) = f v1 + l * (f v2).
+
+
+Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
+                                (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t))))) .
+
+
+(*The following should be generalized to any topological space *)
+
+(* How do you define induced topologies*)
+
+(*Defining induced topologies*)
+Definition locally_restricted (G :set V)  ( x : V) :=  ( fun A => (locally x A) /\ (( A `<=` G)\/ A = setT) ).
+(*why the first axiom of Filter ? *)
+
+(*The following does not work as this is not a Filter on V *)
+(*locally c'est les voisinages et neigh c'est les voisinages ouverts *)
+Lemma restricted_filter  (G : set V) (x: V)  :
+  Filter (locally_restricted (fun y : V => G y) x) .
+Proof.
+  split.
+  - split.
+    - by apply :  filter_locallyT .
+    - by right. 
+  - move => P Q [xP PG] [xQ GQ]. split.
+    - by  apply : filterI.  
+    - case : PG ; case : GQ.          
+      - by move => QG PG ; left ; move => z [Pz _] ; apply : PG Pz.   
+      - by move => QT PG ; left ;   move => z [Pz _] ; apply : PG Pz.   
+      - by move => QG PT ; left ;   move => z [_ Qz] ; apply : QG Qz. 
+      - by move => QT PT ; right ; rewrite QT PT !setIT. 
+  - move => P Q SPQ [xP PG] ; split.         
+    -  apply : filterS. exact : SPQ.  exact xP.        
+    -  case : PG.
+       - left ; move => z Qz. Check (a z). (a z (SPQ z)). 
+       Check linear_continuous.
+
+(*Do we need to have F x ?*)
+Definition continuousR_on_at (F : set V ) (x : V )  (f : V -> R)  :=  ((f @ locally_restricted F x ) --> f x).
+
+Lemma continuousR_scalar_on_bounded ( f : V -> R) (F : pred V) (F0 : F 0)
+      (linF : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2)))
+      (linfF : forall v1 v2 l, F v1 -> F v2 -> 
+                          f (v1 + l *: v2) = f v1 + l * (f v2))  :
+  (continuousR_on_at F 0 f) ->   ( exists  r , (r > 0 ) /\ (forall x : V, F x ->   ( `|f x| ) <=  (`|[x]| ) * r  )  ).
+Proof.
+  rewrite /continuousR_on_at.
+  Check flim_ballPpos.
+  move  => /flim_ballPpos H0. 
+  move : (H0 (restricted_filter F 0 f )) => H {H0}.  
+  have  H':  (0 < 1) by [].
+  move : (H (1%:pos)) {H'}.
+  have -> : ( f 0 = 0). admit. 
+  rewrite  /( _ @ _ ) //= nearE => H0  .
+  (* I had a hard time finding nearE as it is not in the abstract *)
+  Check locally_ex. 
+  move : (locally_ex H0) => [ tp  H] {H0}.  pose t := tp%:num. 
+  move : H. 
+  exists (2*t^-1). split; first by [].
+  move => x ; case :  (boolp.EM (x=0)).
+  -  by move => -> ; rewrite (linear0 f) normm0 normr0 //= mul0r. 
+  - move => xneq0. 
+    have normxle0 : `|[x]| > 0 .
+      rewrite normm_gt0 ; case : (boolp.EM (x==0)).
+    (*proving (x <> y) -> (x != y), where is it done ? *)
+     - by move => /eqP x0 ; have : False by apply : ( xneq0 x0). 
+     - by move => /negP. 
+  pose a := (  `|[x]|^-1 * t/2 ) *: x.
+  (*going from ball to norm is done through ball_normE and unfolding ball_. *)
+  (* I looked a long time for this *) 
+  have ball0ta : ball 0 t a. 
+   apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
+   rewrite normmZ absRE mulrC normedtype.R_AbsRingMixin_obligation_1.
+   rewrite !gtr0_norm //=. rewrite mulrC. 
+   rewrite -mulrA -mulrA  ltr_pdivr_mull //=. 
+   rewrite mulrC -mulrA  gtr_pmull. 
+   rewrite invf_lt1 //=. 
+     by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+     by rewrite mulr_gt0 //=. 
+   apply : mulr_gt0 ; last by [].
+     by rewrite invr_gt0 //=.
+  move : (H a ball0ta) ;  rewrite ball_absE /ball_ sub0r absRE normrN. 
+  suff ->  : ( f a =  ( (`|[x]|^-1) * t/2 ) * ( f x)) .
+     rewrite normedtype.R_AbsRingMixin_obligation_1 (gtr0_norm). 
+     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //=.   
+  rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr.
+  rewrite invf_div => Ht. 
+    by   apply : ltrW.
+    by  apply : mulr_gt0.
+    apply : mulr_gt0 ; last by [].
+       apply : mulr_gt0 ; last by [].
+      by rewrite invr_gt0 //=.
+   suff -> : a = (`|[x]|^-1 * t/2) *: x + 0  by  rewrite linearP (linear0 f) addrC add0r.
+   by rewrite addrC add0r.  
+Qed. 
+
+
+
+End WIP.
 
