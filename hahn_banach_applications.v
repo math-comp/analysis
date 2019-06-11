@@ -27,6 +27,7 @@ Variables (V  : normedModType R ) .
 
 Definition continuousR_at x (f : V -> R) :=   ( f @ x) --> (f x).
 
+(*This is too strong, we want the convergence of the restriction of the filter f @ x on F *)
 Definition continuousR_on ( F : set V) ( f : V -> R) := forall x, F x ->  ( f @ x) --> (f x).
 
 Lemma continuousR_atP x (f : V -> R) :
@@ -192,12 +193,13 @@ Admitted.
 Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 linF linfF).
 Check myHB. 
 
+(*Isn't the assumption too strong ? Is really continuousR_on what we want ? *)
 Theorem HB_geom_normed :
- continuousR_on F f ->
+  continuousR_on F f ->
   exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (g x = f x) ).  
 Proof.
- Locate lmodType. 
- move => H ; move : (continuousR_bounded0 (H 0 F0)) => [r [ltr0 fxrx]] {H}.
+ (*We should land on boundedness on all elements of F, not all elements on V *) 
+ move => H  ;  move : (continuousR_bounded0 (H 0 F0))  => [r [ltr0 fxrx]] {H}.
  pose p := fun x : V => `|[x]|*r ;   have convp: convex p. 
    move => v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
    suff : `|[l *: v1 + m *: v2]|  <= (l * `|[v1]| + m * `|[v2]|).
@@ -227,10 +229,11 @@ End HBGeomNormed.
 
 Section WIP.
 
-  (*Extending functions which cannot already be defined as linear functions everywhere. This needs a theory for supplementary or the following definiton of induced topology *)
+(*Extending functions which cannot already be defined as linear functions everywhere. 
+This needs a theory for supplementary or the following definiton of induced topology *)
 
 
-  Variable ( V : normedModType R) ( F : pred V ) (f : {scalar V}) ( F0 : F 0).
+Variable ( V : normedModType R) ( F : pred V ) (f : {scalar V}) ( F0 : F 0).
 Hypothesis (linF : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2))).
 Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
                               f (v1 + l *: v2) = f v1 + l * (f v2).
@@ -245,50 +248,62 @@ Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
 (* How do you define induced topologies*)
 
 (*Defining induced topologies*)
-Definition locally_restricted (G :set V)  ( x : V) :=  ( fun A => (locally x A) /\ (( A `<=` G)\/ A = setT) ).
-(*why the first axiom of Filter ? *)
+Definition locally_restricted (G : set V)  ( x : V) :=
+  fun A => (A= setT) \/ (exists B, locally x B /\ (B `&` G = A)).
+(*why the first axiom of Filter asking for setT to be inside ? *)
+
+Lemma setTS ( Q : set V) : setT `<=` Q -> Q = setT. 
+Proof.
+  by move => H ; apply : eqEsubset.  
+Qed.
+
 
 (*The following does not work as this is not a Filter on V *)
 (*locally c'est les voisinages et neigh c'est les voisinages ouverts *)
 Lemma restricted_filter  (G : set V) (x: V)  :
-  Filter (locally_restricted (fun y : V => G y) x) .
+  Filter (locally_restricted [eta G] x) .
 Proof.
   split.
-  - split.
-    - by apply :  filter_locallyT .
-    - by right. 
-  - move => P Q [xP PG] [xQ GQ]. split.
-    - by  apply : filterI.  
-    - case : PG ; case : GQ.          
-      - by move => QG PG ; left ; move => z [Pz _] ; apply : PG Pz.   
-      - by move => QT PG ; left ;   move => z [Pz _] ; apply : PG Pz.   
-      - by move => QG PT ; left ;   move => z [_ Qz] ; apply : QG Qz. 
-      - by move => QT PT ; right ; rewrite QT PT !setIT. 
-  - move => P Q SPQ [xP PG] ; split.         
-    -  apply : filterS. exact : SPQ.  exact xP.        
-    -  case : PG.
-       - left ; move => z Qz. Check (a z). (a z (SPQ z)). 
-       Check linear_continuous.
+  - by left. 
+  - move => P Q  xP xQ ; case : xP ; case : xQ. 
+   - by move => -> -> ; left ; rewrite setIT. 
+   - move => [BQ [xB BGQ]] -> ; right ; exists BQ ; split.
+       by [].
+       by rewrite ![setT `&`_ ]setIC !setIT.  
+   - move => -> [BP [xB BPQ]] ; right ; exists BP ; split.
+       by [].
+       by rewrite setIT.  
+   -  move => [BP [xBP BPQ]] [BQ [xBQ BGQ]]  ; right ; exists (BP `&` BQ) ; split.
+       by apply filterI. 
+       rewrite -BPQ -BGQ . rewrite setIA. admit. (*assoc and com*)
+   - move => P Q SPQ xPG ; case : xPG.   
+       by move => PT ; left ; apply setTS ; rewrite -PT. (*avoid introducing PT ?*) 
+       move => [ B [xB BGP]] ; right ;  exists (B `|` (Q `\` P)) ; split.
+        - have Bsub : B `<=` (B `|` Q`\`P) by move => z Bz ; left.
+          by apply :   (filterS Bsub). rewrite setDE. admit. (* associativity and rewriting*)
+ Admitted.  
+
 
 (*Do we need to have F x ?*)
-Definition continuousR_on_at (F : set V ) (x : V )  (f : V -> R)  :=  ((f @ locally_restricted F x ) --> f x).
+Definition continuousR_on_at (F : set V ) (x : V )  (g : V -> R)  :=  ((g @ locally_restricted F x ) --> f x).
 
-Lemma continuousR_scalar_on_bounded ( f : V -> R) (F : pred V) (F0 : F 0)
-      (linF : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2)))
-      (linfF : forall v1 v2 l, F v1 -> F v2 -> 
-                          f (v1 + l *: v2) = f v1 + l * (f v2))  :
+Lemma continuousR_scalar_on_bounded :
   (continuousR_on_at F 0 f) ->   ( exists  r , (r > 0 ) /\ (forall x : V, F x ->   ( `|f x| ) <=  (`|[x]| ) * r  )  ).
 Proof.
   rewrite /continuousR_on_at.
   Check flim_ballPpos.
   move  => /flim_ballPpos H0. 
-  move : (H0 (restricted_filter F 0 f )) => H {H0}.  
+  Check filtermap f (locally_restricted [eta F] 0).
+  move : (H0 (filtermap_filter f (restricted_filter F 0)))  => H {H0}.
   have  H':  (0 < 1) by [].
   move : (H (1%:pos)) {H'}.
   have -> : ( f 0 = 0). admit. 
   rewrite  /( _ @ _ ) //= nearE => H0  .
   (* I had a hard time finding nearE as it is not in the abstract *)
   Check locally_ex. 
+  Locate locally_ex. Check getPex.  
+  have : exists d : R, (d > 0) /\ ( forall x, ( F x /\ `|[x]| < d -> `|f x| < 1)). 
+   move : H0 => /locallyP.  
   move : (locally_ex H0) => [ tp  H] {H0}.  pose t := tp%:num. 
   move : H. 
   exists (2*t^-1). split; first by [].
