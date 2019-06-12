@@ -155,7 +155,7 @@ Proof.
   move  => /flim_ballPpos  H.
     have  H':  (0 < 1) by []. 
   move : (H (1%:pos)) {H'}.
-  have f0 : ( f 0 = 0) by admit.  
+  have f0 : (f 0 = 0). move : (linfF 0 F0 F0). admit.
   rewrite near_simpl /( _ @ _ ) //= nearE /(within _ ) near_simpl f0.
   rewrite -locally_nearE => H0 {H} ; move : (locally_ex H0) => [tp H] {H0}.  
   pose t := tp%:num .
@@ -169,21 +169,20 @@ Proof.
    rewrite normmZ absRE mulrC normedtype.R_AbsRingMixin_obligation_1.
    rewrite !gtr0_norm //= ; last by rewrite  pmulr_lgt0 // invr_gt0 normm_gt0.
    rewrite mulrC -mulrA -mulrA  ltr_pdivr_mull; last by rewrite normm_gt0.
-   rewrite mulrC -mulrA  gtr_pmull; last by admit. 
+   rewrite mulrC -mulrA  gtr_pmull. 
    rewrite invf_lt1 //=.
-   by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+     by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+   by  rewrite pmulr_lgt0 //  !normm_gt0.  
  have Fa : F a by rewrite -[a]add0r; apply: linF. 
  have :  `|f a| < 1.
     by move: (H _ Btp Fa); rewrite ball_absE /ball_ sub0r absRE normrN.
   suff ->  : ( f a =  ( (`|[x]|^-1) * t/2 ) * ( f x)) .
-     rewrite normedtype.R_AbsRingMixin_obligation_1 (gtr0_norm) //; last by admit. 
-     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //=; last by admit.
+     rewrite normedtype.R_AbsRingMixin_obligation_1 (gtr0_norm) //.
+     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //= ;
+       last by rewrite normm_gt0.
      rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr //.
      by rewrite invf_div => Ht; apply : ltrW.
-    (* by   *)
-    (* apply : mulr_gt0 ; last by []. *)
-    (*    apply : mulr_gt0 ; last by []. *)
-    (*   by rewrite invr_gt0 //=. *)
+     by  rewrite !mulr_gt0 // invr_gt0 normm_gt0. 
  suff -> : a = 0+ (`|[x]|^-1 * t/2) *: x by  rewrite linfF //  f0  add0r.
  by rewrite add0r.  
 Admitted.
