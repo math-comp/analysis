@@ -27,18 +27,11 @@ Variables (V  : normedModType R ) .
 
 Definition continuousR_at x (f : V -> R) :=   ( f @ x) --> (f x).
 
-(*This is too strong, we want the convergence of the restriction of the filter f @ x on F *)
-Definition continuousR_on ( F : set V) ( f : V -> R) := forall x, F x ->  ( f @ x) --> (f x).
-
 Lemma continuousR_atP x (f : V -> R) :
   (continuousR_at x f) <-> forall eps : posreal, \forall y \near f @ x, ball (f x) eps%:num y.
 Proof.
   rewrite /continuousR_at. split ; by move => /flim_ballPpos.  
 Qed.
-
-
-
-
 
 Lemma continuousR_bounded0 (f : {scalar V}) :
   (continuousR_at 0 f) -> 
@@ -90,13 +83,14 @@ Proof.
 Qed.
 
 
-
 Lemma bounded_continuousR0 (f: {scalar V }) :
   (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r)) -> continuousR_at 0 f .
 Proof.
   move => [r [lt0r H]].  
   apply/(continuousR_atP 0) => eps ;  rewrite nearE  (linear0 f).
-  rewrite /( _ @ _) /([filter of _ ]) /(_ @^-1` _);  apply/locallyP. 
+  rewrite /( _ @ _) /([filter of _ ]) /(_ @^-1` _).
+  (*near=> b.*)
+  apply/locallyP.  
   (* locally_ is proved via an existential which gives the radius of the ball contained in locally *)
   exists (eps%:num *2^-1*r^-1).  
    by  rewrite !divr_gt0. 
@@ -110,12 +104,6 @@ Proof.
   by apply : (ler_lt_trans faeps2).
 Qed.
 
-
-(*Do that in term of filters*)
-(*Lemma normedspace_topvecspace (x : V) ( y : V) (A : set V) :
-  (locally x A) <-> (locally y (fun z => A ( x + z - y))).
-Proof.
-Admitted.*)
 
    
 Lemma continuousRat0_continuous (f : {scalar V}):
@@ -137,10 +125,11 @@ Qed.
 End LinearContinuousBounded.
 
 
-Section HBGeomNormed.
-(*We study the case where f can be defined as a scalar function on V, and the above tjemmas don´t 
-need to be stated for functions continuous on sub-vector spaces *)  
-Variable ( V : normedModType R) ( F : pred V ) (f : {scalar V}) ( F0 : F 0).
+
+
+Section HBGeom.
+
+Variable ( V : normedModType R) ( F : pred V ) (f :  V -> R) ( F0 : F 0).
 Hypothesis (linF : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2))).
 Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
                               f (v1 + l *: v2) = f v1 + l * (f v2).
@@ -148,6 +137,56 @@ Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 ->
 
 Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
                                 (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t))))) .
+
+ 
+
+(*Looked a long time for within *)
+Definition continuousR_on ( G : set V ) ( f : V -> R) :=
+  (forall x, (f @ (within G (locally x))) --> f x).
+
+(*Do we need to have F x ?*)
+Definition continuousR_on_at (G : set V ) (x : V ) (g : V -> R)  :=
+  (g @ (within G (locally x)) --> f x).
+
+Lemma continuousR_scalar_on_bounded :
+  (continuousR_on_at F 0 f) ->   ( exists  r , (r > 0 ) /\ (forall x : V, F x ->   ( `|f x| ) <=  (`|[x]| ) * r  )  ).
+Proof.
+  rewrite /continuousR_on_at.
+  move  => /flim_ballPpos  H.
+    have  H':  (0 < 1) by []. 
+  move : (H (1%:pos)) {H'}.
+  have f0 : ( f 0 = 0) by admit.  
+  rewrite near_simpl /( _ @ _ ) //= nearE /(within _ ) near_simpl f0.
+  rewrite -locally_nearE => H0 {H} ; move : (locally_ex H0) => [tp H] {H0}.  
+  pose t := tp%:num .
+  exists (2*t^-1). split=> //. 
+  move => x. case :  (boolp.EM (x=0)).
+  -  by move => -> ; rewrite f0 normm0 normr0 //= mul0r. 
+  - move/eqP => xneq0 Fx. 
+  pose a : V := (`|[x]|^-1 * t/2 ) *: x.
+  have Btp : ball 0 t a.
+   apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
+   rewrite normmZ absRE mulrC normedtype.R_AbsRingMixin_obligation_1.
+   rewrite !gtr0_norm //= ; last by rewrite  pmulr_lgt0 // invr_gt0 normm_gt0.
+   rewrite mulrC -mulrA -mulrA  ltr_pdivr_mull; last by rewrite normm_gt0.
+   rewrite mulrC -mulrA  gtr_pmull; last by admit. 
+   rewrite invf_lt1 //=.
+   by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+ have Fa : F a by rewrite -[a]add0r; apply: linF. 
+ have :  `|f a| < 1.
+    by move: (H _ Btp Fa); rewrite ball_absE /ball_ sub0r absRE normrN.
+  suff ->  : ( f a =  ( (`|[x]|^-1) * t/2 ) * ( f x)) .
+     rewrite normedtype.R_AbsRingMixin_obligation_1 (gtr0_norm) //; last by admit. 
+     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //=; last by admit.
+     rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr //.
+     by rewrite invf_div => Ht; apply : ltrW.
+    (* by   *)
+    (* apply : mulr_gt0 ; last by []. *)
+    (*    apply : mulr_gt0 ; last by []. *)
+    (*   by rewrite invr_gt0 //=. *)
+ suff -> : a = 0+ (`|[x]|^-1 * t/2) *: x by  rewrite linfF //  f0  add0r.
+ by rewrite add0r.  
+Admitted.
 
 
  (* Upper bound *)
@@ -190,16 +229,16 @@ Lemma mymyinf : forall (A : set R) (a m : R),
 Admitted.
 
 
-Notation myHB := (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 linF linfF).
-Check myHB. 
+Notation myHB :=
+  (hahn_banach.HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 linF linfF).
+
 
 (*Isn't the assumption too strong ? Is really continuousR_on what we want ? *)
 Theorem HB_geom_normed :
-  continuousR_on F f ->
+  continuousR_on_at F 0  f ->
   exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (g x = f x) ).  
 Proof.
- (*We should land on boundedness on all elements of F, not all elements on V *) 
- move => H  ;  move : (continuousR_bounded0 (H 0 F0))  => [r [ltr0 fxrx]] {H}.
+ move => H  ;  move : ( continuousR_scalar_on_bounded H)  => [r [ltr0 fxrx]] {H}.
  pose p := fun x : V => `|[x]|*r ;   have convp: convex p. 
    move => v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
    suff : `|[l *: v1 + m *: v2]|  <= (l * `|[v1]| + m * `|[v2]|).
@@ -212,8 +251,10 @@ Proof.
    rewrite -[in(_*_)]labs -[in(m*_)]mabs -!absRE -!normmZ.
    by apply : ler_normm_add.
  have majfp : forall x, F x -> f x <= p x.      
-  move => x Fx; rewrite /(p _) ; apply : ler_trans ; last by [].
-   by apply : ler_norm (f x).
+   move => x Fx; rewrite /(p _) ; apply : ler_trans ; last by [].
+   apply : ler_trans.
+   apply : ler_norm.
+   by apply : (fxrx x Fx).   
  move : (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}. 
  exists g ;  split ; last by []. 
   move => x ; rewrite /(continuousR_at) ; apply : (continuousRat0_continuous).
@@ -225,43 +266,25 @@ Proof.
    by exact : majgp x0.  
 Qed.
 
-End HBGeomNormed.
+End HBGeom.
 
-Section WIP.
-
-(*Extending functions which cannot already be defined as linear functions everywhere. 
-This needs a theory for supplementary or the following definiton of induced topology *)
-
-
-Variable ( V : normedModType R) ( F : pred V ) (f : {scalar V}) ( F0 : F 0).
-Hypothesis (linF : (forall (v1 v2 : V) (l : R_realFieldType), F v1 -> F v2 -> F (v1 + l *: v2))).
-Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
-                              f (v1 + l *: v2) = f v1 + l * (f v2).
-
-
-Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
-                                (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t))))) .
-
- 
-(*The following should be generalized to any topological space *)
-
-(* How do you define induced topologies*)
 
 (*Defining induced topologies*)
-Definition locally_restricted (G : set V)  ( x : V) :=
+(*Definition locally_restricted (G : set V)  (x : V) :=
   fun A => (A= setT) \/ (exists B, locally x B /\ (B `&` G = A)).
-(*why the first axiom of Filter asking for setT to be inside ? *)
+
 
 Lemma setTS ( Q : set V) : setT `<=` Q -> Q = setT. 
 Proof.
   by move => H ; apply : eqEsubset.  
 Qed.
 
+Locate within. 
 
 (*The following does not work as this is not a Filter on V *)
 (*locally c'est les voisinages et neigh c'est les voisinages ouverts *)
 Lemma restricted_filter  (G : set V) (x: V)  :
-  Filter (locally_restricted [eta G] x) .
+  Filter (locally_restricted G x) .
 Proof.
   split.
   - by left. 
@@ -277,34 +300,26 @@ Proof.
        by apply filterI. 
        rewrite -BPQ -BGQ . rewrite setIA. admit. (*assoc and com*)
    - move => P Q SPQ xPG ; case : xPG.   
-       by move => PT ; left ; apply setTS ; rewrite -PT. (*avoid introducing PT ?*) 
+       by move => PT ; left ; apply setTS ; rewrite -PT.
        move => [ B [xB BGP]] ; right ;  exists (B `|` (Q `\` P)) ; split.
         - have Bsub : B `<=` (B `|` Q`\`P) by move => z Bz ; left.
           by apply :   (filterS Bsub). rewrite setDE. admit. (* associativity and rewriting*)
  Admitted.  
 
 
-(*Do we need to have F x ?*)
-Definition continuousR_on_at (F : set V ) (x : V )  (g : V -> R)  :=  ((g @ locally_restricted F x ) --> f x).
+Definition continuourR_on (G : set V) (f : V -> R) :=
+  forall x , G x -> ( (f @ locally_restricted G x) --> f x).*)
 
-Lemma continuousR_scalar_on_bounded :
-  (continuousR_on_at F 0 f) ->   ( exists  r , (r > 0 ) /\ (forall x : V, F x ->   ( `|f x| ) <=  (`|[x]| ) * r  )  ).
+(*Lemma continuousR_bounded0 (f : {scalar V}) :
+  (continuousR_at 0 f) -> 
+   ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|[x]| ) * r  )  ) . 
 Proof.
-  rewrite /continuousR_on_at.
-  Check flim_ballPpos.
-  move  => /flim_ballPpos H0. 
-  Check filtermap f (locally_restricted [eta F] 0).
-  move : (H0 (filtermap_filter f (restricted_filter F 0)))  => H {H0}.
+  move => /continuousR_atP H. 
   have  H':  (0 < 1) by [].
   move : (H (1%:pos)) {H'}.
-  have -> : ( f 0 = 0). admit. 
-  rewrite  /( _ @ _ ) //= nearE => H0  .
+  rewrite (linear0 f) /( _ @ _ ) //= nearE => H0 {H}. 
   (* I had a hard time finding nearE as it is not in the abstract *)
-  Check locally_ex. 
-  Locate locally_ex. Check getPex.  
-  have : exists d : R, (d > 0) /\ ( forall x, ( F x /\ `|[x]| < d -> `|f x| < 1)). 
-   move : H0 => /locallyP.  
-  move : (locally_ex H0) => [ tp  H] {H0}.  pose t := tp%:num. 
+  move : (locally_ex H0) => [ tp  H] {H0} ;  pose t := tp%:num. 
   move : H. 
   exists (2*t^-1). split; first by [].
   move => x ; case :  (boolp.EM (x=0)).
@@ -342,9 +357,4 @@ Proof.
       by rewrite invr_gt0 //=.
    suff -> : a = (`|[x]|^-1 * t/2) *: x + 0  by  rewrite linearP (linear0 f) addrC add0r.
    by rewrite addrC add0r.  
-Qed. 
-
-
-
-End WIP.
-
+Qed.*)
