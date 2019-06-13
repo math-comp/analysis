@@ -23,7 +23,7 @@ Section LinearContinuousBounded.
 (* Everything in this section in stated for scalar functions.                       *)
 (* They will be turned into lemmas for linear functions into normed spaces soon     *)
   
-Variables (V  : normedModType R ) . 
+Variables (V  : normedModType R). 
 
 Definition continuousR_at x (f : V -> R) :=   ( f @ x) --> (f x).
 
@@ -91,7 +91,8 @@ Proof.
   rewrite /( _ @ _) /([filter of _ ]) /(_ @^-1` _).
   (*near=> b.*)
   apply/locallyP.  
-  (* locally_ is proved via an existential which gives the radius of the ball contained in locally *)
+  (* locally_ is proved via an existential which gives 
+    the radius of the ball contained in locally *)
   exists (eps%:num *2^-1*r^-1).  
    by  rewrite !divr_gt0. 
    move => a ; rewrite -ball_normE  /(ball_)  addrC addr0 normmN.
@@ -100,10 +101,10 @@ Proof.
    have na0: `|[a]| * r <= eps%:num / 2 by  apply : ltrW ; rewrite -ltr_pdivl_mulr. 
   have faeps2 : `|f a| <= eps%:num /2 by exact : ler_trans ( H a) na0.
   have eps2eps : eps%:num  / 2 < eps%:num. rewrite gtr_pmulr ; last by []. 
-    by  rewrite invf_lt1 ; have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+    by  rewrite invf_lt1 ; have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ;
+      apply : ltr_spaddr.
   by apply : (ler_lt_trans faeps2).
 Qed.
-
 
    
 Lemma continuousRat0_continuous (f : {scalar V}):
@@ -155,7 +156,8 @@ Proof.
   move  => /flim_ballPpos  H.
     have  H':  (0 < 1) by []. 
   move : (H (1%:pos)) {H'}.
-  have f0 : (f 0 = 0). move : (linfF 0 F0 F0). admit.
+  have f0 : (f 0 = 0) . admit. (*suff -> : f 0 = f(1%normedType + (-1)*:1).*)
+  move : (linfF 0 F0 F0). 
   rewrite near_simpl /( _ @ _ ) //= nearE /(within _ ) near_simpl f0.
   rewrite -locally_nearE => H0 {H} ; move : (locally_ex H0) => [tp H] {H0}.  
   pose t := tp%:num .
