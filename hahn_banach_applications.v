@@ -188,7 +188,7 @@ Proof.
      by  rewrite !mulr_gt0 // invr_gt0 normm_gt0. 
  suff -> : a = 0+ (`|[x]|^-1 * t/2) *: x by  rewrite linfF //  f0  add0r.
  by rewrite add0r.  
-Admitted.
+Qed. 
 
 
  (* Upper bound *)
