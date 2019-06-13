@@ -379,7 +379,7 @@ Section StrictInductiveFixpoint.
      split. 
      - exact: (proj2 adm_M C (subset_trans Cextrc ((subextrM extrMc) )) totC t supCt).
      - case : (EM  (maj R C c)).
-       - move => H ; left ; exact : (proj2 supCt c H). Check neg_forall.
+       - move => H ; left ; exact : (proj2 supCt c H). 
        - move =>  /(neg_forall EM)-[s ps]. 
          have [Cs nRsc] := neg_impl EM ps => {ps}. (*short*) 
          have lem : R (f c) s .
@@ -454,10 +454,6 @@ Section StrictInductiveFixpoint.
 
 
 End StrictInductiveFixpoint.  
-
-
-
-
 
 
 
