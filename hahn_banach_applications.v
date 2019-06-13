@@ -156,7 +156,7 @@ Proof.
   move  => /flim_ballPpos  H.
     have  H':  (0 < 1) by []. 
   move : (H (1%:pos)) {H'}.
-  have f0 : (f 0 = 0) . admit.
+  have f0 : (f 0 = 0) . admit. (*suff : f 0 = f (1 + (-1)*:1 .*)
   rewrite near_simpl /( _ @ _ ) //= nearE /(within _ ) near_simpl f0.
   rewrite -locally_nearE => H0 {H} ; move : (locally_ex H0) => [tp H] {H0}.  
   pose t := tp%:num .
