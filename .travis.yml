@@ -16,7 +16,11 @@ env:
   matrix:
   - DOCKERIMAGE="mathcomp/mathcomp:1.8.0-coq-8.8"
   - DOCKERIMAGE="mathcomp/mathcomp:1.8.0-coq-8.9"
-  - DOCKERIMAGE="mathcomp/mathcomp:1.8.0-coq-dev"
+  - DOCKERIMAGE="mathcomp/mathcomp:1.9.0-coq-8.8"
+  - DOCKERIMAGE="mathcomp/mathcomp:1.9.0-coq-8.9"
+  - DOCKERIMAGE="mathcomp/mathcomp:1.9.0-coq-8.10"
+
+
 
 install: |
   # Prepare the COQ container

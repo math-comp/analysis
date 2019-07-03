@@ -19,10 +19,10 @@ install: [
   [make "install"]
 ]
 depends: [
-  "coq" { (>= "8.8" | = "dev") }
-  "coq-mathcomp-field"       {(>= "1.8.0" & < "1.10.0~")}
-  "coq-mathcomp-bigenough"   {(>= "1.0.0" & < "1.1.0~")}
-  "coq-mathcomp-finmap"      {(>= "1.2.0" & < "1.3.0~")}
+  "coq" { ((>= "8.8" & < "8.11~") | = "dev") }
+  "coq-mathcomp-field"       {(>= "1.8.0" & < "1.10~")}
+  "coq-mathcomp-bigenough"   {(>= "1.0.0" & < "1.1~")}
+  "coq-mathcomp-finmap"      {(>= "1.2.0" & < "1.3~")}
 ]
 synopsis: "An analysis library for mathematical components"
 description: """
