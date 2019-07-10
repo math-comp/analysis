@@ -34,7 +34,7 @@ $ wget https://raw.github.com/ocaml/opam/master/shell/opam_installer.sh -O - | s
 $ export OPAMROOT=~/.opam_mathcomp_analysis
 $ opam init -j4 # adapt to the number of cores you have
 $ eval `opam config env`
-$ opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev
+$ opam repo add coq-released https://coq.inria.fr/opam/released
 ```
 3. Install our package (and all its dependencies)
 ```
