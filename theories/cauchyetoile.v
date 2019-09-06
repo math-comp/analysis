@@ -49,21 +49,21 @@ Qed.
 Lemma Re0 : Re 0 = 0 :> R.
 Proof. by []. Qed.
 
-Lemma Im0 : (@Im R_rcfType 0 = 0).
+Lemma Im0 : Im 0 = 0 :> R.
 Proof. by []. Qed.
 
 Lemma ReIm_eq0 (x : C) : (x=0) = ((Re x = 0)/\(Im x = 0)).
 Proof.
-  by rewrite -[in Re x= _]Re0 -Im0  -eqE_complex.  
+  by rewrite -[in Re x= _]Re0 -Im0 -eqE_complex.  
 Qed.
 
 
-Lemma normc0 : @normc R_rcfType 0 =0.
+Lemma normc0 : normc 0 = 0 :> R  .
 Proof. 
   by rewrite /normc //= expr0n //= add0r sqrtr0.
 Qed.
 
-Lemma normcN1 : (@normc R_rcfType (-1 %:C)) = 1.
+Lemma normcN1 : normc (-1%:C) = 1 :> R.
 Proof.  
   by rewrite /normc/=  oppr0 expr0n   addr0  -signr_odd expr0 sqrtr1.
 Qed.
@@ -90,13 +90,11 @@ Section C_Rnormed.
  
  (* Uniform.mixin_of takes a locally but does not expect a TopologicalType, which is inserted in the Uniform.class_of *)
  (* Whereas NormedModule.mixin_of asks for a Uniform.mixin_of loc *)
- (*Context (K : absRingType). Nor working with any K, how to close the real scope ? Or do it before *)
 
-  Search "topologyofballmixin".
+(*Context (K : absRingType). Nor working with any K, how to close the real scope ? Do it before ?  *)
 
-  Print topologyOfBallMixin. 
-
-  Program Definition uniformmixin_of_normaxioms (V : lmodType R) (norm : V -> R)
+ 
+Program Definition uniformmixin_of_normaxioms (V : lmodType R) (norm : V -> R)
          (ax1 : forall x y : V, norm (x + y) <= norm x + norm y)
          ( ax2 : forall (l : R) (x : V), norm (l *: x) = `|l| * (norm x))
          ( ax4 : forall x : V, norm x = 0 -> x = 0 ) : Uniform.mixin_of (locally_ (ball_ norm))
@@ -105,12 +103,9 @@ Next Obligation.
  move => V norm _ H _ ; rewrite /ball_ => x e.  
  have -> :  x - x = 0 . by rewrite addrN.
  suff -> : norm 0 = 0 by [].
-have -> : 0 = 0 *: x by rewrite scale0r.
-(* have : 0 = 1 *: 0 :> V. by rewrite scaler0. *)
-
- (* rewrite -(mulr0 1).  -(scaler0 V x). Search "scal" in ssralg. *)  admit.
-  by [].   
-Admitted.
+ have -> : 0 = 0 *: x by rewrite scale0r.
+  by rewrite H normr0 mul0r.  
+Qed.
 Next Obligation.
   move => V norm _ H _ ; rewrite /ball_ => x e e0.
   have -> : x - e = (-1) *: (e-x) by rewrite -opprB scaleN1r. 
@@ -122,30 +117,10 @@ Next Obligation.
 Qed.
 Next Obligation. by []. Qed. 
 
-(*
-Print NormedModule.mixin_of. 
-About uniformOfnormAxioms.
-Search "NormedModType". Print AbsRing_NormedModType.
-(* This is probably ugly and missing the usual structure *)
-Program Definition normmixin_of_normaxioms  (V : lmodType R) (norm : V -> R)
-         (ax1 : forall x y : V, norm (x + y) <= norm x + norm y)
-         ( ax2 : forall (l : R) (x : V), norm (l *: x) = `|l|%real * (norm x))
-         ( ax4 : forall x : V, norm x = 0 -> x = 0 )
-          : NormedModule.mixin_of (@uniformmixin_of_normaxioms V norm  _ _ _ )
-          := @NormedModule.Mixin R_absRingType V _ _  norm _  _ _ _.                               Next Obligation. by []. Qed.                          
-Next Obligation. by []. Qed.                          
-Next Obligation. by []. Qed.                          
-Next Obligation. by []. Qed.                          
-Next Obligation. by []. Qed.                          
-Next Obligation. by []. Qed.                          
-Next Obligation. by []. Qed.                          
- *)
-
-
 (*C as a R-lmodule *)
-Definition C_RlmodMixin := (complex_lmodMixin R_rcfType).
+Definition C_RlmodMixin := (complex_lmodMixin R_rcfType). (*R instead of R_rcfType is not working *)
 (*LmodType is hard to use, not findable through Search and not checkable as abbreviation is not applied enough*)
-Definition C_RlmodType := @LmodType R_rcfType C C_RlmodMixin.
+Definition C_RlmodType := @LmodType R C C_RlmodMixin.
 
 (* C as a uniformtype *)
 Definition C_pointedType := PointedType C 0.
@@ -160,9 +135,7 @@ Definition C_RtopologicalType := TopologicalType C_filteredType C_RtopologicalMi
 Definition C_RuniformType := @UniformType C_RtopologicalType C_RuniformMixin.
 
 
-
-(*Check (@normmixin_of_normaxioms C_RlmodType (@normc R_rcfType) normcD normcZ (@eq0_normc R_rcfType)).*)
-Program Definition C_RnormedMixin  (*NormedModule.mixin_of C_RuniformMixin*)
+Program Definition C_RnormedMixin
   := @NormedModMixin R_absRingType C_RlmodType _ C_RuniformMixin (@normc R_rcfType) normcD normcZ _  (@eq0_normc R_rcfType) .
 Next Obligation. by []. Qed. 
 
@@ -232,41 +205,29 @@ Definition prod_uniformType_mixin :=
 
 (*Building a normed structure on C necessitates a Uniform structure which necessitates a topological structure *)
 (*We go reverse and define induced uniform structure and toppological structure from normed structure *)
-(* Could we map it to R2 instead *)
-Check C_RNormedModMixin.                 
 
 End C_as_R2. *)
 
 Section C_absRing.
 
-Print AbsRing.Mixin.
-
- Definition C_AbsRingMixin := @AbsRingMixin (complex_ringType R_rcfType) (@normc R_rcfType) normc0 normcN1 normcD (@normcM R_rcfType ) (@eq0_normc R_rcfType). 
-
+Definition C_AbsRingMixin := @AbsRingMixin (complex_ringType R_rcfType) (@normc R_rcfType) normc0 normcN1 normcD (@normcM R_rcfType ) (@eq0_normc R_rcfType). 
  
-(* Difference between canonical and canonical structure *)
 Definition C_absRingType :=  AbsRingType C C_AbsRingMixin.
+Canonical C_absRingType.
 Definition C_topologicalType := [topologicalType of C for C_absRingType].
 Definition C_uniformType := [uniformType of C for C_absRingType].
 
-
-
-(* What is again the reason for using Ro sometimes ? *)(*In the following it seems to be taking C^0 = R *)(*How is defined C^o ? *)
-
-(*Apparently the norm of a module always has value in R *)
-
-(* Definition AbsRing_NormedModMixin (K : absRingType) :=
-  @NormedModule.Mixin K _ _ _ (abs : K^o -> R) ler_abs_add absrM (ball_absE K)
-  absr0_eq0.
-Canonical AbsRing_NormedModType (K : absRingType) :=
-  NormedModType K K^o (AbsRing_NormedModMixin _). *)
-
- 
-Canonical Co_pointedType := [pointedType of C^o for C_absRingType].
+Definition Co_pointedType := [pointedType of C^o for C_absRingType].
+Canonical Co_pointedType.
+(*Why is that redundant with Ro_pointedtype*)
+Locate Ro_pointedType.
 Canonical Co_filteredType := [filteredType C^o of C^o for C_absRingType].
 Canonical Co_topologicalType := [topologicalType of C^o for C_absRingType].
 Canonical Co_uniformType := [uniformType of C^o for C_absRingType].
-Canonical Co_normedType := AbsRing_NormedModType C_absRingType.
+
+Definition Co_normedType := AbsRing_NormedModType C_absRingType.
+Canonical Co_normedType.
+(*Why is this Canonical, when the normed type on Ro is defined for R of the reals ? *)
 
 End C_absRing.
 
@@ -288,7 +249,8 @@ differentiable_def (K : absRingType) (V W : normedModType K) (f : V -> W)
 
 About derivable.
 
-Definition holomorphic (f : Co_normedType -> Co_normedType) c := forall v,  cvg ((fun h => h^-1 *: ((f \o shift c) (h *: v) - f c)) @ locally' (0 : Co_normedType)).
+Definition holomorphic (f : Co_normedType -> Co_normedType) c := forall v,
+cvg ((fun h => h^-1 *: ((f \o shift c) (h *: v) - f c)) @ locally' (0 : Co_normedType)).
 
 Definition complex_realfun (f : C^o -> C^o) : C_RnormedType -> C_RnormedType := f.
 
