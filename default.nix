@@ -46,7 +46,8 @@ let
                   mathcomp-analysis = {version, coqPackages} @ args:
                     let mca = mec.initial.mathcomp-analysis args; in
                     mca // (
-                      if elem version [ "master" "cauchy_etoile" "holomorphy" "numfield_topology" ]
+                      if elem version [ "master" "holomorphy" "numfield_topology" ]
+
                       then {
                         propagatedBuildInputs = mca.propagatedBuildInputs ++
                                                 [ coqPackages.mathcomp-real-closed coqPackages.hierarchy-builder ];
@@ -59,8 +60,7 @@ let
                   (super-coqPackages.mathcomp-extra-config.${coqPackages.coq.coq-version}.${coqPackages.mathcomp.version} or {}) //
                   (removeAttrs cfg [ "mathcomp" "coq" "mathcomp-fast" "mathcomp-full" ]);
               };
-            };
-            mathcomp = if cfg?mathcomp then self.mathcomp_ cfg.mathcomp else super.mathcomp_ "1.11.0+beta1";
+            mathcomp = if cfg?mathcomp then coqPackages.mathcomp_ cfg.mathcomp else super-coqPackages.mathcomp;
           } // mapAttrs
             (package: version: coqPackages.mathcomp-extra package version)
             (removeAttrs cfg ["mathcomp" "coq"])
@@ -94,21 +94,17 @@ let
       for x in $propagatedBuildInputs; do printf "  "; echo $x | cut -d "-" -f "2-"; done
       echo "you can pass option --arg config '{coq = \"x.y\"; math-comp = \"x.y.z\";}' to nix-shell to change coq and/or math-comp versions"
     }
-
     printEnv () {
       for x in $buildInputs; do echo $x; done
       for x in $propagatedBuildInputs; do echo $x; done
     }
-
     cachixEnv () {
       echo "Pushing environement to cachix"
       printEnv | cachix push math-comp
     }
-
     nixDefault () {
       cat $mathcompnix/default.nix
     } > default.nix
-
     updateNixPkgs (){
       HASH=$(git ls-remote https://github.com/NixOS/nixpkgs-channels refs/heads/nixpkgs-unstable | cut -f1);
       URL=https://github.com/NixOS/nixpkgs-channels/archive/$HASH.tar.gz
