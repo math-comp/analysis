@@ -57,7 +57,6 @@ Proof.
   by rewrite -[in Re x= _]Re0 -Im0 -eqE_complex.  
 Qed.
 
-
 Lemma normc0 : normc 0 = 0 :> R  .
 Proof. 
   by rewrite /normc //= expr0n //= add0r sqrtr0.
@@ -70,9 +69,9 @@ Qed.
 
 Lemma realtocomplex_additive : forall x y : R, (x + y)%:C = x%:C + y%:C. 
 Proof.
-move => x y.  
-rewrite -!complexr0.
-Admitted.
+  move => x y ; rewrite -!complexr0 eqE_complex //=.
+  by split ; last by rewrite addr0.  
+Qed. 
 
 Lemma normcD : forall ( x y : C), normc (x+y) <= (normc x + normc y).
 Proof.
@@ -215,8 +214,9 @@ Definition C_AbsRingMixin := @AbsRingMixin (complex_ringType R_rcfType) (@normc 
 Definition C_absRingType :=  AbsRingType C C_AbsRingMixin.
 Canonical C_absRingType.
 Definition C_topologicalType := [topologicalType of C for C_absRingType].
+Canonical C_topologicalType.
 Definition C_uniformType := [uniformType of C for C_absRingType].
-
+Canonical C_uniformType.
 Definition Co_pointedType := [pointedType of C^o for C_absRingType].
 Canonical Co_pointedType.
 (*Why is that redundant with Ro_pointedtype*)
@@ -249,10 +249,14 @@ differentiable_def (K : absRingType) (V W : normedModType K) (f : V -> W)
 
 About derivable.
 
+Print locally'.
 Definition holomorphic (f : Co_normedType -> Co_normedType) c := forall v,
 cvg ((fun h => h^-1 *: ((f \o shift c) (h *: v) - f c)) @ locally' (0 : Co_normedType)).
 
 Definition complex_realfun (f : C^o -> C^o) : C_RnormedType -> C_RnormedType := f.
+
+Definition complex_Rnormed_absring : C_RnormedType -> C^o := id. (* Coercion ? *) (*Avec C tout seul au lieu de C_absRIng ça devrait passer *) 
+
 
 Variable ( h : C_RnormedType -> C_RnormedType) (x : C_RnormedType). 
 
@@ -263,14 +267,26 @@ Definition CauchyRiemanEq (f : C_RnormedType -> C_RnormedType)  :=
   let v:= (fun c => Im (f c)) :  C_RnormedType -> R^o in
   ('D_(1%:C) u = 'D_('i) v) /\ ('D_('i) u = 'D_(1%:C) v).
 
-
 Theorem CauchyRiemann (f : C^o -> C^o) c:  (holomorphic f c)
                <-> (forall v, derivable (complex_realfun f) c v) /\(CauchyRiemanEq f). 
 Proof.
 split.
-- move => H ; split => v.  rewrite /derivable.   
+- move => H ; split => v. 
+  rewrite /derivable.
+  move : (H v) => /cvg_ex [l H0]. (* eapply*)
+  apply : (cvgP (l := l)).
+  have -> : (fun h0 : R_absRingType => h0^-1 *: ((complex_realfun f \o shift c) (h0 *: v ) - complex_realfun f c)) = (fun h : C_absRingType => h^-1 *: ((f \o shift c) (h *: (complex_Rnormed_absring v)) - f c)) \o (real_complex R). admit.
+  unshelve apply : flim_comp. exact (locally' 0%:C).
+  admit. 
+  by []. 
+- split.   
+ -  admit.
+ -  admit.   
+Admitted.
 
-Admitted.   
+
+
+
 End Holomorphe.
 
 
