@@ -62,6 +62,9 @@ Proof.
   by rewrite /normc //= expr0n //= add0r sqrtr0.
 Qed.
 
+Lemma normc_r (x : R) : normc (x%:C) = normr (x).
+Proof. by rewrite /normc/= expr0n //= addr0 sqrtr_sqr. Qed.
+
 Lemma normcN1 : normc (-1%:C) = 1 :> R.
 Proof.  
   by rewrite /normc/=  oppr0 expr0n   addr0  -signr_odd expr0 sqrtr1.
@@ -209,25 +212,29 @@ End C_as_R2. *)
 
 Section C_absRing.
 
-Definition C_AbsRingMixin := @AbsRingMixin (complex_ringType R_rcfType) (@normc R_rcfType) normc0 normcN1 normcD (@normcM R_rcfType ) (@eq0_normc R_rcfType). 
- 
-Definition C_absRingType :=  AbsRingType C C_AbsRingMixin.
-Canonical C_absRingType.
-Definition C_topologicalType := [topologicalType of C for C_absRingType].
-Canonical C_topologicalType.
-Definition C_uniformType := [uniformType of C for C_absRingType].
-Canonical C_uniformType.
-Definition Co_pointedType := [pointedType of C^o for C_absRingType].
-Canonical Co_pointedType.
-(*Why is that redundant with Ro_pointedtype*)
-Locate Ro_pointedType.
-Canonical Co_filteredType := [filteredType C^o of C^o for C_absRingType].
-Canonical Co_topologicalType := [topologicalType of C^o for C_absRingType].
-Canonical Co_uniformType := [uniformType of C^o for C_absRingType].
+  Definition C_AbsRingMixin := @AbsRingMixin (complex_ringType R_rcfType) (@normc R_rcfType) normc0 normcN1 normcD (@normcM R_rcfType ) (@eq0_normc R_rcfType).
 
-Definition Co_normedType := AbsRing_NormedModType C_absRingType.
-Canonical Co_normedType.
-(*Why is this Canonical, when the normed type on Ro is defined for R of the reals ? *)
+  
+  
+  Definition C_absRingType :=  AbsRingType C C_AbsRingMixin.
+  Canonical C_absRingType.
+  Definition C_topologicalType := [topologicalType of C for C_absRingType].
+  Canonical C_topologicalType.
+  Definition C_uniformType := [uniformType of C for C_absRingType].
+  Canonical C_uniformType.
+  Definition Co_pointedType := [pointedType of C^o for C_absRingType].
+  (*Canonical Co_pointedType.*) 
+  Locate Ro_pointedType. 
+  Definition Co_filteredType := [filteredType C^o of C^o for C_absRingType].
+  Definition Co_topologicalType := [topologicalType of C^o for C_absRingType].
+  Definition Co_uniformType := [uniformType of C^o for C_absRingType].
+  Definition Co_normedType := AbsRing_NormedModType C_absRingType.
+  (*Canonical Co_normedType.*)
+  (*Why is this Canonical, when the normed type on Ro is defined for R of the reals ? *)
+
+  Lemma absCE :  forall x : C, `|x|%real = normc x.
+  Proof.  by []. Qed.
+
 
 End C_absRing.
 
@@ -258,27 +265,53 @@ Definition complex_realfun (f : C^o -> C^o) : C_RnormedType -> C_RnormedType := 
 Definition complex_Rnormed_absring : C_RnormedType -> C^o := id. (* Coercion ? *) (*Avec C tout seul au lieu de C_absRIng ça devrait passer *) 
 
 
-Variable ( h : C_RnormedType -> C_RnormedType) (x : C_RnormedType). 
+(* Variable ( h : C_RnormedType -> C_RnormedType) (x : C_RnormedType).  *)
 
-Check ('D_x h 0). (*This has a weird type *)
+(* Check ('D_x h 0). (*This has a weird type *) *)
  
 Definition CauchyRiemanEq (f : C_RnormedType -> C_RnormedType)  :=
   let u := (fun c => Re ( f c)): C_RnormedType -> R^o  in
   let v:= (fun c => Im (f c)) :  C_RnormedType -> R^o in
   ('D_(1%:C) u = 'D_('i) v) /\ ('D_('i) u = 'D_(1%:C) v).
 
+Lemma eqCr (R : rcfType) (r s : R) : (r%:C == s%:C) = (r == s).
+Proof. exact: (inj_eq (@complexI _)). Qed.
+
+
+(*Lemma lim_trans (T : topologicalType) (F : set (set T))  (G : set (set T)) (l : T) : ( F `=>` G ) -> (G --> l) -> ( F --> l). 
+  move => FG Gl A x.
+  Search "lim" "trans". 
+ *)
+
 Theorem CauchyRiemann (f : C^o -> C^o) c:  (holomorphic f c)
-               <-> (forall v, derivable (complex_realfun f) c v) /\(CauchyRiemanEq f). 
+          <-> (forall v, derivable (complex_realfun f) c v) /\(CauchyRiemanEq f). 
 Proof.
 split.
+  
 - move => H ; split => v. 
   rewrite /derivable.
-  move : (H v) => /cvg_ex [l H0]. (* eapply*)
+  move : (H v) => /cvg_ex [l H0] {H}. (* eapply*)
   apply : (cvgP (l := l)).
-  have -> : (fun h0 : R_absRingType => h0^-1 *: ((complex_realfun f \o shift c) (h0 *: v ) - complex_realfun f c)) = (fun h : C_absRingType => h^-1 *: ((f \o shift c) (h *: (complex_Rnormed_absring v)) - f c)) \o (real_complex R). admit.
-  unshelve apply : flim_comp. exact (locally' 0%:C).
-  admit. 
-  by []. 
+  - have eqnear0 : {near (@locally' R_topologicalType  0), (fun h : C_absRingType => h^-1 *: ((f \o shift c) (h *: (complex_Rnormed_absring v)) - f c)) \o (real_complex R) =1 (fun h0 : R_absRingType => h0^-1 *: ((complex_realfun f \o shift c) (h0 *: v ) - complex_realfun f c)) }.
+    exists 1 ; first by [].  move => h _ neq0h //=.
+    have lem : forall w : C^o, forall r : R, (r *: w = r%:C *: w). 
+      move => w r //= .  admit. (*should be w : Co *)
+     have ->  :   h%:C^-1 *: (f (h%:C *: complex_Rnormed_absring v + c) - f c) =   h^-1 *: (f (h%:C *: complex_Rnormed_absring v + c) - f c).  admit.
+    by apply : (scalerI (neq0h)) ; rewrite !scalerA //= (divff neq0h) !scale1r //= -lem. 
+  have subsetfilters:= (flim_eq_loc eqnear0).
+  apply :  (@flim_trans _ ( (fun h : C_absRingType => h^-1 *: ((f \o shift c) (h *: (complex_Rnormed_absring v)) - f c)) \o (real_complex R) @ (@locally' R_topologicalType  0))).
+  exact : (subsetfilters (@locally'_filter R_topologicalType  0)).
+- unshelve apply : flim_comp.
+  exact (locally' 0%:C).
+- move => //= A  [r [H1 H2]] ; exists r ; first by [].
+  move => b ballrb neqb0.  
+  have H4 : (AbsRing_ball 0%:C r b%:C). rewrite /AbsRing_ball /ball_ absCE.
+   rewrite addrC addr0 -scaleN1r normcZ normrN1 mul1r normc_r. 
+   move : ballrb ; rewrite /AbsRing_ball /ball_ absRE.
+   by rewrite addrC addr0 normrN. 
+  have H5 : (b%:C != 0%:C) by move : neqb0 ; apply : contra ; rewrite eqCr.
+  by apply : (H2 b%:C H4 H5).
+- by [].
 - split.   
  -  admit.
  -  admit.   
@@ -310,6 +343,7 @@ Inductive borel_top (T : topologicalType) : set (set T) :=
   | borel_union : forall ( F : nat -> set T ),
                  (forall n , borel_top (F n)) ->
                  borel_top ( \bigcup_n (F n))
+
   | borel_compl : forall A, borel_top (~`A) -> borel_top A.
 
 
