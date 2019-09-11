@@ -67,14 +67,21 @@ Proof. by rewrite /normc/= expr0n //= addr0 sqrtr_sqr. Qed.
 
 Lemma normcN1 : normc (-1%:C) = 1 :> R.
 Proof.  
-  by rewrite /normc/=  oppr0 expr0n   addr0  -signr_odd expr0 sqrtr1.
+  by rewrite /normc/=  oppr0 expr0n addr0 -signr_odd expr0 sqrtr1.
 Qed.
 
 Lemma realtocomplex_additive : forall x y : R, (x + y)%:C = x%:C + y%:C. 
 Proof.
   move => x y ; rewrite -!complexr0 eqE_complex //=.
   by split ; last by rewrite addr0.  
-Qed. 
+Qed.
+
+
+Lemma real_complex_inv : forall x : R, x%:C^-1 = (x^-1)%:C.  
+Proof. Admitted. 
+
+
+Check real_complex_additive.
 
 Lemma normcD : forall ( x y : C), normc (x+y) <= (normc x + normc y).
 Proof.
@@ -87,6 +94,11 @@ Proof.
   rewrite -mulrDr sqrtrM ; last by rewrite sqr_ge0.
   by rewrite sqrtr_sqr.
 Qed.
+
+Lemma scalecr : forall w : C^o, forall r : R, (r *: w = r%:C *: w). 
+Proof. by move => [a b ] r ; rewrite  eqE_complex //= ; split ;  simpc. Qed.
+
+Check complex_real.
  
 Section C_Rnormed.
  
@@ -287,18 +299,18 @@ Theorem CauchyRiemann (f : C^o -> C^o) c:  (holomorphic f c)
           <-> (forall v, derivable (complex_realfun f) c v) /\(CauchyRiemanEq f). 
 Proof.
 split.
-  
 - move => H ; split => v. 
   rewrite /derivable.
   move : (H v) => /cvg_ex [l H0] {H}. (* eapply*)
   apply : (cvgP (l := l)).
-  - have eqnear0 : {near (@locally' R_topologicalType  0), (fun h : C_absRingType => h^-1 *: ((f \o shift c) (h *: (complex_Rnormed_absring v)) - f c)) \o (real_complex R) =1 (fun h0 : R_absRingType => h0^-1 *: ((complex_realfun f \o shift c) (h0 *: v ) - complex_realfun f c)) }.
-    exists 1 ; first by [].  move => h _ neq0h //=.
-    have lem : forall w : C^o, forall r : R, (r *: w = r%:C *: w). 
-      move => w r //= .  admit. (*should be w : Co *)
-     have ->  :   h%:C^-1 *: (f (h%:C *: complex_Rnormed_absring v + c) - f c) =   h^-1 *: (f (h%:C *: complex_Rnormed_absring v + c) - f c).  admit.
-    by apply : (scalerI (neq0h)) ; rewrite !scalerA //= (divff neq0h) !scale1r //= -lem. 
-  have subsetfilters:= (flim_eq_loc eqnear0).
+- have eqnear0 : {near (@locally' R_topologicalType  0),
+     (fun h : C_absRingType => h^-1 *: ((f \o shift c) (h *: (complex_Rnormed_absring v)) - f c))
+       \o (real_complex R) =1
+     (fun h0 : R_absRingType => h0^-1 *: ((complex_realfun f \o shift c) (h0 *: v )
+     - complex_realfun f c)) }.
+    exists 1 ; first by [] ;  move => h _ neq0h //=; rewrite real_complex_inv -scalecr.    
+    by apply : (scalerI (neq0h)) ; rewrite !scalerA //= (divff neq0h) !scale1r //= -scalecr. 
+  pose subsetfilters:= (flim_eq_loc eqnear0).
   apply :  (@flim_trans _ ( (fun h : C_absRingType => h^-1 *: ((f \o shift c) (h *: (complex_Rnormed_absring v)) - f c)) \o (real_complex R) @ (@locally' R_topologicalType  0))).
   exact : (subsetfilters (@locally'_filter R_topologicalType  0)).
 - unshelve apply : flim_comp.
@@ -311,9 +323,9 @@ split.
    by rewrite addrC addr0 normrN. 
   have H5 : (b%:C != 0%:C) by move : neqb0 ; apply : contra ; rewrite eqCr.
   by apply : (H2 b%:C H4 H5).
-- by [].
+by [].
 - split.   
- -  admit.
+ -  
  -  admit.   
 Admitted.
 
