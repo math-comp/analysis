@@ -350,24 +350,23 @@ split.
   have bneq0C : (b%:C != 0%:C) by move : neqb0 ; apply : contra ; rewrite eqCr.
   by apply : (ballrA b%:C ballCrb bneq0C).
 by [].
-- move => x . (* move : ( H 1%:C) => /cvg_ex [l H0].*) (*do we need f to be holo to perform the calculi ? *)
-   have eqnear0x : {near (@locally' R_topologicalType 0),   (fun h : C => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) \o ( fun h => h *: 1%:C)  =1 ((fun (h : R) => h^-1 *: ((f \o shift x) (h *: 1%:C) - f x))) }.
-   by exists 1 ; first by [] ; move => h  //= ;  simpc ; rewrite real_complex_inv -scalecr. 
-   have eqnear0y : {near (@locally' R_topologicalType 0), ((fun (h : R) => h^-1 *: ((-'i) * ((f \o shift x) (h *: 'i%C) - f x)))) =1
-                   (fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) \o ( fun h => h *: 'i%C)  }.
-   exists 1 ; first by [] ; move => h _ _ //= ;  simpc ; rewrite (Im_mul h) invcM. 
-   by rewrite -scalerA real_complex_inv  Im_inv scalecr; simpc. 
-pose subsetfiltersx := (flim_eq_loc eqnear0x). Search _ (lim _ = lim _ ).  
-pose subsetfiltersy := (flim_eq_loc eqnear0y).
-pose l := deriveC f c x.
+- move => x .
+   pose quotC := (fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)).
+   pose quotR := (fun h : R_absRingType => h^-1 *: ((f \o shift x) (h *: 1%:C ) - f x)).
+   (* move : ( H 1%:C) => /cvg_ex [l H0].*) (*do we need f to be holo to perform the calculi ? *)
+   have eqnear0x : {near (@locally' R_topologicalType 0), quotC \o ( fun h => h *: 1%:C)  =1 quotR }.
+      by  exists 1 ; first by [] ; move => h  _ _ //= ;  simpc ; rewrite /quotC /quotR real_complex_inv -scalecr ; simpc. 
+   pose subsetfiltersx := (flim_eq_loc eqnear0x).
+   pose l := deriveC f x 1.
    (*lim ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) @ (@locally' C_topologicalType 0) ). *)
-   have -> : lim ((fun h : R_absRingType => h^-1 *: ((f \o shift x) (h *: 1%:C) - f x)) @ (@locally' R_topologicalType 0)) = lim ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) @ (@locally' C_topologicalType 0) ).  
-     apply:  (@flim_map_lim _ _ _ (@locally' R_topologicalType 0) _ _ (lim ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) @ (@locally' C_topologicalType 0) ))).  
-     apply : (@flim_trans _ ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) \o ( fun h => h *: 1%:C)  @ (@locally' R_topologicalType  0))).   
+   have -> : lim (quotR @ (@locally' R_topologicalType 0)) = lim (quotC @ (@locally' C_topologicalType 0) ).
+     apply:  (@flim_map_lim _ _ _ (@locally' R_topologicalType 0) _ _ (lim (quotC @ (@locally' C_topologicalType 0) ))).
+     (* apply flim_trans *)
+      (*move => A.         
        - exact : (subsetfiltersx (@locally'_filter R_topologicalType  0)). 
        - set f1 := (X in X \o _).
          set f2 := (X in _ \o X).
-         set F := (X in _ `=>` X).
+         set F := (X in _ `=>` X).    
 
          About lim.
 
@@ -377,10 +376,16 @@ pose l := deriveC f c x.
          exists r. by [].
          move => z [ballrz neqz0] //= ; simpc. 
          have zneq0C : (z%:C != 0%:C) by move : neqz0 ; apply : contra ; rewrite eqCr.
-    apply : (H1 ((z +i* 0)^-1 *: (f (z +i* 0 + x) - f x))).  
-    rewrite /AbsRing_ball /ball_ absCE //=. /locally'.  
-    admit.
-   have -> : lim ((fun h : R_absRingType => h^-1 *: ((f \o shift x) (h *: 'i%C) - f x)) @ (@locally' R_topologicalType 0)) = ('i%C) * l. 
+     apply : (H1 ((z +i* 0)^-1 *: (f (z +i* 0 + x) - f x))).  
+     rewrite /AbsRing_ball /ball_ absCE //=.*) 
+     admit.
+  have eqnear0y : {near (@locally' R_topologicalType 0), ((fun (h : R) => h^-1 *: ((-'i) * ((f \o shift x) (h *: 'i%C) - f x)))) =1
+                  quotC  \o ( fun h => h *: 'i%C)  }.
+    exists 1 ; first by [] ; move => h _ _ //= ;  simpc ; rewrite /quotC (Im_mul h) invcM. 
+    by rewrite -scalerA real_complex_inv  Im_inv scalecr; simpc. 
+  
+   pose subsetfiltersy := (flim_eq_loc eqnear0y).
+  have -> : lim ((fun h : R_absRingType => h^-1 *: ((f \o shift x) (h *: 'i%C) - f x)) @ (@locally' R_topologicalType 0)) = ('i%C) * l. 
      admit.
   by [].
 - move => [D0 CR] v.
