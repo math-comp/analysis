@@ -76,6 +76,7 @@ Proof.
   by split ; last by rewrite addr0.  
 Qed.
 
+ 
 
 Lemma real_complex_inv : forall x : R, x%:C^-1 = (x^-1)%:C.  
 Proof. Admitted. 
@@ -104,6 +105,7 @@ Qed.
 Lemma scalecr : forall w : C^o, forall r : R, (r *: w = r%:C *: w). 
 Proof. by move => [a b ] r ; rewrite  eqE_complex //= ; split ;  simpc. Qed.
 
+About AbsRing_ball.
 
  
 Section C_Rnormed.
@@ -254,6 +256,15 @@ Section C_absRing.
   Proof.  by []. Qed.
 
 
+  Lemma absring_real_complex : forall r: R, forall x : R, AbsRing_ball 0 r x -> (@AbsRing_ball C_absRingType 0%:C r x%:C).
+  Proof.
+    move => r x ballrx.   
+    rewrite /AbsRing_ball /ball_ absCE.
+    rewrite addrC addr0 -scaleN1r normcZ normrN1 mul1r normc_r. 
+    move : ballrx ; rewrite /AbsRing_ball /ball_ absRE.
+    by rewrite addrC addr0 normrN. 
+  Qed.
+
 End C_absRing.
 
 Section Holomorphe.
@@ -297,9 +308,9 @@ Definition deriveC (V W : normedModType C)(f : V -> W) c v :=
   lim ((fun h => h^-1 *: ((f \o shift c) (h *: v) - f c)) @ locally' (0 : C^o)).
 
 
-Definition CauchyRiemanEq (f : C_RnormedType -> C_RnormedType) :=
- forall z, 'i * lim ((fun h : R_absRingType => h^-1 *: ((f \o shift z) (h *: 1%:C) - f z)) @ locally' (0 : R^o)) =
-      lim ((fun h : R_absRingType => h^-1 *: ((f \o shift z) (h *: 'i%C) - f z)) @ locally' (0 : R^o)).
+Definition CauchyRiemanEq (f : C -> C) :=
+ forall z, 'i * lim ((fun h : R => h^-1 *: ((f \o shift z) (h *: 1%:C) - f z)) @ locally' (0 : R^o)) =
+      lim ((fun h : R => h^-1 *: ((f \o shift z) (h *: 'i%C) - f z)) @ locally' (0 : R^o)).
 
   
 Lemma eqCr (R : rcfType) (r s : R) : (r%:C == s%:C) = (r == s).
@@ -312,11 +323,12 @@ Proof. exact: (inj_eq (@complexI _)). Qed.
  *)
 
 Theorem CauchyRiemann (f : C^o -> C^o) c:  (holomorphic f c)
-          <-> (forall v, derivable (complex_realfun f) c v) /\(CauchyRiemanEq f). 
+          <-> (forall v : C, derivable (complex_realfun f) c v) /\ (CauchyRiemanEq f). 
 Proof.
 split. 
-- move => H ; split.
-  rewrite /derivable => v.
+- move => H ; split (* => v*). 
+  (* case/cvg_ex: (H v) => l H0. apply: (cvgP (l := l)). *)
+  rewrite /derivable => v. 
   move : (H v) => /cvg_ex [l H0] {H}. (* eapply*)
   apply : (cvgP (l := l)).
   - have eqnear0 : {near (@locally' R_topologicalType  0),
@@ -332,30 +344,42 @@ split.
 - unshelve apply : flim_comp.
   exact (locally' 0%:C).
 - move => //= A  [r [leq0r ballrA]] ; exists r ; first by []. 
-  move => b ballrb neqb0.  
+  move => b ballrb neqb0.   
   have ballCrb : (AbsRing_ball 0%:C r b%:C).
-   rewrite /AbsRing_ball /ball_ absCE.
-   rewrite addrC addr0 -scaleN1r normcZ normrN1 mul1r normc_r. 
-   move : ballrb ; rewrite /AbsRing_ball /ball_ absRE.
-   by rewrite addrC addr0 normrN. 
+   by apply : absring_real_complex.
   have bneq0C : (b%:C != 0%:C) by move : neqb0 ; apply : contra ; rewrite eqCr.
   by apply : (ballrA b%:C ballCrb bneq0C).
 by [].
 - move => x . (* move : ( H 1%:C) => /cvg_ex [l H0].*) (*do we need f to be holo to perform the calculi ? *)
-   have eqnear0x : {near (@locally' R_topologicalType 0),   (fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) \o ( fun h => h *: 1%:C)  =1 ((fun (h : R) => h^-1 *: ((f \o shift x) (h *: 1%:C) - f x))) }.
+   have eqnear0x : {near (@locally' R_topologicalType 0),   (fun h : C => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) \o ( fun h => h *: 1%:C)  =1 ((fun (h : R) => h^-1 *: ((f \o shift x) (h *: 1%:C) - f x))) }.
    by exists 1 ; first by [] ; move => h  //= ;  simpc ; rewrite real_complex_inv -scalecr. 
    have eqnear0y : {near (@locally' R_topologicalType 0), ((fun (h : R) => h^-1 *: ((-'i) * ((f \o shift x) (h *: 'i%C) - f x)))) =1
                    (fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) \o ( fun h => h *: 'i%C)  }.
    exists 1 ; first by [] ; move => h _ _ //= ;  simpc ; rewrite (Im_mul h) invcM. 
    by rewrite -scalerA real_complex_inv  Im_inv scalecr; simpc. 
-   pose subsetfiltersx := (flim_eq_loc eqnear0x).
-   pose subsetfiltersy := (flim_eq_loc eqnear0y).
-   pose l := lim ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) @ (@locally' C_topologicalType 0) ).
-   have -> : lim ((fun h : R_absRingType => h^-1 *: ((f \o shift x) (h *: 1%:C) - f x)) @ (@locally' R_topologicalType 0)) = l. 
-     apply:  (@flim_map_lim _ _ _ (@locally' R_topologicalType 0) _ _ l).
-     apply : (@flim_trans _ ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) \o ( fun h => h *: 1%:C)  @ (@locally' R_topologicalType  0))).  
-     exact : (subsetfiltersx (@locally'_filter R_topologicalType  0)).
-     admit.
+pose subsetfiltersx := (flim_eq_loc eqnear0x). Search _ (lim _ = lim _ ).  
+pose subsetfiltersy := (flim_eq_loc eqnear0y).
+pose l := deriveC f c x.
+   (*lim ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) @ (@locally' C_topologicalType 0) ). *)
+   have -> : lim ((fun h : R_absRingType => h^-1 *: ((f \o shift x) (h *: 1%:C) - f x)) @ (@locally' R_topologicalType 0)) = lim ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) @ (@locally' C_topologicalType 0) ).  
+     apply:  (@flim_map_lim _ _ _ (@locally' R_topologicalType 0) _ _ (lim ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) @ (@locally' C_topologicalType 0) ))).  
+     apply : (@flim_trans _ ((fun h : C_absRingType => h^-1 *: ((f \o shift x) (h * 1%:C) - f x)) \o ( fun h => h *: 1%:C)  @ (@locally' R_topologicalType  0))).   
+       - exact : (subsetfiltersx (@locally'_filter R_topologicalType  0)). 
+       - set f1 := (X in X \o _).
+         set f2 := (X in _ \o X).
+         set F := (X in _ `=>` X).
+
+         About lim.
+
+       Search _ flim (_ =1 _).
+       Locate  "_ `=>` _".
+       -  move => A [r leqr0] H1 //=.  
+         exists r. by [].
+         move => z [ballrz neqz0] //= ; simpc. 
+         have zneq0C : (z%:C != 0%:C) by move : neqz0 ; apply : contra ; rewrite eqCr.
+    apply : (H1 ((z +i* 0)^-1 *: (f (z +i* 0 + x) - f x))).  
+    rewrite /AbsRing_ball /ball_ absCE //=. /locally'.  
+    admit.
    have -> : lim ((fun h : R_absRingType => h^-1 *: ((f \o shift x) (h *: 'i%C) - f x)) @ (@locally' R_topologicalType 0)) = ('i%C) * l. 
      admit.
   by [].
