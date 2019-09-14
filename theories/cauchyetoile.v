@@ -85,7 +85,7 @@ Lemma invcM : forall x y : C, (x*y)^-1 = x^-1 * y^-1. (*Maybe another lemma is d
 Proof. Admitted.
 
 Lemma Im_mul : forall x : R, (x*i) = (x%:C * 'i%C). 
-Proof. by move => x ; simpc. Qed. 
+Proof. by move => x ; simpc. Qed.
   
 Lemma normcD : forall ( x y : C), normc (x+y) <= (normc x + normc y).
 Proof.
@@ -205,7 +205,15 @@ Section C_absRing.
     move : ballrx ; rewrite /AbsRing_ball /ball_ absRE.
     by rewrite addrC addr0 normrN. 
   Qed.
-    
+
+  Lemma scalei_muli : forall z : C^o,  ('i * z) = ('i *: z).
+  Proof.
+    by []. 
+  Qed.
+
+  Lemma iE : 'i%C = 'i :> C.
+  Proof. by []. Qed.    
+
 End C_absRing.
 
 Section Holomorphe.
@@ -275,7 +283,34 @@ Proof.
 Qed.
 
 
+Lemma cvg_scaler (K : absRingType) (V : normedModType K) (T : topologicalType)
+      (F : set (set T)) (H :Filter F) (f : T -> V) (k : K) :
+    cvg (f @ F) -> cvg ((k \*: f) @ F ).
+Proof. 
+  by move => /cvg_ex [l H0] ; apply : cvgP ; apply :(@lim_scaler _ _ _ F _ f k l).
+Qed.
+
+About lim_scaler. 
+
+
+Lemma limin_scaler (K : absRingType) (V : normedModType K) (T : topologicalType)
+      (F : set (set T)) (FF :Filter F) (f : T -> V) (k : K) :
+      cvg(f@F) -> k *: lim (f @ F) = lim ((k \*: f) @ F ).
+Proof.
+  move => /cvg_ex [l H].
+  (*rewrite (flim_lim H). *)
+(*   The LHS of (flim_lim H) *)
+(*     (lim (f @ F)) *)
+(* matches but type classes inference fails *)
+(*   Check (flim_lim (@lim_scaler K V T F FF f k l H)). *)
+ Admitted. 
+
+
+(*this could be done for scale also ... *)
+
 (*I needed filter_of_filterE to make things easier - looked a long time of it as I was lookin for a [filter of lim]* instead of a [filter of filter]*)
+
+(*There whould be a lemma analogous to [filter of lim] to ease the search  *)
 
 (* 
 
@@ -363,7 +398,7 @@ Proof.
        - exact  (@locally' C_topologicalType 0). 
        - move => A //= [r leq0r] absringrA. 
          exists r ; first by [].   
-         move => h absrh hneq0 ; simpc. 
+         move => h absrh hneq0 ; simpc.      
          apply :  (absringrA h%:C).
           - by apply : absring_real_complex.
           - by rewrite eqCr .
@@ -378,12 +413,14 @@ Proof.
            = 'i * lim (quotC @ (@locally' C_topologicalType 0)).
     have -> : 'i * lim (quotC @ (@locally' C_topologicalType 0))
            =  lim ('i \*: quotC @ (@locally' C_topologicalType 0)). 
-           Search "lim" "scale". admit.
+      rewrite  scalei_muli ; rewrite  (limin_scaler _ ('i) ).
+       - by [].
+       - exact : H.       
     apply :  (@flim_map_lim _ _ _ (@locally' R_topologicalType 0) _ _ (lim ('i \*:quotC @ (@locally' C_topologicalType 0) ))).
     suff :  quotiR @ (@locally' R_topologicalType 0)
                    `=>` ('i \*: quotC @ (@locally' C_topologicalType 0)).
-      move => H1 ; apply : (flim_trans H1). About lim_scaler. Check (lim_scaler _).
-    admit.      
+      move => H1 ; apply : (flim_translim H1) .
+      by apply :(@cvg_scaler _ _ _ _ _ quotC ('i) ) ; exact : H. 
     apply :  flim_trans.   
     - apply : (subsetfiltersy (@locally'_filter R_topologicalType  0)).
       move => {subsetfiltersx eqnear0x}.
