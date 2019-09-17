@@ -446,7 +446,7 @@ Qed.
     move : loclA ; move =>[r leq0r] absrA ;  exists r ; first by [].
      - move => [x y] ballrh neq0h //=.
        move : lem ;  move => //=. 
-
+Admitted.
   
 Theorem CauchyRiemann (f : C^o -> C^o) c:  ((holomorphic f c))
           <-> (forall v : C, derivable (complex_realfun f) c v) /\ (CauchyRiemanEq f c). 
