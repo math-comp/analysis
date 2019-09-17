@@ -18,91 +18,89 @@ Local Open Scope classical_set_scope.
 Local Open Scope complex_scope.
 
 
-Set Implicit Arguments.
-Unset Strict Implicit.
-Unset Printing Implicit Defensive.
+ Set Implicit Arguments.
+ Unset Strict Implicit.
+ Unset Printing Implicit Defensive.
 (* Obligation Tactic := idtac. *)
 
-Local Notation sgr := Num.sg.
-Local Notation sqrtr := Num.sqrt.
-Local Notation C := R[i].
+ Local Notation sgr := Num.sg.
+ Local Notation sqrtr := Num.sqrt.
+ Local Notation C := R[i].
 
-Notation Re:= (complex.Re).
-Notation Im:= (complex.Im).
+ Notation Re:= (complex.Re).
+ Notation Im:= (complex.Im).
 
   
 (*Adapting lemma eq_complex from complex.v, which was done in boolean style*)
-Lemma eqE_complex : forall (x y : C), (x = y) = ((Re x = Re y) /\ (Im x = Im y)).
-Proof.
+ Lemma eqE_complex : forall (x y : C), (x = y) = ((Re x = Re y) /\ (Im x = Im y)).
+ Proof.
    move => [a b] [c d]; apply : propositional_extensionality ; split.
    by move => -> ; split. 
    by  case => //= -> ->.
-Qed.
+ Qed.
 
-Lemma Re0 : Re 0 = 0 :> R.
-Proof. by []. Qed.
+ Lemma Re0 : Re 0 = 0 :> R.
+ Proof. by []. Qed.
 
-Lemma Im0 : Im 0 = 0 :> R.
-Proof. by []. Qed.
+ Lemma Im0 : Im 0 = 0 :> R.
+ Proof. by []. Qed.
 
-Lemma ReIm_eq0 (x : C) : (x=0) = ((Re x = 0)/\(Im x = 0)).
-Proof.
+ Lemma ReIm_eq0 (x : C) : (x=0) = ((Re x = 0)/\(Im x = 0)).
+ Proof.
   by rewrite -[in Re x= _]Re0 -Im0 -eqE_complex.  
-Qed.
+ Qed.
 
-Lemma normc0 : normc 0 = 0 :> R  .
-Proof. 
+ Lemma normc0 : normc 0 = 0 :> R  .
+ Proof. 
   by rewrite /normc //= expr0n //= add0r sqrtr0.
-Qed.
+ Qed.
 
-Lemma normc_r (x : R) : normc (x%:C) = normr (x).
-Proof. by rewrite /normc/= expr0n //= addr0 sqrtr_sqr. Qed.
+ Lemma normc_r (x : R) : normc (x%:C) = normr (x).
+ Proof. by rewrite /normc/= expr0n //= addr0 sqrtr_sqr. Qed.
 
 
-Lemma normc_i (x : R) : normc (x*i) = normr (x).
-Proof. by rewrite /normc/= expr0n //=  add0r sqrtr_sqr. Qed.
+ Lemma normc_i (x : R) : normc (x*i) = normr (x).
+ Proof. by rewrite /normc/= expr0n //=  add0r sqrtr_sqr. Qed.
 
-Lemma normcN1 : normc (-1%:C) = 1 :> R.
-Proof.  
+ Lemma normcN1 : normc (-1%:C) = 1 :> R.
+ Proof.  
   by rewrite /normc/=  oppr0 expr0n addr0 -signr_odd expr0 sqrtr1.
-Qed.
+ Qed.
 
-Lemma realtocomplex_additive : forall x y : R, (x + y)%:C = x%:C + y%:C. 
-Proof.
+ Lemma realtocomplex_additive : forall x y : R, (x + y)%:C = x%:C + y%:C. 
+ Proof.
   move => x y ; rewrite -!complexr0 eqE_complex //=.
   by split ; last by rewrite addr0.  
-Qed.
+ Qed.
 
  
 
-Lemma real_complex_inv : forall x : R, x%:C^-1 = (x^-1)%:C.  
-Proof. Admitted. 
+ Lemma real_complex_inv : forall x : R, x%:C^-1 = (x^-1)%:C.  
+ Proof. Admitted. 
 
-Lemma Im_inv : ('i%C)^-1 = (-1*i) :> C.
-Proof. Admitted.  
+ Lemma Im_inv : ('i%C)^-1 = (-1*i) :> C.
+ Proof. Admitted.  
 
-Lemma invcM : forall x y : C, (x*y)^-1 = x^-1 * y^-1. (*Maybe another lemma is doing that, or invrM *)
-Proof. Admitted.
+ Lemma invcM : forall x y : C, (x*y)^-1 = x^-1 * y^-1. (*Maybe another lemma is doing that, or invrM *)
+ Proof. Admitted.
 
-Lemma Im_mul : forall x : R, (x*i) = (x%:C * 'i%C). 
-Proof. by move => x ; simpc. Qed.
+ Lemma Im_mul : forall x : R, (x*i) = (x%:C * 'i%C). 
+ Proof. by move => x ; simpc. Qed.
   
-Lemma normcD : forall ( x y : C), normc (x+y) <= (normc x + normc y).
-Proof.
+ Lemma normcD : forall ( x y : C), normc (x+y) <= (normc x + normc y).
+ Proof.
   by move => x y ; rewrite -lecR realtocomplex_additive ; apply :lec_normD .
-Qed. 
+ Qed. 
 
-Lemma normcZ :  forall (l : R) (x : C), normc (l *: x) = `|l| * (normc x).
-Proof.
+ Lemma normcZ :  forall (l : R) (x : C), normc (l *: x) = `|l| * (normc x).
+ Proof.
   move => l [a b] ;  rewrite /normc //= !exprMn. 
   rewrite -mulrDr sqrtrM ; last by rewrite sqr_ge0.
   by rewrite sqrtr_sqr.
-Qed.
+ Qed.
 
-Lemma scalecr : forall w : C^o, forall r : R, (r *: w = r%:C *: w). 
-Proof. by move => [a b ] r ; rewrite  eqE_complex //= ; split ;  simpc. Qed.
-
-About AbsRing_ball.
+ Lemma scalecr : forall w : C^o, forall r : R, (r *: w = r%:C *: w). 
+ Proof. by move => [a b ] r ; rewrite  eqE_complex //= ; split ;  simpc. Qed.
 
  
 Section C_Rnormed.
@@ -113,53 +111,51 @@ Section C_Rnormed.
 (*Context (K : absRingType). Nor working with any K, how to close the real scope ? Do it before ?  *) 
 
  
-Program Definition uniformmixin_of_normaxioms (V : lmodType R) (norm : V -> R)
+ Program Definition uniformmixin_of_normaxioms (V : lmodType R) (norm : V -> R)
          (ax1 : forall x y : V, norm (x + y) <= norm x + norm y)
          ( ax2 : forall (l : R) (x : V), norm (l *: x) = `|l| * (norm x))
          ( ax4 : forall x : V, norm x = 0 -> x = 0 ) : Uniform.mixin_of (locally_ (ball_ norm))
-          := @Uniform.Mixin V (locally_ (ball_ norm))  (ball_ norm) _ _ _ _. 
-Next Obligation.
+  := @Uniform.Mixin V (locally_ (ball_ norm))  (ball_ norm) _ _ _ _.
+ Next Obligation.
  move => V norm _ H _ ; rewrite /ball_ => x e.  
  have -> :  x - x = 0 . by rewrite addrN.
  suff -> : norm 0 = 0 by [].
  have -> : 0 = 0 *: x by rewrite scale0r.
   by rewrite H normr0 mul0r.  
-Qed.
-Next Obligation.
+ Qed.
+ Next Obligation.
   move => V norm _ H _ ; rewrite /ball_ => x e e0.
   have -> : x - e = (-1) *: (e-x) by rewrite -opprB scaleN1r. 
   by rewrite (H (-1) (e-x)) normrN1 mul1r. 
-Qed.
-Next Obligation.
+ Qed.
+ Next Obligation.
   move => V norm H _ _ ; rewrite /ball_ => x y z e1 e2 normxy normyz.
   by rewrite (subr_trans y) (ler_lt_trans (H  _ _)) ?ltr_add.
-Qed.
-Next Obligation. by []. Qed. 
+ Qed.
+ Next Obligation. by []. Qed. 
 
-(*C as a R-lmodule *)
-Definition C_RlmodMixin := (complex_lmodMixin R_rcfType). (*R instead of R_rcfType is not working *)
-(*LmodType is hard to use, not findable through Search and not checkable as abbreviation is not applied enough*)
-Definition C_RlmodType := @LmodType R C C_RlmodMixin.
+ (*C as a R-lmodule *)
+ Definition C_RlmodMixin := (complex_lmodMixin R_rcfType). (*R instead of R_rcfType is not working *)
+ (*LmodType is hard to use, not findable through Search and not checkable as abbreviation is not applied enough*) 
+ Definition C_RlmodType := @LmodType R C C_RlmodMixin.
+ Definition C_pointedType := PointedType C 0.
+ Canonical C_pointedType.
+ Definition C_filteredType := FilteredType C C (locally_ (ball_ (@normc R_rcfType))).
+ Canonical C_filteredType.
+ (*Are we sure that the above is canonical *)
 
-(* C as a uniformtype *)
-Definition C_pointedType := PointedType C 0.
-Canonical C_pointedType.
-Definition C_filteredType := FilteredType C C (locally_ (ball_ (@normc R_rcfType))).
-Canonical C_filteredType.
-(*Are we sure that the above is canonical *)
-
-Program Definition C_RuniformMixin := @uniformmixin_of_normaxioms C_RlmodType (@normc R_rcfType) normcD normcZ (@eq0_normc R_rcfType).
-Definition C_RtopologicalMixin := topologyOfBallMixin C_RuniformMixin.
-Definition C_RtopologicalType := TopologicalType C_filteredType C_RtopologicalMixin.
-Definition C_RuniformType := @UniformType C_RtopologicalType C_RuniformMixin.
+ Program Definition C_RuniformMixin := @uniformmixin_of_normaxioms C_RlmodType (@normc R_rcfType) normcD normcZ (@eq0_normc R_rcfType).
+ Definition C_RtopologicalMixin := topologyOfBallMixin C_RuniformMixin.
+ Definition C_RtopologicalType := TopologicalType C_filteredType C_RtopologicalMixin.
+ Definition C_RuniformType := @UniformType C_RtopologicalType C_RuniformMixin.
 
 
-Program Definition C_RnormedMixin
+ Program Definition C_RnormedMixin
   := @NormedModMixin R_absRingType C_RlmodType _ C_RuniformMixin (@normc R_rcfType) normcD normcZ _  (@eq0_normc R_rcfType) .
-Next Obligation. by []. Qed. 
+ Next Obligation. by []. Qed. 
 
 
-Definition C_RnormedType : normedModType R := @NormedModType R C_RuniformType C_RnormedMixin.
+ Definition C_RnormedType : normedModType R := @NormedModType R C_RuniformType C_RnormedMixin.
 End C_Rnormed.
 Section C_absRing.
 
@@ -250,8 +246,7 @@ Definition CauchyRiemanEq_R2 (f : C_RnormedType -> C_RnormedType) c :=
   (* ('D_(1%:C) u = 'D_('i) v) /\ ('D_('i) u = 'D_(1%:C) v). *)
   (((derive u c (1%:C)) = 
          (derive v c ('i))) /\ ((derive v c (1%:C)) = -(derive u c ('i)))).
-Check derive. (*derive is explicitely for R normed spaces *)
-Check derivable. 
+
 
 Definition deriveC (V W : normedModType C)(f : V -> W) c v :=
   lim ((fun h => h^-1 *: ((f \o shift c) (h *: v) - f c)) @ locally' (0 : C^o)).
@@ -438,6 +433,21 @@ Proof.
 Qed.
 
 
+ Lemma Diff_CR_holo (f : C^o -> C^o) c:
+   (forall v : C, derivable (complex_realfun f) c v) /\ (CauchyRiemanEq f c) ->
+   ((holomorphic f c)) . 
+ Proof.
+   move => [der CR] v.
+   move : (der v); move => /cvg_ex {der} [l der].
+    apply : (@cvgP _ _ _ l).
+    move =>  //= A loclA.
+    have lem :   locally ((fun h : R => h^-1 *: (complex_realfun f (h *: v + c) - complex_realfun f c))
+                            @ (@locally' R_topologicalType 0)) A by exact : (der A loclA).  
+    move : loclA ; move =>[r leq0r] absrA ;  exists r ; first by [].
+     - move => [x y] ballrh neq0h //=.
+       move : lem ;  move => //=. 
+
+  
 Theorem CauchyRiemann (f : C^o -> C^o) c:  ((holomorphic f c))
           <-> (forall v : C, derivable (complex_realfun f) c v) /\ (CauchyRiemanEq f c). 
 Proof.
@@ -447,48 +457,3 @@ Admitted.
 
 
 End Holomorphe.
-
-
-
-
-
-
-
-Module real_integral (M: INTEGRAL). 
-Import M.
-
-Parameter borel_real : sigma_algebra R.
-Definition R_measurable := Measurable.Pack  borel_real.
-(* Notation AbsRingType T m := (@pack T _ m _ _ id _ id). *)
-(* Canonical R_absRingType := AbsRingType R R_AbsRingMixin. *)
-Canonical R_measurableType := @Measurable.Pack R borel_real. 
-
-
-Inductive borel_top (T : topologicalType) : set (set T) :=
-  | borel_open : forall A, open A -> borel_top  A
-  | borel_union : forall ( F : nat -> set T ),
-                 (forall n , borel_top (F n)) ->
-                 borel_top ( \bigcup_n (F n))
-
-  | borel_compl : forall A, borel_top (~`A) -> borel_top A.
-
-
-Lemma borel_measurable : forall A : set R,  borel_top A ->  @measurable R_measurable A.
-Admitted.
-
-Variable lebesgue : set R -> Rbar. 
-
-
-Record path (T : topologicalType) := Path {
-  base : R -> T ;
-  cont : forall x : R, `|x| <= 1 -> (base @ x --> base x ) }.
-
-Check base. 
- (*Local Coercion base T : path T >-> (R -> T). J'arrive pas à faire une coercion *) 
-
-Definition segment01 := fun (x : R) => is_true (`|x| <= 1 ).
-
-Definition integral_path  (T : topologicalType) (p : path T) (f : T -> Rbar) := integral lebesgue  (segment01)  (Basics.compose f (base p)). 
-  
-
-End real_integral.
