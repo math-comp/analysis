@@ -1,7 +1,7 @@
 {withEmacs ? false,
  nixpkgs ? (fetchTarball {
-  url = "https://github.com/NixOS/nixpkgs/archive/650a295621b27c4ebe0fa64a63fd25323e64deb3.tar.gz";
-  sha256 = "0rxjkfiq53ibz0rzggvnp341b6kgzgfr9x6q07m2my7ijlirs2da";
+  url = "https://github.com/NixOS/nixpkgs/archive/d80148928b12ffa9c6cc320e107515aa7b7c7994.tar.gz";
+  sha256 = "0590i3p14f668h0il81bh8m64l1ccl7nmdpv59y865db1wyq3a8c";
 }),
 coq-version ? "default",
 print-env ? false
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   name = "env";
   env = buildEnv { name = name; paths = buildInputs; };
   buildInputs = [ coq ] ++ (with myCoqPackages;
-    [mathcomp mathcomp-finmap mathcomp-bigenough])
+    [mathcomp mathcomp-finmap mathcomp-bigenough mathcomp-real-closed])
                 ++ lib.optional withEmacs pgEmacs;
   shellHook = ''
     nixEnv (){
