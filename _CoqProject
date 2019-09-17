@@ -8,6 +8,7 @@ theories/reals.v
 theories/posnum.v
 theories/landau.v
 theories/classical_sets.v
+theories/cauchyetoile.v
 theories/Rstruct.v
 theories/Rbar.v
 theories/topology.v
@@ -15,6 +16,7 @@ theories/prodnormedzmodule.v
 theories/normedtype.v
 theories/forms.v
 theories/derive.v
+theories/integral.v
 theories/summability.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
