@@ -27,8 +27,8 @@ Local Open Scope complex_scope.
  Notation Im:= (complex.Im).
 
   
-(*Adapting lemma eq_complex from complex.v, 
-which was done in boolean style*)
+ (*Adapting lemma eq_complex from complex.v, 
+ which was done in boolean style*)
  Lemma eqE_complex : forall (x y : C), (x = y) = ((Re x = Re y) /\ (Im x = Im y)).
  Proof.
    move => [a b] [c d]; apply : propositional_extensionality ; split.
@@ -197,24 +197,25 @@ Section C_absRing.
   
   Definition Co_uniformType := [uniformType of C^o for C_absRingType].
   Definition Co_normedType := AbsRing_NormedModType C_absRingType.
-  Canonical C_normedType := [normedModType C of C for Co_normedType].
+  Canonical C_normedType := [normedModType C^o of C for Co_normedType].
   (*C is convertible to C^o *)
-  (*Notation "`|[ x ]|" := (normc x) : ring_scope. (*This was not inferred, despite l. 611 of normedtype. *)*)
   
   Canonical R_normedType := [normedModType R of R for  [normedModType R of R^o]].
-
   
+  Canonical absRing_normedType (K : absRingType) := [normedModType K^o of K for (AbsRing_NormedModType K)].
 
-  
-  (*Canonical Co_normedType.*)
-  (*Why is this Canonical, when the normed type on Ro is defined for R of the reals ? *)
-
-  Lemma absCE :  forall x : C, `|x|%real = normc x.
+  Lemma abs_normE : forall ( K : absRingType) (x : K), `|x|%real = `|[x]|.
   Proof.  by []. Qed.
 
+  (*Delete absCE and adapt from abs_normE *)
+  Lemma absCE : forall x : C, `|x|%real = (normc x).
+  Proof. by []. Qed.
 
+  Lemma normCR : forall x : R, `|[x%:C]| = `|x|%real.
+  Proof. Admitted.
+  
   Lemma absring_real_complex : forall r: R, forall x : R, AbsRing_ball 0 r x ->
-   (@AbsRing_ball C_absRingType 0%:C r x%:C).
+   (AbsRing_ball 0%:C r x%:C).
   Proof.
     move => r x ballrx.   
     rewrite /AbsRing_ball /ball_ absCE.
@@ -225,7 +226,7 @@ Section C_absRing.
 
 
   Lemma absring_real_Im :  forall r: R, forall x : R, AbsRing_ball 0 r x ->
-                                            (@AbsRing_ball C_absRingType 0%:C r x*i).
+                                            (AbsRing_ball  0%:C r x*i).
   Proof.
     move => r x ballrx.   
     rewrite /AbsRing_ball /ball_ absCE. 
@@ -263,15 +264,15 @@ differentiable_def (K : absRingType) (V W : normedModType K) (f : V -> W)
 not just that the limit exists. *)
 (*derivable concerns only the existence of the derivative *)
 
-Definition holomorphic (f : C^o -> C^o) (c: C^o) :=
-  cvg ((fun (h:C)=> h^-1 *: ((f \o shift c) (h) - f c)) @ (locally' 0)).
+ Definition holomorphic (f : C^o -> C^o) (c: C^o) :=
+  cvg ((fun (h:C^o)=> h^-1 *: ((f \o shift c) (h) - f c)) @ (locally' 0)).
 
-Definition complex_realfun (f : C^o -> C^o) : C_RnormedType -> C_RnormedType := f.
-Arguments complex_realfun _ _ /.
+ Definition complex_realfun (f : C^o -> C^o) : C_RnormedType -> C_RnormedType := f.
+ Arguments complex_realfun _ _ /.
 
-Definition complex_Rnormed_absring : C_RnormedType -> C^o := id.
+ Definition complex_Rnormed_absring : C_RnormedType -> C^o := id.
 
-Definition CauchyRiemanEq_R2 (f : C_RnormedType -> C_RnormedType) c :=
+ Definition CauchyRiemanEq_R2 (f : C_RnormedType -> C_RnormedType) c :=
   let u := (fun c => Re ( f c)): C_RnormedType -> R^o  in 
   let v:= (fun c => Im (f c)) :  C_RnormedType -> R^o in
   (* ('D_(1%:C) u = 'D_('i) v) /\ ('D_('i) u = 'D_(1%:C) v). *)
@@ -279,20 +280,20 @@ Definition CauchyRiemanEq_R2 (f : C_RnormedType -> C_RnormedType) c :=
          (derive v c ('i))) /\ ((derive v c (1%:C)) = -(derive u c ('i)))).
 
 
-Definition deriveC (V W : normedModType C)(f : V -> W) c v :=
-  lim ((fun h => h^-1 *: ((f \o shift c) (h *: v) - f c)) @ locally' 0).
+ Definition deriveC (V W : normedModType C)(f : V -> W) c v :=
+  lim ((fun (h: C^o) => h^-1 *: ((f \o shift c) (h *: v) - f c)) @ locally' 0).
 
 
-Definition CauchyRiemanEq (f : C -> C) z :=
+ Definition CauchyRiemanEq (f : C -> C) z :=
   'i * lim ((fun h : R => h^-1 *: ((f \o shift z) (h *: 1%:C) - f z)) @ locally' 0) =
    lim ((fun h : R => h^-1 *: ((f \o shift z) (h *: 'i%C) - f z)) @ locally' 0).
 
   
-Lemma eqCr (R : rcfType) (r s : R) : (r%:C == s%:C) = (r == s).
-Proof. exact: (inj_eq (@complexI _)). Qed.
+ Lemma eqCr (R : rcfType) (r s : R) : (r%:C == s%:C) = (r == s).
+ Proof. exact: (inj_eq (@complexI _)). Qed.
 
-Lemma eqCI (R : rcfType) (r s : R) : (r*i == s*i) = (r == s).
-Proof. Admitted.
+ Lemma eqCI (R : rcfType) (r s : R) : (r*i == s*i) = (r == s).
+ Proof. Admitted.
 
 
 (*Lemma lim_trans (T : topologicalType) (F : set (set T))  
@@ -301,23 +302,21 @@ Proof. Admitted.
   Search "lim" "trans". 
  *)
 
-Lemma flim_translim (T : topologicalType) (F G: set (set T)) (l :T) :
+ Lemma flim_translim (T : topologicalType) (F G: set (set T)) (l :T) :
    F `=>` G -> (G --> l) -> (F --> l). 
-Proof.
+ Proof.
   move => FG Gl. apply : flim_trans.
    exact : FG.   
    exact : Gl. 
-Qed.
+ Qed.
 
 
-Lemma cvg_scaler (K : absRingType) (V : normedModType K) (T : topologicalType)
+ Lemma cvg_scaler (K : absRingType) (V : normedModType K) (T : topologicalType)
       (F : set (set T)) (H :Filter F) (f : T -> V) (k : K) :
     cvg (f @ F) -> cvg ((k \*: f) @ F ).
-Proof. 
+ Proof. 
     by move => /cvg_ex [l H0] ; apply: cvgP; apply: lim_scaler; apply: H0. 
-Qed.
-
-Search "lim".
+ Qed.
 
 (* Lemma cvg_proper_top  (T : topologicalType) (F : set (set  U)) (FF : Filter F) : *)
 (*   cvg F  -> ProperFilter F.   *)
@@ -353,20 +352,16 @@ Proof.
 as if we needed C^o still for the normed structure*)
   case : (EM (v = 0)). 
   - move => eqv0 ; apply (cvgP (l := (0:C))). 
-    have eqnear0 : {near locally' (0 : R), 0 =1 quotR}.
+    have eqnear0 : {near locally' (0:R), 0 =1 quotR}.
       exists 1 => // h _ _ ; rewrite /quotR /shift eqv0. simpl.
       by rewrite scaler0 add0r addrN scaler0.
       (*addrN is too hard to find through Search *)
-    Check (flim_eq_loc eqnear0).
-    Search "flim". apply: flim_translim.
-     - exact (flim_eq_loc eqnear0). 
-     - set foo := (X in (X @ locally' 0)). 
-       have -> : (foo = (fun (x : R_normedType)  => 0))  by apply : funext.
-      (*In have an issue wherein (0 @ filter),
- 0 is not understood as a constant function.*)
-       About lim_cst.   admit.
-    (* can't apply: (@lim_cst _ R_normedType 0 (locally' 0) (locally'_filter 0)).*) 
-     - move => vneq0 ; apply : (cvgP (l := v *: l)). (*chainage avant et suff plutot *)
+    apply: flim_translim.
+    - exact (flim_eq_loc eqnear0).
+    - by apply : cst_continuous.
+    (*WARNING : lim_cst from normedtype applies only to endofunctions
+     That should NOT be the case, as one could use it insteas of cst_continuous *)
+  - move => vneq0 ; apply : (cvgP (l := v *: l)). (*chainage avant et suff plutot *)
     have eqnear0 : {near (locally' (0 : R)), (v \*: quotC) \o mulv =1 quotR}.
       exists 1 => // h _ neq0h //=; rewrite /quotC /quotR /mulv scale_inv.  
       rewrite scalerAl scalerCA -scalecAl mulrA -(mulrC v) mulfV. (*use mulfv instead of mulrv *)
@@ -374,23 +369,26 @@ as if we needed C^o still for the normed structure*)
       by rewrite !scalerA //= (divff neq0h). 
       by move/eqP: vneq0. (*REMEMBER *)
     have subsetfilters : quotR @ locally' 0 `=>` (v \*: quotC) \o mulv @ locally' 0.
-      exact: (flim_eq_loc eqnear0).
-    apply: flim_trans subsetfilters _. 
+    by exact: (flim_eq_loc eqnear0).
+    apply: flim_trans subsetfilters _.
+    (* rewrite /filter_of /= /locally /= /filtermap /= => x /=. *)
+    (* rewrite /locally_ /= /filter_from /= /locally' /within /=. *)
     unshelve apply : flim_comp.
-      - exact  (locally (0:C)). 
-      - move => //= A  [r [leq0r ballrA]].  exists (r / (normc v)).
+    - exact  (locally (0:C)).
+    - move => //= A [r [leq0r ballrA]].
+      exists (r / (`|[v]|)).
       - apply : mulr_gt0 ; first by []. 
-      - rewrite invr_gt0.  About normm_gt0.
-        (* The LHS of normm_gt0  (0 < `|[_]|)
-           does not match any subterm of the goal*) admit.
-           (*As if the normed structure on C is not recognized
-            and normc not recognized as a norm *)
-         - move => b. rewrite /AbsRing_ball /ball_ sub0r absRE normrN => ballrb neqb0.   
-           have ballCrb : (AbsRing_ball 0 r (mulv b)). 
-           rewrite  /AbsRing_ball /ball_ absCE sub0r normcN normcZ.
-           Check (@ltr_pmul R_numDomainType `|b| _ _ _ _ _ ballrb). admit. (*can't apply *)
-           have bneq0C : (b%:C != 0%:C) by move: neqb0; apply: contra; rewrite eqCr.
-           exact : (ballrA (mulv b) ballCrb). 
+        by rewrite invr_gt0 normm_gt0; apply /eqP.
+      - move => b; rewrite /AbsRing_ball /ball_ sub0r absRE normrN => ballrb neqb0.
+        have ballCrb : (AbsRing_ball 0 r (mulv b)). 
+         rewrite  /AbsRing_ball /ball_ sub0r absrN /mulv scalecr absrM abs_normE.  
+         rewrite -ltr_pdivl_mulr.
+         - by rewrite normCR.
+        by rewrite abs_normE normm_gt0;  move/eqP : vneq0.
+      have bneq0C : (b%:C != 0%:C) by move: neqb0; apply: contra; rewrite eqCr.
+      exact : (ballrA (mulv b) ballCrb).
+   Search "scal" "lim". apply: lim_scaler. 
+
 Admitted.
 
 Lemma holo_CauchyRieman (f : C^o -> C^o) c : (holomorphic f c) -> (CauchyRiemanEq f c). 
