@@ -107,8 +107,9 @@ Lemma scale_inv : forall (h : R)  (v : C), (h*:v)^-1 = h^-1 *: v^-1.
  Qed.
 
  Lemma scalecr : forall w : C^o, forall r : R, (r *: w = r%:C *: w). 
- Proof. by move => [a b ] r ; rewrite  eqE_complex //= ; split ;  simpc. Qed.
+ Proof. by move => [a b ] r; rewrite eqE_complex //=; split; simpc. Qed.
 
+ 
  
 Section C_Rnormed.
  
@@ -170,6 +171,7 @@ Section C_Rnormed.
  Lemma scalecAl : forall (h : R) ( x y : C_RnormedType),
    h *: ( x * y) = h *: x * y. 
  Proof. move => h [a b] [c d]. simpc. Admitted.
+
 
  Definition C_RLalg := LalgType R C_RlmodType scalecAl. 
 
@@ -243,6 +245,8 @@ Section C_absRing.
   Lemma iE : 'i%C = 'i :> C.
   Proof. by []. Qed.
 
+  Lemma scaleC_mul : forall (w  v : C^o), (v *: w = v * w).  
+  Proof. by []. Qed. 
 
 End C_absRing.
 
@@ -293,7 +297,7 @@ not just that the limit exists. *)
  Proof. exact: (inj_eq (@complexI _)). Qed.
 
  Lemma eqCI (R : rcfType) (r s : R) : (r*i == s*i) = (r == s).
- Proof. Admitted.
+ Proof.  Admitted.
 
 
 (*Lemma lim_trans (T : topologicalType) (F : set (set T))  
@@ -340,7 +344,7 @@ looked a long time of it as I was looking for a [filter of lim]*
 (*There whould be a lemma analogous to [filter of lim] to ease the search  *)
 
 Lemma holo_derivable  (f : C^o -> C^o) c :  holomorphic f c
-         -> ( forall v:C , derivable (complex_realfun f) c v).
+         -> (forall v:C , derivable (complex_realfun f) c v).
 Proof.
   move => /cvg_ex [l H]; rewrite /derivable => v. 
   rewrite /type_of_filter /= in l H.
@@ -384,27 +388,26 @@ as if we needed C^o still for the normed structure*)
          - by rewrite normCR.
         by rewrite abs_normE normm_gt0. 
       have bneq0C : (b%:C != 0%:C) by move: neqb0; apply: contra; rewrite eqCr.
-      by apply: (ballrA (mulv b) ballCrb); rewrite scaler_eq0; apply /norP; split.
+      by apply: (ballrA (mulv b) ballCrb); rewrite scaler_eq0; apply/norP; split.
     suff : v \*: quotC @ locally' (0 : C) -->  v *: l by []. 
     by apply: lim_scaler ; rewrite /quotC.
 Qed.      
 
-Lemma holo_CauchyRieman (f : C^o -> C^o) c : (holomorphic f c) -> (CauchyRiemanEq f c). 
+Lemma holo_CauchyRieman (f : C^o -> C^o) c: (holomorphic f c) -> (CauchyRiemanEq f c). 
 Proof.
-  move => H. 
+  move => H; rewrite /CauchyRiemanEq.
   pose quotC := (fun h : C => h^-1 *: ((f \o shift c) (h) - f c)).
   pose quotR := (fun h : R => h^-1 *: ((f \o shift c) (h *: 1%:C ) - f c)).
   pose quotiR := (fun (h : R) => h^-1 *: ((f \o shift c) (h *: 'i%C) - f c)).
-  have eqnear0x : {near (@locally' R_topologicalType 0), quotC \o ( fun h => h *: 1%:C)  =1 quotR }.
+  have eqnear0x : {near (locally' 0), quotC \o ( fun h => h *: 1%:C) =1 quotR}.
      exists 1 ; first by [] ; move => h  _ _ //=; simpc.
        by rewrite /quotC /quotR real_complex_inv -scalecr; simpc.
   pose subsetfiltersx := (flim_eq_loc eqnear0x).
-  rewrite /CauchyRiemanEq.
   have -> : lim (quotR @ (locally' 0))
            = lim (quotC @ (locally' 0)).  
   apply: flim_map_lim.  
   suff: quotR @ (locally' 0) `=>` (quotC @ (locally' 0)). 
-    move => H1; apply: (flim_translim H1) ; exact H.
+    move => H1; apply: (flim_translim H1) ;  exact H. (*can't apply a view*)
     apply :  flim_trans.   
     - exact : (subsetfiltersx (locally'_filter 0)).
       move => {subsetfiltersx eqnear0x}.
@@ -420,9 +423,10 @@ Proof.
           - by rewrite eqCr .
   by [].
   have eqnear0y : {near (locally' 0), 'i \*:quotC  \o ( fun h => h *: 'i%C)  =1 quotiR }.
-    exists 1 ; first by [] ; move => h _ _ //= ;  simpc. rewrite /quotC /quotiR (Im_mul h) invcM.   
-     rewrite scalerA real_complex_inv Im_inv !scalecr; simpc ; rewrite (Im_mul h).
-  by rewrite !real_complexE.
+    exists 1 ; first by [] ; move => h _ _ //= ;  simpc.
+    rewrite /quotC /quotiR (Im_mul h) invcM.   
+    rewrite scalerA real_complex_inv Im_inv !scalecr; simpc ; rewrite (Im_mul h).
+    by rewrite !real_complexE.
   pose subsetfiltersy := (flim_eq_loc eqnear0y). 
   have properlocally' : ProperFilter (locally'(0:C)).
   (*This should be Canonical *)
@@ -435,7 +439,6 @@ Proof.
      by apply: ltr_spaddl. (* 1 < 2 *)
      by apply : divr_ge0; apply ltrW. 
      have : (r / 2 != 0) by apply: mulf_neq0 ;apply: lt0r_neq0.
-     (* move /eqP => lem.       *)
      have -> : (0 = 0%:C) by move => K //=. 
      by apply: contra=> /eqP /complexI /eqP.
      (* une vue permet d'abord d'utiliser une implication sur le terme 
@@ -447,9 +450,6 @@ Proof.
            =  lim ('i \*: quotC @ (locally' 0)). 
       rewrite  scalei_muli  limin_scaler; first by [].  
       by exact: H.
-         (* set l := (RHS). *)
-         (* Arguments type_of_filter {T} _ /. *)
-         (* simpl in (type of l). *)
     apply: flim_map_lim.
          suff: quotiR @ (locally' 0)
                    `=>` ('i \*: quotC @ (locally' 0)).
@@ -463,7 +463,7 @@ Proof.
        - exact (locally' 0). 
        - move => A //= [r leq0r] absringrA. 
          exists r ; first by [].   
-         move => h absrh hneq0 ; simpc. 
+         move => h absrh hneq0; simpc. 
          apply: (absringrA). 
           - by apply : absring_real_Im.
           - by rewrite eqCI.
@@ -476,12 +476,20 @@ Qed.
    (forall v : C, derivable (complex_realfun f) c v) /\ (CauchyRiemanEq f c) ->
    ((holomorphic f c)) . 
  Proof.
-    move => [der CR]. 
+   move => [der CR]; move: (der 1%:C); simpl  => /cvg_ex [lr Dlr].
+   move: (der 'i); simpl  => /cvg_ex [li Dli].
+   apply/cvg_ex; simpl.
+   simpl in (type of lr); simpl in (type of Dlr).
+   simpl in (type of li); simpl in (type of Dli).
+   move : CR; rewrite /CauchyRiemanEq (flim_lim (Dlr)) (flim_lim (Dli)) => CR.
+   pose l:= ((lr + lr*'i)) ; exists l.
+move => h //=. /cvg_ex.
+   Unset Printing Notations.
    suff :  exists l, forall h : C_absRingType,
             f (c + h) = f c + h * l + 'o_[filter of locally (0 : C^o)] id  h.
    admit.
-   move : (der 1%:C) ; move => /cvg_ex [l Dl].
-   simpl in (type of l).
+   
+   
    exists l ; move => h. 
    pose fx := derivable_locallyx (der h) 1.
    move : fx. 
