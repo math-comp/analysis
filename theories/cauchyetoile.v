@@ -436,11 +436,14 @@ Proof.
      rewrite expr0n //= addr0 sqrtr_sqr //= ger0_norm.
      rewrite ltr_pdivr_mulr ; last by [] .
      rewrite ltr_pmulr ; last by  [].
-     (* 1 < 2 *) admit.
-     apply : divr_ge0 ; by apply ltrW. 
-     have lem : (r / 2 != 0) by apply: mulf_neq0 ;apply: lt0r_neq0.
-     have -> : (0 = 0%:C).  admit.
-     admit. (* (r / 2)%:C != 0%:C  *)
+     by apply: ltr_spaddl. (* 1 < 2 *)
+     by apply : divr_ge0; apply ltrW. 
+     have : (r / 2 != 0) by apply: mulf_neq0 ;apply: lt0r_neq0.
+     (* move /eqP => lem.       *)
+     have -> : (0 = 0%:C) by move => K //=. 
+     by apply: contra=> /eqP /complexI /eqP.
+     (* une vue permet d'abord d'utiliser une implication sur le terme 
+      en tête sans avoir à l 'introduire*)  
    - by apply: locally'_filter.
   have <- : lim (quotiR @ (locally' 0))
            = 'i * lim (quotC @ (locally' 0)).
@@ -471,7 +474,7 @@ Proof.
       rewrite filter_of_filterE.
     by []. 
  by [].
-Admitted.
+Qed.
 
  Lemma Diff_CR_holo (f : C -> C) c:
    (forall v : C, derivable (complex_realfun f) c v) /\ (CauchyRiemanEq f c) ->
