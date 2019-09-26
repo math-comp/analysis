@@ -340,9 +340,9 @@ looked a long time of it as I was looking for a [filter of lim]*
 (*There whould be a lemma analogous to [filter of lim] to ease the search  *)
 
 Lemma holo_derivable  (f : C^o -> C^o) c :  holomorphic f c
-         -> ( forall v:C^o , derivable (complex_realfun f) c v).
+         -> ( forall v:C , derivable (complex_realfun f) c v).
 Proof.
-  move => /cvg_ex [l H]; rewrite /derivable => v.
+  move => /cvg_ex [l H]; rewrite /derivable => v. 
   rewrite /type_of_filter /= in l H.
   set ff : C_RnormedType -> C_RnormedType :=  f.
   set quotR := (X in (X @ locally' 0)).
@@ -361,35 +361,33 @@ as if we needed C^o still for the normed structure*)
     - by apply : cst_continuous.
     (*WARNING : lim_cst from normedtype applies only to endofunctions
      That should NOT be the case, as one could use it insteas of cst_continuous *)
-  - move => vneq0 ; apply : (cvgP (l := v *: l)). (*chainage avant et suff plutot *)
+  - move/eqP => vneq0 ; apply : (cvgP (l := v *: l)). (*chainage avant et suff *) 
     have eqnear0 : {near (locally' (0 : R)), (v \*: quotC) \o mulv =1 quotR}.
       exists 1 => // h _ neq0h //=; rewrite /quotC /quotR /mulv scale_inv.  
-      rewrite scalerAl scalerCA -scalecAl mulrA -(mulrC v) mulfV. (*use mulfv instead of mulrv *)
-      rewrite mul1r ;apply : (scalerI (neq0h)). 
-      by rewrite !scalerA //= (divff neq0h). 
-      by move/eqP: vneq0. (*REMEMBER *)
-    have subsetfilters : quotR @ locally' 0 `=>` (v \*: quotC) \o mulv @ locally' 0.
+      rewrite scalerAl scalerCA -scalecAl mulrA -(mulrC v) mulfV. 
+      rewrite mul1r; apply: (scalerI (neq0h)).
+        by rewrite !scalerA //= (divff neq0h).  
+        by []. 
+    have subsetfilters: quotR @ locally' 0 `=>` (v \*: quotC) \o mulv @locally' 0.
     by exact: (flim_eq_loc eqnear0).
     apply: flim_trans subsetfilters _.
-    (* rewrite /filter_of /= /locally /= /filtermap /= => x /=. *)
-    (* rewrite /locally_ /= /filter_from /= /locally' /within /=. *)
     unshelve apply : flim_comp.
-    - exact  (locally (0:C)).
+    - exact  (locally' (0:C)).
     - move => //= A [r [leq0r ballrA]].
       exists (r / (`|[v]|)).
       - apply : mulr_gt0 ; first by []. 
-        by rewrite invr_gt0 normm_gt0; apply /eqP.
+        by rewrite invr_gt0 normm_gt0.
       - move => b; rewrite /AbsRing_ball /ball_ sub0r absRE normrN => ballrb neqb0.
         have ballCrb : (AbsRing_ball 0 r (mulv b)). 
          rewrite  /AbsRing_ball /ball_ sub0r absrN /mulv scalecr absrM abs_normE.  
          rewrite -ltr_pdivl_mulr.
          - by rewrite normCR.
-        by rewrite abs_normE normm_gt0;  move/eqP : vneq0.
+        by rewrite abs_normE normm_gt0. 
       have bneq0C : (b%:C != 0%:C) by move: neqb0; apply: contra; rewrite eqCr.
-      exact : (ballrA (mulv b) ballCrb).
-   Search "scal" "lim". apply: lim_scaler. 
-
-Admitted.
+      by apply: (ballrA (mulv b) ballCrb); rewrite scaler_eq0; apply /norP; split.
+    suff : v \*: quotC @ locally' (0 : C) -->  v *: l by []. 
+    by apply: lim_scaler ; rewrite /quotC.
+Qed.      
 
 Lemma holo_CauchyRieman (f : C^o -> C^o) c : (holomorphic f c) -> (CauchyRiemanEq f c). 
 Proof.
@@ -423,7 +421,7 @@ Proof.
   by [].
   have eqnear0y : {near (locally' 0), 'i \*:quotC  \o ( fun h => h *: 'i%C)  =1 quotiR }.
     exists 1 ; first by [] ; move => h _ _ //= ;  simpc. rewrite /quotC /quotiR (Im_mul h) invcM.   
-    rewrite scalerA real_complex_inv Im_inv !scalecr; simpc ; rewrite (Im_mul h).
+     rewrite scalerA real_complex_inv Im_inv !scalecr; simpc ; rewrite (Im_mul h).
   by rewrite !real_complexE.
   pose subsetfiltersy := (flim_eq_loc eqnear0y). 
   have properlocally' : ProperFilter (locally'(0:C)).
