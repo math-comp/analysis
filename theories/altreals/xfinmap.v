@@ -12,7 +12,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Set Asymmetric Patterns.
 
-Import GRing.Theory Num.Theory.
+Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 Local Open Scope fset_scope.
@@ -126,7 +126,7 @@ Proof.
 move=> ge0_F le_IJ; rewrite !big_fset_seq /=.
 rewrite [X in _<=X](bigID [pred j : T | j \in I]) /=.
 rewrite ler_paddr ?sumr_ge0 // -[X in _<=X]big_filter.
-rewrite ler_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
+rewrite le_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
 apply/uniq_perm_eq; rewrite ?filter_uniq //; last move=> i.
 rewrite mem_filter; case/boolP: (_ \in _) => //=.
 by move/le_IJ => ->.

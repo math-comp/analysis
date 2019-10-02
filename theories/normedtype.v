@@ -1,9 +1,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
+From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
-Require Import boolp reals Rstruct Rbar.
+Require Import boolp (*reals*) Rstruct Rbar.
 Require Import classical_sets posnum topology.
 
 (******************************************************************************)
@@ -77,7 +77,7 @@ Require Import classical_sets posnum topology.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope classical_set_scope.
 
@@ -165,10 +165,11 @@ End AbsRing.
 Export AbsRing.Exports.
 
 Definition abs {K : absRingType} : K -> R := @AbsRing.abs _ (AbsRing.class K).
-Notation "`| x |" := (abs x%R) : R_scope.
-Notation "`| x |" := (abs x%R) : real_scope.
 
 Section AbsRing1.
+
+Local Notation "`| x |" := (abs x%R) : R_scope.
+Local Notation "`| x |" := (abs x%R) : real_scope.
 
 Context {K : absRingType}.
 Implicit Types x : K.
@@ -191,7 +192,7 @@ Lemma absrN x : `|- x| = `|x|.
 Proof.
 gen have le_absN1 : x / `|- x| <= `|x|.
   by rewrite -mulN1r absrM absrN1 mul1r.
-by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
+by apply/eqP; rewrite eq_le le_absN1 /= -{1}[x]opprK le_absN1.
 Qed.
 
 Lemma absrB (x y : K) : `|x - y| = `|y - x|.
@@ -202,14 +203,14 @@ Lemma absr1 : `|1 : K| = 1. Proof. by rewrite -absrN absrN1. Qed.
 Lemma absr_ge0 x : 0 <= `|x|.
 Proof.
 rewrite -(@pmulr_rge0 _ 2) // mulr2n mulrDl !mul1r.
-by rewrite -{2}absrN (ler_trans _ (ler_abs_add _ _)) // subrr absr0.
+by rewrite -{2}absrN (le_trans _ (ler_abs_add _ _)) // subrr absr0.
 Qed.
 
 Lemma absr_eq0 x : (`|x| == 0) = (x == 0).
 Proof. by apply/eqP/eqP=> [/absr0_eq0//|->]; rewrite absr0. Qed.
 
 Lemma absr1_gt0 : `|1 : K| > 0.
-Proof. by rewrite ltr_def absr1 oner_eq0 /=. Qed.
+Proof. by rewrite lt_def absr1 oner_eq0 /=. Qed.
 
 Lemma absrX x n : `|x ^+ n| <= `|x|%real ^+ n.
 Proof.
@@ -221,9 +222,9 @@ End AbsRing1.
 Hint Resolve absr_ge0 : core.
 Hint Resolve absr1_gt0 : core.
 
-Definition ball_ (V : zmodType) (norm : V -> R) (x : V)
+Definition ball_ (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V)
   (e : R) := [set y | norm (x - y) < e].
-Arguments ball_ {V} norm x e%R y /.
+Arguments ball_ {R} {V} norm x e%R y /.
 
 Section AbsRing_UniformSpace.
 
@@ -246,7 +247,7 @@ Lemma AbsRing_ball_triangle (x y z : K) (e1 e2 : R) :
   AbsRing_ball x e1 y -> AbsRing_ball y e2 z -> AbsRing_ball x (e1 + e2) z.
 Proof.
 rewrite /AbsRing_ball /= => xy yz.
-by rewrite (subr_trans y) (ler_lt_trans (ler_abs_add _ _)) ?ltr_add.
+by rewrite (subr_trans y) (le_lt_trans (ler_abs_add _ _)) ?ltr_add.
 Qed.
 
 Definition AbsRingUniformMixin :=
@@ -304,24 +305,155 @@ Qed.
 
 (** real numbers *)
 
-Program Definition R_AbsRingMixin :=
- @AbsRing.Mixin _ normr (normr0 _) (normrN1 _) (@ler_norm_add _) _ (@normr0_eq0 _).
-Next Obligation. by rewrite normrM. Qed.
-Canonical R_absRingType := AbsRingType R R_AbsRingMixin.
+Module UniformNormedDomain.
+Section ClassDef.
+Variable R : numDomainType.
+Record class_of (T : Type) := Class {
+  base : Num.NormedDomain.class_of R T;
+  pointed_mixin : Pointed.point_of T ;
+  locally_mixin : Filtered.locally_of T T ;
+  topological_mixin : @Topological.mixin_of T locally_mixin ;
+  uniform_mixin : @Uniform.mixin_of R T locally_mixin
+}.
+Local Coercion base : class_of >-> Num.NormedDomain.class_of.
+Definition base2 T c := @Uniform.Class _ _
+    (@Topological.Class _
+      (Filtered.Class
+       (Pointed.Class (@base T c) (pointed_mixin c))
+       (locally_mixin c))
+      (topological_mixin c))
+    (uniform_mixin c).
+Local Coercion base2 : class_of >-> Uniform.class_of.
 
-Canonical R_pointedType := [pointedType of R for R_absRingType].
-Canonical R_filteredType := [filteredType R of R for R_absRingType].
-Canonical R_topologicalType := [topologicalType of R for R_absRingType].
-Canonical R_uniformType := [uniformType of R for R_absRingType].
-Canonical Ro_pointedType := [pointedType of R^o for R_absRingType].
-Canonical Ro_filteredType := [filteredType R^o of R^o for R_absRingType].
-Canonical Ro_topologicalType := [topologicalType of R^o for R_absRingType].
-Canonical Ro_uniformType := [uniformType of R^o for R_absRingType].
+Structure type (phR : phant R) :=
+  Pack { sort; _ : class_of sort }.
+Local Coercion sort : type >-> Sortclass.
+
+Variables (phR : phant R) (T : Type) (cT : type phR).
+
+Definition class := let: Pack _ c := cT return class_of cT in c.
+Definition clone c of phant_id class c := @Pack phR T c.
+Let xT := let: Pack T _ := cT in T.
+Notation xclass := (class : class_of xT).
+(*Definition pack b0 (m0 : @mixin_of (NormedDomain.Pack (Phant R) b0)) :=
+  Pack phR (@Class T b0 m0).*)
+(* TODO: that will be a clone, cf. comUnitRing *)
+
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass.
+Definition ringType := @GRing.Ring.Pack cT xclass.
+Definition comRingType := @GRing.ComRing.Pack cT xclass.
+Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
+Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
+Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
+Definition normedDomainType := @Num.NormedDomain.Pack R (Phant R) cT xclass.
+Definition uniformType := @Num.NormedDomain.Pack R (Phant R) cT xclass.
+
+End ClassDef.
+
+(*Definition numDomain_normedDomainType (R : numDomainType) : type (Phant R) :=
+  Pack (Phant R) (@Class R _ _ (NumDomain.normed_mixin (NumDomain.class R))).*)
+
+Module Exports.
+Coercion base : class_of >-> Num.NormedDomain.class_of.
+Coercion base2 : class_of >-> Uniform.class_of.
+Coercion sort : type >-> Sortclass.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion zmodType : type >-> GRing.Zmodule.type.
+Canonical zmodType.
+Coercion ringType : type >-> GRing.Ring.type.
+Canonical ringType.
+Coercion comRingType : type >-> GRing.ComRing.type.
+Canonical comRingType.
+Coercion unitRingType : type >-> GRing.UnitRing.type.
+Canonical unitRingType.
+Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
+Canonical comUnitRingType.
+Coercion idomainType : type >-> GRing.IntegralDomain.type.
+Canonical idomainType.
+Coercion normedDomainType : type >-> Num.NormedDomain.type.
+(*Coercion numDomain_normedDomainType : numDomainType >-> type.
+Canonical numDomain_normedDomainType.*)
+Notation uniformNormedDomainType R := (type (Phant R)).
+Notation "[ 'uniformNormedDomainType' R 'of' T 'for' cT ]" :=
+  (@clone _ (Phant R) T cT _ idfun)
+  (at level 0, format "[ 'uniformNormedDomainType'  R  'of'  T  'for'  cT ]") :
+  form_scope.
+Notation "[ 'uniformNormedDomainType' R 'of' T ]" := (@clone _ (Phant R) T _ _ id)
+  (at level 0, format "[ 'uniformNormedDomainType'  R  'of'  T ]") : form_scope.
+End Exports.
+
+End UniformNormedDomain.
+Import UniformNormedDomain.Exports.
+
+(*TODO: create a Definition that creates, given a ring structure, a
+pointed type with 0 as a default element and a Definition that creates,
+locally open ball and all the proofs from normedDomainType and then
+use to create R_pointedType, etc.*)
+
+Definition pointed_of_ring (R : ringType) : pointedType :=
+  @Pointed.Pack R (@Pointed.Class R (Choice.class R) 0) R.
+
+Canonical R_pointedType := pointed_of_ring [ringType of R].
+(* NB: similar definition in topology.v *)
+(* was Canonical R_pointedType := [pointedType R of R for R_absRingType].*)
+
+Definition filtered_of_normedDomain (K : numDomainType) (R : normedDomainType K)
+  : filteredType R := Filtered.Pack (Filtered.Class
+    (@Pointed.class (pointed_of_ring R)) (locally_ (ball_ (fun x => `|x|)))) R.
+Canonical R_filteredType := filtered_of_normedDomain R_normedDomainType.
+(* was Canonical R_filteredType := [filteredType R of R for R_absRingType].*)
+
+Section uniform_of_normedDomain.
+Variables (K : numDomainType) (R : normedDomainType K).
+Lemma ball_norm_center (x : R) (e : K) : (0%R < e)%O -> ball_ normr x e x.
+Proof. by move=> ? /=; rewrite subrr normr0. Qed.
+Lemma ball_norm_symmetric (x y : R) (e : K) :
+  ball_ normr x e y -> ball_ normr y e x.
+Proof. by rewrite /= distrC. Qed.
+Lemma ball_norm_triangle (x y z : R) (e1 e2 : K) :
+  ball_ normr x e1 y -> ball_ normr y e2 z -> ball_ normr x (e1 + e2) z.
+Proof.
+move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
+by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
+Qed.
+Definition uniform_of_normedDomain
+  : Uniform.mixin_of K (@locally_ K R R (ball_ (fun x => `|x|)))
+  := UniformMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+End uniform_of_normedDomain.
+
+Definition R_topologicalType : topologicalType := Topological.Pack
+  (@Topological.Class _
+    (Filtered.class R_filteredType)
+    (topologyOfBallMixin (uniform_of_normedDomain R_normedDomainType))) R.
+Canonical R_topologicalType.
+(* was Canonical R_topologicalType := [topologicalType of R for R_absRingType]. *)
+
+Definition R_uniformType : uniformType R_numDomainType :=
+  UniformType _ (uniform_of_normedDomain R_normedDomainType).
+Canonical R_uniformType.
+(* was Canonical R_uniformType := [uniformType of R for R_absRingType]. *)
+
+Definition R_uniformNormedDomainType : uniformNormedDomainType R_numDomainType :=
+  @UniformNormedDomain.Pack _ _ _ (@UniformNormedDomain.Class
+    R_numDomainType
+    R_topologicalType
+    (Num.NormedDomain.class R_numDomainType)
+    0
+    _
+    (Topological.mixin (Topological.class R_topologicalType))
+    (Uniform.mixin (Uniform.class R_uniformType))).
+Canonical R_uniformNormedDomainType.
+Fail Canonical R_uniformNormedDomainType := [uniformNormedDomainType R of R].
 
 (** locally *)
 
 Section Locally.
-Context {T : uniformType}.
+Context {R : realFieldType} {T : uniformType R}.
 
 Lemma forallN {U} (P : set U) : (forall x, ~ P x) = ~ exists x, P x.
 Proof. (*boolP*)
@@ -339,8 +471,8 @@ by apply: contrapT; rewrite -forallN => allP; apply: Nall => x; apply: contrapT.
 Qed.
 
 Lemma ex_ball_sig (x : T) (P : set T) :
-  ~ (forall eps : posreal, ~ (ball x eps%:num `<=` ~` P)) ->
-    {d : posreal | ball x d%:num `<=` ~` P}.
+  ~ (forall eps : {posnum R}, ~ (ball x eps%:num `<=` ~` P)) ->
+    {d : {posnum R} | ball x d%:num `<=` ~` P}.
 Proof.
 rewrite forallN eqNNP => exNP.
 pose D := [set d : R | d > 0 /\ ball x d `<=` ~` P].
@@ -349,19 +481,19 @@ by move: exNP => [e eP]; exists e%:num.
 Qed.
 
 Lemma locallyC (x : T) (P : set T) :
-  ~ (forall eps : posreal, ~ (ball x eps%:num `<=` ~` P)) ->
+  ~ (forall eps : {posnum R}, ~ (ball x eps%:num `<=` ~` P)) ->
   locally x (~` P).
 Proof. by move=> /ex_ball_sig [e] ?; apply/locallyP; exists e%:num. Qed.
 
 Lemma locallyC_ball (x : T) (P : set T) :
-  locally x (~` P) -> {d : posreal | ball x d%:num `<=` ~` P}.
+  locally x (~` P) -> {d : {posnum R} | ball x d%:num `<=` ~` P}.
 Proof.
 move=> /locallyP xNP; apply: ex_ball_sig.
 by have [_ /posnumP[e] eP /(_ _ eP)] := xNP.
 Qed.
 
 Lemma locally_ex (x : T) (P : T -> Prop) : locally x P ->
-  {d : posreal | forall y, ball x d%:num y -> P y}.
+  {d : {posnum R} | forall y, ball x d%:num y -> P y}.
 Proof.
 move=> /locallyP xP.
 pose D := [set d : R | d > 0 /\ forall y, ball x d y -> P y].
@@ -376,7 +508,7 @@ Lemma ler_addgt0Pr (R : realFieldType) (x y : R) :
 Proof.
 apply/(iffP idP)=> [lexy _/posnumP[e] | lexye]; first by rewrite ler_paddr.
 case: (lerP x y) => // ltyx.
-have /midf_lt [_] := ltyx; rewrite ltrNge -eqbF_neg => /eqP<-.
+have /midf_lt [_] := ltyx; rewrite ltNge -eqbF_neg => /eqP<-.
 suff -> : (y + x) / 2 = y + (x - y) / 2.
   by apply/lexye/divr_gt0 => //; rewrite subr_gt0.
 by rewrite !mulrDl addrC -mulN1r -mulrA mulN1r [RHS]addrC {3}(splitr y)
@@ -406,19 +538,20 @@ apply/(equivP (in_segment_addgt0Pr x y z)).
 by split=> zxy e /zxy; rewrite [z + _]addrC [_ + x]addrC.
 Qed.
 
-Lemma absRE (x : R) : `|x|%real = `|x|%R.
-Proof. by []. Qed.
+(*Lemma absRE (x : R) : `|x|%real = `|x|%R.
+Proof. by []. Qed.*)
 
-Lemma Rhausdorff : hausdorff [topologicalType of R].
+(* TODO: should move to reals.v *)
+(*Lemma Rhausdorff (R : realType) : hausdorff [topologicalType of R].
 Proof.
-move=> x y clxy; apply/eqP; rewrite eqr_le.
+move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
-rewrite inE -ler_distl -absRE; set he := (e%:num / 2)%:pos.
-have [z []] := clxy _ _ (locally_ball x he) (locally_ball y he).
+rewrite inE -ler_distl (*-absRE*); set he := (e%:num / 2)%:pos.
+have [z []] := clxy _ _ (@locally_ball R_uniformType _ x he) (locally_ball y he).
 rewrite ball_absE /ball_ absrB => zx_he yz_he.
-rewrite (subr_trans z) (ler_trans (ler_abs_add _ _) _)// ltrW//.
+rewrite (subr_trans z) (le_trans (ler_abs_add _ _) _)// ltW //.
 by rewrite (splitr e%:num); apply: ltr_add.
-Qed.
+Qed.*)
 
 Lemma coord_continuous {K : absRingType} m n i j :
   continuous (fun M : 'M[K]_(m.+1, n.+1) => M i j).
@@ -433,15 +566,16 @@ Qed.
 
 Notation "'+oo'" := p_infty : real_scope.
 Notation "'-oo'" := m_infty : real_scope.
+(* TODO: go to reals or to Rbar.v, status w.r.t. ereal? *)
 Definition Rbar_locally' (a : Rbar) (P : R -> Prop) :=
   match a with
-    | Finite a => locally' a P
+    | Finite a => @locally' R_topologicalType a P
     | +oo => exists M : R, forall x, M < x -> P x
     | -oo => exists M : R, forall x, x < M -> P x
   end.
 Definition Rbar_locally (a : Rbar) (P : R -> Prop) :=
   match a with
-    | Finite a => locally a P
+    | Finite a => @locally _ R_filteredType a P
     | +oo => exists M : R, forall x, M < x -> P x
     | -oo => exists M : R, forall x, x < M -> P x
   end.
@@ -450,12 +584,12 @@ Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.
 Canonical Rbar_pointed := PointedType Rbar (+oo).
 Canonical Rbar_filter := FilteredType R Rbar (Rbar_locally).
 
-Global Instance Rlocally'_proper (x : R) : ProperFilter (locally' x).
+Global Instance Rlocally'_proper (x : R) : ProperFilter (@locally' R_topologicalType x).
 Proof.
 apply: Build_ProperFilter => A [_/posnumP[e] Ae].
 exists (x + e%:num / 2); apply: Ae; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0 absRE ger0_norm //.
+rewrite /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
@@ -465,12 +599,12 @@ case=> [x||]; first exact: Rlocally'_proper.
   apply Build_ProperFilter.
     by move=> P [M gtMP]; exists (M + 1); apply: gtMP; rewrite ltr_addl.
   split=> /= [|P Q [MP gtMP] [MQ gtMQ] |P Q sPQ [M gtMP]]; first by exists 0.
-    by exists (maxr MP MQ) => ?; rewrite ltr_maxl => /andP [/gtMP ? /gtMQ].
+    by exists (maxr MP MQ) => ?; rewrite ltUx => /andP [/gtMP ? /gtMQ].
   by exists M => ? /gtMP /sPQ.
 apply Build_ProperFilter.
   by move=> P [M ltMP]; exists (M - 1); apply: ltMP; rewrite gtr_addl oppr_lt0.
 split=> /= [|P Q [MP ltMP] [MQ ltMQ] |P Q sPQ [M ltMP]]; first by exists 0.
-  by exists (minr MP MQ) => ?; rewrite ltr_minr => /andP [/ltMP ? /ltMQ].
+  by exists (minr MP MQ) => ?; rewrite ltxI => /andP [/ltMP ? /ltMQ].
 by exists M => ? /ltMP /sPQ.
 Qed.
 Typeclasses Opaque Rbar_locally'.
@@ -479,7 +613,7 @@ Typeclasses Opaque Rbar_locally'.
 Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
 Proof.
 case=> [x||].
-by apply/locally_filter.
+by apply/(@locally_filter R_topologicalType).
 exact: (Rbar_locally'_filter +oo).
 exact: (Rbar_locally'_filter -oo).
 Qed.
@@ -495,7 +629,7 @@ Lemma locally_pinfty_gt c : \forall x \near +oo, c < x.
 Proof. by exists c. Qed.
 
 Lemma locally_pinfty_ge c : \forall x \near +oo, c <= x.
-Proof. by exists c; apply: ltrW. Qed.
+Proof. by exists c; apply: ltW. Qed.
 
 Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
@@ -507,25 +641,26 @@ Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").
 
 Module NormedModule.
 
-Record mixin_of (K : absRingType) (V : lmodType K) loc (m : @Uniform.mixin_of V loc) := Mixin {
-  norm : V -> R ;
-  ax1 : forall (x y : V), norm (x + y) <= norm x + norm y ;
-  ax2 : forall (l : K) (x : V), norm (l *: x) = abs l * norm x;
-  ax3 : Uniform.ball m = ball_ norm;
-  ax4 : forall x : V, norm x = 0 -> x = 0
+Record mixin_of (K : numDomainType(*absRingType*)) (V : lmodType K) loc (m : @Uniform.mixin_of K V loc) (norm : V -> K) := Mixin {
+(*  ax1 : forall (x y : V), norm (x + y) <= norm x + norm y ;*)
+  ax2 : forall (l : K) (x : V), norm (l *: x) = (*abs*) `| l | * norm x;
+(*  ax3 : Uniform.ball m = ball_ norm; see uniformNormed *)
+(*  ax4 : forall x : V, norm x = 0 -> x = 0*)
 }.
 
 Section ClassDef.
 
-Variable K : absRingType.
+Variable K : numDomainType(*absRingType*).
 
 Record class_of (T : Type) := Class {
   base : GRing.Lmodule.class_of K T ;
   pointed_mixin : Pointed.point_of T ;
   locally_mixin : Filtered.locally_of T T ;
   topological_mixin : @Topological.mixin_of T locally_mixin ;
-  uniform_mixin : @Uniform.mixin_of T locally_mixin;
-  mixin : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T base) _ uniform_mixin
+  uniform_mixin : @Uniform.mixin_of K T locally_mixin;
+  (* NB: added *)
+  normed_mixin : @Num.normed_mixin_of _ _ (@GRing.Lmodule.Pack K (Phant K) T base) _ ;
+  mixin : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T base) _ uniform_mixin (Num.norm_op normed_mixin)
 }.
 Local Coercion base : class_of >-> GRing.Lmodule.class_of.
 Definition base2 T (c : class_of T) :=
@@ -634,7 +769,7 @@ Lemma normmN x : `|[- x]| = `|[x]|.
 Proof.
 gen have le_absN1 : x / `|[- x]| <= `|[x]|.
   by rewrite -scaleN1r normmZ absrN1 mul1r.
-by apply/eqP; rewrite eqr_le le_absN1 /= -{1}[x]opprK le_absN1.
+by apply/eqP; rewrite eq_le le_absN1 /= -{1}[x]opprK le_absN1.
 Qed.
 
 Lemma normmB x y : `|[x - y]| = `|[y - x]|.
@@ -642,7 +777,7 @@ Proof. by rewrite -normmN opprB. Qed.
 
 Lemma normm0 : `|[0 : V]| = 0.
 Proof.
-apply/eqP; rewrite eqr_le; apply/andP; split.
+apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite -{1}(scale0r 0) normmZ absr0 mul0r.
 by rewrite -(ler_add2r `|[0 : V]|) add0r -{1}[0 : V]add0r ler_normm_add.
 Qed.
@@ -654,22 +789,22 @@ Proof. by apply/eqP/eqP=> [/normm0_eq0|->//]. Qed.
 Lemma normm_ge0 x : 0 <= `|[x]|.
 Proof.
 rewrite -(@pmulr_rge0 _ 2) // mulr2n mulrDl !mul1r.
-by rewrite -{2}normmN (ler_trans _ (ler_normm_add _ _)) // subrr normm0.
+by rewrite -{2}normmN (le_trans _ (ler_normm_add _ _)) // subrr normm0.
 Qed.
 
 Lemma normm_gt0 x : (0 < `|[x]|) = (x != 0).
-Proof. by rewrite ltr_def normm_eq0 normm_ge0 andbT. Qed.
+Proof. by rewrite lt_def normm_eq0 normm_ge0 andbT. Qed.
 
 Lemma normm_lt0 x : (`|[x]| < 0) = false.
-Proof. by rewrite ltrNge normm_ge0. Qed.
+Proof. by rewrite ltNge normm_ge0. Qed.
 
 Lemma normm_le0 x : (`|[x]| <= 0) = (x == 0).
-Proof. by rewrite lerNgt normm_gt0 negbK. Qed.
+Proof. by rewrite leNgt normm_gt0 negbK. Qed.
 
 Lemma ler_distm_dist x y : `| `|[x]| - `|[y]| | <= `|[x - y]|.
 Proof.
 wlog gt_xy : x y / `|[x]| >= `|[y]| => [hw|].
-  by have [/hw//|/ltrW/hw] := lerP `|[y]| `|[x]|; rewrite absRE distrC normmB.
+  by have [/hw//|/ltW/hw] := lerP `|[y]| `|[x]|; rewrite absRE distrC normmB.
 rewrite absRE ger0_norm ?subr_ge0 // ler_subl_addr.
 by rewrite -{1}[x](addrNK y) ler_normm_add.
 Qed.
@@ -688,7 +823,7 @@ Proof. by have := @ball_splitl _ z x y e; rewrite -ball_normE. Qed.
 
 Lemma normm_leW x (e : R) : e > 0 -> `|[x]| <= (e / 2)%R -> `|[x]| < e.
 Proof.
-move=> /posnumP[{e}e] /ler_lt_trans ->//.
+move=> /posnumP[{e}e] /le_lt_trans ->//.
 by rewrite [X in _ < X]splitr ltr_spaddl.
 Qed.
 
@@ -702,9 +837,9 @@ Lemma closeE x y : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
 have dxy_gt0 : `|[x - y]| > 0 by rewrite normm_gt0 subr_eq0.
-have dxy_ge0 := ltrW dxy_gt0.
+have dxy_ge0 := ltW dxy_gt0.
 have := cl_xy ((PosNum dxy_gt0)%:num / 2)%:pos.
-rewrite -ball_normE /= -subr_lt0 ler_gtF //.
+rewrite -ball_normE /= -subr_lt0 le_gtF //.
 rewrite -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
 by rewrite subr_ge0 -(@ler_pmul2r _ 2) // mulVf // mul1r ler1n.
 Qed.
@@ -761,7 +896,7 @@ Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
 Proof.
 rewrite /ball_norm => H1 H2; rewrite (subr_trans y).
-by rewrite (ler_lt_trans (ler_normm_add _ _)) ?ltr_add.
+by rewrite (le_lt_trans (ler_normm_add _ _)) ?ltr_add.
 Qed.
 
 Lemma ball_norm_center (x : V) (e : posreal) : ball_norm x e%:num x.
@@ -775,7 +910,7 @@ Proof. by rewrite /ball_norm -opprB normmN. Qed.
 
 Lemma ball_norm_le x (e1 e2 : R) :
   e1 <= e2 -> ball_norm x e1 `<=` ball_norm x e2.
-Proof. by move=> e1e2 y /ltr_le_trans; apply. Qed.
+Proof. by move=> e1e2 y /lt_le_trans; apply. Qed.
 
 Lemma norm_close x y : close x y = (forall eps : posreal, ball_norm x eps%:num y).
 Proof. by rewrite propeqE ball_normE. Qed.
@@ -810,7 +945,7 @@ suff loc_preim r C :
   have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
   by exists `|[p - r]|.
 move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
-apply: pre_C; apply: ler_lt_trans (ler_distm_dist _ _) _.
+apply: pre_C; apply: le_lt_trans (ler_distm_dist _ _) _.
 by rewrite opprB addrC -subr_trans normmB.
 Qed.
 
@@ -856,8 +991,8 @@ Proof.
 move=> /flim_norm Fy; exists `|[y]| => M.
 rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
-rewrite (ler_lt_trans _ yy') //.
-by rewrite (ler_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
+rewrite (le_lt_trans _ yy') //.
+by rewrite (le_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
 Qed.
 
 Lemma flimi_map_lim {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
@@ -874,7 +1009,7 @@ Arguments flim_norm {_ _ F FF}.
 Arguments flim_bounded {_ _ F FF}.
 
 Lemma continuous_flim_norm {K : absRingType} (V W : normedModType K) (f : V -> W) x l :
-  continuous f -> x --> l -> forall e : posreal, `|[f l - f x]| < e.
+  continuous f -> x --> l -> forall e : posreal, `|[f l - f x]| < e%:num.
 Proof.
 move=> cf xl e.
 move/flim_norm: (cf l) => /(_ _ (posnum_gt0 e)).
@@ -902,7 +1037,7 @@ Program Definition matrix_NormedModMixin :=
 Next Obligation.
 apply/bigmaxr_lerP=> [|i]; rewrite size_map -cardT mxvec_cast // => ltimn.
 rewrite (nth_map (ord0, ord0)); last by rewrite -cardT mxvec_cast.
-rewrite mxE; apply: ler_trans (ler_abs_add _ _) _.
+rewrite mxE; apply: le_trans (ler_abs_add _ _) _.
 do 2 ?[rewrite -(nth_map _ 0 (fun p => `|_ p.1 p.2|)) -?cardT ?mxvec_cast //].
 by apply: ler_add; apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
 Qed.
@@ -933,12 +1068,12 @@ by rewrite !mxE !nth_index //=; apply=> //; rewrite -mxvec_cast cardT index_mem.
 Qed.
 Next Obligation.
 apply/matrixP => i j; rewrite mxE; apply/eqP.
-rewrite -absr_eq0 eqr_le; apply/andP; split; last exact: absr_ge0.
+rewrite -absr_eq0 eq_le; apply/andP; split; last exact: absr_ge0.
 have /(bigmaxr_ler 0) :
   (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
    size [seq (`|x ij.1 ij.2|)%real | ij : 'I_m.+1 * 'I_n.+1])%N.
   by rewrite size_map index_mem mem_enum.
-rewrite -{3}H; apply: ler_trans.
+rewrite -{3}H; apply: le_trans.
 rewrite (nth_map (ord0, ord0)); last by rewrite index_mem mem_enum.
 by rewrite nth_index // mem_enum.
 Qed.
@@ -958,9 +1093,9 @@ Definition prod_norm (x : U * V) := maxr `|[x.1]| `|[x.2]|.
 
 Lemma prod_norm_triangle : forall x y : U * V, prod_norm (x + y) <= prod_norm x + prod_norm y.
 Proof.
-by move=> [xu xv] [yu yv]; rewrite ler_maxl /=; apply/andP; split;
-  apply: ler_trans (ler_normm_add _ _) _; apply: ler_add;
-  rewrite ler_maxr lerr // orbC.
+by move=> [xu xv] [yu yv]; rewrite leUx /=; apply/andP; split;
+  apply: le_trans (ler_normm_add _ _) _; apply: ler_add;
+  rewrite lexU lexx // orbC.
 Qed.
 
 Lemma prod_norm_scal (l : K) (x : U * V) :
@@ -970,16 +1105,16 @@ Proof. by rewrite /prod_norm !normmZ maxr_pmulr. Qed.
 Lemma ball_prod_normE : ball = ball_ prod_norm.
 Proof.
 rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
-by rewrite /ball /= /prod_ball -!ball_normE /ball_ ltr_maxl; split=> /andP.
+by rewrite /ball /= /prod_ball -!ball_normE /ball_ ltUx; split=> /andP.
 Qed.
 
 Lemma prod_norm_eq0 (x : U * V) : prod_norm x = 0 -> x = 0.
 Proof.
 case: x => [xu xv]; rewrite /prod_norm /= => nx0.
 suff /andP [/eqP -> /eqP ->] : (xu == 0) && (xv == 0) by [].
-rewrite -!normm_eq0 !eqr_le !normm_ge0.
-have : maxr `|[xu]| `|[xv]| <= 0 by rewrite nx0 lerr.
-by rewrite ler_maxl => /andP [-> ->].
+rewrite -!normm_eq0 !eq_le !normm_ge0.
+have : maxr `|[xu]| `|[xv]| <= 0 by rewrite nx0 lexx.
+by rewrite leUx => /andP [-> ->].
 Qed.
 
 End prod_NormedModule.
@@ -1050,12 +1185,12 @@ Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
 rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
-  rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
+  rewrite (le_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lexx _)))
           ?ler_addl //.
-  rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
+  rewrite -ltr_pdivl_mull // ?(lt_le_trans ltr01) ?ler_addr //; near: z.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
 have zM: `|[z]| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
-rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= M))) // ?ltrW//.
+rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW //.
 by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1304,11 +1439,11 @@ have /cauchyP /(_ 1) [//|x0 x01] := F_cauchy.
 have D_has_sup : has_sup (mem D); first split.
 - exists (x0 - 1); rewrite in_setE => A FA.
   apply/existsbP; near F => x; first exists x.
-    by rewrite ler_distW 1?distrC 1?ltrW ?andbT ?in_setE //; near: x.
+    by rewrite ler_distW 1?distrC 1?ltW ?andbT ?in_setE //; near: x.
 - exists (x0 + 1); apply/forallbP => x; apply/implyP; rewrite in_setE.
   move=> /(_ _ x01) /existsbP [y /andP[]]; rewrite in_setE.
-  rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltrW].
-  by move=> /(ler_trans _) yx01 _ /yx01.
+  rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltW].
+  by move=> /(le_trans _) yx01 _ /yx01.
 exists (sup (mem D)).
 apply: (flim_normW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl sup_upper_bound //=.
@@ -1317,11 +1452,11 @@ rewrite ler_distl sup_upper_bound //=.
   move=> /(_ (ball_ norm x eps%:num) _) /existsbP [].
     by near: x; apply: nearP_dep; apply: F_cauchy.
   move=> z /andP[]; rewrite in_setE /ball_ ltr_distl ltr_subl_addr.
-  by move=> /andP [/ltrW /(ler_trans _) le_xeps _ /le_xeps].
+  by move=> /andP [/ltW /(le_trans _) le_xeps _ /le_xeps].
 rewrite in_setE /D /= => A FA; near F => y.
 apply/existsbP; exists y; apply/andP; split.
   by rewrite in_setE; near: y.
-rewrite ler_subl_addl -ler_subl_addr ltrW //.
+rewrite ler_subl_addl -ler_subl_addr ltW //.
 suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
 by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
 Grab Existential Variables. all: end_near. Qed.
@@ -1358,7 +1493,7 @@ Lemma continuous_norm {K : absRingType} {V : normedModType K} :
 Proof.
 move=> x; apply/(@flim_normP _ [normedModType R of R^o]) => _/posnumP[e] /=.
 rewrite !near_simpl; apply/locally_normP; exists e%:num => // y Hy.
-exact/(ler_lt_trans (ler_distm_dist _ _)).
+exact/(le_lt_trans (ler_distm_dist _ _)).
 Qed.
 
 (* :TODO: yet, not used anywhere?! *)
@@ -1379,12 +1514,12 @@ Proof.
 move=> a_cvg; suff: exists M, forall n, norm (a n) <= M.
   by move=> /getPex; set M := get _; exists M.
 near +oo => M.
-have [//|N _ /(_ _ _) /ltrW a_leM] := !! near (flim_bounded _ a_cvg) M.
+have [//|N _ /(_ _ _) /ltW a_leM] := !! near (flim_bounded _ a_cvg) M.
 exists (maxr M (\big[maxr/M]_(n < N) `|[a (val (rev_ord n))]|)) => /= n.
-rewrite ler_maxr; have [nN|nN] := leqP N n; first by rewrite a_leM.
+rewrite lexU; have [nN|nN] := leqP N n; first by rewrite a_leM.
 apply/orP; right => {a_leM}; elim: N n nN=> //= N IHN n.
 rewrite leq_eqVlt => /orP[/eqP[->] |/IHN a_le];
-by rewrite big_ord_recl subn1 /= ler_maxr ?a_le ?lerr ?orbT.
+by rewrite big_ord_recl subn1 /= lexU ?a_le ?lexx ?orbT.
 Grab Existential Variables. all: end_near. Qed.
 
 (** Some open sets of [R] *)
@@ -1407,7 +1542,7 @@ Lemma open_neq (y : R) : open (xpredC (eq_op^~ y)).
 Proof.
 rewrite (_ : xpredC _ = [set x | x < y] `|` [set x | x > y] :> set _) /=.
   by apply: openU => //; apply: open_lt.
-rewrite predeqE => x /=; rewrite eqr_le !lerNgt negb_and !negbK orbC.
+rewrite predeqE => x /=; rewrite eq_le !leNgt negb_and !negbK orbC.
 by symmetry; apply (rwP orP).
 Qed.
 
@@ -1417,14 +1552,14 @@ Lemma closed_le (y : R) : closed [set x | x <= y].
 Proof.
 rewrite (_ : [set x | x <= _] = ~` (> y) :> set _).
   by apply: closedC; exact: open_gt.
-by rewrite predeqE => x /=; rewrite lerNgt; split => /negP.
+by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
 Lemma closed_ge (y : R) : closed (>= y).
 Proof.
 rewrite (_ : (>= _) = ~` [set x | x < y] :> set _).
   by apply: closedC; exact: open_lt.
-by rewrite predeqE => x /=; rewrite lerNgt; split => /negP.
+by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
 Lemma closed_eq (y : R) : closed (eq^~ y).
@@ -1442,7 +1577,7 @@ move=> A [y Ay] Aop Acl.
 move: Aop; apply: contrapTT; rewrite predeqE => /asboolPn /existsp_asboolPn [x].
 wlog ltyx : a b (* leab *) A y Ay Acl x / y < x.
   move=> scon; case: (ltrP y x); first exact: scon.
-  rewrite ler_eqVlt; case/orP=> [/eqP xey|ltxy].
+  rewrite le_eqVlt; case/orP=> [/eqP xey|ltxy].
     move: Acl => [B Bcl AeabB].
     have sAab : A `<=` [set x | x \in `[a, b]] by rewrite AeabB => ? [].
     move=> /asboolPn; rewrite asbool_and=> /nandP [/asboolPn /(_ (sAab _))|] //.
@@ -1473,7 +1608,7 @@ move=> /imply_asboolPn [abx nAx] [C Cop AeabC].
 set Altx := fun y => y \in A `&` [set y | y < x].
 have Altxn0 : reals.nonempty Altx by exists y; rewrite in_setE.
 have xub_Altx : x \in ub Altx.
-  by apply/ubP => ?; rewrite in_setE => - [_ /ltrW].
+  by apply/ubP => ?; rewrite in_setE => - [_ /ltW].
 have Altxsup : has_sup Altx by apply/has_supP; split=> //; exists x.
 set z := sup Altx.
 have yxz : z \in `[y, x].
@@ -1493,25 +1628,25 @@ have Az : A z.
   by apply/sup_upper_bound => //; rewrite in_setE.
 have ltzx : 0 < x - z.
   have : z <= x by rewrite (itvP yxz).
-  by rewrite subr_gt0 ler_eqVlt => /orP [/eqP zex|] //; move: nAx; rewrite -zex.
+  by rewrite subr_gt0 le_eqVlt => /orP [/eqP zex|] //; move: nAx; rewrite -zex.
 have := Az; rewrite AeabC => - [_ /Cop [_ /posnumP[e] ze_C]].
 suff [t Altxt] : exists2 t, Altx t & z < t.
-  by rewrite ltrNge => /negP; apply; apply/sup_upper_bound.
+  by rewrite ltNge => /negP; apply; apply/sup_upper_bound.
 exists (z + (minr (e%:num / 2) ((PosNum ltzx)%:num / 2))); last first.
   by rewrite ltr_addl.
 rewrite in_setE; split; last first.
-  rewrite -[_ < _]ltr_subr_addl ltr_minl; apply/orP; right.
+  rewrite -[_ < _]ltr_subr_addl ltIx; apply/orP; right.
   by rewrite ltr_pdivr_mulr // mulrDr mulr1 ltr_addl.
 rewrite AeabC; split; last first.
   apply: ze_C; rewrite /AbsRing_ball /ball_ absRE ltr_distl.
   apply/andP; split; last by rewrite -addrA ltr_addl.
-  rewrite -addrA gtr_addl subr_lt0 ltr_minl; apply/orP; left.
+  rewrite -addrA gtr_addl subr_lt0 ltIx; apply/orP; left.
   by rewrite [X in _ < X]splitr ltr_addl.
 rewrite inE; apply/andP; split.
   by apply: ler_paddr => //; have := Az; rewrite AeabB => - [/itvP->].
 have : x <= b by rewrite (itvP abx).
-apply: ler_trans; rewrite -ler_subr_addl ler_minl; apply/orP; right.
-by rewrite ler_pdivr_mulr // mulrDr mulr1 ler_addl; apply: ltrW.
+apply: le_trans; rewrite -ler_subr_addl leIx; apply/orP; right.
+by rewrite ler_pdivr_mulr // mulrDr mulr1 ler_addl; apply: ltW.
 Qed.
 
 Lemma segment_closed (a b : R) : closed [set x | x \in `[a, b]].
@@ -1539,7 +1674,7 @@ apply: segment_connected.
   exists [fset i]%fset; first by move=> ?; rewrite inE in_setE => /eqP->.
   split; last by exists i => //; rewrite inE.
   move=> x aex; exists i; [by rewrite inE|suff /eqP-> : x == a by []].
-  by rewrite eqr_le !(itvP aex).
+  by rewrite eq_le !(itvP aex).
 - exists B => //; rewrite openE => x [D' sD [saxUf [i Di fx]]].
   have : open (f i) by have /sD := Di; rewrite in_setE => /fop.
   rewrite openE => /(_ _ fx) [e egt0 xe_fi]; exists e => // y xe_y.
@@ -1548,9 +1683,9 @@ apply: segment_connected.
     by apply/saxUf; rewrite inE/= (itvP ayz) lezx.
   exists i=> //; apply/xe_fi; rewrite /AbsRing_ball/ball_ absrB absRE ger0_norm.
     have lezy : z <= y by rewrite (itvP ayz).
-    rewrite ltr_subl_addl; apply: ler_lt_trans lezy _; rewrite -ltr_subl_addr.
+    rewrite ltr_subl_addl; apply: le_lt_trans lezy _; rewrite -ltr_subl_addr.
     by have := xe_y; rewrite /AbsRing_ball/ball_ absRE => /ltr_distW.
-  by rewrite subr_ge0; apply/ltrW.
+  by rewrite subr_ge0; apply/ltW.
 exists A; last by rewrite predeqE => x; split=> [[] | []].
 move=> x clAx; have abx : x \in `[a, b].
   by apply: segment_closed; have /closureI [] := clAx.
@@ -1567,7 +1702,7 @@ case: (lerP z y) => [lezy|ltyz].
 exists i; first by rewrite !inE eq_refl.
 apply/xe_fi; rewrite /AbsRing_ball/ball_ absRE ger0_norm; last first.
   by rewrite subr_ge0 (itvP axz).
-rewrite ltr_subl_addl -ltr_subl_addr; apply: ltr_trans ltyz.
+rewrite ltr_subl_addl -ltr_subl_addr; apply: lt_trans ltyz.
 by apply: ltr_distW; rewrite -absRE absrB.
 Qed.
 
@@ -1575,9 +1710,9 @@ Lemma ler0_addgt0P (R : realFieldType) (x : R) :
   reflect (forall e, e > 0 -> x <= e) (x <= 0).
 Proof.
 apply: (iffP idP) => [lex0 e egt0|lex0].
-  by apply: ler_trans lex0 _; apply: ltrW.
+  by apply: le_trans lex0 _; apply: ltW.
 case: (lerP x 0) => // lt0x.
-have /midf_lt [_] := lt0x; rewrite ltrNge -eqbF_neg => /eqP<-.
+have /midf_lt [_] := lt0x; rewrite ltNge -eqbF_neg => /eqP<-.
 by rewrite add0r; apply: lex0; rewrite -[x]/((PosNum lt0x)%:num).
 Qed.
 
@@ -1587,55 +1722,55 @@ Lemma IVT (f : R -> R) (a b v : R) :
   exists2 c, c \in `[a, b] & f c = v.
 Proof.
 move=> leab; wlog : f v / f a <= f b.
-  move=> ivt; case: (lerP (f a) (f b)) => [|/ltrW lefba].
+  move=> ivt; case: (lerP (f a) (f b)) => [|/ltW lefba].
     exact: ivt.
   move=> fcont fabv; have [] := ivt (fun x => - f x) (- v).
   - by rewrite ler_oppr opprK.
   - by move=> x /fcont; apply: (@continuousN _ [normedModType R of R^o]).
   - by rewrite -oppr_max -oppr_min ler_oppr opprK ler_oppr opprK andbC.
   by move=> c cab /eqP; rewrite eqr_opp => /eqP; exists c.
-move=> lefab fcont; rewrite minr_l // maxr_r // => /andP [].
-rewrite ler_eqVlt => /orP [/eqP<- _|ltfav].
-  by exists a => //; rewrite inE/= lerr leab.
-rewrite ler_eqVlt => /orP [/eqP->|ltvfb].
-  by exists b => //; rewrite inE/= lerr leab.
+move=> lefab fcont; rewrite (elimT meet_idPl) // (elimT join_idPl) // => /andP [].
+rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
+  by exists a => //; rewrite inE/= lexx leab.
+rewrite le_eqVlt => /orP [/eqP->|ltvfb].
+  by exists b => //; rewrite inE/= lexx leab.
 set A := [pred c | (c <= b) && (f c <= v)].
-have An0 : reals.nonempty A by exists a; apply/andP; split=> //; apply: ltrW.
+have An0 : reals.nonempty A by exists a; apply/andP; split=> //; apply: ltW.
 have supA : has_sup A.
   by apply/has_supP; split=> //; exists b; apply/ubP => ? /andP [].
 have supAab : sup A \in `[a, b].
   rewrite inE; apply/andP; split; last first.
     by apply: sup_le_ub => //; apply/ubP => ? /andP [].
-  by apply: sup_upper_bound => //; rewrite inE leab andTb ltrW.
+  by apply: sup_upper_bound => //; rewrite inE leab andTb ltW.
 exists (sup A) => //; have lefsupv : f (sup A) <= v.
-  rewrite lerNgt; apply/negP => ltvfsup.
+  rewrite leNgt; apply/negP => ltvfsup.
   have vltfsup : 0 < f (sup A) - v by rewrite subr_gt0.
   have /fcont /(_ _ (locally_ball _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
     := supAab.
   have [t At supd_t] := sup_adherent supA [gt0 of d%:num].
   suff /supdfe : ball (sup A) d%:num t.
     rewrite ball_absE /= absRE ltr_norml => /andP [_].
-    by rewrite ltr_add2l ltr_oppr opprK ltrNge; have /andP [_ ->] := At.
+    by rewrite ltr_add2l ltr_oppr opprK ltNge; have /andP [_ ->] := At.
   rewrite ball_absE /= absRE ger0_norm.
     by rewrite ltr_subl_addr -ltr_subl_addl.
   by rewrite subr_ge0 sup_upper_bound.
-apply/eqP; rewrite eqr_le; apply/andP; split=> //.
+apply/eqP; rewrite eq_le; apply/andP; split=> //.
 rewrite -subr_le0; apply/ler0_addgt0P => _/posnumP[e].
-rewrite ler_subl_addr -ler_subl_addl ltrW //.
+rewrite ler_subl_addr -ler_subl_addl ltW //.
 have /fcont /(_ _ (locally_ball _ e)) [_/posnumP[d] supdfe] := supAab.
 have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
 have /supdfe /= : ball (sup A) d%:num x.
   by near: x; rewrite /= locally_simpl; exists d%:num => //.
-rewrite ball_absE /= absRE => /ltr_distW; apply: ler_lt_trans.
-rewrite ler_add2r ltrW //; suff : forall t, t \in `](sup A), b] -> v < f t.
+rewrite ball_absE /= absRE => /ltr_distW; apply: le_lt_trans.
+rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
   apply; rewrite inE; apply/andP; split; first by near: x; exists 1.
   near: x; exists (b - sup A).
-    rewrite subr_gt0 ltr_def (itvP supAab) andbT; apply/negP => /eqP besup.
-    by move: lefsupv; rewrite lerNgt -besup ltvfb.
+    rewrite subr_gt0 lt_def (itvP supAab) andbT; apply/negP => /eqP besup.
+    by move: lefsupv; rewrite leNgt -besup ltvfb.
   move=> t lttb ltsupt; move: lttb; rewrite /AbsRing_ball /= absrB absRE.
-  by rewrite gtr0_norm ?subr_gt0 // ltr_add2r; apply: ltrW.
-move=> t /andP [ltsupt /= letb]; rewrite ltrNge; apply/negP => leftv.
-move: ltsupt => /=; rewrite ltrNge => /negP; apply; apply: sup_upper_bound => //.
+  by rewrite gtr0_norm ?subr_gt0 // ltr_add2r; apply: ltW.
+move=> t /andP [ltsupt /= letb]; rewrite ltNge; apply/negP => leftv.
+move: ltsupt => /=; rewrite ltNge => /negP; apply; apply: sup_upper_bound => //.
 by rewrite inE leftv letb.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1812,11 +1947,11 @@ have covA : A `<=` \bigcup_(n : int) [set p | `|[p]| < n%:~R].
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite -subr_gt0 => ltpn.
   apply/locallyP; exists (n%:~R - `|[p]|) => // q.
-  rewrite -ball_normE /= ltr_subr_addr normmB; apply: ler_lt_trans.
+  rewrite -ball_normE /= ltr_subr_addr normmB; apply: le_lt_trans.
   by rewrite -{1}(subrK p q) ler_normm_add.
 move=> D _ DcovA.
 exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]).
-move=> x ltmaxx p /DcovA [n Dn /ltr_trans]; apply; apply: ler_lt_trans ltmaxx.
+move=> x ltmaxx p /DcovA [n Dn /lt_trans]; apply; apply: le_lt_trans ltmaxx.
 have ltin : (index n (enum_fset D) < size (enum_fset D))%N by rewrite index_mem.
 rewrite -(nth_index 0 Dn) -(nth_map _ 0) //; apply: bigmaxr_ler.
 by rewrite size_map.
@@ -1888,8 +2023,8 @@ have Mnco : compact
   apply: (@rV_compact _ _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvltM i.
-suff /ltrW : `|[v ord0 i : R^o]| < M + 1 by rewrite [ `|[_]| ]absRE ler_norml.
-apply: ler_lt_trans (normvltM _ _); last by rewrite ltr_addl.
+suff /ltW : `|[v ord0 i : R^o]| < M + 1 by rewrite [ `|[_]| ]absRE ler_norml.
+apply: le_lt_trans (normvltM _ _); last by rewrite ltr_addl.
 have vinseq : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
 rewrite -[X in X <= _](nth_index 0 vinseq); apply: bigmaxr_ler.
@@ -1953,16 +2088,16 @@ Proof.
 move=> P; rewrite /Rbar_loc_seq.
 case: x => /= [x [_/posnumP[delta] Hp] |[delta Hp] |[delta Hp]]; last 2 first.
     have /ZnatP [N Nfloor] : ifloor (maxr delta 0) \is a Znat.
-      by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC.
+      by rewrite Znat_def ifloor_ge0 lexU lexx orbC.
     exists N.+1 => // n ltNn; apply: Hp.
-    have /ler_lt_trans : delta <= maxr delta 0 by rewrite ler_maxr lerr.
-    apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
+    have /le_lt_trans : delta <= maxr delta 0 by rewrite lexU lexx.
+    apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
     by rewrite -(@natrD [ringType of R] N 1) INRE ler_nat addn1.
   have /ZnatP [N Nfloor] : ifloor (maxr (- delta) 0) \is a Znat.
-    by rewrite Znat_def ifloor_ge0 ler_maxr lerr orbC.
+    by rewrite Znat_def ifloor_ge0 lexU lexx orbC.
   exists N.+1 => // n ltNn; apply: Hp; rewrite ltr_oppl.
-  have /ler_lt_trans : - delta <= maxr (- delta) 0 by rewrite ler_maxr lerr.
-  apply; apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
+  have /le_lt_trans : - delta <= maxr (- delta) 0 by rewrite lexU lexx.
+  apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
   by rewrite -(@natrD [ringType of R] N 1) INRE ler_nat addn1.
 have /ZnatP [N Nfloor] : ifloor (delta%:num^-1) \is a Znat.
   by rewrite Znat_def ifloor_ge0.
@@ -1973,13 +2108,13 @@ apply: Hp; last first.
 rewrite /AbsRing_ball /= opprD addrA subrr absrB subr0.
 rewrite absRE gtr0_norm; last by rewrite invr_gt0.
 rewrite -[X in X < _]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
-apply: ltr_le_trans (floorS_gtr _) _; rewrite floorE Nfloor ler_add //.
+apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor ler_add //.
 by rewrite INRE ler_nat.
 Qed.
 
 (* TODO: express using ball?*)
 Lemma continuity_pt_locally f x : continuity_pt f x <->
-  forall eps : posreal, locally x (fun u => `|f u - f x| < eps).
+  forall eps : posreal, locally x (fun u => `|f u - f x| < eps%:num).
 Proof.
 split=> [fcont e|fcont _/RltP/posnumP[e]]; last first.
   have [_/posnumP[d] xd_fxe] := fcont e.
@@ -2045,3 +2180,4 @@ Qed.
 Lemma locally_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
   locally (f x) P -> continuity_pt f x -> \near x, P (f x).
 Proof. by move=> Lf /continuity_pt_flim; apply. Qed.
+
