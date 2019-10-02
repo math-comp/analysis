@@ -19,7 +19,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import GRing.Theory Num.Theory.
+Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -114,6 +114,9 @@ Definition pack b0 (m0 : mixin_of (@Num.ArchimedeanField.Pack T b0)) :=
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
+Definition porderType := @Order.POrder.Pack ring_display cT xclass.
+Definition latticeType := @Order.Lattice.Pack ring_display cT xclass.
+Definition orderType := @Order.Total.Pack ring_display cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
 Definition ringType := @GRing.Ring.Pack cT xclass.
 Definition comRingType := @GRing.ComRing.Pack cT xclass.
@@ -121,6 +124,7 @@ Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
 Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
 Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
 Definition numDomainType := @Num.NumDomain.Pack cT xclass.
+Definition normedDomainType := NormedDomainType numDomainType cT xclass.
 Definition fieldType := @GRing.Field.Pack cT xclass.
 Definition join_numDomainType := @Num.NumDomain.Pack fieldType xclass.
 Definition realDomainType := @Num.RealDomain.Pack cT xclass.
@@ -143,6 +147,12 @@ Coercion eqType : type >-> Equality.type.
 Canonical eqType.
 Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
+Coercion porderType : type >-> Order.POrder.type.
+Canonical porderType.
+Coercion latticeType : type >-> Order.Lattice.type.
+Canonical latticeType.
+Coercion orderType : type >-> Order.Total.type.
+Canonical orderType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
 Coercion ringType : type >-> GRing.Ring.type.
@@ -157,6 +167,8 @@ Coercion idomainType : type >-> GRing.IntegralDomain.type.
 Canonical idomainType.
 Coercion numDomainType : type >-> Num.NumDomain.type.
 Canonical numDomainType.
+Coercion normedDomainType : type >-> Num.NormedDomain.type.
+Canonical normedDomainType.
 Canonical join_numDomainType.
 Coercion realDomainType : type >-> Num.RealDomain.type.
 Canonical realDomainType.
@@ -228,6 +240,7 @@ Proof. by []. Qed.
 End BaseReflect.
 
 (* -------------------------------------------------------------------- *)
+
 Lemma sup_upper_bound {R : realType} (E : pred R):
   has_sup E -> (forall x, x \in E -> x <= sup E).
 Proof. by move=> supE; apply/ubP; case: R E supE=> ? [? ? []]. Qed.
@@ -354,7 +367,7 @@ Proof.
 move=> has_supE; rewrite orbC; case: (lerP (sup E) x)=> hx //=.
 have /(sup_adherent has_supE) : 0 < sup E - x by rewrite subr_gt0.
 case=> e Ee hlte; apply/downP; exists e => //; move: hlte.
-by rewrite opprB addrCA subrr addr0 => /ltrW.
+by rewrite opprB addrCA subrr addr0 => /ltW.
 Qed.
 
 Lemma sup_le_ub {E} x : nonempty E -> x \in ub E -> sup E <= x.
@@ -365,7 +378,7 @@ have Dz: 2%:R * z = x + y.
 have ubE: has_sup E by split; last by exists x; apply/ubP.
 have /orP [/downP [t Et lezt] | leyz] := sup_total z ubE.
   rewrite -(ler_add2l x) -Dz -mulr2n -[X in _<=X]mulr_natl.
-  rewrite ler_pmul2l ?ltr0Sn //; exact/(ler_trans lezt)/leEx.
+  rewrite ler_pmul2l ?ltr0Sn //; exact/(le_trans lezt)/leEx.
 rewrite -(ler_add2r y) -Dz -mulr2n -[X in X<=_]mulr_natl.
 by rewrite ler_pmul2l ?ltr0Sn.
 Qed.
@@ -384,11 +397,11 @@ Lemma has_ubPn {E} :
   ~ has_ub E <-> (forall x, exists2 y, y \in E & x < y).
 Proof. split; last first.
 + move=> h /has_ubP [x /ubP] hle; case/(_ x): h => y /hle.
-  by rewrite lerNgt => /negbTE ->.
+  by rewrite leNgt => /negbTE ->.
 move/asboolPn; rewrite (asbool_equiv_eq has_ubP).
 move/asboolPn/nonemptyPn=> h x; have /ubP {h} := h x.
 case/asboolPn/existsp_asboolPn=> y /asboolPn /imply_asboolPn.
-by case=> [yE /negP]; rewrite -ltrNge => ltx; exists y.
+by case=> [yE /negP]; rewrite -ltNge => ltx; exists y.
 Qed.
 
 Lemma has_supPn {E} : nonempty E ->
@@ -501,27 +514,27 @@ Lemma has_sup_floor_set x: has_sup (floor_set x).
 Proof.
 split; [exists (- (Num.bound (-x))%:~R) | exists (Num.bound x)%:~R].
   rewrite inE rpredN rpred_int /= ler_oppl.
-  case: (ger0P (-x)) => [/archi_boundP/ltrW//|].
-  by move/ltrW/ler_trans; apply; rewrite ler0z.
-apply/ubP=> y /andP[_] /ler_trans; apply.
-case: (ger0P x)=> [/archi_boundP/ltrW|] //.
-by move/ltrW/ler_trans; apply; rewrite ler0z.
+  case: (ger0P (-x)) => [/archi_boundP/ltW//|].
+  by move/ltW/le_trans; apply; rewrite ler0z.
+apply/ubP=> y /andP[_] /le_trans; apply.
+case: (ger0P x)=> [/archi_boundP/ltW|] //.
+by move/ltW/le_trans; apply; rewrite ler0z.
 Qed.
 
 Lemma sup_in_floor_set x : sup (floor_set x) \in floor_set x.
 Proof.
 have /sup_adherent /(_ ltr01) [y Fy] := has_sup_floor_set x.
 have /sup_upper_bound /(_ _ Fy) := has_sup_floor_set x.
-rewrite ler_eqVlt=> /orP[/eqP<-//| lt_yFx].
+rewrite le_eqVlt=> /orP[/eqP<-//| lt_yFx].
 rewrite ltr_subl_addr -ltr_subl_addl => lt1_FxBy.
 pose e := sup (floor_set x) - y; have := has_sup_floor_set x.
 move/sup_adherent=> -/(_ e) []; first by rewrite subr_gt0.
 move=> z Fz; rewrite /e opprB addrCA subrr addr0 => lt_yz.
 have /sup_upper_bound /(_ _ Fz) := has_sup_floor_set x.
-rewrite -(ler_add2r (-y)) => /ler_lt_trans /(_ lt1_FxBy).
-case/andP: Fy Fz lt_yz=> /RintP[yi -> _]. 
+rewrite -(ler_add2r (-y)) => /le_lt_trans /(_ lt1_FxBy).
+case/andP: Fy Fz lt_yz=> /RintP[yi -> _].
 case/andP=> /RintP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
-rewrite ltr_neqAle => /andP[ne_yz le_yz].
+rewrite lt_neqAle => /andP[ne_yz le_yz].
 rewrite -[_-_]gez0_abs ?subr_ge0 // ltz_nat ltnS leqn0.
 by rewrite absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
 Qed.
@@ -536,7 +549,7 @@ Lemma mem_rg1_floor (x : R) : x \in range1 (floor x).
 Proof.
 rewrite inE; have /andP[_ ->] /= := sup_in_floor_set x.
 case: (boolP (floor x + 1 \in floor_set x)); last first.
-  by rewrite inE negb_and -ltrNge rpredD // ?(Rint1, isint_floor).
+  by rewrite inE negb_and -ltNge rpredD // ?(Rint1, isint_floor).
 by move/sup_upper_bound=> -/(_ (has_sup_floor_set x)); rewrite ger_addl ler10.
 Qed.
 
@@ -551,13 +564,13 @@ Lemma range1z_inj (x : R) (m1 m2 : int) :
 Proof.
 move=> /andP[m1x x_m1] /andP[m2x x_m2].
 wlog suffices: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 <= m2)%R.
-  by move=> ih; apply/eqP; rewrite eqr_le !ih.
+  by move=> ih; apply/eqP; rewrite eq_le !ih.
 rewrite -(ler_add2r 1) lez_addr1 -(@ltr_int R) intrD.
-by apply/(ler_lt_trans m1x).
+by apply/(le_lt_trans m1x).
 Qed.
 
 Lemma range1rr (x : R) : x \in range1 x.
-Proof. by rewrite inE lerr /= ltr_addl ltr01. Qed.
+Proof. by rewrite inE lexx /= ltr_addl ltr01. Qed.
 
 Lemma range1zP (m : int) (x : R) :
   reflect (floor x = m%:~R) (x \in range1 m%:~R).
@@ -579,14 +592,14 @@ Proof. by rewrite -{1}(mulr1z 1) floor_natz. Qed.
 Lemma ler_floor (x y : R) : x <= y -> floor x <= floor y.
 Proof.
 move=> le_xy; case: lerP=> //=; rewrite -Rint_ler_addr1 ?isint_floor //.
-move/(ltr_le_trans (floorS_gtr y))/ltr_le_trans/(_ (floor_ler x)).
-by rewrite ltrNge le_xy.
+move/(lt_le_trans (floorS_gtr y))/lt_le_trans/(_ (floor_ler x)).
+by rewrite ltNge le_xy.
 Qed.
 
 Lemma floor_ge0 (x : R) : (0 <= floor x) = (0 <= x).
 Proof.
 apply/idP/idP; last by move/ler_floor; rewrite floor0.
-by move/ler_trans=> -/(_ _ (floor_ler x)).
+by move/le_trans=> -/(_ _ (floor_ler x)).
 Qed.
 
 Lemma ifloor_ge0 (x : R) : (0 <= ifloor x) = (0 <= x).
@@ -604,7 +617,7 @@ Lemma downK (S : pred R) : down (down S) =i down S.
 Proof.
 move=> x; apply/downP/downP=> -[y yS le_xy]; last first.
   by exists y=> //; apply/le_down.
-by case/downP: yS => z zS le_yz; exists z => //; apply/(ler_trans le_xy).
+by case/downP: yS => z zS le_yz; exists z => //; apply/(le_trans le_xy).
 Qed.
 
 Lemma eq_ub (S1 S2 : pred R) : S2 =i S1 -> ub S2 =i ub S1.
@@ -643,14 +656,14 @@ Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_has_inf. Qed.
 Lemma eq_sup (S1 S2 : pred R) : S2 =i S1 -> sup S2 = sup S1.
 Proof.
 wlog: S1 S2 / (sup S1 <= sup S2) => [wlog|le_S1S2] eq_12.
-  by case: (lerP (sup S1) (sup S2)) => [|/ltrW] /wlog ->.
-move: le_S1S2; rewrite ler_eqVlt => /orP[/eqP->//|lt_S1S2].
+  by case: (lerP (sup S1) (sup S2)) => [|/ltW] /wlog ->.
+move: le_S1S2; rewrite le_eqVlt => /orP[/eqP->//|lt_S1S2].
 case/boolP: `[< has_sup S2 >] => [/asboolP|] h2; last first.
   by rewrite !sup_out // => /asboolPn; rewrite -?(eq_has_supb eq_12).
 pose x : R := sup S2 - sup S1; have gt0_x: 0 < x by rewrite subr_gt0.
 have [e eS2] := sup_adherent h2 gt0_x; rewrite subKr => lt_S1e.
 have /(eq_has_sup eq_12) h1 := h2; have := eS2; rewrite eq_12.
-by move/sup_upper_bound=> -/(_ h1); rewrite lerNgt lt_S1e.
+by move/sup_upper_bound=> -/(_ h1); rewrite leNgt lt_S1e.
 Qed.
 
 Lemma eq_inf (S1 S2 : pred R) : S2 =i S1 -> inf S2 = inf S1.
@@ -666,7 +679,7 @@ split=> /has_supP [nzS nzubS]; apply/has_supP.
   by apply/ubS; apply/downP; exists z.
 case: nzS=> x xS; split; first by exists x; apply/le_down.
 case: nzubS=> u /ubP ubS; exists u; apply/ubP=> y /downP [].
-by move=> z zS /ler_trans; apply; apply/ubS.
+by move=> z zS /le_trans; apply; apply/ubS.
 Qed.
 
 Lemma le_sup (S1 S2 : pred R) :
@@ -676,11 +689,11 @@ Proof.
 move=> le_S12 nz_S1 hs_S2; have hs_S1: has_sup S1.
   apply/has_supP; split=> //; case/has_supP: hs_S2=> _ [x ubx].
   exists x; apply/ubP=> y /le_S12 /downP[z zS2 le_yz].
-  by apply/(ler_trans le_yz); move/ubP: ubx; apply.
-rewrite lerNgt -subr_gt0; apply/negP => lt_sup.
+  by apply/(le_trans le_yz); move/ubP: ubx; apply.
+rewrite leNgt -subr_gt0; apply/negP => lt_sup.
 case: (sup_adherent hs_S1 lt_sup)=> x /le_S12 xdS2.
 rewrite subKr => lt_S2x; case/downP: xdS2=> z zS2.
-by move/(ltr_le_trans lt_S2x); rewrite ltrNge sup_upper_bound.
+by move/(lt_le_trans lt_S2x); rewrite ltNge sup_upper_bound.
 Qed.
 
 Lemma sup_down (S : pred R) : sup (down S) = sup S.
@@ -688,7 +701,7 @@ Proof.
 case/boolP: `[< has_sup S >] => [/asboolP|/asboolPn]; last first.
   by move=> supNS; rewrite !sup_out // => /has_sup_down.
 move=> supS; have supDS: has_sup (down S) by apply/has_sup_down.
-apply/eqP; rewrite eqr_le !le_sup //.
+apply/eqP; rewrite eq_le !le_sup //.
   by case/has_supP: supS => -[x xS] _; exists x; apply/le_down.
   by move=> x xS; rewrite downK le_down.
   by case/has_supP: supS.
@@ -698,7 +711,7 @@ Lemma sup1 (c : R) : sup (pred1 c) = c.
 Proof.
 have hs: has_sup (pred1 c); first (apply/has_supP; split; exists c).
   by rewrite inE eqxx. by apply/ubP => y; rewrite inE => /eqP->.
-apply/eqP; rewrite eqr_le sup_upper_bound ?inE // andbT.
+apply/eqP; rewrite eq_le sup_upper_bound ?inE // andbT.
 apply/sup_le_ub; first by exists c; rewrite inE eqxx.
 by apply/ubP=> y; rewrite inE => /eqP ->.
 Qed.
@@ -789,7 +802,7 @@ Proof. by apply/eqP/eqP=> [[]|->]. Qed.
 Section ERealOrder.
 Context {R : realType}.
 
-Definition lee (x1 x2 : {ereal R}) :=
+Definition le_ereal (x1 x2 : {ereal R}) :=
   match x1, x2 with
   | \-inf, _ | _, \+inf => true
   | \+inf, _ | _, \-inf => false
@@ -797,7 +810,7 @@ Definition lee (x1 x2 : {ereal R}) :=
   | x1%:E, x2%:E => (x1 <= x2)
   end.
 
-Definition lte (x1 x2 : {ereal R}) :=
+Definition lt_ereal (x1 x2 : {ereal R}) :=
   match x1, x2 with
   | \-inf, \-inf | \+inf, \+inf => false
   | \-inf, _     | _    , \+inf => true
@@ -806,6 +819,33 @@ Definition lte (x1 x2 : {ereal R}) :=
   | x1%:E, x2%:E => (x1 < x2)
   end.
 End ERealOrder.
+
+Definition emeet (R : realType) (*min*) : {ereal R} -> {ereal R} -> {ereal R}.
+Admitted.
+Definition ejoin (R : realType) (*max*) : {ereal R} -> {ereal R} -> {ereal R}.
+Admitted.
+Program Definition ereal_porderMixin (R : realType) :=
+  @LeOrderMixin _ le_ereal lt_ereal (@emeet R) (@ejoin R) _ _ _ _ _ _.
+Next Obligation. admit. Admitted.
+Next Obligation. admit. Admitted.
+Next Obligation. admit. Admitted.
+Next Obligation. admit. Admitted.
+Next Obligation. admit. Admitted.
+Next Obligation. admit. Admitted.
+Fact ereal_display : unit. Proof. by []. Qed.
+Canonical ereal_porderType (R : realType) :=
+  POrderType ereal_display {ereal R} (ereal_porderMixin R).
+Canonical ereal_latticeType (R : realType) :=
+  LatticeType {ereal R} (ereal_porderMixin R).
+Canonical ereal_totalType (R : realType) :=
+  OrderType {ereal R} (ereal_porderMixin R).
+
+Notation lee := (@le ereal_display _) (only parsing).
+Notation "@ 'lee' R" :=
+  (@le ereal_display R) (at level 10, R at level 8, only parsing).
+Notation lte := (@lt ereal_display _) (only parsing).
+Notation "@ 'lte' R" :=
+  (@lt ereal_display R) (at level 10, R at level 8, only parsing).
 
 Notation "x <= y" := (lee x y) : ereal_scope.
 Notation "x < y"  := (lte x y) : ereal_scope.
@@ -908,7 +948,7 @@ Local Open Scope ereal_scope.
 Implicit Types x y z : {ereal R}.
 
 Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
-  by case: x => [?||]; first by rewrite ?eqe; apply: lm.
+  by case: x => [||?]; first by rewrite ?eqe; apply: lm.
 
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
   by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
@@ -920,28 +960,28 @@ Lemma le0R (l : {ereal R}) : (0%:E <= l)%E -> (0 <= l :> R).
 Proof. by case: l. Qed.
 
 Lemma leee x : x <= x.
-Proof. by elift lerr: x. Qed.
+Proof. exact: lexx. Qed.
 
 Lemma ltee x : (x < x) = false.
-Proof. by elift ltrr: x. Qed.
+Proof. exact: ltxx. Qed.
 
 Lemma lteW x y : x < y -> x <= y.
-Proof. by elift ltrW: x y. Qed.
+Proof. exact: ltW. Qed.
 
 Lemma eqe_le x y : (x == y) = (x <= y <= x).
-Proof. by elift eqr_le: x y. Qed.
+Proof. exact: eq_le. Qed.
 
 Lemma leeNgt x y : (x <= y) = ~~ (y < x).
-Proof. by elift lerNgt: x y. Qed.
+Proof. exact: leNgt. Qed.
 
 Lemma lteNgt x y : (x < y) = ~~ (y <= x).
-Proof. by elift ltrNge: x y. Qed.
+Proof. exact: ltNge. Qed.
 
 Lemma lee_eqVlt x y : (x <= y) = ((x == y) || (x < y)).
-Proof. by elift ler_eqVlt: x y. Qed.
+Proof. exact: le_eqVlt. Qed.
 
 Lemma lte_neqAle x y : (x < y) = ((x != y) && (x <= y)).
-Proof. by elift ltr_neqAle: x y. Qed.
+Proof. exact: lt_neqAle. Qed.
 
 Lemma lee_fin (x y : R) : (x%:E <= y%:E)%E = (x <= y)%R.
 Proof. by []. Qed.
@@ -955,17 +995,13 @@ Proof. by []. Qed.
 Lemma lte_tofin (x y : R) : (x < y)%R -> (x%:E < y%:E)%E.
 Proof. by []. Qed.
 
-Lemma lee_trans : transitive _ (@lee R).
-Proof. by move=> x y z; elift ler_trans : x y z. Qed.
+Definition lee_trans := @le_trans _ [porderType of {ereal R}].
 
-Lemma lte_trans : transitive _ (@lte R).
-Proof. by move=> x y z; elift ltr_trans : x y z. Qed.
+Definition lte_trans := @lt_trans _ [porderType of {ereal R}].
 
-Lemma lee_lt_trans y x z : (x <= y) -> (y < z) -> (x < z).
-Proof. by elift ler_lt_trans : x y z. Qed.
+Definition lee_lt_trans := @le_lt_trans _ [porderType of {ereal R}].
 
-Lemma lte_le_trans y x z : (x < y) -> (y <= z) -> (x < z).
-Proof. by elift ltr_le_trans : x y z. Qed.
+Definition lte_le_trans := @lt_le_trans _ [porderType of {ereal R}].
 
 Lemma lee_opp2 : {mono @eopp R : x y /~ (x <= y)}.
 Proof. by move=> x y; elift ler_opp2 : x y. Qed.

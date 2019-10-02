@@ -21,3 +21,6 @@ theories/altreals/realsum.v
 theories/altreals/distr.v
 
 -R theories mathcomp.analysis
+-R /home/affeldt/git/math-comp/mathcomp mathcomp
+-R /home/affeldt/git/finmap mathcomp.finmap
+-R /home/affeldt/git/bigenough mathcomp.bigenough

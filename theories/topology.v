@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrnum finmap matrix.
+From mathcomp Require Import seq fintype bigop order ssralg ssrnum finmap matrix.
 Require Import boolp Rstruct classical_sets posnum.
 
 (******************************************************************************)
@@ -275,7 +275,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
 Local Open Scope classical_set_scope.
 
 Section function_space.
@@ -2158,15 +2158,14 @@ Proof.
 move=> Aco; rewrite compact_ultra => F FU FA.
 set subst_coord := fun i pi f j =>
   match eqVneq i j with
-  | left e => eq_rect i T pi _ e
+  | EqNotNeq e => eq_rect i T pi _ e
   | _ => f j
   end.
 have subst_coordT i pi f : subst_coord i pi f i = pi.
-  rewrite /subst_coord; case: (eqVneq i i) => [e|/negP] //.
+  rewrite /subst_coord; case (@eqVneq _ i i) => [e|/negP] //.
   by rewrite (eq_irrelevance e (erefl _)).
 have subst_coordN i pi f j : i != j -> subst_coord i pi f j = f j.
-  move=> inej; rewrite /subst_coord; case: (eqVneq i j) => [e|] //.
-  by move: inej; rewrite {1}e => /negP.
+  by move=> inej; rewrite /subst_coord; destruct (@eqVneq I i j).
 have pr_surj i : @^~ i @` (@setT (forall i, T i)) = setT.
   rewrite predeqE => pi; split=> // _.
   by exists (subst_coord i pi (fun _ => point))=> //; rewrite subst_coordT.
@@ -2418,7 +2417,7 @@ Lemma my_ball_le (M : Type) (loc : M -> set (set M))
   forall (y : M), Uniform.ball m x e1 y -> Uniform.ball m x e2 y.
 Proof.
 move=> x e1 e2 le12 y xe1_y.
-move: le12; rewrite ler_eqVlt => /orP [/eqP <- //|].
+move: le12; rewrite le_eqVlt => /orP [/eqP <- //|].
 rewrite -subr_gt0 => lt12.
 rewrite -[e2](subrK e1); apply: Uniform.ax3 xe1_y.
 suff : Uniform.ball m x (PosNum lt12)%:num x by [].
@@ -2436,7 +2435,7 @@ apply: filter_from_filter; first by exists 1%:pos%:num.
 move=> e1 e2 e1gt0 e2gt0; exists (Num.min e1 e2).
   by have := min_pos_gt0 (PosNum e1gt0) (PosNum e2gt0).
 by move=> q pmin_q; split; apply: my_ball_le pmin_q;
-  rewrite ler_minl lerr // orbC.
+  rewrite leIx lexx // orbC.
 Qed.
 Next Obligation.
 move: H; rewrite (Uniform.ax4 m) locally_E => - [e egt0]; apply.
@@ -2499,7 +2498,7 @@ Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
 Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
 Proof.
-move=> le12 y; case: ltrgtP le12 => [//|lte12 _|->//].
+move=> le12 y; case: ltgtP le12 => [lte12 _|//|->//].
 by rewrite -[e2](subrK e1); apply/ball_triangle/ballxx; rewrite subr_gt0.
 Qed.
 
@@ -2535,8 +2534,8 @@ Global Instance entourages_filter : ProperFilter entourages.
 Proof.
 apply filter_from_proper; last by exists (point,point); apply: ballxx.
 apply: filter_from_filter; first by exists 1; rewrite ltr01.
-move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i j) => // [[/= x y]] bxy.
-by eexists => /=; apply: ball_ler bxy; rewrite ler_minl lerr ?orbT.
+move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i%:num j%:num) => // [[/= x y]] bxy.
+by eexists => /=; apply: ball_ler bxy; rewrite leIx lexx ?orbT.
 Qed.
 Typeclasses Opaque entourages.
 
@@ -2677,7 +2676,7 @@ Lemma ltr_bigminr (I : finType) (R : realDomainType) (f : I -> R) (x0 x : R) :
   x < x0 -> (forall i, x < f i) -> x < \big[minr/x0]_i f i.
 Proof.
 move=> ltx0 ltxf; elim/big_ind: _ => // y z ltxy ltxz.
-by rewrite ltr_minr ltxy ltxz.
+by rewrite ltxI ltxy ltxz.
 Qed.
 
 Lemma bigminr_ler (I : finType) (R : realDomainType) (f : I -> R) (x0 : R) i :
@@ -2685,7 +2684,7 @@ Lemma bigminr_ler (I : finType) (R : realDomainType) (f : I -> R) (x0 : R) i :
 Proof.
 have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
 by rewrite inE => /orP [/eqP->|/ihl leminlfi];
-  rewrite ler_minl ?lerr // leminlfi orbC.
+  rewrite leIx ?lexx // leminlfi orbC.
 Qed.
 
 Canonical R_pointedType := PointedType R 0.
@@ -2701,7 +2700,7 @@ exists (\big[minr/1]_i \big[minr/1]_j
   by have /exists2P/getPex [] := x_P i j.
 move=> y xmin_y; apply: sPA => i j; have /exists2P/getPex [_] := x_P i j; apply.
 apply: ball_ler (xmin_y i j).
-by apply: ler_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
+by apply: le_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
 Qed.
 
 Definition matrix_uniformType_mixin :=
@@ -2743,8 +2742,8 @@ rewrite predeq2E => -[x y] P; split=> [[[A B] /=[xX yY] XYP] |]; last first.
 move: xX yY => /locallyP [_ /posnumP[ex] eX] /locallyP [_ /posnumP[ey] eY].
 exists (minr ex%:num ey%:num) => // -[x' y'] [/= xx' yy'].
 apply: XYP; split=> /=.
-  by apply/eX/(ball_ler _ xx'); rewrite ler_minl lerr.
-by apply/eY/(ball_ler _ yy'); rewrite ler_minl lerr orbT.
+  by apply/eX/(ball_ler _ xx'); rewrite leIx lexx.
+by apply/eY/(ball_ler _ yy'); rewrite leIx lexx orbT.
 Qed.
 
 Definition prod_uniformType_mixin :=
