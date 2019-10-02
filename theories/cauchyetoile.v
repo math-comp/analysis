@@ -485,40 +485,58 @@ Print derive.
  Proof.
    move => [der CR] c. 
    (* (* first attempt with littleo but requires to mix littleo on filter on different types ...*) *)
-   (* suff :  exists l, forall h : C_absRingType, *)
-   (*       f (c + h) = f c + h * l + 'o_[filter of locally (0 : C)] id  h. *)
-   (* admit. *)
-   (* move: (der c 1%:C ); simpl => /cvg_ex [lr /flim_lim //= Dlr]. *)
-   (* move: (der c 'i); simpl  => /cvg_ex [li /flim_lim //= Dli]. *)
-   (* simpl in (type of lr); simpl in (type of Dlr). *)
-   (* simpl in (type of li); simpl in (type of Dli). *)
-   (* move : (CR c) ; rewrite /CauchyRiemanEq //=  (Dlr) (Dli) => CRc. *)
-   (* pose l:= ((lr + lr*'i)) ; exists l; move  => [a b]. *)
-   (* move: (der (c + a%:C)  'i); simpl => /cvg_ex [//= la /flim_lim //= Dla]. *)
-   (* move: (der (c + a%:C) 'i) => /derivable_locallyxP. *)
-   (* rewrite /derive //= Dla => oR.     *)
-   (* have -> : (a +i* b) = (a%:C + b*: 'i%C) by simpc.  *)
-   (* rewrite addrA oR.     *)
-   (* (*have fun a => la = cst(lr) + o_0(a). *)   *)
-   (* move: (der c 1%:C); simpl => /derivable_locallyxP ; rewrite /derive //= Dlr => oC. *)
-   (* (* rewrite [a%:C]/(a *: 1%:C). *) *)
-   (* have -> : a%:C = (a *: 1%:C) by simpc.   *)
-   (* rewrite oC.  *)
-   (* (* struggling with o *) *)
-   (* Search "o" in landau. *)
-   rewrite /holomorphic cvg_ex. 
-   move: (der c 1%:C ); simpl => /cvg_ex [lr //= Dlr]. 
-   move: (der c 'i); simpl  => /cvg_ex [li //= Dli].
+   suff :  exists l, forall h : C_absRingType,
+         f (c + h) = f c + h * l + 'o_[filter of locally (0 : C)] id  h.
+   admit.
+   move: (der c 1%:C ); simpl => /cvg_ex [lr /flim_lim //= Dlr].
+   move: (der c 'i); simpl  => /cvg_ex [li /flim_lim //= Dli].
    simpl in (type of lr); simpl in (type of Dlr).
    simpl in (type of li); simpl in (type of Dli).
-   move : (CR c) ; rewrite /CauchyRiemanEq //=  (flim_lim Dlr) (flim_lim Dli) => CRc.
-   pose l:= ((lr + lr*'i)) ; exists l; move => A //= [r leq0r] normrA.
-   
-   exists r ; first by [].    
-   move => [a b] ballab abneq0 //=. 
-   suff :   normc (l- (a +i* b)^-1 *: ((f (a +i* b + c) - f c) : C^o)) <= r.     
+   move : (CR c) ; rewrite /CauchyRiemanEq //=  (Dlr) (Dli) => CRc.
+   pose l:= ((lr + lr*'i)) ; exists l; move  => [a b].
+   move: (der (c + a%:C)  'i); simpl => /cvg_ex [//= la /flim_lim //= Dla].
+   move: (der (c + a%:C) 'i) => /derivable_locallyxP.
+   rewrite /derive //= Dla => oR.
+   have -> : (a +i* b) = (a%:C + b*: 'i%C) by simpc.
+   rewrite addrA oR.
+   (*have fun a => la = cst(lr) + o_0(a). *)
+   move: (der c 1%:C); simpl => /derivable_locallyxP ; rewrite /derive //= Dlr => oC.
+   (* rewrite [a%:C]/(a *: 1%:C). *)
+   have -> : a%:C = (a *: 1%:C) by simpc.
+   rewrite oC. Print real_complex. 
+   have lem : (fun a =>( la - lr)) = 'o_[ filter of locally (0:R)] (@real_complex R) .
+   (*tried : la - lr = 'o_[ filter of locally (0:R)] (@real_complex R) a :> C^o *)
+   move => s0.  Check eqoE.
+   suff :   (fun _ : R => la - lr) = 'a_o_[filter of locally (0:R)] (real_complex R).
    admit.
-   Check (Dlr A ) .     
+   move => s1. 
+    
+   
+   apply: eqoE. (*eqoE and eqoP are not working*) apply: eqoE. apply: eqoE. 
+   (* struggling with o *)
+   Search "o" in landau.
+
+   (* (*another attempt*) *)
+   (* rewrite /holomorphic cvg_ex.  *)
+   (* move: (der c 1%:C ); simpl => /cvg_ex [lr //= Dlr].  *)
+   (* move: (der c 'i); simpl  => /cvg_ex [li //= Dli]. *)
+   (* simpl in (type of lr); simpl in (type of Dlr). *)
+   (* simpl in (type of li); simpl in (type of Dli). *)
+   (* move : (CR c) ; rewrite /CauchyRiemanEq //=  (flim_lim Dlr) (flim_lim Dli) => CRc. *)
+   (* pose l:= ((lr + lr*'i)) ; exists l; move => A //= [r leq0r] normrA. *)
+   (* pose r':= r/(sqrtr 2). *)
+   (* have lrl : l / (1 + 'i*1) = lr. admit.   *)
+   (* exists r ; first by [].     *)
+   (* move => [a b] ballab abneq0 //=.  *)
+   (* suff :   normc (l- (a +i* b)^-1 *: ((f (a +i* b + c) - f c) : C^o)) <= r.      *)
+   (* admit. *)
+   (* have : locally lr A. exists r'. *)
+   (* - by rewrite mulr_gt0 //= invr_gt0 sqrtr_gt0.  *)
+   (* - move => t; rewrite /ball_ -lrl.admit. *)
+   (*   (*we should have a tactic rewriting in any way that fits *) *)
+   (* move => /Dlr //=. *)
+   (* move : (Dli A) => //=.   
+     *)
  Admitted.
  
 Theorem CauchyRiemann (f : C^o -> C^o) c:  ((holomorphic f c))
