@@ -23,10 +23,10 @@ COPYING file for more details.
 *)
 
 Require Import Reals.
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype order.
 From mathcomp Require Import ssralg ssrnum.
 Require Import Rstruct posnum.
-Import GRing.Theory Num.Theory Num.Def.
+Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory Num.Def.
 Local Open Scope ring_scope.
 
 (** This file contains the definition and properties of the set
@@ -217,23 +217,23 @@ Proof. by split=> [[]|->]. Qed.
 
 Lemma Rbar_lt_not_eq (x y : Rbar) :
   Rbar_lt x y -> (x == y) = false.
-Proof. by move: x y => [x||] [y||] => //= /ltr_eqF; apply. Qed.
+Proof. by move: x y => [x||] [y||] => //= /lt_eqF; apply. Qed.
 
 Lemma Rbar_not_le_lt (x y : Rbar) :
   ~~ Rbar_le x y -> Rbar_lt y x.
-Proof. by move: x y => [x||] [y||] => //=; rewrite ltrNge. Qed.
+Proof. by move: x y => [x||] [y||] => //=; rewrite ltNge. Qed.
 
 Lemma Rbar_lt_not_le (x y : Rbar) :
   Rbar_lt y x -> ~~ Rbar_le x y.
-Proof. by move: x y => [x||] [y||] => //=; rewrite ltrNge. Qed.
+Proof. by move: x y => [x||] [y||] => //=; rewrite ltNge. Qed.
 
 Lemma Rbar_not_lt_le (x y : Rbar) :
   ~~ Rbar_lt x y -> Rbar_le y x.
-Proof. by move: x y => [x||] [y||] => //=; rewrite lerNgt. Qed.
+Proof. by move: x y => [x||] [y||] => //=; rewrite leNgt. Qed.
 
 Lemma Rbar_le_not_lt (x y : Rbar) :
   Rbar_le y x -> ~~ Rbar_lt x y.
-Proof. by move: x y => [x||] [y||] => //=; rewrite lerNgt. Qed.
+Proof. by move: x y => [x||] [y||] => //=; rewrite leNgt. Qed.
 
 Lemma Rbar_le_refl (x : Rbar) : Rbar_le x x.
 Proof. by case: x => [] /=. Qed.
@@ -281,25 +281,25 @@ Qed.
 
 Lemma Rbar_lt_trans (x y z : Rbar) :
   Rbar_lt x y -> Rbar_lt y z -> Rbar_lt x z.
-Proof. by case: x y z => [x||] [y||] [z||] //; apply: ltr_trans. Qed.
+Proof. by case: x y z => [x||] [y||] [z||] //; apply: lt_trans. Qed.
 
 Lemma Rbar_lt_le_trans (x y z : Rbar) :
   Rbar_lt x y -> Rbar_le y z -> Rbar_lt x z.
-Proof. by case: x y z => [x||] [y||] [z||] //; apply: ltr_le_trans. Qed.
+Proof. by case: x y z => [x||] [y||] [z||] //; apply: lt_le_trans. Qed.
 
 Lemma Rbar_le_lt_trans (x y z : Rbar) :
   Rbar_le x y -> Rbar_lt y z -> Rbar_lt x z.
-Proof. by case: x y z => [x||] [y||] [z||] //; apply: ler_lt_trans. Qed.
+Proof. by case: x y z => [x||] [y||] [z||] //; apply: le_lt_trans. Qed.
 
 Lemma Rbar_le_trans (x y z : Rbar) :
   Rbar_le x y -> Rbar_le y z -> Rbar_le x z.
-Proof. by case: x y z => [x||] [y||] [z||] //; apply: ler_trans. Qed.
+Proof. by case: x y z => [x||] [y||] [z||] //; apply: le_trans. Qed.
 
 Lemma Rbar_le_antisym (x y : Rbar) :
   Rbar_le x y -> Rbar_le y x -> x = y.
 Proof.
 case: x y => [x||] [y||] //=.
-by move=> xy /(conj xy) /andP; rewrite -eqr_le => /eqP->.
+by move=> xy /(conj xy) /andP; rewrite -eq_le => /eqP->.
 Qed.
 
 (** * Properties of operations *)
@@ -411,7 +411,7 @@ Proof.
 Qed.
 
 Lemma Rbar_mult_0_l (x : Rbar) : Rbar_mult (Finite 0) x = Finite 0.
-Proof. by case: x => [x||] //=; rewrite ?mul0r ?ltrr. Qed.
+Proof. by case: x => [x||] //=; rewrite ?mul0r ?ltxx. Qed.
 
 Lemma Rbar_mult_0_r (x : Rbar) : Rbar_mult x (Finite 0) = (Finite 0).
 Proof. by rewrite Rbar_mult_comm ; by apply Rbar_mult_0_l. Qed.
@@ -419,8 +419,7 @@ Proof. by rewrite Rbar_mult_comm ; by apply Rbar_mult_0_l. Qed.
 Lemma Rbar_mult_eq_0 (y x : Rbar) :
   Rbar_mult x y = Finite 0 -> x = Finite 0 \/ y = Finite 0.
 Proof.
-case: x y => [x||] [y||] //=; do ?case: ltrgtP=> /eqP ? //=;
-  do ?by [left; apply/eqP|right; apply/eqP].
+case: x y => [x||] [y||] //=; try by case: ltgtP => // <-; tauto.
 by move=> /eqP; rewrite [_ == _]mulf_eq0 => /orP[/eqP->|/eqP->]; [left|right].
 Qed.
 
@@ -521,16 +520,16 @@ Definition Rbar_min (x y : Rbar) : Rbar :=
 Lemma Rbar_lt_locally (a b : Rbar) (x : R) :
   Rbar_lt a x -> Rbar_lt x b ->
   exists delta : posreal,
-    forall y, `|y - x| < delta -> Rbar_lt a y && Rbar_lt y b.
+    forall y, `|y - x| < delta%:num -> Rbar_lt a y && Rbar_lt y b.
 Proof.
 move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
   move=> {a b} a b ltxa ltxb.
   have m_gt0 : minr ((x - a) / 2) ((b - x) / 2) > 0.
-    by rewrite ltr_minr !divr_gt0 ?subr_gt0.
-  exists (PosNum m_gt0) => y //=; rewrite ltr_minr !ltr_distl.
+    by rewrite ltxI !divr_gt0 ?subr_gt0.
+  exists (PosNum m_gt0) => y //=; rewrite ltxI !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].
-  rewrite (ltr_trans _ ay) ?(ltr_trans yb) //=.
+  rewrite (lt_trans _ ay) ?(lt_trans yb) //=.
     by rewrite -subr_gt0 opprD addrA {1}[b - x]splitr addrK divr_gt0 ?subr_gt0.
   by rewrite -subr_gt0 addrAC {1}[x - a]splitr addrK divr_gt0 ?subr_gt0.
 - have [//||d dP] := wlog a (x + 1); rewrite ?ltr_addl //.
@@ -541,25 +540,25 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 Qed.
 
 Lemma Rbar_min_comm (x y : Rbar) : Rbar_min x y = Rbar_min y x.
-Proof. by case: x y => [x||] [y||] //=; rewrite minrC. Qed.
+Proof. by case: x y => [x||] [y||] //=; rewrite meetC. Qed.
 
 Lemma Rbar_min_r (x y : Rbar) : Rbar_le (Rbar_min x y) y.
-Proof. by case: x y => [x||] [y||] //=; rewrite ler_minl lerr orbT. Qed.
+Proof. by case: x y => [x||] [y||] //=; rewrite leIx lexx orbT. Qed.
 
 Lemma Rbar_min_l (x y : Rbar) : Rbar_le (Rbar_min x y) x.
 Proof. by rewrite Rbar_min_comm Rbar_min_r. Qed.
 
 Lemma Rbar_min_case (x y : Rbar) (P : Rbar -> Type) :
   P x -> P y -> P (Rbar_min x y).
-Proof. by case: x y => [x||] [y||] //=; case: minrP. Qed.
+Proof. by case: x y => [x||] [y||] //=; case: leP. Qed.
 
 Lemma Rbar_min_case_strong (x y : Rbar) (P : Rbar -> Type) :
   (Rbar_le x y -> P x) -> (Rbar_le y x -> P y)
     -> P (Rbar_min x y).
 Proof.
-case: x y => [x||] [y||] //=; do 1?[case: minrP => ltxy];
+case: x y => [x||] [y||] //=; do 1?[case: leP => ltxy];
 do ?by [move=> /(_ isT) //|move=> _ /(_ isT) //=].
-by move=> _; rewrite ler_eqVlt ltxy orbT; apply.
+by move=> _; rewrite le_eqVlt ltxy orbT; apply.
 Qed.
 
 (** * Rbar_abs *)

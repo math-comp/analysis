@@ -13,7 +13,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import GRing.Theory Num.Theory BigEnough.
+Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory BigEnough.
 
 Local Open Scope ring_scope.
 
@@ -40,7 +40,7 @@ Lemma leff f : f <=1 f.
 Proof. by []. Qed.
 
 Lemma lef_trans g f h : f <=1 g -> g <=1 h -> f <=1 h.
-Proof. by move=> h1 h2 x; apply/(ler_trans (h1 x)). Qed.
+Proof. by move=> h1 h2 x; apply/(le_trans (h1 x)). Qed.
 End FFTheory.
 
 (* -------------------------------------------------------------------- *)
@@ -99,7 +99,7 @@ Lemma gt0_clamp {R : realType} (e : R) : 0 < eclamp e.
 Proof. by rewrite /eclamp; case: (lerP e 0) => h //; apply/ltr01. Qed.
 
 Lemma eclamp_id {R : realType} (e : R) : 0 < e -> eclamp e = e.
-Proof. by rewrite ltrNge /eclamp => /negbTE ->. Qed.
+Proof. by rewrite ltNge /eclamp => /negbTE ->. Qed.
 
 Definition B1 {R : realType} (x : R) :=
   @NFin R x 1 ltr01.
@@ -114,18 +114,18 @@ Lemma separable_le {R : realType} (l1 l2 : {ereal R}) :
 Proof.
 case: l1 l2 => [l1||] [l2||] //= lt_l12; last first.
 + exists (NNInf 0), (NPInf 1) => x y; rewrite !inE => lt1 lt2.
-  by apply/(ltr_trans lt1)/(ltr_trans ltr01).
+  by apply/(lt_trans lt1)/(lt_trans ltr01).
 + exists (NNInf (l2-1)), (B1 l2) => x y; rewrite !inE.
   rewrite ltr_norml [-1 < _]ltr_subr_addl.
-  by move => lt1 /andP[lt2 _]; apply/(ltr_trans lt1).
+  by move => lt1 /andP[lt2 _]; apply/(lt_trans lt1).
 + exists (B1 l1), (NPInf (l1+1)) => x y; rewrite !inE.
   rewrite ltr_norml ltr_subl_addr [1+_]addrC => /andP[_].
-  by move=> lt1 lt2; apply/(ltr_trans lt1).
+  by move=> lt1 lt2; apply/(lt_trans lt1).
 pose e := l2 - l1; exists (B l1 (e/2%:R)), (B l2 (e/2%:R)).
 have gt0_e: 0 < e by rewrite subr_gt0.
 move=> x y; rewrite !inE/= /eclamp pmulr_rle0 // invr_le0.
 rewrite lern0 /= !ltr_distl => /andP[_ lt1] /andP[lt2 _].
-apply/(ltr_trans lt1)/(ler_lt_trans _ lt2).
+apply/(lt_trans lt1)/(le_lt_trans _ lt2).
 rewrite ler_subr_addl addrCA -mulrDl -mulr2n -mulr_natr.
 by rewrite mulfK ?pnatr_eq0 //= /e addrCA subrr addr0.
 Qed.
@@ -141,7 +141,7 @@ wlog: l1 l2 / (l1 < l2)%E => [wlog ne_l12|le_l12 _].
   by exists y, x=> z; rewrite inE andbC /= (h z).
 case/separable_le: le_l12 => [v1] [v2] h; exists v1, v2.
 move=> x; apply/negP; rewrite inE/= => /andP[] xv1 xv2.
-by have := h _ _ xv1 xv2; rewrite ltrr.
+by have := h _ _ xv1 xv2; rewrite ltxx.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -165,7 +165,7 @@ apply: (iffP idP) => [/asboolP[]|]; first elim/nbh_finW.
   move=> M /= gt0_M cv; exists M => [|n] //.
   by have := cv n; rewrite inE subr0.
 case=> M _ cv; apply/asboolP; exists (B 0 M) => n; rewrite inE subr0.
-by rewrite eclamp_id // (@ler_lt_trans _ `|u 0%N|).
+by rewrite eclamp_id // (@le_lt_trans _ _ `|u 0%N|).
 Qed.
 End SequenceLim.
 
@@ -203,7 +203,7 @@ move=> le_uv cv cu; rewrite leeNgt; apply/negP=> /separable_le.
 case=> [v1] [v2] h; have [] := (cv v1, cu v2).
 case=> [K1 vv1] [K2 uv2]; pose_big_enough K'.
 have []// := And3 (le_uv K' _) (vv1 K' _) (uv2 K' _). 2: by close.
-by move=> le h1 h2; have := h _ _ h1 h2; rewrite ltrNge le.
+by move=> le h1 h2; have := h _ _ h1 h2; rewrite ltNge le.
 Qed.
 
 Lemma ncvg_le v u (lv lu : {ereal R}) :
@@ -214,20 +214,20 @@ Lemma ncvg_nbounded u x : ncvg u x%:E -> nbounded u.
 Proof.                   (* FIXME: factor out `sup` of a finite set *)
 case/(_ (B x 1)) => K cu; pose S := [seq `|u n| | n <- iota 0 K].
 pose M : R := sup [pred x in S]; pose e := Num.max (`|x| + 1) (M + 1).
-apply/asboolP/nboundedP; exists e => [|n]; first by rewrite ltr_maxr ltr_paddl.
+apply/asboolP/nboundedP; exists e => [|n]; first by rewrite ltxU ltr_paddl.
 case: (ltnP n K); last first.
   move/cu; rewrite inE eclamp_id ?ltr01 // => ltunBx1.
-  rewrite ltr_maxr; apply/orP; left; rewrite -[u n](addrK x) addrAC.
-  by apply/(ler_lt_trans (ler_norm_add _ _)); rewrite addrC ltr_add2l.
+  rewrite ltxU; apply/orP; left; rewrite -[u n](addrK x) addrAC.
+  by apply/(le_lt_trans (ler_norm_add _ _)); rewrite addrC ltr_add2l.
 move=> lt_nK; have: `|u n| \in S; first by apply/map_f; rewrite mem_iota.
-move=> un_S; rewrite ltr_maxr; apply/orP; right.
+move=> un_S; rewrite ltxU; apply/orP; right.
 case E: {+}K lt_nK => [|k] // lt_nSk; apply/ltr_spaddr; first apply/ltr01.
 apply/sup_upper_bound; last by apply/map_f; rewrite mem_iota E.
 apply/has_supP; split; first by exists `|u 0%N|; rewrite /S E inE eqxx.
 elim: {+}S => [|v s [ux /ubP hux]]; first by exists 0; apply/ubP.
 exists (Num.max v ux); apply/ubP=> y; rewrite inE => /orP[/eqP->|].
-  by rewrite ler_maxr lerr.
-by move/hux=> le_yux; rewrite ler_maxr le_yux orbT.
+  by rewrite lexU lexx.
+by move/hux=> le_yux; rewrite lexU le_yux orbT.
 Qed.
 
 Lemma nboundedC c : nbounded c%:S.
@@ -248,7 +248,7 @@ Proof.
 move=> cu cv; elim/nbh_finW => e /= gt0_e; pose z := e / 2%:R.
 case: (cu (B lu z)) (cv (B lv z)) => [ku {cu}cu] [kv {cv}cv].
 exists (maxn ku kv) => n; rewrite geq_max => /andP[leu lev].
-rewrite inE opprD addrACA (ler_lt_trans (ler_norm_add _ _)) //.
+rewrite inE opprD addrACA (le_lt_trans (ler_norm_add _ _)) //.
 move: (cu _ leu) (cv _ lev); rewrite !inE eclamp_id.
   by rewrite mulr_gt0 // invr_gt0 ltr0Sn.
 move=> cu' cv'; suff ->: e = z + z by rewrite ltr_add.
@@ -277,7 +277,7 @@ Lemma ncvg_abs u lu : ncvg u lu%:E -> ncvg (fun n => `|u n|) `|lu|%:E.
 Proof.
 move=> cu; elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
 move=> K {cu}cu; exists K=> n /cu; rewrite !inE eclamp_id //.
-by move/(ler_lt_trans (ler_dist_dist _ _)).
+by move/(le_lt_trans (ler_dist_dist _ _)).
 Qed.
 
 Lemma ncvg_abs0 u : ncvg (fun n => `|u n|) 0%:E -> ncvg u 0%:E.
@@ -289,7 +289,7 @@ Qed.
 Lemma ncvgMl u v : ncvg u 0%:E -> nbounded v -> ncvg (u \* v) 0%:E.
 move=> cu /asboolP/nboundedP [M gt0_M ltM]; elim/nbh_finW => e /= gt0_e.
 case: (cu (B 0 (e / (M + 1)))) => K {cu}cu; exists K => n le_Kn.
-rewrite inE subr0 normrM; apply/(@ltr_trans _ (e / (M + 1) * M)).
+rewrite inE subr0 normrM; apply/(@lt_trans _ _ (e / (M + 1) * M)).
   apply/ltr_pmul => //; have /cu := le_Kn; rewrite inE subr0 eclamp_id //.
   by rewrite mulr_gt0 // invr_gt0 addr_gt0.
 rewrite -mulrAC -mulrA gtr_pmulr // ltr_pdivr_mulr ?addr_gt0 //.
@@ -390,7 +390,7 @@ case: l1 l2 => [l1||] [l2||] //=; first last.
 + by move=> _ /(_ (NPInf l1)) [K cv]; exists K => n /cv.
 move=> lt_12; pose e := l2 - l1 => /(_ (B l2 e)).
 case=> K cv; exists K => n /cv; rewrite !inE eclamp_id ?subr_gt0 //.
-rewrite ltr_distl => /andP[] /(ler_lt_trans _) h _; apply: h.
+rewrite ltr_distl => /andP[] /(le_lt_trans _) h _; apply: h.
 by rewrite {cv}/e opprB addrCA subrr addr0.
 Qed.
 
@@ -545,7 +545,7 @@ elim/nbh_finW=> /= e gt0_e; have sS: has_sup S.
 have /sup_adherent := sS => /(_ _ gt0_e) [r /imsetbP] [N ->] lt_uN.
 exists N => n le_Nn; rewrite !inE distrC ger0_norm ?subr_ge0.
   by apply/sup_upper_bound => //; apply/imsetbP; exists n.
-by rewrite ltr_subl_addr -ltr_subl_addl (ltr_le_trans lt_uN) ?mn_u.
+by rewrite ltr_subl_addr -ltr_subl_addl (lt_le_trans lt_uN) ?mn_u.
 Qed.
 
 End LimOp.
