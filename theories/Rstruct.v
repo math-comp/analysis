@@ -25,13 +25,13 @@ Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
-From mathcomp Require Import choice bigop ssralg fintype poly.
+From mathcomp Require Import choice bigop order ssralg fintype poly.
 From mathcomp Require Import mxpoly ssrnum finfun.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope R_scope.
 
@@ -226,7 +226,9 @@ Qed.
 
 Definition R_numMixin := NumMixin Rleb_norm_add addr_Rgtb0 Rnorm0_eq0
                                   Rleb_leVge RnormM Rleb_def Rltb_def.
+Canonical R_porderType := POrderType ring_display R R_numMixin.
 Canonical R_numDomainType := NumDomainType R R_numMixin.
+Canonical R_normedDomainType := NormedDomainType R R R_numMixin.
 
 Lemma RleP : forall x y, reflect (Rle x y) (x <= y)%R.
 Proof. exact: RlebP. Qed.
@@ -246,7 +248,12 @@ case: (Rle_dec 0 x)=> [/RleP ->|] //.
 by move/Rnot_le_lt/Rlt_le/RleP=> ->; rewrite orbT.
 Qed.
 
-Canonical R_realDomainType := RealDomainType R Rreal_axiom.
+Lemma R_total : totalLatticeMixin R_porderType.
+Proof. Admitted.
+
+Canonical R_latticeType := LatticeType R R_total.
+Canonical R_orderType := OrderType R R_total.
+Canonical R_realDomainType := [realDomainType of R].
 Canonical R_realFieldType := [realFieldType of R].
 
 Lemma Rarchimedean_axiom : Num.archimedean_axiom R_numDomainType.
@@ -336,13 +343,13 @@ Qed.
 
 Lemma Rreal_closed_axiom : Num.real_closed_axiom R_numDomainType.
 Proof.
-move=> p a b; rewrite !ler_eqVlt.
+move=> p a b; rewrite !le_eqVlt.
 case Hpa: ((p.[a])%R == 0%R).
-  by move=> ? _ ; exists a=> //; rewrite lerr ler_eqVlt.
+  by move=> ? _ ; exists a=> //; rewrite lexx le_eqVlt.
 case Hpb: ((p.[b])%R == 0%R).
-  by move=> ? _; exists b=> //; rewrite lerr ler_eqVlt andbT.
+  by move=> ? _; exists b=> //; rewrite lexx le_eqVlt andbT.
 case Hab: (a == b).
-  by move=> _; rewrite (eqP Hab) eq_sym Hpb (ltrNge 0) /=; case/andP=> /ltrW ->.
+  by move=> _; rewrite (eqP Hab) eq_sym Hpb (ltNge 0) /=; case/andP=> /ltW ->.
 rewrite eq_sym Hpb /=; clear=> /RltbP Hab /andP [] /RltbP Hpa /RltbP Hpb.
 suff Hcp: continuity (fun x => (p.[x])%R).
   have [z [[Hza Hzb] /eqP Hz2]]:= IVT _ a b Hcp Hab Hpa Hpb.
@@ -401,10 +408,10 @@ Proof.
 move=> supE eps_gt0; set m := _ - eps; apply: contrapT=> mNsmall.
 have: m \in ub E.
   apply/ubP=> y Ey; have /negP := mNsmall (ex_intro2 _ _ y Ey _).
-  by rewrite -lerNgt.
+  by rewrite -leNgt.
 have [_ /(_ m)] := real_sup_is_lub supE.
 rewrite is_upper_boundE => m_big /m_big /RleP.
-by rewrite -subr_ge0 addrC addKr oppr_ge0 lerNgt eps_gt0.
+by rewrite -subr_ge0 addrC addKr oppr_ge0 leNgt eps_gt0.
 Qed.
 
 Definition real_realMixin : Real.mixin_of _ :=
@@ -470,15 +477,15 @@ Proof. by elim: n => [ | n In] //=; rewrite exprS In RmultE. Qed.
 
 Lemma RmaxE x y : Rmax x y = Num.max x y.
 Proof.
-case: (lerP x y) => H; first by rewrite maxr_r // Rmax_right //; apply: RlebP.
-by rewrite maxr_l ?ltrW // Rmax_left //;  apply/RlebP; move/ltrW : H.
+case: (lerP x y) => H; first by rewrite (elimT join_idPl) // Rmax_right //; apply: RlebP.
+by rewrite (elimT join_idPr) ?ltW // Rmax_left //;  apply/RlebP; move/ltW : H.
 Qed.
 
 (* useful? *)
 Lemma RminE x y : Rmin x y = Num.min x y.
 Proof.
-case: (lerP x y) => H; first by rewrite minr_l // Rmin_left //; apply: RlebP.
-by rewrite minr_r ?ltrW // Rmin_right //;  apply/RlebP; move/ltrW : H.
+case: (lerP x y) => H; first by rewrite (elimT meet_idPl) // Rmin_left //; apply: RlebP.
+by rewrite (elimT meet_idPr) ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
 Qed.
 
 (* bigop pour le max pour des listes non vides ? *)
@@ -494,21 +501,21 @@ Proof. by rewrite /bigmaxr. Qed.
 Lemma bigmaxr_cons x0 x y lr :
   bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
 Proof.
-rewrite /bigmaxr /=; elim: lr => [/= | a lr /=]; first by rewrite maxrC.
+rewrite /bigmaxr /=; elim: lr => [/= | a lr /=]; first by rewrite joinC.
 set b := foldr _ _ _; set c := foldr _ _ _ => H.
-by rewrite [Num.max a b]maxrC maxrA H -maxrA (maxrC c a).
+by rewrite [Num.max a b]joinC joinA H -joinA (joinC c a).
 Qed.
 
 Lemma bigmaxr_ler x0 lr i :
   (i < size lr)%N -> (nth x0 lr i) <= (bigmaxr x0 lr).
 Proof.
-case: lr i => [i | x lr]; first by rewrite nth_nil bigmaxr_nil lerr.
+case: lr i => [i | x lr]; first by rewrite nth_nil bigmaxr_nil lexx.
 elim: lr x => [x i /= | x lr /= ihlr y i i_size].
   by rewrite ltnS leqn0 => /eqP ->; rewrite nth0 bigmaxr_un /=.
 rewrite bigmaxr_cons /=; case: i i_size => [_ /= | i].
-  by rewrite ler_maxr lerr.
-rewrite ltnS /=; move/(ihlr x); move/(ler_trans)=> H; apply: H.
-by rewrite ler_maxr lerr orbT.
+  by rewrite lexU lexx.
+rewrite ltnS /=; move/(ihlr x); move/(le_trans)=> H; apply: H.
+by rewrite lexU lexx orbT.
 Qed.
 
 (* Compatibilité avec l'addition *)
@@ -525,9 +532,9 @@ Lemma bigmaxr_index x0 lr :
 Proof.
 case: lr => [//= | x l _].
 elim: l x => [x | x lr]; first by rewrite bigmaxr_un /= eq_refl.
-move/(_ x); set z := bigmaxr _ _ => /= ihl y; rewrite bigmaxr_cons /Num.max -/z.
-case: (z <= y); first by rewrite eq_refl.
-by case: (y == z); rewrite //.
+move/(_ x); set z := bigmaxr _ _ => /= ihl y; rewrite bigmaxr_cons -/z.
+rewrite eq_sym eq_joinl.
+by case: (leP z y).
 Qed.
 
 Lemma bigmaxr_mem x0 lr :
@@ -539,7 +546,7 @@ Lemma bigmaxr_lerP x0 lr x :
   reflect (forall i, (i < size lr)%N -> (nth x0 lr i) <= x) ((bigmaxr x0 lr) <= x).
 Proof.
 move=> lr_size; apply: (iffP idP) => [le_x i i_size | H].
-  by apply: (ler_trans _ le_x); apply: bigmaxr_ler.
+  by apply: (le_trans _ le_x); apply: bigmaxr_ler.
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
@@ -548,14 +555,14 @@ Lemma bigmaxr_ltrP x0 lr x :
   reflect (forall i, (i < size lr)%N -> (nth x0 lr i) < x) ((bigmaxr x0 lr) < x).
 Proof.
 move=> lr_size; apply: (iffP idP) => [lt_x i i_size | H].
-  by apply: ler_lt_trans lt_x; apply: bigmaxr_ler.
+  by apply: le_lt_trans lt_x; apply: bigmaxr_ler.
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
 Lemma bigmaxrP x0 lr x :
   (x \in lr /\ forall i, (i < size lr) %N -> (nth x0 lr i) <= x) -> (bigmaxr x0 lr = x).
 Proof.
-move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: ler_asym; apply/andP; split.
+move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: le_anti; apply/andP; split.
   by apply/bigmaxr_lerP => //; apply: (leq_trans _ j_size).
 by rewrite -j_nth (bigmaxr_ler _ j_size).
 Qed.
