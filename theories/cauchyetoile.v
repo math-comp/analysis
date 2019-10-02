@@ -4,9 +4,9 @@ From mathcomp Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
 From mathcomp Require Import complex.  
 From mathcomp Require Import boolp reals Rstruct Rbar derive. 
-Require Import classical_sets posnum topology normedtype landau integral. 
+Require Import classical_sets posnum topology normedtype landau integral.  
 
-(*Pour distinguer fonctions mesurables et integrables, 
+(*Pour distinguer fonctions mesurables et integrables,  
 utiliser des structures comme posrel. *)
 Import GRing.Theory Num.Theory ComplexField Num.Def.
 Local Open Scope ring_scope.
@@ -472,31 +472,45 @@ Proof.
  by [].
 Qed.
 
- Lemma Diff_CR_holo (f : C -> C) c:
-   (forall v : C, derivable (complex_realfun f) c v) /\ (CauchyRiemanEq f c) ->
-   ((holomorphic f c)) . 
+
+
+(* Local Notation "''D_' v f" := (derive f ^~ v). *)
+(* Local Notation "''D_' v f c" := (derive f c v). *)
+
+Print derive. 
+ Lemma Diff_CR_holo (f : C -> C) : (*This does not work pointwise *)
+   (forall c v : C, derivable ( f : C_RnormedType -> C_RnormedType) c v)
+   /\ (forall c, CauchyRiemanEq f c) ->(forall c, (holomorphic f c)).
+ (*sanity check : derivable (f : C ->C) does not type check  *)
  Proof.
-   move => [der CR]; move: (der 1%:C); simpl  => /cvg_ex [lr Dlr].
-   move: (der 'i); simpl  => /cvg_ex [li Dli].
-   apply/cvg_ex; simpl.
-   simpl in (type of lr); simpl in (type of Dlr).
-   simpl in (type of li); simpl in (type of Dli).
-   move : CR; rewrite /CauchyRiemanEq (flim_lim (Dlr)) (flim_lim (Dli)) => CR.
-   pose l:= ((lr + lr*'i)) ; exists l.
-move => h //=. /cvg_ex.
-   Unset Printing Notations.
-   suff :  exists l, forall h : C_absRingType,
-            f (c + h) = f c + h * l + 'o_[filter of locally (0 : C^o)] id  h.
-   admit.
+   move => [der CR] c.
+   (* (* first attempt with littleo but requires to mix littleo on filter on different types ...*) *)
+   (* suff :  exists l, forall h : C_absRingType, *)
+   (*       f (c + h) = f c + h * l + 'o_[filter of locally (0 : C)] id  h. *)
+   (* admit. *)
+   (* move: (der c 1%:C ); simpl => /cvg_ex [lr /flim_lim //= Dlr]. *)
+   (* move: (der c 'i); simpl  => /cvg_ex [li /flim_lim //= Dli]. *)
+   (* simpl in (type of lr); simpl in (type of Dlr). *)
+   (* simpl in (type of li); simpl in (type of Dli). *)
+   (* move : (CR c) ; rewrite /CauchyRiemanEq //=  (Dlr) (Dli) => CRc. *)
+   (* pose l:= ((lr + lr*'i)) ; exists l; move  => [a b]. *)
+   (* move: (der (c + a%:C)  'i); simpl => /cvg_ex [//= la /flim_lim //= Dla]. *)
+   (* move: (der (c + a%:C) 'i) => /derivable_locallyxP. *)
+   (* rewrite /derive //= Dla => oR.     *)
+   (* have -> : (a +i* b) = (a%:C + b*: 'i%C) by simpc.  *)
+   (* rewrite addrA oR.     *)
+   (* (*have fun a => la = cst(lr) + o_0(a). *)   *)
+   (* move: (der c 1%:C); simpl => /derivable_locallyxP ; rewrite /derive //= Dlr => oC. *)
+   (* (* rewrite [a%:C]/(a *: 1%:C). *) *)
+   (* have -> : a%:C = (a *: 1%:C) by simpc.   *)
+   (* rewrite oC.  *)
+   (* (* struggling with o *) *)
+   (* Search "o" in landau. *)
+      
    
-   
-   exists l ; move => h. 
-   pose fx := derivable_locallyx (der h) 1.
-   move : fx. 
-   have lem : forall x : C, 1 *: x = x. admit. 
-   rewrite !lem //=.
-   Search "derive" in derive. 
-   Unset Printing Notations .
+  
+    
+  
  Admitted.
  
 Theorem CauchyRiemann (f : C^o -> C^o) c:  ((holomorphic f c))
