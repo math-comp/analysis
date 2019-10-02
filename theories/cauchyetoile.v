@@ -483,7 +483,7 @@ Print derive.
    /\ (forall c, CauchyRiemanEq f c) ->(forall c, (holomorphic f c)).
  (*sanity check : derivable (f : C ->C) does not type check  *)
  Proof.
-   move => [der CR] c.
+   move => [der CR] c. 
    (* (* first attempt with littleo but requires to mix littleo on filter on different types ...*) *)
    (* suff :  exists l, forall h : C_absRingType, *)
    (*       f (c + h) = f c + h * l + 'o_[filter of locally (0 : C)] id  h. *)
@@ -506,11 +506,19 @@ Print derive.
    (* rewrite oC.  *)
    (* (* struggling with o *) *)
    (* Search "o" in landau. *)
-      
+   rewrite /holomorphic cvg_ex. 
+   move: (der c 1%:C ); simpl => /cvg_ex [lr //= Dlr]. 
+   move: (der c 'i); simpl  => /cvg_ex [li //= Dli].
+   simpl in (type of lr); simpl in (type of Dlr).
+   simpl in (type of li); simpl in (type of Dli).
+   move : (CR c) ; rewrite /CauchyRiemanEq //=  (flim_lim Dlr) (flim_lim Dli) => CRc.
+   pose l:= ((lr + lr*'i)) ; exists l; move => A //= [r leq0r] normrA.
    
-  
-    
-  
+   exists r ; first by [].    
+   move => [a b] ballab abneq0 //=. 
+   suff :   normc (l- (a +i* b)^-1 *: ((f (a +i* b + c) - f c) : C^o)) <= r.     
+   admit.
+   Check (Dlr A ) .     
  Admitted.
  
 Theorem CauchyRiemann (f : C^o -> C^o) c:  ((holomorphic f c))
