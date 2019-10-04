@@ -2,7 +2,7 @@
 (* Distributed under the terms of CeCILL-B.                                  *)
 Require Import Reals. (*can't get rid of this because it is used in normedtype *)
 From mathcomp  Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
-From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg ssrnum.
+From mathcomp Require Import ssrnat eqtype choice fintype bigop ssralg .
 From mathcomp Require Import bigop ssralg ssrint div ssrnum rat poly.
 (* From mathcomp *)
 (*      Require Import matrix mxalgebra tuple mxpoly zmodp binomial realalg. *)
@@ -45,30 +45,30 @@ Reserved Notation "R [i]"
 Local Notation sgr := Num.sg.
 Local Notation sqrtr := Num.sqrt.
 
-Record complex (R : Type) : Type := Complex { Re : R; Im : R }.
+Record C : Type := Complex { Re : R; Im : R }.
 
 Delimit Scope complex_scope with C.
 Local Open Scope complex_scope.
 
-Definition real_complex_def (F : ringType) (phF : phant F) (x : F) :=
+Definition real_complex (x : R) :=
   Complex x 0.
-Notation real_complex F := (@real_complex_def _ (Phant F)).
-Notation "x %:C" := (real_complex _ x)
+(* Notation real_complex := (@real_complex_def _ ). *)
+Notation "x %:C" := (real_complex  x)
   (at level 2, left associativity, format "x %:C")  : complex_scope.
 Notation "x +i* y" := (Complex x y) : complex_scope.
 Notation "x -i* y" := (Complex x (- y)) : complex_scope.
 Notation "x *i " := (Complex 0 x) (at level 8, format "x *i") : complex_scope.
 Notation "''i'" := (Complex 0 1) : complex_scope.
-Notation "R [i]" := (complex R)
-  (at level 2, left associativity, format "R [i]").
+(* Notation "C" := (complex) *)
+(*   (at level 2, left associativity, format "R [i]"). *)
 
 (* Module ComplexInternal. *)
 Module ComplexEqChoice.
 Section ComplexEqChoice.
 
-Variable R : Type.
+(* Variable R : Type. *)
 
-Definition sqR_of_complex (x : R[i]) := let: a +i* b := x in [:: a; b].
+Definition sqR_of_complex (x : C) := let: a +i* b := x in [:: a; b].
 Definition complex_of_sqR (x : seq R) :=
   if x is [:: a; b] then Some (a +i* b) else None.
 
@@ -78,60 +78,60 @@ Proof. by case. Qed.
 End ComplexEqChoice.
 End ComplexEqChoice.
 
-Definition complex_eqMixin (R : eqType) :=
-  PcanEqMixin (@ComplexEqChoice.complex_of_sqRK R).
-Definition complex_choiceMixin  (R : choiceType) :=
-  PcanChoiceMixin (@ComplexEqChoice.complex_of_sqRK R).
-Definition complex_countMixin  (R : countType) :=
-  PcanCountMixin (@ComplexEqChoice.complex_of_sqRK R).
+Definition complex_eqMixin (* (R : eqType) *) :=
+  PcanEqMixin (ComplexEqChoice.complex_of_sqRK ).
+Definition complex_choiceMixin  (* (R : choiceType) *) :=
+  PcanChoiceMixin (ComplexEqChoice.complex_of_sqRK ).
+(* Definition complex_countMixin  (* (R : countType) *) := *)
+(*   PcanCountMixin (ComplexEqChoice.complex_of_sqRK ). *)
 
-Canonical complex_eqType (R : eqType) :=
-  EqType R[i] (complex_eqMixin R).
-Canonical complex_choiceType (R : choiceType) :=
-  ChoiceType R[i] (complex_choiceMixin R).
-Canonical complex_countType (R : countType) :=
-  CountType R[i] (complex_countMixin R).
+Canonical complex_eqType (* (R : eqType) *) :=
+  EqType C (complex_eqMixin).
+Canonical complex_choiceType (* (R : choiceType) *) :=
+  ChoiceType C (complex_choiceMixin).
+(* Canonical complex_countType (* (R : countType) *) := *)
+(*   CountType C (complex_countMixin). *)
 
-Lemma eq_complex : forall (R : eqType) (x y : complex R),
+Lemma eq_complex : forall (* (R : eqType) *) (x y : C),
   (x == y) = (Re x == Re y) && (Im x == Im y).
 Proof.
-move=> R [a b] [c d] /=.
+move=>  [a b] [c d] /=.
 apply/eqP/andP; first by move=> [-> ->]; split.
 by case; move/eqP->; move/eqP->.
 Qed.
 
-Lemma complexr0 : forall (R : ringType) (x : R), x +i* 0 = x%:C. Proof. by []. Qed.
+Lemma complexr0 : forall (* (R : ringType)  *) (x : R), x +i* 0 = x%:C. Proof. by []. Qed.
 
 Module ComplexField.
 Section ComplexField.
 
 (* Variable R : realType. *)
-Local Notation C := R[i].
 Local Notation C0 := ((0 : R)%:C).
 Local Notation C1 := ((1 : R)%:C).
 
-Definition addc (x y : R[i]) := let: a +i* b := x in let: c +i* d := y in
+Definition addc (x y : C) := let: a +i* b := x in let: c +i* d := y in
   (a + c) +i* (b + d).
-Definition oppc (x : R[i]) := let: a +i* b := x in (- a) +i* (- b).
+Definition oppc (x : C) := let: a +i* b := x in (- a) +i* (- b).
 
 Program Definition complex_zmodMixin := @ZmodMixin _ C0 oppc addc _ _ _ _.
 Next Obligation. by move=> [a b] [c d] [e f] /=; rewrite !addrA. Qed.
 Next Obligation. by move=> [a b] [c d] /=; congr (_ +i* _); rewrite addrC. Qed.
 Next Obligation. by move=> [a b] /=; rewrite !add0r. Qed.
 Next Obligation. by move=> [a b] /=; rewrite !addNr. Qed.
-Canonical complex_zmodType := ZmodType R[i] complex_zmodMixin.
+Canonical complex_zmodType := ZmodType C complex_zmodMixin.
 
-Definition scalec (a : R) (x : R[i]) := 
+Definition scalec (a : R) (x : C) := 
   let: b +i* c := x in (a * b) +i* (a * c).
 
-Program Definition complex_lmodMixin := @LmodMixin _ _ scalec _ _ _ _.
+Program Definition complex_lmodMixin := @LmodMixin _ _ scalec _ _ _ _. 
 Next Obligation. by move=> a b [c d] /=; rewrite !mulrA. Qed.
 Next Obligation. by move=> [a b] /=; rewrite !mul1r. Qed.
 Next Obligation. by move=> a [b c] [d e] /=; rewrite !mulrDr. Qed.
 Next Obligation. by move=> [a b] c d /=; rewrite !mulrDl. Qed.
-Canonical complex_lmodType := LmodType R R[i] complex_lmodMixin.
+Definition C_RlmodType := LmodType R C complex_lmodMixin.
+(*WARNING We don't want this to be canonical / contrary to real closed  *)
 
-Definition mulc (x y : R[i]) := let: a +i* b := x in let: c +i* d := y in
+Definition mulc (x y : C) := let: a +i* b := x in let: c +i* d := y in
   ((a * c) - (b * d)) +i* ((a * d) + (b * c)).
 
 Lemma mulcC : commutative mulc.
@@ -148,7 +148,7 @@ by congr ((_ + _) +i* (_ + _)); rewrite !addrA addrAC;
   congr (_ + _); rewrite addrC.
 Qed.
 
-Definition invc (x : R[i]) := let: a +i* b := x in let n2 := (a ^+ 2 + b ^+ 2) in
+Definition invc (x : C) := let: a +i* b := x in let n2 := (a ^+ 2 + b ^+ 2) in
   (a / n2) -i* (b / n2).
 
 Lemma mul1c : left_id C1 mulc.
@@ -164,8 +164,8 @@ Lemma nonzero1c : C1 != C0. Proof. by rewrite eq_complex /= oner_eq0. Qed.
 
 Definition complex_comRingMixin :=
   ComRingMixin mulcA mulcC mul1c mulc_addl nonzero1c.
-Canonical complex_ringType :=RingType R[i] complex_comRingMixin.
-Canonical complex_comRingType := ComRingType R[i] mulcC.
+Canonical complex_ringType :=RingType C complex_comRingMixin.
+Canonical complex_comRingType := ComRingType C mulcC.
 
 Lemma mulVc : forall x, x != C0 -> mulc (invc x) x = C1.
 Proof.
@@ -178,21 +178,21 @@ Lemma invc0 : invc C0 = C0. Proof. by rewrite /= !mul0r oppr0. Qed.
 
 Definition complex_fieldUnitMixin := FieldUnitMixin mulVc invc0.
 Canonical complex_unitRingType := UnitRingType C complex_fieldUnitMixin.
-Canonical complex_comUnitRingType := Eval hnf in [comUnitRingType of R[i]].
+Canonical complex_comUnitRingType := Eval hnf in [comUnitRingType of C].
 
 Lemma field_axiom : GRing.Field.mixin_of complex_unitRingType.
 Proof. by []. Qed.
 
 Definition ComplexFieldIdomainMixin := (FieldIdomainMixin field_axiom).
-Canonical complex_idomainType := IdomainType R[i] (FieldIdomainMixin field_axiom).
-Canonical complex_fieldType := FieldType R[i] field_axiom.
+Canonical complex_idomainType := IdomainType C (FieldIdomainMixin field_axiom).
+Canonical complex_fieldType := FieldType C field_axiom.
 
 Ltac simpc := do ?
   [ rewrite -[(_ +i* _) - (_ +i* _)]/(_ +i* _)
   | rewrite -[(_ +i* _) + (_ +i* _)]/(_ +i* _)
   | rewrite -[(_ +i* _) * (_ +i* _)]/(_ +i* _)].
 
-Lemma real_complex_is_rmorphism : rmorphism (real_complex R).
+Lemma real_complex_is_rmorphism : rmorphism (real_complex).
 Proof.
 split; [|split=> //] => a b /=; simpc; first by rewrite subrr.
 by rewrite !mulr0 !mul0r addr0 subr0.
@@ -202,28 +202,28 @@ Canonical real_complex_rmorphism :=
   RMorphism real_complex_is_rmorphism.
 Canonical real_complex_additive :=
   Additive real_complex_is_rmorphism.
-
-Lemma Re_is_scalar : scalar (@Re R).
+About scalar. 
+Lemma Re_is_scalar : scalar (Re : C_RlmodType -> R).
 Proof. by move=> a [b c] [d e]. Qed.
 
 Canonical Re_additive := Additive Re_is_scalar.
 Canonical Re_linear := Linear Re_is_scalar.
 
-Lemma Im_is_scalar : scalar (@Im R).
+Lemma Im_is_scalar : scalar (Im : C_RlmodType -> R).
 Proof. by move=> a [b c] [d e]. Qed.
 
 Canonical Im_additive := Additive Im_is_scalar.
 Canonical Im_linear := Linear Im_is_scalar.
 
-Definition lec (x y : R[i]) :=
+Definition lec (x y : C) :=
   let: a +i* b := x in let: c +i* d := y in
     (d == b) && (a <= c).
 
-Definition ltc (x y : R[i]) :=
+Definition ltc (x y : C) :=
   let: a +i* b := x in let: c +i* d := y in
     (d == b) && (a < c).
 
-Definition normc (x : R[i]) : R :=
+Definition normc (x : C) : R :=
   let: a +i* b := x in sqrtr (a ^+ 2 + b ^+ 2).
 
 Notation normC x := (normc x)%:C.
@@ -304,13 +304,16 @@ Qed.
 
 Definition complex_numMixin := NumMixin lec_normD ltc0_add eq0_normC
      ge0_lec_total normCM lec_def ltc_def.
-Canonical complex_numDomainType := NumDomainType R[i] complex_numMixin.
+Canonical complex_numDomainType := NumDomainType C complex_numMixin.
 
 End ComplexField.
 End ComplexField.
+
+Locate numFieldType. 
+Import ComplexField.
 
 Canonical ComplexField.complex_zmodType.
-Canonical ComplexField.complex_lmodType.
+Canonical ComplexField.C_RlmodType. (*Warning : is this OK ?*)
 Canonical ComplexField.complex_ringType.
 Canonical ComplexField.complex_comRingType.
 Canonical ComplexField.complex_unitRingType.
@@ -318,13 +321,13 @@ Canonical ComplexField.complex_comUnitRingType.
 Canonical ComplexField.complex_idomainType.
 Canonical ComplexField.complex_fieldType.
 Canonical ComplexField.complex_numDomainType.
-Canonical complex_numFieldType  := [numFieldType of complex R].
+Canonical complex_numFieldType  := [numFieldType of C]. 
 Canonical ComplexField.real_complex_rmorphism.
 Canonical ComplexField.real_complex_additive.
 Canonical ComplexField.Re_additive.
 Canonical ComplexField.Im_additive.
 
-Definition conjc {R : ringType} (x : R[i]) := let: a +i* b := x in a -i* b.
+Definition conjc (x : C) := let: a +i* b := x in a -i* b.
 Notation "x ^*" := (conjc x) (at level 2, format "x ^*") : complex_scope.
 Local Open Scope complex_scope.
 Delimit Scope complex_scope with C.
@@ -348,28 +351,28 @@ Section ComplexTheory.
 
 (* Variable R : realType. *)
 
-Lemma ReiNIm : forall x : R[i], Re (x * 'i%C) = - Im x.
+Lemma ReiNIm : forall x : C, Re (x * 'i%C) = - Im x.
 Proof. by case=> a b; simpc. Qed.
 
-Lemma ImiRe : forall x : R[i], Im (x * 'i%C) = Re x.
+Lemma ImiRe : forall x : C, Im (x * 'i%C) = Re x.
 Proof. by case=> a b; simpc. Qed.
 
-Lemma complexE x : x = (Re x)%:C + 'i%C * (Im x)%:C :> R[i].
+Lemma complexE x : x = (Re x)%:C + 'i%C * (Im x)%:C :> C.
 Proof. by case: x => *; simpc. Qed.
 
-Lemma real_complexE x : x%:C = x +i* 0 :> R[i]. Proof. done. Qed.
+Lemma real_complexE x : x%:C = x +i* 0 :> C. Proof. done. Qed.
 
-Lemma sqr_i : 'i%C ^+ 2 = -1 :> R[i].
+Lemma sqr_i : 'i%C ^+ 2 = -1 :> C.
 Proof. by rewrite exprS; simpc; rewrite -real_complexE rmorphN. Qed.
 
-Lemma complexI : injective (real_complex R). Proof. by move=> x y []. Qed.
+Lemma complexI : injective (real_complex). Proof. by move=> x y []. Qed.
 
 Lemma ler0c (x : R) : (0 <= x%:C) = (0 <= x). Proof. by simpc. Qed.
 
-Lemma lecE : forall x y : R[i], (x <= y) = (Im y == Im x) && (Re x <= Re y).
+Lemma lecE : forall x y : C, (x <= y) = (Im y == Im x) && (Re x <= Re y).
 Proof. by move=> [a b] [c d]. Qed.
 
-Lemma ltcE : forall x y : R[i], (x < y) = (Im y == Im x) && (Re x < Re y).
+Lemma ltcE : forall x y : C, (x < y) = (Im y == Im x) && (Re x < Re y).
 Proof. by move=> [a b] [c d]. Qed.
 
 Lemma lecR : forall x y : R, (x%:C <= y%:C) = (x <= y).
@@ -378,23 +381,23 @@ Proof. by move=> x y; simpc. Qed.
 Lemma ltcR : forall x y : R, (x%:C < y%:C) = (x < y).
 Proof. by move=> x y; simpc. Qed.
 
-Lemma conjc_is_rmorphism : rmorphism (@conjc R_ringType).
+Lemma conjc_is_rmorphism : rmorphism (conjc).
 Proof.
 split=> [[a b] [c d] | ] /=; first by simpc; rewrite [d - _]addrC.
 by split=> [[a b] [c d] | ] /=; simpc.
 Qed. 
 
-Lemma conjc_is_scalable : scalable (@conjc R_ringType).
+Lemma conjc_is_scalable : scalable (conjc : C -> C_RlmodType).
 Proof. by move=> a [b c]; simpc. Qed.
 
 Canonical conjc_rmorphism := RMorphism conjc_is_rmorphism.
 Canonical conjc_additive := Additive conjc_is_rmorphism.
 Canonical conjc_linear := AddLinear conjc_is_scalable.
 
-Lemma conjcK : involutive (@conjc R_ringType).
+Lemma conjcK : involutive (conjc).
 Proof. by move=> [a b] /=; rewrite opprK. Qed.
 
-Lemma mulcJ_ge0 (x : R[i]) : 0 <= x * x^*%C.
+Lemma mulcJ_ge0 (x : C) : 0 <= x * x^*%C.
 Proof.
 by move: x=> [a b]; simpc; rewrite mulrC addNr eqxx addr_ge0 ?sqr_ge0.
 Qed.
@@ -402,58 +405,58 @@ Qed.
 Lemma conjc_real (x : R) : x%:C^* = x%:C.
 Proof. by rewrite /= oppr0. Qed.
 
-Lemma ReJ_add (x : R[i]) : (Re x)%:C =  (x + x^*%C) / 2%:R.
+Lemma ReJ_add (x : C) : (Re x)%:C =  (x + x^*%C) / 2%:R.
 Proof.
 case: x => a b; simpc; rewrite [0 ^+ 2]mul0r addr0 /=.
 rewrite -!mulr2n -mulr_natr -mulrA [_ * (_ / _)]mulrA.
 by rewrite divff ?mulr1 // -natrM pnatr_eq0.
 Qed.
 
-Lemma ImJ_sub (x : R[i]) : (Im x)%:C =  (x^*%C - x) / 2%:R * 'i%C.
+Lemma ImJ_sub (x : C) : (Im x)%:C =  (x^*%C - x) / 2%:R * 'i%C.
 Proof.
 case: x => a b; simpc; rewrite [0 ^+ 2]mul0r addr0 /=.
 rewrite -!mulr2n -mulr_natr -mulrA [_ * (_ / _)]mulrA.
 by rewrite divff ?mulr1 ?opprK // -natrM pnatr_eq0.
 Qed.
 
-Lemma ger0_Im (x : R[i]) : 0 <= x -> Im x = 0.
+Lemma ger0_Im (x : C) : 0 <= x -> Im x = 0.
 Proof. by move: x=> [a b] /=; simpc => /andP [/eqP]. Qed.
 
 (* Todo : extend theory of : *)
 (*   - signed exponents *)
 
-Lemma conj_ge0 : forall x : R[i], (0 <= x ^*) = (0 <= x).
+Lemma conj_ge0 : forall x : C, (0 <= x ^*) = (0 <= x).
 Proof. by move=> [a b] /=; simpc; rewrite oppr_eq0. Qed.
 
-Lemma conjc_nat : forall n, (n%:R : R[i])^* = n%:R.
+Lemma conjc_nat : forall n, (n%:R : C)^* = n%:R.
 Proof. exact: rmorph_nat. Qed.
 
-Lemma conjc0 : (0 : R[i]) ^* = 0.
+Lemma conjc0 : (0 : C) ^* = 0.
 Proof. exact: (conjc_nat 0). Qed.
 
-Lemma conjc1 : (1 : R[i]) ^* = 1.
+Lemma conjc1 : (1 : C) ^* = 1.
 Proof. exact: (conjc_nat 1). Qed.
 
-Lemma conjc_eq0 : forall x : R[i], (x ^* == 0) = (x == 0).
+Lemma conjc_eq0 : forall x : C, (x ^* == 0) = (x == 0).
 Proof. by move=> [a b]; rewrite !eq_complex /= eqr_oppLR oppr0. Qed.
 
-Lemma conjc_inv: forall x : R[i], (x^-1)^* = (x^*%C )^-1.
+Lemma conjc_inv: forall x : C, (x^-1)^* = (x^*%C )^-1.
 Proof. exact: fmorphV. Qed.
 
-Lemma complex_root_conj (p : {poly R[i]}) (x : R[i]) :
+Lemma complex_root_conj (p : {poly C}) (x : C) :
   root (map_poly conjc p) x = root p x^*.
 Proof. by rewrite /root -{1}[x]conjcK horner_map /= conjc_eq0. Qed.
 
-Lemma normc_def (z : R[i]) : `|z| = (sqrtr ((Re z)^+2 + (Im z)^+2))%:C.
+Lemma normc_def (z : C) : `|z| = (sqrtr ((Re z)^+2 + (Im z)^+2))%:C.
 Proof. by case: z. Qed.
 
-Lemma add_Re2_Im2 (z : R[i]) : ((Re z)^+2 + (Im z)^+2)%:C = `|z|^+2.
+Lemma add_Re2_Im2 (z : C) : ((Re z)^+2 + (Im z)^+2)%:C = `|z|^+2.
 Proof. by rewrite normc_def -rmorphX sqr_sqrtr ?addr_ge0 ?sqr_ge0. Qed.
 
-Lemma addcJ (z : R[i]) : z + z^*%C = 2%:R * (Re z)%:C.
+Lemma addcJ (z : C) : z + z^*%C = 2%:R * (Re z)%:C.
 Proof. by rewrite ReJ_add mulrC mulfVK ?pnatr_eq0. Qed.
 
-Lemma subcJ (z : R[i]) : z - z^*%C = 2%:R * (Im z)%:C * 'i%C.
+Lemma subcJ (z : C) : z - z^*%C = 2%:R * (Im z)%:C * 'i%C.
 Proof.
 rewrite ImJ_sub mulrCA mulrA mulfVK ?pnatr_eq0 //.
 by rewrite -mulrA ['i%C * _]sqr_i mulrN1 opprB.
@@ -465,23 +468,23 @@ rewrite realE; simpc; rewrite [0 == _]eq_sym.
 by have [] := ltrgtP 0 a; rewrite ?(andbF, andbT, orbF, orbb).
 Qed.
 
-Lemma complex_realP (x : R[i]) : reflect (exists y, x = y%:C) (x \is Num.real).
+Lemma complex_realP (x : C) : reflect (exists y, x = y%:C) (x \is Num.real).
 Proof.
 case: x=> [a b] /=; rewrite complex_real.
 by apply: (iffP eqP) => [->|[c []//]]; exists a.
 Qed.
 
-Lemma RRe_real (x : R[i]) : x \is Num.real -> (Re x)%:C = x.
+Lemma RRe_real (x : C) : x \is Num.real -> (Re x)%:C = x.
 Proof. by move=> /complex_realP [y ->]. Qed.
 
-Lemma RIm_real (x : R[i]) : x \is Num.real -> (Im x)%:C = 0.
+Lemma RIm_real (x : C) : x \is Num.real -> (Im x)%:C = 0.
 Proof. by move=> /complex_realP [y ->]. Qed.
 
 End ComplexTheory.
 
 (* all the above is copied from real-closed/complex.v *)
 
-  Local Open Scope complex_scope.
+ Local Open Scope complex_scope.
  Import  ComplexField .
 
  Set Implicit Arguments.
@@ -489,7 +492,6 @@ End ComplexTheory.
  Unset Printing Implicit Defensive.
  (* Obligation Tactic := idtac. *)
  
- Local Notation C := R[i].
  (*This is now R from Reals *) 
  (*Adapting lemma eq_complex from complex.v, 
  which was done in boolean style*)
@@ -580,9 +582,6 @@ Section C_Rnormed.
  (* Uniform.mixin_of takes a locally but does not expect a TopologicalType, which is inserted in the Uniform.class_of *)
  (* Whereas NormedModule.mixin_of asks for a Uniform.mixin_of loc *)
 
-  (*Context (K : absRingType). Nor working with any K, how to close the real scope ? Do it before ?  *)
-  Locate ball_. 
- 
   Program Definition uniformmixin_of_normaxioms (V : lmodType R) (norm : V -> R)
          (ax1 : forall x y : V, norm (x + y) <= norm x + norm y)
          ( ax2 : forall (l : R) (x : V), norm (l *: x) = `|l| * (norm x))
@@ -712,11 +711,14 @@ Section C_absRing.
     move : ballrx ; rewrite /AbsRing_ball /ball_ absRE.
     by rewrite addrC addr0 normrN. 
   Qed.
-
+  Locate imaginaryC.  (* WHAT ?????? *)
+  Print imaginaryC. 
+  Unset Printing Notations.
+  Check 'i. 
   Lemma scalei_muli : forall (z : C),  z * 'i = 'i *: z.
-  (* Proof. *) (* Why is it not working ? *) (*Let us do everyhting over a realtype *)
-  (*   by []. *) (*Coule be a problem of requiring Reals after reals. *)
-  (* Qed. *)
+  Proof. Why is it not working ? Let us do everyhting over a realtype
+    by []. Coule be a problem of requiring Reals after reals.
+  Qed.
 
   Lemma iE : 'i%C = 'i :> C.
   Proof. by []. Qed.
@@ -759,7 +761,7 @@ not just that the limit exists. *)
   let v:= (fun c => Im (f c)) :  C_RnormedType -> R^o in
   (* ('D_(1%:C) u = 'D_('i) v) /\ ('D_('i) u = 'D_(1%:C) v). *)
   (((derive u c (1%:C)) = 
-         (derive v c ('i))) /\ ((derive v c (1%:C)) = -(derive u c ('i)))).
+         (derive v c ('i : C_RnormedType))) /\ ((derive v c (1%:C)) = -(derive u c ('i : C_RnormedType)))).
 
 
  Definition deriveC (V W : normedModType C)(f : V -> W) c v :=
