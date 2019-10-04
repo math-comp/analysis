@@ -802,8 +802,9 @@ Proof. by apply/eqP/eqP=> [[]|->]. Qed.
 (* -------------------------------------------------------------------- *)
 Section ERealOrder.
 Context {R : realType}.
+Implicit Types (x y : {ereal R}).
 
-Definition le_ereal (x1 x2 : {ereal R}) :=
+Definition le_ereal x1 x2 :=
   match x1, x2 with
   | \-inf, _ | _, \+inf => true
   | \+inf, _ | _, \-inf => false
@@ -811,7 +812,7 @@ Definition le_ereal (x1 x2 : {ereal R}) :=
   | x1%:E, x2%:E => (x1 <= x2)
   end.
 
-Definition lt_ereal (x1 x2 : {ereal R}) :=
+Definition lt_ereal x1 x2 :=
   match x1, x2 with
   | \-inf, \-inf | \+inf, \+inf => false
   | \-inf, _     | _    , \+inf => true
@@ -819,27 +820,54 @@ Definition lt_ereal (x1 x2 : {ereal R}) :=
 
   | x1%:E, x2%:E => (x1 < x2)
   end.
-End ERealOrder.
 
-Definition emeet (R : realType) (*min*) : {ereal R} -> {ereal R} -> {ereal R}.
-Admitted.
-Definition ejoin (R : realType) (*max*) : {ereal R} -> {ereal R} -> {ereal R}.
-Admitted.
-Program Definition ereal_porderMixin (R : realType) :=
-  @LeOrderMixin _ le_ereal lt_ereal (@emeet R) (@ejoin R) _ _ _ _ _ _.
-Next Obligation. admit. Admitted.
-Next Obligation. admit. Admitted.
-Next Obligation. admit. Admitted.
-Next Obligation. admit. Admitted.
-Next Obligation. admit. Admitted.
-Next Obligation. admit. Admitted.
+Definition min_ereal x1 x2 :=
+  match x1, x2 with
+  | \-inf, _ | _, \-inf => \-inf
+  | \+inf, x | x, \+inf => x
+
+  | x1%:E, x2%:E => (Num.Def.minr x1 x2)%:E
+  end.
+
+Definition max_ereal x1 x2 :=
+  match x1, x2 with
+  | \-inf, x | x, \-inf => x
+  | \+inf, _ | _, \+inf => \+inf
+
+  | x1%:E, x2%:E => (Num.Def.maxr x1 x2)%:E
+  end.
+
+Lemma lt_def_ereal x y : lt_ereal x y = (y != x) && le_ereal x y.
+Proof. by case: x y => [?||][?||] //=; rewrite lt_def eqe. Qed.
+
+Lemma minE_ereal x y : min_ereal x y = if le_ereal x y then x else y.
+Proof. by case: x y => [?||][?||] //=; case: leP. Qed.
+
+Lemma maxE_ereal x y : max_ereal x y = if le_ereal y x then x else y.
+Proof. by case: x y => [?||][?||] //=; case: ltP. Qed.
+
+Lemma le_anti_ereal : ssrbool.antisymmetric le_ereal.
+Proof. by case=> [?||][?||] //= /le_anti ->. Qed.
+
+Lemma le_trans_ereal : ssrbool.transitive le_ereal.
+Proof. by case=> [?||][?||][?||] //=; exact: le_trans. Qed.
+
+Lemma le_total_ereal : total le_ereal.
+Proof. by case=> [?||][?||] //=; exact: le_total. Qed.
+
+Definition ereal_porderMixin :=
+  @LeOrderMixin _ le_ereal lt_ereal min_ereal max_ereal
+                lt_def_ereal minE_ereal maxE_ereal
+                le_anti_ereal le_trans_ereal le_total_ereal.
+
 Fact ereal_display : unit. Proof. by []. Qed.
-Canonical ereal_porderType (R : realType) :=
-  POrderType ereal_display {ereal R} (ereal_porderMixin R).
-Canonical ereal_latticeType (R : realType) :=
-  LatticeType {ereal R} (ereal_porderMixin R).
-Canonical ereal_totalType (R : realType) :=
-  OrderType {ereal R} (ereal_porderMixin R).
+
+Canonical ereal_porderType :=
+  POrderType ereal_display {ereal R} ereal_porderMixin.
+Canonical ereal_latticeType := LatticeType {ereal R} ereal_porderMixin.
+Canonical ereal_totalType := OrderType {ereal R} ereal_porderMixin.
+
+End ERealOrder.
 
 Notation lee := (@le ereal_display _) (only parsing).
 Notation "@ 'lee' R" :=
@@ -941,6 +969,7 @@ Proof. by case=> [x||] //=; rewrite opprK. Qed.
 End ERealArithTh.
 
 (* -------------------------------------------------------------------- *)
+(* TODO: There are many duplications with `order.v`. Remove them.       *)
 Section ERealOrderTheory.
 Context {R : realType}.
 
