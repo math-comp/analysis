@@ -1186,6 +1186,7 @@ move=> domS; rewrite (sum_finseq (r := [:: x])) //.
   by move=> y; rewrite !inE => /domS /eqP->.
 by rewrite big_seq1.
 Qed.
+
 End SumTheory.
 
 Arguments sum_seq1 {R T} [S] x _.

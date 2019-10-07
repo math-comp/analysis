@@ -142,4 +142,4 @@ Qed.
 Hint Resolve posnum_gt0 : core.
 Hint Resolve posnum_ge0 : core.
 Hint Resolve posnum_neq0 : core.
-Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom R x)).
+Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom _ x)).
