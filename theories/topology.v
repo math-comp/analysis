@@ -2354,13 +2354,13 @@ Record class_of (R : numDomainType) (M : Type) := Class {
 
 Section ClassDef.
 Variable R : numDomainType.
-Structure type := Pack { sort; _ : class_of R sort ; _ : Type }.
+Structure type := Pack { sort; _ : class_of R sort }.
 Local Coercion sort : type >-> Sortclass.
 Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c _ := cT return class_of R cT in c.
+Definition class := let: Pack _ c := cT return class_of R cT in c.
 
-Definition clone c of phant_id class c := @Pack T c T.
-Let xT := let: Pack T _ _ := cT in T.
+Definition clone c of phant_id class c := @Pack T c.
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of R xT).
 Local Coercion base : class_of >-> Topological.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
@@ -2368,7 +2368,7 @@ Local Coercion mixin : class_of >-> mixin_of.
 Definition pack loc (m : @mixin_of R T loc) :=
   fun bT (b : Topological.class_of T) of phant_id (@Topological.class bT) b =>
   fun m'   of phant_id m (m' : @mixin_of R T (Filtered.locally_op b)) =>
-  @Pack T (@Class R _ b m') T.
+  @Pack T (@Class R _ b m').
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
@@ -2849,7 +2849,7 @@ Section ClassDef.
 Variable R : realFieldType.
 Record class_of (T : Type) := Class {
   base : Uniform.class_of R T ;
-  mixin : axiom (Uniform.Pack base T)
+  mixin : axiom (Uniform.Pack base)
 }.
 Local Coercion base : class_of >-> Uniform.class_of.
 Local Coercion mixin : class_of >-> Complete.axiom.
@@ -2865,7 +2865,7 @@ Definition clone c of phant_id class c := @Pack T c T.
 Let xT := let: Pack T _ _ := cT in T.
 Notation xclass := (class : class_of xT).
 
-Definition pack b0 (m0 : axiom (@Uniform.Pack R T b0 T)) :=
+Definition pack b0 (m0 : axiom (@Uniform.Pack R T b0)) :=
   fun bT b of phant_id (@Uniform.class R bT) b =>
   fun m of phant_id m m0 => @Pack T (@Class T b m) T.
 
@@ -2874,7 +2874,7 @@ Definition choiceType := @Choice.Pack cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass xT.
 Definition filteredType := @Filtered.Pack cT cT xclass xT.
 Definition topologicalType := @Topological.Pack cT xclass xT.
-Definition uniformType := @Uniform.Pack R cT xclass xT.
+Definition uniformType := @Uniform.Pack R cT xclass.
 
 End ClassDef.
 
