@@ -439,18 +439,18 @@ Record class_of (T : Type) := Class {
 
 Section ClassDef.
 
-Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Structure type := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
+Definition class := let: Pack _ c := cT return class_of cT in c.
 
-Definition clone c of phant_id class c := @Pack T c T.
-Let xT := let: Pack T _ _ := cT in T.
+Definition clone c of phant_id class c := @Pack T c.
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 Local Coercion base : class_of >-> Choice.class_of.
 
 Definition pack m :=
-  fun bT b of phant_id (Choice.class bT) b => @Pack T (Class b m) T.
+  fun bT b of phant_id (Choice.class bT) b => @Pack T (Class b m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
@@ -531,7 +531,7 @@ Hypothesis (Rsucc : forall s, exists t, R s t /\ s <> t /\
 
 Let Teq := @gen_eqMixin T.
 Let Tch := @gen_choiceMixin T.
-Let Tp := Pointed.Pack (Pointed.Class (Choice.Class Teq Tch) t0) T.
+Let Tp := Pointed.Pack (Pointed.Class (Choice.Class Teq Tch) t0).
 Let lub := fun A : {A : set T | total_on A R} =>
   get (fun t : Tp => (forall s, sval A s -> R s t) /\
     forall r, (forall s, sval A s -> R s r) -> R t r).
@@ -648,7 +648,7 @@ Lemma ZL_preorder T (t0 : T) (R : T -> T -> Prop) :
   exists t, premaximal R t.
 Proof.
 set Teq := @gen_eqMixin T; set Tch := @gen_choiceMixin T.
-set Tp := Pointed.Pack (Pointed.Class (Choice.Class Teq Tch) t0) T.
+set Tp := Pointed.Pack (Pointed.Class (Choice.Class Teq Tch) t0).
 move=> Rrefl Rtrans tot_max.
 set eqR := fun s t => R s t /\ R t s; set ceqR := fun s => [set t | eqR s t].
 have eqR_trans r s t : eqR r s -> eqR s t -> eqR r t.
