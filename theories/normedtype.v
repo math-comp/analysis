@@ -103,17 +103,17 @@ Record class_of (K : Type) := Class {
 Local Coercion base : class_of >-> Num.NumDomain.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
 
-Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Structure type := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 
 Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
-Let xT := let: Pack T _ _ := cT in T.
+Definition class := let: Pack _ c := cT return class_of cT in c.
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
-Definition clone c of phant_id class c := @Pack T c T.
+Definition clone c of phant_id class c := @Pack T c.
 Definition pack b0 (m0 : mixin_of (@Num.NumDomain.Pack T b0)) :=
   fun bT b & phant_id (Num.NumDomain.class bT) b =>
-  fun    m & phant_id m0 m => Pack (@Class T b m) T.
+  fun    m & phant_id m0 m => Pack (@Class T b m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
@@ -335,9 +335,11 @@ Definition class := let: Pack _ c := cT return class_of cT in c.
 Definition clone c of phant_id class c := @Pack phR T c.
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
-(*Definition pack b0 (m0 : @mixin_of (NormedDomain.Pack (Phant R) b0)) :=
-  Pack phR (@Class T b0 m0).*)
-(* TODO: that will be a clone, cf. comUnitRing *)
+Definition pack :=
+  fun bT (b : Num.NormedDomain.class_of R T)
+      & phant_id (@Num.NormedDomain.class R (Phant R) bT) b =>
+  fun uT (u : Uniform.class_of R T) & phant_id (@Uniform.class R uT) u =>
+  @Pack phR T (@Class T b u u u u).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
@@ -384,7 +386,8 @@ Notation "[ 'uniformNormedDomainType' R 'of' T 'for' cT ]" :=
   (@clone _ (Phant R) T cT _ idfun)
   (at level 0, format "[ 'uniformNormedDomainType'  R  'of'  T  'for'  cT ]") :
   form_scope.
-Notation "[ 'uniformNormedDomainType' R 'of' T ]" := (@clone _ (Phant R) T _ _ id)
+Notation "[ 'uniformNormedDomainType' R 'of' T ]" :=
+  (@pack _ (Phant R) T _ _ idfun _ _ idfun)
   (at level 0, format "[ 'uniformNormedDomainType'  R  'of'  T ]") : form_scope.
 End Exports.
 
@@ -396,18 +399,16 @@ pointed type with 0 as a default element and a Definition that creates,
 locally open ball and all the proofs from normedDomainType and then
 use to create R_pointedType, etc.*)
 
-Definition pointed_of_ring (R : ringType) : pointedType :=
-  @Pointed.Pack R (@Pointed.Class R (Choice.class R) 0) R.
+Definition pointed_of_ring (R : ringType) : pointedType := PointedType R 0.
 
-Canonical R_pointedType := pointed_of_ring [ringType of R].
+Canonical R_pointedType := [pointedType of R for pointed_of_ring R_ringType].
 (* NB: similar definition in topology.v *)
-(* was Canonical R_pointedType := [pointedType R of R for R_absRingType].*)
 
 Definition filtered_of_normedDomain (K : numDomainType) (R : normedDomainType K)
   : filteredType R := Filtered.Pack (Filtered.Class
-    (@Pointed.class (pointed_of_ring R)) (locally_ (ball_ (fun x => `|x|)))) R.
-Canonical R_filteredType := filtered_of_normedDomain R_normedDomainType.
-(* was Canonical R_filteredType := [filteredType R of R for R_absRingType].*)
+    (@Pointed.class (pointed_of_ring R)) (locally_ (ball_ (fun x => `|x|)))).
+Canonical R_filteredType :=
+  [filteredType R of R for filtered_of_normedDomain R_normedDomainType].
 
 Section uniform_of_normedDomain.
 Variables (K : numDomainType) (R : normedDomainType K).
@@ -427,29 +428,13 @@ Definition uniform_of_normedDomain
   := UniformMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
 End uniform_of_normedDomain.
 
-Definition R_topologicalType : topologicalType := Topological.Pack
-  (@Topological.Class _
-    (Filtered.class R_filteredType)
-    (topologyOfBallMixin (uniform_of_normedDomain R_normedDomainType))) R.
-Canonical R_topologicalType.
-(* was Canonical R_topologicalType := [topologicalType of R for R_absRingType]. *)
+Canonical R_topologicalType : topologicalType :=
+  TopologicalType R (topologyOfBallMixin (uniform_of_normedDomain R_normedDomainType)).
 
-Definition R_uniformType : uniformType R_numDomainType :=
-  UniformType _ (uniform_of_normedDomain R_normedDomainType).
-Canonical R_uniformType.
-(* was Canonical R_uniformType := [uniformType of R for R_absRingType]. *)
+Canonical R_uniformType : uniformType R_numDomainType :=
+  UniformType R (uniform_of_normedDomain R_normedDomainType).
 
-Definition R_uniformNormedDomainType : uniformNormedDomainType R_numDomainType :=
-  @UniformNormedDomain.Pack _ _ _ (@UniformNormedDomain.Class
-    R_numDomainType
-    R_topologicalType
-    (Num.NormedDomain.class R_numDomainType)
-    0
-    _
-    (Topological.mixin (Topological.class R_topologicalType))
-    (Uniform.mixin (Uniform.class R_uniformType))).
-Canonical R_uniformNormedDomainType.
-Fail Canonical R_uniformNormedDomainType := [uniformNormedDomainType R of R].
+Canonical R_uniformNormedDomainType := [uniformNormedDomainType R of R].
 
 (** locally *)
 
@@ -665,22 +650,22 @@ Local Coercion base2 T (c : class_of T) : GRing.Lmodule.class_of K T :=
 Local Coercion mixin : class_of >-> mixin_of.
 
 Structure type (phK : phant K) :=
-  Pack { sort; _ : class_of sort ; _ : Type }.
+  Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 
 Variables (phK : phant K) (T : Type) (cT : type phK).
 
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
-Definition clone c of phant_id class c := @Pack phK T c T.
-Let xT := let: Pack T _ _ := cT in T.
+Definition class := let: Pack _ c := cT return class_of cT in c.
+Definition clone c of phant_id class c := @Pack phK T c.
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 
-(* TODO
-Definition pack b0 l0 um0 (m0 : @mixin_of _ (@GRing.Lmodule.Pack K (Phant K) T b0) l0 um0) :=
-  fun bT b & phant_id (@GRing.Lmodule.class K phK bT) b =>
-  fun ubT (ub : Uniform.class_of _) & phant_id (@Uniform.class ubT) ub =>
-  fun   m & phant_id m0 m => Pack phK (@Class T b ub ub ub ub m) T.
-*)
+Definition pack b0 l0
+                (m0 : @mixin_of K (@UniformNormedDomain.Pack K (Phant K) R b0)
+                                (GRing.Lmodule.scale l0)) :=
+  fun bT b & phant_id (@Num.NormedDomain.class K (Phant K) bT) b =>
+  fun l & phant_id l0 l =>
+  fun m & phant_id m0 m => Pack phK (@Class T b l m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
@@ -693,9 +678,9 @@ Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
 Definition normedDomainType := @Num.NormedDomain.Pack K (Phant K) cT xclass.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition uniformType := @Uniform.Pack K cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass xT.
-Definition filteredType := @Filtered.Pack cT cT xclass xT.
-Definition topologicalType := @Topological.Pack cT xclass xT.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
 (*Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass.*)
 Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
 End ClassDef.
@@ -738,7 +723,7 @@ Canonical topologicalType.
 Canonical join_lmodType.
 
 Notation normedModType K := (type (Phant K)).
-(*TODO: Notation NormedModType K T m := (@pack _ (Phant K) T _ _ _ m _ _ id _ _ id _ id).*)
+Notation NormedModType K T m := (@pack _ (Phant K) T _ _ m _ _ idfun _ idfun _ idfun).
 Notation NormedModMixin := Mixin.
 Notation "[ 'normedModType' K 'of' T 'for' cT ]" := (@clone _ (Phant K) T cT _ idfun)
   (at level 0, format "[ 'normedModType'  K  'of'  T  'for'  cT ]") : form_scope.
@@ -764,7 +749,7 @@ Lemma ler_normm_add x y : `| x + y | <= `| x | + `| y |.
 Proof. exact: ler_norm_add. Qed.
 
 Lemma normmZ l x : `| l *: x | = `| l | * `| x |.
-Proof. by case: V x => V0 [a b [c]] T //= v; rewrite c. Qed.
+Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
 Notation ball_norm := (ball_ (@normr K V)).
 

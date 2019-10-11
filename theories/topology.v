@@ -350,22 +350,22 @@ Record class_of U T := Class {
 Section ClassDef.
 Variable U : Type.
 
-Structure type := Pack { sort; _ : class_of U sort ; _ : Type }.
+Structure type := Pack { sort; _ : class_of U sort }.
 Local Coercion sort : type >-> Sortclass.
 Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c _ := cT return class_of U cT in c.
+Definition class := let: Pack _ c := cT return class_of U cT in c.
 
-Definition clone c of phant_id class c := @Pack T c T.
-Let xT := let: Pack T _ _ := cT in T.
+Definition clone c of phant_id class c := @Pack T c.
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of U xT).
 Local Coercion base : class_of >-> Pointed.class_of.
 
 Definition pack m :=
-  fun bT b of phant_id (Pointed.class bT) b => @Pack T (Class b m) T.
+  fun bT b of phant_id (Pointed.class bT) b => @Pack T (Class b m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
-Definition fpointedType := @Pointed.Pack cT xclass xT.
+Definition fpointedType := @Pointed.Pack cT xclass.
 
 End ClassDef.
 
@@ -1250,13 +1250,13 @@ Record class_of (T : Type) := Class {
 
 Section ClassDef.
 
-Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Structure type := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
+Definition class := let: Pack _ c := cT return class_of cT in c.
 
-Definition clone c of phant_id class c := @Pack T c T.
-Let xT := let: Pack T _ _ := cT in T.
+Definition clone c of phant_id class c := @Pack T c.
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 Local Coercion base : class_of >-> Filtered.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
@@ -1264,12 +1264,12 @@ Local Coercion mixin : class_of >-> mixin_of.
 Definition pack loc (m : @mixin_of T loc) :=
   fun bT (b : Filtered.class_of T T) of phant_id (@Filtered.class T bT) b =>
   fun m'   of phant_id m (m' : @mixin_of T (Filtered.locally_op b)) =>
-  @Pack T (@Class _ b m') T.
+  @Pack T (@Class _ b m').
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass xT.
-Definition filteredType := @Filtered.Pack cT cT xclass xT.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
 
 End ClassDef.
 
@@ -1741,7 +1741,7 @@ Definition weak_topologicalTypeMixin := topologyOfOpenMixin wopT wopI wop_bigU.
 Let S_filteredClass := Filtered.Class (Pointed.class S) (locally_of_open wopen).
 Definition weak_topologicalType :=
   Topological.Pack (@Topological.Class _ S_filteredClass
-    weak_topologicalTypeMixin) S.
+    weak_topologicalTypeMixin).
 
 Lemma weak_continuous : continuous (f : weak_topologicalType -> T).
 Proof. by apply/continuousP => A ?; exists A. Qed.
@@ -1769,7 +1769,7 @@ Section Sup_Topology.
 
 Variable (T : pointedType) (I : Type) (Tc : I -> Topological.class_of T).
 
-Let TS := fun i => Topological.Pack (Tc i) T.
+Let TS := fun i => Topological.Pack (Tc i).
 
 Definition sup_subbase := \bigcup_i (@open (TS i) : set (set T)).
 
@@ -1777,7 +1777,7 @@ Definition sup_topologicalTypeMixin := topologyOfSubbaseMixin sup_subbase id.
 
 Definition sup_topologicalType :=
   Topological.Pack (@Topological.Class _ (Filtered.Class (Pointed.class T) _)
-  sup_topologicalTypeMixin) T.
+  sup_topologicalTypeMixin).
 
 Lemma flim_sup (F : set (set T)) (t : T) :
   Filter F -> F --> (t : sup_topologicalType) <-> forall i, F --> (t : TS i).
@@ -1810,8 +1810,7 @@ Definition dep_arrow_choiceClass :=
   Choice.Class (Equality.class (dep_arrow_eqType T)) gen_choiceMixin.
 
 Definition dep_arrow_pointedType :=
-  Pointed.Pack (Pointed.Class dep_arrow_choiceClass (fun i => @point (T i)))
-  (forall i, T i).
+  Pointed.Pack (Pointed.Class dep_arrow_choiceClass (fun i => @point (T i))).
 
 Definition product_topologicalType :=
   sup_topologicalType (fun i => Topological.class
@@ -2380,9 +2379,9 @@ Definition pack loc (m : @mixin_of R T loc) :=
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass xT.
-Definition filteredType := @Filtered.Pack cT cT xclass xT.
-Definition topologicalType := @Topological.Pack cT xclass xT.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
 
 End ClassDef.
 
@@ -2862,26 +2861,26 @@ Record class_of (T : Type) := Class {
 Local Coercion base : class_of >-> Uniform.class_of.
 Local Coercion mixin : class_of >-> Complete.axiom.
 
-Structure type := Pack { sort; _ : class_of sort ; _ : Type }.
+Structure type := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 
 Variables (T : Type) (cT : type).
 
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
+Definition class := let: Pack _ c := cT return class_of cT in c.
 
-Definition clone c of phant_id class c := @Pack T c T.
-Let xT := let: Pack T _ _ := cT in T.
+Definition clone c of phant_id class c := @Pack T c.
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 
 Definition pack b0 (m0 : axiom (@Uniform.Pack R T b0)) :=
   fun bT b of phant_id (@Uniform.class R bT) b =>
-  fun m of phant_id m m0 => @Pack T (@Class T b m) T.
+  fun m of phant_id m m0 => @Pack T (@Class T b m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass xT.
-Definition filteredType := @Filtered.Pack cT cT xclass xT.
-Definition topologicalType := @Topological.Pack cT xclass xT.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
 Definition uniformType := @Uniform.Pack R cT xclass.
 
 End ClassDef.
