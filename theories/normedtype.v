@@ -1,9 +1,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-Require Import Reals.
+(*Require Import Reals.*)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
-Require Import boolp (*reals*) Rstruct Rbar.
+Require Import boolp reals Rstruct Rbar.
 Require Import classical_sets posnum topology.
 
 (******************************************************************************)
@@ -83,7 +83,7 @@ Local Open Scope classical_set_scope.
 
 (** rings with an absolute value *)
 
-Module AbsRing.
+(*Module AbsRing.
 
 Record mixin_of (D : ringType) := Mixin {
   abs : D -> R;
@@ -221,12 +221,16 @@ Qed.
 End AbsRing1.
 Hint Resolve absr_ge0 : core.
 Hint Resolve absr1_gt0 : core.
-
+*)
 Definition ball_ (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V)
   (e : R) := [set y | norm (x - y) < e].
 Arguments ball_ {R} {V} norm x e%R y /.
 
-Section AbsRing_UniformSpace.
+(* :TODO: to math-comp *)
+Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
+Proof. by rewrite addrA addrNK. Qed.
+
+(*Section AbsRing_UniformSpace.
 
 Context {K : absRingType}.
 
@@ -238,10 +242,6 @@ Proof. by rewrite /AbsRing_ball /= subrr absr0. Qed.
 Lemma AbsRing_ball_sym (x y : K) (e : R) :
   AbsRing_ball x e y -> AbsRing_ball y e x.
 Proof. by rewrite /AbsRing_ball /= absrB. Qed.
-
-(* :TODO: to math-comp *)
-Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
-Proof. by rewrite addrA addrNK. Qed.
 
 Lemma AbsRing_ball_triangle (x y z : K) (e1 e2 : R) :
   AbsRing_ball x e1 y -> AbsRing_ball y e2 z -> AbsRing_ball x (e1 + e2) z.
@@ -302,20 +302,25 @@ move=> B oppx_B; have : [set - x | x in A] `&` [set - x | x in B] !=set0.
 move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
 by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
 Qed.
-
+*)
 (** real numbers *)
 
-Module UniformNormedDomain.
+Module UniformNormedZmodule.
 Section ClassDef.
 Variable R : numDomainType.
+Record mixin_of (T : normedZmodType R) (loc : T -> set (set T))
+    (m : Uniform.mixin_of R loc) := Mixin {
+  _ : Uniform.ball m = ball_ (fun x => `| x |) }.
+
 Record class_of (T : Type) := Class {
-  base : Num.NormedDomain.class_of R T;
+  base : Num.NormedZmodule.class_of R T;
   pointed_mixin : Pointed.point_of T ;
   locally_mixin : Filtered.locally_of T T ;
   topological_mixin : @Topological.mixin_of T locally_mixin ;
-  uniform_mixin : @Uniform.mixin_of R T locally_mixin
+  uniform_mixin : @Uniform.mixin_of R T locally_mixin ;
+  mixin : @mixin_of (Num.NormedZmodule.Pack _ base) _ uniform_mixin
 }.
-Local Coercion base : class_of >-> Num.NormedDomain.class_of.
+Local Coercion base : class_of >-> Num.NormedZmodule.class_of.
 Definition base2 T c := @Uniform.Class _ _
     (@Topological.Class _
       (Filtered.Class
@@ -324,6 +329,7 @@ Definition base2 T c := @Uniform.Class _ _
       (topological_mixin c))
     (uniform_mixin c).
 Local Coercion base2 : class_of >-> Uniform.class_of.
+(* TODO: base3? *)
 
 Structure type (phR : phant R) :=
   Pack { sort; _ : class_of sort }.
@@ -335,22 +341,29 @@ Definition class := let: Pack _ c := cT return class_of cT in c.
 Definition clone c of phant_id class c := @Pack phR T c.
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
-Definition pack :=
-  fun bT (b : Num.NormedDomain.class_of R T)
-      & phant_id (@Num.NormedDomain.class R (Phant R) bT) b =>
+Definition pack (b0 : Num.NormedZmodule.class_of R T) lm0 um0 (m0 : @mixin_of (@Num.NormedZmodule.Pack R (Phant R) T b0) lm0 um0) :=
+  fun bT (b : Num.NormedZmodule.class_of R T)
+      & phant_id (@Num.NormedZmodule.class R (Phant R) bT) b =>
   fun uT (u : Uniform.class_of R T) & phant_id (@Uniform.class R uT) u =>
-  @Pack phR T (@Class T b u u u u).
+  fun (m : @mixin_of (Num.NormedZmodule.Pack _ b) _ u) & phant_id m m0 =>
+  @Pack phR T (@Class T b u u u u m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition ringType := @GRing.Ring.Pack cT xclass.
-Definition comRingType := @GRing.ComRing.Pack cT xclass.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
-Definition normedDomainType := @Num.NormedDomain.Pack R (Phant R) cT xclass.
+Definition normedZmodType := @Num.NormedZmodule.Pack R phR cT xclass.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack xT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
 Definition uniformType := @Uniform.Pack R cT xclass.
+Definition pointed_zmodType := @GRing.Zmodule.Pack pointedType xclass.
+Definition filtered_zmodType := @GRing.Zmodule.Pack filteredType xclass.
+Definition topological_zmodType := @GRing.Zmodule.Pack topologicalType xclass.
+Definition uniform_zmodType := @GRing.Zmodule.Pack uniformType xclass.
+Definition pointed_normedZmodType := @Num.NormedZmodule.Pack R phR pointedType xclass.
+Definition filtered_normedZmodType := @Num.NormedZmodule.Pack R phR filteredType xclass.
+Definition topological_normedZmodType := @Num.NormedZmodule.Pack R phR topologicalType xclass.
+Definition uniform_normedZmodType := @Num.NormedZmodule.Pack R phR uniformType xclass.
 
 End ClassDef.
 
@@ -358,7 +371,7 @@ End ClassDef.
   Pack (Phant R) (@Class R _ _ (NumDomain.normed_mixin (NumDomain.class R))).*)
 
 Module Exports.
-Coercion base : class_of >-> Num.NormedDomain.class_of.
+Coercion base : class_of >-> Num.NormedZmodule.class_of.
 Coercion base2 : class_of >-> Uniform.class_of.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
@@ -367,51 +380,58 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
-Coercion ringType : type >-> GRing.Ring.type.
-Canonical ringType.
-Coercion comRingType : type >-> GRing.ComRing.type.
-Canonical comRingType.
-Coercion unitRingType : type >-> GRing.UnitRing.type.
-Canonical unitRingType.
-Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
-Canonical comUnitRingType.
-Coercion idomainType : type >-> GRing.IntegralDomain.type.
-Canonical idomainType.
-Coercion normedDomainType : type >-> Num.NormedDomain.type.
-Canonical normedDomainType.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
+Canonical normedZmodType.
+Coercion pointedType : type >-> Pointed.type.
+Canonical pointedType.
+Coercion filteredType : type >-> Filtered.type.
+Canonical filteredType.
+Coercion topologicalType : type >-> Topological.type.
+Canonical topologicalType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
-Notation uniformNormedDomainType R := (type (Phant R)).
-Notation "[ 'uniformNormedDomainType' R 'of' T 'for' cT ]" :=
+Canonical pointed_zmodType.
+Canonical filtered_zmodType.
+Canonical topological_zmodType.
+Canonical uniform_zmodType.
+Canonical pointed_normedZmodType.
+Canonical filtered_normedZmodType.
+Canonical topological_normedZmodType.
+Canonical uniform_normedZmodType.
+Notation uniformNormedZmoduleType R := (type (Phant R)).
+Notation UniformNormedZmoduleType R T m := (@pack _ (Phant R) T _ _ _ m _ _ idfun _ _ idfun _ idfun).
+Notation "[ 'uniformNormedZmoduleType' R 'of' T 'for' cT ]" :=
   (@clone _ (Phant R) T cT _ idfun)
-  (at level 0, format "[ 'uniformNormedDomainType'  R  'of'  T  'for'  cT ]") :
+  (at level 0, format "[ 'uniformNormedZmoduleType'  R  'of'  T  'for'  cT ]") :
   form_scope.
-Notation "[ 'uniformNormedDomainType' R 'of' T ]" :=
-  (@pack _ (Phant R) T _ _ idfun _ _ idfun)
-  (at level 0, format "[ 'uniformNormedDomainType'  R  'of'  T ]") : form_scope.
+Notation "[ 'uniformNormedZmoduleType' R 'of' T ]" :=
+  (@clone _ (Phant R) T _ _ idfun)
+  (at level 0, format "[ 'uniformNormedZmoduleType'  R  'of'  T ]") : form_scope.
 End Exports.
 
-End UniformNormedDomain.
-Import UniformNormedDomain.Exports.
+End UniformNormedZmodule.
+Import UniformNormedZmodule.Exports.
 
 (*TODO: create a Definition that creates, given a ring structure, a
 pointed type with 0 as a default element and a Definition that creates,
 locally open ball and all the proofs from normedDomainType and then
 use to create R_pointedType, etc.*)
 
-Definition pointed_of_ring (R : ringType) : pointedType := PointedType R 0.
+(*Definition pointed_of_ring (R : ringType) : pointedType := PointedType R 0.*)
 
-Canonical R_pointedType := [pointedType of R for pointed_of_ring R_ringType].
+Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
+
+Canonical R_pointedType := [pointedType of Rdefinitions.R for pointed_of_zmodule R_ringType].
 (* NB: similar definition in topology.v *)
 
-Definition filtered_of_normedDomain (K : numDomainType) (R : normedDomainType K)
+Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
   : filteredType R := Filtered.Pack (Filtered.Class
-    (@Pointed.class (pointed_of_ring R)) (locally_ (ball_ (fun x => `|x|)))).
+    (@Pointed.class (pointed_of_zmodule R)) (locally_ (ball_ (fun x => `|x|)))).
 Canonical R_filteredType :=
-  [filteredType R of R for filtered_of_normedDomain R_normedDomainType].
+  [filteredType Rdefinitions.R of Rdefinitions.R for filtered_of_normedZmod R_normedZmodType].
 
 Section uniform_of_normedDomain.
-Variables (K : numDomainType) (R : normedDomainType K).
+Variables (K : numDomainType) (R : normedZmodType K).
 Lemma ball_norm_center (x : R) (e : K) : (0%R < e)%O -> ball_ normr x e x.
 Proof. by move=> ? /=; rewrite subrr normr0. Qed.
 Lemma ball_norm_symmetric (x y : R) (e : K) :
@@ -429,12 +449,15 @@ Definition uniform_of_normedDomain
 End uniform_of_normedDomain.
 
 Canonical R_topologicalType : topologicalType :=
-  TopologicalType R (topologyOfBallMixin (uniform_of_normedDomain R_normedDomainType)).
+  TopologicalType Rdefinitions.R (topologyOfBallMixin (uniform_of_normedDomain R_normedZmodType)).
 
 Canonical R_uniformType : uniformType R_numDomainType :=
-  UniformType R (uniform_of_normedDomain R_normedDomainType).
+  UniformType Rdefinitions.R (uniform_of_normedDomain R_normedZmodType).
 
-Canonical R_uniformNormedDomainType := [uniformNormedDomainType R of R].
+(*
+TODO
+Canonical R_uniformNormedZmoduleType := [uniformNormedZmoduleType Rdefinitions.R of Rdefinitions.R].
+*)
 
 (** locally *)
 
@@ -527,48 +550,62 @@ Qed.
 (*Lemma absRE (x : R) : `|x|%real = `|x|%R.
 Proof. by []. Qed.*)
 
-(* TODO: should move to reals.v *)
-(*Lemma Rhausdorff (R : realType) : hausdorff [topologicalType of R].
-Proof.
-move=> x y clxy; apply/eqP; rewrite eq_le.
-apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
-rewrite inE -ler_distl (*-absRE*); set he := (e%:num / 2)%:pos.
-have [z []] := clxy _ _ (@locally_ball R_uniformType _ x he) (locally_ball y he).
-rewrite ball_absE /ball_ absrB => zx_he yz_he.
-rewrite (subr_trans z) (le_trans (ler_abs_add _ _) _)// ltW //.
-by rewrite (splitr e%:num); apply: ltr_add.
-Qed.*)
-
-Lemma coord_continuous {K : absRingType} m n i j :
+(*Lemma coord_continuous {K : absRingType} m n i j :
   continuous (fun M : 'M[K]_(m.+1, n.+1) => M i j).
 Proof.
 move=> /= M s /= /locallyP; rewrite locally_E => -[e e0 es].
 apply/locallyP; rewrite locally_E; exists e => //= N MN; exact/es/MN.
-Qed.
+Qed.*)
 
 (** * Some Topology on [Rbar] *)
 
+Section realFieldType_topological.
+Variable R : realFieldType.
+Definition topological_of_realfield : Type := R.
+Canonical topological_of_realFieldType := [realFieldType of topological_of_realfield].
+Canonical realFieldType_pointedType := [pointedType of topological_of_realfield for pointed_of_zmodule R].
+Canonical realFieldType_filteredType :=
+  [filteredType R of topological_of_realfield for filtered_of_normedZmod R].
+Canonical realFieldType_topologicalType : topologicalType :=
+  TopologicalType topological_of_realfield (topologyOfBallMixin (uniform_of_normedDomain [normedZmodType R of R])).
+Canonical realFieldType_uniformType := @Uniform.Pack R topological_of_realfield (@Uniform.Class R R
+  (Topological.class realFieldType_topologicalType) (@uniform_of_normedDomain R R)).
+End realFieldType_topological.
+
+(*Section realType_topological.
+Variable R : realType.
+Definition topological_of_real : Type := R.
+Canonical topological_of_realType := [realType of topological_of_real].
+Canonical realType_pointedType := [pointedType of topological_of_real for pointed_of_zmodule R].
+Canonical realType_filteredType :=
+  [filteredType R of topological_of_real for filtered_of_normedZmod R].
+Canonical realType_topologicalType : topologicalType :=
+  TopologicalType topological_of_real (topologyOfBallMixin (uniform_of_normedDomain [normedZmodType R of R])).
+End realType_topological.*)
+
 (* NB: already defined in R_scope in Rbar.v *)
 
-Notation "'+oo'" := p_infty : real_scope.
-Notation "'-oo'" := m_infty : real_scope.
-(* TODO: go to reals or to Rbar.v, status w.r.t. ereal? *)
-Definition Rbar_locally' (a : Rbar) (P : R -> Prop) :=
+Notation "'+oo'" := (@ERPInf _) : real_scope.
+Notation "'-oo'" := (@ERNInf _) : real_scope.
+Section rbar.
+Context {R : realType}.
+Let R_topologicalType := [topologicalType of topological_of_realfield R].
+Definition Rbar_locally' (a : {ereal R}) (P : R -> Prop) :=
   match a with
-    | Finite a => @locally' R_topologicalType a P
-    | +oo => exists M : R, forall x, M < x -> P x
-    | -oo => exists M : R, forall x, x < M -> P x
+    | ERFin a => @locally' R_topologicalType a P
+    | +oo => exists M, forall x, (M < x)%O -> P x
+    | -oo => exists M, forall x, (x < M)%O -> P x
   end.
-Definition Rbar_locally (a : Rbar) (P : R -> Prop) :=
+Definition Rbar_locally (a : {ereal R}) (P : R -> Prop) :=
   match a with
-    | Finite a => @locally _ R_filteredType a P
-    | +oo => exists M : R, forall x, M < x -> P x
-    | -oo => exists M : R, forall x, x < M -> P x
+    | ERFin a => @locally _ R_topologicalType a P
+    | +oo => exists M, forall x, (M < x)%O -> P x
+    | -oo => exists M, forall x, (x < M)%O -> P x
   end.
 
-Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.
-Canonical Rbar_pointed := PointedType Rbar (+oo).
-Canonical Rbar_filter := FilteredType R Rbar (Rbar_locally).
+(*Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.*)
+Canonical Rbar_pointed := PointedType {ereal R} (+oo).
+Canonical Rbar_filter := FilteredType R {ereal R} (Rbar_locally).
 
 Global Instance Rlocally'_proper (x : R) : ProperFilter (@locally' R_topologicalType x).
 Proof.
@@ -595,7 +632,6 @@ by exists M => ? /ltMP /sPQ.
 Qed.
 Typeclasses Opaque Rbar_locally'.
 
-
 Global Instance Rbar_locally_filter : forall x, ProperFilter (Rbar_locally x).
 Proof.
 case=> [x||].
@@ -611,7 +647,7 @@ Proof.
 by move=> [M AM]; exists (M * 2) => x; rewrite -ltr_pdivl_mulr //; apply: AM.
 Qed.
 
-Lemma locally_pinfty_gt c : \forall x \near +oo, c < x.
+Lemma locally_pinfty_gt (c : R) : \forall x \near +oo, c < x.
 Proof. by exists c. Qed.
 
 Lemma locally_pinfty_ge c : \forall x \near +oo, c <= x.
@@ -621,15 +657,17 @@ Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
     solve[near: x; exists 0 => _/posnumP[x] //] end : core.
 
+End rbar.
+
 (** ** Modules with a norm *)
 
-Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").
+(*Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").*)
 
 Module NormedModule.
 
-Record mixin_of (K : numDomainType(*absRingType*)) (V : uniformNormedDomainType K) (scale : K -> V -> V) := Mixin {
+Record mixin_of (K : numDomainType(*absRingType*)) (V : uniformNormedZmoduleType K) (scale : K -> V -> V) := Mixin {
 (*  ax1 : forall (x y : V), norm (x + y) <= norm x + norm y ;*)
-  ax2 : forall (l : K) (x : V), `| scale l x | = `| l | * `| x |;
+  _ : forall (l : K) (x : V), `| scale l x | = `| l | * `| x |;
 (*  ax3 : Uniform.ball m = ball_ norm; see uniformNormed *)
 (*  ax4 : forall x : V, norm x = 0 -> x = 0*)
 }.
@@ -640,11 +678,11 @@ Variable K : numDomainType(*absRingType*).
 
 (* joint of normedDomainType and Lmodule *)
 Record class_of (T : Type) := Class {
-  base : UniformNormedDomain.class_of K T ;
+  base : UniformNormedZmodule.class_of K T ;
   lmodmixin : GRing.Lmodule.mixin_of K (GRing.Zmodule.Pack base) ;
-  mixin : @mixin_of K (UniformNormedDomain.Pack _(*TODO: ???*) base) (GRing.Lmodule.scale lmodmixin)
+  mixin : @mixin_of K (UniformNormedZmodule.Pack (Phant K)(*TODO: ???*) base) (GRing.Lmodule.scale lmodmixin)
 }.
-Local Coercion base : class_of >-> UniformNormedDomain.class_of.
+Local Coercion base : class_of >-> UniformNormedZmodule.class_of.
 Local Coercion base2 T (c : class_of T) : GRing.Lmodule.class_of K T :=
   @GRing.Lmodule.Class K T (base c) (lmodmixin c).
 Local Coercion mixin : class_of >-> mixin_of.
@@ -661,33 +699,31 @@ Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 
 Definition pack b0 l0
-                (m0 : @mixin_of K (@UniformNormedDomain.Pack K (Phant K) R b0)
+                (m0 : @mixin_of K (@UniformNormedZmodule.Pack K (Phant K) T b0)
                                 (GRing.Lmodule.scale l0)) :=
-  fun bT b & phant_id (@Num.NormedDomain.class K (Phant K) bT) b =>
+  fun bT b & phant_id (@UniformNormedZmodule.class K (Phant K) bT) b =>
   fun l & phant_id l0 l =>
   fun m & phant_id m0 m => Pack phK (@Class T b l m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition ringType := @GRing.Ring.Pack cT xclass.
-Definition comRingType := @GRing.ComRing.Pack cT xclass.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
-Definition normedDomainType := @Num.NormedDomain.Pack K (Phant K) cT xclass.
+Definition normedZmodType := @Num.NormedZmodule.Pack K phK cT xclass.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
-Definition uniformType := @Uniform.Pack K cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
-(*Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass.*)
-Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
+Definition uniformType := @Uniform.Pack K cT xclass.
+Definition normedZmod_lmodType := @GRing.Lmodule.Pack K phK normedZmodType xclass.
+Definition pointed_lmodType := @GRing.Lmodule.Pack K phK pointedType xclass.
+Definition filtered_lmodType := @GRing.Lmodule.Pack K phK filteredType xclass.
+Definition topological_lmodType := @GRing.Lmodule.Pack K phK topologicalType xclass.
+Definition uniform_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
 End ClassDef.
 
 Module Exports.
 
-Coercion base : class_of >-> UniformNormedDomain.class_of.
+Coercion base : class_of >-> UniformNormedZmodule.class_of.
 Coercion base2 : class_of >-> GRing.Lmodule.class_of.
 Coercion mixin : class_of >-> mixin_of.
 Coercion sort : type >-> Sortclass.
@@ -697,18 +733,8 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
-Coercion ringType : type >-> GRing.Ring.type.
-Canonical ringType.
-Coercion comRingType : type >-> GRing.ComRing.type.
-Canonical comRingType.
-Coercion unitRingType : type >-> GRing.UnitRing.type.
-Canonical unitRingType.
-Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
-Canonical comUnitRingType.
-Coercion idomainType : type >-> GRing.IntegralDomain.type.
-Canonical idomainType.
-Coercion normedDomainType : type >-> Num.NormedDomain.type.
-Canonical normedDomainType.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
+Canonical normedZmodType.
 Coercion lmodType : type >-> GRing.Lmodule.type.
 Canonical lmodType.
 Coercion uniformType : type >-> Uniform.type.
@@ -719,9 +745,11 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-(*Canonical join_zmodType.*)
-Canonical join_lmodType.
-
+Canonical normedZmod_lmodType.
+Canonical pointed_lmodType.
+Canonical filtered_lmodType.
+Canonical topological_lmodType.
+Canonical uniform_lmodType.
 Notation normedModType K := (type (Phant K)).
 Notation NormedModType K T m := (@pack _ (Phant K) T _ _ m _ _ idfun _ idfun _ idfun).
 Notation NormedModMixin := Mixin.
@@ -729,34 +757,25 @@ Notation "[ 'normedModType' K 'of' T 'for' cT ]" := (@clone _ (Phant K) T cT _ i
   (at level 0, format "[ 'normedModType'  K  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'normedModType' K 'of' T ]" := (@clone _ (Phant K) T _ _ id)
   (at level 0, format "[ 'normedModType'  K  'of'  T ]") : form_scope.
-
 End Exports.
 
 End NormedModule.
 
 Export NormedModule.Exports.
 
+Fail Canonical R_NormedModule := [normedModType Rdefinitions.R of Rdefinitions.R^o].
+
 (*Definition norm {K : absRingType} {V : normedModType K} : V -> R :=
   NormedModule.norm (NormedModule.class _).
 Notation "`|[ x ]|" := (norm x) : ring_scope.*)
 
 Section NormedModule1.
-Context {K : numDomainType(*absRingType*)} {V : normedModType K}.
+Context {K : numDomainType(*absRingType*)} {V : normedZmodType K}.
 Implicit Types (l : K) (x y : V) (eps : posreal).
 
 (*TODO: useless? *)
 Lemma ler_normm_add x y : `| x + y | <= `| x | + `| y |.
 Proof. exact: ler_norm_add. Qed.
-
-Lemma normmZ l x : `| l *: x | = `| l | * `| x |.
-Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
-
-Notation ball_norm := (ball_ (@normr K V)).
-
-Notation locally_norm := (locally_ ball_norm).
-
-Lemma ball_normE : ball_norm = ball.
-Proof. Fail by rewrite -NormedModule.ax3. Admitted.
 
 Lemma normm0_eq0 x : `|x| = 0 -> x = 0.
 Proof. by move/eqP; rewrite normr_eq0 => /eqP. Qed.
@@ -789,58 +808,94 @@ Proof. exact: normr_le0. Qed.
 Lemma ler_distm_dist x y : `| `|x| - `|y| | <= `|x - y|.
 Proof. exact: ler_dist_dist. Qed.
 
-Lemma distm_lt_split z x y (e : K) :
+End NormedModule1.
+
+Section NormedModule1'.
+Context {K : numDomainType(*absRingType*)} {V : uniformNormedZmoduleType K}.
+Implicit Types (l : K) (x y : V) (eps : posreal).
+
+Notation ball_norm := (ball_ (@normr K V)).
+
+Notation locally_norm := (locally_ ball_norm).
+
+Lemma ball_normE : ball_norm = ball.
+Proof. by case: V => ? [? ? ? ? ? []]. Qed.
+
+End NormedModule1'.
+
+Section NormedModule1''.
+Variables (R : realFieldType) (V : normedModType R).
+
+Lemma normmZ l (x : V) : `| l *: x | = `| l | * `| x |.
+Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
+
+Notation ball_norm := (ball_ (@normr R V)).
+
+Notation locally_norm := (locally_ ball_norm).
+
+Lemma distm_lt_split (z x y : V) (e : R) :
   `|x - z| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
-Proof. (*TODO: put in a dedicated section *)by have := @ball_split _ z x y e; rewrite -ball_normE. Qed
+Proof.
+have := @ball_split _ _ z x y e.
+by rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))).
+Qed.
 
-Lemma distm_lt_splitr z x y (e : R) :
-  `|[z - x]| < (e / 2)%R -> `|[z - y]| < (e / 2)%R -> `|[x - y]| < e.
-Proof. by have := @ball_splitr _ z x y e; rewrite -ball_normE. Qed.
+Lemma distm_lt_splitr (z x y : V) (e : R) :
+  `|z - x| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
+Proof.
+have := @ball_splitr _ _ z x y e.
+by rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))).
+Qed.
 
-Lemma distm_lt_splitl z x y (e : R) :
-  `|[x - z]| < (e / 2)%R -> `|[y - z]| < (e / 2)%R -> `|[x - y]| < e.
-Proof. by have := @ball_splitl _ z x y e; rewrite -ball_normE. Qed.
+Lemma distm_lt_splitl (z x y : V) (e : R) :
+  `|x - z| < e / 2 -> `|y - z| < e / 2 -> `|x - y| < e.
+Proof.
+have := @ball_splitl _ _ z x y e.
+by rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))).
+Qed.
 
-Lemma normm_leW x (e : R) : e > 0 -> `|[x]| <= (e / 2)%R -> `|[x]| < e.
+Lemma normm_leW (x : V) (e : R) : e > 0 -> `|x| <= e / 2 -> `|x| < e.
 Proof.
 move=> /posnumP[{e}e] /le_lt_trans ->//.
 by rewrite [X in _ < X]splitr ltr_spaddl.
 Qed.
 
-Lemma normm_lt_split  x y (e : R) :
-  `|[x]| < (e / 2)%R -> `|[y]| < (e / 2)%R -> `|[x + y]| < e.
+Lemma normm_lt_split (x y : V) (e : R) :
+  `|x| < (e / 2)%R -> `|y| < (e / 2)%R -> `|x + y| < e.
 Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
-Lemma closeE x y : close x y = (x = y).
+Lemma closeE (x y : V) : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
-have dxy_gt0 : `|[x - y]| > 0 by rewrite normm_gt0 subr_eq0.
+have dxy_gt0 : `|x - y| > 0.
+  rewrite (@normm_gt0 _ (UniformNormedZmodule.Pack (Phant R) (NormedModule.base (NormedModule.class V)))).
+  by rewrite subr_eq0.
 have dxy_ge0 := ltW dxy_gt0.
 have := cl_xy ((PosNum dxy_gt0)%:num / 2)%:pos.
-rewrite -ball_normE /= -subr_lt0 le_gtF //.
+rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))) /= -subr_lt0 le_gtF //.
 rewrite -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
 by rewrite subr_ge0 -(@ler_pmul2r _ 2) // mulVf // mul1r ler1n.
 Qed.
-Lemma eq_close x y : close x y -> x = y. by rewrite closeE. Qed.
+Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
 
-Lemma locally_le_locally_norm x : flim (locally x) (locally_norm x).
+Lemma locally_le_locally_norm (x : V) : flim (locally x) (locally_norm x).
 Proof.
 move=> P [_ /posnumP[e] subP]; apply/locallyP.
-by eexists; last (move=> y Py; apply/subP; rewrite ball_normE; apply/Py).
+by eexists; last (move=> y Py; apply/subP; rewrite (@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))); apply/Py).
 Qed.
 
 Lemma locally_norm_le_locally x : flim (locally_norm x) (locally x).
 Proof.
 move=> P /locallyP [_ /posnumP[e] Pxe].
-by exists e%:num => // y; rewrite ball_normE; apply/Pxe.
+by exists e%:num => // y; rewrite (@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))); apply/Pxe.
 Qed.
 
 (* NB: this lemmas was not here before *)
 Lemma locally_locally_norm : locally_norm = locally.
 Proof.
-by rewrite funeqE => x; rewrite /locally_norm ball_normE filter_from_ballE.
+by rewrite funeqE => x; rewrite /locally_norm (@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))) filter_from_ballE.
 Qed.
 
 Lemma locally_normP x P : locally x P <-> locally_norm x P.
@@ -862,40 +917,38 @@ Lemma near_locally_norm (x : V) (P : set V) :
   (\forall x \near locally_norm x, P x) = \near x, P x.
 Proof. exact: locally_normE. Qed.
 
-Lemma locally_norm_ball_norm x (e : posreal) :
+Lemma locally_norm_ball_norm x (e : {posnum R}) :
   locally_norm x (ball_norm x e%:num).
 Proof. by exists e%:num. Qed.
 
-Lemma locally_norm_ball x (eps : posreal) : locally_norm x (ball x eps%:num).
+Lemma locally_norm_ball x (eps : {posnum R}) : locally_norm x (ball x eps%:num).
 Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
 
-Lemma locally_ball_norm (x : V) (eps : posreal) : locally x (ball_norm x eps%:num).
+Lemma locally_ball_norm (x : V) (eps : {posnum R}) : locally x (ball_norm x eps%:num).
 Proof. rewrite -locally_locally_norm; apply: locally_norm_ball_norm. Qed.
 
-Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
+(* TODO: useless? *)
+Lemma ball_norm_triangle' (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
-Proof.
-rewrite /ball_norm => H1 H2; rewrite (subr_trans y).
-by rewrite (le_lt_trans (ler_normm_add _ _)) ?ltr_add.
-Qed.
+Proof. exact: ball_norm_triangle. Qed.
 
-Lemma ball_norm_center (x : V) (e : posreal) : ball_norm x e%:num x.
-Proof. by rewrite /ball_norm subrr normm0. Qed.
+Lemma ball_norm_center' (x : V) (e : {posnum R}) : ball_norm x e%:num x.
+Proof. exact: ball_norm_center. Qed.
 
 Lemma ball_norm_dec x y (e : R) : {ball_norm x e y} + {~ ball_norm x e y}.
 Proof. exact: pselect. Qed.
 
 Lemma ball_norm_sym x y (e : R) : ball_norm x e y -> ball_norm y e x.
-Proof. by rewrite /ball_norm -opprB normmN. Qed.
+Proof. by rewrite /ball_norm -opprB (@normmN _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))). Qed.
 
 Lemma ball_norm_le x (e1 e2 : R) :
   e1 <= e2 -> ball_norm x e1 `<=` ball_norm x e2.
 Proof. by move=> e1e2 y /lt_le_trans; apply. Qed.
 
-Lemma norm_close x y : close x y = (forall eps : posreal, ball_norm x eps%:num y).
-Proof. by rewrite propeqE ball_normE. Qed.
+Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
+Proof. by rewrite propeqE (@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))). Qed.
 
-Lemma ball_norm_eq x y : (forall eps : posreal, ball_norm x eps%:num y) -> x = y.
+Lemma ball_norm_eq x y : (forall eps : {posnum R}, ball_norm x eps%:num y) -> x = y.
 Proof. by rewrite -norm_close closeE. Qed.
 
 Lemma flim_unique {F} {FF : ProperFilter F} :
@@ -916,20 +969,38 @@ Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
   f @ F --> l -> lim (f @ F) = l.
 Proof. exact: flim_lim. Qed.
 
+(* TODO: should move to reals.v *)
+Lemma Rhausdorff : hausdorff [topologicalType of Rdefinitions.R].
+Proof.
+move=> x y clxy; apply/eqP; rewrite eq_le.
+apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
+rewrite inE -ler_distl; set he := (e%:num / 2)%:pos.
+have [z []] := clxy _ _ (@locally_ball _ R_uniformType x he) (locally_ball y he).
+move=> zx_he yz_he.
+rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
+by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
+Qed.
+
+End NormedModule1''.
+
+Section NormedModule1'''.
+
+Variable (V : normedModType Rdefinitions.R).
+
 Lemma normedModType_hausdorff : hausdorff V.
 Proof.
 move=> p q clp_q; apply/subr0_eq/normm0_eq0/Rhausdorff => A B pq_A.
-rewrite -normm0 -(subrr p) => pp_B.
+rewrite -(@normm0 _ V) -(subrr p) => pp_B.
 suff loc_preim r C :
-  locally `|[p - r]| C -> locally r ((fun r => `|[p - r]|) @^-1` C).
+  locally `|p - r| C -> locally r ((fun r => `|p - r|) @^-1` C).
   have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
-  by exists `|[p - r]|.
+  by exists `|p - r|.
 move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
 apply: pre_C; apply: le_lt_trans (ler_distm_dist _ _) _.
 by rewrite opprB addrC -subr_trans normmB.
 Qed.
 
-End NormedModule1.
+End NormedModule1'''.
 
 Module Export LocallyNorm.
 Definition locally_simpl := (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
@@ -943,18 +1014,18 @@ End NearNorm.
 
 Section NormedModule2.
 
-Context {T : Type} {K : absRingType} {V : normedModType K}.
+Context {T : Type} {K : realFieldType(*absRingType*)} {V : normedModType K}.
 
 Lemma flimi_unique {F} {FF : ProperFilter F} (f : T -> set V) :
   {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
 
 Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, `|[y - y']| < eps.
+  F --> y <-> forall eps, 0 < eps -> \forall y' \near F, `|y - y'| < eps.
 Proof. by rewrite -filter_fromP /= !locally_simpl. Qed.
 
 Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
-  (forall eps : R, 0 < eps -> \forall y' \near F, `|[y - y']| <= eps) ->
+  (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
   F --> y.
 Proof.
 move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
@@ -962,20 +1033,28 @@ by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|[y - y']| < eps.
+  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
 Proof. by move=> /flim_normP. Qed.
 
-Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> \forall M \near +oo, \forall y' \near F, `|[y']|%real < M.
+End NormedModule2.
+Hint Resolve normm_ge0 : core.
+Arguments flim_norm {_ _ F FF}.
+
+Section NormedModule2'.
+
+Context {T : Type}.
+
+Lemma flim_bounded {R : realType} {V : normedModType R} {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof.
-move=> /flim_norm Fy; exists `|[y]| => M.
+move=> /flim_norm Fy; exists `|y| => M.
 rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
-apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
+apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
 rewrite (le_lt_trans _ yy') //.
-by rewrite (le_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
+by rewrite (le_trans _ (@ler_distm_dist _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V))) _ _)) // (*absRE*) distrC ler_norm.
 Qed.
 
-Lemma flimi_map_lim {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
+Lemma flimi_map_lim {R : realFieldType} {V : normedModType R} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
   F (fun x : T => is_prop (f x)) ->
   f `@ F --> l -> lim (f `@ F) = l.
 Proof.
@@ -983,13 +1062,11 @@ move=> f_prop f_l; apply: get_unique => // l' f_l'.
 exact: flimi_unique _ f_l' f_l.
 Qed.
 
-End NormedModule2.
-Hint Resolve normm_ge0 : core.
-Arguments flim_norm {_ _ F FF}.
+End NormedModule2'.
 Arguments flim_bounded {_ _ F FF}.
 
-Lemma continuous_flim_norm {K : absRingType} (V W : normedModType K) (f : V -> W) x l :
-  continuous f -> x --> l -> forall e : posreal, `|[f l - f x]| < e%:num.
+Lemma continuous_flim_norm {R : realFieldType} (*{K : absRingType}*) (V W : normedModType R) (f : V -> W) x l :
+  continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof.
 move=> cf xl e.
 move/flim_norm: (cf l) => /(_ _ (posnum_gt0 e)).
@@ -997,43 +1074,106 @@ rewrite nearE /= => /locallyP; rewrite locally_E => -[i i0]; apply.
 have /@flim_norm : Filter [filter of x] by apply: filter_on_Filter.
 move/(_ _ xl _ i0).
 rewrite nearE /= => /locallyP; rewrite locally_E => -[j j0].
-move/(_ _ (ballxx _ j0)); by rewrite -ball_normE.
+move/(_ _ (ballxx _ j0)); by rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))).
 Qed.
 
 (** ** Matrices *)
 
-Section matrix_normedMod.
+Section mx_norm.
 
-Variables (K : absRingType) (m n : nat).
+Variables (K : realFieldType) (m n : nat).
 
 (* take m.+1, n.+1 because ball_normE is not provable for m = 0 or n = 0 *)
+(* TODO: check if we can remove .+1 partially *)
 Definition mx_norm (x : 'M[K]_(m.+1, n.+1)) :=
   bigmaxr 0 [seq `|x ij.1 ij.2| | ij : 'I_m.+1 * 'I_n.+1].
 
-Program Definition matrix_NormedModMixin :=
-  @NormedModMixin _ _
-    (@locally _ [filteredType 'M[K]_(m.+1, n.+1) of 'M[K]_(m.+1, n.+1)])
-    (Uniform.mixin (Uniform.class _)) mx_norm _ _ _ _.
-Next Obligation.
+Lemma ler_mx_norm_add (x y : 'M_(m.+1, n.+1)) : mx_norm (x + y) <= mx_norm x + mx_norm y.
+Proof.
 apply/bigmaxr_lerP=> [|i]; rewrite size_map -cardT mxvec_cast // => ltimn.
 rewrite (nth_map (ord0, ord0)); last by rewrite -cardT mxvec_cast.
-rewrite mxE; apply: le_trans (ler_abs_add _ _) _.
+rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
 do 2 ?[rewrite -(nth_map _ 0 (fun p => `|_ p.1 p.2|)) -?cardT ?mxvec_cast //].
 by apply: ler_add; apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
 Qed.
-Next Obligation.
+
+Lemma mx_norm_eq0 (x : 'M_(m.+1, n.+1)) : mx_norm x = 0 -> x = 0.
+Proof.
+move=> x0; apply/matrixP => i j; rewrite mxE; apply/eqP.
+rewrite -normr_eq0 eq_le; apply/andP; split; last exact: normr_ge0.
+have /(bigmaxr_ler 0) :
+  (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
+   size [seq (`|x ij.1 ij.2|)%R | ij : 'I_m.+1 * 'I_n.+1])%N.
+  by rewrite size_map index_mem mem_enum.
+rewrite -{3}x0; apply: le_trans.
+rewrite (nth_map (ord0, ord0)); last by rewrite index_mem mem_enum.
+by rewrite nth_index // mem_enum.
+Qed.
+
+Lemma mx_norm_natmul (x : 'M_(m.+1, n.+1)) n0 :  mx_norm (x *+ n0) = mx_norm x *+ n0.
+Proof.
 apply/bigmaxrP; split=> [|i].
-  have : (0 < size [seq `|x ij.1 ij.2|%real | ij : 'I_m.+1 * 'I_n.+1])%N.
+  have : (0 < size [seq `|x ij.1 ij.2|%R | ij : 'I_m.+1 * 'I_n.+1])%O.
     by rewrite size_map -cardT mxvec_cast.
   move=> /bigmaxr_mem - /(_ 0) /mapP [ij ijP normx]; rewrite [mx_norm _]normx.
-  by apply/mapP; exists ij => //; rewrite mxE absrM.
+  by apply/mapP; exists ij => //; rewrite mulmxnE normrMn.
 rewrite size_map -cardT mxvec_cast // => ltimn.
 rewrite (nth_map (ord0, ord0)); last by rewrite -cardT mxvec_cast.
-rewrite mxE absrM ler_pmul // -(nth_map _ 0 (fun p => `|x p.1 p.2|)).
+rewrite mulmxnE normrMn ler_muln2r /=.
+case/boolP : (n0 == O) => n0O //=.
+rewrite -(nth_map _ 0 (fun p => `|x p.1 p.2|)).
   by apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
 by rewrite -cardT mxvec_cast.
 Qed.
-Next Obligation.
+
+Lemma mx_normN (x : 'M_(m.+1, n.+1)) : mx_norm (- x) = mx_norm x.
+Proof.
+rewrite /mx_norm; congr (bigmaxr 0 _).
+apply eq_in_map => /= i _; by rewrite mxE normrN.
+Qed.
+
+End mx_norm.
+
+(* TODO: bigmaxr_morph *)
+Lemma bigmaxr_scale (K : realFieldType) m n (s : seq [finType of 'I_m.+1 * 'I_n.+1]) (k : K) (x : 'M[K]_(m.+1, n.+1)) :
+  bigmaxr 0 (map (fun ij => `|(k *: x) ij.1 ij.2|) s) =
+  `| k | * bigmaxr 0 (map (fun ij => `|x ij.1 ij.2|) s).
+Proof.
+elim: s k x => /= [k _|h [|h' t] ih k x]; first by rewrite bigmaxr_nil mulr0.
+  by rewrite !bigmaxr_un mxE normrM.
+by rewrite bigmaxr_cons ih bigmaxr_cons maxr_pmulr ?normr_ge0 // mxE normrM.
+Qed.
+
+Section matrix_normedMod.
+
+Variables (K : realFieldType(*absRingType*)) (m n : nat).
+
+Definition matrix_normedZModuleMixin :=
+  Num.NormedMixin (@ler_mx_norm_add K m n)
+    (@mx_norm_eq0 _ _ _) (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
+
+Canonical matrix_normedZModuleType :=
+  NormedZmoduleType K 'M[K]_(m.+1, n.+1) matrix_normedZModuleMixin.
+
+(* TODO: show the norm axiom and then use a factory
+to instantiate the types below *)
+
+(*Canonical K_filteredType := [filteredType K of K for filtered_of_normedZmod K].
+
+Canonical K_topologicalType : topologicalType := @Topological.Pack K
+  (@Topological.Class K (Filtered.class K_filteredType)
+    (@topologyOfBallMixin _ K _ (@uniform_of_normedDomain K K))).
+
+Canonical K_uniformType : uniformType K := @Uniform.Pack K K (@Uniform.Class K K
+  (Topological.class K_topologicalType) (@uniform_of_normedDomain K K)).
+*)
+
+(*Definition K_lalgType : lalgType K := @GRing.regular_lalgType K.*)
+
+Lemma mx_norm_ball :
+  @ball _ [uniformType K of 'M[topological_of_realfield K]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
+Proof.
+rewrite /= /normr /= /mx_norm.
 rewrite predeq3E => x e y; split.
   move=> xe_y; apply/bigmaxr_ltrP; rewrite size_map -cardT mxvec_cast //.
   move=> i iltmn; rewrite (nth_map (ord0, ord0)).
@@ -1046,20 +1186,18 @@ have memij : (i, j) \in enum [finType of 'I_m.+1 * 'I_n.+1].
 rewrite (nth_map (ord0, ord0)); last by rewrite index_mem.
 by rewrite !mxE !nth_index //=; apply=> //; rewrite -mxvec_cast cardT index_mem.
 Qed.
-Next Obligation.
-apply/matrixP => i j; rewrite mxE; apply/eqP.
-rewrite -absr_eq0 eq_le; apply/andP; split; last exact: absr_ge0.
-have /(bigmaxr_ler 0) :
-  (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
-   size [seq (`|x ij.1 ij.2|)%real | ij : 'I_m.+1 * 'I_n.+1])%N.
-  by rewrite size_map index_mem mem_enum.
-rewrite -{3}H; apply: le_trans.
-rewrite (nth_map (ord0, ord0)); last by rewrite index_mem mem_enum.
-by rewrite nth_index // mem_enum.
-Qed.
 
+Definition matrix_UniformNormedZmodMixin :=
+  UniformNormedZmodule.Mixin mx_norm_ball.
+Canonical matrix_uniformNormedZmodType :=
+  UniformNormedZmoduleType K 'M[topological_of_realfield K]_(m.+1, n.+1) matrix_UniformNormedZmodMixin.
+
+Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
+Proof. by rewrite {1 3}/normr /= /mx_norm bigmaxr_scale. Qed.
+
+Definition matrix_NormedModMixin := NormedModMixin mx_normZ.
 Canonical matrix_normedModType :=
-  NormedModType K 'M[K]_(m.+1, n.+1) matrix_NormedModMixin.
+  NormedModType K 'M[topological_of_realfield K]_(m.+1, n.+1) matrix_NormedModMixin.
 
 End matrix_normedMod.
 
@@ -1067,61 +1205,95 @@ End matrix_normedMod.
 
 Section prod_NormedModule.
 
-Context {K : absRingType} {U V : normedModType K}.
+Context {K : realFieldType(*absRingType*)} {U V : normedModType K}.
 
-Definition prod_norm (x : U * V) := maxr `|[x.1]| `|[x.2]|.
+Definition prod_norm (x : U * V) := maxr `|x.1| `|x.2|.
 
 Lemma prod_norm_triangle : forall x y : U * V, prod_norm (x + y) <= prod_norm x + prod_norm y.
 Proof.
 by move=> [xu xv] [yu yv]; rewrite leUx /=; apply/andP; split;
-  apply: le_trans (ler_normm_add _ _) _; apply: ler_add;
+  apply: le_trans (ler_norm_add _ _) _; apply: ler_add;
   rewrite lexU lexx // orbC.
 Qed.
 
 Lemma prod_norm_scal (l : K) (x : U * V) :
-  prod_norm (l *: x) = abs l * prod_norm x.
+  prod_norm (l *: x) = `| l | * prod_norm x.
 Proof. by rewrite /prod_norm !normmZ maxr_pmulr. Qed.
 
 Lemma ball_prod_normE : ball = ball_ prod_norm.
 Proof.
 rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
-by rewrite /ball /= /prod_ball -!ball_normE /ball_ ltUx; split=> /andP.
+rewrite /ball /= /prod_ball.
+rewrite -!(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class _)))).
+by rewrite /ball_ ltUx; split=> /andP.
 Qed.
 
 Lemma prod_norm_eq0 (x : U * V) : prod_norm x = 0 -> x = 0.
 Proof.
 case: x => [xu xv]; rewrite /prod_norm /= => nx0.
 suff /andP [/eqP -> /eqP ->] : (xu == 0) && (xv == 0) by [].
-rewrite -!normm_eq0 !eq_le !normm_ge0.
-have : maxr `|[xu]| `|[xv]| <= 0 by rewrite nx0 lexx.
+rewrite -!(@normm_eq0 _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class _)))) !eq_le !normm_ge0.
+have : maxr `|xu| `|xv| <= 0 by rewrite nx0 lexx.
 by rewrite leUx => /andP [-> ->].
 Qed.
 
+Lemma prod_norm_natmul (x : U * V) n : prod_norm (x *+ n) = prod_norm x *+ n.
+Proof.
+rewrite /prod_norm /= pairMnE !normrMn; elim: n => [|n ih].
+  by rewrite !mulr0n mc_1_9.Num.Theory.maxr_r.
+rewrite [in RHS]mulrS -{}ih !mulrS; case: (lerP `|x.1| `|x.2|) => x12.
+  rewrite !mc_1_9.Num.Theory.maxr_r // ?ler_muln2r ?x12 ?orbT //.
+  by rewrite ler_add // ler_muln2r // x12 orbT.
+rewrite !mc_1_9.Num.Theory.maxr_l // ?ler_muln2r ?(ltW x12) ?orbT //.
+by rewrite ler_add // ?ler_muln2r // ?(ltW x12) // orbT.
+Qed.
+
+Lemma prod_normN (x : U * V) : prod_norm (- x) = prod_norm x.
+Proof. by case: x => u v; rewrite /prod_norm /= !normrN. Qed.
+
 End prod_NormedModule.
 
-Definition prod_NormedModule_mixin (K : absRingType) (U V : normedModType K) :=
-  @NormedModMixin K _ _ _ (@prod_norm K U V) prod_norm_triangle
-  prod_norm_scal ball_prod_normE prod_norm_eq0.
+Section prod.
+Variables (K : realFieldType) (U V : normedModType K).
 
-Canonical prod_NormedModule (K : absRingType) (U V : normedModType K) :=
-  NormedModType K (U * V) (@prod_NormedModule_mixin K U V).
+Definition prod_NormedZModuleMixin :=
+  Num.NormedMixin (@prod_norm_triangle K U V)
+    (@prod_norm_eq0 K U V) (@prod_norm_natmul _ _ _) (@prod_normN _ _ _).
+
+Canonical prod_normedZmModuleType :=
+  NormedZmoduleType K (U * V) prod_NormedZModuleMixin.
+
+Lemma prod_norm_ball :
+  @ball _ [uniformType K of U * V] = ball_ (fun x => `| x |).
+Proof. by rewrite /= -ball_prod_normE. Qed.
+
+Definition prod_UniformNormedZmodMixin :=
+  UniformNormedZmodule.Mixin prod_norm_ball.
+Canonical prod_uniformNormedZmodType :=
+  UniformNormedZmoduleType K (U * V) prod_UniformNormedZmodMixin.
+
+Definition prod_NormedModMixin := NormedModMixin prod_norm_scal.
+Canonical prod_normedModType :=
+  NormedModType K (U * V) prod_NormedModMixin.
+
+End prod.
 
 Section NormedModule3.
 
-Context {T : Type} {K : absRingType} {U : normedModType K}
+Context {T : Type} {K : realFieldType(*absRingType*)} {U : normedModType K}
                    {V : normedModType K}.
 
 Lemma flim_norm2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
-  forall eps : R, 0 < eps ->
-   \forall y' \near F & z' \near G, `|[(y, z) - (y', z')]| < eps.
+  forall eps, 0 < eps ->
+   \forall y' \near F & z' \near G, `|(y, z) - (y', z')| < eps.
 Proof. exact: flim_normP. Qed.
 
 (* Lemma flim_norm_supP {F : set (set U)} {G : set (set V)} *)
 (*   {FF : Filter F} {FG : Filter G} (y : U) (z : V): *)
 (*   (F, G) --> (y, z) <-> *)
-(*   forall eps : posreal, {near F & G, forall y' z', *)
+(*   forall eps : {posnum R}, {near F & G, forall y' z', *)
 (*           (`|[y - y']| < eps) /\ (`|[z - z']| < eps) }. *)
 (* Proof. *)
 (* rewrite flim_ballP; split => [] P eps. *)
@@ -1132,8 +1304,8 @@ Proof. exact: flim_normP. Qed.
 Lemma flim_norm2 {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) ->
-  forall eps : R, 0 < eps ->
-   \forall y' \near F & z' \near G, `|[(y, z) - (y', z')]| < eps.
+  forall eps, 0 < eps ->
+   \forall y' \near F & z' \near G, `|(y, z) - (y', z')| < eps.
 Proof. by rewrite flim_normP. Qed.
 
 End NormedModule3.
@@ -1141,17 +1313,17 @@ Arguments flim_norm2 {_ _ _ F G FF FG}.
 
 (** Rings with absolute values are normed modules *)
 
-Definition AbsRing_NormedModMixin (K : absRingType) :=
+(*Definition AbsRing_NormedModMixin (K : absRingType) :=
   @NormedModule.Mixin K _ _ _ (abs : K^o -> R) ler_abs_add absrM (ball_absE K)
   absr0_eq0.
 Canonical AbsRing_NormedModType (K : absRingType) :=
-  NormedModType K K^o (AbsRing_NormedModMixin _).
+  NormedModType K K^o (AbsRing_NormedModMixin _).*)
 
 (** Normed vector spaces have some continuous functions *)
 
 Section NVS_continuity.
 
-Context {K : absRingType} {V : normedModType K}.
+Context {K : realFieldType(*absRingType*)} {V : normedModType K}.
 
 Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
 Proof.
@@ -1160,19 +1332,35 @@ rewrite !near_simpl /=; near=> a b => /=; rewrite opprD addrACA.
 by rewrite normm_lt_split //; [near: a|near: b]; apply: flim_norm.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
+End NVS_continuity.
+
+(* kludge *)
+Global Instance filter_locally (K' : realType) (K := topological_of_realfield K') (k : K) : Filter (locally k).
+Proof. exact: (@locally_filter [topologicalType of K]). Qed.
+
+Section NVS_continuity1.
+Context {K' : realType} {V : normedModType K'}.
+Let K := topological_of_realfield K'.
+Local Notation "'+oo'" := (@ERPInf K').
+Local Notation "'-oo'" := (@ERNInf K').
+
+Lemma scale_continuous :
+  continuous (fun z : [filteredType _ of K * V] => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
 rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
-  rewrite (le_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lexx _)))
+  rewrite (le_lt_trans (ler_pmul _ _ (_ : _ <= `|k| + 1) (lexx _)))
           ?ler_addl //.
   rewrite -ltr_pdivl_mull // ?(lt_le_trans ltr01) ?ler_addr //; near: z.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
-have zM: `|[z]| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
+have zM : `|z| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
 rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW //.
+(* TODO: urgent
 by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
 Grab Existential Variables. all: end_near. Qed.
+*)
+Admitted.
 
 Arguments scale_continuous _ _ : clear implicits.
 
@@ -1181,7 +1369,7 @@ Proof.
 by move=> x; apply: (flim_comp2 (flim_const _) flim_id (scale_continuous (_, _))).
 Qed.
 
-Lemma scalel_continuous (x : V) : continuous (fun k : K => k *: x).
+Lemma scalel_continuous (x : V) : continuous (fun k : [filteredType _ of K] => k *: x).
 Proof.
 by move=> k; apply: (flim_comp2 flim_id (flim_const _) (scale_continuous (_, _))).
 Qed.
@@ -1193,11 +1381,11 @@ rewrite !locally_nearE near_map.
 by apply: filterS => x'; rewrite scaleN1r.
 Qed.
 
-End NVS_continuity.
+End NVS_continuity1.
 
 Section limit_composition.
 
-Context {K : absRingType} {V : normedModType K} {T : topologicalType}.
+Context {K' : realFieldType(*absRingType*)} {V : normedModType K'} {T : topologicalType}.
 
 Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
@@ -1212,10 +1400,16 @@ Lemma continuousD (f g : T -> V) x :
   {for x, continuous (fun x => f x + g x)}.
 Proof. by move=> ??; apply: lim_add. Qed.
 
+Let K := topological_of_realfield K'.
+
 Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
   (k : K) (a : V) :
   f @ F --> k -> g @ F --> a -> (fun x => (f x) *: (g x)) @ F --> k *: a.
-Proof. by move=> ??; apply: lim_cont2 => //; exact: scale_continuous. Qed.
+Proof.
+(* TODO urgent
+move=> ??; apply: lim_cont2 => //; exact: scale_continuous. Qed.
+*)
+Admitted.
 
 Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (a : V) (k : K) :
   f @ F --> k -> (fun x => (f x) *: a) @ F --> k *: a.
@@ -1235,12 +1429,16 @@ Proof. by move=> ?; apply: lim_scalel. Qed.
 
 Lemma lim_opp (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
   f @ F --> a -> (fun x => - f x) @ F --> - a.
-Proof. by move=> ?; apply: lim_cont => //; apply: opp_continuous. Qed.
+Proof.
+(* TODO: urgent
+by move=> ?; apply: lim_cont => //; apply: opp_continuous. Qed.*)
+Admitted.
 
 Lemma continuousN (f : T -> V) x :
   {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
 Proof. by move=> ?; apply: lim_opp. Qed.
 
+(* TODO: urgent
 Lemma lim_mult (x y : K) : z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof. exact: (@scale_continuous _ (AbsRing_NormedModType K)). Qed.
 
@@ -1248,7 +1446,7 @@ Lemma continuousM (f g : T -> K) x :
   {for x, continuous f} -> {for x, continuous g} ->
   {for x, continuous (fun x => f x * g x)}.
 Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
-
+*)
 End limit_composition.
 
 (** ** Complete Normed Modules *)
@@ -1257,44 +1455,46 @@ Module CompleteNormedModule.
 
 Section ClassDef.
 
-Variable K : absRingType.
+Variable K : realFieldType(*absRingType*).
 
 Record class_of (T : Type) := Class {
   base : NormedModule.class_of K T ;
-  mixin : Complete.axiom (Uniform.Pack base T)
+  mixin : Complete.axiom (Uniform.Pack base)
 }.
 Local Coercion base : class_of >-> NormedModule.class_of.
-Definition base2 T (cT : class_of T) : Complete.class_of T :=
-  @Complete.Class _ (@base T cT) (@mixin T cT).
+Definition base2 T (cT : class_of T) : Complete.class_of K T :=
+  @Complete.Class _ _ (@base T cT) (@mixin T cT).
 Local Coercion base2 : class_of >-> Complete.class_of.
 
-Structure type (phK : phant K) := Pack { sort; _ : class_of sort ; _ : Type }.
+Structure type (phK : phant K) := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 
 Variables (phK : phant K) (cT : type phK) (T : Type).
 
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
+Definition class := let: Pack _ c := cT return class_of cT in c.
 
 Definition pack :=
   fun bT b & phant_id (@NormedModule.class K phK bT) (b : NormedModule.class_of K T) =>
-  fun mT m & phant_id (@Complete.class mT) (@Complete.Class T b m) =>
-    Pack phK (@Class T b m) T.
-Let xT := let: Pack T _ _ := cT in T.
+  fun mT m & phant_id (@Complete.class mT) (@Complete.Class K T b m) =>
+    Pack phK (@Class T b m).
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
+Definition normedZmodType := @Num.NormedZmodule.Pack K phK cT xclass.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass xT.
-Definition filteredType := @Filtered.Pack cT cT xclass xT.
-Definition topologicalType := @Topological.Pack cT xclass xT.
-Definition uniformType := @Uniform.Pack cT xclass xT.
-Definition completeType := @Complete.Pack cT xclass xT.
-Definition join_zmodType := @GRing.Zmodule.Pack completeType xclass.
-Definition join_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
-Definition normedModType := @NormedModule.Pack K phK cT xclass xT.
-Definition join_completeType := @Complete.Pack normedModType xclass xT.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
+Definition uniformType := @Uniform.Pack _ cT xclass.
+Definition normedModType := @NormedModule.Pack K phK cT xclass.
+Definition completeType := @Complete.Pack _ cT xclass.
+Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
+Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
+Definition complete_normedZmodType := @Num.NormedZmodule.Pack K phK completeType xclass.
+Definition complete_normedModType := @NormedModule.Pack K phK completeType xclass.
 End ClassDef.
 
 Module Exports.
@@ -1308,6 +1508,8 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
+Canonical normedZmodType.
 Coercion lmodType : type >-> GRing.Lmodule.type.
 Canonical lmodType.
 Coercion pointedType : type >-> Pointed.type.
@@ -1318,17 +1520,17 @@ Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
-Canonical join_zmodType.
-Canonical join_lmodType.
-Coercion completeType : type >-> Complete.type.
-Canonical completeType.
 Coercion normedModType : type >-> NormedModule.type.
 Canonical normedModType.
-Canonical join_completeType.
+Coercion completeType : type >-> Complete.type.
+Canonical completeType.
+Canonical complete_zmodType.
+Canonical complete_lmodType.
+Canonical complete_normedZmodType.
+Canonical complete_normedModType.
 Notation completeNormedModType K := (type (Phant K)).
 Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ id _ _ id)
   (at level 0, format "[ 'completeNormedModType'  K  'of'  T ]") : form_scope.
-
 End Exports.
 
 End CompleteNormedModule.
@@ -1411,7 +1613,7 @@ Lemma ler_distW (R : realDomainType) (x y e : R):
    (`|x - y|%R <= e) -> y - e <= x.
 Proof. by rewrite ler_distl => /andP[]. Qed.
 
-Lemma R_complete (F : set (set R)) : ProperFilter F -> cauchy F -> cvg F.
+Lemma R_complete (R : realType) (F : set (set (topological_of_realfield R))) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF F_cauchy; apply/cvg_ex.
 pose D := \bigcap_(A in F) (down (mem A)).
@@ -1770,7 +1972,7 @@ Qed.
 
 (* Lemma locally_2d_align : *)
 (*   forall (P Q : R -> R -> Prop) x y, *)
-(*   ( forall eps : posreal, (forall uv, ball (x, y) eps uv -> P uv.1 uv.2) -> *)
+(*   ( forall eps : {posnum R}, (forall uv, ball (x, y) eps uv -> P uv.1 uv.2) -> *)
 (*     forall uv, ball (x, y) eps uv -> Q uv.1 uv.2 ) -> *)
 (*   {near x & y, forall x y, P x y} ->  *)
 (*   {near x & y, forall x y, Q x y}. *)
@@ -1828,13 +2030,13 @@ Qed.
 (*     - case: Huv => /sub_ball_abs /=; by rewrite mul1r absrB. *)
 (*     - case: Huv => _ /sub_ball_abs /=; by rewrite mul1r absrB. *)
 (*   rewrite -subr_gt0 => /RltP H1. *)
-(*   set d1 := mkposreal _ H1. *)
+(*   set d1 := mk{posnum R} _ H1. *)
 (*   have /RltP H2 : 0 < pos d1 / 2 / Num.max `|u - x| `|v - y| *)
 (*     by rewrite mulr_gt0 // invr_gt0. *)
-(*   set d2 := mkposreal _ H2. *)
+(*   set d2 := mk{posnum R} _ H2. *)
 (*   exists d2 => // z Hz. *)
 (*   apply/locallyP. *)
-(*   exists [posreal of d1 / 2] => //= pq Hpq. *)
+(*   exists [{posnum R} of d1 / 2] => //= pq Hpq. *)
 (*   set p := pq.1. set q := pq.2. *)
 (*   apply HP; split. *)
 (*   + apply/sub_abs_ball => /=. *)
@@ -1904,7 +2106,7 @@ Qed.
 (*   forall P x y, *)
 (*   (forall x y, P x y \/ ~P x y) -> *)
 (*   locally_2d x y P -> *)
-(*   {d : posreal | forall u v, `|u - x| < d -> `|v - y| < d -> P u v}. *)
+(*   {d : {posnum R} | forall u v, `|u - x| < d -> `|v - y| < d -> P u v}. *)
 (* Proof. *)
 (* move=> P x y P_dec H. *)
 (* destruct (@locally_ex _ (x, y) (fun z => P (fst z) (snd z))) as [d Hd]. *)
@@ -2094,7 +2296,7 @@ Qed.
 
 (* TODO: express using ball?*)
 Lemma continuity_pt_locally f x : continuity_pt f x <->
-  forall eps : posreal, locally x (fun u => `|f u - f x| < eps%:num).
+  forall eps : {posnum R}, locally x (fun u => `|f u - f x| < eps%:num).
 Proof.
 split=> [fcont e|fcont _/RltP/posnumP[e]]; last first.
   have [_/posnumP[d] xd_fxe] := fcont e.
