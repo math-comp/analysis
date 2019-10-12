@@ -527,18 +527,6 @@ Qed.
 (*Lemma absRE (x : R) : `|x|%real = `|x|%R.
 Proof. by []. Qed.*)
 
-(* TODO: should move to reals.v *)
-(*Lemma Rhausdorff (R : realType) : hausdorff [topologicalType of R].
-Proof.
-move=> x y clxy; apply/eqP; rewrite eq_le.
-apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
-rewrite inE -ler_distl (*-absRE*); set he := (e%:num / 2)%:pos.
-have [z []] := clxy _ _ (@locally_ball R_uniformType _ x he) (locally_ball y he).
-rewrite ball_absE /ball_ absrB => zx_he yz_he.
-rewrite (subr_trans z) (le_trans (ler_abs_add _ _) _)// ltW //.
-by rewrite (splitr e%:num); apply: ltr_add.
-Qed.*)
-
 Lemma coord_continuous {K : absRingType} m n i j :
   continuous (fun M : 'M[K]_(m.+1, n.+1) => M i j).
 Proof.
@@ -751,13 +739,6 @@ Proof. exact: ler_norm_add. Qed.
 Lemma normmZ l x : `| l *: x | = `| l | * `| x |.
 Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
-Notation ball_norm := (ball_ (@normr K V)).
-
-Notation locally_norm := (locally_ ball_norm).
-
-Lemma ball_normE : ball_norm = ball.
-Proof. Fail by rewrite -NormedModule.ax3. Admitted.
-
 Lemma normm0_eq0 x : `|x| = 0 -> x = 0.
 Proof. by move/eqP; rewrite normr_eq0 => /eqP. Qed.
 
@@ -789,43 +770,59 @@ Proof. exact: normr_le0. Qed.
 Lemma ler_distm_dist x y : `| `|x| - `|y| | <= `|x - y|.
 Proof. exact: ler_dist_dist. Qed.
 
-Lemma distm_lt_split z x y (e : K) :
+End NormedModule1.
+
+Section NormedModule1'.
+Variables (R : realFieldType) (V : normedModType R).
+
+Notation ball_norm := (ball_ (@normr R V)).
+
+Notation locally_norm := (locally_ ball_norm).
+
+Lemma ball_normE : ball_norm = ball.
+Proof.
+Fail by rewrite -NormedModule.ax3.
+Admitted.
+
+Lemma distm_lt_split (z x y : V) (e : R) :
   `|x - z| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
-Proof. (*TODO: put in a dedicated section *)by have := @ball_split _ z x y e; rewrite -ball_normE. Qed
+Proof.
+by have := @ball_split _ _ z x y e; rewrite -ball_normE.
+Qed.
 
-Lemma distm_lt_splitr z x y (e : R) :
-  `|[z - x]| < (e / 2)%R -> `|[z - y]| < (e / 2)%R -> `|[x - y]| < e.
-Proof. by have := @ball_splitr _ z x y e; rewrite -ball_normE. Qed.
+Lemma distm_lt_splitr (z x y : V) (e : R) :
+  `|z - x| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
+Proof. by have := @ball_splitr _ _ z x y e; rewrite -ball_normE. Qed.
 
-Lemma distm_lt_splitl z x y (e : R) :
-  `|[x - z]| < (e / 2)%R -> `|[y - z]| < (e / 2)%R -> `|[x - y]| < e.
-Proof. by have := @ball_splitl _ z x y e; rewrite -ball_normE. Qed.
+Lemma distm_lt_splitl (z x y : V) (e : R) :
+  `|x - z| < e / 2 -> `|y - z| < e / 2 -> `|x - y| < e.
+Proof. by have := @ball_splitl _ _ z x y e; rewrite -ball_normE. Qed.
 
-Lemma normm_leW x (e : R) : e > 0 -> `|[x]| <= (e / 2)%R -> `|[x]| < e.
+Lemma normm_leW (x : V) (e : R) : e > 0 -> `|x| <= e / 2 -> `|x| < e.
 Proof.
 move=> /posnumP[{e}e] /le_lt_trans ->//.
 by rewrite [X in _ < X]splitr ltr_spaddl.
 Qed.
 
-Lemma normm_lt_split  x y (e : R) :
-  `|[x]| < (e / 2)%R -> `|[y]| < (e / 2)%R -> `|[x + y]| < e.
+Lemma normm_lt_split (x y : V) (e : R) :
+  `|x| < (e / 2)%R -> `|y| < (e / 2)%R -> `|x + y| < e.
 Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
-Lemma closeE x y : close x y = (x = y).
+Lemma closeE (x y : V) : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
-have dxy_gt0 : `|[x - y]| > 0 by rewrite normm_gt0 subr_eq0.
+have dxy_gt0 : `|x - y| > 0 by rewrite normm_gt0 subr_eq0.
 have dxy_ge0 := ltW dxy_gt0.
 have := cl_xy ((PosNum dxy_gt0)%:num / 2)%:pos.
 rewrite -ball_normE /= -subr_lt0 le_gtF //.
 rewrite -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
 by rewrite subr_ge0 -(@ler_pmul2r _ 2) // mulVf // mul1r ler1n.
 Qed.
-Lemma eq_close x y : close x y -> x = y. by rewrite closeE. Qed.
+Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
 
-Lemma locally_le_locally_norm x : flim (locally x) (locally_norm x).
+Lemma locally_le_locally_norm (x : V) : flim (locally x) (locally_norm x).
 Proof.
 move=> P [_ /posnumP[e] subP]; apply/locallyP.
 by eexists; last (move=> y Py; apply/subP; rewrite ball_normE; apply/Py).
@@ -862,6 +859,15 @@ Lemma near_locally_norm (x : V) (P : set V) :
   (\forall x \near locally_norm x, P x) = \near x, P x.
 Proof. exact: locally_normE. Qed.
 
+End NormedModule1'.
+
+Section NormedModule1''.
+Variables (V : normedModType R).
+
+Notation ball_norm := (ball_ (@normr _ V)).
+
+Notation locally_norm := (locally_ ball_norm).
+
 Lemma locally_norm_ball_norm x (e : posreal) :
   locally_norm x (ball_norm x e%:num).
 Proof. by exists e%:num. Qed.
@@ -872,15 +878,13 @@ Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
 Lemma locally_ball_norm (x : V) (eps : posreal) : locally x (ball_norm x eps%:num).
 Proof. rewrite -locally_locally_norm; apply: locally_norm_ball_norm. Qed.
 
-Lemma ball_norm_triangle (x y z : V) (e1 e2 : R) :
+(* TODO: useless? *)
+Lemma ball_norm_triangle' (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
-Proof.
-rewrite /ball_norm => H1 H2; rewrite (subr_trans y).
-by rewrite (le_lt_trans (ler_normm_add _ _)) ?ltr_add.
-Qed.
+Proof. exact: ball_norm_triangle. Qed.
 
-Lemma ball_norm_center (x : V) (e : posreal) : ball_norm x e%:num x.
-Proof. by rewrite /ball_norm subrr normm0. Qed.
+Lemma ball_norm_center' (x : V) (e : posreal) : ball_norm x e%:num x.
+Proof. exact: ball_norm_center. Qed.
 
 Lemma ball_norm_dec x y (e : R) : {ball_norm x e y} + {~ ball_norm x e y}.
 Proof. exact: pselect. Qed.
@@ -916,20 +920,32 @@ Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
   f @ F --> l -> lim (f @ F) = l.
 Proof. exact: flim_lim. Qed.
 
+(* TODO: should move to reals.v *)
+Lemma Rhausdorff : hausdorff [topologicalType of R].
+Proof.
+move=> x y clxy; apply/eqP; rewrite eq_le.
+apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
+rewrite inE -ler_distl (*-absRE*); set he := (e%:num / 2)%:pos.
+have [z []] := clxy _ _ (@locally_ball _ R_uniformType x he) (locally_ball y he).
+move=> zx_he yz_he.
+rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
+by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
+Qed.
+
 Lemma normedModType_hausdorff : hausdorff V.
 Proof.
 move=> p q clp_q; apply/subr0_eq/normm0_eq0/Rhausdorff => A B pq_A.
-rewrite -normm0 -(subrr p) => pp_B.
+rewrite -(@normm0 _ V) -(subrr p) => pp_B.
 suff loc_preim r C :
-  locally `|[p - r]| C -> locally r ((fun r => `|[p - r]|) @^-1` C).
+  locally `|p - r| C -> locally r ((fun r => `|p - r|) @^-1` C).
   have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
-  by exists `|[p - r]|.
+  by exists `|p - r|.
 move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
 apply: pre_C; apply: le_lt_trans (ler_distm_dist _ _) _.
 by rewrite opprB addrC -subr_trans normmB.
 Qed.
 
-End NormedModule1.
+End NormedModule1''.
 
 Module Export LocallyNorm.
 Definition locally_simpl := (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
