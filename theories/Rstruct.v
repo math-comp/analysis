@@ -228,7 +228,7 @@ Definition R_numMixin := NumMixin Rleb_norm_add addr_Rgtb0 Rnorm0_eq0
                                   Rleb_leVge RnormM Rleb_def Rltb_def.
 Canonical R_porderType := POrderType ring_display R R_numMixin.
 Canonical R_numDomainType := NumDomainType R R_numMixin.
-Canonical R_normedDomainType := NormedDomainType R R R_numMixin.
+Canonical R_normedZmodType := NormedZmoduleType R R R_numMixin.
 
 Lemma RleP : forall x y, reflect (Rle x y) (x <= y)%R.
 Proof. exact: RlebP. Qed.
@@ -248,8 +248,11 @@ case: (Rle_dec 0 x)=> [/RleP ->|] //.
 by move/Rnot_le_lt/Rlt_le/RleP=> ->; rewrite orbT.
 Qed.
 
-Lemma R_total : totalLatticeMixin R_porderType.
-Proof. Admitted.
+Lemma R_total : totalPOrderMixin R_porderType.
+Proof.
+move=> x y; case: (Rle_lt_dec x y) => [/RleP -> //|/Rlt_le/RleP ->];
+  by rewrite orbT.
+Qed.
 
 Canonical R_latticeType := LatticeType R R_total.
 Canonical R_orderType := OrderType R R_total.
@@ -488,17 +491,20 @@ case: (lerP x y) => H; first by rewrite (elimT meet_idPl) // Rmin_left //; apply
 by rewrite (elimT meet_idPr) ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
 Qed.
 
+Section bigmaxr.
+Context {R : realDomainType}.
+
 (* bigop pour le max pour des listes non vides ? *)
 Definition bigmaxr (x0 : R) lr :=
   foldr Num.max (head x0 lr) (behead lr).
 
-Lemma bigmaxr_nil x0 : bigmaxr x0 [::] = x0.
+Lemma bigmaxr_nil (x0 : R) : bigmaxr x0 [::] = x0.
 Proof. by rewrite /bigmaxr. Qed.
 
-Lemma bigmaxr_un x0 x : bigmaxr x0 [:: x] = x.
+Lemma bigmaxr_un (x0 x : R) : bigmaxr x0 [:: x] = x.
 Proof. by rewrite /bigmaxr. Qed.
 
-Lemma bigmaxr_cons x0 x y lr :
+Lemma bigmaxr_cons (x0 x y : R) lr :
   bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
 Proof.
 rewrite /bigmaxr /=; elim: lr => [/= | a lr /=]; first by rewrite joinC.
@@ -506,7 +512,7 @@ set b := foldr _ _ _; set c := foldr _ _ _ => H.
 by rewrite [Num.max a b]joinC joinA H -joinA (joinC c a).
 Qed.
 
-Lemma bigmaxr_ler x0 lr i :
+Lemma bigmaxr_ler (x0 : R) (lr : seq R) i :
   (i < size lr)%N -> (nth x0 lr i) <= (bigmaxr x0 lr).
 Proof.
 case: lr i => [i | x lr]; first by rewrite nth_nil bigmaxr_nil lexx.
@@ -519,15 +525,15 @@ by rewrite lexU lexx orbT.
 Qed.
 
 (* Compatibilité avec l'addition *)
-Lemma bigmaxr_addr x0 lr x :
-  bigmaxr (x0 + x) (map (fun y => y + x) lr) = (bigmaxr x0 lr) + x.
+Lemma bigmaxr_addr (x0 : R) lr (x : R) :
+  bigmaxr (x0 + x) (map (fun y : R => y + x) lr) = (bigmaxr x0 lr) + x.
 Proof.
 case: lr => [/= | y lr]; first by rewrite bigmaxr_nil.
 elim: lr y => [y | y lr ihlr z]; first by rewrite /= !bigmaxr_un.
 by rewrite map_cons !bigmaxr_cons ihlr addr_maxl.
 Qed.
 
-Lemma bigmaxr_index x0 lr :
+Lemma bigmaxr_index (x0 : R) lr :
   (0 < size lr)%N -> (index (bigmaxr x0 lr) lr < size lr)%N.
 Proof.
 case: lr => [//= | x l _].
@@ -537,11 +543,11 @@ rewrite eq_sym eq_joinl.
 by case: (leP z y).
 Qed.
 
-Lemma bigmaxr_mem x0 lr :
+Lemma bigmaxr_mem (x0 : R) lr :
   (0 < size lr)%N -> bigmaxr x0 lr \in lr.
 Proof. by move/(bigmaxr_index x0); rewrite index_mem. Qed.
 
-Lemma bigmaxr_lerP x0 lr x :
+Lemma bigmaxr_lerP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
   reflect (forall i, (i < size lr)%N -> (nth x0 lr i) <= x) ((bigmaxr x0 lr) <= x).
 Proof.
@@ -550,7 +556,7 @@ move=> lr_size; apply: (iffP idP) => [le_x i i_size | H].
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-Lemma bigmaxr_ltrP x0 lr x :
+Lemma bigmaxr_ltrP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
   reflect (forall i, (i < size lr)%N -> (nth x0 lr i) < x) ((bigmaxr x0 lr) < x).
 Proof.
@@ -559,7 +565,7 @@ move=> lr_size; apply: (iffP idP) => [lt_x i i_size | H].
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-Lemma bigmaxrP x0 lr x :
+Lemma bigmaxrP (x0 : R) lr (x : R) :
   (x \in lr /\ forall i, (i < size lr) %N -> (nth x0 lr i) <= x) -> (bigmaxr x0 lr = x).
 Proof.
 move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: le_anti; apply/andP; split.
@@ -578,7 +584,7 @@ apply/negP => /eqP H; apply: neq_i; rewrite -H eq_sym; apply/eqP.
 by apply: index_uniq.
 Qed. *)
 
-Lemma bigmaxr_lerif x0 lr :
+Lemma bigmaxr_lerif (x0 : R) lr :
   uniq lr -> forall i, (i < size lr)%N ->
      (nth x0 lr i) <= (bigmaxr x0 lr) ?= iff (i == index (bigmaxr x0 lr) lr).
 Proof.
@@ -632,5 +638,7 @@ Lemma bmaxrf_lerif n (f : {ffun 'I_n.+1 -> R}) :
 Proof.
 by move=> inj_f i; rewrite /lerif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
 Qed.
+
+End bigmaxr.
 
 End ssreal_struct_contd.

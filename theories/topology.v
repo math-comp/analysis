@@ -1027,7 +1027,7 @@ End at_point.
 
 (** Filters for pairs *)
 
-Global Instance filter_prod_filter  T U (F : set (set T)) (G : set (set U)) :
+Global Instance filter_prod_filter T U (F : set (set T)) (G : set (set U)) :
   Filter F -> Filter G -> Filter (filter_prod F G).
 Proof.
 move=> FF FG; apply: filter_from_filter.
@@ -2395,10 +2395,10 @@ Canonical topologicalType.
 Notation uniformType := type.
 Notation UniformType T m := (@pack _ T _ m _ _ idfun _ idfun).
 Notation UniformMixin := Mixin.
-Notation "[ 'uniformType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
-  (at level 0, format "[ 'uniformType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'uniformType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'uniformType'  'of'  T ]") : form_scope.
+Notation "[ 'uniformType' R 'of' T 'for' cT ]" :=  (@clone R T cT _ idfun)
+  (at level 0, format "[ 'uniformType'  R  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'uniformType' R 'of' T ]" := (@clone R T _ _ id)
+  (at level 0, format "[ 'uniformType'  R  'of'  T ]") : form_scope.
 
 End Exports.
 
