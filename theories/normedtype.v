@@ -309,13 +309,13 @@ Module UniformNormedDomain.
 Section ClassDef.
 Variable R : numDomainType.
 Record class_of (T : Type) := Class {
-  base : Num.NormedDomain.class_of R T;
+  base : Num.NormedZModule.class_of R T;
   pointed_mixin : Pointed.point_of T ;
   locally_mixin : Filtered.locally_of T T ;
   topological_mixin : @Topological.mixin_of T locally_mixin ;
   uniform_mixin : @Uniform.mixin_of R T locally_mixin
 }.
-Local Coercion base : class_of >-> Num.NormedDomain.class_of.
+Local Coercion base : class_of >-> Num.NormedZModule.class_of.
 Definition base2 T c := @Uniform.Class _ _
     (@Topological.Class _
       (Filtered.Class
@@ -336,20 +336,15 @@ Definition clone c of phant_id class c := @Pack phR T c.
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 Definition pack :=
-  fun bT (b : Num.NormedDomain.class_of R T)
-      & phant_id (@Num.NormedDomain.class R (Phant R) bT) b =>
+  fun bT (b : Num.NormedZModule.class_of R T)
+      & phant_id (@Num.NormedZModule.class R (Phant R) bT) b =>
   fun uT (u : Uniform.class_of R T) & phant_id (@Uniform.class R uT) u =>
   @Pack phR T (@Class T b u u u u).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition ringType := @GRing.Ring.Pack cT xclass.
-Definition comRingType := @GRing.ComRing.Pack cT xclass.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
-Definition normedDomainType := @Num.NormedDomain.Pack R (Phant R) cT xclass.
+Definition normedZmodType := @Num.NormedZModule.Pack R (Phant R) cT xclass.
 Definition uniformType := @Uniform.Pack R cT xclass.
 
 End ClassDef.
@@ -358,7 +353,7 @@ End ClassDef.
   Pack (Phant R) (@Class R _ _ (NumDomain.normed_mixin (NumDomain.class R))).*)
 
 Module Exports.
-Coercion base : class_of >-> Num.NormedDomain.class_of.
+Coercion base : class_of >-> Num.NormedZModule.class_of.
 Coercion base2 : class_of >-> Uniform.class_of.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
@@ -367,18 +362,8 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
-Coercion ringType : type >-> GRing.Ring.type.
-Canonical ringType.
-Coercion comRingType : type >-> GRing.ComRing.type.
-Canonical comRingType.
-Coercion unitRingType : type >-> GRing.UnitRing.type.
-Canonical unitRingType.
-Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
-Canonical comUnitRingType.
-Coercion idomainType : type >-> GRing.IntegralDomain.type.
-Canonical idomainType.
-Coercion normedDomainType : type >-> Num.NormedDomain.type.
-Canonical normedDomainType.
+Coercion normedZmodType : type >-> Num.NormedZModule.type.
+Canonical normedZmodType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
 Notation uniformNormedDomainType R := (type (Phant R)).
@@ -399,19 +384,21 @@ pointed type with 0 as a default element and a Definition that creates,
 locally open ball and all the proofs from normedDomainType and then
 use to create R_pointedType, etc.*)
 
-Definition pointed_of_ring (R : ringType) : pointedType := PointedType R 0.
+(*Definition pointed_of_ring (R : ringType) : pointedType := PointedType R 0.*)
 
-Canonical R_pointedType := [pointedType of R for pointed_of_ring R_ringType].
+Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
+
+Canonical R_pointedType := [pointedType of R for pointed_of_zmodule R_ringType].
 (* NB: similar definition in topology.v *)
 
-Definition filtered_of_normedDomain (K : numDomainType) (R : normedDomainType K)
+Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
   : filteredType R := Filtered.Pack (Filtered.Class
-    (@Pointed.class (pointed_of_ring R)) (locally_ (ball_ (fun x => `|x|)))).
+    (@Pointed.class (pointed_of_zmodule R)) (locally_ (ball_ (fun x => `|x|)))).
 Canonical R_filteredType :=
-  [filteredType R of R for filtered_of_normedDomain R_normedDomainType].
+  [filteredType R of R for filtered_of_normedZmod R_normedZmodType].
 
 Section uniform_of_normedDomain.
-Variables (K : numDomainType) (R : normedDomainType K).
+Variables (K : numDomainType) (R : normedZmodType K).
 Lemma ball_norm_center (x : R) (e : K) : (0%R < e)%O -> ball_ normr x e x.
 Proof. by move=> ? /=; rewrite subrr normr0. Qed.
 Lemma ball_norm_symmetric (x y : R) (e : K) :
@@ -429,10 +416,10 @@ Definition uniform_of_normedDomain
 End uniform_of_normedDomain.
 
 Canonical R_topologicalType : topologicalType :=
-  TopologicalType R (topologyOfBallMixin (uniform_of_normedDomain R_normedDomainType)).
+  TopologicalType R (topologyOfBallMixin (uniform_of_normedDomain R_normedZmodType)).
 
 Canonical R_uniformType : uniformType R_numDomainType :=
-  UniformType R (uniform_of_normedDomain R_normedDomainType).
+  UniformType R (uniform_of_normedDomain R_normedZmodType).
 
 Canonical R_uniformNormedDomainType := [uniformNormedDomainType R of R].
 
@@ -651,25 +638,20 @@ Notation xclass := (class : class_of xT).
 Definition pack b0 l0
                 (m0 : @mixin_of K (@UniformNormedDomain.Pack K (Phant K) R b0)
                                 (GRing.Lmodule.scale l0)) :=
-  fun bT b & phant_id (@Num.NormedDomain.class K (Phant K) bT) b =>
+  fun bT b & phant_id (@Num.NormedZModule.class K (Phant K) bT) b =>
   fun l & phant_id l0 l =>
   fun m & phant_id m0 m => Pack phK (@Class T b l m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition ringType := @GRing.Ring.Pack cT xclass.
-Definition comRingType := @GRing.ComRing.Pack cT xclass.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
-Definition normedDomainType := @Num.NormedDomain.Pack K (Phant K) cT xclass.
+Definition normedZmodType := @Num.NormedZModule.Pack K (Phant K) cT xclass.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition uniformType := @Uniform.Pack K cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
-(*Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass.*)
+Definition join_zmodType := @GRing.Zmodule.Pack uniformType xclass.
 Definition join_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
 End ClassDef.
 
@@ -685,18 +667,8 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
-Coercion ringType : type >-> GRing.Ring.type.
-Canonical ringType.
-Coercion comRingType : type >-> GRing.ComRing.type.
-Canonical comRingType.
-Coercion unitRingType : type >-> GRing.UnitRing.type.
-Canonical unitRingType.
-Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
-Canonical comUnitRingType.
-Coercion idomainType : type >-> GRing.IntegralDomain.type.
-Canonical idomainType.
-Coercion normedDomainType : type >-> Num.NormedDomain.type.
-Canonical normedDomainType.
+Coercion normedZmodType : type >-> Num.NormedZModule.type.
+Canonical normedZmodType.
 Coercion lmodType : type >-> GRing.Lmodule.type.
 Canonical lmodType.
 Coercion uniformType : type >-> Uniform.type.
@@ -707,7 +679,7 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-(*Canonical join_zmodType.*)
+Canonical join_zmodType.
 Canonical join_lmodType.
 
 Notation normedModType K := (type (Phant K)).
@@ -959,18 +931,18 @@ End NearNorm.
 
 Section NormedModule2.
 
-Context {T : Type} {K : absRingType} {V : normedModType K}.
+Context {T : Type} {K : realFieldType(*absRingType*)} {V : normedModType K}.
 
 Lemma flimi_unique {F} {FF : ProperFilter F} (f : T -> set V) :
   {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
 
 Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, `|[y - y']| < eps.
+  F --> y <-> forall eps, 0 < eps -> \forall y' \near F, `|y - y'| < eps.
 Proof. by rewrite -filter_fromP /= !locally_simpl. Qed.
 
 Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
-  (forall eps : R, 0 < eps -> \forall y' \near F, `|[y - y']| <= eps) ->
+  (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
   F --> y.
 Proof.
 move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
@@ -978,17 +950,25 @@ by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|[y - y']| < eps.
+  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
 Proof. by move=> /flim_normP. Qed.
 
+End NormedModule2.
+Hint Resolve normm_ge0 : core.
+Arguments flim_norm {_ _ F FF}.
+
+Section NormedModule2'.
+
+Context {T : Type} {V : normedModType R}.
+
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> \forall M \near +oo, \forall y' \near F, `|[y']|%real < M.
+  F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof.
-move=> /flim_norm Fy; exists `|[y]| => M.
+move=> /flim_norm Fy; exists `|y| => M.
 rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
-apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|[y]|)).
+apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
 rewrite (le_lt_trans _ yy') //.
-by rewrite (le_trans _ (ler_distm_dist _ _)) // absRE distrC ler_norm.
+by rewrite (le_trans _ (ler_distm_dist _ _)) // (*absRE*) distrC ler_norm.
 Qed.
 
 Lemma flimi_map_lim {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
@@ -999,13 +979,11 @@ move=> f_prop f_l; apply: get_unique => // l' f_l'.
 exact: flimi_unique _ f_l' f_l.
 Qed.
 
-End NormedModule2.
-Hint Resolve normm_ge0 : core.
-Arguments flim_norm {_ _ F FF}.
-Arguments flim_bounded {_ _ F FF}.
+End NormedModule2'.
+Arguments flim_bounded {_ F FF}.
 
-Lemma continuous_flim_norm {K : absRingType} (V W : normedModType K) (f : V -> W) x l :
-  continuous f -> x --> l -> forall e : posreal, `|[f l - f x]| < e%:num.
+Lemma continuous_flim_norm (*{K : absRingType}*) (V W : normedModType R) (f : V -> W) x l :
+  continuous f -> x --> l -> forall e : posreal, `|f l - f x| < e%:num.
 Proof.
 move=> cf xl e.
 move/flim_norm: (cf l) => /(_ _ (posnum_gt0 e)).
@@ -1020,34 +998,108 @@ Qed.
 
 Section matrix_normedMod.
 
-Variables (K : absRingType) (m n : nat).
+Variables (K : realFieldType(*absRingType*)) (m n : nat).
 
 (* take m.+1, n.+1 because ball_normE is not provable for m = 0 or n = 0 *)
 Definition mx_norm (x : 'M[K]_(m.+1, n.+1)) :=
   bigmaxr 0 [seq `|x ij.1 ij.2| | ij : 'I_m.+1 * 'I_n.+1].
 
-Program Definition matrix_NormedModMixin :=
-  @NormedModMixin _ _
-    (@locally _ [filteredType 'M[K]_(m.+1, n.+1) of 'M[K]_(m.+1, n.+1)])
-    (Uniform.mixin (Uniform.class _)) mx_norm _ _ _ _.
-Next Obligation.
+Let mx_norm1 (x y : 'M_(m.+1, n.+1)) : mx_norm (x + y) <= mx_norm x + mx_norm y.
+Proof.
 apply/bigmaxr_lerP=> [|i]; rewrite size_map -cardT mxvec_cast // => ltimn.
 rewrite (nth_map (ord0, ord0)); last by rewrite -cardT mxvec_cast.
-rewrite mxE; apply: le_trans (ler_abs_add _ _) _.
+rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
 do 2 ?[rewrite -(nth_map _ 0 (fun p => `|_ p.1 p.2|)) -?cardT ?mxvec_cast //].
 by apply: ler_add; apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
 Qed.
-Next Obligation.
+
+Let mx_norm2 (x : 'M_(m.+1, n.+1)) : mx_norm x = 0 -> x = 0.
+Proof.
+move=> x0; apply/matrixP => i j; rewrite mxE; apply/eqP.
+rewrite -normr_eq0 eq_le; apply/andP; split; last exact: normr_ge0.
+have /(bigmaxr_ler 0) :
+  (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
+   size [seq (`|x ij.1 ij.2|)%R | ij : 'I_m.+1 * 'I_n.+1])%N.
+  by rewrite size_map index_mem mem_enum.
+rewrite -{3}x0; apply: le_trans.
+rewrite (nth_map (ord0, ord0)); last by rewrite index_mem mem_enum.
+by rewrite nth_index // mem_enum.
+Qed.
+
+Let mx_norm3 (x : 'M_(m.+1, n.+1)) n0 :  mx_norm (x *+ n0) = mx_norm x *+ n0.
+Proof.
 apply/bigmaxrP; split=> [|i].
-  have : (0 < size [seq `|x ij.1 ij.2|%real | ij : 'I_m.+1 * 'I_n.+1])%N.
+  have : (0 < size [seq `|x ij.1 ij.2|%R | ij : 'I_m.+1 * 'I_n.+1])%O.
     by rewrite size_map -cardT mxvec_cast.
   move=> /bigmaxr_mem - /(_ 0) /mapP [ij ijP normx]; rewrite [mx_norm _]normx.
-  by apply/mapP; exists ij => //; rewrite mxE absrM.
+  by apply/mapP; exists ij => //; rewrite mulmxnE normrMn.
 rewrite size_map -cardT mxvec_cast // => ltimn.
 rewrite (nth_map (ord0, ord0)); last by rewrite -cardT mxvec_cast.
-rewrite mxE absrM ler_pmul // -(nth_map _ 0 (fun p => `|x p.1 p.2|)).
+rewrite mulmxnE normrMn ler_muln2r /=.
+case/boolP : (n0 == O) => n0O //=.
+rewrite -(nth_map _ 0 (fun p => `|x p.1 p.2|)).
   by apply: bigmaxr_ler; rewrite size_map -cardT mxvec_cast.
 by rewrite -cardT mxvec_cast.
+Qed.
+
+Let mx_norm4 (x : 'M_(m.+1, n.+1)) : mx_norm (- x) = mx_norm x.
+Proof.
+rewrite /mx_norm; congr (bigmaxr 0 _).
+apply eq_in_map => /= i _; by rewrite mxE normrN.
+Qed.
+
+Definition matrix_normedZModuleClass :
+  Num.NormedZModule.class_of K 'M[K]_(m.+1, n.+1) :=
+  Num.NormedZModule.Class (Num.NormedMixin mx_norm1 mx_norm2 mx_norm3 mx_norm4).
+
+Canonical K_filteredType := [filteredType K of K for filtered_of_normedZmod K].
+
+Canonical K_topologicalType : topologicalType := @Topological.Pack K
+  (@Topological.Class K (Filtered.class K_filteredType)
+    (@topologyOfBallMixin _ K _ (@uniform_of_normedDomain K K))).
+
+Canonical K_uniformType : uniformType K := @Uniform.Pack K K (@Uniform.Class K K
+  (Topological.class K_topologicalType) (@uniform_of_normedDomain K K)).
+
+Definition matrix_uniformNormedDomainType : uniformNormedDomainType K :=
+  @UniformNormedDomain.Pack K _ 'M[K]_(m.+1, n.+1)
+    (@UniformNormedDomain.Class K _ matrix_normedZModuleClass 0 _
+      (matrix_topologicalTypeMixin _ _ _)
+      (@matrix_uniformType_mixin _ _ K K_uniformType)).
+
+Definition K_lalgType : lalgType K := @GRing.regular_lalgType K.
+
+Lemma bigmaxr_scale (s : seq [finType of 'I_m.+1 * 'I_n.+1]) (k : K) (x : 'M[K]_(m.+1, n.+1)) :
+  bigmaxr 0 (map (fun ij => `|(k *: x) ij.1 ij.2|) s) =
+  `| k | * bigmaxr 0 (map (fun ij => `|x ij.1 ij.2|) s).
+Proof.
+elim: s k x => /= [|h [|h' t] ih k x].
+  move=> k _.
+  by rewrite bigmaxr_nil mulr0.
+rewrite !bigmaxr_un.
+transitivity (`| k *: (x h.1 h.2 : [zmodType of K^o]) |).
+  by rewrite mxE.
+admit.
+rewrite bigmaxr_cons ih bigmaxr_cons.
+rewrite maxr_pmulr ?normr_ge0 //.
+congr maxr.
+rewrite mxE.
+Admitted.
+
+Obligation Tactic := idtac.
+Program Definition matrix_NormedModMixin :=
+  @NormedModMixin K matrix_uniformNormedDomainType (fun k x => k *: x) _.
+Next Obligation.
+by move=> /= k x; rewrite {1 3}/normr /= /mx_norm bigmaxr_scale.
+Qed.
+
+(*    (@locally _ [filteredType 'M[K]_(m.+1, n.+1) of 'M[K]_(m.+1, n.+1)])
+    (Uniform.mixin (Uniform.class _)) mx_norm _ _ _ _.
+Next Obligation.
+...
+Qed.
+Next Obligation.
+...
 Qed.
 Next Obligation.
 rewrite predeq3E => x e y; split.
@@ -1063,16 +1115,8 @@ rewrite (nth_map (ord0, ord0)); last by rewrite index_mem.
 by rewrite !mxE !nth_index //=; apply=> //; rewrite -mxvec_cast cardT index_mem.
 Qed.
 Next Obligation.
-apply/matrixP => i j; rewrite mxE; apply/eqP.
-rewrite -absr_eq0 eq_le; apply/andP; split; last exact: absr_ge0.
-have /(bigmaxr_ler 0) :
-  (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
-   size [seq (`|x ij.1 ij.2|)%real | ij : 'I_m.+1 * 'I_n.+1])%N.
-  by rewrite size_map index_mem mem_enum.
-rewrite -{3}H; apply: le_trans.
-rewrite (nth_map (ord0, ord0)); last by rewrite index_mem mem_enum.
-by rewrite nth_index // mem_enum.
-Qed.
+...
+Qed.*)
 
 Canonical matrix_normedModType :=
   NormedModType K 'M[K]_(m.+1, n.+1) matrix_NormedModMixin.
