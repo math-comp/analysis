@@ -1043,7 +1043,7 @@ Section NormedModule2'.
 
 Context {T : Type}.
 
-Lemma flim_bounded {V : normedModType Rdefinitions.R} {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma flim_bounded {R : realType} {V : normedModType R} {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof.
 move=> /flim_norm Fy; exists `|y| => M.
@@ -1062,7 +1062,7 @@ exact: flimi_unique _ f_l' f_l.
 Qed.
 
 End NormedModule2'.
-Arguments flim_bounded {_ F FF}.
+Arguments flim_bounded {_ _ F FF}.
 
 Lemma continuous_flim_norm {R : realFieldType} (*{K : absRingType}*) (V W : normedModType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
@@ -1333,54 +1333,59 @@ Grab Existential Variables. all: end_near. Qed.
 
 End NVS_continuity.
 
+(* kludge *)
+Global Instance filter_locally (K' : realType) (K := topological_of_realfield K') (k : K) : Filter (locally k).
+Proof. exact: (@locally_filter [topologicalType of K]). Qed.
+
 Section NVS_continuity1.
 Context {K' : realType} {V : normedModType K'}.
 Let K := topological_of_realfield K'.
 Local Notation "'+oo'" := (@ERPInf K').
 Local Notation "'-oo'" := (@ERNInf K').
-(* TODO: urgent
+
 Lemma scale_continuous :
   continuous (fun z : [filteredType _ of K * V] => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
 rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
-  rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
+  rewrite (le_lt_trans (ler_pmul _ _ (_ : _ <= `|k| + 1) (lexx _)))
           ?ler_addl //.
-  rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
+  rewrite -ltr_pdivl_mull // ?(lt_le_trans ltr01) ?ler_addr //; near: z.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
-have zM: `|[z]| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
-rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= M))) // ?ltrW//.
+have zM : `|z| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
+rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW //.
+rewrite -ltr_pdivl_mulr ?(le_lt_trans _ zM) //; near: l.
+(* TODO urgent
 by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
 Grab Existential Variables. all: end_near. Qed.
+*)
+Admitted.
 
 Arguments scale_continuous _ _ : clear implicits.
-*)
 
-(* TODO urgent
 Lemma scaler_continuous k : continuous (fun x : V => k *: x).
 Proof.
 by move=> x; apply: (flim_comp2 (flim_const _) flim_id (scale_continuous (_, _))).
 Qed.
-*)
 
 Lemma scalel_continuous (x : V) : continuous (fun k : [filteredType _ of K] => k *: x).
-(*Proof.
+Proof.
 by move=> k; apply: (flim_comp2 flim_id (flim_const _) (scale_continuous (_, _))).
-Qed.*) Abort. (* TODO: urgent *)
+Qed.
 
 Lemma opp_continuous : continuous (@GRing.opp V).
 Proof.
-(*move=> x; rewrite -scaleN1r => P /scaler_continuous /=.
+move=> x; rewrite -scaleN1r => P /scaler_continuous /=.
 rewrite !locally_nearE near_map.
 by apply: filterS => x'; rewrite scaleN1r.
-Qed.*) Abort. (* TODO: urgent *)
+Qed.
 
 End NVS_continuity1.
 
 Section limit_composition.
 
-Context {K : realFieldType(*absRingType*)} {V : normedModType K} {T : topologicalType}.
+Context {K' : realFieldType(*absRingType*)} {V : normedModType K'} {T : topologicalType}.
 
 Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
@@ -1395,12 +1400,16 @@ Lemma continuousD (f g : T -> V) x :
   {for x, continuous (fun x => f x + g x)}.
 Proof. by move=> ??; apply: lim_add. Qed.
 
-(*
-TODO: urgent
+Let K := topological_of_realfield K'.
+
 Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
   (k : K) (a : V) :
   f @ F --> k -> g @ F --> a -> (fun x => (f x) *: (g x)) @ F --> k *: a.
-Proof. by move=> ??; apply: lim_cont2 => //; exact: scale_continuous. Qed.
+Proof.
+(* TODO urgent
+move=> ??; apply: lim_cont2 => //; exact: scale_continuous. Qed.
+*)
+Admitted.
 
 Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (a : V) (k : K) :
   f @ F --> k -> (fun x => (f x) *: a) @ F --> k *: a.
@@ -1420,12 +1429,16 @@ Proof. by move=> ?; apply: lim_scalel. Qed.
 
 Lemma lim_opp (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
   f @ F --> a -> (fun x => - f x) @ F --> - a.
-Proof. by move=> ?; apply: lim_cont => //; apply: opp_continuous. Qed.
+Proof.
+(* TODO: urgent
+by move=> ?; apply: lim_cont => //; apply: opp_continuous. Qed.*)
+Admitted.
 
 Lemma continuousN (f : T -> V) x :
   {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
 Proof. by move=> ?; apply: lim_opp. Qed.
 
+(* TODO: urgent
 Lemma lim_mult (x y : K) : z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof. exact: (@scale_continuous _ (AbsRing_NormedModType K)). Qed.
 
@@ -1434,7 +1447,6 @@ Lemma continuousM (f g : T -> K) x :
   {for x, continuous (fun x => f x * g x)}.
 Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
 *)
-
 End limit_composition.
 
 (** ** Complete Normed Modules *)
