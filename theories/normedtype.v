@@ -770,7 +770,7 @@ Fail Canonical R_NormedModule := [normedModType Rdefinitions.R of Rdefinitions.R
 Notation "`|[ x ]|" := (norm x) : ring_scope.*)
 
 Section NormedModule1.
-Context {K : numDomainType(*absRingType*)} {V : uniformNormedZmoduleType K}.
+Context {K : numDomainType(*absRingType*)} {V : normedZmodType K}.
 Implicit Types (l : K) (x y : V) (eps : posreal).
 
 (*TODO: useless? *)
@@ -808,6 +808,12 @@ Proof. exact: normr_le0. Qed.
 Lemma ler_distm_dist x y : `| `|x| - `|y| | <= `|x - y|.
 Proof. exact: ler_dist_dist. Qed.
 
+End NormedModule1.
+
+Section NormedModule1'.
+Context {K : numDomainType(*absRingType*)} {V : uniformNormedZmoduleType K}.
+Implicit Types (l : K) (x y : V) (eps : posreal).
+
 Notation ball_norm := (ball_ (@normr K V)).
 
 Notation locally_norm := (locally_ ball_norm).
@@ -815,9 +821,9 @@ Notation locally_norm := (locally_ ball_norm).
 Lemma ball_normE : ball_norm = ball.
 Proof. by case: V => ? [? ? ? ? ? []]. Qed.
 
-End NormedModule1.
+End NormedModule1'.
 
-Section NormedModule1'.
+Section NormedModule1''.
 Variables (R : realFieldType) (V : normedModType R).
 
 Lemma normmZ l (x : V) : `| l *: x | = `| l | * `| x |.
@@ -911,15 +917,6 @@ Lemma near_locally_norm (x : V) (P : set V) :
   (\forall x \near locally_norm x, P x) = \near x, P x.
 Proof. exact: locally_normE. Qed.
 
-End NormedModule1'.
-
-Section NormedModule1''.
-Variables (R : realFieldType) (V : normedModType R).
-
-Notation ball_norm := (ball_ (@normr _ V)).
-
-Notation locally_norm := (locally_ ball_norm).
-
 Lemma locally_norm_ball_norm x (e : {posnum R}) :
   locally_norm x (ball_norm x e%:num).
 Proof. by exists e%:num. Qed.
@@ -980,13 +977,17 @@ apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
 rewrite inE -ler_distl (*-absRE*); set he := (e%:num / 2)%:pos.
 have [z []] := clxy _ _ (@locally_ball _ R_uniformType x he) (locally_ball y he).
 move=> zx_he yz_he.
-Print Canonical Projections.
 rewrite (@subr_trans R_zmodType(*TODO???*) z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (@distrC _ R_normedZmodType (*TODO???*) z); apply: ltr_add.
 Qed.
 
-(* TODO: replay on top of Redefinitions.R *)
-(* Lemma normedModType_hausdorff : hausdorff V.
+End NormedModule1''.
+
+Section NormedModule1'''.
+
+Variable (V : normedModType Rdefinitions.R).
+
+Lemma normedModType_hausdorff : hausdorff V.
 Proof.
 move=> p q clp_q; apply/subr0_eq/normm0_eq0/Rhausdorff => A B pq_A.
 rewrite -(@normm0 _ V) -(subrr p) => pp_B.
@@ -997,9 +998,9 @@ suff loc_preim r C :
 move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
 apply: pre_C; apply: le_lt_trans (ler_distm_dist _ _) _.
 by rewrite opprB addrC -subr_trans normmB.
-Qed.*)
+Qed.
 
-End NormedModule1''.
+End NormedModule1'''.
 
 Module Export LocallyNorm.
 Definition locally_simpl := (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
