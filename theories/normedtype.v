@@ -410,7 +410,7 @@ Notation "[ 'uniformNormedZmoduleType' R 'of' T ]" :=
 End Exports.
 
 End UniformNormedZmodule.
-Import UniformNormedZmodule.Exports.
+Export UniformNormedZmodule.Exports.
 
 (*TODO: create a Definition that creates, given a ring structure, a
 pointed type with 0 as a default element and a Definition that creates,
@@ -714,11 +714,13 @@ Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
 Definition uniformType := @Uniform.Pack K cT xclass.
-Definition normedZmod_lmodType := @GRing.Lmodule.Pack K phK normedZmodType xclass.
+Definition uniformNormedZmodType := @UniformNormedZmodule.Pack K phK cT xclass.
 Definition pointed_lmodType := @GRing.Lmodule.Pack K phK pointedType xclass.
 Definition filtered_lmodType := @GRing.Lmodule.Pack K phK filteredType xclass.
 Definition topological_lmodType := @GRing.Lmodule.Pack K phK topologicalType xclass.
 Definition uniform_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
+Definition normedZmod_lmodType := @GRing.Lmodule.Pack K phK normedZmodType xclass.
+Definition uniformNormedZmod_lmodType := @GRing.Lmodule.Pack K phK uniformNormedZmodType xclass.
 End ClassDef.
 
 Module Exports.
@@ -737,19 +739,22 @@ Coercion normedZmodType : type >-> Num.NormedZmodule.type.
 Canonical normedZmodType.
 Coercion lmodType : type >-> GRing.Lmodule.type.
 Canonical lmodType.
-Coercion uniformType : type >-> Uniform.type.
-Canonical uniformType.
 Coercion pointedType : type >-> Pointed.type.
 Canonical pointedType.
 Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-Canonical normedZmod_lmodType.
+Coercion uniformType : type >-> Uniform.type.
+Canonical uniformType.
+Coercion uniformNormedZmodType : type >-> UniformNormedZmodule.type.
+Canonical uniformNormedZmodType.
 Canonical pointed_lmodType.
 Canonical filtered_lmodType.
 Canonical topological_lmodType.
 Canonical uniform_lmodType.
+Canonical normedZmod_lmodType.
+Canonical uniformNormedZmod_lmodType.
 Notation normedModType K := (type (Phant K)).
 Notation NormedModType K T m := (@pack _ (Phant K) T _ _ m _ _ idfun _ idfun _ idfun).
 Notation NormedModMixin := Mixin.
@@ -837,21 +842,21 @@ Lemma distm_lt_split (z x y : V) (e : R) :
   `|x - z| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
 Proof.
 have := @ball_split _ _ z x y e.
-by rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))).
+by rewrite -ball_normE.
 Qed.
 
 Lemma distm_lt_splitr (z x y : V) (e : R) :
   `|z - x| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
 Proof.
 have := @ball_splitr _ _ z x y e.
-by rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))).
+by rewrite -ball_normE.
 Qed.
 
 Lemma distm_lt_splitl (z x y : V) (e : R) :
   `|x - z| < e / 2 -> `|y - z| < e / 2 -> `|x - y| < e.
 Proof.
 have := @ball_splitl _ _ z x y e.
-by rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))).
+by rewrite -ball_normE.
 Qed.
 
 Lemma normm_leW (x : V) (e : R) : e > 0 -> `|x| <= e / 2 -> `|x| < e.
@@ -870,11 +875,10 @@ Lemma closeE (x y : V) : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
 have dxy_gt0 : `|x - y| > 0.
-  rewrite (@normm_gt0 _ (UniformNormedZmodule.Pack (Phant R) (NormedModule.base (NormedModule.class V)))).
-  by rewrite subr_eq0.
+  by rewrite normm_gt0 subr_eq0.
 have dxy_ge0 := ltW dxy_gt0.
 have := cl_xy ((PosNum dxy_gt0)%:num / 2)%:pos.
-rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))) /= -subr_lt0 le_gtF //.
+rewrite -ball_normE /= -subr_lt0 le_gtF //.
 rewrite -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
 by rewrite subr_ge0 -(@ler_pmul2r _ 2) // mulVf // mul1r ler1n.
 Qed.
@@ -883,19 +887,19 @@ Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
 Lemma locally_le_locally_norm (x : V) : flim (locally x) (locally_norm x).
 Proof.
 move=> P [_ /posnumP[e] subP]; apply/locallyP.
-by eexists; last (move=> y Py; apply/subP; rewrite (@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))); apply/Py).
+by eexists; last (move=> y Py; apply/subP; rewrite ball_normE; apply/Py).
 Qed.
 
 Lemma locally_norm_le_locally x : flim (locally_norm x) (locally x).
 Proof.
 move=> P /locallyP [_ /posnumP[e] Pxe].
-by exists e%:num => // y; rewrite (@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))); apply/Pxe.
+by exists e%:num => // y; rewrite ball_normE; apply/Pxe.
 Qed.
 
 (* NB: this lemmas was not here before *)
 Lemma locally_locally_norm : locally_norm = locally.
 Proof.
-by rewrite funeqE => x; rewrite /locally_norm (@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))) filter_from_ballE.
+by rewrite funeqE => x; rewrite /locally_norm ball_normE filter_from_ballE.
 Qed.
 
 Lemma locally_normP x P : locally x P <-> locally_norm x P.
@@ -939,14 +943,14 @@ Lemma ball_norm_dec x y (e : R) : {ball_norm x e y} + {~ ball_norm x e y}.
 Proof. exact: pselect. Qed.
 
 Lemma ball_norm_sym x y (e : R) : ball_norm x e y -> ball_norm y e x.
-Proof. by rewrite /ball_norm -opprB (@normmN _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))). Qed.
+Proof. by rewrite /ball_norm -opprB normmN. Qed.
 
 Lemma ball_norm_le x (e1 e2 : R) :
   e1 <= e2 -> ball_norm x e1 `<=` ball_norm x e2.
 Proof. by move=> e1e2 y /lt_le_trans; apply. Qed.
 
 Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
-Proof. by rewrite propeqE (@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))). Qed.
+Proof. by rewrite propeqE ball_normE. Qed.
 
 Lemma ball_norm_eq x y : (forall eps : {posnum R}, ball_norm x eps%:num y) -> x = y.
 Proof. by rewrite -norm_close closeE. Qed.
@@ -1051,7 +1055,7 @@ move=> /flim_norm Fy; exists `|y| => M.
 rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
 rewrite (le_lt_trans _ yy') //.
-by rewrite (le_trans _ (@ler_distm_dist _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V))) _ _)) // (*absRE*) distrC ler_norm.
+by rewrite (le_trans _ (ler_distm_dist _ _)) // (*absRE*) distrC ler_norm.
 Qed.
 
 Lemma flimi_map_lim {R : realFieldType} {V : normedModType R} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
@@ -1074,7 +1078,7 @@ rewrite nearE /= => /locallyP; rewrite locally_E => -[i i0]; apply.
 have /@flim_norm : Filter [filter of x] by apply: filter_on_Filter.
 move/(_ _ xl _ i0).
 rewrite nearE /= => /locallyP; rewrite locally_E => -[j j0].
-move/(_ _ (ballxx _ j0)); by rewrite -(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class V)))).
+by move/(_ _ (ballxx _ j0)); rewrite -ball_normE.
 Qed.
 
 (** ** Matrices *)
@@ -1148,12 +1152,12 @@ Section matrix_normedMod.
 
 Variables (K : realFieldType(*absRingType*)) (m n : nat).
 
-Definition matrix_normedZModuleMixin :=
+Definition matrix_normedZmodMixin :=
   Num.NormedMixin (@ler_mx_norm_add K m n)
     (@mx_norm_eq0 _ _ _) (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
 
-Canonical matrix_normedZModuleType :=
-  NormedZmoduleType K 'M[K]_(m.+1, n.+1) matrix_normedZModuleMixin.
+Canonical matrix_normedZmodType :=
+  NormedZmoduleType K 'M[K]_(m.+1, n.+1) matrix_normedZmodMixin.
 
 (* TODO: show the norm axiom and then use a factory
 to instantiate the types below *)
@@ -1207,64 +1211,26 @@ Section prod_NormedModule.
 
 Context {K : realFieldType(*absRingType*)} {U V : normedModType K}.
 
-Definition prod_norm (x : U * V) := maxr `|x.1| `|x.2|.
+Lemma prod_normE (x : U * V) : `|x| = maxr `|x.1| `|x.2|.
+Proof. by []. Qed.
 
-Lemma prod_norm_triangle : forall x y : U * V, prod_norm (x + y) <= prod_norm x + prod_norm y.
-Proof.
-by move=> [xu xv] [yu yv]; rewrite leUx /=; apply/andP; split;
-  apply: le_trans (ler_norm_add _ _) _; apply: ler_add;
-  rewrite lexU lexx // orbC.
-Qed.
+Lemma prod_norm_scale (l : K) (x : U * V) : `|l *: x| = `|l| * `|x|.
+Proof. by rewrite !prod_normE !normmZ maxr_pmulr. Qed.
 
-Lemma prod_norm_scal (l : K) (x : U * V) :
-  prod_norm (l *: x) = `| l | * prod_norm x.
-Proof. by rewrite /prod_norm !normmZ maxr_pmulr. Qed.
-
-Lemma ball_prod_normE : ball = ball_ prod_norm.
+Lemma ball_prod_normE : ball = ball_ (@normr _ [normedZmodType K of U * V]).
 Proof.
 rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
 rewrite /ball /= /prod_ball.
-rewrite -!(@ball_normE _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class _)))).
-by rewrite /ball_ ltUx; split=> /andP.
+by rewrite -!ball_normE /ball_ ltUx; split=> /andP.
 Qed.
-
-Lemma prod_norm_eq0 (x : U * V) : prod_norm x = 0 -> x = 0.
-Proof.
-case: x => [xu xv]; rewrite /prod_norm /= => nx0.
-suff /andP [/eqP -> /eqP ->] : (xu == 0) && (xv == 0) by [].
-rewrite -!(@normm_eq0 _ (UniformNormedZmodule.Pack _ (NormedModule.base (NormedModule.class _)))) !eq_le !normm_ge0.
-have : maxr `|xu| `|xv| <= 0 by rewrite nx0 lexx.
-by rewrite leUx => /andP [-> ->].
-Qed.
-
-Lemma prod_norm_natmul (x : U * V) n : prod_norm (x *+ n) = prod_norm x *+ n.
-Proof.
-rewrite /prod_norm /= pairMnE !normrMn; elim: n => [|n ih].
-  by rewrite !mulr0n mc_1_9.Num.Theory.maxr_r.
-rewrite [in RHS]mulrS -{}ih !mulrS; case: (lerP `|x.1| `|x.2|) => x12.
-  rewrite !mc_1_9.Num.Theory.maxr_r // ?ler_muln2r ?x12 ?orbT //.
-  by rewrite ler_add // ler_muln2r // x12 orbT.
-rewrite !mc_1_9.Num.Theory.maxr_l // ?ler_muln2r ?(ltW x12) ?orbT //.
-by rewrite ler_add // ?ler_muln2r // ?(ltW x12) // orbT.
-Qed.
-
-Lemma prod_normN (x : U * V) : prod_norm (- x) = prod_norm x.
-Proof. by case: x => u v; rewrite /prod_norm /= !normrN. Qed.
 
 End prod_NormedModule.
 
 Section prod.
 Variables (K : realFieldType) (U V : normedModType K).
 
-Definition prod_NormedZModuleMixin :=
-  Num.NormedMixin (@prod_norm_triangle K U V)
-    (@prod_norm_eq0 K U V) (@prod_norm_natmul _ _ _) (@prod_normN _ _ _).
-
-Canonical prod_normedZmModuleType :=
-  NormedZmoduleType K (U * V) prod_NormedZModuleMixin.
-
 Lemma prod_norm_ball :
-  @ball _ [uniformType K of U * V] = ball_ (fun x => `| x |).
+  @ball _ [uniformType K of U * V] = ball_ (fun x => `|x|).
 Proof. by rewrite /= -ball_prod_normE. Qed.
 
 Definition prod_UniformNormedZmodMixin :=
@@ -1272,7 +1238,7 @@ Definition prod_UniformNormedZmodMixin :=
 Canonical prod_uniformNormedZmodType :=
   UniformNormedZmoduleType K (U * V) prod_UniformNormedZmodMixin.
 
-Definition prod_NormedModMixin := NormedModMixin prod_norm_scal.
+Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
 Canonical prod_normedModType :=
   NormedModType K (U * V) prod_NormedModMixin.
 
