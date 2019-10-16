@@ -1334,55 +1334,53 @@ Grab Existential Variables. all: end_near. Qed.
 End NVS_continuity.
 
 Section NVS_continuity1.
-Context {K : realType} {V : normedModType K}.
-Local Notation "'+oo'" := (@ERPInf _).
-Local Notation "'-oo'" := (@ERNInf _).
-Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
+Context {K' : realType} {V : normedModType K'}.
+Let K := topological_of_realfield K'.
+Local Notation "'+oo'" := (@ERPInf K').
+Local Notation "'-oo'" := (@ERNInf K').
+(* TODO: urgent
+Lemma scale_continuous :
+  continuous (fun z : [filteredType _ of K * V] => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
 rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
-  rewrite (le_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lexx _)))
+  rewrite (ler_lt_trans (ler_pmul _ _ (_ : _ <= `|k|%real + 1) (lerr _)))
           ?ler_addl //.
-  rewrite -ltr_pdivl_mull // ?(lt_le_trans ltr01) ?ler_addr //; near: z.
+  rewrite -ltr_pdivl_mull // ?(ltr_le_trans ltr01) ?ler_addr //; near: z.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
-have zM: `|z| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
-rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW //.
-rewrite -ltr_pdivl_mulr //; near: l.
-apply: (flim_norm (_ : K^o)).
-move: (@flim_norm Rstruct.R_realFieldType V).
-
-(*by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).*)
-
-
-; apply: (flim_norm (_ : K^o)).
-
+have zM: `|[z]| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
+rewrite (ler_lt_trans (ler_pmul _ _ (lerr _) (_ : _ <= M))) // ?ltrW//.
+by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
 Grab Existential Variables. all: end_near. Qed.
 
 Arguments scale_continuous _ _ : clear implicits.
+*)
 
+(* TODO urgent
 Lemma scaler_continuous k : continuous (fun x : V => k *: x).
 Proof.
 by move=> x; apply: (flim_comp2 (flim_const _) flim_id (scale_continuous (_, _))).
 Qed.
+*)
 
-Lemma scalel_continuous (x : V) : continuous (fun k : K => k *: x).
-Proof.
+Lemma scalel_continuous (x : V) : continuous (fun k : [filteredType _ of K] => k *: x).
+(*Proof.
 by move=> k; apply: (flim_comp2 flim_id (flim_const _) (scale_continuous (_, _))).
-Qed.
+Qed.*) Abort. (* TODO: urgent *)
 
 Lemma opp_continuous : continuous (@GRing.opp V).
 Proof.
-move=> x; rewrite -scaleN1r => P /scaler_continuous /=.
+(*move=> x; rewrite -scaleN1r => P /scaler_continuous /=.
 rewrite !locally_nearE near_map.
 by apply: filterS => x'; rewrite scaleN1r.
-Qed.
+Qed.*) Abort. (* TODO: urgent *)
 
-End NVS_continuity.
+End NVS_continuity1.
 
 Section limit_composition.
 
-Context {K : absRingType} {V : normedModType K} {T : topologicalType}.
+Context {K : realFieldType(*absRingType*)} {V : normedModType K} {T : topologicalType}.
 
 Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
@@ -1397,6 +1395,8 @@ Lemma continuousD (f g : T -> V) x :
   {for x, continuous (fun x => f x + g x)}.
 Proof. by move=> ??; apply: lim_add. Qed.
 
+(*
+TODO: urgent
 Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
   (k : K) (a : V) :
   f @ F --> k -> g @ F --> a -> (fun x => (f x) *: (g x)) @ F --> k *: a.
@@ -1433,6 +1433,7 @@ Lemma continuousM (f g : T -> K) x :
   {for x, continuous f} -> {for x, continuous g} ->
   {for x, continuous (fun x => f x * g x)}.
 Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
+*)
 
 End limit_composition.
 
@@ -1442,44 +1443,46 @@ Module CompleteNormedModule.
 
 Section ClassDef.
 
-Variable K : absRingType.
+Variable K : realFieldType(*absRingType*).
 
 Record class_of (T : Type) := Class {
   base : NormedModule.class_of K T ;
-  mixin : Complete.axiom (Uniform.Pack base T)
+  mixin : Complete.axiom (Uniform.Pack base)
 }.
 Local Coercion base : class_of >-> NormedModule.class_of.
-Definition base2 T (cT : class_of T) : Complete.class_of T :=
-  @Complete.Class _ (@base T cT) (@mixin T cT).
+Definition base2 T (cT : class_of T) : Complete.class_of K T :=
+  @Complete.Class _ _ (@base T cT) (@mixin T cT).
 Local Coercion base2 : class_of >-> Complete.class_of.
 
-Structure type (phK : phant K) := Pack { sort; _ : class_of sort ; _ : Type }.
+Structure type (phK : phant K) := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 
 Variables (phK : phant K) (cT : type phK) (T : Type).
 
-Definition class := let: Pack _ c _ := cT return class_of cT in c.
+Definition class := let: Pack _ c := cT return class_of cT in c.
 
 Definition pack :=
   fun bT b & phant_id (@NormedModule.class K phK bT) (b : NormedModule.class_of K T) =>
-  fun mT m & phant_id (@Complete.class mT) (@Complete.Class T b m) =>
-    Pack phK (@Class T b m) T.
-Let xT := let: Pack T _ _ := cT in T.
+  fun mT m & phant_id (@Complete.class mT) (@Complete.Class K T b m) =>
+    Pack phK (@Class T b m).
+Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
+Definition normedZmodType := @Num.NormedZModule.Pack K phK cT xclass.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass xT.
-Definition filteredType := @Filtered.Pack cT cT xclass xT.
-Definition topologicalType := @Topological.Pack cT xclass xT.
-Definition uniformType := @Uniform.Pack cT xclass xT.
-Definition completeType := @Complete.Pack cT xclass xT.
-Definition join_zmodType := @GRing.Zmodule.Pack completeType xclass.
-Definition join_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
-Definition normedModType := @NormedModule.Pack K phK cT xclass xT.
-Definition join_completeType := @Complete.Pack normedModType xclass xT.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
+Definition uniformType := @Uniform.Pack _ cT xclass.
+Definition normedModType := @NormedModule.Pack K phK cT xclass.
+Definition completeType := @Complete.Pack _ cT xclass.
+Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
+Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
+Definition complete_normedZmodType := @Num.NormedZModule.Pack K phK completeType xclass.
+Definition complete_normedModType := @NormedModule.Pack K phK completeType xclass.
 End ClassDef.
 
 Module Exports.
@@ -1493,6 +1496,8 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
+Coercion normedZmodType : type >-> Num.NormedZModule.type.
+Canonical normedZmodType.
 Coercion lmodType : type >-> GRing.Lmodule.type.
 Canonical lmodType.
 Coercion pointedType : type >-> Pointed.type.
@@ -1503,17 +1508,17 @@ Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
-Canonical join_zmodType.
-Canonical join_lmodType.
-Coercion completeType : type >-> Complete.type.
-Canonical completeType.
 Coercion normedModType : type >-> NormedModule.type.
 Canonical normedModType.
-Canonical join_completeType.
+Coercion completeType : type >-> Complete.type.
+Canonical completeType.
+Canonical complete_zmodType.
+Canonical complete_lmodType.
+Canonical complete_normedZmodType.
+Canonical complete_normedModType.
 Notation completeNormedModType K := (type (Phant K)).
 Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ id _ _ id)
   (at level 0, format "[ 'completeNormedModType'  K  'of'  T ]") : form_scope.
-
 End Exports.
 
 End CompleteNormedModule.
@@ -1596,7 +1601,7 @@ Lemma ler_distW (R : realDomainType) (x y e : R):
    (`|x - y|%R <= e) -> y - e <= x.
 Proof. by rewrite ler_distl => /andP[]. Qed.
 
-Lemma R_complete (F : set (set R)) : ProperFilter F -> cauchy F -> cvg F.
+Lemma R_complete (R : realType) (F : set (set (topological_of_realfield R))) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF F_cauchy; apply/cvg_ex.
 pose D := \bigcap_(A in F) (down (mem A)).
