@@ -91,8 +91,8 @@ Record class_of (R : Type) : Type := Class {
 
 Local Coercion base : class_of >-> Num.ArchimedeanField.class_of.
 Local Coercion base_rcf R (c : class_of R) : Num.RealClosedField.class_of R :=
-  @Num.RealClosedField.Class _ c (@mixin_rcf _ c). 
-  
+  @Num.RealClosedField.Class _ c (@mixin_rcf _ c).
+
 Structure type := Pack {sort; _ : class_of sort; _ : Type}.
 Local Coercion sort : type >-> Sortclass.
 Variables (T : Type) (cT : type).
@@ -127,10 +127,8 @@ Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
 Definition numDomainType := @Num.NumDomain.Pack cT xclass.
 Definition normedZmodType := NormedZModuleType numDomainType cT xclass.
 Definition fieldType := @GRing.Field.Pack cT xclass.
-Definition join_numDomainType := @Num.NumDomain.Pack fieldType xclass.
 Definition realDomainType := @Num.RealDomain.Pack cT xclass.
 Definition numFieldType := @Num.NumField.Pack cT xclass.
-Definition join_realDomainType := @Num.RealDomain.Pack numFieldType xclass.
 Definition realFieldType := @Num.RealField.Pack cT xclass.
 Definition archimedeanFieldType := @Num.ArchimedeanField.Pack cT xclass.
 Definition rcfType := @Num.RealClosedField.Pack cT xclass.
@@ -170,7 +168,6 @@ Coercion numDomainType : type >-> Num.NumDomain.type.
 Canonical numDomainType.
 Coercion normedZmodType : type >-> Num.NormedZModule.type.
 Canonical normedZmodType.
-Canonical join_numDomainType.
 Coercion realDomainType : type >-> Num.RealDomain.type.
 Canonical realDomainType.
 Coercion fieldType : type >-> GRing.Field.type.
