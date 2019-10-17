@@ -64,7 +64,7 @@ Record posnum_def (R : numDomainType) := PosNumDef {
   posnum_gt0 : num_of_pos > 0
 }.
 Hint Resolve posnum_gt0 : core.
-Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
+Hint Extern 0 ((0%R < _)%O = true) => exact: posnum_gt0 : core.
 Definition posnum_of (R : numDomainType) (phR : phant R) := posnum_def R.
 Identity Coercion posnum_of_id : posnum_of >-> posnum_def.
 Notation "'{posnum' R }" := (posnum_of (@Phant R)).
@@ -106,8 +106,8 @@ Canonical invr_posnum x := PosNum (inv_pos_gt0 x).
 Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
 Canonical oner_posnum := PosNum one_pos_gt0.
 End PosNum.
-Hint Extern 0 ((0 <= _)%R = true) => exact: posnum_ge0 : core.
-Hint Extern 0 ((_ != 0)%R = true) => exact: posnum_neq0 : core.
+Hint Extern 0 ((0%R <= _)%O = true) => exact: posnum_ge0 : core.
+Hint Extern 0 ((_ != 0%R)%O = true) => exact: posnum_neq0 : core.
 
 Section PosNumReal.
 Context {R : realDomainType}.

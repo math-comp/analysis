@@ -561,15 +561,19 @@ Qed.*)
 
 Section realFieldType_topological.
 Variable R : realFieldType.
-Definition topological_of_realfield : Type := R.
-Canonical topological_of_realFieldType := [realFieldType of topological_of_realfield].
-Canonical realFieldType_pointedType := [pointedType of topological_of_realfield for pointed_of_zmodule R].
+(*Canonical topological_of_realFieldType := [realFieldType of R^o].*)
+Canonical realFieldType_pointedType :=
+  [pointedType of R^o for pointed_of_zmodule R].
 Canonical realFieldType_filteredType :=
-  [filteredType R of topological_of_realfield for filtered_of_normedZmod R].
-Canonical realFieldType_topologicalType : topologicalType :=
-  TopologicalType topological_of_realfield (topologyOfBallMixin (uniform_of_normedDomain [normedZmodType R of R])).
-Canonical realFieldType_uniformType := @Uniform.Pack R topological_of_realfield (@Uniform.Class R R
+  [filteredType R of R^o for filtered_of_normedZmod R].
+Canonical realFieldType_topologicalType : topologicalType := TopologicalType R^o
+  (topologyOfBallMixin (uniform_of_normedDomain [normedZmodType R of R])).
+Canonical realFieldType_uniformType := @Uniform.Pack R R^o (@Uniform.Class R R
   (Topological.class realFieldType_topologicalType) (@uniform_of_normedDomain R R)).
+Lemma R_ball : @ball _ [uniformType R of R^o] = ball_ (fun x => `| x |).
+Proof. by []. Qed.
+Definition realFieldType_uniformNormedZmodMixin := UniformNormedZmodule.Mixin R_ball.
+Canonical realFieldType_uniformNormedZmodType := @UniformNormedZmoduleType R R^o realFieldType_uniformNormedZmodMixin.
 End realFieldType_topological.
 
 (*Section realType_topological.
@@ -589,7 +593,7 @@ Notation "'+oo'" := (@ERPInf _) : real_scope.
 Notation "'-oo'" := (@ERNInf _) : real_scope.
 Section rbar.
 Context {R : realType}.
-Let R_topologicalType := [topologicalType of topological_of_realfield R].
+Let R_topologicalType := [topologicalType of R^o].
 Definition Rbar_locally' (a : {ereal R}) (P : R -> Prop) :=
   match a with
     | ERFin a => @locally' R_topologicalType a P
@@ -1175,7 +1179,7 @@ Canonical K_uniformType : uniformType K := @Uniform.Pack K K (@Uniform.Class K K
 (*Definition K_lalgType : lalgType K := @GRing.regular_lalgType K.*)
 
 Lemma mx_norm_ball :
-  @ball _ [uniformType K of 'M[topological_of_realfield K]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
+  @ball _ [uniformType K of 'M[K^o]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
 Proof.
 rewrite /= /normr /= /mx_norm.
 rewrite predeq3E => x e y; split.
@@ -1194,14 +1198,14 @@ Qed.
 Definition matrix_UniformNormedZmodMixin :=
   UniformNormedZmodule.Mixin mx_norm_ball.
 Canonical matrix_uniformNormedZmodType :=
-  UniformNormedZmoduleType K 'M[topological_of_realfield K]_(m.+1, n.+1) matrix_UniformNormedZmodMixin.
+  UniformNormedZmoduleType K 'M[K^o]_(m.+1, n.+1) matrix_UniformNormedZmodMixin.
 
 Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
 Proof. by rewrite {1 3}/normr /= /mx_norm bigmaxr_scale. Qed.
 
 Definition matrix_NormedModMixin := NormedModMixin mx_normZ.
 Canonical matrix_normedModType :=
-  NormedModType K 'M[topological_of_realfield K]_(m.+1, n.+1) matrix_NormedModMixin.
+  NormedModType K 'M[K^o]_(m.+1, n.+1) matrix_NormedModMixin.
 
 End matrix_normedMod.
 
@@ -1285,6 +1289,12 @@ Arguments flim_norm2 {_ _ _ F G FF FG}.
 Canonical AbsRing_NormedModType (K : absRingType) :=
   NormedModType K K^o (AbsRing_NormedModMixin _).*)
 
+Lemma R_normZ (R : realFieldType) (l : R) (x : R^o) : `| l *: x | = `| l | * `| x |.
+Proof. by rewrite normrM. Qed.
+Definition realFieldType_NormedModMixin (R : realFieldType) := NormedModMixin (@R_normZ R).
+Canonical realFieldType_normedModType (R : realFieldType) :=
+  NormedModType R R^o (realFieldType_NormedModMixin R).
+
 (** Normed vector spaces have some continuous functions *)
 
 Section NVS_continuity.
@@ -1301,17 +1311,18 @@ Grab Existential Variables. all: end_near. Qed.
 End NVS_continuity.
 
 (* kludge *)
-Global Instance filter_locally (K' : realType) (K := topological_of_realfield K') (k : K) : Filter (locally k).
-Proof. exact: (@locally_filter [topologicalType of K]). Qed.
+Global Instance filter_locally (K' : realType) (k : K'^o) : Filter (locally k).
+Proof.
+exact: (@locally_filter [topologicalType of K'^o]).
+Qed.
 
 Section NVS_continuity1.
-Context {K' : realType} {V : normedModType K'}.
-Let K := topological_of_realfield K'.
-Local Notation "'+oo'" := (@ERPInf K').
-Local Notation "'-oo'" := (@ERNInf K').
+Context {K : realType} {V : normedModType K}.
+Local Notation "'+oo'" := (@ERPInf K).
+Local Notation "'-oo'" := (@ERNInf K).
 
 Lemma scale_continuous :
-  continuous (fun z : [filteredType _ of K * V] => z.1 *: z.2).
+  continuous (fun z : [filteredType _ of K^o * V] => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
@@ -1322,8 +1333,9 @@ rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
 have zM : `|z| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
 rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW //.
-(* TODO: urgent
-by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
+rewrite -ltr_pdivl_mulr ?(le_lt_trans _ zM) //; near: l; apply: (flim_norm (_ : K^o)) => //.
+admit.
+(*
 Grab Existential Variables. all: end_near. Qed.
 *)
 Admitted.
@@ -1335,7 +1347,7 @@ Proof.
 by move=> x; apply: (flim_comp2 (flim_const _) flim_id (scale_continuous (_, _))).
 Qed.
 
-Lemma scalel_continuous (x : V) : continuous (fun k : [filteredType _ of K] => k *: x).
+Lemma scalel_continuous (x : V) : continuous (fun k : [filteredType _ of K^o] => k *: x).
 Proof.
 by move=> k; apply: (flim_comp2 flim_id (flim_const _) (scale_continuous (_, _))).
 Qed.
@@ -1351,7 +1363,7 @@ End NVS_continuity1.
 
 Section limit_composition.
 
-Context {K' : realFieldType(*absRingType*)} {V : normedModType K'} {T : topologicalType}.
+Context {K : realType(*absRingType*)} {V : normedModType K} {T : topologicalType}.
 
 Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
@@ -1366,53 +1378,45 @@ Lemma continuousD (f g : T -> V) x :
   {for x, continuous (fun x => f x + g x)}.
 Proof. by move=> ??; apply: lim_add. Qed.
 
-Let K := topological_of_realfield K'.
-
 Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
-  (k : K) (a : V) :
+  (k : K^o) (a : V) :
   f @ F --> k -> g @ F --> a -> (fun x => (f x) *: (g x)) @ F --> k *: a.
-Proof.
-(* TODO urgent
-move=> ??; apply: lim_cont2 => //; exact: scale_continuous. Qed.
-*)
-Admitted.
+Proof. move=> ??; apply: lim_cont2 => //; exact: scale_continuous. Qed.
 
-Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (a : V) (k : K) :
+Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (a : V) (k : K^o) :
   f @ F --> k -> (fun x => (f x) *: a) @ F --> k *: a.
 Proof. by move=> ?; apply: lim_scale => //; exact: cst_continuous. Qed.
 
 Lemma lim_scaler (F : set (set T)) (FF : Filter F) (f : T -> V) (k : K) (a : V) :
   f @ F --> a -> k \*: f  @ F --> k *: a.
-Proof. by apply: lim_scale => //; exact: cst_continuous. Qed.
+Proof.
+apply: lim_scale => //; exact: (@cst_continuous _ [topologicalType of K^o]).
+Qed.
 
 Lemma continuousZ (f : T -> V) k x :
   {for x, continuous f} -> {for x, continuous (k \*: f)}.
 Proof. by move=> ?; apply: lim_scaler. Qed.
 
-Lemma continuousZl (k : T -> K) (f : V) x :
+Lemma continuousZl (k : T -> K^o) (f : V) x :
   {for x, continuous k} -> {for x, continuous (fun z => k z *: f)}.
 Proof. by move=> ?; apply: lim_scalel. Qed.
 
 Lemma lim_opp (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
   f @ F --> a -> (fun x => - f x) @ F --> - a.
-Proof.
-(* TODO: urgent
-by move=> ?; apply: lim_cont => //; apply: opp_continuous. Qed.*)
-Admitted.
+Proof. by move=> ?; apply: lim_cont => //; apply: opp_continuous. Qed.
 
 Lemma continuousN (f : T -> V) x :
   {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
 Proof. by move=> ?; apply: lim_opp. Qed.
 
-(* TODO: urgent
-Lemma lim_mult (x y : K) : z.1 * z.2 @[z --> (x, y)] --> x * y.
-Proof. exact: (@scale_continuous _ (AbsRing_NormedModType K)). Qed.
+Lemma lim_mult (x y : K^o) : z.1 * z.2 @[z --> (x, y)] --> x * y.
+Proof. exact: (@scale_continuous _ [normedModType K of K^o]). Qed.
 
-Lemma continuousM (f g : T -> K) x :
+Lemma continuousM (f g : T -> K^o) x :
   {for x, continuous f} -> {for x, continuous g} ->
   {for x, continuous (fun x => f x * g x)}.
 Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
-*)
+
 End limit_composition.
 
 (** ** Complete Normed Modules *)
@@ -1579,7 +1583,7 @@ Lemma ler_distW (R : realDomainType) (x y e : R):
    (`|x - y|%R <= e) -> y - e <= x.
 Proof. by rewrite ler_distl => /andP[]. Qed.
 
-Lemma R_complete (R : realType) (F : set (set (topological_of_realfield R))) : ProperFilter F -> cauchy F -> cvg F.
+Lemma R_complete (R : realType) (F : set (set R^o)) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF F_cauchy; apply/cvg_ex.
 pose D := \bigcap_(A in F) (down (mem A)).
@@ -1597,7 +1601,7 @@ apply: (flim_normW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl sup_upper_bound //=.
   apply: sup_le_ub => //; first by case: D_has_sup.
   apply/forallbP => y; apply/implyP; rewrite in_setE.
-  move=> /(_ (ball_ norm x eps%:num) _) /existsbP [].
+  move=> /(_ (ball_ (fun x => `| x |) x eps%:num) _) /existsbP [].
     by near: x; apply: nearP_dep; apply: F_cauchy.
   move=> z /andP[]; rewrite in_setE /ball_ ltr_distl ltr_subl_addr.
   by move=> /andP [/ltW /(le_trans _) le_xeps _ /le_xeps].
