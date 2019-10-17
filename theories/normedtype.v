@@ -308,30 +308,29 @@ Canonical realFieldType_uniformType := @Uniform.Pack R R^o (@Uniform.Class R R
   (Topological.class realFieldType_topologicalType) (@uniform_of_normedDomain R R)).
 End realFieldType_canonical.
 
-(* TODO urgent
-Lemma locallyN (R : numDomainType) (x : R) :
+Lemma locallyN (R : realFieldType) (x : R^o) :
   locally (- x) = [set [set - y | y in A] | A in locally x].
 Proof.
 rewrite predeqE => A; split=> [[e egt0 oppxe_A]|[B [e egt0 xe_B] <-]];
   last first.
   exists e => // y xe_y; exists (- y); last by rewrite opprK.
   apply/xe_B.
-  by rewrite /AbsRing_ball /ball_ opprK -absrN -mulN1r mulrDr !mulN1r.
+  by rewrite /ball_ opprK -normrN -mulN1r mulrDr !mulN1r.
 exists [set - y | y in A]; last first.
   rewrite predeqE => y; split=> [[z [t At <- <-]]|Ay]; first by rewrite opprK.
   by exists (- y); [exists y|rewrite opprK].
 exists e => // y xe_y; exists (- y); last by rewrite opprK.
-by apply/oppxe_A; rewrite /AbsRing_ball /ball_ absrB opprK addrC.
+by apply/oppxe_A; rewrite /ball_ distrC opprK addrC.
 Qed.
 
-Lemma openN (R : absRingType) (A : set R) :
+Lemma openN (R : realFieldType) (A : set R^o) :
   open A -> open [set - x | x in A].
 Proof.
 move=> Aop; rewrite openE => _ [x /Aop x_A <-].
 by rewrite /interior locallyN; exists A.
 Qed.
 
-Lemma closedN (R : absRingType) (A : set R) :
+Lemma closedN (R : realFieldType) (A : set R^o) :
   closed A -> closed [set - x | x in A].
 Proof.
 move=> Acl x clNAx.
@@ -341,7 +340,6 @@ move=> B oppx_B; have : [set - x | x in A] `&` [set - x | x in B] !=set0.
 move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
 by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
 Qed.
-*)
 
 (** real numbers *)
 
@@ -476,7 +474,6 @@ locally open ball and all the proofs from normedDomainType and then
 use to create R_pointedType, etc.*)
 
 (*Definition pointed_of_ring (R : ringType) : pointedType := PointedType R 0.*)
-
 
 (*
 TODO
@@ -1622,9 +1619,7 @@ Grab Existential Variables. all: end_near. Qed.
 Canonical R_completeType (R : realType) := CompleteType R^o (@R_complete R).
 (* Canonical R_NormedModule := [normedModType R of R^o]. *)
 
-(*TODO: urgent
 Canonical R_CompleteNormedModule (R : realType) := [completeNormedModType R of R^o].
-*)
 
 Section at_left_right.
 Variable R : realType.
