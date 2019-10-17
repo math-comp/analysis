@@ -292,10 +292,10 @@ Lemma showo : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). Proof. by []. Qed.
 (* Tentative to handle small o and big O notations *)
 Section Domination.
 
-Context {K : absRingType} {T : Type} {V W : normedModType K}.
+Context {K : realType(*absRingType*)} {T : Type} {V W : normedModType K}.
 
 Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  forall eps : R, 0 < eps -> \forall x \near F, `|[f x]| <= eps * `|[g x]|.
+  forall eps, 0 < eps -> \forall x \near F, `|f x| <= eps * `|g x|.
 
 Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
   littleo_fun :> T -> V;
@@ -481,7 +481,7 @@ Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
   littleo_def F (a *: (df : _ -> _)) e.
 Proof.
 have [->|a0] := eqVneq a 0; first by rewrite scale0r.
-move=> _ /posnumP[eps]; have aa := absr_eq0 a; near=> x => /=.
+move=> _ /posnumP[eps]; have aa := normr_eq0 a; near=> x => /=.
 rewrite normmZ -ler_pdivl_mull ?lt_def ?aa ?a0 //= mulrA; near: x.
 by apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?lt_def ?aa ?a0 /=.
 Grab Existential Variables. all: end_near. Qed.
@@ -498,10 +498,10 @@ Lemma scaleox (F : filter_on T) a (f : T -> V) e x :
 Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
 
 Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  \forall k \near +oo, \forall x \near F, `|[f x]| <= k * `|[g x]|.
+  \forall k \near +oo, \forall x \near F, `|f x| <= k * `|g x|.
 
 Let bigO_ex_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
-  exists2 k, k > 0 & \forall x \near F, `|[f x]| <= k * `|[g x]|.
+  exists2 k, k > 0 & \forall x \near F, `|f x| <= k * `|g x|.
 
 Lemma bigO_exP (F : set (set T)) (f : T -> V) (g : T -> W) :
   Filter F -> bigO_ex_def F f g <-> bigO_def F f g.
@@ -534,7 +534,8 @@ Notation "[bigO 'of' f ]" := (@bigO_clone _ _ f _ _ idfun).
 
 Lemma bigO0_subproof F (g : T -> W) : Filter F -> bigO_def F (0 : T -> V) g.
 Proof.
-by move=> FF; near=> k; apply: filterE => x; rewrite normm0 pmulr_rge0.
+move=> FF; near=> k; apply: filterE => x; rewrite normm0 pmulr_rge0 ?normr_ge0 //.
+by near: k; exists 0.
 Grab Existential Variables. end_near. Qed.
 
 Canonical bigO0 (F : filter_on T) g := BigO (asboolT (@bigO0_subproof F g _)).
@@ -599,7 +600,7 @@ Canonical the_bigO_bigO (tag : unit) (F : filter_on T)
 
 Variant bigO_spec (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
   BigOSpec f (k : posreal)
-    of (\forall x \near F, `|[f x]| <= k%:num * `|[g x]|) :
+    of (\forall x \near F, `|f x| <= k%:num * `|g x|) :
       bigO_spec F g f.
 
 Lemma bigO (F : filter_on T) (g : T -> W) (f : {O_F g}) : bigO_spec F g f.

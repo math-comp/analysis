@@ -2465,7 +2465,7 @@ Lemma locallyP {R : numDomainType} {M : uniformType R} (x : M) P :
 Proof. by rewrite locally_simpl. Qed.
 
 Section uniformType1.
-Context {R : realFieldType} {M : uniformType R}.
+Context {R : numFieldType} {M : uniformType R}.
 
 Lemma ball_center (x : M) (e : {posnum R}) : ball x e%:num x.
 Proof. exact: Uniform.ax1. Qed.
@@ -2493,6 +2493,26 @@ Lemma ball_splitl (z x y : M) (e : R) :
   ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
 Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
+Lemma locally_ball (x : M) (eps : {posnum R}) : locally x (ball x eps%:num).
+Proof. by apply/locallyP; exists eps%:num. Qed.
+Hint Resolve locally_ball : core.
+
+Definition close (x y : M) : Prop := forall eps : {posnum R}, ball x eps%:num y.
+
+Lemma flim_close {F} {FF : ProperFilter F} (x y : M) :
+  F --> x -> F --> y -> close x y.
+Proof.
+move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z;
+by [apply/Fx/locally_ball|apply/Fy/locally_ball].
+Grab Existential Variables. all: end_near. Qed.
+
+End uniformType1.
+Hint Resolve ball_center : core. (*TODO(rei): this hint does not seem to work as well anymore*)
+Hint Resolve locally_ball : core.
+
+Section uniformType1'.
+Context {R : realFieldType} {M : uniformType R}.
+
 Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
 Proof.
 move=> le12 y; case: ltgtP le12 => [lte12 _|//|->//].
@@ -2502,13 +2522,7 @@ Qed.
 Lemma ball_le (x : M) (e1 e2 : R) : (e1 <= e2) -> ball x e1 `<=` ball x e2.
 Proof. by move=> /ball_ler. Qed.
 
-Lemma locally_ball (x : M) (eps : {posnum R}) : locally x (ball x eps%:num).
-Proof. by apply/locallyP; exists eps%:num. Qed.
-Hint Resolve locally_ball : core.
-
-Definition close (x y : M) : Prop := forall eps : {posnum R}, ball x eps%:num y.
-
-Lemma close_refl (x : M) : close x x. Proof. by []. Qed.
+Lemma close_refl (x : M) : close x x. Proof. exact/ball_center. Qed.
 
 Lemma close_sym (x y : M) : close x y -> close y x.
 Proof. by move=> ??; apply: ball_sym. Qed.
@@ -2535,13 +2549,6 @@ move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i%:num j%:num) => // [[/= x y]]
 by eexists => /=; apply: ball_ler bxy; rewrite leIx lexx ?orbT.
 Qed.
 Typeclasses Opaque entourages.
-
-Lemma flim_close {F} {FF : ProperFilter F} (x y : M) :
-  F --> x -> F --> y -> close x y.
-Proof.
-move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z;
-by [apply/Fx/locally_ball|apply/Fy/locally_ball].
-Grab Existential Variables. all: end_near. Qed.
 
 Lemma flimx_close (x y : M) : x --> y -> close x y.
 Proof. exact: flim_close. Qed.
@@ -2600,23 +2607,23 @@ Lemma flim_const {T} {F : set (set T)}
    {FF : Filter F} (a : M) : a @[_ --> F] --> a.
 Proof.
 move=> P /locallyP[_ /posnumP[eps] subP]; rewrite !near_simpl /=.
-by apply: filterE=> ?; apply/subP.
+by apply: filterE=> ?; apply/subP/close_refl.
 Qed.
 
 Lemma close_lim (F1 F2 : set (set M)) {FF2 : ProperFilter F2} :
   F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
 Proof.
 move=> F12 F21; have [/(flim_trans F21) F2l|dvgF1] := pselect (cvg F1).
-  by apply: (@flim_close F2) => //; apply: cvgP F2l.
+  by apply: (@flim_close _ _ F2) => //; apply: cvgP F2l.
 have [/(flim_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
-by rewrite dvgP // dvgP //.
+rewrite dvgP // dvgP //; exact/close_refl.
 Qed.
 
 Lemma flim_closeP (F : set (set M)) (l : M) : ProperFilter F ->
   F --> l <-> ([cvg F in M] /\ close (lim F) l).
 Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
-  by have /cvgP := Fl; split=> //; apply: (@flim_close F).
+  by have /cvgP := Fl; split=> //; apply: (@flim_close _ _ F).
 by apply: flim_trans (close_limxx Cl).
 Qed.
 
@@ -2624,11 +2631,8 @@ Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
 Canonical set_filter_source :=
   @Filtered.Source Prop _ M (fun A => locally_ ball_set A).
 
-End uniformType1.
-
-Hint Resolve ball_center : core.
+End uniformType1'.
 Hint Resolve close_refl : core.
-Hint Resolve locally_ball : core.
 Arguments flim_const {R M T F FF} a.
 Arguments close_lim {R M} F1 F2 {FF2} _.
 
@@ -2690,7 +2694,8 @@ Canonical R_pointedType := PointedType R 0.
 Lemma mx_locally : locally = locally_ mx_ball.
 Proof.
 rewrite predeq2E => x A; split; last first.
-  by move=> [e egt0 xe_A]; exists (fun i j => ball (x i j) (PosNum egt0)%:num).
+  move=> [e egt0 xe_A]; exists (fun i j => ball (x i j) (PosNum egt0)%:num) => //.
+  move=> i j; exact/locally_ball.
 move=> [P]; rewrite -locally_ballE => x_P sPA.
 exists (\big[minr/1]_i \big[minr/1]_j
   get (fun e : R => 0 < e /\ ball (x i j) e `<=` P i j)).
@@ -2722,7 +2727,7 @@ Definition prod_ball x (eps : R) y :=
   ball (fst x) eps (fst y) /\ ball (snd x) eps (snd y).
 
 Lemma prod_ball_center x (eps : R) : 0 < eps -> prod_ball x eps x.
-Proof. by move=> /posnumP[e]; split. Qed.
+Proof. move=> /posnumP[e]; split; exact/ball_center. Qed.
 
 Lemma prod_ball_sym x y (eps : R) : prod_ball x eps y -> prod_ball y eps x.
 Proof. by move=> [bxy1 bxy2]; split; apply: ball_sym. Qed.
@@ -2730,13 +2735,14 @@ Proof. by move=> [bxy1 bxy2]; split; apply: ball_sym. Qed.
 Lemma prod_ball_triangle x y z (e1 e2 : R) :
   prod_ball x e1 y -> prod_ball y e2 z -> prod_ball x (e1 + e2) z.
 Proof.
-by move=> [bxy1 bxy2] [byz1 byz2]; split; eapply ball_triangle; eassumption.
+by move=> [bxy1 bxy2] [byz1 byz2]; split; apply: ball_triangle; eassumption.
 Qed.
 
 Lemma prod_locally : locally = locally_ prod_ball.
 Proof.
 rewrite predeq2E => -[x y] P; split=> [[[A B] /=[xX yY] XYP] |]; last first.
-  by move=> [_ /posnumP[eps] epsP]; exists (ball x eps%:num, ball y eps%:num) => /=.
+  move=> [_ /posnumP[eps] epsP]; exists (ball x eps%:num, ball y eps%:num) => //=.
+  split; exact: locally_ball.
 move: xX yY => /locallyP [_ /posnumP[ex] eX] /locallyP [_ /posnumP[ey] eY].
 exists (minr ex%:num ey%:num) => // -[x' y'] [/= xx' yy'].
 apply: XYP; split=> /=.
@@ -2775,7 +2781,7 @@ Definition fct_ball (x : T -> U) (eps : R) (y : T -> U) :=
   forall t : T, ball (x t) eps (y t).
 
 Lemma fct_ball_center (x : T -> U) (e : R) : 0 < e -> fct_ball x e x.
-Proof. by move=> /posnumP[{e}e] t. Qed.
+Proof. move=> /posnumP[{e}e] t; exact/ball_center. Qed.
 
 Lemma fct_ball_sym (x y : T -> U) (e : R) : fct_ball x e y -> fct_ball y e x.
 Proof. by move=> P t; apply: ball_sym. Qed.
