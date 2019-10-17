@@ -125,7 +125,7 @@ Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
 Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
 Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
 Definition numDomainType := @Num.NumDomain.Pack cT xclass.
-Definition normedZmodType := NormedZModuleType numDomainType cT xclass.
+Definition normedZmodType := NormedZmoduleType numDomainType cT xclass.
 Definition fieldType := @GRing.Field.Pack cT xclass.
 Definition realDomainType := @Num.RealDomain.Pack cT xclass.
 Definition numFieldType := @Num.NumField.Pack cT xclass.
@@ -166,7 +166,7 @@ Coercion idomainType : type >-> GRing.IntegralDomain.type.
 Canonical idomainType.
 Coercion numDomainType : type >-> Num.NumDomain.type.
 Canonical numDomainType.
-Coercion normedZmodType : type >-> Num.NormedZModule.type.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
 Canonical normedZmodType.
 Coercion realDomainType : type >-> Num.RealDomain.type.
 Canonical realDomainType.

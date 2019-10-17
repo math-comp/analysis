@@ -313,14 +313,14 @@ Record mixin_of (T : normedZmodType R) (loc : T -> set (set T))
   _ : Uniform.ball m = ball_ (fun x => `| x |) }.
 
 Record class_of (T : Type) := Class {
-  base : Num.NormedZModule.class_of R T;
+  base : Num.NormedZmodule.class_of R T;
   pointed_mixin : Pointed.point_of T ;
   locally_mixin : Filtered.locally_of T T ;
   topological_mixin : @Topological.mixin_of T locally_mixin ;
   uniform_mixin : @Uniform.mixin_of R T locally_mixin ;
-  mixin : @mixin_of (Num.NormedZModule.Pack _ base) _ uniform_mixin
+  mixin : @mixin_of (Num.NormedZmodule.Pack _ base) _ uniform_mixin
 }.
-Local Coercion base : class_of >-> Num.NormedZModule.class_of.
+Local Coercion base : class_of >-> Num.NormedZmodule.class_of.
 Definition base2 T c := @Uniform.Class _ _
     (@Topological.Class _
       (Filtered.Class
@@ -341,17 +341,17 @@ Definition class := let: Pack _ c := cT return class_of cT in c.
 Definition clone c of phant_id class c := @Pack phR T c.
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
-Definition pack (b0 : Num.NormedZModule.class_of R T) lm0 um0 (m0 : @mixin_of (@Num.NormedZModule.Pack R (Phant R) T b0) lm0 um0) :=
-  fun bT (b : Num.NormedZModule.class_of R T)
-      & phant_id (@Num.NormedZModule.class R (Phant R) bT) b =>
+Definition pack (b0 : Num.NormedZmodule.class_of R T) lm0 um0 (m0 : @mixin_of (@Num.NormedZmodule.Pack R (Phant R) T b0) lm0 um0) :=
+  fun bT (b : Num.NormedZmodule.class_of R T)
+      & phant_id (@Num.NormedZmodule.class R (Phant R) bT) b =>
   fun uT (u : Uniform.class_of R T) & phant_id (@Uniform.class R uT) u =>
-  fun (m : @mixin_of (Num.NormedZModule.Pack _ b) _ u) & phant_id m m0 =>
+  fun (m : @mixin_of (Num.NormedZmodule.Pack _ b) _ u) & phant_id m m0 =>
   @Pack phR T (@Class T b u u u u m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition normedZmodType := @Num.NormedZModule.Pack R phR cT xclass.
+Definition normedZmodType := @Num.NormedZmodule.Pack R phR cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack xT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
@@ -360,10 +360,10 @@ Definition pointed_zmodType := @GRing.Zmodule.Pack pointedType xclass.
 Definition filtered_zmodType := @GRing.Zmodule.Pack filteredType xclass.
 Definition topological_zmodType := @GRing.Zmodule.Pack topologicalType xclass.
 Definition uniform_zmodType := @GRing.Zmodule.Pack uniformType xclass.
-Definition pointed_normedZmodType := @Num.NormedZModule.Pack R phR pointedType xclass.
-Definition filtered_normedZmodType := @Num.NormedZModule.Pack R phR filteredType xclass.
-Definition topological_normedZmodType := @Num.NormedZModule.Pack R phR topologicalType xclass.
-Definition uniform_normedZmodType := @Num.NormedZModule.Pack R phR uniformType xclass.
+Definition pointed_normedZmodType := @Num.NormedZmodule.Pack R phR pointedType xclass.
+Definition filtered_normedZmodType := @Num.NormedZmodule.Pack R phR filteredType xclass.
+Definition topological_normedZmodType := @Num.NormedZmodule.Pack R phR topologicalType xclass.
+Definition uniform_normedZmodType := @Num.NormedZmodule.Pack R phR uniformType xclass.
 
 End ClassDef.
 
@@ -371,7 +371,7 @@ End ClassDef.
   Pack (Phant R) (@Class R _ _ (NumDomain.normed_mixin (NumDomain.class R))).*)
 
 Module Exports.
-Coercion base : class_of >-> Num.NormedZModule.class_of.
+Coercion base : class_of >-> Num.NormedZmodule.class_of.
 Coercion base2 : class_of >-> Uniform.class_of.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
@@ -380,7 +380,7 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
-Coercion normedZmodType : type >-> Num.NormedZModule.type.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
 Canonical normedZmodType.
 Coercion pointedType : type >-> Pointed.type.
 Canonical pointedType.
@@ -708,7 +708,7 @@ Definition pack b0 l0
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition normedZmodType := @Num.NormedZModule.Pack K phK cT xclass.
+Definition normedZmodType := @Num.NormedZmodule.Pack K phK cT xclass.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
@@ -733,7 +733,7 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
-Coercion normedZmodType : type >-> Num.NormedZModule.type.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
 Canonical normedZmodType.
 Coercion lmodType : type >-> GRing.Lmodule.type.
 Canonical lmodType.
@@ -974,11 +974,11 @@ Lemma Rhausdorff : hausdorff [topologicalType of Rdefinitions.R].
 Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
-rewrite inE -ler_distl (*-absRE*); set he := (e%:num / 2)%:pos.
+rewrite inE -ler_distl; set he := (e%:num / 2)%:pos.
 have [z []] := clxy _ _ (@locally_ball _ R_uniformType x he) (locally_ball y he).
 move=> zx_he yz_he.
-rewrite (@subr_trans R_zmodType(*TODO???*) z) (le_trans (ler_norm_add _ _) _)// ltW //.
-by rewrite (splitr e%:num) (@distrC _ R_normedZmodType (*TODO???*) z); apply: ltr_add.
+rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
+by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
 Qed.
 
 End NormedModule1''.
@@ -1153,7 +1153,7 @@ Definition matrix_normedZModuleMixin :=
     (@mx_norm_eq0 _ _ _) (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
 
 Canonical matrix_normedZModuleType :=
-  NormedZModuleType K 'M[K]_(m.+1, n.+1) matrix_normedZModuleMixin.
+  NormedZmoduleType K 'M[K]_(m.+1, n.+1) matrix_normedZModuleMixin.
 
 (* TODO: show the norm axiom and then use a factory
 to instantiate the types below *)
@@ -1260,8 +1260,8 @@ Definition prod_NormedZModuleMixin :=
   Num.NormedMixin (@prod_norm_triangle K U V)
     (@prod_norm_eq0 K U V) (@prod_norm_natmul _ _ _) (@prod_normN _ _ _).
 
-Canonical prod_normedZModuleType :=
-  NormedZModuleType K (U * V) prod_NormedZModuleMixin.
+Canonical prod_normedZmModuleType :=
+  NormedZmoduleType K (U * V) prod_NormedZModuleMixin.
 
 Lemma prod_norm_ball :
   @ball _ [uniformType K of U * V] = ball_ (fun x => `| x |).
@@ -1356,8 +1356,7 @@ rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
 have zM : `|z| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
 rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW //.
-rewrite -ltr_pdivl_mulr ?(le_lt_trans _ zM) //; near: l.
-(* TODO urgent
+(* TODO: urgent
 by rewrite -ltr_pdivl_mulr //; near: l; apply: (flim_norm (_ : K^o)).
 Grab Existential Variables. all: end_near. Qed.
 *)
@@ -1484,7 +1483,7 @@ Notation xclass := (class : class_of xT).
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition normedZmodType := @Num.NormedZModule.Pack K phK cT xclass.
+Definition normedZmodType := @Num.NormedZmodule.Pack K phK cT xclass.
 Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
@@ -1494,7 +1493,7 @@ Definition normedModType := @NormedModule.Pack K phK cT xclass.
 Definition completeType := @Complete.Pack _ cT xclass.
 Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
 Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
-Definition complete_normedZmodType := @Num.NormedZModule.Pack K phK completeType xclass.
+Definition complete_normedZmodType := @Num.NormedZmodule.Pack K phK completeType xclass.
 Definition complete_normedModType := @NormedModule.Pack K phK completeType xclass.
 End ClassDef.
 
@@ -1509,7 +1508,7 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
-Coercion normedZmodType : type >-> Num.NormedZModule.type.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
 Canonical normedZmodType.
 Coercion lmodType : type >-> GRing.Lmodule.type.
 Canonical lmodType.
