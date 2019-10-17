@@ -1447,8 +1447,8 @@ Variables (phK : phant K) (cT : type phK) (T : Type).
 Definition class := let: Pack _ c := cT return class_of cT in c.
 
 Definition pack :=
-  fun bT b & phant_id (@NormedModule.class K phK bT) (b : NormedModule.class_of K T) =>
-  fun mT m & phant_id (@Complete.class mT) (@Complete.Class K T b m) =>
+  fun bT (b : NormedModule.class_of K T) & phant_id (@NormedModule.class K phK bT) b =>
+  fun mT m & phant_id (@Complete.class K mT) (@Complete.Class K T b m) =>
     Pack phK (@Class T b m).
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
@@ -1502,7 +1502,7 @@ Canonical complete_lmodType.
 Canonical complete_normedZmodType.
 Canonical complete_normedModType.
 Notation completeNormedModType K := (type (Phant K)).
-Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ id _ _ id)
+Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
   (at level 0, format "[ 'completeNormedModType'  K  'of'  T ]") : form_scope.
 End Exports.
 
