@@ -568,9 +568,9 @@ Qed.
 Proof. by []. Qed.*)
 
 Lemma coord_continuous {K : realFieldType} m n i j :
-  continuous (fun M : 'M[[filteredType _ of K^o]]_(m.+1, n.+1) => M i j).
+  continuous (fun M : 'M[K^o]_(m.+1, n.+1) => M i j).
 Proof.
-move=> /= M s /= /(@locallyP _ _ (M i j)); rewrite locally_E => -[e e0 es].
+move=> /= M s /= /(locallyP (M i j)); rewrite locally_E => -[e e0 es].
 apply/locallyP; rewrite locally_E; exists e => //= N MN; exact/es/MN.
 Qed.
 
@@ -600,7 +600,7 @@ Definition Rbar_locally (a : {ereal R}) (P : R -> Prop) :=
 Canonical Rbar_pointed := PointedType {ereal R} (+oo).
 Canonical Rbar_filter := FilteredType R {ereal R} (Rbar_locally).
 
-Global Instance Rlocally'_proper (x : R) : ProperFilter (@locally' R_topologicalType x).
+Global Instance Rlocally'_proper (x : R^o) : ProperFilter (locally' x).
 Proof.
 apply: Build_ProperFilter => A [_/posnumP[e] Ae].
 exists (x + e%:num / 2); apply: Ae; last first.
@@ -971,7 +971,7 @@ Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
 rewrite inE -ler_distl; set he := (e%:num / 2)%:pos.
-have [z []] := clxy _ _ (@locally_ball _ R_uniformType x he) (locally_ball y he).
+have [z []] := clxy _ _ (locally_ball x he) (locally_ball y he).
 move=> zx_he yz_he.
 rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
@@ -1131,7 +1131,7 @@ Qed.
 End mx_norm.
 
 (* TODO: bigmaxr_morph *)
-Lemma bigmaxr_scale (K : realFieldType) m n (s : seq [finType of 'I_m.+1 * 'I_n.+1]) (k : K) (x : 'M[K]_(m.+1, n.+1)) :
+Lemma bigmaxr_scale (K : realFieldType) m n (s : seq ('I_m.+1 * 'I_n.+1)) (k : K) (x : 'M[K]_(m.+1, n.+1)) :
   bigmaxr 0 (map (fun ij => `|(k *: x) ij.1 ij.2|) s) =
   `| k | * bigmaxr 0 (map (fun ij => `|x ij.1 ij.2|) s).
 Proof.
@@ -1309,8 +1309,7 @@ Context {K : realType} {V : normedModType K}.
 Local Notation "'+oo'" := (@ERPInf K).
 Local Notation "'-oo'" := (@ERNInf K).
 
-Lemma scale_continuous :
-  continuous (fun z : [filteredType _ of K^o * V] => z.1 *: z.2).
+Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
@@ -1333,7 +1332,7 @@ Proof.
 by move=> x; apply: (flim_comp2 (flim_const _) flim_id (scale_continuous (_, _))).
 Qed.
 
-Lemma scalel_continuous (x : V) : continuous (fun k : [filteredType _ of K^o] => k *: x).
+Lemma scalel_continuous (x : V) : continuous (fun k : K^o => k *: x).
 Proof.
 by move=> k; apply: (flim_comp2 flim_id (flim_const _) (scale_continuous (_, _))).
 Qed.
@@ -1643,7 +1642,7 @@ Qed.
 (* :TODO: yet, not used anywhere?! *)
 Lemma flim_norm0 {U} {K : realFieldType} {V : normedModType K}
   {F : set (set U)} {FF : Filter F} (f : U -> V) :
-  (fun x => `|f x|) @ F --> (0 : [filteredType _ of K^o])
+  (fun x => `|f x|) @ F --> (0 : K^o)
   -> f @ F --> (0 : V).
 Proof.
 move=> /(flim_norm (_ : K^o)) fx0; apply/flim_normP => _/posnumP[e].
@@ -1677,21 +1676,21 @@ End cvg_seq_bounded.
 Section some_open_sets.
 Variable R : realType.
 
-Lemma open_lt (y : R) : @open [topologicalType of R^o] [set x | x < y].
+Lemma open_lt (y : R) : open [set x : R^o | x < y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
 by rewrite /= distrC ltr_distl addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_lt : core.
 
-Lemma open_gt (y : R) : @open [topologicalType of R^o] [set x | x > y].
+Lemma open_gt (y : R) : open [set x : R^o | x > y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
 by rewrite /= distrC ltr_distl opprB addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_gt : core.
 
-Lemma open_neq (y : R) : @open [topologicalType of R^o] (xpredC (eq_op^~ y)).
+Lemma open_neq (y : R) : open [set x : R^o | x != y].
 Proof.
 rewrite (_ : xpredC _ = [set x | x < y] `|` [set x | x > y] :> set _) /=.
   by apply: openU => //; apply: open_lt.
@@ -1701,21 +1700,21 @@ Qed.
 
 (** Some closed sets of [R] *)
 
-Lemma closed_le (y : R) : @closed [topologicalType of R^o] [set x | x <= y].
+Lemma closed_le (y : R) : closed [set x : R^o | x <= y].
 Proof.
 rewrite (_ : [set x | x <= _] = ~` (> y) :> set _).
   by apply: closedC; exact: open_gt.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
-Lemma closed_ge (y : R) : @closed [topologicalType of R^o] (>= y).
+Lemma closed_ge (y : R) : closed [set x : R^o | y <= x].
 Proof.
 rewrite (_ : (>= _) = ~` [set x | x < y] :> set _).
   by apply: closedC; exact: open_lt.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
-Lemma closed_eq (y : R) : @closed [topologicalType of R^o] (eq^~ y).
+Lemma closed_eq (y : R) : closed [set x : R^o | x = y].
 Proof.
 rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
   by apply: closedC; exact: open_neq.
@@ -1724,7 +1723,7 @@ Qed.
 
 (** properties of segments in [R] *)
 
-Lemma segment_connected (a b : R) : @connected [topologicalType of R^o] [set x | x \in `[a, b]].
+Lemma segment_connected (a b : R) : connected [set x : R^o | x \in `[a, b]].
 Proof.
 move=> A [y Ay] Aop Acl.
 move: Aop; apply: contrapTT; rewrite predeqE => /asboolPn /existsp_asboolPn [x].
@@ -1802,14 +1801,14 @@ apply: le_trans; rewrite -ler_subr_addl leIx; apply/orP; right.
 by rewrite ler_pdivr_mulr // mulrDr mulr1 ler_addl; apply: ltW.
 Qed.
 
-Lemma segment_closed (a b : R) : @closed [topologicalType of R^o] [set x | x \in `[a, b]].
+Lemma segment_closed (a b : R) : closed [set x : R^o | x \in `[a, b]].
 Proof.
 have -> : [set x | x \in `[a, b]] = [set x | x >= a] `&` [set x | x <= b].
   by rewrite predeqE => ?; rewrite inE; split=> [/andP [] | /= [->]].
 exact: closedI (@closed_ge _) (@closed_le _).
 Qed.
 
-Lemma segment_compact (a b : R) : @compact [topologicalType of R^o] [set x | x \in `[a, b]].
+Lemma segment_compact (a b : R) : compact [set x : R^o | x \in `[a, b]].
 Proof.
 case: (lerP a b) => [leab|ltba]; last first.
   by move=> F FF /filter_ex [x abx]; move: ltba; rewrite (itvP abx).
@@ -1954,10 +1953,10 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - by exists 1%:pos.
 Qed.
 
-Lemma locally_interval (R : realType) (P : R -> Prop) (x : R) (a b : {ereal R}) :
+Lemma locally_interval (R : realType) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
   lt_ereal a (ERFin x) -> lt_ereal (ERFin x) b ->
   (forall y : R, lt_ereal a (ERFin y) -> lt_ereal (ERFin y) b -> P y) ->
-  @locally _ [filteredType _ of R^o] x P.
+  locally x P.
 Proof.
 move => Hax Hxb Hp; case: (lt_ereal_locally Hax Hxb) => d Hd.
 exists d%:num => //= y; rewrite /= distrC.
@@ -2218,7 +2217,7 @@ Qed.
 Section open_sets_in_Rbar.
 Variable R : realType.
 
-Lemma open_Rbar_lt y : open (fun u : [topologicalType of R^o] => lt_ereal (ERFin u) y).
+Lemma open_Rbar_lt y : open [set u : R^o | lt_ereal (ERFin u) y].
 Proof.
 case: y => [y||] /=.
 exact: open_lt.
@@ -2226,7 +2225,7 @@ by rewrite trueE; apply: openT.
 by rewrite falseE; apply: open0.
 Qed.
 
-Lemma open_Rbar_gt y : open (fun u : [topologicalType of R^o] => lt_ereal y (ERFin u)).
+Lemma open_Rbar_gt y : open [set u : R^o | lt_ereal y (ERFin u)].
 Proof.
 case: y => [y||] /=.
 exact: open_gt.
@@ -2285,13 +2284,13 @@ case: x => /= [x [_/posnumP[delta] Hp] |[delta Hp] |[delta Hp]]; last 2 first.
     exists N.+1 => // n ltNn; apply: Hp.
     have /le_lt_trans : delta <= maxr delta 0 by rewrite lexU lexx.
     apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
-    by rewrite -(@natrD [ringType of R] N 1) ler_nat addn1.
+    by rewrite -(@natrD R N 1) ler_nat addn1.
   have /ZnatP [N Nfloor] : ifloor (maxr (- delta) 0) \is a Znat.
     by rewrite Znat_def ifloor_ge0 lexU lexx orbC.
   exists N.+1 => // n ltNn; apply: Hp; rewrite ltr_oppl.
   have /le_lt_trans : - delta <= maxr (- delta) 0 by rewrite lexU lexx.
   apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
-  by rewrite -(@natrD [ringType of R] N 1) ler_nat addn1.
+  by rewrite -(@natrD R N 1) ler_nat addn1.
 have /ZnatP [N Nfloor] : ifloor (delta%:num^-1) \is a Znat.
   by rewrite Znat_def ifloor_ge0.
 exists N => // n leNn; have gt0Sn : (0 < n%:R + 1 :> R).
