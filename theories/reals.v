@@ -9,7 +9,7 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-(* ------- *) Require Import boolp.
+(* ------- *) Require Import boolp ereal.
 
 Require Import Setoid.
 
@@ -19,7 +19,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory.
+Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -745,225 +745,7 @@ Qed.
 
 End Sup.
 
-(* -------------------------------------------------------------------- *)
-Section ExtendedReals.
-Variable (R : realType).
-
-Inductive er := ERFin of R | ERPInf | ERNInf.
-
-Coercion real_of_er (x : er) :=
-  if x is ERFin v then v else 0.
-End ExtendedReals.
-
-Notation "\+inf" := (@ERPInf _).
-Notation "\-inf" := (@ERNInf _).
-Notation "x %:E" := (@ERFin _ x) (at level 2, format "x %:E").
-
-Notation "{ 'ereal' R }" := (er R) (format "{ 'ereal'  R }").
-
-Bind    Scope ereal_scope with er.
-Delimit Scope ereal_scope with E.
-
-(* -------------------------------------------------------------------- *)
-Section ERealCode.
-Variable (R : realType).
-
-Definition code (x : {ereal R}) :=
-  match x with
-  | x%:E  => GenTree.Node 0 [:: GenTree.Leaf x]
-  | \+inf => GenTree.Node 1 [::]
-  | \-inf => GenTree.Node 2 [::]
-  end.
-
-Definition decode (x : GenTree.tree R) : option {ereal R} :=
-  match x with
-  | GenTree.Node 0 [:: GenTree.Leaf x] => Some x%:E
-  | GenTree.Node 1 [::] => Some \+inf
-  | GenTree.Node 2 [::] => Some \-inf
-  | _ => None
-  end.
-
-Lemma codeK : pcancel code decode.
-Proof. by case. Qed.
-
-Definition ereal_eqMixin := PcanEqMixin codeK.
-Canonical  ereal_eqType  := EqType {ereal R} ereal_eqMixin.
-Definition ereal_choiceMixin := PcanChoiceMixin codeK.
-Canonical  ereal_choiceType  := ChoiceType {ereal R} ereal_choiceMixin.
-End ERealCode.
-
-Lemma eqe {R : realType} (x1 x2 : R) :
-  (x1%:E == x2%:E) = (x1 == x2).
-Proof. by apply/eqP/eqP=> [[]|->]. Qed.
-
-(* -------------------------------------------------------------------- *)
-Section ERealOrder.
-Context {R : realType}.
-Implicit Types (x y : {ereal R}).
-
-Definition le_ereal x1 x2 :=
-  match x1, x2 with
-  | \-inf, _ | _, \+inf => true
-  | \+inf, _ | _, \-inf => false
-
-  | x1%:E, x2%:E => (x1 <= x2)
-  end.
-
-Definition lt_ereal x1 x2 :=
-  match x1, x2 with
-  | \-inf, \-inf | \+inf, \+inf => false
-  | \-inf, _     | _    , \+inf => true
-  | \+inf, _     | _    , \-inf => false
-
-  | x1%:E, x2%:E => (x1 < x2)
-  end.
-
-Definition min_ereal x1 x2 :=
-  match x1, x2 with
-  | \-inf, _ | _, \-inf => \-inf
-  | \+inf, x | x, \+inf => x
-
-  | x1%:E, x2%:E => (Num.Def.minr x1 x2)%:E
-  end.
-
-Definition max_ereal x1 x2 :=
-  match x1, x2 with
-  | \-inf, x | x, \-inf => x
-  | \+inf, _ | _, \+inf => \+inf
-
-  | x1%:E, x2%:E => (Num.Def.maxr x1 x2)%:E
-  end.
-
-Lemma lt_def_ereal x y : lt_ereal x y = (y != x) && le_ereal x y.
-Proof. by case: x y => [?||][?||] //=; rewrite lt_def eqe. Qed.
-
-Lemma minE_ereal x y : min_ereal x y = if le_ereal x y then x else y.
-Proof. by case: x y => [?||][?||] //=; case: leP. Qed.
-
-Lemma maxE_ereal x y : max_ereal x y = if le_ereal y x then x else y.
-Proof. by case: x y => [?||][?||] //=; case: ltP. Qed.
-
-Lemma le_anti_ereal : ssrbool.antisymmetric le_ereal.
-Proof. by case=> [?||][?||] //= /le_anti ->. Qed.
-
-Lemma le_trans_ereal : ssrbool.transitive le_ereal.
-Proof. by case=> [?||][?||][?||] //=; exact: le_trans. Qed.
-
-Lemma le_total_ereal : total le_ereal.
-Proof. by case=> [?||][?||] //=; exact: le_total. Qed.
-
-Definition ereal_porderMixin :=
-  @LeOrderMixin _ le_ereal lt_ereal min_ereal max_ereal
-                lt_def_ereal minE_ereal maxE_ereal
-                le_anti_ereal le_trans_ereal le_total_ereal.
-
-Fact ereal_display : unit. Proof. by []. Qed.
-
-Canonical ereal_porderType :=
-  POrderType ereal_display {ereal R} ereal_porderMixin.
-Canonical ereal_latticeType := LatticeType {ereal R} ereal_porderMixin.
-Canonical ereal_totalType := OrderType {ereal R} ereal_porderMixin.
-
-End ERealOrder.
-
-Notation lee := (@le ereal_display _) (only parsing).
-Notation "@ 'lee' R" :=
-  (@le ereal_display R) (at level 10, R at level 8, only parsing).
-Notation lte := (@lt ereal_display _) (only parsing).
-Notation "@ 'lte' R" :=
-  (@lt ereal_display R) (at level 10, R at level 8, only parsing).
-
-Notation "x <= y" := (lee x y) : ereal_scope.
-Notation "x < y"  := (lte x y) : ereal_scope.
-
-Notation "x <= y <= z" := ((lee x y) && (lee y z)) : ereal_scope.
-Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
-Notation "x <= y < z"  := ((lee x y) && (lte y z)) : ereal_scope.
-Notation "x < y < z"   := ((lte x y) && (lte y z)) : ereal_scope.
-
-(* -------------------------------------------------------------------- *)
-Section ERealArith.
-Context {R : realType}.
-
-Implicit Types (x y z : {ereal R}).
-
-Definition eadd x y :=
-  match x, y with
-  | x%:E , y%:E  => (x + y)%:E
-  | \-inf, _     => \-inf
-  | _    , \-inf => \-inf
-  | \+inf, _     => \+inf
-  | _    , \+inf => \+inf
-  end.
-
-Definition eopp x :=
-  match x with
-  | x%:E  => (-x)%:E
-  | \-inf => \+inf
-  | \+inf => \-inf
-  end.
-End ERealArith.
-
-Notation "+%E"   := eadd.
-Notation "-%E"   := eopp.
-Notation "x + y" := (eadd x y) : ereal_scope.
-Notation "x - y" := (eadd x (eopp y)) : ereal_scope.
-Notation "- x"   := (eopp x) : ereal_scope.
-
-Notation "\sum_ ( i <- r | P ) F" :=
-  (\big[+%E/0%:E]_(i <- r | P%B) F%R) : ereal_scope.
-Notation "\sum_ ( i <- r ) F" :=
-  (\big[+%E/0%:E]_(i <- r) F%R) : ereal_scope.
-Notation "\sum_ ( m <= i < n | P ) F" :=
-  (\big[+%E/0%:E]_(m <= i < n | P%B) F%R) : ereal_scope.
-Notation "\sum_ ( m <= i < n ) F" :=
-  (\big[+%E/0%:E]_(m <= i < n) F%R) : ereal_scope.
-Notation "\sum_ ( i | P ) F" :=
-  (\big[+%E/0%:E]_(i | P%B) F%R) : ereal_scope.
-Notation "\sum_ i F" :=
-  (\big[+%E/0%:E]_i F%R) : ereal_scope.
-Notation "\sum_ ( i : t | P ) F" :=
-  (\big[+%E/0%:E]_(i : t | P%B) F%R) (only parsing) : ereal_scope.
-Notation "\sum_ ( i : t ) F" :=
-  (\big[+%E/0%:E]_(i : t) F%R) (only parsing) : ereal_scope.
-Notation "\sum_ ( i < n | P ) F" :=
-  (\big[+%E/0%:E]_(i < n | P%B) F%R) : ereal_scope.
-Notation "\sum_ ( i < n ) F" :=
-  (\big[+%E/0%:E]_(i < n) F%R) : ereal_scope.
-Notation "\sum_ ( i 'in' A | P ) F" :=
-  (\big[+%E/0%:E]_(i in A | P%B) F%R) : ereal_scope.
-Notation "\sum_ ( i 'in' A ) F" :=
-  (\big[+%E/0%:E]_(i in A) F%R) : ereal_scope.
-
 Local Open Scope ereal_scope.
-
-(* -------------------------------------------------------------------- *)
-Section ERealArithTh.
-Context {R : realType}.
-
-Implicit Types (x y z : {ereal R}).
-
-Lemma adde0 : right_id (0%:E : {ereal R}) +%E.
-Proof. by case=> //= x; rewrite addr0. Qed.
-
-Lemma add0e : left_id (S := {ereal R}) 0%:E +%E.
-Proof. by case=> //= x; rewrite add0r. Qed.
-
-Lemma addeC : commutative (S := {ereal R}) +%E.
-Proof. by case=> [x||] [y||] //=; rewrite addrC. Qed.
-
-Lemma addeA : associative (S := {ereal R}) +%E.
-Proof. by case=> [x||] [y||] [z||] //=; rewrite addrA. Qed.
-
-Canonical adde_monoid := Monoid.Law addeA add0e adde0.
-Canonical adde_comoid := Monoid.ComLaw addeC.
-
-Lemma oppe0 : - (0%:E) = 0%:E :> {ereal R}.
-Proof. by rewrite /= oppr0. Qed.
-
-Lemma oppeK : involutive (A := {ereal R}) -%E.
-Proof. by case=> [x||] //=; rewrite opprK. Qed.
-End ERealArithTh.
 
 (* -------------------------------------------------------------------- *)
 (* TODO: There are many duplications with `order.v`. Remove them.       *)
@@ -983,7 +765,7 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
-Lemma le0R (l : {ereal R}) : (0%:E <= l)%E -> (0 <= l :> R).
+Lemma le0R (l : {ereal R}) : (0%:E <= l)%E -> (0 <= real_of_er(*TODO: coercion broken*) l :> R).
 Proof. by case: l. Qed.
 
 Lemma leee x : x <= x.

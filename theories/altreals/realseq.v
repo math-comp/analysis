@@ -6,14 +6,14 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import mathcomp.bigenough.bigenough.
-Require Import xfinmap boolp reals discrete.
+Require Import xfinmap boolp ereal reals discrete.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory BigEnough.
+Import Order.TTheory GRing.Theory Num.Theory BigEnough.
 
 Local Open Scope ring_scope.
 
@@ -36,7 +36,7 @@ Context {R : realDomainType} (T : Type).
 
 Implicit Types (f g h : T -> R).
 
-Lemma leff f : f <=1 f. 
+Lemma leff f : f <=1 f.
 Proof. by []. Qed.
 
 Lemma lef_trans g f h : f <=1 g -> g <=1 h -> f <=1 h.
@@ -49,8 +49,8 @@ Context {R : realType}.
 
 Inductive nbh : {ereal R} -> predArgType :=
 | NFin  (c e : R) of (0 < e) : nbh c%:E
-| NPInf (M   : R) : nbh \+inf
-| NNInf (M   : R) : nbh \-inf.
+| NPInf (M   : R) : nbh +oo
+| NNInf (M   : R) : nbh -oo.
 
 Coercion pred_of_nbh l (v : nbh l) :=
   match v with
@@ -73,16 +73,16 @@ by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 
 Lemma nbh_pinfW (P : forall x, nbh x -> Prop) :
-  (forall M, P _ (@NPInf R M)) -> forall (v : nbh \+inf), P _ v.
+  (forall M, P _ (@NPInf R M)) -> forall (v : nbh +oo), P _ v.
 Proof.
-move=> ih ; move: {-2}\+inf (erefl (@ERPInf R)).
+move=> ih ; move: {-2}+oo (erefl (@ERPInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 
 Lemma nbh_ninfW (P : forall x, nbh x -> Prop) :
-  (forall M, P _ (@NNInf R M)) -> forall (v : nbh \-inf), P _ v.
+  (forall M, P _ (@NNInf R M)) -> forall (v : nbh -oo), P _ v.
 Proof.
-move=> ih ; move: {-2}\-inf (erefl (@ERNInf R)).
+move=> ih ; move: {-2}-oo (erefl (@ERNInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 End NbhElim.
@@ -307,9 +307,9 @@ Lemma ncvgM u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
 Proof.
 move=> cu cv; pose a := u \- lu%:S; pose b := v \- lv%:S.
 have eq: (u \* v) =1 (lu * lv)%:S \+ ((lu%:S \* b) \+ (a \* v)).
-  move=> n; rewrite {}/a {}/b /= [u n+_]addrC [(_+_)*(v n)]mulrDl.  
+  move=> n; rewrite {}/a {}/b /= [u n+_]addrC [(_+_)*(v n)]mulrDl.
   rewrite !addrA -[LHS]add0r; congr (_ + _); rewrite mulrDr.
-  by rewrite !(mulrN, mulNr) [X in X-_]addrCA subrr addr0 subrr.
+  by rewrite !(mulrN, mulNr) (addrCA (lu * lv)) subrr addr0 subrr.
 apply/(ncvg_eq eq); rewrite -[X in X%:E]addr0; apply/ncvgD.
   by apply/ncvgC. rewrite -[X in X%:E]addr0; apply/ncvgD.
 + apply/ncvgMr; first rewrite -[X in X%:E](subrr lv).
@@ -429,7 +429,7 @@ Implicit Types (u v : nat -> R).
 
 Definition nlim u : {ereal R} :=
   if @idP `[exists l, `[< ncvg u l >]] is ReflectT Px then
-    xchooseb Px else \-inf.
+    xchooseb Px else -oo.
 
 Lemma nlim_ncvg u : (exists l, ncvg u l) -> ncvg u (nlim u).
 Proof.
@@ -439,7 +439,7 @@ move=> p; rewrite -[xchooseb _](ncvg_uniq cv_u_l) //.
 by apply/asboolP/(xchoosebP p).
 Qed.
 
-Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = \-inf.
+Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = -oo.
 Proof.
 move=> h; rewrite /nlim; case: {-}_ / idP => // p.
 by case: h; case/existsbP: p => l /asboolP; exists l.
@@ -447,7 +447,7 @@ Qed.
 
 CoInductive nlim_spec (u : nat -> R) : er R -> Type :=
 | NLimCvg l : ncvg u l -> nlim_spec u l
-| NLimOut   : ~ (exists l, ncvg u l) -> nlim_spec u \-inf.
+| NLimOut   : ~ (exists l, ncvg u l) -> nlim_spec u -oo.
 
 Lemma nlimP u : nlim_spec u (nlim u).
 Proof.
@@ -521,7 +521,7 @@ Qed.
 Lemma nlim_sumR {I : eqType} (u : I -> nat -> R) (r : seq I) :
   (forall i, i \in r -> iscvg (u i)) ->
       nlim (fun n => \sum_(i <- r) (u i) n)
-    = (\sum_(i <- r) (nlim (u i) : R))%:E.
+    = (\sum_(i <- r) (real_of_er(*TODO: coercion broken*) (nlim (u i)) : R))%:E.
 Proof.
 move=> h; rewrite nlim_sum //; elim: r h => [|i r ih] h.
   by rewrite !big_nil.
