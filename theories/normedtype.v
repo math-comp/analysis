@@ -821,7 +821,7 @@ Proof. by case: V => ? [? ? ? ? ? []]. Qed.
 End NormedModule1'.
 
 Section NormedModule1''.
-Variables (R : realFieldType) (V : normedModType R).
+Variables (R : numFieldType) (V : normedModType R).
 
 Lemma normmZ l (x : V) : `| l *: x | = `| l | * `| x |.
 Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
