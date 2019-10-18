@@ -26,12 +26,20 @@ Require Import classical_sets posnum topology.
 (*                   locally_dist == neighbourhoods defined by a "distance"   *)
 (*                                   function                                 *)
 (*                                                                            *)
-(* * Topological groups:                                                      *)
-(*   TODO: document                                                           *)
+(* * Normed Topological Abelian groups:                                       *)
+(*     uniformNormedZmoduleType R == interface type for a topological Abelian *)
+(*                                   group equipped with a norm               *)
+(* UniformNormedZmodule.Mixin nball == builds the mixin for a normed          *)
+(*                                   topological Abelian group from the       *)
+(*                                   compatibility between the norm and       *)
+(*                                   balls; the carrier type must have a      *)
+(*                                   normed Zmodule K structure a             *)
+(*                                   numDomainType                            *)
+(* TODO: complete documentation of normed topological Abelian groups          *)
+(*                                                                            *)
 (* * Normed modules :                                                         *)
 (*                normedModType K == interface type for a normed module       *)
-(*                                   structure over the ring with absolute    *)
-(*                                   value K.                                 *)
+(*                                   structure over the numDomainType K.      *)
 (*     NormedModMixin normD normZ balln normeq0 == builds the mixin for a     *)
 (*                                   normed module from the algebraic         *)
 (*                                   properties of the norm and the           *)
@@ -81,195 +89,27 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
 
-Local Open Scope classical_set_scope.
+Section add_to_mathcomp.
 
-(*Module AbsRing.
-
-Record mixin_of (D : ringType) := Mixin {
-  abs : D -> R;
-  ax1 : abs 0 = 0 ;
-  ax2 : abs (- 1) = 1 ;
-  ax3 : forall x y : D, abs (x + y) <= abs x + abs y ;
-  ax4 : forall x y : D, abs (x * y) = abs x * abs y ;
-  ax5 : forall x : D, abs x = 0 -> x = 0
-}.
-
-Section ClassDef.
-
-Record class_of (K : Type) := Class {
-  base : Num.NumDomain.class_of K ;
-  mixin : mixin_of (Num.NumDomain.Pack base)
-}.
-Local Coercion base : class_of >-> Num.NumDomain.class_of.
-Local Coercion mixin : class_of >-> mixin_of.
-
-Structure type := Pack { sort; _ : class_of sort }.
-Local Coercion sort : type >-> Sortclass.
-
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c := cT return class_of cT in c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of xT).
-Definition clone c of phant_id class c := @Pack T c.
-Definition pack b0 (m0 : mixin_of (@Num.NumDomain.Pack T b0)) :=
-  fun bT b & phant_id (Num.NumDomain.class bT) b =>
-  fun    m & phant_id m0 m => Pack (@Class T b m).
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition ringType := @GRing.Ring.Pack cT xclass.
-Definition comRingType := @GRing.ComRing.Pack cT xclass.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
-Definition numDomainType := @Num.NumDomain.Pack cT xclass.
-
-End ClassDef.
-
-Module Exports.
-
-Coercion base : class_of >-> Num.NumDomain.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion sort : type >-> Sortclass.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion zmodType : type >-> GRing.Zmodule.type.
-Canonical zmodType.
-Coercion ringType : type >-> GRing.Ring.type.
-Canonical ringType.
-Coercion comRingType : type >-> GRing.ComRing.type.
-Canonical comRingType.
-Coercion unitRingType : type >-> GRing.UnitRing.type.
-Canonical unitRingType.
-Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
-Canonical comUnitRingType.
-Coercion idomainType : type >-> GRing.IntegralDomain.type.
-Canonical idomainType.
-Coercion numDomainType : type >-> Num.NumDomain.type.
-Canonical numDomainType.
-Notation AbsRingMixin := Mixin.
-Notation AbsRingType T m := (@pack T _ m _ _ id _ id).
-Notation "[ 'absRingType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
-  (at level 0, format "[ 'absRingType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'absRingType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'absRingType'  'of'  T ]") : form_scope.
-Notation absRingType := type.
-
-End Exports.
-
-End AbsRing.
-
-Export AbsRing.Exports.
-
-Definition abs {K : absRingType} : K -> R := @AbsRing.abs _ (AbsRing.class K).
-
-Section AbsRing1.
-
-Local Notation "`| x |" := (abs x%R) : R_scope.
-Local Notation "`| x |" := (abs x%R) : real_scope.
-
-Context {K : absRingType}.
-Implicit Types x : K.
-
-Lemma absr0 : `|0 : K| = 0. Proof. exact: AbsRing.ax1. Qed.
-
-Lemma absrN1: `|- 1 : K| = 1.
-Proof. exact: AbsRing.ax2. Qed.
-
-Lemma ler_abs_add (x y : K) :  `|x + y| <= `|x|%real + `|y|%real.
-Proof. exact: AbsRing.ax3. Qed.
-
-Lemma absrM (x y : K) : `|x * y| = `|x|%real * `|y|%real.
-Proof. exact: AbsRing.ax4. Qed.
-
-Lemma absr0_eq0 (x : K) : `|x| = 0 -> x = 0.
-Proof. exact: AbsRing.ax5. Qed.
-
-Lemma absrN x : `|- x| = `|x|.
-Proof.
-gen have le_absN1 : x / `|- x| <= `|x|.
-  by rewrite -mulN1r absrM absrN1 mul1r.
-by apply/eqP; rewrite eq_le le_absN1 /= -{1}[x]opprK le_absN1.
-Qed.
-
-Lemma absrB (x y : K) : `|x - y| = `|y - x|.
-Proof. by rewrite -absrN opprB. Qed.
-
-Lemma absr1 : `|1 : K| = 1. Proof. by rewrite -absrN absrN1. Qed.
-
-Lemma absr_ge0 x : 0 <= `|x|.
-Proof.
-rewrite -(@pmulr_rge0 _ 2) // mulr2n mulrDl !mul1r.
-by rewrite -{2}absrN (le_trans _ (ler_abs_add _ _)) // subrr absr0.
-Qed.
-
-Lemma absr_eq0 x : (`|x| == 0) = (x == 0).
-Proof. by apply/eqP/eqP=> [/absr0_eq0//|->]; rewrite absr0. Qed.
-
-Lemma absr1_gt0 : `|1 : K| > 0.
-Proof. by rewrite lt_def absr1 oner_eq0 /=. Qed.
-
-Lemma absrX x n : `|x ^+ n| <= `|x|%real ^+ n.
-Proof.
-elim: n => [|n IH]; first  by rewrite !expr0 absr1.
-by rewrite !exprS absrM ler_pmul // absr_ge0.
-Qed.
-
-End AbsRing1.
-Hint Resolve absr_ge0 : core.
-Hint Resolve absr1_gt0 : core.
-*)
-Definition ball_ (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V)
-  (e : R) := [set y | norm (x - y) < e].
-Arguments ball_ {R} {V} norm x e%R y /.
-
-(* :TODO: to math-comp *)
 Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
 Proof. by rewrite addrA addrNK. Qed.
 
-(*Section AbsRing_UniformSpace.
+Lemma ltr_distW (R : realDomainType) (x y e : R) :
+  (`|x - y|%R < e) -> y - e < x.
+Proof. by rewrite ltr_distl => /andP[]. Qed.
 
-Context {K : absRingType}.
+Lemma ler_distW (R : realDomainType) (x y e : R):
+   (`|x - y|%R <= e) -> y - e <= x.
+Proof. by rewrite ler_distl => /andP[]. Qed.
 
-Definition AbsRing_ball := ball_ (@abs K).
+End add_to_mathcomp.
 
-Lemma AbsRing_ball_center (x : K) (e : R) : 0 < e -> AbsRing_ball x e x.
-Proof. by rewrite /AbsRing_ball /= subrr absr0. Qed.
+Local Open Scope classical_set_scope.
 
-Lemma AbsRing_ball_sym (x y : K) (e : R) :
-  AbsRing_ball x e y -> AbsRing_ball y e x.
-Proof. by rewrite /AbsRing_ball /= absrB. Qed.
-
-Lemma AbsRing_ball_triangle (x y z : K) (e1 e2 : R) :
-  AbsRing_ball x e1 y -> AbsRing_ball y e2 z -> AbsRing_ball x (e1 + e2) z.
-Proof.
-rewrite /AbsRing_ball /= => xy yz.
-by rewrite (subr_trans y) (le_lt_trans (ler_abs_add _ _)) ?ltr_add.
-Qed.
-
-Definition AbsRingUniformMixin :=
-  UniformMixin AbsRing_ball_center AbsRing_ball_sym AbsRing_ball_triangle erefl.
-
-End AbsRing_UniformSpace.
-
-(* :TODO: DANGEROUS ! Must change this to include uniform type et al inside absring *)
-Coercion absRing_pointedType (K : absRingType) := PointedType K 0.
-Canonical absRing_pointedType.
-Coercion absRing_filteredType (K : absRingType) :=
-   FilteredType K K (locally_ AbsRing_ball).
-Canonical absRing_filteredType.
-Coercion absRing_topologicalType (K : absRingType) :=
-  TopologicalType K (topologyOfBallMixin AbsRingUniformMixin).
-Canonical absRing_topologicalType.
-Coercion absRing_UniformType (K : absRingType) := UniformType K AbsRingUniformMixin.
-Canonical absRing_UniformType.
-
-Lemma ball_absE (K : absRingType) : ball = ball_ (@abs K).
-Proof. by []. Qed.
-*)
+Definition ball_
+  (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V) (e : R) :=
+  [set y | norm (x - y) < e].
+Arguments ball_ {R} {V} norm x e%R y /.
 
 Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
 
@@ -341,9 +181,7 @@ move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
 by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
 Qed.
 
-(** real numbers *)
-
-Module TopologicalZmodule.
+Module UniformNormedZmodule.
 Section ClassDef.
 Variable R : numDomainType.
 Record mixin_of (T : normedZmodType R) (loc : T -> set (set T))
@@ -437,19 +275,19 @@ Canonical pointed_normedZmodType.
 Canonical filtered_normedZmodType.
 Canonical topological_normedZmodType.
 Canonical uniform_normedZmodType.
-Notation topologicalZmoduleType R := (type (Phant R)).
-Notation TopologicalZmoduleType R T m := (@pack _ (Phant R) T _ _ _ m _ _ idfun _ _ idfun _ idfun).
-Notation "[ 'topologicalZmoduleType' R 'of' T 'for' cT ]" :=
+Notation uniformNormedZmoduleType R := (type (Phant R)).
+Notation UniformNormedZmoduleType R T m := (@pack _ (Phant R) T _ _ _ m _ _ idfun _ _ idfun _ idfun).
+Notation "[ 'uniformNormedZmoduleType' R 'of' T 'for' cT ]" :=
   (@clone _ (Phant R) T cT _ idfun)
-  (at level 0, format "[ 'topologicalZmoduleType'  R  'of'  T  'for'  cT ]") :
+  (at level 0, format "[ 'uniformNormedZmoduleType'  R  'of'  T  'for'  cT ]") :
   form_scope.
-Notation "[ 'topologicalZmoduleType' R 'of' T ]" :=
+Notation "[ 'uniformNormedZmoduleType' R 'of' T ]" :=
   (@clone _ (Phant R) T _ _ idfun)
-  (at level 0, format "[ 'topologicalZmoduleType'  R  'of'  T ]") : form_scope.
+  (at level 0, format "[ 'uniformNormedZmoduleType'  R  'of'  T ]") : form_scope.
 End Exports.
 
-End TopologicalZmodule.
-Export TopologicalZmodule.Exports.
+End UniformNormedZmodule.
+Export UniformNormedZmodule.Exports.
 
 Canonical R_pointedType := [pointedType of
   Rdefinitions.R for pointed_of_zmodule R_ringType].
@@ -465,19 +303,10 @@ Section realFieldType_canonical_contd.
 Variable R : realFieldType.
 Lemma R_ball : @ball _ [uniformType R of R^o] = ball_ (fun x => `| x |).
 Proof. by []. Qed.
-Definition realFieldType_topologicalZmodMixin := TopologicalZmodule.Mixin R_ball.
-Canonical realFieldType_topologicalZmodType := @TopologicalZmoduleType R R^o realFieldType_topologicalZmodMixin.
+Definition realFieldType_uniformNormedZmodMixin := UniformNormedZmodule.Mixin R_ball.
+Canonical realFieldType_uniformNormedZmodType :=
+  @UniformNormedZmoduleType R R^o realFieldType_uniformNormedZmodMixin.
 End realFieldType_canonical_contd.
-
-(*TODO: create a Definition that creates, given a ring structure, a
-pointed type with 0 as a default element and a Definition that creates,
-locally open ball and all the proofs from normedDomainType and then
-use to create R_pointedType, etc.*)
-
-(*
-TODO
-Canonical R_uniformNormedZmoduleType := [uniformNormedZmoduleType Rdefinitions.R of Rdefinitions.R].
-*)
 
 (** locally *)
 
@@ -577,12 +406,21 @@ move=> /= M s /= /(locallyP (M i j)); rewrite locally_E => -[e e0 es].
 apply/locallyP; rewrite locally_E; exists e => //= N MN; exact/es/MN.
 Qed.
 
+Global Instance Rlocally'_proper (R : realType) (x : R^o) : ProperFilter (locally' x).
+Proof.
+apply: Build_ProperFilter => A [_/posnumP[e] Ae].
+exists (x + e%:num / 2); apply: Ae; last first.
+  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
+rewrite /= opprD addrA subrr distrC subr0 ger0_norm //.
+by rewrite {2}(splitr e%:num) ltr_spaddl.
+Qed.
+
 (** * Some Topology on [Rbar] *)
 
-(* NB: already defined in R_scope in Rbar.v *)
-(* TODO: factor *)
+(* NB: definitions specialized to Coq reals in Rbar.v *)
 Notation "'+oo'" := (@ERPInf _) : real_scope.
 Notation "'-oo'" := (@ERNInf _) : real_scope.
+
 Section rbar.
 Context {R : realType}.
 Let R_topologicalType := [topologicalType of R^o].
@@ -602,15 +440,6 @@ Definition Rbar_locally (a : {ereal R}) (P : R -> Prop) :=
 (*Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.*)
 Canonical Rbar_pointed := PointedType {ereal R} (+oo).
 Canonical Rbar_filter := FilteredType R {ereal R} (Rbar_locally).
-
-Global Instance Rlocally'_proper (x : R^o) : ProperFilter (locally' x).
-Proof.
-apply: Build_ProperFilter => A [_/posnumP[e] Ae].
-exists (x + e%:num / 2); apply: Ae; last first.
-  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-rewrite /= opprD addrA subrr distrC subr0 ger0_norm //.
-by rewrite {2}(splitr e%:num) ltr_spaddl.
-Qed.
 
 Global Instance Rbar_locally'_filter : forall x, ProperFilter (Rbar_locally' x).
 Proof.
@@ -657,12 +486,10 @@ End rbar.
 
 (** ** Modules with a norm *)
 
-(*Reserved Notation  "`|[ x ]|" (at level 0, x at level 99, format "`|[ x ]|").*)
-
 Module NormedModule.
 
 Record mixin_of (K : numDomainType)
-  (V : topologicalZmoduleType K) (scale : K -> V -> V) := Mixin {
+  (V : uniformNormedZmoduleType K) (scale : K -> V -> V) := Mixin {
   _ : forall (l : K) (x : V), `| scale l x | = `| l | * `| x |;
 }.
 
@@ -670,14 +497,13 @@ Section ClassDef.
 
 Variable K : numDomainType.
 
-(* joint of normedDomainType and Lmodule *)
 Record class_of (T : Type) := Class {
-  base : TopologicalZmodule.class_of K T ;
+  base : UniformNormedZmodule.class_of K T ;
   lmodmixin : GRing.Lmodule.mixin_of K (GRing.Zmodule.Pack base) ;
-  mixin : @mixin_of K (TopologicalZmodule.Pack (Phant K) base)
+  mixin : @mixin_of K (UniformNormedZmodule.Pack (Phant K) base)
                       (GRing.Lmodule.scale lmodmixin)
 }.
-Local Coercion base : class_of >-> TopologicalZmodule.class_of.
+Local Coercion base : class_of >-> UniformNormedZmodule.class_of.
 Local Coercion base2 T (c : class_of T) : GRing.Lmodule.class_of K T :=
   @GRing.Lmodule.Class K T (base c) (lmodmixin c).
 Local Coercion mixin : class_of >-> mixin_of.
@@ -694,9 +520,9 @@ Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 
 Definition pack b0 l0
-                (m0 : @mixin_of K (@TopologicalZmodule.Pack K (Phant K) T b0)
+                (m0 : @mixin_of K (@UniformNormedZmodule.Pack K (Phant K) T b0)
                                 (GRing.Lmodule.scale l0)) :=
-  fun bT b & phant_id (@TopologicalZmodule.class K (Phant K) bT) b =>
+  fun bT b & phant_id (@UniformNormedZmodule.class K (Phant K) bT) b =>
   fun l & phant_id l0 l =>
   fun m & phant_id m0 m => Pack phK (@Class T b l m).
 
@@ -709,18 +535,18 @@ Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
 Definition uniformType := @Uniform.Pack K cT xclass.
-Definition topologicalZmodType := @TopologicalZmodule.Pack K phK cT xclass.
+Definition uniformNormedZmodType := @UniformNormedZmodule.Pack K phK cT xclass.
 Definition pointed_lmodType := @GRing.Lmodule.Pack K phK pointedType xclass.
 Definition filtered_lmodType := @GRing.Lmodule.Pack K phK filteredType xclass.
 Definition topological_lmodType := @GRing.Lmodule.Pack K phK topologicalType xclass.
 Definition uniform_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
 Definition normedZmod_lmodType := @GRing.Lmodule.Pack K phK normedZmodType xclass.
-Definition topologicalZmod_lmodType := @GRing.Lmodule.Pack K phK topologicalZmodType xclass.
+Definition uniformNormedZmod_lmodType := @GRing.Lmodule.Pack K phK uniformNormedZmodType xclass.
 End ClassDef.
 
 Module Exports.
 
-Coercion base : class_of >-> TopologicalZmodule.class_of.
+Coercion base : class_of >-> UniformNormedZmodule.class_of.
 Coercion base2 : class_of >-> GRing.Lmodule.class_of.
 Coercion mixin : class_of >-> mixin_of.
 Coercion sort : type >-> Sortclass.
@@ -742,14 +568,14 @@ Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
-Coercion topologicalZmodType : type >-> TopologicalZmodule.type.
-Canonical topologicalZmodType.
+Coercion uniformNormedZmodType : type >-> UniformNormedZmodule.type.
+Canonical uniformNormedZmodType.
 Canonical pointed_lmodType.
 Canonical filtered_lmodType.
 Canonical topological_lmodType.
 Canonical uniform_lmodType.
 Canonical normedZmod_lmodType.
-Canonical topologicalZmod_lmodType.
+Canonical uniformNormedZmod_lmodType.
 Notation normedModType K := (type (Phant K)).
 Notation NormedModType K T m := (@pack _ (Phant K) T _ _ m _ _ idfun _ idfun _ idfun).
 Notation NormedModMixin := Mixin.
@@ -811,7 +637,7 @@ Proof. exact: ler_dist_dist. Qed.
 End NormedModule1.
 
 Section NormedModule1'.
-Context {K : numDomainType(*absRingType*)} {V : topologicalZmoduleType K}.
+Context {K : numDomainType(*absRingType*)} {V : uniformNormedZmoduleType K}.
 Implicit Types (l : K) (x y : V) (eps : posreal).
 
 Notation ball_norm := (ball_ (@normr K V)).
@@ -1186,9 +1012,10 @@ rewrite (nth_map (ord0, ord0)); last by rewrite index_mem.
 by rewrite !mxE !nth_index //=; apply=> //; rewrite -mxvec_cast cardT index_mem.
 Qed.
 
-Definition matrix_TopologicalZmodMixin := TopologicalZmodule.Mixin mx_norm_ball.
-Canonical matrix_topologicalZmodType :=
-  TopologicalZmoduleType K 'M[K^o]_(m.+1, n.+1) matrix_TopologicalZmodMixin.
+Definition matrix_UniformNormedZmodMixin :=
+  UniformNormedZmodule.Mixin mx_norm_ball.
+Canonical matrix_uniformNormedZmodType :=
+  UniformNormedZmoduleType K 'M[K^o]_(m.+1, n.+1) matrix_UniformNormedZmodMixin.
 
 Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
 Proof. by rewrite {1 3}/normr /= /mx_norm bigmaxr_scale. Qed.
@@ -1227,9 +1054,10 @@ Lemma prod_norm_ball :
   @ball _ [uniformType K of U * V] = ball_ (fun x => `|x|).
 Proof. by rewrite /= -ball_prod_normE. Qed.
 
-Definition prod_TopologicalZmodMixin := TopologicalZmodule.Mixin prod_norm_ball.
+Definition prod_UniformNormedZmodMixin :=
+  UniformNormedZmodule.Mixin prod_norm_ball.
 Canonical prod_topologicalZmodType :=
-  TopologicalZmoduleType K (U * V) prod_TopologicalZmodMixin.
+  UniformNormedZmoduleType K (U * V) prod_UniformNormedZmodMixin.
 
 Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
 Canonical prod_normedModType :=
@@ -1558,16 +1386,6 @@ Export CompleteNormedModule.Exports.
 (* Admitted. *)
 
 Arguments flim_normW {_ _ F FF}.
-
-(* :TODO: add to mathcomp *)
-Lemma ltr_distW (R : realDomainType) (x y e : R):
-   (`|x - y|%R < e) -> y - e < x.
-Proof. by rewrite ltr_distl => /andP[]. Qed.
-
-(* :TODO: add to mathcomp *)
-Lemma ler_distW (R : realDomainType) (x y e : R):
-   (`|x - y|%R <= e) -> y - e <= x.
-Proof. by rewrite ler_distl => /andP[]. Qed.
 
 Lemma R_complete (R : realType) (F : set (set R^o)) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
