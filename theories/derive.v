@@ -159,7 +159,7 @@ move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; near=> k; rewrite /cst [`|1 : R^o|]normr1 mulr1.
   near=> y; rewrite ltW //; near: y; apply/locally_normP.
-  by exists k; [near: k; exists 0|move=> ? /=; rewrite sub0r normmN].
+  by exists k; [near: k; exists 0|move=> ? /=; rewrite sub0r normrN].
 rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
 by apply/eqolim0P; apply: (flim_trans (dfc 0)); rewrite linear0.
 Grab Existential Variables. all: end_near. Qed.
@@ -172,14 +172,14 @@ Lemma normm_littleo x (f : X -> Y) : `| [o_(x \near x) (1 : R^o) of f x]| = 0.
 Proof.
 rewrite /cst /=; have [e /(_ (`|e x|/2) _)/locally_singleton /=] := littleo.
 rewrite pmulr_lgt0 // [`|1 : R^o|]normr1 mulr1 [X in X <= _]splitr.
-by rewrite ger_addr pmulr_lle0 // => /implyP; case: ltrgtP; rewrite ?normm_lt0.
+by rewrite ger_addr pmulr_lle0 // => /implyP; case: ltrgtP; rewrite ?normr_lt0.
 Qed.
 
 Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :
   f @ x --> (0 : Y) -> [o_x f of h] x = 0.
 Proof.
 move/eqolim0P => ->; have [k /(_ _ [gt0 of 1])/=] := littleo.
-by move=> /locally_singleton; rewrite mul1r normm_littleo normm_le0 => /eqP.
+by move=> /locally_singleton; rewrite mul1r normm_littleo normr_le0 => /eqP.
 Qed.
 
 End littleo_lemmas.
@@ -222,7 +222,7 @@ Proof.
 move=> df; apply/eqaddoP => _/posnumP[e].
 rewrite -locally_nearE locally_simpl /= locallyE'; split; last first.
   rewrite /at_point opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
-  by rewrite addrA subrr add0r normmN scale0r !normm0 mulr0.
+  by rewrite addrA subrr add0r normrN scale0r !normr0 mulr0.
 have /eqolimP := df; rewrite -[lim _]/(derive _ _ _).
 move=> /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]).
 apply: filter_app; rewrite /= !near_simpl near_withinE; near=> h => hN0.
@@ -290,16 +290,16 @@ have [/eqP ->|v0] := boolP (v == 0).
 apply/flim_normP => e e0.
 rewrite nearE /=; apply/locallyP; rewrite locally_E.
 have /(littleoP [littleo of k]) /locallyP[i i0 Hi] : 0 < e / (2 * `|v|).
-  by rewrite divr_gt0 // pmulr_rgt0 // normm_gt0.
-exists (i / `|v|); first by rewrite divr_gt0 // normm_gt0.
+  by rewrite divr_gt0 // pmulr_rgt0 // normr_gt0.
+exists (i / `|v|); first by rewrite divr_gt0 // normr_gt0.
 move=> /= j; rewrite /ball /= /ball_ add0r normrN.
-rewrite ltr_pdivl_mulr ?normm_gt0 // => jvi j0.
-rewrite add0r normmN normmZ -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
+rewrite ltr_pdivl_mulr ?normr_gt0 // => jvi j0.
+rewrite add0r normrN normmZ -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
 have /Hi/le_lt_trans -> // : ball 0 i (j *: v).
-  by rewrite -ball_normE /ball_ add0r normmN (le_lt_trans _ jvi) // normmZ.
+  by rewrite -ball_normE /ball_ add0r normrN (le_lt_trans _ jvi) // normmZ.
 rewrite -(mulrC e) -mulrA -ltr_pdivl_mull // mulrA mulVr ?unitfE ?gt_eqF //.
 rewrite normrV ?unitfE // div1r invrK ltr_pdivr_mull; last first.
-  by rewrite pmulr_rgt0 // normm_gt0.
+  by rewrite pmulr_rgt0 // normr_gt0.
 rewrite normmZ mulrC -mulrA.
 by rewrite ltr_pmull ?ltr1n // pmulr_rgt0 ?normm_gt0 // normr_gt0.
 Qed.
@@ -361,8 +361,8 @@ Lemma littleo_linear0 (V W : normedModType R) (f : {linear V -> W}) :
 Proof.
 move/eqoP => oid.
 rewrite funeqE => x; apply/eqP; case: (ler0P `|x|) => [|xn0].
-  by rewrite normm_le0 => /eqP ->; rewrite linear0.
-rewrite -normm_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
+  by rewrite normr_le0 => /eqP ->; rewrite linear0.
+rewrite -normr_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
 apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
 have /oid /locallyP [_ /posnumP[d] dfe] := posnum_gt0 e.
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
@@ -371,7 +371,7 @@ rewrite -ler_pdivl_mull; last by rewrite gtr0_norm.
 rewrite mulrCA (@le_trans _ _ (e%:num * `|k^-1 *: x|)) //; last first.
   by rewrite ler_pmul // normmZ normfV.
 apply dfe.
-rewrite -ball_normE /ball_ sub0r normmN normmZ.
+rewrite -ball_normE /ball_ sub0r normrN normmZ.
 rewrite invrK -ltr_pdivl_mulr // ger0_norm // ltr_pdivr_mulr //.
 by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [X in _ < X]splitr ltr_addl.
 Qed.
@@ -610,7 +610,7 @@ Proof.
 move=> /(_ 0); rewrite linear0 => /(_ _ (locally_ball 0 1%:pos)).
 move=> /locallyP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
 case: (lerP `|x| 0) => [|xn0].
-  by rewrite normm_le0 => /eqP->; rewrite linear0 !normm0 mulr0.
+  by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
 set k := 2 / e%:num * (PosNum xn0)%:num.
 have kn0 : k != 0 by [].
 have abskgt0 : `|k| > 0 by rewrite normr_gt0.
@@ -720,9 +720,9 @@ Proof.
 move=> /(_ 0); rewrite linear0r => /(_ _ (locally_ball 0 1%:pos)).
 move=> /locallyP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
 case: (lerP `|u| 0) => [|un0].
-  by rewrite normm_le0 => /eqP->; rewrite linear0l !normm0 mulr0 mul0r.
+  by rewrite normr_le0 => /eqP->; rewrite linear0l !normr0 mulr0 mul0r.
 case: (lerP `|v| 0) => [|vn0].
-  by rewrite normm_le0 => /eqP->; rewrite linear0r !normm0 mulr0.
+  by rewrite normr_le0 => /eqP->; rewrite linear0r !normr0 mulr0.
 rewrite -[`|u|]/((PosNum un0)%:num) -[`|v|]/((PosNum vn0)%:num).
 set ku := 2 / e%:num * (PosNum un0)%:num.
 set kv := 2 / e%:num * (PosNum vn0)%:num.
@@ -900,9 +900,9 @@ have hDx_neq0 : h + x != 0.
   near: h; rewrite !locally_simpl; apply/locally_normP.
   exists `|x|; first by rewrite normr_gt0.
   move=> h /=; rewrite normmB subr0 -subr_gt0 => lthx.
-  rewrite -(normm_gt0 (h + x : R^o)) addrC -[h]opprK.
+  rewrite -(normr_gt0 (h + x : R^o)) addrC -[h]opprK.
   apply: lt_le_trans (ler_distm_dist _ _).
-  by rewrite ger0_norm normmN //; apply: ltW.
+  by rewrite ger0_norm normrN //; apply: ltW.
 rewrite addrC -[X in X * _]mulr1 -{2}[1](@mulfVK _ (h + x)) //.
 rewrite mulrA expr_div_n expr1n mulf_div mulr1 [_ ^+ 2 * _]mulrC -mulrA.
 rewrite -mulrDr mulrBr [1 / _ * _]mulrC normrM.
@@ -919,7 +919,7 @@ move=> /le_trans-> //; rewrite [X in X <= _]mulrC ler_pmul ?mulr_ge0 //.
 near: h; exists (`|x| / 2); first by rewrite divr_gt0 ?normr_gt0.
 move=> h; rewrite /= distrC subr0 => lthhx; rewrite addrC -[h]opprK.
 apply: le_trans (@ler_distm_dist _ [normedModType R of R^o] _ _).
-rewrite normmN [X in _ <= X]ger0_norm; last first.
+rewrite normrN [X in _ <= X]ger0_norm; last first.
   rewrite subr_ge0; apply: ltW; apply: lt_le_trans lthhx _.
   by rewrite ler_pdivr_mulr // -{1}(mulr1 `|x|) ler_pmul // ler1n.
 rewrite ler_subr_addr -ler_subr_addl (splitr `|x : R^o|).
@@ -1247,7 +1247,7 @@ move=> fxn0 df.
 have /derivable1P/derivable1_diffP/differentiable_continuous := df.
 move=> /continuous_withinNx; rewrite scale0r add0r => fc.
 have fn0 : locally' (0 : R^o) [set h | f (h *: v + x) != 0].
-  apply: (fc [set x | x != 0]); exists `|f x|; first by rewrite normm_gt0.
+  apply: (fc [set x | x != 0]); exists `|f x|; first by rewrite normr_gt0.
   move=> y; rewrite /= => yltfx.
   by apply/eqP => y0; move: yltfx; rewrite y0 subr0 ltxx.
 have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
@@ -1365,7 +1365,7 @@ Lemma le0r_flim_map (R : realType) (T : topologicalType) (F : set (set T))
 Proof.
 move=> fge0 fcv; case: (lerP 0 (lim (f @ F))) => // limlt0; near F => x.
 have := near fge0 x; rewrite leNgt => /(_ _) /negbTE<- //; near: x.
-have normlimgt0 : `|lim (f @ F)| > 0 by rewrite normm_gt0 ltr0_neq0.
+have normlimgt0 : `|lim (f @ F)| > 0 by rewrite normr_gt0 ltr0_neq0.
 have /fcv := locally_ball_norm (lim (f @ F)) (PosNum normlimgt0).
 rewrite /= !near_simpl; apply: filterS => x.
 rewrite /= normmB => /(le_lt_trans (ler_norm _)).

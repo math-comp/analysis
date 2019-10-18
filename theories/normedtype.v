@@ -9,22 +9,7 @@ Require Import classical_sets posnum topology.
 (******************************************************************************)
 (* This file extends the topological hierarchy with norm-related notions.     *)
 (*                                                                            *)
-(* * Rings with absolute value :                                              *)
-(*                    absRingType == interface type for a ring with absolute  *)
-(*                                   value structure.                         *)
-(*     AbsRingMixin abs0 absN1 absD absM abseq0 == builds the mixin for a     *)
-(*                                   ring with absolute value from the        *)
-(*                                   algebraic properties of the absolute     *)
-(*                                   value; the carrier type must have a      *)
-(*                                   ringType structure.                      *)
-(*      [absRingType of T for cT] == T-clone of the absRingType structure cT. *)
-(*             [absRingType of T] == clone of a canonical absRingType         *)
-(*                                   structure on T.                          *)
-(*                           `|x| == the absolute value of x.                 *)
-(*                        ball_ N == balls defined by the norm/absolute value *)
-(*                                   N.                                       *)
-(*                   locally_dist == neighbourhoods defined by a "distance"   *)
-(*                                   function                                 *)
+(* ball_ N == balls defined by the norm/absolute value N                      *)
 (*                                                                            *)
 (* * Normed Topological Abelian groups:                                       *)
 (*     uniformNormedZmoduleType R == interface type for a topological Abelian *)
@@ -289,7 +274,6 @@ End Exports.
 End UniformNormedZmodule.
 Export UniformNormedZmodule.Exports.
 
-(* TODO: to Rstruct.v *)
 Canonical R_pointedType := [pointedType of
   Rdefinitions.R for pointed_of_zmodule R_ringType].
 (* NB: similar definition in topology.v *)
@@ -596,44 +580,15 @@ Export NormedModule.Exports.
 
 Fail Canonical R_NormedModule := [normedModType Rdefinitions.R of Rdefinitions.R^o].
 
-(*Definition norm {K : absRingType} {V : normedModType K} : V -> R :=
-  NormedModule.norm (NormedModule.class _).
-Notation "`|[ x ]|" := (norm x) : ring_scope.*)
-
 Section NormedModule1.
 Context {K : numDomainType} {V : normedZmodType K}.
 Implicit Types (l : K) (x y : V) (eps : posreal).
 
-(*Lemma ler_normm_add x y : `| x + y | <= `| x | + `| y |.
-Proof. exact: ler_norm_add. Qed.*)
-
 Lemma normm0_eq0 x : `|x| = 0 -> x = 0.
 Proof. by move/eqP; rewrite normr_eq0 => /eqP. Qed.
 
-Lemma normmN x : `|- x| = `|x|.
-Proof. by rewrite normrN. Qed.
-
 Lemma normmB x y : `|x - y| = `|y - x|.
-Proof. by rewrite -normmN opprB. Qed.
-
-Lemma normm0 : `|0 : V| = 0.
-Proof. by rewrite normr0. Qed.
-Hint Resolve normm0 : core.
-
-Lemma normm_eq0 x : (`|x| == 0) = (x == 0).
-Proof. exact: normr_eq0. Qed.
-
-Lemma normm_ge0 x : 0 <= `|x|.
-Proof. exact: normr_ge0. Qed.
-
-Lemma normm_gt0 x : (0 < `|x|) = (x != 0).
-Proof. by rewrite normr_gt0. Qed.
-
-Lemma normm_lt0 x : (`|x| < 0) = false.
-Proof. by rewrite normr_lt0. Qed.
-
-Lemma normm_le0 x : (`|x| <= 0) = (x == 0).
-Proof. exact: normr_le0. Qed.
+Proof. by rewrite -normrN opprB. Qed.
 
 Lemma ler_distm_dist x y : `| `|x| - `|y| | <= `|x - y|.
 Proof. exact: ler_dist_dist. Qed.
@@ -700,7 +655,7 @@ Lemma closeE (x y : V) : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
 have dxy_gt0 : `|x - y| > 0.
-  by rewrite normm_gt0 subr_eq0.
+  by rewrite normr_gt0 subr_eq0.
 have dxy_ge0 := ltW dxy_gt0.
 have := cl_xy ((PosNum dxy_gt0)%:num / 2)%:pos.
 rewrite -ball_normE /= -subr_lt0 le_gtF //.
@@ -767,7 +722,7 @@ Lemma ball_norm_dec x y (e : R) : {ball_norm x e y} + {~ ball_norm x e y}.
 Proof. exact: pselect. Qed.
 
 Lemma ball_norm_sym x y (e : R) : ball_norm x e y -> ball_norm y e x.
-Proof. by rewrite /ball_norm -opprB normmN. Qed.
+Proof. by rewrite /ball_norm -opprB normrN. Qed.
 
 Lemma ball_norm_le x (e1 e2 : R) :
   e1 <= e2 -> ball_norm x e1 `<=` ball_norm x e2.
@@ -818,7 +773,7 @@ Variable (V : normedModType Rdefinitions.R).
 Lemma normedModType_hausdorff : hausdorff V.
 Proof.
 move=> p q clp_q; apply/subr0_eq/normm0_eq0/Rhausdorff => A B pq_A.
-rewrite -(@normm0 _ V) -(subrr p) => pp_B.
+rewrite -(@normr0 _ V) -(subrr p) => pp_B.
 suff loc_preim r C :
   locally `|p - r| C -> locally r ((fun r => `|p - r|) @^-1` C).
   have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
@@ -865,7 +820,7 @@ Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
 Proof. by move=> /flim_normP. Qed.
 
 End NormedModule2.
-Hint Resolve normm_ge0 : core.
+Hint Resolve normr_ge0 : core.
 Arguments flim_norm {_ _ F FF}.
 
 Section NormedModule2'.
@@ -1469,7 +1424,7 @@ Lemma flim_norm0 {U} {K : realFieldType} {V : normedModType K}
 Proof.
 move=> /(flim_norm (_ : K^o)) fx0; apply/flim_normP => _/posnumP[e].
 rewrite near_simpl; have := fx0 _ [gt0 of e%:num]; rewrite near_simpl.
-by apply: filterS => x; rewrite !sub0r !normmN [ `|_| ]ger0_norm.
+by apply: filterS => x; rewrite !sub0r !normrN [ `|_| ]ger0_norm.
 Qed.
 
 Section cvg_seq_bounded.
@@ -1697,7 +1652,7 @@ have /midf_lt [_] := lt0x; rewrite ltNge -eqbF_neg => /eqP<-.
 by rewrite add0r; apply: lex0; rewrite -[x]/((PosNum lt0x)%:num).
 Qed.
 
-Lemma IVT (f : Rdefinitions.R^o -> Rdefinitions.R^o) (a b v : Rdefinitions.R^o) :
+Lemma IVT (R : realType) (f : R^o -> R^o) (a b v : R^o) :
   a <= b -> {in `[a, b], continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
   exists2 c, c \in `[a, b] & f c = v.
@@ -1707,7 +1662,7 @@ move=> leab; wlog : f v / f a <= f b.
     exact: ivt.
   move=> fcont fabv; have [] := ivt (fun x => - f x) (- v).
   - by rewrite ler_oppr opprK.
-  - by move=> x /fcont; apply: (@continuousN _ [normedModType Rdefinitions.R of Rdefinitions.R^o]).
+  - by move=> x /fcont; apply: (@continuousN _ [normedModType R of R^o]).
   - by rewrite -oppr_max -oppr_min ler_oppr opprK ler_oppr opprK andbC.
   by move=> c cab /eqP; rewrite eqr_opp => /eqP; exists c.
 move=> lefab fcont; rewrite (elimT meet_idPl) // (elimT join_idPl) // => /andP [].
@@ -1726,10 +1681,10 @@ have supAab : sup A \in `[a, b].
 exists (sup A) => //; have lefsupv : f (sup A) <= v.
   rewrite leNgt; apply/negP => ltvfsup.
   have vltfsup : 0 < f (sup A) - v by rewrite subr_gt0.
-  have /fcont /(_ _ (locally_ball _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
+  have /fcont /(_ _ (@locally_ball _ [normedModType R of R^o] _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
     := supAab.
   have [t At supd_t] := sup_adherent supA [gt0 of d%:num].
-  suff /supdfe : ball (sup A) d%:num t.
+  suff /supdfe : @ball _ [normedModType R of R^o] (sup A) d%:num t.
     rewrite /= /ball /= ltr_norml => /andP [_].
     by rewrite ltr_add2l ltr_oppr opprK ltNge; have /andP [_ ->] := At.
   rewrite /= /ball /= ger0_norm.
@@ -1738,9 +1693,9 @@ exists (sup A) => //; have lefsupv : f (sup A) <= v.
 apply/eqP; rewrite eq_le; apply/andP; split=> //.
 rewrite -subr_le0; apply/ler0_addgt0P => _/posnumP[e].
 rewrite ler_subl_addr -ler_subl_addl ltW //.
-have /fcont /(_ _ (locally_ball _ e)) [_/posnumP[d] supdfe] := supAab.
+have /fcont /(_ _ (@locally_ball _ [normedModType R of R^o] _ e)) [_/posnumP[d] supdfe] := supAab.
 have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
-have /supdfe /= : ball (sup A) d%:num x.
+have /supdfe /= : @ball _ [normedModType R of R^o] (sup A) d%:num x.
   by near: x; rewrite /= locally_simpl; exists d%:num => //.
 rewrite /= => /ltr_distW; apply: le_lt_trans.
 rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
