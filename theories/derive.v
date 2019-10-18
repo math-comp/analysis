@@ -387,8 +387,7 @@ have hdf h :
   (f \o shift x = cst (f x) + h +o_ (0 : V) id) ->
   h = f \o shift x - cst (f x) +o_ (0 : V) id.
   move=> hdf; apply: eqaddoE.
-  rewrite hdf.
-  rewrite addrAC addrC !addrA (addrC _ (cst _)) subrr add0r.
+  rewrite hdf addrAC (addrC _ h) addrK.
   rewrite -[LHS]addr0 -addrA; congr (_ + _).
   by apply/eqP; rewrite eq_sym addrC addr_eq0 oppo.
 rewrite (hdf _ dxf).

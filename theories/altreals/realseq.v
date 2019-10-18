@@ -6,7 +6,7 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import mathcomp.bigenough.bigenough.
-Require Import xfinmap boolp reals discrete.
+Require Import xfinmap boolp ereal reals discrete.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -36,7 +36,7 @@ Context {R : realDomainType} (T : Type).
 
 Implicit Types (f g h : T -> R).
 
-Lemma leff f : f <=1 f. 
+Lemma leff f : f <=1 f.
 Proof. by []. Qed.
 
 Lemma lef_trans g f h : f <=1 g -> g <=1 h -> f <=1 h.
@@ -307,9 +307,9 @@ Lemma ncvgM u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
 Proof.
 move=> cu cv; pose a := u \- lu%:S; pose b := v \- lv%:S.
 have eq: (u \* v) =1 (lu * lv)%:S \+ ((lu%:S \* b) \+ (a \* v)).
-  move=> n; rewrite {}/a {}/b /= [u n+_]addrC [(_+_)*(v n)]mulrDl.  
+  move=> n; rewrite {}/a {}/b /= [u n+_]addrC [(_+_)*(v n)]mulrDl.
   rewrite !addrA -[LHS]add0r; congr (_ + _); rewrite mulrDr.
-  by rewrite !(mulrN, mulNr) [X in X-_]addrCA subrr addr0 subrr.
+  by rewrite !(mulrN, mulNr) (addrCA (lu * lv)) subrr addr0 subrr.
 apply/(ncvg_eq eq); rewrite -[X in X%:E]addr0; apply/ncvgD.
   by apply/ncvgC. rewrite -[X in X%:E]addr0; apply/ncvgD.
 + apply/ncvgMr; first rewrite -[X in X%:E](subrr lv).
@@ -521,7 +521,7 @@ Qed.
 Lemma nlim_sumR {I : eqType} (u : I -> nat -> R) (r : seq I) :
   (forall i, i \in r -> iscvg (u i)) ->
       nlim (fun n => \sum_(i <- r) (u i) n)
-    = (\sum_(i <- r) (nlim (u i) : R))%:E.
+    = (\sum_(i <- r) (real_of_er(*TODO: coercion broken*) (nlim (u i)) : R))%:E.
 Proof.
 move=> h; rewrite nlim_sum //; elim: r h => [|i r ih] h.
   by rewrite !big_nil.

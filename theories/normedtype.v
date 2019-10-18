@@ -3,7 +3,7 @@ Require Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
-Require Import boolp reals Rstruct Rbar.
+Require Import boolp ereal reals Rstruct Rbar.
 Require Import classical_sets posnum topology.
 
 (******************************************************************************)
@@ -289,6 +289,7 @@ End Exports.
 End UniformNormedZmodule.
 Export UniformNormedZmodule.Exports.
 
+(* TODO: to Rstruct.v *)
 Canonical R_pointedType := [pointedType of
   Rdefinitions.R for pointed_of_zmodule R_ringType].
 (* NB: similar definition in topology.v *)
@@ -303,7 +304,8 @@ Section realFieldType_canonical_contd.
 Variable R : realFieldType.
 Lemma R_ball : @ball _ [uniformType R of R^o] = ball_ (fun x => `| x |).
 Proof. by []. Qed.
-Definition realFieldType_uniformNormedZmodMixin := UniformNormedZmodule.Mixin R_ball.
+Definition realFieldType_uniformNormedZmodMixin :=
+  UniformNormedZmodule.Mixin R_ball.
 Canonical realFieldType_uniformNormedZmodType :=
   @UniformNormedZmoduleType R R^o realFieldType_uniformNormedZmodMixin.
 End realFieldType_canonical_contd.
@@ -406,7 +408,7 @@ move=> /= M s /= /(locallyP (M i j)); rewrite locally_E => -[e e0 es].
 apply/locallyP; rewrite locally_E; exists e => //= N MN; exact/es/MN.
 Qed.
 
-Global Instance Rlocally'_proper (R : realType) (x : R^o) : ProperFilter (locally' x).
+Global Instance Rlocally'_proper_realFieldType (R : realFieldType) (x : R^o) : ProperFilter (locally' x).
 Proof.
 apply: Build_ProperFilter => A [_/posnumP[e] Ae].
 exists (x + e%:num / 2); apply: Ae; last first.
@@ -415,6 +417,9 @@ rewrite /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
+Global Instance Rlocally'_proper_realType (R : realType) (x : R^o) : ProperFilter (locally' x).
+Proof. exact: Rlocally'_proper_realFieldType. Qed.
+
 (** * Some Topology on [Rbar] *)
 
 (* NB: definitions specialized to Coq reals in Rbar.v *)
@@ -422,17 +427,17 @@ Notation "'+oo'" := (@ERPInf _) : real_scope.
 Notation "'-oo'" := (@ERNInf _) : real_scope.
 
 Section rbar.
-Context {R : realType}.
+Context {R : realFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
 Definition Rbar_locally' (a : {ereal R}) (P : R -> Prop) :=
   match a with
-    | ERFin a => @locally' R_topologicalType a P
+    | a%:E => @locally' R_topologicalType a P
     | +oo => exists M, forall x, (M < x)%O -> P x
     | -oo => exists M, forall x, (x < M)%O -> P x
   end.
 Definition Rbar_locally (a : {ereal R}) (P : R -> Prop) :=
   match a with
-    | ERFin a => @locally _ R_topologicalType a P
+    | a%:E => @locally _ R_topologicalType a P
     | +oo => exists M, forall x, (M < x)%O -> P x
     | -oo => exists M, forall x, (x < M)%O -> P x
   end.
@@ -443,7 +448,7 @@ Canonical Rbar_filter := FilteredType R {ereal R} (Rbar_locally).
 
 Global Instance Rbar_locally'_filter : forall x, ProperFilter (Rbar_locally' x).
 Proof.
-case=> [x||]; first exact: Rlocally'_proper.
+case=> [x||]; first exact: Rlocally'_proper_realFieldType.
   apply Build_ProperFilter.
     by move=> P [M gtMP]; exists (M + 1); apply: gtMP; rewrite ltr_addl.
   split=> /= [|P Q [MP gtMP] [MQ gtMQ] |P Q sPQ [M gtMP]]; first by exists 0.
@@ -596,12 +601,11 @@ Fail Canonical R_NormedModule := [normedModType Rdefinitions.R of Rdefinitions.R
 Notation "`|[ x ]|" := (norm x) : ring_scope.*)
 
 Section NormedModule1.
-Context {K : numDomainType(*absRingType*)} {V : normedZmodType K}.
+Context {K : numDomainType} {V : normedZmodType K}.
 Implicit Types (l : K) (x y : V) (eps : posreal).
 
-(*TODO: useless? *)
-Lemma ler_normm_add x y : `| x + y | <= `| x | + `| y |.
-Proof. exact: ler_norm_add. Qed.
+(*Lemma ler_normm_add x y : `| x + y | <= `| x | + `| y |.
+Proof. exact: ler_norm_add. Qed.*)
 
 Lemma normm0_eq0 x : `|x| = 0 -> x = 0.
 Proof. by move/eqP; rewrite normr_eq0 => /eqP. Qed.
@@ -752,10 +756,9 @@ Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
 Lemma locally_ball_norm (x : V) (eps : {posnum R}) : locally x (ball_norm x eps%:num).
 Proof. rewrite -locally_locally_norm; apply: locally_norm_ball_norm. Qed.
 
-(* TODO: useless? *)
-Lemma ball_norm_triangle' (x y z : V) (e1 e2 : R) :
+(*Lemma ball_norm_triangle' (x y z : V) (e1 e2 : R) :
   ball_norm x e1 y -> ball_norm y e2 z -> ball_norm x (e1 + e2) z.
-Proof. exact: ball_norm_triangle. Qed.
+Proof. exact: ball_norm_triangle. Qed.*)
 
 Lemma ball_norm_center' (x : V) (e : {posnum R}) : ball_norm x e%:num x.
 Proof. exact: ball_norm_center. Qed.
@@ -869,7 +872,7 @@ Section NormedModule2'.
 
 Context {T : Type}.
 
-Lemma flim_bounded {R : realType} {V : normedModType R} {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma flim_bounded {R : realFieldType} {V : normedModType R} {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof.
 move=> /flim_norm Fy; exists `|y| => M.
@@ -1134,7 +1137,7 @@ exact: (@locally_filter [topologicalType of K'^o]).
 Qed.
 
 Section NVS_continuity1.
-Context {K : realType} {V : normedModType K}.
+Context {K : realFieldType} {V : normedModType K}.
 Local Notation "'+oo'" := (@ERPInf K).
 Local Notation "'-oo'" := (@ERNInf K).
 
@@ -1177,7 +1180,7 @@ End NVS_continuity1.
 
 Section limit_composition.
 
-Context {K : realType(*absRingType*)} {V : normedModType K} {T : topologicalType}.
+Context {K : realFieldType(*absRingType*)} {V : normedModType K} {T : topologicalType}.
 
 Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
@@ -1423,7 +1426,7 @@ Canonical R_completeType (R : realType) := CompleteType R^o (@R_complete R).
 Canonical R_CompleteNormedModule (R : realType) := [completeNormedModType R of R^o].
 
 Section at_left_right.
-Variable R : realType.
+Variable R : realFieldType.
 
 Definition at_left (x : R^o) := within (fun u => u < x) (locally x).
 Definition at_right (x : R^o) := within (fun u : R => x < u) (locally x).
@@ -1470,7 +1473,7 @@ by apply: filterS => x; rewrite !sub0r !normmN [ `|_| ]ger0_norm.
 Qed.
 
 Section cvg_seq_bounded.
-Context {K : realType}.
+Context {K : realFieldType}.
 Local Notation "'+oo'" := (@ERPInf K).
 
 (* TODO: simplify using extremumP when PR merged in mathcomp *)
@@ -1490,10 +1493,10 @@ Grab Existential Variables. all: end_near. Qed.
 
 End cvg_seq_bounded.
 
-(** Some open sets of [R] *)
+Section some_sets.
+Variable R : realFieldType.
 
-Section some_open_sets.
-Variable R : realType.
+(** Some open sets of [R] *)
 
 Lemma open_lt (y : R) : open [set x : R^o | x < y].
 Proof.
@@ -1539,6 +1542,11 @@ rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
   by apply: closedC; exact: open_neq.
 by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
 Qed.
+
+End some_sets.
+
+Section segment.
+Variable R : realType.
 
 (** properties of segments in [R] *)
 
@@ -1624,7 +1632,7 @@ Lemma segment_closed (a b : R) : closed [set x : R^o | x \in `[a, b]].
 Proof.
 have -> : [set x | x \in `[a, b]] = [set x | x >= a] `&` [set x | x <= b].
   by rewrite predeqE => ?; rewrite inE; split=> [/andP [] | /= [->]].
-exact: closedI (@closed_ge _) (@closed_le _).
+by apply closedI; [apply closed_ge | apply closed_le].
 Qed.
 
 Lemma segment_compact (a b : R) : compact [set x : R^o | x \in `[a, b]].
@@ -1677,7 +1685,7 @@ rewrite ltr_subl_addl -ltr_subl_addr; apply: lt_trans ltyz.
 by apply: ltr_distW; rewrite distrC.
 Qed.
 
-End some_open_sets.
+End segment.
 
 Lemma ler0_addgt0P (R : realFieldType) (x : R) :
   reflect (forall e, e > 0 -> x <= e) (x <= 0).
@@ -1689,7 +1697,7 @@ have /midf_lt [_] := lt0x; rewrite ltNge -eqbF_neg => /eqP<-.
 by rewrite add0r; apply: lex0; rewrite -[x]/((PosNum lt0x)%:num).
 Qed.
 
-Lemma IVT (f : Rdefinitions.R -> Rdefinitions.R) (a b v : Rdefinitions.R) :
+Lemma IVT (f : Rdefinitions.R^o -> Rdefinitions.R^o) (a b v : Rdefinitions.R^o) :
   a <= b -> {in `[a, b], continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
   exists2 c, c \in `[a, b] & f c = v.
@@ -1750,10 +1758,10 @@ Grab Existential Variables. all: end_near. Qed.
 (** Local properties in [R] *)
 
 (* NB: this is a proof that was in Rbar and that has been ported to {ereal _} *)
-Lemma lt_ereal_locally (R : realType) (a b : {ereal R}) (x : R) :
-  lt_ereal a (ERFin x) -> lt_ereal (ERFin x) b ->
+Lemma lt_ereal_locally (R : realFieldType) (a b : {ereal R}) (x : R) :
+  lt_ereal a x%:E -> lt_ereal x%:E b ->
   exists delta : {posnum R},
-    forall y, `|y - x| < delta%:num -> lt_ereal a (ERFin y) && lt_ereal (ERFin y) b.
+    forall y, `|y - x| < delta%:num -> lt_ereal a y%:E && lt_ereal y%:E b.
 Proof.
 move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
@@ -1772,9 +1780,9 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - by exists 1%:pos.
 Qed.
 
-Lemma locally_interval (R : realType) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
-  lt_ereal a (ERFin x) -> lt_ereal (ERFin x) b ->
-  (forall y : R, lt_ereal a (ERFin y) -> lt_ereal (ERFin y) b -> P y) ->
+Lemma locally_interval (R : realFieldType) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
+  lt_ereal a x%:E -> lt_ereal x%:E b ->
+  (forall y : R, lt_ereal a y%:E -> lt_ereal y%:E b -> P y) ->
   locally x P.
 Proof.
 move => Hax Hxb Hp; case: (lt_ereal_locally Hax Hxb) => d Hd.
@@ -1931,7 +1939,7 @@ Qed.
 (* Qed. *)
 
 Section bounded.
-Variable K : realType.
+Variable K : realFieldType.
 Local Notation "'+oo'" := (@ERPInf K).
 Definition bounded (V : normedModType K) (A : set V) :=
   \forall M \near +oo, A `<=` [set x | `|x| < M].
@@ -1948,7 +1956,7 @@ have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite -subr_gt0 => ltpn.
   apply/locallyP; exists (n%:~R - `|p|) => // q.
   rewrite -ball_normE /= ltr_subr_addr normmB; apply: le_lt_trans.
-  by rewrite -{1}(subrK p q) ler_normm_add.
+  by rewrite -{1}(subrK p q) ler_norm_add.
 move=> D _ DcovA.
 exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]).
 move=> x ltmaxx p /DcovA [n Dn /lt_trans]; apply; apply: le_lt_trans ltmaxx.
@@ -2014,16 +2022,16 @@ have GC : G [set g | C (\row_j g j)] by exists C.
 by have [g []] := clGf _ _ GC f_D; exists (\row_j (g j : T)).
 Qed.
 
-Lemma bounded_closed_compact n (A : set 'rV[Rdefinitions.R]_n.+1) :
+Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R^o]_n.+1) :
   bounded A -> closed A -> compact A.
 Proof.
 move=> [M normAltM] Acl.
 have Mnco : compact
-  [set v : 'rV[Rdefinitions.R]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
-  apply: (@rV_compact _ _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
+  [set v : 'rV[R^o]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
+  apply: (@rV_compact [topologicalType of R^o] _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvltM i.
-suff /ltW : `|v ord0 i : Rdefinitions.R^o| < M + 1 by rewrite ler_norml.
+suff /ltW : `|v ord0 i : R^o| < M + 1 by rewrite ler_norml.
 apply: le_lt_trans (normvltM _ _); last by rewrite ltr_addl.
 have vinseq : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
@@ -2034,9 +2042,9 @@ Qed.
 (** Open sets in [Rbar] *)
 
 Section open_sets_in_Rbar.
-Variable R : realType.
+Variable R : realFieldType.
 
-Lemma open_Rbar_lt y : open [set u : R^o | lt_ereal (ERFin u) y].
+Lemma open_Rbar_lt y : open [set u : R^o | lt_ereal u%:E y].
 Proof.
 case: y => [y||] /=.
 exact: open_lt.
@@ -2044,7 +2052,7 @@ by rewrite trueE; apply: openT.
 by rewrite falseE; apply: open0.
 Qed.
 
-Lemma open_Rbar_gt y : open [set u : R^o | lt_ereal y (ERFin u)].
+Lemma open_Rbar_gt y : open [set u : R^o | lt_ereal y u%:E].
 Proof.
 case: y => [y||] /=.
 exact: open_gt.
@@ -2052,7 +2060,7 @@ by rewrite falseE; apply: open0.
 by rewrite trueE; apply: openT.
 Qed.
 
-Lemma open_Rbar_lt' x y : lt_ereal x y -> Rbar_locally x (fun u : R => lt_ereal (ERFin u) y).
+Lemma open_Rbar_lt' x y : lt_ereal x y -> Rbar_locally x (fun u : R => lt_ereal u%:E y).
 Proof.
 case: x => [x|//|] xy; first exact: open_Rbar_lt.
 case: y => [y||//] /= in xy *.
@@ -2063,7 +2071,7 @@ exists y => /= x ? //.
 by exists 0.
 Qed.
 
-Lemma open_Rbar_gt' x y : lt_ereal y x -> Rbar_locally x (fun u : R => lt_ereal y (ERFin u)).
+Lemma open_Rbar_gt' x y : lt_ereal y x -> Rbar_locally x (fun u : R => lt_ereal y u%:E).
 Proof.
 case: x => [x||] //=; do ?[exact: open_Rbar_gt];
   case: y => [y||] //=; do ?by exists 0.
@@ -2076,7 +2084,7 @@ move: x => [x P [_/posnumP[e] HP] |x P|x P] //=.
 by exists e%:num => // ???; apply: HP.
 Qed.
 
-Lemma Rbar_locally'_le_finite (x : R) : Rbar_locally' (ERFin x) --> locally (ERFin x).
+Lemma Rbar_locally'_le_finite (x : R) : Rbar_locally' x%:E --> locally x%:E.
 Proof.
 by move=> P [_/posnumP[e] HP] //=; exists e%:num => // ???; apply: HP.
 Qed.
@@ -2085,8 +2093,8 @@ End open_sets_in_Rbar.
 
 (** * Some limits on real functions *)
 
-Definition Rbar_loc_seq (R : realType) (x : {ereal R}) (n : nat) := match x with
-    | ERFin x => x + (n%:R + 1)^-1
+Definition Rbar_loc_seq (R : numDomainType) (x : {ereal R}) (n : nat) := match x with
+    | x%:E => x + (n%:R + 1)^-1
     | +oo => n%:R
     | -oo => - n%:R
   end.
@@ -2124,7 +2132,8 @@ by rewrite ler_nat.
 Qed.
 
 (* TODO: express using ball?*)
-Lemma continuity_pt_locally (f : Rdefinitions.R -> Rdefinitions.R) x : Ranalysis1.continuity_pt f x <->
+Lemma continuity_pt_locally (f : Rdefinitions.R -> Rdefinitions.R) x :
+  Ranalysis1.continuity_pt f x <->
   forall eps : {posnum Rdefinitions.R}, locally x (fun u => `|f u - f x| < eps%:num).
 Proof.
 split=> [fcont e|fcont _/RltP/posnumP[e]]; last first.
@@ -2163,7 +2172,7 @@ Lemma continuity_ptE (f : Rdefinitions.R -> Rdefinitions.R) (x : Rdefinitions.R)
   Ranalysis1.continuity_pt f x <-> {for x, continuous f}.
 Proof. exact: continuity_pt_flim. Qed.
 
-Lemma continuous_withinNx (R : realType) {U V : uniformType R}
+Lemma continuous_withinNx (R : realFieldType) {U V : uniformType R}
   (f : U -> V) x :
   {for x, continuous f} <-> f @ locally' x --> f x.
 Proof.

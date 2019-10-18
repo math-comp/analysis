@@ -3,6 +3,7 @@
 -arg -w -arg -duplicate-clear
 
 theories/boolp.v
+theories/ereal.v
 theories/reals.v
 theories/posnum.v
 theories/landau.v
