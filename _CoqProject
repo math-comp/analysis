@@ -3,6 +3,7 @@
 -arg -w -arg -duplicate-clear
 
 theories/boolp.v
+theories/ereal.v
 theories/reals.v
 theories/posnum.v
 theories/landau.v
@@ -21,6 +22,6 @@ theories/altreals/realsum.v
 theories/altreals/distr.v
 
 -R theories mathcomp.analysis
--R /home/affeldt/git/finmap mathcomp.finmap
--R /home/affeldt/git/math-comp/mathcomp mathcomp
--R /home/affeldt/git/bigenough mathcomp.bigenough
+-R ../finmap mathcomp.finmap
+-R ../math-comp/mathcomp mathcomp
+-R ../bigenough mathcomp.bigenough

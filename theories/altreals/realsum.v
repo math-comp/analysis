@@ -5,14 +5,14 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import xfinmap boolp reals discrete realseq.
+Require Import xfinmap boolp ereal reals discrete realseq.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope fset_scope.
 Local Open Scope ring_scope.
@@ -169,12 +169,12 @@ Context {R : realType}.
 Lemma ncvg_mono (u : nat -> R) :
     (* {mono u : x y / (x <= y)%N >-> u x <= u y *)
     (forall x y, (x <= y)%N -> u x <= u y)
-  -> exists2 l, (\-inf < l)%E & ncvg u l.
+  -> exists2 l, (-oo < l)%E & ncvg u l.
 Proof.
 move=> mono_u; pose E := [pred x | `[exists n, x == u n]].
 have nzE: nonempty E by exists (u 0%N); apply/imsetbP; exists 0%N.
 case/boolP: `[< has_sup E >] => /asboolP; last first.
-  move/has_supPn=> -/(_ nzE) h; exists \+inf => //; elim/nbh_pinfW => M /=.
+  move/has_supPn=> -/(_ nzE) h; exists +oo => //; elim/nbh_pinfW => M /=.
   case/(_ M): h=> x /imsetbP[K -> lt_MuK]; exists K=> n le_Kn; rewrite inE.
   by apply/(lt_le_trans lt_MuK)/mono_u.
 move=> supE; exists (sup E)%:E => //; elim/nbh_finW=>e /= gt0_e.
@@ -490,7 +490,7 @@ Hypothesis smS     : summable S.
 Hypothesis homo_P  : forall n m, (n <= m)%N -> (P n `<=` P m).
 Hypothesis cover_P : forall x, S x != 0 -> exists n, x \in P n.
 
-Lemma psum_as_lim : psum S = nlim (fun n => \sum_(j : P n) (S (val j))).
+Lemma psum_as_lim : psum S = real_of_er(*TODO: broken coercion*) (nlim (fun n => \sum_(j : P n) (S (val j)))).
 Proof.
 set v := fun n => _; have hm_v m n: (m <= n)%N -> v m <= v n.
   by move=> le_mn; apply/big_fset_subset/fsubsetP/homo_P.

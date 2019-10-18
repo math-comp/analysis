@@ -1,10 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-Require Import Reals.
+Require Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
-Require Import boolp reals.
-Require Import Rstruct Rbar classical_sets posnum topology normedtype.
+Require Import boolp ereal reals.
+Require Import Rstruct classical_sets posnum topology normedtype.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -39,12 +39,12 @@ Qed.
 Definition partial_sum {I : choiceType} {R : zmodType}
   (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
 
-Definition sum (I : choiceType) {K : absRingType} {R : normedModType K}
+Definition sum (I : choiceType) {K : numDomainType} {R : normedModType K}
    (x : I -> R) : R := lim (partial_sum x).
 
-Definition summable (I : choiceType) {K : absRingType} {R : normedModType K}
+Definition summable (I : choiceType) {K : realType} {R : normedModType K}
    (x : I -> R) :=
    \forall M \near +oo, \forall J \near totally,
-   partial_sum (fun i => `|[x i]|) J <= M.
+   partial_sum (fun i => `|x i|) J <= M.
 
 End totally.

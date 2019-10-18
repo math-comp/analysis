@@ -31,7 +31,7 @@ From mathcomp Require Import mxpoly ssrnum finfun.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope R_scope.
 
@@ -480,15 +480,15 @@ Proof. by elim: n => [ | n In] //=; rewrite exprS In RmultE. Qed.
 
 Lemma RmaxE x y : Rmax x y = Num.max x y.
 Proof.
-case: (lerP x y) => H; first by rewrite (elimT join_idPl) // Rmax_right //; apply: RlebP.
-by rewrite (elimT join_idPr) ?ltW // Rmax_left //;  apply/RlebP; move/ltW : H.
+case: (lerP x y) => H; first by rewrite join_r // Rmax_right //; apply: RlebP.
+by rewrite join_l ?ltW // Rmax_left //;  apply/RlebP; move/ltW : H.
 Qed.
 
 (* useful? *)
 Lemma RminE x y : Rmin x y = Num.min x y.
 Proof.
-case: (lerP x y) => H; first by rewrite (elimT meet_idPl) // Rmin_left //; apply: RlebP.
-by rewrite (elimT meet_idPr) ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
+case: (lerP x y) => H; first by rewrite meet_l // Rmin_left //; apply: RlebP.
+by rewrite meet_r ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
 Qed.
 
 Section bigmaxr.
@@ -531,6 +531,14 @@ Proof.
 case: lr => [/= | y lr]; first by rewrite bigmaxr_nil.
 elim: lr y => [y | y lr ihlr z]; first by rewrite /= !bigmaxr_un.
 by rewrite map_cons !bigmaxr_cons ihlr addr_maxl.
+Qed.
+
+(* TODO: bigmaxr_morph? *)
+Lemma bigmaxr_mulr (A : finType) (s : seq A) (k : R) (x : A -> R) :
+  0 <= k -> bigmaxr 0 (map (fun i => k * x i) s) = k * bigmaxr 0 (map x s).
+Proof.
+move=> k0; elim: s => /= [|h [//|h' t ih]]; first by rewrite bigmaxr_nil mulr0.
+by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pmulr.
 Qed.
 
 Lemma bigmaxr_index (x0 : R) lr :
@@ -588,7 +596,7 @@ Lemma bigmaxr_lerif (x0 : R) lr :
   uniq lr -> forall i, (i < size lr)%N ->
      (nth x0 lr i) <= (bigmaxr x0 lr) ?= iff (i == index (bigmaxr x0 lr) lr).
 Proof.
-move=> lr_uniq i i_size; rewrite /lerif (bigmaxr_ler _ i_size).
+move=> lr_uniq i i_size; rewrite /Num.leif (bigmaxr_ler _ i_size).
 rewrite -(nth_uniq x0 i_size (bigmaxr_index _ (leq_trans _ i_size)) lr_uniq) //.
 rewrite nth_index //.
 by apply: bigmaxr_mem; apply: (leq_trans _ i_size).
@@ -636,7 +644,7 @@ Lemma bmaxrf_lerif n (f : {ffun 'I_n.+1 -> R}) :
   injective f -> forall i,
      (f i) <= (bmaxrf f) ?= iff (i == index_bmaxrf f).
 Proof.
-by move=> inj_f i; rewrite /lerif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
+by move=> inj_f i; rewrite /Num.leif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
 Qed.
 
 End bigmaxr.
