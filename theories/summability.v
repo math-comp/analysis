@@ -39,12 +39,12 @@ Qed.
 Definition partial_sum {I : choiceType} {R : zmodType}
   (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
 
-Definition sum (I : choiceType) {K : absRingType} {R : normedModType K}
+Definition sum (I : choiceType) {K : numDomainType} {R : normedModType K}
    (x : I -> R) : R := lim (partial_sum x).
 
-Definition summable (I : choiceType) {K : absRingType} {R : normedModType K}
+Definition summable (I : choiceType) {K : realType} {R : normedModType K}
    (x : I -> R) :=
    \forall M \near +oo, \forall J \near totally,
-   partial_sum (fun i => `|[x i]|) J <= M.
+   partial_sum (fun i => `|x i|) J <= M.
 
 End totally.
