@@ -275,7 +275,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 
 Section function_space.
@@ -2472,12 +2472,13 @@ Lemma locallyP {R : numDomainType} {M : uniformType R} (x : M) P :
   locally x P <-> locally_ ball x P.
 Proof. by rewrite locally_simpl. Qed.
 
-Section uniformType1.
-Context {R : numFieldType} {M : uniformType R}.
-
-Lemma ball_center (x : M) (e : {posnum R}) : ball x e%:num x.
+Lemma ball_center {R : numDomainType} (M : uniformType R) (x : M)
+  (e : {posnum R}) : ball x e%:num x.
 Proof. exact: Uniform.ax1. Qed.
 Hint Resolve ball_center : core.
+
+Section uniformType1.
+Context {R : numFieldType} {M : uniformType R}.
 
 Lemma ballxx (x : M) (e : R) : (0 < e)%R -> ball x e x.
 Proof. by move=> e_gt0; apply: ball_center (PosNum e_gt0). Qed.
@@ -2515,7 +2516,6 @@ by [apply/Fx/locally_ball|apply/Fy/locally_ball].
 Grab Existential Variables. all: end_near. Qed.
 
 End uniformType1.
-Hint Resolve ball_center : core. (*TODO(rei): this hint does not seem to work as well anymore*)
 Hint Resolve locally_ball : core.
 
 Section uniformType1'.
@@ -2530,7 +2530,7 @@ Qed.
 Lemma ball_le (x : M) (e1 e2 : R) : (e1 <= e2) -> ball x e1 `<=` ball x e2.
 Proof. by move=> /ball_ler. Qed.
 
-Lemma close_refl (x : M) : close x x. Proof. exact/ball_center. Qed.
+Lemma close_refl (x : M) : close x x. Proof. by []. Qed.
 
 Lemma close_sym (x y : M) : close x y -> close y x.
 Proof. by move=> ??; apply: ball_sym. Qed.
@@ -2553,7 +2553,7 @@ Global Instance entourages_filter : ProperFilter entourages.
 Proof.
 apply filter_from_proper; last by exists (point,point); apply: ballxx.
 apply: filter_from_filter; first by exists 1; rewrite ltr01.
-move=> _ _ /posnumP[i] /posnumP[j]; exists (minr i%:num j%:num) => // [[/= x y]] bxy.
+move=> _ _ /posnumP[i] /posnumP[j]; exists (Num.min i%:num j%:num) => // [[/= x y]] bxy.
 by eexists => /=; apply: ball_ler bxy; rewrite leIx lexx ?orbT.
 Qed.
 Typeclasses Opaque entourages.
@@ -2683,14 +2683,14 @@ by move=> xe1_y ye2_z ??; apply: ball_triangle; [apply: xe1_y| apply: ye2_z].
 Qed.
 
 Lemma ltr_bigminr (I : finType) (*(R : realDomainType)*) (f : I -> R) (x0 x : R) :
-  x < x0 -> (forall i, x < f i) -> x < \big[minr/x0]_i f i.
+  x < x0 -> (forall i, x < f i) -> x < \big[Num.min/x0]_i f i.
 Proof.
 move=> ltx0 ltxf; elim/big_ind: _ => // y z ltxy ltxz.
 by rewrite ltxI ltxy ltxz.
 Qed.
 
 Lemma bigminr_ler (I : finType) (*(R : realDomainType)*) (f : I -> R) (x0 : R) i :
-  \big[minr/x0]_j f j <= f i.
+  \big[Num.min/x0]_j f j <= f i.
 Proof.
 have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
 by rewrite inE => /orP [/eqP->|/ihl leminlfi];
@@ -2705,7 +2705,7 @@ rewrite predeq2E => x A; split; last first.
   move=> [e egt0 xe_A]; exists (fun i j => ball (x i j) (PosNum egt0)%:num) => //.
   move=> i j; exact/locally_ball.
 move=> [P]; rewrite -locally_ballE => x_P sPA.
-exists (\big[minr/1]_i \big[minr/1]_j
+exists (\big[Num.min/1]_i \big[Num.min/1]_j
   get (fun e : R => 0 < e /\ ball (x i j) e `<=` P i j)).
   apply: ltr_bigminr => // i; apply: ltr_bigminr => // j.
   by have /exists2P/getPex [] := x_P i j.
@@ -2735,7 +2735,7 @@ Definition prod_ball x (eps : R) y :=
   ball (fst x) eps (fst y) /\ ball (snd x) eps (snd y).
 
 Lemma prod_ball_center x (eps : R) : 0 < eps -> prod_ball x eps x.
-Proof. move=> /posnumP[e]; split; exact/ball_center. Qed.
+Proof. by move=> /posnumP[?]. Qed.
 
 Lemma prod_ball_sym x y (eps : R) : prod_ball x eps y -> prod_ball y eps x.
 Proof. by move=> [bxy1 bxy2]; split; apply: ball_sym. Qed.
@@ -2752,7 +2752,7 @@ rewrite predeq2E => -[x y] P; split=> [[[A B] /=[xX yY] XYP] |]; last first.
   move=> [_ /posnumP[eps] epsP]; exists (ball x eps%:num, ball y eps%:num) => //=.
   split; exact: locally_ball.
 move: xX yY => /locallyP [_ /posnumP[ex] eX] /locallyP [_ /posnumP[ey] eY].
-exists (minr ex%:num ey%:num) => // -[x' y'] [/= xx' yy'].
+exists (Num.min ex%:num ey%:num) => // -[x' y'] [/= xx' yy'].
 apply: XYP; split=> /=.
   by apply/eX/(ball_ler _ xx'); rewrite leIx lexx.
 by apply/eY/(ball_ler _ yy'); rewrite leIx lexx orbT.
@@ -2789,7 +2789,7 @@ Definition fct_ball (x : T -> U) (eps : R) (y : T -> U) :=
   forall t : T, ball (x t) eps (y t).
 
 Lemma fct_ball_center (x : T -> U) (e : R) : 0 < e -> fct_ball x e x.
-Proof. move=> /posnumP[{e}e] t; exact/ball_center. Qed.
+Proof. by move=> /posnumP[{e}e] ?. Qed.
 
 Lemma fct_ball_sym (x y : T -> U) (e : R) : fct_ball x e y -> fct_ball y e x.
 Proof. by move=> P t; apply: ball_sym. Qed.

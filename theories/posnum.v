@@ -39,7 +39,7 @@ Reserved Notation "[gt0 'of' x ]" (format "[gt0 'of'  x ]").
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 
 Delimit Scope R_scope with coqR.
 Delimit Scope real_scope with real.
@@ -118,7 +118,7 @@ Proof. by rewrite leNgt posnum_gt0. Qed.
 Lemma posnum_lt0 x : (x%:num < 0 :> R) = false.
 Proof. by rewrite ltNge posnum_ge0. Qed.
 
-Lemma min_pos_gt0 x y : 0 < minr x%:num y%:num.
+Lemma min_pos_gt0 x y : 0 < Num.min x%:num y%:num.
 Proof. by rewrite ltxI !posnum_gt0. Qed.
 Canonical minr_posnum x y := PosNum (@min_pos_gt0 x y).
 

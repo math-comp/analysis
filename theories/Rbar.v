@@ -26,7 +26,7 @@ Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype order.
 From mathcomp Require Import ssralg ssrnum.
 Require Import Rstruct posnum.
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory Num.Def.
+Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
 (** This file contains the definition and properties of the set
@@ -514,7 +514,7 @@ Definition Rbar_min (x y : Rbar) : Rbar :=
   match x, y with
   | z, p_infty | p_infty, z => z
   | _ , m_infty | m_infty, _ => m_infty
-  | Finite x, Finite y => minr x y
+  | Finite x, Finite y => Num.min x y
   end.
 
 Lemma Rbar_lt_locally (a b : Rbar) (x : R) :
@@ -525,7 +525,7 @@ Proof.
 move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
   move=> {a b} a b ltxa ltxb.
-  have m_gt0 : minr ((x - a) / 2) ((b - x) / 2) > 0.
+  have m_gt0 : Num.min ((x - a) / 2) ((b - x) / 2) > 0.
     by rewrite ltxI !divr_gt0 ?subr_gt0.
   exists (PosNum m_gt0) => y //=; rewrite ltxI !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].

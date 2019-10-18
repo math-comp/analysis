@@ -646,4 +646,3 @@ Notation hermitian := (false, @conjC _).-sesqui.
 (* Local Notation "''[' u , v ]" := (form u v) : ring_scope. *)
 (* Local Notation "''[' u ]" := '[u%R, u%R] : ring_scope. *)
 (* Local Notation "A _|_ B" := (A%MS <= kermx B%MS^T)%MS. *)
-
