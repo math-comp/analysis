@@ -480,15 +480,15 @@ Proof. by elim: n => [ | n In] //=; rewrite exprS In RmultE. Qed.
 
 Lemma RmaxE x y : Rmax x y = Num.max x y.
 Proof.
-case: (lerP x y) => H; first by rewrite (elimT join_idPl) // Rmax_right //; apply: RlebP.
-by rewrite (elimT join_idPr) ?ltW // Rmax_left //;  apply/RlebP; move/ltW : H.
+case: (lerP x y) => H; first by rewrite join_r // Rmax_right //; apply: RlebP.
+by rewrite join_l ?ltW // Rmax_left //;  apply/RlebP; move/ltW : H.
 Qed.
 
 (* useful? *)
 Lemma RminE x y : Rmin x y = Num.min x y.
 Proof.
-case: (lerP x y) => H; first by rewrite (elimT meet_idPl) // Rmin_left //; apply: RlebP.
-by rewrite (elimT meet_idPr) ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
+case: (lerP x y) => H; first by rewrite meet_l // Rmin_left //; apply: RlebP.
+by rewrite meet_r ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
 Qed.
 
 Section bigmaxr.

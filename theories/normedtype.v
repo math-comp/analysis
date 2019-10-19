@@ -11,14 +11,14 @@ Require Import classical_sets posnum topology.
 (*                                                                            *)
 (* ball_ N == balls defined by the norm/absolute value N                      *)
 (*                                                                            *)
-(* * Normed (Topological) Abelian groups:                                     *)
-(*     uniformNormedZmoduleType R == interface type for a normed Abelian      *)
-(*                                   group equipped with a norm               *)
-(*  UniformNormedZmodule.Mixin nb == builds the mixin for a normed Abelian    *)
-(*                                   group from the compatibility between the *)
-(*                                   norm and balls; the carrier type must    *)
-(*                                   have a normed Zmodule over a             *)
-(*                                   numDomainType.                           *)
+(* * Normed Topological Abelian groups:                                     *)
+(*     uniformNormedZmoduleType R == interface type for a normed topological  *)
+(*                                   Abelian group equipped with a norm       *)
+(*  UniformNormedZmodule.Mixin nb == builds the mixin for a normed            *)
+(*                                   topological Abelian group from the       *)
+(*                                   compatibility between the norm and       *)
+(*                                   balls; the carrier type must have a      *)
+(*                                   normed Zmodule over a numDomainType.     *)
 (*                                                                            *)
 (* * Normed modules :                                                         *)
 (*                normedModType K == interface type for a normed module       *)
@@ -85,7 +85,7 @@ Proof. by rewrite ler_distl => /andP[]. Qed.
 
 End add_to_mathcomp.
 
-(* TODO: bigmaxr_morph, move to Rstruct.v *)
+(* TODO: bigmaxr_morph? move to Rstruct.v? *)
 Lemma bigmaxr_scale (K : realDomainType) m n (s : seq ('I_m.+1 * 'I_n.+1)) (k : K) (x : 'M[K]_(m.+1, n.+1)) :
   bigmaxr 0 (map (fun ij => `|(k *: x) ij.1 ij.2|) s) =
   `| k | * bigmaxr 0 (map (fun ij => `|x ij.1 ij.2|) s).
@@ -147,6 +147,7 @@ Canonical realFieldType_topologicalType : topologicalType := TopologicalType R^o
   (topologyOfBallMixin (uniform_of_normedDomain [normedZmodType R of R])).
 Canonical realFieldType_uniformType := @Uniform.Pack R R^o (@Uniform.Class R R
   (Topological.class realFieldType_topologicalType) (@uniform_of_normedDomain R R)).
+Definition realdFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
 End realFieldType_canonical.
 
 Lemma locallyN (R : realFieldType) (x : R^o) :
@@ -918,21 +919,7 @@ Definition matrix_normedZmodMixin :=
 Canonical matrix_normedZmodType :=
   NormedZmoduleType K 'M[K]_(m.+1, n.+1) matrix_normedZmodMixin.
 
-(* TODO: show the norm axiom and then use a factory
-to instantiate the types below *)
-
-(*Canonical K_filteredType := [filteredType K of K for filtered_of_normedZmod K].
-
-Canonical K_topologicalType : topologicalType := @Topological.Pack K
-  (@Topological.Class K (Filtered.class K_filteredType)
-    (@topologyOfBallMixin _ K _ (@uniform_of_normedDomain K K))).
-
-Canonical K_uniformType : uniformType K := @Uniform.Pack K K (@Uniform.Class K K
-  (Topological.class K_topologicalType) (@uniform_of_normedDomain K K)).
-*)
-
-(*Definition K_lalgType : lalgType K := @GRing.regular_lalgType K.*)
-
+(* show the norm axiom and then use a factory to instantiate the type *)
 Lemma mx_norm_ball :
   @ball _ [uniformType K of 'M[K^o]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
 Proof.
@@ -1644,7 +1631,7 @@ move=> leab; wlog : f v / f a <= f b.
   - by move=> x /fcont; apply: (@continuousN _ [normedModType R of R^o]).
   - by rewrite -oppr_max -oppr_min ler_oppr opprK ler_oppr opprK andbC.
   by move=> c cab /eqP; rewrite eqr_opp => /eqP; exists c.
-move=> lefab fcont; rewrite (elimT meet_idPl) // (elimT join_idPl) // => /andP [].
+move=> lefab fcont; rewrite meet_l // join_r // => /andP [].
 rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
   by exists a => //; rewrite inE/= lexx leab.
 rewrite le_eqVlt => /orP [/eqP->|ltvfb].
