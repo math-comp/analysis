@@ -1190,7 +1190,7 @@ Definition convexon (a b : {ereal R}) (f : R -> R) :=
     forall t, 0 <= t <= 1 ->
       f (t * x + (1 - t) * y) <= t * (f x) + (1 - t) * (f y).
 
-Notation convex f := (convexon \-inf \+inf f).
+Notation convex f := (convexon -oo +oo f).
 
 Section Jensen.
 Context (f : R -> R) (x l : I -> R).

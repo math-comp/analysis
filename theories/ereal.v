@@ -2,6 +2,10 @@
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
+(* -------------------------------------------------------------------- *)
+
+(* NB: taken out from reals.v and generalized in 2019 *)
+
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import boolp.
 
@@ -20,8 +24,10 @@ Coercion real_of_er x :=
   if x is ERFin v then v else 0%R.
 End ExtendedReals.
 
-Notation "\+inf" := (@ERPInf _).
-Notation "\-inf" := (@ERNInf _).
+(*Notation "\+inf" := (@ERPInf _).*)
+Notation "+oo" := (@ERPInf _).
+(*Notation "\-inf" := (@ERNInf _).*)
+Notation "-oo" := (@ERNInf _).
 Notation "x %:E" := (@ERFin _ x) (at level 2, format "x %:E").
 
 Notation "{ 'ereal' R }" := (er R) (format "{ 'ereal'  R }").
@@ -35,15 +41,15 @@ Variable (R : numDomainType).
 Definition code (x : {ereal R}) :=
   match x with
   | x%:E  => GenTree.Node 0 [:: GenTree.Leaf x]
-  | \+inf => GenTree.Node 1 [::]
-  | \-inf => GenTree.Node 2 [::]
+  | +oo => GenTree.Node 1 [::]
+  | -oo => GenTree.Node 2 [::]
   end.
 
 Definition decode (x : GenTree.tree R) : option {ereal R} :=
   match x with
   | GenTree.Node 0 [:: GenTree.Leaf x] => Some x%:E
-  | GenTree.Node 1 [::] => Some \+inf
-  | GenTree.Node 2 [::] => Some \-inf
+  | GenTree.Node 1 [::] => Some +oo
+  | GenTree.Node 2 [::] => Some -oo
   | _ => None
   end.
 
@@ -67,33 +73,33 @@ Implicit Types (x y : {ereal R}).
 
 Definition le_ereal x1 x2 :=
   match x1, x2 with
-  | \-inf, _ | _, \+inf => true
-  | \+inf, _ | _, \-inf => false
+  | -oo, _ | _, +oo => true
+  | +oo, _ | _, -oo => false
 
   | x1%:E, x2%:E => (x1 <= x2)%O
   end.
 
 Definition lt_ereal x1 x2 :=
   match x1, x2 with
-  | \-inf, \-inf | \+inf, \+inf => false
-  | \-inf, _     | _    , \+inf => true
-  | \+inf, _     | _    , \-inf => false
+  | -oo, -oo | +oo, +oo => false
+  | -oo, _   | _  , +oo => true
+  | +oo, _   | _  , -oo => false
 
   | x1%:E, x2%:E => (x1 < x2)%O
   end.
 
 Definition min_ereal x1 x2 :=
   match x1, x2 with
-  | \-inf, _ | _, \-inf => \-inf
-  | \+inf, x | x, \+inf => x
+  | -oo, _ | _, -oo => -oo
+  | +oo, x | x, +oo => x
 
   | x1%:E, x2%:E => (Num.Def.minr x1 x2)%:E
   end.
 
 Definition max_ereal x1 x2 :=
   match x1, x2 with
-  | \-inf, x | x, \-inf => x
-  | \+inf, _ | _, \+inf => \+inf
+  | -oo, x | x, -oo => x
+  | +oo, _ | _, +oo => +oo
 
   | x1%:E, x2%:E => (Num.Def.maxr x1 x2)%:E
   end.
@@ -153,17 +159,17 @@ Implicit Types (x y z : {ereal R}).
 Definition eadd x y :=
   match x, y with
   | x%:E , y%:E  => (x + y)%:E
-  | \-inf, _     => \-inf
-  | _    , \-inf => \-inf
-  | \+inf, _     => \+inf
-  | _    , \+inf => \+inf
+  | -oo, _     => -oo
+  | _    , -oo => -oo
+  | +oo, _     => +oo
+  | _    , +oo => +oo
   end.
 
 Definition eopp x :=
   match x with
   | x%:E  => (-x)%:E
-  | \-inf => \+inf
-  | \+inf => \-inf
+  | -oo => +oo
+  | +oo => -oo
   end.
 End ERealArith.
 

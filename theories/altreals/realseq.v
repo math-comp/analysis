@@ -49,8 +49,8 @@ Context {R : realType}.
 
 Inductive nbh : {ereal R} -> predArgType :=
 | NFin  (c e : R) of (0 < e) : nbh c%:E
-| NPInf (M   : R) : nbh \+inf
-| NNInf (M   : R) : nbh \-inf.
+| NPInf (M   : R) : nbh +oo
+| NNInf (M   : R) : nbh -oo.
 
 Coercion pred_of_nbh l (v : nbh l) :=
   match v with
@@ -73,16 +73,16 @@ by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 
 Lemma nbh_pinfW (P : forall x, nbh x -> Prop) :
-  (forall M, P _ (@NPInf R M)) -> forall (v : nbh \+inf), P _ v.
+  (forall M, P _ (@NPInf R M)) -> forall (v : nbh +oo), P _ v.
 Proof.
-move=> ih ; move: {-2}\+inf (erefl (@ERPInf R)).
+move=> ih ; move: {-2}+oo (erefl (@ERPInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 
 Lemma nbh_ninfW (P : forall x, nbh x -> Prop) :
-  (forall M, P _ (@NNInf R M)) -> forall (v : nbh \-inf), P _ v.
+  (forall M, P _ (@NNInf R M)) -> forall (v : nbh -oo), P _ v.
 Proof.
-move=> ih ; move: {-2}\-inf (erefl (@ERNInf R)).
+move=> ih ; move: {-2}-oo (erefl (@ERNInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 End NbhElim.
@@ -429,7 +429,7 @@ Implicit Types (u v : nat -> R).
 
 Definition nlim u : {ereal R} :=
   if @idP `[exists l, `[< ncvg u l >]] is ReflectT Px then
-    xchooseb Px else \-inf.
+    xchooseb Px else -oo.
 
 Lemma nlim_ncvg u : (exists l, ncvg u l) -> ncvg u (nlim u).
 Proof.
@@ -439,7 +439,7 @@ move=> p; rewrite -[xchooseb _](ncvg_uniq cv_u_l) //.
 by apply/asboolP/(xchoosebP p).
 Qed.
 
-Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = \-inf.
+Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = -oo.
 Proof.
 move=> h; rewrite /nlim; case: {-}_ / idP => // p.
 by case: h; case/existsbP: p => l /asboolP; exists l.
@@ -447,7 +447,7 @@ Qed.
 
 CoInductive nlim_spec (u : nat -> R) : er R -> Type :=
 | NLimCvg l : ncvg u l -> nlim_spec u l
-| NLimOut   : ~ (exists l, ncvg u l) -> nlim_spec u \-inf.
+| NLimOut   : ~ (exists l, ncvg u l) -> nlim_spec u -oo.
 
 Lemma nlimP u : nlim_spec u (nlim u).
 Proof.
