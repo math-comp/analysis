@@ -85,16 +85,6 @@ Proof. by rewrite ler_distl => /andP[]. Qed.
 
 End add_to_mathcomp.
 
-(* TODO: bigmaxr_morph? move to Rstruct.v? *)
-Lemma bigmaxr_scale (K : realDomainType) m n (s : seq ('I_m.+1 * 'I_n.+1)) (k : K) (x : 'M[K]_(m.+1, n.+1)) :
-  bigmaxr 0 (map (fun ij => `|(k *: x) ij.1 ij.2|) s) =
-  `| k | * bigmaxr 0 (map (fun ij => `|x ij.1 ij.2|) s).
-Proof.
-elim: s k x => /= [k _|h [|h' t] ih k x]; first by rewrite bigmaxr_nil mulr0.
-  by rewrite !bigmaxr_un mxE normrM.
-by rewrite bigmaxr_cons ih bigmaxr_cons maxr_pmulr ?normr_ge0 // mxE normrM.
-Qed.
-
 Local Open Scope classical_set_scope.
 
 Definition ball_
@@ -596,30 +586,15 @@ Export NormedModule.Exports.
 
 Fail Canonical R_NormedModule := [normedModType Rdefinitions.R of Rdefinitions.R^o].
 
-Section NormedModule1.
-Context {K : numDomainType} {V : normedZmodType K}.
-Implicit Types (l : K) (x y : V) (eps : posreal).
-
-Lemma normm0_eq0 x : `|x| = 0 -> x = 0.
-Proof. by move/eqP; rewrite normr_eq0 => /eqP. Qed.
-
-Lemma normmB x y : `|x - y| = `|y - x|.
-Proof. by rewrite -normrN opprB. Qed.
-
-Lemma ler_distm_dist x y : `| `|x| - `|y| | <= `|x - y|.
-Proof. exact: ler_dist_dist. Qed.
-
-End NormedModule1.
-
-Section NormedModule1'.
+Section NormedModule_numDomainType.
 Variables (R : numDomainType) (V : normedModType R).
 
 Lemma normmZ l (x : V) : `| l *: x | = `| l | * `| x |.
 Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
-End NormedModule1'.
+End NormedModule_numDomainType.
 
-Section NormedModule1'.
+Section NormedModule1_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
 
 Local Notation ball_norm := (ball_ (@normr R V)).
@@ -745,7 +720,7 @@ Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
   f @ F --> l -> lim (f @ F) = l.
 Proof. exact: flim_lim. Qed.
 
-End NormedModule1'.
+End NormedModule1_numFieldType.
 
 Section hausdorff.
 
@@ -763,15 +738,15 @@ Qed.
 
 Lemma normedModType_hausdorff (V : normedModType Rdefinitions.R) : hausdorff V.
 Proof.
-move=> p q clp_q; apply/subr0_eq/normm0_eq0/Rhausdorff => A B pq_A.
+move=> p q clp_q; apply/subr0_eq/normr0_eq0/Rhausdorff => A B pq_A.
 rewrite -(@normr0 _ V) -(subrr p) => pp_B.
 suff loc_preim r C :
   locally `|p - r| C -> locally r ((fun r => `|p - r|) @^-1` C).
   have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
   by exists `|p - r|.
 move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
-apply: pre_C; apply: le_lt_trans (ler_distm_dist _ _) _.
-by rewrite opprB addrC -subr_trans normmB.
+apply: pre_C; apply: le_lt_trans (ler_dist_dist _ _) _.
+by rewrite opprB addrC -subr_trans distrC.
 Qed.
 
 End hausdorff.
@@ -787,7 +762,7 @@ Definition near_simpl := (@near_simpl, @locally_normE,
 Ltac near_simpl := rewrite ?near_simpl.
 End NearNorm.
 
-Section NormedModule2.
+Section NormedModule_realFieldType.
 
 Context {T : Type} {K : realFieldType(*absRingType*)} {V : normedModType K}.
 
@@ -811,24 +786,17 @@ Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
 Proof. by move=> /flim_normP. Qed.
 
-End NormedModule2.
-Hint Resolve normr_ge0 : core.
-Arguments flim_norm {_ _ F FF}.
-
-Section NormedModule2'.
-Context {T : Type} {R : realFieldType}.
-
-Lemma flim_bounded {V : normedModType R} {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof.
 move=> /flim_norm Fy; exists `|y| => M.
 rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
 rewrite (le_lt_trans _ yy') //.
-by rewrite (le_trans _ (ler_distm_dist _ _)) // (*absRE*) distrC ler_norm.
+by rewrite (le_trans _ (ler_dist_dist _ _)) // distrC ler_norm.
 Qed.
 
-Lemma flimi_map_lim {V : normedModType R} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
+Lemma flimi_map_lim {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
   F (fun x : T => is_prop (f x)) ->
   f `@ F --> l -> lim (f `@ F) = l.
 Proof.
@@ -836,10 +804,13 @@ move=> f_prop f_l; apply: get_unique => // l' f_l'.
 exact: flimi_unique _ f_l' f_l.
 Qed.
 
-End NormedModule2'.
+End NormedModule_realFieldType.
+Hint Resolve normr_ge0 : core.
+Arguments flim_norm {_ _ F FF}.
 Arguments flim_bounded {_ _ F FF}.
 
-Lemma continuous_flim_norm {R : realFieldType} (*{K : absRingType}*) (V W : normedModType R) (f : V -> W) x l :
+Lemma continuous_flim_norm {R : realFieldType} (*{K : absRingType}*)
+  (V W : normedModType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof.
 move=> cf xl e.
@@ -874,7 +845,7 @@ Qed.
 Lemma mx_norm_eq0 (x : 'M_(m.+1, n.+1)) : mx_norm x = 0 -> x = 0.
 Proof.
 move=> x0; apply/matrixP => i j; rewrite mxE; apply/eqP.
-rewrite -normr_eq0 eq_le; apply/andP; split; last exact: normr_ge0.
+rewrite -normr_eq0 eq_le; apply/andP; split; last by [].
 have /(bigmaxr_ler 0) :
   (index (i, j) (enum [finType of 'I_m.+1 * 'I_n.+1]) <
    size [seq (`|x ij.1 ij.2|)%R | ij : 'I_m.+1 * 'I_n.+1])%N.
@@ -908,7 +879,7 @@ Qed.
 
 End mx_norm.
 
-Section matrix_normedMod.
+Section matrix_NormedModule.
 
 Variables (K : realFieldType(*absRingType*)) (m n : nat).
 
@@ -943,13 +914,16 @@ Canonical matrix_uniformNormedZmodType :=
   UniformNormedZmoduleType K 'M[K^o]_(m.+1, n.+1) matrix_UniformNormedZmodMixin.
 
 Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
-Proof. by rewrite {1 3}/normr /= /mx_norm bigmaxr_scale. Qed.
+Proof.
+rewrite {1 3}/normr /= /mx_norm -(bigmaxr_mulr _ (fun i => `|x i.1 i.2|)) //.
+by congr bigmaxr; apply eq_in_map => /= ? _; rewrite mxE normrM.
+Qed.
 
 Definition matrix_NormedModMixin := NormedModMixin mx_normZ.
 Canonical matrix_normedModType :=
   NormedModType K 'M[K^o]_(m.+1, n.+1) matrix_NormedModMixin.
 
-End matrix_normedMod.
+End matrix_NormedModule.
 
 (** ** Pairs *)
 
@@ -970,11 +944,6 @@ rewrite /ball /= /prod_ball.
 by rewrite -!ball_normE /ball_ ltUx; split=> /andP.
 Qed.
 
-End prod_NormedModule.
-
-Section prod.
-Variables (K : realFieldType) (U V : normedModType K).
-
 Lemma prod_norm_ball :
   @ball _ [uniformType K of U * V] = ball_ (fun x => `|x|).
 Proof. by rewrite /= -ball_prod_normE. Qed.
@@ -988,9 +957,9 @@ Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
 Canonical prod_normedModType :=
   NormedModType K (U * V) prod_NormedModMixin.
 
-End prod.
+End prod_NormedModule.
 
-Section NormedModule3.
+Section prod_NormedModule_lemmas.
 
 Context {T : Type} {K : realFieldType(*absRingType*)} {U : normedModType K}
                    {V : normedModType K}.
@@ -1020,7 +989,7 @@ Lemma flim_norm2 {F : set (set U)} {G : set (set V)}
    \forall y' \near F & z' \near G, `|(y, z) - (y', z')| < eps.
 Proof. by rewrite flim_normP. Qed.
 
-End NormedModule3.
+End prod_NormedModule_lemmas.
 Arguments flim_norm2 {_ _ _ F G FF FG}.
 
 (** Rings with absolute values are normed modules *)
@@ -1379,7 +1348,7 @@ Lemma continuous_norm {K : realFieldType} {V : normedModType K} :
 Proof.
 move=> x; apply/(@flim_normP _ [normedModType K of K^o]) => _/posnumP[e] /=.
 rewrite !near_simpl; apply/locally_normP; exists e%:num => // y Hy.
-exact/(le_lt_trans (ler_distm_dist _ _)).
+exact/(le_lt_trans (ler_dist_dist _ _)).
 Qed.
 
 (* :TODO: yet, not used anywhere?! *)
@@ -1875,7 +1844,7 @@ have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite -subr_gt0 => ltpn.
   apply/locallyP; exists (n%:~R - `|p|) => // q.
-  rewrite -ball_normE /= ltr_subr_addr normmB; apply: le_lt_trans.
+  rewrite -ball_normE /= ltr_subr_addr distrC; apply: le_lt_trans.
   by rewrite -{1}(subrK p q) ler_norm_add.
 move=> D _ DcovA.
 exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]).

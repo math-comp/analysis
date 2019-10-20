@@ -533,6 +533,14 @@ elim: lr y => [y | y lr ihlr z]; first by rewrite /= !bigmaxr_un.
 by rewrite map_cons !bigmaxr_cons ihlr addr_maxl.
 Qed.
 
+(* TODO: bigmaxr_morph? *)
+Lemma bigmaxr_mulr (A : finType) (s : seq A) (k : R) (x : A -> R) :
+  0 <= k -> bigmaxr 0 (map (fun i => k * x i) s) = k * bigmaxr 0 (map x s).
+Proof.
+move=> k0; elim: s => /= [|h [//|h' t ih]]; first by rewrite bigmaxr_nil mulr0.
+by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pmulr.
+Qed.
+
 Lemma bigmaxr_index (x0 : R) lr :
   (0 < size lr)%N -> (index (bigmaxr x0 lr) lr < size lr)%N.
 Proof.

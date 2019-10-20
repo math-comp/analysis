@@ -616,9 +616,9 @@ have kn0 : k != 0 by [].
 have abskgt0 : `|k| > 0 by rewrite normr_gt0.
 rewrite -[x in X in X <= _](scalerKV kn0) linearZZ normmZ -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (k^-1 *: x).
-  rewrite -ball_normE /= normmB subr0 => /ltW /le_trans; apply.
+  rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
   by rewrite ger0_norm // mulVf.
-rewrite -ball_normE /= normmB subr0 normmZ.
+rewrite -ball_normE /= distrC subr0 normmZ.
 rewrite normfV ger0_norm // invrM ?unitfE // mulrAC mulVf //.
 by rewrite invf_div mul1r [X in _ < X]splitr; apply: ltr_spaddr.
 Qed.
@@ -646,10 +646,10 @@ move=>  /(_ (e%:num / k%:num)) /(_ _) /locallyP [//|_ /posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: le_trans (hd _ _) _; last first.
   rewrite -ler_pdivl_mull //; apply: le_trans leOxkx _.
   by rewrite invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
-rewrite -ball_normE /= normmB subr0 (le_lt_trans leOxkx) //.
+rewrite -ball_normE /= distrC subr0 (le_lt_trans leOxkx) //.
 rewrite -ltr_pdivl_mull //; near: x; rewrite /= !locally_simpl.
 apply/locallyP; exists (k%:num ^-1 * d%:num)=> // x.
-by rewrite -ball_normE /= normmB subr0.
+by rewrite -ball_normE /= distrC subr0.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma compoO_eqox (K : realType) (U V' W' : normedModType K) (f : U -> V')
@@ -669,10 +669,10 @@ have ekgt0 : e%:num / k%:num > 0 by [].
 have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
 apply: filter_app; near=> x => leoxekx; apply: le_trans (hd _ _) _; last first.
   by rewrite -ler_pdivl_mull // mulrA [_^-1 * _]mulrC.
-rewrite -ball_normE /= normmB subr0; apply: le_lt_trans leoxekx _.
+rewrite -ball_normE /= distrC subr0; apply: le_lt_trans leoxekx _.
 rewrite -ltr_pdivl_mull //; near: x; rewrite /= locally_simpl.
 apply/locallyP; exists ((e%:num / k%:num) ^-1 * d%:num)=> // x.
-by rewrite -ball_normE /= normmB subr0.
+by rewrite -ball_normE /= distrC subr0.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma compOo_eqox (K : realType) (U V' W' : normedModType K) (f : U -> V')
@@ -731,10 +731,10 @@ rewrite gtr0_norm // -ler_pdivl_mull //.
 rewrite -[X in f _ X](@scalerKV _ _ kv) // linearZr_LR normmZ.
 rewrite gtr0_norm // -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (ku^-1 *: u, kv^-1 *: v).
-  rewrite -ball_normE /= normmB subr0 => /ltW /le_trans; apply.
+  rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
   rewrite ler_pdivl_mull // mulr1 ler_pdivl_mull //.
   by rewrite mulrA [ku * _]mulrAC expr2.
-rewrite -ball_normE /= normmB subr0.
+rewrite -ball_normE /= distrC subr0.
 have -> : (ku^-1 *: u, kv^-1 *: v) =
   (e%:num / 2) *: ((PosNum un0)%:num ^-1 *: u, (PosNum vn0)%:num ^-1 *: v).
   rewrite invrM ?unitfE // [kv ^-1]invrM ?unitfE //.
@@ -753,7 +753,7 @@ rewrite ler_pmul ?pmulr_rge0 //; last by rewrite lexU orbC lexx.
 rewrite -ler_pdivl_mull //.
 suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite lexU lexx.
 near: x; rewrite !near_simpl; apply/locally_le_locally_norm.
-by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite normmB subr0 => /ltW.
+by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite distrC subr0 => /ltW.
 Grab Existential Variables. all: end_near. Qed.
 
 Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
@@ -899,9 +899,9 @@ rewrite mulrA mulf_div mulr1.
 have hDx_neq0 : h + x != 0.
   near: h; rewrite !locally_simpl; apply/locally_normP.
   exists `|x|; first by rewrite normr_gt0.
-  move=> h /=; rewrite normmB subr0 -subr_gt0 => lthx.
+  move=> h /=; rewrite distrC subr0 -subr_gt0 => lthx.
   rewrite -(normr_gt0 (h + x : R^o)) addrC -[h]opprK.
-  apply: lt_le_trans (ler_distm_dist _ _).
+  apply: lt_le_trans (ler_dist_dist _ _).
   by rewrite ger0_norm normrN //; apply: ltW.
 rewrite addrC -[X in X * _]mulr1 -{2}[1](@mulfVK _ (h + x)) //.
 rewrite mulrA expr_div_n expr1n mulf_div mulr1 [_ ^+ 2 * _]mulrC -mulrA.
@@ -918,7 +918,7 @@ have : `|h * h| <= `|x / 2| * (e%:num * `|x * x| * `|h : R^o|).
 move=> /le_trans-> //; rewrite [X in X <= _]mulrC ler_pmul ?mulr_ge0 //.
 near: h; exists (`|x| / 2); first by rewrite divr_gt0 ?normr_gt0.
 move=> h; rewrite /= distrC subr0 => lthhx; rewrite addrC -[h]opprK.
-apply: le_trans (@ler_distm_dist _ [normedModType R of R^o] _ _).
+apply: le_trans (@ler_dist_dist _ [normedModType R of R^o] _ _).
 rewrite normrN [X in _ <= X]ger0_norm; last first.
   rewrite subr_ge0; apply: ltW; apply: lt_le_trans lthhx _.
   by rewrite ler_pdivr_mulr // -{1}(mulr1 `|x|) ler_pmul // ler1n.
@@ -1368,7 +1368,7 @@ have := near fge0 x; rewrite leNgt => /(_ _) /negbTE<- //; near: x.
 have normlimgt0 : `|lim (f @ F)| > 0 by rewrite normr_gt0 ltr0_neq0.
 have /fcv := locally_ball_norm (lim (f @ F)) (PosNum normlimgt0).
 rewrite /= !near_simpl; apply: filterS => x.
-rewrite /= normmB => /(le_lt_trans (ler_norm _)).
+rewrite /= distrC => /(le_lt_trans (ler_norm _)).
 rewrite ltr_subl_addr => /lt_le_trans; apply.
 by rewrite ltr0_norm // addrC subrr.
 Grab Existential Variables. all: end_near. Qed.

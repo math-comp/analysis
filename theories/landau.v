@@ -854,7 +854,7 @@ Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
 Proof.
 split=> fFl.
   apply/eqaddoP => _/posnumP[eps]; near=> x.
-  rewrite /cst ltW //= normmB; near: x.
+  rewrite /cst ltW //= distrC; near: x.
   by apply: (flim_norm _ fFl); rewrite mulr_gt0 // normr1.
 apply/flim_normP=> _/posnumP[eps]; rewrite /= near_simpl.
 have lt_eps x : x <= (eps%:num / 2%:R) * `|1 : K^o|%real -> x < eps%:num.
@@ -1090,7 +1090,7 @@ rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //; last by near: k; exi
 rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
 have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
-rewrite -linearZ fk //= normmB subr0 normmZ ger0_norm //.
+rewrite -linearZ fk //= distrC subr0 normmZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //; last by near: k; exists 0.
 by rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: locally_pinfty_gt.
 Grab Existential Variables. all: end_near. Qed.
@@ -1128,7 +1128,7 @@ Lemma equivoRL (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
 Proof.
 move=> ->; apply/eqoP; move=> _/posnumP[eps]; near=> x.
 rewrite -ler_pdivr_mull // -[X in g + X]opprK oppo.
-rewrite (le_trans _ (ler_distm_dist _ _)) //.
+rewrite (le_trans _ (ler_dist_dist _ _)) //.
 rewrite [X in _ <= X]ger0_norm ?ler_subr_addr ?add0r; last first.
   by rewrite -[X in _ <= X]mul1r; near: x; apply: littleoP.
 rewrite [X in _ <= X]splitr [_ / 2]mulrC.
