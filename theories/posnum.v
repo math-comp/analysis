@@ -59,34 +59,51 @@ Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 Lemma splitr (R : numFieldType) (x : R) : x = x / 2%:R + x / 2%:R.
 Proof. by rewrite -mulr2n -mulr_natr mulfVK //= pnatr_eq0. Qed.
 
-Record posnum_def (R : numDomainType) := PosNumDef {
-  num_of_pos :> R;
-  posnum_gt0 : num_of_pos > 0
+Record posnum_of (R : numDomainType) (phR : phant R) := PosNumDef {
+  num_of_pos : R;
+  posnum_gt0 :> num_of_pos > 0
 }.
 Hint Resolve posnum_gt0 : core.
 Hint Extern 0 ((0%R < _)%O = true) => exact: posnum_gt0 : core.
-Definition posnum_of (R : numDomainType) (phR : phant R) := posnum_def R.
-Identity Coercion posnum_of_id : posnum_of >-> posnum_def.
 Notation "'{posnum' R }" := (posnum_of (@Phant R)).
 Definition PosNum (R : numDomainType) x x_gt0 : {posnum R} :=
-  @PosNumDef _ x x_gt0.
+  @PosNumDef _ (Phant R) x x_gt0.
 
-Definition pos_of_num (R : numDomainType) (x : {posnum R})
-   (phx : phantom R x) := x.
-Notation "x %:pos" := (pos_of_num (Phantom _ x)) : ring_scope.
 Notation "x %:num" := (num_of_pos x) : ring_scope.
+Definition pos_of_num (R : numDomainType) (x : {posnum R})
+   (phx : phantom R x%:num) := x.
+Notation "x %:pos" := (pos_of_num (Phantom _ x)) : ring_scope.
 Notation posreal := {posnum R}.
 Notation "2" := 2%:R : ring_scope.
+
+Section Order.
+Variable (R : numDomainType).
+
+Canonical posnum_subType := [subType for @num_of_pos R (Phant R)].
+Definition posnum_eqMixin := [eqMixin of {posnum R} by <:].
+Canonical posnum_eqType := EqType {posnum R} posnum_eqMixin.
+Definition posnum_choiceMixin := [choiceMixin of {posnum R} by <:].
+Canonical posnum_choiceType := ChoiceType {posnum R} posnum_choiceMixin.
+Definition posnum_porderMixin := [porderMixin of {posnum R} by <:].
+Canonical posnum_porderType := POrderType ring_display {posnum R} posnum_porderMixin.
+
+Lemma posnum_le_total : totalPOrderMixin [porderType of {posnum R}].
+Proof. by move=> x y; apply/real_comparable; apply/gtr0_real/posnum_gt0. Qed.
+
+Canonical posnum_latticeType := LatticeType {posnum R} posnum_le_total.
+Canonical posnum_orderType := OrderType {posnum R} posnum_le_total.
+
+End Order.
 
 Section PosNum.
 Context {R : numDomainType}.
 Implicit Types (x y : {posnum R}).
 
-Definition posnum_gt0_def x (phx : phantom R x) := posnum_gt0 x.
+Definition posnum_gt0_def x (phx : phantom R x%:num) := posnum_gt0 x.
 
-Lemma posnum_ge0 x : x >= 0 :> R. Proof. by apply: ltW. Qed.
-Lemma posnum_eq0 x : (x == 0 :> R) = false. Proof. by rewrite gt_eqF. Qed.
-Lemma posnum_neq0 x : (x != 0 :> R). Proof. by rewrite gt_eqF. Qed.
+Lemma posnum_ge0 x : x%:num >= 0 :> R. Proof. by apply: ltW. Qed.
+Lemma posnum_eq0 x : (x%:num == 0 :> R) = false. Proof. by rewrite gt_eqF. Qed.
+Lemma posnum_neq0 x : (x%:num != 0 :> R). Proof. by rewrite gt_eqF. Qed.
 
 Lemma add_pos_gt0 x y : 0 < x%:num + y%:num.
 Proof. by rewrite addr_gt0. Qed.
@@ -105,6 +122,13 @@ Canonical invr_posnum x := PosNum (inv_pos_gt0 x).
 
 Lemma one_pos_gt0 : 0 < 1 :> R. Proof. by rewrite ltr01. Qed.
 Canonical oner_posnum := PosNum one_pos_gt0.
+
+Lemma posnum_le0 x : (x%:num <= 0 :> R) = false.
+Proof. by rewrite lt_geF. Qed.
+
+Lemma posnum_lt0 x : (x%:num < 0 :> R) = false.
+Proof. by rewrite lt_gtF. Qed.
+
 End PosNum.
 Hint Extern 0 ((0%R <= _)%O = true) => exact: posnum_ge0 : core.
 Hint Extern 0 ((_ != 0%R)%O = true) => exact: posnum_neq0 : core.
@@ -113,10 +137,13 @@ Section PosNumReal.
 Context {R : realDomainType}.
 Implicit Types (x y : {posnum R}).
 
-Lemma posnum_le0 x : (x%:num <= 0 :> R) = false.
-Proof. by rewrite leNgt posnum_gt0. Qed.
-Lemma posnum_lt0 x : (x%:num < 0 :> R) = false.
-Proof. by rewrite ltNge posnum_ge0. Qed.
+Lemma min_posE x y : Num.min x%:num y%:num = (Num.min x y)%:num.
+Proof.
+case: (lcomparable_ltgtP (comparableT x y)) => [yx|xy|<-]; last first.
+- by rewrite meetxx.
+- by rewrite (meet_idPr _)// ltW.
+- by rewrite (meet_idPl _)// ltW.
+Qed.
 
 Lemma min_pos_gt0 x y : 0 < Num.min x%:num y%:num.
 Proof. by rewrite ltxI !posnum_gt0. Qed.
@@ -130,7 +157,7 @@ Canonical sqrt_posnum (R : rcfType) (x : {posnum R}) := PosNum (sqrt_pos_gt0 x).
 
 CoInductive posnum_spec (R : numDomainType) (x : R) :
   R -> bool -> bool -> bool -> Type :=
-| IsPosnum (p : {posnum R}) : posnum_spec x (p : R) false true true.
+| IsPosnum (p : {posnum R}) : posnum_spec x (p%:num) false true true.
 
 Lemma posnumP (R : numDomainType) (x : R) : 0 < x ->
   posnum_spec x x (x == 0) (0 <= x) (0 < x).
