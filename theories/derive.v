@@ -41,7 +41,7 @@ Reserved Notation "f ^` ( n )" (at level 8, format "f ^` ( n )").
 
 Section Differential.
 
-Context {K : realType} {V W : normedModType K}.
+Context {K : realFieldType (* yyy numDomainType*)} {V W : normedModType K}.
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
@@ -867,7 +867,8 @@ Global Instance is_diffM (f g df dg : V -> R^o) x :
 Proof.
 move=> dfx dgx.
 have -> : f * g = (fun p => p.1 * p.2) \o (fun y => (f y, g y)) by [].
-by apply: is_diff_eq; rewrite funeqE => ?; rewrite /= [_ * g _]mulrC.
+apply: is_diff_eq; first exact: is_diff_comp.
+by rewrite funeqE => ?; rewrite /= [_ * g _]mulrC.
 Qed.
 
 Lemma diffM (f g : V -> R^o) x :

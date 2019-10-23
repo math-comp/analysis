@@ -291,7 +291,7 @@ Lemma showo : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). Proof. by []. Qed.
 (* Tentative to handle small o and big O notations *)
 Section Domination.
 
-Context {K : realFieldType(*absRingType*)} {T : Type} {V W : normedModType K}.
+Context {K : numFieldType(*absRingType*)} {T : Type} {V W : normedModType K}.
 
 Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   forall eps, 0 < eps -> \forall x \near F, `|f x| <= eps * `|g x|.
@@ -496,6 +496,12 @@ Lemma scaleox (F : filter_on T) a (f : T -> V) e x :
   a *: ([o_F e of f] x) = [o_F e of a *: [o_F e of f]] x.
 Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
 
+End Domination.
+
+Section Domination_realType.
+
+Context {K : realType (* yyy numFieldType *)} {T : Type} {V W : normedModType K}.
+
 Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|f x| <= k * `|g x|.
 
@@ -542,6 +548,9 @@ Canonical bigO0 (F : filter_on T) g := BigO (asboolT (@bigO0_subproof F g _)).
 Definition the_bigO (u : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := bigO_fun (insubd (bigO0 F h) f).
 Arguments the_bigO : simpl never, clear implicits.
+
+(* NB: duplication from Section Domination *)
+Notation PhantomF := (Phantom (set (set T))).
 
 Notation mkbigO tag x := (the_bigO tag _ (PhantomF x)).
 (* Parsing *)
@@ -697,10 +706,20 @@ Lemma eqaddOEx (F : filter_on T) (f g : T -> V) h (e : T -> W) :
   (forall x, f x = g x +O_(x \near F) (e x)).
 Proof. by have := @eqaddOE F f g h e; rewrite !funeqE. Qed.
 
+(* NB: duplicate from Section Domination *)
+Notation mklittleo tag x := (@the_littleo _ _ _ _ tag _ (PhantomF x)).
+(* Parsing *)
+Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e).
+(*Printing*)
+Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (PhantomF x) f e).
+
 Lemma eqoO (F : filter_on T) (f : T -> V) (e : T -> W) :
   [o_F e of f] =O_F e.
 Proof. by apply/eqOP; exists 0 => k kgt0; apply: littleoP. Qed.
 Hint Resolve eqoO : core.
+
+(* NB: duplicate from Section Domination *)
+Notation "{o_ F f }" := (littleo_type F f).
 
 Lemma littleo_eqO (F : filter_on T) (e : T -> W) (f : {o_F e}) :
    (f : _ -> _) =O_F e.
@@ -709,9 +728,9 @@ Proof. by apply: eqOE; rewrite littleo_eqo. Qed.
 Canonical littleo_is_bigO (F : filter_on T) (e : T -> W) (f : {o_F e}) :=
   BigO (asboolT (eqO_bigO (littleo_eqO f))).
 Canonical the_littleo_bigO (tag : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := [bigO of the_littleo tag F phF f h].
+  (phF : phantom (set (set T)) F) f h := [bigO of @the_littleo _ _ _ _ tag F phF f h].
 
-End Domination.
+End Domination_realType.
 
 Notation "{o_ F f }" := (@littleo_type _ _ _ _ F f).
 Notation "{O_ F f }" := (@bigO_type _ _ _ _ F f).
@@ -831,7 +850,7 @@ Hint Resolve littleo_eqO : core.
 Arguments bigO {_ _ _ _}.
 
 (* NB: see also scaleox *)
-Lemma scaleolx (K : realFieldType) (V W : normedModType K) {T : Type}
+Lemma scaleolx (K : numFieldType) (V W : normedModType K) {T : Type}
   (F : filter_on T) (a : W) (k : T -> K^o) (e : T -> V) (x : T) :
   ([o_F e of k] x) *: a = [o_F e of (fun y => [o_F e of k] y *: a)] x.
 Proof.
@@ -880,6 +899,12 @@ Proof. by move=> /eqoE /eqolim0P. Qed.
 (* universally quantified f' which is irrelevant and replaced by *)
 (* a hole, on the fly, by ssreflect rewrite *)
 
+End Limit.
+
+Section Limit_realType.
+
+Context {K : realType (* yyy realFieldType *) } {T : Type} {V W X : normedModType K}.
+
 Lemma littleo_bigO_eqo {F : filter_on T}
   (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> [o_F f of h] =o_F g.
@@ -905,7 +930,7 @@ Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
 Proof.
 move->; apply/eqOP; have [k c1 kOg] := bigO _ g. have [k' c2 k'Ok] := bigO _ k.
 near=> c; move: k'Ok kOg; apply: filter_app2; near=> x => lek'c2k.
-rewrite -(@ler_pmul2l _ c2) // mulrA => /(le_trans lek'c2k) /le_trans; apply.
+rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans; apply.
 by rewrite ler_pmul //; near: c; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. all: end_near. Qed.
 Arguments bigO_bigO_eqO {F}.
@@ -941,7 +966,7 @@ Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
   f =o_F g -> [o_F f of h] =o_F g.
 Proof. by move=> ->; apply: eqoE; rewrite (littleo_bigO_eqo g). Qed.
 
-End Limit.
+End Limit_realType.
 
 Arguments littleo_bigO_eqo {K T V W X F}.
 Arguments bigO_littleo_eqo {K T V W X F}.
@@ -949,11 +974,17 @@ Arguments bigO_bigO_eqO {K T V W X F}.
 
 Section littleo_bigO_transitivity.
 
-Context {K : realFieldType} {T : Type} {V W Z : normedModType K}.
+Context {K : numFieldType} {T : Type} {V W Z : normedModType K}.
 
 Lemma eqaddo_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [o_ F e of fg] -> g = h + [o_F e of gh] -> f = h +o_F e.
 Proof. by move=> -> ->; rewrite -addrA addo. Qed.
+
+End littleo_bigO_transitivity.
+
+Section littleo_bigO_transitivity_realType.
+
+Context {K : realType (* yyy numFieldType *) } {T : Type} {V W Z : normedModType K}.
 
 Lemma eqaddO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [O_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
@@ -983,11 +1014,11 @@ Lemma eqoO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) 
   f = [o_F g of f'] -> g = [O_F h of g'] -> f =o_F h.
 Proof. by move=> -> ->; rewrite (littleo_bigO_eqo h). Qed.
 
-End littleo_bigO_transitivity.
+End littleo_bigO_transitivity_realType.
 
 Section rule_of_products_in_R.
 
-Variables (R : realType) (pT : pointedType).
+Variables (R : realType (*yyy numDomainType*)) (pT : pointedType).
 
 Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
@@ -1055,7 +1086,7 @@ by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
 
 Section Linear3.
-Context (R : realFieldType) (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
+Context (R : realType (* yyy realFieldType *)) (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
         (s_law : GRing.Scale.law s).
 Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 
@@ -1099,12 +1130,12 @@ End Linear3.
 
 Arguments linear_for_continuous {R U V s s_law normm_s} f _.
 
-Lemma linear_continuous (R : realFieldType) (U : normedModType R) (V : normedModType R)
+Lemma linear_continuous (R : realType (* yyy realFieldType *)) (U : normedModType R) (V : normedModType R)
   (f : {linear U -> V}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
 
-Lemma linear_for_mul_continuous (R : realFieldType) (U : normedModType R)
+Lemma linear_for_mul_continuous (R : realType (* yyy realFieldType*)) (U : normedModType R)
   (f : {linear U -> R | (@GRing.mul [ringType of R^o])}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
@@ -1114,7 +1145,7 @@ Notation "f '~~_' F g" := (f == g +o_ F g).
 
 Section asymptotic_equivalence.
 
-Context {K : realFieldType} {T : Type} {V W : normedModType K}.
+Context {K : realType (* yyy realFieldType*)} {T : Type} {V W : normedModType K}.
 Implicit Types F : filter_on T.
 
 Lemma equivOLR F (f g : T -> V) : f ~_F g -> f =O_F g.
@@ -1239,6 +1270,22 @@ Lemma bigOmega {W} (F : filter_on T) (g : T -> W) (f : {Omega_F g}) :
   bigOmega_spec F g f.
 Proof. by have [_/posnumP[k]] := bigOmegaP f; exists k. Qed.
 
+End big_omega.
+
+Notation "{Omega_ F f }" := (@bigOmega_type _ _ _ _ F f).
+Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ _ _ _ f _ _ idfun).
+Notation mkbigOmega tag x := (the_bigOmega tag (PhantomF x)).
+Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e).
+Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
+Notation "'Omega_ F g" := (is_bigOmega F g).
+Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
+Arguments bigOmega {_ _ _ _}.
+
+Section big_omega_realType.
+
+Context {K : realType (*yyy realFieldType*)} {T : Type} {V : normedModType K}.
+Implicit Types W : normedModType K.
+
 (* properties of big Omega *)
 
 Lemma eqOmegaO {W} (F : filter_on T) (f : T -> V) (e : T -> W) :
@@ -1257,29 +1304,21 @@ Lemma eqOmegaE (F : filter_on T) (f e : T -> V) :
 Proof.
 rewrite propeqE; split=> [->|]; rewrite qualifE; last first.
   by move=> H; rewrite /the_bigOmega val_insubd H.
-by apply/asboolP; rewrite /the_bigOmega val_insubd; case: ifPn => // /asboolP.
-Qed.
+apply/asboolP; rewrite /the_bigOmega val_insubd; case: ifPn => // /asboolP //= _.
+exists 1 => //; near=> x; by rewrite mul1r.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma eqOmega_trans (F : filter_on T) (f g h : T -> V) :
   f =Omega_F(g) -> g =Omega_F(h) -> f =Omega_F(h).
 Proof. rewrite !eqOmegaE !eqOmegaO => fg gh; exact: (eqO_trans gh fg). Qed.
 
-End big_omega.
-
-Notation "{Omega_ F f }" := (@bigOmega_type _ _ _ _ F f).
-Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ _ _ _ f _ _ idfun).
-Notation mkbigOmega tag x := (the_bigOmega tag (PhantomF x)).
-Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e).
-Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
-Notation "'Omega_ F g" := (is_bigOmega F g).
-Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
-Arguments bigOmega {_ _ _ _}.
+End big_omega_realType.
 
 Section big_omega_in_R.
 
 Variable pT : pointedType.
 
-Lemma addOmega (R : realFieldType) (F : filter_on pT) (f g h : _ -> R^o)
+Lemma addOmega (R : realType (* yyy realFieldType *)) (F : filter_on pT) (f g h : _ -> R^o)
   (f_nonneg : forall x, 0 <= f x) (g_nonneg : forall x, 0 <= g x) :
   f =Omega_F h -> f + g =Omega_F h.
 Proof.
@@ -1289,7 +1328,7 @@ apply; rewrite ler_pmul2l //; last by near: k; exists 0.
 by rewrite !ger0_norm // ?addr_ge0 // ler_addl.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
 
-Lemma mulOmega (R : realFieldType) (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
+Lemma mulOmega (R : realType (* yyy realFieldType *)) (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [Omega_F h1 of f] * [Omega_F h2 of g] =Omega_F (h1 * h2).
 Proof.
 rewrite eqOmegaE eqOmegaO [in RHS]bigOE //.
@@ -1386,6 +1425,21 @@ Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
 
 (* properties of big Theta *)
 
+End big_theta.
+
+Notation "{Theta_ F g }" := (@bigTheta_type _ F g).
+Notation "[bigTheta 'of' f ]" := (@bigTheta_clone _ _ _ _ _ _ f _ _ idfun).
+Notation mkbigTheta tag x := (the_bigTheta tag (PhantomF x)).
+Notation "[Theta_ x e 'of' f ]" := (mkbigTheta gen_tag x f e).
+Notation "[Theta '_' x e 'of' f ]" := (the_bigTheta _ _ (PhantomF x) f e).
+Notation "'Theta_ F g" := (is_bigTheta F g).
+Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
+
+Section big_theta_realType.
+
+Context {K : realType (*yyy realFieldType*)} {T : Type} {V : normedModType K}.
+Implicit Types W : normedModType K.
+
 Lemma bigThetaE {W} (F : filter_on T) (f : T -> V) (g : T -> W) :
   (f \is 'Theta_F(g)) = (f =O_F g /\ f \is 'Omega_F(g)) :> Prop.
 Proof.
@@ -1403,8 +1457,10 @@ Lemma eqThetaE (F : filter_on T) (f e : T -> V) :
 Proof.
 rewrite propeqE; split=> [->|]; rewrite qualifE; last first.
   by move=> H; rewrite /the_bigTheta val_insubd H.
-by apply/asboolP; rewrite /the_bigTheta val_insubd; case: ifPn => // /asboolP.
-Qed.
+apply/asboolP; rewrite /the_bigTheta val_insubd; case: ifPn => // /asboolP //= ?.
+exists (1, 1); first by rewrite ltr01.
+by near=> x; rewrite mul1r.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma eqThetaO (F : filter_on T) (f g : T -> V) : [Theta_F g of f] =O_F g.
 Proof. by have [T1 k1 k2 ? ?] := bigTheta; apply/eqO_exP; exists k2%:num. Qed.
@@ -1424,15 +1480,7 @@ by rewrite fg (bigO_bigO_eqO _ _ _ gh).
 exact: (eqOmega_trans gf hg).
 Qed.
 
-End big_theta.
-
-Notation "{Theta_ F g }" := (@bigTheta_type _ F g).
-Notation "[bigTheta 'of' f ]" := (@bigTheta_clone _ _ _ _ _ _ f _ _ idfun).
-Notation mkbigTheta tag x := (the_bigTheta tag (PhantomF x)).
-Notation "[Theta_ x e 'of' f ]" := (mkbigTheta gen_tag x f e).
-Notation "[Theta '_' x e 'of' f ]" := (the_bigTheta _ _ (PhantomF x) f e).
-Notation "'Theta_ F g" := (is_bigTheta F g).
-Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
+End big_theta_realType.
 
 Section big_theta_in_R.
 
