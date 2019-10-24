@@ -13,7 +13,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Section ExtendedReals.
 Variable (R : numDomainType).
@@ -136,12 +136,12 @@ Canonical ereal_totalType := OrderType {ereal R} ereal_porderMixin.
 
 End ERealOrder.
 
-Notation lee := (@le ereal_display _) (only parsing).
+Notation lee := (@Order.le ereal_display _) (only parsing).
 Notation "@ 'lee' R" :=
-  (@le ereal_display R) (at level 10, R at level 8, only parsing).
-Notation lte := (@lt ereal_display _) (only parsing).
+  (@Order.le ereal_display R) (at level 10, R at level 8, only parsing).
+Notation lte := (@Order.lt ereal_display _) (only parsing).
 Notation "@ 'lte' R" :=
-  (@lt ereal_display R) (at level 10, R at level 8, only parsing).
+  (@Order.lt ereal_display R) (at level 10, R at level 8, only parsing).
 
 Notation "x <= y" := (lee x y) : ereal_scope.
 Notation "x < y"  := (lte x y) : ereal_scope.

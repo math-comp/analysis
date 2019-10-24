@@ -31,7 +31,7 @@ From mathcomp Require Import mxpoly ssrnum finfun.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope R_scope.
 
@@ -596,7 +596,7 @@ Lemma bigmaxr_lerif (x0 : R) lr :
   uniq lr -> forall i, (i < size lr)%N ->
      (nth x0 lr i) <= (bigmaxr x0 lr) ?= iff (i == index (bigmaxr x0 lr) lr).
 Proof.
-move=> lr_uniq i i_size; rewrite /lerif (bigmaxr_ler _ i_size).
+move=> lr_uniq i i_size; rewrite /Num.leif (bigmaxr_ler _ i_size).
 rewrite -(nth_uniq x0 i_size (bigmaxr_index _ (leq_trans _ i_size)) lr_uniq) //.
 rewrite nth_index //.
 by apply: bigmaxr_mem; apply: (leq_trans _ i_size).
@@ -644,7 +644,7 @@ Lemma bmaxrf_lerif n (f : {ffun 'I_n.+1 -> R}) :
   injective f -> forall i,
      (f i) <= (bmaxrf f) ?= iff (i == index_bmaxrf f).
 Proof.
-by move=> inj_f i; rewrite /lerif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
+by move=> inj_f i; rewrite /Num.leif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
 Qed.
 
 End bigmaxr.

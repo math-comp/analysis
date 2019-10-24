@@ -12,7 +12,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Set Asymmetric Patterns.
 
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 Local Open Scope fset_scope.

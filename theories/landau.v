@@ -90,7 +90,7 @@ Require Import classical_sets posnum topology normedtype.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Reserved Notation "{o_ F f }" (at level 0, F at level 0, format "{o_ F  f }").
 Reserved Notation "[littleo 'of' f 'for' fT ]" (at level 0, f at level 0,
@@ -508,7 +508,7 @@ Proof.
 split=> [[k _ fOg] | [k fOg]].
   exists k => l ltkl; move: fOg; apply: filter_app; near=> x.
   by move/le_trans; apply; rewrite ler_wpmul2r // ltW.
-exists (maxr 1 (k + 1)); first by rewrite ltxU ltr01.
+exists (Num.max 1 (k + 1)); first by rewrite ltxU ltr01.
 by apply: fOg; rewrite ltxU orbC ltr_addl ltr01.
 Unshelve. end_near. Qed.
 

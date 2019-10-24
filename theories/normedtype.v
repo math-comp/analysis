@@ -11,7 +11,7 @@ Require Import classical_sets posnum topology.
 (*                                                                            *)
 (* ball_ N == balls defined by the norm/absolute value N                      *)
 (*                                                                            *)
-(* * Normed Topological Abelian groups:                                     *)
+(* * Normed Topological Abelian groups:                                       *)
 (*     uniformNormedZmoduleType R == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
 (*  UniformNormedZmodule.Mixin nb == builds the mixin for a normed            *)
@@ -68,7 +68,7 @@ Require Import classical_sets posnum topology.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Section add_to_mathcomp.
 
@@ -958,6 +958,22 @@ Canonical prod_normedModType :=
   NormedModType K (U * V) prod_NormedModMixin.
 
 End prod_NormedModule.
+
+Section example_of_sharing.
+Variables (K : realFieldType).
+
+Goal forall m n (M N : 'M[K]_(m.+1, n.+1)),
+  `|M + N| <= `|M| + `|N|.
+move=> m n M N.
+apply ler_norm_add.
+Qed.
+
+Goal forall x y : K * K, `|x + y| <= `|x| + `|y|.
+move=> x y.
+apply ler_norm_add.
+Qed.
+
+End example_of_sharing.
 
 Section prod_NormedModule_lemmas.
 

@@ -12,7 +12,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope fset_scope.
 Local Open Scope ring_scope.

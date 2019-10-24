@@ -19,7 +19,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Theory.
+Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.

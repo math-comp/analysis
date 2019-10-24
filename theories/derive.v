@@ -4,13 +4,6 @@ From mathcomp Require Import ssralg ssrnum fintype bigop order matrix interval.
 Require Import boolp reals Rstruct.
 Require Import classical_sets posnum topology normedtype landau forms.
 
-Set Implicit Arguments.
-Unset Strict Implicit.
-Unset Printing Implicit Defensive.
-Import Order.TTheory Order.Def Order.Syntax GRing.Theory Num.Def Num.Theory.
-
-Local Open Scope classical_set_scope.
-
 (******************************************************************************)
 (* This file provides a theory of differentiation. It includes the standard   *)
 (* rules of differentiation (differential of a sum, of a product, of          *)
@@ -25,6 +18,13 @@ Local Open Scope classical_set_scope.
 (*               f^`()  == the derivative of f of domain R                    *)
 (*               f^`(n) == the nth derivative of f of domain R                *)
 (******************************************************************************)
+
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+Import Order.TTheory GRing.Theory Num.Theory.
+
+Local Open Scope classical_set_scope.
 
 Reserved Notation "''d' f x" (at level 0, f at level 0, x at level 0,
   format "''d'  f  x").
@@ -765,8 +765,7 @@ Proof.
 move=> fc; split=> [q|].
   by apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
     move=> A /(fc (_.1, _.2)) /= /locallyP [_ /posnumP[e] fpqe_A];
-    apply/locallyP; exists e%:num => // r [??]; apply: (fpqe_A (_.1, _.2));
-    split => //=; exact/ball_center.
+    apply/locallyP; exists e%:num => // r [??]; exact: (fpqe_A (_.1, _.2)).
 apply/eqaddoE; rewrite funeqE => q /=.
 rewrite linearDl !linearDr addrA addrC.
 rewrite -[f q.1 _ + _ + _]addrA [f q.1 _ + _]addrC addrA [f q.1 _ + _]addrC.
@@ -1313,7 +1312,7 @@ have [M imVfltM] : bounded ((fun t => 1 / (sup imf - f t)) @`
   [set x | x \in `[a, b]] : set R^o).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
   by move=> ?; rewrite inE => /asboolP /invf_cont.
-set k := maxr (M + 1) 1; have kgt0 : 0 < k by rewrite ltxU ltr01 orbC.
+set k := Num.max (M + 1) 1; have kgt0 : 0 < k by rewrite ltxU ltr01 orbC.
 have : exists2 y, y \in imf & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
 move=> [y]; rewrite !inE => /asboolP [t tab <-] {y}.
