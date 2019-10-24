@@ -1424,11 +1424,22 @@ Lemma continuous_comp (R S T : topologicalType) (f : R -> S) (g : S -> T) x :
   {for x, continuous (g \o f)}.
 Proof. exact: flim_comp. Qed.
 
+About prop_pin1.
+
+Notation "{ 'in' d , P }" :=
+  (prop_pin1 (pmem d) (inPhantom P))
+  (at level 0, format "{ 'in'  d ,  P }") : classical_scope.
+
 Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
   ({in f @^-1` D, continuous f})%classic -> open D -> open (f @^-1` D).
-Proof.
-rewrite !openE => fcont Dop x /= Dfx.
+Proof. Unset Printing Notations.
+
+
+ewrite !openE => fcont Dop x /= Dfx. Locate "{ in _ , _ }". Locate prop_in1.
+apply: fcont; last exact: Dop. Locate "{ in _ , _ }".
+Locate prop_in1.
 by apply: fcont; [rewrite in_setE|apply: Dop].
+
 Qed.
 
 Lemma is_filter_lim_filtermap {T: topologicalType} {U : topologicalType}

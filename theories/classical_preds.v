@@ -7,7 +7,8 @@ Unset Printing Implicit Defensive.
 Set Warnings "-projection-no-head-constant".
 
 
-(* todo: define classical predtypes, named sets, so as to have an infix \in in Prop, in scope classical_stuff *)
+(* todo: define classical predtypes, named sets, so as to have an infix \in *)
+(* in Prop, in scope classical_stuff *)
 (* possible pb: clash with mathcomp..., and painful duplication. *)
 
 
@@ -18,6 +19,10 @@ Set Warnings "-projection-no-head-constant".
 (* See ssrbool for more comment: we are just trying to duplicate the various  *)
 (* machineries here.                                                          *)
 (******************************************************************************)
+
+Delimit Scope classical_set_scope with classic.
+Local Open Scope classical_set_scope.
+
 Definition ppred T := T -> Prop.
 
 Identity Coercion fun_of_ppred : ppred >-> Funclass.
@@ -205,3 +210,105 @@ Notation "[ 'prel' x y 'in' A ]" := [prel x y in A & A]
 
 (* skipping ... *) 
 
+
+
+(* Braindead borrow from ssrbool *)
+
+Local Notation "{ 'all1' P }" := (forall x, P x : Prop) (at level 0).
+Local Notation "{ 'all2' P }" := (forall x y, P x y : Prop) (at level 0).
+Local Notation "{ 'all3' P }" := (forall x y z, P x y z: Prop) (at level 0).
+
+
+Section LocalProperties.
+
+Variables T1 T2 T3 : Type.
+
+Variables (d1 : mem_ppred T1) (d2 : mem_ppred T2) (d3 : mem_ppred T3).
+Local Notation ph := (phantom Prop).
+
+Definition prop_pin1 P & ph {all1 P} :=
+  forall x, in_pmem x d1 -> P x.
+
+Definition prop_pin11 P & ph {all2 P} :=
+  forall x y, in_pmem x d1 -> in_pmem y d2 -> P x y.
+
+Definition prop_pin2 P & ph {all2 P} :=
+  forall x y, in_pmem x d1 -> in_pmem y d1 -> P x y.
+
+Definition prop_pin111 P & ph {all3 P} :=
+  forall x y z, in_pmem x d1 -> in_pmem y d2 -> in_pmem z d3 -> P x y z.
+
+Definition prop_pin12 P & ph {all3 P} :=
+  forall x y z, in_pmem x d1 -> in_pmem y d2 -> in_pmem z d2 -> P x y z.
+
+Definition prop_pin21 P & ph {all3 P} :=
+  forall x y z, in_pmem x d1 -> in_pmem y d1 -> in_pmem z d2 -> P x y z.
+
+Definition prop_pin3 P & ph {all3 P} :=
+  forall x y z, in_pmem x d1 -> in_pmem y d1 -> in_pmem z d1 -> P x y z.
+
+Variable f : T1 -> T2.
+
+Definition prop_on1 Pf P & phantom T3 (Pf f) & ph {all1 P} :=
+  forall x, in_pmem (f x) d2 -> P x.
+
+Definition prop_on2 Pf P & phantom T3 (Pf f) & ph {all2 P} :=
+  forall x y, in_pmem (f x) d2 -> in_pmem (f y) d2 -> P x y.
+
+End LocalProperties.
+
+
+
+Notation "{ 'for' x , P }" :=
+  (prop_for x (inPhantom P))
+  (at level 0, format "{ 'for'  x ,  P }") : classical_scope.
+
+Notation "{ 'in' d , P }" :=
+  (prop_pin1 (pmem d) (inPhantom P))
+  (at level 0, format "{ 'in'  d ,  P }") : classical_scope.
+
+Notation "{ 'in' d1 & d2 , P }" :=
+  (prop_pin11 (pmem d1) (pmem d2) (inPhantom P))
+  (at level 0, format "{ 'in'  d1  &  d2 ,  P }") : classical_scope.
+
+Notation "{ 'in' d & , P }" :=
+  (prop_pin2 (pmem d) (inPhantom P))
+  (at level 0, format "{ 'in'  d  & ,  P }") : classical_scope.
+
+Notation "{ 'in' d1 & d2 & d3 , P }" :=
+  (prop_pin111 (pmem d1) (pmem d2) (pmem d3) (inPhantom P))
+  (at level 0, format "{ 'in'  d1  &  d2  &  d3 ,  P }") : classical_scope.
+
+Notation "{ 'in' d1 & & d3 , P }" :=
+  (prop_pin21 (pmem d1) (pmem d3) (inPhantom P))
+  (at level 0, format "{ 'in'  d1  &  &  d3 ,  P }") : classical_scope.
+
+Notation "{ 'in' d1 & d2 & , P }" :=
+  (prop_pin12 (pmem d1) (pmem d2) (inPhantom P))
+  (at level 0, format "{ 'in'  d1  &  d2  & ,  P }") : classical_scope.
+
+Notation "{ 'in' d & & , P }" :=
+  (prop_pin3 (pmem d) (inPhantom P))
+  (at level 0, format "{ 'in'  d  &  & ,  P }") : classical_scope.
+
+Notation "{ 'on' cd , P }" :=
+  (prop_on1 (pmem cd) (inPhantom P) (inPhantom P))
+  (at level 0, format "{ 'on'  cd ,  P }") : classical_scope.
+
+Notation "{ 'on' cd & , P }" :=
+  (prop_on2 (pmem cd) (inPhantom P) (inPhantom P))
+  (at level 0, format "{ 'on'  cd  & ,  P }") : classical_scope.
+
+Local Arguments onPhantom {_%classical_scope} _ _.
+
+Notation "{ 'on' cd , P & g }" :=
+  (prop_on1 (pmem cd) (Phantom (_ -> Prop) P) (onPhantom P g))
+  (at level 0, format "{ 'on'  cd ,  P  &  g }") : classical_scope.
+
+Notation "{ 'in' d , 'bijective' f }" := (bijective_in (pmem d) f)
+  (at level 0, f at level 8,
+   format "{ 'in'  d ,  'bijective'  f }") : classical_scope.
+
+Notation "{ 'on' cd , 'bijective' f }" := (bijective_on (pmem cd) f)
+  (at level 0, f at level 8,
+   format "{ 'on'  cd ,  'bijective'  f }") : classical_scope.
