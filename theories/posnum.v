@@ -31,6 +31,11 @@ Require Import boolp reals.
 (*                  that x is positive.                                       *)
 (******************************************************************************)
 
+Reserved Notation "'{posnum' R }" (at level 0, format "'{posnum'  R }").
+Reserved Notation "x %:pos" (at level 0, format "x %:pos").
+Reserved Notation "x %:num" (at level 0, format "x %:num").
+Reserved Notation "[gt0 'of' x ]" (format "[gt0 'of'  x ]").
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -58,21 +63,18 @@ Record posnum_def (R : numDomainType) := PosNumDef {
   num_of_pos :> R;
   posnum_gt0 : num_of_pos > 0
 }.
-Hint Resolve posnum_gt0.
+Hint Resolve posnum_gt0 : core.
 Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
 Definition posnum_of (R : numDomainType) (phR : phant R) := posnum_def R.
 Identity Coercion posnum_of_id : posnum_of >-> posnum_def.
-Notation "'{posnum' R }" := (posnum_of (@Phant R))
-  (at level 0, format "'{posnum'  R }").
+Notation "'{posnum' R }" := (posnum_of (@Phant R)).
 Definition PosNum (R : numDomainType) x x_gt0 : {posnum R} :=
   @PosNumDef _ x x_gt0.
 
 Definition pos_of_num (R : numDomainType) (x : {posnum R})
    (phx : phantom R x) := x.
-Notation "x %:pos" := (pos_of_num (Phantom _ x))
-  (at level 0, format "x %:pos") : ring_scope.
-Notation "x %:num" := (num_of_pos x)
-  (at level 0, format "x %:num") : ring_scope.
+Notation "x %:pos" := (pos_of_num (Phantom _ x)) : ring_scope.
+Notation "x %:num" := (num_of_pos x) : ring_scope.
 Notation posreal := {posnum R}.
 Notation "2" := 2%:R : ring_scope.
 
@@ -137,8 +139,7 @@ move=> x_gt0; case: real_ltrgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _.
 by rewrite -[x]/(PosNum x_gt0)%:num; constructor.
 Qed.
 
-Hint Resolve posnum_gt0.
-Hint Resolve posnum_ge0.
-Hint Resolve posnum_neq0.
-Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom R x))
- (format "[gt0 'of'  x ]").
+Hint Resolve posnum_gt0 : core.
+Hint Resolve posnum_ge0 : core.
+Hint Resolve posnum_neq0 : core.
+Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom R x)).

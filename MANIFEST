@@ -1,18 +1,27 @@
 # This MANIFEST
 MANIFEST
 
-# LICENCE, ...
+# Documentations, human readable informations and license
 AUTHORS.md
 FILES.md
 README.md
+INSTALL.md
+NIX.md
 Licence_CeCILL-C_V1-en.txt
 
-# Dev
+# Build and meta data 
 Makefile
 Makefile.common
 _CoqProject
-*.v
-altreals/*.v
+.gitignore
+.travis.yml
+opam
+shell.nix
+
+# Theory files
+theories/*.v
+theories/altreals/*.v
+theories/misc/*.v
 
 # Build scripts
 scripts/install-sh

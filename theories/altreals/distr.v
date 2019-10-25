@@ -69,7 +69,7 @@ Lemma summable_mu : summable mu.
 Proof. by case: mu. Qed.
 End DistrCoreTh.
 
-Hint Resolve ge0_mu le1_mu summable_mu.
+Hint Resolve ge0_mu le1_mu summable_mu : core.
 
 (* -------------------------------------------------------------------- *)
 Section Clamp.
@@ -273,9 +273,8 @@ move=> /eqP nz_s; rewrite ler_pdivr_mulr ?ltr0n ?lt0n // mul1r.
 rewrite ler_nat (bigID (mem s)) /= [X in (_+X)%N]big1 ?addn0.
    by move=> i /count_memPn.
 have ->: (size s = \sum_(i <- undup s) count_mem i s)%N.
-  rewrite -sum1_size -(eq_big_perm _ (perm_undup_count s)) /=.
-  rewrite big_flatten /= big_map; apply/eq_bigr => x _.
-  by rewrite big_nseq iter_addn !simpm.
+  rewrite -sum1_size -big_undup_iterop_count; apply: eq_bigr => i _.
+  by rewrite Monoid.iteropE iter_addn addn0 mul1n.
 rewrite [X in (_<=X)%N](bigID (mem J)) /= -ltnS -addSn.
 rewrite ltn_addr //= ltnS -big_filter -[X in (_<=X)%N]big_filter.
 rewrite leq_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
@@ -288,10 +287,9 @@ Local Lemma mrat_sup s : (0 < size s)%N ->
 Proof.
 move=> gt0_s; rewrite -mulr_suml -natr_sum.
 apply/(mulIf (x := (size s)%:R)); first by rewrite pnatr_eq0 -lt0n.
-rewrite mul1r -mulrA mulVf ?mulr1 ?pnatr_eq0 -?lt0n //.
-rewrite -sum1_size -(eq_big_perm _ (perm_undup_count s)) /=.
-rewrite big_flatten big_map /=; congr _%:R.
-by apply/eq_bigr=> x _; rewrite big_nseq iter_addn !simpm.
+rewrite mul1r -mulrA mulVf ?mulr1 ?pnatr_eq0 -?lt0n //; congr (_%:R).
+rewrite -sum1_size -[in RHS]big_undup_iterop_count/=; apply: eq_bigr => i _.
+by rewrite Monoid.iteropE iter_addn addn0 mul1n.
 Qed.
 
 Local Lemma summable_mrat s: summable (mrat s).
@@ -795,7 +793,7 @@ Lemma dfstE (mu : {distr (T * U) /  R}) x :
 Proof.
 rewrite dmargin_psumE /=; pose h y : T * U := (x, y).
 rewrite (reindex_psum (P := [pred z | z.1 == x]) (h := h)) /=.
-+ case=> a b; rewrite !inE /= mulf_eq0 => /norP[].
++ case=> a b; rewrite !inE/= mulf_eq0 => /norP[].
   by rewrite pnatr_eq0 eqb0 negbK.
 + by exists snd => [z|[z1 z2]]; rewrite !inE //= => /eqP ->.
 by apply/eq_psum => y; rewrite eqxx mul1r.

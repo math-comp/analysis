@@ -3,7 +3,7 @@ Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop matrix interval.
 Require Import boolp reals Rstruct Rbar.
-Require Import classical_sets posnum topology hierarchy landau forms.
+Require Import classical_sets posnum topology normedtype landau forms.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -46,8 +46,6 @@ Context {K : absRingType} {V W : normedModType K}.
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
-Canonical diff_linear F phF f := [linear of @diff F phF f].
-Canonical diff_raddf F phF f := [additive of @diff F phF f].
 
 Local Notation "''d' f x" := (@diff _ (Phantom _ [filter of x]) f).
 
@@ -130,8 +128,7 @@ End Differential.
 Notation "''d' f F" := (@diff _ _ _ _ (Phantom _ [filter of F]) f).
 Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
 
-Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F]))
-  (at level 0, F at level 0, format "'is_diff'  F").
+Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F])).
 Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
 Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
 
@@ -400,7 +397,7 @@ suff /diff_locally /hdf -> : differentiable f x.
 apply/diffP; apply: (@getPex _ (fun (df : {linear V -> W}) => continuous df /\
   forall y, f y = f (lim x) + df (y - lim x) +o_(y \near x) (y - lim x))).
 exists df; split=> //; apply: eqaddoEx => z.
-rewrite (hdf _ dxf) !addrA lim_id /funcomp /= subrK [f _ + _]addrC addrK.
+rewrite (hdf _ dxf) !addrA lim_id /(_ \o _) /= subrK [f _ + _]addrC addrK.
 rewrite -addrA -[LHS]addr0; congr (_ + _).
 apply/eqP; rewrite eq_sym addrC addr_eq0 oppox; apply/eqP.
 by rewrite littleo_center0 (comp_centerK x id) -[- _ in RHS](comp_centerK x).
@@ -1259,7 +1256,7 @@ have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
   - (1 / f x) ^+2 *: 'D_v f x.
   apply: flim_comp2 (@lim_mult _ _ _) => //=.
   apply: (@lim_opp _ [normedModType R of R^o]); rewrite expr2.
-  exact/lim_scaler/lim_inv.
+  by apply: lim_scaler; apply: lim_inv.
 apply: flim_trans => A [_/posnumP[e] /= Ae].
 move: fn0; apply: filter_app; near=> h => /=.
 move=> fhvxn0; have he : AbsRing_ball 0 e%:num h by near: h; exists e%:num.
@@ -1293,7 +1290,7 @@ Proof.
 move=> leab fcont; set imf := [pred t | t \in f @` [set x | x \in `[a, b]]].
 have imf_sup : has_sup imf.
   apply/has_supP; split.
-    by exists (f a); rewrite !inE; apply/asboolP/imageP; rewrite inE lerr.
+    by exists (f a); rewrite !inE; apply/asboolP/imageP; rewrite inE/= lerr.
   have [M imfltM] : bounded (f @` [set x | x \in `[a, b]] : set R^o).
     apply/compact_bounded/continuous_compact; last exact: segment_compact.
     by move=> ?; rewrite inE => /asboolP /fcont.
@@ -1310,9 +1307,9 @@ have {imf_ltsup} imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
   apply/eqP; rewrite eqr_le supleft sup_upper_bound => //.
   by rewrite !inE; apply/asboolP/imageP.
 have invf_cont : {in `[a, b], continuous (fun t => 1 / (sup imf - f t))}.
-  move=> t tab; apply: lim_inv.
+  move=> t tab; apply: (@lim_inv _ [filter of t]).
     by rewrite neqr_lt subr_gt0 orbC imf_ltsup.
-  by apply: lim_add; [apply: continuous_cst|apply/lim_opp/fcont].
+  by apply: lim_add; [apply: continuous_cst|apply: lim_opp; apply:fcont].
 have [M imVfltM] : bounded ((fun t => 1 / (sup imf - f t)) @`
   [set x | x \in `[a, b]] : set R^o).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
@@ -1348,7 +1345,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_right_proper_filter x.
-apply: flim_map_lim => A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@flim_map_lim _ _ _ (at_right _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
 by exists e%:num => // y xe_y; rewrite ltr_def => /andP [xney _]; apply: xe_A.
 Qed.
 
@@ -1358,7 +1355,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_left_proper_filter x.
-apply: flim_map_lim => A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@flim_map_lim _ _ _ (at_left _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
 exists e%:num => // y xe_y; rewrite ltr_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.
@@ -1383,7 +1380,7 @@ Lemma ler0_flim_map (T : topologicalType) (F : set (set T))
 Proof.
 move=> fle0 fcv; rewrite -oppr_ge0.
 have limopp : - lim (f @ F) = lim (- f @ F).
-  exact/Logic.eq_sym/flim_map_lim/lim_opp.
+  by apply: Logic.eq_sym; apply: flim_map_lim; apply: lim_opp.
 rewrite limopp; apply: le0r_flim_map; last by rewrite -limopp; apply: lim_opp.
 by move: fle0; apply: filterS => x; rewrite oppr_ge0.
 Qed.
@@ -1395,7 +1392,7 @@ Lemma ler_flim_map (T : topologicalType) (F : set (set T)) (FF : ProperFilter F)
 Proof.
 move=> lefg fcv gcv; rewrite -subr_ge0.
 have eqlim : lim (g @ F) - lim (f @ F) = lim ((g - f) @ F).
-  by apply/Logic.eq_sym/flim_map_lim/lim_add => //; apply: lim_opp.
+  by apply: Logic.eq_sym; apply: flim_map_lim; apply: lim_add => //; apply: lim_opp.
 rewrite eqlim; apply: le0r_flim_map; last first.
   by rewrite /(cvg _) -eqlim /=; apply: lim_add => //; apply: lim_opp.
 by move: lefg; apply: filterS => x; rewrite subr_ge0.
@@ -1418,7 +1415,7 @@ apply/eqP; rewrite eqr_le; apply/andP; split.
   rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
   exists (b - c); first by rewrite subr_gt0 (itvP cab).
   move=> h; rewrite /AbsRing_ball /= absrB subr0 absRE.
-  move=> /(ler_lt_trans (ler_norm _)); rewrite ltr_subr_addr inE => ->.
+  move=> /(ler_lt_trans (ler_norm _)); rewrite ltr_subr_addr inE/= => ->.
   by move=> /ltr_spsaddl -> //; rewrite (itvP cab).
 rewrite ['D_1 f c]cvg_at_leftE; last exact: fdrvbl.
 apply: le0r_flim_map; last first.
@@ -1431,7 +1428,7 @@ near=> h; apply: mulr_le0.
 rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
 exists (c - a); first by rewrite subr_gt0 (itvP cab).
 move=> h; rewrite /AbsRing_ball /= absrB subr0 absRE.
-move=> /ltr_normlP []; rewrite ltr_subr_addl ltr_subl_addl inE => -> _.
+move=> /ltr_normlP []; rewrite ltr_subr_addl ltr_subl_addl inE/= => -> _.
 by move=> /ltr_snsaddl -> //; rewrite (itvP cab).
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1458,24 +1455,24 @@ case: (pselect ([set a; b] cmax))=> [cmaxeaVb|]; last first.
   move=> /asboolPn; rewrite asbool_or => /norP.
   move=> [/asboolPn/eqP cnea /asboolPn/eqP cneb].
   have {cmaxab} cmaxab : cmax \in `]a, b[.
-    by rewrite inE !ltr_def !(itvP cmaxab) cnea eq_sym cneb.
+    by rewrite inE/= !ltr_def !(itvP cmaxab) cnea eq_sym cneb.
   exists cmax => //; apply: derive1_at_max (ltrW ltab) fdrvbl cmaxab _ => t tab.
-  by apply: fcmax; rewrite inE !ltrW // (itvP tab).
+  by apply: fcmax; rewrite inE/= !ltrW // (itvP tab).
 have [cmin cminab fcmin] := EVT_min (ltrW ltab) fcont.
 case: (pselect ([set a; b] cmin))=> [cmineaVb|]; last first.
   move=> /asboolPn; rewrite asbool_or => /norP.
   move=> [/asboolPn/eqP cnea /asboolPn/eqP cneb].
   have {cminab} cminab : cmin \in `]a, b[.
-    by rewrite inE !ltr_def !(itvP cminab) cnea eq_sym cneb.
+    by rewrite inE/= !ltr_def !(itvP cminab) cnea eq_sym cneb.
   exists cmin => //; apply: derive1_at_min (ltrW ltab) fdrvbl cminab _ => t tab.
-  by apply: fcmin; rewrite inE !ltrW // (itvP tab).
+  by apply: fcmin; rewrite inE/= !ltrW // (itvP tab).
 have midab : (a + b) / 2 \in `]a, b[ by apply: mid_in_itvoo.
 exists ((a + b) / 2) => //; apply: derive1_at_max (ltrW ltab) fdrvbl (midab) _.
 move=> t tab.
 suff fcst : forall s, s \in `]a, b[ -> f s = f cmax by rewrite !fcst.
 move=> s sab.
-apply/eqP; rewrite eqr_le fcmax; last by rewrite inE !ltrW ?(itvP sab).
-suff -> : f cmax = f cmin by rewrite fcmin // inE !ltrW ?(itvP sab).
+apply/eqP; rewrite eqr_le fcmax; last by rewrite inE/= !ltrW ?(itvP sab).
+suff -> : f cmax = f cmin by rewrite fcmin // inE/= !ltrW ?(itvP sab).
 by case: cmaxeaVb => ->; case: cmineaVb => ->.
 Qed.
 
@@ -1485,7 +1482,7 @@ Lemma MVT (f df : R^o -> R^o) (a b : R) :
   exists2 c, c \in `[a, b] & f b - f a = df c * (b - a).
 Proof.
 move=> leab fdrvbl fcont; move: leab; rewrite ler_eqVlt => /orP [/eqP aeb|altb].
-  by exists a; [rewrite inE aeb lerr|rewrite aeb !subrr mulr0].
+  by exists a; [rewrite inE/= aeb lerr|rewrite aeb !subrr mulr0].
 set g := f + (- ( *:%R^~ ((f b - f a) / (b - a)) : R -> R)).
 have gdrvbl : forall x, x \in `]a, b[ -> derivable g x 1.
   by move=> x /fdrvbl dfx; apply: derivableB => //; apply/derivable1_diffP.

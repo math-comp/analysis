@@ -132,7 +132,7 @@ by rewrite Rmult_0_r eq_sym R1_neq_0.
 Qed.
 
 Lemma Rinvx_out : {in predC unit_R, Rinvx =1 id}.
-Proof. by move=> x; rewrite inE /= /Rinvx -if_neg => ->. Qed.
+Proof. by move=> x; rewrite inE/= /Rinvx -if_neg => ->. Qed.
 
 Definition R_unitRingMixin :=
   UnitRingMixin RmultRinvx RinvxRmult intro_unit_R Rinvx_out.
@@ -599,7 +599,8 @@ Lemma bmaxrf_index n (f : {ffun 'I_n.+1 -> R}) :
   (index (bmaxrf f) (codom f) < n.+1)%N.
 Proof.
 rewrite /bmaxrf.
-have {6}-> : n.+1 = size (codom f) by rewrite size_codom card_ord.
+rewrite [in X in (_ < X)%N](_ : n.+1 = size (codom f)); last first.
+  by rewrite size_codom card_ord.
 by apply: bigmaxr_index; rewrite size_codom card_ord.
 Qed.
 
@@ -612,7 +613,7 @@ Lemma eq_index_bmaxrf n (f : {ffun 'I_n.+1 -> R}) :
   f (index_bmaxrf f) = bmaxrf f.
 Proof.
 move: (bmaxrf_index f).
-rewrite -{3}[n.+1]card_ord -(size_codom f) index_mem.
+rewrite -[X in _ (_ < X)%N]card_ord -(size_codom f) index_mem.
 move/(nth_index (f ord0)) => <-; rewrite (nth_map ord0).
   by rewrite (ordnat (bmaxrf_index _)) /index_bmaxrf nth_ord_enum.
 by rewrite size_enum_ord; apply: bmaxrf_index.

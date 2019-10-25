@@ -123,7 +123,7 @@ case: l1 l2 => [l1||] [l2||] //= lt_l12; last first.
   by move=> lt1 lt2; apply/(ltr_trans lt1).
 pose e := l2 - l1; exists (B l1 (e/2%:R)), (B l2 (e/2%:R)).
 have gt0_e: 0 < e by rewrite subr_gt0.
-move=> x y; rewrite !inE /= /eclamp pmulr_rle0 // invr_le0.
+move=> x y; rewrite !inE/= /eclamp pmulr_rle0 // invr_le0.
 rewrite lern0 /= !ltr_distl => /andP[_ lt1] /andP[lt2 _].
 apply/(ltr_trans lt1)/(ler_lt_trans _ lt2).
 rewrite ler_subr_addl addrCA -mulrDl -mulr2n -mulr_natr.
@@ -140,7 +140,7 @@ wlog: l1 l2 / (l1 < l2)%E => [wlog ne_l12|le_l12 _].
   case/wlog=> [|x [y h]]; first by rewrite eq_sym.
   by exists y, x=> z; rewrite inE andbC /= (h z).
 case/separable_le: le_l12 => [v1] [v2] h; exists v1, v2.
-move=> x; apply/negP; rewrite inE /= => /andP[] xv1 xv2.
+move=> x; apply/negP; rewrite inE/= => /andP[] xv1 xv2.
 by have := h _ _ xv1 xv2; rewrite ltrr.
 Qed.
 
@@ -182,7 +182,7 @@ Proof.
 move=> cv1 cv2; apply/eqP; case: (l1 =P l2) => // /eqP.
 case/separable=> [n1] [n2] h; move: (cv1 n1) (cv2 n2).
 case=> [K1 c1] [K2 c2]; pose K := maxn K1 K2.
-move/(_ (u K)): h; rewrite !inE /= !(c1, c2) //.
+move/(_ (u K)): h; rewrite !inE/= !(c1, c2) //.
   by apply/leq_maxl. by apply/leq_maxr.
 Qed.
 
@@ -332,7 +332,7 @@ Proof. by move=> le cu; apply/(@ncvg_le u c%:S)=> //; apply/ncvgC. Qed.
 Lemma iscvgC c : iscvg c%:S.
 Proof. by exists c; apply/ncvgC. Qed.
 
-Hint Resolve iscvgC.
+Hint Resolve iscvgC : core.
 
 Lemma iscvgD (u v : nat -> R) : iscvg u -> iscvg v -> iscvg (u \+ v).
 Proof. by case=> [lu cu] [lv cv]; exists (lu + lv); apply/ncvgD. Qed.

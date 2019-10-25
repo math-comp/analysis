@@ -1,8 +1,8 @@
-opam-version: "1.2"
+opam-version: "2.0"
 maintainer: "pierre-yves@strub.nu"
 homepage: "https://github.com/math-comp/analysis"
 bug-reports: "https://github.com/math-comp/analysis/issues"
-dev-repo: "https://github.com/math-comp/analysis.git"
+dev-repo: "git+https://github.com/math-comp/analysis.git"
 license: "CeCILL-C"
 authors: [
   "Reynald Affeldt"
@@ -18,12 +18,16 @@ build: [
 install: [
   [make "install"]
 ]
-remove: ["rm" "-R" "%{lib}%/coq/user-contrib/mathcomp/analysis"]
 depends: [
-  "coq" { (>= "8.7" & < "8.9~") }
-  "coq-mathcomp-ssreflect"   {= "1.7.0"}
-  "coq-mathcomp-algebra"     {= "1.7.0"}
-  "coq-mathcomp-field"       {= "1.7.0"}
-  "coq-mathcomp-bigenough"   {(>= "1.0.0" & < "1.1.0~")}
-  "coq-mathcomp-finmap"      {(>= "1.1.0" & < "1.2.0~")}
+  "coq" { ((>= "8.8" & < "8.11~") | = "dev") }
+  "coq-mathcomp-field"       {(>= "1.8.0" & < "1.10~")}
+  "coq-mathcomp-bigenough"   {(>= "1.0.0" & < "1.1~")}
+  "coq-mathcomp-finmap"      {(>= "1.2.0" & < "1.4~")}
 ]
+synopsis: "An analysis library for mathematical components"
+description: """
+This repository contains an experimental library for real analysis for
+the Coq proof-assistant and using the Mathematical Components library.
+
+It is inspired by the Coquelicot library.
+"""
