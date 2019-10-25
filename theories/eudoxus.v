@@ -13,6 +13,7 @@ Unset SsrOldRewriteGoalsOrder.
 Import GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope ring_scope.
+Local Open Scope int_scope.
 Local Open Scope classical_set_scope.
 Local Open Scope quotient_scope.
 
@@ -373,11 +374,19 @@ Canonical  qzendo_choiceType  := Eval hnf in ChoiceType qzEndo qzendo_choiceMixi
 (* -------------------------------------------------------------------- *)
 Section QZEqv.
 
-Definition qzeqv (f g : qzEndo) :=
-  `[<exists k : int, forall n : int, `|f n - g n| < k>].
+Definition eqv {T : Type} (f g : T -> int) :=
+  `[<exists k : int, forall n : T, `|f n - g n| < k>].
 
-Local Notation "~%E"   := qzeqv.
-Local Notation "f ~ g" := (qzeqv f g).
+Definition qzeqv (f g : qzEndo) := eqv f g.
+
+Local Notation "~%E"   := eqv.
+Local Notation "f ~ g" := (eqv f g).
+
+Lemma eqvP {T : Type} (f g : T -> int) :
+  reflect
+    (exists k : int, forall n : T, `|f n - g n| < k)
+    (f ~ g).
+Proof. by apply: asboolP. Qed.
 
 Lemma qzeqvP (f g : qzEndo) :
   reflect
@@ -385,38 +394,57 @@ Lemma qzeqvP (f g : qzEndo) :
     (f ~ g).
 Proof. by apply: asboolP. Qed.
 
-Lemma qzeqv_is_equiv : equiv_class_of ~%E.
+Lemma eqv_is_equiv {T : Type} : equiv_class_of (@eqv T).
 Proof. split.
-+ by move=> f; apply/qzeqvP; exists 1 => n; rewrite subrr normr0.
-+ suff sym f g: f ~ g -> g ~ f by move=> f g; apply/idP/idP => /sym.
-  by case/qzeqvP=> [k hk]; apply/qzeqvP; exists k=> n; rewrite distrC.
-+ move=> f g h /qzeqvP[k1 h1] /qzeqvP[k2 h2].
-  apply/qzeqvP; exists (k1 + k2) => n.
++ by move=> f; apply/eqvP; exists 1 => n; rewrite subrr normr0.
++ suff sym (f g : T -> int): f ~ g -> g ~ f.
+  - by move=> f g; apply/idP/idP => /sym.
+  by case/eqvP => [k hk]; apply/eqvP; exists k=> n; rewrite distrC.
++ move=> f g h /eqvP[k1 h1] /eqvP[k2 h2].
+  apply/eqvP; exists (k1 + k2) => n.
   apply/(ler_lt_trans _ (ltr_add (h1 n) (h2 n))).
   apply/(ler_trans _ (ler_norm_add _ _)).
   by rewrite [f n - _]addrC addrACA addNr addr0.
 Qed.
 
-Lemma qzeqv_refl_eq (f g : qzEndo) : f =1 g -> f ~ g.
+Lemma qzeqv_is_equiv : equiv_class_of qzeqv.
 Proof.
-move=> eq_fg; apply/qzeqvP; exists 1 => n.
+case: (@eqv_is_equiv int) => hr hs ht; split.
++ by apply: hr. + by apply: hs. + by apply: ht.
+Qed.
+
+Lemma eqv_refl_eq (f g : int -> int) : f =1 g -> f ~ g.
+Proof.
+move=> eq_fg; apply/eqvP; exists 1 => n.
 by rewrite eq_fg subrr normr0.
 Qed.
 
+Canonical eqv_equiv T := EquivRelPack (@eqv_is_equiv T).
 Canonical qzeqv_equiv := EquivRelPack qzeqv_is_equiv.
-Canonical qzeqv_encModRel := defaultEncModRel ~%E.
+Canonical qzeqv_encModRel := defaultEncModRel qzeqv.
 
-Definition eudoxus := {eq_quot ~%E}.
+Definition eudoxus := {eq_quot qzeqv}.
 
-Canonical eudoxus_quotType   := [quotType       of eudoxus].
-Canonical eudoxus_eqType     := [eqType         of eudoxus].
-Canonical eudoxus_choiceType := [choiceType     of eudoxus].
-Canonical eudoxus_eqQuotType := [eqQuotType ~%E of eudoxus].
+Canonical eudoxus_quotType   := [quotType         of eudoxus].
+Canonical eudoxus_eqType     := [eqType           of eudoxus].
+Canonical eudoxus_choiceType := [choiceType       of eudoxus].
+Canonical eudoxus_eqQuotType := [eqQuotType qzeqv of eudoxus].
 
+Lemma eqv_refl {T : Type} : reflexive (@eqv T).
+Proof. by apply: equiv_refl. Qed.
+
+Lemma eqv_sym {T : Type} : symmetric (@eqv T).
+Proof. by apply: equiv_sym. Qed.
+
+Lemma eqv_symL {T : Type} (f g : T -> int) : f ~ g -> g ~ f.
+Proof. by rewrite eqv_sym. Qed.
+
+Lemma eqv_trans {T : Type} : transitive (@eqv T).
+Proof. by apply: equiv_trans. Qed.
 End QZEqv.
 
-Local Notation "~%E"   := qzeqv.
-Local Notation "f ~ g" := (qzeqv f g).
+Local Notation "~%E"   := eqv.
+Local Notation "f ~ g" := (eqv f g).
 
 (* -------------------------------------------------------------------- *)
 Definition edxoppf (f : qzEndo) : qzEndo :=
@@ -442,7 +470,7 @@ Canonical to_eudoxus_pi_morph := PiEmbed to_eudoxus.
 Lemma pi_edxopp : {morph \pi_eudoxus : f / edxoppf f >-> edxopp f}.
 Proof.
 move=> f; unlock edxopp; apply/eqmodP/qzeqvP; rewrite /edxoppf /=.
-set g := repr _; have: f ~ g by apply/eqmodP; rewrite reprK.
+set g := repr _; have: qzeqv f g by apply/eqmodP; rewrite reprK.
 by case/qzeqvP=> k hk; exists k => n; rewrite -opprD normrN.
 Qed.
 
@@ -453,8 +481,8 @@ Lemma pi_edxadd : {morph \pi_eudoxus : f g / edxaddf f g >-> edxadd f g}.
 Proof.
 move=> f g; unlock edxadd; apply/eqmodP/qzeqvP; rewrite /edxaddf /=.
 set f' := repr (_ f); set g' := repr (_ g).
-have: g ~ g' by apply/eqmodP; rewrite reprK.
-have: f ~ f' by apply/eqmodP; rewrite reprK.
+have: qzeqv g g' by apply/eqmodP; rewrite reprK.
+have: qzeqv f f' by apply/eqmodP; rewrite reprK.
 move=> /qzeqvP[k1 h1] /qzeqvP[k2 h2]; exists (k1 + k2) => n.
 rewrite opprD addrACA (ler_lt_trans _ (ltr_add (h1 n) (h2 n))) //.
 by apply/ler_norm_add.
@@ -468,9 +496,9 @@ Proof.
 move=> f g; unlock edxmul; apply/eqmodP => /=.
 set f' := repr (_ f); set g' := repr (_ g).
 apply/(@equiv_trans _ _ (edxmulf f' g)); apply/qzeqvP=> /=.
-+ have: f ~ f' by apply/eqmodP; rewrite reprK.
++ have: qzeqv f f' by apply/eqmodP; rewrite reprK.
   by case/qzeqvP=> [k hk]; exists k.
-have /qzeqvP[k hk]: g ~ g' by apply/eqmodP; rewrite reprK.
+have /qzeqvP[k hk]: qzeqv g g' by apply/eqmodP; rewrite reprK.
 pose M : int := \sum_(0 <= j < `|k|) (`|f' j| + `|f' (- j%:Z)|).
 case/is_eqzendoPP: (valP f') => /= kf hkf; exists (kf + M) => n.
 rewrite -[X in `|X|](subrK (f' (g n - g' n))).
@@ -501,13 +529,13 @@ Lemma edxzmod :
     & left_inverse (0%:R)%E edxopp edxadd].
 Proof. split.
 + elim/quotW=> f; elim/quotW=> g; elim/quotW=> h /=.
-  rewrite !piE; apply/eqmodP/qzeqv_refl_eq => n /=.
+  rewrite !piE; apply/eqmodP/eqv_refl_eq => n /=.
   by rewrite addrA.
 + elim/quotW=> f; elim/quotW=> g; rewrite !piE.
-  by apply/eqmodP/qzeqv_refl_eq => n /=; rewrite addrC.
-+ elim/quotW=> f; rewrite !piE; apply/eqmodP/qzeqv_refl_eq.
+  by apply/eqmodP/eqv_refl_eq => n /=; rewrite addrC.
++ elim/quotW=> f; rewrite !piE; apply/eqmodP/eqv_refl_eq.
   by move=> n /=; rewrite /qzendoC mulr0 add0r.
-+ elim/quotW=> f; rewrite !piE; apply/eqmodP/qzeqv_refl_eq.
++ elim/quotW=> f; rewrite !piE; apply/eqmodP/eqv_refl_eq.
   by move=> n /=; rewrite addNr /qzendoC mulr0.
 Qed.
 
@@ -535,7 +563,7 @@ Lemma edxcomring :
     & (1%:R)%E != 0 ].
 Proof. split.
 + elim/quotW=> f; elim/quotW=> g; elim/quotW=> h.
-  by rewrite !piE /=; apply/eqmodP/qzeqv_refl_eq.
+  by rewrite !piE /=; apply/eqmodP/eqv_refl_eq.
 + elim/quotW=> f; elim/quotW=> g; rewrite !piE.
   case/is_eqzendoP: (valP f) => /= kf hf.
   case/is_eqzendoP: (valP g) => /= kg hg.
@@ -578,10 +606,10 @@ Proof. split.
   rewrite [X in X + _ <= _]addrACA [X in _ + X <= _]addrACA.
   rewrite [X in X <=  _]addrACA addrC [X in _ + X]addrACA.
   by rewrite [X in _ + X <= _]addrC -!addrA.
-+ elim/quotW=> f; rewrite !piE; apply/eqmodP/qzeqv_refl_eq.
++ elim/quotW=> f; rewrite !piE; apply/eqmodP/eqv_refl_eq.
   by move=> n /=; rewrite /qzendoC mulr1.
 + elim/quotW=> f; elim/quotW=> g; elim/quotW=> h.
-  by rewrite !piE /=; apply/eqmodP/qzeqv_refl_eq.
+  by rewrite !piE /=; apply/eqmodP/eqv_refl_eq.
 + apply/eqP; rewrite !piE => /eqmodP/qzeqvP /= [k hk].
   have := (hk 0); rewrite /qzendoC normr0 => /ltrW ge0k.
   move/(_ (k+1)): hk; rewrite /qzendoC !(mulr0, mulr1).
@@ -604,7 +632,7 @@ Canonical comRingType      := Eval hnf in ComRingType eudoxus edxmulC.
 Lemma edxnatrE n : n%:R = \pi_eudoxus (QZEndo (is_eqzendoC n)) :> eudoxus.
 Proof.
 rewrite !piE; elim: n => [|n ihn]; first by rewrite mulr0n !piE.
-rewrite mulrS ihn !piE; apply/eqmodP/qzeqv_refl_eq => /=.
+rewrite mulrS ihn !piE; apply/eqmodP/eqv_refl_eq => /=.
 by move=> k; rewrite /qzendoC /= -mulrDr intS.
 Qed.
 
@@ -733,6 +761,24 @@ Lemma edxposfP (f : qzEndo) :
 Proof. by apply/asboolP. Qed.
 
 (* -------------------------------------------------------------------- *)
+Lemma edxposfPE (f : qzEndo) : edxposf f ->
+  forall C : int, exists N : int, forall p : int, N < p -> C < f p.
+Proof.                          (* See edxposf_spec *)
+move=> /edxposfP gt0_f; case: (edxcmp0_spec (valP f)) => //=.
++ case=> C lt_fC; suff: C < C by rewrite ltrr.
+  move/(_ C): gt0_f => [n _ le_Cf]; rewrite (ltr_trans le_Cf) //.
+  by rewrite (ler_lt_trans (ler_norm _)).
++ move=> /(_ 0) [N]; rewrite oppr0 => h.
+  pose M : int := \sum_(0 <= i < `|N|.+1) `|f i|.
+  move/(_ M): gt0_f => [] [] // n _; rewrite ltrNge => /negP[].
+  rewrite {}/M; case: (ltnP n `|N|.+1) => [lt_n_SN|].
+  * rewrite (bigD1_seq n) 1?(iota_uniq, mem_iota) //=.
+    by rewrite ler_paddr 1?ler_norm //= sumr_ge0.
+  * rewrite -ltz_nat abszE => /(ler_lt_trans (ler_norm _)) /h.
+    by move/ltrW/ler_trans; apply; rewrite sumr_ge0.
+Qed.
+
+(* -------------------------------------------------------------------- *)
 Local Lemma pi_edxpos_r (f g : qzEndo) : f ~ g -> edxposf f -> edxposf g.
 Proof.
 case/qzeqvP=> C bdC /edxposfP /edxposf_spec h.
@@ -749,7 +795,7 @@ Qed.
 Lemma pi_edxpos : {mono \pi_eudoxus : f / edxposf f >-> edxpos f}.
 Proof.
 move=> f; unlock edxpos; apply/idP/idP; apply: pi_edxpos_r;
-  by apply/eqmodP; rewrite reprK.
+  by rewrite -/(qzeqv _ _); apply/eqmodP; rewrite reprK.
 Qed.
 
 Canonical pi_edxpos_morph := PiMono1 pi_edxpos.
@@ -771,7 +817,7 @@ Proof. split.
   + apply/orP; left; apply/edxposfP => /= k; case: (hf k).
     move=> N hN; exists (`|N| + 1); first by rewrite ltz_addr1.
     by rewrite hN // ltz_addr1 ler_norm.
-  by move/edxzero_spec; rewrite (negbTE h).
+  by move/edxzero_spec; rewrite -/(qzeqv _ _) (negbTE h).
 + elim/quotW=> f; elim/quotW=> g; rewrite !piE /=.
   move=> /edxposfP hf /edxposfP hg; apply/edxposfP => k.
   case/(edxposf_spec `|k| (valP _)): hf => /= kf hkf.
@@ -794,12 +840,130 @@ End EudoxusPos.
 (* ==================================================================== *)
 Section EudoxusFieldType.
 
+(*
+Lemma eqvPd {T : Type} (f g : T -> int) : f ~ g <->
+  exists C : int, forall n, exists2 a : int,
+    `|a| < C & g n = f n + a.
+Proof. split.
+* case/eqvP=> C bdC; exists C => n; exists (g n - f n) => //.
+  + by rewrite distrC. + by rewrite addrCA subrr addr0.
+* case=> C bdC; apply/eqvP; exists C => n; case: (bdC n).
+  by move=> a lt_aC ->; rewrite opprD addrA subrr add0r normrN.
+Qed.
+
+Lemma qzeqvDC (f : qzEndo) (c : int) : (f \o (fun x => x + c)) ~ f.
+Proof.
+case/is_eqzendoPP: (valP f) => /= C bdC; apply/eqvP; exists (C + `|f c|).
+move=> k /=; move/(_ k c): bdC; rewrite -{1}(ltr_add2r `|f c| _ C).
+by move/(ler_lt_trans (ler_norm_add _ _)); rewrite opprD -!addrA addNr addr0.
+Qed.
+
+Lemma qzeqvD (f : qzEndo) :
+  (fun '(x, y) => f (x + y)) ~ (fun '(x, y) => f x + f y).
+Proof.
+by case/is_eqzendoPP: (valP f) => /= C bdC; apply/eqvP; exists C; case.
+Qed.
+
+Lemma qzeqvN (f : qzEndo) : f \o [eta -%R] ~ - (val f).
+Proof.
+case/is_eqzendoPP: (valP f) => /= C bdC.
+apply/eqvP; exists (C + `|f 0|) => x; rewrite opprK /=.
+move/(_ x (-x)): bdC; rewrite subrr distrC -{1}(ltr_add2r `|f 0| _ C).
+by move/(ler_lt_trans (ler_norm_add _ _)); rewrite -addrA addNr addr0 addrC.
+Qed.
+
+Lemma L (f : qzEndo) :
+    (fun '(p, q, r) => f (r - p - q))
+  ~ (fun '(p, q, r) => f r - f (p-1) - f (q-1)).
+Proof.
+apply/eqvPd => /=; evar (C : int); evar (a : int).
+exists C; case=> [[p q] r]; exists a; last first.
++ rewrite -[r-p-q]addrA -opprD.
+
+  case/eqv_symL/eqvPd: (qzeqvDC f (-1)) => /= Cp1 /(_ p)[ap1] ltp1 ->.
+
+  case/eqv_symL/eqvPd: (qzeqvDC f (-1)) => /= Cq1 /(_ q)[aq1] ltq1 ->.
+  case/eqv_symL/eqvPd: (qzeqvD f) => CDr /= /(_ (r, -(p+q)))[aDr] ltDr ->.
+  rewrite -![LHS]addrA -![RHS]addrA; congr (f r + _).
+  case/eqv_symL/eqvPd: (qzeqvN f) => CN /= /(_ (p+q))[aN] ltN ->.
+  rewrite [in RHS]/GRing.opp /=.
+  case/eqv_symL/eqvPd: (qzeqvD f) => CD /= /(_ (p, q))[aD] ltD ->.
+  rewrite !opprD -![LHS]addrA -![RHS]addrA; congr (- f p + _).
+  rewrite addrC -![LHS]addrA; congr (-f q + _); apply/eqP.
+  rewrite [X in _==X]addrC -subr_eq [X in _==X]addrC -subr_eq.
+  rewrite [X in _==X]addrC -subr_eq; apply/eqP/esym.
+  rewrite -!opprD; set av := (X in _ = X).
+
+  rewrite /a; reflexivity.
+  
+
+Lemma edxinv_r (x : qzEndo) :
+  edxposf x -> { y : eudoxus | y * \pi_eudoxus x = 1 }.
+Proof.
+move: x => f gt0_f; have h (p : nat) : exists n : nat, p%:Z <= f n.
++ by move/edxposfP: gt0_f => /(_ p) [] [|//] n _ /ltrW ?; exists n.
+pose g p := (ex_minn (h p))%:Z.
+have hC: exists C : int, forall n m, `|g (n + m)%N - g n - g m| <= C.
++ have [N gt0_g]: exists N, forall n, (N <= n)%N -> 0 < g n.
+  - exists `|f 0|.+1 => n lt_f0_n; rewrite /g; case: ex_minnP.
+    case=> //; rewrite lerNgt => /negP[].
+    by rewrite (ler_lt_trans (ler_norm _)).
+  have hrg: forall r, (N <= r)%N -> f (g r - 1) < r%:Z <= f (g r).
+  - move=> r /gt0_g; rewrite /g; case: ex_minnP.
+    move=> m le_m_fr hmin gt0_m; rewrite le_m_fr andbT.
+    rewrite ltrNge; apply/negP; rewrite -predn_int //.
+    move/hmin; case: {le_m_fr hmin} m gt0_m => //=.
+    by move=> m _; rewrite ltnn.
+  have h1: forall m n, (N <= m)%N -> (N <= n)%N ->
+    0 < f (g (m + n)%N) - f (g m - 1) - f (g n - 1).
+  - move=> m n le_Nm le_Nn; rewrite -[X in X<_](subrr (m%:Z + n%:Z)).
+    rewrite opprD !addrA ltr_sub //; last by case/andP: (hrg _ le_Nn).
+    rewrite ler_lt_sub //; last by case/andP: (hrg _ le_Nm).
+    suff: (N <= m + n)%N by move/hrg => /andP[].
+    by apply: (leq_trans le_Nm); rewrite leq_addr.
+  have h2: forall m n, (N <= m)%N -> (N <= n)%N ->
+    f (g (m + n)%N - 1) - f (g m) - f (g n) < 0.
+  - move=> m n le_Nm le_Nn; rewrite -[X in _<X](subrr (m%:Z + n%:Z)).
+    rewrite opprD !addrA ltr_le_sub //; last by case/andP: (hrg _ le_Nn).
+    rewrite ltr_le_sub //; last by case/andP: (hrg _ le_Nm).
+    suff: (N <= m + n)%N by move/hrg => /andP[].
+    by apply: (leq_trans le_Nm); rewrite leq_addr.
+
+    
+
+
+Search _ (_ \is a eqzendo).
+; last by case/andP: (hrg _ le_Nn).
+
+
+
+Search _ (_ <= _ + _)%N.
+
+
+    have := hrg (n + m)%N.
+
+rewrite -(rwP andP); split; last first.
+    * by rewrite /g; 
+    
+
+  - move/edxposfPE: (gt0_f) => /(_ (f 0))[n hn]; exists `|n|%N.+1.
+    move=> p; rewrite -ltz_nat abszE => /(ler_lt_trans (ler_norm _)).
+    move/hn => lt_f0_fp; rewrite /g; case: ex_minnP.
+    case=> //.
+
+
+
+eexists=> n le_Nn; rewrite /g; case: ex_minnP.
+    move=> m le_n_fm min.
+*)
+
 Parameter (edxinv : eudoxus -> eudoxus).
 
 Lemma edxfield :
      (forall x, x != 0 -> edxinv x * x = 1)
   /\ (edxinv 0 = 0).
-Proof. Admitted.
+Proof.
+Admitted.
 
 Definition eudoxus_fieldUnitMixin :=
   FieldUnitMixin edxfield.1 edxfield.2.
