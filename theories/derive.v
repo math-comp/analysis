@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop order matrix interval.
-Require Import boolp reals Rstruct.
+Require Import boolp reals.
 Require Import classical_sets posnum topology normedtype landau forms.
 
 (******************************************************************************)
@@ -41,7 +41,7 @@ Reserved Notation "f ^` ( n )" (at level 8, format "f ^` ( n )").
 
 Section Differential.
 
-Context {K : realFieldType (* TODO: generalize to numDomainType *)} {V W : normedModType K}.
+Context {K : numFieldType (* TODO: generalize to numDomainType *)} {V W : normedModType K}.
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
@@ -131,13 +131,13 @@ Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F])).
 Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
 Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
 
-Lemma differentiableP (R : realType) (V W : normedModType R) (f : V -> W) x :
+Lemma differentiableP (R : numFieldType) (V W : normedModType R) (f : V -> W) x :
   differentiable f x -> is_diff x f ('d f x).
 Proof. by move=> ?; apply: DiffDef. Qed.
 
 Section jacobian.
 
-Definition jacobian n m (R : realType) (f : 'rV[R]_n.+1 -> 'rV[R]_m.+1) p :=
+Definition jacobian n m (R : realFieldType) (f : 'rV[R]_n.+1 -> 'rV[R]_m.+1) p :=
   lin1_mx ('d f p).
 
 End jacobian.
@@ -146,7 +146,7 @@ Notation "''J' f p" := (jacobian f p).
 
 Section DifferentialR.
 
-Context {R : realType} {V W : normedModType R}.
+Context {R : realFieldType} {V W : normedModType R}.
 
 (* split in multiple bits:
 - a linear map which is locally bounded is a little o of 1
@@ -268,6 +268,15 @@ move=> df; apply/derivable_locallyP; apply/eqaddoE; rewrite funeqE => h.
 by rewrite /= addrC df.
 Qed.
 
+End DifferentialR.
+
+Notation "''D_' v f" := (derive f ^~ v).
+Notation "''D_' v f c" := (derive f c v). (* printing *)
+Hint Extern 0 (derivable _ _ _) => solve[apply: ex_derive] : core.
+
+Section DifferentialR_realType.
+Context {R : realType} {V W : normedModType R}.
+
 Lemma deriveE (f : V -> W) (a v : V) :
   differentiable f a -> 'D_v f a = 'd f a v.
 Proof.
@@ -303,11 +312,8 @@ rewrite normrV ?unitfE // div1r invrK ltr_pdivr_mull; last first.
 rewrite normmZ mulrC -mulrA.
 by rewrite ltr_pmull ?ltr1n // pmulr_rgt0 ?normm_gt0 // normr_gt0.
 Qed.
-End DifferentialR.
 
-Notation "''D_' v f" := (derive f ^~ v).
-Notation "''D_' v f c" := (derive f c v). (* printing *)
-Hint Extern 0 (derivable _ _ _) => solve[apply: ex_derive] : core.
+End DifferentialR_realType.
 
 Section DifferentialR2.
 Variable R : realType.
@@ -355,7 +361,7 @@ Notation "f ^` ()" := (derive1 f).
 Notation "f ^` ( n )" := (derive1n n f).
 
 Section DifferentialR3.
-Variable R : realType.
+Variable R : realFieldType.
 Lemma littleo_linear0 (V W : normedModType R) (f : {linear V -> W}) :
   (f : V -> W) =o_ (0 : V) id -> f = cst 0 :> (V -> W).
 Proof.
@@ -635,7 +641,7 @@ Lemma diff_eqO (V' W' : normedModType R) (x : filter_on V') (f : V' -> W') :
 Proof. by move=> /diff_continuous /linear_eqO; apply. Qed.
 
 (* TODO: generalize *)
-Lemma compoO_eqo (K : realType) (U V' W' : normedModType K) (f : U -> V')
+Lemma compoO_eqo (U V' W' : normedModType R) (f : U -> V')
   (g : V' -> W') :
   [o_ (0 : V') id of g] \o [O_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
@@ -652,13 +658,13 @@ apply/locallyP; exists (k%:num ^-1 * d%:num)=> // x.
 by rewrite -ball_normE /= distrC subr0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma compoO_eqox (K : realType) (U V' W' : normedModType K) (f : U -> V')
+Lemma compoO_eqox (U V' W' : normedModType R) (f : U -> V')
   (g : V' -> W') :
   forall x : U, [o_ (0 : V') id of g] ([O_ (0 : U) id of f] x) =o_(x \near 0 : U) x.
 Proof. by move=> x; rewrite -[X in X = _]/((_ \o _) x) compoO_eqo. Qed.
 
 (* TODO: generalize *)
-Lemma compOo_eqo (K : realType) (U V' W' : normedModType K) (f : U -> V')
+Lemma compOo_eqo  (U V' W' : normedModType R) (f : U -> V')
   (g : V' -> W') :
   [O_ (0 : V') id of g] \o [o_ (0 : U) id of f] =o_ (0 : U) id.
 Proof.
@@ -675,7 +681,7 @@ apply/locallyP; exists ((e%:num / k%:num) ^-1 * d%:num)=> // x.
 by rewrite -ball_normE /= distrC subr0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma compOo_eqox (K : realType) (U V' W' : normedModType K) (f : U -> V')
+Lemma compOo_eqox (U V' W' : normedModType R) (f : U -> V')
   (g : V' -> W') : forall x,
   [O_ (0 : V') id of g] ([o_ (0 : U) id of f] x) =o_(x \near 0 : U) x.
 Proof. by move=> x; rewrite -[X in X = _]/((_ \o _) x) compOo_eqo. Qed.
@@ -1338,7 +1344,7 @@ have /(EVT_max leab) [c clr fcmax] : {in `[a, b], continuous (- f)}.
 by exists c => // ? /fcmax; rewrite ler_opp2.
 Qed.
 
-Lemma cvg_at_rightE (R : realType) (V : normedModType R) (f : R^o -> V) x :
+Lemma cvg_at_rightE (R : realFieldType) (V : normedModType R) (f : R^o -> V) x :
   cvg (f @ locally' x) -> lim (f @ locally' x) = lim (f @ at_right x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
@@ -1348,7 +1354,7 @@ apply: (@flim_map_lim _ _ _ (at_right _)) => A /cvfx /locallyP [_ /posnumP[e] xe
 by exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
 
-Lemma cvg_at_leftE (R : realType) (V : normedModType R) (f : R^o -> V) x :
+Lemma cvg_at_leftE (R : realFieldType) (V : normedModType R) (f : R^o -> V) x :
   cvg (f @ locally' x) -> lim (f @ locally' x) = lim (f @ at_left x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
@@ -1359,7 +1365,7 @@ exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.
 
-Lemma le0r_flim_map (R : realType) (T : topologicalType) (F : set (set T))
+Lemma le0r_flim_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R^o) :
   (\forall x \near F, 0 <= f x) -> cvg (f @ F) -> 0 <= lim (f @ F).
 Proof.
@@ -1373,7 +1379,7 @@ rewrite ltr_subl_addr => /lt_le_trans; apply.
 by rewrite ltr0_norm // addrC subrr.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma ler0_flim_map (R : realType) (T : topologicalType) (F : set (set T))
+Lemma ler0_flim_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R^o) :
   (\forall x \near F, f x <= 0) -> cvg (f @ F) -> lim (f @ F) <= 0.
 Proof.
@@ -1384,7 +1390,7 @@ rewrite limopp; apply: le0r_flim_map; last by rewrite -limopp; apply: lim_opp.
 by move: fle0; apply: filterS => x; rewrite oppr_ge0.
 Qed.
 
-Lemma ler_flim_map (R : realType) (T : topologicalType) (F : set (set T)) (FF : ProperFilter F)
+Lemma ler_flim_map (R : realFieldType) (T : topologicalType) (F : set (set T)) (FF : ProperFilter F)
   (f g : T -> R^o) :
   (\forall x \near F, f x <= g x) -> cvg (f @ F) -> cvg (g @ F) ->
   lim (f @ F) <= lim (g @ F).
@@ -1397,7 +1403,7 @@ rewrite eqlim; apply: le0r_flim_map; last first.
 by move: lefg; apply: filterS => x; rewrite subr_ge0.
 Qed.
 
-Lemma derive1_at_max (R : realType) (f : R^o -> R^o) (a b c : R) :
+Lemma derive1_at_max (R : realFieldType) (f : R^o -> R^o) (a b c : R) :
   a <= b -> (forall t, t \in `]a, b[ -> derivable f t 1) -> c \in `]a, b[ ->
   (forall t, t \in `]a, b[ -> f t <= f c) -> is_derive (c : R^o) 1 f 0.
 Proof.

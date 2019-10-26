@@ -1043,7 +1043,7 @@ Canonical numFieldType_normedModType (R : numFieldType) :=
 
 Section NVS_continuity.
 
-Context {K : numFieldType(*absRingType*)} {V : normedModType K}.
+Context {K : numFieldType} {V : normedModType K}.
 
 Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
 Proof.
@@ -1402,7 +1402,7 @@ by apply: filterS => x; rewrite !sub0r !normrN [ `|_| ]ger0_norm.
 Qed.
 
 Section cvg_seq_bounded.
-Context {K : realType (* numFieldType *) }.
+Context {K : realFieldType (* TODO: generalize to numFieldType *) }.
 Local Notation "'+oo'" := (@ERPInf K).
 
 (* TODO: simplify using extremumP when PR merged in mathcomp *)
