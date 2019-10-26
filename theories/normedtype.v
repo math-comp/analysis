@@ -358,7 +358,7 @@ Qed.
 
 End Locally'.
 
-Lemma ler_addgt0Pr (R : realType(* TODO: generalize to numFieldType*)) (x y : R) :
+Lemma ler_addgt0Pr (R : realFieldType(* TODO: generalize to numFieldType*)) (x y : R) :
   reflect (forall e, e > 0 -> x <= y + e) (x <= y).
 Proof.
 apply/(iffP idP)=> [lexy _/posnumP[e] | lexye]; first by rewrite ler_paddr.
@@ -370,13 +370,13 @@ by rewrite !mulrDl addrC -mulN1r -mulrA mulN1r [RHS]addrC {3}(splitr y)
   [RHS]GRing.subrKA.
 Qed.
 
-Lemma ler_addgt0Pl (R : realType(* TODO: generalize to numFieldType*)) (x y : R) :
+Lemma ler_addgt0Pl (R : realFieldType(* TODO: generalize to numFieldType*)) (x y : R) :
   reflect (forall e, e > 0 -> x <= e + y) (x <= y).
 Proof.
 by apply/(equivP (ler_addgt0Pr x y)); split=> lexy e /lexy; rewrite addrC.
 Qed.
 
-Lemma in_segment_addgt0Pr (R : realType(*TODO: generalize to numFieldType*)) (x y z : R) :
+Lemma in_segment_addgt0Pr (R : realFieldType(*TODO: generalize to numFieldType*)) (x y z : R) :
   reflect (forall e, e > 0 -> y \in `[(x - e), (z + e)]) (y \in `[x, z]).
 Proof.
 apply/(iffP idP)=> [xyz _/posnumP[e] | xyz_e].
@@ -729,8 +729,7 @@ End NormedModule1_numFieldType.
 
 Section hausdorff.
 
-(* TODO: should move to reals.v *)
-Lemma Rhausdorff : hausdorff [topologicalType of Rdefinitions.R].
+Lemma Rhausdorff (R : realFieldType) : hausdorff [topologicalType of R^o].
 Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
@@ -741,12 +740,12 @@ rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
 Qed.
 
-Lemma normedModType_hausdorff (V : normedModType Rdefinitions.R) : hausdorff V.
+Lemma normedModType_hausdorff (R : realFieldType) (V : normedModType R) : hausdorff V.
 Proof.
 move=> p q clp_q; apply/subr0_eq/normr0_eq0/Rhausdorff => A B pq_A.
 rewrite -(@normr0 _ V) -(subrr p) => pp_B.
 suff loc_preim r C :
-  locally `|p - r| C -> locally r ((fun r => `|p - r|) @^-1` C).
+  @locally _ [filteredType R of R^o] `|p - r| C -> locally r ((fun r => `|p - r|) @^-1` C).
   have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
   by exists `|p - r|.
 move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
