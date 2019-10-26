@@ -417,7 +417,7 @@ Proof. exact: Proper_locally'_numFieldType. Qed.
 (** * Some Topology on [Rbar] *)
 
 Section ereal_locally.
-Context {R : realType(* TODO: generalize to numFieldType*)}.
+Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
 Definition ereal_locally' (a : {ereal R}) (P : R -> Prop) :=
   match a with
@@ -435,8 +435,13 @@ Definition ereal_locally (a : {ereal R}) (P : R -> Prop) :=
 (*Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.*)
 Canonical ereal_pointed := PointedType {ereal R} (+oo).
 Canonical ereal_filter := FilteredType R {ereal R} (ereal_locally).
+End ereal_locally.
 
-Global Instance ereal_locally'_filter : forall x, ProperFilter (ereal_locally' x).
+Section ereal_locally_realFieldType.
+Context {R : realFieldType(* TODO: generalize to numFieldType*)}.
+Let R_topologicalType := [topologicalType of R^o].
+
+Global Instance ereal_locally'_filter : forall x : {ereal R}, ProperFilter (ereal_locally' x).
 Proof.
 case=> [x||]; first exact: Proper_locally'_numFieldType.
   apply Build_ProperFilter.
@@ -452,7 +457,7 @@ by exists M => ? /ltMP /sPQ.
 Qed.
 Typeclasses Opaque ereal_locally'.
 
-Global Instance ereal_locally_filter : forall x, ProperFilter (ereal_locally x).
+Global Instance ereal_locally_filter : forall x, ProperFilter (@ereal_locally R x).
 Proof.
 case=> [x||].
 by apply/(@locally_filter R_topologicalType).
@@ -470,14 +475,14 @@ Qed.
 Lemma locally_pinfty_gt (c : R) : \forall x \near +oo, c < x.
 Proof. by exists c. Qed.
 
-Lemma locally_pinfty_ge c : \forall x \near +oo, c <= x.
+Lemma locally_pinfty_ge (c : R) : \forall x \near +oo, c <= x.
 Proof. by exists c; apply: ltW. Qed.
 
 Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
     solve[near: x; exists 0 => _/posnumP[x] //] end : core.
 
-End ereal_locally.
+End ereal_locally_realFieldType.
 
 (** ** Modules with a norm *)
 
@@ -798,9 +803,9 @@ End NormedModule_numFieldType.
 Hint Resolve normr_ge0 : core.
 Arguments flim_norm {_ _ F FF}.
 
-Section NormedModule_realType.
+Section NormedModule_realFieldType.
 
-Context {T : Type} {K : realType(* TODO: generalize to numFieldType*)} {V : normedModType K}.
+Context {T : Type} {K : realFieldType(* TODO: generalize to numFieldType*)} {V : normedModType K}.
 
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
@@ -812,10 +817,10 @@ rewrite (le_lt_trans _ yy') //.
 by rewrite (le_trans _ (ler_dist_dist _ _)) // distrC ler_norm.
 Qed.
 
-End NormedModule_realType.
+End NormedModule_realFieldType.
 Arguments flim_bounded {_ _ F FF}.
 
-Lemma continuous_flim_norm {R : numFieldType} (*{K : absRingType}*)
+Lemma continuous_flim_norm {R : numFieldType}
   (V W : normedModType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof.
@@ -887,7 +892,7 @@ End mx_norm.
 
 Section matrix_NormedModule.
 
-Variables (K : realType (* TODO: generalize to numFieldType*)) (m n : nat).
+Variables (K : realFieldType (* TODO: generalize to numFieldType*)) (m n : nat).
 
 Definition matrix_normedZmodMixin :=
   Num.NormedMixin (@ler_mx_norm_add K m n)
@@ -945,9 +950,9 @@ Proof. by rewrite !prod_normE !normmZ maxr_pmulr. Qed.
 
 End prod_NormedModule_realDomainType.
 
-Section prod_NormedModule_realType.
+Section prod_NormedModule_realFieldType.
 
-Context {K : realType (* TODO: generalize to numFieldType*)} {U V : normedModType K}.
+Context {K : realFieldType (* TODO: generalize to numFieldType*)} {U V : normedModType K}.
 
 Lemma ball_prod_normE : ball = ball_ (@normr _ [normedZmodType K of U * V]).
 Proof.
@@ -969,10 +974,10 @@ Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
 Canonical prod_normedModType :=
   NormedModType K (U * V) prod_NormedModMixin.
 
-End prod_NormedModule_realType.
+End prod_NormedModule_realFieldType.
 
 Section example_of_sharing.
-Variables (K : realType (* TODO: generalize to realFieldType *)).
+Variables (K : realFieldType).
 
 Goal forall m n (M N : 'M[K]_(m.+1, n.+1)),
   `|M + N| <= `|M| + `|N|.
@@ -989,7 +994,7 @@ End example_of_sharing.
 
 Section prod_NormedModule_lemmas.
 
-Context {T : Type} {K : realType (* TODO: generalize to numFieldType *)} {U : normedModType K}
+Context {T : Type} {K : realFieldType (* TODO: generalize to numFieldType *)} {U : normedModType K}
                    {V : normedModType K}.
 
 Lemma flim_norm2P {F : set (set U)} {G : set (set V)}
@@ -1056,7 +1061,7 @@ exact: (@locally_filter [topologicalType of K'^o]).
 Qed.
 
 Section NVS_continuity1.
-Context {K : realType (* TODO: generalize to numFieldType*)} {V : normedModType K}.
+Context {K : realFieldType (* TODO: generalize to numFieldType*)} {V : normedModType K}.
 Local Notation "'+oo'" := (@ERPInf K).
 
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
@@ -1098,7 +1103,7 @@ End NVS_continuity1.
 
 Section limit_composition.
 
-Context {K : numFieldType(*absRingType*)} {V : normedModType K} {T : topologicalType}.
+Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
 
 Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
@@ -1115,9 +1120,9 @@ Proof. by move=> ??; apply: lim_add. Qed.
 
 End limit_composition.
 
-Section limit_composition_realType.
+Section limit_composition_realFieldType.
 
-Context {K : realType(* TODO: generalize to numFieldTYpe*)} {V : normedModType K} {T : topologicalType}.
+Context {K : realFieldType(* TODO: generalize to numFieldTYpe*)} {V : normedModType K} {T : topologicalType}.
 
 Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
   (k : K^o) (a : V) :
@@ -1158,7 +1163,7 @@ Lemma continuousM (f g : T -> K^o) x :
   {for x, continuous (fun x => f x * g x)}.
 Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
 
-End limit_composition_realType.
+End limit_composition_realFieldType.
 
 (** ** Complete Normed Modules *)
 
@@ -1166,7 +1171,7 @@ Module CompleteNormedModule.
 
 Section ClassDef.
 
-Variable K : numFieldType(*absRingType*).
+Variable K : numFieldType.
 
 Record class_of (T : Type) := Class {
   base : NormedModule.class_of K T ;
@@ -1418,7 +1423,7 @@ Grab Existential Variables. all: end_near. Qed.
 End cvg_seq_bounded.
 
 Section some_sets.
-Variable R : realType (* TODO: generalize to numFieldType *).
+Variable R : realFieldType (* TODO: generalize to numFieldType *).
 
 (** Some open sets of [R] *)
 
@@ -1611,7 +1616,7 @@ Qed.
 
 End segment.
 
-Lemma ler0_addgt0P (R : realType (* TODO: generalize to numFieldType*)) (x : R) :
+Lemma ler0_addgt0P (R : realFieldType (* TODO: generalize to numFieldType*)) (x : R) :
   reflect (forall e, e > 0 -> x <= e) (x <= 0).
 Proof.
 apply: (iffP idP) => [lex0 e egt0|lex0].
@@ -1682,7 +1687,7 @@ Grab Existential Variables. all: end_near. Qed.
 (** Local properties in [R] *)
 
 (* NB: this is a proof that was in Rbar and that has been ported to {ereal _} *)
-Lemma lt_ereal_locally (R : realType (* TODO: generalize to numFieldType *)) (a b : {ereal R}) (x : R) :
+Lemma lt_ereal_locally (R : realFieldType (* TODO: generalize to numFieldType *)) (a b : {ereal R}) (x : R) :
   lt_ereal a x%:E -> lt_ereal x%:E b ->
   exists delta : {posnum R},
     forall y, `|y - x| < delta%:num -> lt_ereal a y%:E && lt_ereal y%:E b.
@@ -1704,7 +1709,7 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - by exists 1%:pos.
 Qed.
 
-Lemma locally_interval (R : realType (* TODO: generalize to numFieldType *) ) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
+Lemma locally_interval (R : realFieldType (* TODO: generalize to numFieldType *) ) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
   lt_ereal a x%:E -> lt_ereal x%:E b ->
   (forall y : R, lt_ereal a y%:E -> lt_ereal y%:E b -> P y) ->
   locally x P.
@@ -1863,7 +1868,7 @@ Qed.
 (* Qed. *)
 
 Section bounded.
-Variable K : realType (* TODO: generalize to numFieldType *).
+Variable K : numFieldType.
 Definition bounded (V : normedModType K) (A : set V) :=
   \forall M \near +oo, A `<=` [set x | `|x| < M].
 End bounded.
@@ -1965,7 +1970,7 @@ Qed.
 (** Open sets in [Rbar] *)
 
 Section open_sets_in_Rbar.
-Variable R : realType (* TODO: generalize to numFieldType *).
+Variable R : realFieldType (* TODO: generalize to numFieldType *).
 
 Lemma open_ereal_lt y : open [set u : R^o | lt_ereal u%:E y].
 Proof.
