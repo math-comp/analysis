@@ -500,7 +500,7 @@ End Domination.
 
 Section Domination_realType.
 
-Context {K : realType (* yyy numFieldType *)} {T : Type} {V W : normedModType K}.
+Context {K : realType (* TODO: generalize tonumFieldType *)} {T : Type} {V W : normedModType K}.
 
 Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|f x| <= k * `|g x|.
@@ -903,7 +903,7 @@ End Limit.
 
 Section Limit_realType.
 
-Context {K : realType (* yyy realFieldType *) } {T : Type} {V W X : normedModType K}.
+Context {K : realType (* TODO: generalize to  realFieldType *) } {T : Type} {V W X : normedModType K}.
 
 Lemma littleo_bigO_eqo {F : filter_on T}
   (g : T -> W) (f : T -> V) (h : T -> X) :
@@ -984,7 +984,7 @@ End littleo_bigO_transitivity.
 
 Section littleo_bigO_transitivity_realType.
 
-Context {K : realType (* yyy numFieldType *) } {T : Type} {V W Z : normedModType K}.
+Context {K : realType (* TODO: generalize to numFieldType *)} {T : Type} {V W Z : normedModType K}.
 
 Lemma eqaddO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [O_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
@@ -1018,7 +1018,7 @@ End littleo_bigO_transitivity_realType.
 
 Section rule_of_products_in_R.
 
-Variables (R : realType (*yyy numDomainType*)) (pT : pointedType).
+Variables (R : realType (* TODO: generalize to numDomainType*)) (pT : pointedType).
 
 Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
@@ -1086,7 +1086,7 @@ by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
 
 Section Linear3.
-Context (R : realType (* yyy realFieldType *)) (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
+Context (R : realType (* TODO: generalize to realFieldType *)) (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
         (s_law : GRing.Scale.law s).
 Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 
@@ -1130,12 +1130,12 @@ End Linear3.
 
 Arguments linear_for_continuous {R U V s s_law normm_s} f _.
 
-Lemma linear_continuous (R : realType (* yyy realFieldType *)) (U : normedModType R) (V : normedModType R)
+Lemma linear_continuous (R : realType (* TODO: generalize to realFieldType *)) (U : normedModType R) (V : normedModType R)
   (f : {linear U -> V}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
 
-Lemma linear_for_mul_continuous (R : realType (* yyy realFieldType*)) (U : normedModType R)
+Lemma linear_for_mul_continuous (R : realType (* TODO: generalizt to realFieldType*)) (U : normedModType R)
   (f : {linear U -> R | (@GRing.mul [ringType of R^o])}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
@@ -1145,7 +1145,7 @@ Notation "f '~~_' F g" := (f == g +o_ F g).
 
 Section asymptotic_equivalence.
 
-Context {K : realType (* yyy realFieldType*)} {T : Type} {V W : normedModType K}.
+Context {K : realType (* TODO: generalize to realFieldType*)} {T : Type} {V W : normedModType K}.
 Implicit Types F : filter_on T.
 
 Lemma equivOLR F (f g : T -> V) : f ~_F g -> f =O_F g.
@@ -1283,7 +1283,7 @@ Arguments bigOmega {_ _ _ _}.
 
 Section big_omega_realType.
 
-Context {K : realType (*yyy realFieldType*)} {T : Type} {V : normedModType K}.
+Context {K : realType (*TODO: generalize to realFieldType*)} {T : Type} {V : normedModType K}.
 Implicit Types W : normedModType K.
 
 (* properties of big Omega *)
@@ -1318,7 +1318,7 @@ Section big_omega_in_R.
 
 Variable pT : pointedType.
 
-Lemma addOmega (R : realType (* yyy realFieldType *)) (F : filter_on pT) (f g h : _ -> R^o)
+Lemma addOmega (R : realType (* TODO: generalize to realFieldType *)) (F : filter_on pT) (f g h : _ -> R^o)
   (f_nonneg : forall x, 0 <= f x) (g_nonneg : forall x, 0 <= g x) :
   f =Omega_F h -> f + g =Omega_F h.
 Proof.
@@ -1328,7 +1328,7 @@ apply; rewrite ler_pmul2l //; last by near: k; exists 0.
 by rewrite !ger0_norm // ?addr_ge0 // ler_addl.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
 
-Lemma mulOmega (R : realType (* yyy realFieldType *)) (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
+Lemma mulOmega (R : realType (* TODO: generalize to realFieldType *)) (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [Omega_F h1 of f] * [Omega_F h2 of g] =Omega_F (h1 * h2).
 Proof.
 rewrite eqOmegaE eqOmegaO [in RHS]bigOE //.
@@ -1437,7 +1437,7 @@ Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
 
 Section big_theta_realType.
 
-Context {K : realType (*yyy realFieldType*)} {T : Type} {V : normedModType K}.
+Context {K : realType (*TODO: generalize to realFieldType*)} {T : Type} {V : normedModType K}.
 Implicit Types W : normedModType K.
 
 Lemma bigThetaE {W} (F : filter_on T) (f : T -> V) (g : T -> W) :

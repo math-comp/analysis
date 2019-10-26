@@ -358,7 +358,7 @@ Qed.
 
 End Locally'.
 
-Lemma ler_addgt0Pr (R : realType(* yyy numFieldType*)) (x y : R) :
+Lemma ler_addgt0Pr (R : realType(* TODO: generalize to numFieldType*)) (x y : R) :
   reflect (forall e, e > 0 -> x <= y + e) (x <= y).
 Proof.
 apply/(iffP idP)=> [lexy _/posnumP[e] | lexye]; first by rewrite ler_paddr.
@@ -370,13 +370,13 @@ by rewrite !mulrDl addrC -mulN1r -mulrA mulN1r [RHS]addrC {3}(splitr y)
   [RHS]GRing.subrKA.
 Qed.
 
-Lemma ler_addgt0Pl (R : realType(*yyy numFieldType*)) (x y : R) :
+Lemma ler_addgt0Pl (R : realType(* TODO: generalize to numFieldType*)) (x y : R) :
   reflect (forall e, e > 0 -> x <= e + y) (x <= y).
 Proof.
 by apply/(equivP (ler_addgt0Pr x y)); split=> lexy e /lexy; rewrite addrC.
 Qed.
 
-Lemma in_segment_addgt0Pr (R : realType(*yyy numFieldType*)) (x y z : R) :
+Lemma in_segment_addgt0Pr (R : realType(*TODO: generalize to numFieldType*)) (x y z : R) :
   reflect (forall e, e > 0 -> y \in `[(x - e), (z + e)]) (y \in `[x, z]).
 Proof.
 apply/(iffP idP)=> [xyz _/posnumP[e] | xyz_e].
@@ -386,7 +386,7 @@ rewrite inE/=; apply/andP.
 by split; apply/ler_addgt0Pr => ? /xyz_e /andP /= []; rewrite ler_subl_addr.
 Qed.
 
-Lemma in_segment_addgt0Pl (R : realType(*yyy numFieldType*)) (x y z : R) :
+Lemma in_segment_addgt0Pl (R : realType(*generalize to numFieldType*)) (x y z : R) :
   reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]) (y \in `[x, z]).
 Proof.
 apply/(equivP (in_segment_addgt0Pr x y z)).
@@ -417,7 +417,7 @@ Proof. exact: Proper_locally'_numFieldType. Qed.
 (** * Some Topology on [Rbar] *)
 
 Section ereal_locally.
-Context {R : realType(*yyy numFieldType*)}.
+Context {R : realType(* TODO: generalize to numFieldType*)}.
 Let R_topologicalType := [topologicalType of R^o].
 Definition ereal_locally' (a : {ereal R}) (P : R -> Prop) :=
   match a with
@@ -800,7 +800,7 @@ Arguments flim_norm {_ _ F FF}.
 
 Section NormedModule_realType.
 
-Context {T : Type} {K : realType(*yyy numFieldType*)} {V : normedModType K}.
+Context {T : Type} {K : realType(* TODO: generalize to numFieldType*)} {V : normedModType K}.
 
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
@@ -832,7 +832,7 @@ Qed.
 
 Section mx_norm.
 
-Variables (K : realDomainType) (*yyy numFieldType*) (m n : nat).
+Variables (K : realDomainType) (* TODO: generalize to numFieldType*) (m n : nat).
 
 (* take m.+1, n.+1 because ball_normE is not provable for m = 0 or n = 0 *)
 (* TODO: check if we can remove .+1 partially *)
@@ -887,7 +887,7 @@ End mx_norm.
 
 Section matrix_NormedModule.
 
-Variables (K : realType (* yyy numFieldType*) (*absRingType*)) (m n : nat).
+Variables (K : realType (* TODO: generalize to numFieldType*)) (m n : nat).
 
 Definition matrix_normedZmodMixin :=
   Num.NormedMixin (@ler_mx_norm_add K m n)
@@ -935,7 +935,7 @@ End matrix_NormedModule.
 
 Section prod_NormedModule_realDomainType.
 
-Context {K : realDomainType (* yyy numFieldType*)} {U V : normedModType K}.
+Context {K : realDomainType (* TODO: generalize to numFieldType*)} {U V : normedModType K}.
 
 Lemma prod_normE (x : U * V) : `|x| = maxr `|x.1| `|x.2|.
 Proof. by []. Qed.
@@ -947,7 +947,7 @@ End prod_NormedModule_realDomainType.
 
 Section prod_NormedModule_realType.
 
-Context {K : realType (* yyy numFieldType*)} {U V : normedModType K}.
+Context {K : realType (* TODO: generalize to numFieldType*)} {U V : normedModType K}.
 
 Lemma ball_prod_normE : ball = ball_ (@normr _ [normedZmodType K of U * V]).
 Proof.
@@ -972,7 +972,7 @@ Canonical prod_normedModType :=
 End prod_NormedModule_realType.
 
 Section example_of_sharing.
-Variables (K : realType (* realFieldType *)).
+Variables (K : realType (* TODO: generalize to realFieldType *)).
 
 Goal forall m n (M N : 'M[K]_(m.+1, n.+1)),
   `|M + N| <= `|M| + `|N|.
@@ -989,7 +989,7 @@ End example_of_sharing.
 
 Section prod_NormedModule_lemmas.
 
-Context {T : Type} {K : realType (* yyy numFieldType *)} {U : normedModType K}
+Context {T : Type} {K : realType (* TODO: generalize to numFieldType *)} {U : normedModType K}
                    {V : normedModType K}.
 
 Lemma flim_norm2P {F : set (set U)} {G : set (set V)}
@@ -1056,7 +1056,7 @@ exact: (@locally_filter [topologicalType of K'^o]).
 Qed.
 
 Section NVS_continuity1.
-Context {K : realType (*yyy numFieldType*)} {V : normedModType K}.
+Context {K : realType (* TODO: generalize to numFieldType*)} {V : normedModType K}.
 Local Notation "'+oo'" := (@ERPInf K).
 
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
@@ -1117,7 +1117,7 @@ End limit_composition.
 
 Section limit_composition_realType.
 
-Context {K : realType(*yyy numFieldTYpe*)} {V : normedModType K} {T : topologicalType}.
+Context {K : realType(* TODO: generalize to numFieldTYpe*)} {V : normedModType K} {T : topologicalType}.
 
 Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
   (k : K^o) (a : V) :
@@ -1418,7 +1418,7 @@ Grab Existential Variables. all: end_near. Qed.
 End cvg_seq_bounded.
 
 Section some_sets.
-Variable R : realType (* yyy numFieldType *).
+Variable R : realType (* TODO: generalize to numFieldType *).
 
 (** Some open sets of [R] *)
 
@@ -1611,7 +1611,7 @@ Qed.
 
 End segment.
 
-Lemma ler0_addgt0P (R : realType (*yyy numFieldType*)) (x : R) :
+Lemma ler0_addgt0P (R : realType (* TODO: generalize to numFieldType*)) (x : R) :
   reflect (forall e, e > 0 -> x <= e) (x <= 0).
 Proof.
 apply: (iffP idP) => [lex0 e egt0|lex0].
@@ -1682,7 +1682,7 @@ Grab Existential Variables. all: end_near. Qed.
 (** Local properties in [R] *)
 
 (* NB: this is a proof that was in Rbar and that has been ported to {ereal _} *)
-Lemma lt_ereal_locally (R : realType (* yyy numFieldType *)) (a b : {ereal R}) (x : R) :
+Lemma lt_ereal_locally (R : realType (* TODO: generalize to numFieldType *)) (a b : {ereal R}) (x : R) :
   lt_ereal a x%:E -> lt_ereal x%:E b ->
   exists delta : {posnum R},
     forall y, `|y - x| < delta%:num -> lt_ereal a y%:E && lt_ereal y%:E b.
@@ -1704,7 +1704,7 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - by exists 1%:pos.
 Qed.
 
-Lemma locally_interval (R : realType (* yyy numFieldType *) ) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
+Lemma locally_interval (R : realType (* TODO: generalize to numFieldType *) ) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
   lt_ereal a x%:E -> lt_ereal x%:E b ->
   (forall y : R, lt_ereal a y%:E -> lt_ereal y%:E b -> P y) ->
   locally x P.
@@ -1863,7 +1863,7 @@ Qed.
 (* Qed. *)
 
 Section bounded.
-Variable K : realType (* yyy numFieldType *).
+Variable K : realType (* TODO: generalize to numFieldType *).
 Definition bounded (V : normedModType K) (A : set V) :=
   \forall M \near +oo, A `<=` [set x | `|x| < M].
 End bounded.
@@ -1965,7 +1965,7 @@ Qed.
 (** Open sets in [Rbar] *)
 
 Section open_sets_in_Rbar.
-Variable R : realType (* yyy numFieldType *).
+Variable R : realType (* TODO: generalize to numFieldType *).
 
 Lemma open_ereal_lt y : open [set u : R^o | lt_ereal u%:E y].
 Proof.
