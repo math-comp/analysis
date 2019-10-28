@@ -358,25 +358,45 @@ Qed.
 
 End Locally'.
 
-Lemma ler_addgt0Pr (R : realFieldType(* TODO: generalize to numFieldType*)) (x y : R) :
-  reflect (forall e, e > 0 -> x <= y + e) (x <= y).
+Section TODO_will_be_moved_to_PR270.
+Variable R : numDomainType.
+Implicit Types x y z : R.
+
+Lemma comparabler0 x : (x >=< 0)%R = (x \is Num.real).
+Proof. by rewrite comparable_sym. Qed.
+
+Lemma subr_comparable0 x y : (x - y >=< 0)%R = (x >=< y)%R.
+Proof. by rewrite /Order.comparable subr_ge0 subr_le0. Qed.
+
+Lemma comparablerE x y : (x >=< y)%R = (x - y \is Num.real).
+Proof. by rewrite -comparabler0 subr_comparable0. Qed.
+
+Lemma comparabler_trans y x z : (x >=< y)%O -> (y >=< z)%O -> (x >=< z)%O.
+Proof.
+rewrite !comparablerE => xBy_real yBz_real.
+by have := realD xBy_real yBz_real; rewrite addrA addrNK.
+Qed.
+End TODO_will_be_moved_to_PR270.
+
+Lemma ler_addgt0Pr (R : numFieldType) (x y : R) :
+   reflect (forall e, e > 0 -> x <= y + e) (x <= y).
 Proof.
 apply/(iffP idP)=> [lexy _/posnumP[e] | lexye]; first by rewrite ler_paddr.
-case: (leP x y) => // ltyx.
-have /midf_lt [_] := ltyx; rewrite ltNge -eqbF_neg => /eqP<-.
-suff -> : (y + x) / 2 = y + (x - y) / 2.
-  by apply/lexye/divr_gt0 => //; rewrite subr_gt0.
-by rewrite !mulrDl addrC -mulN1r -mulrA mulN1r [RHS]addrC {3}(splitr y)
-  [RHS]GRing.subrKA.
+have [||ltyx]// := comparable_leP.
+  rewrite (@comparabler_trans _ (y + 1))// /Order.comparable ?lexye//.
+  by rewrite ler_addl ler01 orbT.
+have /midf_lt [_] := ltyx; rewrite le_gtF//.
+by rewrite -(@addrK _ y y) addrAC -addrA 2!mulrDl -splitr lexye// divr_gt0//
+  subr_gt0.
 Qed.
 
-Lemma ler_addgt0Pl (R : realFieldType(* TODO: generalize to numFieldType*)) (x y : R) :
+Lemma ler_addgt0Pl (R : numFieldType) (x y : R) :
   reflect (forall e, e > 0 -> x <= e + y) (x <= y).
 Proof.
 by apply/(equivP (ler_addgt0Pr x y)); split=> lexy e /lexy; rewrite addrC.
 Qed.
 
-Lemma in_segment_addgt0Pr (R : realFieldType(*TODO: generalize to numFieldType*)) (x y z : R) :
+Lemma in_segment_addgt0Pr (R : numFieldType) (x y z : R) :
   reflect (forall e, e > 0 -> y \in `[(x - e), (z + e)]) (y \in `[x, z]).
 Proof.
 apply/(iffP idP)=> [xyz _/posnumP[e] | xyz_e].
@@ -386,7 +406,7 @@ rewrite inE/=; apply/andP.
 by split; apply/ler_addgt0Pr => ? /xyz_e /andP /= []; rewrite ler_subl_addr.
 Qed.
 
-Lemma in_segment_addgt0Pl (R : realType(*generalize to numFieldType*)) (x y z : R) :
+Lemma in_segment_addgt0Pl (R : numFieldType) (x y z : R) :
   reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]) (y \in `[x, z]).
 Proof.
 apply/(equivP (in_segment_addgt0Pr x y z)).
