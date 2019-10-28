@@ -1635,14 +1635,15 @@ Qed.
 
 End segment.
 
-Lemma ler0_addgt0P (R : realFieldType (* TODO: generalize to numFieldType*)) (x : R) :
+Lemma ler0_addgt0P (R : numFieldType) (x : R) :
   reflect (forall e, e > 0 -> x <= e) (x <= 0).
 Proof.
-apply: (iffP idP) => [lex0 e egt0|lex0].
-  by apply: le_trans lex0 _; apply: ltW.
-case: (lerP x 0) => // lt0x.
-have /midf_lt [_] := lt0x; rewrite ltNge -eqbF_neg => /eqP<-.
-by rewrite add0r; apply: lex0; rewrite -[x]/((PosNum lt0x)%:num).
+apply: (iffP idP) => [lex0 e egt0|lex0]; first by rewrite (le_trans lex0)// ltW.
+have [|//|x0] := comparable_leP.
+  by rewrite (@comparabler_trans _ 1)// /Order.comparable ?lex0// ler01 orbT.
+have : x <= x / 2 by rewrite lex0// divr_gt0.
+rewrite {1}(splitr x) ger_addl pmulr_lle0 // => /(lt_le_trans x0);
+  by rewrite ltxx.
 Qed.
 
 Lemma IVT (R : realType) (f : R^o -> R^o) (a b v : R^o) :
