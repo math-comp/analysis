@@ -131,7 +131,7 @@ Fact ereal_display : unit. Proof. by []. Qed.
 
 Canonical ereal_porderType :=
   POrderType ereal_display {ereal R} ereal_porderMixin.
-Canonical ereal_latticeType := LatticeType {ereal R} ereal_porderMixin.
+Canonical ereal_latticeType := DistrLatticeType {ereal R} ereal_porderMixin.
 Canonical ereal_totalType := OrderType {ereal R} ereal_porderMixin.
 
 End ERealOrder.

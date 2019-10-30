@@ -254,7 +254,7 @@ move=> x y; case: (Rle_lt_dec x y) => [/RleP -> //|/Rlt_le/RleP ->];
   by rewrite orbT.
 Qed.
 
-Canonical R_latticeType := LatticeType R R_total.
+Canonical R_latticeType := DistrLatticeType R R_total.
 Canonical R_orderType := OrderType R R_total.
 Canonical R_realDomainType := [realDomainType of R].
 Canonical R_realFieldType := [realFieldType of R].

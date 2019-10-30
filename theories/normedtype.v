@@ -824,7 +824,7 @@ Arguments flim_norm {_ _ F FF}.
 
 Section NormedModule_realFieldType.
 
-Context {T : Type} {K : realFieldType(* TODO: generalize to numFieldType*)} {V : normedModType K}.
+Context {T : Type}  {K : numFieldType} (* {K : realFieldType(* TODO: generalize to numFieldType*)} *) {V : normedModType K}. 
 
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
@@ -833,7 +833,8 @@ move=> /flim_norm Fy; exists `|y| => M.
 rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
 rewrite (le_lt_trans _ yy') //.
-by rewrite (le_trans _ (ler_dist_dist _ _)) // distrC ler_norm.
+rewrite (le_trans _ (ler_dist_dist _ _)) // distrC real_ler_norm // -comparablerE.
+apply: real_comparable; apply:normr_real .
 Qed.
 
 End NormedModule_realFieldType.
