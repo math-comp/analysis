@@ -442,14 +442,14 @@ Let R_topologicalType := [topologicalType of R^o].
 Definition ereal_locally' (a : {ereal R}) (P : R -> Prop) :=
   match a with
     | a%:E => @locally' R_topologicalType a P
-    | +oo => exists M, forall x, (M < x)%O -> P x
-    | -oo => exists M, forall x, (x < M)%O -> P x
+    | +oo => exists M, M \is Num.real /\ forall x, (M < x)%O -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, (x < M)%O -> P x
   end.
 Definition ereal_locally (a : {ereal R}) (P : R -> Prop) :=
   match a with
     | a%:E => @locally _ R_topologicalType a P
-    | +oo => exists M, forall x, (M < x)%O -> P x
-    | -oo => exists M, forall x, (x < M)%O -> P x
+    | +oo => exists M, M \is Num.real /\ forall x, (M < x)%O -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, (x < M)%O -> P x
   end.
 
 (*Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.*)
@@ -457,25 +457,86 @@ Canonical ereal_pointed := PointedType {ereal R} (+oo).
 Canonical ereal_filter := FilteredType R {ereal R} (ereal_locally).
 End ereal_locally.
 
-Section ereal_locally_realFieldType.
-Context {R : realFieldType(* TODO: generalize to numFieldType*)}.
+Section tmp.
+Context {R : numFieldType}.
+Implicit Types (x : R) (y z : {posnum R}).
+
+Lemma ltUx_pos x y z : (maxr y z)%:num < x = (y%:num < x) && (z%:num < x).
+Proof.
+case: (lcomparable_ltgtP (comparableT y z)) => [?|?|<-]; last by rewrite andbb.
+rewrite andb_idl //; exact/lt_trans.
+rewrite andb_idr //; exact/lt_trans.
+Qed.
+
+End tmp.
+
+Section ereal_locally_numFieldType.
+Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
 
 Global Instance ereal_locally'_filter : forall x : {ereal R}, ProperFilter (ereal_locally' x).
 Proof.
 case=> [x||]; first exact: Proper_locally'_numFieldType.
   apply Build_ProperFilter.
-    by move=> P [M gtMP]; exists (M + 1); apply: gtMP; rewrite ltr_addl.
-  split=> /= [|P Q [MP gtMP] [MQ gtMQ] |P Q sPQ [M gtMP]]; first by exists 0.
-    by exists (maxr MP MQ) => ?; rewrite ltUx => /andP [/gtMP ? /gtMQ].
-  by exists M => ? /gtMP /sPQ.
+    by move=> P [M [Mreal gtMP]]; exists (M + 1); apply gtMP; rewrite ltr_addl.
+  split=> /= [|P Q [MP [MPreal gtMP]] [MQ [MQreal gtMQ]] |P Q sPQ [M [Mreal gtM]]].
+  - by exists 0; rewrite real0.
+  - have [/eqP MP0|MP0] := boolP (MP == 0).
+      have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+        by exists 0; rewrite real0; split => // x x0; split;
+        [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
+      exists `|MQ|; rewrite realE normr_ge0; split => // x Hx; split.
+        by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0.
+      by apply gtMQ; rewrite (le_lt_trans _ Hx) // real_ler_normr // lexx.
+    have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+      exists `|MP|; rewrite realE normr_ge0; split => // x MPx; split.
+      by apply gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
+      by apply gtMQ; rewrite (le_lt_trans _ MPx) // MQ0.
+    have {MP0}MP0 : 0 < `|MP| by rewrite normr_gt0.
+    have {MQ0}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
+    exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
+    rewrite realE /= posnum_ge0 /=; split => // x.
+    rewrite ltUx_pos /= => /andP[MPx MQx]; split.
+    by apply/gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
+    by apply/gtMQ; rewrite (le_lt_trans _ MQx) // real_ler_normr // lexx.
+  - by exists M; split => // ? /gtM /sPQ.
 apply Build_ProperFilter.
-  by move=> P [M ltMP]; exists (M - 1); apply: ltMP; rewrite gtr_addl oppr_lt0.
-split=> /= [|P Q [MP ltMP] [MQ ltMQ] |P Q sPQ [M ltMP]]; first by exists 0.
-  by exists (minr MP MQ) => ?; rewrite ltxI => /andP [/ltMP ? /ltMQ].
-by exists M => ? /ltMP /sPQ.
+  by move=> P [M [Mreal ltMP]]; exists (M - 1); apply: ltMP; rewrite gtr_addl oppr_lt0.
+split=> /= [|P Q [MP [MPreal ltMP]] [MQ [MQreal ltMQ]] |P Q sPQ [M [Mreal ltM]]].
+  - by exists 0; rewrite real0.
+  - have [/eqP MP0|MP0] := boolP (MP == 0).
+      have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+        by exists 0; rewrite real0; split => // x x0; split;
+        [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
+      exists (- `|MQ|); rewrite realN realE normr_ge0; split => // x xMQ; split.
+      apply ltMP.
+      by rewrite (lt_le_trans xMQ) // MP0 ler_oppl oppr0.
+      apply ltMQ.
+      by rewrite (lt_le_trans xMQ) // ler_oppl -normrN real_ler_normr ?realN // lexx.
+    have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+      exists (- `|MP|); rewrite realN realE normr_ge0; split => // x MPx; split.
+      by apply ltMP; rewrite (lt_le_trans MPx) // ler_oppl -normrN real_ler_normr ?realN // lexx.
+      apply ltMQ.
+      by rewrite (lt_le_trans MPx) // MQ0 ler_oppl oppr0.
+    have {MP0}MP0 : 0 < `|MP| by rewrite normr_gt0.
+    have {MQ0}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
+    exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
+    rewrite realN realE /= posnum_ge0 /=; split => // x.
+    rewrite ltr_oppr ltUx_pos => /andP[MPx MQx]; split.
+    apply/ltMP.
+    rewrite ltr_oppr in MPx.
+    by rewrite (lt_le_trans MPx) //= ler_oppl -normrN real_ler_normr ?realN // lexx.
+    apply/ltMQ.
+    rewrite ltr_oppr in MQx.
+    by rewrite (lt_le_trans MQx) //= ler_oppl -normrN real_ler_normr ?realN // lexx.
+by exists M; split => // x /ltM /sPQ.
 Qed.
 Typeclasses Opaque ereal_locally'.
+End ereal_locally_numFieldType.
+
+Section ereal_locally_realFieldType.
+Context {R : realFieldType(* TODO: generalize to numFieldType*)}.
+Let R_topologicalType := [topologicalType of R^o].
 
 Global Instance ereal_locally_filter : forall x, ProperFilter (@ereal_locally R x).
 Proof.
@@ -489,14 +550,16 @@ Typeclasses Opaque ereal_locally.
 Lemma near_pinfty_div2 (A : set R) :
   (\forall k \near +oo, A k) -> (\forall k \near +oo, A (k / 2)).
 Proof.
-by move=> [M AM]; exists (M * 2) => x; rewrite -ltr_pdivl_mulr //; apply: AM.
+move=> [M [Mreal AM]]; exists (M * 2); split.
+  by rewrite realM // realE; apply/orP; left.
+by move=> x; rewrite -ltr_pdivl_mulr //; apply: AM.
 Qed.
 
 Lemma locally_pinfty_gt (c : R) : \forall x \near +oo, c < x.
-Proof. by exists c. Qed.
+Proof. by exists c; split => //; rewrite Num.Internals.num_real. Qed.
 
 Lemma locally_pinfty_ge (c : R) : \forall x \near +oo, c <= x.
-Proof. by exists c; apply: ltW. Qed.
+Proof. by exists c; rewrite Num.Internals.num_real; split => //; apply: ltW. Qed.
 
 Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
@@ -829,7 +892,7 @@ Context {T : Type}  {K : numFieldType} (* {K : realFieldType(* TODO: generalize 
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof.
-move=> /flim_norm Fy; exists `|y| => M.
+move=> /flim_norm Fy; exists `|y|; rewrite normr_real; split => // M.
 rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
 rewrite (le_lt_trans _ yy') //.
@@ -1097,7 +1160,7 @@ have zM : `|z| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
 rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW//.
 rewrite -ltr_pdivl_mulr ?(le_lt_trans _ zM) //.
 near: l; apply: (flim_norm (_ : K^o)) => //.
-by rewrite divr_gt0 //; near: M; exists 0. (*NB(rei): the last three lines used to be one *)
+by rewrite divr_gt0 //; near: M; exists 0; rewrite real0. (*NB(rei): the last three lines used to be one *)
 Grab Existential Variables. all: end_near. Qed.
 
 Arguments scale_continuous _ _ : clear implicits.
@@ -1894,6 +1957,24 @@ Definition bounded (V : normedModType K) (A : set V) :=
   \forall M \near +oo, A `<=` [set x | `|x| < M].
 End bounded.
 
+(* TODO: move *)
+Lemma maxr_real (K : realDomainType) (x y : K) :
+  x \is Num.real -> y \is Num.real -> maxr x y \is Num.real.
+Proof.
+by rewrite !realE => /orP[|] x0 /orP[|] y0; rewrite lexU leUx x0 y0 !(orbT,orTb).
+Qed.
+
+(* TODO: move *)
+Lemma bigmaxr_real (K : realDomainType) x (s : seq K) :
+  x \is Num.real ->
+  (forall x, x \in s -> x \is Num.real) ->
+  bigmaxr x s \is Num.real.
+Proof.
+elim: s x => // h [|h' t] ih x ? H.
+by rewrite bigmaxr_un H // inE.
+by rewrite bigmaxr_cons maxr_real.
+Qed.
+
 Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
   compact A -> bounded A.
 Proof.
@@ -1907,7 +1988,9 @@ have /Aco [] := covA.
   rewrite -ball_normE /= ltr_subr_addr distrC; apply: le_lt_trans.
   by rewrite -{1}(subrK p q) ler_norm_add.
 move=> D _ DcovA.
-exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]).
+exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]); rewrite bigmaxr_real ?real0 //=; last first.
+  by move=> x /mapP[/= i iD ->]; rewrite realz.
+split => //.
 move=> x ltmaxx p /DcovA [n Dn /lt_trans]; apply; apply: le_lt_trans ltmaxx.
 have ltin : (index n (enum_fset D) < size (enum_fset D))%N by rewrite index_mem.
 rewrite -(nth_index 0 Dn) -(nth_map _ 0) //; apply: bigmaxr_ler.
@@ -1974,7 +2057,7 @@ Qed.
 Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R^o]_n.+1) :
   bounded A -> closed A -> compact A.
 Proof.
-move=> [M normAltM] Acl.
+move=> [M [Mreal normAltM]] Acl.
 have Mnco : compact
   [set v : 'rV[R^o]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
   apply: (@rV_compact [topologicalType of R^o] _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
@@ -2013,18 +2096,18 @@ Lemma open_ereal_lt' x y : lt_ereal x y -> ereal_locally x (fun u : R => lt_erea
 Proof.
 case: x => [x|//|] xy; first exact: open_ereal_lt.
 case: y => [y||//] /= in xy *.
-exists y => /= x ? //.
+exists y; rewrite num_real; split => //= x ? //.
 by exists 0.
 case: y => [y||//] /= in xy *.
-exists y => /= x ? //.
-by exists 0.
+exists y; rewrite num_real; split => //= x ? //.
+by exists 0; rewrite real0.
 Qed.
 
 Lemma open_ereal_gt' x y : lt_ereal y x -> ereal_locally x (fun u : R => lt_ereal y u%:E).
 Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
-  case: y => [y||] //=; do ?by exists 0.
-by exists y => x yx //=.
+  case: y => [y||] //=; do ?by exists 0; rewrite real0.
+by exists y; rewrite num_real.
 Qed.
 
 Lemma ereal_locally'_le (x : {ereal R}) : ereal_locally' x --> ereal_locally x.
@@ -2054,7 +2137,7 @@ Lemma flim_ereal_loc_seq (R : realType) (x : {ereal R}) :
 (*TODO(notation issue): was ereal_loc_seq x --> ereal_locally' x *)
 Proof.
 move=> P; rewrite /ereal_loc_seq.
-case: x => /= [x [_/posnumP[delta] Hp] |[delta Hp] |[delta Hp]]; last 2 first.
+case: x => /= [x [_/posnumP[delta] Hp] |[delta [deltareal Hp]] |[delta [deltareal Hp]]]; last 2 first.
     have /ZnatP [N Nfloor] : ifloor (maxr delta 0) \is a Znat.
       by rewrite Znat_def ifloor_ge0 lexU lexx orbC.
     exists N.+1 => // n ltNn; apply: Hp.

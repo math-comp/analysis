@@ -23,5 +23,5 @@ theories/altreals/distr.v
 
 -R theories mathcomp.analysis
 -R ../finmap mathcomp.finmap
--R ../math-comp/mathcomp mathcomp
+-R ../math-comp/order/mathcomp mathcomp
 -R ../bigenough mathcomp.bigenough

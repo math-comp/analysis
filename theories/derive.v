@@ -159,7 +159,7 @@ move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; near=> k; rewrite /cst [`|1 : R^o|]normr1 mulr1.
   near=> y; rewrite ltW //; near: y; apply/locally_normP.
-  by exists k; [near: k; exists 0|move=> ? /=; rewrite sub0r normrN].
+  by exists k; [near: k; exists 0; rewrite real0|move=> ? /=; rewrite sub0r normrN].
 rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
 by apply/eqolim0P; apply: (flim_trans (dfc 0)); rewrite linear0.
 Grab Existential Variables. all: end_near. Qed.
@@ -1296,7 +1296,7 @@ move=> leab fcont; set imf := [pred t | t \in f @` [set x | x \in `[a, b]]].
 have imf_sup : has_sup imf.
   apply/has_supP; split.
     by exists (f a); rewrite !inE; apply/asboolP/imageP; rewrite inE/= lexx.
-  have [M imfltM] : bounded (f @` [set x | x \in `[a, b]] : set R^o).
+  have [M [Mreal imfltM]] : bounded (f @` [set x | x \in `[a, b]] : set R^o).
     apply/compact_bounded/continuous_compact; last exact: segment_compact.
     by move=> ?; rewrite inE => /asboolP /fcont.
   exists (M + 1); apply/ubP => y; rewrite !inE => /asboolP /imfltM yltM.
@@ -1315,7 +1315,7 @@ have invf_cont : {in `[a, b], continuous (fun t => 1 / (sup imf - f t) : R^o)}.
   move=> t tab; apply: (@lim_inv _ [topologicalType of R^o]).
     by rewrite neq_lt subr_gt0 orbC imf_ltsup.
   by apply: lim_add; [apply: continuous_cst|apply: lim_opp; apply:fcont].
-have [M imVfltM] : bounded ((fun t => 1 / (sup imf - f t)) @`
+have [M [Mreal imVfltM]] : bounded ((fun t => 1 / (sup imf - f t)) @`
   [set x | x \in `[a, b]] : set R^o).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
   by move=> ?; rewrite inE => /asboolP /invf_cont.
