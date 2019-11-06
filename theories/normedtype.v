@@ -1787,14 +1787,12 @@ Proof.
 by rewrite !realE => /orP[|] x0 /orP[|] y0; rewrite lexU leUx x0 y0 !(orbT,orTb).
 Qed.
 
-Lemma bigmaxr_real (K : realDomainType) x (s : seq K) :
+Lemma bigmaxr_real (K : realDomainType) (R : choiceType) (x : K) (D : seq R) (f : R -> K):
   x \is Num.real ->
-  (forall x, x \in s -> x \is Num.real) ->
-  bigmaxr x s \is Num.real.
+  (forall x, x \in D -> f x \is Num.real) ->
+  \big[maxr/x]_(n <- D) f n \is Num.real.
 Proof.
-elim: s x => // h [|h' t] ih x ? H.
-by rewrite bigmaxr_un H // inE.
-by rewrite bigmaxr_cons maxr_real.
+move=> ?; elim/big_ind : _ => // *; by [rewrite maxr_real | rewrite num_real].
 Qed.
 
 End TODO_add_to_ssrnum.
@@ -2288,13 +2286,11 @@ have /Aco [] := covA.
   rewrite -ball_normE /= ltr_subr_addr distrC; apply: le_lt_trans.
   by rewrite -{1}(subrK p q) ler_norm_add.
 move=> D _ DcovA.
-exists (bigmaxr 0 [seq n%:~R | n <- enum_fset D]); rewrite bigmaxr_real ?real0 //=; last first.
-  by move=> x /mapP[/= i iD ->]; rewrite realz.
-split => //.
+exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
+rewrite bigmaxr_real ?real0 //; split => //.
 move=> x ltmaxx p /DcovA [n Dn /lt_trans]; apply; apply: le_lt_trans ltmaxx.
-have ltin : (index n (enum_fset D) < size (enum_fset D))%N by rewrite index_mem.
-rewrite -(nth_index 0 Dn) -(nth_map _ 0) //; apply: bigmaxr_ler.
-by rewrite size_map.
+have {} : n \in enum_fset D by [].
+rewrite enum_fsetE => /mapP[/= i iD ->]; exact/ler_bigmaxr.
 Qed.
 
 Lemma rV_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
