@@ -457,8 +457,8 @@ Canonical ereal_pointed := PointedType {ereal R} (+oo).
 Canonical ereal_filter := FilteredType R {ereal R} (ereal_locally).
 End ereal_locally.
 
-Section tmp.
-Context {R : numFieldType}.
+Section TODO_add_to_posnum.
+Context {R : numDomainType}.
 Implicit Types (x : R) (y z : {posnum R}).
 
 Lemma ltUx_pos x y z : (maxr y z)%:num < x = (y%:num < x) && (z%:num < x).
@@ -467,8 +467,7 @@ case: (lcomparable_ltgtP (comparableT y z)) => [?|?|<-]; last by rewrite andbb.
 rewrite andb_idl //; exact/lt_trans.
 rewrite andb_idr //; exact/lt_trans.
 Qed.
-
-End tmp.
+End TODO_add_to_posnum.
 
 Section ereal_locally_numFieldType.
 Context {R : numFieldType}.
@@ -839,6 +838,23 @@ move=> f_prop f_l; apply: get_unique => // l' f_l'.
 exact: flimi_unique _ f_l' f_l.
 Qed.
 
+Lemma flim_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> \forall M \near +oo, M \is Num.real /\ \forall y' \near F, `|y'| < M.
+Proof.
+move=> /flim_norm Fy; exists `|y|; rewrite normr_real; split => // M.
+rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
+move=> H.
+split.
+  rewrite -comparabler0 (@comparabler_trans _ (M - `|y|)) //.
+  by rewrite -subr_comparable0 opprD addrA subrr add0r opprK comparabler0 normr_real.
+  by rewrite comparablerE subr0 realE ltW.
+move: H.
+apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
+rewrite (le_lt_trans _ yy') // (le_trans _ (ler_dist_dist _ _)) // distrC.
+by rewrite real_ler_norm // realB.
+Qed.
+
+(* TODO: use flim_bounded_real *)
 Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof.
@@ -1468,23 +1484,98 @@ rewrite near_simpl; have := fx0 _ [gt0 of e%:num]; rewrite near_simpl.
 by apply: filterS => x; rewrite !sub0r !normrN [ `|_| ]ger0_norm.
 Qed.
 
+Reserved Notation "'{nonneg' R }" (at level 0, format "'{nonneg'  R }").
+Reserved Notation "x %:nnnum" (at level 0, format "x %:nnnum").
+Section nonnegative_numbers.
+
+Record nonnegnum_of (R : numDomainType) (phR : phant R) := NonnegNumDef {
+  num_of_nonneg : R ;
+  nonnegnum_ge0 :> num_of_nonneg >= 0
+}.
+Local Notation "'{nonneg' R }" := (nonnegnum_of (@Phant R)).
+Definition NonnegNum (R : numDomainType) x x_ge0 : {nonneg R} :=
+  @NonnegNumDef _ (Phant R) x x_ge0.
+Local Notation "x %:nnnum" := (num_of_nonneg x) : ring_scope.
+
+Variable (R : numDomainType).
+
+Canonical nonnegnum_subType := [subType for @num_of_nonneg R (Phant R)].
+Definition nonnegnum_eqMixin := [eqMixin of {nonneg R} by <:].
+Canonical nonnegnum_eqType := EqType {nonneg R} nonnegnum_eqMixin.
+Definition nonnegnum_choiceMixin := [choiceMixin of {nonneg R} by <:].
+Canonical nonnegnum_choiceType := ChoiceType {nonneg R} nonnegnum_choiceMixin.
+Definition nonnegnum_porderMixin := [porderMixin of {nonneg R} by <:].
+Canonical nonnegnum_porderType :=
+  POrderType ring_display {nonneg R} nonnegnum_porderMixin.
+
+Lemma nonnegnum_le_total : totalPOrderMixin [porderType of {nonneg R}].
+Proof. by move=> x y; apply/real_comparable; apply/ger0_real/nonnegnum_ge0. Qed.
+
+Canonical nonnegnum_latticeType := DistrLatticeType {nonneg R} nonnegnum_le_total.
+Canonical nonnegnum_orderType := OrderType {nonneg R} nonnegnum_le_total.
+
+Definition nonneg_0 : {nonneg R} := NonnegNum (lexx 0).
+
+Definition nonneg_abs (x : R) : {nonneg R} := NonnegNum (@mc_1_9.Num.Theory.normr_ge0 _ x).
+Definition nonneg_norm (V : normedModType R) (x : V) : {nonneg R} := NonnegNum (@normr_ge0 _ V x).
+
+End nonnegative_numbers.
+Notation "'{nonneg' R }" := (nonnegnum_of (@Phant R)).
+Notation "x %:nnnum" := (num_of_nonneg x) : ring_scope.
+
+Section TODO_add_to_nonnegnum.
+Context {R : numDomainType}.
+Implicit Types (x : R) (y z : {nonneg R}).
+
+Lemma lexU_nonneg x y z : x <= (maxr y z)%:nnnum = (x <= y%:nnnum) || (x <= z%:nnnum).
+Proof.
+case: (lcomparable_ltgtP (comparableT y z)) => [?|?|<-]; last by rewrite orbb.
+rewrite orb_idl // => /le_trans; apply; exact/ltW.
+rewrite orb_idr // => /le_trans; apply; exact/ltW.
+Qed.
+
+End TODO_add_to_nonnegnum.
+
+Section TODO_add_to_ssrnum.
+
+Lemma maxr_real (K : realDomainType) (x y : K) :
+  x \is Num.real -> y \is Num.real -> maxr x y \is Num.real.
+Proof.
+by rewrite !realE => /orP[|] x0 /orP[|] y0; rewrite lexU leUx x0 y0 !(orbT,orTb).
+Qed.
+
+Lemma bigmaxr_real (K : realDomainType) x (s : seq K) :
+  x \is Num.real ->
+  (forall x, x \in s -> x \is Num.real) ->
+  bigmaxr x s \is Num.real.
+Proof.
+elim: s x => // h [|h' t] ih x ? H.
+by rewrite bigmaxr_un H // inE.
+by rewrite bigmaxr_cons maxr_real.
+Qed.
+
+End TODO_add_to_ssrnum.
+
 Section cvg_seq_bounded.
-Context {K : realFieldType (* TODO: generalize to numFieldType *) }.
+Context {K : numFieldType}.
 Local Notation "'+oo'" := (@ERPInf K).
 
 (* TODO: simplify using extremumP when PR merged in mathcomp *)
 Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
   [cvg a in V] -> {M | forall n, normr (a n) <= M}.
 Proof.
-move=> a_cvg; suff: exists M, forall n, normr (a n) <= M.
-  by move=> /(@getPex [pointedType of K^o]); set M := get _; exists M.
+move=> a_cvg; suff: exists M, M \is Num.real /\ forall n, normr (a n) <= M.
+  by move=> /(@getPex [pointedType of K^o]) [?]; set M := get _; exists M.
 near +oo => M.
-have [//|N _ /(_ _ _) /ltW a_leM] := !! near (flim_bounded _ a_cvg) M.
-exists (maxr M (\big[maxr/M]_(n < N) `|a (val (rev_ord n))|)) => /= n.
-rewrite lexU; have [nN|nN] := leqP N n; first by rewrite a_leM.
+have [//|Mreal [N _ /(_ _ _) /ltW a_leM]] := !! near (flim_bounded_real a_cvg) M.
+exists (maxr (nonneg_abs M) (\big[maxr/(nonneg_0 K)]_(n < N)
+    (NonnegNum (nonneg_norm (a (val (rev_ord n)))))))%:nnnum.
+split => [|/= n]; first by rewrite realE lexU_nonneg normr_ge0.
+rewrite lexU_nonneg; have [nN|nN] := leqP N n.
+  by rewrite (@le_trans _ _ M) //=; [exact: a_leM | rewrite real_ler_norm].
 apply/orP; right => {a_leM}; elim: N n nN=> //= N IHN n.
 rewrite leq_eqVlt => /orP[/eqP[->] |/IHN a_le];
-by rewrite big_ord_recl subn1 /= lexU ?a_le ?lexx ?orbT.
+by rewrite big_ord_recl subn1 /= lexU_nonneg ?a_le ?lexx ?orbT.
 Grab Existential Variables. all: end_near. Qed.
 
 End cvg_seq_bounded.
@@ -1940,24 +2031,6 @@ Variable K : numFieldType.
 Definition bounded (V : normedModType K) (A : set V) :=
   \forall M \near +oo, A `<=` [set x | `|x| < M].
 End bounded.
-
-(* TODO: move *)
-Lemma maxr_real (K : realDomainType) (x y : K) :
-  x \is Num.real -> y \is Num.real -> maxr x y \is Num.real.
-Proof.
-by rewrite !realE => /orP[|] x0 /orP[|] y0; rewrite lexU leUx x0 y0 !(orbT,orTb).
-Qed.
-
-(* TODO: move *)
-Lemma bigmaxr_real (K : realDomainType) x (s : seq K) :
-  x \is Num.real ->
-  (forall x, x \in s -> x \is Num.real) ->
-  bigmaxr x s \is Num.real.
-Proof.
-elim: s x => // h [|h' t] ih x ? H.
-by rewrite bigmaxr_un H // inE.
-by rewrite bigmaxr_cons maxr_real.
-Qed.
 
 Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
   compact A -> bounded A.
