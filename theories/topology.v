@@ -2639,7 +2639,9 @@ Lemma unif_contP (U V : uniformType R) (f : U -> V) :
     forall x, ball x.1 d x.2 -> ball (f x.1) e (f x.2).
 Proof. exact: filter_fromP. Qed.
 End entourages.
+
 (** ** Specific uniform spaces *)
+
 (** matrices *)
 Section matrix_Uniform.
 Variables (m n : nat) (R : numFieldType) (T : uniformType R).
@@ -2655,6 +2657,7 @@ Proof.
 by move=> xe1_y ye2_z ??; apply: ball_triangle; [apply: xe1_y| apply: ye2_z].
 Qed.
 
+(* TODO: useful? see bigminr_gtrP in normedtype.v *)
 Lemma ltr_bigminr (I : finType) (f : I -> {posnum R}) (x0 x : {posnum R}) :
   x < x0 -> (forall i, x < f i) -> x < \big[Num.min/x0]_i f i.
 Proof.
@@ -2662,6 +2665,7 @@ move=> ltx0 ltxf; elim/big_ind: _ => // y z ltxy ltxz.
 by rewrite ltxI ltxy ltxz.
 Qed.
 
+(* TODO: see bigminr_ler in normedtype.v *)
 Lemma bigminr_ler (I : finType) (*(R : realDomainType)*) (f : I -> {posnum R}) (x0 : {posnum R}) i :
   \big[Num.min/x0]_j f j <= f i.
 Proof.
@@ -2669,6 +2673,7 @@ have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
 by rewrite inE => /orP [/eqP->|/ihl leminlfi];
   rewrite leIx ?lexx // leminlfi orbC.
 Qed.
+
 Canonical R_pointedType := PointedType R 0.
 Lemma mx_locally : locally = locally_ mx_ball.
 Proof.
