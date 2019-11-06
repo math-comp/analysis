@@ -532,11 +532,6 @@ split=> /= [|P Q [MP [MPreal ltMP]] [MQ [MQreal ltMQ]] |P Q sPQ [M [Mreal ltM]]]
 by exists M; split => // x /ltM /sPQ.
 Qed.
 Typeclasses Opaque ereal_locally'.
-End ereal_locally_numFieldType.
-
-Section ereal_locally_realFieldType.
-Context {R : realFieldType(* TODO: generalize to numFieldType*)}.
-Let R_topologicalType := [topologicalType of R^o].
 
 Global Instance ereal_locally_filter : forall x, ProperFilter (@ereal_locally R x).
 Proof.
@@ -555,11 +550,16 @@ move=> [M [Mreal AM]]; exists (M * 2); split.
 by move=> x; rewrite -ltr_pdivl_mulr //; apply: AM.
 Qed.
 
+End ereal_locally_numFieldType.
+
+Section ereal_locally_realFieldType.
+Context {R : realFieldType(* TODO: generalize to numFieldType?*)}.
+
 Lemma locally_pinfty_gt (c : R) : \forall x \near +oo, c < x.
-Proof. by exists c; split => //; rewrite Num.Internals.num_real. Qed.
+Proof. by exists c; split => //; rewrite num_real. Qed.
 
 Lemma locally_pinfty_ge (c : R) : \forall x \near +oo, c <= x.
-Proof. by exists c; rewrite Num.Internals.num_real; split => //; apply: ltW. Qed.
+Proof. by exists c; rewrite num_real; split => //; apply: ltW. Qed.
 
 Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
@@ -682,7 +682,7 @@ Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
 End NormedModule_numDomainType.
 
-Section NormedModule1_numFieldType.
+Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
 
 Local Notation ball_norm := (ball_ (@normr R V)).
@@ -808,7 +808,56 @@ Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
   f @ F --> l -> lim (f @ F) = l.
 Proof. exact: flim_lim. Qed.
 
-End NormedModule1_numFieldType.
+Lemma flimi_unique {T : Type} {F} {FF : ProperFilter F} (f : T -> set V) :
+  {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
+Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
+
+Let locally_simpl :=
+  (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
+
+Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y <-> forall eps, 0 < eps -> \forall y' \near F, `|y - y'| < eps.
+Proof. by rewrite -filter_fromP /= !locally_simpl. Qed.
+
+Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
+  (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
+  F --> y.
+Proof.
+move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
+by apply: normm_leW => //; near: x; apply: cv.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
+Proof. by move=> /flim_normP. Qed.
+
+Lemma flimi_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
+  F (fun x : T => is_prop (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
+Proof.
+move=> f_prop f_l; apply: get_unique => // l' f_l'.
+exact: flimi_unique _ f_l' f_l.
+Qed.
+
+Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
+Proof.
+move=> /flim_norm Fy; exists `|y|; rewrite normr_real; split => // M.
+rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
+apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
+rewrite (le_lt_trans _ yy') // (le_trans _ (ler_dist_dist _ _)) // distrC.
+by rewrite real_ler_norm // realB.
+Qed.
+
+End NormedModule_numFieldType.
+Hint Resolve normr_ge0 : core.
+Arguments flim_norm {_ _ F FF}.
+Arguments flim_bounded {_ _ F FF}.
+
+Module Export LocallyNorm.
+Definition locally_simpl :=
+  (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
+End LocallyNorm.
 
 Section hausdorff.
 
@@ -838,70 +887,11 @@ Qed.
 
 End hausdorff.
 
-Module Export LocallyNorm.
-Definition locally_simpl :=
-  (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
-End LocallyNorm.
-
 Module Export NearNorm.
 Definition near_simpl := (@near_simpl, @locally_normE,
    @filter_from_normE, @near_locally_norm).
 Ltac near_simpl := rewrite ?near_simpl.
 End NearNorm.
-
-Section NormedModule_numFieldType.
-
-Context {T : Type} {K : numFieldType(*absRingType*)} {V : normedModType K}.
-
-Lemma flimi_unique {F} {FF : ProperFilter F} (f : T -> set V) :
-  {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
-Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
-
-Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y <-> forall eps, 0 < eps -> \forall y' \near F, `|y - y'| < eps.
-Proof. by rewrite -filter_fromP /= !locally_simpl. Qed.
-
-Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
-  (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
-  F --> y.
-Proof.
-move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
-by apply: normm_leW => //; near: x; apply: cv.
-Grab Existential Variables. all: end_near. Qed.
-
-Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
-Proof. by move=> /flim_normP. Qed.
-
-Lemma flimi_map_lim {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
-  F (fun x : T => is_prop (f x)) ->
-  f `@ F --> l -> lim (f `@ F) = l.
-Proof.
-move=> f_prop f_l; apply: get_unique => // l' f_l'.
-exact: flimi_unique _ f_l' f_l.
-Qed.
-
-End NormedModule_numFieldType.
-Hint Resolve normr_ge0 : core.
-Arguments flim_norm {_ _ F FF}.
-
-Section NormedModule_realFieldType.
-
-Context {T : Type}  {K : numFieldType} (* {K : realFieldType(* TODO: generalize to numFieldType*)} *) {V : normedModType K}. 
-
-Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
-Proof.
-move=> /flim_norm Fy; exists `|y|; rewrite normr_real; split => // M.
-rewrite -subr_gt0 => subM_gt0; have := Fy _ subM_gt0.
-apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
-rewrite (le_lt_trans _ yy') //.
-rewrite (le_trans _ (ler_dist_dist _ _)) // distrC real_ler_norm // -comparablerE.
-apply: real_comparable; apply:normr_real .
-Qed.
-
-End NormedModule_realFieldType.
-Arguments flim_bounded {_ _ F FF}.
 
 Lemma continuous_flim_norm {R : numFieldType}
   (V W : normedModType R) (f : V -> W) x l :
@@ -1144,7 +1134,7 @@ exact: (@locally_filter [topologicalType of K'^o]).
 Qed.
 
 Section NVS_continuity1.
-Context {K : realFieldType (* TODO: generalize to numFieldType*)} {V : normedModType K}.
+Context {K : numFieldType} {V : normedModType K}.
 Local Notation "'+oo'" := (@ERPInf K).
 
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
@@ -1201,12 +1191,6 @@ Lemma continuousD (f g : T -> V) x :
   {for x, continuous (fun x => f x + g x)}.
 Proof. by move=> ??; apply: lim_add. Qed.
 
-End limit_composition.
-
-Section limit_composition_realFieldType.
-
-Context {K : realFieldType(* TODO: generalize to numFieldTYpe*)} {V : normedModType K} {T : topologicalType}.
-
 Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
   (k : K^o) (a : V) :
   f @ F --> k -> g @ F --> a -> (fun x => (f x) *: (g x)) @ F --> k *: a.
@@ -1246,7 +1230,7 @@ Lemma continuousM (f g : T -> K^o) x :
   {for x, continuous (fun x => f x * g x)}.
 Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
 
-End limit_composition_realFieldType.
+End limit_composition.
 
 (** ** Complete Normed Modules *)
 
