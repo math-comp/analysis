@@ -980,6 +980,148 @@ Qed.
 
 End TODO_add_to_nonnegnum.
 
+Lemma filter_andb I r (a P : pred I) :
+  [seq i <- r | P i && a i] = [seq i <- [seq j <- r | P j] | a i].
+Proof. by elim: r => //= i r ->; case P. Qed.
+
+Module Bigmaxr_nonneg.
+Section bigmaxr_nonneg.
+Variable (R : numDomainType).
+
+Lemma bigmaxr_mkcond I r (P : pred I) (F : I -> {nonneg R}) x :
+  \big[maxr/x]_(i <- r | P i) F i =
+     \big[maxr/x]_(i <- r) (if P i then F i else x).
+Proof.
+rewrite unlock; elim: r x => //= i r ihr x.
+case P; rewrite ihr // join_r //; elim: r {ihr} => //= j r ihr.
+by rewrite lexU ihr orbT.
+Qed.
+
+Lemma bigmaxr_split I r (P : pred I) (F1 F2 : I -> {nonneg R}) x :
+  \big[maxr/x]_(i <- r | P i) (maxr (F1 i) (F2 i)) =
+  maxr (\big[maxr/x]_(i <- r | P i) F1 i) (\big[maxr/x]_(i <- r | P i) F2 i).
+Proof.
+elim/big_rec3: _ => [|i y z _ _ ->]; rewrite ?joinxx //.
+by rewrite joinCA -!joinA joinCA.
+Qed.
+
+(* TODO: move *)
+Lemma filter_andb I r (a P : pred I) :
+  [seq i <- r | P i && a i] = [seq i <- [seq j <- r | P j] | a i].
+Proof. by elim: r => //= i r ->; case P. Qed.
+
+Lemma bigmaxr_idl I r (P : pred I) (F : I -> {nonneg R}) x :
+  \big[maxr/x]_(i <- r | P i) F i = maxr x (\big[maxr/x]_(i <- r | P i) F i).
+Proof.
+rewrite -big_filter; elim: [seq i <- r | P i] => [|i l ihl].
+  by rewrite big_nil joinxx.
+by rewrite big_cons joinCA -ihl.
+Qed.
+
+Lemma bigmaxrID I r (a P : pred I) (F : I -> {nonneg R}) x :
+  \big[maxr/x]_(i <- r | P i) F i =
+  maxr (\big[maxr/x]_(i <- r | P i && a i) F i)
+    (\big[maxr/x]_(i <- r | P i && ~~ a i) F i).
+Proof.
+rewrite -!(big_filter _ (fun _ => _ && _)) !filter_andb !big_filter.
+rewrite ![in RHS](bigmaxr_mkcond _ _ F) !big_filter -bigmaxr_split.
+have eqmax : forall i, P i ->
+  maxr (if a i then F i else x) (if ~~ a i then F i else x) = maxr (F i) x.
+  by move=> i _; case: (a i) => //=; rewrite joinC.
+rewrite [RHS](eq_bigr _ eqmax) -!(big_filter _ P).
+elim: [seq j <- r | P j] => [|j l ihl]; first by rewrite !big_nil.
+by rewrite !big_cons -joinA -bigmaxr_idl ihl.
+Qed.
+
+Lemma bigmaxr_seq1 I (i : I) (F : I -> {nonneg R}) x :
+  \big[maxr/x]_(j <- [:: i]) F j = maxr (F i) x.
+Proof. by rewrite unlock /=. Qed.
+
+Lemma bigmaxr_pred1_eq (I : finType) (i : I) (F : I -> {nonneg R}) x :
+  \big[maxr/x]_(j | j == i) F j = maxr (F i) x.
+Proof. by rewrite -big_filter filter_index_enum enum1 bigmaxr_seq1. Qed.
+
+Lemma bigmaxr_pred1 (I : finType) i (P : pred I) (F : I -> {nonneg R}) x :
+  P =1 pred1 i -> \big[maxr/x]_(j | P j) F j = maxr (F i) x.
+Proof. by move/(eq_bigl _ _)->; apply: bigmaxr_pred1_eq. Qed.
+
+Lemma bigmaxrD1 (I : finType) j (P : pred I) (F : I -> {nonneg R}) x :
+  P j -> \big[maxr/x]_(i | P i) F i
+    = maxr (F j) (\big[maxr/x]_(i | P i && (i != j)) F i).
+Proof.
+move=> Pj; rewrite (bigmaxrID _ (pred1 j)) [in RHS]bigmaxr_idl joinA.
+by congr maxr; apply: bigmaxr_pred1 => i; rewrite /= andbC; case: eqP => //->.
+Qed.
+
+Lemma ler_bigmaxr_cond (I : finType) (P : pred I) (F : I -> {nonneg R}) x i0 :
+  P i0 -> F i0 <= \big[maxr/x]_(i | P i) F i.
+Proof. by move=> Pi0; rewrite (bigmaxrD1 _ _ Pi0) lexU lexx. Qed.
+
+Lemma ler_bigmaxr (I : finType) (F : I -> {nonneg R}) (i0 : I) x :
+  F i0 <= \big[maxr/x]_i F i.
+Proof. exact: ler_bigmaxr_cond. Qed.
+
+Lemma bigmaxr_lerP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
+  reflect (x <= m /\ forall i, P i -> F i <= m)
+    (\big[maxr/x]_(i | P i) F i <= m).
+Proof.
+apply: (iffP idP) => [|[lexm leFm]]; last first.
+  by elim/big_ind: _ => // ??; rewrite leUx =>->.
+rewrite bigmaxr_idl leUx => /andP[-> leFm]; split=> // i Pi.
+by apply: le_trans leFm; apply: ler_bigmaxr_cond.
+Qed.
+
+Lemma bigmaxr_sup (I : finType) i0 (P : pred I) m (F : I -> {nonneg R}) x :
+  P i0 -> m <= F i0 -> m <= \big[maxr/x]_(i | P i) F i.
+Proof. by move=> Pi0 ?; apply: le_trans (ler_bigmaxr_cond _ _ Pi0). Qed.
+
+Lemma bigmaxr_ltrP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
+  reflect (x < m /\ forall i, P i -> F i < m)
+    (\big[maxr/x]_(i | P i) F i < m).
+Proof.
+apply: (iffP idP) => [|[ltxm ltFm]]; last first.
+  by elim/big_ind: _ => // ??; rewrite ltUx =>->.
+rewrite bigmaxr_idl ltUx => /andP[-> ltFm]; split=> // i Pi.
+by apply: le_lt_trans ltFm; apply: ler_bigmaxr_cond.
+Qed.
+
+Lemma bigmaxr_gerP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
+  reflect (m <= x \/ exists2 i, P i & m <= F i)
+  (m <= \big[maxr/x]_(i | P i) F i).
+Proof.
+apply: (iffP idP) => [|[lemx|[i Pi lemFi]]]; last 2 first.
+- by rewrite bigmaxr_idl lexU lemx.
+- by rewrite (bigmaxrD1 _ _ Pi) lexU lemFi.
+rewrite leNgt => /bigmaxr_ltrP /asboolPn.
+rewrite asbool_and negb_and => /orP [/asboolPn/negP|/existsp_asboolPn [i]].
+  by rewrite -leNgt; left.
+by move=> /asboolPn/imply_asboolPn [Pi /negP]; rewrite -leNgt; right; exists i.
+Qed.
+
+Lemma bigmaxr_gtrP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
+  reflect (m < x \/ exists2 i, P i & m < F i)
+  (m < \big[maxr/x]_(i | P i) F i).
+Proof.
+apply: (iffP idP) => [|[ltmx|[i Pi ltmFi]]]; last 2 first.
+- by rewrite bigmaxr_idl ltxU ltmx.
+- by rewrite (bigmaxrD1 _ _ Pi) ltxU ltmFi.
+rewrite ltNge => /bigmaxr_lerP /asboolPn.
+rewrite asbool_and negb_and => /orP [/asboolPn/negP|/existsp_asboolPn [i]].
+  by rewrite -ltNge; left.
+by move=> /asboolPn/imply_asboolPn [Pi /negP]; rewrite -ltNge; right; exists i.
+Qed.
+
+End bigmaxr_nonneg.
+End Bigmaxr_nonneg.
+
+Arguments Bigmaxr_nonneg.bigmaxr_mkcond {R I r}.
+Arguments Bigmaxr_nonneg.bigmaxrID {R I r}.
+Arguments Bigmaxr_nonneg.bigmaxr_pred1 {R I} i {P F}.
+Arguments Bigmaxr_nonneg.bigmaxrD1 {R I} j {P F}.
+Arguments Bigmaxr_nonneg.ler_bigmaxr_cond {R I P F}.
+Arguments Bigmaxr_nonneg.ler_bigmaxr {R I F}.
+Arguments Bigmaxr_nonneg.bigmaxr_sup {R I} i0 {P m F}.
+
 Section Bigmaxr.
 
 Variable (R : realDomainType).
@@ -1023,9 +1165,6 @@ rewrite !bigminr_maxr -oppr_max -bigmaxr_split; congr (- _).
 by apply: eq_bigr => i _; rewrite oppr_min.
 Qed.
 
-Lemma filter_andb I r (a P : pred I) :
-  [seq i <- r | P i && a i] = [seq i <- [seq j <- r | P j] | a i].
-Proof. by elim: r => //= i r ->; case P. Qed.
 
 Lemma bigmaxr_idl I r (P : pred I) (F : I -> R) x :
   \big[maxr/x]_(i <- r | P i) F i = maxr x (\big[maxr/x]_(i <- r | P i) F i).
@@ -1244,6 +1383,18 @@ case: (leP a b) => ab; first by rewrite join_r.
 by rewrite join_l // ltW.
 Qed.
 
+Lemma le_nonnegnum (a : K) (b : {nonneg K}) : nonneg_abs a <= b -> `|a| <= b %:nnnum.
+Proof. by []. Qed.
+
+Lemma ler_mx_norm'_add (x y : 'M[K]_(m, n)) :
+  mx_norm' (x + y) <= addr_nonneg (mx_norm' x) (mx_norm' y).
+Proof.
+apply/Bigmaxr_nonneg.bigmaxr_lerP; split.
+  apply: addr_ge0; exact/nonnegnum_ge0.
+move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
+by apply: ler_add; apply/le_nonnegnum/Bigmaxr_nonneg.ler_bigmaxr.
+Qed.
+
 End mx_norm'.
 
 Section mx_norm.
@@ -1258,14 +1409,9 @@ Lemma mx_normE (x : 'M[K]_(m, n)) :
   mx_norm x = \big[maxr/0]_ij `|x ij.1 ij.2|.
 Proof. by rewrite /mx_norm -bigmaxr_nonneg. Qed.
 
-Lemma ler_mx_norm_add (x y : 'M_(m, n)) :
+(*Lemma ler_mx_norm_add (x y : 'M_(m, n)) :
   mx_norm (x + y) <= mx_norm x + mx_norm y.
-Proof.
-rewrite !mx_normE; apply/bigmaxr_lerP; split.
-  by apply: addr_ge0; apply/bigmaxr_gerP; left.
-move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
-by apply: ler_add; apply: ler_bigmaxr.
-Qed.
+Proof. exact: ler_mx_norm'_add. Qed.*)
 
 Lemma mx_norm_eq0 (x : 'M_(m, n)) : mx_norm x = 0 -> x = 0.
 Proof.
@@ -1298,7 +1444,7 @@ Proof.
 rewrite [in RHS]mx_normE.
 elim: n0 => [|n0 ih]; first by rewrite !mulr0n mx_norm0.
 rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
-  by rewrite -ih -mx_normE; exact/ler_mx_norm_add.
+  by rewrite -ih -mx_normE; exact/ler_mx_norm'_add.
 have [/eqP/mx_norm_eq0->|x0] := boolP (mx_norm x == 0).
   by rewrite -mx_normE !(mul0rn,addr0,mx_norm0).
 rewrite mx_normE.
@@ -1316,7 +1462,7 @@ Section matrix_NormedModule.
 Variables (K : realFieldType (* TODO: generalize to numFieldType*)) (m n : nat).
 
 Definition matrix_normedZmodMixin :=
-  Num.NormedMixin (@ler_mx_norm_add K m.+1 n.+1)
+  @Num.NormedMixin _ _ _ (@mx_norm _ _ _) (@ler_mx_norm'_add K m.+1 n.+1)
     (@mx_norm_eq0 _ _ _) (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
 
 Canonical matrix_normedZmodType :=
