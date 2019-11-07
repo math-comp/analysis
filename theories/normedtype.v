@@ -963,6 +963,18 @@ Definition nonneg_0 : {nonneg R} := NonnegNum (lexx 0).
 Definition nonneg_abs (x : R) : {nonneg R} := NonnegNum (@mc_1_9.Num.Theory.normr_ge0 _ x).
 Definition nonneg_norm (V : normedModType R) (x : V) : {nonneg R} := NonnegNum (@normr_ge0 _ V x).
 
+Lemma nonneg_abs_eq0 (x : R) : (nonneg_abs x == nonneg_0) = ( x == 0).
+Proof.
+by rewrite -normr_eq0.
+Qed.
+
+Lemma nonneg_abs_ge0 (x : R) : nonneg_0 <= nonneg_abs x. 
+Proof.
+Admitted.
+
+Lemma nonneg_eq ( x y : {nonneg R}) : (x == y) = (x%:nnnum == y%:nnnum).
+Proof. by []. Qed.
+
 End nonnegative_numbers.
 Notation "'{nonneg' R }" := (nonnegnum_of (@Phant R)).
 Notation "x %:nnnum" := (num_of_nonneg x) : ring_scope.
@@ -1390,10 +1402,54 @@ Lemma ler_mx_norm'_add (x y : 'M[K]_(m, n)) :
   mx_norm' (x + y) <= addr_nonneg (mx_norm' x) (mx_norm' y).
 Proof.
 apply/Bigmaxr_nonneg.bigmaxr_lerP; split.
-  apply: addr_ge0; exact/nonnegnum_ge0.
+apply: addr_ge0; exact/nonnegnum_ge0.
 move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
 by apply: ler_add; apply/le_nonnegnum/Bigmaxr_nonneg.ler_bigmaxr.
 Qed.
+
+Lemma mx_normE' (x : 'M[K]_(m, n)) :
+  mx_norm' x = \big[maxr/nonneg_0 K]_ij (nonneg_abs (x ij.1 ij.2)).
+Proof.  by []. Qed.
+
+Lemma mx_norm'_eq0 (x : 'M_(m, n)) : mx_norm' x = (nonneg_0 K) -> x = 0.
+Proof.
+rewrite !mx_normE'.
+move=> H.
+have /eqP := H; rewrite eq_le => /andP [/Bigmaxr_nonneg.bigmaxr_lerP [_ x0] _].
+apply/matrixP => i j; rewrite mxE; apply/eqP.
+by rewrite -nonneg_abs_eq0 eq_le nonneg_abs_ge0 (x0 (i,j)) . 
+Qed.
+
+Lemma mx_norm0' : mx_norm' (0 : 'M_(m, n)) = nonneg_0 K.
+Proof. Check eq_bigr.
+rewrite !mx_normE'.
+(* have -> : (nonneg_0 K) = \big[_/0]_ij (nonneg_0 K). *)
+Check (eq_bigr (fun=> nonneg_0)). (* /=; last by move=> i _; rewrite mxE normr0.  *)
+(* by elim/big_ind : _ => // x y -> ->; rewrite joinxx. *)
+(* Qed. *)
+Admitted.
+
+Lemma mx_norm'_natmul (x : 'M_(m, n)) n0 : (mx_norm' (x *+ n0))%:nnnum = (mx_norm' x)%:nnnum *+ n0. 
+Proof. 
+rewrite [in RHS]mx_normE'.
+elim: n0 => [|n0 ih]; first by rewrite !mulr0n mx_norm0'.
+rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
+  by rewrite -ih -mx_normE'; exact/ler_mx_norm'_add.
+have [/eqP/mx_norm'_eq0->|x0] := boolP (mx_norm' x == (nonneg_0 K)).
+  by rewrite -mx_normE' !(mul0rn,addr0,mx_norm0').
+rewrite mx_normE'.
+(* apply/Bigmaxr_nonneg.bigmaxr_gerP; right => /=; have [i Hi] := mx_norm_neq0 x0. *)
+(* by exists i => //; rewrite -mx_normE Hi -!mulrS -normrMn mulmxnE. *)
+(* Qed. *)
+Admitted.
+
+(*TODO: clean, how to avoid nonneg_eq *)
+Lemma mx_normN (x : 'M_(m, n)) : mx_norm' (- x) = mx_norm' x.
+Proof.
+rewrite !mx_normE'; apply eq_bigr => /= ? _; rewrite mxE /nonneg_abs.
+by apply /eqP ;rewrite nonneg_eq //= normrN.
+Qed.
+
 
 End mx_norm'.
 
