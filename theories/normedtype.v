@@ -968,9 +968,8 @@ Proof.
 by rewrite -normr_eq0.
 Qed.
 
-Lemma nonneg_abs_ge0 (x : R) : nonneg_0 <= nonneg_abs x. 
-Proof.
-Admitted.
+Lemma nonneg_abs_ge0 (x : R) : nonneg_0 <= nonneg_abs x.
+Proof. exact: nonnegnum_ge0. Qed.
 
 Lemma nonneg_eq ( x y : {nonneg R}) : (x == y) = (x%:nnnum == y%:nnnum).
 Proof. by []. Qed.
@@ -1398,6 +1397,14 @@ Qed.
 Lemma le_nonnegnum (a : K) (b : {nonneg K}) : nonneg_abs a <= b -> `|a| <= b %:nnnum.
 Proof. by []. Qed.
 
+Lemma le_mulr_nonnegnum (a b c : {nonneg K}) k :
+  nonneg_abs (a%:nnnum + b%:nnnum *+ k) <= c -> a%:nnnum + b%:nnnum *+ k <= c%:nnnum.
+Proof.
+move=> H; apply: le_trans; last exact H.
+move: a b c => /= [a a0] [b b0] [c c0] /= in H *.
+by rewrite ger0_norm // addr_ge0 // mulrn_wge0.
+Qed.
+
 Lemma ler_mx_norm'_add (x y : 'M[K]_(m, n)) :
   mx_norm' (x + y) <= addr_nonneg (mx_norm' x) (mx_norm' y).
 Proof.
@@ -1417,20 +1424,30 @@ rewrite !mx_normE'.
 move=> H.
 have /eqP := H; rewrite eq_le => /andP [/Bigmaxr_nonneg.bigmaxr_lerP [_ x0] _].
 apply/matrixP => i j; rewrite mxE; apply/eqP.
-by rewrite -nonneg_abs_eq0 eq_le nonneg_abs_ge0 (x0 (i,j)) . 
+by rewrite -nonneg_abs_eq0 eq_le nonneg_abs_ge0 (x0 (i,j)).
 Qed.
 
 Lemma mx_norm0' : mx_norm' (0 : 'M_(m, n)) = nonneg_0 K.
-Proof. Check eq_bigr.
-rewrite !mx_normE'.
-(* have -> : (nonneg_0 K) = \big[_/0]_ij (nonneg_0 K). *)
-Check (eq_bigr (fun=> nonneg_0)). (* /=; last by move=> i _; rewrite mxE normr0.  *)
-(* by elim/big_ind : _ => // x y -> ->; rewrite joinxx. *)
-(* Qed. *)
-Admitted.
+Proof.
+rewrite !mx_normE' (eq_bigr (fun=> nonneg_0 K)) /=; last first.
+  by move=> i _; apply val_inj => /=; rewrite mxE normr0.
+by elim/big_ind : _ => // a b ->{a} ->{b}; rewrite joinxx.
+Qed.
 
-Lemma mx_norm'_natmul (x : 'M_(m, n)) n0 : (mx_norm' (x *+ n0))%:nnnum = (mx_norm' x)%:nnnum *+ n0. 
-Proof. 
+Lemma mx_norm'_neq0 x : mx_norm' x != @nonneg_0 K -> exists i, (mx_norm' x)%:nnnum = `|x i.1 i.2|.
+Proof.
+rewrite !mx_normE'.
+elim/big_ind : _ => [|a b Ha Hb H|/= i _ _]; [by rewrite eqxx| | by exists i].
+case: (leP a b) => ab.
++ suff /Hb[i xi] : b != nonneg_0 K by exists i.
+  by apply: contra H => b0; rewrite join_r.
++ suff /Ha[i xi] : a != nonneg_0 K by exists i.
+  by apply: contra H => a0; rewrite join_l // ltW.
+Qed.
+
+Lemma mx_norm'_natmul (x : 'M_(m, n)) n0 :
+  (mx_norm' (x *+ n0))%:nnnum = (mx_norm' x)%:nnnum *+ n0.
+Proof.
 rewrite [in RHS]mx_normE'.
 elim: n0 => [|n0 ih]; first by rewrite !mulr0n mx_norm0'.
 rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
@@ -1438,18 +1455,17 @@ rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
 have [/eqP/mx_norm'_eq0->|x0] := boolP (mx_norm' x == (nonneg_0 K)).
   by rewrite -mx_normE' !(mul0rn,addr0,mx_norm0').
 rewrite mx_normE'.
-(* apply/Bigmaxr_nonneg.bigmaxr_gerP; right => /=; have [i Hi] := mx_norm_neq0 x0. *)
-(* by exists i => //; rewrite -mx_normE Hi -!mulrS -normrMn mulmxnE. *)
-(* Qed. *)
-Admitted.
+apply/le_mulr_nonnegnum/Bigmaxr_nonneg.bigmaxr_gerP; right => /=; have [i Hi] := mx_norm'_neq0 x0.
+exists i => //; rewrite -mx_normE' Hi -!mulrS -normrMn mulmxnE.
+rewrite le_eqVlt; apply/orP; left; apply/eqP/val_inj => /=; by rewrite normr_id.
+Qed.
 
 (*TODO: clean, how to avoid nonneg_eq *)
-Lemma mx_normN (x : 'M_(m, n)) : mx_norm' (- x) = mx_norm' x.
+Lemma mx_norm'N (x : 'M_(m, n)) : mx_norm' (- x) = mx_norm' x.
 Proof.
 rewrite !mx_normE'; apply eq_bigr => /= ? _; rewrite mxE /nonneg_abs.
 by apply /eqP ;rewrite nonneg_eq //= normrN.
 Qed.
-
 
 End mx_norm'.
 
