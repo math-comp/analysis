@@ -1178,6 +1178,8 @@ Record nonnegnum_of (R : numDomainType) (phR : phant R) := NonnegNumDef {
   num_of_nonneg : R ;
   nonnegnum_ge0 :> num_of_nonneg >= 0
 }.
+Hint Resolve nonnegnum_ge0 : core.
+Hint Extern 0 ((0%R <= _)%O = true) => exact: nonnegnum_ge0 : core.
 Local Notation "'{nonneg' R }" := (nonnegnum_of (@Phant R)).
 Definition NonnegNum (R : numDomainType) x x_ge0 : {nonneg R} :=
   @NonnegNumDef _ (Phant R) x x_ge0.
@@ -1199,6 +1201,10 @@ Proof. by move=> x y; apply/real_comparable; apply/ger0_real/nonnegnum_ge0. Qed.
 
 Canonical nonnegnum_latticeType := DistrLatticeType {nonneg R} nonnegnum_le_total.
 Canonical nonnegnum_orderType := OrderType {nonneg R} nonnegnum_le_total.
+
+Lemma add_nonneg_ge0 (x y : {nonneg R}) : 0 <= x%:nnnum + y%:nnnum.
+Proof. by rewrite addr_ge0. Qed.
+Canonical addr_nonneg x y := NonnegNum (add_nonneg_ge0 x y).
 
 Definition nonneg_0 : {nonneg R} := NonnegNum (lexx 0).
 
@@ -1222,15 +1228,40 @@ Qed.
 
 End TODO_add_to_nonnegnum.
 
+(* TODO: wip *)
+Section mx_norm'.
+Variables (K : numDomainType) (m n : nat).
+
+Definition mx_norm' (x : 'M[K]_(m, n)) :=
+  \big[maxr/nonneg_0 K]_i (nonneg_abs (x i.1 i.2)).
+
+Lemma bigmaxr_nonneg (R : realDomainType) (x : 'M_(m, n)) :
+  \big[maxr/0]_ij `|x ij.1 ij.2| =
+  (\big[maxr/nonneg_0 [numDomainType of R]]_i nonneg_abs (x i.1 i.2))%:nnnum.
+Proof.
+elim/big_ind2 : _ => //= a a' b b' ->{a'} ->{b'}.
+case: (leP a b) => ab; first by rewrite mc_1_9.Num.Theory.maxr_r.
+by rewrite mc_1_9.Num.Theory.maxr_l // ltW.
+Qed.
+
+End mx_norm'.
+
 Section mx_norm.
 
 Variables (K : realDomainType) (* TODO: generalize to numFieldType*) (m n : nat).
 
-Definition mx_norm (x : 'M[K]_(m, n)) := \big[maxr/0]_ij `|x ij.1 ij.2|.
+(*Definition mx_norm (x : 'M[K]_(m, n)) := \big[maxr/0]_ij `|x ij.1 ij.2|.*)
 
-Lemma ler_mx_norm_add (x y : 'M_(m, n)) : mx_norm (x + y) <= mx_norm x + mx_norm y.
+Definition mx_norm (x : 'M[K]_(m, n)) : K := (mx_norm' x)%:nnnum.
+
+Lemma mx_normE (x : 'M[K]_(m, n)) :
+  mx_norm x = \big[maxr/0]_ij `|x ij.1 ij.2|.
+Proof. by rewrite /mx_norm -bigmaxr_nonneg. Qed.
+
+Lemma ler_mx_norm_add (x y : 'M_(m, n)) :
+  mx_norm (x + y) <= mx_norm x + mx_norm y.
 Proof.
-apply/bigmaxr_lerP; split.
+rewrite !mx_normE; apply/bigmaxr_lerP; split.
   by apply: addr_ge0; apply/bigmaxr_gerP; left.
 move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
 by apply: ler_add; apply: ler_bigmaxr.
@@ -1238,6 +1269,7 @@ Qed.
 
 Lemma mx_norm_eq0 (x : 'M_(m, n)) : mx_norm x = 0 -> x = 0.
 Proof.
+rewrite !mx_normE.
 move=> H.
 have /eqP := H; rewrite eq_le => /andP [/bigmaxr_lerP [_ x0] _].
 apply/matrixP => i j; rewrite mxE; apply/eqP.
@@ -1246,13 +1278,13 @@ Qed.
 
 Lemma mx_norm0 : mx_norm (0 : 'M_(m, n)) = 0.
 Proof.
-rewrite /mx_norm (eq_bigr (fun=> 0)) /=; last by move=> i _; rewrite mxE normr0.
+rewrite !mx_normE (eq_bigr (fun=> 0)) /=; last by move=> i _; rewrite mxE normr0.
 by elim/big_ind : _ => // x y -> ->; rewrite mc_1_9.Num.Theory.maxrr.
 Qed.
 
 Lemma mx_norm_neq0 x : mx_norm x != 0 -> exists i, mx_norm x = `|x i.1 i.2|.
 Proof.
-rewrite /mx_norm.
+rewrite !mx_normE.
 elim/big_ind : _ => [|a b Ha Hb H|/= i _ _]; [by rewrite eqxx| | by exists i].
 case: (leP a b) => ab.
 + suff /Hb[i xi] : b != 0 by exists i.
@@ -1263,17 +1295,19 @@ Qed.
 
 Lemma mx_norm_natmul (x : 'M_(m, n)) n0 : mx_norm (x *+ n0) = mx_norm x *+ n0.
 Proof.
+rewrite [in RHS]mx_normE.
 elim: n0 => [|n0 ih]; first by rewrite !mulr0n mx_norm0.
 rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
-  by rewrite -ih; exact/ler_mx_norm_add.
+  by rewrite -ih -mx_normE; exact/ler_mx_norm_add.
 have [/eqP/mx_norm_eq0->|x0] := boolP (mx_norm x == 0).
-  by rewrite !(mul0rn,addr0,mx_norm0).
+  by rewrite -mx_normE !(mul0rn,addr0,mx_norm0).
+rewrite mx_normE.
 apply/bigmaxr_gerP; right => /=; have [i Hi] := mx_norm_neq0 x0.
-by exists i => //; rewrite Hi -!mulrS -normrMn mulmxnE.
+by exists i => //; rewrite -mx_normE Hi -!mulrS -normrMn mulmxnE.
 Qed.
 
 Lemma mx_normN (x : 'M_(m, n)) : mx_norm (- x) = mx_norm x.
-Proof. by rewrite /mx_norm; apply eq_bigr => /= ? _; rewrite mxE normrN. Qed.
+Proof. by rewrite !mx_normE; apply eq_bigr => /= ? _; rewrite mxE normrN. Qed.
 
 End mx_norm.
 
@@ -1292,12 +1326,12 @@ Canonical matrix_normedZmodType :=
 Lemma mx_norm_ball :
   @ball _ [uniformType K of 'M[K^o]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
 Proof.
-rewrite /= /normr /= /mx_norm.
+rewrite /= /normr /=.
 rewrite predeq3E => x e y; split.
-  move=> xe_y; apply/bigmaxr_ltrP.
+  move=> xe_y; rewrite /ball_ mx_normE; apply/bigmaxr_ltrP.
   split; [exact/(le_lt_trans _ (xe_y ord0 ord0)) |
           move=> ??; rewrite !mxE; exact: xe_y].
-move=> /bigmaxr_ltrP => -[e0 xey] i j.
+rewrite /ball_; rewrite mx_normE => /bigmaxr_ltrP => -[e0 xey] i j.
 move: (xey (i, j)); rewrite !mxE; exact.
 Qed.
 
@@ -1308,7 +1342,7 @@ Canonical matrix_uniformNormedZmodType :=
 
 Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
 Proof.
-rewrite {1 3}/normr /= /mx_norm (eq_bigr (fun i => `|l| * `|x i.1 i.2|)); last first.
+rewrite {1 3}/normr /= !mx_normE (eq_bigr (fun i => `|l| * `|x i.1 i.2|)); last first.
   by move=> *; rewrite mxE normrM.
 elim/big_ind2 : _ => //; first by rewrite mulr0.
 by move=> a b c d ->{b} ->{d}; rewrite maxr_pmulr.
@@ -2363,6 +2397,7 @@ suff /ltW : `|v ord0 i : R^o| < M + 1 by rewrite ler_norml.
 apply: le_lt_trans (normvltM _ _); last by rewrite ltr_addl.
 have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
+rewrite [in X in _ <= X]/normr /= mx_normE.
 by apply/bigmaxr_gerP; right => /=; exists j.
 Qed.
 
