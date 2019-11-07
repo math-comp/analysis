@@ -968,9 +968,8 @@ Proof.
 by rewrite -normr_eq0.
 Qed.
 
-Lemma nonneg_abs_ge0 (x : R) : nonneg_0 <= nonneg_abs x. 
-Proof.
-Admitted.
+Lemma nonneg_abs_ge0 (x : R) : nonneg_0 <= nonneg_abs x.
+Proof. exact: nonnegnum_ge0. Qed.
 
 Lemma nonneg_eq ( x y : {nonneg R}) : (x == y) = (x%:nnnum == y%:nnnum).
 Proof. by []. Qed.
@@ -1398,6 +1397,14 @@ Qed.
 Lemma le_nonnegnum (a : K) (b : {nonneg K}) : nonneg_abs a <= b -> `|a| <= b %:nnnum.
 Proof. by []. Qed.
 
+Lemma le_mulr_nonnegnum (a b c : {nonneg K}) k :
+  nonneg_abs (a%:nnnum + b%:nnnum *+ k) <= c -> a%:nnnum + b%:nnnum *+ k <= c%:nnnum.
+Proof.
+move=> H; apply: le_trans; last exact H.
+move: a b c => /= [a a0] [b b0] [c c0] /= in H *.
+by rewrite ger0_norm // addr_ge0 // mulrn_wge0.
+Qed.
+
 Lemma ler_mx_norm'_add (x y : 'M[K]_(m, n)) :
   mx_norm' (x + y) <= addr_nonneg (mx_norm' x) (mx_norm' y).
 Proof.
@@ -1417,47 +1424,54 @@ rewrite !mx_normE'.
 move=> H.
 have /eqP := H; rewrite eq_le => /andP [/Bigmaxr_nonneg.bigmaxr_lerP [_ x0] _].
 apply/matrixP => i j; rewrite mxE; apply/eqP.
-by rewrite -nonneg_abs_eq0 eq_le nonneg_abs_ge0 (x0 (i,j)) . 
+by rewrite -nonneg_abs_eq0 eq_le nonneg_abs_ge0 (x0 (i,j)).
 Qed.
 
-Lemma mx_norm0' : mx_norm' (0 : 'M_(m, n)) = nonneg_0 K.
-Proof. Check eq_bigr.
-rewrite !mx_normE'.
-(* have -> : (nonneg_0 K) = \big[_/0]_ij (nonneg_0 K). *)
-Check (eq_bigr (fun=> nonneg_0)). (* /=; last by move=> i _; rewrite mxE normr0.  *)
-(* by elim/big_ind : _ => // x y -> ->; rewrite joinxx. *)
-(* Qed. *)
-Admitted.
+Lemma mx_norm'0 : mx_norm' (0 : 'M_(m, n)) = nonneg_0 K.
+Proof.
+rewrite !mx_normE' (eq_bigr (fun=> nonneg_0 K)) /=; last first.
+  by move=> i _; apply val_inj => /=; rewrite mxE normr0.
+by elim/big_ind : _ => // a b ->{a} ->{b}; rewrite joinxx.
+Qed.
 
-Lemma mx_norm'_natmul (x : 'M_(m, n)) n0 : (mx_norm' (x *+ n0))%:nnnum = (mx_norm' x)%:nnnum *+ n0. 
-Proof. 
+Lemma mx_norm'_neq0 x : mx_norm' x != @nonneg_0 K -> exists i, (mx_norm' x)%:nnnum = `|x i.1 i.2|.
+Proof.
+rewrite !mx_normE'.
+elim/big_ind : _ => [|a b Ha Hb H|/= i _ _]; [by rewrite eqxx| | by exists i].
+case: (leP a b) => ab.
++ suff /Hb[i xi] : b != nonneg_0 K by exists i.
+  by apply: contra H => b0; rewrite join_r.
++ suff /Ha[i xi] : a != nonneg_0 K by exists i.
+  by apply: contra H => a0; rewrite join_l // ltW.
+Qed.
+
+Lemma mx_norm'_natmul (x : 'M_(m, n)) n0 :
+  (mx_norm' (x *+ n0))%:nnnum = (mx_norm' x)%:nnnum *+ n0.
+Proof.
 rewrite [in RHS]mx_normE'.
-elim: n0 => [|n0 ih]; first by rewrite !mulr0n mx_norm0'.
+elim: n0 => [|n0 ih]; first by rewrite !mulr0n mx_norm'0.
 rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite -ih -mx_normE'; exact/ler_mx_norm'_add.
 have [/eqP/mx_norm'_eq0->|x0] := boolP (mx_norm' x == (nonneg_0 K)).
-  by rewrite -mx_normE' !(mul0rn,addr0,mx_norm0').
+  by rewrite -mx_normE' !(mul0rn,addr0,mx_norm'0).
 rewrite mx_normE'.
-(* apply/Bigmaxr_nonneg.bigmaxr_gerP; right => /=; have [i Hi] := mx_norm_neq0 x0. *)
-(* by exists i => //; rewrite -mx_normE Hi -!mulrS -normrMn mulmxnE. *)
-(* Qed. *)
-Admitted.
+apply/le_mulr_nonnegnum/Bigmaxr_nonneg.bigmaxr_gerP; right => /=; have [i Hi] := mx_norm'_neq0 x0.
+exists i => //; rewrite -mx_normE' Hi -!mulrS -normrMn mulmxnE.
+rewrite le_eqVlt; apply/orP; left; apply/eqP/val_inj => /=; by rewrite normr_id.
+Qed.
 
 (*TODO: clean, how to avoid nonneg_eq *)
-Lemma mx_normN (x : 'M_(m, n)) : mx_norm' (- x) = mx_norm' x.
+Lemma mx_norm'N (x : 'M_(m, n)) : mx_norm' (- x) = mx_norm' x.
 Proof.
 rewrite !mx_normE'; apply eq_bigr => /= ? _; rewrite mxE /nonneg_abs.
 by apply /eqP ;rewrite nonneg_eq //= normrN.
 Qed.
 
-
 End mx_norm'.
 
 Section mx_norm.
 
-Variables (K : realDomainType) (* TODO: generalize to numFieldType*) (m n : nat).
-
-(*Definition mx_norm (x : 'M[K]_(m, n)) := \big[maxr/0]_ij `|x ij.1 ij.2|.*)
+Variables (K : realDomainType) (m n : nat).
 
 Definition mx_norm (x : 'M[K]_(m, n)) : K := (mx_norm' x)%:nnnum.
 
@@ -1470,46 +1484,19 @@ Proof. by rewrite /mx_norm -bigmaxr_nonneg. Qed.
 Proof. exact: ler_mx_norm'_add. Qed.*)
 
 Lemma mx_norm_eq0 (x : 'M_(m, n)) : mx_norm x = 0 -> x = 0.
-Proof.
-rewrite !mx_normE.
-move=> H.
-have /eqP := H; rewrite eq_le => /andP [/bigmaxr_lerP [_ x0] _].
-apply/matrixP => i j; rewrite mxE; apply/eqP.
-by rewrite -normr_eq0 eq_le normr_ge0 (x0 (i,j)).
-Qed.
+Proof. move=> x0; apply: mx_norm'_eq0 => //; exact: val_inj. Qed.
 
 Lemma mx_norm0 : mx_norm (0 : 'M_(m, n)) = 0.
-Proof.
-rewrite !mx_normE (eq_bigr (fun=> 0)) /=; last by move=> i _; rewrite mxE normr0.
-by elim/big_ind : _ => // x y -> ->; rewrite joinxx.
-Qed.
+Proof. by rewrite /mx_norm mx_norm'0. Qed.
 
-Lemma mx_norm_neq0 x : mx_norm x != 0 -> exists i, mx_norm x = `|x i.1 i.2|.
-Proof.
-rewrite !mx_normE.
-elim/big_ind : _ => [|a b Ha Hb H|/= i _ _]; [by rewrite eqxx| | by exists i].
-case: (leP a b) => ab.
-+ suff /Hb[i xi] : b != 0 by exists i.
-  by apply: contra H => b0; rewrite join_r.
-+ suff /Ha[i xi] : a != 0 by exists i.
-  by apply: contra H => a0; rewrite join_l // ltW.
-Qed.
+(*Lemma mx_norm_neq0 x : mx_norm x != 0 -> exists i, mx_norm x = `|x i.1 i.2|.
+Proof. exact: mx_norm'_neq0. Qed.*)
 
-Lemma mx_norm_natmul (x : 'M_(m, n)) n0 : mx_norm (x *+ n0) = mx_norm x *+ n0.
-Proof.
-rewrite [in RHS]mx_normE.
-elim: n0 => [|n0 ih]; first by rewrite !mulr0n mx_norm0.
-rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
-  by rewrite -ih -mx_normE; exact/ler_mx_norm'_add.
-have [/eqP/mx_norm_eq0->|x0] := boolP (mx_norm x == 0).
-  by rewrite -mx_normE !(mul0rn,addr0,mx_norm0).
-rewrite mx_normE.
-apply/bigmaxr_gerP; right => /=; have [i Hi] := mx_norm_neq0 x0.
-by exists i => //; rewrite -mx_normE Hi -!mulrS -normrMn mulmxnE.
-Qed.
+(*Lemma mx_norm_natmul (x : 'M_(m, n)) n0 : mx_norm (x *+ n0) = mx_norm x *+ n0.
+Proof. exact: mx_norm'_natmul. Qed.*)
 
 Lemma mx_normN (x : 'M_(m, n)) : mx_norm (- x) = mx_norm x.
-Proof. by rewrite !mx_normE; apply eq_bigr => /= ? _; rewrite mxE normrN. Qed.
+Proof. by rewrite /mx_norm mx_norm'N. Qed.
 
 End mx_norm.
 
@@ -1519,7 +1506,7 @@ Variables (K : realFieldType (* TODO: generalize to numFieldType*)) (m n : nat).
 
 Definition matrix_normedZmodMixin :=
   @Num.NormedMixin _ _ _ (@mx_norm _ _ _) (@ler_mx_norm'_add K m.+1 n.+1)
-    (@mx_norm_eq0 _ _ _) (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
+    (@mx_norm_eq0 _ _ _) (@mx_norm'_natmul _ _ _) (@mx_normN _ _ _).
 
 Canonical matrix_normedZmodType :=
   NormedZmoduleType K 'M[K]_(m.+1, n.+1) matrix_normedZmodMixin.
