@@ -323,7 +323,7 @@ Qed.
 End Locally.
 
 Section Locally'.
-Context {R : numFieldType} {T : uniformType R}.
+Context {R : numDomainType} {T : uniformType R}.
 
 Lemma ex_ball_sig (x : T) (P : set T) :
   ~ (forall eps : {posnum R}, ~ (ball x eps%:num `<=` ~` P)) ->
@@ -679,7 +679,78 @@ Variables (R : numDomainType) (V : normedModType R).
 Lemma normmZ l (x : V) : `| l *: x | = `| l | * `| x |.
 Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
+Local Notation ball_norm := (ball_ (@normr R V)).
+
+Local Notation locally_norm := (locally_ ball_norm).
+
+Lemma locally_le_locally_norm (x : V) : flim (locally x) (locally_norm x).
+Proof.
+move=> P [_ /posnumP[e] subP]; apply/locallyP.
+by eexists; last (move=> y Py; apply/subP; rewrite ball_normE; apply/Py).
+Qed.
+
+Lemma locally_norm_le_locally x : flim (locally_norm x) (locally x).
+Proof.
+move=> P /locallyP [_ /posnumP[e] Pxe].
+by exists e%:num => // y; rewrite ball_normE; apply/Pxe.
+Qed.
+
+(* NB: this lemmas was not here before *)
+Lemma locally_locally_norm : locally_norm = locally.
+Proof.
+by rewrite funeqE => x; rewrite /locally_norm ball_normE filter_from_ballE.
+Qed.
+
+Lemma locally_normP x P : locally x P <-> locally_norm x P.
+Proof. by rewrite locally_locally_norm. Qed.
+
+Lemma filter_from_norm_locally x :
+  @filter_from R _ [set x : R | 0 < x] (ball_norm x) = locally x.
+Proof. by rewrite -locally_locally_norm. Qed.
+
+Lemma locally_normE (x : V) (P : set V) :
+  locally_norm x P = \near x, P x.
+Proof. by rewrite locally_locally_norm near_simpl. Qed.
+
+Lemma filter_from_normE (x : V) (P : set V) :
+  @filter_from R _ [set x : R | 0 < x] (ball_norm x) P = \near x, P x.
+Proof. by rewrite filter_from_norm_locally. Qed.
+
+Lemma near_locally_norm (x : V) (P : set V) :
+  (\forall x \near locally_norm x, P x) = \near x, P x.
+Proof. exact: locally_normE. Qed.
+
+Lemma locally_norm_ball_norm x (e : {posnum R}) :
+  locally_norm x (ball_norm x e%:num).
+Proof. by exists e%:num. Qed.
+
+Lemma locally_ball_norm (x : V) (eps : {posnum R}) : locally x (ball_norm x eps%:num).
+Proof. rewrite -locally_locally_norm; apply: locally_norm_ball_norm. Qed.
+
+Lemma ball_norm_dec x y (e : R) : {ball_norm x e y} + {~ ball_norm x e y}.
+Proof. exact: pselect. Qed.
+
+Lemma ball_norm_sym x y (e : R) : ball_norm x e y -> ball_norm y e x.
+Proof. by rewrite /ball_norm -opprB normrN. Qed.
+
+Lemma ball_norm_le x (e1 e2 : R) :
+  e1 <= e2 -> ball_norm x e1 `<=` ball_norm x e2.
+Proof. by move=> e1e2 y /lt_le_trans; apply. Qed.
+
+Let locally_simpl :=
+  (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
+
+Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y <-> forall eps, 0 < eps -> \forall y' \near F, `|y - y'| < eps.
+Proof. by rewrite -filter_fromP /= !locally_simpl. Qed.
+
+Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
+  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
+Proof. by move=> /flim_normP. Qed.
+
 End NormedModule_numDomainType.
+Hint Resolve normr_ge0 : core.
+Arguments flim_norm {_ _ F FF}.
 
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
@@ -726,68 +797,11 @@ Qed.
 
 Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
 
-Lemma locally_le_locally_norm (x : V) : flim (locally x) (locally_norm x).
-Proof.
-move=> P [_ /posnumP[e] subP]; apply/locallyP.
-by eexists; last (move=> y Py; apply/subP; rewrite ball_normE; apply/Py).
-Qed.
-
-Lemma locally_norm_le_locally x : flim (locally_norm x) (locally x).
-Proof.
-move=> P /locallyP [_ /posnumP[e] Pxe].
-by exists e%:num => // y; rewrite ball_normE; apply/Pxe.
-Qed.
-
-(* NB: this lemmas was not here before *)
-Lemma locally_locally_norm : locally_norm = locally.
-Proof.
-by rewrite funeqE => x; rewrite /locally_norm ball_normE filter_from_ballE.
-Qed.
-
-Lemma locally_normP x P : locally x P <-> locally_norm x P.
-Proof. by rewrite locally_locally_norm. Qed.
-
-Lemma filter_from_norm_locally x :
-  @filter_from R _ [set x : R | 0 < x] (ball_norm x) = locally x.
-Proof. by rewrite -locally_locally_norm. Qed.
-
-Lemma locally_normE (x : V) (P : set V) :
-  locally_norm x P = \near x, P x.
-Proof. by rewrite locally_locally_norm near_simpl. Qed.
-
-Lemma filter_from_normE (x : V) (P : set V) :
-  @filter_from R _ [set x : R | 0 < x] (ball_norm x) P = \near x, P x.
-Proof. by rewrite filter_from_norm_locally. Qed.
-
-Lemma near_locally_norm (x : V) (P : set V) :
-  (\forall x \near locally_norm x, P x) = \near x, P x.
-Proof. exact: locally_normE. Qed.
-
-Lemma locally_norm_ball_norm x (e : {posnum R}) :
-  locally_norm x (ball_norm x e%:num).
-Proof. by exists e%:num. Qed.
-
 Lemma locally_norm_ball x (eps : {posnum R}) : locally_norm x (ball x eps%:num).
 Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
 
-Lemma locally_ball_norm (x : V) (eps : {posnum R}) : locally x (ball_norm x eps%:num).
-Proof. rewrite -locally_locally_norm; apply: locally_norm_ball_norm. Qed.
-
-Lemma ball_norm_dec x y (e : R) : {ball_norm x e y} + {~ ball_norm x e y}.
-Proof. exact: pselect. Qed.
-
-Lemma ball_norm_sym x y (e : R) : ball_norm x e y -> ball_norm y e x.
-Proof. by rewrite /ball_norm -opprB normrN. Qed.
-
-Lemma ball_norm_le x (e1 e2 : R) :
-  e1 <= e2 -> ball_norm x e1 `<=` ball_norm x e2.
-Proof. by move=> e1e2 y /lt_le_trans; apply. Qed.
-
 Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
 Proof. by rewrite propeqE ball_normE. Qed.
-
-Lemma ball_norm_eq x y : (forall eps : {posnum R}, ball_norm x eps%:num y) -> x = y.
-Proof. by rewrite -norm_close closeE. Qed.
 
 Lemma flim_unique {F} {FF : ProperFilter F} :
   is_prop [set x : V | F --> x].
@@ -811,13 +825,6 @@ Lemma flimi_unique {T : Type} {F} {FF : ProperFilter F} (f : T -> set V) :
   {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
 
-Let locally_simpl :=
-  (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
-
-Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y <-> forall eps, 0 < eps -> \forall y' \near F, `|y - y'| < eps.
-Proof. by rewrite -filter_fromP /= !locally_simpl. Qed.
-
 Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
   (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
   F --> y.
@@ -825,10 +832,6 @@ Proof.
 move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
 by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
-
-Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
-Proof. by move=> /flim_normP. Qed.
 
 Lemma flimi_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
   F (fun x : T => is_prop (f x)) ->
@@ -866,8 +869,6 @@ by rewrite real_ler_norm // realB.
 Qed.
 
 End NormedModule_numFieldType.
-Hint Resolve normr_ge0 : core.
-Arguments flim_norm {_ _ F FF}.
 Arguments flim_bounded {_ _ F FF}.
 
 Module Export LocallyNorm.
