@@ -68,7 +68,7 @@ Lemma eqe {R : numDomainType} (x1 x2 : R) :
 Proof. by apply/eqP/eqP=> [[]|->]. Qed.
 
 Section ERealOrder.
-Context {R : realDomainType}.
+Context {R : numDomainType}.
 Implicit Types (x y : {ereal R}).
 
 Definition le_ereal x1 x2 :=
@@ -88,6 +88,21 @@ Definition lt_ereal x1 x2 :=
   | x1%:E, x2%:E => (x1 < x2)%O
   end.
 
+Lemma lt_def_ereal x y : lt_ereal x y = (y != x) && le_ereal x y.
+Proof. by case: x y => [?||][?||] //=; rewrite lt_def eqe. Qed.
+
+Lemma le_anti_ereal : ssrbool.antisymmetric le_ereal.
+Proof. by case=> [?||][?||] //= /le_anti ->. Qed.
+
+Lemma le_trans_ereal : ssrbool.transitive le_ereal.
+Proof. by case=> [?||][?||][?||] //=; exact: le_trans. Qed.
+
+End ERealOrder.
+
+Section ERealOrder_realDomainType.
+Context {R : realDomainType}.
+Implicit Types (x y : {ereal R}).
+
 Definition min_ereal x1 x2 :=
   match x1, x2 with
   | -oo, _ | _, -oo => -oo
@@ -104,22 +119,13 @@ Definition max_ereal x1 x2 :=
   | x1%:E, x2%:E => (Num.Def.maxr x1 x2)%:E
   end.
 
-Lemma lt_def_ereal x y : lt_ereal x y = (y != x) && le_ereal x y.
-Proof. by case: x y => [?||][?||] //=; rewrite lt_def eqe. Qed.
-
 Lemma minE_ereal x y : min_ereal x y = if le_ereal x y then x else y.
 Proof. by case: x y => [?||][?||] //=; case: leP. Qed.
 
 Lemma maxE_ereal x y : max_ereal x y = if le_ereal y x then x else y.
 Proof. by case: x y => [?||][?||] //=; case: ltP. Qed.
 
-Lemma le_anti_ereal : ssrbool.antisymmetric le_ereal.
-Proof. by case=> [?||][?||] //= /le_anti ->. Qed.
-
-Lemma le_trans_ereal : ssrbool.transitive le_ereal.
-Proof. by case=> [?||][?||][?||] //=; exact: le_trans. Qed.
-
-Lemma le_total_ereal : total le_ereal.
+Lemma le_total_ereal : total (@le_ereal R).
 Proof. by case=> [?||][?||] //=; exact: le_total. Qed.
 
 Definition ereal_porderMixin :=
@@ -134,7 +140,7 @@ Canonical ereal_porderType :=
 Canonical ereal_latticeType := DistrLatticeType {ereal R} ereal_porderMixin.
 Canonical ereal_totalType := OrderType {ereal R} ereal_porderMixin.
 
-End ERealOrder.
+End ERealOrder_realDomainType.
 
 Notation lee := (@Order.le ereal_display _) (only parsing).
 Notation "@ 'lee' R" :=

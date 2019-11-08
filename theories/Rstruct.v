@@ -228,7 +228,7 @@ Definition R_numMixin := NumMixin Rleb_norm_add addr_Rgtb0 Rnorm0_eq0
                                   Rleb_leVge RnormM Rleb_def Rltb_def.
 Canonical R_porderType := POrderType ring_display R R_numMixin.
 Canonical R_numDomainType := NumDomainType R R_numMixin.
-Canonical R_normedZmodType := NormedZmoduleType R R R_numMixin.
+Canonical R_normedZmodType := NormedZmodType R R R_numMixin.
 
 Lemma RleP : forall x y, reflect (Rle x y) (x <= y)%R.
 Proof. exact: RlebP. Qed.
