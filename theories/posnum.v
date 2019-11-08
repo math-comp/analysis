@@ -129,6 +129,13 @@ Proof. by rewrite lt_geF. Qed.
 Lemma posnum_lt0 x : (x%:num < 0 :> R) = false.
 Proof. by rewrite lt_gtF. Qed.
 
+Lemma pos_ltUx (a : R) x y : (Num.max x y)%:num < a = (x%:num < a) && (y%:num < a).
+Proof.
+case: (lcomparable_ltgtP (comparableT x y)) => [?|?|<-]; last by rewrite andbb.
+rewrite andb_idl //; exact/lt_trans.
+rewrite andb_idr //; exact/lt_trans.
+Qed.
+
 End PosNum.
 Hint Extern 0 ((0%R <= _)%O = true) => exact: posnum_ge0 : core.
 Hint Extern 0 ((_ != 0%R)%O = true) => exact: posnum_neq0 : core.
