@@ -279,6 +279,14 @@ move=> Xx; have : setT x by [].
 by rewrite -fsurj => - [y _ fy_eqx]; exists y => //; rewrite /preimage fy_eqx.
 Qed.
 
+Lemma preimage_setU {A B I} (P : set I) (f:A->B) F:
+  f @^-1` (\bigcup_ (i in P) F) = \bigcup_(i in P) (f @^-1` F).
+Proof. by rewrite predeqE; split; rewrite /bigsetU /preimage. Qed.
+
+Lemma preimage_setI {A B I} (P : set I) (f:A->B) F:
+  f @^-1` (\bigcap_ (i in P) F) = \bigcap_(i in P) (f @^-1` F).
+Proof. by rewrite predeqE; split; rewrite /bigsetI /preimage. Qed.
+
 Lemma preimage_setC A B (f : A -> B) (X : set B) :
   ~` (f @^-1` X) = f @^-1` (~` X).
 Proof. by rewrite predeqE => a; split=> nXfa ?; apply: nXfa. Qed.
