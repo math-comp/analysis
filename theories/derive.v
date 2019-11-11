@@ -747,7 +747,8 @@ have -> : (ku^-1 *: u, kv^-1 *: v) =
   rewrite mulrC -[_ *: u]scalerA [X in X *: v]mulrC -[_ *: v]scalerA.
   by rewrite invf_div.
 rewrite normmZ ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
-by rewrite ltUx !normmZ !ger0_norm // !mulVf // ltr1n.
+rewrite Num.ProdNormedZmodule.prod_normE /= !normmZ !ger0_norm // ?invr_ge0 ?ltW //.
+by rewrite !mulVf ?gt_eqF //= joinxx (_ : _%:nnnum = 1) ?ltr1n // Num.Nonneg.nonnegE normr1.
 Qed.
 
 Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
@@ -755,9 +756,13 @@ Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
 Proof.
 move=> fc; have [_ /posnumP[k] fschwarz] := bilinear_schwarz fc.
 apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (le_trans (fschwarz _ _))//.
-rewrite ler_pmul ?pmulr_rge0 //; last by rewrite lexU orbC lexx.
+rewrite ler_pmul ?pmulr_rge0 //; last first.
+  rewrite Num.ProdNormedZmodule.prod_normE /=.
+  by rewrite Num.Nonneg.nonneg_lexU; apply/orP; right; apply/Num.Nonneg.nonneg_le.
 rewrite -ler_pdivl_mull //.
-suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite lexU lexx.
+suff : `|x| <= k%:num ^-1 * e%:num.
+  apply: le_trans.
+  by rewrite Num.ProdNormedZmodule.prod_normE Num.Nonneg.nonneg_lexU; apply/orP; left; apply/Num.Nonneg.nonneg_le.
 near: x; rewrite !near_simpl; apply/locally_le_locally_norm.
 by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite distrC subr0 => /ltW.
 Grab Existential Variables. all: end_near. Qed.
@@ -821,7 +826,8 @@ Lemma eqo_pair (U V' W' : normedModType R) (F : filter_on U)
   (f : U -> V') (g : U -> W') :
   (fun t => ([o_F id of f] t, [o_F id of g] t)) =o_F id.
 Proof.
-apply/eqoP => _/posnumP[e]; near=> x; rewrite leUx /=.
+apply/eqoP => _/posnumP[e]; near=> x.
+rewrite Num.Nonneg.nonneg_leUx /= !normr_id.
 by apply/andP; split; near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -873,7 +879,7 @@ Global Instance is_diffM (f g df dg : V -> R^o) x :
 Proof.
 move=> dfx dgx.
 have -> : f * g = (fun p => p.1 * p.2) \o (fun y => (f y, g y)) by [].
-apply: is_diff_eq; first exact: is_diff_comp.
+apply: is_diff_eq.
 by rewrite funeqE => ?; rewrite /= [_ * g _]mulrC.
 Qed.
 

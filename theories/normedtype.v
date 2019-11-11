@@ -923,115 +923,16 @@ rewrite nearE /= => /locallyP; rewrite locally_E => -[j j0].
 by move/(_ _ (ballxx _ j0)); rewrite -ball_normE.
 Qed.
 
-Reserved Notation "'{nonneg' R }" (at level 0, format "'{nonneg'  R }").
-Reserved Notation "x %:nnnum" (at level 0, format "x %:nnnum").
-Section nonnegative_numbers.
-
-Record nonnegnum_of (R : numDomainType) (phR : phant R) := NonnegNumDef {
-  num_of_nonneg : R ;
-  nonnegnum_ge0 :> num_of_nonneg >= 0
-}.
-Hint Resolve nonnegnum_ge0 : core.
-Hint Extern 0 ((0%R <= _)%O = true) => exact: nonnegnum_ge0 : core.
-Local Notation "'{nonneg' R }" := (nonnegnum_of (@Phant R)).
-Definition NonnegNum (R : numDomainType) x x_ge0 : {nonneg R} :=
-  @NonnegNumDef _ (Phant R) x x_ge0.
-Local Notation "x %:nnnum" := (num_of_nonneg x) : ring_scope.
-
-Variable (R : numDomainType).
-Implicit Types a : R.
-Implicit Types x y : {nonneg R}.
-
-Canonical nonnegnum_subType := [subType for @num_of_nonneg R (Phant R)].
-Definition nonnegnum_eqMixin := [eqMixin of {nonneg R} by <:].
-Canonical nonnegnum_eqType := EqType {nonneg R} nonnegnum_eqMixin.
-Definition nonnegnum_choiceMixin := [choiceMixin of {nonneg R} by <:].
-Canonical nonnegnum_choiceType := ChoiceType {nonneg R} nonnegnum_choiceMixin.
-Definition nonnegnum_porderMixin := [porderMixin of {nonneg R} by <:].
-Canonical nonnegnum_porderType :=
-  POrderType ring_display {nonneg R} nonnegnum_porderMixin.
-
-Lemma nonnegnum_le_total : totalPOrderMixin [porderType of {nonneg R}].
-Proof. by move=> x y; apply/real_comparable; apply/ger0_real/nonnegnum_ge0. Qed.
-
-Canonical nonnegnum_latticeType := DistrLatticeType {nonneg R} nonnegnum_le_total.
-Canonical nonnegnum_orderType := OrderType {nonneg R} nonnegnum_le_total.
-
-Definition nonneg_0 : {nonneg R} := NonnegNum (lexx 0).
-Definition nonneg_abs a : {nonneg R} := NonnegNum (@mc_1_9.Num.Theory.normr_ge0 _ a).
-Definition nonneg_norm (V : normedModType R) (v : V) : {nonneg R} := NonnegNum (normr_ge0 v).
-
-Lemma add_nonneg_ge0 x y : 0 <= x%:nnnum + y%:nnnum.
-Proof. by rewrite addr_ge0. Qed.
-Canonical addr_nonneg x y := NonnegNum (add_nonneg_ge0 x y).
-
-Definition nonneg_mul x y :=
-  NonnegNum (mulr_ge0 (nonnegnum_ge0 x) (nonnegnum_ge0 y)).
-
-Lemma nonnegE a (a0 : 0 <= a) : (NonnegNum a0)%:nnnum = a.
-Proof. by []. Qed.
-
-Lemma nonneg_abs_eq0 a : (nonneg_abs a == nonneg_0) = (a == 0).
-Proof. by rewrite -normr_eq0. Qed.
-
-Lemma nonneg_abs_ge0 a : nonneg_0 <= nonneg_abs a.
-Proof. exact: nonnegnum_ge0. Qed.
-
-Lemma nonneg_eq x y : (x == y) = (x%:nnnum == y%:nnnum).
-Proof. by []. Qed.
-
-Lemma nonneg_eq0 x : (x == nonneg_0) = (x%:nnnum == 0).
-Proof. by []. Qed.
-
-Lemma nonneg_leE x y : (x%:nnnum <= y%:nnnum) = (x <= y).
-Proof. by []. Qed.
-
-Lemma nonneg_ltE x y : (x%:nnnum < y%:nnnum) = (x < y).
-Proof. by []. Qed.
-
-Lemma nonneg_lexU a x y : a <= (maxr x y)%:nnnum = (a <= x%:nnnum) || (a <= y%:nnnum).
-Proof.
-case: (lcomparable_ltgtP (comparableT x y)) => [?|?|<-]; last by rewrite orbb.
-rewrite orb_idl // => /le_trans; apply; exact/ltW.
-rewrite orb_idr // => /le_trans; apply; exact/ltW.
-Qed.
-
-Lemma nonneg_le a x : 0 <= a -> nonneg_abs a <= x -> a <= x%:nnnum.
-Proof.
-case: x => x x0 a0 H; apply: le_trans; last exact H; by rewrite /= ger0_norm.
-Qed.
-
-Lemma nonneg_le_abs a x : nonneg_abs a <= x -> `|a| <= x%:nnnum.
-Proof. by []. Qed.
-
-Lemma nonneg_scal a x : `|a| * x%:nnnum = (nonneg_mul (nonneg_abs a) x)%:nnnum.
-Proof. by []. Qed.
-
-End nonnegative_numbers.
-Notation "'{nonneg' R }" := (nonnegnum_of (@Phant R)).
-Notation "x %:nnnum" := (num_of_nonneg x) : ring_scope.
-
-Section TODO_add_to_nonnegnum.
-
-Lemma nonneg_maxr (K : numFieldType) (a : K) (x y : {nonneg K}) : a != 0 ->
-  `|a| * (maxr x y)%:nnnum =
-  (maxr (nonneg_mul (nonneg_abs a) x) (nonneg_mul (nonneg_abs a) y))%:nnnum.
-Proof.
-move=> a0; rewrite /maxr /= /Order.TotalPOrderMixin.join /=; case: ifPn => yx /=.
-- rewrite ifT //=; apply ler_pmul => //; exact: nonnegnum_ge0.
-- rewrite ifF //=; apply/negbTE; apply: contra yx.
-  by rewrite -nonneg_leE /= -ler_pdivl_mull ?normr_gt0 // mulrA mulVr ?unitfE ?normr_eq0 // mul1r.
-Qed.
+Definition nonneg_norm (R : numDomainType) (V : normedModType R) (v : V) : {nonneg R} :=
+  Num.Nonneg.NonnegNum (normr_ge0 v).
 
 Lemma bigmaxr_nonneg (R : realDomainType) m n (x : 'M_(m, n)) :
   \big[maxr/0]_ij `|x ij.1 ij.2| =
-  (\big[maxr/nonneg_0 [numDomainType of R]]_i nonneg_abs (x i.1 i.2))%:nnnum.
+  (\big[maxr/Num.Nonneg.nonneg_0 [numDomainType of R]]_i Num.Nonneg.nonneg_abs (x i.1 i.2))%:nnnum.
 Proof.
 elim/big_ind2 : _ => //= a a' b b' ->{a'} ->{b'}.
 case: (leP a b) => ab; by [rewrite join_r | rewrite join_l // ltW].
 Qed.
-
-End TODO_add_to_nonnegnum.
 
 Lemma filter_andb I r (a P : pred I) :
   [seq i <- r | P i && a i] = [seq i <- [seq j <- r | P j] | a i].
@@ -1417,6 +1318,7 @@ Arguments bigminr_inf {R I} i0 {P m F}.
 Section mx_norm'.
 Variables (K : numDomainType) (m n : nat).
 Implicit Types x y : 'M[K]_(m, n).
+Import Num.Nonneg.
 
 Definition mx_norm' x : {nonneg K} :=
   \big[maxr/nonneg_0 K]_i (nonneg_abs (x i.1 i.2)).
@@ -1484,6 +1386,7 @@ End mx_norm'.
 Section mx_norm.
 Variables (K : numDomainType) (m n : nat).
 Implicit Types x y : 'M[K]_(m, n).
+Import Num.Nonneg.
 
 Definition mx_norm x : K := (mx_norm' x)%:nnnum.
 
@@ -1511,13 +1414,14 @@ Proof. by rewrite /mx_norm -bigmaxr_nonneg. Qed.
 
 Section matrix_NormedModule.
 Variables (K : numFieldType) (m n : nat).
+Import Num.Nonneg.
 
 Definition matrix_normedZmodMixin :=
   @Num.NormedMixin _ _ _ (@mx_norm K m.+1 n.+1) (@ler_mx_norm'_add _ _ _)
     (@mx_norm_eq0 _ _ _) (@mx_norm'_natmul _ _ _) (@mx_normN _ _ _).
 
 Canonical matrix_normedZmodType :=
-  NormedZmoduleType K 'M[K]_(m.+1, n.+1) matrix_normedZmodMixin.
+  NormedZmodType K 'M[K]_(m.+1, n.+1) matrix_normedZmodMixin.
 
 Lemma mx_norm_ball :
   @ball _ [uniformType K of 'M[K^o]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
@@ -1525,7 +1429,7 @@ Proof.
 rewrite /= /normr /= predeq3E => x e y; split.
 - move=> xe_y; rewrite /ball_ mx_normE.
   (* TODO:  lemma : ball x e y -> 0 < e *)
-  have lee0: ( 0 < e) by rewrite (le_lt_trans _ (xe_y ord0 ord0)) //.
+  have lee0 : ( 0 < e) by rewrite (le_lt_trans _ (xe_y ord0 ord0)) //.
   have -> : e = (NonnegNum (ltW lee0))%:nnnum by [].
   rewrite nonneg_ltE; apply/Bigmaxr_nonneg.bigmaxr_ltrP.
 - split; [rewrite -nonneg_ltE //= | move=> ??; rewrite !mxE; exact: xe_y].
@@ -1563,32 +1467,31 @@ End matrix_NormedModule.
 
 (** ** Pairs *)
 
-Section prod_NormedModule_realDomainType.
+Section prod_NormedModule.
+Context {K : numFieldType} {U V : normedModType K}.
+Import Num.
 
-Context {K : realDomainType (* TODO: generalize to numFieldType*)} {U V : normedModType K}.
-
-Lemma prod_normE (x : U * V) : `|x| = maxr `|x.1| `|x.2|.
+Lemma prod_normE (x : U * V) : `| x | = ProdNormedZmodule.norm x.
 Proof. by []. Qed.
 
-Lemma prod_norm_scale (l : K) (x : U * V) : `|l *: x| = `|l| * `|x|.
-Proof. by rewrite !prod_normE !normmZ maxr_pmulr. Qed.
-
-End prod_NormedModule_realDomainType.
-
-Section prod_NormedModule_realFieldType.
-
-Context {K : realFieldType (* TODO: generalize to numFieldType*)} {U V : normedModType K}.
-
-Lemma ball_prod_normE : ball = ball_ (@normr _ [normedZmodType K of U * V]).
+Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof.
-rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
-rewrite /ball /= /prod_ball.
-by rewrite -!ball_normE /ball_ ltUx; split=> /andP.
+rewrite ProdNormedZmodule.prod_normE !normmZ.
+have [/eqP ->|l0] := boolP (l == 0).
+  by rewrite !(normr0,mul0r) joinxx /= normr0.
+by rewrite Nonneg.nonneg_maxr //; congr ((maxr _ _ )%:nnnum); apply val_inj => /=;
+  rewrite !(normr_id,normrM).
 Qed.
 
-Lemma prod_norm_ball :
-  @ball _ [uniformType K of U * V] = ball_ (fun x => `|x|).
-Proof. by rewrite /= -ball_prod_normE. Qed.
+Lemma ball_prod_normE : ball = ball_ (fun x => `| x : U * V |).
+Proof.
+rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
+rewrite /ball /= /prod_ball -!ball_normE /ball_ /=.
+by rewrite Num.Nonneg.ltUx_nonneg /= !normr_id; split=> /andP.
+Qed.
+
+Lemma prod_norm_ball : @ball _ [uniformType K of U * V] = ball_ (fun x => `|x|).
+Proof. by rewrite /= - ball_prod_normE. Qed.
 
 Definition prod_UniformNormedZmodMixin :=
   UniformNormedZmodule.Mixin prod_norm_ball.
@@ -1599,10 +1502,10 @@ Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
 Canonical prod_normedModType :=
   NormedModType K (U * V) prod_NormedModMixin.
 
-End prod_NormedModule_realFieldType.
+End prod_NormedModule.
 
 Section example_of_sharing.
-Variables (K : realFieldType).
+Variables (K : numFieldType).
 
 Goal forall m n (M N : 'M[K]_(m.+1, n.+1)),
   `|M + N| <= `|M| + `|N|.
@@ -1619,14 +1522,13 @@ End example_of_sharing.
 
 Section prod_NormedModule_lemmas.
 
-Context {T : Type} {K : realFieldType (* TODO: generalize to numFieldType *)} {U : normedModType K}
-                   {V : normedModType K}.
+Context {T : Type} {K : numFieldType} {U V : normedModType K}.
 
 Lemma flim_norm2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
   forall eps, 0 < eps ->
-   \forall y' \near F & z' \near G, `|(y, z) - (y', z')| < eps.
+   \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
 Proof. exact: flim_normP. Qed.
 
 (* Lemma flim_norm_supP {F : set (set U)} {G : set (set V)} *)
@@ -1698,7 +1600,7 @@ rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
           ?ler_addl //.
   rewrite -ltr_pdivl_mull // ?(lt_le_trans ltr01) ?ler_addr //; near: z.
   by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
-have zM : `|z| < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
+have zM : @normr _ V z < M by near: z; near: M; apply: flim_bounded; apply: flim_refl.
 rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW//.
 rewrite -ltr_pdivl_mulr ?(le_lt_trans _ zM) //.
 near: l; apply: (flim_norm (_ : K^o)) => //.
@@ -2041,12 +1943,13 @@ End TODO_add_to_ssrnum.
 Section cvg_seq_bounded.
 Context {K : numFieldType}.
 Local Notation "'+oo'" := (@ERPInf K).
+Import Num.Nonneg.
 
 (* TODO: simplify using extremumP when PR merged in mathcomp *)
 Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
-  [cvg a in V] -> {M | forall n, normr (a n) <= M}.
+  [cvg a in V] -> {M | forall n, @normr _ V (a n) <= M}.
 Proof.
-move=> a_cvg; suff: exists M, M \is Num.real /\ forall n, normr (a n) <= M.
+move=> a_cvg; suff: exists M, M \is Num.real /\ forall n, `|a n| <= M.
   by move=> /(@getPex [pointedType of K^o]) [?]; set M := get _; exists M.
 near +oo => M.
 have [//|Mreal [N _ /(_ _ _) /ltW a_leM]] := !! near (flim_bounded_real a_cvg) M.
@@ -2063,7 +1966,7 @@ Grab Existential Variables. all: end_near. Qed.
 End cvg_seq_bounded.
 
 Section some_sets.
-Variable R : realFieldType (* TODO: generalize to numFieldType *).
+Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 
 (** Some open sets of [R] *)
 
@@ -2328,7 +2231,7 @@ Grab Existential Variables. all: end_near. Qed.
 (** Local properties in [R] *)
 
 (* NB: this is a proof that was in Rbar and that has been ported to {ereal _} *)
-Lemma lt_ereal_locally (R : realFieldType (* TODO: generalize to numFieldType *)) (a b : {ereal R}) (x : R) :
+Lemma lt_ereal_locally (R : realFieldType (* TODO: generalize to numFieldType? *)) (a b : {ereal R}) (x : R) :
   lt_ereal a x%:E -> lt_ereal x%:E b ->
   exists delta : {posnum R},
     forall y, `|y - x| < delta%:num -> lt_ereal a y%:E && lt_ereal y%:E b.
@@ -2350,7 +2253,7 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - by exists 1%:pos.
 Qed.
 
-Lemma locally_interval (R : realFieldType (* TODO: generalize to numFieldType *) ) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
+Lemma locally_interval (R : realFieldType (* TODO: generalize to numFieldType? *) ) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
   lt_ereal a x%:E -> lt_ereal x%:E b ->
   (forall y : R, lt_ereal a y%:E -> lt_ereal y%:E b -> P y) ->
   locally x P.
@@ -2519,7 +2422,7 @@ Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
 Proof.
 rewrite compact_cover => Aco.
 have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  move=> p Ap; exists (ifloor `|p| + 1) => //.
+  move=> p Ap; exists (ifloor (@normr _ V p) (*`|p|*) + 1) => //.
   by rewrite rmorphD /= -floorE floorS_gtr.
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite -subr_gt0 => ltpn.
@@ -2611,7 +2514,7 @@ Qed.
 (** Open sets in [Rbar] *)
 
 Section open_sets_in_Rbar.
-Variable R : realFieldType (* TODO: generalize to numFieldType *).
+Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 
 Lemma open_ereal_lt y : open [set u : R^o | lt_ereal u%:E y].
 Proof.
@@ -2669,9 +2572,7 @@ Definition ereal_loc_seq (R : numDomainType) (x : {ereal R}) (n : nat) := match 
   end.
 
 Lemma flim_ereal_loc_seq (R : realType) (x : {ereal R}) :
-  flim (filter_of (Phantom (nat -> R^o) (ereal_loc_seq x)))
-       (filter_of (Phantom ((R^o -> Prop) -> Prop) (@ereal_locally' R x))).
-(*TODO(notation issue): was ereal_loc_seq x --> ereal_locally' x *)
+  ereal_loc_seq x --> ereal_locally' x.
 Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[delta] Hp] |[delta [deltareal Hp]] |[delta [deltareal Hp]]]; last 2 first.

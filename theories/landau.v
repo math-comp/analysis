@@ -500,7 +500,7 @@ End Domination.
 
 Section Domination_realFieldType.
 
-Context {K : realFieldType (* TODO: generalize to numFieldType *)} {T : Type} {V W : normedModType K}.
+Context {K : realFieldType (* TODO: generalize to numFieldType? *)} {T : Type} {V W : normedModType K}.
 
 Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|f x| <= k * `|g x|.
@@ -978,7 +978,7 @@ End littleo_bigO_transitivity.
 
 Section littleo_bigO_transitivity_realFieldType.
 
-Context {K : realFieldType (* TODO: generalize to numFieldType *)} {T : Type} {V W Z : normedModType K}.
+Context {K : realFieldType (* TODO: generalize to numFieldType? *)} {T : Type} {V W Z : normedModType K}.
 
 Lemma eqaddO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [O_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
@@ -1012,7 +1012,7 @@ End littleo_bigO_transitivity_realFieldType.
 
 Section rule_of_products_in_R.
 
-Variables (R : realType (* TODO: generalize to numDomainType*)) (pT : pointedType).
+Variables (R : realType (* TODO: generalize to numDomainType? *)) (pT : pointedType).
 
 Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
