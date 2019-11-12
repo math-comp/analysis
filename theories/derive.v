@@ -748,7 +748,7 @@ have -> : (ku^-1 *: u, kv^-1 *: v) =
   by rewrite invf_div.
 rewrite normmZ ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
 rewrite Num.ProdNormedZmodule.prod_normE /= !normmZ !ger0_norm // ?invr_ge0 ?ltW //.
-by rewrite !mulVf ?gt_eqF //= joinxx (_ : _%:nnnum = 1) ?ltr1n // Num.Nonneg.nonnegE normr1.
+by rewrite !mulVf ?gt_eqF //= joinxx (_ : _%:nng = 1) ?ltr1n //= normr1.
 Qed.
 
 Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
@@ -757,12 +757,11 @@ Proof.
 move=> fc; have [_ /posnumP[k] fschwarz] := bilinear_schwarz fc.
 apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (le_trans (fschwarz _ _))//.
 rewrite ler_pmul ?pmulr_rge0 //; last first.
-  rewrite Num.ProdNormedZmodule.prod_normE /=.
-  by rewrite Num.Nonneg.nonneg_lexU; apply/orP; right; apply/Num.Nonneg.nonneg_le.
+  by rewrite Num.Nonneg.nonneg_lexU /= 2!normr_id lexx orbT.
 rewrite -ler_pdivl_mull //.
 suff : `|x| <= k%:num ^-1 * e%:num.
   apply: le_trans.
-  by rewrite Num.ProdNormedZmodule.prod_normE Num.Nonneg.nonneg_lexU; apply/orP; left; apply/Num.Nonneg.nonneg_le.
+  by rewrite Num.Nonneg.nonneg_lexU /= 2!normr_id lexx.
 near: x; rewrite !near_simpl; apply/locally_le_locally_norm.
 by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite distrC subr0 => /ltW.
 Grab Existential Variables. all: end_near. Qed.
