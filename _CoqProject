@@ -11,6 +11,7 @@ theories/classical_sets.v
 theories/Rstruct.v
 theories/Rbar.v
 theories/topology.v
+theories/prodnormedzmodule.v
 theories/normedtype.v
 theories/forms.v
 theories/derive.v

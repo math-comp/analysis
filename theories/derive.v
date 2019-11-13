@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop order matrix interval.
 Require Import boolp reals.
-Require Import classical_sets posnum topology normedtype landau forms.
+Require Import classical_sets posnum topology prodnormedzmodule normedtype landau forms.
 
 (******************************************************************************)
 (* This file provides a theory of differentiation. It includes the standard   *)
@@ -747,8 +747,11 @@ have -> : (ku^-1 *: u, kv^-1 *: v) =
   rewrite mulrC -[_ *: u]scalerA [X in X *: v]mulrC -[_ *: v]scalerA.
   by rewrite invf_div.
 rewrite normmZ ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
-rewrite Num.ProdNormedZmodule.prod_normE /= !normmZ !ger0_norm // ?invr_ge0 ?ltW //.
-by rewrite !mulVf ?gt_eqF //= joinxx (_ : _%:nng = 1) ?ltr1n //= normr1.
+rewrite prod_normE /= (_ : _%:nng = 1%:nng); last first.
+  by apply/val_inj => /=; rewrite normmZ normrV ?unitfE ?gt_eqF // normr_id mulVf ?gt_eqF.
+rewrite (_ : _%:nng = 1%:nng); last first.
+  by apply/val_inj => /=; rewrite normmZ normrV ?unitfE ?gt_eqF // normr_id mulVf ?gt_eqF.
+by rewrite joinxx /= ltr1n.
 Qed.
 
 Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
@@ -756,12 +759,9 @@ Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
 Proof.
 move=> fc; have [_ /posnumP[k] fschwarz] := bilinear_schwarz fc.
 apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (le_trans (fschwarz _ _))//.
-rewrite ler_pmul ?pmulr_rge0 //; last first.
-  by rewrite Num.Nonneg.nonneg_lexU /= 2!normr_id lexx orbT.
+rewrite ler_pmul ?pmulr_rge0 //; last by rewrite nng_lexU /= lexx orbT.
 rewrite -ler_pdivl_mull //.
-suff : `|x| <= k%:num ^-1 * e%:num.
-  apply: le_trans.
-  by rewrite Num.Nonneg.nonneg_lexU /= 2!normr_id lexx.
+suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite nng_lexU /= lexx.
 near: x; rewrite !near_simpl; apply/locally_le_locally_norm.
 by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite distrC subr0 => /ltW.
 Grab Existential Variables. all: end_near. Qed.
@@ -825,8 +825,7 @@ Lemma eqo_pair (U V' W' : normedModType R) (F : filter_on U)
   (f : U -> V') (g : U -> W') :
   (fun t => ([o_F id of f] t, [o_F id of g] t)) =o_F id.
 Proof.
-apply/eqoP => _/posnumP[e]; near=> x.
-rewrite Num.Nonneg.nonneg_leUx /= !normr_id.
+apply/eqoP => _/posnumP[e]; near=> x; rewrite nng_leUx /=.
 by apply/andP; split; near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
 

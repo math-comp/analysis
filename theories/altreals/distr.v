@@ -173,7 +173,7 @@ End DistrTheory.
 
 Lemma isdistr_finP {R : realType} {I : finType} (mu : I -> R) :
   (isdistr mu) <-> (forall x, 0 <= mu x) /\ (\sum_j mu j <= 1).
-Proof. split=> -[ge0_mu le1]; split=> //.
+Proof. split=> -[ ge0_mu le1]; split=> //.
 + by apply/le1; rewrite /index_enum -enumT enum_uniq.
 + move=> J uqJ; rewrite big_uniq 1?(le_trans _ le1) //=.
   by rewrite [X in _<=X](bigID (mem J)) /= ler_addl sumr_ge0.
