@@ -4,6 +4,7 @@ From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg.
 From mathcomp Require Import ssrnum.
 Require Import boolp ereal reals.
 Require Import classical_sets posnum topology normedtype.
+Require Import prodnormedzmodule.
 
 (******************************************************************************)
 (*              BACHMANN-LANDAU NOTATIONS : BIG AND LITTLE O                  *)
@@ -511,11 +512,14 @@ Let bigO_ex_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
 Lemma bigO_exP (F : set (set T)) (f : T -> V) (g : T -> W) :
   Filter F -> bigO_ex_def F f g <-> bigO_def F f g.
 Proof.
-split=> [[k _ fOg] | [k [kreal fOg]]].
-  exists k; rewrite num_real; split => // l ltkl; move: fOg; apply: filter_app; near=> x.
-  by move/le_trans; apply; rewrite ler_wpmul2r // ltW.
-exists (Num.max 1 (k + 1)); first by rewrite ltxU ltr01.
-by apply: fOg; rewrite ltxU orbC ltr_addl ltr01.
+split=> [[k k0 fOg] | [k [kreal fOg]]].
+  exists k; rewrite realE (ltW k0) /=; split=> // l ltkl; move: fOg.
+  by apply: filter_app; near=> x => /le_trans; apply; rewrite ler_wpmul2r // ltW.
+exists (Num.max 1%:nng `|k + 1|%:nng)%:nngnum.
+  by rewrite -nng_lt /= ltxU /= nng_lt ltr01.
+apply: fOg; rewrite (@lt_le_trans _ _ `|k + 1|) //.
+by rewrite (@lt_le_trans _ _ (k + 1)) ?ltr_addl // real_ler_norm ?(realD,real1).
+by rewrite -nng_le lexU orbC lexx.
 Unshelve. end_near. Qed.
 
 Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
@@ -867,6 +871,7 @@ Grab Existential Variables. all: end_near. Qed.
 Section Limit.
 
 Context {K : realFieldType} {T : Type} {V W X : normedModType K}.
+(*TODO : generalize to numFieldtype *)
 
 Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
   f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
