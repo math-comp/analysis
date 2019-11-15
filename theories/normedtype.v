@@ -1875,7 +1875,7 @@ Local Notation "'+oo'" := (@ERPInf K).
 
 (* TODO: simplify using extremumP when PR merged in mathcomp *)
 Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
-  [cvg a in V] -> {M | forall n, @normr _ V (a n) <= M}.
+  [cvg a in V] -> {M | forall n, `|a n| <= M}.
 Proof.
 move=> a_cvg; suff: exists M, M \is Num.real /\ forall n, `|a n| <= M.
   by move=> /(@getPex [pointedType of K^o]) [?]; set M := get _; exists M.
@@ -2156,10 +2156,6 @@ by rewrite inE leftv letb.
 Grab Existential Variables. all: end_near. Qed.
 
 (** Local properties in [R] *)
-
-Lemma posnum_le (R : numDomainType) (x y : {posnum R}) :
-  (x <= y) = (x%:num <= y%:num).
-Proof. by []. Qed.
 
 (* TODO: generalize to numFieldType? *)
 Lemma lt_ereal_locally (R : realFieldType) (a b : {ereal R}) (x : R) :
