@@ -4,6 +4,7 @@ From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg.
 From mathcomp Require Import ssrnum.
 Require Import boolp ereal reals.
 Require Import classical_sets posnum topology normedtype.
+Require Import prodnormedzmodule.
 
 (******************************************************************************)
 (*              BACHMANN-LANDAU NOTATIONS : BIG AND LITTLE O                  *)
@@ -290,8 +291,7 @@ Lemma showo : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). Proof. by []. Qed.
 
 (* Tentative to handle small o and big O notations *)
 Section Domination.
-
-Context {K : numFieldType(*absRingType*)} {T : Type} {V W : normedModType K}.
+Context {K : numFieldType} {T : Type} {V W : normedModType K}.
 
 Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   forall eps, 0 < eps -> \forall x \near F, `|f x| <= eps * `|g x|.
@@ -496,12 +496,6 @@ Lemma scaleox (F : filter_on T) a (f : T -> V) e x :
   a *: ([o_F e of f] x) = [o_F e of a *: [o_F e of f]] x.
 Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
 
-End Domination.
-
-Section Domination_realFieldType.
-Context {K : realFieldType} {T : Type} {V W : normedModType K}.
-(* TODO: generalize to K : numFieldType? *)
-
 Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|f x| <= k * `|g x|.
 
@@ -511,11 +505,14 @@ Let bigO_ex_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
 Lemma bigO_exP (F : set (set T)) (f : T -> V) (g : T -> W) :
   Filter F -> bigO_ex_def F f g <-> bigO_def F f g.
 Proof.
-split=> [[k _ fOg] | [k [kreal fOg]]].
-  exists k; rewrite num_real; split => // l ltkl; move: fOg; apply: filter_app; near=> x.
-  by move/le_trans; apply; rewrite ler_wpmul2r // ltW.
-exists (Num.max 1 (k + 1)); first by rewrite ltxU ltr01.
-by apply: fOg; rewrite ltxU orbC ltr_addl ltr01.
+split=> [[k k0 fOg] | [k [kreal fOg]]].
+  exists k; rewrite realE (ltW k0) /=; split=> // l ltkl; move: fOg.
+  by apply: filter_app; near=> x => /le_trans; apply; rewrite ler_wpmul2r // ltW.
+exists (Num.max 1%:nng `|k + 1|%:nng)%:nngnum.
+  by rewrite -nng_lt /= ltxU /= nng_lt ltr01.
+apply: fOg; rewrite (@lt_le_trans _ _ `|k + 1|) //.
+by rewrite (@lt_le_trans _ _ (k + 1)) ?ltr_addl // real_ler_norm ?(realD,real1).
+by rewrite -nng_le lexU orbC lexx.
 Unshelve. end_near. Qed.
 
 Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
@@ -548,9 +545,6 @@ Canonical bigO0 (F : filter_on T) g := BigO (asboolT (@bigO0_subproof F g _)).
 Definition the_bigO (u : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := bigO_fun (insubd (bigO0 F h) f).
 Arguments the_bigO : simpl never, clear implicits.
-
-(* NB: duplication from Section Domination *)
-Notation PhantomF := (Phantom (set (set T))).
 
 Notation mkbigO tag x := (the_bigO tag _ (PhantomF x)).
 (* Parsing *)
@@ -706,8 +700,6 @@ Lemma eqaddOEx (F : filter_on T) (f g : T -> V) h (e : T -> W) :
   (forall x, f x = g x +O_(x \near F) (e x)).
 Proof. by have := @eqaddOE F f g h e; rewrite !funeqE. Qed.
 
-(* NB: duplicate from Section Domination *)
-Notation mklittleo tag x := (@the_littleo _ _ _ _ tag _ (PhantomF x)).
 (* Parsing *)
 Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e).
 (*Printing*)
@@ -728,9 +720,9 @@ Proof. by apply: eqOE; rewrite littleo_eqo. Qed.
 Canonical littleo_is_bigO (F : filter_on T) (e : T -> W) (f : {o_F e}) :=
   BigO (asboolT (eqO_bigO (littleo_eqO f))).
 Canonical the_littleo_bigO (tag : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := [bigO of @the_littleo _ _ _ _ tag F phF f h].
+  (phF : phantom (set (set T)) F) f h := [bigO of the_littleo tag F phF f h].
 
-End Domination_realFieldType.
+End Domination.
 
 Notation "{o_ F f }" := (@littleo_type _ _ _ _ F f).
 Notation "{O_ F f }" := (@bigO_type _ _ _ _ F f).
@@ -865,8 +857,7 @@ by rewrite lt_def normr_eq0 a0 normr_ge0.
 Grab Existential Variables. all: end_near. Qed.
 
 Section Limit.
-
-Context {K : realFieldType} {T : Type} {V W X : normedModType K}.
+Context {K : numFieldType} {T : Type} {V W X : normedModType K}.
 
 Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
   f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
@@ -919,16 +910,6 @@ by rewrite -ler_pdivl_mull // mulrA; near: x; apply: littleoP.
 Grab Existential Variables. all: end_near. Qed.
 Arguments bigO_littleo_eqo {F}.
 
-Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
-  f =O_F g -> ([O_F f of h] : _ -> _) =O_F g.
-Proof.
-move->; apply/eqOP; have [k c1 kOg] := bigO _ g. have [k' c2 k'Ok] := bigO _ k.
-near=> c; move: k'Ok kOg; apply: filter_app2; near=> x => lek'c2k.
-rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans; apply.
-by rewrite ler_pmul //; near: c; apply: locally_pinfty_ge.
-Unshelve. end_near. Grab Existential Variables. all: end_near. Qed.
-Arguments bigO_bigO_eqO {F}.
-
 Lemma add2o (F : filter_on T) (f g : T -> V) (e : T -> W) :
   f =o_F e -> g =o_F e -> f + g =o_F e.
 Proof. by move=> -> ->; rewrite addo. Qed.
@@ -961,9 +942,23 @@ Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
 Proof. by move=> ->; apply: eqoE; rewrite (littleo_bigO_eqo g). Qed.
 
 End Limit.
-
 Arguments littleo_bigO_eqo {K T V W X F}.
 Arguments bigO_littleo_eqo {K T V W X F}.
+
+Section Limit_realFieldType.
+Context {K : realFieldType} (*TODO: generalize to numFieldType?*) {T : Type} {V W X : normedModType K}.
+
+Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
+  f =O_F g -> ([O_F f of h] : _ -> _) =O_F g.
+Proof.
+move->; apply/eqOP; have [k c1 kOg] := bigO _ g. have [k' c2 k'Ok] := bigO _ k.
+near=> c; move: k'Ok kOg; apply: filter_app2; near=> x => lek'c2k.
+rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans; apply.
+by rewrite ler_pmul //; near: c; apply: locally_pinfty_ge.
+Unshelve. end_near. Grab Existential Variables. all: end_near. Qed.
+Arguments bigO_bigO_eqO {F}.
+End Limit_realFieldType.
+
 Arguments bigO_bigO_eqO {K T V W X F}.
 
 Section littleo_bigO_transitivity.
@@ -976,10 +971,8 @@ Proof. by move=> -> ->; rewrite -addrA addo. Qed.
 
 End littleo_bigO_transitivity.
 
-Section littleo_bigO_transitivity_realFieldType.
-
-Context {K : realFieldType} {T : Type} {V W Z : normedModType K}.
-(* TODO: generalize to K : numFieldType? *)
+Section littleo_bigO_transitivity.
+Context {K : numFieldType} {T : Type} {V W Z : normedModType K}.
 
 Lemma eqaddO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [O_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
@@ -997,10 +990,6 @@ Lemma eqo_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
   f = [o_F g of f'] -> g = [o_F h of g'] -> f =o_F h.
 Proof.  by move=> -> ->; rewrite (littleo_bigO_eqo h). Qed.
 
-Lemma eqO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
-  f = [O_F g of f'] -> g = [O_F h of g'] -> f =O_F h.
-Proof. by move=> -> ->; rewrite (bigO_bigO_eqO h). Qed.
-
 Lemma eqOo_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
   f = [O_F g of f'] -> g = [o_F h of g'] -> f =o_F h.
 Proof. by move=> -> ->; rewrite (bigO_littleo_eqo h). Qed.
@@ -1008,10 +997,17 @@ Proof. by move=> -> ->; rewrite (bigO_littleo_eqo h). Qed.
 Lemma eqoO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
   f = [o_F g of f'] -> g = [O_F h of g'] -> f =o_F h.
 Proof. by move=> -> ->; rewrite (littleo_bigO_eqo h). Qed.
+End littleo_bigO_transitivity.
 
+Section littleo_bigO_transitivity_realFieldType.
+Context {K : realFieldType} (*TODO: generalize to numFieldType?*) {T : Type} {V W Z : normedModType K}.
+
+Lemma eqO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
+  f = [O_F g of f'] -> g = [O_F h of g'] -> f =O_F h.
+Proof. by move=> -> ->; rewrite (bigO_bigO_eqO h). Qed.
 End littleo_bigO_transitivity_realFieldType.
 
-Section rule_of_products_in_R.
+Section rule_of_products_rcfType.
 
 Variables (R : rcfType) (pT : pointedType).
 (* TODO: generalize to R : numDomainType? *)
@@ -1035,7 +1031,7 @@ rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
 
-End rule_of_products_in_R.
+End rule_of_products_rcfType.
 
 Section Shift.
 
@@ -1119,7 +1115,7 @@ rewrite -normm_s.
 have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
 rewrite -linearZ fk //= distrC subr0 normmZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //; last by near: k; exists 0; rewrite real0.
-by rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: locally_pinfty_gt.
+rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: locally_pinfty_gt.
 Grab Existential Variables. all: end_near. Qed.
 
 End Linear3.
