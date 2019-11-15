@@ -500,7 +500,7 @@ Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
 End Domination.
 
 Section Domination_realFieldType.
-Context {K : realFieldType} {T : Type} {V W : normedModType K}.
+Context {K : numFieldType} {T : Type} {V W : normedModType K}.
 (* TODO: generalize to K : numFieldType? *)
 
 Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
@@ -870,8 +870,8 @@ Grab Existential Variables. all: end_near. Qed.
 
 Section Limit.
 
-Context {K : realFieldType} {T : Type} {V W X : normedModType K}.
-(*TODO : generalize to numFieldtype *)
+Context {K : numFieldType} {T : Type} {V W X : normedModType K}.
+(*proven here while admitting ereal_locally_realFieldType in normedtype.v*)
 
 Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
   f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
@@ -983,7 +983,7 @@ End littleo_bigO_transitivity.
 
 Section littleo_bigO_transitivity_realFieldType.
 
-Context {K : realFieldType} {T : Type} {V W Z : normedModType K}.
+Context {K : numFieldType} {T : Type} {V W Z : normedModType K}.
 (* TODO: generalize to K : numFieldType? *)
 
 Lemma eqaddO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
@@ -1018,7 +1018,7 @@ End littleo_bigO_transitivity_realFieldType.
 
 Section rule_of_products_in_R.
 
-Variables (R : rcfType) (pT : pointedType).
+Variables (R : numDomainType) (pT : pointedType).
 (* TODO: generalize to R : numDomainType? *)
 
 Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
