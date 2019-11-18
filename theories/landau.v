@@ -1018,7 +1018,7 @@ End littleo_bigO_transitivity_realFieldType.
 
 Section rule_of_products_in_R.
 
-Variables (R : numDomainType) (pT : pointedType).
+Variables (R : rcfType) (pT : pointedType).
 (* TODO: generalize to R : numDomainType? *)
 
 Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
