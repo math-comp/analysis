@@ -2157,10 +2157,6 @@ Grab Existential Variables. all: end_near. Qed.
 
 (** Local properties in [R] *)
 
-Lemma posnum_le (R : numDomainType) (x y : {posnum R}) :
-  (x <= y) = (x%:num <= y%:num).
-Proof. by []. Qed.
-
 (* TODO: generalize to numFieldType? *)
 Lemma lt_ereal_locally (R : realFieldType) (a b : {ereal R}) (x : R) :
   lt_ereal a x%:E -> lt_ereal x%:E b ->

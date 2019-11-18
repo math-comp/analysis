@@ -136,6 +136,13 @@ rewrite andb_idl //; exact/lt_trans.
 rewrite andb_idr //; exact/lt_trans.
 Qed.
 
+Lemma pos_ltxI (a : R) x y : a < (Num.min x y)%:num = (a < x%:num) && (a < y%:num).
+Proof.
+case: (ltP x y)=> ?.
+by rewrite andb_idr // => /lt_trans; apply.
+by rewrite andb_idl // => /lt_le_trans; apply.
+Qed.
+
 End PosNum.
 Hint Extern 0 ((0%R <= _)%O = true) => exact: posnum_ge0 : core.
 Hint Extern 0 ((_ != 0%R)%O = true) => exact: posnum_neq0 : core.
