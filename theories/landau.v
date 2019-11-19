@@ -941,13 +941,6 @@ Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
   f =o_F g -> [o_F f of h] =o_F g.
 Proof. by move=> ->; apply: eqoE; rewrite (littleo_bigO_eqo g). Qed.
 
-(* End Limit. *)
-(* Arguments littleo_bigO_eqo {K T V W X F}. *)
-(* Arguments bigO_littleo_eqo {K T V W X F}. *)
-
-(* Section Limit_realFieldType. *)
-(* Context {K : numFieldType} (*TODO: generalize to numFieldType?*) {T : Type} {V W X : normedModType K}. *)
-
 Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> ([O_F f of h] : _ -> _) =O_F g.
 Proof.
@@ -957,7 +950,7 @@ rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans; appl
 by rewrite ler_pmul //; near: c; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. all: end_near. Qed.
 Arguments bigO_bigO_eqO {F}.
-(* End Limit_realFieldType. *)
+
 
 End Limit.
 Arguments littleo_bigO_eqo {K T V W X F}.
@@ -1000,31 +993,15 @@ Proof. by move=> -> ->; rewrite (bigO_littleo_eqo h). Qed.
 Lemma eqoO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
   f = [o_F g of f'] -> g = [O_F h of g'] -> f =o_F h.
 Proof. by move=> -> ->; rewrite (littleo_bigO_eqo h). Qed.
-(* End littleo_bigO_transitivity. *)
-
-(* Section littleo_bigO_transitivity_realFieldType. *)
-(* Context {K : numFieldType} (*TODO: generalize to numFieldType?*) {T : Type} {V W Z : normedModType K}. *)
 
 Lemma eqO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
   f = [O_F g of f'] -> g = [O_F h of g'] -> f =O_F h.
 Proof. by move=> -> ->; rewrite (bigO_bigO_eqO h). Qed.
-(* End littleo_bigO_transitivity_realFieldType. *)
+
 End littleo_bigO_transitivity.
 
 
 Section rule_of_products_in_numClosedFields.
-(* Variables (R : realType) (pT : pointedType). *)
-(* (* TODO: generalize to R : numDomainType? *) *)
-
-(* Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) : *)
-(*   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2). *)
-(* Proof. *)
-(* rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x. *)
-(* rewrite [`|_|]normrM -(sqr_sqrtr (ltW [gt0 of e%:num])) expr2. *)
-(* rewrite (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x; *)
-(* by have [/= h] := littleo; apply. *)
-(* Grab Existential Variables. all: end_near. Qed. *)
-
 
 Variables (R : numClosedFieldType) (pT : pointedType).
 (* TODO: generalize to R : numDomainType? *)

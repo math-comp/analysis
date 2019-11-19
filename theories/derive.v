@@ -146,7 +146,7 @@ Notation "''J' f p" := (jacobian f p).
 
 Section DifferentialR.
 
-Context {R : realFieldType} {V W : normedModType R}.
+Context {R : numFieldType} {V W : normedModType R}.
 
 (* split in multiple bits:
 - a linear map which is locally bounded is a little o of 1
@@ -172,8 +172,10 @@ Lemma normm_littleo x (f : X -> Y) : `| [o_(x \near x) (1 : R^o) of f x]| = 0.
 Proof.
 rewrite /cst /=; have [e /(_ (`|e x|/2) _)/locally_singleton /=] := littleo.
 rewrite pmulr_lgt0 // [`|1 : R^o|]normr1 mulr1 [X in X <= _]splitr.
-by rewrite ger_addr pmulr_lle0 // => /implyP; case: ltrgtP; rewrite ?normr_lt0.
-Qed.
+rewrite ger_addr pmulr_lle0 // => /implyP.
+case : real_ltgtP; rewrite ?realE ?normrE //=.
+by apply/orP; left.
+Qed.  
 
 Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :
   f @ x --> (0 : Y) -> [o_x f of h] x = 0.
