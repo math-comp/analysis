@@ -518,17 +518,19 @@ move=> [M [Mreal AM]]; exists (M * 2); split.
 by move=> x; rewrite -ltr_pdivl_mulr //; apply: AM.
 Qed.
 
+(* End ereal_locally_numFieldType. *)
+
+(* Section ereal_locally_realFieldType. *)
+(* Context {R : numFieldType}. (*TODO : generalize to numFieldtype *) *)
+
+Lemma locally_pinfty_gt (c : {posnum R}) : \forall x \near +oo, c%:num < x.
+Proof. by  exists c%:num; split => // ; rewrite realE posnum_ge0. Qed.
+
+Lemma locally_pinfty_ge (c : {posnum R}) : \forall x \near +oo, c%:num <= x.
+Proof. by exists c%:num; rewrite realE posnum_ge0; split => //; apply: ltW. Qed.
+
+
 End ereal_locally_numFieldType.
-
-Section ereal_locally_realFieldType.
-Context {R : realFieldType}.
-
-Lemma locally_pinfty_gt (c : R) : \forall x \near +oo, c < x.
-Proof. by exists c; split => //; rewrite num_real. Qed.
-
-Lemma locally_pinfty_ge (c : R) : \forall x \near +oo, c <= x.
-Proof. by exists c; rewrite num_real; split => //; apply: ltW. Qed.
-End ereal_locally_realFieldType.
 
 Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
@@ -1875,7 +1877,7 @@ Local Notation "'+oo'" := (@ERPInf K).
 
 (* TODO: simplify using extremumP when PR merged in mathcomp *)
 Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
-  [cvg a in V] -> {M | forall n, @normr _ V (a n) <= M}.
+  [cvg a in V] -> {M | forall n, `|a n| <= M}.
 Proof.
 move=> a_cvg; suff: exists M, M \is Num.real /\ forall n, `|a n| <= M.
   by move=> /(@getPex [pointedType of K^o]) [?]; set M := get _; exists M.
@@ -2156,10 +2158,6 @@ by rewrite inE leftv letb.
 Grab Existential Variables. all: end_near. Qed.
 
 (** Local properties in [R] *)
-
-Lemma posnum_le (R : numDomainType) (x y : {posnum R}) :
-  (x <= y) = (x%:num <= y%:num).
-Proof. by []. Qed.
 
 (* TODO: generalize to numFieldType? *)
 Lemma lt_ereal_locally (R : realFieldType) (a b : {ereal R}) (x : R) :
