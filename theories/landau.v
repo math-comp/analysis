@@ -1012,7 +1012,7 @@ Proof. by move=> -> ->; rewrite (bigO_bigO_eqO h). Qed.
 End littleo_bigO_transitivity.
 
 
-Section rule_of_products_in_R.
+Section rule_of_products_in_numClosedFields.
 (* Variables (R : realType) (pT : pointedType). *)
 (* (* TODO: generalize to R : numDomainType? *) *)
 
@@ -1053,7 +1053,7 @@ rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
 
-End rule_of_products_in_R.
+End rule_of_products_in_numClosedFields.
 
 Section Shift.
 
