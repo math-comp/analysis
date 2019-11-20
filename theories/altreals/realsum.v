@@ -169,7 +169,7 @@ Context {R : realType}.
 Lemma ncvg_mono (u : nat -> R) :
     (* {mono u : x y / (x <= y)%N >-> u x <= u y *)
     (forall x y, (x <= y)%N -> u x <= u y)
-  -> exists2 l, (-oo < l)%E & ncvg u l.
+  -> exists2 l, (-oo < l)%O & ncvg u l.
 Proof.
 move=> mono_u; pose E := [pred x | `[exists n, x == u n]].
 have nzE: nonempty E by exists (u 0%N); apply/imsetbP; exists 0%N.
