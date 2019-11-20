@@ -1000,24 +1000,18 @@ Proof. by move=> -> ->; rewrite (bigO_bigO_eqO h). Qed.
 
 End littleo_bigO_transitivity.
 
+Section rule_of_products_rcfType.
 
-Section rule_of_products_in_numClosedFields.
-
-Variables (R : numClosedFieldType) (pT : pointedType).
+Variables (R : rcfType) (pT : pointedType).
 (* TODO: generalize to R : numDomainType? *)
 
 Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
 Proof.
 rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
-rewrite [`|_|]normrM -(sqrCK (ltW [gt0 of e%:num])) expr2 sqrtCM. 
-rewrite (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x.
- have [/= h] := littleo; apply.
- by rewrite sqrtC_gt0 posnum_gt0. 
- have [/= h] := littleo; apply.
- by rewrite sqrtC_gt0 posnum_gt0. 
-by rewrite nnegrE; apply (ltW [gt0 of e%:num]).
-by rewrite nnegrE; apply (ltW [gt0 of e%:num]).
+rewrite [`|_|]normrM -(sqr_sqrtr (ltW [gt0 of e%:num])) expr2.
+rewrite (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x;
+by have [/= h] := littleo; apply.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma mulO (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
@@ -1030,7 +1024,38 @@ rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. end_near. Qed.
 
-End rule_of_products_in_numClosedFields.
+End rule_of_products_rcfType.
+
+(* NB: almost a duplicate of Section rule_of_products_rcfType *)
+Section rule_of_products_numClosedFieldType.
+
+Variables (R : numClosedFieldType) (pT : pointedType).
+
+Lemma mulo_numClosedFieldType (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
+  [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
+Proof.
+rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
+rewrite [`|_|]normrM -(sqrCK (ltW [gt0 of e%:num])) expr2 sqrtCM.
+rewrite (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x.
+ have [/= h] := littleo; apply.
+ by rewrite sqrtC_gt0 posnum_gt0.
+ have [/= h] := littleo; apply.
+ by rewrite sqrtC_gt0 posnum_gt0.
+by rewrite nnegrE; apply (ltW [gt0 of e%:num]).
+by rewrite nnegrE; apply (ltW [gt0 of e%:num]).
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma mulO_numClosedFieldType (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
+  [O_F h1 of f] * [O_F h2 of g] =O_F (h1 * h2).
+Proof.
+rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
+near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
+rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
+rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
+by near: k; apply: locally_pinfty_ge.
+Unshelve. end_near. Grab Existential Variables. end_near. Qed.
+
+End rule_of_products_numClosedFieldType.
 
 Section Shift.
 
@@ -1457,7 +1482,7 @@ Notation "f '=Theta_' F h" := (f%function = mkbigTheta the_tag F f h).
 
 Section big_theta_in_R.
 
-Variables (R : realType) (pT : pointedType).
+Variables (R : rcfType (*realType*)) (pT : pointedType).
 
 Lemma addTheta (F : filter_on pT) (f g h : _ -> R^o)
   (f0 : forall x, 0 <= f x) (g0 : forall x, 0 <= g x) (h0 : forall x, 0 <= h x) :

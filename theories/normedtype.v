@@ -437,7 +437,7 @@ Canonical ereal_pointed := PointedType {ereal R} (+oo).
 Canonical ereal_filter := FilteredType R {ereal R} (ereal_locally).
 End ereal_locally.
 
-Section ereal_locally_numFieldType.
+Section ereal_locally.
 Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
 
@@ -518,19 +518,13 @@ move=> [M [Mreal AM]]; exists (M * 2); split.
 by move=> x; rewrite -ltr_pdivl_mulr //; apply: AM.
 Qed.
 
-(* End ereal_locally_numFieldType. *)
-
-(* Section ereal_locally_realFieldType. *)
-(* Context {R : numFieldType}. (*TODO : generalize to numFieldtype *) *)
-
 Lemma locally_pinfty_gt (c : {posnum R}) : \forall x \near +oo, c%:num < x.
 Proof. by  exists c%:num; split => // ; rewrite realE posnum_ge0. Qed.
 
 Lemma locally_pinfty_ge (c : {posnum R}) : \forall x \near +oo, c%:num <= x.
 Proof. by exists c%:num; rewrite realE posnum_ge0; split => //; apply: ltW. Qed.
 
-
-End ereal_locally_numFieldType.
+End ereal_locally.
 
 Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
