@@ -557,7 +557,7 @@ apply/(@le_trans _ _ (\sum_(j <- J) (real_of_er (*TODO: broken coercion*) (nlim 
 rewrite -lee_fin -nlim_sumR => [i _|].
   rewrite /F; case/boolP: `[< _ >] => [/asboolP //|].
   by move=> _; apply/iscvgC.
-rewrite leeNgt; apply/negP; pose s n := \sum_(j <- J) F j n.
+rewrite leNgt; apply/negP; pose s n := \sum_(j <- J) F j n.
 move/ncvg_gt=> -/(_ s (nlim_ncvg _)) [].
   suff: iscvg s by case=> l cs; exists l%:E.
   apply/iscvg_sum=> j _; rewrite /F; case/boolP: `[< _ >].
@@ -627,8 +627,8 @@ CoInductive dlim_spec f (x : T) : R -> Type :=
 Lemma dlimP f x : dlim_spec f x (dlim f x).
 Proof.
 rewrite dlimE; case: nlimP => [l h|?] /=; last by apply/DLimOut.
-have: (0%:E <= l)%E by apply/ncvg_geC: h => n; apply/ge0_mu.
-have: (l <= 1%:E)%E by apply/ncvg_leC: h => n; apply/le1_mu1.
+have: (0%:E <= l)%O by apply/ncvg_geC: h => n; apply/ge0_mu.
+have: (l <= 1%:E)%O by apply/ncvg_leC: h => n; apply/le1_mu1.
 by case: l h => // l h /= ge0_l ge1_; apply/DLimCvg.
 Qed.
 
@@ -1186,7 +1186,7 @@ Section Jensen.
 Context {R : realType} {I : finType}.
 
 Definition convexon (a b : {ereal R}) (f : R -> R) :=
-  forall x y, (a <= x%:E <= b)%E -> (a <= y%:E <= b)%E ->
+  forall x y, (a <= x%:E <= b)%O -> (a <= y%:E <= b)%O ->
     forall t, 0 <= t <= 1 ->
       f (t * x + (1 - t) * y) <= t * (f x) + (1 - t) * (f y).
 

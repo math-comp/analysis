@@ -750,9 +750,9 @@ Local Open Scope ereal_scope.
 (* -------------------------------------------------------------------- *)
 (* TODO: There are many duplications with `order.v`. Remove them.       *)
 Section ERealOrderTheory.
-Context {R : realType}.
+Context {R : realDomainType}.
 
-Local Open Scope ereal_scope.
+Local Open Scope order_scope.
 
 Implicit Types x y z : {ereal R}.
 
@@ -765,52 +765,20 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
-Lemma le0R (l : {ereal R}) : (0%:E <= l)%E -> (0 <= real_of_er(*TODO: coercion broken*) l :> R).
+Lemma le0R (l : {ereal R}) : 0%:E <= l -> (0%R <= real_of_er(*TODO: coercion broken*) l :> R).
 Proof. by case: l. Qed.
 
-Lemma leee x : x <= x.
-Proof. exact: lexx. Qed.
-
-Lemma ltee x : (x < x) = false.
-Proof. exact: ltxx. Qed.
-
-Lemma lteW x y : x < y -> x <= y.
-Proof. exact: ltW. Qed.
-
-Lemma eqe_le x y : (x == y) = (x <= y <= x).
-Proof. exact: eq_le. Qed.
-
-Lemma leeNgt x y : (x <= y) = ~~ (y < x).
-Proof. exact: leNgt. Qed.
-
-Lemma lteNgt x y : (x < y) = ~~ (y <= x).
-Proof. exact: ltNge. Qed.
-
-Lemma lee_eqVlt x y : (x <= y) = ((x == y) || (x < y)).
-Proof. exact: le_eqVlt. Qed.
-
-Lemma lte_neqAle x y : (x < y) = ((x != y) && (x <= y)).
-Proof. exact: lt_neqAle. Qed.
-
-Lemma lee_fin (x y : R) : (x%:E <= y%:E)%E = (x <= y)%R.
+Lemma lee_fin (x y : R) : (x%:E <= y%:E) = (x <= y)%R.
 Proof. by []. Qed.
 
-Lemma lte_fin (x y : R) : (x%:E < y%:E)%E = (x < y)%R.
+Lemma lte_fin (x y : R) : (x%:E < y%:E) = (x < y)%R.
 Proof. by []. Qed.
 
-Lemma lee_tofin (x y : R) : (x <= y)%R -> (x%:E <= y%:E)%E.
+Lemma lee_tofin (x y : R) : (x <= y)%R -> (x%:E <= y%:E).
 Proof. by []. Qed.
 
-Lemma lte_tofin (x y : R) : (x < y)%R -> (x%:E < y%:E)%E.
+Lemma lte_tofin (x y : R) : (x < y)%R -> (x%:E < y%:E).
 Proof. by []. Qed.
-
-Definition lee_trans := @le_trans _ [porderType of {ereal R}].
-
-Definition lte_trans := @lt_trans _ [porderType of {ereal R}].
-
-Definition lee_lt_trans := @le_lt_trans _ [porderType of {ereal R}].
-
-Definition lte_le_trans := @lt_le_trans _ [porderType of {ereal R}].
 
 Lemma lee_opp2 : {mono @eopp R : x y /~ (x <= y)}.
 Proof. by move=> x y; elift ler_opp2 : x y. Qed.

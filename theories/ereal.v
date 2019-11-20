@@ -123,6 +123,7 @@ Lemma minE_ereal x y : min_ereal x y = if le_ereal x y then x else y.
 Proof. by case: x y => [?||][?||] //=; case: leP. Qed.
 
 Lemma maxE_ereal x y : max_ereal x y = if le_ereal y x then x else y.
+Proof.
 Proof. by case: x y => [?||][?||] //=; case: ltP. Qed.
 
 Lemma le_total_ereal : total (@le_ereal R).
@@ -148,14 +149,6 @@ Notation "@ 'lee' R" :=
 Notation lte := (@Order.lt ereal_display _) (only parsing).
 Notation "@ 'lte' R" :=
   (@Order.lt ereal_display R) (at level 10, R at level 8, only parsing).
-
-Notation "x <= y" := (lee x y) : ereal_scope.
-Notation "x < y"  := (lte x y) : ereal_scope.
-
-Notation "x <= y <= z" := ((lee x y) && (lee y z)) : ereal_scope.
-Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
-Notation "x <= y < z"  := ((lee x y) && (lte y z)) : ereal_scope.
-Notation "x < y < z"   := ((lte x y) && (lte y z)) : ereal_scope.
 
 Section ERealArith.
 Context {R : numDomainType}.

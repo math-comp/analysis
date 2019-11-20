@@ -109,7 +109,7 @@ Definition B {R : realType} (x e : R) :=
 
 (* -------------------------------------------------------------------- *)
 Lemma separable_le {R : realType} (l1 l2 : {ereal R}) :
-  (l1 < l2)%E -> exists (v1 : nbh l1) (v2 : nbh l2),
+  (l1 < l2)%O -> exists (v1 : nbh l1) (v2 : nbh l2),
     forall x y, x \in v1 -> y \in v2 -> x < y.
 Proof.
 case: l1 l2 => [l1||] [l2||] //= lt_l12; last first.
@@ -134,9 +134,9 @@ Lemma separable {R : realType} (l1 l2 : {ereal R}) :
   l1 != l2 -> exists (v1 : nbh l1) (v2 : nbh l2),
     forall x, x \notin [predI v1 & v2].
 Proof.
-wlog: l1 l2 / (l1 < l2)%E => [wlog ne_l12|le_l12 _].
-  case/boolP: (l1 < l2)%E => [/wlog/(_ ne_l12)//|].
-  rewrite -leeNgt lee_eqVlt eq_sym (negbTE ne_l12) /=.
+wlog: l1 l2 / (l1 < l2)%O => [wlog ne_l12|le_l12 _].
+  case/boolP: (l1 < l2)%O => [/wlog/(_ ne_l12)//|].
+  rewrite -leNgt le_eqVlt eq_sym (negbTE ne_l12) /=.
   case/wlog=> [|x [y h]]; first by rewrite eq_sym.
   by exists y, x=> z; rewrite inE andbC /= (h z).
 case/separable_le: le_l12 => [v1] [v2] h; exists v1, v2.
@@ -197,9 +197,9 @@ Lemma ncvg_eq v u l : u =1 v -> ncvg v l -> ncvg u l.
 Proof. by move=> eq; apply: (@ncvg_eq_from 0). Qed.
 
 Lemma ncvg_le_from K v u (lv lu : {ereal R}) :
-  (forall n, (K <= n)%N -> u n <= v n) -> ncvg v lv -> ncvg u lu -> (lu <= lv)%E.
+  (forall n, (K <= n)%N -> u n <= v n) -> ncvg v lv -> ncvg u lu -> (lu <= lv)%O.
 Proof.
-move=> le_uv cv cu; rewrite leeNgt; apply/negP=> /separable_le.
+move=> le_uv cv cu; rewrite leNgt; apply/negP=> /separable_le.
 case=> [v1] [v2] h; have [] := (cv v1, cu v2).
 case=> [K1 vv1] [K2 uv2]; pose_big_enough K'.
 have []// := And3 (le_uv K' _) (vv1 K' _) (uv2 K' _). 2: by close.
@@ -207,7 +207,7 @@ by move=> le h1 h2; have := h _ _ h1 h2; rewrite ltNge le.
 Qed.
 
 Lemma ncvg_le v u (lv lu : {ereal R}) :
-  u <=1 v -> ncvg v lv -> ncvg u lu -> (lu <= lv)%E.
+  u <=1 v -> ncvg v lv -> ncvg u lu -> (lu <= lv)%O.
 Proof. by move=> le_uv; apply/(@ncvg_le_from 0). Qed.
 
 Lemma ncvg_nbounded u x : ncvg u x%:E -> nbounded u.
@@ -322,11 +322,11 @@ Lemma ncvgZ c u lu : ncvg u lu%:E -> ncvg (c \*o u) (c * lu)%:E.
 Proof. by move=> cu; apply/ncvgM => //; apply/ncvgC. Qed.
 
 Lemma ncvg_leC c u (lu : {ereal R}) :
-  (forall n, u n <= c) -> ncvg u lu -> (lu <= c%:E)%E.
+  (forall n, u n <= c) -> ncvg u lu -> (lu <= c%:E)%O.
 Proof. by move=> le cu; apply/(@ncvg_le c%:S u)=> //; apply/ncvgC. Qed.
 
 Lemma ncvg_geC c u (lu : {ereal R}) :
-  (forall n, c <= u n) -> ncvg u lu -> (c%:E <= lu)%E.
+  (forall n, c <= u n) -> ncvg u lu -> (c%:E <= lu)%O.
 Proof. by move=> le cu; apply/(@ncvg_le u c%:S)=> //; apply/ncvgC. Qed.
 
 Lemma iscvgC c : iscvg c%:S.
@@ -382,8 +382,8 @@ Lemma iscvg_shift k (u : nat -> R) :
 Proof. by split=> -[l h]; exists l; apply/(ncvg_shift _ u). Qed.
 
 Lemma ncvg_gt (u : nat -> R) (l1 l2 : {ereal R}) :
-  (l1 < l2)%E -> ncvg u l2 ->
-    exists K, forall n, (K <= n)%N -> (l1 < (u n)%:E)%E.
+  (l1 < l2)%O -> ncvg u l2 ->
+    exists K, forall n, (K <= n)%N -> (l1 < (u n)%:E)%O.
 Proof.
 case: l1 l2 => [l1||] [l2||] //=; first last.
 + by move=> _ _; exists 0%N. + by move=> _ _; exists 0%N.
@@ -395,8 +395,8 @@ by rewrite {cv}/e opprB addrCA subrr addr0.
 Qed.
 
 Lemma ncvg_lt (u : nat -> R) (l1 l2 : {ereal R}) :
-  (l1 < l2)%E -> ncvg u l1 ->
-    exists K, forall n, (K <= n)%N -> ((u n)%:E < l2)%E.
+  (l1 < l2)%O -> ncvg u l1 ->
+    exists K, forall n, (K <= n)%N -> ((u n)%:E < l2)%O.
 Proof.
 move=> lt_12 cv_u_l1; case: (@ncvg_gt (\- u) (-l2) (-l1)).
   by rewrite lte_opp2. by apply/ncvgN.
@@ -405,19 +405,19 @@ Qed.
 
 Lemma ncvg_homo_lt (u : nat -> R) (l1 l2 : {ereal R}) :
     (forall m n, (m <= n)%N -> u m <= u n)
-  -> (l1 < l2)%E -> ncvg u l1 -> forall n, ((u n)%:E < l2)%E.
+  -> (l1 < l2)%O -> ncvg u l1 -> forall n, ((u n)%:E < l2)%O.
 Proof.
 move=> homo_u lt_12 cvu n; have [K {cvu}cv] := ncvg_lt lt_12 cvu.
 case: (leqP n K) => [/homo_u|/ltnW /cv //].
-by move/lee_tofin/lee_lt_trans; apply; apply/cv.
+by move/lee_tofin/le_lt_trans; apply; apply/cv.
 Qed.
 
 Lemma ncvg_homo_le (u : nat -> R) (l : {ereal R}) :
     (forall m n, (m <= n)%N -> u m <= u n)
-  -> ncvg u l -> forall n, ((u n)%:E <= l)%E.
+  -> ncvg u l -> forall n, ((u n)%:E <= l)%O.
 Proof.
-move=> homo_u cvu n; case/boolP: (_ <= _)%E => //; rewrite -lteNgt.
-by move/ncvg_homo_lt/(_ cvu) => -/(_ homo_u n); rewrite ltee.
+move=> homo_u cvu n; case/boolP: (_ <= _)%O => //; rewrite -ltNge.
+by move/ncvg_homo_lt/(_ cvu) => -/(_ homo_u n); rewrite ltxx.
 Qed.
 End SeqLimTh.
 
