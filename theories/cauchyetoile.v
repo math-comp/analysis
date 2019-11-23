@@ -180,16 +180,16 @@ Canonical C_filteredType.
 (*Are we sure that the above is canonical *)
 
 Program Definition C_RuniformMixin :=
-  @uniformmixin_of_normaxioms C_RlmodType(**(complex_lmodType R)*) (@normc R) normcD normcZ (@eq0_normc R).
+  @uniformmixin_of_normaxioms (*C_RlmodType*)(complex_lmodType R) (@normc R) normcD normcZ (@eq0_normc R).
 Definition C_RtopologicalMixin := topologyOfBallMixin C_RuniformMixin.
 (*Definition C_RtopologicalType := TopologicalType C_filteredType C_RtopologicalMixin.*)
 Canonical C_RtopologicalType := TopologicalType C C_RtopologicalMixin.
 (*Definition C_RuniformType := @UniformType C_RtopologicalType C_RuniformMixin.*)
 Canonical C_RuniformType := UniformType C C_RuniformMixin.
 
-Program Definition C_RnormedMixin :=
+Definition C_RnormedMixin :=
   @Num.NormedMixin _ _ _ _ normcD (@eq0_normc _) normc_mulrn normcN.
-Canonical C_RnormedType := NormedZmodType R C^o C_RnormedMixin.
+Canonical C_RnormedZmodType := NormedZmodType R C^o C_RnormedMixin.
 
 Lemma normc_ball :
   @ball _ [uniformType R of C^o] = ball_ (fun x => `| x |).
@@ -211,9 +211,9 @@ Canonical C_RnormedModType :=
  Next Obligation. by []. Qed.
 
  Definition C_RnormedType : normedModType R := @NormedModType R C_RuniformType C_RnormedMixin.
-*)
+ *)
 
-Lemma scalecAl (h : R) (x y : C_RnormedType) : h *: (x * y) = h *: x * y.
+Lemma scalecAl (h : R) (x y : C_RnormedModType) : h *: (x * y) = h *: x * y.
 Proof.
 by move: h x y => h [a b] [c d]; simpc; rewrite -!mulrA -mulrBr -mulrDr.
 Qed.
@@ -221,6 +221,8 @@ Qed.
 Definition C_RLalg := LalgType R C_RlmodType scalecAl.
 
 End C_Rnormed.
+
+(*Important: C is a lmodType R while C^o is a lmodType C*)
 
 (*Section C_absRing.*)
 (* This is now replaced by  complex_numFieldType and numFieldType_normedModType.*)
@@ -306,12 +308,12 @@ not just that the limit exists. *)
 Definition holomorphic (f : C^o -> C^o) (c : C^o) :=
   cvg ((fun (h : C^o) => h^-1 *: ((f \o shift c) h - f c)) @ (locally' 0)).
 
-Definition complex_realfun (f : C^o -> C^o) : C_RnormedType -> C_RnormedType := f.
+Definition complex_realfun (f : C^o -> C^o) : C_RnormedModType -> C_RnormedModType := f.
 Arguments complex_realfun _ _ /.
 
-Definition complex_Rnormed_absring : C_RnormedType -> C^o := id.
+Definition complex_Rnormed_absring : C_RnormedModType -> C^o := id.
 
-Definition CauchyRiemanEq_R2 (f : C_RnormedType -> C_RnormedType) c :=
+Definition CauchyRiemanEq_R2 (f : C_RnormedModType -> C_RnormedModType) c :=
   let u := (fun c => Re ( f c)): C_RnormedModType -> R^o  in
   let v:= (fun c => Im (f c)) :  C_RnormedModType -> R^o in
   (* ('D_(1%:C) u = 'D_('i) v) /\ ('D_('i) u = 'D_(1%:C) v). *)
@@ -359,22 +361,25 @@ Qed.
 
 (*I needed filter_of_filterE to make things easier -
 looked a long time of it as I was looking for a [filter of lim]*
- instead of a [filter of filter]*)
+ instead of a [filter of filter]*) 
 
-(*There whould be a lemma analogous to [filter of lim] to ease the search  *)
+(*There should be a lemma analogous to [filter of lim] to ease the search  *)
+Search "normedType".
+(* Canonical C_normedType := [normedModType C of C for  [normedModType C of C^o]]. *)
+  
+(*The topoloical structure on R is given by R^o *)
 Lemma holo_derivable  (f : C^o -> C^o) c : holomorphic f c ->
-  (forall v : C, @derivable _ C_RnormedModType C_RnormedModType f c v).
+   (forall v : C, derivable (complex_realfun f) c v).
+  (* @derivable _ C_RnormedModType C_RnormedModType f c v). *)
 Proof.
 move => /cvg_ex [l H]; rewrite /derivable => v.
 rewrite /type_of_filter /= in l H.
-set ff : C_RnormedType -> C_RnormedType :=  f.
+set ff : C_RnormedModType -> C_RnormedModType :=  f.
 set quotR := (X in (X @ _)).
 pose mulv (h : R):= (h *:v).
-pose quotC (h : C) : C^o := h^-1 *: ((f \o shift c) (h) - f c).
-(* here f : C -> C does not work -
-as if we needed C^o still for the normed structure*)
+pose quotC (h : C^o) : C^o := h^-1 *: ((f \o shift c) (h) - f c).
 case : (EM (v = 0)).
-- move => eqv0 ; apply (cvgP (l := (0:C))).
+- move => eqv0 ; apply (cvgP (l := (0:C))). 
   have eqnear0 : {near locally' (0:R^o), 0 =1 quotR}.
     exists 1 => // h _ _ ; rewrite /quotR /shift eqv0. simpl.
     by rewrite scaler0 add0r addrN scaler0.
@@ -383,8 +388,8 @@ case : (EM (v = 0)).
   - exact (flim_eq_loc eqnear0).
   - by apply : cst_continuous.
   (*WARNING : lim_cst from normedtype applies only to endofunctions
-   That should NOT be the case, as one could use it insteas of cst_continuous *)
-- move/eqP => vneq0 ; apply : (cvgP (l := (v *: l : C))). (*chainage avant et suff *)
+   That should NOT be the case, as one could use it instead of cst_continuous *)
+- move/eqP => vneq0 ; apply : (cvgP (l := (v *: l : C))). 
   have eqnear0 : {near (locally' (0 : R^o)), (v \*: quotC) \o mulv =1 quotR}.
     exists 1 => // h _ neq0h //=; rewrite /quotC /quotR /mulv scale_inv.
     rewrite scalerAl scalerCA -scalecAl mulrA -(mulrC v) mulfV //.
@@ -406,17 +411,25 @@ case : (EM (v = 0)).
           by rewrite (le_lt_trans _ ballrb) // normc_r.
         by rewrite normc_gt0.
       have bneq0C : (b%:C != 0%:C) by move: neqb0; apply: contra; rewrite eqCr.
-      by apply: (ballrA (mulv b) ballCrb); rewrite scaler_eq0; apply/norP; split.
-    * suff : v \*: quotC @ locally' (0 : C^o) -->  v *: l.
-        set lhs0 := (X in X @ _ --> _ -> _).
-        rewrite -/lhs0.
-        set rhs0 := (X in _  --> X).
-        rewrite -/rhs0.
-        rewrite !filter_of_filterE.
-        have Z : GRing.regular_zmodType (complex_ringType R) = complex_zmodType R by [].
-(*        Unset Printing Notations.*)
-        admit.
-      by apply: lim_scaler ; rewrite /quotC.
+      by apply: (ballrA (mulv b) ballCrb); rewrite scaler_eq0; apply/norP; split. 
+    * suff : v \*: quotC @ locally' (0 : C) -->
+               ( v *: l : C_RnormedModType).
+      (* Check: rewrite filter_of_filterE. 
+       rewrite !/(_ `=>` _) !/(_ `<=` _). *)
+        by [].
+       (*WARNING : C_RnormedModType absolutely necessary here, 
+       otherwise the canonical structure considered is the one 
+       given by GRing.regular_lmodType (complex_ringType R)  *)
+      (* apply: (@lim_scaler R C_RnormedModType C_RnormedModType). *)
+      (*  * suff : v \*: quotC @ locally' (0 : C^o) -->  v *: l. *)
+      (* set lhs0 := (X in X @ _ --> _ -> _). *)
+      (* rewrite -/lhs0. *)
+      (* set rhs0 := (X in _  --> X). *)
+      (* rewrite -/rhs0. *)
+      (* rewrite !filter_of_filterE. *)
+      (* have Z : GRing.regular_zmodType (complex_ringType R) = complex_zmodType R by []. *)
+      (* Unset Printing Notations.  *)  
+      rewrite /quotC. About lim_scaler.
 Admitted.
 
 Lemma holo_CauchyRieman (f : C^o -> C^o) c: (holomorphic f c) -> (CauchyRiemanEq f c).
@@ -473,9 +486,9 @@ admit.
       en tête sans avoir à l 'introduire*)
    - by apply: locally'_filter.
   have <- : lim (quotiR @ (locally' (0:R^o)))
-           = 'i * lim (quotC @ (locally' (0:C_RnormedType))).
-    have -> : 'i * lim (quotC @ (locally' (0:C_RnormedType)))
-           =  lim ('i \*: quotC @ (locally' (0:C_RnormedType))).
+           = 'i * lim (quotC @ (locally' (0:C_RnormedZmodType))).
+    have -> : 'i * lim (quotC @ (locally' (0:C_RnormedZmodType)))
+           =  lim ('i \*: quotC @ (locally' (0:C_RnormedZmodType))).
       rewrite  scalei_muli  limin_scaler; first by [].
       by exact: H.
 (* TODO: urgent
@@ -506,10 +519,10 @@ Admitted.
 (* Local Notation "''D_' v f c" := (derive f c v). *)
 
 Lemma Diff_CR_holo (f : C -> C) :
-   (forall c v : C, derivable ( f : C_RnormedType -> C_RnormedType) c v)
+   (forall c v : C, derivable ( f : C_RnormedModType -> C_RnormedModType) c v)
    /\ (forall c, CauchyRiemanEq f c) ->(forall c, (holomorphic f c)).
  (*sanity check : derivable (f : C ->C) does not type check  *)
- Proof.
+Proof..
    move => [der CR] c.
    (* Before 270: first attempt with littleo but requires to mix
     littleo on filter on different types. Check now*)
