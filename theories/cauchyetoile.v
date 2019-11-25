@@ -137,6 +137,14 @@ Proof.
 by rewrite -mulr_natr normcM -[in RHS]mulr_natr normc_natmul.
 Qed.
 
+Lemma gt0_normc (r : C) : 0 < r -> r = (normc r)%:C.
+Proof.
+move=> r0; have rr : r \is Num.real by rewrite realE (ltW r0).
+rewrite /normc (complexE r) /=; simpc.
+rewrite (ger0_Im (ltW r0)) expr0n addr0 sqrtr_sqr gtr0_norm ?complexr0 //.
+by move: r0; rewrite {1}(complexE r) /=; simpc => /andP[/eqP].
+Qed.
+
 Section C_Rnormed.
 
  (* Uniform.mixin_of takes a locally but does not expect a TopologicalType,
@@ -169,45 +177,50 @@ Qed.
 Next Obligation. by []. Qed.
 
 (*C as a R-lmodule *)
-Definition C_RlmodMixin := (complex_lmodMixin R).
+(*Definition C_RlmodMixin := (complex_lmodMixin R).
 (*LmodType is hard to use, not findable through Search
  and not checkable as abbreviation is not applied enough*)
-Definition C_RlmodType := @LmodType R C C_RlmodMixin.
+Definition C_RlmodType := @LmodType R C C_RlmodMixin.*)
+(*Are we sure that the above is canonical *)
 Definition C_pointedType := PointedType C 0.
 Canonical C_pointedType.
 Definition C_filteredType := FilteredType C C (locally_ (ball_ (@normc R))).
 Canonical C_filteredType.
-(*Are we sure that the above is canonical *)
 
-Definition C_RuniformMixin :=
-  @uniformmixin_of_normaxioms (*C_RlmodType*)(complex_lmodType R) (@normc R) normcD normcZ (@eq0_normc R).
-Definition C_RtopologicalMixin := topologyOfBallMixin C_RuniformMixin.
 (*Definition C_RtopologicalType := TopologicalType C_filteredType C_RtopologicalMixin.*)
-Definition C_RtopologicalType := TopologicalType C C_RtopologicalMixin.
+(*Definition C_RtopologicalType := TopologicalType C C_RtopologicalMixin.*)
 (*Definition C_RuniformType := @UniformType C_RtopologicalType C_RuniformMixin.*)
-Definition C_RuniformType := UniformType C_RtopologicalType C_RuniformMixin.
+(*Definition C_RuniformType := UniformType C_RtopologicalType C_RuniformMixin.*)
+(*Definition C_RnormedZmodType := NormedZmodType R C^o C_RnormedMixin.*)
 
+Definition Rcomplex := R[i].
+Canonical Rcomplex_eqType := [eqType of Rcomplex].
+Canonical Rcomplex_choiceType := [choiceType of Rcomplex].
+Canonical Rcomplex_zmodType := [zmodType of Rcomplex].
+Canonical Rcomplex_lmodType := [lmodType R of Rcomplex].
+Canonical Rcomplex_pointedType := [pointedType of Rcomplex].
+Canonical Rcomplex_filteredType := [filteredType Rcomplex of Rcomplex].
+Definition C_RuniformMixin :=
+  @uniformmixin_of_normaxioms [lmodType R of Rcomplex] (@normc R) normcD normcZ (@eq0_normc R).
+Definition C_RtopologicalMixin := topologyOfBallMixin C_RuniformMixin.
+Canonical Rcomplex_topologicalType := TopologicalType Rcomplex C_RtopologicalMixin.
+Canonical Rcomplex_uniformType := UniformType Rcomplex C_RuniformMixin.
 Definition C_RnormedMixin :=
   @Num.NormedMixin _ _ _ _ normcD (@eq0_normc _) normc_mulrn normcN.
-Definition C_RnormedZmodType := NormedZmodType R C^o C_RnormedMixin.
+Canonical Rcomplex_normedZmodType := NormedZmodType R Rcomplex C_RnormedMixin.
 
 Lemma normc_ball :
-  @ball R C_RuniformType = ball_ (fun x => normc x).
+  @ball _ [uniformType R of Rcomplex] = ball_ (fun x => `| x |).
 Proof. by []. Qed.
 
 Definition normc_UniformNormedZmodMixin :=
-  @UniformNormedZmodule.Mixin R C_RnormedZmodType _ _ normc_ball.
-Definition normc_uniformNormedZmodType : uniformNormedZmoduleType R.
-refine (UniformNormedZmodule.Pack _ _).
-refine (UniformNormedZmodule.Class _ _ _); last 2 first.
-apply (Topological.mixin (Topological.class C_RtopologicalType)).
-exact: normc_UniformNormedZmodMixin.
-exact: 0.
-Defined.
+  UniformNormedZmodule.Mixin normc_ball.
+Canonical normc_uniformNormedZmodType :=
+  UniformNormedZmoduleType R Rcomplex normc_UniformNormedZmodMixin.
 
-Definition C_RnormedModMixin := @NormedModMixin R normc_uniformNormedZmodType _ normcZ.
-Definition C_RnormedModType :=
-  NormedModType R normc_uniformNormedZmodType C_RnormedModMixin.
+Definition C_RnormedModMixin := @NormedModMixin R [uniformNormedZmoduleType R of Rcomplex] _ normcZ.
+Canonical C_RnormedModType :=
+  NormedModType R Rcomplex C_RnormedModMixin.
 
 (*
  Program Definition C_RnormedMixin
@@ -223,7 +236,7 @@ Proof.
 by move: h x y => h [a b] [c d]; simpc; rewrite -!mulrA -mulrBr -mulrDr.
 Qed.
 
-Definition C_RLalg := LalgType R C_RlmodType scalecAl.
+Definition C_RLalg := LalgType R [lmodType R of Rcomplex] scalecAl.
 
 End C_Rnormed.
 
@@ -374,67 +387,54 @@ Search "normedType".
 
 Definition Rderivable (V W: normedModType R) (f : V -> W) := derivable f.
 
+Let C := Rcomplex.
 (*The topoloical structure on R is given by R^o *)
-Lemma holo_derivable (f : C^o -> C^o) c : holomorphic f c ->
-   (forall v : C, Rderivable (complex_realfun f) c v).
+Lemma holo_derivable (f : C -> C^o) c : holomorphic f c ->
+  (forall v : C, Rderivable (complex_realfun f) c v).
 Proof.
-  move => /cvg_ex [l H]; rewrite /Rderivable /derivable => v.
-  rewrite /type_of_filter /= in l H.
-  set ff : C_RnormedModType -> C_RnormedModType :=  f.
-  set quotR := (X in (X @ locally' (0:R^o))).
-  pose mulv (h :R):= (h *:v).
-  pose quotC (h : C) : C^o := h^-1 *: ((f \o shift c) (h) - f c).
-  (* here f : C -> C does not work -
+move => /cvg_ex; rewrite /type_of_filter /= => -[l H] v.
+rewrite /Rderivable /derivable.
+set ff : C -> C :=  f.
+set quotR := (X in (X @ locally' (0 : R^o))).
+pose mulv (h : R) := h *: v.
+pose quotC (h : C) : C^o := h^-1 *: ((f \o shift c) h - f c).
+(* here f : C -> C does not work -
 as if we needed C^o still for the normed structure*)
-  case : (EM (v = 0)).
-  - move => eqv0 ; apply (cvgP (l := (0:C))).
-    have eqnear0 : {near locally' (0:R^o), 0 =1 quotR}.
-      exists 1 => // h _ _ ; rewrite /quotR /shift eqv0. simpl.
-      by rewrite scaler0 add0r addrN scaler0.
-      (*addrN is too hard to find through Search *)
-    apply: (@flim_translim C_RtopologicalType).
-    - exact (flim_eq_loc eqnear0).
-    - by apply : cst_continuous.
-    (*WARNING : lim_cst from normedtype applies only to endofunctions
-     That should NOT be the case, as one could use it insteas of cst_continuous *)
-  - move/eqP => vneq0 ; apply : (cvgP (l := v *: l : C)). (*chainage avant et suff *)
-    have eqnear0 : {near (locally' (0 : R^o)), (v \*: quotC) \o mulv =1 quotR}.
-      exists 1 => // h _ neq0h //=; rewrite /quotC /quotR /mulv scale_inv.
-      rewrite scalerAl scalerCA -scalecAl mulrA -(mulrC v) mulfV.
-      rewrite mul1r; apply: (scalerI (neq0h)).
-        by rewrite !scalerA //= (divff neq0h).
-        by [].
-    have subsetfilters: quotR @ locally' (0:R^o) `=>` (v \*: quotC) \o mulv @locally' (0:R^o).
-    by exact: (flim_eq_loc eqnear0).
-    apply: flim_trans subsetfilters _.
-    unshelve apply : flim_comp.
-    - exact  (locally' (0:C^o)).
-    - move => //= A [r [leq0r ballrA]].
-      exists (normc r / normc v).
-      - apply : mulr_gt0.
-        by rewrite normc_gt0 gt_eqF.
-        by rewrite invr_gt0 normc_gt0.
-      - move => b; rewrite /ball_ sub0r normrN => ballrb neqb0.
-        have ballCrb : (@ball_ _ (complex_normedZmodType R) normr 0 r (mulv b)).
-         rewrite  /ball_ sub0r normrN /mulv scalecr normrM.
-         rewrite ltr_pdivl_mulr in ballrb; last by rewrite normc_gt0.
-         rewrite -normcZ -ltcR in ballrb.
-         rewrite -normrM (_ : _ * v = b *: v); last by rewrite scalecr.
-         have rr : r \is Num.real by rewrite realE (ltW leq0r).
-         rewrite (lt_le_trans ballrb) // -{2}(@RRe_real _ r) //.
-         rewrite (complexE r) /=; simpc; rewrite /=.
-         have r0 : complex.Im r = 0 by case: (RIm_real rr).
-         rewrite r0 expr0n addr0 sqrtr_sqr ger0_norm //.
-         rewrite ltW // -ltcR (lt_le_trans leq0r) //.
-         by rewrite {1}(complexE r) /=; simpc; rewrite /= r0 eqxx /= lexx.
-      have bneq0C : (b%:C != 0%:C) by move: neqb0; apply: contra; rewrite eqCr.
-      apply: (ballrA (mulv b) ballCrb).
-      by rewrite /mulv (@scaler_eq0 _ C_RlmodType); apply/norP; split.
-    suff : v \*: quotC @ locally' (0 : C^o) -->  v *: l.
-      rewrite -(@filter_of_filterE _ [filter of v *: l]).
-      admit.
-    by apply: lim_scaler ; rewrite /quotC.
-Admitted.
+have [/eqP eqv0|eqv0] := boolP (v == 0).
+- apply (@cvgP _ _ _ (0 : C)).
+  have eqnear0 : {near locally' (0 : R^o), 0 =1 quotR}.
+    exists 1 => // h _ _ .
+    by rewrite /quotR /shift eqv0 /= scaler0 add0r subrr scaler0.
+  apply: (flim_translim (flim_eq_loc eqnear0)).
+  exact: cst_continuous.
+  (*WARNING : lim_cst from normedtype applies only to endofunctions
+   That should NOT be the case, as one could use it insteas of cst_continuous *)
+- apply (@cvgP _ _ _ (v *: l : C)). (*chainage avant et suff *)
+  have eqnear0 : {near (locally' (0 : R^o)), (v \*: quotC) \o mulv =1 quotR}.
+    exists 1 => // h _ neq0h //=; rewrite /quotC /quotR /mulv scale_inv.
+    by rewrite scalerAl scalerCA -scalecAl mulrA -(mulrC v) mulfV // mul1r.
+  have subsetfilters :
+    quotR @ locally' (0 : R^o) `=>` (v \*: quotC) \o mulv @ locally' (0 : R^o).
+    exact: flim_eq_loc eqnear0.
+  move/flim_trans : subsetfilters; apply.
+  suff : v \*: quotC \o mulv @ locally' (0 : R^o) `=>` locally (v *: l).
+    move/flim_trans; apply => /= s -[x /= x0].
+    rewrite /ball_ /= => xs; exists x%:C => //=.
+    by rewrite ltcR.
+    by rewrite /ball_ /= => z Hz; apply xs; rewrite -ltcR.
+  apply: (@flim_comp _ _ _ _ _ _ (locally' (0 : C^o))); last exact: lim_scaler.
+  move => //= A [r [leq0r ballrA]].
+  exists (normc r / `|v|).
+  - apply: mulr_gt0; by [rewrite normc_gt0 gt_eqF | rewrite invr_gt0 normr_gt0].
+  - move => b; rewrite /ball_ sub0r normrN => ballrb neqb0.
+    have ballCrb : @ball_ R [zmodType of C] normr 0 (normc r) (mulv b).
+      by rewrite /ball_ sub0r normrN /mulv normmZ -ltr_pdivl_mulr // normr_gt0.
+    apply: ballrA.
+    + move: ballCrb.
+      rewrite /ball_ sub0r !normrN -ltcR => /lt_le_trans; apply.
+      by rewrite -gt0_normc.
+    + by rewrite /mulv (@scaler_eq0 _ Rcomplex_lmodType) negb_or neqb0.
+Qed.
 
 Lemma holo_CauchyRieman (f : C^o -> C^o) c: (holomorphic f c) -> (CauchyRiemanEq f c).
 Proof.
@@ -447,7 +447,7 @@ have eqnear0x : {near (@locally' [topologicalType of R^o] 0), quotC \o ( fun h =
      by rewrite /quotC /quotR real_complex_inv -scalecr; simpc.
 pose subsetfiltersx := (flim_eq_loc eqnear0x).
 have -> : lim (quotR @ (locally' (0:R^o))) = lim (quotC @ (locally' (0:C^o))).
-(* TODO: urgent
+(*TODO: urgent
   apply: flim_map_lim.
   suff: quotR @ (locally' 0) `=>` (quotC @ (locally' 0)).
     move => H1; apply: (flim_translim H1) ;  exact H. (*can't apply a view*)
