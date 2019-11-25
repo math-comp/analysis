@@ -291,7 +291,7 @@ Lemma showo : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). Proof. by []. Qed.
 
 (* Tentative to handle small o and big O notations *)
 Section Domination.
-Context {K : numFieldType} {T : Type} {V W : normedModType K}.
+Context {K : numDomainType} {T : Type} {V W : normedModType K}.
 
 Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   forall eps, 0 < eps -> \forall x \near F, `|f x| <= eps * `|g x|.
@@ -407,28 +407,6 @@ Lemma oppox (F : filter_on T) (f : T -> V) e x :
   - [o_F e of f] x = [o_F e of - [o_F e of f]] x.
 Proof. by move: x; rewrite -/(- _ =1 _) {1}oppo. Qed.
 
-Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
-  littleo_def F (df \+ dg) e.
-Proof.
-move=> _/posnumP[eps]; near=> x => /=.
-rewrite [eps%:num]splitr mulrDl (le_trans (ler_norm_add _ _)) // ler_add //;
-by near: x; apply: littleoP.
-Grab Existential Variables. all: end_near. Qed.
-
-Canonical add_littleo (F : filter_on T) e (df dg : {o_F e}) :=
-  @Littleo _ _ (_ + _) (asboolT (add_littleo_subproof df dg)).
-Canonical addfun_littleo (F : filter_on T) e (df dg : {o_F e}) :=
-  @Littleo _ _ (_ \+ _) (asboolT (add_littleo_subproof df dg)).
-
-Lemma addo (F : filter_on T) (f g: T -> V) e :
-  [o_F e of f] + [o_F e of g] =o_F e.
-Proof. by rewrite [RHS]littleoE. Qed.
-
-Lemma addox (F : filter_on T) (f g: T -> V) e x :
-  [o_F e of f] x + [o_F e of g] x =
-  [o_F e of [o_F e of f] + [o_F e of g]] x.
-Proof. by move: x; rewrite -/(_ + _ =1 _) {1}addo. Qed.
-
 Lemma eqadd_some_oP (F : filter_on T) (f g : T -> V) (e : T -> W) h :
   f = g + [o_F e of h] -> littleo_def F (f - g) e.
 Proof.
@@ -476,25 +454,10 @@ Lemma littleo_eqo (F : filter_on T) (g : T -> W) (f : {o_F g}) :
    (f : _ -> _) =o_F g.
 Proof. by apply/eqoP. Qed.
 
-Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
-  littleo_def F (a *: (df : _ -> _)) e.
-Proof.
-have [->|a0] := eqVneq a 0; first by rewrite scale0r.
-move=> _ /posnumP[eps]; have aa := normr_eq0 a; near=> x => /=.
-rewrite normmZ -ler_pdivl_mull ?lt_def ?aa ?a0 //= mulrA; near: x.
-by apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?lt_def ?aa ?a0 /=.
-Grab Existential Variables. all: end_near. Qed.
+End Domination.
 
-Canonical scale_littleo (F : filter_on T) e a (df : {o_F e}) :=
-  Littleo (asboolT (scale_littleo_subproof df a)).
-
-Lemma scaleo (F : filter_on T) a (f : T -> V) e :
-  a *: [o_F e of f] = [o_F e of a *: [o_F e of f]].
-Proof. by rewrite [RHS]littleoE. Qed.
-
-Lemma scaleox (F : filter_on T) a (f : T -> V) e x :
-  a *: ([o_F e of f] x) = [o_F e of a *: [o_F e of f]] x.
-Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
+Section Domination_numFieldType.
+Context {K : numFieldType} {T : Type} {V W : normedModType K}.
 
 Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|f x| <= k * `|g x|.
@@ -546,6 +509,8 @@ Definition the_bigO (u : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := bigO_fun (insubd (bigO0 F h) f).
 Arguments the_bigO : simpl never, clear implicits.
 
+(* duplicate from Section Domination *)
+Notation PhantomF := (Phantom (set (set T))).
 Notation mkbigO tag x := (the_bigO tag _ (PhantomF x)).
 (* Parsing *)
 Notation "[O_ x e 'of' f ]" := (mkbigO gen_tag x f e).
@@ -700,6 +665,8 @@ Lemma eqaddOEx (F : filter_on T) (f g : T -> V) h (e : T -> W) :
   (forall x, f x = g x +O_(x \near F) (e x)).
 Proof. by have := @eqaddOE F f g h e; rewrite !funeqE. Qed.
 
+(* duplicate from Section Domination *)
+Notation mklittleo tag x := (the_littleo tag (PhantomF x)).
 (* Parsing *)
 Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e).
 (*Printing*)
@@ -720,9 +687,9 @@ Proof. by apply: eqOE; rewrite littleo_eqo. Qed.
 Canonical littleo_is_bigO (F : filter_on T) (e : T -> W) (f : {o_F e}) :=
   BigO (asboolT (eqO_bigO (littleo_eqO f))).
 Canonical the_littleo_bigO (tag : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := [bigO of the_littleo tag F phF f h].
+  (phF : phantom (set (set T)) F) f h := [bigO of the_littleo tag phF f h].
 
-End Domination.
+End Domination_numFieldType.
 
 Notation "{o_ F f }" := (@littleo_type _ _ _ _ F f).
 Notation "{O_ F f }" := (@bigO_type _ _ _ _ F f).
@@ -841,6 +808,60 @@ Hint Resolve littleo_eqO : core.
 
 Arguments bigO {_ _ _ _}.
 
+Section Domination_numFieldType.
+Context {K : numFieldType} {T : Type} {V W : normedModType K}.
+
+(* duplicate from Section Domination *)
+Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
+  forall eps, 0 < eps -> \forall x \near F, `|f x| <= eps * `|g x|.
+
+Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
+  littleo_def F (df \+ dg) e.
+Proof.
+move=> _/posnumP[eps]; near=> x => /=.
+rewrite [eps%:num]splitr mulrDl (le_trans (ler_norm_add _ _)) // ler_add //;
+by near: x; apply: littleoP.
+Grab Existential Variables. all: end_near. Qed.
+
+Canonical add_littleo (F : filter_on T) e (df dg : {o_F e}) :=
+  @Littleo _ _ _ _ _ _ (_ + _) (asboolT (add_littleo_subproof df dg)).
+Canonical addfun_littleo (F : filter_on T) e (df dg : {o_F e}) :=
+  @Littleo _ _ _ _ _ _ (_ \+ _) (asboolT (add_littleo_subproof df dg)).
+
+Lemma addo (F : filter_on T) (f g: T -> V) (e : _ -> W) :
+  [o_F e of f] + [o_F e of g] =o_F e.
+Proof. by rewrite [RHS]littleoE. Qed.
+
+Lemma addox (F : filter_on T) (f g: T -> V) (e : _ -> W) x :
+  [o_F e of f] x + [o_F e of g] x =
+  [o_F e of [o_F e of f] + [o_F e of g]] x.
+Proof. by move: x; rewrite -/(_ + _ =1 _) {1}addo. Qed.
+
+(* duplicate from Section Domination *)
+Hint Extern 0 (littleo_def _ _ _) => solve[apply: littleoP] : core.
+
+Lemma scale_littleo_subproof (F : filter_on T) e (df : {o_F e}) a :
+  littleo_def F (a *: (df : _ -> _)) e.
+Proof.
+have [->|a0] := eqVneq a 0; first  by rewrite scale0r.
+move=> _ /posnumP[eps]; have aa := normr_eq0 a; near=> x => /=.
+rewrite normmZ -ler_pdivl_mull ?lt_def ?aa ?a0 //= mulrA; near: x.
+by apply: littleoP; rewrite mulr_gt0 // invr_gt0 ?lt_def ?aa ?a0 /=.
+Grab Existential Variables. all: end_near. Qed.
+
+Canonical scale_littleo (F : filter_on T) e a (df : {o_F e}) :=
+  Littleo (asboolT (scale_littleo_subproof df a)).
+
+Lemma scaleo (F : filter_on T) a (f : T -> V) (e : _ -> W) :
+  a *: [o_F e of f] = [o_F e of a *: [o_F e of f]].
+Proof. by rewrite [RHS]littleoE. Qed.
+
+Lemma scaleox (F : filter_on T) a (f : T -> V) (e : _ -> W) x :
+  a *: ([o_F e of f] x) = [o_F e of a *: [o_F e of f]] x.
+Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
+
+End Domination_numFieldType.
+
 (* NB: see also scaleox *)
 Lemma scaleolx (K : numFieldType) (V W : normedModType K) {T : Type}
   (F : filter_on T) (a : W) (k : T -> K^o) (e : T -> V) (x : T) :
@@ -950,7 +971,6 @@ rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans; appl
 by rewrite ler_pmul //; near: c; apply: locally_pinfty_ge.
 Unshelve. end_near. Grab Existential Variables. all: end_near. Qed.
 Arguments bigO_bigO_eqO {F}.
-
 
 End Limit.
 Arguments littleo_bigO_eqo {K T V W X F}.
@@ -1081,7 +1101,7 @@ End Shift.
 Arguments shift {R} x / y.
 Notation center c := (shift (- c)).
 
-Lemma near_shift {K : numFieldType} {R : normedModType K}
+Lemma near_shift {K : numDomainType} {R : normedModType K}
    (y x : R) (P : set R) :
    (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
@@ -1093,7 +1113,7 @@ have /= := ye (t - (x - y)); rewrite addrNK; apply.
 by rewrite opprB addrCA opprD addrA subrr add0r opprB.
 Qed.
 
-Lemma flim_shift {T : Type}  {K : numFieldType} {R : normedModType K}
+Lemma flim_shift {T : Type} {K : numDomainType} {R : normedModType K}
   (x y : R) (f : R -> T) :
   (f \o shift x) @ y = f @ (y + x).
 Proof.

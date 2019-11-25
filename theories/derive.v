@@ -40,8 +40,8 @@ Reserved Notation "f ^` ()" (at level 8, format "f ^` ()").
 Reserved Notation "f ^` ( n )" (at level 8, format "f ^` ( n )").
 
 Section Differential.
+Context {K : numDomainType} {V W : normedModType K}.
 
-Context {K : numFieldType (* TODO: generalize to numDomainType *)} {V W : normedModType K}.
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
@@ -91,6 +91,16 @@ rewrite insubF //; apply/asboolP => fe; apply: Nfe => _/posnumP[eps].
 by rewrite [\forall x \near _, _ <= _](near_shift 0) subr0; apply: fe.
 Grab Existential Variables. end_near. Qed.
 
+End Differential.
+
+Section Differential_numFieldType.
+Context {K : numFieldType (*TODO: to numDomainType?*)} {V W : normedModType K}.
+
+(* duplicate from Section Differential *)
+Local Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
+Local Notation "''d' f x" := (@diff _ _ _ _ (Phantom _ [filter of x]) f).
+Hint Extern 0 (continuous _) => exact: diff_continuous : core.
+
 Lemma diff_locallyxP (x : V) (f : V -> W) :
   differentiable f x <-> continuous ('d f x) /\
   forall h, f (h + x) = f x + 'd f x h +o_(h \near 0 : V) h.
@@ -122,7 +132,7 @@ Lemma diff_locally (x : V) (f : V -> W) : differentiable f x ->
   (f \o shift x = cst (f x) + 'd f x +o_ (0 : V) id).
 Proof. by move=> /diff_locallyP []. Qed.
 
-End Differential.
+End Differential_numFieldType.
 
 Notation "''d' f F" := (@diff _ _ _ _ (Phantom _ [filter of F]) f).
 Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
@@ -131,7 +141,7 @@ Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F])).
 Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
 Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
 
-Lemma differentiableP (R : numFieldType) (V W : normedModType R) (f : V -> W) x :
+Lemma differentiableP (R : numDomainType) (V W : normedModType R) (f : V -> W) x :
   differentiable f x -> is_diff x f ('d f x).
 Proof. by move=> ?; apply: DiffDef. Qed.
 
