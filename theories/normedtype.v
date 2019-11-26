@@ -12,7 +12,7 @@ Require Import classical_sets posnum topology prodnormedzmodule.
 (* ball_ N == balls defined by the norm/absolute value N                      *)
 (*                                                                            *)
 (* * Normed Topological Abelian groups:                                       *)
-(*     uniformNormedZmoduleType R == interface type for a normed topological  *)
+(*     uniformNormedZmodType R    == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
 (*  UniformNormedZmodule.Mixin nb == builds the mixin for a normed            *)
 (*                                   topological Abelian group from the       *)
@@ -26,10 +26,10 @@ Require Import classical_sets posnum topology prodnormedzmodule.
 (*           NormedModMixin normZ == builds the mixin for a normed module     *)
 (*                                   from the property of the linearity of    *)
 (*                                   the norm; the carrier type must have a   *)
-(*                                   uniformNormedZmoduleType structure       *)
+(*                                   uniformNormedZmodType structure          *)
 (*            NormedModType K T m == packs the mixin m to build a             *)
 (*                                   normedModType K; T must have canonical   *)
-(*                                   uniformNormedZmoduleType K and           *)
+(*                                   uniformNormedZmodType K and              *)
 (*                                   uniformType structures.                  *)
 (*  [normedModType K of T for cT] == T-clone of the normedModType K structure *)
 (*                                   cT.                                      *)
@@ -267,22 +267,23 @@ Canonical pointed_normedZmodType.
 Canonical filtered_normedZmodType.
 Canonical topological_normedZmodType.
 Canonical uniform_normedZmodType.
-Notation uniformNormedZmoduleType R := (type (Phant R)).
-Notation UniformNormedZmoduleType R T m := (@pack _ (Phant R) T _ _ _ m _ _ idfun _ _ idfun _ idfun).
-Notation "[ 'uniformNormedZmoduleType' R 'of' T 'for' cT ]" :=
+Notation uniformNormedZmodType R := (type (Phant R)).
+Notation UniformNormedZmodType R T m :=
+  (@pack _ (Phant R) T _ _ _ m _ _ idfun _ _ idfun _ idfun).
+Notation "[ 'uniformNormedZmodType' R 'of' T 'for' cT ]" :=
   (@clone _ (Phant R) T cT _ idfun)
-  (at level 0, format "[ 'uniformNormedZmoduleType'  R  'of'  T  'for'  cT ]") :
+  (at level 0, format "[ 'uniformNormedZmodType'  R  'of'  T  'for'  cT ]") :
   form_scope.
-Notation "[ 'uniformNormedZmoduleType' R 'of' T ]" :=
+Notation "[ 'uniformNormedZmodType' R 'of' T ]" :=
   (@clone _ (Phant R) T _ _ idfun)
-  (at level 0, format "[ 'uniformNormedZmoduleType'  R  'of'  T ]") : form_scope.
+  (at level 0, format "[ 'uniformNormedZmodType'  R  'of'  T ]") : form_scope.
 End Exports.
 
 End UniformNormedZmodule.
 Export UniformNormedZmodule.Exports.
 
 Section uniformnormedzmodule_lemmas.
-Context {K : numDomainType} {V : uniformNormedZmoduleType K}.
+Context {K : numDomainType} {V : uniformNormedZmodType K}.
 
 Local Notation ball_norm := (ball_ (@normr K V)).
 
@@ -298,7 +299,7 @@ Proof. by []. Qed.
 Definition numFieldType_uniformNormedZmodMixin :=
   UniformNormedZmodule.Mixin R_ball.
 Canonical numFieldType_uniformNormedZmodType :=
-  @UniformNormedZmoduleType R R^o numFieldType_uniformNormedZmodMixin.
+  @UniformNormedZmodType R R^o numFieldType_uniformNormedZmodMixin.
 End numFieldType_canonical_contd.
 
 (** locally *)
@@ -535,7 +536,7 @@ Hint Extern 0 (is_true (0 < _)) => match goal with
 Module NormedModule.
 
 Record mixin_of (K : numDomainType)
-  (V : uniformNormedZmoduleType K) (scale : K -> V -> V) := Mixin {
+  (V : uniformNormedZmodType K) (scale : K -> V -> V) := Mixin {
   _ : forall (l : K) (x : V), `| scale l x | = `| l | * `| x |;
 }.
 
@@ -1370,8 +1371,8 @@ Qed.
 
 Definition matrix_UniformNormedZmodMixin :=
   UniformNormedZmodule.Mixin mx_norm_ball.
-Canonical matrix_uniformNormedZmodType' :=
-  UniformNormedZmoduleType K 'M[K^o]_(m.+1, n.+1) matrix_UniformNormedZmodMixin.
+Canonical matrix_uniformNormedZmodType :=
+  UniformNormedZmodType K 'M[K^o]_(m.+1, n.+1) matrix_UniformNormedZmodMixin.
 
 Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
 Proof.
@@ -1416,7 +1417,7 @@ Proof. by rewrite /= - ball_prod_normE. Qed.
 Definition prod_UniformNormedZmodMixin :=
   UniformNormedZmodule.Mixin prod_norm_ball.
 Canonical prod_topologicalZmodType :=
-  UniformNormedZmoduleType K (U * V) prod_UniformNormedZmodMixin.
+  UniformNormedZmodType K (U * V) prod_UniformNormedZmodMixin.
 
 Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
 Canonical prod_normedModType :=
