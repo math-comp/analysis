@@ -464,8 +464,11 @@ Proof.
     exact: Proper_locally'_numFieldType.
   suff: quotR @ (locally' (0:R^o)) `=>` (quotC @ (locally' (0:C^o))). 
     move => H1; apply: (flim_trans H1).
-    
-    (*exact H. (*can't apply a view*)*) admit.
+    have : cvg (quotC @ locally' (0:C^o)) by [].
+    move/flim_trans; apply.
+    move=> /= s [x x0 xs]; exists x%:C; first by rewrite ltcR.
+    by move=> y xy; apply xs; move: xy; rewrite /ball_ -ltcR.
+
     apply :  flim_trans.   
     - exact : (subsetfiltersx (locally'_filter (0:R^o))).
       move => {subsetfiltersx eqnear0x}.
@@ -474,12 +477,11 @@ Proof.
      - general lemma ? *)
        - exact (locally' (0:Rcomplex^o)). 
        - move => A //= [r leq0r] absringrA. 
-         exists (normc r).
-         (*; first by [].   :*) admit.
+         exists (normc r); first by rewrite normc_gt0 gt_eqF.
          move => h absrh hneq0 ; simpc.      
          apply :  (absringrA h%:C).
-          - (*by apply : absring_real_complex.*) admit.
-          - by rewrite eqCr .
+         by move: absrh; rewrite /ball_ !sub0r !normrN -ltcR real_norm {2}(gt0_normc leq0r) //.
+        - by rewrite eqCr .
   by [].
   have eqnear0y : {near (locally' (0:R^o)), 'i \*:quotC  \o ( fun h => h *: 'i%C)  =1 quotiR }.
     exists 1 ; first by [] ; move => h _ _ //= ;  simpc.
@@ -488,23 +490,7 @@ Proof.
     by rewrite !real_complexE.
   pose subsetfiltersy := (flim_eq_loc eqnear0y). 
   have properlocally' : ProperFilter (locally'(0:C^o)).
-(*  
-  (*This should be Canonical *)
-  split.
-   - rewrite /locally' /within => [[r leq0r] ballrwithin].
-      apply: (ballrwithin ((r/2)%:C) _). 
-     rewrite /AbsRing_ball /ball_ absCE sub0r normcN //= .
-     rewrite expr0n //= addr0 sqrtr_sqr //= ger0_norm.
-     rewrite ltr_pdivr_mulr ; last by [] .
-     rewrite ltr_pmulr ; last by  [].
-     by apply: ltr_spaddl. (* 1 < 2 *)
-     by apply : divr_ge0; apply ltrW. 
-     have : (r / 2 != 0) by apply: mulf_neq0 ;apply: lt0r_neq0.
-     have -> : (0 = 0%:C) by move => K //=. 
-     by apply: contra=> /eqP /complexI /eqP.
-     (* une vue permet d'abord d'utiliser une implication sur le terme 
-      en tête sans avoir à l 'introduire*)  
-   - by apply: locally'_filter.*) admit.
+    exact: Proper_locally'_numFieldType.
   have <- : lim (quotiR @ (locally' (0:R^o)))
            = 'i * lim (quotC @ (locally' (0:C^o))).
     have -> : 'i * lim (quotC @ (locally' (0:C^o))) 
@@ -512,25 +498,29 @@ Proof.
       rewrite  scalei_muli  limin_scaler; first by [].  
       by exact: H.
     apply: (@flim_map_lim _ C_RnormedModType).
-      admit.
+      exact: Proper_locally'_numFieldType.
          suff: quotiR @ (locally' (0:R^o))
                    `=>` ('i \*: quotC @ (locally' (0:C^o))).
          move => H1 ; apply: flim_translim.
          - exact: H1.
-         - (*by apply : cvg_scaler; exact : H. *) admit.
+         - (*apply : cvg_scaler; exact : H. *) admit.
     apply: flim_trans.   
     - apply : (subsetfiltersy (locally'_filter 0)).
       move => {subsetfiltersx eqnear0x}.
     - unshelve apply : flim_comp. 
        - exact (locally' (0:C^o)). 
        - move => A //= [r leq0r] absringrA. 
-         (*exists r ; first by [].   
-         move => h absrh hneq0; simpc. 
-         apply: (absringrA). 
-          - by apply : absring_real_Im.
-          - by rewrite eqCI.*) admit.
+         exists (normc r); first by rewrite normc_gt0 gt_eqF.
+         move=> y ry y0.
+         apply absringrA.
+         move: ry; rewrite /ball_ !sub0r !normrN -ltcR {2}(gt0_normc leq0r) //.
+         rewrite scalecr normrM (_ : `|'i| = 1) ?mulr1 // ?real_norm //.
+         by rewrite normc_def /= expr0n expr1n add0r sqrtr1.
+         rewrite scalecr scaler_eq0 negb_or; apply/andP; split.
+           by rewrite eqCr.
+         by apply/eqP; case => /eqP; rewrite oner_eq0.
       rewrite filter_of_filterE.
-    by []. 
+    by [].
  by [].
 Admitted.
 
