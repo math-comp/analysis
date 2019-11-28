@@ -491,19 +491,20 @@ Proof.
   pose subsetfiltersy := (flim_eq_loc eqnear0y). 
   have properlocally' : ProperFilter (locally'(0:C^o)).
     exact: Proper_locally'_numFieldType.
-  have <- : lim (quotiR @ (locally' (0:R^o)))
+  have <- : lim ((quotiR : R -> (numFieldType_normedModType (complex_numFieldType R)) (*TODO: IMP*)) @ (locally' (0:R^o)))
            = 'i * lim (quotC @ (locally' (0:C^o))).
     have -> : 'i * lim (quotC @ (locally' (0:C^o))) 
            =  lim ('i \*: quotC @ (locally' (0:C^o))). 
       rewrite  scalei_muli  limin_scaler; first by [].  
       by exact: H.
-    apply: (@flim_map_lim _ C_RnormedModType).
+    apply: (@flim_map_lim).
       exact: Proper_locally'_numFieldType.
          suff: quotiR @ (locally' (0:R^o))
                    `=>` ('i \*: quotC @ (locally' (0:C^o))).
          move => H1 ; apply: flim_translim.
          - exact: H1.
-         - (*apply : cvg_scaler; exact : H. *) admit.
+         -
+    apply : cvg_scaler; exact : H.
     apply: flim_trans.   
     - apply : (subsetfiltersy (locally'_filter 0)).
       move => {subsetfiltersx eqnear0x}.
@@ -521,8 +522,15 @@ Proof.
          by apply/eqP; case => /eqP; rewrite oner_eq0.
       rewrite filter_of_filterE.
     by [].
- by [].
-Admitted.
+rewrite -/quotiR /lim_in /=.
+f_equal.
+rewrite funeqE => i; rewrite propeqE; split.
+  move/flim_trans; apply; move=> s [x x0 ix]; exists x%:C; first by rewrite ltcR.
+  by move=> y y0; apply ix; move: y0; rewrite /ball_ -ltcR.
+move/flim_trans; apply.
+  move=> s [x x0 ix]; exists (normc x); first by rewrite normc_gt0 gt_eqF.
+  move=> y y0; apply ix; by move: y0; rewrite /ball_ -ltcR {2}(gt0_normc x0).
+Qed.
 
 (* Local Notation "''D_' v f" := (derive f ^~ v). *)
 (* Local Notation "''D_' v f c" := (derive f c v). *)
