@@ -385,7 +385,7 @@ case: (EM (v = 0)) => [eqv0|/eqP vneq0].
     exists x%:C; first by rewrite ltcR.
     by move=> /= y yx; apply Hx; rewrite /ball_ -ltcR.
   apply: (@flim_comp _ _ _ _ _ _ (locally' (0:C^o))).
-  + move => //= A [r [leq0r ballrA]].
+  + move => //= A [r leq0r ballrA].
     exists (normc r / normc v).
     * rewrite mulr_gt0 //.
       by rewrite normc_gt0 gt_eqF.
@@ -547,3 +547,5 @@ Proof.
 Admitted.
 
 End Holomorphe.
+
+End cauchyetoile.

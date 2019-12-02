@@ -15,6 +15,7 @@ Reserved Notation "{ 'ae' P }" (at level 0, format "{ 'ae'  P }").
    1. better lim notation *)
 
 Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
 
 Definition fct_sequence (R : numDomainType) (T : Type) := nat -> (T -> {ereal R}).
 
