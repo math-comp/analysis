@@ -1,12 +1,13 @@
 Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
+From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
-Require Import boolp reals Rstruct Rbar.
-Require Import classical_sets posnum topology normedtype landau.
+Require Import boolp ereal reals Rstruct.
+Require Import classical_sets posnum topology prodnormedzmodule normedtype.
  
 
 Require Import hahn_banach.
+
 
 
 Set Implicit Arguments.
@@ -22,9 +23,10 @@ Section LinearContinuousBounded.
 (* Everything in this section in stated for scalar functions.                 *)
 (* They should be turned into lemmas for linear functions into normed spaces  *)
   
-Variables (V  : normedModType R). 
+Variables (*R: realFieldType*) (V  : normedModType R). 
 
-Definition continuousR_at x (f : V -> R) :=   ( f @ x) --> (f x).
+Definition continuousR_at x (f : V -> R) :=   (f @ x) --> (f x).
+(*Not working with R : RealFieldtype *)
 
 Lemma continuousR_atP x (f : V -> R) :
 (continuousR_at x f) <-> forall eps : posreal, \forall y \near f @ x, ball (f x) eps%:num y.
@@ -57,30 +59,30 @@ Proof.
   (* I looked a long time for this *) 
   have ball0ta : ball 0 t a. 
    apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
-   rewrite normmZ mulrC !gtr0_norm //= mulrC. 
+   rewrite normmZ mulrC normrM. 
+   rewrite !gtr0_norm //= mulrC. 
    rewrite -mulrA -mulrA  ltr_pdivr_mull //=. 
-   rewrite mulrC. admit. 
-   (* rewrite invf_lt1 //=.  *)
-   (*   by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr. *)
-   (*   by rewrite mulr_gt0 //=.  *)
-   (* apply : mulr_gt0 ; last by []. *)
-  (*    by rewrite invr_gt0 //=. *) admit. 
-  move : (H a ball0ta) ;  rewrite /ball //= sub0r normrN. 
-  suff ->  : ( f a =  ( (`|x|^-1) * t/2 ) * ( f x)) . 
-   admit.   
-         (* rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr. *)
-    (* rewrite invf_div => Ht.  *)
-    (* by   apply : ltrW. *)
-    (* by  apply : mulr_gt0. *)
-    (* apply : mulr_gt0 ; last by []. *)
-    (*    apply : mulr_gt0 ; last by []. *)
-    (*   by rewrite invr_gt0 //=. *)
-  suff -> : a = (`|x|^-1 * t/2) *: x + 0
-        by rewrite linearP (linear0 f) addrC add0r.
-   by rewrite addrC add0r.  
-(* Qed. *)
-Admitted.
-
+   rewrite mulrC -mulrA  gtr_pmull. 
+   rewrite invf_lt1 //=. 
+     by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+     by rewrite mulr_gt0 //=. 
+   apply : mulr_gt0.  
+     by apply: posnum_gt0.
+     by rewrite invr_gt0 //=.
+  move : (H a ball0ta); rewrite /ball /ball_ //= sub0r normrN. 
+  suff ->  : ( f a =  ( (`|x|^-1) * t/2 ) * ( f x)) .
+     rewrite normrM gtr0_norm. 
+     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //=.   
+  rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr.
+  rewrite invf_div => Ht. 
+    by   apply : ltW.
+    by  apply : mulr_gt0.
+    apply : mulr_gt0 ; last by [].
+       apply : mulr_gt0 ; last by [].
+      by rewrite invr_gt0 //=.
+   suff -> : a = (`|x|^-1 * t/2) *: x + 0  by  rewrite linearP (linear0 f) addrC add0r.
+     by rewrite addrC add0r.
+Qed.     
 
 Lemma bounded_continuousR0 (f: {scalar V }) :
   (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|x| ) * r))
@@ -97,11 +99,11 @@ Proof.
    move => a ; rewrite -ball_normE  /(ball_)  addrC addr0 normrN.
    move => na ; rewrite /ball /(ball_) //= addrC addr0 normrN.
   have na0: `|a| * r <= eps%:num / 2. Check ltW. by  apply : ltW; rewrite -ltr_pdivl_mulr. 
-  have faeps2 : `|f a| <= eps%:num /2 by exact : ler_trans ( H a) na0.
+  have faeps2 : `|f a| <= eps%:num /2 by exact : le_trans (H a) na0.
   have eps2eps : eps%:num  / 2 < eps%:num. rewrite gtr_pmulr ; last by []. 
     by  rewrite invf_lt1 ; have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ;
       apply : ltr_spaddr.
-  by apply : (ler_lt_trans faeps2).
+  by apply : (le_lt_trans faeps2).
 Qed.
 
    
@@ -110,13 +112,13 @@ Lemma continuousRat0_continuous (f : {scalar V}):
 Proof.
  move => cont0f  x ; rewrite flim_locally => eps pos.
  move : (continuousR_bounded0 cont0f) => [r [rpos Hr]]. 
- rewrite nearE ball_absE /ball_.
+ rewrite nearE /ball_ //.
  rewrite /(_@_) /[filter of _] locallyP -ball_normE /ball_.
  exists (eps /r).
   -  by rewrite mulr_gt0 //= invr_gt0 .
   - move => y Hxy.
-    rewrite /(_ @^-1`_); rewrite -(linearB f) absRE.   
-    suff : `|[x - y]| * r < eps by apply : ler_lt_trans (Hr (x-y)).
+    rewrite /(_ @^-1`_) /ball //= -(linearB f).   
+    suff : `|x - y| * r < eps by apply : le_lt_trans (Hr (x-y)).
     by rewrite -ltr_pdivl_mulr.
 Qed.      
 
@@ -150,7 +152,7 @@ Definition continuousR_on_at (G : set V ) (x : V ) (g : V -> R)  :=
 
 Lemma continuousR_scalar_on_bounded :
   (continuousR_on_at F 0 f) ->
-  (exists  r , (r > 0 ) /\ (forall x : V, F x ->   (`|f x| ) <=  `|[x]| * r)).
+  (exists  r , (r > 0 ) /\ (forall x : V, F x ->   (`|f x| ) <=  `|x| * r)).
 Proof.
   rewrite /continuousR_on_at.
   move  => /flim_ballPpos  H.
@@ -164,29 +166,29 @@ Proof.
   pose t := tp%:num .
   exists (2*t^-1). split=> //. 
   move => x. case :  (boolp.EM (x=0)).
-  -  by move => -> ; rewrite f0 normm0 normr0 //= mul0r. 
+  -  by move => -> ; rewrite f0 normr0 normr0 //= mul0r. 
   - move/eqP => xneq0 Fx. 
-  pose a : V := (`|[x]|^-1 * t/2 ) *: x.
+  pose a : V := (`|x|^-1 * t/2 ) *: x.
   have Btp : ball 0 t a.
    apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
-   rewrite normmZ absRE mulrC normedtype.R_AbsRingMixin_obligation_1.
-   rewrite !gtr0_norm //= ; last by rewrite  pmulr_lgt0 // invr_gt0 normm_gt0.
-   rewrite mulrC -mulrA -mulrA  ltr_pdivr_mull; last by rewrite normm_gt0.
+   rewrite normmZ mulrC (*normedtype.R_AbsRingMixin_obligation_1*) normrM.
+   rewrite !gtr0_norm //= ; last by rewrite  pmulr_lgt0 // invr_gt0 normr_gt0.
+   rewrite mulrC -mulrA -mulrA  ltr_pdivr_mull; last by rewrite normr_gt0.
    rewrite mulrC -mulrA  gtr_pmull. 
    rewrite invf_lt1 //=.
      by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
-   by  rewrite pmulr_lgt0 //  !normm_gt0.  
+   by  rewrite pmulr_lgt0 //  !normr_gt0.  
  have Fa : F a by rewrite -[a]add0r; apply: linF. 
  have :  `|f a| < 1.
-    by move: (H _ Btp Fa); rewrite ball_absE /ball_ sub0r absRE normrN.
-  suff ->  : ( f a =  ( (`|[x]|^-1) * t/2 ) * ( f x)) .
-     rewrite normedtype.R_AbsRingMixin_obligation_1 (gtr0_norm) //.
+    by move: (H _ Btp Fa); rewrite /ball /ball_ //= sub0r normrN.
+  suff ->  : ( f a =  ( (`|x|^-1) * t/2 ) * ( f x)) .
+     rewrite (*normedtype.R_AbsRingMixin_obligation_1*)normrM (gtr0_norm) //.
      rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //= ;
-       last by rewrite normm_gt0.
+       last by rewrite normr_gt0.
      rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr //.
-     by rewrite invf_div => Ht; apply : ltrW.
-     by  rewrite !mulr_gt0 // invr_gt0 normm_gt0. 
- suff -> : a = 0+ (`|[x]|^-1 * t/2) *: x by rewrite linfF // f0 add0r.
+     by rewrite invf_div => Ht; apply : ltW.
+     by  rewrite !mulr_gt0 // invr_gt0 normr_gt0. 
+ suff -> : a = 0+ (`|x|^-1 * t/2) *: x by rewrite linfF // f0 add0r.
  by rewrite add0r.  
 Qed. 
 
@@ -244,20 +246,20 @@ Theorem HB_geom_normed :
   exists g : {scalar V} , ( continuous g ) /\ ( forall x, F x -> (g x = f x) ).  
 Proof.
  move => H; move: ( continuousR_scalar_on_bounded H) => [r [ltr0 fxrx]] {H}.
- pose p := fun x : V => `|[x]|*r ;   have convp: convex p. 
+ pose p := fun x : V => `|x|*r ;   have convp: convex p. 
    move => v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
-   suff : `|[l *: v1 + m *: v2]|  <= (l * `|[v1]| + m * `|[v2]|).
+   suff : `|l *: v1 + m *: v2|  <= (l * `|v1| + m * `|v2|).
      move => h ; apply : ler_pmul  ; last by [].
-     by apply : normm_ge0.
-     by apply : ltrW. 
+     by apply : normr_ge0.
+     by apply : ltW. 
        by [].
    have labs : `|l| = l by apply/normr_idP.
    have mabs: `|m| = m by apply/normr_idP.
-   rewrite -[in(_*_)]labs -[in(m*_)]mabs -!absRE -!normmZ.
-   by apply : ler_normm_add.
+   rewrite -[in(_*_)]labs -[in(m*_)]mabs -!normmZ.
+   by apply : ler_norm_add.
  have majfp : forall x, F x -> f x <= p x.      
-   move => x Fx; rewrite /(p _) ; apply : ler_trans ; last by [].
-   apply : ler_trans.
+   move => x Fx; rewrite /(p _) ; apply : le_trans ; last by [].
+   apply : le_trans.
    apply : ler_norm.
    by apply : (fxrx x Fx).   
  move : (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}. 
@@ -266,7 +268,7 @@ Proof.
   apply : bounded_continuousR0 ; exists r.  
    split; first by [].  
    move => x0 ; rewrite ler_norml ; apply /andP ; split.
-   rewrite -sub0r (ler_subl_addr) ; move : (majgp (-x0)) ; rewrite /(p _) normmN (linearN g).  
+   rewrite -sub0r (ler_subl_addr) ; move : (majgp (-x0)) ; rewrite /(p _) normrN (linearN g).  
    by  rewrite -sub0r ler_subl_addl.
    by exact : majgp x0.  
 Qed.
