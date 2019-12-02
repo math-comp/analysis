@@ -347,14 +347,12 @@ looked a long time of it as I was looking for a [filter of lim]*
  instead of a [filter of filter]*)
 
 (*There should be a lemma analogous to [filter of lim] to ease the search  *)
-Search "normedType".
-(* Canonical C_normedType := [normedModType C of C for  [normedModType C of C^o]]. *)
 
 Definition Rderivable (V W : normedModType R) (f : V -> W) := derivable f.
 
 (*The topological structure on R is given by R^o *)
-Lemma holo_derivable (f : (Rcomplex R)^o -> (Rcomplex R)^o) c :
-  holomorphic f c -> (forall v : C, Rderivable (complex_realfun f) c v).
+Lemma holo_derivable (f : (C)^o -> (C)^o) c :
+  holomorphic f c -> (forall v : C, Rderivable ( complex_realfun f) c v).
 Proof.
 move=> /cvg_ex [l H]; rewrite /Rderivable /derivable => v /=.
 rewrite /type_of_filter /= in l H.
