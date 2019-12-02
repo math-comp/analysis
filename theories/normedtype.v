@@ -76,11 +76,11 @@ Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
 Proof. by rewrite addrA addrNK. Qed.
 
 Lemma ltr_distW (R : realDomainType) (x y e : R) :
-  (`|x - y|%R < e) -> y - e < x.
+  `|x - y| < e -> y - e < x.
 Proof. by rewrite ltr_distl => /andP[]. Qed.
 
 Lemma ler_distW (R : realDomainType) (x y e : R):
-   (`|x - y|%R <= e) -> y - e <= x.
+  `|x - y| <= e -> y - e <= x.
 Proof. by rewrite ler_distl => /andP[]. Qed.
 
 End add_to_mathcomp.
@@ -100,7 +100,7 @@ Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
 
 Section uniform_of_normedDomain.
 Variables (K : numDomainType) (R : normedZmodType K).
-Lemma ball_norm_center (x : R) (e : K) : (0%R < e)%O -> ball_ normr x e x.
+Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ normr x e x.
 Proof. by move=> ? /=; rewrite subrr normr0. Qed.
 Lemma ball_norm_symmetric (x y : R) (e : K) :
   ball_ normr x e y -> ball_ normr y e x.
@@ -742,7 +742,7 @@ by rewrite [X in _ < X]splitr ltr_spaddl.
 Qed.
 
 Lemma normm_lt_split (x y : V) (e : R) :
-  `|x| < (e / 2)%R -> `|y| < (e / 2)%R -> `|x + y| < e.
+  `|x| < e / 2 -> `|y| < e / 2 -> `|x + y| < e.
 Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
@@ -2154,39 +2154,43 @@ Grab Existential Variables. all: end_near. Qed.
 
 (** Local properties in [R] *)
 
+Local Open Scope order_scope.
+
 (* TODO: generalize to numFieldType? *)
 Lemma lt_ereal_locally (R : realFieldType) (a b : {ereal R}) (x : R) :
-  lt_ereal a x%:E -> lt_ereal x%:E b ->
+  a < x%:E -> x%:E < b ->
   exists delta : {posnum R},
-    forall y, `|y - x| < delta%:num -> lt_ereal a y%:E && lt_ereal y%:E b.
+    forall y, `|y - x| < delta%:num -> (a < y%:E) && (y%:E < b).
 Proof.
 move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
   move=> {a b} a b ltxa ltxb.
-  have m_gt0 : minr ((x - a) / 2) ((b - x) / 2) > 0.
+  have m_gt0 : (minr ((x - a) / 2) ((b - x) / 2) > 0)%R.
     by rewrite ltxI !divr_gt0 // ?subr_gt0.
   exists (PosNum m_gt0) => y //=; rewrite ltxI !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].
-  rewrite (lt_trans _ ay) ?(lt_trans yb) //=.
+  rewrite 2!lte_fin (lt_trans _ ay) ?(lt_trans yb) //=.
     by rewrite -subr_gt0 opprD addrA {1}[b - x]splitr addrK divr_gt0 ?subr_gt0.
   by rewrite -subr_gt0 addrAC {1}[x - a]splitr addrK divr_gt0 ?subr_gt0.
-- have [//||d dP] := wlog a (x + 1); rewrite ?ltr_addl //.
+- have [//||d dP] := wlog a (x + 1); rewrite ?lte_fin ?ltr_addl //.
   by exists d => y /dP /andP[->].
-- have [//||d dP] := wlog (x - 1) b; rewrite ?gtr_addl ?ltrN10 //.
+- have [//||d dP] := wlog (x - 1) b; rewrite ?lte_fin ?gtr_addl ?ltrN10 //.
   by exists d => y /dP /andP[_ ->].
-- by exists 1%:pos.
+- by exists 1%:pos%R.
 Qed.
 
 (* TODO: generalize to numFieldType? *)
 Lemma locally_interval (R : realFieldType) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
-  lt_ereal a x%:E -> lt_ereal x%:E b ->
-  (forall y : R, lt_ereal a y%:E -> lt_ereal y%:E b -> P y) ->
+  a < x%:E -> x%:E < b ->
+  (forall y : R, a < y%:E -> y%:E < b -> P y) ->
   locally x P.
 Proof.
 move => Hax Hxb Hp; case: (lt_ereal_locally Hax Hxb) => d Hd.
 exists d%:num => //= y; rewrite /= distrC.
 by move=> /Hd /andP[??]; apply: Hp.
 Qed.
+
+Local Close Scope order_scope.
 
 (** * Topology on [R]² *)
 
@@ -2455,41 +2459,47 @@ Qed.
 
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 
-Lemma open_ereal_lt y : open [set u : R^o | lt_ereal u%:E y].
+Local Open Scope order_scope.
+
+Lemma open_ereal_lt (y : {ereal R}) : open [set u : R^o | u%:E < y].
 Proof.
-case: y => [y||] /=.
-exact: open_lt.
-by rewrite trueE; apply: openT.
-by rewrite falseE; apply: open0.
+case: y => [y||] /=; first exact: open_lt.
+rewrite [X in open X](_ : _ = setT); first exact: openT.
+by rewrite funeqE => ?; rewrite trueE.
+rewrite [X in open X](_ : _ = set0); first exact: open0.
+by rewrite funeqE => ?; rewrite falseE.
 Qed.
 
-Lemma open_ereal_gt y : open [set u : R^o | lt_ereal y u%:E].
+Lemma open_ereal_gt y : open [set u : R^o | y < u%:E].
 Proof.
-case: y => [y||] /=.
-exact: open_gt.
-by rewrite falseE; apply: open0.
-by rewrite trueE; apply: openT.
+case: y => [y||] /=; first exact: open_gt.
+rewrite [X in open X](_ : _ = set0); first exact: open0.
+by rewrite funeqE => ?; rewrite falseE.
+rewrite [X in open X](_ : _ = setT); first exact: openT.
+by rewrite funeqE => ?; rewrite trueE.
 Qed.
 
-Lemma open_ereal_lt' x y : lt_ereal x y ->
-  ereal_locally x (fun u : R => lt_ereal u%:E y).
+Lemma open_ereal_lt' (x y : {ereal R}) : x < y ->
+  ereal_locally x (fun u : R => u%:E < y).
 Proof.
 case: x => [x|//|] xy; first exact: open_ereal_lt.
 case: y => [y||//] /= in xy *.
 exists y; rewrite num_real; split => //= x ? //.
-by exists 0.
+by exists 0%R.
 case: y => [y||//] /= in xy *.
 exists y; rewrite num_real; split => //= x ? //.
-by exists 0; rewrite real0.
+by exists 0%R; rewrite real0.
 Qed.
 
-Lemma open_ereal_gt' x y : lt_ereal y x ->
-  ereal_locally x (fun u : R => lt_ereal y u%:E).
+Lemma open_ereal_gt' (x y : {ereal R}) : y < x ->
+  ereal_locally x (fun u : R => y < u%:E).
 Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
-  case: y => [y||] //=; do ?by exists 0; rewrite real0.
+  case: y => [y||] //=; do ?by exists 0%R; rewrite real0.
 by exists y; rewrite num_real.
 Qed.
+
+Local Close Scope order_scope.
 
 End open_sets_in_Rbar.
 
@@ -2592,7 +2602,7 @@ Proof. by rewrite continuity_ptE continuous_withinNx. Qed.
 
 Lemma continuity_pt_locally' f x :
   Ranalysis1.continuity_pt f x <->
-  forall eps, 0 < eps -> locally' x (fun u => `|f x - f u| < eps)%R.
+  forall eps, 0 < eps -> locally' x (fun u => `|f x - f u| < eps).
 Proof.
 rewrite continuity_pt_flim' (@flim_normP _ [normedModType _ of Rdefinitions.R^o]).
 exact.

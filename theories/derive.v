@@ -24,6 +24,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 
+Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 
 Reserved Notation "''d' f x" (at level 0, f at level 0, x at level 0,
