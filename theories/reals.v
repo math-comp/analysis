@@ -752,7 +752,8 @@ Local Open Scope ereal_scope.
 Section ERealOrderTheory.
 Context {R : realDomainType}.
 
-Local Open Scope order_scope.
+Local Open Scope ring_scope.
+Local Open Scope ereal_scope.
 
 Implicit Types x y z : {ereal R}.
 
@@ -767,12 +768,6 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
 
 Lemma le0R (l : {ereal R}) : 0%:E <= l -> (0%R <= real_of_er(*TODO: coercion broken*) l :> R).
 Proof. by case: l. Qed.
-
-Lemma lee_fin (x y : R) : (x%:E <= y%:E) = (x <= y)%R.
-Proof. by []. Qed.
-
-Lemma lte_fin (x y : R) : (x%:E < y%:E) = (x < y)%R.
-Proof. by []. Qed.
 
 Lemma lee_tofin (x y : R) : (x <= y)%R -> (x%:E <= y%:E).
 Proof. by []. Qed.
