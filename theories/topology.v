@@ -277,6 +277,7 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
 
 Section function_space.
 

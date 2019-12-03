@@ -627,8 +627,8 @@ CoInductive dlim_spec f (x : T) : R -> Type :=
 Lemma dlimP f x : dlim_spec f x (dlim f x).
 Proof.
 rewrite dlimE; case: nlimP => [l h|?] /=; last by apply/DLimOut.
-have: (0%:E <= l)%O by apply/ncvg_geC: h => n; apply/ge0_mu.
-have: (l <= 1%:E)%O by apply/ncvg_leC: h => n; apply/le1_mu1.
+have: (0%:E <= l)%E by apply/ncvg_geC: h => n; apply/ge0_mu.
+have: (l <= 1%:E)%E by apply/ncvg_leC: h => n; apply/le1_mu1.
 by case: l h => // l h /= ge0_l ge1_; apply/DLimCvg.
 Qed.
 
@@ -1186,7 +1186,7 @@ Section Jensen.
 Context {R : realType} {I : finType}.
 
 Definition convexon (a b : {ereal R}) (f : R -> R) :=
-  forall x y, (a <= x%:E <= b)%O -> (a <= y%:E <= b)%O ->
+  forall x y, (a <= x%:E <= b)%E -> (a <= y%:E <= b)%E ->
     forall t, 0 <= t <= 1 ->
       f (t * x + (1 - t) * y) <= t * (f x) + (1 - t) * (f y).
 
