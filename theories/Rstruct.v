@@ -372,7 +372,7 @@ Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 
 End ssreal_struct.
 
-Open Scope ring_scope.
+Local Open Scope ring_scope.
 Require Import reals boolp.
 
 Section ssreal_struct_contd.

@@ -70,6 +70,8 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
+Local Open Scope ring_scope.
+
 Section add_to_mathcomp.
 
 Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).

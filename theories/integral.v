@@ -20,7 +20,7 @@ Local Open Scope ring_scope.
 Definition fct_sequence (R : numDomainType) (T : Type) := nat -> (T -> {ereal R}).
 
 Definition increasing (R : numDomainType) (T : Type) (D : set T) (f_ : fct_sequence R T) :=
-  forall n, (forall x, D x -> f_ n x <= f_ n.+1 x :> R).
+  forall n x, D x -> real_of_er (f_ n x) <= real_of_er (f_ n.+1 x).
 
 Module Type INTEGRAL.
 
