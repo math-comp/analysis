@@ -130,7 +130,7 @@ End Countable.
 (* -------------------------------------------------------------------- *)
 Section CountableTheory.
 Lemma countable_countable (T : countType) (E : pred T) : countable E.
-Proof. by exists pickle unpickle; apply/pickleK. Qed.
+Proof. by exists choice.pickle choice.unpickle; apply/choice.pickleK. Qed.
 
 Section CanCountable.
 Variables (T : Type) (U : countType) (E : pred T).
@@ -138,9 +138,9 @@ Variables (f : [psub E] -> U) (g : U -> [psub E]).
 
 Lemma can_countable : cancel f g -> countable E.
 Proof.
-pose p := pickle \o f; pose u n := omap g (unpickle n).
+pose p := choice.pickle \o f; pose u n := omap g (choice.unpickle n).
 move=> can_fg; apply (@Countable _ E p u) => x.
-by rewrite {}/u {}/p /= pickleK /= can_fg.
+by rewrite {}/u {}/p /= choice.pickleK /= can_fg.
 Qed.
 End CanCountable.
 
