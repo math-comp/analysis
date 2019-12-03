@@ -468,7 +468,7 @@ End Exports.
 End BoolQuant.
 Export BoolQuant.Exports.
 
-Open Scope quant_scope.
+Local Open Scope quant_scope.
 
 (* -------------------------------------------------------------------- *)
 Section QuantifierCombinators.
