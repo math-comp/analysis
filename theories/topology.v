@@ -792,6 +792,10 @@ Lemma near T (F : set (set T)) P (FP : F P) (x : T)
 Proof. by move: Px; rewrite prop_ofE. Qed.
 Arguments near {T F P} FP x Px.
 
+Lemma locallyW {T : Type} {F : set (set T)} (P : T -> Prop) :
+  Filter F -> (forall x, P x) -> (\forall x \near F, P x).
+Proof. by move=> FF FP; apply: filterS filterT. Qed.
+
 Lemma filterE {T : Type} {F : set (set T)} :
   Filter F -> forall P : set T, (forall x, P x) -> F P.
 Proof. by move=> ???; near=> x => //. Unshelve. end_near. Qed.
@@ -998,11 +1002,11 @@ Lemma cvgi_comp T U V (f : T -> U) (g : U -> set V)
   f @ F `=>` G -> g `@ G `=>` H -> g \o f `@ F `=>` H.
 Proof. by move=> fFG gGH; apply: cvg_trans gGH => P /fFG. Qed.
 
-Lemma cvg_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> U) :
+Lemma near_eq_cvg {T U} {F : set (set T)} {FF : Filter F} (f g : T -> U) :
   {near F, f =1 g} -> g @ F `=>` f @ F.
 Proof. by move=> eq_fg P /=; apply: filterS2 eq_fg => x <-. Qed.
 
-Lemma cvgi_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> set U) :
+Lemma neari_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> set U) :
   {near F, f =2 g} -> g `@ F `=>` f `@ F.
 Proof.
 move=> eq_fg P /=; apply: filterS2 eq_fg => x eq_fg [y [fxy Py]].
