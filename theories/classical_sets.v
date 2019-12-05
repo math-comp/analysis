@@ -266,6 +266,13 @@ Qed.
 Lemma imageP {A B} (f : A -> B) (X : set A) a : X a -> (f @` X) (f a).
 Proof. by exists a. Qed.
 
+Lemma image_inj {A B} (f : A -> B) (X : set A) a :
+  injective f -> (f @` X) (f a) = X a.
+Proof.
+by move=> f_inj; rewrite propeqE; split => [[b Xb /f_inj <-]|/(imageP f)//].
+Qed.
+Arguments image_inj {A B} [f X a].
+
 Lemma image_comp T U V (f : T -> U) (g : U -> V) A : g @` (f @` A) = (g \o f) @` A.
 Proof.
 apply eqEsubset => c.
