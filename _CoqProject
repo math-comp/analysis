@@ -13,6 +13,7 @@ theories/Rbar.v
 theories/topology.v
 theories/prodnormedzmodule.v
 theories/normedtype.v
+theories/sequences.v
 theories/forms.v
 theories/derive.v
 theories/summability.v

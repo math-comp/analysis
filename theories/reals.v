@@ -631,6 +631,18 @@ Proof.
 by move=> eq_12 x; apply/lbP/lbP=> h y yS; apply/h; rewrite (eq_12, =^~ eq_12).
 Qed.
 
+Lemma eq_has_ub (S1 S2 : pred R) : S2 =i S1 -> has_ub S2 -> has_ub S1.
+Proof.
+move=> eq_12 /has_ubP[x /ubP xS2]; apply/has_ubP; exists x; apply/ubP => y yS1.
+by apply xS2; rewrite eq_12.
+Qed.
+
+Lemma eq_has_lb (S1 S2 : pred R) : S2 =i S1 -> has_lb S2 -> has_lb S1.
+Proof.
+move=> eq_12 /has_lbP[x /lbP xS2]; apply/has_lbP; exists x; apply/lbP => y yS1.
+by apply xS2; rewrite eq_12.
+Qed.
+
 Lemma eq_has_sup (S1 S2 : pred R) :
   S2 =i S1 -> has_sup S2 -> has_sup S1.
 Proof.
