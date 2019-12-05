@@ -1847,7 +1847,7 @@ Proof. by move=> ?; apply: continuous_cvg => //; exact: opp_continuous. Qed.
 Lemma is_cvgN f : cvg (f @ F) -> cvg (- f @ F).
 Proof. by move=> /cvgN /cvgP. Qed.
 
-Lemma is_cvgN_LR f : cvg ((- f) @ F) = cvg (f @ F).
+Lemma is_cvgNE f : cvg ((- f) @ F) = cvg (f @ F).
 Proof. by rewrite propeqE; split=> /cvgN; rewrite ?opprK => /cvgP. Qed.
 
 Lemma cvgD f g a b : f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
@@ -1862,14 +1862,14 @@ Proof. by move=> ? ?; apply: cvgD => //; apply: cvgN. Qed.
 Lemma is_cvgB f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f - g @ F).
 Proof. by have := cvgP _ (cvgB _ _); apply. Qed.
 
-Lemma is_cvgDl_LR f g : cvg (g @ F) -> cvg ((f + g) @ F) = cvg (f @ F).
+Lemma is_cvgDlE f g : cvg (g @ F) -> cvg ((f + g) @ F) = cvg (f @ F).
 Proof.
 move=> g_cvg; rewrite propeqE; split; last by move=> /is_cvgD; apply.
 by move=> /is_cvgB /(_ g_cvg); rewrite addrK.
 Qed.
 
-Lemma is_cvgDr_LR f g : cvg (f @ F) -> cvg ((f + g) @ F) = cvg (g @ F).
-Proof. by rewrite addrC; apply: is_cvgDl_LR. Qed.
+Lemma is_cvgDrE f g : cvg (f @ F) -> cvg ((f + g) @ F) = cvg (g @ F).
+Proof. by rewrite addrC; apply: is_cvgDlE. Qed.
 
 Lemma cvgZ s f k a : s @ F --> k -> f @ F --> a ->
                      s x *: f x @[x --> F] --> k *: a.
@@ -1891,7 +1891,7 @@ Proof. apply: cvgZ => //; exact: cvg_cst. Qed.
 Lemma is_cvgZr k f : cvg (f @ F) -> cvg (k *: f  @ F).
 Proof. by have := cvgP _ (cvgZr  _); apply. Qed.
 
-Lemma is_cvgZr_LR k f : k != 0 -> cvg (k *: f @ F) = cvg (f @ F).
+Lemma is_cvgZrE k f : k != 0 -> cvg (k *: f @ F) = cvg (f @ F).
 Proof.
 move=> k_neq0; rewrite propeqE; split => [/(@cvgZr k^-1)|/(@cvgZr k)/cvgP//].
 by under [_ \*: _]funext => x /= do rewrite scalerK//; apply: cvgP.
@@ -1926,14 +1926,14 @@ Proof. exact: is_cvgZ. Qed.
 Lemma is_cvgMr g a (f := fun=> a) : cvg (g @ F) -> cvg (f * g @ F).
 Proof. exact: is_cvgZr. Qed.
 
-Lemma is_cvgMr_LR g a (f := fun=> a) : a != 0 -> cvg (f * g @ F) = cvg (g @ F).
-Proof. exact: is_cvgZr_LR. Qed.
+Lemma is_cvgMrE g a (f := fun=> a) : a != 0 -> cvg (f * g @ F) = cvg (g @ F).
+Proof. exact: is_cvgZrE. Qed.
 
 Lemma is_cvgMl f a (g := fun=> a) : cvg (f @ F) -> cvg (f * g @ F).
 Proof. by move=> f_cvg; rewrite mulrC; apply: is_cvgMr. Qed.
 
-Lemma is_cvgMl_LR f a (g := fun=> a) : a != 0 -> cvg (f * g @ F) = cvg (f @ F).
-Proof. by move=> a_neq0; rewrite mulrC is_cvgMr_LR. Qed.
+Lemma is_cvgMlE f a (g := fun=> a) : a != 0 -> cvg (f * g @ F) = cvg (f @ F).
+Proof. by move=> a_neq0; rewrite mulrC is_cvgMrE. Qed.
 
 Lemma cvgV f a : a != 0 -> f @ F --> a -> (f x)^-1 @[x --> F] --> a^-1.
 Proof.
@@ -2348,6 +2348,13 @@ by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
 Qed.
 
 End some_sets.
+
+Hint Extern 0 (open _) => now apply: open_gt : core.
+Hint Extern 0 (open _) => now apply: open_lt : core.
+Hint Extern 0 (open _) => now apply: open_neq : core.
+Hint Extern 0 (closed _) => now apply: closed_ge : core.
+Hint Extern 0 (closed _) => now apply: closed_le : core.
+Hint Extern 0 (closed _) => now apply: closed_eq : core.
 
 Section segment.
 Variable R : realType.
