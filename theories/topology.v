@@ -2167,7 +2167,7 @@ move=> Aco; rewrite compact_ultra => F FU FA.
 set subst_coord := fun (i : I) (pi : T i) (f : forall x : I, T x) (j : I) =>
   if eqP is ReflectT e then ecast i (T i) (esym e) pi else f j.
 have subst_coordT i pi f : subst_coord i pi f i = pi.
-  rewrite /subst_coord; case: eqP => // e.
+  rewrite /subst_coord; case eqP => // e.
   by rewrite (eq_irrelevance e (erefl _)).
 have subst_coordN i pi f j : i != j -> subst_coord i pi f j = f j.
   move=> inej; rewrite /subst_coord; case: eqP => // e.
