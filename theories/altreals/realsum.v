@@ -169,7 +169,7 @@ Context {R : realType}.
 Lemma ncvg_mono (u : nat -> R) :
     (* {mono u : x y / (x <= y)%N >-> u x <= u y *)
     (forall x y, (x <= y)%N -> u x <= u y)
-  -> exists2 l, (-oo < l)%O & ncvg u l.
+  -> exists2 l, (-oo < l)%E & ncvg u l.
 Proof.
 move=> mono_u; pose E := [pred x | `[exists n, x == u n]].
 have nzE: nonempty E by exists (u 0%N); apply/imsetbP; exists 0%N.
@@ -442,7 +442,7 @@ Qed.
 
 Lemma psummable_ptbounded : nbounded (fun n => \sum_(i < n) S i).
 Proof.
-apply/asboolP/nboundedP; exists (psum S + 1)%R.
+apply/asboolP/nboundedP; exists (psum S + 1).
   rewrite ltr_spaddr ?ltr01 1?(le_trans (normr_ge0 (S 0%N))) //.
   by apply/ger1_psum.
 move=> n; rewrite ltr_spaddr ?ltr01 // ger0_norm ?sumr_ge0 //.
@@ -554,7 +554,7 @@ Proof. by exists 0 => J; rewrite big1 ?normr0. Qed.
 Lemma summableD (S1 S2 : T -> R) :
   summable S1 -> summable S2 -> summable (S1 \+ S2).
 Proof.
-case=> [M1 h1] [M2 h2]; exists (M1 + M2)%R => J /=.
+case=> [M1 h1] [M2 h2]; exists (M1 + M2) => J /=.
 pose M := \sum_(x : J) (`|S1 (val x)| + `|S2 (val x)|).
 rewrite (@le_trans _ _ M) // ?ler_sum // => [K _|].
   by rewrite ler_norm_add.
@@ -789,7 +789,7 @@ Qed.
 Lemma psumD S1 S2 :
     (forall x, 0 <= S1 x) -> (forall x, 0 <= S2 x)
   -> summable S1 -> summable S2
-  -> psum (S1 \+ S2) = (psum S1 + psum S2)%R.
+  -> psum (S1 \+ S2) = (psum S1 + psum S2).
 Proof.
 move=> ge0_S1 ge0_S2 smS1 smS2; have smD := summableD smS1 smS2.
 have ge0D: forall x, 0 <= S1 x + S2 x by move=> x; rewrite addr_ge0.
@@ -816,7 +816,7 @@ Qed.
 (* -------------------------------------------------------------------- *)
 Lemma psumB S1 S2 :
     (forall x, 0 <= S2 x <= S1 x) -> summable S1
-  -> psum (S1 \- S2) = (psum S1 - psum S2)%R.
+  -> psum (S1 \- S2) = (psum S1 - psum S2).
 Proof using Type. Admitted.
 
 (* -------------------------------------------------------------------- *)
