@@ -120,7 +120,7 @@ Section BigFSetOrder.
 Variable (R : realDomainType) (T : choiceType).
 
 Lemma big_fset_subset (I J : {fset T}) (F : T -> R) :
-  (forall x, (0 <= F x)%R) -> {subset I <= J} ->
+  (forall x, 0 <= F x) -> {subset I <= J} ->
     \sum_(i : I) F (val i) <= \sum_(j : J) F (val j).
 Proof.
 move=> ge0_F le_IJ; rewrite !big_fset_seq /=.

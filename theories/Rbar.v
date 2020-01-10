@@ -57,7 +57,7 @@ Definition Rbar_lt (x y : Rbar) : bool :=
   match x, y with
     | p_infty, _ | _, m_infty => false
     | m_infty, _ | _, p_infty => true
-    | Finite x, Finite y => (x < y)%R
+    | Finite x, Finite y => x < y
   end.
 
 Definition Rbar_le (x y : Rbar) : bool :=
@@ -135,7 +135,6 @@ Definition Rbar_inv (x : Rbar) : Rbar :=
     | _ => Finite 0
   end.
 
-Local Open Scope ring_scope.
 Definition Rbar_mult' (x y : Rbar) : option Rbar :=
   match x, y with
     | Finite x, Finite y => Some (Finite (x * y))

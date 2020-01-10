@@ -289,7 +289,7 @@ Implicit Types (a b : R) (u v : 'rV[R]_n) (N P Q : 'M[R]_n).
 Definition form u v := (u *m M *m (v ^t theta)) 0 0.
 
 Local Notation "''[' u , v ]" := (form u%R v%R) : ring_scope.
-Local Notation "''[' u ]" := '[u, u]%R : ring_scope.
+Local Notation "''[' u ]" := '[u, u] : ring_scope.
 
 Lemma form0l u : '[0, u] = 0.
 Proof. by rewrite /form !mul0mx mxE. Qed.
@@ -348,7 +348,7 @@ Local Notation "eps_theta .-sesqui" := (sesqui eps_theta).
 Variables (eps : bool) (theta : {rmorphism R -> R}).
 Variables (M : 'M[R]_n).
 Local Notation "''[' u , v ]" := (form theta M u%R v%R) : ring_scope.
-Local Notation "''[' u ]" := '[u%R, u%R]%R : ring_scope.
+Local Notation "''[' u ]" := '[u, u] : ring_scope.
 
 Lemma sesquiE : (M \is (eps,theta).-sesqui) = (M == (-1) ^+ eps *: M ^t theta).
 Proof. by rewrite qualifE. Qed.
