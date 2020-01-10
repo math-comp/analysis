@@ -2471,14 +2471,14 @@ Hint Resolve ball_center : core.
 Section uniformType_numDomainType.
 Context {R : numDomainType} {M : uniformType R}.
 
-Lemma ballxx (x : M) (e : R) : (0 < e)%R -> ball x e x.
+Lemma ballxx (x : M) (e : R) : 0 < e -> ball x e x.
 Proof. by move=> e_gt0; apply: ball_center (PosNum e_gt0). Qed.
 
 Lemma ball_sym (x y : M) (e : R) : ball x e y -> ball y e x.
 Proof. exact: Uniform.ax2. Qed.
 
 Lemma ball_triangle (y x z : M) (e1 e2 : R) :
-  ball x e1 y -> ball y e2 z -> ball x (e1 + e2)%R z.
+  ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z.
 Proof. exact: Uniform.ax3. Qed.
 
 Lemma locally_ball (x : M) (eps : {posnum R}) : locally x (ball x eps%:num).
@@ -2574,11 +2574,11 @@ Section uniformType_numFieldType.
 Context {R : numFieldType} {M : uniformType R}.
 
 Lemma ball_split (z x y : M) (e : R) :
-  ball x (e / 2)%R z -> ball z (e / 2)%R y -> ball x e y.
+  ball x (e / 2) z -> ball z (e / 2) y -> ball x e y.
 Proof. by move=> /ball_triangle h /h; rewrite -splitr. Qed.
 
 Lemma ball_splitr (z x y : M) (e : R) :
-  ball z (e / 2)%R x -> ball z (e / 2)%R y -> ball x e y.
+  ball z (e / 2) x -> ball z (e / 2) y -> ball x e y.
 Proof. by move=> /ball_sym /ball_split; apply. Qed.
 
 Lemma ball_splitl (z x y : M) (e : R) :

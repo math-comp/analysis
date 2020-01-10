@@ -23,8 +23,10 @@ Section ExtendedReals.
 Variable (R : numDomainType).
 
 Coercion real_of_er x : R :=
-  if x is ERFin v then v else 0%R.
+  if x is ERFin v then v else 0.
 End ExtendedReals.
+
+(* TODO: the following notations should have scopes. *)
 
 (*Notation "\+inf" := (@ERPInf _).*)
 Notation "+oo" := (@ERPInf _).
@@ -100,7 +102,7 @@ Definition le_ereal x1 x2 :=
   | -oo, _ | _, +oo => true
   | +oo, _ | _, -oo => false
 
-  | x1%:E, x2%:E => (x1 <= x2)%O
+  | x1%:E, x2%:E => x1 <= x2
   end.
 
 Definition lt_ereal x1 x2 :=
@@ -109,7 +111,7 @@ Definition lt_ereal x1 x2 :=
   | -oo, _   | _  , +oo => true
   | +oo, _   | _  , -oo => false
 
-  | x1%:E, x2%:E => (x1 < x2)%O
+  | x1%:E, x2%:E => x1 < x2
   end.
 
 Lemma lt_def_ereal x y : lt_ereal x y = (y != x) && le_ereal x y.
@@ -149,10 +151,10 @@ Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
 Notation "x <= y < z"  := ((lee x y) && (lte y z)) : ereal_scope.
 Notation "x < y < z"   := ((lte x y) && (lte y z)) : ereal_scope.
 
-Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E)%E = (x <= y)%R.
+Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E)%E = (x <= y).
 Proof. by []. Qed.
 
-Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E)%E = (x < y)%R.
+Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E)%E = (x < y).
 Proof. by []. Qed.
 
 Section ERealOrder_realDomainType.
@@ -273,7 +275,6 @@ Notation "\sum_ ( i 'in' A ) F" :=
   (\big[+%E/0%:E]_(i in A) F%R) : ereal_scope.
 
 Section ERealArithTh.
-Local Open Scope ereal_scope.
 
 Context {R : numDomainType}.
 
@@ -294,7 +295,7 @@ Proof. by case=> [x||] [y||] [z||] //=; rewrite addrA. Qed.
 Canonical adde_monoid := Monoid.Law addeA add0e adde0.
 Canonical adde_comoid := Monoid.ComLaw addeC.
 
-Lemma oppe0 : - (0%:E) = 0%:E :> {ereal R}.
+Lemma oppe0 : (- 0%:E)%E = 0%:E :> {ereal R}.
 Proof. by rewrite /= oppr0. Qed.
 
 Lemma oppeK : involutive (A := {ereal R}) -%E.

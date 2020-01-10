@@ -561,7 +561,7 @@ Lemma range1z_inj (x : R) (m1 m2 : int) :
   x \in range1 m1%:~R -> x \in range1 m2%:~R -> m1 = m2.
 Proof.
 move=> /andP[m1x x_m1] /andP[m2x x_m2].
-wlog suffices: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 <= m2)%R.
+wlog suffices: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 <= m2).
   by move=> ih; apply/eqP; rewrite eq_le !ih.
 rewrite -(ler_add2r 1) lez_addr1 -(@ltr_int R) intrD.
 by apply/(le_lt_trans m1x).
@@ -745,15 +745,10 @@ Qed.
 
 End Sup.
 
-Local Open Scope ereal_scope.
-
 (* -------------------------------------------------------------------- *)
 (* TODO: There are many duplications with `order.v`. Remove them.       *)
 Section ERealOrderTheory.
 Context {R : realDomainType}.
-
-Local Open Scope ring_scope.
-Local Open Scope ereal_scope.
 
 Implicit Types x y z : {ereal R}.
 
@@ -766,18 +761,19 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
-Lemma le0R (l : {ereal R}) : 0%:E <= l -> (0%R <= real_of_er(*TODO: coercion broken*) l :> R).
+Lemma le0R (l : {ereal R}) : (0%:E <= l)%E -> (0 <= real_of_er(*TODO: coercion broken*) l).
 Proof. by case: l. Qed.
 
-Lemma lee_tofin (x y : R) : (x <= y)%R -> (x%:E <= y%:E).
+Lemma lee_tofin (x y : R) : x <= y -> (x%:E <= y%:E)%E.
 Proof. by []. Qed.
 
-Lemma lte_tofin (x y : R) : (x < y)%R -> (x%:E < y%:E).
+Lemma lte_tofin (x y : R) : x < y -> (x%:E < y%:E)%E.
 Proof. by []. Qed.
 
-Lemma lee_opp2 : {mono @eopp R : x y /~ (x <= y)}.
+Lemma lee_opp2 : {mono @eopp R : x y /~ (x <= y)%E}.
 Proof. by move=> x y; elift ler_opp2 : x y. Qed.
 
-Lemma lte_opp2 : {mono @eopp R : x y /~ (x < y)}.
+Lemma lte_opp2 : {mono @eopp R : x y /~ (x < y)%E}.
 Proof. by move=> x y; elift ltr_opp2 : x y. Qed.
+
 End ERealOrderTheory.
