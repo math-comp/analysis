@@ -43,7 +43,6 @@ Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 
 Delimit Scope R_scope with coqR.
 Delimit Scope real_scope with real.
-Close Scope R_scope.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 Bind Scope ring_scope with R.
@@ -64,7 +63,7 @@ Record posnum_of (R : numDomainType) (phR : phant R) := PosNumDef {
   posnum_gt0 :> num_of_pos > 0
 }.
 Hint Resolve posnum_gt0 : core.
-Hint Extern 0 ((0%R < _)%O = true) => exact: posnum_gt0 : core.
+Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
 Notation "'{posnum' R }" := (posnum_of (@Phant R)).
 Definition PosNum (R : numDomainType) x x_gt0 : {posnum R} :=
   @PosNumDef _ (Phant R) x x_gt0.
@@ -144,8 +143,8 @@ by rewrite andb_idl // => /lt_le_trans; apply.
 Qed.
 
 End PosNum.
-Hint Extern 0 ((0%R <= _)%O = true) => exact: posnum_ge0 : core.
-Hint Extern 0 ((_ != 0%R)%O = true) => exact: posnum_neq0 : core.
+Hint Extern 0 ((0 <= _)%R = true) => exact: posnum_ge0 : core.
+Hint Extern 0 ((_ != 0)%R = true) => exact: posnum_neq0 : core.
 
 Section PosNumReal.
 Context {R : realDomainType}.

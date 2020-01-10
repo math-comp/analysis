@@ -6,7 +6,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Local Open Scope order_scope.
 Local Open Scope ring_scope.
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -24,7 +23,7 @@ Record nngnum_of (R : numDomainType) (phR : phant R) := NngNumDef {
   nngnum_ge0 :> num_of_nng >= 0
 }.
 Hint Resolve nngnum_ge0 : core.
-Hint Extern 0 ((0%R <= _)%O = true) => exact: nngnum_ge0 : core.
+Hint Extern 0 ((0 <= _)%R = true) => exact: nngnum_ge0 : core.
 Local Notation "'{nonneg' R }" := (nngnum_of (@Phant R)).
 Definition NngNum (R : numDomainType) x x_ge0 : {nonneg R} :=
   @NngNumDef _ (Phant R) x x_ge0.
@@ -61,7 +60,7 @@ Module Exports.
 Arguments NngNum {R}.
 Notation "'{nonneg' R }" := (nngnum_of (@Phant R)) : type_scope.
 Notation "x %:nngnum" := (num_of_nng x) : ring_scope.
-Hint Extern 0 ((0%R <= _)%O = true) => exact: nngnum_ge0 : core.
+Hint Extern 0 ((0 <= _)%R = true) => exact: nngnum_ge0 : core.
 Notation "x %:nng" := (nng_of_num (Phantom _ x)) : ring_scope.
 Canonical nngnum_subType.
 Canonical nngnum_eqType.
