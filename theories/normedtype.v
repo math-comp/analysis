@@ -425,14 +425,14 @@ Let R_topologicalType := [topologicalType of R^o].
 Definition ereal_locally' (a : {ereal R}) (P : R -> Prop) :=
   match a with
     | a%:E => @locally' R_topologicalType a P
-    | +oo => exists M, M \is Num.real /\ forall x, (M < x)%O -> P x
-    | -oo => exists M, M \is Num.real /\ forall x, (x < M)%O -> P x
+    | +oo => exists M, M \is Num.real /\ forall x, M < x -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, x < M -> P x
   end.
 Definition ereal_locally (a : {ereal R}) (P : R -> Prop) :=
   match a with
     | a%:E => @locally _ R_topologicalType a P
-    | +oo => exists M, M \is Num.real /\ forall x, (M < x)%O -> P x
-    | -oo => exists M, M \is Num.real /\ forall x, (x < M)%O -> P x
+    | +oo => exists M, M \is Num.real /\ forall x, M < x -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, x < M -> P x
   end.
 
 (*Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.*)
@@ -2156,18 +2156,16 @@ Grab Existential Variables. all: end_near. Qed.
 
 (** Local properties in [R] *)
 
-Local Open Scope order_scope.
-
 (* TODO: generalize to numFieldType? *)
 Lemma lt_ereal_locally (R : realFieldType) (a b : {ereal R}) (x : R) :
-  a < x%:E -> x%:E < b ->
+  (a < x%:E)%E -> (x%:E < b)%E ->
   exists delta : {posnum R},
-    forall y, `|y - x| < delta%:num -> (a < y%:E) && (y%:E < b).
+    forall y, `|y - x| < delta%:num -> ((a < y%:E) && (y%:E < b))%E.
 Proof.
 move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
   move=> {a b} a b ltxa ltxb.
-  have m_gt0 : (minr ((x - a) / 2) ((b - x) / 2) > 0)%R.
+  have m_gt0 : (minr ((x - a) / 2) ((b - x) / 2) > 0).
     by rewrite ltxI !divr_gt0 // ?subr_gt0.
   exists (PosNum m_gt0) => y //=; rewrite ltxI !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].
@@ -2178,21 +2176,19 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
   by exists d => y /dP /andP[->].
 - have [//||d dP] := wlog (x - 1) b; rewrite ?lte_fin ?gtr_addl ?ltrN10 //.
   by exists d => y /dP /andP[_ ->].
-- by exists 1%:pos%R.
+- by exists 1%:pos.
 Qed.
 
 (* TODO: generalize to numFieldType? *)
 Lemma locally_interval (R : realFieldType) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
-  a < x%:E -> x%:E < b ->
-  (forall y : R, a < y%:E -> y%:E < b -> P y) ->
+  (a < x%:E)%E -> (x%:E < b)%E ->
+  (forall y : R, a < y%:E -> y%:E < b -> P y)%E ->
   locally x P.
 Proof.
 move => Hax Hxb Hp; case: (lt_ereal_locally Hax Hxb) => d Hd.
 exists d%:num => //= y; rewrite /= distrC.
 by move=> /Hd /andP[??]; apply: Hp.
 Qed.
-
-Local Close Scope order_scope.
 
 (** * Topology on [R]² *)
 
@@ -2461,9 +2457,7 @@ Qed.
 
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 
-Local Open Scope order_scope.
-
-Lemma open_ereal_lt (y : {ereal R}) : open [set u : R^o | u%:E < y].
+Lemma open_ereal_lt (y : {ereal R}) : open [set u : R^o | u%:E < y]%E.
 Proof.
 case: y => [y||] /=; first exact: open_lt.
 rewrite [X in open X](_ : _ = setT); first exact: openT.
@@ -2472,7 +2466,7 @@ rewrite [X in open X](_ : _ = set0); first exact: open0.
 by rewrite funeqE => ?; rewrite falseE.
 Qed.
 
-Lemma open_ereal_gt y : open [set u : R^o | y < u%:E].
+Lemma open_ereal_gt y : open [set u : R^o | y < u%:E]%E.
 Proof.
 case: y => [y||] /=; first exact: open_gt.
 rewrite [X in open X](_ : _ = set0); first exact: open0.
@@ -2481,27 +2475,25 @@ rewrite [X in open X](_ : _ = setT); first exact: openT.
 by rewrite funeqE => ?; rewrite trueE.
 Qed.
 
-Lemma open_ereal_lt' (x y : {ereal R}) : x < y ->
-  ereal_locally x (fun u : R => u%:E < y).
+Lemma open_ereal_lt' (x y : {ereal R}) : (x < y)%E ->
+  ereal_locally x (fun u : R => u%:E < y)%E.
 Proof.
 case: x => [x|//|] xy; first exact: open_ereal_lt.
 case: y => [y||//] /= in xy *.
 exists y; rewrite num_real; split => //= x ? //.
-by exists 0%R.
+by exists 0.
 case: y => [y||//] /= in xy *.
 exists y; rewrite num_real; split => //= x ? //.
-by exists 0%R; rewrite real0.
+by exists 0; rewrite real0.
 Qed.
 
-Lemma open_ereal_gt' (x y : {ereal R}) : y < x ->
-  ereal_locally x (fun u : R => y < u%:E).
+Lemma open_ereal_gt' (x y : {ereal R}) : (y < x)%E ->
+  ereal_locally x (fun u : R => y < u%:E)%E.
 Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
-  case: y => [y||] //=; do ?by exists 0%R; rewrite real0.
+  case: y => [y||] //=; do ?by exists 0; rewrite real0.
 by exists y; rewrite num_real.
 Qed.
-
-Local Close Scope order_scope.
 
 End open_sets_in_Rbar.
 
