@@ -5,7 +5,7 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import mathcomp.bigenough.bigenough.
+From mathcomp Require Import bigenough.
 Require Import xfinmap boolp reals discrete.
 
 Set Implicit Arguments.
