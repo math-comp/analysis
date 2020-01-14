@@ -42,9 +42,7 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 
 Delimit Scope R_scope with coqR.
-Delimit Scope real_scope with real.
 Local Open Scope ring_scope.
-Local Open Scope real_scope.
 Bind Scope ring_scope with R.
 
 (* Enrico's trick for tc resolution in have *)
