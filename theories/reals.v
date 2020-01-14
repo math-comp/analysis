@@ -24,7 +24,6 @@ Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
 
-Local Open Scope real_scope.
 Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)

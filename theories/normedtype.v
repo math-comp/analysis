@@ -1343,15 +1343,15 @@ elim/big_ind2 : _ => //= a a' b b' ->{a'} ->{b'}.
 case: (leP a b) => ab; by [rewrite join_r | rewrite join_l // ltW].
 Qed.
 
-Section matrix_NormedModule.
-Variables (K : numFieldType) (m n : nat).
-
-Definition matrix_normedZmodMixin :=
+Definition matrix_normedZmodMixin (K : numDomainType) (m n : nat) :=
   @Num.NormedMixin _ _ _ (@mx_norm K m.+1 n.+1) (@ler_mx_norm_add _ _ _)
     (@mx_norm_eq0 _ _ _) (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
 
-Canonical matrix_normedZmodType :=
-  NormedZmodType K 'M[K]_(m.+1, n.+1) matrix_normedZmodMixin.
+Canonical matrix_normedZmodType (K : numDomainType) (m n : nat) :=
+  NormedZmodType K 'M[K]_(m.+1, n.+1) (matrix_normedZmodMixin K m n).
+
+Section matrix_NormedModule.
+Variables (K : numFieldType) (m n : nat).
 
 Lemma mx_norm_ball :
   @ball _ [uniformType K of 'M[K^o]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
