@@ -277,9 +277,7 @@ Reserved Notation "f '=Theta_' F h"
    format "f  '=Theta_' F  h").
 
 Delimit Scope R_scope with coqR.
-Delimit Scope real_scope with real.
 Local Open Scope ring_scope.
-Local Open Scope real_scope.
 Local Open Scope classical_set_scope.
 
 (* tags for littleo and bigO notations *)

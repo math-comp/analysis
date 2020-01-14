@@ -24,7 +24,6 @@ Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
 
-Local Open Scope real_scope.
 Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
@@ -85,7 +84,7 @@ Section ClassDef.
 Record class_of (R : Type) : Type := Class {
   base : Num.ArchimedeanField.class_of R;
   mixin_rcf : Num.real_closed_axiom (Num.NumDomain.Pack base);
-  (* TODO: ajouter une structure de uniformNormedDomain *)
+  (* TODO: ajouter une structure de pseudoMetricNormedDomain *)
   mixin : mixin_of (Num.ArchimedeanField.Pack base)
 }.
 
