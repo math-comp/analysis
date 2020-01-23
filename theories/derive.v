@@ -392,7 +392,7 @@ Fact dadd (f g : V -> W) x :
   (f + g) \o shift x = cst ((f + g) x) + ('d f x \+ 'd g x) +o_ (0 : V) id.
 Proof.
 move=> df dg; split => [?|]; do ?exact: continuousD.
-apply/eqaddoE; rewrite funeqE => y /=; rewrite -[(f + g) _]/(_ + _).
+apply/(@eqaddoE R); rewrite funeqE => y /=; rewrite -[(f + g) _]/(_ + _).
 by rewrite ![_ (_ + x)]diff_locallyx// addrACA addox addrACA.
 Qed.
 
@@ -898,7 +898,8 @@ Global Instance is_diffM (f g df dg : V -> R^o) x :
 Proof.
 move=> dfx dgx.
 have -> : f * g = (fun p => p.1 * p.2) \o (fun y => (f y, g y)) by [].
-apply: is_diff_eq.
+(* TODO: type class inference should succeed or fail, not leave an evar *)
+apply: is_diff_eq; do ?exact: is_diff_comp.
 by rewrite funeqE => ?; rewrite /= [_ * g _]mulrC.
 Qed.
 

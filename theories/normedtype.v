@@ -1394,7 +1394,7 @@ End matrix_NormedModule.
 (** ** Pairs *)
 
 Section prod_NormedModule.
-Context {K : numFieldType} {U V : normedModType K}.
+Context {K : numDomainType} {U V : normedModType K}.
 
 Lemma prod_normE (x : U * V) : `| x | =
   (Num.max `| x.1 |%:nng `|x.2|%:nng)%:nngnum.
@@ -1428,24 +1428,20 @@ Canonical prod_normedModType :=
 End prod_NormedModule.
 
 Section example_of_sharing.
-Variables (K : numFieldType).
+Variables (K : numDomainType).
 
-Goal forall m n (M N : 'M[K]_(m.+1, n.+1)),
+Example matrix_triangke m n (M N : 'M[K]_(m.+1, n.+1)) :
   `|M + N| <= `|M| + `|N|.
-move=> m n M N.
-apply ler_norm_add.
-Qed.
+Proof. apply ler_norm_add. Qed.
 
-Goal forall x y : K * K, `|x + y| <= `|x| + `|y|.
-move=> x y.
-apply ler_norm_add.
-Qed.
+Example pair_triangle (x y : K * K) : `|x + y| <= `|x| + `|y|.
+Proof. apply ler_norm_add. Qed.
 
 End example_of_sharing.
 
 Section prod_NormedModule_lemmas.
 
-Context {T : Type} {K : numFieldType} {U V : normedModType K}.
+Context {T : Type} {K : numDomainType} {U V : normedModType K}.
 
 Lemma flim_norm2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
@@ -1483,7 +1479,7 @@ Arguments flim_norm2 {_ _ _ F G FF FG}.
 Canonical AbsRing_NormedModType (K : absRingType) :=
   NormedModType K K^o (AbsRing_NormedModMixin _).*)
 
-Lemma R_normZ (R : numFieldType) (l : R) (x : R^o) :
+Lemma R_normZ (R : numDomainType) (l : R) (x : R^o) :
   `| l *: x | = `| l | * `| x |.
 Proof. by rewrite normrM. Qed.
 
