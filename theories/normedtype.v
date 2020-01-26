@@ -12,9 +12,9 @@ Require Import classical_sets posnum topology prodnormedzmodule.
 (* ball_ N == balls defined by the norm/absolute value N                      *)
 (*                                                                            *)
 (* * Normed Topological Abelian groups:                                       *)
-(*     uniformNormedZmodType R    == interface type for a normed topological  *)
+(*  pseudoMetricNormedZmodType R  == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
-(*  UniformNormedZmodule.Mixin nb == builds the mixin for a normed            *)
+(*  PseudoMetricNormedZmodule.Mixin nb == builds the mixin for a normed       *)
 (*                                   topological Abelian group from the       *)
 (*                                   compatibility between the norm and       *)
 (*                                   balls; the carrier type must have a      *)
@@ -26,11 +26,11 @@ Require Import classical_sets posnum topology prodnormedzmodule.
 (*           NormedModMixin normZ == builds the mixin for a normed module     *)
 (*                                   from the property of the linearity of    *)
 (*                                   the norm; the carrier type must have a   *)
-(*                                   uniformNormedZmodType structure          *)
+(*                                   pseudoMetricNormedZmodType structure     *)
 (*            NormedModType K T m == packs the mixin m to build a             *)
 (*                                   normedModType K; T must have canonical   *)
-(*                                   uniformNormedZmodType K and              *)
-(*                                   uniformType structures.                  *)
+(*                                   pseudoMetricNormedZmodType K and         *)
+(*                                   pseudoMetricType structures.             *)
 (*  [normedModType K of T for cT] == T-clone of the normedModType K structure *)
 (*                                   cT.                                      *)
 (*         [normedModType K of T] == clone of a canonical normedModType K     *)
@@ -100,7 +100,7 @@ Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
   : filteredType R := Filtered.Pack (Filtered.Class
     (@Pointed.class (pointed_of_zmodule R)) (locally_ (ball_ (fun x => `|x|)))).
 
-Section uniform_of_normedDomain.
+Section pseudoMetric_of_normedDomain.
 Variables (K : numDomainType) (R : normedZmodType K).
 Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ normr x e x.
 Proof. by move=> ? /=; rewrite subrr normr0. Qed.
@@ -113,10 +113,10 @@ Proof.
 move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
 by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
 Qed.
-Definition uniform_of_normedDomain
-  : Uniform.mixin_of K (@locally_ K R R (ball_ (fun x => `|x|)))
-  := UniformMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
-End uniform_of_normedDomain.
+Definition pseudoMetric_of_normedDomain
+  : PseudoMetric.mixin_of K (@locally_ K R R (ball_ (fun x => `|x|)))
+  := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+End pseudoMetric_of_normedDomain.
 
 Canonical R_pointedType := [pointedType of
   Rdefinitions.R for pointed_of_zmodule R_ringType].
@@ -124,9 +124,9 @@ Canonical R_pointedType := [pointedType of
 Canonical R_filteredType := [filteredType Rdefinitions.R of
   Rdefinitions.R for filtered_of_normedZmod R_normedZmodType].
 Canonical R_topologicalType : topologicalType := TopologicalType Rdefinitions.R
-  (topologyOfBallMixin (uniform_of_normedDomain R_normedZmodType)).
-Canonical R_uniformType : uniformType R_numDomainType :=
-  UniformType Rdefinitions.R (uniform_of_normedDomain R_normedZmodType).
+  (topologyOfBallMixin (pseudoMetric_of_normedDomain R_normedZmodType)).
+Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType :=
+  PseudoMetricType Rdefinitions.R (pseudoMetric_of_normedDomain R_normedZmodType).
 
 Section numFieldType_canonical.
 Variable R : numFieldType.
@@ -136,9 +136,9 @@ Canonical numFieldType_pointedType :=
 Canonical numFieldType_filteredType :=
   [filteredType R of R^o for filtered_of_normedZmod R].
 Canonical numFieldType_topologicalType : topologicalType := TopologicalType R^o
-  (topologyOfBallMixin (uniform_of_normedDomain [normedZmodType R of R])).
-Canonical numFieldType_uniformType := @Uniform.Pack R R^o (@Uniform.Class R R
-  (Topological.class numFieldType_topologicalType) (@uniform_of_normedDomain R R)).
+  (topologyOfBallMixin (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R
+  (Topological.class numFieldType_topologicalType) (@pseudoMetric_of_normedDomain R R)).
 Definition numdFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
 End numFieldType_canonical.
 
@@ -175,30 +175,30 @@ move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
 by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
 Qed.
 
-Module UniformNormedZmodule.
+Module PseudoMetricNormedZmodule.
 Section ClassDef.
 Variable R : numDomainType.
 Record mixin_of (T : normedZmodType R) (loc : T -> set (set T))
-    (m : Uniform.mixin_of R loc) := Mixin {
-  _ : Uniform.ball m = ball_ (fun x => `| x |) }.
+    (m : PseudoMetric.mixin_of R loc) := Mixin {
+  _ : PseudoMetric.ball m = ball_ (fun x => `| x |) }.
 
 Record class_of (T : Type) := Class {
   base : Num.NormedZmodule.class_of R T;
   pointed_mixin : Pointed.point_of T ;
   locally_mixin : Filtered.locally_of T T ;
   topological_mixin : @Topological.mixin_of T locally_mixin ;
-  uniform_mixin : @Uniform.mixin_of R T locally_mixin ;
-  mixin : @mixin_of (Num.NormedZmodule.Pack _ base) _ uniform_mixin
+  pseudoMetric_mixin : @PseudoMetric.mixin_of R T locally_mixin ;
+  mixin : @mixin_of (Num.NormedZmodule.Pack _ base) _ pseudoMetric_mixin
 }.
 Local Coercion base : class_of >-> Num.NormedZmodule.class_of.
-Definition base2 T c := @Uniform.Class _ _
+Definition base2 T c := @PseudoMetric.Class _ _
     (@Topological.Class _
       (Filtered.Class
        (Pointed.Class (@base T c) (pointed_mixin c))
        (locally_mixin c))
       (topological_mixin c))
-    (uniform_mixin c).
-Local Coercion base2 : class_of >-> Uniform.class_of.
+    (pseudoMetric_mixin c).
+Local Coercion base2 : class_of >-> PseudoMetric.class_of.
 (* TODO: base3? *)
 
 Structure type (phR : phant R) :=
@@ -215,7 +215,7 @@ Definition pack (b0 : Num.NormedZmodule.class_of R T) lm0 um0
   (m0 : @mixin_of (@Num.NormedZmodule.Pack R (Phant R) T b0) lm0 um0) :=
   fun bT (b : Num.NormedZmodule.class_of R T)
       & phant_id (@Num.NormedZmodule.class R (Phant R) bT) b =>
-  fun uT (u : Uniform.class_of R T) & phant_id (@Uniform.class R uT) u =>
+  fun uT (u : PseudoMetric.class_of R T) & phant_id (@PseudoMetric.class R uT) u =>
   fun (m : @mixin_of (Num.NormedZmodule.Pack _ b) _ u) & phant_id m m0 =>
   @Pack phR T (@Class T b u u u u m).
 
@@ -226,15 +226,15 @@ Definition normedZmodType := @Num.NormedZmodule.Pack R phR cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack xT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
-Definition uniformType := @Uniform.Pack R cT xclass.
+Definition pseudoMetricType := @PseudoMetric.Pack R cT xclass.
 Definition pointed_zmodType := @GRing.Zmodule.Pack pointedType xclass.
 Definition filtered_zmodType := @GRing.Zmodule.Pack filteredType xclass.
 Definition topological_zmodType := @GRing.Zmodule.Pack topologicalType xclass.
-Definition uniform_zmodType := @GRing.Zmodule.Pack uniformType xclass.
+Definition pseudoMetric_zmodType := @GRing.Zmodule.Pack pseudoMetricType xclass.
 Definition pointed_normedZmodType := @Num.NormedZmodule.Pack R phR pointedType xclass.
 Definition filtered_normedZmodType := @Num.NormedZmodule.Pack R phR filteredType xclass.
 Definition topological_normedZmodType := @Num.NormedZmodule.Pack R phR topologicalType xclass.
-Definition uniform_normedZmodType := @Num.NormedZmodule.Pack R phR uniformType xclass.
+Definition pseudoMetric_normedZmodType := @Num.NormedZmodule.Pack R phR pseudoMetricType xclass.
 
 End ClassDef.
 
@@ -243,7 +243,7 @@ End ClassDef.
 
 Module Exports.
 Coercion base : class_of >-> Num.NormedZmodule.class_of.
-Coercion base2 : class_of >-> Uniform.class_of.
+Coercion base2 : class_of >-> PseudoMetric.class_of.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
 Canonical eqType.
@@ -259,55 +259,55 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-Coercion uniformType : type >-> Uniform.type.
-Canonical uniformType.
+Coercion pseudoMetricType : type >-> PseudoMetric.type.
+Canonical pseudoMetricType.
 Canonical pointed_zmodType.
 Canonical filtered_zmodType.
 Canonical topological_zmodType.
-Canonical uniform_zmodType.
+Canonical pseudoMetric_zmodType.
 Canonical pointed_normedZmodType.
 Canonical filtered_normedZmodType.
 Canonical topological_normedZmodType.
-Canonical uniform_normedZmodType.
-Notation uniformNormedZmodType R := (type (Phant R)).
-Notation UniformNormedZmodType R T m :=
+Canonical pseudoMetric_normedZmodType.
+Notation pseudoMetricNormedZmodType R := (type (Phant R)).
+Notation PseudoMetricNormedZmodType R T m :=
   (@pack _ (Phant R) T _ _ _ m _ _ idfun _ _ idfun _ idfun).
-Notation "[ 'uniformNormedZmodType' R 'of' T 'for' cT ]" :=
+Notation "[ 'pseudoMetricNormedZmodType' R 'of' T 'for' cT ]" :=
   (@clone _ (Phant R) T cT _ idfun)
-  (at level 0, format "[ 'uniformNormedZmodType'  R  'of'  T  'for'  cT ]") :
+  (at level 0, format "[ 'pseudoMetricNormedZmodType'  R  'of'  T  'for'  cT ]") :
   form_scope.
-Notation "[ 'uniformNormedZmodType' R 'of' T ]" :=
+Notation "[ 'pseudoMetricNormedZmodType' R 'of' T ]" :=
   (@clone _ (Phant R) T _ _ idfun)
-  (at level 0, format "[ 'uniformNormedZmodType'  R  'of'  T ]") : form_scope.
+  (at level 0, format "[ 'pseudoMetricNormedZmodType'  R  'of'  T ]") : form_scope.
 End Exports.
 
-End UniformNormedZmodule.
-Export UniformNormedZmodule.Exports.
+End PseudoMetricNormedZmodule.
+Export PseudoMetricNormedZmodule.Exports.
 
-Section uniformnormedzmodule_lemmas.
-Context {K : numDomainType} {V : uniformNormedZmodType K}.
+Section pseudoMetricnormedzmodule_lemmas.
+Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
 
 Local Notation ball_norm := (ball_ (@normr K V)).
 
 Lemma ball_normE : ball_norm = ball.
 Proof. by case: V => ? [? ? ? ? ? []]. Qed.
 
-End uniformnormedzmodule_lemmas.
+End pseudoMetricnormedzmodule_lemmas.
 
 Section numFieldType_canonical_contd.
 Variable R : numFieldType.
-Lemma R_ball : @ball _ [uniformType R of R^o] = ball_ (fun x => `| x |).
+Lemma R_ball : @ball _ [pseudoMetricType R of R^o] = ball_ (fun x => `| x |).
 Proof. by []. Qed.
-Definition numFieldType_uniformNormedZmodMixin :=
-  UniformNormedZmodule.Mixin R_ball.
-Canonical numFieldType_uniformNormedZmodType :=
-  @UniformNormedZmodType R R^o numFieldType_uniformNormedZmodMixin.
+Definition numFieldType_pseudoMetricNormedZmodMixin :=
+  PseudoMetricNormedZmodule.Mixin R_ball.
+Canonical numFieldType_pseudoMetricNormedZmodType :=
+  @PseudoMetricNormedZmodType R R^o numFieldType_pseudoMetricNormedZmodMixin.
 End numFieldType_canonical_contd.
 
 (** locally *)
 
 Section Locally.
-Context {R : numDomainType} {T : uniformType R}.
+Context {R : numDomainType} {T : pseudoMetricType R}.
 
 Lemma forallN {U} (P : set U) : (forall x, ~ P x) = ~ exists x, P x.
 Proof. (*boolP*)
@@ -326,7 +326,7 @@ Qed.
 End Locally.
 
 Section Locally'.
-Context {R : numDomainType} {T : uniformType R}.
+Context {R : numDomainType} {T : pseudoMetricType R}.
 
 Lemma ex_ball_sig (x : T) (P : set T) :
   ~ (forall eps : {posnum R}, ~ (ball x eps%:num `<=` ~` P)) ->
@@ -538,7 +538,7 @@ Hint Extern 0 (is_true (0 < _)) => match goal with
 Module NormedModule.
 
 Record mixin_of (K : numDomainType)
-  (V : uniformNormedZmodType K) (scale : K -> V -> V) := Mixin {
+  (V : pseudoMetricNormedZmodType K) (scale : K -> V -> V) := Mixin {
   _ : forall (l : K) (x : V), `| scale l x | = `| l | * `| x |;
 }.
 
@@ -547,12 +547,12 @@ Section ClassDef.
 Variable K : numDomainType.
 
 Record class_of (T : Type) := Class {
-  base : UniformNormedZmodule.class_of K T ;
+  base : PseudoMetricNormedZmodule.class_of K T ;
   lmodmixin : GRing.Lmodule.mixin_of K (GRing.Zmodule.Pack base) ;
-  mixin : @mixin_of K (UniformNormedZmodule.Pack (Phant K) base)
+  mixin : @mixin_of K (PseudoMetricNormedZmodule.Pack (Phant K) base)
                       (GRing.Lmodule.scale lmodmixin)
 }.
-Local Coercion base : class_of >-> UniformNormedZmodule.class_of.
+Local Coercion base : class_of >-> PseudoMetricNormedZmodule.class_of.
 Local Coercion base2 T (c : class_of T) : GRing.Lmodule.class_of K T :=
   @GRing.Lmodule.Class K T (base c) (lmodmixin c).
 Local Coercion mixin : class_of >-> mixin_of.
@@ -569,9 +569,9 @@ Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 
 Definition pack b0 l0
-                (m0 : @mixin_of K (@UniformNormedZmodule.Pack K (Phant K) T b0)
+                (m0 : @mixin_of K (@PseudoMetricNormedZmodule.Pack K (Phant K) T b0)
                                 (GRing.Lmodule.scale l0)) :=
-  fun bT b & phant_id (@UniformNormedZmodule.class K (Phant K) bT) b =>
+  fun bT b & phant_id (@PseudoMetricNormedZmodule.class K (Phant K) bT) b =>
   fun l & phant_id l0 l =>
   fun m & phant_id m0 m => Pack phK (@Class T b l m).
 
@@ -583,19 +583,19 @@ Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
-Definition uniformType := @Uniform.Pack K cT xclass.
-Definition uniformNormedZmodType := @UniformNormedZmodule.Pack K phK cT xclass.
+Definition pseudoMetricType := @PseudoMetric.Pack K cT xclass.
+Definition pseudoMetricNormedZmodType := @PseudoMetricNormedZmodule.Pack K phK cT xclass.
 Definition pointed_lmodType := @GRing.Lmodule.Pack K phK pointedType xclass.
 Definition filtered_lmodType := @GRing.Lmodule.Pack K phK filteredType xclass.
 Definition topological_lmodType := @GRing.Lmodule.Pack K phK topologicalType xclass.
-Definition uniform_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
+Definition pseudoMetric_lmodType := @GRing.Lmodule.Pack K phK pseudoMetricType xclass.
 Definition normedZmod_lmodType := @GRing.Lmodule.Pack K phK normedZmodType xclass.
-Definition uniformNormedZmod_lmodType := @GRing.Lmodule.Pack K phK uniformNormedZmodType xclass.
+Definition pseudoMetricNormedZmod_lmodType := @GRing.Lmodule.Pack K phK pseudoMetricNormedZmodType xclass.
 End ClassDef.
 
 Module Exports.
 
-Coercion base : class_of >-> UniformNormedZmodule.class_of.
+Coercion base : class_of >-> PseudoMetricNormedZmodule.class_of.
 Coercion base2 : class_of >-> GRing.Lmodule.class_of.
 Coercion mixin : class_of >-> mixin_of.
 Coercion sort : type >-> Sortclass.
@@ -615,16 +615,16 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-Coercion uniformType : type >-> Uniform.type.
-Canonical uniformType.
-Coercion uniformNormedZmodType : type >-> UniformNormedZmodule.type.
-Canonical uniformNormedZmodType.
+Coercion pseudoMetricType : type >-> PseudoMetric.type.
+Canonical pseudoMetricType.
+Coercion pseudoMetricNormedZmodType : type >-> PseudoMetricNormedZmodule.type.
+Canonical pseudoMetricNormedZmodType.
 Canonical pointed_lmodType.
 Canonical filtered_lmodType.
 Canonical topological_lmodType.
-Canonical uniform_lmodType.
+Canonical pseudoMetric_lmodType.
 Canonical normedZmod_lmodType.
-Canonical uniformNormedZmod_lmodType.
+Canonical pseudoMetricNormedZmod_lmodType.
 Notation normedModType K := (type (Phant K)).
 Notation NormedModType K T m := (@pack _ (Phant K) T _ _ m _ _ idfun _ idfun _ idfun).
 Notation NormedModMixin := Mixin.
@@ -1354,7 +1354,7 @@ Section matrix_NormedModule.
 Variables (K : numFieldType) (m n : nat).
 
 Lemma mx_norm_ball :
-  @ball _ [uniformType K of 'M[K^o]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
+  @ball _ [pseudoMetricType K of 'M[K^o]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
 Proof.
 rewrite /= /normr /= predeq3E => x e y; split.
 - move=> xe_y; rewrite /ball_ mx_normE.
@@ -1371,10 +1371,10 @@ rewrite /= /normr /= predeq3E => x e y; split.
   move: (xey (i, j)); rewrite !mxE; exact.
 Qed.
 
-Definition matrix_UniformNormedZmodMixin :=
-  UniformNormedZmodule.Mixin mx_norm_ball.
-Canonical matrix_uniformNormedZmodType :=
-  UniformNormedZmodType K 'M[K^o]_(m.+1, n.+1) matrix_UniformNormedZmodMixin.
+Definition matrix_PseudoMetricNormedZmodMixin :=
+  PseudoMetricNormedZmodule.Mixin mx_norm_ball.
+Canonical matrix_pseudoMetricNormedZmodType :=
+  PseudoMetricNormedZmodType K 'M[K^o]_(m.+1, n.+1) matrix_PseudoMetricNormedZmodMixin.
 
 Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
 Proof.
@@ -1413,13 +1413,13 @@ rewrite /ball /= /prod_ball -!ball_normE /ball_ /=.
 by rewrite nng_ltUx /=; split=> /andP.
 Qed.
 
-Lemma prod_norm_ball : @ball _ [uniformType K of U * V] = ball_ (fun x => `|x|).
+Lemma prod_norm_ball : @ball _ [pseudoMetricType K of U * V] = ball_ (fun x => `|x|).
 Proof. by rewrite /= - ball_prod_normE. Qed.
 
-Definition prod_UniformNormedZmodMixin :=
-  UniformNormedZmodule.Mixin prod_norm_ball.
+Definition prod_PseudoMetricNormedZmodMixin :=
+  PseudoMetricNormedZmodule.Mixin prod_norm_ball.
 Canonical prod_topologicalZmodType :=
-  UniformNormedZmodType K (U * V) prod_UniformNormedZmodMixin.
+  PseudoMetricNormedZmodType K (U * V) prod_PseudoMetricNormedZmodMixin.
 
 Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
 Canonical prod_normedModType :=
@@ -1620,7 +1620,7 @@ Variable K : numFieldType.
 
 Record class_of (T : Type) := Class {
   base : NormedModule.class_of K T ;
-  mixin : Complete.axiom (Uniform.Pack base)
+  mixin : Complete.axiom (PseudoMetric.Pack base)
 }.
 Local Coercion base : class_of >-> NormedModule.class_of.
 Definition base2 T (cT : class_of T) : Complete.class_of K T :=
@@ -1649,7 +1649,7 @@ Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
-Definition uniformType := @Uniform.Pack _ cT xclass.
+Definition pseudoMetricType := @PseudoMetric.Pack _ cT xclass.
 Definition normedModType := @NormedModule.Pack K phK cT xclass.
 Definition completeType := @Complete.Pack _ cT xclass.
 Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
@@ -1679,8 +1679,8 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-Coercion uniformType : type >-> Uniform.type.
-Canonical uniformType.
+Coercion pseudoMetricType : type >-> PseudoMetric.type.
+Canonical pseudoMetricType.
 Coercion normedModType : type >-> NormedModule.type.
 Canonical normedModType.
 Coercion completeType : type >-> Complete.type.
@@ -2572,7 +2572,7 @@ Lemma continuity_ptE (f : Rdefinitions.R -> Rdefinitions.R) (x : Rdefinitions.R)
   Ranalysis1.continuity_pt f x <-> {for x, continuous f}.
 Proof. exact: continuity_pt_flim. Qed.
 
-Lemma continuous_withinNx (R : numFieldType) {U V : uniformType R}
+Lemma continuous_withinNx (R : numFieldType) {U V : pseudoMetricType R}
   (f : U -> V) x :
   {for x, continuous f} <-> f @ locally' x --> f x.
 Proof.

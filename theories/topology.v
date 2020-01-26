@@ -194,24 +194,23 @@ Require Import boolp Rstruct classical_sets posnum.
 (*     states that any product of compact sets is compact according to the    *)
 (*     product topology.                                                      *)
 (*                                                                            *)
-(* * Uniform spaces :                                                         *)
+(* * PseudoMetric spaces :                                                    *)
 (*                  locally_ ball == neighbourhoods defined using balls       *)
-(*                    uniformType == interface type for uniform space         *)
-(*                                   structure. We use here a pseudo-metric   *)
-(*                                   definition of uniform space: a type      *)
-(*                                   equipped with balls.                     *)
-(*      UniformMixin brefl bsym btriangle locb == builds the mixin for a      *)
-(*                                   uniform space from the properties of     *)
-(*                                   balls and the compatibility between      *)
+(*               pseudoMetricType == interface type for pseudo metric space   *)
+(*                                   structure:a type equipped with balls.    *)
+(*   PseudoMetricMixin brefl bsym btriangle locb == builds the mixin for a    *)
+(*                                   pseudo metric space from the properties  *)
+(*                                   of balls and the compatibility between   *)
 (*                                   balls and locally.                       *)
-(*                UniformType T m == packs the uniform space mixin into a     *)
-(*                                   uniformType. T must have a canonical     *)
-(*                                   topologicalType structure.               *)
-(*      [uniformType of T for cT] == T-clone of the uniformType structure cT. *)
-(*             [uniformType of T] == clone of a canonical uniformType         *)
+(*           PseudoMetricType T m == packs the pseudo metric space mixin into *)
+(*                                   a pseudoMetricType. T must have a        *)
+(*                                   canonical topologicalType structure.     *)
+(*   [pseudoMetricType of T for cT] == T-clone of the pseudoMetricType        *)
+(*                                   structure cT.                            *)
+(*        [pseudoMetricType of T] == clone of a canonical pseudoMetricType    *)
 (*                                   structure on T.                          *)
 (*     topologyOfBallMixin umixin == builds the mixin for a topological space *)
-(*                                   from a mixin for a uniform space.        *)
+(*                                   from a mixin for a pseudoMetric space.   *)
 (*                       ball x e == ball of center x and radius e.           *)
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
@@ -227,12 +226,12 @@ Require Import boolp Rstruct classical_sets posnum.
 (*                                   (epsilon-delta definition).              *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
 (*                                   (using the near notations).              *)
-(*                   completeType == interface type for a complete uniform    *)
-(*                                   space structure.                         *)
+(*                   completeType == interface type for a complete            *)
+(*                                   pseudoMetric space structure.            *)
 (*       CompleteType T cvgCauchy == packs the proof that every proper cauchy *)
 (*                                   filter on T converges into a             *)
 (*                                   completeType structure; T must have a    *)
-(*                                   canonical uniformType structure.         *)
+(*                                   canonical pseudoMetricType structure.    *)
 (*     [completeType of T for cT] == T-clone of the completeType structure    *)
 (*                                   cT.                                      *)
 (*            [completeType of T] == clone of a canonical completeType        *)
@@ -2328,7 +2327,7 @@ Definition connected (T : topologicalType) (A : set T) :=
   forall B : set T, B !=set0 -> (exists2 C, open C & B = A `&` C) ->
   (exists2 C, closed C & B = A `&` C) -> B = A.
 
-(** * Uniform spaces defined using balls *)
+(** * PseudoMetric spaces defined using balls *)
 
 Definition locally_ {R : numDomainType} {T T'} (ball : T -> R -> set T') (x : T) :=
    @filter_from R _ [set x | 0 < x] (ball x).
@@ -2337,7 +2336,7 @@ Lemma locally_E {R : numDomainType} {T T'} (ball : T -> R -> set T') x :
   locally_ ball x = @filter_from R _ [set x : R | 0 < x] (ball x).
 Proof. by []. Qed.
 
-Module Uniform.
+Module PseudoMetric.
 
 Record mixin_of (R : numDomainType) (M : Type) (locally : M -> set (set M)) := Mixin {
   ball : M -> R -> M -> Prop ;
@@ -2393,65 +2392,65 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-Notation uniformType := type.
-Notation UniformType T m := (@pack _ T _ m _ _ idfun _ idfun).
-Notation UniformMixin := Mixin.
-Notation "[ 'uniformType' R 'of' T 'for' cT ]" :=  (@clone R T cT _ idfun)
-  (at level 0, format "[ 'uniformType'  R  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'uniformType' R 'of' T ]" := (@clone R T _ _ id)
-  (at level 0, format "[ 'uniformType'  R  'of'  T ]") : form_scope.
+Notation pseudoMetricType := type.
+Notation PseudoMetricType T m := (@pack _ T _ m _ _ idfun _ idfun).
+Notation PseudoMetricMixin := Mixin.
+Notation "[ 'pseudoMetricType' R 'of' T 'for' cT ]" :=  (@clone R T cT _ idfun)
+  (at level 0, format "[ 'pseudoMetricType'  R  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'pseudoMetricType' R 'of' T ]" := (@clone R T _ _ id)
+  (at level 0, format "[ 'pseudoMetricType'  R  'of'  T ]") : form_scope.
 
 End Exports.
 
-End Uniform.
+End PseudoMetric.
 
-Export Uniform.Exports.
+Export PseudoMetric.Exports.
 
-Section UniformTopology.
+Section PseudoMetricTopology.
 
-Lemma my_ball_le (R : numDomainType) (M : Type) (loc : M -> set (set M)) (m : Uniform.mixin_of R loc) :
-  forall (x : M), {homo Uniform.ball m x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
+Lemma my_ball_le (R : numDomainType) (M : Type) (loc : M -> set (set M)) (m : PseudoMetric.mixin_of R loc) :
+  forall (x : M), {homo PseudoMetric.ball m x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
 Proof.
 move=> x e1 e2 le12 y xe1_y.
 move: le12; rewrite le_eqVlt => /orP [/eqP <- //|].
 rewrite -subr_gt0 => lt12.
-rewrite -[e2](subrK e1); apply: Uniform.ax3 xe1_y.
-suff : Uniform.ball m x (PosNum lt12)%:num x by [].
-exact: Uniform.ax1.
+rewrite -[e2](subrK e1); apply: PseudoMetric.ax3 xe1_y.
+suff : PseudoMetric.ball m x (PosNum lt12)%:num x by [].
+exact: PseudoMetric.ax1.
 Qed.
 
 Obligation Tactic := idtac.
 Program Definition topologyOfBallMixin (R : numFieldType) (T : Type)
-  (loc : T -> set (set T)) (m : Uniform.mixin_of R loc) :
+  (loc : T -> set (set T)) (m : PseudoMetric.mixin_of R loc) :
   Topological.mixin_of loc := topologyOfFilterMixin _ _ _.
 Next Obligation.
 move=> R T lo m p;
-rewrite (Uniform.ax4 m) locally_E; apply filter_from_proper; last first.
-  move=> e egt0; exists p; suff : Uniform.ball m p (PosNum egt0)%:num p by [].
-  exact: Uniform.ax1.
+rewrite (PseudoMetric.ax4 m) locally_E; apply filter_from_proper; last first.
+  move=> e egt0; exists p; suff : PseudoMetric.ball m p (PosNum egt0)%:num p by [].
+  exact: PseudoMetric.ax1.
 apply: filter_from_filter => [|_ _ /posnumP[e1] /posnumP[e2]]; first by exists 1.
 exists (Num.min e1 e2)%:num; rewrite ?subsetI//.
 by split=> //; apply: my_ball_le; rewrite -leEsub leIx lexx ?orbT.
 Qed.
 Next Obligation.
-move=> R T loc m p A; rewrite (Uniform.ax4 m) locally_E => - [_/posnumP[e]]; apply.
-by have : Uniform.ball m p e%:num p by exact: Uniform.ax1.
+move=> R T loc m p A; rewrite (PseudoMetric.ax4 m) locally_E => - [_/posnumP[e]]; apply.
+by have : PseudoMetric.ball m p e%:num p by exact: PseudoMetric.ax1.
 Qed.
 Next Obligation.
-move=> R T loc m p A; rewrite (Uniform.ax4 m) locally_E => - [_/posnumP[e] pe_A].
+move=> R T loc m p A; rewrite (PseudoMetric.ax4 m) locally_E => - [_/posnumP[e] pe_A].
 exists (e%:num / 2) => // q phe_q.
 rewrite locally_E; exists (e%:num / 2) => // r qhe_r.
-by apply: pe_A; rewrite [e%:num]splitr; apply: Uniform.ax3 qhe_r.
+by apply: pe_A; rewrite [e%:num]splitr; apply: PseudoMetric.ax3 qhe_r.
 Qed.
 
-End UniformTopology.
+End PseudoMetricTopology.
 
-Definition ball {R : numDomainType} {M : uniformType R} := Uniform.ball (Uniform.class M).
+Definition ball {R : numDomainType} {M : pseudoMetricType R} := PseudoMetric.ball (PseudoMetric.class M).
 
-Lemma locally_ballE {R : numDomainType} {M : uniformType R} : locally_ (@ball R M) = locally.
+Lemma locally_ballE {R : numDomainType} {M : pseudoMetricType R} : locally_ (@ball R M) = locally.
 Proof. by case: M=> [?[?[]]]. Qed.
 
-Lemma filter_from_ballE {R : numDomainType} {M : uniformType R} x :
+Lemma filter_from_ballE {R : numDomainType} {M : pseudoMetricType R} x :
   @filter_from R _ [set x : R | 0 < x] (@ball R M x) = locally x.
 Proof. by rewrite -locally_ballE. Qed.
 
@@ -2459,27 +2458,27 @@ Module Export LocallyBall.
 Definition locally_simpl := (locally_simpl,@filter_from_ballE,@locally_ballE).
 End LocallyBall.
 
-Lemma locallyP {R : numDomainType} {M : uniformType R} (x : M) P :
+Lemma locallyP {R : numDomainType} {M : pseudoMetricType R} (x : M) P :
   locally x P <-> locally_ ball x P.
 Proof. by rewrite locally_simpl. Qed.
 
-Lemma ball_center {R : numDomainType} (M : uniformType R) (x : M)
+Lemma ball_center {R : numDomainType} (M : pseudoMetricType R) (x : M)
   (e : {posnum R}) : ball x e%:num x.
-Proof. exact: Uniform.ax1. Qed.
+Proof. exact: PseudoMetric.ax1. Qed.
 Hint Resolve ball_center : core.
 
-Section uniformType_numDomainType.
-Context {R : numDomainType} {M : uniformType R}.
+Section pseudoMetricType_numDomainType.
+Context {R : numDomainType} {M : pseudoMetricType R}.
 
 Lemma ballxx (x : M) (e : R) : 0 < e -> ball x e x.
 Proof. by move=> e_gt0; apply: ball_center (PosNum e_gt0). Qed.
 
 Lemma ball_sym (x y : M) (e : R) : ball x e y -> ball y e x.
-Proof. exact: Uniform.ax2. Qed.
+Proof. exact: PseudoMetric.ax2. Qed.
 
 Lemma ball_triangle (y x z : M) (e1 e2 : R) :
   ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z.
-Proof. exact: Uniform.ax3. Qed.
+Proof. exact: PseudoMetric.ax3. Qed.
 
 Lemma locally_ball (x : M) (eps : {posnum R}) : locally x (ball x eps%:num).
 Proof. by apply/locallyP; exists eps%:num. Qed.
@@ -2565,13 +2564,13 @@ Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
 Canonical set_filter_source :=
   @Filtered.Source Prop _ M (fun A => locally_ ball_set A).
 
-End uniformType_numDomainType.
+End pseudoMetricType_numDomainType.
 Hint Resolve locally_ball : core.
 Hint Resolve close_refl : core.
 Arguments flim_const {R M T F FF} a.
 
-Section uniformType_numFieldType.
-Context {R : numFieldType} {M : uniformType R}.
+Section pseudoMetricType_numFieldType.
+Context {R : numFieldType} {M : pseudoMetricType R}.
 
 Lemma ball_split (z x y : M) (e : R) :
   ball x (e / 2) z -> ball z (e / 2) y -> ball x e y.
@@ -2632,25 +2631,25 @@ move=> FF; split=> [Fl|[cvF]Cl].
 by apply: flim_trans (close_limxx Cl).
 Qed.
 
-End uniformType_numFieldType.
+End pseudoMetricType_numFieldType.
 Arguments close_lim {R M} F1 F2 {FF2} _.
 
 Section entourages.
 Variable R : numDomainType.
-Definition unif_cont (U V : uniformType R) (f : U -> V) :=
+Definition unif_cont (U V : pseudoMetricType R) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourages --> entourages.
-Lemma unif_contP (U V : uniformType R) (f : U -> V) :
+Lemma unif_contP (U V : pseudoMetricType R) (f : U -> V) :
   unif_cont f <->
   forall e, e > 0 -> exists2 d, d > 0 &
     forall x, ball x.1 d x.2 -> ball (f x.1) e (f x.2).
 Proof. exact: filter_fromP. Qed.
 End entourages.
 
-(** ** Specific uniform spaces *)
+(** ** Specific pseudoMetric spaces *)
 
 (** matrices *)
-Section matrix_Uniform.
-Variables (m n : nat) (R : numDomainType) (T : uniformType R).
+Section matrix_PseudoMetric.
+Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
 Implicit Types x y : 'M[T]_(m, n).
 Definition mx_ball x (e : R) y := forall i j, ball (x i j) e (y i j).
 Lemma mx_ball_center x (e : R) : 0 < e -> mx_ball x e x.
@@ -2672,7 +2671,7 @@ by rewrite ltxI ltxy ltxz.
 Qed.
 
 (* TODO: see bigminr_ler in normedtype.v *)
-Lemma bigminr_ler (I : finType) (*(R : realDomainType)*) (f : I -> {posnum R}) (x0 : {posnum R}) i :
+Lemma bigminr_ler (I : finType) (f : I -> {posnum R}) (x0 : {posnum R}) i :
   \big[Num.min/x0]_j f j <= f i.
 Proof.
 have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
@@ -2694,15 +2693,15 @@ have /(xgetPex 1%:pos): exists e : {posnum R}, ball (x i j) (e)%:num `<=` P i j.
 apply; apply: ball_ler (xmin_y i j).
 by apply: le_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
 Qed.
-Definition matrix_uniformType_mixin :=
-  Uniform.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_locally.
-Canonical matrix_uniformType :=
-  UniformType 'M[T]_(m, n) matrix_uniformType_mixin.
-End matrix_Uniform.
+Definition matrix_pseudoMetricType_mixin :=
+  PseudoMetric.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_locally.
+Canonical matrix_pseudoMetricType :=
+  PseudoMetricType 'M[T]_(m, n) matrix_pseudoMetricType_mixin.
+End matrix_PseudoMetric.
 
-(** product of two uniform spaces *)
-Section prod_Uniform.
-Context {R : numDomainType} {U V : uniformType R}.
+(** product of two pseudoMetric spaces *)
+Section prod_PseudoMetric.
+Context {R : numDomainType} {U V : pseudoMetricType R}.
 Implicit Types (x y : U * V).
 Definition prod_point : U * V := (point, point).
 Definition prod_ball x (eps : R) y :=
@@ -2725,14 +2724,14 @@ exists (Num.min ex ey)%:num => // -[x' y'] [/= xx' yy']; apply: XYP; split=> /=.
   by apply/eX/(ball_ler _ xx'); rewrite -leEsub leIx lexx.
 by apply/eY/(ball_ler _ yy'); rewrite -leEsub leIx lexx orbT.
 Qed.
-Definition prod_uniformType_mixin :=
-  Uniform.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_locally.
-End prod_Uniform.
-Canonical prod_uniformType (R : numDomainType) (U V : uniformType R) :=
-  UniformType (U * V) (@prod_uniformType_mixin R U V).
+Definition prod_pseudoMetricType_mixin :=
+  PseudoMetric.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_locally.
+End prod_PseudoMetric.
+Canonical prod_pseudoMetricType (R : numDomainType) (U V : pseudoMetricType R) :=
+  PseudoMetricType (U * V) (@prod_pseudoMetricType_mixin R U V).
 
 Section Locally_fct2.
-Context {T : Type} {R : numDomainType} {U V : uniformType R}.
+Context {T : Type} {R : numDomainType} {U V : pseudoMetricType R}.
 Lemma flim_ball2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
@@ -2742,8 +2741,8 @@ Proof. exact: flim_ballP. Qed.
 End Locally_fct2.
 
 (** Functional metric spaces *)
-Section fct_Uniform.
-Variable (T : choiceType) (R : numFieldType) (U : uniformType R).
+Section fct_PseudoMetric.
+Variable (T : choiceType) (R : numFieldType) (U : pseudoMetricType R).
 Definition fct_ball (x : T -> U) (eps : R) (y : T -> U) :=
   forall t : T, ball (x t) eps (y t).
 Lemma fct_ball_center (x : T -> U) (e : R) : 0 < e -> fct_ball x e x.
@@ -2754,24 +2753,24 @@ Proof. by move=> P t; apply: ball_sym. Qed.
 Lemma fct_ball_triangle (x y z : T -> U) (e1 e2 : R) :
   fct_ball x e1 y -> fct_ball y e2 z -> fct_ball x (e1 + e2) z.
 Proof. by move=> xy yz t; apply: (@ball_triangle _ _ (y t)). Qed.
-Definition fct_uniformType_mixin :=
-  UniformMixin fct_ball_center fct_ball_sym fct_ball_triangle erefl.
+Definition fct_pseudoMetricType_mixin :=
+  PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle erefl.
 Definition fct_topologicalTypeMixin :=
-  topologyOfBallMixin fct_uniformType_mixin.
+  topologyOfBallMixin fct_pseudoMetricType_mixin.
 Canonical generic_source_filter := @Filtered.Source _ _ _ (locally_ fct_ball).
 Canonical fct_topologicalType :=
   TopologicalType (T -> U) fct_topologicalTypeMixin.
-Canonical fct_uniformType := UniformType (T -> U) fct_uniformType_mixin.
-End fct_Uniform.
+Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
+End fct_PseudoMetric.
 
-(** ** Complete uniform spaces *)
+(** ** Complete pseudoMetric spaces *)
 (* :TODO: Use cauchy2 alternative to define cauchy? *)
 (* Or not: is the fact that cauchy F -/> ProperFilter F a problem? *)
-Definition cauchy_ex {R : numDomainType} {T : uniformType R} (F : set (set T)) :=
+Definition cauchy_ex {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
   forall eps : R, 0 < eps -> exists x, F (ball x eps).
-Definition cauchy {R : numDomainType} {T : uniformType R} (F : set (set T)) :=
+Definition cauchy {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
   forall e, e > 0 -> \forall x & y \near F, ball x e y.
-Lemma cauchy_entouragesP (R : numDomainType) (T  : uniformType R) (F : set (set T)) :
+Lemma cauchy_entouragesP (R : numDomainType) (T  : pseudoMetricType R) (F : set (set T)) :
   Filter F -> cauchy F <-> (F, F) --> entourages.
 Proof.
 move=> FF; split=> cauchyF; last first.
@@ -2779,36 +2778,36 @@ move=> FF; split=> cauchyF; last first.
 move=> U [_/posnumP[eps] xyepsU].
 by near=> x; apply: xyepsU; near: x; apply: cauchyF.
 Grab Existential Variables. all: end_near. Qed.
-Lemma cvg_cauchy_ex {R : numDomainType} {T : uniformType R} (F : set (set T)) :
+Lemma cvg_cauchy_ex {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :
   [cvg F in T] -> cauchy_ex F.
 Proof. by move=> Fl _/posnumP[eps]; exists (lim F); apply/Fl/locally_ball. Qed.
-Lemma cauchy_exP (R : numFieldType) (T : uniformType R) (F : set (set T)) : Filter F ->
+Lemma cauchy_exP (R : numFieldType) (T : pseudoMetricType R) (F : set (set T)) : Filter F ->
   cauchy_ex F -> cauchy F.
 Proof.
 move=> FF Fc; apply/cauchy_entouragesP => A [_/posnumP[e] sdeA].
 have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sdeA => /=.
 by apply: (@ball_splitr _ _ z); [near: x|near: y].
 Grab Existential Variables. all: end_near. Qed.
-Lemma cauchyP (R : numFieldType) (T : uniformType R) (F : set (set T)) : ProperFilter F ->
+Lemma cauchyP (R : numFieldType) (T : pseudoMetricType R) (F : set (set T)) : ProperFilter F ->
   cauchy F <-> cauchy_ex F.
 Proof.
 move=> FF; split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
 by near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
 Grab Existential Variables. all: end_near. Qed.
-Lemma cvg_cauchy {R : numFieldType} {T : uniformType R} (F : set (set T)) : Filter F ->
+Lemma cvg_cauchy {R : numFieldType} {T : pseudoMetricType R} (F : set (set T)) : Filter F ->
   [cvg F in T] -> cauchy F.
 Proof. by move=> FF /cvg_cauchy_ex /cauchy_exP. Qed.
 
 Module Complete.
-Definition axiom (R : numDomainType) (T : uniformType R) :=
+Definition axiom (R : numDomainType) (T : pseudoMetricType R) :=
   forall (F : set (set T)), ProperFilter F -> cauchy F -> F --> lim F.
 Section ClassDef.
 Variable R : numDomainType.
 Record class_of (T : Type) := Class {
-  base : Uniform.class_of R T ;
-  mixin : axiom (Uniform.Pack base)
+  base : PseudoMetric.class_of R T ;
+  mixin : axiom (PseudoMetric.Pack base)
 }.
-Local Coercion base : class_of >-> Uniform.class_of.
+Local Coercion base : class_of >-> PseudoMetric.class_of.
 Local Coercion mixin : class_of >-> Complete.axiom.
 Structure type := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
@@ -2817,18 +2816,18 @@ Definition class := let: Pack _ c := cT return class_of cT in c.
 Definition clone c of phant_id class c := @Pack T c.
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
-Definition pack b0 (m0 : axiom (@Uniform.Pack R T b0)) :=
-  fun bT b of phant_id (@Uniform.class R bT) b =>
+Definition pack b0 (m0 : axiom (@PseudoMetric.Pack R T b0)) :=
+  fun bT b of phant_id (@PseudoMetric.class R bT) b =>
   fun m of phant_id m m0 => @Pack T (@Class T b m).
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
-Definition uniformType := @Uniform.Pack R cT xclass.
+Definition pseudoMetricType := @PseudoMetric.Pack R cT xclass.
 End ClassDef.
 Module Exports.
-Coercion base : class_of >-> Uniform.class_of.
+Coercion base : class_of >-> PseudoMetric.class_of.
 Coercion mixin : class_of >-> axiom.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
@@ -2841,8 +2840,8 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-Coercion uniformType : type >-> Uniform.type.
-Canonical uniformType.
+Coercion pseudoMetricType : type >-> PseudoMetric.type.
+Canonical pseudoMetricType.
 Notation completeType := type.
 Notation "[ 'completeType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
   (at level 0, format "[ 'completeType'  'of'  T  'for'  cT ]") : form_scope.
@@ -2898,7 +2897,7 @@ End fun_Complete.
 (** ** Limit switching *)
 Section Flim_switch.
 Context {T1 T2 : choiceType}.
-Lemma flim_switch_1 {R : numFieldType} {U : uniformType R}
+Lemma flim_switch_1 {R : numFieldType} {U : pseudoMetricType R}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) -> h @ F1 --> l ->
