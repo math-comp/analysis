@@ -242,6 +242,39 @@ Definition C_RLalg := LalgType R Rcomplex scalecAl.
 
 End C_Rnormed.
 
+Canonical regular_pointedType (R: pointedType) :=
+  [pointedType of R^o].
+
+Canonical regular_normedZmodType (R: numDomainType) (V: normedZmodType R) :=
+  [normedZmodType R of V^o].
+
+Canonical regular_numDomainType (R: numDomainType) :=
+  [numDomainType of R^o].
+
+Canonical regular_numFieldType (R: numFieldType) :=
+  [numFieldType of R^o].
+
+Canonical regular_rcfType (R: rcfType) :=
+  [rcfType of R^o].
+
+Canonical regular_filteredType U (R: filteredType U) :=
+  [filteredType U of R^o].
+
+Canonical regular_topologicalType (R : topologicalType) :=
+  [topologicalType of R^o].
+
+Canonical regular_uniformType U (R : uniformType U):=
+  [uniformType U of R^o].
+(*Update the header of topologicaltype.v *)
+
+Canonical regular_completeType U (R : completeType U) :=
+  @Complete.clone U R^o _ _ id.
+
+(*Update the syntax for completeType *)
+
+(*To be added at least to normedmodule.v*)
+
+
 Section Holomorphe.
 Variable R : rcfType.
 
@@ -397,12 +430,13 @@ case: (EM (v = 0)) => [eqv0|/eqP vneq0].
     by apply: cvgZr; rewrite /quotC.
 Qed.
 
+
 Lemma holo_CauchyRieman (f : C^o -> C^o) c : holomorphic f c -> CauchyRiemanEq f c.
 Proof.
 move=> H; rewrite /CauchyRiemanEq.
-pose quotC := fun h : C => h^-1 *: ((f \o shift c) h - f c).
-pose quotR := fun h : R => h^-1 *: ((f \o shift c) (h *: 1%:C ) - f c) : RComplex.
-pose quotiR := fun h : R => h^-1 *: ((f \o shift c) (h *: 'i%C) - f c) : (numFieldType_normedModType (complex_numFieldType R)). (*IMP*)  (* pbm with cvg_map_lim*)
+pose quotC := fun h : C => h^-1 *: ((f \o shift c) h - f c) : C^o.
+pose quotR := fun h : R => h^-1 *: ((f \o shift c) (h *: 1%:C ) - f c) : (Rcomplex R).
+pose quotiR := fun h : R => h^-1 *: ((f \o shift c) (h *: 'i%C) - f c): C^o. (* : (numFieldType_normedModType (complex_numFieldType R)).  *)
 have eqnear0x : {near (locally' (0:R^o)), quotC \o (fun h => h *: 1%:C) =1 quotR}.
   exists 1; first by [].
   by move => h  _ _ //=; simpc; rewrite /quotC /quotR real_complex_inv -scalecr; simpc.
@@ -437,7 +471,20 @@ have <- : lim (quotiR @ (locally' (0:R^o))) =
      'i * lim (quotC @ (locally' (0:C^o))) .
   have -> : 'i * lim (quotC @ (locally' (0:C^o))) =  lim ('i \*: quotC @ (locally' (0:C^o))).
     by rewrite scalei_muli limin_scaler. (* exact: H. *)
-  apply: cvg_map_lim.
+  Set Printing All. Set Printing Depth 20.
+  (*simpl.
+  rewrite {1}/type_of_filter.*) (*too violent*)
+  have := cvg_map_lim _ .
+  rewrite {1}/Choice.sort.
+  rewrite {1}/Filtered.fpointedType.
+  rewrite {1}/Pointed.choiceType.
+  rewrite {1}/Pointed.sort.
+  rewrite {1}/Filtered.sort {1}/Filtered.clone.
+  apply.
+  (* apply: (@cvg_map_lim _ _ ).  *)
+  (* C and C^o are too alike and Coq avoids
+     computing the nec. projections.
+     Instead it computes the can structures *)
     exact: Proper_locally'_numFieldType.
   suff : quotiR @ (locally' (0:R^o)) `=>` ('i \*: quotC @ (locally' (0:C^o))).
     move=> H1 ; apply: cvg_trans.
@@ -466,6 +513,8 @@ rewrite funeqE => i; rewrite propeqE; split => /cvg_trans; apply.
 move=> s [x x0 ix]; exists (normc x); first by rewrite normc_gt0 gt_eqF.
 move=> y y0; apply ix; by move: y0; rewrite /ball_ -ltcR {2}(gt0_normc x0).
 Qed.
+
+
 
 (* Local Notation "''D_' v f" := (derive f ^~ v). *)
 (* Local Notation "''D_' v f c" := (derive f c v). *)
