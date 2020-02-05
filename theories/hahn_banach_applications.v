@@ -132,6 +132,7 @@ Variables (R: numFieldType) (V  W: normedModType R).
 Definition continuous_at (x : V) (f : V -> W) :=  f @ x --> (f x).
 (*No topological structure on R, only on R^o induced by the norm *)
 
+
 Lemma continuous_atP x (f : V -> W) :
 (continuous_at x f) <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
 Proof.
@@ -230,8 +231,8 @@ End LinearContinuousBounded.
 
 Section HBGeom.
 
-Variable ( V : normedModType R) ( F : pred V ) (f :  V -> R) (F0 : F 0).
-Hypothesis (linF : (forall (v1 v2 : V) (l : R_realFieldType),
+Variable (R : numFieldType) (V : normedModType R) (F : pred V) (f :  V -> R^o) (F0 : F 0).
+Hypothesis (linF : (forall (v1 v2 : V) (l : R),
                        F v1 -> F v2 -> F (v1 + l *: v2))).
 Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
                               f (v1 + l *: v2) = f v1 + l * (f v2).
@@ -243,12 +244,12 @@ Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
  
 
 (*Looked a long time for within *)
-Definition continuousR_on ( G : set V ) ( f : V -> R) :=
+Definition continuousR_on ( G : set V ) ( f : V -> R^o) :=
   (forall x, (f @ (within G (locally x))) --> f x).
 
 (*Do we need to have F x ?*)
-Definition continuousR_on_at (G : set V ) (x : V ) (g : V -> R)  :=
-  (g @ (within G (locally x)) --> f x).
+Definition continuousR_on_at (G : set V ) (x : V ) (g : V -> R^o)  :=
+  g @ (within G (locally x)) --> (f x).
 
 Lemma continuousR_scalar_on_bounded :
   (continuousR_on_at F 0 f) ->
@@ -290,7 +291,7 @@ Proof.
      by  rewrite !mulr_gt0 // invr_gt0 normr_gt0. 
  suff -> : a = 0+ (`|x|^-1 * t/2) *: x by rewrite linfF // f0 add0r.
  by rewrite add0r.  
-Qed. 
+Qed.  
 
 
  (* Upper bound *)
