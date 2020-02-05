@@ -1,4 +1,3 @@
-Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp.
@@ -19,20 +18,21 @@ Local Open Scope ring_scope .
 Local Open Scope classical_set_scope.
  
 
-Section LinearContinuousBounded.
+Section LinearContinuousBoundedscalar.
 (* Everything in this section in stated for scalar functions.                 *)
 (* They should be turned into lemmas for linear functions into normed spaces  *)
   
-Variables (R: numFieldType) (V  : normedModType R).
+Variables (R: numFieldType) (V : normedModType R).
 
+Definition continuousR_at (x : V) (f : V -> R^o) :=  f @ x --> (f x).
+(*No topological structure on R, only on R^o induced by the norm *)
 
-Definition continuousR_at (x : V) (f : V -> R^o) :=  f @ x --> (f x). 
-(*Beware: at the moment no topological structure is available on R - only on R^o *)
+About ball.
 
-Lemma continuousR_atP x (f : V -> R) :
-(continuousR_at x f) <-> forall eps : posreal, \forall y \near f @ x, ball (f x) eps%:num y.
+Lemma continuousR_atP x (f : V -> R^o) :
+(continuousR_at x f) <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
 Proof.
-  rewrite /continuousR_at. split ; by move => /flim_ballPpos.  
+  rewrite /continuousR_at. split ; by  move => /flim_ballP.
 Qed.
 
 Lemma continuousR_bounded0 (f : {scalar V}) :
@@ -41,13 +41,13 @@ Lemma continuousR_bounded0 (f : {scalar V}) :
 Proof.
   move => /continuousR_atP H. 
   have  H':  (0 < 1) by [].
-  move : (H (1%:pos)) {H'}.
-  rewrite (linear0 f) /( _ @ _ ) //= nearE => H0 {H}. 
+  move : (H 1 (H' _)).
+  rewrite (linear0 f) /( _ @ _ ) //= nearE =>  H0 {H}. 
   (* I had a hard time finding nearE as it is not in the abstract *)
-  move : (locally_ex H0) => [ tp  H] {H0} ;  pose t := tp%:num. 
-  move : H. 
-  exists (2*t^-1). split; first by [].
-  move => x ; case :  (boolp.EM (x=0)).
+  move : (locally_ex H0) => [ tp  H] {H0} ;  pose t := tp%:num; move : H. 
+  exists (2*t^-1).
+  split; first by [].
+  move => x; case: (boolp.EM (x=0)).
   - by move => -> ; rewrite (linear0 f) !normr0 //= mul0r. 
   - move => xneq0. 
     have normxle0 : `|x| > 0 .
@@ -89,7 +89,7 @@ Lemma bounded_continuousR0 (f: {scalar V}):
   (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|x| ) * r))
   -> continuousR_at 0 f .
 Proof.
-  move => [r [lt0r H]]; apply/(continuousR_atP 0) => -[eps poseps] /=.
+  move => [r [lt0r H]];  apply/(continuousR_atP 0) => eps poseps /=.
   rewrite nearE (linear0 f); apply/locallyP.  (*hnf*) (*!!!*)
   (* locally_ is proved via an existential which gives 
     the radius of the ball contained in locally *)
@@ -106,14 +106,15 @@ Proof.
   by apply : (le_lt_trans fxeps2).
 Qed.
 
-   
-Lemma continuousRat0_continuous (f : {scalar V}):
+(* rmq : as R carries no topological structure : *)
+
+Fail Check (forall f : {scalar V}, continuous f). 
+
+Lemma continuousRat0_continuous (f : {linear V -> R^o}):
   continuousR_at 0 f -> continuous f.
 Proof.
- move => cont0f  x ; rewrite flim_locally => eps pos.
+ move=> cont0f x ; rewrite flim_locally => eps pos.
  move : (continuousR_bounded0 cont0f) => [r [rpos Hr]]. 
- (*rewrite nearE /ball_ //.
- rewrite /(_@_) /[filter of _] locallyP -ball_normE /ball_.*)
  rewrite nearE /= locallyP -ball_normE.
  exists (eps /r).
   -  by rewrite mulr_gt0 //= invr_gt0 .
@@ -123,9 +124,116 @@ Proof.
 Qed.      
 
 
-(*The same lemmas for functions with values in vector spaces *)
+End LinearContinuousBoundedscalar.
 
-Search  "continuous".
+Section LinearContinuousBounded.
+
+  
+Section LinearContinuousBoundedscalar.
+(* Everything in this section in stated for scalar functions.                 *)
+(* They should be turned into lemmas for linear functions into normed spaces  *)
+  
+Variables (R: numFieldType) (V  W: normedModType R).
+
+Definition continuousR_at (x : V) (f : V -> R^o) :=  f @ x --> (f x).
+(*No topological structure on R, only on R^o induced by the norm *)
+
+About ball.
+
+Lemma continuousR_atP x (f : V -> R^o) :
+(continuousR_at x f) <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
+Proof.
+  rewrite /continuousR_at. split ; by  move => /flim_ballP.
+Qed.
+
+Lemma continuousR_bounded0 (f : {scalar V}) :
+  (continuousR_at 0 f) -> 
+   ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|x| ) * r  )  ) . 
+Proof.
+  move => /continuousR_atP H. 
+  have  H':  (0 < 1) by [].
+  move : (H 1 (H' _)).
+  rewrite (linear0 f) /( _ @ _ ) //= nearE =>  H0 {H}. 
+  (* I had a hard time finding nearE as it is not in the abstract *)
+  move : (locally_ex H0) => [ tp  H] {H0} ;  pose t := tp%:num; move : H. 
+  exists (2*t^-1).
+  split; first by [].
+  move => x; case: (boolp.EM (x=0)).
+  - by move => -> ; rewrite (linear0 f) !normr0 //= mul0r. 
+  - move => xneq0. 
+    have normxle0 : `|x| > 0 .
+      rewrite normr_gt0 ; case : (boolp.EM (x==0)).
+    (*proving (x <> y) -> (x != y), where is it done ? *)
+     - by move => /eqP x0 ; have : False by apply: (xneq0 x0). 
+     - by move => /negP. 
+  pose a := (  `|x|^-1 * t/2 ) *: x.
+  (*going from ball to norm is done through ball_normE and unfolding ball_. *)
+  (* I looked a long time for this *) 
+  have ball0ta : ball 0 t a. 
+   apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
+   rewrite normmZ mulrC normrM. 
+   rewrite !gtr0_norm //= mulrC. 
+   rewrite -mulrA -mulrA  ltr_pdivr_mull //=. 
+   rewrite mulrC -mulrA  gtr_pmull. 
+   rewrite invf_lt1 //=. 
+     by have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ; apply : ltr_spaddr.
+     by rewrite mulr_gt0 //=. 
+   apply : mulr_gt0.  
+     by apply: posnum_gt0.
+     by rewrite invr_gt0 //=.
+  move : (H a ball0ta); rewrite /ball /ball_ //= sub0r normrN. 
+  suff ->  : ( f a =  ( (`|x|^-1) * t/2 ) * ( f x)) .
+     rewrite normrM gtr0_norm. 
+     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //=.   
+  rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr.
+  rewrite invf_div => Ht. 
+    by   apply : ltW.
+    by  apply : mulr_gt0.
+    apply : mulr_gt0 ; last by [].
+       apply : mulr_gt0 ; last by [].
+      by rewrite invr_gt0 //=.
+   suff -> : a = (`|x|^-1 * t/2) *: x + 0  by  rewrite linearP (linear0 f) addrC add0r.
+     by rewrite addrC add0r.
+Qed.     
+
+Lemma bounded_continuousR0 (f: {scalar V}):
+  (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|x| ) * r))
+  -> continuousR_at 0 f .
+Proof.
+  move => [r [lt0r H]];  apply/(continuousR_atP 0) => eps poseps /=.
+  rewrite nearE (linear0 f); apply/locallyP.  (*hnf*) (*!!!*)
+  (* locally_ is proved via an existential which gives 
+    the radius of the ball contained in locally *)
+  exists (eps /2 / r).  
+   by rewrite !divr_gt0. 
+   move => x; rewrite -ball_normE  /(ball_)  addrC addr0 normrN.
+   move => nx; rewrite /ball /(ball_) /= addrC addr0 normrN.
+  have nx0: `|x| * r <= eps / 2 by  apply : ltW; rewrite -ltr_pdivl_mulr. 
+  have fxeps2 : `|f x| <= eps /2 by exact : le_trans (H x) nx0.
+  have eps2eps : eps/ 2 < eps.
+    rewrite gtr_pmulr ; last by [].
+      by rewrite invf_lt1 ; have lt01 : 0 < 1 by [] ; have le11 : 1 <= 1 by [] ;
+      apply : ltr_spaddr.
+  by apply : (le_lt_trans fxeps2).
+Qed.
+
+(* rmq : as R carries no topological structure : *)
+
+Fail Check (forall f : {scalar V}, continuous f). 
+
+Lemma continuousRat0_continuous (f : {linear V -> R^o}):
+  continuousR_at 0 f -> continuous f.
+Proof.
+ move=> cont0f x ; rewrite flim_locally => eps pos.
+ move : (continuousR_bounded0 cont0f) => [r [rpos Hr]]. 
+ rewrite nearE /= locallyP -ball_normE.
+ exists (eps /r).
+  -  by rewrite mulr_gt0 //= invr_gt0 .
+  - move => y Hxy ; rewrite /(_ @^-1`_) /ball //= -(linearB f).   
+    suff : `|x - y| * r < eps by apply : le_lt_trans (Hr (x-y)).
+    by rewrite -ltr_pdivl_mulr.
+Qed.      
+
 
 
 End LinearContinuousBounded.
