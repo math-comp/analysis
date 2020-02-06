@@ -197,7 +197,7 @@ Require Import boolp Rstruct classical_sets posnum.
 (* * PseudoMetric spaces :                                                    *)
 (*                  locally_ ball == neighbourhoods defined using balls       *)
 (*               pseudoMetricType == interface type for pseudo metric space   *)
-(*                                   structure:a type equipped with balls.    *)
+(*                                   structure: a type equipped with balls.   *)
 (*   PseudoMetricMixin brefl bsym btriangle locb == builds the mixin for a    *)
 (*                                   pseudo metric space from the properties  *)
 (*                                   of balls and the compatibility between   *)
@@ -205,10 +205,10 @@ Require Import boolp Rstruct classical_sets posnum.
 (*           PseudoMetricType T m == packs the pseudo metric space mixin into *)
 (*                                   a pseudoMetricType. T must have a        *)
 (*                                   canonical topologicalType structure.     *)
-(*   [pseudoMetricType of T for cT] == T-clone of the pseudoMetricType        *)
-(*                                   structure cT.                            *)
-(*        [pseudoMetricType of T] == clone of a canonical pseudoMetricType    *)
-(*                                   structure on T.                          *)
+(* [pseudoMetricType R of T for cT] == T-clone of the pseudoMetricType        *)
+(*                                   structure cT, with R the ball radius.    *)
+(*      [pseudoMetricType R of T] == clone of a canonical pseudoMetricType    *)
+(*                                   structure on T, with R the ball radius.  *)
 (*     topologyOfBallMixin umixin == builds the mixin for a topological space *)
 (*                                   from a mixin for a pseudoMetric space.   *)
 (*                       ball x e == ball of center x and radius e.           *)
@@ -2395,7 +2395,7 @@ Canonical topologicalType.
 Notation pseudoMetricType := type.
 Notation PseudoMetricType T m := (@pack _ T _ m _ _ idfun _ idfun).
 Notation PseudoMetricMixin := Mixin.
-Notation "[ 'pseudoMetricType' R 'of' T 'for' cT ]" :=  (@clone R T cT _ idfun)
+Notation "[ 'pseudoMetricType' R 'of' T 'for' cT ]" := (@clone R T cT _ idfun)
   (at level 0, format "[ 'pseudoMetricType'  R  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'pseudoMetricType' R 'of' T ]" := (@clone R T _ _ id)
   (at level 0, format "[ 'pseudoMetricType'  R  'of'  T ]") : form_scope.
