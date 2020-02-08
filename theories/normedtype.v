@@ -714,6 +714,24 @@ Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
 Proof. by move=> /flim_normP. Qed.
 
+Lemma closeE (x y : V) : close x y = (x = y).
+Proof.
+rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
+have dxy_gt0 : `|x - y| > 0.
+  by rewrite normr_gt0 subr_eq0.
+have dxy_ge0 := ltW dxy_gt0.
+have := cl_xy (PosNum dxy_gt0).
+by rewrite -ball_normE /= ltxx.
+Qed.
+
+Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
+
+Lemma locally_norm_ball x (eps : {posnum R}) : locally_norm x (ball x eps%:num).
+Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
+
+Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
+Proof. by rewrite propeqE ball_normE. Qed.
+
 End NormedModule_numDomainType.
 Hint Resolve normr_ge0 : core.
 Arguments flim_norm {_ _ F FF}.
@@ -748,26 +766,6 @@ Lemma normm_lt_split (x y : V) (e : R) :
 Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
-
-Lemma closeE (x y : V) : close x y = (x = y).
-Proof.
-rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
-have dxy_gt0 : `|x - y| > 0.
-  by rewrite normr_gt0 subr_eq0.
-have dxy_ge0 := ltW dxy_gt0.
-have := cl_xy ((PosNum dxy_gt0)%:num / 2)%:pos.
-rewrite -ball_normE /= -subr_lt0 le_gtF //.
-rewrite -[X in X - _]mulr1 -mulrBr mulr_ge0 //.
-by rewrite subr_ge0 -(@ler_pmul2r _ 2) // mulVf // mul1r ler1n.
-Qed.
-
-Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
-
-Lemma locally_norm_ball x (eps : {posnum R}) : locally_norm x (ball x eps%:num).
-Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
-
-Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
-Proof. by rewrite propeqE ball_normE. Qed.
 
 Lemma flim_unique {F} {FF : ProperFilter F} :
   is_prop [set x : V | F --> x].
