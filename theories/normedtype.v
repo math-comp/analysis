@@ -116,9 +116,20 @@ Qed.
 Definition pseudoMetric_of_normedDomain
   : PseudoMetric.mixin_of K (@locally_ K R R (ball_ (fun x => `|x|)))
   := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
-Canonical pseudoMetric_of_normedDomain. (* ok ? *)
+(*Canonical pseudoMetric_of_normedDomain.*) (* ok ? *)
 End pseudoMetric_of_normedDomain.
 
+Section pseudoMetric_of_normedDomainnumField.
+  Variables (K : numFieldType) (R : normedZmodType K).
+Canonical normedZmodType_pointedType :=
+  [pointedType of R for pointed_of_zmodule R].
+Canonical normedZmodType_filteredType :=
+  [filteredType R of R for filtered_of_normedZmod R].
+Canonical normedZmodType_topologicalType : topologicalType := 
+  TopologicalType R (topologyOfBallMixin (pseudoMetric_of_normedDomain R)). 
+End pseudoMetric_of_normedDomainnumField.
+
+(*TODO: compatibility*)
 (*Is the following redundant now ? *)
 Canonical R_pointedType := [pointedType of
   Rdefinitions.R for pointed_of_zmodule R_ringType].
@@ -130,6 +141,7 @@ Canonical R_topologicalType : topologicalType := TopologicalType Rdefinitions.R
 Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType :=
   PseudoMetricType Rdefinitions.R (pseudoMetric_of_normedDomain R_normedZmodType).
 
+(*This should be suppressed *)
 Section numFieldType_canonical.
 Variable R : numFieldType.
 (*Canonical topological_of_numFieldType := [numFieldType of R^o].*)
@@ -139,10 +151,10 @@ Canonical numFieldType_filteredType :=
   [filteredType R of R^o for filtered_of_normedZmod R].
 Canonical numFieldType_topologicalType : topologicalType := TopologicalType R^o
   (topologyOfBallMixin (pseudoMetric_of_normedDomain [normedZmodType R of R])).
-Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R
-  (Topological.class numFieldType_topologicalType) (@pseudoMetric_of_normedDomain R R)).
+Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R (Topological.class numFieldType_topologicalType) (@pseudoMetric_of_normedDomain R R)).
 Definition numdFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
 End numFieldType_canonical.
+
 
 Lemma locallyN (R : numFieldType) (x : R^o) :
   locally (- x) = [set [set - y | y in A] | A in locally x].
@@ -296,6 +308,7 @@ Proof. by case: V => ? [? ? ? ? ? []]. Qed.
 
 End pseudoMetricnormedzmodule_lemmas.
 
+(*TODO: adapt *)
 Section numFieldType_canonical_contd.
 Variable R : numFieldType.
 Lemma R_ball : @ball _ [pseudoMetricType R of R^o] = ball_ (fun x => `| x |).
