@@ -126,8 +126,11 @@ Canonical normedZmodType_pointedType :=
 Canonical normedZmodType_filteredType :=
   [filteredType R of R for filtered_of_normedZmod R].
 Canonical normedZmodType_topologicalType : topologicalType := 
-  TopologicalType R (topologyOfBallMixin (pseudoMetric_of_normedDomain R)). 
+  TopologicalType R (topologyOfBallMixin (pseudoMetric_of_normedDomain R)).
+Canonical normedZmodtype_pseudoMetricType := @PseudoMetric.Pack K R (@PseudoMetric.Class K R (Topological.class normedZmodType_topologicalType) (@pseudoMetric_of_normedDomain K R)).
 End pseudoMetric_of_normedDomainnumField.
+
+
 
 (*TODO: compatibility*)
 (*Is the following redundant now ? *)
@@ -154,6 +157,10 @@ Canonical numFieldType_topologicalType : topologicalType := TopologicalType R^o
 Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R (Topological.class numFieldType_topologicalType) (@pseudoMetric_of_normedDomain R R)).
 Definition numdFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
 End numFieldType_canonical.
+
+Variable (K : numFieldType) (x : K).
+
+Check (locally x).  
 
 
 Lemma locallyN (R : numFieldType) (x : R^o) :
@@ -298,6 +305,8 @@ End Exports.
 End PseudoMetricNormedZmodule.
 Export PseudoMetricNormedZmodule.Exports.
 
+Search  "pseudoMetric_normedZmodType". 
+
 Section pseudoMetricnormedzmodule_lemmas.
 Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
 
@@ -318,6 +327,8 @@ Definition numFieldType_pseudoMetricNormedZmodMixin :=
 Canonical numFieldType_pseudoMetricNormedZmodType :=
   @PseudoMetricNormedZmodType R R^o numFieldType_pseudoMetricNormedZmodMixin.
 End numFieldType_canonical_contd.
+
+
 
 (** locally *)
 
@@ -876,6 +887,7 @@ by rewrite opprB addrC -subr_trans distrC.
 Qed.
 
 End hausdorff.
+
 
 Module Export NearNorm.
 Definition near_simpl := (@near_simpl, @locally_normE,
