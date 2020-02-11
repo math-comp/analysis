@@ -116,8 +116,10 @@ Qed.
 Definition pseudoMetric_of_normedDomain
   : PseudoMetric.mixin_of K (@locally_ K R R (ball_ (fun x => `|x|)))
   := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+Canonical pseudoMetric_of_normedDomain. (* ok ? *)
 End pseudoMetric_of_normedDomain.
 
+(*Is the following redundant now ? *)
 Canonical R_pointedType := [pointedType of
   Rdefinitions.R for pointed_of_zmodule R_ringType].
 (* NB: similar definition in topology.v *)
