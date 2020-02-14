@@ -191,55 +191,63 @@ Definition C_RlmodType := @LmodType R C C_RlmodMixin.*)
 
 Local Notation C := R[i].
 
+Definition Rcomplex_lmodMixin := (complex_lmodMixin R).
+Canonical  Rcomplex_lmodMixin.
+(*This canonical is taken out in real-closed/complex.v *)
+(*TODO: this seems intricate. Try a wihtin approach *)
+
 Definition C_pointedType := PointedType C 0.
 Canonical C_pointedType.
 Definition C_filteredType := FilteredType C C (locally_ (ball_ (@normc R))).
 Canonical C_filteredType.
 
-(*Definition C_RtopologicalType := TopologicalType C_filteredType C_RtopologicalMixin.*)
-(*Definition C_RtopologicalType := TopologicalType C C_RtopologicalMixin.*)
-(*Definition C_RuniformType := @UniformType C_RtopologicalType C_RuniformMixin.*)
-(*Definition C_RuniformType := UniformType C_RtopologicalType C_RuniformMixin.*)
-(*Definition C_RnormedZmodType := NormedZmodType R C^o C_RnormedMixin.*)
-
-Definition Rcomplex := R[i].
-Canonical Rcomplex_eqType := [eqType of Rcomplex].
-Canonical Rcomplex_choiceType := [choiceType of Rcomplex].
-Canonical Rcomplex_zmodType := [zmodType of Rcomplex].
-Canonical Rcomplex_lmodType := [lmodType R of Rcomplex].
-Canonical Rcomplex_pointedType := [pointedType of Rcomplex].
-Canonical Rcomplex_filteredType := [filteredType Rcomplex of Rcomplex].
+Definition Rcomplex_eqType := [eqType of C].
+Definition Rcomplex_choiceType := [choiceType of C].
+Definition Rcomplex_zmodType := [zmodType of C].
+Definition Rcomplex_lmodType := [lmodType R of C].
+Definition Rcomplex_pointedType := [pointedType of C].
+Definition Rcomplex_filteredType := [filteredType C of C].
 Definition Rcomplex_pseudoMetricMixin :=
-  @pseudometricmixin_of_normaxioms [lmodType R of Rcomplex] (@normc R) (@normcD _) (@normcZ _) (@eq0_normc _).
+  @pseudometricmixin_of_normaxioms [lmodType R of C] (@normc R) (@normcD _) (@normcZ _) (@eq0_normc _).
 Definition Rcomplex_topologicalMixin := topologyOfBallMixin Rcomplex_pseudoMetricMixin.
-Canonical Rcomplex_topologicalType :=
-  TopologicalType Rcomplex Rcomplex_topologicalMixin.
-Canonical Rcomplex_pseudoMetricType := PseudoMetricType Rcomplex Rcomplex_pseudoMetricMixin.
+Definition  Rcomplex_topologicalType :=
+  TopologicalType C Rcomplex_topologicalMixin.
+
+About PseudoMetric.Pack.
+About pseudoMetric_of_normedDomain.
+Definition Rcomplex_pseudoMetricType := @PseudoMetric.Pack R C (@PseudoMetric.Class R C (Topological.class Rcomplex_topologicalType) (Rcomplex_pseudoMetricMixin)).
+
 Definition Rcomplex_normedMixin :=
   @Num.NormedMixin _ _ _ _ (@normcD R) (@eq0_normc _) (@normc_mulrn _) (@normcN _).
-Canonical Rcomplex_normedZmodType := NormedZmodType R Rcomplex Rcomplex_normedMixin.
+Definition Rcomplex_normedZmodType := NormedZmodType R C Rcomplex_normedMixin.
 
 Lemma Rcomplex_ball_ball_ :
-  @ball _ [pseudoMetricType R of Rcomplex] = ball_ (fun x => `| x |).
+  @ball _ Rcomplex_pseudoMetricType = ball_ (fun (x : C) => normc x).
 Proof. by []. Qed.
 
+
+About PseudoMetricNormedZmodule.Mixin.
+About PseudoMetricNormedZmodule.pack.
+
 Definition Rcomplex_pseudoMetricNormedZmodMixin :=
-  PseudoMetricNormedZmodule.Mixin Rcomplex_ball_ball_.
-Canonical Rcomplex_pseudoMetricNormedZmodType :=
-  PseudoMetricNormedZmodType R Rcomplex Rcomplex_pseudoMetricNormedZmodMixin.
+  @PseudoMetricNormedZmodule.Mixin R Rcomplex_normedZmodType _ _  Rcomplex_ball_ball_.
+(* Definition Rcomplex_pseudoMetricNormedZmodType := *)
+(*   PseudoMetricNormedZmodule.pack R C Rcomplex_pseudoMetricNormedZmodMixin. *)
 
-Definition Rcomplex_normedModMixin :=
-  @NormedModMixin R [pseudoMetricNormedZmodType R of Rcomplex] _ (@normcZ _).
-Canonical Rcomplex_normedModType :=
-  NormedModType R Rcomplex Rcomplex_normedModMixin.
+(* Definition Rcomplex_normedModMixin := *)
+(*   @NormedModMixin R [pseudoMetricNormedZmodType R of C] _ (@normcZ _). *)
+(* Definition Rcomplex_normedModType := *)
+(*   NormedModType R C Rcomplex_normedModMixin. *)
 
-Lemma scalecAl (h : R) (x y : Rcomplex_normedModType) : h *: (x * y) = h *: x * y.
-Proof.
-by move: h x y => h [a b] [c d]; simpc; rewrite -!mulrA -mulrBr -mulrDr.
-Qed.
+(* Lemma scalecAl (h : R) (x y : Rcomplex_normedModType) : h *: (x * y) = h *: x * y. *)
+(* Proof. *)
+(* by move: h x y => h [a b] [c d]; simpc; rewrite -!mulrA -mulrBr -mulrDr. *)
+(* Qed. *)
 
-Definition C_RLalg := LalgType R Rcomplex scalecAl.
+(* Definition C_RLalg := LalgType R Rcomplex scalecAl. *)
 
+
+(*TODO *)
 End C_Rnormed.
 
 Canonical regular_pointedType (R: pointedType) :=
@@ -279,45 +287,9 @@ Variable R : rcfType.
 
 Local Notation sqrtr := Num.sqrt.
 Local Notation C := R[i].
-Local Notation RComplex := (Rcomplex R).
+(* Local Notation RComplex := (Rcomplex R). *)
 Local Notation Re := (@complex.Re R).
 Local Notation Im := (@complex.Im R).
-
-(*Important: C is a lmodType R while C^o is a lmodType C*)
-
-(*Section C_absRing.*)
-(* This is now replaced by  complex_numFieldType and numFieldType_normedModType.*)
-
-(*
-  Definition C_AbsRingMixin := @AbsRingMixin (complex_ringType R_rcfType)
-                 (@normc R_rcfType) normc0 normcN1 normcD (@normcM R_rcfType )
-                             (@eq0_normc R_rcfType).
-  Definition C_absRingType :=  AbsRingType C C_AbsRingMixin.
-  Canonical C_absRingType.
-  Definition C_topologicalType := [topologicalType of C for C_absRingType].
-  Canonical C_topologicalType.
-  Definition C_uniformType := [uniformType of C for C_absRingType].
-  Canonical C_uniformType.
-  Definition Co_pointedType := [pointedType of C^o for C_absRingType].
-  Definition Co_filteredType := [filteredType C^o of C^o for C_absRingType].
-  Definition Co_topologicalType := [topologicalType of C^o for C_absRingType].
-
-  Canonical Zmod_topologicalType ( K : absRingType)
-            (V : normedModType K):=
-    [topologicalType of [zmodType of V]].
-
-  Definition Co_uniformType := [uniformType of C^o for C_absRingType].
-  Definition Co_normedType := AbsRing_NormedModType C_absRingType.
-  Canonical C_normedType := [normedModType C^o of C for Co_normedType].
-  (*C is convertible to C^o *)
-
-  Canonical R_normedType := [normedModType R of R for  [normedModType R of R^o]].
-
-  Canonical absRing_normedType (K : absRingType) := [normedModType K^o
-of K for (AbsRing_NormedModType K)].
-
-*)
-
 
 (* NB: not used *)
 Lemma flim_translim (T : topologicalType) (F G: set (set T)) (l :T) :
@@ -333,20 +305,6 @@ Lemma limin_scaler (K : numFieldType) (V : normedModType K) (T : topologicalType
   (F : set (set T)) (FF : ProperFilter F) (f : T -> V) (k : K) :
   cvg(f @ F) -> k *: lim (f @ F) = lim ((k \*: f) @ F ).
 Proof. by move => cv; apply/esym/flim_lim; apply: lim_scaler. Qed.
-
-(* used in derive.v, what does center means*)
-(*CoInductive
-differentiable_def (K : absRingType) (V W : normedModType K) (f : V -> W)
-(x : filter_on V) (phF : phantom (set (set V)) x) : Prop :=
-    DifferentiableDef : continuous 'd f x /\ f = (cst (f (lim x)) + 'd f x) \o
-                center (lim x) +o_x center (lim x) -> differentiable_def f phF *)
-(*Diff is defined from any normedmodule of any absringtype,
- so C is a normedmodul on itself *)
-(*Vague idea that this should work, as we see C^o as a vector space on C and not R*)
-
-(*Important : differentiable in derive.v, means continuoulsy differentiable,
-not just that the limit exists. *)
-(*derivable concerns only the existence of the derivative *)
 
 Definition holomorphic (f : C^o -> C^o) (c : C^o) :=
   cvg ((fun (h : C^o) => h^-1 *: ((f \o shift c) h - f c)) @ (locally' (0:C^o))).
