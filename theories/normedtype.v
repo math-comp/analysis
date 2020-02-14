@@ -157,24 +157,20 @@ Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType :=
   PseudoMetricType Rdefinitions.R (pseudoMetric_of_normedDomain R_normedZmodType).
 
 (*Do we need the following ? Not sure*)
-Section numFieldType_canonical.
+Section numFieldType_vec_canonical.
 Variable R : numFieldType.
 (*Canonical topological_of_numFieldType := [numFieldType of R^o].*)
-Canonical numFieldType_pointedType :=
+Canonical numFieldType_vec_pointedType :=
   [pointedType of R^o for pointed_of_zmodule R].
-Canonical numFieldType_filteredType :=
+Canonical numFieldType_vec_filteredType :=
   [filteredType R of R^o for filtered_of_normedZmod R].
-Canonical numFieldType_topologicalType : topologicalType := TopologicalType R^o
+Canonical numFieldType_vec_topologicalType : topologicalType := TopologicalType R^o
   (topologyOfBallMixin (pseudoMetric_of_normedDomain [normedZmodType R of R])).
-Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R (Topological.class numFieldType_topologicalType) (@pseudoMetric_of_normedDomain R R)).
-Definition numdFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
-End numFieldType_canonical.
+Canonical numFieldType_vec_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R (Topological.class numFieldType_vec_topologicalType) (@pseudoMetric_of_normedDomain R R)).
+End numFieldType_vec_canonical.
 
-Fail Check (locally (w:K^o)) (*why*).
-Variable (ww : K^o).
-Check (locally ww).
 
-Lemma locallyN (R : numFieldType) (x : R^o) :
+Lemma locallyN (R : numFieldType) (x : R) :
   locally (- x) = [set [set - y | y in A] | A in locally x].
 Proof.
 rewrite predeqE => A; split=> [[e egt0 oppxe_A]|[B [e egt0 xe_B] <-]];
@@ -189,14 +185,14 @@ exists e => // y xe_y; exists (- y); last by rewrite opprK.
 by apply/oppxe_A; rewrite /ball_ distrC opprK addrC.
 Qed.
 
-Lemma openN (R : numFieldType) (A : set R^o) :
+Lemma openN (R : numFieldType) (A : set R) :
   open A -> open [set - x | x in A].
 Proof.
 move=> Aop; rewrite openE => _ [x /Aop x_A <-].
 by rewrite /interior locallyN; exists A.
 Qed.
 
-Lemma closedN (R : numFieldType) (A : set R^o) :
+Lemma closedN (R : numFieldType) (A : set R) :
   closed A -> closed [set - x | x in A].
 Proof.
 move=> Acl x clNAx.
@@ -331,12 +327,12 @@ End pseudoMetricnormedzmodule_lemmas.
 (*TODO: adapt *)
 Section numFieldType_canonical_contd.
 Variable R : numFieldType.
-Lemma R_ball : @ball _ [pseudoMetricType R of R^o] = ball_ (fun x => `| x |).
+Lemma R_ball : @ball _ [pseudoMetricType R of R] = ball_ (fun x => `| x |).
 Proof. by []. Qed.
 Definition numFieldType_pseudoMetricNormedZmodMixin :=
   PseudoMetricNormedZmodule.Mixin R_ball.
 Canonical numFieldType_pseudoMetricNormedZmodType :=
-  @PseudoMetricNormedZmodType R R^o numFieldType_pseudoMetricNormedZmodMixin.
+  @PseudoMetricNormedZmodType R R numFieldType_pseudoMetricNormedZmodMixin.
 End numFieldType_canonical_contd.
 
 
@@ -451,7 +447,7 @@ by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
 Global Instance Proper_locally'_realType (R : realType) (x : R^o) :
-  ProperFilter (locally' x).
+  ProperFilter (locally' (x)).
 Proof. exact: Proper_locally'_numFieldType. Qed.
 
 (** * Some Topology on [Rbar] *)
