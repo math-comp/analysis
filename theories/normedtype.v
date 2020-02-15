@@ -422,6 +422,121 @@ Proof. exact: Proper_locally'_numFieldType. Qed.
 Section ereal_locally.
 Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
+Definition ereal_locally' (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
+  match a with
+    | a%:E => @locally' R_topologicalType a (fun x => P x%:E)
+    | +oo => exists M, M \is Num.real /\ forall x, (M%:E < x)%E -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, (x < M%:E)%E -> P x
+  end.
+Definition ereal_locally (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
+  match a with
+    | a%:E => @locally _ R_topologicalType a (fun x => P x%:E)
+    | +oo => exists M, M \is Num.real /\ forall x, (M%:E < x)%E -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, (x < M%:E)%E -> P x
+  end.
+Canonical ereal_pointed := PointedType {ereal R} (+oo).
+Canonical ereal_ereal_filter := FilteredType {ereal R} {ereal R} (ereal_locally).
+End ereal_locally.
+
+Section ereal_locally.
+Context {R : numFieldType}.
+Let R_topologicalType := [topologicalType of R^o].
+
+Global Instance ereal_locally'_filter :
+  forall x : {ereal R}, ProperFilter (ereal_locally' x).
+Proof.
+case=> [x||].
+- case: (Proper_locally'_numFieldType x) => x0 [//= xT xI xS].
+  apply Build_ProperFilter' => //=; apply Build_Filter => //=.
+  move=> P Q lP lQ; exact: xI.
+  by move=> P Q PQ /xS; apply => y /PQ.
+- apply Build_ProperFilter.
+    move=> P [x [xr xP]]; exists (x + 1)%:E; apply xP => /=.
+    by rewrite lte_fin ltr_addl.
+  split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
+  + by exists 0; rewrite real0.
+  + have [/eqP MP0|MP0] := boolP (MP == 0).
+      have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+        by exists 0; rewrite real0; split => // x x0; split;
+        [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
+      exists `|MQ|; rewrite realE normr_ge0; split => // x Hx; split.
+        by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0 lee_fin.
+      by apply gtMQ; rewrite (le_lt_trans _ Hx) // lee_fin real_ler_normr // lexx.
+    have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+      exists `|MP|; rewrite realE normr_ge0; split => // x MPx; split.
+      by apply gtMP; rewrite (le_lt_trans _ MPx) // lee_fin real_ler_normr // lexx.
+      by apply gtMQ; rewrite (le_lt_trans _ MPx) // lee_fin MQ0.
+    have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
+    have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
+    exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
+    rewrite realE /= posnum_ge0 /=; split => //.
+    case=> [r| |//].
+    * rewrite lte_fin pos_ltUx /= => /andP[MPx MQx]; split.
+      by apply/gtMP; rewrite lte_fin (le_lt_trans _ MPx) // real_ler_normr // lexx.
+      by apply/gtMQ; rewrite lte_fin (le_lt_trans _ MQx) // real_ler_normr // lexx.
+    * by move=> _; split; [apply/gtMP | apply/gtMQ].
+  + by exists M; split => // ? /gtM /sPQ.
+- apply Build_ProperFilter.
+  + move=> P [M [Mr ltMP]]; exists (M - 1)%:E.
+    by apply: ltMP; rewrite lte_fin gtr_addl oppr_lt0.
+  + split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
+    * by exists 0; rewrite real0.
+    * have [/eqP MP0|MP0] := boolP (MP == 0).
+        have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+          by exists 0; rewrite real0; split => // x x0; split;
+          [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
+        exists (- `|MQ|); rewrite realN realE normr_ge0; split => // x xMQ; split.
+          by apply ltMP; rewrite (lt_le_trans xMQ) // lee_fin MP0 ler_oppl oppr0.
+       apply ltMQ; rewrite (lt_le_trans xMQ) // lee_fin ler_oppl -normrN.
+       by rewrite real_ler_normr ?realN // lexx.
+    * have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+        exists (- `|MP|); rewrite realN realE normr_ge0; split => // x MPx; split.
+          apply ltMP; rewrite (lt_le_trans MPx) // lee_fin ler_oppl -normrN.
+          by rewrite real_ler_normr ?realN // lexx.
+        by apply ltMQ; rewrite (lt_le_trans MPx) // lee_fin MQ0 ler_oppl oppr0.
+      have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
+      have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
+      exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
+      rewrite realN realE /= posnum_ge0 /=; split => //.
+      case=> [r|//|].
+      - rewrite lte_fin ltr_oppr pos_ltUx => /andP[].
+        rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
+          apply/ltMP; rewrite lte_fin (lt_le_trans MPx) //= ler_oppl -normrN.
+          by rewrite real_ler_normr ?realN // lexx.
+        apply/ltMQ; rewrite lte_fin (lt_le_trans MQx) //= ler_oppl -normrN.
+        by rewrite real_ler_normr ?realN // lexx.
+      - by move=> _; split; [apply/ltMP | apply/ltMQ].
+    * by exists M; split => // x /ltM /sPQ.
+Qed.
+Typeclasses Opaque ereal_locally'.
+
+Global Instance ereal_locally_filter :
+  forall x, ProperFilter (@ereal_locally R x).
+Proof.
+case=> [x| |].
+- case: (ereal_locally'_filter x%:E) => x0 [//=nxT xI xS].
+  apply Build_ProperFilter => //=.
+  by move=> P [r r0 xr]; exists x%:E; apply xr => //=; rewrite subrr normr0.
+  apply Build_Filter => //=.
+  by rewrite locallyE'.
+  move=> P Q.
+  rewrite !locallyE' => -[xP axP] [xQ axQ]; split => //=.
+  exact: xI.
+  move=> P Q PQ; rewrite !locallyE' => -[xP axP]; split => //=.
+  apply (xS P) => //=.
+  exact: PQ.
+exact: (ereal_locally'_filter +oo).
+exact: (ereal_locally'_filter -oo).
+Qed.
+Typeclasses Opaque ereal_locally.
+
+End ereal_locally.
+
+xxx
+
+Section ereal_locally.
+Context {R : numFieldType}.
+Let R_topologicalType := [topologicalType of R^o].
 Definition ereal_locally' (a : {ereal R}) (P : R -> Prop) :=
   match a with
     | a%:E => @locally' R_topologicalType a P
