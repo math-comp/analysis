@@ -394,6 +394,8 @@ Notation "[ 'filteredType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
 Notation "[ 'filteredType' U 'of' T ]" := (@clone U T _ _ id)
   (at level 0, format "[ 'filteredType'  U  'of'  T ]") : form_scope.
 
+
+
 (* The default filter for an arbitrary element is the one obtained *)
 (* from its type *)
 Canonical default_arrow_filter Y (Z : pointedType) (X : source Z Y) :=
@@ -2344,6 +2346,53 @@ Qed.
 
 End Covers.
 
+Section separated_topologicalType.
+Variable (T : topologicalType).
+Local Open Scope classical_set_scope.
+Definition T2separated (O : set (set T)) := forall x y, x != y ->
+  exists2 AB, (x \in AB.1 /\ y \in AB.2) &
+              [/\ O AB.1, O AB.2 & AB.1 `&` AB.2 == set0].
+End separated_topologicalType.
+
+Definition closeness (T : topologicalType) (x : T) (A : set T) : Prop :=
+  forall N, neigh x N -> N `&` A !=set0.
+
+Definition close_points (T : topologicalType) (x y : T) : Prop :=
+  forall M, neigh y M -> closeness x M.
+
+Lemma close_points_sym (T : topologicalType) (x y : T) :
+  close_points x y -> close_points y x.
+Proof.
+rewrite /close_points /closeness => xy N xN M yM.
+rewrite setIC; apply xy => //; by case yM.
+Qed.
+
+Lemma close_points_refl (T : topologicalType) (t : T) : close_points t t.
+Proof. by move=> M [? ?] N [? ?]; exists t; split. Qed.
+Hint Resolve close_points_refl : core.
+
+Lemma cvg_close (T : topologicalType) {F} {FF : ProperFilter F} (x y : T) :
+  F --> x -> F --> y -> close_points x y.
+Proof.
+move=> Fx Fy N yN M xM; near F => z; exists z; split.
+- near: z; by apply/Fx; rewrite /filter_of locallyE; exists M; split.
+- near: z; by apply/Fy; rewrite /filter_of locallyE; exists N; split.
+Grab Existential Variables. all: end_near. Qed.
+
+Section separated_numDomainType.
+Variables (T : topologicalType).
+Hypothesis sep : T2separated (@open T).
+Lemma closeE (x y : T) : close_points x y = (x = y).
+Proof.
+rewrite propeqE; split => [cxy|->//]; have [//|xdy] := eqVneq x y.
+case: (sep xdy) => -[/= r1 r2] [xr1 yr2] [or1 or2].
+move/eqP; rewrite funeqE => /(_ x)/notT/Classical_Prop.not_and_or => -[].
+by rewrite in_setE in xr1.
+rewrite in_setE in yr2.
+move: (cxy r2 (conj or2 yr2)); rewrite /closeness.
+Abort.
+End separated_numDomainType.
+
 (* connected sets *)
 
 Definition connected (T : topologicalType) (A : set T) :=
@@ -2656,6 +2705,48 @@ Qed.
 
 End pseudoMetricType_numFieldType.
 Arguments close_cvg {R M} F1 F2 {FF2} _.
+
+Section separated.
+Variables (R : numDomainType) (T : pseudoMetricType R).
+Definition separated := forall (a b : T), a != b ->
+  exists r : {posnum R} * {posnum R}, ball a r.1%:num `&` ball b r.2%:num == set0.
+Lemma T2separated_separated : T2separated (@open T) -> separated.
+Proof.
+move=> T2T a b ab; have [[A B] /=] := (@T2T a b ab).
+rewrite 2!in_setE => -[aA bB]; rewrite !openE /interior => -[].
+move/(_ _ aA); rewrite locallyE => -[A0 [[oA0 aA0] A0A]] => -[].
+move/(_ _ bB); rewrite locallyE => -[B0 [[oB0 bB0] B0B]] => AB0.
+move: oA0; rewrite openE => /(_ _ aA0).
+rewrite /interior => /locallyP; rewrite /locally_ => -[ra ra0 rA0].
+move: oB0; rewrite openE => /(_ _ bB0).
+rewrite /interior => /locallyP; rewrite /locally_ => -[rb rb0 rB0].
+exists (PosNum ra0, PosNum rb0) => /=; apply/negPn/negP => /set0P[t [ta tb]].
+by move: AB0; apply/negP/set0P; exists t; split; [apply/A0A/rA0 | apply/B0B/rB0].
+Qed.
+End separated.
+
+Section separated_numDomainType.
+Variables (R : numDomainType) (T : pseudoMetricType R).
+Hypothesis sep : separated T.
+Lemma closeE (x y : T) : close x y = (x = y).
+Proof.
+rewrite propeqE; split => [cxy|->//]; have [//|xdy] := eqVneq x y.
+case: (sep xdy) => -[r1 r2] /=.
+move/eqP; rewrite funeqE => /(_ x)/notT/Classical_Prop.not_and_or => -[].
+by move/(_ (@ballxx _ _ _ _ (posnum_gt0 r1))).
+by move/ball_sym : (cxy r2).
+Qed.
+End separated_numDomainType.
+
+Section separated_numFieldType.
+Variables (R : numFieldType) (T : pseudoMetricType R).
+Hypothesis sep : separated T.
+Lemma cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : T | F --> x].
+Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close _ T F). Qed.
+
+Lemma cvg_lim {F} {FF : ProperFilter F} (l : T) : F --> l -> lim F = l.
+Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@cvg_unique F). Qed.
+End separated_numFieldType.
 
 Section entourages.
 Variable R : numDomainType.

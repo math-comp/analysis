@@ -1139,7 +1139,7 @@ Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 (* - locally lipschitz => continuous at a point *)
 (* - lipschitz => uniformly continous *)
 
-Local Notation "'+oo'" := (@ERPInf R).
+Local Notation "'+oo'" := (@pinfty_locally R).
 
 Lemma linear_for_continuous (f : {linear U -> V | GRing.Scale.op s_law}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.

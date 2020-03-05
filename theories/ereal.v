@@ -29,15 +29,17 @@ End ExtendedReals.
 (* TODO: the following notations should have scopes. *)
 
 (*Notation "\+inf" := (@ERPInf _).*)
-Notation "+oo" := (@ERPInf _).
+Notation "+oo" := (@ERPInf _) : ereal_scope.
 (*Notation "\-inf" := (@ERNInf _).*)
-Notation "-oo" := (@ERNInf _).
+Notation "-oo" := (@ERNInf _) : ereal_scope.
 Notation "x %:E" := (@ERFin _ x) (at level 2, format "x %:E").
 
 Notation "{ 'ereal' R }" := (er R) (format "{ 'ereal'  R }").
 
 Bind    Scope ereal_scope with er.
 Delimit Scope ereal_scope with E.
+
+Local Open Scope ereal_scope.
 
 Section EqEReal.
 Variable (R : eqType).
@@ -65,7 +67,7 @@ Variable (R : choiceType).
 
 Definition code (x : {ereal R}) :=
   match x with
-  | x%:E  => GenTree.Node 0 [:: GenTree.Leaf x]
+  | x%:E => GenTree.Node 0 [:: GenTree.Leaf x]
   | +oo => GenTree.Node 1 [::]
   | -oo => GenTree.Node 2 [::]
   end.
@@ -151,10 +153,10 @@ Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
 Notation "x <= y < z"  := ((lee x y) && (lte y z)) : ereal_scope.
 Notation "x < y < z"   := ((lte x y) && (lte y z)) : ereal_scope.
 
-Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E)%E = (x <= y).
+Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E)%E = (x <= y)%O.
 Proof. by []. Qed.
 
-Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E)%E = (x < y).
+Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E)%E = (x < y)%O.
 Proof. by []. Qed.
 
 Section ERealOrder_realDomainType.

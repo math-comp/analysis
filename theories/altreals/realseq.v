@@ -75,14 +75,14 @@ Qed.
 Lemma nbh_pinfW (P : forall x, nbh x -> Prop) :
   (forall M, P _ (@NPInf R M)) -> forall (v : nbh +oo), P _ v.
 Proof.
-move=> ih ; move: {-2}+oo (erefl (@ERPInf R)).
+move=> ih; move: {-2}+oo%E (erefl (@ERPInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 
 Lemma nbh_ninfW (P : forall x, nbh x -> Prop) :
   (forall M, P _ (@NNInf R M)) -> forall (v : nbh -oo), P _ v.
 Proof.
-move=> ih ; move: {-2}-oo (erefl (@ERNInf R)).
+move=> ih ; move: {-2}-oo%E (erefl (@ERNInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 End NbhElim.
@@ -439,7 +439,7 @@ move=> p; rewrite -[xchooseb _](ncvg_uniq cv_u_l) //.
 by apply/asboolP/(xchoosebP p).
 Qed.
 
-Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = -oo.
+Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = -oo%E.
 Proof.
 move=> h; rewrite /nlim; case: {-}_ / idP => // p.
 by case: h; case/existsbP: p => l /asboolP; exists l.
