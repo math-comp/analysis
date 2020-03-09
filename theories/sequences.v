@@ -371,10 +371,12 @@ Lemma squeeze T (f g h : T -> R) (a : filter_on T) :
   f @ a --> l -> h @ a --> l -> g @ a --> l.
 Proof.
 move=> fgh l /cvg_distP lfa /cvg_distP lga; apply/cvg_distP => _/posnumP[e].
-rewrite near_map; apply: filterS3 fgh (lfa _ e) (lga _ e) => /= x /andP[fg gh].
+rewrite near_map; near=> x; have /(_ _)/andP[//|fg gh] := near fgh x.
+have : `|l - h x| < e%:num by near: x; apply: lga.
+have : `|l - f x| < e%:num by near: x; apply: lfa.
 rewrite ![`|l - _|]distrC; rewrite !ltr_distl => /andP[lf _] /andP[_ hl].
 by rewrite (lt_le_trans lf)? (le_lt_trans gh).
-Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma cvgPpinfty (u_ : R ^nat) :
   u_ --> +oo <-> forall A, \forall n \near \oo, A <= u_ n.
@@ -623,7 +625,7 @@ move=> u_nd u_ub; set M := sup (range u_).
 have su_ : has_sup (range u_) by split => //; exists (u_ 0%N), 0%N.
 apply: cvg_distW => _/posnumP[e]; rewrite near_map.
 have [p /andP[Mu_p u_pM]] : exists p, M - e%:num <= u_ p <= M.
-  have [_ -[p _] <- /ltW Mu_p] := sup_adherent su_ (posnum_gt0 e).
+  have [_ -[p _] <- /ltW Mu_p] := sup_adherent su_ (gt0 e).
   by exists p; rewrite Mu_p; have /ubP := sup_upper_bound su_; apply; exists p.
 near=> n; have pn : (p <= n)%N by near: n; apply: nbhs_infty_ge.
 rewrite distrC ler_norml ler_sub_addl (le_trans Mu_p (u_nd _ _ pn)) /=.
@@ -721,7 +723,7 @@ have ge_half n : (0 < n)%N -> 2^-1 <= \sum_(n <= i < n.*2) harmonic i.
     rewrite sumr_const_nat -addnn addnK addnn -mul2n natrM invfM.
     by rewrite -[_ *+ n.+1]mulr_natr divfK.
   by apply: ler_sum_nat => i /andP[? ?]; rewrite lef_pinv ?qualifE ?ler_nat.
-move/cvg_cauchy/cauchy_ballP => /(_ _ 2^-1%:pos); rewrite !near_map2.
+move/cvg_cauchy/cauchy_ballP => /(_ _ [gt0 of 2^-1 : R]); rewrite !near_map2.
 rewrite -ball_normE => /nearP_dep hcvg; near \oo => n; near \oo => m.
 have: `|series harmonic n - series harmonic m| < 2^-1 :> R by near: m; near: n.
 rewrite le_gtF// distrC -[X in X - _](addrNK (series harmonic n.*2)).
@@ -784,7 +786,7 @@ Let cesaro_converse_off_by_one (u_ : R ^nat) :
   [sequence n.+1%:R^-1 * series u_ n]_ n --> (0 : R).
 Proof.
 move=> H; apply/cvg_distP => _/posnumP[e]; rewrite near_map.
-move/cvg_distP : H => /(_ e%:num (posnum_gt0 e)); rewrite near_map => -[m _ mu].
+move/cvg_distP : H => /(_ _ (gt0 e)); rewrite near_map => -[m _ mu].
 near=> n; rewrite sub0r normrN /=.
 have /andP[n0] : ((0 < n) && (m <= n.-1))%N.
   near: n; exists m.+1 => // k mk; rewrite (leq_trans _ mk) //=.
@@ -985,7 +987,8 @@ Lemma cauchy_seriesP {R : numFieldType} (V : normedModType R) (u_ : V ^nat) :
   forall e : R, e > 0 ->
     \forall n \near (\oo, \oo), `|\sum_(n.1 <= k < n.2) u_ k| < e.
 Proof.
-rewrite -cauchy_ballP; split=> su_cv _/posnumP[e]; have {}su_cv := su_cv _ e;
+rewrite -cauchy_ballP; split=> su_cv _/posnumP[e];
+have {}su_cv := !! su_cv _ (gt0 e);
 rewrite -near2_pair -ball_normE !near_simpl/= in su_cv *.
   apply: filterS su_cv => -[/= m n]; rewrite distrC sub_series.
   by have [|/ltnW]:= leqP m n => mn//; rewrite (big_geq mn) ?normr0.
@@ -1280,7 +1283,7 @@ Lemma ereal_cvg_abs0 (R : realFieldType) (f : (\bar R)^nat) :
   abse \o f --> 0 -> f --> 0.
 Proof.
 move=> /cvg_ballP f0; apply/cvg_ballP => _/posnumP[e].
-have := f0 _ (posnum_gt0 e); rewrite !near_map => -[n _ {}f0].
+have := !! f0 _ (gt0 e); rewrite !near_map => -[n _ {}f0].
 near=> m; have /f0 : (n <= m)%N by near: m; exists n.
 rewrite /ball /= /ereal_ball !contract0 !sub0r !normrN; apply: le_lt_trans.
 have [fm0|fm0] := leP 0 (f m); first by rewrite gee0_abs.
@@ -2444,7 +2447,7 @@ case: l => [l /ereal_cvg_real[u_fin_num] ul| |]; last 2 first.
 have [p _ pu] := u_fin_num; apply/cvg_ballP => _/posnumP[e].
 have : EFin \o sups (fine \o u) --> l%:E.
   by apply: continuous_cvg => //; apply: cvg_sups.
-move=> /cvg_ballP /(_ e%:num (posnum_gt0 _))[q _ qsupsu].
+move=> /cvg_ballP /(_ e%:num (gt0 _))[q _ qsupsu].
 rewrite near_simpl; near=> n.
 have -> : esups u n = (EFin \o sups (fine \o u)) n.
   rewrite /= -ereal_sup_EFin; last 2 first.

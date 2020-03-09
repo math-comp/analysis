@@ -473,11 +473,10 @@ Proof.
 split=> [[k k0 fOg] | [k [kreal fOg]]].
   exists k; rewrite realE (ltW k0) /=; split=> // l ltkl; move: fOg.
   by apply: filter_app; near=> x => /le_trans; apply; rewrite ler_wpmul2r // ltW.
-exists (Num.max 1%:nng `|k + 1|%:nng)%:nngnum.
-  by rewrite nng_lt /= lt_maxr /= -nng_lt ltr01.
+exists (Num.max 1 `|k + 1|) => //.
 apply: fOg; rewrite (@lt_le_trans _ _ `|k + 1|) //.
-by rewrite (@lt_le_trans _ _ (k + 1)) ?ltr_addl // real_ler_norm ?(realD,real1).
-by rewrite nng_le le_maxr orbC lexx.
+  by rewrite (@lt_le_trans _ _ (k + 1)) ?ltr_addl // real_ler_norm ?(realD,real1).
+by rewrite comparable_le_maxr ?real_comparable// lexx orbT.
 Unshelve. end_near. Qed.
 
 Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
@@ -1042,7 +1041,7 @@ Lemma mulo (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
 Proof.
 rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
-rewrite [`|_|]normrM -(sqr_sqrtr (ltW [gt0 of e%:num])) expr2.
+rewrite [`|_|]normrM -(sqr_sqrtr (ge0 e)) expr2.
 rewrite (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x;
 by have [/= h] := littleo; apply.
 Unshelve. all: by end_near. Qed.
@@ -1068,14 +1067,9 @@ Lemma mulo_numClosedFieldType (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
 Proof.
 rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
-rewrite [`|_|]normrM -(sqrCK (ltW [gt0 of e%:num])) expr2 sqrtCM.
-rewrite (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x.
- have [/= h] := littleo; apply.
- by rewrite sqrtC_gt0 posnum_gt0.
- have [/= h] := littleo; apply.
- by rewrite sqrtC_gt0 posnum_gt0.
-by rewrite nnegrE; apply (ltW [gt0 of e%:num]).
-by rewrite nnegrE; apply (ltW [gt0 of e%:num]).
+rewrite [`|_|]normrM -(sqrCK (ge0 e)) expr2 sqrtCM ?qualifE//.
+rewrite (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x;
+by have [/= h] := littleo; apply.
 Unshelve. all: by end_near. Qed.
 
 Lemma mulO_numClosedFieldType (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
@@ -1502,8 +1496,7 @@ rewrite [`|_|]normrM (@le_trans _ _ ((k2%:num * k1%:num)^-1 * `|(T1 * T2) x|)) /
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
   rewrite ler_pdivl_mull // (mulrA k1%:num) mulrCA (@normrM _ (T1 x)) ler_pmul //;
   by [rewrite mulr_ge0 //|near: x].
-rewrite ler_wpmul2r // ltW //; near: k; exists (k2%:num * k1%:num)^-1; split => //.
-by rewrite realV realM // num_real.
+by rewrite ler_wpmul2r // ltW //; near: k; exists (k2%:num * k1%:num)^-1.
 Unshelve. all: by end_near. Qed.
 
 End big_theta_in_R.

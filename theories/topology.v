@@ -4051,10 +4051,10 @@ Program Definition uniformityOfBallMixin (R : numFieldType) (T : Type)
   UniformMixin _ _ _ _ nbhsE.
 Next Obligation.
 move=> R T ent nbhs nbhsE m; rewrite (PseudoMetric.ax4 m).
-apply: filter_from_filter; first by exists 1.
-move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //.
+apply: filter_from_filter; first by exists 1 => /=.
+move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //=.
 by rewrite subsetI; split=> ?; apply: my_ball_le;
-  rewrite -leEsub le_minl lexx ?orbT.
+   rewrite -leEsub// le_minl lexx ?orbT.
 Qed.
 Next Obligation.
 move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m).
@@ -4069,7 +4069,7 @@ Next Obligation.
 move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m).
 move=> [_/posnumP[e] sbeA].
 exists [set xy | PseudoMetric.ball m xy.1 (e%:num / 2) xy.2].
-  by exists (e%:num / 2).
+  by exists (e%:num / 2) => /=.
 move=> xy [z xzhe zyhe]; apply: sbeA.
 by rewrite [e%:num]splitr; apply: PseudoMetric.ax3 zyhe.
 Qed.
@@ -4088,7 +4088,7 @@ Proof. by rewrite -entourage_ballE. Qed.
 
 Lemma entourage_ball {R : numDomainType} (M : pseudoMetricType R)
   (e : {posnum R}) : entourage [set xy : M * M | ball xy.1 e%:num xy.2].
-Proof. by rewrite -entourage_ballE; exists e%:num. Qed.
+Proof. by rewrite -entourage_ballE; exists e%:num => /=. Qed.
 #[global] Hint Resolve entourage_ball : core.
 
 Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
@@ -4136,7 +4136,7 @@ Lemma ball_triangle (y x z : M) (e1 e2 : R) :
 Proof. exact: PseudoMetric.ax3. Qed.
 
 Lemma nbhsx_ballx (x : M) (eps : {posnum R}) : nbhs x (ball x eps%:num).
-Proof. by apply/nbhs_ballP; exists eps%:num. Qed.
+Proof. by apply/nbhs_ballP; exists eps%:num => /=. Qed.
 
 Lemma open_nbhs_ball (x : M) (eps : {posnum R}) : open_nbhs x ((ball x eps%:num)^°).
 Proof.
@@ -4167,7 +4167,8 @@ Proof. by rewrite -filter_fromP !nbhs_simpl /=. Qed.
 Lemma cvg_ballPpos {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
 Proof.
-by split => [/cvg_ballP|] pos; [case|apply/cvg_ballP=> _/posnumP[eps] //].
+split => [/cvg_ballP + eps|pos]; first exact.
+by apply/cvg_ballP=> _/posnumP[eps] //.
 Qed.
 
 Lemma cvg_ball {F} {FF : Filter F} (y : M) :
@@ -4185,7 +4186,7 @@ Proof.
 split=> [Fy _/posnumP[eps] |Fy P] /=; first exact/Fy/nbhsx_ballx.
 move=> /nbhs_ballP[_ /posnumP[eps] subP].
 rewrite near_simpl near_mapi; near=> x.
-have [//|z [fxz yz]] := near (Fy _ (posnum_gt0 eps)) x.
+have [//|z [fxz yz]] := near (Fy _ (gt0 eps)) x.
 by exists z => //; split => //; apply: subP.
 Unshelve. all: end_near. Qed.
 Definition cvg_toi_locally := @cvgi_ballP.
@@ -4245,7 +4246,7 @@ rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
   by exists (r, s) => /=; rewrite (subsetI_eq0 _ _ ABeq0).
 move=> r s /eqP brs_eq0; exists ((ball a r%:num)^°, (ball b s%:num)^°) => /=.
   split; by rewrite inE; apply: nbhs_singleton; apply: nbhs_interior;
-            apply/nbhs_ballP; apply: in_filter_from.
+            apply/nbhs_ballP; apply: in_filter_from => /=.
 split; do ?by apply: open_interior.
 by rewrite (subsetI_eq0 _ _ brs_eq0)//; apply: interior_subset.
 Qed.
@@ -4306,7 +4307,7 @@ rewrite predeqE=> A; split; last first.
 move=> [P]; rewrite -entourage_ballE => entP sPA.
 set diag := fun (e : {posnum R}) => [set xy : T * T | ball xy.1 e%:num xy.2].
 exists (\big[Num.min/1%:pos]_i \big[Num.min/1%:pos]_j xget 1%:pos
-  (fun e : {posnum R} => diag e `<=` P i j))%:num => //.
+  (fun e : {posnum R} => diag e `<=` P i j))%:num => //=.
 move=> MN MN_min; apply: sPA => i j.
 have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
   by have [_/posnumP[e]] := entP i j; exists e.
@@ -4345,7 +4346,7 @@ rewrite predeqE => P; split; last first.
   exact: sbeP.
 move=> [[A B]] /=; rewrite -!entourage_ballE.
 move=> [[_/posnumP[eA] sbA] [_/posnumP[eB] sbB] sABP].
-exists (Num.min eA eB)%:num => // - [[a b] [c d] [/= bac bbd]].
+exists (Num.min eA eB)%:num => //= -[[a b] [c d] [/= bac bbd]].
 suff /sABP [] : (A `*` B) ((a, c), (b, d)) by move=> [[??] [??]] ? [<-<-<-<-].
 split; [apply: sbA|apply: sbB] => /=.
   by apply: le_ball bac; rewrite -leEsub le_minl lexx.
@@ -4385,7 +4386,7 @@ Proof.
 rewrite predeqE => A; split; last first.
   by move=> [_/posnumP[e] sbeA]; exists [set xy | ball xy.1 e%:num xy.2].
 move=> [P]; rewrite -entourage_ballE => -[_/posnumP[e] sbeP] sPA.
-by exists e%:num => // fg fg_e; apply: sPA => t; apply: sbeP; apply: fg_e.
+by exists e%:num => //= fg fg_e; apply: sPA => t; apply: sbeP; apply: fg_e.
 Qed.
 Definition fct_pseudoMetricType_mixin :=
   PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle fct_entourage.
