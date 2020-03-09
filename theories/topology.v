@@ -338,6 +338,17 @@ Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_la
                                             (@GRing.null_fun_linear R U V s s_law).
 End Linear2.
 
+
+(* TODO: move to classical_sets *)
+Lemma subsetI_neq0 (T : Type) (A B C D : set T) :
+  A `<=` B -> C `<=` D -> A `&` C !=set0 -> B `&` D !=set0.
+Proof. by move=> AB CD [x [/AB Bx /CD Dx]]; exists x. Qed.
+
+Lemma subsetI_eq0 (T : Type) (A B C D : set T) :
+  A `<=` B -> C `<=` D -> B `&` D = set0 -> A `&` C = set0.
+Proof. by move=> AB /(subsetI_neq0 AB); rewrite -!set0P => /contra_eq. Qed.
+
+
 Module Filtered.
 
 (* Index a family of filters on a type, one for each element of the type *)
@@ -2325,50 +2336,95 @@ End Covers.
 
 Section separated_topologicalType.
 Variable (T : topologicalType).
-Local Open Scope classical_set_scope.
-Definition T2separated (O : set (set T)) := forall x y, x != y ->
-  exists2 AB, (x \in AB.1 /\ y \in AB.2) &
-              [/\ O AB.1, O AB.2 & AB.1 `&` AB.2 == set0].
-End separated_topologicalType.
 
-Definition closeness (T : topologicalType) (x : T) (A : set T) : Prop :=
+Local Open Scope classical_set_scope.
+
+Definition close_to (x : T) (A : set T) : Prop :=
   forall N, neigh x N -> N `&` A !=set0.
 
-Definition close_points (T : topologicalType) (x y : T) : Prop :=
-  forall M, neigh y M -> closeness x M.
+Definition close (x y : T) : Prop :=
+  forall M, neigh y M -> close_to x M.
 
-Lemma close_points_sym (T : topologicalType) (x y : T) :
-  close_points x y -> close_points y x.
+Lemma close_refl (t : T) : close t t.
+Proof. by move=> M [? ?] N [? ?]; exists t; split. Qed.
+Hint Resolve close_refl : core.
+
+Lemma close_sym (x y : T) : close x y -> close y x.
 Proof.
-rewrite /close_points /closeness => xy N xN M yM.
+rewrite /close /close_to => xy N xN M yM.
 rewrite setIC; apply xy => //; by case yM.
 Qed.
 
-Lemma close_points_refl (T : topologicalType) (t : T) : close_points t t.
-Proof. by move=> M [? ?] N [? ?]; exists t; split. Qed.
-Hint Resolve close_points_refl : core.
-
-Lemma flim_close (T : topologicalType) {F} {FF : ProperFilter F} (x y : T) :
-  F --> x -> F --> y -> close_points x y.
+Lemma flim_close {F} {FF : ProperFilter F} (x y : T) :
+  F --> x -> F --> y -> close x y.
 Proof.
 move=> Fx Fy N yN M xM; near F => z; exists z; split.
 - near: z; by apply/Fx; rewrite /filter_of locallyE; exists M; split.
 - near: z; by apply/Fy; rewrite /filter_of locallyE; exists N; split.
 Grab Existential Variables. all: end_near. Qed.
 
-Section separated_numDomainType.
-Variables (T : topologicalType).
-Hypothesis sep : T2separated (@open T).
-Lemma closeE (x y : T) : close_points x y = (x = y).
+
+Lemma close_lim (F1 F2 : set (set T)) {FF2 : ProperFilter F2} :
+  F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
+Proof.
+move=> F12 F21.
+have [/(flim_trans F21) F2l|dvgF1] := pselect (cvg F1).
+  by apply: (@flim_close F2) => //; apply: cvgP F2l.
+have [/(flim_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
+rewrite dvgP // dvgP //; exact/close_refl.
+Qed.
+
+Lemma flimx_close (x y : T) : x --> y -> close x y.
+Proof. exact: flim_close. Qed.
+
+Lemma flimi_close T' {F} {FF: ProperFilter F} (f : T' -> set T) (l l' : T) :
+  {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> close l l'.
+Proof.
+move=> f_prop fFl fFl'.
+suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
+apply: filter_app f_prop; near=> x; split=> //=; near: x.
+have: (f `@ F) setT by apply: fFl; apply: filterT.
+by rewrite filtermapiE; apply: filterS => x [y []]; exists y.
+Grab Existential Variables. all: end_near. Qed.
+Definition flimi_locally_close := @flimi_close.
+
+Lemma open_hausdorff : hausdorff T =
+  (forall x y : T, x != y ->
+    exists2 AB, (x \in AB.1 /\ y \in AB.2) &
+                [/\ open AB.1, open AB.2 & AB.1 `&` AB.2 == set0]).
+Proof.
+rewrite propeqE; split => [T_filterT2|T_openT2] x y.
+  have := contrap (T_filterT2 x y); rewrite (rwP eqP) (rwP negP) => cl /cl.
+  rewrite [cluster _ _](rwP forallp_asboolP) => /negP.
+  rewrite forallbE => /existsp_asboolPn/=[A]/negP/existsp_asboolPn/=[B].
+  rewrite [locally _ _ -> _](rwP imply_asboolP) => /negP.
+  rewrite asbool_imply !negb_imply => /andP[/asboolP xA] /andP[/asboolP yB].
+  move=> /asboolPn; rewrite -set0P => /negP; rewrite negbK => /eqP AIB_eq0.
+  move: xA yB; rewrite !locallyE.
+  move=> - [oA [[oA_open oAx] oAA]] [oB [[oB_open oBx] oBB]].
+  by exists (oA, oB); rewrite ?in_setE; split => //; apply: subsetI_eq0 AIB_eq0.
+apply: contrapTT => /eqP /T_openT2[[/=A B]].
+rewrite !in_setE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
+move=> /(_ A B (neigh_locally _) (neigh_locally _)).
+by rewrite -set0P => /(_ _ _)/negP; apply.
+Qed.
+
+Hypothesis sep : hausdorff T.
+
+Lemma closeE (x y : T) : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cxy|->//]; have [//|xdy] := eqVneq x y.
-case: (sep xdy) => -[/= r1 r2] [xr1 yr2] [or1 or2].
-move/eqP; rewrite funeqE => /(_ x)/notT/Classical_Prop.not_and_or => -[].
-by rewrite in_setE in xr1.
-rewrite in_setE in yr2.
-move: (cxy r2 (conj or2 yr2)); rewrite /closeness.
-Abort.
-End separated_numDomainType.
+apply: sep => A B; rewrite !locallyE => - [oA [xoA oAA]] [oB [xoB oBB]].
+exact: subsetI_neq0 oAA oBB (cxy _ _ _ _).
+Qed.
+
+Lemma flim_unique {F} {FF : ProperFilter F} : is_prop [set x : T | F --> x].
+Proof. move=> Fx Fy; rewrite -closeE //; exact: (@flim_close F). Qed.
+
+Lemma flim_lim {F} {FF : ProperFilter F} (l : T) : F --> l -> lim F = l.
+Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@flim_unique F). Qed.
+
+End separated_topologicalType.
 
 (* connected sets *)
 
@@ -2532,7 +2588,13 @@ Proof. exact: PseudoMetric.ax3. Qed.
 Lemma locally_ball (x : M) (eps : {posnum R}) : locally x (ball x eps%:num).
 Proof. by apply/locallyP; exists eps%:num. Qed.
 
-Definition close (x y : M) : Prop := forall eps : {posnum R}, ball x eps%:num y.
+Lemma neigh_ball (x : M) (eps : {posnum R}) : neigh x ((ball x eps%:num)^°).
+Proof.
+split; first exact: open_interior.
+apply: locally_singleton; apply: locally_interior.
+by apply/locallyP; exists eps%:num.
+Qed.
+
 
 Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
 Proof.
@@ -2542,11 +2604,6 @@ Qed.
 
 Lemma ball_le (x : M) (e1 e2 : R) : (e1 <= e2) -> ball x e1 `<=` ball x e2.
 Proof. by move=> /ball_ler. Qed.
-
-Lemma close_refl (x : M) : close x x. Proof. by []. Qed.
-
-Lemma close_sym (x y : M) : close x y -> close y x.
-Proof. by move=> ??; apply: ball_sym. Qed.
 
 Definition entourages : set (set (M * M)):=
   filter_from [set eps : R | eps > 0]
@@ -2606,7 +2663,7 @@ Lemma flim_const {T} {F : set (set T)}
    {FF : Filter F} (a : M) : a @[_ --> F] --> a.
 Proof.
 move=> P /locallyP[_ /posnumP[eps] subP]; rewrite !near_simpl /=.
-by apply: filterE=> ?; apply/subP/close_refl.
+by apply: filterE=> ?; apply/subP/ballxx.
 Qed.
 
 Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
@@ -2617,6 +2674,7 @@ End pseudoMetricType_numDomainType.
 Hint Resolve locally_ball : core.
 Hint Resolve close_refl : core.
 Arguments flim_const {R M T F FF} a.
+Arguments close_lim {T} F1 F2 {FF2} _.
 
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.
@@ -2633,97 +2691,59 @@ Lemma ball_splitl (z x y : M) (e : R) :
   ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
 Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
-Lemma flim_close {F} {FF : ProperFilter F} (x y : M) :
-  F --> x -> F --> y -> close x y.
+Lemma ball_close (x y : M) :
+  close x y = forall eps : {posnum R}, ball x eps%:num y.
 Proof.
-move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z;
-by [apply/Fx/locally_ball|apply/Fy/locally_ball].
-Grab Existential Variables. all: end_near. Qed.
+rewrite propeqE; split => [cxy eps|cxy].
+  have [z [zx zy]] := cxy _ (neigh_ball _ (eps%:num/2)%:pos)
+                          _ (neigh_ball _ (eps%:num/2)%:pos).
+  by apply: (@ball_splitl z); apply: interior_subset.
+move=> B /neigh_locally/locallyP[_/posnumP[e2 e2B]].
+move=> A /neigh_locally/locallyP[_/posnumP[e1 e1A]].
+by exists y; split; [apply/e1A|apply/e2B/ballxx].
+Qed.
 
-Lemma close_trans (x y z : M) : close x y -> close y z -> close x z.
-Proof. by move=> cxy cyz eps; apply: ball_split (cxy _) (cyz _). Qed.
+Lemma close_trans (y x z : M) : close x y -> close y z -> close x z.
+Proof.
+by rewrite !ball_close  => cxy cyz eps; apply: ball_split (cxy _) (cyz _).
+Qed.
 
 Lemma close_limxx (x y : M) : close x y -> x --> y.
 Proof.
-move=> cxy P /= /locallyP /= [_/posnumP [eps] epsP].
+rewrite ball_close => cxy P /= /locallyP /= [_/posnumP [eps] epsP].
 apply/locallyP; exists (eps%:num / 2) => // z bxz.
 by apply: epsP; apply: ball_splitr (cxy _) bxz.
-Qed.
-
-Lemma flimx_close (x y : M) : x --> y -> close x y.
-Proof. exact: flim_close. Qed.
-
-Lemma flimi_close T {F} {FF: ProperFilter F} (f : T -> set M) (l l' : M) :
-  {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> close l l'.
-Proof.
-move=> f_prop fFl fFl'.
-suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
-apply: filter_app f_prop; near=> x; split=> //=.
-by have [//|y [fxy _]] := near (flimi_ball fFl [gt0 of 1]) x; exists y.
-Grab Existential Variables. all: end_near. Qed.
-Definition flimi_locally_close := @flimi_close.
-
-Lemma close_lim (F1 F2 : set (set M)) {FF2 : ProperFilter F2} :
-  F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
-Proof.
-move=> F12 F21; have [/(flim_trans F21) F2l|dvgF1] := pselect (cvg F1).
-  by apply: (@flim_close F2) => //; apply: cvgP F2l.
-have [/(flim_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
-rewrite dvgP // dvgP //; exact/close_refl.
 Qed.
 
 Lemma flim_closeP (F : set (set M)) (l : M) : ProperFilter F ->
   F --> l <-> ([cvg F in M] /\ close (lim F) l).
 Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
-  by have /cvgP := Fl; split=> //; apply: (@flim_close F).
+  by have /cvgP := Fl; split=> //; apply: (@flim_close _ F).
 by apply: flim_trans (close_limxx Cl).
 Qed.
 
 End pseudoMetricType_numFieldType.
-Arguments close_lim {R M} F1 F2 {FF2} _.
 
-Section separated.
+Section ball_hausdorff.
 Variables (R : numDomainType) (T : pseudoMetricType R).
-Definition separated := forall (a b : T), a != b ->
+
+Lemma ball_hausdorff : hausdorff T =
+  forall (a b : T), a != b ->
   exists r : {posnum R} * {posnum R}, ball a r.1%:num `&` ball b r.2%:num == set0.
-Lemma T2separated_separated : T2separated (@open T) -> separated.
 Proof.
-move=> T2T a b ab; have [[A B] /=] := (@T2T a b ab).
-rewrite 2!in_setE => -[aA bB]; rewrite !openE /interior => -[].
-move/(_ _ aA); rewrite locallyE => -[A0 [[oA0 aA0] A0A]] => -[].
-move/(_ _ bB); rewrite locallyE => -[B0 [[oB0 bB0] B0B]] => AB0.
-move: oA0; rewrite openE => /(_ _ aA0).
-rewrite /interior => /locallyP; rewrite /locally_ => -[ra ra0 rA0].
-move: oB0; rewrite openE => /(_ _ bB0).
-rewrite /interior => /locallyP; rewrite /locally_ => -[rb rb0 rB0].
-exists (PosNum ra0, PosNum rb0) => /=; apply/negPn/negP => /set0P[t [ta tb]].
-by move: AB0; apply/negP/set0P; exists t; split; [apply/A0A/rA0 | apply/B0B/rB0].
+rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
+  move=> A B; rewrite 2!in_setE => [[aA bB] [oA oB /eqP ABeq0]].
+  have /locallyP[_/posnumP[r] rA]: locally a A by apply: neigh_locally.
+  have /locallyP[_/posnumP[s] rB]: locally b B by apply: neigh_locally.
+  by exists (r, s) => /=; rewrite (subsetI_eq0 _ _ ABeq0).
+move=> r s /eqP brs_eq0; exists ((ball a r%:num)^°, (ball b s%:num)^°) => /=.
+  split; by rewrite in_setE; apply: locally_singleton; apply: locally_interior;
+            apply/locallyP; apply: in_filter_from.
+split; do ?by apply: open_interior.
+by rewrite (subsetI_eq0 _ _ brs_eq0)//; apply: interior_subset.
 Qed.
-End separated.
-
-Section separated_numDomainType.
-Variables (R : numDomainType) (T : pseudoMetricType R).
-Hypothesis sep : separated T.
-Lemma closeE (x y : T) : close x y = (x = y).
-Proof.
-rewrite propeqE; split => [cxy|->//]; have [//|xdy] := eqVneq x y.
-case: (sep xdy) => -[r1 r2] /=.
-move/eqP; rewrite funeqE => /(_ x)/notT/Classical_Prop.not_and_or => -[].
-by move/(_ (@ballxx _ _ _ _ (posnum_gt0 r1))).
-by move/ball_sym : (cxy r2).
-Qed.
-End separated_numDomainType.
-
-Section separated_numFieldType.
-Variables (R : numFieldType) (T : pseudoMetricType R).
-Hypothesis sep : separated T.
-Lemma flim_unique {F} {FF : ProperFilter F} : is_prop [set x : T | F --> x].
-Proof. move=> Fx Fy; rewrite -closeE //; exact: (@flim_close _ T F). Qed.
-
-Lemma flim_lim {F} {FF : ProperFilter F} (l : T) : F --> l -> lim F = l.
-Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@flim_unique F). Qed.
-End separated_numFieldType.
+End ball_hausdorff.
 
 Section entourages.
 Variable R : numDomainType.
