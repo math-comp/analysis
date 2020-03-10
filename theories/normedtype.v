@@ -419,6 +419,8 @@ Proof. exact: Proper_locally'_numFieldType. Qed.
 
 (** * Some Topology on [Rbar] *)
 
+Canonical ereal_pointed (R : numDomainType) := PointedType {ereal R} (+oo%E).
+
 Section ereal_locally.
 Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
@@ -435,7 +437,6 @@ Definition ereal_locally (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
     | +oo => exists M, M \is Num.real /\ forall x, (M%:E < x)%E -> P x
     | -oo => exists M, M \is Num.real /\ forall x, (x < M%:E)%E -> P x
   end.
-Canonical ereal_pointed := PointedType {ereal R} (+oo).
 Canonical ereal_ereal_filter := FilteredType {ereal R} {ereal R} (ereal_locally).
 End ereal_locally.
 
@@ -879,7 +880,11 @@ Lemma cvg_norm {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
 Proof. by move=> /cvg_normP. Qed.
 
-(* TODO: see closeE in topology.v *)
+Lemma locally_norm_ball x (eps : {posnum R}) : locally_norm x (ball x eps%:num).
+Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
+
+(* TODO: commented out on 2020-03-10, prove me *)
+(*
 Lemma closeE (x y : V) : close x y = (x = y).
 Proof.
 rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
@@ -892,11 +897,9 @@ Qed.
 
 Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
 
-Lemma locally_norm_ball x (eps : {posnum R}) : locally_norm x (ball x eps%:num).
-Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
-
 Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
 Proof. by rewrite propeqE ball_normE. Qed.
+*)
 
 End NormedModule_numDomainType.
 Hint Resolve normr_ge0 : core.
@@ -908,6 +911,19 @@ Variables (R : numFieldType) (V : normedModType R).
 Local Notation ball_norm := (ball_ (@normr R V)).
 
 Local Notation locally_norm := (locally_ ball_norm).
+
+Lemma normedModType_hausdorff : hausdorff V.
+Proof.
+rewrite ball_hausdorff => a b ab.
+have ab2 : 0 < `|a - b| / 2 by apply divr_gt0 => //; rewrite normr_gt0 subr_eq0.
+set r := PosNum ab2; exists (r, r) => /=.
+apply/negPn/negP => /set0P[c] []; rewrite -ball_normE /ball_ => acr bcr.
+have r22 : r%:num * 2 = r%:num + r%:num by rewrite (_ : 2 = 1 + 1) // mulrDr mulr1.
+move: (ltr_add acr bcr); rewrite -r22 (distrC b c).
+move/(le_lt_trans (ler_dist_add c a b)).
+by rewrite -mulrA mulVr ?mulr1 ?ltxx // unitfE.
+Qed.
+Hint Extern 0 (hausdorff _) => exact: normedModType_hausdorff.
 
 Lemma distm_lt_split (z x y : V) (e : R) :
   `|x - z| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
@@ -933,21 +949,21 @@ Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
-Lemma normedModType_separated : separated V.
+(*Lemma normedModType_separated : separated V.
 Proof.
 move=> a b anb.
 have ab : 0 < `|a - b| / 2 by apply divr_gt0 => //; rewrite normr_gt0 subr_eq0.
 exists (PosNum ab, PosNum ab); apply/eqP; rewrite -(eqNNP (_ = _)) =>/eqP/set0P[v [av bv]].
 by move: (ball_splitl av bv); rewrite -ball_normE /ball_ ltxx.
 Qed.
-Hint Extern 0 (separated _) => exact: normedModType_separated.
+Hint Extern 0 (separated _) => exact: normedModType_separated.*)
 
 (*Lemma cvg_unique {F} {FF : ProperFilter F} :
   is_prop [set x : V | F --> x].
 Proof. by move=> Fx Fy; rewrite -closeE; apply: cvg_close. Qed.*)
 
 Lemma locally_cvg_unique (x y : V) : x --> y -> x = y.
-Proof. by rewrite -closeE; apply: cvg_close. Qed.
+Proof. by rewrite -closeE //; apply: cvg_close. Qed.
 
 Lemma lim_id (x : V) : lim x = x.
 Proof. by symmetry; apply: locally_cvg_unique; apply/cvg_ex; exists x. Qed.
@@ -962,7 +978,7 @@ Proof. exact: cvg_lim. Qed.
 
 Lemma cvgi_unique {T : Type} {F} {FF : ProperFilter F} (f : T -> set V) :
   {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
-Proof. by move=> ffun fx fy; rewrite -closeE; apply: cvgi_close. Qed.
+Proof. by move=> ffun fx fy; rewrite -closeE //; apply: cvgi_close. Qed.
 
 Lemma cvg_normW {F : set (set V)} {FF : Filter F} (y : V) :
   (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
@@ -1002,7 +1018,7 @@ Proof. move/cvg_bounded_real; by apply: filterS => x []. Qed.
 
 End NormedModule_numFieldType.
 Arguments cvg_bounded {_ _ F FF}.
-Hint Extern 0 (separated _) => exact: normedModType_separated : core.
+Hint Extern 0 (hausdorff _) => exact: normedModType_hausdorff : core.
 
 Module Export LocallyNorm.
 Definition locally_simpl :=
@@ -1020,20 +1036,6 @@ have [z []] := clxy _ _ (locally_ball x he) (locally_ball y he).
 move=> zx_he yz_he.
 rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
-Qed.
-
-Lemma normedModType_hausdorff (R : realFieldType) (V : normedModType R) :
-  hausdorff V.
-Proof.
-move=> p q clp_q; apply/subr0_eq/normr0_eq0/Rhausdorff => A B pq_A.
-rewrite -(@normr0 _ V) -(subrr p) => pp_B.
-suff loc_preim r C : @locally _ [filteredType R of R^o] `|p - r| C ->
-    locally r ((fun r => `|p - r|) @^-1` C).
-  have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
-  by exists `|p - r|.
-move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
-apply: pre_C; apply: le_lt_trans (ler_dist_dist _ _) _.
-by rewrite opprB addrC -subr_trans distrC.
 Qed.
 
 End hausdorff.
