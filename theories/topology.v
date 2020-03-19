@@ -1734,8 +1734,8 @@ End TopologyOfFilter.
 Section TopologyOfOpen.
 
 Variable (T : Type) (op : set T -> Prop).
-Hypothesis (opT : op setT).
-Hypothesis (opI : forall (A B : set T), op A -> op B -> op (A `&` B)).
+(* Hypothesis (opT : op setT). *)
+(* Hypothesis (opI : forall (A B : set T), op A -> op B -> op (A `&` B)). *)
 Hypothesis (op_bigU : forall (I : Type) (f : I -> set T),
   (forall i, op (f i)) -> op (\bigcup_i f i)).
 
@@ -1772,37 +1772,37 @@ Section TopologyOfBase.
 Definition open_from I T (D : set I) (b : I -> set T) :=
   [set \bigcup_(i in D') b i | D' in subset^~ D].
 
-Lemma open_fromT I T (D : set I) (b : I -> set T) :
-  \bigcup_(i in D) b i = setT -> open_from D b setT.
-Proof. by move=> ?; exists D. Qed.
+(* Lemma open_fromT I T (D : set I) (b : I -> set T) : *)
+(*   \bigcup_(i in D) b i = setT -> open_from D b setT. *)
+(* Proof. by move=> ?; exists D. Qed. *)
 
 Variable (I : pointedType) (T : Type) (D : set I) (b : I -> (set T)).
-Hypothesis (b_cover : \bigcup_(i in D) b i = setT).
-Hypothesis (b_join : forall i j t, D i -> D j -> b i t -> b j t ->
-  exists k, D k /\ b k t /\ b k `<=` b i `&` b j).
+(* Hypothesis (b_cover : \bigcup_(i in D) b i = setT). *)
+(* Hypothesis (b_join : forall i j t, D i -> D j -> b i t -> b j t -> *)
+(*   exists k, D k /\ b k t /\ b k `<=` b i `&` b j). *)
 
 Program Definition topologyOfBaseMixin :=
-  @topologyOfOpenMixin _ (open_from D b) (open_fromT b_cover) _ _.
-Next Obligation.
-have [DA sDAD AeUbA] := H; have [DB sDBD BeUbB] := H0.
-have ABU : forall t, (A `&` B) t ->
-  exists it, D it /\ b it t /\ b it `<=` A `&` B.
-  move=> t [At Bt].
-  have [iA [DiA [biAt sbiA]]] : exists i, D i /\ b i t /\ b i `<=` A.
-    move: At; rewrite -AeUbA => - [i DAi bit]; exists i.
-    by split; [apply: sDAD|split=> // ?; exists i].
-  have [iB [DiB [biBt sbiB]]] : exists i, D i /\ b i t /\ b i `<=` B.
-    move: Bt; rewrite -BeUbB => - [i DBi bit]; exists i.
-    by split; [apply: sDBD|split=> // ?; exists i].
-  have [i [Di [bit sbiAB]]] := b_join DiA DiB biAt biBt.
-  by exists i; split=> //; split=> // s /sbiAB [/sbiA ? /sbiB].
-set Dt := fun t => [set it | D it /\ b it t /\ b it `<=` A `&` B].
-exists [set get (Dt t) | t in A `&` B].
-  by move=> _ [t ABt <-]; have /ABU/getPex [] := ABt.
-rewrite predeqE => t; split=> [[_ [s ABs <-] bDtst]|ABt].
-  by have /ABU/getPex [_ [_]] := ABs; apply.
-by exists (get (Dt t)); [exists t| have /ABU/getPex [? []]:= ABt].
-Qed.
+  @topologyOfOpenMixin _ (open_from D b) _.
+(* Next Obligation. *)
+(* have [DA sDAD AeUbA] := H; have [DB sDBD BeUbB] := H0. *)
+(* have ABU : forall t, (A `&` B) t -> *)
+(*   exists it, D it /\ b it t /\ b it `<=` A `&` B. *)
+(*   move=> t [At Bt]. *)
+(*   have [iA [DiA [biAt sbiA]]] : exists i, D i /\ b i t /\ b i `<=` A. *)
+(*     move: At; rewrite -AeUbA => - [i DAi bit]; exists i. *)
+(*     by split; [apply: sDAD|split=> // ?; exists i]. *)
+(*   have [iB [DiB [biBt sbiB]]] : exists i, D i /\ b i t /\ b i `<=` B. *)
+(*     move: Bt; rewrite -BeUbB => - [i DBi bit]; exists i. *)
+(*     by split; [apply: sDBD|split=> // ?; exists i]. *)
+(*   have [i [Di [bit sbiAB]]] := b_join DiA DiB biAt biBt. *)
+(*   by exists i; split=> //; split=> // s /sbiAB [/sbiA ? /sbiB]. *)
+(* set Dt := fun t => [set it | D it /\ b it t /\ b it `<=` A `&` B]. *)
+(* exists [set get (Dt t) | t in A `&` B]. *)
+(*   by move=> _ [t ABt <-]; have /ABU/getPex [] := ABt. *)
+(* rewrite predeqE => t; split=> [[_ [s ABs <-] bDtst]|ABt]. *)
+(*   by have /ABU/getPex [_ [_]] := ABs; apply. *)
+(* by exists (get (Dt t)); [exists t| have /ABU/getPex [? []]:= ABt]. *)
+(* Qed. *)
 Next Obligation.
 set fop := fun j => [set Dj | Dj `<=` D /\ f j = \bigcup_(i in Dj) b i].
 exists (\bigcup_j get (fop j)).
@@ -1845,7 +1845,7 @@ Section TopologyOfSubbase.
 Variable (I : pointedType) (T : Type) (D : set I) (b : I -> set T).
 
 Program Definition topologyOfSubbaseMixin :=
-  @topologyOfBaseMixin _ _ (finI_from D b) id (finI_from_cover D b) _.
+  @topologyOfBaseMixin _ _ _ (finI_from D b).
 Next Obligation.
 move: i j t H H0 H1 H2 => A B t [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
 exists (A `&` B); split; last by split.
