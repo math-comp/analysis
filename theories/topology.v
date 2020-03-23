@@ -1474,7 +1474,7 @@ Module Topological.
 Record mixin_of (T : Type) (nbhs : T -> set (set T)) := Mixin {
   open : set (set T);
   ax2 : forall p : T, nbhs p =
-    [set A : set T | exists B : set T, open B /\ B p /\ B `<=` A] ;
+    [set A : set T | exists B : set T, [/\ open B, B p & B `<=` A]] ;
   ax3 : open = [set A : set T | A `<=` nbhs^~ A ]
 }.
 
@@ -1553,9 +1553,9 @@ Lemma open_nbhsE (p : T) :
   (nbhs p) = 
   [set A : set T | exists B : set T, neigh p B /\ B `<=` A] :> set _.
 Proof.
-have -> : (nbhs p) = [set A : set T | exists B, open B /\ B p /\ B `<=` A] :> set _.
+have -> : (nbhs p) = [set A : set T | exists B, [/\ open B, B p & B `<=` A]] :> set _.
   exact: Topological.ax2.
-by rewrite predeqE => A; split=> [[B [? []]]|[B [[]]]]; exists B.
+by rewrite predeqE => A; split=> [[B [?]]|[B [[]]]]; exists B.
 Qed.
 
 Definition interior (A : set T) : set T := [set x | (nbhs x) A].
@@ -1722,86 +1722,133 @@ Program Definition topologyOfFilterMixin : Topological.mixin_of loc :=
   @Topological.Mixin T loc open_of_nbhs _ _.
 Next Obligation.
 rewrite predeqE => A; split=> [p_A|]; last first.
-  by move=> [B [Bop [Bp sBA]]]; apply: nearS sBA _; apply: Bop.
-exists (loc^~ A); split; first by move=> ?; apply: loc_loc.
-by split => // q /loc_singleton.
+  by move=> [B [Bop Bp sBA]]; apply: nearS sBA _; apply: Bop.
+exists (loc^~ A); split => //; do ?by move=> ?; apply: loc_loc.
+by move=> // q /loc_singleton.
 Qed.
 
 End TopologyOfFilter.
 
 (** ** Topology defined by open sets *)
 
-Module TopologyOfOpen.
-Section TopologyOfOpen.
+Module OfOpen.
+Section OfOpen.
 
-Variable (T : pointedType) (op : set T -> Prop).
+Variable (T : pointedType).
+Definition type : Type := T.
+Variable (op : set type -> Prop).
 Hypothesis (opT : op setT).
-Hypothesis (opI : forall (A B : set T), op A -> op B -> op (A `&` B)).
-Hypothesis (op_bigU : forall (I : Type) (f : I -> set T),
+Hypothesis (opI : forall (A B : set type), op A -> op B -> op (A `&` B)).
+Hypothesis (op_bigU : forall (I : Type) (f : I -> set type),
   (forall i, op (f i)) -> op (\bigcup_i f i)).
 
-Definition nbhs_of_open (p : T) : set (set T) :=
-  [set A | exists B, [/\ op B, B p & B `<=` A]].
+Canonical pointedType := [pointedType of type].
 
-Fact nbhs_of_openE : op = [set A : set T | A `<=` nbhs_of_open^~ A].
+Definition Mixin : Nbhs.mixin_of type type :=
+   NbhsMixin (fun p => [set A | exists B, [/\ op B, B p & B `<=` A]]).
+Canonical nbhsType := NbhsType type type Mixin.
+
+Lemma filterMixin : Filtered.mixin_of [nbhsType type of type].
+Proof.
+constructor=> x; split; first by exists setT.  
+  move=> A B [OA [OPop OAp OAA] [OB [OBop OBp OBB]]].
+  by exists (OA `&` OB); split => //; [exact: opI|exact: subsetI2].
+by move=> A B AB [OA [OPop OAp OAA]]; exists OA; split => // y /OAA /AB.
+Qed.
+Canonical filteredType := FilteredType type type filterMixin.
+
+Lemma pfilterMixin : PFiltered.mixin_of [filteredType type of type].
+Proof. by constructor => x; move=> [O [Oop Op]] /(_ _ Op). Qed.
+Canonical pfilteredType := PFilteredType type type pfilterMixin.
+
+Fact nbhs_of_openE : op = [set A : set type | A `<=` nbhs^~ A].
 Proof.
 rewrite predeqE => A; split=> [Aop p Ap|Aop].
   by exists A; split=> //; split.
-suff -> : A = \bigcup_(B : {B : set T & op B /\ B `<=` A}) projT1 B.
+suff -> : A = \bigcup_(B : {B : set type & op B /\ B `<=` A}) projT1 B.
   by apply: op_bigU => B; have [] := projT2 B.
 rewrite predeqE => p; split=> [|[B _ Bp]]; last by have [_] := projT2 B; apply.
 by move=> /Aop [B [Bop Bp sBA]]; exists (existT _ B (conj Bop sBA)).
 Qed.
 
-Lemma nbhs_of_open_filter (p : T) : Filter (nbhs_of_open p).
-Proof.
-split; first by exists setT.  
-move=> A B [OA [OPop OAp OAA] [OB [OBop OBp OBB]]].
-exists (\bigcup_(i : unit) setT).
-  
-
-
-  have := op_bigU (fun x : Empty_set => match x with end).
-
-
-Definition Mixin : Nbhs.mixin_of T T := NbhsMixin nbhs_of_open.
-Canonical nbhsType := NbhsType T T Mixin.
-
-Lemma filterOfOpenMixin : Filtered.mixin_of [nbhsType T of T].
-Proof.
-constructor => x.
-
-
-
-Definition topologyOfOpenMixin : Topological.mixin_of nbhs_of_open :=
+Definition topologyMixin : Topological.mixin_of (nbhs : type -> set (set type)) :=
   Topological.Mixin (fun=> erefl) nbhs_of_openE.
+Canonical topologicalType := TopologicalType type topologyMixin.
 
-End TopologyOfOpen.
-End TopologyOfOpen.
+End OfOpen.
+End OfOpen.
+
+
+Lemma bigcup1 (I R : Type) (i : I) (F : I -> set R) :
+  \bigcup_(j in [set i]) F j = F i.
+Proof. by rewrite predeqE => x; split=> [[j->//]|]; exists i. Qed.
+
 
 (** ** Topology defined by a base of open sets *)
 
-Section TopologyOfBase.
+Module OfBase.
+Section OfBase.
 
-Variable (I T : Type) (D : set I) (b : I -> (set T)).
+Variable (I : Type) (T : pointedType) (D : set I) (b : I -> set T).
+Definition type : Type := T.
 
-Definition open_from := [set \bigcup_(i in D') b i | D' in subset^~ D].
+Definition open_of : set (set type) :=
+ [set A | exists E, E `<=` D /\ A = \bigcup_(i in E) b i].
 
-Fact open_from_bigU (I0 : Type) (f : I0 -> set T) :
-  (forall i, open_from (f i)) -> open_from (\bigcup_i f i).
+Definition nbhs_of (p : type) : set (set type) :=
+  [set A | exists i, [/\ D i, b i p & b i `<=` A]].
+
+Canonical pointedType := [pointedType of type].
+
+Definition Mixin : Nbhs.mixin_of type type := NbhsMixin nbhs_of.
+Canonical nbhsType := NbhsType type type Mixin.
+
+Hypothesis (b_cover : \bigcup_(i in D) b i = setT).
+Hypothesis (b_join : forall i j t, D i -> D j -> b i t -> b j t ->
+  exists k, [/\ D k, b k t & b k `<=` b i `&` b j]).
+
+Fact geti (x : type) : exists2 i, D i & b i x.
 Proof.
-exists (\bigcup_j xget setT (open_from j)).
-  move=> i [j _ fopji].
-  suff /getPex [/(_ _ fopji)] : exists Dj, fop j Dj by [].
-  by have [Dj] := H j; exists Dj.
-rewrite predeqE => t; split=> [[i [j _ fopji bit]]|[j _]].
-  exists j => //; suff /getPex [_ ->] : exists Dj, fop j Dj by exists i.
-  by have [Dj] := H j; exists Dj.
-have /getPex [_ ->] : exists Dj, fop j Dj by have [Dj] := H j; exists Dj.
-by move=> [i]; exists i => //; exists j.
+have: True by []; have /(congr1 (@^~ x))/= := b_cover; rewrite /setT => <-.
+by move=> [i Di]; exists i.
 Qed.
 
-Admitted.
+Lemma filterMixin : Filtered.mixin_of [nbhsType type of type].
+Proof.
+constructor=> x; split.
+  by have [i Di bix] := geti x; exists i.
+move=> A B [i [Di bix biA]] [j [Dj bjx bjB]].
+  have [||||k [Dk bkx bkij]] // := @b_join i j x.
+  by exists k; split => //; apply: subset_trans bkij _; apply: subsetI2.
+by move=> A B AB [i [Di bix biA]]; exists i; split => // y /biA /AB.
+Qed.
+Canonical filteredType := FilteredType type type filterMixin.
+
+Lemma pfilterMixin : PFiltered.mixin_of [filteredType type of type].
+Proof. by constructor => x; move=> [O [Oop Op]] /(_ _ Op). Qed.
+Canonical pfilteredType := PFilteredType type type pfilterMixin.
+
+Lemma nbhs_open p :
+   nbhs p = [set A | exists B, [/\ open_of B, B p & B `<=` A]] :> set (set T).
+Proof.
+rewrite predeqE => A; split => [[i [Di bip biA]]|[O [[E [ED ->]] Op OA]]].
+  exists (b i); split => //; exists [set i].
+  by split => [j ->//|]; rewrite bigcup1.
+have [i Ei bip] := Op; exists i.
+split => //; first exact: ED.
+by apply: subset_trans OA => q biq; exists i.
+Qed.
+
+Fact nbhs_of_openE : open_of = [set A : set type | A `<=` nbhs^~ A].
+Proof.
+
+rewrite /=.
+
+rewrite [nbhs_of](nbhs_open ).
+
+Definition topologyMixin : Topological.mixin_of (nbhs : type -> set (set type)) :=
+  Topological.Mixin _ nbhs_of_openE.
+Canonical topologicalType := TopologicalType T topologyMixin.
 
 (* Lemma open_fromT I T (D : set I) (b : I -> set T) : *)
 (*   \bigcup_(i in D) b i = setT -> open_from D b setT. *)

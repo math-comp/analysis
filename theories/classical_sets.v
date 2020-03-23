@@ -315,11 +315,16 @@ Qed.
 
 Lemma subsetI A (X Y Z : set A) : (X `<=` Y `&` Z) = ((X `<=` Y) /\ (X `<=` Z)).
 Proof.
-rewrite propeqE; split=> [H|[y z ??]]; split; by [move=> ?/H[]|apply y|apply z].
+rewrite propeqE; split=> [XYZ|[XY XZ] x Xx]; first by split=> x /XYZ[].
+by split; [apply: XY|apply: XZ].
 Qed.
 
 Lemma subIset {A} (X Y Z : set A) : X `<=` Z \/ Y `<=` Z -> X `&` Y `<=` Z.
-Proof. case => H a; by [move=> [/H] | move=> [_ /H]]. Qed.
+Proof. by move=> [XZ x [/XZ]|YZ x [_ /YZ]]. Qed.
+
+Lemma subsetI2 (A : Type) (X Y X' Y' : set A) :
+  X `<=` X'  -> Y `<=` Y' -> X `&` Y `<=` X' `&` Y'.
+Proof. by move=> sX sY x [/sX ? /sY]. Qed.
 
 Lemma setD_eq0 A (X Y : set A) : (X `\` Y = set0) = (X `<=` Y).
 Proof.
