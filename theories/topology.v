@@ -1742,19 +1742,8 @@ Hypothesis (op_bigU : forall (I : Type) (f : I -> set T),
 Definition nbhs_of_open (p : T) (A : set T) :=
   exists B, op B /\ B p /\ B `<=` A.
 
-Program Definition topologyOfOpenMixin : Topological.mixin_of nbhs_of_open :=
-  @Topological.Mixin T nbhs_of_open op _ _.
-Next Obligation.
-(* apply Build_ProperFilter. *)
-(*   by move=> A [B [_ [Bp sBA]]]; exists p; apply: sBA. *)
-(* split; first by exists setT. *)
-(*   move=> A B [C [Cop [Cp sCA]]] [D [Dop [Dp sDB]]]. *)
-(*   exists (C `&` D); split; first exact: opI. *)
-(*   by split=> // q [/sCA Aq /sDB Bq]. *)
-(* move=> A B sAB [C [Cop [p_C sCA]]]. *)
-(* by exists C; split=> //; split=> //; apply: subset_trans sAB. *)
-(* Qed. *)
-(* Next Obligation. *)
+Fact nbhs_of_openE : op = [set A : set T | A `<=` nbhs_of_open^~ A].
+Proof.
 rewrite predeqE => A; split=> [Aop p Ap|Aop].
   by exists A; split=> //; split.
 suff -> : A = \bigcup_(B : {B : set T & op B /\ B `<=` A}) projT1 B.
@@ -1763,26 +1752,44 @@ rewrite predeqE => p; split=> [|[B _ Bp]]; last by have [_] := projT2 B; apply.
 by move=> /Aop [B [Bop [Bp sBA]]]; exists (existT _ B (conj Bop sBA)).
 Qed.
 
+Definition topologyOfOpenMixin : Topological.mixin_of nbhs_of_open :=
+  Topological.Mixin (fun=> erefl) nbhs_of_openE.
+
 End TopologyOfOpen.
 
 (** ** Topology defined by a base of open sets *)
 
 Section TopologyOfBase.
 
-Definition open_from I T (D : set I) (b : I -> set T) :=
-  [set \bigcup_(i in D') b i | D' in subset^~ D].
+Variable (I T : Type) (D : set I) (b : I -> (set T)).
+
+Definition open_from := [set \bigcup_(i in D') b i | D' in subset^~ D].
+
+Fact open_from_bigU (I0 : Type) (f : I0 -> set T) :
+  (forall i, open_from (f i)) -> open_from (\bigcup_i f i).
+Proof.
+exists (\bigcup_j xget setT (open_from j)).
+  move=> i [j _ fopji].
+  suff /getPex [/(_ _ fopji)] : exists Dj, fop j Dj by [].
+  by have [Dj] := H j; exists Dj.
+rewrite predeqE => t; split=> [[i [j _ fopji bit]]|[j _]].
+  exists j => //; suff /getPex [_ ->] : exists Dj, fop j Dj by exists i.
+  by have [Dj] := H j; exists Dj.
+have /getPex [_ ->] : exists Dj, fop j Dj by have [Dj] := H j; exists Dj.
+by move=> [i]; exists i => //; exists j.
+Qed.
+
+Admitted.
 
 (* Lemma open_fromT I T (D : set I) (b : I -> set T) : *)
 (*   \bigcup_(i in D) b i = setT -> open_from D b setT. *)
 (* Proof. by move=> ?; exists D. Qed. *)
 
-Variable (I : pointedType) (T : Type) (D : set I) (b : I -> (set T)).
 (* Hypothesis (b_cover : \bigcup_(i in D) b i = setT). *)
 (* Hypothesis (b_join : forall i j t, D i -> D j -> b i t -> b j t -> *)
 (*   exists k, D k /\ b k t /\ b k `<=` b i `&` b j). *)
 
-Program Definition topologyOfBaseMixin :=
-  @topologyOfOpenMixin _ (open_from D b) _.
+Definition topologyOfBaseMixin := topologyOfOpenMixin open_from_bigU.
 (* Next Obligation. *)
 (* have [DA sDAD AeUbA] := H; have [DB sDBD BeUbB] := H0. *)
 (* have ABU : forall t, (A `&` B) t -> *)
