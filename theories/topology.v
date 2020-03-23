@@ -1731,16 +1731,17 @@ End TopologyOfFilter.
 
 (** ** Topology defined by open sets *)
 
+Module TopologyOfOpen.
 Section TopologyOfOpen.
 
-Variable (T : Type) (op : set T -> Prop).
-(* Hypothesis (opT : op setT). *)
-(* Hypothesis (opI : forall (A B : set T), op A -> op B -> op (A `&` B)). *)
+Variable (T : pointedType) (op : set T -> Prop).
+Hypothesis (opT : op setT).
+Hypothesis (opI : forall (A B : set T), op A -> op B -> op (A `&` B)).
 Hypothesis (op_bigU : forall (I : Type) (f : I -> set T),
   (forall i, op (f i)) -> op (\bigcup_i f i)).
 
-Definition nbhs_of_open (p : T) (A : set T) :=
-  exists B, op B /\ B p /\ B `<=` A.
+Definition nbhs_of_open (p : T) : set (set T) :=
+  [set A | exists B, [/\ op B, B p & B `<=` A]].
 
 Fact nbhs_of_openE : op = [set A : set T | A `<=` nbhs_of_open^~ A].
 Proof.
@@ -1749,12 +1750,33 @@ rewrite predeqE => A; split=> [Aop p Ap|Aop].
 suff -> : A = \bigcup_(B : {B : set T & op B /\ B `<=` A}) projT1 B.
   by apply: op_bigU => B; have [] := projT2 B.
 rewrite predeqE => p; split=> [|[B _ Bp]]; last by have [_] := projT2 B; apply.
-by move=> /Aop [B [Bop [Bp sBA]]]; exists (existT _ B (conj Bop sBA)).
+by move=> /Aop [B [Bop Bp sBA]]; exists (existT _ B (conj Bop sBA)).
 Qed.
+
+Lemma nbhs_of_open_filter (p : T) : Filter (nbhs_of_open p).
+Proof.
+split; first by exists setT.  
+move=> A B [OA [OPop OAp OAA] [OB [OBop OBp OBB]]].
+exists (\bigcup_(i : unit) setT).
+  
+
+
+  have := op_bigU (fun x : Empty_set => match x with end).
+
+
+Definition Mixin : Nbhs.mixin_of T T := NbhsMixin nbhs_of_open.
+Canonical nbhsType := NbhsType T T Mixin.
+
+Lemma filterOfOpenMixin : Filtered.mixin_of [nbhsType T of T].
+Proof.
+constructor => x.
+
+
 
 Definition topologyOfOpenMixin : Topological.mixin_of nbhs_of_open :=
   Topological.Mixin (fun=> erefl) nbhs_of_openE.
 
+End TopologyOfOpen.
 End TopologyOfOpen.
 
 (** ** Topology defined by a base of open sets *)
