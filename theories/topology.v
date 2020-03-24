@@ -355,6 +355,7 @@ Structure set_set_on T := SetSetType {
   in_nbhs :> set (set T);
 }.
 Arguments SetSetType {T}.
+Arguments in_nbhs : simpl never.
 
 Structure filter_on T := FilterType {
   filter :> (T -> Prop) -> Prop;
@@ -1243,7 +1244,7 @@ Lemma filtermapi_complete
   (f : T -> U -> Prop) (fFtotal : {near F, is_totalfun f}) :
   f `@ F = complete_fun fFtotal @ F.
 Proof.
-rewrite neareqE => x /=; split; rewrite near_mapi => Fx; near=> t.
+rewrite neareqE => x /=; split; rewrite near_mapi near_map => Fx; near=> t.
   have [//|u [ftu xu]] := near Fx t.
   by move: ftu; rewrite (near (complete_funE fFtotal) t)// => ->.
 exists (complete_fun fFtotal t); split; last by near: t.
@@ -1783,6 +1784,22 @@ Lemma bigcup1 (I R : Type) (i : I) (F : I -> set R) :
   \bigcup_(j in [set i]) F j = F i.
 Proof. by rewrite predeqE => x; split=> [[j->//]|]; exists i. Qed.
 
+Lemma in_nbhs_inj T : injective (@in_nbhs T).
+Proof. by move=> [A] [B]; rewrite /in_nbhs => ->. Qed.
+
+Notation flip f := (fun x y => f y x).
+Definition imagei U V (f : U -> V -> Prop) (A : set U) : set V :=
+  [set v | exists2 u, A u & f u v].
+Definition preimagei U V (f : U -> V -> Prop) (B : set V) : set U :=
+  imagei (flip f) B.
+
+Lemma bigcup_image I J (f : I -> J -> Prop) R (F : J -> set R) (A : set I) :
+  \bigcup_(j in imagei f A) F j = \bigcup_(i in A) \bigcup_(j in f i) F j.
+Proof.
+rewrite predeqE => x; split=> [[j [i Ai fij] Fjx]|[i Ai [j fij Fjx]]].
+  by exists i => //; exists j.
+by exists j => //; exists i.
+Qed.
 
 (** ** Topology defined by a base of open sets *)
 
@@ -1828,10 +1845,12 @@ Lemma pfilterMixin : PFiltered.mixin_of [filteredType type of type].
 Proof. by constructor => x; move=> [O [Oop Op]] /(_ _ Op). Qed.
 Canonical pfilteredType := PFilteredType type type pfilterMixin.
 
-Lemma nbhs_open p :
-   nbhs p = [set A | exists B, [/\ open_of B, B p & B `<=` A]] :> set (set T).
+
+Lemma nbhs_open :
+   nbhs = fun p : type => SetSetType [set A | exists B, [/\ open_of B, B p & B `<=` A]].
 Proof.
-rewrite predeqE => A; split => [[i [Di bip biA]]|[O [[E [ED ->]] Op OA]]].
+rewrite funeqE => U; apply: in_nbhs_inj; rewrite predeqE => A.
+split => [[i [Di bip biA]]|[O [[E [ED ->]] Op OA]]].
   exists (b i); split => //; exists [set i].
   by split => [j ->//|]; rewrite bigcup1.
 have [i Ei bip] := Op; exists i.
@@ -1839,12 +1858,26 @@ split => //; first exact: ED.
 by apply: subset_trans OA => q biq; exists i.
 Qed.
 
+Lemma op_bigU (J : Type) (f : J -> set type) :
+  (forall i : J, open_of (f i)) -> open_of (\bigcup_i f i).
+Proof.
+move=> /choice [select selectP].
+exists (imagei select setT).
+split; first by move=> i [j _ sji]; have [/(_ _ sji)] := selectP j.
+rewrite bigcup_image. apply: eq_bigcup.
+
+rewrite predeqE => x; .
+
+evar (X : I0 -> Prop).
+have ? i : X i.
+  have [E [ED ]] := f_open i.
+  
+
 Fact nbhs_of_openE : open_of = [set A : set type | A `<=` nbhs^~ A].
 Proof.
-
-rewrite /=.
-
-rewrite [nbhs_of](nbhs_open ).
+rewrite nbhs_open /in_nbhs/=.
+apply: OfOpen.nbhs_of_openE.
+rewrite (nbhs_open ).
 
 Definition topologyMixin : Topological.mixin_of (nbhs : type -> set (set type)) :=
   Topological.Mixin _ nbhs_of_openE.
