@@ -553,7 +553,7 @@ Canonical filter_on_NbhsType T :=
 Definition filter_on_filtered_mixin T := FilterMixin (@filter_class T).
 Canonical filter_on_filterType T :=
   FilterType T (filter_on T) (@filter_on_filtered_mixin T).
-Notation "{ 'filter' T }" := (filter_on_filterType T)
+Notation "{ 'filter' T }" := (filter_on_NbhsType T)
   (at level 0, format "{ 'filter'  T }" ) : type_scope.
 
 Lemma nbhs_is_filter {U} {T : filterType U} (x : T) : is_filter (nbhs x).
@@ -770,35 +770,6 @@ Definition pfilter_on_filter_mixin (T : pointedType)  :=
   FilterMixin (@pfilter_on_filter T).
 Canonical pfilter_on_filterType (T : pointedType) :=
   FilterType T (pfilter_on T) (@pfilter_on_filter_mixin T).
-Notation "{ 'pfilter' T }" := (pfilter_on_filterType T)
-  (at level 0, format "{ 'pfilter'  T }" ) : type_scope.
-
-Lemma near_ex_subproof {T : Type} (F : set (set T)) :
-     ~ nbhs F set0 -> (forall P, F P -> exists x, P x).
-Proof.
-move=> NFset0 P FP; apply: contrapNT NFset0 => nex; suff <- : P = set0 by [].
-by rewrite funeqE => x; rewrite propeqE; split=> // Px; apply: nex; exists x.
-Qed.
-
-Lemma filter_not_empty T (F : {pfilter T}) : ~ \near F, False.
-Proof. by move: F => [? []]. Qed.
-Arguments filter_not_empty {T} F _.
-
-Lemma pfilter_on_is_pfilter T (x : {pfilter T}) : is_pfilter x.
-Proof. by case: x. Qed.
-
-Definition near_ex {T : pointedType} (F : {pfilter T}) :
-  forall P, nbhs F P -> exists x : T, P x :=
-  near_ex_subproof (filter_not_empty F).
-
-Lemma near_getP {T : pointedType} (F : {pfilter T})
-      (P : set T) : nbhs F P -> P (get P).
-Proof. by move=> /near_ex /getPex. Qed.
-
-Lemma near_const {T : pointedType} {F : {pfilter T}} (P : Prop) :
-  (\near F, P) -> P.
-Proof. by move=> FP; case: (near_ex FP). Qed.
-Arguments near_const {T} x : rename.
 
 Lemma pfilter_on_pfilter (T : pointedType) (pT : pfilter_on T) :
    ~ (in_pfilter pT) set0.
@@ -808,13 +779,38 @@ Definition pfilter_on_pfilter_mixin (T : pointedType)  :=
 Canonical pfilter_on_pfilterType (T : pointedType) :=
   PFilterType T (pfilter_on T) (@pfilter_on_pfilter_mixin T).
 
-Lemma have_near (U : pointedType) (T : pfilterType U) (x : T) (P : Prop) :
-   (\forall _ \near x, P) -> P.
-Proof. exact: near_const. Qed.
-Arguments have_near {U T} x.
+Notation "{ 'pfilter' T }" := (pfilter_on_NbhsType T)
+  (at level 0, format "{ 'pfilter'  T }" ) : type_scope.
+
+Lemma pfilter_on_is_pfilter T (x : {pfilter T}) : is_pfilter x.
+Proof. by case: x. Qed.
+
+Lemma near_ex_subproof {T : Type} (F : set (set T)) :
+     ~ nbhs F set0 -> (forall P, F P -> exists x, P x).
+Proof.
+move=> NFset0 P FP; apply: contrapNT NFset0 => nex; suff <- : P = set0 by [].
+by rewrite funeqE => x; rewrite propeqE; split=> // Px; apply: nex; exists x.
+Qed.
+
+Lemma filter_not_empty T (fT : pfilterType T) (F : fT) : ~ \near F, False.
+Proof. by case: fT F => [? [? []]]. Qed.
+Arguments filter_not_empty {T fT} F _.
+
+Definition near_ex {T : nonPropType}  {fT : pfilterType T} (F : fT) :
+  forall P, nbhs F P -> exists x : T, P x :=
+  near_ex_subproof (filter_not_empty F).
+
+Lemma near_getP {T : pointedType} {fT : pfilterType T} (F : fT) (P : set T) :
+  nbhs F P -> P (get P).
+Proof. by move=> /near_ex /getPex. Qed.
+
+Lemma near_const {T : nonPropType} {fT : pfilterType T} (F : fT) (P : Prop) :
+  (\near F, P) -> P.
+Proof. by move=> FP; case: (near_ex FP). Qed.
+Arguments near_const {T fT} x : rename.
 
 Tactic Notation "near" constr(F) "=>" ident(x) :=
-  apply: (have_near F); near=> x.
+  apply: (near_const F); near=> x.
 
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) : set (set T) :=
   [set P | exists2 i, D i & B i `<=` P].
@@ -883,6 +879,14 @@ End ProdPFilter.
 
 Definition uncurry X Y Z (f : X -> Y -> Z) xy := f xy.1 xy.2.
 Arguments uncurry : simpl never.
+
+Definition uncurry_dep X Y Z (f : forall x : X, forall y : Y, Z x y) xy :=
+   f xy.1 xy.2.
+Arguments uncurry_dep : simpl never.
+
+Definition uncurry_sig X Y Z (f : forall x : X, forall y : Y x, Z x y) xy :=
+   f (projT1 xy) (projT2 xy).
+Arguments uncurry_sig : simpl never.
 
 Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P" :=
   ((nbhs (x_0, y_0)) (uncurry (fun x y => P)))
@@ -1110,12 +1114,10 @@ move=> FF BN0; apply: Build_is_pfilter => // P [i Di BiP].
 by have [x Bix] := BN0 _ Di; exists x; apply: BiP.
 Qed.
 
-Lemma near_ex2 {T U : pointedType} (F : {pfilter T}) (G : {pfilter U})
-   (P : set T) (Q : set U) :
-   F P -> G Q -> exists x : T, exists2 y : U, P x & Q y.
+Lemma near_ex2 {T U : nonPropType} {fT : pfilterType T} {fU : pfilterType U}
+  (F : fT) (G : fU) (P : set T) (Q : set U) :
+   nbhs F P -> nbhs G Q -> exists x : T, exists2 y : U, P x & Q y.
 Proof. by move=> /near_ex [x Px] /near_ex [y Qy]; exists x, y. Qed.
-Arguments near_ex2 {T U F G _ _}.
-
 
 (** ** Limits expressed with filters *)
 
@@ -1367,7 +1369,7 @@ Grab Existential Variables. all: end_near. Qed.
 Tactic Notation "near=>" ident(x) ident(y) :=
   (apply: filter_pair_near_of => x y ? ?).
 Tactic Notation "near" constr(F) "=>" ident(x) ident(y) :=
-  apply: (have_near F); near=> x y.
+  apply: (near_const F); near=> x y.
 
 (* Module Export NearMap. *)
 (* Definition near_simpl := (@near_simpl, @near_map, @near_mapi, @near_map2). *)
@@ -2026,34 +2028,12 @@ Context (m n : nat) {T : pointedType} (fT : pfilterType T).
 Lemma mx_pfilter_mixin :
   PFilter.mixin_of [filterType 'M[T]_(m, n) of 'M[fT]_(m, n)].
 Proof.
-constructor=> /= M [A AF]; apply => i j.
-pose u := (nbhs (M i j)).
-have := @near_ex _ _ (A i j) (AF i j).
+constructor=> /= M [A AF].
+have /choice [f /(_ (_,_))/= fP] := fun ij => near_ex (uncurry_dep AF ij).
+by move=> /(_ (\matrix_(i,j) f (i, j))); apply=> i j; rewrite mxE; apply: fP.
+Qed.
 
-apply: (have_near (M i j)).
-apply: AF.
-near (M i j) => t.
-
-
-
-
-have := fun i j => @near_ex T (AF i j).
-
-
-
- /(_ (\matrix_(i,j) point))]; apply=> i j.
-.
-
-Lemma filter_mx_nontriv (x : fT * fU) : ~ \near x, False.
-Proof.
-move=> [[/= X Y] [Xx Yx]]; rewrite subset0; apply/eqP; rewrite set0P.
-near x.1 => x1; near x.2 => x2.
-by exists (x1, x2); split => /=; [near: x1|near: x2].
-Grab Existential Variables. all: by end_near. Qed.
-
-Definition mx_pfilter_mixin : PFilter.mixin_of [nbhsType 'M[T]_(m, n) of 'M[fT]_(m, n)].
-
-Canonical mx_pfiltered := PFilterType (T * U) (fT * fU) mx_pfilter_mixin.
+Canonical mx_pfiltered := PFilterType 'M[T]_(m,n) 'M[fT]_(m,n) mx_pfilter_mixin.
 End MatrixPFilter.
 
 Section matrix_Topology.
@@ -2061,17 +2041,6 @@ Section matrix_Topology.
 Variables (m n : nat) (T : topologicalType).
 
 Implicit Types M : 'M[T]_(m, n).
-
-Lemma mx_loc_filter M : is_pfilter (nbhs M).
-Proof.
-apply: (filter_from_proper (filter_from_filter _ _)) => [|P Q M_P M_Q|P M_P].
-- by exists (fun i j => setT) => ? ?; apply: nearT.
-- exists (fun i j => P i j `&` Q i j) => [? ?|mx PQmx]; first by apply: nearI => //=.
-  by split=> i j; have [] := PQmx i j.
-- exists (\matrix_(i, j) get (P i j)) => i j; rewrite mxE; apply: getPex.
-
-  have := near_ex (M_P i j). => /=.
-Qed.
 
 Lemma mx_loc_singleton M (A : set 'M[T]_(m, n)) : nbhs M A -> A M.
 Proof. by move=> [P M_P]; apply=> ? ?; apply: nbhs_singleton. Qed.
@@ -2085,7 +2054,7 @@ by move=> ? ?; exists P.
 Qed.
 
 Definition matrix_topologicalTypeMixin :=
-  topologyOfFilterMixin mx_loc_filter mx_loc_singleton mx_loc_loc.
+  topologyOfFilterMixin mx_loc_singleton mx_loc_loc.
 
 Canonical matrix_topologicalType :=
   TopologicalType 'M[T]_(m, n) matrix_topologicalTypeMixin.
