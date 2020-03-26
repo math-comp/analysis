@@ -450,6 +450,10 @@ Notation "[ 'nbhsType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
   (at level 0, format "[ 'nbhsType'  U  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'nbhsType' U 'of' T ]" := (@clone U T _ _ id)
   (at level 0, format "[ 'nbhsType'  U  'of'  T ]") : form_scope.
+Notation "[ 'nbhsType' 'of' T 'for' cT ]" :=  (@clone T T cT _ idfun)
+  (at level 0, format "[ 'nbhsType'  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'nbhsType' 'of' T ]" := (@clone T T _ _ id)
+  (at level 0, format "[ 'nbhsType'  'of'  T ]") : form_scope.
 
 (* The default filter for an arbitrary element is the one obtained *)
 (* from its type *)
@@ -527,7 +531,7 @@ Canonical pointedType.
 Coercion nbhsType : type >-> Nbhs.type.
 Canonical nbhsType.
 Notation filterType := type.
-Notation is_filteredMixin := Mixin.
+Notation FilterMixin := Mixin.
 Notation FilterType U T m := (@pack U T _ m _ _ idfun _ idfun).
 Notation "[ 'filterType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
   (at level 0, format "[ 'filterType'  U  'of'  T  'for'  cT ]") : form_scope.
@@ -546,7 +550,7 @@ Canonical filter_on_PointedType T :=
 Definition filter_on_nbhs_mixin T := NbhsMixin (@in_filter T).
 Canonical filter_on_NbhsType T :=
   NbhsType T (filter_on T) (@filter_on_nbhs_mixin T).
-Definition filter_on_filtered_mixin T := is_filteredMixin (@filter_class T).
+Definition filter_on_filtered_mixin T := FilterMixin (@filter_class T).
 Canonical filter_on_filterType T :=
   FilterType T (filter_on T) (@filter_on_filtered_mixin T).
 Notation "{ 'filter' T }" := (filter_on_filterType T)
@@ -567,7 +571,8 @@ Lemma filter_on_is_filter T (x : {filter T}) : is_filter x.
 Proof. by case: x. Qed.
 Lemma nearT T (x : {filter T}) : \near x, True.
 Proof. by move: x => [? []]. Qed.
-Lemma nearI T (x : {filter T}) P Q : (\near x, P x) -> (\near x, Q x) -> \near x, P x /\ Q x.
+Lemma nearI T (x : {filter T}) P Q :
+  (\near x, P x) -> (\near x, Q x) -> \near x, P x /\ Q x.
 Proof. by move: x P Q => [? []]. Qed.
 Lemma nearS T (x : {filter T}) P Q : P `<=` Q -> (\near x, P x) -> \near x, Q x.
 Proof. by move: x P Q => [? []]. Qed.
@@ -632,7 +637,7 @@ Canonical nbhsType.
 Coercion filterType : type >-> Filter.type.
 Canonical filterType.
 Notation pfilterType := type.
-Notation Pis_filteredMixin := Mixin.
+Notation PFilterMixin := Mixin.
 Notation PFilterType U T m := (@pack U T _ m _ _ idfun _ idfun).
 Notation "[ 'pfilterType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
   (at level 0, format "[ 'pfilterType'  U  'of'  T  'for'  cT ]") : form_scope.
@@ -655,7 +660,7 @@ Canonical nbhs_pfilter {U} {T : pfilterType U} (x : T) :=
   PFilterPack (in_nbhs (nbhs x))
    (Build_is_pfilter' (@nbhs_is_pfilter U T x) (@nbhs_is_filter U T x)).
 
-Definition nbhs_pfilter_mixin U T := Pis_filteredMixin (@nbhs_is_pfilter U T).
+Definition nbhs_pfilter_mixin U T := PFilterMixin (@nbhs_is_pfilter U T).
 
 Canonical nbhs_pfilterType {U} {T : pfilterType U} (x : T) :=
   PFilterType U T (@nbhs_pfilter_mixin U T).
@@ -762,7 +767,7 @@ Definition pfilter_on_nbhs_mixin (T : pointedType)  := NbhsMixin (@in_pfilter T)
 Canonical pfilter_on_NbhsType (T : pointedType) :=
   NbhsType T (pfilter_on T) (@pfilter_on_nbhs_mixin T).
 Definition pfilter_on_filter_mixin (T : pointedType)  :=
-  is_filteredMixin (@pfilter_on_filter T).
+  FilterMixin (@pfilter_on_filter T).
 Canonical pfilter_on_filterType (T : pointedType) :=
   FilterType T (pfilter_on T) (@pfilter_on_filter_mixin T).
 Notation "{ 'pfilter' T }" := (pfilter_on_filterType T)
@@ -799,7 +804,7 @@ Lemma pfilter_on_pfilter (T : pointedType) (pT : pfilter_on T) :
    ~ (in_pfilter pT) set0.
 Proof. by case: pT => /= F []. Qed.
 Definition pfilter_on_pfilter_mixin (T : pointedType)  :=
-  Pis_filteredMixin (@pfilter_on_pfilter T).
+  PFilterMixin (@pfilter_on_pfilter T).
 Canonical pfilter_on_pfilterType (T : pointedType) :=
   PFilterType T (pfilter_on T) (@pfilter_on_pfilter_mixin T).
 
@@ -834,14 +839,6 @@ move=> [i0 _] BI; apply: filter_from_filter; first by exists i0.
 by move=> i j _ _; have [k] := BI i j; exists k.
 Qed.
 
-(* the canonical filter on matrices on X is the product of the canonical filter
-   on X *)
-(* Canonical matrix_filtered m n X (Z : filterType X) : *)
-(*   filterType 'M[X]_(m, n) := *)
-(*   FilterType 'M[X]_(m, n) 'M[Z]_(m, n) (fun mx => filter_from *)
-(*     [set P | forall i j, (nbhs mx i j) (P i j)] *)
-(*     (fun P => [set my : 'M[X]_(m, n) | forall i j, P i j (my i j)])). *)
-
 Section ProdNbhsType.
 Context {T U : Type} {fT : nbhsType T} {fU : nbhsType U}.
 
@@ -864,7 +861,7 @@ exists (P `&` P', Q `&` Q') => /=; first by split; apply: nearI.
 by move=> [p q] [/= [? ?] []].
 Qed.
  
-Definition prod_filter_mixin := is_filteredMixin prod_filter_filter.
+Definition prod_filter_mixin := FilterMixin prod_filter_filter.
 
 Canonical prod_filtered := FilterType (T * U) (fT * fU) prod_filter_mixin.
 End ProdFilter.
@@ -879,7 +876,7 @@ near x.1 => x1; near x.2 => x2.
 by exists (x1, x2); split => /=; [near: x1|near: x2].
 Grab Existential Variables. all: by end_near. Qed.
 
-Definition prod_pfilter_mixin := Pis_filteredMixin filter_prod_nontriv.
+Definition prod_pfilter_mixin := PFilterMixin filter_prod_nontriv.
 
 Canonical prod_pfiltered := PFilterType (T * U) (fT * fU) prod_pfilter_mixin.
 End ProdPFilter.
@@ -1994,6 +1991,70 @@ Canonical prod_topologicalType :=
 End Prod_Topology.
 
 (** ** Topology on matrices *)
+
+Section MatrixNbhsType.
+Context (m n : nat) {T : Type} (fT : nbhsType T).
+
+Definition mx_filter (mx : 'M[fT]_(m, n)) : set (set 'M[T]_(m,n)) :=
+  filter_from [set P | forall i j, (nbhs (mx i j)) (P i j)]
+              (fun P => [set my : 'M[T]_(m, n) | forall i j, P i j (my i j)]).
+
+Definition mx_nbhs_mixin := NbhsMixin mx_filter.
+
+Canonical mx_nbhs := NbhsType 'M[T]_(m,n) 'M[fT]_(m,n) mx_nbhs_mixin.
+End MatrixNbhsType.
+
+Section MatrixFilter.
+Context (m n : nat) {T : Type} (fT : filterType T).
+
+Lemma mx_filter_mixin :
+  Filter.mixin_of [nbhsType 'M[T]_(m, n) of 'M[fT]_(m, n)].
+Proof.
+constructor=> /= M; apply: filter_from_filter => [|A B AM BM].
+  by exists (fun _ _ => setT) => i j; apply: nearT.
+exists (fun i j => A i j `&` B i j) => [i j|].
+  by move: (AM i j) (BM i j); apply: nearS2.
+by move=> M' ABM'; split=> i j; move: (ABM' i j) => [].
+Qed.
+
+Canonical mx_filtered := FilterType 'M[T]_(m,n) 'M[fT]_(m,n) mx_filter_mixin.
+End MatrixFilter.
+
+Section MatrixPFilter.
+Context (m n : nat) {T : pointedType} (fT : pfilterType T).
+
+Lemma mx_pfilter_mixin :
+  PFilter.mixin_of [filterType 'M[T]_(m, n) of 'M[fT]_(m, n)].
+Proof.
+constructor=> /= M [A AF]; apply => i j.
+pose u := (nbhs (M i j)).
+have := @near_ex _ _ (A i j) (AF i j).
+
+apply: (have_near (M i j)).
+apply: AF.
+near (M i j) => t.
+
+
+
+
+have := fun i j => @near_ex T (AF i j).
+
+
+
+ /(_ (\matrix_(i,j) point))]; apply=> i j.
+.
+
+Lemma filter_mx_nontriv (x : fT * fU) : ~ \near x, False.
+Proof.
+move=> [[/= X Y] [Xx Yx]]; rewrite subset0; apply/eqP; rewrite set0P.
+near x.1 => x1; near x.2 => x2.
+by exists (x1, x2); split => /=; [near: x1|near: x2].
+Grab Existential Variables. all: by end_near. Qed.
+
+Definition mx_pfilter_mixin : PFilter.mixin_of [nbhsType 'M[T]_(m, n) of 'M[fT]_(m, n)].
+
+Canonical mx_pfiltered := PFilterType (T * U) (fT * fU) mx_pfilter_mixin.
+End MatrixPFilter.
 
 Section matrix_Topology.
 
