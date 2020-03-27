@@ -276,7 +276,7 @@ move=> cb /asboolPn nb; apply/asboolPn.
 by apply: contra nb => /asboolP /cb /asboolP.
 Qed.
 
-Definition contrapNN := contra.
+Definition contrapNN := contrap.
 
 Lemma contrapL (Q P : Prop) : (Q -> ~ P) -> P -> ~ Q.
 Proof.
