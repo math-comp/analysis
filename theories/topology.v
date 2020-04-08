@@ -2054,8 +2054,8 @@ Proof.
   have lem : (f @ within D F) `=>` (f @ F).
   by apply: flim_incl; apply: within_subset.  
   move => fFG; apply: flim_trans. 
-   by apply: (flim_incl lem).
-   by [].
+  by apply: (flim_incl lem).
+  by [].
 Qed. 
 
 
@@ -2075,9 +2075,8 @@ Qed.
 
 Variables (T: topologicalType).
 
-
-      
-Lemma h_flim_close  ( x y :T ) (F : set (set T)) {FF: ProperFilter F} : (* TODO : to rename  flim_cluster *)
+  
+Lemma flim_cluster_locally  ( x y :T ) (F : set (set T)) {FF: ProperFilter F} : (* TODO : to rename  flim_cluster *)
       F --> x -> F --> y -> cluster (locally x) y.
 Proof. 
   move => Fx Fy A B /(Fx A) /= locA /(Fy B) /= locB; apply/set0P/eqP => H. 
@@ -2091,43 +2090,44 @@ Lemma clusterI  ( y: T): cluster (locally y) y.
    by apply: filter_not_empty.
 Qed.
   
-Lemma h_closeE {H : hausdorff T} ( x y : T) : (cluster (locally x) y) = (x = y).  
+Lemma cluster_locallyE {H : hausdorff T} ( x y : T) : (cluster (locally x) y) = (x = y).  
 Proof.
   rewrite propeqE; split => [cl_xy|->//].
   by apply: H.
   by apply: clusterI.
 Qed.
 
+
+
 Lemma h_flim_unique {H : hausdorff T} {F} {FF : ProperFilter F} :
   is_prop [set x : T | F --> x].
 Proof.
-  move=> Fx Fy; rewrite -h_closeE.
-    by apply: h_flim_close.
+  move=> Fx Fy; rewrite -cluster_locallyE.
+    by apply: flim_cluster_locally.
     by [].
 Qed.
 
 
-Lemma h_flimi_close {H : hausdorff T} U {F} {FF: ProperFilter F} (f : U -> set T) (l l' : T) :   (*to rename flimi_cluster *) 
+Lemma flimi_cluster {H : hausdorff T} U {F} {FF: ProperFilter F} (f : U -> set T) (l l' : T) :  
   {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> cluster (locally l) l'.
 Proof.
-  move=> f_prop fFl fFl' A B.  
-(* suff f_totalfun: infer {near F, is_totalfun f} by exact: h_flim_close fFl fFl'.  *)
-(* apply: filter_app f_prop; near=> x; split=> //=.  *)
-
-(* by have [//|y [fxy _]] := near (h_flimi_ball fFl [gt0 of 1]) x; exists y. *)
+  move=> f_prop fFl fFl'.   
+  suff f_totalfun: infer {near F, is_totalfun f}. apply: flim_cluster_locally fFl fFl'.
+  apply: filter_app f_prop; near=> x; split=> //=.
+(*   by have [//|y [fxy _]] := near (h_flimi_ball fFl [gt0 of 1]) x; exists y. *)
 (* Grab Existential Variables. all: end_near. Qed. *)
 Admitted.
 
 
-Definition h_flimi_locally_close := @h_flimi_close.
+Definition flimi_locally_cluster := @flimi_cluster.
 
 
 
 Lemma h_locally_flim_unique  {H : hausdorff T} (x y : T) :
   x --> y -> x = y.
 Proof.
-  rewrite -h_closeE.
-  by apply: h_flim_close.
+  rewrite -cluster_locallyE.
+  by apply: flim_cluster_locally.
   by []. 
 Qed.
 
@@ -2152,18 +2152,37 @@ Proof. exact: h_flim_lim. Qed.
 Lemma h_flimi_unique {H : hausdorff T} {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
   {near F, is_fun f} -> is_prop [set x : T | f `@ F --> x].
 Proof.
-  move=> ffun fx fy; rewrite -h_closeE.
-  by apply: h_flimi_close.
+  move=> ffun fx fy; rewrite -cluster_locallyE.
+  by apply: flimi_cluster.
   by []. (*how do I get rid of that *)
 Qed.
 
-Lemma hausdorff_flimi_map_lim {H : hausdorff T} {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
+Lemma h_flimi_map_lim {H : hausdorff T} {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
   F (fun x : U => is_prop (f x)) ->
   f `@ F --> l -> lim (f `@ F) = l.
 Proof.
 move=> f_prop f_l; apply: get_unique => // l' f_l'.
 exact: h_flimi_unique _ f_l' f_l.
 Qed.
+
+
+Lemma cluster_lim (F1 F2 : set (set T)) {FF2 : ProperFilter F2} :
+  F1 --> F2 -> F2 --> F1 -> cluster (locally (lim F1)) (lim F2).
+Proof.
+move=> F12 F21; have [/(flim_trans F21) F2l|dvgF1] := pselect (cvg F1).
+by apply: (@flim_cluster_locally _ _ F2) => //; apply: cvgP F2l.
+have [/(flim_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
+rewrite dvgP // dvgP //; exact/clusterI.
+Qed.
+
+
+Lemma flim_clusterP (F : set (set T)) (l : T) : ProperFilter F ->
+  F --> l <-> ([cvg F in T] /\ cluster (locally (lim F)) l).
+Proof.
+move=> FF; split=> [Fl|[cvF]Cl].
+  by have /cvgP := Fl; split=> //; apply: (@flim_cluster_locally _ _ F).
+apply: flim_trans. Admitted. (*  (close_limxx Cl). TODO *)
+(* Qed. *)
 
 End Hausddorff_topologies.
 
@@ -2609,6 +2628,9 @@ Proof. exact: PseudoMetric.ax1. Qed.
 Hint Resolve ball_center : core.
 
 Section pseudoMetricType_numDomainType.
+
+
+
 Context {R : numDomainType} {M : pseudoMetricType R}.
 
 Lemma ballxx (x : M) (e : R) : 0 < e -> ball x e x.
@@ -2626,7 +2648,7 @@ Proof. by apply/locallyP; exists eps%:num. Qed.
 
 Definition close (x y : M) : Prop := forall eps : {posnum R}, ball x eps%:num y.
 
-Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
+ Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
 Proof.
 move=> le12 y. case: comparableP le12 => [lte12 _|//|//|->//].
 by rewrite -[e2](subrK e1); apply/ball_triangle/ballxx; rewrite subr_gt0.
@@ -2713,6 +2735,23 @@ Arguments flim_const {R M T F FF} a.
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.
 
+
+Lemma close_cluster ( x y: M) : (*generalize to numdOmaintype ? *)
+    close x y = cluster (locally x) y.
+ Proof.
+ apply: propositional_extensionality; split.
+ - move => closxy A B locA; rewrite -!locally_ballE /locally_ //= /filter_from !exists2P.
+   move => [eb [eb0 EB]]; exists x; split. 
+   by apply: locally_singleton.
+   by apply: EB; exact:  ball_sym (closxy (PosNum eb0)).   
+ - move => clusxy [eps eps0] /=. pose e:= eps/2.
+   have e0 : 0 <e by apply: divr_gt0.  
+   move: (clusxy (ball x e) (ball y e) (locally_ball x (PosNum e0)) (locally_ball y (PosNum e0))).
+   move => [z [zx /ball_sym zy]].  
+   have -> : eps = e + e by  apply: splitr.  
+   apply: (ball_triangle zx zy). 
+ Qed.
+ 
 Lemma ball_split (z x y : M) (e : R) :
   ball x (e / 2) z -> ball z (e / 2) y -> ball x e y.
 Proof. by move=> /ball_triangle h /h; rewrite -splitr. Qed.
@@ -2728,9 +2767,11 @@ Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 Lemma flim_close {F} {FF : ProperFilter F} (x y : M) :
   F --> x -> F --> y -> close x y.
 Proof.
-move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z;
+(* rewrite close_cluster. apply: h_flim_close *)                                                      
+move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z. Check ball_splitl. 
 by [apply/Fx/locally_ball|apply/Fy/locally_ball].
-Grab Existential Variables. all: end_near. Qed.
+Grab Existential Variables. all: end_near.
+Qed.
 
 Lemma close_trans (x y z : M) : close x y -> close y z -> close x z.
 Proof. by move=> cxy cyz eps; apply: ball_split (cxy _) (cyz _). Qed.
