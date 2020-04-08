@@ -2046,8 +2046,7 @@ have lem2: subset A ((fun a : T => D a -> A a)) by move => a Aa _.
 by apply: filterS.   
 Qed.     
  
-
-Lemma flim_within (T U : topologicalType) (f : T -> U) (F : set (set T))
+Lemma h_flim_within (T U : topologicalType) (f : T -> U) (F : set (set T)) (* rename *)
       (G : set (set U)): forall (D : set T), (Filter F) -> ((f @ F) --> G) -> ((f @ within D F) --> G).
 Proof.
   move => D FF; rewrite /flim !filter_of_filterE.
@@ -2064,7 +2063,7 @@ Lemma cvg_within (T U : topologicalType) (f : T -> U) (F: set (set T)) (D: set T
 Proof.
   move => FF /cvg_ex [l H].
   apply/cvg_ex; exists l. 
-  by apply: flim_within.
+  by apply: h_flim_within.
 Qed.
 
 
@@ -2077,7 +2076,7 @@ Variables (T: topologicalType).
 
 
       
-Lemma h_flim_close  ( x y :T ) (F : set (set T)) {FF: ProperFilter F} : (* to rename  flim_cluster *)
+Lemma h_flim_close  ( x y :T ) (F : set (set T)) {FF: ProperFilter F} : (* TODO : to rename  flim_cluster *)
       F --> x -> F --> y -> cluster (locally x) y.
 Proof. 
   move => Fx Fy A B /(Fx A) /= locA /(Fy B) /= locB; apply/set0P/eqP => H. 
