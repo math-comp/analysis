@@ -2027,6 +2027,146 @@ have : G (A `&` f @^-1` B) by exists B.
 by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
 Qed.
 
+Section Hausddorff_topologies. (*new *)
+(*TODO : replace all lemmas using close on pseudometric types or normedMod types
+  by lemmas using cluster on topologicalspace *)
+(*and then replace by cluster -> ball *)
+  
+Lemma flim_incl (T U : topologicalType) (f : T -> U): forall (F G: set (set T)),  (G `=>` F) -> (f @ G `=>` f @ F).
+Proof.
+ by move => F G  H A fFA ; exact ((H (preimage f A)) fFA).
+Qed.
+
+
+Lemma within_subset (T U : topologicalType) (F : set (set T)) (D : set T) (fF: Filter F) :
+  within D F `=>` F .
+Proof.
+move => A; rewrite /within.
+have lem2: subset A ((fun a : T => D a -> A a)) by move => a Aa _.
+by apply: filterS.   
+Qed.     
+ 
+
+Lemma flim_within (T U : topologicalType) (f : T -> U) (F : set (set T))
+      (G : set (set U)): forall (D : set T), (Filter F) -> ((f @ F) --> G) -> ((f @ within D F) --> G).
+Proof.
+  move => D FF; rewrite /flim !filter_of_filterE.
+  have lem : (f @ within D F) `=>` (f @ F).
+  by apply: flim_incl; apply: within_subset.  
+  move => fFG; apply: flim_trans. 
+   by apply: (flim_incl lem).
+   by [].
+Qed. 
+
+
+Lemma cvg_within (T U : topologicalType) (f : T -> U) (F: set (set T)) (D: set T):
+  (Filter F) -> cvg (f @ F) -> cvg (f @ within D F).
+Proof.
+  move => FF /cvg_ex [l H].
+  apply/cvg_ex; exists l. 
+  by apply: flim_within.
+Qed.
+
+
+Lemma locally_locally' (T : topologicalType): forall (x : T), (locally' x) `=>` (locally x).
+Proof.
+  by move => x; apply: (within_subset). 
+Qed.
+
+Variables (T: topologicalType).
+
+
+      
+Lemma h_flim_close  ( x y :T ) (F : set (set T)) {FF: ProperFilter F} : (* to rename  flim_cluster *)
+      F --> x -> F --> y -> cluster (locally x) y.
+Proof. 
+  move => Fx Fy A B /(Fx A) /= locA /(Fy B) /= locB; apply/set0P/eqP => H. 
+  set h :=  (filterI locA locB); move : h; rewrite locally_filterE H.
+  by apply: filter_not_empty.
+Qed.    
+
+Lemma clusterI  ( y: T): cluster (locally y) y.
+  Proof. move => A B locA /filterI locB; apply/set0P/eqP => H.    
+  set H0 :=  locB A locA; move: H0; rewrite setIC H. 
+   by apply: filter_not_empty.
+Qed.
+  
+Lemma h_closeE {H : hausdorff T} ( x y : T) : (cluster (locally x) y) = (x = y).  
+Proof.
+  rewrite propeqE; split => [cl_xy|->//].
+  by apply: H.
+  by apply: clusterI.
+Qed.
+
+Lemma h_flim_unique {H : hausdorff T} {F} {FF : ProperFilter F} :
+  is_prop [set x : T | F --> x].
+Proof.
+  move=> Fx Fy; rewrite -h_closeE.
+    by apply: h_flim_close.
+    by [].
+Qed.
+
+
+Lemma h_flimi_close {H : hausdorff T} U {F} {FF: ProperFilter F} (f : U -> set T) (l l' : T) :   (*to rename flimi_cluster *) 
+  {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> cluster (locally l) l'.
+Proof.
+  move=> f_prop fFl fFl' A B.  
+(* suff f_totalfun: infer {near F, is_totalfun f} by exact: h_flim_close fFl fFl'.  *)
+(* apply: filter_app f_prop; near=> x; split=> //=.  *)
+
+(* by have [//|y [fxy _]] := near (h_flimi_ball fFl [gt0 of 1]) x; exists y. *)
+(* Grab Existential Variables. all: end_near. Qed. *)
+Admitted.
+
+
+Definition h_flimi_locally_close := @h_flimi_close.
+
+
+
+Lemma h_locally_flim_unique  {H : hausdorff T} (x y : T) :
+  x --> y -> x = y.
+Proof.
+  rewrite -h_closeE.
+  by apply: h_flim_close.
+  by []. 
+Qed.
+
+Lemma h_lim_id (H : hausdorff T) (x : T) : lim x = x.
+Proof.
+  symmetry; apply: h_locally_flim_unique.
+    by [].
+    by apply/cvg_ex; exists x.
+Qed.
+
+Lemma h_flim_lim  {H : hausdorff T} {F} {FF : ProperFilter F} (l : T) :
+  F --> l -> lim F = l.
+Proof.
+  move=> Fl; have Fcv := cvgP Fl.
+  by apply: (@h_flim_unique H F ).
+Qed.
+
+Lemma h_flim_map_lim {H : hausdorff T} {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
+  f @ F --> l -> lim (f @ F) = l.
+Proof. exact: h_flim_lim. Qed.
+
+Lemma h_flimi_unique {H : hausdorff T} {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
+  {near F, is_fun f} -> is_prop [set x : T | f `@ F --> x].
+Proof.
+  move=> ffun fx fy; rewrite -h_closeE.
+  by apply: h_flimi_close.
+  by []. (*how do I get rid of that *)
+Qed.
+
+Lemma hausdorff_flimi_map_lim {H : hausdorff T} {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
+  F (fun x : U => is_prop (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
+Proof.
+move=> f_prop f_l; apply: get_unique => // l' f_l'.
+exact: h_flimi_unique _ f_l' f_l.
+Qed.
+
+End Hausddorff_topologies.
+
 Section Tychonoff.
 
 Class UltraFilter T (F : set (set T)) := {
