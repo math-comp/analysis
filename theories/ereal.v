@@ -214,9 +214,12 @@ Lemma le_total_ereal : total (@le_ereal R).
 Proof. by case=> [?||][?||] //=; exact: le_total. Qed.
 
 Definition ereal_latticeMixin :=
-  DistrLatticeMixin min_erealC max_erealC min_erealA max_erealA
-                    joinKI_ereal meetKU_ereal leEmeet_ereal meetUl_ereal.
-Canonical ereal_latticeType := DistrLatticeType {ereal R} ereal_latticeMixin.
+  LatticeMixin min_erealC max_erealC min_erealA max_erealA
+                    joinKI_ereal meetKU_ereal leEmeet_ereal.
+Canonical ereal_latticeType := LatticeType {ereal R} ereal_latticeMixin.
+Definition ereal_distrLatticeMixin := DistrLatticeMixin meetUl_ereal.
+Canonical ereal_distrLatticeType :=
+  DistrLatticeType {ereal R} ereal_distrLatticeMixin.
 Canonical ereal_orderType := OrderType {ereal R} le_total_ereal.
 
 End ERealOrder_realDomainType.
