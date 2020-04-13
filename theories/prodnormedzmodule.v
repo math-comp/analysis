@@ -49,7 +49,8 @@ Canonical nngnum_porderType :=
 Lemma nngnum_le_total : totalPOrderMixin [porderType of {nonneg R}].
 Proof. by move=> x y; apply/real_comparable; apply/ger0_real. Qed.
 
-Canonical nngnum_latticeType := DistrLatticeType {nonneg R} nngnum_le_total.
+Canonical nngnum_latticeType := LatticeType {nonneg R} nngnum_le_total.
+Canonical nngnum_distrLatticeType := DistrLatticeType {nonneg R} nngnum_le_total.
 Canonical nngnum_orderType := OrderType {nonneg R} nngnum_le_total.
 
 End Order.

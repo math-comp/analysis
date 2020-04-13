@@ -5,7 +5,7 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-From mathcomp Require Export finmap.
+From mathcomp Require Export finmap bigop.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -83,7 +83,7 @@ Lemma big_seq_fset_cond (T : choiceType) (s : seq T) P F : uniq s ->
     \big[*%M/1]_(x : [fset x in s] | P (val x)) F (val x)
   = \big[*%M/1]_(x <- s | P x) F x.
 Proof.
-move=> eq_s; rewrite big_fset_seq_cond; apply/eq_big_perm.
+move=> eq_s; rewrite big_fset_seq_cond; apply/perm_big.
 by apply/uniq_perm_eq=> //= x; rewrite in_fset.
 Qed.
 
@@ -107,7 +107,7 @@ Lemma big_fsetU (A B : {fset T}) F : [disjoint A & B] ->
     op (\big[op/idx]_(j : A) F (val j))
        (\big[op/idx]_(j : B) F (val j)).
 Proof.
-move=> dj_AB; rewrite !big_fset_seq -big_cat; apply/eq_big_perm.
+move=> dj_AB; rewrite !big_fset_seq -big_cat; apply/perm_big.
 apply/uniq_perm_eq=> //.
 + rewrite cat_uniq ?uniq_fset_keys !(andbT, andTb); apply/hasPn => x /=.
   by apply/fdisjointP; rewrite fdisjoint_sym.
@@ -126,7 +126,7 @@ Proof.
 move=> ge0_F le_IJ; rewrite !big_fset_seq /=.
 rewrite [X in _<=X](bigID [pred j : T | j \in I]) /=.
 rewrite ler_paddr ?sumr_ge0 // -[X in _<=X]big_filter.
-rewrite le_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
+rewrite le_eqVlt; apply/orP; left; apply/eqP/perm_big.
 apply/uniq_perm_eq; rewrite ?filter_uniq //; last move=> i.
 rewrite mem_filter; case/boolP: (_ \in _) => //=.
 by move/le_IJ => ->.
@@ -136,7 +136,7 @@ Lemma big_nat_mkfset (F : nat -> R) n :
   \sum_(0 <= i < n) F i =
     \sum_(i : [fset x in (iota 0 n)]) F (val i).
 Proof.
-rewrite -(big_map val xpredT) /=; apply/eq_big_perm.
+rewrite -(big_map val xpredT) /=; apply/perm_big.
 apply/uniq_perm_eq; rewrite ?iota_uniq //.
   rewrite map_inj_uniq /=; last apply/val_inj.
   by rewrite /index_enum -enumT enum_uniq.
