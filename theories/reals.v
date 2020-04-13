@@ -115,7 +115,8 @@ Definition pack b0 (m0 : mixin_of (@Num.ArchimedeanField.Pack T b0)) :=
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition porderType := @Order.POrder.Pack ring_display cT xclass.
-Definition latticeType := @Order.DistrLattice.Pack ring_display cT xclass.
+Definition latticeType := @Order.Lattice.Pack ring_display cT xclass.
+Definition distrLatticeType := @Order.DistrLattice.Pack ring_display cT xclass.
 Definition orderType := @Order.Total.Pack ring_display cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
 Definition ringType := @GRing.Ring.Pack cT xclass.
@@ -147,8 +148,10 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion porderType : type >-> Order.POrder.type.
 Canonical porderType.
-Coercion latticeType : type >-> Order.DistrLattice.type.
+Coercion latticeType : type >-> Order.Lattice.type.
 Canonical latticeType.
+Coercion distrLatticeType : type >-> Order.DistrLattice.type.
+Canonical distrLatticeType.
 Coercion orderType : type >-> Order.Total.type.
 Canonical orderType.
 Coercion zmodType : type >-> GRing.Zmodule.type.

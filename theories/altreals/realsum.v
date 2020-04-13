@@ -374,8 +374,8 @@ rewrite /psum (asboolT (summable_fin f)) (@max_sup _ S).
   apply/ubP=> y /imsetbP[J ->]; apply/(big_fset_subset (F := \`|_|)).
     by move=> i; rewrite normr_ge0.
   by move=> j jJ; apply/in_imfset.
-rewrite /S -(big_map val xpredT \`|f|); apply/eq_big_perm.
-rewrite /index_enum -!enumT; apply/(perm_eq_trans _ enum_fsetT).
+rewrite /S -(big_map val xpredT \`|f|); apply/perm_big.
+rewrite /index_enum -!enumT; apply/(perm_trans _ enum_fsetT).
 apply/uniq_perm_eq; rewrite ?map_inj_uniq ?enum_uniq //=.
   by apply/val_inj. by rewrite -enumT enum_uniq.
 move=> i /=; rewrite mem_enum in_imfset //; apply/mapP.
@@ -893,7 +893,7 @@ move=> eq_r ler; set s := RHS; have h J: uniq J -> \sum_(x <- J) `|S x| <= s.
     by rewrite normr_eq0 => /ler.
   rewrite add0r {}/s -big_filter; set s := filter _ _.
   rewrite [X in _<=X](bigID (ssrbool.mem J)) /=.
-  rewrite (eq_big_perm [seq x <- r | x \in J]) /=.
+  rewrite (perm_big [seq x <- r | x \in J]) /=.
     apply/uniq_perm_eq; rewrite ?filter_uniq // => x.
     by rewrite !mem_filter andbC.
   by rewrite big_filter ler_addl sumr_ge0.
@@ -933,7 +933,7 @@ have uqpJ: uniq (pmap h' [seq j | j <- J & S j != 0]).
 exists (pmap h' [seq j | j <- J & S j != 0]) => //.
 apply/eqP; rewrite -(big_map h predT \`|S|) (bigID [pred j | S j == 0]) /=.
 rewrite big1 ?add0r => [i /eqP->|]; first by rewrite normr0.
-rewrite -big_filter; apply/eq_big_perm/uniq_perm_eq.
+rewrite -big_filter; apply/perm_big/uniq_perm_eq.
 + by rewrite filter_uniq.
 + rewrite map_inj_in_uniq // !map_id => y1 y2 h1 h2.
   move/(congr1 h'); rewrite !hP ?PS //; last by case.

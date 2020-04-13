@@ -87,7 +87,8 @@ Canonical posnum_porderType := POrderType ring_display {posnum R} posnum_porderM
 Lemma posnum_le_total : totalPOrderMixin [porderType of {posnum R}].
 Proof. by move=> x y; apply/real_comparable; apply/gtr0_real/posnum_gt0. Qed.
 
-Canonical posnum_latticeType := DistrLatticeType {posnum R} posnum_le_total.
+Canonical posnum_latticeType := LatticeType {posnum R} posnum_le_total.
+Canonical posnum_distrLatticeType := DistrLatticeType {posnum R} posnum_le_total.
 Canonical posnum_orderType := OrderType {posnum R} posnum_le_total.
 
 End Order.
