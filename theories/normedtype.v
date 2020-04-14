@@ -858,6 +858,21 @@ rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
 Qed.
 
+Lemma normedModType_hausdorff (R : realFieldType) (V : pseudoMetricNormedZmodType R) :
+  hausdorff V.
+Proof.
+move=> p q clp_q; apply/subr0_eq/normr0_eq0/Rhausdorff => A B pq_A.
+rewrite -(@normr0 _ V) -(subrr p) => pp_B.
+suff loc_preim r C : @locally _ [filteredType R of R^o] `|p - r| C ->
+    locally r ((fun r => `|p - r|) @^-1` C).
+  have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
+  by exists `|p - r|.
+move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
+apply: pre_C; apply: le_lt_trans (ler_dist_dist _ _) _.
+by rewrite opprB addrC -subr_trans distrC.
+Qed.
+
+
 Lemma normedModType_hausdorff (R : realFieldType) (V : normedModType R) :
   hausdorff V.
 Proof.
