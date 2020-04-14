@@ -4175,16 +4175,14 @@ Section LinearContinuousBounded.
 
 Variables (R: numFieldType) (V  W: normedModType R).
 
-Definition continuous_at (x : V) (f : V -> W) :=  f @ x --> (f x).
-
 Lemma continuous_atP x (f : V -> W) :
-(continuous_at x f) <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
+ {for x, continuous f} <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
 Proof.
    split; by  move => /cvg_ballP.
 Qed.
 
 Lemma continuous_bounded0 (f : {linear V -> W}) :
-  (continuous_at 0 f) -> 
+  {for 0, continuous f} -> 
    (exists  r, (r > 0) /\ (forall x : V,   (`|f x|) <=  (`|x| ) * r)) . 
 Proof.
   move => /continuous_atP H. 
@@ -4229,7 +4227,7 @@ Qed.
 (* rewrite using landau notations ? *)
 Lemma bounded_continuous0 (f: {linear V -> W}):
   (exists  r , (r > 0) /\ (forall x : V, `|f x| <=  `|x| * r))
-  -> continuous_at 0 f .
+  -> {for 0, continuous f} .
 Proof.
   move => [r [lt0r H]];  apply/(continuous_atP 0) => eps poseps /=.
   rewrite nearE (linear0 f); apply/locallyP.  
@@ -4247,7 +4245,7 @@ Qed.
 
 
 Lemma continuousat0_continuous (f : {linear V -> W}):
-  continuous_at 0 f -> continuous f.
+  {for 0, continuous f} -> continuous f.
 Proof.
  move=> cont0f x ; rewrite cvg_locally => eps pos.
  move : (continuous_bounded0 cont0f) => [r [rpos Hr]].
