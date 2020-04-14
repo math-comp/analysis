@@ -1514,10 +1514,10 @@ Canonical numFieldType_normedModType (R : numFieldType) :=
   NormedModType R R^o (numFieldType_NormedModMixin R).
 
 (** Normed vector spaces have some continuous functions *)
-
+ (** that are in fact continuous on Pseudometricnormedzmodtype  *)
 Section NVS_continuity.
 
-Context {K : numFieldType} {V : normedModType K}.
+Context {K : numFieldType} {V : pseudoMetricNormedZmodType K}.
 
 Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
 Proof.
