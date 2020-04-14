@@ -1884,6 +1884,7 @@ Proof.
 Qed.
 
 
+
 (** ** Closed sets in topological spaces *)
 
 Section Closed.
