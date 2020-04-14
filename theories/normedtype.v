@@ -1515,18 +1515,17 @@ Canonical numFieldType_normedModType (R : numFieldType) :=
 
 (** Normed vector spaces have some continuous functions *)
  (** that are in fact continuous on Pseudometricnormedzmodtype  *)
-Section NVS_continuity.
 
-Context {K : numFieldType} {V : pseudoMetricNormedZmodType K}.
 
-Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
+Lemma add_continuous {K : numFieldType} {V : pseudoMetricNormedZmodType K} :
+  continuous (fun z : V * V => z.1 + z.2).
 Proof.
 move=> [/=x y]; apply/flim_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> a b => /=; rewrite opprD addrACA.
 by rewrite normm_lt_split //; [near: a|near: b]; apply: flim_norm.
 Grab Existential Variables. all: end_near. Qed.
 
-End NVS_continuity.
+
 
 (* kludge *)
 Global Instance filter_locally (K' : numFieldType) (k : K'^o) :
@@ -1535,7 +1534,7 @@ Proof.
 exact: (@locally_filter [topologicalType of K'^o]).
 Qed.
 
-Section NVS_continuity1.
+Section NVS_continuity.
 Context {K : numFieldType} {V : normedModType K}.
 Local Notation "'+oo'" := (@ERPInf K).
 
@@ -1575,7 +1574,7 @@ move=> x; rewrite -scaleN1r => P /scaler_continuous /=.
 by rewrite !locally_nearE near_map; apply: filterS => x'; rewrite scaleN1r.
 Qed.
 
-End NVS_continuity1.
+End NVS_continuity.
 
 Section limit_composition.
 
