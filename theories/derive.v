@@ -108,10 +108,10 @@ Lemma diff_locallyxP (x : V) (f : V -> W) :
 Proof.
 split=> [dxf|[dfc dxf]].
   split => //; apply: eqaddoEx => h; have /diffE -> := dxf.
-  rewrite lim_id addrK; congr (_ + _); rewrite littleo_center0 /= addrK.
+  rewrite lim_id // addrK; congr (_ + _); rewrite littleo_center0 /= addrK.
   by congr ('o); rewrite funeqE => k /=; rewrite addrK.
 apply/diffP; split=> //; apply: eqaddoEx; move=> y.
-rewrite lim_id -[in LHS](subrK x y) dxf; congr (_ + _).
+rewrite lim_id // -[in LHS](subrK x y) dxf; congr (_ + _).
 rewrite -(comp_centerK x id) -[X in the_littleo _ _ _ X](comp_centerK x).
 by rewrite -[_ (y - x)]/((_ \o (center x)) y) -littleo_center0.
 Qed.
@@ -297,7 +297,7 @@ rewrite /derive => /diff_locally -> /=; set k := 'o _.
 evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
   by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
-apply: cvg_map_lim.
+apply: cvg_map_lim => //.
 pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: (@cvgD _ _ [topologicalType of R^o]).
@@ -525,7 +525,7 @@ suff /diff_locally /hdf -> : differentiable f x.
 apply/diffP; apply: (@getPex _ (fun (df : {linear V -> W}) => continuous df /\
   forall y, f y = f (lim x) + df (y - lim x) +o_(y \near x) (y - lim x))).
 exists df; split=> //; apply: eqaddoEx => z.
-rewrite (hdf _ dxf) !addrA lim_id /(_ \o _) /= subrK [f _ + _]addrC addrK.
+rewrite (hdf _ dxf) !addrA lim_id // /(_ \o _) /= subrK [f _ + _]addrC addrK.
 rewrite -addrA -[LHS]addr0; congr (_ + _).
 apply/eqP; rewrite eq_sym addrC addr_eq0 oppox; apply/eqP.
 by rewrite littleo_center0 (comp_centerK x id) -[- _ in RHS](comp_centerK x).
@@ -1376,7 +1376,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_right_proper_filter x.
-apply: (@cvg_map_lim _ _ _ (at_right _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@cvg_map_lim _ _ _ (at_right _)) => // A /cvfx /locallyP [_ /posnumP[e] xe_A].
 by exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
 
@@ -1386,7 +1386,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_left_proper_filter x.
-apply: (@cvg_map_lim _ _ _ (at_left _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@cvg_map_lim _ _ _ (at_left _)) => // A /cvfx /locallyP [_ /posnumP[e] xe_A].
 exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.
@@ -1411,7 +1411,7 @@ Lemma ler0_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
 Proof.
 move=> fle0 fcv; rewrite -oppr_ge0.
 have limopp : - lim (f @ F) = lim (- f @ F).
-  by apply: Logic.eq_sym; apply: cvg_map_lim; apply: cvgN.
+  by apply: Logic.eq_sym; apply: cvg_map_lim => //; apply: cvgN.
 rewrite limopp; apply: le0r_cvg_map; last by rewrite -limopp; apply: cvgN.
 by move: fle0; apply: filterS => x; rewrite oppr_ge0.
 Qed.
@@ -1423,7 +1423,7 @@ Lemma ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T)) (F
 Proof.
 move=> lefg fcv gcv; rewrite -subr_ge0.
 have eqlim : lim (g @ F) - lim (f @ F) = lim ((g - f) @ F).
-  by apply: Logic.eq_sym; apply: cvg_map_lim; apply: cvgD => //; apply: cvgN.
+  by apply/esym; apply: cvg_map_lim => //; apply: cvgD => //; apply: cvgN.
 rewrite eqlim; apply: le0r_cvg_map; last first.
   by rewrite /(cvg _) -eqlim /=; apply: cvgD => //; apply: cvgN.
 by move: lefg; apply: filterS => x; rewrite subr_ge0.

@@ -958,28 +958,6 @@ by move: (ball_splitl av bv); rewrite -ball_normE /ball_ ltxx.
 Qed.
 Hint Extern 0 (separated _) => exact: normedModType_separated.*)
 
-(*Lemma cvg_unique {F} {FF : ProperFilter F} :
-  is_prop [set x : V | F --> x].
-Proof. by move=> Fx Fy; rewrite -closeE; apply: cvg_close. Qed.*)
-
-Lemma locally_cvg_unique (x y : V) : x --> y -> x = y.
-Proof. by rewrite -closeE //; apply: cvg_close. Qed.
-
-Lemma lim_id (x : V) : lim x = x.
-Proof. by symmetry; apply: locally_cvg_unique; apply/cvg_ex; exists x. Qed.
-
-(*Lemma cvg_lim {F} {FF : ProperFilter F} (l : V) :
-  F --> l -> lim F = l.
-Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@cvg_unique F). Qed.*)
-
-Lemma cvg_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
-  f @ F --> l -> lim (f @ F) = l.
-Proof. exact: cvg_lim. Qed.
-
-Lemma cvgi_unique {T : Type} {F} {FF : ProperFilter F} (f : T -> set V) :
-  {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
-Proof. by move=> ffun fx fy; rewrite -closeE //; apply: cvgi_close. Qed.
-
 Lemma cvg_normW {F : set (set V)} {FF : Filter F} (y : V) :
   (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
   F --> y.
@@ -987,14 +965,6 @@ Proof.
 move=> cv; apply/cvg_normP => _/posnumP[e]; near=> x.
 by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
-
-Lemma cvgi_map_lim {T} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
-  F (fun x : T => is_prop (f x)) ->
-  f `@ F --> l -> lim (f `@ F) = l.
-Proof.
-move=> f_prop f_l; apply: get_unique => // l' f_l'.
-exact: cvgi_unique _ f_l' f_l.
-Qed.
 
 Lemma cvg_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y ->
