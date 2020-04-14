@@ -1860,6 +1860,21 @@ Typeclasses Opaque locally'.
 Canonical locally'_filter_on (T : topologicalType)  (x : T) :=
   FilterType (locally' x) (locally'_filter _).
 
+Lemma subset_filtermap (T U : Type) (f : T -> U):
+  forall (F G : set (set T)), G `=>` F -> f @ G `=>` f @ F.
+Proof. by move=> F G H A fFA ; exact: H (preimage f A) fFA. Qed.
+
+Lemma flim_within_filter {T U} {f : T -> U} (F : set (set T)) {FF : (Filter F) }
+  (G : set (set U)) : forall (D : set T), (f @ F) --> G -> (f @ within D F) --> G.
+Proof. move=> ?;  exact: flim_trans (subset_filtermap (flim_within _)). Qed. 
+
+Lemma cvg_within {T} {U : topologicalType} (f : T -> U) (F : set (set T))
+  (D : set T): Filter F -> cvg (f @ F) -> cvg (f @ within D F).
+Proof. by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: flim_within_filter. Qed.
+
+Lemma locally_locally' {T : topologicalType} (x : T) : locally' x `=>` locally x.
+Proof. exact: flim_within. Qed.
+
 (** ** Closed sets in topological spaces *)
 
 Section Closed.
