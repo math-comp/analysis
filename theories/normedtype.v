@@ -646,6 +646,12 @@ Variables (R : numDomainType) (V : normedModType R).
 Lemma normmZ l (x : V) : `| l *: x | = `| l | * `| x |.
 Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
+
+End NormedModule_numDomainType.
+
+Section PseudoNormedZmod_numDomainType. (*to be lifted *)
+Variables (R : numDomainType) (V : pseudoMetricNormedZmodType R).
+  
 Local Notation ball_norm := (ball_ (@normr R V)).
 
 Local Notation locally_norm := (locally_ ball_norm).
@@ -732,7 +738,7 @@ Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
 Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
 Proof. by rewrite propeqE ball_normE. Qed.
 
-End NormedModule_numDomainType.
+End PseudoNormedZmod_numDomainType.
 Hint Resolve normr_ge0 : core.
 Arguments flim_norm {_ _ F FF}.
 
