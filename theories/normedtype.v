@@ -742,8 +742,9 @@ End PseudoNormedZmod_numDomainType.
 Hint Resolve normr_ge0 : core.
 Arguments flim_norm {_ _ F FF}.
 
-Section NormedModule_numFieldType.
-Variables (R : numFieldType) (V : normedModType R).
+(* Section NormedModule_numFieldType. *)
+Section PseudoNormedZMod_numFieldType.
+Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
 
 Local Notation ball_norm := (ball_ (@normr R V)).
 
@@ -775,17 +776,22 @@ Qed.
 
 Lemma flim_unique {F} {FF : ProperFilter F} :
   is_prop [set x : V | F --> x].
-Proof. by move=> Fx Fy; rewrite -closeE; apply: flim_close. Qed.
+Proof. by move=> Fx Fy; rewrite -closeE; apply: (@flim_close _ V). Qed.
 
 Lemma locally_flim_unique (x y : V) : x --> y -> x = y.
-Proof. by rewrite -closeE; apply: flim_close. Qed.
+Proof. by rewrite -closeE; apply:  (@flim_close _ V). Qed.
 
-Lemma lim_id (x : V) : lim x = x.
+End PseudoNormedZMod_numFieldType.
+
+Section NormedModule_numFieldType.
+Variables (R : numFieldType) (V : normedModType R).
+  
+Lemma lim_id (x : V) : lim x = x. (*Why is this not working with pseudometricnormedzmod *)
 Proof. by symmetry; apply: locally_flim_unique; apply/cvg_ex; exists x. Qed.
 
 Lemma flim_lim {F} {FF : ProperFilter F} (l : V) :
   F --> l -> lim F = l.
-Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@flim_unique F). Qed.
+Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@flim_unique _ V F). Qed.
 
 Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
   f @ F --> l -> lim (f @ F) = l.
