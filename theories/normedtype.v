@@ -1568,7 +1568,7 @@ Proof.
 by move=> k; apply: (flim_comp2 flim_id (flim_const _) (scale_continuous (_, _))).
 Qed.
 
-Lemma opp_continuous : continuous (@GRing.opp V).
+Lemma opp_continuous : continuous (@GRing.opp V). (*TODO: generalize to pseudometricnormedzmod*)
 Proof.
 move=> x; rewrite -scaleN1r => P /scaler_continuous /=.
 by rewrite !locally_nearE near_map; apply: filterS => x'; rewrite scaleN1r.
@@ -1576,9 +1576,9 @@ Qed.
 
 End NVS_continuity.
 
-Section limit_composition.
+Section limit_composition_pseudoMetricNormedZmodType.
 
-Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
+Context {K : numFieldType} {V : pseudoMetricNormedZmodType K} {T : topologicalType}.
 
 Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
@@ -1593,6 +1593,13 @@ Lemma continuousD (f g : T -> V) x :
   {for x, continuous (fun x => f x + g x)}.
 Proof. by move=> ??; apply: lim_add. Qed.
 
+End limit_composition_pseudoMetricNormedZmodType.
+
+
+Section limit_composition_normedmod.
+  
+Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
+  
 Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
   (k : K^o) (a : V) :
   f @ F --> k -> g @ F --> a -> (fun x => (f x) *: (g x)) @ F --> k *: a.
@@ -1632,7 +1639,7 @@ Lemma continuousM (f g : T -> K^o) x :
   {for x, continuous (fun x => f x * g x)}.
 Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
 
-End limit_composition.
+End limit_composition_normedmod.
 
 (** ** Complete Normed Modules *)
 
