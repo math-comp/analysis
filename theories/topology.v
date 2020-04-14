@@ -2028,31 +2028,19 @@ by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
 Qed.
 
 
-Section Hausddorff_topologies. (*new *)
-(*TODO : replace all lemmas using close on pseudometric types or normedMod types
-  by lemmas using cluster on topologicalspace *)
-(*and then replace by cluster -> ball *)
+Section within.
+
   
-Lemma flim_incl (T U : topologicalType) (f : T -> U): forall (F G: set (set T)),  (G `=>` F) -> (f @ G `=>` f @ F).
-Proof.
- by move => F G  H A fFA ; exact ((H (preimage f A)) fFA).
-Qed.
+Lemma flim_incl (T U : topologicalType) (f : T -> U): forall (F G: set (set T)), (G `=>` F) -> (f @ G `=>` f @ F).
+Proof. by move => F G H A fFA ; exact ((H (preimage f A)) fFA). Qed.
 
 
-Lemma within_subset (T U : topologicalType) (F : set (set T)) (D : set T) (fF: Filter F) :
-  within D F `=>` F .
-Proof.
-move => A; rewrite /within.
-have lem2: subset A ((fun a : T => D a -> A a)) by move => a Aa _.
-by apply: filterS.   
-Qed.     
- 
-Lemma h_flim_within (T U : topologicalType) (f : T -> U) (F : set (set T)) (* rename *)
+Lemma flim_within_filter (T U : topologicalType) (f : T -> U) (F : set (set T)) (* rename *)
       (G : set (set U)): forall (D : set T), (Filter F) -> ((f @ F) --> G) -> ((f @ within D F) --> G).
 Proof.
   move => D FF; rewrite /flim !filter_of_filterE.
   have lem : (f @ within D F) `=>` (f @ F).
-  by apply: flim_incl; apply: within_subset.  
+  by apply: flim_incl; apply: flim_within.  
   move => fFG; apply: flim_trans. 
   by apply: (flim_incl lem).
   by [].
@@ -2064,14 +2052,24 @@ Lemma cvg_within (T U : topologicalType) (f : T -> U) (F: set (set T)) (D: set T
 Proof.
   move => FF /cvg_ex [l H].
   apply/cvg_ex; exists l. 
-  by apply: h_flim_within.
+  by apply: flim_within_filter.
 Qed.
 
 
 Lemma locally_locally' (T : topologicalType): forall (x : T), (locally' x) `=>` (locally x).
 Proof.
-  by move => x; apply: (within_subset). 
+  by move => x; apply: flim_within. 
 Qed.
+
+
+End within.
+
+
+Section Hausddorff_topologies. (*new *)
+(*TODO : replace all lemmas using close on pseudometric types or normedMod types
+  by lemmas using cluster on topologicalspace *)
+(*and then replace by cluster -> ball *)
+  
 
 Variables (T: topologicalType).
 
@@ -2767,8 +2765,7 @@ Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 Lemma flim_close {F} {FF : ProperFilter F} (x y : M) :
   F --> x -> F --> y -> close x y.
 Proof.
-(* rewrite close_cluster. apply: h_flim_close *)                                                      
-move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z. Check ball_splitl. 
+move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z ;
 by [apply/Fx/locally_ball|apply/Fy/locally_ball].
 Grab Existential Variables. all: end_near.
 Qed.
