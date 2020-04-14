@@ -858,7 +858,7 @@ rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
 Qed.
 
-Lemma normedModType_hausdorff (R : realFieldType) (V : pseudoMetricNormedZmodType R) :
+Lemma pseudoMetricNormedZModType_hausdorff (R : realFieldType) (V : pseudoMetricNormedZmodType R) :
   hausdorff V.
 Proof.
 move=> p q clp_q; apply/subr0_eq/normr0_eq0/Rhausdorff => A B pq_A.
@@ -896,13 +896,13 @@ Ltac near_simpl := rewrite ?near_simpl.
 End NearNorm.
 
 Lemma continuous_flim_norm {R : numFieldType}
-  (V W : normedModType R) (f : V -> W) x l :
+  (V W : pseudoMetricNormedZmodType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof.
 move=> cf xl e.
 move/flim_norm: (cf l) => /(_ _ (posnum_gt0 e)).
 rewrite nearE /= => /locallyP; rewrite locally_E => -[i i0]; apply.
-have /@flim_norm : Filter [filter of x] by apply: filter_on_Filter.
+have /@flim_norm : Filter [filter of x]  by apply: (@filter_on_Filter V).
 move/(_ _ xl _ i0).
 rewrite nearE /= => /locallyP; rewrite locally_E => -[j j0].
 by move/(_ _ (ballxx _ j0)); rewrite -ball_normE.
