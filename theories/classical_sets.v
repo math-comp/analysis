@@ -243,6 +243,14 @@ Proof. by move=> H K; rewrite funeqE=> s; rewrite propeqE; split=> [/H|/K]. Qed.
 Lemma sub0set T (X : set T) : set0 `<=` X.
 Proof. by []. Qed.
 
+Lemma setC0 T : ~` set0 = setT :> set T.
+Proof. by rewrite predeqE; split => ?. Qed.
+
+Lemma setCK T : involutive (@setC T).
+Proof. by move=> A; rewrite funeqE => t; rewrite /setC; exact: notLR. Qed.
+
+Lemma setCT T : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
+
 Lemma subset0 T (X : set T) : (X `<=` set0) = (X = set0).
 Proof. rewrite propeqE; split => [?|-> //]; exact/eqEsubset. Qed.
 
