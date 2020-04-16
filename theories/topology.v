@@ -1398,6 +1398,14 @@ Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
 Lemma neigh_locally (p : T) (A : set T) : neigh p A -> locally p A.
 Proof. by rewrite locallyE => p_A; exists A; split. Qed.
 
+Lemma interiorI (A B:set T): (A `&` B)^° = A^° `&` B^°.
+Proof.
+rewrite /interior predeqE => //= x; rewrite locallyE; split => [[B0 [?]] | []].
+- by rewrite subsetI => // -[? ?]; split; rewrite locallyE; exists B0.
+- rewrite locallyE => -[B0 [? ?]] [B1 [? ?]]; exists (B0 `&` B1); split;
+  [exact: neighI | by rewrite subsetI; split; apply: subIset; [left|right]].
+Qed.
+
 End Topological1.
 
 Notation "A ^°" := (interior A) : classical_set_scope.
