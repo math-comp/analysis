@@ -2633,93 +2633,55 @@ Lemma locally_pt_comp (P : Rdefinitions.R -> Prop)
   locally (f x) P -> Ranalysis1.continuity_pt f x -> \near x, P (f x).
 Proof. by move=> Lf /continuity_pt_cvg; apply. Qed.
 
-
 Section LinearContinuousBounded.
 
-Variables (R: numFieldType) (V  W: normedModType R).
+Variables (R : numFieldType) (V W : normedModType R).
 
 Lemma continuous_atP x (f : V -> W) :
- {for x, continuous f} <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
-Proof.
-   split; by  move => /cvg_ballP.
-Qed.
+  {for x, continuous f} <-> (forall e, 0 < e -> \forall y \near f @ x, ball (f x) e y).
+Proof. exact: cvg_ballP. Qed.
 
 Lemma continuous_bounded0 (f : {linear V -> W}) :
-  {for 0, continuous f} -> 
-   (exists  r, (r > 0) /\ (forall x : V,   (`|f x|) <=  (`|x| ) * r)) . 
+  {for 0, continuous f} -> exists r, r > 0 /\ forall x, `|f x| <= `|x| * r.
 Proof.
-  move => /continuous_atP H. 
-  have  H':  (0 < 1) by [].
-  move : (H 1 (H' _)).
-  rewrite (linear0 f) /( _ @ _ ) //= nearE =>  H0 {H}. 
-  move : (locally_ex H0) => [ tp  H] {H0} ;  pose t := tp%:num; move : H. 
-  exists (2*t^-1).
-  split; first by [].
-  move => x; case: (boolp.EM (x=0)).
-  - by move => -> ; rewrite (linear0 f) !normr0 //= mul0r. 
-  - move => /eqP xneq0. 
-  have normxle0 : `|x| > 0 by rewrite normr_gt0. 
-  pose a := (  `|x|^-1 * t/2 ) *: x.
-  have ball0ta : ball 0 t a. 
-   apply : ball_sym ; rewrite -ball_normE /ball_  subr0.
-   rewrite normmZ mulrC normrM. 
-   rewrite !gtr0_norm //= mulrC. 
-   rewrite -mulrA -mulrA ltr_pdivr_mull //=. 
-   rewrite mulrC -mulrA gtr_pmull. 
-   rewrite invf_lt1 //=. 
-     by apply: ltr_spaddr.
-     by rewrite mulr_gt0 //=. 
-   apply : mulr_gt0.  
-     by apply: posnum_gt0.
-     by rewrite invr_gt0 //=.
-  move: (H a ball0ta); rewrite -ball_normE //= sub0r normrN. 
-  suff -> : (f a =  `|x|^-1 * t/2  *: (f x)).
-     rewrite normmZ gtr0_norm. 
-     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivr_mull //=.   
-  rewrite mulrC [(_*1)]mulrC mul1r -ltr_pdivl_mulr.
-  rewrite invf_div => Ht. 
-    by apply: ltW.
-    by apply: mulr_gt0.
-    apply: mulr_gt0 ; last by [].
-       apply : mulr_gt0 ; last by [].
-      by rewrite invr_gt0 //=.
-   suff -> : a = (`|x|^-1 * t/2) *: x + 0  by  rewrite linearP (linear0 f) addrC add0r.
-     by rewrite addrC add0r.
-Qed.     
-
-(* rewrite using landau notations ? *)
-Lemma bounded_continuous0 (f: {linear V -> W}):
-  (exists  r , (r > 0) /\ (forall x : V, `|f x| <=  `|x| * r))
-  -> {for 0, continuous f} .
-Proof.
-  move => [r [lt0r H]];  apply/(continuous_atP 0) => eps poseps /=.
-  rewrite nearE (linear0 f); apply/locallyP.  
-  exists (eps /2 / r).  
-   by rewrite !divr_gt0. 
-   move => x; rewrite -ball_normE /= addrC addr0 normrN.
-   move => nx; rewrite -ball_normE /= addrC addr0 normrN.
-  have nx0: `|x| * r <= eps / 2 by  apply : ltW; rewrite -ltr_pdivl_mulr. 
-  have fxeps2 : `|f x| <= eps /2 by exact : le_trans (H x) nx0.
-  have eps2eps : eps/ 2 < eps.
-    rewrite gtr_pmulr; last by [].
-      by rewrite invf_lt1; apply: ltr_spaddr.
-  by apply : (le_lt_trans fxeps2).
+move=> /continuous_atP /(_ _ ltr01).
+rewrite linear0 /= nearE => /locally_ex[tp ball_f].
+pose t := tp%:num; exists (2 * t^-1); split => // x.
+have [->|/eqP x0] := boolp.EM (x = 0); first by rewrite linear0 !normr0 mul0r.
+have /ball_f : ball 0 t ((`|x|^-1 * t /2) *: x).
+  apply: ball_sym; rewrite -ball_normE /ball_  subr0 normmZ mulrC 2!normrM.
+  rewrite 2!mulrA normrV ?unitfE ?normr_eq0 // normr_id.
+  rewrite divrr ?mul1r ?unitfE ?normr_eq0 // gtr0_norm // gtr_pmulr //.
+  by rewrite gtr0_norm // invr_lt1 // ?unitfE // ltr1n.
+rewrite -ball_normE //= sub0r normrN linearZ /= normmZ -mulrA normrM.
+rewrite normrV ?unitfE ?normr_eq0 // normr_id -mulrA.
+rewrite ltr_pdivr_mull ?mulr1 ?normr_gt0 // -ltr_pdivl_mull ?normr_gt0 //.
+by rewrite gtr0_norm // invf_div mulrC => /ltW.
 Qed.
 
+(* rewrite using landau notations ? *)
+Lemma bounded_continuous0 (f : {linear V -> W}) :
+  (exists r, r > 0 /\ forall x, `|f x| <= `|x| * r) -> {for 0, continuous f} .
+Proof.
+move=> [r [r0 fr]]; apply/(continuous_atP 0) => e e0.
+rewrite nearE linear0; apply/locallyP.
+exists (e / 2 / r); first by rewrite !divr_gt0.
+move=> x; rewrite -2!ball_normE /= 2!sub0r 2!normrN => xr.
+have /le_lt_trans -> // : `|f x| <= e / 2.
+  by rewrite (le_trans (fr x)) // -ler_pdivl_mulr // ltW.
+by rewrite gtr_pmulr // invr_lt1 // ?unitfE // ltr1n.
+Qed.
 
-Lemma continuousat0_continuous (f : {linear V -> W}):
+Lemma continuousat0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
 Proof.
- move=> cont0f x ; rewrite cvg_locally => eps pos.
- move : (continuous_bounded0 cont0f) => [r [rpos Hr]]. 
- rewrite nearE /= locallyP -ball_normE.
- exists (eps /r).
-  -  by rewrite mulr_gt0 //= invr_gt0 .
-  - move => y Hxy ; rewrite /(_ @^-1`_)  -ball_normE //= -(linearB f).   
-    suff : `|x - y| * r < eps by apply : le_lt_trans (Hr (x-y)).
-    by rewrite -ltr_pdivl_mulr.
-Qed.      
+move=> cont0f x; rewrite cvg_locally => e e0.
+move: (continuous_bounded0 cont0f) => [r [r0 fr]].
+rewrite nearE /= locallyP -ball_normE.
+exists (e / r).
+- by rewrite mulr_gt0 //= invr_gt0.
+- move=> y xy; rewrite -ball_normE /= -linearB.
+  by rewrite (le_lt_trans (fr (x - y))) // -ltr_pdivl_mulr.
+Qed.
 
 End LinearContinuousBounded.
-
-Print {for _, _}.
