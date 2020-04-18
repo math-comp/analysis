@@ -263,6 +263,26 @@ Qed.
 Lemma imageP {A B} (f : A -> B) (X : set A) a : X a -> (f @` X) (f a).
 Proof. by exists a. Qed.
 
+Lemma image_comp T U V (f : T -> U) (g : U -> V) A : g @` (f @` A) = (g \o f) @` A.
+Proof.
+apply eqEsubset => c.
+- by case => b [] a Xa <- <-; apply/imageP.
+- by case => a Xa <-; apply/imageP/imageP.
+Qed.
+
+Lemma image_id T (A : set T) : id @` A = A.
+Proof. by apply eqEsubset => a; [case=> /= x Xx <-|exists a]. Qed.
+
+Lemma image_setU T U (f : T -> U) A B : f @` (A `|` B) = f @` A `|` f @` B.
+Proof.
+apply eqEsubset => b.
+- by case=> a [] Ha <-; [left | right]; apply imageP.
+- by case=> -[] a Ha <-; apply imageP; [left | right].
+Qed.
+
+Lemma image_set1 T U (f : T -> U) (t : T) : f @` [set t] = [set f t].
+Proof. by apply eqEsubset => b; [case=> a' -> <- | move->; apply imageP]. Qed.
+
 Lemma sub_image_setI {A B} (f : A -> B) (X Y : set A) :
   f @` (X `&` Y) `<=` f @` X `&` f @` Y.
 Proof. by move=> b [x [Xa Ya <-]]; split; apply: imageP. Qed.
