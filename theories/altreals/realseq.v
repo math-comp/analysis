@@ -386,7 +386,8 @@ Lemma ncvg_gt (u : nat -> R) (l1 l2 : {ereal R}) :
     exists K, forall n, (K <= n)%N -> (l1 < (u n)%:E)%E.
 Proof.
 case: l1 l2 => [l1||] [l2||] //=; first last.
-+ by move=> _ _; exists 0%N. + by move=> _ _; exists 0%N.
++ by move=> _ _; exists 0%N => ? ?; exact: lte_ninfty.
++ by move=> _ _; exists 0%N => ? ?; exact: lte_ninfty.
 + by move=> _ /(_ (NPInf l1)) [K cv]; exists K => n /cv.
 move=> lt_12; pose e := l2 - l1 => /(_ (B l2 e)).
 case=> K cv; exists K => n /cv; rewrite !inE eclamp_id ?subr_gt0 //.

@@ -148,14 +148,20 @@ Require Import boolp Rstruct classical_sets posnum.
 (*                                     open sets.                             *)
 (*   topologyOfFilterMixin loc_filt loc_sing loc_loc == builds the mixin for  *)
 (*                                     a topological space from the           *)
-(*                                     properties of locally.                 *)
+(*                                     properties of locally and hence        *)
+(*                                     assumes that the carrier is a          *)
+(*                                     filterType.                            *)
 (*   topologyOfOpenMixin opT opI op_bigU == builds the mixin for a            *)
 (*                                     topological space from the properties  *)
-(*                                     of open sets.                          *)
+(*                                     of open sets, assuming the carrier is  *)
+(*                                     a pointed type. locally_of_open must   *)
+(*                                     be used to declare a filterType.       *)
 (*   topologyOfBaseMixin b_cover b_join == builds the mixin for a topological *)
 (*                                     space from the properties of a base of *)
 (*                                     open sets; the type of indices must be *)
-(*                                     a pointedType.                         *)
+(*                                     a pointedType, as well as the carrier. *)
+(*                                     locally_of_open \o open_from must be   *)
+(*                                     used to declare a filterType           *)
 (*       topologyOfSubbaseMixin D b == builds the mixin for a topological     *)
 (*                                     space from a subbase of open sets b    *)
 (*                                     indexed on domain D; the type of       *)
@@ -1024,6 +1030,14 @@ move=> eq_fg P /=; apply: filterS2 eq_fg => x eq_fg [y [fxy Py]].
 by exists y; rewrite -eq_fg.
 Qed.
 
+Lemma cvg_near_const (T U : Type) (f : T -> U) (F : set (set T)) (G : set (set U)) :
+  Filter F -> ProperFilter G ->
+  (\forall y \near G, \forall x \near F, f x = y) -> f @ F --> G.
+Proof.
+move=> FF FG fFG P /= GP; rewrite !near_simpl; apply: (have_near G).
+by apply: filter_app fFG; near=> y => /=; apply: filterS => x /= ->; near: y.
+Grab Existential Variables. all: by end_near. Qed.
+
 (** ** Specific filters *)
 
 Section at_point.
@@ -1498,6 +1512,21 @@ by move=> x; rewrite !near_simpl => /locally_singleton ?; apply: filterE.
 Qed.
 Arguments cst_continuous {T T'} k F {FF}.
 Hint Resolve cst_continuous : core.
+
+Lemma cvg_fconst (T : Type) (U : topologicalType)
+  (f : T -> U) (F : set (set T)) (l : U) :
+  Filter F ->
+  (\forall x \near F, f x = l) -> f @ F --> l.
+Proof.
+move=> FF fFl P /=; rewrite !near_simpl => Pl.
+by apply: filterS fFl => _ ->; apply: locally_singleton.
+Qed.
+
+Lemma cvg_const (T : Type) (U : topologicalType) (F : set (set T)) {FF : Filter F}
+  (x : U) : (fun _ : T => x) @ F --> x.
+Proof. by apply: cvg_fconst; near=> x0.
+Grab Existential Variables. all: end_near. Qed.
+Arguments cvg_const {T U F FF} x.
 
 (** ** Topology defined by a filter *)
 
@@ -2457,11 +2486,11 @@ Lemma cvg_map_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
 Proof. exact: cvg_lim. Qed.
 
 Lemma cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
-  {near F, is_fun f} -> is_prop [set x : T | f `@ F --> x].
+  {near F, is_fun f} -> is_subset1 [set x : T | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE //; exact: cvgi_close. Qed.
 
 Lemma cvgi_map_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
-  F (fun x : U => is_prop (f x)) ->
+  F (fun x : U => is_subset1 (f x)) ->
   f `@ F --> l -> lim (f `@ F) = l.
 Proof.
 move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
@@ -2702,13 +2731,6 @@ Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   forall eps : R, 0 < eps -> F [set x | exists z, f x z /\ ball y eps z].
 Proof. by move/cvgi_ballP. Qed.
 
-Lemma cvg_const {T} {F : set (set T)}
-   {FF : Filter F} (a : M) : a @[_ --> F] --> a.
-Proof.
-move=> P /locallyP[_ /posnumP[eps] subP]; rewrite !near_simpl /=.
-by apply: filterE=> ?; apply/subP/ballxx.
-Qed.
-
 Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
 Canonical set_filter_source :=
   @Filtered.Source Prop _ M (fun A => locally_ ball_set A).
@@ -2716,7 +2738,6 @@ Canonical set_filter_source :=
 End pseudoMetricType_numDomainType.
 Hint Resolve locally_ball : core.
 Hint Resolve close_refl : core.
-Arguments cvg_const {R M T F FF} a.
 Arguments close_cvg {T} F1 F2 {FF2} _.
 
 Section pseudoMetricType_numFieldType.

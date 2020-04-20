@@ -1220,7 +1220,7 @@ set c1 : R := _ / _; set c2 : R := _ / _; have eqc2: c2 = 1 - c1.
 set c := (li + l j); pose z := (c * c1 * f xi + c * c2 * f (x j)).
 apply/(@le_trans _ _ z); last by rewrite /z ![_*(_/_)]mulrC !mulfVK.
 rewrite {}/z -![c * _ * _]mulrA -mulrDr ler_wpmul2l ?addr_ge0 //.
-rewrite eqc2 cvx_f // divr_ge0 ?addr_ge0 //=.
+rewrite eqc2 cvx_f // ?lee_ninfty ?lee_pinfty // divr_ge0 ?addr_ge0 //=.
 by rewrite ler_pdivr_mulr ?mul1r ?ler_addl ?ltr_paddl.
 Qed.
 End Jensen.
