@@ -369,6 +369,12 @@ Proof. by rewrite funeqE => t; rewrite propeqE; split; [case|left]. Qed.
 Lemma setU_eq0 T (X Y : set T) : (X `|` Y = set0) = ((X = set0) /\ (Y = set0)).
 Proof. by rewrite -!subset0 subUset. Qed.
 
+Lemma setCU T (X Y : set T) : ~`(X `|` Y) = ~` X `&` ~` Y.
+Proof.
+rewrite predeqE => z.
+by apply: asbool_eq_equiv; rewrite asbool_and !asbool_neg asbool_or negb_or.
+Qed.
+
 Lemma setI_bigcapl A I (D : set I) (f : I -> set A) (X : set A) :
   D !=set0 -> \bigcap_(i in D) f i `&` X = \bigcap_(i in D) (f i `&` X).
 Proof.
