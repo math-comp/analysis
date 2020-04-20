@@ -101,19 +101,19 @@ Implicit Types (x y : {ereal R}).
 
 Definition le_ereal x1 x2 :=
   match x1, x2 with
-  | -oo, _ | _, +oo => true
-  | +oo, _ | _, -oo => false
-
+  | -oo, x%:E | x%:E, +oo => x \is Num.real
   | x1%:E, x2%:E => x1 <= x2
+  | -oo, _    | _, +oo => true
+  | +oo, _    | _, -oo => false
   end.
 
 Definition lt_ereal x1 x2 :=
   match x1, x2 with
-  | -oo, -oo | +oo, +oo => false
-  | -oo, _   | _  , +oo => true
-  | +oo, _   | _  , -oo => false
-
+  | -oo, x%:E | x%:E, +oo => x \is Num.real
   | x1%:E, x2%:E => x1 < x2
+  | -oo, -oo  | +oo, +oo => false
+  | +oo, _    | _  , -oo => false
+  | -oo, _  => true
   end.
 
 Lemma lt_def_ereal x y : lt_ereal x y = (y != x) && le_ereal x y.
@@ -123,10 +123,14 @@ Lemma le_refl_ereal : reflexive le_ereal.
 Proof. by case => /=. Qed.
 
 Lemma le_anti_ereal : ssrbool.antisymmetric le_ereal.
-Proof. by case=> [?||][?||] //= /le_anti ->. Qed.
+Proof. by case=> [?||][?||]/=; rewrite ?andbF => // /le_anti ->. Qed.
 
 Lemma le_trans_ereal : ssrbool.transitive le_ereal.
-Proof. by case=> [?||][?||][?||] //=; exact: le_trans. Qed.
+Proof.
+case=> [?||][?||][?||] //=; rewrite -?comparabler0; first exact: le_trans.
+  by move=> /le_comparable cmp /(comparabler_trans cmp).
+by move=> cmp /ge_comparable /comparabler_trans; apply.
+Qed.
 
 Fact ereal_display : unit. Proof. by []. Qed.
 
@@ -158,6 +162,18 @@ Proof. by []. Qed.
 
 Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E)%E = (x < y)%O.
 Proof. by []. Qed.
+
+Lemma lte_pinfty (R : realDomainType) (x : R) : (x%:E < +oo).
+Proof. exact: num_real. Qed.
+
+Lemma lee_pinfty (R : realDomainType) (x : R) : (x%:E <= +oo).
+Proof. by rewrite ltW // lte_pinfty. Qed.
+
+Lemma lte_ninfty (R : realDomainType) (x : R) : (-oo < x%:E).
+Proof. exact: num_real. Qed.
+
+Lemma lee_ninfty (R : realDomainType) (x : R) : (-oo <= x%:E).
+Proof. by rewrite ltW // lte_ninfty. Qed.
 
 Section ERealOrder_realDomainType.
 Context {R : realDomainType}.
@@ -198,7 +214,10 @@ Lemma meetKU_ereal y x : max_ereal x (min_ereal x y) = x.
 Proof. by case: x y => [?||][?||] //=; rewrite (meetKU, joinxx). Qed.
 
 Lemma leEmeet_ereal x y : (x <= y)%E = (min_ereal x y == x).
-Proof. by case: x y => [x||][y||] //=; [exact: leEmeet | rewrite eqxx]. Qed.
+Proof.
+case: x y => [x||][y||] //=; rewrite ?eqxx ?lee_pinfty ?lee_ninfty //.
+exact: leEmeet.
+Qed.
 
 Lemma meetUl_ereal : left_distributive min_ereal max_ereal.
 Proof.
@@ -206,14 +225,13 @@ by case=> [?||][?||][?||] //=; rewrite ?(meetUl, meetUK, meetKUC, joinxx).
 Qed.
 
 Lemma minE_ereal x y : min_ereal x y = if le_ereal x y then x else y.
-Proof. by case: x y => [?||][?||] //=; case: leP. Qed.
+Proof. by case: x y => [?||][?||] //=; rewrite ?num_real //; case: leP. Qed.
 
 Lemma maxE_ereal x y : max_ereal x y = if le_ereal y x then x else y.
-Proof.
-Proof. by case: x y => [?||][?||] //=; case: ltP. Qed.
+Proof. by case: x y => [?||][?||] //=; rewrite ?num_real //; case: ltP. Qed.
 
 Lemma le_total_ereal : total (@le_ereal R).
-Proof. by case=> [?||][?||] //=; exact: le_total. Qed.
+Proof. by case=> [?||][?||] //=; rewrite ?num_real //; exact: le_total. Qed.
 
 Definition ereal_latticeMixin :=
   LatticeMixin min_erealC max_erealC min_erealA max_erealA

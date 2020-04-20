@@ -1,5 +1,5 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import ssralg matrix.
+From mathcomp Require Import fintype bigop ssralg matrix.
 Require Import boolp.
 
 (******************************************************************************)
@@ -371,6 +371,9 @@ Proof. by rewrite predeqE => ?; split=> [[]|[]]. Qed.
 Lemma setIT {A} (X : set A) : X `&` setT = X.
 Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
 
+Lemma setTI {A} (X : set A) : setT `&` X = X.
+Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
+
 Lemma setI0 {A} (X : set A) : X `&` set0 = set0.
 Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
 
@@ -403,10 +406,16 @@ Lemma setUC A : commutative (@setU A).
 Proof. move=> p q; rewrite /setU predeqE => a; tauto. Qed.
 
 Lemma set0U T (X : set T) : set0 `|` X = X.
-Proof. by rewrite funeqE => t; rewrite propeqE; split; [case|right]. Qed.
+Proof. by rewrite predeqE => t; split; [case|right]. Qed.
 
 Lemma setU0 T (X : set T) : X `|` set0 = X.
-Proof. by rewrite funeqE => t; rewrite propeqE; split; [case|left]. Qed.
+Proof. by rewrite predeqE => t; split; [case|left]. Qed.
+
+Lemma setTU T (X : set T) : setT `|` X = setT.
+Proof. by rewrite predeqE => t; split; [case|left]. Qed.
+
+Lemma setUT T (X : set T) : X `|` setT = setT.
+Proof. by rewrite predeqE => t; split; [case|right]. Qed.
 
 Lemma setU_eq0 T (X Y : set T) : (X `|` Y = set0) = ((X = set0) /\ (Y = set0)).
 Proof. by rewrite -!subset0 subUset. Qed.
@@ -424,6 +433,26 @@ move=> [i Di]; rewrite predeqE => a; split=> [[Ifa Xa] j Dj|IfIXa].
   by split=> //; apply: Ifa.
 by split=> [j /IfIXa [] | ] //; have /IfIXa [] := Di.
 Qed.
+
+Lemma setIDl T : left_distributive (@setI T) (@setU T).
+Proof.
+move=> X Y Z; rewrite predeqE => t; split.
+  by move=> [[Xt|Yt] Zt]; [left|right].
+by move=> [[Xt Zt]|[Yt Zt]]; split => //; [left|right].
+Qed.
+
+Lemma setIDr T : right_distributive (@setI T) (@setU T).
+Proof. by move=> X Y Z; rewrite ![X `&` _]setIC setIDl. Qed.
+
+Lemma setUDl T : left_distributive (@setU T) (@setI T).
+Proof.
+move=> X Y Z; rewrite predeqE => t; split.
+  by move=> [[Xt Yt]|Zt]; split; by [left|right].
+by move=> [[Xt|Zt] [Yt|Zt']]; by [left|right].
+Qed.
+
+Lemma setUDr T : right_distributive (@setU T) (@setI T).
+Proof. by move=> X Y Z; rewrite ![X `|` _]setUC setUDl. Qed.
 
 Definition is_subset1 {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := all (is_subset1 \o f).
@@ -475,6 +504,39 @@ Proof. by move=> [b fab]; rewrite /fun_of_rel; apply: xgetI fab. Qed.
 Lemma fun_of_rel_uniq {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
   is_subset1 (f a) -> forall b, f a b ->  fun_of_rel f0 f a = b.
 Proof. by move=> fa_prop b /xget_subset1 xgeteq; rewrite /fun_of_rel xgeteq. Qed.
+
+Section SetMonoids.
+Variable (T : Type).
+
+Import Monoid.
+Canonical setU_monoid := Law (@setUA T) (@set0U T) (@setU0 T).
+Canonical setU_comoid := ComLaw (@setUC T).
+Canonical setU_mul_monoid := MulLaw (@setTU T) (@setUT T).
+Canonical setI_monoid := Law (@setIA T) (@setTI T) (@setIT T).
+Canonical setI_comoid := ComLaw (@setIC T).
+Canonical setI_mul_monoid := MulLaw (@set0I T) (@setI0 T).
+Canonical setU_add_monoid := AddLaw (@setUDl T) (@setUDr T).
+Canonical setI_add_monoid := AddLaw (@setIDl T) (@setIDr T).
+
+End SetMonoids.
+
+Lemma bigcup_ord T n (A : nat -> set T) :
+ \big[setU/set0]_(i < n) A i = \bigcup_(i in [set k | (k < n)%N]) A i.
+Proof.
+elim: n => [|n IHn] in A *; first by rewrite big_ord0 predeqE; split => -[].
+rewrite big_ord_recl /= (IHn (fun i => A i.+1)) predeqE => x; split.
+  by move=> [A0|[i AS]]; [exists 0%N|exists i.+1].
+by move=> [[|i] Ai]; [left|right; exists i].
+Qed.
+
+Lemma bigcap_ord T n (A : nat -> set T) :
+ \big[setI/setT]_(i < n) A i = \bigcap_(i in [set k | (k < n)%N]) A i.
+Proof.
+elim: n => [|n IHn] in A *; first by rewrite big_ord0 predeqE.
+rewrite big_ord_recl /= (IHn (fun i => A i.+1)) predeqE => x; split.
+  by move=> [A0 AS] [|i]// /AS.
+by move=> AP; split => [|i i_lt]; apply: AP.
+Qed.
 
 Module Pointed.
 

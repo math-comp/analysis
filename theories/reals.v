@@ -254,7 +254,7 @@ Proof. by case: R E => ? [? ? []]. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section IsInt.
-Context {R : realType}.
+Context {R : realFieldType}.
 
 Definition Rint := [qualify a x : R | `[exists z, x == z%:~R]].
 Fact Rint_key : pred_key Rint. Proof. by []. Qed.
@@ -773,9 +773,17 @@ Lemma lte_tofin (x y : R) : x < y -> (x%:E < y%:E)%E.
 Proof. by []. Qed.
 
 Lemma lee_opp2 : {mono @eopp R : x y /~ (x <= y)%E}.
-Proof. by move=> x y; elift ler_opp2 : x y. Qed.
+Proof.
+move=> x y; case: x y => [?||] [?||] //; first by rewrite !lee_fin !ler_opp2.
+by rewrite lee_ninfty /Order.le /= realN num_real.
+by rewrite lee_pinfty /Order.le /= realN num_real.
+Qed.
 
 Lemma lte_opp2 : {mono @eopp R : x y /~ (x < y)%E}.
-Proof. by move=> x y; elift ltr_opp2 : x y. Qed.
+Proof.
+move=> x y; case: x y => [?||] [?||] //; first by rewrite !lte_fin !ltr_opp2.
+by rewrite lte_ninfty /Order.lt /= realN num_real.
+by rewrite lte_pinfty /Order.lt /= realN num_real.
+Qed.
 
 End ERealOrderTheory.

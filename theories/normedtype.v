@@ -534,6 +534,60 @@ Typeclasses Opaque ereal_locally.
 
 End ereal_locally_instances.
 
+Section ereal_topologicalType.
+Variable R : realFieldType.
+
+Lemma ereal_loc_singleton (p : {ereal R}) (A : set {ereal R}) :
+  ereal_locally p A -> A p.
+Proof.
+move: p => -[p | [M [Mreal MA]] | [M [Mreal MA]]] /=; [|exact: MA | exact: MA].
+move/locallyP; rewrite locally_E => -[_/posnumP[e]]; apply; exact/ballxx.
+Qed.
+
+Lemma ereal_loc_loc (p : {ereal R}) (A : set {ereal R}) :
+  ereal_locally p A -> ereal_locally p (ereal_locally^~ A).
+Proof.
+move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
+- move/locallyP; rewrite locally_E => -[_/posnumP[e]] ballA.
+  apply/locallyP; rewrite locally_E; exists (e%:num / 2) => //= r per.
+  apply/locallyP; rewrite locally_E; exists (e%:num / 2) => //= x rex.
+  apply/ballA/(@ball_splitl _ _ r) => //; exact/ball_sym.
+- exists (M + 1); split; first by rewrite realD // real1.
+  move=> -[x| _ |] //=.
+    rewrite lte_fin => M'x /=.
+    apply/locallyP; rewrite locally_E; exists 1 => //= y x1y.
+    apply MA; rewrite lte_fin.
+    rewrite addrC -ltr_subr_addl in M'x.
+    rewrite (lt_le_trans M'x) // ler_subl_addl addrC -ler_subl_addl.
+    rewrite (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
+      rewrite ltr_subr_addr in M'x.
+      rewrite -comparabler0 (@comparabler_trans _ (M + 1)) //.
+        by rewrite /Order.comparable (ltW M'x) orbT.
+      by rewrite comparabler0 realD // real1.
+    by rewrite num_real. (* where we really use realFieldType *)
+  by exists M.
+- exists (M - 1); split; first by rewrite realB // real1.
+  move=> -[x| _ |] //=.
+    rewrite lte_fin => M'x /=.
+    apply/locallyP; rewrite locally_E; exists 1 => //= y x1y.
+    apply MA; rewrite lte_fin.
+    rewrite ltr_subr_addl in M'x.
+    rewrite (le_lt_trans _ M'x) // addrC -ler_subl_addl.
+    rewrite (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
+      by rewrite num_real. (* where we really use realFieldType *)
+    rewrite addrC -ltr_subr_addr in M'x.
+    rewrite -comparabler0 (@comparabler_trans _ (M - 1)) //.
+      by rewrite /Order.comparable (ltW M'x).
+    by rewrite comparabler0 realB // real1.
+  by exists M.
+Qed.
+
+Definition ereal_topologicalMixin : Topological.mixin_of (@ereal_locally R) :=
+  topologyOfFilterMixin _ ereal_loc_singleton ereal_loc_loc.
+Canonical ereal_topologicalType := TopologicalType _ ereal_topologicalMixin.
+
+End ereal_topologicalType.
+
 Definition pinfty_locally (R : numFieldType) : set (set R) :=
   fun P => exists M, M \is Num.real /\ forall x, M < x -> P x.
 Arguments pinfty_locally R : clear implicits.
@@ -2347,10 +2401,10 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
     by rewrite -subr_gt0 opprD addrA {1}[b - x]splitr addrK divr_gt0 ?subr_gt0.
   by rewrite -subr_gt0 addrAC {1}[x - a]splitr addrK divr_gt0 ?subr_gt0.
 - have [//||d dP] := wlog a (x + 1); rewrite ?lte_fin ?ltr_addl //.
-  by exists d => y /dP /andP[->].
+  by exists d => y /dP /andP[->] /= /lt_le_trans; apply; rewrite lee_pinfty.
 - have [//||d dP] := wlog (x - 1) b; rewrite ?lte_fin ?gtr_addl ?ltrN10 //.
-  by exists d => y /dP /andP[_ ->].
-- by exists 1%:pos.
+  by exists d => y /dP /andP[_ ->] /=; rewrite lte_ninfty.
+- by exists 1%:pos => ? ?; rewrite lte_ninfty lte_pinfty.
 Qed.
 
 (* TODO: generalize to numFieldType? *)
@@ -2635,7 +2689,7 @@ Lemma open_ereal_lt (y : {ereal R}) : open [set u : R^o | u%:E < y]%E.
 Proof.
 case: y => [y||] /=; first exact: open_lt.
 rewrite [X in open X](_ : _ = setT); first exact: openT.
-by rewrite funeqE => ?; rewrite trueE.
+by rewrite funeqE => ?; rewrite lte_pinfty trueE.
 rewrite [X in open X](_ : _ = set0); first exact: open0.
 by rewrite funeqE => ?; rewrite falseE.
 Qed.
@@ -2646,7 +2700,7 @@ case: y => [y||] /=; first exact: open_gt.
 rewrite [X in open X](_ : _ = set0); first exact: open0.
 by rewrite funeqE => ?; rewrite falseE.
 rewrite [X in open X](_ : _ = setT); first exact: openT.
-by rewrite funeqE => ?; rewrite trueE.
+by rewrite funeqE => ?; rewrite lte_ninfty trueE.
 Qed.
 
 Lemma open_ereal_lt' (x y : {ereal R}) : (x < y)%E ->
@@ -2658,7 +2712,8 @@ exists y; rewrite num_real; split => //= x ? //.
 by exists 0.
 case: y => [y||//] /= in xy *.
 exists y; rewrite num_real; split => //= x ? //.
-by exists 0; rewrite real0; split => // x /lt_le_trans; apply.
+exists 0; rewrite real0; split => // x.
+by move/lt_le_trans; apply; rewrite lee_pinfty.
 Qed.
 
 Lemma open_ereal_gt' (x y : {ereal R}) : (y < x)%E ->
@@ -2667,10 +2722,157 @@ Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
   case: y => [y||] //=; do ?by exists 0; rewrite real0.
 by exists y; rewrite num_real.
-by move=> _; exists 0; rewrite real0; split => // x; apply/le_lt_trans.
+move=> _; exists 0; rewrite real0; split => // x.
+by apply/le_lt_trans; rewrite lee_ninfty.
 Qed.
 
 End open_sets_in_Rbar.
+
+Let open_ereal_lt_real (R : realFieldType) (y : R) :
+  open (fun x : {ereal R} => (x < y%:E)%E).
+Proof.
+case => [x | // | ooy]; [rewrite lte_fin => xy | by exists y].
+by move: (@open_ereal_lt _ y%:E); rewrite openE; apply; rewrite lte_fin.
+Qed.
+
+Lemma open_ereal_lt_ereal (R : realFieldType) (y : {ereal R}) :
+  open [set u : {ereal R} | u < y]%E.
+Proof.
+case: y => [y | | [] // ] /=.
+- exact: open_ereal_lt_real.
+- suff -> : [set u : {ereal R} | (u < +oo)%E] =
+    \bigcup_(i in setT) [set u : {ereal R} | (u < i%:E)%E].
+    by apply open_bigU => x _; exact: open_ereal_lt_real.
+  rewrite predeqE => -[x | | ].
+  + split => [_ |]; last by rewrite  lte_pinfty.
+    by exists (x + 1) => //; rewrite lte_fin ltr_addl.
+  + by rewrite ltxx; split => // -[] x; rewrite ltNge lee_pinfty.
+  + by split => // _; exists 0 => //; rewrite lte_ninfty.
+Qed.
+
+Let open_ereal_gt_real (R : realFieldType) (y : R) :
+  open (fun x : {ereal R} => (y%:E < x)%E).
+Proof.
+case => [x | yoo | //]; [rewrite lte_fin => xy | by exists y].
+by move: (@open_ereal_gt _ y%:E); rewrite openE; apply; rewrite lte_fin.
+Qed.
+
+Lemma open_ereal_gt_ereal (R : realFieldType) (y : {ereal R}) :
+  open [set u : {ereal R} | y < u]%E.
+Proof.
+case: y => [y | [] // | ] /=.
+- exact: open_ereal_gt_real.
+- suff -> : [set u : {ereal R} | (-oo < u)%E] =
+    \bigcup_(i in setT) [set u : {ereal R} | (i%:E < u)%E].
+    by apply open_bigU => x _; exact: open_ereal_gt_real.
+  rewrite predeqE => -[x | | ].
+  + split => [_ |]; last by rewrite  lte_ninfty.
+    by exists (x - 1) => //; rewrite lte_fin ltr_subl_addr ltr_addl.
+  + by split => // _; exists 0 => //; rewrite lte_pinfty.
+  + by rewrite ltxx; split => // -[] x _; rewrite ltNge lee_ninfty.
+Qed.
+
+Lemma ereal_hausdorff (R : realFieldType) : hausdorff (ereal_topologicalType R).
+Proof.
+move=> -[x| |] // [y | |] //=.
+- move=> xy; congr (_%:E); apply Rhausdorff => /= A B xA yB.
+  have xAe : locally x%:E ((fun x => x%:E) @` A).
+    case: xA => _/posnumP[r] xrA.
+    exists r%:num => //= e xre.
+    by exists e => //; apply xrA.
+  have yBe : locally y%:E ((fun x => x%:E) @` B).
+    case: yB => _/posnumP[r] yrB.
+    exists r%:num => //= e yre.
+    by exists e => //; apply yrB.
+  have [/= z [[za ? zaz] [zb ? zbz]]] := xy _ _ xAe yBe.
+  move: zbz; rewrite -zaz => -[?]; subst zb.
+  by exists za; split => //.
+- rewrite /cluster /=.
+  pose A := [set u | (u < (x + 1)%R%:E)%E].
+  pose B := [set u | ((x + 1)%R%:E < u)%E].
+  have xA : locally x%:E A.
+    rewrite locallyE /=.
+    eexists; split; last by move=> y; exact.
+    by split; [apply open_ereal_lt_ereal | rewrite /A lte_fin ltr_addl].
+  have ooB : locally +oo%E B.
+    rewrite locallyE /=.
+    eexists; split; last by move=> y; exact.
+    by split; [apply open_ereal_gt_ereal | rewrite /B lte_pinfty].
+  move/(_ _ _ xA ooB) => -[z []].
+  rewrite /A /B => zx xz.
+  by move: (lt_trans xz zx); rewrite lte_fin ltxx.
+- rewrite /cluster /=.
+  pose A := [set u | ((x - 1)%R%:E < u)%E].
+  pose B := [set u | (u < (x - 1)%R%:E)%E].
+  have xA : locally x%:E A.
+    rewrite locallyE /=.
+    eexists; split; last by move=> y; exact.
+    by split; [apply open_ereal_gt_ereal | rewrite /A lte_fin ltr_subl_addr ltr_addl].
+  have ooB : locally -oo%E B.
+    rewrite locallyE /=.
+    eexists; split; last by move=> y; exact.
+    by split; [apply open_ereal_lt_ereal | rewrite /B lte_ninfty].
+  move/(_ _ _ xA ooB) => -[z []].
+  rewrite /A /B => zx xz.
+  by move: (lt_trans xz zx); rewrite ltxx.
+- rewrite /cluster /=.
+  pose A := [set u | (u < (y + 1)%R%:E)%E].
+  pose B := [set u | ((y + 1)%R%:E < u)%E].
+  have yA : locally y%:E A.
+    rewrite locallyE /=.
+    eexists; split; last by move=> x; exact.
+    by split; [apply open_ereal_lt_ereal | rewrite /A lte_fin ltr_addl].
+  have ooB : locally +oo%E B.
+    rewrite locallyE /=.
+    eexists; split; last by move=> x; exact.
+    by split; [apply open_ereal_gt_ereal | rewrite /B lte_pinfty].
+  move/(_ _ _ ooB yA) => -[z []].
+  rewrite /A /B => zx xz.
+  by move: (lt_trans xz zx); rewrite ltxx.
+- rewrite /cluster.
+  pose A := [set u : {ereal R} | (0%:E < u)%E].
+  pose B := [set u : {ereal R} | (u < 0%:E)%E].
+  have ooA : locally +oo%E A.
+    rewrite locallyE /=.
+    eexists; split; last by move=> y; exact.
+    by split; [apply open_ereal_gt_ereal | rewrite /A lte_pinfty].
+  have ooB : locally -oo%E B.
+    rewrite locallyE /=.
+    eexists; split; last by move=> y; exact.
+    by split; [apply open_ereal_lt_ereal | rewrite /B lte_ninfty].
+  move/(_ _ _ ooA ooB) => -[z []].
+  rewrite /A /B => zx xz.
+  by move: (lt_trans xz zx); rewrite ltxx.
+- rewrite /cluster /=.
+  pose A := [set u | (u < (y - 1)%R%:E)%E].
+  pose B := [set u | ((y - 1)%R%:E < u)%E].
+  have ooA : locally -oo%E A.
+    rewrite locallyE /=.
+    eexists; split; last by move=> x; exact.
+    by split; [apply open_ereal_lt_ereal | rewrite /A lte_ninfty].
+  have yB : locally y%:E B.
+    rewrite locallyE /=.
+    eexists; split; last by move=> x; exact.
+    by split; [apply open_ereal_gt_ereal | rewrite /B lte_fin ltr_subl_addr ltr_addl].
+  move/(_ _ _ ooA yB) => -[z []].
+  rewrite /A /B => zx xz.
+  by move: (lt_trans xz zx); rewrite ltxx.
+- rewrite /cluster.
+  pose A := [set u : {ereal R} | (0%:E < u)%E].
+  pose B := [set u : {ereal R} | (u < 0%:E)%E].
+  have ooA : locally +oo%E A.
+    rewrite locallyE /=.
+    eexists; split; last by move=> y; exact.
+    by split; [apply open_ereal_gt_ereal | rewrite /A lte_pinfty].
+  have ooB : locally -oo%E B.
+    rewrite locallyE /=.
+    eexists; split; last by move=> y; exact.
+    by split; [apply open_ereal_lt_ereal | rewrite /B lte_ninfty].
+  move/(_ _ _ ooB ooA) => -[z []].
+  rewrite /A /B => zx xz.
+  by move: (lt_trans xz zx); rewrite ltxx.
+Qed.
+Hint Resolve ereal_hausdorff.
 
 (** * Some limits on real functions *)
 
