@@ -349,6 +349,14 @@ Qed.
 Lemma subIset {A} (X Y Z : set A) : X `<=` Z \/ Y `<=` Z -> X `&` Y `<=` Z.
 Proof. case => H a; by [move=> [/H] | move=> [_ /H]]. Qed.
 
+Lemma subsetI_neq0 T (A B C D : set T) :
+  A `<=` B -> C `<=` D -> A `&` C !=set0 -> B `&` D !=set0.
+Proof. by move=> AB CD [x [/AB Bx /CD Dx]]; exists x. Qed.
+
+Lemma subsetI_eq0 T (A B C D : set T) :
+  A `<=` B -> C `<=` D -> B `&` D = set0 -> A `&` C = set0.
+Proof. by move=> AB /(subsetI_neq0 AB); rewrite -!set0P => /contra_eq. Qed.
+
 Lemma setD_eq0 A (X Y : set A) : (X `\` Y = set0) = (X `<=` Y).
 Proof.
 rewrite propeqE; split=> [XDY0 a|sXY].

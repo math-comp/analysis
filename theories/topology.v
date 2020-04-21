@@ -344,17 +344,6 @@ Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_la
                                             (@GRing.null_fun_linear R U V s s_law).
 End Linear2.
 
-
-(* TODO: move to classical_sets *)
-Lemma subsetI_neq0 (T : Type) (A B C D : set T) :
-  A `<=` B -> C `<=` D -> A `&` C !=set0 -> B `&` D !=set0.
-Proof. by move=> AB CD [x [/AB Bx /CD Dx]]; exists x. Qed.
-
-Lemma subsetI_eq0 (T : Type) (A B C D : set T) :
-  A `<=` B -> C `<=` D -> B `&` D = set0 -> A `&` C = set0.
-Proof. by move=> AB /(subsetI_neq0 AB); rewrite -!set0P => /contra_eq. Qed.
-
-
 Module Filtered.
 
 (* Index a family of filters on a type, one for each element of the type *)
