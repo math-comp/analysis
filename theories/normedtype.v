@@ -128,6 +128,14 @@ Canonical R_topologicalType : topologicalType := TopologicalType Rdefinitions.R
 Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType :=
   PseudoMetricType Rdefinitions.R (pseudoMetric_of_normedDomain R_normedZmodType).
 
+Section numDomainType_canonical.
+Variable R : numDomainType.
+Canonical numDOmainType_pointedType :=
+  [pointedType of R^o for pointed_of_zmodule R].
+Canonical numDomainType_filteredType :=
+  [filteredType R of R^o for filtered_of_normedZmod R].
+End numDomainType_canonical.
+
 Section numFieldType_canonical.
 Variable R : numFieldType.
 (*Canonical topological_of_numFieldType := [numFieldType of R^o].*)
@@ -142,7 +150,7 @@ Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetr
 Definition numdFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
 End numFieldType_canonical.
 
-Lemma locallyN (R : numFieldType) (x : R^o) :
+Lemma locallyN (R : numDomainType) (x : R^o) :
   locally (- x) = [set [set - y | y in A] | A in locally x].
 Proof.
 rewrite predeqE => A; split=> [[e egt0 oppxe_A]|[B [e egt0 xe_B] <-]];
@@ -1503,12 +1511,6 @@ Arguments cvg_norm2 {_ _ _ F G FF FG}.
 
 (** Rings with absolute values are normed modules *)
 
-(*Definition AbsRing_NormedModMixin (K : absRingType) :=
-  @NormedModule.Mixin K _ _ _ (abs : K^o -> R) ler_abs_add absrM (ball_absE K)
-  absr0_eq0.
-Canonical AbsRing_NormedModType (K : absRingType) :=
-  NormedModType K K^o (AbsRing_NormedModMixin _).*)
-
 Lemma R_normZ (R : numDomainType) (l : R) (x : R^o) :
   `| l *: x | = `| l | * `| x |.
 Proof. by rewrite normrM. Qed.
@@ -1582,13 +1584,14 @@ Qed.
 
 End NVS_continuity1.
 
+Lemma cvg_cst {K : numDomainType} {V : normedModType K} (a : V)
+  (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
+Proof. exact: cst_continuous. Qed.
+Hint Resolve cvg_cst : core.
+
 Section limit_composition.
 
 Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
-
-Lemma cvg_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
-Proof. exact: cst_continuous. Qed.
-Hint Resolve cvg_cst : core.
 
 Lemma cvgD (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
