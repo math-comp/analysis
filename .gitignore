@@ -9,6 +9,8 @@
 *.vo
 *.glob
 *.aux
+*.vo[ks]
+*~
 
 Makefile.coq
 Makefile.coq.conf
