@@ -166,14 +166,14 @@ Proof. by []. Qed.
 Lemma lte_pinfty (R : realDomainType) (x : R) : (x%:E < +oo).
 Proof. exact: num_real. Qed.
 
-Lemma lee_pinfty (R : realDomainType) (x : R) : (x%:E <= +oo).
-Proof. by rewrite ltW // lte_pinfty. Qed.
+Lemma lee_pinfty (R : realDomainType) (x : {ereal R}) : (x <= +oo).
+Proof. case: x => //= r; exact: num_real. Qed.
 
 Lemma lte_ninfty (R : realDomainType) (x : R) : (-oo < x%:E).
 Proof. exact: num_real. Qed.
 
-Lemma lee_ninfty (R : realDomainType) (x : R) : (-oo <= x%:E).
-Proof. by rewrite ltW // lte_ninfty. Qed.
+Lemma lee_ninfty (R : realDomainType) (x : {ereal R}) : (-oo <= x).
+Proof. case: x => //= r; exact: num_real. Qed.
 
 Section ERealOrder_realDomainType.
 Context {R : realDomainType}.
