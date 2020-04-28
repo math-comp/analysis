@@ -4184,7 +4184,7 @@ Proof.
 move=> /continuous_atP /(_ _ ltr01).
 rewrite linear0 /= nearE => /locally_ex[tp ball_f].
 pose t := tp%:num; exists (2 * t^-1); split => // x.
-have [->|/eqP x0] := boolp.EM (x = 0); first by rewrite linear0 !normr0 mul0r.
+have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mul0r.
 have /ball_f : ball 0 t ((`|x|^-1 * t /2) *: x).
   apply: ball_sym; rewrite -ball_normE /ball_  subr0 normmZ mulrC 2!normrM.
   rewrite 2!mulrA normrV ?unitfE ?normr_eq0 // normr_id.
