@@ -9,7 +9,7 @@ with builtins;
 let
   cfg-fun = if isFunction config then config else (pkgs: config);
   pkgs = import nixpkgs {
-    config.packageOverrides = pkgs: with pkgs.lib;
+    overlays = [ (pkgs: super-pkgs: with pkgs.lib;
       let coqPackages = with pkgs; {
         "8.7" = coqPackages_8_7;
         "8.8" = coqPackages_8_8;
@@ -43,7 +43,22 @@ let
         ); in {
           coqPackages = coqPackages.filterPackages coqPackages.coq coqPackages;
           coq = coqPackages.coq;
-        };
+          mc-clean = src: {
+            version = baseNameOf src;
+            src = cleanSourceWith {
+              src = cleanSource src;
+              filter = path: type: let baseName = baseNameOf (toString path); in ! (
+                # Filter out editor backup / swap files.
+                hasPrefix ".git" baseName ||
+                hasSuffix ".aux" baseName ||
+                hasSuffix ".d" baseName ||
+                hasSuffix ".vo" baseName ||
+                hasSuffix ".glob" baseName ||
+                elem baseName ["Makefile.coq" "Makefile.coq.conf" ".mailmap"]
+              );
+            };
+          };
+        })];
   };
 
   mathcompnix = ./.;
