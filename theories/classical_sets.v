@@ -359,6 +359,9 @@ Qed.
 Lemma setDE {A} (X Y : set A) : X `\` Y = X `&` ~` Y.
 Proof. by []. Qed.
 
+Lemma nonsubset {A} (X Y:set A): ~ (X `<=` Y) -> X `&` ~` Y !=set0.
+Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
+
 Lemma setIid {A} (X : set A) : X `&` X = X.
 Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
 
@@ -373,6 +376,9 @@ Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
 
 Lemma set0I A (Y : set A) : set0 `&` Y = set0.
 Proof. by rewrite setIC setI0. Qed.
+
+Lemma setICl {A} (X : set A) : ~` X `&` X = set0.
+Proof. by rewrite predeqE => ?; split => // -[]. Qed.
 
 Lemma setIA {A} (X Y Z : set A) : X `&` (Y `&` Z) = X `&` Y `&` Z.
 Proof. by rewrite predeqE => ?; split=> [[? []]|[[]]]. Qed.
