@@ -14,4 +14,4 @@ jobs:
         name:  math-comp
         # Authentication token for Cachix, needed only for private cache access
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - run: nix-build --arg config '{mathcomp = "1.11.0+beta1"; mathcomp-analysis = ./.;}' --argstr package mathcomp-analysis
+    - run: nix-build --arg config 'pkgs: {mathcomp = "1.11.0+beta1"; mathcomp-analysis = pkgs.mc-clean ./. // {version = "${{git rev-parse --abbrev-ref HEAD}}}";}' --argstr package mathcomp-analysis
