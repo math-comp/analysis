@@ -6,7 +6,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v8
     - uses: cachix/cachix-action@v6
       with:
@@ -14,4 +13,5 @@ jobs:
         name:  math-comp
         # Authentication token for Cachix, needed only for private cache access
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - run: nix-build --arg config '{mathcomp = "1.11.0+beta1"; mathcomp-analysis = "master";}' --argstr package mathcomp-analysis
+    - run: nix-build --arg config '{mathcomp = "1.11.0+beta1"; mathcomp-analysis = "${{GITHUB_REF}}";}' --argstr package mathcomp-analysis
+    - run: cachix push math-comp result
