@@ -159,11 +159,11 @@ which is inserted in the Uniform.class_of *)
 
 (*Context (K : absRingType). Nor working with any K, how to close the real scope ? Do it before ?  *)
 
-Program Definition uniformmixin_of_normaxioms (V : lmodType R) (norm : V -> R)
+Program Definition pseudometricmixin_of_normaxioms (V : lmodType R) (norm : V -> R)
   (ax1 : forall x y : V, norm (x + y) <= norm x + norm y)
   (ax2 : forall (l : R) (x : V), norm (l *: x) = `|l| * (norm x))
-  (ax4 : forall x : V, norm x = 0 -> x = 0 ) : Uniform.mixin_of _ (locally_ (ball_ norm)) :=
-  @Uniform.Mixin _ V (locally_ (ball_ norm))  (ball_ norm) _ _ _ _.
+  (ax4 : forall x : V, norm x = 0 -> x = 0 ) : PseudoMetric.mixin_of _ (locally_ (ball_ norm)) :=
+  @PseudoMetric.Mixin _ V (locally_ (ball_ norm))  (ball_ norm) _ _ _ _.
 Next Obligation.
 move => V norm _ H _; rewrite /ball_ => x e.
 rewrite subrr.
@@ -209,27 +209,27 @@ Canonical Rcomplex_zmodType := [zmodType of Rcomplex].
 Canonical Rcomplex_lmodType := [lmodType R of Rcomplex].
 Canonical Rcomplex_pointedType := [pointedType of Rcomplex].
 Canonical Rcomplex_filteredType := [filteredType Rcomplex of Rcomplex].
-Definition Rcomplex_uniformMixin :=
-  @uniformmixin_of_normaxioms [lmodType R of Rcomplex] (@normc R) (@normcD _) (@normcZ _) (@eq0_normc _).
-Definition Rcomplex_topologicalMixin := topologyOfBallMixin Rcomplex_uniformMixin.
+Definition Rcomplex_pseudoMetricMixin :=
+  @pseudometricmixin_of_normaxioms [lmodType R of Rcomplex] (@normc R) (@normcD _) (@normcZ _) (@eq0_normc _).
+Definition Rcomplex_topologicalMixin := topologyOfBallMixin Rcomplex_pseudoMetricMixin.
 Canonical Rcomplex_topologicalType :=
   TopologicalType Rcomplex Rcomplex_topologicalMixin.
-Canonical Rcomplex_uniformType := UniformType Rcomplex Rcomplex_uniformMixin.
+Canonical Rcomplex_pseudoMetricType := PseudoMetricType Rcomplex Rcomplex_pseudoMetricMixin.
 Definition Rcomplex_normedMixin :=
   @Num.NormedMixin _ _ _ _ (@normcD R) (@eq0_normc _) (@normc_mulrn _) (@normcN _).
 Canonical Rcomplex_normedZmodType := NormedZmodType R Rcomplex Rcomplex_normedMixin.
 
 Lemma Rcomplex_ball_ball_ :
-  @ball _ [uniformType R of Rcomplex] = ball_ (fun x => `| x |).
+  @ball _ [pseudoMetricType R of Rcomplex] = ball_ (fun x => `| x |).
 Proof. by []. Qed.
 
-Definition Rcomplex_uniformNormedZmodMixin :=
-  UniformNormedZmodule.Mixin Rcomplex_ball_ball_.
-Canonical Rcomplex_uniformNormedZmodType :=
-  UniformNormedZmodType R Rcomplex Rcomplex_uniformNormedZmodMixin.
+Definition Rcomplex_pseudoMetricNormedZmodMixin :=
+  PseudoMetricNormedZmodule.Mixin Rcomplex_ball_ball_.
+Canonical Rcomplex_pseudoMetricNormedZmodType :=
+  PseudoMetricNormedZmodType R Rcomplex Rcomplex_pseudoMetricNormedZmodMixin.
 
 Definition Rcomplex_normedModMixin :=
-  @NormedModMixin R [uniformNormedZmodType R of Rcomplex] _ (@normcZ _).
+  @NormedModMixin R [pseudoMetricNormedZmodType R of Rcomplex] _ (@normcZ _).
 Canonical Rcomplex_normedModType :=
   NormedModType R Rcomplex Rcomplex_normedModMixin.
 
