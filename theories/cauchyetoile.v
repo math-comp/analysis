@@ -263,9 +263,8 @@ Canonical regular_filteredType U (R: filteredType U) :=
 Canonical regular_topologicalType (R : topologicalType) :=
   [topologicalType of R^o].
 
-Canonical regular_uniformType U (R : uniformType U):=
-  [uniformType U of R^o].
-(*Update the header of topologicaltype.v *)
+Canonical regular_pseudoMetricType U (R : pseudoMetricType U):=
+  [pseudoMetricType U of R^o].
 
 Canonical regular_completeType U (R : completeType U) :=
   @Complete.clone U R^o _ _ id.
@@ -319,7 +318,6 @@ of K for (AbsRing_NormedModType K)].
 
 *)
 
-
 (* NB: not used *)
 Lemma cvg_translim (T : topologicalType) (F G: set (set T)) (l :T) :
    F `=>` G -> (G --> l) -> (F --> l).
@@ -333,7 +331,7 @@ Proof. by move => /cvg_ex [l H0] ; apply: cvgP; apply: cvgZr; apply: H0. Qed.
 Lemma limin_scaler (K : numFieldType) (V : normedModType K) (T : topologicalType)
   (F : set (set T)) (FF : ProperFilter F) (f : T -> V) (k : K) :
   cvg(f @ F) -> k *: lim (f @ F) = lim ((k \*: f) @ F ).
-Proof. by move => cv; apply/esym/cvg_lim; apply: cvgZr. Qed.
+Proof. by move => cv; apply/esym/cvg_lim => //; apply: cvgZr. Qed.
 
 (* used in derive.v, what does center means*)
 (*CoInductive
@@ -361,7 +359,7 @@ Definition CauchyRiemanEq_R2 (f : RComplex -> RComplex) c :=
   'D_1%:C u c = 'D_'i v c /\ 'D_1%:C v c = - 'D_'i u c.
 
 (* NB: not used *)
-+Definition Cderivable (V W : normedModType C) (f : V -> W) := derivable f.
+Definition Cderivable (V W : normedModType C) (f : V -> W) := derivable f.
 
 Definition CauchyRiemanEq (f : C -> C) z :=
   'i * lim ((fun h : R => h^-1 *: ((f \o shift z) (h *: 1%:C) - f z)) @ (locally' (0:R^o))) =
@@ -377,7 +375,7 @@ looked a long time of it as I was looking for a [filter of lim]*
 Definition Rderivable (V W : normedModType R) (f : V -> W) := derivable f.
 
 (*The topological structure on R is given by R^o *)
-Lemma holo_derivable (f : (C)^o -> (C)^o) c :
+Lemma holo_derivable (f : C^o -> C^o) c :
   holomorphic f c -> (forall v : C, Rderivable (complex_realfun f) c v).
 Proof.
 move=> /cvg_ex [l H]; rewrite /Rderivable /derivable => v /=.
@@ -389,14 +387,15 @@ pose quotC (h : C) : C^o := h^-1 *: ((f \o shift c) h - f c).
 case: (EM (v = 0)) => [eqv0|/eqP vneq0].
 - apply (cvgP (l := (0:RComplex))).
   have eqnear0 : {near locally' (0:R^o), 0 =1 quotR}.
-    by exists 1=> // h _ _ ; rewrite /quotR /shift eqv0 /= scaler0 add0r addrN scaler0.
+    exists 1 => // h _ _.
+    by rewrite /quotR /shift eqv0 /= scaler0 add0r addrN scaler0.
   apply: cvg_trans.
   + exact (cvg_eq_loc eqnear0).
   + exact: cst_continuous.
     (*cvg_cst from normedtype applies only to endofunctions
      That should NOT be the case, as one could use it insteas of cst_continuous *)
 - apply (cvgP (l := v *: l : RComplex)).
-  (*normedtype seem difficulut to infer *)
+  (*normedtype seem difficult to infer *)
   (*Est-ce que on peut faire cohabiter plusieurs normes ? *)
   have eqnear0 : {near (locally' (0 : R^o)), (v \*: quotC) \o mulv =1 quotR}.
     exists 1 => // h _ neq0h //=; rewrite /quotC /quotR /mulv scale_inv //.
@@ -442,7 +441,7 @@ have eqnear0x : {near (locally' (0:R^o)), quotC \o (fun h => h *: 1%:C) =1 quotR
   by move => h  _ _ //=; simpc; rewrite /quotC /quotR real_complex_inv -scalecr; simpc.
 pose subsetfiltersx := cvg_eq_loc eqnear0x.
 have -> : lim (quotR @ (locally' (0:R^o))) = lim (quotC @ (locally' (0:C^o))).
-  apply: (@cvg_map_lim _ _). (*IMP*)
+  apply: (@cvg_map_lim _ _) => //. (*IMP*)
     exact: Proper_locally'_numFieldType.
   suff: quotR @ (locally' (0:R^o)) `=>` quotC @ (locally' (0:C^o)).
     move/cvg_trans; apply.
@@ -471,7 +470,7 @@ have <- : lim (quotiR @ (locally' (0:R^o))) =
      'i * lim (quotC @ (locally' (0:C^o))) .
   have -> : 'i * lim (quotC @ (locally' (0:C^o))) =  lim ('i \*: quotC @ (locally' (0:C^o))).
     by rewrite scalei_muli limin_scaler. (* exact: H. *)
-  Set Printing All. Set Printing Depth 20.
+  (*Set Printing All. Set Printing Depth 20.*)
   (*simpl.
   rewrite {1}/type_of_filter.*) (*too violent*)
   have := cvg_map_lim _ .
@@ -480,7 +479,7 @@ have <- : lim (quotiR @ (locally' (0:R^o))) =
   rewrite {1}/Pointed.choiceType.
   rewrite {1}/Pointed.sort.
   rewrite {1}/Filtered.sort {1}/Filtered.clone.
-  apply.
+  apply => //.
   (* apply: (@cvg_map_lim _ _ ).  *)
   (* C and C^o are too alike and Coq avoids
      computing the nec. projections.
@@ -514,8 +513,6 @@ move=> s [x x0 ix]; exists (normc x); first by rewrite normc_gt0 gt_eqF.
 move=> y y0; apply ix; by move: y0; rewrite /ball_ -ltcR {2}(gt0_normc x0).
 Qed.
 
-
-
 (* Local Notation "''D_' v f" := (derive f ^~ v). *)
 (* Local Notation "''D_' v f c" := (derive f c v). *)
 
@@ -537,13 +534,13 @@ move: (der c 1%:C ); simpl => /cvg_ex [lr /cvg_lim //= Dlr].
 move: (der c 'i); simpl  => /cvg_ex [li /cvg_lim //= Dli].
 simpl in (type of lr); simpl in (type of Dlr).
 simpl in (type of li); simpl in (type of Dli).
-move : (CR c) ; rewrite /CauchyRiemanEq //=  (Dlr) (Dli) => CRc.
+move : (CR c) ; rewrite /CauchyRiemanEq //= Dlr // Dli // => CRc.
 pose l:= ((lr + lr*'i)) ; exists l; move  => [a b].
 move: (der (c + a%:C)  'i); simpl => /cvg_ex [//= la /cvg_lim //= Dla].
 move: (der (c + a%:C) 'i) => /derivable_locallyxP.
 have Htmp : ProperFilter ((fun h : R => h^-1 *: (f (h *: 'i%C + (c + a%:C)) - f (c + a%:C))) @ locally' (0:R^o)).
   by apply fmap_proper_filter; apply Proper_locally'_numFieldType.
-move: (Dla Htmp) => {}Dla.
+move: (Dla (@normedModType_hausdorff _ _) Htmp) => {}Dla.
 rewrite /derive //= Dla => oR.
 have -> : (a +i* b) = (a%:C + b*: 'i%C) by simpc.
 rewrite addrA oR.
