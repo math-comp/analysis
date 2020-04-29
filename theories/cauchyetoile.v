@@ -3,7 +3,7 @@ From mathcomp Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg ssrnum.
 From mathcomp Require Import complex.
 From mathcomp Require Import boolp reals ereal derive.
-Require Import classical_sets posnum topology normedtype landau integral.
+Require Import classical_sets posnum topology normedtype landau.
 
 (* Pour distinguer fonctions mesurables et integrables, utiliser des structures comme posrel. *)
 Import Order.TTheory GRing.Theory Num.Theory ComplexField Num.Def.

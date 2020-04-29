@@ -16,6 +16,7 @@ theories/normedtype.v
 theories/forms.v
 theories/derive.v
 theories/summability.v
+theories/cauchyetoile.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v
