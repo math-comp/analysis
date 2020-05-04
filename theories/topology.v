@@ -71,14 +71,14 @@ Require Import boolp Rstruct classical_sets posnum.
 (*                 PFilterPack F FF == packs the set of sets F with the proof *)
 (*                                     FF of ProperFilter F to build a        *)
 (*                                     pfilter_on T structure.                *)
-(*                    filtermap f F == image of the filter F by the function  *)
+(*                    fmap f F == image of the filter F by the function  *)
 (*                                     f.                                     *)
 (*                     E @[x --> F] == image of the canonical filter          *)
 (*                                     associated to F by the function        *)
 (*                                     (fun x => E).                          *)
 (*                            f @ F == image of the canonical filter          *)
 (*                                     associated to F by the function f.     *)
-(*                   filtermapi f F == image of the filter F by the relation  *)
+(*                   fmapi f F == image of the filter F by the relation  *)
 (*                                     f.                                     *)
 (*                    E `@[x --> F] == image of the canonical filter          *)
 (*                                     associated to F by the relation        *)
@@ -219,7 +219,7 @@ Require Import boolp Rstruct classical_sets posnum.
 (*                                   "neighbourhood" of the diagonal set      *)
 (*                                   D = {(x, x) | x in T}.                   *)
 (*                   ball_set A e == set A extended with a band of width e    *)
-(*                   unif_cont f <-> f is uniformly continuous.               *)
+(*                   unif_continuous f <-> f is uniformly continuous.               *)
 (*                                                                            *)
 (* * Complete spaces :                                                        *)
 (*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
@@ -473,16 +473,16 @@ Module Export LocallyFilter.
 Definition locally_simpl := (@filter_of_filterE, @locally_filterE).
 End LocallyFilter.
 
-Definition flim {T : Type} (F G : set (set T)) := G `<=` F.
-Notation "F `=>` G" := (flim F G) : classical_set_scope.
-Lemma flim_refl T (F : set (set T)) : F `=>` F.
+Definition cvg_to {T : Type} (F G : set (set T)) := G `<=` F.
+Notation "F `=>` G" := (cvg_to F G) : classical_set_scope.
+Lemma cvg_refl T (F : set (set T)) : F `=>` F.
 Proof. exact. Qed.
 
-Lemma flim_trans T (G F H : set (set T)) :
+Lemma cvg_trans T (G F H : set (set T)) :
   (F `=>` G) -> (G `=>` H) -> (F `=>` H).
 Proof. by move=> FG GH P /GH /FG. Qed.
 
-Notation "F --> G" := (flim [filter of F] [filter of G]) : classical_set_scope.
+Notation "F --> G" := (cvg_to [filter of F] [filter of G]) : classical_set_scope.
 Definition type_of_filter {T} (F : set (set T)) := T.
 
 Definition lim_in {U : Type} (T : filteredType U) :=
@@ -499,7 +499,7 @@ Canonical filtered_prod X1 X2 (Z1 : filteredType X1)
   FilteredType (X1 * X2) (Z1 * Z2)
     (fun x => filter_prod (locally x.1) (locally x.2)).
 
-Lemma flim_prod T {U U' V V' : filteredType T} (x : U) (l : U') (y : V) (k : V') :
+Lemma cvg_prod T {U U' V V' : filteredType T} (x : U) (l : U') (y : V) (k : V') :
   x --> l -> y --> k -> (x, y) --> (l, k).
 Proof.
 move=> xl yk X [[X1 X2] /= [HX1 HX2] H]; exists (X1, X2) => //=.
@@ -907,51 +907,51 @@ Qed.
 
 (** ** Limits expressed with filters *)
 
-Definition filtermap {T U : Type} (f : T -> U) (F : set (set T)) :=
+Definition fmap {T U : Type} (f : T -> U) (F : set (set T)) :=
   [set P | F (f @^-1` P)].
-Arguments filtermap _ _ _ _ _ /.
+Arguments fmap _ _ _ _ _ /.
 
-Lemma filtermapE {U V : Type} (f : U -> V)
-  (F : set (set U)) (P : set V) : filtermap f F P = F (f @^-1` P).
+Lemma fmapE {U V : Type} (f : U -> V)
+  (F : set (set U)) (P : set V) : fmap f F P = F (f @^-1` P).
 Proof. by []. Qed.
 
 Notation "E @[ x --> F ]" :=
-  (filtermap (fun x => E) [filter of F]) : classical_set_scope.
-Notation "f @ F" := (filtermap f [filter of F]) : classical_set_scope.
-Global Instance filtermap_filter T U (f : T -> U) (F : set (set T)) :
+  (fmap (fun x => E) [filter of F]) : classical_set_scope.
+Notation "f @ F" := (fmap f [filter of F]) : classical_set_scope.
+Global Instance fmap_filter T U (f : T -> U) (F : set (set T)) :
   Filter F -> Filter (f @ F).
 Proof.
-move=> FF; constructor => [|P Q|P Q PQ]; rewrite ?filtermapE ?filter_ofE //=.
+move=> FF; constructor => [|P Q|P Q PQ]; rewrite ?fmapE ?filter_ofE //=.
 - exact: filterT.
 - exact: filterI.
 - by apply: filterS=> ?/PQ.
 Qed.
-Typeclasses Opaque filtermap.
+Typeclasses Opaque fmap.
 
-Global Instance filtermap_proper_filter T U (f : T -> U) (F : set (set T)) :
+Global Instance fmap_proper_filter T U (f : T -> U) (F : set (set T)) :
   ProperFilter F -> ProperFilter (f @ F).
 Proof.
 move=> FF; apply: Build_ProperFilter';
-by rewrite filtermapE; apply: filter_not_empty.
+by rewrite fmapE; apply: filter_not_empty.
 Qed.
-Definition filtermap_proper_filter' := filtermap_proper_filter.
+Definition fmap_proper_filter' := fmap_proper_filter.
 
-Definition filtermapi {T U : Type} (f : T -> set U) (F : set (set T)) :=
+Definition fmapi {T U : Type} (f : T -> set U) (F : set (set T)) :=
   [set P | \forall x \near F, exists y, f x y /\ P y].
 
 Notation "E `@[ x --> F ]" :=
-  (filtermapi (fun x => E) [filter of F]) : classical_set_scope.
-Notation "f `@ F" := (filtermapi f [filter of F]) : classical_set_scope.
+  (fmapi (fun x => E) [filter of F]) : classical_set_scope.
+Notation "f `@ F" := (fmapi f [filter of F]) : classical_set_scope.
 
-Lemma filtermapiE {U V : Type} (f : U -> set V)
+Lemma fmapiE {U V : Type} (f : U -> set V)
   (F : set (set U)) (P : set V) :
-  filtermapi f F P = \forall x \near F, exists y, f x y /\ P y.
+  fmapi f F P = \forall x \near F, exists y, f x y /\ P y.
 Proof. by []. Qed.
 
-Global Instance filtermapi_filter T U (f : T -> set U) (F : set (set T)) :
+Global Instance fmapi_filter T U (f : T -> set U) (F : set (set T)) :
   infer {near F, is_totalfun f} -> Filter F -> Filter (f `@ F).
 Proof.
-move=> f_totalfun FF; rewrite /filtermapi; apply: Build_Filter. (* bug *)
+move=> f_totalfun FF; rewrite /fmapi; apply: Build_Filter. (* bug *)
 - by apply: filterS f_totalfun => x [[y Hy] H]; exists y.
 - move=> P Q FP FQ; near=> x.
     have [//|y [fxy Py]] := near FP x.
@@ -962,49 +962,49 @@ move=> f_totalfun FF; rewrite /filtermapi; apply: Build_Filter. (* bug *)
   by have [//|y [fxy /subPQ Qy]] := near FP x; exists y.
 Grab Existential Variables. all: end_near. Qed.
 
-Typeclasses Opaque filtermapi.
+Typeclasses Opaque fmapi.
 
-Global Instance filtermapi_proper_filter
+Global Instance fmapi_proper_filter
   T U (f : T -> U -> Prop) (F : set (set T)) :
   infer {near F, is_totalfun f} ->
   ProperFilter F -> ProperFilter (f `@ F).
 Proof.
 move=> f_totalfun FF; apply: Build_ProperFilter.
-by move=> P; rewrite /filtermapi => /filter_ex [x [y [??]]]; exists y.
+by move=> P; rewrite /fmapi => /filter_ex [x [y [??]]]; exists y.
 Qed.
-Definition filter_map_proper_filter' := filtermapi_proper_filter.
+Definition filter_map_proper_filter' := fmapi_proper_filter.
 
-Lemma flim_id T (F : set (set T)) : x @[x --> F] --> F.
+Lemma cvg_id T (F : set (set T)) : x @[x --> F] --> F.
 Proof. exact. Qed.
-Arguments flim_id {T F}.
+Arguments cvg_id {T F}.
 
 Lemma appfilter U V (f : U -> V) (F : set (set U)) :
   f @ F = [set P : set _ | \forall x \near F, P (f x)].
 Proof. by []. Qed.
 
-Lemma flim_app U V (F G : set (set U)) (f : U -> V) :
+Lemma cvg_app U V (F G : set (set U)) (f : U -> V) :
   F --> G -> f @ F --> f @ G.
 Proof. by move=> FG P /=; exact: FG. Qed.
 
-Lemma flimi_app U V (F G : set (set U)) (f : U -> set V) :
+Lemma cvgi_app U V (F G : set (set U)) (f : U -> set V) :
   F --> G -> f `@ F --> f `@ G.
 Proof. by move=> FG P /=; exact: FG. Qed.
 
-Lemma flim_comp T U V (f : T -> U) (g : U -> V)
+Lemma cvg_comp T U V (f : T -> U) (g : U -> V)
   (F : set (set T)) (G : set (set U)) (H : set (set V)) :
   f @ F `=>` G -> g @ G `=>` H -> g \o f @ F `=>` H.
-Proof. by move=> fFG gGH; apply: flim_trans gGH => P /fFG. Qed.
+Proof. by move=> fFG gGH; apply: cvg_trans gGH => P /fFG. Qed.
 
-Lemma flimi_comp T U V (f : T -> U) (g : U -> set V)
+Lemma cvgi_comp T U V (f : T -> U) (g : U -> set V)
   (F : set (set T)) (G : set (set U)) (H : set (set V)) :
   f @ F `=>` G -> g `@ G `=>` H -> g \o f `@ F `=>` H.
-Proof. by move=> fFG gGH; apply: flim_trans gGH => P /fFG. Qed.
+Proof. by move=> fFG gGH; apply: cvg_trans gGH => P /fFG. Qed.
 
-Lemma flim_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> U) :
+Lemma cvg_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> U) :
   {near F, f =1 g} -> g @ F `=>` f @ F.
 Proof. by move=> eq_fg P /=; apply: filterS2 eq_fg => x <-. Qed.
 
-Lemma flimi_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> set U) :
+Lemma cvgi_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> set U) :
   {near F, f =2 g} -> g `@ F `=>` f `@ F.
 Proof.
 move=> eq_fg P /=; apply: filterS2 eq_fg => x eq_fg [y [fxy Py]].
@@ -1078,11 +1078,11 @@ Lemma near_pair {T U} {F : set (set T)} {G : set (set U)}
        prop_of P x.1 -> prop_of Q x.2 -> prop_of (in_filter_prod P Q) x.
 Proof. by case: x=> x y; do ?rewrite prop_ofE /=; split. Qed.
 
-Lemma flim_fst {T U F G} {FG : Filter G} :
+Lemma cvg_fst {T U F G} {FG : Filter G} :
   (@fst T U) @ filter_prod F G --> F.
 Proof. by move=> P; apply: filter_prod1. Qed.
 
-Lemma flim_snd {T U F G} {FF : Filter F} :
+Lemma cvg_snd {T U F G} {FF : Filter F} :
   (@snd T U) @ filter_prod F G --> G.
 Proof. by move=> P; apply: filter_prod2. Qed.
 
@@ -1101,7 +1101,7 @@ move=> FF FG; rewrite propeqE; split=> -[[A B] /= [fFA fGB] ABP].
   by apply: (ABP (_, _)); apply: xyAB.
 exists (f @` A, g @` B) => //=; last first.
   by move=> -_ [/= [x Ax <-] [x' Bx' <-]]; apply: (ABP (_, _)).
-rewrite !locally_simpl /filtermap /=; split.
+rewrite !locally_simpl /fmap /=; split.
   by apply: filterS fFA=> x Ax; exists x.
 by apply: filterS fGB => x Bx; exists x.
 Qed.
@@ -1118,7 +1118,7 @@ Proof. by []. Qed.
 (* Proof. *)
 (* move=> FF FF' P P' Q PQ [FP FP']; near=> x. *)
 (* have := PQ x.1 x.2; rewrite -surjective_pairing; apply; near: x; *)
-(* by [apply: flim_fst|apply: flim_snd]. *)
+(* by [apply: cvg_fst|apply: cvg_snd]. *)
 (* Grab Existential Variables. all: end_near. Qed. *)
 
 Lemma filter_pair_near_of (T T' : Type) (F : set (set T)) (F' : set (set T')) :
@@ -1129,7 +1129,7 @@ Lemma filter_pair_near_of (T T' : Type) (F : set (set T)) (F' : set (set T')) :
 Proof.
 move=> FF FF' [P FP] [P' FP'] Q PQ; rewrite prop_ofE in FP FP' PQ.
 near=> x; have := PQ x.1 x.2; rewrite -surjective_pairing; apply; near: x;
-by [apply: flim_fst|apply: flim_snd].
+by [apply: cvg_fst|apply: cvg_snd].
 Grab Existential Variables. all: end_near. Qed.
 
 Tactic Notation "near=>" ident(x) ident(y) :=
@@ -1142,7 +1142,7 @@ Definition near_simpl := (@near_simpl, @near_map, @near_mapi, @near_map2).
 Ltac near_simpl := rewrite ?near_simpl.
 End NearMap.
 
-Lemma flim_pair {T U V F} {G : set (set U)} {H : set (set V)}
+Lemma cvg_pair {T U V F} {G : set (set U)} {H : set (set V)}
   {FF : Filter F} {FG : Filter G} {FH : Filter H} (f : T -> U) (g : T -> V) :
   f @ F --> G -> g @ F --> H ->
   (f x, g x) @[x --> F] --> (G, H).
@@ -1151,18 +1151,18 @@ move=> fFG gFH P; rewrite !near_simpl => -[[A B] /=[GA HB] ABP]; near=> x.
 by apply: (ABP (_, _)); split=> //=; near: x; [apply: fFG|apply: gFH].
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma flim_comp2 {T U V W}
+Lemma cvg_comp2 {T U V W}
   {F : set (set T)} {G : set (set U)} {H : set (set V)} {I : set (set W)}
   {FF : Filter F} {FG : Filter G} {FH : Filter H}
   (f : T -> U) (g : T -> V) (h : U -> V -> W) :
   f @ F --> G -> g @ F --> H ->
   h (fst x) (snd x) @[x --> (G, H)] --> I ->
   h (f x) (g x) @[x --> F] --> I.
-Proof. by move=> fFG gFH hGHI P /= IP; apply: flim_pair (hGHI _ IP). Qed.
-Arguments flim_comp2 {T U V W F G H I FF FG FH f g h} _ _ _.
-Definition flim_comp_2 := @flim_comp2.
+Proof. by move=> fFG gFH hGHI P /= IP; apply: cvg_pair (hGHI _ IP). Qed.
+Arguments cvg_comp2 {T U V W F G H I FF FG FH f g h} _ _ _.
+Definition cvg_to_comp_2 := @cvg_comp2.
 
-(* Lemma flimi_comp_2 {T U V W} *)
+(* Lemma cvgi_comp_2 {T U V W} *)
 (*   {F : set (set T)} {G : set (set U)} {H : set (set V)} {I : set (set W)} *)
 (*   {FF : Filter F} *)
 (*   (f : T -> U) (g : T -> V) (h : U -> V -> set W) : *)
@@ -1172,8 +1172,8 @@ Definition flim_comp_2 := @flim_comp2.
 (* Proof. *)
 (* intros Cf Cg Ch. *)
 (* change (fun x => h (f x) (g x)) with (fun x => h (fst (f x, g x)) (snd (f x, g x))). *)
-(* apply: flimi_comp Ch. *)
-(* now apply flim_pair. *)
+(* apply: cvgi_comp Ch. *)
+(* now apply cvg_pair. *)
 (* Qed. *)
 
 (** Restriction of a filter to a domain *)
@@ -1205,7 +1205,7 @@ Typeclasses Opaque within.
 Canonical within_filter_on T D (F : filter_on T) :=
   FilterType (within D F) (within_filter _ _).
 
-Lemma flim_within {T} {F : set (set T)} {FF : Filter F} D :
+Lemma cvg_within {T} {F : set (set T)} {FF : Filter F} D :
   within D F --> F.
 Proof. by move=> P; apply: filterS. Qed.
 
@@ -1430,7 +1430,7 @@ Qed.
 Lemma continuous_comp (R S T : topologicalType) (f : R -> S) (g : S -> T) x :
   {for x, continuous f} -> {for (f x), continuous g} ->
   {for x, continuous (g \o f)}.
-Proof. exact: flim_comp. Qed.
+Proof. exact: cvg_comp. Qed.
 
 Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
@@ -1439,7 +1439,7 @@ rewrite !openE => fcont Dop x /= Dfx.
 by apply: fcont; [rewrite in_setE|apply: Dop].
 Qed.
 
-Lemma is_filter_lim_filtermap {T: topologicalType} {U : topologicalType}
+Lemma cvg_fmap {T: topologicalType} {U : topologicalType}
   (F : set (set T)) x (f : T -> U) :
    {for x, continuous f} -> F --> x -> f @ F --> f x.
 Proof. by move=> cf fx P /cf /fx. Qed.
@@ -1457,24 +1457,24 @@ Grab Existential Variables. all: end_near. Qed.
 
 (* limit composition *)
 
-Lemma lim_cont {T : Type} {V U : topologicalType}
+Lemma cvg_continuous {T : Type} {V U : topologicalType}
   (F : set (set T)) (FF : Filter F)
   (f : T -> V) (h : V -> U) (a : V) :
   {for a, continuous h} ->
   f @ F --> a -> (h \o f) @ F --> h a.
 Proof.
-move=> h_cont fa fb; apply: (flim_trans _ h_cont).
-exact: (@flim_comp _ _ _ _ h _ _ _ fa).
+move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
+exact: (@cvg_comp _ _ _ _ h _ _ _ fa).
 Qed.
 
-Lemma lim_cont2 {T : Type} {V W U : topologicalType}
+Lemma cvg_continuous2 {T : Type} {V W U : topologicalType}
   (F : set (set T)) (FF : Filter F)
   (f : T -> V) (g : T -> W) (h : V -> W -> U) (a : V) (b : W) :
   h z.1 z.2 @[z --> (a, b)] --> h a b ->
   f @ F --> a -> g @ F --> b -> (fun x => h (f x) (g x)) @ F --> h a b.
 Proof.
-move=> h_cont fa fb; apply: (flim_trans _ h_cont).
-exact: (@flim_comp _ _ _ _ (fun x => h x.1 x.2) _ _ _ (flim_pair fa fb)).
+move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
+exact: (@cvg_comp _ _ _ _ (fun x => h x.1 x.2) _ _ _ (cvg_pair fa fb)).
 Qed.
 
 Lemma cst_continuous {T : Type} {T' : topologicalType} (k : T')
@@ -1746,7 +1746,7 @@ Definition weak_topologicalType :=
 Lemma weak_continuous : continuous (f : weak_topologicalType -> T).
 Proof. by apply/continuousP => A ?; exists A. Qed.
 
-Lemma flim_image (F : set (set S)) (s : S) :
+Lemma cvg_image (F : set (set S)) (s : S) :
   Filter F -> f @` setT = setT ->
   F --> (s : weak_topologicalType) <-> [set f @` A | A in F] --> (f s).
 Proof.
@@ -1779,7 +1779,7 @@ Definition sup_topologicalType :=
   Topological.Pack (@Topological.Class _ (Filtered.Class (Pointed.class T) _)
   sup_topologicalTypeMixin).
 
-Lemma flim_sup (F : set (set T)) (t : T) :
+Lemma cvg_sup (F : set (set T)) (t : T) :
   Filter F -> F --> (t : sup_topologicalType) <-> forall i, F --> (t : TS i).
 Proof.
 move=> Ffilt; split=> cvFt.
@@ -1860,20 +1860,20 @@ Typeclasses Opaque locally'.
 Canonical locally'_filter_on (T : topologicalType)  (x : T) :=
   FilterType (locally' x) (locally'_filter _).
 
-Lemma subset_filtermap (T U : Type) (f : T -> U):
+Lemma cvg_fmap2 (T U : Type) (f : T -> U):
   forall (F G : set (set T)), G `=>` F -> f @ G `=>` f @ F.
 Proof. by move=> F G H A fFA ; exact: H (preimage f A) fFA. Qed.
 
-Lemma flim_within_filter {T U} {f : T -> U} (F : set (set T)) {FF : (Filter F) }
+Lemma cvg_within_filter {T U} {f : T -> U} (F : set (set T)) {FF : (Filter F) }
   (G : set (set U)) : forall (D : set T), (f @ F) --> G -> (f @ within D F) --> G.
-Proof. move=> ?;  exact: flim_trans (subset_filtermap (flim_within _)). Qed. 
+Proof. move=> ?;  exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed. 
 
-Lemma cvg_within {T} {U : topologicalType} (f : T -> U) (F : set (set T))
+Lemma cvg_app_within {T} {U : topologicalType} (f : T -> U) (F : set (set T))
   (D : set T): Filter F -> cvg (f @ F) -> cvg (f @ within D F).
-Proof. by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: flim_within_filter. Qed.
+Proof. by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_filter. Qed.
 
 Lemma locally_locally' {T : topologicalType} (x : T) : locally' x `=>` locally x.
-Proof. exact: flim_within. Qed.
+Proof. exact: cvg_within. Qed.
 
 (** ** Closed sets in topological spaces *)
 
@@ -1940,13 +1940,13 @@ End Closed.
 Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
-rewrite !closedE=> f_cont D_cl x /= xDf; apply: D_cl; apply: contrap xDf => fxD.
+rewrite !closedE=> f_continuous D_cl x /= xDf; apply: D_cl; apply: contrap xDf => fxD.
 have NDfx : ~ D (f x).
   by move: fxD; rewrite -locally_nearE locallyE => - [A [[??]]]; apply.
-by apply: f_cont fxD; rewrite in_setE.
+by apply: f_continuous fxD; rewrite in_setE.
 Qed.
 
-Lemma closed_flim_loc {T} {U : topologicalType} {F} {FF : ProperFilter F}
+Lemma closed_cvg_loc {T} {U : topologicalType} {F} {FF : ProperFilter F}
   (f : T -> U) (D : U -> Prop) :
   forall y, f @ F --> y -> F (f @^-1` D) -> closed D -> D y.
 Proof.
@@ -1954,11 +1954,11 @@ move=> y Ffy Df; apply => A /Ffy /=; rewrite locally_filterE.
 by move=> /(filterI Df); apply: filter_ex.
 Qed.
 
-Lemma closed_flim {T} {U : topologicalType} {F} {FF : ProperFilter F}
+Lemma closed_cvg {T} {U : topologicalType} {F} {FF : ProperFilter F}
   (f : T -> U) (D : U -> Prop) :
   forall y, f @ F --> y -> (forall x, D (f x)) -> closed D -> D y.
 Proof.
-by move=> y fy FDf; apply: (closed_flim_loc fy); apply: filterE.
+by move=> y fy FDf; apply: (closed_cvg_loc fy); apply: filterE.
 Qed.
 
 (** ** Compact sets *)
@@ -1973,10 +1973,10 @@ Definition cluster (F : set (set T)) (p : T) :=
 Lemma clusterE F : cluster F = \bigcap_(A in F) (closure A).
 Proof. by rewrite predeqE => p; split=> cF ????; apply: cF. Qed.
 
-Lemma flim_cluster F G : F --> G -> cluster F `<=` cluster G.
+Lemma cvg_cluster F G : F --> G -> cluster F `<=` cluster G.
 Proof. by move=> sGF p Fp P Q GP Qp; apply: Fp Qp; apply: sGF. Qed.
 
-Lemma cluster_flimE F :
+Lemma cluster_cvgE F :
   ProperFilter F ->
   cluster F = [set p | exists2 G, ProperFilter G & G --> p /\ F `<=` G].
 Proof.
@@ -2028,7 +2028,7 @@ Lemma compact_closed (A : set T) : hausdorff -> compact A -> closed A.
 Proof.
 move=> hT Aco p clAp; have pA := !! @withinT _ (locally p) A _.
 have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
-by apply: flim_cluster clsAp_q; apply: flim_within.
+by apply: cvg_cluster clsAp_q; apply: cvg_within.
 Qed.
 
 End Compact.
@@ -2057,12 +2057,12 @@ Class UltraFilter T (F : set (set T)) := {
   max_filter : forall G : set (set T), ProperFilter G -> F `<=` G -> G = F
 }.
 
-Lemma ultra_flim_clusterE (T : topologicalType) (F : set (set T)) :
+Lemma ultra_cvg_clusterE (T : topologicalType) (F : set (set T)) :
   UltraFilter F -> cluster F = [set p | F --> p].
 Proof.
 move=> FU; rewrite predeqE => p; split.
-  by rewrite cluster_flimE => - [G GF [cvGp /max_filter <-]].
-by move=> cvFp; rewrite cluster_flimE; exists F; [apply: ultra_proper|split].
+  by rewrite cluster_cvgE => - [G GF [cvGp /max_filter <-]].
+by move=> cvFp; rewrite cluster_cvgE; exists F; [apply: ultra_proper|split].
 Qed.
 
 Lemma ultraFilterLemma T (F : set (set T)) :
@@ -2105,11 +2105,11 @@ Lemma compact_ultra (T : topologicalType) :
   UltraFilter F -> F A -> A `&` [set p | F --> p] !=set0].
 Proof.
 rewrite predeqE => A; split=> Aco F FF FA.
-  by have /Aco [p [?]] := FA; rewrite ultra_flim_clusterE; exists p.
+  by have /Aco [p [?]] := FA; rewrite ultra_cvg_clusterE; exists p.
 have [G [GU sFG]] := ultraFilterLemma FF.
 have /Aco [p [Ap]] : G A by apply: sFG.
-rewrite -[_ --> p]/([set _ | _] p) -ultra_flim_clusterE.
-by move=> /(flim_cluster sFG); exists p.
+rewrite -[_ --> p]/([set _ | _] p) -ultra_cvg_clusterE.
+by move=> /(cvg_cluster sFG); exists p.
 Qed.
 
 Lemma filter_image (T U : Type) (f : T -> U) (F : set (set T)) :
@@ -2200,10 +2200,10 @@ have pFA : forall i, pF i (A i).
   move=> j; case: (eqVneq i j); first by case: _ /; rewrite subst_coordT.
   by move=> /subst_coordN ->; apply: Af.
 have cvpFA i : A i `&` [set p | pF i --> p] !=set0.
-  by rewrite -ultra_flim_clusterE; apply: Aco.
+  by rewrite -ultra_cvg_clusterE; apply: Aco.
 exists (fun i => get (A i `&` [set p | pF i --> p])).
 split=> [i|]; first by have /getPex [] := cvpFA i.
-by apply/flim_sup => i; apply/flim_image=> //; have /getPex [] := cvpFA i.
+by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
 End Tychonoff.
@@ -2539,27 +2539,27 @@ Lemma near_ball (y : M) (eps : {posnum R}) :
    \forall y' \near y, ball y eps%:num y'.
 Proof. exact: locally_ball. Qed.
 
-Lemma flim_ballP {F} {FF : Filter F} (y : M) :
+Lemma cvg_ballP {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by rewrite -filter_fromP !locally_simpl /=. Qed.
 
-Definition flim_locally := @flim_ballP.
+Definition cvg_to_locally := @cvg_ballP.
 
-Lemma flim_ballPpos {F} {FF : Filter F} (y : M) :
+Lemma cvg_ballPpos {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
 Proof.
-by split => [/flim_ballP|] pos; [case|apply/flim_ballP=> _/posnumP[eps] //].
+by split => [/cvg_ballP|] pos; [case|apply/cvg_ballP=> _/posnumP[eps] //].
 Qed.
 
-Lemma flim_ball {F} {FF : Filter F} (y : M) :
+Lemma cvg_ball {F} {FF : Filter F} (y : M) :
   F --> y -> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
-Proof. by move/flim_ballP. Qed.
+Proof. by move/cvg_ballP. Qed.
 
-Lemma app_flim_locally T {F} {FF : Filter F} (f : T -> M) y :
+Lemma app_cvg_locally T {F} {FF : Filter F} (f : T -> M) y :
   f @ F --> y <-> forall eps : R, 0 < eps -> \forall x \near F, ball y eps (f x).
-Proof. exact: flim_ballP. Qed.
+Proof. exact: cvg_ballP. Qed.
 
-Lemma flimi_ballP T {F} {FF : Filter F} (f : T -> M -> Prop) y :
+Lemma cvgi_ballP T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   f `@ F --> y <->
   forall eps : R, 0 < eps -> \forall x \near F, exists z, f x z /\ ball y eps z.
 Proof.
@@ -2569,14 +2569,14 @@ rewrite near_simpl near_mapi; near=> x.
 have [//|z [fxz yz]] := near (Fy _ (posnum_gt0 eps)) x.
 by exists z => //; split => //; apply: subP.
 Unshelve. all: end_near. Qed.
-Definition flimi_locally := @flimi_ballP.
+Definition cvg_toi_locally := @cvgi_ballP.
 
-Lemma flimi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
+Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   f `@ F --> y ->
   forall eps : R, 0 < eps -> F [set x | exists z, f x z /\ ball y eps z].
-Proof. by move/flimi_ballP. Qed.
+Proof. by move/cvgi_ballP. Qed.
 
-Lemma flim_const {T} {F : set (set T)}
+Lemma cvg_const {T} {F : set (set T)}
    {FF : Filter F} (a : M) : a @[_ --> F] --> a.
 Proof.
 move=> P /locallyP[_ /posnumP[eps] subP]; rewrite !near_simpl /=.
@@ -2590,7 +2590,7 @@ Canonical set_filter_source :=
 End pseudoMetricType_numDomainType.
 Hint Resolve locally_ball : core.
 Hint Resolve close_refl : core.
-Arguments flim_const {R M T F FF} a.
+Arguments cvg_const {R M T F FF} a.
 
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.
@@ -2607,7 +2607,7 @@ Lemma ball_splitl (z x y : M) (e : R) :
   ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
 Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
-Lemma flim_close {F} {FF : ProperFilter F} (x y : M) :
+Lemma cvg_close {F} {FF : ProperFilter F} (x y : M) :
   F --> x -> F --> y -> close x y.
 Proof.
 move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z;
@@ -2617,52 +2617,52 @@ Grab Existential Variables. all: end_near. Qed.
 Lemma close_trans (x y z : M) : close x y -> close y z -> close x z.
 Proof. by move=> cxy cyz eps; apply: ball_split (cxy _) (cyz _). Qed.
 
-Lemma close_limxx (x y : M) : close x y -> x --> y.
+Lemma close_cvgxx (x y : M) : close x y -> x --> y.
 Proof.
 move=> cxy P /= /locallyP /= [_/posnumP [eps] epsP].
 apply/locallyP; exists (eps%:num / 2) => // z bxz.
 by apply: epsP; apply: ball_splitr (cxy _) bxz.
 Qed.
 
-Lemma flimx_close (x y : M) : x --> y -> close x y.
-Proof. exact: flim_close. Qed.
+Lemma cvgx_close (x y : M) : x --> y -> close x y.
+Proof. exact: cvg_close. Qed.
 
-Lemma flimi_close T {F} {FF: ProperFilter F} (f : T -> set M) (l l' : M) :
+Lemma cvgi_close T {F} {FF: ProperFilter F} (f : T -> set M) (l l' : M) :
   {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> close l l'.
 Proof.
 move=> f_prop fFl fFl'.
-suff f_totalfun: infer {near F, is_totalfun f} by exact: flim_close fFl fFl'.
+suff f_totalfun: infer {near F, is_totalfun f} by exact: cvg_close fFl fFl'.
 apply: filter_app f_prop; near=> x; split=> //=.
-by have [//|y [fxy _]] := near (flimi_ball fFl [gt0 of 1]) x; exists y.
+by have [//|y [fxy _]] := near (cvgi_ball fFl [gt0 of 1]) x; exists y.
 Grab Existential Variables. all: end_near. Qed.
-Definition flimi_locally_close := @flimi_close.
+Definition cvg_toi_locally_close := @cvgi_close.
 
-Lemma close_lim (F1 F2 : set (set M)) {FF2 : ProperFilter F2} :
+Lemma close_cvg (F1 F2 : set (set M)) {FF2 : ProperFilter F2} :
   F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
 Proof.
-move=> F12 F21; have [/(flim_trans F21) F2l|dvgF1] := pselect (cvg F1).
-  by apply: (@flim_close F2) => //; apply: cvgP F2l.
-have [/(flim_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
+move=> F12 F21; have [/(cvg_trans F21) F2l|dvgF1] := pselect (cvg F1).
+  by apply: (@cvg_close F2) => //; apply: cvgP F2l.
+have [/(cvg_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
 rewrite dvgP // dvgP //; exact/close_refl.
 Qed.
 
-Lemma flim_closeP (F : set (set M)) (l : M) : ProperFilter F ->
+Lemma cvg_closeP (F : set (set M)) (l : M) : ProperFilter F ->
   F --> l <-> ([cvg F in M] /\ close (lim F) l).
 Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
-  by have /cvgP := Fl; split=> //; apply: (@flim_close F).
-by apply: flim_trans (close_limxx Cl).
+  by have /cvgP := Fl; split=> //; apply: (@cvg_close F).
+by apply: cvg_trans (close_cvgxx Cl).
 Qed.
 
 End pseudoMetricType_numFieldType.
-Arguments close_lim {R M} F1 F2 {FF2} _.
+Arguments close_cvg {R M} F1 F2 {FF2} _.
 
 Section entourages.
 Variable R : numDomainType.
-Definition unif_cont (U V : pseudoMetricType R) (f : U -> V) :=
+Definition unif_continuous (U V : pseudoMetricType R) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourages --> entourages.
-Lemma unif_contP (U V : pseudoMetricType R) (f : U -> V) :
-  unif_cont f <->
+Lemma unif_continuousP (U V : pseudoMetricType R) (f : U -> V) :
+  unif_continuous f <->
   forall e, e > 0 -> exists2 d, d > 0 &
     forall x, ball x.1 d x.2 -> ball (f x.1) e (f x.2).
 Proof. exact: filter_fromP. Qed.
@@ -2755,12 +2755,12 @@ Canonical prod_pseudoMetricType (R : numDomainType) (U V : pseudoMetricType R) :
 
 Section Locally_fct2.
 Context {T : Type} {R : numDomainType} {U V : pseudoMetricType R}.
-Lemma flim_ball2P {F : set (set U)} {G : set (set V)}
+Lemma cvg_ball2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
   forall eps : R, eps > 0 -> \forall y' \near F & z' \near G,
                 ball y eps y' /\ ball z eps z'.
-Proof. exact: flim_ballP. Qed.
+Proof. exact: cvg_ballP. Qed.
 End Locally_fct2.
 
 (** Functional metric spaces *)
@@ -2894,7 +2894,7 @@ have /(_ _ _) /complete_cauchy cvF :
   by move=> ?? _ /posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex.
 exists (\matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T)).
-apply/flim_ballP => _ /posnumP[e]; near=> M => i j.
+apply/cvg_ballP => _ /posnumP[e]; near=> M => i j.
 rewrite mxE; near F => M' => /=; apply: (@ball_splitl _ _ (M' i j)).
   by near: M'; apply/cvF/locally_ball.
 by move: (i) (j); near: M'; near: M; apply: nearP_dep; apply: filterS (Fc _ _).
@@ -2910,7 +2910,7 @@ Proof.
 move=> Fc; have /(_ _) /complete_cauchy Ft_cvg : cauchy (@^~_ @ F).
   by move=> t e ?; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/flim_ballPpos => e; near=> f => t; near F => g => /=.
+apply/cvg_ballPpos => e; near=> f => t; near F => g => /=.
 apply: (@ball_splitl _ _ (g t)); first by near: g; exact/Ft_cvg/locally_ball.
 by move: (t); near: g; near: f; apply: nearP_dep; apply: filterS (Fc _ _).
 Grab Existential Variables. all: end_near. Qed.
@@ -2918,21 +2918,21 @@ Canonical fun_completeType := CompleteType (T -> U) fun_complete.
 End fun_Complete.
 
 (** ** Limit switching *)
-Section Flim_switch.
+Section Cvg_switch.
 Context {T1 T2 : choiceType}.
-Lemma flim_switch_1 {R : numFieldType} {U : pseudoMetricType R}
+Lemma cvg_switch_1 {R : numFieldType} {U : pseudoMetricType R}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) -> h @ F1 --> l ->
   g @ F2 --> l.
 Proof.
-move=> fg fh hl; apply/flim_ballPpos => e.
+move=> fg fh hl; apply/cvg_ballPpos => e.
 rewrite near_simpl; near F1 => x1; near=> x2.
 apply: (@ball_split _ _ (h x1)); first by near: x1; apply/hl/locally_ball.
 apply: (@ball_splitl _ _ (f x1 x2)); first by near: x2; apply/fh/locally_ball.
-by move: (x2); near: x1; apply/(flim_ball fg).
+by move: (x2); near: x1; apply/(cvg_ball fg).
 Grab Existential Variables. all: end_near. Qed.
-Lemma flim_switch_2 {R : numFieldType} {U : completeType R}
+Lemma cvg_switch_2 {R : numFieldType} {U : completeType R}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : ProperFilter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
   f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
@@ -2943,23 +2943,23 @@ rewrite !near_simpl; near=> x1 y1=> /=; near F2 => x2.
 apply: (@ball_splitl _ _ (f x1 x2)); first by near: x2; apply/fh/locally_ball.
 apply: (@ball_split _ _ (f y1 x2)); first by near: x2; apply/fh/locally_ball.
 apply: (@ball_splitr _ _ (g x2)); move: (x2); [near: y1|near: x1];
-by apply/(flim_ball fg).
+by apply/(cvg_ball fg).
 Grab Existential Variables. all: end_near. Qed.
 
 (* Alternative version *)
-(* Lemma flim_switch {U : completeType} *)
+(* Lemma cvg_switch {U : completeType} *)
 (*   F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2) (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) : *)
 (*   [cvg f @ F1 in T2 -> U] -> (forall x, [cvg f x @ F2 in U]) -> *)
 (*   [/\ [cvg [lim f @ F1] @ F2 in U], [cvg (fun x => [lim f x @ F2]) @ F1 in U] *)
 (*   & [lim [lim f @ F1] @ F2] = [lim (fun x => [lim f x @ F2]) @ F1]]. *)
-Lemma flim_switch {R : numFieldType} {U : completeType R}
+Lemma cvg_switch {R : numFieldType} {U : completeType R}
   F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2)
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) ->
   exists l : U, h @ F1 --> l /\ g @ F2 --> l.
 Proof.
-move=> Hfg Hfh; have hcv := !! flim_switch_2 Hfg Hfh.
-by exists [lim h @ F1 in U]; split=> //; apply: flim_switch_1 Hfg Hfh hcv.
+move=> Hfg Hfh; have hcv := !! cvg_switch_2 Hfg Hfh.
+by exists [lim h @ F1 in U]; split=> //; apply: cvg_switch_1 Hfg Hfh hcv.
 Qed.
 
-End Flim_switch.
+End Cvg_switch.

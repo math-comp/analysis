@@ -883,8 +883,8 @@ Proof.
 split=> fFl.
   apply/eqaddoP => _/posnumP[eps]; near=> x.
   rewrite /cst ltW //= distrC; near: x.
-  by apply: (flim_norm _ fFl); rewrite mulr_gt0 // normr1.
-apply/flim_normP=> _/posnumP[eps]; rewrite /= near_simpl.
+  by apply: (cvg_norm _ fFl); rewrite mulr_gt0 // normr1.
+apply/cvg_normP=> _/posnumP[eps]; rewrite /= near_simpl.
 have lt_eps x : x <= (eps%:num / 2%:R) * `|1 : K^o|%real -> x < eps%:num.
   rewrite normr1 mulr1 => /le_lt_trans; apply.
   by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
@@ -1120,7 +1120,7 @@ have /= := ye (t - (x - y)); rewrite addrNK; apply.
 by rewrite opprB addrCA opprD addrA subrr add0r opprB.
 Qed.
 
-Lemma flim_shift {T : Type} {K : numDomainType} {R : normedModType K}
+Lemma cvg_shift {T : Type} {K : numDomainType} {R : normedModType K}
   (x y : R) (f : R -> T) :
   (f \o shift x) @ y = f @ (y + x).
 Proof.
@@ -1145,7 +1145,7 @@ Lemma linear_for_continuous (f : {linear U -> V | GRing.Scale.op s_law}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
 move=> /eqO_exP [_/posnumP[k0] Of1] x.
-apply/flim_normP => _/posnumP[e]; rewrite !near_simpl.
+apply/cvg_normP => _/posnumP[e]; rewrite !near_simpl.
 rewrite (near_shift 0) /= subr0; near=> y => /=.
 rewrite -linearB opprD addrC addrNK linearN normrN; near: y.
 suff flip : \forall k \near +oo, forall x, `|f x| <= k * `|x|.

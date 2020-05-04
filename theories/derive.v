@@ -171,8 +171,8 @@ rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; near=> k; rewrite /cst [`|1 : R^o|]normr1 mulr1.
   near=> y; rewrite ltW //; near: y; apply/locally_normP.
   by exists k; [near: k; exists 0; rewrite real0|move=> ? /=; rewrite sub0r normrN].
-rewrite addfo; first by move=> /eqolim; rewrite flim_shift add0r.
-by apply/eqolim0P; apply: (flim_trans (dfc 0)); rewrite linear0.
+rewrite addfo; first by move=> /eqolim; rewrite cvg_shift add0r.
+by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
 Grab Existential Variables. all: end_near. Qed.
 
 Section littleo_lemmas.
@@ -297,11 +297,11 @@ rewrite /derive => /diff_locally -> /=; set k := 'o _.
 evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
   by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
-apply: flim_map_lim.
+apply: cvg_map_lim.
 pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
-rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: (@lim_add _ _ [topologicalType of R^o]).
-  rewrite -(scale1r (_ _ v)); apply: lim_scalel => /= X [e e0].
+rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: (@cvgD _ _ [topologicalType of R^o]).
+  rewrite -(scale1r (_ _ v)); apply: cvgZl => /= X [e e0].
   rewrite /ball_ /= => eX.
   apply/locallyP; rewrite locally_E.
   by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE // subrr normr0.
@@ -309,7 +309,7 @@ rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
   rewrite (_ : (fun _ => _) = cst 0); first exact: cst_continuous.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
-apply/flim_normP => e e0.
+apply/cvg_normP => e e0.
 rewrite nearE /=; apply/locallyP; rewrite locally_E.
 have /(littleoP [littleo of k]) /locallyP[i i0 Hi] : 0 < e / (2 * `|v|).
   by rewrite divr_gt0 // pmulr_rgt0 // normr_gt0.
@@ -838,8 +838,8 @@ Canonical Rmult_bilinear :=
 Global Instance is_diff_Rmult (p : [filteredType R^o * R^o of R^o * R^o]) :
   is_diff p (fun q => q.1 * q.2) (fun q => p.1 * q.2 + q.1 * p.2).
 Proof.
-apply: DiffDef; first by apply: differentiable_bilin =>?; apply: lim_mult.
-by rewrite diff_bilin // => ?; apply: lim_mult.
+apply: DiffDef; first by apply: differentiable_bilin =>?; apply: cvgM.
+by rewrite diff_bilin // => ?; apply: cvgM.
 Qed.
 
 Lemma eqo_pair (U V' W' : normedModType R) (F : filter_on U)
@@ -856,7 +856,7 @@ Fact dpair (U V' W' : normedModType R) (f : U -> V') (g : U -> W') x :
   (fun y => (f y, g y)) \o shift x = cst (f x, g x) +
   (fun y => ('d f x y, 'd g x y)) +o_ (0 : U) id.
 Proof.
-move=> df dg; split=> [?|]; first by apply: flim_pair; apply: diff_continuous.
+move=> df dg; split=> [?|]; first by apply: cvg_pair; apply: diff_continuous.
 apply/eqaddoE; rewrite funeqE => y /=.
 rewrite ![_ (_ + x)]diff_locallyx//.
 (* fixme *)
@@ -981,8 +981,8 @@ Lemma lim_inv (T : topologicalType) (F : set (set T)) (FF : Filter F)
   (f : T -> R^o) (a : R^o) :
   a != 0 -> f @ F --> a -> (fun y => 1 / f y) @ F --> 1 / a.
 Proof.
-move=> an0 fa; apply: (flim_trans _ (inv_continuous an0)).
-exact: (@flim_comp _ _ _ f (fun y => 1 / y) _ _ _ fa).
+move=> an0 fa; apply: (cvg_trans _ (inv_continuous an0)).
+exact: (@cvg_comp _ _ _ f (fun y => 1 / y) _ _ _ fa).
 Qed.
 
 Lemma diffV (f : V -> R^o) x : differentiable f x -> f x != 0 ->
@@ -1098,12 +1098,12 @@ move=> df dg.
 evar (fg : R -> W); rewrite [X in X @ _](_ : _ = fg) /=; last first.
   rewrite funeqE => h.
   by rewrite !scalerDr scalerN scalerDr opprD addrACA -!scalerBr /fg.
-exact: (@lim_add _ _ [topologicalType of R^o]).
+exact: (@cvgD _ _ [topologicalType of R^o]).
 Qed.
 
 Lemma deriveD (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
   'D_v (f + g) x = 'D_v f x + 'D_v g x.
-Proof. by move=> df dg; apply: flim_map_lim (der_add df dg). Qed.
+Proof. by move=> df dg; apply: cvg_map_lim (der_add df dg). Qed.
 
 Lemma derivableD (f g : V -> W) (x v : V) :
   derivable f x v -> derivable g x v -> derivable (f + g) x v.
@@ -1150,12 +1150,12 @@ Fact der_opp (f : V -> W) (x v : V) : derivable f x v ->
 Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   by rewrite funeqE => h; rewrite !scalerDr !scalerN -opprD -scalerBr /g.
-exact: (@lim_opp _ _ [topologicalType of R^o]).
+exact: (@cvgN _ _ [topologicalType of R^o]).
 Qed.
 
 Lemma deriveN (f : V -> W) (x v : V) : derivable f x v ->
   'D_v (- f) x = - 'D_v f x.
-Proof. by move=> df; apply: flim_map_lim (der_opp df). Qed.
+Proof. by move=> df; apply: cvg_map_lim (der_opp df). Qed.
 
 Lemma derivableN (f : V -> W) (x v : V) :
   derivable f x v -> derivable (- f) x v.
@@ -1191,12 +1191,12 @@ Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE => h.
   by rewrite scalerBr !scalerA mulrC -!scalerA -!scalerBr /g.
-exact: (@lim_scaler _ _ [topologicalType of R^o]).
+exact: (@cvgZr _ _ [topologicalType of R^o]).
 Qed.
 
 Lemma deriveZ (f : V -> W) (k : R) (x v : V) : derivable f x v ->
   'D_v (k \*: f) x = k *: 'D_v f x.
-Proof. by move=> df; apply: flim_map_lim (der_scal df). Qed.
+Proof. by move=> df; apply: cvg_map_lim (der_scal df). Qed.
 
 Lemma derivableZ (f : V -> W) (k : R) (x v : V) :
   derivable f x v -> derivable (k \*: f) x v.
@@ -1224,8 +1224,8 @@ evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
     by rewrite !scalerBr -addrA ![g x *: _]mulrC addKr.
   rewrite scalerDr scalerA mulrC -scalerA.
   by rewrite [_ *: (g x *: _)]scalerA mulrC -scalerA /fg.
-apply: (@lim_add _ _ [topologicalType of R^o]); last exact: lim_scaler df.
-apply: flim_comp2 (@lim_mult _ _ _) => /=; last exact: dg.
+apply: (@cvgD _ _ [topologicalType of R^o]); last exact: cvgZr df.
+apply: cvg_comp2 (@cvgM _ _ _) => /=; last exact: dg.
 suff : {for 0, continuous (fun h : [filteredType _ of R^o] => f(h *: v + x))}.
   by move=> /continuous_withinNx; rewrite scale0r add0r.
 exact/(@differentiable_continuous _ _ _ (0 : R^o))/derivable1_diffP/derivable1P.
@@ -1234,7 +1234,7 @@ Qed.
 Lemma deriveM (f g : V -> R^o) (x v : V) :
   derivable f x v -> derivable g x v ->
   'D_v (f * g) x = f x *: 'D_v g x + g x *: 'D_v f x.
-Proof. by move=> df dg; apply: flim_map_lim (der_mult df dg). Qed.
+Proof. by move=> df dg; apply: cvg_map_lim (der_mult df dg). Qed.
 
 Lemma derivableM (f g : V -> R^o) (x v : V) :
   derivable f x v -> derivable g x v -> derivable (f * g) x v.
@@ -1285,10 +1285,10 @@ have fn0 : locally' (0 : R^o) [set h | f (h *: v + x) != 0].
 have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
   (h^-1 *: (f (h *: v + x) - f x))) @ locally' (0 : R^o) -->
   - (1 / f x) ^+2 *: 'D_v f x.
-  apply: flim_comp2 (@lim_mult _ _ _) => //=.
-  apply: (@lim_opp _ [normedModType R of R^o] [topologicalType of R^o]); rewrite expr2.
-  by apply: lim_scaler; apply: lim_inv.
-apply: flim_trans => A [_/posnumP[e] /= Ae].
+  apply: cvg_comp2 (@cvgM _ _ _) => //=.
+  apply: (@cvgN _ [normedModType R of R^o] [topologicalType of R^o]); rewrite expr2.
+  by apply: cvgZr; apply: lim_inv.
+apply: cvg_trans => A [_/posnumP[e] /= Ae].
 move: fn0; apply: filter_app; near=> h => /=.
 move=> fhvxn0; have he : ball 0 e%:num (h : R^o) by near: h; exists e%:num.
 have hn0 : h != 0 by near: h; exists e%:num.
@@ -1303,7 +1303,7 @@ Grab Existential Variables. all: end_near. Qed.
 
 Lemma deriveV (f : V -> R^o) x v : f x != 0 -> derivable f x v ->
   'D_v[fun y => 1 / f y] x = - (1 / f x) ^+2 *: 'D_v f x.
-Proof. by move=> fxn0 df; apply: flim_map_lim (der_inv fxn0 df). Qed.
+Proof. by move=> fxn0 df; apply: cvg_map_lim (der_inv fxn0 df). Qed.
 
 Lemma derivableV (f : V -> R^o) (x v : V) :
   f x != 0 -> derivable f x v -> derivable (fun y => 1 / f y) x v.
@@ -1337,14 +1337,14 @@ have {imf_ltsup} imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
   rewrite falseE; apply: imf_ltsup; exists t => //.
   apply/eqP; rewrite eq_le supleft sup_upper_bound => //.
   by rewrite !inE; apply/asboolP/imageP.
-have invf_cont : {in `[a, b], continuous (fun t => 1 / (sup imf - f t) : R^o)}.
+have invf_continuous : {in `[a, b], continuous (fun t => 1 / (sup imf - f t) : R^o)}.
   move=> t tab; apply: (@lim_inv _ [topologicalType of R^o]).
     by rewrite neq_lt subr_gt0 orbC imf_ltsup.
-  by apply: lim_add; [apply: continuous_cst|apply: lim_opp; apply:fcont].
+  by apply: cvgD; [apply: continuous_cst|apply: cvgN; apply:fcont].
 have [M [Mreal imVfltM]] : bounded ((fun t => 1 / (sup imf - f t)) @`
   [set x | x \in `[a, b]] : set R^o).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
-  by move=> ?; rewrite inE => /asboolP /invf_cont.
+  by move=> ?; rewrite inE => /asboolP /invf_continuous.
 set k := Num.max (M + 1) 1; have kgt0 : 0 < k by rewrite ltxU ltr01 orbC.
 have : exists2 y, y \in imf & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
@@ -1376,7 +1376,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_right_proper_filter x.
-apply: (@flim_map_lim _ _ _ (at_right _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@cvg_map_lim _ _ _ (at_right _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
 by exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
 
@@ -1386,12 +1386,12 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_left_proper_filter x.
-apply: (@flim_map_lim _ _ _ (at_left _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@cvg_map_lim _ _ _ (at_left _)) => A /cvfx /locallyP [_ /posnumP[e] xe_A].
 exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.
 
-Lemma le0r_flim_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+Lemma le0r_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R^o) :
   (\forall x \near F, 0 <= f x) -> cvg (f @ F) -> 0 <= lim (f @ F).
 Proof.
@@ -1405,27 +1405,27 @@ rewrite ltr_subl_addr => /lt_le_trans; apply.
 by rewrite ltr0_norm // addrC subrr.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma ler0_flim_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+Lemma ler0_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R^o) :
   (\forall x \near F, f x <= 0) -> cvg (f @ F) -> lim (f @ F) <= 0.
 Proof.
 move=> fle0 fcv; rewrite -oppr_ge0.
 have limopp : - lim (f @ F) = lim (- f @ F).
-  by apply: Logic.eq_sym; apply: flim_map_lim; apply: lim_opp.
-rewrite limopp; apply: le0r_flim_map; last by rewrite -limopp; apply: lim_opp.
+  by apply: Logic.eq_sym; apply: cvg_map_lim; apply: cvgN.
+rewrite limopp; apply: le0r_cvg_map; last by rewrite -limopp; apply: cvgN.
 by move: fle0; apply: filterS => x; rewrite oppr_ge0.
 Qed.
 
-Lemma ler_flim_map (R : realFieldType) (T : topologicalType) (F : set (set T)) (FF : ProperFilter F)
+Lemma ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T)) (FF : ProperFilter F)
   (f g : T -> R^o) :
   (\forall x \near F, f x <= g x) -> cvg (f @ F) -> cvg (g @ F) ->
   lim (f @ F) <= lim (g @ F).
 Proof.
 move=> lefg fcv gcv; rewrite -subr_ge0.
 have eqlim : lim (g @ F) - lim (f @ F) = lim ((g - f) @ F).
-  by apply: Logic.eq_sym; apply: flim_map_lim; apply: lim_add => //; apply: lim_opp.
-rewrite eqlim; apply: le0r_flim_map; last first.
-  by rewrite /(cvg _) -eqlim /=; apply: lim_add => //; apply: lim_opp.
+  by apply: Logic.eq_sym; apply: cvg_map_lim; apply: cvgD => //; apply: cvgN.
+rewrite eqlim; apply: le0r_cvg_map; last first.
+  by rewrite /(cvg _) -eqlim /=; apply: cvgD => //; apply: cvgN.
 by move: lefg; apply: filterS => x; rewrite subr_ge0.
 Qed.
 
@@ -1436,10 +1436,10 @@ Proof.
 move=> leab fdrvbl cab cmax; apply: DeriveDef; first exact: fdrvbl.
 apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite ['D_1 f c]cvg_at_rightE; last exact: fdrvbl.
-  apply: ler0_flim_map; last first.
+  apply: ler0_cvg_map; last first.
     have /fdrvbl dfc := cab.
     rewrite -(@cvg_at_rightE _ _ (fun h : R^o => h^-1 *: ((f \o shift c) _ - f c))) //.
-    apply: flim_trans dfc; apply: flim_app.
+    apply: cvg_trans dfc; apply: cvg_app.
     move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.
     exact/lt0r_neq0.
   near=> h; apply: mulr_ge0_le0.
@@ -1450,9 +1450,9 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   move=> /(le_lt_trans (ler_norm _)); rewrite ltr_subr_addr inE/= => ->.
   by move=> /ltr_spsaddl -> //; rewrite (itvP cab).
 rewrite ['D_1 f c]cvg_at_leftE; last exact: fdrvbl.
-apply: le0r_flim_map; last first.
+apply: le0r_cvg_map; last first.
   have /fdrvbl dfc := cab; rewrite -(@cvg_at_leftE _ _ (fun h => h^-1 *: ((f \o shift c) _ - f c))) //.
-  apply: flim_trans dfc; apply: flim_app.
+  apply: cvg_trans dfc; apply: cvg_app.
   move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.
   exact/ltr0_neq0.
 near=> h; apply: mulr_le0.

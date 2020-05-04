@@ -650,13 +650,13 @@ Local Notation ball_norm := (ball_ (@normr R V)).
 
 Local Notation locally_norm := (locally_ ball_norm).
 
-Lemma locally_le_locally_norm (x : V) : flim (locally x) (locally_norm x).
+Lemma locally_le_locally_norm (x : V) : locally x `=>` locally_norm x.
 Proof.
 move=> P [_ /posnumP[e] subP]; apply/locallyP.
 by eexists; last (move=> y Py; apply/subP; rewrite ball_normE; apply/Py).
 Qed.
 
-Lemma locally_norm_le_locally x : flim (locally_norm x) (locally x).
+Lemma locally_norm_le_locally x : locally_norm x `=>` locally x.
 Proof.
 move=> P /locallyP [_ /posnumP[e] Pxe].
 by exists e%:num => // y; rewrite ball_normE; apply/Pxe.
@@ -706,13 +706,13 @@ Proof. by move=> e1e2 y /lt_le_trans; apply. Qed.
 Let locally_simpl :=
   (locally_simpl,@locally_locally_norm,@filter_from_norm_locally).
 
-Lemma flim_normP {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma cvg_normP {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y <-> forall eps, 0 < eps -> \forall y' \near F, `|y - y'| < eps.
 Proof. by rewrite -filter_fromP /= !locally_simpl. Qed.
 
-Lemma flim_norm {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma cvg_norm {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
-Proof. by move=> /flim_normP. Qed.
+Proof. by move=> /cvg_normP. Qed.
 
 Lemma closeE (x y : V) : close x y = (x = y).
 Proof.
@@ -734,7 +734,7 @@ Proof. by rewrite propeqE ball_normE. Qed.
 
 End NormedModule_numDomainType.
 Hint Resolve normr_ge0 : core.
-Arguments flim_norm {_ _ F FF}.
+Arguments cvg_norm {_ _ F FF}.
 
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
@@ -767,49 +767,49 @@ Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
-Lemma flim_unique {F} {FF : ProperFilter F} :
+Lemma cvg_unique {F} {FF : ProperFilter F} :
   is_prop [set x : V | F --> x].
-Proof. by move=> Fx Fy; rewrite -closeE; apply: flim_close. Qed.
+Proof. by move=> Fx Fy; rewrite -closeE; apply: cvg_close. Qed.
 
-Lemma locally_flim_unique (x y : V) : x --> y -> x = y.
-Proof. by rewrite -closeE; apply: flim_close. Qed.
+Lemma locally_cvg_unique (x y : V) : x --> y -> x = y.
+Proof. by rewrite -closeE; apply: cvg_close. Qed.
 
 Lemma lim_id (x : V) : lim x = x.
-Proof. by symmetry; apply: locally_flim_unique; apply/cvg_ex; exists x. Qed.
+Proof. by symmetry; apply: locally_cvg_unique; apply/cvg_ex; exists x. Qed.
 
-Lemma flim_lim {F} {FF : ProperFilter F} (l : V) :
+Lemma cvg_lim {F} {FF : ProperFilter F} (l : V) :
   F --> l -> lim F = l.
-Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@flim_unique F). Qed.
+Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@cvg_unique F). Qed.
 
-Lemma flim_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
+Lemma cvg_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
   f @ F --> l -> lim (f @ F) = l.
-Proof. exact: flim_lim. Qed.
+Proof. exact: cvg_lim. Qed.
 
-Lemma flimi_unique {T : Type} {F} {FF : ProperFilter F} (f : T -> set V) :
+Lemma cvgi_unique {T : Type} {F} {FF : ProperFilter F} (f : T -> set V) :
   {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
-Proof. by move=> ffun fx fy; rewrite -closeE; apply: flimi_close. Qed.
+Proof. by move=> ffun fx fy; rewrite -closeE; apply: cvgi_close. Qed.
 
-Lemma flim_normW {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma cvg_normW {F : set (set V)} {FF : Filter F} (y : V) :
   (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
   F --> y.
 Proof.
-move=> cv; apply/flim_normP => _/posnumP[e]; near=> x.
+move=> cv; apply/cvg_normP => _/posnumP[e]; near=> x.
 by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma flimi_map_lim {T} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
+Lemma cvgi_map_lim {T} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
   F (fun x : T => is_prop (f x)) ->
   f `@ F --> l -> lim (f `@ F) = l.
 Proof.
 move=> f_prop f_l; apply: get_unique => // l' f_l'.
-exact: flimi_unique _ f_l' f_l.
+exact: cvgi_unique _ f_l' f_l.
 Qed.
 
-Lemma flim_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma cvg_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y ->
   \forall M \near +oo, M \is Num.real /\ \forall y' \near F, `|y'| < M.
 Proof.
-move=> /flim_norm Fy; exists `|y|; rewrite normr_real; split => // M.
+move=> /cvg_norm Fy; exists `|y|; rewrite normr_real; split => // M.
 rewrite -subr_gt0 => subM_gt0; split.
   rewrite -comparabler0 (@comparabler_trans _ (M - `|y|)) //.
     by rewrite -subr_comparable0 opprD addrA subrr add0r opprK comparabler0
@@ -821,12 +821,12 @@ rewrite (le_lt_trans _ yy') // (le_trans _ (ler_dist_dist _ _)) // distrC.
 by rewrite real_ler_norm // realB.
 Qed.
 
-Lemma flim_bounded {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma cvg_bounded {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
-Proof. move/flim_bounded_real; by apply: filterS => x []. Qed.
+Proof. move/cvg_bounded_real; by apply: filterS => x []. Qed.
 
 End NormedModule_numFieldType.
-Arguments flim_bounded {_ _ F FF}.
+Arguments cvg_bounded {_ _ F FF}.
 
 Module Export LocallyNorm.
 Definition locally_simpl :=
@@ -868,14 +868,14 @@ Definition near_simpl := (@near_simpl, @locally_normE,
 Ltac near_simpl := rewrite ?near_simpl.
 End NearNorm.
 
-Lemma continuous_flim_norm {R : numFieldType}
+Lemma continuous_cvg_norm {R : numFieldType}
   (V W : normedModType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof.
 move=> cf xl e.
-move/flim_norm: (cf l) => /(_ _ (posnum_gt0 e)).
+move/cvg_norm: (cf l) => /(_ _ (posnum_gt0 e)).
 rewrite nearE /= => /locallyP; rewrite locally_E => -[i i0]; apply.
-have /@flim_norm : Filter [filter of x] by apply: filter_on_Filter.
+have /@cvg_norm : Filter [filter of x] by apply: filter_on_Filter.
 move/(_ _ xl _ i0).
 rewrite nearE /= => /locallyP; rewrite locally_E => -[j j0].
 by move/(_ _ (ballxx _ j0)); rewrite -ball_normE.
@@ -1473,33 +1473,33 @@ Section prod_NormedModule_lemmas.
 
 Context {T : Type} {K : numDomainType} {U V : normedModType K}.
 
-Lemma flim_norm2P {F : set (set U)} {G : set (set V)}
+Lemma cvg_norm2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
   forall eps, 0 < eps ->
    \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
-Proof. exact: flim_normP. Qed.
+Proof. exact: cvg_normP. Qed.
 
-(* Lemma flim_norm_supP {F : set (set U)} {G : set (set V)} *)
+(* Lemma cvg_norm_supP {F : set (set U)} {G : set (set V)} *)
 (*   {FF : Filter F} {FG : Filter G} (y : U) (z : V): *)
 (*   (F, G) --> (y, z) <-> *)
 (*   forall eps : {posnum R}, {near F & G, forall y' z', *)
 (*           (`|[y - y']| < eps) /\ (`|[z - z']| < eps) }. *)
 (* Proof. *)
-(* rewrite flim_ballP; split => [] P eps. *)
+(* rewrite cvg_ballP; split => [] P eps. *)
 (* - have [[A B] /=[FA GB] ABP] := P eps; exists (A, B) => -//[a b] [/= Aa Bb]. *)
 (*   apply/andP; rewrite -ltr_maxl. *)
 (*   have /= := (@sub_ball_norm_rev _ _ (_, _)). *)
 
-Lemma flim_norm2 {F : set (set U)} {G : set (set V)}
+Lemma cvg_norm2 {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) ->
   forall eps, 0 < eps ->
    \forall y' \near F & z' \near G, `|(y, z) - (y', z')| < eps.
-Proof. by rewrite flim_normP. Qed.
+Proof. by rewrite cvg_normP. Qed.
 
 End prod_NormedModule_lemmas.
-Arguments flim_norm2 {_ _ _ F G FF FG}.
+Arguments cvg_norm2 {_ _ _ F G FF FG}.
 
 (** Rings with absolute values are normed modules *)
 
@@ -1526,9 +1526,9 @@ Context {K : numFieldType} {V : normedModType K}.
 
 Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
 Proof.
-move=> [/=x y]; apply/flim_normP=> _/posnumP[e].
+move=> [/=x y]; apply/cvg_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> a b => /=; rewrite opprD addrACA.
-by rewrite normm_lt_split //; [near: a|near: b]; apply: flim_norm.
+by rewrite normm_lt_split //; [near: a|near: b]; apply: cvg_norm.
 Grab Existential Variables. all: end_near. Qed.
 
 End NVS_continuity.
@@ -1546,18 +1546,18 @@ Local Notation "'+oo'" := (@ERPInf K).
 
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
-move=> [k x]; apply/flim_normP=> _/posnumP[e].
+move=> [k x]; apply/cvg_normP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
 rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
   rewrite (le_lt_trans (ler_pmul _ _ (_ : _ <= `|k| + 1) (lexx _))) //.
   by rewrite ler_addl.
   rewrite -ltr_pdivl_mull // ?(lt_le_trans ltr01) ?ler_addr //; near: z.
-  by apply: flim_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
+  by apply: cvg_norm; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
 have zM : @normr _ V z < M.
-  by near: z; near: M; apply: flim_bounded; apply: flim_refl.
+  by near: z; near: M; apply: cvg_bounded; apply: cvg_refl.
 rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW //.
 rewrite -ltr_pdivl_mulr ?(le_lt_trans _ zM) //.
-near: l; apply: (flim_norm (_ : K^o)) => //.
+near: l; apply: (cvg_norm (_ : K^o)) => //.
 by rewrite divr_gt0 //; near: M; exists 0; rewrite real0.
 (* NB: the last three lines used to be one *)
 Grab Existential Variables. all: end_near. Qed.
@@ -1566,12 +1566,12 @@ Arguments scale_continuous _ _ : clear implicits.
 
 Lemma scaler_continuous k : continuous (fun x : V => k *: x).
 Proof.
-by move=> x; apply: (flim_comp2 (flim_const _) flim_id (scale_continuous (_, _))).
+by move=> x; apply: (cvg_comp2 (cvg_const _) cvg_id (scale_continuous (_, _))).
 Qed.
 
 Lemma scalel_continuous (x : V) : continuous (fun k : K^o => k *: x).
 Proof.
-by move=> k; apply: (flim_comp2 flim_id (flim_const _) (scale_continuous (_, _))).
+by move=> k; apply: (cvg_comp2 cvg_id (cvg_const _) (scale_continuous (_, _))).
 Qed.
 
 Lemma opp_continuous : continuous (@GRing.opp V).
@@ -1586,57 +1586,57 @@ Section limit_composition.
 
 Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
 
-Lemma lim_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
+Lemma cvg_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
 Proof. exact: cst_continuous. Qed.
-Hint Resolve lim_cst : core.
+Hint Resolve cvg_cst : core.
 
-Lemma lim_add (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
+Lemma cvgD (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
-Proof. by move=> ??; apply: lim_cont2 => //; exact: add_continuous. Qed.
+Proof. by move=> ??; apply: cvg_continuous2 => //; exact: add_continuous. Qed.
 
 Lemma continuousD (f g : T -> V) x :
   {for x, continuous f} -> {for x, continuous g} ->
   {for x, continuous (fun x => f x + g x)}.
-Proof. by move=> ??; apply: lim_add. Qed.
+Proof. by move=> ??; apply: cvgD. Qed.
 
-Lemma lim_scale (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
+Lemma cvgZ (F : set (set T)) (FF : Filter F) (f : T -> K) (g : T -> V)
   (k : K^o) (a : V) :
   f @ F --> k -> g @ F --> a -> (fun x => (f x) *: (g x)) @ F --> k *: a.
-Proof. move=> ??; apply: lim_cont2 => //; exact: scale_continuous. Qed.
+Proof. move=> ??; apply: cvg_continuous2 => //; exact: scale_continuous. Qed.
 
-Lemma lim_scalel (F : set (set T)) (FF : Filter F) (f : T -> K) (a : V) (k : K^o) :
+Lemma cvgZl (F : set (set T)) (FF : Filter F) (f : T -> K) (a : V) (k : K^o) :
   f @ F --> k -> (fun x => (f x) *: a) @ F --> k *: a.
-Proof. by move=> ?; apply: lim_scale => //; exact: cst_continuous. Qed.
+Proof. by move=> ?; apply: cvgZ => //; exact: cst_continuous. Qed.
 
-Lemma lim_scaler (F : set (set T)) (FF : Filter F) (f : T -> V) (k : K) (a : V) :
+Lemma cvgZr (F : set (set T)) (FF : Filter F) (f : T -> V) (k : K) (a : V) :
   f @ F --> a -> k \*: f  @ F --> k *: a.
 Proof.
-apply: lim_scale => //; exact: (@cst_continuous _ [topologicalType of K^o]).
+apply: cvgZ => //; exact: (@cst_continuous _ [topologicalType of K^o]).
 Qed.
 
 Lemma continuousZ (f : T -> V) k x :
   {for x, continuous f} -> {for x, continuous (k \*: f)}.
-Proof. by move=> ?; apply: lim_scaler. Qed.
+Proof. by move=> ?; apply: cvgZr. Qed.
 
 Lemma continuousZl (k : T -> K^o) (f : V) x :
   {for x, continuous k} -> {for x, continuous (fun z => k z *: f)}.
-Proof. by move=> ?; apply: lim_scalel. Qed.
+Proof. by move=> ?; apply: cvgZl. Qed.
 
-Lemma lim_opp (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
+Lemma cvgN (F : set (set T)) (FF : Filter F) (f : T -> V) (a : V) :
   f @ F --> a -> (fun x => - f x) @ F --> - a.
-Proof. by move=> ?; apply: lim_cont => //; apply: opp_continuous. Qed.
+Proof. by move=> ?; apply: cvg_continuous => //; apply: opp_continuous. Qed.
 
 Lemma continuousN (f : T -> V) x :
   {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
-Proof. by move=> ?; apply: lim_opp. Qed.
+Proof. by move=> ?; apply: cvgN. Qed.
 
-Lemma lim_mult (x y : K^o) : z.1 * z.2 @[z --> (x, y)] --> x * y.
+Lemma cvgM (x y : K^o) : z.1 * z.2 @[z --> (x, y)] --> x * y.
 Proof. exact: (@scale_continuous _ [normedModType K of K^o]). Qed.
 
 Lemma continuousM (f g : T -> K^o) x :
   {for x, continuous f} -> {for x, continuous g} ->
   {for x, continuous (fun x => f x * g x)}.
-Proof. by move=> fc gc; apply: flim_comp2 fc gc _; apply: lim_mult. Qed.
+Proof. by move=> fc gc; apply: cvg_comp2 fc gc _; apply: cvgM. Qed.
 
 End limit_composition.
 
@@ -1792,7 +1792,7 @@ Export CompleteNormedModule.Exports.
 (* Qed. *)
 (* Admitted. *)
 
-Arguments flim_normW {_ _ F FF}.
+Arguments cvg_normW {_ _ F FF}.
 
 Lemma R_complete (R : realType) (F : set (set R^o)) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
@@ -1808,7 +1808,7 @@ have D_has_sup : has_sup (mem D); first split.
   rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltW].
   by move=> /(le_trans _) yx01 _ /yx01.
 exists (sup (mem D)).
-apply: (flim_normW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
+apply: (cvg_normW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl sup_upper_bound //=.
   apply: sup_le_ub => //; first by case: D_has_sup.
   apply/forallbP => y; apply/implyP; rewrite in_setE.
@@ -1860,18 +1860,18 @@ Typeclasses Opaque at_left at_right.
 Lemma continuous_norm {K : numFieldType} {V : normedModType K} :
   continuous ((@normr _ V) : V -> K^o).
 Proof.
-move=> x; apply/(@flim_normP _ [normedModType K of K^o]) => _/posnumP[e] /=.
+move=> x; apply/(@cvg_normP _ [normedModType K of K^o]) => _/posnumP[e] /=.
 rewrite !near_simpl; apply/locally_normP; exists e%:num => // y Hy.
 exact/(le_lt_trans (ler_dist_dist _ _)).
 Qed.
 
 (* :TODO: yet, not used anywhere?! *)
-Lemma flim_norm0 {U} {K : numFieldType} {V : normedModType K}
+Lemma cvg_norm0 {U} {K : numFieldType} {V : normedModType K}
   {F : set (set U)} {FF : Filter F} (f : U -> V) :
   (fun x => `|f x|) @ F --> (0 : K^o)
   -> f @ F --> (0 : V).
 Proof.
-move=> /(flim_norm (_ : K^o)) fx0; apply/flim_normP => _/posnumP[e].
+move=> /(cvg_norm (_ : K^o)) fx0; apply/cvg_normP => _/posnumP[e].
 rewrite near_simpl; have := fx0 _ [gt0 of e%:num]; rewrite near_simpl.
 by apply: filterS => x; rewrite !sub0r !normrN [ `|_| ]ger0_norm.
 Qed.
@@ -1905,7 +1905,7 @@ Proof.
 move=> a_cvg; suff: exists M, M \is Num.real /\ forall n, `|a n| <= M.
   by move=> /(@getPex [pointedType of K^o]) [?]; set M := get _; exists M.
 near +oo => M.
-have [//|Mreal [N _ /(_ _ _) /ltW a_leM]] := !! near (flim_bounded_real a_cvg) M.
+have [//|Mreal [N _ /(_ _ _) /ltW a_leM]] := !! near (cvg_bounded_real a_cvg) M.
 exists (maxr `|M|%:nng (\big[maxr/0%:nng]_(n < N) `|a (val (rev_ord n))|%:nng))%:nngnum.
 split => [|/= n]; first by rewrite realE nng_lexU normr_ge0.
 rewrite nng_lexU; have [nN|nN] := leqP N n.
@@ -2532,7 +2532,7 @@ Definition ereal_loc_seq (R : numDomainType) (x : {ereal R}) (n : nat) :=
     | -oo => - n%:R
   end.
 
-Lemma flim_ereal_loc_seq (R : realType) (x : {ereal R}) :
+Lemma cvg_ereal_loc_seq (R : realType) (x : {ereal R}) :
   ereal_loc_seq x --> ereal_locally' x.
 Proof.
 move=> P; rewrite /ereal_loc_seq.
@@ -2579,15 +2579,15 @@ apply/RltP/dx_fxe; split; first by split=> //; apply/eqP.
 by have /RltP := xyd; rewrite distrC.
 Qed.
 
-Lemma continuity_pt_flim (f : Rdefinitions.R -> Rdefinitions.R) (x : Rdefinitions.R) :
+Lemma continuity_pt_cvg (f : Rdefinitions.R -> Rdefinitions.R) (x : Rdefinitions.R) :
   Ranalysis1.continuity_pt f x <-> {for x, continuous f}.
 Proof.
 eapply iff_trans; first exact: continuity_pt_locally.
 apply iff_sym.
 have FF : Filter (f @ x).
   by typeclasses eauto.
-  (*by apply filtermap_filter; apply: @filter_filter' (locally_filter _).*)
-case: (@flim_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
+  (*by apply fmap_filter; apply: @filter_filter' (locally_filter _).*)
+case: (@cvg_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
 split => [{H2} - /H1 {H1} H1 eps|{H1} H].
 - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
@@ -2600,7 +2600,7 @@ Qed.
 
 Lemma continuity_ptE (f : Rdefinitions.R -> Rdefinitions.R) (x : Rdefinitions.R) :
   Ranalysis1.continuity_pt f x <-> {for x, continuous f}.
-Proof. exact: continuity_pt_flim. Qed.
+Proof. exact: continuity_pt_cvg. Qed.
 
 Lemma continuous_withinNx (R : numFieldType) {U V : pseudoMetricType R}
   (f : U -> V) x :
@@ -2608,7 +2608,7 @@ Lemma continuous_withinNx (R : numFieldType) {U V : pseudoMetricType R}
 Proof.
 split=> - cfx P /= fxP.
   rewrite /locally' !near_simpl near_withinE.
-  by rewrite /locally'; apply: flim_within; apply/cfx.
+  by rewrite /locally'; apply: cvg_within; apply/cfx.
  (* :BUG: ssr apply: does not work,
     because the type of the filter is not inferred *)
 rewrite !locally_nearE !near_map !near_locally in fxP *; have /= := cfx P fxP.
@@ -2616,7 +2616,7 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: locally_singleton|near: y].
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma continuity_pt_flim' f x :
+Lemma continuity_pt_cvg' f x :
   Ranalysis1.continuity_pt f x <-> f @ locally' x --> f x.
 Proof. by rewrite continuity_ptE continuous_withinNx. Qed.
 
@@ -2624,11 +2624,11 @@ Lemma continuity_pt_locally' f x :
   Ranalysis1.continuity_pt f x <->
   forall eps, 0 < eps -> locally' x (fun u => `|f x - f u| < eps).
 Proof.
-rewrite continuity_pt_flim' (@flim_normP _ [normedModType _ of Rdefinitions.R^o]).
+rewrite continuity_pt_cvg' (@cvg_normP _ [normedModType _ of Rdefinitions.R^o]).
 exact.
 Qed.
 
 Lemma locally_pt_comp (P : Rdefinitions.R -> Prop)
   (f : Rdefinitions.R -> Rdefinitions.R) (x : Rdefinitions.R) :
   locally (f x) P -> Ranalysis1.continuity_pt f x -> \near x, P (f x).
-Proof. by move=> Lf /continuity_pt_flim; apply. Qed.
+Proof. by move=> Lf /continuity_pt_cvg; apply. Qed.
