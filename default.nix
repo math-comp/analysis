@@ -32,10 +32,13 @@ let
               };
             } // (cfg-fun all-pkgs);
           in {
-            # mathcomp-extra-config = lib.recursiveUpdate super.mathcomp-extra-config {
-            #   for-coq-and-mc.${self.coq.coq-version}.${self.mathcomp.version} =
-            #     removeAttrs cfg ["mathcomp" "coq"];
-            # };
+            mathcomp-extra-config = lib.recursiveUpdate super.mathcomp-extra-config {
+              initial = {
+                mathcomp-analysis = version:
+                  let mca = super.mathcomp-extra-config.initial.mathcomp-analysis version; in
+                  mca // { propagatedBuildInputs = mca.propagatedBuildInputs ++ [self.mathcomp-real-closed]; };
+              };
+            };
             mathcomp = if cfg?mathcomp then self.mathcomp_ cfg.mathcomp else super.mathcomp_ "1.11.0+beta1";
           } // mapAttrs
             (package: version: coqPackages.mathcomp-extra package version)
