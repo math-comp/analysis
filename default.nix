@@ -59,7 +59,8 @@ let
                   (super-coqPackages.mathcomp-extra-config.${coqPackages.coq.coq-version}.${coqPackages.mathcomp.version} or {}) //
                   (removeAttrs cfg [ "mathcomp" "coq" "mathcomp-fast" "mathcomp-full" ]);
               };
-            mathcomp = if cfg?mathcomp then coqPackages.mathcomp_ cfg.mathcomp else super-coqPackages.mathcomp;
+            };
+            mathcomp = if cfg?mathcomp then self.mathcomp_ cfg.mathcomp else super.mathcomp_ "1.11.0+beta1";
           } // mapAttrs
             (package: version: coqPackages.mathcomp-extra package version)
             (removeAttrs cfg ["mathcomp" "coq"])
