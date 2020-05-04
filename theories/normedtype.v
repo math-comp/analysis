@@ -1246,6 +1246,34 @@ by move=> [?|[i ??]]; apply/bigmaxr_gtrP; [left|right; exists i => //];
   rewrite ltr_opp2.
 Qed.
 
+Lemma bigmaxr_eq_arg (I : finType) i0 (P : pred I) (F : I -> R) x :
+  P i0 -> (forall i, P i -> x <= F i) ->
+  \big[maxr/x]_(i | P i) F i = F [arg max_(i > i0 | P i) F i]%O.
+Proof.
+move=> Pi0; case: arg_maxP => //= i Pi PF PxF.
+apply/eqP; rewrite eq_le ler_bigmaxr_cond // andbT.
+by apply/bigmaxr_lerP; split => //; exact: PxF.
+Qed.
+
+Lemma bigminr_eq_arg (I : finType) i0 (P : pred I) (F : I -> R) x :
+  P i0 -> (forall i, P i -> F i <= x) ->
+  \big[minr/x]_(i | P i) F i = F [arg min_(i < i0 | P i) F i]%O.
+Proof.
+move=> Pi0; case: arg_minP => //= i Pi PF PFx.
+apply/eqP; rewrite eq_le bigminr_ler_cond //=.
+by apply/bigminr_gerP; split => //; exact: PFx.
+Qed.
+
+Lemma eq_bigmaxr (I : finType) i0 (P : pred I) (F : I -> R) x :
+  P i0 -> (forall i, P i -> x <= F i) ->
+  {i0 | i0 \in I & \big[maxr/x]_(i | P i) F i = F i0}.
+Proof. by move=> Pi0 Hx; rewrite (bigmaxr_eq_arg Pi0) //; eexists. Qed.
+
+Lemma eq_bigminr (I : finType) i0 (P : pred I) (F : I -> R) x :
+  P i0 -> (forall i, P i -> F i <= x) ->
+  {i0 | i0 \in I & \big[minr/x]_(i | P i) F i = F i0}.
+Proof. by move=> Pi0 Hx; rewrite (bigminr_eq_arg Pi0) //; eexists. Qed.
+
 End bigmax_bigmin.
 Module Exports.
 Arguments bigmaxr_mkcond {R I r}.
@@ -1262,6 +1290,10 @@ Arguments bigminrD1 {R I} j {P F}.
 Arguments bigminr_ler_cond {R I P F}.
 Arguments bigminr_ler {R I F}.
 Arguments bigminr_inf {R I} i0 {P m F}.
+Arguments bigmaxr_eq_arg {R I} i0 {P F}.
+Arguments bigminr_eq_arg {R I} i0 {P F}.
+Arguments eq_bigmaxr {R I} i0 {P F}.
+Arguments eq_bigminr {R I} i0 {P F}.
 End Exports.
 End BigmaxBigminr.
 Export BigmaxBigminr.Exports.
