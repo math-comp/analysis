@@ -4212,14 +4212,13 @@ Qed.
 Lemma continuousat0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
 Proof.
- move=> cont0f x ; rewrite cvg_locally => eps pos.
- move : (continuous_bounded0 cont0f) => [r [rpos Hr]].
- rewrite nearE /= locallyP -ball_normE.
- exists (eps /r).
-  -  by rewrite mulr_gt0 //= invr_gt0 .
-  - move => y Hxy ; rewrite /(_ @^-1`_)  -ball_normE //= -(linearB f).
-    suff : `|x - y| * r < eps by apply : le_lt_trans (Hr (x-y)).
-    by rewrite -ltr_pdivl_mulr.
+move=> cont0f x; rewrite cvg_to_locally => e e0.
+move: (continuous_bounded0 cont0f) => [r [r0 fr]].
+rewrite nearE /= locallyP -ball_normE.
+exists (e / r).
+- by rewrite mulr_gt0 //= invr_gt0.
+- move=> y xy; rewrite -ball_normE /= -linearB.
+  by rewrite (le_lt_trans (fr (x - y))) // -ltr_pdivl_mulr.
 Qed.
 
 End LinearContinuousBounded.
