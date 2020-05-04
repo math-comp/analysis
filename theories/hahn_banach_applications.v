@@ -30,7 +30,7 @@ Definition continuousR_at (x : V) (f : V -> R^o) :=  f @ x --> (f x).
 Lemma continuousR_atP x (f : V -> R^o) :
 (continuousR_at x f) <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
 Proof.
-  split ; by  move => /flim_ballP.
+  split ; by  move => /cvg_ballP.
 Qed.
 
 Lemma continuousR_bounded0 (f : {scalar V}) :
@@ -111,7 +111,7 @@ Fail Check (forall f : {scalar V}, continuous f).
 Lemma continuousRat0_continuous (f : {linear V -> R^o}):
   continuousR_at 0 f -> continuous f.
 Proof.
- move=> cont0f x ; rewrite flim_locally => eps pos.
+ move=> cont0f x ; rewrite cvg_to_locally => eps pos.
  move : (continuousR_bounded0 cont0f) => [r [rpos Hr]]. 
  rewrite nearE /= locallyP -ball_normE.
  exists (eps /r).
@@ -136,7 +136,7 @@ Definition continuous_at (x : V) (f : V -> W) :=  f @ x --> (f x).
 Lemma continuous_atP x (f : V -> W) :
 (continuous_at x f) <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
 Proof.
-   split; by  move => /flim_ballP.
+   split; by  move => /cvg_ballP.
 Qed.
 
 Lemma continuous_bounded0 (f : {linear V -> W}) :
@@ -214,7 +214,7 @@ Qed.
 Lemma continuousat0_continuous (f : {linear V -> W}):
   continuous_at 0 f -> continuous f.
 Proof.
- move=> cont0f x ; rewrite flim_locally => eps pos.
+ move=> cont0f x ; rewrite cvg_to_locally => eps pos.
  move : (continuous_bounded0 cont0f) => [r [rpos Hr]]. 
  rewrite nearE /= locallyP -ball_normE.
  exists (eps /r).
@@ -256,7 +256,7 @@ Lemma continuousR_scalar_on_bounded :
   (exists  r , (r > 0 ) /\ (forall x : V, F x ->   (`|f x| ) <=  `|x| * r)).
 Proof.
   rewrite /continuousR_on_at.
-  move  => /flim_ballPpos  H.
+  move  => /cvg_ballPpos  H.
     have  H':  (0 < 1) by []. 
   move : (H (1%:pos)) {H'}.
   have f0 : f 0 = 0.
