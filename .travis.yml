@@ -1,0 +1,31 @@
+language: generic
+os: linux
+
+branches:
+  only:
+  - master
+
+services:
+- docker
+
+env:
+  global:
+  - NJOBS="2"
+  - CONTRIB="analysis"
+  - OPAMYES=yes
+  jobs:
+  - DOCKERIMAGE="mathcomp/mathcomp:1.11.0-coq-8.10"
+  - DOCKERIMAGE="mathcomp/mathcomp:1.11.0-coq-8.11"
+  - DOCKERIMAGE="mathcomp/mathcomp:1.11.0-coq-8.12"
+
+install:
+- docker pull ${DOCKERIMAGE}
+- docker tag  ${DOCKERIMAGE} ci:current
+- docker run  --env=OPAMYES --init -id --name=CI -v ${TRAVIS_BUILD_DIR}:/home/coq/${CONTRIB} -w /home/coq/${CONTRIB} ci:current
+- docker exec CI /bin/bash --login -c "opam repo add coq-released https://coq.inria.fr/opam/released"
+- docker exec CI /bin/bash --login -c "opam repo add coq-extra-dev https://coq.inria.fr/opam/extra-dev"
+# - docker exec CI /bin/bash --login -c "opam pin add -y -n coq-mathcomp-${CONTRIB} ."
+- docker exec CI /bin/bash --login -c "opam install --deps-only ."
+
+script:
+- docker exec CI /bin/bash --login -c "opam install -vvv ."
