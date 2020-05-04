@@ -2675,7 +2675,7 @@ Qed.
 Lemma continuousat0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
 Proof.
-move=> cont0f x; rewrite cvg_locally => e e0.
+move=> cont0f x; rewrite cvg_to_locally => e e0.
 move: (continuous_bounded0 cont0f) => [r [r0 fr]].
 rewrite nearE /= locallyP -ball_normE.
 exists (e / r).
