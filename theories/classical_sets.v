@@ -59,7 +59,7 @@ Require Import boolp.
 (*                   f @^-1` A == preimage of A by f.                         *)
 (*                      f @` A == image of A by f.                            *)
 (*                    A !=set0 := exists x, A x.                              *)
-(*                  is_prop X <-> X contains only 1 element.                  *)
+(*               is_subset1 X <-> X contains only 1 element.                  *)
 (*                   is_fun f <-> for each a, f a contains only 1 element.    *)
 (*                 is_total f <-> for each a, f a is non empty.               *)
 (*              is_totalfun f <-> conjunction of is_fun and is_total.         *)
@@ -425,11 +425,11 @@ move=> [i Di]; rewrite predeqE => a; split=> [[Ifa Xa] j Dj|IfIXa].
 by split=> [j /IfIXa [] | ] //; have /IfIXa [] := Di.
 Qed.
 
-Definition is_prop {A} (X : set A) := forall x y, X x -> X y -> x = y.
-Definition is_fun {A B} (f : A -> B -> Prop) := all (is_prop \o f).
+Definition is_subset1 {A} (X : set A) := forall x y, X x -> X y -> x = y.
+Definition is_fun {A B} (f : A -> B -> Prop) := all (is_subset1 \o f).
 Definition is_total {A B} (f : A -> B -> Prop) := all (nonempty \o f).
 Definition is_totalfun {A B} (f : A -> B -> Prop) :=
-  forall x, nonempty (f x) /\ is_prop (f x).
+  forall x, nonempty (f x) /\ is_subset1 (f x).
 
 Definition xget {T : choiceType} x0 (P : set T) : T :=
   if pselect (exists x : T, `[<P x>]) isn't left exP then x0
@@ -454,13 +454,13 @@ Proof. by case: xgetP=> // NP [x /NP]. Qed.
 Lemma xgetI {T : choiceType} x0 (P : set T) (x : T): P x -> P (xget x0 P).
 Proof. by move=> Px; apply: xgetPex; exists x. Qed.
 
-Lemma xget_prop {T : choiceType} x0 (P : set T) (x : T) :
-  P x -> is_prop P -> xget x0 P = x.
+Lemma xget_subset1 {T : choiceType} x0 (P : set T) (x : T) :
+  P x -> is_subset1 P -> xget x0 P = x.
 Proof. by move=> Px /(_ _ _ (xgetI x0 Px) Px). Qed.
 
 Lemma xget_unique  {T : choiceType} x0 (P : set T) (x : T) :
   P x -> (forall y, P y -> y = x) -> xget x0 P = x.
-Proof. by move=> /xget_prop gPx eqx; apply: gPx=> y z /eqx-> /eqx. Qed.
+Proof. by move=> /xget_subset1 gPx eqx; apply: gPx=> y z /eqx-> /eqx. Qed.
 
 Lemma xgetPN {T : choiceType} x0 (P : set T) : (forall x, ~ P x) -> xget x0 P = x0.
 Proof. by case: xgetP => // x _ Px /(_ x). Qed.
@@ -473,8 +473,8 @@ Lemma fun_of_relP {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
 Proof. by move=> [b fab]; rewrite /fun_of_rel; apply: xgetI fab. Qed.
 
 Lemma fun_of_rel_uniq {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
-  is_prop (f a) -> forall b, f a b ->  fun_of_rel f0 f a = b.
-Proof. by move=> fa_prop b /xget_prop xgeteq; rewrite /fun_of_rel xgeteq. Qed.
+  is_subset1 (f a) -> forall b, f a b ->  fun_of_rel f0 f a = b.
+Proof. by move=> fa_prop b /xget_subset1 xgeteq; rewrite /fun_of_rel xgeteq. Qed.
 
 Module Pointed.
 
@@ -551,8 +551,8 @@ Proof. exact: (xgetPex point). Qed.
 Lemma getI (P : set T) (x : T): P x -> P (get P).
 Proof. exact: (xgetI point). Qed.
 
-Lemma get_prop (P : set T) (x : T) : P x -> is_prop P -> get P = x.
-Proof. exact: (xget_prop point). Qed.
+Lemma get_subset1 (P : set T) (x : T) : P x -> is_subset1 P -> get P = x.
+Proof. exact: (xget_subset1 point). Qed.
 
 Lemma get_unique (P : set T) (x : T) :
    P x -> (forall y, P y -> y = x) -> get P = x.
