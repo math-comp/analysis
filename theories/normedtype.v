@@ -768,7 +768,7 @@ by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
 Lemma cvg_unique {F} {FF : ProperFilter F} :
-  is_prop [set x : V | F --> x].
+  is_subset1 [set x : V | F --> x].
 Proof. by move=> Fx Fy; rewrite -closeE; apply: cvg_close. Qed.
 
 Lemma locally_cvg_unique (x y : V) : x --> y -> x = y.
@@ -786,7 +786,7 @@ Lemma cvg_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
 Proof. exact: cvg_lim. Qed.
 
 Lemma cvgi_unique {T : Type} {F} {FF : ProperFilter F} (f : T -> set V) :
-  {near F, is_fun f} -> is_prop [set x : V | f `@ F --> x].
+  {near F, is_fun f} -> is_subset1 [set x : V | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE; apply: cvgi_close. Qed.
 
 Lemma cvg_normW {F : set (set V)} {FF : Filter F} (y : V) :
@@ -798,7 +798,7 @@ by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma cvgi_map_lim {T} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
-  F (fun x : T => is_prop (f x)) ->
+  F (fun x : T => is_subset1 (f x)) ->
   f `@ F --> l -> lim (f `@ F) = l.
 Proof.
 move=> f_prop f_l; apply: get_unique => // l' f_l'.
