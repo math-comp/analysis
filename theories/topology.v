@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Import Reals.
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
+From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
 From mathcomp Require Import seq fintype bigop order ssralg ssrnum finmap matrix.
 Require Import boolp Rstruct classical_sets posnum.
 
@@ -526,19 +526,9 @@ Lemma dvgP {U : Type} (T : filteredType U) (F : set (set U)) :
   ~ [cvg F in T] -> [lim F in T] = point.
 Proof. by rewrite /lim_in /=; case xgetP. Qed.
 
-(* CoInductive cvg_spec {U : Type} (T : filteredType U) (F : set (set U)) : *)
-(*    U -> Prop -> Type := *)
-(* | HasLim  of F --> [lim F in T] : cvg_spec T F [lim F in T] True *)
-(* | HasNoLim of ~ [cvg F in U] : cvg_spec F point False. *)
-
-(* Lemma cvgP (F : set (set U)) : cvg_spec F (lim F) [cvg F in U]. *)
-(* Proof. *)
-(* have [cvg|dvg] := pselect [cvg F in U]. *)
-(*   by rewrite (propT cvg); apply: HasLim; rewrite -cvgE. *)
-(* by rewrite (propF dvg) (dvgP _) //; apply: HasNoLim. *)
-(* Qed. *)
-
 End FilteredTheory.
+Arguments cvgP {U T F} l.
+Arguments dvgP {U} T {F}.
 
 Lemma locally_nearE {U} {T : filteredType U} (x : T) (P : set U) :
   locally x P = \near x, P x.
@@ -1473,7 +1463,7 @@ Grab Existential Variables. all: end_near. Qed.
 
 (* limit composition *)
 
-Lemma cvg_continuous {T : Type} {V U : topologicalType}
+Lemma continuous_cvg {T : Type} {V U : topologicalType}
   (F : set (set T)) (FF : Filter F)
   (f : T -> V) (h : V -> U) (a : V) :
   {for a, continuous h} ->
@@ -1483,7 +1473,7 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (@cvg_comp _ _ _ _ h _ _ _ fa).
 Qed.
 
-Lemma cvg_continuous2 {T : Type} {V W U : topologicalType}
+Lemma continuous2_cvg {T : Type} {V W U : topologicalType}
   (F : set (set T)) (FF : Filter F)
   (f : T -> V) (g : T -> W) (h : V -> W -> U) (a : V) (b : W) :
   h z.1 z.2 @[z --> (a, b)] --> h a b ->
@@ -1493,29 +1483,48 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (@cvg_comp _ _ _ _ (fun x => h x.1 x.2) _ _ _ (cvg_pair fa fb)).
 Qed.
 
-Lemma cst_continuous {T : Type} {T' : topologicalType} (k : T')
-  (F : set (set T)) {FF : Filter F} :
-  (fun _ : T => k) @ F --> k.
-Proof.
-by move=> x; rewrite !near_simpl => /locally_singleton ?; apply: filterE.
-Qed.
-Arguments cst_continuous {T T'} k F {FF}.
-Hint Resolve cst_continuous : core.
-
-Lemma cvg_fconst (T : Type) (U : topologicalType)
-  (f : T -> U) (F : set (set T)) (l : U) :
-  Filter F ->
+Lemma cvg_near_cst (T : Type) (U : topologicalType)
+  (l : U) (f : T -> U) (F : set (set T)) {FF : Filter F} :
   (\forall x \near F, f x = l) -> f @ F --> l.
 Proof.
-move=> FF fFl P /=; rewrite !near_simpl => Pl.
+move=> fFl P /=; rewrite !near_simpl => Pl.
 by apply: filterS fFl => _ ->; apply: locally_singleton.
 Qed.
+Arguments cvg_near_cst {T U} l {f F FF}.
 
-Lemma cvg_const (T : Type) (U : topologicalType) (F : set (set T)) {FF : Filter F}
-  (x : U) : (fun _ : T => x) @ F --> x.
-Proof. by apply: cvg_fconst; near=> x0.
+Lemma is_cvg_near_cst (T : Type) (U : topologicalType)
+  (l : U) (f : T -> U) (F : set (set T)) {FF : Filter F} :
+  (\forall x \near F, f x = l) -> cvg (f @ F).
+Proof. by move=> /cvg_near_cst/cvgP. Qed.
+Arguments is_cvg_near_cst {T U} l {f F FF}.
+
+Lemma near_cst_continuous (T U : topologicalType)
+  (l : U) (f : T -> U) (x : T) :
+  (\forall y \near x, f y = l) -> {for x, continuous f}.
+Proof.
+move=> eq_f_l; apply: cvg_near_cst; apply: filterS (eq_f_l) => y ->.
+by rewrite (locally_singleton eq_f_l).
+Qed.
+Arguments near_cst_continuous {T U} l [f x].
+
+Lemma cvg_cst (U : topologicalType) (x : U) (T : Type) 
+    (F : set (set T)) {FF : Filter F} :
+  (fun _ : T => x) @ F --> x.
+Proof. by apply: cvg_near_cst; near=> x0.
 Grab Existential Variables. all: end_near. Qed.
-Arguments cvg_const {T U F FF} x.
+Arguments cvg_cst {U} x {T F FF}.
+Hint Resolve cvg_cst : core.
+
+Lemma is_cvg_cst (U : topologicalType) (x : U) (T : Type)
+  (F : set (set T)) {FF : Filter F} :
+  cvg ((fun _ : T => x) @ F).
+Proof. by apply: cvgP; apply: cvg_cst. Qed.
+Arguments is_cvg_cst {U} x {T F FF}.
+Hint Resolve is_cvg_cst : core.
+
+Lemma cst_continuous {T U : topologicalType} (x : U) :
+  continuous (fun _ : T => x).
+Proof. by move=> t; apply: cvg_cst. Qed.
 
 (** ** Topology defined by a filter *)
 
@@ -1668,6 +1677,81 @@ by move=> [DAi|DBi];
 Qed.
 
 End TopologyOfSubbase.
+
+(* Topology on nat *)
+
+Section nat_topologicalType.
+
+Let D : set nat := setT.
+Let b : nat -> set nat := fun i => [set i].
+Let bT : \bigcup_(i in D) b i = setT.
+Proof. by rewrite predeqE => i; split => // _; exists i. Qed.
+
+Let bD : forall i j t, D i -> D j -> b i t -> b j t ->
+  exists k, D k /\ b k t /\ b k `<=` b i `&` b j.
+Proof. by move=> i j t _ _ -> ->; exists j. Qed.
+
+Definition nat_topologicalTypeMixin := topologyOfBaseMixin bT bD.
+Canonical nat_filteredType := FilteredType nat nat (locally_of_open (open_from D b)).
+Canonical nat_topologicalType := TopologicalType nat nat_topologicalTypeMixin.
+
+End nat_topologicalType.
+
+(* :TODO: ultimately nat could be replaced by any lattice *)
+Definition eventually := filter_from setT (fun N => [set n | (N <= n)%N]).
+Notation "'\oo'" := eventually : classical_set_scope.
+
+Canonical eventually_filter_source X :=
+   @Filtered.Source X _ nat (fun f => f @ \oo).
+
+Global Instance eventually_filter : ProperFilter eventually.
+Proof.
+eapply @filter_from_proper; last by move=> i _; exists i.
+apply: filter_fromT_filter; first by exists 0%N.
+move=> i j; exists (maxn i j) => n //=.
+by rewrite geq_max => /andP[ltin ltjn].
+Qed.
+
+Canonical eventually_filterType := FilterType eventually _.
+Canonical eventually_pfilterType := PFilterType eventually (filter_not_empty _).
+
+Lemma locally_infty_gt N : \forall n \near \oo, (N < n)%N.
+Proof. by exists N.+1. Qed.
+Hint Resolve locally_infty_gt.
+
+Lemma locally_infty_ge N : \forall n \near \oo, (N <= n)%N.
+Proof. by exists N. Qed.
+
+Lemma cvg_addnl N : addn N @ \oo --> \oo.
+Proof.
+by move=> P [n _ Pn]; exists (n - N)%N => // m; rewrite leq_subLR => /Pn.
+Qed.
+
+Lemma cvg_addnr N : addn^~ N --> \oo.
+Proof. by under [addn^~ N]funext => n do rewrite addnC; apply: cvg_addnl. Qed.
+
+Lemma cvg_subnr N : subn^~ N --> \oo.
+Proof.
+move=> P [n _ Pn]; exists (N + n)%N => //= m le_m.
+by apply: Pn; rewrite leq_subRL// (leq_trans _ le_m)// leq_addr.
+Qed.
+
+Lemma cvg_mulnl N : (N > 0)%N -> muln N --> \oo.
+Proof.
+case: N => N // _ P [n _ Pn]; exists (n %/ N.+1).+1 => //= m.
+by rewrite ltn_divLR// => n_lt; apply: Pn; rewrite mulnC ltnW.
+Qed.
+
+Lemma cvg_mulnr N :(N > 0)%N -> muln^~ N --> \oo.
+Proof.
+by move=> N_gt0; under [muln^~ N]funext => n do rewrite mulnC; apply: cvg_mulnl.
+Qed.
+
+Lemma cvg_divnr N : (N > 0)%N -> divn^~ N --> \oo.
+Proof.
+move=> N_gt0 P [n _ Pn]; exists (n * N)%N => //= m.
+by rewrite -leq_divRL//; apply: Pn.
+Qed.
 
 (** ** Topology on the product of two spaces *)
 
@@ -1849,23 +1933,6 @@ Definition product_topologicalType :=
 
 End Product_Topology.
 
-(** * The topology on natural numbers *)
-
-(* :TODO: ultimately nat could be replaced by any lattice *)
-Definition eventually := filter_from setT (fun N => [set n | (N <= n)%N]).
-Notation "'\oo'" := eventually : classical_set_scope.
-
-Canonical eventually_filter_source X :=
-   @Filtered.Source X _ nat (fun f => f @ \oo).
-
-Global Instance eventually_filter : ProperFilter eventually.
-Proof.
-eapply @filter_from_proper; last by move=> i _; exists i.
-apply: filter_fromT_filter; first by exists 0%N.
-move=> i j; exists (maxn i j) => n //=.
-by rewrite geq_max => /andP[ltin ltjn].
-Qed.
-
 (** locally' *)
 
 (* Should have a generic ^' operator *)
@@ -1897,7 +1964,7 @@ Proof. by move=> F G H A fFA ; exact: H (preimage f A) fFA. Qed.
 
 Lemma cvg_within_filter {T U} {f : T -> U} (F : set (set T)) {FF : (Filter F) }
   (G : set (set U)) : forall (D : set T), (f @ F) --> G -> (f @ within D F) --> G.
-Proof. move=> ?;  exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed. 
+Proof. move=> ?;  exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed.
 
 Lemma cvg_app_within {T} {U : topologicalType} (f : T -> U) (F : set (set T))
   (D : set T): Filter F -> cvg (f @ F) -> cvg (f @ within D F).
@@ -2471,7 +2538,15 @@ Lemma lim_id (x : T) : lim x = x.
 Proof. by apply/esym/cvg_eq/cvg_ex; exists x. Qed.
 
 Lemma cvg_lim {F} {FF : ProperFilter F} (l : T) : F --> l -> lim F = l.
-Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@cvg_unique F). Qed.
+Proof. by move=> Fl; have /cvgP Fcv := Fl; apply: (@cvg_unique F). Qed.
+
+Lemma lim_near_cst U {F} {FF : ProperFilter F} (l : T) (f : U -> T) :
+   (\forall x \near F, f x = l) -> lim (f @ F) = l.
+Proof. by move=> /cvg_near_cst/cvg_lim. Qed.
+
+Lemma lim_cst U {F} {FF : ProperFilter F} (k : T) :
+   lim ((fun _ : U => k) @ F) = k.
+Proof. by apply: cvg_lim; apply: cvg_cst. Qed.
 
 Lemma cvg_map_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
   f @ F --> l -> lim (f @ F) = l.
@@ -2945,39 +3020,51 @@ Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType
 End fct_PseudoMetric.
 
 (** ** Complete pseudoMetric spaces *)
-(* :TODO: Use cauchy2 alternative to define cauchy? *)
-(* Or not: is the fact that cauchy F -/> ProperFilter F a problem? *)
 Definition cauchy_ex {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
   forall eps : R, 0 < eps -> exists x, F (ball x eps).
+
 Definition cauchy {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
   forall e, e > 0 -> \forall x & y \near F, ball x e y.
-Lemma cauchy_entouragesP (R : numDomainType) (T  : pseudoMetricType R) (F : set (set T)) :
-  Filter F -> cauchy F <-> (F, F) --> entourages.
+
+Lemma cauchy_entouragesP (R : numDomainType) (T  : pseudoMetricType R)
+    (F : set (set T)) (FF : Filter F) :
+  cauchy F <-> (F, F) --> entourages.
 Proof.
-move=> FF; split=> cauchyF; last first.
+split=> cauchyF; last first.
   by move=> _/posnumP[eps]; apply: cauchyF; exists eps%:num.
 move=> U [_/posnumP[eps] xyepsU].
 by near=> x; apply: xyepsU; near: x; apply: cauchyF.
 Grab Existential Variables. all: end_near. Qed.
+Arguments cauchy_entouragesP {R T} F {FF}.
+
 Lemma cvg_cauchy_ex {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :
-  [cvg F in T] -> cauchy_ex F.
+  cvg F -> cauchy_ex F.
 Proof. by move=> Fl _/posnumP[eps]; exists (lim F); apply/Fl/locally_ball. Qed.
-Lemma cauchy_exP (R : numFieldType) (T : pseudoMetricType R) (F : set (set T)) : Filter F ->
+Arguments cvg_cauchy_ex {R T} F.
+
+Lemma cauchy_exP (R : numFieldType) (T : pseudoMetricType R)
+    (F : set (set T)) (FF : Filter F) :
   cauchy_ex F -> cauchy F.
 Proof.
-move=> FF Fc; apply/cauchy_entouragesP => A [_/posnumP[e] sdeA].
+move=> Fc; apply/cauchy_entouragesP => A [_/posnumP[e] sdeA].
 have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sdeA => /=.
 by apply: (@ball_splitr _ _ z); [near: x|near: y].
 Grab Existential Variables. all: end_near. Qed.
-Lemma cauchyP (R : numFieldType) (T : pseudoMetricType R) (F : set (set T)) : ProperFilter F ->
+Arguments cauchy_exP {R T} F {FF}.
+
+Lemma cauchyP (R : numFieldType) (T : pseudoMetricType R)
+    (F : set (set T)) (PF : ProperFilter F) :
   cauchy F <-> cauchy_ex F.
 Proof.
-move=> FF; split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
+split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
 by near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
 Grab Existential Variables. all: end_near. Qed.
-Lemma cvg_cauchy {R : numFieldType} {T : pseudoMetricType R} (F : set (set T)) : Filter F ->
-  [cvg F in T] -> cauchy F.
-Proof. by move=> FF /cvg_cauchy_ex /cauchy_exP. Qed.
+Arguments cauchyP {R T} F {PF}.
+
+Lemma cvg_cauchy {R : numFieldType} {T : pseudoMetricType R}
+  (F : set (set T)) {FF : Filter F} : cvg F -> cauchy F.
+Proof. by move=> /cvg_cauchy_ex /cauchy_exP. Qed.
+Arguments cvg_cauchy {R T} F {FF}.
 
 Module Complete.
 Definition axiom (R : numDomainType) (T : pseudoMetricType R) :=
@@ -3035,19 +3122,30 @@ Export Complete.Exports.
 
 Section completeType1.
 Context {R : numDomainType} {T : completeType R}.
-Lemma complete_cauchy (F : set (set T)) (FF : ProperFilter F) :
-  cauchy F -> F --> lim F.
+
+Lemma cauchy_cvg (F : set (set T)) (FF : ProperFilter F) : cauchy F -> cvg F.
 Proof. by case: T F FF => [? [?]]. Qed.
+
 End completeType1.
-Arguments complete_cauchy {R} {T} F {FF} _.
+Arguments cauchy_cvg {R} {T} F {FF}.
+
+Section completeType2.
+Context {R : numFieldType} {T : completeType R}.
+
+Lemma cauchy_cvgP (F : set (set T)) (FF : ProperFilter F) : cauchy F <-> cvg F.
+Proof. by split=> [/cauchy_cvg|/cvg_cauchy]. Qed.
+
+End completeType2.
+Arguments cauchy_cvgP {R} {T} F {FF}.
 
 Section matrix_Complete.
 Variables (R : numFieldType) (T : completeType R) (m n : nat).
+
 Lemma mx_complete (F : set (set 'M[T]_(m, n))) :
   ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF Fc.
-have /(_ _ _) /complete_cauchy cvF :
+have /(_ _ _) /cauchy_cvg cvF :
   cauchy ((fun M : 'M[T]_(m, n) => M _ _) @ F).
   by move=> ?? _ /posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex.
@@ -3065,7 +3163,7 @@ Context {T : choiceType} {R : numFieldType} {U : completeType R}.
 Lemma fun_complete (F : set (set (T -> U)))
   {FF :  ProperFilter F} : cauchy F -> cvg F.
 Proof.
-move=> Fc; have /(_ _) /complete_cauchy Ft_cvg : cauchy (@^~_ @ F).
+move=> Fc; have /(_ _) /cauchy_cvg Ft_cvg : cauchy (@^~_ @ F).
   by move=> t e ?; rewrite near_simpl; apply: filterS (Fc _ _).
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
 apply/cvg_ballPpos => e; near=> f => t; near F => g => /=.
@@ -3078,6 +3176,7 @@ End fun_Complete.
 (** ** Limit switching *)
 Section Cvg_switch.
 Context {T1 T2 : choiceType}.
+
 Lemma cvg_switch_1 {R : numFieldType} {U : pseudoMetricType R}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
@@ -3090,13 +3189,14 @@ apply: (@ball_split _ _ (h x1)); first by near: x1; apply/hl/locally_ball.
 apply: (@ball_splitl _ _ (f x1 x2)); first by near: x2; apply/fh/locally_ball.
 by move: (x2); near: x1; apply/(cvg_ball fg).
 Grab Existential Variables. all: end_near. Qed.
+
 Lemma cvg_switch_2 {R : numFieldType} {U : completeType R}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : ProperFilter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
   f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
   [cvg h @ F1 in U].
 Proof.
-move=> fg fh; apply: complete_cauchy => _/posnumP[e].
+move=> fg fh; apply: cauchy_cvg => _/posnumP[e].
 rewrite !near_simpl; near=> x1 y1=> /=; near F2 => x2.
 apply: (@ball_splitl _ _ (f x1 x2)); first by near: x2; apply/fh/locally_ball.
 apply: (@ball_split _ _ (f y1 x2)); first by near: x2; apply/fh/locally_ball.
@@ -3104,12 +3204,6 @@ apply: (@ball_splitr _ _ (g x2)); move: (x2); [near: y1|near: x1];
 by apply/(cvg_ball fg).
 Grab Existential Variables. all: end_near. Qed.
 
-(* Alternative version *)
-(* Lemma cvg_switch {U : completeType} *)
-(*   F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2) (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) : *)
-(*   [cvg f @ F1 in T2 -> U] -> (forall x, [cvg f x @ F2 in U]) -> *)
-(*   [/\ [cvg [lim f @ F1] @ F2 in U], [cvg (fun x => [lim f x @ F2]) @ F1 in U] *)
-(*   & [lim [lim f @ F1] @ F2] = [lim (fun x => [lim f x @ F2]) @ F1]]. *)
 Lemma cvg_switch {R : numFieldType} {U : completeType R}
   F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2)
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :

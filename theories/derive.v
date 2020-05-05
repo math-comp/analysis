@@ -307,9 +307,9 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: (@cvgD _ _ [topolo
   by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE // subrr normr0.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
-  rewrite (_ : (fun _ => _) = cst 0); first exact: cst_continuous.
+  rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
-apply/cvg_normP => e e0.
+apply/cvg_distP => e e0.
 rewrite nearE /=; apply/locallyP; rewrite locally_E.
 have /(littleoP [littleo of k]) /locallyP[i i0 Hi] : 0 < e / (2 * `|v|).
   by rewrite divr_gt0 // pmulr_rgt0 // normr_gt0.
@@ -413,7 +413,7 @@ Fact dscale (f : V -> W) k x :
   differentiable f x -> continuous (k \*: 'd f x) /\
   (k *: f) \o shift x = cst ((k *: f) x) + k \*: 'd f x +o_ (0 : V) id.
 Proof.
-move=> df; split; first by move=> ?; apply: continuousZ.
+move=> df; split; first by move=> ?; apply: continuousZr.
 apply/eqaddoE; rewrite funeqE => y /=.
 by rewrite -[(k *: f) _]/(_ *: _) diff_locallyx // !scalerDr scaleox.
 Qed.
@@ -838,8 +838,8 @@ Canonical Rmult_bilinear :=
 Global Instance is_diff_Rmult (p : [filteredType R^o * R^o of R^o * R^o]) :
   is_diff p (fun q => q.1 * q.2) (fun q => p.1 * q.2 + q.1 * p.2).
 Proof.
-apply: DiffDef; first by apply: differentiable_bilin =>?; apply: cvgM.
-by rewrite diff_bilin // => ?; apply: cvgM.
+apply: DiffDef; last by rewrite diff_bilin // => ?; apply: mul_continuous.
+by apply: differentiable_bilin =>?; apply: mul_continuous.
 Qed.
 
 Lemma eqo_pair (U V' W' : normedModType R) (F : filter_on U)
@@ -915,11 +915,17 @@ Proof. by move=> /differentiableP df /differentiableP dg. Qed.
 (* fixme using *)
 (* (1 / (h + x) - 1 / x) / h = - 1 / (h + x) x = -1/x^2 + o(1) *)
 Fact dinv (x : R) :
-  x != 0 -> continuous (fun h : R^o => - (1 / x) ^+ 2 *: h) /\
+  x != 0 -> continuous (fun h : R^o => - x ^- 2 *: h) /\
+  (fun x => x^-1 : R^o) \o shift x = cst (x^-1) +
+  (fun h : R^o => - x ^- 2 *: h) +o_ (0 : [filteredType R^o of R^o]) id.
+Proof.
+move=> xn0; suff: continuous (fun h : R^o => - (1 / x) ^+ 2 *: h) /\
   (fun x => 1 / x : R^o) \o shift x = cst (1 / x) +
   (fun h : R^o => - (1 / x) ^+ 2 *: h) +o_ (0 : [filteredType R^o of R^o]) id.
-Proof.
-move=> xn0; split; first by move=> ?; apply: continuousZ.
+  rewrite !mul1r !GRing.exprVn.
+  rewrite (_ : (fun x => x^-1 : R^o) =  (fun x => 1 / x : R^o))//.
+  by rewrite funeqE => y; rewrite mul1r.
+split; first by move=> ?; apply: continuousZr.
 apply/eqaddoP => _ /posnumP[e]; near=> h.
 rewrite -[(_ + _ : R -> R) h]/(_ + _) -[(- _ : R -> R) h]/(- _) /=.
 rewrite opprD scaleNr opprK /cst /=.
@@ -959,41 +965,28 @@ by rewrite normrM normfV (@ger0_norm _ 2) // -addrA subrr addr0; apply: ltW.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma diff_Rinv (x : [filteredType R^o of R^o]) : x != 0 ->
-  'd (fun y => 1 / y) x = (fun h => - (1 / x) ^+ 2 *: h) :> (R^o -> R^o).
+  'd GRing.inv x = (fun h => - x ^- 2 *: h) :> (R^o -> R^o).
 Proof.
-move=> xn0; have -> : (fun h : R^o => - (1 / x) ^+2 *: h) =
-  GRing.scale_linear _ (- (1 / x) ^+2) by [].
+move=> xn0; have -> : (fun h : R^o => - x ^- 2 *: h) =
+  GRing.scale_linear _ (- x ^- 2) by [].
 by apply: diff_unique; have [] := dinv xn0.
 Qed.
 
-Lemma differentiable_Rinv (x : R^o) :
-  x != 0 -> differentiable (fun y : R^o => 1 / y) x.
+Lemma differentiable_Rinv (x : R^o) : x != 0 ->
+  differentiable (GRing.inv : R^o -> R^o) x.
 Proof.
 by move=> xn0; apply/diff_locallyP; rewrite diff_Rinv //; apply: dinv.
 Qed.
 
-Lemma inv_continuous x : x != 0 -> {for x, continuous (fun y : R^o => 1 / y)}.
-Proof.
-by move=> xn0; apply: differentiable_continuous (differentiable_Rinv xn0).
-Qed.
-
-Lemma lim_inv (T : topologicalType) (F : set (set T)) (FF : Filter F)
-  (f : T -> R^o) (a : R^o) :
-  a != 0 -> f @ F --> a -> (fun y => 1 / f y) @ F --> 1 / a.
-Proof.
-move=> an0 fa; apply: (cvg_trans _ (inv_continuous an0)).
-exact: (@cvg_comp _ _ _ f (fun y => 1 / y) _ _ _ fa).
-Qed.
-
 Lemma diffV (f : V -> R^o) x : differentiable f x -> f x != 0 ->
-  'd (fun y => 1 / f y) x = - (1 / f x) ^+ 2 \*: 'd f x :> (V -> R).
+  'd (fun y => (f y)^-1) x = - (f x) ^- 2 \*: 'd f x :> (V -> R).
 Proof.
 move=> df fxn0.
 by rewrite [LHS](diff_comp df (differentiable_Rinv fxn0)) diff_Rinv.
 Qed.
 
 Lemma differentiableV (f : V -> R^o) x :
-  differentiable f x -> f x != 0 -> differentiable (fun y => 1 / f y) x.
+  differentiable f x -> f x != 0 -> differentiable (fun y => (f y)^-1) x.
 Proof.
 by move=> df fxn0; apply: differentiable_comp _ (differentiable_Rinv fxn0).
 Qed.
@@ -1225,7 +1218,7 @@ evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
   rewrite scalerDr scalerA mulrC -scalerA.
   by rewrite [_ *: (g x *: _)]scalerA mulrC -scalerA /fg.
 apply: (@cvgD _ _ [topologicalType of R^o]); last exact: cvgZr df.
-apply: cvg_comp2 (@cvgM _ _ _) => /=; last exact: dg.
+apply: cvg_comp2 (@mul_continuous _ (_, _)) => /=; last exact: dg.
 suff : {for 0, continuous (fun h : [filteredType _ of R^o] => f(h *: v + x))}.
   by move=> /continuous_withinNx; rewrite scale0r add0r.
 exact/(@differentiable_continuous _ _ _ (0 : R^o))/derivable1_diffP/derivable1P.
@@ -1272,8 +1265,8 @@ Proof. by move=> /derivableP df; rewrite derive_val. Qed.
 
 Fact der_inv (f : V -> R^o) (x v : V) :
   f x != 0 -> derivable f x v ->
-  (fun h => h^-1 *: (((fun y => 1 / f y) \o shift x) (h *: v) - 1 / f x)) @
-  locally' (0 : R^o) --> - (1 / f x) ^+2 *: 'D_v f x.
+  (fun h => h^-1 *: (((fun y => (f y)^-1) \o shift x) (h *: v) - (f x)^-1)) @
+  locally' (0 : R^o) --> - (f x) ^-2 *: 'D_v f x.
 Proof.
 move=> fxn0 df.
 have /derivable1P/derivable1_diffP/differentiable_continuous := df.
@@ -1282,33 +1275,32 @@ have fn0 : locally' (0 : R^o) [set h | f (h *: v + x) != 0].
   apply: (fc [set x | x != 0]); exists `|f x|; first by rewrite normr_gt0.
   move=> y; rewrite /= => yltfx.
   by apply/eqP => y0; move: yltfx; rewrite y0 subr0 ltxx.
-have : (fun h => - ((1 / f x) * (1 / f (h *: v + x))) *:
+have : (fun h => - ((f x)^-1 * (f (h *: v + x))^-1) *:
   (h^-1 *: (f (h *: v + x) - f x))) @ locally' (0 : R^o) -->
-  - (1 / f x) ^+2 *: 'D_v f x.
-  apply: cvg_comp2 (@cvgM _ _ _) => //=.
-  apply: (@cvgN _ [normedModType R of R^o] [topologicalType of R^o]); rewrite expr2.
-  by apply: cvgZr; apply: lim_inv.
+  - (f x) ^- 2 *: 'D_v f x.
+  by apply: cvgM => //; apply: cvgN; rewrite expr2 invfM; apply: cvgM;
+     [exact: cvg_cst|  exact: cvgV].
 apply: cvg_trans => A [_/posnumP[e] /= Ae].
 move: fn0; apply: filter_app; near=> h => /=.
 move=> fhvxn0; have he : ball 0 e%:num (h : R^o) by near: h; exists e%:num.
 have hn0 : h != 0 by near: h; exists e%:num.
 suff <- :
-  - ((1 / f x) * (1 / f (h *: v + x))) *: (h^-1 *: (f (h *: v + x) - f x)) =
-  h^-1 *: (1 / f (h *: v + x) - 1 / f x) by exact: Ae.
+  - ((f x)^-1 * (f (h *: v + x))^-1) *: (h^-1 *: (f (h *: v + x) - f x)) =
+  h^-1 *: ((f (h *: v + x))^-1 - (f x)^-1) by exact: Ae.
 rewrite scalerA mulrC -scalerA; congr (_ *: _).
-apply/eqP; rewrite scaleNr eqr_oppLR opprB !div1r scalerBr.
+apply/eqP; rewrite scaleNr eqr_oppLR opprB scalerBr.
 rewrite -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
 by rewrite mulrC -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma deriveV (f : V -> R^o) x v : f x != 0 -> derivable f x v ->
-  'D_v[fun y => 1 / f y] x = - (1 / f x) ^+2 *: 'D_v f x.
+  'D_v[fun y => (f y)^-1] x = - (f x) ^- 2 *: 'D_v f x.
 Proof. by move=> fxn0 df; apply: cvg_map_lim (der_inv fxn0 df). Qed.
 
 Lemma derivableV (f : V -> R^o) (x v : V) :
-  f x != 0 -> derivable f x v -> derivable (fun y => 1 / f y) x v.
+  f x != 0 -> derivable f x v -> derivable (fun y => (f y)^-1) x v.
 Proof.
-move=> df dg; apply/cvg_ex; exists (- (1 / f x) ^+2 *: 'D_v f x).
+move=> df dg; apply/cvg_ex; exists (- (f x) ^- 2 *: 'D_v f x).
 exact: der_inv.
 Qed.
 
@@ -1337,11 +1329,11 @@ have {imf_ltsup} imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
   rewrite falseE; apply: imf_ltsup; exists t => //.
   apply/eqP; rewrite eq_le supleft sup_upper_bound => //.
   by rewrite !inE; apply/asboolP/imageP.
-have invf_continuous : {in `[a, b], continuous (fun t => 1 / (sup imf - f t) : R^o)}.
-  move=> t tab; apply: (@lim_inv _ [topologicalType of R^o]).
+have invf_continuous : {in `[a, b], continuous (fun t => (sup imf - f t)^-1 : R^o)}.
+  move=> t tab; apply: cvgV.
     by rewrite neq_lt subr_gt0 orbC imf_ltsup.
   by apply: cvgD; [apply: continuous_cst|apply: cvgN; apply:fcont].
-have [M [Mreal imVfltM]] : bounded ((fun t => 1 / (sup imf - f t)) @`
+have [M [Mreal imVfltM]] : bounded ((fun t => (sup imf - f t)^-1) @`
   [set x | x \in `[a, b]] : set R^o).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
   by move=> ?; rewrite inE => /asboolP /invf_continuous.
@@ -1352,7 +1344,7 @@ move=> [y]; rewrite !inE => /asboolP [t tab <-] {y}.
 rewrite ltr_subl_addr - ltr_subl_addl.
 suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
 rewrite -[X in _ < X]invrK ltr_pinv.
-    rewrite -div1r; apply: le_lt_trans (ler_norm _) _.
+    apply: le_lt_trans (ler_norm _) _.
     by apply: imVfltM; [rewrite ltxU ltr_addl ltr01|apply: imageP].
   by rewrite inE kgt0 unitfE lt0r_neq0.
 have invsupft_gt0 : 0 < (sup imf - f t)^-1.
