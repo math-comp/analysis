@@ -44,7 +44,7 @@ Definition sum (I : choiceType) {K : numDomainType} {R : normedModType K}
 
 Definition summable (I : choiceType) {K : realType} {R : normedModType K}
    (x : I -> R) :=
-   \forall M \near +oo, \forall J \near totally,
+   \forall M \near +oo%R, \forall J \near totally,
    (partial_sum (fun i => `|x i|) J <= M)%R.
 
 End totally.

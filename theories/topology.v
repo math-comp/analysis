@@ -148,14 +148,20 @@ Require Import boolp Rstruct classical_sets posnum.
 (*                                     open sets.                             *)
 (*   topologyOfFilterMixin loc_filt loc_sing loc_loc == builds the mixin for  *)
 (*                                     a topological space from the           *)
-(*                                     properties of locally.                 *)
+(*                                     properties of locally and hence        *)
+(*                                     assumes that the carrier is a          *)
+(*                                     filterType.                            *)
 (*   topologyOfOpenMixin opT opI op_bigU == builds the mixin for a            *)
 (*                                     topological space from the properties  *)
-(*                                     of open sets.                          *)
+(*                                     of open sets, assuming the carrier is  *)
+(*                                     a pointed type. locally_of_open must   *)
+(*                                     be used to declare a filterType.       *)
 (*   topologyOfBaseMixin b_cover b_join == builds the mixin for a topological *)
 (*                                     space from the properties of a base of *)
 (*                                     open sets; the type of indices must be *)
-(*                                     a pointedType.                         *)
+(*                                     a pointedType, as well as the carrier. *)
+(*                                     locally_of_open \o open_from must be   *)
+(*                                     used to declare a filterType           *)
 (*       topologyOfSubbaseMixin D b == builds the mixin for a topological     *)
 (*                                     space from a subbase of open sets b    *)
 (*                                     indexed on domain D; the type of       *)
@@ -393,6 +399,8 @@ Notation "[ 'filteredType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
   (at level 0, format "[ 'filteredType'  U  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'filteredType' U 'of' T ]" := (@clone U T _ _ id)
   (at level 0, format "[ 'filteredType'  U  'of'  T ]") : form_scope.
+
+
 
 (* The default filter for an arbitrary element is the one obtained *)
 (* from its type *)
@@ -1011,6 +1019,14 @@ move=> eq_fg P /=; apply: filterS2 eq_fg => x eq_fg [y [fxy Py]].
 by exists y; rewrite -eq_fg.
 Qed.
 
+Lemma cvg_near_const (T U : Type) (f : T -> U) (F : set (set T)) (G : set (set U)) :
+  Filter F -> ProperFilter G ->
+  (\forall y \near G, \forall x \near F, f x = y) -> f @ F --> G.
+Proof.
+move=> FF FG fFG P /= GP; rewrite !near_simpl; apply: (have_near G).
+by apply: filter_app fFG; near=> y => /=; apply: filterS => x /= ->; near: y.
+Grab Existential Variables. all: by end_near. Qed.
+
 (** ** Specific filters *)
 
 Section at_point.
@@ -1485,6 +1501,21 @@ by move=> x; rewrite !near_simpl => /locally_singleton ?; apply: filterE.
 Qed.
 Arguments cst_continuous {T T'} k F {FF}.
 Hint Resolve cst_continuous : core.
+
+Lemma cvg_fconst (T : Type) (U : topologicalType)
+  (f : T -> U) (F : set (set T)) (l : U) :
+  Filter F ->
+  (\forall x \near F, f x = l) -> f @ F --> l.
+Proof.
+move=> FF fFl P /=; rewrite !near_simpl => Pl.
+by apply: filterS fFl => _ ->; apply: locally_singleton.
+Qed.
+
+Lemma cvg_const (T : Type) (U : topologicalType) (F : set (set T)) {FF : Filter F}
+  (x : U) : (fun _ : T => x) @ F --> x.
+Proof. by apply: cvg_fconst; near=> x0.
+Grab Existential Variables. all: end_near. Qed.
+Arguments cvg_const {T U F FF} x.
 
 (** ** Topology defined by a filter *)
 
@@ -2344,6 +2375,121 @@ Qed.
 
 End Covers.
 
+Section separated_topologicalType.
+Variable (T : topologicalType).
+
+Local Open Scope classical_set_scope.
+
+Definition close_to (x : T) (A : set T) : Prop :=
+  forall N, neigh x N -> N `&` A !=set0.
+
+Definition close (x y : T) : Prop :=
+  forall M, neigh y M -> close_to x M.
+
+Lemma close_refl (t : T) : close t t.
+Proof. by move=> M [? ?] N [? ?]; exists t; split. Qed.
+Hint Resolve close_refl : core.
+
+Lemma close_sym (x y : T) : close x y -> close y x.
+Proof.
+rewrite /close /close_to => xy N xN M yM.
+rewrite setIC; apply xy => //; by case yM.
+Qed.
+
+Lemma cvg_close {F} {FF : ProperFilter F} (x y : T) :
+  F --> x -> F --> y -> close x y.
+Proof.
+move=> Fx Fy N yN M xM; near F => z; exists z; split.
+- near: z; by apply/Fx; rewrite /filter_of locallyE; exists M; split.
+- near: z; by apply/Fy; rewrite /filter_of locallyE; exists N; split.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma close_cvg (F1 F2 : set (set T)) {FF2 : ProperFilter F2} :
+  F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
+Proof.
+move=> F12 F21.
+have [/(cvg_trans F21) F2l|dvgF1] := pselect (cvg F1).
+  by apply: (@cvg_close F2) => //; apply: cvgP F2l.
+have [/(cvg_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
+rewrite dvgP // dvgP //; exact/close_refl.
+Qed.
+
+Lemma cvgx_close (x y : T) : x --> y -> close x y.
+Proof. exact: cvg_close. Qed.
+
+Lemma cvgi_close T' {F} {FF : ProperFilter F} (f : T' -> set T) (l l' : T) :
+  {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> close l l'.
+Proof.
+move=> f_prop fFl fFl'.
+suff f_totalfun: infer {near F, is_totalfun f} by exact: cvg_close fFl fFl'.
+apply: filter_app f_prop; near=> x; split=> //=; near: x.
+have: (f `@ F) setT by apply: fFl; apply: filterT.
+by rewrite fmapiE; apply: filterS => x [y []]; exists y.
+Grab Existential Variables. all: end_near. Qed.
+Definition cvg_toi_locally_close := @cvgi_close.
+
+Lemma open_hausdorff : hausdorff T =
+  (forall x y : T, x != y ->
+    exists2 AB, (x \in AB.1 /\ y \in AB.2) &
+                [/\ open AB.1, open AB.2 & AB.1 `&` AB.2 == set0]).
+Proof.
+rewrite propeqE; split => [T_filterT2|T_openT2] x y.
+  have := contrap (T_filterT2 x y); rewrite (rwP eqP) (rwP negP) => cl /cl.
+  rewrite [cluster _ _](rwP forallp_asboolP) => /negP.
+  rewrite forallbE => /existsp_asboolPn/=[A]/negP/existsp_asboolPn/=[B].
+  rewrite [locally _ _ -> _](rwP imply_asboolP) => /negP.
+  rewrite asbool_imply !negb_imply => /andP[/asboolP xA] /andP[/asboolP yB].
+  move=> /asboolPn; rewrite -set0P => /negP; rewrite negbK => /eqP AIB_eq0.
+  move: xA yB; rewrite !locallyE.
+  move=> - [oA [[oA_open oAx] oAA]] [oB [[oB_open oBx] oBB]].
+  by exists (oA, oB); rewrite ?in_setE; split => //; apply: subsetI_eq0 AIB_eq0.
+apply: contrapTT => /eqP /T_openT2[[/=A B]].
+rewrite !in_setE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
+move=> /(_ A B (neigh_locally _) (neigh_locally _)).
+by rewrite -set0P => /(_ _ _)/negP; apply.
+Qed.
+
+Hypothesis sep : hausdorff T.
+
+Lemma closeE (x y : T) : close x y = (x = y).
+Proof.
+rewrite propeqE; split => [cxy|->//]; have [//|xdy] := eqVneq x y.
+apply: sep => A B; rewrite !locallyE => - [oA [xoA oAA]] [oB [xoB oBB]].
+exact: subsetI_neq0 oAA oBB (cxy _ _ _ _).
+Qed.
+
+Lemma close_eq (y x : T) : close x y -> x = y.
+Proof. by rewrite closeE. Qed.
+
+Lemma cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : T | F --> x].
+Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close F). Qed.
+
+Lemma cvg_eq (x y : T) : x --> y -> x = y.
+Proof. by rewrite -closeE //; apply: cvg_close. Qed.
+
+Lemma lim_id (x : T) : lim x = x.
+Proof. by apply/esym/cvg_eq/cvg_ex; exists x. Qed.
+
+Lemma cvg_lim {F} {FF : ProperFilter F} (l : T) : F --> l -> lim F = l.
+Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@cvg_unique F). Qed.
+
+Lemma cvg_map_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
+  f @ F --> l -> lim (f @ F) = l.
+Proof. exact: cvg_lim. Qed.
+
+Lemma cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
+  {near F, is_fun f} -> is_subset1 [set x : T | f `@ F --> x].
+Proof. by move=> ffun fx fy; rewrite -closeE //; exact: cvgi_close. Qed.
+
+Lemma cvgi_map_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
+  F (fun x : U => is_subset1 (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
+Proof.
+move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
+Qed.
+
+End separated_topologicalType.
+
 (* connected sets *)
 
 Definition connected (T : topologicalType) (A : set T) :=
@@ -2506,7 +2652,13 @@ Proof. exact: PseudoMetric.ax3. Qed.
 Lemma locally_ball (x : M) (eps : {posnum R}) : locally x (ball x eps%:num).
 Proof. by apply/locallyP; exists eps%:num. Qed.
 
-Definition close (x y : M) : Prop := forall eps : {posnum R}, ball x eps%:num y.
+Lemma neigh_ball (x : M) (eps : {posnum R}) : neigh x ((ball x eps%:num)^°).
+Proof.
+split; first exact: open_interior.
+apply: locally_singleton; apply: locally_interior.
+by apply/locallyP; exists eps%:num.
+Qed.
+
 
 Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
 Proof.
@@ -2516,11 +2668,6 @@ Qed.
 
 Lemma ball_le (x : M) (e1 e2 : R) : (e1 <= e2) -> ball x e1 `<=` ball x e2.
 Proof. by move=> /ball_ler. Qed.
-
-Lemma close_refl (x : M) : close x x. Proof. by []. Qed.
-
-Lemma close_sym (x y : M) : close x y -> close y x.
-Proof. by move=> ??; apply: ball_sym. Qed.
 
 Definition entourages : set (set (M * M)):=
   filter_from [set eps : R | eps > 0]
@@ -2576,13 +2723,6 @@ Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   forall eps : R, 0 < eps -> F [set x | exists z, f x z /\ ball y eps z].
 Proof. by move/cvgi_ballP. Qed.
 
-Lemma cvg_const {T} {F : set (set T)}
-   {FF : Filter F} (a : M) : a @[_ --> F] --> a.
-Proof.
-move=> P /locallyP[_ /posnumP[eps] subP]; rewrite !near_simpl /=.
-by apply: filterE=> ?; apply/subP/close_refl.
-Qed.
-
 Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
 Canonical set_filter_source :=
   @Filtered.Source Prop _ M (fun A => locally_ ball_set A).
@@ -2590,7 +2730,7 @@ Canonical set_filter_source :=
 End pseudoMetricType_numDomainType.
 Hint Resolve locally_ball : core.
 Hint Resolve close_refl : core.
-Arguments cvg_const {R M T F FF} a.
+Arguments close_cvg {T} F1 F2 {FF2} _.
 
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.
@@ -2607,55 +2747,73 @@ Lemma ball_splitl (z x y : M) (e : R) :
   ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
 Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
-Lemma cvg_close {F} {FF : ProperFilter F} (x y : M) :
-  F --> x -> F --> y -> close x y.
+Lemma ball_close (x y : M) :
+  close x y = forall eps : {posnum R}, ball x eps%:num y.
 Proof.
-move=> Fx Fy e; near F => z; apply: (@ball_splitl z); near: z;
-by [apply/Fx/locally_ball|apply/Fy/locally_ball].
-Grab Existential Variables. all: end_near. Qed.
+rewrite propeqE; split => [cxy eps|cxy].
+  have [z [zx zy]] := cxy _ (neigh_ball _ (eps%:num/2)%:pos)
+                          _ (neigh_ball _ (eps%:num/2)%:pos).
+  by apply: (@ball_splitl z); apply: interior_subset.
+move=> B /neigh_locally/locallyP[_/posnumP[e2 e2B]].
+move=> A /neigh_locally/locallyP[_/posnumP[e1 e1A]].
+by exists y; split; [apply/e1A|apply/e2B/ballxx].
+Qed.
 
-Lemma close_trans (x y z : M) : close x y -> close y z -> close x z.
-Proof. by move=> cxy cyz eps; apply: ball_split (cxy _) (cyz _). Qed.
+Lemma close_trans (y x z : M) : close x y -> close y z -> close x z.
+Proof.
+by rewrite !ball_close  => cxy cyz eps; apply: ball_split (cxy _) (cyz _).
+Qed.
 
 Lemma close_cvgxx (x y : M) : close x y -> x --> y.
 Proof.
-move=> cxy P /= /locallyP /= [_/posnumP [eps] epsP].
+rewrite ball_close => cxy P /= /locallyP /= [_/posnumP [eps] epsP].
 apply/locallyP; exists (eps%:num / 2) => // z bxz.
 by apply: epsP; apply: ball_splitr (cxy _) bxz.
-Qed.
-
-Lemma cvgx_close (x y : M) : x --> y -> close x y.
-Proof. exact: cvg_close. Qed.
-
-Lemma cvgi_close T {F} {FF: ProperFilter F} (f : T -> set M) (l l' : M) :
-  {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> close l l'.
-Proof.
-move=> f_prop fFl fFl'.
-suff f_totalfun: infer {near F, is_totalfun f} by exact: cvg_close fFl fFl'.
-apply: filter_app f_prop; near=> x; split=> //=.
-by have [//|y [fxy _]] := near (cvgi_ball fFl [gt0 of 1]) x; exists y.
-Grab Existential Variables. all: end_near. Qed.
-Definition cvg_toi_locally_close := @cvgi_close.
-
-Lemma close_cvg (F1 F2 : set (set M)) {FF2 : ProperFilter F2} :
-  F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
-Proof.
-move=> F12 F21; have [/(cvg_trans F21) F2l|dvgF1] := pselect (cvg F1).
-  by apply: (@cvg_close F2) => //; apply: cvgP F2l.
-have [/(cvg_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
-rewrite dvgP // dvgP //; exact/close_refl.
 Qed.
 
 Lemma cvg_closeP (F : set (set M)) (l : M) : ProperFilter F ->
   F --> l <-> ([cvg F in M] /\ close (lim F) l).
 Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
-  by have /cvgP := Fl; split=> //; apply: (@cvg_close F).
+  by have /cvgP := Fl; split=> //; apply: (@cvg_close _ F).
 by apply: cvg_trans (close_cvgxx Cl).
 Qed.
 
 End pseudoMetricType_numFieldType.
-Arguments close_cvg {R M} F1 F2 {FF2} _.
+
+Section ball_hausdorff.
+Variables (R : numDomainType) (T : pseudoMetricType R).
+
+Lemma ball_hausdorff : hausdorff T =
+  forall (a b : T), a != b ->
+  exists r : {posnum R} * {posnum R}, ball a r.1%:num `&` ball b r.2%:num == set0.
+Proof.
+rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
+  move=> A B; rewrite 2!in_setE => [[aA bB] [oA oB /eqP ABeq0]].
+  have /locallyP[_/posnumP[r] rA]: locally a A by apply: neigh_locally.
+  have /locallyP[_/posnumP[s] rB]: locally b B by apply: neigh_locally.
+  by exists (r, s) => /=; rewrite (subsetI_eq0 _ _ ABeq0).
+move=> r s /eqP brs_eq0; exists ((ball a r%:num)^°, (ball b s%:num)^°) => /=.
+  split; by rewrite in_setE; apply: locally_singleton; apply: locally_interior;
+            apply/locallyP; apply: in_filter_from.
+split; do ?by apply: open_interior.
+by rewrite (subsetI_eq0 _ _ brs_eq0)//; apply: interior_subset.
+Qed.
+End ball_hausdorff.
+
+Lemma close_cluster (R : numFieldType) (T : pseudoMetricType R) (x y : T) :
+  close x y = cluster (locally x) y.
+Proof.
+rewrite propeqE; split => xy.
+- move=> A B xA; rewrite -locally_ballE locally_E => -[_/posnumP[e] yeB].
+  exists x; split; first exact: locally_singleton.
+  by apply/yeB/ball_sym; move: e {yeB}; rewrite -ball_close.
+- rewrite ball_close => e.
+  have e20 : 0 < e%:num / 2 by apply: divr_gt0.
+  set e2  := PosNum e20.
+  case: (xy _ _ (locally_ball x e2) (locally_ball y e2)) => z [xz /ball_sym zy].
+  by rewrite (splitr e%:num); exact: (ball_triangle xz).
+Qed.
 
 Section entourages.
 Variable R : numDomainType.

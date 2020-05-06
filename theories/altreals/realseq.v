@@ -75,14 +75,14 @@ Qed.
 Lemma nbh_pinfW (P : forall x, nbh x -> Prop) :
   (forall M, P _ (@NPInf R M)) -> forall (v : nbh +oo), P _ v.
 Proof.
-move=> ih ; move: {-2}+oo (erefl (@ERPInf R)).
+move=> ih; move: {-2}+oo%E (erefl (@ERPInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 
 Lemma nbh_ninfW (P : forall x, nbh x -> Prop) :
   (forall M, P _ (@NNInf R M)) -> forall (v : nbh -oo), P _ v.
 Proof.
-move=> ih ; move: {-2}-oo (erefl (@ERNInf R)).
+move=> ih ; move: {-2}-oo%E (erefl (@ERNInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 End NbhElim.
@@ -386,7 +386,8 @@ Lemma ncvg_gt (u : nat -> R) (l1 l2 : {ereal R}) :
     exists K, forall n, (K <= n)%N -> (l1 < (u n)%:E)%E.
 Proof.
 case: l1 l2 => [l1||] [l2||] //=; first last.
-+ by move=> _ _; exists 0%N. + by move=> _ _; exists 0%N.
++ by move=> _ _; exists 0%N => ? ?; exact: lte_ninfty.
++ by move=> _ _; exists 0%N => ? ?; exact: lte_ninfty.
 + by move=> _ /(_ (NPInf l1)) [K cv]; exists K => n /cv.
 move=> lt_12; pose e := l2 - l1 => /(_ (B l2 e)).
 case=> K cv; exists K => n /cv; rewrite !inE eclamp_id ?subr_gt0 //.
@@ -439,7 +440,7 @@ move=> p; rewrite -[xchooseb _](ncvg_uniq cv_u_l) //.
 by apply/asboolP/(xchoosebP p).
 Qed.
 
-Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = -oo.
+Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = -oo%E.
 Proof.
 move=> h; rewrite /nlim; case: {-}_ / idP => // p.
 by case: h; case/existsbP: p => l /asboolP; exists l.

@@ -419,32 +419,252 @@ Proof. exact: Proper_locally'_numFieldType. Qed.
 
 (** * Some Topology on [Rbar] *)
 
+Canonical ereal_pointed (R : numDomainType) := PointedType {ereal R} (+oo%E).
+
 Section ereal_locally.
 Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
-Definition ereal_locally' (a : {ereal R}) (P : R -> Prop) :=
+Local Open Scope ereal_scope.
+Definition ereal_locally' (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
   match a with
-    | a%:E => @locally' R_topologicalType a P
-    | +oo => exists M, M \is Num.real /\ forall x, M < x -> P x
-    | -oo => exists M, M \is Num.real /\ forall x, x < M -> P x
+    | a%:E => @locally' R_topologicalType a (fun x => P x%:E)
+    | +oo => exists M, M \is Num.real /\ forall x, (M%:E < x)%E -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, (x < M%:E)%E -> P x
   end.
-Definition ereal_locally (a : {ereal R}) (P : R -> Prop) :=
+Definition ereal_locally (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
   match a with
-    | a%:E => @locally _ R_topologicalType a P
-    | +oo => exists M, M \is Num.real /\ forall x, M < x -> P x
-    | -oo => exists M, M \is Num.real /\ forall x, x < M -> P x
+    | a%:E => @locally _ R_topologicalType a (fun x => P x%:E)
+    | +oo => exists M, M \is Num.real /\ forall x, (M%:E < x)%E -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, (x < M%:E)%E -> P x
   end.
-
-(*Canonical Rbar_choiceType := ChoiceType Rbar gen_choiceMixin.*)
-Canonical ereal_pointed := PointedType {ereal R} (+oo).
-Canonical ereal_filter := FilteredType R {ereal R} (ereal_locally).
+Canonical ereal_ereal_filter := FilteredType {ereal R} {ereal R} (ereal_locally).
 End ereal_locally.
 
-Section ereal_locally.
+Section ereal_locally_instances.
 Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
 
 Global Instance ereal_locally'_filter :
+  forall x : {ereal R}, ProperFilter (ereal_locally' x).
+Proof.
+case=> [x||].
+- case: (Proper_locally'_numFieldType x) => x0 [//= xT xI xS].
+  apply Build_ProperFilter' => //=; apply Build_Filter => //=.
+  move=> P Q lP lQ; exact: xI.
+  by move=> P Q PQ /xS; apply => y /PQ.
+- apply Build_ProperFilter.
+    move=> P [x [xr xP]]; exists (x + 1)%:E; apply xP => /=.
+    by rewrite lte_fin ltr_addl.
+  split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
+  + by exists 0; rewrite real0.
+  + have [/eqP MP0|MP0] := boolP (MP == 0).
+      have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+        by exists 0; rewrite real0; split => // x x0; split;
+        [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
+      exists `|MQ|; rewrite realE normr_ge0; split => // x Hx; split.
+        by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0 lee_fin.
+      by apply gtMQ; rewrite (le_lt_trans _ Hx) // lee_fin real_ler_normr // lexx.
+    have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+      exists `|MP|; rewrite realE normr_ge0; split => // x MPx; split.
+      by apply gtMP; rewrite (le_lt_trans _ MPx) // lee_fin real_ler_normr // lexx.
+      by apply gtMQ; rewrite (le_lt_trans _ MPx) // lee_fin MQ0.
+    have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
+    have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
+    exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
+    rewrite realE /= posnum_ge0 /=; split => //.
+    case=> [r| |//].
+    * rewrite lte_fin pos_ltUx /= => /andP[MPx MQx]; split.
+      by apply/gtMP; rewrite lte_fin (le_lt_trans _ MPx) // real_ler_normr // lexx.
+      by apply/gtMQ; rewrite lte_fin (le_lt_trans _ MQx) // real_ler_normr // lexx.
+    * by move=> _; split; [apply/gtMP | apply/gtMQ].
+  + by exists M; split => // ? /gtM /sPQ.
+- apply Build_ProperFilter.
+  + move=> P [M [Mr ltMP]]; exists (M - 1)%:E.
+    by apply: ltMP; rewrite lte_fin gtr_addl oppr_lt0.
+  + split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
+    * by exists 0; rewrite real0.
+    * have [/eqP MP0|MP0] := boolP (MP == 0).
+        have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+          by exists 0; rewrite real0; split => // x x0; split;
+          [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
+        exists (- `|MQ|); rewrite realN realE normr_ge0; split => // x xMQ; split.
+          by apply ltMP; rewrite (lt_le_trans xMQ) // lee_fin MP0 ler_oppl oppr0.
+       apply ltMQ; rewrite (lt_le_trans xMQ) // lee_fin ler_oppl -normrN.
+       by rewrite real_ler_normr ?realN // lexx.
+    * have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+        exists (- `|MP|); rewrite realN realE normr_ge0; split => // x MPx; split.
+          apply ltMP; rewrite (lt_le_trans MPx) // lee_fin ler_oppl -normrN.
+          by rewrite real_ler_normr ?realN // lexx.
+        by apply ltMQ; rewrite (lt_le_trans MPx) // lee_fin MQ0 ler_oppl oppr0.
+      have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
+      have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
+      exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
+      rewrite realN realE /= posnum_ge0 /=; split => //.
+      case=> [r|//|].
+      - rewrite lte_fin ltr_oppr pos_ltUx => /andP[].
+        rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
+          apply/ltMP; rewrite lte_fin (lt_le_trans MPx) //= ler_oppl -normrN.
+          by rewrite real_ler_normr ?realN // lexx.
+        apply/ltMQ; rewrite lte_fin (lt_le_trans MQx) //= ler_oppl -normrN.
+        by rewrite real_ler_normr ?realN // lexx.
+      - by move=> _; split; [apply/ltMP | apply/ltMQ].
+    * by exists M; split => // x /ltM /sPQ.
+Qed.
+Typeclasses Opaque ereal_locally'.
+
+Global Instance ereal_locally_filter :
+  forall x, ProperFilter (@ereal_locally R x).
+Proof.
+case=> [x| |].
+- case: (ereal_locally'_filter x%:E) => x0 [//=nxT xI xS].
+  apply Build_ProperFilter => //=.
+  by move=> P [r r0 xr]; exists x%:E; apply xr => //=; rewrite subrr normr0.
+  apply Build_Filter => //=.
+  by rewrite locallyE'.
+  move=> P Q.
+  rewrite !locallyE' => -[xP axP] [xQ axQ]; split => //=.
+  exact: xI.
+  move=> P Q PQ; rewrite !locallyE' => -[xP axP]; split => //=.
+  apply (xS P) => //=.
+  exact: PQ.
+exact: (ereal_locally'_filter +oo).
+exact: (ereal_locally'_filter -oo).
+Qed.
+Typeclasses Opaque ereal_locally.
+
+End ereal_locally_instances.
+
+Section ereal_topologicalType.
+Variable R : realFieldType.
+
+Lemma ereal_loc_singleton (p : {ereal R}) (A : set {ereal R}) :
+  ereal_locally p A -> A p.
+Proof.
+move: p => -[p | [M [Mreal MA]] | [M [Mreal MA]]] /=; [|exact: MA | exact: MA].
+move/locallyP; rewrite locally_E => -[_/posnumP[e]]; apply; exact/ballxx.
+Qed.
+
+Lemma ereal_loc_loc (p : {ereal R}) (A : set {ereal R}) :
+  ereal_locally p A -> ereal_locally p (ereal_locally^~ A).
+Proof.
+move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
+- move/locallyP; rewrite locally_E => -[_/posnumP[e]] ballA.
+  apply/locallyP; rewrite locally_E; exists (e%:num / 2) => //= r per.
+  apply/locallyP; rewrite locally_E; exists (e%:num / 2) => //= x rex.
+  apply/ballA/(@ball_splitl _ _ r) => //; exact/ball_sym.
+- exists (M + 1); split; first by rewrite realD // real1.
+  move=> -[x| _ |] //=.
+    rewrite lte_fin => M'x /=.
+    apply/locallyP; rewrite locally_E; exists 1 => //= y x1y.
+    apply MA; rewrite lte_fin.
+    rewrite addrC -ltr_subr_addl in M'x.
+    rewrite (lt_le_trans M'x) // ler_subl_addl addrC -ler_subl_addl.
+    rewrite (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
+      rewrite ltr_subr_addr in M'x.
+      rewrite -comparabler0 (@comparabler_trans _ (M + 1)) //.
+        by rewrite /Order.comparable (ltW M'x) orbT.
+      by rewrite comparabler0 realD // real1.
+    by rewrite num_real. (* where we really use realFieldType *)
+  by exists M.
+- exists (M - 1); split; first by rewrite realB // real1.
+  move=> -[x| _ |] //=.
+    rewrite lte_fin => M'x /=.
+    apply/locallyP; rewrite locally_E; exists 1 => //= y x1y.
+    apply MA; rewrite lte_fin.
+    rewrite ltr_subr_addl in M'x.
+    rewrite (le_lt_trans _ M'x) // addrC -ler_subl_addl.
+    rewrite (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
+      by rewrite num_real. (* where we really use realFieldType *)
+    rewrite addrC -ltr_subr_addr in M'x.
+    rewrite -comparabler0 (@comparabler_trans _ (M - 1)) //.
+      by rewrite /Order.comparable (ltW M'x).
+    by rewrite comparabler0 realB // real1.
+  by exists M.
+Qed.
+
+Definition ereal_topologicalMixin : Topological.mixin_of (@ereal_locally R) :=
+  topologyOfFilterMixin _ ereal_loc_singleton ereal_loc_loc.
+Canonical ereal_topologicalType := TopologicalType _ ereal_topologicalMixin.
+
+End ereal_topologicalType.
+
+Definition pinfty_locally (R : numFieldType) : set (set R) :=
+  fun P => exists M, M \is Num.real /\ forall x, M < x -> P x.
+Arguments pinfty_locally R : clear implicits.
+Definition ninfty_locally (R : numFieldType) : set (set R) :=
+  fun P => exists M, M \is Num.real /\ forall x, x < M -> P x.
+Arguments ninfty_locally R : clear implicits.
+
+Notation "+oo" := (pinfty_locally _) : ring_scope.
+Notation "-oo" := (ninfty_locally _) : ring_scope.
+
+Section infty_locally_instances.
+Context {R : numFieldType}.
+Let R_topologicalType := [topologicalType of R^o].
+
+Global Instance proper_pinfty_locally : ProperFilter (pinfty_locally R).
+Proof.
+apply Build_ProperFilter.
+  by move=> P [M [Mreal MP]]; exists (M + 1); apply MP; rewrite ltr_addl.
+split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
+- by exists 0; rewrite real0.
+- have [/eqP MP0|MP0] := boolP (MP == 0).
+    have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+      by exists 0; rewrite real0; split => // x x0; split;
+      [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
+    exists `|MQ|; rewrite realE normr_ge0; split => // x Hx; split.
+      by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0.
+    by apply gtMQ; rewrite (le_lt_trans _ Hx) // real_ler_normr // lexx.
+  have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+    exists `|MP|; rewrite realE normr_ge0; split => // x MPx; split.
+    by apply gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
+    by apply gtMQ; rewrite (le_lt_trans _ MPx) // MQ0.
+  have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
+  have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
+  exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
+  rewrite realE /= posnum_ge0 /=; split => // x.
+  rewrite pos_ltUx /= => /andP[MPx MQx]; split.
+  by apply/gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
+  by apply/gtMQ; rewrite (le_lt_trans _ MQx) // real_ler_normr // lexx.
+- by exists M; split => // ? /gtM /sPQ.
+Defined.
+Typeclasses Opaque proper_pinfty_locally.
+
+Global Instance proper_ninfty_locally : ProperFilter (ninfty_locally R).
+Proof.
+apply Build_ProperFilter.
+- move=> P [M [Mr ltMP]]; exists (M - 1).
+  by apply: ltMP; rewrite gtr_addl oppr_lt0.
+- split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
+  + by exists 0; rewrite real0.
+  + have [/eqP MP0|MP0] := boolP (MP == 0).
+      have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+        by exists 0; rewrite real0; split => // x x0; split;
+        [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
+      exists (- `|MQ|); rewrite realN realE normr_ge0; split => // x xMQ; split.
+        by apply ltMP; rewrite (lt_le_trans xMQ) // MP0 ler_oppl oppr0.
+      apply ltMQ; rewrite (lt_le_trans xMQ) // ler_oppl -normrN.
+     by rewrite real_ler_normr ?realN // lexx.
+  + have [/eqP MQ0|MQ0] := boolP (MQ == 0).
+      exists (- `|MP|); rewrite realN realE normr_ge0; split => // x MPx; split.
+        apply ltMP; rewrite (lt_le_trans MPx) // ler_oppl -normrN.
+        by rewrite real_ler_normr ?realN // lexx.
+      by apply ltMQ; rewrite (lt_le_trans MPx) // MQ0 ler_oppl oppr0.
+    have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
+    have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
+    exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
+    rewrite realN realE /= posnum_ge0 /=; split => // x.
+    rewrite ltr_oppr pos_ltUx => /andP[].
+    rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
+      apply/ltMP; rewrite (lt_le_trans MPx) //= ler_oppl -normrN.
+      by rewrite real_ler_normr ?realN // lexx.
+    apply/ltMQ; rewrite (lt_le_trans MQx) //= ler_oppl -normrN.
+    by rewrite real_ler_normr ?realN // lexx.
+  + by exists M; split => // x /ltM /sPQ.
+Defined.
+Typeclasses Opaque proper_ninfty_locally.
+
+(*Global Instance ereal_locally'_filter :
   forall x : {ereal R}, ProperFilter (ereal_locally' x).
 Proof.
 case=> [x||]; first exact: Proper_locally'_numFieldType.
@@ -501,17 +721,17 @@ case=> [x||]; first exact: Proper_locally'_numFieldType.
       by rewrite real_ler_normr ?realN // lexx.
     * by exists M; split => // x /ltM /sPQ.
 Qed.
-Typeclasses Opaque ereal_locally'.
+Typeclasses Opaque ereal_locally'.*)
 
-Global Instance ereal_locally_filter :
+(*Global Instance ereal_locally_filter :
   forall x, ProperFilter (@ereal_locally R x).
 Proof.
 case=> [x||].
-by apply/(@locally_filter R_topologicalType).
+exact: ereal_locally_filter.
 exact: (ereal_locally'_filter +oo).
 exact: (ereal_locally'_filter -oo).
 Qed.
-Typeclasses Opaque ereal_locally.
+Typeclasses Opaque ereal_locally.*)
 
 Lemma near_pinfty_div2 (A : set R) :
   (\forall k \near +oo, A k) -> (\forall k \near +oo, A (k / 2)).
@@ -527,7 +747,7 @@ Proof. by  exists c%:num; split => // ; rewrite realE posnum_ge0. Qed.
 Lemma locally_pinfty_ge (c : {posnum R}) : \forall x \near +oo, c%:num <= x.
 Proof. by exists c%:num; rewrite realE posnum_ge0; split => //; apply: ltW. Qed.
 
-End ereal_locally.
+End infty_locally_instances.
 
 Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (locally +oo) |- _ =>
@@ -714,23 +934,8 @@ Lemma cvg_norm {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
 Proof. by move=> /cvg_normP. Qed.
 
-Lemma closeE (x y : V) : close x y = (x = y).
-Proof.
-rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
-have dxy_gt0 : `|x - y| > 0.
-  by rewrite normr_gt0 subr_eq0.
-have dxy_ge0 := ltW dxy_gt0.
-have := cl_xy (PosNum dxy_gt0).
-by rewrite -ball_normE /= ltxx.
-Qed.
-
-Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
-
 Lemma locally_norm_ball x (eps : {posnum R}) : locally_norm x (ball x eps%:num).
 Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
-
-Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
-Proof. by rewrite propeqE ball_normE. Qed.
 
 End NormedModule_numDomainType.
 Hint Resolve normr_ge0 : core.
@@ -738,10 +943,49 @@ Arguments cvg_norm {_ _ F FF}.
 
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
+Implicit Types (x y z : V).
 
 Local Notation ball_norm := (ball_ (@normr R V)).
 
 Local Notation locally_norm := (locally_ ball_norm).
+
+Lemma norm_hausdorff : hausdorff V.
+Proof.
+rewrite ball_hausdorff => a b ab.
+have ab2 : 0 < `|a - b| / 2 by apply divr_gt0 => //; rewrite normr_gt0 subr_eq0.
+set r := PosNum ab2; exists (r, r) => /=.
+apply/negPn/negP => /set0P[c] []; rewrite -ball_normE /ball_ => acr bcr.
+have r22 : r%:num * 2 = r%:num + r%:num by rewrite (_ : 2 = 1 + 1) // mulrDr mulr1.
+move: (ltr_add acr bcr); rewrite -r22 (distrC b c).
+move/(le_lt_trans (ler_dist_add c a b)).
+by rewrite -mulrA mulVr ?mulr1 ?ltxx // unitfE.
+Qed.
+Hint Extern 0 (hausdorff _) => solve[apply: norm_hausdorff] : core.
+
+(* TODO: check if the following lemma are indeed useless *)
+(*       i.e. where the generic lemma is applied, *)
+(*            check that norm_hausdorff is not used in a hard way *)
+
+Lemma norm_closeE x y : close x y = (x = y). Proof. exact: closeE. Qed.
+Lemma norm_close_eq x y : close x y -> x = y. Proof. exact: close_eq. Qed.
+
+Lemma norm_cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : V | F --> x].
+Proof. exact: cvg_unique. Qed.
+
+Lemma norm_cvg_eq x y : x --> y -> x = y. Proof. exact: cvg_eq. Qed.
+Lemma norm_lim_id x : lim x = x. Proof. exact: lim_id. Qed.
+
+Lemma norm_cvg_lim {F} {FF : ProperFilter F} (l : V) : F --> l -> lim F = l.
+Proof. exact: cvg_lim. Qed.
+
+Lemma norm_cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set V) :
+  {near F, is_fun f} -> is_subset1 [set x : V | f `@ F --> x].
+Proof. exact: cvgi_unique. Qed.
+
+Lemma norm_cvgi_map_lim {U} {F} {FF : ProperFilter F} (f : U -> V -> Prop) (l : V) :
+  F (fun x : U => is_subset1 (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
+Proof. exact: cvgi_map_lim. Qed.
 
 Lemma distm_lt_split (z x y : V) (e : R) :
   `|x - z| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
@@ -767,28 +1011,6 @@ Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
-Lemma cvg_unique {F} {FF : ProperFilter F} :
-  is_subset1 [set x : V | F --> x].
-Proof. by move=> Fx Fy; rewrite -closeE; apply: cvg_close. Qed.
-
-Lemma locally_cvg_unique (x y : V) : x --> y -> x = y.
-Proof. by rewrite -closeE; apply: cvg_close. Qed.
-
-Lemma lim_id (x : V) : lim x = x.
-Proof. by symmetry; apply: locally_cvg_unique; apply/cvg_ex; exists x. Qed.
-
-Lemma cvg_lim {F} {FF : ProperFilter F} (l : V) :
-  F --> l -> lim F = l.
-Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@cvg_unique F). Qed.
-
-Lemma cvg_map_lim {T : Type} {F} {FF : ProperFilter F} (f : T -> V) (l : V) :
-  f @ F --> l -> lim (f @ F) = l.
-Proof. exact: cvg_lim. Qed.
-
-Lemma cvgi_unique {T : Type} {F} {FF : ProperFilter F} (f : T -> set V) :
-  {near F, is_fun f} -> is_subset1 [set x : V | f `@ F --> x].
-Proof. by move=> ffun fx fy; rewrite -closeE; apply: cvgi_close. Qed.
-
 Lemma cvg_normW {F : set (set V)} {FF : Filter F} (y : V) :
   (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
   F --> y.
@@ -796,14 +1018,6 @@ Proof.
 move=> cv; apply/cvg_normP => _/posnumP[e]; near=> x.
 by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
-
-Lemma cvgi_map_lim {T} {F} {FF : ProperFilter F} (f : T -> V -> Prop) (l : V) :
-  F (fun x : T => is_subset1 (f x)) ->
-  f `@ F --> l -> lim (f `@ F) = l.
-Proof.
-move=> f_prop f_l; apply: get_unique => // l' f_l'.
-exact: cvgi_unique _ f_l' f_l.
-Qed.
 
 Lemma cvg_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y ->
@@ -827,6 +1041,7 @@ Proof. move/cvg_bounded_real; by apply: filterS => x []. Qed.
 
 End NormedModule_numFieldType.
 Arguments cvg_bounded {_ _ F FF}.
+Hint Extern 0 (hausdorff _) => solve[apply: norm_hausdorff] : core.
 
 Module Export LocallyNorm.
 Definition locally_simpl :=
@@ -844,20 +1059,6 @@ have [z []] := clxy _ _ (locally_ball x he) (locally_ball y he).
 move=> zx_he yz_he.
 rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
-Qed.
-
-Lemma normedModType_hausdorff (R : realFieldType) (V : normedModType R) :
-  hausdorff V.
-Proof.
-move=> p q clp_q; apply/subr0_eq/normr0_eq0/Rhausdorff => A B pq_A.
-rewrite -(@normr0 _ V) -(subrr p) => pp_B.
-suff loc_preim r C : @locally _ [filteredType R of R^o] `|p - r| C ->
-    locally r ((fun r => `|p - r|) @^-1` C).
-  have [r []] := clp_q _ _ (loc_preim _ _ pp_B) (loc_preim _ _ pq_A).
-  by exists `|p - r|.
-move=> [e egt0 pre_C]; apply: locally_le_locally_norm; exists e => // s re_s.
-apply: pre_C; apply: le_lt_trans (ler_dist_dist _ _) _.
-by rewrite opprB addrC -subr_trans distrC.
 Qed.
 
 End hausdorff.
@@ -1542,7 +1743,7 @@ Qed.
 
 Section NVS_continuity1.
 Context {K : numFieldType} {V : normedModType K}.
-Local Notation "'+oo'" := (@ERPInf K).
+Local Notation "'+oo'" := (pinfty_locally K).
 
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
@@ -1896,7 +2097,7 @@ End TODO_add_to_ssrnum.
 
 Section cvg_seq_bounded.
 Context {K : numFieldType}.
-Local Notation "'+oo'" := (@ERPInf K).
+Local Notation "'+oo'" := (@pinfty_locally K).
 
 (* TODO: simplify using extremumP when PR merged in mathcomp *)
 Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
@@ -2199,10 +2400,10 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
     by rewrite -subr_gt0 opprD addrA {1}[b - x]splitr addrK divr_gt0 ?subr_gt0.
   by rewrite -subr_gt0 addrAC {1}[x - a]splitr addrK divr_gt0 ?subr_gt0.
 - have [//||d dP] := wlog a (x + 1); rewrite ?lte_fin ?ltr_addl //.
-  by exists d => y /dP /andP[->].
+  by exists d => y /dP /andP[->] /= /lt_le_trans; apply; rewrite lee_pinfty.
 - have [//||d dP] := wlog (x - 1) b; rewrite ?lte_fin ?gtr_addl ?ltrN10 //.
-  by exists d => y /dP /andP[_ ->].
-- by exists 1%:pos.
+  by exists d => y /dP /andP[_ ->] /=; rewrite lte_ninfty.
+- by exists 1%:pos => ? ?; rewrite lte_ninfty lte_pinfty.
 Qed.
 
 (* TODO: generalize to numFieldType? *)
@@ -2487,7 +2688,7 @@ Lemma open_ereal_lt (y : {ereal R}) : open [set u : R^o | u%:E < y]%E.
 Proof.
 case: y => [y||] /=; first exact: open_lt.
 rewrite [X in open X](_ : _ = setT); first exact: openT.
-by rewrite funeqE => ?; rewrite trueE.
+by rewrite funeqE => ?; rewrite lte_pinfty trueE.
 rewrite [X in open X](_ : _ = set0); first exact: open0.
 by rewrite funeqE => ?; rewrite falseE.
 Qed.
@@ -2498,11 +2699,11 @@ case: y => [y||] /=; first exact: open_gt.
 rewrite [X in open X](_ : _ = set0); first exact: open0.
 by rewrite funeqE => ?; rewrite falseE.
 rewrite [X in open X](_ : _ = setT); first exact: openT.
-by rewrite funeqE => ?; rewrite trueE.
+by rewrite funeqE => ?; rewrite lte_ninfty trueE.
 Qed.
 
 Lemma open_ereal_lt' (x y : {ereal R}) : (x < y)%E ->
-  ereal_locally x (fun u : R => u%:E < y)%E.
+  ereal_locally x (fun u => u < y)%E.
 Proof.
 case: x => [x|//|] xy; first exact: open_ereal_lt.
 case: y => [y||//] /= in xy *.
@@ -2510,26 +2711,143 @@ exists y; rewrite num_real; split => //= x ? //.
 by exists 0.
 case: y => [y||//] /= in xy *.
 exists y; rewrite num_real; split => //= x ? //.
-by exists 0; rewrite real0.
+exists 0; rewrite real0; split => // x.
+by move/lt_le_trans; apply; rewrite lee_pinfty.
 Qed.
 
 Lemma open_ereal_gt' (x y : {ereal R}) : (y < x)%E ->
-  ereal_locally x (fun u : R => y < u%:E)%E.
+  ereal_locally x (fun u => y < u)%E.
 Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
   case: y => [y||] //=; do ?by exists 0; rewrite real0.
 by exists y; rewrite num_real.
+move=> _; exists 0; rewrite real0; split => // x.
+by apply/le_lt_trans; rewrite lee_ninfty.
 Qed.
 
 End open_sets_in_Rbar.
+
+Section open_sets_in_ereal.
+
+Variables R : realFieldType.
+Implicit Types x y : {ereal R}.
+Implicit Types r : R.
+
+Let open_ereal_lt_real r : open (fun x => x < r%:E)%E.
+Proof.
+case => [? | // | ?]; [rewrite lte_fin => xy | by exists r].
+by move: (@open_ereal_lt _ r%:E); rewrite openE; apply; rewrite lte_fin.
+Qed.
+
+Lemma open_ereal_lt_ereal x : open [set y | y < x]%E.
+Proof.
+case: x => [x | | [] // ] /=; first exact: open_ereal_lt_real.
+suff -> : ([set y | y < +oo] = \bigcup_r [set y : {ereal R} | y < r%:E])%E.
+  by apply open_bigU => x _; exact: open_ereal_lt_real.
+rewrite predeqE => -[r | | ].
+- rewrite lte_pinfty; split => // _.
+  by exists (r + 1) => //; rewrite lte_fin ltr_addl.
+- by rewrite ltxx; split => // -[] x; rewrite ltNge lee_pinfty.
+- by split => // _; exists 0 => //; rewrite lte_ninfty.
+Qed.
+
+Let open_ereal_gt_real r : open (fun x => r%:E < x)%E.
+Proof.
+case => [? | ? | //]; [rewrite lte_fin => xy | by exists r].
+by move: (@open_ereal_gt _ r%:E); rewrite openE; apply; rewrite lte_fin.
+Qed.
+
+Lemma open_ereal_gt_ereal x : open [set y | x < y]%E.
+Proof.
+case: x => [x | [] // | ] /=; first exact: open_ereal_gt_real.
+suff -> : ([set y | -oo < y] = \bigcup_r [set y : {ereal R} | r%:E < y])%E.
+  by apply open_bigU => x _; exact: open_ereal_gt_real.
+rewrite predeqE => -[r | | ].
+- rewrite lte_ninfty; split => // _.
+  by exists (r - 1) => //; rewrite lte_fin ltr_subl_addr ltr_addl.
+- by split => // _; exists 0 => //; rewrite lte_pinfty.
+- by rewrite ltxx; split => // -[] x _; rewrite ltNge lee_ninfty.
+Qed.
+
+End open_sets_in_ereal.
+
+Section ereal_is_hausdorff.
+Variable R : realFieldType.
+Implicit Types r : R.
+
+Lemma locally_image_ERFin (x : R^o) (X : set R) :
+  locally x X -> locally x%:E ((fun r => r%:E) @` X).
+Proof.
+case => _/posnumP[e] xeX; exists e%:num => //= r xer.
+by exists r => //; apply xeX.
+Qed.
+
+Lemma locally_open_ereal_lt r (f : R -> R) : r < f r ->
+  locally r%:E [set y | y < (f r)%R%:E]%E.
+Proof.
+move=> xfx; rewrite locallyE /=; eexists; split; last by move=> y; exact.
+by split; [apply open_ereal_lt_ereal | rewrite lte_fin].
+Qed.
+
+Lemma locally_open_ereal_gt r (f : R -> R) : f r < r ->
+  locally r%:E [set y | (f r)%R%:E < y]%E.
+Proof.
+move=> xfx; rewrite locallyE /=; eexists; split; last by move=> y; exact.
+by split; [apply open_ereal_gt_ereal | rewrite lte_fin].
+Qed.
+
+Lemma locally_open_ereal_pinfty r : locally +oo%E [set y | r%R%:E < y]%E.
+Proof.
+rewrite locallyE /=; eexists; split; last by move=> y; exact.
+by split; [apply open_ereal_gt_ereal | rewrite lte_pinfty].
+Qed.
+
+Lemma locally_open_ereal_ninfty r : locally -oo%E [set y | y < r%R%:E]%E.
+Proof.
+rewrite locallyE /=; eexists; split; last by move=> y; exact.
+by split; [apply open_ereal_lt_ereal | rewrite lte_ninfty].
+Qed.
+
+Lemma ereal_hausdorff : hausdorff (ereal_topologicalType R).
+Proof.
+move=> -[r| |] // [r' | |] //=.
+- move=> rr'; congr (_%:E); apply Rhausdorff => /= A B rA r'B.
+  have [/= z [[r0 ? r0z] [r1 ?]]] :=
+    rr' _ _ (locally_image_ERFin rA) (locally_image_ERFin r'B).
+  by rewrite -r0z => -[r1r0]; exists r0; split => //; rewrite -r1r0.
+- have /(@locally_open_ereal_lt _ (fun x => x + 1)) loc_r : r < r + 1.
+    by rewrite ltr_addl.
+  move/(_ _ _ loc_r (locally_open_ereal_pinfty (r + 1))) => -[z [zr rz]].
+  by move: (lt_trans rz zr); rewrite lte_fin ltxx.
+- have /(@locally_open_ereal_gt _ (fun x => x - 1)) loc_r : r - 1 < r.
+    by rewrite ltr_subl_addr ltr_addl.
+  move/(_ _ _ loc_r (locally_open_ereal_ninfty (r - 1))) => -[z [rz zr]].
+  by move: (lt_trans zr rz); rewrite ltxx.
+- have /(@locally_open_ereal_lt _ (fun x => x + 1)) loc_r' : r' < r' + 1.
+    by rewrite ltr_addl.
+  move/(_ _ _ (locally_open_ereal_pinfty (r' + 1)) loc_r') => -[z [r'z zr']].
+  by move: (lt_trans zr' r'z); rewrite ltxx.
+- move/(_ _ _ (locally_open_ereal_pinfty 0) (locally_open_ereal_ninfty 0)).
+  by move=> -[z [zx xz]]; move: (lt_trans xz zx); rewrite ltxx.
+- have /(@locally_open_ereal_gt _ (fun x => x - 1)) yB : r' - 1 < r'.
+    by rewrite ltr_subl_addr ltr_addl.
+  move/(_ _ _ (locally_open_ereal_ninfty (r' - 1)) yB) => -[z [zr' r'z]].
+  by move: (lt_trans r'z zr'); rewrite ltxx.
+- move/(_ _ _ (locally_open_ereal_ninfty 0) (locally_open_ereal_pinfty 0)).
+  by move=> -[z [zO Oz]]; move: (lt_trans Oz zO); rewrite ltxx.
+Qed.
+
+End ereal_is_hausdorff.
+
+Hint Resolve ereal_hausdorff.
 
 (** * Some limits on real functions *)
 
 Definition ereal_loc_seq (R : numDomainType) (x : {ereal R}) (n : nat) :=
   match x with
-    | x%:E => x + (n%:R + 1)^-1
-    | +oo => n%:R
-    | -oo => - n%:R
+    | x%:E => (x + (n%:R + 1)^-1)%:E
+    | +oo%E => n%:R%:E
+    | -oo%E => (- n%:R%:E)%E
   end.
 
 Lemma cvg_ereal_loc_seq (R : realType) (x : {ereal R}) :
@@ -2545,7 +2863,7 @@ case: x => /= [x [_/posnumP[d] Hp] |[d [dreal Hp]] |[d [dreal Hp]]]; last 2 firs
     by rewrite -(@natrD R N 1) ler_nat addn1.
   have /ZnatP [N Nfloor] : ifloor (maxr (- d) 0) \is a Znat.
     by rewrite Znat_def ifloor_ge0 lexU lexx orbC.
-  exists N.+1 => // n ltNn; apply: Hp; rewrite ltr_oppl.
+  exists N.+1 => // n ltNn; apply: Hp; rewrite lte_fin ltr_oppl.
   have /le_lt_trans : - d <= maxr (- d) 0 by rewrite lexU lexx.
   apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
   by rewrite -(@natrD R N 1) ler_nat addn1.

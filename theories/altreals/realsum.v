@@ -174,10 +174,11 @@ Proof.
 move=> mono_u; pose E := [pred x | `[exists n, x == u n]].
 have nzE: nonempty E by exists (u 0%N); apply/imsetbP; exists 0%N.
 case/boolP: `[< has_sup E >] => /asboolP; last first.
-  move/has_supPn=> -/(_ nzE) h; exists +oo => //; elim/nbh_pinfW => M /=.
+  move/has_supPn=> -/(_ nzE) h; exists +oo%E => //; elim/nbh_pinfW => M /=.
   case/(_ M): h=> x /imsetbP[K -> lt_MuK]; exists K=> n le_Kn; rewrite inE.
   by apply/(lt_le_trans lt_MuK)/mono_u.
-move=> supE; exists (sup E)%:E => //; elim/nbh_finW=>e /= gt0_e.
+move=> supE; exists (sup E)%:E => //; first exact: lte_ninfty.
+elim/nbh_finW=>e /= gt0_e.
 case: (sup_adherent supE gt0_e)=> x /imsetbP[K ->] lt_uK.
 exists K=> n le_Kn; rewrite inE distrC ger0_norm ?subr_ge0.
   by apply/sup_upper_bound/imsetbP=> //; exists n.
