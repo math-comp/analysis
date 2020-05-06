@@ -85,6 +85,7 @@ Require Import boolp Rstruct classical_sets posnum.
 (*                                     (fun x => E).                          *)
 (*                           f `@ F == image of the canonical filter          *)
 (*                                     associated to F by the relation f.     *)
+(*                       globally A == filter of the sets containing A.       *)
 (*                       at_point a == filter of the sets containing a.       *)
 (*                       within D F == restriction of the filter F to the     *)
 (*                                     domain D.                              *)
@@ -196,6 +197,10 @@ Require Import boolp Rstruct classical_sets posnum.
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
 (*                                     is both open and closed in A is A.     *)
+(*                     [locally P]  := forall a, A a ->                       *)
+(*                                         G (within A (locally x))           *)
+(*                                       if P is convertible to G (globally A)*)
+(*                                                                            *)
 (* --> We used these topological notions to prove Tychonoff's Theorem, which  *)
 (*     states that any product of compact sets is compact according to the    *)
 (*     product topology.                                                      *)
@@ -485,6 +490,7 @@ Definition cvg_to {T : Type} (F G : set (set T)) := G `<=` F.
 Notation "F `=>` G" := (cvg_to F G) : classical_set_scope.
 Lemma cvg_refl T (F : set (set T)) : F `=>` F.
 Proof. exact. Qed.
+Hint Resolve cvg_refl : core.
 
 Lemma cvg_trans T (G F H : set (set T)) :
   (F `=>` G) -> (G `=>` H) -> (F `=>` H).
@@ -593,21 +599,6 @@ Lemma filterP_strong T (F : set (set T)) {FF : Filter F} (P : set T) :
 Proof.
 split; last by exists P.
 by move=> [Q [FQ QP]]; apply: (filterS QP).
-Qed.
-
-Lemma filter_bigI T (I : choiceType) (D : {fset I}) (f : I -> set T)
-  (F : set (set T)) :
-  Filter F -> (forall i, i \in D -> F (f i)) ->
-  F (\bigcap_(i in [set i | i \in D]) f i).
-Proof.
-move=> FF FfD.
-suff: F [set p | forall i, i \in enum_fset D -> f i p] by [].
-have {FfD} : forall i, i \in enum_fset D -> F (f i) by move=> ? /FfD.
-elim: (enum_fset D) => [|i s ihs] FfD; first exact: filterS filterT.
-apply: (@filterS _ _ _ (f i `&` [set p | forall i, i \in s -> f i p])).
-  by move=> p [fip fsp] j; rewrite inE => /orP [/eqP->|] //; apply: fsp.
-apply: filterI; first by apply: FfD; rewrite inE eq_refl.
-by apply: ihs => j sj; apply: FfD; rewrite inE sj orbC.
 Qed.
 
 Structure filter_on T := FilterType {
@@ -907,6 +898,30 @@ move=> FF BN0; apply: Build_ProperFilter=> P [i Di BiP].
 by have [x Bix] := BN0 _ Di; exists x; apply: BiP.
 Qed.
 
+Lemma filter_bigI T (I : choiceType) (D : {fset I}) (f : I -> set T)
+  (F : set (set T)) :
+  Filter F -> (forall i, i \in D -> F (f i)) ->
+  F (\bigcap_(i in [set i | i \in D]) f i).
+Proof.
+move=> FF FfD.
+suff: F [set p | forall i, i \in enum_fset D -> f i p] by [].
+have {FfD} : forall i, i \in enum_fset D -> F (f i) by move=> ? /FfD.
+elim: (enum_fset D) => [|i s ihs] FfD; first exact: filterS filterT.
+apply: (@filterS _ _ _ (f i `&` [set p | forall i, i \in s -> f i p])).
+  by move=> p [fip fsp] j; rewrite inE => /orP [/eqP->|] //; apply: fsp.
+apply: filterI; first by apply: FfD; rewrite inE eq_refl.
+by apply: ihs => j sj; apply: FfD; rewrite inE sj orbC.
+Qed.
+
+Lemma filter_forall T (I : finType) (f : I -> set T) (F : set (set T)) :
+    Filter F -> (forall i : I, \forall x \near F, f i x) ->
+  \forall x \near F, forall i, f i x.
+Proof.
+move=> FF fIF; apply: filterS (@filter_bigI T I [fset x in I]%fset f F FF _).
+  by move=> x fIx i; have := fIx i; rewrite inE/=; apply.
+by move=> i; rewrite inE/= => _; apply: (fIF i).
+Qed.
+
 (** ** Limits expressed with filters *)
 
 Definition fmap {T U : Type} (f : T -> U) (F : set (set T)) :=
@@ -1020,6 +1035,23 @@ Proof.
 move=> FF FG fFG P /= GP; rewrite !near_simpl; apply: (have_near G).
 by apply: filter_app fFG; near=> y => /=; apply: filterS => x /= ->; near: y.
 Grab Existential Variables. all: by end_near. Qed.
+
+(* globally filter *)
+
+Definition globally {T : Type} (A : set T) : set (set T) :=
+   [set P : set T | forall x, A x -> P x].
+Arguments globally {T} A _ /.
+
+Global Instance globally_filter {T : Type} (A : set T) :
+   Filter (globally A).
+Proof.
+constructor => //= P Q; last by move=> PQ AP x /AP /PQ.
+by move=> AP AQ x Ax; split; [apply: AP|apply: AQ].
+Qed.
+
+Global Instance globally_properfilter {T : Type} (A : set T) a :
+   infer (A a) -> ProperFilter (globally A).
+Proof. by move=> Aa; apply: Build_ProperFilter' => /(_ a). Qed.
 
 (** ** Specific filters *)
 
@@ -1529,6 +1561,24 @@ Hint Resolve is_cvg_cst : core.
 Lemma cst_continuous {T U : topologicalType} (x : U) :
   continuous (fun _ : T => x).
 Proof. by move=> t; apply: cvg_cst. Qed.
+
+(* Relation between  globally  and  within A (locally x)     *)
+(* to be combined with lemmas such as boundedP in normedtype *)
+Lemma within_locallyW {T : topologicalType} (A : set T) (x : T) :
+  A x -> within A (locally x) `=>` globally A.
+Proof.
+move=> Ax P AP; rewrite /within; near=> y; apply: AP.
+Grab Existential Variables. all: end_near. Qed.
+
+(* [locally P] replaces a (globally A) in P by a within A (locally x)     *)
+(* Can be combined with a notation taking a filter as a its last argument *)
+Definition locally_of (T : topologicalType) (A : set T)
+  (P : set (set T) -> Prop) of phantom Prop (P (globally A)) :=
+  forall x, A x -> P (within A (locally x)).
+Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P))
+  (at level 0, format "[ 'locally'  P ]").
+(* e.g. [locally [bounded f x | x in A]]  *)
+(* see lemmas bounded_locally for example *)
 
 (** ** Topology defined by a filter *)
 

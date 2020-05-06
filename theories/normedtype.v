@@ -38,7 +38,22 @@ Require Import classical_sets posnum topology prodnormedzmodule.
 (*                           `|x| == the norm of x (notation from ssrnum).    *)
 (*                      ball_norm == balls defined by the norm.               *)
 (*                   locally_norm == neighborhoods defined by the norm.       *)
-(*                        bounded == set of bounded sets.                     *)
+(*                                                                            *)
+(* * Domination notations:                                                    *)
+(*              dominated_by h k f F == `|f| <= k * `|h|, near F              *)
+(*                    bounded_on f F == f is bounded near F                   *)
+(*            [bounded f x | x in A] == f is bounded on A, ie F := globally A *)
+(*   [locally [bounded f x | x in A] == f is locally bounded on A             *)
+(*                       bounded_set == set of bounded sets.                  *)
+(*                                   := [set A | [bounded x | x in A]]        *)
+(*                       bounded_fun == set of bounded functions.             *)
+(*                                   := [set f | [bounded f x | x in setT]]   *)
+(*                  lipschitz_on f F == f is lipschitz near F                 *)
+(*          [lipschitz f x | x in A] == f is lipschitz on A                   *)
+(* [locally [lipschitz f x | x in A] == f is locally lipschitz on A           *)
+(*               k.-lipschitz_on f F == f is k.-lipschitz near F              *)
+(*                  k.-lipschitz_A f == f is k.-lipschitz on A                *)
+(*        [locally k.-lipschitz_A f] == f is locally k.-lipschitz on A        *)
 (*                                                                            *)
 (* * Complete normed modules :                                                *)
 (*        completeNormedModType K == interface type for a complete normed     *)
@@ -747,11 +762,27 @@ Proof. by exists c%:num; split => // ; rewrite realE posnum_ge0. Qed.
 Lemma locally_pinfty_ge (c : {posnum R}) : \forall x \near +oo, c%:num <= x.
 Proof. by exists c%:num; rewrite realE posnum_ge0; split => //; apply: ltW. Qed.
 
-Lemma locally_minfty_gt (c : {posnum R}) : \forall x \near -oo, c%:num > x.
+Lemma locally_pinfty_gt_real (c : R) : c \is Num.real ->
+  \forall x \near +oo, c < x.
+Proof. by exists c. Qed.
+
+Lemma locally_pinfty_ge_real (c : R) : c \is Num.real ->
+  \forall x \near +oo, c <= x.
+Proof. by exists c; split => //; apply: ltW. Qed.
+
+Lemma locally_minfty_lt (c : {posnum R}) : \forall x \near -oo, c%:num > x.
 Proof. by exists c%:num; split => // ; rewrite realE posnum_ge0. Qed.
 
-Lemma locally_minfty_ge (c : {posnum R}) : \forall x \near -oo, c%:num >= x.
+Lemma locally_minfty_le (c : {posnum R}) : \forall x \near -oo, c%:num >= x.
 Proof. by exists c%:num; rewrite realE posnum_ge0/=; split => // x; apply: ltW. Qed.
+
+Lemma locally_minfty_lt_real (c : R) : c \is Num.real ->
+  \forall x \near -oo, c > x.
+Proof. by exists c. Qed.
+
+Lemma locally_minfty_le_real (c : R) : c \is Num.real ->
+  \forall x \near -oo, c >= x.
+Proof. by exists c; split => // ?; apply: ltW. Qed.
 
 End infty_locally_instances.
 
@@ -864,8 +895,15 @@ End NormedModule.
 
 Export NormedModule.Exports.
 
-Fail Canonical R_NormedModule := [normedModType Rdefinitions.R of Rdefinitions.R^o].
+Lemma R_normZ (R : numDomainType) (l : R) (x : R^o) :
+  `| l *: x | = `| l | * `| x |.
+Proof. by rewrite normrM. Qed.
 
+Definition numFieldType_NormedModMixin (R : numFieldType) :=
+  NormedModMixin (@R_normZ R).
+Canonical numFieldType_normedModType (R : numFieldType) :=
+  NormedModType R R^o (numFieldType_NormedModMixin R).
+ 
 Section NormedModule_numDomainType.
 Variables (R : numDomainType) (V : normedModType R).
 
@@ -946,6 +984,190 @@ Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
 End NormedModule_numDomainType.
 Hint Resolve normr_ge0 : core.
 Arguments cvg_dist {_ _ F FF}.
+
+Lemma pinfty_ex_gt {R : numFieldType} (m : R) (A : set R) : m \is Num.real ->
+  (\forall k \near +oo, A k) -> exists2 M, m < M & A M.
+Proof.
+by move=> m_real Agt; near (pinfty_locally R) => M;
+   exists M; near: M => //; exists m.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma pinfty_ex_gt0 {R : numFieldType} (A : set R) :
+  (\forall k \near +oo, A k) -> exists2 M, M > 0 & A M.
+Proof. by apply: pinfty_ex_gt; rewrite real0. Qed.
+
+Definition self_sub (K : numDomainType) (V W : normedModType K)
+  (f : V -> W) (x : V * V) : W := f x.1 - f x.2.
+Arguments self_sub {K V W} f x /.
+
+Definition fun1 {T : Type} {K : numFieldType} :
+  T -> [normedModType K of K^o] := fun=> 1.
+Arguments fun1 {T K} x /.
+
+Definition dominated_by {T : Type} {K : numDomainType} {V W : normedModType K}
+  (h : T -> V) (k : K) (f : T -> W) (F : set (set T)) :=
+  F [set x | `|f x| <= k * `|h x|].
+
+Definition strictly_dominated_by {T : Type} {K : numDomainType} {V W : normedModType K}
+  (h : T -> V) (k : K) (f : T -> W) (F : set (set T)) :=
+  F [set x | `|f x| < k * `|h x|].
+
+Lemma sub_dominatedl (T : Type) (K : numFieldType) (V W : normedModType K)
+   (h : T -> V) (k : K) (F G : set (set T)) : F `=>` G ->
+  (@dominated_by T K V W h k)^~ G `<=` (dominated_by h k)^~ F.
+Proof. by move=> FG f; exact: FG. Qed.
+
+Lemma sub_dominatedr (T : Type) (K : numFieldType) (V : normedModType K)
+    (h : T -> V) (k : K) (f g : T -> V) (F : set (set T)) (FF : Filter F) :
+   (\forall x \near F, `|f x| <= `|g x|) ->
+   dominated_by h k g F -> dominated_by h k f F.
+Proof. by move=> le_fg; apply: filterS2 le_fg => x; apply: le_trans. Qed.
+
+Lemma dominated_by1 {T : Type} {K : numFieldType} {V : normedModType K} :
+  @dominated_by T K _ V fun1 = fun k f F => F [set x | `|f x| <= k].
+Proof.
+rewrite funeq3E => k f F.
+by congr F; rewrite funeqE => x; rewrite normr1 mulr1.
+Qed.
+
+Lemma strictly_dominated_by1 {T : Type} {K : numFieldType} {V : normedModType K} :
+  @strictly_dominated_by T K _ V fun1 = fun k f F => F [set x | `|f x| < k].
+Proof.
+rewrite funeq3E => k f F.
+by congr F; rewrite funeqE => x; rewrite normr1 mulr1.
+Qed.
+
+Lemma ex_dom_bound {T : Type} {K : numFieldType} {V W : normedModType K}
+    (h : T -> V) (f : T -> W) (F : set (set T)) {PF : ProperFilter F}:
+  (\forall M \near +oo, dominated_by h M f F) <->
+  exists M, dominated_by h M f F.
+Proof.
+rewrite /dominated_by; split => [/pinfty_ex_gt0[M M_gt0]|[M]] FM.
+  by exists M.
+have [] := pselect (exists x, (h x != 0) && (`|f x| <= M * `|h x|)); last first.
+  rewrite -forallN; move=> Nex; exists 0; rewrite real0; split => //.
+  move=> k k_gt0; apply: filterS FM => x f_le_Mh.
+  have /negP := Nex x; rewrite negb_and negbK f_le_Mh orbF => /eqP h_eq0.
+  by rewrite h_eq0 normr0 !mulr0 in f_le_Mh *.
+case => x0 /andP[hx0_neq0] /(le_trans (normr_ge0 _)) /ger0_real.
+rewrite realrM // ?normr_eq0// => M_real.
+exists M; split => // k Mk; apply: filterS FM => x /le_trans->//.
+by rewrite ler_wpmul2r// ltW.
+Qed.
+
+Lemma ex_strict_dom_bound {T : Type} {K : numFieldType} {V W : normedModType K}
+    (h : T -> V) (f : T -> W) (F : set (set T)) {PF : ProperFilter F} :
+  (\forall x \near F, h x != 0) ->
+  (\forall M \near +oo, dominated_by h M f F) <->
+   exists M, strictly_dominated_by h M f F.
+Proof.
+move=> hN0; rewrite ex_dom_bound /dominated_by /strictly_dominated_by.
+split => -[] M FM; last by exists M; apply: filterS FM => x /ltW.
+exists (M + 1); apply: filterS2 hN0 FM => x hN0 /le_lt_trans->//.
+by rewrite ltr_pmul2r ?normr_gt0// ltr_addl.
+Qed.
+
+Definition bounded_on {T : Type} {K : numFieldType} {V : normedModType K}
+  (f : T -> V) (F : set (set T)) :=
+  \forall M \near +oo, F [set x | `|f x| <= M].
+
+Lemma boundedE {T : Type} {K : numFieldType} {V : normedModType K} :
+  @bounded_on T K V = fun f F => \forall M \near +oo, dominated_by fun1 M f F.
+Proof. by rewrite dominated_by1. Qed.
+
+Lemma sub_boundedr (T : Type) (K : numFieldType) (V : normedModType K)
+     (F G : set (set T)) : F `=>` G ->
+  (@bounded_on T K V)^~ G `<=` bounded_on^~ F.
+Proof. by move=> FG f; rewrite /bounded_on; apply: filterS => M; apply: FG. Qed.
+
+Lemma sub_boundedl (T : Type) (K : numFieldType) (V : normedModType K)
+     (f g : T -> V) (F : set (set T)) (FF : Filter F) :
+   (\forall x \near F, `|f x| <= `|g x|) ->  bounded_on g F -> bounded_on f F.
+Proof.
+move=> le_fg; rewrite /bounded_on; apply: filterS => M.
+by apply: filterS2 le_fg => x; apply: le_trans.
+Qed.
+
+Lemma ex_bound {T : Type} {K : numFieldType} {V : normedModType K}
+  (f : T -> V) (F : set (set T)) {PF : ProperFilter F}:
+  bounded_on f F <-> exists M, F [set x | `|f x| <= M].
+Proof. by rewrite boundedE ex_dom_bound dominated_by1. Qed.
+
+Lemma ex_strict_bound {T : Type} {K : numFieldType} {V : normedModType K}
+  (f : T -> V) (F : set (set T)) {PF : ProperFilter F}:
+  bounded_on f F <-> exists M, F [set x | `|f x| < M].
+Proof.
+rewrite boundedE ex_strict_dom_bound ?strictly_dominated_by1//.
+by near=> x; rewrite oner_eq0.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma ex_strict_bound_gt0 {T : Type} {K : numFieldType} {V : normedModType K}
+  (f : T -> V) (F : set (set T)) {PF : Filter F}:
+  bounded_on f F -> exists2 M, M > 0 & F [set x | `|f x| < M].
+Proof.
+move=> /pinfty_ex_gt0[M M_gt0 FM]; exists (M + 1); rewrite ?addr_gt0//.
+by apply: filterS FM => x /le_lt_trans->//; rewrite ltr_addl.
+Qed.
+
+Notation "[ 'bounded' E | x 'in' A ]" := (bounded_on (fun x => E) (globally A))
+  (at level 0, x ident, format "[ 'bounded'  E  |  x  'in'  A ]").
+Notation bounded_set := [set A | [bounded x | x in A]].
+Notation bounded_fun := [set f | [bounded f x | x in setT]].
+
+Lemma bounded_locally (T : topologicalType)
+    (R : numFieldType) (V : normedModType R) (A : set T) (f : T -> V) :
+  [bounded f x | x in A] -> [locally [bounded f x | x in A]].
+Proof. by move=> /sub_boundedr AB x Ax; apply: AB; apply: within_locallyW. Qed.
+
+Notation "k .-lipschitz_on f" := (dominated_by (self_sub id) k (self_sub f))
+  (at level 2, format "k .-lipschitz_on  f") : type_scope.
+
+Definition sub_klipschitz (K : numFieldType) (V W : normedModType K) (k : K)
+           (f : V -> W) (F G : set (set (V * V))) :
+  F `=>` G -> k.-lipschitz_on f G -> k.-lipschitz_on f F.
+Proof. exact. Qed.
+
+Definition lipschitz_on (K : numFieldType) (V W : normedModType K)
+           (f : V -> W) (F : set (set (V * V))) :=
+  \forall M \near +oo, M.-lipschitz_on f F.
+
+Definition sub_lipschitz (K : numFieldType) (V W : normedModType K)
+           (f : V -> W) (F G : set (set (V * V))) :
+  F `=>` G -> lipschitz_on f G -> lipschitz_on f F.
+Proof. by move=> FG; rewrite /lipschitz_on; apply: filterS => M; apply: FG. Qed.
+
+Lemma klipschitzW (K : numFieldType) (V W : normedModType K) (k : K)
+      (f : V -> W) (F : set (set (V * V))) {PF : ProperFilter F} :
+  k.-lipschitz_on f F -> lipschitz_on f F.
+Proof. by move=> f_lip; apply/ex_dom_bound; exists k. Qed.
+
+Notation "k .-lipschitz_ A f" :=
+  (k.-lipschitz_on f (globally (A `*` A)))
+  (at level 2, A at level 0, format "k .-lipschitz_ A  f").
+Notation "k .-lipschitz f" := (k.-lipschitz_setT f)
+  (at level 2, format "k .-lipschitz  f") : type_scope.
+Notation "[ 'lipschitz' E | x 'in' A ]" :=
+  (lipschitz_on (fun x => E) (globally (A `*` A)))
+  (at level 0, x ident, format "[ 'lipschitz'  E  |  x  'in'  A ]").
+Notation lipschitz f := [lipschitz f x | x in setT].
+
+Lemma klipschitz_locally (R : numFieldType) (V W : normedModType R)
+   (k : R) (f : V -> W) (A : set V) :
+  k.-lipschitz_A f -> [locally k.-lipschitz_A f].
+Proof.
+by move=> bndf x Ax; apply: sub_klipschitz bndf; apply: within_locallyW.
+Qed.
+
+Lemma lipschitz_locally (R : numFieldType) (V W : normedModType R)
+    (A : set V) (f : V -> W) :
+  [lipschitz f x | x in A] -> [locally [lipschitz f x | x in A]].
+Proof.
+by move=> bndf x Ax; apply: sub_lipschitz bndf; apply: within_locallyW.
+Qed.
+
+Lemma lipschitz_id (R : numFieldType) (V : normedModType R) : 1.-lipschitz (@id V).
+Proof. by move=> [/= x y] _; rewrite mul1r. Qed.
+Arguments lipschitz_id {R V}.
 
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
@@ -1033,25 +1255,13 @@ move=> cv; apply/cvg_distP => _/posnumP[e]; near=> x.
 by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma cvg_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y ->
-  \forall M \near +oo, M \is Num.real /\ \forall y' \near F, `|y'| < M.
-Proof.
-move=> /cvg_dist Fy; exists `|y|; rewrite normr_real; split => // M.
-rewrite -subr_gt0 => subM_gt0; split.
-  rewrite -comparabler0 (@comparabler_trans _ (M - `|y|)) //.
-    by rewrite -subr_comparable0 opprD addrA subrr add0r opprK comparabler0
-      normr_real.
-  by rewrite comparablerE subr0 realE ltW.
-have := Fy _ subM_gt0.
-apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
-rewrite (le_lt_trans _ yy') // (le_trans _ (ler_dist_dist _ _)) // distrC.
-by rewrite real_ler_norm // realB.
-Qed.
-
 Lemma cvg_bounded {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
-Proof. move/cvg_bounded_real; by apply: filterS => x []. Qed.
+  F --> y -> bounded_on id F.
+Proof.
+move=> /cvg_dist Fy; exists `|y|; rewrite normr_real; split => //= M.
+rewrite -subr_gt0 => /Fy; apply: filterS => y' yy'; apply: ltW.
+by rewrite -(@ltr_add2r _ (- `|y|)) (le_lt_trans (ler_sub_dist _ _))// distrC.
+Qed.
 
 End NormedModule_numFieldType.
 Arguments cvg_bounded {_ _ F FF}.
@@ -1724,15 +1934,6 @@ Arguments cvg_dist2 {_ _ _ F G FF FG}.
 Canonical AbsRing_NormedModType (K : absRingType) :=
   NormedModType K K^o (AbsRing_NormedModMixin _).*)
 
-Lemma R_normZ (R : numDomainType) (l : R) (x : R^o) :
-  `| l *: x | = `| l | * `| x |.
-Proof. by rewrite normrM. Qed.
-
-Definition numFieldType_NormedModMixin (R : numFieldType) :=
-  NormedModMixin (@R_normZ R).
-Canonical numFieldType_normedModType (R : numFieldType) :=
-  NormedModType R R^o (numFieldType_NormedModMixin R).
-
 (** Normed vector spaces have some continuous functions *)
 
 (* kludge *)
@@ -1756,19 +1957,17 @@ Grab Existential Variables. all: end_near. Qed.
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/cvg_distP=> _/posnumP[e].
-rewrite !near_simpl /=; near +oo => M; near=> l z => /=.
+rewrite !near_simpl /=; near +oo => M.
+have M_gt0 : M > 0 by near: M; apply: locally_pinfty_gt_real; rewrite real0.
+near=> l z => /=.
 rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
-  rewrite (le_lt_trans (ler_pmul _ _ (_ : _ <= `|k| + 1) (lexx _))) //.
-  by rewrite ler_addl.
+  suff: (`|k| + 1) * `|x - z| < e%:num / 2.
+    by apply: le_lt_trans; rewrite ler_pmul// ler_addl.
   rewrite -ltr_pdivl_mull // ?(lt_le_trans ltr01) ?ler_addr //; near: z.
   by apply: cvg_dist; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
-have zM : @normr _ V z < M.
-  by near: z; near: M; apply: cvg_bounded; apply: cvg_refl.
-rewrite (le_lt_trans (ler_pmul _ _ (lexx _) (_ : _ <= M))) // ?ltW //.
-rewrite -ltr_pdivl_mulr ?(le_lt_trans _ zM) //.
-near: l; apply: (cvg_dist (_ : K^o)) => //.
-by rewrite divr_gt0 //; near: M; exists 0; rewrite real0.
-(* NB: the last three lines used to be one *)
+have zM : `|z| <= M by near: z; near: M; apply:cvg_bounded; apply: cvg_refl.
+rewrite (le_lt_trans (ler_pmul _ _ (lexx _) zM)) // ?ltW // -ltr_pdivl_mulr//.
+by near: l; apply: (cvg_dist (_ : K^o)); rewrite // mulr_gt0// invr_gt0.
 Grab Existential Variables. all: end_near. Qed.
 
 Arguments scale_continuous _ _ : clear implicits.
@@ -2278,21 +2477,17 @@ Section cvg_seq_bounded.
 Context {K : numFieldType}.
 Local Notation "'+oo'" := (@pinfty_locally K).
 
-(* TODO: simplify using extremumP when PR merged in mathcomp *)
 Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
-  [cvg a in V] -> {M | forall n, `|a n| <= M}.
+  cvg a -> bounded_fun a.
 Proof.
-move=> a_cvg; suff: exists M, M \is Num.real /\ forall n, `|a n| <= M.
-  by move=> /(@getPex [pointedType of K^o]) [?]; set M := get _; exists M.
-near +oo => M.
-have [//|Mreal [N _ /(_ _ _) /ltW a_leM]] := !! near (cvg_bounded_real a_cvg) M.
-exists (maxr `|M|%:nng (\big[maxr/0%:nng]_(n < N) `|a (val (rev_ord n))|%:nng))%:nngnum.
-split => [|/= n]; first by rewrite realE nng_lexU normr_ge0.
-rewrite nng_lexU; have [nN|nN] := leqP N n.
-  by rewrite (@le_trans _ _ M) //=; [exact: a_leM | rewrite real_ler_norm].
-apply/orP; right => {a_leM}; elim: N n nN=> //= N IHN n.
-rewrite leq_eqVlt => /orP[/eqP[->] |/IHN a_le];
-by rewrite big_ord_recl subn1 /= nng_lexU ?a_le ?lexx ?orbT.
+move=> /cvg_bounded/ex_bound => -[/= Moo]; rewrite !near_simpl.
+rewrite [(\near a, _ <= _)](near_map _ \oo) => -[N _ /(_ _) a_leM].
+have Moo_real : Moo \is Num.real by rewrite ger0_real ?(le_trans _ (a_leM N _)).
+rewrite /bounded_on /=; near=> M => n _.
+have [nN|nN]/= := leqP N n.
+  by apply: (le_trans (a_leM _ _)) => //; near: M; apply: locally_pinfty_ge_real.
+move: n nN; suff /(_ (Ordinal _)) : forall n : 'I_N, `|a n| <= M by [].
+by near: M; apply: filter_forall => i; apply: locally_pinfty_ge_real.
 Grab Existential Variables. all: end_near. Qed.
 
 End cvg_seq_bounded.
@@ -2751,14 +2946,8 @@ Qed.
 (* by apply (Hd (u, v)) => /=; split; apply sub_abs_ball; rewrite absrB. *)
 (* Qed. *)
 
-Section bounded.
-Variable K : numFieldType.
-Definition bounded (V : normedModType K) (A : set V) :=
-  \forall M \near +oo, A `<=` [set x | `|x| < M].
-End bounded.
-
 Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
-  compact A -> bounded A.
+  compact A -> bounded_set A.
 Proof.
 rewrite compact_cover => Aco.
 have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
@@ -2772,7 +2961,8 @@ have /Aco [] := covA.
 move=> D _ DcovA.
 exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
 rewrite bigmaxr_real ?real0 //; split => //.
-move=> x ltmaxx p /DcovA [n Dn /lt_trans]; apply; apply: le_lt_trans ltmaxx.
+move=> x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
+apply; apply: le_lt_trans ltmaxx.
 have {} : n \in enum_fset D by [].
 rewrite enum_fsetE => /mapP[/= i iD ->]; exact/BigmaxBigminr.ler_bigmaxr.
 Qed.
@@ -2835,16 +3025,16 @@ by have [g []] := clGf _ _ GC f_D; exists (\row_j (g j : T)).
 Qed.
 
 Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R^o]_n.+1) :
-  bounded A -> closed A -> compact A.
+  bounded_set A -> closed A -> compact A.
 Proof.
 move=> [M [Mreal normAltM]] Acl.
 have Mnco : compact
   [set v : 'rV[R^o]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
   apply: (@rV_compact [topologicalType of R^o] _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
   by move=> _; apply: segment_compact.
-apply: subclosed_compact Acl Mnco _ => v /normAltM normvltM i.
-suff /ltW : `|v ord0 i : R^o| < M + 1 by rewrite ler_norml.
-apply: le_lt_trans (normvltM _ _); last by rewrite ltr_addl.
+apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
+suff : `|v ord0 i : R^o| <= M + 1 by rewrite ler_norml.
+apply: le_trans (normvleM _ _); last by rewrite ltr_addl.
 have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
 rewrite [in X in _ <= X]/normr /= mx_normrE.
