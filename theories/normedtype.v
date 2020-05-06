@@ -937,36 +937,19 @@ Proof. by move=> /cvg_normP. Qed.
 Lemma locally_norm_ball x (eps : {posnum R}) : locally_norm x (ball x eps%:num).
 Proof. rewrite locally_locally_norm; by apply: locally_ball. Qed.
 
-(* TODO: commented out on 2020-03-10, prove me *)
-(*
-Lemma closeE (x y : V) : close x y = (x = y).
-Proof.
-rewrite propeqE; split => [cl_xy|->//]; have [//|neq_xy] := eqVneq x y.
-have dxy_gt0 : `|x - y| > 0.
-  by rewrite normr_gt0 subr_eq0.
-have dxy_ge0 := ltW dxy_gt0.
-have := cl_xy (PosNum dxy_gt0).
-by rewrite -ball_normE /= ltxx.
-Qed.
-
-Lemma eq_close (x y : V) : close x y -> x = y. by rewrite closeE. Qed.
-
-Lemma norm_close x y : close x y = (forall eps : {posnum R}, ball_norm x eps%:num y).
-Proof. by rewrite propeqE ball_normE. Qed.
-*)
-
 End NormedModule_numDomainType.
 Hint Resolve normr_ge0 : core.
 Arguments cvg_norm {_ _ F FF}.
 
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
+Implicit Types (x y z : V).
 
 Local Notation ball_norm := (ball_ (@normr R V)).
 
 Local Notation locally_norm := (locally_ ball_norm).
 
-Lemma normedModType_hausdorff : hausdorff V.
+Lemma norm_hausdorff : hausdorff V.
 Proof.
 rewrite ball_hausdorff => a b ab.
 have ab2 : 0 < `|a - b| / 2 by apply divr_gt0 => //; rewrite normr_gt0 subr_eq0.
@@ -977,7 +960,32 @@ move: (ltr_add acr bcr); rewrite -r22 (distrC b c).
 move/(le_lt_trans (ler_dist_add c a b)).
 by rewrite -mulrA mulVr ?mulr1 ?ltxx // unitfE.
 Qed.
-Hint Extern 0 (hausdorff _) => exact: normedModType_hausdorff.
+Hint Extern 0 (hausdorff _) => solve[apply: norm_hausdorff] : core.
+
+(* TODO: check if the following lemma are indeed useless *)
+(*       i.e. where the generic lemma is applied, *)
+(*            check that norm_hausdorff is not used in a hard way *)
+
+Lemma norm_closeE x y : close x y = (x = y). Proof. exact: closeE. Qed.
+Lemma norm_close_eq x y : close x y -> x = y. Proof. exact: close_eq. Qed.
+
+Lemma norm_cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : V | F --> x].
+Proof. exact: cvg_unique. Qed.
+
+Lemma norm_cvg_eq x y : x --> y -> x = y. Proof. exact: cvg_eq. Qed.
+Lemma norm_lim_id x : lim x = x. Proof. exact: lim_id. Qed.
+
+Lemma norm_cvg_lim {F} {FF : ProperFilter F} (l : V) : F --> l -> lim F = l.
+Proof. exact: cvg_lim. Qed.
+
+Lemma norm_cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set V) :
+  {near F, is_fun f} -> is_subset1 [set x : V | f `@ F --> x].
+Proof. exact: cvgi_unique. Qed.
+
+Lemma norm_cvgi_map_lim {U} {F} {FF : ProperFilter F} (f : U -> V -> Prop) (l : V) :
+  F (fun x : U => is_subset1 (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
+Proof. exact: cvgi_map_lim. Qed.
 
 Lemma distm_lt_split (z x y : V) (e : R) :
   `|x - z| < e / 2 -> `|z - y| < e / 2 -> `|x - y| < e.
@@ -1033,7 +1041,7 @@ Proof. move/cvg_bounded_real; by apply: filterS => x []. Qed.
 
 End NormedModule_numFieldType.
 Arguments cvg_bounded {_ _ F FF}.
-Hint Extern 0 (hausdorff _) => exact: normedModType_hausdorff : core.
+Hint Extern 0 (hausdorff _) => solve[apply: norm_hausdorff] : core.
 
 Module Export LocallyNorm.
 Definition locally_simpl :=
