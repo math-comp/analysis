@@ -2458,14 +2458,17 @@ apply: sep => A B; rewrite !locallyE => - [oA [xoA oAA]] [oB [xoB oBB]].
 exact: subsetI_neq0 oAA oBB (cxy _ _ _ _).
 Qed.
 
+Lemma close_eq (y x : T) : close x y -> x = y.
+Proof. by rewrite closeE. Qed.
+
 Lemma cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : T | F --> x].
 Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close F). Qed.
 
-Lemma locally_cvg_unique (x y : T) : x --> y -> x = y.
+Lemma cvg_eq (x y : T) : x --> y -> x = y.
 Proof. by rewrite -closeE //; apply: cvg_close. Qed.
 
 Lemma lim_id (x : T) : lim x = x.
-Proof. by apply/esym/locally_cvg_unique/cvg_ex; exists x. Qed.
+Proof. by apply/esym/cvg_eq/cvg_ex; exists x. Qed.
 
 Lemma cvg_lim {F} {FF : ProperFilter F} (l : T) : F --> l -> lim F = l.
 Proof. by move=> Fl; have Fcv := cvgP Fl; apply: (@cvg_unique F). Qed.
