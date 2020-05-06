@@ -1314,11 +1314,11 @@ move=> leab fcont; set imf := [pred t | t \in f @` [set x | x \in `[a, b]]].
 have imf_sup : has_sup imf.
   apply/has_supP; split.
     by exists (f a); rewrite !inE; apply/asboolP/imageP; rewrite inE/= lexx.
-  have [M [Mreal imfltM]] : bounded (f @` [set x | x \in `[a, b]] : set R^o).
+  have [M [Mreal imfltM]] : bounded_set (f @` [set x | x \in `[a, b]] : set R^o).
     apply/compact_bounded/continuous_compact; last exact: segment_compact.
     by move=> ?; rewrite inE => /asboolP /fcont.
-  exists (M + 1); apply/ubP => y; rewrite !inE => /asboolP /imfltM yltM.
-  apply/ltW; apply: le_lt_trans (yltM _ _); last by rewrite ltr_addl.
+  exists (M + 1); apply/ubP => y; rewrite !inE => /asboolP /imfltM yleM.
+  apply: le_trans (yleM _ _); last by rewrite ltr_addl.
   by rewrite ler_norm.
 case: (pselect (exists2 c, c \in `[a, b] & f c = sup imf)) => [|imf_ltsup].
   move=> [c cab fceqsup]; exists c => // t tab.
@@ -1333,23 +1333,17 @@ have invf_continuous : {in `[a, b], continuous (fun t => (sup imf - f t)^-1 : R^
   move=> t tab; apply: cvgV.
     by rewrite neq_lt subr_gt0 orbC imf_ltsup.
   by apply: cvgD; [apply: continuous_cst|apply: cvgN; apply:fcont].
-have [M [Mreal imVfltM]] : bounded ((fun t => (sup imf - f t)^-1) @`
-  [set x | x \in `[a, b]] : set R^o).
+have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] :
+   bounded_set ((fun t => (sup imf - f t)^-1) @` [set x | x \in `[a, b]] : set R^o).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
   by move=> ?; rewrite inE => /asboolP /invf_continuous.
-set k := Num.max (M + 1) 1; have kgt0 : 0 < k by rewrite ltxU ltr01 orbC.
 have : exists2 y, y \in imf & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
 move=> [y]; rewrite !inE => /asboolP [t tab <-] {y}.
-rewrite ltr_subl_addr - ltr_subl_addl.
+rewrite ltr_subl_addr -ltr_subl_addl.
 suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
-rewrite -[X in _ < X]invrK ltr_pinv.
-    apply: le_lt_trans (ler_norm _) _.
-    by apply: imVfltM; [rewrite ltxU ltr_addl ltr01|apply: imageP].
-  by rewrite inE kgt0 unitfE lt0r_neq0.
-have invsupft_gt0 : 0 < (sup imf - f t)^-1.
-  by rewrite invr_gt0 subr_gt0 imf_ltsup.
-by rewrite inE invsupft_gt0 unitfE lt0r_neq0.
+rewrite -[X in _ < X]invrK ltf_pinv ?qualifE ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
+by rewrite (le_lt_trans (ler_norm _) _) ?imVfltk//; apply: imageP.
 Qed.
 
 Lemma EVT_min (R : realType) (f : R^o -> R^o) (a b : R^o) :
