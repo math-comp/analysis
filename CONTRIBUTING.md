@@ -1,5 +1,10 @@
 # Contribution Guide for the mathcomp-analysis library (WIP)
 
+The purpose of this file is to document scripting techniques to be
+used when contributing to mathcomp-analysis. It comes as an addition
+to mathcomp's [contribution
+guide](https://github.com/math-comp/math-comp/blob/master/CONTRIBUTING.md).
+
 ## `=>` vs. `-->` vs. cvg vs. lim
 
 TODO: explain in particular the lemmas `cvgP`, `cvg_ex`
