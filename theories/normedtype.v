@@ -1767,12 +1767,12 @@ Arguments scale_continuous _ _ : clear implicits.
 
 Lemma scaler_continuous k : continuous (fun x : V => k *: x).
 Proof.
-by move=> x; apply: (cvg_comp2 (cvg_const _) cvg_id (scale_continuous (_, _))).
+by move=> x; apply: (cvg_comp2 (cvg_cst _) cvg_id (scale_continuous (_, _))).
 Qed.
 
 Lemma scalel_continuous (x : V) : continuous (fun k : K^o => k *: x).
 Proof.
-by move=> k; apply: (cvg_comp2 cvg_id (cvg_const _) (scale_continuous (_, _))).
+by move=> k; apply: (cvg_comp2 cvg_id (cvg_cst _) (scale_continuous (_, _))).
 Qed.
 
 Lemma opp_continuous : continuous (@GRing.opp V).
@@ -1786,10 +1786,6 @@ End NVS_continuity1.
 Section limit_composition.
 
 Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
-
-Lemma cvg_cst (a : V) (F : set (set V)) {FF : Filter F} : (fun=> a) @ F --> a.
-Proof. exact: cst_continuous. Qed.
-Hint Resolve cvg_cst : core.
 
 Lemma cvgD (F : set (set T)) (FF : Filter F) (f g : T -> V) (a b : V) :
   f @ F --> a -> g @ F --> b -> (f \+ g) @ F --> a + b.
@@ -1807,13 +1803,11 @@ Proof. move=> ??; apply: cvg_continuous2 => //; exact: scale_continuous. Qed.
 
 Lemma cvgZl (F : set (set T)) (FF : Filter F) (f : T -> K) (a : V) (k : K^o) :
   f @ F --> k -> (fun x => (f x) *: a) @ F --> k *: a.
-Proof. by move=> ?; apply: cvgZ => //; exact: cst_continuous. Qed.
+Proof. by move=> ?; apply: cvgZ => //; exact: cvg_cst. Qed.
 
 Lemma cvgZr (F : set (set T)) (FF : Filter F) (f : T -> V) (k : K) (a : V) :
   f @ F --> a -> k \*: f  @ F --> k *: a.
-Proof.
-apply: cvgZ => //; exact: (@cst_continuous _ [topologicalType of K^o]).
-Qed.
+Proof. apply: cvgZ => //; exact: (@cvg_cst _ [topologicalType of K^o]). Qed.
 
 Lemma continuousZ (f : T -> V) k x :
   {for x, continuous f} -> {for x, continuous (k \*: f)}.

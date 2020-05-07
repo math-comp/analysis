@@ -307,7 +307,7 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: (@cvgD _ _ [topolo
   by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE // subrr normr0.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
-  rewrite (_ : (fun _ => _) = cst 0); first exact: cst_continuous.
+  rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
 apply/cvg_normP => e e0.
 rewrite nearE /=; apply/locallyP; rewrite locally_E.

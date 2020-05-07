@@ -1493,15 +1493,6 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (@cvg_comp _ _ _ _ (fun x => h x.1 x.2) _ _ _ (cvg_pair fa fb)).
 Qed.
 
-Lemma cst_continuous {T : Type} {T' : topologicalType} (k : T')
-  (F : set (set T)) {FF : Filter F} :
-  (fun _ : T => k) @ F --> k.
-Proof.
-by move=> x; rewrite !near_simpl => /locally_singleton ?; apply: filterE.
-Qed.
-Arguments cst_continuous {T T'} k F {FF}.
-Hint Resolve cst_continuous : core.
-
 Lemma cvg_fconst (T : Type) (U : topologicalType)
   (f : T -> U) (F : set (set T)) (l : U) :
   Filter F ->
@@ -1511,11 +1502,13 @@ move=> FF fFl P /=; rewrite !near_simpl => Pl.
 by apply: filterS fFl => _ ->; apply: locally_singleton.
 Qed.
 
-Lemma cvg_const (T : Type) (U : topologicalType) (F : set (set T)) {FF : Filter F}
+Lemma cvg_cst (T : Type) (U : topologicalType) (F : set (set T)) {FF : Filter F}
   (x : U) : (fun _ : T => x) @ F --> x.
-Proof. by apply: cvg_fconst; near=> x0.
-Grab Existential Variables. all: end_near. Qed.
-Arguments cvg_const {T U F FF} x.
+Proof.
+by move=> S; rewrite !near_simpl => /locally_singleton ?; apply: filterE.
+Qed.
+Arguments cvg_cst {T U F FF} x.
+Hint Resolve cvg_cst : core.
 
 (** ** Topology defined by a filter *)
 
