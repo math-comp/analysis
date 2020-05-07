@@ -1,6 +1,10 @@
 language: generic
 os: linux
 
+branches:
+  only:
+  - master
+
 services:
 - docker
 
