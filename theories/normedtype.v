@@ -2399,25 +2399,25 @@ move=> FF F_cauchy; apply/cvg_ex.
 pose D := \bigcap_(A in F) (down (mem A)).
 have /cauchyP /(_ 1) [//|x0 x01] := F_cauchy.
 have D_has_sup : has_sup (mem D); first split.
-- exists (x0 - 1); rewrite in_setE => A FA.
+- exists (x0 - 1); rewrite inE => A FA.
   apply/existsbP; near F => x; first exists x.
-    by rewrite ler_distW 1?distrC 1?ltW ?andbT ?in_setE //; near: x.
-- exists (x0 + 1); apply/forallbP => x; apply/implyP; rewrite in_setE.
-  move=> /(_ _ x01) /existsbP [y /andP[]]; rewrite in_setE.
+    by rewrite ler_distW 1?distrC 1?ltW ?andbT ?inE //; near: x.
+- exists (x0 + 1); apply/forallbP => x; apply/implyP; rewrite inE.
+  move=> /(_ _ x01) /existsbP [y /andP[]]; rewrite inE.
   rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltW].
   by move=> /(le_trans _) yx01 _ /yx01.
 exists (sup (mem D)).
 apply: (cvg_distW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl sup_upper_bound //=.
   apply: sup_le_ub => //; first by case: D_has_sup.
-  apply/forallbP => y; apply/implyP; rewrite in_setE.
+  apply/forallbP => y; apply/implyP; rewrite inE.
   move=> /(_ (ball_ (fun x => `| x |) x eps%:num) _) /existsbP [].
     by near: x; apply: nearP_dep; apply: F_cauchy.
-  move=> z /andP[]; rewrite in_setE /ball_ ltr_distl ltr_subl_addr.
+  move=> z /andP[]; rewrite inE /ball_ ltr_distl ltr_subl_addr.
   by move=> /andP [/ltW /(le_trans _) le_xeps _ /le_xeps].
-rewrite in_setE /D /= => A FA; near F => y.
+rewrite inE /D /= => A FA; near F => y.
 apply/existsbP; exists y; apply/andP; split.
-  by rewrite in_setE; near: y.
+  by rewrite inE; near: y.
 rewrite ler_subl_addl -ler_subl_addr ltW //.
 suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
 by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
@@ -2591,26 +2591,26 @@ have sAab : A `<=` [set x | x \in `[a, b]] by rewrite AeabB => ? [].
 move=> /asboolPn; rewrite asbool_and => /nandP [/asboolPn /(_ (sAab _))|] //.
 move=> /imply_asboolPn [abx nAx] [C Cop AeabC].
 set Altx := fun y => y \in A `&` [set y | y < x].
-have Altxn0 : reals.nonempty Altx by exists y; rewrite in_setE.
+have Altxn0 : reals.nonempty Altx by exists y; rewrite inE.
 have xub_Altx : x \in ub Altx.
-  by apply/ubP => ?; rewrite in_setE => - [_ /ltW].
+  by apply/ubP => ?; rewrite inE => - [_ /ltW].
 have Altxsup : has_sup Altx by apply/has_supP; split=> //; exists x.
 set z := sup Altx.
 have yxz : z \in `[y, x].
   rewrite inE; apply/andP; split; last exact: sup_le_ub.
-  by apply/sup_upper_bound => //; rewrite in_setE.
+  by apply/sup_upper_bound => //; rewrite inE.
 have Az : A z.
   rewrite AeabB; split.
     suff : {subset `[y, x] <= `[a, b]} by apply.
     by apply/subitvP; rewrite /= (itvP abx); have /sAab/itvP-> := Ay.
   apply: Bcl => D [_ /posnumP[e] ze_D].
   have [t] := sup_adherent Altxsup [gt0 of e%:num].
-  rewrite in_setE => - [At lttx] ltzet.
+  rewrite inE => - [At lttx] ltzet.
   exists t; split; first by move: At; rewrite AeabB => - [].
   apply/ze_D; rewrite /= ltr_distl.
   apply/andP; split; last by rewrite -ltr_subl_addr.
   rewrite ltr_subl_addr; apply: ltr_spaddr => //.
-  by apply/sup_upper_bound => //; rewrite in_setE.
+  by apply/sup_upper_bound => //; rewrite inE.
 have ltzx : 0 < x - z.
   have : z <= x by rewrite (itvP yxz).
   by rewrite subr_gt0 le_eqVlt => /orP [/eqP zex|] //; move: nAx; rewrite -zex.
@@ -2619,7 +2619,7 @@ suff [t Altxt] : exists2 t, Altx t & z < t.
   by rewrite ltNge => /negP; apply; apply/sup_upper_bound.
 exists (z + (minr (e%:num / 2) ((PosNum ltzx)%:num / 2))); last first.
   by rewrite ltr_addl.
-rewrite in_setE; split; last first.
+rewrite inE; split; last first.
   rewrite -[_ < _]ltr_subr_addl ltIx; apply/orP; right.
   by rewrite ltr_pdivr_mulr // mulrDr mulr1 ltr_addl.
 rewrite AeabC; split; last first.
@@ -2656,12 +2656,12 @@ suff Aeab : A = [set x | x \in `[a, b]].
 apply: segment_connected.
 - have aba : a \in `[a, b] by rewrite inE/=; apply/andP.
   exists a; split=> //; have /sabUf [i Di fia] := aba.
-  exists [fset i]%fset; first by move=> ?; rewrite inE in_setE => /eqP->.
+  exists [fset i]%fset; first by move=> ?; rewrite inE inE => /eqP->.
   split; last by exists i => //; rewrite inE.
   move=> x aex; exists i; [by rewrite inE|suff /eqP-> : x == a by []].
   by rewrite eq_le !(itvP aex).
 - exists B => //; rewrite openE => x [D' sD [saxUf [i Di fx]]].
-  have : open (f i) by have /sD := Di; rewrite in_setE => /fop.
+  have : open (f i) by have /sD := Di; rewrite inE => /fop.
   rewrite openE => /(_ _ fx) [e egt0 xe_fi]; exists e => // y xe_y.
   exists D' => //; split; last by exists i => //; apply/xe_fi.
   move=> z ayz; case: (lerP z x) => [lezx|ltxz].
@@ -2677,7 +2677,7 @@ move=> x clAx; have abx : x \in `[a, b].
 split=> //; have /sabUf [i Di fx] := abx.
 have /fop := Di; rewrite openE => /(_ _ fx) [_ /posnumP[e] xe_fi].
 have /clAx [y [[aby [D' sD [sayUf _]]] xe_y]] := locally_ball x e.
-exists (i |` D')%fset; first by move=> j /fset1UP[->|/sD] //; rewrite in_setE.
+exists (i |` D')%fset; first by move=> j /fset1UP[->|/sD] //; rewrite inE.
 split=> [z axz|]; last first.
   exists i; first by rewrite !inE eq_refl.
   by apply/xe_fi; rewrite /ball_ subrr normr0.
@@ -3014,7 +3014,7 @@ move=> C D FC f_D; have {f_D} f_D :
   move=> _ [_ _ <-]; set s := [seq (@^~ j) @^-1` (get (Pj j)) | j : 'I_n.+1].
   exists [fset x in s]%fset.
     move=> B'; rewrite in_fset => /mapP [j _ ->]; rewrite inE.
-    apply/asboolP; exists j => //; exists (get (Pj j)) => //.
+    exists j => //; exists (get (Pj j)) => //.
     by have /getPex [[]] := exPj j.
   rewrite predeqE => g; split=> [Ig j|Ig B'].
     apply: (Ig ((@^~ j) @^-1` (get (Pj j)))).
