@@ -1478,7 +1478,7 @@ Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
 Proof.
 rewrite !openE => fcont Dop x /= Dfx.
-by apply: fcont; [rewrite in_setE|apply: Dop].
+by apply: fcont; [rewrite inE|apply: Dop].
 Qed.
 
 Lemma cvg_fmap {T: topologicalType} {U : topologicalType}
@@ -1708,9 +1708,9 @@ Lemma finI_from1 (I : choiceType) T (D : set I) (f : I -> set T) i :
   D i -> finI_from D f (f i).
 Proof.
 move=> Di; exists [fset i]%fset.
-  by move=> ?; rewrite in_fsetE in_setE => /eqP->.
-rewrite predeqE => t; split=> [|fit]; first by apply; rewrite in_fsetE.
-by move=> ?; rewrite in_fsetE => /eqP->.
+  by move=> ?; rewrite !inE => /eqP->.
+rewrite predeqE => t; split=> [|fit]; first by apply; rewrite inE.
+by move=> ?; rewrite inE => /eqP->.
 Qed.
 
 Section TopologyOfSubbase.
@@ -1724,8 +1724,8 @@ move: i j t H H0 H1 H2 => A B t [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
 exists (A `&` B); split; last by split.
 exists (DA `|` DB)%fset; first by move=> i /fsetUP [/sDAD|/sDBD].
 rewrite predeqE => s; split=> [Ifs|[As Bs] i /fsetUP].
-  split; first by rewrite -AeIbA => i DAi; apply: Ifs; rewrite in_fsetE DAi.
-  by rewrite -BeIbB => i DBi; apply: Ifs; rewrite in_fsetE DBi orbC.
+  split; first by rewrite -AeIbA => i DAi; apply: Ifs; rewrite inE DAi.
+  by rewrite -BeIbB => i DBi; apply: Ifs; rewrite inE DBi orbC.
 by move=> [DAi|DBi];
   [have := As; rewrite -AeIbA; apply|have := Bs; rewrite -BeIbB; apply].
 Qed.
@@ -1956,14 +1956,14 @@ move=> Ffilt; split=> cvFt.
   apply: cvFt; exists B; split=> //; exists [set B]; last first.
     by rewrite predeqE => ?; split=> [[_ ->]|] //; exists B.
   move=> _ ->; exists [fset B]%fset.
-    by move=> ?; rewrite in_fsetE in_setE => /eqP->; exists i.
-  by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite in_fsetE // =>/eqP->.
+    by move=> ?; rewrite inE inE => /eqP->; exists i.
+  by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite inE // =>/eqP->.
 move=> A /=; rewrite (@locallyE sup_topologicalType).
 move=> [_ [[[B sB <-] [C BC Ct]] sUBA]].
 rewrite locally_filterE; apply: filterS sUBA _; apply: (@filterS _ _ _ C).
   by move=> ??; exists C.
 have /sB [D sD IDeC] := BC; rewrite -IDeC; apply: filter_bigI => E DE.
-have /sD := DE; rewrite in_setE => - [i _]; rewrite openE => Eop.
+have /sD := DE; rewrite inE => - [i _]; rewrite openE => Eop.
 by apply: (cvFt i); apply: Eop; move: Ct; rewrite -IDeC => /(_ _ DE).
 Qed.
 
@@ -2095,7 +2095,7 @@ Proof.
 rewrite !closedE=> f_continuous D_cl x /= xDf; apply: D_cl; apply: contrap xDf => fxD.
 have NDfx : ~ D (f x).
   by move: fxD; rewrite -locally_nearE locallyE => - [A [[??]]]; apply.
-by apply: f_continuous fxD; rewrite in_setE.
+by apply: f_continuous fxD; rewrite inE.
 Qed.
 
 Lemma closed_cvg_loc {T} {U : topologicalType} {F} {FF : ProperFilter F}
@@ -2197,7 +2197,7 @@ have GF : ProperFilter G.
   by move=> C /(filterI FfA) /filter_ex [_ [[p ? <-]]]; eexists p.
 case: (Aco G); first by exists (f @` A) => // ? [].
 move=> p [Ap clsGp]; exists (f p); split; first exact/imageP.
-move=> B C FB /fcont; rewrite in_setE /= locally_filterE => /(_ Ap) p_Cf.
+move=> B C FB /fcont; rewrite inE /= locally_filterE => /(_ Ap) p_Cf.
 have : G (A `&` f @^-1` B) by exists B.
 by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
 Qed.
@@ -2371,10 +2371,10 @@ move=> finIf; apply: (filter_from_proper (filter_from_filter _ _)).
 - by exists setT; exists fset0 => //; rewrite predeqE.
 - move=> A B [DA sDA IfA] [DB sDB IfB]; exists (A `&` B) => //.
   exists (DA `|` DB)%fset.
-    by move=> ?; rewrite in_fsetE => /orP [/sDA|/sDB].
+    by move=> ?; rewrite inE => /orP [/sDA|/sDB].
   rewrite -IfA -IfB predeqE => p; split=> [Ifp|[IfAp IfBp] i].
-    by split=> i Di; apply: Ifp; rewrite in_fsetE Di // orbC.
-  by rewrite in_fsetE => /orP []; [apply: IfAp|apply: IfBp].
+    by split=> i Di; apply: Ifp; rewrite inE Di // orbC.
+  by rewrite inE => /orP []; [apply: IfAp|apply: IfBp].
 - by move=> _ [?? <-]; apply: finIf.
 Qed.
 
@@ -2383,7 +2383,7 @@ Lemma filter_finI (T : pointedType) (F : set (set T)) (D : set (set T))
   ProperFilter F -> (forall A, D A -> F (f A)) -> finI D f.
 Proof.
 move=> FF sDFf D' sD; apply: (@filter_ex _ F); apply: filter_bigI.
-by move=> A /sD; rewrite in_setE => /sDFf.
+by move=> A /sD; rewrite inE => /sDFf.
 Qed.
 
 Section Covers.
@@ -2412,7 +2412,7 @@ rewrite predeqE => A; split=> [Aco I D f [g gop feAg] fcov|Aco I D f fop fcov].
     by move=> p /fcov [i Di]; rewrite feAg // => - []; exists i.
   have [D' sD sgcov] := Aco _ _ _ gop gcov.
   exists D' => // p Ap; have /sgcov [i D'i gip] := Ap.
-  by exists i => //; rewrite feAg //; have /sD := D'i; rewrite in_setE.
+  by exists i => //; rewrite feAg //; have /sD := D'i; rewrite inE.
 have Afcov : A `<=` \bigcup_(i in D) (A `&` f i).
   by move=> p Ap; have /fcov [i ??] := Ap; exists i.
 have Afop : open_fam_of A D (fun i => A `&` f i) by exists f.
@@ -2486,11 +2486,11 @@ have Anfop : open_fam_of A D (fun i => A `\` f i).
 have [D' sD sAnfcov] := Aco _ _ _ Anfop Anfcov.
 wlog [k D'k] : D' sD sAnfcov / exists i, i \in D'.
   move=> /(_ (D' `|` [fset j])%fset); apply.
-  - by move=> k; rewrite !in_fsetE => /orP [/sD|/eqP->] //; rewrite in_setE.
-  - by move=> p /sAnfcov [i D'i Anfip]; exists i => //; rewrite !in_fsetE D'i.
-  - by exists j; rewrite !in_fsetE orbC eq_refl.
+  - by move=> k; rewrite !inE => /orP [/sD|/eqP->] //; rewrite inE.
+  - by move=> p /sAnfcov [i D'i Anfip]; exists i => //; rewrite !inE D'i.
+  - by exists j; rewrite !inE orbC eq_refl.
 exists D' => /(_ sD) [p Ifp].
-have /Ifp := D'k; rewrite feAg; last by have /sD := D'k; rewrite in_setE.
+have /Ifp := D'k; rewrite feAg; last by have /sD := D'k; rewrite inE.
 by move=> [/sAnfcov [i D'i [_ nfip]] _]; have /Ifp := D'i.
 Qed.
 
@@ -2563,9 +2563,9 @@ rewrite propeqE; split => [T_filterT2|T_openT2] x y.
   move=> /asboolPn; rewrite -set0P => /negP; rewrite negbK => /eqP AIB_eq0.
   move: xA yB; rewrite !locallyE.
   move=> - [oA [[oA_open oAx] oAA]] [oB [[oB_open oBx] oBB]].
-  by exists (oA, oB); rewrite ?in_setE; split => //; apply: subsetI_eq0 AIB_eq0.
+  by exists (oA, oB); rewrite ?inE; split => //; apply: subsetI_eq0 AIB_eq0.
 apply: contrapTT => /eqP /T_openT2[[/=A B]].
-rewrite !in_setE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
+rewrite !inE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
 move=> /(_ A B (neigh_locally _) (neigh_locally _)).
 by rewrite -set0P => /(_ _ _)/negP; apply.
 Qed.
@@ -2918,12 +2918,12 @@ Lemma ball_hausdorff : hausdorff T =
   exists r : {posnum R} * {posnum R}, ball a r.1%:num `&` ball b r.2%:num == set0.
 Proof.
 rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
-  move=> A B; rewrite 2!in_setE => [[aA bB] [oA oB /eqP ABeq0]].
+  move=> A B; rewrite 2!inE => [[aA bB] [oA oB /eqP ABeq0]].
   have /locallyP[_/posnumP[r] rA]: locally a A by apply: neigh_locally.
   have /locallyP[_/posnumP[s] rB]: locally b B by apply: neigh_locally.
   by exists (r, s) => /=; rewrite (subsetI_eq0 _ _ ABeq0).
 move=> r s /eqP brs_eq0; exists ((ball a r%:num)^°, (ball b s%:num)^°) => /=.
-  split; by rewrite in_setE; apply: locally_singleton; apply: locally_interior;
+  split; by rewrite inE; apply: locally_singleton; apply: locally_interior;
             apply/locallyP; apply: in_filter_from.
 split; do ?by apply: open_interior.
 by rewrite (subsetI_eq0 _ _ brs_eq0)//; apply: interior_subset.
