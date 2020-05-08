@@ -1,5 +1,4 @@
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import fintype bigop ssralg matrix.
+From mathcomp Require Import all_ssreflect ssralg matrix finmap.
 Require Import boolp.
 
 (******************************************************************************)
@@ -162,11 +161,15 @@ Canonical Prop_eqType := EqType Prop gen_eqMixin.
 Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
 
 Definition set A := A -> Prop.
-Definition in_set T (P : set T) : pred T := [pred x | `[<P x>]].
+(* we use fun x => instead of pred to prevent inE from working *)
+(* we will then extend inE with in_setE to make this work      *)
+Definition in_set T (P : set T) : pred T := (fun x => `[<P x>]).
 Canonical set_predType T := @PredType T (set T) (@in_set T).
 
 Lemma in_setE T (P : set T) x : x \in P = P x :> Prop.
 Proof. by rewrite propeqE; split => [] /asboolP. Qed.
+
+Definition inE := (inE, in_setE).
 
 Bind Scope classical_set_scope with set.
 Local Open Scope classical_set_scope.
@@ -463,8 +466,8 @@ Lemma setUDr T : right_distributive (@setU T) (@setI T).
 Proof. by move=> X Y Z; rewrite ![X `|` _]setUC setUDl. Qed.
 
 Definition is_subset1 {A} (X : set A) := forall x y, X x -> X y -> x = y.
-Definition is_fun {A B} (f : A -> B -> Prop) := all (is_subset1 \o f).
-Definition is_total {A B} (f : A -> B -> Prop) := all (nonempty \o f).
+Definition is_fun {A B} (f : A -> B -> Prop) := Logic.all (is_subset1 \o f).
+Definition is_total {A B} (f : A -> B -> Prop) := Logic.all (nonempty \o f).
 Definition is_totalfun {A B} (f : A -> B -> Prop) :=
   forall x, nonempty (f x) /\ is_subset1 (f x).
 
