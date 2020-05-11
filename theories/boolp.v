@@ -554,6 +554,29 @@ apply: (asbool_equiv_eqP existsp_asboolPn);
   by split=> -[x h]; exists x; apply/negP.
 Qed.
 
+Lemma existsp_Pn (T : Type) (P : T -> Prop) :
+  (exists x : T, ~ P x) <-> (~ forall x : T, P x).
+Proof.
+split => [[x Px h]|/asboolP]; [exact: Px|].
+by rewrite asbool_neg => /existsp_asboolPn.
+Qed.
+
+Lemma forallp_Pn (T : Type) (P : T -> Prop) :
+  (forall x : T, ~ P x) <-> (~ exists x : T, P x).
+Proof.
+split => [h [x Px]|/asboolP]; [exact: (h x)|].
+by rewrite asbool_neg => /forallp_asboolPn.
+Qed.
+
+Lemma imply_Pn (P Q : Prop) : (P /\ ~ Q) <-> ~ (P -> Q).
+Proof.
+split => [[p nq pq]|/asboolP]; [exact/nq/pq|].
+by rewrite asbool_neg => /imply_asboolPn.
+Qed.
+
+Lemma orC (P Q : Prop) : (P \/ Q) = (Q \/ P).
+Proof. rewrite propeqE; tauto. Qed.
+
 (* -------------------------------------------------------------------- *)
 Definition xchooseb {T : choiceType} (P : pred T) (h : `[exists x, P x]) :=
   xchoose (existsbP P h).

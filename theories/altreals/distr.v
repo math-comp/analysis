@@ -157,8 +157,8 @@ Qed.
 Local Lemma isd3 : psum mu <= 1.
 Proof.
 rewrite psumE; [apply/isd1 | apply/isd2 | apply/sup_le_ub].
-  by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
-apply/ubP=> y /imsetbP[x ->]; rewrite big_fset_seq /=.
+  by exists 0, fset0; rewrite big_fset0.
+apply/ubP=> y [x ->]; rewrite big_fset_seq /=.
 by case: isd => _; apply; case: x => x /= /canonical_uniq.
 Qed.
 

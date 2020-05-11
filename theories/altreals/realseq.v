@@ -7,6 +7,7 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import mathcomp.bigenough.bigenough.
 Require Import xfinmap boolp ereal reals discrete.
+Require Import classical_sets.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -213,7 +214,7 @@ Proof. by move=> le_uv; apply/(@ncvg_le_from 0). Qed.
 Lemma ncvg_nbounded u x : ncvg u x%:E -> nbounded u.
 Proof.                   (* FIXME: factor out `sup` of a finite set *)
 case/(_ (B x 1)) => K cu; pose S := [seq `|u n| | n <- iota 0 K].
-pose M : R := sup [pred x in S]; pose e := Num.max (`|x| + 1) (M + 1).
+pose M : R := sup [set x : R | x \in S]; pose e := Num.max (`|x| + 1) (M + 1).
 apply/asboolP/nboundedP; exists e => [|n]; first by rewrite ltxU ltr_paddl.
 case: (ltnP n K); last first.
   move/cu; rewrite inE eclamp_id ?ltr01 // => ltunBx1.
@@ -534,18 +535,18 @@ Qed.
 Lemma nlim_sup (u : nat -> R) l :
     (forall n m, (n <= m)%N -> u n <= u m)
   -> ncvg u l%:E
-  -> sup [pred r | `[exists n, r == u n]] = l.
+  -> sup [set r | exists n, r = u n] = l.
 Proof.
 move=> mn_u cv_ul; set S := (X in sup X); suff: ncvg u (sup S)%:E.
   by move/nlimE; move/nlimE: cv_ul => -> [->].
 elim/nbh_finW=> /= e gt0_e; have sS: has_sup S.
   apply/has_supP; split; first exists (u 0%N).
-    by apply/imsetbP; exists 0%N.
-  exists l; apply/ubP => _ /imsetbP[n ->].
+    by exists 0%N.
+  exists l; apply/ubP => _ [n ->].
   by rewrite -lee_fin; apply/ncvg_homo_le.
-have /sup_adherent := sS => /(_ _ gt0_e) [r /imsetbP] [N ->] lt_uN.
+have /sup_adherent := sS => /(_ _ gt0_e) [r] [N ->] lt_uN.
 exists N => n le_Nn; rewrite !inE distrC ger0_norm ?subr_ge0.
-  by apply/sup_upper_bound => //; apply/imsetbP; exists n.
+  by apply/sup_upper_bound => //; exists n.
 by rewrite ltr_subl_addr -ltr_subl_addl (lt_le_trans lt_uN) ?mn_u.
 Qed.
 
