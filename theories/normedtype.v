@@ -2393,28 +2393,31 @@ Arguments cvg_distW {_ _ F FF}.
 Lemma R_complete (R : realType) (F : set (set R^o)) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF F_cauchy; apply/cvg_ex.
-pose D := \bigcap_(A in F) (down (mem A)).
+pose D := \bigcap_(A in F) (down A).
 have /cauchyP /(_ 1) [//|x0 x01] := F_cauchy.
-have D_has_sup : has_sup (mem D); first split.
-- exists (x0 - 1); rewrite inE => A FA.
-  apply/existsbP; near F => x; first exists x.
-    by rewrite ler_distW 1?distrC 1?ltW ?andbT ?inE //; near: x.
-- exists (x0 + 1); apply/forallbP => x; apply/implyP; rewrite inE.
-  move=> /(_ _ x01) /existsbP [y /andP[]]; rewrite inE.
+have D_has_sup : has_sup D; first split.
+- exists (x0 - 1) => A FA.
+  near F => x.
+  exists x.
+  split.
+    by near: x.
+  by rewrite ler_distW 1?distrC 1?ltW ?andbT //; near: x.
+- exists (x0 + 1) => x.
+  move=> /(_ _ x01) [y []].
   rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltW].
   by move=> /(le_trans _) yx01 _ /yx01.
-exists (sup (mem D)).
+exists (sup D).
 apply: (cvg_distW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl sup_upper_bound //=.
   apply: sup_le_ub => //; first by case: D_has_sup.
-  apply/forallbP => y; apply/implyP; rewrite inE.
-  move=> /(_ (ball_ (fun x => `| x |) x eps%:num) _) /existsbP [].
+  move=> y.
+  move=> /(_ (ball_ (fun x => `| x |) x eps%:num) _) [].
     by near: x; apply: nearP_dep; apply: F_cauchy.
-  move=> z /andP[]; rewrite inE /ball_ ltr_distl ltr_subl_addr.
+  move=> z []; rewrite /ball_ ltr_distl ltr_subl_addr.
   by move=> /andP [/ltW /(le_trans _) le_xeps _ /le_xeps].
-rewrite inE /D /= => A FA; near F => y.
-apply/existsbP; exists y; apply/andP; split.
-  by rewrite inE; near: y.
+rewrite /D /= => A FA; near F => y.
+exists y; split.
+  by near: y.
 rewrite ler_subl_addl -ler_subl_addr ltW //.
 suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
 by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
@@ -2589,7 +2592,7 @@ move=> /asboolPn; rewrite asbool_and => /nandP [/asboolPn /(_ (sAab _))|] //.
 move=> /imply_asboolPn [abx nAx] [C Cop AeabC].
 set Altx := fun y => y \in A `&` [set y | y < x].
 have Altxn0 : reals.nonempty Altx by exists y; rewrite inE.
-have xub_Altx : x \in ub Altx.
+have xub_Altx : (ub Altx) x.
   by apply/ubP => ?; rewrite inE => - [_ /ltW].
 have Altxsup : has_sup Altx by apply/has_supP; split=> //; exists x.
 set z := sup Altx.
@@ -2719,14 +2722,14 @@ rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
   by exists a => //; rewrite inE/= lexx leab.
 rewrite le_eqVlt => /orP [/eqP->|ltvfb].
   by exists b => //; rewrite inE/= lexx leab.
-set A := [pred c | (c <= b) && (f c <= v)].
+set A := [set c | (c <= b) && (f c <= v)].
 have An0 : reals.nonempty A by exists a; apply/andP; split=> //; apply: ltW.
 have supA : has_sup A.
   by apply/has_supP; split=> //; exists b; apply/ubP => ? /andP [].
 have supAab : sup A \in `[a, b].
   rewrite inE; apply/andP; split; last first.
     by apply: sup_le_ub => //; apply/ubP => ? /andP [].
-  by apply: sup_upper_bound => //; rewrite inE leab andTb ltW.
+  by apply: sup_upper_bound => //; rewrite /A leab andTb ltW.
 exists (sup A) => //; have lefsupv : f (sup A) <= v.
   rewrite leNgt; apply/negP => ltvfsup.
   have vltfsup : 0 < f (sup A) - v by rewrite subr_gt0.
@@ -2756,7 +2759,7 @@ rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
   by rewrite gtr0_norm ?subr_gt0 // ltr_add2r; apply: ltW.
 move=> t /andP [ltsupt /= letb]; rewrite ltNge; apply/negP => leftv.
 move: ltsupt => /=; rewrite ltNge => /negP; apply; apply: sup_upper_bound => //.
-by rewrite inE leftv letb.
+by rewrite /A leftv letb.
 Grab Existential Variables. all: end_near. Qed.
 
 (** Local properties in [R] *)

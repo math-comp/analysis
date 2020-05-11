@@ -1310,24 +1310,24 @@ Lemma EVT_max (R : realType) (f : R^o -> R^o) (a b : R^o) :
   a <= b -> {in `[a, b], continuous f} -> exists2 c, c \in `[a, b] &
   forall t, t \in `[a, b] -> f t <= f c.
 Proof.
-move=> leab fcont; set imf := [pred t | t \in f @` [set x | x \in `[a, b]]].
+move=> leab fcont; set imf := [set t | (f @` [set x | x \in `[a, b]]) t].
 have imf_sup : has_sup imf.
   apply/has_supP; split.
-    by exists (f a); rewrite !inE; apply/imageP; rewrite inE/= lexx.
+    by exists (f a) => //; rewrite /imf; apply/imageP; rewrite inE /= lexx.
   have [M [Mreal imfltM]] : bounded_set (f @` [set x | x \in `[a, b]] : set R^o).
     apply/compact_bounded/continuous_compact; last exact: segment_compact.
     by move=> ?; rewrite inE => /fcont.
-  exists (M + 1); apply/ubP => y; rewrite !inE => /imfltM yleM.
+  exists (M + 1); apply/ubP => y /imfltM yleM.
   apply: le_trans (yleM _ _); last by rewrite ltr_addl.
   by rewrite ler_norm.
 case: (pselect (exists2 c, c \in `[a, b] & f c = sup imf)) => [|imf_ltsup].
   move=> [c cab fceqsup]; exists c => // t tab.
-  by rewrite fceqsup; apply: sup_upper_bound=> //; rewrite !inE; apply: imageP.
+  by rewrite fceqsup; apply: sup_upper_bound=> //; apply: imageP.
 have {imf_ltsup} imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
   move=> t tab; case: (ltrP (f t) (sup imf))=> // supleft.
   rewrite falseE; apply: imf_ltsup; exists t => //.
   apply/eqP; rewrite eq_le supleft sup_upper_bound => //.
-  by rewrite !inE; apply/imageP.
+  by apply/imageP.
 have invf_continuous : {in `[a, b], continuous (fun t => (sup imf - f t)^-1 : R^o)}.
   move=> t tab; apply: cvgV.
     by rewrite neq_lt subr_gt0 orbC imf_ltsup.
@@ -1336,9 +1336,9 @@ have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] :
    bounded_set ((fun t => (sup imf - f t)^-1) @` [set x | x \in `[a, b]] : set R^o).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
   by move=> ?; rewrite inE => /invf_continuous.
-have : exists2 y, y \in imf & sup imf - k^-1 < y.
+have : exists2 y, imf y & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
-move=> [y]; rewrite !inE => -[t tab <-] {y}.
+move=> [y] -[t tab <-] {y}.
 rewrite ltr_subl_addr -ltr_subl_addl.
 suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
 rewrite -[X in _ < X]invrK ltf_pinv ?qualifE ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
