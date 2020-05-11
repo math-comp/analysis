@@ -290,6 +290,9 @@ apply eqEsubset => b.
 - by case=> -[] a Ha <-; apply imageP; [left | right].
 Qed.
 
+Lemma image_set0 T U (f : T -> U) : f @` set0 = set0.
+Proof. by apply eqEsubset => b // -[]. Qed.
+
 Lemma image_set1 T U (f : T -> U) (t : T) : f @` [set t] = [set f t].
 Proof. by apply eqEsubset => b; [case=> a' -> <- | move->; apply imageP]. Qed.
 
@@ -817,3 +820,44 @@ have /Amax <- : R' A (lift t).
   by have [Rt _] := repr_liftE t; apply: Rtrans Rt.
 by have [] := repr_liftE t.
 Qed.
+
+(* -------------------------------------------------------------------- *)
+Section ArchiBound.
+
+Variables (d : unit) (T : porderType d).
+Implicit Types E : set T.
+
+(* upper bound and lower bound sets. *)
+Definition ub E : set T := [set z | forall y, E y -> (y <= z)%O].
+Definition lb E : set T := [set z | forall y, E y -> (z <= y)%O].
+
+(* down set (i.e., generated order ideal) *)
+(* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
+Definition down E : set T := [set x | exists y, E y /\ (x <= y)%O].
+
+(* Real set supremum and infimum existence condition. *)
+Definition has_ub  E := nonempty (ub E).
+Definition has_sup E := nonempty E /\ has_ub E.
+Definition has_lb  E := nonempty (lb E).
+Definition has_inf E := nonempty E /\ has_lb E.
+
+Definition supremums E := [set x | ub E x /\ (forall y, ub E y -> (x <= y)%O)].
+
+Lemma supremums_set1 x : supremums [set x] = [set x].
+Proof.
+rewrite predeqE => y; split => [[]/(_ x erefl) xy /(_ x) yx|->{y}].
+  by apply/eqP; rewrite Order.POrderTheory.eq_le xy andbT yx // => z ->.
+by split=> [y -> //|y]; exact.
+Qed.
+
+Lemma is_subset1_supremums E : is_subset1 (supremums E).
+Proof.
+move=> x y [Ex xE] [Ey yE].
+move: {xE Ey}(xE _ Ey) {yE Ex}(yE _ Ex) => xy yx.
+by apply/eqP; rewrite Order.POrderTheory.eq_le xy.
+Qed.
+
+Definition supremum (x0 : T) E :=
+  if pselect (E !=set0) then xget x0 (supremums E) else x0.
+
+End ArchiBound.

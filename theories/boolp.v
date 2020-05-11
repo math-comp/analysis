@@ -561,6 +561,13 @@ split => [[x Px h]|/asboolP]; [exact: Px|].
 by rewrite asbool_neg => /existsp_asboolPn.
 Qed.
 
+Lemma existsp_P (T : Type) (P : T -> Prop) :
+  (exists x : T, P x) <-> (~ forall x : T, ~ P x).
+Proof.
+split => [[x Px h]|/asboolP]; [exact: (h x)|].
+by move/asboolP/existsp_Pn => [x /contrapT Px]; exists x.
+Qed.
+
 Lemma forallp_Pn (T : Type) (P : T -> Prop) :
   (forall x : T, ~ P x) <-> (~ exists x : T, P x).
 Proof.
