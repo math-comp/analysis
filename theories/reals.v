@@ -9,7 +9,7 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-(* ------- *) Require Import boolp ereal classical_sets.
+(* ------- *) Require Import boolp classical_sets.
 
 Require Import Setoid.
 
@@ -26,34 +26,6 @@ Delimit Scope real_scope with real.
 
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
-
-(* -------------------------------------------------------------------- *)
-Section ArchiBound.
-
-Variables (d : unit) (R : porderType d).
-
-(* set non-emptyness. *)
-Definition nonempty (E : set R) :=
-  exists x : R, E x.
-
-(* upper bound and lower bound sets. *)
-Definition ub (E : set R) : set R :=
-  [set z | forall y, E y -> (y <= z)%O].
-Definition lb (E : set R) : set R :=
-  [set z | forall y, E y -> (z <= y)%O].
-
-(* down set (i.e., generated order ideal) *)
-(* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
-Definition down (E : set R) : set R :=
-  [set x | exists y, E y /\ (x <= y)%O].
-
-(* Real set supremum and infimum existence condition. *)
-Definition has_ub  (E : set R) := nonempty (ub E).
-Definition has_sup (E : set R) := nonempty E /\ has_ub E.
-Definition has_lb  (E : set R) := nonempty (lb E).
-Definition has_inf (E : set R) := nonempty E /\ has_lb E.
-
-End ArchiBound.
 
 (* -------------------------------------------------------------------- *)
 Module Real.
@@ -625,69 +597,6 @@ rewrite predeqE => x; split.
 - by move=> Sx; apply/downP; exists x.
 Qed.
 
-(*Lemma eq_ub (S1 S2 : set R) : S2 =i S1 -> ub S2 =i ub S1.
-Proof.
-move=> eq_12 x; apply/ubP/ubP=> h y yS; apply/h;
-  by rewrite (eq_12, =^~ eq_12).
-Qed.
-
-Lemma eq_lb (S1 S2 : pred R) : S2 =i S1 -> lb S2 =i lb S1.
-Proof.
-by move=> eq_12 x; apply/lbP/lbP=> h y yS; apply/h; rewrite (eq_12, =^~ eq_12).
-Qed.
-
-Lemma eq_has_ub (S1 S2 : pred R) : S2 =i S1 -> has_ub S2 -> has_ub S1.
-Proof.
-move=> eq_12 /has_ubP[x /ubP xS2]; apply/has_ubP; exists x; apply/ubP => y yS1.
-by apply xS2; rewrite eq_12.
-Qed.
-
-Lemma eq_has_lb (S1 S2 : pred R) : S2 =i S1 -> has_lb S2 -> has_lb S1.
-Proof.
-move=> eq_12 /has_lbP[x /lbP xS2]; apply/has_lbP; exists x; apply/lbP => y yS1.
-by apply xS2; rewrite eq_12.
-Qed.
-
-Lemma eq_has_sup (S1 S2 : pred R) :
-  S2 =i S1 -> has_sup S2 -> has_sup S1.
-Proof.
-move=> eq_12 /has_supP[[x xS2] [u uS2]]; apply/has_supP; split.
-  by exists x; rewrite -eq_12. by exists u; rewrite (@eq_ub S2).
-Qed.
-
-Lemma eq_has_inf (S1 S2 : pred R) :
-  S2 =i S1 -> has_inf S2 -> has_inf S1.
-Proof.
-move=> eq_12 /has_inf_supN infS1; apply/has_inf_supN; apply: eq_has_sup infS1.
-by move=> ?; rewrite inE eq_12.
-Qed.
-
-Lemma eq_has_supb (S1 S2 : pred R) :
-  S2 =i S1 -> `[< has_sup S2 >] = `[< has_sup S1 >].
-Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_has_sup. Qed.
-
-Lemma eq_has_infb (S1 S2 : pred R) :
-  S2 =i S1 -> `[< has_inf S2 >] = `[< has_inf S1 >].
-Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_has_inf. Qed.
-
-Lemma eq_sup (S1 S2 : pred R) : S2 =i S1 -> sup S2 = sup S1.
-Proof.
-wlog: S1 S2 / (sup S1 <= sup S2) => [wlog|le_S1S2] eq_12.
-  by case: (lerP (sup S1) (sup S2)) => [|/ltW] /wlog ->.
-move: le_S1S2; rewrite le_eqVlt => /orP[/eqP->//|lt_S1S2].
-case/boolP: `[< has_sup S2 >] => [/asboolP|] h2; last first.
-  by rewrite !sup_out // => /asboolPn; rewrite -?(eq_has_supb eq_12).
-pose x : R := sup S2 - sup S1; have gt0_x: 0 < x by rewrite subr_gt0.
-have [e eS2] := sup_adherent h2 gt0_x; rewrite subKr => lt_S1e.
-have /(eq_has_sup eq_12) h1 := h2; have := eS2; rewrite eq_12.
-by move/sup_upper_bound=> -/(_ h1); rewrite leNgt lt_S1e.
-Qed.
-
-Lemma eq_inf (S1 S2 : pred R) : S2 =i S1 -> inf S2 = inf S1.
-Proof.
-by move=> eq_12; rewrite /inf; apply/congr1/eq_sup => ?; rewrite inE eq_12.
-Qed.
-*)
 Lemma has_sup_down (S : set R) : has_sup (down S) <-> has_sup S.
 Proof.
 split=> /has_supP [nzS nzubS]; apply/has_supP.
@@ -761,44 +670,3 @@ by move=> ltFxl; exists x=> //; apply/inf_lower_bound => //; exists x.
 Qed.
 
 End Sup.
-
-(* -------------------------------------------------------------------- *)
-(* TODO: There are many duplications with `order.v`. Remove them.       *)
-Section ERealOrderTheory.
-Context {R : realDomainType}.
-
-Implicit Types x y z : {ereal R}.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
-  by case: x => [||?]; first by rewrite ?eqe; apply: lm.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
-  by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
-  by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
-
-Lemma le0R (l : {ereal R}) : (0%:E <= l)%E -> (0 <= real_of_er(*TODO: coercion broken*) l).
-Proof. by case: l. Qed.
-
-Lemma lee_tofin (x y : R) : x <= y -> (x%:E <= y%:E)%E.
-Proof. by []. Qed.
-
-Lemma lte_tofin (x y : R) : x < y -> (x%:E < y%:E)%E.
-Proof. by []. Qed.
-
-Lemma lee_opp2 : {mono @eopp R : x y /~ (x <= y)%E}.
-Proof.
-move=> x y; case: x y => [?||] [?||] //; first by rewrite !lee_fin !ler_opp2.
-by rewrite lee_ninfty /Order.le /= realN num_real.
-by rewrite lee_pinfty /Order.le /= realN num_real.
-Qed.
-
-Lemma lte_opp2 : {mono @eopp R : x y /~ (x < y)%E}.
-Proof.
-move=> x y; case: x y => [?||] [?||] //; first by rewrite !lte_fin !ltr_opp2.
-by rewrite lte_ninfty /Order.lt /= realN num_real.
-by rewrite lte_pinfty /Order.lt /= realN num_real.
-Qed.
-
-End ERealOrderTheory.

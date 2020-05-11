@@ -2591,7 +2591,7 @@ have sAab : A `<=` [set x | x \in `[a, b]] by rewrite AeabB => ? [].
 move=> /asboolPn; rewrite asbool_and => /nandP [/asboolPn /(_ (sAab _))|] //.
 move=> /imply_asboolPn [abx nAx] [C Cop AeabC].
 set Altx := fun y => y \in A `&` [set y | y < x].
-have Altxn0 : reals.nonempty Altx by exists y; rewrite inE.
+have Altxn0 : nonempty Altx by exists y; rewrite inE.
 have xub_Altx : (ub Altx) x.
   by apply/ubP => ?; rewrite inE => - [_ /ltW].
 have Altxsup : has_sup Altx by apply/has_supP; split=> //; exists x.
@@ -2723,7 +2723,7 @@ rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
 rewrite le_eqVlt => /orP [/eqP->|ltvfb].
   by exists b => //; rewrite inE/= lexx leab.
 set A := [set c | (c <= b) && (f c <= v)].
-have An0 : reals.nonempty A by exists a; apply/andP; split=> //; apply: ltW.
+have An0 : nonempty A by exists a; apply/andP; split=> //; apply: ltW.
 have supA : has_sup A.
   by apply/has_supP; split=> //; exists b; apply/ubP => ? /andP [].
 have supAab : sup A \in `[a, b].
