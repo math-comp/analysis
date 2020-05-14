@@ -385,16 +385,16 @@ set quotR := (X in (X @ _)).
 pose mulv (h : R) := (h *: v).
 pose quotC (h : C) : C^o := h^-1 *: ((f \o shift c) h - f c).
 case: (EM (v = 0)) => [eqv0|/eqP vneq0].
-- apply (cvgP (l := (0:RComplex))).
+- apply (@cvgP _ _ _ (0:RComplex)).
   have eqnear0 : {near locally' (0:R^o), 0 =1 quotR}.
     exists 1 => // h _ _.
     by rewrite /quotR /shift eqv0 /= scaler0 add0r addrN scaler0.
   apply: cvg_trans.
-  + exact (cvg_eq_loc eqnear0).
-  + exact: cst_continuous.
+  + exact (near_eq_cvg eqnear0).
+  + exact: cvg_cst.
     (*cvg_cst from normedtype applies only to endofunctions
      That should NOT be the case, as one could use it insteas of cst_continuous *)
-- apply (cvgP (l := v *: l : RComplex)).
+- apply (@cvgP _ _ _ (v *: l : RComplex)).
   (*normedtype seem difficult to infer *)
   (*Est-ce que on peut faire cohabiter plusieurs normes ? *)
   have eqnear0 : {near (locally' (0 : R^o)), (v \*: quotC) \o mulv =1 quotR}.
@@ -402,7 +402,7 @@ case: (EM (v = 0)) => [eqv0|/eqP vneq0].
     rewrite scalerAl scalerCA -scalecAl mulrA -(mulrC v) mulfV // mul1r.
     by apply: (scalerI neq0h); rewrite !scalerA //= (divff neq0h).
   have subsetfilters : quotR @ locally' (0:R^o) `=>` (v \*: quotC) \o mulv @ locally' (0:R^o).
-    exact: (cvg_eq_loc eqnear0).
+    exact: (near_eq_cvg eqnear0).
   apply: cvg_trans subsetfilters _.
   suff : v \*: quotC \o mulv @ locally' (0:R^o) `=>` locally (v *: l).
     move/cvg_trans; apply.
@@ -439,7 +439,7 @@ pose quotiR := fun h : R => h^-1 *: ((f \o shift c) (h *: 'i%C) - f c): C^o. (* 
 have eqnear0x : {near (locally' (0:R^o)), quotC \o (fun h => h *: 1%:C) =1 quotR}.
   exists 1; first by [].
   by move => h  _ _ //=; simpc; rewrite /quotC /quotR real_complex_inv -scalecr; simpc.
-pose subsetfiltersx := cvg_eq_loc eqnear0x.
+pose subsetfiltersx := near_eq_cvg eqnear0x.
 have -> : lim (quotR @ (locally' (0:R^o))) = lim (quotC @ (locally' (0:C^o))).
   apply: (@cvg_map_lim _ _) => //. (*IMP*)
     exact: Proper_locally'_numFieldType.
@@ -463,7 +463,7 @@ have eqnear0y : {near (locally' (0:R^o)), 'i \*:quotC \o ( fun h => h *: 'i%C) =
   rewrite /quotC /quotiR (Im_mul h) invcM.
   rewrite scalerA real_complex_inv Im_inv !scalecr; simpc; rewrite (Im_mul h).
   by rewrite !real_complexE.
-pose subsetfiltersy := (cvg_eq_loc eqnear0y).
+pose subsetfiltersy := (near_eq_cvg eqnear0y).
 have properlocally' : ProperFilter (locally'(0:C^o)).
   exact: Proper_locally'_numFieldType.
 have <- : lim (quotiR @ (locally' (0:R^o))) =
@@ -540,7 +540,7 @@ move: (der (c + a%:C)  'i); simpl => /cvg_ex [//= la /cvg_lim //= Dla].
 move: (der (c + a%:C) 'i) => /derivable_locallyxP.
 have Htmp : ProperFilter ((fun h : R => h^-1 *: (f (h *: 'i%C + (c + a%:C)) - f (c + a%:C))) @ locally' (0:R^o)).
   by apply fmap_proper_filter; apply Proper_locally'_numFieldType.
-move: (Dla (@normedModType_hausdorff _ _) Htmp) => {}Dla.
+move: (Dla (@norm_hausdorff _ _) Htmp) => {}Dla.
 rewrite /derive //= Dla => oR.
 have -> : (a +i* b) = (a%:C + b*: 'i%C) by simpc.
 rewrite addrA oR.
