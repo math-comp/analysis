@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
 From mathcomp Require Import seq fintype bigop order ssralg ssrnum finmap matrix.
-Require Import boolp classical_sets posnum.
+Require Import boolp reals classical_sets posnum.
 
 (******************************************************************************)
 (* This file develops tools for the manipulation of filters and basic         *)
@@ -4289,6 +4289,17 @@ Definition ball_
   [set y | norm (x - y) < e].
 Arguments ball_ {R} {V} norm x e%R y /.
 
+Global Instance ball_filter (R : realFieldType) (t : R) : Filter
+  [set P | exists2 i : R, 0 < i & ball_ Num.norm t i `<=` P].
+Proof.
+apply Build_Filter; [by exists 1 | move=> P Q | move=> P Q PQ]; rewrite /mkset.
+- move=> -[x x0 xP] [y ? yQ]; exists (Num.min x y); first by rewrite lt_minr x0.
+  move=> z tz; split.
+  by apply xP; rewrite /= (lt_le_trans tz) // le_minl lexx.
+  by apply yQ; rewrite /= (lt_le_trans tz) // le_minl lexx orbT.
+- by move=> -[x ? xP]; exists x => //; apply: (subset_trans xP).
+Qed.
+
 Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
   : filteredType R := Filtered.Pack (Filtered.Class
     (@Pointed.class (pointed_of_zmodule R))
@@ -4321,26 +4332,200 @@ Qed.
 End pseudoMetric_of_normedDomain.
 
 Section numFieldType_canonical.
-Variable R : numFieldType.
-(*Canonical topological_of_numFieldType := [numFieldType of R^o].*)
-Canonical numFieldType_pointedType :=
-  [pointedType of R^o for pointed_of_zmodule R].
-Canonical numFieldType_filteredType :=
-  [filteredType R of R^o for filtered_of_normedZmod R].
-Canonical numFieldType_topologicalType : topologicalType := TopologicalType R^o
+
+Canonical numFieldType_pointedType (R: numFieldType) :=
+  [pointedType of R for pointed_of_zmodule R].
+Canonical numFieldType_filteredType (R: numFieldType) :=
+  [filteredType R of R for filtered_of_normedZmod R].
+Canonical numFieldType_topologicalType (R: numFieldType) : topologicalType :=
+  TopologicalType R
   (topologyOfEntourageMixin
     (uniformityOfBallMixin
       (@nbhs_ball_normE _ [normedZmodType R of R])
       (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
-Canonical numFieldType_uniformType : uniformType := UniformType R^o
+Canonical numFieldType_uniformType (R: numFieldType) : uniformType := UniformType R
   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
     (pseudoMetric_of_normedDomain [normedZmodType R of R])).
-Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R
-  (Uniform.class numFieldType_uniformType) (@pseudoMetric_of_normedDomain R R)).
-Definition numFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
+Canonical numFieldType_pseudoMetricType (R: numFieldType)
+  := @PseudoMetric.Pack R R (@PseudoMetric.Class R R
+     (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)).
+(* (*NEW*) *)
+
+Canonical numClosedFieldType_pointedType (R: numClosedFieldType) :=
+  [pointedType of R for [pointedType of [numFieldType of R]]].
+Canonical numClosedFieldType_filteredType (R: numClosedFieldType) :=
+  [filteredType _ of R for [filteredType _ of [numFieldType of R]]].
+Canonical numClosedFieldType_topologicalType (R: numClosedFieldType) : topologicalType :=
+  (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *)
+  (*leads to ambiguous path *)
+  TopologicalType R
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ [normedZmodType R of R])
+      (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+Canonical numClosedFieldType_uniformType (R: numClosedFieldType) : uniformType := UniformType R
+  (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
+    (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+Canonical numClosedFieldType_pseudoMetricType (R: numClosedFieldType) :=
+ (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *)
+ (* leads to ambiguous path *)
+  @PseudoMetric.Pack R R (@PseudoMetric.Class R R
+     (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)).
+
+Canonical realFieldType_pointedType (R: realFieldType) :=
+  [pointedType of R for [pointedType of [numFieldType of R]]].
+Canonical realFieldType_filteredType (R: realFieldType) :=
+ [filteredType _ of R for [filteredType _ of [numFieldType of R]]].
+Canonical realFieldType_topologicalType (R: realFieldType) : topologicalType :=
+  (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *)
+  (*leads to ambiguous path *)
+  TopologicalType R
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ [normedZmodType R of R])
+      (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+Canonical realFieldType_uniformType (R: realFieldType) : uniformType := UniformType R
+  (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
+    (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+Canonical realFieldType_pseudoMetricType (R: realFieldType) :=
+ (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *)
+ (* leads to ambiguous path *)
+   @PseudoMetric.Pack R R (@PseudoMetric.Class R R
+     (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)).
+
+Canonical archiFieldType_pointedType (R: archiFieldType) :=
+  [pointedType of R for [pointedType of [numFieldType of R]]].
+Canonical archiFieldType_filteredType (R: archiFieldType) :=
+  [filteredType _ of R for [filteredType _ of [numFieldType of R]]].
+Canonical archiFieldType_topologicalType (R: archiFieldType) : topologicalType :=
+ (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *)
+  (*leads to ambiguous path *)
+ TopologicalType R
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ [normedZmodType R of R])
+      (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+Canonical archiFieldType_uniformType (R: archiFieldType) : uniformType := UniformType R
+  (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
+    (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+Canonical archiFieldType_pseudoMetricType (R: archiFieldType):=
+   (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *)
+ (* leads to ambiguous path *)
+  @PseudoMetric.Pack R R (@PseudoMetric.Class R R
+     (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)).
+
+Canonical rcfType_pointedType (R: rcfType) :=
+  [pointedType of R for [pointedType of [numFieldType of R]]].
+Canonical rcfType_filteredType (R: rcfType) :=
+  [filteredType R of R for filtered_of_normedZmod R].
+Canonical rcfType_topologicalType (R: rcfType) : topologicalType :=
+ (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *)
+  (*leads to ambiguous path *)
+TopologicalType R
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ [normedZmodType R of R])
+      (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+Canonical rcfType_uniformType (R: rcfType) : uniformType := UniformType R
+  (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
+    (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+Canonical rcfType_pseudoMetricType (R: rcfType) :=
+  (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *)
+ (* leads to ambiguous path *)
+ @PseudoMetric.Pack R R (@PseudoMetric.Class R R
+     (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)).
+
+Canonical realType_pointedType (R: realType) :=
+  [pointedType of R for [pointedType of [numFieldType of R]]].
+Canonical realType_filteredType (R: realType) :=
+  [filteredType _ of R for [filteredType _ of [numFieldType of R]]].
+Canonical realType_topologicalType (R: realType) : topologicalType :=
+ (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *)
+  (*leads to ambiguous path *)
+ TopologicalType R
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ [normedZmodType R of R])
+      (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+Canonical realType_uniformType (R: realType) : uniformType := UniformType R
+  (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
+    (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+Canonical realType_pseudoMetricType (R: realType) :=
+  (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *)
+ (* leads to ambiguous path *)
+@PseudoMetric.Pack R R (@PseudoMetric.Class R R
+     (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)).
+
+Coercion numFieldType_pointedType : numFieldType >-> pointedType.
+Coercion numFieldType_filteredType : numFieldType >-> filteredType.
+Coercion numFieldType_topologicalType : numFieldType >-> topologicalType.
+Coercion numFieldType_uniformType : numFieldType >-> uniformType.
+Coercion numFieldType_pseudoMetricType : numFieldType >-> pseudoMetricType.
+
+Coercion numClosedFieldType_pointedType : numClosedFieldType >-> pointedType.
+Coercion numClosedFieldType_filteredType : numClosedFieldType >-> filteredType.
+Coercion numClosedFieldType_topologicalType : numClosedFieldType >-> topologicalType.
+Coercion numClosedFieldType_uniformType : numClosedFieldType >-> uniformType.
+Coercion numClosedFieldType_pseudoMetricType : numClosedFieldType >-> pseudoMetricType.
+
+Coercion realFieldType_pointedType : realFieldType >-> pointedType.
+Coercion realFieldType_filteredType : realFieldType >-> filteredType.
+Coercion realFieldType_topologicalType : realFieldType >-> topologicalType.
+Coercion realFieldType_uniformType : realFieldType >-> uniformType.
+Coercion realFieldType_pseudoMetricType : realFieldType >-> pseudoMetricType.
+
+Coercion archiFieldType_pointedType : archiFieldType >-> pointedType.
+Coercion archiFieldType_filteredType : archiFieldType >-> filteredType.
+Coercion archiFieldType_topologicalType : archiFieldType >-> topologicalType.
+Coercion archiFieldType_uniformType : archiFieldType >-> uniformType.
+Coercion archiFieldType_pseudoMetricType : archiFieldType >-> pseudoMetricType.
+
+Coercion rcfType_pointedType : rcfType >-> pointedType.
+Coercion rcfType_filteredType : rcfType >-> filteredType.
+Coercion rcfType_topologicalType : rcfType >-> topologicalType.
+Coercion rcfType_uniformType : rcfType >-> uniformType.
+Coercion rcfType_pseudoMetricType : rcfType >-> pseudoMetricType.
+
+Coercion realType_pointedType : realType >-> pointedType.
+Coercion realType_filteredType : realType >-> filteredType.
+Coercion realType_topologicalType : realType >-> topologicalType.
+Coercion realType_uniformType : realType >-> uniformType.
+Coercion realType_pseudoMetricType : realType >-> pseudoMetricType.
+
+
+(* Canonical numFieldType_regular_pointedType (R : numFieldType) := *)
+(*   [pointedType of R^o for pointed_of_zmodule R]. *)
+(* Canonical numFieldType_regular_filteredType (R : numFieldType) := *)
+(*   [filteredType R of R^o for filtered_of_normedZmod R]. *)
+(* Canonical numFieldType_regular_topologicalType (R : numFieldType) : topologicalType := *)
+(*   TopologicalType R^o (topologyOfEntourageMixin  (uniformityOfBallMixin *)
+(*       (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *)
+(* Canonical numFieldType_regular_uniformType (R : numFieldType) : uniformType := *)
+(*   UniformType R^o (uniformityOfBallMixin *)
+(*     (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *)
+(* Canonical numFieldType_regular_pseudoMetricType (R : numFieldType) := *)
+(*   @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R *)
+(*   (Uniform.class (numFieldType_regular_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *)
+
+Definition numFieldType_lalgType (R : numFieldType) : lalgType R := @GRing.regular_lalgType R.
+
+(* Definition numFieldType_regular_lalgType (R : numFieldType) : lalgType R := @GRing.regular_lalgType R. *)
 End numFieldType_canonical.
 
-Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R^o) :
+Global Instance Proper_nbhs'_regular_numFieldType (R : numFieldType) (x : R^o) :
+  ProperFilter (nbhs' x).
+Proof.
+apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
+exists (x + e%:num / 2)%R; apply: Ae; last first.
+  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
+rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
+by rewrite {2}(splitr e%:num) ltr_spaddl.
+Qed.
+
+
+Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R) :
   ProperFilter (nbhs' x).
 Proof.
 apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].

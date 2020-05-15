@@ -1,9 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
-From mathcomp Require Import matrix interval zmodp.
+From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 Require Import boolp ereal reals.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
+
 
 (******************************************************************************)
 (* This file extends the topological hierarchy with norm-related notions.     *)
@@ -87,10 +88,366 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 
-Lemma nbhsN (R : numFieldType) (x : R^o) :
+Definition ball_
+  (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V) (e : R) :=
+  [set y | norm (x - y) < e].
+Arguments ball_ {R} {V} norm x e%R y /.
+
+Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
+
+Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
+  : filteredType R := Filtered.Pack (Filtered.Class
+    (@Pointed.class (pointed_of_zmodule R))
+    (nbhs_ball_ (ball_ (fun x => `|x|)))).
+
+Section pseudoMetric_of_normedDomain.
+Variables (K : numDomainType) (R : normedZmodType K).
+Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ normr x e x.
+Proof. by move=> ? /=; rewrite subrr normr0. Qed.
+Lemma ball_norm_symmetric (x y : R) (e : K) :
+  ball_ normr x e y -> ball_ normr y e x.
+Proof. by rewrite /= distrC. Qed.
+Lemma ball_norm_triangle (x y z : R) (e1 e2 : K) :
+  ball_ normr x e1 y -> ball_ normr y e2 z -> ball_ normr x (e1 + e2) z.
+Proof.
+move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
+by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
+Qed.
+Definition pseudoMetric_of_normedDomain
+  : PseudoMetric.mixin_of K (@entourage_ K R R (ball_ (fun x => `|x|)))
+  := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+
+Lemma nbhs_ball_normE :
+  @nbhs_ball_ K R R (ball_ normr) = nbhs_ (entourage_ (ball_ normr)).
+Proof.
+rewrite /nbhs_ entourage_E predeq2E => x A; split.
+  move=> [e egt0 sbeA].
+  by exists [set xy | ball_ normr xy.1 e xy.2] => //; exists e.
+by move=> [E [e egt0 sbeE] sEA]; exists e => // ??; apply/sEA/sbeE.
+Qed.
+End pseudoMetric_of_normedDomain.
+
+Section vecspace_of_numfield. (*NEW*)
+  (*TODO: put all results on ^o in a separate module (C. Cohen suggestion) *)
+  (* !! Redundant with ^o *)
+  (* While there may not be a canonical algebra on each ring, we assume here  *)
+  (* there is a canonical vecspace on each field. We make use of the          *)
+  (* canonical algebraic structures defined on regular algebras in mathcomp   *)
+
+Canonical numField_lmodType (K : numFieldType) :=
+  [lmodType K of K for [lmodType K of K^o]].
+Canonical numField_lalgType (K : numFieldType) :=
+  [lalgType K of K for [lalgType K of K^o]].
+Canonical numField_algType (K : numFieldType) :=
+  [algType K of K for [algType K of K^o]].
+Canonical numField_comAlgType (K : numFieldType) :=   [comAlgType K of K].
+Canonical numField_unitAlgType (K : numFieldType) := [unitAlgType K of K].
+Canonical numField_comUnitAlgType (K : numFieldType) := [comUnitAlgType K of K].
+Canonical numField_vectType (K : numFieldType) :=
+  [vectType K of K for [vectType K of K^o]].
+Canonical numField_falgType (K : numFieldType) := [FalgType K of K].
+Canonical numField_fieldExtType (K : numFieldType) :=
+  [fieldExtType K of K for regular_fieldExtType K].
+
+Canonical numClosedField_lmodType (K : numClosedFieldType) :=
+  [lmodType K of K for [lmodType K of K^o]].
+Canonical numClosedField_lalgType (K : numClosedFieldType) :=
+  [lalgType K of K for [lalgType K of K^o]].
+Canonical numClosedField_algType (K : numClosedFieldType) :=
+  [algType K of K for [algType K of K^o]].
+Canonical numClosedField_comAlgType (K : numClosedFieldType) :=
+  [comAlgType K of K].
+Canonical numClosedField_unitAlgType (K : numClosedFieldType) :=
+  [unitAlgType K of K].
+Canonical numClosedField_comUnitAlgType (K : numClosedFieldType) :=
+  [comUnitAlgType K of K].
+Canonical numClosedField_vectType (K : numClosedFieldType) :=
+  [vectType K of K for [vectType K of K^o]].
+Canonical numClosedField_falgType (K : numClosedFieldType) := [FalgType K of K].
+Canonical numClosedField_fieldExtType (K : numClosedFieldType) :=
+  [fieldExtType K of K for regular_fieldExtType K].
+
+Canonical realField_lmodType (K : realFieldType) :=
+  [lmodType K of K for [lmodType K of K^o]].
+Canonical realField_lalgType (K : realFieldType) :=
+  [lalgType K of K for [lalgType K of K^o]].
+Canonical realField_algType (K : realFieldType) :=
+  [algType K of K for [algType K of K^o]].
+Canonical realField_comAlgType (K : realFieldType) := [comAlgType K of K].
+Canonical realField_unitAlgType (K : realFieldType) := [unitAlgType K of K].
+Canonical realField_comUnitAlgType (K : realFieldType) :=
+  [comUnitAlgType K of K].
+Canonical realField_vectType (K : realFieldType) :=
+  [vectType K of K for [vectType K of K^o]].
+Canonical realField_falgType (K : realFieldType) := [FalgType K of K].
+Canonical realField_fieldExtType (K : realFieldType) :=
+  [fieldExtType K of K for regular_fieldExtType K].
+
+Canonical archiField_lmodType (K : archiFieldType) :=
+  [lmodType K of K for [lmodType K of K^o]].
+Canonical archiField_lalgType (K : archiFieldType) :=
+  [lalgType K of K for [lalgType K of K^o]].
+Canonical archiField_algType (K : archiFieldType) :=
+  [algType K of K for [algType K of K^o]].
+Canonical archiField_comAlgType (K : archiFieldType) := [comAlgType K of K].
+Canonical archiField_unitAlgType (K : archiFieldType) := [unitAlgType K of K].
+Canonical archiField_comUnitAlgType (K : archiFieldType) :=
+  [comUnitAlgType K of K].
+Canonical archiField_vectType (K : archiFieldType) :=
+  [vectType K of K for [vectType K of K^o]].
+Canonical archiField_falgType (K : archiFieldType) := [FalgType K of K].
+Canonical archiField_fieldExtType (K : archiFieldType) :=
+  [fieldExtType K of K for regular_fieldExtType K].
+
+Canonical rcf_lmodType (K : rcfType) :=
+  [lmodType K of K for [lmodType K of K^o]].
+Canonical rcf_lalgType (K : rcfType) :=
+  [lalgType K of K for [lalgType K of K^o]].
+Canonical rcf_algType (K : rcfType) := [algType K of K for [algType K of K^o]].
+Canonical rcf_comAlgType (K : rcfType) := [comAlgType K of K].
+Canonical rcf_unitAlgType (K : rcfType) := [unitAlgType K of K] .
+Canonical rcf_comUnitAlgType (K : rcfType) := [comUnitAlgType K of K].
+Canonical rcf_vectType (K : rcfType) :=
+  [vectType K of K for [vectType K of K^o]].
+Canonical rcf_falgType (K : rcfType) := [FalgType K of K].
+Canonical rcf_fieldExtType (K : rcfType) :=
+  [fieldExtType K of K for regular_fieldExtType K].
+
+Canonical real_lmodType (K : realType) :=
+  [lmodType K of K for [lmodType K of K^o]].
+Canonical real_lalgType (K : realType) :=
+  [lalgType K of K for [lalgType K of K^o]].
+Canonical real_algType (K : realType) :=
+  [algType K of K for [algType K of K^o]].
+Canonical real_comAlgType (K : realType) := [comAlgType K of K].
+Canonical real_unitAlgType (K : realType) := [unitAlgType K of K].
+Canonical real_comUnitAlgType (K : realType) := [comUnitAlgType K of K].
+Canonical real_vectType (K : realType) :=
+  [vectType K of K for [vectType K of K^o]].
+Canonical real_falgType (K : realType) := [FalgType K of K].
+Canonical real_fieldExtType (K : realType) :=
+  [fieldExtType K of K for regular_fieldExtType K].
+
+
+Coercion numField_lmodType : numFieldType >-> lmodType.
+Coercion numField_lalgType : numFieldType >-> lalgType.
+Coercion numField_comAlgType : numFieldType >-> comAlgType. (* ambiguous path *)
+Coercion numField_unitAlgType : numFieldType >-> unitAlgType.
+Coercion numField_comUnitAlgType : numFieldType >-> comUnitAlgType. (* ambiguous path *)
+Coercion numField_vectType  : numFieldType >-> vectType.
+Coercion numField_falgType : numFieldType >-> FalgType.
+Coercion numField_fieldExtType : numFieldType >-> fieldExtType. (* ambiguous path *)
+
+
+
+(* TODO : other coercions *)
+
+End vecspace_of_numfield.
+
+
+
+(* Section numField_topological. (*New *) *) (** included in topology.v *)
+(* (* Variable  (R: numFieldType). *) *)
+(* (* Canonical numFieldType_pointedType (R: numFieldType) := *) *)
+(* (*   [pointedType of R for pointed_of_zmodule R]. *) *)
+(* (* Canonical numFieldType_filteredType (R: numFieldType) := *) *)
+(* (*   [filteredType R of R for filtered_of_normedZmod R]. *) *)
+(* (* Canonical numFieldType_topologicalType (R: numFieldType) : topologicalType := TopologicalType R *) *)
+(* (*   (topologyOfEntourageMixin *) *)
+(* (*     (uniformityOfBallMixin *) *)
+(* (*       (@nbhs_ball_normE _ [normedZmodType R of R]) *) *)
+(* (*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *) *)
+(* (* Canonical numFieldType_uniformType (R: numFieldType) : uniformType := UniformType R *) *)
+(* (*   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R]) *) *)
+(* (*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *) *)
+(* (* Canonical numFieldType_pseudoMetricType (R: numFieldType) *) *)
+(* (*   := @PseudoMetric.Pack R R (@PseudoMetric.Class R R *) *)
+(* (*      (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *) *)
+(* (** the previous is included in topology.v **) *)
+
+(* Canonical numClosedFieldType_pointedType (R: numClosedFieldType) := *)
+(*   [pointedType of R for [pointedType of [numFieldType of R]]]. *)
+(* Canonical numClosedFieldType_filteredType (R: numClosedFieldType) := *)
+(*   [filteredType _ of R for [filteredType _ of [numFieldType of R]]]. *)
+(* Canonical numClosedFieldType_topologicalType (R: numClosedFieldType) : topologicalType := *)
+(*   (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *) *)
+(*   (*leads to ambiguous path *) *)
+(*   TopologicalType R *)
+(*   (topologyOfEntourageMixin *)
+(*     (uniformityOfBallMixin *)
+(*       (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *)
+(* Canonical numClosedFieldType_uniformType (R: numClosedFieldType) : uniformType := UniformType R *)
+(*   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *)
+(* Canonical numClosedFieldType_pseudoMetricType (R: numClosedFieldType) := *)
+(*  (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *) *)
+(*  (* leads to ambiguous path *) *)
+(*   @PseudoMetric.Pack R R (@PseudoMetric.Class R R *)
+(*      (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *)
+
+(* Canonical realFieldType_pointedType (R: realFieldType) := *)
+(*   [pointedType of R for [pointedType of [numFieldType of R]]]. *)
+(* Canonical realFieldType_filteredType (R: realFieldType) := *)
+(*  [filteredType _ of R for [filteredType _ of [numFieldType of R]]]. *)
+(* Canonical realFieldType_topologicalType (R: realFieldType) : topologicalType := *)
+(*   (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *) *)
+(*   (*leads to ambiguous path *) *)
+(*   TopologicalType R *)
+(*   (topologyOfEntourageMixin *)
+(*     (uniformityOfBallMixin *)
+(*       (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *)
+(* Canonical realFieldType_uniformType (R: realFieldType) : uniformType := UniformType R *)
+(*   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *)
+(* Canonical realFieldType_pseudoMetricType (R: realFieldType) := *)
+(*  (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *) *)
+(*  (* leads to ambiguous path *) *)
+(*    @PseudoMetric.Pack R R (@PseudoMetric.Class R R *)
+(*      (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *)
+
+(* Canonical archiFieldType_pointedType (R: archiFieldType) := *)
+(*   [pointedType of R for [pointedType of [numFieldType of R]]]. *)
+(* Canonical archiFieldType_filteredType (R: archiFieldType) := *)
+(*   [filteredType _ of R for [filteredType _ of [numFieldType of R]]]. *)
+(* Canonical archiFieldType_topologicalType (R: archiFieldType) : topologicalType := *)
+(*  (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *) *)
+(*   (*leads to ambiguous path *) *)
+(*  TopologicalType R *)
+(*   (topologyOfEntourageMixin *)
+(*     (uniformityOfBallMixin *)
+(*       (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *)
+(* Canonical archiFieldType_uniformType (R: archiFieldType) : uniformType := UniformType R *)
+(*   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *)
+(* Canonical archiFieldType_pseudoMetricType (R: archiFieldType):= *)
+(*    (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *) *)
+(*  (* leads to ambiguous path *) *)
+(*   @PseudoMetric.Pack R R (@PseudoMetric.Class R R *)
+(*      (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *)
+
+(* Canonical rcfType_pointedType (R: rcfType) := *)
+(*   [pointedType of R for [pointedType of [numFieldType of R]]]. *)
+(* Canonical rcfType_filteredType (R: rcfType) := *)
+(*   [filteredType R of R for filtered_of_normedZmod R]. *)
+(* Canonical rcfType_topologicalType (R: rcfType) : topologicalType := *)
+(*  (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *) *)
+(*   (*leads to ambiguous path *) *)
+(* TopologicalType R *)
+(*   (topologyOfEntourageMixin *)
+(*     (uniformityOfBallMixin *)
+(*       (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *)
+(* Canonical rcfType_uniformType (R: rcfType) : uniformType := UniformType R *)
+(*   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *)
+(* Canonical rcfType_pseudoMetricType (R: rcfType) := *)
+(*   (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *) *)
+(*  (* leads to ambiguous path *) *)
+(*  @PseudoMetric.Pack R R (@PseudoMetric.Class R R *)
+(*      (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *)
+
+(* Canonical realType_pointedType (R: realType) := *)
+(*   [pointedType of R for [pointedType of [numFieldType of R]]]. *)
+(* Canonical realType_filteredType (R: realType) := *)
+(*   [filteredType _ of R for [filteredType _ of [numFieldType of R]]]. *)
+(* Canonical realType_topologicalType (R: realType) : topologicalType := *)
+(*  (* [topologicalType of R for [topologicalType of [numFieldType of R]]]. *) *)
+(*   (*leads to ambiguous path *) *)
+(*  TopologicalType R *)
+(*   (topologyOfEntourageMixin *)
+(*     (uniformityOfBallMixin *)
+(*       (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *)
+(* Canonical realType_uniformType (R: realType) : uniformType := UniformType R *)
+(*   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *)
+(* Canonical realType_pseudoMetricType (R: realType) := *)
+(*   (* [pseudoMetricType _ of R for [pseudoMetricType _ of [numFieldType of R]]]. *) *)
+(*  (* leads to ambiguous path *) *)
+(* @PseudoMetric.Pack R R (@PseudoMetric.Class R R *)
+(*      (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *)
+
+(* Coercion numFieldType_pointedType : numFieldType >-> pointedType. *)
+(* Coercion numFieldType_filteredType : numFieldType >-> filteredType. *)
+(* Coercion numFieldType_topologicalType : numFieldType >-> topologicalType. *)
+(* Coercion numFieldType_uniformType : numFieldType >-> uniformType. *)
+(* Coercion numFieldType_pseudoMetricType : numFieldType >-> pseudoMetricType. *)
+
+(* Coercion numClosedFieldType_pointedType : numClosedFieldType >-> pointedType. *)
+(* Coercion numClosedFieldType_filteredType : numClosedFieldType >-> filteredType. *)
+(* Coercion numClosedFieldType_topologicalType : numClosedFieldType >-> topologicalType. *)
+(* Coercion numClosedFieldType_uniformType : numClosedFieldType >-> uniformType. *)
+(* Coercion numClosedFieldType_pseudoMetricType : numClosedFieldType >-> pseudoMetricType. *)
+
+(* Coercion realFieldType_pointedType : realFieldType >-> pointedType. *)
+(* Coercion realFieldType_filteredType : realFieldType >-> filteredType. *)
+(* Coercion realFieldType_topologicalType : realFieldType >-> topologicalType. *)
+(* Coercion realFieldType_uniformType : realFieldType >-> uniformType. *)
+(* Coercion realFieldType_pseudoMetricType : realFieldType >-> pseudoMetricType. *)
+
+(* Coercion archiFieldType_pointedType : archiFieldType >-> pointedType. *)
+(* Coercion archiFieldType_filteredType : archiFieldType >-> filteredType. *)
+(* Coercion archiFieldType_topologicalType : archiFieldType >-> topologicalType. *)
+(* Coercion archiFieldType_uniformType : archiFieldType >-> uniformType. *)
+(* Coercion archiFieldType_pseudoMetricType : archiFieldType >-> pseudoMetricType. *)
+
+(* Coercion rcfType_pointedType : rcfType >-> pointedType. *)
+(* Coercion rcfType_filteredType : rcfType >-> filteredType. *)
+(* Coercion rcfType_topologicalType : rcfType >-> topologicalType. *)
+(* Coercion rcfType_uniformType : rcfType >-> uniformType. *)
+(* Coercion rcfType_pseudoMetricType : rcfType >-> pseudoMetricType. *)
+
+(* Coercion realType_pointedType : realType >-> pointedType. *)
+(* Coercion realType_filteredType : realType >-> filteredType. *)
+(* Coercion realType_topologicalType : realType >-> topologicalType. *)
+(* Coercion realType_uniformType : realType >-> uniformType. *)
+(* Coercion realType_pseudoMetricType : realType >-> pseudoMetricType. *)
+
+
+(* End numField_topological. *)
+
+
+(* Canonical R_pointedType := [pointedType of *)
+(*   Rdefinitions.R for pointed_of_zmodule R_ringType]. *)
+(* (* NB: similar definition in topology.v *) *)
+(* Canonical R_filteredType := [filteredType Rdefinitions.R of *)
+(*   Rdefinitions.R for filtered_of_normedZmod R_normedZmodType]. *)
+(* Canonical R_topologicalType : topologicalType := TopologicalType Rdefinitions.R *)
+(*   (topologyOfBallMixin (pseudoMetric_of_normedDomain R_normedZmodType)). *)
+(* Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType := *)
+(*   PseudoMetricType Rdefinitions.R (pseudoMetric_of_normedDomain R_normedZmodType). *)
+
+(* Section numFieldType_regular_canonical. (*Modified *) *)
+(*   (* TODO: specific module *) *)
+(* Variable R : numFieldType. *)
+(* (*Canonical topological_of_numFieldType := [numFieldType of R^o].*) *)
+(* Canonical numFieldType_regular_pointedType := *)
+(*   [pointedType of R^o for pointed_of_zmodule R]. *)
+(* Canonical numFieldType_regular_filteredType := *)
+(*   [filteredType R of R^o for filtered_of_normedZmod R]. *)
+(* Canonical numFieldType_regular_topologicalType : topologicalType := TopologicalType R^o *)
+(*   (topologyOfEntourageMixin *)
+(*     (uniformityOfBallMixin *)
+(*       (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *)
+(* Canonical numFieldType_regular_uniformType : uniformType := UniformType R^o *)
+(*   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R]) *)
+(*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *)
+(* Canonical numFieldType_regular_pseudoMetricType := *)
+(*   @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R *)
+(*   (Uniform.class (numFieldType_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *)
+(* Definition numdFieldType_lalgType : lalgType R := @GRing.regular_lalgType R. *)
+(* End numFieldType_regular_canonical. *)
+
+
+
+Lemma nbhsN (R : numFieldType) (x : R) :
   nbhs (- x) = [set [set - y | y in A] | A in nbhs x].
 Proof.
-rewrite -!(@filter_from_ballE _ [pseudoMetricType R of R^o]).
+rewrite -!(@filter_from_ballE).
 rewrite predeqE => A; split=> [[e egt0 oppxe_A]|[B [e egt0 xe_B] <-]];
   last first.
   exists e => // y xe_y; exists (- y); last by rewrite opprK.
@@ -103,14 +460,14 @@ exists e => // y xe_y; exists (- y); last by rewrite opprK.
 by apply/oppxe_A; rewrite /ball /= distrC opprK addrC.
 Qed.
 
-Lemma openN (R : numFieldType) (A : set R^o) :
+Lemma openN (R : numFieldType) (A : set R) :
   open A -> open [set - x | x in A].
 Proof.
 move=> Aop; rewrite openE => _ [x /Aop x_A <-].
 by rewrite /interior nbhsN; exists A.
 Qed.
 
-Lemma closedN (R : numFieldType) (A : set R^o) :
+Lemma closedN (R : numFieldType) (A : set R) :
   closed A -> closed [set - x | x in A].
 Proof.
 move=> Acl x clNAx.
@@ -251,15 +608,39 @@ Proof. by case: V => ? [? ? ? ? ? ? []]. Qed.
 
 End pseudoMetricnormedzmodule_lemmas.
 
-Section numFieldType_canonical_contd.
-Variable R : numFieldType.
-Lemma R_ball : @ball _ [pseudoMetricType R of R^o] = ball_ (fun x => `| x |).
+Section numFieldType_pseudoMetricNormedZmod. (*modified*)
+
+Lemma R_ball (R : numFieldType) :
+    @ball _ [pseudoMetricType R of R] = ball_ (fun x => `| x |).
 Proof. by []. Qed.
-Definition numFieldType_pseudoMetricNormedZmodMixin :=
-  PseudoMetricNormedZmodule.Mixin R_ball.
-Canonical numFieldType_pseudoMetricNormedZmodType :=
-  @PseudoMetricNormedZmodType R R^o numFieldType_pseudoMetricNormedZmodMixin.
-End numFieldType_canonical_contd.
+Definition numFieldType_pseudoMetricNormedZmodMixin (R : numFieldType):=
+  PseudoMetricNormedZmodule.Mixin (R_ball R).
+Canonical numFieldType_pseudoMetricNormedZmodType (R : numFieldType) :=
+  @PseudoMetricNormedZmodType R R (numFieldType_pseudoMetricNormedZmodMixin R).
+
+(*NEW*)
+Canonical numClosedFieldType_PseudoMetricNormedZmodule (R: numClosedFieldType) :=
+   [pseudoMetricNormedZmodType _ of R for
+   [pseudoMetricNormedZmodType  _ of [numFieldType of R]]].
+
+Canonical archiFieldType_PseudoMetricNormedZmodule (R: archiFieldType) :=
+   [pseudoMetricNormedZmodType _ of R for
+   [pseudoMetricNormedZmodType  _ of [numFieldType of R]]].
+
+Canonical realFieldType_PseudoMetricNormedZmodule (R: realFieldType) :=
+   [pseudoMetricNormedZmodType _ of R for
+   [pseudoMetricNormedZmodType  _ of [numFieldType of R]]].
+
+Canonical rcfType_PseudoMetricNormedZmodule (R: rcfType) :=
+   [pseudoMetricNormedZmodType _ of R for
+   [pseudoMetricNormedZmodType  _ of [numFieldType of R]]].
+
+Canonical realType_PseudoMetricNormedZmodule (R: realType) :=
+   [pseudoMetricNormedZmodType _ of R for
+   [pseudoMetricNormedZmodType  _ of [numFieldType of R]]].
+(*end NEW*)
+
+End numFieldType_pseudoMetricNormedZmod.
 
 (** locally *)
 
@@ -334,13 +715,24 @@ by split=> zxy e /zxy; rewrite [z + _]addrC [_ + x]addrC.
 Qed.
 
 Lemma coord_continuous {K : numFieldType} m n i j :
-  continuous (fun M : 'M[K^o]_(m.+1, n.+1) => M i j).
+  continuous (fun M : 'M[K]_(m.+1, n.+1) => M i j).
 Proof.
 move=> /= M s /= /(nbhs_ballP (M i j)) [e e0 es].
 apply/nbhs_ballP; exists e => //= N MN; exact/es/MN.
 Qed.
 
-Global Instance Proper_nbhs'_realType (R : realType) (x : R^o) :
+
+Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R) :
+  ProperFilter (nbhs' x).
+Proof.
+apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
+exists (x + e%:num / 2); apply: Ae; last first.
+  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
+rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
+by rewrite {2}(splitr e%:num) ltr_spaddl.
+Qed.
+
+Global Instance Proper_nbhs'_realType (R : realType) (x : R) :
   ProperFilter (nbhs' x).
 Proof. exact: Proper_nbhs'_numFieldType. Qed.
 
@@ -358,7 +750,7 @@ Notation "-oo" := (ninfty_nbhs _) : ring_scope.
 
 Section infty_nbhs_instances.
 Context {R : numFieldType}.
-Let R_topologicalType := [topologicalType of R^o].
+Let R_topologicalType := [topologicalType of R].
 
 Global Instance proper_pinfty_nbhs : ProperFilter (pinfty_nbhs R).
 Proof.
@@ -645,14 +1037,54 @@ End NormedModule.
 
 Export NormedModule.Exports.
 
-Lemma R_normZ (R : numDomainType) (l : R) (x : R^o) :
+Section normedMod_of_numfield. (* NEW  !*)
+
+(* Lemma R_normZ (R : numDomainType) (l : R) (x : R^o) : *)
+(*   `| l *: x | = `| l | * `| x |. *)
+(* Proof. by rewrite normrM. Qed. *)
+
+(*NB: this is replacing  R_normZ above *)
+Lemma numDomain_normZ (R : numDomainType) (l : R) (x : R^o) :
+  `| l *: x | = `| l | * `| x |.
+Proof. by rewrite normrM. Qed.
+
+Lemma numField_normZ (R : numFieldType) (l : R) (x : R) :
   `| l *: x | = `| l | * `| x |.
 Proof. by rewrite normrM. Qed.
 
 Definition numFieldType_NormedModMixin (R : numFieldType) :=
-  NormedModMixin (@R_normZ R).
-Canonical numFieldType_normedModType (R : numFieldType) :=
+  NormedModMixin (@numField_normZ R).
+
+(* Definition numField_normedModType (R : numFieldType) := *)
+(*   NormedModType R (numField_lmodType R) (@numField_normedModMixin R). *)
+(* (*the only difference is numField_lmodType above *) *)
+(* Canonical numField_normedModType. *)
+(* Variables (R : numFieldType) (V : normedModType R) (x : R) (w : V). *)
+(* Fail Check (x *: w). *)
+
+(* Canonical numFieldType_normedModType (R : numFieldType) := *)
+(*   NormedModType R R (numFieldType_NormedModMixin R). *)
+(* Canonical realFieldType_normedModType (R : realFieldType) := *)
+(*   [normedModType R of R for numFieldType_normedModType R]. *) (*fail*)
+
+
+Canonical regular_numFieldType_normedModType (R : numFieldType) :=
   NormedModType R R^o (numFieldType_NormedModMixin R).
+Canonical numFieldType_normedModType (R : numFieldType) :=
+  [normedModType R of R for [normedModType R of R^o]].
+Canonical numClosedFieldType_normedModType (R : numClosedFieldType) :=
+  [normedModType R of R for [normedModType R of R^o]].
+Canonical realFieldType_normedModType (R : realFieldType) :=
+  [normedModType R of R for [normedModType R of R^o]].
+Canonical archiFieldType_normedModType (R : archiFieldType) :=
+  [normedModType R of R for [normedModType R of R^o]].
+Canonical rcfType_normedModType (R : rcfType) :=
+  [normedModType R of R for [normedModType R of R^o]].
+Canonical realType_normedModType (R : realType) :=
+  [normedModType R of R for [normedModType R of R^o]].
+(*TODO : define without R^o ? Missing joins ? *)
+End normedMod_of_numfield.
+
 
 Section NormedModule_numDomainType.
 Variables (R : numDomainType) (V : normedModType R).
@@ -748,7 +1180,7 @@ Definition self_sub (K : numDomainType) (V W : normedModType K)
 Arguments self_sub {K V W} f x /.
 
 Definition fun1 {T : Type} {K : numFieldType} :
-  T -> [normedModType K of K^o] := fun=> 1.
+  T -> K := fun=> 1.
 Arguments fun1 {T K} x /.
 
 Definition dominated_by {T : Type} {K : numDomainType} {V W : normedModType K}
@@ -1023,7 +1455,7 @@ End NbhsNorm.
 
 Section hausdorff.
 
-Lemma Rhausdorff (R : realFieldType) : hausdorff [topologicalType of R^o].
+Lemma Rhausdorff (R : realFieldType) : hausdorff R.
 Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
@@ -1417,7 +1849,7 @@ Section matrix_NormedModule.
 Variables (K : numFieldType) (m n : nat).
 
 Lemma mx_norm_ball :
-  @ball _ [pseudoMetricType K of 'M[K^o]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
+  @ball _ [pseudoMetricType K of 'M[K]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
 Proof.
 rewrite /= /normr /= predeq3E => x e y; split.
 - move=> xe_y; rewrite /ball_/= mx_normE.
@@ -1437,7 +1869,7 @@ Qed.
 Definition matrix_PseudoMetricNormedZmodMixin :=
   PseudoMetricNormedZmodule.Mixin mx_norm_ball.
 Canonical matrix_pseudoMetricNormedZmodType :=
-  PseudoMetricNormedZmodType K 'M[K^o]_(m.+1, n.+1) matrix_PseudoMetricNormedZmodMixin.
+  PseudoMetricNormedZmodType K 'M[K]_(m.+1, n.+1) matrix_PseudoMetricNormedZmodMixin.
 
 Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
 Proof.
@@ -1450,7 +1882,7 @@ Qed.
 
 Definition matrix_NormedModMixin := NormedModMixin mx_normZ.
 Canonical matrix_normedModType :=
-  NormedModType K 'M[K^o]_(m.+1, n.+1) matrix_NormedModMixin.
+  NormedModType K 'M[K]_(m.+1, n.+1) matrix_NormedModMixin.
 
 End matrix_NormedModule.
 
@@ -1540,14 +1972,20 @@ Arguments cvg_dist2 {_ _ _ F G FF FG}.
 Canonical AbsRing_NormedModType (K : absRingType) :=
   NormedModType K K^o (AbsRing_NormedModMixin _).*)
 
+
+
+
+
 (** Normed vector spaces have some continuous functions *)
 
 (* kludge *)
-Global Instance filter_nbhs (K' : numFieldType) (k : K'^o) :
+
+Global Instance filter_nbhs (K' : numFieldType) (k : K') :
   Filter (nbhs k).
 Proof.
-exact: (@nbhs_filter [topologicalType of K'^o]).
+exact: (@nbhs_filter).
 Qed.
+
 
 Section NVS_continuity_normedModType.
 Context {K : numFieldType} {V : normedModType K}.
@@ -1560,6 +1998,7 @@ rewrite !near_simpl /=; near=> a b => /=; rewrite opprD addrACA.
 by rewrite normm_lt_split //; [near: a|near: b]; apply: cvg_dist.
 Grab Existential Variables. all: end_near. Qed.
 
+
 Lemma natmul_continuous n : continuous (fun x : V => x *+ n).
 Proof.
 case: n => [|n] x; first exact: cvg_cst.
@@ -1568,7 +2007,8 @@ rewrite -mulrnBl normrMn -mulr_natr -ltr_pdivl_mulr//.
 by near: a; apply: cvg_dist.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
+Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
+
 Proof.
 move=> [k x]; apply/cvg_distP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M.
@@ -1581,7 +2021,7 @@ rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
   by apply: cvg_dist; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
 have zM : `|z| <= M by near: z; near: M; apply:cvg_bounded; apply: cvg_refl.
 rewrite (le_lt_trans (ler_pmul _ _ (lexx _) zM)) // ?ltW // -ltr_pdivl_mulr//.
-by near: l; apply: (cvg_dist (_ : K^o)); rewrite // mulr_gt0// invr_gt0.
+by near: l; apply: cvg_dist; rewrite // mulr_gt0// invr_gt0.
 Grab Existential Variables. all: end_near. Qed.
 
 Arguments scale_continuous _ _ : clear implicits.
@@ -1591,7 +2031,7 @@ Proof.
 by move=> x; apply: (cvg_comp2 (cvg_cst _) cvg_id (scale_continuous (_, _))).
 Qed.
 
-Lemma scalel_continuous (x : V) : continuous (fun k : K^o => k *: x).
+Lemma scalel_continuous (x : V) : continuous (fun k : K => k *: x).
 Proof.
 by move=> k; apply: (cvg_comp2 cvg_id (cvg_cst _) (scale_continuous (_, _))).
 Qed.
@@ -1604,7 +2044,7 @@ Qed.
 
 (** Continuity of norm *)
 
-Lemma norm_continuous : continuous ((@normr _ V) : V -> K^o).
+Lemma norm_continuous : continuous (normr : V -> K).
 Proof.
 move=> x; apply/cvg_distP => _/posnumP[e].
 rewrite near_map; apply/nbhs_normP; exists e%:num => // y.
@@ -1615,10 +2055,10 @@ End NVS_continuity_normedModType.
 
 Lemma cvg_dist0 {U} {K : numFieldType} {V : normedModType K}
   {F : set (set U)} {FF : Filter F} (f : U -> V) :
-  (fun x => `|f x|) @ F --> (0 : K^o)
+  (fun x => `|f x|) @ F --> (0 : K)
   -> f @ F --> (0 : V).
 Proof.
-move=> /(cvg_dist (_ : K^o)) fx0; apply/cvg_distP => _/posnumP[e].
+move=> /(cvg_dist (_ : K)) fx0; apply/cvg_distP => _/posnumP[e].
 rewrite near_simpl; have := fx0 _ [gt0 of e%:num]; rewrite near_simpl.
 by apply: filterS => x; rewrite !sub0r !normrN [ `|_| ]ger0_norm.
 Qed.
@@ -1627,10 +2067,10 @@ Section NVS_continuity_mul.
 
 Context {K : numFieldType}.
 
-Lemma mul_continuous : continuous (fun z : K^o * K^o => z.1 * z.2).
+Lemma mul_continuous : continuous (fun z : K * K => z.1 * z.2).
 Proof. exact: scale_continuous. Qed.
 
-Lemma inv_continuous x : x != 0 -> {for x, continuous (GRing.inv : K^o -> K^o)}.
+Lemma inv_continuous x : x != 0 -> {for x, continuous (GRing.inv : K -> K)}.
 Proof.
 move=> x_neq0 /=; apply/cvg_distP => _/posnumP[e]; rewrite !nearE/=; near=> y.
 have y_gt : `|y| > `|x| / 2.
@@ -1652,7 +2092,7 @@ Section cvg_composition.
 
 Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
 Context (F : set (set T)) {FF : Filter F}.
-Implicit Types (f g : T -> V) (s : T -> K^o) (k : K^o) (x : T) (a b : V).
+Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
 
 Lemma cvgN f a : f @ F --> a -> (- f) @ F --> - a.
 Proof. by move=> ?; apply: continuous_cvg => //; exact: opp_continuous. Qed.
@@ -1716,10 +2156,10 @@ move=> k_neq0; rewrite propeqE; split => [/(@cvgZr k^-1)|/(@cvgZr k)/cvgP//].
 by under [_ \*: _]funext => x /= do rewrite scalerK//; apply: cvgP.
 Qed.
 
-Lemma cvg_norm f a : f @ F --> a -> `|f x| @[x --> F] --> (`|a| : K^o).
+Lemma cvg_norm f a : f @ F --> a -> `|f x| @[x --> F] --> (`|a| : K).
 Proof. exact: (continuous_cvg _ (@norm_continuous _ _ _)). Qed.
 
-Lemma is_cvg_norm f : cvg (f @ F) -> cvg ((Num.norm \o f : T -> K^o) @ F).
+Lemma is_cvg_norm f : cvg (f @ F) -> cvg ((Num.norm \o f : T -> K) @ F).
 Proof. by have := cvgP _ (cvg_norm _); apply. Qed.
 
 End cvg_composition.
@@ -1728,7 +2168,7 @@ Section cvg_composition_field.
 
 Context {K : numFieldType}  {T : topologicalType}.
 Context (F : set (set T)) {FF : Filter F}.
-Implicit Types (f g : T -> K^o) (a b : K^o).
+Implicit Types (f g : T -> K) (a b : K).
 
 Lemma cvgM f g a b : f @ F --> a -> g @ F --> b -> (f * g) @ F --> a * b.
 Proof. exact: cvgZ. Qed.
@@ -1768,7 +2208,7 @@ Section limit_composition.
 
 Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
 Context (F : set (set T)) {FF : ProperFilter F}.
-Implicit Types (f g : T -> V) (s : T -> K^o) (k : K^o) (x : T) (a : V).
+Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a : V).
 
 Lemma limN f : cvg (f @ F) -> lim (- f @ F) = - lim (f @ F).
 Proof. by move=> ?; apply: cvg_lim => //; apply: cvgN. Qed.
@@ -1792,8 +2232,8 @@ Proof. by move=> ?; apply: cvg_lim => //; apply: cvgZl. Qed.
 Lemma limZr k f : cvg (f @ F) -> lim (k *: f @ F) = k *: lim (f @ F).
 Proof. by move=> ?; apply: cvg_lim => //; apply: cvgZr. Qed.
 
-Lemma lim_norm f : cvg (f @ F) -> lim ((fun x => `|f x| : K^o) @ F) = `|lim (f @ F)|.
-Proof. by move=> ?; apply: (@cvg_lim [topologicalType of K^o]) => //; apply: cvg_norm. Qed.
+Lemma lim_norm f : cvg (f @ F) -> lim ((fun x => `|f x| : K) @ F) = `|lim (f @ F)|.
+Proof. by move=> ?; apply: cvg_lim => //; apply: cvg_norm. Qed.
 
 End limit_composition.
 
@@ -1801,17 +2241,17 @@ Section limit_composition_field.
 
 Context {K : numFieldType}  {T : topologicalType}.
 Context (F : set (set T)) {FF : ProperFilter F}.
-Implicit Types (f g : T -> K^o).
+Implicit Types (f g : T -> K).
 
 Lemma limM f g : cvg (f @ F) -> cvg (g @ F) ->
    lim (f * g @ F) = lim (f @ F) * lim (g @ F).
 Proof.
-by move=> ? ?; apply: (@cvg_lim [topologicalType of K^o]) => //; apply: cvgM.
+by move=> ? ?; apply: cvg_lim => //; apply: cvgM.
 Qed.
 
 Lemma limV f : cvg (f @ F) -> lim (f @ F) != 0 -> lim ((fun x => (f x)^-1) @ F) = (lim (f @ F))^-1.
 Proof.
-by move=> ? ?; apply: (@cvg_lim [topologicalType of K^o]) => //; apply: cvgV.
+by move=> ? ?; apply: cvg_lim => //; apply: cvgV.
 Qed.
 
 End limit_composition_field.
@@ -1819,7 +2259,7 @@ End limit_composition_field.
 Section local_continuity.
 
 Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
-Implicit Types (f g : T -> V) (s t : T -> K^o) (x : T) (k : K^o) (a : V).
+Implicit Types (f g : T -> V) (s t : T -> K) (x : T) (k : K) (a : V).
 
 Lemma continuousN (f : T -> V) x :
   {for x, continuous f} -> {for x, continuous (fun x => - f x)}.
@@ -2047,7 +2487,7 @@ Export CompleteNormedModule.Exports.
 
 Arguments cvg_distW {_ _ F FF}.
 
-Lemma R_complete (R : realType) (F : set (set R^o)) : ProperFilter F -> cauchy F -> cvg F.
+Lemma R_complete (R : realType) (F : set (set R)) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF /cauchy_ballP F_cauchy; apply/cvg_ex.
 pose D := \bigcap_(A in F) (down A).
@@ -2061,7 +2501,7 @@ have D_has_sup : has_sup D; first split.
   rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltW].
   by move=> /(le_trans _) yx01 _ /yx01.
 exists (sup D).
-apply: (cvg_distW (_ : R^o)) => /= _ /posnumP[eps]; near=> x.
+apply: (cvg_distW) => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl; move/ubP: (sup_upper_bound D_has_sup) => -> //=.
   apply: sup_le_ub => //; first by case: D_has_sup.
   have Fxeps : F (ball_ [eta normr] x (eps)%:num).
@@ -2077,19 +2517,26 @@ suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
 by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
 Grab Existential Variables. all: end_near. Qed.
 
-Canonical R_completeType (R : realType) := CompleteType R^o (@R_complete R).
-(* Canonical R_NormedModule := [normedModType R of R^o]. *)
+Canonical R_regular_completeType (R : realType) :=
+  CompleteType R^o (@R_complete R). (*todo : delete*)
+Canonical R_regular_CompleteNormedModule (R : realType) :=
+  [completeNormedModType R of R^o]. (*todo : delete*)
 
-Canonical R_CompleteNormedModule (R : realType) := [completeNormedModType R of R^o].
+Canonical R_completeType (R : realType) :=
+  [completeType of R for [completeType of R^o]].
+Canonical R_CompleteNormedModule (R : realType) :=
+  [completeNormedModType R of R].
+(* new *)
 
 Section at_left_right.
 Variable R : numFieldType.
 
-Definition at_left (x : R^o) := within (fun u => u < x) (nbhs x).
-Definition at_right (x : R^o) := within (fun u : R => x < u) (nbhs x).
+Definition at_left (x : R) := within (fun u => u < x) (nbhs x).
+Definition at_right (x : R) := within (fun u : R => x < u) (nbhs x).
+
 (* :TODO: We should have filter notation ^- and ^+ for these *)
 
-Global Instance at_right_proper_filter (x : R^o) : ProperFilter (at_right x).
+Global Instance at_right_proper_filter (x : R) : ProperFilter (at_right x).
 Proof.
 apply: Build_ProperFilter' => -[_/posnumP[d] /(_ (x + d%:num / 2))].
 apply; last (by rewrite ltr_addl); rewrite /=.
@@ -2128,7 +2575,7 @@ Grab Existential Variables. all: end_near. Qed.
 
 End cvg_seq_bounded.
 
-Lemma closure_sup (R : realType) (A : set R^o) : A !=set0 -> has_ubound A ->
+Lemma closure_sup (R : realType) (A : set R) : A !=set0 -> has_ubound A ->
   (closure A) (sup A).
 Proof.
 move=> A0 ?; have [|AsupA] := pselect (A (sup A)); first exact: subset_closure.
@@ -2155,15 +2602,15 @@ rewrite (lt_trans (archi_boundP _)) // ltr_nat.
 by near: n; exists (Num.bound e%:num^-1).
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma limit_pointP (T : archiFieldType) (A : set T^o) (x : T) :
-  limit_point A x <-> exists a_ : nat -> T^o,
-    [/\ a_ @` setT `<=` A, forall n, a_ n != x & a_ --> (x:T^o)].
+Lemma limit_pointP (T : archiFieldType) (A : set T) (x : T) :
+  limit_point A x <-> exists a_ : nat -> T,
+    [/\ a_ @` setT `<=` A, forall n, a_ n != x & a_ --> x].
 Proof.
 split=> [Ax|[a_ [aTA a_x] ax]]; last first.
   move=> U /ax[m _ a_U]; near \oo => n; exists (a_ n); split => //.
   by apply aTA; exists n.
   by apply a_U; near: n; exists m.
-pose U := fun n : nat => [set z : T^o | `|x - z| < n.+1%:R^-1].
+pose U := fun n : nat => [set z : T | `|x - z| < n.+1%:R^-1].
 suff [a_ anx] : exists a_, forall n, a_ n != x /\ (U n `&` A) (a_ n).
   exists a_; split.
   - by move=> a [n _ <-]; have [? []] := anx n.
@@ -2171,51 +2618,58 @@ suff [a_ anx] : exists a_, forall n, a_ n != x /\ (U n `&` A) (a_ n).
   - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
     have [? [] xann Aan] := anx n.
     by rewrite (lt_le_trans xann) // ltW //; near: n; exact: near_infty_natSinv_lt.
-have @a_ : nat -> T^o.
-  move=> n; have : nbhs (x : T^o) (U n).
-    by apply/(nbhs_ballP (x:T^o) (U n)); rewrite nbhs_ballE; exists n.+1%:R^-1.
+have @a_ : nat -> T.
+  move=> n; have : nbhs (x : T) (U n).
+    by apply/(nbhs_ballP (x:T) (U n)); rewrite nbhs_ballE; exists n.+1%:R^-1.
   by move/Ax/cid => [/= an [anx Aan Uan]]; exact: an.
 by exists a_ => n; rewrite /a_ /= /ssr_have; case: cid => ? [].
 Grab Existential Variables. all: end_near. Qed.
 
 Section open_closed_sets.
 Variable R : realFieldType (* TODO: can we generalize to numFieldType? *).
-Implicit Types y : R.
 
-Lemma open_lt y : open [set x : R^o | x < y].
+(* TODO : topology on R *)
+(** Some open sets of [R] *)
+
+Lemma open_lt (y : R) : open [set x : R| x < y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
 by rewrite /= distrC ltr_distl addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_lt : core.
 
-Lemma open_gt y : open [set x : R^o | x > y].
+
+Lemma open_gt (y : R) : open [set x : R | x > y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
 by rewrite /= distrC ltr_distl opprB addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_gt : core.
 
-Lemma open_neq y : open [set x : R^o | x != y].
+Lemma open_neq (y : R) : open [set x : R | x != y].
 Proof.
 rewrite (_ : mkset _ = [set x | x < y] `|` [set x | x > y]); first exact: openU.
 rewrite predeqE => x /=; rewrite eq_le !leNgt negb_and !negbK orbC.
 by symmetry; apply (rwP orP).
 Qed.
 
-Lemma closed_le y : closed [set x : R^o | x <= y].
+(** Some closed sets of [R] *)
+
+Lemma closed_le (y : R) : closed [set x : R | x <= y].
 Proof.
 rewrite (_ : mkset _ = ~` [set x | x > y]); first exact: closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
-Lemma closed_ge y : closed [set x : R^o | y <= x].
+
+Lemma closed_ge (y : R) : closed [set x : R | y <= x].
 Proof.
 rewrite (_ : mkset _ = ~` [set x | x < y]); first exact: closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
-Lemma closed_eq y : closed [set x : R^o | x = y].
+
+Lemma closed_eq (y : R) : closed [set x : R | x = y].
 Proof.
 rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
   by apply: closedC; exact: open_neq.
@@ -2237,7 +2691,6 @@ move: a b => [[]a|[]] [[]b|[]]// _ _.
 - exact: open_lt.
 - by rewrite (_ : mkset _ = setT); [exact: openT | rewrite predeqE].
 Qed.
-
 Lemma interval_closed a b : ~~ bound_side false a -> ~~ bound_side true b ->
   closed [set x : R^o | x \in Interval a b].
 Proof.
@@ -2263,7 +2716,7 @@ Section closure_left_right_open.
 Variable R : archiFieldType.
 Implicit Types z : R.
 
-Lemma closure_gt z : closure ([set x | z < x] : set R^o) = [set x | z <= x].
+Lemma closure_gt z : closure ([set x | z < x] : set R) = [set x | z <= x].
 Proof.
 rewrite predeqE => v; split.
   by rewrite closureE; apply; split => [|W /ltW //]; exact: closed_ge.
@@ -2277,7 +2730,7 @@ apply/subset_limit_point/limit_pointP; exists (fun n => z + n.+1%:R^-1); split.
   by near: n; exact: near_infty_natSinv_lt.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma closure_lt z : closure ([set x : R^o | x < z]) = [set x | x <= z].
+Lemma closure_lt z : closure ([set x : R | x < z]) = [set x | x <= z].
 Proof.
 rewrite predeqE => v; split.
   by rewrite closureE; apply; split => [|w /ltW //]; exact: closed_le.
@@ -2317,7 +2770,7 @@ Qed.
 
 End interval.
 
-Lemma right_bounded_interior (R : realType) (X : set R^o) :
+Lemma right_bounded_interior (R : realType) (X : set R) :
   has_ubound X -> X^° `<=` [set r | r < sup X].
 Proof.
 move=> uX r Xr; rewrite /mkset ltNge; apply/negP.
@@ -2332,7 +2785,7 @@ have : sup X + f%:num <= sup X by apply sup_ub.
 by apply/negP; rewrite -ltNge; rewrite ltr_addl.
 Qed.
 
-Lemma left_bounded_interior (R : realType) (X : set R^o) :
+Lemma left_bounded_interior (R : realType) (X : set R) :
   has_lbound X -> X^° `<=` [set r | inf X < r].
 Proof.
 move=> lX r Xr; rewrite /mkset ltNge; apply/negP.
@@ -2374,7 +2827,7 @@ move/has_ubPn : uX => /(_ x) [z Xz xz].
 by apply: (iX _ _ Xy Xz); rewrite xy xz.
 Qed.
 
-Lemma interval_left_unbounded_interior (X : set R^o) : is_interval X ->
+Lemma interval_left_unbounded_interior (X : set R) : is_interval X ->
   ~ has_lbound X -> has_ubound X -> X^° = [set r | r < sup X].
 Proof.
 move=> iX lX uX; rewrite eqEsubset; split; first exact: right_bounded_interior.
@@ -2385,7 +2838,7 @@ have /(sup_adherent hsX)[e Xe] : 0 < sup X - r by rewrite subr_gt0.
 by rewrite opprB addrCA subrr addr0 => re; apply (iX _ _ Xy Xe); rewrite yr re.
 Qed.
 
-Lemma interval_right_unbounded_interior (X : set R^o) : is_interval X ->
+Lemma interval_right_unbounded_interior (X : set R) : is_interval X ->
   has_lbound X -> ~ has_ubound X -> X^° = [set r | inf X < r].
 Proof.
 move=> iX lX uX; rewrite eqEsubset; split; first exact: left_bounded_interior.
@@ -2396,7 +2849,7 @@ have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
 by rewrite addrCA subrr addr0 => er; apply: (iX _ _ Xe Xy); rewrite yr er.
 Qed.
 
-Lemma interval_bounded_interior (X : set R^o) : is_interval X ->
+Lemma interval_bounded_interior (X : set R) : is_interval X ->
   has_lbound X -> has_ubound X -> X^° = [set r | inf X < r < sup X].
 Proof.
 move=> iX bX aX; rewrite eqEsubset; split=> [r Xr|].
@@ -2441,32 +2894,32 @@ case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
     rewrite !(lteifF, lteifT).
   + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx].
     rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
-    apply: (@interior_subset [topologicalType of R^o]).
+    apply: (@interior_subset R).
     by rewrite interval_bounded_interior // /mkset infXx.
   + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx supXx].
-    apply: (@interior_subset [topologicalType of R^o]).
+    apply: (@interior_subset R).
     by rewrite interval_bounded_interior // /mkset infXx.
   + move=> /andP[infXx]; rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
-    apply: (@interior_subset [topologicalType of R^o]).
+    apply: (@interior_subset R).
     by rewrite interval_bounded_interior // /mkset infXx.
-  + move=> ?; apply: (@interior_subset [topologicalType of R^o]).
+  + move=> ?; apply: (@interior_subset R).
     by rewrite interval_bounded_interior // /mkset infXx.
 - case: asboolP => XinfX; rewrite !(lteifF, lteifT, andbT).
   + rewrite le_eqVlt => /orP[/eqP<-//|infXx].
-    apply: (@interior_subset [topologicalType of R^o]).
+    apply: (@interior_subset R).
     by rewrite interval_right_unbounded_interior.
-  + move=> infXx; apply: (@interior_subset [topologicalType of R^o]).
+  + move=> infXx; apply: (@interior_subset R).
     by rewrite interval_right_unbounded_interior.
 - case: asboolP => XsupX /=.
   + rewrite le_eqVlt => /orP[/eqP->//|xsupX].
-    apply: (@interior_subset [topologicalType of R^o]).
+    apply: (@interior_subset R).
     by rewrite interval_left_unbounded_interior.
-  + move=> xsupX; apply: (@interior_subset [topologicalType of R^o]).
+  + move=> xsupX; apply: (@interior_subset R).
     by rewrite interval_left_unbounded_interior.
 - by move=> _; rewrite (interval_unbounded_setT iX).
 Qed.
 
-Lemma connected_intervalP (E : set R^o) : connected E <-> is_interval E.
+Lemma connected_intervalP (E : set R) : connected E <-> is_interval E.
 Proof.
 split => [cE x y Ex Ey z /andP[xz zy]|].
 - apply: contrapT => Ez.
@@ -2510,7 +2963,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
   suff [z1 [/andP[zz1 z1y] Ez1]] : exists z1 : R, z < z1 < y /\ ~ E z1.
     apply Ez1; apply (intE x y) => //; rewrite ?EU; [by left|by right|].
     by rewrite z1y (le_lt_trans _ zz1).
-  have [r zcA1] : {r:{posnum R}| ball (z:R^o) r%:num `<=` ~` closure (A true)}.
+  have [r zcA1] : {r:{posnum R}| ball z r%:num `<=` ~` closure (A true)}.
     have ? : ~ closure (A true) z.
       by move: sepA; rewrite /separated => -[] _ /disjoints_subset; apply.
     have ? : open (~` closure (A true)) by exact/openC/closed_closure.
@@ -2539,10 +2992,10 @@ Variable R : realType.
 
 (** properties of segments in [R] *)
 
-Lemma segment_connected (a b : R) : connected [set x : R^o | x \in `[a, b]].
+Lemma segment_connected (a b : R) : connected [set x : R | x \in `[a, b]].
 Proof. exact/connected_intervalP/interval_is_interval. Qed.
 
-Lemma segment_compact (a b : R) : compact [set x : R^o | x \in `[a, b]].
+Lemma segment_compact (a b : R) : compact [set x | x \in `[a, b]].
 Proof.
 case: (lerP a b) => [leab|ltba]; last first.
   by move=> F FF /filter_ex [x abx]; move: ltba; rewrite (itvP abx).
@@ -2605,7 +3058,7 @@ rewrite {1}(splitr x) ger_addl pmulr_lle0 // => /(lt_le_trans x0);
   by rewrite ltxx.
 Qed.
 
-Lemma IVT (R : realType) (f : R^o -> R^o) (a b v : R^o) :
+Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
   a <= b -> {in `[a, b], continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
   exists2 c, c \in `[a, b] & f c = v.
@@ -2614,7 +3067,7 @@ move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
     exists2 c, c \in `[a, b] & f c = v; last first.
   case: (leP (f a) (f b)) => [] _ fabv; first exact: ivt.
   have [||c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
-    by move=> x /fcont; apply: (@continuousN _ [normedModType R of R^o]).
+    by move=> x /fcont; apply: continuousN.
   by rewrite ler_oppr opprK ler_oppr opprK andbC.
 move=> /andP[]; rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
   by exists a => //; rewrite in_itv /= lexx leab.
@@ -2630,10 +3083,10 @@ have supAab : sup A \in `[a, b].
 exists (sup A) => //; have lefsupv : f (sup A) <= v.
   rewrite leNgt; apply/negP => ltvfsup.
   have vltfsup : 0 < f (sup A) - v by rewrite subr_gt0.
-  have /fcont /(_ _ (@nbhsx_ballx _ [normedModType R of R^o] _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
+  have /fcont /(_ _ (nbhsx_ballx _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
     := supAab.
   have [t At supd_t] := sup_adherent supA [gt0 of d%:num].
-  suff /supdfe : @ball _ [normedModType R of R^o] (sup A) d%:num t.
+  suff /supdfe : ball (sup A) d%:num t.
     rewrite /= /ball /= ltr_norml => /andP [_].
     by rewrite ltr_add2l ltr_oppr opprK ltNge; have /andP [_ ->] := At.
   rewrite /= /ball /= ger0_norm.
@@ -2642,9 +3095,9 @@ exists (sup A) => //; have lefsupv : f (sup A) <= v.
 apply/eqP; rewrite eq_le; apply/andP; split=> //.
 rewrite -subr_le0; apply/ler0_addgt0P => _/posnumP[e].
 rewrite ler_subl_addr -ler_subl_addl ltW //.
-have /fcont /(_ _ (@nbhsx_ballx _ [normedModType R of R^o] _ e)) [_/posnumP[d] supdfe] := supAab.
+have /fcont /(_ _ (nbhsx_ballx _ e)) [_/posnumP[d] supdfe] := supAab.
 have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
-have /supdfe /= : @ball _ [normedModType R of R^o] (sup A) d%:num x.
+have /supdfe /= : ball (sup A) d%:num x.
   by near: x; rewrite /= nbhs_simpl; exists d%:num => //.
 rewrite /= => /ltr_distlC_subl; apply: le_lt_trans.
 rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
@@ -2887,17 +3340,16 @@ have GC : G [set g | C (\row_j g j)] by exists C.
 by have [g []] := clGf _ _ GC f_D; exists (\row_j (g j : T)).
 Qed.
 
-Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R^o]_n.+1) :
+Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n.+1) :
   bounded_set A -> closed A -> compact A.
 Proof.
 move=> [M [Mreal normAltM]] Acl.
 have Mnco : compact
-  [set v : 'rV[R^o]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
-  apply: (@rV_compact [topologicalType of R^o] _
-    (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
+  [set v : 'rV[R]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
+  apply: (@rV_compact _  _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
-suff : `|v ord0 i : R^o| <= M + 1 by rewrite ler_norml.
+suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
 apply: le_trans (normvleM _ _); last by rewrite ltr_addl.
 have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
@@ -2923,7 +3375,7 @@ Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 Implicit Types x y : {ereal R}.
 Implicit Types r : R.
 
-Lemma open_ereal_lt y : open [set r : R^o | r%:E < y]%E.
+Lemma open_ereal_lt y : open [set r : R | r%:E < y]%E.
 Proof.
 case: y => [y||] /=; first exact: open_lt.
 rewrite [X in open X](_ : _ = setT); first exact: openT.
@@ -2932,7 +3384,7 @@ rewrite [X in open X](_ : _ = set0); first exact: open0.
 by rewrite funeqE => ? /=; rewrite falseE.
 Qed.
 
-Lemma open_ereal_gt y : open [set r : R^o | y < r%:E]%E.
+Lemma open_ereal_gt y : open [set r : R | y < r%:E]%E.
 Proof.
 case: y => [y||] /=; first exact: open_gt.
 rewrite [X in open X](_ : _ = set0); first exact: open0.
@@ -3018,7 +3470,7 @@ Section ereal_is_hausdorff.
 Variable R : realFieldType.
 Implicit Types r : R.
 
-Lemma nbhs_image_ERFin (x : R^o) (X : set R) :
+Lemma nbhs_image_ERFin (x : R) (X : set R) :
   nbhs x X -> nbhs x%:E ((fun r => r%:E) @` X).
 Proof.
 case => _/posnumP[e] xeX; exists e%:num => //= r xer.
@@ -3082,7 +3534,7 @@ Qed.
 
 End ereal_is_hausdorff.
 
-Hint Resolve ereal_hausdorff : core.
+Hint Extern 0 (hausdorff _) => solve[apply: ereal_hausdorff] : core.
 
 (** * Some limits on real functions *)
 
