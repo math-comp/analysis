@@ -831,17 +831,16 @@ Canonical ereal_pointed (R : numDomainType) := PointedType {ereal R} +oo%E.
 
 Section ereal_nbhs.
 Context {R : numFieldType}.
-Let R_topologicalType := [topologicalType of R^o].
 Local Open Scope ereal_scope.
 Definition ereal_nbhs' (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
   match a with
-    | a%:E => @nbhs' R_topologicalType a (fun x => P x%:E)
+    | a%:E => nbhs' a (fun x => P x%:E)
     | +oo => exists M, M \is Num.real /\ forall x, M%:E < x -> P x
     | -oo => exists M, M \is Num.real /\ forall x, x < M%:E -> P x
   end.
 Definition ereal_nbhs (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
   match a with
-    | a%:E => @nbhs _ R_topologicalType a (fun x => P x%:E)
+    | a%:E => nbhs a (fun x => P x%:E)
     | +oo => exists M, M \is Num.real /\ forall x, M%:E < x -> P x
     | -oo => exists M, M \is Num.real /\ forall x, x < M%:E -> P x
   end.
@@ -858,7 +857,7 @@ Proof. by exists c; rewrite realE (ltW H) orbT; split => // x /ltW. Qed.
 
 Section ereal_nbhs_instances.
 Context {R : numFieldType}.
-Let R_topologicalType := [topologicalType of R^o].
+
 
 Global Instance ereal_nbhs'_filter :
   forall x : {ereal R}, ProperFilter (ereal_nbhs' x).
@@ -1724,7 +1723,7 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 Qed.
 
 (* TODO: generalize to numFieldType? *)
-Lemma nbhs_interval (R : realFieldType) (P : R -> Prop) (x : R^o) (a b : {ereal R}) :
+Lemma nbhs_interval (R : realFieldType) (P : R -> Prop) (x : R) (a b : {ereal R}) :
   (a < x%:E)%E -> (x%:E < b)%E ->
   (forall y : R, a < y%:E -> y%:E < b -> P y)%E ->
   nbhs x P.

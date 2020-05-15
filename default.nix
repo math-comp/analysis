@@ -46,10 +46,10 @@ let
                   mathcomp-analysis = {version, coqPackages} @ args:
                     let mca = mec.initial.mathcomp-analysis args; in
                     mca // (
-                      if elem version [ "master" "cauchy_etoile" "holomorphy" ]
+                      if elem version [ "master" "cauchy_etoile" "holomorphy" "numfield_topology" ]
                       then {
                         propagatedBuildInputs = mca.propagatedBuildInputs ++
-                                                [ coqPackages.mathcomp-real-closed coqPackages.hiearchy-builder ];
+                                                [ coqPackages.mathcomp-real-closed coqPackages.hierarchy-builder ];
                       } else {
                         propagatedBuildInputs = mca.propagatedBuildInputs ++
                                                 (with coqPackages; [ coq-elpi hierarchy-builder ]);
