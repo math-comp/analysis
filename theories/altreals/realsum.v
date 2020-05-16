@@ -182,7 +182,7 @@ move=> supE; exists (sup E)%:E => //; first exact: lte_ninfty.
 elim/nbh_finW=>e /= gt0_e.
 case: (sup_adherent supE gt0_e)=> x [K ->] lt_uK.
 exists K=> n le_Kn; rewrite inE distrC ger0_norm ?subr_ge0.
-  by apply/sup_upper_bound=> //; exists n.
+  by move/ubP: (sup_upper_bound supE); apply; exists n.
 rewrite ltr_subl_addr addrC -ltr_subl_addr.
 by rewrite (lt_le_trans lt_uK) //; apply/mono_u.
 Qed.
@@ -209,7 +209,7 @@ Implicit Type S : T -> R.
 Lemma summable_sup (S : T -> R) : summable S -> has_sup
   [set x | exists J : {fset T}, x = \sum_(j : J) `|S (val j)|]%classic.
 Proof.
-case/summableP=> M _ hbd; apply/has_supP; split.
+case/summableP=> M _ hbd; split.
   by exists 0, fset0; rewrite big_fset0.
 by exists M; apply/ubP=> y [J ->].
 Qed.
@@ -219,8 +219,8 @@ Lemma psum_sup S : psum S =
 Proof.
 rewrite /psum; case: ifPn => // /asboolPn h.
 rewrite sup_out //; set X := [set r | _]%classic => hs.
-apply: h; exists (sup X) => J; apply/sup_upper_bound => //.
-by exists J.
+apply: h; exists (sup X) => J.
+by move/ubP : (sup_upper_bound hs); apply; exists J.
 Qed.
 
 Lemma psum_sup_seq S : psum S =
@@ -316,8 +316,8 @@ Qed.
 Lemma gerfin_psum S (J : {fset T}) :
   summable S -> \sum_(j : J) `|S (val j)| <= psum S.
 Proof.
-move=> smS; rewrite /psum (asboolT smS); apply/sup_upper_bound.
-  by apply/summable_sup. by exists J.
+move=> smS; rewrite /psum (asboolT smS).
+by move/ubP : (sup_upper_bound (summable_sup smS)); apply; exists J.
 Qed.
 
 Lemma gerfinseq_psum S (r : seq T) :
@@ -352,8 +352,9 @@ Lemma max_sup {R : realType} x (E : set R) :
   (E `&` ub E)%classic x -> sup E = x.
 Proof.
 case=> /= xE xubE; have nzE: nonempty E by exists x.
-apply/eqP; rewrite eq_le sup_le_ub ?sup_upper_bound //.
-by apply/has_supP; split; exists x.
+apply/eqP; rewrite eq_le sup_le_ub //=.
+have : has_sup E by split; exists x.
+by move/sup_upper_bound/ubP; apply.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -395,9 +396,11 @@ Variable (S : T -> R).
 Lemma ger_big_psum r : uniq r -> summable S ->
   \sum_(x <- r) `|S x| <= psum S.
 Proof.
-move=> uq_r smS; rewrite /psum (asboolT smS) sup_upper_bound //.
-  by apply/summable_sup. exists [fset x in r].
-by rewrite (big_seq_fset (fun i => `|S i|)).
+move=> uq_r smS; rewrite /psum (asboolT smS).
+set E := (X in sup X).
+have : has_sup E by apply/summable_sup.
+move/sup_upper_bound/ubP; apply.
+by exists [fset x in r]; rewrite (big_seq_fset (fun i => `|S i|)).
 Qed.
 
 Lemma ger1_psum x : summable S -> `|S x| <= psum S.

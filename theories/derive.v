@@ -1312,7 +1312,7 @@ Lemma EVT_max (R : realType) (f : R^o -> R^o) (a b : R^o) :
 Proof.
 move=> leab fcont; set imf := [set t | (f @` [set x | x \in `[a, b]]) t].
 have imf_sup : has_sup imf.
-  apply/has_supP; split.
+  split.
     by exists (f a) => //; rewrite /imf; apply/imageP; rewrite inE /= lexx.
   have [M [Mreal imfltM]] : bounded_set (f @` [set x | x \in `[a, b]] : set R^o).
     apply/compact_bounded/continuous_compact; last exact: segment_compact.
@@ -1321,13 +1321,13 @@ have imf_sup : has_sup imf.
   apply: le_trans (yleM _ _); last by rewrite ltr_addl.
   by rewrite ler_norm.
 case: (pselect (exists2 c, c \in `[a, b] & f c = sup imf)) => [|imf_ltsup].
-  move=> [c cab fceqsup]; exists c => // t tab.
-  by rewrite fceqsup; apply: sup_upper_bound=> //; apply: imageP.
+  move=> [c cab fceqsup]; exists c => // t tab; rewrite fceqsup.
+  by move/ubP : (sup_upper_bound imf_sup); apply; exact: imageP.
 have {imf_ltsup} imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
   move=> t tab; case: (ltrP (f t) (sup imf))=> // supleft.
   rewrite falseE; apply: imf_ltsup; exists t => //.
-  apply/eqP; rewrite eq_le supleft sup_upper_bound => //.
-  by apply/imageP.
+  apply/eqP; rewrite eq_le supleft andbT.
+  by move/ubP : (sup_upper_bound imf_sup); apply; exact: imageP.
 have invf_continuous : {in `[a, b], continuous (fun t => (sup imf - f t)^-1 : R^o)}.
   move=> t tab; apply: cvgV.
     by rewrite neq_lt subr_gt0 orbC imf_ltsup.
@@ -1531,8 +1531,8 @@ have itvW : {subset `[x, y] <= `[a, b]} by apply/subitvP; rewrite /= leyb leax.
 have fdrv z : z \in `]x, y[ -> is_derive (z : R^o) 1 f (f^`()z).
   rewrite inE => /andP [/ltW lexz /ltW lezy].
   apply: DeriveDef; last by rewrite derive1E.
-  apply: fdrvbl; rewrite inE; apply/andP; split; first exact: le_trans lexz.
-  exact: le_trans leyb.
+  apply: fdrvbl; rewrite inE; apply/andP.
+  by split; [exact: le_trans lexz | exact: le_trans leyb].
 have [] := @MVT _ f (f^`()) x y lexy fdrv.
   by move=> ? /itvW /fdrvbl /derivable1_diffP /differentiable_continuous.
 move=> t /itvW /dfle0 dft dftxy; rewrite -oppr_le0 opprB dftxy.

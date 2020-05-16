@@ -380,8 +380,8 @@ Section ssreal_struct_contd.
 
 Lemma is_upper_boundE (E : set R) x : is_upper_bound E x = ((ub E) x).
 Proof.
-apply/eq_forall=> y.
-by rewrite propeqE; split => h Ey; [apply/RleP/h|apply/RleP/h].
+rewrite propeqE; split; [move=> h|move=> /ubP h y Ey; exact/RleP/h].
+by apply/ubP => y Ey; apply/RleP/h.
 Qed.
 
 Lemma boundE (E : set R) : bound E = has_ub E.
@@ -411,7 +411,7 @@ Lemma real_sup_adherent (E : set R) (eps : R) :
 Proof.
 move=> supE eps_gt0; set m := _ - eps; apply: contrapT=> mNsmall.
 have: (ub E) m.
-  move=> y Ey.
+  apply/ubP => y Ey.
   have /negP := mNsmall (ex_intro2 _ _ y Ey _).
   by rewrite -leNgt.
 have [_ /(_ m)] := real_sup_is_lub supE.
