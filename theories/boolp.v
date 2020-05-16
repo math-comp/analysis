@@ -554,28 +554,35 @@ apply: (asbool_equiv_eqP existsp_asboolPn);
   by split=> -[x h]; exists x; apply/negP.
 Qed.
 
-Lemma existsp_Pn (T : Type) (P : T -> Prop) :
+Lemma existsNP (T : Type) (P : T -> Prop) :
   (exists x : T, ~ P x) <-> (~ forall x : T, P x).
 Proof.
 split => [[x Px h]|/asboolP]; [exact: Px|].
 by rewrite asbool_neg => /existsp_asboolPn.
 Qed.
 
-Lemma existsp_P (T : Type) (P : T -> Prop) :
+Lemma existsP (T : Type) (P : T -> Prop) :
   (exists x : T, P x) <-> (~ forall x : T, ~ P x).
 Proof.
 split => [[x Px h]|/asboolP]; [exact: (h x)|].
-by move/asboolP/existsp_Pn => [x /contrapT Px]; exists x.
+by move/asboolP/existsNP => [x /contrapT Px]; exists x.
 Qed.
 
-Lemma forallp_Pn (T : Type) (P : T -> Prop) :
+Lemma forallNP (T : Type) (P : T -> Prop) :
   (forall x : T, ~ P x) <-> (~ exists x : T, P x).
 Proof.
 split => [h [x Px]|/asboolP]; [exact: (h x)|].
 by rewrite asbool_neg => /forallp_asboolPn.
 Qed.
 
-Lemma imply_Pn (P Q : Prop) : (P /\ ~ Q) <-> ~ (P -> Q).
+Lemma forallP (T : Type) (P : T -> Prop) :
+  (forall x : T, P x) <-> (~ exists x : T, ~ P x).
+Proof.
+split => [h [x px]|]; [exact/px/h|move=> /forallNP h x].
+by move/contrapT : (h x).
+Qed.
+
+Lemma imply_classic (P Q : Prop) : (P /\ ~ Q) <-> ~ (P -> Q).
 Proof.
 split => [[p nq pq]|/asboolP]; [exact/nq/pq|].
 by rewrite asbool_neg => /imply_asboolPn.

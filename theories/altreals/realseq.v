@@ -223,8 +223,8 @@ case: (ltnP n K); last first.
 move=> lt_nK; have: `|u n| \in S; first by apply/map_f; rewrite mem_iota.
 move=> un_S; rewrite ltxU; apply/orP; right.
 case E: {+}K lt_nK => [|k] // lt_nSk; apply/ltr_spaddr; first apply/ltr01.
-apply/sup_upper_bound; last by apply/map_f; rewrite mem_iota E.
-apply/has_supP; split; first by exists `|u 0%N|; rewrite /S E inE eqxx.
+suff : has_sup (fun x : R => x \in S) by move/sup_upper_bound/ubP => ->.
+split; first by exists `|u 0%N|; rewrite /S E inE eqxx.
 elim: {+}S => [|v s [ux /ubP hux]]; first by exists 0; apply/ubP.
 exists (Num.max v ux); apply/ubP=> y; rewrite inE => /orP[/eqP->|].
   by rewrite lexU lexx.
@@ -540,13 +540,13 @@ Proof.
 move=> mn_u cv_ul; set S := (X in sup X); suff: ncvg u (sup S)%:E.
   by move/nlimE; move/nlimE: cv_ul => -> [->].
 elim/nbh_finW=> /= e gt0_e; have sS: has_sup S.
-  apply/has_supP; split; first exists (u 0%N).
+  split; first exists (u 0%N).
     by exists 0%N.
   exists l; apply/ubP => _ [n ->].
   by rewrite -lee_fin; apply/ncvg_homo_le.
 have /sup_adherent := sS => /(_ _ gt0_e) [r] [N ->] lt_uN.
 exists N => n le_Nn; rewrite !inE distrC ger0_norm ?subr_ge0.
-  by apply/sup_upper_bound => //; exists n.
+  by move/ubP : (sup_upper_bound sS) => -> //; exists n.
 by rewrite ltr_subl_addr -ltr_subl_addl (lt_le_trans lt_uN) ?mn_u.
 Qed.
 

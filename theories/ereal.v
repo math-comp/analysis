@@ -425,19 +425,19 @@ Implicit Types S : set {ereal R}.
 Implicit Types x : {ereal R}.
 
 Lemma ereal_ub_pinfty S : ub S +oo.
-Proof. by move=> x _; rewrite lee_pinfty. Qed.
-
-Lemma ereal_ub_set1 x : ub [set x] x.
-Proof. by move=> /= y ->. Qed.
+Proof. by apply/ubP=> x _; rewrite lee_pinfty. Qed.
 
 Lemma ereal_ub_ninfty S : ub S -oo -> S = set0 \/ S = [set -oo].
 Proof.
-have [[x Sx] Snoo|/set0P/negP] := pselect (S !=set0).
+have [[x Sx] /ubP Snoo|/set0P/negP] := pselect (S !=set0).
   right; rewrite predeqE => y; split => [/Snoo|->{y}].
   by rewrite lee_ninfty_eq => /eqP ->.
   by have := Snoo _ Sx; rewrite lee_ninfty_eq => /eqP <-.
 by rewrite negbK => /eqP -> _; left.
 Qed.
+
+Lemma ereal_supremums_set0_ninfty : supremums (@set0 {ereal R}) -oo.
+Proof. by split; [exact/ubP | apply/lbP=> y _; rewrite lee_ninfty]. Qed.
 
 Let real_of_er_def r0 x : R := if x is r%:E then r else r0.
 (* NB: see also real_of_er above *)
@@ -445,37 +445,37 @@ Let real_of_er_def r0 x : R := if x is r%:E then r else r0.
 Lemma ereal_supremums_neq0 S : supremums S !=set0.
 Proof.
 have [/eqP ->|Snoo] := pselect (S == [set -oo]).
-  by exists -oo; split => [|/= y /(_ -oo)]; [exact: ereal_ub_set1 | exact].
+  by exists -oo; split; [rewrite ub_set1 |exact: lb_ub_refl].
 have [S0|/set0P/negP] := pselect (S !=set0); last first.
-  by rewrite negbK => /eqP ->; exists -oo; split => // y _; rewrite lee_ninfty.
+  by rewrite negbK => /eqP ->; exists -oo; exact: ereal_supremums_set0_ninfty.
 have [Spoo|Spoo] := pselect (S +oo).
-  by exists +oo; split => [|/= y /(_ _ Spoo) //]; exact: ereal_ub_pinfty.
+  by exists +oo; split; [apply/ereal_ub_pinfty | apply/lbP => /= y /ubP; apply].
 have [r Sr] : exists r, S r%:E.
   move: S0 Snoo Spoo => [[r Sr _ _|//|Snoo Snoo1 Spoo]]; first by exists r.
-  apply/existsp_P => nS; move: Snoo1; apply; apply/eqP; rewrite predeqE.
+  apply/existsP => nS; move: Snoo1; apply; apply/eqP; rewrite predeqE.
   by case=> // r; split => // /nS.
 set U := [set x | (real_of_er_def r @` S) x ].
 have [ubU|/set0P/negP] := pselect (ub U !=set0); last first.
   rewrite negbK => /eqP; rewrite -subset0 => U0; exists +oo.
-  split => [|/= [r0 Sr0|//|]]; first exact: ereal_ub_pinfty.
+  split; [exact/ereal_ub_pinfty | apply/lbP => /= -[r0 /ubP Sr0|//|]].
   - suff : ub U r0 by move/U0.
-    by move=> y -[] [r1 Sr1 <-| // | /= _ <-{y}]; rewrite -lee_fin; apply Sr0.
+    by apply/ubP=> y -[] [r1 Sr1 <-| // | /= _ <-{y}]; rewrite -lee_fin; apply Sr0.
   - by move/ereal_ub_ninfty => [|] /eqP //; move/set0P : S0 => /negbTE => ->.
 set u : R := sup U.
 exists u%:E; split; last first.
-  case => [r0 Sr0| |].
+  apply/lbP=> -[r0 /ubP Sr0| |].
   - rewrite lee_fin; apply/sup_le_ub; first by exists r, r%:E.
     by apply/ubP => r1 -[[r2 /= Sr2 <-{r1}| // | /= _ <-{r1}]];
       rewrite -lee_fin; exact: Sr0.
   - by rewrite lee_pinfty.
   - by move/ereal_ub_ninfty => [|/eqP //] => /eqP; move/set0P : S0 => /negbTE ->.
-case=> [r0 Sr0|//|_]; last by rewrite lee_ninfty.
-rewrite lee_fin; apply sup_upper_bound; last by exists r0%:E.
-apply/has_supP; split; first by exists r0, r0%:E.
+apply/ubP => -[r0 Sr0|//|_]; last by rewrite lee_ninfty.
+rewrite lee_fin.
+suff : has_sup U by move/sup_upper_bound/ubP; apply; exists r0%:E.
+split; first by exists r0, r0%:E.
 exists u; apply/ubP => y; move=> [] y' Sy' <-{y}.
-apply/sup_upper_bound.
-- apply/has_supP; split; first by exists r, r%:E.
-  by case: ubU => x ubUx; exists x.
+have : has_sup U by split; first by exists r, r%:E.
+move/sup_upper_bound/ubP; apply.
 by case: y' Sy' => [r1 /= Sr1 | // | /= _]; [exists r1%:E | exists r%:E].
 Qed.
 
@@ -501,7 +501,7 @@ Proof.
 rewrite /ereal_sup /supremum.
 case: pselect => /= [S0|/(_ (ex_intro S y Sy)) //].
 case: xgetP => /=.
-by move=> x ->{x} -[] geS _; apply geS.
+by move=> x ->{x} -[] /ubP geS _; apply geS.
 by case: (ereal_supremums_neq0 S) => /= x0 Sx0; move/(_ x0).
 Qed.
 

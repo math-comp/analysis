@@ -479,7 +479,7 @@ Definition is_subset1 {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := Logic.all (is_subset1 \o f).
 Definition is_total {A B} (f : A -> B -> Prop) := Logic.all (nonempty \o f).
 Definition is_totalfun {A B} (f : A -> B -> Prop) :=
-  forall x, nonempty (f x) /\ is_subset1 (f x).
+  forall x, f x !=set0 /\ is_subset1 (f x).
 
 Definition xget {T : choiceType} x0 (P : set T) : T :=
   if pselect (exists x : T, `[<P x>]) isn't left exP then x0
@@ -519,7 +519,7 @@ Definition fun_of_rel {A} {B : choiceType} (f0 : A -> B) (f : A -> B -> Prop) :=
   fun x => xget (f0 x) (f x).
 
 Lemma fun_of_relP {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
-  nonempty (f a) ->  f a (fun_of_rel f0 f a).
+  f a !=set0 -> f a (fun_of_rel f0 f a).
 Proof. by move=> [b fab]; rewrite /fun_of_rel; apply: xgetI fab. Qed.
 
 Lemma fun_of_rel_uniq {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
@@ -695,18 +695,18 @@ suff Twtot : total_on tower R.
   have [R_S] := RS (lub (exist _ tower Twtot)); apply.
   by apply/Rantisym => //; apply/lub_ub/Succ/Lub.
 move=> s t Tws; elim: Tws t => {s} [A sATw ihA|s Tws ihs] t Twt.
-  case: (pselect (forall s, sval A s -> R s t)).
-    by move=> ?; left; apply: lub_lub.
-  move/asboolP; rewrite asbool_neg => /existsp_asboolPn [s /asboolP].
+  have [?|/asboolP] := pselect (forall s, sval A s -> R s t).
+    by left; apply: lub_lub.
+  rewrite asbool_neg => /existsp_asboolPn [s /asboolP].
   rewrite asbool_neg => /imply_asboolPn [As nRst]; right.
   by have /lub_ub := As; apply: Rtrans; have [] := ihA _ As _ Twt.
 suff /(_ _ Twt) [Rts|RSst] : forall r, tower r -> R r s \/ R (succ s) r.
     by right; apply: Rtrans Rts _; have [] := RS s.
   by left.
 move=> r; elim=> {r} [A sATw ihA|r Twr ihr].
-  case: (pselect (forall r, sval A r -> R r s)).
-    by move=> ?; left; apply: lub_lub.
-  move/asboolP; rewrite asbool_neg => /existsp_asboolPn [r /asboolP].
+  have [?|/asboolP] := pselect (forall r, sval A r -> R r s).
+    by left; apply: lub_lub.
+  rewrite asbool_neg => /existsp_asboolPn [r /asboolP].
   rewrite asbool_neg => /imply_asboolPn [Ar nRrs]; right.
   by have /lub_ub := Ar; apply: Rtrans; have /ihA [] := Ar.
 have [Rrs|RSsr] := ihr; last by right; apply: Rtrans RSsr _; have [] := RS r.
@@ -761,9 +761,9 @@ have Astot : total_on (sval A `|` [set s]) R.
   by apply: Rtrans Rts; apply: tub.
 exists (exist _ (sval A `|` [set s]) Astot); split; first by move=> ??; left.
 split=> [AeAs|[B Btot] sAB sBAs].
-  case: (pselect (sval A s)); first by move=> /tub Rst; apply/snet/Rantisym.
+  have [/tub Rst|] := (pselect (sval A s)); first exact/snet/Rantisym.
   by rewrite AeAs /=; apply; right.
-case: (pselect (B s)) => [Bs|nBs].
+have [Bs|nBs] := pselect (B s).
   by right; apply: exist_congr; rewrite predeqE => r; split=> [/sBAs|[/sAB|->]].
 left; case: A tub Astot sBAs sAB => A Atot /= tub Astot sBAs sAB.
 apply: exist_congr; rewrite predeqE => r; split=> [Br|/sAB] //.
@@ -821,43 +821,69 @@ have /Amax <- : R' A (lift t).
 by have [] := repr_liftE t.
 Qed.
 
-(* -------------------------------------------------------------------- *)
-Section ArchiBound.
-
+Section UpperLowerTheory.
+Import Order.TTheory.
 Variables (d : unit) (T : porderType d).
 Implicit Types E : set T.
 
 (* upper bound and lower bound sets. *)
-Definition ub E : set T := [set z | forall y, E y -> (y <= z)%O].
-Definition lb E : set T := [set z | forall y, E y -> (z <= y)%O].
+Definition ub E : set T := locked [set z | forall y, E y -> (y <= z)%O].
+Definition lb E : set T := locked [set z | forall y, E y -> (z <= y)%O].
+
+Lemma ubP E x : (forall y, E y -> (y <= x)%O) <-> ub E x.
+Proof. by rewrite /ub; unlock. Qed.
+
+Lemma lbP E x : (forall y, E y -> (x <= y)%O) <-> lb E x.
+Proof. by rewrite /lb; unlock. Qed.
+
+Lemma ub_set1 x y : ub [set x] y = (x <= y)%O.
+Proof.
+by rewrite propeqE; split => [/ubP/(_ x erefl)//|xy]; apply/ubP => z ->.
+Qed.
+
+Lemma lb_ub_set1 x y : lb (ub [set x]) y -> (y <= x)%O.
+Proof. by move/lbP => /(_ x); apply; rewrite ub_set1. Qed.
+
+Lemma lb_ub_refl x : lb (ub [set x]) x.
+Proof. by apply/lbP => y /ubP; apply. Qed.
+
+Lemma ub_lb_ub E x y : ub E y -> lb (ub E) x -> (x <= y)%O.
+Proof. by move=> Ey /lbP; apply. Qed.
 
 (* down set (i.e., generated order ideal) *)
 (* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
-Definition down E : set T := [set x | exists y, E y /\ (x <= y)%O].
+Definition down E : set T := locked [set x | exists y, E y /\ (x <= y)%O].
 
 (* Real set supremum and infimum existence condition. *)
-Definition has_ub  E := nonempty (ub E).
-Definition has_sup E := nonempty E /\ has_ub E.
-Definition has_lb  E := nonempty (lb E).
-Definition has_inf E := nonempty E /\ has_lb E.
+Definition has_ub  E := ub E !=set0.
+Definition has_sup E := E !=set0 /\ has_ub E.
+Definition has_lb  E := lb E !=set0.
+Definition has_inf E := E !=set0 /\ has_lb E.
 
-Definition supremums E := [set x | ub E x /\ (forall y, ub E y -> (x <= y)%O)].
+Lemma has_ub_set1 x : has_ub [set x]. Proof. by exists x; rewrite ub_set1. Qed.
+
+Lemma downP E x : (exists2 y, E y & (x <= y)%O) <-> down E x.
+Proof.
+by rewrite /down; unlock; split => [[y Ey xy]|[y [Ey xy]]]; [exists y| exists y].
+Qed.
+
+Definition supremums E := ub E `&` lb (ub E).
 
 Lemma supremums_set1 x : supremums [set x] = [set x].
 Proof.
-rewrite predeqE => y; split => [[]/(_ x erefl) xy /(_ x) yx|->{y}].
-  by apply/eqP; rewrite Order.POrderTheory.eq_le xy andbT yx // => z ->.
-by split=> [y -> //|y]; exact.
+rewrite /supremums predeqE => y; split => [[]|].
+  rewrite ub_set1 => xy /lb_ub_set1 => yx.
+  by apply/eqP; rewrite eq_le xy andbT yx // => z ->.
+by move=> xy; split; [rewrite -xy ub_set1 | rewrite -xy; apply: lb_ub_refl].
 Qed.
 
 Lemma is_subset1_supremums E : is_subset1 (supremums E).
 Proof.
-move=> x y [Ex xE] [Ey yE].
-move: {xE Ey}(xE _ Ey) {yE Ex}(yE _ Ex) => xy yx.
-by apply/eqP; rewrite Order.POrderTheory.eq_le xy.
+move=> x y [Ex xE] [Ey yE]; have yx := ub_lb_ub Ex yE. have xy := ub_lb_ub Ey xE.
+by apply/eqP; rewrite eq_le xy.
 Qed.
 
 Definition supremum (x0 : T) E :=
   if pselect (E !=set0) then xget x0 (supremums E) else x0.
 
-End ArchiBound.
+End UpperLowerTheory.

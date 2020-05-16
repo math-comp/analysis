@@ -177,42 +177,9 @@ Definition sup {R : realType} := Real.sup (Real.class R).
 Definition inf {R : realType} (E : set R) := - sup (-%R @` E).
 
 (* -------------------------------------------------------------------- *)
-Section BaseReflect.
-Context {R : archiFieldType}.
-
-Implicit Types E : set R.
-Implicit Types x : R.
-
-Lemma nonemptyP E : nonempty E <-> exists x, E x.
-Proof. by []. Qed.
-
-Lemma ubP E x : (forall y, E y -> y <= x) <-> (ub E x).
-Proof. by []. Qed.
-
-Lemma lbP E x : (forall y, E y -> x <= y) <-> (lb E x).
-Proof. by []. Qed.
-
-Lemma downP E x : (exists2 y, E y & x <= y) <-> (down E x).
-Proof. split => [[y Ey xy]|[y [Ey xy]]]; by [exists y| exists y]. Qed.
-
-Lemma has_ubP {E} : has_ub E <-> nonempty (ub E).
-Proof. by []. Qed.
-
-Lemma has_lbP {E} : has_lb E <-> nonempty (lb E).
-Proof. by []. Qed.
-
-Lemma has_supP {E} : has_sup E <-> (nonempty E /\ nonempty (ub E)).
-Proof. by []. Qed.
-
-Lemma has_infP {E} : has_inf E <-> (nonempty E /\ nonempty (lb E)).
-Proof. by []. Qed.
-
-End BaseReflect.
-
-(* -------------------------------------------------------------------- *)
 
 Lemma sup_upper_bound {R : realType} (E : set R):
-  has_sup E -> (forall x, E x -> x <= sup E).
+  has_sup E -> ub E (sup E).
 Proof. by move=> supE; case: R E supE=> ? [? ? []]. Qed.
 
 Lemma sup_adherent {R : realType} (E : set R) (eps : R) :
@@ -327,8 +294,8 @@ Implicit Types x : R.
 
 Lemma sup_ub {E} : has_ub E -> (ub E) (sup E).
 Proof.
-move=> ubE; apply/ubP=> x x_in_E; apply/sup_upper_bound=> //.
-by apply/has_supP; split; first by exists x.
+move=> ubE; apply/ubP=> x x_in_E; move: (x) (x_in_E).
+by apply/ubP/sup_upper_bound=> //; split; first by exists x.
 Qed.
 
 Lemma sup_total {E} x : has_sup E -> (down E) x \/ sup E <= x.
@@ -340,38 +307,35 @@ case=> e Ee hlte; apply/downP; exists e => //; move: hlte.
 by rewrite opprB addrCA subrr addr0 => /ltW.
 Qed.
 
-Lemma sup_le_ub {E} x : nonempty E -> (ub E) x -> sup E <= x.
+Lemma sup_le_ub {E} x : E !=set0 -> (ub E) x -> sup E <= x.
 Proof.
-move=> hasE /ubP leEx; set y := sup E; pose z := (x + y) / 2%:R.
+move=> hasE leEx; set y := sup E; pose z := (x + y) / 2%:R.
 have Dz: 2%:R * z = x + y.
   by rewrite mulrCA divff ?mulr1 // pnatr_eq0.
-have ubE : has_sup E by split; last by exists x.
+have ubE : has_sup E by split => //; exists x.
 have [/downP [t Et lezt] | leyz] := sup_total z ubE.
   rewrite -(ler_add2l x) -Dz -mulr2n -[X in _<=X]mulr_natl.
-  rewrite ler_pmul2l ?ltr0Sn //; exact/(le_trans lezt)/leEx.
+  rewrite ler_pmul2l ?ltr0Sn //; apply/(le_trans lezt).
+  by move/ubP : leEx; exact.
 rewrite -(ler_add2r y) -Dz -mulr2n -[X in X<=_]mulr_natl.
 by rewrite ler_pmul2l ?ltr0Sn.
 Qed.
 
-Lemma nonemptyPn {E} : ~ nonempty E <-> (forall x, ~ E x).
-Proof. split => [h x Ex|h [x Ex]]; by [apply h; exists x| apply (h x)]. Qed.
-
 Lemma has_ubPn {E} : ~ has_ub E <-> (forall x, exists2 y, E y & x < y).
 Proof.
 split; last first.
-  move=> h /has_ubP [x] hle; case/(_ x): h => y /hle.
+  move=> h [x] /ubP hle; case/(_ x): h => y /hle.
   by rewrite leNgt => /negbTE ->.
-move/forallp_Pn => h x; have {h} := h x.
-move=> /existsp_Pn => -[y /imply_Pn[Ey /negP]].
+move/forallNP => h x; have {h} := h x.
+move=> /ubP /existsNP => -[y /imply_classic[Ey /negP]].
 by rewrite -ltNge => ltx; exists y.
 Qed.
 
-Lemma has_supPn {E} : nonempty E ->
+Lemma has_supPn {E} : E !=set0 ->
   ~ has_sup E <-> (forall x, exists2 y, E y & x < y).
 Proof.
-move=> nzE; split=> [/asboolPn|]; first rewrite (asbool_equiv_eq has_supP).
-  by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_ubPn.
-by move/has_ubPn=> h /has_supP [_].
+move=> nzE; split=> [/asboolPn|/has_ubPn h [_]] //.
+by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_ubPn.
 Qed.
 
 End RealLemmas.
@@ -399,16 +363,16 @@ Qed.
 
 Lemma lb_ubN E x : lb E x <-> ub (-%R @` E) (- x).
 Proof.
-rewrite /lb /ub; split => [xlbE y [z Ez <-{y}]|xlbE y Ey].
-by rewrite ler_oppr opprK; apply xlbE.
-by rewrite -(opprK x) ler_oppl; apply xlbE; exists y.
+split=> [/lbP xlbE|/ubP xlbE].
+by apply/ubP=> y [z Ez <-{y}]; rewrite ler_oppr opprK; apply xlbE.
+by apply/lbP => y Ey; rewrite -(opprK x) ler_oppl; apply xlbE; exists y.
 Qed.
 
 Lemma ub_lbN E x : ub E x <-> lb (-%R @` E) (- x).
 Proof.
-split.
-  by move=> ?; apply/lb_ubN; rewrite opprK setNK.
-by move/lb_ubN; rewrite opprK setNK.
+split=> [? | /lb_ubN].
+by apply/lb_ubN; rewrite opprK setNK.
+by rewrite opprK setNK.
 Qed.
 
 Lemma nonemptyN E : nonempty (-%R @` E) <-> nonempty E.
@@ -419,14 +383,14 @@ Qed.
 
 Lemma has_inf_supN E : has_inf E <-> has_sup (-%R @` E).
 Proof.
-split=> [/has_infP [En0 [x /lb_ubN xlbe]] |/has_supP[NEn0 [x /ub_lbN xubE]] ].
-  by apply/has_supP; split; [apply/nonemptyN|exists (- x)].
-by apply/has_infP; split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
+split=> [ [En0 [x /lb_ubN xlbe]] | [NEn0 [x /ub_lbN xubE]] ].
+by split; [apply/nonemptyN|exists (- x)].
+by split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
 Qed.
 
-Lemma inf_lower_bound E : has_inf E -> (forall x, E x -> inf E <= x).
+Lemma inf_lower_bound E : has_inf E -> lb E (inf E).
 Proof.
-move=> /has_inf_supN /sup_upper_bound inflb x.
+move=> /has_inf_supN /sup_upper_bound /ubP inflb; apply/lbP => x.
 by rewrite memNE => /inflb; rewrite ler_oppl.
 Qed.
 
@@ -446,8 +410,7 @@ Qed.
 
 Lemma has_lb_ubN E : has_lb E <-> has_ub (-%R @` E).
 Proof.
-by split=> [/has_lbP [x /lb_ubN]|/has_ubP [x /ub_lbN]]; [|rewrite setNK];
-  exists (- x).
+by split=> [[x /lb_ubN] | [x /ub_lbN]]; [|rewrite setNK]; exists (- x).
 Qed.
 
 Lemma inf_lb E : has_lb E -> (lb E) (inf E).
@@ -471,9 +434,8 @@ Qed.
 Lemma has_infPn E : nonempty E ->
   ~ has_inf E <-> (forall x, exists2 y, E y & y < x).
 Proof.
-move=> nzE; split=> [/asboolPn|]; first rewrite (asbool_equiv_eq has_infP).
-  by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_lbPn.
-by move/has_lbPn=> h /has_infP [_].
+move=> nzE; split=> [/asboolPn|/has_lbPn h [_] //].
+by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_lbPn.
 Qed.
 
 End InfTheory.
@@ -498,13 +460,13 @@ Qed.
 Lemma sup_in_floor_set x : (floor_set x) (sup (floor_set x)).
 Proof.
 have /sup_adherent /(_ ltr01) [y Fy] := has_sup_floor_set x.
-have /sup_upper_bound /(_ _ Fy) := has_sup_floor_set x.
+have /sup_upper_bound /ubP /(_ _ Fy) := has_sup_floor_set x.
 rewrite le_eqVlt=> /orP[/eqP<-//| lt_yFx].
 rewrite ltr_subl_addr -ltr_subl_addl => lt1_FxBy.
 pose e := sup (floor_set x) - y; have := has_sup_floor_set x.
 move/sup_adherent=> -/(_ e) []; first by rewrite subr_gt0.
 move=> z Fz; rewrite /e opprB addrCA subrr addr0 => lt_yz.
-have /sup_upper_bound /(_ _ Fz) := has_sup_floor_set x.
+have /sup_upper_bound /ubP /(_ _ Fz) := has_sup_floor_set x.
 rewrite -(ler_add2r (-y)) => /le_lt_trans /(_ lt1_FxBy).
 case/andP: Fy Fz lt_yz=> /RintP[yi -> _].
 case/andP=> /RintP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
@@ -523,10 +485,11 @@ Lemma mem_rg1_floor (x : R) : (range1 (floor x)) x.
 Proof.
 rewrite /range1.
 have /andP[_ ->] /= := sup_in_floor_set x.
-case: (pselect ((floor_set x) (floor x + 1))); last first.
+have [|] := pselect ((floor_set x) (floor x + 1)); last first.
   rewrite /floor_set => /negP.
   by rewrite negb_and -ltNge rpredD // ?(Rint1, isint_floor).
-by move/sup_upper_bound=> -/(_ (has_sup_floor_set x)); rewrite ger_addl ler10.
+move/ubP : (sup_upper_bound (has_sup_floor_set x)) => h/h.
+by rewrite ger_addl ler10.
 Qed.
 
 Lemma floor_ler (x : R) : floor x <= x.
@@ -599,7 +562,7 @@ Qed.
 
 Lemma has_sup_down (S : set R) : has_sup (down S) <-> has_sup S.
 Proof.
-split=> /has_supP [nzS nzubS]; apply/has_supP.
+split=> -[nzS nzubS].
   case: nzS=> x /downP[y yS le_xy]; split; first by exists y.
   case: nzubS=> u /ubP ubS; exists u; apply/ubP=> z zS.
   by apply/ubS; apply/downP; exists z.
@@ -613,33 +576,32 @@ Lemma le_sup (S1 S2 : set R) :
     -> sup S1 <= sup S2.
 Proof.
 move=> le_S12 nz_S1 hs_S2; have hs_S1: has_sup S1.
-  apply/has_supP; split=> //; case/has_supP: hs_S2=> _ [x ubx].
+  split=> //; case: hs_S2=> _ [x ubx].
   exists x; apply/ubP=> y /le_S12 /downP[z zS2 le_yz].
   by apply/(le_trans le_yz); move/ubP: ubx; apply.
 rewrite leNgt -subr_gt0; apply/negP => lt_sup.
 case: (sup_adherent hs_S1 lt_sup)=> x /le_S12 xdS2.
 rewrite subKr => lt_S2x; case/downP: xdS2=> z zS2.
-by move/(lt_le_trans lt_S2x); rewrite ltNge sup_upper_bound.
+move/(lt_le_trans lt_S2x); rewrite ltNge.
+by move/ubP: (sup_upper_bound hs_S2) => ->.
 Qed.
 
 Lemma sup_down (S : set R) : sup (down S) = sup S.
 Proof.
-case: (pselect (has_sup S)); last first.
-  by move=> supNS; rewrite !sup_out // => /has_sup_down.
-move=> supS; have supDS: has_sup (down S) by apply/has_sup_down.
+have [supS|supNS] := pselect (has_sup S); last first.
+  by rewrite !sup_out // => /has_sup_down.
+have supDS : has_sup (down S) by apply/has_sup_down.
 apply/eqP; rewrite eq_le !le_sup //.
-  by case/has_supP: supS => -[x xS] _; exists x; apply/le_down.
+  by case: supS => -[x xS] _; exists x; apply/le_down.
   rewrite downK; exact: le_down.
-  by case/has_supP: supS.
+  by case: supS.
 Qed.
 
 Lemma sup1 (c : R) : sup [set c] = c.
 Proof.
-have hs : has_sup [set c]; first (apply/has_supP; split; exists c => //).
-by move=> y <-.
-apply/eqP; rewrite eq_le sup_upper_bound // andbT; apply/sup_le_ub.
-by exists c.
-by move=> y <-.
+have hs : has_sup [set c] by split; [exists c | exact: has_ub_set1].
+apply/eqP; rewrite eq_le; move/ubP: (sup_upper_bound hs) => -> //.
+by rewrite andbT; apply/sup_le_ub; [exists c | rewrite ub_set1].
 Qed.
 
 Lemma inf1 (c : R) : inf [set c] = c.
@@ -655,8 +617,8 @@ Lemma lt_sup_imfset {T : Type} (F : T -> R) l :
   exists2 x, l < F x & F x <= sup [set y | exists x, y = F x].
 Proof.
 set P := [set y | _]; move=> hs; rewrite -subr_gt0.
-case/(sup_adherent hs)=> _ [x ->]; rewrite subKr => lt_lFx.
-by exists x => //; apply/sup_upper_bound => //; exists x.
+case/(sup_adherent hs) => _[x ->]; rewrite subKr=> lt_lFx.
+by exists x => //; move/ubP : (sup_upper_bound hs) => -> //; exists x.
 Qed.
 
 Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
@@ -666,7 +628,7 @@ Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
 Proof.
 set P := [set y | _]; move=> hs; rewrite -subr_gt0.
 case/(inf_adherent hs)=> _ [x ->]; rewrite addrA [_ + l]addrC addrK.
-by move=> ltFxl; exists x=> //; apply/inf_lower_bound => //; exists x.
+by move=> ltFxl; exists x=> //; move/lbP : (inf_lower_bound hs) => -> //; exists x.
 Qed.
 
 End Sup.
