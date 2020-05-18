@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect ssralg matrix finmap.
+From mathcomp Require Import all_ssreflect ssralg matrix finmap order.
 Require Import boolp.
 
 (******************************************************************************)
@@ -144,6 +144,7 @@ Reserved Notation "\bigcap_ ( i : T ) F"
 Reserved Notation "\bigcap_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \bigcap_ i '/  '  F ']'").
+Reserved Notation "A `<` B" (at level 70, no associativity).
 Reserved Notation "A `<=` B" (at level 70, no associativity).
 Reserved Notation "A `<=>` B" (at level 70, no associativity).
 Reserved Notation "f @^-1` A" (at level 24).
@@ -243,8 +244,11 @@ Notation "\bigcap_ ( i : T ) F" :=
 Notation "\bigcap_ i F" := (\bigcap_(i : _) F) : classical_set_scope.
 
 Definition subset {A} (X Y : set A) := forall a, X a -> Y a.
-
 Notation "A `<=` B" := (subset A B) : classical_set_scope.
+
+Definition proper_subset {A} (X Y : set A) := X `<=` Y /\ (exists2 a, Y a & ~ X a).
+Notation "A `<` B" := (proper_subset A B) : classical_set_scope.
+
 Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) : classical_set_scope.
 Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
 Notation "f @` A" := (image f A) : classical_set_scope.
@@ -465,6 +469,27 @@ rewrite propeqE; split=> [XDY0 a|sXY].
 by rewrite predeqE => ?; split=> // - [?]; apply; apply: sXY.
 Qed.
 
+Lemma setDset0 {T} (X Y : set T) : (Y `\` X) != set0 <-> exists2 a : T, Y a & ~ X a.
+Proof.
+rewrite setDE set0P /nonempty; split.
+  by move => -[a [? ?]]; exists a.
+by move => [] a Ya Xa; exists a.
+Qed.
+
+Lemma subsetNeqSetDnonempty {T} (X Y : set T) (H : X `<=` Y) : X != Y <-> (Y `\` X) != set0.
+Proof.
+split.
+  by move/eqP; apply: contra_not_neq; rewrite setD_eq0; apply eqEsubset.
+by move/eqP; apply: contra_not_neq; rewrite setD_eq0 => XeqY; move: XeqY H ->.
+Qed.
+
+Lemma proper_neqAsubset {A} (X Y : set A) : (X `<` Y) = ((X != Y) /\ (X `<=` Y)).
+Proof.
+rewrite propeqE /proper_subset -setDset0; split; move => [] ?.
+  by rewrite -subsetNeqSetDnonempty.
+move => ? ; by rewrite -subsetNeqSetDnonempty.
+Qed.
+
 Lemma nonsubset {A} (X Y:set A): ~ (X `<=` Y) -> X `&` ~` Y !=set0.
 Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
 
@@ -603,8 +628,19 @@ by move=> [[Xt|Zt] [Yt|Zt']]; by [left|right].
 Qed.
 
 Lemma setUIr T : right_distributive (@setU T) (@setI T).
-move.
 Proof. by move=> X Y Z; rewrite ![X `|` _]setUC setUIl. Qed.
+
+Lemma setUK T (A B : set T) : (A `|` B) `&` A = A.
+Proof. by apply/eqEsubset => [t []//|t ?]; split => //; left. Qed.
+
+Lemma setKU T (A B : set T) : A `&` (B `|` A) = A.
+Proof. by apply/eqEsubset => [t []//|t ?]; split => //; right. Qed.
+
+Lemma setIK T (A B : set T) : (A `&` B) `|` A = A.
+Proof. by apply/eqEsubset => [t [[]//|//]|t At]; right. Qed.
+
+Lemma setKI T (A B : set T) : A `|` (B `&` A) = A.
+Proof. by apply/eqEsubset => [t [//|[]//]|t At]; left. Qed.
 
 Lemma setDUl T (A B C : set T) : (A `|` B) `\` C = (A `\` C) `|` (B `\` C).
 Proof. by rewrite !setDE setIUl. Qed.
@@ -1136,3 +1172,88 @@ exists n.+1; split => // m Em; case/existsNP : En => k /not_implyP[Ek /negP].
 rewrite -Order.TotalTheory.ltNge => kn.
 by rewrite (Order.POrderTheory.le_trans _ (Em _ Ek)).
 Qed.
+
+Fact set_display : unit. Proof. by []. Qed.
+
+Module SetOrder.
+Module Internal.
+Section SetOrder.
+
+Context {T: Type}.
+Implicit Types (X Y : set T).
+
+Lemma setI_meet X Y : `[< X `<=` Y >] = (X `&` Y == X).
+Proof. by apply/asboolP/eqP; rewrite setIidPl. Qed.
+
+Fact SetOrder_joinKI (Y X : set T) : X `&` (X `|` Y) = X.
+Proof. by rewrite setUC setKU. Qed.
+
+Fact SetOrder_meetKU (Y X : set T) : X `|` (X `&` Y) = X.
+Proof. by rewrite setIC setKI. Qed.
+
+Definition orderMixin := @MeetJoinMixin _ _ _ setI setU setI_meet
+  (fun _ _ => erefl) (@setIC _) (@setUC _) (@setIA _) (@setUA _)
+  SetOrder_joinKI SetOrder_meetKU (@setIUl _) setIid.
+
+Local Canonical porderType := POrderType set_display (set T) orderMixin.
+Local Canonical latticeType := LatticeType (set T) orderMixin.
+Local Canonical distrLatticeType := DistrLatticeType (set T) orderMixin.
+
+Fact SetOrder_sub0set (x: set T): (set0 <= x)%O.
+Proof. apply/asboolP; apply: sub0set. Qed.
+
+Fact SetOrder_setTsub (x:set T): (x <= setT)%O.
+Proof. apply/asboolP; by []. Qed.
+
+Local Canonical blatticeType := BLatticeType (set T) (Order.BLattice.Mixin  SetOrder_sub0set).
+Local Canonical tblatticeType := TBLatticeType (set T) (Order.TBLattice.Mixin SetOrder_setTsub).
+Local Canonical bDistrLatticeType := [bDistrLatticeType of (set T)].
+Local Canonical tbDistrLatticeType := [tbDistrLatticeType of (set T)].
+
+Lemma subKI X Y : Y `&` (X `\` Y) = set0. Proof.
+  by rewrite setDE setICA setICr setI0.
+Qed.
+Lemma joinIB X Y : (X `&` Y) `|` X `\` Y = X. Proof.
+  by rewrite setDE -setIUr setUCr setIT.
+Qed.
+
+Local Canonical cbDistrLatticeType := CBDistrLatticeType (set T)
+  (@CBDistrLatticeMixin _ _ (fun X Y => X `\` Y) subKI joinIB).
+
+Local Canonical ctbDistrLatticeType := CTBDistrLatticeType (set T)
+  (@CTBDistrLatticeMixin _ _ _ (fun X => ~` X) (@setCE _)).
+
+End SetOrder.
+End Internal.
+
+Module Exports.
+
+Canonical Internal.porderType.
+Canonical Internal.latticeType.
+Canonical Internal.distrLatticeType.
+Canonical Internal.blatticeType.
+Canonical Internal.tblatticeType.
+Canonical Internal.bDistrLatticeType.
+Canonical Internal.tbDistrLatticeType.
+Canonical Internal.cbDistrLatticeType.
+Canonical Internal.ctbDistrLatticeType.
+
+Lemma subsetEset {T} (X Y : set T) : (X <= Y)%O = (X `<=` Y) :> Prop.
+Proof. by rewrite asboolE. Qed.
+
+Lemma properEset  {T} (X Y : set T) : (X < Y)%O = (X `<` Y) :> Prop. 
+Proof.
+rewrite /Order.lt proper_neqAsubset //=.
+by rewrite -[Y != X]asboolb -asbool_and asboolE eq_sym.
+Qed.
+
+Lemma subEset {T} (X Y : set T) : (X `\` Y)%O = (X `\` Y). Proof. by []. Qed.
+Lemma complEset {T} (X Y : set T) : (~` X)%O = ~` X. Proof. by []. Qed.
+Lemma botEset {T} (X Y : set T) : 0%O = @set0 T. Proof. by []. Qed.
+Lemma topEset {T} (X Y : set T) : 1%O = @setT T. Proof. by []. Qed.
+
+Lemma meetEset {T} (X Y : set T) : (X `&` Y)%O = (X `&` Y). Proof. by []. Qed.
+Lemma joinEset {T} (X Y : set T) : (X `|` Y)%O = (X `|` Y). Proof. by []. Qed.
+
+End Exports.
+End SetOrder.

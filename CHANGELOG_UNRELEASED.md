@@ -11,6 +11,8 @@
     `setDUr`, `setDUl`, `setIDA`, `setDD`
   + definition `dep_arrow_choiceType`
   + lemma `bigcup_set0`
+  + lemmas `setUK`, `setKU`, `setIK`, `setKI`, `subsetEset`, `subEset`, `complEset`, `botEset`, `topEset`, `meetEset`, `joinEset`
+  + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType`
 - in `normedtype.v`:
   + lemma `closed_ereal_le_ereal`
   + lemma `closed_ereal_ge_ereal`
@@ -47,6 +49,9 @@
   + lemma `oppe_continuous`
   + lemmas `setUCl`, `setDv`
   + lemmas `image_preimage_subset`, `image_subset`, `preimage_subset`
+  + lemmas `setUK`, `setKU`, `setIK`, `setKI`
+  + lemmas `setUK`, `setKU`, `setIK`, `setKI`, `subsetEset`, `subEset`, `complEset`, `botEset`, `topEset`, `meetEset`, `joinEset`, `setDset0`, `subsetNeqSetDnonempty`, `proper_neqAsubset`
+  + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType`.
 
 ### Changed
 

@@ -278,6 +278,18 @@ move=> cb /asboolPn nb; apply/asboolPn.
 by apply: contra nb => /asboolP /cb /asboolP.
 Qed.
 
+(** subsumed by mathcomp 1.2, to be removed *)
+Lemma contra_notT (P: Prop) (b:bool) : (~~ b -> P) -> ~ P -> b.
+Proof. by case: b => //= /(_ isT) HP /(_ HP). Qed.
+
+(** subsumed by mathcomp 1.2, to be removed *)
+Lemma contra_notN (P: Prop) (b:bool) : (b -> P) -> ~ P -> ~~ b.
+Proof. rewrite -{1}[b]negbK; exact: contra_notT. Qed.
+
+(** subsumed by mathcomp 1.2, to be removed *)
+Lemma contra_not_neq (T: eqType)  (P: Prop) (x y:T) : (x = y -> P) -> ~ P -> x != y.
+Proof. by move=> imp; apply: contra_notN => /eqP. Qed.
+
 Lemma contraPnot (Q P : Prop) : (Q -> ~ P) -> P -> ~ Q.
 Proof.
 move=> cb /asboolP hb; apply/asboolPn.
