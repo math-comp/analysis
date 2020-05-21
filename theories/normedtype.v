@@ -89,9 +89,6 @@ Local Open Scope ring_scope.
 
 Section add_to_mathcomp.
 
-Lemma subr_trans (M : zmodType) (z x y : M) : x - y = (x - z) + (z - y).
-Proof. by rewrite addrA addrNK. Qed.
-
 Lemma ltr_distW (R : realDomainType) (x y e : R) :
   `|x - y| < e -> y - e < x.
 Proof. by rewrite ltr_distl => /andP[]. Qed.
@@ -1281,7 +1278,7 @@ apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
 rewrite inE -ler_distl; set he := (e%:num / 2)%:pos.
 have [z []] := clxy _ _ (locally_ball x he) (locally_ball y he).
 move=> zx_he yz_he.
-rewrite (subr_trans z) (le_trans (ler_norm_add _ _) _)// ltW //.
+rewrite -(subrKA z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
 Qed.
 
