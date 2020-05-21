@@ -297,7 +297,7 @@ Notation "\sum_ ( i 'in' A | P ) F" :=
 Notation "\sum_ ( i 'in' A ) F" :=
   (\big[+%E/0%:E]_(i in A) F%R) : ereal_scope.
 
-Section ERealArithTh.
+Section ERealArithTh_numDomainType.
 
 Context {R : numDomainType}.
 
@@ -324,4 +324,52 @@ Proof. by rewrite /= oppr0. Qed.
 Lemma oppeK : involutive (A := {ereal R}) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
 
-End ERealArithTh.
+Lemma eqe_opp x y : (- x == - y)%E = (x == y).
+Proof.
+move: x y => [r| |] [r'| |] //=; apply/idP/idP => [|/eqP[->]//].
+by move/eqP => -[] /eqP; rewrite eqr_opp => /eqP ->.
+Qed.
+
+End ERealArithTh_numDomainType.
+
+Section ERealArithTh_realDomainType.
+
+Context {R : realDomainType}.
+Implicit Types x y a b : {ereal R}.
+
+Lemma sube_gt0 x y: (0%:E < y - x)%E = (x < y)%E.
+Proof.
+move: x y => [r | |] [r'| |] //=; rewrite ?(lte_pinfty,lte_ninfty) //.
+by rewrite !lte_fin subr_gt0.
+Qed.
+
+Lemma lte_oppl x y : (- x < y)%E = (- y < x)%E.
+Proof.
+move: x y => [r| |] [r'| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
+by rewrite !lte_fin ltr_oppl.
+Qed.
+
+Lemma lte_oppr x y : (x < - y)%E = (y < - x)%E.
+Proof.
+move: x y => [r| |] [r'| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
+by rewrite !lte_fin ltr_oppr.
+Qed.
+
+Lemma lee_addl x y : (0%:E <= y)%E ->  (x <= x + y)%E.
+Proof.
+move: x y => -[ x [y| |]//= | [| |]// | [| | ]//];
+  by [rewrite !lee_fin ler_addl | move=> _; exact: lee_pinfty].
+Qed.
+
+Lemma lee_add2l x a b : (a <= b)%E -> (x + a <= x + b)%E.
+Proof.
+move: a b x => -[a [b [x /=|//|//] | []// |//] | []// | ].
+- by rewrite !lee_fin ler_add2l.
+- move=> r _; exact: lee_pinfty.
+- move=> -[b [|  |]// | []// | //] r oob; exact: lee_ninfty.
+Qed.
+
+Lemma lee_add2r x a b : (a <= b)%E -> (a + x <= b + x)%E.
+Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
+
+End ERealArithTh_realDomainType.
