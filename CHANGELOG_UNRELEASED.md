@@ -59,7 +59,7 @@ notation for the norm is now uniform.
   + fixed differential of `inv` which was defined on `1 / x` instead of `x^-1`
   + two versions of lemmas on inverse exist
     * one in realType (`Rinv_` lemmas), for which we have differential
-    * one in numClosedFieldType (no differential so far, just continuity)
+    * a general one `numFieldType`  (`inv_` lemmas in normedtype.v, no differential so far, just continuity)
   + renamed `cvg_norm` to `cvg_dist` to reuse the name `cvg_norm` for
     convergence under the norm
 - rename `is_prop` to `is_subset1`
