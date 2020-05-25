@@ -5,7 +5,25 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import boolp classical_sets reals.
+Require Import boolp classical_sets reals posnum.
+
+(******************************************************************************)
+(*                        Extended real numbers                               *)
+(*                                                                            *)
+(* Given a type R for numbers, {ereal R} is the type R extended with symbols  *)
+(* -oo and +oo (notation scope: %E), suitable to represent extended real      *)
+(* numbers. When R is a numDomainType, {ereal R} is equipped with a canonical *)
+(* POrderType and operations for addition/opposite. When R is a               *)
+(* realDomainType, {ereal R} is equipped with a Canonical OrderType.          *)
+(*                                                                            *)
+(*                   r%:E == injects real numbers into {ereal R}              *)
+(*               +%E, -%E == addition/opposite for extended reals             *)
+(*  (\sum_(i in A) f i)%E == bigopg-like notation in scope %E                 *)
+(*            ereal_sup E == supremum of E                                    *)
+(*            ereal_inf E == infimum of E                                     *)
+(* ereal_supremums_neq0 S == S has a supremum                                 *)
+(*                                                                            *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -91,7 +109,7 @@ Variable (R : countType).
 Definition ereal_countMixin := PcanCountMixin (@codeK R).
 Canonical ereal_countType := CountType {ereal R} ereal_countMixin.
 
-End ERealCount.
+ End ERealCount.
 
 Section ERealOrder.
 Context {R : numDomainType}.
@@ -339,7 +357,7 @@ End ERealArithTh_numDomainType.
 Section ERealArithTh_realDomainType.
 
 Context {R : realDomainType}.
-Implicit Types x y a b : {ereal R}.
+Implicit Types x y z a b : {ereal R}.
 
 Lemma sube_gt0 x y: (0%:E < y - x)%E = (x < y)%E.
 Proof.
@@ -375,6 +393,12 @@ Qed.
 
 Lemma lee_add2r x a b : (a <= b)%E -> (a + x <= b + x)%E.
 Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
+
+Lemma lte_subl_addr x (r : R) z : (x - r%:E < z)%E = (x < z + r%:E)%E.
+Proof.
+move: x r z => [x| |] r [z| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
+by rewrite !lte_fin ltr_subl_addr.
+Qed.
 
 End ERealArithTh_realDomainType.
 
@@ -496,13 +520,33 @@ Qed.
 Lemma ereal_inf_set0 : ereal_inf set0 = +oo.
 Proof. by rewrite /ereal_inf image_set0 ereal_sup_set0. Qed.
 
-Lemma ereal_sup_ub S y (Sy : S y) : y <= ereal_sup S.
+Lemma ereal_sup_ub S : ub S (ereal_sup S).
 Proof.
-rewrite /ereal_sup /supremum.
+move=> y Sy; rewrite /ereal_sup /supremum.
 case: pselect => /= [S0|/(_ (ex_intro S y Sy)) //].
 case: xgetP => /=.
 by move=> x ->{x} -[] /ubP geS _; apply geS.
 by case: (ereal_supremums_neq0 S) => /= x0 Sx0; move/(_ x0).
+Qed.
+
+Lemma ub_ereal_sup S M : ub S M -> (ereal_sup S <= M)%E.
+Proof.
+rewrite /ereal_sup /supremum; case: pselect => /= [|_ _].
+- move=> S0 SM; case: xgetP => [x ->{x} [_]| _] /=; first exact.
+  by rewrite lee_ninfty.
+- by rewrite lee_ninfty.
+Qed.
+
+Lemma ub_ereal_sup_adherent S (e : {posnum R}) (r : R) :
+  ereal_sup S = r%:E -> exists x, S x /\ (ereal_sup S - e%:num%:E < x)%E.
+Proof.
+move=> Sr.
+have : ~ ub S (ereal_sup S - e%:num%:E)%E.
+  move/ub_ereal_sup; apply/negP.
+  by rewrite -ltNge Sr lte_subl_addr lte_fin ltr_addl.
+move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
+case/imply_classic => ? ?; exists x; split => //.
+by rewrite ltNge; apply/negP.
 Qed.
 
 End ereal_supremum.

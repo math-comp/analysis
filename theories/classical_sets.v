@@ -85,6 +85,11 @@ Require Import boolp.
 (*     upper bound has a maximal element. We also proved an analogous version *)
 (*     for preorders, where maximal is replaced with premaximal: t is         *)
 (*     premaximal if whenever t < s we also have s < t.                       *)
+(*                                                                            *)
+(* * Upper and lower bounds:                                                  *)
+(*                      ul, lb == upper bound and lower bound sets            *)
+(*               supremum x0 E == supremum of E or x0 if E is empty           *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -826,15 +831,14 @@ Import Order.TTheory.
 Variables (d : unit) (T : porderType d).
 Implicit Types E : set T.
 
-(* upper bound and lower bound sets. *)
-Definition ub E : set T := locked [set z | forall y, E y -> (y <= z)%O].
-Definition lb E : set T := locked [set z | forall y, E y -> (z <= y)%O].
+Definition ub E : set T := [set z | forall y, E y -> (y <= z)%O].
+Definition lb E : set T := [set z | forall y, E y -> (z <= y)%O].
 
 Lemma ubP E x : (forall y, E y -> (y <= x)%O) <-> ub E x.
-Proof. by rewrite /ub; unlock. Qed.
+Proof. by []. Qed.
 
 Lemma lbP E x : (forall y, E y -> (x <= y)%O) <-> lb E x.
-Proof. by rewrite /lb; unlock. Qed.
+Proof. by []. Qed.
 
 Lemma ub_set1 x y : ub [set x] y = (x <= y)%O.
 Proof.
@@ -852,7 +856,7 @@ Proof. by move=> Ey /lbP; apply. Qed.
 
 (* down set (i.e., generated order ideal) *)
 (* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
-Definition down E : set T := locked [set x | exists y, E y /\ (x <= y)%O].
+Definition down E : set T := [set x | exists y, E y /\ (x <= y)%O].
 
 (* Real set supremum and infimum existence condition. *)
 Definition has_ub  E := ub E !=set0.
@@ -863,9 +867,7 @@ Definition has_inf E := E !=set0 /\ has_lb E.
 Lemma has_ub_set1 x : has_ub [set x]. Proof. by exists x; rewrite ub_set1. Qed.
 
 Lemma downP E x : (exists2 y, E y & (x <= y)%O) <-> down E x.
-Proof.
-by rewrite /down; unlock; split => [[y Ey xy]|[y [Ey xy]]]; [exists y| exists y].
-Qed.
+Proof. by split => [[y Ey xy]|[y [Ey xy]]]; [exists y| exists y]. Qed.
 
 Definition supremums E := ub E `&` lb (ub E).
 
