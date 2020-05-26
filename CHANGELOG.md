@@ -7,8 +7,8 @@ Last release: [[0.3.0] - 2020-05-26](#030---2020-05-26)
 This release is compatible with MathComp version 1.11.0+beta1.
 
 The biggest change of this release is compatibility with MathComp
-1.11.0.  The latter introduces in particular ordered types. The
-notation for the norm is now uniform.
+1.11.0.  The latter introduces in particular ordered types.
+All norms and absolute values have been unified, both in their denotation `|_| and in their theory.
 
 ### Added
 
