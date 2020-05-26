@@ -53,6 +53,11 @@ notation for the norm is now uniform.
 
 ### Renamed
 
+- renaming `flim` to `cvg`
+  + `cvg` corresponds to `_ --> _`
+  + `lim` corresponds to `lim _`
+  + `continuous`  corresponds to continuity
+  + some suffixes `_opp`, `_add` ... renamed to `N`, `D`, ...
 - big refactoring about naming conventions
   + complete the theory of `cvg_`, `is_cvg_` and `lim_` in normedtype.v
     with consistent naming schemes
@@ -62,13 +67,8 @@ notation for the norm is now uniform.
     * a general one `numFieldType`  (`inv_` lemmas in normedtype.v, no differential so far, just continuity)
   + renamed `cvg_norm` to `cvg_dist` to reuse the name `cvg_norm` for
     convergence under the norm
-- rename `is_prop` to `is_subset1`
-- renaming `flim` to `cvg`
-  + `cvg` corresponds to `_ --> _`
-  + `lim` corresponds to `lim _`
-  + `continuous`  corresponds to continuity
-  + some suffixes `_opp`, `_add` ... renamed to `N`, `D`, ...
 - `Uniform` renamed to `PseudoMetric`
+- rename `is_prop` to `is_subset1`
 
 ### Removed
 
