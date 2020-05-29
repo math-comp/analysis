@@ -687,3 +687,50 @@ apply/cauchy_cvgP/cauchy_seriesP => e /u_ncvg.
 apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
+
+Section sequences_of_extended_real_numbers.
+
+(* TODO: worth keeping in addition to cvgPpinfty? *)
+Lemma cvgPpinfty_lt (R : realFieldType) (u_ : R^o ^nat) :
+  u_ --> +oo <-> forall A, A > 0 -> \forall n \near \oo, A < u_ n.
+Proof.
+split => [/cvgPpinfty uoo A A0|uoo]; last first.
+  by apply/cvgPpinfty => A {}/uoo [n _ uoo]; exists n => // m nm; apply/ltW/uoo.
+have /uoo[n _ {}uoo] : 0 < A *+ 2 by rewrite pmulrn_lgt0.
+exists n => // m nm; rewrite (@lt_le_trans _ _ (A *+ 2)) // ?mulr2n ?ltr_addr //.
+exact: uoo.
+Qed.
+
+Lemma dvg_ereal_cvg (R : realType) (u_ : (R^o) ^nat) :
+  u_ --> +oo -> (fun n => (u_ n)%:E) --> +oo%E.
+Proof.
+move/cvgPpinfty_lt => uoo; apply/cvg_ballP => _/posnumP[e]; rewrite near_map.
+have [e1|e1] := lerP 1 e%:num.
+  case: (uoo _ ltr01) => k _ k1un; near=> n.
+  rewrite /ball /= /ereal_ball [contract +oo]/= ger0_norm ?subr_ge0; last first.
+    by move: (contract_le1 (u_ n)%:E); rewrite ler_norml => /andP[].
+  rewrite ltr_subl_addr addrC -ltr_subl_addr.
+  suff : contract 1%:E < contract (u_ n)%:E.
+    apply/le_lt_trans.
+    by rewrite (@le_trans _ _ 0) // ?subr_le0 //= normr1 divr_ge0.
+  apply homo_contract_lt; rewrite lte_fin; apply k1un.
+  by near: n; exists k.
+have onee1 : `|1 - e%:num| < 1.
+  by rewrite gtr0_norm // ?subr_gt0 // ltr_subl_addl addrC -ltr_subl_addl subrr.
+have : 0 < real_of_er (expand (1 - e%:num)).
+  rewrite -lte_fin real_of_er_expand // -expand0.
+  apply homo_expand_lt; by
+    [rewrite inE normr0| rewrite inE ltW| rewrite subr_gt0].
+case/uoo => k _ k1un; near=> n.
+rewrite /ball /= /ereal_ball [contract +oo]/= ger0_norm ?subr_ge0; last first.
+  by move: (contract_le1 (u_ n)%:E); rewrite ler_norml => /andP[].
+rewrite ltr_subl_addr addrC -ltr_subl_addr.
+suff : `|1 - e%:num| < contract (u_ n)%:E by exact: le_lt_trans (ler_norm _).
+rewrite gtr0_norm ?subr_gt0 // -(@expandK R (1 - e%:num)); last first.
+  by rewrite inE gtr0_norm ?subr_gt0// ler_subl_addr addrC -ler_subl_addr subrr.
+rewrite -lte_fin; apply/homo_contract_lt.
+rewrite -real_of_er_expand // lte_fin; apply k1un.
+by near: n; exists k.
+Grab Existential Variables. all: end_near. Qed.
+
+End sequences_of_extended_real_numbers.
