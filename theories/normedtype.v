@@ -946,39 +946,26 @@ Qed.
 Lemma bijective_contract : {on [pred x| `|x| <= 1], bijective contract}.
 Proof. exists expand; [by move=> x _; rewrite contractK | exact: expandK]. Qed.
 
-Lemma contract_preserves_order : {homo contract : x y / (x < y)%O}.
+Lemma homo_contract_lt : {homo contract : x y / (x < y)%O}.
 Proof.
-move=> -[r0 | | ] [r1 | _ | _ ] //=.
-- rewrite lte_fin => r0r1; rewrite ltr_pdivr_mulr; last first.
-    by rewrite -(addr0 0) ltr_le_add.
-  rewrite mulrAC ltr_pdivl_mulr 2?mulrDr 2?mulr1; last first.
-    by rewrite -(addr0 0) ltr_le_add.
-  have [r10|r10] := lerP 0 r1.
-    rewrite ger0_norm //.
-    have [r00|r00] := lerP 0 r0.
-      move: r00 r0r1; rewrite le_eqVlt => /orP[/eqP <-|r00].
-        by rewrite add0r mul0r normr0 mulr0 addr0.
-      by move=> r0r1; rewrite gtr0_norm // mulrC ltr_add2r.
-    move: r10 r0r1; rewrite le_eqVlt => /orP[/eqP <-|r10 r0r1].
-      by rewrite mulr0 addr0 add0r mul0r.
-    rewrite ltr0_norm // ltr_add // (@lt_trans _ _ 0) //.
-    by rewrite nmulr_rlt0.
-    by rewrite pmulr_lgt0 // oppr_gt0.
-  rewrite ltr0_norm //.
-  have [r00|r00] := lerP 0 r0.
-    by move: (le_lt_trans r00 r0r1) => /(lt_trans r10); rewrite ltxx.
-  by rewrite ltr0_norm // mulrC mulrN -mulNr ltr_add2r.
-- rewrite ltr_pdivr_mulr; last by rewrite -(addr0 0) ltr_le_add.
-  by rewrite mul1r -{1}(add0r r0) ltr_le_add // ler_norm.
-- rewrite ltr_pdivl_mulr ?mulN1r; last by rewrite -(addr0 0) ltr_le_add.
-  by rewrite ltr_oppl -(add0r (- r1)) ltr_le_add // -(normrN r1) ler_norm.
-- by rewrite -subr_gt0 opprK (_ : 1 = 1%:R).
+move=> -[r0 | | ] [r1 | _ | _] //=.
+- rewrite lte_fin => r0r1; rewrite ltr_pdivr_mulr ?ltr_paddr//.
+  rewrite mulrAC ltr_pdivl_mulr ?ltr_paddr// 2?mulrDr 2?mulr1.
+  have [r10|?] := ler0P r1; last first.
+    rewrite ltr_le_add // mulrC; have [r00|//] := ler0P r0.
+    by rewrite (@le_trans _ _ 0) // ?pmulr_lle0 // mulr_ge0 // ?oppr_ge0 // ltW.
+  have [?|r00] := ler0P r0; first by rewrite ltr_le_add // 2!mulrN mulrC.
+  by move: (le_lt_trans r10 (lt_trans r00 r0r1)); rewrite ltxx.
+- by rewrite ltr_pdivr_mulr ?ltr_paddr// mul1r ltr_spaddl // ler_norm.
+- rewrite ltr_pdivl_mulr ?mulN1r ?ltr_paddr// => _.
+  by rewrite ltr_oppl ltr_spaddl // ler_normr lexx orbT.
+- by rewrite -subr_gt0 opprK.
 Qed.
 
-Lemma contract_preserves_le_order : {homo contract : x y / (x <= y)%O}.
-Proof. exact/ltW_homo/contract_preserves_order. Qed.
+Lemma homo_contract_le : {homo contract : x y / (x <= y)%O}.
+Proof. exact/ltW_homo/homo_contract_lt. Qed.
 
-Lemma expand_preserves_order :
+Lemma homo_expand_lt :
   {in [pred x| `|x| <= 1] & [pred x| `|x| <= 1], {homo expand : x y / (x < y)%O}}.
 Proof.
 move=> x y; rewrite !inE => x1 y1 xy; rewrite /expand.
@@ -1067,7 +1054,7 @@ case => [r | | //].
     by move: (contract_lt1 r); rewrite ltr_norml => /andP[].
   rewrite ltr_subl_addl addrC -ltr_subl_addl -[X in X < _]expandK; last first.
     by rewrite inE ger0_norm ?ler_subl_addl ?ler_addr // subr_ge0.
-  exact: contract_preserves_order.
+  exact: homo_contract_lt.
 - by move=> _; apply reA; rewrite /= subrr normr0.
 Qed.
 
@@ -1145,7 +1132,7 @@ have X : `|contract r%:E - (e)%:num| < 1.
 pose e' := r - real_of_er (expand (contract r%:E - e%:num)).
 have e'0 : 0 < e'.
   rewrite subr_gt0 -lte_fin -[in X in (_ < X)%E](contractK r%:E) real_of_er_expand //.
-  apply: (expand_preserves_order _ (contract_le1 _)); first by rewrite inE ltW.
+  apply: (homo_expand_lt _ (contract_le1 _)); first by rewrite inE ltW.
   by rewrite ltr_subl_addl ltr_addr.
 apply/locallyP; exists e' => // r' re'r'; apply reA.
 rewrite /ball /= in re'r'.
@@ -1153,15 +1140,15 @@ have [rr'|r'r] := lerP r r'.
   move: rr'; rewrite le_eqVlt => /orP[/eqP->|rr']; first by rewrite subrr normr0.
   rewrite ltr0_norm ?subr_lt0// opprB in re'r'.
   rewrite ltr0_norm; last first.
-    by rewrite subr_lt0; apply: contract_preserves_order; rewrite lte_fin.
+    by rewrite subr_lt0; apply: homo_contract_lt; rewrite lte_fin.
   rewrite opprB ltr_subl_addl (lt_le_trans _ re1) //.
   by move: (contract_lt1 r'); rewrite ltr_norml => /andP[].
 rewrite gtr0_norm ?subr_gt0 //; last first.
-    by apply: contract_preserves_order; rewrite lte_fin.
+    by apply: homo_contract_lt; rewrite lte_fin.
 move: re'r'.
 rewrite gtr0_norm // ?subr_gt0// /e'.
 rewrite -ltr_subl_addl addrAC subrr add0r ltr_oppl opprK -lte_fin real_of_er_expand //.
-rewrite -[in X in X -> _](contractK r'%:E) => /contract_preserves_order r'e'r.
+rewrite -[in X in X -> _](contractK r'%:E) => /homo_contract_lt r'e'r.
 rewrite expandK in r'e'r; last by rewrite inE ltW.
 rewrite expandK in r'e'r; last by rewrite inE contract_le1.
 by rewrite ltr_subl_addl addrC -ltr_subl_addl.
@@ -1181,7 +1168,7 @@ pose e' : R := real_of_er (expand (contract r%:E + e%:num)) - r.
 have e'0 : 0 < e'.
   rewrite /e'.
   rewrite subr_gt0 -lte_fin -[in X in (X < _)%E](contractK r%:E) real_of_er_expand //.
-  apply: (expand_preserves_order (contract_le1 _)); last by rewrite ltr_addl.
+  apply: (homo_expand_lt (contract_le1 _)); last by rewrite ltr_addl.
   by rewrite inE ltW.
 apply/locallyP; exists e' => // r' r'e'r; apply reA.
 rewrite /ball /= in r'e'r.
@@ -1190,13 +1177,13 @@ have [rr'|r'r] := lerP r r'.
     by rewrite subrr normr0.
   rewrite ltr0_norm ?subr_lt0// opprB in r'e'r.
   rewrite ltr0_norm; last first.
-    by rewrite subr_lt0; apply: contract_preserves_order; rewrite lte_fin.
+    by rewrite subr_lt0; apply: homo_contract_lt; rewrite lte_fin.
   rewrite opprB; move: r'e'r.
   rewrite /e' -ltr_subl_addr opprK subrK -lte_fin real_of_er_expand //.
   move=> r'e'r; rewrite ltr_subl_addl.
-  by move/contract_preserves_order : r'e'r; rewrite expandK // inE ltW.
+  by move/homo_contract_lt : r'e'r; rewrite expandK // inE ltW.
 rewrite gtr0_norm; last first.
-  by rewrite subr_gt0; apply contract_preserves_order; rewrite lte_fin.
+  by rewrite subr_gt0; apply homo_contract_lt; rewrite lte_fin.
 rewrite ltr_subl_addl addrC -ltr_subl_addl (le_lt_trans reN1) //.
 by move: (contract_lt1 r'); rewrite ltr_norml => /andP[].
 Qed.
@@ -1214,11 +1201,11 @@ case: x => [r'| |] //.
     rewrite le_eqVlt => /orP[/eqP <-|rr'].
       by rewrite subrr normr0.
     rewrite ltr0_norm; last first.
-      by rewrite subr_lt0; apply: contract_preserves_order; rewrite lte_fin.
+      by rewrite subr_lt0; apply: homo_contract_lt; rewrite lte_fin.
     rewrite opprB ltr_subl_addl (le_lt_trans _ re1) //.
     by move: (contract_le1 r'%:E); rewrite ler_norml => /andP[].
   rewrite gtr0_norm; last first.
-    by rewrite subr_gt0; apply contract_preserves_order; rewrite lte_fin.
+    by rewrite subr_gt0; apply homo_contract_lt; rewrite lte_fin.
   rewrite ltr_subl_addl addrC -ltr_subl_addl (lt_le_trans reN1) //.
   by move: (contract_le1 r'%:E); rewrite ler_norml => /andP[].
 - rewrite [contract +oo]/= ler0_norm; last first.
@@ -1276,10 +1263,10 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
     have e'0 : 0 < e'.
       rewrite /e' ltxI; apply/andP; split.
         rewrite subr_gt0 -lte_fin -[in X in (_ < X)%E](contractK r%:E) real_of_er_expand //.
-        apply: (expand_preserves_order _ (contract_le1 _)); first by rewrite inE ltW.
+        apply: (homo_expand_lt _ (contract_le1 _)); first by rewrite inE ltW.
         by rewrite ltr_subl_addl ltr_addr.
       rewrite subr_gt0 -lte_fin -[in X in (X < _)%E](contractK r%:E) real_of_er_expand //.
-      apply: (expand_preserves_order (contract_le1 _)); last by rewrite ltr_addl.
+      apply: (homo_expand_lt (contract_le1 _)); last by rewrite ltr_addl.
       by rewrite inE ltW.
     apply/locallyP; exists e' => // r' re'r'; apply reA.
     rewrite /ball /= in re'r'.
@@ -1288,19 +1275,19 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
         by rewrite subrr normr0.
       rewrite ltr0_norm ?subr_lt0// opprB in re'r'.
       rewrite ltr0_norm; last first.
-        by rewrite subr_lt0; apply: contract_preserves_order; rewrite lte_fin.
+        by rewrite subr_lt0; apply: homo_contract_lt; rewrite lte_fin.
       rewrite opprB; move: re'r'.
       rewrite /e' ltxI => /andP[_].
       rewrite -ltr_subl_addr opprK subrK -lte_fin real_of_er_expand //.
       move=> r'e'r; rewrite ltr_subl_addl.
-      by move/contract_preserves_order : r'e'r; rewrite expandK // inE ltW.
+      by move/homo_contract_lt : r'e'r; rewrite expandK // inE ltW.
     move: re'r'; rewrite ltxI => /andP[].
     rewrite gtr0_norm ?subr_gt0 // -ltr_subl_addl addrAC subrr add0r ltr_oppl.
     rewrite opprK -lte_fin real_of_er_expand // => r'e'r _.
     rewrite gtr0_norm; last first.
-      by rewrite subr_gt0; apply contract_preserves_order; rewrite lte_fin.
+      by rewrite subr_gt0; apply homo_contract_lt; rewrite lte_fin.
     rewrite ltr_subl_addl addrC -ltr_subl_addl.
-    by move/contract_preserves_order : r'e'r; rewrite expandK // inE ltW.
+    by move/homo_contract_lt : r'e'r; rewrite expandK // inE ltW.
   by apply (@locally_fin_out_above _ e) => //; rewrite ltW.
 have [re1|re1] := ltrP 1 (contract r%:E + (e)%:num).
   exact: (@locally_fin_out_above_below _ e).
@@ -1329,7 +1316,7 @@ move: re1; rewrite le_eqVlt => /orP[re1|re1].
 by apply (@locally_fin_out_below _ e) => //; rewrite ltW.
 Qed.
 
-Lemma ereal_locally_locall_ : locally = locally_ ereal_ball.
+Lemma ereal_locallyE : locally = locally_ ereal_ball.
 Proof.
 rewrite predeq2E => x A; split.
 - rewrite {1}/locally /= /ereal_locally.
@@ -1338,8 +1325,8 @@ rewrite predeq2E => x A; split.
                         (contract (r%:E + e%:num%:E) - contract r%:E).
     exists e'.
       rewrite /e' ltxI; apply/andP; split.
-        by rewrite subr_gt0 contract_preserves_order //= lte_fin ltr_subl_addr ltr_addl.
-      rewrite subr_gt0; apply contract_preserves_order.
+        by rewrite subr_gt0 homo_contract_lt //= lte_fin ltr_subl_addr ltr_addl.
+      rewrite subr_gt0; apply homo_contract_lt.
       by rewrite lte_fin ltr_addl.
     case=> [r' re'r'| |].
     * rewrite /ereal_ball in re'r'.
@@ -1351,29 +1338,29 @@ rewrite predeq2E => x A; split.
           move: re'r'; rewrite /e' mc_1_10.Num.Theory.ltr_minr => /andP[Hr'1 Hr'2].
           rewrite /e' ltr_subr_addl addrC -ltr_subr_addl in Hr'1.
           by rewrite (lt_le_trans Hr'1) // opprB addrCA subrr addr0.
-        move: (expand_preserves_order (contract_le1 _) (contract_le1 _) H1).
+        move: (homo_expand_lt (contract_le1 _) (contract_le1 _) H1).
         rewrite !contractK => rer'.
         rewrite lte_fin ltr_subl_addr addrC -ltr_subl_addr in rer'.
         rewrite rer' /= andbT (@lt_le_trans _ _ 0) //.
           by rewrite ltr_oppl oppr0.
         rewrite subr_ge0 -lee_fin -(contractK r%:E) -(contractK r'%:E).
         move: r'r; rewrite le_eqVlt => /orP[/eqP -> //|r'r].
-        exact/ltW/(expand_preserves_order (contract_le1 _) (contract_le1 _)).
+        exact/ltW/(homo_expand_lt (contract_le1 _) (contract_le1 _)).
       apply reA.
       rewrite /ball_ real_ltr_norml // ?num_real //.
       rewrite ltr0_norm ?subr_lt0// opprB in re'r'.
       apply/andP; split; last first.
         rewrite (@lt_trans _ _ 0) // subr_lt0 -lte_fin.
         rewrite -(contractK r%:E) -(contractK r'%:E).
-        by apply: (expand_preserves_order (contract_le1 _) (contract_le1 _)).
+        by apply: (homo_expand_lt (contract_le1 _) (contract_le1 _)).
       rewrite ltr_oppl opprB.
       rewrite /e' in re'r'.
       have H2 : contract r'%:E < contract (r%:E + e%:num%:E).
-        move: re'r'; rewrite mc_1_10.Num.Theory.ltr_minr => /andP[Hr'1 Hr'2].
+        move: re'r'; rewrite ltxI => /andP[Hr'1 Hr'2].
         by rewrite ltr_subl_addr subrK in Hr'2.
       rewrite ltr_subl_addr -lte_fin -(contractK (_ + r)%:E).
       rewrite addrC -(contractK r'%:E) //.
-      exact: (expand_preserves_order (contract_le1 _) (contract_le1 _)).
+      exact: (homo_expand_lt (contract_le1 _) (contract_le1 _)).
     * rewrite /ereal_ball [contract +oo]/=.
       rewrite ltxI => /andP[re'1 re'2].
       have [cr0|cr0] := lerP 0 (contract r%:E).
@@ -1413,7 +1400,7 @@ rewrite predeq2E => x A; split.
         by rewrite subr_ge0 // (le_trans _ (contract_le1 r%:E)) // ler_norm.
       rewrite ltr_subl_addr addrC addrCA addrC -ltr_subl_addr subrr subr_gt0 in rM1.
       rewrite -lte_fin -(contractK M%:E) -(contractK r%:E).
-      exact: (expand_preserves_order (contract_le1 _) (contract_le1 _)).
+      exact: (homo_expand_lt (contract_le1 _) (contract_le1 _)).
     * rewrite /ereal_ball /= subrr normr0 => h.
       exact: MA.
     * rewrite /ereal_ball /= opprK => h {MA}.
@@ -1434,7 +1421,7 @@ rewrite predeq2E => x A; split.
         by move: (contract_lt1 r); rewrite ltr_norml => /andP[].
       rewrite opprB opprK -ltr_subl_addl addrK in rM1.
       rewrite -lte_fin -(contractK M%:E) -(contractK r%:E).
-      exact: (expand_preserves_order (contract_le1 _) (contract_le1 _)).
+      exact: (homo_expand_lt (contract_le1 _) (contract_le1 _)).
     * rewrite /ereal_ball /= -opprD normrN => h {MA}.
       exfalso.
       move: h; apply/negP.
@@ -1454,7 +1441,7 @@ rewrite predeq2E => x A; split.
 Qed.
 Definition ereal_pseudoMetricType_mixin :=
   PseudoMetric.Mixin ereal_ball_center ereal_ball_sym ereal_ball_triangle
-                     ereal_locally_locall_.
+                     ereal_locallyE.
 Canonical ereal_pseudoMetricType :=
   PseudoMetricType {ereal R} ereal_pseudoMetricType_mixin.
 End ereal_PseudoMetric.
@@ -3073,7 +3060,7 @@ have D_has_sup : has_sup D; first split.
   apply/downP; exists x.
   by near: x.
   by rewrite ler_distW 1?distrC 1?ltW ?andbT //; near: x.
-- exists (x0 + 1); apply/ubP => x /(_ _ x01) /downP [y []].
+- exists (x0 + 1); apply/ubP => x /(_ _ x01) /downP [y].
   rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltW].
   by move=> /(le_trans _) yx01 _ /yx01.
 exists (sup D).
@@ -3082,7 +3069,7 @@ rewrite ler_distl; move/ubP: (sup_upper_bound D_has_sup) => -> //=.
   apply: sup_le_ub => //; first by case: D_has_sup.
   have Fxeps : F (ball_ [eta normr] x (eps)%:num).
     by near: x; apply: nearP_dep; apply: F_cauchy.
-  apply/ubP => y /(_ _ Fxeps) /downP[z []].
+  apply/ubP => y /(_ _ Fxeps) /downP[z].
   rewrite /ball_ ltr_distl ltr_subl_addr.
   by move=> /andP [/ltW /(le_trans _) le_xeps _ /le_xeps].
 rewrite /D /= => A FA; near F => y.
