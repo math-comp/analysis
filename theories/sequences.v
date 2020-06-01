@@ -65,7 +65,7 @@ Arguments mk_sequence R f /.
 Notation "[ 'sequence' E ]_ n" := (mk_sequence (fun n => E)) : ring_scope.
 Notation "R ^nat" := (sequence R) : type_scope.
 
-Notation "'nondecreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> n <= m})
+Notation "'nondecreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> (n <= m)%O})
   (at level 10).
 Notation "'nonincreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> n >= m})
   (at level 10).
@@ -731,6 +731,112 @@ rewrite gtr0_norm ?subr_gt0 // -(@expandK R (1 - e%:num)); last first.
 rewrite -lte_fin; apply/homo_contract_lt.
 rewrite -real_of_er_expand // lte_fin; apply k1un.
 by near: n; exists k.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma nondecreasing_seq_ereal_cvg (R : realType) (u_ : nat -> {ereal R}) :
+  nondecreasing_seq u_ -> u_ --> ereal_sup (u_ @` setT).
+Proof.
+move=> nd_u_; set S := u_ @` setT; set l := ereal_sup S.
+have [Spoo|Spoo] := pselect (S +oo%E).
+  have [N Nu] : exists N, forall n, (n >= N)%nat -> u_ n = +oo%E.
+    case: Spoo => N _ uNoo; exists N => n Nn.
+    by move: (nd_u_ _ _ Nn); rewrite uNoo lee_pinfty_eq => /eqP.
+  have -> : l = +oo%E by rewrite /l /ereal_sup; exact: supremum_pinfty.
+  rewrite -(cvg_comp_addn N); set f := (X in X --> _).
+  rewrite (_ : f = (fun=> +oo%E)); first exact: cvg_cst.
+  by rewrite funeqE => n; rewrite /f /= Nu // leq_addl.
+have [Snoo|Snoo] := pselect (u_ = fun=> -oo%E).
+  suff : l = -oo%E by move=> ->; rewrite Snoo; exact: cvg_cst.
+  rewrite /l.
+  suff -> : S = [set -oo%E] by rewrite ereal_sup_set1.
+  rewrite predeqE => x; split => [-[n _ <-]|->].
+  by rewrite Snoo.
+  by exists O => //; rewrite Snoo.
+have [/eqP|lnoo] := boolP (l == -oo%E).
+  move/ereal_sup_ninfty => loo.
+  suff : u_ = (fun=> -oo%E) by [].
+  by rewrite funeqE => m; apply (loo (u_ m)); exists m.
+apply/cvg_ballP => _/posnumP[e].
+have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo%E).
+  rewrite near_map; near=> n; rewrite /ball /= /ereal_ball.
+  have unoo : u_ n != -oo%E.
+    near: n.
+    have [m /eqP umoo] : exists m, u_ m <> -oo%E.
+      apply/existsNP => uoo.
+      by apply/Snoo; rewrite funeqE => ?; rewrite uoo.
+    exists m => // k mk; apply: contra umoo => /eqP ukoo.
+    by move/nd_u_ : mk; rewrite ukoo lee_ninfty_eq.
+  rewrite loo ger0_norm ?subr_ge0; last by case/ler_normlP : (contract_le1 (u_ n)).
+  have [e2|e2] := lerP 2 e%:num.
+    rewrite /= ltr_subl_addr addrC -ltr_subl_addr.
+    case/ler_normlP : (contract_le1 (u_ n)); rewrite ler_oppl => un1 _.
+    rewrite (@le_lt_trans _ _ (-1)) //.
+      by rewrite ler_subl_addr addrC -ler_subl_addr opprK (le_trans e2).
+    by move: un1; rewrite le_eqVlt eq_sym contract_eqN1 (negbTE unoo).
+  rewrite ltNge; apply/negP.
+  rewrite ler_subr_addl addrC -ler_subr_addl.
+  move/homo_expand_le.
+  rewrite 2!inE.
+  have leun : (expand (contract +oo - (e)%:num)%R < u_ n)%E.
+    near: n.
+    suff [n Hn] : exists n, (expand (contract +oo - (e)%:num)%R < u_ n)%E.
+      by exists n => // m nm; rewrite (lt_le_trans Hn) //; apply nd_u_.
+    apply/existsP => abs.
+    have : (l <= expand (contract +oo - (e)%:num)%R)%E.
+      apply: ub_ereal_sup => x [n _ <-{x}].
+      rewrite leNgt; apply/negP/abs.
+      by rewrite loo lee_pinfty_eq expand_eqoo lt_eqF // ltr_subl_addr ltr_addl.
+  have e1 : `| 1 - e%:num | <= 1.
+    have [e1|e1] := ltrP 1 e%:num.
+    by rewrite ler_subl_addr (le_trans (ltW e2)).
+    by rewrite ler_subl_addr ler_addl.
+  by move/(_ (contract_le1 _) e1); rewrite contractK; apply/negP; rewrite -ltNge.
+have [r lr] : exists r, l = r%:E by move: l lnoo lpoo => [] // r' _ _; exists r'.
+have [re1|re1] := ltrP (`|contract l - (e)%:num|) 1; last first.
+  rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
+  have unoo : u_ n != -oo%E.
+    near: n.
+    have [m /eqP umoo] : exists m, u_ m <> -oo%E.
+      apply/existsNP => uoo.
+      by apply/Snoo; rewrite funeqE => ?; rewrite uoo.
+    exists m => // k mk; apply: contra umoo => /eqP ukoo.
+    by move/nd_u_ : mk; rewrite ukoo lee_ninfty_eq.
+  rewrite ger0_norm; last first.
+    by rewrite subr_ge0; apply/homo_contract_le/ereal_sup_ub; exists n.
+  have [l0|l0] := ger0P (contract l).
+    have ? : e%:num > contract r%:E.
+      rewrite ltNge; apply/negP => er.
+      rewrite lr ger0_norm ?subr_ge0// -ler_subl_addr opprK in re1.
+      case/ler_normlP : (contract_le1 r%:E) => _ /(le_trans re1); apply/negP.
+      by rewrite -ltNge ltr_addl.
+    rewrite lr ltr0_norm ?subr_lt0// opprB in re1.
+    rewrite ltr_subl_addr addrC -ltr_subl_addr -opprB ltr_oppl lr.
+    rewrite (lt_le_trans _ re1) // lt_neqAle eqr_oppLR contract_eqN1 unoo /=.
+    by case/ler_normlP : (contract_le1 (u_ n)).
+  rewrite ler0_norm in re1; last first.
+    by rewrite subr_le0 (le_trans (ltW l0)).
+  rewrite opprB ler_subr_addr addrC -ler_subr_addr in re1.
+  rewrite ltr_subl_addr (le_lt_trans re1) // -ltr_subl_addl addrAC subrr add0r.
+  rewrite ltr_neqAle eq_sym contract_eqN1 unoo /=.
+  by case/ler_normlP : (contract_le1 (u_ n)); rewrite ler_oppl.
+pose e' := r - real_of_er (expand (contract l - e%:num)).
+have e'0 : 0 < e'.
+  rewrite /e' subr_gt0 -lte_fin real_of_er_expand //.
+  rewrite -[in X in (_ < X)%E](contractK r%:E); apply homo_expand_lt.
+  by rewrite inE ltW.
+  by rewrite inE; exact: contract_le1.
+  by rewrite lr ltr_subl_addr // ltr_addl.
+have [y [[m _] umx] Se'y] := @ub_ereal_sup_adherent _ S (PosNum e'0) _ lr.
+rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
+rewrite ger0_norm; last first.
+  by rewrite subr_ge0; apply/homo_contract_le/ereal_sup_ub; exists n.
+move: Se'y; rewrite -{}umx {y} /= => le'um.
+have leum : contract l - e%:num < contract (u_ m).
+  move: le'um; rewrite /e' NERFin -/l [in X in (X - _ < _)%E -> _]lr /= opprB.
+  rewrite addrCA subrr addr0 real_of_er_expand // => /homo_contract_lt.
+  by rewrite expandK // inE // ltW // lr.
+rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
+by apply/homo_contract_le/nd_u_; near: n; exists m.
 Grab Existential Variables. all: end_near. Qed.
 
 End sequences_of_extended_real_numbers.

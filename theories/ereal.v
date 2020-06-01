@@ -325,6 +325,8 @@ Context {R : numDomainType}.
 
 Implicit Types (x y z : {ereal R}).
 
+Lemma NERFin (x : R) : (- x)%R%:E = (- x%:E)%E. Proof. by []. Qed.
+
 Lemma adde0 : right_id (0%:E : {ereal R}) +%E.
 Proof. by case=> //= x; rewrite addr0. Qed.
 
@@ -463,6 +465,19 @@ Qed.
 Lemma ereal_supremums_set0_ninfty : supremums (@set0 {ereal R}) -oo.
 Proof. by split; [exact/ubP | apply/lbP=> y _; rewrite lee_ninfty]. Qed.
 
+Lemma supremum_pinfty S x0 : S +oo%E -> supremum x0 S = +oo%E.
+Proof.
+move=> Spoo; rewrite /supremum.
+case: pselect => [a /= {a}|]; last by move=> S0; exfalso; apply S0; exists +oo%E.
+have sSoo : supremums S +oo%E.
+  split; first exact: ereal_ub_pinfty.
+  move=> /= y; rewrite /ub => /(_ _ Spoo).
+  by rewrite lee_pinfty_eq => /eqP ->.
+case: xgetP.
+by move=> y ->{y} sSxget; move: (is_subset1_supremums sSoo sSxget).
+by move/(_ +oo%E) => gSoo; exfalso; apply gSoo => {gSoo}.
+Qed.
+
 Let real_of_er_def r0 x : R := if x is r%:E then r else r0.
 (* NB: see also real_of_er above *)
 
@@ -528,6 +543,9 @@ case: xgetP => /=.
 by move=> x ->{x} -[] /ubP geS _; apply geS.
 by case: (ereal_supremums_neq0 S) => /= x0 Sx0; move/(_ x0).
 Qed.
+
+Lemma ereal_sup_ninfty S : ereal_sup S = -oo%E -> S `<=` [set -oo%E].
+Proof. by move=> supS [r /ereal_sup_ub | /ereal_sup_ub |//]; rewrite supS. Qed.
 
 Lemma ub_ereal_sup S M : ub S M -> (ereal_sup S <= M)%E.
 Proof.
