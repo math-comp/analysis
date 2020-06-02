@@ -771,11 +771,12 @@ have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo%E).
     near: n.
     suff [n Hn] : exists n, (expand (contract +oo - (e)%:num)%R < u_ n)%E.
       by exists n => // m nm; rewrite (lt_le_trans Hn) //; apply nd_u_.
-    apply/existsP => abs.
+    apply/existsPN => abs.
     have : (l <= expand (contract +oo - (e)%:num)%R)%E.
       apply: ub_ereal_sup => x [n _ <-{x}].
       rewrite leNgt; apply/negP/abs.
-      by rewrite loo lee_pinfty_eq expand_eqoo lt_eqF // ltr_subl_addr ltr_addl.
+      rewrite loo lee_pinfty_eq expand_eqoo ler_sub_addr addrC -ler_sub_addr.
+      by rewrite subrr; apply/negP; rewrite -ltNge.
     have [e1|e1] := ltrP 1 e%:num.
       by rewrite ler_subl_addr (le_trans (ltW e2)).
     by rewrite ler_subl_addr ler_addl.

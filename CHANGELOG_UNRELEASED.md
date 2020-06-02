@@ -15,6 +15,9 @@
     * `ereal_sup`, `ereal_inf`
   + lemmas about `ereal_sup`:
     * `ereal_sup_ub`, `ub_ereal_sup`, `ub_ereal_sup_adherent`
+- in `normedtype.v`:
+  + function `contract` (bijection from `{ereal R}` to `R`)
+  + `ereal_pseudoMetricType R`
 
 ### Changed
 
