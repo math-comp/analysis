@@ -57,6 +57,8 @@ Require Import prodnormedzmodule.
 (*                   expands to ('O_F h)                                      *)
 (*           'O_F == pattern to match a bigO with a specific F                *)
 (*             'O == pattern to match a bigO with a generic F                 *)
+(* f x =O_(x \near F) e x == alternative way of stating f =O_F e (provably    *)
+(*                   equal using the lemma eqOEx                              *)
 (*                                                                            *)
 (* Printing only notations:                                                   *)
 (*        {O_F f} == the type of functions that are a bigO of f near F        *)
@@ -85,6 +87,9 @@ Require Import prodnormedzmodule.
 (* Similar notations available for big-Theta.                                 *)
 (* --> lemmas: relations with big-O and big-Omega, reflexivity, symmetry,     *)
 (*     transitivity, product of functions, etc.                               *)
+(*                                                                            *)
+(* WARNING: The piece of syntax "=O_(" is only valid in the syntax            *)
+(*          "=O_(x \near F)", not in the syntax "=O_(x : U)".                 *)
 (*                                                                            *)
 (******************************************************************************)
 
