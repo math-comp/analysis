@@ -4,10 +4,26 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 
-(* NB: taken out from reals.v and generalized in 2019 *)
-
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import boolp.
+Require Import boolp classical_sets reals posnum.
+
+(******************************************************************************)
+(*                        Extended real numbers                               *)
+(*                                                                            *)
+(* Given a type R for numbers, {ereal R} is the type R extended with symbols  *)
+(* -oo and +oo (notation scope: %E), suitable to represent extended real      *)
+(* numbers. When R is a numDomainType, {ereal R} is equipped with a canonical *)
+(* POrderType and operations for addition/opposite. When R is a               *)
+(* realDomainType, {ereal R} is equipped with a Canonical OrderType.          *)
+(*                                                                            *)
+(*                   r%:E == injects real numbers into {ereal R}              *)
+(*               +%E, -%E == addition/opposite for extended reals             *)
+(*  (\sum_(i in A) f i)%E == bigopg-like notation in scope %E                 *)
+(*            ereal_sup E == supremum of E                                    *)
+(*            ereal_inf E == infimum of E                                     *)
+(* ereal_supremums_neq0 S == S has a supremum                                 *)
+(*                                                                            *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -93,7 +109,7 @@ Variable (R : countType).
 Definition ereal_countMixin := PcanCountMixin (@codeK R).
 Canonical ereal_countType := CountType {ereal R} ereal_countMixin.
 
-End ERealCount.
+ End ERealCount.
 
 Section ERealOrder.
 Context {R : numDomainType}.
@@ -174,6 +190,12 @@ Proof. exact: num_real. Qed.
 
 Lemma lee_ninfty (R : realDomainType) (x : {ereal R}) : (-oo <= x).
 Proof. case: x => //= r; exact: num_real. Qed.
+
+Lemma lee_ninfty_eq (R : numDomainType) (x : {ereal R}) : (x <= -oo)%E = (x == -oo%E).
+Proof. by case: x. Qed.
+
+Lemma lee_pinfty_eq (R : numDomainType) (x : {ereal R}) : (+oo <= x)%E = (x == +oo%E).
+Proof. by case: x. Qed.
 
 Section ERealOrder_realDomainType.
 Context {R : realDomainType}.
@@ -335,7 +357,7 @@ End ERealArithTh_numDomainType.
 Section ERealArithTh_realDomainType.
 
 Context {R : realDomainType}.
-Implicit Types x y a b : {ereal R}.
+Implicit Types x y z a b : {ereal R}.
 
 Lemma sube_gt0 x y: (0%:E < y - x)%E = (x < y)%E.
 Proof.
@@ -372,4 +394,159 @@ Qed.
 Lemma lee_add2r x a b : (a <= b)%E -> (a + x <= b + x)%E.
 Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
 
+Lemma lte_subl_addr x (r : R) z : (x - r%:E < z)%E = (x < z + r%:E)%E.
+Proof.
+move: x r z => [x| |] r [z| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
+by rewrite !lte_fin ltr_subl_addr.
+Qed.
+
 End ERealArithTh_realDomainType.
+
+(* -------------------------------------------------------------------- *)
+(* TODO: Check for duplications with `order.v`. Remove them.            *)
+Section ERealOrderTheory.
+Context {R : numDomainType}.
+Implicit Types x y z : {ereal R}.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
+  by case: x => [||?]; first by rewrite ?eqe; apply: lm.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
+  by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
+  by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
+Lemma le0R (x : {ereal R}) :
+  (0%:E <= x)%E -> (0 <= real_of_er(*TODO: coercion broken*) x)%R.
+Proof. by case: x. Qed.
+
+Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%O -> (r0%:E <= r1%:E)%E.
+Proof. by []. Qed.
+
+Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%O -> (r0%:E < r1%:E)%E.
+Proof. by []. Qed.
+End ERealOrderTheory.
+
+Lemma lee_opp2 {R : realDomainType} : {mono @eopp R : x y /~ (x <= y)%E}.
+Proof.
+move=> x y; case: x y => [?||] [?||] //; first by rewrite !lee_fin !ler_opp2.
+by rewrite lee_ninfty /Order.le /= realN num_real.
+by rewrite lee_pinfty /Order.le /= realN num_real.
+Qed.
+
+Lemma lte_opp2 {R : realDomainType} : {mono @eopp R : x y /~ (x < y)%E}.
+Proof.
+move=> x y; case: x y => [?||] [?||] //; first by rewrite !lte_fin !ltr_opp2.
+by rewrite lte_ninfty /Order.lt /= realN num_real.
+by rewrite lte_pinfty /Order.lt /= realN num_real.
+Qed.
+
+Section ereal_supremum.
+Variable R : realType.
+Local Open Scope classical_set_scope.
+Implicit Types S : set {ereal R}.
+Implicit Types x : {ereal R}.
+
+Lemma ereal_ub_pinfty S : ub S +oo.
+Proof. by apply/ubP=> x _; rewrite lee_pinfty. Qed.
+
+Lemma ereal_ub_ninfty S : ub S -oo -> S = set0 \/ S = [set -oo].
+Proof.
+have [[x Sx] /ubP Snoo|/set0P/negP] := pselect (S !=set0).
+  right; rewrite predeqE => y; split => [/Snoo|->{y}].
+  by rewrite lee_ninfty_eq => /eqP ->.
+  by have := Snoo _ Sx; rewrite lee_ninfty_eq => /eqP <-.
+by rewrite negbK => /eqP -> _; left.
+Qed.
+
+Lemma ereal_supremums_set0_ninfty : supremums (@set0 {ereal R}) -oo.
+Proof. by split; [exact/ubP | apply/lbP=> y _; rewrite lee_ninfty]. Qed.
+
+Let real_of_er_def r0 x : R := if x is r%:E then r else r0.
+(* NB: see also real_of_er above *)
+
+Lemma ereal_supremums_neq0 S : supremums S !=set0.
+Proof.
+have [/eqP ->|Snoo] := pselect (S == [set -oo]).
+  by exists -oo; split; [rewrite ub_set1 |exact: lb_ub_refl].
+have [S0|/set0P/negP] := pselect (S !=set0); last first.
+  by rewrite negbK => /eqP ->; exists -oo; exact: ereal_supremums_set0_ninfty.
+have [Spoo|Spoo] := pselect (S +oo).
+  by exists +oo; split; [apply/ereal_ub_pinfty | apply/lbP => /= y /ubP; apply].
+have [r Sr] : exists r, S r%:E.
+  move: S0 Snoo Spoo => [[r Sr _ _|//|Snoo Snoo1 Spoo]]; first by exists r.
+  apply/existsP => nS; move: Snoo1; apply; apply/eqP; rewrite predeqE.
+  by case=> // r; split => // /nS.
+set U := [set x | (real_of_er_def r @` S) x ].
+have [ubU|/set0P/negP] := pselect (ub U !=set0); last first.
+  rewrite negbK => /eqP; rewrite -subset0 => U0; exists +oo.
+  split; [exact/ereal_ub_pinfty | apply/lbP => /= -[r0 /ubP Sr0|//|]].
+  - suff : ub U r0 by move/U0.
+    by apply/ubP=> y -[] [r1 Sr1 <-| // | /= _ <-{y}]; rewrite -lee_fin; apply Sr0.
+  - by move/ereal_ub_ninfty => [|] /eqP //; move/set0P : S0 => /negbTE => ->.
+set u : R := sup U.
+exists u%:E; split; last first.
+  apply/lbP=> -[r0 /ubP Sr0| |].
+  - rewrite lee_fin; apply/sup_le_ub; first by exists r, r%:E.
+    by apply/ubP => r1 -[[r2 /= Sr2 <-{r1}| // | /= _ <-{r1}]];
+      rewrite -lee_fin; exact: Sr0.
+  - by rewrite lee_pinfty.
+  - by move/ereal_ub_ninfty => [|/eqP //] => /eqP; move/set0P : S0 => /negbTE ->.
+apply/ubP => -[r0 Sr0|//|_]; last by rewrite lee_ninfty.
+rewrite lee_fin.
+suff : has_sup U by move/sup_upper_bound/ubP; apply; exists r0%:E.
+split; first by exists r0, r0%:E.
+exists u; apply/ubP => y; move=> [] y' Sy' <-{y}.
+have : has_sup U by split; first by exists r, r%:E.
+move/sup_upper_bound/ubP; apply.
+by case: y' Sy' => [r1 /= Sr1 | // | /= _]; [exists r1%:E | exists r%:E].
+Qed.
+
+Definition ereal_sup S := supremum -oo S.
+
+Definition ereal_inf S := - ereal_sup (eopp @` S).
+
+Lemma ereal_sup_set0 : ereal_sup set0 = -oo.
+Proof. by rewrite /ereal_sup /supremum; case: pselect => // -[]. Qed.
+
+Lemma ereal_sup_set1 x : ereal_sup [set x] = x.
+Proof.
+rewrite /ereal_sup /supremum; case: pselect => /= [_|x0]; last first.
+  by exfalso; apply x0; exists x.
+by rewrite supremums_set1; case: xgetP => // /(_ x) /(_ erefl).
+Qed.
+
+Lemma ereal_inf_set0 : ereal_inf set0 = +oo.
+Proof. by rewrite /ereal_inf image_set0 ereal_sup_set0. Qed.
+
+Lemma ereal_sup_ub S : ub S (ereal_sup S).
+Proof.
+move=> y Sy; rewrite /ereal_sup /supremum.
+case: pselect => /= [S0|/(_ (ex_intro S y Sy)) //].
+case: xgetP => /=.
+by move=> x ->{x} -[] /ubP geS _; apply geS.
+by case: (ereal_supremums_neq0 S) => /= x0 Sx0; move/(_ x0).
+Qed.
+
+Lemma ub_ereal_sup S M : ub S M -> (ereal_sup S <= M)%E.
+Proof.
+rewrite /ereal_sup /supremum; case: pselect => /= [|_ _].
+- move=> S0 SM; case: xgetP => [x ->{x} [_]| _] /=; first exact.
+  by rewrite lee_ninfty.
+- by rewrite lee_ninfty.
+Qed.
+
+Lemma ub_ereal_sup_adherent S (e : {posnum R}) (r : R) :
+  ereal_sup S = r%:E -> exists x, S x /\ (ereal_sup S - e%:num%:E < x)%E.
+Proof.
+move=> Sr.
+have : ~ ub S (ereal_sup S - e%:num%:E)%E.
+  move/ub_ereal_sup; apply/negP.
+  by rewrite -ltNge Sr lte_subl_addr lte_fin ltr_addl.
+move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
+case/imply_classic => ? ?; exists x; split => //.
+by rewrite ltNge; apply/negP.
+Qed.
+
+End ereal_supremum.

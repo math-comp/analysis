@@ -347,56 +347,55 @@ Section sequences_R_lemmas.
 Variable R : realType.
 
 Lemma cvg_has_ub (u_ : R^o ^nat) :
-  cvg u_ -> has_ub (mem [set `|u_ n| | n in setT]).
+  cvg u_ -> has_ub [set `|u_ n| | n in setT].
 Proof.
-move=> /cvg_seq_bounded/pinfty_ex_gt0[M M_gt0 /= uM]; apply/has_ubP/nonemptyP.
-by exists M; apply/ubP => x; rewrite inE => -[n _ <-{x}]; exact: uM.
+move=> /cvg_seq_bounded/pinfty_ex_gt0[M M_gt0 /= uM].
+by exists M; apply/ubP => x -[n _ <-{x}]; exact: uM.
 Qed.
 
 (* TODO: move *)
-Lemma has_ub_image_norm (S : set R) :
-  has_ub (mem (normr @` S)) -> has_ub (mem S).
+Lemma has_ub_image_norm (S : set R) : has_ub (normr @` S) -> has_ub S.
 Proof.
-case/has_ubP => M /ubP uM; apply/has_ubP; exists `|M|; apply/ubP => r.
-rewrite !inE => rS.
+case => M /ubP uM; exists `|M|; apply/ubP => r rS.
 rewrite (le_trans (real_ler_norm _)) ?num_real //.
 rewrite (le_trans (uM _ _)) ?real_ler_norm ?num_real //.
-by rewrite !inE; exists r.
+by exists r.
 Qed.
 
-Lemma cvg_has_sup (u_ : R^o ^nat) : cvg u_ -> has_sup (mem (u_ @` setT)).
+Lemma cvg_has_sup (u_ : R^o ^nat) : cvg u_ -> has_sup (u_ @` setT).
 Proof.
 move/cvg_has_ub; rewrite -/(_ @` _) -(image_comp u_ normr setT).
-move=> /has_ub_image_norm uM; apply/has_supP; split => //.
-by exists (u_ 0%N); rewrite !inE; exists 0%N.
+move=> /has_ub_image_norm uM; split => //.
+by exists (u_ 0%N), 0%N.
 Qed.
 
-Lemma cvg_has_inf (u_ : R^o ^nat) : cvg u_ -> has_inf (mem (u_ @` setT)).
+Lemma cvg_has_inf (u_ : R^o ^nat) : cvg u_ -> has_inf (u_ @` setT).
 Proof.
-move/is_cvgN/cvg_has_sup; rewrite has_inf_supN; apply eq_has_sup => r /=.
-rewrite !inE; apply/asbool_equiv_eq; split => /=.
-by case=> n _ <- /= ; rewrite opprK; exists n.
-by case=> n _ /eqP; rewrite -eqr_oppLR => /eqP <-; exists n.
+move/is_cvgN/cvg_has_sup; rewrite has_inf_supN.
+suff -> : (- u_) @` setT = -%R @` (u_ @` setT) by [].
+rewrite predeqE => x; split.
+by case=> n _ <-; exists (u_ n) => //; exists n.
+by case=> y [] n _ <- <-; exists n.
 Qed.
 
 Lemma nondecreasing_cvg (u_ : (R^o) ^nat) (M : R) :
     nondecreasing_seq u_ -> (forall n, u_ n <= M) ->
-  u_ --> (sup (mem (u_ @` setT)) : R^o).
+  u_ --> (sup (u_ @` setT) : R^o).
 Proof.
-move=> u_nd u_M; set S := mem _; set M0 := sup S.
+move=> u_nd u_M; set S := _ @` _; set M0 := sup S.
 have supS : has_sup S.
-  apply/has_supP; split; first by exists (u_ 0%N); rewrite in_setE; exists 0%N.
-  by exists M; apply/ubP => x; rewrite in_setE => -[n _ <-{x}].
+  split; first by exists (u_ 0%N), 0%N.
+  by exists M; apply/ubP => x -[n _ <-{x}].
 apply: cvg_distW => _/posnumP[e]; rewrite near_map.
 have [p /andP[M0u_p u_pM0]] : exists p, M0 - e%:num <= u_ p <= M0.
   have [x] := sup_adherent supS (posnum_gt0 e).
-  rewrite in_setE => -[p _] <-{x} => /ltW M0u_p.
-  exists p; rewrite M0u_p /=; apply/sup_upper_bound => //.
-  by rewrite in_setE; exists p.
+  move=> -[p _] <-{x} => /ltW M0u_p.
+  exists p; rewrite M0u_p /=; have /ubP := sup_upper_bound supS.
+  by apply; exists p.
 near=> n; have pn : (p <= n)%N by near: n; apply: locally_infty_ge.
 rewrite distrC ler_norml ler_sub_addl (ler_trans M0u_p (u_nd _ _ pn)) /=.
 rewrite ler_subl_addr (@le_trans _ _ M0) ?ler_addr //.
-by apply/sup_upper_bound => //; rewrite in_setE; exists n.
+by have /ubP := sup_upper_bound supS; apply; exists n.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma nondecreasing_is_cvg (u_ : (R^o) ^nat) (M : R) :
@@ -417,13 +416,11 @@ Qed.
 
 Lemma nonincreasing_cvg (u_ : (R^o) ^nat) (m : R) :
     nonincreasing_seq u_ -> (forall n, m <= u_ n) ->
-  u_ --> (inf (mem (u_ @` setT)) : R^o).
+  u_ --> (inf (u_ @` setT) : R^o).
 Proof.
 rewrite -nondecreasing_opp => /(@nondecreasing_cvg _ (- m)) u_sup mu_.
-rewrite -[X in X --> _]opprK /inf (@eq_sup _ (mem ((-%R \o u_) @` setT))).
-  by apply: cvgN; apply u_sup => p; rewrite ler_oppl opprK.
-move=> r; rewrite -[in X in _ = X](opprK r); apply asbool_equiv_eq.
-by rewrite -(image_inj oppr_inj) image_comp.
+rewrite -[X in X --> _]opprK /inf image_comp.
+by apply: cvgN; apply u_sup => p; rewrite ler_oppl opprK.
 Qed.
 
 Lemma nonincreasing_is_cvg (u_ : (R^o) ^nat) (m : R) :
