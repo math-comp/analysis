@@ -66,6 +66,7 @@ Notation "'{posnum' R }" := (posnum_of (@Phant R)).
 Definition PosNum (R : numDomainType) x x_gt0 : {posnum R} :=
   @PosNumDef _ (Phant R) x x_gt0.
 
+Notation numpos R := (@num_of_pos _ (Phant R)).
 Notation "x %:num" := (num_of_pos x) : ring_scope.
 Definition pos_of_num (R : numDomainType) (x : {posnum R})
    (phx : phantom R x%:num) := x.
@@ -95,7 +96,7 @@ End Order.
 
 Section PosNum.
 Context {R : numDomainType}.
-Implicit Types (x y : {posnum R}).
+Implicit Types (x y : {posnum R}) (a b : R).
 
 Definition posnum_gt0_def x (phx : phantom R x%:num) := posnum_gt0 x.
 
@@ -103,13 +104,21 @@ Lemma posnum_ge0 x : x%:num >= 0 :> R. Proof. by apply: ltW. Qed.
 Lemma posnum_eq0 x : (x%:num == 0 :> R) = false. Proof. by rewrite gt_eqF. Qed.
 Lemma posnum_neq0 x : (x%:num != 0 :> R). Proof. by rewrite gt_eqF. Qed.
 
-Lemma add_pos_gt0 x y : 0 < x%:num + y%:num.
-Proof. by rewrite addr_gt0. Qed.
-Canonical addr_posnum x y := PosNum (add_pos_gt0 x y).
+Lemma posnum_eq : {mono numpos R : x y / x == y}. Proof. by []. Qed.
+Lemma posnum_le : {mono numpos R : x y / x <= y}. Proof. by []. Qed.
+Lemma posnum_lt : {mono numpos R : x y / x < y}. Proof. by []. Qed.
 
-Lemma mul_pos_posnum x y : 0 < x%:num * y%:num.
-Proof. by rewrite mulr_gt0. Qed.
-Canonical mulr_posnum x y := PosNum (mul_pos_posnum x y).
+Lemma posnum_min : {morph numpos R : x y / Order.min x y}.
+Proof. by move=> x y; rewrite !minEle posnum_le -fun_if. Qed.
+
+Lemma posnum_max : {morph numpos R : x y / Order.max x y}.
+Proof. by move=> x y; rewrite !maxEle posnum_le -fun_if. Qed.
+
+Lemma posnum_real x : x%:num \is Num.real. Proof. by rewrite gtr0_real. Qed.
+Hint Resolve posnum_real.
+
+Canonical addr_posnum x y := PosNum (addr_gt0 x y).
+Canonical mulr_posnum x y := PosNum (mulr_gt0 x y).
 
 Lemma muln_pos_posnum x n : 0 < x%:num *+ n.+1.
 Proof. by rewrite pmulrn_lgt0. Qed.
@@ -127,41 +136,23 @@ Proof. by rewrite lt_geF. Qed.
 Lemma posnum_lt0 x : (x%:num < 0 :> R) = false.
 Proof. by rewrite lt_gtF. Qed.
 
-Lemma pos_ltUx (a : R) x y : (Num.max x y)%:num < a = (x%:num < a) && (y%:num < a).
-Proof.
-case: (lcomparable_ltgtP (comparableT x y)) => [?|?|<-]; last by rewrite andbb.
-rewrite andb_idl //; exact/lt_trans.
-rewrite andb_idr //; exact/lt_trans.
-Qed.
+Lemma pos_lt_maxl a x y : Num.max x%:num y%:num < a = (x%:num < a) && (y%:num < a).
+Proof. by rewrite comparable_lt_maxl ?real_comparable. Qed.
 
-Lemma pos_ltxI (a : R) x y : a < (Num.min x y)%:num = (a < x%:num) && (a < y%:num).
-Proof.
-case: (ltP x y)=> ?.
-by rewrite andb_idr // => /lt_trans; apply.
-by rewrite andb_idl // => /lt_le_trans; apply.
-Qed.
-
-End PosNum.
-Hint Extern 0 ((0 <= _)%R = true) => exact: posnum_ge0 : core.
-Hint Extern 0 ((_ != 0)%R = true) => exact: posnum_neq0 : core.
-
-Section PosNumReal.
-Context {R : realDomainType}.
-Implicit Types (x y : {posnum R}).
-
-Lemma min_posE x y : Num.min x%:num y%:num = (Num.min x y)%:num.
-Proof.
-case: (lcomparable_ltgtP (comparableT x y)) => [yx|xy|<-]; last first.
-- by rewrite meetxx.
-- by rewrite (meet_idPr _)// ltW.
-- by rewrite (meet_idPl _)// ltW.
-Qed.
+Lemma pos_lt_minr (a : R) x y : a < Num.min x%:num y%:num = (a < x%:num) && (a < y%:num).
+Proof. by rewrite comparable_lt_minr ?real_comparable. Qed.
 
 Lemma min_pos_gt0 x y : 0 < Num.min x%:num y%:num.
-Proof. by rewrite ltxI !posnum_gt0. Qed.
+Proof. by rewrite -posnum_min !posnum_gt0. Qed.
 Canonical minr_posnum x y := PosNum (@min_pos_gt0 x y).
 
-End PosNumReal.
+Lemma max_pos_gt0 x y : 0 < Num.max x%:num y%:num.
+Proof. by rewrite -posnum_max !posnum_gt0. Qed.
+Canonical maxr_posnum x y := PosNum (@max_pos_gt0 x y).
+
+End PosNum.
+Hint Extern 0 ((0 <= _)%R = true) => solve [apply: posnum_ge0] : core.
+Hint Extern 0 ((_ != 0)%R = true) => solve [apply: posnum_neq0] : core.
 
 Lemma sqrt_pos_gt0 (R : rcfType) (x : {posnum R}) : 0 < Num.sqrt (x%:num).
 Proof. by rewrite sqrtr_gt0. Qed.

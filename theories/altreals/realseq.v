@@ -215,20 +215,20 @@ Lemma ncvg_nbounded u x : ncvg u x%:E -> nbounded u.
 Proof.                   (* FIXME: factor out `sup` of a finite set *)
 case/(_ (B x 1)) => K cu; pose S := [seq `|u n| | n <- iota 0 K].
 pose M : R := sup [set x : R | x \in S]; pose e := Num.max (`|x| + 1) (M + 1).
-apply/asboolP/nboundedP; exists e => [|n]; first by rewrite ltxU ltr_paddl.
+apply/asboolP/nboundedP; exists e => [|n]; first by rewrite lt_maxr ltr_paddl.
 case: (ltnP n K); last first.
   move/cu; rewrite inE eclamp_id ?ltr01 // => ltunBx1.
-  rewrite ltxU; apply/orP; left; rewrite -[u n](addrK x) addrAC.
+  rewrite lt_maxr; apply/orP; left; rewrite -[u n](addrK x) addrAC.
   by apply/(le_lt_trans (ler_norm_add _ _)); rewrite addrC ltr_add2l.
 move=> lt_nK; have: `|u n| \in S; first by apply/map_f; rewrite mem_iota.
-move=> un_S; rewrite ltxU; apply/orP; right.
+move=> un_S; rewrite lt_maxr; apply/orP; right.
 case E: {+}K lt_nK => [|k] // lt_nSk; apply/ltr_spaddr; first apply/ltr01.
 suff : has_sup (fun x : R => x \in S) by move/sup_upper_bound/ubP => ->.
 split; first by exists `|u 0%N|; rewrite /S E inE eqxx.
 elim: {+}S => [|v s [ux /ubP hux]]; first by exists 0; apply/ubP.
 exists (Num.max v ux); apply/ubP=> y; rewrite inE => /orP[/eqP->|].
-  by rewrite lexU lexx.
-by move/hux=> le_yux; rewrite lexU le_yux orbT.
+  by rewrite le_maxr lexx.
+by move/hux=> le_yux; rewrite le_maxr le_yux orbT.
 Qed.
 
 Lemma nboundedC c : nbounded c%:S.

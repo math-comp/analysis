@@ -469,10 +469,10 @@ split=> [[k k0 fOg] | [k [kreal fOg]]].
   exists k; rewrite realE (ltW k0) /=; split=> // l ltkl; move: fOg.
   by apply: filter_app; near=> x => /le_trans; apply; rewrite ler_wpmul2r // ltW.
 exists (Num.max 1%:nng `|k + 1|%:nng)%:nngnum.
-  by rewrite -nng_lt /= ltxU /= nng_lt ltr01.
+  by rewrite nng_lt /= lt_maxr /= -nng_lt ltr01.
 apply: fOg; rewrite (@lt_le_trans _ _ `|k + 1|) //.
 by rewrite (@lt_le_trans _ _ (k + 1)) ?ltr_addl // real_ler_norm ?(realD,real1).
-by rewrite -nng_le lexU orbC lexx.
+by rewrite nng_le le_maxr orbC lexx.
 Unshelve. end_near. Qed.
 
 Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {

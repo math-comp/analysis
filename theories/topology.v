@@ -2728,7 +2728,7 @@ rewrite (PseudoMetric.ax4 m) locally_E; apply filter_from_proper; last first.
   exact: PseudoMetric.ax1.
 apply: filter_from_filter => [|_ _ /posnumP[e1] /posnumP[e2]]; first by exists 1.
 exists (Num.min e1 e2)%:num; rewrite ?subsetI//.
-by split=> //; apply: my_ball_le; rewrite -leEsub leIx lexx ?orbT.
+by split=> //; apply: my_ball_le; rewrite -leEsub le_minl lexx ?orbT.
 Qed.
 Next Obligation.
 move=> R T loc m p A; rewrite (PseudoMetric.ax4 m) locally_E => - [_/posnumP[e]]; apply.
@@ -2807,7 +2807,7 @@ Proof.
 apply filter_from_proper; last by exists (point,point); apply: ballxx.
 apply: filter_from_filter; first by exists 1; rewrite ltr01.
 move=> _ _ /posnumP[i] /posnumP[j]; exists (Num.min i j)%:num; rewrite ?subsetI//.
-by split=> // ?; apply: ball_ler; rewrite -leEsub leIx lexx ?orbT.
+by split=> // ?; apply: ball_ler; rewrite -leEsub le_minl lexx ?orbT.
 Qed.
 Typeclasses Opaque entourages.
 
@@ -2977,7 +2977,7 @@ Lemma ltr_bigminr (I : finType) (f : I -> {posnum R}) (x0 x : {posnum R}) :
   x < x0 -> (forall i, x < f i) -> x < \big[Num.min/x0]_i f i.
 Proof.
 move=> ltx0 ltxf; elim/big_ind: _ => // y z ltxy ltxz.
-by rewrite ltxI ltxy ltxz.
+by rewrite lt_minr ltxy ltxz.
 Qed.
 
 (* TODO: see bigminr_ler in normedtype.v *)
@@ -2986,7 +2986,7 @@ Lemma bigminr_ler (I : finType) (f : I -> {posnum R}) (x0 : {posnum R}) i :
 Proof.
 have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
 by rewrite inE => /orP [/eqP->|/ihl leminlfi];
-  rewrite leIx ?lexx // leminlfi orbC.
+  rewrite le_minl ?lexx // leminlfi orbC.
 Qed.
 
 Canonical R_pointedType := PointedType R 0.
@@ -3031,8 +3031,8 @@ rewrite predeq2E => -[x y] P; split=> [[[A B] /=[xX yY] XYP] |]; last first.
   by move=> [_ /posnumP[eps] epsP]; exists (ball x eps%:num, ball y eps%:num) => /=.
 move: xX yY => /locallyP [_ /posnumP[ex] eX] /locallyP [_ /posnumP[ey] eY].
 exists (Num.min ex ey)%:num => // -[x' y'] [/= xx' yy']; apply: XYP; split=> /=.
-  by apply/eX/(ball_ler _ xx'); rewrite -leEsub leIx lexx.
-by apply/eY/(ball_ler _ yy'); rewrite -leEsub leIx lexx orbT.
+  by apply/eX/(ball_ler _ xx'); rewrite -leEsub le_minl lexx.
+by apply/eY/(ball_ler _ yy'); rewrite -leEsub le_minl lexx orbT.
 Qed.
 Definition prod_pseudoMetricType_mixin :=
   PseudoMetric.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_locally.
