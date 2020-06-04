@@ -482,15 +482,15 @@ Proof. by elim: n => [ | n In] //=; rewrite exprS In RmultE. Qed.
 
 Lemma RmaxE x y : Rmax x y = Num.max x y.
 Proof.
-case: (lerP x y) => H; first by rewrite join_r // Rmax_right //; apply: RlebP.
-by rewrite join_l ?ltW // Rmax_left //;  apply/RlebP; move/ltW : H.
+case: (lerP x y) => H; first by rewrite Rmax_right //; apply: RlebP.
+by rewrite ?ltW // Rmax_left //;  apply/RlebP; move/ltW : H.
 Qed.
 
 (* useful? *)
 Lemma RminE x y : Rmin x y = Num.min x y.
 Proof.
-case: (lerP x y) => H; first by rewrite meet_l // Rmin_left //; apply: RlebP.
-by rewrite meet_r ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
+case: (lerP x y) => H; first by rewrite Rmin_left //; apply: RlebP.
+by rewrite ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
 Qed.
 
 Section bigmaxr.
@@ -503,14 +503,14 @@ Lemma bigmaxr_nil (x0 : R) : bigmaxr x0 [::] = x0.
 Proof. by rewrite /bigmaxr /= big_nil. Qed.
 
 Lemma bigmaxr_un (x0 x : R) : bigmaxr x0 [:: x] = x.
-Proof. by rewrite /bigmaxr /= big_cons big_nil joinxx. Qed.
+Proof. by rewrite /bigmaxr /= big_cons big_nil maxxx. Qed.
 
 (* previous definition *)
 Lemma bigmaxrE (r : R) s : bigmaxr r s = foldr Num.max (head r s) (behead s).
 Proof.
 rewrite (_ : bigmaxr _ _ = if s isn't h :: t then r else \big[Num.max/h]_(i <- s) i).
   case: s => // ? t; rewrite big_cons /bigmaxr.
-  by elim: t => //= [|? ? <-]; [rewrite big_nil joinxx | rewrite big_cons joinCA].
+  by elim: t => //= [|? ? <-]; [rewrite big_nil maxxx | rewrite big_cons maxCA].
 by case: s => //=; rewrite /bigmaxr big_nil.
 Qed.
 
@@ -518,8 +518,8 @@ Lemma bigrmax_dflt (x y : R) s : Num.max x (\big[Num.max/x]_(j <- y :: s) j) =
   Num.max x (\big[Num.max/y]_(i <- y :: s) i).
 Proof.
 elim: s => /= [|h t IH] in x y *.
-by rewrite !big_cons !big_nil joinxx joinCA joinxx joinC.
-by rewrite big_cons joinCA IH joinCA [in RHS]big_cons IH.
+by rewrite !big_cons !big_nil maxxx maxCA maxxx maxC.
+by rewrite big_cons maxCA IH maxCA [in RHS]big_cons IH.
 Qed.
 
 Lemma bigmaxr_cons (x0 x y : R) lr :
@@ -530,9 +530,9 @@ Lemma bigmaxr_ler (x0 : R) s i :
   (i < size s)%N -> (nth x0 s i) <= (bigmaxr x0 s).
 Proof.
 rewrite /bigmaxr; elim: s i => // h t IH [_|i] /=.
-  by rewrite big_cons /= lexU lexx.
+  by rewrite big_cons /= le_maxr lexx.
 rewrite ltnS => ti; case: t => [|h' t] // in IH ti *.
-by rewrite big_cons bigrmax_dflt lexU orbC IH.
+by rewrite big_cons bigrmax_dflt le_maxr orbC IH.
 Qed.
 
 (* Compatibilité avec l'addition *)
@@ -547,10 +547,10 @@ Qed.
 Lemma bigmaxr_mem (x0 : R) lr : (0 < size lr)%N -> bigmaxr x0 lr \in lr.
 Proof.
 rewrite /bigmaxr; case: lr => // h t _.
-elim: t => //= [|h' t IH] in h *; first by rewrite big_cons big_nil inE joinxx.
+elim: t => //= [|h' t IH] in h *; first by rewrite big_cons big_nil inE maxxx.
 rewrite big_cons bigrmax_dflt inE eq_le; case: lerP => /=.
-- by rewrite lexU lexx.
-- by rewrite ltxU ltxx => ?; rewrite join_r ?IH // ltW.
+- by rewrite le_maxr lexx.
+- by rewrite lt_maxr ltxx => ?; rewrite max_r ?IH // ltW.
 Qed.
 
 (* TODO: bigmaxr_morph? *)

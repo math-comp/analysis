@@ -179,8 +179,8 @@ split => [u_cvg _/posnumP[A]|u_ge X [A [Ar AX]]].
   by apply: u_cvg; apply: locally_pinfty_ge.
 rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
 apply: AX; rewrite (@lt_le_trans _ _ ((maxr 0 A) +1)) //.
-  by rewrite ltr_spaddr // lexU lexx orbT.
-by near: x; apply: u_ge; rewrite ltr_spaddr // lexU lexx.
+  by rewrite ltr_spaddr // le_maxr lexx orbT.
+by near: x; apply: u_ge; rewrite ltr_spaddr // le_maxr lexx.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma cvgNpinfty (u_ : R^o ^nat) : (- u_ --> +oo) = (u_ --> -oo).
@@ -407,10 +407,10 @@ Lemma near_nondecreasing_is_cvg (u_ : (R^o) ^nat) (M : R) :
     (\forall n \near \oo, u_ n <= M) ->
   cvg u_.
 Proof.
-move=> [k _ u_nd] [k' _ u_M]; suff : cvg [sequence u_ (n + max k k')%N]_n.
+move=> [k _ u_nd] [k' _ u_M]; suff : cvg [sequence u_ (n + maxn k k')%N]_n.
   by case/cvg_ex => /= l; rewrite cvg_comp_addn => ul; apply/cvg_ex; exists l.
-apply (@nondecreasing_is_cvg _ M) => [? ? ? | ?].
-by rewrite u_nd ?leq_add2r ?(leq_trans (leq_maxl _ _) (leq_addl _ _)).
+apply (@nondecreasing_is_cvg _ M) => [/= ? ? ? | ?].
+  by rewrite u_nd ?leq_add2r ?(leq_trans (leq_maxl _ _) (leq_addl _ _))//.
 by rewrite u_M // (leq_trans (leq_maxr _ _) (leq_addl _ _)).
 Qed.
 
