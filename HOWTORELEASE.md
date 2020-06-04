@@ -34,7 +34,7 @@
 - details omitted for now.
 
 3. Annouce on Zulip:
-- "The opam package the X.Y.Z version of mathcomp-analysis is available as an opam package in U."
+- "The X.Y.Z version of mathcomp-analysis is available as an opam package in U."
   where U is among
   + https://coq.inria.fr/opam/released
   + https://coq.inria.fr/opam/extra-dev
