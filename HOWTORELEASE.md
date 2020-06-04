@@ -31,7 +31,7 @@
 1. Update the date of the opam file in master
 
 2. Submit a new opam package to [https://github.com/coq/opam-coq-archive](https://github.com/coq/opam-coq-archive)
-- details omitted (for now?)
+- details omitted for now.
 
 3. Annouce on Zulip:
 - "The opam package the X.Y.Z version of mathcomp-analysis is available as an opam package in U."
