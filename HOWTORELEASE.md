@@ -14,8 +14,8 @@
 4. Close the milestone.
 
 5. Draft the release
-   - [https://github.com/math-comp/analysis/releases](https://github.com/math-comp/analysis/releases)
-   - Tag: `vX.Y.Z`
+   - [github.com/math-comp/analysis/releases/new](https://github.com/math-comp/analysis/releases/new?tag=X.Y.Z%20%28no%20v%20prefix%29&title=MathComp%20Analysis%20X.Y.Z&body=Compatible%20with%20MathComp%20X.Y.Z%2C%20...%0AThe%20main%20changes%20are%20...%0ASee%20the%20%5Bchangelog%5D%28https%3A%2F%2Fgithub.com%2Fmath-comp%2Fanalysis%2Fblob%2Fmaster%2FCHANGELOG.md%29)
+   - Tag: `X.Y.Z`
    - Title: "MathComp Analysis X.Y.Z"
    - Summary:
      + "Compatible with MathComp X.YZ, ..."
