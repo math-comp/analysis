@@ -4,8 +4,8 @@
 
 ### Added
 
-- in `boolp.v`, lemmas for classical reasoning `existsNP`, `existsP`,
-  `forallNP`, `forallP`, `imply_classic`, `orC`.
+- in `boolp.v`, lemmas for classical reasoning `existsNP`, `existsPN`,
+  `forallNP`, `forallPN`, `Nimply`, `orC`.
 - in `classical_sets.v`, definitions for supremums: `ul`, `lb`,
   `supremum`
 - in `ereal.v`:
