@@ -327,7 +327,7 @@ split; last first.
   move=> h [x] /ubP hle; case/(_ x): h => y /hle.
   by rewrite leNgt => /negbTE ->.
 move/forallNP => h x; have {h} := h x.
-move=> /ubP /existsNP => -[y /imply_classic[Ey /negP]].
+move=> /ubP /existsNP => -[y /Nimply[Ey /negP]].
 by rewrite -ltNge => ltx; exists y.
 Qed.
 

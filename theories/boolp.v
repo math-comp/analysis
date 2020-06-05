@@ -140,7 +140,6 @@ Qed.
 Lemma gen_choiceMixin {T : Type} : Choice.mixin_of T.
 Proof. by case: classic. Qed.
 
-
 Lemma pdegen (P : Prop): P = True \/ P = False.
 Proof. by have [p|Np] := pselect P; [left|right]; rewrite propeqE. Qed.
 
@@ -561,7 +560,7 @@ split => [[x Px h]|/asboolP]; [exact: Px|].
 by rewrite asbool_neg => /existsp_asboolPn.
 Qed.
 
-Lemma existsP (T : Type) (P : T -> Prop) :
+Lemma existsPN (T : Type) (P : T -> Prop) :
   (exists x : T, P x) <-> (~ forall x : T, ~ P x).
 Proof.
 split => [[x Px h]|/asboolP]; [exact: (h x)|].
@@ -575,16 +574,16 @@ split => [h [x Px]|/asboolP]; [exact: (h x)|].
 by rewrite asbool_neg => /forallp_asboolPn.
 Qed.
 
-Lemma forallP (T : Type) (P : T -> Prop) :
+Lemma forallPN (T : Type) (P : T -> Prop) :
   (forall x : T, P x) <-> (~ exists x : T, ~ P x).
 Proof.
 split => [h [x px]|]; [exact/px/h|move=> /forallNP h x].
 by move/contrapT : (h x).
 Qed.
 
-Lemma imply_classic (P Q : Prop) : (P /\ ~ Q) <-> ~ (P -> Q).
+Lemma Nimply (P Q : Prop) : ~ (P -> Q) <-> (P /\ ~ Q).
 Proof.
-split => [[p nq pq]|/asboolP]; [exact/nq/pq|].
+split=> [/asboolP|[p nq pq]]; [|exact/nq/pq].
 by rewrite asbool_neg => /imply_asboolPn.
 Qed.
 
