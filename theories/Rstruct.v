@@ -378,13 +378,13 @@ Require Import reals boolp classical_sets.
 
 Section ssreal_struct_contd.
 
-Lemma is_upper_boundE (E : set R) x : is_upper_bound E x = ((ub E) x).
+Lemma is_upper_boundE (E : set R) x : is_upper_bound E x = ((ubound E) x).
 Proof.
 rewrite propeqE; split; [move=> h|move=> /ubP h y Ey; exact/RleP/h].
 by apply/ubP => y Ey; apply/RleP/h.
 Qed.
 
-Lemma boundE (E : set R) : bound E = has_ub E.
+Lemma boundE (E : set R) : bound E = has_ubound E.
 Proof. by apply/eq_exists=> x; rewrite is_upper_boundE. Qed.
 
 Lemma completeness' (E : set R) : has_sup E -> {m : R | is_lub E m}.
@@ -398,7 +398,7 @@ Proof.
 by move=> hsE; rewrite /real_sup; case: pselect=> // ?; case: completeness'.
 Qed.
 
-Lemma real_sup_ub (E : set R) : has_sup E -> (ub E) (real_sup E).
+Lemma real_sup_ub (E : set R) : has_sup E -> (ubound E) (real_sup E).
 Proof. by move=> /real_sup_is_lub []; rewrite is_upper_boundE. Qed.
 
 Lemma real_sup_out (E : set R) : ~ has_sup E -> real_sup E = 0.
@@ -410,7 +410,7 @@ Lemma real_sup_adherent (E : set R) (eps : R) :
   has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
 Proof.
 move=> supE eps_gt0; set m := _ - eps; apply: contrapT=> mNsmall.
-have: (ub E) m.
+have: (ubound E) m.
   apply/ubP => y Ey.
   have /negP := mNsmall (ex_intro2 _ _ y Ey _).
   by rewrite -leNgt.

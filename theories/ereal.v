@@ -402,10 +402,10 @@ Local Open Scope classical_set_scope.
 Implicit Types S : set {ereal R}.
 Implicit Types x : {ereal R}.
 
-Lemma ereal_ub_pinfty S : ub S +oo.
+Lemma ereal_ub_pinfty S : ubound S +oo.
 Proof. by apply/ubP=> x _; rewrite lee_pinfty. Qed.
 
-Lemma ereal_ub_ninfty S : ub S -oo -> S = set0 \/ S = [set -oo].
+Lemma ereal_ub_ninfty S : ubound S -oo -> S = set0 \/ S = [set -oo].
 Proof.
 have [[x Sx] /ubP Snoo|/set0P/negP] := pselect (S !=set0).
   right; rewrite predeqE => y; split => [/Snoo|->{y}].
@@ -423,7 +423,7 @@ move=> Spoo; rewrite /supremum.
 case: pselect => [a /= {a}|]; last by move=> S0; exfalso; apply S0; exists +oo%E.
 have sSoo : supremums S +oo%E.
   split; first exact: ereal_ub_pinfty.
-  move=> /= y; rewrite /ub => /(_ _ Spoo).
+  move=> /= y; rewrite /ubound => /(_ _ Spoo).
   by rewrite lee_pinfty_eq => /eqP ->.
 case: xgetP.
 by move=> y ->{y} sSxget; move: (is_subset1_supremums sSoo sSxget).
@@ -446,10 +446,10 @@ have [r Sr] : exists r, S r%:E.
   apply/existsPN => nS; move: Snoo1; apply; apply/eqP; rewrite predeqE.
   by case=> // r; split => // /nS.
 set U := [set x | (real_of_er_def r @` S) x ].
-have [ubU|/set0P/negP] := pselect (ub U !=set0); last first.
+have [ubU|/set0P/negP] := pselect (ubound U !=set0); last first.
   rewrite negbK => /eqP; rewrite -subset0 => U0; exists +oo.
   split; [exact/ereal_ub_pinfty | apply/lbP => /= -[r0 /ubP Sr0|//|]].
-  - suff : ub U r0 by move/U0.
+  - suff : ubound U r0 by move/U0.
     by apply/ubP=> y -[] [r1 Sr1 <-| // | /= _ <-{y}]; rewrite -lee_fin; apply Sr0.
   - by move/ereal_ub_ninfty => [|] /eqP //; move/set0P : S0 => /negbTE => ->.
 set u : R := sup U.
@@ -487,7 +487,7 @@ Qed.
 Lemma ereal_inf_set0 : ereal_inf set0 = +oo.
 Proof. by rewrite /ereal_inf image_set0 ereal_sup_set0. Qed.
 
-Lemma ereal_sup_ub S : ub S (ereal_sup S).
+Lemma ereal_sup_ub S : ubound S (ereal_sup S).
 Proof.
 move=> y Sy; rewrite /ereal_sup /supremum.
 case: pselect => /= [S0|/(_ (ex_intro S y Sy)) //].
@@ -499,7 +499,7 @@ Qed.
 Lemma ereal_sup_ninfty S : ereal_sup S = -oo%E -> S `<=` [set -oo%E].
 Proof. by move=> supS [r /ereal_sup_ub | /ereal_sup_ub |//]; rewrite supS. Qed.
 
-Lemma ub_ereal_sup S M : ub S M -> (ereal_sup S <= M)%E.
+Lemma ub_ereal_sup S M : ubound S M -> (ereal_sup S <= M)%E.
 Proof.
 rewrite /ereal_sup /supremum; case: pselect => /= [|_ _].
 - move=> S0 SM; case: xgetP => [x ->{x} [_]| _] /=; first exact.
@@ -511,7 +511,7 @@ Lemma ub_ereal_sup_adherent S (e : {posnum R}) (r : R) :
   ereal_sup S = r%:E -> exists x, S x /\ (ereal_sup S - e%:num%:E < x)%E.
 Proof.
 move=> Sr.
-have : ~ ub S (ereal_sup S - e%:num%:E)%E.
+have : ~ ubound S (ereal_sup S - e%:num%:E)%E.
   move/ub_ereal_sup; apply/negP.
   by rewrite -ltNge Sr lte_subl_addr lte_fin ltr_addl.
 move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
