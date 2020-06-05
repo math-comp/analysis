@@ -13,15 +13,15 @@ Require Import boolp classical_sets reals posnum.
 (* Given a type R for numbers, {ereal R} is the type R extended with symbols  *)
 (* -oo and +oo (notation scope: %E), suitable to represent extended real      *)
 (* numbers. When R is a numDomainType, {ereal R} is equipped with a canonical *)
-(* POrderType and operations for addition/opposite. When R is a               *)
-(* realDomainType, {ereal R} is equipped with a Canonical OrderType.          *)
+(* porderType and operations for addition/opposite. When R is a               *)
+(* realDomainType, {ereal R} is equipped with a Canonical orderType.          *)
 (*                                                                            *)
-(*                   r%:E == injects real numbers into {ereal R}              *)
-(*               +%E, -%E == addition/opposite for extended reals             *)
-(*  (\sum_(i in A) f i)%E == bigopg-like notation in scope %E                 *)
-(*            ereal_sup E == supremum of E                                    *)
-(*            ereal_inf E == infimum of E                                     *)
-(* ereal_supremums_neq0 S == S has a supremum                                 *)
+(*                    r%:E == injects real numbers into {ereal R}             *)
+(*                +%E, -%E == addition/opposite for extended reals            *)
+(*   (\sum_(i in A) f i)%E == bigop-like notation in scope %E                 *)
+(*             ereal_sup E == supremum of E                                   *)
+(*             ereal_inf E == infimum of E                                    *)
+(*  ereal_supremums_neq0 S == S has a supremum                                *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -272,14 +272,14 @@ Section ERealArithTh_numDomainType.
 
 Context {R : numDomainType}.
 
-Implicit Types (x y z : {ereal R}).
+Implicit Types x y z : {ereal R}.
 
 Lemma NERFin (x : R) : (- x)%R%:E = (- x%:E)%E. Proof. by []. Qed.
 
 Lemma adde0 : right_id (0%:E : {ereal R}) +%E.
 Proof. by case=> //= x; rewrite addr0. Qed.
 
-Lemma add0e : left_id (S := {ereal R}) 0%:E +%E.
+Lemma add0e : left_id (0%:E : {ereal R}) +%E.
 Proof. by case=> //= x; rewrite add0r. Qed.
 
 Lemma addeC : commutative (S := {ereal R}) +%E.
@@ -291,13 +291,13 @@ Proof. by case=> [x||] [y||] [z||] //=; rewrite addrA. Qed.
 Canonical adde_monoid := Monoid.Law addeA add0e adde0.
 Canonical adde_comoid := Monoid.ComLaw addeC.
 
-Lemma oppe0 : (- 0%:E)%E = 0%:E :> {ereal R}.
+Lemma oppe0 : - 0%:E = 0%:E :> {ereal R}.
 Proof. by rewrite /= oppr0. Qed.
 
 Lemma oppeK : involutive (A := {ereal R}) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
 
-Lemma eqe_opp x y : (- x == - y)%E = (x == y).
+Lemma eqe_opp x y : (- x == - y) = (x == y).
 Proof.
 move: x y => [r| |] [r'| |] //=; apply/idP/idP => [|/eqP[->]//].
 by move/eqP => -[] /eqP; rewrite eqr_opp => /eqP ->.
@@ -305,6 +305,21 @@ Qed.
 
 Lemma eqe_oppLR x y : (- x == y)%E = (x == - y)%E.
 Proof. by move: x y => [r0| |] [r1| |] //=; rewrite !eqe eqr_oppLR. Qed.
+
+Lemma adde_eq_ninfty x y : (x + y == -oo) = ((x == -oo) || (y == -oo)).
+Proof. by move: x y => [?| |] [?| |]. Qed.
+
+Lemma esum_ninfty n (f : 'I_n -> {ereal R}) :
+  (\sum_(i < n) f i == -oo) = [exists i, f i == -oo].
+Proof.
+apply/eqP/idP => [|/existsP [i fi]]; last by rewrite (bigD1 i) //= (eqP fi).
+elim: n f => [f|n ih f]; [by rewrite big_ord0 | rewrite big_ord_recl /=].
+have [/eqP f0 _|? /eqP] := boolP (f ord0 == -oo%E).
+  by apply/existsP; exists ord0; rewrite f0.
+rewrite adde_eq_ninfty => /orP[f0|/eqP/ih/existsP[i fi]].
+by apply/existsP; exists ord0.
+by apply/existsP; exists (lift ord0 i).
+Qed.
 
 End ERealArithTh_numDomainType.
 
