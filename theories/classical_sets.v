@@ -87,7 +87,7 @@ Require Import boolp.
 (*     premaximal if whenever t < s we also have s < t.                       *)
 (*                                                                            *)
 (* * Upper and lower bounds:                                                  *)
-(*                      ul, lb == upper bound and lower bound sets            *)
+(*              ubound, lbound == upper bound and lower bound sets            *)
 (*               supremum x0 E == supremum of E or x0 if E is empty           *)
 (*                                                                            *)
 (******************************************************************************)
@@ -831,27 +831,27 @@ Import Order.TTheory.
 Variables (d : unit) (T : porderType d).
 Implicit Types E : set T.
 
-Definition ub E : set T := [set z | forall y, E y -> (y <= z)%O].
-Definition lb E : set T := [set z | forall y, E y -> (z <= y)%O].
+Definition ubound E : set T := [set z | forall y, E y -> (y <= z)%O].
+Definition lbound E : set T := [set z | forall y, E y -> (z <= y)%O].
 
-Lemma ubP E x : (forall y, E y -> (y <= x)%O) <-> ub E x.
+Lemma ubP E x : (forall y, E y -> (y <= x)%O) <-> ubound E x.
 Proof. by []. Qed.
 
-Lemma lbP E x : (forall y, E y -> (x <= y)%O) <-> lb E x.
+Lemma lbP E x : (forall y, E y -> (x <= y)%O) <-> lbound E x.
 Proof. by []. Qed.
 
-Lemma ub_set1 x y : ub [set x] y = (x <= y)%O.
+Lemma ub_set1 x y : ubound [set x] y = (x <= y)%O.
 Proof.
 by rewrite propeqE; split => [/ubP/(_ x erefl)//|xy]; apply/ubP => z ->.
 Qed.
 
-Lemma lb_ub_set1 x y : lb (ub [set x]) y -> (y <= x)%O.
+Lemma lb_ub_set1 x y : lbound (ubound [set x]) y -> (y <= x)%O.
 Proof. by move/lbP => /(_ x); apply; rewrite ub_set1. Qed.
 
-Lemma lb_ub_refl x : lb (ub [set x]) x.
+Lemma lb_ub_refl x : lbound (ubound [set x]) x.
 Proof. by apply/lbP => y /ubP; apply. Qed.
 
-Lemma ub_lb_ub E x y : ub E y -> lb (ub E) x -> (x <= y)%O.
+Lemma ub_lb_ub E x y : ubound E y -> lbound (ubound E) x -> (x <= y)%O.
 Proof. by move=> Ey /lbP; apply. Qed.
 
 (* down set (i.e., generated order ideal) *)
@@ -859,29 +859,33 @@ Proof. by move=> Ey /lbP; apply. Qed.
 Definition down E : set T := [set x | exists y, E y /\ (x <= y)%O].
 
 (* Real set supremum and infimum existence condition. *)
-Definition has_ub  E := ub E !=set0.
-Definition has_sup E := E !=set0 /\ has_ub E.
-Definition has_lb  E := lb E !=set0.
-Definition has_inf E := E !=set0 /\ has_lb E.
+Definition has_ubound E := ubound E !=set0.
+Definition has_sup E := E !=set0 /\ has_ubound E.
+Definition has_lbound  E := lbound E !=set0.
+Definition has_inf E := E !=set0 /\ has_lbound E.
 
-Lemma has_ub_set1 x : has_ub [set x]. Proof. by exists x; rewrite ub_set1. Qed.
+Lemma has_ub_set1 x : has_ubound [set x].
+Proof. by exists x; rewrite ub_set1. Qed.
 
 Lemma downP E x : (exists2 y, E y & (x <= y)%O) <-> down E x.
 Proof. by split => [[y Ey xy]|[y [Ey xy]]]; [exists y| exists y]. Qed.
 
-Definition supremums E := ub E `&` lb (ub E).
+Definition supremums E := ubound E `&` lbound (ubound E).
 
 Lemma supremums_set1 x : supremums [set x] = [set x].
 Proof.
 rewrite /supremums predeqE => y; split => [[]|].
   rewrite ub_set1 => xy /lb_ub_set1 => yx.
   by apply/eqP; rewrite eq_le xy andbT yx // => z ->.
-by move=> xy; split; [rewrite -xy ub_set1 | rewrite -xy; apply: lb_ub_refl].
+by move=> xy; split; [rewrite -xy ub_set1 |
+  rewrite -xy; apply: lb_ub_refl].
 Qed.
 
 Lemma is_subset1_supremums E : is_subset1 (supremums E).
 Proof.
-move=> x y [Ex xE] [Ey yE]; have yx := ub_lb_ub Ex yE. have xy := ub_lb_ub Ey xE.
+move=> x y [Ex xE] [Ey yE].
+have yx := ub_lb_ub Ex yE.
+have xy := ub_lb_ub Ey xE.
 by apply/eqP; rewrite eq_le xy.
 Qed.
 

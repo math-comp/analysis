@@ -1163,10 +1163,11 @@ move=> S0; apply/eqP; rewrite eq_le; apply/andP; split; last first.
   move=> x [y Sy] <-{x}; rewrite le_contract; exact/ereal_sup_ub.
 rewrite leNgt; apply/negP.
 set supc := sup _; set csup := contract _; move=> ltsup.
-suff [y [ysupS ?]] : exists y, (y < ereal_sup S)%E /\ ub S y.
+suff [y [ysupS ?]] : exists y, (y < ereal_sup S)%E /\ ubound S y.
   have : (ereal_sup S <= y)%E by apply ub_ereal_sup.
   by move/(lt_le_trans ysupS); rewrite ltxx.
-suff [x [? [ubSx x1]]] : exists x, x < csup /\ ub (contract @` S) x /\ `|x| <= 1.
+suff [x [? [ubSx x1]]] : exists x, x < csup /\ ubound (contract @` S) x /\
+    `|x| <= 1.
   exists (expand x); split => [|y Sy].
     by rewrite -(contractK (ereal_sup S)) lt_expand // inE // contract_le1.
   by rewrite -(contractK y) le_expand //; apply ubSx; exists y.
@@ -3393,7 +3394,7 @@ move=> /asboolPn; rewrite asbool_and => /nandP [/asboolPn /(_ (sAab _))|] //.
 move=> /imply_asboolPn [abx nAx] [C Cop AeabC].
 set Altx := fun y => y \in A `&` [set y | y < x].
 have Altxn0 : Altx !=set0 by exists y; rewrite inE.
-have xub_Altx : (ub Altx) x by apply/ubP => ?; rewrite inE => - [_ /ltW].
+have xub_Altx : (ubound Altx) x by apply/ubP => ?; rewrite inE => - [_ /ltW].
 have Altxsup : has_sup Altx by split=> //; exists x.
 set z := sup Altx.
 have yxz : z \in `[y, x].
