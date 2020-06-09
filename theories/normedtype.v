@@ -75,19 +75,23 @@ Require Import classical_sets posnum topology prodnormedzmodule.
 (*                ereal_loc_seq x == sequence that converges to x in the set  *)
 (*                                   of extended real numbers.                *)
 (*                                                                            *)
+(* --> We used these definitions to prove the intermediate value theorem and  *)
+(*     the Heine-Borel theorem, which states that the compact sets of R^n are *)
+(*     the closed and bounded sets.                                           *)
+(*                                                                            *)
 (* * Extended real numbers:                                                   *)
 (*        ereal_topologicalType R == topology for extended real numbers over  *)
 (*                                   R, a realFieldType                       *)
 (*                       contract == order-preserving bijective function      *)
-(*                                   from extended real numbers to [-1;1]     *)
+(*                                   from extended real numbers to [-1; 1]    *)
+(*                         expand == function from real numbers to extended   *)
+(*                                   real numbers that cancels contract in    *)
+(*                                   [-1; 1]                                  *)
 (*       ereal_pseudoMetricType R == pseudometric space for extended reals    *)
 (*                                   over R where is a realFieldType; the     *)
 (*                                   distance between x and y is defined by   *)
 (*                                   `|contract x - contract y|               *)
 (*                                                                            *)
-(* --> We used these definitions to prove the intermediate value theorem and  *)
-(*     the Heine-Borel theorem, which states that the compact sets of R^n are *)
-(*     the closed and bounded sets.                                           *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -1004,16 +1008,24 @@ Definition expand r : {ereal R} :=
 Lemma expand1 x : 1 <= x -> expand x = +oo%E.
 Proof. by move=> x1; rewrite /expand x1. Qed.
 
+Lemma expandN r : expand (- r) = (- expand r)%E.
+Proof.
+rewrite /expand; case: ifPn => [r1|].
+  rewrite ifF; [by rewrite ifT // -ler_oppr|apply/negbTE].
+  by rewrite -ltNge -(opprK r) -ltr_oppl (lt_le_trans _ r1) // -subr_gt0 opprK.
+rewrite -ltNge => r1; case: ifPn; rewrite ler_oppl opprK; [by move=> ->|].
+by rewrite -ltNge leNgt => ->; rewrite leNgt -ltr_oppl r1 /= mulNr normrN.
+Qed.
+
 Lemma expandN1 x : x <= -1 -> expand x = -oo%E.
 Proof.
-move=> x1; rewrite /expand x1 ifF //; apply/negP => /le_trans/(_ x1).
-by apply/negP; rewrite -ltNge -subr_gt0 opprK.
+by rewrite ler_oppr => /expand1/eqP; rewrite expandN eqe_oppLR => /eqP.
 Qed.
 
 Lemma expand0 : expand 0 = 0%:E.
 Proof. by rewrite /expand leNgt ltr01 /= oppr_ge0 leNgt ltr01 /= mul0r. Qed.
 
-(* Cyril: TODO: add to ssrnum *)
+(* TODO: added in mathcomp-1.11.0 ssrnum *)
 Lemma nlt_eqF (x y : R) : `|x| < y -> (x == - y = false) * (x == y = false).
 Proof.
 move=> x1; split; last by rewrite lt_eqF // (le_lt_trans (ler_norm _) x1).
@@ -1103,6 +1115,19 @@ Definition le_contractRL := monoRL_in
 Definition lt_contractRL := monoRL_in
   (onW_can_in predT expandK) (fun x _ => isT) (in2W lt_contract).
 
+Lemma homo_le_expand : {homo expand : x y / (x <= y)%O}.
+Proof.
+move=> x y xy; have [x1|] := lerP `|x| 1.
+  rewrite le_expandLR //; have [y1|] := lerP `|y| 1; first by rewrite expandK.
+  case/ler_normlP : x1 => xN1 x1; rewrite ltr_normr => /orP[y1|].
+    by rewrite expand1 //= ltW.
+  rewrite ltr_oppr => y1; move: xN1; rewrite ler_oppl => /(lt_le_trans y1).
+  by rewrite ltNge xy.
+rewrite ltr_normr => /orP[|] x1; last first.
+  by rewrite expandN1 // ?lee_ninfty // ler_oppr ltW.
+by rewrite expand1; [rewrite expand1 // (le_trans _ xy) // ltW | exact: ltW].
+Qed.
+
 Lemma contract_eq0 x : (contract x == 0) = (x == 0%:E).
 Proof. by rewrite -(can_eq contractK) contract0. Qed.
 
@@ -1153,8 +1178,7 @@ suff [y [ysupS ?]] : exists y, (y < ereal_sup S)%E /\ ub S y.
 suff [x [? [ubSx x1]]] : exists x, x < csup /\ ub (contract @` S) x /\ `|x| <= 1.
   exists (expand x); split => [|y Sy].
     by rewrite -(contractK (ereal_sup S)) lt_expand // inE // contract_le1.
-  rewrite -(contractK y) le_expand // ?inE ?contract_le1 //.
-  by apply ubSx; exists y.
+  by rewrite -(contractK y) homo_le_expand //; apply ubSx; exists y.
 exists ((supc + csup) / 2); split; first by rewrite midf_lt.
 split => [r [y Sy <-{r}]|].
   rewrite (@le_trans _ _ supc) ?midf_le //; last by rewrite ltW.
@@ -1502,8 +1526,7 @@ rewrite predeq2E => x A; split.
         move: re'r'; rewrite ltxI => /andP[Hr'1 Hr'2].
         by rewrite ltr_subl_addr subrK in Hr'2.
       rewrite ltr_subl_addr -lte_fin -(contractK (_ + r)%:E).
-      rewrite addrC -(contractK r'%:E) //.
-      by rewrite lt_expand ?inE ?contract_le1.
+      by rewrite addrC -(contractK r'%:E) // lt_expand ?inE ?contract_le1.
     * rewrite /ereal_ball [contract +oo]/=.
       rewrite ltxI => /andP[re'1 re'2].
       have [cr0|cr0] := lerP 0 (contract r%:E).

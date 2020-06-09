@@ -67,11 +67,11 @@ Notation "R ^nat" := (sequence R) : type_scope.
 
 Notation "'nondecreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> (n <= m)%O})
   (at level 10).
-Notation "'nonincreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> n >= m})
+Notation "'nonincreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> (n >= m)%O})
   (at level 10).
-Notation "'increasing_seq' f" := ({mono f : n m / (n <= m)%nat >-> n <= m})
+Notation "'increasing_seq' f" := ({mono f : n m / (n <= m)%nat >-> (n <= m)%O})
   (at level 10).
-Notation "'decreasing_seq' f" := ({mono f : n m / (n <= m)%nat >-> n >= m})
+Notation "'decreasing_seq' f" := ({mono f : n m / (n <= m)%nat >-> (n >= m)%O})
   (at level 10).
 (* TODO:  the "strict" versions with mono instead of homo should also have notations*)
 
