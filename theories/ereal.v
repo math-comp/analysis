@@ -321,6 +321,13 @@ by apply/existsP; exists ord0.
 by apply/existsP; exists (lift ord0 i).
 Qed.
 
+Lemma adde_ge0 x y : (0%:E <= x -> 0%:E <= y -> 0%:E <= x + y)%E.
+Proof. by move: x y => [r0| |] [r1| |] // ? ?; rewrite !lee_fin addr_ge0. Qed.
+
+Lemma sume_ge0 T (u_ : T -> {ereal R}) : (forall n, 0%:E <= u_ n)%E -> forall l,
+  (0%:E <= \sum_(i <- l) u_ i)%E.
+Proof. by move=> ?; elim => [|? ? ?]; rewrite ?big_nil// big_cons adde_ge0. Qed.
+
 End ERealArithTh_numDomainType.
 
 Section ERealArithTh_realDomainType.
