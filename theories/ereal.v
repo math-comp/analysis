@@ -354,6 +354,9 @@ move: x y => [r| |] [r'| |] //=; apply/idP/idP => [|/eqP[->]//].
 by move/eqP => -[] /eqP; rewrite eqr_opp => /eqP ->.
 Qed.
 
+Lemma eqe_oppLR x y : (- x == y)%E = (x == - y)%E.
+Proof. by move: x y => [r0| |] [r1| |] //=; rewrite !eqe eqr_oppLR. Qed.
+
 End ERealArithTh_numDomainType.
 
 Section ERealArithTh_realDomainType.

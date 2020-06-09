@@ -9,7 +9,7 @@
 - in `classical_sets.v`, definitions for supremums: `ul`, `lb`,
   `supremum`
 - in `ereal.v`:
-  + technical lemmas `lee_ninfty_eq`, `lee_pinfty_eq`, `lte_subl_addr`
+  + technical lemmas `lee_ninfty_eq`, `lee_pinfty_eq`, `lte_subl_addr`, `eqe_oppLR`
   + lemmas about supremum: `ereal_supremums_neq0`
   + definitions:
     * `ereal_sup`, `ereal_inf`
@@ -17,6 +17,7 @@
     * `ereal_sup_ub`, `ub_ereal_sup`, `ub_ereal_sup_adherent`
 - in `normedtype.v`:
   + function `contract` (bijection from `{ereal R}` to `R`)
+  + function `expand` (that cancels `contract`)
   + `ereal_pseudoMetricType R`
 
 ### Changed
