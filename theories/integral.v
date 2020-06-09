@@ -1,9 +1,13 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From Coq Require Import ssreflect ssrfun ssrbool.
-From mathcomp Require Import ssrnat eqtype choice fintype order bigop ssralg.
-From mathcomp Require Import ssrnum.
+From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
+From mathcomp Require Import ssralg ssrnum.
 Require Import boolp reals ereal.
-Require Import classical_sets posnum topology normedtype.
+Require Import classical_sets posnum topology normedtype sequences measure.
+
+(******************************************************************************)
+(*           Scratch file for formalization of integrals (WIP)                *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -18,35 +22,13 @@ Reserved Notation "{ 'ae' P }" (at level 0, format "{ 'ae'  P }").
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Definition fct_sequence (R : numDomainType) (T : Type) := nat -> (T -> {ereal R}).
+Definition fct_sequence (R : numDomainType) (T : Type) := (T -> {ereal R}) ^nat.
 
 Definition increasing (R : numDomainType) (T : Type) (D : set T) (f_ : fct_sequence R T) :=
   forall n, (forall x, D x -> real_of_er (f_ n x) <= real_of_er (f_ n.+1 x)).
 
+
 Module Type INTEGRAL.
-
-Module Measurable.
-
-Parameter class_of : forall (T : Type), Type.
-Notation sigma_algebra := class_of.
-
-Parameter sets : forall T, class_of T -> set (set T).
-
-Structure type := Pack {
-  sort : Type ; class : class_of sort }.
-
-Module Exports.
-Notation measurableType := type.
-Coercion sort : type >-> Sortclass.
-Definition measurable (T : type) := sets (class T).
-Notation sigma_algebra := class_of.
-End Exports.
-
-(* TODO: property that all measurable sets are indeed measurable *)
-
-End Measurable.
-
-Export Measurable.Exports.
 
 Parameter measurable_fun : forall (R : numDomainType) (T : measurableType) (f : T -> {ereal R}), bool.
 
@@ -151,189 +133,5 @@ Axiom fubini_tonelli : measurable_fun f ->
   integral (fun x => (mz x)%:E) setT f = integral (fun x => (mx x)%:E) setT F.
 
 End fubini.
-
-(* wip *)
-
-(* TODO: see also definitions in sequences.v *)
-Definition nondecreasing (T : measurableType) (u_ : nat -> set T) :=
-  forall n, u_ n `<=` u_ n.+1.
-
-Lemma nondecreasing_ler (T : measurableType) (u_ : nat -> set T) :
-  nondecreasing u_ -> {homo u_ : n m / (n <= m)%nat >-> n `<=` m}.
-Proof.
-move=> iu n; elim=> [|m ih]; first by rewrite leqn0 => /eqP ->.
-rewrite leq_eqVlt => /orP[/eqP <- //|].
-by rewrite ltnS => /ih/subset_trans; apply; apply iu.
-Qed.
-
-Definition triviset X (A : nat -> set X) :=
-  forall j i, (i != j)%nat -> A i `&` A j = set0.
-
-Section additivity.
-Variables (R : numFieldType) (X : Type) (mx : set X -> {ereal R}).
-Definition additive2 := forall A B, A `&` B = set0 -> mx (A `|` B) = (mx A + mx B)%E.
-Definition additive := forall A, triviset A -> forall n,
-  mx (\big[setU/set0]_(i < n.+1) A i) = (\sum_(i < n.+1) mx (A i))%E.
-Definition sigma_additive := forall A, triviset A ->
-  (fun n => (\sum_(i < n.+1) mx (A i))%E) --> mx (\bigcup_n A n).
-End additivity.
-
-Lemma additive2P (R : numFieldType) X (mx : set X -> {ereal R}) :
-  additive mx <-> additive2 mx.
-Proof.
-split => [amx A B AB|a2mx A ATI n].
-  set C := fun n => if n isn't n'.+1 then A else if n' is O then B else set0.
-  have CTI : triviset C by move=> [|[|i]] [|[|j]]; rewrite ?set0I ?setI0// setIC.
-  by have := amx _ CTI 1%N; rewrite !big_ord_recl !big_ord0 adde0/= setU0.
-elim: n => [|n IHn] in A ATI *;
-  rewrite big_ord_recl [in RHS]big_ord_recl ?big_ord0 ?setU0 ?adde0//=.
-rewrite a2mx ?(IHn (fun i => A (bump 0 i)))//.
-  by move=> j i neq_ji; apply: ATI.
-by rewrite big_distrr /= big1// => i _; apply: ATI.
-Qed.
-
-Lemma sigma_additive_implies_additive (R : realFieldType(*numFieldType*)) X (mx : set X -> {ereal R}) :
-  mx set0 = 0%:E -> sigma_additive mx -> additive mx.
-Proof.
-move=> mx0 samx; apply/additive2P => A B AB_eq0.
-set C := fun i => if (i == 0)%N then A else if (i == 1)%N then B else set0.
-have CTI : triviset C by move=> [|[|i]] [|[|j]]; rewrite ?setI0 ?set0I// setIC.
-have -> : A `|` B = \bigcup_i C i.
-  rewrite predeqE => x; split.
-    by case=> [Ax|Bx]; by [exists 0%N|exists 1%N].
-  by case=> [[|[|n]]]//; by [left|right].
-have /cvg_unique := samx C CTI; apply => //.
-apply: cvg_fconst; exists 2%N => // -[|n] _//.
-by rewrite !big_ord_recl/= big1 ?adde0.
-Qed.
-
-Section properties_of_measures.
-Variables (R : realFieldType(*numFieldType*)) (X : measurableType) (mx : set X -> {ereal R}).
-Axiom measurable0 : mx set0 = 0%:E.
-Axiom measurable_ge0 : forall x, (0%:E <= mx x)%E.
-Axiom measurable_sigma_additive : sigma_additive mx.
-Hint Resolve measurable0 measurable_ge0 measurable_sigma_additive.
-
-Lemma measurable_additive : additive mx.
-Proof. exact: sigma_additive_implies_additive. Qed.
-Hint Resolve measurable_additive.
-
-Lemma measurable_additive2 : additive2 mx.
-Proof. exact/additive2P. Qed.
-
-End properties_of_measures.
-
-Lemma lee_addl (R : realDomainType(*numDomainType*)) (x y : {ereal R}) : (0%:E <= y)%E ->  (x <= x + y)%E.
-Proof.
-move: x y => -[ x [y| |]//= | [| |]// | [| | ]//]; first by rewrite !lee_fin ler_addl.
-by move=> _; exact: lee_pinfty.
-Qed.
-
-Lemma lee_add2l (R : realDomainType(*numDomainType*)) (x a b : {ereal R}) :
-  (a <= b)%E -> (x + a <= x + b)%E.
-Proof.
-move: a b x => -[a [b [x /=|//|//] | []// |//] | []// | ].
-- by rewrite !lee_fin ler_add2l.
-- move=> r _; exact: lee_pinfty.
-- move=> -[b [|  |]// | []// | //] r oob; exact: lee_ninfty.
-Qed.
-
-Lemma lee_add2r (R : realDomainType(*numDomainType*)) (x a b : {ereal R}) :
-  (a <= b)%E -> (a + x <= b + x)%E.
-Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
-
-(* measure is monotone *)
-Lemma measure_monotone (R : realFieldType(*numFieldType*)) (X : measurableType) (mx : set X -> {ereal R}) :
-  {homo mx : A B / A `<=` B >-> (A <= B)%E}.
-Proof.
-move=> A B AB; have {1}-> : B = A `|` (B `\` A).
-  rewrite funeqE => x; rewrite propeqE.
-  have [Ax|Ax] := pselect (A x).
-    split=> [Bx|]; by [left | move=> -[/AB //|] []].
-  by split=> [Bx|]; by [right| move=> -[//|] []].
-rewrite measurable_additive2 ?lee_addl ?measurable_ge0//.
-rewrite setDE setICA (_ : _ `&` ~` _ = set0) ?setI0 //.
-by rewrite funeqE => x; rewrite propeqE; split => // -[].
-Qed.
-
-Section boole_inequality.
-Variables (R : realFieldType (*numFieldType*)) (X : measurableType) (mx : set X -> {ereal R}).
-
-(* measure is continuous from below *)
-Lemma measure_bigcup (A : nat -> set X) : nondecreasing A ->
-  mx (\bigcup_n A n) = lim (mx \o A).
-Proof.
-move=> ndA.
-set B := fun n => if n isn't n'.+1 then A O else A n `\` A n'.
-have Binter : triviset B.
-  move=> j i; wlog : j i / (i < j)%nat.
-    move=> h; rewrite neq_ltn => /orP[|] ?; by
-      [rewrite h // ltn_eqF|rewrite setIC h // ltn_eqF].
-  move=> ij _; move: j i ij; case => // j [_ /=|n].
-    rewrite funeqE => x; rewrite propeqE; split => // -[A0 [Aj1 Aj]].
-    by apply Aj; apply: nondecreasing_ler A0.
-  rewrite ltnS => nj /=; rewrite funeqE => x; rewrite propeqE; split => //.
-  by move=> -[[An1 An] [Aj1 Aj]]; apply Aj; apply: nondecreasing_ler An1.
-have ABE : forall n, A n.+1 = A n `|` B n.+1.
-  move=> n; rewrite /B funeqE => x; rewrite propeqE; split.
-  by move=> ?; have [?|?] := pselect (A n x); [left | right].
-  by move=> -[|[]//]; apply: ndA.
-have AE n : A n = \bigcup_(i in [set k | (k <= n)%nat]) B i.
-  elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
-  - by move=> ?; exists O.
-  - by move=> -[?]; rewrite leqn0 => /eqP ->.
-  - rewrite ABE => -[|/=].
-    by rewrite ih => -[j /leq_trans jn Bjx]; exists j => //; rewrite jn.
-    by move=> -[An1x Anx]; exists n.+1.
-  - move=> -[[_|j]]; first by rewrite /=; apply: nondecreasing_ler.
-    by rewrite /= => jn [Aj1x Ajx]; apply: (nondecreasing_ler ndA _ Aj1x).
-have AB : \bigcup_(n in setT) A n = \bigcup_(n in setT) B n.
-  rewrite funeqE => x; rewrite propeqE; split.
-  by move=> -[n _]; rewrite AE => -[n' _] ?; exists n'.
-  by move=> -[n _ ?]; exists n => //; rewrite AE; exists n.
-rewrite AB -(cvg_lim _ (@measurable_sigma_additive _ _ _ _ _))//.
-rewrite (_ : (fun n => \sum_(i < n.+1) mx (B i))%E = mx \o A) //.
-by rewrite funeqE => n; rewrite -measurable_additive// bigcup_ord -AE.
-Qed.
-
-(* measure satisfies Boole's inequality *)
-Lemma bool_le (A : nat -> set X) : forall n,
-  (mx (\bigcup_(i in [set k | (k <= n)%N]) A i) <= \sum_(i < n.+1) mx (A i))%E.
-Proof.
-elim => [|n ih].
-  rewrite big_ord_recl big_ord0 adde0 (_ : bigsetU _ _ = A O) //.
-  rewrite funeqE => x; rewrite propeqE; split => [|A0x]; last by exists O.
-  by move=> -[i]; rewrite leqn0 => /eqP ->.
-set B := \bigcup_(i in (fun k => (k <= n)%nat)) A i.
-set C := \bigcup_(i in _) A i.
-have -> : C = B `|` (A n.+1 `&` ~` B).
-  rewrite funeqE => x; rewrite propeqE; split.
-    move=> -[j]; rewrite leq_eqVlt => /orP[/eqP ->{j} An1|].
-      have [?|?] := pselect (B x); [by left|by right].
-    by move=> jn Aj; left; exists j.
-  move=> -[[j jn Aj]|]; first by exists j => //; rewrite ltnW.
-  by move=> [An1 _]; exists n.+1.
-rewrite measurable_additive2; last first.
-  rewrite setIC -setIA (_ : ~` _ `&` _ = set0) ?setI0 //.
-  by rewrite funeqE => x; rewrite propeqE; split => // -[].
-rewrite (@le_trans _ _ (mx B + mx (A n.+1))%E) // ?lee_add2l //.
-rewrite measure_monotone //; first by apply subIset; left.
-by rewrite big_ord_recr /= lee_add2r.
-Qed.
-
-(* measure satisfies generalized Boole's inequality *)
-Lemma bool_le_gen (A : nat -> set X) :
-  (mx (\bigcup_(n in setT) A n) <= lim (fun n => \sum_(i < n) mx (A i)))%E.
-Proof.
-set B := fun n : nat => \bigcup_(i in [set k | (k <= n)%nat]) (A i).
-rewrite [X in mx X](_ : _ = \bigcup_(n in setT) B n); last first.
-  rewrite funeqE => x; rewrite propeqE; split.
-  by move=> -[k _ Akx]; exists k => //; exists k.
-  by move=> -[k _ [k' ? ?]]; exists k'.
-rewrite measure_bigcup; last first.
-  by move=> n x [n' /leq_trans n'n ?]; exists n' => //; exact: n'n.
-Abort.
-
-End boole_inequality.
 
 End INTEGRAL.
