@@ -723,7 +723,7 @@ rewrite /ball /= /ereal_ball [contract +oo]/= ger0_norm ?subr_ge0; last first.
   by move: (contract_le1 (u_ n)%:E); rewrite ler_norml => /andP[].
 rewrite ltr_subl_addr addrC -ltr_subl_addr.
 suff : `|1 - e%:num| < contract (u_ n)%:E by exact: le_lt_trans (ler_norm _).
-rewrite gtr0_norm ?subr_gt0 // lt_contractRL ?inE ?ltW//.
+rewrite gtr0_norm ?subr_gt0 // -lt_expandLR ?inE ?ltW//.
 by rewrite -real_of_er_expand // lte_fin k1un//; near: n; exists k.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -767,7 +767,7 @@ have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo%E).
     rewrite (@le_lt_trans _ _ (-1)) //.
       by rewrite ler_subl_addr addrC -ler_subl_addr opprK (le_trans e2).
     by move: un1; rewrite le_eqVlt eq_sym contract_eqN1 (negbTE unoo).
-  rewrite ltr_subl_addr addrC -ltr_subl_addr lt_contractRL ?inE//=.
+  rewrite ltr_subl_addr addrC -ltr_subl_addr -lt_expandLR ?inE//=.
     near: n.
     suff [n Hn] : exists n, (expand (contract +oo - (e)%:num)%R < u_ n)%E.
       by exists n => // m nm; rewrite (lt_le_trans Hn) //; apply nd_u_.
@@ -817,7 +817,7 @@ rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
 rewrite ger0_norm ?subr_ge0 ?le_contract ?ereal_sup_ub//; last by exists n.
 move: Se'y; rewrite -{}umx {y} /= => le'um.
 have leum : contract l - e%:num < contract (u_ m).
-  rewrite lt_contractRL ?inE ?ltW//.
+  rewrite -lt_expandLR ?inE ?ltW//.
   move: le'um; rewrite /e' NERFin -/l [in X in (X - _ < _)%E -> _]lr /= opprB.
   by rewrite addrCA subrr addr0 real_of_er_expand //.
 rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
