@@ -5,28 +5,27 @@
 - [Mathematical Components version ≥ 1.11.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 1.5.0](https://github.com/math-comp/finmap)
 
-These requirements can be installed can be installed in a custom way or through
+These requirements can be installed in a custom way, or through
 [opam](https://opam.ocaml.org/) (the recommended way) using
-- the repository https://coq.inria.fr/opam/released, which you can add by typing
-  `opam repo add coq-released https://coq.inria.fr/opam/released`
-- or the repository https://coq.inria.fr/opam/extra-dev, if the requirements involve beta releases
-  (this has been the case with MathComp 1.11+beta1)
+the repository https://coq.inria.fr/opam/released, which you can add by typing
+`opam repo add coq-released https://coq.inria.fr/opam/released`.
 
 Detailed instructions for possible installations of Mathematical Components are located
 [here](https://github.com/math-comp/math-comp/blob/master/INSTALL.md).
 
 ## Short Instructions
 - Through opam:
-  + For the latest version (as of [2020-06-05]), type `opam install coq-mathcomp-analysis.0.3.0`
-  + For other versions, type `opam install coq-mathcomp-analysis.X.Y.Z`
-    (all the dependencies should be automatically installed, assuming `opam` has been properly configured
-    and `coq-released` repository is added---possibly `extra-dev` if necessary, see above)
+  + type `opam install coq-mathcomp-analysis.X.Y.Z` where `X.Y.Z` is the version number
+    (all the dependencies should be automatically installed, assuming `opam` has been properly
+    configured and `coq-released` repository is added)
 - Custom (assuming Coq ≥ 8.7, Mathematical Components version ≥ 1.11, and Finmap version 1.5.0
   have been installed):
   + Type `make` to use the provided `Makefile`.
 
 ## From scratch instructions
+
 ### How to install as a package
+
 1. Install opam
 - any linux system:
 ```
@@ -35,22 +34,18 @@ $ sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/instal
 
 2. Configure opam
 ```
-$ export OPAMROOT=~/.opam_mathcomp_analysis
+$ export OPAMROOT=~/.opam_mathcomp_analysis # opam configuration, metadata, logs, temporary directories and caches
 $ opam init -j4 # adapt to the number of cores you have
 $ eval `opam config env`
 $ opam repo add coq-released https://coq.inria.fr/opam/released
-```
-To access beta releases:
-```
-$ opam repo add extra-dev https://coq.inria.fr/opam/extra-dev
 ```
 3. Install our package (and all its dependencies)
 ```
 $ opam install coq-mathcomp-analysis
 ```
-To install a precise version, type, say 0.3.0,
+To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.0.3.0
+$ opam install coq-mathcomp-analysis.X.Y.Z
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
