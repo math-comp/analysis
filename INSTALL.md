@@ -5,19 +5,24 @@
 - [Mathematical Components version ≥ 1.11.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 1.5.0](https://github.com/math-comp/finmap)
 
-These requirements can be installed through [opam](https://opam.ocaml.org/) (the recommended way) using
-- the repository https://coq.inria.fr/opam/extra-dev, if the requirements involve beta releases (as of [2020-06-05] this is the case for MathComp 1.11.0)
-- or, for other versions, the repository https://coq.inria.fr/opam/released, which you can add by typing `opam repo add coq-released https://coq.inria.fr/opam/released`
-or can be installed in a custom way.
+These requirements can be installed can be installed in a custom way or through
+[opam](https://opam.ocaml.org/) (the recommended way) using
+- the repository https://coq.inria.fr/opam/released, which you can add by typing
+  `opam repo add coq-released https://coq.inria.fr/opam/released`
+- or the repository https://coq.inria.fr/opam/extra-dev, if the requirements involve beta releases
+  (this has been the case with MathComp 1.11+beta1)
 
-Detailed instructions for possible installations of Mathematical Components are located [here](https://github.com/math-comp/math-comp/blob/master/INSTALL.md).
+Detailed instructions for possible installations of Mathematical Components are located
+[here](https://github.com/math-comp/math-comp/blob/master/INSTALL.md).
 
 ## Short Instructions
 - Through opam:
-  + For the latest version (as of [2020-06-05]), type `opam install coq-mathcomp-analysis.0.3.0` (assuming the `extra-dev` repository has been added)
-  + For other versions, type `opam install coq-mathcomp-analysis`
-  (all the dependencies should be automatically installed, assuming `opam` has been properly configured and `coq-released` repository is added)
-- Custom (assuming Coq ≥ 8.7, Mathematical Components version ≥ 1.11, and Finmap version 1.5.0 have been installed):
+  + For the latest version (as of [2020-06-05]), type `opam install coq-mathcomp-analysis.0.3.0`
+  + For other versions, type `opam install coq-mathcomp-analysis.X.Y.Z`
+    (all the dependencies should be automatically installed, assuming `opam` has been properly configured
+    and `coq-released` repository is added---possibly `extra-dev` if necessary, see above)
+- Custom (assuming Coq ≥ 8.7, Mathematical Components version ≥ 1.11, and Finmap version 1.5.0
+  have been installed):
   + Type `make` to use the provided `Makefile`.
 
 ## From scratch instructions
@@ -54,18 +59,22 @@ $ eval `opam config env`
 ```
 
 ### How to edit and test the source code
-If you would rather edit and test the files than intalling them, we suggest that you replace `opam install coq-mathcomp-analysis` command with the following
+
+If you would rather edit and test the files than intalling them, we suggest that you replace
+`opam install coq-mathcomp-analysis` command with the following
 ```
 $ opam install coq-mathcomp-analysis --deps-only
 $ git clone https://github.com/math-comp/analysis
 $ cd analysis
 $ make
 ```
-You may then browse the files using `coqide` (you might want to `opam install coqide`) or using [proof general for emacs](https://github.com/ProofGeneral/PG)
+You may then browse the files using `coqide` (you might want to `opam install coqide`) or
+using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.9.1 and MathComp 1.8.0. For more recent versions, update the version numbers accordingly.
+With the example of Coq 8.9.1 and MathComp 1.8.0. For more recent versions, update the
+version numbers accordingly.
 
 1. Install Coq 8.9.1
 ```
@@ -95,7 +104,8 @@ $ make
 ```
 $ opam remove coq-mathcomp-analysis
 ```
-- However if you wish to clean the entire installation (including `coq` and `mathcomp` dependencies) you should remove the opam root we created for this purpose:
+- However if you wish to clean the entire installation (including `coq` and `mathcomp` dependencies)
+  you should remove the opam root we created for this purpose:
 ```
 $ rm -rf ~/.opam_mathcomp_analysis
 ```
