@@ -1078,11 +1078,12 @@ Qed.
 Definition lt_contract := leW_mono le_contract.
 Definition contract_inj := mono_inj lexx le_anti le_contract.
 
-Lemma le_expand : {in [pred x| `|x| <= 1] &, {mono expand : x y / (x <= y)%O}}.
+Lemma le_expand_in : {in [pred x | `|x| <= 1] &,
+  {mono expand : x y / (x <= y)%O}}.
 Proof. exact: can_mono_in (onW_can_in predT expandK) _ (in2W le_contract). Qed.
 
-Definition lt_expand := leW_mono_in le_expand.
-Definition expand_inj := mono_inj_in lexx le_anti le_expand.
+Definition lt_expand := leW_mono_in le_expand_in.
+Definition expand_inj := mono_inj_in lexx le_anti le_expand_in.
 
 Lemma real_of_er_expand x : `|x| < 1 -> (real_of_er (expand x))%:E = expand x.
 Proof.
@@ -1099,30 +1100,20 @@ Lemma bijective_contract : {on [pred x| `|x| <= 1], bijective contract}.
 Proof. exists expand; [exact: in1W contractK | exact: expandK]. Qed.
 
 Definition le_expandLR := monoLR_in
-  (in_onW_can _ predT contractK) (fun x _ => contract_le1 x) le_expand.
+  (in_onW_can _ predT contractK) (fun x _ => contract_le1 x) le_expand_in.
 Definition lt_expandLR := monoLR_in
   (in_onW_can _ predT contractK) (fun x _ => contract_le1 x) lt_expand.
 Definition le_expandRL := monoRL_in
-  (in_onW_can _ predT contractK) (fun x _ => contract_le1 x) le_expand.
+  (in_onW_can _ predT contractK) (fun x _ => contract_le1 x) le_expand_in.
 Definition lt_expandRL := monoRL_in
   (in_onW_can _ predT contractK) (fun x _ => contract_le1 x) lt_expand.
-Definition le_contractLR := monoLR_in
-  (onW_can_in predT expandK) (fun x _ => isT) (in2W le_contract).
-Definition lt_contractLR := monoLR_in
-  (onW_can_in predT expandK) (fun x _ => isT) (in2W lt_contract).
-Definition le_contractRL := monoRL_in
-  (onW_can_in predT expandK) (fun x _ => isT) (in2W lt_contract).
-Definition lt_contractRL := monoRL_in
-  (onW_can_in predT expandK) (fun x _ => isT) (in2W lt_contract).
 
-Lemma homo_le_expand : {homo expand : x y / (x <= y)%O}.
+Lemma le_expand : {homo expand : x y / (x <= y)%O}.
 Proof.
 move=> x y xy; have [x1|] := lerP `|x| 1.
-  rewrite le_expandLR //; have [y1|] := lerP `|y| 1; first by rewrite expandK.
-  case/ler_normlP : x1 => xN1 x1; rewrite ltr_normr => /orP[y1|].
-    by rewrite expand1 //= ltW.
-  rewrite ltr_oppr => y1; move: xN1; rewrite ler_oppl => /(lt_le_trans y1).
-  by rewrite ltNge xy.
+  have [y_le1|/ltW /expand1->] := leP y 1; last by rewrite lee_pinfty.
+  rewrite le_expand_in ?inE// ler_norml y_le1 (le_trans _ xy)//.
+  by rewrite ler_oppl (ler_normlP _ _ _).
 rewrite ltr_normr => /orP[|] x1; last first.
   by rewrite expandN1 // ?lee_ninfty // ler_oppr ltW.
 by rewrite expand1; [rewrite expand1 // (le_trans _ xy) // ltW | exact: ltW].
@@ -1178,7 +1169,7 @@ suff [y [ysupS ?]] : exists y, (y < ereal_sup S)%E /\ ub S y.
 suff [x [? [ubSx x1]]] : exists x, x < csup /\ ub (contract @` S) x /\ `|x| <= 1.
   exists (expand x); split => [|y Sy].
     by rewrite -(contractK (ereal_sup S)) lt_expand // inE // contract_le1.
-  by rewrite -(contractK y) homo_le_expand //; apply ubSx; exists y.
+  by rewrite -(contractK y) le_expand //; apply ubSx; exists y.
 exists ((supc + csup) / 2); split; first by rewrite midf_lt.
 split => [r [y Sy <-{r}]|].
   rewrite (@le_trans _ _ supc) ?midf_le //; last by rewrite ltW.
@@ -1453,12 +1444,12 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
       rewrite opprB; move: re'r'.
       rewrite /e' ltxI => /andP[_].
       rewrite -ltr_subl_addr opprK subrK -lte_fin real_of_er_expand //.
-      by move=> r'e'r; rewrite ltr_subl_addl lt_contractLR ?inE ?ltW.
+      by move=> r'e'r; rewrite ltr_subl_addl -lt_expandRL ?inE ?ltW.
     move: re'r'; rewrite ltxI => /andP[].
     rewrite gtr0_norm ?subr_gt0 // -ltr_subl_addl addrAC subrr add0r ltr_oppl.
     rewrite opprK -lte_fin real_of_er_expand // => r'e'r _.
     rewrite gtr0_norm ?subr_gt0 ?lt_contract ?lte_fin//.
-    by rewrite ltr_subl_addl addrC -ltr_subl_addl lt_contractRL ?inE ?ltW.
+    by rewrite ltr_subl_addl addrC -ltr_subl_addl -lt_expandLR ?inE ?ltW.
   by apply (@locally_fin_out_above _ e) => //; rewrite ltW.
 have [re1|re1] := ltrP 1 (contract r%:E + (e)%:num).
   exact: (@locally_fin_out_above_below _ e).
@@ -1509,7 +1500,7 @@ rewrite predeq2E => x A; split.
           move: re'r'; rewrite /e' ltxI => /andP[Hr'1 Hr'2].
           rewrite /e' ltr_subr_addl addrC -ltr_subr_addl in Hr'1.
           by rewrite (lt_le_trans Hr'1) // opprB addrCA subrr addr0.
-        have := H1;  rewrite lt_contractLR ?inE ?contract_le1 //.
+        have := H1;  rewrite -lt_expandRL ?inE ?contract_le1 //.
         rewrite !contractK => rer'.
         rewrite lte_fin ltr_subl_addr addrC -ltr_subl_addr in rer'.
         rewrite rer' /= andbT (@lt_le_trans _ _ 0) //.
