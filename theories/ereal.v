@@ -335,7 +335,7 @@ Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types x y z a b : {ereal R}.
 
-Lemma sube_gt0 x y: (0%:E < y - x)%E = (x < y)%E.
+Lemma sube_gt0 x y : (0%:E < y - x)%E = (x < y)%E.
 Proof.
 move: x y => [r | |] [r'| |] //=; rewrite ?(lte_pinfty,lte_ninfty) //.
 by rewrite !lte_fin subr_gt0.
@@ -353,7 +353,7 @@ move: x y => [r| |] [r'| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_oppr.
 Qed.
 
-Lemma lee_addl x y : (0%:E <= y)%E ->  (x <= x + y)%E.
+Lemma lee_addl x y : (0%:E <= y)%E -> (x <= x + y)%E.
 Proof.
 move: x y => -[ x [y| |]//= | [| |]// | [| | ]//];
   by [rewrite !lee_fin ler_addl | move=> _; exact: lee_pinfty].
@@ -370,10 +370,35 @@ Qed.
 Lemma lee_add2r x a b : (a <= b)%E -> (a + x <= b + x)%E.
 Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
 
+Lemma lee_add a b x y : (a <= b)%E -> (x <= y)%E -> (a + x <= b + y)%E.
+Proof.
+move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(lee_pinfty,lee_ninfty)//.
+by rewrite !lee_fin; exact: ler_add.
+Qed.
+
+Lemma lee_sum (f g : nat -> {ereal R}) :
+  (forall i, (f i <= g i)%E) -> forall n, (\sum_(i < n) f i <= \sum_(i < n) g i)%E.
+Proof.
+move=> fg; elim => [|n ih]; first by rewrite !big_ord0.
+by rewrite 2!big_ord_recr /= lee_add.
+Qed.
+
 Lemma lte_subl_addr x (r : R) z : (x - r%:E < z)%E = (x < z + r%:E)%E.
 Proof.
 move: x r z => [x| |] r [z| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_subl_addr.
+Qed.
+
+Lemma lee_oppr x y : (x <= - y)%E = (y <= - x)%E.
+Proof.
+move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
+by rewrite !lee_fin ler_oppr.
+Qed.
+
+Lemma lee_oppl x y : (- x <= y)%E = (- y <= x)%E.
+Proof.
+move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
+by rewrite !lee_fin ler_oppl.
 Qed.
 
 End ERealArithTh_realDomainType.
@@ -402,6 +427,7 @@ Proof. by []. Qed.
 
 Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%O -> (r0%:E < r1%:E)%E.
 Proof. by []. Qed.
+
 End ERealOrderTheory.
 
 Lemma lee_opp2 {R : realDomainType} : {mono @eopp R : x y /~ (x <= y)%E}.
@@ -419,7 +445,7 @@ by rewrite lte_pinfty /Order.lt /= realN num_real.
 Qed.
 
 Section ereal_supremum.
-Variable R : realType.
+Variable R : realFieldType.
 Local Open Scope classical_set_scope.
 Implicit Types S : set {ereal R}.
 Implicit Types x : {ereal R}.
@@ -451,6 +477,57 @@ case: xgetP.
 by move=> y ->{y} sSxget; move: (is_subset1_supremums sSoo sSxget).
 by move/(_ +oo%E) => gSoo; exfalso; apply gSoo => {gSoo}.
 Qed.
+
+Definition ereal_sup S := supremum -oo S.
+
+Definition ereal_inf S := - ereal_sup (eopp @` S).
+
+Lemma ereal_sup_set0 : ereal_sup set0 = -oo.
+Proof. by rewrite /ereal_sup /supremum; case: pselect => // -[]. Qed.
+
+Lemma ereal_sup_set1 x : ereal_sup [set x] = x.
+Proof.
+rewrite /ereal_sup /supremum; case: pselect => /= [_|x0]; last first.
+  by exfalso; apply x0; exists x.
+by rewrite supremums_set1; case: xgetP => // /(_ x) /(_ erefl).
+Qed.
+
+Lemma ereal_inf_set0 : ereal_inf set0 = +oo.
+Proof. by rewrite /ereal_inf image_set0 ereal_sup_set0. Qed.
+
+Lemma ub_ereal_sup S M : ubound S M -> (ereal_sup S <= M)%E.
+Proof.
+rewrite /ereal_sup /supremum; case: pselect => /= [|_ _].
+- move=> S0 SM; case: xgetP => [x ->{x} [_]| _] /=; first exact.
+  by rewrite lee_ninfty.
+- by rewrite lee_ninfty.
+Qed.
+
+Lemma lb_ereal_inf S M : lbound S M -> (M <= ereal_inf S)%E.
+Proof.
+move=> SM; rewrite /ereal_inf lee_oppr; apply ub_ereal_sup => x [y Sy <-{x}].
+by rewrite lee_oppl oppeK; apply SM.
+Qed.
+
+Lemma ub_ereal_sup_adherent S (e : {posnum R}) (r : R) :
+  ereal_sup S = r%:E -> exists x, S x /\ (ereal_sup S - e%:num%:E < x)%E.
+Proof.
+move=> Sr.
+have : ~ ubound S (ereal_sup S - e%:num%:E)%E.
+  move/ub_ereal_sup; apply/negP.
+  by rewrite -ltNge Sr lte_subl_addr lte_fin ltr_addl.
+move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
+case/Nimply => ? ?; exists x; split => //.
+by rewrite ltNge; apply/negP.
+Qed.
+
+End ereal_supremum.
+
+Section ereal_supremum_realType.
+Variable R : realType.
+Local Open Scope classical_set_scope.
+Implicit Types S : set {ereal R}.
+Implicit Types x : {ereal R}.
 
 Let real_of_er_def r0 x : R := if x is r%:E then r else r0.
 (* NB: see also real_of_er above *)
@@ -492,23 +569,6 @@ move/sup_upper_bound/ubP; apply.
 by case: y' Sy' => [r1 /= Sr1 | // | /= _]; [exists r1%:E | exists r%:E].
 Qed.
 
-Definition ereal_sup S := supremum -oo S.
-
-Definition ereal_inf S := - ereal_sup (eopp @` S).
-
-Lemma ereal_sup_set0 : ereal_sup set0 = -oo.
-Proof. by rewrite /ereal_sup /supremum; case: pselect => // -[]. Qed.
-
-Lemma ereal_sup_set1 x : ereal_sup [set x] = x.
-Proof.
-rewrite /ereal_sup /supremum; case: pselect => /= [_|x0]; last first.
-  by exfalso; apply x0; exists x.
-by rewrite supremums_set1; case: xgetP => // /(_ x) /(_ erefl).
-Qed.
-
-Lemma ereal_inf_set0 : ereal_inf set0 = +oo.
-Proof. by rewrite /ereal_inf image_set0 ereal_sup_set0. Qed.
-
 Lemma ereal_sup_ub S : ubound S (ereal_sup S).
 Proof.
 move=> y Sy; rewrite /ereal_sup /supremum.
@@ -521,24 +581,15 @@ Qed.
 Lemma ereal_sup_ninfty S : ereal_sup S = -oo%E -> S `<=` [set -oo%E].
 Proof. by move=> supS [r /ereal_sup_ub | /ereal_sup_ub |//]; rewrite supS. Qed.
 
-Lemma ub_ereal_sup S M : ubound S M -> (ereal_sup S <= M)%E.
+Lemma ereal_inf_lb S : lbound S (ereal_inf S).
 Proof.
-rewrite /ereal_sup /supremum; case: pselect => /= [|_ _].
-- move=> S0 SM; case: xgetP => [x ->{x} [_]| _] /=; first exact.
-  by rewrite lee_ninfty.
-- by rewrite lee_ninfty.
+by move=> x Sx; rewrite /ereal_inf lee_oppl; apply ereal_sup_ub; exists x.
 Qed.
 
-Lemma ub_ereal_sup_adherent S (e : {posnum R}) (r : R) :
-  ereal_sup S = r%:E -> exists x, S x /\ (ereal_sup S - e%:num%:E < x)%E.
-Proof.
-move=> Sr.
-have : ~ ubound S (ereal_sup S - e%:num%:E)%E.
-  move/ub_ereal_sup; apply/negP.
-  by rewrite -ltNge Sr lte_subl_addr lte_fin ltr_addl.
-move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
-case/Nimply => ? ?; exists x; split => //.
-by rewrite ltNge; apply/negP.
-Qed.
+Lemma le_ereal_sup : {homo @ereal_sup R : A B / A `<=` B >-> (A <= B)%E}.
+Proof. by move=> A B AB; apply ub_ereal_sup => x Ax; apply/ereal_sup_ub/AB. Qed.
 
-End ereal_supremum.
+Lemma le_ereal_inf : {homo @ereal_inf R : A B / A `<=` B >-> (B <= A)%E}.
+Proof. by move=> A B AB; apply lb_ereal_inf => x Bx; exact/ereal_inf_lb/AB. Qed.
+
+End ereal_supremum_realType.
