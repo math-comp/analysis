@@ -28,8 +28,7 @@ authors).
 
 ## Contributing
 
-Always submit a pull request for code and wait for the CI to pass before merging.
-Text markup files may be edited directly though, should you have commit rights.
+see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## License
 

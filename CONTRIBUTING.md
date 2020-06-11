@@ -5,6 +5,11 @@ used when contributing to mathcomp-analysis. It comes as an addition
 to mathcomp's [contribution
 guide](https://github.com/math-comp/math-comp/blob/master/CONTRIBUTING.md).
 
+## Policy for Pull Requests
+
+Always submit a pull request for code and wait for the CI to pass before merging.
+Text markup files may be edited directly though, should you have commit rights.
+
 ## `=>` vs. `-->` vs. `cvg` vs. `lim`
 
 TODO: explain in particular the lemmas `cvgP`, `cvg_ex`
@@ -27,7 +32,11 @@ filterS : forall T (F : set (set T)), Filter F -> forall P Q : set T, P `<=` Q -
 ```
 and its variants (`filterS2`, `filterS3`, etc.).
 
-## idioms
+## Landau notations
+
+TODO
+
+## Idioms
 
 ### How to introduce a positive real number?
 
@@ -45,5 +54,3 @@ e : {posnum R}
 ==========================
 G
 ```
-
-## TODO: Landau notations
