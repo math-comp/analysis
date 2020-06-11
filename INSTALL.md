@@ -18,7 +18,7 @@ Detailed instructions for possible installations of Mathematical Components are 
   + type `opam install coq-mathcomp-analysis.X.Y.Z` where `X.Y.Z` is the version number
     (all the dependencies should be automatically installed, assuming `opam` has been properly
     configured and `coq-released` repository is added)
-- Custom (assuming Coq ≥ 8.7, Mathematical Components version ≥ 1.11, and Finmap version 1.5.0
+- Custom (assuming Coq ≥ 8.7, Mathematical Components version ≥ 1.11.0, and Finmap version 1.5.0
   have been installed):
   + Type `make` to use the provided `Makefile`.
 
@@ -45,7 +45,7 @@ $ opam install coq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.X.Y.Z
+$ opam install coq-mathcomp-analysis.0.3.1
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
@@ -68,7 +68,7 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.9.1 and MathComp 1.8.0. For more recent versions, update the
+With the example of Coq 8.9.1 and MathComp 1.11.0. For more recent versions, update the
 version numbers accordingly.
 
 1. Install Coq 8.9.1
@@ -77,16 +77,16 @@ $ opam install coq.8.9.1
 ```
 2. Install Mathematical Components development version 
 ```
-$ opam install coq-mathcomp-ssreflect.1.8.0
-$ opam install coq-mathcomp-fingroup.1.8.0
-$ opam install coq-mathcomp-algebra.1.8.0
-$ opam install coq-mathcomp-solvable.1.8.0
-$ opam install coq-mathcomp-field.1.8.0
+$ opam install coq-mathcomp-ssreflect.1.11.0
+$ opam install coq-mathcomp-fingroup.1.11.0
+$ opam install coq-mathcomp-algebra.1.11.0
+$ opam install coq-mathcomp-solvable.1.11.0
+$ opam install coq-mathcomp-field.1.11.0
 $ opam install coq-mathcomp-bigenough.1.0.0
 ```
 3. Install Finite maps library
 ```
-$ opam install coq-mathcomp-finmap.1.2.0
+$ opam install coq-mathcomp-finmap.1.5.0
 ```
 4. Download and compile `coq-mathcomp-analysis` without installing
 ```
