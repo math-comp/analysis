@@ -156,6 +156,9 @@ Definition ereal_porderMixin :=
 Canonical ereal_porderType :=
   POrderType ereal_display {ereal R} ereal_porderMixin.
 
+Lemma leEereal x y : (x <= y)%O = le_ereal x y. Proof. by []. Qed.
+Lemma ltEereal x y : (x < y)%O = lt_ereal x y. Proof. by []. Qed.
+
 End ERealOrder.
 
 Notation lee := (@Order.le ereal_display _) (only parsing).
@@ -179,16 +182,16 @@ Proof. by []. Qed.
 Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E)%E = (x < y)%O.
 Proof. by []. Qed.
 
-Lemma lte_pinfty (R : realDomainType) (x : R) : (x%:E < +oo).
+Lemma lte_pinfty (R : realDomainType) (x : R) : x%:E < +oo.
 Proof. exact: num_real. Qed.
 
-Lemma lee_pinfty (R : realDomainType) (x : {ereal R}) : (x <= +oo).
+Lemma lee_pinfty (R : realDomainType) (x : {ereal R}) : x <= +oo.
 Proof. case: x => //= r; exact: num_real. Qed.
 
 Lemma lte_ninfty (R : realDomainType) (x : R) : (-oo < x%:E).
 Proof. exact: num_real. Qed.
 
-Lemma lee_ninfty (R : realDomainType) (x : {ereal R}) : (-oo <= x).
+Lemma lee_ninfty (R : realDomainType) (x : {ereal R}) : -oo <= x.
 Proof. case: x => //= r; exact: num_real. Qed.
 
 Lemma lee_ninfty_eq (R : numDomainType) (x : {ereal R}) : (x <= -oo)%E = (x == -oo%E).
@@ -201,67 +204,13 @@ Section ERealOrder_realDomainType.
 Context {R : realDomainType}.
 Implicit Types (x y : {ereal R}).
 
-Definition min_ereal x1 x2 :=
-  match x1, x2 with
-  | -oo, _ | _, -oo => -oo
-  | +oo, x | x, +oo => x
-
-  | x1%:E, x2%:E => (Num.Def.minr x1 x2)%:E
-  end.
-
-Definition max_ereal x1 x2 :=
-  match x1, x2 with
-  | -oo, x | x, -oo => x
-  | +oo, _ | _, +oo => +oo
-
-  | x1%:E, x2%:E => (Num.Def.maxr x1 x2)%:E
-  end.
-
-Lemma min_erealC : commutative min_ereal.
-Proof. by case=> [?||][?||] //=; rewrite meetC. Qed.
-
-Lemma max_erealC : commutative max_ereal.
-Proof. by case=> [?||][?||] //=; rewrite joinC. Qed.
-
-Lemma min_erealA : associative min_ereal.
-Proof. by case=> [?||][?||][?||] //=; rewrite meetA. Qed.
-
-Lemma max_erealA : associative max_ereal.
-Proof. by case=> [?||][?||][?||] //=; rewrite joinA. Qed.
-
-Lemma joinKI_ereal y x : min_ereal x (max_ereal x y) = x.
-Proof. by case: x y => [?||][?||] //=; rewrite (joinKI, meetxx). Qed.
-
-Lemma meetKU_ereal y x : max_ereal x (min_ereal x y) = x.
-Proof. by case: x y => [?||][?||] //=; rewrite (meetKU, joinxx). Qed.
-
-Lemma leEmeet_ereal x y : (x <= y)%E = (min_ereal x y == x).
+Lemma le_total_ereal : totalPOrderMixin [porderType of {ereal R}].
 Proof.
-case: x y => [x||][y||] //=; rewrite ?eqxx ?lee_pinfty ?lee_ninfty //.
-exact: leEmeet.
+by move=> [?||][?||]//=; rewrite (ltEereal, leEereal)/= ?num_real ?le_total.
 Qed.
 
-Lemma meetUl_ereal : left_distributive min_ereal max_ereal.
-Proof.
-by case=> [?||][?||][?||] //=; rewrite ?(meetUl, meetUK, meetKUC, joinxx).
-Qed.
-
-Lemma minE_ereal x y : min_ereal x y = if le_ereal x y then x else y.
-Proof. by case: x y => [?||][?||] //=; rewrite ?num_real //; case: leP. Qed.
-
-Lemma maxE_ereal x y : max_ereal x y = if le_ereal y x then x else y.
-Proof. by case: x y => [?||][?||] //=; rewrite ?num_real //; case: ltP. Qed.
-
-Lemma le_total_ereal : total (@le_ereal R).
-Proof. by case=> [?||][?||] //=; rewrite ?num_real //; exact: le_total. Qed.
-
-Definition ereal_latticeMixin :=
-  LatticeMixin min_erealC max_erealC min_erealA max_erealA
-                    joinKI_ereal meetKU_ereal leEmeet_ereal.
-Canonical ereal_latticeType := LatticeType {ereal R} ereal_latticeMixin.
-Definition ereal_distrLatticeMixin := DistrLatticeMixin meetUl_ereal.
-Canonical ereal_distrLatticeType :=
-  DistrLatticeType {ereal R} ereal_distrLatticeMixin.
+Canonical ereal_latticeType := LatticeType {ereal R} le_total_ereal.
+Canonical ereal_distrLatticeType :=  DistrLatticeType {ereal R} le_total_ereal.
 Canonical ereal_orderType := OrderType {ereal R} le_total_ereal.
 
 End ERealOrder_realDomainType.

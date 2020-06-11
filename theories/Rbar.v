@@ -525,8 +525,8 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
   move=> {a b} a b ltxa ltxb.
   have m_gt0 : Num.min ((x - a) / 2) ((b - x) / 2) > 0.
-    by rewrite ltxI !divr_gt0 ?subr_gt0.
-  exists (PosNum m_gt0) => y //=; rewrite ltxI !ltr_distl.
+    by rewrite lt_minr !divr_gt0 ?subr_gt0.
+  exists (PosNum m_gt0) => y //=; rewrite lt_minr !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].
   rewrite (lt_trans _ ay) ?(lt_trans yb) //=.
     by rewrite -subr_gt0 opprD addrA {1}[b - x]splitr addrK divr_gt0 ?subr_gt0.
@@ -539,10 +539,10 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 Qed.
 
 Lemma Rbar_min_comm (x y : Rbar) : Rbar_min x y = Rbar_min y x.
-Proof. by case: x y => [x||] [y||] //=; rewrite meetC. Qed.
+Proof. by case: x y => [x||] [y||] //=; rewrite minC. Qed.
 
 Lemma Rbar_min_r (x y : Rbar) : Rbar_le (Rbar_min x y) y.
-Proof. by case: x y => [x||] [y||] //=; rewrite leIx lexx orbT. Qed.
+Proof. by case: x y => [x||] [y||] //=; rewrite le_minl lexx orbT. Qed.
 
 Lemma Rbar_min_l (x y : Rbar) : Rbar_le (Rbar_min x y) x.
 Proof. by rewrite Rbar_min_comm Rbar_min_r. Qed.

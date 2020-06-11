@@ -615,7 +615,7 @@ case=> [x||].
     exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
     rewrite realE /= posnum_ge0 /=; split => //.
     case=> [r| |//].
-    * rewrite lte_fin pos_ltUx /= => /andP[MPx MQx]; split.
+    * rewrite lte_fin/= posnum_max pos_lt_maxl /= => /andP[MPx MQx]; split.
       by apply/gtMP; rewrite lte_fin (le_lt_trans _ MPx) // real_ler_normr // lexx.
       by apply/gtMQ; rewrite lte_fin (le_lt_trans _ MQx) // real_ler_normr // lexx.
     * by move=> _; split; [apply/gtMP | apply/gtMQ].
@@ -643,7 +643,7 @@ case=> [x||].
       exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
       rewrite realN realE /= posnum_ge0 /=; split => //.
       case=> [r|//|].
-      - rewrite lte_fin ltr_oppr pos_ltUx => /andP[].
+      - rewrite lte_fin ltr_oppr posnum_max pos_lt_maxl => /andP[].
         rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
           apply/ltMP; rewrite lte_fin (lt_le_trans MPx) //= ler_oppl -normrN.
           by rewrite real_ler_normr ?realN // lexx.
@@ -765,7 +765,7 @@ split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
   have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
   exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
   rewrite realE /= posnum_ge0 /=; split => // x.
-  rewrite pos_ltUx /= => /andP[MPx MQx]; split.
+  rewrite posnum_max pos_lt_maxl /= => /andP[MPx MQx]; split.
   by apply/gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
   by apply/gtMQ; rewrite (le_lt_trans _ MQx) // real_ler_normr // lexx.
 - by exists M; split => // ? /gtM /sPQ.
@@ -796,7 +796,7 @@ apply Build_ProperFilter.
     have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
     exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
     rewrite realN realE /= posnum_ge0 /=; split => // x.
-    rewrite ltr_oppr pos_ltUx => /andP[].
+    rewrite ltr_oppr posnum_max pos_lt_maxl => /andP[].
     rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
       apply/ltMP; rewrite (lt_le_trans MPx) //= ler_oppl -normrN.
       by rewrite real_ler_normr ?realN // lexx.
@@ -829,7 +829,7 @@ case=> [x||]; first exact: Proper_locally'_numFieldType.
     have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
     exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
     rewrite realE /= posnum_ge0 /=; split => // x.
-    rewrite pos_ltUx /= => /andP[MPx MQx]; split.
+    rewrite pos_lt_maxl /= => /andP[MPx MQx]; split.
     by apply/gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
     by apply/gtMQ; rewrite (le_lt_trans _ MQx) // real_ler_normr // lexx.
   + by exists M; split => // ? /gtM /sPQ.
@@ -855,7 +855,7 @@ case=> [x||]; first exact: Proper_locally'_numFieldType.
       have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
       exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
       rewrite realN realE /= posnum_ge0 /=; split => // x.
-      rewrite ltr_oppr pos_ltUx => /andP[].
+      rewrite ltr_oppr pos_lt_maxl => /andP[].
       rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
         apply/ltMP; rewrite (lt_le_trans MPx) //= ler_oppl -normrN.
         by rewrite real_ler_normr ?realN // lexx.
@@ -1427,7 +1427,7 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
     pose e' : R := minr (r - real_of_er (expand (contract r%:E - e%:num)))
                         (real_of_er (expand (contract r%:E + e%:num)) - r).
     have e'0 : 0 < e'.
-      rewrite /e' ltxI; apply/andP; split.
+      rewrite /e' lt_minr; apply/andP; split.
         rewrite subr_gt0 -lte_fin -[in X in (_ < X)%E](contractK r%:E).
         rewrite real_of_er_expand // lt_expand// ?inE ?contract_le1 ?ltW//.
         by rewrite ltr_subl_addl ltr_addr.
@@ -1442,10 +1442,10 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
       rewrite ltr0_norm ?subr_lt0// opprB in re'r'.
       rewrite ltr0_norm ?subr_lt0 ?lt_contract ?lte_fin//.
       rewrite opprB; move: re'r'.
-      rewrite /e' ltxI => /andP[_].
+      rewrite /e' lt_minr => /andP[_].
       rewrite -ltr_subl_addr opprK subrK -lte_fin real_of_er_expand //.
       by move=> r'e'r; rewrite ltr_subl_addl -lt_expandRL ?inE ?ltW.
-    move: re'r'; rewrite ltxI => /andP[].
+    move: re'r'; rewrite lt_minr => /andP[].
     rewrite gtr0_norm ?subr_gt0 // -ltr_subl_addl addrAC subrr add0r ltr_oppl.
     rewrite opprK -lte_fin real_of_er_expand // => r'e'r _.
     rewrite gtr0_norm ?subr_gt0 ?lt_contract ?lte_fin//.
@@ -1487,7 +1487,7 @@ rewrite predeq2E => x A; split.
   + pose e' : R := minr (contract r%:E - contract (r%:E - e%:num%:E))
                         (contract (r%:E + e%:num%:E) - contract r%:E).
     exists e'.
-      rewrite /e' ltxI; apply/andP; split.
+      rewrite /e' lt_minr; apply/andP; split.
         by rewrite subr_gt0 lt_contract lte_fin ltr_subl_addr ltr_addl.
       by rewrite subr_gt0 lt_contract lte_fin ltr_addl.
     case=> [r' re'r'| |].
@@ -1497,7 +1497,7 @@ rewrite predeq2E => x A; split.
         rewrite /ball_ real_ltr_norml // ?num_real //.
         rewrite ger0_norm ?subr_ge0// in re'r'.
         have H1 : contract (r%:E - e%:num%:E) < contract r'%:E.
-          move: re'r'; rewrite /e' ltxI => /andP[Hr'1 Hr'2].
+          move: re'r'; rewrite /e' lt_minr => /andP[Hr'1 Hr'2].
           rewrite /e' ltr_subr_addl addrC -ltr_subr_addl in Hr'1.
           by rewrite (lt_le_trans Hr'1) // opprB addrCA subrr addr0.
         have := H1;  rewrite -lt_expandRL ?inE ?contract_le1 //.
@@ -1514,12 +1514,12 @@ rewrite predeq2E => x A; split.
       rewrite ltr_oppl opprB.
       rewrite /e' in re'r'.
       have H2 : contract r'%:E < contract (r%:E + e%:num%:E).
-        move: re'r'; rewrite ltxI => /andP[Hr'1 Hr'2].
+        move: re'r'; rewrite lt_minr => /andP[Hr'1 Hr'2].
         by rewrite ltr_subl_addr subrK in Hr'2.
       rewrite ltr_subl_addr -lte_fin -(contractK (_ + r)%:E).
       by rewrite addrC -(contractK r'%:E) // lt_expand ?inE ?contract_le1.
     * rewrite /ereal_ball [contract +oo]/=.
-      rewrite ltxI => /andP[re'1 re'2].
+      rewrite lt_minr => /andP[re'1 re'2].
       have [cr0|cr0] := lerP 0 (contract r%:E).
         move: re'2; rewrite ler0_norm; last first.
           by rewrite subr_le0; case/ler_normlP : (contract_le1 r%:E).
@@ -1534,7 +1534,7 @@ rewrite predeq2E => x A; split.
       move: h; apply/negP; rewrite -leNgt.
       by case/ler_normlP : (contract_le1 (r%:E + e%:num%:E)).
     * rewrite /ereal_ball [contract -oo]/=; rewrite opprK.
-      rewrite ltxI => /andP[re'1 _].
+      rewrite lt_minr => /andP[re'1 _].
       move: re'1.
       rewrite ger0_norm; last first.
         rewrite addrC -ler_subl_addl add0r.
@@ -2127,24 +2127,24 @@ Lemma bigmaxr_mkcond I r (P : pred I) (F : I -> {nonneg R}) x :
      \big[maxr/x]_(i <- r) (if P i then F i else x).
 Proof.
 rewrite unlock; elim: r x => //= i r ihr x.
-case P; rewrite ihr // join_r //; elim: r {ihr} => //= j r ihr.
-by rewrite lexU ihr orbT.
+case P; rewrite ihr // max_r //; elim: r {ihr} => //= j r ihr.
+by rewrite le_maxr ihr orbT.
 Qed.
 
 Lemma bigmaxr_split I r (P : pred I) (F1 F2 : I -> {nonneg R}) x :
   \big[maxr/x]_(i <- r | P i) (maxr (F1 i) (F2 i)) =
   maxr (\big[maxr/x]_(i <- r | P i) F1 i) (\big[maxr/x]_(i <- r | P i) F2 i).
 Proof.
-elim/big_rec3: _ => [|i y z _ _ ->]; rewrite ?joinxx //.
-by rewrite joinCA -!joinA joinCA.
+elim/big_rec3: _ => [|i y z _ _ ->]; rewrite ?maxxx //.
+by rewrite maxCA -!maxA maxCA.
 Qed.
 
 Lemma bigmaxr_idl I r (P : pred I) (F : I -> {nonneg R}) x :
   \big[maxr/x]_(i <- r | P i) F i = maxr x (\big[maxr/x]_(i <- r | P i) F i).
 Proof.
 rewrite -big_filter; elim: [seq i <- r | P i] => [|i l ihl].
-  by rewrite big_nil joinxx.
-by rewrite big_cons joinCA -ihl.
+  by rewrite big_nil maxxx.
+by rewrite big_cons maxCA -ihl.
 Qed.
 
 Lemma bigmaxrID I r (a P : pred I) (F : I -> {nonneg R}) x :
@@ -2156,10 +2156,10 @@ rewrite -!(big_filter _ (fun _ => _ && _)) !filter_andb !big_filter.
 rewrite ![in RHS](bigmaxr_mkcond _ _ F) !big_filter -bigmaxr_split.
 have eqmax : forall i, P i ->
   maxr (if a i then F i else x) (if ~~ a i then F i else x) = maxr (F i) x.
-  by move=> i _; case: (a i) => //=; rewrite joinC.
+  by move=> i _; case: (a i) => //=; rewrite maxC.
 rewrite [RHS](eq_bigr _ eqmax) -!(big_filter _ P).
 elim: [seq j <- r | P j] => [|j l ihl]; first by rewrite !big_nil.
-by rewrite !big_cons -joinA -bigmaxr_idl ihl.
+by rewrite !big_cons -maxA -bigmaxr_idl ihl.
 Qed.
 
 Lemma bigmaxr_seq1 I (i : I) (F : I -> {nonneg R}) x :
@@ -2178,13 +2178,13 @@ Lemma bigmaxrD1 (I : finType) j (P : pred I) (F : I -> {nonneg R}) x :
   P j -> \big[maxr/x]_(i | P i) F i
     = maxr (F j) (\big[maxr/x]_(i | P i && (i != j)) F i).
 Proof.
-move=> Pj; rewrite (bigmaxrID _ (pred1 j)) [in RHS]bigmaxr_idl joinA.
+move=> Pj; rewrite (bigmaxrID _ (pred1 j)) [in RHS]bigmaxr_idl maxA.
 by congr maxr; apply: bigmaxr_pred1 => i; rewrite /= andbC; case: eqP => //->.
 Qed.
 
 Lemma ler_bigmaxr_cond (I : finType) (P : pred I) (F : I -> {nonneg R}) x i0 :
   P i0 -> F i0 <= \big[maxr/x]_(i | P i) F i.
-Proof. by move=> Pi0; rewrite (bigmaxrD1 _ _ Pi0) lexU lexx. Qed.
+Proof. by move=> Pi0; rewrite (bigmaxrD1 _ _ Pi0) le_maxr lexx. Qed.
 
 Lemma ler_bigmaxr (I : finType) (F : I -> {nonneg R}) (i0 : I) x :
   F i0 <= \big[maxr/x]_i F i.
@@ -2195,8 +2195,8 @@ Lemma bigmaxr_lerP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
     (\big[maxr/x]_(i | P i) F i <= m).
 Proof.
 apply: (iffP idP) => [|[lexm leFm]]; last first.
-  by elim/big_ind: _ => // ??; rewrite leUx =>->.
-rewrite bigmaxr_idl leUx => /andP[-> leFm]; split=> // i Pi.
+  by elim/big_ind: _ => // ??; rewrite le_maxl =>->.
+rewrite bigmaxr_idl le_maxl => /andP[-> leFm]; split=> // i Pi.
 by apply: le_trans leFm; apply: ler_bigmaxr_cond.
 Qed.
 
@@ -2209,8 +2209,8 @@ Lemma bigmaxr_ltrP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
     (\big[maxr/x]_(i | P i) F i < m).
 Proof.
 apply: (iffP idP) => [|[ltxm ltFm]]; last first.
-  by elim/big_ind: _ => // ??; rewrite ltUx =>->.
-rewrite bigmaxr_idl ltUx => /andP[-> ltFm]; split=> // i Pi.
+  by elim/big_ind: _ => // ??; rewrite lt_maxl =>->.
+rewrite bigmaxr_idl lt_maxl => /andP[-> ltFm]; split=> // i Pi.
 by apply: le_lt_trans ltFm; apply: ler_bigmaxr_cond.
 Qed.
 
@@ -2219,8 +2219,8 @@ Lemma bigmaxr_gerP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
   (m <= \big[maxr/x]_(i | P i) F i).
 Proof.
 apply: (iffP idP) => [|[lemx|[i Pi lemFi]]]; last 2 first.
-- by rewrite bigmaxr_idl lexU lemx.
-- by rewrite (bigmaxrD1 _ _ Pi) lexU lemFi.
+- by rewrite bigmaxr_idl le_maxr lemx.
+- by rewrite (bigmaxrD1 _ _ Pi) le_maxr lemFi.
 rewrite leNgt => /bigmaxr_ltrP /asboolPn.
 rewrite asbool_and negb_and => /orP [/asboolPn/negP|/existsp_asboolPn [i]].
   by rewrite -leNgt; left.
@@ -2232,8 +2232,8 @@ Lemma bigmaxr_gtrP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
   (m < \big[maxr/x]_(i | P i) F i).
 Proof.
 apply: (iffP idP) => [|[ltmx|[i Pi ltmFi]]]; last 2 first.
-- by rewrite bigmaxr_idl ltxU ltmx.
-- by rewrite (bigmaxrD1 _ _ Pi) ltxU ltmFi.
+- by rewrite bigmaxr_idl lt_maxr ltmx.
+- by rewrite (bigmaxrD1 _ _ Pi) lt_maxr ltmFi.
 rewrite ltNge => /bigmaxr_lerP /asboolPn.
 rewrite asbool_and negb_and => /orP [/asboolPn/negP|/existsp_asboolPn [i]].
   by rewrite -ltNge; left.
@@ -2262,8 +2262,8 @@ Lemma bigmaxr_mkcond I r (P : pred I) (F : I -> R) x :
      \big[maxr/x]_(i <- r) (if P i then F i else x).
 Proof.
 rewrite unlock; elim: r x => //= i r ihr x.
-case P; rewrite ihr // join_r //; elim: r {ihr} => //= j r ihr.
-by rewrite lexU ihr orbT.
+case P; rewrite ihr // max_r //; elim: r {ihr} => //= j r ihr.
+by rewrite le_maxr ihr orbT.
 Qed.
 
 Lemma bigminr_maxr I r (P : pred I) (F : I -> R) x :
@@ -2284,8 +2284,8 @@ Lemma bigmaxr_split I r (P : pred I) (F1 F2 : I -> R) x :
   \big[maxr/x]_(i <- r | P i) (maxr (F1 i) (F2 i)) =
   maxr (\big[maxr/x]_(i <- r | P i) F1 i) (\big[maxr/x]_(i <- r | P i) F2 i).
 Proof.
-elim/big_rec3: _ => [|i y z _ _ ->]; rewrite ?joinxx //.
-by rewrite joinCA -!joinA joinCA.
+elim/big_rec3: _ => [|i y z _ _ ->]; rewrite ?maxxx //.
+by rewrite maxCA -!maxA maxCA.
 Qed.
 
 Lemma bigminr_split I r (P : pred I) (F1 F2 : I -> R) x :
@@ -2300,8 +2300,8 @@ Lemma bigmaxr_idl I r (P : pred I) (F : I -> R) x :
   \big[maxr/x]_(i <- r | P i) F i = maxr x (\big[maxr/x]_(i <- r | P i) F i).
 Proof.
 rewrite -big_filter; elim: [seq i <- r | P i] => [|i l ihl].
-  by rewrite big_nil joinxx.
-by rewrite big_cons joinCA -ihl.
+  by rewrite big_nil maxxx.
+by rewrite big_cons maxCA -ihl.
 Qed.
 
 Lemma bigminr_idl I r (P : pred I) (F : I -> R) x :
@@ -2317,10 +2317,10 @@ rewrite -!(big_filter _ (fun _ => _ && _)) !filter_andb !big_filter.
 rewrite ![in RHS](bigmaxr_mkcond _ _ F) !big_filter -bigmaxr_split.
 have eqmax : forall i, P i ->
   maxr (if a i then F i else x) (if ~~ a i then F i else x) = maxr (F i) x.
-  by move=> i _; case: (a i) => //=; rewrite joinC.
+  by move=> i _; case: (a i) => //=; rewrite maxC.
 rewrite [RHS](eq_bigr _ eqmax) -!(big_filter _ P).
 elim: [seq j <- r | P j] => [|j l ihl]; first by rewrite !big_nil.
-by rewrite !big_cons -joinA -bigmaxr_idl ihl.
+by rewrite !big_cons -maxA -bigmaxr_idl ihl.
 Qed.
 
 Lemma bigminrID I r (a P : pred I) (F : I -> R) x :
@@ -2357,7 +2357,7 @@ Lemma bigmaxrD1 (I : finType) j (P : pred I) (F : I -> R) x :
   P j -> \big[maxr/x]_(i | P i) F i
     = maxr (F j) (\big[maxr/x]_(i | P i && (i != j)) F i).
 Proof.
-move=> Pj; rewrite (bigmaxrID _ (pred1 j)) [in RHS]bigmaxr_idl joinA.
+move=> Pj; rewrite (bigmaxrID _ (pred1 j)) [in RHS]bigmaxr_idl maxA.
 by congr maxr; apply: bigmaxr_pred1 => i; rewrite /= andbC; case: eqP => //->.
 Qed.
 
@@ -2370,11 +2370,11 @@ Qed.
 
 Lemma ler_bigmaxr_cond (I : finType) (P : pred I) (F : I -> R) x i0 :
   P i0 -> F i0 <= \big[maxr/x]_(i | P i) F i.
-Proof. by move=> Pi0; rewrite (bigmaxrD1 _ _ Pi0) lexU lexx. Qed.
+Proof. by move=> Pi0; rewrite (bigmaxrD1 _ _ Pi0) le_maxr lexx. Qed.
 
 Lemma bigminr_ler_cond (I : finType) (P : pred I) (F : I -> R) x i0 :
   P i0 -> \big[minr/x]_(i | P i) F i <= F i0.
-Proof. by move=> Pi0; rewrite (bigminrD1 _ _ Pi0) leIx lexx. Qed.
+Proof. by move=> Pi0; rewrite (bigminrD1 _ _ Pi0) le_minl lexx. Qed.
 
 Lemma ler_bigmaxr (I : finType) (F : I -> R) (i0 : I) x :
   F i0 <= \big[maxr/x]_i F i.
@@ -2389,8 +2389,8 @@ Lemma bigmaxr_lerP (I : finType) (P : pred I) m (F : I -> R) x :
     (\big[maxr/x]_(i | P i) F i <= m).
 Proof.
 apply: (iffP idP) => [|[lexm leFm]]; last first.
-  by elim/big_ind: _ => // ??; rewrite leUx =>->.
-rewrite bigmaxr_idl leUx => /andP[-> leFm]; split=> // i Pi.
+  by elim/big_ind: _ => // ??; rewrite le_maxl =>->.
+rewrite bigmaxr_idl le_maxl => /andP[-> leFm]; split=> // i Pi.
 by apply: le_trans leFm; apply: ler_bigmaxr_cond.
 Qed.
 
@@ -2416,8 +2416,8 @@ Lemma bigmaxr_ltrP (I : finType) (P : pred I) m (F : I -> R) x :
     (\big[maxr/x]_(i | P i) F i < m).
 Proof.
 apply: (iffP idP) => [|[ltxm ltFm]]; last first.
-  by elim/big_ind: _ => // ??; rewrite ltUx =>->.
-rewrite bigmaxr_idl ltUx => /andP[-> ltFm]; split=> // i Pi.
+  by elim/big_ind: _ => // ??; rewrite lt_maxl =>->.
+rewrite bigmaxr_idl lt_maxl => /andP[-> ltFm]; split=> // i Pi.
 by apply: le_lt_trans ltFm; apply: ler_bigmaxr_cond.
 Qed.
 
@@ -2435,8 +2435,8 @@ Lemma bigmaxr_gerP (I : finType) (P : pred I) m (F : I -> R) x :
   (m <= \big[maxr/x]_(i | P i) F i).
 Proof.
 apply: (iffP idP) => [|[lemx|[i Pi lemFi]]]; last 2 first.
-- by rewrite bigmaxr_idl lexU lemx.
-- by rewrite (bigmaxrD1 _ _ Pi) lexU lemFi.
+- by rewrite bigmaxr_idl le_maxr lemx.
+- by rewrite (bigmaxrD1 _ _ Pi) le_maxr lemFi.
 rewrite leNgt => /bigmaxr_ltrP /asboolPn.
 rewrite asbool_and negb_and => /orP [/asboolPn/negP|/existsp_asboolPn [i]].
   by rewrite -leNgt; left.
@@ -2459,8 +2459,8 @@ Lemma bigmaxr_gtrP (I : finType) (P : pred I) m (F : I -> R) x :
   (m < \big[maxr/x]_(i | P i) F i).
 Proof.
 apply: (iffP idP) => [|[ltmx|[i Pi ltmFi]]]; last 2 first.
-- by rewrite bigmaxr_idl ltxU ltmx.
-- by rewrite (bigmaxrD1 _ _ Pi) ltxU ltmFi.
+- by rewrite bigmaxr_idl lt_maxr ltmx.
+- by rewrite (bigmaxrD1 _ _ Pi) lt_maxr ltmFi.
 rewrite ltNge => /bigmaxr_lerP /asboolPn.
 rewrite asbool_and negb_and => /orP [/asboolPn/negP|/existsp_asboolPn [i]].
   by rewrite -ltNge; left.
@@ -2543,10 +2543,10 @@ Proof. by []. Qed.
 
 Lemma ler_mx_norm_add x y : mx_norm (x + y) <= mx_norm x + mx_norm y.
 Proof.
-rewrite -nng_le; apply/BigmaxrNonneg.bigmaxr_lerP; split.
+rewrite nng_le; apply/BigmaxrNonneg.bigmaxr_lerP; split.
   exact: addr_ge0.
 move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
-rewrite ler_add // -nng_abs_le //= nng_le /= normr_id -nng_le;
+rewrite ler_add // -nng_abs_le //= -nng_le /= normr_id nng_le;
   exact/BigmaxrNonneg.ler_bigmaxr.
 Qed.
 
@@ -2554,13 +2554,13 @@ Lemma mx_norm_eq0 x : mx_norm x = 0 -> x = 0.
 Proof.
 move/eqP; rewrite eq_le => /andP [/BigmaxrNonneg.bigmaxr_lerP [_ x0] _].
 apply/matrixP => i j; rewrite mxE; apply/eqP.
-by rewrite -nng_abs_eq0 eq_le (x0 (i,j)) // andTb nng_le /= normr_ge0.
+by rewrite -nng_abs_eq0 eq_le (x0 (i,j)) // andTb -nng_le /= normr_ge0.
 Qed.
 
 Lemma mx_norm0 : mx_norm 0 = 0.
 Proof.
 rewrite /mx_norm (eq_bigr (fun=> 0%:nng)) /=.
-  by elim/big_ind : _ => // a b /val_inj ->{a} /val_inj ->{b}; rewrite joinxx.
+  by elim/big_ind : _ => // a b /val_inj ->{a} /val_inj ->{b}; rewrite maxxx.
 by move=> i _; apply val_inj => /=; rewrite mxE normr0.
 Qed.
 
@@ -2570,9 +2570,9 @@ rewrite /mx_norm.
 elim/big_ind : _ => [|a b Ha Hb H|/= i _ _]; [by rewrite eqxx| |by exists i].
 case: (leP a b) => ab.
 + suff /Hb[i xi] : b != 0%:nng by exists i.
-  by apply: contra H => b0; rewrite join_r.
+  by apply: contra H => b0; rewrite max_r.
 + suff /Ha[i xi] : a != 0%:nng by exists i.
-  by apply: contra H => a0; rewrite join_l // ltW.
+  by apply: contra H => a0; rewrite max_l // ltW.
 Qed.
 
 Lemma mx_norm_natmul x k : mx_norm (x *+ k) = (mx_norm x) *+ k.
@@ -2592,7 +2592,7 @@ Qed.
 Lemma mx_normN x : mx_norm (- x) = mx_norm x.
 Proof.
 congr (_%:nngnum).
-by apply eq_bigr => /= ? _; apply/eqP; rewrite mxE nng_eq //= normrN.
+by apply eq_bigr => /= ? _; apply/eqP; rewrite mxE -nng_eq //= normrN.
 Qed.
 
 End mx_norm.
@@ -2602,7 +2602,7 @@ Lemma mx_normrE (K : realDomainType) (m n : nat) (x : 'M[K]_(m, n)) :
 Proof.
 rewrite /mx_norm; apply/esym.
 elim/big_ind2 : _ => //= a a' b b' ->{a'} ->{b'}.
-case: (leP a b) => ab; by [rewrite join_r | rewrite join_l // ltW].
+case: (leP a b) => ab; by [rewrite max_r | rewrite max_l // ltW].
 Qed.
 
 Definition matrix_normedZmodMixin (K : numDomainType) (m n : nat) :=
@@ -2623,8 +2623,8 @@ rewrite /= /normr /= predeq3E => x e y; split.
   (* TODO:  lemma : ball x e y -> 0 < e *)
   have lee0 : ( 0 < e) by rewrite (le_lt_trans _ (xe_y ord0 ord0)) //.
   have -> : e = (Nonneg.NngNum _ (ltW lee0))%:nngnum by [].
-  rewrite -nng_lt; apply/BigmaxrNonneg.bigmaxr_ltrP.
-- split; [rewrite nng_lt //= | move=> ??; rewrite !mxE; exact: xe_y].
+  rewrite nng_lt; apply/BigmaxrNonneg.bigmaxr_ltrP.
+- split; [rewrite -nng_lt //= | move=> ??; rewrite !mxE; exact: xe_y].
   rewrite /ball_; rewrite mx_normE => H.
   have lee0 : (0 < e) by rewrite (le_lt_trans _ H) // nonnegnum_ge0.
   move : H.
@@ -2642,7 +2642,7 @@ Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
 Proof.
 rewrite {1 3}/normr /= !mx_normE
  (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)); last first.
-  by move=> i _; rewrite mxE //=; apply/eqP; rewrite nng_eq /= normrM.
+  by move=> i _; rewrite mxE //=; apply/eqP; rewrite -nng_eq /= normrM.
 elim/big_ind2 : _ => // [|a b c d bE dE]; first by rewrite mulr0.
 rewrite nonneg_maxr; congr (maxr _ _)%:nngnum; exact/val_inj.
 Qed.
@@ -2658,21 +2658,14 @@ End matrix_NormedModule.
 Section prod_NormedModule.
 Context {K : numDomainType} {U V : normedModType K}.
 
-Lemma prod_normE (x : U * V) : `| x | =
-  (Num.max `| x.1 |%:nng `|x.2|%:nng)%:nngnum.
-Proof. by []. Qed.
-
 Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
-Proof.
-rewrite prod_normE /= nonneg_maxr /=.
-by congr (maxr _ _ )%:nngnum; apply val_inj => /=; rewrite normmZ.
-Qed.
+Proof. by rewrite prod_normE /= !normmZ maxr_pmulr. Qed.
 
 Lemma ball_prod_normE : ball = ball_ (fun x => `| x : U * V |).
 Proof.
 rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
 rewrite /ball /= /prod_ball -!ball_normE /ball_ /=.
-by rewrite nng_ltUx /=; split=> /andP.
+by rewrite comparable_lt_maxl// ?real_comparable//; split=> /andP.
 Qed.
 
 Lemma prod_norm_ball : @ball _ [pseudoMetricType K of U * V] = ball_ (fun x => `|x|).
@@ -3268,7 +3261,7 @@ Section TODO_add_to_ssrnum.
 Lemma maxr_real (K : realDomainType) (x y : K) :
   x \is Num.real -> y \is Num.real -> maxr x y \is Num.real.
 Proof.
-by rewrite !realE => /orP[|] x0 /orP[|] y0; rewrite lexU leUx x0 y0 !(orbT,orTb).
+by rewrite !realE => /orP[|] x0 /orP[|] y0; rewrite le_maxr le_maxl x0 y0 !(orbT,orTb).
 Qed.
 
 Lemma bigmaxr_real (K : realDomainType) (R : choiceType) (x : K) (D : seq R) (f : R -> K):
@@ -3428,17 +3421,17 @@ suff [t Altxt] : exists2 t, Altx t & z < t.
 exists (z + (minr (e%:num / 2) ((PosNum ltzx)%:num / 2))); last first.
   by rewrite ltr_addl.
 rewrite inE; split; last first.
-  rewrite -[_ < _]ltr_subr_addl ltIx; apply/orP; right.
+  rewrite -[_ < _]ltr_subr_addl lt_minl; apply/orP; right.
   by rewrite ltr_pdivr_mulr // mulrDr mulr1 ltr_addl.
 rewrite AeabC; split; last first.
   apply: ze_C; rewrite /ball_ ltr_distl.
   apply/andP; split; last by rewrite -addrA ltr_addl.
-  rewrite -addrA gtr_addl subr_lt0 ltIx; apply/orP; left.
+  rewrite -addrA gtr_addl subr_lt0 lt_minl; apply/orP; left.
   by rewrite [X in _ < X]splitr ltr_addl.
 rewrite inE; apply/andP; split.
   by apply: ler_paddr => //; have := Az; rewrite AeabB => - [/itvP->].
 have : x <= b by rewrite (itvP abx).
-apply: le_trans; rewrite -ler_subr_addl leIx; apply/orP; right.
+apply: le_trans; rewrite -ler_subr_addl le_minl; apply/orP; right.
 by rewrite ler_pdivr_mulr // mulrDr mulr1 ler_addl; apply: ltW.
 Qed.
 
@@ -3517,16 +3510,13 @@ Lemma IVT (R : realType) (f : R^o -> R^o) (a b v : R^o) :
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
   exists2 c, c \in `[a, b] & f c = v.
 Proof.
-move=> leab; wlog : f v / f a <= f b.
-  move=> ivt; case: (lerP (f a) (f b)) => [|/ltW lefba].
-    exact: ivt.
-  move=> fcont fabv; have [] := ivt (fun x => - f x) (- v).
-  - by rewrite ler_oppr opprK.
-  - by move=> x /fcont; apply: (@continuousN _ [normedModType R of R^o]).
-  - by rewrite -oppr_max -oppr_min ler_oppr opprK ler_oppr opprK andbC.
-  by move=> c cab /eqP; rewrite eqr_opp => /eqP; exists c.
-move=> lefab fcont; rewrite meet_l // join_r // => /andP [].
-rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
+move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
+    exists2 c, c \in `[a, b] & f c = v; last first.
+  case: (leP (f a) (f b)) => [] _ fabv; first exact: ivt.
+  have [||c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
+    by move=> x /fcont; apply: (@continuousN _ [normedModType R of R^o]).
+  by rewrite ler_oppr opprK ler_oppr opprK andbC.
+move=> /andP[]; rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
   by exists a => //; rewrite inE/= lexx leab.
 rewrite le_eqVlt => /orP [/eqP->|ltvfb].
   by exists b => //; rewrite inE/= lexx leab.
@@ -3581,8 +3571,8 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
   move=> {a b} a b ltxa ltxb.
   have m_gt0 : (minr ((x - a) / 2) ((b - x) / 2) > 0).
-    by rewrite ltxI !divr_gt0 // ?subr_gt0.
-  exists (PosNum m_gt0) => y //=; rewrite ltxI !ltr_distl.
+    by rewrite lt_minr !divr_gt0 // ?subr_gt0.
+  exists (PosNum m_gt0) => y //=; rewrite lt_minr !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].
   rewrite 2!lte_fin (lt_trans _ ay) ?(lt_trans yb) //=.
     by rewrite -subr_gt0 opprD addrA {1}[b - x]splitr addrK divr_gt0 ?subr_gt0.
@@ -4039,15 +4029,15 @@ Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] Hp] |[d [dreal Hp]] |[d [dreal Hp]]]; last 2 first.
     have /ZnatP [N Nfloor] : ifloor (maxr d 0) \is a Znat.
-      by rewrite Znat_def ifloor_ge0 lexU lexx orbC.
+      by rewrite Znat_def ifloor_ge0 le_maxr lexx orbC.
     exists N.+1 => // n ltNn; apply: Hp.
-    have /le_lt_trans : d <= maxr d 0 by rewrite lexU lexx.
+    have /le_lt_trans : d <= maxr d 0 by rewrite le_maxr lexx.
     apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
     by rewrite -(@natrD R N 1) ler_nat addn1.
   have /ZnatP [N Nfloor] : ifloor (maxr (- d) 0) \is a Znat.
-    by rewrite Znat_def ifloor_ge0 lexU lexx orbC.
+    by rewrite Znat_def ifloor_ge0 le_maxr lexx orbC.
   exists N.+1 => // n ltNn; apply: Hp; rewrite lte_fin ltr_oppl.
-  have /le_lt_trans : - d <= maxr (- d) 0 by rewrite lexU lexx.
+  have /le_lt_trans : - d <= maxr (- d) 0 by rewrite le_maxr lexx.
   apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
   by rewrite -(@natrD R N 1) ler_nat addn1.
 have /ZnatP [N Nfloor] : ifloor (d%:num^-1) \is a Znat.

@@ -54,10 +54,10 @@ Lemma eq_fneg f g : f =1 g -> fneg f =1 fneg g.
 Proof. by move=> eq_fg x; rewrite /fneg eq_fg. Qed.
 
 Lemma fpos0 x : fpos (fun _ : T => 0) x = 0 :> R.
-Proof. by rewrite /fpos joinxx normr0. Qed.
+Proof. by rewrite /fpos maxxx normr0. Qed.
 
 Lemma fneg0 x : fneg (fun _ : T => 0) x = 0 :> R.
-Proof. by rewrite /fneg meetxx normr0. Qed.
+Proof. by rewrite /fneg minxx normr0. Qed.
 
 Lemma fnegN f : fneg (\- f) =1 fpos f.
 Proof. by move=> x; rewrite /fpos /fneg -{1}oppr0 -oppr_max normrN. Qed.
@@ -92,10 +92,10 @@ by apply/eq_fpos=> y; rewrite mulrN.
 Qed.
 
 Lemma fneg_ge0 f x : (forall x, 0 <= f x) -> fneg f x = 0.
-Proof. by move=> ?; rewrite /fneg (elimT meet_idPl) ?normr0. Qed.
+Proof. by move=> ?; rewrite /fneg min_l ?normr0. Qed.
 
 Lemma fpos_ge0 f x : (forall x, 0 <= f x ) -> fpos f x = f x.
-Proof. by move=> ?; rewrite /fpos (elimT join_idPl) ?ger0_norm. Qed.
+Proof. by move=> ?; rewrite /fpos max_r ?ger0_norm. Qed.
 
 Lemma ge0_fpos f x : 0 <= fpos f x.
 Proof. by apply/normr_ge0. Qed.
@@ -105,19 +105,19 @@ Proof. by apply/normr_ge0. Qed.
 
 Lemma le_fpos_norm f x : fpos f x <= `|f x|.
 Proof.
-rewrite /fpos ger0_norm ?(lexU, lexx) //.
-by rewrite leUx normr_ge0 ler_norm.
+rewrite /fpos ger0_norm ?(le_maxr, lexx) //.
+by rewrite le_maxl normr_ge0 ler_norm.
 Qed.
 
 Lemma le_fpos f1 f2 : f1 <=1 f2 -> fpos f1 <=1 fpos f2.
 Proof.
-move=> le_f x; rewrite /fpos !ger0_norm ?lexU ?lexx //.
-by rewrite leUx lexx /=; case: ltP => //=; rewrite le_f.
+move=> le_f x; rewrite /fpos !ger0_norm ?le_maxr ?lexx //.
+by rewrite le_maxl lexx /=; case: ltP => //=; rewrite le_f.
 Qed.
 
 Lemma fposBfneg f x : fpos f x - fneg f x = f x.
 Proof.
-rewrite /fpos /fneg joinC.
+rewrite /fpos /fneg maxC.
 case: (leP (f x) 0); rewrite normr0 (subr0, sub0r) => ?.
   by rewrite ler0_norm ?opprK.
 by rewrite gtr0_norm.
@@ -1177,10 +1177,10 @@ Proof.
 move=> eqr domS; rewrite /sum !(psum_finseq eqr).
 + move=> x; rewrite !inE => xPS; apply/domS; rewrite !inE.
   move: xPS; rewrite /fpos normr_eq0.
-  by apply: contra => /eqP ->; rewrite joinxx.
+  by apply: contra => /eqP ->; rewrite maxxx.
 + move=> x; rewrite !inE => xPS; apply/domS; rewrite !inE.
   move: xPS; rewrite /fneg normr_eq0.
-  by apply: contra => /eqP ->; rewrite meetxx.
+  by apply: contra => /eqP ->; rewrite minxx.
 rewrite -sumrB; apply/eq_bigr=> i _.
 by rewrite !ger0_norm ?(ge0_fpos, ge0_fneg) ?fposBfneg.
 Qed.
