@@ -6,7 +6,12 @@ Require Import boolp reals ereal.
 Require Import classical_sets posnum topology normedtype sequences.
 
 (******************************************************************************)
-(*          Tentative formalization of Boole's inequality (WIP)               *)
+(* This file provides basic elements of a theory of measure illustrated       *)
+(* by a formalization of Boole's inequality.                                  *)
+(*                                                                            *)
+(* {measure set T -> {ereal R}} == type of a measure over sets of elements of *)
+(*                                 type T where R is expected to be a         *)
+(*                                 a realFieldType or a realType              *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -21,7 +26,12 @@ Local Open Scope ring_scope.
 Lemma setCE T (A : set T) : ~` A = setT `\` A.
 Proof. by rewrite predeqE => t; split => // -[]. Qed.
 
-Lemma bigsetU_incl T m n (U : nat -> set T) : (m <= n)%N ->
+Lemma setUCr T (A : set T) : A `|` ~` A = setT.
+Proof.
+by rewrite predeqE => t; split => // _; case: (pselect (A t)); [left|right].
+Qed.
+
+Lemma subset_bigsetU T m n (U : nat -> set T) : (m <= n)%N ->
   \big[setU/set0]_(i < m) U i `<=` \big[setU/set0]_(i < n) U i.
 Proof.
 by rewrite !bigcup_ord => mn x [i im ?]; exists i => //; rewrite (leq_trans im).
@@ -65,25 +75,25 @@ End Measurable.
 Export Measurable.Exports.
 
 Section measurable_interface.
-Variables X : measurableType.
+Variables T : measurableType.
 
-Lemma measurable0 : measurable (set0 : set X).
-Proof. by case: X => ? []. Qed.
+Lemma measurable0 : measurable (set0 : set T).
+Proof. by case: T => ? []. Qed.
 
-Lemma measurableC (A : set X) : measurable A -> measurable (~` A).
-Proof. by case: X A => ? []. Qed.
+Lemma measurableC (A : set T) : measurable A -> measurable (~` A).
+Proof. by case: T A => ? []. Qed.
 
-Lemma measurable_bigU (U : (set X)^nat) :
+Lemma measurable_bigU (U : (set T)^nat) :
   (forall i, measurable (U i)) -> measurable (\bigcup_i (U i)).
-Proof. by case: X U => ? []. Qed.
+Proof. by case: T U => ? []. Qed.
 
 End measurable_interface.
 
 Section measurable_lemmas.
-Variables X : measurableType.
-Implicit Types A B : set X.
+Variables T : measurableType.
+Implicit Types A B : set T.
 
-Lemma measurableT : measurable (setT : set X).
+Lemma measurableT : measurable (setT : set T).
 Proof. by rewrite -setC0; apply measurableC; exact: measurable0. Qed.
 
 Lemma measurableU A B : measurable A -> measurable B -> measurable (A `|` B).
@@ -106,14 +116,14 @@ Proof.
 by move=> mA mB; rewrite setDE; apply measurableI => //; exact: measurableC.
 Qed.
 
-Lemma measurable_finbigU (U : (set X) ^nat) : (forall i, measurable (U i)) ->
+Lemma measurable_finbigU (U : (set T) ^nat) : (forall i, measurable (U i)) ->
   forall n, measurable (\big[setU/set0]_(i < n) U i).
 Proof.
 move=> mU; elim=> [|n ih]; first by rewrite big_ord0; exact: measurable0.
 by rewrite big_ord_recr /=; apply measurableU.
 Qed.
 
-Lemma measurable_bigI (U : (set X)^nat) :
+Lemma measurable_bigI (U : (set T)^nat) :
   (forall i, measurable (U i)) -> measurable (\bigcap_i (U i)).
 Proof.
 move=> mU; rewrite bigcapCU; apply/measurableC/measurable_bigU => i.
@@ -123,18 +133,18 @@ Qed.
 End measurable_lemmas.
 
 Section additivity.
-Variables (R : numFieldType) (X : measurableType) (mu : set X -> {ereal R}).
+Variables (R : numFieldType) (T : measurableType) (mu : set T -> {ereal R}).
 
 Definition additive2 := forall A B, measurable A -> measurable B ->
   A `&` B = set0 -> mu (A `|` B) = (mu A + mu B)%E.
 
 Definition additive :=
   forall A, (forall i, measurable (A i)) -> triviset A ->
-  forall n, mu (\big[setU/set0]_(i < n.+1) A i) = (\sum_(i < n.+1) mu (A i))%E.
+  forall n, mu (\big[setU/set0]_(i < n) A i) = (\sum_(i < n) mu (A i))%E.
 
 Definition sigma_additive :=
   forall A, (forall i, measurable (A i)) -> triviset A ->
-  (fun n => (\sum_(i < n.+1) mu (A i))%E) --> mu (\bigcup_n A n).
+  (fun n => (\sum_(i < n) mu (A i))%E) --> mu (\bigcup_n A n).
 
 Lemma additive2P : mu set0 = 0%:E -> additive <-> additive2.
 Proof.
@@ -143,9 +153,9 @@ move=> mu0; split => [amx A B mA mB AB|a2mx A mA ATI n].
   have tC : triviset C by move=> [|[|i]] [|[|j]]; rewrite ?set0I ?setI0// setIC.
   have mC : forall i, measurable (C i).
     by move=> [|[]] //= i; exact: measurable0.
-  by have := amx _ mC tC 1%N; rewrite !big_ord_recl !big_ord0 adde0/= setU0.
+  by have := amx _ mC tC 2%N; rewrite !big_ord_recl !big_ord0 adde0/= setU0.
 elim: n => [|n IHn] in A mA ATI *.
-  by rewrite big_ord_recr /= big_ord0 set0U big_ord_recr /= big_ord0 add0e.
+  by rewrite !big_ord0.
 rewrite big_ord_recr /= a2mx //; last 2 first.
    exact: measurable_finbigU.
    rewrite big_distrl /= big1 // => i _; apply: ATI; rewrite lt_eqF //.
@@ -170,7 +180,7 @@ have mC : forall i, measurable (C i).
   by move=> [|[]] //= i; rewrite /C /=; exact: measurable0.
 have /cvg_unique := samu C mC tC; apply => //.
 apply: cvg_near_cst.
-exists 2%N => // -[//|n] _.
+exists 3%N => // -[//|[//|n]] _.
 by rewrite !big_ord_recl /= big1 ?adde0.
 Qed.
 
@@ -178,17 +188,17 @@ Module Measure.
 
 Section ClassDef.
 
-Variables (R : numFieldType) (X : measurableType).
-Record axioms (mu : set X -> {ereal R}) := IsMeasure {
+Variables (R : numFieldType) (T : measurableType).
+Record axioms (mu : set T -> {ereal R}) := Measure {
   _ : mu set0 = 0%:E ;
   _ : forall x, measurable x -> (0%:E <= mu x)%E ;
   _ : sigma_additive mu }.
 
-Structure map (phUV : phant (set X -> {ereal R})) :=
-  Pack {apply : set X -> {ereal R} ; _ : axioms apply}.
+Structure map (phUV : phant (set T -> {ereal R})) :=
+  Pack {apply : set T -> {ereal R} ; _ : axioms apply}.
 Local Coercion apply : map >-> Funclass.
 
-Variables (phUV : phant (set X -> {ereal R})) (f g : set X -> {ereal R}).
+Variables (phUV : phant (set T -> {ereal R})) (f g : set T -> {ereal R}).
 Variable (cF : map phUV).
 Definition class := let: Pack _ c as cF' := cF return axioms cF' in c.
 Definition clone fA of phant_id g (apply cF) & phant_id fA class :=
@@ -199,7 +209,7 @@ End ClassDef.
 Module Exports.
 Notation is_measure f := (axioms f).
 Coercion apply : map >-> Funclass.
-Notation IsMeasure fA := (Pack (Phant _) fA).
+Notation Measure fA := (Pack (Phant _) fA).
 Notation "{ 'measure' fUV }" := (map (Phant fUV))
   (at level 0, format "{ 'measure'  fUV }") : ring_scope.
 Notation "[ 'measure' 'of' f 'as' g ]" := (@clone _ _ _ f g _ _ idfun id)
@@ -211,41 +221,41 @@ End Exports.
 End Measure.
 Include Measure.Exports.
 
-Section is_measure_lemmas.
-Variables (R : numFieldType) (X : measurableType).
-Variable mu : {measure set X -> {ereal R}}.
+Section measure_lemmas.
+Variables (R : numFieldType) (T : measurableType).
+Variable mu : {measure set T -> {ereal R}}.
 
-Lemma is_measure0 : mu set0 = 0%:E.
+Lemma measure0 : mu set0 = 0%:E.
 Proof. by case: mu => ? []. Qed.
 
-Lemma is_measure_ge0 : forall x, measurable x -> (0%:E <= mu x)%E.
+Lemma measure_ge0 : forall x, measurable x -> (0%:E <= mu x)%E.
 Proof. by case: mu => ? []. Qed.
 
-Lemma is_measure_sigma_additive : sigma_additive mu.
+Lemma measure_sigma_additive : sigma_additive mu.
 Proof. by case: mu => ? []. Qed.
 
-End is_measure_lemmas.
+End measure_lemmas.
 
-Hint Extern 0 (_ set0 = 0%:E) => solve [apply: is_measure0] : core.
+Hint Extern 0 (_ set0 = 0%:E) => solve [apply: measure0] : core.
 Hint Extern 0 (sigma_additive _) =>
-  solve [apply: is_measure_sigma_additive] : core.
+  solve [apply: measure_sigma_additive] : core.
 
-Section is_measure_additive_lemmas.
+Section measure_additive_lemmas.
 Variables (R : realFieldType) (X : measurableType).
 Variable (mu : {measure set X -> {ereal R}}).
 
-Lemma is_measure_additive : additive mu.
+Lemma measure_additive : additive mu.
 Proof. by apply: sigma_additive_implies_additive. Qed.
-Hint Resolve is_measure_additive.
+Hint Resolve measure_additive.
 
-Lemma is_measure_additive2 : additive2 mu.
+Lemma measure_additive2 : additive2 mu.
 Proof. exact/additive2P. Qed.
 
-End is_measure_additive_lemmas.
+End measure_additive_lemmas.
 
 (* measure is monotone *)
-Lemma le_measure (R : realFieldType) (X : measurableType)
-  (mu : {measure set X -> {ereal R}}) :
+Lemma le_measure (R : realFieldType) (T : measurableType)
+  (mu : {measure set T -> {ereal R}}) :
   {in [set x | measurable x] &, {homo mu : A B / A `<=` B >-> (A <= B)%E}}.
 Proof.
 move=> A B mA mB AB; have {1}-> : B = A `|` (B `\` A).
@@ -255,19 +265,19 @@ move=> A B mA mB AB; have {1}-> : B = A `|` (B `\` A).
   by split=> [Bx|]; by [right| move=> -[//|] []].
 rewrite 2!inE in mA, mB.
 have ? : measurable (B `\` A) by apply: measurableD.
-rewrite is_measure_additive2 // ?lee_addl // ?is_measure_ge0 //.
+rewrite measure_additive2 // ?lee_addl // ?measure_ge0 //.
 rewrite setDE setICA (_ : _ `&` ~` _ = set0) ?setI0 //.
 by rewrite funeqE => x; rewrite propeqE; split => // -[].
 Qed.
 
 Section boole_inequality.
-Variables (R : realFieldType) (X : measurableType).
-Variables (mu : {measure set X -> {ereal R}}).
+Variables (R : realFieldType) (T : measurableType).
+Variables (mu : {measure set T -> {ereal R}}).
 
-Definition B_of (A : (set X) ^nat) :=
+Definition B_of (A : (set T) ^nat) :=
   fun n => if n isn't n'.+1 then A O else A n `\` A n'.
 
-Lemma triviset_B_of (A : (set X) ^nat) :
+Lemma triviset_B_of (A : (set T) ^nat) :
   {homo A : n m / (n <= m)%nat >-> n `<=` m} -> triviset (B_of A).
 Proof.
 move=> ndA j i; wlog : j i / (i < j)%N.
@@ -280,7 +290,7 @@ rewrite ltnS => nj /=; rewrite funeqE => x; rewrite propeqE; split => //.
 by move=> -[[An1 An] [Aj1 Aj]]; apply/Aj/(ndA n.+1).
 Qed.
 
-Lemma UB_of (A : (set X) ^nat) : {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
+Lemma UB_of (A : (set T) ^nat) : {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
   forall n, A n.+1 = A n `|` B_of A n.+1.
 Proof.
 move=> ndA n; rewrite /B_of funeqE => x; rewrite propeqE; split.
@@ -288,7 +298,7 @@ by move=> ?; have [?|?] := pselect (A n x); [left | right].
 by move=> -[|[]//]; apply: ndA.
 Qed.
 
-Lemma bigUB_of (A : (set X) ^nat) n :
+Lemma bigUB_of (A : (set T) ^nat) n :
   \big[setU/set0]_(i < n.+1) A i = \big[setU/set0]_(i < n.+1) B_of A i.
 Proof.
 elim: n => [|n ih]; first by rewrite !big_ord_recl !big_ord0.
@@ -300,7 +310,7 @@ rewrite big_ord_recr [in RHS]big_ord_recr /= predeqE => x; split=> [[Ax|An1x]|].
 move=> [summyB|[An1x NAnx]]; by [rewrite ih; left | right].
 Qed.
 
-Lemma homo_bigUB_of (A : (set X) ^nat) n :
+Lemma eq_bigsetUB_of (A : (set T) ^nat) n :
   {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
   A n = \big[setU/set0]_(i < n.+1) B_of A i.
 Proof.
@@ -313,18 +323,18 @@ move=> ndA; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
 - rewrite big_ord_recr /= -ih => -[|[]//]; exact: ndA.
 Qed.
 
-Lemma A_B_of (A : (set X) ^nat) : {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
+Lemma eq_bigcupB_of (A : (set T) ^nat) : {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
   \bigcup_n A n = \bigcup_n (B_of A) n.
 Proof.
 move=> ndA; rewrite funeqE => x; rewrite propeqE; split.
-  move=> -[n _]; rewrite (homo_bigUB_of _ ndA) bigcup_ord => -[m mn ?].
+  move=> -[n _]; rewrite (eq_bigsetUB_of _ ndA) bigcup_ord => -[m mn ?].
   by exists m.
-move=> -[m _] myBAmx; exists m => //; rewrite (homo_bigUB_of _ ndA) bigcup_ord.
+move=> -[m _] myBAmx; exists m => //; rewrite (eq_bigsetUB_of _ ndA) bigcup_ord.
 by exists m.
 Qed.
 
 (* 401,p.43 measure is continuous from below *)
-Lemma measure_bigcup (A : (set X) ^nat) :
+Lemma cvg_mu_inc (A : (set T) ^nat) :
   (forall i, measurable (A i)) ->
   {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
   mu \o A --> mu (\bigcup_n A n).
@@ -332,20 +342,22 @@ Proof.
 move=> mA ndA.
 have Binter : triviset (B_of A) := triviset_B_of ndA.
 have ABE : forall n, A n.+1 = A n `|` B_of A n.+1 := UB_of ndA.
-have AE n : A n = \big[setU/set0]_(i < n.+1) (B_of A) i := homo_bigUB_of n ndA.
-have -> : \bigcup_n A n = \bigcup_n (B_of A) n := A_B_of ndA.
+have AE n : A n = \big[setU/set0]_(i < n.+1) (B_of A) i := eq_bigsetUB_of n ndA.
+have -> : \bigcup_n A n = \bigcup_n (B_of A) n := eq_bigcupB_of ndA.
 have mB : forall i, measurable (B_of A i).
   by elim=> [|i ih] //=; apply: measurableD.
-apply: cvg_trans (is_measure_sigma_additive mB Binter).
+apply: cvg_trans (measure_sigma_additive mB Binter).
+apply: (@cvg_trans _ [filter of (fun n => (\sum_(i < n.+1) mu (B_of A i))%E)]); last first.
+  by move=> S [n _] nS; exists n => // m nm; apply/(nS m.+1)/(leq_trans nm).
 rewrite (_ : (fun n => \sum_(i < n.+1) mu (B_of A i))%E = mu \o A) //.
-rewrite funeqE => n; rewrite -is_measure_additive// bigcup_ord.
+rewrite funeqE => n; rewrite -measure_additive// bigcup_ord.
 by rewrite -bigcup_ord -AE.
 Qed.
 
-Theorem Boole_inequality (A : (set X) ^nat) : (forall i, measurable (A i)) ->
+Theorem Boole_inequality (A : (set T) ^nat) : (forall i, measurable (A i)) ->
   forall n, (mu (\big[setU/set0]_(i < n) A i) <= \sum_(i < n) mu (A i))%E.
 Proof.
-move=> mA; elim => [|n ih]; first by rewrite !big_ord0 is_measure0.
+move=> mA; elim => [|n ih]; first by rewrite !big_ord0 measure0.
 set B := \big[setU/set0]_(i < n) A i.
 set C := \big[setU/set0]_(i < n.+1) A i.
 have -> : C = B `|` (A n `&` ~` B).
@@ -356,7 +368,7 @@ have -> : C = B `|` (A n `&` ~` B).
     by rewrite /C big_ord_recr; left.
   by rewrite /C big_ord_recr; right.
 have ? : measurable B by apply measurable_finbigU.
-rewrite is_measure_additive2 //; last 2 first.
+rewrite measure_additive2 //; last 2 first.
   apply measurableI => //.
   rewrite setCE; apply measurableD => //.
   exact: measurableT.
@@ -372,6 +384,7 @@ by rewrite big_ord_recr /= lee_add2r.
 Qed.
 
 End boole_inequality.
+Notation le_mu_bigsetU := Boole_inequality.
 
 (* NB: see also nondecreasing_series *)
 Lemma ereal_nondecreasing_series (R : realFieldType) (u_ : {ereal R} ^nat) :
@@ -393,31 +406,12 @@ by apply ereal_sup_ub; exists k.+1.
 Qed.
 
 Section generalized_boole_inequality.
-Variables (R : realType) (X : measurableType).
-Variable (mu : {measure set X -> {ereal R}}).
-
-(*
-(* ereal_increasing_upper_bound_cvg *)
-Lemma lim_ereal_sup (u_ : nat -> {ereal R}) :
-  nondecreasing_seq u_ ->
-  lim u_ = ereal_sup [set u_ i |i in setT].
-Proof.
-move=> u_incr.
-set S := [set u_ n | n in setT].
-set l := ereal_sup S.
-have supS := ereal_supremums_neq0 S.
-have : (lim u_ <= l)%O.
-  (* *) admit.
-rewrite le_eqVlt => /orP [ /eqP | H ]; first by [].
-suff: False by [].
-have : exists2 x, (lim u_ < u_ x)%O & (u_ x <= l )%O.
-admit.  (*apply: lt_sup_imfset_ereal.*)
-move => [k A B]. (*now use monotonicity of u_ *)
-Abort.
-*)
+Variables (R : realType) (T : measurableType).
+Variable (mu : {measure set T -> {ereal R}}).
 
 (* 404,p.44 measure satisfies generalized Boole's inequality *)
-Theorem generalized_Boole_inequality (A : (set X) ^nat) : (forall i : nat, measurable (A i)) ->
+Theorem generalized_Boole_inequality (A : (set T) ^nat) :
+  (forall i : nat, measurable (A i)) ->
   (mu (\bigcup_n A n) <= lim (fun n => \sum_(i < n) mu (A i)))%E.
 Proof.
 move=> mA; set B := fun n => \big[setU/set0]_(i < n.+1) (A i).
@@ -429,98 +423,19 @@ rewrite [X in mu X](_ : _ = \bigcup_n B n); last first.
   by rewrite bigcup_ord => -[k km Akx]; exists k.
   by move=> Amx; exists m.
 have ndB : {homo B : n m / (n <= m)%N >-> n `<=` m}.
-  by move=> n m nm; apply bigsetU_incl.
+  by move=> n m nm; apply subset_bigsetU.
 have mB : forall i, measurable (B i) by move=> i; exact: measurable_finbigU.
-move/(@measure_bigcup _ _ mu _ mB) : ndB => /cvg_lim => <- //.
+move/(@cvg_mu_inc _ _ mu _ mB) : ndB => /cvg_lim => <- //.
 have -> : lim (mu \o B) = ereal_sup ((mu \o B) @` setT).
   suff : nondecreasing_seq (mu \o B).
     by move/nondecreasing_seq_ereal_cvg; apply/cvg_lim.
   move=> n m nm; apply: le_measure => //; try by rewrite inE; apply mB.
-  exact: bigsetU_incl.
+  exact: subset_bigsetU.
 have BA : forall m, (mu (B m) <= lim (fun n : nat => \sum_(i < n) mu (A i)))%E.
-  move=> m; rewrite (le_trans (Boole_inequality mu mA m.+1)) // -/(B m).
-  by apply: (@series_nneg _ (mu \o A)) => n; exact: is_measure_ge0.
+  move=> m; rewrite (le_trans (le_mu_bigsetU mu mA m.+1)) // -/(B m).
+  by apply: (@series_nneg _ (mu \o A)) => n; exact: measure_ge0.
 by apply ub_ereal_sup => /= x [n _ <-{x}]; apply BA.
 Qed.
 
 End generalized_boole_inequality.
-
-Definition sigma_subadditive (R : numFieldType) (X : measurableType)
-  (mu : set X -> {ereal R}) (A : (set X) ^nat) :=
-  (forall i, measurable (A i)) ->
-  (mu (\bigcup_n (A n)) <= lim (fun n => \sum_(i < n.+1) mu (A i)))%E.
-
-Module OuterMeasure.
-
-Section ClassDef.
-
-Variables (R : numFieldType) (X : measurableType).
-Record axioms (mu : set X -> {ereal R}) := IsOuterMeasure {
-  _ : mu set0 = 0%:E ;
-  _ : forall x, measurable x -> (0%:E <= mu x)%E ;
-  _ : forall A B, measurable A -> measurable B -> A `<=` B -> (mu A <= mu B)%E ;
-  _ : forall (A : (set X) ^nat), sigma_subadditive mu A }.
-
-Structure map (phUV : phant (set X -> {ereal R})) :=
-  Pack {apply : set X -> {ereal R} ; _ : axioms apply}.
-Local Coercion apply : map >-> Funclass.
-
-Variables (phUV : phant (set X -> {ereal R})) (f g : set X -> {ereal R}).
-Variable (cF : map phUV).
-Definition class := let: Pack _ c as cF' := cF return axioms cF' in c.
-Definition clone fA of phant_id g (apply cF) & phant_id fA class :=
-  @Pack phUV f fA.
-
-End ClassDef.
-
-Module Exports.
-Notation is_outer_measure f := (axioms f).
-Coercion apply : map >-> Funclass.
-Notation IsOuterMeasure fA := (Pack (Phant _) fA).
-Notation "{ 'outer_measure' fUV }" := (map (Phant fUV))
-  (at level 0, format "{ 'outer_measure'  fUV }") : ring_scope.
-Notation "[ 'outer_measure' 'of' f 'as' g ]" := (@clone _ _ _ f g _ _ idfun id)
-  (at level 0, format "[ 'outer_measure'  'of'  f  'as'  g ]") : form_scope.
-Notation "[ 'outer_measure' 'of' f ]" := (@clone _ _ _ f f _ _ id id)
-  (at level 0, format "[ 'outer_measure'  'of'  f ]") : form_scope.
-End Exports.
-
-End OuterMeasure.
-Include OuterMeasure.Exports.
-
-Section is_outer_measure_lemmas.
-Variables (R : numFieldType) (X : measurableType).
-Variable mu : {outer_measure set X -> {ereal R}}.
-
-Lemma is_outer_measure0 : mu set0 = 0%:E.
-Proof. by case: mu => ? []. Qed.
-
-Lemma is_outer_measure_ge0 : forall x, measurable x -> (0%:E <= mu x)%E.
-Proof. by case: mu => ? []. Qed.
-
-Lemma is_outer_measure_monotone : forall A B, measurable A -> measurable B ->
-  A `<=` B -> (mu A <= mu B)%E.
-Proof. by case: mu => ? []. Qed.
-
-Lemma is_outer_measure_sigma_subadditive : forall A, sigma_subadditive mu A.
-Proof. by case: mu => ? []. Qed.
-
-End is_outer_measure_lemmas.
-
-Hint Extern 0 (_ set0 = 0%:E) => solve [apply: is_outer_measure0] : core.
-Hint Extern 0 (sigma_subadditive _) =>
-  solve [apply: is_outer_measure_sigma_subadditive] : core.
-
-Section measure_extension.
-
-Variables (R : realFieldType) (X : measurableType).
-
-Definition mu_ext (mu : {measure set X -> {ereal R}}) : set X -> {ereal R} :=
-  fun A => ereal_inf [set mu B | B in (fun x => measurable x /\ A `<=` x) ].
-
-Lemma mu_ext_ge0 mu A : measurable A -> (0%:E <= mu_ext mu A)%E.
-Proof.
-by move=> mA; apply: lb_ereal_inf => x [B [mB AB] <-{x}]; exact: is_measure_ge0.
-Qed.
-
-End measure_extension.
+Notation le_mu_bigcup := generalized_Boole_inequality.
