@@ -36,6 +36,20 @@ and its variants (`filterS2`, `filterS3`, etc.).
 
 TODO
 
+## Naming convention
+
+### homo and mono notations
+
+Statements of `{homo ...}` or `{mono ...}` shouldn't be named after `homo`, or `mono`
+(just as for `{morph ...}` lemmas). Instead use the head of the unfolded statement
+(for `homo`) or the head of the LHS of the equality (for `mono`).
+
+When a `{mono ...}` lemma subsumes `{homo ...}`, it gets priority
+for the short name, and, if really needed, the corresponding `{homo ...}`
+lemma can be suffixed with `W`. If the `{mono ...}` lemma is
+only valid on a subdomain, then the `{homo ...}` lemma takes the
+short name, and the `{mono ...}` lemma gets the suffix `in`.
+
 ## Idioms
 
 ### How to introduce a positive real number?
