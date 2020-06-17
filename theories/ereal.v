@@ -44,6 +44,7 @@ Coercion real_of_er x : R :=
   if x is ERFin v then v else 0.
 
 End ExtendedReals.
+Arguments real_of_er {R}.
 
 
 Notation "+oo" := (@ERPInf _) : ereal_scope.
@@ -384,6 +385,7 @@ Lemma sume_ge0 T (u_ : T -> {ereal R}) : (forall n, 0%:E <= u_ n) -> forall l,
 Proof. by move=> ?; elim => [|? ? ?]; rewrite ?big_nil// big_cons adde_ge0. Qed.
 
 End ERealArithTh_numDomainType.
+Arguments is_real {R}.
 
 Section ERealArithTh_realDomainType.
 

@@ -16,6 +16,8 @@ theories/sequences.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
+theories/integral.v
+theories/measure_wip.v
 theories/summability.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
