@@ -349,7 +349,7 @@ End SumTh.
 
 (* -------------------------------------------------------------------- *)
 Lemma max_sup {R : realType} x (E : set R) :
-  (E `&` ub E)%classic x -> sup E = x.
+  (E `&` ubound E)%classic x -> sup E = x.
 Proof.
 case=> /= xE xubE; have nzE: nonempty E by exists x.
 apply/eqP; rewrite eq_le sup_le_ub //=.

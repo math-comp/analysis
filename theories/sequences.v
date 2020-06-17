@@ -347,14 +347,14 @@ Section sequences_R_lemmas.
 Variable R : realType.
 
 Lemma cvg_has_ub (u_ : R^o ^nat) :
-  cvg u_ -> has_ub [set `|u_ n| | n in setT].
+  cvg u_ -> has_ubound [set `|u_ n| | n in setT].
 Proof.
 move=> /cvg_seq_bounded/pinfty_ex_gt0[M M_gt0 /= uM].
 by exists M; apply/ubP => x -[n _ <-{x}]; exact: uM.
 Qed.
 
 (* TODO: move *)
-Lemma has_ub_image_norm (S : set R) : has_ub (normr @` S) -> has_ub S.
+Lemma has_ub_image_norm (S : set R) : has_ubound (normr @` S) -> has_ubound S.
 Proof.
 case => M /ubP uM; exists `|M|; apply/ubP => r rS.
 rewrite (le_trans (real_ler_norm _)) ?num_real //.
