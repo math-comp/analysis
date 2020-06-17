@@ -517,7 +517,7 @@ have : ~ ubound S (ereal_sup S - e%:num%:E)%E.
   move/ub_ereal_sup; apply/negP.
   by rewrite -ltNge Sr lte_subl_addr lte_fin ltr_addl.
 move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
-case/Nimply => ? ?; exists x; split => //.
+rewrite not_implyE => -[? ?]; exists x; split => //.
 by rewrite ltNge; apply/negP.
 Qed.
 
@@ -542,7 +542,7 @@ have [Spoo|Spoo] := pselect (S +oo).
   by exists +oo; split; [apply/ereal_ub_pinfty | apply/lbP => /= y /ubP; apply].
 have [r Sr] : exists r, S r%:E.
   move: S0 Snoo Spoo => [[r Sr _ _|//|Snoo Snoo1 Spoo]]; first by exists r.
-  apply/existsPN => nS; move: Snoo1; apply; apply/eqP; rewrite predeqE.
+  apply/not_existsP => nS; move: Snoo1; apply; apply/eqP; rewrite predeqE.
   by case=> // r; split => // /nS.
 set U := [set x | (real_of_er_def r @` S) x ].
 have [ubU|/set0P/negP] := pselect (ubound U !=set0); last first.

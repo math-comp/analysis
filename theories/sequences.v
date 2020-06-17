@@ -771,7 +771,7 @@ have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo%E).
     near: n.
     suff [n Hn] : exists n, (expand (contract +oo - (e)%:num)%R < u_ n)%E.
       by exists n => // m nm; rewrite (lt_le_trans Hn) //; apply nd_u_.
-    apply/existsPN => abs.
+    apply/not_existsP => abs.
     have : (l <= expand (contract +oo - (e)%:num)%R)%E.
       apply: ub_ereal_sup => x [n _ <-{x}].
       rewrite leNgt; apply/negP/abs.
