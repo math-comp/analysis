@@ -553,42 +553,50 @@ apply: (asbool_equiv_eqP existsp_asboolPn);
   by split=> -[x h]; exists x; apply/negP.
 Qed.
 
-Lemma existsNP (T : Type) (P : T -> Prop) :
-  (exists x : T, ~ P x) <-> (~ forall x : T, P x).
-Proof.
-split => [[x Px h]|/asboolP]; [exact: Px|].
-by rewrite asbool_neg => /existsp_asboolPn.
-Qed.
-
-Lemma existsPN (T : Type) (P : T -> Prop) :
-  (exists x : T, P x) <-> (~ forall x : T, ~ P x).
-Proof.
-split => [[x Px h]|/asboolP]; [exact: (h x)|].
-by move/asboolP/existsNP => [x /contrapT Px]; exists x.
-Qed.
-
-Lemma forallNP (T : Type) (P : T -> Prop) :
-  (forall x : T, ~ P x) <-> (~ exists x : T, P x).
-Proof.
-split => [h [x Px]|/asboolP]; [exact: (h x)|].
-by rewrite asbool_neg => /forallp_asboolPn.
-Qed.
-
-Lemma forallPN (T : Type) (P : T -> Prop) :
-  (forall x : T, P x) <-> (~ exists x : T, ~ P x).
-Proof.
-split => [h [x px]|]; [exact/px/h|move=> /forallNP h x].
-by move/contrapT : (h x).
-Qed.
-
-Lemma Nimply (P Q : Prop) : ~ (P -> Q) <-> (P /\ ~ Q).
+Lemma not_implyP (P Q : Prop) : ~ (P -> Q) <-> P /\ ~ Q.
 Proof.
 split=> [/asboolP|[p nq pq]]; [|exact/nq/pq].
 by rewrite asbool_neg => /imply_asboolPn.
 Qed.
 
+Lemma not_implyE (P Q : Prop) : (~ (P -> Q)) = (P /\ ~ Q).
+Proof. by rewrite propeqE not_implyP. Qed.
+
 Lemma orC (P Q : Prop) : (P \/ Q) = (Q \/ P).
-Proof. rewrite propeqE; tauto. Qed.
+Proof. by rewrite propeqE; split=> [[]|[]]; [right|left|right|left]. Qed.
+
+Lemma andC (P Q : Prop) : (P /\ Q) = (Q /\ P).
+Proof. by rewrite propeqE; split=> [[]|[]]. Qed.
+
+Lemma eqNN (P : Prop) : (~ ~ P) = P.
+Proof. by rewrite propeqE; split=> [/contrapT|?]. Qed.
+
+Lemma forallNE {T} (P : T -> Prop) : (forall x, ~ P x) = ~ exists x, P x.
+Proof.
+by rewrite propeqE; split => [fP [x /fP]//|nexP x Px]; apply: nexP; exists x.
+Qed.
+
+Lemma existsNE {T} (P : T -> Prop) : (exists x, ~ P x) = ~ forall x, P x.
+Proof.
+rewrite propeqE; split=> [[x Px] aP //|NaP].
+by apply: contrapT; rewrite -forallNE => aP; apply: NaP => x; apply: contrapT.
+Qed.
+
+Lemma existsNP T (P : T -> Prop) :
+  (exists x : T, ~ P x) <-> ~ forall x : T, P x.
+Proof. by rewrite existsNE. Qed.
+
+Lemma not_existsP T (P : T -> Prop) :
+  (exists x : T, P x) <-> ~ forall x : T, ~ P x.
+Proof. by rewrite forallNE eqNN. Qed.
+
+Lemma forallNP T (P : T -> Prop) :
+  (forall x : T, ~ P x) <-> ~ exists x : T, P x.
+Proof. by rewrite forallNE. Qed.
+
+Lemma not_forallP T (P : T -> Prop) :
+  (forall x : T, P x) <-> ~ exists x : T, ~ P x.
+Proof. by rewrite existsNE eqNN. Qed.
 
 (* -------------------------------------------------------------------- *)
 Definition xchooseb {T : choiceType} (P : pred T) (h : `[exists x, P x]) :=
