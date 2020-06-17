@@ -3079,12 +3079,16 @@ Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
-Definition pseudoMetricType := @PseudoMetric.Pack _ cT xclass.
+Definition pseudoMetricType := @PseudoMetric.Pack K cT xclass.
+Definition pseudoMetricNormedZmodType :=
+  @PseudoMetricNormedZmodule.Pack K phK cT xclass.
 Definition normedModType := @NormedModule.Pack K phK cT xclass.
-Definition completeType := @Complete.Pack _ cT xclass.
+Definition completeType := @Complete.Pack K cT xclass.
 Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
 Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
 Definition complete_normedZmodType := @Num.NormedZmodule.Pack K phK completeType xclass.
+Definition complete_pseudoMetricNormedZmodType :=
+  @PseudoMetricNormedZmodule.Pack K phK completeType xclass.
 Definition complete_normedModType := @NormedModule.Pack K phK completeType xclass.
 End ClassDef.
 
@@ -3099,6 +3103,8 @@ Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
+Coercion pseudoMetricNormedZmodType : type >-> PseudoMetricNormedZmodule.type.
+Canonical pseudoMetricNormedZmodType.
 Coercion normedZmodType : type >-> Num.NormedZmodule.type.
 Canonical normedZmodType.
 Coercion lmodType : type >-> GRing.Lmodule.type.
@@ -3118,6 +3124,7 @@ Canonical completeType.
 Canonical complete_zmodType.
 Canonical complete_lmodType.
 Canonical complete_normedZmodType.
+Canonical complete_pseudoMetricNormedZmodType.
 Canonical complete_normedModType.
 Notation completeNormedModType K := (type (Phant K)).
 Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
