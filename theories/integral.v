@@ -4,6 +4,7 @@ From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
 From mathcomp Require Import ssralg ssrnum.
 Require Import boolp reals ereal.
 Require Import classical_sets posnum topology normedtype sequences measure.
+From HB Require Import structures.
 
 (******************************************************************************)
 (*           Scratch file for formalization of integrals (WIP)                *)
@@ -115,10 +116,24 @@ End fin_fct.
 (* TODO *)
 Axiom product_measure : forall (R : numFieldType) (X Y : measurableType)
   (mx : set X -> R) (my : set Y -> R), set (X * Y) -> R.
-Axiom product_measurableType_sigma_algebra : forall (X Y : measurableType), is_sigma_algebra (X * Y).
-Canonical product_measurableType X Y := Measurable.Pack (product_measurableType_sigma_algebra X Y).
-Axiom sigma_algebra_completion : forall (R : numFieldType) (T : Type) (X : is_sigma_algebra T) (mx : set T -> R),
- is_sigma_algebra T.
+Axiom product_measurableType_sigma_algebra : forall (X Y : measurableType), isMeasurable (X * Y)%type.
+
+(* TODO: urgent
+Section prod_measurable.
+Variables X Y : measurableType.
+
+HB.instance ((prod (Measurable.sort X) ( Measurable.sort Y))%type)
+  (product_measurableType_sigma_algebra X Y).
+
+End prod_measurable.
+(* Canonical product_measurableType X Y := Measurable.Pack (product_measurableType_sigma_algebra X Y). *)
+*)
+
+
+Axiom sigma_algebra_completion : forall (R : numFieldType) (T : Type) (X : isMeasurable T) (mx : set T -> R),
+ isMeasurable T.
+
+(* TODO: urgent
 Definition measurable_completion (R : numFieldType) (X : measurableType) (m : set X -> {ereal R}) :=
   @Measurable.Pack X (sigma_algebra_completion (Measurable.class X) (fun x => real_of_er (m x))).
 
@@ -137,5 +152,6 @@ Axiom fubini_tonelli : measurable_fun f ->
   integral (fun x => (mz x)%:E) setT f = integral (fun x => (mx x)%:E) setT F.
 
 End fubini.
+*)
 
 End INTEGRAL.
