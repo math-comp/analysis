@@ -169,7 +169,7 @@ Proof.
 move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; near=> k; rewrite /cst [`|1 : R^o|]normr1 mulr1.
-  near=> y; rewrite ltW //; near: y; apply/locally_normP.
+  near=> y; rewrite ltW //; near: y; apply/nbhs_normP.
   by exists k; [near: k; exists 0; rewrite real0|move=> ? /=; rewrite sub0r normrN].
 rewrite addfo; first by move=> /eqolim; rewrite cvg_shift add0r.
 by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
@@ -181,7 +181,7 @@ Variables (X Y Z : normedModType R).
 
 Lemma normm_littleo x (f : X -> Y) : `| [o_(x \near x) (1 : R^o) of f x]| = 0.
 Proof.
-rewrite /cst /=; have [e /(_ (`|e x|/2) _)/locally_singleton /=] := littleo.
+rewrite /cst /=; have [e /(_ (`|e x|/2) _)/nbhs_singleton /=] := littleo.
 rewrite pmulr_lgt0 // [`|1 : R^o|]normr1 mulr1 [X in X <= _]splitr.
 rewrite ger_addr pmulr_lle0 // => /implyP.
 case : real_ltgtP; rewrite ?realE ?normrE //=.
@@ -192,7 +192,7 @@ Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :
   f @ x --> (0 : Y) -> [o_x f of h] x = 0.
 Proof.
 move/eqolim0P => ->; have [k /(_ _ [gt0 of 1])/=] := littleo.
-by move=> /locally_singleton; rewrite mul1r normm_littleo normr_le0 => /eqP.
+by move=> /nbhs_singleton; rewrite mul1r normm_littleo normr_le0 => /eqP.
 Qed.
 
 End littleo_lemmas.
@@ -214,26 +214,26 @@ Qed.
 End diff_locally_converse_tentative.
 
 Definition derive (f : V -> W) a v :=
-  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
+  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ nbhs' (0 : R^o)).
 
 Local Notation "''D_' v f" := (derive f ^~ v).
 Local Notation "''D_' v f c" := (derive f c v). (* printing *)
 
 Definition derivable (f : V -> W) a v :=
-  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ locally' (0 : R^o)).
+  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ nbhs' (0 : R^o)).
 
 Class is_derive (a v : V) (f : V -> W) (df : W) := DeriveDef {
   ex_derive : derivable f a v;
   derive_val : 'D_v f a = df
 }.
 
-Lemma derivable_locally (f : V -> W) a v :
+Lemma derivable_nbhs (f : V -> W) a v :
   derivable f a v ->
   (fun h => (f \o shift a) (h *: v)) = (cst (f a)) +
-    (fun h => h *: ('D_v f a)) +o_ (locally (0 : [filteredType R^o of R^o])) id.
+    (fun h => h *: ('D_v f a)) +o_ (nbhs (0 : [filteredType R^o of R^o])) id.
 Proof.
 move=> df; apply/eqaddoP => _/posnumP[e].
-rewrite -locally_nearE locally_simpl /= locallyE'; split; last first.
+rewrite -nbhs_nearE nbhs_simpl /= nbhsE'; split; last first.
   rewrite /at_point opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
   by rewrite addrA subrr add0r normrN scale0r !normr0 mulr0.
 have /eqolimP := df; rewrite -[lim _]/(derive _ _ _).
@@ -247,14 +247,14 @@ rewrite -ler_pdivl_mull; last by rewrite normr_gt0.
 by rewrite mulrCA mulVf ?mulr1; last by rewrite normr_eq0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma derivable_locallyP (f : V -> W) a v :
+Lemma derivable_nbhsP (f : V -> W) a v :
   derivable f a v <->
   (fun h => (f \o shift a) (h *: v)) = (cst (f a)) +
-    (fun h => h *: ('D_v f a)) +o_ (locally (0 : [filteredType R^o of R^o])) id.
+    (fun h => h *: ('D_v f a)) +o_ (nbhs (0 : [filteredType R^o of R^o])) id.
 Proof.
-split; first exact: derivable_locally.
+split; first exact: derivable_nbhs.
 move=> df; apply/cvg_ex; exists ('D_v f a).
-apply/(@eqolimP _ R^o _ (locally'_filter_on _))/eqaddoP => _/posnumP[e].
+apply/(@eqolimP _ R^o _ (nbhs'_filter_on _))/eqaddoP => _/posnumP[e].
 have /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]) := df.
 rewrite /= !(near_simpl, near_withinE); apply: filter_app; near=> h.
 rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
@@ -264,20 +264,20 @@ rewrite -scalerA -scalerBr normmZ normfV ler_pdivr_mull ?normr_gt0 //.
 by rewrite mulrC.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma derivable_locallyx (f : V -> W) a v :
+Lemma derivable_nbhsx (f : V -> W) a v :
   derivable f a v -> forall h, f (a + h *: v) = f a + h *: 'D_v f a
-  +o_(h \near (locally (0 : [filteredType R^o of R^o]))) h.
+  +o_(h \near (nbhs (0 : [filteredType R^o of R^o]))) h.
 Proof.
-move=> /derivable_locally; rewrite funeqE => df.
+move=> /derivable_nbhs; rewrite funeqE => df.
 by apply: eqaddoEx => h; have /= := (df h); rewrite addrC => ->.
 Qed.
 
-Lemma derivable_locallyxP (f : V -> W) a v :
+Lemma derivable_nbhsxP (f : V -> W) a v :
   derivable f a v <-> forall h, f (a + h *: v) = f a + h *: 'D_v f a
-  +o_(h \near (locally (0 : [filteredType R^o of R^o]))) h.
+  +o_(h \near (nbhs (0 : [filteredType R^o of R^o]))) h.
 Proof.
-split; first exact: derivable_locallyx.
-move=> df; apply/derivable_locallyP; apply/eqaddoE; rewrite funeqE => h.
+split; first exact: derivable_nbhsx.
+move=> df; apply/derivable_nbhsP; apply/eqaddoE; rewrite funeqE => h.
 by rewrite /= addrC df.
 Qed.
 
@@ -303,15 +303,15 @@ pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: (@cvgD _ _ [topologicalType of R^o]).
   rewrite -(scale1r (_ _ v)); apply: cvgZl => /= X [e e0].
   rewrite /ball_ /= => eX.
-  apply/locallyP; rewrite locally_E.
+  apply/nbhsP; rewrite nbhs_E.
   by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE // subrr normr0.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
   rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
 apply/cvg_distP => e e0.
-rewrite nearE /=; apply/locallyP; rewrite locally_E.
-have /(littleoP [littleo of k]) /locallyP[i i0 Hi] : 0 < e / (2 * `|v|).
+rewrite nearE /=; apply/nbhsP; rewrite nbhs_E.
+have /(littleoP [littleo of k]) /nbhsP[i i0 Hi] : 0 < e / (2 * `|v|).
   by rewrite divr_gt0 // pmulr_rgt0 // normr_gt0.
 exists (i / `|v|); first by rewrite divr_gt0 // normr_gt0.
 move=> /= j; rewrite /ball /= /ball_ add0r normrN.
@@ -337,7 +337,7 @@ Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R^o]_m.+1) :
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
 Definition derive1 V (f : R -> V) (a : R) :=
-   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ locally' (0 : R^o)).
+   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ nbhs' (0 : R^o)).
 
 Local Notation "f ^` ()" := (derive1 f).
 
@@ -447,13 +447,13 @@ Proof.
 apply/eqoP => _ /posnumP[e].
 have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
 have := littleoP [littleo of [o_ (0 : V') id of g]].
-move=>  /(_ (e%:num / k%:num)) /(_ _) /locallyP [//|_ /posnumP[d] hd].
+move=>  /(_ (e%:num / k%:num)) /(_ _) /nbhsP [//|_ /posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: le_trans (hd _ _) _; last first.
   rewrite -ler_pdivl_mull //; apply: le_trans leOxkx _.
   by rewrite invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
 rewrite -ball_normE /= distrC subr0 (le_lt_trans leOxkx) //.
-rewrite -ltr_pdivl_mull //; near: x; rewrite /= !locally_simpl.
-apply/locallyP; exists (k%:num ^-1 * d%:num)=> // x.
+rewrite -ltr_pdivl_mull //; near: x; rewrite /= !nbhs_simpl.
+apply/nbhsP; exists (k%:num ^-1 * d%:num)=> // x.
 by rewrite -ball_normE /= distrC subr0.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -469,14 +469,14 @@ Lemma compOo_eqo  (U V' W' : normedModType R) (f : U -> V')
 Proof.
 apply/eqoP => _ /posnumP[e].
 have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
-move=> /locallyP [_ /posnumP[d] hd].
+move=> /nbhsP [_ /posnumP[d] hd].
 have ekgt0 : e%:num / k%:num > 0 by [].
 have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
 apply: filter_app; near=> x => leoxekx; apply: le_trans (hd _ _) _; last first.
   by rewrite -ler_pdivl_mull // mulrA [_^-1 * _]mulrC.
 rewrite -ball_normE /= distrC subr0; apply: le_lt_trans leoxekx _.
-rewrite -ltr_pdivl_mull //; near: x; rewrite /= locally_simpl.
-apply/locallyP; exists ((e%:num / k%:num) ^-1 * d%:num)=> // x.
+rewrite -ltr_pdivl_mull //; near: x; rewrite /= nbhs_simpl.
+apply/nbhsP; exists ((e%:num / k%:num) ^-1 * d%:num)=> // x.
 by rewrite -ball_normE /= distrC subr0.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -493,7 +493,7 @@ rewrite funeqE => x; apply/eqP; case: (ler0P `|x|) => [|xn0].
   by rewrite normr_le0 => /eqP ->; rewrite linear0.
 rewrite -normr_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
 apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
-have /oid /locallyP [_ /posnumP[d] dfe] := posnum_gt0 e.
+have /oid /nbhsP [_ /posnumP[d] dfe] := posnum_gt0 e.
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
 rewrite -{1}(@scalerKV _ _ k _ x) // linearZZ normmZ.
 rewrite -ler_pdivl_mull; last by rewrite gtr0_norm.
@@ -675,8 +675,8 @@ Qed.
 Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
   continuous f -> exists2 k, k > 0 & forall x, `|f x| <= k * `|x|.
 Proof.
-move=> /(_ 0); rewrite linear0 => /(_ _ (locally_ball 0 1%:pos)).
-move=> /locallyP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
+move=> /(_ 0); rewrite linear0 => /(_ _ (nbhs_ball 0 1%:pos)).
+move=> /nbhsP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
 case: (lerP `|x| 0) => [|xn0].
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
 set k := 2 / e%:num * (PosNum xn0)%:num.
@@ -744,8 +744,8 @@ Lemma bilinear_schwarz (U V' W' : normedModType R)
   (f : {bilinear U -> V' -> W'}) : continuous (fun p => f p.1 p.2) ->
   exists2 k, k > 0 & forall u v, `|f u v| <= k * `|u| * `|v|.
 Proof.
-move=> /(_ 0); rewrite linear0r => /(_ _ (locally_ball 0 1%:pos)).
-move=> /locallyP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
+move=> /(_ 0); rewrite linear0r => /(_ _ (nbhs_ball 0 1%:pos)).
+move=> /nbhsP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
 case: (lerP `|u| 0) => [|un0].
   by rewrite normr_le0 => /eqP->; rewrite linear0l !normr0 mulr0 mul0r.
 case: (lerP `|v| 0) => [|vn0].
@@ -779,7 +779,7 @@ apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (le_trans (fschwarz _ _))//.
 rewrite ler_pmul ?pmulr_rge0 //; last by rewrite nng_le_maxr /= lexx orbT.
 rewrite -ler_pdivl_mull //.
 suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite nng_le_maxr /= lexx.
-near: x; rewrite !near_simpl; apply/locally_le_locally_norm.
+near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
 by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite distrC subr0 => /ltW.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -791,8 +791,8 @@ Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
 Proof.
 move=> fc; split=> [q|].
   by apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
-    move=> A /(fc (_.1, _.2)) /= /locallyP [_ /posnumP[e] fpqe_A];
-    apply/locallyP; exists e%:num => // r [??]; exact: (fpqe_A (_.1, _.2)).
+    move=> A /(fc (_.1, _.2)) /= /nbhsP [_ /posnumP[e] fpqe_A];
+    apply/nbhsP; exists e%:num => // r [??]; exact: (fpqe_A (_.1, _.2)).
 apply/eqaddoE; rewrite funeqE => q /=.
 rewrite linearDl !linearDr addrA addrC.
 rewrite -[f q.1 _ + _ + _]addrA [f q.1 _ + _]addrC addrA [f q.1 _ + _]addrC.
@@ -931,7 +931,7 @@ rewrite -[X in X + _]mulr1 -[X in 1 / _ * X](@mulfVK _ (x ^+ 2)); last first.
   by rewrite sqrf_eq0.
 rewrite mulrA mulf_div mulr1.
 have hDx_neq0 : h + x != 0.
-  near: h; rewrite !locally_simpl; apply/locally_normP.
+  near: h; rewrite !nbhs_simpl; apply/nbhs_normP.
   exists `|x|; first by rewrite normr_gt0.
   move=> h /=; rewrite distrC subr0 -subr_gt0 => lthx.
   rewrite -(normr_gt0 (h + x : R^o)) addrC -[h]opprK.
@@ -1020,7 +1020,7 @@ Variables (R : realFieldType) (V W : normedModType R).
 Let der1 (U : normedModType R) (f : R^o -> U) x : derivable f x 1 ->
   f \o shift x = cst (f x) + ( *:%R^~ (f^`() x)) +o_ (0 : [filteredType R^o of R^o]) id.
 Proof.
-move=> df; apply/eqaddoE; have /derivable_locallyP := df.
+move=> df; apply/eqaddoE; have /derivable_nbhsP := df.
 have -> : (fun h => (f \o shift x) h%:A) = f \o shift x.
   by rewrite funeqE=> ?; rewrite [_%:A]mulr1.
 by rewrite derive1E =>->.
@@ -1053,7 +1053,7 @@ Proof.
 split=> dfx.
   by apply/diff_locallyP; rewrite deriv1E //; split;
     [apply: scalel_continuous|apply: der1].
-apply/derivable_locallyP/eqaddoE.
+apply/derivable_nbhsP/eqaddoE.
 have -> : (fun h => (f \o shift x) h%:A) = f \o shift x.
   by rewrite funeqE=> ?; rewrite [_%:A]mulr1.
 by have /diff_locally := dfx; rewrite diff1E // derive1E =>->.
@@ -1081,7 +1081,7 @@ Qed.
 
 Fact der_add (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f + g) \o shift x) (h *: v) - (f + g) x)) @
-  locally' (0 : R^o) --> 'D_v f x + 'D_v g x.
+  nbhs' (0 : R^o) --> 'D_v f x + 'D_v g x.
 Proof.
 move=> df dg.
 evar (fg : R -> W); rewrite [X in X @ _](_ : _ = fg) /=; last first.
@@ -1135,7 +1135,7 @@ Qed.
 
 Fact der_opp (f : V -> W) (x v : V) : derivable f x v ->
   (fun h => h^-1 *: (((- f) \o shift x) (h *: v) - (- f) x)) @
-  locally' (0 : R^o) --> - 'D_v f x.
+  nbhs' (0 : R^o) --> - 'D_v f x.
 Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   by rewrite funeqE => h; rewrite !scalerDr !scalerN -opprD -scalerBr /g.
@@ -1175,7 +1175,7 @@ Proof. by move=> /derivableP df /derivableP dg. Qed.
 
 Fact der_scal (f : V -> W) (k : R) (x v : V) : derivable f x v ->
   (fun h => h^-1 *: ((k \*: f \o shift x) (h *: v) - (k \*: f) x)) @
-  locally' (0 : R^o) --> k *: 'D_v f x.
+  nbhs' (0 : R^o) --> k *: 'D_v f x.
 Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE => h.
@@ -1203,7 +1203,7 @@ Qed.
 Fact der_mult (f g : V -> R^o) (x v : V) :
   derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f * g) \o shift x) (h *: v) - (f * g) x)) @
-  locally' (0 : R^o) --> f x *: 'D_v g x + g x *: 'D_v f x.
+  nbhs' (0 : R^o) --> f x *: 'D_v g x + g x *: 'D_v f x.
 Proof.
 move=> df dg.
 evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
@@ -1262,17 +1262,17 @@ Proof. by move=> /derivableP df; rewrite derive_val. Qed.
 Fact der_inv (f : V -> R^o) (x v : V) :
   f x != 0 -> derivable f x v ->
   (fun h => h^-1 *: (((fun y => (f y)^-1) \o shift x) (h *: v) - (f x)^-1)) @
-  locally' (0 : R^o) --> - (f x) ^-2 *: 'D_v f x.
+  nbhs' (0 : R^o) --> - (f x) ^-2 *: 'D_v f x.
 Proof.
 move=> fxn0 df.
 have /derivable1P/derivable1_diffP/differentiable_continuous := df.
 move=> /continuous_withinNx; rewrite scale0r add0r => fc.
-have fn0 : locally' (0 : R^o) [set h | f (h *: v + x) != 0].
+have fn0 : nbhs' (0 : R^o) [set h | f (h *: v + x) != 0].
   apply: (fc [set x | x != 0]); exists `|f x|; first by rewrite normr_gt0.
   move=> y; rewrite /= => yltfx.
   by apply/eqP => y0; move: yltfx; rewrite y0 subr0 ltxx.
 have : (fun h => - ((f x)^-1 * (f (h *: v + x))^-1) *:
-  (h^-1 *: (f (h *: v + x) - f x))) @ locally' (0 : R^o) -->
+  (h^-1 *: (f (h *: v + x) - f x))) @ nbhs' (0 : R^o) -->
   - (f x) ^- 2 *: 'D_v f x.
   by apply: cvgM => //; apply: cvgN; rewrite expr2 invfM; apply: cvgM;
      [exact: cvg_cst|  exact: cvgV].
@@ -1352,22 +1352,22 @@ by exists c => // ? /fcmax; rewrite ler_opp2.
 Qed.
 
 Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R^o -> V) x :
-  cvg (f @ locally' x) -> lim (f @ locally' x) = lim (f @ at_right x).
+  cvg (f @ nbhs' x) -> lim (f @ nbhs' x) = lim (f @ at_right x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_right_proper_filter x.
-apply: (@cvg_map_lim _ _ _ (at_right _)) => // A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@cvg_map_lim _ _ _ (at_right _)) => // A /cvfx /nbhsP [_ /posnumP[e] xe_A].
 by exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
 
 Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R^o -> V) x :
-  cvg (f @ locally' x) -> lim (f @ locally' x) = lim (f @ at_left x).
+  cvg (f @ nbhs' x) -> lim (f @ nbhs' x) = lim (f @ at_left x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_left_proper_filter x.
-apply: (@cvg_map_lim _ _ _ (at_left _)) => // A /cvfx /locallyP [_ /posnumP[e] xe_A].
+apply: (@cvg_map_lim _ _ _ (at_left _)) => // A /cvfx /nbhsP [_ /posnumP[e] xe_A].
 exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.
@@ -1379,7 +1379,7 @@ Proof.
 move=> fge0 fcv; case: (lerP 0 (lim (f @ F))) => // limlt0; near F => x.
 have := near fge0 x; rewrite leNgt => /(_ _) /negbTE<- //; near: x.
 have normlimgt0 : `|lim (f @ F)| > 0 by rewrite normr_gt0 ltr0_neq0.
-have /fcv := locally_ball_norm (lim (f @ F)) (PosNum normlimgt0).
+have /fcv := nbhs_ball_norm (lim (f @ F)) (PosNum normlimgt0).
 rewrite /= !near_simpl; apply: filterS => x.
 rewrite /= distrC => /(le_lt_trans (ler_norm _)).
 rewrite ltr_subl_addr => /lt_le_trans; apply.
