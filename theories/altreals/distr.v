@@ -275,7 +275,7 @@ have ->: (size s = \sum_(i <- undup s) count_mem i s)%N.
 rewrite [X in (_<=X)%N](bigID (mem J)) /= -ltnS -addSn.
 rewrite ltn_addr //= ltnS -big_filter -[X in (_<=X)%N]big_filter.
 rewrite leq_eqVlt; apply/orP; left; apply/eqP/perm_big.
-apply/uniq_perm_eq; rewrite ?filter_uniq ?undup_uniq //.
+apply/uniq_perm; rewrite ?filter_uniq ?undup_uniq //.
 by move=> x; rewrite !mem_filter mem_undup andbC.
 Qed.
 
