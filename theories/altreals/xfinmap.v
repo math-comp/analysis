@@ -31,7 +31,7 @@ Proof. by rewrite enumT unlock. Qed.
 Lemma enum_fset1 (T : choiceType) (x : T) :
   enum [finType of [fset x]] = [:: [`fset11 x]].
 Proof.
-apply/perm_eq_small=> //; apply/uniq_perm_eq => //.
+apply/perm_small_eq=> //; apply/uniq_perm => //.
   by apply/enum_uniq.
 case=> [y hy]; rewrite mem_seq1 mem_enum /in_mem /=.
 by rewrite eqE /=; rewrite in_fset1 in hy.
@@ -84,7 +84,7 @@ Lemma big_seq_fset_cond (T : choiceType) (s : seq T) P F : uniq s ->
   = \big[*%M/1]_(x <- s | P x) F x.
 Proof.
 move=> eq_s; rewrite big_fset_seq_cond; apply/perm_big.
-by apply/uniq_perm_eq=> //= x; rewrite in_fset.
+by apply/uniq_perm=> //= x; rewrite in_fset.
 Qed.
 
 Lemma big_seq_fset (T : choiceType) (s : seq T) F : uniq s ->
@@ -108,7 +108,7 @@ Lemma big_fsetU (A B : {fset T}) F : [disjoint A & B] ->
        (\big[op/idx]_(j : B) F (val j)).
 Proof.
 move=> dj_AB; rewrite !big_fset_seq -big_cat; apply/perm_big.
-apply/uniq_perm_eq=> //.
+apply/uniq_perm=> //.
 + rewrite cat_uniq ?uniq_fset_keys !(andbT, andTb); apply/hasPn => x /=.
   by apply/fdisjointP; rewrite fdisjoint_sym.
 + by move=> x; rewrite mem_cat in_fsetE.
@@ -127,7 +127,7 @@ move=> ge0_F le_IJ; rewrite !big_fset_seq /=.
 rewrite [X in _<=X](bigID [pred j : T | j \in I]) /=.
 rewrite ler_paddr ?sumr_ge0 // -[X in _<=X]big_filter.
 rewrite le_eqVlt; apply/orP; left; apply/eqP/perm_big.
-apply/uniq_perm_eq; rewrite ?filter_uniq //; last move=> i.
+apply/uniq_perm; rewrite ?filter_uniq //; last move=> i.
 rewrite mem_filter; case/boolP: (_ \in _) => //=.
 by move/le_IJ => ->.
 Qed.
@@ -137,7 +137,7 @@ Lemma big_nat_mkfset (F : nat -> R) n :
     \sum_(i : [fset x in (iota 0 n)]) F (val i).
 Proof.
 rewrite -(big_map val xpredT) /=; apply/perm_big.
-apply/uniq_perm_eq; rewrite ?iota_uniq //.
+apply/uniq_perm; rewrite ?iota_uniq //.
   rewrite map_inj_uniq /=; last apply/val_inj.
   by rewrite /index_enum -enumT enum_uniq.
 by move=> i; rewrite /index_enum -enumT -enum_fsetE in_fset /index_iota subn0.
@@ -153,7 +153,7 @@ End BigFSetOrder.
 Lemma enum_fsetT {I : finType} :
   perm_eq (enum [fset i | i in I]) (enum I).
 Proof.
-apply/uniq_perm_eq; rewrite ?enum_uniq //.
+apply/uniq_perm; rewrite ?enum_uniq //.
 by move=> i /=; rewrite !mem_enum in_imfset.
 Qed.
 
