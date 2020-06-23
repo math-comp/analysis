@@ -2165,11 +2165,14 @@ Qed.
 
 Lemma bigmaxr_seq1 I (i : I) (F : I -> {nonneg R}) x :
   \big[maxr/x]_(j <- [:: i]) F j = maxr (F i) x.
-Proof. by rewrite unlock /=. Qed.
+Proof. by rewrite big_cons big_nil. Qed.
 
 Lemma bigmaxr_pred1_eq (I : finType) (i : I) (F : I -> {nonneg R}) x :
   \big[maxr/x]_(j | j == i) F j = maxr (F i) x.
-Proof. by rewrite -big_filter filter_index_enum enum1 bigmaxr_seq1. Qed.
+Proof.
+have [e1 <- _ [e_enum _]] := big_enumP (pred1 i).
+by rewrite (perm_small_eq _ e_enum) enum1 ?bigmaxr_seq1.
+Qed.
 
 Lemma bigmaxr_pred1 (I : finType) i (P : pred I) (F : I -> {nonneg R}) x :
   P =1 pred1 i -> \big[maxr/x]_(j | P j) F j = maxr (F i) x.
@@ -2332,15 +2335,18 @@ Proof. by rewrite !bigminr_maxr -oppr_max -bigmaxrID. Qed.
 
 Lemma bigmaxr_seq1 I (i : I) (F : I -> R) x :
   \big[maxr/x]_(j <- [:: i]) F j = maxr (F i) x.
-Proof. by rewrite unlock /=. Qed.
+Proof. by rewrite big_cons big_nil. Qed.
 
 Lemma bigminr_seq1 I (i : I) (F : I -> R) x :
   \big[minr/x]_(j <- [:: i]) F j = minr (F i) x.
-Proof. by rewrite unlock /=. Qed.
+Proof. by rewrite big_cons big_nil. Qed.
 
 Lemma bigmaxr_pred1_eq (I : finType) (i : I) (F : I -> R) x :
   \big[maxr/x]_(j | j == i) F j = maxr (F i) x.
-Proof. by rewrite -big_filter filter_index_enum enum1 bigmaxr_seq1. Qed.
+Proof.
+have [e1 <- _ [e_enum _]] := big_enumP (pred1 i).
+by rewrite (perm_small_eq _ e_enum) enum1 ?bigmaxr_seq1.
+Qed.
 
 Lemma bigminr_pred1_eq (I : finType) (i : I) (F : I -> R) x :
   \big[minr/x]_(j | j == i) F j = minr (F i) x.
