@@ -11,6 +11,6 @@
   `Hierarchy.v` from the library Coquelicot by Sylvie Boldo, Catherine Lelay,
   and Guillaume Melquiond (http://coquelicot.saclay.inria.fr/)
 - our proof of Zorn's Lemma in `set.v` is a reimplementation of the one by
-  Daniel Schepler (https://github.com/coq-contribs/zorns-lemma); we also took
+  Daniel Schepler (https://github.com/coq-community/zorns-lemma); we also took
   inspiration from his work on topology
-  (https://github.com/coq-contribs/topology) for parts of `topology.v`
+  (https://github.com/coq-community/topology) for parts of `topology.v`
