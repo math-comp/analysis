@@ -243,6 +243,8 @@ Notation "x + y" := (eadd x y) : ereal_scope.
 Notation "x - y" := (eadd x (eopp y)) : ereal_scope.
 Notation "- x"   := (eopp x) : ereal_scope.
 
+Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
+
 Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%E/0%:E]_(i <- r | P%B) F%R) : ereal_scope.
 Notation "\sum_ ( i <- r ) F" :=
@@ -309,6 +311,13 @@ Proof. by move: x y => [r0| |] [r1| |] //=; rewrite !eqe eqr_oppLR. Qed.
 Lemma adde_eq_ninfty x y : (x + y == -oo) = ((x == -oo) || (y == -oo)).
 Proof. by move: x y => [?| |] [?| |]. Qed.
 
+Lemma addooe x : x != -oo -> +oo + x = +oo.
+Proof. by case: x. Qed.
+
+Lemma adde_Neq_pinfty x y : x != -oo -> y != -oo ->
+  (x + y != +oo) = (x != +oo) && (y != +oo).
+Proof. by move: x y => [x| |] [y| |]. Qed.
+
 Lemma esum_ninfty n (f : 'I_n -> {ereal R}) :
   (\sum_(i < n) f i == -oo) = [exists i, f i == -oo].
 Proof.
@@ -334,6 +343,9 @@ Section ERealArithTh_realDomainType.
 
 Context {R : realDomainType}.
 Implicit Types x y z a b : {ereal R}.
+
+Lemma subERFin (r r' : R) : (r - r')%R%:E = (r%:E - r'%:E)%E.
+Proof. by []. Qed.
 
 Lemma sube_gt0 x y : (0%:E < y - x)%E = (x < y)%E.
 Proof.
@@ -367,6 +379,18 @@ move: a b x => -[a [b [x /=|//|//] | []// |//] | []// | ].
 - move=> -[b [|  |]// | []// | //] r oob; exact: lee_ninfty.
 Qed.
 
+Lemma lee_add2lE (r : R) a b : (r%:E + a <= r%:E + b) = (a <= b).
+Proof.
+move: a b => [a| |] [b| |] //; rewrite ?lee_pinfty ?lee_ninfty //.
+by rewrite !lee_fin ler_add2l.
+Qed.
+
+Lemma lte_add2lE (r : R) a b : (r%:E + a < r%:E + b) = (a < b).
+Proof.
+move: a b => [a| |] [b| |] //; rewrite ?lte_pinfty ?lte_ninfty //.
+by rewrite !lte_fin ltr_add2l.
+Qed.
+
 Lemma lee_add2r x a b : (a <= b)%E -> (a + x <= b + x)%E.
 Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
 
@@ -387,6 +411,18 @@ Lemma lte_subl_addr x (r : R) z : (x - r%:E < z)%E = (x < z + r%:E)%E.
 Proof.
 move: x r z => [x| |] r [z| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_subl_addr.
+Qed.
+
+Lemma lte_subl_addl (r : R) y z : (r%:E - y < z)%E = (r%:E < y + z)%E.
+Proof.
+move: y z => [y| |] [z| |] //=; rewrite ?lte_ninfty ?lte_pinfty //.
+by rewrite !lte_fin ltr_subl_addl.
+Qed.
+
+Lemma lte_subr_addr (r : R) y z : (r%:E < y - z)%E = (r%:E + z < y)%E.
+Proof.
+move: y z => [y| |] [z| |] //=; rewrite ?lte_ninfty ?lte_pinfty //.
+by rewrite !lte_fin ltr_subr_addr.
 Qed.
 
 Lemma lee_oppr x y : (x <= - y)%E = (y <= - x)%E.
