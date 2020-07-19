@@ -36,11 +36,17 @@
   + `filter_locallyT` -> `filter_nbhsT`
   + `Global Instance locally_filter` -> `Global Instance nbhs_filter`
   + `Canonical locally_filter_on` -> `Canonical nbhs_filter_on`
+  + `neigh` -> `open_nbhs`
   + `locallyE` -> `nbhsE`
   + `locally_singleton` -> `nbhs_singleton`
   + `locally_interior` -> `nbhs_interior`
-  + `neigh_locally` -> `neigh_nbhs`
+  + `neighT` -> `open_nbhsT`
+  + `neighI` -> `open_nbhsI`
+  + `neigh_locally` -> `open_nbhs_nbhs`
   + `within_locallyW` -> `within_nbhsW`
+  + `prod_loc_filter` -> `prod_nbhs_filter`
+  + `prod_loc_singleton` -> `prod_nbhs_singleton`
+  + `prod_loc_loc` -> `prod_nbhs_nbhs`
   + `mx_loc_filter` -> `mx_nbhs_filter`
   + `mx_loc_singleton` -> `mx_nbhs_singleton`
   + `mx_loc_loc` -> `mx_nbhs_nbhs`
@@ -52,6 +58,7 @@
   + `Global Instance within_locally_proper` -> `Global Instance within_nbhs_proper`
   + `locallyP` -> `nbhsP`
   + `locally_ball` -> `nbhs_ball`
+  + `neigh_ball` -> `open_nbhs_ball`
   + `mx_locally` -> `mx_nbhs`
   + `prod_locally` -> `prod_nbhs`
   + `Filtered.locally_op` -> `Filtered.nbhs_op`
@@ -61,7 +68,8 @@
   + `locally_` -> `nbhs_`
   + lemma `locally_E` -> `nbhs_E`
   + lemma `locally_ballE` -> `nbhs_ballE`
-  + `locallyW` -> `nbhsW`
+  + `locallyW` -> `nearW`
+  + `nearW` -> `near_skip_subproof`
   + `locally_infty_gt` -> `nbhs_infty_gt`
   + `locally_infty_ge` -> `nbhs_infty_ge`
 - in `normedtype.v`:

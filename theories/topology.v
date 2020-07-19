@@ -142,13 +142,13 @@ Require Import boolp Rstruct classical_sets posnum.
 (* * Topology :                                                               *)
 (*                  topologicalType == interface type for topological space   *)
 (*                                     structure.                             *)
-(*   TopologicalMixin loc_filt locE == builds the mixin for a topological     *)
+(* TopologicalMixin nbhs_filt nbhsE == builds the mixin for a topological     *)
 (*                                     space from the proofs that nbhs        *)
 (*                                     outputs proper filters and defines the *)
 (*                                     same notion of neighbourhood as the    *)
 (*                                     open sets.                             *)
-(*   topologyOfFilterMixin loc_filt loc_sing loc_loc == builds the mixin for  *)
-(*                                     a topological space from the           *)
+(* topologyOfFilterMixin nbhs_filt nbhs_sing nbhs_nbhs == builds the mixin    *)
+(*                                     for a topological space from the       *)
 (*                                     properties of nbhs and hence assumes   *)
 (*                                     that the carrier is a filterType       *)
 (*   topologyOfOpenMixin opT opI op_bigU == builds the mixin for a            *)
@@ -182,7 +182,7 @@ Require Import boolp Rstruct classical_sets posnum.
 (*           [topologicalType of T] == clone of a canonical topologicalType   *)
 (*                                     structure on T.                        *)
 (*                             open == set of open sets.                      *)
-(*                          neigh p == set of open neighbourhoods of p.       *)
+(*                      open_nbhs p == set of open neighbourhoods of p.       *)
 (*                    continuous f <-> f is continuous w.r.t the topology.    *)
 (*                          nbhs' x == set of neighbourhoods of x where x is  *)
 (*                                     excluded.                              *)
@@ -207,7 +207,7 @@ Require Import boolp Rstruct classical_sets posnum.
 (*                     nbhs_ ball == neighbourhoods defined using balls       *)
 (*               pseudoMetricType == interface type for pseudo metric space   *)
 (*                                   structure: a type equipped with balls.   *)
-(*   PseudoMetricMixin brefl bsym btriangle locb == builds the mixin for a    *)
+(*  PseudoMetricMixin brefl bsym btriangle nbhsb == builds the mixin for a    *)
 (*                                   pseudo metric space from the properties  *)
 (*                                   of balls and the compatibility between   *)
 (*                                   balls and nbhs.                          *)
@@ -735,7 +735,7 @@ Lemma near_acc T F (P : @in_filter T F) (Q : set T) (FF : Filter F)
    locked_with near_key (forall x, prop_of (in_filterI FF P (InFilter FQ)) x -> Q x).
 Proof. by rewrite unlock => x /=; rewrite !prop_ofE /= => -[Px]. Qed.
 
-Lemma nearW T F (P Q : @in_filter T F) (G : set T) (FF : Filter F) :
+Lemma near_skip_subproof T F (P Q : @in_filter T F) (G : set T) (FF : Filter F) :
    locked_with near_key (forall x, prop_of P x -> G x) ->
    locked_with near_key (forall x, prop_of (in_filterI FF P Q) x -> G x).
 Proof.
@@ -750,7 +750,7 @@ Ltac just_discharge_near x :=
         then idtac else fail "the variable" x "is not a ""near"" variable".
 Ltac near_skip :=
   match goal with |- locked_with near_key (forall _, @PropInFilter.t _ _ ?P _ -> _) =>
-    tryif is_evar P then fail "nothing to skip" else apply: nearW end.
+    tryif is_evar P then fail "nothing to skip" else apply: near_skip_subproof end.
 
 Tactic Notation "near:" ident(x) :=
   just_discharge_near x;
@@ -781,7 +781,7 @@ Lemma near T (F : set (set T)) P (FP : F P) (x : T)
 Proof. by move: Px; rewrite prop_ofE. Qed.
 Arguments near {T F P} FP x Px.
 
-Lemma nbhsW {T : Type} {F : set (set T)} (P : T -> Prop) :
+Lemma nearW {T : Type} {F : set (set T)} (P : T -> Prop) :
   Filter F -> (forall x, P x) -> (\forall x \near F, P x).
 Proof. by move=> FF FP; apply: filterS filterT. Qed.
 
@@ -1301,7 +1301,7 @@ Notation xclass := (class : class_of xT).
 Local Coercion base : class_of >-> Filtered.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
 
-Definition pack loc (m : @mixin_of T loc) :=
+Definition pack nbhs' (m : @mixin_of T nbhs') :=
   fun bT (b : Filtered.class_of T T) of phant_id (@Filtered.class T bT) b =>
   fun m'   of phant_id m (m' : @mixin_of T (Filtered.nbhs_op b)) =>
   @Pack T (@Class _ b m').
@@ -1346,7 +1346,7 @@ Context {T : topologicalType}.
 
 Definition open := Topological.open (Topological.class T).
 
-Definition neigh (p : T) (A : set T) := open A /\ A p.
+Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 
 Global Instance nbhs_filter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: Topological.ax1; case: T p => ? []. Qed.
@@ -1356,7 +1356,7 @@ Canonical nbhs_filter_on (x : T) :=
   FilterType (nbhs x) (@filter_filter' _ _ (nbhs_filter x)).
 
 Lemma nbhsE (p : T) :
-  nbhs p = [set A : set T | exists B : set T, neigh p B /\ B `<=` A].
+  nbhs p = [set A : set T | exists B : set T, open_nbhs p B /\ B `<=` A].
 Proof.
 have -> : nbhs p = [set A : set T | exists B, open B /\ B p /\ B `<=` A].
   exact: Topological.ax2.
@@ -1380,7 +1380,7 @@ Proof. by rewrite nbhsE => - [? [[_ ?]]]; apply. Qed.
 
 Lemma nbhs_interior (p : T) (A : set T) : nbhs p A -> nbhs p A^°.
 Proof.
-rewrite nbhsE /neigh openE => - [B [[Bop Bp] sBA]].
+rewrite nbhsE /open_nbhs openE => - [B [[Bop Bp] sBA]].
 by exists B; split=> // q Bq; apply: filterS sBA _; apply: Bop.
 Qed.
 
@@ -1428,14 +1428,14 @@ move=> p [i Di]; rewrite /interior nbhsE => - [B [[Bop Bp] sBfi]].
 by exists B; split=> // ? /sBfi; exists i.
 Qed.
 
-Lemma neighT (p : T) : neigh p setT.
+Lemma open_nbhsT (p : T) : open_nbhs p setT.
 Proof. by split=> //; apply: openT. Qed.
 
-Lemma neighI (p : T) (A B : set T) :
-  neigh p A -> neigh p B -> neigh p (A `&` B).
+Lemma open_nbhsI (p : T) (A B : set T) :
+  open_nbhs p A -> open_nbhs p B -> open_nbhs p (A `&` B).
 Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
 
-Lemma neigh_nbhs (p : T) (A : set T) : neigh p A -> nbhs p A.
+Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
 Proof. by rewrite nbhsE => p_A; exists A; split. Qed.
 
 Lemma interiorI (A B:set T): (A `&` B)^° = A^° `&` B^°.
@@ -1443,7 +1443,7 @@ Proof.
 rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 [?]] | []].
 - by rewrite subsetI => // -[? ?]; split; rewrite nbhsE; exists B0.
 - rewrite nbhsE => -[B0 [? ?]] [B1 [? ?]]; exists (B0 `&` B1); split;
-  [exact: neighI | by rewrite subsetI; split; apply: subIset; [left|right]].
+  [exact: open_nbhsI | by rewrite subsetI; split; apply: subIset; [left|right]].
 Qed.
 
 End Topological1.
@@ -1456,7 +1456,7 @@ Lemma continuous_cst (S T : topologicalType) (a : T) :
   continuous (fun _ : S => a).
 Proof.
 move=> x A; rewrite !nbhs_simpl /= !nbhsE => - [B [[_ Ba] sBA]].
-by exists setT; split; [apply: neighT|move=> ??; apply: sBA].
+by exists setT; split; [apply: open_nbhsT|move=> ??; apply: sBA].
 Qed.
 
 Lemma continuousP (S T : topologicalType) (f : S -> T) :
@@ -1582,20 +1582,20 @@ Notation "[ 'locally' P ]" := (@nbhs_of _ _ _ (Phantom _ P))
 
 Section TopologyOfFilter.
 
-Context {T : Type} {loc : T -> set (set T)}.
-Hypothesis (loc_filter : forall p : T, ProperFilter (loc p)).
-Hypothesis (loc_singleton : forall (p : T) (A : set T), loc p A -> A p).
-Hypothesis (loc_loc : forall (p : T) (A : set T), loc p A -> loc p (loc^~ A)).
+Context {T : Type} {nbhs' : T -> set (set T)}.
+Hypothesis (nbhs'_filter : forall p : T, ProperFilter (nbhs' p)).
+Hypothesis (nbhs'_singleton : forall (p : T) (A : set T), nbhs' p A -> A p).
+Hypothesis (nbhs'_nbhs' : forall (p : T) (A : set T), nbhs' p A -> nbhs' p (nbhs'^~ A)).
 
-Definition open_of_nbhs := [set A : set T | A `<=` loc^~ A].
+Definition open_of_nbhs := [set A : set T | A `<=` nbhs'^~ A].
 
-Program Definition topologyOfFilterMixin : Topological.mixin_of loc :=
-  @Topological.Mixin T loc open_of_nbhs _ _ _.
+Program Definition topologyOfFilterMixin : Topological.mixin_of nbhs' :=
+  @Topological.Mixin T nbhs' open_of_nbhs _ _ _.
 Next Obligation.
 rewrite predeqE => A; split=> [p_A|]; last first.
   by move=> [B [Bop [Bp sBA]]]; apply: filterS sBA _; apply: Bop.
-exists (loc^~ A); split; first by move=> ?; apply: loc_loc.
-by split => // q /loc_singleton.
+exists (nbhs'^~ A); split; first by move=> ?; apply: nbhs'_nbhs'.
+by split => // q /nbhs'_singleton.
 Qed.
 
 End TopologyOfFilter.
@@ -1811,25 +1811,25 @@ Section Prod_Topology.
 
 Context {T U : topologicalType}.
 
-Let prod_loc (p : T * U) := filter_prod (nbhs p.1) (nbhs p.2).
+Let prod_nbhs (p : T * U) := filter_prod (nbhs p.1) (nbhs p.2).
 
-Lemma prod_loc_filter (p : T * U) : ProperFilter (prod_loc p).
+Lemma prod_nbhs_filter (p : T * U) : ProperFilter (prod_nbhs p).
 Proof. exact: filter_prod_proper. Qed.
 
-Lemma prod_loc_singleton (p : T * U) (A : set (T * U)) : prod_loc p A -> A p.
+Lemma prod_nbhs_singleton (p : T * U) (A : set (T * U)) : prod_nbhs p A -> A p.
 Proof.
 by move=> [QR [/nbhs_singleton Qp1 /nbhs_singleton Rp2]]; apply.
 Qed.
 
-Lemma prod_loc_loc (p : T * U) (A : set (T * U)) :
-  prod_loc p A -> prod_loc p (prod_loc^~ A).
+Lemma prod_nbhs_nbhs (p : T * U) (A : set (T * U)) :
+  prod_nbhs p A -> prod_nbhs p (prod_nbhs^~ A).
 Proof.
 move=> [QR [/nbhs_interior p1_Q /nbhs_interior p2_R] sQRA].
 by exists (QR.1^°, QR.2^°) => // ??; exists QR.
 Qed.
 
 Definition prod_topologicalTypeMixin :=
-  topologyOfFilterMixin prod_loc_filter prod_loc_singleton prod_loc_loc.
+  topologyOfFilterMixin prod_nbhs_filter prod_nbhs_singleton prod_nbhs_nbhs.
 
 Canonical prod_topologicalType :=
   TopologicalType (T * U) prod_topologicalTypeMixin.
@@ -1918,7 +1918,7 @@ Lemma cvg_image (F : set (set S)) (s : S) :
 Proof.
 move=> FF fsurj; split=> [cvFs|cvfFfs].
   move=> A /weak_continuous [B [Bop [Bs sBAf]]].
-  have /cvFs FB : nbhs (s : weak_topologicalType) B by apply: neigh_nbhs.
+  have /cvFs FB : nbhs (s : weak_topologicalType) B by apply: open_nbhs_nbhs.
   rewrite nbhs_simpl; exists (f @^-1` A); first exact: filterS FB.
   exact: image_preimage.
 move=> A /= [_ [[B Bop <-] [Bfs sBfA]]].
@@ -2498,10 +2498,10 @@ Variable (T : topologicalType).
 Local Open Scope classical_set_scope.
 
 Definition close_to (x : T) (A : set T) : Prop :=
-  forall N, neigh x N -> N `&` A !=set0.
+  forall N, open_nbhs x N -> N `&` A !=set0.
 
 Definition close (x y : T) : Prop :=
-  forall M, neigh y M -> close_to x M.
+  forall M, open_nbhs y M -> close_to x M.
 
 Lemma close_refl (t : T) : close t t.
 Proof. by move=> M [? ?] N [? ?]; exists t; split. Qed.
@@ -2562,7 +2562,7 @@ rewrite propeqE; split => [T_filterT2|T_openT2] x y.
   by exists (oA, oB); rewrite ?inE; split => //; apply: subsetI_eq0 AIB_eq0.
 apply: contrapTT => /eqP /T_openT2[[/=A B]].
 rewrite !inE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
-move=> /(_ A B (neigh_nbhs _) (neigh_nbhs _)).
+move=> /(_ A B (open_nbhs_nbhs _) (open_nbhs_nbhs _)).
 by rewrite -set0P => /(_ _ _)/negP; apply.
 Qed.
 
@@ -2658,7 +2658,7 @@ Notation xclass := (class : class_of R xT).
 Local Coercion base : class_of >-> Topological.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
 
-Definition pack loc (m : @mixin_of R T loc) :=
+Definition pack nbhs' (m : @mixin_of R T nbhs') :=
   fun bT (b : Topological.class_of T) of phant_id (@Topological.class bT) b =>
   fun m'   of phant_id m (m' : @mixin_of R T (Filtered.nbhs_op b)) =>
   @Pack T (@Class R _ b m').
@@ -2702,7 +2702,8 @@ Export PseudoMetric.Exports.
 
 Section PseudoMetricTopology.
 
-Lemma my_ball_le (R : numDomainType) (M : Type) (loc : M -> set (set M)) (m : PseudoMetric.mixin_of R loc) :
+Lemma my_ball_le (R : numDomainType) (M : Type) (nbhs' : M -> set (set M))
+    (m : PseudoMetric.mixin_of R nbhs') :
   forall (x : M), {homo PseudoMetric.ball m x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
 Proof.
 move=> x e1 e2 le12 y xe1_y.
@@ -2715,8 +2716,8 @@ Qed.
 
 Obligation Tactic := idtac.
 Program Definition topologyOfBallMixin (R : numFieldType) (T : Type)
-  (loc : T -> set (set T)) (m : PseudoMetric.mixin_of R loc) :
-  Topological.mixin_of loc := topologyOfFilterMixin _ _ _.
+  (nbhs' : T -> set (set T)) (m : PseudoMetric.mixin_of R nbhs') :
+  Topological.mixin_of nbhs' := topologyOfFilterMixin _ _ _.
 Next Obligation.
 move=> R T lo m p;
 rewrite (PseudoMetric.ax4 m) nbhs_E; apply filter_from_proper; last first.
@@ -2777,7 +2778,7 @@ Proof. exact: PseudoMetric.ax3. Qed.
 Lemma nbhs_ball (x : M) (eps : {posnum R}) : nbhs x (ball x eps%:num).
 Proof. by apply/nbhsP; exists eps%:num. Qed.
 
-Lemma neigh_ball (x : M) (eps : {posnum R}) : neigh x ((ball x eps%:num)^°).
+Lemma open_nbhs_ball (x : M) (eps : {posnum R}) : open_nbhs x ((ball x eps%:num)^°).
 Proof.
 split; first exact: open_interior.
 apply: nbhs_singleton; apply: nbhs_interior.
@@ -2875,11 +2876,11 @@ Lemma ball_close (x y : M) :
   close x y = forall eps : {posnum R}, ball x eps%:num y.
 Proof.
 rewrite propeqE; split => [cxy eps|cxy].
-  have [z [zx zy]] := cxy _ (neigh_ball _ (eps%:num/2)%:pos)
-                          _ (neigh_ball _ (eps%:num/2)%:pos).
+  have [z [zx zy]] := cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos)
+                          _ (open_nbhs_ball _ (eps%:num/2)%:pos).
   by apply: (@ball_splitl z); apply: interior_subset.
-move=> B /neigh_nbhs/nbhsP[_/posnumP[e2 e2B]].
-move=> A /neigh_nbhs/nbhsP[_/posnumP[e1 e1A]].
+move=> B /open_nbhs_nbhs/nbhsP[_/posnumP[e2 e2B]].
+move=> A /open_nbhs_nbhs/nbhsP[_/posnumP[e1 e1A]].
 by exists y; split; [apply/e1A|apply/e2B/ballxx].
 Qed.
 
@@ -2914,8 +2915,8 @@ Lemma ball_hausdorff : hausdorff T =
 Proof.
 rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
   move=> A B; rewrite 2!inE => [[aA bB] [oA oB /eqP ABeq0]].
-  have /nbhsP[_/posnumP[r] rA] : nbhs a A by apply: neigh_nbhs.
-  have /nbhsP[_/posnumP[s] rB] : nbhs b B by apply: neigh_nbhs.
+  have /nbhsP[_/posnumP[r] rA] : nbhs a A by apply: open_nbhs_nbhs.
+  have /nbhsP[_/posnumP[s] rB] : nbhs b B by apply: open_nbhs_nbhs.
   by exists (r, s) => /=; rewrite (subsetI_eq0 _ _ ABeq0).
 move=> r s /eqP brs_eq0; exists ((ball a r%:num)^°, (ball b s%:num)^°) => /=.
   split; by rewrite inE; apply: nbhs_singleton; apply: nbhs_interior;
@@ -3035,7 +3036,7 @@ End prod_PseudoMetric.
 Canonical prod_pseudoMetricType (R : numDomainType) (U V : pseudoMetricType R) :=
   PseudoMetricType (U * V) (@prod_pseudoMetricType_mixin R U V).
 
-Section Locally_fct2.
+Section Nbhs_fct2.
 Context {T : Type} {R : numDomainType} {U V : pseudoMetricType R}.
 Lemma cvg_ball2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
@@ -3043,7 +3044,7 @@ Lemma cvg_ball2P {F : set (set U)} {G : set (set V)}
   forall eps : R, eps > 0 -> \forall y' \near F & z' \near G,
                 ball y eps y' /\ ball z eps z'.
 Proof. exact: cvg_ballP. Qed.
-End Locally_fct2.
+End Nbhs_fct2.
 
 (** Functional metric spaces *)
 Section fct_PseudoMetric.
