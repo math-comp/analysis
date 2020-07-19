@@ -10,6 +10,9 @@
 - in `classical_sets.v`:
   + lemmas `setICr`, `setUidPl`, `subsets_disjoint`, `disjoints_subset`, `setDidPl`,
     `setIidPl`, `setIS`, `setSI`, `setISS`, `bigcup_recl`, `bigcup_distrr`
+- in `ereal.v`:
+  + notation `\+` (`ereal_scope`) for function addition
+  + new lemmas: `addooe`, `adde_Neq_pinfty`, `subERFin`, `lee_add2lE`, `lte_add2lE`, `lte_subl_addl`
 
 ### Changed
 
