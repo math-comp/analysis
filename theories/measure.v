@@ -23,30 +23,6 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 (* TODO: move to classical_sets *)
-Lemma setCE T (A : set T) : ~` A = setT `\` A.
-Proof. by rewrite predeqE => t; split => // -[]. Qed.
-
-Lemma setUCr T (A : set T) : A `|` ~` A = setT.
-Proof.
-by rewrite predeqE => t; split => // _; case: (pselect (A t)); [left|right].
-Qed.
-
-Lemma subset_bigsetU T m n (U : nat -> set T) : (m <= n)%N ->
-  \big[setU/set0]_(i < m) U i `<=` \big[setU/set0]_(i < n) U i.
-Proof.
-by rewrite !bigcup_ord => mn x [i im ?]; exists i => //; rewrite (leq_trans im).
-Qed.
-
-Lemma bigcup_set1 T (U : nat -> set T) n : \bigcup_(i in [set n]) U i = U n.
-Proof. by rewrite predeqE => t; split => [[m -> //]|Unt]; exists n. Qed.
-
-Lemma bigcapCU T (U : nat -> set T) : \bigcap_i (U i) = ~` (\bigcup_i (~` U i)).
-Proof.
-rewrite predeqE => t; split => [capU|cupU i _].
-  by move=> -[n _]; apply; apply capU.
-by rewrite -(setCK (U i)) => CU; apply cupU; exists i.
-Qed.
-
 Definition triviset T (U : nat -> set T) :=
   forall j i, (i != j)%nat -> U i `&` U j = set0.
 

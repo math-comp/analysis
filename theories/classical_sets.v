@@ -251,6 +251,11 @@ Proof. by move=> H K; rewrite funeqE=> s; rewrite propeqE; split=> [/H|/K]. Qed.
 Lemma sub0set T (X : set T) : set0 `<=` X.
 Proof. by []. Qed.
 
+Lemma setUCr T (A : set T) : A `|` ~` A = setT.
+Proof.
+by rewrite predeqE => t; split => // _; case: (pselect (A t)); [left|right].
+Qed.
+
 Lemma setC0 T : ~` set0 = setT :> set T.
 Proof. by rewrite predeqE; split => ?. Qed.
 
@@ -258,6 +263,9 @@ Lemma setCK T : involutive (@setC T).
 Proof. by move=> A; rewrite funeqE => t; rewrite /setC; exact: notLR. Qed.
 
 Lemma setCT T : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
+
+Lemma setCE T (A : set T) : ~` A = setT `\` A.
+Proof. by rewrite predeqE => t; split => // -[]. Qed.
 
 Lemma subset0 T (X : set T) : (X `<=` set0) = (X = set0).
 Proof. rewrite propeqE; split => [?|-> //]; exact/eqEsubset. Qed.
@@ -480,6 +488,16 @@ Qed.
 Lemma setUDr T : right_distributive (@setU T) (@setI T).
 Proof. by move=> X Y Z; rewrite ![X `|` _]setUC setUDl. Qed.
 
+Lemma bigcup_set1 T (U : nat -> set T) n : \bigcup_(i in [set n]) U i = U n.
+Proof. by rewrite predeqE => t; split => [[m -> //]|Unt]; exists n. Qed.
+
+Lemma bigcapCU T (U : nat -> set T) : \bigcap_i (U i) = ~` (\bigcup_i (~` U i)).
+Proof.
+rewrite predeqE => t; split => [capU|cupU i _].
+  by move=> -[n _]; apply; apply capU.
+by rewrite -(setCK (U i)) => CU; apply cupU; exists i.
+Qed.
+
 Definition is_subset1 {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := Logic.all (is_subset1 \o f).
 Definition is_total {A B} (f : A -> B -> Prop) := Logic.all (nonempty \o f).
@@ -553,6 +571,12 @@ elim: n => [|n IHn] in A *; first by rewrite big_ord0 predeqE; split => -[].
 rewrite big_ord_recl /= (IHn (fun i => A i.+1)) predeqE => x; split.
   by move=> [A0|[i AS]]; [exists 0%N|exists i.+1].
 by move=> [[|i] Ai]; [left|right; exists i].
+Qed.
+
+Lemma subset_bigsetU T m n (U : nat -> set T) : (m <= n)%N ->
+  \big[setU/set0]_(i < m) U i `<=` \big[setU/set0]_(i < n) U i.
+Proof.
+by rewrite !bigcup_ord => mn x [i im ?]; exists i => //; rewrite (leq_trans im).
 Qed.
 
 Lemma bigcap_ord T n (A : nat -> set T) :
