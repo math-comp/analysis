@@ -14,7 +14,10 @@
 
 ### Renamed
 
-- in `classical_sets.v`, `ub` and `lb` are renamed to `ubound` and `lbound`
+- in `classical_sets.v`,
+  + `ub` and `lb` are renamed to `ubound` and `lbound`
+  + new lemmas:
+    * `setUCr`, `setCE`, `bigcup_set1`, `bigcapCU`, `subset_bigsetU`
 - in `boolp.v`,
   + `existsPN` -> `not_existsP`
   + `forallPN` -> `not_forallP`
