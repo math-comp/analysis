@@ -1363,6 +1363,12 @@ have -> : nbhs p = [set A : set T | exists B, open B /\ B p /\ B `<=` A].
 by rewrite predeqE => A; split=> [[B [? []]]|[B [[]]]]; exists B.
 Qed.
 
+Lemma open_nbhsE (p : T) (A : set T) : open_nbhs p A = (open A /\ nbhs p A).
+Proof.
+rewrite nbhsE propeqE; split=> [[? ?]|[? [B [[? ?] BA]]]]; split => //;
+  [by exists A; split | exact: BA].
+Qed.
+
 Definition interior (A : set T) := (@nbhs _ [filteredType T of T])^~ A.
 
 Local Notation "A ^°" := (interior A).

@@ -5,6 +5,8 @@
 ### Added
 
 - in `boolp.v`, new lemma `andC`
+- in `topology.v`:
+  + new lemma `open_nbhsE`
 
 ### Changed
 
