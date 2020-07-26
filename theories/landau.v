@@ -978,7 +978,7 @@ move->; apply/eqOP; have [k c1 kOg] := bigO _ g. have [k' c2 k'Ok] := bigO _ k.
 near=> c; move: k'Ok kOg; apply: filter_app2; near=> x => lek'c2k.
 rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans; apply.
 by rewrite ler_pmul //; near: c; apply: nbhs_pinfty_ge.
-Unshelve. end_near. Grab Existential Variables. all: end_near. Qed.
+Grab Existential Variables. all: end_near. Qed.
 Arguments bigO_bigO_eqO {F}.
 
 End Limit_realFieldType.
@@ -1054,7 +1054,7 @@ near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; apply: nbhs_pinfty_ge.
-Unshelve. end_near. Grab Existential Variables. end_near. Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 End rule_of_products_rcfType.
 
@@ -1085,7 +1085,7 @@ near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; apply: nbhs_pinfty_ge.
-Unshelve. end_near. Grab Existential Variables. end_near. Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 End rule_of_products_numClosedFieldType.
 
@@ -1366,7 +1366,7 @@ rewrite 2!eqOmegaE !eqOmegaO => /eqOP hOf; apply/eqOP.
 apply: filter_app hOf; near=> k; apply: filter_app; near=> x => /le_trans.
 apply; rewrite ler_pmul2l //; last by near: k; exists 0; rewrite real0.
 by rewrite !ger0_norm // ?addr_ge0 // ler_addl.
-Unshelve. end_near. Grab Existential Variables. end_near. Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma mulOmega (R : realFieldType) (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [Omega_F h1 of f] * [Omega_F h2 of g] =Omega_F (h1 * h2).

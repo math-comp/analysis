@@ -19,7 +19,7 @@ install: [
   [make "install"]
 ]
 depends: [
-  "coq" { ((>= "8.7" & < "8.12~") | = "dev") }
+  "coq" { ((>= "8.7" & < "8.13~") | = "dev") }
   "coq-mathcomp-field"       {(>= "1.11.0" & < "1.12~")}
   "coq-mathcomp-finmap"      {(>= "1.5.0" & < "1.6~")}
 ]
