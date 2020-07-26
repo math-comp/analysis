@@ -7,6 +7,9 @@
 - in `boolp.v`, new lemma `andC`
 - in `topology.v`:
   + new lemma `open_nbhsE`
+- in `classical_sets.v`:
+  + lemmas `setICr`, `setUidPl`, `subsets_disjoint`, `disjoints_subset`, `setDidPl`,
+    `setIidPl`, `setIS`, `setSI`, `setISS`, `bigcup_recl`, `bigcup_distrr`
 
 ### Changed
 
