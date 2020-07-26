@@ -12,7 +12,13 @@
     `setIidPl`, `setIS`, `setSI`, `setISS`, `bigcup_recl`, `bigcup_distrr`
 - in `ereal.v`:
   + notation `\+` (`ereal_scope`) for function addition
-  + new lemmas: `addooe`, `adde_Neq_pinfty`, `subERFin`, `lee_add2lE`, `lte_add2lE`, `lte_subl_addl`
+  + notations `>` and `>=` for comparison of extended real numbers
+  + definition `is_real`, lemmas `is_realN`, `is_realD`, `ERFin_real_of_er`
+  + basic lemmas: `addooe`, `adde_Neq_pinfty`, `adde_Neq_ninfty`, `addERFin`,
+    `subERFin`, `real_of_erN`, `lb_ereal_inf_adherent`
+  + arithmetic lemmas: `oppeD`, `subre_ge0`, `suber_ge0`, `lee_add2lE`, `lte_add2lE`,
+    `lte_add`, `lte_addl`, `lte_le_add`, `lte_subl_addl`, `lee_subr_addr`,
+    `lee_subl_addr`, `lte_spaddr`
 
 ### Changed
 
