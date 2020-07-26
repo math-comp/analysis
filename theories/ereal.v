@@ -18,6 +18,8 @@ Require Import boolp classical_sets reals posnum.
 (*                                                                            *)
 (*                    r%:E == injects real numbers into {ereal R}             *)
 (*                +%E, -%E == addition/opposite for extended reals            *)
+(*  (_ <= _)%E, (_ < _)%E, == comparison relations for extended reals         *)
+(*  (_ >= _)%E, (_ > _)%E                                                     *)
 (*   (\sum_(i in A) f i)%E == bigop-like notation in scope %E                 *)
 (*             ereal_sup E == supremum of E                                   *)
 (*             ereal_inf E == infimum of E                                    *)
@@ -40,6 +42,7 @@ Variable (R : numDomainType).
 
 Coercion real_of_er x : R :=
   if x is ERFin v then v else 0.
+
 End ExtendedReals.
 
 (* TODO: the following notations should have scopes. *)
@@ -167,9 +170,17 @@ Notation "@ 'lee' R" :=
 Notation lte := (@Order.lt ereal_display _) (only parsing).
 Notation "@ 'lte' R" :=
   (@Order.lt ereal_display R) (at level 10, R at level 8, only parsing).
+Notation gee := (@Order.ge ereal_display _) (only parsing).
+Notation "@ 'gee' R" :=
+  (@Order.ge ereal_display R) (at level 10, R at level 8, only parsing).
+Notation gte := (@Order.gt ereal_display _) (only parsing).
+Notation "@ 'gte' R" :=
+  (@Order.gt ereal_display R) (at level 10, R at level 8, only parsing).
 
 Notation "x <= y" := (lee x y) : ereal_scope.
 Notation "x < y"  := (lte x y) : ereal_scope.
+Notation "x >= y" := (gee x y) : ereal_scope.
+Notation "x > y"  := (gte x y) : ereal_scope.
 
 Notation "x <= y <= z" := ((lee x y) && (lee y z)) : ereal_scope.
 Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
@@ -276,7 +287,16 @@ Context {R : numDomainType}.
 
 Implicit Types x y z : {ereal R}.
 
-Lemma NERFin (x : R) : (- x)%R%:E = (- x%:E)%E. Proof. by []. Qed.
+Lemma NERFin (x : R) : (- x)%R%:E = (- x%:E). Proof. by []. Qed.
+
+Lemma real_of_erN x : real_of_er (- x) = (- real_of_er x)%R.
+Proof. by case: x => //=; rewrite oppr0. Qed.
+
+Lemma addERFin (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
+Proof. by []. Qed.
+
+Lemma subERFin (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
+Proof. by []. Qed.
 
 Lemma adde0 : right_id (0%:E : {ereal R}) +%E.
 Proof. by case=> //= x; rewrite addr0. Qed.
@@ -299,6 +319,9 @@ Proof. by rewrite /= oppr0. Qed.
 Lemma oppeK : involutive (A := {ereal R}) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
 
+Lemma oppeD x (r : R) : - (x + r%:E) = - x - r%:E.
+Proof. by move: x => [x| |] //=; rewrite opprD. Qed.
+
 Lemma eqe_opp x y : (- x == - y) = (x == y).
 Proof.
 move: x y => [r| |] [r'| |] //=; apply/idP/idP => [|/eqP[->]//].
@@ -308,6 +331,19 @@ Qed.
 Lemma eqe_oppLR x y : (- x == y)%E = (x == - y)%E.
 Proof. by move: x y => [r0| |] [r1| |] //=; rewrite !eqe eqr_oppLR. Qed.
 
+Definition is_real x := (x != -oo) && (x != +oo).
+
+Lemma is_realN x : is_real (- x) = is_real x.
+Proof.
+by rewrite /is_real andbC -eqe_opp oppeK; congr (_ && _); rewrite -eqe_opp oppeK.
+Qed.
+
+Lemma is_realD x y : is_real (x + y) = (is_real x) && (is_real y).
+Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma ERFin_real_of_er x : is_real x -> x = (real_of_er x)%:E.
+Proof. by case: x. Qed.
+
 Lemma adde_eq_ninfty x y : (x + y == -oo) = ((x == -oo) || (y == -oo)).
 Proof. by move: x y => [?| |] [?| |]. Qed.
 
@@ -316,6 +352,10 @@ Proof. by case: x. Qed.
 
 Lemma adde_Neq_pinfty x y : x != -oo -> y != -oo ->
   (x + y != +oo) = (x != +oo) && (y != +oo).
+Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma adde_Neq_ninfty x y : x != +oo%E -> y != +oo%E ->
+  (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
 Lemma esum_ninfty n (f : 'I_n -> {ereal R}) :
@@ -344,13 +384,22 @@ Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types x y z a b : {ereal R}.
 
-Lemma subERFin (r r' : R) : (r - r')%R%:E = (r%:E - r'%:E)%E.
-Proof. by []. Qed.
-
-Lemma sube_gt0 x y : (0%:E < y - x)%E = (x < y)%E.
+Lemma sube_gt0 x y : (0%:E < y - x) = (x < y).
 Proof.
 move: x y => [r | |] [r'| |] //=; rewrite ?(lte_pinfty,lte_ninfty) //.
 by rewrite !lte_fin subr_gt0.
+Qed.
+
+Lemma suber_ge0 r x : (0%:E <= x - r%:E) = (r%:E <= x)%E.
+Proof.
+move: x => [x| |] //=; rewrite ?(lee_pinfty,lee_ninfty,lee_fin) //=.
+by rewrite subr_ge0.
+Qed.
+
+Lemma subre_ge0 x r : (0%:E <= r%:E - x) = (x <= r%:E).
+Proof.
+move: x => [x| |] //=; rewrite ?(lee_pinfty,lee_ninfty,lee_fin) //=.
+by rewrite subr_ge0.
 Qed.
 
 Lemma lte_oppl x y : (- x < y)%E = (- y < x)%E.
@@ -365,10 +414,27 @@ move: x y => [r| |] [r'| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_oppr.
 Qed.
 
-Lemma lee_addl x y : (0%:E <= y)%E -> (x <= x + y)%E.
+Lemma lte_add a b x y : a < b -> x < y -> a + x < b + y.
+Proof.
+move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
+by rewrite !lte_fin; exact: ltr_add.
+Qed.
+
+Lemma lee_addl x y : (0%:E <= y) -> (x <= x + y).
 Proof.
 move: x y => -[ x [y| |]//= | [| |]// | [| | ]//];
   by [rewrite !lee_fin ler_addl | move=> _; exact: lee_pinfty].
+Qed.
+
+Lemma lte_addl r x : 0%:E < x -> r%:E < r%:E + x.
+Proof.
+by move: x => [x| |] //; rewrite ?lte_pinfty ?lte_ninfty // !lte_fin ltr_addl.
+Qed.
+
+Lemma lte_add2lE (r : R) a b : (r%:E + a < r%:E + b) = (a < b).
+Proof.
+move: a b => [a| |] [b| |] //; rewrite ?lte_pinfty ?lte_ninfty //.
+by rewrite !lte_fin ltr_add2l.
 Qed.
 
 Lemma lee_add2l x a b : (a <= b)%E -> (x + a <= x + b)%E.
@@ -379,59 +445,71 @@ move: a b x => -[a [b [x /=|//|//] | []// |//] | []// | ].
 - move=> -[b [|  |]// | []// | //] r oob; exact: lee_ninfty.
 Qed.
 
-Lemma lee_add2lE (r : R) a b : (r%:E + a <= r%:E + b) = (a <= b).
+Lemma lee_add2lE r a b : (r%:E + a <= r%:E + b) = (a <= b).
 Proof.
 move: a b => [a| |] [b| |] //; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_add2l.
 Qed.
 
-Lemma lte_add2lE (r : R) a b : (r%:E + a < r%:E + b) = (a < b).
-Proof.
-move: a b => [a| |] [b| |] //; rewrite ?lte_pinfty ?lte_ninfty //.
-by rewrite !lte_fin ltr_add2l.
-Qed.
-
-Lemma lee_add2r x a b : (a <= b)%E -> (a + x <= b + x)%E.
+Lemma lee_add2r x a b : (a <= b) -> (a + x <= b + x).
 Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
 
-Lemma lee_add a b x y : (a <= b)%E -> (x <= y)%E -> (a + x <= b + y)%E.
+Lemma lee_add a b x y : (a <= b) -> (x <= y) -> (a + x <= b + y).
 Proof.
 move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(lee_pinfty,lee_ninfty)//.
 by rewrite !lee_fin; exact: ler_add.
 Qed.
 
+Lemma lte_le_add r t x y : r%:E < x -> t%:E <= y -> r%:E + t%:E < x + y.
+Proof.
+move: x y => [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
+by rewrite !lte_fin; exact: ltr_le_add.
+Qed.
+
 Lemma lee_sum (f g : nat -> {ereal R}) :
-  (forall i, (f i <= g i)%E) -> forall n, (\sum_(i < n) f i <= \sum_(i < n) g i)%E.
+  (forall i, f i <= g i) -> forall n, \sum_(i < n) f i <= \sum_(i < n) g i.
 Proof.
 move=> fg; elim => [|n ih]; first by rewrite !big_ord0.
 by rewrite 2!big_ord_recr /= lee_add.
 Qed.
 
-Lemma lte_subl_addr x (r : R) z : (x - r%:E < z)%E = (x < z + r%:E)%E.
+Lemma lte_subl_addr x (r : R) z : (x - r%:E < z) = (x < z + r%:E).
 Proof.
 move: x r z => [x| |] r [z| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_subl_addr.
 Qed.
 
-Lemma lte_subl_addl (r : R) y z : (r%:E - y < z)%E = (r%:E < y + z)%E.
+Lemma lte_subl_addl (r : R) y z : (r%:E - y < z) = (r%:E < y + z).
 Proof.
 move: y z => [y| |] [z| |] //=; rewrite ?lte_ninfty ?lte_pinfty //.
 by rewrite !lte_fin ltr_subl_addl.
 Qed.
 
-Lemma lte_subr_addr (r : R) y z : (r%:E < y - z)%E = (r%:E + z < y)%E.
+Lemma lte_subr_addr (r : R) y z : (r%:E < y - z) = (r%:E + z < y).
 Proof.
 move: y z => [y| |] [z| |] //=; rewrite ?lte_ninfty ?lte_pinfty //.
 by rewrite !lte_fin ltr_subr_addr.
 Qed.
 
-Lemma lee_oppr x y : (x <= - y)%E = (y <= - x)%E.
+Lemma lee_subr_addr x y r : (x <= y - r%:E) = (x + r%:E <= y).
+Proof.
+move: y x => [y| |] [x| |] //=; rewrite ?lee_ninfty ?lee_pinfty //.
+by rewrite !lee_fin ler_subr_addr.
+Qed.
+
+Lemma lee_subl_addr x (r : R) z : (x - r%:E <= z) = (x <= z + r%:E).
+Proof.
+move: x r z => [x| |] r [z| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
+by rewrite !lee_fin ler_subl_addr.
+Qed.
+
+Lemma lee_oppr x y : (x <= - y) = (y <= - x).
 Proof.
 move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_oppr.
 Qed.
 
-Lemma lee_oppl x y : (- x <= y)%E = (- y <= x)%E.
+Lemma lee_oppl x y : (- x <= y) = (- y <= x).
 Proof.
 move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_oppl.
@@ -484,7 +562,13 @@ Section ereal_supremum.
 Variable R : realFieldType.
 Local Open Scope classical_set_scope.
 Implicit Types S : set {ereal R}.
-Implicit Types x : {ereal R}.
+Implicit Types x y : {ereal R}.
+
+Lemma lte_spaddr (r : R) x y : 0%:E < y -> r%:E <= x -> r%:E < x + y.
+Proof.
+move: y x => [y| |] [x| |] //=; rewrite ?lte_fin ?ltt_fin ?lte_pinfty //.
+exact: ltr_spaddr.
+Qed.
 
 Lemma ereal_ub_pinfty S : ubound S +oo.
 Proof. by apply/ubP=> x _; rewrite lee_pinfty. Qed.
@@ -555,6 +639,14 @@ have : ~ ubound S (ereal_sup S - e%:num%:E)%E.
 move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
 rewrite not_implyE => -[? ?]; exists x; split => //.
 by rewrite ltNge; apply/negP.
+Qed.
+
+Lemma lb_ereal_inf_adherent S (e : {posnum R}) (r : R) :
+  ereal_inf S = r%:E -> exists x, S x /\ (x < ereal_inf S + (e)%:num%:E)%E.
+Proof.
+rewrite -(oppeK r%:E) => /eqP; rewrite eqe_opp => /eqP/ub_ereal_sup_adherent.
+move=> /(_ e) [x [[y Sy yx ex]]]; exists (- x)%E; rewrite -yx oppeK; split => //.
+by rewrite -(oppeK y) yx lte_oppl oppeD /ereal_inf oppeK.
 Qed.
 
 End ereal_supremum.
