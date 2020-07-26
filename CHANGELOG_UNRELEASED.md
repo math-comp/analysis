@@ -19,6 +19,10 @@
   + arithmetic lemmas: `oppeD`, `subre_ge0`, `suber_ge0`, `lee_add2lE`, `lte_add2lE`,
     `lte_add`, `lte_addl`, `lte_le_add`, `lte_subl_addl`, `lee_subr_addr`,
     `lee_subl_addr`, `lte_spaddr`
+- in `sequences.v`:
+  + definitions `arithmetic`, `geometric`, `geometric_invn`
+  + lemmas `mulrn_arithmetic`, `exprn_geometric`, `dvg_arithmetic`, `cvg_expr`, ` cvg_geometric_invn`,
+    `geometric_seriesE`, `cvg_geometric_series`, `is_cvg_geometric_series`
 
 ### Changed
 

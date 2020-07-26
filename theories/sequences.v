@@ -17,6 +17,8 @@ Require Import classical_sets posnum topology normedtype landau derive forms.
 (*           R ^nat == notation for sequences,                                *)
 (*                     i.e., functions of type nat -> R                       *)
 (*         harmonic == harmonic sequence                                      *)
+(*       arithmetic == arithmetic sequence                                    *)
+(*        geometric == geometric sequence                                     *)
 (*        series u_ == the sequence of partial sums of u_                     *)
 (* [sequence u_n]_n == the sequence of general element u_n                    *)
 (*   [series u_n]_n == the series of general element u_n                      *)
@@ -641,6 +643,112 @@ by rewrite /series/= big_ord_recr ler_addl.
 Qed.
 
 End series_convergence.
+
+Definition arithmetic (R : zmodType) a z : R^o ^nat := [sequence a + z *+ n]_n.
+Arguments arithmetic {R} a z n /.
+
+Lemma mulrn_arithmetic (R : zmodType) : @GRing.natmul R = arithmetic 0.
+Proof. by rewrite funeq2E => z n /=; rewrite add0r. Qed.
+
+Definition geometric (R : fieldType) a z : R^o ^nat := [sequence a * z ^+ n]_n.
+Arguments geometric {R} a z n /.
+
+Lemma exprn_geometric (R : fieldType) : (@GRing.exp R) = geometric 1.
+Proof. by rewrite funeq2E => z n /=; rewrite mul1r. Qed.
+
+Lemma dvg_arithmetic (R : realType) a (z : R^o) :
+  z > 0 -> arithmetic a z --> +oo.
+Proof.
+move=> z0 /=; apply/cvgPpinfty => _ /posnumP[A].
+exists (`| (ifloor ((A%:num - a) / z) + 1)%R |%N) => // i.
+rewrite -(@ler_nat [numDomainType of R]) => Hi.
+rewrite -ler_subl_addl -mulr_natr -ler_pdivr_mull // mulrC (le_trans _ Hi) //.
+case: (ltrP (A%:num - a) 0) => Aa0.
+  by rewrite (@le_trans _ _ 0) // pmulr_lle0 // ?invr_gt0 // ltW.
+move: (ltW (floorS_gtr ((A%:num - a) / z))) => /le_trans; apply.
+rewrite [X in X + _ <= _](floorE _) {2}(_ : 1 = 1%:~R) // -intrD.
+rewrite -mulrz_nat ler_int -{1}(@gez0_abs (_ + _)) ?natz //.
+by rewrite addr_ge0 // ifloor_ge0 divr_ge0 // ltW.
+Qed.
+
+Lemma cvg_expr (R : archiFieldType) (z : R) :
+  0 <= z < 1 -> (fun n => z ^+ n : R^o) --> (0 : R^o).
+Proof.
+case/andP; rewrite le_eqVlt => /orP[/eqP <- _ |z0 z1].
+  apply/cvg_distP => _/posnumP[e]; rewrite near_map.
+  by exists 1%N => // n n0; rewrite sub0r normrN expr0n gtn_eqF // normr0.
+pose t := 1%R - z.
+have onezt : 1 = z + t by rewrite addrCA subrr addr0.
+have t0 : 0 < t by rewrite subr_gt0.
+apply (@squeeze _ _ (fun=> 0) _ (fun n => t^-1 * harmonic n)); last 2 first.
+  exact: (@cvg_cst [topologicalType of R^o]).
+  rewrite -(scaler0 _ t^-1); exact: (cvgZ (cvg_cst _) cvg_harmonic).
+near=> n.
+rewrite exprn_ge0 /= ?ler_pdivl_mull ?subr_gt0//; last exact: ltW.
+rewrite -(mul1r (n.+1%:R)^-1) ler_pdivl_mulr ?ltr0n//.
+move/(congr1 (fun x => x ^+ n.+1)) : onezt.
+rewrite exprDn expr1n big_ord_recl subn0 expr0 bin0 mulr1n mulr1.
+rewrite big_ord_recl subn1 expr1 bin1 addrCA => /eqP; rewrite -subr_eq => /eqP.
+rewrite -mulr_natr mulrAC mulrC mulrA => <-; rewrite -subr_ge0 opprB addrCA.
+rewrite subrr addr0 addr_ge0 // ?exprn_ge0//; first exact: ltW.
+apply sumr_ge0 => i _; rewrite -mulr_natr mulr_ge0 // ?ler0n//.
+by rewrite mulr_ge0 // ?exprn_ge0// ltW.
+Grab Existential Variables. all: end_near. Qed.
+
+Definition geometric_invn {R : realFieldType} x : R^o ^nat := fun n => (x ^ n)%:R^-1.
+
+Lemma cvg_geometric_invn (R : archiFieldType) m :
+  (1 < m)%N -> geometric_invn m --> (0 : R^o).
+Proof.
+move=> m1; rewrite (_ : geometric_invn _ = (fun n => (m%:R^-1) ^+n)); last first.
+  by rewrite funeqE => n; rewrite /geometric_invn natrX exprVn.
+apply cvg_expr.
+rewrite invr_ge0 ler0n /= invr_lt1 ?ltr1n// ?ltr0n ?(ltn_trans _ m1)//.
+by rewrite unitfE pnatr_eq0 gt_eqF // ltEnat /= (leq_trans _ m1).
+Qed.
+
+Lemma geometric_seriesE (R : realFieldType) (a z : R) (n : nat) : z != 1 ->
+  series (geometric a z) n.+1 = a * (1 - z ^+ n.+1) / (1 - z).
+Proof.
+move=> z1; have ? : 1 - z \is a GRing.unit by rewrite unitfE subr_eq0 eq_sym.
+apply: (@mulIr _ (1 - z)) => //; rewrite -!mulrA mulVr // mulr1 /series /=.
+elim: n  => [|n ih].
+  by rewrite big_ord_recl big_ord0 expr0 mulr1 addr0 expr1.
+rewrite big_ord_recr mulrDl {}ih -mulrA -mulrDr mulrBr mulr1.
+by rewrite -exprSr addrA subrK.
+Qed.
+
+Lemma cvg_geometric_series (R : archiFieldType) (a z : R) :
+  0 < z < 1 -> (series (geometric a z) --> (a * (1 - z)^-1 : R^o)).
+Proof.
+case/andP=> z0 z1.
+have [/eqP ->|a0] := boolP (a == 0).
+  rewrite /series /geometric/= (_ : (fun _ => _) = (fun=> 0)).
+    by rewrite mul0r; exact: cvg_cst.
+  by rewrite funeqE => n; rewrite big1 //= => i _; rewrite mul0r.
+rewrite /series.
+apply/cvg_distP => _/posnumP[e].
+have ea1z_gt0 : (0%R < (e)%:num / `|a / (1 - z)|)%O.
+  rewrite divr_gt0 // normr_gt0 mulf_eq0 negb_or /= a0 invr_eq0 subr_eq0.
+  by rewrite gt_eqF.
+move: (@cvg_expr _ z); rewrite (ltW z0) z1 => /(_ isT).
+move/cvg_distP/(_ _ ea1z_gt0) => {ea1z_gt0} [k _ geo_k].
+rewrite near_map; near=> n.
+have [m nkm] : exists m, n = ((k + m).+1)%nat.
+  have nk : (k < n)%nat by near: n; exists k.+1.
+  exists (n - k.+1)%nat.
+  rewrite subnS -subn1 addnBA ?subn_gt0 // addnBA; last exact/ltnW.
+  by rewrite -addnBAC // subnn add0n subn1 prednK // (leq_trans _ nk).
+rewrite nkm -/(series _ _) geometric_seriesE; last by rewrite lt_eqF.
+rewrite -{1}(mulr1 a) -mulrBl -mulrBr opprB addrCA subrr addr0.
+rewrite mulrAC normrM (mulrC `|_ / _|) -ltr_pdivl_mulr; last first.
+  by rewrite normr_gt0 mulf_eq0 negb_or a0 /= invr_eq0 subr_eq0 gt_eqF.
+by rewrite -nkm -normrN -sub0r geo_k // nkm -addnS leq_addr.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma is_cvg_geometric_series (R : archiFieldType) (a z : R) :
+  0 < z < 1 -> cvg (series (geometric a z)).
+Proof. by move=> z01; apply/cvg_ex; eexists; exact: cvg_geometric_series. Qed.
 
 Definition normed_series_of (K : numDomainType) (V : normedModType K)
     (u_ : V ^nat) of phantom V^nat (series u_) : K^o ^nat :=
