@@ -176,7 +176,7 @@ Lemma cvgPpinfty (u_ : R^o ^nat) :
 Proof.
 split => [u_cvg _/posnumP[A]|u_ge X [A [Ar AX]]].
   rewrite -(near_map u_ \oo (<=%R A%:num)).
-  by apply: u_cvg; apply: locally_pinfty_ge.
+  by apply: u_cvg; apply: nbhs_pinfty_ge.
 rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
 apply: AX; rewrite (@lt_le_trans _ _ ((maxr 0 A) +1)) //.
   by rewrite ltr_spaddr // le_maxr lexx orbT.
@@ -392,7 +392,7 @@ have [p /andP[M0u_p u_pM0]] : exists p, M0 - e%:num <= u_ p <= M0.
   move=> -[p _] <-{x} => /ltW M0u_p.
   exists p; rewrite M0u_p /=; have /ubP := sup_upper_bound supS.
   by apply; exists p.
-near=> n; have pn : (p <= n)%N by near: n; apply: locally_infty_ge.
+near=> n; have pn : (p <= n)%N by near: n; apply: nbhs_infty_ge.
 rewrite distrC ler_norml ler_sub_addl (ler_trans M0u_p (u_nd _ _ pn)) /=.
 rewrite ler_subl_addr (@le_trans _ _ M0) ?ler_addr //.
 by have /ubP := sup_upper_bound supS; apply; exists n.
@@ -471,7 +471,7 @@ Proof.
 apply: cvg_distW => _/posnumP[e]; rewrite near_map; near=> i.
 rewrite distrC subr0 ger0_norm//= -lef_pinv ?qualifE// invrK.
 rewrite (le_trans (ltW (archi_boundP _)))// ler_nat -add1n -leq_subLR.
-by near: i; apply: locally_infty_ge.
+by near: i; apply: nbhs_infty_ge.
 Grab Existential Variables. all: end_near. Qed.
 
 (* TODO: is there an equivalent in mathcomp? *)
@@ -509,7 +509,7 @@ move=> /le_lt_trans->//; rewrite [e%:num]splitr ltr_add//.
   rewrite -ltr_pdivl_mulr ?normr_gt0//.
   rewrite -ltf_pinv ?qualifE// ?mulr_gt0 ?invr_gt0 ?normr_gt0// invrK.
   rewrite (lt_le_trans (archi_boundP _))// ?(invr_ge0, mulr_ge0)// ler_nat leqW//.
-  by near: n; apply: locally_infty_ge.
+  by near: n; apply: nbhs_infty_ge.
 rewrite ltr_pdivr_mull ?ltr0n // (le_lt_trans (ler_norm_sum _ _ _)) //.
 rewrite (le_lt_trans (@ler_sum_nat _ _ _ _ (fun i => e%:num / 2) _))//; last first.
   by rewrite sumr_const_nat mulr_natl ltr_pmuln2l// ltn_subrL.
