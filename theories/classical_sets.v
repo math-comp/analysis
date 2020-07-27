@@ -262,7 +262,20 @@ Proof. by rewrite predeqE; split => ?. Qed.
 Lemma setCK T : involutive (@setC T).
 Proof. by move=> A; rewrite funeqE => t; rewrite /setC; exact: notLR. Qed.
 
+Lemma subsets_disjoint {T} (A B : set T) : (A `<=` B) <-> (A `&` ~` B = set0).
+Proof.
+split=> [AB|]; first by rewrite predeqE => t; split => // -[/AB].
+rewrite predeqE => AB t At; move: (AB t) => [{}AB _].
+by apply: contrapT => Bt; exact: AB.
+Qed.
+
+Lemma disjoints_subset {T} (A B : set T) : A `&` B = set0 <-> A `<=` ~` B.
+Proof. by rewrite subsets_disjoint setCK. Qed.
+
 Lemma setCT T : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
+
+Lemma setDE {A} (X Y : set A) : X `\` Y = X `&` ~` Y.
+Proof. by []. Qed.
 
 Lemma setCE T (A : set T) : ~` A = setT `\` A.
 Proof. by rewrite predeqE => t; split => // -[]. Qed.
@@ -367,9 +380,28 @@ rewrite propeqE; split => [|[YX ZX] x]; last by case; [exact: YX | exact: ZX].
 by move=> sYZ_X; split=> x ?; apply sYZ_X; [left | right].
 Qed.
 
+Lemma setIidPl {T} (A B : set T) : A `&` B = A <-> A `<=` B.
+Proof.
+rewrite predeqE; split=> [AB t /AB [] //|AB t].
+by split=> [[]//|At]; split=> //; exact: AB.
+Qed.
+
+Lemma setUidPl {T} (X Y : set T) : X `|` Y = X <-> Y `<=` X.
+Proof.
+split=> [<- ? ?|YX]; first by right.
+rewrite predeqE => t; split=> [[//|/YX//]|?]; by left.
+Qed.
+
 Lemma subsetI A (X Y Z : set A) : (X `<=` Y `&` Z) = ((X `<=` Y) /\ (X `<=` Z)).
 Proof.
 rewrite propeqE; split=> [H|[y z ??]]; split; by [move=> ?/H[]|apply y|apply z].
+Qed.
+
+Lemma setDidPl {T} (A B :set T) : A `\` B = A <-> A `&` B = set0.
+Proof.
+rewrite setDE disjoints_subset predeqE; split => [AB t|AB t].
+by rewrite -AB => -[].
+by split=> [[]//|At]; move: (AB t At).
 Qed.
 
 Lemma subIset {A} (X Y Z : set A) : X `<=` Z \/ Y `<=` Z -> X `&` Y `<=` Z.
@@ -390,9 +422,6 @@ rewrite propeqE; split=> [XDY0 a|sXY].
 by rewrite predeqE => ?; split=> // - [?]; apply; apply: sXY.
 Qed.
 
-Lemma setDE {A} (X Y : set A) : X `\` Y = X `&` ~` Y.
-Proof. by []. Qed.
-
 Lemma nonsubset {A} (X Y:set A): ~ (X `<=` Y) -> X `&` ~` Y !=set0.
 Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
 
@@ -401,6 +430,15 @@ Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
 
 Lemma setIC {A} (X Y : set A) : X `&` Y = Y `&` X.
 Proof. by rewrite predeqE => ?; split=> [[]|[]]. Qed.
+
+Lemma setIS T (A B C : set T) : A `<=` B -> C `&` A `<=` C `&` B.
+Proof. by move=> sAB t [Ct At]; split => //; exact: sAB. Qed.
+
+Lemma setSI T (A B C : set T) : A `<=` B -> A `&` C `<=` B `&` C.
+Proof. by move=> sAB; rewrite -!(setIC C); apply setIS. Qed.
+
+Lemma setISS T (A B C D : set T) : A `<=` C -> B `<=` D -> A `&` B `<=` C `&` D.
+Proof. by move=> /(@setSI _ _ _ B) /subset_trans sAC /(@setIS _ _ _ C) /sAC. Qed.
 
 Lemma setIT {A} (X : set A) : X `&` setT = X.
 Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
@@ -416,6 +454,9 @@ Proof. by rewrite setIC setI0. Qed.
 
 Lemma setICl {A} (X : set A) : ~` X `&` X = set0.
 Proof. by rewrite predeqE => ?; split => // -[]. Qed.
+
+Lemma setICr {A} (X : set A) : X `&` ~` X = set0.
+Proof. by rewrite setIC setICl. Qed.
 
 Lemma setIA {A} (X Y Z : set A) : X `&` (Y `&` Z) = X `&` Y `&` Z.
 Proof. by rewrite predeqE => ?; split=> [[? []]|[[]]]. Qed.
@@ -563,6 +604,25 @@ Canonical setU_add_monoid := AddLaw (@setUDl T) (@setUDr T).
 Canonical setI_add_monoid := AddLaw (@setIDl T) (@setIDr T).
 
 End SetMonoids.
+
+Lemma bigcup_recl T n (A : nat -> set T) :
+  \bigcup_i A i = \big[setU/set0]_(i < n) A i `|` \bigcup_i A (n + i)%N.
+Proof.
+elim: n => [|n ih]; first by rewrite big_ord0 set0U.
+rewrite ih big_ord_recr /= -setUA; congr (_ `|` _).
+rewrite predeqE => t; split => [[[|m] _ At]|[At|[i _ At]]].
+- by left; rewrite addn0 in At.
+  by right; exists m => //; rewrite addSnnS.
+- by exists 0%N => //; rewrite addn0.
+  by exists i.+1 => //; rewrite -addSnnS.
+Qed.
+
+Lemma bigcup_distrr T (A : nat -> set T) X :
+  X `&` \bigcup_i (A i) = \bigcup_i (X `&` A i).
+Proof.
+rewrite predeqE => t; split => [[Xt [k _ Akt]]|[k _ [Xt Akt]]];
+  by [exists k |split => //; exists k].
+Qed.
 
 Lemma bigcup_ord T n (A : nat -> set T) :
  \big[setU/set0]_(i < n) A i = \bigcup_(i in [set k | (k < n)%N]) A i.
