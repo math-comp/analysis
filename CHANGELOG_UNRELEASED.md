@@ -19,10 +19,14 @@
   + arithmetic lemmas: `oppeD`, `subre_ge0`, `suber_ge0`, `lee_add2lE`, `lte_add2lE`,
     `lte_add`, `lte_addl`, `lte_le_add`, `lte_subl_addl`, `lee_subr_addr`,
     `lee_subl_addr`, `lte_spaddr`
+- in `normedtype.v`, lemmas `natmul_continuous`, `cvgMn` and `is_cvgMn`.
 - in `sequences.v`:
   + definitions `arithmetic`, `geometric`, `geometric_invn`
-  + lemmas `mulrn_arithmetic`, `exprn_geometric`, `dvg_arithmetic`, `cvg_expr`, ` cvg_geometric_invn`,
-    `geometric_seriesE`, `cvg_geometric_series`, `is_cvg_geometric_series`
+  + lemmas `increasing_series`, `cvg_shiftS`, `mulrn_arithmetic`,
+    `exprn_geometric`, `cvg_arithmetic`, `cvg_expr`,
+    `geometric_seriesE`, `cvg_geometric_series`,
+    `is_cvg_geometric_series`.
+  +
 
 ### Changed
 
@@ -156,6 +160,12 @@
   + `derivable_locallyP` -> `derivable_nbhsP`
   + `derivable_locallyx` -> `derivable_nbhsx`
   + `derivable_locallyxP` -> `derivable_nbhsxP`
+- in `sequences.v`,
+  + `cvg_comp_subn` -> `cvg_centern`,
+  + `cvg_comp_addn` -> `cvg_shiftn`,
+  + `telescoping` -> `telescope`
+  + `sderiv1_series` -> `seriesSB`
+  + `telescopingS0` -> `eq_sum_telescope`
 
 ### Removed
 
