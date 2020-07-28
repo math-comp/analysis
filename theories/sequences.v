@@ -744,7 +744,7 @@ Lemma cauchy_seriesP {R : numFieldType} (V : normedModType R) (u_ : V ^nat) :
   forall e : R, e > 0 ->
     \forall n \near (\oo, \oo), `|\sum_(n.1 <= k < n.2) u_ k| < e.
 Proof.
-split=> su_cv _/posnumP[e]; have {}su_cv := su_cv _ e;
+rewrite -cauchy_ballP; split=> su_cv _/posnumP[e]; have {}su_cv := su_cv _ e;
 rewrite -near2_pair -ball_normE !near_simpl/= in su_cv *.
   apply: filterS su_cv => -[/= m n]; rewrite distrC sub_series.
   by have [|/ltnW]:= leqP m n => mn//; rewrite (big_geq mn) ?normr0.
