@@ -539,6 +539,9 @@ rewrite predeqE => t; split => [capU|cupU i _].
 by rewrite -(setCK (U i)) => CU; apply cupU; exists i.
 Qed.
 
+Lemma setMT {A B} : (@setT A) `*` (@setT B) = setT.
+Proof. by rewrite predeqE. Qed.
+
 Definition is_subset1 {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := Logic.all (is_subset1 \o f).
 Definition is_total {A B} (f : A -> B -> Prop) := Logic.all (nonempty \o f).
