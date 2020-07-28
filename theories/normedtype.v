@@ -2759,6 +2759,14 @@ rewrite !near_simpl /=; near=> a b => /=; rewrite opprD addrACA.
 by rewrite normm_lt_split //; [near: a|near: b]; apply: cvg_dist.
 Grab Existential Variables. all: end_near. Qed.
 
+Lemma natmul_continuous n : continuous (fun x : V => x *+ n).
+Proof.
+case: n => [|n] x; first exact: cvg_cst.
+apply/cvg_distP=> _/posnumP[e]; rewrite !near_simpl /=; near=> a.
+rewrite -mulrnBl normrMn -mulr_natr -ltr_pdivl_mulr//.
+by near: a; apply: cvg_dist.
+Grab Existential Variables. all: end_near. Qed.
+
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/cvg_distP=> _/posnumP[e].
@@ -2853,6 +2861,12 @@ Proof. by move=> /cvgN /cvgP. Qed.
 
 Lemma is_cvgNE f : cvg ((- f) @ F) = cvg (f @ F).
 Proof. by rewrite propeqE; split=> /cvgN; rewrite ?opprK => /cvgP. Qed.
+
+Lemma cvgMn f n a : f @ F --> a -> ((@GRing.natmul _)^~n \o f) @ F --> a *+ n.
+Proof. by move=> ?;  apply: continuous_cvg => //; exact: natmul_continuous. Qed.
+
+Lemma is_cvgMn f n : cvg (f @ F) -> cvg (((@GRing.natmul _)^~n \o f) @ F).
+Proof. by move=> /cvgMn /cvgP. Qed.
 
 Lemma cvgD f g a b : f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
 Proof. by move=> ? ?; apply: continuous2_cvg => //; exact: add_continuous. Qed.
