@@ -3842,7 +3842,7 @@ Definition topologicalType := @Topological.Pack cT xclass.
 Definition uniformType := @Uniform.Pack cT xclass.
 Definition completeType := @Complete.Pack cT xclass.
 Definition pseudoMetricType := @PseudoMetric.Pack R cT xclass.
-Definition complete_pseudoMetricType := @Complete.Pack pseudoMetricType xclass.
+Definition pseudoMetric_completeType := @Complete.Pack pseudoMetricType xclass.
 End ClassDef.
 Module Exports.
 Coercion base : class_of >-> PseudoMetric.class_of.
@@ -3865,7 +3865,7 @@ Coercion completeType : type >-> Complete.type.
 Canonical completeType.
 Coercion pseudoMetricType : type >-> PseudoMetric.type.
 Canonical pseudoMetricType.
-Canonical complete_pseudoMetricType.
+Canonical pseudoMetric_completeType.
 Notation completePseudoMetricType := type.
 Notation "[ 'completePseudoMetricType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
   (at level 0, format "[ 'completePseudoMetricType'  'of'  T  'for'  cT ]") : form_scope.
