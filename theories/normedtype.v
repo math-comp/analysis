@@ -3121,9 +3121,9 @@ Record class_of (T : Type) := Class {
   mixin : Complete.axiom (PseudoMetric.Pack base)
 }.
 Local Coercion base : class_of >-> NormedModule.class_of.
-Definition base2 T (cT : class_of T) : Complete.class_of T :=
-  @Complete.Class _ (@base T cT) (@mixin T cT).
-Local Coercion base2 : class_of >-> Complete.class_of.
+Definition base2 T (cT : class_of T) : CompletePseudoMetric.class_of K T :=
+  @CompletePseudoMetric.Class _ _ (@base T cT) (@mixin T cT).
+Local Coercion base2 : class_of >-> CompletePseudoMetric.class_of.
 
 Structure type (phK : phant K) := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
@@ -3153,19 +3153,35 @@ Definition pseudoMetricNormedZmodType :=
   @PseudoMetricNormedZmodule.Pack K phK cT xclass.
 Definition normedModType := @NormedModule.Pack K phK cT xclass.
 Definition completeType := @Complete.Pack cT xclass.
-Definition completePseudoMetricType := @CompletePseudoMetric.Pack K cT (CompletePseudoMetric.Class xclass).
+Definition completePseudoMetricType := @CompletePseudoMetric.Pack K cT xclass.
 Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
 Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
 Definition complete_normedZmodType := @Num.NormedZmodule.Pack K phK completeType xclass.
 Definition complete_pseudoMetricNormedZmodType :=
   @PseudoMetricNormedZmodule.Pack K phK completeType xclass.
 Definition complete_normedModType := @NormedModule.Pack K phK completeType xclass.
+Definition completePseudoMetric_lmodType : GRing.Lmodule.type phK :=
+  @GRing.Lmodule.Pack K phK (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_zmodType : GRing.Zmodule.type :=
+  @GRing.Zmodule.Pack (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_normedModType : NormedModule.type phK :=
+  @NormedModule.Pack K phK (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_normedZmodType : Num.NormedZmodule.type phK :=
+  @Num.NormedZmodule.Pack K phK
+  (CompletePseudoMetric.sort completePseudoMetricType) xclass.
+Definition completePseudoMetric_pseudoMetricNormedZmodType :
+  PseudoMetricNormedZmodule.type phK :=
+  @PseudoMetricNormedZmodule.Pack K phK
+  (CompletePseudoMetric.sort completePseudoMetricType) xclass.
 End ClassDef.
 
 Module Exports.
 
 Coercion base : class_of >-> NormedModule.class_of.
-Coercion base2 : class_of >-> Complete.class_of.
+Coercion base2 : class_of >-> CompletePseudoMetric.class_of.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
 Canonical eqType.
@@ -3200,6 +3216,11 @@ Canonical complete_lmodType.
 Canonical complete_normedZmodType.
 Canonical complete_pseudoMetricNormedZmodType.
 Canonical complete_normedModType.
+Canonical completePseudoMetric_lmodType.
+Canonical completePseudoMetric_zmodType.
+Canonical completePseudoMetric_normedModType.
+Canonical completePseudoMetric_normedZmodType.
+Canonical completePseudoMetric_pseudoMetricNormedZmodType.
 Notation completeNormedModType K := (type (Phant K)).
 Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
   (at level 0, format "[ 'completeNormedModType'  K  'of'  T ]") : form_scope.
