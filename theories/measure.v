@@ -6,12 +6,13 @@ Require Import boolp reals ereal.
 Require Import classical_sets posnum topology normedtype sequences.
 
 (******************************************************************************)
-(* This file provides basic elements of a theory of measure illustrated       *)
-(* by a formalization of Boole's inequality.                                  *)
+(* This file provides basic elements of a theory of measure.                  *)
 (*                                                                            *)
 (* {measure set T -> {ereal R}} == type of a measure over sets of elements of *)
 (*                                 type T where R is expected to be a         *)
 (*                                 a realFieldType or a realType              *)
+(*                                                                            *)
+(* Theorems: Boole_inequality, generalized_Boole_inequality                   *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -24,7 +25,7 @@ Local Open Scope ring_scope.
 
 (* TODO: move to classical_sets *)
 Definition triviset T (U : nat -> set T) :=
-  forall j i, (i != j)%nat -> U i `&` U j = set0.
+  forall i j, (i != j)%nat -> U i `&` U j = set0.
 
 Module Measurable.
 
@@ -256,7 +257,7 @@ Definition B_of (A : (set T) ^nat) :=
 Lemma triviset_B_of (A : (set T) ^nat) :
   {homo A : n m / (n <= m)%nat >-> n `<=` m} -> triviset (B_of A).
 Proof.
-move=> ndA j i; wlog : j i / (i < j)%N.
+move=> ndA i j; wlog : i j / (i < j)%N.
   move=> h; rewrite neq_ltn => /orP[|] ?; by
     [rewrite h // ltn_eqF|rewrite setIC h // ltn_eqF].
 move=> ij _; move: j i ij; case => // j [_ /=|n].
@@ -362,25 +363,6 @@ Qed.
 End boole_inequality.
 Notation le_mu_bigsetU := Boole_inequality.
 
-(* NB: see also nondecreasing_series *)
-Lemma ereal_nondecreasing_series (R : realFieldType) (u_ : {ereal R} ^nat) :
-  (forall n, 0%:E <= u_ n)%E ->
-  nondecreasing_seq (fun n => \sum_(i < n) u_ i)%E.
-Proof.
-move=> u_ge0 n m nm; rewrite -(subnKC nm).
-rewrite -[X in (_ <= X)%E](big_mkord xpredT) /index_iota subn0 iota_add.
-rewrite big_cat -[in X in (_ <= X + _)%E](subn0 n) big_mkord lee_addl //=.
-by rewrite sume_ge0.
-Qed.
-
-Lemma series_nneg (R : realType) (u_ : {ereal R} ^nat) k :
-  (forall n, (0%:E <= u_ n)%E) ->
-  (\sum_(i < k.+1) u_ i <= lim (fun n : nat => \sum_(i < n) u_ i))%E.
-Proof.
-move/ereal_nondecreasing_series/nondecreasing_seq_ereal_cvg/cvg_lim => -> //.
-by apply ereal_sup_ub; exists k.+1.
-Qed.
-
 Section generalized_boole_inequality.
 Variables (R : realType) (T : measurableType).
 Variable (mu : {measure set T -> {ereal R}}).
@@ -409,7 +391,7 @@ have -> : lim (mu \o B) = ereal_sup ((mu \o B) @` setT).
   exact: subset_bigsetU.
 have BA : forall m, (mu (B m) <= lim (fun n : nat => \sum_(i < n) mu (A i)))%E.
   move=> m; rewrite (le_trans (le_mu_bigsetU mu mA m.+1)) // -/(B m).
-  by apply: (@series_nneg _ (mu \o A)) => n; exact: measure_ge0.
+  by apply: (@ereal_nneg_series_lim_ge _ (mu \o A)) => n; exact: measure_ge0.
 by apply ub_ereal_sup => /= x [n _ <-{x}]; apply BA.
 Qed.
 

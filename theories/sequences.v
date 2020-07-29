@@ -775,7 +775,7 @@ Qed.
 
 Section sequences_of_extended_real_numbers.
 
-(* TODO: worth keeping in addition to cvgPpinfty? *)
+(* NB: worth keeping in addition to cvgPpinfty? *)
 Lemma cvgPpinfty_lt (R : realFieldType) (u_ : R^o ^nat) :
   u_ --> +oo <-> forall A, A > 0 -> \forall n \near \oo, A < u_ n.
 Proof.
@@ -786,7 +786,7 @@ exists n => // m nm; rewrite (@lt_le_trans _ _ (A *+ 2)) // ?mulr2n ?ltr_addr //
 exact: uoo.
 Qed.
 
-Lemma dvg_ereal_cvg (R : realType) (u_ : (R^o) ^nat) :
+Lemma dvg_ereal_cvg (R : realFieldType) (u_ : (R^o) ^nat) :
   u_ --> +oo -> (fun n => (u_ n)%:E) --> +oo%E.
 Proof.
 move/cvgPpinfty_lt => uoo; apply/cvg_ballP => _/posnumP[e]; rewrite near_map.
@@ -908,5 +908,24 @@ have leum : contract l - e%:num < contract (u_ m).
 rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
 by rewrite le_contract nd_u_//; near: n; exists m.
 Grab Existential Variables. all: end_near. Qed.
+
+(* NB: see also nondecreasing_series *)
+Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : {ereal R} ^nat) :
+  (forall n, 0%:E <= u_ n)%E ->
+  nondecreasing_seq (fun n => \sum_(i < n) u_ i)%E.
+Proof.
+move=> u_ge0 n m nm; rewrite -(subnKC nm).
+rewrite -[X in (_ <= X)%E](big_mkord xpredT) /index_iota subn0 iota_add.
+rewrite big_cat -[in X in (_ <= X + _)%E](subn0 n) big_mkord lee_addl //=.
+by rewrite sume_ge0.
+Qed.
+
+Lemma ereal_nneg_series_lim_ge (R : realType) (u_ : {ereal R} ^nat) k :
+  (forall n, (0%:E <= u_ n)%E) ->
+  (\sum_(i < k) u_ i <= lim (fun n : nat => \sum_(i < n) u_ i))%E.
+Proof.
+move/ereal_nondecreasing_series/nondecreasing_seq_ereal_cvg/cvg_lim => -> //.
+by apply ereal_sup_ub; exists k.
+Qed.
 
 End sequences_of_extended_real_numbers.
