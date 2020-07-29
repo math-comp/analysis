@@ -594,7 +594,7 @@ Proof. exact: Proper_nbhs'_numFieldType. Qed.
 
 (** * Some Topology on [Rbar] *)
 
-Canonical ereal_pointed (R : numDomainType) := PointedType {ereal R} (+oo%E).
+Canonical ereal_pointed (R : numDomainType) := PointedType {ereal R} +oo%E.
 
 Section ereal_nbhs.
 Context {R : numFieldType}.
@@ -603,14 +603,14 @@ Local Open Scope ereal_scope.
 Definition ereal_nbhs' (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
   match a with
     | a%:E => @nbhs' R_topologicalType a (fun x => P x%:E)
-    | +oo => exists M, M \is Num.real /\ forall x, (M%:E < x)%E -> P x
-    | -oo => exists M, M \is Num.real /\ forall x, (x < M%:E)%E -> P x
+    | +oo => exists M, M \is Num.real /\ forall x, M%:E < x -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, x < M%:E -> P x
   end.
 Definition ereal_nbhs (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
   match a with
     | a%:E => @nbhs _ R_topologicalType a (fun x => P x%:E)
-    | +oo => exists M, M \is Num.real /\ forall x, (M%:E < x)%E -> P x
-    | -oo => exists M, M \is Num.real /\ forall x, (x < M%:E)%E -> P x
+    | +oo => exists M, M \is Num.real /\ forall x, M%:E < x -> P x
+    | -oo => exists M, M \is Num.real /\ forall x, x < M%:E -> P x
   end.
 Canonical ereal_ereal_filter := FilteredType {ereal R} {ereal R} (ereal_nbhs).
 End ereal_nbhs.
@@ -628,7 +628,7 @@ case=> [x||].
   move=> P Q lP lQ; exact: xI.
   by move=> P Q PQ /xS; apply => y /PQ.
 - apply Build_ProperFilter.
-    move=> P [x [xr xP]]; exists (x + 1)%:E; apply xP => /=.
+    move=> P [x [xr xP]] //; exists (x + 1)%:E; apply xP => /=.
     by rewrite lte_fin ltr_addl.
   split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
   + by exists 0; rewrite real0.
@@ -992,7 +992,7 @@ exists (-%E @` S); first by rewrite nbhsNe; exists S.
 rewrite predeqE => x; split => [[y [u Su <-{y} <-]]|Ax].
   rewrite oppeK.
   move: SA; rewrite predeqE => /(_ (- u)%E) [h _].
-  have : (exists2 y : {ereal R}, S y & (- y)%E = (- u)%E) by exists u.
+  have : (exists2 y, S y & (- y)%E = (- u)%E) by exists u.
   by move/h => -[y Ay] /eqP; rewrite eqe_opp => /eqP <-.
 exists (- x)%E; last by rewrite oppeK.
 exists x => //.
@@ -1003,20 +1003,21 @@ Qed.
 
 Section contract_expand.
 Variable R : realFieldType.
+Local Open Scope ereal_scope.
 
 Definition contract (x : {ereal R}) : R :=
   match x with
-  | r%:E => r / (1 + `|r|) | +oo%E => 1 | -oo%E => -1
+  | r%:E => r / (1 + `|r|) | +oo => 1 | -oo => -1
   end.
 
-Lemma contract_lt1 x : `|contract x%:E| < 1.
+Lemma contract_lt1 x : (`|contract x%:E| < 1)%R.
 Proof.
 rewrite normrM normrV ?unitfE //; last by rewrite eq_sym lt_eqF // ltr_spaddl.
 rewrite ltr_pdivr_mulr // ?mul1r; last by rewrite gtr0_norm ltr_spaddl.
-by rewrite [X in _ < X]gtr0_norm ?ltr_addr// ltr_spaddl.
+by rewrite [X in (_ < X)%R]gtr0_norm ?ltr_addr// ltr_spaddl.
 Qed.
 
-Lemma contract_le1 x : `|contract x| <= 1.
+Lemma contract_le1 x : (`|contract x| <= 1)%R.
 Proof.
 by case: x => [x| |] /=; rewrite ?normrN1 ?normr1 // (ltW (contract_lt1 _)).
 Qed.
@@ -1024,7 +1025,7 @@ Qed.
 Lemma contract0 : contract 0%:E = 0.
 Proof. by rewrite /contract mul0r. Qed.
 
-Lemma contractN x : contract (- x) = - contract x.
+Lemma contractN x : contract (- x) = (- contract x)%R.
 Proof. by case: x => //= [r|]; [ rewrite normrN mulNr | rewrite opprK]. Qed.
 
 Lemma contract_imageN (S : set {ereal R}) :
@@ -1032,19 +1033,19 @@ Lemma contract_imageN (S : set {ereal R}) :
 Proof.
 rewrite predeqE => r; split => [[y [z Sz <-{y} <-{r}]]|[s [y Sy <-{s} <-{r}]]].
 by exists (contract z); [exists z | rewrite contractN].
-by exists (- y)%E; [exists y | rewrite contractN].
+by exists (- y); [exists y | rewrite contractN].
 Qed.
 
 (* TODO: not exploited yet: expand is nondecreasing everywhere so it should be
    possible to use some of the homoRL/homoLR lemma where monoRL/monoLR do not
    apply *)
 Definition expand r : {ereal R} :=
-  if r >= 1 then +oo%E else if r <= -1 then -oo%E else (r / (1 - `|r|))%:E.
+  if (r >= 1)%R then +oo else if (r <= -1)%R then -oo else (r / (1 - `|r|))%:E.
 
-Lemma expand1 x : 1 <= x -> expand x = +oo%E.
+Lemma expand1 x : (1 <= x)%R -> expand x = +oo.
 Proof. by move=> x1; rewrite /expand x1. Qed.
 
-Lemma expandN r : expand (- r) = (- expand r)%E.
+Lemma expandN r : expand (- r)%R = - expand r.
 Proof.
 rewrite /expand; case: ifPn => [r1|].
   rewrite ifF; [by rewrite ifT // -ler_oppr|apply/negbTE].
@@ -1053,7 +1054,7 @@ rewrite -ltNge => r1; case: ifPn; rewrite ler_oppl opprK; [by move=> ->|].
 by rewrite -ltNge leNgt => ->; rewrite leNgt -ltr_oppl r1 /= mulNr normrN.
 Qed.
 
-Lemma expandN1 x : x <= -1 -> expand x = -oo%E.
+Lemma expandN1 x : (x <= -1)%R -> expand x = -oo.
 Proof.
 by rewrite ler_oppr => /expand1/eqP; rewrite expandN eqe_oppLR => /eqP.
 Qed.
@@ -1061,38 +1062,32 @@ Qed.
 Lemma expand0 : expand 0 = 0%:E.
 Proof. by rewrite /expand leNgt ltr01 /= oppr_ge0 leNgt ltr01 /= mul0r. Qed.
 
-(* TODO: added in mathcomp-1.11.0 ssrnum *)
-Lemma nlt_eqF (x y : R) : `|x| < y -> (x == - y = false) * (x == y = false).
-Proof.
-move=> x1; split; last by rewrite lt_eqF // (le_lt_trans (ler_norm _) x1).
-by move: x1; rewrite ltr_norml => /andP[? ?]; rewrite gt_eqF.
-Qed.
-
-Lemma expandK : {in [pred x | `|x| <= 1], cancel expand contract}.
+Lemma expandK : {in [pred x | `|x| <= 1]%R, cancel expand contract}.
 Proof.
 move=> x; rewrite inE le_eqVlt => /orP[|x1].
   rewrite eqr_norml => /andP[/orP[]/eqP->{x}] _;
     by [rewrite expand1|rewrite expandN1].
 rewrite /expand 2!leNgt ltr_oppl; case/ltr_normlP : (x1) => -> -> /=.
-have x_pneq0 : 1 + x / (1 - x) != 0.
-  rewrite -[X in X + _](@divrr _ (1 - x)) -?mulrDl; last first.
-    by rewrite unitfE subr_eq0 eq_sym nlt_eqF.
-  by rewrite subrK mulf_neq0 // invr_eq0 subr_eq0 eq_sym nlt_eqF.
-have x_nneq0 : 1 - x / (1 + x) != 0.
-  rewrite -[X in X + _](@divrr _ (1 + x)) -?mulrBl; last first.
-    rewrite unitfE addrC addr_eq0 nlt_eqF//.
-  by rewrite addrK mulf_neq0 // invr_eq0 addr_eq0 -eqr_oppLR eq_sym nlt_eqF.
-wlog : x x1 x_pneq0 x_nneq0 / 0 <= x => wlog_x0.
+have x_pneq0 : (1 + x / (1 - x) != 0)%R.
+  rewrite -[X in (X + _)%R](@divrr _ (1 - x)%R) -?mulrDl; last first.
+    by rewrite unitfE subr_eq0 eq_sym lt_eqF // ltr_normlW.
+  by rewrite subrK mulf_neq0 // invr_eq0 subr_eq0 eq_sym lt_eqF // ltr_normlW.
+have x_nneq0 : (1 - x / (1 + x) != 0)%R.
+  rewrite -[X in (X + _)%R](@divrr _ (1 + x)%R) -?mulrBl; last first.
+    by rewrite unitfE addrC addr_eq0 gt_eqF // ltrNnormlW.
+  rewrite addrK mulf_neq0 // invr_eq0 addr_eq0 -eqr_oppLR eq_sym gt_eqF //.
+  exact: ltrNnormlW.
+wlog : x x1 x_pneq0 x_nneq0 / (0 <= x)%R => wlog_x0.
   have [x0|x0] := lerP 0 x; first by rewrite wlog_x0.
-  move: (wlog_x0 (- x)).
+  move: (wlog_x0 (- x)%R).
   rewrite !(normrN,opprK,mulNr) oppr_ge0 => /(_ x1 x_nneq0 x_pneq0 (ltW x0)).
   by move/eqP; rewrite eqr_opp => /eqP.
 rewrite /contract !ger0_norm //; last first.
   by rewrite divr_ge0 // subr_ge0 (le_trans _ (ltW x1)) // ler_norm.
-apply: (@mulIr _ (1 + x / (1 - x))); first by rewrite unitfE.
+apply: (@mulIr _ (1 + x / (1 - x))%R); first by rewrite unitfE.
 rewrite -(mulrA (x / _)) mulVr ?unitfE // mulr1.
-rewrite -[X in X + _ / _](@divrr _ (1 - x)) -?mulrDl ?subrK ?div1r //.
-by rewrite unitfE subr_eq0 eq_sym nlt_eqF.
+rewrite -[X in (X + _ / _)%R](@divrr _ (1 - x)%R) -?mulrDl ?subrK ?div1r //.
+by rewrite unitfE subr_eq0 eq_sym lt_eqF // ltr_normlW.
 Qed.
 
 Lemma le_contract : {mono contract : x y / (x <= y)%O}.
@@ -1114,25 +1109,25 @@ Qed.
 Definition lt_contract := leW_mono le_contract.
 Definition contract_inj := mono_inj lexx le_anti le_contract.
 
-Lemma le_expand_in : {in [pred x | `|x| <= 1] &,
+Lemma le_expand_in : {in [pred x | `|x| <= 1]%R &,
   {mono expand : x y / (x <= y)%O}}.
 Proof. exact: can_mono_in (onW_can_in predT expandK) _ (in2W le_contract). Qed.
 
 Definition lt_expand := leW_mono_in le_expand_in.
 Definition expand_inj := mono_inj_in lexx le_anti le_expand_in.
 
-Lemma real_of_er_expand x : `|x| < 1 -> (real_of_er (expand x))%:E = expand x.
+Lemma real_of_er_expand x : (`|x| < 1)%R -> (real_of_er (expand x))%:E = expand x.
 Proof.
 by move=> x1; rewrite /expand 2!leNgt ltr_oppl; case/ltr_normlP : x1 => -> ->.
 Qed.
 
 Lemma contractK : cancel contract expand.
 Proof.
-apply: (onT_can [pred x | `|x| <= 1] contract_le1).
+apply: (onT_can [pred x | `|x| <= 1]%R contract_le1).
 exact: inj_can_sym_on expandK (in1W contract_inj).
 Qed.
 
-Lemma bijective_contract : {on [pred x| `|x| <= 1], bijective contract}.
+Lemma bijective_contract : {on [pred x| `|x| <= 1]%R, bijective contract}.
 Proof. exists expand; [exact: in1W contractK | exact: expandK]. Qed.
 
 Definition le_expandLR := monoLR_in
@@ -1158,16 +1153,16 @@ Qed.
 Lemma contract_eq0 x : (contract x == 0) = (x == 0%:E).
 Proof. by rewrite -(can_eq contractK) contract0. Qed.
 
-Lemma contract_eqN1 x : (contract x == -1) = (x == -oo%E).
+Lemma contract_eqN1 x : (contract x == -1) = (x == -oo).
 Proof. by rewrite -(can_eq contractK). Qed.
 
-Lemma contract_eq1 x : (contract x == 1) = (x == +oo%E).
+Lemma contract_eq1 x : (contract x == 1) = (x == +oo).
 Proof. by rewrite -(can_eq contractK). Qed.
 
-Lemma expand_eqoo (r : R) : (expand r == +oo%E) = (1 <= r).
+Lemma expand_eqoo (r : R) : (expand r == +oo) = (1 <= r)%R.
 Proof. by rewrite /expand; case: ifP => //; case: ifP. Qed.
 
-Lemma expand_eqNoo (r : R) : (expand r == -oo%E) = (r <= -1).
+Lemma expand_eqNoo (r : R) : (expand r == -oo) = (r <= -1)%R.
 Proof.
 rewrite /expand; case: ifP => /= r1; last by case: ifP.
 by apply/esym/negbTE; rewrite -ltNge (lt_le_trans _ r1) // -subr_gt0 opprK.
@@ -1224,7 +1219,7 @@ Qed.
 Lemma contract_inf S : S !=set0 -> contract (ereal_inf S) = inf (contract @` S).
 Proof.
 move=> -[x Sx]; rewrite /ereal_inf /contract (contractN (ereal_sup (-%E @` S))).
-by rewrite  -/contract contract_sup /inf; [rewrite contract_imageN | exists (- x)%E, x].
+by rewrite -/contract contract_sup /inf; [rewrite contract_imageN | exists (- x)%E, x].
 Qed.
 
 End contract_expand_realType.
@@ -1249,8 +1244,8 @@ by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
 Qed.
 
 Lemma nbhs_oo_up_e1 (A : set {ereal R}) (e : {posnum R}) :
-  (fun y : {ereal R} => `|1 - contract y| < (e)%:num) `<=` A ->
-  (e)%:num <= 1 ->
+  (fun y => `|1 - contract y| < e%:num) `<=` A ->
+  e%:num <= 1 ->
   nbhs +oo%E A.
 Proof.
 move=> reA e1.
@@ -1266,12 +1261,12 @@ case => [r | | //].
 Qed.
 
 Lemma nbhs_oo_down_e1 (A : set {ereal R}) (e : {posnum R}) :
-  (fun y : {ereal R} => `|-1 - contract y| < (e)%:num) `<=` A ->
-  (e)%:num <= 1 ->
+  (fun y => `|-1 - contract y| < e%:num) `<=` A ->
+  e%:num <= 1 ->
   nbhs -oo%E A.
 Proof.
 move=> reA e1.
-suff h : nbhs +oo%E ((fun x : {ereal R} => - x)%E @` A).
+suff h : nbhs +oo%E (-%E @` A).
   rewrite (_ : -oo = - +oo)%E // nbhsNe.
   exists (-%E @` A) => //.
   rewrite predeqE => x; split=> [[y [z Az <- <-]]|Ax]; rewrite ?oppeK //.
@@ -1282,8 +1277,8 @@ by apply reA; rewrite contractN opprK -normrN opprD opprK.
 Qed.
 
 Lemma nbhs_oo_up_1e (A : set {ereal R}) (e : {posnum R}) :
-  (fun y : {ereal R} => `|1 - contract y| < (e)%:num) `<=` A ->
-  1 < (e)%:num ->
+  (fun y => `|1 - contract y| < e%:num) `<=` A ->
+  1 < e%:num ->
   nbhs +oo%E A.
 Proof.
 move=> reA e1.
@@ -1307,8 +1302,8 @@ by rewrite (le_trans e11) // ltW.
 Qed.
 
 Lemma nbhs_oo_down_1e (A : set {ereal R}) (e : {posnum R}) :
-  (fun y : {ereal R} => `|-1 - contract y| < (e)%:num) `<=` A ->
-  1 < (e)%:num ->
+  (fun y => `|-1 - contract y| < e%:num) `<=` A ->
+  1 < e%:num ->
   nbhs -oo%E A.
 Proof.
 move=> reA e1.
@@ -1331,13 +1326,13 @@ by rewrite (le_trans e11) // ltW.
 Qed.
 
 Lemma nbhs_fin_out_above (r : R) (e : {posnum R}) (A : set {ereal R}) :
-  (fun y : {ereal R} => `|contract r%:E - contract y| < (e)%:num) `<=` A ->
+  (fun y => `|contract r%:E - contract y| < e%:num) `<=` A ->
   - 1 < contract r%:E - e%:num ->
-  1 <= contract r%:E + (e)%:num ->
+  1 <= contract r%:E + e%:num ->
   nbhs r%:E A.
 Proof.
 move=> reA reN1 re1.
-have X : `|contract r%:E - (e)%:num| < 1.
+have X : `|contract r%:E - e%:num| < 1.
   rewrite ltr_norml reN1 andTb ltr_subl_addl ltr_spaddl //.
   by move: (contract_le1 r%:E); rewrite ler_norml => /andP[].
 pose e' := r - real_of_er (expand (contract r%:E - e%:num)).
@@ -1362,13 +1357,13 @@ by rewrite ltr_subl_addl addrC -ltr_subl_addl.
 Qed.
 
 Lemma nbhs_fin_out_below (r : R) (e : {posnum R}) (A : set {ereal R}) :
-  (fun y : {ereal R} => `|contract r%:E - contract y| < (e)%:num) `<=` A ->
-  contract r%:E - (e)%:num <= - 1 ->
-  contract r%:E + (e)%:num < 1 ->
-  nbhs r%:E A.
+  (fun y  => `|contract r%:E - contract y| < e%:num) `<=` A ->
+  contract r%:E - e%:num <= - 1 ->
+  contract r%:E + e%:num < 1 ->
+  nbhs r%:E%E A.
 Proof.
 move=> reA reN1 re1.
-have ? : `|contract r%:E + (e)%:num| < 1.
+have ? : `|contract r%:E + e%:num| < 1.
   rewrite ltr_norml re1 andbT (@lt_le_trans _ _ (contract r%:E)) // ?ler_addl //.
   by move: (contract_lt1 r); rewrite ltr_norml => /andP[].
 pose e' : R := real_of_er (expand (contract r%:E + e%:num)) - r.
@@ -1392,9 +1387,9 @@ by move: (contract_lt1 r'); rewrite ltr_norml => /andP[].
 Qed.
 
 Lemma nbhs_fin_out_above_below (r : R) (e : {posnum R}) (A : set {ereal R}) :
-  (fun y : {ereal R} => `|contract r%:E - contract y| < (e)%:num) `<=` A ->
+  (fun y  => `|contract r%:E - contract y| < e%:num) `<=` A ->
   contract r%:E - e%:num < -1 ->
-  1 < contract r%:E + (e)%:num ->
+  1 < contract r%:E + e%:num ->
   nbhs r%:E A.
 Proof.
 move=> reA reN1 re1; suff : A = setT by move->; apply: filterT.
@@ -1418,8 +1413,8 @@ case: x => [r'| |] //.
 Qed.
 
 Lemma nbhs_fin_inbound (r : R) (e : {posnum R}) (A : set {ereal R}) :
-  (fun y : {ereal R} => `|contract r%:E - contract y| < (e)%:num) `<=` A ->
-  nbhs r%:E A.
+  (fun y => `|contract r%:E - contract y| < e%:num) `<=` A ->
+  nbhs r%:E%E A.
 Proof.
 move=> reA.
 have [|reN1] := boolP (contract r%:E - e%:num == -1).
@@ -1454,11 +1449,11 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
   have [/eqP re1|re1] := boolP (contract r%:E + e%:num == 1).
     by apply (@nbhs_fin_out_above _ e) => //; rewrite re1.
   move: re1; rewrite neq_lt => /orP[re1|re1].
-    have ? : `|contract r%:E - (e)%:num| < 1.
+    have ? : `|contract r%:E - e%:num| < 1.
       rewrite ltr_norml reN1 andTb ltr_subl_addl.
       rewrite (@lt_le_trans _ _ 1) // ?ler_addr //.
       by case/ltr_normlP : (contract_lt1 r).
-    have ? : `|contract r%:E + (e)%:num| < 1.
+    have ? : `|contract r%:E + e%:num| < 1.
       rewrite ltr_norml re1 andbT -(addr0 (-1)) ler_lt_add //.
       by move: (contract_le1 r%:E); rewrite ler_norml => /andP[].
     pose e' : R := minr (r - real_of_er (expand (contract r%:E - e%:num)))
@@ -1488,7 +1483,7 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
     rewrite gtr0_norm ?subr_gt0 ?lt_contract ?lte_fin//.
     by rewrite ltr_subl_addl addrC -ltr_subl_addl -lt_expandLR ?inE ?ltW.
   by apply (@nbhs_fin_out_above _ e) => //; rewrite ltW.
-have [re1|re1] := ltrP 1 (contract r%:E + (e)%:num).
+have [re1|re1] := ltrP 1 (contract r%:E + e%:num).
   exact: (@nbhs_fin_out_above_below _ e).
 move: re1; rewrite le_eqVlt => /orP[re1|re1].
   have {re1}re1 : contract r%:E = 1 - e%:num.
@@ -2890,7 +2885,7 @@ have y_neq0 : y != 0.
   by rewrite -normr_eq0 gt_eqF// (le_lt_trans _ y_gt) ?divr_ge0.
 rewrite -div1r -[y^-1]div1r -mulNr addf_div// mul1r mulN1r normrM normfV.
 rewrite ltr_pdivr_mulr ?normr_gt0 ?mulf_neq0//.
-apply: (@lt_le_trans _ _ ((e)%:num * (`|x| * (`|x| / 2)))).
+apply: (@lt_le_trans _ _ (e%:num * (`|x| * (`|x| / 2)))).
   by rewrite distrC; near: y; apply: cvg_dist; rewrite ?mulr_gt0// ?normr_gt0.
 by rewrite normrM !ler_wpmul2l// ltW.
 Grab Existential Variables. all: end_near. Qed.
@@ -4059,26 +4054,26 @@ by exists r => //; apply xeX.
 Qed.
 
 Lemma nbhs_open_ereal_lt r (f : R -> R) : r < f r ->
-  nbhs r%:E [set y | y < (f r)%R%:E]%E.
+  nbhs r%:E [set y | y < (f r)%:E]%E.
 Proof.
 move=> xfx; rewrite nbhsE /=; eexists; split; last by move=> y; exact.
 by split; [apply open_ereal_lt_ereal | rewrite lte_fin].
 Qed.
 
 Lemma nbhs_open_ereal_gt r (f : R -> R) : f r < r ->
-  nbhs r%:E [set y | (f r)%R%:E < y]%E.
+  nbhs r%:E [set y | (f r)%:E < y]%E.
 Proof.
 move=> xfx; rewrite nbhsE /=; eexists; split; last by move=> y; exact.
 by split; [apply open_ereal_gt_ereal | rewrite lte_fin].
 Qed.
 
-Lemma nbhs_open_ereal_pinfty r : nbhs +oo%E [set y | r%R%:E < y]%E.
+Lemma nbhs_open_ereal_pinfty r : nbhs +oo%E [set y | r%:E < y]%E.
 Proof.
 rewrite nbhsE /=; eexists; split; last by move=> y; exact.
 by split; [apply open_ereal_gt_ereal | rewrite lte_pinfty].
 Qed.
 
-Lemma nbhs_open_ereal_ninfty r : nbhs -oo%E [set y | y < r%R%:E]%E.
+Lemma nbhs_open_ereal_ninfty r : nbhs -oo%E [set y | y < r%:E]%E.
 Proof.
 rewrite nbhsE /=; eexists; split; last by move=> y; exact.
 by split; [apply open_ereal_lt_ereal | rewrite lte_ninfty].

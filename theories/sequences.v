@@ -854,10 +854,10 @@ have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo%E).
     by move: un1; rewrite le_eqVlt eq_sym contract_eqN1 (negbTE unoo).
   rewrite ltr_subl_addr addrC -ltr_subl_addr -lt_expandLR ?inE//=.
     near: n.
-    suff [n Hn] : exists n, (expand (contract +oo - (e)%:num)%R < u_ n)%E.
+    suff [n Hn] : exists n, (expand (contract +oo - e%:num)%R < u_ n)%E.
       by exists n => // m nm; rewrite (lt_le_trans Hn) //; apply nd_u_.
     apply/not_existsP => abs.
-    have : (l <= expand (contract +oo - (e)%:num)%R)%E.
+    have : (l <= expand (contract +oo - e%:num)%R)%E.
       apply: ub_ereal_sup => x [n _ <-{x}].
       rewrite leNgt; apply/negP/abs.
       rewrite loo lee_pinfty_eq expand_eqoo ler_sub_addr addrC -ler_sub_addr.
@@ -866,7 +866,7 @@ have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo%E).
       by rewrite ler_subl_addr (le_trans (ltW e2)).
     by rewrite ler_subl_addr ler_addl.
 have [r lr] : exists r, l = r%:E by move: l lnoo lpoo => [] // r' _ _; exists r'.
-have [re1|re1] := ltrP (`|contract l - (e)%:num|) 1; last first.
+have [re1|re1] := ltrP (`|contract l - e%:num|) 1; last first.
   rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
   have unoo : u_ n != -oo%E.
     near: n.
