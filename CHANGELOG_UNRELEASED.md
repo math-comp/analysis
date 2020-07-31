@@ -7,9 +7,24 @@
 - in `boolp.v`, new lemma `andC`
 - in `topology.v`:
   + new lemma `open_nbhsE`
+  + `uniformType` a structure for uniform spaces based on entourages
+    (`entourage`)
+  + `uniformType` structure on products, matrices, function spaces
+  + definitions `nbhs_`, `topologyOfEntourageMixin`, `split_ent`, `nbhsP`,
+    `entourage_set`, `entourage_`, `uniformityOfBallMixin`, `nbhs_ball`
+  + lemmas `nbhs_E`, `nbhs_entourageE`, `filter_from_entourageE`,
+    `entourage_refl`, `entourage_filter`, `entourageT`, `entourage_inv`,
+    `entourage_split_ex`, `split_entP`, `entourage_split_ent`,
+    `subset_split_ent`, `entourage_split`, `nbhs_entourage`, `cvg_entourageP`,
+    `cvg_entourage`, `cvg_app_entourageP`, `cvg_mx_entourageP`,
+    `cvg_fct_entourageP`, `entourage_E`, `entourage_ballE`,
+    `entourage_from_ballE`, `entourage_ball`, `entourage_proper_filter`
+  + `completePseudoMetricType` structure
+  + `completePseudoMetricType` structure on matrices and function spaces
 - in `classical_sets.v`:
   + lemmas `setICr`, `setUidPl`, `subsets_disjoint`, `disjoints_subset`, `setDidPl`,
-    `setIidPl`, `setIS`, `setSI`, `setISS`, `bigcup_recl`, `bigcup_distrr`
+    `setIidPl`, `setIS`, `setSI`, `setISS`, `bigcup_recl`, `bigcup_distrr`,
+    `setMT`
 - in `ereal.v`:
   + notation `\+` (`ereal_scope`) for function addition
   + notations `>` and `>=` for comparison of extended real numbers
@@ -19,7 +34,9 @@
   + arithmetic lemmas: `oppeD`, `subre_ge0`, `suber_ge0`, `lee_add2lE`, `lte_add2lE`,
     `lte_add`, `lte_addl`, `lte_le_add`, `lte_subl_addl`, `lee_subr_addr`,
     `lee_subl_addr`, `lte_spaddr`
-- in `normedtype.v`, lemmas `natmul_continuous`, `cvgMn` and `is_cvgMn`.
+- in `normedtype.v`:
+  + lemmas `natmul_continuous`, `cvgMn` and `is_cvgMn`.
+  + `uniformType` structure for `ereal`
 - in `sequences.v`:
   + definitions `arithmetic`, `geometric`, `geometric_invn`
   + lemmas `increasing_series`, `cvg_shiftS`, `mulrn_arithmetic`,
@@ -33,6 +50,13 @@
 - moved from `normedtype.v` to `boolp.v` and renamed:
   + `forallN` -> `forallNE`
   + `existsN` -> `existsNE`
+- `topology.v`:
+  + `unif_continuous` uses `entourage`
+  + `pseudoMetricType` inherits from `uniformType`
+  + `generic_source_filter` and `set_filter_source` use entourages
+  + `cauchy` is based on entourages and its former version is renamed
+    `cauchy_ball`
+  + `completeType` inherits from `uniformType` and not from `pseudoMetricType`
 
 ### Renamed
 
@@ -78,8 +102,8 @@
   + `Canonical locally'_filter_on` -> `Canonical nbhs'_filter_on`
   + `locally_locally'` -> `nbhs_nbhs'`
   + `Global Instance within_locally_proper` -> `Global Instance within_nbhs_proper`
-  + `locallyP` -> `nbhsP`
-  + `locally_ball` -> `nbhs_ball`
+  + `locallyP` -> `nbhs_ballP`
+  + `locally_ball` -> `nbhsx_ballx`
   + `neigh_ball` -> `open_nbhs_ball`
   + `mx_locally` -> `mx_nbhs`
   + `prod_locally` -> `prod_nbhs`
@@ -87,13 +111,13 @@
   + `locally_of` -> `nbhs_of`
   + `open_of_locally` -> `open_of_nhbs`
   + `locally_of_open` -> `nbhs_of_open`
-  + `locally_` -> `nbhs_`
-  + lemma `locally_E` -> `nbhs_E`
+  + `locally_` -> `nbhs_ball`
   + lemma `locally_ballE` -> `nbhs_ballE`
   + `locallyW` -> `nearW`
   + `nearW` -> `near_skip_subproof`
   + `locally_infty_gt` -> `nbhs_infty_gt`
   + `locally_infty_ge` -> `nbhs_infty_ge`
+  + `cauchy_entouragesP` -> `cauchy_ballP`
 - in `normedtype.v`:
   + `locallyN` -> `nbhsN`
   + `locallyC` -> `nbhsC`
@@ -168,6 +192,10 @@
   + `telescopingS0` -> `eq_sum_telescope`
 
 ### Removed
+
+- in `topology.v`:
+  + definitions `entourages`, `topologyOfBallMixin`, `ball_set`
+  + lemmas `locally_E`, `entourages_filter`, `cvg_cauchy_ex`
 
 ### Infrastructure
 

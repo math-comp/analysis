@@ -1118,11 +1118,11 @@ Lemma near_shift {K : numDomainType} {R : normedModType K}
    (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
 rewrite propeqE; split=> /= /nbhs_normP [_/posnumP[e] ye];
-apply/nbhs_normP; exists e%:num => // t /= et.
-  apply: ye; rewrite /= !opprD addrA addrACA subrr add0r.
+apply/nbhs_normP; exists e%:num => // t; rewrite -ball_normE /= => et.
+  apply: ye; rewrite -ball_normE /= !opprD addrA addrACA subrr add0r.
   by rewrite opprK addrC.
 have /= := ye (t - (x - y)); rewrite addrNK; apply.
-by rewrite opprB addrCA opprD addrA subrr add0r opprB.
+by rewrite -ball_normE /= opprB addrCA opprD addrA subrr add0r opprB.
 Qed.
 
 Lemma cvg_shift {T : Type} {K : numDomainType} {R : normedModType K}
@@ -1157,7 +1157,7 @@ suff flip : \forall k \near +oo, forall x, `|f x| <= k * `|x|.
   near +oo => k; near=> y.
   rewrite (le_lt_trans (near flip k _ _)) // -ltr_pdivl_mull; last by near: k; exists 0; rewrite real0.
   near: y; apply/nbhs_normP.
-  eexists; last by move=> ?; rewrite /= sub0r normrN; apply.
+  eexists; last by move=> ?; rewrite -ball_normE /= sub0r normrN; apply.
   by rewrite mulr_gt0 // invr_gt0; near: k; exists 0; rewrite real0.
 have /nbhs_normP [_/posnumP[d]] := Of1.
 rewrite /cst [X in _ * X]normr1 mulr1 => fk; near=> k => y.
@@ -1169,7 +1169,7 @@ rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //; last by near: k; exi
 rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
 have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
-rewrite -linearZ fk //= distrC subr0 normmZ ger0_norm //.
+rewrite -linearZ fk //= -ball_normE /= distrC subr0 normmZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //; last by near: k; exists 0; rewrite real0.
 rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: nbhs_pinfty_gt.
 Grab Existential Variables. all: end_near. Qed.

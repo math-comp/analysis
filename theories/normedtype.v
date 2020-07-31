@@ -239,7 +239,8 @@ Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
 
 Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
   : filteredType R := Filtered.Pack (Filtered.Class
-    (@Pointed.class (pointed_of_zmodule R)) (nbhs_ (ball_ (fun x => `|x|)))).
+    (@Pointed.class (pointed_of_zmodule R))
+    (nbhs_ball_ (ball_ (fun x => `|x|)))).
 
 Section pseudoMetric_of_normedDomain.
 Variables (K : numDomainType) (R : normedZmodType K).
@@ -255,17 +256,32 @@ move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
 by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
 Qed.
 Definition pseudoMetric_of_normedDomain
-  : PseudoMetric.mixin_of K (@nbhs_ K R R (ball_ (fun x => `|x|)))
+  : PseudoMetric.mixin_of K (@entourage_ K R R (ball_ (fun x => `|x|)))
   := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
-End pseudoMetric_of_normedDomain.
 
+Lemma nbhs_ball_normE :
+  @nbhs_ball_ K R R (ball_ normr) = nbhs_ (entourage_ (ball_ normr)).
+Proof.
+rewrite /nbhs_ entourage_E predeq2E => x A; split.
+  move=> [e egt0 sbeA].
+  by exists [set xy | ball_ normr xy.1 e xy.2] => //; exists e.
+by move=> [E [e egt0 sbeE] sEA]; exists e => // ??; apply/sEA/sbeE.
+Qed.
+End pseudoMetric_of_normedDomain.
 Canonical R_pointedType := [pointedType of
   Rdefinitions.R for pointed_of_zmodule R_ringType].
 (* NB: similar definition in topology.v *)
 Canonical R_filteredType := [filteredType Rdefinitions.R of
   Rdefinitions.R for filtered_of_normedZmod R_normedZmodType].
 Canonical R_topologicalType : topologicalType := TopologicalType Rdefinitions.R
-  (topologyOfBallMixin (pseudoMetric_of_normedDomain R_normedZmodType)).
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ R_normedZmodType)
+      (pseudoMetric_of_normedDomain R_normedZmodType))).
+Canonical R_uniformType : uniformType :=
+  UniformType Rdefinitions.R
+  (uniformityOfBallMixin (@nbhs_ball_normE _ R_normedZmodType)
+    (pseudoMetric_of_normedDomain R_normedZmodType)).
 Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType :=
   PseudoMetricType Rdefinitions.R (pseudoMetric_of_normedDomain R_normedZmodType).
 
@@ -277,25 +293,32 @@ Canonical numFieldType_pointedType :=
 Canonical numFieldType_filteredType :=
   [filteredType R of R^o for filtered_of_normedZmod R].
 Canonical numFieldType_topologicalType : topologicalType := TopologicalType R^o
-  (topologyOfBallMixin (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ [normedZmodType R of R])
+      (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+Canonical numFieldType_uniformType : uniformType := UniformType R^o
+  (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
+    (pseudoMetric_of_normedDomain [normedZmodType R of R])).
 Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R
-  (Topological.class numFieldType_topologicalType) (@pseudoMetric_of_normedDomain R R)).
+  (Uniform.class numFieldType_uniformType) (@pseudoMetric_of_normedDomain R R)).
 Definition numdFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
 End numFieldType_canonical.
 
 Lemma nbhsN (R : numFieldType) (x : R^o) :
   nbhs (- x) = [set [set - y | y in A] | A in nbhs x].
 Proof.
+rewrite -!(@filter_from_ballE _ [pseudoMetricType R of R^o]).
 rewrite predeqE => A; split=> [[e egt0 oppxe_A]|[B [e egt0 xe_B] <-]];
   last first.
   exists e => // y xe_y; exists (- y); last by rewrite opprK.
   apply/xe_B.
-  by rewrite /ball_ opprK -normrN -mulN1r mulrDr !mulN1r.
+  by rewrite /ball /= opprK -normrN -mulN1r mulrDr !mulN1r.
 exists [set - y | y in A]; last first.
   rewrite predeqE => y; split=> [[z [t At <- <-]]|Ay]; first by rewrite opprK.
   by exists (- y); [exists y|rewrite opprK].
 exists e => // y xe_y; exists (- y); last by rewrite opprK.
-by apply/oppxe_A; rewrite /ball_ distrC opprK addrC.
+by apply/oppxe_A; rewrite /ball /= distrC opprK addrC.
 Qed.
 
 Lemma openN (R : numFieldType) (A : set R^o) :
@@ -319,8 +342,8 @@ Qed.
 Module PseudoMetricNormedZmodule.
 Section ClassDef.
 Variable R : numDomainType.
-Record mixin_of (T : normedZmodType R) (nbhs : T -> set (set T))
-    (m : PseudoMetric.mixin_of R nbhs) := Mixin {
+Record mixin_of (T : normedZmodType R) (ent : set (set (T * T)))
+    (m : PseudoMetric.mixin_of R ent) := Mixin {
   _ : PseudoMetric.ball m = ball_ (fun x => `| x |) }.
 
 Record class_of (T : Type) := Class {
@@ -328,16 +351,20 @@ Record class_of (T : Type) := Class {
   pointed_mixin : Pointed.point_of T ;
   nbhs_mixin : Filtered.nbhs_of T T ;
   topological_mixin : @Topological.mixin_of T nbhs_mixin ;
-  pseudoMetric_mixin : @PseudoMetric.mixin_of R T nbhs_mixin ;
+  uniform_mixin : @Uniform.mixin_of T nbhs_mixin ;
+  pseudoMetric_mixin :
+    @PseudoMetric.mixin_of R T (Uniform.entourage uniform_mixin) ;
   mixin : @mixin_of (Num.NormedZmodule.Pack _ base) _ pseudoMetric_mixin
 }.
 Local Coercion base : class_of >-> Num.NormedZmodule.class_of.
 Definition base2 T c := @PseudoMetric.Class _ _
-    (@Topological.Class _
-      (Filtered.Class
-       (Pointed.Class (@base T c) (pointed_mixin c))
-       (nbhs_mixin c))
-      (topological_mixin c))
+    (@Uniform.Class _
+      (@Topological.Class _
+        (Filtered.Class
+         (Pointed.Class (@base T c) (pointed_mixin c))
+         (nbhs_mixin c))
+        (topological_mixin c))
+      (uniform_mixin c))
     (pseudoMetric_mixin c).
 Local Coercion base2 : class_of >-> PseudoMetric.class_of.
 (* TODO: base3? *)
@@ -358,7 +385,7 @@ Definition pack (b0 : Num.NormedZmodule.class_of R T) lm0 um0
       & phant_id (@Num.NormedZmodule.class R (Phant R) bT) b =>
   fun uT (u : PseudoMetric.class_of R T) & phant_id (@PseudoMetric.class R uT) u =>
   fun (m : @mixin_of (Num.NormedZmodule.Pack _ b) _ u) & phant_id m m0 =>
-  @Pack phR T (@Class T b u u u u m).
+  @Pack phR T (@Class T b u u u u u m).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
@@ -367,14 +394,17 @@ Definition normedZmodType := @Num.NormedZmodule.Pack R phR cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack xT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
+Definition uniformType := @Uniform.Pack cT xclass.
 Definition pseudoMetricType := @PseudoMetric.Pack R cT xclass.
 Definition pointed_zmodType := @GRing.Zmodule.Pack pointedType xclass.
 Definition filtered_zmodType := @GRing.Zmodule.Pack filteredType xclass.
 Definition topological_zmodType := @GRing.Zmodule.Pack topologicalType xclass.
+Definition uniform_zmodType := @GRing.Zmodule.Pack uniformType xclass.
 Definition pseudoMetric_zmodType := @GRing.Zmodule.Pack pseudoMetricType xclass.
 Definition pointed_normedZmodType := @Num.NormedZmodule.Pack R phR pointedType xclass.
 Definition filtered_normedZmodType := @Num.NormedZmodule.Pack R phR filteredType xclass.
 Definition topological_normedZmodType := @Num.NormedZmodule.Pack R phR topologicalType xclass.
+Definition uniform_normedZmodType := @Num.NormedZmodule.Pack R phR uniformType xclass.
 Definition pseudoMetric_normedZmodType := @Num.NormedZmodule.Pack R phR pseudoMetricType xclass.
 
 End ClassDef.
@@ -400,15 +430,19 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
+Coercion uniformType : type >-> Uniform.type.
+Canonical uniformType.
 Coercion pseudoMetricType : type >-> PseudoMetric.type.
 Canonical pseudoMetricType.
 Canonical pointed_zmodType.
 Canonical filtered_zmodType.
 Canonical topological_zmodType.
+Canonical uniform_zmodType.
 Canonical pseudoMetric_zmodType.
 Canonical pointed_normedZmodType.
 Canonical filtered_normedZmodType.
 Canonical topological_normedZmodType.
+Canonical uniform_normedZmodType.
 Canonical pseudoMetric_normedZmodType.
 Notation pseudoMetricNormedZmodType R := (type (Phant R)).
 Notation PseudoMetricNormedZmodType R T m :=
@@ -431,7 +465,7 @@ Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
 Local Notation ball_norm := (ball_ (@normr K V)).
 
 Lemma ball_normE : ball_norm = ball.
-Proof. by case: V => ? [? ? ? ? ? []]. Qed.
+Proof. by case: V => ? [? ? ? ? ? ? []]. Qed.
 
 End pseudoMetricnormedzmodule_lemmas.
 
@@ -482,19 +516,19 @@ Qed.
 Lemma nbhsC (x : T) (P : set T) :
   ~ (forall eps : {posnum R}, ~ (ball x eps%:num `<=` ~` P)) ->
   nbhs x (~` P).
-Proof. by move=> /ex_ball_sig [e] ?; apply/nbhsP; exists e%:num. Qed.
+Proof. by move=> /ex_ball_sig [e] ?; apply/nbhs_ballP; exists e%:num. Qed.
 
 Lemma nbhsC_ball (x : T) (P : set T) :
   nbhs x (~` P) -> {d : {posnum R} | ball x d%:num `<=` ~` P}.
 Proof.
-move=> /nbhsP xNP; apply: ex_ball_sig.
+move=> /nbhs_ballP xNP; apply: ex_ball_sig.
 by have [_ /posnumP[e] eP /(_ _ eP)] := xNP.
 Qed.
 
 Lemma nbhs_ex (x : T) (P : T -> Prop) : nbhs x P ->
   {d : {posnum R} | forall y, ball x d%:num y -> P y}.
 Proof.
-move=> /nbhsP xP.
+move=> /nbhs_ballP xP.
 pose D := [set d : R | d > 0 /\ forall y, ball x d y -> P y].
 have [|d_gt0 dP] := @getPex _ D; last by exists (PosNum d_gt0).
 by move: xP => [e bP]; exists (e : R).
@@ -540,17 +574,17 @@ Qed.
 Lemma coord_continuous {K : numFieldType} m n i j :
   continuous (fun M : 'M[K^o]_(m.+1, n.+1) => M i j).
 Proof.
-move=> /= M s /= /(nbhsP (M i j)); rewrite nbhs_E => -[e e0 es].
-apply/nbhsP; rewrite nbhs_E; exists e => //= N MN; exact/es/MN.
+move=> /= M s /= /(nbhs_ballP (M i j)) [e e0 es].
+apply/nbhs_ballP; exists e => //= N MN; exact/es/MN.
 Qed.
 
 Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter (nbhs' x).
 Proof.
-apply: Build_ProperFilter => A [_/posnumP[e] Ae].
+apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2); apply: Ae; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-rewrite /= opprD addrA subrr distrC subr0 ger0_norm //.
+rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
@@ -658,7 +692,8 @@ Proof.
 case=> [x| |].
 - case: (ereal_nbhs'_filter x%:E) => x0 [//=nxT xI xS].
   apply Build_ProperFilter => //=.
-  by move=> P [r r0 xr]; exists x%:E; apply xr => //=; rewrite subrr normr0.
+  move=> P /nbhs_ballP[r r0 xr]; exists x%:E; apply xr => //=.
+  by rewrite /ball /= subrr normr0.
   apply Build_Filter => //=.
   by rewrite nbhsE'.
   move=> P Q.
@@ -681,21 +716,21 @@ Lemma ereal_nbhs_singleton (p : {ereal R}) (A : set {ereal R}) :
   ereal_nbhs p A -> A p.
 Proof.
 move: p => -[p | [M [Mreal MA]] | [M [Mreal MA]]] /=; [|exact: MA | exact: MA].
-move/nbhsP; rewrite nbhs_E => -[_/posnumP[e]]; apply; exact/ballxx.
+move=> /nbhs_ballP[_/posnumP[e]]; apply; exact/ballxx.
 Qed.
 
 Lemma ereal_nbhs_nbhs (p : {ereal R}) (A : set {ereal R}) :
   ereal_nbhs p A -> ereal_nbhs p (ereal_nbhs^~ A).
 Proof.
 move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
-- move/nbhsP; rewrite nbhs_E => -[_/posnumP[e]] ballA.
-  apply/nbhsP; rewrite nbhs_E; exists (e%:num / 2) => //= r per.
-  apply/nbhsP; rewrite nbhs_E; exists (e%:num / 2) => //= x rex.
+- move=> /nbhs_ballP[_/posnumP[e]] ballA.
+  apply/nbhs_ballP; exists (e%:num / 2) => //= r per.
+  apply/nbhs_ballP; exists (e%:num / 2) => //= x rex.
   apply/ballA/(@ball_splitl _ _ r) => //; exact/ball_sym.
 - exists (M + 1); split; first by rewrite realD // real1.
   move=> -[x| _ |] //=.
     rewrite lte_fin => M'x /=.
-    apply/nbhsP; rewrite nbhs_E; exists 1 => //= y x1y.
+    apply/nbhs_ballP; exists 1 => //= y x1y.
     apply MA; rewrite lte_fin.
     rewrite addrC -ltr_subr_addl in M'x.
     rewrite (lt_le_trans M'x) // ler_subl_addl addrC -ler_subl_addl.
@@ -709,7 +744,7 @@ move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
 - exists (M - 1); split; first by rewrite realB // real1.
   move=> -[x| _ |] //=.
     rewrite lte_fin => M'x /=.
-    apply/nbhsP; rewrite nbhs_E; exists 1 => //= y x1y.
+    apply/nbhs_ballP; exists 1 => //= y x1y.
     apply MA; rewrite lte_fin.
     rewrite ltr_subr_addl in M'x.
     rewrite (le_lt_trans _ M'x) // addrC -ler_subl_addl.
@@ -921,15 +956,16 @@ Lemma nbhsNe (R : realFieldType) (x : {ereal R}) :
   nbhs (- x)%E = [set [set (- y)%E | y in A] | A in nbhs x].
 Proof.
 case: x => [r /=| |].
-- rewrite predeqE => S; split => [[_/posnumP[e] reS]|[S' [_ /posnumP[e] reS' <-]]].
+- rewrite /nbhs /= /ereal_nbhs -nbhs_ballE.
+  rewrite predeqE => S; split => [[_/posnumP[e] reS]|[S' [_ /posnumP[e] reS' <-]]].
     exists (-%E @` S).
       exists e%:num => // x rex; exists (- x%:E)%E; last by rewrite oppeK.
-      by apply reS; rewrite /= opprK -normrN opprD opprK.
+      by apply reS; rewrite /ball /= opprK -normrN opprD opprK.
     rewrite predeqE => s; split => [[y [z Sz] <- <-]|Ss].
       by rewrite oppeK.
     by exists (- s)%E; [exists s | rewrite oppeK].
   exists e%:num => // x rex; exists (- x%:E)%E; last by rewrite oppeK.
-  by apply reS'; rewrite /= opprK -normrN opprD.
+  by apply reS'; rewrite /ball /= opprK -normrN opprD.
 - rewrite predeqE => S; split=> [[M [Mreal MS]]|[x [M [Mreal Mx]] <-]].
     exists (-%E @` S).
       exists (- M); rewrite realN Mreal; split => // x Mx.
@@ -1309,7 +1345,7 @@ have e'0 : 0 < e'.
   rewrite subr_gt0 -lte_fin -[in X in (_ < X)%E](contractK r%:E).
   rewrite real_of_er_expand // lt_expand ?inE ?contract_le1// ?ltW//.
   by rewrite ltr_subl_addl ltr_addr.
-apply/nbhsP; exists e' => // r' re'r'; apply reA.
+apply/nbhs_ballP; exists e' => // r' re'r'; apply reA.
 rewrite /ball /= in re'r'.
 have [rr'|r'r] := lerP r r'.
   move: rr'; rewrite le_eqVlt => /orP[/eqP->|rr']; first by rewrite subrr normr0.
@@ -1340,7 +1376,7 @@ have e'0 : 0 < e'.
   rewrite /e'.
   rewrite subr_gt0 -lte_fin -[in X in (X < _)%E](contractK r%:E).
   by rewrite real_of_er_expand // lt_expand ?inE ?contract_le1 ?ltr_addl ?ltW.
-apply/nbhsP; exists e' => // r' r'e'r; apply reA.
+apply/nbhs_ballP; exists e' => // r' r'e'r; apply reA.
 rewrite /ball /= in r'e'r.
 have [rr'|r'r] := lerP r r'.
   move: rr'; rewrite le_eqVlt => /orP[/eqP->|rr'].
@@ -1361,7 +1397,7 @@ Lemma nbhs_fin_out_above_below (r : R) (e : {posnum R}) (A : set {ereal R}) :
   1 < contract r%:E + (e)%:num ->
   nbhs r%:E A.
 Proof.
-move=> reA reN1 re1; suff : A = setT by move=> ->; exists 1.
+move=> reA reN1 re1; suff : A = setT by move->; apply: filterT.
 rewrite predeqE => x; split => // _; apply reA.
 case: x => [r'| |] //.
 - have [|r'r] := lerP r r'.
@@ -1392,7 +1428,7 @@ have [|reN1] := boolP (contract r%:E - e%:num == -1).
     move/eqP : reN1; rewrite -(eqP re1) opprD addrCA subrr addr0 -subr_eq0.
     rewrite opprK -mulr2n mulrn_eq0 orFb contract_eq0 => /eqP[r0].
     move: re1; rewrite r0 contract0 add0r => /eqP e1.
-    exists 1 => // r' /=; rewrite sub0r normrN => r'1.
+    apply/nbhs_ballP; exists 1 => // r' /=; rewrite /ball /= sub0r normrN => r'1.
     by apply reA; rewrite r0 contract0 sub0r normrN e1 contract_lt1.
   rewrite neq_lt => /orP[re1|re1].
     by apply (@nbhs_fin_out_below _ e) => //; rewrite reN1 addrAC subrr sub0r.
@@ -1411,9 +1447,9 @@ have [|reN1] := boolP (contract r%:E - e%:num == -1).
     rewrite [contract +oo]/= ltr0_norm ?subr_lt0; last first.
       by case/ltr_normlP : (contract_lt1 r).
     by rewrite opprB reN1 opprB addrA ltr_subl_addl ltr_add.
-  have : nbhs r%:E (setT `\ -oo%E) by exists 1.
-  case => _/posnumP[e'] /=; rewrite /ball_ => h.
-  by exists e'%:num => // y /h; apply: Aoo.
+  have : nbhs r%:E (setT `\ -oo%E) by apply/nbhs_ballP; exists 1.
+  move=> /nbhs_ballP[_/posnumP[e']] /=; rewrite /ball /= => h.
+  by apply/nbhs_ballP; exists e'%:num => // y /h; apply: Aoo.
 move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
   have [/eqP re1|re1] := boolP (contract r%:E + e%:num == 1).
     by apply (@nbhs_fin_out_above _ e) => //; rewrite re1.
@@ -1435,7 +1471,7 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
       rewrite subr_gt0 -lte_fin -[in X in (X < _)%E](contractK r%:E).
       rewrite real_of_er_expand//.
       by rewrite lt_expand ?inE ?contract_le1 ?ltr_addl ?ltW.
-    apply/nbhsP; exists e' => // r' re'r'; apply reA.
+    apply/nbhs_ballP; exists e' => // r' re'r'; apply reA.
     rewrite /ball /= in re'r'.
     have [|r'r] := lerP r r'.
       rewrite le_eqVlt => /orP[/eqP->|rr'].
@@ -1480,14 +1516,16 @@ move: re1; rewrite le_eqVlt => /orP[re1|re1].
 by apply (@nbhs_fin_out_below _ e) => //; rewrite ltW.
 Qed.
 
-Lemma ereal_nbhsE : nbhs = nbhs_ ereal_ball.
+Lemma ereal_nbhsE : nbhs = nbhs_ (entourage_ ereal_ball).
 Proof.
+set diag := fun (e : R) => [set xy | ereal_ball xy.1 e xy.2].
 rewrite predeq2E => x A; split.
 - rewrite {1}/nbhs /= /ereal_nbhs.
   case: x => [/= r [_/posnumP[e] reA]| [M [/= Mreal MA]]| [M [/= Mreal MA]]].
   + pose e' : R := minr (contract r%:E - contract (r%:E - e%:num%:E))
                         (contract (r%:E + e%:num%:E) - contract r%:E).
-    exists e'.
+    exists (diag e'); rewrite /diag.
+      exists e' => //.
       rewrite /e' lt_minr; apply/andP; split.
         by rewrite subr_gt0 lt_contract lte_fin ltr_subl_addr ltr_addl.
       by rewrite subr_gt0 lt_contract lte_fin ltr_addl.
@@ -1495,7 +1533,7 @@ rewrite predeq2E => x A; split.
     * rewrite /ereal_ball in re'r'.
       have [r'r|rr'] := lerP (contract r'%:E) (contract r%:E).
         apply reA.
-        rewrite /ball_ real_ltr_norml // ?num_real //.
+        rewrite /ball /= real_ltr_norml // ?num_real //.
         rewrite ger0_norm ?subr_ge0// in re'r'.
         have H1 : contract (r%:E - e%:num%:E) < contract r'%:E.
           move: re'r'; rewrite /e' lt_minr => /andP[Hr'1 Hr'2].
@@ -1508,7 +1546,7 @@ rewrite predeq2E => x A; split.
           by rewrite ltr_oppl oppr0.
         by rewrite subr_ge0 -lee_fin -le_contract.
       apply reA.
-      rewrite /ball_ real_ltr_norml // ?num_real //.
+      rewrite /ball /= real_ltr_norml // ?num_real //.
       rewrite ltr0_norm ?subr_lt0// opprB in re'r'.
       apply/andP; split; last first.
         by rewrite (@lt_trans _ _ 0) // subr_lt0 -lte_fin -lt_contract//.
@@ -1544,7 +1582,8 @@ rewrite predeq2E => x A; split.
       exfalso.
       move: h; apply/negP; rewrite -leNgt -ler_oppl.
       by move: (contract_le1 (r%:E - e%:num%:E)); rewrite ler_norml => /andP[].
-  + exists (1 - contract M%:E).
+  + exists (diag (1 - contract M%:E)); rewrite /diag.
+      exists (1 - contract M%:E) => //.
       by rewrite subr_gt0 (le_lt_trans _ (contract_lt1 M)) // ler_norm.
     case=> [r| |].
     * rewrite /ereal_ball [_ +oo%E]/= => rM1.
@@ -1562,7 +1601,8 @@ rewrite predeq2E => x A; split.
       rewrite -leNgt [in X in _ <= X]ger0_norm // ler_subl_addr.
       rewrite -/(contract M%:E) addrC -ler_subl_addr opprD addrA subrr sub0r.
       by move: (contract_le1 M%:E); rewrite ler_norml => /andP[].
-  + exists (1 + contract M%:E).
+  + exists (diag (1 + contract M%:E)); rewrite /diag.
+      exists (1 + contract M%:E) => //.
       rewrite -ltr_subl_addl sub0r.
       by move: (contract_lt1 M); rewrite ltr_norml => /andP[].
     case=> [r| |].
@@ -1581,19 +1621,26 @@ rewrite predeq2E => x A; split.
       rewrite subrr add0r -/(contract M%:E).
       by rewrite (le_trans _ (ltW (contract_lt1 M))) // ler_norm.
     * rewrite /ereal_ball /= => _; exact: MA.
-- case: x => [r [_/posnumP[e] reA]| [_/posnumP[e] reA] | [_/posnumP[e] reA]] //=.
-  + rewrite /ereal_ball in reA.
-    by apply nbhs_fin_inbound with e.
-  + rewrite /ereal_ball [contract +oo]/= in reA.
-    have [|] := boolP (e%:num <= 1); first exact: nbhs_oo_up_e1.
-    by rewrite -ltNge; apply: nbhs_oo_up_1e.
-  + rewrite /ereal_ball [contract -oo]/= in reA.
-    have [|] := boolP (e%:num <= 1); first exact: nbhs_oo_down_e1.
-    by rewrite -ltNge; apply: nbhs_oo_down_1e.
+- case: x => [r [E [_/posnumP[e] reA] sEA]| [E [_/posnumP[e] reA] sEA]| [E [_/posnumP[e] reA] sEA]] //=.
+  + by apply nbhs_fin_inbound with e => ??; apply/sEA/reA.
+  + have [|] := boolP (e%:num <= 1).
+      by apply: nbhs_oo_up_e1 => ??; apply/sEA/reA.
+    by rewrite -ltNge; apply: nbhs_oo_up_1e => ??; apply/sEA/reA.
+  + have [|] := boolP (e%:num <= 1).
+      by apply: nbhs_oo_down_e1 => ??; apply/sEA/reA.
+    by rewrite -ltNge; apply: nbhs_oo_down_1e => ??; apply/sEA/reA.
 Qed.
+
 Definition ereal_pseudoMetricType_mixin :=
   PseudoMetric.Mixin ereal_ball_center ereal_ball_sym ereal_ball_triangle
-                     ereal_nbhsE.
+                     erefl.
+
+Definition ereal_uniformType_mixin : @Uniform.mixin_of {ereal R} nbhs :=
+  uniformityOfBallMixin ereal_nbhsE ereal_pseudoMetricType_mixin.
+
+Canonical ereal_uniformType :=
+  UniformType {ereal R} ereal_uniformType_mixin.
+
 Canonical ereal_pseudoMetricType :=
   PseudoMetricType {ereal R} ereal_pseudoMetricType_mixin.
 End ereal_PseudoMetric.
@@ -1648,11 +1695,13 @@ Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
+Definition uniformType := @Uniform.Pack cT xclass.
 Definition pseudoMetricType := @PseudoMetric.Pack K cT xclass.
 Definition pseudoMetricNormedZmodType := @PseudoMetricNormedZmodule.Pack K phK cT xclass.
 Definition pointed_lmodType := @GRing.Lmodule.Pack K phK pointedType xclass.
 Definition filtered_lmodType := @GRing.Lmodule.Pack K phK filteredType xclass.
 Definition topological_lmodType := @GRing.Lmodule.Pack K phK topologicalType xclass.
+Definition uniform_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
 Definition pseudoMetric_lmodType := @GRing.Lmodule.Pack K phK pseudoMetricType xclass.
 Definition normedZmod_lmodType := @GRing.Lmodule.Pack K phK normedZmodType xclass.
 Definition pseudoMetricNormedZmod_lmodType := @GRing.Lmodule.Pack K phK pseudoMetricNormedZmodType xclass.
@@ -1680,6 +1729,8 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
+Coercion uniformType : type >-> Uniform.type.
+Canonical uniformType.
 Coercion pseudoMetricType : type >-> PseudoMetric.type.
 Canonical pseudoMetricType.
 Coercion pseudoMetricNormedZmodType : type >-> PseudoMetricNormedZmodule.type.
@@ -1687,6 +1738,7 @@ Canonical pseudoMetricNormedZmodType.
 Canonical pointed_lmodType.
 Canonical filtered_lmodType.
 Canonical topological_lmodType.
+Canonical uniform_lmodType.
 Canonical pseudoMetric_lmodType.
 Canonical normedZmod_lmodType.
 Canonical pseudoMetricNormedZmod_lmodType.
@@ -1720,31 +1772,29 @@ Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
 Local Notation ball_norm := (ball_ (@normr R V)).
 
-Local Notation nbhs_norm := (nbhs_ ball_norm).
+Local Notation nbhs_norm := (@nbhs_ball _ V).
 
 Lemma nbhs_le_nbhs_norm (x : V) : nbhs x `=>` nbhs_norm x.
 Proof.
-move=> P [_ /posnumP[e] subP]; apply/nbhsP.
-by eexists; last (move=> y Py; apply/subP; rewrite ball_normE; apply/Py).
+move=> P [_ /posnumP[e] subP]; apply/nbhs_ballP.
+by eexists; last (move=> y Py; apply/subP; apply/Py).
 Qed.
 
 Lemma nbhs_norm_le_nbhs x : nbhs_norm x `=>` nbhs x.
 Proof.
-move=> P /nbhsP [_ /posnumP[e] Pxe].
-by exists e%:num => // y; rewrite ball_normE; apply/Pxe.
+move=> P /nbhs_ballP [_ /posnumP[e] Pxe].
+by exists e%:num => // y; apply/Pxe.
 Qed.
 
 Lemma nbhs_nbhs_norm : nbhs_norm = nbhs.
-Proof.
-by rewrite funeqE => x; rewrite /nbhs_norm ball_normE filter_from_ballE.
-Qed.
+Proof. by rewrite funeqE => x; rewrite -filter_from_ballE. Qed.
 
 Lemma nbhs_normP x P : nbhs x P <-> nbhs_norm x P.
 Proof. by rewrite nbhs_nbhs_norm. Qed.
 
 Lemma filter_from_norm_nbhs x :
   @filter_from R _ [set x : R | 0 < x] (ball_norm x) = nbhs x.
-Proof. by rewrite -nbhs_nbhs_norm. Qed.
+Proof. by rewrite -nbhs_nbhs_norm ball_normE. Qed.
 
 Lemma nbhs_normE (x : V) (P : set V) :
   nbhs_norm x P = \near x, P x.
@@ -1760,7 +1810,7 @@ Proof. exact: nbhs_normE. Qed.
 
 Lemma nbhs_norm_ball_norm x (e : {posnum R}) :
   nbhs_norm x (ball_norm x e%:num).
-Proof. by exists e%:num. Qed.
+Proof. by rewrite ball_normE; exists e%:num. Qed.
 
 Lemma nbhs_ball_norm (x : V) (eps : {posnum R}) : nbhs x (ball_norm x eps%:num).
 Proof. rewrite -nbhs_nbhs_norm; apply: nbhs_norm_ball_norm. Qed.
@@ -1786,7 +1836,7 @@ Lemma cvg_dist {F : set (set V)} {FF : Filter F} (y : V) :
 Proof. by move=> /cvg_distP. Qed.
 
 Lemma nbhs_norm_ball x (eps : {posnum R}) : nbhs_norm x (ball x eps%:num).
-Proof. rewrite nbhs_nbhs_norm; by apply: nbhs_ball. Qed.
+Proof. rewrite nbhs_nbhs_norm; by apply: nbhsx_ballx. Qed.
 
 End NormedModule_numDomainType.
 Hint Resolve normr_ge0 : core.
@@ -1982,7 +2032,7 @@ Implicit Types (x y z : V).
 
 Local Notation ball_norm := (ball_ (@normr R V)).
 
-Local Notation nbhs_norm := (nbhs_ ball_norm).
+Local Notation nbhs_norm := (@nbhs_ball _ V).
 
 Lemma norm_hausdorff : hausdorff V.
 Proof.
@@ -2085,7 +2135,7 @@ Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
 rewrite inE -ler_distl; set he := (e%:num / 2)%:pos.
-have [z []] := clxy _ _ (nbhs_ball x he) (nbhs_ball y he).
+have [z []] := clxy _ _ (nbhsx_ballx x he) (nbhsx_ballx y he).
 move=> zx_he yz_he.
 rewrite -(subrKA z) (le_trans (ler_norm_add _ _) _)// ltW //.
 by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
@@ -2105,10 +2155,10 @@ Lemma continuous_cvg_dist {R : numFieldType}
 Proof.
 move=> cf xl e.
 move/cvg_dist: (cf l) => /(_ _ (posnum_gt0 e)).
-rewrite nearE /= => /nbhsP; rewrite nbhs_E => -[i i0]; apply.
+rewrite nearE /= => /nbhs_ballP [i i0]; apply.
 have /@cvg_dist : Filter [filter of x] by apply: filter_on_Filter.
 move/(_ _ xl _ i0).
-rewrite nearE /= => /nbhsP; rewrite nbhs_E => -[j j0].
+rewrite nearE /= => /nbhs_ballP [j j0].
 by move/(_ _ (ballxx _ j0)); rewrite -ball_normE.
 Qed.
 
@@ -2807,7 +2857,7 @@ Lemma norm_continuous : continuous ((@normr _ V) : V -> K^o).
 Proof.
 move=> x; apply/(@cvg_distP _ [normedModType K of K^o]) => _/posnumP[e] /=.
 rewrite !near_simpl; apply/nbhs_normP; exists e%:num => // y Hy.
-exact/(le_lt_trans (ler_dist_dist _ _)).
+by rewrite -ball_normE in Hy; apply/(le_lt_trans (ler_dist_dist _ _)).
 Qed.
 
 End NVS_continuity_normedModType.
@@ -3071,9 +3121,9 @@ Record class_of (T : Type) := Class {
   mixin : Complete.axiom (PseudoMetric.Pack base)
 }.
 Local Coercion base : class_of >-> NormedModule.class_of.
-Definition base2 T (cT : class_of T) : Complete.class_of K T :=
-  @Complete.Class _ _ (@base T cT) (@mixin T cT).
-Local Coercion base2 : class_of >-> Complete.class_of.
+Definition base2 T (cT : class_of T) : CompletePseudoMetric.class_of K T :=
+  @CompletePseudoMetric.Class _ _ (@base T cT) (@mixin T cT).
+Local Coercion base2 : class_of >-> CompletePseudoMetric.class_of.
 
 Structure type (phK : phant K) := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
@@ -3084,7 +3134,7 @@ Definition class := let: Pack _ c := cT return class_of cT in c.
 
 Definition pack :=
   fun bT (b : NormedModule.class_of K T) & phant_id (@NormedModule.class K phK bT) b =>
-  fun mT m & phant_id (@Complete.class K mT) (@Complete.Class K T b m) =>
+  fun mT m & phant_id (@Complete.class mT) (@Complete.Class T b m) =>
     Pack phK (@Class T b m).
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
@@ -3097,23 +3147,41 @@ Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
+Definition uniformType := @Uniform.Pack cT xclass.
 Definition pseudoMetricType := @PseudoMetric.Pack K cT xclass.
 Definition pseudoMetricNormedZmodType :=
   @PseudoMetricNormedZmodule.Pack K phK cT xclass.
 Definition normedModType := @NormedModule.Pack K phK cT xclass.
-Definition completeType := @Complete.Pack K cT xclass.
+Definition completeType := @Complete.Pack cT xclass.
+Definition completePseudoMetricType := @CompletePseudoMetric.Pack K cT xclass.
 Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
 Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
 Definition complete_normedZmodType := @Num.NormedZmodule.Pack K phK completeType xclass.
 Definition complete_pseudoMetricNormedZmodType :=
   @PseudoMetricNormedZmodule.Pack K phK completeType xclass.
 Definition complete_normedModType := @NormedModule.Pack K phK completeType xclass.
+Definition completePseudoMetric_lmodType : GRing.Lmodule.type phK :=
+  @GRing.Lmodule.Pack K phK (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_zmodType : GRing.Zmodule.type :=
+  @GRing.Zmodule.Pack (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_normedModType : NormedModule.type phK :=
+  @NormedModule.Pack K phK (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_normedZmodType : Num.NormedZmodule.type phK :=
+  @Num.NormedZmodule.Pack K phK
+  (CompletePseudoMetric.sort completePseudoMetricType) xclass.
+Definition completePseudoMetric_pseudoMetricNormedZmodType :
+  PseudoMetricNormedZmodule.type phK :=
+  @PseudoMetricNormedZmodule.Pack K phK
+  (CompletePseudoMetric.sort completePseudoMetricType) xclass.
 End ClassDef.
 
 Module Exports.
 
 Coercion base : class_of >-> NormedModule.class_of.
-Coercion base2 : class_of >-> Complete.class_of.
+Coercion base2 : class_of >-> CompletePseudoMetric.class_of.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
 Canonical eqType.
@@ -3133,17 +3201,26 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
+Coercion uniformType : type >-> Uniform.type.
+Canonical uniformType.
 Coercion pseudoMetricType : type >-> PseudoMetric.type.
 Canonical pseudoMetricType.
 Coercion normedModType : type >-> NormedModule.type.
 Canonical normedModType.
 Coercion completeType : type >-> Complete.type.
 Canonical completeType.
+Coercion completePseudoMetricType : type >-> CompletePseudoMetric.type.
+Canonical completePseudoMetricType.
 Canonical complete_zmodType.
 Canonical complete_lmodType.
 Canonical complete_normedZmodType.
 Canonical complete_pseudoMetricNormedZmodType.
 Canonical complete_normedModType.
+Canonical completePseudoMetric_lmodType.
+Canonical completePseudoMetric_zmodType.
+Canonical completePseudoMetric_normedModType.
+Canonical completePseudoMetric_normedZmodType.
+Canonical completePseudoMetric_pseudoMetricNormedZmodType.
 Notation completeNormedModType K := (type (Phant K)).
 Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
   (at level 0, format "[ 'completeNormedModType'  K  'of'  T ]") : form_scope.
@@ -3221,9 +3298,9 @@ Arguments cvg_distW {_ _ F FF}.
 
 Lemma R_complete (R : realType) (F : set (set R^o)) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
-move=> FF F_cauchy; apply/cvg_ex.
+move=> FF /cauchy_ballP F_cauchy; apply/cvg_ex.
 pose D := \bigcap_(A in F) (down A).
-have /cauchyP /(_ 1) [//|x0 x01] := F_cauchy.
+have /cauchy_ballP /cauchyP /(_ 1) [//|x0 x01] := F_cauchy.
 have D_has_sup : has_sup D; first split.
 - exists (x0 - 1) => A FA.
   near F => x.
@@ -3264,7 +3341,7 @@ Definition at_right (x : R^o) := within (fun u : R => x < u) (nbhs x).
 
 Global Instance at_right_proper_filter (x : R^o) : ProperFilter (at_right x).
 Proof.
-apply: Build_ProperFilter' => -[_ /posnumP[d] /(_ (x + d%:num / 2))].
+apply: Build_ProperFilter' => -[_/posnumP[d] /(_ (x + d%:num / 2))].
 apply; last (by rewrite ltr_addl); rewrite /=.
 rewrite opprD !addrA subrr add0r normrN normf_div !ger0_norm //.
 by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
@@ -3503,7 +3580,7 @@ move=> x clAx; have abx : x \in `[a, b].
   by apply: segment_closed; have /closureI [] := clAx.
 split=> //; have /sabUf [i Di fx] := abx.
 have /fop := Di; rewrite openE => /(_ _ fx) [_ /posnumP[e] xe_fi].
-have /clAx [y [[aby [D' sD [sayUf _]]] xe_y]] := nbhs_ball x e.
+have /clAx [y [[aby [D' sD [sayUf _]]] xe_y]] := nbhsx_ballx x e.
 exists (i |` D')%fset; first by move=> j /fset1UP[->|/sD] //; rewrite inE.
 split=> [z axz|]; last first.
   exists i; first by rewrite !inE eq_refl.
@@ -3556,7 +3633,7 @@ have supAab : sup A \in `[a, b].
 exists (sup A) => //; have lefsupv : f (sup A) <= v.
   rewrite leNgt; apply/negP => ltvfsup.
   have vltfsup : 0 < f (sup A) - v by rewrite subr_gt0.
-  have /fcont /(_ _ (@nbhs_ball _ [normedModType R of R^o] _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
+  have /fcont /(_ _ (@nbhsx_ballx _ [normedModType R of R^o] _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
     := supAab.
   have [t At supd_t] := sup_adherent supA [gt0 of d%:num].
   suff /supdfe : @ball _ [normedModType R of R^o] (sup A) d%:num t.
@@ -3568,7 +3645,7 @@ exists (sup A) => //; have lefsupv : f (sup A) <= v.
 apply/eqP; rewrite eq_le; apply/andP; split=> //.
 rewrite -subr_le0; apply/ler0_addgt0P => _/posnumP[e].
 rewrite ler_subl_addr -ler_subl_addl ltW //.
-have /fcont /(_ _ (@nbhs_ball _ [normedModType R of R^o] _ e)) [_/posnumP[d] supdfe] := supAab.
+have /fcont /(_ _ (@nbhsx_ballx _ [normedModType R of R^o] _ e)) [_/posnumP[d] supdfe] := supAab.
 have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
 have /supdfe /= : @ball _ [normedModType R of R^o] (sup A) d%:num x.
   by near: x; rewrite /= nbhs_simpl; exists d%:num => //.
@@ -3778,7 +3855,7 @@ have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
   by rewrite rmorphD /= -floorE floorS_gtr.
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite -subr_gt0 => ltpn.
-  apply/nbhsP; exists (n%:~R - `|p|) => // q.
+  apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.
   rewrite -ball_normE /= ltr_subr_addr distrC; apply: le_lt_trans.
   by rewrite -{1}(subrK p q) ler_norm_add.
 move=> D _ DcovA.

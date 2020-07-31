@@ -170,7 +170,8 @@ move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R^o))); last first.
   apply/eqOP; near=> k; rewrite /cst [`|1 : R^o|]normr1 mulr1.
   near=> y; rewrite ltW //; near: y; apply/nbhs_normP.
-  by exists k; [near: k; exists 0; rewrite real0|move=> ? /=; rewrite sub0r normrN].
+  exists k; first by near: k; exists 0; rewrite real0.
+  by move=> ? /=; rewrite -ball_normE /= sub0r normrN.
 rewrite addfo; first by move=> /eqolim; rewrite cvg_shift add0r.
 by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
 Grab Existential Variables. all: end_near. Qed.
@@ -303,15 +304,15 @@ pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: (@cvgD _ _ [topologicalType of R^o]).
   rewrite -(scale1r (_ _ v)); apply: cvgZl => /= X [e e0].
   rewrite /ball_ /= => eX.
-  apply/nbhsP; rewrite nbhs_E.
+  apply/nbhs_ballP.
   by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE // subrr normr0.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
   rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
 apply/cvg_distP => e e0.
-rewrite nearE /=; apply/nbhsP; rewrite nbhs_E.
-have /(littleoP [littleo of k]) /nbhsP[i i0 Hi] : 0 < e / (2 * `|v|).
+rewrite nearE /=; apply/nbhs_ballP.
+have /(littleoP [littleo of k]) /nbhs_ballP[i i0 Hi] : 0 < e / (2 * `|v|).
   by rewrite divr_gt0 // pmulr_rgt0 // normr_gt0.
 exists (i / `|v|); first by rewrite divr_gt0 // normr_gt0.
 move=> /= j; rewrite /ball /= /ball_ add0r normrN.
@@ -447,13 +448,13 @@ Proof.
 apply/eqoP => _ /posnumP[e].
 have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : U) id of f]].
 have := littleoP [littleo of [o_ (0 : V') id of g]].
-move=>  /(_ (e%:num / k%:num)) /(_ _) /nbhsP [//|_ /posnumP[d] hd].
+move=>  /(_ (e%:num / k%:num)) /(_ _) /nbhs_ballP [//|_ /posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: le_trans (hd _ _) _; last first.
   rewrite -ler_pdivl_mull //; apply: le_trans leOxkx _.
   by rewrite invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
 rewrite -ball_normE /= distrC subr0 (le_lt_trans leOxkx) //.
 rewrite -ltr_pdivl_mull //; near: x; rewrite /= !nbhs_simpl.
-apply/nbhsP; exists (k%:num ^-1 * d%:num)=> // x.
+apply/nbhs_ballP; exists (k%:num ^-1 * d%:num)=> // x.
 by rewrite -ball_normE /= distrC subr0.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -469,14 +470,14 @@ Lemma compOo_eqo  (U V' W' : normedModType R) (f : U -> V')
 Proof.
 apply/eqoP => _ /posnumP[e].
 have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (0 : V') id of g]].
-move=> /nbhsP [_ /posnumP[d] hd].
+move=> /nbhs_ballP [_ /posnumP[d] hd].
 have ekgt0 : e%:num / k%:num > 0 by [].
 have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
 apply: filter_app; near=> x => leoxekx; apply: le_trans (hd _ _) _; last first.
   by rewrite -ler_pdivl_mull // mulrA [_^-1 * _]mulrC.
 rewrite -ball_normE /= distrC subr0; apply: le_lt_trans leoxekx _.
 rewrite -ltr_pdivl_mull //; near: x; rewrite /= nbhs_simpl.
-apply/nbhsP; exists ((e%:num / k%:num) ^-1 * d%:num)=> // x.
+apply/nbhs_ballP; exists ((e%:num / k%:num) ^-1 * d%:num)=> // x.
 by rewrite -ball_normE /= distrC subr0.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -493,7 +494,7 @@ rewrite funeqE => x; apply/eqP; case: (ler0P `|x|) => [|xn0].
   by rewrite normr_le0 => /eqP ->; rewrite linear0.
 rewrite -normr_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
 apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
-have /oid /nbhsP [_ /posnumP[d] dfe] := posnum_gt0 e.
+have /oid /nbhs_ballP [_ /posnumP[d] dfe] := posnum_gt0 e.
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
 rewrite -{1}(@scalerKV _ _ k _ x) // linearZZ normmZ.
 rewrite -ler_pdivl_mull; last by rewrite gtr0_norm.
@@ -675,8 +676,8 @@ Qed.
 Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
   continuous f -> exists2 k, k > 0 & forall x, `|f x| <= k * `|x|.
 Proof.
-move=> /(_ 0); rewrite linear0 => /(_ _ (nbhs_ball 0 1%:pos)).
-move=> /nbhsP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
+move=> /(_ 0); rewrite linear0 => /(_ _ (nbhsx_ballx 0 1%:pos)).
+move=> /nbhs_ballP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
 case: (lerP `|x| 0) => [|xn0].
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
 set k := 2 / e%:num * (PosNum xn0)%:num.
@@ -744,8 +745,8 @@ Lemma bilinear_schwarz (U V' W' : normedModType R)
   (f : {bilinear U -> V' -> W'}) : continuous (fun p => f p.1 p.2) ->
   exists2 k, k > 0 & forall u v, `|f u v| <= k * `|u| * `|v|.
 Proof.
-move=> /(_ 0); rewrite linear0r => /(_ _ (nbhs_ball 0 1%:pos)).
-move=> /nbhsP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
+move=> /(_ 0); rewrite linear0r => /(_ _ (nbhsx_ballx 0 1%:pos)).
+move=> /nbhs_ballP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
 case: (lerP `|u| 0) => [|un0].
   by rewrite normr_le0 => /eqP->; rewrite linear0l !normr0 mulr0 mul0r.
 case: (lerP `|v| 0) => [|vn0].
@@ -780,7 +781,7 @@ rewrite ler_pmul ?pmulr_rge0 //; last by rewrite nng_le_maxr /= lexx orbT.
 rewrite -ler_pdivl_mull //.
 suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite nng_le_maxr /= lexx.
 near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
-by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite distrC subr0 => /ltW.
+by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite -ball_normE /= distrC subr0 => /ltW.
 Grab Existential Variables. all: end_near. Qed.
 
 Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
@@ -791,8 +792,8 @@ Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
 Proof.
 move=> fc; split=> [q|].
   by apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
-    move=> A /(fc (_.1, _.2)) /= /nbhsP [_ /posnumP[e] fpqe_A];
-    apply/nbhsP; exists e%:num => // r [??]; exact: (fpqe_A (_.1, _.2)).
+    move=> A /(fc (_.1, _.2)) /= /nbhs_ballP [_ /posnumP[e] fpqe_A];
+    apply/nbhs_ballP; exists e%:num => // r [??]; exact: (fpqe_A (_.1, _.2)).
 apply/eqaddoE; rewrite funeqE => q /=.
 rewrite linearDl !linearDr addrA addrC.
 rewrite -[f q.1 _ + _ + _]addrA [f q.1 _ + _]addrC addrA [f q.1 _ + _]addrC.
@@ -933,7 +934,7 @@ rewrite mulrA mulf_div mulr1.
 have hDx_neq0 : h + x != 0.
   near: h; rewrite !nbhs_simpl; apply/nbhs_normP.
   exists `|x|; first by rewrite normr_gt0.
-  move=> h /=; rewrite distrC subr0 -subr_gt0 => lthx.
+  move=> h /=; rewrite -ball_normE /= distrC subr0 -subr_gt0 => lthx.
   rewrite -(normr_gt0 (h + x : R^o)) addrC -[h]opprK.
   apply: lt_le_trans (ler_dist_dist _ _).
   by rewrite ger0_norm normrN //; apply: ltW.
@@ -1357,7 +1358,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_right_proper_filter x.
-apply: (@cvg_map_lim _ _ _ (at_right _)) => // A /cvfx /nbhsP [_ /posnumP[e] xe_A].
+apply: (@cvg_map_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 by exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
 
@@ -1367,7 +1368,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_left_proper_filter x.
-apply: (@cvg_map_lim _ _ _ (at_left _)) => // A /cvfx /nbhsP [_ /posnumP[e] xe_A].
+apply: (@cvg_map_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.

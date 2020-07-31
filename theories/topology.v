@@ -202,49 +202,81 @@ Require Import boolp Rstruct classical_sets posnum.
 (* --> We used these topological notions to prove Tychonoff's Theorem, which  *)
 (*     states that any product of compact sets is compact according to the    *)
 (*     product topology.                                                      *)
+(* * Uniform spaces :                                                         *)
+(*                      nbhs_ ent == neighbourhoods defined using entourages  *)
+(*                    uniformType == interface type for uniform spaces: a     *)
+(*                                   type equipped with entourages            *)
+(*   UniformMixin efilter erefl einv esplit nbhse == builds the mixin for a   *)
+(*                                   uniform space from the properties of     *)
+(*                                   entourages and the compatibility between *)
+(*                                   entourages and nbhs                      *)
+(*                UniformType T m == packs the uniform space mixin into a     *)
+(*                                   uniformType. T must have a canonical     *)
+(*                                   topologicalType structure                *)
+(*      [uniformType of T for cT] == T-clone of the uniformType structure cT  *)
+(*             [uniformType of T] == clone of a canonical uniformType         *)
+(*                                   structure on T                           *)
+(*   topologyOfEntourageMixin umixin == builds the mixin for a topological    *)
+(*                                   space from a mixin for a uniform space   *)
+(*                      entourage == set of entourages in a uniform space     *)
+(*                    split_ent E == when E is an entourage, split_ent E is   *)
+(*                                   an entourage E' such that E' \o E' is    *)
+(*                                   included in E when seen as a relation    *)
+(*                   unif_continuous f <-> f is uniformly continuous.         *)
 (*                                                                            *)
 (* * PseudoMetric spaces :                                                    *)
-(*                     nbhs_ ball == neighbourhoods defined using balls       *)
+(*                entourage_ ball == entourages defined using balls           *)
 (*               pseudoMetricType == interface type for pseudo metric space   *)
 (*                                   structure: a type equipped with balls.   *)
 (*  PseudoMetricMixin brefl bsym btriangle nbhsb == builds the mixin for a    *)
 (*                                   pseudo metric space from the properties  *)
 (*                                   of balls and the compatibility between   *)
-(*                                   balls and nbhs.                          *)
+(*                                   balls and entourages.                    *)
 (*           PseudoMetricType T m == packs the pseudo metric space mixin into *)
 (*                                   a pseudoMetricType. T must have a        *)
-(*                                   canonical topologicalType structure.     *)
+(*                                   canonical uniformType structure.         *)
 (* [pseudoMetricType R of T for cT] == T-clone of the pseudoMetricType        *)
 (*                                   structure cT, with R the ball radius.    *)
 (*      [pseudoMetricType R of T] == clone of a canonical pseudoMetricType    *)
 (*                                   structure on T, with R the ball radius.  *)
-(*     topologyOfBallMixin umixin == builds the mixin for a topological space *)
+(*   uniformityOfBallMixin umixin == builds the mixin for a topological space *)
 (*                                   from a mixin for a pseudoMetric space.   *)
 (*                       ball x e == ball of center x and radius e.           *)
+(*                nbhs_ball_ ball == nbhs defined using the given balls       *)
+(*                      nbhs_ball == nbhs defined using balls in a            *)
+(*                                   pseudometric space                       *)
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
-(*                     entourages == set of entourages defined by balls. An   *)
-(*                                   entourage can be seen as a               *)
-(*                                   "neighbourhood" of the diagonal set      *)
-(*                                   D = {(x, x) | x in T}.                   *)
-(*                   ball_set A e == set A extended with a band of width e    *)
-(*                   unif_continuous f <-> f is uniformly continuous.         *)
 (*                                                                            *)
-(* * Complete spaces :                                                        *)
-(*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
-(*                                   (epsilon-delta definition).              *)
+(* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
-(*                                   (using the near notations).              *)
-(*                   completeType == interface type for a complete            *)
-(*                                   pseudoMetric space structure.            *)
+(*                                   (entourage definition)                   *)
+(*                   completeType == interface type for a complete uniform    *)
+(*                                   space structure.                         *)
 (*       CompleteType T cvgCauchy == packs the proof that every proper cauchy *)
 (*                                   filter on T converges into a             *)
 (*                                   completeType structure; T must have a    *)
-(*                                   canonical pseudoMetricType structure.    *)
+(*                                   canonical uniformType structure.         *)
 (*     [completeType of T for cT] == T-clone of the completeType structure    *)
 (*                                   cT.                                      *)
 (*            [completeType of T] == clone of a canonical completeType        *)
 (*                                   structure on T.                          *)
+(* * Complete pseudometric spaces :                                           *)
+(*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
+(*                                   (epsilon-delta definition).              *)
+(*                      cauchy F <-> the set of sets F is a cauchy filter     *)
+(*                                   (using the near notations).              *)
+(*       completePseudoMetricType == interface type for a complete            *)
+(*                                   pseudometric space structure.            *)
+(* CompletePseudoMetricType T cvgCauchy == packs the proof that every proper  *)
+(*                                   cauchy filter on T converges into a      *)
+(*                                   completePseudoMetricType structure; T    *)
+(*                                   must have a canonical pseudoMetricType   *)
+(*                                   structure.                               *)
+(* [completePseudoMetricType of T for cT] == T-clone of the                   *)
+(*                                   completePseudoMetricType structure cT.   *)
+(* [completePseudoMetricType of T] == clone of a canonical                    *)
+(*                                   completePseudoMetricType structure on T. *)
 (******************************************************************************)
 
 Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
@@ -2627,47 +2659,56 @@ Definition connected (T : topologicalType) (A : set T) :=
   forall B : set T, B !=set0 -> (exists2 C, open C & B = A `&` C) ->
   (exists2 C, closed C & B = A `&` C) -> B = A.
 
-(** * PseudoMetric spaces defined using balls *)
+(** * Uniform spaces *)
 
-Definition nbhs_ {R : numDomainType} {T T'} (ball : T -> R -> set T') (x : T) :=
-   @filter_from R _ [set x | 0 < x] (ball x).
+Local Notation "B \o A" :=
+  ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : classical_set_scope.
 
-Lemma nbhs_E {R : numDomainType} {T T'} (ball : T -> R -> set T') x :
-  nbhs_ ball x = @filter_from R _ [set x : R | 0 < x] (ball x).
+Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
+
+Local Notation "'to_set' A x" := ([set y | A (x, y)])
+  (at level 0, A at level 0) : classical_set_scope.
+
+Definition nbhs_ {T T'} (ent : set (set (T * T'))) (x : T) :=
+  filter_from ent (fun A => to_set A x).
+
+Lemma nbhs_E {T T'} (ent : set (set (T * T'))) x :
+  nbhs_ ent x = filter_from ent (fun A => to_set A x).
 Proof. by []. Qed.
 
-Module PseudoMetric.
+Module Uniform.
 
-Record mixin_of (R : numDomainType) (M : Type) (nbhs : M -> set (set M)) := Mixin {
-  ball : M -> R -> M -> Prop ;
-  ax1 : forall x (e : R), 0 < e -> ball x e x ;
-  ax2 : forall x y (e : R), ball x e y -> ball y e x ;
-  ax3 : forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
-  ax4 : nbhs = nbhs_ ball
+Record mixin_of (M : Type) (nbhs : M -> set (set M)) := Mixin {
+  entourage : (M * M -> Prop) -> Prop ;
+  ax1 : Filter entourage ;
+  ax2 : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A ;
+  ax3 : forall A, entourage A -> entourage (A^-1)%classic ;
+  ax4 : forall A, entourage A -> exists2 B, entourage B & B \o B `<=` A ;
+  ax5 : nbhs = nbhs_ entourage
 }.
 
-Record class_of (R : numDomainType) (M : Type) := Class {
+Record class_of (M : Type) := Class {
   base : Topological.class_of M;
-  mixin : mixin_of R (Filtered.nbhs_op base)
+  mixin : mixin_of (Filtered.nbhs_op base)
 }.
 
 Section ClassDef.
-Variable R : numDomainType.
-Structure type := Pack { sort; _ : class_of R sort }.
+
+Structure type := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c := cT return class_of R cT in c.
+Definition class := let: Pack _ c := cT return class_of cT in c.
 
 Definition clone c of phant_id class c := @Pack T c.
 Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of R xT).
+Notation xclass := (class : class_of xT).
 Local Coercion base : class_of >-> Topological.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
 
-Definition pack nbhs' (m : @mixin_of R T nbhs') :=
+Definition pack nbhs (m : @mixin_of T nbhs) :=
   fun bT (b : Topological.class_of T) of phant_id (@Topological.class bT) b =>
-  fun m'   of phant_id m (m' : @mixin_of R T (Filtered.nbhs_op b)) =>
-  @Pack T (@Class R _ b m').
+  fun m'   of phant_id m (m' : @mixin_of T (Filtered.nbhs_op b)) =>
+  @Pack T (@Class _ b m').
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
@@ -2692,6 +2733,452 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
+Notation uniformType := type.
+Notation UniformType T m := (@pack T _ m _ _ idfun _ idfun).
+Notation UniformMixin := Mixin.
+Notation "[ 'uniformType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
+  (at level 0, format "[ 'uniformType'  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'uniformType' 'of' T ]" := (@clone T _ _ id)
+  (at level 0, format "[ 'uniformType'  'of'  T ]") : form_scope.
+
+End Exports.
+
+End Uniform.
+
+Export Uniform.Exports.
+
+Section UniformTopology.
+
+Program Definition topologyOfEntourageMixin (T : Type)
+  (nbhs : T -> set (set T)) (m : Uniform.mixin_of nbhs) :
+  Topological.mixin_of nbhs := topologyOfFilterMixin _ _ _.
+Next Obligation.
+rewrite (Uniform.ax5 m) nbhs_E; apply filter_from_proper; last first.
+  by move=> A entA; exists p; apply: Uniform.ax2 entA _ _.
+apply: filter_from_filter.
+  by exists setT; apply: @filterT (Uniform.ax1 m).
+move=> A B entA entB; exists (A `&` B) => //.
+exact: (@filterI _ _ (Uniform.ax1 m)).
+Qed.
+Next Obligation.
+move: H; rewrite (Uniform.ax5 m) nbhs_E  => - [B entB sBpA].
+by apply: sBpA; apply: Uniform.ax2 entB _ _.
+Qed.
+Next Obligation.
+move: H; rewrite (Uniform.ax5 m) nbhs_E => - [B entB sBpA].
+have /Uniform.ax4 [C entC sC2B] := entB.
+exists C => // q Cpq; rewrite nbhs_E; exists C => // r Cqr.
+by apply/sBpA/sC2B; exists q.
+Qed.
+
+End UniformTopology.
+
+Definition entourage {M : uniformType} := Uniform.entourage (Uniform.class M).
+
+Lemma nbhs_entourageE {M : uniformType} : nbhs_ (@entourage M) = nbhs.
+Proof. by case: M=> [?[?[]]]. Qed.
+
+Lemma filter_from_entourageE {M : uniformType} x :
+  filter_from (@entourage M) (fun A => to_set A x) = nbhs x.
+Proof. by rewrite -nbhs_entourageE. Qed.
+
+Module Export NbhsEntourage.
+Definition nbhs_simpl :=
+  (nbhs_simpl,@filter_from_entourageE,@nbhs_entourageE).
+End NbhsEntourage.
+
+Lemma nbhsP {M : uniformType} (x : M) P :
+  nbhs x P <-> nbhs_ entourage x P.
+Proof. by rewrite nbhs_simpl. Qed.
+
+Section uniformType1.
+Context {M : uniformType}.
+
+Lemma entourage_refl (A : set (M * M)) x :
+  entourage A -> A (x, x).
+Proof. by move=> entA; apply: Uniform.ax2 entA _ _. Qed.
+
+Global Instance entourage_filter : ProperFilter (@entourage M).
+Proof.
+apply Build_ProperFilter; last exact: Uniform.ax1.
+by move=> A entA; exists (point, point); apply: entourage_refl.
+Qed.
+
+Lemma entourageT : entourage (@setT (M * M)).
+Proof. exact: filterT. Qed.
+
+Lemma entourage_inv (A : set (M * M)) : entourage A -> entourage (A^-1)%classic.
+Proof. exact: Uniform.ax3. Qed.
+
+Lemma entourage_split_ex (A : set (M * M)) :
+  entourage A -> exists2 B, entourage B & B \o B `<=` A.
+Proof. exact: Uniform.ax4. Qed.
+
+Definition split_ent (A : set (M * M)) :=
+  get (entourage `&` [set B | B \o B `<=` A]).
+
+Lemma split_entP (A : set (M * M)) : entourage A ->
+  entourage (split_ent A) /\ split_ent A \o split_ent A `<=` A.
+Proof. by move/entourage_split_ex/exists2P/getPex. Qed.
+
+Lemma entourage_split_ent (A : set (M * M)) : entourage A ->
+  entourage (split_ent A).
+Proof. by move=> /split_entP []. Qed.
+
+Lemma subset_split_ent (A : set (M * M)) : entourage A ->
+  split_ent A \o split_ent A `<=` A.
+Proof. by move=> /split_entP []. Qed.
+
+Lemma entourage_split (z x y : M) A : entourage A ->
+  split_ent A (x,z) -> split_ent A (z,y) -> A (x,y).
+Proof. by move=> /subset_split_ent sA ??; apply: sA; exists z. Qed.
+
+Lemma nbhs_entourage (x : M) A : entourage A -> nbhs x (to_set A x).
+Proof. by move=> ?; apply/nbhsP; exists A. Qed.
+
+Lemma cvg_entourageP F (FF : Filter F) (p : M) :
+  F --> p <-> forall A, entourage A -> \forall q \near F, A (p, q).
+Proof. by rewrite -filter_fromP !nbhs_simpl. Qed.
+
+Lemma cvg_entourage {F} {FF : Filter F} (y : M) :
+  F --> y -> forall A, entourage A -> \forall y' \near F, A (y,y').
+Proof. by move/cvg_entourageP. Qed.
+
+Lemma cvg_app_entourageP T (f : T -> M) F (FF : Filter F) p :
+  f @ F --> p <-> forall A, entourage A -> \forall t \near F, A (p, f t).
+Proof. exact: cvg_entourageP. Qed.
+
+End uniformType1.
+
+Hint Extern 0 (entourage (split_ent _)) => exact: entourage_split_ent : core.
+Hint Extern 0 (entourage (get _)) => exact: entourage_split_ent : core.
+Arguments entourage_split {M} z {x y A}.
+Hint Extern 0 (nbhs _ (to_set _ _)) => exact: nbhs_entourage : core.
+
+Definition unif_continuous (U V : uniformType) (f : U -> V) :=
+  (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
+
+(** product of two uniform spaces *)
+
+Section prod_Uniform.
+
+Context {U V : uniformType}.
+Implicit Types A : set ((U * V) * (U * V)).
+
+Definition prod_ent :=
+  [set A : set ((U * V) * (U * V)) |
+    filter_prod (@entourage U) (@entourage V)
+    [set ((xy.1.1,xy.2.1),(xy.1.2,xy.2.2)) | xy in A]].
+
+Lemma prod_entP (A : set (U * U)) (B : set (V * V)) :
+  entourage A -> entourage B ->
+  prod_ent [set xy | A (xy.1.1, xy.2.1) /\ B (xy.1.2, xy.2.2)].
+Proof.
+move=> entA entB; exists (A,B) => // xy ABxy.
+by exists ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)); rewrite -!surjective_pairing.
+Qed.
+
+Lemma prod_ent_filter : Filter prod_ent.
+Proof.
+have prodF := filter_prod_filter (@entourage_filter U) (@entourage_filter V).
+split; rewrite /prod_ent; last 1 first.
+- by move=> A B sAB; apply: filterS => ? [xy /sAB ??]; exists xy.
+- rewrite -setMT; apply: prod_entP filterT filterT.
+move=> A B entA entB; apply: filterS (filterI entA entB) => xy [].
+move=> [zt Azt ztexy] [zt' Bzt' zt'exy]; exists zt => //; split=> //.
+move/eqP: ztexy; rewrite -zt'exy !xpair_eqE.
+by rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP->.
+Qed.
+
+Lemma prod_ent_refl A : prod_ent A -> [set xy | xy.1 = xy.2] `<=` A.
+Proof.
+move=> [B [entB1 entB2] sBA] xy /eqP.
+rewrite [_.1]surjective_pairing [xy.2]surjective_pairing xpair_eqE.
+move=> /andP [/eqP xy1e /eqP xy2e].
+have /sBA : (B.1 `*` B.2) ((xy.1.1, xy.2.1), (xy.1.2, xy.2.2)).
+  by rewrite xy1e xy2e; split=> /=; apply: entourage_refl.
+move=> [zt Azt /eqP]; rewrite !xpair_eqE.
+by rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP<-.
+Qed.
+
+Lemma prod_ent_inv A : prod_ent A -> prod_ent (A^-1)%classic.
+Proof.
+move=> [B [/entourage_inv entB1 /entourage_inv entB2] sBA].
+have:= prod_entP entB1 entB2; rewrite /prod_ent; apply: filterS.
+move=> _ [p /(sBA (_,_)) [[x y] ? xyE] <-]; exists (y,x) => //=; move/eqP: xyE.
+by rewrite !xpair_eqE => /andP[/andP[/eqP-> /eqP->] /andP[/eqP-> /eqP->]].
+Qed.
+
+Lemma prod_ent_split A : prod_ent A -> exists2 B, prod_ent B & B \o B `<=` A.
+Proof.
+move=> [B [entB1 entB2]] sBA; exists [set xy | split_ent B.1 (xy.1.1,xy.2.1) /\
+  split_ent B.2 (xy.1.2,xy.2.2)].
+  by apply: prod_entP; apply: entourage_split_ent.
+move=> xy [uv /= [hB1xyuv1 hB2xyuv1] [hB1xyuv2 hB2xyuv2]].
+have /sBA : (B.1 `*` B.2) ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)).
+  by split=> /=; apply: subset_split_ent => //; [exists uv.1|exists uv.2].
+move=> [zt Azt /eqP]; rewrite !xpair_eqE andbACA -!xpair_eqE.
+by rewrite -!surjective_pairing => /eqP<-.
+Qed.
+
+Lemma prod_ent_nbhsE : nbhs = nbhs_ prod_ent.
+Proof.
+rewrite predeq2E => xy A; split=> [[B []] | [B [C [entC1 entC2] sCB] sBA]].
+  rewrite -!nbhs_entourageE => - [C1 entC1 sCB1] [C2 entC2 sCB2] sBA.
+  exists [set xy | C1 (xy.1.1, xy.2.1) /\ C2 (xy.1.2, xy.2.2)].
+    exact: prod_entP.
+  by move=> uv [/= /sCB1 Buv1 /sCB2 /(conj Buv1) /sBA].
+exists (to_set (C.1) (xy.1), to_set (C.2) (xy.2)).
+  by rewrite -!nbhs_entourageE; split; [exists C.1|exists C.2].
+move=> uv [/= Cxyuv1 Cxyuv2]; apply: sBA.
+have /sCB : (C.1 `*` C.2) ((xy.1,uv.1),(xy.2,uv.2)) by [].
+move=> [zt Bzt /eqP]; rewrite !xpair_eqE andbACA -!xpair_eqE.
+by rewrite -!surjective_pairing => /eqP<-.
+Qed.
+
+Definition prod_uniformType_mixin :=
+  Uniform.Mixin prod_ent_filter prod_ent_refl prod_ent_inv prod_ent_split
+  prod_ent_nbhsE.
+
+End prod_Uniform.
+
+Canonical prod_uniformType (U V : uniformType) :=
+  UniformType (U * V) (@prod_uniformType_mixin U V).
+
+(** matrices *)
+
+Section matrix_Uniform.
+
+Variables (m n : nat) (T : uniformType).
+
+Implicit Types A : set ('M[T]_(m, n) * 'M[T]_(m, n)).
+
+Definition mx_ent :=
+  filter_from
+  [set P : 'I_m -> 'I_n -> set (T * T) | forall i j, entourage (P i j)]
+  (fun P => [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) |
+    forall i j, P i j (MN.1 i j, MN.2 i j)]).
+
+Lemma mx_ent_filter : Filter mx_ent.
+Proof.
+apply: filter_from_filter => [|A B entA entB].
+  by exists (fun _ _ => setT) => _ _; apply: filterT.
+exists (fun i j => A i j `&` B i j); first by move=> ??; apply: filterI.
+by move=> MN ABMN; split=> i j; have [] := ABMN i j.
+Qed.
+
+Lemma mx_ent_refl A : mx_ent A -> [set MN | MN.1 = MN.2] `<=` A.
+Proof.
+move=> [B entB sBA] MN MN1e2; apply: sBA => i j.
+by rewrite MN1e2; apply: entourage_refl.
+Qed.
+
+Lemma mx_ent_inv A : mx_ent A -> mx_ent (A^-1)%classic.
+Proof.
+move=> [B entB sBA]; exists (fun i j => ((B i j)^-1)%classic).
+  by move=> i j; apply: entourage_inv.
+by move=> MN BMN; apply: sBA.
+Qed.
+
+Lemma mx_ent_split A : mx_ent A -> exists2 B, mx_ent B & B \o B `<=` A.
+Proof.
+move=> [B entB sBA].
+have Bsplit : forall i j, exists C, entourage C /\ C \o C `<=` B i j.
+  by move=> ??; apply/exists2P/entourage_split_ex.
+exists [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) |
+  forall i j, get [set C | entourage C /\ C \o C `<=` B i j]
+  (MN.1 i j, MN.2 i j)].
+  by exists (fun i j => get [set C | entourage C /\ C \o C `<=` B i j]).
+move=> MN [P CMN1P CPMN2]; apply/sBA => i j.
+have /getPex [_] := Bsplit i j; apply; exists (P i j); first exact: CMN1P.
+exact: CPMN2.
+Qed.
+
+Lemma mx_ent_nbhsE : nbhs = nbhs_ mx_ent.
+Proof.
+rewrite predeq2E => M A; split.
+  move=> [B]; rewrite -nbhs_entourageE => M_B sBA.
+  set sB := fun i j => [set C | entourage C /\ to_set C (M i j) `<=` B i j].
+  have {M_B} M_B : forall i j, sB i j !=set0 by move=> ??; apply/exists2P/M_B.
+  exists [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) | forall i j,
+    get (sB i j) (MN.1 i j, MN.2 i j)].
+    by exists (fun i j => get (sB i j)) => // i j; have /getPex [] := M_B i j.
+  move=> N CMN; apply/sBA => i j; have /getPex [_] := M_B i j; apply.
+  exact/CMN.
+move=> [B [C entC sCB] sBA]; exists (fun i j => to_set (C i j) (M i j)).
+  by rewrite -nbhs_entourageE => i j; exists (C i j).
+by move=> N CMN; apply/sBA/sCB.
+Qed.
+
+Definition matrix_uniformType_mixin :=
+  Uniform.Mixin mx_ent_filter mx_ent_refl mx_ent_inv mx_ent_split
+  mx_ent_nbhsE.
+
+Canonical matrix_uniformType :=
+  UniformType 'M[T]_(m, n) matrix_uniformType_mixin.
+
+End matrix_Uniform.
+
+Lemma cvg_mx_entourageP (T : uniformType) m n (F : set (set 'M[T]_(m,n)))
+  (FF : Filter F) (M : 'M[T]_(m,n)) :
+  F --> M <->
+  forall A, entourage A -> \forall N \near F,
+  forall i j, A (M i j, (N : 'M[T]_(m,n)) i j).
+Proof.
+split.
+  by rewrite filter_fromP => FM A ?; apply: (FM (fun i j => to_set A (M i j))).
+move=> FM; apply/cvg_entourageP => A [P entP sPA]; near=> N.
+apply: sPA => /=; near: N; set Q := \bigcap_ij P ij.1 ij.2.
+apply: filterS (FM Q _); first by move=> N QN i j; apply: (QN _ _ (i, j)).
+have -> : Q =
+  \bigcap_(ij in [set k | k \in [fset x in predT]%fset]) P ij.1 ij.2.
+  by rewrite predeqE => t; split=> Qt ij _; apply: Qt => //; rewrite !inE.
+by apply: filter_bigI => ??; apply: entP.
+Grab Existential Variables. all: end_near. Qed.
+
+(** Functional metric spaces *)
+
+Section fct_Uniform.
+
+Variable (T : choiceType) (U : uniformType).
+
+Definition fct_ent :=
+  filter_from
+  (@entourage U)
+  (fun P => [set fg | forall t : T, P (fg.1 t, fg.2 t)]).
+
+Lemma fct_ent_filter : Filter fct_ent.
+Proof.
+apply: filter_from_filter; first by exists setT; apply: filterT.
+move=> A B entA entB.
+exists (A `&` B); first exact: filterI.
+by move=> fg ABfg; split=> t; have [] := ABfg t.
+Qed.
+
+Lemma fct_ent_refl A : fct_ent A -> [set fg | fg.1 =fg.2] `<=` A.
+Proof.
+move=> [B entB sBA] fg feg; apply/sBA => t; rewrite feg.
+exact: entourage_refl.
+Qed.
+
+Lemma fct_ent_inv A : fct_ent A -> fct_ent (A^-1)%classic.
+Proof.
+move=> [B entB sBA]; exists (B^-1)%classic; first exact: entourage_inv.
+by move=> fg Bgf; apply/sBA.
+Qed.
+
+Lemma fct_ent_split A : fct_ent A -> exists2 B, fct_ent B & B \o B `<=` A.
+Proof.
+move=> [B entB sBA].
+(* have Bsplit : exists C, entourage C /\ C \o C `<=` B. *)
+(*   exact/exists2P/entourage_split_ex. *)
+exists [set fg | forall t, split_ent B (fg.1 t, fg.2 t)].
+  by exists (split_ent B).
+move=> fg [h spBfh spBhg].
+by apply: sBA => t; apply: entourage_split (spBfh t) (spBhg t).
+Qed.
+
+Definition fct_uniformType_mixin :=
+  UniformMixin fct_ent_filter fct_ent_refl fct_ent_inv fct_ent_split erefl.
+
+Definition fct_topologicalTypeMixin :=
+  topologyOfEntourageMixin fct_uniformType_mixin.
+
+Canonical generic_source_filter := @Filtered.Source _ _ _ (nbhs_ fct_ent).
+Canonical fct_topologicalType :=
+  TopologicalType (T -> U) fct_topologicalTypeMixin.
+Canonical fct_uniformType := UniformType (T -> U) fct_uniformType_mixin.
+
+End fct_Uniform.
+
+Lemma cvg_fct_entourageP (T : choiceType) (U : uniformType)
+  (F : set (set (T -> U))) (FF : Filter F) (f : T -> U) :
+  F --> f <->
+  forall A, entourage A ->
+  \forall g \near F, forall t, A (f t, g t).
+Proof.
+split.
+  move=> /cvg_entourageP Ff A entA.
+  by apply: (Ff [set fg | forall t : T, A (fg.1 t, fg.2 t)]); exists A.
+move=> Ff; apply/cvg_entourageP => A [P entP sPA]; near=> g.
+by apply: sPA => /=; near: g; apply: Ff.
+Grab Existential Variables. all: end_near. Qed.
+
+Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
+  exists2 B, entourage B & forall PQ, A PQ -> forall p q,
+    PQ.1 p -> PQ.2 q -> B (p,q).
+Canonical set_filter_source (U : uniformType) :=
+  @Filtered.Source Prop _ U (fun A => nbhs_ (@entourage_set U) A).
+
+(** * PseudoMetric spaces defined using balls *)
+
+Definition entourage_ {R : numDomainType} {T T'} (ball : T -> R -> set T') :=
+  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
+
+Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
+  entourage_ ball =
+  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
+Proof. by []. Qed.
+
+Module PseudoMetric.
+
+Record mixin_of (R : numDomainType) (M : Type) (entourage : set (set (M * M))) := Mixin {
+  ball : M -> R -> M -> Prop ;
+  ax1 : forall x (e : R), 0 < e -> ball x e x ;
+  ax2 : forall x y (e : R), ball x e y -> ball y e x ;
+  ax3 : forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
+  ax4 : entourage = entourage_ ball
+}.
+
+Record class_of (R : numDomainType) (M : Type) := Class {
+  base : Uniform.class_of M;
+  mixin : mixin_of R (Uniform.entourage base)
+}.
+
+Section ClassDef.
+Variable R : numDomainType.
+Structure type := Pack { sort; _ : class_of R sort }.
+Local Coercion sort : type >-> Sortclass.
+Variables (T : Type) (cT : type).
+Definition class := let: Pack _ c := cT return class_of R cT in c.
+
+Definition clone c of phant_id class c := @Pack T c.
+Let xT := let: Pack T _ := cT in T.
+Notation xclass := (class : class_of R xT).
+Local Coercion base : class_of >-> Uniform.class_of.
+Local Coercion mixin : class_of >-> mixin_of.
+
+Definition pack ent (m : @mixin_of R T ent) :=
+  fun bT (b : Uniform.class_of T) of phant_id (@Uniform.class bT) b =>
+  fun m'   of phant_id m (m' : @mixin_of R T (Uniform.entourage b)) =>
+  @Pack T (@Class R _ b m').
+
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
+Definition uniformType := @Uniform.Pack cT xclass.
+
+End ClassDef.
+
+Module Exports.
+
+Coercion sort : type >-> Sortclass.
+Coercion base : class_of >-> Uniform.class_of.
+Coercion mixin : class_of >-> mixin_of.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion pointedType : type >-> Pointed.type.
+Canonical pointedType.
+Coercion filteredType : type >-> Filtered.type.
+Canonical filteredType.
+Coercion topologicalType : type >-> Topological.type.
+Canonical topologicalType.
+Coercion uniformType : type >-> Uniform.type.
+Canonical uniformType.
 Notation pseudoMetricType := type.
 Notation PseudoMetricType T m := (@pack _ T _ m _ _ idfun _ idfun).
 Notation PseudoMetricMixin := Mixin.
@@ -2706,10 +3193,9 @@ End PseudoMetric.
 
 Export PseudoMetric.Exports.
 
-Section PseudoMetricTopology.
+Section PseudoMetricUniformity.
 
-Lemma my_ball_le (R : numDomainType) (M : Type) (nbhs' : M -> set (set M))
-    (m : PseudoMetric.mixin_of R nbhs') :
+Lemma my_ball_le (R : numDomainType) (M : Type) (ent : set (set (M * M))) (m : PseudoMetric.mixin_of R ent) :
   forall (x : M), {homo PseudoMetric.ball m x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
 Proof.
 move=> x e1 e2 le12 y xe1_y.
@@ -2721,35 +3207,65 @@ exact: PseudoMetric.ax1.
 Qed.
 
 Obligation Tactic := idtac.
-Program Definition topologyOfBallMixin (R : numFieldType) (T : Type)
-  (nbhs' : T -> set (set T)) (m : PseudoMetric.mixin_of R nbhs') :
-  Topological.mixin_of nbhs' := topologyOfFilterMixin _ _ _.
+Program Definition uniformityOfBallMixin (R : numFieldType) (T : Type)
+  (ent : set (set (T * T))) (nbhs : T -> set (set T)) (nbhsE : nbhs = nbhs_ ent)
+  (m : PseudoMetric.mixin_of R ent) : Uniform.mixin_of nbhs :=
+  UniformMixin _ _ _ _ nbhsE.
 Next Obligation.
-move=> R T lo m p;
-rewrite (PseudoMetric.ax4 m) nbhs_E; apply filter_from_proper; last first.
-  move=> e egt0; exists p; suff : PseudoMetric.ball m p (PosNum egt0)%:num p by [].
-  exact: PseudoMetric.ax1.
-apply: filter_from_filter => [|_ _ /posnumP[e1] /posnumP[e2]]; first by exists 1.
-exists (Num.min e1 e2)%:num; rewrite ?subsetI//.
-by split=> //; apply: my_ball_le; rewrite -leEsub le_minl lexx ?orbT.
+move=> R T ent nbhs nbhsE m; rewrite (PseudoMetric.ax4 m).
+apply: filter_from_filter; first by exists 1.
+move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //.
+by rewrite subsetI; split=> ?; apply: my_ball_le;
+  rewrite -leEsub le_minl lexx ?orbT.
 Qed.
 Next Obligation.
-move=> R T loc m p A; rewrite (PseudoMetric.ax4 m) nbhs_E => - [_/posnumP[e]]; apply.
-by have : PseudoMetric.ball m p e%:num p by exact: PseudoMetric.ax1.
+move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m).
+move=> [e egt0 sbeA] xy xey.
+apply: sbeA; rewrite xey; exact: PseudoMetric.ax1.
 Qed.
 Next Obligation.
-move=> R T loc m p A; rewrite (PseudoMetric.ax4 m) nbhs_E => - [_/posnumP[e] pe_A].
-exists (e%:num / 2) => // q phe_q.
-rewrite nbhs_E; exists (e%:num / 2) => // r qhe_r.
-by apply: pe_A; rewrite [e%:num]splitr; apply: PseudoMetric.ax3 qhe_r.
+move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m) => - [e egt0 sbeA].
+by exists e => // xy xye; apply: sbeA; apply: PseudoMetric.ax2.
+Qed.
+Next Obligation.
+move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m).
+move=> [_/posnumP[e] sbeA].
+exists [set xy | PseudoMetric.ball m xy.1 (e%:num / 2) xy.2].
+  by exists (e%:num / 2).
+move=> xy [z xzhe zyhe]; apply: sbeA.
+by rewrite [e%:num]splitr; apply: PseudoMetric.ax3 zyhe.
 Qed.
 
-End PseudoMetricTopology.
+End PseudoMetricUniformity.
 
 Definition ball {R : numDomainType} {M : pseudoMetricType R} := PseudoMetric.ball (PseudoMetric.class M).
 
-Lemma nbhs_ballE {R : numDomainType} {M : pseudoMetricType R} : nbhs_ (@ball R M) = nbhs.
+Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} : entourage_ (@ball R M) = entourage.
 Proof. by case: M=> [?[?[]]]. Qed.
+
+Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
+  @filter_from R _ [set x : R | 0 < x]
+    (fun e => [set xy | @ball R M xy.1 e xy.2]) = entourage.
+Proof. by rewrite -entourage_ballE. Qed.
+
+Lemma entourage_ball {R : numDomainType} (M : pseudoMetricType R)
+  (e : {posnum R}) : entourage [set xy : M * M | ball xy.1 e%:num xy.2].
+Proof. by rewrite -entourage_ballE; exists e%:num. Qed.
+Hint Resolve entourage_ball.
+
+Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
+  (x : T) := @filter_from R _ [set e | e > 0] (ball x).
+
+Definition nbhs_ball {R : numDomainType} {M : pseudoMetricType R} :=
+  nbhs_ball_ (@ball R M).
+
+Lemma nbhs_ballE {R : numDomainType} {M : pseudoMetricType R} : (@nbhs_ball R M) = nbhs.
+Proof.
+rewrite predeq2E => x P; rewrite -nbhs_entourageE; split.
+  by move=> [_/posnumP[e] sbxeP]; exists [set xy | ball xy.1 e%:num xy.2].
+rewrite -entourage_ballE; move=> [A [e egt0 sbeA] sAP].
+by exists e => // ??; apply/sAP/sbeA.
+Qed.
 
 Lemma filter_from_ballE {R : numDomainType} {M : pseudoMetricType R} x :
   @filter_from R _ [set x : R | 0 < x] (@ball R M x) = nbhs x.
@@ -2759,8 +3275,8 @@ Module Export NbhsBall.
 Definition nbhs_simpl := (nbhs_simpl,@filter_from_ballE,@nbhs_ballE).
 End NbhsBall.
 
-Lemma nbhsP {R : numDomainType} {M : pseudoMetricType R} (x : M) P :
-  nbhs x P <-> nbhs_ ball x P.
+Lemma nbhs_ballP {R : numDomainType} {M : pseudoMetricType R} (x : M) P :
+  nbhs x P <-> nbhs_ball x P.
 Proof. by rewrite nbhs_simpl. Qed.
 
 Lemma ball_center {R : numDomainType} (M : pseudoMetricType R) (x : M)
@@ -2781,14 +3297,13 @@ Lemma ball_triangle (y x z : M) (e1 e2 : R) :
   ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z.
 Proof. exact: PseudoMetric.ax3. Qed.
 
-Lemma nbhs_ball (x : M) (eps : {posnum R}) : nbhs x (ball x eps%:num).
-Proof. by apply/nbhsP; exists eps%:num. Qed.
+Lemma nbhsx_ballx (x : M) (eps : {posnum R}) : nbhs x (ball x eps%:num).
+Proof. by apply/nbhs_ballP; exists eps%:num. Qed.
 
 Lemma open_nbhs_ball (x : M) (eps : {posnum R}) : open_nbhs x ((ball x eps%:num)^°).
 Proof.
 split; first exact: open_interior.
-apply: nbhs_singleton; apply: nbhs_interior.
-by apply/nbhsP; exists eps%:num.
+by apply: nbhs_singleton; apply: nbhs_interior; apply:nbhsx_ballx.
 Qed.
 
 Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
@@ -2800,22 +3315,15 @@ Qed.
 Lemma ball_le (x : M) (e1 e2 : R) : (e1 <= e2) -> ball x e1 `<=` ball x e2.
 Proof. by move=> /ball_ler. Qed.
 
-Definition entourages : set (set (M * M)):=
-  filter_from [set eps : R | eps > 0]
-              (fun eps => [set xy | ball xy.1 eps xy.2]).
-
-Global Instance entourages_filter : ProperFilter entourages.
+Global Instance entourage_proper_filter : ProperFilter (@entourage M).
 Proof.
-apply filter_from_proper; last by exists (point,point); apply: ballxx.
-apply: filter_from_filter; first by exists 1; rewrite ltr01.
-move=> _ _ /posnumP[i] /posnumP[j]; exists (Num.min i j)%:num; rewrite ?subsetI//.
-by split=> // ?; apply: ball_ler; rewrite -leEsub le_minl lexx ?orbT.
+apply: Build_ProperFilter; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
+by exists (point, point); apply: sbeA; apply: ballxx.
 Qed.
-Typeclasses Opaque entourages.
 
 Lemma near_ball (y : M) (eps : {posnum R}) :
    \forall y' \near y, ball y eps%:num y'.
-Proof. exact: nbhs_ball. Qed.
+Proof. exact: nbhsx_ballx. Qed.
 
 Lemma cvg_ballP {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
@@ -2841,8 +3349,8 @@ Lemma cvgi_ballP T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   f `@ F --> y <->
   forall eps : R, 0 < eps -> \forall x \near F, exists z, f x z /\ ball y eps z.
 Proof.
-split=> [Fy _/posnumP[eps] |Fy P] /=; first exact/Fy/nbhs_ball.
-move=> /nbhsP[_ /posnumP[eps] subP].
+split=> [Fy _/posnumP[eps] |Fy P] /=; first exact/Fy/nbhsx_ballx.
+move=> /nbhs_ballP[_ /posnumP[eps] subP].
 rewrite near_simpl near_mapi; near=> x.
 have [//|z [fxz yz]] := near (Fy _ (posnum_gt0 eps)) x.
 by exists z => //; split => //; apply: subP.
@@ -2854,12 +3362,8 @@ Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   forall eps : R, 0 < eps -> F [set x | exists z, f x z /\ ball y eps z].
 Proof. by move/cvgi_ballP. Qed.
 
-Definition ball_set (A : set M) e := \bigcup_(p in A) ball p e.
-Canonical set_filter_source :=
-  @Filtered.Source Prop _ M (fun A => nbhs_ ball_set A).
-
 End pseudoMetricType_numDomainType.
-Hint Resolve nbhs_ball : core.
+Hint Resolve nbhsx_ballx : core.
 Hint Resolve close_refl : core.
 Arguments close_cvg {T} F1 F2 {FF2} _.
 
@@ -2885,8 +3389,8 @@ rewrite propeqE; split => [cxy eps|cxy].
   have [z [zx zy]] := cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos)
                           _ (open_nbhs_ball _ (eps%:num/2)%:pos).
   by apply: (@ball_splitl z); apply: interior_subset.
-move=> B /open_nbhs_nbhs/nbhsP[_/posnumP[e2 e2B]].
-move=> A /open_nbhs_nbhs/nbhsP[_/posnumP[e1 e1A]].
+move=> B /open_nbhs_nbhs/nbhs_ballP[_/posnumP[e2 e2B]].
+move=> A /open_nbhs_nbhs/nbhs_ballP[_/posnumP[e1 e1A]].
 by exists y; split; [apply/e1A|apply/e2B/ballxx].
 Qed.
 
@@ -2897,8 +3401,8 @@ Qed.
 
 Lemma close_cvgxx (x y : M) : close x y -> x --> y.
 Proof.
-rewrite ball_close => cxy P /= /nbhsP /= [_/posnumP [eps] epsP].
-apply/nbhsP; exists (eps%:num / 2) => // z bxz.
+rewrite ball_close => cxy P /= /nbhs_ballP /= [_/posnumP [eps] epsP].
+apply/nbhs_ballP; exists (eps%:num / 2) => // z bxz.
 by apply: epsP; apply: ball_splitr (cxy _) bxz.
 Qed.
 
@@ -2921,12 +3425,12 @@ Lemma ball_hausdorff : hausdorff T =
 Proof.
 rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
   move=> A B; rewrite 2!inE => [[aA bB] [oA oB /eqP ABeq0]].
-  have /nbhsP[_/posnumP[r] rA] : nbhs a A by apply: open_nbhs_nbhs.
-  have /nbhsP[_/posnumP[s] rB] : nbhs b B by apply: open_nbhs_nbhs.
+  have /nbhs_ballP[_/posnumP[r] rA]: nbhs a A by apply: open_nbhs_nbhs.
+  have /nbhs_ballP[_/posnumP[s] rB]: nbhs b B by apply: open_nbhs_nbhs.
   by exists (r, s) => /=; rewrite (subsetI_eq0 _ _ ABeq0).
 move=> r s /eqP brs_eq0; exists ((ball a r%:num)^°, (ball b s%:num)^°) => /=.
   split; by rewrite inE; apply: nbhs_singleton; apply: nbhs_interior;
-            apply/nbhsP; apply: in_filter_from.
+            apply/nbhs_ballP; apply: in_filter_from.
 split; do ?by apply: open_interior.
 by rewrite (subsetI_eq0 _ _ brs_eq0)//; apply: interior_subset.
 Qed.
@@ -2936,25 +3440,27 @@ Lemma close_cluster (R : numFieldType) (T : pseudoMetricType R) (x y : T) :
   close x y = cluster (nbhs x) y.
 Proof.
 rewrite propeqE; split => xy.
-- move=> A B xA; rewrite -nbhs_ballE nbhs_E => -[_/posnumP[e] yeB].
+- move=> A B xA; rewrite -nbhs_ballE => -[_/posnumP[e] yeB].
   exists x; split; first exact: nbhs_singleton.
   by apply/yeB/ball_sym; move: e {yeB}; rewrite -ball_close.
 - rewrite ball_close => e.
   have e20 : 0 < e%:num / 2 by apply: divr_gt0.
   set e2  := PosNum e20.
-  case: (xy _ _ (nbhs_ball x e2) (nbhs_ball y e2)) => z [xz /ball_sym zy].
+  case: (xy _ _ (nbhsx_ballx x e2) (nbhsx_ballx y e2)) => z [xz /ball_sym zy].
   by rewrite (splitr e%:num); exact: (ball_triangle xz).
 Qed.
 
 Section entourages.
 Variable R : numDomainType.
-Definition unif_continuous (U V : pseudoMetricType R) (f : U -> V) :=
-  (fun xy => (f xy.1, f xy.2)) @ entourages --> entourages.
 Lemma unif_continuousP (U V : pseudoMetricType R) (f : U -> V) :
   unif_continuous f <->
   forall e, e > 0 -> exists2 d, d > 0 &
     forall x, ball x.1 d x.2 -> ball (f x.1) e (f x.2).
-Proof. exact: filter_fromP. Qed.
+Proof.
+have fappF : Filter ((fun xy => (f xy.1, f xy.2)) @ entourage_ ball).
+  by rewrite entourage_ballE; apply: fmap_filter.
+by rewrite /unif_continuous -!entourage_ballE filter_fromP.
+Qed.
 End entourages.
 
 (** ** Specific pseudoMetric spaces *)
@@ -2992,21 +3498,23 @@ by rewrite inE => /orP [/eqP->|/ihl leminlfi];
 Qed.
 
 Canonical R_pointedType := PointedType R 0.
-Lemma mx_nbhs : nbhs = nbhs_ mx_ball.
+Lemma mx_entourage : entourage = entourage_ mx_ball.
 Proof.
-rewrite predeq2E => x A; split; last first.
-  by move=> [_/posnumP[e] xe_A]; exists (fun i j => ball (x i j) e%:num).
-move=> [P]; rewrite -nbhs_ballE => x_P sPA.
+rewrite predeqE=> A; split; last first.
+  move=> [_/posnumP[e] sbeA].
+  by exists (fun _ _ => [set xy | ball xy.1 e%:num xy.2]).
+move=> [P]; rewrite -entourage_ballE => entP sPA.
+set diag := fun (e : {posnum R}) => [set xy : T * T | ball xy.1 e%:num xy.2].
 exists (\big[Num.min/1%:pos]_i \big[Num.min/1%:pos]_j xget 1%:pos
-  (fun e : {posnum R} => ball (x i j) e%:num `<=` P i j))%:num => //.
-move=> y xmin_y; apply: sPA => i j.
-have /(xgetPex 1%:pos): exists e : {posnum R}, ball (x i j) (e)%:num `<=` P i j.
-  by have [_/posnumP[e]] := x_P i j; exists e.
-apply; apply: ball_ler (xmin_y i j).
+  (fun e : {posnum R} => diag e `<=` P i j))%:num => //.
+move=> MN MN_min; apply: sPA => i j.
+have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
+  by have [_/posnumP[e]] := entP i j; exists e.
+apply; apply: ball_ler (MN_min i j).
 by apply: le_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
 Qed.
 Definition matrix_pseudoMetricType_mixin :=
-  PseudoMetric.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_nbhs.
+  PseudoMetric.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_entourage.
 Canonical matrix_pseudoMetricType :=
   PseudoMetricType 'M[T]_(m, n) matrix_pseudoMetricType_mixin.
 End matrix_PseudoMetric.
@@ -3027,17 +3535,24 @@ Lemma prod_ball_triangle x y z (e1 e2 : R) :
 Proof.
 by move=> [bxy1 bxy2] [byz1 byz2]; split; apply: ball_triangle; eassumption.
 Qed.
-Lemma prod_nbhs : nbhs = nbhs_ prod_ball.
+Lemma prod_entourage : entourage = entourage_ prod_ball.
 Proof.
-rewrite predeq2E => -[x y] P; split=> [[[A B] /=[xX yY] XYP] |]; last first.
-  by move=> [_ /posnumP[eps] epsP]; exists (ball x eps%:num, ball y eps%:num) => /=.
-move: xX yY => /nbhsP [_ /posnumP[ex] eX] /nbhsP [_ /posnumP[ey] eY].
-exists (Num.min ex ey)%:num => // -[x' y'] [/= xx' yy']; apply: XYP; split=> /=.
-  by apply/eX/(ball_ler _ xx'); rewrite -leEsub le_minl lexx.
-by apply/eY/(ball_ler _ yy'); rewrite -leEsub le_minl lexx orbT.
+rewrite predeqE => P; split; last first.
+  move=> [_/posnumP[e] sbeP].
+  exists ([set xy | ball xy.1 e%:num xy.2],
+          [set xy | ball xy.1 e%:num xy.2]) => //=.
+  move=> [[a b] [c d]] [bab bcd]; exists ((a, c), (b, d))=> //=.
+  exact: sbeP.
+move=> [[A B]] /=; rewrite -!entourage_ballE.
+move=> [[_/posnumP[eA] sbA] [_/posnumP[eB] sbB] sABP].
+exists (Num.min eA eB)%:num => // - [[a b] [c d] [/= bac bbd]].
+suff /sABP [] : (A `*` B) ((a, c), (b, d)) by move=> [[??] [??]] ? [<-<-<-<-].
+split; [apply: sbA|apply: sbB] => /=.
+  by apply: ball_ler bac; rewrite -leEsub le_minl lexx.
+by apply: ball_ler bbd; rewrite -leEsub le_minl lexx orbT.
 Qed.
 Definition prod_pseudoMetricType_mixin :=
-  PseudoMetric.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_nbhs.
+  PseudoMetric.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_entourage.
 End prod_PseudoMetric.
 Canonical prod_pseudoMetricType (R : numDomainType) (U V : pseudoMetricType R) :=
   PseudoMetricType (U * V) (@prod_pseudoMetricType_mixin R U V).
@@ -3065,73 +3580,41 @@ Proof. by move=> P t; apply: ball_sym. Qed.
 Lemma fct_ball_triangle (x y z : T -> U) (e1 e2 : R) :
   fct_ball x e1 y -> fct_ball y e2 z -> fct_ball x (e1 + e2) z.
 Proof. by move=> xy yz t; apply: (@ball_triangle _ _ (y t)). Qed.
+Lemma fct_entourage : entourage = entourage_ fct_ball.
+Proof.
+rewrite predeqE => A; split; last first.
+  by move=> [_/posnumP[e] sbeA]; exists [set xy | ball xy.1 e%:num xy.2].
+move=> [P]; rewrite -entourage_ballE => -[_/posnumP[e] sbeP] sPA.
+by exists e%:num => // fg fg_e; apply: sPA => t; apply: sbeP; apply: fg_e.
+Qed.
 Definition fct_pseudoMetricType_mixin :=
-  PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle erefl.
-Definition fct_topologicalTypeMixin :=
-  topologyOfBallMixin fct_pseudoMetricType_mixin.
-Canonical generic_source_filter := @Filtered.Source _ _ _ (nbhs_ fct_ball).
-Canonical fct_topologicalType :=
-  TopologicalType (T -> U) fct_topologicalTypeMixin.
+  PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle fct_entourage.
 Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
 End fct_PseudoMetric.
 
-(** ** Complete pseudoMetric spaces *)
-Definition cauchy_ex {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
-  forall eps : R, 0 < eps -> exists x, F (ball x eps).
+(** ** Complete uniform spaces *)
 
-Definition cauchy {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
-  forall e, e > 0 -> \forall x & y \near F, ball x e y.
+Definition cauchy {T : uniformType} (F : set (set T)) := (F, F) --> entourage.
 
-Lemma cauchy_entouragesP (R : numDomainType) (T  : pseudoMetricType R)
-    (F : set (set T)) (FF : Filter F) :
-  cauchy F <-> (F, F) --> entourages.
+Lemma cvg_cauchy {T : uniformType} (F : set (set T)) : Filter F ->
+  [cvg F in T] -> cauchy F.
 Proof.
-split=> cauchyF; last first.
-  by move=> _/posnumP[eps]; apply: cauchyF; exists eps%:num.
-move=> U [_/posnumP[eps] xyepsU].
-by near=> x; apply: xyepsU; near: x; apply: cauchyF.
-Grab Existential Variables. all: end_near. Qed.
-Arguments cauchy_entouragesP {R T} F {FF}.
-
-Lemma cvg_cauchy_ex {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :
-  cvg F -> cauchy_ex F.
-Proof. by move=> Fl _/posnumP[eps]; exists (lim F); apply/Fl/nbhs_ball. Qed.
-Arguments cvg_cauchy_ex {R T} F.
-
-Lemma cauchy_exP (R : numFieldType) (T : pseudoMetricType R)
-    (F : set (set T)) (FF : Filter F) :
-  cauchy_ex F -> cauchy F.
-Proof.
-move=> Fc; apply/cauchy_entouragesP => A [_/posnumP[e] sdeA].
-have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sdeA => /=.
-by apply: (@ball_splitr _ _ z); [near: x|near: y].
-Grab Existential Variables. all: end_near. Qed.
-Arguments cauchy_exP {R T} F {FF}.
-
-Lemma cauchyP (R : numFieldType) (T : pseudoMetricType R)
-    (F : set (set T)) (PF : ProperFilter F) :
-  cauchy F <-> cauchy_ex F.
-Proof.
-split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
-by near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F); apply: Fcauchy.
-Grab Existential Variables. all: end_near. Qed.
-Arguments cauchyP {R T} F {PF}.
-
-Lemma cvg_cauchy {R : numFieldType} {T : pseudoMetricType R}
-  (F : set (set T)) {FF : Filter F} : cvg F -> cauchy F.
-Proof. by move=> /cvg_cauchy_ex /cauchy_exP. Qed.
-Arguments cvg_cauchy {R T} F {FF}.
+move=> FF cvF A entA; have /entourage_split_ex [B entB sB2A] := entA.
+exists (to_set ((B^-1)%classic) (lim F), to_set B (lim F)).
+  split=> /=; apply: cvF; rewrite /= -nbhs_entourageE; last by exists B.
+  by exists (B^-1)%classic => //; apply: entourage_inv.
+by move=> ab [/= Balima Blimb]; apply: sB2A; exists (lim F).
+Qed.
 
 Module Complete.
-Definition axiom (R : numDomainType) (T : pseudoMetricType R) :=
+Definition axiom (T : uniformType) :=
   forall (F : set (set T)), ProperFilter F -> cauchy F -> F --> lim F.
 Section ClassDef.
-Variable R : numDomainType.
 Record class_of (T : Type) := Class {
-  base : PseudoMetric.class_of R T ;
-  mixin : axiom (PseudoMetric.Pack base)
+  base : Uniform.class_of T ;
+  mixin : axiom (Uniform.Pack base)
 }.
-Local Coercion base : class_of >-> PseudoMetric.class_of.
+Local Coercion base : class_of >-> Uniform.class_of.
 Local Coercion mixin : class_of >-> Complete.axiom.
 Structure type := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
@@ -3140,18 +3623,18 @@ Definition class := let: Pack _ c := cT return class_of cT in c.
 Definition clone c of phant_id class c := @Pack T c.
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
-Definition pack b0 (m0 : axiom (@PseudoMetric.Pack R T b0)) :=
-  fun bT b of phant_id (@PseudoMetric.class R bT) b =>
+Definition pack b0 (m0 : axiom (@Uniform.Pack T b0)) :=
+  fun bT b of phant_id (@Uniform.class bT) b =>
   fun m of phant_id m m0 => @Pack T (@Class T b m).
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
 Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
-Definition pseudoMetricType := @PseudoMetric.Pack R cT xclass.
+Definition uniformType := @Uniform.Pack cT xclass.
 End ClassDef.
 Module Exports.
-Coercion base : class_of >-> PseudoMetric.class_of.
+Coercion base : class_of >-> Uniform.class_of.
 Coercion mixin : class_of >-> axiom.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
@@ -3164,103 +3647,120 @@ Coercion filteredType : type >-> Filtered.type.
 Canonical filteredType.
 Coercion topologicalType : type >-> Topological.type.
 Canonical topologicalType.
-Coercion pseudoMetricType : type >-> PseudoMetric.type.
-Canonical pseudoMetricType.
+Coercion uniformType : type >-> Uniform.type.
+Canonical uniformType.
 Notation completeType := type.
 Notation "[ 'completeType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
   (at level 0, format "[ 'completeType'  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'completeType' 'of' T ]" := (@clone T _ _ id)
   (at level 0, format "[ 'completeType'  'of'  T ]") : form_scope.
-Notation CompleteType T m := (@pack _ T _ m _ _ idfun _ idfun).
+Notation CompleteType T m := (@pack T _ m _ _ idfun _ idfun).
 End Exports.
 End Complete.
 Export Complete.Exports.
 
 Section completeType1.
-Context {R : numDomainType} {T : completeType R}.
 
-Lemma cauchy_cvg (F : set (set T)) (FF : ProperFilter F) : cauchy F -> cvg F.
+Context {T : completeType}.
+
+Lemma cauchy_cvg (F : set (set T)) (FF : ProperFilter F) :
+  cauchy F -> cvg F.
 Proof. by case: T F FF => [? [?]]. Qed.
-
-End completeType1.
-Arguments cauchy_cvg {R} {T} F {FF}.
-
-Section completeType2.
-Context {R : numFieldType} {T : completeType R}.
 
 Lemma cauchy_cvgP (F : set (set T)) (FF : ProperFilter F) : cauchy F <-> cvg F.
 Proof. by split=> [/cauchy_cvg|/cvg_cauchy]. Qed.
 
-End completeType2.
-Arguments cauchy_cvgP {R} {T} F {FF}.
+End completeType1.
+Arguments cauchy_cvg {T} F {FF} _.
+Arguments cauchy_cvgP {T} F {FF}.
 
 Section matrix_Complete.
-Variables (R : numFieldType) (T : completeType R) (m n : nat).
+
+Variables (T : completeType) (m n : nat).
 
 Lemma mx_complete (F : set (set 'M[T]_(m, n))) :
   ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF Fc.
-have /(_ _ _) /cauchy_cvg cvF :
+have /(_ _ _) /cauchy_cvg /cvg_app_entourageP cvF :
   cauchy ((fun M : 'M[T]_(m, n) => M _ _) @ F).
-  by move=> ?? _ /posnumP[e]; rewrite near_simpl; apply: filterS (Fc _ _).
+  move=> i j A /= entA; rewrite near_simpl -near2E near_map2.
+  by apply: Fc; exists (fun _ _ => A).
 apply/cvg_ex.
-exists (\matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T)).
-apply/cvg_ballP => _ /posnumP[e]; near=> M => i j.
-rewrite mxE; near F => M' => /=; apply: (@ball_splitl _ _ (M' i j)).
-  by near: M'; apply/cvF/nbhs_ball.
-by move: (i) (j); near: M'; near: M; apply: nearP_dep; apply: filterS (Fc _ _).
+set Mlim := \matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T).
+exists Mlim; apply/cvg_mx_entourageP => A entA; near=> M => i j; near F => M'.
+apply: subset_split_ent => //; exists (M' i j) => /=.
+  by near: M'; rewrite mxE; apply: cvF.
+move: (i) (j); near: M'; near: M; apply: nearP_dep; apply: Fc.
+by exists (fun _ _ => (split_ent A)^-1%classic) => ?? //; apply: entourage_inv.
 Grab Existential Variables. all: end_near. Qed.
+
 Canonical matrix_completeType := CompleteType 'M[T]_(m, n) mx_complete.
+
 End matrix_Complete.
 
 Section fun_Complete.
-Context {T : choiceType} {R : numFieldType} {U : completeType R}.
+
+Context {T : choiceType} {U : completeType}.
+
 Lemma fun_complete (F : set (set (T -> U)))
   {FF :  ProperFilter F} : cauchy F -> cvg F.
 Proof.
-move=> Fc; have /(_ _) /cauchy_cvg Ft_cvg : cauchy (@^~_ @ F).
-  by move=> t e ?; rewrite near_simpl; apply: filterS (Fc _ _).
+move=> Fc.
+have /(_ _) /cauchy_cvg /cvg_app_entourageP cvF : cauchy (@^~_ @ F).
+  move=> t A /= entA; rewrite near_simpl -near2E near_map2.
+  by apply: Fc; exists A.
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/cvg_ballPpos => e; near=> f => t; near F => g => /=.
-apply: (@ball_splitl _ _ (g t)); first by near: g; exact/Ft_cvg/nbhs_ball.
-by move: (t); near: g; near: f; apply: nearP_dep; apply: filterS (Fc _ _).
+apply/cvg_fct_entourageP => A entA; near=> f => t; near F => g.
+apply: (entourage_split (g t)) => //; first by near: g; apply: cvF.
+move: (t); near: g; near: f; apply: nearP_dep; apply: Fc.
+exists ((split_ent A)^-1)%classic=> //=.
+by apply: entourage_inv; apply: entourage_split_ent.
 Grab Existential Variables. all: end_near. Qed.
+
 Canonical fun_completeType := CompleteType (T -> U) fun_complete.
+
 End fun_Complete.
 
 (** ** Limit switching *)
 Section Cvg_switch.
 Context {T1 T2 : choiceType}.
 
-Lemma cvg_switch_1 {R : numFieldType} {U : pseudoMetricType R}
+Lemma cvg_switch_1 {U : uniformType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) -> h @ F1 --> l ->
   g @ F2 --> l.
 Proof.
-move=> fg fh hl; apply/cvg_ballPpos => e.
-rewrite near_simpl; near F1 => x1; near=> x2.
-apply: (@ball_split _ _ (h x1)); first by near: x1; apply/hl/nbhs_ball.
-apply: (@ball_splitl _ _ (f x1 x2)); first by near: x2; apply/fh/nbhs_ball.
-by move: (x2); near: x1; apply/(cvg_ball fg).
+move=> fg fh hl; apply/cvg_app_entourageP => A entA.
+near F1 => x1; near=> x2; apply: (entourage_split (h x1)) => //.
+  by near: x1; apply/(hl (to_set _ l)) => /=.
+apply: (entourage_split (f x1 x2)) => //.
+  by near: x2; apply/(fh x1 (to_set _ _)) => /=.
+move: (x2); near: x1; have /cvg_fct_entourageP /(_ (_^-1%classic)):= fg; apply.
+exact: entourage_inv.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma cvg_switch_2 {R : numFieldType} {U : completeType R}
+Lemma cvg_switch_2 {U : completeType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : ProperFilter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
   f @ F1 --> g -> (forall x, f x @ F2 --> h x) ->
   [cvg h @ F1 in U].
 Proof.
-move=> fg fh; apply: cauchy_cvg => _/posnumP[e].
-rewrite !near_simpl; near=> x1 y1=> /=; near F2 => x2.
-apply: (@ball_splitl _ _ (f x1 x2)); first by near: x2; apply/fh/nbhs_ball.
-apply: (@ball_split _ _ (f y1 x2)); first by near: x2; apply/fh/nbhs_ball.
-apply: (@ball_splitr _ _ (g x2)); move: (x2); [near: y1|near: x1];
-by apply/(cvg_ball fg).
+move=> fg fh; apply: cauchy_cvg => A entA.
+rewrite !near_simpl -near2_pair near_map2; near=> x1 y1 => /=; near F2 => x2.
+apply: (entourage_split (f x1 x2)) => //.
+  by near: x2; apply/(fh _ (to_set _ _)) => /=.
+apply: (entourage_split (f y1 x2)) => //; last first.
+  near: x2; apply/(fh _ (to_set ((_^-1)%classic) _)).
+  exact: nbhs_entourage (entourage_inv _).
+apply: (entourage_split (g x2)) => //; move: (x2); [near: x1|near: y1].
+  have /cvg_fct_entourageP /(_ (_^-1)%classic) := fg; apply.
+  exact: entourage_inv.
+by have /cvg_fct_entourageP := fg; apply.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma cvg_switch {R : numFieldType} {U : completeType R}
+Lemma cvg_switch {U : completeType}
   F1 (FF1 : ProperFilter F1) F2 (FF2 : ProperFilter F2)
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) :
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) ->
@@ -3271,3 +3771,114 @@ by exists [lim h @ F1 in U]; split=> //; apply: cvg_switch_1 Hfg Hfh hcv.
 Qed.
 
 End Cvg_switch.
+
+(** ** Complete pseudoMetric spaces *)
+
+Definition cauchy_ex {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
+  forall eps : R, 0 < eps -> exists x, F (ball x eps).
+
+Definition cauchy_ball {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
+  forall e, e > 0 -> \forall x & y \near F, ball x e y.
+
+Lemma cauchy_ballP (R : numDomainType) (T  : pseudoMetricType R)
+    (F : set (set T)) (FF : Filter F) :
+  cauchy_ball F <-> cauchy F.
+Proof.
+split=> cauchyF; last first.
+  by move=> _/posnumP[eps]; apply: cauchyF; rewrite nbhs_simpl.
+move=> U; rewrite -entourage_ballE => - [_/posnumP[eps] xyepsU].
+by near=> x; apply: xyepsU; near: x; apply: cauchyF.
+Grab Existential Variables. all: end_near. Qed.
+Arguments cauchy_ballP {R T} F {FF}.
+
+Lemma cauchy_exP (R : numFieldType) (T : pseudoMetricType R)
+    (F : set (set T)) (FF : Filter F) :
+  cauchy_ex F -> cauchy F.
+Proof.
+move=> Fc A; rewrite !nbhs_simpl /= -entourage_ballE => -[_/posnumP[e] sdeA].
+have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sdeA => /=.
+by apply: (@ball_splitr _ _ z); [near: x|near: y].
+Grab Existential Variables. all: end_near. Qed.
+Arguments cauchy_exP {R T} F {FF}.
+
+Lemma cauchyP (R : numFieldType) (T : pseudoMetricType R)
+    (F : set (set T)) (PF : ProperFilter F) :
+  cauchy F <-> cauchy_ex F.
+Proof.
+split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
+near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F).
+by apply: Fcauchy; rewrite nbhs_simpl.
+Grab Existential Variables. all: end_near. Qed.
+Arguments cauchyP {R T} F {PF}.
+
+Module CompletePseudoMetric.
+Section ClassDef.
+Variable R : numDomainType.
+Record class_of (T : Type) := Class {
+  base : PseudoMetric.class_of R T;
+  mixin : Complete.axiom (Uniform.Pack base)
+}.
+Local Coercion base : class_of >-> PseudoMetric.class_of.
+Definition base2 T m := Complete.Class (@mixin T m).
+Local Coercion base2 : class_of >-> Complete.class_of.
+
+Structure type := Pack { sort; _ : class_of sort }.
+Local Coercion sort : type >-> Sortclass.
+Variables (T : Type) (cT : type).
+Definition class := let: Pack _ c := cT return class_of cT in c.
+Definition clone c of phant_id class c := @Pack T c.
+Let xT := let: Pack T _ := cT in T.
+Notation xclass := (class : class_of xT).
+Definition pack :=
+  fun bT b & phant_id (@PseudoMetric.class R bT) (b : PseudoMetric.class_of R T) =>
+  fun mT m & phant_id (Complete.class mT) (@Complete.Class T b m) =>
+  Pack (@Class T b m).
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
+Definition uniformType := @Uniform.Pack cT xclass.
+Definition completeType := @Complete.Pack cT xclass.
+Definition pseudoMetricType := @PseudoMetric.Pack R cT xclass.
+Definition pseudoMetric_completeType := @Complete.Pack pseudoMetricType xclass.
+End ClassDef.
+Module Exports.
+Coercion base : class_of >-> PseudoMetric.class_of.
+Coercion mixin : class_of >-> Complete.axiom.
+Coercion base2 : class_of >-> Complete.class_of.
+Coercion sort : type >-> Sortclass.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion pointedType : type >-> Pointed.type.
+Canonical pointedType.
+Coercion filteredType : type >-> Filtered.type.
+Canonical filteredType.
+Coercion topologicalType : type >-> Topological.type.
+Canonical topologicalType.
+Coercion uniformType : type >-> Uniform.type.
+Canonical uniformType.
+Coercion completeType : type >-> Complete.type.
+Canonical completeType.
+Coercion pseudoMetricType : type >-> PseudoMetric.type.
+Canonical pseudoMetricType.
+Canonical pseudoMetric_completeType.
+Notation completePseudoMetricType := type.
+Notation "[ 'completePseudoMetricType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
+  (at level 0, format "[ 'completePseudoMetricType'  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'completePseudoMetricType' 'of' T ]" := (@clone T _ _ id)
+  (at level 0, format "[ 'completePseudoMetricType'  'of'  T ]") : form_scope.
+Notation CompletePseudoMetricType T m := (@pack _ T _ _ id _ _ id).
+End Exports.
+End CompletePseudoMetric.
+Export CompletePseudoMetric.Exports.
+
+Canonical matrix_completePseudoMetricType (R : numFieldType)
+  (T : completePseudoMetricType R) (m n : nat) :=
+  CompletePseudoMetricType 'M[T]_(m, n) mx_complete.
+
+Canonical fct_completePseudoMetricType (T : choiceType) (R : numFieldType)
+  (U : completePseudoMetricType R) :=
+  CompletePseudoMetricType (T -> U) fun_complete.
