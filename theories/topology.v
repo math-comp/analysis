@@ -2836,17 +2836,17 @@ Proof. by move=> /subset_split_ent sA ??; apply: sA; exists z. Qed.
 Lemma nbhs_entourage (x : M) A : entourage A -> nbhs x (to_set A x).
 Proof. by move=> ?; apply/nbhsP; exists A. Qed.
 
-Lemma flim_entourageP F (FF : Filter F) (p : M) :
+Lemma cvg_entourageP F (FF : Filter F) (p : M) :
   F --> p <-> forall A, entourage A -> \forall q \near F, A (p, q).
 Proof. by rewrite -filter_fromP !nbhs_simpl. Qed.
 
-Lemma flim_entourage {F} {FF : Filter F} (y : M) :
+Lemma cvg_entourage {F} {FF : Filter F} (y : M) :
   F --> y -> forall A, entourage A -> \forall y' \near F, A (y,y').
-Proof. by move/flim_entourageP. Qed.
+Proof. by move/cvg_entourageP. Qed.
 
-Lemma app_flim_entourageP T (f : T -> M) F (FF : Filter F) p :
+Lemma cvg_app_entourageP T (f : T -> M) F (FF : Filter F) p :
   f @ F --> p <-> forall A, entourage A -> \forall t \near F, A (p, f t).
-Proof. exact: flim_entourageP. Qed.
+Proof. exact: cvg_entourageP. Qed.
 
 End uniformType1.
 
@@ -3019,7 +3019,7 @@ Canonical matrix_uniformType :=
 
 End matrix_Uniform.
 
-Lemma flim_mx_entourageP (T : uniformType) m n (F : set (set 'M[T]_(m,n)))
+Lemma cvg_mx_entourageP (T : uniformType) m n (F : set (set 'M[T]_(m,n)))
   (FF : Filter F) (M : 'M[T]_(m,n)) :
   F --> M <->
   forall A, entourage A -> \forall N \near F,
@@ -3027,7 +3027,7 @@ Lemma flim_mx_entourageP (T : uniformType) m n (F : set (set 'M[T]_(m,n)))
 Proof.
 split.
   by rewrite filter_fromP => FM A ?; apply: (FM (fun i j => to_set A (M i j))).
-move=> FM; apply/flim_entourageP => A [P entP sPA]; near=> N.
+move=> FM; apply/cvg_entourageP => A [P entP sPA]; near=> N.
 apply: sPA => /=; near: N; set Q := \bigcap_ij P ij.1 ij.2.
 apply: filterS (FM Q _); first by move=> N QN i j; apply: (QN _ _ (i, j)).
 have -> : Q =
@@ -3091,17 +3091,16 @@ Canonical fct_uniformType := UniformType (T -> U) fct_uniformType_mixin.
 
 End fct_Uniform.
 
-(* TODO: is it possible to remove A's dependency in t? *)
-Lemma flim_fct_entourageP (T : choiceType) (U : uniformType)
+Lemma cvg_fct_entourageP (T : choiceType) (U : uniformType)
   (F : set (set (T -> U))) (FF : Filter F) (f : T -> U) :
   F --> f <->
   forall A, entourage A ->
   \forall g \near F, forall t, A (f t, g t).
 Proof.
 split.
-  move=> /flim_entourageP Ff A entA.
+  move=> /cvg_entourageP Ff A entA.
   by apply: (Ff [set fg | forall t : T, A (fg.1 t, fg.2 t)]); exists A.
-move=> Ff; apply/flim_entourageP => A [P entP sPA]; near=> g.
+move=> Ff; apply/cvg_entourageP => A [P entP sPA]; near=> g.
 by apply: sPA => /=; near: g; apply: Ff.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -3683,13 +3682,13 @@ Lemma mx_complete (F : set (set 'M[T]_(m, n))) :
   ProperFilter F -> cauchy F -> cvg F.
 Proof.
 move=> FF Fc.
-have /(_ _ _) /cauchy_cvg /app_flim_entourageP cvF :
+have /(_ _ _) /cauchy_cvg /cvg_app_entourageP cvF :
   cauchy ((fun M : 'M[T]_(m, n) => M _ _) @ F).
   move=> i j A /= entA; rewrite near_simpl -near2E near_map2.
   by apply: Fc; exists (fun _ _ => A).
 apply/cvg_ex.
 set Mlim := \matrix_(i, j) (lim ((fun M : 'M[T]_(m, n) => M i j) @ F) : T).
-exists Mlim; apply/flim_mx_entourageP => A entA; near=> M => i j; near F => M'.
+exists Mlim; apply/cvg_mx_entourageP => A entA; near=> M => i j; near F => M'.
 apply: subset_split_ent => //; exists (M' i j) => /=.
   by near: M'; rewrite mxE; apply: cvF.
 move: (i) (j); near: M'; near: M; apply: nearP_dep; apply: Fc.
@@ -3708,11 +3707,11 @@ Lemma fun_complete (F : set (set (T -> U)))
   {FF :  ProperFilter F} : cauchy F -> cvg F.
 Proof.
 move=> Fc.
-have /(_ _) /cauchy_cvg /app_flim_entourageP cvF : cauchy (@^~_ @ F).
+have /(_ _) /cauchy_cvg /cvg_app_entourageP cvF : cauchy (@^~_ @ F).
   move=> t A /= entA; rewrite near_simpl -near2E near_map2.
   by apply: Fc; exists A.
 apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
-apply/flim_fct_entourageP => A entA; near=> f => t; near F => g.
+apply/cvg_fct_entourageP => A entA; near=> f => t; near F => g.
 apply: (entourage_split (g t)) => //; first by near: g; apply: cvF.
 move: (t); near: g; near: f; apply: nearP_dep; apply: Fc.
 exists ((split_ent A)^-1)%classic=> //=.
@@ -3733,12 +3732,12 @@ Lemma cvg_switch_1 {U : uniformType}
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) -> h @ F1 --> l ->
   g @ F2 --> l.
 Proof.
-move=> fg fh hl; apply/app_flim_entourageP => A entA.
+move=> fg fh hl; apply/cvg_app_entourageP => A entA.
 near F1 => x1; near=> x2; apply: (entourage_split (h x1)) => //.
   by near: x1; apply/(hl (to_set _ l)) => /=.
 apply: (entourage_split (f x1 x2)) => //.
   by near: x2; apply/(fh x1 (to_set _ _)) => /=.
-move: (x2); near: x1; have /flim_fct_entourageP /(_ (_^-1%classic)):= fg; apply.
+move: (x2); near: x1; have /cvg_fct_entourageP /(_ (_^-1%classic)):= fg; apply.
 exact: entourage_inv.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -3756,9 +3755,9 @@ apply: (entourage_split (f y1 x2)) => //; last first.
   near: x2; apply/(fh _ (to_set ((_^-1)%classic) _)).
   exact: nbhs_entourage (entourage_inv _).
 apply: (entourage_split (g x2)) => //; move: (x2); [near: x1|near: y1].
-  have /flim_fct_entourageP /(_ (_^-1)%classic) := fg; apply.
+  have /cvg_fct_entourageP /(_ (_^-1)%classic) := fg; apply.
   exact: entourage_inv.
-by have /flim_fct_entourageP := fg; apply.
+by have /cvg_fct_entourageP := fg; apply.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma cvg_switch {U : completeType}

@@ -15,9 +15,9 @@
   + lemmas `nbhs_E`, `nbhs_entourageE`, `filter_from_entourageE`,
     `entourage_refl`, `entourage_filter`, `entourageT`, `entourage_inv`,
     `entourage_split_ex`, `split_entP`, `entourage_split_ent`,
-    `subset_split_ent`, `entourage_split`, `nbhs_entourage`, `flim_entourageP`,
-    `flim_entourage`, `app_flim_entourageP`, `flim_mx_entourageP`,
-    `flim_fct_entourageP`, `entourage_E`, `entourage_ballE`,
+    `subset_split_ent`, `entourage_split`, `nbhs_entourage`, `cvg_entourageP`,
+    `cvg_entourage`, `cvg_app_entourageP`, `cvg_mx_entourageP`,
+    `cvg_fct_entourageP`, `entourage_E`, `entourage_ballE`,
     `entourage_from_ballE`, `entourage_ball`, `entourage_proper_filter`
   + `completePseudoMetricType` structure
   + `completePseudoMetricType` structure on matrices and function spaces
