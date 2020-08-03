@@ -65,6 +65,8 @@
     `continuity_pt_cvg'`, `continuity_pt_nbhs'`, `nbhs_pt_comp`
   + lemmas `close_trans`, `close_cvgxx`, `cvg_closeP` and `close_cluster` are
     valid for a `uniformType`
+  + moved `continuous_withinNx` from `normedType.v` to `topology.v` and
+    generalised it to `uniformType`
 
 ### Renamed
 

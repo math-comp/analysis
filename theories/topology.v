@@ -2854,6 +2854,19 @@ Hint Extern 0 (entourage (get _)) => exact: entourage_split_ent : core.
 Arguments entourage_split {M} z {x y A}.
 Hint Extern 0 (nbhs _ (to_set _ _)) => exact: nbhs_entourage : core.
 
+Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
+  {for x, continuous f} <-> f @ nbhs' x --> f x.
+Proof.
+split=> - cfx P /= fxP.
+  rewrite /nbhs' !near_simpl near_withinE.
+  by rewrite /nbhs'; apply: cvg_within; apply/cfx.
+ (* :BUG: ssr apply: does not work,
+    because the type of the filter is not inferred *)
+rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
+rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
+by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
+Grab Existential Variables. all: end_near. Qed.
+
 Section uniform_closeness.
 
 Variable (U : uniformType).
