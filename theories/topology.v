@@ -2854,6 +2854,68 @@ Hint Extern 0 (entourage (get _)) => exact: entourage_split_ent : core.
 Arguments entourage_split {M} z {x y A}.
 Hint Extern 0 (nbhs _ (to_set _ _)) => exact: nbhs_entourage : core.
 
+Section uniform_closeness.
+
+Variable (U : uniformType).
+
+Lemma open_nbhs_entourage (x : U) (A : set (U * U)) :
+  entourage A -> open_nbhs x (to_set A x)^°.
+Proof.
+move=> entA; split; first exact: open_interior.
+by apply: nbhs_singleton; apply: nbhs_interior; apply: nbhs_entourage.
+Qed.
+
+Lemma entourage_close (x y : U) :
+  close x y = forall A, entourage A -> A (x, y).
+Proof.
+rewrite propeqE; split=> [cxy A entA|cxy].
+  have /entourage_split_ent entsA := entA.
+  have [z [/interior_subset zx /interior_subset /= zy]] :=
+    cxy _ (open_nbhs_entourage _ (entourage_inv entsA))
+        _ (open_nbhs_entourage _ entsA).
+  exact: (entourage_split z).
+move=> A /open_nbhs_nbhs/nbhsP[E1 entE1 sE1A].
+move=> B /open_nbhs_nbhs/nbhsP[E2 entE2 sE2B].
+by exists y; split; [apply/sE2B; apply: cxy|apply/sE1A; apply: entourage_refl].
+Qed.
+
+Lemma close_trans (y x z : U) : close x y -> close y z -> close x z.
+Proof.
+rewrite !entourage_close => cxy cyz A entA.
+exact: entourage_split (cxy _ _) (cyz _ _).
+Qed.
+
+Lemma close_cvgxx (x y : U) : close x y -> x --> y.
+Proof.
+rewrite entourage_close => cxy P /= /nbhsP[A entA sAP].
+apply/nbhsP; exists (split_ent A) => // z xz; apply: sAP.
+apply: (entourage_split x) => //.
+by have := cxy _ (entourage_inv (entourage_split_ent entA)).
+Qed.
+
+Lemma cvg_closeP (F : set (set U)) (l : U) : ProperFilter F ->
+  F --> l <-> ([cvg F in U] /\ close (lim F) l).
+Proof.
+move=> FF; split=> [Fl|[cvF]Cl].
+  by have /cvgP := Fl; split=> //; apply: (@cvg_close _ F).
+by apply: cvg_trans (close_cvgxx Cl).
+Qed.
+
+Lemma close_cluster (x y : U) : close x y = cluster (nbhs x) y.
+Proof.
+rewrite propeqE; split => xy.
+- move=> A B xA; rewrite -nbhs_entourageE => -[E entE sEB].
+  exists x; split; first exact: nbhs_singleton.
+  by apply/sEB; move/close_sym: xy; rewrite entourage_close; apply.
+- rewrite entourage_close => A entA.
+  have /entourage_split_ent entsA := entA.
+  have [z [/= zx zy]] :=
+    xy _ _ (nbhs_entourage _ entsA) (nbhs_entourage _ (entourage_inv entsA)).
+  exact: (entourage_split z).
+Qed.
+
+End uniform_closeness.
+
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
 
@@ -3393,26 +3455,6 @@ move=> A /open_nbhs_nbhs/nbhs_ballP[_/posnumP[e1 e1A]].
 by exists y; split; [apply/e1A|apply/e2B/ballxx].
 Qed.
 
-Lemma close_trans (y x z : M) : close x y -> close y z -> close x z.
-Proof.
-by rewrite !ball_close  => cxy cyz eps; apply: ball_split (cxy _) (cyz _).
-Qed.
-
-Lemma close_cvgxx (x y : M) : close x y -> x --> y.
-Proof.
-rewrite ball_close => cxy P /= /nbhs_ballP /= [_/posnumP [eps] epsP].
-apply/nbhs_ballP; exists (eps%:num / 2) => // z bxz.
-by apply: epsP; apply: ball_splitr (cxy _) bxz.
-Qed.
-
-Lemma cvg_closeP (F : set (set M)) (l : M) : ProperFilter F ->
-  F --> l <-> ([cvg F in M] /\ close (lim F) l).
-Proof.
-move=> FF; split=> [Fl|[cvF]Cl].
-  by have /cvgP := Fl; split=> //; apply: (@cvg_close _ F).
-by apply: cvg_trans (close_cvgxx Cl).
-Qed.
-
 End pseudoMetricType_numFieldType.
 
 Section ball_hausdorff.
@@ -3434,20 +3476,6 @@ split; do ?by apply: open_interior.
 by rewrite (subsetI_eq0 _ _ brs_eq0)//; apply: interior_subset.
 Qed.
 End ball_hausdorff.
-
-Lemma close_cluster (R : numFieldType) (T : pseudoMetricType R) (x y : T) :
-  close x y = cluster (nbhs x) y.
-Proof.
-rewrite propeqE; split => xy.
-- move=> A B xA; rewrite -nbhs_ballE => -[_/posnumP[e] yeB].
-  exists x; split; first exact: nbhs_singleton.
-  by apply/yeB/ball_sym; move: e {yeB}; rewrite -ball_close.
-- rewrite ball_close => e.
-  have e20 : 0 < e%:num / 2 by apply: divr_gt0.
-  set e2  := PosNum e20.
-  case: (xy _ _ (nbhsx_ballx x e2) (nbhsx_ballx y e2)) => z [xz /ball_sym zy].
-  by rewrite (splitr e%:num); exact: (ball_triangle xz).
-Qed.
 
 Section entourages.
 Variable R : numDomainType.
