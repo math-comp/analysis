@@ -57,6 +57,12 @@
   + `cauchy` is based on entourages and its former version is renamed
     `cauchy_ball`
   + `completeType` inherits from `uniformType` and not from `pseudoMetricType`
+- moved from `posnum.v` to `Rbar.v`: notation `posreal`
+- moved from `normedtype.v` to `Rstruct.v`:
+  + definitions `R_pointedType`, `R_filteredType`, `R_topologicalType`,
+    `R_uniformType`, `R_pseudoMetricType`
+  + lemmas `continuity_pt_nbhs`, `continuity_pt_cvg`, `continuity_ptE`,
+    `continuity_pt_cvg'`, `continuity_pt_nbhs'`, `nbhs_pt_comp`
 
 ### Renamed
 
