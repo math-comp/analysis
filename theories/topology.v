@@ -1,8 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-Require Import Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
 From mathcomp Require Import seq fintype bigop order ssralg ssrnum finmap matrix.
-Require Import boolp Rstruct classical_sets posnum.
+Require Import boolp classical_sets posnum.
 
 (******************************************************************************)
 (* This file develops tools for the manipulation of filters and basic         *)

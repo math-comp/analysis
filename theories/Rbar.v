@@ -28,6 +28,7 @@ From mathcomp Require Import ssralg ssrnum.
 Require Import Rstruct posnum.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
+Bind Scope ring_scope with R.
 
 (** This file contains the definition and properties of the set
  [R] # &#8746; {+ &infin;} &#8746; {- &infin;} # denoted by [Rbar]. We have defined:
@@ -159,6 +160,8 @@ Definition ex_Rbar_mult (x y : Rbar) : Prop :=
     | _, _ => true
   end.
 Arguments ex_Rbar_mult !x !y /.
+
+Notation posreal := {posnum R}.
 
 Definition Rbar_mult_pos (x : Rbar) (y : posreal) :=
   match x with
