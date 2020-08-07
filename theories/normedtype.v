@@ -2688,11 +2688,8 @@ End matrix_NormedModule.
 
 (** ** Pairs *)
 
-Section prod_NormedModule.
-Context {K : numDomainType} {U V : normedModType K}.
-
-Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
-Proof. by rewrite prod_normE /= !normmZ maxr_pmulr. Qed.
+Section prod_PseudoMetricNormedZmodule.
+Context {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
 
 Lemma ball_prod_normE : ball = ball_ (fun x => `| x : U * V |).
 Proof.
@@ -2704,10 +2701,18 @@ Qed.
 Lemma prod_norm_ball : @ball _ [pseudoMetricType K of U * V] = ball_ (fun x => `|x|).
 Proof. by rewrite /= - ball_prod_normE. Qed.
 
-Definition prod_PseudoMetricNormedZmodMixin :=
+Definition prod_pseudoMetricNormedZmodMixin :=
   PseudoMetricNormedZmodule.Mixin prod_norm_ball.
-Canonical prod_topologicalZmodType :=
-  PseudoMetricNormedZmodType K (U * V) prod_PseudoMetricNormedZmodMixin.
+Canonical prod_pseudoMetricNormedZmodType :=
+  PseudoMetricNormedZmodType K (U * V) prod_pseudoMetricNormedZmodMixin.
+
+End prod_PseudoMetricNormedZmodule.
+
+Section prod_NormedModule.
+Context {K : numDomainType} {U V : normedModType K}.
+
+Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
+Proof. by rewrite prod_normE /= !normmZ maxr_pmulr. Qed.
 
 Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
 Canonical prod_normedModType :=
