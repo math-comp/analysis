@@ -28,12 +28,12 @@
 - in `ereal.v`:
   + notation `\+` (`ereal_scope`) for function addition
   + notations `>` and `>=` for comparison of extended real numbers
-  + definition `is_real`, lemmas `is_realN`, `is_realD`, `ERFin_real_of_er`
+  + definition `is_real`, lemmas `is_realN`, `is_realD`, `ERFin_real_of_er`, `adde_undef`
   + basic lemmas: `addooe`, `adde_Neq_pinfty`, `adde_Neq_ninfty`, `addERFin`,
     `subERFin`, `real_of_erN`, `lb_ereal_inf_adherent`
   + arithmetic lemmas: `oppeD`, `subre_ge0`, `suber_ge0`, `lee_add2lE`, `lte_add2lE`,
     `lte_add`, `lte_addl`, `lte_le_add`, `lte_subl_addl`, `lee_subr_addr`,
-    `lee_subl_addr`, `lte_spaddr`
+    `lee_subl_addr`, `lte_spaddr`, `addeAC`, `addeCA`
 - in `normedtype.v`:
   + lemmas `natmul_continuous`, `cvgMn` and `is_cvgMn`.
   + `uniformType` structure for `ereal`
@@ -43,7 +43,6 @@
     `exprn_geometric`, `cvg_arithmetic`, `cvg_expr`,
     `geometric_seriesE`, `cvg_geometric_series`,
     `is_cvg_geometric_series`.
-  +
 
 ### Changed
 
@@ -69,6 +68,8 @@
   + `forallPN` -> `not_forallP`
   + `Nimply` -> `not_implyP`
 - in `classical_sets.v`, `ub` and `lb` are renamed to `ubound` and `lbound`
+- in `ereal.v`:
+  + `eadd` -> `adde`, `eopp` -> `oppe`
 - in `topology.v`:
   + `locally` -> `nbhs`
   + `locally_filterE` -> `nbhs_filterE`
