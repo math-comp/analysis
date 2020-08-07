@@ -1,8 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum.
-Require Import boolp reals.
+Require Import boolp.
 
 (******************************************************************************)
 (* This file develops tools to make the manipulation of positive numbers      *)
@@ -41,9 +40,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 
-Delimit Scope R_scope with coqR.
 Local Open Scope ring_scope.
-Bind Scope ring_scope with R.
 
 (* Enrico's trick for tc resolution in have *)
 Notation "!! x" := (ltac:(refine x)) (at level 100, only parsing).
@@ -71,7 +68,6 @@ Notation "x %:num" := (num_of_pos x) : ring_scope.
 Definition pos_of_num (R : numDomainType) (x : {posnum R})
    (phx : phantom R x%:num) := x.
 Notation "x %:pos" := (pos_of_num (Phantom _ x)) : ring_scope.
-Notation posreal := {posnum R}.
 Notation "2" := 2%:R : ring_scope.
 
 Section Order.
