@@ -67,6 +67,9 @@
     valid for a `uniformType`
   + moved `continuous_withinNx` from `normedType.v` to `topology.v` and
     generalised it to `uniformType`
+- moved from `measure.v` to `sequences.v`
+  + `ereal_nondecreasing_series`
+  + `ereal_nneg_series_lim_ge` (renamed from `series_nneg`)
 
 ### Renamed
 
