@@ -10,9 +10,11 @@ guide](https://github.com/math-comp/math-comp/blob/master/CONTRIBUTING.md).
 Always submit a pull request for code and wait for the CI to pass before merging.
 Text markup files may be edited directly though, should you have commit rights.
 
-## `=>` vs. `-->` vs. `cvg` vs. `lim`
+## `-->` vs. `cvg` vs. `lim`
 
-TODO: explain in particular the lemmas `cvgP`, `cvg_ex`
+- `F --> x` means `F` tends to `x`. _This is the preferred way of stating a convergence._ **Lemmas about it use the string `cvg`.**
+- `lim F` is the limit of `F`, it makes sense only when `F` converges and defaults to a distinguished point otherwise. _It should only be used when there is no other expression for the limit._ **Lemmas about it use the string `lim`.**
+- `cvg F` is defined as `F --> lim F`, and is equivalent through `cvgP` and `cvg_ex` to the existence of some `x` such that `F --> x`. _When the limit is known, `F --> x` should be preferred._ **Lemmas about it use the string `is_cvg`.**```
 
 ## `near` tactics vs. `filterS`, `filterS2`, `filterS3` lemmas
 
@@ -34,7 +36,13 @@ and its variants (`filterS2`, `filterS3`, etc.).
 
 ## Landau notations
 
-TODO
+Landau notations can be written in four shapes:
+- `f =o_F e` (i.e. functional with a simple right member, thus a binary notation)
+- `f = g +o_F e` (i.e. functional with an additive right member, thus ternary)
+- `f x =o_(x \near F) (e x)` (i.e. pointwise with a simple right member, thus binary)
+- `f x = g x +o_(x \near F) (e x)` (i.e. pointwise with an additive right member, thus ternary)
+
+The outcome is an expression with the normal Leibniz equality `=` and term `'o_F` which is not parsable. See [this paper](https://doi.org/10.6092/issn.1972-5787/8124) for more explanation and the header of the file [landau.v](https://github.com/math-comp/analysis/blob/master/theories/landau.v).
 
 ## Naming convention
 
