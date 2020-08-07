@@ -18,7 +18,8 @@
     `subset_split_ent`, `entourage_split`, `nbhs_entourage`, `cvg_entourageP`,
     `cvg_entourage`, `cvg_app_entourageP`, `cvg_mx_entourageP`,
     `cvg_fct_entourageP`, `entourage_E`, `entourage_ballE`,
-    `entourage_from_ballE`, `entourage_ball`, `entourage_proper_filter`
+    `entourage_from_ballE`, `entourage_ball`, `entourage_proper_filter`,
+    `open_nbhs_entourage`, `entourage_close`
   + `completePseudoMetricType` structure
   + `completePseudoMetricType` structure on matrices and function spaces
 - in `classical_sets.v`:
@@ -62,6 +63,10 @@
     `R_uniformType`, `R_pseudoMetricType`
   + lemmas `continuity_pt_nbhs`, `continuity_pt_cvg`, `continuity_ptE`,
     `continuity_pt_cvg'`, `continuity_pt_nbhs'`, `nbhs_pt_comp`
+  + lemmas `close_trans`, `close_cvgxx`, `cvg_closeP` and `close_cluster` are
+    valid for a `uniformType`
+  + moved `continuous_withinNx` from `normedType.v` to `topology.v` and
+    generalised it to `uniformType`
 
 ### Renamed
 
