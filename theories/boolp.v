@@ -55,7 +55,6 @@ Proof. by case: extentionality=> _; apply. Qed.
 Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
 Proof. by apply: propext; split=> [->|/propext]. Qed.
 
-
 Lemma funeqE {T U : Type} (f g : T -> U) : (f = g) = (f =1 g).
 Proof. by rewrite propeqE; split=> [->//|/funext]. Qed.
 
@@ -86,6 +85,9 @@ Lemma predeq3E {T U V} (P Q : T -> U -> V -> Prop) :
 Proof.
 by rewrite propeqE; split=> [->//|?]; rewrite funeq3E=> ???; rewrite propeqE.
 Qed.
+
+Lemma predext {T} (P Q : T -> Prop) : (forall x, P x <-> Q x) -> P = Q.
+Proof. by rewrite predeqE. Qed.
 
 Lemma propT (P : Prop) : P -> P = True.
 Proof. by move=> p; rewrite propeqE; tauto. Qed.

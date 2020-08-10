@@ -96,6 +96,10 @@ Reserved Notation "[ 'set' x : T | P ]"
   (at level 0, x at level 99, only parsing).
 Reserved Notation "[ 'set' x | P ]"
   (at level 0, x, P at level 99, format "[ 'set'  x  |  P ]").
+Reserved Notation "[ 'get' x : T | P ]"
+  (at level 0, x at level 99, only parsing).
+Reserved Notation "[ 'get' x | P ]"
+  (at level 0, x, P at level 99, format "[ 'get'  x  |  P ]").
 Reserved Notation "[ 'set' E | x 'in' A ]" (at level 0, E, x at level 99,
   format "[ '[hv' 'set'  E '/ '  |  x  'in'  A ] ']'").
 Reserved Notation "[ 'set' E | x 'in' A & y 'in' B ]"
@@ -505,6 +509,8 @@ Canonical matrix_pointedType m n (T : pointedType) :=
   PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
 
 Notation get := (xget point).
+Notation "[ 'get' x : T | P ]" := (get [set x : T | P]) : classical_set_scope.
+Notation "[ 'get' x | P ]" := [get x : _ | P] : classical_est_scope.
 
 Section PointedTheory.
 
