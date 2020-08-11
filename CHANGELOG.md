@@ -41,11 +41,10 @@ Last releases: [[0.3.2] - 2020-08-11](#032---2020-08-11) and [[0.3.1] - 2020-06-
   + lemmas `natmul_continuous`, `cvgMn` and `is_cvgMn`.
   + `uniformType` structure for `ereal`
 - in `sequences.v`:
-  + definitions `arithmetic`, `geometric`, `geometric_invn`
-  + lemmas `increasing_series`, `cvg_shiftS`, `mulrn_arithmetic`,
-    `exprn_geometric`, `cvg_arithmetic`, `cvg_expr`,
-    `geometric_seriesE`, `cvg_geometric_series`,
-    `is_cvg_geometric_series`.
+  + definitions `arithmetic`, `geometric`
+  + lemmas `telescopeK`, `seriesK`, `increasing_series`, `cvg_shiftS`,
+     `mulrn_arithmetic`, `exprn_geometric`, `cvg_arithmetic`, `cvg_expr`,
+    `geometric_seriesE`, `cvg_geometric_series`, `is_cvg_geometric_series`.
 
 ### Changed
 
