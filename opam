@@ -1,5 +1,5 @@
 opam-version: "2.0"
-maintainer: "pierre-yves@strub.nu"
+maintainer: "reynald.affeldt@aist.go.jp"
 homepage: "https://github.com/math-comp/analysis"
 bug-reports: "https://github.com/math-comp/analysis/issues"
 dev-repo: "git+https://github.com/math-comp/analysis.git"
@@ -36,5 +36,5 @@ tags: [
   "keyword: topology"
   "keyword: real numbers"
   "logpath: mathcomp.analysis"
-  "date:2020-07-27"
+  "date:2020-08-11"
 ]
