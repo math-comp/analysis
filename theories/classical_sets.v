@@ -529,8 +529,8 @@ Qed.
 Lemma setUDr T : right_distributive (@setU T) (@setI T).
 Proof. by move=> X Y Z; rewrite ![X `|` _]setUC setUDl. Qed.
 
-Lemma bigcup_set1 T (U : nat -> set T) n : \bigcup_(i in [set n]) U i = U n.
-Proof. by rewrite predeqE => t; split => [[m -> //]|Unt]; exists n. Qed.
+Lemma bigcup_set1 T V (U : V -> set T) v : \bigcup_(i in [set v]) U i = U v.
+Proof. by apply: eqEsubset => ? => [[] ? -> //|]; exists v. Qed.
 
 Lemma bigcapCU T (U : nat -> set T) : \bigcap_i (U i) = ~` (\bigcup_i (~` U i)).
 Proof.
