@@ -1,7 +1,7 @@
 # Installing
 
 ## Requirements
-- [The Coq Proof Assistant version ≥ 8.7](https://coq.inria.fr)
+- [The Coq Proof Assistant version ≥ 8.10](https://coq.inria.fr)
 - [Mathematical Components version ≥ 1.11.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 1.5.0](https://github.com/math-comp/finmap)
 
@@ -18,7 +18,7 @@ Detailed instructions for possible installations of Mathematical Components are 
   + type `opam install coq-mathcomp-analysis.X.Y.Z` where `X.Y.Z` is the version number
     (all the dependencies should be automatically installed, assuming `opam` has been properly
     configured and `coq-released` repository is added)
-- Custom (assuming Coq ≥ 8.7, Mathematical Components version ≥ 1.11.0, and Finmap version 1.5.0
+- Custom (assuming Coq ≥ 8.10, Mathematical Components version ≥ 1.11.0, and Finmap version ≥ 1.5.0
   have been installed):
   + Type `make` to use the provided `Makefile`.
 
@@ -45,7 +45,7 @@ $ opam install coq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.0.3.1
+$ opam install coq-mathcomp-analysis.0.3.2
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
@@ -68,12 +68,12 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.9.1 and MathComp 1.11.0. For more recent versions, update the
+With the example of Coq 8.12.0 and MathComp 1.11.0. For other versions, update the
 version numbers accordingly.
 
-1. Install Coq 8.9.1
+1. Install Coq 8.12.0
 ```
-$ opam install coq.8.9.1
+$ opam install coq.8.12.0
 ```
 2. Install Mathematical Components development version 
 ```
@@ -94,7 +94,7 @@ $ git clone https://github.com/math-comp/analysis
 $ cd analysis
 $ make
 ```
-## How to clean you computer
+## How to clean your computer
 - If you installed the package `coq-mathcomp-analysis` and wish to get rid of it, just type
 ```
 $ opam remove coq-mathcomp-analysis
