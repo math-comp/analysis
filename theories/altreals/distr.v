@@ -380,7 +380,7 @@ Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
 Definition dlift {A : choiceType} (f : A -> {distr A / R}) :=
   fun d => \dlet_(x <- d) f x.
 
-Fixpoint diter {A : choiceType} n (f : A -> {distr A / R}) :=
+Definition diter {A : choiceType} n (f : A -> {distr A / R}) :=
   fun a => (iter n (dlift f) (dunit a)).
 
 (* -------------------------------------------------------------------- *)
@@ -492,7 +492,7 @@ Lemma eq0_dlet (mu : {distr T / R}) (F : T -> {distr U / R}) y :
   (\dlet_(x <- mu) F x) y = 0 -> forall x, x \in dinsupp mu -> F x y = 0.
 Proof.
 unlock dlet; rewrite /= /mlet => /eq0_psum h x /dinsuppP /eqP mu_x.
-have {h}/h: summable (fun x => mu x * F x y).
+have {}/h: summable (fun x => mu x * F x y).
   apply/(le_summable (F2 := mu)) => // z.
   by rewrite mulr_ge0 //= ler_pimulr // le1_mu1.
 by move/(_ x)/eqP; rewrite mulf_eq0 (negbTE mu_x) /= => /eqP.
@@ -1005,7 +1005,7 @@ Lemma le_mu_pr A mu nu :
 Proof.
 move=> h; apply/le_psum; last by apply/summable_pr.
 move=> x; rewrite mulr_ge0 ?ler0n //=.
-case/boolP: (x \in dinsupp nu) => [/h {h}h|]; last first.
+case/boolP: (x \in dinsupp nu) => [/h {}h|]; last first.
   by move/dinsuppPn=> ->; rewrite mulr0 mulr_ge0 ?ler0n.
 by case/boolP: (A x) => [/h|]; rewrite ?(mul0r, mul1r).
 Qed.
@@ -1027,7 +1027,7 @@ move=> x /=; rewrite /pr (psum_finseq (r := [:: x])) ?big_seq1 //=.
   move=> y; rewrite !inE; case: (y == x) => //=.
   by rewrite mul0r eqxx.
 by rewrite !inE eqxx -topredE ger0_norm ?mulr_ge0 ?ler0n.
-Qed. 
+Qed.
 
 Lemma pr_eq0 mu E : \P_[mu] E = 0 -> forall x, x \in E -> mu x = 0.
 Proof.
@@ -1208,7 +1208,7 @@ case/orP => [/eqP<-|gt0_lj].
 rewrite !addrA => eq1; pose z := (li * xi + l j * x j) / (li + l j).
 have nz_lij: li + l j != 0 by rewrite gt_eqF ?ltr_paddl.
 have/ih := eq1 => -/(_ _ z); rewrite [_ * (_ / _)]mulrC.
-rewrite mulfVK // => {ih}ih; apply/(le_trans (ih _)).
+rewrite mulfVK // => {}ih; apply/(le_trans (ih _)).
   by rewrite addr_ge0 ?ge0_l.
 rewrite ler_add2r {ih}/z mulrDl ![_*_/_]mulrAC.
 set c1 : R := _ / _; set c2 : R := _ / _; have eqc2: c2 = 1 - c1.

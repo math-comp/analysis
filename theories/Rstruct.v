@@ -712,12 +712,12 @@ have FF : Filter (f @ x).
   (*by apply fmap_filter; apply: @filter_filter' (locally_filter _).*)
 case: (@cvg_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
-split => [{H2} - /H1 {H1} H1 eps|{H1} H].
+split => [{H2} - /H1 {}H1 eps|{H1} H].
 - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
   exists x0%:num => // Hx0' /Hx0 /=.
   by rewrite /= distrC; apply.
 - apply H2 => _ /posnumP[eps]; move: (H eps) => {H} [_ /posnumP[x0] Hx0].
-  exists x0%:num => // y /Hx0 /= {Hx0}Hx0.
+  exists x0%:num => // y /Hx0 /= {}Hx0.
   by rewrite /ball /= distrC.
 Qed.
 

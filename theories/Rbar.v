@@ -526,7 +526,7 @@ Lemma Rbar_lt_locally (a b : Rbar) (x : R) :
 Proof.
 move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
-  move=> {a b} a b ltxa ltxb.
+  move=> {}a {}b ltxa ltxb.
   have m_gt0 : Num.min ((x - a) / 2) ((b - x) / 2) > 0.
     by rewrite lt_minr !divr_gt0 ?subr_gt0.
   exists (PosNum m_gt0) => y //=; rewrite lt_minr !ltr_distl.

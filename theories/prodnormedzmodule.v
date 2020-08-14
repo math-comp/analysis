@@ -92,7 +92,7 @@ Proof. by rewrite le_gtF. Qed.
 
 Lemma nngnum_real x : x%:nngnum \is Num.real.
 Proof. by rewrite ger0_real. Qed.
-Hint Resolve nngnum_real.
+Hint Resolve nngnum_real : core.
 
 Lemma nng_eq : {mono nngnum R : x y / x == y}. Proof. by []. Qed.
 Lemma nng_le : {mono nngnum R : x y / x <= y}. Proof. by []. Qed.

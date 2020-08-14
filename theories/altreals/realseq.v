@@ -190,7 +190,7 @@ Qed.
 Lemma ncvg_eq_from K v u l :
   (forall n, (K <= n)%N -> u n = v n) -> ncvg v l -> ncvg u l.
 Proof.
-move=> eq cu nb; case: (cu nb) => Ku {cu}cu; exists (maxn K Ku) => n.
+move=> eq cu nb; case: (cu nb) => Ku {}cu; exists (maxn K Ku) => n.
 by rewrite geq_max => /andP[leK leKu]; rewrite eq // cu.
 Qed.
 
@@ -247,7 +247,7 @@ Lemma ncvgD u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
   ncvg (u \+ v) (lu + lv)%:E.
 Proof.
 move=> cu cv; elim/nbh_finW => e /= gt0_e; pose z := e / 2%:R.
-case: (cu (B lu z)) (cv (B lv z)) => [ku {cu}cu] [kv {cv}cv].
+case: (cu (B lu z)) (cv (B lv z)) => [ku {}cu] [kv {}cv].
 exists (maxn ku kv) => n; rewrite geq_max => /andP[leu lev].
 rewrite inE opprD addrACA (le_lt_trans (ler_norm_add _ _)) //.
 move: (cu _ leu) (cv _ lev); rewrite !inE eclamp_id.
@@ -259,12 +259,12 @@ Qed.
 Lemma ncvgN u lu : ncvg u lu -> ncvg (\- u) (- lu).
 Proof.
 case: lu => [lu||] cu /=; first last.
-+ elim/nbh_pinfW=> M; case: (cu (NNInf (-M))) => K {cu}cu.
++ elim/nbh_pinfW=> M; case: (cu (NNInf (-M))) => K {}cu.
   by exists K => n /cu; rewrite !inE ltr_oppr.
-+ elim/nbh_ninfW=> M; case: (cu (NPInf (-M))) => K {cu}cu.
++ elim/nbh_ninfW=> M; case: (cu (NPInf (-M))) => K {}cu.
   by exists K => n /cu; rewrite !inE ltr_oppl.
 elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
-by move=> K {cu}cu; exists K=> n /cu; rewrite !inE -opprD normrN eclamp_id.
+by move=> K {}cu; exists K=> n /cu; rewrite !inE -opprD normrN eclamp_id.
 Qed.
 
 Lemma ncvgN_fin u lu : ncvg u lu%:E -> ncvg (\- u) (- lu)%:E.
@@ -277,19 +277,19 @@ Proof. by move=> cu cv; apply/ncvgD/ncvgN_fin. Qed.
 Lemma ncvg_abs u lu : ncvg u lu%:E -> ncvg (fun n => `|u n|) `|lu|%:E.
 Proof.
 move=> cu; elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
-move=> K {cu}cu; exists K=> n /cu; rewrite !inE eclamp_id //.
+move=> K {}cu; exists K=> n /cu; rewrite !inE eclamp_id //.
 by move/(le_lt_trans (ler_dist_dist _ _)).
 Qed.
 
 Lemma ncvg_abs0 u : ncvg (fun n => `|u n|) 0%:E -> ncvg u 0%:E.
 Proof.
 move=> cu; elim/nbh_finW => e /= gt0_e; case: (cu (B 0 e)).
-by move=> K {cu}cu; exists K=> n /cu; rewrite !inE !subr0 eclamp_id // normr_id.
+by move=> K {}cu; exists K=> n /cu; rewrite !inE !subr0 eclamp_id // normr_id.
 Qed.
 
 Lemma ncvgMl u v : ncvg u 0%:E -> nbounded v -> ncvg (u \* v) 0%:E.
 move=> cu /asboolP/nboundedP [M gt0_M ltM]; elim/nbh_finW => e /= gt0_e.
-case: (cu (B 0 (e / (M + 1)))) => K {cu}cu; exists K => n le_Kn.
+case: (cu (B 0 (e / (M + 1)))) => K {}cu; exists K => n le_Kn.
 rewrite inE subr0 normrM; apply/(@lt_trans _ _ (e / (M + 1) * M)).
   apply/ltr_pmul => //; have /cu := le_Kn; rewrite inE subr0 eclamp_id //.
   by rewrite mulr_gt0 // invr_gt0 addr_gt0.
@@ -358,7 +358,7 @@ Lemma ncvg_sub h u lu :
      {homo h : x y / (x < y)%N}
   -> ncvg u lu -> ncvg (fun n => u (h n)) lu.
 Proof.
-move=> mono_h cvu v; case: (cvu v)=> K {cvu}cvu; exists K.
+move=> mono_h cvu v; case: (cvu v)=> K {}cvu; exists K.
 move=> n le_Kn; apply/cvu; apply/(leq_trans le_Kn).
 elim: {le_Kn} n => [|n ih] //; apply/(leq_ltn_trans ih).
 by rewrite mono_h.
