@@ -586,7 +586,7 @@ suff abel : forall n,
       fun n => n.+1%:R^-1 * \sum_(k < n) k.+1%:R * a_ k); last first.
     rewrite funeqE => n; rewrite big_add1 /= big_mkord /= big_distrr /=.
     by apply eq_bigr => i _; rewrite mulrCA mulrA.
-  have {a_o}a_o : [sequence n.+1%:R * telescope u_ n]_n --> (0 : R^o).
+  have {}a_o : [sequence n.+1%:R * telescope u_ n]_n --> (0 : R^o).
     apply: (@eqolim0 R nat [normedModType R of R^o] eventually_filterType).
     rewrite a_o.
     set h := 'o_[filter of \oo] harmonic.

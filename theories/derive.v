@@ -1320,7 +1320,7 @@ have imf_sup : has_sup imf.
 case: (pselect (exists2 c, c \in `[a, b] & f c = sup imf)) => [|imf_ltsup].
   move=> [c cab fceqsup]; exists c => // t tab; rewrite fceqsup.
   by move/ubP : (sup_upper_bound imf_sup); apply; exact: imageP.
-have {imf_ltsup} imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
+have {}imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
   move=> t tab; case: (ltrP (f t) (sup imf))=> // supleft.
   rewrite falseE; apply: imf_ltsup; exists t => //.
   apply/eqP; rewrite eq_le supleft andbT.
@@ -1468,7 +1468,7 @@ have [cmax cmaxab fcmax] := EVT_max (ltW ltab) fcont.
 case: (pselect ([set a; b] cmax))=> [cmaxeaVb|]; last first.
   move=> /asboolPn; rewrite asbool_or => /norP.
   move=> [/asboolPn/eqP cnea /asboolPn/eqP cneb].
-  have {cmaxab} cmaxab : cmax \in `]a, b[.
+  have {}cmaxab : cmax \in `]a, b[.
     by rewrite inE/= !lt_def !(itvP cmaxab) cnea eq_sym cneb.
   exists cmax => //; apply: derive1_at_max (ltW ltab) fdrvbl cmaxab _ => t tab.
   by apply: fcmax; rewrite inE/= !ltW // (itvP tab).
@@ -1476,7 +1476,7 @@ have [cmin cminab fcmin] := EVT_min (ltW ltab) fcont.
 case: (pselect ([set a; b] cmin))=> [cmineaVb|]; last first.
   move=> /asboolPn; rewrite asbool_or => /norP.
   move=> [/asboolPn/eqP cnea /asboolPn/eqP cneb].
-  have {cminab} cminab : cmin \in `]a, b[.
+  have {}cminab : cmin \in `]a, b[.
     by rewrite inE/= !lt_def !(itvP cminab) cnea eq_sym cneb.
   exists cmin => //; apply: derive1_at_min (ltW ltab) fdrvbl cminab _ => t tab.
   by apply: fcmin; rewrite inE/= !ltW // (itvP tab).

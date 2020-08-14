@@ -223,7 +223,7 @@ Variable (mu : {measure set X -> {ereal R}}).
 
 Lemma measure_additive : additive mu.
 Proof. by apply: sigma_additive_implies_additive. Qed.
-Hint Resolve measure_additive.
+Hint Resolve measure_additive : core.
 
 Lemma measure_additive2 : additive2 mu.
 Proof. exact/additive2P. Qed.
