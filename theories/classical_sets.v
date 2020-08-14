@@ -839,7 +839,7 @@ have R'tot_lub A : total_on A R' -> exists t, (forall s, A s -> R' s t) /\
     by move=> B ???; exists B.
   by move=> B Bub ? /= [? /Bub]; apply.
 apply: contrapT => nomax.
-have {nomax} nomax t : exists s, R t s /\ s <> t.
+have {}nomax t : exists s, R t s /\ s <> t.
   have /asboolP := nomax; rewrite asbool_neg => /forallp_asboolPn /(_ t).
   move=> /asboolP; rewrite asbool_neg => /existsp_asboolPn [s].
   by move=> /asboolP; rewrite asbool_neg => /imply_asboolPn []; exists s.

@@ -1469,7 +1469,7 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
 have [re1|re1] := ltrP 1 (contract r%:E + e%:num).
   exact: (@nbhs_fin_out_above_below _ e).
 move: re1; rewrite le_eqVlt => /orP[re1|re1].
-  have {re1}re1 : contract r%:E = 1 - e%:num.
+  have {}re1 : contract r%:E = 1 - e%:num.
     by move: re1; rewrite eq_sym -subr_eq => /eqP <-.
   have e1 : 1 < e%:num.
     move: reN1.
@@ -2072,7 +2072,7 @@ Proof. by have := @ball_splitl _ _ z x y e; rewrite -ball_normE. Qed.
 
 Lemma normm_leW (x : V) (e : R) : e > 0 -> `|x| <= e / 2 -> `|x| < e.
 Proof.
-move=> /posnumP[{e}e] /le_lt_trans ->//.
+move=> /posnumP[{}e] /le_lt_trans ->//.
 by rewrite [X in _ < X]splitr ltr_spaddl.
 Qed.
 
@@ -3655,8 +3655,8 @@ Lemma lt_ereal_nbhs (R : realFieldType) (a b : {ereal R}) (x : R) :
 Proof.
 move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
-  move=> {a b} a b ltxa ltxb.
-  have m_gt0 : (minr ((x - a) / 2) ((b - x) / 2) > 0).
+  move=> {}a {}b ltxa ltxb.
+  have m_gt0 : minr ((x - a) / 2) ((b - x) / 2) > 0.
     by rewrite lt_minr !divr_gt0 // ?subr_gt0.
   exists (PosNum m_gt0) => y //=; rewrite lt_minr !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].
@@ -3878,7 +3878,7 @@ have [f [Af clGf]] : [set f | forall i, A i (f i)] `&`
     by apply: filterS FE => v Ev; apply/sCD; rewrite -EeqC row_simpl.
   by rewrite predeqE => ?; rewrite row_simpl'.
 exists (\row_j f j); split; first by move=> i; rewrite mxE; apply: Af.
-move=> C D FC f_D; have {f_D} f_D :
+move=> C D FC f_D; have {}f_D :
   nbhs (f : product_topologicalType _) [set g | D (\row_j g j)].
   have [E f_E sED] := f_D; rewrite nbhsE.
   set Pj := fun j Bj => open_nbhs (f j) Bj /\ Bj `<=` E ord0 j.
@@ -4098,7 +4098,7 @@ Qed.
 
 End ereal_is_hausdorff.
 
-Hint Resolve ereal_hausdorff.
+Hint Resolve ereal_hausdorff : core.
 
 (** * Some limits on real functions *)
 

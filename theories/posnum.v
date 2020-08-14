@@ -111,7 +111,7 @@ Lemma posnum_max : {morph numpos R : x y / Order.max x y}.
 Proof. by move=> x y; rewrite !maxEle posnum_le -fun_if. Qed.
 
 Lemma posnum_real x : x%:num \is Num.real. Proof. by rewrite gtr0_real. Qed.
-Hint Resolve posnum_real.
+Hint Resolve posnum_real : core.
 
 Canonical addr_posnum x y := PosNum (addr_gt0 x y).
 Canonical mulr_posnum x y := PosNum (mulr_gt0 x y).

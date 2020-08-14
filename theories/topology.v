@@ -1806,7 +1806,7 @@ Canonical eventually_pfilterType := PFilterType eventually (filter_not_empty _).
 
 Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
 Proof. by exists N.+1. Qed.
-Hint Resolve nbhs_infty_gt.
+Hint Resolve nbhs_infty_gt : core.
 
 Lemma nbhs_infty_ge N : \forall n \near \oo, (N <= n)%N.
 Proof. by exists N. Qed.
@@ -3073,7 +3073,7 @@ Proof.
 rewrite predeq2E => M A; split.
   move=> [B]; rewrite -nbhs_entourageE => M_B sBA.
   set sB := fun i j => [set C | entourage C /\ to_set C (M i j) `<=` B i j].
-  have {M_B} M_B : forall i j, sB i j !=set0 by move=> ??; apply/exists2P/M_B.
+  have {}M_B : forall i j, sB i j !=set0 by move=> ??; apply/exists2P/M_B.
   exists [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) | forall i j,
     get (sB i j) (MN.1 i j, MN.2 i j)].
     by exists (fun i j => get (sB i j)) => // i j; have /getPex [] := M_B i j.
@@ -3325,7 +3325,7 @@ Proof. by rewrite -entourage_ballE. Qed.
 Lemma entourage_ball {R : numDomainType} (M : pseudoMetricType R)
   (e : {posnum R}) : entourage [set xy : M * M | ball xy.1 e%:num xy.2].
 Proof. by rewrite -entourage_ballE; exists e%:num. Qed.
-Hint Resolve entourage_ball.
+Hint Resolve entourage_ball : core.
 
 Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
   (x : T) := @filter_from R _ [set e | e > 0] (ball x).
@@ -3613,7 +3613,7 @@ Variable (T : choiceType) (R : numFieldType) (U : pseudoMetricType R).
 Definition fct_ball (x : T -> U) (eps : R) (y : T -> U) :=
   forall t : T, ball (x t) eps (y t).
 Lemma fct_ball_center (x : T -> U) (e : R) : 0 < e -> fct_ball x e x.
-Proof. by move=> /posnumP[{e}e] ?. Qed.
+Proof. by move=> /posnumP[{}e] ?. Qed.
 
 Lemma fct_ball_sym (x y : T -> U) (e : R) : fct_ball x e y -> fct_ball y e x.
 Proof. by move=> P t; apply: ball_sym. Qed.
