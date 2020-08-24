@@ -559,6 +559,12 @@ split=> [/asboolP|[p nq pq]]; [|exact/nq/pq].
 by rewrite asbool_neg => /imply_asboolPn.
 Qed.
 
+Lemma not_andP (P Q : Prop) : ~ (P /\ Q) <-> ~ P \/ ~ Q.
+Proof.
+split => [/asboolPn|[|]]; try by apply: contrap => -[].
+by rewrite asbool_and negb_and => /orP[]/asboolPn; [left|right].
+Qed.
+
 Lemma not_implyE (P Q : Prop) : (~ (P -> Q)) = (P /\ ~ Q).
 Proof. by rewrite propeqE not_implyP. Qed.
 
