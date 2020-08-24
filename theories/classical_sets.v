@@ -425,9 +425,6 @@ Qed.
 Lemma nonsubset {A} (X Y:set A): ~ (X `<=` Y) -> X `&` ~` Y !=set0.
 Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
 
-Lemma setIid {A} (X : set A) : X `&` X = X.
-Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
-
 Lemma setIC {A} (X Y : set A) : X `&` Y = Y `&` X.
 Proof. by rewrite predeqE => ?; split=> [[]|[]]. Qed.
 
@@ -436,6 +433,9 @@ Proof. by move=> sAB t [Ct At]; split => //; exact: sAB. Qed.
 
 Lemma setSI T (A B C : set T) : A `<=` B -> A `&` C `<=` B `&` C.
 Proof. by move=> sAB; rewrite -!(setIC C); apply setIS. Qed.
+
+Lemma setSD T (A B C : set T) : A `<=` B -> A `\` C `<=` B `\` C.
+Proof. by rewrite !setDE; apply: setSI. Qed.
 
 Lemma setISS T (A B C D : set T) : A `<=` C -> B `<=` D -> A `&` B `<=` C `&` D.
 Proof. by move=> /(@setSI _ _ _ B) /subset_trans sAC /(@setIS _ _ _ C) /sAC. Qed.
@@ -471,6 +471,15 @@ Lemma setIACA {A} (X Y Z T : set A) :
   X `&` Y `&` (Z `&` T) = X `&` Z `&` (Y `&` T).
 Proof. by rewrite -setIA [Y `&` _]setICA setIA. Qed.
 
+Lemma setIid {A} (X : set A) : X `&` X = X.
+Proof. by rewrite predeqE => ?; split=> [[]|]. Qed.
+
+Lemma setIIl T (A B C : set T) : A `&` B `&` C = (A `&` C) `&` (B `&` C).
+Proof. by rewrite setIA !(setIAC _ C) -(setIA _ C) setIid. Qed.
+
+Lemma setIIr T (A B C : set T) : A `&` (B `&` C) = (A `&` B) `&` (A `&` C).
+Proof. by rewrite !(setIC A) setIIl. Qed.
+
 Lemma setUA A : associative (@setU A).
 Proof. move=> p q r; rewrite /setU predeqE => a; tauto. Qed.
 
@@ -495,11 +504,32 @@ Proof. by rewrite predeqE => t; split; [case|right]. Qed.
 Lemma setU_eq0 T (X Y : set T) : (X `|` Y = set0) = ((X = set0) /\ (Y = set0)).
 Proof. by rewrite -!subset0 subUset. Qed.
 
+Lemma setCS T (A B : set T) : (~` A `<=` ~` B) = (B `<=` A).
+Proof.
+rewrite propeqE; split => [|BA].
+  by move/subsets_disjoint; rewrite setCK setIC => /subsets_disjoint.
+by apply/subsets_disjoint; rewrite setCK setIC; apply/subsets_disjoint.
+Qed.
+
+Lemma setDS T (A B C : set T) : A `<=` B -> C `\` B `<=` C `\` A.
+Proof. by rewrite !setDE -setCS; apply: setIS. Qed.
+
+Lemma setDSS T (A B C D : set T) : A `<=` C -> D `<=` B -> A `\` B `<=` C `\` D.
+Proof.
+by move=> /(@setSD _ _ _ B) /subset_trans sAC /(@setDS _ _ _ C) /sAC.
+Qed.
+
 Lemma setCU T (X Y : set T) : ~`(X `|` Y) = ~` X `&` ~` Y.
 Proof.
 rewrite predeqE => z.
 by apply: asbool_eq_equiv; rewrite asbool_and !asbool_neg asbool_or negb_or.
 Qed.
+
+Lemma setCI T (A B : set T) : ~` (A `&` B) = ~` A `|` ~` B.
+Proof. by rewrite -[in LHS](setCK A) -[in LHS](setCK B) -setCU setCK. Qed.
+
+Lemma setDUr T (A B C : set T) : A `\` (B `|` C) = (A `\` B) `&` (A `\` C).
+Proof. by rewrite !setDE setCU setIIr. Qed.
 
 Lemma setI_bigcapl A I (D : set I) (f : I -> set A) (X : set A) :
   D !=set0 -> \bigcap_(i in D) f i `&` X = \bigcap_(i in D) (f i `&` X).
@@ -509,25 +539,35 @@ move=> [i Di]; rewrite predeqE => a; split=> [[Ifa Xa] j Dj|IfIXa].
 by split=> [j /IfIXa [] | ] //; have /IfIXa [] := Di.
 Qed.
 
-Lemma setIDl T : left_distributive (@setI T) (@setU T).
+Lemma setIUl T : left_distributive (@setI T) (@setU T).
 Proof.
 move=> X Y Z; rewrite predeqE => t; split.
   by move=> [[Xt|Yt] Zt]; [left|right].
 by move=> [[Xt Zt]|[Yt Zt]]; split => //; [left|right].
 Qed.
 
-Lemma setIDr T : right_distributive (@setI T) (@setU T).
-Proof. by move=> X Y Z; rewrite ![X `&` _]setIC setIDl. Qed.
+Lemma setIUr T : right_distributive (@setI T) (@setU T).
+Proof. by move=> X Y Z; rewrite ![X `&` _]setIC setIUl. Qed.
 
-Lemma setUDl T : left_distributive (@setU T) (@setI T).
+Lemma setUIl T : left_distributive (@setU T) (@setI T).
 Proof.
 move=> X Y Z; rewrite predeqE => t; split.
   by move=> [[Xt Yt]|Zt]; split; by [left|right].
 by move=> [[Xt|Zt] [Yt|Zt']]; by [left|right].
 Qed.
 
-Lemma setUDr T : right_distributive (@setU T) (@setI T).
-Proof. by move=> X Y Z; rewrite ![X `|` _]setUC setUDl. Qed.
+Lemma setUIr T : right_distributive (@setU T) (@setI T).
+move.
+Proof. by move=> X Y Z; rewrite ![X `|` _]setUC setUIl. Qed.
+
+Lemma setDUl T (A B C : set T) : (A `|` B) `\` C = (A `\` C) `|` (B `\` C).
+Proof. by rewrite !setDE setIUl. Qed.
+
+Lemma setIDA T (A B C : set T) : A `&` (B `\` C) = (A `&` B) `\` C.
+Proof. by rewrite !setDE setIA. Qed.
+
+Lemma setDD T (A B : set T) : A `\` (A `\` B) = A `&` B.
+Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
 
 Lemma bigcup_set1 T V (U : V -> set T) v : \bigcup_(i in [set v]) U i = U v.
 Proof. by apply: eqEsubset => ? => [[] ? -> //|]; exists v. Qed.
@@ -603,8 +643,8 @@ Canonical setU_mul_monoid := MulLaw (@setTU T) (@setUT T).
 Canonical setI_monoid := Law (@setIA T) (@setTI T) (@setIT T).
 Canonical setI_comoid := ComLaw (@setIC T).
 Canonical setI_mul_monoid := MulLaw (@set0I T) (@setI0 T).
-Canonical setU_add_monoid := AddLaw (@setUDl T) (@setUDr T).
-Canonical setI_add_monoid := AddLaw (@setIDl T) (@setIDr T).
+Canonical setU_add_monoid := AddLaw (@setUIl T) (@setUIr T).
+Canonical setI_add_monoid := AddLaw (@setIUl T) (@setIUr T).
 
 End SetMonoids.
 
