@@ -3446,7 +3446,7 @@ Variable R : realType.
 Lemma segment_connected (a b : R) : connected [set x : R^o | x \in `[a, b]].
 Proof.
 move=> A [y Ay] Aop Acl.
-move: Aop; apply: contrapTT; rewrite predeqE => /asboolPn /existsp_asboolPn [x].
+move: Aop; apply: contraPP; rewrite predeqE => /asboolPn /existsp_asboolPn [x].
 wlog ltyx : a b (* leab *) A y Ay Acl x / y < x.
   move=> scon; case: (ltrP y x); first exact: scon.
   rewrite le_eqVlt; case/orP=> [/eqP xey|ltxy].

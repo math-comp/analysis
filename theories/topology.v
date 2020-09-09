@@ -708,7 +708,7 @@ Definition Build_ProperFilter {T : Type} (F : set (set T))
 Lemma filter_ex_subproof {T : Type} (F : set (set T)) :
      ~ F set0 -> (forall P, F P -> exists x, P x).
 Proof.
-move=> NFset0 P FP; apply: contrapNT NFset0 => nex; suff <- : P = set0 by [].
+move=> NFset0 P FP; apply: contra_notP NFset0 => nex; suff <- : P = set0 by [].
 by rewrite funeqE => x; rewrite propeqE; split=> // Px; apply: nex; exists x.
 Qed.
 
@@ -2125,7 +2125,8 @@ End Closed.
 Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
-rewrite !closedE=> f_continuous D_cl x /= xDf; apply: D_cl; apply: contrap xDf => fxD.
+rewrite !closedE=> f_continuous D_cl x /= xDf.
+apply: D_cl; apply: contra_not xDf => fxD.
 have NDfx : ~ D (f x).
   by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [[??]]]; apply.
 by apply: f_continuous fxD; rewrite inE.
@@ -2505,7 +2506,7 @@ split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
   by exists p => i D'i; split=> // fip; apply: nUfp; exists i.
 case: (pselect (exists i, D i)) => [[j Dj] | /asboolP]; last first.
   by rewrite asbool_neg => /forallp_asboolPn D0 => _; exists point => ? /D0.
-apply: contrapTT => /asboolP; rewrite asbool_neg => /forallp_asboolPn If0.
+apply: contraPP => /asboolP; rewrite asbool_neg => /forallp_asboolPn If0.
 apply/asboolP; rewrite asbool_neg; apply/existsp_asboolPn.
 have Anfcov : A `<=` \bigcup_(i in D) (A `\` f i).
   move=> p Ap; have /asboolP := If0 p; rewrite asbool_neg => /existsp_asboolPn.
@@ -2588,7 +2589,7 @@ Lemma open_hausdorff : hausdorff T =
                 [/\ open AB.1, open AB.2 & AB.1 `&` AB.2 == set0]).
 Proof.
 rewrite propeqE; split => [T_filterT2|T_openT2] x y.
-  have := contrap (T_filterT2 x y); rewrite (rwP eqP) (rwP negP) => cl /cl.
+  have := contra_not (T_filterT2 x y); rewrite (rwP eqP) (rwP negP) => cl /cl.
   rewrite [cluster _ _](rwP forallp_asboolP) => /negP.
   rewrite forallbE => /existsp_asboolPn/=[A]/negP/existsp_asboolPn/=[B].
   rewrite [nbhs _ _ -> _](rwP imply_asboolP) => /negP.
@@ -2597,7 +2598,7 @@ rewrite propeqE; split => [T_filterT2|T_openT2] x y.
   move: xA yB; rewrite !nbhsE.
   move=> - [oA [[oA_open oAx] oAA]] [oB [[oB_open oBx] oBB]].
   by exists (oA, oB); rewrite ?inE; split => //; apply: subsetI_eq0 AIB_eq0.
-apply: contrapTT => /eqP /T_openT2[[/=A B]].
+apply: contraPP => /eqP /T_openT2[[/=A B]].
 rewrite !inE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
 move=> /(_ A B (open_nbhs_nbhs _) (open_nbhs_nbhs _)).
 by rewrite -set0P => /(_ _ _)/negP; apply.
