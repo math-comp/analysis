@@ -464,25 +464,6 @@ End numFieldType_canonical_contd.
 
 (** locally *)
 
-Section Locally.
-Context {R : numDomainType} {T : pseudoMetricType R}.
-
-Lemma forallN {U} (P : set U) : (forall x, ~ P x) = ~ exists x, P x.
-Proof. (*boolP*)
-rewrite propeqE; split; first by move=> fP [x /fP].
-by move=> nexP x Px; apply: nexP; exists x.
-Qed.
-
-Lemma eqNNP (P : Prop) : (~ ~ P) = P. (*boolP*)
-Proof. by rewrite propeqE; split=> [/contrapT|?]. Qed.
-
-Lemma existsN {U} (P : set U) : (exists x, ~ P x) = ~ forall x, P x. (*boolP*)
-Proof.
-rewrite propeqE; split=> [[x Px] Nall|Nall]; first exact: Px.
-by apply: contrapT; rewrite -forallN => allP; apply: Nall => x; apply: contrapT.
-Qed.
-End Locally.
-
 Section Nbhs'.
 Context {R : numDomainType} {T : pseudoMetricType R}.
 
@@ -490,7 +471,7 @@ Lemma ex_ball_sig (x : T) (P : set T) :
   ~ (forall eps : {posnum R}, ~ (ball x eps%:num `<=` ~` P)) ->
     {d : {posnum R} | ball x d%:num `<=` ~` P}.
 Proof.
-rewrite forallN eqNNP => exNP.
+rewrite forallNE notK => exNP.
 pose D := [set d : R | d > 0 /\ ball x d `<=` ~` P].
 have [|d_gt0] := @getPex _ D; last by exists (PosNum d_gt0).
 by move: exNP => [e eP]; exists e%:num.
@@ -1880,7 +1861,7 @@ Proof.
 rewrite /dominated_by; split => [/pinfty_ex_gt0[M M_gt0]|[M]] FM.
   by exists M.
 have [] := pselect (exists x, (h x != 0) && (`|f x| <= M * `|h x|)); last first.
-  rewrite -forallN; move=> Nex; exists 0; rewrite real0; split => //.
+  rewrite -forallNE; move=> Nex; exists 0; rewrite real0; split => //.
   move=> k k_gt0; apply: filterS FM => x f_le_Mh.
   have /negP := Nex x; rewrite negb_and negbK f_le_Mh orbF => /eqP h_eq0.
   by rewrite h_eq0 normr0 !mulr0 in f_le_Mh *.
