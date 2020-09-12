@@ -9,6 +9,9 @@
 - in `classical_sets.v`:
   + lemmas `setIIl`, `setIIr`, `setCS`, `setSD`, `setDS`, `setDSS`, `setCI`,
     `setDUr`, `setDUl`, `setIDA`, `setDD`
+- in `normedtype.v`:
+  + lemma `closed_ereal_le_ereal`
+  + lemma `closed_ereal_ge_ereal`
 
 ### Changed
 
