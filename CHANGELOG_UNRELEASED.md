@@ -38,6 +38,8 @@
   + new lemmas: `lb_set1`, `ub_lb_set1`, `ub_lb_refl`, `lb_ub_lb`
   + new definitions and lemmas: `infimums`, `infimum`, `infimums_set1`, `is_subset1_infimum`
   + new lemmas: `ge_supremum_Nmem`, `le_infimum_Nmem`, `nat_supremums_neq0`
+  + lemmas `ereal_nbhs_pinfty_ge`, `ereal_nbhs_ninfty_le`
+  + lemma `oppe_continuous`
 
 ### Changed
 

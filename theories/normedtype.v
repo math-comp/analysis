@@ -579,6 +579,14 @@ Definition ereal_nbhs (a : {ereal R}) (P : {ereal R} -> Prop) : Prop :=
 Canonical ereal_ereal_filter := FilteredType {ereal R} {ereal R} (ereal_nbhs).
 End ereal_nbhs.
 
+Lemma ereal_nbhs_pinfty_ge (R : numFieldType) (c : {posnum R}) :
+  (\forall x \near +oo, (c%:num%:E <= x))%E.
+Proof. by exists c%:num; rewrite realE posnum_ge0; split => //; apply: ltW. Qed.
+
+Lemma ereal_nbhs_ninfty_le (R : numFieldType) (c : R) : c < 0 ->
+  (\forall x \near -oo, (x <= c%:E))%E.
+Proof. by exists c; rewrite realE (ltW H) orbT; split => // x /ltW. Qed.
+
 Section ereal_nbhs_instances.
 Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R^o].
@@ -963,6 +971,12 @@ exists x => //.
 move: SA; rewrite predeqE => /(_ (- x)%E) [_ h].
 have : (-%E @` A) (- x)%E by exists x.
 by move/h => [y Sy] /eqP; rewrite eqe_opp => /eqP <-.
+Qed.
+
+Lemma oppe_continuous (R : realFieldType) : continuous (@oppe R).
+Proof.
+move=> x S /= xS; apply nbhsNKe; rewrite image_preimage //.
+by rewrite predeqE => y; split => // _; exists (- y)%E => //; rewrite oppeK.
 Qed.
 
 Section contract_expand.
