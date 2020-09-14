@@ -3379,26 +3379,25 @@ Grab Existential Variables. all: end_near. Qed.
 
 End cvg_seq_bounded.
 
-Section some_sets.
+Section open_closed_sets.
 Variable R : realFieldType (* TODO: can we generalize to numFieldType? *).
+Implicit Types y : R.
 
-(** Some open sets of [R] *)
-
-Lemma open_lt (y : R) : open [set x : R^o | x < y].
+Lemma open_lt y : open [set x : R^o | x < y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
 by rewrite /= distrC ltr_distl addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_lt : core.
 
-Lemma open_gt (y : R) : open [set x : R^o | x > y].
+Lemma open_gt y : open [set x : R^o | x > y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
 by rewrite /= distrC ltr_distl opprB addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_gt : core.
 
-Lemma open_neq (y : R) : open [set x : R^o | x != y].
+Lemma open_neq y : open [set x : R^o | x != y].
 Proof.
 rewrite (_ : xpredC _ = [set x | x < y] `|` [set x | x > y] :> set _) /=.
   by apply: openU => //; apply: open_lt.
@@ -3406,30 +3405,28 @@ rewrite predeqE => x /=; rewrite eq_le !leNgt negb_and !negbK orbC.
 by symmetry; apply (rwP orP).
 Qed.
 
-(** Some closed sets of [R] *)
-
-Lemma closed_le (y : R) : closed [set x : R^o | x <= y].
+Lemma closed_le y : closed [set x : R^o | x <= y].
 Proof.
 rewrite (_ : [set x | x <= _] = ~` (> y) :> set _).
   by apply: closedC; exact: open_gt.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
-Lemma closed_ge (y : R) : closed [set x : R^o | y <= x].
+Lemma closed_ge y : closed [set x : R^o | y <= x].
 Proof.
 rewrite (_ : (>= _) = ~` [set x | x < y] :> set _).
   by apply: closedC; exact: open_lt.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
-Lemma closed_eq (y : R) : closed [set x : R^o | x = y].
+Lemma closed_eq y : closed [set x : R^o | x = y].
 Proof.
 rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
   by apply: closedC; exact: open_neq.
 by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
 Qed.
 
-End some_sets.
+End open_closed_sets.
 
 Hint Extern 0 (open _) => now apply: open_gt : core.
 Hint Extern 0 (open _) => now apply: open_lt : core.
@@ -3924,10 +3921,6 @@ rewrite [in X in _ <= X]/normr /= mx_normrE.
 by apply/BigmaxBigminr.bigmaxr_gerP; right => /=; exists j.
 Qed.
 
-(** Open sets in [Rbar] *)
-
-Section open_sets_in_Rbar.
-
 Lemma ereal_nbhs'_le (R : numFieldType) (x : {ereal R}) :
   ereal_nbhs' x --> ereal_nbhs x.
 Proof.
@@ -3941,9 +3934,12 @@ Proof.
 by move=> P [_/posnumP[e] HP] //=; exists e%:num => // ???; apply: HP.
 Qed.
 
+Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
+Implicit Types x y : {ereal R}.
+Implicit Types r : R.
 
-Lemma open_ereal_lt (y : {ereal R}) : open [set u : R^o | u%:E < y]%E.
+Lemma open_ereal_lt y : open [set r : R^o | r%:E < y]%E.
 Proof.
 case: y => [y||] /=; first exact: open_lt.
 rewrite [X in open X](_ : _ = setT); first exact: openT.
@@ -3952,7 +3948,7 @@ rewrite [X in open X](_ : _ = set0); first exact: open0.
 by rewrite funeqE => ?; rewrite falseE.
 Qed.
 
-Lemma open_ereal_gt y : open [set u : R^o | y < u%:E]%E.
+Lemma open_ereal_gt y : open [set r : R^o | y < r%:E]%E.
 Proof.
 case: y => [y||] /=; first exact: open_gt.
 rewrite [X in open X](_ : _ = set0); first exact: open0.
@@ -3961,8 +3957,7 @@ rewrite [X in open X](_ : _ = setT); first exact: openT.
 by rewrite funeqE => ?; rewrite lte_ninfty trueE.
 Qed.
 
-Lemma open_ereal_lt' (x y : {ereal R}) : (x < y)%E ->
-  ereal_nbhs x (fun u => u < y)%E.
+Lemma open_ereal_lt' x y : (x < y)%E -> ereal_nbhs x (fun u => u < y)%E.
 Proof.
 case: x => [x|//|] xy; first exact: open_ereal_lt.
 case: y => [y||//] /= in xy *.
@@ -3974,8 +3969,7 @@ exists 0; rewrite real0; split => // x.
 by move/lt_le_trans; apply; rewrite lee_pinfty.
 Qed.
 
-Lemma open_ereal_gt' (x y : {ereal R}) : (y < x)%E ->
-  ereal_nbhs x (fun u => y < u)%E.
+Lemma open_ereal_gt' x y : (y < x)%E -> ereal_nbhs x (fun u => y < u)%E.
 Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
   case: y => [y||] //=; do ?by exists 0; rewrite real0.
@@ -3984,18 +3978,10 @@ move=> _; exists 0; rewrite real0; split => // x.
 by apply/le_lt_trans; rewrite lee_ninfty.
 Qed.
 
-End open_sets_in_Rbar.
-
-Section open_sets_in_ereal.
-
-Variables R : realFieldType.
-Implicit Types x y : {ereal R}.
-Implicit Types r : R.
-
 Let open_ereal_lt_real r : open (fun x => x < r%:E)%E.
 Proof.
 case => [? | // | ?]; [rewrite lte_fin => xy | by exists r].
-by move: (@open_ereal_lt _ r%:E); rewrite openE; apply; rewrite lte_fin.
+by move: (@open_ereal_lt r%:E); rewrite openE; apply; rewrite lte_fin.
 Qed.
 
 Lemma open_ereal_lt_ereal x : open [set y | y < x]%E.
@@ -4013,7 +3999,7 @@ Qed.
 Let open_ereal_gt_real r : open (fun x => r%:E < x)%E.
 Proof.
 case => [? | ? | //]; [rewrite lte_fin => xy | by exists r].
-by move: (@open_ereal_gt _ r%:E); rewrite openE; apply; rewrite lte_fin.
+by move: (@open_ereal_gt r%:E); rewrite openE; apply; rewrite lte_fin.
 Qed.
 
 Lemma open_ereal_gt_ereal x : open [set y | x < y]%E.
@@ -4028,7 +4014,21 @@ rewrite predeqE => -[r | | ].
 - by rewrite ltxx; split => // -[] x _; rewrite ltNge lee_ninfty.
 Qed.
 
-End open_sets_in_ereal.
+Lemma closed_ereal_le_ereal y : closed [set x | (y <= x)%E].
+Proof.
+rewrite (_ : [set x | y <= x]%E = ~` [set x | y > x]%E); last first.
+  by rewrite predeqE=> x; split=> [rx|/negP]; [apply/negP|]; rewrite -leNgt.
+exact/closedC/open_ereal_lt_ereal.
+Qed.
+
+Lemma closed_ereal_ge_ereal y : closed [set x | (y >= x)%E].
+Proof.
+rewrite (_ : [set x | y >= x]%E = ~` [set x | y < x]%E); last first.
+  by rewrite predeqE=> x; split=> [rx|/negP]; [apply/negP|]; rewrite -leNgt.
+exact/closedC/open_ereal_gt_ereal.
+Qed.
+
+End open_closed_sets_ereal.
 
 Section ereal_is_hausdorff.
 Variable R : realFieldType.
