@@ -19,26 +19,51 @@ Local Open Scope classical_set_scope.
  
 
 Section LinearContinuousBoundedscalar.
-(* Everything in this section in stated for scalar functions.                 *)
-(* They should be turned into lemmas for linear functions into normed spaces  *)
-  
+(* TODO: use bounded_on and bounded_fun *)
+(* TODO: integrate to PRLinearContinuousBounded on which Banach-Steinhauss should depend*)  
 Variables (R: numFieldType) (V : normedModType R).
 
-Definition continuousR_at (x : V) (f : V -> R^o) :=  f @ x --> (f x).
-(*No topological structure on R, only on R^o induced by the norm *)
 
-Lemma continuousR_atP x (f : V -> R^o) :
-(continuousR_at x f) <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) .
-Proof.
-  split ; by  move => /cvg_ballP.
-Qed.
+(* Lemma continuousR_atP x (f : V -> R^o) : *)
+(* {for x, continuous f} <-> (forall eps : R,  0 < eps -> \forall y \near f @ x, ball (f x) eps y) . *)
+(* Proof. *)
+(*   split; by move=> /cvg_ballP. *)
+(* Qed. *)
 
-Lemma continuousR_bounded0 (f : {scalar V}) :
-  (continuousR_at 0 f) -> 
-   ( exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|x| ) * r  )  ) . 
+Lemma scalar_boundedP (f: {linear V -> R^o}) : bounded_on f (nbhs (0:V)) <->
+        (exists  r , (r > 0 ) /\ (forall x : V, `|f x| <=  `|x| * r )).
 Proof.
-  move => /continuousR_atP H. 
-  have  H':  (0 < 1) by [].
+  split.
+  -  move => /ex_bound [M /nbhs_ballP [a a0 Ba0]] //=.
+     exists (M * 2 *a^-1); split.
+     - admit.  
+     - move => x. rewrite mulrA ler_pdivl_mulr //=. (* todo : lipschitz bounded *)
+       case: (boolp.EM (x=0)).
+       - by move => ->; rewrite linear0 !normr0 !mul0r.
+       - move => /eqP x0 ; rewrite -lter_pdivr_mull.
+         rewrite [X in ( _ <= X)]mulrC -lter_pdivr_mull //= .
+         have ->: 2^-1 *(`|x|^-1 * (`|f x| * a))=`| f ((`|x|^-1*a*2^-1)*:x)|. admit.
+         apply: Ba0 ;rewrite -ball_normE /= sub0r normrN.
+         rewrite normmZ !normrM normrV ?unitfE ?normrE //=.
+         rewrite mulrC mulrA mulrA /= mulrV ?unitfE ?normrE //=.
+         rewrite -mulrA mulrC mulr1.
+         rewrite gtr0_norm //= gtr_pmulr //= normrV ?unitfE ?normrE //=.
+         rewrite invr_lte1 //=  gtr0_norm //=  ?unitfE ?normrE //=.
+         rewrite ltr_spaddr //=  ?unitfE ?normrE //=. rewrite normr_gt0 //=.
+       - move => [r [r0 fr]]; apply/ex_bound; exists r.
+         rewrite -nbhs_nbhs_norm; exists 1; first by []. (* entourage adds a layer here *) 
+         move=> x; rewrite -ball_normE //= sub0r normrN => x1; apply: le_trans.
+         apply: fr.     
+         by rewrite ler_pimull //=; apply: ltW.
+Admitted.
+
+
+       
+Lemma scalar_continuous (f : {scalar V}):
+{for 0, continuous (f : V -> R^o)} ->  bounded_on (f : V -> R^o) (nbhs (0:V)). 
+Proof.
+  move => /cvg_ballP H.  apply/scalar_boundedP. 
+  have  H' : (0 < 1) by [].
   move : (H 1 (H' _)).
   rewrite (linear0 f) /( _ @ _ ) //= nearE =>  H0 {H}.
   move : (nbhs_ex H0) => [ tp  H] {H0} ;  pose t := tp%:num; move : H.
@@ -83,13 +108,11 @@ Qed.
 
 Lemma bounded_continuousR0 (f: {scalar V}):
   (exists  r , (r > 0 ) /\ (forall x : V,   ( `|f x| ) <=  (`|x| ) * r))
-  -> continuousR_at 0 f .
+  -> {for 0, continuous (f : V -> R^o)}.
 Proof.
-  move => [r [lt0r H]];  apply/(continuousR_atP 0) => eps poseps /=.
-  rewrite nearE (linear0 f); apply/nbhsP.  (*hnf*) admit. (* see the PR, easier way *)
-  (* (* locally_ is proved via an existential which gives *)
-  (*   the radius of the ball contained in locally *) *)
-  (*  exists (eps /2 / r). *)
+  move => [r [lt0r H]]; apply/cvg_ballP => eps poseps /=.
+  rewrite nearE (linear0 f); apply/nbhsP.
+   (* exists (eps /2 / r). *)
   (*  by rewrite !divr_gt0. *)
   (*  move => x; rewrite -ball_normE  /(ball_)  addrC addr0 normrN. *)
   (*  move => nx; rewrite /ball /(ball_) /= addrC addr0 normrN. *)
@@ -102,12 +125,8 @@ Proof.
   (* by apply : (le_lt_trans fxeps2). *)
 Admitted.
 
-(* rmq : as R carries no topological structure : *)
-
-Fail Check (forall f : {scalar V}, continuous f).
-
 Lemma continuousRat0_continuous (f : {linear V -> R^o}):
-  continuousR_at 0 f -> continuous f.
+ {for 0, continuous f} -> continuous f.
 Proof.
  move=> cont0f x ; rewrite cvg_to_locally => eps pos.
  move : (continuousR_bounded0 cont0f) => [r [rpos Hr]].
