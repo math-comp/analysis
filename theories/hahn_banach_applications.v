@@ -227,7 +227,7 @@ End LinearContinuousBounded.
 
 Section HBGeom.
 
-Variable (R : archiFieldType) (V : normedModType R) (F : pred V) (f :  V -> R^o) (F0 : F 0).
+Variable (R : realType) (V : normedModType R) (F : pred V) (f :  V -> R^o) (F0 : F 0).
 Hypothesis (linF : (forall (v1 v2 : V) (l : R),
                        F v1 -> F v2 -> F (v1 + l *: v2))).
 Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
@@ -289,46 +289,28 @@ Proof.
  by rewrite add0r.
 Qed.
 
-
- (* Upper bound *)
-Definition ubd (A : set R) (a : R) := forall x, A x -> x <= a.
-
- (* Lower bound *)
-Definition ibd (A : set R) (a : R) := forall x, A x -> a <= x.
-
-(* From the sup properties proven in bool in reals,
-   we deduce the version in Prop that we used in our proof
-    of hahn banach theorem in hahn_banach.v *)
-
 Lemma mymysup : forall (A : set R) (a m : R),
-     A a -> ubd A m ->
-     {s : R | ubd A s /\ forall u, ubd A u -> s <= u}.
+     A a -> ubound A m ->
+     {s : R | ubound A s /\ forall u, ubound A u -> s <= u}.
 Proof.
-  move => A a m  Aa majAm.
-  have : (has_sup (in_set A)).
-  split.
-  - by exists a; rewrite in_setE.
-  - exists m => x //=; rewrite in_setE; apply: majAm.
-  rewrite /has_sup => has_sup_A. admit.
-  (* exists (real_sup (in_set A)). *)
-  (* split. *)
-  (* - move => x Ax ; move : (real_sup_ub (has_sup_A)) => //= /ubP H. *)
-  (*   have Axb : x \in in_set A by rewrite in_setE. *)
-  (*   by apply : (H x Axb). *)
-  (* - move => x xmajA. *)
-  (*   have ubdA : is_upper_bound A x *)
-  (*     by move => y Ay; move : (xmajA y Ay); move => /RleP. *)
-  (*   (*I spent a long time looking for RleP*) *)
-  (*   have majAxb : is_upper_bound  (fun x : R => in_set A x) x. *)
-  (*   by move =>y ; rewrite in_setE => Ay ; move : (xmajA y Ay) ; move => /RleP. *)
-  (*   move : (proj2 (real_sup_is_lub has_sup_A) x majAxb). *)
-  (*   by move => /RleP. *)
-Admitted.
+  move => A a m Aa majAm. 
+  have [A0 Aub]: has_sup A. split; first by exists a.
+    by exists m => x; apply majAm.
+  exists (reals.sup A).
+  split; first by apply: sup_ub.
+  by move => x; apply: sup_le_ub.
+Qed.
 
 Lemma mymyinf : forall (A : set R) (a m : R),
-     A a ->  ibd A m ->
-     {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
-Admitted.
+     A a ->  lbound A m ->
+     {s : R | lbound A s /\ forall u, lbound A u -> u <= s}.
+  move => A a m Aa minAm.
+  have [A0 Alb]: has_inf A. split; first by exists a.
+    by exists m => x; apply minAm.
+  exists (reals.inf A).
+  split; first by apply: inf_lb.
+  by move => x; apply: lb_le_inf.
+Qed.
 
 
 Notation myHB :=
@@ -337,7 +319,7 @@ Notation myHB :=
 
 Theorem HB_geom_normed :
   continuousR_on_at F 0  f ->
-  exists g : {scalar V} , (continuous (g : V -> R^o) ) /\ ( forall x, F x -> (g x = f x) ).
+  exists g: {scalar V}, (continuous (g : V -> R^o)) /\ (forall x, F x -> (g x = f x)).
 Proof.
  move=> H; move: ( continuousR_scalar_on_bounded H) => [r [ltr0 fxrx]] {H}.
  pose p:= fun x : V => `|x|*r ;   have convp: convex p.
