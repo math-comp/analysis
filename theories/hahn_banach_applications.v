@@ -41,7 +41,7 @@ Proof.
          rewrite invr_lte1 //=  gtr0_norm //=  ?unitfE ?normrE //=.
          rewrite ltr_spaddr //=  ?unitfE ?normrE //=. rewrite normr_gt0 //=.
        - move => [r [r0 fr]]; apply/ex_bound; exists r.
-         rewrite -nbhs_nbhs_norm; exists 1; first by []. (* entourage adds a layer here *) 
+         rewrite nbhs_ballP; exists 1; first by []. 
          move=> x; rewrite -ball_normE //= sub0r normrN => x1; apply: le_trans.
          apply: fr.
          by rewrite ler_pimull //=; apply: ltW.
@@ -69,7 +69,7 @@ Lemma linear_bounded0 (f : {linear V -> W}) :
  bounded_on f (nbhs (0:V)) -> {for 0, continuous f} .
 Proof.
 move=> /linear_boundedP [r [r0 fr]]; apply/cvg_ballP => e e0.
-rewrite nearE linear0.   rewrite /fmap /= nbhs_ballP. (*!!!*) (*used to be locallyP before*)
+rewrite nearE linear0 /= nbhs_ballP. (*!!!*) (*used to be locallyP before*)
 exists (e / 2 / r); first by rewrite !divr_gt0.
 move=> x; rewrite -2!ball_normE /= 2!sub0r 2!normrN => xr.
 have /le_lt_trans -> // : `|f x| <= e / 2.
@@ -80,14 +80,13 @@ Qed.
 Lemma continuousfor0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
 Proof.
-move=> cont0f x; rewrite cvg_to_locally => e e0.
-move: (linear_continuous0 cont0f) => [r [r0 fr]].
-rewrite nearE /=. rewrite -nbhs_nbhs_norm.
-exists (e / r). admit.
-(* - rewrite mulr_gt0 //= invr_gt0.  admit. *)
-(* - move=> y xy; rewrite -ball_normE /= -linearB. *)
-(*   by rewrite (le_lt_trans (fr (x - y))) // -ltr_pdivl_mulr *)
-Admitted.
+  move=> /(linear_continuous0) /linear_boundedP [r [r0 fr]]  x.
+rewrite cvg_to_locally => e e0; rewrite nearE /= nbhs_ballP.
+exists (e / r).
+ - by rewrite mulr_gt0 //= invr_gt0.
+ - move=> y; rewrite -!ball_normE //= => xy; rewrite -linearB.
+   by rewrite (le_lt_trans (fr (x - y))) // -ltr_pdivl_mulr.
+Qed.
 
 Lemma linear_bounded_continuus (f : {linear V -> W}) :
   bounded_on f (nbhs (0 : V)) <-> continuous f.
