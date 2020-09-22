@@ -31,12 +31,12 @@ Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
 
 
 (*Looked a long time for within *)
-Definition continuousR_on ( G : set V ) ( f : V -> R^o) :=
-  (forall x, (f @ (within G (nbhs x))) --> f x).
+Definition continuousR_on ( G : set V ) (g : V -> R^o) :=
+  (forall x, (g @ (within G (nbhs x))) --> g x).
 
 (*Do we need to have F x ?*)
 Definition continuousR_on_at (G : set V ) (x : V ) (g : V -> R^o)  :=
-  g @ (within G (nbhs x)) --> (f x).
+  g @ (within G (nbhs x)) --> (g x).
 
 Lemma continuousR_scalar_on_bounded :
   (continuousR_on_at F 0 f) ->
@@ -129,15 +129,18 @@ Proof.
    apply : le_trans.
    apply : ler_norm.
    by apply : (fxrx x Fx).
- move : (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
- exists g ;  split ; last by [].
+ move: (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
+ exists g;  split; last by [].  
   move=> x; rewrite /cvgP; apply: (continuousfor0_continuous).
   apply: linear_bounded0; exists r.
-   split; first by [].
-   move => x0 ; rewrite ler_norml ; apply /andP ; split.
-   rewrite -sub0r (ler_subl_addr) ; move : (majgp (-x0)) ; rewrite /(p _) normrN (linearN g).  
-   by  rewrite -sub0r ler_subl_addl.
-   by exact : majgp x0.
+  split; first by rewrite realE; apply/orP; left; apply: ltW. (* r is Numreal ... *) 
+  move => M m1; rewrite nbhs_ballP;  exists 1; first by [].
+  move => y; rewrite -ball_normE //= sub0r => y1.
+  rewrite ler_norml; apply/andP; split.
+  - rewrite ler_oppl -linearN; apply: (le_trans (majgp (-y))).
+    by rewrite /p -[X in _ <= X]mul1r; apply: ler_pmul; rewrite ?normr_ge0 ?ltW //=.
+  - apply: (le_trans (majgp (y))); rewrite /p -[X in _ <= X]mul1r -normrN.
+    apply: ler_pmul; rewrite ?normr_ge0 ?ltW //=.
 Qed.
 
 End HBGeom.
