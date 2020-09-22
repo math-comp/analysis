@@ -18,11 +18,10 @@ Local Open Scope ring_scope .
 Local Open Scope classical_set_scope.
 Section LinearContinuousBounded.
   (* TODO : update PR adapted and rebase hahnbanah and banach steinhauss on it *)
-  
+
 Variables (R: numFieldType) (V  W: normedModType R).
 
-Lemma ball_nonempty (x: V) (a: R): a > 0 -> exists y, (ball x a y /\ `|x -y|>0).
-Admitted.
+
 
 Lemma linear_boundedP (f: {linear V -> W}) : bounded_on f (nbhs (0:V)) <->
         (exists r, 0 <= r /\ (forall x : V, `|f x| <=  `|x| * r )).
@@ -36,8 +35,8 @@ Proof.
      - move => x. rewrite mulrA ler_pdivl_mulr //=.
        case: (boolp.EM (x=0)).
        - by move => ->; rewrite linear0 !normr0 !mul0r.
-       - move => /eqP x0 ; rewrite -lter_pdivr_mull ?normr_gt0 //=. 
-         rewrite [X in ( _ <= X)]mulrC -lter_pdivr_mull //=. 
+       - move => /eqP x0 ; rewrite -lter_pdivr_mull ?normr_gt0 //=.
+         rewrite [X in ( _ <= X)]mulrC -lter_pdivr_mull //=.
          have ->: 2^-1 *(`|x|^-1 * (`|f x| * a))=`|f ((2^-1 * `|x|^-1 * a)*:x)|.
            rewrite linearZ normmZ !normrM !ger0_norm ?invr_ge0 //= ?ltW //=.
            by rewrite mulrA mulrA mulrAC.
@@ -78,7 +77,7 @@ Proof.
 move=> /linear_boundedP [r]; rewrite le0r=>  [[/orP r0]]; case: r0.
 - move/eqP => -> fr; apply: near_cst_continuous; near=> y.
   by move: (fr y); rewrite mulr0 normr_le0; apply/eqP.
-- move => r0 fr;  apply/cvg_ballP => e e0. 
+- move => r0 fr;  apply/cvg_ballP => e e0.
   rewrite nearE linear0 /= nbhs_ballP.
   exists (e / 2 / r); first by rewrite !divr_gt0.
   move=> x; rewrite -2!ball_normE /= 2!sub0r 2!normrN => xr.
@@ -92,14 +91,17 @@ Lemma continuousfor0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
 Proof.
 move=> /(linear_continuous0) /linear_boundedP [r].
-rewrite le0r=>  [[/orP r0]]; case: r0 => r0 fr x.
-- admit. 
-- rewrite cvg_to_locally => e e0; rewrite nearE /= nbhs_ballP.
-  exists (e / r). 
-   - by rewrite mulr_gt0 //= invr_gt0. 
+rewrite le0r=>  [[/orP r0]]; case: r0  => /eqP. 
+- move => ->;  move : f  =>  [f linf] f0 //=. (* Linear linf = f ?? *) 
+  suff: f  = fun x => 0 by move => ->; apply: cst_continuous.
+    by apply: funext => x; move: (f0 x); rewrite mulr0 normr_le0; apply/eqP .
+- move/eqP => //= r0 fr x.
+  rewrite cvg_to_locally => e e0; rewrite nearE /= nbhs_ballP.
+  exists (e / r).
+   - by rewrite mulr_gt0 //= invr_gt0.
    - move=> y; rewrite -!ball_normE //= => xy; rewrite -linearB.
      by rewrite (le_lt_trans (fr (x - y))) // -ltr_pdivl_mulr.
-Admitted.
+Qed.        
 
 Lemma linear_bounded_continuus (f : {linear V -> W}) :
   bounded_on f (nbhs (0 : V)) <-> continuous f.
