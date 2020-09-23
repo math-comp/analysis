@@ -41,6 +41,9 @@
   + lemmas `ereal_nbhs_pinfty_ge`, `ereal_nbhs_ninfty_le`
   + lemma `oppe_continuous`
 
+  + section "LinearContinuousBounded"
+  + section "Closed_ball"
+  
 ### Changed
 
 - in `classical_sets.v`:
