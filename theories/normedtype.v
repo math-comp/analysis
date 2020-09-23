@@ -4245,37 +4245,66 @@ Proof.
 Qed.
 
 End LinearContinuousBounded.
- 
+
 Section Close_Ball.
-Definition close_ball_ (R : numDomainType) (V: zmodType) (norm : V -> R) (x : V) (e :R) :=
-[set y | (norm (x- y) <=e)%O ] .
-Definition close_ball (R : realType) (M : completeNormedModType R) (x : M) (e : R) :=
+
+  
+Lemma closureI (T : topologicalType) ( A : set T) :
+  closure A = \bigcap_(B in [ set B : set T | ( A `<=` B)/\ closed B]) B.
+Admitted.
+(* TBA to topology.v *)
+
+Definition close_ball_ (R: numDomainType) (V: zmodType) (norm: V -> R) (x: V) (e : R) :=
+  [set y | (norm (x- y) <=e)%O ].
+
+Definition close_ball (R: numDomainType) (V:  pseudoMetricNormedZmodType R) (x: V) (e : R) :=
   close_ball_ normr x e.
 
-Lemma closed_close_ball (R : realType) (M : completeNormedModType R) (x : M) (e : R) :
+Lemma close_ballxx  (R: numDomainType) (V:  pseudoMetricNormedZmodType R) (x : V) (r : {posnum R}) :
+  close_ball x r%:num x.
+Proof.
+  by rewrite /close_ball /close_ball_ //= subrr normr0.
+Qed.
+
+Lemma closed_close_ball (R: realFieldType) (V:  normedModType R) (x : V) (e : R) :
   closed (close_ball x e).
 Proof.
-  Search _ closed.
-  pose f := fun y => normr ( x - y).
-  have : close_ball x e  = f @^-1` [set x | (x<= e)%O] by rewrite /close_ball /close_ball_ /preimage.
-  move ->.
-  apply (@closed_comp _ _ (f : M -> R^o) _).
-  have H : forall x : M , x \in (~` f @^-1` (fun x : R => (x<=e)%O))  -> {for x, continuous ( f : M -> R^o)}.
-  move => y Hy.
-  apply  (@continuous_comp _ _ _ (fun y : M => (x-y)) (normr : M -> R^o) y) .
-    apply: continuousB.
-     by apply: cst_continuous.
-     by [].
-    by apply : norm_continuous.
-   move=> a.
-   exact (H a).
+pose f := fun y => normr (x - y).
+have -> : close_ball x e  = f @^-1` [set x | (x<= e)%O] by [].
+apply: (@closed_comp _ _ (f : V -> R^o)).
+  move => y Hy; apply: (@continuous_comp _ _ _ (fun y : V => (x-y))).
+      by apply: continuousB ; first by apply: cst_continuous.
+      by apply : norm_continuous.
   by apply: closed_le.
 Qed.
 
-Variable (K : realType).
+Lemma closure_ball (R: realFieldType) (V:  normedModType R)
+      (x: V) (e: {posnum R}) :
+  closure (ball x e%:num) =  close_ball x e%:num.
+Proof.
+  apply: eqEsubset =>y; rewrite /closure /close_ball /close_ball_  /=.
+  - move => e0 /=.
+    pose f := fun y => `|x - y|. 
+    have lem:  continuous ( f : V -> R^o).
+          admit (* continuous_comp, norm_continuous, continuousB *).
+    have : \forall z \near (nbhs y), f z <= e%:num. admit.
+    have : lim ( (f : V -> R^o) @  y)  <= e%:num.    admit. (* !! *)
+    admit.
+  - case: (EM (x = y)).
+  - move => <- _  ; exists x; split; first by apply: ballxx.
+      by apply: nbhs_singleton.
+    move => xy xye B /(nbhs_ex) [[r r0] By].
+    pose z := y + (r/2/(`|x-y|))*: (x - y). exists y; split.
+    - rewrite -ball_normE /ball_  //=.  leW.     
+Admitted.
 
 
-Lemma neighBall (U : completeNormedModType K) (y : U) (A : set U) :
+
+
+Variable (R: : realFieldType) (U : NormedModType R).
+
+
+Lemma neighBall  (y : U) (A : set U) :
   open_nbhs y A -> exists (r : {posnum K}), ball y r%:num `<=` A.
 Proof.
   by move=> /open_nbhs_nbhs /(@nbhs_ballP _ _ y A) /exists2P [r [supr prop]]; exists (PosNum supr).
@@ -4298,11 +4327,7 @@ Proof.
   by [].
 Qed.
 
-Lemma close_ball_center (U :completeNormedModType K) (x : U) (r : {posnum K}) :
-  close_ball x r%:num x.
-Proof.
-  by rewrite /close_ball /close_ball_ //= subrr normr0.
-Qed.
+
 
 Lemma close_neigh_ball (U : completeNormedModType K) (x : U) (r : {posnum K}) :
   open_nbhs x (close_ball x r%:num)^°.
@@ -4321,3 +4346,5 @@ Lemma close_ball_ler (U : completeNormedModType K) (x : U) (e1 e2 : K) :
 Qed.
 
 End Close_Ball.
+
+
