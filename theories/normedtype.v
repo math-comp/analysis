@@ -4245,3 +4245,79 @@ Proof.
 Qed.
 
 End LinearContinuousBounded.
+ 
+Section Close_Ball.
+Definition close_ball_ (R : numDomainType) (V: zmodType) (norm : V -> R) (x : V) (e :R) :=
+[set y | (norm (x- y) <=e)%O ] .
+Definition close_ball (R : realType) (M : completeNormedModType R) (x : M) (e : R) :=
+  close_ball_ normr x e.
+
+Lemma closed_close_ball (R : realType) (M : completeNormedModType R) (x : M) (e : R) :
+  closed (close_ball x e).
+Proof.
+  Search _ closed.
+  pose f := fun y => normr ( x - y).
+  have : close_ball x e  = f @^-1` [set x | (x<= e)%O] by rewrite /close_ball /close_ball_ /preimage.
+  move ->.
+  apply (@closed_comp _ _ (f : M -> R^o) _).
+  have H : forall x : M , x \in (~` f @^-1` (fun x : R => (x<=e)%O))  -> {for x, continuous ( f : M -> R^o)}.
+  move => y Hy.
+  apply  (@continuous_comp _ _ _ (fun y : M => (x-y)) (normr : M -> R^o) y) .
+    apply: continuousB.
+     by apply: cst_continuous.
+     by [].
+    by apply : norm_continuous.
+   move=> a.
+   exact (H a).
+  by apply: closed_le.
+Qed.
+
+Variable (K : realType).
+
+
+Lemma neighBall (U : completeNormedModType K) (y : U) (A : set U) :
+  open_nbhs y A -> exists (r : {posnum K}), ball y r%:num `<=` A.
+Proof.
+  by move=> /open_nbhs_nbhs /(@nbhs_ballP _ _ y A) /exists2P [r [supr prop]]; exists (PosNum supr).
+Qed.
+
+
+Lemma closeNeigh_ball (U : completeNormedModType K) (y : U) (A : set U) :
+  open_nbhs y A -> exists (r : {posnum K}), close_ball y r%:num `<=` A.
+Proof.
+  move=> H.
+  have [r Hr] : (exists r : {posnum K}, ball y r%:num `<=` A).
+    by apply: neighBall.
+  have Hrr : r%:num / 2 > 0.
+    by [].
+  exists (PosNum Hrr).
+  apply (@subset_trans  _ (ball y r%:num) _ _).
+  rewrite -?ball_normE;  move=> a Ha;
+  apply (@le_lt_trans _ _  (PosNum Hrr)%:num (`| y - a|) r%:num); rewrite ?(@ltr_pdivr_mulr _ 2 r%:num r%:num);
+  by rewrite -?(@ltr_pdivr_mull _ r%:num 2 r%:num) //= mulrC mulfV ?ltr1n.
+  by [].
+Qed.
+
+Lemma close_ball_center (U :completeNormedModType K) (x : U) (r : {posnum K}) :
+  close_ball x r%:num x.
+Proof.
+  by rewrite /close_ball /close_ball_ //= subrr normr0.
+Qed.
+
+Lemma close_neigh_ball (U : completeNormedModType K) (x : U) (r : {posnum K}) :
+  open_nbhs x (close_ball x r%:num)^°.
+Proof.
+  split.
+    by apply: open_interior.
+    apply: nbhs_singleton; apply: nbhs_interior; apply /nbhs_ballP; exists r%:num.
+    by [].
+    by rewrite -ball_normE; move=> a; apply/ltW.
+Qed.
+
+
+Lemma close_ball_ler (U : completeNormedModType K) (x : U) (e1 e2 : K) :
+  (e1 <= e2)%O -> close_ball x e1 `<=` close_ball x e2.
+  by move=> H e Y; apply: (@le_trans _ _ e1 (`|x-e|) e2). 
+Qed.
+
+End Close_Ball.
