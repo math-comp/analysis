@@ -32,6 +32,14 @@ Local Open Scope classical_set_scope.
 Definition dense (T : topologicalType) (S : T  -> Prop) :=
   forall (O : set T), (exists y, O y) -> open O ->  exists x, (setI O S) x.
 
+Lemma denseNE (T : topologicalType) (S : set T) : (not(dense S)) ->
+                  (exists O, ( exists x, (open_nbhs x) O) /\ (O `&` S = set0)).
+Proof.
+  rewrite /dense /open_nbhs => /existsNP [X /not_implyP [[x Xx] /not_implyP [ Ox /forallNP A ]]].
+  exists X; split; first by exists x; split.
+  by rewrite -subset0; apply/A => y.
+Qed.
+
 Lemma closureD (T : topologicalType) ( A B : set T) :
   (A `<=` B) -> closure A `<=` closure B.
 Admitted.
@@ -233,20 +241,13 @@ End Baire.
 Section banach_steinhauss.
 Variable (K: realType).
 Variable (V: completeNormedModType K)  (W: normedModType K).
-(*Theorem banach_steinhauss *)
 
-Check bounded_on.
-Print bounded_on.
-
-(*Definition bounded_alt (f: V -> W) :=
-  bounded_on f (locally (0:V)).*)
-
-Definition bounded (f: V -> W) := forall r, exists M,
+Definition bounded_fun_norm (f: V -> W) := forall r, exists M,
       forall x, (`|x| <= r) -> (`|(f x)| <= M).
 
-(*Lemma bounded_ballE (f: V -> W) : bounded f <-> bounded_alt f.
-Proof.
-Admitted.*)
+Lemma bounded_funP (f : {linear V -> W}) : bounded_fun_norm f <-> bounded_on f (nbhs (0:V)). 
+Admitted.
+(*TBA normedtype via linearcontinuousbounded *)
 
 Definition pointwise_bounded (F: (V -> W) -> Prop) := forall x, exists M,
       forall f , F f ->  (`|f x| <= M)%O.
@@ -255,7 +256,7 @@ Definition uniform_bounded (F: (V -> W) -> Prop) := forall r, exists M,
       forall f, F f -> forall x, (`|x| <= r)  -> (`|f x| <= M)%O.
 
 Lemma bounded_landau (f :{linear V->W}) :
-  bounded f <-> ((f : V -> W) =O_ (0:V) cst (1 : K^o)).
+  bounded_fun_norm f <-> ((f : V -> W) =O_ (0:V) cst (1 : K^o)).
 Proof.
   split.
   - rewrite eqOP => bf.
@@ -297,7 +298,7 @@ Proof.
 Admitted.
 
 Lemma bounded_imply_landau (f :{linear V->W}) :
-  bounded f -> ((f : V->W) =O_ (0:V) cst (1 : K^o)).
+  bounded_fun_norm f -> ((f : V->W) =O_ (0:V) cst (1 : K^o)).
 Proof.
   rewrite eqOP => bf.
     move: (bf 1) => [M bm]. 
@@ -310,12 +311,7 @@ Proof.
     by apply: ltW.
 Qed.
 
-Lemma denseNE (S : set V) : (not(dense S)) -> (exists O, ( exists x, (open_nbhs x) O) /\ (O `&` S = set0)).
-Proof.
-  rewrite /dense /open_nbhs => /existsNP [X /not_implyP [[x Xx] /not_implyP [ Ox /forallNP A ]]].
-  exists X; split; first by exists x; split.
-  by rewrite -subset0; apply/A => y.
-Qed.
+
 
 
 Lemma setIsubset (A B : set V) : A `&` B = set0 -> A `<=` ~` B.
@@ -335,7 +331,7 @@ Proof.
 Qed.
 
 Theorem Banach_Steinhauss (F: set ((V -> W))):
-  (forall f, (F f) -> bounded f /\ linear f) ->
+  (forall f, (F f) -> bounded_fun_norm f /\ linear f) ->
   pointwise_bounded F -> uniform_bounded F.
 Proof.
   move=> Propf.
@@ -348,7 +344,7 @@ Proof.
      apply: (@open_comp _ _ ((normr : W -> K^o) \o i) [set y | y > n%:R]).
      have Ci : continuous i.
      + have Li : linear i by apply Propf.
-       have Bi : bounded i by apply Propf.
+       have Bi : bounded_fun_norm i by apply Propf.
        have Landaui : i =O_ (0:V) cst (1:K^o) by apply (@bounded_imply_landau (Linear Li)).
        by apply: (@linear_continuous K V W (Linear Li)).
      move=> x Hx ; apply: continuous_comp.
@@ -381,7 +377,7 @@ Proof.
   have BaireContra : exists n :nat , exists x : V,
                exists r : {posnum K}, (ball x r%:num) `<=` (~` (O n)).
     - move: ContraBaire =>
-      [ i /(denseNE) [ O0 [ [ x /(neighBall) [ r H1 ] ]
+      [ i /(denseNE) [ O0 [ [ x /open_nbhs_nbhs /nbhs_ballrP [ r H1 ] ]
       /((@subsetI_eq0 _ (ball x r%:num) O0 (O i) (O i)) )  ]  ] /(_ H1) ] H2. 
        by exists i; exists x; exists r;apply: setIsubset; apply H2.
   move: BaireContra => [n [x0 [ r H ] ] k]; exists ((n%:R + n%:R) * k * 2 /r%:num); move=> f Hf y Hx.
