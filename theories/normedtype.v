@@ -4273,6 +4273,11 @@ Lemma closed_open_ball (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : 
   exists e, ball x e `<=` closed_ball x r%:num.
 Admitted.
 
+Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
+      (B : set M) (x: M):
+   nbhs x B <-> exists (r : {posnum R}), ball x r%:num `<=` B .
+Admitted.  (* essential *)
+
 Lemma nbhs_closedballP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
       (B : set M) (x: M):
    nbhs x B <-> exists (r : {posnum R}), closed_ball x r%:num `<=` B .
