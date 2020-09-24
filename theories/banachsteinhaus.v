@@ -160,43 +160,41 @@ have Suite_ball : forall (n m :nat) , (n <= m)%N -> closed_ball (a m) (r m)%:num
  have step : closed_ball (a k.+1) (r k.+1)%:num `<=` closed_ball (a k) (r k)%:num.
    have [Htemp _]: P k.+1 (a k, r k) (a (k.+1), r (k.+1)) by apply: (Pf (k, ar k)).
    move: Htemp ; rewrite subsetI; move => [tempbis _].
- apply: (@subset_trans _ (closed_ball (a k, r k).1 (numpos K (a k, r k).2))^° _ _). (*todo*)
-   by [].
-   by apply : interior_subset.
+   by apply: subset_trans; last by apply: interior_subset.
  rewrite leq_eqVlt in iHk2.
  have : (n==k.+1) \/ (n<k.+1)%N by apply /orP.
  case; first by move=> /eqP ->.
-   move => /iHk temp.
-   by apply : subset_trans; first by apply: step.
+ by move => /iHk temp; apply : subset_trans; first by apply: step.
 have cauchyexa: (cauchy_ex (a @ \oo )).
  move => e e0; rewrite /fmapE -ball_normE /ball_.
- have [n Hn]: exists n : nat , 2*(r n)%:num < e.
- pose eps := e/2.
- have [n Hn]: exists n : nat , ((n.+1)%:R^-1 < eps).
- exists `|Rtoint (floor eps^-1 + 1%:~R)|%N.
- have He : (eps^-1 < `|Rtoint(floor eps^-1 + 1%:~R)|%:R)
-   by apply : floor_nat_comp;rewrite invr_ge0 ler_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) ?ltW.
- have : (eps^-1 < `|Rtoint(floor eps^-1 + 1%:~R)|%:R) by [].
- rewrite -(mulr1 eps^-1) ltr_pdivr_mull.
- rewrite mulrC -ltr_pdivr_mull mulr1.  
-    rewrite mulr1; move=> Ht; apply (@lt_trans _ _ (`|Rtoint (floor eps^-1 + 1%:~R)|%:R^-1) _ _).
-    rewrite ltf_pinv //= ?posrE.  (*No, we should not be using strict < *)
+ have [n Hn]: exists n: nat , 2*(r n)%:num < e.
+   pose eps := e/2.
+   have [n Hn]: exists n: nat, ((n.+1)%:R^-1 < eps).
+     exists `|Rtoint (floor eps^-1 + 1%:~R)|%N.
+     have He : (eps^-1 < `|Rtoint(floor eps^-1 + 1%:~R)|%:R)
+     by apply : floor_nat_comp;rewrite invr_ge0 ler_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) ?ltW.
+     have : (eps^-1 < `|Rtoint(floor eps^-1 + 1%:~R)|%:R) by [].
+     rewrite -(mulr1 eps^-1) ltr_pdivr_mull.
+     rewrite mulrC -ltr_pdivr_mull mulr1.  
+     rewrite mulr1; move=> Ht; apply (@lt_trans _ _ (`|Rtoint (floor eps^-1 + 1%:~R)|%:R^-1) _ _).
+     rewrite ltf_pinv //= ?posrE.  (*No, we should not be using strict < *)
     (* admit. admit. admit. admit. admit. admit.  *)
       by rewrite ltr_nat //=.
       rewrite (@lt_trans _ _ eps^-1 _ _) ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //= .
       rewrite -ltf_pinv /= ?invrK //=. admit.
       by rewrite posrE.
-      rewrite posrE (@lt_trans _ _ eps^-1 _ _) ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //=. admit.
+      rewrite posrE (@lt_trans _ _ eps^-1 _ _)
+      ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //=. admit.
       admit. admit. admit. admit. (* rewrite ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2). *)
- exists (n.+1).
- have: (r n.+1)%:num < n.+1%:R^-1. 
- have: P n.+1 (a n, r n)   (a (n.+1), r (n.+1)) by apply: (Pf (n, ar n)).
-  move=> [_ B]; apply: (@lt_trans _ _ (n.+2%:R^-1) _ _);  rewrite ?lt_inv ?ltr_nat . admit. admit.  
-  move=> temp; apply: (@lt_trans _ _ (2* n.+1%:R^-1) _ _);
-  by rewrite -ltr_pdivl_mull ?mulrA ?(mulrC 2^-1 2) ?mulfV ?(mulrC 2^-1 e) ?div1r.
+   exists (n.+1).
+   have: (r n.+1)%:num < n.+1%:R^-1.
+   have: P n.+1 (a n, r n)   (a (n.+1), r (n.+1)) by apply: (Pf (n, ar n)).
+    move=> [_ B]; apply: (@lt_trans _ _ (n.+2%:R^-1) _ _);  rewrite ?lt_inv ?ltr_nat . admit. admit.  
+   move=> temp; apply: (@lt_trans _ _ (2* n.+1%:R^-1) _ _);
+   by rewrite -ltr_pdivl_mull ?mulrA ?(mulrC 2^-1 2) ?mulfV ?(mulrC 2^-1 e) ?div1r.
  exists (a n); exists n; first by [].
  move =>  m nsupm.
- apply: (@lt_trans _ _ (2*(r n)%:num) (`|a n - a m|) e); last first. by [].
+ apply: (@lt_trans _ _ (2*(r n)%:num) (`|a n - a m|) e); last  by [].
  have : (closed_ball (a n) (r n)%:num) (a m).
  move : (Suite_ball n m nsupm).
  have : closed_ball (a m) (r m)%:num (a m) by apply: closed_ballxx.
@@ -204,7 +202,7 @@ have cauchyexa: (cauchy_ex (a @ \oo )).
    rewrite closure_closed_ball => temp.
    by rewrite (@le_lt_trans _ _ (r n)%:num (`|a n - a m|) (2*(r n)%:num)) -?ltr_pdivr_mulr ?mulfV ?ltr1n //=.
 have cauchya : (cauchy (a @ \oo)) by apply: cauchy_exP.
-have : cvg (a @ \oo) by apply: cauchy_cvg. 
+have : cvg (a @ \oo) by apply: cauchy_cvg.
 rewrite cvg_ex //=.
 move=> [l Hl] {Hf Dy OpenD H cauchya cauchyexa}.
 exists l.
