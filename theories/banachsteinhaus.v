@@ -32,6 +32,11 @@ Local Open Scope classical_set_scope.
 Definition dense (T : topologicalType) (S : T  -> Prop) :=
   forall (O : set T), (exists y, O y) -> open O ->  exists x, (setI O S) x.
 
+Lemma closureD (T : topologicalType) ( A B : set T) :
+  (A `<=` B) -> closure A `<=` closure B.
+Admitted.
+
+
 (*TBA to topology.v *)
 
 Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
@@ -39,11 +44,8 @@ Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
    nbhs x B <-> exists (r : {posnum R}), ball x r%:num `<=` B .
 Admitted.
 
-Lemma closureD (T : topologicalType) ( A B : set T) :
-  (A `<=` B) -> closure A `<=` closure B.
-Admitted.
 
-Lemma close_ball_ler (R : numFieldType) (M : pseudoMetricNormedZmodType R) (x : M) (e1 e2 : R) :
+Lemma closed_ball_ler (R : numFieldType) (M : pseudoMetricNormedZmodType R) (x : M) (e1 e2 : R) :
   (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
 Proof.
   by rewrite /closed_ball => le; apply: closureD; apply: ball_ler.
@@ -95,7 +97,7 @@ move=> F Hf D Dy  OpenD.
 have [H /(_ D  Dy OpenD) [a0 DF0a0 ]]: open (F 0%nat) /\ dense (F 0%nat)
   by apply Hf.
 have openIDF0 : open (D `&` F 0%N) by apply: openI.
-have /open_nbhs_nbhs /nbhs_ballrP [r0 Ball_a0]  : open_nbhs a0 (D `&` F 0%N) by [].
+have /open_nbhs_nbhs /nbhs_closedballP [r0 Ball_a0]  : open_nbhs a0 (D `&` F 0%N) by [].
 pose P (m: nat) (arn : U * {posnum K}) (arm : U * {posnum K}) :=
   closed_ball arm.1 (arm.2%:num)
                   `<=` ((closed_ball (arn).1 ((arn).2%:num))^°
@@ -111,23 +113,21 @@ simpl in (type of an1).
 have openIB0Fn1 : open ((closed_ball an (numpos K rn))^° `&` F (S n)%N).
   apply: openI; last by [].
   by apply: open_interior.
-  have /open_nbhs_nbhs /nbhs_ballrP [rn01 Ball_an1] :
+  have /open_nbhs_nbhs /nbhs_closedballP [rn01 Ball_an1] :
     open_nbhs an1 ((closed_ball an (numpos K rn))^° `&` F (S n)%N) by [].
-(* move: (@close_neigh_ball _ _ an1  ((closed_ball an (numpos K rn))^° `&` F (S n)%N) neigh_an1) *)
-(*         {B0Fn2an1 openIB0Fn1 openFn denseFn} => [rn01 Ball_an1]. *)
 pose a := ((n.+3)%:R^-1 : K).
 have asup: a > 0 by [].
 pose abis := PosNum asup.
 pose rn1b := minr abis%:num rn01%:num.
 have majr : rn1b > 0 by apply min_pos_gt0.
 pose rn1 := PosNum majr.
-exists (an1,rn1); split. 
-   - have temp : closed_ball an1 rn1b `<=` closed_ball an1 rn01%:num
+exists (an1,rn1); split.
+   - have temp: closed_ball an1 rn1b `<=` closed_ball an1 rn01%:num
      by apply : closed_ball_ler; apply: minr_le2.
-     by apply:  (@subset_trans _ (closed_ball an1 rn01%:num) _ _).
+     by apply: (subset_trans temp).
    - apply: (@le_lt_trans _ _ (n.+3%:R^-1) rn1b (n.+2%:R^-1)).
      by apply: minr_le1.
-     by rewrite ltf_pinv ?ltr_nat.
+     by rewrite ltf_pinv ?ltr_nat  ?posrE //=.
 move: (choice Ar) => [f Pf].
 pose fix ar (n: nat):= match n with
                      | 0 => (a0,r0)
@@ -140,9 +140,9 @@ have Suite_ball : forall (n m :nat) , (n <= m)%N -> closed_ball (a m) (r m)%:num
  move=> n m.
  elim m=> [| k iHk].
   by rewrite leqn0; move=> /eqP ->.
- move=> iHk2. 
+ move=> iHk2.
  have step : closed_ball (a k.+1) (r k.+1)%:num `<=` closed_ball (a k) (r k)%:num.
- have [Htemp _]: P k.+1 (a k, r k)   (a (k.+1), r (k.+1)) by apply: (Pf (k, ar k)).
+ have [Htemp _]: P k.+1 (a k, r k) (a (k.+1), r (k.+1)) by apply: (Pf (k, ar k)).
  move: Htemp ; rewrite subsetI.
  move=> [tempbis _].
  apply: (@subset_trans _ (closed_ball (a k, r k).1 (numpos K (a k, r k).2))^° _ _).
@@ -150,15 +150,11 @@ have Suite_ball : forall (n m :nat) , (n <= m)%N -> closed_ball (a m) (r m)%:num
    by apply : interior_subset.  
  rewrite leq_eqVlt in iHk2.
  have : (n==k.+1) \/ (n<k.+1)%N by apply /orP.
- case.
- - by move=> /eqP ->.
- - move => temp.
-   have: (n<= k)%N by []. 
-   move  => /iHk final.
-   by apply : (@subset_trans _ (closed_ball (a k) (numpos K (r k))) _ _).   
+ case; first by move=> /eqP ->.
+   move => /iHk temp.
+   by apply : subset_trans; first by apply: step.
 have cauchyexa: (cauchy_ex (a @ \oo )).
- move => e e0.
- rewrite /fmapE -ball_normE /ball_.
+ move => e e0; rewrite /fmapE -ball_normE /ball_.
  have [n Hn]: exists n : nat , 2*(r n)%:num < e.
  pose eps := e/2.
  have [n Hn]: exists n : nat , ((n.+1)%:R^-1 < eps).
@@ -167,18 +163,20 @@ have cauchyexa: (cauchy_ex (a @ \oo )).
    by apply : floor_nat_comp;rewrite invr_ge0 ler_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) ?ltW.
  have : (eps^-1 < `|Rtoint(floor eps^-1 + 1%:~R)|%:R) by [].
  rewrite -(mulr1 eps^-1) ltr_pdivr_mull.
- rewrite mulrC -ltr_pdivr_mull mulr1.
+ rewrite mulrC -ltr_pdivr_mull mulr1.  
     rewrite mulr1; move=> Ht; apply (@lt_trans _ _ (`|Rtoint (floor eps^-1 + 1%:~R)|%:R^-1) _ _).
-    rewrite ltf_pinv //=.
+    rewrite ltf_pinv //= ?posrE.  (*No, we should not be using strict < *)
+    (* admit. admit. admit. admit. admit. admit.  *)
       by rewrite ltr_nat //=.
-      by rewrite (@lt_trans _ _ eps^-1 _ _) ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //=.
-      by [].
-      by rewrite (@lt_trans _ _ eps^-1 _ _) ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //=.
-      by rewrite ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2).
+      rewrite (@lt_trans _ _ eps^-1 _ _) ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //= .
+      rewrite -ltf_pinv /= ?invrK //=. admit.
+      by rewrite posrE.
+      rewrite posrE (@lt_trans _ _ eps^-1 _ _) ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //=. admit.
+      admit. admit. admit. admit. (* rewrite ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2). *)
  exists (n.+1).
  have: (r n.+1)%:num < n.+1%:R^-1. 
  have: P n.+1 (a n, r n)   (a (n.+1), r (n.+1)) by apply: (Pf (n, ar n)).
- by move=> [_ B]; apply: (@lt_trans _ _ (n.+2%:R^-1) _ _);  rewrite ?lt_inv ?ltr_nat .
+  move=> [_ B]; apply: (@lt_trans _ _ (n.+2%:R^-1) _ _);  rewrite ?lt_inv ?ltr_nat . admit. admit.  
   move=> temp; apply: (@lt_trans _ _ (2* n.+1%:R^-1) _ _);
   by rewrite -ltr_pdivl_mull ?mulrA ?(mulrC 2^-1 2) ?mulfV ?(mulrC 2^-1 e) ?div1r.
  exists (a n); exists n; first by [].
@@ -186,9 +184,10 @@ have cauchyexa: (cauchy_ex (a @ \oo )).
  apply: (@lt_trans _ _ (2*(r n)%:num) (`|a n - a m|) e); last first. by [].
  have : (closed_ball (a n) (r n)%:num) (a m).
  move : (Suite_ball n m nsupm).
- have : closed_ball (a m) (r m)%:num (a m) by apply: closed_ball_center.
+ have : closed_ball (a m) (r m)%:num (a m) by apply: closed_ballxx.
  by move=> temp1 Ha; move : (Ha (a m) temp1).
- by move=> temp; rewrite (@le_lt_trans _ _ (r n)%:num (`|a n - a m|) (2*(r n)%:num)) -?ltr_pdivr_mulr ?mulfV ?ltr1n.
+   rewrite closure_closed_ball => temp.
+   by rewrite (@le_lt_trans _ _ (r n)%:num (`|a n - a m|) (2*(r n)%:num)) -?ltr_pdivr_mulr ?mulfV ?ltr1n //=.
 have cauchya : (cauchy (a @ \oo)) by apply: cauchy_exP.
 have : cvg (a @ \oo) by apply: cauchy_cvg. 
 rewrite cvg_ex //=.
@@ -196,14 +195,15 @@ move=> [l Hl] {Hf Dy OpenD H cauchya cauchyexa}.
 exists l.
 have partie1 : D l.
  have Hinter : (closed_ball a0 r0%:num) l.
-  apply: (@closedd_cvg _ _ \oo eventually_filter a); first by [].
+  apply: (@closed_cvg _ _ \oo eventually_filter a); first by [].
   move=> m.
   have temp:  (0 <= m)%N by apply: leq0n.
     move : (Suite_ball 0%N m temp).
-    have : closed_ball (a m) (r m)%:num (a m) by apply: closed_ball_center.
+    have : closed_ball (a m) (r m)%:num (a m) by apply: closed_ballxx.
   by move=> temp1 Ha; move : (Ha (a m) temp1).
  by apply: closed_closed_ball.
-have : closed_ball a0 r0%:num `<=` D by move: Ball_a0; rewrite subsetI; apply:  proj1.
+ have : closed_ball a0 r0%:num `<=` D.
+   by move: Ball_a0; rewrite closure_closed_ball subsetI; apply:  proj1.
 by move=>  Htemp; move : (Htemp l Hinter).
 have partie2 : (\bigcap_i F i) l.
 move=> i _.
@@ -213,19 +213,19 @@ move=> i _.
   have partiecvg:  forall n : nat, closed_ball (a i) (r i)%:num (a (n + i)%N).
    move=> n.
    have temp : (i <= (n +i)%N)%N by apply: leq_addl.
-   have temp2 : closed_ball (a (n+i)%N) (r (n+i)%N)%:num (a (n+i)%N) by apply: closed_ball_center.
+   have temp2 : closed_ball (a (n+i)%N) (r (n+i)%N)%:num (a (n+i)%N) by apply: closed_ballxx.
    by move : (Suite_ball i (n +i)%N temp (a (n+i)%N) temp2).
   apply (@closed_cvg _ _ \oo eventually_filter (fun n : nat => a (n+i)%N)).  
   by [].
   by [].  
-  by apply :  closedd_closed_ball.
+  by apply:  closed_closed_ball.
 case i.
 by rewrite subsetI in Ball_a0; move: Ball_a0; move=> [_ p] la0; move : (p l la0).
 move=> n.
 have [temp _] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply : (Pf (n , ar n)).
 by rewrite subsetI in temp; move : temp; move=> [_ p] lan1; move: (p l lan1). 
 by [].  
-Qed.
+Admitted. 
 
 
 End Baire.
