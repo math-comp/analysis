@@ -12,7 +12,9 @@
 - in `normedtype.v`:
   + lemma `closed_ereal_le_ereal`
   + lemma `closed_ereal_ge_ereal`
-
+  + section "LinearContinuousBounded"
+  + section "Closed_ball"
+  
 ### Changed
 
 - in `classical_sets.v`:
