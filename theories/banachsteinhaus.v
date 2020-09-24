@@ -40,9 +40,18 @@ Proof.
   by rewrite -subset0; apply/A => y.
 Qed.
 
-Lemma closureD (T : topologicalType) ( A B : set T) :
+Lemma nbhsS (T : topologicalType) ( A B : set T) (x : T) :
+  (A `<=` B) -> nbhs x A -> nbhs x B.
+Proof. by apply: filterS. Qed.
+
+Lemma closureS (T : topologicalType) ( A B : set T) :
   (A `<=` B) -> closure A `<=` closure B.
-Admitted.
+Proof.
+  rewrite /closure => AB a aT S aS. (* simpler ? *)
+  move: (aT S aS) => [x [Ax Sx]]; exists x.
+  split; last by [].
+  by apply: AB.
+Qed.
 
 
 (*TBA to topology.v *)
@@ -56,7 +65,7 @@ Admitted.
 Lemma closed_ball_ler (R : numFieldType) (M : pseudoMetricNormedZmodType R) (x : M) (e1 e2 : R) :
   (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
 Proof.
-  by rewrite /closed_ball => le; apply: closureD; apply: ball_ler.
+  by rewrite /closed_ball => le; apply: closureS; apply: ball_ler.
 Qed.
 
 (*TBA to normedtype *)
@@ -105,7 +114,7 @@ move=> F Hf D Dy  OpenD.
 have [H /(_ D  Dy OpenD) [a0 DF0a0 ]]: open (F 0%nat) /\ dense (F 0%nat)
   by apply Hf.
 have openIDF0 : open (D `&` F 0%N) by apply: openI.
-have /open_nbhs_nbhs /nbhs_closedballP [r0 Ball_a0]  : open_nbhs a0 (D `&` F 0%N) by [].
+have /open_nbhs_nbhs /nbhs_closedballP [r0 Ball_a0]: open_nbhs a0 (D `&` F 0%N) by [].
 pose P (m: nat) (arn : U * {posnum K}) (arm : U * {posnum K}) :=
   closed_ball arm.1 (arm.2%:num)
                   `<=` ((closed_ball (arn).1 ((arn).2%:num))^°
@@ -114,22 +123,21 @@ have Ar: forall na : nat * (U * {posnum K}), exists b : (U * {posnum K}) , P (S(
   move=> [n [an rn]].
   move: (Hf ((S n)%N)) => [ openFn denseFn ].
   have [an1 B0Fn2an1]: exists x, ((closed_ball an (numpos K rn))^° `&` F (S n)%N) x .
-  move: (close_neigh_ball an rn)=> [h1 h2]; apply: denseFn.
-   - by exists an.
-   - by [].
-simpl in (type of an1).
-have openIB0Fn1 : open ((closed_ball an (numpos K rn))^° `&` F (S n)%N).
-  apply: openI; last by [].
-  by apply: open_interior.
+    move: (close_neigh_ball an rn)=> [h1 h2]; apply: denseFn; last by [].
+    by exists an.
+  simpl in (type of an1).
+  have openIB0Fn1 : open ((closed_ball an (numpos K rn))^° `&` F (S n)%N).
+    apply: openI; last by [].
+    by apply: open_interior.
   have /open_nbhs_nbhs /nbhs_closedballP [rn01 Ball_an1] :
     open_nbhs an1 ((closed_ball an (numpos K rn))^° `&` F (S n)%N) by [].
-pose a := ((n.+3)%:R^-1 : K).
-have asup: a > 0 by [].
-pose abis := PosNum asup.
-pose rn1b := minr abis%:num rn01%:num.
-have majr : rn1b > 0 by apply min_pos_gt0.
-pose rn1 := PosNum majr.
-exists (an1,rn1); split.
+  pose a := ((n.+3)%:R^-1 : K).
+  have asup: a > 0 by [].
+  pose abis := PosNum asup.
+  pose rn1b := minr abis%:num rn01%:num.
+  have majr : rn1b > 0 by apply min_pos_gt0.
+  pose rn1 := PosNum majr.
+  exists (an1,rn1); split.
    - have temp: closed_ball an1 rn1b `<=` closed_ball an1 rn01%:num
      by apply : closed_ball_ler; apply: minr_le2.
      by apply: (subset_trans temp).
@@ -150,12 +158,11 @@ have Suite_ball : forall (n m :nat) , (n <= m)%N -> closed_ball (a m) (r m)%:num
   by rewrite leqn0; move=> /eqP ->.
  move=> iHk2.
  have step : closed_ball (a k.+1) (r k.+1)%:num `<=` closed_ball (a k) (r k)%:num.
- have [Htemp _]: P k.+1 (a k, r k) (a (k.+1), r (k.+1)) by apply: (Pf (k, ar k)).
- move: Htemp ; rewrite subsetI.
- move=> [tempbis _].
- apply: (@subset_trans _ (closed_ball (a k, r k).1 (numpos K (a k, r k).2))^° _ _).
+   have [Htemp _]: P k.+1 (a k, r k) (a (k.+1), r (k.+1)) by apply: (Pf (k, ar k)).
+   move: Htemp ; rewrite subsetI; move => [tempbis _].
+ apply: (@subset_trans _ (closed_ball (a k, r k).1 (numpos K (a k, r k).2))^° _ _). (*todo*)
    by [].
-   by apply : interior_subset.  
+   by apply : interior_subset.
  rewrite leq_eqVlt in iHk2.
  have : (n==k.+1) \/ (n<k.+1)%N by apply /orP.
  case; first by move=> /eqP ->.
