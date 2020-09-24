@@ -4257,7 +4257,7 @@ Admitted.
 Definition closed_ball_ (R: numDomainType) (V: zmodType) (norm: V -> R) (x: V) (e : R) :=
   [set y | (norm (x- y) <=e)%O ].
 
-Print ball. 
+
 
 Definition closed_ball (R: numDomainType) (V: pseudoMetricType R) (x: V) (e : R) :=
   closure (ball x e).
@@ -4314,7 +4314,7 @@ apply: (@closed_comp _ _ (f : V -> R^o)).
 Qed.
 
 
-Lemma close_neigh_ball (R: realFieldType) (V:  normedModType R) (x : V) (r : {posnum R}) :
+Lemma closed_neigh_ball (R: realFieldType) (V:  normedModType R) (x : V) (r : {posnum R}) :
   open_nbhs x (closed_ball x r%:num)^°.
 Proof.
 split.
