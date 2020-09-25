@@ -26,8 +26,16 @@
   + `setUDl` -> `setUIl`
   + `setUDr` -> `setUIr`
   + `setIDr` -> `setIUl`
+- in `boolp.v`:
+  + `contrap` -> `contra_not`
+  + `contrapL` -> `contraPnot`
+  + `contrapR` -> `contra_notP`
+  + `contrapLR` -> `contraPP`
 
 ### Removed
+
+- in `boolp.v`:
+  + `contrapNN`, `contrapTN`, `contrapNT`, `contrapTT`
 
 ### Infrastructure
 

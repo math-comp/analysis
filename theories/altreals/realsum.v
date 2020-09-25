@@ -457,7 +457,7 @@ Qed.
 
 Lemma ncvg_sum : ncvg (fun n => \sum_(i < n) S i) (psum S)%:E.
 Proof.
-set u := (fun n => _); apply: contrapLR smS => ncv _.
+set u := (fun n => _); apply: contraPP smS => ncv _.
 case: (ncvg_mono_bnd (u := u)) => //.
   by apply/ptsum_homo. by apply/psummable_ptbounded.
 move=> x cvux; suff xE: x = (psum S) by rewrite xE in cvux.

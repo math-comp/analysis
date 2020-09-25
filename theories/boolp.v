@@ -269,37 +269,29 @@ by case=> x bPx; apply/asboolP; exists x; apply/asboolP.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma contrap (Q P : Prop) : (Q -> P) -> ~ P -> ~ Q.
+Lemma contra_not (Q P : Prop) : (Q -> P) -> ~ P -> ~ Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolPn.
 by apply: contra nb => /asboolP /cb /asboolP.
 Qed.
 
-Definition contrapNN := contra.
-
-Lemma contrapL (Q P : Prop) : (Q -> ~ P) -> P -> ~ Q.
+Lemma contraPnot (Q P : Prop) : (Q -> ~ P) -> P -> ~ Q.
 Proof.
 move=> cb /asboolP hb; apply/asboolPn.
 by apply: contraL hb => /asboolP /cb /asboolPn.
 Qed.
 
-Definition contrapTN := contrapL.
-
-Lemma contrapR (Q P : Prop) : (~ Q -> P) -> ~ P -> Q.
+Lemma contra_notP (Q P : Prop) : (~ Q -> P) -> ~ P -> Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolP.
 by apply: contraR nb => /asboolP /cb /asboolP.
 Qed.
 
-Definition contrapNT := contrapR.
-
-Lemma contrapLR (Q P : Prop) : (~ Q -> ~ P) -> P -> Q.
+Lemma contraPP (Q P : Prop) : (~ Q -> ~ P) -> P -> Q.
 Proof.
 move=> cb /asboolP hb; apply/asboolP.
 by apply: contraLR hb => /asboolP /cb /asboolPn.
 Qed.
-
-Definition contrapTT := contrapLR.
 
 Lemma contrapT P : ~ ~ P -> P.
 Proof.
@@ -478,8 +470,8 @@ Hypothesis viewP : forall x, reflect (PP x) (P x).
 Lemma existsPP : reflect (exists x, PP x) `[exists x, P x].
 Proof.
 apply: (iffP idP).
-  move/asboolP; (* oops notation! *) apply: contrapR => nh x /=; apply: notTE.
-  by apply: contrap nh => /viewP Px; exists x.
+  move/asboolP; (* oops notation! *) apply: contra_notP => nh x /=; apply: notTE.
+  by apply: contra_not nh => /viewP Px; exists x.
 case=> x PPx; apply/asboolP=> /(_ x) /notT /=; rewrite -/(not (~ P x)) notK.
 exact/viewP.
 Qed.
@@ -561,7 +553,7 @@ Qed.
 
 Lemma not_andP (P Q : Prop) : ~ (P /\ Q) <-> ~ P \/ ~ Q.
 Proof.
-split => [/asboolPn|[|]]; try by apply: contrap => -[].
+split => [/asboolPn|[|]]; try by apply: contra_not => -[].
 by rewrite asbool_and negb_and => /orP[]/asboolPn; [left|right].
 Qed.
 

@@ -433,7 +433,7 @@ Proof. by move=> AB /(subsetI_neq0 AB); rewrite -!set0P => /contra_eq. Qed.
 Lemma setD_eq0 A (X Y : set A) : (X `\` Y = set0) = (X `<=` Y).
 Proof.
 rewrite propeqE; split=> [XDY0 a|sXY].
-  by apply: contrapTT => nYa xA; rewrite -[False]/(set0 a) -XDY0.
+  by apply: contraPP => nYa xA; rewrite -[False]/(set0 a) -XDY0.
 by rewrite predeqE => ?; split=> // - [?]; apply; apply: sXY.
 Qed.
 
@@ -623,7 +623,7 @@ move: (erefl (xget x0 P)); set y := {2}(xget x0 P).
 rewrite /xget; case: pselect => /= [?|neqP _].
   by case: sigW => x /= /asboolP Px; rewrite [P x]propT //; constructor.
 suff NP x : ~ P x by rewrite [P x0]propF //; constructor.
-by apply: contrap neqP => Px; exists x; apply/asboolP.
+by apply: contra_not neqP => Px; exists x; apply/asboolP.
 Qed.
 
 Lemma xgetPex {T : choiceType} x0 (P : set T) : (exists x, P x) -> P (xget x0 P).

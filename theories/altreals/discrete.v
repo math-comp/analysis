@@ -38,7 +38,7 @@ Proof. by move/asboolPn/forallp_asboolPn. Qed.
 
 Lemma exists2NP : ~ (exists2 x, P x & Q x) -> forall x, ~ P x \/ ~ Q x.
 Proof.
-apply: contrapR; case/asboolPn/existsp_asboolPn=> [x].
+apply: contra_notP; case/asboolPn/existsp_asboolPn=> [x].
 by case/neg_or => /contrapT Px /contrapT Qx; exists x.
 Qed.
 
@@ -186,7 +186,7 @@ Lemma finiteNP (E : pred T): (forall s : seq T, ~ {subset E <= s}) ->
 Proof.
 move=> finN; elim=> [|n [s] [<- uq_s sE]]; first by exists [::].
 have [x sxN xE]: exists2 x, x \notin s & x \in E.
-  apply: contrapR (finN (filter (mem E) s)) => /exists2NP finE x Ex.
+  apply: contra_notP (finN (filter (mem E) s)) => /exists2NP finE x Ex.
   move/or_asboolP: (finE x).
   by rewrite !asbool_neg !asboolb negbK Ex mem_filter orbF [(mem E) x]Ex.
 exists (x :: s) => /=; rewrite sxN; split=> // y.
