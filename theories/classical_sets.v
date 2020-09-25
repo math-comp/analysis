@@ -319,8 +319,20 @@ Qed.
 Lemma image_set0 T U (f : T -> U) : f @` set0 = set0.
 Proof. by apply eqEsubset => b // -[]. Qed.
 
+Lemma image_set0_set0 T U (A : set T) (f : T -> U) : f @` A = set0 -> A = set0.
+Proof.
+move=> fA0; rewrite predeqE => t; split => // At.
+by have : set0 (f t) by rewrite -fA0; exists t.
+Qed.
+
 Lemma image_set1 T U (f : T -> U) (t : T) : f @` [set t] = [set f t].
 Proof. by apply eqEsubset => b; [case=> a' -> <- | move->; apply imageP]. Qed.
+
+Lemma subset_set1 T (A : set T) a : A `<=` [set a] -> A = set0 \/ A = [set a].
+Proof.
+move=> Aa; have [|/set0P/negP/negPn/eqP->] := pselect (A !=set0); [|by left].
+by case=> t At; right; apply: eqEsubset => // ? ->; rewrite -(Aa _ At).
+Qed.
 
 Lemma sub_image_setI {A B} (f : A -> B) (X Y : set A) :
   f @` (X `&` Y) `<=` f @` X `&` f @` Y.
@@ -330,6 +342,9 @@ Arguments sub_image_setI {A B f X Y} a _.
 Lemma nonempty_image {A B} (f : A -> B) (X : set A) :
   f @` X !=set0 -> X !=set0.
 Proof. by case=> b [a]; exists a. Qed.
+
+Lemma preimage_set0 T U (f : T -> U) : f @^-1` set0 = set0.
+Proof. by rewrite predeqE. Qed.
 
 Lemma nonempty_preimage {A B} (f : A -> B) (X : set B) :
   f @^-1` X !=set0 -> X !=set0.
@@ -578,6 +593,12 @@ rewrite predeqE => t; split => [capU|cupU i _].
   by move=> -[n _]; apply; apply capU.
 by rewrite -(setCK (U i)) => CU; apply cupU; exists i.
 Qed.
+
+Lemma setM0 T U (A : set T) : A `*` @set0 U = set0.
+Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
+
+Lemma set0M T U (B : set U) : @set0 T `*` B = set0.
+Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 
 Lemma setMT {A B} : (@setT A) `*` (@setT B) = setT.
 Proof. by rewrite predeqE. Qed.
