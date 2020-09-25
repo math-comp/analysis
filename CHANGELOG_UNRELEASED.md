@@ -18,6 +18,9 @@
 
 - in `classical_sets.v`:
   + the index in `bigcup_set1` generalized from `nat` to some `Type`
+- lemma `asboolb` moved from `discrete.v` to `boolp.v`
+- lemma `exists2NP` moved from `discrete.v` to `boolp.v`
+- lemma `neg_or` moved from `discrete.v` to `boolp.v` and renamed to `not_orP`
 
 ### Renamed
 
@@ -36,6 +39,14 @@
 
 - in `boolp.v`:
   + `contrapNN`, `contrapTN`, `contrapNT`, `contrapTT`
+  + `eqNN`
+- in `normedtype.v`:
+  + `forallN`
+  + `eqNNP`
+  + `existsN`
+- in `discrete.v`:
+  + `existsP`
+  + `existsNP`
 
 ### Infrastructure
 

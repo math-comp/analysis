@@ -18,51 +18,16 @@ Import GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
-(* -------------------------------------------------------------------- *)
-Section ToBeEventuallyMovedToBoolP.
-
-Context {T : Type} {P Q : T -> Prop}.
-
-Lemma asboolb (b : bool) : `[< b >] = b.
-Proof. by apply/asboolP/idP. Qed.
-
-(* TODO : add its friends... *)
-Lemma neg_or (A B : Prop) : ~ (A \/ B) <-> ~ A /\ ~ B.
-Proof.
-split; last by case=> [nA nB]; case.
-by move=> nAoB; split => ?; apply: nAoB; [left| right].
-Qed.
-
-Lemma existsNP : ~ (exists x, P x) -> forall x, ~ P x.
-Proof. by move/asboolPn/forallp_asboolPn. Qed.
-
-Lemma exists2NP : ~ (exists2 x, P x & Q x) -> forall x, ~ P x \/ ~ Q x.
-Proof.
-apply: contra_notP; case/asboolPn/existsp_asboolPn=> [x].
-by case/neg_or => /contrapT Px /contrapT Qx; exists x.
-Qed.
-
-End ToBeEventuallyMovedToBoolP.
-
-(* -------------------------------------------------------------------- *)
-
 Section ProofIrrelevantChoice.
 
 Context {T : choiceType}.
 
-Lemma existsP  (P : T -> Prop) : (exists x, P x) -> {x : T | P x}.
-Proof.
-move/asboolP/exists_asboolP=> h; have/asboolP hxh := (xchooseP h).
-by exists (xchoose h).
-Qed.
-
 Lemma existsTP (P : T -> Prop) : { x : T | P x } + (forall x, ~ P x).
 Proof.
 case: (boolP `[<exists x : T, P x>]) => [/exists_asboolP | /asboolPn] h.
-  by case/existsP: h => w Pw; left; exists w; apply/asboolP.
+  by case/cid: h => w Pw; left; exists w; apply/asboolP.
 by right=> x Px; apply/h; exists x.
 Qed.
-
 
 End ProofIrrelevantChoice.
 
@@ -176,7 +141,7 @@ Context {T : choiceType}.
 
 Lemma finiteP (E : pred T) : (exists s : seq T, {subset E <= s}) -> finite E.
 Proof.
-case/existsP=> s sEs; exists (undup s); first by rewrite undup_uniq.
+case/cid=> s sEs; exists (undup s); first by rewrite undup_uniq.
 by move=> x; rewrite mem_undup; exact: sEs.
 Qed.
 
