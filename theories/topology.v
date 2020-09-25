@@ -560,10 +560,12 @@ Proof. by move=> Px; apply: nearS (nearT x). Qed.
 
 End NearBasics.
 
+Definition filter_is_proper {T : Type} (F : set (set T)) :=
+  ~ (\forall x \near F, False).
 
 Record is_pfilter {T : Type} (F : set (set T)) := Build_is_pfilter' {
-  filter_not_empty_prop : ~ (\forall x \near F, False);
-  filter_pfilter : is_filter (nbhs F)
+  filter_pfilter : is_filter (nbhs F);
+  filter_not_empty_prop : filter_is_proper F;
 }.
 Coercion filter_pfilter : is_pfilter >-> is_filter.
 
@@ -583,7 +585,7 @@ Coercion pfilter_filter_on : pfilter_on >-> filter_on.
 Definition PFilter_of {T} (F : set (set T)) (fN0 : not (F set0)) :=
   fun (fF : filter_on T) of phant_id F (fF : set (set T)) =>
   fun fFF of phant_id (Filter _ fFF) fF =>
-  PFilterPack F (Build_is_pfilter' fN0 fFF).
+  PFilterPack F (Build_is_pfilter' fFF fN0).
 Notation PFilter F fN0 := (@PFilter_of _ F fN0 _ id _ id).
 
 Identity Coercion set_id : set >-> Funclass.
@@ -663,7 +665,7 @@ Proof. by case: T x => T [/= ? []]. Qed.
 
 Canonical nbhs_pfilter {U} {T : pfilterType U} (x : T) :=
   PFilterPack (in_nbhs (nbhs x))
-   (Build_is_pfilter' (@nbhs_is_pfilter U T x) (@nbhs_is_filter U T x)).
+   (Build_is_pfilter' (@nbhs_is_filter U T x) (@nbhs_is_pfilter U T x)).
 
 Definition nbhs_pfilter_mixin U T := PFilterMixin (@nbhs_is_pfilter U T).
 
@@ -755,21 +757,26 @@ Canonical pfilter_on_eqType T := EqType (pfilter_on T) gen_eqMixin.
 Canonical pfilter_on_choiceType T :=
   ChoiceType (pfilter_on T) gen_choiceMixin.
 
-Lemma set1T_is_filter T : @is_filter T (Nbhs (set1 setT)).
-Proof.
-rewrite /set1; split => //= P Q; first by move=> -> ->; apply/predext.
-by move=> PQ PT; apply/predext => x; split => // _; apply/PQ; rewrite PT.
-Qed.
+Definition pointfilter T (x : T) := [set A : set T | A x].
 
-Lemma setTN0 (T : pointedType) :  ~ [set (@setT T)] set0.
-Proof. by rewrite /set0 => /(congr1 (@^~ point)) ->. Qed.
+Lemma pointfilter_is_filter T (x : T) : @is_filter T (pointfilter x).
+Proof. by split => //= P Q; apply. Qed.
 
-Lemma pfilter_is_filter (T : Type) (pT : pfilter_on T) : is_filter (Nbhs (in_pfilter pT)).
+Canonical pointfilter_filter T (x : T) :=
+  Filter (pointfilter x) (pointfilter_is_filter x).
+
+Lemma pointfilterN0 T (x : T) :  ~ [set A : set T | A x] set0.
+Proof. by []. Qed.
+
+Canonical pointfilter_pfilter T (x : T) :=
+  PFilter (pointfilter x) (@pointfilterN0 _ x).
+
+Lemma pfilter_is_filter (T : Type) (pT : pfilter_on T) :
+  is_filter (Nbhs (in_pfilter pT)).
 Proof. by case: pT => ? []. Qed.
 
 Canonical pfilter_on_PointedType (T : pointedType) :=
-  PointedType (pfilter_on T)
-   (@PFilterPack _ _ (Build_is_pfilter' (@setTN0 _) (set1T_is_filter _))).
+  PointedType (pfilter_on T) (pointfilter_pfilter point).
 Definition pfilter_on_nbhs_mixin (T : pointedType)  := NbhsMixin_ (@in_pfilter T).
 Canonical pfilter_on_NbhsType (T : pointedType) :=
   NbhsType T (pfilter_on T) (@pfilter_on_nbhs_mixin T).
@@ -1039,7 +1046,7 @@ Proof. by move=> /(_ set0) ex /ex []. Qed.
 Definition Build_is_pfilter {T : Type} (F : set (set T))
   (near_ex : forall P, F P -> exists x, P x)
   (filter_filter : is_filter (nbhs F)) :=
-  Build_is_pfilter' (filter_not_empty_ex near_ex) (filter_filter).
+  Build_is_pfilter' (filter_filter) (filter_not_empty_ex near_ex).
 
 Lemma filter_bigI {T} {fT : filterType T} (I : choiceType)
   (D : {fset I}) (f : I -> set T) (F : fT) :
@@ -1550,16 +1557,12 @@ Lemma subset_sig_proper D F :
   (forall P, nbhs F P -> ~ ~ exists x, D x /\ P x) ->
   is_pfilter (subset_sig D F).
 Proof.
-move=> DAP; apply: Build_is_pfilter'; last exact: filter_class.
+move=> DAP; apply: Build_is_pfilter'; first exact: filter_class.
 rewrite /subset_sig => subFD.
 by have /(_ subFD) := DAP (~` D); apply => -[x [dx /(_ dx)]].
 Qed.
 
 End Within.
-
-f`@ a`* `->` b`*
-
-
 
 (** * Topological spaces *)
 
@@ -2586,94 +2589,175 @@ Qed.
 
 Section Tychonoff.
 
-Record is_ufilter T (F : {filter T}) := {
-  ultra_proper :> is_pfilter F ;
-  max_filter : forall G : pfilter_on T, F `<=` G -> G = F :> set _
+Definition filter_is_ultra T (F : set (set T)) :=
+  forall G : pfilter_on T, F `<=` G -> G = F :> set _.
+
+Record is_ufilter T (F : set (set T)) := {
+  pfilter_ufilter :> is_pfilter F ;
+  _ : filter_is_ultra F
 }.
 
+Structure ufilter_on T := UFilterPack {
+  in_ufilter :> set (set T);
+  _ : is_ufilter in_ufilter
+}.
 
+Definition ufilter_class T (F : ufilter_on T) : is_ufilter F :=
+  let: UFilterPack _ class := F in class.
+Arguments UFilterPack {T} _ _.
+Canonical ufilter_nbhs_on T (F : ufilter_on T) := Nbhs F.
+Coercion ufilter_nbhs_on : ufilter_on >-> nbhs_on.
+Canonical ufilter_filter_on T (F : ufilter_on T) :=
+  Filter F (ufilter_class F).
+Coercion ufilter_filter_on : ufilter_on >-> filter_on.
+Canonical ufilter_pfilter_on T (F : ufilter_on T) :=
+  PFilterPack F (ufilter_class F).
+Coercion ufilter_pfilter_on : ufilter_on >-> pfilter_on.
 
-Lemma ultra_cvg_clusterE (T : topologicalType) (F : {filter T}) :
-  Ultrais_filter F -> cluster F = [set p | F --> p].
+Definition UFilter_of {T} (F : set (set T)) (ultraF : filter_is_ultra F) :=
+  fun (fF : pfilter_on T) of phant_id F (fF : set (set T)) =>
+  fun (fFF : is_pfilter _) of phant_id (PFilterPack _ fFF) fF =>
+  UFilterPack F (Build_is_ufilter fFF ultraF).
+Notation UFilter F ultraF := (@UFilter_of _ F ultraF _ id _ id).
+
+Lemma ultra_pointfilter (T : pointedType) (x : T) :
+  filter_is_ultra (pointfilter x).
 Proof.
-move=> FU; rewrite predeqE => p; split.
-  by rewrite cluster_cvgE => - [G GF [cvGp /max_filter <-]].
-by move=> cvFp; rewrite cluster_cvgE; exists F; [apply: ultra_proper|split].
+rewrite /pointfilter/= => G pG; rewrite predeqE => A; split => [|/pG//].
+rewrite -nbhs_setE => GA; have Gp : G [set x] by apply: pG.
+by near G => y; suff <- : y = x; near: y.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma ufilter_is_pfilter (T : Type) (pT : ufilter_on T) :
+  filter_is_proper (Nbhs (in_ufilter pT)).
+Proof. by case: pT => ? [[]]. Qed.
+
+Lemma ufilter_is_filter (T : Type) (pT : ufilter_on T) :
+  is_filter (Nbhs (in_pfilter pT)).
+Proof. exact: pfilter_is_filter. Qed.
+
+Canonical ufilter_on_eqType T := EqType (ufilter_on T) gen_eqMixin.
+Canonical ufilter_on_choiceType T :=
+  ChoiceType (ufilter_on T) gen_choiceMixin.
+Canonical pointfilter_ufilter (T : pointedType) (x : T) :=
+  UFilter (pointfilter x) (@ultra_pointfilter _ x). 
+Canonical ufilter_on_PointedType (T : pointedType) :=
+  PointedType (ufilter_on T) (pointfilter_ufilter point).
+Definition ufilter_on_nbhs_mixin (T : pointedType) :=
+  NbhsMixin_ (@in_ufilter T).
+Canonical ufilter_on_NbhsType (T : pointedType) :=
+  NbhsType T (ufilter_on T) (@ufilter_on_nbhs_mixin T).
+Definition ufilter_on_filter_mixin (T : pointedType)  :=
+  FilterMixin (@ufilter_is_filter T).
+Canonical ufilter_on_filterType (T : pointedType) :=
+  FilterType T (ufilter_on T) (@ufilter_on_filter_mixin T).
+Definition ufilter_on_pfilter_mixin (T : pointedType)  :=
+  PFilterMixin (@ufilter_is_pfilter T).
+Canonical ufilter_on_pfilterType (T : pointedType) :=
+  PFilterType T (ufilter_on T) (@ufilter_on_pfilter_mixin T).
+
+Lemma ufilter_on_pfilter (T : Type) (F : ufilter_on T) :
+   ~ (in_ufilter F) set0.
+Proof. by case: F => /= F [[]]. Qed.
+
+Lemma max_filter (T : Type) (F : ufilter_on T) :
+    forall G : pfilter_on T, F `<=` G -> G = F.
+Proof.
+case: F => /= F [Fp Fu] [G Gp] /Fu eqGF.
+case: _ / eqGF Fp Fu => /= Fp Fu; suff -> : Gp = Fp by [].
+exact: Prop_irrelevance.
 Qed.
 
-Lemma ultrais_filterLemma T (F : {filter T}) :
-  is_pfilter F -> exists G, Ultrais_filter G /\ F `<=` G.
+Lemma ultra_cvg_clusterE (T : topologicalType) (F : ufilter_on T) :
+  cluster (nbhs F) = [set p | nbhs F --> p].
 Proof.
-move=> FF.
+rewrite predeqE => p; split; last first.
+  by move=> cvFp; rewrite cluster_cvgE; exists (F : pfilter_on T).
+rewrite cluster_cvgE => - [G cvGp /max_filter eqGF].
+by rewrite eqGF in cvGp.
+Qed.
+
+Lemma mk_ufilter_subdef T (F : {pfilter T}) :
+  exists G : ufilter_on T, F `<=` G.
+Proof.
 set filter_preordset := ({G : {filter T} & is_pfilter G /\ F `<=` G}).
 set preorder := fun G1 G2 : filter_preordset => projT1 G1 `<=` projT1 G2.
 suff [G Gmax] : exists G : filter_preordset, premaximal preorder G.
-  have [GF sFG] := projT2 G; exists (projT1 G); split=> //; split=> // H HF sGH.
-  have sFH : F `<=` H by apply: subset_trans sGH.
-  have sHG : preorder (existT _ H (conj HF sFH)) G by apply: Gmax.
-  by rewrite predeqE => ?; split=> [/sHG|/sGH].
-have sFF : F `<=` F by [].
-apply: (ZL_preorder ((existT _ F (conj FF sFF)) : filter_preordset)) =>
-  [?|G H I sGH sHI ? /sGH /sHI|A Atot] //.
-case: (pselect (A !=set0)) => [[G AG] | A0]; last first.
-  exists (existT _ F (conj FF sFF)) => G AG.
-  by have /asboolP := A0; rewrite asbool_neg => /forallp_asboolPn /(_ G).
-have [GF sFG] := projT2 G.
-suff UAF : is_pfilter (\bigcup_(H in A) projT1 H).
-  have sFUA : F `<=` \bigcup_(H in A) projT1 H.
-    by move=> B FB; exists G => //; apply: sFG.
-  exists (existT _ (\bigcup_(H in A) projT1 H) (conj UAF sFUA)) => H AH B HB /=.
-  by exists H.
-apply Build_is_pfilter.
-  by move=> B [H AH HB]; have [HF _] := projT2 H; apply: (@near_ex _ _ HF).
-split; first by exists G => //; apply: nearT.
-  move=> B C [HB AHB HBB] [HC AHC HCC]; have [sHBC|sHCB] := Atot _ _ AHB AHC.
-    exists HC => //; have [HCF _] := projT2 HC; apply: nearI HCC.
-    exact: sHBC.
-  exists HB => //; have [HBF _] := projT2 HB; apply: nearI HBB _.
-  exact: sHCB.
-move=> B C SBC [H AH HB]; exists H => //; have [HF _] := projT2 H.
-exact: nearS HB.
-Qed.
+(*   have [GF sFG] := projT2 G; exists (projT1 G). split=> //; split=> // H HF sGH. *)
+(*   have sFH : F `<=` H by apply: subset_trans sGH. *)
+(*   have sHG : preorder (existT _ H (conj HF sFH)) G by apply: Gmax. *)
+(*   by rewrite predeqE => ?; split=> [/sHG|/sGH]. *)
+(* have sFF : F `<=` F by []. *)
+(* apply: (ZL_preorder ((existT _ F (conj FF sFF)) : filter_preordset)) => *)
+(*   [?|G H I sGH sHI ? /sGH /sHI|A Atot] //. *)
+(* case: (pselect (A !=set0)) => [[G AG] | A0]; last first. *)
+(*   exists (existT _ F (conj FF sFF)) => G AG. *)
+(*   by have /asboolP := A0; rewrite asbool_neg => /forallp_asboolPn /(_ G). *)
+(* have [GF sFG] := projT2 G. *)
+(* suff UAF : is_pfilter (\bigcup_(H in A) projT1 H). *)
+(*   have sFUA : F `<=` \bigcup_(H in A) projT1 H. *)
+(*     by move=> B FB; exists G => //; apply: sFG. *)
+(*   exists (existT _ (\bigcup_(H in A) projT1 H) (conj UAF sFUA)) => H AH B HB /=. *)
+(*   by exists H. *)
+(* apply Build_is_pfilter. *)
+(*   by move=> B [H AH HB]; have [HF _] := projT2 H; apply: (@near_ex _ _ HF). *)
+(* split; first by exists G => //; apply: nearT. *)
+(*   move=> B C [HB AHB HBB] [HC AHC HCC]; have [sHBC|sHCB] := Atot _ _ AHB AHC. *)
+(*     exists HC => //; have [HCF _] := projT2 HC; apply: nearI HCC. *)
+(*     exact: sHBC. *)
+(*   exists HB => //; have [HBF _] := projT2 HB; apply: nearI HBB _. *)
+(*   exact: sHCB. *)
+(* move=> B C SBC [H AH HB]; exists H => //; have [HF _] := projT2 H. *)
+(* exact: nearS HB. *)
+(* Qed. *)
+Admitted.
 
 Lemma compact_ultra (T : topologicalType) :
-  compact = [set A | forall F : {filter T},
-  Ultrais_filter F -> F A -> A `&` [set p | F --> p] !=set0].
+  compact = [set A | forall F : ufilter_on T,
+                      F A -> A `&` [set p | F --> p] !=set0].
 Proof.
-rewrite predeqE => A; split=> Aco F FF FA.
-  by have /Aco [p [?]] := FA; rewrite ultra_cvg_clusterE; exists p.
-have [G [GU sFG]] := ultrais_filterLemma FF.
-have /Aco [p [Ap]] : G A by apply: sFG.
-rewrite -[_ --> p]/([set _ | _] p) -ultra_cvg_clusterE.
-by move=> /(cvg_cluster sFG); exists p.
-Qed.
+(* rewrite predeqE => A; split=> Aco F FF FA. *)
+(*   by have /Aco [p [?]] := FA; rewrite ultra_cvg_clusterE; exists p. *)
+(* have [G [GU sFG]] := ultrais_filterLemma FF. *)
+(* have /Aco [p [Ap]] : G A by apply: sFG. *)
+(* rewrite -[_ --> p]/([set _ | _] p) -ultra_cvg_clusterE. *)
+(* by move=> /(cvg_cluster sFG); exists p. *)
+(* Qed. *)
+Admitted.
 
 Lemma filter_image (T U : Type) (f : T -> U) (F : {filter T}) :
-  is_filter F -> f @` setT = setT -> is_filter [set f @` A | A in F].
+  f @` setT = setT -> is_filter [set f @` A | A in F].
 Proof.
-move=> FF fsurj; split.
-- by exists setT => //; apply: nearT.
+set X := [set _ | _ in _]; move=> fsurj; split.
+- by exists setT => //; exact: (nearT F).
 - move=> _ _ [A FA <-] [B FB <-].
   exists (f @^-1` (f @` A `&` f @` B)); last by rewrite image_preimage.
   have sAB : A `&` B `<=` f @^-1` (f @` A `&` f @` B).
     by move=> x [Ax Bx]; split; exists x.
+  set FAB := f @^-1` _; suff: nbhs F FAB by [].
   by apply: nearS sAB _; apply: nearI.
 - move=> A B sAB [C FC fC_eqA].
   exists (f @^-1` B); last by rewrite image_preimage.
-  by apply: nearS FC => p Cp; apply: sAB; rewrite -fC_eqA; exists p.
-Qed.
+  suff: nbhs F C -> nbhs F (f @^-1` B) by apply.
+  by apply: nearS => p Cp; apply: sAB; rewrite -fC_eqA; exists p.
+Grab Existential Variables. all: by end_near. Qed.
 
-Lemma proper_image (T U : Type) (f : T -> U) (F : {filter T}) :
-  is_pfilter F -> f @` setT = setT -> is_pfilter [set f @` A | A in F].
+Lemma proper_image (T U : Type) (f : T -> U) (F : pfilter_on T) :
+  f @` setT = setT -> is_pfilter [set f @` A | A in F].
 Proof.
-move=> FF fsurj; apply Build_is_pfilter; last exact: filter_image.
-by move=> _ [A FA <-]; have /near_ex [p Ap] := FA; exists (f p); exists p.
-Qed.
+move=> fsurj; apply Build_is_pfilter; last exact: filter_image.
+move=> _ [A FA <-].
+(* have := (@near_const _ (pfilter_on T) F). *)
 
-Lemma in_ultra_setVsetC T (F : {filter T}) (A : set T) :
-  Ultrais_filter F -> F A \/ F (~` A).
+(* have : nbhs (F : {filter T}) A := FA. *)
+(* have /near_ex [p Ap] := FA; exists (f p); exists p. *)
+(* Qed. *)
+Admitted.
+
+Lemma in_ultra_setVsetC T (F : ufilter_on T) (A : set T) :
+  F A \/ F (~` A).
 Proof.
-move=> FU; case: (pselect (F (~` A))) => [|nFnA]; first by right.
+case: (pselect (F (~` A))) => [|nFnA]; first by right.
 left; suff : is_pfilter (nbhs_from (F `|` [set A `&` B | B in F]) id).
   move=> /max_filter <-; last by move=> B FB; exists B => //; left.
   by exists A => //; right; exists setT; [apply: nearT|rewrite setIT].
