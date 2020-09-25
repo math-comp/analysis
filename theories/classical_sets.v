@@ -989,18 +989,28 @@ Lemma lbP E x : (forall y, E y -> (x <= y)%O) <-> lbound E x.
 Proof. by []. Qed.
 
 Lemma ub_set1 x y : ubound [set x] y = (x <= y)%O.
-Proof.
-by rewrite propeqE; split => [/ubP/(_ x erefl)//|xy]; apply/ubP => z ->.
-Qed.
+Proof. by rewrite propeqE; split => [/(_ x erefl)//|xy z ->]. Qed.
+
+Lemma lb_set1 x y : lbound [set x] y = (x >= y)%O.
+Proof. by rewrite propeqE; split => [/(_ x erefl)//|xy z ->]. Qed.
 
 Lemma lb_ub_set1 x y : lbound (ubound [set x]) y -> (y <= x)%O.
-Proof. by move/lbP => /(_ x); apply; rewrite ub_set1. Qed.
+Proof. by move/(_ x); apply; rewrite ub_set1. Qed.
+
+Lemma ub_lb_set1 x y : ubound (lbound [set x]) y -> (x <= y)%O.
+Proof. by move/(_ x); apply; rewrite lb_set1. Qed.
 
 Lemma lb_ub_refl x : lbound (ubound [set x]) x.
-Proof. by apply/lbP => y /ubP; apply. Qed.
+Proof. by move=> y; apply. Qed.
+
+Lemma ub_lb_refl x : ubound (lbound [set x]) x.
+Proof. by move=> y; apply. Qed.
 
 Lemma ub_lb_ub E x y : ubound E y -> lbound (ubound E) x -> (x <= y)%O.
-Proof. by move=> Ey /lbP; apply. Qed.
+Proof. by move=> Ey; apply. Qed.
+
+Lemma lb_ub_lb E x y : lbound E y -> ubound (lbound E) x -> (y <= x)%O.
+Proof. by move=> Ey; apply. Qed.
 
 (* down set (i.e., generated order ideal) *)
 (* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
@@ -1022,22 +1032,68 @@ Definition supremums E := ubound E `&` lbound (ubound E).
 
 Lemma supremums_set1 x : supremums [set x] = [set x].
 Proof.
-rewrite /supremums predeqE => y; split => [[]|].
-  rewrite ub_set1 => xy /lb_ub_set1 => yx.
-  by apply/eqP; rewrite eq_le xy andbT yx // => z ->.
-by move=> xy; split; [rewrite -xy ub_set1 |
-  rewrite -xy; apply: lb_ub_refl].
+rewrite /supremums predeqE => y; split => [[]|->{y}]; last first.
+  by split; [rewrite ub_set1|exact: lb_ub_refl].
+by rewrite ub_set1 => xy /lb_ub_set1 yx; apply/eqP; rewrite eq_le xy yx.
 Qed.
 
 Lemma is_subset1_supremums E : is_subset1 (supremums E).
 Proof.
-move=> x y [Ex xE] [Ey yE].
-have yx := ub_lb_ub Ex yE.
-have xy := ub_lb_ub Ey xE.
-by apply/eqP; rewrite eq_le xy.
+move=> x y [Ex xE] [Ey yE]; apply/eqP.
+by rewrite eq_le (ub_lb_ub Ex yE) (ub_lb_ub Ey xE).
 Qed.
 
 Definition supremum (x0 : T) E :=
   if pselect (E !=set0) then xget x0 (supremums E) else x0.
 
+Definition infimums E := lbound E `&` ubound (lbound E).
+
+Definition infimum (x0 : T) E :=
+  if pselect (E !=set0) then xget x0 (infimums E) else x0.
+
+Lemma infimums_set1 x : infimums [set x] = [set x].
+Proof.
+rewrite /infimums predeqE => y; split => [[]|->{y}]; last first.
+  by split; [rewrite lb_set1|apply ub_lb_refl].
+by rewrite lb_set1 => xy /ub_lb_set1 yx; apply/eqP; rewrite eq_le xy yx.
+Qed.
+
+Lemma is_subset1_infimums E : is_subset1 (infimums E).
+Proof.
+move=> x y [Ex xE] [Ey yE]; apply/eqP.
+by rewrite eq_le (lb_ub_lb Ex yE) (lb_ub_lb Ey xE).
+Qed.
+
 End UpperLowerTheory.
+
+Section UpperLowerOrderTheory.
+Import Order.TTheory.
+Variables (d : unit) (T : orderType d).
+Implicit Types E : set T.
+
+Lemma ge_supremum_Nmem x0 E t :
+  supremums E !=set0 -> E t -> (supremum x0 E >= t)%O.
+Proof.
+case=> x Ex; rewrite /supremum.
+case: pselect => /= [_ | /set0P/negP/negPn/eqP -> //].
+by case: xgetP => [t' t'E [uEt' _]|/(_ x) //]; exact: uEt'.
+Qed.
+
+Lemma le_infimum_Nmem x0 E t :
+  infimums E !=set0 -> E t -> (infimum x0 E <= t)%O.
+Proof.
+case=> x Ex; rewrite /infimum.
+case: pselect => /= [_ | /set0P/negP/negPn/eqP -> //].
+by case: xgetP => [t' t'E [uEt' _]|/(_ x) //]; exact: uEt'.
+Qed.
+
+End UpperLowerOrderTheory.
+
+Lemma nat_supremums_neq0 (E : set nat) : ubound E !=set0 -> supremums E !=set0.
+Proof.
+case => /=; elim => [E0|n ih]; first by exists O.
+case: (pselect (ubound E n)) => [/ih //|En {ih}] En1.
+exists n.+1; split => // m Em; case/existsNP : En => k /not_implyP[Ek /negP].
+rewrite -Order.TotalTheory.ltNge => kn.
+by rewrite (Order.POrderTheory.le_trans _ (Em _ Ek)).
+Qed.
