@@ -56,10 +56,6 @@ Qed.
 
 (*TBA to topology.v *)
 
-Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
-      (B : set M) (x: M):
-   nbhs x B <-> exists (r : {posnum R}), ball x r%:num `<=` B .
-Admitted.
 
 
 Lemma closed_ball_ler (R : numFieldType) (M : pseudoMetricNormedZmodType R) (x : M) (e1 e2 : R) :
@@ -165,32 +161,24 @@ have Suite_ball : forall (n m :nat) , (n <= m)%N -> closed_ball (a m) (r m)%:num
  have : (n==k.+1) \/ (n<k.+1)%N by apply /orP.
  case; first by move=> /eqP ->.
  by move => /iHk temp; apply : subset_trans; first by apply: step.
-have cauchyexa: (cauchy_ex (a @ \oo )).
+have cauchyexa: (cauchy_ex (a @ \oo )). 
  move => e e0; rewrite /fmapE -ball_normE /ball_.
  have [n Hn]: exists n: nat , 2*(r n)%:num < e.
    pose eps := e/2.
-   have [n Hn]: exists n: nat, ((n.+1)%:R^-1 < eps).
+   have [n Hn]: exists n: nat, ((n.+1)%:R^-1 < eps). 
      exists `|Rtoint (floor eps^-1 + 1%:~R)|%N.
      have He : (eps^-1 < `|Rtoint(floor eps^-1 + 1%:~R)|%:R)
-     by apply : floor_nat_comp;rewrite invr_ge0 ler_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) ?ltW.
-     have : (eps^-1 < `|Rtoint(floor eps^-1 + 1%:~R)|%:R) by [].
-     rewrite -(mulr1 eps^-1) ltr_pdivr_mull.
-     rewrite mulrC -ltr_pdivr_mull mulr1.  
-     rewrite mulr1; move=> Ht; apply (@lt_trans _ _ (`|Rtoint (floor eps^-1 + 1%:~R)|%:R^-1) _ _).
-     rewrite ltf_pinv //= ?posrE.  (*No, we should not be using strict < *)
-    (* admit. admit. admit. admit. admit. admit.  *)
-      by rewrite ltr_nat //=.
-      rewrite (@lt_trans _ _ eps^-1 _ _) ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //= .
-      rewrite -ltf_pinv /= ?invrK //=. admit.
-      by rewrite posrE.
-      rewrite posrE (@lt_trans _ _ eps^-1 _ _)
-      ?invr_gt0  ?ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) //=. admit.
-      admit. admit. admit. admit. (* rewrite ltr_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2). *)
+       by apply : floor_nat_comp;rewrite invr_ge0 ler_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) ?ltW.
+     rewrite -[X in (`|Rtoint (floor eps^-1 + 1%:~R)|.+1%:R^-1   < X)]invrK. 
+     rewrite ltf_pinv ?posrE ?invr_gt0 ?divr_gt0 //=.
+     apply: lt_trans; first by apply: He.
+     by rewrite ltr_nat.
    exists (n.+1).
-   have: (r n.+1)%:num < n.+1%:R^-1.
-   have: P n.+1 (a n, r n)   (a (n.+1), r (n.+1)) by apply: (Pf (n, ar n)).
-    move=> [_ B]; apply: (@lt_trans _ _ (n.+2%:R^-1) _ _);  rewrite ?lt_inv ?ltr_nat . admit. admit.  
-   move=> temp; apply: (@lt_trans _ _ (2* n.+1%:R^-1) _ _);
+   have temp: (r n.+1)%:num < n.+1%:R^-1.
+    have: P n.+1 (a n, r n)   (a (n.+1), r (n.+1)) by apply: (Pf (n, ar n)).
+    move=> [_ B]; apply: (@lt_trans _ _ (n.+2%:R^-1) _ _); rewrite //=. 
+    by rewrite //= ltf_pinv ?posrE ?ltr_nat //=. 
+   apply: (@lt_trans _ _ (2* n.+1%:R^-1) _ _);
    by rewrite -ltr_pdivl_mull ?mulrA ?(mulrC 2^-1 2) ?mulfV ?(mulrC 2^-1 e) ?div1r.
  exists (a n); exists n; first by [].
  move =>  m nsupm.
@@ -200,7 +188,8 @@ have cauchyexa: (cauchy_ex (a @ \oo )).
  have : closed_ball (a m) (r m)%:num (a m) by apply: closed_ballxx.
  by move=> temp1 Ha; move : (Ha (a m) temp1).
    rewrite closure_closed_ball => temp.
-   by rewrite (@le_lt_trans _ _ (r n)%:num (`|a n - a m|) (2*(r n)%:num)) -?ltr_pdivr_mulr ?mulfV ?ltr1n //=.
+   rewrite (@le_lt_trans _ _ (r n)%:num (`|a n - a m|) (2*(r n)%:num))
+           -?ltr_pdivr_mulr ?mulfV ?ltr1n //=.
 have cauchya : (cauchy (a @ \oo)) by apply: cauchy_exP.
 have : cvg (a @ \oo) by apply: cauchy_cvg.
 rewrite cvg_ex //=.
@@ -228,17 +217,17 @@ move=> i _.
    have temp : (i <= (n +i)%N)%N by apply: leq_addl.
    have temp2 : closed_ball (a (n+i)%N) (r (n+i)%N)%:num (a (n+i)%N) by apply: closed_ballxx.
    by move : (Suite_ball i (n +i)%N temp (a (n+i)%N) temp2).
-  apply (@closed_cvg _ _ \oo eventually_filter (fun n : nat => a (n+i)%N)).  
+  apply: (@closed_cvg _ _ \oo eventually_filter (fun n : nat => a (n+i)%N)).
   by [].
-  by [].  
+  by [].
   by apply:  closed_closed_ball.
 case i.
 by rewrite subsetI in Ball_a0; move: Ball_a0; move=> [_ p] la0; move : (p l la0).
 move=> n.
 have [temp _] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply : (Pf (n , ar n)).
-by rewrite subsetI in temp; move : temp; move=> [_ p] lan1; move: (p l lan1). 
-by [].  
-Admitted. 
+by rewrite subsetI in temp; move : temp; move=> [_ p] lan1; move: (p l lan1).
+by [].
+Qed. 
 
 
 End Baire.
@@ -382,9 +371,9 @@ Proof.
   have BaireContra : exists n :nat , exists x : V,
                exists r : {posnum K}, (ball x r%:num) `<=` (~` (O n)).
     - move: ContraBaire =>
-      [ i /(denseNE) [ O0 [ [ x /open_nbhs_nbhs /nbhs_ballrP [ r H1 ] ]
-      /((@subsetI_eq0 _ (ball x r%:num) O0 (O i) (O i)) )  ]  ] /(_ H1) ] H2. 
-       by exists i; exists x; exists r;apply: setIsubset; apply H2.
+      [i /(denseNE) [ O0 [ [ x /open_nbhs_nbhs /nbhs_ballP [r [r0 bxr]]  
+      /((@subsetI_eq0 _ (ball x r) O0 (O i) (O i)))]]]] H2. 
+       by exists i; exists x; exists (PosNum r0) ;apply: setIsubset; apply H2.
   move: BaireContra => [n [x0 [ r H ] ] k]; exists ((n%:R + n%:R) * k * 2 /r%:num); move=> f Hf y Hx.
   move: (Propf f Hf) => [ _ linf].
   case: (eqVneq y 0) => [-> | Zeroy]; last first. 
