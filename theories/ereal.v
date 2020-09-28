@@ -67,6 +67,7 @@ Coercion real_of_er x : R :=
   if x is ERFin v then v else 0.
 
 End ExtendedReals.
+Arguments real_of_er {R}.
 
 
 Notation "+oo" := (@ERPInf _) : ereal_scope.
@@ -215,6 +216,10 @@ Proof. by []. Qed.
 
 Lemma lte_pinfty (R : realDomainType) (x : R) : x%:E < +oo.
 Proof. exact: num_real. Qed.
+
+Lemma gee0P (R : realDomainType) (x : {ereal R}) :
+  0%:E <= x -> x = +oo \/ exists r, x = r%:E.
+Proof. by case: x => [r r0| _ |//]; [right; exists r|left]. Qed.
 
 Lemma lee_pinfty (R : realDomainType) (x : {ereal R}) : x <= +oo.
 Proof. case: x => //= r; exact: num_real. Qed.
@@ -402,11 +407,12 @@ Qed.
 Lemma adde_ge0 x y : 0%:E <= x -> 0%:E <= y -> 0%:E <= x + y.
 Proof. by move: x y => [r0| |] [r1| |] // ? ?; rewrite !lee_fin addr_ge0. Qed.
 
-Lemma sume_ge0 T (u_ : T -> {ereal R}) : (forall n, 0%:E <= u_ n) -> forall l,
-  0%:E <= \sum_(i <- l) u_ i.
-Proof. by move=> ?; elim => [|? ? ?]; rewrite ?big_nil// big_cons adde_ge0. Qed.
+Lemma sume_ge0 T (u_ : T -> {ereal R}) (P : pred T) : (forall n, 0%:E <= u_ n) ->
+  forall l, 0%:E <= \sum_(i <- l | P i) u_ i.
+Proof. by move=> u0 l; elim/big_rec : _ => // t x Pt; apply: adde_ge0. Qed.
 
 End ERealArithTh_numDomainType.
+Arguments is_real {R}.
 
 Section ERealArithTh_realDomainType.
 
@@ -502,6 +508,35 @@ move=> fg; elim => [|n ih]; first by rewrite !big_ord0.
 by rewrite 2!big_ord_recr /= lee_add.
 Qed.
 
+Lemma lee_sum_seq (T : eqType) (f g : T -> {ereal R}) s (p : pred T) :
+  (forall i, i \in s -> f i <= g i) -> \sum_(i <- s | p i) f i <= \sum_(i <- s | p i) g i.
+Proof.
+elim: s => [|h t ih fg]; first by rewrite 2!big_nil.
+rewrite 2!big_cons; case: ifPn => ?.
+by rewrite lee_add // ?fg ?mem_head // ih // => i it; rewrite fg // inE it orbT.
+by apply ih => i it; rewrite fg // inE it orbT.
+Qed.
+
+Lemma lee_sum_nneg_seq (T : eqType) (s1 s2 : seq T)
+  (f : T -> {ereal R}) : (forall t, 0%:E <= f t) -> {subset s1 <= s2} ->
+  uniq s1 -> uniq s2 -> \sum_(t <- s1) f t <= \sum_(t <- s2) f t.
+Proof.
+move=> f0 s12 us1 us2; rewrite [X in _ <= X](bigID (mem s1)) /=.
+rewrite -[X in X <= _]adde0 lee_add //; last exact: sume_ge0.
+rewrite le_eqVlt; apply/orP; left; apply/eqP.
+rewrite -[RHS]big_filter; apply/perm_big.
+apply: (uniq_perm us1 (filter_uniq _ us2)) => t.
+by rewrite mem_filter; apply/idP/idP => [ts1|/andP[]//]; rewrite s12 // andbT.
+Qed.
+
+Lemma lee_sum_nneg_ord (f : nat -> {ereal R}) : (forall n, 0%:E <= f n) ->
+  {homo (fun n => \sum_(i < n) (f i))%E : i j / (i <= j)%N >-> i <= j}.
+Proof.
+move=> ? i j ?; rewrite -!(big_mkord xpredT) -big_filter -[X in _ <= X]big_filter.
+apply: lee_sum_nneg_seq => //; try by rewrite filter_predT iota_uniq.
+by move=> k; rewrite !(mem_filter,mem_iota,add0n,subn0) /= => /leq_trans; apply.
+Qed.
+
 Lemma lte_subl_addr x (r : R) z : (x - r%:E < z) = (x < z + r%:E).
 Proof.
 move: x r z => [x| |] r [z| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
@@ -587,17 +622,33 @@ by rewrite lte_ninfty /Order.lt /= realN num_real.
 by rewrite lte_pinfty /Order.lt /= realN num_real.
 Qed.
 
-Section ereal_supremum.
+Section realFieldType_lemmas.
 Variable R : realFieldType.
-Local Open Scope classical_set_scope.
-Implicit Types S : set {ereal R}.
 Implicit Types x y : {ereal R}.
+
+Lemma lee_adde x y : (forall e : {posnum R}, x <= y + e%:num%:E) -> x <= y.
+Proof.
+move: x y => [x| |] [y| |] //=; rewrite ?(lee_ninfty,lee_pinfty) //;
+  try by move/(_ (PosNum ltr01)).
+rewrite lee_fin => abe; rewrite leNgt; apply/negP => ba; apply/existsNP : abe.
+have xy : (0 < (x - y) / 2)%R by apply divr_gt0 => //; rewrite subr_gt0.
+exists (PosNum xy); apply/negP; rewrite -ltNge lte_fin -ltr_subr_addl.
+by rewrite ltr_pdivr_mulr // ltr_pmulr ?subr_gt0 // ltr1n.
+Qed.
 
 Lemma lte_spaddr (r : R) x y : 0%:E < y -> r%:E <= x -> r%:E < x + y.
 Proof.
 move: y x => [y| |] [x| |] //=; rewrite ?lte_fin ?ltt_fin ?lte_pinfty //.
 exact: ltr_spaddr.
 Qed.
+
+End realFieldType_lemmas.
+
+Section ereal_supremum.
+Variable R : realFieldType.
+Local Open Scope classical_set_scope.
+Implicit Types S : set {ereal R}.
+Implicit Types x y : {ereal R}.
 
 Lemma ereal_ub_pinfty S : ubound S +oo.
 Proof. by apply/ubP=> x _; rewrite lee_pinfty. Qed.
