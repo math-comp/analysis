@@ -217,12 +217,15 @@ Proof. by []. Qed.
 Lemma lte_pinfty (R : realDomainType) (x : R) : x%:E < +oo.
 Proof. exact: num_real. Qed.
 
-Lemma gee0P (R : realDomainType) (x : {ereal R}) :
-  0%:E <= x -> x = +oo \/ exists r, x = r%:E.
-Proof. by case: x => [r r0| _ |//]; [right; exists r|left]. Qed.
-
 Lemma lee_pinfty (R : realDomainType) (x : {ereal R}) : x <= +oo.
 Proof. case: x => //= r; exact: num_real. Qed.
+
+Lemma gee0P (R : realDomainType) (x : {ereal R}) :
+  0%:E <= x <-> x = +oo \/ exists2 r, (r >= 0)%R & x = r%:E.
+Proof.
+split=> [|[->|[r r0 ->//]]]; last exact: lee_pinfty.
+by case: x => [r r0 | _ |//]; [right; exists r|left].
+Qed.
 
 Lemma lte_ninfty (R : realDomainType) (x : R) : (-oo < x%:E).
 Proof. exact: num_real. Qed.
@@ -407,9 +410,10 @@ Qed.
 Lemma adde_ge0 x y : 0%:E <= x -> 0%:E <= y -> 0%:E <= x + y.
 Proof. by move: x y => [r0| |] [r1| |] // ? ?; rewrite !lee_fin addr_ge0. Qed.
 
-Lemma sume_ge0 T (u_ : T -> {ereal R}) (P : pred T) : (forall n, 0%:E <= u_ n) ->
+Lemma sume_ge0 T (u_ : T -> {ereal R}) (P : pred T) :
+  (forall n, P n -> 0%:E <= u_ n) ->
   forall l, 0%:E <= \sum_(i <- l | P i) u_ i.
-Proof. by move=> u0 l; elim/big_rec : _ => // t x Pt; apply: adde_ge0. Qed.
+Proof. by move=> u0 l; elim/big_rec : _ => // t x Pt; apply/adde_ge0/u0. Qed.
 
 End ERealArithTh_numDomainType.
 Arguments is_real {R}.
@@ -501,15 +505,8 @@ move: x y => [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
 by rewrite !lte_fin; exact: ltr_le_add.
 Qed.
 
-Lemma lee_sum (f g : nat -> {ereal R}) :
-  (forall i, f i <= g i) -> forall n, \sum_(i < n) f i <= \sum_(i < n) g i.
-Proof.
-move=> fg; elim => [|n ih]; first by rewrite !big_ord0.
-by rewrite 2!big_ord_recr /= lee_add.
-Qed.
-
-Lemma lee_sum_seq (T : eqType) (f g : T -> {ereal R}) s (p : pred T) :
-  (forall i, i \in s -> f i <= g i) -> \sum_(i <- s | p i) f i <= \sum_(i <- s | p i) g i.
+Lemma lee_sum I (f g : I -> {ereal R}) s (P : pred I) :
+  (forall i, P i -> f i <= g i) -> \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
 Proof.
 elim: s => [|h t ih fg]; first by rewrite 2!big_nil.
 rewrite 2!big_cons; case: ifPn => ?.
@@ -517,15 +514,23 @@ by rewrite lee_add // ?fg ?mem_head // ih // => i it; rewrite fg // inE it orbT.
 by apply ih => i it; rewrite fg // inE it orbT.
 Qed.
 
+Lemma lee_sum_nneg I (s : seq I) (P Q : pred I)
+  (f : I -> {ereal R}) : (forall i, P i -> ~~ Q i -> 0%:E <= f i) ->
+  \sum_(i <- s | P i && Q i) f i <= \sum_(i <- s | P i) f i.
+Proof.
+move=> PQf; rewrite [X in _ <= X](bigID Q) /= -[X in X <= _]adde0 lee_add //.
+by rewrite sume_ge0 // => i /andP[]; exact: PQf.
+Qed.
+
 Lemma lee_sum_nneg_seq (T : eqType) (s1 s2 : seq T)
   (f : T -> {ereal R}) : (forall t, 0%:E <= f t) -> {subset s1 <= s2} ->
   uniq s1 -> uniq s2 -> \sum_(t <- s1) f t <= \sum_(t <- s2) f t.
 Proof.
-move=> f0 s12 us1 us2; rewrite [X in _ <= X](bigID (mem s1)) /=.
-rewrite -[X in X <= _]adde0 lee_add //; last exact: sume_ge0.
-rewrite le_eqVlt; apply/orP; left; apply/eqP.
+move=> f0 s12 u1 u2.
+rewrite [X in X <= _](_ : _ = \sum_(i <- s2 | i \in s1) f i).
+  exact: (@lee_sum_nneg _ _ xpredT).
 rewrite -[RHS]big_filter; apply/perm_big.
-apply: (uniq_perm us1 (filter_uniq _ us2)) => t.
+apply: (uniq_perm u1 (filter_uniq _ u2)) => t.
 by rewrite mem_filter; apply/idP/idP => [ts1|/andP[]//]; rewrite s12 // andbT.
 Qed.
 

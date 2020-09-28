@@ -27,7 +27,7 @@
   + arithmetic lemmas: `oppeD`, `subre_ge0`, `suber_ge0`, `lee_add2lE`, `lte_add2lE`,
     `lte_add`, `lte_addl`, `lte_le_add`, `lte_subl_addl`, `lee_subr_addr`,
     `lee_subl_addr`, `lte_spaddr`
-  + lemmas `gee0P`, `sume_ge0`, `lee_sum_seq`, `lee_sum_nneg_seq`, `lee_sum_nneg_ord`
+  + lemmas `gee0P`, `sume_ge0`, `lee_sum_nneg_seq`, `lee_sum_nneg_ord`
   + lemma `lee_adde`
 - in `normedtype.v`:
   + lemmas `natmul_continuous`, `cvgMn` and `is_cvgMn`.
@@ -65,6 +65,7 @@
 - in `ereal.v`:
   + the first argument of `real_of_er` is now maximal implicit
   + the first argument of `is_real` is now maximal implicit
+  + generalization of `lee_sum`
 
 ### Renamed
 
