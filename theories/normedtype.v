@@ -4257,66 +4257,70 @@ Admitted.
 Definition closed_ball_ (R: numDomainType) (V: zmodType) (norm: V -> R) (x: V) (e : R) :=
   [set y | (norm (x- y) <=e)%O ].
 
-
-
-Definition closed_ball (R: numDomainType) (V: pseudoMetricType R) (x: V) (e : R) :=
-  closure (ball x e).
-
-
-Lemma closed_ballxx  (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : {posnum R}) :
-  closed_ball x r%:num x.
-Proof.
-  by rewrite /closed_ball; apply: subset_closure; apply: ballxx.
-Qed.
-
-Lemma closed_open_ball (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : {posnum R}) :
-  exists e, ball x e `<=` closed_ball x r%:num.
-Admitted.
-
-Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
-      (B : set M) (x: M):
-   nbhs x B <-> exists (r : {posnum R}), ball x r%:num `<=` B .
-Admitted.  (* essential *)
-
-Lemma nbhs_closedballP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
-      (B : set M) (x: M):
-   nbhs x B <-> exists (r : {posnum R}), closed_ball x r%:num `<=` B .
-Admitted.
-
-Lemma closure_closed_ball (R: realFieldType) (V:  pseudoMetricNormedZmodType R):
-  forall (x: V) (e : R),  closed_ball x e = closed_ball_ normr x e.
-  move=> x e ; apply: eqEsubset =>y; rewrite /closure /closed_ball /closed_ball_  /=.
-  - move => e0 /=.
-    pose f := fun y => `|x - y|. 
-    have lem:  continuous ( f : V -> R^o).
-          admit (* continuous_comp, norm_continuous, continuousB *).
-    have : \forall z \near (nbhs y), f z <= e. admit.
-    have : lim ( (f : V -> R^o) @  y)  <= e.    admit. (* !! *)
-    admit.
-(*   - case: (EM (x = y)). *)
-(*   - move => <- _  ; exists x; split; first by apply: ballxx. *)
-(*       by apply: nbhs_singleton. *)
-(*     move => xy xye B /(nbhs_ex) [[r r0] By]. *)
-(*     pose z := y + (r/2/(`|x-y|))*: (x - y). *)
-(*     simpl in (type of z). *)
-(*     exists z; split. *)
-(*     - rewrite -ball_normE /ball_  //= /z. admit. *)
-(*     - apply: By;  rewrite -ball_normE /ball_  //= /z. *)
-(*       (* - (x + y) = -x - y *) admit. *)
-Admitted.
-
 Lemma closed_closed_ball (R: realFieldType) (V:  normedModType R) (x : V) (e : R) :
-  closed (closed_ball x e).
+  closed (closed_ball_ normr  x e).
 Proof.
 pose f := fun y => normr (x - y).
-have -> : closed_ball x e  = f @^-1` [set x | (x<= e)%O]
-  by rewrite (closure_closed_ball x e).
+have -> : closed_ball_ normr x e  = f @^-1` [set x | (x<= e)%O] by [].
 apply: (@closed_comp _ _ (f : V -> R^o)).
   move => y Hy; apply: (@continuous_comp _ _ _ (fun y : V => (x-y))). 
       by apply: continuousB ; first by apply: cst_continuous.
       by apply : norm_continuous.
   by apply: closed_le.
 Qed.
+
+Definition closed_ball (R: numDomainType) (V: pseudoMetricType R) (x: V) (e : R) :=
+ closure (ball x e).
+
+ 
+Lemma closure_closed_ball (R: realFieldType) (V: normedModType R):
+  forall (x: V) (e : R),  closed_ball x e = closed_ball_ normr x e.
+move=> x e ; apply: eqEsubset =>y.
+- rewrite /closed_ball closureI //= => CB.
+  apply: (CB (closed_ball_ normr x e)); split.
+  by move => z; rewrite -ball_normE /closed_ball_ //=; apply: ltW.
+  by apply: closed_closed_ball.
+- rewrite  /closed_ball /closed_ball_  /= closureI.
+  move => xye B [Be Bc]. 
+  pose f := fun y => `|x - y|. 
+  have lem:  continuous ( f : V -> R^o).
+    have -> : f = normr \o ( fun y => x -y ) by [].
+    move => z; apply: continuous_comp.
+      by apply: continuousB; first apply: continuous_cst.
+      by apply: norm_continuous.
+  have : \forall z \near (nbhs y), f z <= e.
+    near=> z. admit. 
+  have : lim ( (f : V -> R^o) @  y)  <= e.   admit. (* closed_cvg_loc *)
+
+Admitted.
+
+
+Lemma closed_ballxx  (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
+  (0 < r) -> closed_ball x r x.
+Proof. Check subset_closure.
+  by move => r_gt0; rewrite /closed_ball; apply: subset_closure; apply: ballxx.
+Qed.
+
+Lemma closed_open_ball (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
+  (0 < r) -> exists e, ball x e `<=` closed_ball x r.
+Admitted.
+
+(* Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R) *)
+(*       (B : set M) (x: M): *)
+(*    nbhs x B <-> exists r, (0 < r) /\ ball x r `<=` B . *)
+(* Proof. *)
+(*   split; first by move=>/nbhs_ballP [r ro Br]; exists r; split. *)
+(*   by move => [r [r0 Br]]; apply/nbhs_ballP; by exists r. *)
+(* Qed. *)
+
+Lemma nbhs_closedballP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
+      (B : set M) (x: M):
+   nbhs x B <-> exists (r : {posnum R}), closed_ball x r%:num `<=` B .
+Admitted.
+
+
+
+
 
 
 Lemma closed_neigh_ball (R: realFieldType) (V:  normedModType R) (x : V) (r : {posnum R}) :
