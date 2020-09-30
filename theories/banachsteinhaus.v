@@ -13,22 +13,6 @@ Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 
 
-(* Lemma close_ball_center (U :completeNormedModType K) (x : U) (r : {posnum K}) : *)
-(*   close_ball x r%:num x. *)
-(* Proof. *)
-(*   by rewrite /close_ball /close_ball_ //= subrr normr0. *)
-(* Qed. *)
-
-(* Lemma close_neigh_ball (U : completeNormedModType K) (x : U) (r : {posnum K}) : *)
-(*   open_nbhs x (close_ball x r%:num)^°. *)
-(* Proof. *)
-(*   split. *)
-(*     by apply: open_interior. *)
-(*     apply: nbhs_singleton; apply: nbhs_interior; apply /nbhs_ballP; exists r%:num. *)
-(*     by []. *)
-(*     by rewrite -ball_normE; move=> a; apply/ltW. *)
-(* Qed. *)
-
 Definition dense (T : topologicalType) (S : T  -> Prop) :=
   forall (O : set T), (exists y, O y) -> open O ->  exists x, (setI O S) x.
 
@@ -83,7 +67,7 @@ Qed.
 End order.
 
 Section Baire.
-Variable (K: realType). 
+Variable (K: realType).
 
 Lemma floor_nat_comp (M :K) : (0 <= M) -> (M < `|Rtoint(floor M + 1%:~R)|%:R).
 move=> M0.
@@ -161,15 +145,15 @@ have Suite_ball : forall (n m :nat) , (n <= m)%N -> closed_ball (a m) (r m)%:num
  have : (n==k.+1) \/ (n<k.+1)%N by apply /orP.
  case; first by move=> /eqP ->.
  by move => /iHk temp; apply : subset_trans; first by apply: step.
-have cauchyexa: (cauchy_ex (a @ \oo )). 
+have cauchyexa: (cauchy_ex (a @ \oo )).
  move => e e0; rewrite /fmapE -ball_normE /ball_.
  have [n Hn]: exists n: nat , 2*(r n)%:num < e.
    pose eps := e/2.
-   have [n Hn]: exists n: nat, ((n.+1)%:R^-1 < eps). 
+   have [n Hn]: exists n: nat, ((n.+1)%:R^-1 < eps).
      exists `|Rtoint (floor eps^-1 + 1%:~R)|%N.
      have He : (eps^-1 < `|Rtoint(floor eps^-1 + 1%:~R)|%:R)
        by apply : floor_nat_comp;rewrite invr_ge0 ler_pdivl_mulr ?(mulrC 0 2) ?(mulr0 2) ?ltW.
-     rewrite -[X in (`|Rtoint (floor eps^-1 + 1%:~R)|.+1%:R^-1   < X)]invrK. 
+     rewrite -[X in (`|Rtoint (floor eps^-1 + 1%:~R)|.+1%:R^-1   < X)]invrK.
      rewrite ltf_pinv ?posrE ?invr_gt0 ?divr_gt0 //=.
      apply: lt_trans; first by apply: He.
      by rewrite ltr_nat.
@@ -190,13 +174,12 @@ have cauchyexa: (cauchy_ex (a @ \oo )).
    rewrite closure_closed_ball => temp.
    rewrite (@le_lt_trans _ _ (r n)%:num (`|a n - a m|) (2*(r n)%:num))
            -?ltr_pdivr_mulr ?mulfV ?ltr1n //=.
-have cauchya : (cauchy (a @ \oo)) by apply: cauchy_exP.
+have cauchya : (cauchy (a @ \oo)) by apply: cauchy_exP. 
 have : cvg (a @ \oo) by apply: cauchy_cvg.
 rewrite cvg_ex //=.
 move=> [l Hl] {Hf Dy OpenD H cauchya cauchyexa}.
-exists l.
-have partie1 : D l.
- have Hinter : (closed_ball a0 r0%:num) l.
+exists l; split. 
+- have Hinter : (closed_ball a0 r0%:num) l.
   apply: (@closed_cvg _ _ \oo eventually_filter a); first by [].
   move=> m.
   have temp:  (0 <= m)%N by apply: leq0n.
@@ -206,29 +189,22 @@ have partie1 : D l.
  by apply: closed_closed_ball.
  have : closed_ball a0 r0%:num `<=` D.
    by move: Ball_a0; rewrite closure_closed_ball subsetI; apply:  proj1.
-by move=>  Htemp; move : (Htemp l Hinter).
-have partie2 : (\bigcap_i F i) l.
-move=> i _.
- have : closed_ball (a i) (r i)%:num l.
-  rewrite -(@cvg_shiftn i _ a l) in Hl.
-  simpl in Hl.
-  have partiecvg:  forall n : nat, closed_ball (a i) (r i)%:num (a (n + i)%N).
-   move=> n.
-   have temp : (i <= (n +i)%N)%N by apply: leq_addl.
-   have temp2 : closed_ball (a (n+i)%N) (r (n+i)%N)%:num (a (n+i)%N) by apply: closed_ballxx.
-   by move : (Suite_ball i (n +i)%N temp (a (n+i)%N) temp2).
-  apply: (@closed_cvg _ _ \oo eventually_filter (fun n : nat => a (n+i)%N)).
-  by [].
-  by [].
-  by apply:  closed_closed_ball.
-case i.
-by rewrite subsetI in Ball_a0; move: Ball_a0; move=> [_ p] la0; move : (p l la0).
-move=> n.
-have [temp _] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply : (Pf (n , ar n)).
-by rewrite subsetI in temp; move : temp; move=> [_ p] lan1; move: (p l lan1).
-by [].
-Qed. 
-
+by move=>  Htemp; move : (Htemp l Hinter). 
+- move=> i _. 
+  have : closed_ball (a i) (r i)%:num l.
+    rewrite -(@cvg_shiftn i _ a l) in Hl.
+    simpl in Hl.
+    have partiecvg:  forall n : nat, closed_ball (a i) (r i)%:num (a (n + i)%N).
+      move=> n; apply: (Suite_ball i (n +i)%N); first by apply: leq_addl.
+      by apply: closed_ballxx. 
+    apply: (@closed_cvg _ _ \oo eventually_filter (fun n : nat => a (n+i)%N)) => //=.
+    by apply:  closed_closed_ball.
+  case i.
+  - by rewrite subsetI in Ball_a0; move: Ball_a0; move=> [_ p] la0; move: (p l la0).
+  - move=> n.
+    have [temp _] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply : (Pf (n , ar n)).
+    by rewrite subsetI in temp; move : temp; move=> [_ p] lan1; move: (p l lan1).
+Qed.
 
 End Baire.
 
@@ -240,7 +216,34 @@ Definition bounded_fun_norm (f: V -> W) := forall r, exists M,
       forall x, (`|x| <= r) -> (`|(f x)| <= M).
 
 Lemma bounded_funP (f : {linear V -> W}) : bounded_fun_norm f <-> bounded_on f (nbhs (0:V)). 
-Admitted.
+Proof.
+split.
+- move => /(_ 1) [M Bf]; apply /linear_boundedP.
+  have M0: (0 <= M) by move: (Bf 0); rewrite  linear0 !normr0//= => /(_ ler01).
+  exists M; split; first by [].
+  move: M0; rewrite le0r => /orP; case.
+  - move=> /eqP M0; move: M0 Bf =>  -> Bf x; rewrite mulr0 normr_le0.
+    case: (EM (`|x| = 0)); move=>/eqP; rewrite normr_eq0=> /eqP x0.
+    - by rewrite x0 linear0.
+    - have x00: x != 0 by apply/eqP.
+      have : `| `|x|^-1 *: x | <= 1.
+        rewrite normmZ normrV ?unitf_gt0 ?normrE //=.
+        by rewrite mulrC mulrV ?unitf_gt0 ?normrE //=. 
+      move=> /Bf; rewrite linearZ normr_le0 scaler_eq0 invr_eq0 => /orP.
+      by case ; rewrite ?normr_eq0  //=; move => /eqP ->; rewrite linear0.
+ - move => M0 x.
+   case: (EM ( x = 0)).
+   - by move=> ->;rewrite normr0 mul0r normr_le0 linear0.
+   - move => /eqP  x0; rewrite mulrC -ler_pdivr_mulr ?normr_gt0 //= mulrC.
+     have <- : `| (`|x|^-1) | = `|x|^-1.
+     by apply/eqP; rewrite eqr_norm_id invr_ge0 normr_ge0.
+     rewrite -normmZ -linearZ; apply: (Bf (`|x|^-1 *: x)).
+     rewrite normmZ normrV ?unitf_gt0 ?normrE //=.
+     rewrite mulrC mulrV  ?unitf_gt0 ?normrE //=.
+ - move => /linear_boundedP [r [r0 Bf]]; rewrite /bounded_fun_norm => e.
+   exists (e * r) => x xe; apply: le_trans; first by apply: Bf.
+   by apply: ler_pmul; rewrite ?normr_ge0 //=.
+Qed. 
 (*TBA normedtype via linearcontinuousbounded *)
 
 Definition pointwise_bounded (F: (V -> W) -> Prop) := forall x, exists M,
@@ -254,9 +257,9 @@ Lemma bounded_landau (f :{linear V->W}) :
 Proof.
   split.
   - rewrite eqOP => bf.
-    move: (bf 1) => [M bm]. 
+    move: (bf 1) => [M bm].
     rewrite !nearE /=; exists M; split. by  apply : num_real.
-    move => x Mx; rewrite nearE nbhs_normP /=. 
+    move => x Mx; rewrite nearE nbhs_normP /=.
     exists 1; first by [].
     move => y /=. rewrite -ball_normE /ball_ sub0r normrN /cst normr1 mulr1 => y1.
     apply: (@le_trans _ _ M _ _).
