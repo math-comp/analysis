@@ -4282,9 +4282,29 @@ End LinearContinuousBounded.
 Section Closed_Ball.
 
 
+Lemma closureS (T : topologicalType) (A B: set T):
+  (A `<=` B) -> (closure A `<=` closure B).
+Proof.
+move => AB x CAx C Cx.
+by move: (CAx C Cx) => [z [Az Cz]]; exists z; split; first by apply: AB. 
+Qed.
+
+(* not obvious when one doesn't know that closed is defined from closure *)
+Lemma closure_id (T : topologicalType) (A : set T): closed A <-> A = closure A.
+Proof.
+split; last by move=> -> ; apply: closed_closure.
+by move => CA; apply: eqEsubset; first by apply: subset_closure.
+Qed.
+
+
 Lemma closureI (T : topologicalType) ( A : set T) :
   closure A = \bigcap_(B in [ set B : set T | ( A `<=` B)/\ closed B]) B.
-Admitted.
+Proof.
+  apply: eqEsubset => x Ax.
+  - by rewrite /closed; move => B [AB CB]; apply: CB; apply: closureS; first by apply: AB. 
+  - apply: (Ax (closure A)); split; first by apply: subset_closure.
+    by apply: closed_closure.
+Qed.
 (* TBA to topology.v *)
 
 Definition closed_ball_ (R: numDomainType) (V: zmodType) (norm: V -> R) (x: V) (e : R) :=
@@ -4296,7 +4316,7 @@ Proof.
 pose f := fun y => normr (x - y).
 have -> : closed_ball_ normr x e  = f @^-1` [set x | (x<= e)%O] by [].
 apply: (@closed_comp _ _ (f : V -> R^o)).
-  move => y Hy; apply: (@continuous_comp _ _ _ (fun y : V => (x-y))). 
+  move => y Hy; apply: (@continuous_comp _ _ _ (fun y : V => (x-y))).
       by apply: continuousB ; first by apply: cst_continuous.
       by apply : norm_continuous.
   by apply: closed_le.
