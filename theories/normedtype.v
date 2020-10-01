@@ -4244,11 +4244,44 @@ Proof.
   by move => /(_ 0) /linear_continuous0 /=.
 Qed.
 
+Definition bounded_fun_norm (f: V -> W) := forall r, exists M,
+      forall x, (`|x| <= r) -> (`|(f x)| <= M).
+
+Lemma bounded_funP (f : {linear V -> W}) : bounded_fun_norm f <-> bounded_on f (nbhs (0:V)). 
+Proof.
+split.
+- move => /(_ 1) [M Bf]; apply /linear_boundedP.
+  have M0: (0 <= M) by move: (Bf 0); rewrite  linear0 !normr0//= => /(_ ler01).
+  exists M; split; first by [].
+  move: M0; rewrite le0r => /orP; case.
+  - move=> /eqP M0; move: M0 Bf =>  -> Bf x; rewrite mulr0 normr_le0.
+    case: (EM (`|x| = 0)); move=>/eqP; rewrite normr_eq0=> /eqP x0.
+    - by rewrite x0 linear0.
+    - have x00: x != 0 by apply/eqP.
+      have : `| `|x|^-1 *: x | <= 1.
+        rewrite normmZ normrV ?unitf_gt0 ?normrE //=.
+        by rewrite mulrC mulrV ?unitf_gt0 ?normrE //=.
+      move=> /Bf; rewrite linearZ normr_le0 scaler_eq0 invr_eq0 => /orP.
+      by case ; rewrite ?normr_eq0  //=; move => /eqP ->; rewrite linear0.
+ - move => M0 x.
+   case: (EM ( x = 0)).
+   - by move=> ->;rewrite normr0 mul0r normr_le0 linear0.
+   - move => /eqP  x0; rewrite mulrC -ler_pdivr_mulr ?normr_gt0 //= mulrC.
+     have <- : `| (`|x|^-1) | = `|x|^-1.
+     by apply/eqP; rewrite eqr_norm_id invr_ge0 normr_ge0.
+     rewrite -normmZ -linearZ; apply: (Bf (`|x|^-1 *: x)).
+     rewrite normmZ normrV ?unitf_gt0 ?normrE //=.
+     rewrite mulrC mulrV  ?unitf_gt0 ?normrE //=.
+ - move => /linear_boundedP [r [r0 Bf]]; rewrite /bounded_fun_norm => e.
+   exists (e * r) => x xe; apply: le_trans; first by apply: Bf.
+   by apply: ler_pmul; rewrite ?normr_ge0 //=.
+Qed.
+
 End LinearContinuousBounded.
 
 Section Closed_Ball.
 
-  
+
 Lemma closureI (T : topologicalType) ( A : set T) :
   closure A = \bigcap_(B in [ set B : set T | ( A `<=` B)/\ closed B]) B.
 Admitted.
