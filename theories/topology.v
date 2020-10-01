@@ -427,11 +427,12 @@ Canonical nbhs_on_choiceType T :=
 Canonical nbhs_on_PointedType T :=
   PointedType (nbhs_on T) (Nbhs (@setT (set T))).
 Definition nbhs_on_nbhs_mixin T := NbhsMixin (@id (nbhs_on T)).
-Canonical nbhs_on_NbhsType T := NbhsType T (nbhs_on T) (nbhs_on_nbhs_mixin T). 
-Notation "{ 'nbhs' T }" := (nbhs_on_NbhsType T)
+Canonical nbhs_on_nbhsType T := NbhsType T (nbhs_on T) (nbhs_on_nbhs_mixin T). 
+Notation "{ 'nbhs' T }" := (nbhs_on_nbhsType T)
   (at level 0, format "{ 'nbhs'  T }" ) : type_scope.
 
-Definition nbhs {U} {T : nbhsType U} := Nbhs.nbhs_op (Nbhs.class T).
+Definition nbhs {U} {T : nbhsType U} : T -> {nbhs U} :=
+   Nbhs.nbhs_op (Nbhs.class T).
 
 Record is_filter {T : Type} (F : set (set T)) := {
   filterT_prop : in_nbhs (nbhs F) setT ;
@@ -524,12 +525,12 @@ Canonical filter_on_choiceType T :=
 Canonical filter_on_PointedType T :=
   PointedType (filter_on T) (Filter _ (filter_setT T)).
 Definition filter_on_nbhs_mixin T := NbhsMixin_ (@in_filter T).
-Canonical filter_on_NbhsType T :=
+Canonical filter_on_nbhsType T :=
   NbhsType T (filter_on T) (@filter_on_nbhs_mixin T).
 Definition filter_on_filtered_mixin T := FilterMixin (@filter_class T).
 Canonical filter_on_filterType T :=
   FilterType T (filter_on T) (@filter_on_filtered_mixin T).
-Notation "{ 'filter' T }" := (filter_on_filterType T)
+Notation "{ 'filter' T }" := (filter_on_nbhsType T)
   (at level 0, format "{ 'filter'  T }" ) : type_scope.
 
 Lemma nbhs_is_filter {U} {T : filterType U} (x : T) : is_filter (Nbhs (nbhs x)).
@@ -706,6 +707,10 @@ Lemma filter_near_of T (fT : filterType T) (F : fT)
   (P : @filter_elt T (nbhs F)) (Q : set T) :
   (forall x, prop_of P x -> Q x) -> nbhs F Q.
 Proof. by move: P => [P FP] /=; rewrite prop_ofE /= => /nearS; apply. Qed.
+(* Lemma filter_near_of T (F : {filter T}) *)
+(*   (P : @filter_elt T (nbhs F)) (Q : set T) : *)
+(*   (forall x, prop_of P x -> Q x) -> nbhs F Q. *)
+(* Proof. by move: P => [P FP] /=; rewrite prop_ofE /= => /nearS; apply. Qed. *)
 
 Lemma near_acc_key : unit. Proof. exact: tt. Qed.
 
@@ -778,7 +783,7 @@ Proof. by case: pT => ? []. Qed.
 Canonical pfilter_on_PointedType (T : pointedType) :=
   PointedType (pfilter_on T) (pointfilter_pfilter point).
 Definition pfilter_on_nbhs_mixin (T : pointedType)  := NbhsMixin_ (@in_pfilter T).
-Canonical pfilter_on_NbhsType (T : pointedType) :=
+Canonical pfilter_on_nbhsType (T : pointedType) :=
   NbhsType T (pfilter_on T) (@pfilter_on_nbhs_mixin T).
 Definition pfilter_on_filter_mixin (T : pointedType)  :=
   FilterMixin (@pfilter_is_filter T).
@@ -793,7 +798,7 @@ Definition pfilter_on_pfilter_mixin (T : pointedType)  :=
 Canonical pfilter_on_pfilterType (T : pointedType) :=
   PFilterType T (pfilter_on T) (@pfilter_on_pfilter_mixin T).
 
-Notation "{ 'pfilter' T }" := (pfilter_on_pfilterType T)
+Notation "{ 'pfilter' T }" := (pfilter_on_nbhsType T)
   (at level 0, format "{ 'pfilter'  T }" ) : type_scope.
 
 Lemma pfilter_on_is_pfilter T (x : {pfilter T}) : is_pfilter x.
@@ -873,6 +878,8 @@ Definition prod_nbhs_mixin := NbhsMixin_ (fun x : fT * fU =>
 
 Canonical prod_nbhs := NbhsType (T * U) (fT * fU) (prod_nbhs_mixin).
 End ProdNbhsType.
+
+Print Canonical Projections.
 
 Section ProdFilter.
 Context {T U : Type} {fT : filterType T} {fU : filterType U}.
@@ -954,6 +961,12 @@ Arguments prop_near2 : simpl never.
 (* Proof. by []. Qed. *)
 
 Lemma nbhs_setE {T : Type}  (F : {nbhs T}) : in_nbhs (nbhs F) = F :> set (set T).
+Proof. by []. Qed.
+
+Lemma filter_setE {T : Type}  (F : {filter T}) : in_nbhs (nbhs F) = F :> set (set T).
+Proof. by []. Qed.
+
+Lemma pfilter_setE {T : pointedType}  (F : {pfilter T}) : in_nbhs (nbhs F) = F :> set (set T).
 Proof. by []. Qed.
 
 Lemma nbhsE {T : Type} {fT : nbhsType T} (F : fT) : nbhs (in_nbhs (nbhs F)) = nbhs F.
@@ -1766,7 +1779,6 @@ Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
 Proof.
 rewrite !openE => fcont Dop x /= Dfx.
-
 by apply: fcont; [rewrite in_setE|apply: Dop].
 Qed.
 
@@ -1798,7 +1810,7 @@ Qed.
 
 Lemma cst_continuous {T : Type} {T' : topologicalType} (k : T') (F : {filter T}) :
   (fun _ : T => k) @ F --> k.
-Proof. move=> x /nbhs_singleton ?; apply: near_all. Admitted.
+Proof. by move=> x /nbhs_singleton ?; apply: near_all. Qed.
 Arguments cst_continuous {T T'} k F.
 Hint Resolve cst_continuous : core.
 
@@ -1816,7 +1828,11 @@ Program Definition topologyOfFilterMixin : Topological.mixin_of loc :=
   @Topological.Mixin T loc open_of_nbhs _ _.
 Next Obligation.
 rewrite predeqE => A; split=> [p_A|]; last first.
-  (* by move=> [B [Bop Bp sBA]]; apply: nearS sBA _; apply: Bop. *)
+    move=> [B [Bop Bp sBA]].
+    rewrite -filter_setE/=.
+    near=> x.
+    suff : \forall x \near loc p, A x by [].
+    by apply: nearS sBA _; apply: Bop.
   admit.
 exists (loc^~ A); split => //; do ?by move=> ?; apply: loc_loc.
 by move=> // q /loc_singleton.
@@ -2645,7 +2661,7 @@ Canonical ufilter_on_PointedType (T : pointedType) :=
   PointedType (ufilter_on T) (pointfilter_ufilter point).
 Definition ufilter_on_nbhs_mixin (T : pointedType) :=
   NbhsMixin_ (@in_ufilter T).
-Canonical ufilter_on_NbhsType (T : pointedType) :=
+Canonical ufilter_on_nbhsType (T : pointedType) :=
   NbhsType T (ufilter_on T) (@ufilter_on_nbhs_mixin T).
 Definition ufilter_on_filter_mixin (T : pointedType)  :=
   FilterMixin (@ufilter_is_filter T).
@@ -2656,12 +2672,15 @@ Definition ufilter_on_pfilter_mixin (T : pointedType)  :=
 Canonical ufilter_on_pfilterType (T : pointedType) :=
   PFilterType T (ufilter_on T) (@ufilter_on_pfilter_mixin T).
 
+Notation "{ 'ufilter' T }" := (ufilter_on_nbhsType T)
+  (at level 0, format "{ 'ufilter'  T }" ) : type_scope.
+
 Lemma ufilter_on_pfilter (T : Type) (F : ufilter_on T) :
    ~ (in_ufilter F) set0.
 Proof. by case: F => /= F [[]]. Qed.
 
-Lemma max_filter (T : Type) (F : ufilter_on T) :
-    forall G : pfilter_on T, F `<=` G -> G = F.
+Lemma max_filter (T : pointedType) (F : {ufilter T}) :
+    forall G : {pfilter T}, F `<=` G -> G = F.
 Proof.
 case: F => /= F [Fp Fu] [G Gp] /Fu eqGF.
 case: _ / eqGF Fp Fu => /= Fp Fu; suff -> : Gp = Fp by [].
