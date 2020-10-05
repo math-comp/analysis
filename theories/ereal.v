@@ -459,11 +459,14 @@ move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//
 by rewrite !lte_fin; exact: ltr_add.
 Qed.
 
-Lemma lee_addl x y : (0%:E <= y) -> (x <= x + y).
+Lemma lee_addl x y : 0%:E <= y -> x <= x + y.
 Proof.
 move: x y => -[ x [y| |]//= | [| |]// | [| | ]//];
   by [rewrite !lee_fin ler_addl | move=> _; exact: lee_pinfty].
 Qed.
+
+Lemma lee_addr x y : 0%:E <= y -> x <= y + x.
+Proof. by rewrite addeC; exact: lee_addl. Qed.
 
 Lemma lte_addl r x : 0%:E < x -> r%:E < r%:E + x.
 Proof.
@@ -476,7 +479,7 @@ move: a b => [a| |] [b| |] //; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_add2l.
 Qed.
 
-Lemma lee_add2l x a b : (a <= b) -> (x + a <= x + b).
+Lemma lee_add2l x a b : a <= b -> x + a <= x + b.
 Proof.
 move: a b x => -[a [b [x /=|//|//] | []// |//] | []// | ].
 - by rewrite !lee_fin ler_add2l.
@@ -490,10 +493,10 @@ move: a b => [a| |] [b| |] //; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_add2l.
 Qed.
 
-Lemma lee_add2r x a b : (a <= b) -> (a + x <= b + x).
+Lemma lee_add2r x a b : a <= b -> a + x <= b + x.
 Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
 
-Lemma lee_add a b x y : (a <= b) -> (x <= y) -> (a + x <= b + y).
+Lemma lee_add a b x y : a <= b -> x <= y -> a + x <= b + y.
 Proof.
 move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(lee_pinfty,lee_ninfty)//.
 by rewrite !lee_fin; exact: ler_add.
@@ -522,23 +525,33 @@ move=> PQf; rewrite [X in _ <= X](bigID Q) /= -[X in X <= _]adde0 lee_add //.
 by rewrite sume_ge0 // => i /andP[]; exact: PQf.
 Qed.
 
-Lemma lee_sum_nneg_seq (T : eqType) (s1 s2 : seq T)
-  (f : T -> {ereal R}) : (forall t, 0%:E <= f t) -> {subset s1 <= s2} ->
-  uniq s1 -> uniq s2 -> \sum_(t <- s1) f t <= \sum_(t <- s2) f t.
+Lemma lee_sum_nneg_undup (T : eqType) (s : seq T)
+  (f : T -> {ereal R}) : (forall t, 0%:E <= f t) ->
+  \sum_(t <- undup s) f t <= \sum_(t <- s) f t.
 Proof.
-move=> f0 s12 u1 u2.
-rewrite [X in X <= _](_ : _ = \sum_(i <- s2 | i \in s1) f i).
-  exact: (@lee_sum_nneg _ _ xpredT).
-rewrite -[RHS]big_filter; apply/perm_big.
-apply: (uniq_perm u1 (filter_uniq _ u2)) => t.
-by rewrite mem_filter; apply/idP/idP => [ts1|/andP[]//]; rewrite s12 // andbT.
+move=> f0; elim: s => //= h t ih; case: ifPn => ht; rewrite !big_cons;
+  by [rewrite (le_trans ih) // lee_addr | rewrite lee_add2l].
+Qed.
+
+Lemma lee_sum_nneg_subset (T : eqType) (s1 s2 : seq T)
+  (f : T -> {ereal R}) : (forall t, 0%:E <= f t) -> {subset s1 <= s2} ->
+  uniq s1 -> \sum_(t <- s1) f t <= \sum_(t <- s2) f t.
+Proof.
+move=> f0 s12 u1.
+rewrite (le_trans _ (@lee_sum_nneg _ _ xpredT (mem s1) _ _)) //=.
+rewrite [in X in _ <= X](eq_bigl (predI (mem s1) xpredT)) /=; last first.
+  by move=> ?; rewrite inE andbT.
+rewrite -big_filter_cond (le_trans _ (lee_sum_nneg_undup _ f0)) //.
+rewrite le_eqVlt; apply/orP; left; apply/eqP/perm_big.
+rewrite -(undup_id u1) perm_undup // => i.
+by rewrite mem_filter mem_undup andb_idr // => /s12.
 Qed.
 
 Lemma lee_sum_nneg_ord (f : nat -> {ereal R}) : (forall n, 0%:E <= f n) ->
   {homo (fun n => \sum_(i < n) (f i))%E : i j / (i <= j)%N >-> i <= j}.
 Proof.
 move=> ? i j ?; rewrite -!(big_mkord xpredT) -big_filter -[X in _ <= X]big_filter.
-apply: lee_sum_nneg_seq => //; try by rewrite filter_predT iota_uniq.
+apply: lee_sum_nneg_subset => //; last by rewrite filter_predT iota_uniq.
 by move=> k; rewrite !(mem_filter,mem_iota,add0n,subn0) /= => /leq_trans; apply.
 Qed.
 
