@@ -160,7 +160,7 @@ have cauchyexa: (cauchy_ex (a @ \oo )).
    exists (n.+1).
    have temp: (r n.+1)%:num < n.+1%:R^-1.
     have: P n.+1 (a n, r n)   (a (n.+1), r (n.+1)) by apply: (Pf (n, ar n)).
-    move=> [_ B]; apply: (@lt_trans _ _ (n.+2%:R^-1) _ _); rewrite //=. 
+    move=> [_ B]; apply: (@lt_trans _ _ (n.+2%:R^-1) _ _); rewrite //=.
     by rewrite //= ltf_pinv ?posrE ?ltr_nat //=. 
    apply: (@lt_trans _ _ (2* n.+1%:R^-1) _ _);
    by rewrite -ltr_pdivl_mull ?mulrA ?(mulrC 2^-1 2) ?mulfV ?(mulrC 2^-1 e) ?div1r.
@@ -174,11 +174,11 @@ have cauchyexa: (cauchy_ex (a @ \oo )).
    rewrite closure_closed_ball => temp.
    rewrite (@le_lt_trans _ _ (r n)%:num (`|a n - a m|) (2*(r n)%:num))
            -?ltr_pdivr_mulr ?mulfV ?ltr1n //=.
-have cauchya : (cauchy (a @ \oo)) by apply: cauchy_exP. 
+have cauchya : (cauchy (a @ \oo)) by apply: cauchy_exP.
 have : cvg (a @ \oo) by apply: cauchy_cvg.
 rewrite cvg_ex //=.
 move=> [l Hl] {Hf Dy OpenD H cauchya cauchyexa}.
-exists l; split. 
+exists l; split.
 - have Hinter : (closed_ball a0 r0%:num) l.
   apply: (@closed_cvg _ _ \oo eventually_filter a); first by [].
   move=> m.
@@ -228,7 +228,7 @@ split.
     - have x00: x != 0 by apply/eqP.
       have : `| `|x|^-1 *: x | <= 1.
         rewrite normmZ normrV ?unitf_gt0 ?normrE //=.
-        by rewrite mulrC mulrV ?unitf_gt0 ?normrE //=. 
+        by rewrite mulrC mulrV ?unitf_gt0 ?normrE //=.
       move=> /Bf; rewrite linearZ normr_le0 scaler_eq0 invr_eq0 => /orP.
       by case ; rewrite ?normr_eq0  //=; move => /eqP ->; rewrite linear0.
  - move => M0 x.
@@ -243,7 +243,7 @@ split.
  - move => /linear_boundedP [r [r0 Bf]]; rewrite /bounded_fun_norm => e.
    exists (e * r) => x xe; apply: le_trans; first by apply: Bf.
    by apply: ler_pmul; rewrite ?normr_ge0 //=.
-Qed. 
+Qed.
 (*TBA normedtype via linearcontinuousbounded *)
 
 Definition pointwise_bounded (F: (V -> W) -> Prop) := forall x, exists M,
@@ -264,49 +264,14 @@ Proof.
     move => y /=. rewrite -ball_normE /ball_ sub0r normrN /cst normr1 mulr1 => y1.
     apply: (@le_trans _ _ M _ _).
     apply: (bm y); by apply: ltW.
-    by apply: ltW.
-  - rewrite eqOP !nearE /+oo /cst normr1; move=> [M [Mr Bf]] r.
-    move: (Bf (2*M)); rewrite nearE /=.
-    have: M < 2 * M by admit.
-    move=> lem /(_ lem) {lem} //=; rewrite nbhs_normP /cst -mulrA mulr1 .
-    move=> [R oR] BR; exists (R^-1 * r * 2 * 2 * M)  => x xr.
-    case: (EM (0 < `|x|)). (*ameliorer*)
-     - move => x0.
-       have r0 : 0 < r by apply: (@lt_le_trans _ _ (`|x|)). 
-       move: (BR ((R * (2 * r)^-1) *: x)); simpl. rewrite -ball_normE /ball_ sub0r normrN.
-       have R2r10 : (0 < R/(2*r)) by rewrite divr_gt0 ?mulr_gt0 //=.
-       have: (`|(R / (2 * r)) *: x| < R)%O by rewrite normmZ gtr0_norm //= -mulrA -ltr_pdivl_mull //= mulVf;
-         rewrite ?lt0r_neq0 //= ltr_pdivr_mull ?mulr1 ?mulr_gt0 //= (@le_lt_trans _ _ r) //=;
-         rewrite -ltr_pdivr_mulr //= divff ?lt0r_neq0 //= ltr1n //=.
-       move=> lem /(_ lem) {lem}.
-       rewrite linearZZ normmZ gtr0_norm //= (mulrC R) -(mulrA (2*r)^-1) ler_pdivr_mull ?mulr_gt0 //= (mulrC 2 r).
-       by rewrite -ler_pdivl_mull //= !mulrA.
-     - move => x0.
-       have -> :  x = 0.
-        have : ~~ (0%R < `|x|)%O by apply /negP.
-        by rewrite -leNgt normrE; apply: eqP.
-       have M0 : 0 <= M.
-        have temp : (PosNum oR)%:num = R by [].
-        rewrite -temp in BR; move:  (BR 0 (@ball_center _ _ 0 (PosNum oR))).
-        by rewrite linear0 normr0 -ler_pdivr_mull ?mulr0 //=.        
-       have r0 : 0 <= r by apply: (@le_trans _ _ (`|x|)); rewrite ?normr_ge0 //=.
-       rewrite linear0 normr0 !mulr_ge0 //= ?invr_ge0 ?ltW //=.
-       
-Admitted.
-
-Lemma bounded_imply_landau (f :{linear V->W}) :
-  bounded_fun_norm f -> ((f : V->W) =O_ (0:V) cst (1 : K^o)).
-Proof.
-  rewrite eqOP => bf.
-    move: (bf 1) => [M bm]. 
-    rewrite !nearE /=; exists M; split. by  apply : num_real.
-    move => x Mx; rewrite nearE nbhs_normP /=. 
-    exists 1; first by [].
-    move => y /=. rewrite -ball_normE /ball_ sub0r normrN /cst normr1 mulr1 => y1.
-    apply: (@le_trans _ _ M _ _).
-    apply: (bm y); by apply: ltW.
-    by apply: ltW.
-Qed.
+    by apply: ltW. 
+  - rewrite eqOP /= ; move => Bf; apply/bounded_funP; rewrite /bounded_on.
+    near=>M.
+    set P :=  (X in (nbhs _ X)).
+    have -> : P  = (fun x : V => (`|f x| <= M * `|cst 1%R x|)%O).
+      by apply: funext => x; rewrite /cst normr1 mulr1.
+    by near: M.
+Grab Existential Variables. all: end_near. Qed.
 
 
 
@@ -342,12 +307,12 @@ Proof.
      have Ci : continuous i.
      + have Li : linear i by apply Propf.
        have Bi : bounded_fun_norm i by apply Propf.
-       have Landaui : i =O_ (0:V) cst (1:K^o) by apply (@bounded_imply_landau (Linear Li)).
+       have Landaui : i =O_ (0:V) cst (1:K^o) by apply (@bounded_landau (Linear Li)).
        by apply: (@linear_continuous K V W (Linear Li)).
      move=> x Hx ; apply: continuous_comp.
        + by apply: Ci.
        + by apply: norm_continuous.
-      by apply: open_gt.     
+      by apply: open_gt.
   set O_inf := (\bigcap_i ( O i)).
   have  O_infempty : O_inf = set0.
      rewrite -subset0 => x //=.
@@ -357,7 +322,8 @@ Proof.
      -  by rewrite /setT.
      - move=> f  Hf abs; move : (HMx f Hf) => abs2.
      have: (`|Rtoint (floor M + 1%:~R)|%:R < M) by  apply: (@lt_le_trans _ _ (`|f x|)).
-     have : (M < `|Rtoint(floor M + 1%:~R)|%:R) by apply : floor_nat_comp; apply:  (@le_trans _ _ `|f x|).       
+     have : (M < `|Rtoint(floor M + 1%:~R)|%:R)
+       by apply : floor_nat_comp; apply: (@le_trans _ _ `|f x|).
      by apply : lt_nsym.
   have BaireV : Baire V by apply : DeBaire.
   have ContraBaire : exists i : nat, not (dense (O i)).
@@ -374,12 +340,12 @@ Proof.
   have BaireContra : exists n :nat , exists x : V,
                exists r : {posnum K}, (ball x r%:num) `<=` (~` (O n)).
     - move: ContraBaire =>
-      [i /(denseNE) [ O0 [ [ x /open_nbhs_nbhs /nbhs_ballP [r [r0 bxr]]  
-      /((@subsetI_eq0 _ (ball x r) O0 (O i) (O i)))]]]] H2. 
+      [i /(denseNE) [ O0 [ [ x /open_nbhs_nbhs /nbhs_ballP [r [r0 bxr]]
+      /((@subsetI_eq0 _ (ball x r) O0 (O i) (O i)))]]]] H2.
        by exists i; exists x; exists (PosNum r0) ;apply: setIsubset; apply H2.
   move: BaireContra => [n [x0 [ r H ] ] k]; exists ((n%:R + n%:R) * k * 2 /r%:num); move=> f Hf y Hx.
   move: (Propf f Hf) => [ _ linf].
-  case: (eqVneq y 0) => [-> | Zeroy]; last first. 
+  case: (eqVneq y 0) => [-> | Zeroy]; last first.
   - have  majballi : forall f, forall x, F f -> (ball x0 r%:num) x -> (`|f x | <= n%:R)%O.
     move=> g x Fg Bx; move: (H x Bx).
     rewrite /O //= /bigsetU //= /setC exists2P -forallNP.
@@ -398,32 +364,32 @@ Proof.
     - by apply: ler_norm_sub.
     - by [].
     have ballprop : ball x0 r%:num (2^-1  * (r%:num / `|y|) *: y  + x0).
-      rewrite -ball_normE /ball_ opprD. 
+      rewrite -ball_normE /ball_ opprD.
       rewrite addrC -addrA (@addrC _ (-x0) x0) addrN addr0 normrN normmZ.
       rewrite R_normZ R_normZ -mulrA -mulrA  -(@normr_id _ _ y) -R_normZ normr_id.
-      rewrite /GRing.scale //= mulVf; last by rewrite normr_eq0. 
-      rewrite normr1  mulr1 gtr0_norm; last by rewrite invr_gt0. 
-      by rewrite gtr0_norm //=  gtr_pmull //= invf_lt1 //= ltr1n. 
-    move: (majball f (2^-1 * (r%:num/`|y|)*:y + x0) Hf ballprop). 
+      rewrite /GRing.scale //= mulVf; last by rewrite normr_eq0.
+      rewrite normr1  mulr1 gtr0_norm; last by rewrite invr_gt0.
+      by rewrite gtr0_norm //=  gtr_pmull //= invf_lt1 //= ltr1n.
+    move: (majball f (2^-1 * (r%:num/`|y|)*:y + x0) Hf ballprop).
     rewrite -addrA addrN linf.
-    have -> : f 0 =0 by rewrite -(linear0  (Linear linf)). 
+    have -> : f 0 =0 by rewrite -(linear0  (Linear linf)).
     rewrite addr0 normmZ !R_normZ -ler_pdivl_mull //=.
     rewrite !gtr0_norm //= ; last by rewrite invr_gt0 normr_gt0.
     rewrite mulrA mulrC invf_div mulrA (@mulrC _ (2^-1) _) invf_div mulrA.
     move=> Currentmaj {Propf BoundedF O O_open O_inf O_infempty BaireV ContraBaire H majball majballi}.
     rewrite (@le_trans  _ _ ((n%:R + n%:R) * `|y| * 2 / r%:num)) //= => {Currentmaj}.    
     rewrite (mulrC (n%:R + n%:R)) -ler_pdivl_mulr //=.
-    rewrite invrK -(mulrC r%:num) -(mulrC r%:num^-1) (mulrA r%:num) mulfV //=. 
-    rewrite (mulrC 1) mulr1 -ler_pdivl_mulr //=.  
+    rewrite invrK -(mulrC r%:num) -(mulrC r%:num^-1) (mulrA r%:num) mulfV //=.
+    rewrite (mulrC 1) mulr1 -ler_pdivl_mulr //=.
     rewrite -(mulrC 2) -(mulrC 2^-1) (mulrA 2^-1) mulVf //= (mulrC 1) mulr1.
-    case: n. 
+    case: n.
     - by rewrite addr0 mulr0 (mulrC 0) mulr0.
-    - move => n. 
+    - move => n.
       rewrite -ler_pdivl_mulr //= -mulrC mulrA mulVf //=.
-      by rewrite (mulrC 1) mulr1. 
-    rewrite mulr_gt0 ?invr_gt0 ?normr_gt0 //=. 
-    rewrite mulr_gt0 ?invr_gt0 ?normr_gt0 //=. 
-    by rewrite invr_neq0; rewrite ?normrE. 
+      by rewrite (mulrC 1) mulr1.
+    rewrite mulr_gt0 ?invr_gt0 ?normr_gt0 //=.
+    rewrite mulr_gt0 ?invr_gt0 ?normr_gt0 //=.
+    by rewrite invr_neq0; rewrite ?normrE.
     have -> : f 0 =0 by rewrite -(linear0  (Linear linf)).
     rewrite normr0 !mulr_ge0 //=.
     by rewrite (@le_trans _ _ `|y| _ _).
