@@ -4247,7 +4247,14 @@ Qed.
 Definition bounded_fun_norm (f: V -> W) := forall r, exists M,
       forall x, (`|x| <= r) -> (`|(f x)| <= M).
 
-Lemma bounded_funP (f : {linear V -> W}) : bounded_fun_norm f <-> bounded_on f (nbhs (0:V)). 
+Definition pointwise_bounded (F: (V -> W) -> Prop) := forall x, exists M,
+      forall f , F f ->  (`|f x| <= M)%O.
+
+Definition uniform_bounded (F: (V -> W) -> Prop) := forall r, exists M,
+      forall f, F f -> forall x, (`|x| <= r)  -> (`|f x| <= M)%O.
+
+Lemma bounded_funP (f : {linear V -> W}):
+  bounded_fun_norm f <-> bounded_on f (nbhs (0:V)).
 Proof.
 split.
 - move => /(_ 1) [M Bf]; apply /linear_boundedP.
@@ -4277,6 +4284,30 @@ split.
    by apply: ler_pmul; rewrite ?normr_ge0 //=.
 Qed.
 
+
+
+(* Lemma bounded_landau (f :{linear V->W}) : *)
+(*   bounded_fun_norm f <-> ((f : V -> W) =O_ (0:V) cst (1 : K^o)). *)
+(* Proof. *)
+(*   split. *)
+(*   - rewrite eqOP => bf. *)
+(*     move: (bf 1) => [M bm]. *)
+(*     rewrite !nearE /=; exists M; split. by  apply : num_real. *)
+(*     move => x Mx; rewrite nearE nbhs_normP /=. *)
+(*     exists 1; first by []. *)
+(*     move => y /=. rewrite -ball_normE /ball_ sub0r normrN /cst normr1 mulr1 => y1. *)
+(*     apply: (@le_trans _ _ M _ _). *)
+(*     apply: (bm y); by apply: ltW. *)
+(*     by apply: ltW. *)
+(*   - rewrite eqOP /= ; move => Bf; apply/bounded_funP; rewrite /bounded_on. *)
+(*     near=>M. *)
+(*     set P :=  (X in (nbhs _ X)). *)
+(*     have -> : P  = (fun x : V => (`|f x| <= M * `|cst 1%R x|)%O). *)
+(*       by apply: funext => x; rewrite /cst normr1 mulr1. *)
+(*     by near: M. *)
+(* Grab Existential Variables. all: end_near. Qed. *)
+
+
 End LinearContinuousBounded.
 
 Section Closed_Ball.
@@ -4286,7 +4317,7 @@ Lemma closureS (T : topologicalType) (A B: set T):
   (A `<=` B) -> (closure A `<=` closure B).
 Proof.
 move => AB x CAx C Cx.
-by move: (CAx C Cx) => [z [Az Cz]]; exists z; split; first by apply: AB. 
+by move: (CAx C Cx) => [z [Az Cz]]; exists z; split; first by apply: AB.
 Qed.
 
 (* not obvious when one doesn't know that closed is defined from closure *)
@@ -4325,7 +4356,7 @@ Qed.
 Definition closed_ball (R: numDomainType) (V: pseudoMetricType R) (x: V) (e : R) :=
  closure (ball x e).
 
- 
+
 Lemma closure_closed_ball (R: realFieldType) (V: normedModType R):
   forall (x: V) (e : R),  closed_ball x e = closed_ball_ normr x e.
 move=> x e ; apply: eqEsubset =>y.
@@ -4334,16 +4365,23 @@ move=> x e ; apply: eqEsubset =>y.
   by move => z; rewrite -ball_normE /closed_ball_ //=; apply: ltW.
   by apply: closed_closed_ball.
 - rewrite  /closed_ball /closed_ball_  /= closureI.
-  move => xye B [Be Bc]. 
-  pose f := fun y => `|x - y|. 
+  move => xye B [Be Bc].
+  pose f := (fun y => `|x - y|) : V -> R^o.
   have lem:  continuous ( f : V -> R^o).
     have -> : f = normr \o ( fun y => x -y ) by [].
     move => z; apply: continuous_comp.
       by apply: continuousB; first apply: continuous_cst.
       by apply: norm_continuous.
-  have : \forall z \near (nbhs y), f z <= e.
-    near=> z. admit. 
-  have : lim ( (f : V -> R^o) @  y)  <= e.   admit. (* closed_cvg_loc *)
+  pose D := fun y => (y <= e).      
+  have lem2: nbhs (f y) (fun y0 : R^o => D y0).
+     admit.
+  have: lim ( (f : V -> R^o) @  y)  <= e.
+   apply: (@closed_cvg_loc _ _  (nbhs y) _ f D).
+   admit. apply: lem; simpl. by [].
+   rewrite /D /closed //= /closure //=.
+   move => z /(_ (ball z 1) (nbhsx_ballx z 1%:pos)).
+   move => [w [we wz1]]. Search "nbhs" "ball".   
+   Search "lim" in topology.  Check closed_cvg_loc.   admit. (* closed_cvg_loc *)
 
 Admitted.
 
@@ -4374,8 +4412,6 @@ Admitted.
 
 
 
-
-
 Lemma closed_neigh_ball (R: realFieldType) (V:  normedModType R) (x : V) (r : {posnum R}) :
   open_nbhs x (closed_ball x r%:num)^°.
 Proof.
@@ -4385,7 +4421,6 @@ split.
   exists r%:num; first by [].
   by rewrite /closed_ball; apply subset_closure.
 Qed.
-
 
 
 End Closed_Ball.
