@@ -346,17 +346,16 @@ have -> : C = B `|` (A n `&` ~` B).
   by rewrite /C big_ord_recr; right.
 have ? : measurable B by apply measurable_finbigU.
 rewrite measure_additive2 //; last 2 first.
-  apply measurableI => //.
-  rewrite setCE; apply measurableD => //.
-  exact: measurableT.
-  rewrite setIC -setIA (_ : ~` _ `&` _ = set0) ?setI0 //.
-  by rewrite funeqE => x; rewrite propeqE; split => // -[].
+  - apply measurableI => //.
+    by rewrite -setTD; apply measurableD => //; exact: measurableT.
+  - rewrite setIC -setIA (_ : ~` _ `&` _ = set0) ?setI0 //.
+    by rewrite funeqE => x; rewrite propeqE; split => // -[].
 rewrite (@le_trans _ _ (mu B + mu (A n))%E) // ?lee_add2l //.
   rewrite le_measure //; last 2 first.
     by rewrite inE; apply mA.
     by apply subIset; left.
     rewrite inE. apply measurableI => //.
-    by rewrite setCE; apply: measurableD => //; exact: measurableT.
+    by rewrite -setTD; apply: measurableD => //; exact: measurableT.
 by rewrite big_ord_recr /= lee_add2r.
 Qed.
 
