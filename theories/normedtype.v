@@ -4414,17 +4414,13 @@ Qed.
 
 
 Lemma closed_closed_ball (R: realFieldType) (V:  normedModType R) (x : V) (e : R) :
-  closed (closed_ball  x e).
+  (0 < e ) -> closed (closed_ball  x e).
 Proof.
-  by rewrite closure_closed_ball; apply: closed_closed_ball_.
+  by move => e0; rewrite closure_closed_ball; first by apply: closed_closed_ball_.
 Qed.
 
 
-Lemma closed_ballxx  (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
-  (0 < r) -> closed_ball x r x.
-Proof. Check subset_closure.
-  by move => r_gt0; rewrite /closed_ball; apply: subset_closure; apply: ballxx.
-Qed.
+
 
 Lemma closed_open_ball (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
   (0 < r) -> exists e, ball x e `<=` closed_ball x r.
