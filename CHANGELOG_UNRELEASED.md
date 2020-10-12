@@ -9,6 +9,7 @@
 - in `classical_sets.v`:
   + lemmas `setIIl`, `setIIr`, `setCS`, `setSD`, `setDS`, `setDSS`, `setCI`,
     `setDUr`, `setDUl`, `setIDA`, `setDD`
+  + definition `dep_arrow_choiceType`
 - in `normedtype.v`:
   + lemma `closed_ereal_le_ereal`
   + lemma `closed_ereal_ge_ereal`
@@ -48,6 +49,9 @@
 - lemma `asboolb` moved from `discrete.v` to `boolp.v`
 - lemma `exists2NP` moved from `discrete.v` to `boolp.v`
 - lemma `neg_or` moved from `discrete.v` to `boolp.v` and renamed to `not_orP`
+- definitions `dep_arrow_choiceClass` and `dep_arrow_pointedType`
+  slightly generalized and moved from `topology.v` to
+  `classical_sets.v`
 
 ### Renamed
 
