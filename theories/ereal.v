@@ -5,6 +5,7 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import finmap.
 Require Import boolp classical_sets reals posnum topology.
 
 (******************************************************************************)
@@ -509,12 +510,15 @@ by rewrite !lte_fin; exact: ltr_le_add.
 Qed.
 
 Lemma lee_sum I (f g : I -> {ereal R}) s (P : pred I) :
-  (forall i, P i -> f i <= g i) -> \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
+  (forall i, P i -> f i <= g i) ->
+  \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
+Proof. by move=> Pfg; elim/big_ind2 : _ => // *; apply lee_add. Qed.
+
+Lemma lee_sum_nneg_ord (f : nat -> {ereal R}) : (forall n, 0%:E <= f n) ->
+  {homo (fun n => \sum_(i < n) (f i))%E : i j / (i <= j)%N >-> i <= j}.
 Proof.
-elim: s => [|h t ih fg]; first by rewrite 2!big_nil.
-rewrite 2!big_cons; case: ifPn => ?.
-by rewrite lee_add // ?fg ?mem_head // ih // => i it; rewrite fg // inE it orbT.
-by apply ih => i it; rewrite fg // inE it orbT.
+move=> g_ge m n /(big_ord_widen _) ->; rewrite big_mkcond lee_sum //=.
+by move=> i; case: ifP.
 Qed.
 
 Lemma lee_sum_nneg I (s : seq I) (P Q : pred I)
@@ -525,34 +529,23 @@ move=> PQf; rewrite [X in _ <= X](bigID Q) /= -[X in X <= _]adde0 lee_add //.
 by rewrite sume_ge0 // => i /andP[]; exact: PQf.
 Qed.
 
-Lemma lee_sum_nneg_undup (T : eqType) (s : seq T)
-  (f : T -> {ereal R}) : (forall t, 0%:E <= f t) ->
-  \sum_(t <- undup s) f t <= \sum_(t <- s) f t.
+Lemma lee_sum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> {ereal R}) :
+  {subset Q <= P} -> {in [predD P & Q], forall i, (0%:E <= f i)%E} ->
+  (\sum_(i <- s | Q i) f i <= \sum_(i <- s | P i) f i)%E.
 Proof.
-move=> f0; elim: s => //= h t ih; case: ifPn => ht; rewrite !big_cons;
-  by [rewrite (le_trans ih) // lee_addr | rewrite lee_add2l].
+move=> QP PQf; rewrite big_mkcond [X in (_ <= X)%E]big_mkcond lee_sum// => i.
+by move/implyP: (QP i); move: (PQf i); rewrite !inE -!topredE/=; do !case: ifP.
 Qed.
 
-Lemma lee_sum_nneg_subset (T : eqType) (s1 s2 : seq T)
-  (f : T -> {ereal R}) : (forall t, 0%:E <= f t) -> {subset s1 <= s2} ->
-  uniq s1 -> \sum_(t <- s1) f t <= \sum_(t <- s2) f t.
+Lemma lee_sum_nneg_subfset (T : choiceType) (A B : {fset T}%fset)
+  (f : T -> {ereal R}) : {subset A <= B} ->
+  {in [predD B & A], forall t, 0%:E <= f t} ->
+  \sum_(t <- A) f t <= \sum_(t <- B) f t.
 Proof.
-move=> f0 s12 u1.
-rewrite (le_trans _ (@lee_sum_nneg _ _ xpredT (mem s1) _ _)) //=.
-rewrite [in X in _ <= X](eq_bigl (predI (mem s1) xpredT)) /=; last first.
-  by move=> ?; rewrite inE andbT.
-rewrite -big_filter_cond (le_trans _ (lee_sum_nneg_undup _ f0)) //.
-rewrite le_eqVlt; apply/orP; left; apply/eqP/perm_big.
-rewrite -(undup_id u1) perm_undup // => i.
-by rewrite mem_filter mem_undup andb_idr // => /s12.
-Qed.
-
-Lemma lee_sum_nneg_ord (f : nat -> {ereal R}) : (forall n, 0%:E <= f n) ->
-  {homo (fun n => \sum_(i < n) (f i))%E : i j / (i <= j)%N >-> i <= j}.
-Proof.
-move=> ? i j ?; rewrite -!(big_mkord xpredT) -big_filter -[X in _ <= X]big_filter.
-apply: lee_sum_nneg_subset => //; last by rewrite filter_predT iota_uniq.
-by move=> k; rewrite !(mem_filter,mem_iota,add0n,subn0) /= => /leq_trans; apply.
+move=> AB f0; rewrite (big_fsetID _ (mem A) B) /= -[X in X <= _]adde0 lee_add//.
+  rewrite [in X in X <= _](_ : A = [fset x in B | x \in A]%fset) //.
+  by apply/fsetP=> t; rewrite !inE /= andbC; case: (boolP (_ \in _)) => // /AB.
+by rewrite big_fset /= big_seq_cond sume_ge0 // => t ?; rewrite f0 // inE andbC.
 Qed.
 
 Lemma lte_subl_addr x (r : R) z : (x - r%:E < z) = (x < z + r%:E).
