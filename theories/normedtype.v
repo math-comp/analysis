@@ -4331,7 +4331,7 @@ Proof.
   - apply: (Ax (closure A)); split; first by apply: subset_closure.
     by apply: closed_closure.
 Qed.
-(* TBA to topology.v *)
+(* to be removed when PR closure_connected is merged *)
 
 Definition closed_ball_ (R: numDomainType) (V: zmodType) (norm: V -> R) (x: V) (e : R) :=
   [set y | (norm (x- y) <=e)%O ].
@@ -4390,20 +4390,22 @@ rewrite /= opprD addrA addrN add0r normrN normmZ normrxx ?subr_eq0// mulr1.
 rewrite normrM gtr0_norm // gtr0_norm //.
 by rewrite ltr_pdivr_mulr // mulr_natr mulr2n ltr_spaddl.
 Qed.
+ 
 
-
-Lemma closed_closed_ball (R: realFieldType) (V:  normedModType R) (x : V) (e : R) :
-  (0 < e ) -> closed (closed_ball  x e).
+Lemma closed_closed_ball (R: realFieldType) (V:  normedModType R) (x : V)
+      (e : {posnum R}):  closed (closed_ball x e%:num).
 Proof.
-  by move => e0; rewrite closure_closed_ball; first by apply: closed_closed_ball_.
+ by rewrite closure_closed_ball; first by apply: closed_closed_ball_.
 Qed.
 
 
 
 
 Lemma closed_open_ball (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
-  (0 < r) -> exists e, ball x e `<=` closed_ball x r.
-Admitted.
+  exists e, ball x e `<=` closed_ball x r.
+Proof.
+  by move=> _; exists r; exact: subset_closure.
+Qed.
 
 (* Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R) *)
 (*       (B : set M) (x: M): *)
