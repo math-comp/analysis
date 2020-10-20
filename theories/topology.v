@@ -2875,7 +2875,27 @@ Qed.
 Lemma closureS (A B: set T):
   (A `<=` B) -> (closure A `<=` closure B).
 Proof.
-Admitted.
+move => AB x CAx C Cx.
+by move: (CAx C Cx) => [z [Az Cz]]; exists z; split; first by apply: AB.
+Qed.
+
+(* not obvious when one doesn't know that closed is defined from closure *)
+Lemma closure_id (A : set T): closed A <-> A = closure A.
+Proof.
+split; last by move=> -> ; apply: closed_closure.
+by move => CA; apply: eqEsubset; first by apply: subset_closure.
+Qed.
+
+
+Lemma closureI (A : set T) :
+  closure A = \bigcap_(B in [ set B : set T | ( A `<=` B)/\ closed B]) B.
+Proof.
+apply: eqEsubset => x Ax.
+  rewrite /closed; move => B [AB CB].
+  apply: CB; apply: closureS; first by apply: AB.
+apply: (Ax (closure A)); split; first by apply: subset_closure.
+by apply: closed_closure.
+Qed.
 
 Lemma connect0 : connected (@set0 T).
 Proof. by move=> ? ? [? ?]; rewrite set0I. Qed.
