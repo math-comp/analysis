@@ -4367,49 +4367,28 @@ Qed.
 
 (*used a lot *)
 
-Lemma closure_closed_ball (R: realFieldType) (V: normedModType R):
-  forall (x: V) (e : R), (0<e) -> closed_ball x e = closed_ball_ normr x e.
-move=> x e e0; apply: eqEsubset =>y.
-  rewrite /closed_ball closureI //= => CB.
-  apply: (CB (closed_ball_ normr x e)); split.
-  by move => z; rewrite -ball_normE /closed_ball_ //=; apply: ltW.
-  by apply: closed_closed_ball_.
-case: (@eqP V x y); first by move => -> _; apply: closed_ballxx.
-move => xy; rewrite  /closed_ball /closed_ball_  /= closureI /closed /closure.
-rewrite le_eqVlt; case/predU1P; last first.
-  by rewrite -ball_normE => xye B0 [/(_ y xye) B0B _].
-rewrite -ball_normE // => xye B [Be Bc].
-apply: Bc => B0 /nbhs_ballP [s s0]; rewrite -ball_normE //= => B0y.
-case: (leP s e); last first.
+Lemma closure_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
+  (e : {posnum R}) : closed_ball x e%:num = closed_ball_ normr x e%:num.
+Proof.
+apply: eqEsubset => y.
+  rewrite /closed_ball closureI; apply; split; last exact: closed_closed_ball_.
+  by move=> z; rewrite -ball_normE /closed_ball_; exact: ltW.
+have [/eqP -> _|xy] := boolP (x == y); first exact: closed_ballxx.
+rewrite /closed_ball /closed_ball_ closureI /closed /closure -ball_normE.
+rewrite le_eqVlt => /orP[/eqP xye B [Be]|xye B0 [/(_ _ xye)]//].
+apply=> B0 /nbhs_ballP[s s0]; rewrite -ball_normE => B0y.
+have [es|se] := leP s e%:num; last first.
   exists x; split; first by apply: Be; rewrite ball_normE; apply: ballxx.
-  apply: B0y; apply (@le_lt_trans _ _  e _ s); last by [].
-  by rewrite -normrN opprD addrC opprK xye.
-  pose r := 2^-1 * s ; simpl in (type of r).
-exists (y + (r *: (`|x-y|^-1 *: (x -y)))); split; last first.
-  apply: B0y; move=> //=.
-  rewrite opprD addrA addrN add0r normrN normmZ normrxx.
-  rewrite mulr1 /r normrM gtr0_norm //=.
-  rewrite gtr0_norm //=; rewrite gtr_pmull //= invf_lt1 //=.
-  by rewrite ltr_addl ltr01.
-  by move/eqP: xy; apply: contra; rewrite subr_eq0.
-apply: Be; move => //=.
-rewrite opprD addrA.
-have {1}-> : (x - y) = (1 *: (x - y)) by rewrite scale1r.
-rewrite scalerA -scalerBl.
-have -> : (1 - r / `|x - y|) = ((`|x - y| -r) / `|x - y|).
-rewrite -(@mulfV _  `|x - y|); first by rewrite mulrBl.
-  by move/eqP: xy; apply contra; rewrite normr_eq0 subr_eq0.
-rewrite -scalerA normmZ normrxx /r; last first.
-  by move/eqP: xy; apply: contra; rewrite subr_eq0.
-rewrite mulr1 gtr0_norm -[X in _ < X]subr0.
-apply: ler_lt_sub; first by rewrite xye.
-rewrite mulr_gt0 //= ?invf_lt1.
-rewrite !subr0 subr_gt0.
-apply: (@le_lt_trans _ _ (2^-1 * e)).
-by apply: ler_pmul=> //=; rewrite ?ltW.
-rewrite -xye gtr_pmull // ?normr_gt0 ?invf_lt1 //=.
-by rewrite ltr_addl ltr01.
-by move/eqP: xy; apply: contra; rewrite subr_eq0.
+  by apply: B0y; rewrite /ball_ distrC xye.
+exists (y + (s / 2) *: (`|x - y|^-1 *: (x - y))); split; [apply: Be|apply: B0y].
+  rewrite /= opprD addrA -[X in `|X - _|](scale1r (x - y)) scalerA -scalerBl.
+  rewrite -[X in X - _](@divrr _ `|x - y|) ?unitfE ?normr_eq0 ?subr_eq0//.
+  rewrite -mulrBl -scalerA normmZ normrxx ?subr_eq0// mulr1.
+  rewrite gtr0_norm; first by rewrite ltr_subl_addl xye ltr_addr mulr_gt0.
+  by rewrite subr_gt0 xye ltr_pdivr_mulr // mulr_natr mulr2n ltr_spaddl.
+rewrite /= opprD addrA addrN add0r normrN normmZ normrxx ?subr_eq0// mulr1.
+rewrite normrM gtr0_norm // gtr0_norm //.
+by rewrite ltr_pdivr_mulr // mulr_natr mulr2n ltr_spaddl.
 Qed.
 
 
