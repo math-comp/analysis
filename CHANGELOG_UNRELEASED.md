@@ -63,6 +63,12 @@
   + lemmas `setUK`, `setKU`, `setIK`, `setKI`, `subsetEset`, `subEset`, `complEset`, `botEset`, `topEset`, `meetEset`, `joinEset`, `properEneq`
   + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType` on classical `set`.
 
+  + definition `limit_point`
+  + lemmas `subset_limit_point`, `closure_limit_point`, `closure_open_nbhs`,
+    `closure_subset`, `closureE`, `closureC`, `closure_id`
+  + definition `separated`, `not_connected`
+  + lemmas `connected0`, `connectedP`
+
 ### Changed
 
 - in `classical_sets.v`:

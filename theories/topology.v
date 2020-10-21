@@ -2264,6 +2264,55 @@ Proof.
 by move=> y fy FDf; apply: (closed_cvg_loc fy); apply: filterE.
 Qed.
 
+Section closure_lemmas.
+Variable T : topologicalType.
+Implicit Types E A B U : set T.
+
+Definition limit_point E := [set t : T |
+  forall U, nbhs t U -> exists y, [/\ y != t, E y & U y]].
+
+Lemma subset_limit_point E : limit_point E `<=` closure E.
+Proof. by move=> t Et U tU; have [p [? ? ?]] := Et _ tU; exists p. Qed.
+
+Lemma closure_limit_point E : closure E = E `|` limit_point E.
+Proof.
+rewrite predeqE => t; split => [cEt|]; last first.
+  by case; [exact: subset_closure|exact: subset_limit_point].
+have [?|Et] := pselect (E t); [by left|right=> U tU; have [p []] := cEt _ tU].
+by exists p; split => //; apply/eqP => pt; apply: Et; rewrite -pt.
+Qed.
+
+Lemma closure_open_nbhs E :
+  closure E = [set t : T | forall U, open_nbhs t U -> E `&` U !=set0].
+Proof.
+rewrite predeqE=> t; split=> Et U; [by rewrite open_nbhsE => -[? ?]; exact: Et|].
+rewrite nbhsE => -[V [tV VU]]; have := Et _ tV; exact: subsetI_neq0.
+Qed.
+
+Lemma closure_subset A B : A `<=` B -> closure A `<=` closure B.
+Proof. by move=> ? ? CAx ?; move/CAx; exact/subsetI_neq0. Qed.
+
+Lemma closureE E : closure E = \bigcap_(B in [set B | closed B /\ E `<=` B]) B.
+Proof.
+apply: eqEsubset => [x Ax B [cB AB]|x]; first exact/cB/(closure_subset AB).
+by apply; split; [exact: closed_closure|exact: subset_closure].
+Qed.
+
+Lemma closureC E :
+  ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
+Proof.
+rewrite closureE bigcapCU setCK; apply: eqEsubset => t [U [? EU Ut]].
+  by exists (~` U) => //; split; [exact: openC|exact: subsetC].
+by rewrite -(setCK E); exists (~` U)=> //; split; [exact:closedC|exact:subsetC].
+Qed.
+
+Lemma closure_id E : closed E <-> E = closure E.
+Proof.
+split=> [?|->]; [exact:(eqEsubset (@subset_closure _ _))|exact: closed_closure].
+Qed.
+
+End closure_lemmas.
+
 (** ** Compact sets *)
 
 Section Compact.
@@ -2776,182 +2825,45 @@ Definition connected (T : topologicalType) (A : set T) :=
   forall B : set T, B !=set0 -> (exists2 C, open C & B = A `&` C) ->
   (exists2 C, closed C & B = A `&` C) -> B = A.
 
-(* NB: PR in progress *)
-Lemma setTD T (A : set T) : setT `\` A = ~` A.
-Proof. by rewrite predeqE => x; split => // -[]. Qed.
-
-Lemma setDv T (A : set T) : A `\` A = set0.
-Proof. by rewrite predeqE => t; split => // -[]. Qed.
-
-Lemma bigcapCU' T I (U : I -> set T) E : \bigcap_(i in E) (U i) = ~` (\bigcup_(i in E) (~` U i)).
-Proof.
-rewrite predeqE => t; split => [capU|cupU i Et].
-  by move=> -[n En]; apply; apply capU.
-by rewrite -(setCK (U i)) => CU; apply cupU; exists i.
-Qed.
-
-Lemma setUCl T (A : set T) : ~` A `|` A = setT.
-Proof. by rewrite setUC setUCr. Qed.
-
-Lemma preimage_setU {A B} (f : A -> B) (X Y : set B) :
-  f @^-1` (X `|` Y) = f @^-1` X `|` f @^-1` Y.
-Proof. by rewrite predeqE. Qed.
-
-Lemma preimage_bigcup {A B I} (P : set I) (f : A -> B) F:
-  f @^-1` (\bigcup_ (i in P) (F i)) = \bigcup_(i in P) (f @^-1` (F i)).
-Proof. by rewrite predeqE. Qed.
-
-Lemma preimage_subset A B (f : A -> B) (X Y : set B) :
-  X `<=` Y -> f @^-1` X `<=` f @^-1` Y.
-Proof. by move=> XY a /XY. Qed.
-
-Lemma image_subset A B (f : A -> B) (X Y : set A) :
-  X `<=` Y -> f @` X `<=` f @` Y.
-Proof. by move=> XY _ [a Xa <-]; exists a => //; apply/XY. Qed.
-
-Lemma image_preimage_subset A B (f : A -> B) (Y : set B) :
-  f @` (f @^-1` Y) `<=` Y.
-Proof. by move=> _ [a /= Yfa <-]. Qed.
-(* end: PR in progress*)
-
-Section closure_lemmas.
-Variable (T : topologicalType).
-Implicit Types E A B U : set T.
-
-Definition limit_point E := [set t : T |
-  forall U, nbhs t U -> exists y, [/\ y != t, E y & U y]].
-
-Lemma subset_limit_point E : limit_point E `<=` closure E.
-Proof.
-by move=> t Et U tU; have [p [pt Ep Up]] := Et _ tU; exists p.
-Qed.
-
-Lemma closure_limit_point E : closure E = E `|` limit_point E.
-Proof.
-rewrite predeqE => t; split => [|]; last first.
-  by case; [exact: subset_closure|exact: subset_limit_point].
-move=> cEt.
-have [?|Et] := pselect (E t); [by left | right => U tU].
-have [p [Ep Up]] := cEt _ tU.
-by exists p; split => //; apply/eqP => pt; apply: Et; rewrite -pt.
-Qed.
-
-Lemma closure_open_nbhs E :
-  closure E = [set t : T | forall U, open_nbhs t U -> E `&` U !=set0].
-Proof.
-rewrite predeqE=> t; split=> Et U.
-  by rewrite open_nbhsE => -[oU tU]; exact: Et.
-rewrite nbhsE => -[V [tV VU]]; have [y [Ey Vy]] := Et _ tV.
-by exists y => //; split => //; exact: VU.
-Qed.
-
-Lemma closureC E :
-  ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
-Proof.
-rewrite closure_open_nbhs predeqE => t; split => [/existsNP|[U [oU UE tU]]].
-  move=> [A /not_implyP[tA /set0P/negP/negPn/eqP EA0]].
-  exists A => //; last by apply: nbhs_singleton; apply/open_nbhs_nbhs.
-  split; first by move: tA; rewrite open_nbhsE => -[].
-  by apply/disjoints_subset; rewrite setIC.
-apply/existsNP; exists U; apply/not_implyP; split => //.
-by apply/set0P/negP/negPn/eqP; rewrite setIC; apply/disjoints_subset.
-Qed.
-
-Lemma closureE E :
-  closure E = \bigcap_(x in [set U | closed U /\ E `<=` U]) x.
-Proof.
-rewrite -[LHS]setCK closureC bigcapCU'; congr (~` _).
-rewrite predeqE => t; split => -[U [oU UE Ut]].
-  by exists (~` U) => //; split; [exact: closedC|rewrite -setCS setCK].
-by exists (~` U) => //; split; [exact: openC|rewrite setCS].
-Qed.
-
-Lemma closed_closure' E : closed E -> E = closure E.
-Proof.
-move=> cE; apply/eqEsubset; first exact: subset_closure.
-by rewrite closureE => t; apply; split.
-Qed.
-
-Lemma closureS (A B: set T):
-  (A `<=` B) -> (closure A `<=` closure B).
-Proof.
-move => AB x CAx C Cx.
-by move: (CAx C Cx) => [z [Az Cz]]; exists z; split; first by apply: AB.
-Qed.
-
-(* not obvious when one doesn't know that closed is defined from closure *)
-Lemma closure_id (A : set T): closed A <-> A = closure A.
-Proof.
-split; last by move=> -> ; apply: closed_closure.
-by move => CA; apply: eqEsubset; first by apply: subset_closure.
-Qed.
-
-
-Lemma closureI (A : set T) :
-  closure A = \bigcap_(B in [ set B : set T | ( A `<=` B)/\ closed B]) B.
-Proof.
-apply: eqEsubset => x Ax.
-  rewrite /closed; move => B [AB CB].
-  apply: CB; apply: closureS; first by apply: AB.
-apply: (Ax (closure A)); split; first by apply: subset_closure.
-by apply: closed_closure.
-Qed.
-
-Lemma connect0 : connected (@set0 T).
-Proof. by move=> ? ? [? ?]; rewrite set0I. Qed.
-
-End closure_lemmas.
-
 Section connected_lemmas.
 Variable (T : topologicalType).
 Implicit Types E A B U : set T.
 
+Lemma connect0 : connected (@set0 T).
+Proof. by move=> ? ? [? ?]; rewrite set0I. Qed.
+
 Definition separated A B :=
   (closure A) `&` B = set0 /\ A `&` (closure B) = set0.
 
-Definition not_connected E :=
-  exists P : bool -> set T, [/\ forall b, P b !=set0,
-    separated (P false) (P true) & E = P false `|` P true].
+Definition not_connected E := exists P : bool -> set T,
+  [/\ forall b, P b !=set0, separated (P false) (P true) &
+   E = P false `|` P true].
 
 Lemma connectedP E : connected E <-> ~ not_connected E.
 Proof.
-split=> [conE -[P [P0 [sepP1 sepP2] PU]]|conE B B0 [C0 oC0 BEC0] [C1 cC1 BEC1]].
+split=> [conE -[P [P0 [P1 P2] PU]]|conE B B0 [C oC BEC] [D cD BED]].
   suff : P true = E.
-    rewrite PU => /(congr1 (fun x => x `\` closure (P true))); rewrite setDUl.
+    move/esym/(congr1 (setD^~ (closure (P true)))); rewrite PU setDUl.
     have := @subset_closure _ (P true); rewrite -setD_eq0 => ->; rewrite setU0.
-    by move/setDidPl : sepP2 => -> /esym; exact/eqP/set0P.
+    by move/setDidPl : P2 => ->; exact/eqP/set0P.
   apply: (conE _ (P0 true)).
-  - exists (~` (closure (P false))); first by apply: openC; apply/closed_closure.
+  - exists (~` (closure (P false))); first exact/openC/closed_closure.
     rewrite PU setIUl.
     have /subsets_disjoint -> := @subset_closure _ (P false); rewrite set0U.
-    suff : P true `<=` ~` closure (P false) by move/setIidPl => ->.
-    by apply/disjoints_subset; rewrite setIC.
+    by apply/esym/setIidPl/disjoints_subset; rewrite setIC.
   - exists (closure (P true)); first exact: closed_closure.
-    rewrite PU setIUl.
-    have /setIidPl -> := @subset_closure _ (P true).
-    by rewrite sepP2 set0U.
-apply/eqP/negPn/negP => BE; apply: conE.
-exists (fun i => if i is false then E `\` C0 else (E `&` C0)); split.
-- case => /=; first by rewrite -BEC0.
-  apply/set0P/negP => /eqP.
-  rewrite setDE => /subsets_disjoint EC0.
-  move/eqP : BE; apply.
-  by rewrite BEC0; exact/setIidPl.
+    by rewrite PU setIUl P2 set0U; exact/esym/setIidPl/subset_closure.
+apply: contrapT => BE; apply: conE.
+exists (fun i => if i is false then E `\` C else E `&` C); split.
+- case=> /=; first by rewrite -BEC.
+  apply/set0P/eqP => /disjoints_subset; rewrite setCK => EC.
+  by apply: BE; rewrite BEC; exact/setIidPl.
 - split.
-  + rewrite setIC; apply/disjoints_subset.
-    rewrite closureC => x [Ex C0x] //.
-    exists C0 => //; split=> //.
-    rewrite setCE => y C0y.
-    split => // -[] Ey C1y.
-    have : B y by rewrite BEC0; split.
-    by rewrite BEC0 => -[].
-  + apply/disjoints_subset => y -[Ey C0y] EC0y.
-    move/negP : BE; apply.
-    apply/eqP; rewrite predeqE => t; split => //; first by rewrite BEC0 => -[].
-    move: EC0y; rewrite -BEC0 BEC1 => /closureI[_ C1y] Et.
-    have {}C1y : C1 y by rewrite -closed_closure' // in C1y.
-    have : B y by rewrite BEC1; split.
-    by rewrite BEC0 => -[].
+  + rewrite setIC; apply/disjoints_subset; rewrite closureC => x [? ?].
+    by exists C => //; split=> //; rewrite setDE setCI setCK; right.
+  + apply/disjoints_subset => y -[Ey Cy].
+    rewrite -BEC BED=> /closureI[_]; rewrite -(proj1 (@closure_id _ _) cD)=> Dy.
+    by have : B y; [by rewrite BED; split|rewrite BEC=> -[]].
 - by rewrite setDE -setIUr setUCl setIT.
 Qed.
 
