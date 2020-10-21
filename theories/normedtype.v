@@ -4390,7 +4390,7 @@ rewrite /= opprD addrA addrN add0r normrN normmZ normrxx ?subr_eq0// mulr1.
 rewrite normrM gtr0_norm // gtr0_norm //.
 by rewrite ltr_pdivr_mulr // mulr_natr mulr2n ltr_spaddl.
 Qed.
- 
+
 
 Lemma closed_closed_ball (R: realFieldType) (V:  normedModType R) (x : V)
       (e : {posnum R}):  closed (closed_ball x e%:num).
@@ -4403,9 +4403,7 @@ Qed.
 
 Lemma closed_open_ball (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
   exists e, ball x e `<=` closed_ball x r.
-Proof.
-  by move=> _; exists r; exact: subset_closure.
-Qed.
+Proof. by exists r; exact: subset_closure. Qed.
 
 (* Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R) *)
 (*       (B : set M) (x: M): *)
