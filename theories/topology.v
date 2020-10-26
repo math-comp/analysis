@@ -2009,15 +2009,9 @@ Section Product_Topology.
 
 Variable (I : Type) (T : I -> topologicalType).
 
-Definition dep_arrow_choiceClass :=
-  Choice.Class (Equality.class (dep_arrow_eqType T)) gen_choiceMixin.
-
-Definition dep_arrow_pointedType :=
-  Pointed.Pack (Pointed.Class dep_arrow_choiceClass (fun i => @point (T i))).
-
 Definition product_topologicalType :=
   sup_topologicalType (fun i => Topological.class
-    (weak_topologicalType (fun f : dep_arrow_pointedType => f i))).
+    (weak_topologicalType (fun f : dep_arrow_pointedType T => f i))).
 
 End Product_Topology.
 

@@ -155,12 +155,17 @@ Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
 Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
 Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
 
-Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
-  EqType (forall x : T, T' x) gen_eqMixin.
 Canonical arrow_eqType (T : Type) (T' : eqType) :=
   EqType (T -> T') gen_eqMixin.
 Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
   ChoiceType (T -> T') gen_choiceMixin.
+
+Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
+  EqType (forall x : T, T' x) gen_eqMixin.
+Definition dep_arrow_choiceClass (T : Type) (T' : T -> choiceType) :=
+  Choice.Class (Equality.class (dep_arrow_eqType T')) gen_choiceMixin.
+Definition dep_arrow_choiceType (T : Type) (T' : T -> choiceType) :=
+  Choice.Pack (dep_arrow_choiceClass T').
 
 Canonical Prop_eqType := EqType Prop gen_eqMixin.
 Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
@@ -767,6 +772,10 @@ Definition point {M : pointedType} : M := Pointed.mixin (Pointed.class M).
 
 Canonical arrow_pointedType (T : Type) (T' : pointedType) :=
   PointedType (T -> T') (fun=> point).
+
+Definition dep_arrow_pointedType (T : Type) (T' : T -> pointedType) :=
+  Pointed.Pack (Pointed.Class (dep_arrow_choiceClass T') (fun i => @point (T' i))).
+
 Canonical bool_pointedType := PointedType bool false.
 Canonical Prop_pointedType := PointedType Prop False.
 Canonical nat_pointedType := PointedType nat 0%N.
