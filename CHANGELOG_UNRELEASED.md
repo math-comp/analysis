@@ -10,6 +10,7 @@
   + lemmas `setIIl`, `setIIr`, `setCS`, `setSD`, `setDS`, `setDSS`, `setCI`,
     `setDUr`, `setDUl`, `setIDA`, `setDD`
   + definition `dep_arrow_choiceType`
+  + lemma `bigcup_set0`
 - in `normedtype.v`:
   + lemma `closed_ereal_le_ereal`
   + lemma `closed_ereal_ge_ereal`
@@ -41,11 +42,15 @@
   + new lemmas: `ge_supremum_Nmem`, `le_infimum_Nmem`, `nat_supremums_neq0`
   + lemmas `ereal_nbhs_pinfty_ge`, `ereal_nbhs_ninfty_le`
   + lemma `oppe_continuous`
+  + lemmas `setUCl`, `setDv`
+  + lemmas `image_preimage_subset`, `image_subset`, `preimage_subset`
 
 ### Changed
 
 - in `classical_sets.v`:
   + the index in `bigcup_set1` generalized from `nat` to some `Type`
+  + lemma `bigcapCU` generalized
+  + lemmas `preimage_setU` and `preimage_setI` are about the `setU` and `setI` (instead of `bigcup` and `bigcap`)
 - lemma `asboolb` moved from `discrete.v` to `boolp.v`
 - lemma `exists2NP` moved from `discrete.v` to `boolp.v`
 - lemma `neg_or` moved from `discrete.v` to `boolp.v` and renamed to `not_orP`
@@ -60,6 +65,8 @@
   + `setUDl` -> `setUIl`
   + `setUDr` -> `setUIr`
   + `setIDr` -> `setIUl`
+  + `setCE` -> `setTD`
+  + `preimage_setU` -> `preimage_bigcup`, `preimage_setI` -> `preimage_bigcap`
 - in `boolp.v`:
   + `contrap` -> `contra_not`
   + `contrapL` -> `contraPnot`

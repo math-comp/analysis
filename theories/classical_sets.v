@@ -282,7 +282,10 @@ Lemma setCT T : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
 Lemma setDE {A} (X Y : set A) : X `\` Y = X `&` ~` Y.
 Proof. by []. Qed.
 
-Lemma setCE T (A : set T) : ~` A = setT `\` A.
+Lemma setTD T (A : set T) : setT `\` A = ~` A.
+Proof. by rewrite predeqE => t; split => // -[]. Qed.
+
+Lemma setDv T (A : set T) : A `\` A = set0.
 Proof. by rewrite predeqE => t; split => // -[]. Qed.
 
 Lemma subset0 T (X : set T) : (X `<=` set0) = (X = set0).
@@ -348,6 +351,10 @@ Lemma nonempty_image {A B} (f : A -> B) (X : set A) :
   f @` X !=set0 -> X !=set0.
 Proof. by case=> b [a]; exists a. Qed.
 
+Lemma image_subset A B (f : A -> B) (X Y : set A) :
+  X `<=` Y -> f @` X `<=` f @` Y.
+Proof. by move=> XY _ [a Xa <-]; exists a => //; apply/XY. Qed.
+
 Lemma preimage_set0 T U (f : T -> U) : f @^-1` set0 = set0.
 Proof. by rewrite predeqE. Qed.
 
@@ -355,8 +362,12 @@ Lemma nonempty_preimage {A B} (f : A -> B) (X : set B) :
   f @^-1` X !=set0 -> X !=set0.
 Proof. by case=> [a ?]; exists (f a). Qed.
 
-Lemma preimage_image A B (f : A -> B) (X : set A) : X `<=` f@^-1` (f @` X).
+Lemma preimage_image A B (f : A -> B) (X : set A) : X `<=` f @^-1` (f @` X).
 Proof. by move=> a Xa; exists a. Qed.
+
+Lemma image_preimage_subset A B (f : A -> B) (Y : set B) :
+  f @` (f @^-1` Y) `<=` Y.
+Proof. by move=> _ [a /= Yfa <-]. Qed.
 
 Lemma image_preimage A B (f : A -> B) (X : set B) :
   f @` setT = setT -> f @` (f @^-1` X) = X.
@@ -366,17 +377,29 @@ move=> Xx; have : setT x by [].
 by rewrite -fsurj => - [y _ fy_eqx]; exists y => //; rewrite /preimage fy_eqx.
 Qed.
 
-Lemma preimage_setU {A B I} (P : set I) (f:A->B) F:
-  f @^-1` (\bigcup_ (i in P) F) = \bigcup_(i in P) (f @^-1` F).
+Lemma preimage_setU {A B} (f : A -> B) (X Y : set B) :
+  f @^-1` (X `|` Y) = f @^-1` X `|` f @^-1` Y.
 Proof. by rewrite predeqE. Qed.
 
-Lemma preimage_setI {A B I} (P : set I) (f:A->B) F:
-  f @^-1` (\bigcap_ (i in P) F) = \bigcap_(i in P) (f @^-1` F).
+Lemma preimage_bigcup {A B I} (P : set I) (f : A -> B) F :
+  f @^-1` (\bigcup_ (i in P) F i) = \bigcup_(i in P) (f @^-1` F i).
+Proof. by rewrite predeqE. Qed.
+
+Lemma preimage_setI {A B} (f : A -> B) (X Y : set B) :
+  f @^-1` (X `&` Y) = f @^-1` X `&` f @^-1` Y.
+Proof. by rewrite predeqE. Qed.
+
+Lemma preimage_bigcap {A B I} (P : set I) (f : A -> B) F :
+  f @^-1` (\bigcap_ (i in P) F i) = \bigcap_(i in P) (f @^-1` F i).
 Proof. by rewrite predeqE. Qed.
 
 Lemma preimage_setC A B (f : A -> B) (X : set B) :
   ~` (f @^-1` X) = f @^-1` (~` X).
 Proof. by rewrite predeqE => a; split=> nXfa ?; apply: nXfa. Qed.
+
+Lemma preimage_subset A B (f : A -> B) (X Y : set B) :
+  X `<=` Y -> f @^-1` X `<=` f @^-1` Y.
+Proof. by move=> XY a /XY. Qed.
 
 Lemma subset_empty {A} (X Y : set A) : X `<=` Y -> X !=set0 -> Y !=set0.
 Proof. by move=> sXY [x Xx]; exists x; apply: sXY. Qed.
@@ -524,6 +547,9 @@ Proof. by rewrite predeqE => t; split; [case|right]. Qed.
 Lemma setU_eq0 T (X Y : set T) : (X `|` Y = set0) = ((X = set0) /\ (Y = set0)).
 Proof. by rewrite -!subset0 subUset. Qed.
 
+Lemma setUCl T (A : set T) : ~` A `|` A = setT.
+Proof. by rewrite setUC setUCr. Qed.
+
 Lemma setCS T (A B : set T) : (~` A `<=` ~` B) = (B `<=` A).
 Proof.
 rewrite propeqE; split => [|BA].
@@ -589,13 +615,17 @@ Proof. by rewrite !setDE setIA. Qed.
 Lemma setDD T (A B : set T) : A `\` (A `\` B) = A `&` B.
 Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
 
+Lemma bigcup_set0 T U (X : U -> set T) : \bigcup_(i in set0) X i = set0.
+Proof. by apply eqEsubset => a // []. Qed.
+
 Lemma bigcup_set1 T V (U : V -> set T) v : \bigcup_(i in [set v]) U i = U v.
 Proof. by apply: eqEsubset => ? => [[] ? -> //|]; exists v. Qed.
 
-Lemma bigcapCU T (U : nat -> set T) : \bigcap_i (U i) = ~` (\bigcup_i (~` U i)).
+Lemma bigcapCU T I (U : I -> set T) E :
+  \bigcap_(i in E) (U i) = ~` (\bigcup_(i in E) (~` U i)).
 Proof.
-rewrite predeqE => t; split => [capU|cupU i _].
-  by move=> -[n _]; apply; apply capU.
+rewrite predeqE => t; split => [capU|cupU i Et].
+  by move=> -[n En]; apply; apply capU.
 by rewrite -(setCK (U i)) => CU; apply cupU; exists i.
 Qed.
 
