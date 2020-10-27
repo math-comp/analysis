@@ -67,7 +67,7 @@
   + lemmas `subset_limit_point`, `closure_limit_point`, `closure_open_nbhs`,
     `closure_subset`, `closureE`, `closureC`, `closure_id`
   + definition `separated`, `not_connected`
-  + lemmas `connected0`, `connectedP`
+  + lemmas `connected0`, `connectedP`, `connected_continuous_connected`
 
 ### Changed
 

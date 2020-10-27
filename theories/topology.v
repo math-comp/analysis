@@ -2825,21 +2825,14 @@ Definition connected (T : topologicalType) (A : set T) :=
   forall B : set T, B !=set0 -> (exists2 C, open C & B = A `&` C) ->
   (exists2 C, closed C & B = A `&` C) -> B = A.
 
-Section connected_lemmas.
-Variable (T : topologicalType).
-Implicit Types E A B U : set T.
-
-Lemma connect0 : connected (@set0 T).
-Proof. by move=> ? ? [? ?]; rewrite set0I. Qed.
-
-Definition separated A B :=
+Definition separated (T : topologicalType) (A B : set T) :=
   (closure A) `&` B = set0 /\ A `&` (closure B) = set0.
 
-Definition not_connected E := exists P : bool -> set T,
-  [/\ forall b, P b !=set0, separated (P false) (P true) &
-   E = P false `|` P true].
+Definition not_connected (T : topologicalType) (E : set T) :=
+  exists P : bool -> set T, [/\ forall b, P b !=set0, separated (P false) (P true) &
+    E = P false `|` P true].
 
-Lemma connectedP E : connected E <-> ~ not_connected E.
+Lemma connectedP (T : topologicalType) (E : set T) : connected E <-> ~ not_connected E.
 Proof.
 split=> [conE -[P [P0 [P1 P2] PU]]|conE B B0 [C oC BEC] [D cD BED]].
   suff : P true = E.
@@ -2865,6 +2858,52 @@ exists (fun i => if i is false then E `\` C else E `&` C); split.
     rewrite -BEC BED=> /closureI[_]; rewrite -(proj1 (@closure_id _ _) cD)=> Dy.
     by have : B y; [by rewrite BED; split|rewrite BEC=> -[]].
 - by rewrite setDE -setIUr setUCl setIT.
+Qed.
+
+Section connected_lemmas.
+Variable T : topologicalType.
+Implicit Types E : set T.
+
+Lemma connect0 : connected (@set0 T).
+Proof. by move=> ? ? [? ?]; rewrite set0I. Qed.
+
+Lemma connected_continuous_connected (U : topologicalType) (f : T -> U) E :
+  connected E -> continuous f -> connected (f @` E).
+Proof.
+move=> cE cf; apply/connectedP => -[P [P0 sP fEP]].
+set EfP := fun b => E `&` f @^-1` P b.
+suff sEfP : separated (EfP false) (EfP true).
+  move/connectedP : cE; apply; exists EfP; split => //.
+  - move=> b; case: (P0 b) => /= u Pbu.
+    have [t Et ftu] : (f @` E) u by rewrite fEP; case: b Pbu; [right|left].
+    by exists t; split => //; rewrite /preimage ftu.
+  - by rewrite -setIUr -preimage_setU -fEP; exact/esym/setIidPl/preimage_image.
+suff cI0 : forall b, closure (EfP b) `&` EfP (~~ b) = set0.
+  by rewrite /separated cI0 setIC cI0.
+move=> b.
+have [fEfP cPIP] :
+    f @` EfP (~~ b) = P (~~ b) /\ closure (P b) `&` P (~~ b) = set0.
+  split; last by case: sP => ? ?; case: b => //; rewrite setIC.
+  apply: eqEsubset.
+    apply: (subset_trans sub_image_setI).
+    by apply subIset; right; exact: image_preimage_subset.
+  move=> u Pbu.
+  have [e [Ee feu]] : exists e, E e /\ f e = u.
+    suff [e Ee feu] : (f @` E) u by exists e.
+    by rewrite fEP; case: b Pbu; [left|right].
+  by exists e => //; split => //; rewrite /preimage feu.
+have fcEfP : f @` closure (EfP b) `<=` closure (P b).
+  have /(@image_subset _ _ f) : closure (EfP b) `<=` f @^-1` closure (P b).
+    have /closure_id -> : closed (f @^-1` closure (P b)).
+      by apply closed_comp => //; exact: closed_closure.
+    apply: closure_subset.
+    have /(@preimage_subset _ _ f) P0cP0 := @subset_closure _ (P b).
+    by apply: subset_trans P0cP0; apply: subIset; right.
+  by move/subset_trans; apply; exact: image_preimage_subset.
+apply/eqP/negPn/negP/set0P => -[t [cEfPt EfPt]].
+have : f @` closure (EfP b) `&` f @` EfP (~~ b) = set0.
+  by rewrite fEfP; exact: subsetI_eq0 cPIP.
+by rewrite predeqE => /(_ (f t)) [fcEfPb] _; apply fcEfPb; split; exists t.
 Qed.
 
 End connected_lemmas.
