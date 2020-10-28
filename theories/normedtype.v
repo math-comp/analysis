@@ -4307,7 +4307,7 @@ End LinearContinuousBounded.
 
 Section Closed_Ball.
 
-
+(* NB(rei): closure_subset in PR#268 *)
 Lemma closureS (T : topologicalType) (A B: set T):
   (A `<=` B) -> (closure A `<=` closure B).
 Proof.
@@ -4316,13 +4316,14 @@ by move: (CAx C Cx) => [z [Az Cz]]; exists z; split; first by apply: AB.
 Qed.
 
 (* not obvious when one doesn't know that closed is defined from closure *)
+(* NB(rei): in PR#268 *)
 Lemma closure_id (T : topologicalType) (A : set T): closed A <-> A = closure A.
 Proof.
 split; last by move=> -> ; apply: closed_closure.
 by move => CA; apply: eqEsubset; first by apply: subset_closure.
 Qed.
 
-
+(* NB(rei): closureE in PR#268 *)
 Lemma closureI (T : topologicalType) ( A : set T) :
   closure A = \bigcap_(B in [ set B : set T | ( A `<=` B)/\ closed B]) B.
 Proof.
@@ -4331,7 +4332,6 @@ Proof.
   - apply: (Ax (closure A)); split; first by apply: subset_closure.
     by apply: closed_closure.
 Qed.
-(* to be removed when PR closure_connected is merged *)
 
 Definition closed_ball_ (R: numDomainType) (V: zmodType) (norm: V -> R) (x: V) (e : R) :=
   [set y | (norm (x- y) <=e)%O ].
@@ -4398,12 +4398,20 @@ Proof.
  by rewrite closure_closed_ball; first by apply: closed_closed_ball_.
 Qed.
 
-
-
-
 Lemma closed_open_ball (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
   exists e, ball x e `<=` closed_ball x r.
 Proof. by exists r; exact: subset_closure. Qed.
+
+Lemma closed_ball_ball (R : realFieldType) (M : normedModType R) (x : M)
+  (r0 r1 : R) : 0 < r0 -> r0 < r1 -> closed_ball x r0 `<=` ball x r1.
+Proof.
+move=> r00 r01; rewrite /closed_ball closureI => m xm.
+rewrite -ball_normE /ball_ (le_lt_trans _ r01) //; apply xm; split.
+  by rewrite -ball_normE /ball_ => ? /ltW.
+rewrite [X in closed X](_ : _ = closed_ball x (PosNum r00)%:num).
+  exact: closed_closed_ball.
+by rewrite predeqE => p; rewrite closure_closed_ball.
+Qed.
 
 (* Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R) *)
 (*       (B : set M) (x: M): *)
@@ -4413,13 +4421,18 @@ Proof. by exists r; exact: subset_closure. Qed.
 (*   by move => [r [r0 Br]]; apply/nbhs_ballP; by exists r. *)
 (* Qed. *)
 
-Lemma nbhs_closedballP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
+(* NB(rei): original statement was (R : numDomainType) (M : pseudoMetricNormedZmodType R) *)
+Lemma nbhs_closedballP (R : realFieldType) (M : normedModType R)
       (B : set M) (x: M):
    nbhs x B <-> exists (r : {posnum R}), closed_ball x r%:num `<=` B .
-Admitted.
-
-
-
+Proof.
+split=> [/nbhs_ballP[r r0 xrB]|[e xeB]].
+  have r20 : 0 < r / 2 by apply divr_gt0. exists (PosNum r20).
+  apply: subset_trans xrB => /=; apply: closed_ball_ball => //.
+  by rewrite lter_pdivr_mulr // ltr_pmulr // ltr1n.
+apply/nbhs_ballP; exists e%:num => //.
+by apply: subset_trans xeB; exact: subset_closure.
+Qed.
 
 Lemma closed_neigh_ball (R: realFieldType) (V:  normedModType R) (x : V) (r : {posnum R}) :
   open_nbhs x (closed_ball x r%:num)^°.
