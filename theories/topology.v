@@ -276,6 +276,14 @@ Require Import boolp classical_sets posnum.
 (*                                   completePseudoMetricType structure cT.   *)
 (* [completePseudoMetricType of T] == clone of a canonical                    *)
 (*                                   completePseudoMetricType structure on T. *)
+(*                                                                            *)
+(* We endow several standard types with the types of topological notions:     *)
+(* - products: prod_topologicalType, prod_uniformType, prod_pseudoMetricType  *)
+(* - matrices: matrix_filtered, matrix_topologicalType, matrix_uniformType,   *)
+(*     matrix_pseudoMetricType, matrix_completeType,                          *)
+(*     matrix_completePseudoMetricType                                        *)
+(* - numFieldType: numFieldType_filteredType, numFieldType_topologicalType,   *)
+(*     numFieldType_uniformType, numFieldType_pseudoMetricType                *)
 (******************************************************************************)
 
 Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
@@ -313,6 +321,121 @@ Reserved Notation "A ^°" (at level 1, format "A ^°").
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
+(********************************)
+(* Missing lemmas for mathcommp *)
+(********************************)
+
+Section MonoHomoMorphismTheory_in.
+
+Variables (aT rT : predArgType) (aD : {pred aT}) (rD : {pred rT}).
+Variables (f : aT -> rT) (g : rT -> aT) (aR : rel aT) (rR : rel rT).
+
+Hypothesis fgK : {in rD, {on aD, cancel g & f}}.
+Hypothesis mem_g : {homo g : x / x \in rD >-> x \in aD}.
+
+Lemma homoRL_in :
+    {in aD &, {homo f : x y / aR x y >-> rR x y}} ->
+  {in rD & aD, forall x y, aR (g x) y -> rR x (f y)}.
+Proof. by move=> Hf x y hx hy /Hf; rewrite fgK ?mem_g// ?inE; apply. Qed.
+
+Lemma homoLR_in :
+    {in aD &, {homo f : x y / aR x y >-> rR x y}} ->
+  {in aD & rD, forall x y, aR x (g y) -> rR (f x) y}.
+Proof. by move=> Hf x y hx hy /Hf; rewrite fgK ?mem_g// ?inE; apply. Qed.
+
+Lemma homo_mono_in :
+    {in aD &, {homo f : x y / aR x y >-> rR x y}} ->
+    {in rD &, {homo g : x y / rR x y >-> aR x y}} ->
+  {in rD &, {mono g : x y / rR x y >-> aR x y}}.
+Proof.
+move=> mf mg x y hx hy; case: (boolP (rR _ _))=> [/mg //|]; first exact.
+by apply: contraNF=> /mf; rewrite !fgK ?mem_g//; apply.
+Qed.
+
+Lemma monoLR_in :
+    {in aD &, {mono f : x y / aR x y >-> rR x y}} ->
+  {in aD & rD, forall x y, rR (f x) y = aR x (g y)}.
+Proof. by move=> mf x y hx hy; rewrite -{1}[y]fgK ?mem_g// mf ?mem_g. Qed.
+
+Lemma monoRL_in :
+    {in aD &, {mono f : x y / aR x y >-> rR x y}} ->
+  {in rD & aD, forall x y, rR x (f y) = aR (g x) y}.
+Proof. by move=> mf x y hx hy; rewrite -{1}[x]fgK ?mem_g// mf ?mem_g. Qed.
+
+Lemma can_mono_in :
+    {in aD &, {mono f : x y / aR x y >-> rR x y}} ->
+  {in rD &, {mono g : x y / rR x y >-> aR x y}}.
+Proof. by move=> mf x y hx hy; rewrite -mf ?mem_g// !fgK ?mem_g. Qed.
+
+End MonoHomoMorphismTheory_in.
+Arguments homoRL_in {aT rT aD rD f g aR rR}.
+Arguments homoLR_in {aT rT aD rD f g aR rR}.
+Arguments homo_mono_in {aT rT aD rD f g aR rR}.
+Arguments monoLR_in {aT rT aD rD f g aR rR}.
+Arguments monoRL_in {aT rT aD rD f g aR rR}.
+Arguments can_mono_in {aT rT aD rD f g aR rR}.
+
+Section onW_can.
+
+Variables (aT rT : predArgType) (aD : {pred aT}) (rD : {pred rT}).
+Variables (f : aT -> rT) (g : rT -> aT).
+
+Lemma onW_can : cancel g f -> {on aD, cancel g & f}.
+Proof. by move=> fgK x xaD; apply: fgK. Qed.
+
+Lemma onW_can_in : {in rD, cancel g f} -> {in rD, {on aD, cancel g & f}}.
+Proof. by move=> fgK x xrD xaD; apply: fgK. Qed.
+
+Lemma in_onW_can : cancel g f -> {in rD, {on aD, cancel g & f}}.
+Proof. by move=> fgK x xrD xaD; apply: fgK. Qed.
+
+Lemma onT_can : (forall x, g x \in aD) -> {on aD, cancel g & f} -> cancel g f.
+Proof. by move=> mem_g fgK x; apply: fgK. Qed.
+
+Lemma onT_can_in : {homo g : x / x \in rD >-> x \in aD} ->
+  {in rD, {on aD, cancel g & f}} -> {in rD, cancel g f}.
+Proof. by move=> mem_g fgK x x_rD; apply/fgK/mem_g. Qed.
+
+Lemma in_onT_can : (forall x, g x \in aD) ->
+  {in rT, {on aD, cancel g & f}} -> cancel g f.
+Proof. by move=> mem_g fgK x; apply/fgK. Qed.
+
+
+End onW_can.
+Arguments onW_can {aT rT} aD {f g}.
+Arguments onW_can_in {aT rT} aD {rD f g}.
+Arguments in_onW_can {aT rT} aD rD {f g}.
+Arguments onT_can {aT rT} aD {f g}.
+Arguments onW_can_in {aT rT} aD {rD f g}.
+Arguments in_onT_can {aT rT} aD {f g}.
+
+Section inj_can_sym_in_on.
+Variables (aT rT : predArgType) (aD : {pred aT}) (rD : {pred rT}).
+Variables (f : aT -> rT) (g : rT -> aT).
+
+Lemma inj_can_sym_in_on : {homo f : x / x \in aD >-> x \in rD} ->
+  {in aD, {on rD, cancel f & g}} ->
+  {in [pred x | x \in rD & g x \in aD], injective g} ->
+  {in rD, {on aD, cancel g & f}}.
+Proof. by move=> fD fK gI x x_rD gx_aD; apply: gI; rewrite ?inE ?fK ?fD. Qed.
+
+Lemma inj_can_sym_on : {in aD, cancel f g} ->
+  {in [pred x | g x \in aD], injective g} -> {on aD, cancel g & f}.
+Proof. by move=> fK gI x gx_aD; apply: gI; rewrite ?inE ?fK. Qed.
+
+Lemma inj_can_sym_in : {homo f \o g : x / x \in rD} -> {on rD, cancel f & g} ->
+  {in rD, injective g} ->  {in rD, cancel g f}.
+Proof. by move=> fgD fK gI x x_rD; apply: gI; rewrite ?fK ?fgD. Qed.
+
+End inj_can_sym_in_on.
+Arguments inj_can_sym_in_on {aT rT aD rD f g}.
+Arguments inj_can_sym_on {aT rT aD f g}.
+Arguments inj_can_sym_in {aT rT rD f g}.
+
+(*************************)
+(* Mathcomp analysis now *)
+(*************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
@@ -3917,3 +4040,71 @@ Canonical matrix_completePseudoMetricType (R : numFieldType)
 Canonical fct_completePseudoMetricType (T : choiceType) (R : numFieldType)
   (U : completePseudoMetricType R) :=
   CompletePseudoMetricType (T -> U) fun_complete.
+
+Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
+
+Definition ball_
+  (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V) (e : R) :=
+  [set y | norm (x - y) < e].
+Arguments ball_ {R} {V} norm x e%R y /.
+
+Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
+  : filteredType R := Filtered.Pack (Filtered.Class
+    (@Pointed.class (pointed_of_zmodule R))
+    (nbhs_ball_ (ball_ (fun x => `|x|)))).
+
+Section pseudoMetric_of_normedDomain.
+Variables (K : numDomainType) (R : normedZmodType K).
+Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ Num.Def.normr x e x.
+Proof. by move=> ? /=; rewrite subrr normr0. Qed.
+Lemma ball_norm_symmetric (x y : R) (e : K) :
+  ball_ Num.Def.normr x e y -> ball_ Num.Def.normr y e x.
+Proof. by rewrite /= distrC. Qed.
+Lemma ball_norm_triangle (x y z : R) (e1 e2 : K) :
+  ball_ Num.Def.normr x e1 y -> ball_ Num.Def.normr y e2 z -> ball_ Num.Def.normr x (e1 + e2) z.
+Proof.
+move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
+by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
+Qed.
+Definition pseudoMetric_of_normedDomain
+  : PseudoMetric.mixin_of K (@entourage_ K R R (ball_ (fun x => `|x|)))
+  := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+Lemma nbhs_ball_normE :
+  @nbhs_ball_ K R R (ball_ Num.Def.normr) = nbhs_ (entourage_ (ball_ Num.Def.normr)).
+Proof.
+rewrite /nbhs_ entourage_E predeq2E => x A; split.
+  move=> [e egt0 sbeA].
+  by exists [set xy | ball_ Num.Def.normr xy.1 e xy.2] => //; exists e.
+by move=> [E [e egt0 sbeE] sEA]; exists e => // ??; apply/sEA/sbeE.
+Qed.
+End pseudoMetric_of_normedDomain.
+
+Section numFieldType_canonical.
+Variable R : numFieldType.
+(*Canonical topological_of_numFieldType := [numFieldType of R^o].*)
+Canonical numFieldType_pointedType :=
+  [pointedType of R^o for pointed_of_zmodule R].
+Canonical numFieldType_filteredType :=
+  [filteredType R of R^o for filtered_of_normedZmod R].
+Canonical numFieldType_topologicalType : topologicalType := TopologicalType R^o
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ [normedZmodType R of R])
+      (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+Canonical numFieldType_uniformType : uniformType := UniformType R^o
+  (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
+    (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+Canonical numFieldType_pseudoMetricType := @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R
+  (Uniform.class numFieldType_uniformType) (@pseudoMetric_of_normedDomain R R)).
+Definition numFieldType_lalgType : lalgType R := @GRing.regular_lalgType R.
+End numFieldType_canonical.
+
+Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R^o) :
+  ProperFilter (nbhs' x).
+Proof.
+apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
+exists (x + e%:num / 2)%R; apply: Ae; last first.
+  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
+rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
+by rewrite {2}(splitr e%:num) ltr_spaddl.
+Qed.

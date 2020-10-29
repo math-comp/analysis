@@ -57,6 +57,9 @@
 - definitions `dep_arrow_choiceClass` and `dep_arrow_pointedType`
   slightly generalized and moved from `topology.v` to
   `classical_sets.v`
+- the types of the topological notions for `numFieldType` have been moved from `normedtype.v` to `topology.v`
+- the topology of extended real numbers has been moved from `normedtype.v` to `ereal.v` (including the notions of filters)
+- `numdFieldType_lalgType` in `normedtype.v` renamed to `numFieldType_lalgType` in `topology.v`
 
 ### Renamed
 
