@@ -41,7 +41,7 @@
     `is_cvg_geometric_series`.
   + lemmas `ereal_cvgN`, `ereal_cvg_ge0`, `ereal_lim_ge`, `ereal_lim_le`
   + lemma `ereal_cvg_real`
-  + lemmas `is_cvg_ereal_nneg_series`, `ereal_nneg_series_lim_ge0`, `ereal_nneg_series_pinfty`
+  + lemmas `is_cvg_ereal_nneg_series_cond`, `is_cvg_ereal_nneg_series`, `ereal_nneg_series_lim_ge0`, `ereal_nneg_series_pinfty`
   + lemmas `ereal_cvgPpinfty`, `ereal_cvgPninfty`, `lee_lim`
   + lemma `ereal_cvgD`
     * with intermediate lemmas `ereal_cvgD_pinfty_fin`, `ereal_cvgD_ninfty_fin`, `ereal_cvgD_pinfty_pinfty`, `ereal_cvgD_ninfty_ninfty`
