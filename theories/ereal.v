@@ -514,11 +514,12 @@ Lemma lee_sum I (f g : I -> {ereal R}) s (P : pred I) :
   \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
 Proof. by move=> Pfg; elim/big_ind2 : _ => // *; apply lee_add. Qed.
 
-Lemma lee_sum_nneg_ord (f : nat -> {ereal R}) : (forall n, 0%:E <= f n) ->
-  {homo (fun n => \sum_(i < n) (f i))%E : i j / (i <= j)%N >-> i <= j}.
+Lemma lee_sum_nneg_ord (f : nat -> {ereal R}) (P : pred nat) :
+  (forall n, P n -> 0%:E <= f n)%E ->
+  {homo (fun n => \sum_(i < n | P i) (f i))%E : i j / (i <= j)%N >-> (i <= j)%E}.
 Proof.
-move=> g_ge m n /(big_ord_widen _) ->; rewrite big_mkcond lee_sum //=.
-by move=> i; case: ifP.
+move=> f0 m n ?; rewrite (big_ord_widen_cond n) // big_mkcondr /=.
+by rewrite lee_sum // => i ?; case: ifP => // _; exact: f0.
 Qed.
 
 Lemma lee_sum_nneg I (s : seq I) (P Q : pred I)
