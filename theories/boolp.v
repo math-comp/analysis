@@ -278,15 +278,15 @@ move=> cb /asboolPn nb; apply/asboolPn.
 by apply: contra nb => /asboolP /cb /asboolP.
 Qed.
 
-(** subsumed by mathcomp 1.2, to be removed *)
+(** subsumed by mathcomp 1.12, to be removed *)
 Lemma contra_notT (P: Prop) (b:bool) : (~~ b -> P) -> ~ P -> b.
 Proof. by case: b => //= /(_ isT) HP /(_ HP). Qed.
 
-(** subsumed by mathcomp 1.2, to be removed *)
+(** subsumed by mathcomp 1.12, to be removed *)
 Lemma contra_notN (P: Prop) (b:bool) : (b -> P) -> ~ P -> ~~ b.
 Proof. rewrite -{1}[b]negbK; exact: contra_notT. Qed.
 
-(** subsumed by mathcomp 1.2, to be removed *)
+(** subsumed by mathcomp 1.12, to be removed *)
 Lemma contra_not_neq (T: eqType)  (P: Prop) (x y:T) : (x = y -> P) -> ~ P -> x != y.
 Proof. by move=> imp; apply: contra_notN => /eqP. Qed.
 
@@ -610,11 +610,18 @@ Proof. by rewrite forallNE. Qed.
 Lemma not_forallP T (P : T -> Prop) : (forall x, P x) <-> ~ exists x, ~ P x.
 Proof. by rewrite existsNE notK. Qed.
 
-Lemma exists2NP T (P Q : T -> Prop) :
-  ~ (exists2 x, P x & Q x) -> forall x, ~ P x \/ ~ Q x.
+Lemma not_exists2P T (P Q : T -> Prop) :
+  (exists2 x, P x & Q x) <-> ~ forall x, ~ P x \/ ~ Q x.
 Proof.
-apply: contra_notP; case/asboolPn/existsp_asboolPn=> [x].
-by case/not_orP => /contrapT Px /contrapT Qx; exists x.
+split=> [[x Px Qx] /(_ x) [|]//|]; apply: contra_notP => PQ t.
+by rewrite -not_andP; apply: contra_not PQ => -[Pt Qt]; exists t.
+Qed.
+
+Lemma forall2NP T (P Q : T -> Prop) :
+  (forall x, ~ P x \/ ~ Q x) <-> ~ (exists2 x, P x & Q x).
+Proof.
+split=> [PQ [t Pt Qt]|PQ t]; first by have [] := PQ t.
+by rewrite -not_andP => -[Pt Qt]; apply PQ; exists t.
 Qed.
 
 (* -------------------------------------------------------------------- *)

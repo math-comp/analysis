@@ -151,7 +151,7 @@ Lemma finiteNP (E : pred T): (forall s : seq T, ~ {subset E <= s}) ->
 Proof.
 move=> finN; elim=> [|n [s] [<- uq_s sE]]; first by exists [::].
 have [x sxN xE]: exists2 x, x \notin s & x \in E.
-  apply: contra_notP (finN (filter (mem E) s)) => /exists2NP finE x Ex.
+  apply: contra_notP (finN (filter (mem E) s)) => /forall2NP finE x Ex.
   move/or_asboolP: (finE x).
   by rewrite !asbool_neg !asboolb negbK Ex mem_filter orbF [(mem E) x]Ex.
 exists (x :: s) => /=; rewrite sxN; split=> // y.
