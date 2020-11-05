@@ -6,10 +6,13 @@ Analysis library compatible with Mathematical Components
 
 ## Disclaimer
 
-This library is still at an early and experimental stage.
+This library is still at an experimental stage.
 Contents may change, definitions and theorems may be renamed,
 and inference mechanisms may be replaced at any major version bump.
 Use at your own risk.
+
+Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
+[CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
 
 ## Contents
 
@@ -20,11 +23,14 @@ library.
 It is inspired by the [Coquelicot library]. The instantiation of the
 mathematical structures of the Mathematical Components library with
 the real numbers of the standard Coq library uses a well-known file
-(Rstruct.v) from the [CoqApprox library] (with modifications from various
-authors).
+(`Rstruct.v`) from the [CoqApprox library] (with modifications from
+various authors).
 
 [Coquelicot library]: http://coquelicot.saclay.inria.fr/
 [CoqApprox library]: http://tamadi.gforge.inria.fr/CoqApprox/
+
+[ORIGINAL_FILES.md](ORIGINAL_FILES.md) gives more details about the
+files in the first releases.
 
 ## Contributing
 
@@ -40,10 +46,6 @@ The license for this library's original contents is [CeCILL-C].
 
 see [AUTHORS.md](AUTHORS.md)
 
-## Files
-
-see [FILES.md](FILES.md)
-
 ## Requirements and Installation Procedure
 
 see [INSTALL.md](INSTALL.md)
@@ -51,3 +53,13 @@ see [INSTALL.md](INSTALL.md)
 ## Developping with nix
 
 see [NIX.md](NIX.md)
+
+## Documentation
+
+Each file is documented in its header.
+
+See also the following publications:
+
+- [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124)
+- [Outils pour la Formalisation en Analyse Classique](http://www-sop.inria.fr/members/Damien.Rouhling/data/phd/thesis.pdf)
+- [Competing inheritance paths in dependent type theory: a case study in functional analysis](https://hal.inria.fr/hal-02463336)
