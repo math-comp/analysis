@@ -4148,6 +4148,14 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Grab Existential Variables. all: end_near. Qed.
 
+Lemma normrZV (R : numFieldType) (V: normedModType R) (x : V):
+  x != 0 -> `| `| x|^-1 *: x | = 1.
+Proof.
+move =>  x0; rewrite normmZ normrV ?unitf_gt0 ?normr_gt0 //=.
+by rewrite normrE mulrC mulrV ?unitf_gt0 ?normr_gt0.
+Qed.
+
+
 Section LinearContinuousBounded.
 
 Variables (R : numFieldType) (V W : normedModType R).
@@ -4263,26 +4271,6 @@ split => [/(_ 1) [M Bf]|/linear_boundedP [r [r0 Bf]] e].
  - by exists (e * r) => x xe; rewrite (le_trans (Bf _)) // ler_pmul.
 Qed.
 
-(* Lemma bounded_landau (f :{linear V->W}) : *)
-(*   bounded_fun_norm f <-> ((f : V -> W) =O_ (0:V) cst (1 : K^o)). *)
-(* Proof. *)
-(*   split. *)
-(*   - rewrite eqOP => bf. *)
-(*     move: (bf 1) => [M bm]. *)
-(*     rewrite !nearE /=; exists M; split. by  apply : num_real. *)
-(*     move => x Mx; rewrite nearE nbhs_normP /=. *)
-(*     exists 1; first by []. *)
-(*     move => y /=. rewrite -ball_normE /ball_ sub0r normrN /cst normr1 mulr1 => y1. *)
-(*     apply: (@le_trans _ _ M _ _). *)
-(*     apply: (bm y); by apply: ltW. *)
-(*     by apply: ltW. *)
-(*   - rewrite eqOP /= ; move => Bf; apply/bounded_funP; rewrite /bounded_on. *)
-(*     near=>M. *)
-(*     set P :=  (X in (nbhs _ X)). *)
-(*     have -> : P  = (fun x : V => (`|f x| <= M * `|cst 1%R x|)%O). *)
-(*       by apply: funext => x; rewrite /cst normr1 mulr1. *)
-(*     by near: M. *)
-(* Grab Existential Variables. all: end_near. Qed. *)
 
 End LinearContinuousBounded.
 
@@ -4336,14 +4324,7 @@ Lemma closed_ballxx (R: numDomainType) (V: pseudoMetricType R) (x: V) (e : R):
   (0 < e) -> closed_ball x e x.
 Proof. by move => e0; apply: subset_closure; apply: ballxx. Qed.
 
-Lemma normrxx (R : numFieldType) (V: normedModType R) (x : V):
-  x != 0 -> `| `| x|^-1 *: x | = 1.
-Proof.
-move =>  x0; rewrite normmZ normrV ?unitf_gt0 ?normr_gt0 //=.
-by rewrite normrE mulrC mulrV ?unitf_gt0 ?normr_gt0.
-Qed.
 
-(*used a lot *)
 
 Lemma closure_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
   (e : {posnum R}) : closed_ball x e%:num = closed_ball_ normr x e%:num.
@@ -4390,15 +4371,7 @@ rewrite [X in closed X](_ : _ = closed_ball x (PosNum r00)%:num).
 by rewrite predeqE => p; rewrite closure_closed_ball.
 Qed.
 
-(* Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R) *)
-(*       (B : set M) (x: M): *)
-(*    nbhs x B <-> exists r, (0 < r) /\ ball x r `<=` B . *)
-(* Proof. *)
-(*   split; first by move=>/nbhs_ballP [r ro Br]; exists r; split. *)
-(*   by move => [r [r0 Br]]; apply/nbhs_ballP; by exists r. *)
-(* Qed. *)
 
-(* NB(rei): original statement was (R : numDomainType) (M : pseudoMetricNormedZmodType R) *)
 Lemma nbhs_closedballP (R : realFieldType) (M : normedModType R) (B : set M)
   (x : M) : nbhs x B <-> exists (r : {posnum R}), closed_ball x r%:num `<=` B.
 Proof.
