@@ -27,6 +27,9 @@
   + arithmetic lemmas: `oppeD`, `subre_ge0`, `suber_ge0`, `lee_add2lE`, `lte_add2lE`,
     `lte_add`, `lte_addl`, `lte_le_add`, `lte_subl_addl`, `lee_subr_addr`,
     `lee_subl_addr`, `lte_spaddr`
+  + lemmas `gee0P`, `sume_ge0`, `lee_sum_nneg`, `lee_sum_nneg_ord`, `lee_sum_nneg_subset`, `lee_sum_nneg_subfset`
+  + lemma `lee_addr`
+  + lemma `lee_adde`
 - in `normedtype.v`:
   + lemmas `natmul_continuous`, `cvgMn` and `is_cvgMn`.
   + `uniformType` structure for `ereal`
@@ -60,6 +63,10 @@
 - the types of the topological notions for `numFieldType` have been moved from `normedtype.v` to `topology.v`
 - the topology of extended real numbers has been moved from `normedtype.v` to `ereal.v` (including the notions of filters)
 - `numdFieldType_lalgType` in `normedtype.v` renamed to `numFieldType_lalgType` in `topology.v`
+- in `ereal.v`:
+  + the first argument of `real_of_er` is now maximal implicit
+  + the first argument of `is_real` is now maximal implicit
+  + generalization of `lee_sum`
 
 ### Renamed
 

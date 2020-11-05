@@ -5,6 +5,7 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import finmap.
 Require Import boolp classical_sets reals posnum topology.
 
 (******************************************************************************)
@@ -67,6 +68,7 @@ Coercion real_of_er x : R :=
   if x is ERFin v then v else 0.
 
 End ExtendedReals.
+Arguments real_of_er {R}.
 
 
 Notation "+oo" := (@ERPInf _) : ereal_scope.
@@ -218,6 +220,13 @@ Proof. exact: num_real. Qed.
 
 Lemma lee_pinfty (R : realDomainType) (x : {ereal R}) : x <= +oo.
 Proof. case: x => //= r; exact: num_real. Qed.
+
+Lemma gee0P (R : realDomainType) (x : {ereal R}) :
+  0%:E <= x <-> x = +oo \/ exists2 r, (r >= 0)%R & x = r%:E.
+Proof.
+split=> [|[->|[r r0 ->//]]]; last exact: lee_pinfty.
+by case: x => [r r0 | _ |//]; [right; exists r|left].
+Qed.
 
 Lemma lte_ninfty (R : realDomainType) (x : R) : (-oo < x%:E).
 Proof. exact: num_real. Qed.
@@ -402,11 +411,13 @@ Qed.
 Lemma adde_ge0 x y : 0%:E <= x -> 0%:E <= y -> 0%:E <= x + y.
 Proof. by move: x y => [r0| |] [r1| |] // ? ?; rewrite !lee_fin addr_ge0. Qed.
 
-Lemma sume_ge0 T (u_ : T -> {ereal R}) : (forall n, 0%:E <= u_ n) -> forall l,
-  0%:E <= \sum_(i <- l) u_ i.
-Proof. by move=> ?; elim => [|? ? ?]; rewrite ?big_nil// big_cons adde_ge0. Qed.
+Lemma sume_ge0 T (u_ : T -> {ereal R}) (P : pred T) :
+  (forall n, P n -> 0%:E <= u_ n) ->
+  forall l, 0%:E <= \sum_(i <- l | P i) u_ i.
+Proof. by move=> u0 l; elim/big_rec : _ => // t x Pt; apply/adde_ge0/u0. Qed.
 
 End ERealArithTh_numDomainType.
+Arguments is_real {R}.
 
 Section ERealArithTh_realDomainType.
 
@@ -449,11 +460,14 @@ move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//
 by rewrite !lte_fin; exact: ltr_add.
 Qed.
 
-Lemma lee_addl x y : (0%:E <= y) -> (x <= x + y).
+Lemma lee_addl x y : 0%:E <= y -> x <= x + y.
 Proof.
 move: x y => -[ x [y| |]//= | [| |]// | [| | ]//];
   by [rewrite !lee_fin ler_addl | move=> _; exact: lee_pinfty].
 Qed.
+
+Lemma lee_addr x y : 0%:E <= y -> x <= y + x.
+Proof. by rewrite addeC; exact: lee_addl. Qed.
 
 Lemma lte_addl r x : 0%:E < x -> r%:E < r%:E + x.
 Proof.
@@ -466,7 +480,7 @@ move: a b => [a| |] [b| |] //; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_add2l.
 Qed.
 
-Lemma lee_add2l x a b : (a <= b) -> (x + a <= x + b).
+Lemma lee_add2l x a b : a <= b -> x + a <= x + b.
 Proof.
 move: a b x => -[a [b [x /=|//|//] | []// |//] | []// | ].
 - by rewrite !lee_fin ler_add2l.
@@ -480,10 +494,10 @@ move: a b => [a| |] [b| |] //; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_add2l.
 Qed.
 
-Lemma lee_add2r x a b : (a <= b) -> (a + x <= b + x).
+Lemma lee_add2r x a b : a <= b -> a + x <= b + x.
 Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
 
-Lemma lee_add a b x y : (a <= b) -> (x <= y) -> (a + x <= b + y).
+Lemma lee_add a b x y : a <= b -> x <= y -> a + x <= b + y.
 Proof.
 move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(lee_pinfty,lee_ninfty)//.
 by rewrite !lee_fin; exact: ler_add.
@@ -495,11 +509,44 @@ move: x y => [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
 by rewrite !lte_fin; exact: ltr_le_add.
 Qed.
 
-Lemma lee_sum (f g : nat -> {ereal R}) :
-  (forall i, f i <= g i) -> forall n, \sum_(i < n) f i <= \sum_(i < n) g i.
+Lemma lee_sum I (f g : I -> {ereal R}) s (P : pred I) :
+  (forall i, P i -> f i <= g i) ->
+  \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
+Proof. by move=> Pfg; elim/big_ind2 : _ => // *; apply lee_add. Qed.
+
+Lemma lee_sum_nneg_ord (f : nat -> {ereal R}) (P : pred nat) :
+  (forall n, P n -> 0%:E <= f n)%E ->
+  {homo (fun n => \sum_(i < n | P i) (f i))%E : i j / (i <= j)%N >-> (i <= j)%E}.
 Proof.
-move=> fg; elim => [|n ih]; first by rewrite !big_ord0.
-by rewrite 2!big_ord_recr /= lee_add.
+move=> f0 m n ?; rewrite (big_ord_widen_cond n) // big_mkcondr /=.
+by rewrite lee_sum // => i ?; case: ifP => // _; exact: f0.
+Qed.
+
+Lemma lee_sum_nneg I (s : seq I) (P Q : pred I)
+  (f : I -> {ereal R}) : (forall i, P i -> ~~ Q i -> 0%:E <= f i) ->
+  \sum_(i <- s | P i && Q i) f i <= \sum_(i <- s | P i) f i.
+Proof.
+move=> PQf; rewrite [X in _ <= X](bigID Q) /= -[X in X <= _]adde0 lee_add //.
+by rewrite sume_ge0 // => i /andP[]; exact: PQf.
+Qed.
+
+Lemma lee_sum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> {ereal R}) :
+  {subset Q <= P} -> {in [predD P & Q], forall i, (0%:E <= f i)%E} ->
+  (\sum_(i <- s | Q i) f i <= \sum_(i <- s | P i) f i)%E.
+Proof.
+move=> QP PQf; rewrite big_mkcond [X in (_ <= X)%E]big_mkcond lee_sum// => i.
+by move/implyP: (QP i); move: (PQf i); rewrite !inE -!topredE/=; do !case: ifP.
+Qed.
+
+Lemma lee_sum_nneg_subfset (T : choiceType) (A B : {fset T}%fset)
+  (f : T -> {ereal R}) : {subset A <= B} ->
+  {in [predD B & A], forall t, 0%:E <= f t} ->
+  \sum_(t <- A) f t <= \sum_(t <- B) f t.
+Proof.
+move=> AB f0; rewrite (big_fsetID _ (mem A) B) /= -[X in X <= _]adde0 lee_add//.
+  rewrite [in X in X <= _](_ : A = [fset x in B | x \in A]%fset) //.
+  by apply/fsetP=> t; rewrite !inE /= andbC; case: (boolP (_ \in _)) => // /AB.
+by rewrite big_fset /= big_seq_cond sume_ge0 // => t ?; rewrite f0 // inE andbC.
 Qed.
 
 Lemma lte_subl_addr x (r : R) z : (x - r%:E < z) = (x < z + r%:E).
@@ -587,17 +634,33 @@ by rewrite lte_ninfty /Order.lt /= realN num_real.
 by rewrite lte_pinfty /Order.lt /= realN num_real.
 Qed.
 
-Section ereal_supremum.
+Section realFieldType_lemmas.
 Variable R : realFieldType.
-Local Open Scope classical_set_scope.
-Implicit Types S : set {ereal R}.
 Implicit Types x y : {ereal R}.
+
+Lemma lee_adde x y : (forall e : {posnum R}, x <= y + e%:num%:E) -> x <= y.
+Proof.
+move: x y => [x| |] [y| |] //=; rewrite ?(lee_ninfty,lee_pinfty) //;
+  try by move/(_ (PosNum ltr01)).
+rewrite lee_fin => abe; rewrite leNgt; apply/negP => ba; apply/existsNP : abe.
+have xy : (0 < (x - y) / 2)%R by apply divr_gt0 => //; rewrite subr_gt0.
+exists (PosNum xy); apply/negP; rewrite -ltNge lte_fin -ltr_subr_addl.
+by rewrite ltr_pdivr_mulr // ltr_pmulr ?subr_gt0 // ltr1n.
+Qed.
 
 Lemma lte_spaddr (r : R) x y : 0%:E < y -> r%:E <= x -> r%:E < x + y.
 Proof.
 move: y x => [y| |] [x| |] //=; rewrite ?lte_fin ?ltt_fin ?lte_pinfty //.
 exact: ltr_spaddr.
 Qed.
+
+End realFieldType_lemmas.
+
+Section ereal_supremum.
+Variable R : realFieldType.
+Local Open Scope classical_set_scope.
+Implicit Types S : set {ereal R}.
+Implicit Types x y : {ereal R}.
 
 Lemma ereal_ub_pinfty S : ubound S +oo.
 Proof. by apply/ubP=> x _; rewrite lee_pinfty. Qed.
