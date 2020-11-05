@@ -70,16 +70,16 @@ Require Import boolp classical_sets posnum.
 (*                 PFilterPack F FF == packs the set of sets F with the proof *)
 (*                                     FF of ProperFilter F to build a        *)
 (*                                     pfilter_on T structure.                *)
-(*                    fmap f F == image of the filter F by the function  *)
-(*                                     f.                                     *)
-(*                     E @[x --> F] == image of the canonical filter          *)
+(*                         fmap f F == image of the filter F by the function  *)
+(*                                     f                                      *)
+(*                       E @[x --> F] == image of the canonical filter        *)
 (*                                     associated to F by the function        *)
 (*                                     (fun x => E).                          *)
 (*                            f @ F == image of the canonical filter          *)
 (*                                     associated to F by the function f.     *)
-(*                   fmapi f F == image of the filter F by the relation  *)
-(*                                     f.                                     *)
-(*                    E `@[x --> F] == image of the canonical filter          *)
+(*                        fmapi f F == image of the filter F by the relation  *)
+(*                                     f                                      *)
+(*                      E `@[x --> F] == image of the canonical filter        *)
 (*                                     associated to F by the relation        *)
 (*                                     (fun x => E).                          *)
 (*                           f `@ F == image of the canonical filter          *)
@@ -186,6 +186,7 @@ Require Import boolp classical_sets posnum.
 (*                          nbhs' x == set of neighbourhoods of x where x is  *)
 (*                                     excluded.                              *)
 (*                        closure A == closure of the set A.                  *)
+(*                    limit_point E == the set of limit points of E           *)
 (*                           closed == set of closed sets.                    *)
 (*                        cluster F == set of cluster points of F.            *)
 (*                          compact == set of compact sets w.r.t. the filter- *)
@@ -195,6 +196,7 @@ Require Import boolp classical_sets posnum.
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
 (*                                     is both open and closed in A is A.     *)
+(*                    separated A B == the two sets A and B are separated     *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
 (*                                     if P is convertible to G (globally A)  *)
 (*                                                                            *)
@@ -556,8 +558,6 @@ Notation "[ 'filteredType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
   (at level 0, format "[ 'filteredType'  U  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'filteredType' U 'of' T ]" := (@clone U T _ _ id)
   (at level 0, format "[ 'filteredType'  U  'of'  T ]") : form_scope.
-
-
 
 (* The default filter for an arbitrary element is the one obtained *)
 (* from its type *)
@@ -2192,6 +2192,20 @@ Proof. by move=> p ??; exists p; split=> //; apply: nbhs_singleton. Qed.
 Lemma closureI (A B : set T) : closure (A `&` B) `<=` closure A `&` closure B.
 Proof. by move=> p clABp; split=> ? /clABp [q [[]]]; exists q. Qed.
 
+Definition limit_point E := [set t : T |
+  forall U, nbhs t U -> exists y, [/\ y != t, E y & U y]].
+
+Lemma subset_limit_point E : limit_point E `<=` closure E.
+Proof. by move=> t Et U tU; have [p [? ? ?]] := Et _ tU; exists p. Qed.
+
+Lemma closure_limit_point E : closure E = E `|` limit_point E.
+Proof.
+rewrite predeqE => t; split => [cEt|]; last first.
+  by case; [exact: subset_closure|exact: subset_limit_point].
+have [?|Et] := pselect (E t); [by left|right=> U tU; have [p []] := cEt _ tU].
+by exists p; split => //; apply/eqP => pt; apply: Et; rewrite -pt.
+Qed.
+
 Definition closed (D : set T) := closure D `<=` D.
 
 Lemma closedC (D : set T) : open D -> closed (~` D).
@@ -2268,20 +2282,6 @@ Section closure_lemmas.
 Variable T : topologicalType.
 Implicit Types E A B U : set T.
 
-Definition limit_point E := [set t : T |
-  forall U, nbhs t U -> exists y, [/\ y != t, E y & U y]].
-
-Lemma subset_limit_point E : limit_point E `<=` closure E.
-Proof. by move=> t Et U tU; have [p [? ? ?]] := Et _ tU; exists p. Qed.
-
-Lemma closure_limit_point E : closure E = E `|` limit_point E.
-Proof.
-rewrite predeqE => t; split => [cEt|]; last first.
-  by case; [exact: subset_closure|exact: subset_limit_point].
-have [?|Et] := pselect (E t); [by left|right=> U tU; have [p []] := cEt _ tU].
-by exists p; split => //; apply/eqP => pt; apply: Et; rewrite -pt.
-Qed.
-
 Lemma closure_open_nbhs E :
   closure E = [set t : T | forall U, open_nbhs t U -> E `&` U !=set0].
 Proof.
@@ -2324,6 +2324,13 @@ Definition cluster (F : set (set T)) (p : T) :=
 
 Lemma clusterE F : cluster F = \bigcap_(A in F) (closure A).
 Proof. by rewrite predeqE => p; split=> cF ????; apply: cF. Qed.
+
+Lemma closure_cluster_globally E : closure E = cluster (globally E).
+Proof.
+rewrite closureE clusterE predeqE => t; split=> [Et A EA|Et A [cA EA]].
+  by rewrite closureE => B [? AB]; apply Et; split=> //; exact: subset_trans AB.
+by rewrite (iffLR (closure_id A) cA); exact: Et.
+Qed.
 
 Lemma cvg_cluster F G : F --> G -> cluster F `<=` cluster G.
 Proof. by move=> sGF p Fp P Q GP Qp; apply: Fp Qp; apply: sGF. Qed.
@@ -2829,10 +2836,11 @@ Definition separated (T : topologicalType) (A B : set T) :=
   (closure A) `&` B = set0 /\ A `&` (closure B) = set0.
 
 Definition not_connected (T : topologicalType) (E : set T) :=
-  exists P : bool -> set T, [/\ forall b, P b !=set0, separated (P false) (P true) &
-    E = P false `|` P true].
+  exists P : bool -> set T, [/\ forall b, P b !=set0,
+    separated (P false) (P true) & E = P false `|` P true].
 
-Lemma connectedP (T : topologicalType) (E : set T) : connected E <-> ~ not_connected E.
+Lemma connectedP (T : topologicalType) (E : set T) :
+  connected E <-> ~ not_connected E.
 Proof.
 split=> [conE -[P [P0 [P1 P2] PU]]|conE B B0 [C oC BEC] [D cD BED]].
   suff : P true = E.

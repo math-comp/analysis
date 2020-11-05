@@ -66,6 +66,7 @@
   + definition `limit_point`
   + lemmas `subset_limit_point`, `closure_limit_point`, `closure_open_nbhs`,
     `closure_subset`, `closureE`, `closureC`, `closure_id`
+  + lemma `closure_cluster_globally`
   + definition `separated`, `not_connected`
   + lemmas `connected0`, `connectedP`, `connected_continuous_connected`
 
