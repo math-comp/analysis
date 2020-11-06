@@ -1,0 +1,25 @@
+s/cvg_within/cvg_app_within/g;
+s/cvg/PREPROCESS/g;
+s/\([^n]\)lim_add/\1cvgD/g;
+s/\([^n]\)lim_opp/\1cvgN/g;
+s/\([^n]\)lim_mult/\1cvgM/g;
+s/\([^n]\)lim_mul/\1cvgM/g;
+s/\([^n]\)lim_scale/\1cvgZ/g;
+s/\([^n]\)lim_sub/\1cvgN/g;
+s/\([^n]\)lim_cst/\1cvg_cst/g;
+s/\([^n]\)lim_cont/\1cvg_cont/g;
+s/Definition flim/Definition cvg_to/g;
+s/(flim F G)/(cvg_to F G)/g;
+s/(flim \[/(cvg_to \[/g;
+s/flim/cvg/g;
+s/approaches/cvg/g;
+s/approach/cvg/g;
+s/\(is_\)\?filter_\?lim/cvg/g;
+s/filtermap/fmap/g;
+s/close_lim/close_cvg/g;
+s/Flim/Cvg/g;
+s/_cont\([^a-z]\)/_continuous\1/g
+s/fcvg/cvg/g;
+s/subset_fmap/cvg_fmap2/;
+s/\([ (]\)cvg *(\([^)]*\)) *(\([^)]*\))/\1\2 `=>` \3/g;
+s/PREPROCESS/cvg/g;

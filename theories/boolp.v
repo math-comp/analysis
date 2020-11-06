@@ -140,7 +140,6 @@ Qed.
 Lemma gen_choiceMixin {T : Type} : Choice.mixin_of T.
 Proof. by case: classic. Qed.
 
-
 Lemma pdegen (P : Prop): P = True \/ P = False.
 Proof. by have [p|Np] := pselect P; [left|right]; rewrite propeqE. Qed.
 
@@ -180,6 +179,9 @@ Proof. by rewrite propeqE /asbool; case: pselect; split. Qed.
 
 Lemma asboolP (P : Prop) : reflect P `[<P>].
 Proof. by apply: (equivP idP); rewrite asboolE. Qed.
+
+Lemma asboolb (b : bool) : `[< b >] = b.
+Proof. by apply/asboolP/idP. Qed.
 
 Lemma asboolPn (P : Prop) : reflect (~ P) (~~ `[<P>]).
 Proof. by rewrite /asbool; case: pselect=> h; constructor. Qed.
@@ -270,37 +272,29 @@ by case=> x bPx; apply/asboolP; exists x; apply/asboolP.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma contrap (Q P : Prop) : (Q -> P) -> ~ P -> ~ Q.
+Lemma contra_not (Q P : Prop) : (Q -> P) -> ~ P -> ~ Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolPn.
 by apply: contra nb => /asboolP /cb /asboolP.
 Qed.
 
-Definition contrapNN := contra.
-
-Lemma contrapL (Q P : Prop) : (Q -> ~ P) -> P -> ~ Q.
+Lemma contraPnot (Q P : Prop) : (Q -> ~ P) -> P -> ~ Q.
 Proof.
 move=> cb /asboolP hb; apply/asboolPn.
 by apply: contraL hb => /asboolP /cb /asboolPn.
 Qed.
 
-Definition contrapTN := contrapL.
-
-Lemma contrapR (Q P : Prop) : (~ Q -> P) -> ~ P -> Q.
+Lemma contra_notP (Q P : Prop) : (~ Q -> P) -> ~ P -> Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolP.
 by apply: contraR nb => /asboolP /cb /asboolP.
 Qed.
 
-Definition contrapNT := contrapR.
-
-Lemma contrapLR (Q P : Prop) : (~ Q -> ~ P) -> P -> Q.
+Lemma contraPP (Q P : Prop) : (~ Q -> ~ P) -> P -> Q.
 Proof.
 move=> cb /asboolP hb; apply/asboolP.
 by apply: contraLR hb => /asboolP /cb /asboolPn.
 Qed.
-
-Definition contrapTT := contrapLR.
 
 Lemma contrapT P : ~ ~ P -> P.
 Proof.
@@ -468,7 +462,7 @@ End Exports.
 End BoolQuant.
 Export BoolQuant.Exports.
 
-Open Scope quant_scope.
+Local Open Scope quant_scope.
 
 (* -------------------------------------------------------------------- *)
 Section QuantifierCombinators.
@@ -479,8 +473,8 @@ Hypothesis viewP : forall x, reflect (PP x) (P x).
 Lemma existsPP : reflect (exists x, PP x) `[exists x, P x].
 Proof.
 apply: (iffP idP).
-  move/asboolP; (* oops notation! *) apply: contrapR => nh x /=; apply: notTE.
-  by apply: contrap nh => /viewP Px; exists x.
+  move/asboolP; (* oops notation! *) apply: contra_notP => nh x /=; apply: notTE.
+  by apply: contra_not nh => /viewP Px; exists x.
 case=> x PPx; apply/asboolP=> /(_ x) /notT /=; rewrite -/(not (~ P x)) notK.
 exact/viewP.
 Qed.
@@ -552,6 +546,63 @@ Lemma asbool_existsNb {T : Type} (P : pred T) :
 Proof.
 apply: (asbool_equiv_eqP existsp_asboolPn);
   by split=> -[x h]; exists x; apply/negP.
+Qed.
+
+Lemma not_implyP (P Q : Prop) : ~ (P -> Q) <-> P /\ ~ Q.
+Proof.
+split=> [/asboolP|[p nq pq]]; [|exact/nq/pq].
+by rewrite asbool_neg => /imply_asboolPn.
+Qed.
+
+Lemma not_andP (P Q : Prop) : ~ (P /\ Q) <-> ~ P \/ ~ Q.
+Proof.
+split => [/asboolPn|[|]]; try by apply: contra_not => -[].
+by rewrite asbool_and negb_and => /orP[]/asboolPn; [left|right].
+Qed.
+
+Lemma not_orP (P Q : Prop) : ~ (P \/ Q) <-> ~ P /\ ~ Q.
+Proof.
+split; [apply: contra_notP => /not_andP|apply: contraPnot => AB; apply/not_andP];
+  by rewrite 2!notK.
+Qed.
+
+Lemma not_implyE (P Q : Prop) : (~ (P -> Q)) = (P /\ ~ Q).
+Proof. by rewrite propeqE not_implyP. Qed.
+
+Lemma orC (P Q : Prop) : (P \/ Q) = (Q \/ P).
+Proof. by rewrite propeqE; split=> [[]|[]]; [right|left|right|left]. Qed.
+
+Lemma andC (P Q : Prop) : (P /\ Q) = (Q /\ P).
+Proof. by rewrite propeqE; split=> [[]|[]]. Qed.
+
+Lemma forallNE {T} (P : T -> Prop) : (forall x, ~ P x) = ~ exists x, P x.
+Proof.
+by rewrite propeqE; split => [fP [x /fP]//|nexP x Px]; apply: nexP; exists x.
+Qed.
+
+Lemma existsNE {T} (P : T -> Prop) : (exists x, ~ P x) = ~ forall x, P x.
+Proof.
+rewrite propeqE; split=> [[x Px] aP //|NaP].
+by apply: contrapT; rewrite -forallNE => aP; apply: NaP => x; apply: contrapT.
+Qed.
+
+Lemma existsNP T (P : T -> Prop) : (exists x, ~ P x) <-> ~ forall x, P x.
+Proof. by rewrite existsNE. Qed.
+
+Lemma not_existsP T (P : T -> Prop) : (exists x, P x) <-> ~ forall x, ~ P x.
+Proof. by rewrite forallNE notK. Qed.
+
+Lemma forallNP T (P : T -> Prop) : (forall x, ~ P x) <-> ~ exists x, P x.
+Proof. by rewrite forallNE. Qed.
+
+Lemma not_forallP T (P : T -> Prop) : (forall x, P x) <-> ~ exists x, ~ P x.
+Proof. by rewrite existsNE notK. Qed.
+
+Lemma exists2NP T (P Q : T -> Prop) :
+  ~ (exists2 x, P x & Q x) -> forall x, ~ P x \/ ~ Q x.
+Proof.
+apply: contra_notP; case/asboolPn/existsp_asboolPn=> [x].
+by case/not_orP => /contrapT Px /contrapT Qx; exists x.
 Qed.
 
 (* -------------------------------------------------------------------- *)

@@ -9,7 +9,7 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-(* ------- *) Require Import boolp.
+(* ------- *) Require Import boolp classical_sets.
 
 Require Import Setoid.
 
@@ -19,41 +19,13 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import GRing.Theory Num.Theory.
+Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
 
-Local Open Scope real_scope.
 Local Open Scope ring_scope.
-
-(* -------------------------------------------------------------------- *)
-Section ArchiBound.
-
-Variable (R : archiFieldType).
-
-(* Real set non-emptyness. *)
-Definition nonempty (E : pred R) :=
-  exists x : R, x \in E.
-
-(* Real upper bound and lower bound sets. *)
-Definition ub (E : pred R) : pred R :=
-  [pred z | `[forall y, (y \in E) ==> (y <= z)]].
-Definition lb (E : pred R) : pred R :=
-  [pred z | `[forall y, (y \in E) ==> (z <= y)]].
-
-(* Real down set (i.e., generated order ideal) *)
-(* i.e. down E := { x | exists y, y \in E /\ x <= y} *)
-Definition down (E : pred R) : pred R :=
-  [pred x | `[exists y, (y \in E) && (x <= y)]].
-
-(* Real set supremum and infimum existence condition. *)
-Definition has_ub  (E : pred R) := nonempty (ub E).
-Definition has_sup (E : pred R) := nonempty E /\ has_ub E.
-Definition has_lb  (E : pred R) := nonempty (lb E).
-Definition has_inf (E : pred R) := nonempty E /\ has_lb E.
-
-End ArchiBound.
+Local Open Scope classical_set_scope.
 
 (* -------------------------------------------------------------------- *)
 Module Real.
@@ -62,15 +34,15 @@ Section Mixin.
 Variable (R : archiFieldType).
 
 Record mixin_of : Type := Mixin {
-  sup : pred R -> R;
+  sup : set R -> R;
    _  :
-    forall E : pred (Num.ArchimedeanField.sort R),
-      has_sup E -> sup E \in ub E;
+    forall E : set (Num.ArchimedeanField.sort R),
+      has_sup E -> ubound E (sup E);
    _  :
-    forall (E : pred (Num.ArchimedeanField.sort R)) (eps : R),
+    forall (E : set (Num.ArchimedeanField.sort R)) (eps : R),
       has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e;
    _  :
-    forall E : pred (Num.ArchimedeanField.sort R),
+    forall E : set (Num.ArchimedeanField.sort R),
       ~ has_sup E -> sup E = 0
 }.
 
@@ -85,13 +57,14 @@ Section ClassDef.
 Record class_of (R : Type) : Type := Class {
   base : Num.ArchimedeanField.class_of R;
   mixin_rcf : Num.real_closed_axiom (Num.NumDomain.Pack base);
+  (* TODO: ajouter une structure de pseudoMetricNormedDomain *)
   mixin : mixin_of (Num.ArchimedeanField.Pack base)
 }.
 
 Local Coercion base : class_of >-> Num.ArchimedeanField.class_of.
 Local Coercion base_rcf R (c : class_of R) : Num.RealClosedField.class_of R :=
-  @Num.RealClosedField.Class _ c (@mixin_rcf _ c). 
-  
+  @Num.RealClosedField.Class _ c (@mixin_rcf _ c).
+
 Structure type := Pack {sort; _ : class_of sort; _ : Type}.
 Local Coercion sort : type >-> Sortclass.
 Variables (T : Type) (cT : type).
@@ -114,6 +87,10 @@ Definition pack b0 (m0 : mixin_of (@Num.ArchimedeanField.Pack T b0)) :=
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
+Definition porderType := @Order.POrder.Pack ring_display cT xclass.
+Definition latticeType := @Order.Lattice.Pack ring_display cT xclass.
+Definition distrLatticeType := @Order.DistrLattice.Pack ring_display cT xclass.
+Definition orderType := @Order.Total.Pack ring_display cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
 Definition ringType := @GRing.Ring.Pack cT xclass.
 Definition comRingType := @GRing.ComRing.Pack cT xclass.
@@ -121,11 +98,10 @@ Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
 Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
 Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
 Definition numDomainType := @Num.NumDomain.Pack cT xclass.
+Definition normedZmodType := NormedZmodType numDomainType cT xclass.
 Definition fieldType := @GRing.Field.Pack cT xclass.
-Definition join_numDomainType := @Num.NumDomain.Pack fieldType xclass.
 Definition realDomainType := @Num.RealDomain.Pack cT xclass.
 Definition numFieldType := @Num.NumField.Pack cT xclass.
-Definition join_realDomainType := @Num.RealDomain.Pack numFieldType xclass.
 Definition realFieldType := @Num.RealField.Pack cT xclass.
 Definition archimedeanFieldType := @Num.ArchimedeanField.Pack cT xclass.
 Definition rcfType := @Num.RealClosedField.Pack cT xclass.
@@ -143,6 +119,14 @@ Coercion eqType : type >-> Equality.type.
 Canonical eqType.
 Coercion choiceType : type >-> Choice.type.
 Canonical choiceType.
+Coercion porderType : type >-> Order.POrder.type.
+Canonical porderType.
+Coercion latticeType : type >-> Order.Lattice.type.
+Canonical latticeType.
+Coercion distrLatticeType : type >-> Order.DistrLattice.type.
+Canonical distrLatticeType.
+Coercion orderType : type >-> Order.Total.type.
+Canonical orderType.
 Coercion zmodType : type >-> GRing.Zmodule.type.
 Canonical zmodType.
 Coercion ringType : type >-> GRing.Ring.type.
@@ -157,7 +141,8 @@ Coercion idomainType : type >-> GRing.IntegralDomain.type.
 Canonical idomainType.
 Coercion numDomainType : type >-> Num.NumDomain.type.
 Canonical numDomainType.
-Canonical join_numDomainType.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
+Canonical normedZmodType.
 Coercion realDomainType : type >-> Num.RealDomain.type.
 Canonical realDomainType.
 Coercion fieldType : type >-> GRing.Field.type.
@@ -187,61 +172,26 @@ Export Real.Exports.
 
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := Real.sup (Real.class R).
-Local Notation "-` E" := [pred x | - x \in E]
-  (at level 35, right associativity) : fun_scope.
-Definition inf {R : realType} (E : pred R) := - sup (-` E).
+(*Local Notation "-` E" := [pred x | - x \in E]
+  (at level 35, right associativity) : fun_scope.*)
+Definition inf {R : realType} (E : set R) := - sup (-%R @` E).
 
 (* -------------------------------------------------------------------- *)
-Section BaseReflect.
-Context {R : archiFieldType}.
 
-Implicit Types E : pred R.
-Implicit Types x : R.
+Lemma sup_upper_bound {R : realType} (E : set R):
+  has_sup E -> ubound E (sup E).
+Proof. by move=> supE; case: R E supE=> ? [? ? []]. Qed.
 
-Lemma nonemptyP E : nonempty E <-> exists x, x \in E.
-Proof. by []. Qed.
-
-Lemma ubP E x : reflect (forall y, y \in E -> y <= x) (x \in ub E).
-Proof. by apply: (iffP (forallbP _))=> h y; apply/implyP/h. Qed.
-
-Lemma lbP E x : reflect (forall y, y \in E -> x <= y) (x \in lb E).
-Proof. by apply: (iffP (forallbP _))=> h y; apply/implyP/h. Qed.
-
-Lemma downP E x : reflect (exists2 y, y \in E & x <= y) (x \in down E).
-Proof.
-apply: (iffP (existsbP _))=> [[y /andP[]]|[y]].
-  by exists y. by exists y; apply/andP; split.
-Qed.
-
-Lemma has_ubP {E} : has_ub E <-> nonempty (ub E).
-Proof. by []. Qed.
-
-Lemma has_lbP {E} : has_lb E <-> nonempty (lb E).
-Proof. by []. Qed.
-
-Lemma has_supP {E} : has_sup E <-> (nonempty E /\ nonempty (ub E)).
-Proof. by []. Qed.
-
-Lemma has_infP {E} : has_inf E <-> (nonempty E /\ nonempty (lb E)).
-Proof. by []. Qed.
-
-End BaseReflect.
-
-(* -------------------------------------------------------------------- *)
-Lemma sup_upper_bound {R : realType} (E : pred R):
-  has_sup E -> (forall x, x \in E -> x <= sup E).
-Proof. by move=> supE; apply/ubP; case: R E supE=> ? [? ? []]. Qed.
-
-Lemma sup_adherent {R : realType} (E : pred R) (eps : R) :
-  has_sup E -> 0 < eps -> exists2 e : R, e \in E & (sup E - eps) < e.
+Lemma sup_adherent {R : realType} (E : set R) (eps : R) :
+  has_sup E -> 0 < eps -> exists2 e : R, E e & (sup E - eps) < e.
 Proof. by case: R E eps=> ? [? ? []]. Qed.
 
-Lemma sup_out {R : realType} (E : pred R) : ~ has_sup E -> sup E = 0.
+Lemma sup_out {R : realType} (E : set R) : ~ has_sup E -> sup E = 0.
 Proof. by case: R E => ? [? ? []]. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section IsInt.
-Context {R : realType}.
+Context {R : realFieldType}.
 
 Definition Rint := [qualify a x : R | `[exists z, x == z%:~R]].
 Fact Rint_key : pred_key Rint. Proof. by []. Qed.
@@ -325,14 +275,13 @@ Section RealDerivedOps.
 Variable R : realType.
 
 Implicit Types x y : R.
-
-Definition floor_set x := [pred y | (y \is a Rint) && (y <= x)].
+Definition floor_set x := [set y : R | (y \is a Rint) && (y <= x)].
 
 Definition floor x : R := sup (floor_set x).
 
 Definition ifloor x : int := Rtoint (floor x).
 
-Definition range1 (x : R) := [pred y | x <= y < x + 1].
+Definition range1 (x : R) := [set y | x <= y < x + 1].
 End RealDerivedOps.
 
 (*-------------------------------------------------------------------- *)
@@ -340,63 +289,53 @@ Section RealLemmas.
 
 Variables (R : realType).
 
-Implicit Types E : pred R.
+Implicit Types E : set R.
 Implicit Types x : R.
 
-Lemma sup_ub {E} : has_ub E -> sup E \in ub E.
+Lemma sup_ub {E} : has_ubound E -> (ubound E) (sup E).
 Proof.
-move=> ubE; apply/ubP=> x x_in_E; apply/sup_upper_bound=> //.
-by apply/has_supP; split; first by exists x.
+move=> ubE; apply/ubP=> x x_in_E; move: (x) (x_in_E).
+by apply/ubP/sup_upper_bound=> //; split; first by exists x.
 Qed.
 
-Lemma sup_total {E} x : has_sup E -> (x \in down E) || (sup E <= x).
+Lemma sup_total {E} x : has_sup E -> (down E) x \/ sup E <= x.
 Proof.
-move=> has_supE; rewrite orbC; case: (lerP (sup E) x)=> hx //=.
+move=> has_supE; rewrite orC.
+case: (lerP (sup E) x)=> hx /=; [by left|right].
 have /(sup_adherent has_supE) : 0 < sup E - x by rewrite subr_gt0.
 case=> e Ee hlte; apply/downP; exists e => //; move: hlte.
-by rewrite opprB addrCA subrr addr0 => /ltrW.
+by rewrite opprB addrCA subrr addr0 => /ltW.
 Qed.
 
-Lemma sup_le_ub {E} x : nonempty E -> x \in ub E -> sup E <= x.
+Lemma sup_le_ub {E} x : E !=set0 -> (ubound E) x -> sup E <= x.
 Proof.
-move=> hasE /ubP leEx; set y := sup E; pose z := (x + y) / 2%:R.
+move=> hasE leEx; set y := sup E; pose z := (x + y) / 2%:R.
 have Dz: 2%:R * z = x + y.
   by rewrite mulrCA divff ?mulr1 // pnatr_eq0.
-have ubE: has_sup E by split; last by exists x; apply/ubP.
-have /orP [/downP [t Et lezt] | leyz] := sup_total z ubE.
+have ubE : has_sup E by split => //; exists x.
+have [/downP [t Et lezt] | leyz] := sup_total z ubE.
   rewrite -(ler_add2l x) -Dz -mulr2n -[X in _<=X]mulr_natl.
-  rewrite ler_pmul2l ?ltr0Sn //; exact/(ler_trans lezt)/leEx.
+  rewrite ler_pmul2l ?ltr0Sn //; apply/(le_trans lezt).
+  by move/ubP : leEx; exact.
 rewrite -(ler_add2r y) -Dz -mulr2n -[X in X<=_]mulr_natl.
 by rewrite ler_pmul2l ?ltr0Sn.
 Qed.
 
-Lemma nonemptybP {E} :
-  `[< nonempty E >] = `[< exists x : R, x \in E >].
-Proof. by apply: (asbool_equiv_eq (nonemptyP _)). Qed.
-
-Lemma nonemptyPn {E} :
-  ~ nonempty E <-> (forall x, x \notin E).
+Lemma has_ubPn {E} : ~ has_ubound E <-> (forall x, exists2 y, E y & x < y).
 Proof.
-by apply: asbool_eq_equiv; rewrite asbool_neg nonemptybP asbool_forallNb.
+split; last first.
+  move=> h [x] /ubP hle; case/(_ x): h => y /hle.
+  by rewrite leNgt => /negbTE ->.
+move/forallNP => h x; have {h} := h x.
+move=> /ubP /existsNP => -[y /not_implyP[Ey /negP]].
+by rewrite -ltNge => ltx; exists y.
 Qed.
 
-Lemma has_ubPn {E} :
-  ~ has_ub E <-> (forall x, exists2 y, y \in E & x < y).
-Proof. split; last first.
-+ move=> h /has_ubP [x /ubP] hle; case/(_ x): h => y /hle.
-  by rewrite lerNgt => /negbTE ->.
-move/asboolPn; rewrite (asbool_equiv_eq has_ubP).
-move/asboolPn/nonemptyPn=> h x; have /ubP {h} := h x.
-case/asboolPn/existsp_asboolPn=> y /asboolPn /imply_asboolPn.
-by case=> [yE /negP]; rewrite -ltrNge => ltx; exists y.
-Qed.
-
-Lemma has_supPn {E} : nonempty E ->
-  ~ has_sup E <-> (forall x, exists2 y, y \in E & x < y).
+Lemma has_supPn {E} : E !=set0 ->
+  ~ has_sup E <-> (forall x, exists2 y, E y & x < y).
 Proof.
-move=> nzE; split=> [/asboolPn|]; rewrite ?(asbool_equiv_eq has_supP).
-  by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_ubPn.
-by move/has_ubPn=> h /has_supP [_].
+move=> nzE; split=> [/asboolPn|/has_ubPn h [_]] //.
+by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_ubPn.
 Qed.
 
 End RealLemmas.
@@ -406,87 +345,97 @@ Section InfTheory.
 
 Variables (R : realType).
 
-Implicit Types E : pred R.
+Implicit Types E : set R.
 Implicit Types x : R.
 
-Lemma setNK : involutive (fun E => -` E).
-Proof. by move=> E; rewrite funeqE => ?; rewrite !inE opprK. Qed.
-
-Lemma memNE E x : (x \in E) = (- x \in -` E).
-Proof. by rewrite inE opprK. Qed.
-
-Lemma lb_ubN E x : (x \in lb E) <-> - x \in ub (-` E).
+Lemma setNK : involutive (fun E : set R => -%R @` E).
 Proof.
-split=> [/lbP|/ubP] xlbE; first by apply/ubP => ? /xlbE; rewrite ler_oppr.
-by apply/lbP => y; rewrite memNE => /xlbE; rewrite ler_oppr opprK.
+move=> F; rewrite predeqE => y; split => [|Fy].
+  by case=> z -[u xu <-{z} <-{y}]; rewrite opprK.
+by exists (- y); rewrite ?opprK //; exists y.
 Qed.
 
-Lemma ub_lbN E x : (x \in ub E) <-> - x \in lb (-` E).
+Lemma memNE E x : E x = (-%R @` E) (- x).
 Proof.
-split; first by move=> ?; apply/lb_ubN; rewrite opprK setNK.
-by move/lb_ubN; rewrite opprK setNK.
+rewrite propeqE; split => [Ex|[y Ey]]; [by exists x|].
+by move/eqP; rewrite eqr_opp => /eqP <-.
 Qed.
 
-Lemma nonemptyN E : nonempty (-` E) <-> nonempty E.
-Proof. by split=> [[x ENx]|[x Ex]]; exists (- x) => //; rewrite -memNE. Qed.
-
-Lemma has_inf_supN E : has_inf E <-> has_sup (-` E).
+Lemma lb_ubN E x : lbound E x <-> ubound (-%R @` E) (- x).
 Proof.
-split=> [/has_infP [En0 [x /lb_ubN xlbe]]|/has_supP [NEn0 [x /ub_lbN xubE]]].
-  by apply/has_supP; split; [apply/nonemptyN|exists (- x)].
-by apply/has_infP; split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
+split=> [/lbP xlbE|/ubP xlbE].
+by apply/ubP=> y [z Ez <-{y}]; rewrite ler_oppr opprK; apply xlbE.
+by apply/lbP => y Ey; rewrite -(opprK x) ler_oppl; apply xlbE; exists y.
 Qed.
 
-Lemma inf_lower_bound E :
-  has_inf E -> (forall x, x \in E -> inf E <= x).
+Lemma ub_lbN E x : ubound E x <-> lbound (-%R @` E) (- x).
 Proof.
-move=> /has_inf_supN /sup_upper_bound inflb x.
+split=> [? | /lb_ubN].
+by apply/lb_ubN; rewrite opprK setNK.
+by rewrite opprK setNK.
+Qed.
+
+Lemma nonemptyN E : nonempty (-%R @` E) <-> nonempty E.
+Proof.
+split=> [[x ENx]|[x Ex]]; exists (- x); last by rewrite -memNE.
+by rewrite memNE opprK.
+Qed.
+
+Lemma has_inf_supN E : has_inf E <-> has_sup (-%R @` E).
+Proof.
+split=> [ [En0 [x /lb_ubN xlbe]] | [NEn0 [x /ub_lbN xubE]] ].
+by split; [apply/nonemptyN|exists (- x)].
+by split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
+Qed.
+
+Lemma inf_lower_bound E : has_inf E -> lbound E (inf E).
+Proof.
+move=> /has_inf_supN /sup_upper_bound /ubP inflb; apply/lbP => x.
 by rewrite memNE => /inflb; rewrite ler_oppl.
 Qed.
 
 Lemma inf_adherent E (eps : R) :
-  has_inf E -> 0 < eps -> exists2 e, e \in E & e < inf E + eps.
+  has_inf E -> 0 < eps -> exists2 e, E e & e < inf E + eps.
 Proof.
 move=> /has_inf_supN supNE /(sup_adherent supNE) [e NEx egtsup].
-by exists (- e) => //; rewrite ltr_oppl -mulN1r mulrDr !mulN1r opprK.
+exists (- e); first by case: NEx => x Ex <-{}; rewrite opprK.
+by rewrite ltr_oppl -mulN1r mulrDr !mulN1r opprK.
 Qed.
 
 Lemma inf_out E : ~ has_inf E -> inf E = 0.
 Proof.
-move=> ninfE; rewrite -oppr0 -(@sup_out _ (-` E)) => // supNE; apply: ninfE.
+move=> ninfE; rewrite -oppr0 -(@sup_out _ (-%R @` E)) => // supNE; apply: ninfE.
 exact/has_inf_supN.
 Qed.
 
-Lemma has_lb_ubN E : has_lb E <-> has_ub (-` E).
+Lemma has_lb_ubN E : has_lbound E <-> has_ubound (-%R @` E).
 Proof.
-by split=> [/has_lbP [x /lb_ubN]|/has_ubP [x /ub_lbN]]; [|rewrite setNK];
-  exists (- x).
+by split=> [[x /lb_ubN] | [x /ub_lbN]]; [|rewrite setNK]; exists (- x).
 Qed.
 
-Lemma inf_lb E : has_lb E -> inf E \in lb E.
+Lemma inf_lb E : has_lbound E -> (lbound E) (inf E).
 Proof. by move/has_lb_ubN/sup_ub/ub_lbN; rewrite setNK. Qed.
 
-Lemma lb_le_inf E x : nonempty E -> x \in lb E -> x <= inf E.
+Lemma lb_le_inf E x : nonempty E -> (lbound E) x -> x <= inf E.
 Proof.
 by move=> /(nonemptyN E) En0 /lb_ubN /(sup_le_ub En0); rewrite ler_oppr.
 Qed.
 
-Lemma has_lbPn E :
-  ~ has_lb E <-> (forall x, exists2 y, y \in E & y < x).
+Lemma has_lbPn E : ~ has_lbound E <-> (forall x, exists2 y, E y & y < x).
 Proof.
 split=> [/has_lb_ubN /has_ubPn NEnub x|Enlb /has_lb_ubN].
-  by have [y ENy ltxy] := NEnub (- x); exists (- y) => //; rewrite ltr_oppl.
-apply/has_ubPn => x; have [y Ey ltyx] := Enlb (- x); exists (- y).
-  by rewrite inE opprK.
-by rewrite ltr_oppr.
+  have [y ENy ltxy] := NEnub (- x); exists (- y); rewrite 1?ltr_oppl //.
+  by case: ENy => z Ez <-; rewrite opprK.
+apply/has_ubPn => x; have [y Ey ltyx] := Enlb (- x).
+exists (- y); last by rewrite ltr_oppr.
+by exists y => //; rewrite opprK.
 Qed.
 
 Lemma has_infPn E : nonempty E ->
-  ~ has_inf E <-> (forall x, exists2 y, y \in E & y < x).
+  ~ has_inf E <-> (forall x, exists2 y, E y & y < x).
 Proof.
-move=> nzE; split=> [/asboolPn|]; rewrite ?(asbool_equiv_eq has_infP).
-  by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_lbPn.
-by move/has_lbPn=> h /has_infP [_].
+move=> nzE; split=> [/asboolPn|/has_lbPn h [_] //].
+by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_lbPn.
 Qed.
 
 End InfTheory.
@@ -497,31 +446,31 @@ Variable R : realType.
 
 Implicit Types x y : R.
 
-Lemma has_sup_floor_set x: has_sup (floor_set x).
+Lemma has_sup_floor_set x : has_sup (floor_set x).
 Proof.
 split; [exists (- (Num.bound (-x))%:~R) | exists (Num.bound x)%:~R].
-  rewrite inE rpredN rpred_int /= ler_oppl.
-  case: (ger0P (-x)) => [/archi_boundP/ltrW//|].
-  by move/ltrW/ler_trans; apply; rewrite ler0z.
-apply/ubP=> y /andP[_] /ler_trans; apply.
-case: (ger0P x)=> [/archi_boundP/ltrW|] //.
-by move/ltrW/ler_trans; apply; rewrite ler0z.
+  rewrite /floor_set rpredN rpred_int /= ler_oppl.
+  case: (ger0P (-x)) => [/archi_boundP/ltW//|].
+  by move/ltW/le_trans; apply; rewrite ler0z.
+apply/ubP=> y /andP[_] /le_trans; apply.
+case: (ger0P x)=> [/archi_boundP/ltW|] //.
+by move/ltW/le_trans; apply; rewrite ler0z.
 Qed.
 
-Lemma sup_in_floor_set x : sup (floor_set x) \in floor_set x.
+Lemma sup_in_floor_set x : (floor_set x) (sup (floor_set x)).
 Proof.
 have /sup_adherent /(_ ltr01) [y Fy] := has_sup_floor_set x.
-have /sup_upper_bound /(_ _ Fy) := has_sup_floor_set x.
-rewrite ler_eqVlt=> /orP[/eqP<-//| lt_yFx].
+have /sup_upper_bound /ubP /(_ _ Fy) := has_sup_floor_set x.
+rewrite le_eqVlt=> /orP[/eqP<-//| lt_yFx].
 rewrite ltr_subl_addr -ltr_subl_addl => lt1_FxBy.
 pose e := sup (floor_set x) - y; have := has_sup_floor_set x.
 move/sup_adherent=> -/(_ e) []; first by rewrite subr_gt0.
 move=> z Fz; rewrite /e opprB addrCA subrr addr0 => lt_yz.
-have /sup_upper_bound /(_ _ Fz) := has_sup_floor_set x.
-rewrite -(ler_add2r (-y)) => /ler_lt_trans /(_ lt1_FxBy).
-case/andP: Fy Fz lt_yz=> /RintP[yi -> _]. 
+have /sup_upper_bound /ubP /(_ _ Fz) := has_sup_floor_set x.
+rewrite -(ler_add2r (-y)) => /le_lt_trans /(_ lt1_FxBy).
+case/andP: Fy Fz lt_yz=> /RintP[yi -> _].
 case/andP=> /RintP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
-rewrite ltr_neqAle => /andP[ne_yz le_yz].
+rewrite lt_neqAle => /andP[ne_yz le_yz].
 rewrite -[_-_]gez0_abs ?subr_ge0 // ltz_nat ltnS leqn0.
 by rewrite absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
 Qed.
@@ -532,12 +481,15 @@ Proof. by case/andP: (sup_in_floor_set x). Qed.
 Lemma floorE x : floor x = (ifloor x)%:~R.
 Proof. by rewrite /ifloor RtointK ?isint_floor. Qed.
 
-Lemma mem_rg1_floor (x : R) : x \in range1 (floor x).
+Lemma mem_rg1_floor (x : R) : (range1 (floor x)) x.
 Proof.
-rewrite inE; have /andP[_ ->] /= := sup_in_floor_set x.
-case: (boolP (floor x + 1 \in floor_set x)); last first.
-  by rewrite inE negb_and -ltrNge rpredD // ?(Rint1, isint_floor).
-by move/sup_upper_bound=> -/(_ (has_sup_floor_set x)); rewrite ger_addl ler10.
+rewrite /range1.
+have /andP[_ ->] /= := sup_in_floor_set x.
+have [|] := pselect ((floor_set x) (floor x + 1)); last first.
+  rewrite /floor_set => /negP.
+  by rewrite negb_and -ltNge rpredD // ?(Rint1, isint_floor).
+move/ubP : (sup_upper_bound (has_sup_floor_set x)) => h/h.
+by rewrite ger_addl ler10.
 Qed.
 
 Lemma floor_ler (x : R) : floor x <= x.
@@ -547,24 +499,24 @@ Lemma floorS_gtr (x : R) : x < floor x + 1.
 Proof. by case/andP: (mem_rg1_floor x). Qed.
 
 Lemma range1z_inj (x : R) (m1 m2 : int) :
-  x \in range1 m1%:~R -> x \in range1 m2%:~R -> m1 = m2.
+  (range1 m1%:~R) x -> (range1 m2%:~R) x -> m1 = m2.
 Proof.
 move=> /andP[m1x x_m1] /andP[m2x x_m2].
-wlog suffices: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 <= m2)%R.
-  by move=> ih; apply/eqP; rewrite eqr_le !ih.
+wlog suffices: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 <= m2).
+  by move=> ih; apply/eqP; rewrite eq_le !ih.
 rewrite -(ler_add2r 1) lez_addr1 -(@ltr_int R) intrD.
-by apply/(ler_lt_trans m1x).
+exact/(le_lt_trans m1x).
 Qed.
 
-Lemma range1rr (x : R) : x \in range1 x.
-Proof. by rewrite inE lerr /= ltr_addl ltr01. Qed.
+Lemma range1rr (x : R) : (range1 x) x.
+Proof. by rewrite /range1 lexx /= ltr_addl ltr01. Qed.
 
 Lemma range1zP (m : int) (x : R) :
-  reflect (floor x = m%:~R) (x \in range1 m%:~R).
+  floor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
-apply: (iffP idP)=> [h|<-]; [apply/eqP | by apply/mem_rg1_floor].
-rewrite floorE eqr_int; apply/eqP/(@range1z_inj x) => //.
-by rewrite -floorE mem_rg1_floor.
+split=> [<-|h]; first exact/mem_rg1_floor.
+apply/eqP; rewrite floorE eqr_int; apply/eqP/(@range1z_inj x) => //.
+by rewrite /range1 -floorE mem_rg1_floor.
 Qed.
 
 Lemma floor_natz (x : int) : floor x%:~R = x%:~R :> R.
@@ -579,14 +531,14 @@ Proof. by rewrite -{1}(mulr1z 1) floor_natz. Qed.
 Lemma ler_floor (x y : R) : x <= y -> floor x <= floor y.
 Proof.
 move=> le_xy; case: lerP=> //=; rewrite -Rint_ler_addr1 ?isint_floor //.
-move/(ltr_le_trans (floorS_gtr y))/ltr_le_trans/(_ (floor_ler x)).
-by rewrite ltrNge le_xy.
+move/(lt_le_trans (floorS_gtr y))/lt_le_trans/(_ (floor_ler x)).
+by rewrite ltNge le_xy.
 Qed.
 
 Lemma floor_ge0 (x : R) : (0 <= floor x) = (0 <= x).
 Proof.
 apply/idP/idP; last by move/ler_floor; rewrite floor0.
-by move/ler_trans=> -/(_ _ (floor_ler x)).
+by move/le_trans=> -/(_ _ (floor_ler x)).
 Qed.
 
 Lemma ifloor_ge0 (x : R) : (0 <= ifloor x) = (0 <= x).
@@ -597,379 +549,86 @@ End FloorTheory.
 Section Sup.
 Context {R : realType}.
 
-Lemma le_down (S : pred R) : {subset S <= down S}.
+Lemma le_down (S : set R) : S `<=` down S.
 Proof. by move=> x xS; apply/downP; exists x. Qed.
 
-Lemma downK (S : pred R) : down (down S) =i down S.
+Lemma downK (S : set R) : down (down S) = down S.
 Proof.
-move=> x; apply/downP/downP=> -[y yS le_xy]; last first.
-  by exists y=> //; apply/le_down.
-by case/downP: yS => z zS le_yz; exists z => //; apply/(ler_trans le_xy).
+rewrite predeqE => x; split.
+- case/downP => y /downP[z Sz yz xy].
+  by apply/downP; exists z => //; rewrite (le_trans xy).
+- by move=> Sx; apply/downP; exists x.
 Qed.
 
-Lemma eq_ub (S1 S2 : pred R) : S2 =i S1 -> ub S2 =i ub S1.
+Lemma has_sup_down (S : set R) : has_sup (down S) <-> has_sup S.
 Proof.
-move=> eq_12 x; apply/ubP/ubP=> h y yS; apply/h;
-  by rewrite (eq_12, =^~ eq_12).
-Qed.
-
-Lemma eq_lb (S1 S2 : pred R) : S2 =i S1 -> lb S2 =i lb S1.
-Proof.
-by move=> eq_12 x; apply/lbP/lbP=> h y yS; apply/h; rewrite (eq_12, =^~ eq_12).
-Qed.
-
-Lemma eq_has_sup (S1 S2 : pred R) :
-  S2 =i S1 -> has_sup S2 -> has_sup S1.
-Proof.
-move=> eq_12 /has_supP[[x xS2] [u uS2]]; apply/has_supP; split.
-  by exists x; rewrite -eq_12. by exists u; rewrite (@eq_ub S2).
-Qed.
-
-Lemma eq_has_inf (S1 S2 : pred R) :
-  S2 =i S1 -> has_inf S2 -> has_inf S1.
-Proof.
-move=> eq_12 /has_inf_supN infS1; apply/has_inf_supN; apply: eq_has_sup infS1.
-by move=> ?; rewrite inE eq_12.
-Qed.
-
-Lemma eq_has_supb (S1 S2 : pred R) :
-  S2 =i S1 -> `[< has_sup S2 >] = `[< has_sup S1 >].
-Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_has_sup. Qed.
-
-Lemma eq_has_infb (S1 S2 : pred R) :
-  S2 =i S1 -> `[< has_inf S2 >] = `[< has_inf S1 >].
-Proof. by move=> eq_12; apply/asboolP/asboolP; apply/eq_has_inf. Qed.
-
-Lemma eq_sup (S1 S2 : pred R) : S2 =i S1 -> sup S2 = sup S1.
-Proof.
-wlog: S1 S2 / (sup S1 <= sup S2) => [wlog|le_S1S2] eq_12.
-  by case: (lerP (sup S1) (sup S2)) => [|/ltrW] /wlog ->.
-move: le_S1S2; rewrite ler_eqVlt => /orP[/eqP->//|lt_S1S2].
-case/boolP: `[< has_sup S2 >] => [/asboolP|] h2; last first.
-  by rewrite !sup_out // => /asboolPn; rewrite -?(eq_has_supb eq_12).
-pose x : R := sup S2 - sup S1; have gt0_x: 0 < x by rewrite subr_gt0.
-have [e eS2] := sup_adherent h2 gt0_x; rewrite subKr => lt_S1e.
-have /(eq_has_sup eq_12) h1 := h2; have := eS2; rewrite eq_12.
-by move/sup_upper_bound=> -/(_ h1); rewrite lerNgt lt_S1e.
-Qed.
-
-Lemma eq_inf (S1 S2 : pred R) : S2 =i S1 -> inf S2 = inf S1.
-Proof.
-by move=> eq_12; rewrite /inf; apply/congr1/eq_sup => ?; rewrite inE eq_12.
-Qed.
-
-Lemma has_sup_down (S : pred R) : has_sup (down S) <-> has_sup S.
-Proof.
-split=> /has_supP [nzS nzubS]; apply/has_supP.
+split=> -[nzS nzubS].
   case: nzS=> x /downP[y yS le_xy]; split; first by exists y.
   case: nzubS=> u /ubP ubS; exists u; apply/ubP=> z zS.
   by apply/ubS; apply/downP; exists z.
 case: nzS=> x xS; split; first by exists x; apply/le_down.
 case: nzubS=> u /ubP ubS; exists u; apply/ubP=> y /downP [].
-by move=> z zS /ler_trans; apply; apply/ubS.
+by move=> z zS /le_trans; apply; apply/ubS.
 Qed.
 
-Lemma le_sup (S1 S2 : pred R) :
-  {subset S1 <= down S2} -> nonempty S1 -> has_sup S2
+Lemma le_sup (S1 S2 : set R) :
+  S1 `<=` down S2 -> nonempty S1 -> has_sup S2
     -> sup S1 <= sup S2.
 Proof.
 move=> le_S12 nz_S1 hs_S2; have hs_S1: has_sup S1.
-  apply/has_supP; split=> //; case/has_supP: hs_S2=> _ [x ubx].
+  split=> //; case: hs_S2=> _ [x ubx].
   exists x; apply/ubP=> y /le_S12 /downP[z zS2 le_yz].
-  by apply/(ler_trans le_yz); move/ubP: ubx; apply.
-rewrite lerNgt -subr_gt0; apply/negP => lt_sup.
+  by apply/(le_trans le_yz); move/ubP: ubx; apply.
+rewrite leNgt -subr_gt0; apply/negP => lt_sup.
 case: (sup_adherent hs_S1 lt_sup)=> x /le_S12 xdS2.
 rewrite subKr => lt_S2x; case/downP: xdS2=> z zS2.
-by move/(ltr_le_trans lt_S2x); rewrite ltrNge sup_upper_bound.
+move/(lt_le_trans lt_S2x); rewrite ltNge.
+by move/ubP: (sup_upper_bound hs_S2) => ->.
 Qed.
 
-Lemma sup_down (S : pred R) : sup (down S) = sup S.
+Lemma sup_down (S : set R) : sup (down S) = sup S.
 Proof.
-case/boolP: `[< has_sup S >] => [/asboolP|/asboolPn]; last first.
-  by move=> supNS; rewrite !sup_out // => /has_sup_down.
-move=> supS; have supDS: has_sup (down S) by apply/has_sup_down.
-apply/eqP; rewrite eqr_le !le_sup //.
-  by case/has_supP: supS => -[x xS] _; exists x; apply/le_down.
-  by move=> x xS; rewrite downK le_down.
-  by case/has_supP: supS.
+have [supS|supNS] := pselect (has_sup S); last first.
+  by rewrite !sup_out // => /has_sup_down.
+have supDS : has_sup (down S) by apply/has_sup_down.
+apply/eqP; rewrite eq_le !le_sup //.
+  by case: supS => -[x xS] _; exists x; apply/le_down.
+  rewrite downK; exact: le_down.
+  by case: supS.
 Qed.
 
-Lemma sup1 (c : R) : sup (pred1 c) = c.
+Lemma sup1 (c : R) : sup [set c] = c.
 Proof.
-have hs: has_sup (pred1 c); first (apply/has_supP; split; exists c).
-  by rewrite inE eqxx. by apply/ubP => y; rewrite inE => /eqP->.
-apply/eqP; rewrite eqr_le sup_upper_bound ?inE // andbT.
-apply/sup_le_ub; first by exists c; rewrite inE eqxx.
-by apply/ubP=> y; rewrite inE => /eqP ->.
+have hs : has_sup [set c] by split; [exists c | exact: has_ub_set1].
+apply/eqP; rewrite eq_le; move/ubP: (sup_upper_bound hs) => -> //.
+by rewrite andbT; apply/sup_le_ub; [exists c | rewrite ub_set1].
 Qed.
 
-Lemma inf1 (c : R) : inf (pred1 c) = c.
+Lemma inf1 (c : R) : inf [set c] = c.
 Proof.
-rewrite /inf; have /eq_sup -> : -` (pred1 c) =i pred1 (- c).
-  by move=> ?; rewrite !inE eqr_oppLR.
+rewrite /inf (_ : -%R @` (set1 c) = set1 (- c)).
+by rewrite predeqE => x; split => [[y <- <-] //|->]; exists c.
 by rewrite sup1 opprK.
 Qed.
 
 Lemma lt_sup_imfset {T : Type} (F : T -> R) l :
-  has_sup [pred y | `[exists x, y == F x]] ->
-  l < sup [pred y | `[exists x, y == F x]] ->
-  exists2 x, l < F x & F x <= sup [pred y | `[exists x, y == F x]].
+  has_sup [set y | exists x, y = F x] ->
+  l < sup [set y | exists x, y = F x] ->
+  exists2 x, l < F x & F x <= sup [set y | exists x, y = F x].
 Proof.
-set P := [pred y | _]; move=> hs; rewrite -subr_gt0.
-case/(sup_adherent hs)=> _ /imsetbP[x ->]; rewrite subKr => lt_lFx.
-exists x=> //; apply/sup_upper_bound => //.
-by apply/imsetbP; exists x.
+set P := [set y | _]; move=> hs; rewrite -subr_gt0.
+case/(sup_adherent hs) => _[x ->]; rewrite subKr=> lt_lFx.
+by exists x => //; move/ubP : (sup_upper_bound hs) => -> //; exists x.
 Qed.
 
 Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
-  has_inf [pred y | `[exists x, y == F x]] ->
-  inf [pred y | `[exists x, y == F x]] < l ->
-  exists2 x, F x < l & inf [pred y | `[exists x, y == F x]] <= F x.
+  has_inf [set y | exists x, y = F x] ->
+  inf [set y | exists x, y = F x] < l ->
+  exists2 x, F x < l & inf [set y | exists x, y = F x] <= F x.
 Proof.
-set P := [pred y | _]; move=> hs; rewrite -subr_gt0.
-case/(inf_adherent hs)=> _ /imsetbP[x ->]; rewrite addrA [_ + l]addrC addrK.
-move=> ltFxl; exists x=> //; apply/inf_lower_bound => //.
-by apply/imsetbP; exists x.
+set P := [set y | _]; move=> hs; rewrite -subr_gt0.
+case/(inf_adherent hs)=> _ [x ->]; rewrite addrA [_ + l]addrC addrK.
+by move=> ltFxl; exists x=> //; move/lbP : (inf_lower_bound hs) => -> //; exists x.
 Qed.
 
 End Sup.
-
-(* -------------------------------------------------------------------- *)
-Section ExtendedReals.
-Variable (R : realType).
-
-Inductive er := ERFin of R | ERPInf | ERNInf.
-
-Coercion real_of_er (x : er) :=
-  if x is ERFin v then v else 0.
-End ExtendedReals.
-
-Notation "\+inf" := (@ERPInf _).
-Notation "\-inf" := (@ERNInf _).
-Notation "x %:E" := (@ERFin _ x) (at level 2, format "x %:E").
-
-Notation "{ 'ereal' R }" := (er R) (format "{ 'ereal'  R }").
-
-Bind    Scope ereal_scope with er.
-Delimit Scope ereal_scope with E.
-
-(* -------------------------------------------------------------------- *)
-Section ERealCode.
-Variable (R : realType).
-
-Definition code (x : {ereal R}) :=
-  match x with
-  | x%:E  => GenTree.Node 0 [:: GenTree.Leaf x]
-  | \+inf => GenTree.Node 1 [::]
-  | \-inf => GenTree.Node 2 [::]
-  end.
-
-Definition decode (x : GenTree.tree R) : option {ereal R} :=
-  match x with
-  | GenTree.Node 0 [:: GenTree.Leaf x] => Some x%:E
-  | GenTree.Node 1 [::] => Some \+inf
-  | GenTree.Node 2 [::] => Some \-inf
-  | _ => None
-  end.
-
-Lemma codeK : pcancel code decode.
-Proof. by case. Qed.
-
-Definition ereal_eqMixin := PcanEqMixin codeK.
-Canonical  ereal_eqType  := EqType {ereal R} ereal_eqMixin.
-Definition ereal_choiceMixin := PcanChoiceMixin codeK.
-Canonical  ereal_choiceType  := ChoiceType {ereal R} ereal_choiceMixin.
-End ERealCode.
-
-Lemma eqe {R : realType} (x1 x2 : R) :
-  (x1%:E == x2%:E) = (x1 == x2).
-Proof. by apply/eqP/eqP=> [[]|->]. Qed.
-
-(* -------------------------------------------------------------------- *)
-Section ERealOrder.
-Context {R : realType}.
-
-Definition lee (x1 x2 : {ereal R}) :=
-  match x1, x2 with
-  | \-inf, _ | _, \+inf => true
-  | \+inf, _ | _, \-inf => false
-
-  | x1%:E, x2%:E => (x1 <= x2)
-  end.
-
-Definition lte (x1 x2 : {ereal R}) :=
-  match x1, x2 with
-  | \-inf, \-inf | \+inf, \+inf => false
-  | \-inf, _     | _    , \+inf => true
-  | \+inf, _     | _    , \-inf => false
-
-  | x1%:E, x2%:E => (x1 < x2)
-  end.
-End ERealOrder.
-
-Notation "x <= y" := (lee x y) : ereal_scope.
-Notation "x < y"  := (lte x y) : ereal_scope.
-
-Notation "x <= y <= z" := ((lee x y) && (lee y z)) : ereal_scope.
-Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
-Notation "x <= y < z"  := ((lee x y) && (lte y z)) : ereal_scope.
-Notation "x < y < z"   := ((lte x y) && (lte y z)) : ereal_scope.
-
-(* -------------------------------------------------------------------- *)
-Section ERealArith.
-Context {R : realType}.
-
-Implicit Types (x y z : {ereal R}).
-
-Definition eadd x y :=
-  match x, y with
-  | x%:E , y%:E  => (x + y)%:E
-  | \-inf, _     => \-inf
-  | _    , \-inf => \-inf
-  | \+inf, _     => \+inf
-  | _    , \+inf => \+inf
-  end.
-
-Definition eopp x :=
-  match x with
-  | x%:E  => (-x)%:E
-  | \-inf => \+inf
-  | \+inf => \-inf
-  end.
-End ERealArith.
-
-Notation "+%E"   := eadd.
-Notation "-%E"   := eopp.
-Notation "x + y" := (eadd x y) : ereal_scope.
-Notation "x - y" := (eadd x (eopp y)) : ereal_scope.
-Notation "- x"   := (eopp x) : ereal_scope.
-
-Notation "\sum_ ( i <- r | P ) F" :=
-  (\big[+%E/0%:E]_(i <- r | P%B) F%R) : ereal_scope.
-Notation "\sum_ ( i <- r ) F" :=
-  (\big[+%E/0%:E]_(i <- r) F%R) : ereal_scope.
-Notation "\sum_ ( m <= i < n | P ) F" :=
-  (\big[+%E/0%:E]_(m <= i < n | P%B) F%R) : ereal_scope.
-Notation "\sum_ ( m <= i < n ) F" :=
-  (\big[+%E/0%:E]_(m <= i < n) F%R) : ereal_scope.
-Notation "\sum_ ( i | P ) F" :=
-  (\big[+%E/0%:E]_(i | P%B) F%R) : ereal_scope.
-Notation "\sum_ i F" :=
-  (\big[+%E/0%:E]_i F%R) : ereal_scope.
-Notation "\sum_ ( i : t | P ) F" :=
-  (\big[+%E/0%:E]_(i : t | P%B) F%R) (only parsing) : ereal_scope.
-Notation "\sum_ ( i : t ) F" :=
-  (\big[+%E/0%:E]_(i : t) F%R) (only parsing) : ereal_scope.
-Notation "\sum_ ( i < n | P ) F" :=
-  (\big[+%E/0%:E]_(i < n | P%B) F%R) : ereal_scope.
-Notation "\sum_ ( i < n ) F" :=
-  (\big[+%E/0%:E]_(i < n) F%R) : ereal_scope.
-Notation "\sum_ ( i 'in' A | P ) F" :=
-  (\big[+%E/0%:E]_(i in A | P%B) F%R) : ereal_scope.
-Notation "\sum_ ( i 'in' A ) F" :=
-  (\big[+%E/0%:E]_(i in A) F%R) : ereal_scope.
-
-Local Open Scope ereal_scope.
-
-(* -------------------------------------------------------------------- *)
-Section ERealArithTh.
-Context {R : realType}.
-
-Implicit Types (x y z : {ereal R}).
-
-Lemma adde0 : right_id (0%:E : {ereal R}) +%E.
-Proof. by case=> //= x; rewrite addr0. Qed.
-
-Lemma add0e : left_id (S := {ereal R}) 0%:E +%E.
-Proof. by case=> //= x; rewrite add0r. Qed.
-
-Lemma addeC : commutative (S := {ereal R}) +%E.
-Proof. by case=> [x||] [y||] //=; rewrite addrC. Qed.
-
-Lemma addeA : associative (S := {ereal R}) +%E.
-Proof. by case=> [x||] [y||] [z||] //=; rewrite addrA. Qed.
-
-Canonical adde_monoid := Monoid.Law addeA add0e adde0.
-Canonical adde_comoid := Monoid.ComLaw addeC.
-
-Lemma oppe0 : - (0%:E) = 0%:E :> {ereal R}.
-Proof. by rewrite /= oppr0. Qed.
-
-Lemma oppeK : involutive (A := {ereal R}) -%E.
-Proof. by case=> [x||] //=; rewrite opprK. Qed.
-End ERealArithTh.
-
-(* -------------------------------------------------------------------- *)
-Section ERealOrderTheory.
-Context {R : realType}.
-
-Local Open Scope ereal_scope.
-
-Implicit Types x y z : {ereal R}.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
-  by case: x => [?||]; first by rewrite ?eqe; apply: lm.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
-  by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
-  by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
-
-Lemma le0R (l : {ereal R}) : (0%:E <= l)%E -> (0 <= l :> R).
-Proof. by case: l. Qed.
-
-Lemma leee x : x <= x.
-Proof. by elift lerr: x. Qed.
-
-Lemma ltee x : (x < x) = false.
-Proof. by elift ltrr: x. Qed.
-
-Lemma lteW x y : x < y -> x <= y.
-Proof. by elift ltrW: x y. Qed.
-
-Lemma eqe_le x y : (x == y) = (x <= y <= x).
-Proof. by elift eqr_le: x y. Qed.
-
-Lemma leeNgt x y : (x <= y) = ~~ (y < x).
-Proof. by elift lerNgt: x y. Qed.
-
-Lemma lteNgt x y : (x < y) = ~~ (y <= x).
-Proof. by elift ltrNge: x y. Qed.
-
-Lemma lee_eqVlt x y : (x <= y) = ((x == y) || (x < y)).
-Proof. by elift ler_eqVlt: x y. Qed.
-
-Lemma lte_neqAle x y : (x < y) = ((x != y) && (x <= y)).
-Proof. by elift ltr_neqAle: x y. Qed.
-
-Lemma lee_fin (x y : R) : (x%:E <= y%:E)%E = (x <= y)%R.
-Proof. by []. Qed.
-
-Lemma lte_fin (x y : R) : (x%:E < y%:E)%E = (x < y)%R.
-Proof. by []. Qed.
-
-Lemma lee_tofin (x y : R) : (x <= y)%R -> (x%:E <= y%:E)%E.
-Proof. by []. Qed.
-
-Lemma lte_tofin (x y : R) : (x < y)%R -> (x%:E < y%:E)%E.
-Proof. by []. Qed.
-
-Lemma lee_trans : transitive _ (@lee R).
-Proof. by move=> x y z; elift ler_trans : x y z. Qed.
-
-Lemma lte_trans : transitive _ (@lte R).
-Proof. by move=> x y z; elift ltr_trans : x y z. Qed.
-
-Lemma lee_lt_trans y x z : (x <= y) -> (y < z) -> (x < z).
-Proof. by elift ler_lt_trans : x y z. Qed.
-
-Lemma lte_le_trans y x z : (x < y) -> (y <= z) -> (x < z).
-Proof. by elift ltr_le_trans : x y z. Qed.
-
-Lemma lee_opp2 : {mono @eopp R : x y /~ (x <= y)}.
-Proof. by move=> x y; elift ler_opp2 : x y. Qed.
-
-Lemma lte_opp2 : {mono @eopp R : x y /~ (x < y)}.
-Proof. by move=> x y; elift ltr_opp2 : x y. Qed.
-End ERealOrderTheory.

@@ -5,7 +5,7 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import xfinmap boolp reals discrete.
+Require Import xfinmap boolp classical_sets ereal reals discrete.
 Require Import realseq realsum.
 
 Set Implicit Arguments.
@@ -13,7 +13,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import GRing.Theory Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 
@@ -79,27 +79,24 @@ Definition clamp (x : R) :=
   Num.max (Num.min x 1) 0.
 
 Lemma ge0_clamp x : 0 <= clamp x.
-Proof. by rewrite ler_maxr lerr orbT. Qed.
+Proof. by rewrite le_maxr lexx orbT. Qed.
 
 Lemma le1_clamp x : clamp x <= 1.
-Proof. by rewrite ler_maxl ler_minl lerr ler01 orbT. Qed.
+Proof. by rewrite le_maxl le_minl lexx ler01 orbT. Qed.
 
 Definition cp01_clamp := (ge0_clamp, le1_clamp).
 
 Lemma clamp_in01 x : 0 <= x <= 1 -> clamp x = x.
-Proof.
-case/andP=> ge0_x le1_x; rewrite /clamp maxr_l.
-  by rewrite ler_minr ge0_x ler01. by rewrite minr_l.
-Qed.
+Proof. by case/andP=> ge0_x le1_x; rewrite /clamp min_l ?max_l. Qed.
 
 Lemma clamp_id x : clamp (clamp x) = clamp x.
 Proof. by rewrite clamp_in01 // !cp01_clamp. Qed.
 
 Lemma clamp0 : clamp 0 = 0.
-Proof. by rewrite clamp_in01 // lerr ler01. Qed.
+Proof. by rewrite clamp_in01 // lexx ler01. Qed.
 
 Lemma clamp1 : clamp 1 = 1.
-Proof. by rewrite clamp_in01 // lerr ler01. Qed.
+Proof. by rewrite clamp_in01 // lexx ler01. Qed.
 End Clamp.
 
 (* -------------------------------------------------------------------- *)
@@ -150,15 +147,15 @@ Proof. by case: isd. Qed.
 Local Lemma isd2 : summable mu.
 Proof.
 case: isd=> _ h; apply/summable_seqP; exists 1=> //.
-move=> s /h /(ler_trans _); apply; rewrite ler_eqVlt; apply/orP.
+move=> s /h /(le_trans _); apply; rewrite le_eqVlt; apply/orP.
 by left; apply/eqP/eq_bigr=> i _; rewrite ger0_norm ?isd1.
 Qed.
 
 Local Lemma isd3 : psum mu <= 1.
 Proof.
 rewrite psumE; [apply/isd1 | apply/isd2 | apply/sup_le_ub].
-  by exists 0; apply/imsetbP; exists fset0; rewrite big_fset0.
-apply/ubP=> y /imsetbP[x ->]; rewrite big_fset_seq /=.
+  by exists 0, fset0; rewrite big_fset0.
+apply/ubP=> y [x ->]; rewrite big_fset_seq /=.
 by case: isd => _; apply; case: x => x /= /canonical_uniq.
 Qed.
 
@@ -173,16 +170,16 @@ End DistrTheory.
 
 Lemma isdistr_finP {R : realType} {I : finType} (mu : I -> R) :
   (isdistr mu) <-> (forall x, 0 <= mu x) /\ (\sum_j mu j <= 1).
-Proof. split=> -[ge0_mu le1]; split=> //.
+Proof. split=> -[ ge0_mu le1]; split=> //.
 + by apply/le1; rewrite /index_enum -enumT enum_uniq.
-+ move=> J uqJ; rewrite big_uniq 1?(ler_trans _ le1) //=.
++ move=> J uqJ; rewrite big_uniq 1?(le_trans _ le1) //=.
   by rewrite [X in _<=X](bigID (mem J)) /= ler_addl sumr_ge0.
 Qed.
 
 Lemma le1_mu1
   {R : realType} {T : choiceType} (mu : {distr T / R}) x : mu x <= 1.
 Proof.
-apply/(@ler_trans _ (psum mu)) => //; rewrite -[mu x]ger0_norm //.
+apply/(@le_trans _ _ (psum mu)) => //; rewrite -[mu x]ger0_norm //.
 by apply/ger1_psum.
 Qed.
 
@@ -221,10 +218,10 @@ Definition mrestr (mu : {distr T / R}) :=
 Lemma isd_mrestr (mu : {distr T / R}) : isdistr (mrestr mu).
 Proof.
 split=> [x|J]; first by rewrite /mrestr; case: ifP.
-move=> eqJ; apply/(@ler_trans _ (\sum_(j <- J) `|mu j|)).
+move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
 + apply/ler_sum=> i _; rewrite /mrestr; case: ifPn=> _.
   by apply/ler_norm. by apply/normr_ge0.
-+ by apply/(ler_trans _ (le1_mu mu))/gerfinseq_psum.
++ by apply/(le_trans _ (le1_mu mu))/gerfinseq_psum.
 Qed.
 
 Definition drestr (mu : {distr T / R}) := locked (mkdistr (isd_mrestr mu)).
@@ -277,8 +274,8 @@ have ->: (size s = \sum_(i <- undup s) count_mem i s)%N.
   by rewrite Monoid.iteropE iter_addn addn0 mul1n.
 rewrite [X in (_<=X)%N](bigID (mem J)) /= -ltnS -addSn.
 rewrite ltn_addr //= ltnS -big_filter -[X in (_<=X)%N]big_filter.
-rewrite leq_eqVlt; apply/orP; left; apply/eqP/eq_big_perm.
-apply/uniq_perm_eq; rewrite ?filter_uniq ?undup_uniq //.
+rewrite leq_eqVlt; apply/orP; left; apply/eqP/perm_big.
+apply/uniq_perm; rewrite ?filter_uniq ?undup_uniq //.
 by move=> x; rewrite !mem_filter mem_undup andbC.
 Qed.
 
@@ -365,11 +362,11 @@ split=> [x|J uqJ]; first by apply/ge0_psum.
 rewrite /mlet psum_bigop; first by move=> y x; rewrite mulr_ge0.
   move=> u; apply/(le_summable (F2 := mu)) => //.
   by move=> x; rewrite mulr_ge0 //= ler_pimulr ?le1_mu1.
-apply/(ler_trans _ (le1_mu mu))/le_psum => //.
+apply/(le_trans _ (le1_mu mu))/le_psum => //.
 move=> x; rewrite sumr_ge0 /= => [y _|]; first by rewrite mulr_ge0.
-rewrite -mulr_sumr ler_pimulr //; apply/(ler_trans _ (le1_mu (f x))).
+rewrite -mulr_sumr ler_pimulr //; apply/(le_trans _ (le1_mu (f x))).
 have := summable_mu (f x) => /gerfinseq_psum => /(_ _ uqJ).
-by apply/(ler_trans _)/ler_sum=> y _; apply/ler_norm.
+by apply/(le_trans _)/ler_sum=> y _; apply/ler_norm.
 Qed.
 
 Definition dlet := locked (mkdistr isd_mlet).
@@ -383,7 +380,7 @@ Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
 Definition dlift {A : choiceType} (f : A -> {distr A / R}) :=
   fun d => \dlet_(x <- d) f x.
 
-Fixpoint diter {A : choiceType} n (f : A -> {distr A / R}) :=
+Definition diter {A : choiceType} n (f : A -> {distr A / R}) :=
   fun a => (iter n (dlift f) (dunit a)).
 
 (* -------------------------------------------------------------------- *)
@@ -455,7 +452,7 @@ Lemma le_dlet f g mu nu :
   -> {in dinsupp mu, forall x, f x <=1 g x}
   -> \dlet_(x <- mu) f x <=1 \dlet_(x <- nu) g x.
 Proof. move=> le_mu le_fg x.
-by apply/(ler_trans (le_in_dlet le_fg _))/le_mu_dlet.
+by apply/(le_trans (le_in_dlet le_fg _))/le_mu_dlet.
 Qed.
 
 Lemma dletC (mu : {distr T / R}) (nu : {distr U / R}) y :
@@ -495,7 +492,7 @@ Lemma eq0_dlet (mu : {distr T / R}) (F : T -> {distr U / R}) y :
   (\dlet_(x <- mu) F x) y = 0 -> forall x, x \in dinsupp mu -> F x y = 0.
 Proof.
 unlock dlet; rewrite /= /mlet => /eq0_psum h x /dinsuppP /eqP mu_x.
-have {h}/h: summable (fun x => mu x * F x y).
+have {}/h: summable (fun x => mu x * F x y).
   apply/(le_summable (F2 := mu)) => // z.
   by rewrite mulr_ge0 //= ler_pimulr // le1_mu1.
 by move/(_ x)/eqP; rewrite mulf_eq0 (negbTE mu_x) /= => /eqP.
@@ -518,7 +515,7 @@ rewrite interchange_psum.
 + by move=> x; apply/summableZ/summable_mlet.
 + rewrite {}/S; apply/(le_summable (F2 := mu)) => //.
   move=> x; rewrite ge0_psum /= psumZ ?ler_pimulr //.
-  apply/(ler_trans _ (le1_mu (f1 x)))/le_psum => //.
+  apply/(le_trans _ (le1_mu (f1 x)))/le_psum => //.
   by move=> y; rewrite mulr_ge0 //= ler_pimulr ?le1_mu1.
 apply/eq_psum=> y /=; rewrite -psumZr //.
 by apply/eq_psum=> x /=; rewrite {}/S mulrA.
@@ -542,7 +539,7 @@ End DLetAlg.
 
 (* -------------------------------------------------------------------- *)
 Definition mlim T (f : nat -> distr T) : T -> R :=
-  fun x => nlim (fun n => f n x).
+  fun x => real_of_er(*TODO: broken coercion*) (nlim (fun n => f n x)).
 
 Lemma isd_mlim T (f : nat -> distr T) : isdistr (mlim f).
 Proof. split=> [x|J]; rewrite /mlim.
@@ -550,23 +547,23 @@ Proof. split=> [x|J]; rewrite /mlim.
   by move=> n; apply/ge0_mu.
 move=> uqJ; pose F j :=
   if `[< iscvg (fun n => f n j) >] then fun n => f n j else 0%:S.
-apply/(@ler_trans _ (\sum_(j <- J) (nlim (F j) : R))).
+apply/(@le_trans _ _ (\sum_(j <- J) (real_of_er (*TODO: broken coercion*) (nlim (F j) (*: R*))))).
   apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >] => //.
   move/asboolPn=> h; rewrite nlimC; case: nlimP=> //.
   by case=> // l cf; case: h; exists l.
 rewrite -lee_fin -nlim_sumR => [i _|].
   rewrite /F; case/boolP: `[< _ >] => [/asboolP //|].
   by move=> _; apply/iscvgC.
-rewrite leeNgt; apply/negP; pose s n := \sum_(j <- J) F j n.
+rewrite leNgt; apply/negP; pose s n := \sum_(j <- J) F j n.
 move/ncvg_gt=> -/(_ s (nlim_ncvg _)) [].
   suff: iscvg s by case=> l cs; exists l%:E.
   apply/iscvg_sum=> j _; rewrite /F; case/boolP: `[< _ >].
     by move/asboolP. by move=> _; apply/iscvgC.
-move=> K /(_ _ (leqnn K)) /=; apply/negP; rewrite -lerNgt.
-apply/(@ler_trans _ (\sum_(j <- J) f K j)); last first.
+move=> K /(_ _ (leqnn K)) /=; apply/negP; rewrite -leNgt.
+apply/(@le_trans _ _ (\sum_(j <- J) f K j)); last first.
   have /(gerfinseq_psum uqJ) := summable_mu (f K).
-  move/ler_trans=> -/(_ _ (le1_mu (f K)))=> h.
-  by apply/(ler_trans _ h)/ler_sum=> i _; apply/ler_norm.
+  move/le_trans=> -/(_ _ (le1_mu (f K)))=> h.
+  by apply/(le_trans _ h)/ler_sum=> i _; apply/ler_norm.
 apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >] => //.
 by move=> _; apply/ge0_mu.
 Qed.
@@ -577,7 +574,7 @@ Definition dlim T (f : nat -> distr T) :=
 Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
 Lemma dlimE T (f : nat -> distr T) x :
-  (\dlim_(n) f n) x = nlim (fun n => f n x).
+  (\dlim_(n) f n) x = real_of_er(*TODO: broken coercion*) (nlim (fun n => f n x)).
 Proof. by unlock dlim. Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -646,7 +643,7 @@ Proof.
 move=> mn_f x; have: forall n m, (n <= m)%N -> f n x <= f m x.
   by move=> n m /mn_f; apply.
 case/ncvg_mono_bnd => {mn_f}; first apply/asboolP/nboundedP.
-  exists 2%:R => // n; apply/(@ler_lt_trans _ 1%:R)/ltr_nat.
+  exists 2%:R => // n; apply/(@le_lt_trans _ _ 1%:R)/ltr_nat.
   by rewrite ger0_norm // le1_mu1.
 by move=> y h; exists y%:E.
 Qed.
@@ -667,7 +664,7 @@ Qed.
 
 Lemma leub_dlim f mu : (forall n, f n <=1 mu) -> dlim f <=1 mu.
 Proof.
-move=> le x; apply/(@ler_trans _ ((\dlim_(n) mu) x)).
+move=> le x; apply/(@le_trans _ _ ((\dlim_(n) mu) x)).
   by apply/le_dlim => // y; exists (mu y)%:E; apply/ncvgC.
 by rewrite dlimE nlimC.
 Qed.
@@ -804,8 +801,8 @@ Lemma summable_fst (mu : {distr (T * U) / R}) x :
 Proof.
 have /summable_seqP /= := summable_mu mu => -[M ge0_M h].
 apply/summable_seqP; exists M => // J uqJ; pose X := [seq (x, y) | y <- J].
-apply/(ler_trans _ (h X _)); last by rewrite map_inj_uniq // => y1 y2 [].
-by rewrite ler_eqVlt big_map eqxx.
+apply/(le_trans _ (h X _)); last by rewrite map_inj_uniq // => y1 y2 [].
+by rewrite le_eqVlt big_map eqxx.
 Qed.
 End DFst.
 
@@ -980,7 +977,7 @@ Qed.
 
 Lemma le1_pr A mu : \P_[mu] A <= 1.
 Proof.
-apply/(@ler_trans _ \P_[mu] predT).
+apply/(@le_trans _ _ \P_[mu] predT).
   by apply/subset_pr. by rewrite pr_predT le1_mu.
 Qed.
 
@@ -1008,14 +1005,14 @@ Lemma le_mu_pr A mu nu :
 Proof.
 move=> h; apply/le_psum; last by apply/summable_pr.
 move=> x; rewrite mulr_ge0 ?ler0n //=.
-case/boolP: (x \in dinsupp nu) => [/h {h}h|]; last first.
+case/boolP: (x \in dinsupp nu) => [/h {}h|]; last first.
   by move/dinsuppPn=> ->; rewrite mulr0 mulr_ge0 ?ler0n.
 by case/boolP: (A x) => [/h|]; rewrite ?(mul0r, mul1r).
 Qed.
 
 Lemma le1_prc A B mu : \P_[mu, B] A <= 1.
 Proof.
-have := ge0_pr B mu; rewrite /prc ler_eqVlt.
+have := ge0_pr B mu; rewrite /prc le_eqVlt.
 case/orP=> [/eqP<-|]; first by rewrite invr0 mulr0 ler01.
 by move/ler_pdivr_mulr=> ->; rewrite mul1r le_in_pr // => x _ /andP[].
 Qed.
@@ -1025,12 +1022,12 @@ Lemma prc_sum A mu : 0 < \P_[mu] A ->
 Proof.
 move=> gt0_pE; rewrite psumZr ?(invr_ge0, ge0_pr) //.
 rewrite (eq_psum (F2 := (fun x => (A x)%:R * mu x))); last first.
-  by rewrite divff // gtr_eqF.
+  by rewrite divff // gt_eqF.
 move=> x /=; rewrite /pr (psum_finseq (r := [:: x])) ?big_seq1 //=.
   move=> y; rewrite !inE; case: (y == x) => //=.
   by rewrite mul0r eqxx.
 by rewrite !inE eqxx -topredE ger0_norm ?mulr_ge0 ?ler0n.
-Qed. 
+Qed.
 
 Lemma pr_eq0 mu E : \P_[mu] E = 0 -> forall x, x \in E -> mu x = 0.
 Proof.
@@ -1144,14 +1141,14 @@ Lemma has_esp_bounded f mu :
   (exists M, forall x, `|f x| < M) -> \E?_[mu] f.
 Proof.                          (* TO BE REMOVED *)
 case=> M ltM; rewrite /has_esp; apply/summable_seqP.
-exists (Num.max M 0); first by rewrite ler_maxr lerr orbT.
-move=> J uqJ; apply/(@ler_trans _ (\sum_(j <- J) M * mu j)).
+exists (Num.max M 0); first by rewrite le_maxr lexx orbT.
+move=> J uqJ; apply/(@le_trans _ _ (\sum_(j <- J) M * mu j)).
   apply/ler_sum=> j _; rewrite normrM [X in _*X]ger0_norm //.
-  by apply/ler_wpmul2r=> //; apply/ltrW.
+  by apply/ler_wpmul2r=> //; apply/ltW.
 case: (ltrP M 0) => [lt0_M|ge0_M].
-  rewrite maxr_r ?(ltrW lt0_M) // -mulr_sumr.
+  rewrite ?(ltW lt0_M) // -mulr_sumr.
   by rewrite nmulr_rle0 //; apply/sumr_ge0.
-by rewrite maxr_l // -mulr_sumr ler_pimulr // -pr_mem ?le1_pr.
+by rewrite -mulr_sumr ler_pimulr // -pr_mem ?le1_pr.
 Qed.
 
 Lemma bounded_has_exp mu F :
@@ -1167,11 +1164,11 @@ Qed.
 Lemma exp_le_bd mu F (M : R) :
   0 <= M -> (forall x, `|F x| <= M) -> \E_[mu] F <= M.
 Proof.
-move=> ge0M bd; apply/(@ler_trans _ (\E_[mu] (fun _ => M))).
+move=> ge0M bd; apply/(@le_trans _ _ (\E_[mu] (fun _ => M))).
 + apply/le_exp.
   + by apply/bounded_has_exp; exists M.
   + by apply/has_expC.
-  + by move=> x; apply/(ler_trans _ (bd x))/ler_norm.
+  + by move=> x; apply/(le_trans _ (bd x))/ler_norm.
 by rewrite exp_cst ler_pimull // le1_pr.
 Qed.
 
@@ -1190,7 +1187,7 @@ Definition convexon (a b : {ereal R}) (f : R -> R) :=
     forall t, 0 <= t <= 1 ->
       f (t * x + (1 - t) * y) <= t * (f x) + (1 - t) * (f y).
 
-Notation convex f := (convexon \-inf \+inf f).
+Notation convex f := (convexon -oo +oo f).
 
 Section Jensen.
 Context (f : R -> R) (x l : I -> R).
@@ -1205,22 +1202,22 @@ case: (index_enum I) eq1_l => [|i s]; rewrite ?(big_nil, big_cons).
   by move/esym/eqP; rewrite oner_eq0.
 elim: {i} s (l i) (ge0_l i) (x i) => [|j s ih] li ge0_li xi.
   by rewrite !big_nil !addr0 => ->; rewrite !mul1r.
-rewrite !big_cons; have := ge0_l j; rewrite ler_eqVlt.
+rewrite !big_cons; have := ge0_l j; rewrite le_eqVlt.
 case/orP => [/eqP<-|gt0_lj].
   by rewrite !Monoid.simpm /=; apply/ih.
 rewrite !addrA => eq1; pose z := (li * xi + l j * x j) / (li + l j).
-have nz_lij: li + l j != 0 by rewrite gtr_eqF ?ltr_paddl.
+have nz_lij: li + l j != 0 by rewrite gt_eqF ?ltr_paddl.
 have/ih := eq1 => -/(_ _ z); rewrite [_ * (_ / _)]mulrC.
-rewrite mulfVK // => {ih}ih; apply/(ler_trans (ih _)).
+rewrite mulfVK // => {}ih; apply/(le_trans (ih _)).
   by rewrite addr_ge0 ?ge0_l.
 rewrite ler_add2r {ih}/z mulrDl ![_*_/_]mulrAC.
 set c1 : R := _ / _; set c2 : R := _ / _; have eqc2: c2 = 1 - c1.
   apply/(mulfI nz_lij); rewrite mulrBr mulr1 ![(li + l j)*_]mulrC.
   by apply/eqP; rewrite !mulfVK // eq_sym subr_eq addrC.
 set c := (li + l j); pose z := (c * c1 * f xi + c * c2 * f (x j)).
-apply/(@ler_trans _ z); last by rewrite /z ![_*(_/_)]mulrC !mulfVK.
+apply/(@le_trans _ _ z); last by rewrite /z ![_*(_/_)]mulrC !mulfVK.
 rewrite {}/z -![c * _ * _]mulrA -mulrDr ler_wpmul2l ?addr_ge0 //.
-rewrite eqc2 cvx_f // divr_ge0 ?addr_ge0 //=.
+rewrite eqc2 cvx_f // ?lee_ninfty ?lee_pinfty // divr_ge0 ?addr_ge0 //=.
 by rewrite ler_pdivr_mulr ?mul1r ?ler_addl ?ltr_paddl.
 Qed.
 End Jensen.

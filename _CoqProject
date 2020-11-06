@@ -1,18 +1,20 @@
 -arg -w
 -arg -parsing
--arg -w -arg -duplicate-clear
 
 theories/boolp.v
+theories/ereal.v
 theories/reals.v
 theories/posnum.v
 theories/landau.v
 theories/classical_sets.v
 theories/Rstruct.v
-theories/Rbar.v
 theories/topology.v
+theories/prodnormedzmodule.v
 theories/normedtype.v
+theories/sequences.v
 theories/forms.v
 theories/derive.v
+theories/measure.v
 theories/summability.v
 theories/eudoxus.v
 theories/altreals/xfinmap.v

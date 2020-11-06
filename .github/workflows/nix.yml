@@ -1,0 +1,20 @@
+name: Cachix
+on:
+  push:
+jobs:
+  cachix:
+    name: Cachix branch
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get branch shortname
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch-short-name
+    - uses: cachix/install-nix-action@v8
+    - uses: cachix/cachix-action@v6
+      with:
+        # Name of a cachix cache to push and pull/substitute
+        name:  math-comp
+        # Authentication token for Cachix, needed only for private cache access
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - run: nix-build https://github.com/math-comp/math-comp-nix/archive/master.tar.gz --arg config '{mathcomp = "mathcomp-1.11.0"; mathcomp-analysis = "${{ steps.branch-short-name.outputs.branch }}";}' --argstr package mathcomp-analysis
+    # - run: export CACHIX_SIGNING_KEY=${{ secrets.CACHIX_SIGNING_KEY }} cachix push math-comp result

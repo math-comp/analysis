@@ -25,13 +25,13 @@ Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
-From mathcomp Require Import choice bigop ssralg fintype poly.
+From mathcomp Require Import choice bigop order ssralg fintype poly.
 From mathcomp Require Import mxpoly ssrnum finfun.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope R_scope.
 
@@ -226,7 +226,9 @@ Qed.
 
 Definition R_numMixin := NumMixin Rleb_norm_add addr_Rgtb0 Rnorm0_eq0
                                   Rleb_leVge RnormM Rleb_def Rltb_def.
+Canonical R_porderType := POrderType ring_display R R_numMixin.
 Canonical R_numDomainType := NumDomainType R R_numMixin.
+Canonical R_normedZmodType := NormedZmodType R R R_numMixin.
 
 Lemma RleP : forall x y, reflect (Rle x y) (x <= y)%R.
 Proof. exact: RlebP. Qed.
@@ -246,7 +248,16 @@ case: (Rle_dec 0 x)=> [/RleP ->|] //.
 by move/Rnot_le_lt/Rlt_le/RleP=> ->; rewrite orbT.
 Qed.
 
-Canonical R_realDomainType := RealDomainType R Rreal_axiom.
+Lemma R_total : totalPOrderMixin R_porderType.
+Proof.
+move=> x y; case: (Rle_lt_dec x y) => [/RleP -> //|/Rlt_le/RleP ->];
+  by rewrite orbT.
+Qed.
+
+Canonical R_latticeType := LatticeType R R_total.
+Canonical R_distrLatticeType := DistrLatticeType R R_total.
+Canonical R_orderType := OrderType R R_total.
+Canonical R_realDomainType := [realDomainType of R].
 Canonical R_realFieldType := [realFieldType of R].
 
 Lemma Rarchimedean_axiom : Num.archimedean_axiom R_numDomainType.
@@ -336,13 +347,13 @@ Qed.
 
 Lemma Rreal_closed_axiom : Num.real_closed_axiom R_numDomainType.
 Proof.
-move=> p a b; rewrite !ler_eqVlt.
+move=> p a b; rewrite !le_eqVlt.
 case Hpa: ((p.[a])%R == 0%R).
-  by move=> ? _ ; exists a=> //; rewrite lerr ler_eqVlt.
+  by move=> ? _ ; exists a=> //; rewrite lexx le_eqVlt.
 case Hpb: ((p.[b])%R == 0%R).
-  by move=> ? _; exists b=> //; rewrite lerr ler_eqVlt andbT.
+  by move=> ? _; exists b=> //; rewrite lexx le_eqVlt andbT.
 case Hab: (a == b).
-  by move=> _; rewrite (eqP Hab) eq_sym Hpb (ltrNge 0) /=; case/andP=> /ltrW ->.
+  by move=> _; rewrite (eqP Hab) eq_sym Hpb (ltNge 0) /=; case/andP=> /ltW ->.
 rewrite eq_sym Hpb /=; clear=> /RltbP Hab /andP [] /RltbP Hpa /RltbP Hpb.
 suff Hcp: continuity (fun x => (p.[x])%R).
   have [z [[Hza Hzb] /eqP Hz2]]:= IVT _ a b Hcp Hab Hpa Hpb.
@@ -362,49 +373,50 @@ Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 
 End ssreal_struct.
 
-Open Scope ring_scope.
-Require Import reals boolp.
+Local Open Scope ring_scope.
+Require Import reals boolp classical_sets.
 
 Section ssreal_struct_contd.
 
-Lemma is_upper_boundE (E : pred R) x : is_upper_bound E x = (x \in ub E).
+Lemma is_upper_boundE (E : set R) x : is_upper_bound E x = ((ubound E) x).
 Proof.
-rewrite /is_upper_bound inE forallbE asboolE /=; apply/eq_forall=> y.
-by rewrite -(reflect_eq implyP) (reflect_eq (RleP _ _)).
+rewrite propeqE; split; [move=> h|move=> /ubP h y Ey; exact/RleP/h].
+by apply/ubP => y Ey; apply/RleP/h.
 Qed.
 
-Lemma boundE (E : pred R) : bound E = has_ub E.
+Lemma boundE (E : set R) : bound E = has_ubound E.
 Proof. by apply/eq_exists=> x; rewrite is_upper_boundE. Qed.
 
-Lemma completeness' (E : pred R) : has_sup E -> {m : R | is_lub E m}.
+Lemma completeness' (E : set R) : has_sup E -> {m : R | is_lub E m}.
 Proof. by move=> [eE bE]; rewrite -boundE in bE; apply: completeness. Qed.
 
-Definition real_sup (E : pred R) : R :=
+Definition real_sup (E : set R) : R :=
   if pselect (has_sup E) isn't left hsE then 0 else projT1 (completeness' hsE).
 
-Lemma real_sup_is_lub (E : pred R) : has_sup E -> is_lub E (real_sup E).
+Lemma real_sup_is_lub (E : set R) : has_sup E -> is_lub E (real_sup E).
 Proof.
 by move=> hsE; rewrite /real_sup; case: pselect=> // ?; case: completeness'.
 Qed.
 
-Lemma real_sup_ub (E : pred R) : has_sup E -> real_sup E \in ub E.
+Lemma real_sup_ub (E : set R) : has_sup E -> (ubound E) (real_sup E).
 Proof. by move=> /real_sup_is_lub []; rewrite is_upper_boundE. Qed.
 
-Lemma real_sup_out (E : pred R) : ~ has_sup E -> real_sup E = 0.
+Lemma real_sup_out (E : set R) : ~ has_sup E -> real_sup E = 0.
 Proof. by move=> nosup; rewrite /real_sup; case: pselect. Qed.
 
 (* :TODO: rewrite like this using (a fork of?) Coquelicot *)
 (* Lemma real_sup_adherent (E : pred R) : real_sup E \in closure E. *)
-Lemma real_sup_adherent (E : pred R) (eps : R) :
+Lemma real_sup_adherent (E : set R) (eps : R) :
   has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
 Proof.
 move=> supE eps_gt0; set m := _ - eps; apply: contrapT=> mNsmall.
-have: m \in ub E.
-  apply/ubP=> y Ey; have /negP := mNsmall (ex_intro2 _ _ y Ey _).
-  by rewrite -lerNgt.
+have: (ubound E) m.
+  apply/ubP => y Ey.
+  have /negP := mNsmall (ex_intro2 _ _ y Ey _).
+  by rewrite -leNgt.
 have [_ /(_ m)] := real_sup_is_lub supE.
 rewrite is_upper_boundE => m_big /m_big /RleP.
-by rewrite -subr_ge0 addrC addKr oppr_ge0 lerNgt eps_gt0.
+by rewrite -subr_ge0 addrC addKr oppr_ge0 leNgt eps_gt0.
 Qed.
 
 Definition real_realMixin : Real.mixin_of _ :=
@@ -470,92 +482,117 @@ Proof. by elim: n => [ | n In] //=; rewrite exprS In RmultE. Qed.
 
 Lemma RmaxE x y : Rmax x y = Num.max x y.
 Proof.
-case: (lerP x y) => H; first by rewrite maxr_r // Rmax_right //; apply: RlebP.
-by rewrite maxr_l ?ltrW // Rmax_left //;  apply/RlebP; move/ltrW : H.
+case: (lerP x y) => H; first by rewrite Rmax_right //; apply: RlebP.
+by rewrite ?ltW // Rmax_left //;  apply/RlebP; move/ltW : H.
 Qed.
 
 (* useful? *)
 Lemma RminE x y : Rmin x y = Num.min x y.
 Proof.
-case: (lerP x y) => H; first by rewrite minr_l // Rmin_left //; apply: RlebP.
-by rewrite minr_r ?ltrW // Rmin_right //;  apply/RlebP; move/ltrW : H.
+case: (lerP x y) => H; first by rewrite Rmin_left //; apply: RlebP.
+by rewrite ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
 Qed.
+
+Section bigmaxr.
+Context {R : realDomainType}.
 
 (* bigop pour le max pour des listes non vides ? *)
-Definition bigmaxr (x0 : R) lr :=
-  foldr Num.max (head x0 lr) (behead lr).
+Definition bigmaxr (r : R) s := \big[Num.max/head r s]_(i <- s) i.
 
-Lemma bigmaxr_nil x0 : bigmaxr x0 [::] = x0.
-Proof. by rewrite /bigmaxr. Qed.
+Lemma bigmaxr_nil (x0 : R) : bigmaxr x0 [::] = x0.
+Proof. by rewrite /bigmaxr /= big_nil. Qed.
 
-Lemma bigmaxr_un x0 x : bigmaxr x0 [:: x] = x.
-Proof. by rewrite /bigmaxr. Qed.
+Lemma bigmaxr_un (x0 x : R) : bigmaxr x0 [:: x] = x.
+Proof. by rewrite /bigmaxr /= big_cons big_nil maxxx. Qed.
 
-Lemma bigmaxr_cons x0 x y lr :
-  bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
+(* previous definition *)
+Lemma bigmaxrE (r : R) s : bigmaxr r s = foldr Num.max (head r s) (behead s).
 Proof.
-rewrite /bigmaxr /=; elim: lr => [/= | a lr /=]; first by rewrite maxrC.
-set b := foldr _ _ _; set c := foldr _ _ _ => H.
-by rewrite [Num.max a b]maxrC maxrA H -maxrA (maxrC c a).
+rewrite (_ : bigmaxr _ _ = if s isn't h :: t then r else \big[Num.max/h]_(i <- s) i).
+  case: s => // ? t; rewrite big_cons /bigmaxr.
+  by elim: t => //= [|? ? <-]; [rewrite big_nil maxxx | rewrite big_cons maxCA].
+by case: s => //=; rewrite /bigmaxr big_nil.
 Qed.
 
-Lemma bigmaxr_ler x0 lr i :
-  (i < size lr)%N -> (nth x0 lr i) <= (bigmaxr x0 lr).
+Lemma bigrmax_dflt (x y : R) s : Num.max x (\big[Num.max/x]_(j <- y :: s) j) =
+  Num.max x (\big[Num.max/y]_(i <- y :: s) i).
 Proof.
-case: lr i => [i | x lr]; first by rewrite nth_nil bigmaxr_nil lerr.
-elim: lr x => [x i /= | x lr /= ihlr y i i_size].
-  by rewrite ltnS leqn0 => /eqP ->; rewrite nth0 bigmaxr_un /=.
-rewrite bigmaxr_cons /=; case: i i_size => [_ /= | i].
-  by rewrite ler_maxr lerr.
-rewrite ltnS /=; move/(ihlr x); move/(ler_trans)=> H; apply: H.
-by rewrite ler_maxr lerr orbT.
+elim: s => /= [|h t IH] in x y *.
+by rewrite !big_cons !big_nil maxxx maxCA maxxx maxC.
+by rewrite big_cons maxCA IH maxCA [in RHS]big_cons IH.
+Qed.
+
+Lemma bigmaxr_cons (x0 x y : R) lr :
+  bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
+Proof. by rewrite [y :: lr]lock /bigmaxr /= -lock big_cons bigrmax_dflt. Qed.
+
+Lemma bigmaxr_ler (x0 : R) s i :
+  (i < size s)%N -> (nth x0 s i) <= (bigmaxr x0 s).
+Proof.
+rewrite /bigmaxr; elim: s i => // h t IH [_|i] /=.
+  by rewrite big_cons /= le_maxr lexx.
+rewrite ltnS => ti; case: t => [|h' t] // in IH ti *.
+by rewrite big_cons bigrmax_dflt le_maxr orbC IH.
 Qed.
 
 (* Compatibilité avec l'addition *)
-Lemma bigmaxr_addr x0 lr x :
-  bigmaxr (x0 + x) (map (fun y => y + x) lr) = (bigmaxr x0 lr) + x.
+Lemma bigmaxr_addr (x0 : R) lr (x : R) :
+  bigmaxr (x0 + x) (map (fun y : R => y + x) lr) = (bigmaxr x0 lr) + x.
 Proof.
-case: lr => [/= | y lr]; first by rewrite bigmaxr_nil.
-elim: lr y => [y | y lr ihlr z]; first by rewrite /= !bigmaxr_un.
-by rewrite map_cons !bigmaxr_cons ihlr addr_maxl.
+rewrite /bigmaxr; case: lr => [|h t]; first by rewrite !big_nil.
+elim: t h => /= [|h' t IH] h; first by rewrite ?(big_cons,big_nil) -addr_maxl.
+by rewrite [in RHS]big_cons bigrmax_dflt addr_maxl -IH big_cons bigrmax_dflt.
 Qed.
 
-Lemma bigmaxr_index x0 lr :
+Lemma bigmaxr_mem (x0 : R) lr : (0 < size lr)%N -> bigmaxr x0 lr \in lr.
+Proof.
+rewrite /bigmaxr; case: lr => // h t _.
+elim: t => //= [|h' t IH] in h *; first by rewrite big_cons big_nil inE maxxx.
+rewrite big_cons bigrmax_dflt inE eq_le; case: lerP => /=.
+- by rewrite le_maxr lexx.
+- by rewrite lt_maxr ltxx => ?; rewrite max_r ?IH // ltW.
+Qed.
+
+(* TODO: bigmaxr_morph? *)
+Lemma bigmaxr_mulr (A : finType) (s : seq A) (k : R) (x : A -> R) :
+  0 <= k -> bigmaxr 0 (map (fun i => k * x i) s) = k * bigmaxr 0 (map x s).
+Proof.
+move=> k0; elim: s => /= [|h [/=|h' t ih]].
+by rewrite bigmaxr_nil mulr0.
+by rewrite !bigmaxr_un.
+by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pmulr.
+Qed.
+
+Lemma bigmaxr_index (x0 : R) lr :
   (0 < size lr)%N -> (index (bigmaxr x0 lr) lr < size lr)%N.
 Proof.
-case: lr => [//= | x l _].
-elim: l x => [x | x lr]; first by rewrite bigmaxr_un /= eq_refl.
-move/(_ x); set z := bigmaxr _ _ => /= ihl y; rewrite bigmaxr_cons /Num.max -/z.
-case: (z <= y); first by rewrite eq_refl.
-by case: (y == z); rewrite //.
+rewrite /bigmaxr; case: lr => //= h t _; case: ifPn => // /negbTE H.
+move: (@bigmaxr_mem x0 (h :: t) isT).
+by rewrite ltnS index_mem inE /= eq_sym H.
 Qed.
 
-Lemma bigmaxr_mem x0 lr :
-  (0 < size lr)%N -> bigmaxr x0 lr \in lr.
-Proof. by move/(bigmaxr_index x0); rewrite index_mem. Qed.
-
-Lemma bigmaxr_lerP x0 lr x :
+Lemma bigmaxr_lerP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
   reflect (forall i, (i < size lr)%N -> (nth x0 lr i) <= x) ((bigmaxr x0 lr) <= x).
 Proof.
 move=> lr_size; apply: (iffP idP) => [le_x i i_size | H].
-  by apply: (ler_trans _ le_x); apply: bigmaxr_ler.
+  by apply: (le_trans _ le_x); apply: bigmaxr_ler.
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-Lemma bigmaxr_ltrP x0 lr x :
+Lemma bigmaxr_ltrP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
   reflect (forall i, (i < size lr)%N -> (nth x0 lr i) < x) ((bigmaxr x0 lr) < x).
 Proof.
 move=> lr_size; apply: (iffP idP) => [lt_x i i_size | H].
-  by apply: ler_lt_trans lt_x; apply: bigmaxr_ler.
+  by apply: le_lt_trans lt_x; apply: bigmaxr_ler.
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-Lemma bigmaxrP x0 lr x :
+Lemma bigmaxrP (x0 : R) lr (x : R) :
   (x \in lr /\ forall i, (i < size lr) %N -> (nth x0 lr i) <= x) -> (bigmaxr x0 lr = x).
 Proof.
-move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: ler_asym; apply/andP; split.
+move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: le_anti; apply/andP; split.
   by apply/bigmaxr_lerP => //; apply: (leq_trans _ j_size).
 by rewrite -j_nth (bigmaxr_ler _ j_size).
 Qed.
@@ -571,16 +608,15 @@ apply/negP => /eqP H; apply: neq_i; rewrite -H eq_sym; apply/eqP.
 by apply: index_uniq.
 Qed. *)
 
-Lemma bigmaxr_lerif x0 lr :
+Lemma bigmaxr_lerif (x0 : R) lr :
   uniq lr -> forall i, (i < size lr)%N ->
      (nth x0 lr i) <= (bigmaxr x0 lr) ?= iff (i == index (bigmaxr x0 lr) lr).
 Proof.
-move=> lr_uniq i i_size; rewrite /lerif (bigmaxr_ler _ i_size).
+move=> lr_uniq i i_size; rewrite /Num.leif (bigmaxr_ler _ i_size).
 rewrite -(nth_uniq x0 i_size (bigmaxr_index _ (leq_trans _ i_size)) lr_uniq) //.
 rewrite nth_index //.
 by apply: bigmaxr_mem; apply: (leq_trans _ i_size).
 Qed.
-
 
 (* bigop pour le max pour des listes non vides ? *)
 Definition bmaxrf n (f : {ffun 'I_n.+1 -> R}) :=
@@ -623,7 +659,88 @@ Lemma bmaxrf_lerif n (f : {ffun 'I_n.+1 -> R}) :
   injective f -> forall i,
      (f i) <= (bmaxrf f) ?= iff (i == index_bmaxrf f).
 Proof.
-by move=> inj_f i; rewrite /lerif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
+by move=> inj_f i; rewrite /Num.leif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
 Qed.
 
+End bigmaxr.
+
 End ssreal_struct_contd.
+
+Require Import posnum topology normedtype.
+
+Section analysis_struct.
+
+Canonical R_pointedType := [pointedType of R for pointed_of_zmodule R_ringType].
+Canonical R_filteredType :=
+  [filteredType R of R for filtered_of_normedZmod R_normedZmodType].
+Canonical R_topologicalType : topologicalType := TopologicalType R
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ R_normedZmodType)
+      (pseudoMetric_of_normedDomain R_normedZmodType))).
+Canonical R_uniformType : uniformType :=
+  UniformType R
+  (uniformityOfBallMixin (@nbhs_ball_normE _ R_normedZmodType)
+    (pseudoMetric_of_normedDomain R_normedZmodType)).
+Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType :=
+  PseudoMetricType R (pseudoMetric_of_normedDomain R_normedZmodType).
+
+(* TODO: express using ball?*)
+Lemma continuity_pt_nbhs (f : R -> R) x :
+  continuity_pt f x <->
+  forall eps : {posnum R}, nbhs x (fun u => `|f u - f x| < eps%:num).
+Proof.
+split=> [fcont e|fcont _/RltP/posnumP[e]]; last first.
+  have [_/posnumP[d] xd_fxe] := fcont e.
+  exists d%:num; split; first by apply/RltP; have := [gt0 of d%:num].
+  by move=> y [_ /RltP yxd]; apply/RltP/xd_fxe; rewrite /= distrC.
+have /RltP egt0 := [gt0 of e%:num].
+have [_ [/RltP/posnumP[d] dx_fxe]] := fcont e%:num egt0.
+exists d%:num => // y xyd; case: (eqVneq x y) => [->|xney].
+  by rewrite subrr normr0.
+apply/RltP/dx_fxe; split; first by split=> //; apply/eqP.
+by have /RltP := xyd; rewrite distrC.
+Qed.
+
+Lemma continuity_pt_cvg (f : R -> R) (x : R) :
+  continuity_pt f x <-> {for x, continuous f}.
+Proof.
+eapply iff_trans; first exact: continuity_pt_nbhs.
+apply iff_sym.
+have FF : Filter (f @ x).
+  by typeclasses eauto.
+  (*by apply fmap_filter; apply: @filter_filter' (locally_filter _).*)
+case: (@cvg_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
+(* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
+split => [{H2} - /H1 {}H1 eps|{H1} H].
+- have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
+  exists x0%:num => // Hx0' /Hx0 /=.
+  by rewrite /= distrC; apply.
+- apply H2 => _ /posnumP[eps]; move: (H eps) => {H} [_ /posnumP[x0] Hx0].
+  exists x0%:num => // y /Hx0 /= {}Hx0.
+  by rewrite /ball /= distrC.
+Qed.
+
+Lemma continuity_ptE (f : R -> R) (x : R) :
+  continuity_pt f x <-> {for x, continuous f}.
+Proof. exact: continuity_pt_cvg. Qed.
+
+Local Open Scope classical_set_scope.
+
+Lemma continuity_pt_cvg' f x :
+  continuity_pt f x <-> f @ nbhs' x --> f x.
+Proof. by rewrite continuity_ptE continuous_withinNx. Qed.
+
+Lemma continuity_pt_nbhs' f x :
+  continuity_pt f x <->
+  forall eps, 0 < eps -> nbhs' x (fun u => `|f x - f u| < eps).
+Proof.
+rewrite continuity_pt_cvg' (@cvg_distP _ [normedModType _ of R^o]).
+exact.
+Qed.
+
+Lemma nbhs_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
+  nbhs (f x) P -> continuity_pt f x -> \near x, P (f x).
+Proof. by move=> Lf /continuity_pt_cvg; apply. Qed.
+
+End analysis_struct.

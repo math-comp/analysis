@@ -1,9 +1,9 @@
 opam-version: "2.0"
-maintainer: "pierre-yves@strub.nu"
+maintainer: "reynald.affeldt@aist.go.jp"
 homepage: "https://github.com/math-comp/analysis"
 bug-reports: "https://github.com/math-comp/analysis/issues"
 dev-repo: "git+https://github.com/math-comp/analysis.git"
-license: "CeCILL-C"
+license: "CECILL-C"
 authors: [
   "Reynald Affeldt"
   "Cyril Cohen"
@@ -19,9 +19,9 @@ install: [
   [make "install"]
 ]
 depends: [
-  "coq" { ((>= "8.8" & < "8.11~") | = "dev") }
-  "coq-mathcomp-field"       {(>= "1.8.0" & <= "1.10.0")}
-  "coq-mathcomp-finmap"      {(>= "1.2.0" & <= "1.4.0")}
+  "coq" { ((>= "8.10" & < "8.13~") | = "dev") }
+  "coq-mathcomp-field"       {(>= "1.11.0" & < "1.12~")}
+  "coq-mathcomp-finmap"      {(>= "1.5.0" & < "1.6~")}
 ]
 synopsis: "An analysis library for mathematical components"
 description: """
@@ -35,6 +35,6 @@ tags: [
   "keyword: analysis"
   "keyword: topology"
   "keyword: real numbers"
-  "logpath: mathcomp-analysis"
-  "date:2019-12-03"
+  "logpath: mathcomp.analysis"
+  "date:2020-08-11"
 ]
