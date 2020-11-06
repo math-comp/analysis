@@ -481,7 +481,7 @@ by split => //; apply/negP; apply: contra_not YX => /eqP ->.
 by rewrite eqEsubset => XY YX; split => //; exact: contra_not XY.
 Qed.
 
-Lemma nonsubset {A} (X Y:set A): ~ (X `<=` Y) -> X `&` ~` Y !=set0.
+Lemma nonsubset {A} (X Y : set A) : ~ (X `<=` Y) -> X `&` ~` Y !=set0.
 Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
 
 Lemma setIC {A} (X Y : set A) : X `&` Y = Y `&` X.
@@ -1174,11 +1174,17 @@ Module SetOrder.
 Module Internal.
 Section SetOrder.
 
-Context {T: Type}.
-Implicit Types (X Y : set T).
+Context {T : Type}.
+Implicit Types X Y : set T.
 
-Lemma setI_meet X Y : `[< X `<=` Y >] = (X `&` Y == X).
+Lemma le_def X Y : `[< X `<=` Y >] = (X `&` Y == X).
 Proof. by apply/asboolP/eqP; rewrite setIidPl. Qed.
+
+Lemma lt_def X Y : `[< X `<` Y >] = (Y != X) && `[< X `<=` Y >].
+Proof.
+apply/idP/idP => [/asboolP|/andP[YX /asboolP XY]]; rewrite properEneq eq_sym;
+  by [move=> [] -> /asboolP|apply/asboolP].
+Qed.
 
 Fact SetOrder_joinKI (Y X : set T) : X `&` (X `|` Y) = X.
 Proof. by rewrite setUC setKU. Qed.
@@ -1186,33 +1192,32 @@ Proof. by rewrite setUC setKU. Qed.
 Fact SetOrder_meetKU (Y X : set T) : X `|` (X `&` Y) = X.
 Proof. by rewrite setIC setKI. Qed.
 
-Definition orderMixin := @MeetJoinMixin _ _ _ setI setU setI_meet
-  (fun _ _ => erefl) (@setIC _) (@setUC _) (@setIA _) (@setUA _)
-  SetOrder_joinKI SetOrder_meetKU (@setIUl _) setIid.
+Definition orderMixin := @MeetJoinMixin _ _ (fun X Y => `[<proper X Y>]) setI
+  setU le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _) SetOrder_joinKI
+  SetOrder_meetKU (@setIUl _) setIid.
 
 Local Canonical porderType := POrderType set_display (set T) orderMixin.
 Local Canonical latticeType := LatticeType (set T) orderMixin.
 Local Canonical distrLatticeType := DistrLatticeType (set T) orderMixin.
 
-Fact SetOrder_sub0set (x: set T): (set0 <= x)%O.
-Proof. apply/asboolP; apply: sub0set. Qed.
+Fact SetOrder_sub0set (x : set T) : (set0 <= x)%O.
+Proof. by apply/asboolP; apply: sub0set. Qed.
 
-Fact SetOrder_setTsub (x:set T): (x <= setT)%O.
-Proof. apply/asboolP; by []. Qed.
+Fact SetOrder_setTsub (x : set T) : (x <= setT)%O.
+Proof. exact/asboolP. Qed.
 
-Local Canonical blatticeType :=
+Local Canonical bLatticeType :=
   BLatticeType (set T) (Order.BLattice.Mixin  SetOrder_sub0set).
-Local Canonical tblatticeType :=
+Local Canonical tbLatticeType :=
   TBLatticeType (set T) (Order.TBLattice.Mixin SetOrder_setTsub).
-Local Canonical bDistrLatticeType := [bDistrLatticeType of (set T)].
-Local Canonical tbDistrLatticeType := [tbDistrLatticeType of (set T)].
+Local Canonical bDistrLatticeType := [bDistrLatticeType of set T].
+Local Canonical tbDistrLatticeType := [tbDistrLatticeType of set T].
 
-Lemma subKI X Y : Y `&` (X `\` Y) = set0. Proof.
-  by rewrite setDE setICA setICr setI0.
-Qed.
-Lemma joinIB X Y : (X `&` Y) `|` X `\` Y = X. Proof.
-  by rewrite setDE -setIUr setUCr setIT.
-Qed.
+Lemma subKI X Y : Y `&` (X `\` Y) = set0.
+Proof. by rewrite setDE setICA setICr setI0. Qed.
+
+Lemma joinIB X Y : (X `&` Y) `|` X `\` Y = X.
+Proof. by rewrite setDE -setIUr setUCr setIT. Qed.
 
 Local Canonical cbDistrLatticeType := CBDistrLatticeType (set T)
   (@CBDistrLatticeMixin _ _ (fun X Y => X `\` Y) subKI joinIB).
@@ -1228,8 +1233,8 @@ Module Exports.
 Canonical Internal.porderType.
 Canonical Internal.latticeType.
 Canonical Internal.distrLatticeType.
-Canonical Internal.blatticeType.
-Canonical Internal.tblatticeType.
+Canonical Internal.bLatticeType.
+Canonical Internal.tbLatticeType.
 Canonical Internal.bDistrLatticeType.
 Canonical Internal.tbDistrLatticeType.
 Canonical Internal.cbDistrLatticeType.
@@ -1239,10 +1244,7 @@ Lemma subsetEset {T} (X Y : set T) : (X <= Y)%O = (X `<=` Y) :> Prop.
 Proof. by rewrite asboolE. Qed.
 
 Lemma properEset  {T} (X Y : set T) : (X < Y)%O = (X `<` Y) :> Prop.
-Proof.
-rewrite /Order.lt properEneq //=.
-by rewrite -[Y != X]asboolb -asbool_and asboolE eq_sym.
-Qed.
+Proof. by rewrite asboolE. Qed.
 
 Lemma subEset {T} (X Y : set T) : (X `\` Y)%O = (X `\` Y). Proof. by []. Qed.
 Lemma complEset {T} (X Y : set T) : (~` X)%O = ~` X. Proof. by []. Qed.
