@@ -58,8 +58,10 @@ see [NIX.md](NIX.md)
 
 Each file is documented in its header.
 
+Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
+
 See also the following publications:
 
-- [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124)
-- [Outils pour la Formalisation en Analyse Classique](http://www-sop.inria.fr/members/Damien.Rouhling/data/phd/thesis.pdf)
-- [Competing inheritance paths in dependent type theory: a case study in functional analysis](https://hal.inria.fr/hal-02463336)
+- [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) (2018)
+- [Outils pour la Formalisation en Analyse Classique](http://www-sop.inria.fr/members/Damien.Rouhling/data/phd/thesis.pdf) (2019)
+- [Competing inheritance paths in dependent type theory: a case study in functional analysis](https://hal.inria.fr/hal-02463336) (2020)
