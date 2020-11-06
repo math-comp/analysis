@@ -2177,6 +2177,32 @@ Proof. by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_fi
 Lemma nbhs_nbhs' {T : topologicalType} (x : T) : nbhs' x `=>` nbhs x.
 Proof. exact: cvg_within. Qed.
 
+(** meets *)
+
+Lemma meets_openr {T : topologicalType} (F : set (set T)) (x : T) :
+  F `#` nbhs x = F `#` open_nbhs x.
+Proof.
+rewrite propeqE; split; [exact/meetsSr/open_nbhs_nbhs|].
+by move=> P A B {}/P P; rewrite nbhsE => -[B' [/P + sB]]; apply: subsetI_neq0.
+Qed.
+
+Lemma meets_openl {T : topologicalType} (F : set (set T)) (x : T) :
+  nbhs x `#` F = open_nbhs x `#` F.
+Proof. by rewrite meetsC meets_openr meetsC. Qed.
+
+Lemma meets_globallyl T (A : set T) G :
+   globally A `#` G = forall B, G B -> A `&` B !=set0.
+Proof.
+rewrite propeqE; split => [/(_ _ _ (fun=> id))//|clA A' B sA].
+by move=> /clA; apply: subsetI_neq0.
+Qed.
+
+Lemma meets_globallyr T F (B : set T) :
+   F `#` globally B = forall A, F A -> A `&` B !=set0.
+Proof.
+by rewrite meetsC meets_globallyl; under eq_forall do rewrite setIC.
+Qed.
+
 (** ** Closed sets in topological spaces *)
 
 Section Closed.
@@ -2186,6 +2212,12 @@ Context {T : topologicalType}.
 Definition closure (A : set T) :=
   [set p : T | forall B, nbhs p B -> A `&` B !=set0].
 
+Lemma closureEnbhs A : closure A = [set p | globally A `#` nbhs p].
+Proof. by under eq_fun do rewrite meets_globallyl. Qed.
+
+Lemma closureEonbhs A : closure A = [set p | globally A `#` open_nbhs p].
+Proof. by under eq_fun do rewrite -meets_openr meets_globallyl. Qed.
+
 Lemma subset_closure (A : set T) : A `<=` closure A.
 Proof. by move=> p ??; exists p; split=> //; apply: nbhs_singleton. Qed.
 
@@ -2194,6 +2226,17 @@ Proof. by move=> p clABp; split=> ? /clABp [q [[]]]; exists q. Qed.
 
 Definition limit_point E := [set t : T |
   forall U, nbhs t U -> exists y, [/\ y != t, E y & U y]].
+
+Lemma limit_pointEnbhs E : limit_point E = [set p | globally (E `\ p) `#` nbhs p].
+Proof.
+under eq_fun do rewrite meets_globallyl; rewrite funeqE => p /=.
+apply/eq_forall2 => x px; apply/eq_exists => y.
+by rewrite propeqE; split => [[/eqP ? ?]|[[? /eqP ?]]]; do 2?split.
+Qed.
+
+Lemma limit_pointEonbhs E :
+  limit_point E = [set p | globally (E `\ p) `#` open_nbhs p].
+Proof. by rewrite limit_pointEnbhs; under eq_fun do rewrite meets_openr. Qed.
 
 Lemma subset_limit_point E : limit_point E `<=` closure E.
 Proof. by move=> t Et U tU; have [p [? ? ?]] := Et _ tU; exists p. Qed.
@@ -2285,8 +2328,7 @@ Implicit Types E A B U : set T.
 Lemma closure_open_nbhs E :
   closure E = [set t : T | forall U, open_nbhs t U -> E `&` U !=set0].
 Proof.
-rewrite predeqE=> t; split=> Et U; [by rewrite open_nbhsE => -[? ?]; exact: Et|].
-rewrite nbhsE => -[V [tV VU]]; have := Et _ tV; exact: subsetI_neq0.
+by rewrite closureEonbhs; under eq_fun do rewrite meets_globallyl.
 Qed.
 
 Lemma closure_subset A B : A `<=` B -> closure A `<=` closure B.
@@ -2319,18 +2361,16 @@ Section Compact.
 
 Context {T : topologicalType}.
 
-Definition cluster (F : set (set T)) (p : T) :=
-  forall A B, F A -> nbhs p B -> A `&` B !=set0.
+Definition cluster (F : set (set T)) := [set p : T | F `#` nbhs p].
+
+Lemma clusterEonbhs F : cluster F = [set p | F `#` open_nbhs p].
+Proof. by under eq_fun do rewrite -meets_openr. Qed.
 
 Lemma clusterE F : cluster F = \bigcap_(A in F) (closure A).
 Proof. by rewrite predeqE => p; split=> cF ????; apply: cF. Qed.
 
-Lemma closure_cluster_globally E : closure E = cluster (globally E).
-Proof.
-rewrite closureE clusterE predeqE => t; split=> [Et A EA|Et A [cA EA]].
-  by rewrite closureE => B [? AB]; apply Et; split=> //; exact: subset_trans AB.
-by rewrite (iffLR (closure_id A) cA); exact: Et.
-Qed.
+Lemma closureEcluster E : closure E = cluster (globally E).
+Proof. by rewrite closureEnbhs. Qed.
 
 Lemma cvg_cluster F G : F --> G -> cluster F `<=` cluster G.
 Proof. by move=> sGF p Fp P Q GP Qp; apply: Fp Qp; apply: sGF. Qed.
@@ -2711,8 +2751,21 @@ Local Open Scope classical_set_scope.
 Definition close_to (x : T) (A : set T) : Prop :=
   forall N, open_nbhs x N -> N `&` A !=set0.
 
-Definition close (x y : T) : Prop :=
-  forall M, open_nbhs y M -> close_to x M.
+Lemma close_toEonbhs x (A : set T) : close_to x A = closure A x.
+Proof.
+by rewrite closureEcluster clusterEonbhs/= meetsC meets_globallyr.
+Qed.
+
+Definition close (x y : T) : Prop := forall M, open_nbhs y M -> close_to x M.
+
+Lemma closeEcluster x : close x = cluster (nbhs x).
+Proof.
+transitivity (cluster (open_nbhs x)); last first.
+  by rewrite /cluster; under eq_fun do rewrite -meets_openl.
+rewrite clusterEonbhs /close funeqE => y /=; rewrite meetsC /meets.
+apply/eq_forall => A; rewrite forall_swap.
+by rewrite close_toEonbhs closureEonbhs/= meets_globallyl.
+Qed.
 
 Lemma close_refl (t : T) : close t t.
 Proof. by move=> M [? ?] N [? ?]; exists t; split. Qed.
