@@ -11,6 +11,7 @@ Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
 Import GRing.Theory Num.Def Num.Theory.
+Import Order.POrderTheory Order.TotalTheory.
 
 Local Open Scope ring_scope.
 Local Open Scope int_scope.
@@ -53,11 +54,14 @@ Qed.
 Local Lemma sub_ge0  x y : le 0 (y - x) = le x y.
 Proof. by rewrite /le /lt subr0 [0==_]eq_sym subr_eq0 eq_sym. Qed.
 
-Local Lemma le_total x : le 0 x || le x 0.
+Local Lemma cmp0_total x : le 0 x || le x 0.
 Proof.
 rewrite /le /lt [0==_]eq_sym orbCA !orbA orbb subr0 sub0r.
 by case: eqP => //= /eqP /p_total.
 Qed.
+
+Local Lemma le_total x y : le x y || le y x.
+Proof. Admitted.
 
 Local Lemma normN x : norm (- x) = norm x.
 Proof.
@@ -83,7 +87,7 @@ by rewrite subrr (negbTE p_N0).
 Qed.
 
 Definition PosNumMixin :=
-  RealLeMixin le0D le0M le_anti sub_ge0 le_total normN ge0_norm lt_def.
+  RealLeMixin le0D le0M le_anti sub_ge0 cmp0_total normN ge0_norm lt_def.
 End PosNumMixin.
 
 (* -------------------------------------------------------------------- *)
@@ -140,10 +144,10 @@ Lemma is_qzendoP k f :
 Proof. by apply/asboolP. Qed.
 
 Lemma is_qzendo_gt0 k f : f \is a k.-qzendo -> 0 < k.
-Proof. by move/is_qzendoP => /(_ 0 0) /(ler_lt_trans _); apply. Qed.
+Proof. by move/is_qzendoP => /(_ 0 0) /(le_lt_trans _); apply. Qed.
 
 Lemma is_qzendo_ge0 k f : f \is a k.-qzendo -> 0 <= k.
-Proof. by move=> h; apply/ltrW/(is_qzendo_gt0 h). Qed.
+Proof. by move=> h; apply/ltW/(is_qzendo_gt0 h). Qed.
 
 Lemma qzendoC_is_additive z : additive (qzendoC z).
 Proof. by move=> n m; rewrite /qzendoC; rewrite -mulrBl. Qed.
@@ -167,7 +171,7 @@ Lemma is_qzendoD kf kg f g :
 Proof.
 move=> /is_qzendoP bdf /is_qzendoP bdg.
 apply/is_qzendoP => n m; rewrite addrACA opprD addrACA.
-by apply/(ler_lt_trans (ler_norm_add _ _))/ltr_add.
+by apply/(le_lt_trans (ler_norm_add _ _))/ltr_add.
 Qed.
 
 Lemma is_qzendoN k f : f \is a k.-qzendo -> \- f \is a k.-qzendo.
@@ -185,14 +189,14 @@ move/is_qzendoP=> bdf; move/is_qzendoP=> bdg.
 pose M : int := \sum_(0 <= i < `|kg|) (`|f i| + `|f (- i%:Z)|).
 exists (M + kf *+ 2); apply/is_qzendoP => m n /=.
 rewrite -[X in `|X - _|](subrK (f (g m + g n))).
-rewrite -[X in `|X|]addrA (ler_lt_trans (ler_norm_add _ _)) //.
+rewrite -[X in `|X|]addrA (le_lt_trans (ler_norm_add _ _)) //.
 rewrite mulr2n addrA ltr_add //.
 rewrite -[X in `|X|](subrK (f (g (m + n) - (g m + g n)))).
-rewrite [X in _ < X]addrC (ler_lt_trans (ler_norm_add _ _)) ?ltr_le_add //.
+rewrite [X in _ < X]addrC (le_lt_trans (ler_norm_add _ _)) ?ltr_le_add //.
 + by rewrite addrAC -{1}[g (m + n)](subrK (g m + g n)) -addrA -opprD.
 rewrite {}/M; set k := g _ - _; rewrite (bigD1_seq `|k|%N) /=.
 + rewrite mem_index_iota /k /= -ltz_nat !abszE.
-  by apply/(ltr_le_trans (bdg _ _))/ler_norm.
+  by apply/(lt_le_trans (bdg _ _))/ler_norm.
 + by apply/iota_uniq.
 rewrite !abszE ler_paddr ?sumr_ge0 //; case: (ger0P k) => _.
 + by apply/ler_addl.
@@ -232,15 +236,15 @@ move=> hf m n; elim/int_rec: m => [|m|m].
 * rewrite -![`|_%:Z|]abszE !absz_nat => ihm.
   rewrite [in X in _ < X]intS -addrA mulrDl mul1r.
   have /is_qzendoP/(_ n (m%:Z * n)) lek := hf.
-  apply/(ler_lt_trans _ (ltr_add lek ihm)).
-  apply/(ler_trans _ (ler_norm_add _ _)).
+  apply/(le_lt_trans _ (ltr_add lek ihm)).
+  apply/(le_trans _ (ler_norm_add _ _)).
   rewrite opprD addrA addrACA !addrA addrK.
   by rewrite intS !mulrDl !mul1r -addrA -opprD.
 * rewrite !normrN -![`|_%:Z|]abszE !absz_nat !mulNr !opprK.
   move=> ihm; rewrite [in X in _ < X]intS mulrDl mul1r [1+_]addrC.
   have /is_qzendoP/(_ n (- (m.+1%:Z * n))) lek := hf.
-  apply/(ler_lt_trans _ (ltr_add ihm lek)).
-  apply/(ler_trans _ (ler_norm_sub _ _)).
+  apply/(le_lt_trans _ (ltr_add ihm lek)).
+  apply/(le_trans _ (ler_norm_sub _ _)).
   rewrite !opprD !opprK !addrA [X in `|X + _ + _|]addrAC.
   rewrite [X in n - X * n]intS mulrDl mul1r.
   rewrite opprD addrA subrr add0r subrr add0r.
@@ -254,8 +258,8 @@ Proof.
 move=> hf m n; rewrite (natrD _ 1 1) addrACA mulrDl.
 have hL := qzendo_crossbdL hf m n.
 have hR := qzendo_crossbdL hf n m.
-apply/(ler_lt_trans _ (ltr_add hL hR)).
-apply/(ler_trans _ (ler_norm_sub _ _)).
+apply/(le_lt_trans _ (ltr_add hL hR)).
+apply/(le_trans _ (ler_norm_sub _ _)).
 rewrite opprB [n * m]mulrC [in X in _ <= X]addrC.
 by rewrite !addrA subrK distrC.
 Qed.
@@ -269,8 +273,8 @@ have := qzendo_crossbd hf m 1; rewrite mul1r normr1 distrC.
 rewrite -addrA -(natrD _ 1 2) -[(1+2)%N]/3 => h.
 rewrite mulrDl addrAC [k*_]mulrC -mulrDl.
 set M : int := `|f 1| * _; move: h; rewrite -(ltr_add2r M).
-move/(ler_lt_trans _); apply; rewrite {}/M.
-rewrite -normrM (ler_trans _ (ler_norm_add _ _)) //.
+move/(le_lt_trans _); apply; rewrite {}/M.
+rewrite -normrM (le_trans _ (ler_norm_add _ _)) //.
 by rewrite [f 1 * _]mulrC subrK.
 Qed.
 
@@ -344,18 +348,18 @@ Lemma eqzendo_suplin f (D : int) :
 Proof.
 move=> ge0_D edf infp; case/is_eqzendoPP: edf => C edfC.
 pose E : int := C + D; case: (infp (2%:R * E)) => N gt0_n gt_E_fN.
-exists N => //; case=> // k gt0_k; apply/(@ltr_trans _ ((k%:Z + 1) * E)).
+exists N => //; case=> // k gt0_k; apply/(@lt_trans _ _ ((k%:Z + 1) * E)).
 + rewrite ltr_pmul2l; first by rewrite addrC ltz_add1r.
-  by rewrite ltr_addr (ler_lt_trans _ (edfC 0 0)).
+  by rewrite ltr_addr (le_lt_trans _ (edfC 0 0)).
 case: k gt0_k => // k _; rewrite [_+1]addrC -intS.
 elim: k => [|k ihk]; first by rewrite mul1r.
 move: k.+1 ihk => {k} k ihk; have := edfC (k%:Z * N) N.
 rewrite ltr_norml => /andP[h _]; move: h.
 rewrite ltr_subr_addl (_ : k%:Z * N + N = (k.+1)%:Z * N).
 + by rewrite intS mulrDl mul1r addrC.
-move/(ltr_trans _); apply; rewrite intS mulrDl mul1r addrC -addrA.
+move/(lt_trans _); apply; rewrite intS mulrDl mul1r addrC -addrA.
 apply: ltr_add => //; rewrite ltr_subr_addl.
-apply: (ltr_trans _ gt_E_fN); rewrite mulr_natl mulr2n.
+apply: (lt_trans _ gt_E_fN); rewrite mulr_natl mulr2n.
 by rewrite ltr_add2r /E ltr_addl.
 Qed.
 
@@ -367,7 +371,7 @@ Lemma eqzendo_nat (g : nat -> int) :
   -> eqzlift g \is a eqzendo.
 Proof.
 case=> C hC; apply/is_eqzendoP; exists C; apply/is_qzendoP=> m n.
-wlog: m n / (m <= n) => [wlog|]; first case: (lerP m n) => [|/ltrW] /wlog //.
+wlog: m n / (m <= n) => [wlog|]; first case: (lerP m n) => [|/ltW] /wlog //.
 + by rewrite [n+m]addrC [X in _-X]addrC.
 case: m n => [m|m] [n|n] //= _.
 + by rewrite opprD addrA; apply: hC.
@@ -422,8 +426,8 @@ Proof. split.
   by case/eqvP => [k hk]; apply/eqvP; exists k=> n; rewrite distrC.
 + move=> f g h /eqvP[k1 h1] /eqvP[k2 h2].
   apply/eqvP; exists (k1 + k2) => n.
-  apply/(ler_lt_trans _ (ltr_add (h1 n) (h2 n))).
-  apply/(ler_trans _ (ler_norm_add _ _)).
+  apply/(le_lt_trans _ (ltr_add (h1 n) (h2 n))).
+  apply/(le_trans _ (ler_norm_add _ _)).
   by rewrite [f n - _]addrC addrACA addNr addr0.
 Qed.
 
@@ -504,7 +508,7 @@ set f' := repr (_ f); set g' := repr (_ g).
 have: qzeqv g g' by apply/eqmodP; rewrite reprK.
 have: qzeqv f f' by apply/eqmodP; rewrite reprK.
 move=> /qzeqvP[k1 h1] /qzeqvP[k2 h2]; exists (k1 + k2) => n.
-rewrite opprD addrACA (ler_lt_trans _ (ltr_add (h1 n) (h2 n))) //.
+rewrite opprD addrACA (le_lt_trans _ (ltr_add (h1 n) (h2 n))) //.
 by apply/ler_norm_add.
 Qed.
 
@@ -522,11 +526,11 @@ have /qzeqvP[k hk]: qzeqv g g' by apply/eqmodP; rewrite reprK.
 pose M : int := \sum_(0 <= j < `|k|) (`|f' j| + `|f' (- j%:Z)|).
 case/is_eqzendoPP: (valP f') => /= kf hkf; exists (kf + M) => n.
 rewrite -[X in `|X|](subrK (f' (g n - g' n))).
-rewrite (ler_lt_trans (ler_norm_add _ _)) ?ltr_le_add //.
+rewrite (le_lt_trans (ler_norm_add _ _)) ?ltr_le_add //.
 + by rewrite addrAC -addrA -opprD -{1}[g n](subrK (g' n)).
 rewrite {}/M (bigD1_seq `|g n - g' n|%N) /=.
 + rewrite mem_index_iota /= -ltz_nat abszE.
-  by apply/(ltr_le_trans (hk _))/ler_norm.
+  by apply/(lt_le_trans (hk _))/ler_norm.
 + by apply/iota_uniq.
 rewrite ler_paddr ?sumr_ge0 // !abszE; case: (ger0P (g n - g' n)) => _.
 + by rewrite ler_addl.
@@ -592,35 +596,35 @@ Proof. split.
   pose M := (6%:R + (Af + Bf) + (Ag + Bg)) * maxr kf kg.
   apply/eqmodP/qzeqvP; exists (maxr M (1 + `|f (g 0) - g (f 0)|)).
   move=> n; case: (n =P 0) => /= [->|/eqP nz_n].
-  * by rewrite ltr_maxr ltz_add1r lerr orbT.
-  rewrite ltr_maxr; apply/orP; left; rewrite {}/M.
+  * by rewrite lt_maxr ltz_add1r lexx orbT.
+  rewrite lt_maxr; apply/orP; left; rewrite {}/M.
   rewrite -(@ltr_pmul2l _ `|n|) ?normr_gt0 //.
   have /= h1 := qzendo_crossbd hf n (g n).
   have /= h2 := qzendo_crossbd hg (f n) n.
-  have {h1 h2} /(ler_lt_trans (ler_norm_add _ _)) := ltr_add h1 h2.
+  have {h1 h2} /(le_lt_trans (ler_norm_add _ _)) := ltr_add h1 h2.
   rewrite [g n * _]mulrC ![in X in X < _]addrA subrK -mulrBr normrM.
-  move/ltr_le_trans; apply; set M := maxr _ _.
+  move/lt_le_trans; apply; set M := maxr _ _.
   set x1 := (X in X * _ + _); set x2 := (X in _ + X * _).
   have h1: x1 * kf <= (`|n| * (Ag + 1) + (Bg + 2%:R)) * M.
   * apply/ler_pmul; rewrite ?addr_ge0 ?(is_qzendo_ge0 hf) //; last first.
-    - by rewrite /M ler_maxr lerr orTb.
+    - by rewrite /M le_maxr lexx orTb.
     rewrite {}/x1 !addrA !ler_add2r mulrDr mulr1.
-    by rewrite addrAC [X in X<=_]addrC ler_add2r mulrC 1?ltrW.
+    by rewrite addrAC [X in X<=_]addrC ler_add2r mulrC 1?ltW.
   have h2: x2 * kg <= (`|n| * (Af + 1) + (Bf + 2%:R)) * M.
   * apply/ler_pmul; rewrite ?addr_ge0 ?(is_qzendo_ge0 hg) //; last first.
-    - by rewrite /M ler_maxr lerr orbT.
+    - by rewrite /M le_maxr lexx orbT.
     rewrite {}/x2 !addrA !ler_add2r mulrDr mulr1.
-    by rewrite addrAC ler_add2r mulrC 1?ltrW.
-  apply/(ler_trans (ler_add h1 h2)); rewrite -mulrDl mulrA.
-  apply/ler_wpmul2r; first by rewrite ler_maxr (is_qzendo_ge0 hf).
+    by rewrite addrAC ler_add2r mulrC 1?ltW.
+  apply/(le_trans (ler_add h1 h2)); rewrite -mulrDl mulrA.
+  apply/ler_wpmul2r; first by rewrite le_maxr (is_qzendo_ge0 hf).
   rewrite addrACA -mulrDr => {M h1 h2 x1 x2}.
   set M := (X in _ + X <= _); set N := (X in `|n| * X).
-  apply/(@ler_trans _ (`|n| * (N + M))).
+  apply/(@le_trans _ _ (`|n| * (N + M))).
   * rewrite mulrDr ler_add2l ler_pemull // ?addr_ge0 //.
     - move/(_ 0): subg; rewrite normr0 mulr0 add0r.
-      by move/(ler_lt_trans _)/(ltrW); apply.
+      by move/(le_lt_trans _)/ltW; apply.
     - move/(_ 0): subf; rewrite normr0 mulr0 add0r.
-      by move/(ler_lt_trans _)/(ltrW); apply.
+      by move/(le_lt_trans _)/ltW; apply.
     by rewrite -gtz0_ge1 normr_gt0.
   apply/ler_wpmul2l => //; rewrite {}/N {}/M.
   rewrite [X in X + _ <= _]addrACA [X in _ + X <= _]addrACA.
@@ -631,10 +635,10 @@ Proof. split.
 + elim/quotW=> f; elim/quotW=> g; elim/quotW=> h.
   by rewrite !piE /=; apply/eqmodP/eqv_refl_eq.
 + apply/eqP; rewrite !piE => /eqmodP/qzeqvP /= [k hk].
-  have := (hk 0); rewrite /qzendoC normr0 => /ltrW ge0k.
+  have := (hk 0); rewrite /qzendoC normr0 => /ltW ge0k.
   move/(_ (k+1)): hk; rewrite /qzendoC !(mulr0, mulr1).
   rewrite subr0 ger0_norm ?ler_paddr //.
-  by apply/negP; rewrite -lerNgt ler_addl.
+  by apply/negP; rewrite -leNgt ler_addl.
 Qed.
 
 Let edxmulA  := let: And5 h _ _ _ _ := edxcomring in h.
@@ -668,43 +672,43 @@ Proof.
 move=> edf posf; wlog: C / 0 < C => [wlog|].
 + case: (ltrP 0 C) => [gt0_C|le0_C]; first by apply: wlog.
   case: (wlog 1) => // N hN; exists N => p /hN.
-  by move/(ler_lt_trans _); apply; apply/(ler_trans le0_C).
+  by move/(le_lt_trans _); apply; apply/(le_trans le0_C).
 move=> gt0_C; case/is_eqzendoPP: {+}edf => D edfD.
 have [|M gt0_M slf] := eqzendo_suplin _ (D := D) edf posf.
-+ by apply: (ler_lt_trans _ (edfD 0 0)).
++ by apply: (le_lt_trans _ (edfD 0 0)).
 pose g (p : int) := f (p - (p %% M)%Z).
 pose E : int := \sum_(0 <= i < `|M|) `|f i|.
 have bd_fBg p : `|f p - g p| < E + D.
 + rewrite /g {1 2}[p](divz_eq _ M) addrK (addrC E D).
   rewrite -[X in `|X|](subrK (f (p %% M)%Z)).
-  apply/(ler_lt_trans (ler_norm_add _ _))/ltr_le_add.
+  apply/(le_lt_trans (ler_norm_add _ _))/ltr_le_add.
   * by rewrite -addrA -opprD.
   rewrite /E (bigD1_seq (absz (p %% M)%Z)) /=.
   * rewrite mem_index_iota /= -ltz_nat !abszE ger0_norm.
-    - by rewrite modz_ge0 //gtr_eqF.
+    - by rewrite modz_ge0 //gt_eqF.
     by rewrite gtr0_norm // ltz_pmod.
   * by apply: iota_uniq.
-  * rewrite abszE [`|(_ %% _)%Z|]ger0_norm ?modz_ge0 ?gtr_eqF //.
+  * rewrite abszE [`|(_ %% _)%Z|]ger0_norm ?modz_ge0 ?gt_eqF //.
     by rewrite ler_addl sumr_ge0.
 pose n : int := ((E + D + C) %/ D)%Z; exists (n * M) => p ltp.
 have := bd_fBg p; rewrite ltr_norml => /andP[h _]; move: h.
-rewrite ltr_subr_addl => /(ltr_trans _); apply.
+rewrite ltr_subr_addl => /(lt_trans _); apply.
 rewrite ltr_subr_addl /g {1}[p](divz_eq _ M) addrK.
-apply/(ler_lt_trans _ (slf _ _)); last first.
+apply/(le_lt_trans _ (slf _ _)); last first.
 + suff ltMp: M < p.
   - rewrite -(ltr_pmul2r gt0_M) mul0r -[X in _<X](addrK (p %% M)%Z).
-    by rewrite -divz_eq subr_gt0 (ltr_trans _ ltMp) // ltz_pmod.
-  apply/(ler_lt_trans _ (ltp))/ler_pemull; first by apply/ltrW.
-  rewrite lez_divRL 1?(ler_lt_trans _ (edfD 0 0)) // mul1r.
-  by rewrite addrAC ler_addr addr_ge0 ?sumr_ge0 // ltrW.
-apply/(@ler_trans _ ((n+1) * D)); last first.
-+ rewrite ler_pmul2r 1?(ler_lt_trans _ (edfD 0 0)) //.
-  by rewrite ler_add2r lez_divRL 1?ltrW.
+    by rewrite -divz_eq subr_gt0 (lt_trans _ ltMp) // ltz_pmod.
+  apply/(le_lt_trans _ (ltp))/ler_pemull; first by apply/ltW.
+  rewrite lez_divRL 1?(le_lt_trans _ (edfD 0 0)) // mul1r.
+  by rewrite addrAC ler_addr addr_ge0 ?sumr_ge0 // ltW.
+apply/(@le_trans _ _ ((n+1) * D)); last first.
++ rewrite ler_pmul2r 1?(le_lt_trans _ (edfD 0 0)) //.
+  by rewrite ler_add2r lez_divRL 1?ltW.
 rewrite /n mulrDl mul1r addrAC ler_add2r divzDr //.
-rewrite divzz gtr_eqF 1?(ler_lt_trans _ (edfD 0 0)) //=.
+rewrite divzz gt_eqF 1?(le_lt_trans _ (edfD 0 0)) //=.
 rewrite mulrDl mul1r -[X in _ <= X + _](addrK ((E + C) %% D)%Z).
 rewrite -divz_eq -[X in _ <= X]addrA ler_addl addrC subr_ge0.
-by rewrite ltrW // ltz_pmod // (ler_lt_trans _ (edfD 0 0)).
+by rewrite ltW // ltz_pmod // (le_lt_trans _ (edfD 0 0)).
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -736,33 +740,33 @@ case/asboolP: {+}Qneg => [hQneg|hNQneg].
   by move=> N hN; exists N => p /hN /=; rewrite ltr_oppr.
 have: exists2 c : int, 0 < c & forall n : int, 0 < n -> f n < c.
 + move/asboolPn/existsp_asboolPn: hNQpos => [c hc].
-  exists (maxr 0 c + 1); first by rewrite ltz_addr1 ler_maxr lerr.
-  move=> n gt0_n; rewrite ltz_addr1 ler_maxr -(rwP orP); right.
-  by rewrite lerNgt -(rwP negP) => h; apply/hc; exists n.
+  exists (maxr 0 c + 1); first by rewrite ltz_addr1 le_maxr lexx.
+  move=> n gt0_n; rewrite ltz_addr1 le_maxr -(rwP orP); right.
+  by rewrite leNgt -(rwP negP) => h; apply/hc; exists n.
 have: exists2 c : int, 0 < c & forall n : int, 0 < n -> - c < f n.
 + move/asboolPn/existsp_asboolPn: hNQneg => [c hc].
-  exists (maxr (1 - c) 1); first by rewrite ltr_maxr ltr01 orbT.
-  move=> n gt0_n; rewrite ltr_oppl ltr_maxr -(rwP orP); left.
+  exists (maxr (1 - c) 1); first by rewrite lt_maxr ltr01 orbT.
+  move=> n gt0_n; rewrite ltr_oppl lt_maxr -(rwP orP); left.
   rewrite ltr_oppl opprB ltr_subl_addr ltz_addr1.
-  by rewrite lerNgt -(rwP negP) => h; apply/hc; exists n.
+  by rewrite leNgt -(rwP negP) => h; apply/hc; exists n.
 case=> [cN gt0_cN hN] [cP gt0_cP hP].
 have: exists2 C : int, 0 < C & forall n : int, 0 < n -> `|f n| < C.
-+ exists (maxr cP cN); first by rewrite ltr_maxr gt0_cP.
-  move=> n gt0_n; rewrite ltr_norml ltr_oppl !ltr_maxr.
++ exists (maxr cP cN); first by rewrite lt_maxr gt0_cP.
+  move=> n gt0_n; rewrite ltr_norml ltr_oppl !lt_maxr.
   by rewrite hP //= andbT [X in _ || X]ltr_oppl hN // orbT.
 case=> C gt0_C hC; case/is_eqzendoPP: edzf=> D hD.
-have gt0_D: 0 < D by apply/(ler_lt_trans _ (hD 0 0)).
+have gt0_D: 0 < D by apply/(le_lt_trans _ (hD 0 0)).
 absurd False => //; apply/hNP; exists (C + D + `|f 1|).
 move=> n; case: (ltrP 0 n) => [gt0_n|le0_n].
-+ rewrite -addrA (ltr_trans (hC _ gt0_n)) // ltr_addl.
-  by rewrite (ltr_le_trans gt0_D) // ler_addl.
++ rewrite -addrA (lt_trans (hC _ gt0_n)) // ltr_addl.
+  by rewrite (lt_le_trans gt0_D) // ler_addl.
 have: `|f (1 - n)| < C by apply: hC; rewrite subr_gt0.
-rewrite -addrA -(ltr_add2r (D + `|f 1|)) => /(ler_lt_trans _); apply.
+rewrite -addrA -(ltr_add2r (D + `|f 1|)) => /(le_lt_trans _); apply.
 rewrite addrCA; have := hD (1 - n) n; rewrite subrK.
 rewrite -(ltr_add2r (`|f (1 - n)| + `|f 1|)).
-move/ltrW/(ler_trans _); apply. set x := (X in _ <= X + _).
+move/ltW/(le_trans _); apply. set x := (X in _ <= X + _).
 have := ler_norm_sub (f (1 - n)) (f 1); rewrite -(ler_add2l x).
-move/(ler_trans _); apply; apply/(ler_trans _ (ler_norm_add _ _)).
+move/(le_trans _); apply; apply/(le_trans _ (ler_norm_add _ _)).
 rewrite [X in _ <= `|X|]addrC !addrA subrK.
 by rewrite opprD addrCA addKr normrN.
 Qed.
@@ -785,17 +789,17 @@ Lemma edxposfPE (f : qzEndo) : edxposf f ->
   forall C : int, exists N : int, forall p : int, N < p -> C < f p.
 Proof.                          (* See edxposf_spec *)
 move=> /edxposfP gt0_f; case: (edxcmp0_spec (valP f)) => //=.
-+ case=> C lt_fC; suff: C < C by rewrite ltrr.
-  move/(_ C): gt0_f => [n _ le_Cf]; rewrite (ltr_trans le_Cf) //.
-  by rewrite (ler_lt_trans (ler_norm _)).
++ case=> C lt_fC; suff: C < C by rewrite ltxx.
+  move/(_ C): gt0_f => [n _ le_Cf]; rewrite (lt_trans le_Cf) //.
+  by rewrite (le_lt_trans (ler_norm _)).
 + move=> /(_ 0) [N]; rewrite oppr0 => h.
   pose M : int := \sum_(0 <= i < `|N|.+1) `|f i|.
-  move/(_ M): gt0_f => [] [] // n _; rewrite ltrNge => /negP[].
+  move/(_ M): gt0_f => [] [] // n _; rewrite ltNge => /negP[].
   rewrite {}/M; case: (ltnP n `|N|.+1) => [lt_n_SN|].
   * rewrite (bigD1_seq n) 1?(iota_uniq, mem_iota) //=.
     by rewrite ler_paddr 1?ler_norm //= sumr_ge0.
-  * rewrite -ltz_nat abszE => /(ler_lt_trans (ler_norm _)) /h.
-    by move/ltrW/ler_trans; apply; rewrite sumr_ge0.
+  * rewrite -ltz_nat abszE => /(le_lt_trans (ler_norm _)) /h.
+    by move/ltW/le_trans; apply; rewrite sumr_ge0.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -803,12 +807,12 @@ Local Lemma pi_edxpos_r (f g : qzEndo) : f ~ g -> edxposf f -> edxposf g.
 Proof.
 case/qzeqvP=> C bdC /edxposfP /edxposf_spec h.
 apply/edxposfP => k; case/(_ (C + k) (valP _)): h.
-move=> N hN; exists (maxr 0 N + 1); first by rewrite ltz_addr1 ler_maxr.
+move=> N hN; exists (maxr 0 N + 1); first by rewrite ltz_addr1 le_maxr.
 set p : int := maxr _ _ + _; have := bdC p; rewrite distrC.
 rewrite ltr_norml => /andP[h _]; move: h.
-rewrite ltr_subr_addl => /(ltr_trans _); apply.
+rewrite ltr_subr_addl => /(lt_trans _); apply.
 rewrite ltr_subr_addl; apply: hN; rewrite ltz_addr1.
-by rewrite ler_maxr lerr orbT.
+by rewrite le_maxr lexx orbT.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -842,17 +846,17 @@ Proof. split.
   move=> /edxposfP hf /edxposfP hg; apply/edxposfP => k.
   case/(edxposf_spec `|k| (valP _)): hf => /= kf hkf.
   case/(edxposf_spec `|k| (valP _)): hg => /= kg hkg.
-  exists (maxr 0 (maxr kf kg) + 1); first by rewrite ltz_addr1 ler_maxr.
-  apply/(@ler_lt_trans _ (`|k| + `|k|)).
-  * by apply/(ler_trans (ler_norm _))/ler_addr.
-  by rewrite ltr_add ?(hkf, hkg) // ltz_addr1 !ler_maxr lerr !orbT.
+  exists (maxr 0 (maxr kf kg) + 1); first by rewrite ltz_addr1 le_maxr.
+  apply/(@le_lt_trans _ _ (`|k| + `|k|)).
+  * by apply/(le_trans (ler_norm _))/ler_addr.
+  by rewrite ltr_add ?(hkf, hkg) // ltz_addr1 !le_maxr lexx !orbT.
 + elim/quotW=> f; elim/quotW=> g; rewrite !piE /=.
   move=> /edxposfP hf /edxposfP hg; apply/edxposfP => k.
   case/(edxposf_spec `|k | (valP _)): hf => /= kf hkf.
   case/(edxposf_spec `|kf| (valP _)): hg => /= kg hkg.
   exists (`|kg| + 1); first by rewrite ltz_addr1. 
-  apply/(ler_lt_trans (ler_norm _))/hkf.
-  apply/(ler_lt_trans (ler_norm _))/hkg.
+  apply/(le_lt_trans (ler_norm _))/hkf.
+  apply/(le_lt_trans (ler_norm _))/hkg.
   by rewrite ltz_addr1 ler_norm.
 Qed.
 End EudoxusPos.
@@ -877,7 +881,7 @@ Lemma qzeqvDC (f : qzEndo) (c : int) : (f \o (fun x => x + c)) ~ f.
 Proof.
 case/is_eqzendoPP: (valP f) => /= C bdC; apply/eqvP; exists (C + `|f c|).
 move=> k /=; move/(_ k c): bdC; rewrite -{1}(ltr_add2r `|f c| _ C).
-by move/(ler_lt_trans (ler_norm_add _ _)); rewrite opprD -!addrA addNr addr0.
+by move/(le_lt_trans (ler_norm_add _ _)); rewrite opprD -!addrA addNr addr0.
 Qed.
 
 (*
@@ -939,11 +943,11 @@ Lemma eqv_eqzendo f g :
 Proof.
 move/eqvP=> [C hC] /is_eqzendoP[C' /is_qzendoP hC'].
 apply/is_eqzendoP; exists (C *+ 3 + C'); apply/is_qzendoP=> m n.
-apply: (ler_lt_trans (@ler_dist_add _ (f (m + n)) _ _)).
+apply: (le_lt_trans (@ler_dist_add _ _ (f (m + n)) _ _)).
 rewrite mulrS -addrA ltr_add //; first by rewrite distrC hC.
-apply: (ler_lt_trans (@ler_dist_add _ (f m + f n) _ _)).
+apply: (le_lt_trans (@ler_dist_add _ _ (f m + f n) _ _)).
 rewrite [X in _ < X]addrC ltr_add // opprD addrACA.
-by apply: (ler_lt_trans (ler_norm_add _ _)); rewrite ltr_add.
+by apply: (le_lt_trans (ler_norm_add _ _)); rewrite ltr_add.
 Qed.
 
 Lemma edxinv_r (x : qzEndo) :
@@ -954,25 +958,25 @@ move: x => f; wlog: f / forall n : nat, f (Negz n) = - (f n.+1) => [wlog gt0_f|]
     have /= := qzeqvN idfun f => /eqvP[C hC].
     apply/eqvP; exists `|C|.+1; case=> n /=.
       by rewrite subrr normr0.
-    have /= := hC n.+1%:Z; rewrite NegzE => /ltr_trans; apply.
-    by apply: (ler_lt_trans (ler_norm _)); rewrite ltz_nat.
+    have /= := hC n.+1%:Z; rewrite NegzE => /lt_trans; apply.
+    by apply: (le_lt_trans (ler_norm _)); rewrite ltz_nat.
   pose gh := QZEndo (eqv_eqzendo eq_fg (valP f)); case: (wlog gh) => //.
     by apply: (@pi_edxpos_r _ gh eq_fg gt0_f).
   move=> gI hV; exists gI; rewrite -[RHS]hV.
   by congr (_ * _); apply/eqmodP.
 move=> fNE gt0_f; have h (p : nat) : exists n : nat, p%:Z <= f n.
-  by move/edxposfP: gt0_f => /(_ p) [] [|//] n _ /ltrW ?; exists n.
+  by move/edxposfP: gt0_f => /(_ p) [] [|//] n _ /ltW ?; exists n.
 pose g p := (ex_minn (h p))%:Z.
 have [N gt0_g]: { N | forall n, (N <= n)%N -> 0 < g n}.
   exists `|f 0|.+1 => n lt_f0_n; rewrite /g; case: ex_minnP.
-  case=> //; rewrite lerNgt => /negP[].
-  by rewrite (ler_lt_trans (ler_norm _)).
+  case=> //; rewrite leNgt => /negP[].
+  by rewrite (le_lt_trans (ler_norm _)).
 have comp_fg : forall n : nat, f (g n) >= n%:Z.
   by move=> n; rewrite /g; case: ex_minnP.
 have hrg: forall r, (N <= r)%N -> f (g r - 1) < r%:Z <= f (g r).
   move=> r /gt0_g; rewrite /g; case: ex_minnP.
   move=> m le_m_fr hmin gt0_m; rewrite le_m_fr andbT.
-  rewrite ltrNge; apply/negP; rewrite -predn_int //.
+  rewrite ltNge; apply/negP; rewrite -predn_int //.
   move/hmin; case: {le_m_fr hmin} m gt0_m => //=.
   by move=> m _; rewrite ltnn.
 have h1: forall m n, (N <= m)%N -> (N <= n)%N ->
@@ -994,7 +998,7 @@ suff hg: eqzlift (fun p => g (N + p)%N) \is a eqzendo.
   suff [C hC]: exists C : int, forall n, (N <= n)%N -> `|f (g n) - n%:Z| < C.
     have bdnat n: `|f (g (N + n)%N) - n%:Z| < C + N.
       rewrite -[X in `|X|](@subrK _ N%:Z).
-      apply: (ler_lt_trans (ler_norm_add _ _)); rewrite ltr_le_add //.
+      apply: (le_lt_trans (ler_norm_add _ _)); rewrite ltr_le_add //.
       by rewrite -addrA -opprD [(N+_)%N]addnC hC // leq_addl.
     exists (C + N%:Z) => n; rewrite /qzendoC mulr1; case: n => //= n.
     set x := (X in g X); rewrite NegzE (_ : f (- (g x)) = -(f (g x))).
@@ -1002,21 +1006,21 @@ suff hg: eqzlift (fun p => g (N + p)%N) \is a eqzendo.
       by case=> // p _; rewrite -NegzE fNE.
     by rewrite -opprD normrN {}/x.
   have /eqvP[/= C hC] := qzeqvDC f (-1); exists `|C|.+1.
-    move=> n le_Nn; rewrite ltr_norml (@ltr_le_trans _ 0) /=.
+    move=> n le_Nn; rewrite ltr_norml (@lt_le_trans _ _ 0) /=.
     - by rewrite oppr_lt0.
     - by rewrite subr_ge0; have /andP[] := hrg _ le_Nn.
-    rewrite (@ler_lt_trans _ `|C|) //; last by rewrite ltz_nat ltnS.
-    apply: (@ler_trans _ (f (g n) - f (g n - 1))).
-      by rewrite ler_sub //; have /andP[/ltrW] := hrg _ le_Nn.
-    have /ltrW := hC (g n); rewrite distrC ler_norml => /andP[_].
-    by move/ler_trans; apply; rewrite ler_norm.
+    rewrite (@le_lt_trans _ _ `|C|) //; last by rewrite ltz_nat ltnS.
+    apply: (@le_trans _ _ (f (g n) - f (g n - 1))).
+      by rewrite ler_sub //; have /andP[/ltW] := hrg _ le_Nn.
+    have /ltW := hC (g n); rewrite distrC ler_norml => /andP[_].
+    by move/le_trans; apply; rewrite ler_norm.
 set gh := fun p => g (N + p)%N; apply: eqzendo_nat.
 have [C hC]: exists C : int, forall (m n : nat),
     `|f (gh (n + m)%N - gh n - gh m)| < C.
   suff [C hC]: exists C : int, forall (m n : nat),
     (N <= m)%N -> (N <= n)%N -> `|f (g (n + m)%N - g n - g m)| < C.
   exists C.
-
+(*
   + have bd1: exists C : int, forall (m n : nat),
       (N <= m)%N -> (N <= n)%N -> f (g (n + m)%N - g n - g m) > C.
     have /eqvP[C hC] := L1 f; exists (-C) => m n le_Mm le_Mn.
@@ -1128,7 +1132,8 @@ have hC: exists C : int, forall n m, `|g (n + m)%N - g n - g m| <= C.
     * have le_Nn := leq_trans le_Nm le_mn.
       by rewrite ltr_paddr ?normr_ge0 // ltr_normr hC.
     rewrite eq0_g => /eqP->; rewrite subr0.
-
+*)
+Admitted.
 
 
 Parameter (edxinv : eudoxus -> eudoxus).
@@ -1165,15 +1170,25 @@ Let edxpos_total := let: And4 _ h _ _ := edxpos_order in h.
 Let edxpos_add   := let: And4 _ _ h _ := edxpos_order in h.
 Let edxpos_mul   := let: And4 _ _ _ h := edxpos_order in h.
 
-Definition eudoxus_numDomainMixin :=
+Definition eudoxus_realLeMixin :=
   PosNumMixin edxpos_N0 edxpos_total edxpos_add edxpos_mul.
 
-Canonical eudoxus_numDomainType :=
-  Eval hnf in NumDomainType eudoxus eudoxus_numDomainMixin.
+Canonical eudoxus_porderType :=
+  Eval hnf in POrderType ring_display eudoxus eudoxus_realLeMixin.
+Canonical eudoxus_latticeType :=
+  Eval hnf in LatticeType eudoxus eudoxus_realLeMixin.
+Canonical eudoxus_distrLatticeType :=
+  Eval hnf in DistrLatticeType eudoxus eudoxus_realLeMixin.
+Canonical eudoxus_orderType :=
+  Eval hnf in OrderType eudoxus (le_total edxpos_N0 edxpos_total edxpos_add edxpos_mul).
+Canonical rat_numDomainType :=
+  Eval hnf in NumDomainType eudoxus eudoxus_realLeMixin.
+Canonical eudoxus_normedZmodType :=
+  Eval hnf in NormedZmodType eudoxus eudoxus eudoxus_realLeMixin.
 Canonical eudoxus_numFieldType :=
   Eval hnf in [numFieldType of eudoxus].
 Canonical eudoxus_realDomainType :=
-  Eval hnf in RealDomainType eudoxus (le_total edxpos_total).
+  Eval hnf in [realDomainType of eudoxus].
 Canonical eudoxus_realFieldType :=
   Eval hnf in [realFieldType of eudoxus].
 
@@ -1189,12 +1204,12 @@ elim/quotW=> /= f; have /is_eqzendoP[C /qzendo_sublin] /= := valP f.
 case=> [A] [B] ltf; exists `|A|%N.+1; rewrite edx_ltrE /=.
 rewrite edxnatrE !piE; apply/edxposfP => /=; rewrite /qzendoC => k.
 have {ltf} ltf (m : int) : 0 < m -> f m < `|A| * m + B.
-+ move=> gt0_m; apply/(ler_lt_trans (ler_norm _)).
-  apply/(ltr_le_trans (ltf m)); rewrite ler_add2r.
++ move=> gt0_m; apply/(le_lt_trans (ler_norm _)).
+  apply/(lt_le_trans (ltf m)); rewrite ler_add2r.
   by rewrite gtr0_norm // ler_pmul2r // ler_norm.
 exists (`|k + B| + 1); first by rewrite ltz_addr1.
 rewrite ltr_subr_addl -ltr_subr_addr.
-rewrite (ltr_trans (ltf _ _)) ?ltz_addr1 //.
+rewrite (lt_trans (ltf _ _)) ?ltz_addr1 //.
 rewrite intS [1+_]addrC [in X in _ < X]mulrDr mulr1.
 rewrite [`|A|*_]mulrC -addrA ler_lt_add //.
 by rewrite ltr_subr_addl ltz_addr1 ler_norm.
