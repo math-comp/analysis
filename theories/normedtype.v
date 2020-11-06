@@ -4153,47 +4153,49 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Grab Existential Variables. all: end_near. Qed.
 
+
+(* NB: technical lemma that comes in handy in Banach-Steinhaus' PR *)
+Lemma normrZV (R : numFieldType) (V : normedModType R) (x : V) :
+  x != 0 -> `| `| x|^-1 *: x | = 1.
+Proof.
+move=> x0; rewrite normmZ normrV ?unitfE ?normr_eq0 //=.
+by rewrite normr_id mulVr // unitfE normr_eq0.
+Qed.
+
 Section LinearContinuousBounded.
 
-Variables (R: numFieldType) (V  W: normedModType R).
+Variables (R : numFieldType) (V W : normedModType R).
 
-Lemma linear_boundedP (f: {linear V -> W}) : bounded_on f (nbhs (0:V)) <->
-        (exists r, 0 <= r /\ (forall x : V, `|f x| <=  `|x| * r )).
+Lemma linear_boundedP (f : {linear V -> W}) : bounded_on f (nbhs (0 : V)) <->
+  exists r, 0 <= r /\ forall x, `|f x| <= r * `|x|.
 Proof.
-  split.
-  -  move => /ex_bound [M /nbhs_ballP [a a0 Ba0]] //=.
-     exists (M * 2 *a^-1).
-     split.
-     - rewrite !mulr_ge0 //= ?invr_ge0 ; last by apply: ltW.
-       move : (Ba0 0 (ballxx 0 a0 )); rewrite linear0 normr0 //=.
-     - move => x. rewrite mulrA ler_pdivl_mulr //=.
-       case: (boolp.EM (x=0)).
-       - by move => ->; rewrite linear0 !normr0 !mul0r.
-       - move => /eqP x0 ; rewrite -lter_pdivr_mull ?normr_gt0 //=.
-         rewrite [X in ( _ <= X)]mulrC -lter_pdivr_mull //=.
-         have ->: 2^-1 *(`|x|^-1 * (`|f x| * a))=`|f ((2^-1 * `|x|^-1 * a)*:x)|.
-           rewrite linearZ normmZ !normrM !ger0_norm ?invr_ge0 //= ?ltW //=.
-           by rewrite mulrA mulrA mulrAC.
-         apply: Ba0 ;rewrite -ball_normE /= sub0r normrN ?normr_gt0 //=.
-         rewrite normmZ !normrM !normrV ?unitfE ?normrE // !ger0_norm ?ltW //=.
-         rewrite mulrAC -mulrA -mulrA [_ * (_ * a)]mulrA.
-         rewrite mulVr ?unitf_gt0 //= ?normr_gt0 //= mul1r.
-         rewrite mulrC gtr_pmulr ?invr_lte1 //= ?unitfE ?ltr_spaddr //=.
-     - move => [r [r0 fr]]; apply/ex_bound; exists r.
-       rewrite nbhs_ballP; exists 1; first by [].
-       move=> x; rewrite -ball_normE //= sub0r normrN => x1; apply: le_trans.
-       apply: fr.
-       rewrite -[X in _ <= X]mul1r; apply: ler_pmul; rewrite ?normr_ge0 //=.
-       by apply: ltW.
+split=> [/ex_bound[M /nbhs_ballP[a a0 Ba0]]|[r [r0 fr]]]; last first.
+  apply/ex_bound; exists r; apply/nbhs_ballP; exists 1 => // x.
+  rewrite -ball_normE //= sub0r normrN => x1; apply: (le_trans (fr _)).
+  by rewrite ler_pimulr // ltW.
+exists (M * 2 * a^-1); split.
+- rewrite !mulr_ge0 //= ?invr_ge0 ; last by apply: ltW.
+  by move: (Ba0 0 (ballxx 0 a0)); rewrite linear0 normr0.
+- move=> x; rewrite mulrAC ler_pdivl_mulr //=.
+  have [/eqP ->|x0] := boolP (x == 0).
+  + by rewrite linear0 !(normr0,mulr0,mul0r).
+  + rewrite mulrAC -lter_pdivr_mulr // -lter_pdivr_mulr ?normr_gt0 //.
+    rewrite [X in X <= _](_ : _ = `|f (a / 2 / `|x| *: x)|); last first.
+      rewrite linearZ normmZ 2!normrM (gtr0_norm a0) gtr0_norm //.
+      by rewrite normrV ?unitfE ?normr_eq0 // normr_id -2!mulrA mulrC mulrA.
+    apply: Ba0; rewrite -ball_normE /= sub0r normrN.
+    rewrite normmZ normrM (@normrV _ `|x|) ?unitfE ?normr_eq0 // normr_id.
+    rewrite -mulrA mulVr ?mulr1 ?unitfE ?normr_eq0 //.
+    by rewrite normrM 2?gtr0_norm// gtr_pmulr // invf_lt1 // ltr1n.
 Qed.
 
 Lemma linear_continuous0 (f : {linear V -> W}) :
-  {for 0, continuous f} -> bounded_on f (nbhs (0:V)).
+  {for 0, continuous f} -> bounded_on f (nbhs (0 : V)).
 Proof.
 move=> /cvg_ballP /(_ _ ltr01) .
 rewrite linear0 /= nearE => /nbhs_ex[tp ball_f]; apply/linear_boundedP.
 pose t := tp%:num; exists (2 * t^-1); split => // x.
-have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mul0r.
+have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mulr0.
 have /ball_f : ball 0 t ((`|x|^-1 * t /2) *: x).
   apply: ball_sym; rewrite -ball_normE /ball_  subr0 normmZ mulrC 2!normrM.
   rewrite 2!mulrA normrV ?unitfE ?normr_eq0 // normr_id.
@@ -4206,113 +4208,79 @@ by rewrite gtr0_norm // invf_div mulrC => /ltW.
 Qed.
 
 Lemma linear_bounded0 (f : {linear V -> W}) :
- bounded_on f (nbhs (0:V)) -> {for 0, continuous f} .
+  bounded_on f (nbhs (0 : V)) -> {for 0, continuous f} .
 Proof.
 move=> /linear_boundedP [r]; rewrite le0r=>  [[/orP r0]]; case: r0.
 - move/eqP => -> fr; apply: near_cst_continuous; near=> y.
-  by move: (fr y); rewrite mulr0 normr_le0; apply/eqP.
+  by move: (fr y); rewrite mul0r normr_le0; apply/eqP.
 - move => r0 fr;  apply/cvg_ballP => e e0.
   rewrite nearE linear0 /= nbhs_ballP.
   exists (e / 2 / r); first by rewrite !divr_gt0.
   move=> x; rewrite -2!ball_normE /= 2!sub0r 2!normrN => xr.
   have /le_lt_trans -> // : `|f x| <= e / 2.
-  by rewrite (le_trans (fr x)) // -ler_pdivl_mulr // ltW.
+  by rewrite (le_trans (fr x)) // mulrC -ler_pdivl_mulr // ltW.
   by rewrite gtr_pmulr // invr_lt1 // ?unitfE // ltr1n.
-  Grab Existential Variables. by end_near.
-Qed.
+Grab Existential Variables. by end_near. Qed.
 
 Lemma continuousfor0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
 Proof.
-move=> /(linear_continuous0) /linear_boundedP [r].
-rewrite le0r=>  [[/orP r0]]; case: r0  => /eqP.
-- move => ->;  move : f  =>  [f linf] f0 //=. (* Linear linf = f ?? *)
-  suff: f  = fun x => 0 by move => ->; apply: cst_continuous.
-    by apply: funext => x; move: (f0 x); rewrite mulr0 normr_le0; apply/eqP .
-- move/eqP => //= r0 fr x.
-  rewrite cvg_to_locally => e e0; rewrite nearE /= nbhs_ballP.
-  exists (e / r).
-   - by rewrite mulr_gt0 //= invr_gt0.
-   - move=> y; rewrite -!ball_normE //= => xy; rewrite -linearB.
-     by rewrite (le_lt_trans (fr (x - y))) // -ltr_pdivl_mulr.
+move=> /linear_continuous0 /linear_boundedP [r []].
+rewrite le_eqVlt => /orP[/eqP <- f0|r0 fr x].
+- suff : f = (fun _ => 0) :> (_ -> _) by move=> ->; exact: cst_continuous.
+  by rewrite funeqE => x; move: (f0 x); rewrite mul0r normr_le0 => /eqP.
+- rewrite cvg_to_locally => e e0; rewrite nearE /= nbhs_ballP.
+  exists (e / r); first by rewrite divr_gt0.
+  move=> y; rewrite -!ball_normE //= => xy; rewrite -linearB.
+  by rewrite (le_lt_trans (fr (x - y))) // mulrC -ltr_pdivl_mulr.
 Qed.
 
 Lemma linear_bounded_continuous (f : {linear V -> W}) :
   bounded_on f (nbhs (0 : V)) <-> continuous f.
 Proof.
-  split; first by move=> /linear_bounded0; apply continuousfor0_continuous.
-  by move => /(_ 0) /linear_continuous0 /=.
+split=> [/linear_bounded0|/(_ 0)/linear_continuous0//].
+exact: continuousfor0_continuous.
 Qed.
 
-Definition bounded_fun_norm (f: V -> W) := forall r, exists M,
-      forall x, (`|x| <= r) -> (`|(f x)| <= M).
+Definition bounded_fun_norm (f : V -> W) :=
+  forall r, exists M, forall x, `|x| <= r -> `|f x| <= M.
 
-Definition pointwise_bounded (F: (V -> W) -> Prop) := forall x, exists M,
-      forall f , F f ->  (`|f x| <= M)%O.
+Definition pointwise_bounded (F : set (V -> W)) :=
+  forall x, exists M, forall f, F f -> `|f x| <= M.
 
-Definition uniform_bounded (F: (V -> W) -> Prop) := forall r, exists M,
-      forall f, F f -> forall x, (`|x| <= r)  -> (`|f x| <= M)%O.
+Definition uniform_bounded (F : set (V -> W)) :=
+  forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
 
 Lemma bounded_funP (f : {linear V -> W}):
-  bounded_fun_norm f <-> bounded_on f (nbhs (0:V)).
+  bounded_fun_norm f <-> bounded_on f (nbhs (0 : V)).
 Proof.
-split.
-- move => /(_ 1) [M Bf]; apply /linear_boundedP.
-  have M0: (0 <= M) by move: (Bf 0); rewrite  linear0 !normr0//= => /(_ ler01).
-  exists M; split; first by [].
-  move: M0; rewrite le0r => /orP; case.
-  - move=> /eqP M0; move: M0 Bf =>  -> Bf x; rewrite mulr0 normr_le0.
-    case: (EM (`|x| = 0)); move=>/eqP; rewrite normr_eq0=> /eqP x0.
-    - by rewrite x0 linear0.
-    - have x00: x != 0 by apply/eqP.
-      have : `| `|x|^-1 *: x | <= 1.
-        rewrite normmZ normrV ?unitf_gt0 ?normrE //=.
-        by rewrite mulrC mulrV ?unitf_gt0 ?normrE //=.
-      move=> /Bf; rewrite linearZ normr_le0 scaler_eq0 invr_eq0 => /orP.
-      by case ; rewrite ?normr_eq0  //=; move => /eqP ->; rewrite linear0.
- - move => M0 x.
-   case: (EM ( x = 0)).
-   - by move=> ->;rewrite normr0 mul0r normr_le0 linear0.
-   - move => /eqP  x0; rewrite mulrC -ler_pdivr_mulr ?normr_gt0 //= mulrC.
-     have <- : `| (`|x|^-1) | = `|x|^-1.
-     by apply/eqP; rewrite eqr_norm_id invr_ge0 normr_ge0.
-     rewrite -normmZ -linearZ; apply: (Bf (`|x|^-1 *: x)).
-     rewrite normmZ normrV ?unitf_gt0 ?normrE //=.
-     rewrite mulrC mulrV  ?unitf_gt0 ?normrE //=.
- - move => /linear_boundedP [r [r0 Bf]]; rewrite /bounded_fun_norm => e.
-   exists (e * r) => x xe; apply: le_trans; first by apply: Bf.
-   by apply: ler_pmul; rewrite ?normr_ge0 //=.
+split => [/(_ 1) [M Bf]|/linear_boundedP [r [r0 Bf]] e]; last first.
+  by exists (e * r) => x xe; rewrite (le_trans (Bf _)) // mulrC ler_pmul.
+apply/linear_boundedP.
+have M0 : 0 <= M by move: (Bf 0); rewrite linear0 !normr0 => /(_ ler01).
+exists M; split => //.
+move: M0; rewrite le0r => /orP[/eqP|] M0 x.
+- rewrite M0 mul0r normr_le0.
+  have [/eqP ->|x0] := boolP (x == 0); first by rewrite linear0.
+  have /Bf : `| `|x|^-1 *: x | <= 1.
+    rewrite normmZ normrV ?unitf_gt0 ?normrE //=.
+    by rewrite mulrC mulrV ?unitf_gt0 ?normrE.
+  rewrite linearZ M0 normr_le0 scaler_eq0 invr_eq0 => /orP[|//].
+  by rewrite normr_eq0 => /eqP ->; rewrite linear0.
+- have [/eqP ->|x0] := boolP (x == 0).
+  + by rewrite normr0 mulr0 normr_le0 linear0.
+  + rewrite -ler_pdivr_mulr ?normr_gt0 //= mulrC.
+     have xx1 : `| `|x|^-1 | = `|x|^-1.
+       by rewrite normrV ?unitfE ?normr_eq0 // normr_id.
+     rewrite -xx1 -normmZ -linearZ; apply: (Bf (`|x|^-1 *: x)).
+     by rewrite normmZ xx1 mulVr // unitfE normr_eq0.
 Qed.
-
-
-
-(* Lemma bounded_landau (f :{linear V->W}) : *)
-(*   bounded_fun_norm f <-> ((f : V -> W) =O_ (0:V) cst (1 : K^o)). *)
-(* Proof. *)
-(*   split. *)
-(*   - rewrite eqOP => bf. *)
-(*     move: (bf 1) => [M bm]. *)
-(*     rewrite !nearE /=; exists M; split. by  apply : num_real. *)
-(*     move => x Mx; rewrite nearE nbhs_normP /=. *)
-(*     exists 1; first by []. *)
-(*     move => y /=. rewrite -ball_normE /ball_ sub0r normrN /cst normr1 mulr1 => y1. *)
-(*     apply: (@le_trans _ _ M _ _). *)
-(*     apply: (bm y); by apply: ltW. *)
-(*     by apply: ltW. *)
-(*   - rewrite eqOP /= ; move => Bf; apply/bounded_funP; rewrite /bounded_on. *)
-(*     near=>M. *)
-(*     set P :=  (X in (nbhs _ X)). *)
-(*     have -> : P  = (fun x : V => (`|f x| <= M * `|cst 1%R x|)%O). *)
-(*       by apply: funext => x; rewrite /cst normr1 mulr1. *)
-(*     by near: M. *)
-(* Grab Existential Variables. all: end_near. Qed. *)
-
 
 End LinearContinuousBounded.
 
 Section Closed_Ball.
 
-
+(* NB: to be replaced by closure_subset from PR#268 *)
 Lemma closureS (T : topologicalType) (A B: set T):
   (A `<=` B) -> (closure A `<=` closure B).
 Proof.
@@ -4320,14 +4288,14 @@ move => AB x CAx C Cx.
 by move: (CAx C Cx) => [z [Az Cz]]; exists z; split; first by apply: AB.
 Qed.
 
-(* not obvious when one doesn't know that closed is defined from closure *)
+(* NB: to be replaced by lemma from PR#268 *)
 Lemma closure_id (T : topologicalType) (A : set T): closed A <-> A = closure A.
 Proof.
 split; last by move=> -> ; apply: closed_closure.
 by move => CA; apply: eqEsubset; first by apply: subset_closure.
 Qed.
 
-
+(* NB: to be replaced by lemma closureE from PR#268 *)
 Lemma closureI (T : topologicalType) ( A : set T) :
   closure A = \bigcap_(B in [ set B : set T | ( A `<=` B)/\ closed B]) B.
 Proof.
@@ -4336,124 +4304,84 @@ Proof.
   - apply: (Ax (closure A)); split; first by apply: subset_closure.
     by apply: closed_closure.
 Qed.
-(* TBA to topology.v *)
 
-Definition closed_ball_ (R: numDomainType) (V: zmodType) (norm: V -> R) (x: V) (e : R) :=
-  [set y | (norm (x- y) <=e)%O ].
+Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
+  (x : V) (e : R) := [set y | norm (x - y) <= e ].
 
-Lemma closed_closed_ball (R: realFieldType) (V:  normedModType R) (x : V) (e : R) :
-  closed (closed_ball_ normr  x e).
+Lemma closed_closed_ball_ (R : realFieldType) (V : normedModType R)
+  (x : V) (e : R) : closed (closed_ball_ normr x e).
 Proof.
-pose f := fun y => normr (x - y).
-have -> : closed_ball_ normr x e  = f @^-1` [set x | (x<= e)%O] by [].
-apply: (@closed_comp _ _ (f : V -> R^o)).
-  move => y Hy; apply: (@continuous_comp _ _ _ (fun y : V => (x-y))).
-      by apply: continuousB ; first by apply: cst_continuous.
-      by apply : norm_continuous.
-  by apply: closed_le.
+rewrite /closed_ball_ -/((normr \o (fun y => x - y)) @^-1` [set x | x <= e]).
+apply: (closed_comp _ (@closed_le _ _)) => y _.
+apply: (continuous_comp _ (@norm_continuous _ _ _)).
+exact: (continuousB (@cst_continuous _ _ _ _)).
 Qed.
 
-Definition closed_ball (R: numDomainType) (V: pseudoMetricType R) (x: V) (e : R) :=
- closure (ball x e).
+Definition closed_ball (R : numDomainType) (V : pseudoMetricType R)
+  (x : V) (e : R) := closure (ball x e).
 
+Lemma closed_ballxx (R: numDomainType) (V : pseudoMetricType R) (x : V)
+  (e : R) : 0 < e -> closed_ball x e x.
+Proof. by move=> ?; exact/subset_closure/ballxx. Qed.
 
-Lemma closure_closed_ball (R: realFieldType) (V: normedModType R):
-  forall (x: V) (e : R),  closed_ball x e = closed_ball_ normr x e.
-move=> x e ; apply: eqEsubset =>y.
-- rewrite /closed_ball closureI //= => CB.
-  apply: (CB (closed_ball_ normr x e)); split.
-  by move => z; rewrite -ball_normE /closed_ball_ //=; apply: ltW.
-  by apply: closed_closed_ball.
-- rewrite  /closed_ball /closed_ball_  /= closureI.
-  move => xye B [Be Bc].
-  pose f := (fun y => `|x - y|) : V -> R^o.
-  have lem:  continuous ( f : V -> R^o).
-    have -> : f = normr \o ( fun y => x -y ) by [].
-    move => z; apply: continuous_comp.
-      by apply: continuousB; first apply: continuous_cst.
-      by apply: norm_continuous.
-  pose D := fun y => (y <= e).      
-  have lem2: nbhs (f y) (fun y0 : R^o => D y0).
-     admit.
-  have: lim ( (f : V -> R^o) @  y)  <= e.
-   apply: (@closed_cvg_loc _ _  (nbhs y) _ f D).
-   admit. apply: lem; simpl. by [].
-   rewrite /D /closed //= /closure //=.
-   move => z /(_ (ball z 1) (nbhsx_ballx z 1%:pos)).
-   move => [w [we wz1]]. Search "nbhs" "ball".   
-   Search "lim" in topology.  Check closed_cvg_loc.   admit. (* closed_cvg_loc *)
-
-Admitted.
-
-
-Lemma closed_ballxx  (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
-  (0 < r) -> closed_ball x r x.
-Proof. Check subset_closure.
-  by move => r_gt0; rewrite /closed_ball; apply: subset_closure; apply: ballxx.
-Qed.
-
-Lemma closed_open_ball (R: numDomainType) (V:  pseudoMetricType R) (x : V) (r : R) :
-  (0 < r) -> exists e, ball x e `<=` closed_ball x r.
-Admitted.
-
-(* Lemma nbhs_ballrP (R : numDomainType) (M : pseudoMetricNormedZmodType R) *)
-(*       (B : set M) (x: M): *)
-(*    nbhs x B <-> exists r, (0 < r) /\ ball x r `<=` B . *)
-(* Proof. *)
-(*   split; first by move=>/nbhs_ballP [r ro Br]; exists r; split. *)
-(*   by move => [r [r0 Br]]; apply/nbhs_ballP; by exists r. *)
-(* Qed. *)
-
-Lemma nbhs_closedballP (R : numDomainType) (M : pseudoMetricNormedZmodType R)
-      (B : set M) (x: M):
-   nbhs x B <-> exists (r : {posnum R}), closed_ball x r%:num `<=` B .
-Admitted.
-
-
-
-
-Lemma closed_neigh_ball (R: realFieldType) (V:  normedModType R) (x : V) (r : {posnum R}) :
-  open_nbhs x (closed_ball x r%:num)^°.
+(* NB: rename to closed_ballE? *)
+Lemma closure_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
+  (e : {posnum R}) : closed_ball x e%:num = closed_ball_ normr x e%:num.
 Proof.
-split.
-- by apply: open_interior.
-- apply: nbhs_singleton; apply: nbhs_interior; apply /nbhs_ballP.
-  exists r%:num; first by [].
-  by rewrite /closed_ball; apply subset_closure.
+apply: eqEsubset => y.
+  rewrite /closed_ball closureI; apply; split; last exact: closed_closed_ball_.
+  by move=> z; rewrite -ball_normE; exact: ltW.
+have [/eqP -> _|xy] := boolP (x == y); first exact: closed_ballxx.
+rewrite /closed_ball closureI -ball_normE.
+rewrite /closed_ball_ le_eqVlt => /orP[/eqP xye B [Be]|xye B0 [/(_ _ xye)]//].
+apply=> B0 /nbhs_ballP[s s0] B0y.
+have [es|se] := leP s e%:num; last first.
+  exists x; split; first by apply: Be; rewrite ball_normE; apply: ballxx.
+  by apply: B0y; rewrite -ball_normE /ball_ distrC xye.
+exists (y + (s / 2) *: (`|x - y|^-1 *: (x - y))); split; [apply: Be|apply: B0y].
+  rewrite /= opprD addrA -[X in `|X - _|](scale1r (x - y)) scalerA -scalerBl.
+  rewrite -[X in X - _](@divrr _ `|x - y|) ?unitfE ?normr_eq0 ?subr_eq0//.
+  rewrite -mulrBl -scalerA normmZ normrZV ?subr_eq0// mulr1.
+  rewrite gtr0_norm; first by rewrite ltr_subl_addl xye ltr_addr mulr_gt0.
+  by rewrite subr_gt0 xye ltr_pdivr_mulr // mulr_natr mulr2n ltr_spaddl.
+rewrite -ball_normE /ball_ /= opprD addrA addrN add0r normrN normmZ.
+rewrite normrZV ?subr_eq0// mulr1 normrM (gtr0_norm s0) gtr0_norm //.
+by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
 Qed.
 
+Lemma closed_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
+  (e : {posnum R}) : closed (closed_ball x e%:num).
+Proof. rewrite closure_closed_ball //; exact: closed_closed_ball_. Qed.
+
+(* NB: rename to ball_closed_ball since the next lemma is closed_ball_ball? *)
+Lemma closed_open_ball (R : numDomainType) (V : pseudoMetricType R) (x : V)
+  (r : R) : exists e, ball x e `<=` closed_ball x r.
+Proof. by exists r; exact: subset_closure. Qed.
+
+Lemma closed_ball_ball (R : realFieldType) (M : normedModType R) (x : M)
+  (r0 r1 : R) : 0 < r0 -> r0 < r1 -> closed_ball x r0 `<=` ball x r1.
+Proof.
+move=> r00 r01; rewrite (_ : r0 = (PosNum r00)%:num) // closure_closed_ball.
+by move=> m xm; rewrite -ball_normE /ball_ (le_lt_trans _ r01).
+Qed.
+
+Lemma nbhs_closedballP (R : realFieldType) (M : normedModType R) (B : set M)
+  (x : M) : nbhs x B <-> exists (r : {posnum R}), closed_ball x r%:num `<=` B.
+Proof.
+split=> [/nbhs_ballP[r r0 xrB]|[e xeB]]; last first.
+  apply/nbhs_ballP; exists e%:num => //.
+  exact: (subset_trans (@subset_closure _ _) xeB).
+have r20 : 0 < r / 2 by apply divr_gt0.
+exists (PosNum r20); apply: (subset_trans (closed_ball_ball _ _) xrB) => //=.
+by rewrite lter_pdivr_mulr // ltr_pmulr // ltr1n.
+Qed.
+
+Lemma closed_neigh_ball (R : realFieldType) (V : normedModType R) (x : V)
+  (r : {posnum R}) : open_nbhs x (closed_ball x r%:num)^°.
+Proof.
+split; first exact: open_interior.
+apply: nbhs_singleton; apply/nbhs_interior/nbhs_ballP.
+by exists r%:num => //; exact: subset_closure.
+Qed.
 
 End Closed_Ball.
-
-(* Variable (R: : realFieldType) (U : NormedModType R). *)
-
-
-(* Lemma neighBall  (y : U) (A : set U) : *)
-(*   open_nbhs y A -> exists (r : {posnum K}), ball y r%:num `<=` A. *)
-(* Proof. *)
-(*   by move=> /open_nbhs_nbhs /(@nbhs_ballP _ _ y A) /exists2P [r [supr prop]]; exists (PosNum supr). *)
-(* Qed. *)
-
-
-(* Lemma closeNeigh_ball (U : completeNormedModType K) (y : U) (A : set U) : *)
-(*   open_nbhs y A -> exists (r : {posnum K}), close_ball y r%:num `<=` A. *)
-(* Proof. *)
-(*   move=> H. *)
-(*   have [r Hr] : (exists r : {posnum K}, ball y r%:num `<=` A). *)
-(*     by apply: neighBall. *)
-(*   have Hrr : r%:num / 2 > 0. *)
-(*     by []. *)
-(*   exists (PosNum Hrr). *)
-(*   apply (@subset_trans  _ (ball y r%:num) _ _). *)
-(*   rewrite -?ball_normE;  move=> a Ha; *)
-(*   apply (@le_lt_trans _ _  (PosNum Hrr)%:num (`| y - a|) r%:num); rewrite ?(@ltr_pdivr_mulr _ 2 r%:num r%:num); *)
-(*   by rewrite -?(@ltr_pdivr_mull _ r%:num 2 r%:num) //= mulrC mulfV ?ltr1n. *)
-(*   by []. *)
-(* Qed. *)
-
-
-
-
-(* End Close_Ball. *)
-
-
