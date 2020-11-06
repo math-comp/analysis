@@ -755,6 +755,13 @@ rewrite predeqE => t; split => [[Xt [k _ Akt]]|[k _ [Xt Akt]]];
   by [exists k |split => //; exists k].
 Qed.
 
+Lemma bigcup_distrl T (A : nat -> set T) X :
+  \bigcup_i A i `&` X = \bigcup_i (A i `&` X).
+Proof.
+by rewrite predeqE => t; split => [[[n _ Ant Xt]]|[n _ [Ant Xt]]];
+  [exists n|split => //; exists n].
+Qed.
+
 Lemma bigcup_ord T n (A : nat -> set T) :
  \big[setU/set0]_(i < n) A i = \bigcup_(i in [set k | (k < n)%N]) A i.
 Proof.
@@ -778,6 +785,20 @@ rewrite big_ord_recl /= (IHn (fun i => A i.+1)) predeqE => x; split.
   by move=> [A0 AS] [|i]// /AS.
 by move=> AP; split => [|i i_lt]; apply: AP.
 Qed.
+
+Definition trivIset T (A : nat -> set T) :=
+  forall i j, i != j -> A i `&` A j = set0.
+
+Lemma trivIset_bigUI T (A : nat -> set T) : trivIset A ->
+  forall n m, n <= m -> \big[setU/set0]_(i < n) A i `&` A m = set0.
+Proof.
+move=> tA; elim => [|n ih m]; first by move=> m _; rewrite big_ord0 set0I.
+by rewrite ltn_neqAle => /andP[? ?]; rewrite big_ord_recr setIUl tA ?setU0 ?ih.
+Qed.
+
+Lemma trivIset_setI T (A : nat -> set T) : trivIset A ->
+  forall X, trivIset (fun n => X `&` A n).
+Proof. by move=> tA X j i /tA; apply: subsetI_eq0; apply subIset; right. Qed.
 
 Module Pointed.
 
