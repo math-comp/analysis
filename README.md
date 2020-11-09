@@ -65,3 +65,5 @@ See also the following publications:
 - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) (2018)
 - [Outils pour la Formalisation en Analyse Classique](http://www-sop.inria.fr/members/Damien.Rouhling/data/phd/thesis.pdf) (2019)
 - [Competing inheritance paths in dependent type theory: a case study in functional analysis](https://hal.inria.fr/hal-02463336) (2020)
+
+Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
