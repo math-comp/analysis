@@ -63,12 +63,16 @@
   + lemmas `setUK`, `setKU`, `setIK`, `setKI`, `subsetEset`, `subEset`, `complEset`, `botEset`, `topEset`, `meetEset`, `joinEset`, `properEneq`
   + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType` on classical `set`.
 
+  + definition `meets` and its notation `#`
+  + lemmas `meetsC`, `meets_openr`, `meets_openl`, `meets_globallyl`, `meets_globallyr `
+- in `topology.v`:
   + definition `limit_point`
-  + lemmas `subset_limit_point`, `closure_limit_point`, `closure_open_nbhs`,
+  + lemmas `subset_limit_point`, `closure_limit_point`,
     `closure_subset`, `closureE`, `closureC`, `closure_id`
-  + lemma `closure_cluster_globally`
-  + definition `separated`, `not_connected`
-  + lemmas `connected0`, `connectedP`, `connected_continuous_connected`
+  + lemmas `cluster_nbhs`, `clusterEonbhs`, `closureEcluster`
+  + definition `separated`
+  + lemmas `connected0`, `connectedPn`, `connected_continuous_connected`
+  + lemmas `closureEnbhs`, `closureEonbhs`, `limit_pointEnbhs`, `limit_pointEonbhs`
 
 ### Changed
 
@@ -120,6 +124,8 @@
 - in `discrete.v`:
   + `existsP`
   + `existsNP`
+- in `topology.v`:
+  + `close_to`
 
 ### Infrastructure
 
