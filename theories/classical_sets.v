@@ -1247,12 +1247,23 @@ Lemma properEset  {T} (X Y : set T) : (X < Y)%O = (X `<` Y) :> Prop.
 Proof. by rewrite asboolE. Qed.
 
 Lemma subEset {T} (X Y : set T) : (X `\` Y)%O = (X `\` Y). Proof. by []. Qed.
+
 Lemma complEset {T} (X Y : set T) : (~` X)%O = ~` X. Proof. by []. Qed.
+
 Lemma botEset {T} (X Y : set T) : 0%O = @set0 T. Proof. by []. Qed.
+
 Lemma topEset {T} (X Y : set T) : 1%O = @setT T. Proof. by []. Qed.
 
 Lemma meetEset {T} (X Y : set T) : (X `&` Y)%O = (X `&` Y). Proof. by []. Qed.
+
 Lemma joinEset {T} (X Y : set T) : (X `|` Y)%O = (X `|` Y). Proof. by []. Qed.
+
+Lemma subsetPset {T} (X Y : set T) : reflect (X `<=` Y) (X <= Y)%O.
+Proof. by apply: (iffP idP); rewrite subsetEset. Qed.
+
+Lemma properPset {T} (X Y : set T) : reflect (X `<` Y) (X < Y)%O.
+Proof. by apply: (iffP idP); rewrite properEset. Qed.
 
 End Exports.
 End SetOrder.
+Export SetOrder.Exports.
