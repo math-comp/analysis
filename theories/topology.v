@@ -806,7 +806,7 @@ Definition near_simpl := (@near_simpl, @near_filter_onE).
 Program Definition trivial_filter_on T := FilterType [set setT : set T] _.
 Next Obligation.
 split=> // [_ _ -> ->|Q R sQR QT]; first by rewrite setIT.
-by apply: eqEsubset => // ? _; apply/sQR; rewrite QT.
+by move; rewrite eqEsubset; split => // ? _; apply/sQR; rewrite QT.
 Qed.
 Canonical trivial_filter_on.
 

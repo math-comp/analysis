@@ -11,6 +11,10 @@
     `setDUr`, `setDUl`, `setIDA`, `setDD`
   + definition `dep_arrow_choiceType`
   + lemma `bigcup_set0`
+  + lemmas `setUK`, `setKU`, `setIK`, `setKI`, `subsetEset`, `subEset`, `complEset`, `botEset`, `topEset`, `meetEset`, `joinEset`, `subsetPset`, `properPset`
+  + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType`
+  + lemma `not_exists2P`
+
 - in `normedtype.v`:
   + lemma `closed_ereal_le_ereal`
   + lemma `closed_ereal_ge_ereal`
@@ -54,6 +58,10 @@
   + lemma `oppe_continuous`
   + lemmas `setUCl`, `setDv`
   + lemmas `image_preimage_subset`, `image_subset`, `preimage_subset`
+  + definition `proper` and its notation `<`
+  + lemmas `setUK`, `setKU`, `setIK`, `setKI`
+  + lemmas `setUK`, `setKU`, `setIK`, `setKI`, `subsetEset`, `subEset`, `complEset`, `botEset`, `topEset`, `meetEset`, `joinEset`, `properEneq`
+  + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType` on classical `set`.
 
 ### Changed
 
@@ -61,6 +69,7 @@
   + the index in `bigcup_set1` generalized from `nat` to some `Type`
   + lemma `bigcapCU` generalized
   + lemmas `preimage_setU` and `preimage_setI` are about the `setU` and `setI` (instead of `bigcup` and `bigcap`)
+  + `eqEsubset` changed from an implication to an equality
 - lemma `asboolb` moved from `discrete.v` to `boolp.v`
 - lemma `exists2NP` moved from `discrete.v` to `boolp.v`
 - lemma `neg_or` moved from `discrete.v` to `boolp.v` and renamed to `not_orP`
@@ -74,6 +83,8 @@
   + the first argument of `real_of_er` is now maximal implicit
   + the first argument of `is_real` is now maximal implicit
   + generalization of `lee_sum`
+- in `boolp.v`:
+  + rename `exists2NP` to `forall2NP` and make it bidirectionnal
 
 ### Renamed
 
