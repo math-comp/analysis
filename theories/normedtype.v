@@ -330,10 +330,9 @@ Lemma in_segment_addgt0Pr (R : numFieldType) (x y z : R) :
   reflect (forall e, e > 0 -> y \in `[(x - e), (z + e)]) (y \in `[x, z]).
 Proof.
 apply/(iffP idP)=> [xyz _/posnumP[e] | xyz_e].
-  rewrite inE/=; apply/andP; split; last by rewrite ler_paddr // (itvP xyz).
-  by rewrite ler_subl_addr ler_paddr // (itvP xyz).
-rewrite inE/=; apply/andP.
-by split; apply/ler_addgt0Pr => ? /xyz_e /andP /= []; rewrite ler_subl_addr.
+  by rewrite in_itv /= ler_subl_addr !ler_paddr // (itvP xyz).
+by rewrite in_itv /= ; apply/andP; split; apply/ler_addgt0Pr => ? /xyz_e;
+  rewrite in_itv /= ler_subl_addr => /andP [].
 Qed.
 
 Lemma in_segment_addgt0Pl (R : numFieldType) (x y z : R) :
@@ -1034,7 +1033,7 @@ Lemma Rhausdorff (R : realFieldType) : hausdorff [topologicalType of R^o].
 Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
-rewrite inE -ler_distl; set he := (e%:num / 2)%:pos.
+rewrite in_itv /= -ler_distl; set he := (e%:num / 2)%:pos.
 have [z []] := clxy _ _ (nbhsx_ballx x he) (nbhsx_ballx y he).
 move=> zx_he yz_he.
 rewrite -(subrKA z) (le_trans (ler_norm_add _ _) _)// ltW //.
@@ -2254,37 +2253,32 @@ rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
 by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
 Qed.
 
-(* TODO: move after rebase on mathcomp 1.12?  *)
-Definition isBOpen (b : itv_bound R) :=
-  if b is BOpen _ then true else false.
+Definition bound_side d (T : porderType d) (c : bool) (x : itv_bound T) :=
+  if x is BSide c' _ then c == c' else false.
 
-Definition isBClosed (b : itv_bound R) :=
-  if b is BOpen_if false _ then true else false.
-
-Lemma interval_open a b : ~~ isBClosed a -> ~~ isBClosed b ->
+Lemma interval_open a b : ~~ bound_side true a -> ~~ bound_side false b ->
   open [set x : R^o | x \in Interval a b].
 Proof.
-move: a b => [[]//a|] [[]//b|] _ _.
+move: a b => [[]a|[]] [[]b|[]]// _ _.
 - have -> : [set x | a < x < b] = [set x | a < x] `&` [set x | x < b].
     by rewrite predeqE => r; rewrite /mkset; split => [/andP[? ?] //|[-> ->]].
   by apply openI; [exact: open_gt | exact: open_lt].
-- rewrite (_ : [set x | x \in _] = [set x : R^o | x > a]) //.
-  by rewrite predeqE => r; split => //; rewrite /mkset ?(inE,lersifT,andbT).
+- by under eq_set do rewrite itv_ge// inE.
+- by under eq_set do rewrite in_itv andbT/=; exact: open_gt.
 - exact: open_lt.
 - by rewrite (_ : mkset _ = setT); [exact: openT | rewrite predeqE].
 Qed.
 
-Lemma interval_closed a b : ~~ isBOpen a -> ~~ isBOpen b ->
+Lemma interval_closed a b : ~~ bound_side false a -> ~~ bound_side true b ->
   closed [set x : R^o | x \in Interval a b].
 Proof.
-move: a b => [[]//a|] [[]//b|] _ _.
+move: a b => [[]a|[]] [[]b|[]]// _ _;
+  do ?by under eq_set do rewrite itv_ge// inE falseE; apply: closed0.
 - have -> : [set x | x \in `[a, b]] = [set x | x >= a] `&` [set x | x <= b].
-    by rewrite predeqE => ?; rewrite /= inE; split=> [/andP [] | /= [->]].
+    by rewrite predeqE => ?; rewrite /= in_itv/=; split=> [/andP[]|[->]].
   by apply closedI; [exact: closed_ge | exact: closed_le].
-- rewrite (_ : mkset _ = [set x : R^o | x >= a]); first exact :closed_ge.
-  by rewrite predeqE => r; split => //; rewrite /mkset ?(inE,lersifT,andbT).
+- by under eq_set do rewrite in_itv andbT/=; exact: closed_ge.
 - exact: closed_le.
-- by rewrite (_ : mkset _ = setT); [exact: closedT|rewrite predeqE].
 Qed.
 
 End open_closed_sets.
@@ -2349,16 +2343,9 @@ Qed.
 
 Lemma interval_is_interval (i : interval R) : is_interval [set x | x \in i].
 Proof.
-move: i => [[[] i|] [[] j|]] //= x y; rewrite /mkset !(inE,lersifT,lersifF);
-  move=> /andP[ax ?] /andP[? yb] z /andP[? ?]; rewrite !(inE,lersifT,lersifF).
-by rewrite (lt_trans ax) // (lt_trans _ yb).
-by rewrite (lt_trans ax) // (le_trans (ltW _) yb).
-by rewrite (lt_trans ax).
-by rewrite (le_trans ax (ltW _)) // (lt_trans _ yb).
-by rewrite (le_trans ax (ltW _)) // (le_trans (ltW _) yb).
-by rewrite (le_trans ax (ltW _)).
-by rewrite (lt_trans _ yb).
-by rewrite (le_trans (ltW _) yb).
+by case: i => -[[]a|[]] [[]b|[]] // x y /=; do ?[by rewrite ?itv_ge//];
+   move=> xi yi z; rewrite -[x < z < y]/(z \in `]x, y[); apply/subitvP;
+   rewrite subitvE /Order.le/= ?(itvP xi, itvP yi).
 Qed.
 
 End interval.
@@ -2448,7 +2435,7 @@ Proof.
 move=> iX bX aX; rewrite eqEsubset; split=> [r Xr|].
   apply/andP; split;
     [exact: left_bounded_interior|exact: right_bounded_interior].
-rewrite -open_subsetE; last exact: (@interval_open _ (BOpen _) (BOpen _)).
+rewrite -open_subsetE; last exact: (@interval_open _ (BRight _) (BLeft _)).
 move=> r /andP[iXr rsX].
 have [/set0P X0|/negPn/eqP X0] := boolP (X != set0); last first.
   by move: (lt_trans iXr rsX); rewrite X0 inf_out ?sup_out ?ltxx // => - [[]].
@@ -2461,31 +2448,30 @@ by rewrite opprB addrCA subrr addr0 => rf; apply: (iX _ _ Xe Xf); rewrite er rf.
 Qed.
 
 Definition Rhull (X : set R) : interval R := Interval
-  (if `[< has_lbound X >] then BOpen_if (~~ `[< X (inf X) >]) (inf X)
-                          else BInfty _)
-  (if `[< has_ubound X >] then BOpen_if (~~ `[< X (sup X) >]) (sup X)
-                          else BInfty _).
+  (if `[< has_lbound X >] then BSide `[< X (inf X) >] (inf X)
+                          else BInfty _ true)
+  (if `[< has_ubound X >] then BSide (~~ `[< X (sup X) >]) (sup X)
+                          else BInfty _ false).
 
 Lemma sub_Rhull (X : set R) : X `<=` [set x | x \in Rhull X].
 Proof.
-move=> x Xx/=; rewrite inE/=.
+move=> x Xx/=; rewrite in_itv/=.
 case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
 + by case: asboolP => ?; case: asboolP => ? //=;
-     rewrite !(lersifF, lersifT, sup_ub, inf_lb, sup_ub_strict, inf_lb_strict).
-+ by case: asboolP => XinfX; rewrite !(lersifF, lersifT);
+     rewrite !(lteifF, lteifT, sup_ub, inf_lb, sup_ub_strict, inf_lb_strict).
++ by case: asboolP => XinfX; rewrite !(lteifF, lteifT);
      [rewrite inf_lb | rewrite inf_lb_strict].
-+ by case: asboolP => XsupX; rewrite !(lersifF, lersifT);
++ by case: asboolP => XsupX; rewrite !(lteifF, lteifT);
      [rewrite sup_ub | rewrite sup_ub_strict].
 Qed.
-
 
 Lemma is_intervalP (X : set R) : is_interval X <-> X = [set x | x \in Rhull X].
 Proof.
 split=> [iX|->]; last exact: interval_is_interval.
-rewrite predeqE => x /=; split; [exact: sub_Rhull | rewrite inE/=].
+rewrite predeqE => x /=; split; [exact: sub_Rhull | rewrite in_itv/=].
 case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
 - case: asboolP => XinfX; case: asboolP => XsupX;
-    rewrite !(lersifF, lersifT).
+    rewrite !(lteifF, lteifT).
   + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx].
     rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
     apply: (@interior_subset [topologicalType of R^o]).
@@ -2498,7 +2484,7 @@ case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
     by rewrite interval_bounded_interior // /mkset infXx.
   + move=> ?; apply: (@interior_subset [topologicalType of R^o]).
     by rewrite interval_bounded_interior // /mkset infXx.
-- case: asboolP => XinfX; rewrite !(lersifF, lersifT, andbT).
+- case: asboolP => XinfX; rewrite !(lteifF, lteifT, andbT).
   + rewrite le_eqVlt => /orP[/eqP<-//|infXx].
     apply: (@interior_subset [topologicalType of R^o]).
     by rewrite interval_right_unbounded_interior.
@@ -2581,7 +2567,6 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
 Qed.
 End interval_realType.
 
-
 Section segment.
 Variable R : realType.
 
@@ -2614,7 +2599,7 @@ apply: segment_connected.
   rewrite openE => /(_ _ fx) [e egt0 xe_fi]; exists e => // y xe_y.
   exists D' => //; split; last by exists i => //; apply/xe_fi.
   move=> z /= ayz; case: (lerP z x) => [lezx|ltxz].
-    by apply/saxUf; rewrite /= inE/= (itvP ayz) lezx.
+    by apply/saxUf; rewrite /= in_itv/= (itvP ayz) lezx.
   exists i => //; apply/xe_fi; rewrite /ball_/= distrC ger0_norm.
     have lezy : z <= y by rewrite (itvP ayz).
     rewrite ltr_subl_addl; apply: le_lt_trans lezy _; rewrite -ltr_subl_addr.
@@ -2631,7 +2616,7 @@ split=> [z axz|]; last first.
   exists i; first by rewrite /= !inE eq_refl.
   by apply/xe_fi; rewrite /ball_/= subrr normr0.
 case: (lerP z y) => [lezy|ltyz].
-  have /sayUf [j Dj fjz] : z \in `[a, y] by rewrite inE/= (itvP axz) lezy.
+  have /sayUf [j Dj fjz] : z \in `[a, y] by rewrite in_itv /= (itvP axz) lezy.
   by exists j => //=; rewrite inE orbC Dj.
 exists i; first by rewrite /= !inE eq_refl.
 apply/xe_fi; rewrite /ball_/= ger0_norm; last first.
@@ -2665,9 +2650,9 @@ move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
     by move=> x /fcont; apply: (@continuousN _ [normedModType R of R^o]).
   by rewrite ler_oppr opprK ler_oppr opprK andbC.
 move=> /andP[]; rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
-  by exists a => //; rewrite inE/= lexx leab.
+  by exists a => //; rewrite in_itv /= lexx leab.
 rewrite le_eqVlt => /orP [/eqP->|ltvfb].
-  by exists b => //; rewrite inE/= lexx leab.
+  by exists b => //; rewrite in_itv /= lexx leab.
 set A := [set c | (c <= b) && (f c <= v)].
 have An0 : nonempty A by exists a; apply/andP; split=> //; apply: ltW.
 have supA : has_sup A by split=> //; exists b; apply/ubP => ? /andP [].
@@ -2702,8 +2687,8 @@ rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
     by move: lefsupv; rewrite leNgt -besup ltvfb.
   move=> t lttb ltsupt; move: lttb; rewrite /= distrC.
   by rewrite gtr0_norm ?subr_gt0 // ltr_add2r; apply: ltW.
-move=> t /andP [ltsupt /= letb]; rewrite ltNge; apply/negP => leftv.
-move: ltsupt => /=; rewrite ltNge => /negP; apply.
+move=> t; rewrite in_itv /=; case/andP => ltsupt letb.
+apply/contra_lt: ltsupt => leftv.
 by move/ubP : (sup_upper_bound supA); apply; rewrite /A/= leftv letb.
 Grab Existential Variables. all: end_near. Qed.
 
