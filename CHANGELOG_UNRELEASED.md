@@ -64,7 +64,8 @@
   + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType` on classical `set`.
 
   + definition `meets` and its notation `#`
-  + lemmas `meetsC`, `meets_openr`, `meets_openl`, `meets_globallyl`, `meets_globallyr `
+  + lemmas `meetsC`, `meets_openr`, `meets_openl`, `meets_globallyl`,
+    `meets_globallyr `, `meetsxx` and `proper_meetsxx`.
 - in `topology.v`:
   + definition `limit_point`
   + lemmas `subset_limit_point`, `closure_limit_point`,
@@ -72,7 +73,8 @@
   + lemmas `cluster_nbhs`, `clusterEonbhs`, `closureEcluster`
   + definition `separated`
   + lemmas `connected0`, `connectedPn`, `connected_continuous_connected`
-  + lemmas `closureEnbhs`, `closureEonbhs`, `limit_pointEnbhs`, `limit_pointEonbhs`
+  + lemmas `closureEnbhs`, `closureEonbhs`, `limit_pointEnbhs`,
+    `limit_pointEonbhs`, `closeEnbhs`, `closeEonbhs`.
 
 ### Changed
 
@@ -126,6 +128,7 @@
   + `existsNP`
 - in `topology.v`:
   + `close_to`
+  + `close_cluster`, which is subsumed by `closeEnbhs`
 
 ### Infrastructure
 

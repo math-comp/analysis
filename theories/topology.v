@@ -2203,6 +2203,16 @@ Proof.
 by rewrite meetsC meets_globallyl; under eq_forall do rewrite setIC.
 Qed.
 
+Lemma meetsxx T (F : set (set T)) (FF : Filter F) : F `#` F = ~ (F set0).
+Proof.
+rewrite propeqE; split => [FmF F0|]; first by have [x []] := FmF _ _ F0 F0.
+move=> FN0 A B /filterI FAI {}/FAI FAB; apply/set0P/eqP => AB0.
+by rewrite AB0 in FAB.
+Qed.
+
+Lemma proper_meetsxx T (F : set (set T)) (FF : ProperFilter F) : F `#` F.
+Proof. by rewrite meetsxx; apply: filter_not_empty. Qed.
+
 (** ** Closed sets in topological spaces *)
 
 Section Closed.
@@ -2748,7 +2758,7 @@ Local Open Scope classical_set_scope.
 
 Definition close (x y : T) : Prop := forall M, open_nbhs y M -> closure M x.
 
-Lemma closeEcluster x : close x = cluster (nbhs x).
+Lemma closeEnbhs x : close x = cluster (nbhs x).
 Proof.
 transitivity (cluster (open_nbhs x)); last first.
   by rewrite /cluster; under eq_fun do rewrite -meets_openl.
@@ -2757,23 +2767,23 @@ apply/eq_forall => A; rewrite forall_swap.
 by rewrite closureEonbhs meets_globallyl.
 Qed.
 
-Lemma close_refl (x : T) : close x x.
-Proof. by rewrite closeEcluster; exact: cluster_nbhs. Qed.
-Hint Resolve close_refl : core.
+Lemma closeEonbhs x : close x = [set y | open_nbhs x `#` open_nbhs y].
+Proof.
+by rewrite closeEnbhs; under eq_fun do rewrite -meets_openl -meets_openr.
+Qed.
 
 Lemma close_sym (x y : T) : close x y -> close y x.
-Proof.
-move=> xy N xN; rewrite closureEonbhs meetsC meets_globallyr => M yM.
-by have := xy _ yM; rewrite closureEonbhs; exact.
-Qed.
+Proof. by rewrite !closeEnbhs /cluster meetsC. Qed.
 
 Lemma cvg_close {F} {FF : ProperFilter F} (x y : T) :
   F --> x -> F --> y -> close x y.
 Proof.
-move=> Fx Fy N yN M xM; near F => z; exists z; split.
-- by near: z; apply/Fy/open_nbhs_nbhs.
-- by near: z; apply/Fx.
-Grab Existential Variables. all: end_near. Qed.
+by move=> /sub_meets sx /sx; rewrite closeEnbhs; apply; apply/proper_meetsxx.
+Qed.
+
+Lemma close_refl (x : T) : close x x.
+Proof. exact: (@cvg_close (nbhs x)). Qed.
+Hint Resolve close_refl : core.
 
 Lemma close_cvg (F1 F2 : set (set T)) {FF2 : ProperFilter F2} :
   F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
@@ -2825,7 +2835,7 @@ Hypothesis sep : hausdorff T.
 Lemma closeE (x y : T) : close x y = (x = y).
 Proof.
 rewrite propeqE; split; last by move=> ->; exact: close_refl.
-by rewrite closeEcluster; exact: sep.
+by rewrite closeEnbhs; exact: sep.
 Qed.
 
 Lemma close_eq (y x : T) : close x y -> x = y.
@@ -3177,13 +3187,12 @@ Qed.
 Lemma entourage_close (x y : U) : close x y = forall A, entourage A -> A (x, y).
 Proof.
 rewrite propeqE; split=> [cxy A entA|cxy].
-  have /entourage_split_ent entsA := entA.
-  rewrite closeEcluster in cxy.
+  have /entourage_split_ent entsA := entA; rewrite closeEnbhs in cxy.
   have yl := nbhs_entourage _ (entourage_inv entsA).
   have yr := nbhs_entourage _ entsA.
   have [z [zx zy]] := cxy _ _ (yr x) (yl y).
   exact: (entourage_split z).
-rewrite closeEcluster => A B /nbhsP[E1 entE1 sE1A] /nbhsP[E2 entE2 sE2B].
+rewrite closeEnbhs => A B /nbhsP[E1 entE1 sE1A] /nbhsP[E2 entE2 sE2B].
 by exists y; split;[apply: sE1A; apply: cxy|apply: sE2B; apply: entourage_refl].
 Qed.
 
@@ -3207,19 +3216,6 @@ Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
   by have /cvgP := Fl; split=> //; apply: (@cvg_close _ F).
 by apply: cvg_trans (close_cvgxx Cl).
-Qed.
-
-Lemma close_cluster (x y : U) : close x y = cluster (nbhs x) y.
-Proof.
-rewrite propeqE; split => xy.
-- move=> A B xA; rewrite -nbhs_entourageE => -[E entE sEB].
-  exists x; split; first exact: nbhs_singleton.
-  by apply/sEB; move/close_sym: xy; rewrite entourage_close; apply.
-- rewrite entourage_close => A entA.
-  have /entourage_split_ent entsA := entA.
-  have [z [/= zx zy]] :=
-    xy _ _ (nbhs_entourage _ entsA) (nbhs_entourage _ (entourage_inv entsA)).
-  exact: (entourage_split z).
 Qed.
 
 End uniform_closeness.
@@ -3759,9 +3755,9 @@ rewrite propeqE; split => [cxy eps|cxy].
   rewrite closureEonbhs meetsC meets_globallyr.
   move/(_ _ (open_nbhs_ball _ (eps%:num/2)%:pos)) => [z [zx zy]].
   by apply: (@ball_splitl z); apply: interior_subset.
-rewrite closeEcluster => B A /nbhs_ballP[_/posnumP[e2 e2B]]
+rewrite closeEnbhs => B A /nbhs_ballP[_/posnumP[e2 e2B]]
   /nbhs_ballP[_/posnumP[e1 e1A]].
-by exists y; split; [apply e2B|apply e1A; exact: ballxx].
+by exists y; split; [apply/e2B|apply/e1A; exact: ballxx].
 Qed.
 
 End pseudoMetricType_numFieldType.
