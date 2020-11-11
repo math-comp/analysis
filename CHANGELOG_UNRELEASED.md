@@ -64,6 +64,19 @@
   + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType` on classical `set`.
 - file `nngnum.v`
 
+  + definition `meets` and its notation `#`
+  + lemmas `meetsC`, `meets_openr`, `meets_openl`, `meets_globallyl`,
+    `meets_globallyr `, `meetsxx` and `proper_meetsxx`.
+- in `topology.v`:
+  + definition `limit_point`
+  + lemmas `subset_limit_point`, `closure_limit_point`,
+    `closure_subset`, `closureE`, `closureC`, `closure_id`
+  + lemmas `cluster_nbhs`, `clusterEonbhs`, `closureEcluster`
+  + definition `separated`
+  + lemmas `connected0`, `connectedPn`, `connected_continuous_connected`
+  + lemmas `closureEnbhs`, `closureEonbhs`, `limit_pointEnbhs`,
+    `limit_pointEonbhs`, `closeEnbhs`, `closeEonbhs`.
+
 ### Changed
 
 - in `classical_sets.v`:
@@ -115,6 +128,9 @@
 - in `discrete.v`:
   + `existsP`
   + `existsNP`
+- in `topology.v`:
+  + `close_to`
+  + `close_cluster`, which is subsumed by `closeEnbhs`
 
 ### Infrastructure
 

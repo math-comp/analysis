@@ -66,6 +66,8 @@ Require Import boolp.
 (*                                P must be a set on a choiceType.            *)
 (*             fun_of_rel f0 f == function that maps x to an element of f x   *)
 (*                                if there is one, to f0 x otherwise.         *)
+(*                    F `#` G <-> intersections beween elements of F an G are *)
+(*                                all non empty.                              *)
 (*                                                                            *)
 (* * Pointed types:                                                           *)
 (*                 pointedType == interface type for types equipped with a    *)
@@ -1167,6 +1169,39 @@ exists n.+1; split => // m Em; case/existsNP : En => k /not_implyP[Ek /negP].
 rewrite -Order.TotalTheory.ltNge => kn.
 by rewrite (Order.POrderTheory.le_trans _ (Em _ Ek)).
 Qed.
+
+(** ** Intersection of classes of set *)
+
+Definition meets T (F G : set (set T)) :=
+  forall A B, F A -> G B -> A `&` B !=set0.
+
+Reserved Notation "A `#` B"
+ (at level 48, left associativity, format "A  `#`  B").
+
+Notation "F `#` G" := (meets F G) : classical_set_scope.
+
+Section meets.
+
+Lemma meetsC T (F G : set (set T)) : F `#` G = G `#` F.
+Proof.
+gen have sFG : F G / F `#` G -> G `#` F.
+  by move=> FG B A => /FG; rewrite setIC; apply.
+by rewrite propeqE; split; apply: sFG.
+Qed.
+
+Lemma sub_meets T (F F' G G' : set (set T)) :
+  F `<=` F' -> G `<=` G' -> F' `#` G' -> F `#` G.
+Proof. by move=> sF sG FG A B /sF FA /sG GB; apply: (FG A B). Qed.
+
+Lemma meetsSr T (F G G' : set (set T)) :
+  G `<=` G' -> F `#` G' -> F `#` G.
+Proof. exact: sub_meets. Qed.
+
+Lemma meetsSl T (G F F' : set (set T)) :
+  F `<=` F' -> F' `#` G -> F `#` G.
+Proof. by move=> /sub_meets; apply. Qed.
+
+End meets.
 
 Fact set_display : unit. Proof. by []. Qed.
 

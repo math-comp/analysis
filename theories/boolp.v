@@ -156,15 +156,54 @@ Proof. by rewrite propeqE; split. Qed.
 Lemma propF (P : Prop) : ~ P -> P = False.
 Proof. by move=> p; rewrite propeqE; tauto. Qed.
 
+Lemma eq_fun T rT (U V : T -> rT) :
+  (forall x : T, U x = V x) -> (fun x => U x) = (fun x => V x).
+Proof. by move=> /funext->. Qed.
+
+Lemma eq_fun2 T1 T2 rT (U V : T1 -> T2 -> rT) :
+  (forall x y, U x y = V x y) -> (fun x y => U x y) = (fun x y => V x y).
+Proof. by move=> UV; rewrite funeq2E => x y; rewrite UV. Qed.
+
+Lemma eq_fun3  T1 T2 T3 rT (U V : T1 -> T2 -> T3 -> rT) :
+  (forall x y z, U x y z = V x y z) ->
+  (fun x y z => U x y z) = (fun x y z => V x y z).
+Proof. by move=> UV; rewrite funeq3E => x y z; rewrite UV. Qed.
+
 Lemma eq_forall T (U V : T -> Prop) :
   (forall x : T, U x = V x) -> (forall x, U x) = (forall x, V x).
 Proof. by move=> e; rewrite propeqE; split=> ??; rewrite (e,=^~e). Qed.
+
+Lemma eq_forall2 T S (U V : forall x : T, S x -> Prop) :
+  (forall x y, U x y = V x y) -> (forall x y, U x y) = (forall x y, V x y).
+Proof. by move=> UV; apply/eq_forall => x; apply/eq_forall. Qed.
+
+Lemma eq_forall3 T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
+  (forall x y z, U x y z = V x y z) ->
+  (forall x y z, U x y z) = (forall x y z, V x y z).
+Proof. by move=> UV; apply/eq_forall2 => x y; apply/eq_forall. Qed.
 
 Lemma eq_exists T (U V : T -> Prop) :
   (forall x : T, U x = V x) -> (exists x, U x) = (exists x, V x).
 Proof.
 by move=> e; rewrite propeqE; split=> - [] x ?; exists x; rewrite (e,=^~e).
 Qed.
+
+Lemma eq_exists2 T S (U V : forall x : T, S x -> Prop) :
+  (forall x y, U x y = V x y) -> (exists x y, U x y) = (exists x y, V x y).
+Proof. by move=> UV; apply/eq_exists => x; apply/eq_exists. Qed.
+
+Lemma eq_exists3 T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
+  (forall x y z, U x y z = V x y z) ->
+  (exists x y z, U x y z) = (exists x y z, V x y z).
+Proof. by move=> UV; apply/eq_exists2 => x y; apply/eq_exists. Qed.
+
+Lemma forall_swap T S (U : forall (x : T) (y : S), Prop) :
+   (forall x y, U x y) = (forall y x, U x y).
+Proof. by rewrite propeqE; split. Qed.
+
+Lemma exists_swap T S (U : forall (x : T) (y : S), Prop) :
+   (exists x y, U x y) = (exists y x, U x y).
+Proof. by rewrite propeqE; split => -[x [y]]; exists y, x. Qed.
 
 Lemma reflect_eq (P : Prop) (b : bool) : reflect P b -> P = b.
 Proof. by rewrite propeqE; exact: rwP. Qed.
