@@ -2,7 +2,8 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop order matrix interval.
 Require Import boolp reals.
-Require Import classical_sets posnum topology prodnormedzmodule normedtype landau forms.
+Require Import classical_sets posnum nngnum topology prodnormedzmodule.
+Require Import normedtype landau forms.
 
 (******************************************************************************)
 (* This file provides a theory of differentiation. It includes the standard   *)

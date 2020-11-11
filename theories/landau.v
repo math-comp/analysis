@@ -3,7 +3,7 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg.
 From mathcomp Require Import ssrnum.
 Require Import boolp ereal reals.
-Require Import classical_sets posnum topology normedtype.
+Require Import classical_sets posnum nngnum topology normedtype.
 Require Import prodnormedzmodule.
 
 (******************************************************************************)

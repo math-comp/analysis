@@ -62,6 +62,7 @@
   + lemmas `setUK`, `setKU`, `setIK`, `setKI`
   + lemmas `setUK`, `setKU`, `setIK`, `setKI`, `subsetEset`, `subEset`, `complEset`, `botEset`, `topEset`, `meetEset`, `joinEset`, `properEneq`
   + Canonical `porderType`, `latticeType`, `distrLatticeType`, `blatticeType`, `tblatticeType`, `bDistrLatticeType`, `tbDistrLatticeType`, `cbDistrLatticeType`, `ctbDistrLatticeType` on classical `set`.
+- file `nngnum.v`
 
 ### Changed
 
@@ -85,6 +86,7 @@
   + generalization of `lee_sum`
 - in `boolp.v`:
   + rename `exists2NP` to `forall2NP` and make it bidirectionnal
+- moved the definition of `{nngnum _}` and the related bigmax theory to the new `nngnum.v` file
 
 ### Renamed
 

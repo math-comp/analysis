@@ -20,7 +20,7 @@ Require Import boolp.
 (*                  canonically in {posnum R}                                 *)
 (*   PosNum xgt0 == packs the proof xgt0 : x > 0, for x : R, to build a       *)
 (*                  {posnum R}.                                               *)
-(*        x%:pos == explicitely casts x to {posnum R}, triggers the inference *)
+(*        x%:pos == explicitly casts x to {posnum R}, triggers the inference  *)
 (*                  of a {posnum R} structure for x.                          *)
 (*        x%:num == explicit cast from {posnum R} to R.                       *)
 (*       posreal == notation for {posnum R}, where R is the type of real      *)
