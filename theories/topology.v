@@ -2339,23 +2339,24 @@ Implicit Types E A B U : set T.
 Lemma closure_subset A B : A `<=` B -> closure A `<=` closure B.
 Proof. by move=> ? ? CAx ?; move/CAx; exact/subsetI_neq0. Qed.
 
-Lemma closureE E : closure E = \bigcap_(B in [set B | closed B /\ E `<=` B]) B.
+Lemma closureE A : closure A = \bigcap_(B in [set B | closed B /\ A `<=` B]) B.
 Proof.
-apply: eqEsubset => [x Ax B [cB AB]|x]; first exact/cB/(closure_subset AB).
-by apply; split; [exact: closed_closure|exact: subset_closure].
+rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closure_subset AB).
+by move=> x; apply; split; [exact: closed_closure|exact: subset_closure].
 Qed.
 
 Lemma closureC E :
   ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
 Proof.
-rewrite closureE bigcapCU setCK; apply: eqEsubset => t [U [? EU Ut]].
+rewrite closureE bigcapCU setCK eqEsubset; split => t [U [? EU Ut]].
   by exists (~` U) => //; split; [exact: openC|exact: subsetC].
 by rewrite -(setCK E); exists (~` U)=> //; split; [exact:closedC|exact:subsetC].
 Qed.
 
 Lemma closure_id E : closed E <-> E = closure E.
 Proof.
-split=> [?|->]; [exact:(eqEsubset (@subset_closure _ _))|exact: closed_closure].
+split=> [?|->]; last exact: closed_closure.
+rewrite eqEsubset; split => //; exact: subset_closure.
 Qed.
 
 End closure_lemmas.
@@ -2942,7 +2943,7 @@ move=> b.
 have [fAfE cEIE] :
     f @` AfE (~~ b) = E (~~ b) /\ closure (E b) `&` E (~~ b) = set0.
   split; last by case: sE => ? ?; case: b => //; rewrite setIC.
-  apply: eqEsubset.
+  rewrite eqEsubset; split.
     apply: (subset_trans sub_image_setI).
     by apply subIset; right; exact: image_preimage_subset.
   move=> u Ebu.
