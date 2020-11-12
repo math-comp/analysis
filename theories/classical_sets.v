@@ -412,7 +412,7 @@ Lemma preimage_subset A B (f : A -> B) (X Y : set B) :
   X `<=` Y -> f @^-1` X `<=` f @^-1` Y.
 Proof. by move=> XY a /XY. Qed.
 
-Lemma subset_empty {A} (X Y : set A) : X `<=` Y -> X !=set0 -> Y !=set0.
+Lemma subset_nonempty {A} (X Y : set A) : X `<=` Y -> X !=set0 -> Y !=set0.
 Proof. by move=> sXY [x Xx]; exists x; apply: sXY. Qed.
 
 Lemma subset_trans {A} (Y X Z : set A) : X `<=` Y -> Y `<=` Z -> X `<=` Z.
