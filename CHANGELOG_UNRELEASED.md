@@ -40,6 +40,15 @@
     * notation `outer_measure`, `{outer_measure set T -> {ereal R}}`
   + lemmas `outer_measure0`, `outer_measure_ge0`, `le_outer_measure`,
     `outer_measure_sigma_subadditive`, `le_outer_measureIC`
+- in `boolp.v`:
+  + lemmas `and3_asboolP`, `or3_asboolP`, `not_and3P`
+- in `classical_sets.v`:
+  + lemma `bigcup_sup`
+- in `topology.v`:
+  + lemmas `closure0`, `separatedC`, `separated_disjoint`, `connectedP`, `connected_subset`,
+    `connected_bigU`
+  + definition `component`
+  + lemma `connect_component`
 
 ### Changed
 
@@ -62,6 +71,8 @@
   + `sigma_additive_implies_additive` -> `sigma_additive_is_additive`
 - in `topology.v`:
   + `nbhs_of` -> `locally_of`
+- in `topology.v`:
+  + `connect0` -> `connected0`
 
 ### Removed
 
