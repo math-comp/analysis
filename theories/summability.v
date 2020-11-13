@@ -31,7 +31,7 @@ Canonical totally_filter_source {I : choiceType} X :=
 
 Instance totally_filter {I : choiceType} : ProperFilter (@totally I).
 Proof.
-eapply filter_from_proper; last by move=> A _; exists A; rewrite fsubset_refl.
+eapply filter_from_proper; last by move=> A _; exists A; rewrite /= fsubset_refl.
 apply: filter_fromT_filter; first by exists fset0.
 by move=> A B /=; exists (A `|` B) => P /=; rewrite fsubUset => /andP[].
 Qed.

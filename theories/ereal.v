@@ -1581,10 +1581,10 @@ rewrite predeq2E => x A; split.
                         (contract (r%:E + e%:num%:E) - contract r%:E)%R.
     exists (diag e'); rewrite /diag.
       exists e' => //.
-      rewrite /e' lt_minr; apply/andP; split.
+      rewrite /= /e' lt_minr; apply/andP; split.
         by rewrite subr_gt0 lt_contract lte_fin ltr_subl_addr ltr_addl.
       by rewrite subr_gt0 lt_contract lte_fin ltr_addl.
-    case=> [r' re'r'| |].
+    case=> [r' /= re'r'| |]/=.
     * rewrite /ereal_ball in re'r'.
       have [r'r|rr'] := lerP (contract r'%:E) (contract r%:E).
         apply reA.
@@ -1638,9 +1638,9 @@ rewrite predeq2E => x A; split.
       move: h; apply/negP; rewrite -leNgt -ler_oppl.
       by move: (contract_le1 (r%:E - e%:num%:E)); rewrite ler_norml => /andP[].
   + exists (diag (1 - contract M%:E))%R; rewrite /diag.
-      exists (1 - contract M%:E)%R => //.
+      exists (1 - contract M%:E)%R => //=.
       by rewrite subr_gt0 (le_lt_trans _ (contract_lt1 M)) // ler_norm.
-    case=> [r| |].
+    case=> [r| |]/=.
     * rewrite /ereal_ball [_ +oo%E]/= => rM1.
       apply MA.
       rewrite lte_fin.
@@ -1657,11 +1657,11 @@ rewrite predeq2E => x A; split.
       rewrite -/(contract M%:E) addrC -ler_subl_addr opprD addrA subrr sub0r.
       by move: (contract_le1 M%:E); rewrite ler_norml => /andP[].
   + exists (diag (1 + contract M%:E)%R); rewrite /diag.
-      exists (1 + contract M%:E)%R => //.
+      exists (1 + contract M%:E)%R => //=.
       rewrite -ltr_subl_addl sub0r.
       by move: (contract_lt1 M); rewrite ltr_norml => /andP[].
     case=> [r| |].
-    * rewrite /ereal_ball [_ -oo%E]/= => rM1.
+    * rewrite /ereal_ball => /= rM1.
       apply MA.
       rewrite lte_fin.
       rewrite ler0_norm in rM1; last first.

@@ -449,7 +449,7 @@ Implicit Types x y : R.
 Lemma has_sup_floor_set x : has_sup (floor_set x).
 Proof.
 split; [exists (- (Num.bound (-x))%:~R) | exists (Num.bound x)%:~R].
-  rewrite /floor_set rpredN rpred_int /= ler_oppl.
+  rewrite /floor_set/mkset rpredN rpred_int /= ler_oppl.
   case: (ger0P (-x)) => [/archi_boundP/ltW//|].
   by move/ltW/le_trans; apply; rewrite ler0z.
 apply/ubP=> y /andP[_] /le_trans; apply.
@@ -483,7 +483,7 @@ Proof. by rewrite /ifloor RtointK ?isint_floor. Qed.
 
 Lemma mem_rg1_floor (x : R) : (range1 (floor x)) x.
 Proof.
-rewrite /range1.
+rewrite /range1/mkset.
 have /andP[_ ->] /= := sup_in_floor_set x.
 have [|] := pselect ((floor_set x) (floor x + 1)); last first.
   rewrite /floor_set => /negP.
@@ -509,14 +509,14 @@ exact/(le_lt_trans m1x).
 Qed.
 
 Lemma range1rr (x : R) : (range1 x) x.
-Proof. by rewrite /range1 lexx /= ltr_addl ltr01. Qed.
+Proof. by rewrite /range1/mkset lexx /= ltr_addl ltr01. Qed.
 
 Lemma range1zP (m : int) (x : R) :
   floor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
 split=> [<-|h]; first exact/mem_rg1_floor.
 apply/eqP; rewrite floorE eqr_int; apply/eqP/(@range1z_inj x) => //.
-by rewrite /range1 -floorE mem_rg1_floor.
+by rewrite /range1/mkset -floorE mem_rg1_floor.
 Qed.
 
 Lemma floor_natz (x : int) : floor x%:~R = x%:~R :> R.

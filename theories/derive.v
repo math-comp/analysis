@@ -307,7 +307,7 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: (@cvgD _ _ [topolo
   rewrite -(scale1r (_ _ v)); apply: cvgZl => /= X [e e0].
   rewrite /ball_ /= => eX.
   apply/nbhs_ballP.
-  by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE // subrr normr0.
+  by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE //= subrr normr0.
 rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
   rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
@@ -316,12 +316,12 @@ apply/cvg_distP => e e0.
 rewrite nearE /=; apply/nbhs_ballP.
 have /(littleoP [littleo of k]) /nbhs_ballP[i i0 Hi] : 0 < e / (2 * `|v|).
   by rewrite divr_gt0 // pmulr_rgt0 // normr_gt0.
-exists (i / `|v|); first by rewrite divr_gt0 // normr_gt0.
+exists (i / `|v|); first by rewrite /= divr_gt0 // normr_gt0.
 move=> /= j; rewrite /ball /= /ball_ add0r normrN.
 rewrite ltr_pdivl_mulr ?normr_gt0 // => jvi j0.
 rewrite add0r normrN normmZ -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
 have /Hi/le_lt_trans -> // : ball 0 i (j *: v).
-  by rewrite -ball_normE /ball_ add0r normrN (le_lt_trans _ jvi) // normmZ.
+  by rewrite -ball_normE /ball_/= add0r normrN (le_lt_trans _ jvi) // normmZ.
 rewrite -(mulrC e) -mulrA -ltr_pdivl_mull // mulrA mulVr ?unitfE ?gt_eqF //.
 rewrite normrV ?unitfE // div1r invrK ltr_pdivr_mull; last first.
   by rewrite pmulr_rgt0 // normr_gt0.
@@ -503,7 +503,7 @@ rewrite -ler_pdivl_mull; last by rewrite gtr0_norm.
 rewrite mulrCA (@le_trans _ _ (e%:num * `|k^-1 *: x|)) //; last first.
   by rewrite ler_pmul // normmZ normfV.
 apply dfe.
-rewrite -ball_normE /ball_ sub0r normrN normmZ.
+rewrite -ball_normE /ball_/= sub0r normrN normmZ.
 rewrite invrK -ltr_pdivl_mulr // ger0_norm // ltr_pdivr_mulr //.
 by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [X in _ < X]splitr ltr_addl.
 Qed.
@@ -935,7 +935,7 @@ rewrite -[X in X + _]mulr1 -[X in 1 / _ * X](@mulfVK _ (x ^+ 2)); last first.
 rewrite mulrA mulf_div mulr1.
 have hDx_neq0 : h + x != 0.
   near: h; rewrite !nbhs_simpl; apply/nbhs_normP.
-  exists `|x|; first by rewrite normr_gt0.
+  exists `|x|; first by rewrite /= normr_gt0.
   move=> h /=; rewrite -ball_normE /= distrC subr0 -subr_gt0 => lthx.
   rewrite -(normr_gt0 (h + x : R^o)) addrC -[h]opprK.
   apply: lt_le_trans (ler_dist_dist _ _).
@@ -950,10 +950,10 @@ rewrite mulrA mulrAC ler_pdivr_mulr ?normr_gt0 ?mulf_neq0 //.
 rewrite mulrAC ler_pdivr_mulr ?normr_gt0 //.
 have : `|h * h| <= `|x / 2| * (e%:num * `|x * x| * `|h : R^o|).
   rewrite !mulrA; near: h; exists (`|x / 2| * e%:num * `|x * x|).
-    by rewrite !pmulr_rgt0 // normr_gt0 mulf_neq0.
+    by rewrite /= !pmulr_rgt0 // normr_gt0 mulf_neq0.
   by move=> h /ltW; rewrite distrC subr0 [`|h * _|]normrM => /ler_pmul; apply.
 move=> /le_trans-> //; rewrite [X in X <= _]mulrC ler_pmul ?mulr_ge0 //.
-near: h; exists (`|x| / 2); first by rewrite divr_gt0 ?normr_gt0.
+near: h; exists (`|x| / 2); first by rewrite /= divr_gt0 ?normr_gt0.
 move=> h; rewrite /= distrC subr0 => lthhx; rewrite addrC -[h]opprK.
 apply: le_trans (@ler_dist_dist _ [normedModType R of R^o] _ _).
 rewrite normrN [X in _ <= X]ger0_norm; last first.
@@ -1271,7 +1271,7 @@ move=> fxn0 df.
 have /derivable1P/derivable1_diffP/differentiable_continuous := df.
 move=> /continuous_withinNx; rewrite scale0r add0r => fc.
 have fn0 : nbhs' (0 : R^o) [set h | f (h *: v + x) != 0].
-  apply: (fc [set x | x != 0]); exists `|f x|; first by rewrite normr_gt0.
+  apply: (fc [set x | x != 0]); exists `|f x|; first by rewrite /= normr_gt0.
   move=> y; rewrite /= => yltfx.
   by apply/eqP => y0; move: yltfx; rewrite y0 subr0 ltxx.
 have : (fun h => - ((f x)^-1 * (f (h *: v + x))^-1) *:
@@ -1312,7 +1312,7 @@ Proof.
 move=> leab fcont; set imf := [set t | (f @` [set x | x \in `[a, b]]) t].
 have imf_sup : has_sup imf.
   split.
-    by exists (f a) => //; rewrite /imf; apply/imageP; rewrite inE /= lexx.
+    by exists (f a) => //; rewrite /imf; apply/imageP; rewrite /= inE /= lexx.
   have [M [Mreal imfltM]] : bounded_set (f @` [set x | x \in `[a, b]] : set R^o).
     apply/compact_bounded/continuous_compact; last exact: segment_compact.
     by move=> ?; rewrite inE => /fcont.
@@ -1429,7 +1429,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   near=> h; apply: mulr_ge0_le0.
     by rewrite invr_ge0; apply: ltW; near: h; exists 1.
   rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
-  exists (b - c); first by rewrite subr_gt0 (itvP cab).
+  exists (b - c); first by rewrite /= subr_gt0 (itvP cab).
   move=> h; rewrite /= distrC subr0.
   move=> /(le_lt_trans (ler_norm _)); rewrite ltr_subr_addr inE/= => ->.
   by move=> /ltr_spsaddl -> //; rewrite (itvP cab).
@@ -1442,7 +1442,7 @@ apply: le0r_cvg_map; last first.
 near=> h; apply: mulr_le0.
   by rewrite invr_le0; apply: ltW; near: h; exists 1.
 rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
-exists (c - a); first by rewrite subr_gt0 (itvP cab).
+exists (c - a); first by rewrite /= subr_gt0 (itvP cab).
 move=> h; rewrite /= distrC subr0.
 move=> /ltr_normlP []; rewrite ltr_subr_addl ltr_subl_addl inE/= => -> _.
 by move=> /ltr_snsaddl -> //; rewrite (itvP cab).

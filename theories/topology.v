@@ -1070,7 +1070,7 @@ Lemma filter_forall T (I : finType) (f : I -> set T) (F : set (set T)) :
   \forall x \near F, forall i, f i x.
 Proof.
 move=> FF fIF; apply: filterS (@filter_bigI T I [fset x in I]%fset f F FF _).
-  by move=> x fIx i; have := fIx i; rewrite inE/=; apply.
+  by move=> x fIx i; have := fIx i; rewrite /= inE/=; apply.
 by move=> i; rewrite inE/= => _; apply: (fIF i).
 Qed.
 
@@ -1122,12 +1122,12 @@ Global Instance fmapi_filter T U (f : T -> set U) (F : set (set T)) :
 Proof.
 move=> f_totalfun FF; rewrite /fmapi; apply: Build_Filter. (* bug *)
 - by apply: filterS f_totalfun => x [[y Hy] H]; exists y.
-- move=> P Q FP FQ; near=> x.
+- move=> /= P Q FP FQ; near=> x.
     have [//|y [fxy Py]] := near FP x.
     have [//|z [fxz Qz]] := near FQ x.
     have [//|_ fx_prop] := near f_totalfun x.
     by exists y; split => //; split => //; rewrite [y](fx_prop _ z).
-- move=> P Q subPQ FP; near=> x.
+- move=> /= P Q subPQ FP; near=> x.
   by have [//|y [fxy /subPQ Qy]] := near FP x; exists y.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1139,7 +1139,7 @@ Global Instance fmapi_proper_filter
   ProperFilter F -> ProperFilter (f `@ F).
 Proof.
 move=> f_totalfun FF; apply: Build_ProperFilter.
-by move=> P; rewrite /fmapi => /filter_ex [x [y [??]]]; exists y.
+by move=> P; rewrite /fmapi/= => /filter_ex [x [y [??]]]; exists y.
 Qed.
 Definition filter_map_proper_filter' := fmapi_proper_filter.
 
@@ -1171,7 +1171,7 @@ Proof. by move=> fFG gGH; apply: cvg_trans gGH => P /fFG. Qed.
 
 Lemma near_eq_cvg {T U} {F : set (set T)} {FF : Filter F} (f g : T -> U) :
   {near F, f =1 g} -> g @ F `=>` f @ F.
-Proof. by move=> eq_fg P /=; apply: filterS2 eq_fg => x <-. Qed.
+Proof. by move=> eq_fg P /=; apply: filterS2 eq_fg => x /= <-. Qed.
 
 Lemma neari_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> set U) :
   {near F, f =2 g} -> g `@ F `=>` f `@ F.
@@ -1410,7 +1410,7 @@ Arguments subset_filter {T} F D _.
 Global Instance subset_filter_filter T F (D : set T) :
   Filter F -> Filter (subset_filter F D).
 Proof.
-move=> FF; constructor; rewrite /subset_filter.
+move=> FF; constructor; rewrite /subset_filter/=.
 - exact: filterE.
 - by move=> P Q; apply: filterS2=> x PD QD Dx; split.
 - by move=> P Q subPQ; apply: filterS => R PD Dx; apply: subPQ.
@@ -1730,10 +1730,10 @@ Grab Existential Variables. all: end_near. Qed.
 
 (* [locally P] replaces a (globally A) in P by a within A (nbhs x)      *)
 (* Can be combined with a notation taking a filter as its last argument *)
-Definition nbhs_of (T : topologicalType) (A : set T)
+Definition locally_of (T : topologicalType) (A : set T)
   (P : set (set T) -> Prop) of phantom Prop (P (globally A)) :=
   forall x, A x -> P (within A (nbhs x)).
-Notation "[ 'locally' P ]" := (@nbhs_of _ _ _ (Phantom _ P))
+Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P))
   (at level 0, format "[ 'locally'  P ]").
 (* e.g. [locally [bounded f x | x in A]]  *)
 (* see lemmas bounded_locally for example *)
@@ -1867,8 +1867,8 @@ Lemma finI_from1 (I : choiceType) T (D : set I) (f : I -> set T) i :
 Proof.
 move=> Di; exists [fset i]%fset.
   by move=> ?; rewrite !inE => /eqP->.
-rewrite predeqE => t; split=> [|fit]; first by apply; rewrite inE.
-by move=> ?; rewrite inE => /eqP->.
+rewrite predeqE => t; split=> [|fit]; first by apply; rewrite /= inE.
+by move=> ?; rewrite /= inE => /eqP->.
 Qed.
 
 Section TopologyOfSubbase.
@@ -1882,8 +1882,8 @@ move: i j t H H0 H1 H2 => A B t [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
 exists (A `&` B); split; last by split.
 exists (DA `|` DB)%fset; first by move=> i /fsetUP [/sDAD|/sDBD].
 rewrite predeqE => s; split=> [Ifs|[As Bs] i /fsetUP].
-  split; first by rewrite -AeIbA => i DAi; apply: Ifs; rewrite inE DAi.
-  by rewrite -BeIbB => i DBi; apply: Ifs; rewrite inE DBi orbC.
+  split; first by rewrite -AeIbA => i DAi; apply: Ifs; rewrite /= inE DAi.
+  by rewrite -BeIbB => i DBi; apply: Ifs; rewrite /= inE DBi orbC.
 by move=> [DAi|DBi];
   [have := As; rewrite -AeIbA; apply|have := Bs; rewrite -BeIbB; apply].
 Qed.
@@ -1918,7 +1918,7 @@ Canonical eventually_filter_source X :=
 
 Global Instance eventually_filter : ProperFilter eventually.
 Proof.
-eapply @filter_from_proper; last by move=> i _; exists i.
+eapply @filter_from_proper; last by move=> i _; exists i => /=.
 apply: filter_fromT_filter; first by exists 0%N.
 move=> i j; exists (maxn i j) => n //=.
 by rewrite geq_max => /andP[ltin ltjn].
@@ -1936,7 +1936,7 @@ Proof. by exists N. Qed.
 
 Lemma cvg_addnl N : addn N @ \oo --> \oo.
 Proof.
-by move=> P [n _ Pn]; exists (n - N)%N => // m; rewrite leq_subLR => /Pn.
+by move=> P [n _ Pn]; exists (n - N)%N => // m; rewrite /= leq_subLR => /Pn.
 Qed.
 
 Lemma cvg_addnr N : addn^~ N --> \oo.
@@ -1945,13 +1945,13 @@ Proof. by under [addn^~ N]funext => n do rewrite addnC; apply: cvg_addnl. Qed.
 Lemma cvg_subnr N : subn^~ N --> \oo.
 Proof.
 move=> P [n _ Pn]; exists (N + n)%N => //= m le_m.
-by apply: Pn; rewrite leq_subRL// (leq_trans _ le_m)// leq_addr.
+by apply: Pn; rewrite /= leq_subRL// (leq_trans _ le_m)// leq_addr.
 Qed.
 
 Lemma cvg_mulnl N : (N > 0)%N -> muln N --> \oo.
 Proof.
-case: N => N // _ P [n _ Pn]; exists (n %/ N.+1).+1 => //= m.
-by rewrite ltn_divLR// => n_lt; apply: Pn; rewrite mulnC ltnW.
+case: N => N // _ P [n _ Pn]; exists (n %/ N.+1).+1 => // m.
+by rewrite /= ltn_divLR// => n_lt; apply: Pn; rewrite mulnC /= ltnW.
 Qed.
 
 Lemma cvg_mulnr N :(N > 0)%N -> muln^~ N --> \oo.
@@ -1962,7 +1962,7 @@ Qed.
 Lemma cvg_divnr N : (N > 0)%N -> divn^~ N --> \oo.
 Proof.
 move=> N_gt0 P [n _ Pn]; exists (n * N)%N => //= m.
-by rewrite -leq_divRL//; apply: Pn.
+by rewrite /= -leq_divRL//; apply: Pn.
 Qed.
 
 (** ** Topology on the product of two spaces *)
@@ -2114,7 +2114,7 @@ move=> Ffilt; split=> cvFt.
     by rewrite predeqE => ?; split=> [[_ ->]|] //; exists B.
   move=> _ ->; exists [fset B]%fset.
     by move=> ?; rewrite inE inE => /eqP->; exists i.
-  by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite inE // =>/eqP->.
+  by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite /= inE // =>/eqP->.
 move=> A /=; rewrite (@nbhsE sup_topologicalType).
 move=> [_ [[[B sB <-] [C BC Ct]] sUBA]].
 rewrite nbhs_filterE; apply: filterS sUBA _; apply: (@filterS _ _ _ C).
@@ -2516,7 +2516,7 @@ rewrite predeqE => A; split=> Aco F FF FA.
   by have /Aco [p [?]] := FA; rewrite ultra_cvg_clusterE; exists p.
 have [G [GU sFG]] := ultraFilterLemma FF.
 have /Aco [p [Ap]] : G A by apply: sFG.
-rewrite -[_ --> p]/([set _ | _] p) -ultra_cvg_clusterE.
+rewrite /= -[_ --> p]/([set _ | _] p) -ultra_cvg_clusterE.
 by move=> /(cvg_cluster sFG); exists p.
 Qed.
 
@@ -2629,8 +2629,8 @@ move=> finIf; apply: (filter_from_proper (filter_from_filter _ _)).
   exists (DA `|` DB)%fset.
     by move=> ?; rewrite inE => /orP [/sDA|/sDB].
   rewrite -IfA -IfB predeqE => p; split=> [Ifp|[IfAp IfBp] i].
-    by split=> i Di; apply: Ifp; rewrite inE Di // orbC.
-  by rewrite inE => /orP []; [apply: IfAp|apply: IfBp].
+    by split=> i Di; apply: Ifp; rewrite /= inE Di // orbC.
+  by rewrite /= inE => /orP []; [apply: IfAp|apply: IfBp].
 - by move=> _ [?? <-]; apply: finIf.
 Qed.
 
@@ -2743,7 +2743,7 @@ have [D' sD sAnfcov] := Aco _ _ _ Anfop Anfcov.
 wlog [k D'k] : D' sD sAnfcov / exists i, i \in D'.
   move=> /(_ (D' `|` [fset j])%fset); apply.
   - by move=> k; rewrite !inE => /orP [/sD|/eqP->] //; rewrite inE.
-  - by move=> p /sAnfcov [i D'i Anfip]; exists i => //; rewrite !inE D'i.
+  - by move=> p /sAnfcov [i D'i Anfip]; exists i => //=; rewrite !inE D'i.
   - by exists j; rewrite !inE orbC eq_refl.
 exists D' => /(_ sD) [p Ifp].
 have /Ifp := D'k; rewrite feAg; last by have /sD := D'k; rewrite inE.
@@ -2765,7 +2765,7 @@ transitivity (cluster (open_nbhs x)); last first.
   by rewrite /cluster; under eq_fun do rewrite -meets_openl.
 rewrite clusterEonbhs /close funeqE => y /=; rewrite meetsC /meets.
 apply/eq_forall => A; rewrite forall_swap.
-by rewrite closureEonbhs meets_globallyl.
+by rewrite closureEonbhs/= meets_globallyl.
 Qed.
 
 Lemma closeEonbhs x : close x = [set y | open_nbhs x `#` open_nbhs y].
@@ -2774,7 +2774,7 @@ by rewrite closeEnbhs; under eq_fun do rewrite -meets_openl -meets_openr.
 Qed.
 
 Lemma close_sym (x y : T) : close x y -> close y x.
-Proof. by rewrite !closeEnbhs /cluster meetsC. Qed.
+Proof. by rewrite !closeEnbhs /cluster/= meetsC. Qed.
 
 Lemma cvg_close {F} {FF : ProperFilter F} (x y : T) :
   F --> x -> F --> y -> close x y.
@@ -2935,7 +2935,7 @@ suff sAfE : separated (AfE false) (AfE true).
   move: cA; apply/connectedPn; exists AfE; split => //.
   - move=> b; case: (E0 b) => /= u Ebu.
     have [t Et ftu] : (f @` A) u by rewrite fAE; case: b Ebu; [right|left].
-    by exists t; split => //; rewrite /preimage ftu.
+    by exists t; split => //=; rewrite /preimage ftu.
   - by rewrite -setIUr -preimage_setU -fAE; exact/esym/setIidPl/preimage_image.
 suff cI0 : forall b, closure (AfE b) `&` AfE (~~ b) = set0.
   by rewrite /separated cI0 setIC cI0.
@@ -2950,7 +2950,7 @@ have [fAfE cEIE] :
   have [t [At ftu]] : exists t, A t /\ f t = u.
     suff [t At ftu] : (f @` A) u by exists t.
     by rewrite fAE; case: b Ebu; [left|right].
-  by exists t => //; split => //; rewrite /preimage ftu.
+  by exists t => //; split => //=; rewrite /preimage ftu.
 have ? : f @` closure (AfE b) `<=` closure (E b).
   have /(@image_subset _ _ f) : closure (AfE b) `<=` f @^-1` closure (E b).
     have /closure_id -> : closed (f @^-1` closure (E b)).
@@ -3241,16 +3241,16 @@ Lemma prod_entP (A : set (U * U)) (B : set (V * V)) :
   prod_ent [set xy | A (xy.1.1, xy.2.1) /\ B (xy.1.2, xy.2.2)].
 Proof.
 move=> entA entB; exists (A,B) => // xy ABxy.
-by exists ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)); rewrite -!surjective_pairing.
+by exists ((xy.1.1, xy.2.1),(xy.1.2,xy.2.2)); rewrite /= -!surjective_pairing.
 Qed.
 
 Lemma prod_ent_filter : Filter prod_ent.
 Proof.
 have prodF := filter_prod_filter (@entourage_filter U) (@entourage_filter V).
 split; rewrite /prod_ent; last 1 first.
-- by move=> A B sAB; apply: filterS => ? [xy /sAB ??]; exists xy.
+- by move=> A B sAB /=; apply: filterS => ? [xy /sAB ??]; exists xy.
 - rewrite -setMT; apply: prod_entP filterT filterT.
-move=> A B entA entB; apply: filterS (filterI entA entB) => xy [].
+move=> A B /= entA entB; apply: filterS (filterI entA entB) => xy [].
 move=> [zt Azt ztexy] [zt' Bzt' zt'exy]; exists zt => //; split=> //.
 move/eqP: ztexy; rewrite -zt'exy !xpair_eqE.
 by rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP->.
@@ -3270,8 +3270,8 @@ Qed.
 Lemma prod_ent_inv A : prod_ent A -> prod_ent (A^-1)%classic.
 Proof.
 move=> [B [/entourage_inv entB1 /entourage_inv entB2] sBA].
-have:= prod_entP entB1 entB2; rewrite /prod_ent; apply: filterS.
-move=> _ [p /(sBA (_,_)) [[x y] ? xyE] <-]; exists (y,x) => //=; move/eqP: xyE.
+have:= prod_entP entB1 entB2; rewrite /prod_ent/=; apply: filterS.
+move=> _ [p /(sBA (_,_)) [[x y] ? xyE] <-]; exists (y,x) => //; move/eqP: xyE.
 by rewrite !xpair_eqE => /andP[/andP[/eqP-> /eqP->] /andP[/eqP-> /eqP->]].
 Qed.
 
@@ -3299,7 +3299,7 @@ exists (to_set (C.1) (xy.1), to_set (C.2) (xy.2)).
 move=> uv [/= Cxyuv1 Cxyuv2]; apply: sBA.
 have /sCB : (C.1 `*` C.2) ((xy.1,uv.1),(xy.2,uv.2)) by [].
 move=> [zt Bzt /eqP]; rewrite !xpair_eqE andbACA -!xpair_eqE.
-by rewrite -!surjective_pairing => /eqP<-.
+by rewrite /= -!surjective_pairing => /eqP<-.
 Qed.
 
 Definition prod_uniformType_mixin :=
@@ -3398,7 +3398,7 @@ apply: sPA => /=; near: N; set Q := \bigcap_ij P ij.1 ij.2.
 apply: filterS (FM Q _); first by move=> N QN i j; apply: (QN _ _ (i, j)).
 have -> : Q =
   \bigcap_(ij in [set k | k \in [fset x in predT]%fset]) P ij.1 ij.2.
-  by rewrite predeqE => t; split=> Qt ij _; apply: Qt => //; rewrite !inE.
+  by rewrite predeqE => t; split=> Qt ij _; apply: Qt => //=; rewrite !inE.
 by apply: filter_bigI => ??; apply: entP.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -3587,7 +3587,7 @@ Qed.
 Next Obligation.
 move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m).
 move=> [e egt0 sbeA] xy xey.
-apply: sbeA; rewrite xey; exact: PseudoMetric.ax1.
+apply: sbeA; rewrite /= xey; exact: PseudoMetric.ax1.
 Qed.
 Next Obligation.
 move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m) => - [e egt0 sbeA].
@@ -3753,7 +3753,7 @@ Lemma ball_close (x y : M) :
 Proof.
 rewrite propeqE; split => [cxy eps|cxy].
   have := cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos).
-  rewrite closureEonbhs meetsC meets_globallyr.
+  rewrite closureEonbhs/= meetsC meets_globallyr.
   move/(_ _ (open_nbhs_ball _ (eps%:num/2)%:pos)) => [z [zx zy]].
   by apply: (@ball_splitl z); apply: interior_subset.
 rewrite closeEnbhs => B A /nbhs_ballP[_/posnumP[e2 e2B]]
@@ -4118,7 +4118,7 @@ Lemma cauchy_ballP (R : numDomainType) (T  : pseudoMetricType R)
   cauchy_ball F <-> cauchy F.
 Proof.
 split=> cauchyF; last first.
-  by move=> _/posnumP[eps]; apply: cauchyF; rewrite nbhs_simpl.
+  by move=> _/posnumP[eps]; apply/cauchyF/entourage_ball.
 move=> U; rewrite -entourage_ballE => - [_/posnumP[eps] xyepsU].
 by near=> x; apply: xyepsU; near: x; apply: cauchyF.
 Grab Existential Variables. all: end_near. Qed.
@@ -4140,7 +4140,7 @@ Lemma cauchyP (R : numFieldType) (T : pseudoMetricType R)
 Proof.
 split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
 near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F).
-by apply: Fcauchy; rewrite nbhs_simpl.
+exact/Fcauchy/entourage_ball.
 Grab Existential Variables. all: end_near. Qed.
 Arguments cauchyP {R T} F {PF}.
 
