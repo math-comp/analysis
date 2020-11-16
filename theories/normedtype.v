@@ -4160,35 +4160,87 @@ Section LinearContinuousBounded.
 
 Variables (R : numFieldType) (V W : normedModType R).
 
-Lemma linear_boundedP (f : {linear V -> W}) : bounded_on f (nbhs (0 : V)) <->
-  exists r, 0 <= r /\ forall x, `|f x| <= r * `|x|.
-Proof.
-split=> [/ex_bound[M /nbhs_ballP[a a0 Ba0]]|[r [r0 fr]]]; last first.
-  apply/ex_bound; exists r; apply/nbhs_ballP; exists 1 => // x.
-  rewrite -ball_normE //= sub0r normrN => x1; apply: (le_trans (fr _)).
-  by rewrite ler_pimulr // ltW.
-exists (M * 2 * a^-1); split.
-- rewrite !mulr_ge0 //= ?invr_ge0 ; last by apply: ltW.
-  by move: (Ba0 0 (ballxx 0 a0)); rewrite linear0 normr0.
-- move=> x; rewrite mulrAC ler_pdivl_mulr //=.
-  have [/eqP ->|x0] := boolP (x == 0).
-  + by rewrite linear0 !(normr0,mulr0,mul0r).
-  + rewrite mulrAC -lter_pdivr_mulr // -lter_pdivr_mulr ?normr_gt0 //.
-    rewrite [X in X <= _](_ : _ = `|f (a / 2 / `|x| *: x)|); last first.
-      rewrite linearZ normmZ 2!normrM (gtr0_norm a0) gtr0_norm //.
-      by rewrite normrV ?unitfE ?normr_eq0 // normr_id -2!mulrA mulrC mulrA.
-    apply: Ba0; rewrite -ball_normE /= sub0r normrN.
-    rewrite normmZ normrM (@normrV _ `|x|) ?unitfE ?normr_eq0 // normr_id.
-    rewrite -mulrA mulVr ?mulr1 ?unitfE ?normr_eq0 //.
-    by rewrite normrM 2?gtr0_norm// gtr_pmulr // invf_lt1 // ltr1n.
-Qed.
 
+(*drafts for another PR *)
+Definition absorbed (A B : set V) :=
+  exists (r : R),  A `<=` [ set x : V | exists y : V, B y /\ x = r *: y ] . 
+
+Definition strong_bornology :=
+  [ set A | (forall (B : set V), (nbhs (0:V) B -> absorbed A B))].
+
+Lemma normed_bornological (A : set V) :  bounded_set A <->
+                     (forall (B : set V), (nbhs (0:V) B -> absorbed A B)).
+Proof.
+Admitted.
+(*To be generalized to any topological space, with a theory of bounded*)
+
+
+Definition bounded_fun_on (f : V -> W) (B : set (set V)):=
+  forall A, (B A -> (exists M : R, \forall x \near (0 :V), (`|f x| <= M))).
+
+
+Lemma linear_bounded (f : {linear V -> W} ):
+  ( bounded_on f (nbhs (0 : V))) <->
+        (*exists r : R, 0 <= r /\ (forall x : V, `|f x| <= r * `|x|).*)
+     \forall r \near +oo, (forall x : V, `|f x| <= r * `|x|).
+Proof.
+split; last first.
+  move=> /pinfty_ex_gt0 [r [r0 Bf]]; rewrite /bounded_on; near=> M; rewrite -nearE.
+  near=> x; apply: le_trans; first by apply: Bf.
+  apply: (le_trans (y :=r)).
+    apply: ler_pimulr; apply: ltW; first by [].
+    near: x; rewrite nearE.
+    suff <-: ball_ normr 0 1 = (fun x : V => `|x| < 1) by apply: nbhs_ball_norm.
+    by apply: funext => x /=; rewrite sub0r normrN.
+  near: M; rewrite nearE /=; exists r; split; first by apply: gtr0_real.
+  by move => x; apply: ltW. (* much longer *)
+rewrite /bounded_on => Bf; near=> r => x.
+apply: (le_trans (y :=r)). (* hell on earth *)
+(* how to use hypothesis with near *) 
+(* split => [[M /nbhs_ballP[a a0 Ba0]]|[r [r0 fr]]]; last first. *)
+(*   exists r; apply/nbhs_ballP; exists 1 => // x. *)
+(*   rewrite -ball_normE //= sub0r normrN => x1; apply: (le_trans (fr _)). *)
+(*   by rewrite ler_pimulr // ltW.  *)
+(* exists (M * 2 * a^-1); split. *)
+(* - rewrite !mulr_ge0 //= ?invr_ge0 ; last by apply: ltW. *)
+(*   by move: (Ba0 0 (ballxx 0 a0)); rewrite linear0 normr0. *)
+(* - move=> x; rewrite mulrAC ler_pdivl_mulr //=. *)
+(*   have [/eqP ->|x0] := boolP (x == 0). *)
+(*   + by rewrite linear0 !(normr0,mulr0,mul0r). *)
+(*   + rewrite mulrAC -lter_pdivr_mulr // -lter_pdivr_mulr ?normr_gt0 //. *)
+(*     rewrite [X in X <= _](_ : _ = `|f (a / 2 / `|x| *: x)|); last first. *)
+(*       rewrite linearZ normmZ 2!normrM (gtr0_norm a0) gtr0_norm //. *)
+(*       by rewrite normrV ?unitfE ?normr_eq0 // normr_id -2!mulrA mulrC mulrA. *)
+(*     apply: Ba0; rewrite -ball_normE /= sub0r normrN. *)
+(*     rewrite normmZ normrM (@normrV _ `|x|) ?unitfE ?normr_eq0 // normr_id. *)
+(*     rewrite -mulrA mulVr ?mulr1 ?unitfE ?normr_eq0 //. *)
+(*     by rewrite normrM 2?gtr0_norm// gtr_pmulr // invf_lt1 // ltr1n. *)
+(* Qed. *)
+Admitted.
+
+
+Lemma linear_boundedP  (f : {linear V -> W}) :
+  (bounded_on f (nbhs (0 : V))) <->
+        exists r : R, 0 <= r /\ (forall x : V, `|f x| <= r * `|x|).
+Proof.
+split => [/linear_bounded | B].
+  by move=> /pinfty_ex_gt0  [M [M0 B]]; exists M; split; first by apply: ltW.
+apply/linear_bounded; near_simpl. Admitted.
+  
 Lemma linear_continuous0 (f : {linear V -> W}) :
   {for 0, continuous f} -> bounded_on f (nbhs (0 : V)).
 Proof.
-move=> /cvg_ballP /(_ _ ltr01) .
+(* move=> /cvg_distP; rewrite linear0 /= => Bf. *)
+(* apply/linear_boundedP; near=> r => x. *)
+(* have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mulr0. *)
+(* rewrite -ler_pdivr_mulr; last by rewrite normr_gt0. *)
+(* rewrite -(normr_id x) mulrC. *)
+(* rewrite -normrV  ?unitfE ?normr_eq0 // -normmZ -linearZ. *)
+(* apply: ltW. move: (Bf r) x x0; near: r. apply/near_pinfty_div2. *)
+move=> /cvg_ballP /(_ _ ltr01).  
 rewrite linear0 /= nearE => /nbhs_ex[tp ball_f]; apply/linear_boundedP.
-pose t := tp%:num; exists (2 * t^-1); split => // x.
+pose t := tp%:num; exists (2 * t^-1); split => [|x].
+  by apply: divr_ge0.
 have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mulr0.
 have /ball_f : ball 0 t ((`|x|^-1 * t /2) *: x).
   apply: ball_sym; rewrite -ball_normE /ball_  subr0 normmZ mulrC 2!normrM.
@@ -4196,9 +4248,10 @@ have /ball_f : ball 0 t ((`|x|^-1 * t /2) *: x).
   rewrite divrr ?mul1r ?unitfE ?normr_eq0 // gtr0_norm // gtr_pmulr //.
   by rewrite gtr0_norm // invr_lt1 // ?unitfE // ltr1n.
 rewrite -ball_normE //= sub0r normrN linearZ /= normmZ -mulrA normrM.
-rewrite normrV ?unitfE ?normr_eq0 // normr_id -mulrA.
+rewrite normrV ?unitfE ?normr_eq0 // normr_id -mulrA. 
 rewrite ltr_pdivr_mull ?mulr1 ?normr_gt0 // -ltr_pdivl_mull ?normr_gt0 //.
-by rewrite gtr0_norm // invf_div mulrC => /ltW.
+rewrite gtr0_norm // invf_div => /ltW H. apply: le_trans; first by exact: H.
+by apply: ler_pmul.
 Qed.
 
 Lemma linear_bounded0 (f : {linear V -> W}) :
@@ -4238,12 +4291,13 @@ Qed.
 
 Definition bounded_fun_norm (f : V -> W) :=
   forall r, exists M, forall x, `|x| <= r -> `|f x| <= M.
+(*bounded_fun_on bounded_sets is harder to use*)
 
-Definition pointwise_bounded (F : set (V -> W)) :=
-  forall x, exists M, forall f, F f -> `|f x| <= M.
+(* Definition pointwise_bounded (F : set (V -> W)) := *)
+(*   forall x, exists M, forall f, F f -> `|f x| <= M. *)
 
-Definition uniform_bounded (F : set (V -> W)) :=
-  forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
+(* Definition uniform_bounded (F : set (V -> W)) := *)
+(*   forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M. *)
 
 Lemma bounded_funP (f : {linear V -> W}):
   bounded_fun_norm f <-> bounded_on f (nbhs (0 : V)).
