@@ -10,7 +10,7 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: branch-short-name
     - uses: cachix/install-nix-action@v12
-    - uses: cachix/cachix-action@v6
+    - uses: cachix/cachix-action@v8
       with:
         # Name of a cachix cache to push and pull/substitute
         name:  math-comp
