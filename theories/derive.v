@@ -490,8 +490,8 @@ Variable R : numFieldType.
 Lemma littleo_linear0 (V W : normedModType R) (f : {linear V -> W}) :
   (f : V -> W) =o_ (0 : V) id -> f = cst 0 :> (V -> W).
 Proof.
-move/eqoP => oid. 
-rewrite funeqE => x; apply/eqP;  case: (real_le0P (normr_real x)) => [|xn0].
+move/eqoP => oid.
+rewrite funeqE => x; apply/eqP; have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP ->; rewrite linear0.
 rewrite -normr_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
 apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
@@ -679,7 +679,7 @@ Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
 Proof.
 move=> /(_ 0); rewrite linear0 => /(_ _ (nbhsx_ballx 0 1%:pos)).
 move=> /nbhs_ballP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
-case: ( (real_le0P (normr_real x))) => [|xn0].
+have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
 set k := 2 / e%:num * (PosNum xn0)%:num.
 have kn0 : k != 0 by [].
@@ -748,9 +748,9 @@ Lemma bilinear_schwarz (U V' W' : normedModType R)
 Proof.
 move=> /(_ 0); rewrite linear0r => /(_ _ (nbhsx_ballx 0 1%:pos)).
 move=> /nbhs_ballP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
-case: (real_le0P (normr_real u)) => [|un0].
+have [|un0] := real_le0P (normr_real u).
   by rewrite normr_le0 => /eqP->; rewrite linear0l !normr0 mulr0 mul0r.
-case:  (real_le0P (normr_real v)) => [|vn0].
+have [|vn0] := real_le0P (normr_real v).
   by rewrite normr_le0 => /eqP->; rewrite linear0r !normr0 mulr0.
 rewrite -[`|u|]/((PosNum un0)%:num) -[`|v|]/((PosNum vn0)%:num).
 set ku := 2 / e%:num * (PosNum un0)%:num.
