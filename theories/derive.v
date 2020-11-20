@@ -484,14 +484,14 @@ Grab Existential Variables. all: end_near. Qed.
 
 End DifferentialR3.
 
-Section DifferentialR3_realFieldType.
-Variable R : realFieldType.
+Section DifferentialR3_numFieldType.
+Variable R : numFieldType.
 
 Lemma littleo_linear0 (V W : normedModType R) (f : {linear V -> W}) :
   (f : V -> W) =o_ (0 : V) id -> f = cst 0 :> (V -> W).
 Proof.
 move/eqoP => oid.
-rewrite funeqE => x; apply/eqP; case: (ler0P `|x|) => [|xn0].
+rewrite funeqE => x; apply/eqP; have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP ->; rewrite linear0.
 rewrite -normr_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
 apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
@@ -679,7 +679,7 @@ Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
 Proof.
 move=> /(_ 0); rewrite linear0 => /(_ _ (nbhsx_ballx 0 1%:pos)).
 move=> /nbhs_ballP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
-case: (lerP `|x| 0) => [|xn0].
+have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
 set k := 2 / e%:num * (PosNum xn0)%:num.
 have kn0 : k != 0 by [].
@@ -748,9 +748,9 @@ Lemma bilinear_schwarz (U V' W' : normedModType R)
 Proof.
 move=> /(_ 0); rewrite linear0r => /(_ _ (nbhsx_ballx 0 1%:pos)).
 move=> /nbhs_ballP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
-case: (lerP `|u| 0) => [|un0].
+have [|un0] := real_le0P (normr_real u).
   by rewrite normr_le0 => /eqP->; rewrite linear0l !normr0 mulr0 mul0r.
-case: (lerP `|v| 0) => [|vn0].
+have [|vn0] := real_le0P (normr_real v).
   by rewrite normr_le0 => /eqP->; rewrite linear0r !normr0 mulr0.
 rewrite -[`|u|]/((PosNum un0)%:num) -[`|v|]/((PosNum vn0)%:num).
 set ku := 2 / e%:num * (PosNum un0)%:num.
@@ -1014,10 +1014,10 @@ Lemma diffX (f : V -> R^o) n x :
   'd (f ^+ n.+1) x = n.+1%:R * f x ^+ n \*: 'd f x :> (V -> R).
 Proof. by move=> /differentiableP df; rewrite diff_val. Qed.
 
-End DifferentialR3_realFieldType.
+End DifferentialR3_numFieldType.
 
 Section Derive.
-Variables (R : realFieldType) (V W : normedModType R).
+Variables (R : numFieldType) (V W : normedModType R).
 
 Let der1 (U : normedModType R) (f : R^o -> U) x : derivable f x 1 ->
   f \o shift x = cst (f x) + ( *:%R^~ (f^`() x)) +o_ (0 : [filteredType R^o of R^o]) id.
