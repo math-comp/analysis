@@ -2963,7 +2963,7 @@ case/not_andP => /eqP/set0P[x []].
   by move: AB; rewrite /separated => -[] _; apply/eqP/set0P; exists x.
 Qed.
 
-Lemma connected_bigU I (A : I -> set T) (P : I -> Prop) :
+Lemma bigcup_connected I (A : I -> set T) (P : I -> Prop) :
   \bigcap_(i in P) (A i) !=set0 -> (forall i, P i -> connected (A i)) ->
   connected (\bigcup_(i in P) (A i)).
 Proof.
@@ -2990,10 +2990,11 @@ rewrite EU subUset => -[_] /(_ _ E1d) E0d; exfalso.
 by move/separated_disjoint : sE; apply/eqP/set0P; exists d.
 Qed.
 
-Definition component (x : T) := \bigcup_(X in [set C | connected C /\ C x]) X.
+Definition connected_component (x : T) :=
+  \bigcup_(X in [set C | connected C /\ C x]) X.
 
-Lemma connect_component (x : T) : connected (component x).
-Proof. by apply: connected_bigU; [exists x => C []|move=> C []]. Qed.
+Lemma component_connected (x : T) : connected (connected_component x).
+Proof. by apply: bigcup_connected; [exists x => C []|move=> C []]. Qed.
 
 End connected_sets.
 

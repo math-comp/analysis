@@ -46,9 +46,9 @@
   + lemma `bigcup_sup`
 - in `topology.v`:
   + lemmas `closure0`, `separatedC`, `separated_disjoint`, `connectedP`, `connected_subset`,
-    `connected_bigU`
-  + definition `component`
-  + lemma `connect_component`
+    `bigcup_connected`
+  + definition `connected_component`
+  + lemma `component_connected`
 
 ### Changed
 
