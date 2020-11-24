@@ -877,11 +877,11 @@ case=> [x||].
       have [/eqP MQ0|MQ0] := boolP (MQ == 0).
         by exists 0; rewrite real0; split => // x x0; split;
         [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
-      exists (`|MQ|)%R; rewrite realE normr_ge0; split => // x Hx; split.
+      exists `|MQ|%R; rewrite realE normr_ge0; split => // x Hx; split.
         by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0 lee_fin.
       by apply gtMQ; rewrite (le_lt_trans _ Hx) // lee_fin real_ler_normr // lexx.
     have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-      exists (`|MP|)%R; rewrite realE normr_ge0; split => // x MPx; split.
+      exists `|MP|%R; rewrite realE normr_ge0; split => // x MPx; split.
       by apply gtMP; rewrite (le_lt_trans _ MPx) // lee_fin real_ler_normr // lexx.
       by apply gtMQ; rewrite (le_lt_trans _ MPx) // lee_fin MQ0.
     have {}MP0 : (0 < `|MP|)%R by rewrite normr_gt0.
