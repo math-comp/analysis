@@ -13,6 +13,9 @@
 
 ### Renamed
 
+- in `classical_sets.v`:
+  + `subset_empty` -> `subset_nonempty`
+
 ### Removed
 
 ### Infrastructure

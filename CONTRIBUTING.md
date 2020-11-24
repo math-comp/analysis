@@ -61,6 +61,11 @@ lemma can be suffixed with `W`. If the `{mono ...}` lemma is
 only valid on a subdomain, then the `{homo ...}` lemma takes the
 short name, and the `{mono ...}` lemma gets the suffix `in`.
 
+### Suffixes for names of lemmas
+
+- The construction `_ !=set0` corresponds to suffix `nonempty`
+- The construction `_ != set0` corresponds to suffix `neq0`
+
 ## Idioms
 
 ### How to introduce a positive real number?
