@@ -18,7 +18,7 @@ From HB Require Import structures.
 (* {additive_measure set T -> {ereal R}} == type of a function over sets of   *)
 (*                    elements of type T where R is expected to be a          *)
 (*                    numFieldType such that this function maps set0 to 0, is *)
-(*                    non-negative over measurable sets and is semi-additive  *)
+(*                    non-negative over measurable sets, and is semi-additive *)
 (* {measure set T -> {ereal R}} == type of a function over sets of elements   *)
 (*                   of type T where R is expected to be a numFieldType such  *)
 (*                   that this function maps set0 to 0, is non-negative over  *)
@@ -27,7 +27,7 @@ From HB Require Import structures.
 (* Theorems: Boole_inequality, generalized_Boole_inequality                   *)
 (*                                                                            *)
 (* mu.-negligible A == A is mu negligible                                     *)
-(* mu.-ae P == P holds almost everywhere for the measure mu                   *)
+(* {ae mu, P} == P holds almost everywhere for the measure mu                 *)
 (*                                                                            *)
 (* {outer_measure set T -> {ereal R}} == type of an outer measure over sets   *)
 (*                                 of elements o ftype T where R is expected  *)
@@ -39,6 +39,8 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+
+Reserved Notation "{ 'ae' P }" (at level 0, format "{ 'ae'  P }").
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -145,61 +147,6 @@ HB.instance T T_isRingOfSets.
 
 HB.end.
 
-(*HB.factory Record isRingOfSets T := {
-  measurable : set (set T) ;
-  measurable0 : measurable set0 ;
-  measurableU : forall A B, measurable A -> measurable B -> measurable (A `|` B) ;
-  measurableD : forall A B, measurable A -> measurable B -> measurable (A `\` B)
-}.
-
-HB.builders Context T of isRingOfSets T.
-
-Lemma semiRingOfSets_measurableI (A B : set T) :
-  measurable A -> measurable B -> measurable (A `&` B).
-Proof.
-move=> mA mB.
-have -> : A `&` B = (A `|` B) `\` ((A `\` B) `|` (B `\` A)).
-  rewrite predeqE => t; split => [[At Bt]|].
-    by split; [left|move=> [[]|[]]].
-  move=> [[At|Bt]Abt]; split=> //; apply contrapT.
-  by move=> Bt; apply Abt; left.
-  by move=> At; apply Abt; right.
-by apply: measurableD; apply: measurableU => //; apply: measurableD.
-Qed.
-
-Definition diff_fsets := (fun A B : set T => ([fset (A `\` B)%classic])%fset).
-
-Lemma semiRingOfSets_measurableD (A B C : set T) :
-  measurable A -> measurable B -> C \in diff_fsets A B -> measurable C.
-Proof. by move=> mA mB; rewrite inE => /eqP ->; apply measurableD. Qed.
-
-Lemma semiRingOfSets_diff_fsetsE A B :
-  A `\` B = \big[setU/set0]_(X <- enum_fset (diff_fsets A B)) X.
-Proof. by rewrite big_seq_fset1. Qed.
-
-Lemma semiRingOfSets_diff_fsets_disjoint A B C D : C != D ->
-  C \in diff_fsets A B -> D \in diff_fsets A B -> C `&` D = set0.
-Proof.
-by move=> /= CS; rewrite !inE => CAB DAB; move: CS; rewrite CAB DAB eqxx.
-Qed.
-
-Definition T_isSemiRingOfSets : isSemiRingOfSets T :=
-  @isSemiRingOfSets.Build T measurable diff_fsets
-    measurable0
-    semiRingOfSets_measurableI
-    semiRingOfSets_measurableD
-    semiRingOfSets_diff_fsetsE
-    semiRingOfSets_diff_fsets_disjoint.
-
-HB.instance T T_isSemiRingOfSets.
-
-Definition T_isRingOfSets : RingOfSets_from_semiRingOfSets T :=
-  RingOfSets_from_semiRingOfSets.Build T measurableU.
-
-HB.instance T T_isRingOfSets.
-
-HB.end.*)
-
 HB.factory Record isMeasurable T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
@@ -218,12 +165,7 @@ Next Obligation.
 move=> A B mA mB; rewrite -bigcup2E.
 by apply measurable_bigcup => -[//|[//|i]]; exact: measurable0.
 Qed.
-Next Obligation.
-by move=> A mA; apply: measurableC.
-(*rewrite setDE -(setCK A) -setCU; apply measurableC.
-rewrite -bigcup2E; apply measurable_bigcup => -[|]; first exact: measurableC.
-by move=> [//|[|?]]; exact: measurable0.*)
-Qed.
+Next Obligation. by move=> A mA; apply: measurableC. Qed.
 
 HB.instance T T_isRingOfSets.
 
@@ -241,30 +183,17 @@ Section ringofsets_lemmas.
 Variables T : ringOfSetsType.
 Implicit Types A B : set T.
 
-Lemma measurable_bigcup_seq (T' : eqType) (r : seq T') (F : T' -> set T) :
-  (forall i, i \in r -> measurable (F i)) ->
-  measurable (\big[setU/set0]_(i <- r) (F i)).
+Lemma bigsetU_measurable I r (P : pred I) (F : I -> set T) :
+  (forall i, P i -> measurable (F i)) ->
+  measurable (\big[setU/set0]_(i <- r | P i) F i).
 Proof.
-move=> mF; rewrite big_seq_cond; elim/big_ind : _ => /=.
-exact: measurable0.
-by move=> ? ? ? ?; exact: measurableU.
-by move=> i /andP[? _]; exact: mF.
-Qed.
-
-Lemma measurable_bigcup_ord (n : nat) (U : 'I_n -> set T) :
-  (forall i : 'I_n, (i < n)%N -> measurable (U i)) ->
-  measurable (\big[setU/set0]_(i < n) (U i)).
-Proof.
-move=> nU; rewrite -big_enum /=.
-by apply: measurable_bigcup_seq => i _; exact: nU.
+move=> mF; elim/big_ind : _ => //; [exact: measurable0|exact: measurableU].
 Qed.
 
 Lemma measurableD A B : measurable A -> measurable B -> measurable (A `\` B).
 Proof.
-move=> mA mB; rewrite diff_fsetsE enum_fsetE.
-apply: measurable_bigcup_seq => //= i /mapP[/= x].
-rewrite mem_enum => xD ->{i}.
-exact: (measurable_diff_fsets _ _ _ mA mB).
+move=> mA mB; rewrite diff_fsetsE big_seq_cond; apply: bigsetU_measurable => /=.
+by move=> i; rewrite andbT; exact: measurable_diff_fsets.
 Qed.
 
 End ringofsets_lemmas.
@@ -281,7 +210,7 @@ Qed.
 Lemma measurableT : measurable (setT : set T).
 Proof. by rewrite -setC0; apply measurableC; exact: measurable0. Qed.
 
-Lemma measurable_bigI (U : (set T)^nat) :
+Lemma measurable_bigcap (U : (set T)^nat) :
   (forall i, measurable (U i)) -> measurable (\bigcap_i (U i)).
 Proof.
 move=> mU; rewrite bigcapCU; apply/measurableC/measurable_bigcup => i.
@@ -348,17 +277,10 @@ End semi_additivity.
 Section additivity.
 Variables (R : numFieldType) (T : ringOfSetsType) (mu : set T -> {ereal R}).
 
-Lemma measurable_bigsetU I r (P : pred I) (F : I -> set T) :
-  (forall i, P i -> measurable (F i)) ->
-  measurable (\big[setU/set0]_(i <- r | P i) F i).
-Proof.
-move=> mF; elim/big_ind : _ => //; [exact: measurable0|exact: measurableU].
-Qed.
-
 Lemma semi_additiveE : semi_additive mu = additive mu.
 Proof.
 rewrite propeqE; split=> [samu A mA tA n|amu A mA tA _ n]; last by rewrite amu.
-by rewrite samu // => {}n; exact: measurable_bigsetU.
+by rewrite samu // => {}n; exact: bigsetU_measurable.
 Qed.
 
 Lemma semi_additive2E : semi_additive2 mu = additive2 mu.
@@ -372,7 +294,7 @@ Proof. by rewrite -semi_additive2E -semi_additiveE; exact/semi_additive2P. Qed.
 
 End additivity.
 
-Lemma semi_sigma_additive_implies_additive
+Lemma semi_sigma_additive_is_additive
   (R : realFieldType (*TODO: numFieldType if possible?*))
   (X : semiRingOfSetsType) (mu : set X -> {ereal R}) :
   mu set0 = 0%:E -> semi_sigma_additive mu -> semi_additive mu.
@@ -401,12 +323,12 @@ rewrite propeqE; split=> [amu A mA tA|amu A mA tA mbigcupA]; last exact: amu.
 by apply: amu => //; exact: measurable_bigcup.
 Qed.
 
-Lemma sigma_additive_implies_additive
+Lemma sigma_additive_is_additive
   (R : realFieldType) (X : measurableType) (mu : set X -> {ereal R}) :
   mu set0 = 0%:E -> sigma_additive mu -> additive mu.
 Proof.
 move=> mu0; rewrite -semi_sigma_additiveE -semi_additiveE.
-exact: semi_sigma_additive_implies_additive.
+exact: semi_sigma_additive_is_additive.
 Qed.
 
 Module AdditiveMeasure.
@@ -432,7 +354,7 @@ Definition clone fA of phant_id g (apply cF) & phant_id fA class :=
 End ClassDef.
 
 Module Exports.
-Notation is_additive_measure f := (axioms f).
+Notation additive_measure f := (axioms f).
 Coercion apply : map >-> Funclass.
 Notation AdditiveMeasure fA := (Pack (Phant _) fA).
 Notation "{ 'additive_measure' fUV }" := (map (Phant fUV))
@@ -549,14 +471,14 @@ Section measure_is_additive_measure.
 Variables (R : realFieldType) (T : semiRingOfSetsType)
   (mu : {measure set T -> {ereal R}}).
 
-Lemma measure_is_additive_measure : is_additive_measure mu.
+Lemma measure_is_additive_measure : additive_measure mu.
 Proof.
 case: mu => f [f0 fg0 fsa]; split => //.
-apply/(semi_additive2P f0).
-exact: semi_sigma_additive_implies_additive.
+exact/(semi_additive2P f0)/semi_sigma_additive_is_additive.
 Qed.
 
-Canonical measure_additive_measure := AdditiveMeasure measure_is_additive_measure.
+Canonical measure_additive_measure :=
+  AdditiveMeasure measure_is_additive_measure.
 
 End measure_is_additive_measure.
 
@@ -631,7 +553,8 @@ move=> ndA; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
 - rewrite big_ord_recr /= -ih => -[|[]//]; exact: ndA.
 Qed.
 
-Lemma eq_bigcupB_of (A : (set T) ^nat) : {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
+Lemma eq_bigcupB_of (A : (set T) ^nat) :
+  {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
   \bigcup_n A n = \bigcup_n (B_of A) n.
 Proof.
 move=> ndA; rewrite funeqE => x; rewrite propeqE; split.
@@ -685,7 +608,7 @@ have -> : C = B `|` (A n `\` B).
   move=> -[|[An1x _]].
     by rewrite /C big_ord_recr; left.
   by rewrite /C big_ord_recr; right.
-have ? : measurable B by apply measurable_bigsetU.
+have ? : measurable B by apply bigsetU_measurable.
 rewrite measure_additive2 //; last 2 first.
   by apply measurableD.
   rewrite setIC -setIA (_ : ~` _ `&` _ = set0) ?setI0 //.
@@ -721,7 +644,7 @@ have AB : \bigcup_k A k = \bigcup_n B n.
   by move=> Amx; exists m.
 have ndB : {homo B : n m / (n <= m)%N >-> n `<=` m}.
   by move=> n m nm; apply subset_bigsetU.
-have mB : forall i, measurable (B i) by move=> i; exact: measurable_bigsetU.
+have mB : forall i, measurable (B i) by move=> i; exact: bigsetU_measurable.
 rewrite AB.
 move/(@cvg_mu_inc _ _ mu _ mB _) : ndB => /(_ _)/cvg_lim <- //; last first.
   by rewrite -AB.
@@ -748,7 +671,8 @@ Definition negligible (mu : set T -> {ereal R}) (N : set T) :=
 Local Notation "mu .-negligible" := (negligible mu)
   (at level 2, format "mu .-negligible").
 
-Lemma negligibleP (mu : {measure _ -> _}) A : measurable A -> mu.-negligible A <-> mu A = 0%:E.
+Lemma negligibleP (mu : {measure _ -> _}) A :
+  measurable A -> mu.-negligible A <-> mu A = 0%:E.
 Proof.
 move=> mA; split => [[B [mB mB0 AB]]|mA0]; last by exists A; split.
 apply/eqP; rewrite eq_le measure_ge0 // andbT -mB0.
@@ -758,14 +682,13 @@ Qed.
 Lemma negligible_set0 (mu : {measure _ -> _}) : mu.-negligible set0.
 Proof. by apply/negligibleP => //; exact: measurable0. Qed.
 
-Definition almost_satisfied (mu : set T -> {ereal R}) (P : T -> Prop) :=
-  mu.-negligible (~` [set x | P x]).
+Definition almost_everywhere (mu : set T -> {ereal R})
+  (P : T -> Prop) & (phantom Prop (forall x, P x)) := mu.-negligible (~` [set x | P x]).
+Local Notation "{ 'ae' m , P }" := (almost_everywhere m (inPhantom (forall x, P x)))
+  (at level 0, format "{ 'ae'  m ,  P }") : type_scope.
 
-Local Notation "mu '.-ae' P" := (almost_satisfied mu P)
-  (at level 0, format "mu '.-ae'  P").
-
-Lemma satisfies_almost_satisfied (mu : {measure _ -> _}) (P : T -> Prop) :
-  (forall x, P x) -> mu.-ae P.
+Lemma satisfied_almost_everywhere (mu : {measure _ -> _}) (P : T -> Prop) :
+  (forall x, P x) -> {ae mu, P}.
 Proof.
 move=> aP.
 have -> : P = setT by rewrite predeqE => t; split.
@@ -778,8 +701,8 @@ End negligible.
 Notation "mu .-negligible" := (negligible mu)
   (at level 2, format "mu .-negligible").
 
-Notation "mu '.-ae' P" := (almost_satisfied mu P)
-  (at level 0, format "mu '.-ae'  P").
+Notation "{ 'ae' m , P }" := (almost_everywhere m (inPhantom (forall x, P x)))
+  (at level 0, format "{ 'ae'  m ,  P }") : type_scope.
 
 Definition sigma_subadditive (R : numFieldType) (T : Type)
   (mu : set T -> {ereal R}) := forall (A : (set T) ^nat),
@@ -809,7 +732,7 @@ Definition clone fA of phant_id g (apply cF) & phant_id fA class :=
 End ClassDef.
 
 Module Exports.
-Notation is_outer_measure f := (axioms f).
+Notation outer_measure f := (axioms f).
 Coercion apply : map >-> Funclass.
 Notation OuterMeasure fA := (Pack (Phant _) fA).
 Notation "{ 'outer_measure' fUV }" := (map (Phant fUV))
