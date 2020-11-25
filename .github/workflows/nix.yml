@@ -16,5 +16,6 @@ jobs:
         name:  math-comp
         # Authentication token for Cachix, needed only for private cache access
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - uses: actions/checkout@v2
     - run: nix-build --arg config '{mathcomp = "mathcomp-1.11.0"; mathcomp-finmap = "1.5.0"; mathcomp-analysis = "${{ steps.branch-short-name.outputs.branch }}";}'
     # - run: export CACHIX_SIGNING_KEY=${{ secrets.CACHIX_SIGNING_KEY }} cachix push math-comp result
