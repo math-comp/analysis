@@ -22,7 +22,7 @@ let
         "8.10" = coqPackages_8_10;
         "8.11" = coqPackages_8_11;
         "8.12" = coqPackages_8_12;
-        "default" = coqPackages_8_10;
+        "default" = coqPackages_8_11;
       }.${(cfg-fun pkgs).coq or "default"}.overrideScope'
         (coqPackages: super-coqPackages:
           let
@@ -45,10 +45,15 @@ let
                   # fixing mathcomp analysis to depend on real-closed
                   mathcomp-analysis = {version, coqPackages} @ args:
                     let mca = mec.initial.mathcomp-analysis args; in
-                    mca // {
-                      propagatedBuildInputs = mca.propagatedBuildInputs ++
-                                              (if builtins.elem coq.version ["8.10" "8.11" "8.12"] then (with coqPackages; [ coq-elpi hierarchy-builder ]) else []);
-                    };
+                    mca // (
+                      if elem version [ "master" "cauchy_etoile" "holomorphy" ]
+                      then {
+                        propagatedBuildInputs = mca.propagatedBuildInputs ++
+                                                [ coqPackages.mathcomp-real-closed coqPackages.hiearchy-builder ];
+                      } else {
+                        propagatedBuildInputs = mca.propagatedBuildInputs ++
+                                                (with coqPackages; [ coq-elpi hierarchy-builder ]);
+                      });
                 };
                 for-coq-and-mc.${coqPackages.coq.coq-version}.${coqPackages.mathcomp.version} =
                   (super-coqPackages.mathcomp-extra-config.${coqPackages.coq.coq-version}.${coqPackages.mathcomp.version} or {}) //
