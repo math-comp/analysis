@@ -40,7 +40,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
-Reserved Notation "{ 'ae' P }" (at level 0, format "{ 'ae'  P }").
+Reserved Notation "{ 'ae' m , P }" (at level 0, format "{ 'ae'  m ,  P }").
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -683,15 +683,15 @@ Lemma negligible_set0 (mu : {measure _ -> _}) : mu.-negligible set0.
 Proof. by apply/negligibleP => //; exact: measurable0. Qed.
 
 Definition almost_everywhere (mu : set T -> {ereal R})
-  (P : T -> Prop) & (phantom Prop (forall x, P x)) := mu.-negligible (~` [set x | P x]).
-Local Notation "{ 'ae' m , P }" := (almost_everywhere m (inPhantom (forall x, P x)))
-  (at level 0, format "{ 'ae'  m ,  P }") : type_scope.
+    (P : T -> Prop) & (phantom Prop (forall x, P x)) :=
+   mu.-negligible (~` [set x | P x]).
+Local Notation "{ 'ae' m , P }" :=
+  (almost_everywhere m (inPhantom P)) : type_scope.
 
-Lemma satisfied_almost_everywhere (mu : {measure _ -> _}) (P : T -> Prop) :
-  (forall x, P x) -> {ae mu, P}.
+Lemma aeW (mu : {measure _ -> _}) (P : T -> Prop) :
+  (forall x, P x) -> {ae mu, forall x, P x}.
 Proof.
-move=> aP.
-have -> : P = setT by rewrite predeqE => t; split.
+move=> aP; have -> : P = setT by rewrite predeqE => t; split.
 apply/negligibleP; first by rewrite setCT; exact: measurable0.
 by rewrite setCT measure0.
 Qed.
