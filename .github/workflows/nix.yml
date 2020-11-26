@@ -6,9 +6,6 @@ jobs:
     name: Cachix branch
     runs-on: ubuntu-latest
     steps:
-    - name: Get branch shortname
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: branch-short-name
     - uses: cachix/install-nix-action@v12
     - uses: cachix/cachix-action@v8
       with:
@@ -17,5 +14,5 @@ jobs:
         # Authentication token for Cachix, needed only for private cache access
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
     - uses: actions/checkout@v2
-    - run: nix-build --arg config '{mathcomp = "1.11.0"; mathcomp-finmap = "1.5.0"; mathcomp-analysis = "${{ steps.branch-short-name.outputs.branch }}";}'
+    - run: nix-build --arg config '{mathcomp = "1.11.0"; mathcomp-finmap = "1.5.0"; coq = "8.11"; hiearchy-builder = "0.10.0"; }'
     # - run: export CACHIX_SIGNING_KEY=${{ secrets.CACHIX_SIGNING_KEY }} cachix push math-comp result
