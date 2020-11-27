@@ -27,7 +27,7 @@ From HB Require Import structures.
 (* Theorems: Boole_inequality, generalized_Boole_inequality                   *)
 (*                                                                            *)
 (* mu.-negligible A == A is mu negligible                                     *)
-(* {ae mu, P} == P holds almost everywhere for the measure mu                 *)
+(* {ae mu, forall x, P x} == P holds almost everywhere for the measure mu     *)
 (*                                                                            *)
 (* {outer_measure set T -> {ereal R}} == type of an outer measure over sets   *)
 (*                                 of elements o ftype T where R is expected  *)
@@ -701,7 +701,7 @@ End negligible.
 Notation "mu .-negligible" := (negligible mu)
   (at level 2, format "mu .-negligible").
 
-Notation "{ 'ae' m , P }" := (almost_everywhere m (inPhantom (forall x, P x)))
+Notation "{ 'ae' m , P }" := (almost_everywhere m (inPhantom P))
   (at level 0, format "{ 'ae'  m ,  P }") : type_scope.
 
 Definition sigma_subadditive (R : numFieldType) (T : Type)
