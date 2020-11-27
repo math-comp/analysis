@@ -201,8 +201,8 @@ Notation "@ 'gte' R" :=
 
 Notation "x <= y" := (lee x y) : ereal_scope.
 Notation "x < y"  := (lte x y) : ereal_scope.
-Notation "x >= y" := (gee x y) : ereal_scope.
-Notation "x > y"  := (gte x y) : ereal_scope.
+Notation "x >= y" := (y <= x) (only parsing) : ereal_scope.
+Notation "x > y"  := (y < x) (only parsing) : ereal_scope.
 
 Notation "x <= y <= z" := ((lee x y) && (lee y z)) : ereal_scope.
 Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
