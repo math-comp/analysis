@@ -3,7 +3,7 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
 From mathcomp Require Import ssralg ssrnum.
 From mathcomp Require Import finmap.
-Require Import boolp reals ereal classical_sets posnum topology normedtype.
+Require Import boolp reals ereal classical_sets posnum topology.
 Require Import sequences cardinality (*TODO: essayer de faire sans*).
 
 (******************************************************************************)
@@ -24,6 +24,108 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+(* TODO: document *)
+Section funpos.
+
+Local Notation "0" := 0%:E : ereal_scope.
+Local Notation "1" := 1%:E : ereal_scope.
+Local Open Scope ereal_scope.
+
+Definition funepos T (R : realDomainType) (f : T -> {ereal R}) :=
+   fun x => Order.max (f x) 0%E.
+Definition funeneg T (R : realDomainType) (f : T -> {ereal R}) :=
+   fun x => Order.max (- f x)%E 0%E.
+Notation "f ^\+" := (funepos f) (at level 1, format "f ^\+") : ereal_scope.
+Notation "f ^\-" := (funeneg f) (at level 1, format "f ^\-") : ereal_scope.
+
+Definition fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) :=
+  fun x => if `[<D x>] then f x else 0%E.
+Notation "f \|_ D" := (fer f D) (at level 10) : ring_scope.
+
+
+Lemma ferK T (R : realDomainType) (f : T -> {ereal R}) (D1 D2 : set T) :
+  f \|_ D1 \|_ D2 = f \|_ (D1 `&` D2).
+Proof.
+by apply/funext=> x; rewrite /fer/= asbool_and; do 3?[case: asbool => //].
+Qed.
+
+
+Lemma mem_fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
+  D x -> f \|_ D x = f x.
+Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
+
+
+Lemma memNfer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
+  ~ D x -> f \|_ D x = 0%E.
+Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
+
+
+Lemma ferN0  T (R : realDomainType) (f : T -> {ereal R}) :
+  f \|_ [set x | f x != 0%E] = f.
+Proof. by apply/funext => x; rewrite /fer asboolb; case: eqVneq => [->|]. Qed.
+
+
+Lemma funEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
+  f = (fun x => f^\+ x - f^\- x)%E.
+Proof.
+apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
+case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
+by case: ltgtP; rewrite /= ?sub0r ?subr0 ?oppr0 ?opprK// => ->.
+Qed.
+
+
+Lemma normfunEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
+  (fun x => `|f x|)%E = (fun x => f^\+ x + f^\- x)%E.
+Proof.
+apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
+case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
+by case: sgrP => //=; rewrite ?addr0 ?sub0r.
+Qed.
+
+
+Lemma funepos_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (forall x, 0 <= f^\+ x)%E.
+Proof. by move=> x; rewrite /funepos; case: (leP (f x)) => //= /ltW. Qed.
+
+
+Lemma funeneg_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (forall x, 0 <= f^\- x)%E.
+Proof. by move=> x; rewrite /funeneg; case: (leP (- f x)%E) => //= /ltW. Qed.
+
+
+Lemma funeposEgt0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (f^\+ = f \|_ [set x | 0 < f x])%E.
+Proof.
+by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
+Qed.
+
+
+Lemma funeposEge0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (f^\+ = f \|_ [set x | 0 <= f x])%E.
+Proof.
+by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
+Qed.
+
+
+Lemma funenegElt0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (f^\- = fun x => - f \|_ [set x | f x < 0] x)%E.
+Proof.
+apply/funext => x; rewrite /fer /funeneg/= maxEle asboolb leEereal ltEereal.
+case: f => //= [r||]; rewrite ?(oppr0, real0)//.
+by rewrite oppr_le0; case: leP; rewrite //= oppr0.
+Qed.
+
+
+Lemma funenegEle0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (f^\- = fun x => - f \|_ [set x | f x <= 0] x)%E.
+Proof.
+by rewrite funenegElt0 funeqE => x; rewrite /fer !asboolb/=; case: ltgtP => // ->.
+Qed.
+
+
+Hint Resolve funepos_ge0 funeneg_ge0 : core.
+End funpos.
 
 Lemma ub_ereal_sup_adherent2 (R : realFieldType) (T : choiceType)
   (P : T -> Prop) (f : T -> {ereal R}) (e : {posnum R}) c :
@@ -187,22 +289,6 @@ rewrite /csum; case: pselect => // -[] i Ii.
 by apply: ereal_sup_ub; exists fset0 => //; rewrite big_nil.
 Qed.
 
-(* TODO: PR to classical_sets in progress *)
-Definition trivIset T (A : nat -> set T) :=
-  forall i j, i != j -> A i `&` A j = set0.
-
-Lemma trivIset_bigUI T (A : nat -> set T) : trivIset A ->
-  forall n m, (n <= m)%N -> \big[setU/set0]_(i < n) A i `&` A m = set0.
-Proof.
-move=> tA; elim => [|n ih m]; first by move=> m _; rewrite big_ord0 set0I.
-by rewrite ltn_neqAle => /andP[? ?]; rewrite big_ord_recr setIUl tA ?setU0 ?ih.
-Qed.
-
-Lemma trivIset_setI T (A : nat -> set T) : trivIset A ->
-  forall X, trivIset (fun n => X `&` A n).
-Proof. by move=> tA X j i /tA; apply: subsetI_eq0; apply subIset; right. Qed.
-(*NB: PR end*)
-
 Lemma csum_fset (R : realType) (T : choiceType) (S : {fset T})
     (f : T -> {ereal R}) : (forall i, 0%:E <= f i)%E ->
   csum [set x | x \in S] f = (\sum_(i <- S) f i)%E.
@@ -270,9 +356,9 @@ have [n FnS] :
     have : eF != fset0.
       rewrite -eq_set0_fset0 eFE; apply/set0P.
       move: F0; rewrite -eq_set0_fset0 => /set0P[t tF].
-      by move: (tF) => /FS[i Pi eit]; exists i; rewrite /preimage eit.
+      by move: (tF) => /FS[i Pi eit]; exists i; rewrite /preimage /mkset eit.
     move/fset_maximum => [i [ieF eFi]]; exists i => t tF j eji; apply eFi.
-    by move/predeqP : eFE => /(_ j) /iffRL; apply; rewrite /preimage eji.
+    by move/predeqP : eFE => /(_ j) /iffRL; apply; rewrite /preimage /mkset eji.
   exists n.+1; apply/fsubsetP => x Fx; apply/imfsetP => /=.
   have [j Pj ejx] := FS _ Fx.
   by exists (inord j); rewrite ?inE inordK // ltnS (Fn _ Fx).
@@ -322,7 +408,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
       move=> i /fset0Pn[t]; rewrite /FJ !inE /= => /andP[Ft tJi].
       exists t; split => //; rewrite /g; case: xgetP; last by move/(_ i).
       move=> j _ tJj; apply/eqP/negPn/negP => /(tJ i j).
-      rewrite predeqE => /(_ t); rewrite !in_setE in tJi, tJj.
+      rewrite predeqE => /(_ t); rewrite /mkset !in_setE in tJi, tJj.
       by case=> /(_ (conj tJi tJj)).
     by case: (surjective_set_finite sur_g (fset_set_finite F)).
   move/set_finite_fset => [L LKFJ].
@@ -342,7 +428,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   apply: (@le_trans _ _ (\sum_(k <- L) (csum (J k) a))%E).
     apply: lee_sum => i iM; rewrite /csum; case: pselect => // _.
     apply: ereal_sup_ub; exists (FJ i) => // t.
-    by rewrite /FJ !inE /= => /andP[_]; rewrite in_setE.
+    by rewrite /FJ /mkset !inE /= => /andP[_]; rewrite in_setE.
   rewrite [in X in (_ <= X)%E]/csum; case: pselect => // _.
   by apply ereal_sup_ub; exists L.
 rewrite {1}[in X in (X <= _)%E]/csum; case: pselect => // _.
@@ -367,7 +453,7 @@ have [Fj csumFj] : exists F, forall j, P (F j) j.
     suff : (es <= es')%E by rewrite esoo es'r.
     apply: le_ereal_sup => x [F FJ Fx]; exists F => //.
     move/subset_trans : FJ; apply => t Jt.
-    by exists (nth 0%N L j) => //; apply LK; rewrite mem_nth.
+    by exists (nth 0%N L j) => //; apply LK; rewrite /mkset mem_nth.
   - have eL0 : 0 < e%:num / #|` L |%:R by rewrite divr_gt0 // ltr0n cardfs_gt0.
     rewrite (_ : e%:num / _ = (PosNum eL0)%:num) // esc.
     exact: ub_ereal_sup_adherent2.
@@ -375,14 +461,14 @@ pose F := \big[fsetU/fset0]_(i < #|`L|) Fj i.
 apply: (@le_trans _ _ (\sum_(i <- F) a i)%E); last first.
   rewrite /csum; case pselect => // _; apply ereal_sup_ub; exists F => //.
   move=> t /bigfcupP[/= i _] /(proj1 (csumFj i)) Jt.
-  by exists (nth 0%N L i) => //; apply LK; rewrite mem_nth.
+  by exists (nth 0%N L i) => //; apply LK; rewrite /mkset mem_nth.
 apply: (@le_trans _ _ (\sum_(i < #|`L|) (\sum_(j <- Fj i) a j)%E)%E); last first.
   have tFj : (forall i j : 'I_#|`L|, i != j -> [disjoint Fj i & Fj j])%fset.
     move=> i j ij; rewrite -fsetI_eq0; rewrite -eq_set0_fset0.
     have Jij : J (nth 0%N L i) `&` J (nth 0%N L j) = set0.
       apply tJ; apply: contra ij => /eqP /(congr1 (fun x => index x L)).
       by rewrite index_uniq // index_uniq // => /ord_inj ->.
-    apply/eqP; rewrite predeqE => t; split => //; rewrite inE => /andP[].
+    apply/eqP; rewrite predeqE => t; split => //; rewrite /mkset inE => /andP[].
     by move=> /(proj1 (csumFj i)) ? /(proj1 (csumFj j)) ?; rewrite -Jij; split.
   rewrite le_eqVlt; apply/orP; left; apply/eqP/esym.
   pose IL := [fset i | i in 'I_#|`L|]%fset.
