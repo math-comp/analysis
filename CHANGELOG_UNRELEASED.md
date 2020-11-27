@@ -14,6 +14,10 @@
 
 ### Changed
 
+- in `ereal.v`:
+  + notation `x >= y` defined as `y <= x` (only parsing) instead of `gee`
+  + notation `x > y` defined as `y < x` (only parsing) instead of `gte`
+
 ### Renamed
 
 - in `classical_sets.v`:
