@@ -26,6 +26,10 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 (* TODO: document *)
+Reserved Notation "f ^\+" (at level 1, format "f ^\+").
+Reserved Notation "f ^\-" (at level 1, format "f ^\-").
+Reserved Notation "f \|_ D" (at level 10).
+
 Section funpos.
 
 Local Notation "0" := 0%:E : ereal_scope.
@@ -36,12 +40,12 @@ Definition funepos T (R : realDomainType) (f : T -> {ereal R}) :=
    fun x => Order.max (f x) 0%E.
 Definition funeneg T (R : realDomainType) (f : T -> {ereal R}) :=
    fun x => Order.max (- f x)%E 0%E.
-Notation "f ^\+" := (funepos f) (at level 1, format "f ^\+") : ereal_scope.
-Notation "f ^\-" := (funeneg f) (at level 1, format "f ^\-") : ereal_scope.
+Local Notation "f ^\+" := (funepos f).
+Local Notation "f ^\-" := (funeneg f).
 
 Definition fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) :=
   fun x => if `[<D x>] then f x else 0%E.
-Notation "f \|_ D" := (fer f D) (at level 10) : ring_scope.
+Local Notation "f \|_ D" := (fer f D).
 
 
 Lemma ferK T (R : realDomainType) (f : T -> {ereal R}) (D1 D2 : set T) :
@@ -126,6 +130,10 @@ Qed.
 
 Hint Resolve funepos_ge0 funeneg_ge0 : core.
 End funpos.
+
+Notation "f ^\+" := (funepos f) : ereal_scope.
+Notation "f ^\-" := (funeneg f) : ereal_scope.
+Notation "f \|_ D" := (fer f D) : ring_scope.
 
 Lemma ub_ereal_sup_adherent2 (R : realFieldType) (T : choiceType)
   (P : T -> Prop) (f : T -> {ereal R}) (e : {posnum R}) c :
