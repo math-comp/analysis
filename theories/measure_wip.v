@@ -177,7 +177,9 @@ suff : forall n, (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X)%E.
   move=> lee_sum_bigU.
   rewrite [X in (X + _)%E](_ : _ = ereal_sup
     ((fun n : nat => \sum_(k < n) mu (X `&` A k))%E @` setT)); last first.
-    apply/cvg_lim/nondecreasing_seq_ereal_cvg => //.
+    set F := (X in lim_in _ X); have : ProperFilter F by typeclasses eauto.
+    move/(@cvg_lim _ _ _); apply => //.
+    apply/nondecreasing_seq_ereal_cvg.
     apply: (@lee_sum_nneg_ord _ (fun n => mu (X `&` A n)) xpredT) => n _.
     exact: outer_measure_ge0.
   move XAx : (mu (X `&` ~` A')) => x.
@@ -533,7 +535,8 @@ Proof.
 move=> mX; apply/eqP; rewrite eq_le; apply/andP; split.
   apply ereal_inf_lb; exists (fun n => if n is 0%N then X else set0).
     by split=> [[]// _|t Xt]; [exact: measurable0 | exists 0%N].
-  apply: cvg_lim => //.
+  set F := (X in lim_in _ X); have : ProperFilter F by typeclasses eauto.
+  move/(@cvg_lim _ _ _); apply => //.
   rewrite -cvg_shiftS (_ : [sequence _]_n = cst (mu X)); first exact: cvg_cst.
   by rewrite funeqE => n /=; rewrite big_ord_recl /= big1 ?adde0.
 apply/lb_ereal_inf => x [A [mA XA] <-{x}].
@@ -549,8 +552,9 @@ apply lee_lim.
 - by apply: (@is_cvg_ereal_nneg_series _ (mu \o A)) => n; exact/measure_ge0.
 - near=> n; apply: lee_sum => i  _.
   apply: le_measure => //;
-    rewrite ?in_setE //; by [exact: measurableI | apply: subIset; right].
-Grab Existential Variables. all: end_near. Qed.
+    rewrite /mkset ?in_setE //; by [exact: measurableI | apply: subIset; right].
+Grab Existential Variables. all: end_near.
+Qed.
 
 Section outer_measurable.
 
@@ -571,7 +575,8 @@ move=> B mB BX; apply (@le_trans _ _ (mu (B `&` A) + mu (B `&` ~` A))%E).
   - apply/ereal_inf_lb; exists (fun n => if n is 0%N then B `&` A else set0).
       split=> [[|_]|t [Xt At]]; [apply: measurableI => // | exact: measurable0 | ].
       by exists 0%N => //; split => //; exact: BX.
-    apply: cvg_lim => //.
+    set F := (X in lim_in _ X); have : ProperFilter F by typeclasses eauto.
+    move/(@cvg_lim _ _ _); apply => //.
     rewrite -cvg_shiftS (_ : [sequence _]_n = cst (mu (B `&` A))); first exact: cvg_cst.
     by rewrite funeqE => n /=; rewrite big_ord_recl /= big1 ?adde0.
   - apply ereal_inf_lb; exists (fun n => if n is 0%N then B `&` ~` A else set0).
@@ -579,7 +584,8 @@ move=> B mB BX; apply (@le_trans _ _ (mu (B `&` A) + mu (B `&` ~` A))%E).
       + by rewrite -setDE; apply: measurableD.
       + exact: measurable0.
       + by exists 0%N; split => //; exact: BX.
-    apply: cvg_lim => //.
+    set F := (X in lim_in _ X); have : ProperFilter F by typeclasses eauto.
+    move/(@cvg_lim _ _ _); apply => //.
     rewrite -cvg_shiftS (_ : [sequence _]_n = cst (mu (B `&` ~` A))).
       exact: cvg_cst.
     by rewrite funeqE => n /=; rewrite big_ord_recl /= big1 ?adde0.
@@ -704,11 +710,11 @@ have [|undef] := boolP (adde_undef (lim BA) (lim BNA)).
   case/orP => [/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
   - suff : lim (eseries (mu \o B))%E = +oo%E by move=> ->; rewrite lee_pinfty.
     apply/eqP; rewrite -lee_pinfty_eq -(eqP BAoo); apply/lee_lim => //.
-    near=> n; apply: lee_sum => m _; apply: le_measure; by
+    near=> n; apply: lee_sum => m _; apply: le_measure; rewrite /mkset; by
       [rewrite inE; exact: measurableI | rewrite inE | apply: subIset; left].
   - suff : lim (eseries (mu \o B)) = +oo%E by move=> ->; rewrite lee_pinfty.
     apply/eqP; rewrite -lee_pinfty_eq -(eqP BNAoo); apply/lee_lim => //.
-    near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure; by
+    near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure; rewrite /mkset; by
       [rewrite inE; exact: measurableD | rewrite inE | apply: subIset; left].
 rewrite -ereal_limD // (_ : (fun _ => _) =
     eseries (fun i => mu (B i `&` A) + mu (B i `&` ~` A))%E); last first.
@@ -718,8 +724,7 @@ apply/lee_lim => //.
   by apply: measure_ge0 => //; apply: measurableI.
   by rewrite -setDE; apply: measure_ge0; apply: measurableD.
 near=> n; apply: lee_sum => i _; rewrite -measure_semi_additive2.
-- (*NB: pbm d'affichage*)
-  apply: le_measure; [rewrite inE|by rewrite inE|by rewrite -setIUr setUCr setIT].
+- apply: le_measure; rewrite /mkset; [rewrite inE|by rewrite inE|by rewrite -setIUr setUCr setIT].
   by apply: measurableU; [exact: measurableI | rewrite -setDE; exact: measurableD].
 - exact: measurableI.
 - by rewrite -setDE; exact: measurableD.
@@ -780,13 +785,13 @@ case: H => a _ aA.
 case: H0 => b _ bB.
 exists (a `|` b)%fset => //.
 rewrite eqEsubset; split => [r [I]|r [Ar|Br]].
-  rewrite inE => /orP[Ia Ir|Ib Ir].
+  rewrite /mkset inE => /orP[Ia Ir|Ib Ir].
   by left; rewrite -aA /ufint; exists I.
   by right; rewrite -bB /ufint; exists I.
 move: Ar; rewrite -aA => -[I Ia Ir].
-by exists I => //; rewrite in_fsetE Ia.
+by exists I => //; rewrite /mkset in_fsetE Ia.
 move: Br; rewrite -bB => -[I Ib Ir].
-by exists I => //; rewrite in_fsetE Ib orbT.
+by exists I => //; rewrite /mkset in_fsetE Ib orbT.
 Qed.
 Next Obligation.
 rewrite /interval_isRingOfSets_obligation_1 in H *.
