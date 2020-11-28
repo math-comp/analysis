@@ -3,7 +3,7 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
 From mathcomp Require Import ssralg ssrnum.
 Require Import boolp reals ereal.
-Require Import classical_sets posnum topology normedtype sequences measure.
+Require Import classical_sets posnum topology normedtype sequences measure csum.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -54,100 +54,6 @@ Definition complete_measure (R : realType) (T : measurableType)
 
 Definition measurable_fun (T U : measurableType) (D : set T) (f : T -> U) : Prop :=
   forall Y, measurable Y -> measurable ((f @^-1` Y) `&` D).
-
-Definition funpos T (R : realDomainType) (f : T -> R) :=
-   fun x => Order.max (f x) 0.
-Definition funneg T (R : realDomainType) (f : T -> R) :=
-   fun x => Order.max (- f x) 0.
-Notation "f ^\+" := (funpos f) (at level 1) : ring_scope.
-Notation "f ^\-" := (funneg f) (at level 1) : ring_scope.
-
-Lemma funEposneg T (R : realDomainType) (f : T -> R) : f = f^\+ \- f^\-.
-Proof.
-apply/funext => x; rewrite /funpos /funneg/= !maxEle oppr_le0.
-by case: ltgtP; rewrite /= ?sub0r ?subr0 ?oppr0 ?opprK// => ->.
-Qed.
-
-Definition funepos T (R : realDomainType) (f : T -> {ereal R}) :=
-   fun x => Order.max (f x) 0%E.
-Definition funeneg T (R : realDomainType) (f : T -> {ereal R}) :=
-   fun x => Order.max (- f x)%E 0%E.
-Notation "f ^\+" := (funepos f) (at level 1, format "f ^\+") : ereal_scope.
-Notation "f ^\-" := (funeneg f) (at level 1, format "f ^\-") : ereal_scope.
-
-Definition fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) :=
-  fun x => if `[<D x>] then f x else 0%E.
-Notation "f \|_ D" := (fer f D) (at level 10) : ring_scope.
-
-Lemma ferK T (R : realDomainType) (f : T -> {ereal R}) (D1 D2 : set T) :
-  f \|_ D1 \|_ D2 = f \|_ (D1 `&` D2).
-Proof.
-by apply/funext=> x; rewrite /fer/= asbool_and; do 3?[case: asbool => //].
-Qed.
-
-Lemma mem_fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
-  D x -> f \|_ D x = f x.
-Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
-
-Lemma memNfer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
-  ~ D x -> f \|_ D x = 0%E.
-Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
-
-Lemma ferN0  T (R : realDomainType) (f : T -> {ereal R}) :
-  f \|_ [set x | f x != 0%E] = f.
-Proof. by apply/funext => x; rewrite /fer asboolb; case: eqVneq => [->|]. Qed.
-
-Lemma funEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
-  f = (fun x => f^\+ x - f^\- x)%E.
-Proof.
-apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
-case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
-by case: ltgtP; rewrite /= ?sub0r ?subr0 ?oppr0 ?opprK// => ->.
-Qed.
-
-Lemma normfunEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
-  (fun x => `|f x|)%E = (fun x => f^\+ x + f^\- x)%E.
-Proof.
-apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
-case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
-by case: sgrP => //=; rewrite ?addr0 ?sub0r.
-Qed.
-
-Lemma funepos_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (forall x, 0 <= f^\+ x)%E.
-Proof. by move=> x; rewrite /funepos; case: (leP (f x)) => //= /ltW. Qed.
-
-Lemma funeneg_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (forall x, 0 <= f^\- x)%E.
-Proof. by move=> x; rewrite /funeneg; case: (leP (- f x)%E) => //= /ltW. Qed.
-
-Lemma funeposEgt0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (f^\+ = f \|_ [set x | 0 < f x])%E.
-Proof.
-by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
-Qed.
-
-Lemma funeposEge0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (f^\+ = f \|_ [set x | 0 <= f x])%E.
-Proof.
-by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
-Qed.
-
-Lemma funenegElt0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (f^\- = fun x => - f \|_ [set x | f x < 0] x)%E.
-Proof.
-apply/funext => x; rewrite /fer /funeneg/= maxEle asboolb leEereal ltEereal.
-case: f => //= [r||]; rewrite ?(oppr0, real0)//.
-by rewrite oppr_le0; case: leP; rewrite //= oppr0.
-Qed.
-
-Lemma funenegEle0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (f^\- = fun x => - f \|_ [set x | f x <= 0] x)%E.
-Proof.
-by rewrite funenegElt0 funeqE => x; rewrite /fer !asboolb/=; case: ltgtP => // ->.
-Qed.
-
-Hint Resolve funepos_ge0 funeneg_ge0 : core.
 
 Module Type INTEGRAL.
 
