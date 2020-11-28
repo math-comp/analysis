@@ -1158,7 +1158,7 @@ suff flip : \forall k \near +oo, forall x, `|f x| <= k * `|x|.
   rewrite (le_lt_trans (near flip k _ _)) // -ltr_pdivl_mull; last by near: k; exists 0; rewrite real0.
   near: y; apply/nbhs_normP.
   eexists; last by move=> ?; rewrite -ball_normE /= sub0r normrN; apply.
-  by rewrite mulr_gt0 // invr_gt0; near: k; exists 0; rewrite real0.
+  by rewrite /= mulr_gt0 // invr_gt0; near: k; exists 0; rewrite real0.
 have /nbhs_normP [_/posnumP[d]] := Of1.
 rewrite /cst [X in _ * X]normr1 mulr1 => fk; near=> k => y.
 case: (ler0P `|y|) => [|y0].

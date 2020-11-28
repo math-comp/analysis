@@ -188,7 +188,10 @@ Bind Scope classical_set_scope with set.
 Local Open Scope classical_set_scope.
 Delimit Scope classical_set_scope with classic.
 
-Notation "[ 'set' x : T | P ]" := ((fun x => P) : set T) : classical_set_scope.
+Definition mkset {T} (P : T -> Prop) : set T := P.
+Arguments mkset _ _ _ /.
+
+Notation "[ 'set' x : T | P ]" := (mkset (fun x : T => P)) : classical_set_scope.
 Notation "[ 'set' x | P ]" := [set x : _ | P] : classical_set_scope.
 Notation "[ 'set' E | x 'in' A ]" :=
   [set y | exists2 x, A x & E = y] : classical_set_scope.
@@ -261,6 +264,10 @@ Proof.
 rewrite propeqE; split => [->|[FG GF]]; [by split|].
 by rewrite predeqE => t; split=> [/FG|/GF].
 Qed.
+
+Lemma eq_set T (P Q : T -> Prop): (forall x : T, P x = Q x) ->
+  [set x | P x] = [set x | Q x].
+Proof. by move=> /funext->. Qed.
 
 Lemma sub0set T (X : set T) : set0 `<=` X.
 Proof. by []. Qed.
@@ -385,7 +392,8 @@ Lemma image_preimage A B (f : A -> B) (X : set B) :
 Proof.
 move=> fsurj; rewrite predeqE => x; split; first by move=> [?? <-].
 move=> Xx; have : setT x by [].
-by rewrite -fsurj => - [y _ fy_eqx]; exists y => //; rewrite /preimage fy_eqx.
+rewrite -fsurj => - [y _ fy_eqx]; exists y => //.
+by rewrite /preimage/= fy_eqx.
 Qed.
 
 Lemma preimage_setU {A B} (f : A -> B) (X Y : set B) :
@@ -542,13 +550,13 @@ Lemma setIIr T (A B C : set T) : A `&` (B `&` C) = (A `&` B) `&` (A `&` C).
 Proof. by rewrite !(setIC A) setIIl. Qed.
 
 Lemma setUA A : associative (@setU A).
-Proof. move=> p q r; rewrite /setU predeqE => a; tauto. Qed.
+Proof. move=> p q r; rewrite /setU/mkset predeqE => a; tauto. Qed.
 
 Lemma setUid A : idempotent (@setU A).
-Proof. move=> p; rewrite /setU predeqE => a; tauto. Qed.
+Proof. move=> p; rewrite /setU/mkset predeqE => a; tauto. Qed.
 
 Lemma setUC A : commutative (@setU A).
-Proof. move=> p q; rewrite /setU predeqE => a; tauto. Qed.
+Proof. move=> p q; rewrite /setU/mkset predeqE => a; tauto. Qed.
 
 Lemma set0U T (X : set T) : set0 `|` X = X.
 Proof. by rewrite predeqE => t; split; [case|right]. Qed.
@@ -774,7 +782,8 @@ Qed.
 Lemma subset_bigsetU T m n (U : nat -> set T) : (m <= n)%N ->
   \big[setU/set0]_(i < m) U i `<=` \big[setU/set0]_(i < n) U i.
 Proof.
-by rewrite !bigcup_ord => mn x [i im ?]; exists i => //; rewrite (leq_trans im).
+rewrite !bigcup_ord => mn x [i im ?]; exists i => //.
+by rewrite /mkset (leq_trans im).
 Qed.
 
 Lemma bigcap_ord T n (A : nat -> set T) :

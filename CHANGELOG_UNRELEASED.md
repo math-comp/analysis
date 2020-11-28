@@ -46,6 +46,13 @@
 - in `ereal.v`:
   + notation `x >= y` defined as `y <= x` (only parsing) instead of `gee`
   + notation `x > y` defined as `y < x` (only parsing) instead of `gte`
+  + definition `mkset`
+  + lemma `eq_set`
+
+### Changed
+
+- in `classical_sets.v`:
+  + notation `[set x : T | P]` now use definition `mkset`
 
 ### Renamed
 
@@ -53,6 +60,8 @@
   + `subset_empty` -> `subset_nonempty`
 - in `measure.v`:
   + `sigma_additive_implies_additive` -> `sigma_additive_is_additive`
+- in `topology.v`:
+  + `nbhs_of` -> `locally_of`
 
 ### Removed
 
