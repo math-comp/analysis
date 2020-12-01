@@ -11,6 +11,10 @@
 - in `ereal.v`:
   + definition `mule` and its notation `*` (scope `ereal_scope`)
   + definition `abse` and its notation `` `| | `` (scope `ereal_scope`)
+- in `normedtype.v`:
+  + lemmas `closure_sup`, `near_nbhs_inv`, `limit_pointP`
+  + lemmas `closure_gt`, `closure_lt`
+  + definition `is_interval`, `is_intervalPle`
 - in `measure.v`:
   + definition `bigcup2`, lemma `bigcup2E`
   + definitions `isSemiRingOfSets`, `SemiRingOfSets`, notation `semiRingOfSetsType`
