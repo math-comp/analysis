@@ -14,7 +14,7 @@
 - in `normedtype.v`:
   + lemmas `closure_sup`, `near_nbhs_inv`, `limit_pointP`
   + lemmas `closure_gt`, `closure_lt`
-  + definition `is_interval`, `is_intervalPle`
+  + definition `is_interval`, `is_intervalPle`, `interval_is_interval`
 - in `measure.v`:
   + definition `bigcup2`, lemma `bigcup2E`
   + definitions `isSemiRingOfSets`, `SemiRingOfSets`, notation `semiRingOfSetsType`
@@ -77,6 +77,10 @@
   + `nbhs_of` -> `locally_of`
 - in `topology.v`:
   + `connect0` -> `connected0`
+- in `normedtype.v`:
+  + `segment_connected` -> `connected_segment`
+  + `segment_closed` -> `closed_segment`
+  + `segment_compact` -> `compact_segment`
 
 ### Removed
 

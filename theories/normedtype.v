@@ -54,6 +54,8 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*                  k.-lipschitz_A f == f is k.-lipschitz on A                *)
 (*        [locally k.-lipschitz_A f] == f is locally k.-lipschitz on A        *)
 (*                                                                            *)
+(*                     is_interval E == the set E is an interval              *)
+(*                                                                            *)
 (* * Complete normed modules :                                                *)
 (*        completeNormedModType K == interface type for a complete normed     *)
 (*                                   module structure over a realFieldType    *)
@@ -2300,11 +2302,12 @@ Grab Existential Variables. all: end_near. Qed.
 End closure_left_right_open.
 
 Section interval.
+Variable R : numDomainType.
 
-Definition is_interval (R : numDomainType) (E : set R) :=
+Definition is_interval (E : set R) :=
   forall x y, E x -> E y -> forall z, x < z < y -> E z.
 
-Lemma is_intervalPle (R : numDomainType) (E : set R) :
+Lemma is_intervalPle (E : set R) :
   is_interval E <-> forall x y, E x -> E y -> forall z, x <= z <= y -> E z.
 Proof.
 split=> iE x y Ex Ey z /andP[].
@@ -2312,6 +2315,22 @@ split=> iE x y Ex Ey z /andP[].
   by apply (iE _ _ Ex Ey); rewrite xz.
 by move=> xz zy; apply (iE _ _ Ex Ey); rewrite (ltW xz) (ltW zy).
 Qed.
+
+Lemma interval_is_interval (i : interval R) : is_interval [set x | x \in i].
+Proof.
+move: i => [[[] i|] [[] j|]] //= x y; rewrite /mkset !(inE,lersifT,lersifF);
+  move=> /andP[ax ?] /andP[? yb] z /andP[? ?]; rewrite !(inE,lersifT,lersifF).
+by rewrite (lt_trans ax) // (lt_trans _ yb).
+by rewrite (lt_trans ax) // (le_trans (ltW _) yb).
+by rewrite (lt_trans ax).
+by rewrite (le_trans ax (ltW _)) // (lt_trans _ yb).
+by rewrite (le_trans ax (ltW _)) // (le_trans (ltW _) yb).
+by rewrite (le_trans ax (ltW _)).
+by rewrite (lt_trans _ yb).
+by rewrite (le_trans (ltW _) yb).
+Qed.
+
+End interval.
 
 Lemma connected_convex (R : realType) (E : set R^o) :
   connected E <-> is_interval E.
@@ -2381,28 +2400,22 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
   by rewrite EU => -[//|]; apply: contra_not ncA1z1; exact: subset_closure.
 Qed.
 
-End interval.
-
 Section segment.
 Variable R : realType.
 
 (** properties of segments in [R] *)
 
-Lemma segment_connected (a b : R) : connected [set x : R^o | x \in `[a, b]].
-Proof.
-apply/connected_convex => x y; rewrite /mkset !(inE,lersifF).
-move => /andP[ax xb] /andP[ay yb] => z /andP[xz zy].
-by rewrite !(inE,lersifF) (le_trans ax (ltW _)) // (le_trans (ltW zy)).
-Qed.
+Lemma connected_segment (a b : R) : connected [set x : R^o | x \in `[a, b]].
+Proof. exact/connected_convex/interval_is_interval. Qed.
 
-Lemma segment_closed (a b : R) : closed [set x : R^o | x \in `[a, b]].
+Lemma closed_segment (a b : R) : closed [set x : R^o | x \in `[a, b]].
 Proof.
 have -> : [set x | x \in `[a, b]] = [set x | x >= a] `&` [set x | x <= b].
   by rewrite predeqE => ?; rewrite /= inE; split=> [/andP [] | /= [->]].
 by apply closedI; [apply closed_ge | apply closed_le].
 Qed.
 
-Lemma segment_compact (a b : R) : compact [set x : R^o | x \in `[a, b]].
+Lemma compact_segment (a b : R) : compact [set x : R^o | x \in `[a, b]].
 Proof.
 case: (lerP a b) => [leab|ltba]; last first.
   by move=> F FF /filter_ex [x abx]; move: ltba; rewrite (itvP abx).
@@ -2414,7 +2427,7 @@ set A := [set x | x \in `[a, b]] `&` B.
 suff Aeab : A = [set x | x \in `[a, b]].
   suff [_ [D' ? []]] : A b by exists D'.
   by rewrite Aeab/= inE/=; apply/andP.
-apply: segment_connected.
+apply: connected_segment.
 - have aba : a \in `[a, b] by rewrite inE/=; apply/andP.
   exists a; split=> //; have /sabUf [i /= Di fia] := aba.
   exists [fset i]%fset; first by move=> ?; rewrite inE inE => /eqP->.
@@ -2434,7 +2447,7 @@ apply: segment_connected.
   by rewrite subr_ge0; apply/ltW.
 exists A; last by rewrite predeqE => x; split=> [[] | []].
 move=> x clAx; have abx : x \in `[a, b].
-  by apply: segment_closed; have /closureI [] := clAx.
+  by apply: closed_segment; have /closureI [] := clAx.
 split=> //; have /sabUf [i Di fx] := abx.
 have /fop := Di; rewrite openE => /(_ _ fx) [_ /posnumP[e] xe_fi].
 have /clAx [y [[aby [D' sD [sayUf _]]] xe_y]] := nbhsx_ballx x e.
@@ -2754,7 +2767,7 @@ move=> [M [Mreal normAltM]] Acl.
 have Mnco : compact
   [set v : 'rV[R^o]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)])].
   apply: (@rV_compact [topologicalType of R^o] _ (fun _ => [set x | x \in `[(- (M + 1)), (M + 1)]])).
-  by move=> _; apply: segment_compact.
+  by move=> _; apply: compact_segment.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
 suff : `|v ord0 i : R^o| <= M + 1 by rewrite ler_norml.
 apply: le_trans (normvleM _ _); last by rewrite ltr_addl.
