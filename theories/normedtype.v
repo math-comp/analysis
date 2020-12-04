@@ -2256,6 +2256,13 @@ rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
 by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
 Qed.
 
+Lemma open_segment a b : open [set x : R^o | a < x < b].
+Proof.
+have -> : [set x | a < x < b] = [set x | a < x] `&` [set x | x < b].
+  by rewrite predeqE => r; rewrite /mkset; split => [/andP[? ?] //|[-> ->]].
+by apply openI; [exact: open_gt | exact: open_lt].
+Qed.
+
 End open_closed_sets.
 
 Hint Extern 0 (open _) => now apply: open_gt : core.
@@ -2332,7 +2339,159 @@ Qed.
 
 End interval.
 
-Lemma connected_convex (R : realType) (E : set R^o) :
+Lemma right_bounded_interior (R : realType) (X : set R^o) :
+  has_ubound X -> X^° `<=` [set r | r < sup X].
+Proof.
+move=> uX r Xr; rewrite /mkset ltNge; apply/negP.
+rewrite le_eqVlt => /orP[/eqP supXr|]; last first.
+  by apply/negP; rewrite -leNgt sup_ub //; exact: interior_subset.
+suff : ~ X^° (sup X) by rewrite supXr.
+case/nbhs_ballP => _/posnumP[e] supXeX.
+have [f XsupXf] : exists f : {posnum R}, X (sup X + f%:num).
+  exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprD addrA subrr.
+  by rewrite sub0r normrN gtr0_norm // ltr_pdivr_mulr // ltr_pmulr // ltr1n.
+have : sup X + f%:num <= sup X by apply sup_ub.
+by apply/negP; rewrite -ltNge; rewrite ltr_addl.
+Qed.
+
+Lemma left_bounded_interior (R : realType) (X : set R^o) :
+  has_lbound X -> X^° `<=` [set r | inf X < r].
+Proof.
+move=> lX r Xr; rewrite /mkset ltNge; apply/negP.
+rewrite le_eqVlt => /orP[/eqP rinfX|]; last first.
+  by apply/negP; rewrite -leNgt inf_lb //; exact: interior_subset.
+suff : ~ X^° (inf X) by rewrite -rinfX.
+case/nbhs_ballP => _/posnumP[e] supXeX.
+have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
+  exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprB addrCA subrr.
+  by rewrite addr0 gtr0_norm // ltr_pdivr_mulr // ltr_pmulr // ltr1n.
+have : inf X <= inf X - f%:num by apply inf_lb.
+by apply/negP; rewrite -ltNge; rewrite ltr_subl_addr ltr_addl.
+Qed.
+
+(* TODO: move to reals.v? *)
+Lemma inf_lb_strict (R : realType) (X : set R) : has_lbound X ->
+  ~ X (inf X) -> X `<=` [set r | inf X < r].
+Proof.
+move=> lX XinfX r Xr; rewrite /mkset lt_neqAle inf_lb // andbT.
+by apply/negP => /eqP infXr; move: XinfX; rewrite infXr.
+Qed.
+
+Lemma sup_ub_strict (R : realType) (X : set R) : has_ubound X ->
+  ~ X (sup X) -> X `<=` [set r | r < sup X].
+Proof.
+move=> ubX XsupX r Xr; rewrite /mkset lt_neqAle sup_ub // andbT.
+by apply/negP => /eqP supXr; move: XsupX; rewrite -supXr.
+Qed.
+
+Section interval_realType.
+Variable R : realType.
+
+Lemma unbounded_setT (X : set R) : is_interval X ->
+  ~ has_lbound X -> ~ has_ubound X -> X = setT.
+Proof.
+move=> iX lX uX; rewrite predeqE => x; split => // _.
+move/has_lbPn : lX => /(_ x) [y Xy xy].
+move/has_ubPn : uX => /(_ x) [z Xz xz].
+by apply: (iX _ _ Xy Xz); rewrite xy xz.
+Qed.
+
+Lemma left_unbounded_interior (X : set R^o) : is_interval X ->
+  ~ has_lbound X -> has_ubound X -> X^° = [set r | r < sup X].
+Proof.
+move=> iX lX uX; rewrite eqEsubset; split; first exact: right_bounded_interior.
+rewrite -(open_subsetE _ (@open_lt _ _)) => r rsupX.
+move/has_lbPn : lX => /(_ r)[y Xy yr].
+have hsX : has_sup X by split => //; exists y.
+have /(sup_adherent hsX)[e Xe] : 0 < sup X - r by rewrite subr_gt0.
+by rewrite opprB addrCA subrr addr0 => re; apply (iX _ _ Xy Xe); rewrite yr re.
+Qed.
+
+Lemma right_unbounded_interior (X : set R^o) : is_interval X ->
+  has_lbound X -> ~ has_ubound X -> X^° = [set r | inf X < r].
+Proof.
+move=> iX lX uX; rewrite eqEsubset; split; first exact: left_bounded_interior.
+rewrite -(open_subsetE _ (@open_gt _ _)) => r infXr.
+move/has_ubPn : uX => /(_ r)[y Xy yr].
+have hiX : has_inf X by split => //; exists y.
+have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
+by rewrite addrCA subrr addr0 => er; apply: (iX _ _ Xe Xy); rewrite yr er.
+Qed.
+
+Lemma bounded_interior (X : set R^o) : is_interval X ->
+  has_lbound X -> has_ubound X -> X^° = [set r | inf X < r < sup X].
+Proof.
+move=> iX bX aX; rewrite eqEsubset; split.
+  move=> r Xr; apply/andP; split;
+    [exact: left_bounded_interior | exact: right_bounded_interior].
+ rewrite -(open_subsetE _ (@open_segment _ _ _)) => r /andP[iXr rsX].
+have [X0|/set0P/negP/negPn/eqP X0] := pselect (X !=set0); last first.
+  by move: (lt_trans iXr rsX); rewrite X0 inf_out ?sup_out ?ltxx // => - [[]].
+have hiX : has_inf X by split.
+have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
+rewrite addrCA subrr addr0 => er.
+have hsX : has_sup X by split.
+have /(sup_adherent hsX)[f Xf] : 0 < sup X - r by rewrite subr_gt0.
+by rewrite opprB addrCA subrr addr0 => rf; apply: (iX _ _ Xe Xf); rewrite er rf.
+Qed.
+
+Definition interval_of_set (X : set R) : interval R :=
+  match `[< has_lbound X >], `[< has_ubound X >] with
+  | false, false => `]-oo, +oo[
+  | true , false => if `[< X (inf X) >] then `[inf X, +oo[ else `]inf X, +oo[
+  | false, true  => if `[< X (sup X) >] then `]-oo, sup X] else `]-oo, (sup X)[
+  | true , true  => if `[< X (inf X) >] then
+      (if `[< X (sup X) >] then `[inf X, sup X] else `[inf X, (sup X)[)
+    else
+      (if `[< X (sup X) >] then `]inf X, sup X] else `]inf X, (sup X)[)
+  end.
+
+Lemma is_intervalP (X : set R) :
+  is_interval X <-> exists i : interval R, X = [set x | x \in i].
+Proof.
+split=> [iX|[i ->]]; last exact: interval_is_interval.
+exists (interval_of_set X); rewrite predeqE => x; split => [Xx|];
+    rewrite /mkset inE /interval_of_set /=.
+- case: ifPn => /asboolP ?; case: ifPn => /asboolP ? //.
+  + by case: ifPn => /asboolP ?; case: ifPn => /asboolP ?;
+      rewrite !(lersifF,lersifT,sup_ub,inf_lb,sup_ub_strict,inf_lb_strict).
+  + case: ifPn => /asboolP XinfX; rewrite !(lersifF,lersifT);
+      by [rewrite inf_lb | rewrite inf_lb_strict].
+  + case: ifPn => /asboolP XsupX; rewrite !(lersifF,lersifT);
+      by [rewrite sup_ub | rewrite sup_ub_strict].
+- case: ifPn => /asboolP ?; case: ifPn => /asboolP ?.
+  + case: ifPn => /asboolP XinfX; case: ifPn => /asboolP XsupX;
+      rewrite !(lersifF,lersifT).
+    * move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx].
+      rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
+      apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite bounded_interior // /mkset infXx.
+    * move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx supXx].
+      apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite bounded_interior // /mkset infXx.
+    * move=> /andP[infXx]; rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
+      apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite bounded_interior // /mkset infXx.
+    * move=> ?; apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite bounded_interior // /mkset infXx.
+  + case: ifPn => /asboolP XinfX; rewrite !(lersifF,lersifT,andbT).
+    * rewrite le_eqVlt => /orP[/eqP<-//|infXx].
+      apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite right_unbounded_interior.
+    * move=> infXx; apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite right_unbounded_interior.
+  + case: ifPn => /asboolP XsupX /=.
+    * rewrite le_eqVlt => /orP[/eqP->//|xsupX].
+      apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite left_unbounded_interior.
+    * move=> xsupX; apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite left_unbounded_interior.
+  + by move=> _; rewrite (unbounded_setT iX).
+Qed.
+
+End interval_realType.
+
+Lemma connected_intervalP (R : realType) (E : set R^o) :
   connected E <-> is_interval E.
 Proof.
 split => [cE x y Ex Ey z /andP[xz zy]|].
@@ -2406,7 +2565,7 @@ Variable R : realType.
 (** properties of segments in [R] *)
 
 Lemma connected_segment (a b : R) : connected [set x : R^o | x \in `[a, b]].
-Proof. exact/connected_convex/interval_is_interval. Qed.
+Proof. exact/connected_intervalP/interval_is_interval. Qed.
 
 Lemma closed_segment (a b : R) : closed [set x : R^o | x \in `[a, b]].
 Proof.
