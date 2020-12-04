@@ -1314,7 +1314,7 @@ have imf_sup : has_sup imf.
   split.
     by exists (f a) => //; rewrite /imf; apply/imageP; rewrite /= inE /= lexx.
   have [M [Mreal imfltM]] : bounded_set (f @` [set x | x \in `[a, b]] : set R^o).
-    apply/compact_bounded/continuous_compact; last exact: compact_segment.
+    apply/compact_bounded/continuous_compact; last exact: segment_compact.
     by move=> ?; rewrite inE => /fcont.
   exists (M + 1); apply/ubP => y /imfltM yleM.
   apply: le_trans (yleM _ _); last by rewrite ltr_addl.
@@ -1333,7 +1333,7 @@ have invf_continuous : {in `[a, b], continuous (fun t => (sup imf - f t)^-1 : R^
   by apply: cvgD; [apply: continuous_cst|apply: cvgN; apply:fcont].
 have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] :
    bounded_set ((fun t => (sup imf - f t)^-1) @` [set x | x \in `[a, b]] : set R^o).
-  apply/compact_bounded/continuous_compact; last exact: compact_segment.
+  apply/compact_bounded/continuous_compact; last exact: segment_compact.
   by move=> ?; rewrite inE => /invf_continuous.
 have : exists2 y, imf y & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.

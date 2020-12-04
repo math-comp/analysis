@@ -12,14 +12,14 @@
   + definition `mule` and its notation `*` (scope `ereal_scope`)
   + definition `abse` and its notation `` `| | `` (scope `ereal_scope`)
 - in `normedtype.v`:
-  + lemmas `closure_sup`, `near_nbhs_inv`, `limit_pointP`
+  + lemmas `closure_sup`, `near_infty_natSinv_lt`, `limit_pointP`
   + lemmas `closure_gt`, `closure_lt`
   + definition `is_interval`, `is_intervalPle`, `interval_is_interval`
   + lemma `connected_intervalP`
   + lemma `open_segment`
-  + lemmas `inf_lb_strict`, `sup_ub_strict`, `unbounded_setT`,
-    `right_bounded_interior`, `left_unbounded_interior`, `left_bounded_interior`,
-    `right_unbounded_interior`, `bounded_interior`
+  + lemmas `inf_lb_strict`, `sup_ub_strict`, `interval_unbounded_setT`,
+    `right_bounded_interior`, `interval_left_unbounded_interior`, `left_bounded_interior`,
+    `interval_right_unbounded_interior`, `interval_bounded_interior`
   + definition `interval_of_set`
   + lemma `is_intervalP`
 - in `measure.v`:
@@ -84,10 +84,6 @@
   + `nbhs_of` -> `locally_of`
 - in `topology.v`:
   + `connect0` -> `connected0`
-- in `normedtype.v`:
-  + `segment_connected` -> `connected_segment`
-  + `segment_closed` -> `closed_segment`
-  + `segment_compact` -> `compact_segment`
 
 ### Removed
 
