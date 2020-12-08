@@ -2229,23 +2229,20 @@ Hint Resolve open_gt : core.
 
 Lemma open_neq y : open [set x : R^o | x != y].
 Proof.
-rewrite (_ : xpredC _ = [set x | x < y] `|` [set x | x > y] :> set _) /=.
-  by apply: openU => //; apply: open_lt.
+rewrite (_ : mkset _ = [set x | x < y] `|` [set x | x > y]); first exact: openU.
 rewrite predeqE => x /=; rewrite eq_le !leNgt negb_and !negbK orbC.
 by symmetry; apply (rwP orP).
 Qed.
 
 Lemma closed_le y : closed [set x : R^o | x <= y].
 Proof.
-rewrite (_ : [set x | x <= _] = ~` (> y) :> set _).
-  by apply: closedC; exact: open_gt.
+rewrite (_ : mkset _ = ~` [set x | x > y]); first exact: closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
 Lemma closed_ge y : closed [set x : R^o | y <= x].
 Proof.
-rewrite (_ : (>= _) = ~` [set x | x < y] :> set _).
-  by apply: closedC; exact: open_lt.
+rewrite (_ : mkset _ = ~` [set x | x < y]); first exact: closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
@@ -2256,18 +2253,37 @@ rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
 by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
 Qed.
 
-Lemma segment_open a b : open [set x : R^o | x \in `]a, b[].
+(* TODO: move after rebase on mathcomp 1.12?  *)
+Definition isBOpen (b : itv_bound R) :=
+  if b is BOpen _ then true else false.
+
+Definition isBClosed (b : itv_bound R) :=
+  if b is BOpen_if false _ then true else false.
+
+Lemma interval_open a b : ~~ isBClosed a -> ~~ isBClosed b ->
+  open [set x : R^o | x \in Interval a b].
 Proof.
-have -> : [set x | a < x < b] = [set x | a < x] `&` [set x | x < b].
-  by rewrite predeqE => r; rewrite /mkset; split => [/andP[? ?] //|[-> ->]].
-by apply openI; [exact: open_gt | exact: open_lt].
+move: a b => [[]//a|] [[]//b|] _ _.
+- have -> : [set x | a < x < b] = [set x | a < x] `&` [set x | x < b].
+    by rewrite predeqE => r; rewrite /mkset; split => [/andP[? ?] //|[-> ->]].
+  by apply openI; [exact: open_gt | exact: open_lt].
+- rewrite (_ : [set x | x \in _] = [set x : R^o | x > a]) //.
+  by rewrite predeqE => r; split => //; rewrite /mkset ?(inE,lersifT,andbT).
+- exact: open_lt.
+- by rewrite (_ : mkset _ = setT); [exact: openT | rewrite predeqE].
 Qed.
 
-Lemma segment_closed a b : closed [set x : R^o | x \in `[a, b] ].
+Lemma interval_closed a b : ~~ isBOpen a -> ~~ isBOpen b ->
+  closed [set x : R^o | x \in Interval a b].
 Proof.
-have -> : [set x | x \in `[a, b]] = [set x | x >= a] `&` [set x | x <= b].
-  by rewrite predeqE => ?; rewrite /= inE; split=> [/andP [] | /= [->]].
-by apply closedI; [apply closed_ge | apply closed_le].
+move: a b => [[]//a|] [[]//b|] _ _.
+- have -> : [set x | x \in `[a, b]] = [set x | x >= a] `&` [set x | x <= b].
+    by rewrite predeqE => ?; rewrite /= inE; split=> [/andP [] | /= [->]].
+  by apply closedI; [exact: closed_ge | exact: closed_le].
+- rewrite (_ : mkset _ = [set x : R^o | x >= a]); first exact :closed_ge.
+  by rewrite predeqE => r; split => //; rewrite /mkset ?(inE,lersifT,andbT).
+- exact: closed_le.
+- by rewrite (_ : mkset _ = setT); [exact: closedT|rewrite predeqE].
 Qed.
 
 End open_closed_sets.
@@ -2428,11 +2444,12 @@ Qed.
 Lemma interval_bounded_interior (X : set R^o) : is_interval X ->
   has_lbound X -> has_ubound X -> X^° = [set r | inf X < r < sup X].
 Proof.
-move=> iX bX aX; rewrite eqEsubset; split.
-  move=> r Xr; apply/andP; split;
-    [exact: left_bounded_interior | exact: right_bounded_interior].
- rewrite -(open_subsetE _ (@segment_open _ _ _)) => r /andP[iXr rsX].
-have [X0|/set0P/negP/negPn/eqP X0] := pselect (X !=set0); last first.
+move=> iX bX aX; rewrite eqEsubset; split=> [r Xr|].
+  apply/andP; split;
+    [exact: left_bounded_interior|exact: right_bounded_interior].
+rewrite -open_subsetE; last exact: (@interval_open _ (BOpen _) (BOpen _)).
+move=> r /andP[iXr rsX].
+have [/set0P X0|/negPn/eqP X0] := boolP (X != set0); last first.
   by move: (lt_trans iXr rsX); rewrite X0 inf_out ?sup_out ?ltxx // => - [[]].
 have hiX : has_inf X by split.
 have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
@@ -2606,7 +2623,7 @@ apply: segment_connected.
   by rewrite subr_ge0; apply/ltW.
 exists A; last by rewrite predeqE => x; split=> [[] | []].
 move=> x clAx; have abx : x \in `[a, b].
-  by apply: segment_closed; have /closureI [] := clAx.
+  by apply: interval_closed; have /closureI [] := clAx.
 split=> //; have /sabUf [i Di fx] := abx.
 have /fop := Di; rewrite openE => /(_ _ fx) [_ /posnumP[e] xe_fi].
 have /clAx [y [[aby [D' sD [sayUf _]]] xe_y]] := nbhsx_ballx x e.

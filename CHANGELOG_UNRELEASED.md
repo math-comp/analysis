@@ -16,7 +16,7 @@
   + lemmas `closure_gt`, `closure_lt`
   + definition `is_interval`, `is_intervalPle`, `interval_is_interval`
   + lemma `connected_intervalP`
-  + lemma `open_segment`
+  + lemmas `interval_open` and `interval_closed`
   + lemmas `inf_lb_strict`, `sup_ub_strict`, `interval_unbounded_setT`,
     `right_bounded_interior`, `interval_left_unbounded_interior`, `left_bounded_interior`,
     `interval_right_unbounded_interior`, `interval_bounded_interior`
