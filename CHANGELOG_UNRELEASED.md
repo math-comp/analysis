@@ -11,6 +11,17 @@
 - in `ereal.v`:
   + definition `mule` and its notation `*` (scope `ereal_scope`)
   + definition `abse` and its notation `` `| | `` (scope `ereal_scope`)
+- in `normedtype.v`:
+  + lemmas `closure_sup`, `near_infty_natSinv_lt`, `limit_pointP`
+  + lemmas `closure_gt`, `closure_lt`
+  + definition `is_interval`, `is_intervalPle`, `interval_is_interval`
+  + lemma `connected_intervalP`
+  + lemmas `interval_open` and `interval_closed`
+  + lemmas `inf_lb_strict`, `sup_ub_strict`, `interval_unbounded_setT`,
+    `right_bounded_interior`, `interval_left_unbounded_interior`, `left_bounded_interior`,
+    `interval_right_unbounded_interior`, `interval_bounded_interior`
+  + definition `interval_of_set`
+  + lemma `is_intervalP`
 - in `measure.v`:
   + definition `bigcup2`, lemma `bigcup2E`
   + definitions `isSemiRingOfSets`, `SemiRingOfSets`, notation `semiRingOfSetsType`
