@@ -16,12 +16,18 @@ the Coq proof-assistant and using the Mathematical Components library.
 - Author(s):
   - Reynald Affeldt (initial)
   - Cyril Cohen (initial)
+  - Marie Kerjean
   - Assia Mahboubi (initial)
   - Damien Rouhling (initial)
+  - Kazuhiko Sakaguchi
   - Pierre-Yves Strub (initial)
 - License: [CeCILL-C](LICENSE)
 - Compatible Coq versions: Coq 8.11 to 8.12
 - Additional dependencies:
+  - [MathComp ssreflect 1.11](https://math-comp.github.io)
+  - [MathComp fingroup 1.11](https://math-comp.github.io)
+  - [MathComp algebra 1.11](https://math-comp.github.io)
+  - [MathComp solvable 1.11](https://math-comp.github.io)
   - [MathComp field 1.11](https://math-comp.github.io)
   - [MathComp finmap 1.5](https://github.com/math-comp/finmap)
   - [Hierarchy Builder 0.10](https://github.com/math-comp/hierarchy-builder)
@@ -67,24 +73,33 @@ Each file is documented in its header.
 Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
 [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
 
-[ORIGINAL_FILES.md](ORIGINAL_FILES.md) gives more details about the
-files in the first releases.
-
 Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
 
 Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
 
-## Related work
+## Previous work reused at the time of the first releases
 
-This library is inspired by the [Coquelicot library](http://coquelicot.saclay.inria.fr/).
+This library was inspired by the [Coquelicot library](http://coquelicot.saclay.inria.fr/)
+by Sylvie Boldo, Catherine Lelay, and Guillaume Melquiond.
+`topology.v` and `normedtype.v` contained a reimplementation of file
+`Hierarchy.v` from the library Coquelicot.
+
 The instantiation of the mathematical structures of the Mathematical Components library
-with the real numbers of the standard Coq library uses a well-known file (`Rstruct.v`)
+with the real numbers of the standard Coq library used a well-known file (`Rstruct.v`)
 from the [CoqApprox library](http://tamadi.gforge.inria.fr/CoqApprox/) (with
 modifications from various authors).
 
-## Development
+Our proof of Zorn's Lemma in `classical_sets.v` (NB: new filename) is a reimplementation
+of the one by Daniel Schepler (https://github.com/coq-community/zorns-lemma); we also took
+inspiration from his work on topology (https://github.com/coq-community/topology) for parts
+of `topology.v`.
 
-[Requirements and Installation Procedure](INSTALL.md)
+[ORIGINAL_FILES.md](ORIGINAL_FILES.md) gives more details about the
+files in the first releases.
+
+## Development information
+
+[Detailed requirements and installation procedure](INSTALL.md)
 
 [Developping with nix](NIX.md)
 

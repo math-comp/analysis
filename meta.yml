@@ -16,10 +16,14 @@ authors:
   initial: true
 - name: Cyril Cohen
   initial: true
+- name: Marie Kerjean
+  initial: false
 - name: Assia Mahboubi
   initial: true
 - name: Damien Rouhling
   initial: true
+- name: Kazuhiko Sakaguchi
+  initial: false
 - name: Pierre-Yves Strub
   initial: true
 
@@ -43,6 +47,26 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 
 dependencies:
+- opam:
+    name: coq-mathcomp-ssreflect
+    version: '{ (>= "1.11.0" & < "1.12~") }'
+  description: |-
+    [MathComp ssreflect 1.11](https://math-comp.github.io)
+- opam:
+    name: coq-mathcomp-fingroup
+    version: '{ (>= "1.11.0" & < "1.12~") }'
+  description: |-
+    [MathComp fingroup 1.11](https://math-comp.github.io)
+- opam:
+    name: coq-mathcomp-algebra
+    version: '{ (>= "1.11.0" & < "1.12~") }'
+  description: |-
+    [MathComp algebra 1.11](https://math-comp.github.io)
+- opam:
+    name: coq-mathcomp-solvable
+    version: '{ (>= "1.11.0" & < "1.12~") }'
+  description: |-
+    [MathComp solvable 1.11](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-field
     version: '{ (>= "1.11.0" & < "1.12~") }'
@@ -92,24 +116,33 @@ documentation: |-
   Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
   [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
   
-  [ORIGINAL_FILES.md](ORIGINAL_FILES.md) gives more details about the
-  files in the first releases.
-
   Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
 
   Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
 
-  ## Related work
+  ## Previous work reused at the time of the first releases
 
-  This library is inspired by the [Coquelicot library](http://coquelicot.saclay.inria.fr/).
+  This library was inspired by the [Coquelicot library](http://coquelicot.saclay.inria.fr/)
+  by Sylvie Boldo, Catherine Lelay, and Guillaume Melquiond.
+  `topology.v` and `normedtype.v` contained a reimplementation of file
+  `Hierarchy.v` from the library Coquelicot.
+
   The instantiation of the mathematical structures of the Mathematical Components library
-  with the real numbers of the standard Coq library uses a well-known file (`Rstruct.v`)
+  with the real numbers of the standard Coq library used a well-known file (`Rstruct.v`)
   from the [CoqApprox library](http://tamadi.gforge.inria.fr/CoqApprox/) (with
   modifications from various authors).
 
-  ## Development
+  Our proof of Zorn's Lemma in `classical_sets.v` (NB: new filename) is a reimplementation
+  of the one by Daniel Schepler (https://github.com/coq-community/zorns-lemma); we also took
+  inspiration from his work on topology (https://github.com/coq-community/topology) for parts
+  of `topology.v`.
 
-  [Requirements and Installation Procedure](INSTALL.md)
+  [ORIGINAL_FILES.md](ORIGINAL_FILES.md) gives more details about the
+  files in the first releases.
+
+  ## Development information
+
+  [Detailed requirements and installation procedure](INSTALL.md)
 
   [Developping with nix](NIX.md)
 

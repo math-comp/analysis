@@ -44,7 +44,9 @@ Related publications, if any, are listed below.
 
 - Reynald Affeldt
 - Cyril Cohen
+- Marie Kerjean
 - Assia Mahboubi
 - Damien Rouhling
+- Kazuhiko Sakaguchi
 - Pierre-Yves Strub
 
