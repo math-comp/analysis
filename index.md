@@ -34,7 +34,7 @@ Related publications, if any, are listed below.
 
 - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)
 - [Competing inheritance paths in dependent type theory---a case study in functional analysis](https://hal.inria.fr/hal-02463336) doi:[10.1007/978-3-030-51054-1_1](https://doi.org/10.1007/978-3-030-51054-1_1)
-- [Outils pour la Formalisation en Analyse Classique](http://www-sop.inria.fr/members/Damien.Rouhling/data/phd/thesis.pdf) 
+- [Formalisation Tools for Classical Analysis](http://www-sop.inria.fr/members/Damien.Rouhling/data/phd/thesis.pdf) 
 
 ## Help and contact
 
