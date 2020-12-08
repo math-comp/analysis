@@ -1,9 +1,12 @@
 # Analysis library compatible with Mathematical Components
 
 [![CI][action-shield]][action-link]
+[![Chat][chat-shield]][chat-link]
 
 [action-shield]: https://github.com/math-comp/analysis/workflows/CI/badge.svg?branch=master
 [action-link]: https://github.com/math-comp/analysis/actions?query=workflow%3ACI
+[chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
+[chat-link]: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
 
 
 
@@ -65,8 +68,6 @@ mechanisms may be replaced at any major version bump.  Use at your
 own risk.
 
 ## Documentation
-
-[![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://coq.zulipchat.com/#narrow/stream/237666-math-comp-analysis)
 
 Each file is documented in its header.
 

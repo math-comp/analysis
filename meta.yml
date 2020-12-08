@@ -11,6 +11,9 @@ synopsis: >-
 description: |-
   This repository contains an experimental library for real analysis for
   the Coq proof-assistant and using the Mathematical Components library.
+chat:
+- url: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
+  shield: zulip
 authors:
 - name: Reynald Affeldt
   initial: true
@@ -108,8 +111,6 @@ documentation: |-
   own risk.
 
   ## Documentation
-
-  [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://coq.zulipchat.com/#narrow/stream/237666-math-comp-analysis)
 
   Each file is documented in its header.
 
