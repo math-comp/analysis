@@ -257,16 +257,30 @@ by move=> eq; split=> /asboolP; rewrite (eq, =^~ eq) => /asboolP.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma and_asboolP (P Q : Prop) : reflect (P /\ Q) (`[<P>] && `[<Q>]).
+Lemma and_asboolP (P Q : Prop) : reflect (P /\ Q) (`[< P >] && `[< Q >]).
 Proof.
-apply: (iffP idP); first by case/andP=> /asboolP hP /asboolP hQ.
+apply: (iffP idP); first by case/andP => /asboolP p /asboolP q.
 by case=> /asboolP-> /asboolP->.
 Qed.
 
-Lemma or_asboolP (P Q : Prop) : reflect (P \/ Q) (`[<P>] || `[<Q>]).
+Lemma and3_asboolP (P Q R : Prop) :
+  reflect [/\ P, Q & R] [&& `[< P >], `[< Q >] & `[< R >]].
+Proof.
+apply: (iffP idP); first by case/and3P => /asboolP p /asboolP q /asboolP r.
+by case => /asboolP -> /asboolP -> /asboolP ->.
+Qed.
+
+Lemma or_asboolP (P Q : Prop) : reflect (P \/ Q) (`[< P >] || `[< Q >]).
 Proof.
 apply: (iffP idP); first by case/orP=> /asboolP; [left | right].
 by case=> /asboolP-> //=; rewrite orbT.
+Qed.
+
+Lemma or3_asboolP (P Q R : Prop) :
+  reflect [\/ P, Q | R] [|| `[< P >], `[< Q >] | `[< R >]].
+Proof.
+apply: (iffP idP); last by case=> [| |] /asboolP -> //=; rewrite !orbT.
+case/orP=> [/asboolP p|/orP[]/asboolP];[exact:Or31|exact:Or32|exact:Or33].
 Qed.
 
 Lemma asbool_neg {P : Prop} : `[<~ P>] = ~~ `[<P>].
@@ -609,6 +623,13 @@ Lemma not_andP (P Q : Prop) : ~ (P /\ Q) <-> ~ P \/ ~ Q.
 Proof.
 split => [/asboolPn|[|]]; try by apply: contra_not => -[].
 by rewrite asbool_and negb_and => /orP[]/asboolPn; [left|right].
+Qed.
+
+Lemma not_and3P (P Q R : Prop) : ~ [/\ P, Q & R] <-> [\/ ~ P, ~ Q | ~ R].
+Proof.
+split=> [/and3_asboolP|/or3_asboolP].
+by rewrite 2!negb_and -3!asbool_neg => /or3_asboolP.
+by rewrite 3!asbool_neg -2!negb_and => /and3_asboolP.
 Qed.
 
 Lemma not_orP (P Q : Prop) : ~ (P \/ Q) <-> ~ P /\ ~ Q.

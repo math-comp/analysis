@@ -197,6 +197,7 @@ Require Import boolp classical_sets posnum.
 (*                     connected A <-> the only non empty subset of A which   *)
 (*                                     is both open and closed in A is A.     *)
 (*                    separated A B == the two sets A and B are separated     *)
+(*                      component x == the connected component of point x     *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
 (*                                     if P is convertible to G (globally A)  *)
 (*                                                                            *)
@@ -2222,6 +2223,12 @@ Context {T : topologicalType}.
 Definition closure (A : set T) :=
   [set p : T | forall B, nbhs p B -> A `&` B !=set0].
 
+Lemma closure0 : closure set0 = set0 :> set T.
+Proof.
+rewrite predeqE => x; split => // /(_ _ (filter_nbhsT _))/set0P.
+by rewrite set0I eqxx.
+Qed.
+
 Lemma closureEnbhs A : closure A = [set p | globally A `#` nbhs p].
 Proof. by under eq_fun do rewrite meets_globallyl. Qed.
 
@@ -2887,11 +2894,20 @@ Definition connected A :=
   forall B, B !=set0 -> (exists2 C, open C & B = A `&` C) ->
   (exists2 C, closed C & B = A `&` C) -> B = A.
 
-Lemma connect0 : connected (@set0 T).
+Lemma connected0 : connected (@set0 T).
 Proof. by move=> ? ? [? ?]; rewrite set0I. Qed.
 
 Definition separated A B :=
   (closure A) `&` B = set0 /\ A `&` (closure B) = set0.
+
+Lemma separatedC A B : separated A B = separated B A.
+Proof. by rewrite /separated andC setIC (setIC _ B). Qed.
+
+Lemma separated_disjoint A B : separated A B -> A `&` B = set0.
+Proof.
+move=> AB; rewrite predeqE => x; split => // -[Ax Bx].
+by move: AB; rewrite /separated => -[<- _]; split => //; apply: subset_closure.
+Qed.
 
 Lemma connectedPn A : ~ connected A <->
   exists E : bool -> set T, [/\ forall b, E b !=set0,
@@ -2923,6 +2939,62 @@ exists (fun i => if i is false then A `\` C else A `&` C); split.
     rewrite -BAC BAD=> /closureI[_]; rewrite -(proj1 (@closure_id _ _) cD)=> Dy.
     by have : B y; [by rewrite BAD; split|rewrite BAC => -[]].
 Qed.
+
+Lemma connectedP A : connected A <->
+  forall E : bool -> set T, ~ [/\ forall b, E b !=set0,
+    A = E false `|` E true & separated (E false) (E true)].
+Proof.
+rewrite -propeqE forallNE; apply: notRL; rewrite propeqE; exact: connectedPn.
+Qed.
+
+Lemma connected_subset A B C : separated A B -> C `<=` A `|` B ->
+  connected C -> C `<=` A \/ C `<=` B.
+Proof.
+move=> AB CAB; have -> : C = (C `&` A) `|` (C `&` B).
+  rewrite predeqE => x; split=> [Cx|[] [] //].
+  by have [Ax|Bx] := CAB _ Cx; [left|right].
+move/connectedP/(_ (fun b => if b then C `&` B else C `&` A)) => /not_and3P[]//.
+  by move/existsNP => [b /set0P/negP/negPn]; case: b => /eqP ->;
+    rewrite !(setU0,set0U); [left|right]; apply: subIset; right.
+case/not_andP => /eqP/set0P[x []].
+- move=> /closureI[cCx cAx] [Cx Bx]; exfalso.
+  by move: AB; rewrite /separated => -[] + _; apply/eqP/set0P; exists x.
+- move=> [Cx Ax] /closureI[cCx cBx]; exfalso.
+  by move: AB; rewrite /separated => -[] _; apply/eqP/set0P; exists x.
+Qed.
+
+Lemma bigcup_connected I (A : I -> set T) (P : I -> Prop) :
+  \bigcap_(i in P) (A i) !=set0 -> (forall i, P i -> connected (A i)) ->
+  connected (\bigcup_(i in P) (A i)).
+Proof.
+move=> [c AIc] cA; have [[i Pi]|] := pselect (exists i, P i); last first.
+  move/forallNP => P0.
+  rewrite (_ : P = set0) ?bigcup_set0; first exact: connected0.
+  by rewrite predeqE => x; split => //; exact: P0.
+apply/connectedP => [E [E0 EU sE]].
+wlog E0c : E E0 EU sE / E false c.
+  move=> G; have : (\bigcup_(i in P) A i) c by exists i => //; exact: AIc.
+  rewrite EU => -[E0c|E1c]; first exact: G.
+  by apply: (G (E \o negb)) => //;
+    [case => /=|rewrite EU setUC|rewrite separatedC].
+move: (E0 true) => /set0P/eqP; apply.
+have [/eqP //|/set0P[d E1d]] := boolP (E true == set0).
+have : \bigcup_(i in P) A i `<=` E false.
+  suff AE : forall i, P i -> A i `<=` E false by move=> x [j ? ?]; exact: (AE j).
+  move=> j Pj.
+  move: (@connected_subset _ _ (A j) sE).
+  rewrite -EU => /(_ (bigcup_sup _) (cA _ Pj)) [//| | AjE1]; first exact.
+  exfalso; have E1c := AjE1 _ (AIc _ Pj).
+  by move/separated_disjoint : sE; apply/eqP/set0P; exists c.
+rewrite EU subUset => -[_] /(_ _ E1d) E0d; exfalso.
+by move/separated_disjoint : sE; apply/eqP/set0P; exists d.
+Qed.
+
+Definition connected_component (x : T) :=
+  \bigcup_(X in [set C | connected C /\ C x]) X.
+
+Lemma component_connected (x : T) : connected (connected_component x).
+Proof. by apply: bigcup_connected; [exists x => C []|move=> C []]. Qed.
 
 End connected_sets.
 

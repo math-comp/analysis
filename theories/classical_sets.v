@@ -400,6 +400,10 @@ Lemma preimage_setU {A B} (f : A -> B) (X Y : set B) :
   f @^-1` (X `|` Y) = f @^-1` X `|` f @^-1` Y.
 Proof. by rewrite predeqE. Qed.
 
+Lemma bigcup_sup A I j (P : set I) (F : I -> set A) :
+  P j -> F j `<=` \bigcup_(i in P) F i.
+Proof. by move=> Pj a Fja; exists j. Qed.
+
 Lemma preimage_bigcup {A B I} (P : set I) (f : A -> B) F :
   f @^-1` (\bigcup_ (i in P) F i) = \bigcup_(i in P) (f @^-1` F i).
 Proof. by rewrite predeqE. Qed.
