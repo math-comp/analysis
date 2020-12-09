@@ -14,8 +14,7 @@ with builtins;
 with (import nixpkgs {}).lib;
 let
   the-config = (if builtins.pathExists ./.nix/config.nix then import ./.nix/config.nix else {}) // config;
-  full-pname =  if args?pname then "coqPackages.${args.pname}"
-                else the-config.pname or "coqPackages.generic";
+  full-pname = "coqPackages.${args.pname or the-config.pname or "generic"}";
   ppath = splitString "." full-pname;
   pname = last ppath;
   mk-overlays = path: callPackage:
@@ -24,8 +23,7 @@ let
   coq-overlays = mk-overlays ./.nix/coq-overlays;
   ocaml-overlays = mk-overlays ./.nix/ocaml-overlays;
   override-version = x: v: x.override { version = v; };
-  version-overrides = (setAttrByPath ppath ./.) //
-    (the-config.overrides or {});
+  version-overrides = (setAttrByPath ppath ./.) // (the-config.overrides or {});
   overrides = self: super: mapAttrs (n: v: override-version super.${n} v)
     (removeAttrs version-overrides [ "coqPackages" "ocamlPackages" ]);
   ocaml-overrides = self: super: mapAttrs (n: v: override-version super.${n} v)
@@ -43,10 +41,8 @@ let
     (_self: super:  { coqPackages = super.coqPackages.overrideScope' coq-overrides; })
   ];
   pkgs = import nixpkgs { inherit overlays; };
-  default-coq-derivation = makeOverridable pkgs.coqPackages.mkCoqDerivation {
-    inherit pname;
-    version = "./.";
-  };
+  default-coq-derivation = makeOverridable pkgs.coqPackages.mkCoqDerivation
+    { inherit pname; version = ./.; };
   this-pkg = attrByPath ppath default-coq-derivation pkgs;
 
   shellHook = readFile ./.nix/shellHook.sh + pkgs.lib.optionalString print-env "nixEnv";
