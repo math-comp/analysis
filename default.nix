@@ -50,6 +50,8 @@ let
   currentdir = ./.;
   emacs = with pkgs; emacsWithPackages
     (epkgs: with epkgs.melpaStablePackages; [proof-general]);
+
+  coqpkgs = let coqpkgs = pkgs.coqPackages; in coqpkgs.filterPackages pkgs coqpkgs;
 in
 if pkgs.lib.trivial.inNixShell then this-pkg.overrideAttrs (old: {
   inherit shellHook currentdir;
@@ -64,4 +66,4 @@ if pkgs.lib.trivial.inNixShell then this-pkg.overrideAttrs (old: {
 
   propagatedBuildInputs = if do-nothing then [] else old.propagatedBuildInputs or [];
 
-}) else this-pkg
+}) else if ci then coqpkgs else this-pkg
