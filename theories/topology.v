@@ -341,243 +341,73 @@ Structure nbhs_on T := Nbhs {
 Arguments Nbhs {T}.
 Arguments in_nbhs : simpl never.
 
-Module Nbhs.
 
-(* Index a family of filters on a type, one for each element of the type *)
-Record mixin_of U T := Mixin {
-  nbhs_op : T -> nbhs_on U;
-}.
-Definition Mixin_ U T nbhs_op := @Mixin U T (fun x => Nbhs (nbhs_op x)).
-
-Record class_of U T := Class {
-  base : Pointed.class_of T;
-  mixin : mixin_of U T
-}.
-
-Section ClassDef.
-Variable U : Type.
-
-Structure type := Pack { sort; _ : class_of U sort }.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c := cT return class_of U cT in c.
-
-Definition clone c of phant_id class c := @Pack T c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of U xT).
-Local Coercion base : class_of >-> Pointed.class_of.
-
-Definition pack m :=
-  fun bT b of phant_id (Pointed.class bT) b => @Pack T (Class b m).
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition fpointedType := @Pointed.Pack cT xclass.
-
-End ClassDef.
-
-(* filter on arrow sources *)
-Structure source Z Y := Source {
-  source_type :> Type;
-  _ : mixin_of Y (source_type -> Z)
-}.
-Definition source_filter Z Y (F : source Z Y) : mixin_of Y (F -> Z) :=
-  let: Source X f := F in f.
-
-Module Exports.
-Coercion sort : type >-> Sortclass.
-Coercion base : class_of >-> Pointed.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion fpointedType : type >-> Pointed.type.
-Canonical fpointedType.
-Notation nbhsType := type.
-Notation NbhsMixin := Mixin.
-Notation NbhsMixin_ := Mixin_.
-Notation NbhsType U T m := (@pack U T m _ _ idfun).
-Notation "[ 'nbhsType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
-  (at level 0, format "[ 'nbhsType'  U  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'nbhsType' U 'of' T ]" := (@clone U T _ _ id)
-  (at level 0, format "[ 'nbhsType'  U  'of'  T ]") : form_scope.
-Notation "[ 'nbhsType' 'of' T 'for' cT ]" :=  (@clone T T cT _ idfun)
-  (at level 0, format "[ 'nbhsType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'nbhsType' 'of' T ]" := (@clone T T _ _ id)
-  (at level 0, format "[ 'nbhsType'  'of'  T ]") : form_scope.
-
-(* The default filter for an arbitrary element is the one obtained *)
-(* from its type *)
-Canonical default_arrow_filter Y (Z : pointedType) (X : source Z Y) := Eval hnf in
-  NbhsType Y (X -> Z) (@source_filter _ _ X).
-
-Canonical source_filter_filter_to_Prop Y := Eval hnf in 
-  @Source Prop _ (_ -> Prop) (Mixin_ (fun x : (set (set Y)) => x)).
-Canonical source_filter_filter_set Y := Eval hnf in 
-  @Source Prop _ (set _) (Mixin_ (fun x : (set (set Y)) => x)).
- 
-End Exports.
-End Nbhs.
-Export Nbhs.Exports.
-
-Canonical nbhs_on_eqType T := Eval hnf in EqType (nbhs_on T) gen_eqMixin.
-Canonical nbhs_on_choiceType T := Eval hnf in 
-  ChoiceType (nbhs_on T) gen_choiceMixin.
-Canonical nbhs_on_PointedType T := Eval hnf in 
-  PointedType (nbhs_on T) (Nbhs (@setT (set T))).
-Definition nbhs_on_nbhs_mixin T := NbhsMixin (@id (nbhs_on T)).
-Canonical nbhs_on_nbhsType T := Eval hnf in 
-  NbhsType T (nbhs_on T) (nbhs_on_nbhs_mixin T). 
-Notation "{ 'nbhs' T }" := (nbhs_on_nbhsType T)
-  (at level 0, format "{ 'nbhs'  T }" ) : type_scope.
-
-Definition nbhs {U} {T : nbhsType U} : T -> {nbhs U} :=
-   Nbhs.nbhs_op (Nbhs.class T).
-
-Notation "'\for' x '\near' x_0 , P" := (in_nbhs (nbhs x_0) (fun x => P))
+Notation "'\for' x '\near' x_0 , P" := (in_nbhs x_0 (fun x => P))
   (at level 200, x ident, P at level 200, format "'\for'  x  '\near'  x_0 ,  P") : type_scope.
+Notation "'\near' x , P" := (in_nbhs x (fun x => P))
+  (at level 200, x at level 99, P at level 200, format "'\near'  x ,  P", only parsing) : type_scope.
 
-Record is_filter {T : Type} (F : set (set T)) := {
+Record is_filter {T : Type} (F : nbhs_on T) := IsFilter {
   filterT_prop :  \for x \near F, True;
   filterI_prop : forall P Q : set T, 
-   (\for x \near F, P x) -> (\for x \near F, Q x) ->
-     \for x \near F, (P `&` Q) x;
+   (\for x \near  F, P x) -> (\for x \near  F, Q x) ->
+     \for x \near  F, P x /\ Q x;
   filterS_prop : forall P Q : set T, P `<=` Q ->
-     (\for x \near F, P x) -> \for x \near F, Q x;
+     (\for x \near  F, P x) -> \for x \near  F, Q x;
 }.
 
 Structure filter_on T := Filter {
   in_filter :> set (set T);
-  _ : is_filter (in_filter)
+  _ : is_filter (Nbhs in_filter)
 }.
-Definition filter_class T (F : filter_on T) : is_filter (in_filter F) :=
+Definition filter_class T (F : filter_on T) : is_filter (Nbhs (in_filter F)) :=
   let: Filter _ class := F in class.
 Arguments Filter {T} _ _.
 Canonical filter_nbhs_on T (F : filter_on T) := Eval hnf in 
   Nbhs (in_filter F).
 Coercion filter_nbhs_on : filter_on >-> nbhs_on.
 
-Lemma filter_setT (T' : Type) : is_filter (nbhs (@setT (set T'))).
+
+Lemma filter_is_filter (T : Type) (F : filter_on T) : is_filter F.
+Proof. by case: F. Qed.
+
+Lemma setT_is_filter (T : Type) : is_filter (Nbhs (@setT (set T))).
 Proof. by constructor. Qed.
 
-Module Filter.
-
-Section ClassDef.
-Variable U : Type.
-
-(* Index a family of filters on a type, one for each element of the type *)
-Record mixin_of (T : nbhsType U) := Mixin {
-  _ : forall x : T, is_filter (nbhs x)
-}.
-
-Record class_of T := Class {
-  base : Nbhs.class_of U T;
-  mixin : mixin_of (Nbhs.Pack base)
-}.
-
-Structure type := Pack { sort; _ : class_of sort }.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c := cT return class_of cT in c.
-
-Definition clone c of phant_id class c := @Pack T c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of xT).
-Local Coercion base : class_of >-> Nbhs.class_of.
-
-Definition pack (fT : nbhsType U) (m : mixin_of fT) :=
-  fun bT b of phant_id (@Nbhs.class U bT) b =>
-  fun m' of phant_id m m' => @Pack T (@Class T b m').
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass.
-Definition nbhsType := @Nbhs.Pack U cT xclass.
-
-Definition nbhs (x : cT) : nbhsType := x.
-
-End ClassDef.
-
-Module Exports.
-Coercion sort : type >-> Sortclass.
-Coercion base : class_of >-> Nbhs.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion pointedType : type >-> Pointed.type.
-Canonical pointedType.
-Coercion nbhsType : type >-> Nbhs.type.
-Canonical nbhsType.
-Coercion nbhs : Filter.sort >-> Nbhs.sort.
-Notation filterType := type.
-Notation FilterMixin := Mixin.
-Notation FilterType U T m := (@pack U T _ m _ _ idfun _ idfun).
-Notation "[ 'filterType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
-  (at level 0, format "[ 'filterType'  U  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'filterType' U 'of' T ]" := (@clone U T _ _ id)
-  (at level 0, format "[ 'filterType'  U  'of'  T ]") : form_scope.
-
-End Exports.
-End Filter.
-Export Filter.Exports.
-
-Canonical filter_on_eqType T := Eval hnf in EqType (filter_on T) gen_eqMixin.
-Canonical filter_on_choiceType T := Eval hnf in 
-  ChoiceType (filter_on T) gen_choiceMixin.
-Canonical filter_on_PointedType T := Eval hnf in 
-  PointedType (filter_on T) (Filter _ (filter_setT T)).
-Definition filter_on_nbhs_mixin T := NbhsMixin_ (@in_filter T).
-Canonical filter_on_nbhsType T := Eval hnf in 
-  NbhsType T (filter_on T) (@filter_on_nbhs_mixin T).
-Definition filter_on_filtered_mixin T := FilterMixin (@filter_class T).
-Canonical filter_on_filterType T := Eval hnf in
-  FilterType T (filter_on T) (@filter_on_filtered_mixin T).
-Notation "{ 'filter' T }" := (filter_on_nbhsType T)
-  (at level 0, format "{ 'filter'  T }" ) : type_scope.
-
-Lemma nbhs_is_filter {U} {T : filterType U} (x : T) : is_filter (Nbhs (nbhs x)).
-Proof. by move: T => [? [? [m]]]/= in x *; case: (nbhs _) (m x). Qed.
-
-Canonical nbhs_filter {U} {T : filterType U} (x : T) := Eval hnf in 
-  Filter (nbhs x) (nbhs_is_filter x).
-
-Notation "'\near' x , P" := (in_nbhs (nbhs x) (fun x => P))
-  (at level 200, x at level 99, P at level 200, format "'\near'  x ,  P", only parsing) : type_scope.
+Definition setT_filter (T : Type) := Filter _ (setT_is_filter T).
 
 Section NearBasics.
-Context {T : nonPropType} {fT : filterType T}.
-Implicit Type x : fT.
+Context {T : nonPropType}.
+Implicit Type F : filter_on T.
 
-Lemma nearT x : \near x, True. Proof. by case: (nbhs_is_filter x). Qed.
+Lemma nearT F : \for x \near F, True. Proof. by case: F => ? []. Qed.
 
-Lemma nearI x P Q : (\near x, P x) -> (\near x, Q x) -> \near x, P x /\ Q x.
-Proof. by case: (nbhs_is_filter x) => _ nI _; apply: nI. Qed.
+Lemma nearI F P Q : (\for x \near F, P x) -> (\for x \near F, Q x) ->
+   \for x \near F, P x /\ Q x.
+Proof. by case: F => ? [/= ? + ?]; apply. Qed.
 
-Lemma nearS x P Q : P `<=` Q -> (\near x, P x) -> \near x, Q x.
-Proof. by case: (nbhs_is_filter x) => _ _; apply. Qed.
+Lemma nearS F P Q : P `<=` Q -> (\for x \near F, P x) -> \for x \near F, Q x.
+Proof. by case: F => ? [/= ? ? +]; apply. Qed.
 
-Lemma nearW x (P : set T) : (forall x : T, P x) -> (\near x, P x).
-Proof. by move=> Px; apply: nearS (nearT x). Qed.
+Lemma nearW F (P : set T) : (forall x : T, P x) -> (\for x \near F, P x).
+Proof. by move=> Px; apply: nearS (nearT F). Qed.
 
 End NearBasics.
 
-Definition filter_is_proper {T : Type} (F : set (set T)) :=
+Definition filter_is_proper {T : Type} (F : nbhs_on T) :=
   ~ (\for x \near F, False).
 
-Record is_pfilter {T : Type} (F : set (set T)) := Build_is_pfilter' {
-  filter_pfilter : is_filter (nbhs F);
+Record is_pfilter {T : Type} (F : nbhs_on T) := IsPFilter {
+  filter_pfilter : is_filter F;
   filter_not_empty_prop : filter_is_proper F;
 }.
 Coercion filter_pfilter : is_pfilter >-> is_filter.
 
 Structure pfilter_on T := PFilterPack {
   in_pfilter :> set (set T);
-  _ : is_pfilter in_pfilter
+  _ : is_pfilter (Nbhs in_pfilter)
 }.
-Definition pfilter_class T (F : pfilter_on T) : is_pfilter F :=
+Definition pfilter_class T (F : pfilter_on T) : is_pfilter (Nbhs F) :=
   let: PFilterPack _ class := F in class.
 Arguments PFilterPack {T} _ _.
 Canonical pfilter_nbhs_on T (F : pfilter_on T) := Eval hnf in Nbhs F.
@@ -589,92 +419,11 @@ Coercion pfilter_filter_on : pfilter_on >-> filter_on.
 Definition PFilter_of {T} (F : set (set T)) (fN0 : not (F set0)) :=
   fun (fF : filter_on T) of phant_id F (fF : set (set T)) =>
   fun fFF of phant_id (Filter _ fFF) fF =>
-  PFilterPack F (Build_is_pfilter' fFF fN0).
+  PFilterPack F (IsPFilter fFF fN0).
 Notation PFilter F fN0 := (@PFilter_of _ F fN0 _ id _ id).
 
 Identity Coercion set_id : set >-> Funclass.
 Arguments filter : simpl never.
-
-
-Module PFilter.
-
-Section ClassDef.
-Variable U : Type.
-
-(* Index a family of filters on a type, one for each element of the type *)
-Record mixin_of (T : filterType U) := Mixin {
-  nbhs_pfilter : forall x : T, ~ \near x, False
-}.
-
-Record class_of T := Class {
-  base : Filter.class_of U T;
-  mixin : mixin_of (Filter.Pack base)
-}.
-
-Structure type := Pack { sort; _ : class_of sort }.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c := cT return class_of cT in c.
-
-Definition clone c of phant_id class c := @Pack T c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of xT).
-Local Coercion base : class_of >-> Filter.class_of.
-
-Definition pack (fT : filterType U) (m : mixin_of fT) :=
-  fun bT b of phant_id (@Filter.class U bT) b => 
-  fun m' of phant_id m m' => @Pack T (@Class T b m').
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass.
-Definition nbhsType := @Nbhs.Pack U cT xclass.
-Definition filterType := @Filter.Pack U cT xclass.
-
-Definition nbhs (x : cT) : nbhsType := x.
-Definition filter (x : cT) : filterType := x.
-
-End ClassDef.
-
-Module Exports.
-Coercion sort : type >-> Sortclass.
-Coercion base : class_of >-> Filter.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion pointedType : type >-> Pointed.type.
-Canonical pointedType.
-Coercion nbhsType : type >-> Nbhs.type.
-Canonical nbhsType.
-Coercion filterType : type >-> Filter.type.
-Canonical filterType.
-Coercion nbhs : sort >-> Nbhs.sort.
-Coercion filter : sort >-> Filter.sort.
-Notation pfilterType := type.
-Notation PFilterMixin := Mixin.
-Notation PFilterType U T m := (@pack U T _ m _ _ idfun _ idfun).
-Notation "[ 'pfilterType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
-  (at level 0, format "[ 'pfilterType'  U  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'pfilterType' U 'of' T ]" := (@clone U T _ _ id)
-  (at level 0, format "[ 'pfilterType'  U  'of'  T ]") : form_scope.
-
-End Exports.
-End PFilter.
-Export PFilter.Exports.
-
-Lemma nbhs_is_pfilter {U} {T : pfilterType U} (x : T) : ~ \near x, False.
-Proof. by case: T x => T [/= ? []]. Qed.
-
-Canonical nbhs_pfilter {U} {T : pfilterType U} (x : T) := Eval hnf in 
-  PFilterPack (in_nbhs (nbhs x))
-   (Build_is_pfilter' (@nbhs_is_filter U T x) (@nbhs_is_pfilter U T x)).
-
-Definition nbhs_pfilter_mixin U T := PFilterMixin (@nbhs_is_pfilter U T).
-
-Canonical nbhs_pfilterType {U} {T : pfilterType U} (x : T) := Eval hnf in 
-  PFilterType U T (@nbhs_pfilter_mixin U T).
 
 (* Near Tactic *)
 
@@ -701,14 +450,14 @@ Definition is_nearE := prop_ofE.
 Lemma prop_ofP T F (iF : @filter_elt T F) : F (prop_of iF).
 Proof. by rewrite prop_ofE; apply: prop_filter_eltP_proj. Qed.
 
-Definition filter_eltT T (fT : filterType T) (F : fT) : @filter_elt T (nbhs F) :=
+Definition filter_eltT T (F : filter_on T) : @filter_elt T F :=
   FilterElt (nearT _).
-Canonical filter_eltI T (fT : filterType T) (F : fT) (P Q : @filter_elt T (nbhs F)) :=
+Canonical filter_eltI T (F : filter_on T) (P Q : @filter_elt T F) :=
   Eval hnf in FilterElt (nearI (prop_filter_eltP_proj P) (prop_filter_eltP_proj Q)).
 
-Lemma filter_near_of T (fT : filterType T) (F : fT)
-  (P : @filter_elt T (nbhs F)) (Q : set T) :
-  (forall x, prop_of P x -> Q x) -> nbhs F Q.
+Lemma filter_near_of T (F : filter_on T)
+  (P : @filter_elt T F) (Q : set T) :
+  (forall x, prop_of P x -> Q x) -> \for x \near F, Q x.
 Proof. by move: P => [P FP] /=; rewrite prop_ofE /= => /nearS; apply. Qed.
 (* Lemma filter_near_of T (F : {filter T}) *)
 (*   (P : @filter_elt T (nbhs F)) (Q : set T) : *)
@@ -722,13 +471,13 @@ Fact near_key : unit. Proof. exact. Qed.
 Lemma mark_near (P : Prop) : locked_with near_key P -> P.
 Proof. by rewrite unlock. Qed.
 
-Lemma near_acc T (fT : filterType T) (F : fT) (P : @filter_elt T (nbhs F)) (Q : set T)
+Lemma near_acc T (F : filter_on T) (P : @filter_elt T F) (Q : set T)
    (FQ : \for x \near F, Q x) :
    locked_with near_key
   (forall x, prop_of (filter_eltI P (FilterElt FQ)) x -> (Q x)).
 Proof. by rewrite unlock => x /=; rewrite !prop_ofE /= => -[Px]. Qed.
 
-Lemma near_fork T (fT : filterType T) (F : fT) (P Q : @filter_elt T (nbhs F)) (G : set T) :
+Lemma near_fork T (F : filter_on T) (P Q : @filter_elt T F) (G : set T) :
    locked_with near_key (forall x, prop_of P x -> G x) ->
    locked_with near_key (forall x, prop_of (filter_eltI P Q) x -> G x).
 Proof.
@@ -767,7 +516,10 @@ Canonical pfilter_on_choiceType T := Eval hnf in
 
 Definition pointfilter T (x : T) := [set A : set T | A x].
 
-Lemma pointfilter_is_filter T (x : T) : @is_filter T (pointfilter x).
+Canonical pointfilter_nbhs T (x : T) := Eval hnf in 
+  Nbhs (pointfilter x).
+
+Lemma pointfilter_is_filter T (x : T) : @is_filter T (Nbhs (pointfilter x)).
 Proof. by split => //= P Q; apply. Qed.
 
 Canonical pointfilter_filter T (x : T) := Eval hnf in 
@@ -779,73 +531,56 @@ Proof. by []. Qed.
 Canonical pointfilter_pfilter T (x : T) := Eval hnf in 
   PFilter (pointfilter x) (@pointfilterN0 _ x).
 
-Lemma pfilter_is_filter (T : Type) (pT : pfilter_on T) :
-  is_filter (Nbhs (in_pfilter pT)).
-Proof. by case: pT => ? []. Qed.
+Lemma pfilter_is_filter (T : Type) (F : pfilter_on T) :
+  is_filter (Nbhs (in_pfilter F)).
+Proof. by case: F => ? []. Qed.
 
-Canonical pfilter_on_PointedType (T : pointedType) := Eval hnf in 
-  PointedType (pfilter_on T) (pointfilter_pfilter point).
-Definition pfilter_on_nbhs_mixin (T : pointedType)  := NbhsMixin_ (@in_pfilter T).
-Canonical pfilter_on_nbhsType (T : pointedType) := Eval hnf in 
-  NbhsType T (pfilter_on T) (@pfilter_on_nbhs_mixin T).
-Definition pfilter_on_filter_mixin (T : pointedType)  :=
-  FilterMixin (@pfilter_is_filter T).
-Canonical pfilter_on_filterType (T : pointedType) := Eval hnf in 
-  FilterType T (pfilter_on T) (@pfilter_on_filter_mixin T).
+Lemma pfilter_on_pfilter (T : Type) (F : pfilter_on T) :
+   ~ (in_pfilter F) set0.
+Proof. by case: F => ? []. Qed.
 
-Lemma pfilter_on_pfilter (T : Type) (pT : pfilter_on T) :
-   ~ (in_pfilter pT) set0.
-Proof. by case: pT => /= F []. Qed.
-Definition pfilter_on_pfilter_mixin (T : pointedType)  :=
-  PFilterMixin (@pfilter_on_pfilter T).
-Canonical pfilter_on_pfilterType (T : pointedType) := Eval hnf in 
-  PFilterType T (pfilter_on T) (@pfilter_on_pfilter_mixin T).
-
-Notation "{ 'pfilter' T }" := (pfilter_on_nbhsType T)
-  (at level 0, format "{ 'pfilter'  T }" ) : type_scope.
-
-Lemma pfilter_on_is_pfilter T (x : {pfilter T}) : is_pfilter x.
+Lemma pfilter_on_is_pfilter T (x : pfilter_on T) : is_pfilter x.
 Proof. by case: x. Qed.
 
 Variant pfilter_spec T (F : set (set T)) : (set (set T)) -> Type :=
   PFilterSpec (p : pfilter_on T) & p = F :> set (set T) : pfilter_spec F p.
 
-Lemma pfilterP T (fT : nbhsType T) (F : fT) :
-  is_pfilter (nbhs F) -> pfilter_spec (nbhs F) (nbhs F).
+Lemma pfilterP T (F : nbhs_on T) :
+  is_pfilter (Nbhs F) -> pfilter_spec F F.
 Proof.
-move=> PF; rewrite -[in_nbhs (nbhs F)]/(in_pfilter (PFilterPack (nbhs F) PF)).
+move=> PF; rewrite -[in_nbhs F]/(in_nbhs (PFilterPack F PF)).
 exact: PFilterSpec.
 Qed.
 
-Lemma pfilterPW T (F : {filter T}) : (~ \near F, False) -> pfilter_spec F (nbhs F).
+Lemma pfilterPW T (F : filter_on T) : (~ \near F, False) -> pfilter_spec F F.
 Proof.
-move=> PF; case: pfilterP => //.
-apply: Build_is_pfilter' => //; apply: filter_class.
+move=> PF; case: (@pfilterP _ F) => //.
+by apply: IsPFilter => //; apply: filter_is_filter.
 Qed.
 
-Lemma near_ex_subproof {T : Type} (F : set (set T)) :
-     ~ nbhs F set0 -> (forall P, F P -> exists x, P x).
+Lemma near_ex_subproof {T : Type} (F : nbhs_on T) :
+     ~ in_nbhs F set0 -> (forall P, F P -> exists x, P x).
 Proof.
 move=> NFset0 P FP; apply: contrapNT NFset0 => nex; suff <- : P = set0 by [].
 by rewrite funeqE => x; rewrite propeqE; split=> // Px; apply: nex; exists x.
 Qed.
 
-Lemma filter_not_empty T (fT : pfilterType T) (F : fT) : ~ \near F, False.
-Proof. by case: fT F => [? [? []]]. Qed.
-Arguments filter_not_empty {T fT} F _.
+Lemma filter_not_empty T (F : pfilter_on T) : ~ \near F, False.
+Proof. by case: F => [? [/= ?]]; apply. Qed.
+Arguments filter_not_empty {T} F _.
 
-Definition near_ex {T : nonPropType}  {fT : pfilterType T} (F : fT) :
-  forall P, nbhs F P -> exists x : T, P x :=
+Definition near_ex {T : nonPropType}  {F : pfilter_on T} :
+    forall P, in_nbhs F P -> exists x : T, P x :=
   near_ex_subproof (filter_not_empty F).
 
-Lemma near_getP {T : pointedType} {fT : pfilterType T} (F : fT) (P : set T) :
-  nbhs F P -> P (get P).
+Lemma near_getP {T : pointedType} (F : pfilter_on T) (P : set T) :
+  in_nbhs F P -> P (get P).
 Proof. by move=> /near_ex /getPex. Qed.
 
-Lemma near_const {T : nonPropType} {fT : pfilterType T} (F : fT) (P : Prop) :
-  (\near F, P) -> P.
+Lemma near_const {T : nonPropType} (F : pfilter_on T) (P : Prop) :
+  (\for x \near F, P) -> P.
 Proof. by move=> FP; case: (near_ex FP). Qed.
-Arguments near_const {T fT} x : rename.
+Arguments near_const {T} F P.
 
 Tactic Notation "near" constr(F) "=>" ident(x) :=
   apply: (near_const F); near=> x.
@@ -856,7 +591,7 @@ Definition nbhs_from {I T : Type} (D : set I) (B : I -> set T) : set (set T) :=
 Lemma nbhs_from_filter {I T : Type} (D : set I) (B : I -> set T) :
   (exists i : I, D i) ->
   (forall i j, D i -> D j -> exists2 k, D k & B k `<=` B i `&` B j) ->
-  is_filter (nbhs (nbhs_from D B)).
+  is_filter (Nbhs (nbhs_from D B)).
 Proof.
 move=> [i0 Di0] Binter; constructor; first by exists i0.
 - move=> P Q [i Di BiP] [j Dj BjQ]; have [k Dk BkPQ]:= Binter _ _ Di Dj.
@@ -867,27 +602,22 @@ Qed.
 Lemma nbhs_fromT_filter {I T : Type} (B : I -> set T) :
   (exists _ : I, True) ->
   (forall i j, exists k, B k `<=` B i `&` B j) ->
-  is_filter (nbhs (nbhs_from setT B)).
+  is_filter (Nbhs (nbhs_from setT B)).
 Proof.
 move=> [i0 _] BI; apply: nbhs_from_filter; first by exists i0.
 by move=> i j _ _; have [k] := BI i j; exists k.
 Qed.
 
 Section ProdNbhsType.
-Context {T U : Type} {fT : nbhsType T} {fU : nbhsType U}.
+Context {T U : Type}.
 
-Definition prod_nbhs_mixin := NbhsMixin_ (fun x : fT * fU => 
-  nbhs_from (fun P => (nbhs x.1) P.1 /\ (nbhs x.2) P.2) (fun P => P.1 `*` P.2)).
+Definition prod_nbhs (F : nbhs_on T) (G : nbhs_on U) := 
+  nbhs_from (fun P => in_nbhs F P.1 /\ in_nbhs G P.2) (fun P => P.1 `*` P.2).
 
-Canonical prod_nbhs := Eval hnf in  NbhsType (T * U) (fT * fU) (prod_nbhs_mixin).
-End ProdNbhsType.
+Canonical prod_nbhs_nbhs F G := Eval hnf in Nbhs (prod_nbhs F G).
 
-Print Canonical Projections.
-
-Section ProdFilter.
-Context {T U : Type} {fT : filterType T} {fU : filterType U}.
-
-Lemma prod_filter_filter (x : fT * fU) : is_filter (nbhs x).
+Lemma prod_nbhs_is_filter (F : filter_on T) (G : filter_on U) :
+   is_filter (Nbhs (prod_nbhs F G)).
 Proof.
 apply: nbhs_from_filter => [|[P Q] [P' Q'] /= [FP GQ] [FP' GQ']].
   by exists (setT, setT) => /=; split; apply: nearT.
@@ -895,27 +625,20 @@ exists (P `&` P', Q `&` Q') => /=; first by split; apply: nearI.
 by move=> [p q] [/= [? ?] []].
 Qed.
  
-Definition prod_filter_mixin := FilterMixin prod_filter_filter.
+Canonical prod_nbhs_filter F G := Eval hnf in 
+  Filter _ (prod_nbhs_is_filter F G).
 
-Canonical prod_filtered := Eval hnf in 
-  FilterType (T * U) (fT * fU) prod_filter_mixin.
-End ProdFilter.
-
-Section ProdPFilter.
-Context {T U : pointedType} {fT : pfilterType T} {fU : pfilterType U}.
-
-Lemma filter_prod_nontriv (x : fT * fU) : ~ \near x, False.
+Lemma filter_prod_nontriv (F : pfilter_on T) (G : pfilter_on U) :
+  ~ \for x \near Nbhs (prod_nbhs F G), False.
 Proof.
 move=> [[/= X Y] [Xx Yx]]; rewrite subset0; apply/eqP; rewrite set0P.
-near x.1 => x1; near x.2 => x2.
+near F => x1; near G => x2.
 by exists (x1, x2); split => /=; [near: x1|near: x2].
 Grab Existential Variables. all: by end_near. Qed.
 
-Definition prod_pfilter_mixin := PFilterMixin filter_prod_nontriv.
+Canonical prod_nbhs_pfilter F G := PFilter _ (@filter_prod_nontriv F G).
 
-Canonical prod_pfiltered := Eval hnf in 
-  PFilterType (T * U) (fT * fU) prod_pfilter_mixin.
-End ProdPFilter.
+End ProdNbhsType.
 
 Definition uncurry X Y Z (f : X -> Y -> Z) xy := f xy.1 xy.2.
 Arguments uncurry : simpl never.
@@ -929,7 +652,7 @@ Definition uncurry_sig X Y Z (f : forall x : X, forall y : Y x, Z x y) xy :=
 Arguments uncurry_sig : simpl never.
 
 Notation "'\for' x '\near' x_0 & y '\near' y_0 , P" :=
-  ((nbhs (x_0, y_0)) (uncurry (fun x y => P)))
+  ((prod_nbhs x_0 y_0) (uncurry (fun x y => P)))
   (at level 200, x ident, y ident, P at level 200,
    format "'\for'  x  '\near'  x_0  &  y  '\near'  y_0 ,  P") : type_scope.
 Notation "'\for' x & y '\near' z , P" :=
@@ -946,36 +669,34 @@ Local Notation "{ 'all2' P }" := (forall x y, P x y : Prop) (at level 0).
 Local Notation "{ 'all3' P }" := (forall x y z, P x y z: Prop) (at level 0).
 Local Notation ph := (phantom _).
 
-Definition prop_near1 {X} {fX : nbhsType X} (x : fX)
-   P (phP : ph {all1 P}) := (nbhs x) P.
+Definition prop_near1 {X} (F : nbhs_on X) P (phP : ph {all1 P}) := in_nbhs F P.
 
-Definition prop_near2 {X X'} {fX : nbhsType X} {fX' : nbhsType X'}
-  (x : fX) (x' : fX') := fun P of ph {all2 P} =>
-  (nbhs (x, x')) (fun x => P x.1 x.2).
+Definition prop_near2 {X X'} (F : nbhs_on X) (F' : nbhs_on X') :=
+   fun P of ph {all2 P} => prod_nbhs F F' (fun x => P x.1 x.2).
 
 End Near.
 
-Notation "{ 'near' x , P }" := (@prop_near1 _ _ x _ (inPhantom P))
-  (at level 0, format "{ 'near'  x ,  P }") : type_scope.
-Notation "{ 'near' x & y , P }" := (@prop_near2 _ _ _ _ x y _ (inPhantom P))
-  (at level 0, format "{ 'near'  x  &  y ,  P }") : type_scope.
+Notation "{ 'near' F , P }" := (@prop_near1 _ F _ (inPhantom P))
+  (at level 0, format "{ 'near'  F ,  P }") : type_scope.
+Notation "{ 'near' F & G , P }" := (@prop_near2 _ _ F G _ (inPhantom P))
+  (at level 0, format "{ 'near'  F  &  G ,  P }") : type_scope.
 Arguments prop_near1 : simpl never.
 Arguments prop_near2 : simpl never.
 
 (* Lemma nbhsE {T : Type} {fT : nbhsType T} {F : fT} : nbhs F = F :> fT. *)
 (* Proof. by []. Qed. *)
 
-Lemma nbhs_setE {T : Type}  (F : {nbhs T}) : in_nbhs (nbhs F) = F :> set (set T).
+Lemma nbhs_setE {T : Type} (F : nbhs_on T) : in_nbhs F = F :> set (set T).
 Proof. by []. Qed.
 
-Lemma filter_setE {T : Type}  (F : {filter T}) : in_nbhs (nbhs F) = F :> set (set T).
+Lemma filter_setE {T : Type} (F : filter_on T) : in_nbhs F = F :> set (set T).
 Proof. by []. Qed.
 
-Lemma pfilter_setE {T : pointedType}  (F : {pfilter T}) : in_nbhs (nbhs F) = F :> set (set T).
+Lemma pfilter_setE {T : Type} (F : pfilter_on T) : in_nbhs F = F :> set (set T).
 Proof. by []. Qed.
 
-Lemma nbhsE {T : Type} {fT : nbhsType T} (F : fT) : nbhs (in_nbhs (nbhs F)) = nbhs F.
-Proof. by case: (nbhs F). Qed.
+Lemma nbhsE {T : Type} (F : filter_on T) : Nbhs (in_nbhs F) = F.
+Proof. by case: F. Qed.
 
 Canonical nbhs_on_any T (X : set (set T)) := Eval hnf in Nbhs X.
 Canonical nbhs_nbhs_on_any T (X : set (set T)) := Eval hnf in Nbhs (in_nbhs (nbhs X)).
