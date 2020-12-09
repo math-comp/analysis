@@ -20,8 +20,8 @@
   + lemmas `inf_lb_strict`, `sup_ub_strict`, `interval_unbounded_setT`,
     `right_bounded_interior`, `interval_left_unbounded_interior`, `left_bounded_interior`,
     `interval_right_unbounded_interior`, `interval_bounded_interior`
-  + definition `interval_of_set`
-  + lemma `is_intervalP`
+  + definition `Rhull`
+  + lemma `sub_Rhull`, `is_intervalP`
 - in `measure.v`:
   + definition `bigcup2`, lemma `bigcup2E`
   + definitions `isSemiRingOfSets`, `SemiRingOfSets`, notation `semiRingOfSetsType`
