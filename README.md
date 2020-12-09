@@ -27,12 +27,12 @@ the Coq proof-assistant and using the Mathematical Components library.
 - License: [CeCILL-C](LICENSE)
 - Compatible Coq versions: Coq 8.11 to 8.12
 - Additional dependencies:
-  - [MathComp ssreflect 1.11](https://math-comp.github.io)
-  - [MathComp fingroup 1.11](https://math-comp.github.io)
-  - [MathComp algebra 1.11](https://math-comp.github.io)
-  - [MathComp solvable 1.11](https://math-comp.github.io)
-  - [MathComp field 1.11](https://math-comp.github.io)
-  - [MathComp finmap 1.5](https://github.com/math-comp/finmap)
+  - [MathComp ssreflect 1.12](https://math-comp.github.io)
+  - [MathComp fingroup 1.12](https://math-comp.github.io)
+  - [MathComp algebra 1.12](https://math-comp.github.io)
+  - [MathComp solvable 1.12](https://math-comp.github.io)
+  - [MathComp field 1.12](https://math-comp.github.io)
+  - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
   - [Hierarchy Builder 0.10](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
 - Related publication(s):
