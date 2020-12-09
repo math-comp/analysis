@@ -55,6 +55,7 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*        [locally k.-lipschitz_A f] == f is locally k.-lipschitz on A        *)
 (*                                                                            *)
 (*                     is_interval E == the set E is an interval              *)
+(*                           Rhull E == the real interval hull of a set       *)
 (*                                                                            *)
 (* * Complete normed modules :                                                *)
 (*        completeNormedModType K == interface type for a complete normed     *)
@@ -2459,64 +2460,60 @@ have /(sup_adherent hsX)[f Xf] : 0 < sup X - r by rewrite subr_gt0.
 by rewrite opprB addrCA subrr addr0 => rf; apply: (iX _ _ Xe Xf); rewrite er rf.
 Qed.
 
-Definition interval_of_set (X : set R) : interval R :=
-  match `[< has_lbound X >], `[< has_ubound X >] with
-  | false, false => `]-oo, +oo[
-  | true , false => if `[< X (inf X) >] then `[inf X, +oo[ else `]inf X, +oo[
-  | false, true  => if `[< X (sup X) >] then `]-oo, sup X] else `]-oo, (sup X)[
-  | true , true  => if `[< X (inf X) >] then
-      (if `[< X (sup X) >] then `[inf X, sup X] else `[inf X, (sup X)[)
-    else
-      (if `[< X (sup X) >] then `]inf X, sup X] else `]inf X, (sup X)[)
-  end.
+Definition Rhull (X : set R) : interval R := Interval
+  (if `[< has_lbound X >] then BOpen_if (~~ `[< X (inf X) >]) (inf X)
+                          else BInfty _)
+  (if `[< has_ubound X >] then BOpen_if (~~ `[< X (sup X) >]) (sup X)
+                          else BInfty _).
 
-Lemma is_intervalP (X : set R) :
-  is_interval X <-> exists i : interval R, X = [set x | x \in i].
+Lemma sub_Rhull (X : set R) : X `<=` [set x | x \in Rhull X].
 Proof.
-split=> [iX|[i ->]]; last exact: interval_is_interval.
-exists (interval_of_set X); rewrite predeqE => x; split => [Xx|];
-    rewrite /mkset inE /interval_of_set /=.
-- case: ifPn => /asboolP ?; case: ifPn => /asboolP ? //.
-  + by case: ifPn => /asboolP ?; case: ifPn => /asboolP ?;
-      rewrite !(lersifF,lersifT,sup_ub,inf_lb,sup_ub_strict,inf_lb_strict).
-  + case: ifPn => /asboolP XinfX; rewrite !(lersifF,lersifT);
-      by [rewrite inf_lb | rewrite inf_lb_strict].
-  + case: ifPn => /asboolP XsupX; rewrite !(lersifF,lersifT);
-      by [rewrite sup_ub | rewrite sup_ub_strict].
-- case: ifPn => /asboolP ?; case: ifPn => /asboolP ?.
-  + case: ifPn => /asboolP XinfX; case: ifPn => /asboolP XsupX;
-      rewrite !(lersifF,lersifT).
-    * move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx].
-      rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
-      apply: (@interior_subset [topologicalType of R^o]).
-      by rewrite interval_bounded_interior // /mkset infXx.
-    * move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx supXx].
-      apply: (@interior_subset [topologicalType of R^o]).
-      by rewrite interval_bounded_interior // /mkset infXx.
-    * move=> /andP[infXx]; rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
-      apply: (@interior_subset [topologicalType of R^o]).
-      by rewrite interval_bounded_interior // /mkset infXx.
-    * move=> ?; apply: (@interior_subset [topologicalType of R^o]).
-      by rewrite interval_bounded_interior // /mkset infXx.
-  + case: ifPn => /asboolP XinfX; rewrite !(lersifF,lersifT,andbT).
-    * rewrite le_eqVlt => /orP[/eqP<-//|infXx].
-      apply: (@interior_subset [topologicalType of R^o]).
-      by rewrite interval_right_unbounded_interior.
-    * move=> infXx; apply: (@interior_subset [topologicalType of R^o]).
-      by rewrite interval_right_unbounded_interior.
-  + case: ifPn => /asboolP XsupX /=.
-    * rewrite le_eqVlt => /orP[/eqP->//|xsupX].
-      apply: (@interior_subset [topologicalType of R^o]).
-      by rewrite interval_left_unbounded_interior.
-    * move=> xsupX; apply: (@interior_subset [topologicalType of R^o]).
-      by rewrite interval_left_unbounded_interior.
-  + by move=> _; rewrite (interval_unbounded_setT iX).
+move=> x Xx/=; rewrite inE/=.
+case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
++ by case: asboolP => ?; case: asboolP => ? //=;
+     rewrite !(lersifF, lersifT, sup_ub, inf_lb, sup_ub_strict, inf_lb_strict).
++ by case: asboolP => XinfX; rewrite !(lersifF, lersifT);
+     [rewrite inf_lb | rewrite inf_lb_strict].
++ by case: asboolP => XsupX; rewrite !(lersifF, lersifT);
+     [rewrite sup_ub | rewrite sup_ub_strict].
 Qed.
 
-End interval_realType.
 
-Lemma connected_intervalP (R : realType) (E : set R^o) :
-  connected E <-> is_interval E.
+Lemma is_intervalP (X : set R) : is_interval X <-> X = [set x | x \in Rhull X].
+Proof.
+split=> [iX|->]; last exact: interval_is_interval.
+rewrite predeqE => x /=; split; [exact: sub_Rhull | rewrite inE/=].
+case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
+- case: asboolP => XinfX; case: asboolP => XsupX;
+    rewrite !(lersifF, lersifT).
+  + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx].
+    rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
+    apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_bounded_interior // /mkset infXx.
+  + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx supXx].
+    apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_bounded_interior // /mkset infXx.
+  + move=> /andP[infXx]; rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
+    apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_bounded_interior // /mkset infXx.
+  + move=> ?; apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_bounded_interior // /mkset infXx.
+- case: asboolP => XinfX; rewrite !(lersifF, lersifT, andbT).
+  + rewrite le_eqVlt => /orP[/eqP<-//|infXx].
+    apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_right_unbounded_interior.
+  + move=> infXx; apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_right_unbounded_interior.
+- case: asboolP => XsupX /=.
+  + rewrite le_eqVlt => /orP[/eqP->//|xsupX].
+    apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_left_unbounded_interior.
+  + move=> xsupX; apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_left_unbounded_interior.
+- by move=> _; rewrite (interval_unbounded_setT iX).
+Qed.
+
+Lemma connected_intervalP (E : set R^o) : connected E <-> is_interval E.
 Proof.
 split => [cE x y Ex Ey z /andP[xz zy]|].
 - apply: contrapT => Ez.
@@ -2536,7 +2533,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
     move=> /= wlog_hypo; have [xy|yx|{wlog_hypo}yx] := ltgtP x y.
     + exact: (wlog_hypo _ _ _ _ _ A0x _ A1y).
     + apply: (wlog_hypo (A \o negb) _ _ _ y _ x) => //=;
-        by [rewrite setUC | rewrite separatedC].
+      by [rewrite setUC | rewrite separatedC].
     + move/separated_disjoint : sepA; rewrite predeqE => /(_ x)[] + _; apply.
       by split => //; rewrite yx.
   pose z := sup (A false `&` [set z | x <= z <= y]).
@@ -2582,6 +2579,8 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
     by split => //; rewrite /mkset /z1 (le_trans xz) /= ?ler_addl // (ltW z1y).
   by rewrite EU => -[//|]; apply: contra_not ncA1z1; exact: subset_closure.
 Qed.
+End interval_realType.
+
 
 Section segment.
 Variable R : realType.
