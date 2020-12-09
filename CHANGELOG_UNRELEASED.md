@@ -68,11 +68,13 @@
   + notation `x > y` defined as `y < x` (only parsing) instead of `gte`
   + definition `mkset`
   + lemma `eq_set`
-
-### Changed
-
 - in `classical_sets.v`:
   + notation `[set x : T | P]` now use definition `mkset`
+- in `reals.v`:
+  + lemmas generalized from `realType` to `numDomainType`:
+    `setNK`, `memNE`, `lb_ubN`, `ub_lbN`, `nonemptyN`, `has_lb_ubN `
+  + lemmas generalized from `realType` to `realDomainType`:
+    `has_ubPn`, `has_lbPn`
 
 ### Renamed
 
