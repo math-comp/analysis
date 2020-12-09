@@ -49,7 +49,7 @@ let
                       if elem version [ "master" "cauchy_etoile" "holomorphy" ]
                       then {
                         propagatedBuildInputs = mca.propagatedBuildInputs ++
-                                                [ coqPackages.mathcomp-real-closed coqPackages.hiearchy-builder ];
+                                                [ coqPackages.mathcomp-real-closed coqPackages.hierarchy-builder ];
                       } else {
                         propagatedBuildInputs = mca.propagatedBuildInputs ++
                                                 (with coqPackages; [ coq-elpi hierarchy-builder ]);
