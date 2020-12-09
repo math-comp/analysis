@@ -1,5 +1,5 @@
 {
-  nixpkgs ? (if builtins.pathExists ./nixpkgs.nix then import ./nixpkgs.nix
+  nixpkgs ? (if builtins.pathExists ./.nix/nixpkgs.nix then import ./.nix/nixpkgs.nix
              else fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/502845c3e31ef3de0e424f3fcb09217df2ce6df6.tar.gz),
   config ? (if builtins.pathExists ./config.nix then import ./config.nix else {}),
   withEmacs ? false,
@@ -115,7 +115,7 @@ let
       echo "fetchTarball {
         url = $URL;
         sha256 = \"$SHA256\";
-      }" > nixpkgs.nix
+      }" > .nix/nixpkgs.nix
     }
     updateNixPkgsMaster (){
       HASH=$(git ls-remote https://github.com/NixOS/nixpkgs refs/heads/master | cut -f1);
@@ -124,7 +124,7 @@ let
       echo "fetchTarball {
         url = $URL;
         sha256 = \"$SHA256\";
-      }" > nixpkgs.nix
+      }" > .nix/nixpkgs.nix
     }
   ''
   + pkgs.lib.optionalString print-env "nixEnv";
