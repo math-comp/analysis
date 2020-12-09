@@ -1,89 +1,47 @@
 {
   nixpkgs ? (if builtins.pathExists ./.nix/nixpkgs.nix then import ./.nix/nixpkgs.nix
-             else fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/502845c3e31ef3de0e424f3fcb09217df2ce6df6.tar.gz),
-  config ? (if builtins.pathExists ./config.nix then import ./config.nix else {}),
+             # else fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/502845c3e31ef3de0e424f3fcb09217df2ce6df6.tar.gz),
+             else null),
+  config ? (if builtins.pathExists ./.nix/config.nix then import ./.nix/config.nix else {}),
   withEmacs ? false,
   print-env ? false,
   do-nothing ? false,
-  package ? (if builtins.pathExists ./package.nix then import ./package.nix else "mathcomp-fast"),
-  src ? (if builtins.pathExists ./package.nix then ./. else false)
+  pname ? config.pname or "generic"
 }:
 with builtins;
+with (import nixpkgs {}).lib;
 let
-  cfg-fun = if isFunction config then config else (pkgs: config);
-  pkg-src = if src == false then {}
-            else { ${if package == "mathcomp.single" then "mathcomp" else package} = src; };
-  pkgs = if isAttrs nixpkgs then nixpkgs else import nixpkgs {
-    overlays = [ (pkgs: super-pkgs: with pkgs.lib;
-      let coqPackages = with pkgs; {
-        "8.7" = coqPackages_8_7;
-        "8.8" = coqPackages_8_8;
-        "8.9" = coqPackages_8_9;
-        "8.10" = coqPackages_8_10;
-        "8.11" = coqPackages_8_11;
-        "8.12" = coqPackages_8_12;
-        "default" = coqPackages_8_11;
-      }.${(cfg-fun pkgs).coq or "default"}.overrideScope'
-        (coqPackages: super-coqPackages:
-          let
-            all-pkgs = pkgs // { inherit coqPackages; };
-            cfg = pkg-src // {
-              mathcomp-fast = {
-                src = ./.;
-                propagatedBuildInputs = with coqPackages; ([ mathcomp ] ++ mathcomp-extra-fast);
-              };
-              mathcomp-full = {
-                src = ./.;
-                propagatedBuildInputs = with coqPackages; ([ mathcomp ] ++ mathcomp-extra-all);
-              };
-            } // (cfg-fun all-pkgs);
-          in {
-            mathcomp-extra-config =
-              let mec = super-coqPackages.mathcomp-extra-config; in
-              lib.recursiveUpdate mec {
-                initial = {
-                  # fixing mathcomp analysis to depend on real-closed
-                  mathcomp-analysis = {version, coqPackages} @ args:
-                    let mca = mec.initial.mathcomp-analysis args; in
-                    mca // (
-                      if elem version [ "master" "cauchy_etoile" "holomorphy" ]
-                      then {
-                        propagatedBuildInputs = mca.propagatedBuildInputs ++
-                                                [ coqPackages.mathcomp-real-closed coqPackages.hiearchy-builder ];
-                      } else {
-                        propagatedBuildInputs = mca.propagatedBuildInputs ++
-                                                (with coqPackages; [ coq-elpi hierarchy-builder ]);
-                      });
-                };
-                for-coq-and-mc.${coqPackages.coq.coq-version}.${coqPackages.mathcomp.version} =
-                  (super-coqPackages.mathcomp-extra-config.${coqPackages.coq.coq-version}.${coqPackages.mathcomp.version} or {}) //
-                  (removeAttrs cfg [ "mathcomp" "coq" "mathcomp-fast" "mathcomp-full" ]);
-              };
-            mathcomp = if cfg?mathcomp then coqPackages.mathcomp_ cfg.mathcomp else super-coqPackages.mathcomp;
-          } // mapAttrs
-            (package: version: coqPackages.mathcomp-extra package version)
-            (removeAttrs cfg ["mathcomp" "coq"])
-        ); in {
-          coqPackages = coqPackages.filterPackages coqPackages.coq coqPackages;
-          coq = coqPackages.coq;
-          mc-clean = src: {
-            version = baseNameOf src;
-            src = cleanSourceWith {
-              src = cleanSource src;
-              filter = path: type: let baseName = baseNameOf (toString path); in ! (
-                hasSuffix ".aux" baseName ||
-                hasSuffix ".d" baseName ||
-                hasSuffix ".vo" baseName ||
-                hasSuffix ".glob" baseName ||
-                elem baseName ["Makefile.coq" "Makefile.coq.conf" ".mailmap" ".git"]
-              );
-            };
-          };
-        })];
+  mk-overlays = path:
+    if !pathExists path then self: {}
+    else self: mapAttrs (x: _v:
+      let overlays = import (path + "/${x}");
+          args = functionArgs overlays;
+      in overlays (intersectAttrs args self)) (readDir path);
+  coq-overlays = mk-overlays ./.nix/coq-overlays;
+  ocaml-overlays = mk-overlays ./.nix/ocaml-overlays;
+  overlays = [ (self: super: mk-overlays ./.nix/overlays self) ] ++ [
+    (self-pkgs: super-pkgs: {
+      coqPackages = super-pkgs.coqPackages.overrideScope' (
+        coqPackages: super-coqPackages:
+        let pkgs = self-pkgs // {inherit coqPackages;}; in
+        coq-overlays (pkgs // coqPackages));
+
+      ocamlPackages = super-pkgs.ocamlPackages.overrideScope' (
+        ocamlPackages: super-ocamlPackages:
+        let pkgs = self-pkgs // {inherit ocamlPackages;}; in
+        ocaml-overlays (pkgs // ocamlPackages));
+    })];
+  pkgs = import nixpkgs { inherit overlays; };
+  default-coq-derivation = makeOverridable pkgs.coqPackages.mkCoqDerivation {
+    pname = "generic";
+    version = "0.0.0";
+    src = "./.";
   };
-
-  mathcompnix = ./.;
-
+  locate = pkgs: pname:
+    if pkgs.coqPackages?${pname}   then pkgs.coqPackages.${pname} else
+    if pkgs.ocamlPackages?${pname} then pkgs.ocamlPackages.${pname} else
+    if pkgs?${pname} then pkgs.${pname} else default-coq-derivation.override { inherit pname; };
+  this-pkg = (locate pkgs pname).overrideAttrs (o: { src = config.${pname}.src or ./.; });
   shellHook = ''
     nixEnv () {
       echo "Here is your work environement"
@@ -91,7 +49,7 @@ let
       for x in $buildInputs; do printf "  "; echo $x | cut -d "-" -f "2-"; done
       echo "propagatedBuildInputs:"
       for x in $propagatedBuildInputs; do printf "  "; echo $x | cut -d "-" -f "2-"; done
-      echo "you can pass option --arg config '{coq = \"x.y\"; math-comp = \"x.y.z\";}' to nix-shell to change coq and/or math-comp versions"
+      echo "you can pass option --arg config '{coq = \"x.y\"; ...}' to nix-shell to change packages versions"
     }
 
     printEnv () {
@@ -105,7 +63,7 @@ let
     }
 
     nixDefault () {
-      cat $mathcompnix/default.nix
+      cat $currentdir/default.nix
     } > default.nix
 
     updateNixPkgs (){
@@ -129,21 +87,19 @@ let
   ''
   + pkgs.lib.optionalString print-env "nixEnv";
 
+  currentdir = ./.;
   emacs = with pkgs; emacsWithPackages
     (epkgs: with epkgs.melpaStablePackages; [proof-general]);
-
-  pkg = with pkgs;
-        if package == "mathcomp.single" then coqPackages.mathcomp.single
-        else coqPackages.${package} or (coqPackages.current-mathcomp-extra package);
 in
-if pkgs.lib.trivial.inNixShell then pkg.overrideAttrs (old: {
-  inherit shellHook mathcompnix;
-  
-  buildInputs = if do-nothing then []
-                else (old.buildInputs ++
-                (if pkgs.lib.trivial.inNixShell then pkgs.lib.optional withEmacs pkgs.emacs
-                 else []));
+# if pkgs.lib.trivial.inNixShell then this-pkg.overrideAttrs (old: {
+#   inherit shellHook currentdir;
 
-  propagatedBuildInputs = if do-nothing then [] else old.propagatedBuildInputs;
+#   buildInputs = if do-nothing then []
+#                 else (old.buildInputs ++
+#                 (if pkgs.lib.trivial.inNixShell then pkgs.lib.optional withEmacs pkgs.emacs
+#                  else []));
 
-}) else pkg
+#   propagatedBuildInputs = if do-nothing then [] else old.propagatedBuildInputs;
+
+# }) else this-pkg
+this-pkg
