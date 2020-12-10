@@ -1,6 +1,6 @@
 #! /usr/bin/bash
 
-nixEnv () {
+printNixEnv () {
   echo "Here is your work environement"
   echo "buildInputs:"
   for x in $buildInputs; do printf "  "; echo $x | cut -d "-" -f "2-"; done
@@ -8,17 +8,15 @@ nixEnv () {
   for x in $propagatedBuildInputs; do printf "  "; echo $x | cut -d "-" -f "2-"; done
   echo "you can pass option --arg config '{coq = \"x.y\"; ...}' to nix-shell to change packages versions"
 }
-printEnv () {
+catNixEnv () {
   for x in $buildInputs; do echo $x; done
   for x in $propagatedBuildInputs; do echo $x; done
 }
-cachixEnv () {
-  echo "Pushing environement to cachix"
-  printEnv | cachix push math-comp
-}
-nixDefault () {
+
+upateNixDefault () {
   cat $currentdir/default.nix
 } > default.nix
+
 updateNixPkgs (){
   HASH=$(git ls-remote https://github.com/NixOS/nixpkgs-channels refs/heads/nixpkgs-unstable | cut -f1);
   URL=https://github.com/NixOS/nixpkgs-channels/archive/$HASH.tar.gz
@@ -36,8 +34,30 @@ updateNixPkgsMaster (){
     sha256 = \"$SHA256\";
   }" > .nix/nixpkgs.nix
 }
-printOverrides (){
+
+printNixOverrides (){
     echo overrides: $overrides
     echo ocaml-overrides: $ocaml_overrides
     echo coq-overrides: $coq_overrides
+}
+
+initNixConfig (){
+  F=./.nix/config.nix;
+  if [[ -f $F ]]
+  then echo "$F already exists"; exit 1
+  else if [[ -n "$1" ]]
+  then echo "{" > $F
+       echo "  pname = \"$1\";" >> $F
+       echo "}" >> $F
+  else echo "usage: initNixConfig pname"; exit 2
+  fi
+  fi
+}
+
+fetchCoqOverlay (){
+  if [[ -n "$1" ]]
+  then mkdir -p ./.nix/coq-overlays/$1/
+       cp $nixpkgs/pkgs/development/coq-modules/$1/default.nix ./.nix/coq-overlays/$1/
+  else echo "usage: fetchCoqOverlay pname"; exit 1
+  fi
 }

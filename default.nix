@@ -28,7 +28,8 @@ let
     (removeAttrs version-overrides [ "coqPackages" "ocamlPackages" ]);
   ocaml-overrides = self: super: mapAttrs (n: v: override-version super.${n} v)
     (version-overrides.ocamlPackages or {});
-  coq-overrides = self: super: mapAttrs (n: v: override-version super.${n} v)
+  coq-overrides = self: super: mapAttrs 
+    (n: v: if super?${n} then override-version super.${n} v else default-coq-derivation)
     (version-overrides.coqPackages or {});
   overlays = [
     (self: _super: mk-overlays ./.nix/overlays self.callPackage)
@@ -54,7 +55,7 @@ let
   coqpkgs = let coqpkgs = pkgs.coqPackages; in coqpkgs.filterPackages pkgs coqpkgs;
 in
 if pkgs.lib.trivial.inNixShell then this-pkg.overrideAttrs (old: {
-  inherit shellHook currentdir;
+  inherit shellHook currentdir nixpkgs;
   overrides = toJSON (removeAttrs version-overrides [ "coqPackages" "ocamlPackages" ]);
   coq_overrides = toJSON (version-overrides.coqPackages or {});
   ocaml_overrides = toJSON (version-overrides.ocamlPackages or {});
