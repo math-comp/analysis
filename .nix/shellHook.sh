@@ -44,20 +44,22 @@ printNixOverrides (){
 initNixConfig (){
   F=./.nix/config.nix;
   if [[ -f $F ]]
-  then echo "$F already exists"; exit 1
-  else if [[ -n "$1" ]]
-  then echo "{" > $F
-       echo "  pname = \"$1\";" >> $F
-       echo "}" >> $F
-  else echo "usage: initNixConfig pname"; exit 2
-  fi
+    then echo "$F already exists"; exit 1
+    else if [[ -n "$1" ]]
+      then echo "{" > $F
+           echo "  pname = \"$1\";" >> $F
+           echo "}" >> $F
+      else echo "usage: initNixConfig pname"; exit 2
+    fi
   fi
 }
 
 fetchCoqOverlay (){
+  F=$nixpkgs/pkgs/development/coq-modules/$1/default.nix
+  D=./.nix/coq-overlays/$1/
+  echo $F
   if [[ -n "$1" ]]
-  then mkdir -p ./.nix/coq-overlays/$1/
-       cp $nixpkgs/pkgs/development/coq-modules/$1/default.nix ./.nix/coq-overlays/$1/
-  else echo "usage: fetchCoqOverlay pname"; exit 1
+    then mkdir -p $D; cp $F $D; chmod u+w ${D}default.nix
+    else echo "usage: fetchCoqOverlay pname"; exit 1
   fi
 }
