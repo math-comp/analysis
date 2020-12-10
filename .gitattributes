@@ -1,1 +1,3 @@
+.git* export-ignore
+.nix export-ignore
 CHANGELOG_UNRELEASED.md merge=union

@@ -5,10 +5,14 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 # Analysis library compatible with Mathematical Components
 
 [![Docker CI][docker-action-shield]][docker-action-link]
+[![Nix CI][nix-action-shield]][nix-action-link]
 [![Chat][chat-shield]][chat-link]
 
 [docker-action-shield]: https://github.com/math-comp/analysis/workflows/Docker%20CI/badge.svg?branch=master
 [docker-action-link]: https://github.com/math-comp/analysis/actions?query=workflow:"Docker%20CI"
+
+[nix-action-shield]: https://github.com/math-comp/analysis/workflows/Nix%20CI/badge.svg?branch=master
+[nix-action-link]: https://github.com/math-comp/analysis/actions?query=workflow:"Nix%20CI"
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
 [chat-link]: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
 
