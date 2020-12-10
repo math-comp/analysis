@@ -1,8 +1,11 @@
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
 {
   nixpkgs ? (if builtins.pathExists ./.nix/nixpkgs.nix then import ./.nix/nixpkgs.nix
              # else fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/502845c3e31ef3de0e424f3fcb09217df2ce6df6.tar.gz),
              else null),
   config ? {},
+  overrides ? {},
   withEmacs ? false,
   print-env ? false,
   do-nothing ? false,
@@ -13,8 +16,9 @@
 with builtins;
 with (import nixpkgs {}).lib;
 let
-  the-config = (if builtins.pathExists ./.nix/config.nix then import ./.nix/config.nix else {}) // config;
-  full-pname = "coqPackages.${args.pname or the-config.pname or "generic"}";
+  the-config = recursiveUpdate
+    (if builtins.pathExists ./.nix/config.nix then import ./.nix/config.nix else {})
+    (recursiveUpdate config {inherit overrides;});
   ppath = splitString "." full-pname;
   pname = last ppath;
   mk-overlays = path: callPackage:
