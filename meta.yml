@@ -2,9 +2,15 @@ fullname: Analysis library compatible with Mathematical Components
 shortname: analysis
 organization: math-comp
 opam_name: coq-mathcomp-analysis
+nix_name: mathcomp-analysis
 community: false
 action: true
 coqdoc: false
+nix: true
+cachix:
+  - name: coq
+  - name: math-comp
+    token: CACHIX_SIGNING_KEY
 
 synopsis: >-
   An analysis library for mathematical components
@@ -48,6 +54,18 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 - version: '1.11.0-coq-8.12'
   repo: 'mathcomp/mathcomp'
+
+tested_nix_versions:
+- dependencies:
+  - name: coqPackages.coq
+    version: "8.11.2"
+  - name: coqPackages.mathcomp
+    version: "1.11.0"
+- dependencies:
+  - name: coqPackages.coq
+    version: "8.12.1"
+  - name: coqPackages.mathcomp
+    version: "1.11.0"
 
 dependencies:
 - opam:

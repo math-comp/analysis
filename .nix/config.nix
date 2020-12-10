@@ -1,0 +1,3 @@
+{
+  pname = "mathcomp-analysis";
+}
