@@ -48,7 +48,9 @@ initNixConfig (){
     else if [[ -n "$1" ]]
       then echo "{" > $F
            echo "  pname = \"$1\";" >> $F
+           echo "  overrides = {};" >> $F
            echo "}" >> $F
+           chmod u+w $F
       else echo "usage: initNixConfig pname"; exit 2
     fi
   fi

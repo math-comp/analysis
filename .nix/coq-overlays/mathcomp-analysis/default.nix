@@ -15,7 +15,7 @@ with lib; mkCoqDerivation {
       { cases = [ (range "8.10" "8.12~") "1.11.0" ];                out = "0.3.1"; }
       { cases = [ (range "8.9"  "8.12~") "1.10.0" ];                out = "0.3.0"; }
       { cases = [ (range "8.8"  "8.11~") (range "1.8.0" "1.11~") ]; out = "0.2.3"; }
-    ] null;
+    ] "0.3.1" ;
 
   propagatedBuildInputs =
     [ mathcomp.ssreflect mathcomp.field hierarchy-builder
