@@ -2,9 +2,19 @@ fullname: Analysis library compatible with Mathematical Components
 shortname: analysis
 organization: math-comp
 opam_name: coq-mathcomp-analysis
+nix_name: mathcomp-analysis
 community: false
 action: true
 coqdoc: false
+
+nix: true
+cachix:
+- name: coq
+- name: math-comp
+  token: CACHIX_AUTH_TOKEN
+
+nix-ci:
+- name: all
 
 synopsis: >-
   An analysis library for mathematical components
