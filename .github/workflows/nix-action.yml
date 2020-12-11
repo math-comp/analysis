@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include: 
+        include:
         - override: "coqPackages.coq = \"8.11.2\"; coqPackages.mathcomp = \"1.11.0\"; "
         - override: "coqPackages.coq = \"8.12.1\"; coqPackages.mathcomp = \"1.11.0\"; "
       fail-fast: false
@@ -31,7 +31,8 @@ jobs:
         with:
           # Name of a cachix cache to pull/substitute
           name: math-comp
+          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 20
+          fetch-depth: 0
       - run: nix-build --arg overrides '{ ${{ matrix.override }}}'
