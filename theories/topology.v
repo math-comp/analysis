@@ -3560,17 +3560,18 @@ Proof. by []. Qed.
 
 Module PseudoMetric.
 
-Record mixin_of (R : numDomainType) (M : Type) (entourage : set (set (M * M))) := Mixin {
+Record mixin_of (R : numDomainType) (M : topologicalType) (entourage : set (set (M * M))) := Mixin {
   ball : M -> R -> M -> Prop ;
   ax1 : forall x (e : R), 0 < e -> ball x e x ;
   ax2 : forall x y (e : R), ball x e y -> ball y e x ;
   ax3 : forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
-  ax4 : entourage = entourage_ ball
+  ax4 : entourage = entourage_ ball ;
+  ax5 : forall x (e : R), open (ball x e)
 }.
 
 Record class_of (R : numDomainType) (M : Type) := Class {
   base : Uniform.class_of M;
-  mixin : mixin_of R (Uniform.entourage base)
+  mixin : @mixin_of R (Topological.Pack (Uniform.base base)) (Uniform.entourage base)
 }.
 
 Section ClassDef.
@@ -3586,9 +3587,9 @@ Notation xclass := (class : class_of R xT).
 Local Coercion base : class_of >-> Uniform.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
 
-Definition pack ent (m : @mixin_of R T ent) :=
+Definition pack T0 ent (m : @mixin_of R T0 ent) :=
   fun bT (b : Uniform.class_of T) of phant_id (@Uniform.class bT) b =>
-  fun m'   of phant_id m (m' : @mixin_of R T (Uniform.entourage b)) =>
+  fun m'   of phant_id m (m' : @mixin_of R (@Topological.Pack T b) (Uniform.entourage b)) =>
   @Pack T (@Class R _ b m').
 
 Definition eqType := @Equality.Pack cT xclass.
@@ -3618,7 +3619,7 @@ Canonical topologicalType.
 Coercion uniformType : type >-> Uniform.type.
 Canonical uniformType.
 Notation pseudoMetricType := type.
-Notation PseudoMetricType T m := (@pack _ T _ m _ _ idfun _ idfun).
+Notation PseudoMetricType T m := (@pack _ T _ _ m _ _ idfun _ idfun).
 Notation PseudoMetricMixin := Mixin.
 Notation "[ 'pseudoMetricType' R 'of' T 'for' cT ]" := (@clone R T cT _ idfun)
   (at level 0, format "[ 'pseudoMetricType'  R  'of'  T  'for'  cT ]") : form_scope.
@@ -3633,7 +3634,7 @@ Export PseudoMetric.Exports.
 
 Section PseudoMetricUniformity.
 
-Lemma my_ball_le (R : numDomainType) (M : Type) (ent : set (set (M * M))) (m : PseudoMetric.mixin_of R ent) :
+Lemma my_ball_le (R : numDomainType) (M : topologicalType) (ent : set (set (M * M))) (m : PseudoMetric.mixin_of R ent) :
   forall (x : M), {homo PseudoMetric.ball m x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
 Proof.
 move=> x e1 e2 le12 y xe1_y.
@@ -3645,7 +3646,7 @@ exact: PseudoMetric.ax1.
 Qed.
 
 Obligation Tactic := idtac.
-Program Definition uniformityOfBallMixin (R : numFieldType) (T : Type)
+Program Definition uniformityOfBallMixin (R : numFieldType) (T : topologicalType)
   (ent : set (set (T * T))) (nbhs : T -> set (set T)) (nbhsE : nbhs = nbhs_ ent)
   (m : PseudoMetric.mixin_of R ent) : Uniform.mixin_of nbhs :=
   UniformMixin _ _ _ _ nbhsE.
@@ -3681,6 +3682,9 @@ Definition ball {R : numDomainType} {M : pseudoMetricType R} := PseudoMetric.bal
 Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} : entourage_ (@ball R M) = entourage.
 Proof. by case: M=> [?[?[]]]. Qed.
 
+Lemma open_ball {R : numDomainType} {M : pseudoMetricType R} (x : M) (e : R) : open (ball x e).
+Proof. by case: M x => ? [? [? ? ? ? ? ob ?]]; apply ob. Qed.
+
 Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
   @filter_from R _ [set x : R | 0 < x]
     (fun e => [set xy | @ball R M xy.1 e xy.2]) = entourage.
@@ -3689,7 +3693,7 @@ Proof. by rewrite -entourage_ballE. Qed.
 Lemma entourage_ball {R : numDomainType} (M : pseudoMetricType R)
   (e : {posnum R}) : entourage [set xy : M * M | ball xy.1 e%:num xy.2].
 Proof. by rewrite -entourage_ballE; exists e%:num. Qed.
-Hint Resolve entourage_ball : core.
+Hint Extern 0 (entourage (mkset _)) => solve[apply: entourage_ball] : core.
 
 Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
   (x : T) := @filter_from R _ [set e | e > 0] (ball x).
@@ -3918,8 +3922,16 @@ have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
 apply; apply: ball_ler (MN_min i j).
 by apply: le_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
 Qed.
+
+Lemma mx_open_ball x e : open (mx_ball x e).
+Proof.
+rewrite openE => /= y xey; exists (fun i j => ball (x i j) e).
+- by move=> i j; have := open_ball (x i j) e; rewrite openE; apply.
+- by move=> z xez i j; apply xez.
+Qed.
+
 Definition matrix_pseudoMetricType_mixin :=
-  PseudoMetric.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_entourage.
+  PseudoMetric.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_entourage mx_open_ball.
 Canonical matrix_pseudoMetricType :=
   PseudoMetricType 'M[T]_(m, n) matrix_pseudoMetricType_mixin.
 End matrix_PseudoMetric.
@@ -3929,8 +3941,7 @@ Section prod_PseudoMetric.
 Context {R : numDomainType} {U V : pseudoMetricType R}.
 Implicit Types (x y : U * V).
 Definition prod_point : U * V := (point, point).
-Definition prod_ball x (eps : R) y :=
-  ball (fst x) eps (fst y) /\ ball (snd x) eps (snd y).
+Definition prod_ball x (eps : R) y := ball x.1 eps y.1 /\ ball x.2 eps y.2.
 Lemma prod_ball_center x (eps : R) : 0 < eps -> prod_ball x eps x.
 Proof. by move=> /posnumP[?]. Qed.
 Lemma prod_ball_sym x y (eps : R) : prod_ball x eps y -> prod_ball y eps x.
@@ -3956,8 +3967,16 @@ split; [apply: sbA|apply: sbB] => /=.
   by apply: ball_ler bac; rewrite -leEsub le_minl lexx.
 by apply: ball_ler bbd; rewrite -leEsub le_minl lexx orbT.
 Qed.
-Definition prod_pseudoMetricType_mixin :=
-  PseudoMetric.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_entourage.
+
+Lemma prod_open_ball x e : open (prod_ball x e).
+Proof.
+by rewrite openE => /= y [xey1 xey2]; exists (ball x.1 e, ball x.2 e) => //;
+  split; [have := open_ball x.1 e; rewrite openE; apply |
+          have := open_ball x.2 e; rewrite openE; apply ].
+Qed.
+
+Definition prod_pseudoMetricType_mixin := PseudoMetric.Mixin prod_ball_center
+  prod_ball_sym prod_ball_triangle prod_entourage prod_open_ball.
 End prod_PseudoMetric.
 Canonical prod_pseudoMetricType (R : numDomainType) (U V : pseudoMetricType R) :=
   PseudoMetricType (U * V) (@prod_pseudoMetricType_mixin R U V).
@@ -3992,8 +4011,13 @@ rewrite predeqE => A; split; last first.
 move=> [P]; rewrite -entourage_ballE => -[_/posnumP[e] sbeP] sPA.
 by exists e%:num => // fg fg_e; apply: sPA => t; apply: sbeP; apply: fg_e.
 Qed.
+
+Lemma fct_open_ball x e : open (fct_ball x e).
+Proof.
+Admitted.
+
 Definition fct_pseudoMetricType_mixin :=
-  PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle fct_entourage.
+  PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle fct_entourage fct_open_ball.
 Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
 End fct_PseudoMetric.
 
@@ -4313,6 +4337,9 @@ Proof.
 move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
 by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
 Qed.
+Lemma ball_norm_open_ball (x : R) (e : K) : open (ball_ Num.Def.normr x e).
+xxx
+
 Definition pseudoMetric_of_normedDomain
   : PseudoMetric.mixin_of K (@entourage_ K R R (ball_ (fun x => `|x|)))
   := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
