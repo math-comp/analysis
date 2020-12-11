@@ -33,4 +33,6 @@ jobs:
           name: math-comp
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 20
       - run: nix-build --arg overrides '{ ${{ matrix.override }}}'
