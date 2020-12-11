@@ -188,7 +188,7 @@ have {PAe} -> : P = [fset x | x in A :: e]%fset.
 move=> {P} /andP[]; rewrite fset_cons => Ae ue.
 set E := [fset x | x in e]%fset; have Ee : E =i e by move=> x; rewrite !inE.
 rewrite -Ee in Ae; move: (ih _ Ee ue) => {}ih.
-rewrite /trivIfset /fcover !big_setU1 // eq_sym.
+rewrite /trivIfset /fcover !big_fsetU1 // eq_sym.
 have := leq_card_fcover E; rewrite -(mono_leqif (leq_add2l #|` A|)).
 move/(leqif_trans (leq_card_fsetU _ _)) => /= ->.
 have [dAcE|dAcE]/= := boolP [disjoint A & fcover E]%fset; last first.
