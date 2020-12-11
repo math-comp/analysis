@@ -31,7 +31,6 @@ jobs:
         with:
           # Name of a cachix cache to pull/substitute
           name: math-comp
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - uses: actions/checkout@v2
         with:
           fetch-depth: 20

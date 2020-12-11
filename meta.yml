@@ -10,7 +10,7 @@ nix: true
 cachix:
   - name: coq
   - name: math-comp
-    token: CACHIX_SIGNING_KEY
+#    token: CACHIX_SIGNING_KEY
 
 synopsis: >-
   An analysis library for mathematical components
