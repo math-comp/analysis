@@ -13,8 +13,8 @@
   version ? null,
   ci ? false,
 }@args:
-with builtins;
-with (import nixpkgs {}).lib;
+let tmp-pkgs = import nixpkgs {}; in
+with builtins; with tmp-pkgs.lib;
 let
   the-config = recursiveUpdate
     (if builtins.pathExists ./.nix/config.nix then import ./.nix/config.nix else {})
@@ -28,7 +28,9 @@ let
   coq-overlays = mk-overlays ./.nix/coq-overlays;
   ocaml-overlays = mk-overlays ./.nix/ocaml-overlays;
   override-version = x: v: x.override { version = v; };
-  version-overrides = recursiveUpdate (setAttrByPath ppath ./.) (the-config.overrides or {});
+  git-src = fetchGit (if versionAtLeast builtins.nixVersion "2.3.9"
+    then { url = ./.; shallow = true; } else ./.);
+  version-overrides = recursiveUpdate (setAttrByPath ppath "${git-src}") (the-config.overrides or {});
   overrides = self: super: mapAttrs (n: v: override-version super.${n} v)
     (removeAttrs version-overrides [ "coqPackages" "ocamlPackages" ]);
   ocaml-overrides = self: super: mapAttrs (n: v: override-version super.${n} v)
