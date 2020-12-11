@@ -4324,6 +4324,30 @@ Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
     (@Pointed.class (pointed_of_zmodule R))
     (nbhs_ball_ (ball_ (fun x => `|x|)))).
 
+
+
+Canonical pointed_of_zmodule.
+
+Section zmodType_topologicalType.
+Variable V : zmodType.
+
+Let D : set V := setT.
+Let b : V -> set V := fun i => [set i].
+Let bT : \bigcup_(i in D) b i = setT.
+Proof. by rewrite predeqE => i; split => // _; exists i. Qed.
+
+Let bD : forall i j t, D i -> D j -> b i t -> b j t ->
+  exists k, D k /\ b k t /\ b k `<=` b i `&` b j.
+Proof. by move=> i j t _ _ -> ->; exists j. Qed.
+
+Definition zmodType_topologicalTypeMixin := topologyOfBaseMixin bT bD.
+Canonical zmodType_filteredType := FilteredType V V (nbhs_of_open (open_from D b)).
+Canonical zmodType_topologicalType := TopologicalType V zmodType_topologicalTypeMixin.
+
+End zmodType_topologicalType.
+
+Coercion zmodType_topologicalType : zmodType >-> topologicalType.
+
 Section pseudoMetric_of_normedDomain.
 Variables (K : numDomainType) (R : normedZmodType K).
 Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ Num.Def.normr x e x.
@@ -4338,11 +4362,22 @@ move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
 by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
 Qed.
 Lemma ball_norm_open_ball (x : R) (e : K) : open (ball_ Num.Def.normr x e).
-xxx
+Proof.
+rewrite openE => /= y xey; exists (ball_ Num.Def.normr x e); split; last by split.
+rewrite /open_from /mkset; exists [set v | ball_ Num.Def.normr x e v] => //.
+(* TODO: classical_sets.v lemma? *)
+by rewrite predeqE => z; split=> [[u] ? -> //|xez]; exists z.
+Qed.
 
-Definition pseudoMetric_of_normedDomain
-  : PseudoMetric.mixin_of K (@entourage_ K R R (ball_ (fun x => `|x|)))
-  := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+Definition pseudoMetric_of_normedDomain : @PseudoMetric.mixin_of K R (@entourage_ K R R (ball_ (fun x => `|x|))).
+apply: PseudoMetric.Mixin.
+exact: ball_norm_center.
+exact: ball_norm_symmetric.
+exact: ball_norm_triangle.
+reflexivity.
+exact: ball_norm_open_ball.
+Defined.
+
 Lemma nbhs_ball_normE :
   @nbhs_ball_ K R R (ball_ Num.Def.normr) = nbhs_ (entourage_ (ball_ Num.Def.normr)).
 Proof.
@@ -4360,11 +4395,13 @@ Canonical numFieldType_pointedType :=
   [pointedType of R^o for pointed_of_zmodule R].
 Canonical numFieldType_filteredType :=
   [filteredType R of R^o for filtered_of_normedZmod R].
+(*
 Canonical numFieldType_topologicalType : topologicalType := TopologicalType R^o
   (topologyOfEntourageMixin
     (uniformityOfBallMixin
       (@nbhs_ball_normE _ [normedZmodType R of R])
       (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+*)
 Canonical numFieldType_uniformType : uniformType := UniformType R^o
   (uniformityOfBallMixin (@nbhs_ball_normE _ [normedZmodType R of R])
     (pseudoMetric_of_normedDomain [normedZmodType R of R])).
