@@ -28,7 +28,8 @@ let
   coq-overlays = mk-overlays ./.nix/coq-overlays;
   ocaml-overlays = mk-overlays ./.nix/ocaml-overlays;
   override-version = x: v: x.override { version = v; };
-  git-src = fetchGit (if versionAtLeast builtins.nixVersion "2.3.9"
+  git-src = fetchGit (if false # replace by a version check when supported
+    # cf https://github.com/NixOS/nix/issues/1837
     then { url = ./.; shallow = true; } else ./.);
   version-overrides = recursiveUpdate (setAttrByPath ppath "${git-src}") (the-config.overrides or {});
   overrides = self: super: mapAttrs (n: v: override-version super.${n} v)
