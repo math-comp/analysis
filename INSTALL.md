@@ -1,8 +1,9 @@
 # Installing
 
 ## Requirements
-- [The Coq Proof Assistant version ≥ 8.10](https://coq.inria.fr)
-- [Mathematical Components version ≥ 1.11.0](https://github.com/math-comp/math-comp)
+
+- [The Coq Proof Assistant version ≥ 8.11](https://coq.inria.fr)
+- [Mathematical Components version = 1.11.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 1.5.0](https://github.com/math-comp/finmap)
 
 These requirements can be installed in a custom way, or through
@@ -14,13 +15,14 @@ Detailed instructions for possible installations of Mathematical Components are 
 [here](https://github.com/math-comp/math-comp/blob/master/INSTALL.md).
 
 ## Short Instructions
+
 - Through opam:
   + type `opam install coq-mathcomp-analysis.X.Y.Z` where `X.Y.Z` is the version number
     (all the dependencies should be automatically installed, assuming `opam` has been properly
     configured and `coq-released` repository is added)
-- Custom (assuming Coq ≥ 8.10, Mathematical Components version ≥ 1.11.0, and Finmap version ≥ 1.5.0
-  have been installed):
-  + Type `make` to use the provided `Makefile`.
+- Custom (assuming Coq ≥ 8.11, Mathematical Components version = 1.11.0, Finmap version ≥ 1.5.0,
+  and Hierarchy Builder ≥ 0.10.0 have been installed):
+  + type `make` to use the provided `Makefile`
 
 ## From scratch instructions
 
@@ -45,7 +47,7 @@ $ opam install coq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.0.3.3
+$ opam install coq-mathcomp-analysis.0.3.4
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
@@ -75,26 +77,31 @@ version numbers accordingly.
 ```
 $ opam install coq.8.12.0
 ```
-2. Install Mathematical Components development version 
+2. Install the Mathematical Components
 ```
 $ opam install coq-mathcomp-ssreflect.1.11.0
 $ opam install coq-mathcomp-fingroup.1.11.0
 $ opam install coq-mathcomp-algebra.1.11.0
 $ opam install coq-mathcomp-solvable.1.11.0
 $ opam install coq-mathcomp-field.1.11.0
-$ opam install coq-mathcomp-bigenough.1.0.0
 ```
-3. Install Finite maps library
+3. Install the Finite maps library
 ```
 $ opam install coq-mathcomp-finmap.1.5.0
 ```
-4. Download and compile `coq-mathcomp-analysis` without installing
+4. Install the Hierarchy Builder
+```
+$ opam install coq-hierarchy-builder.0.10.0
+```
+5. Download and compile `coq-mathcomp-analysis` without installing
 ```
 $ git clone https://github.com/math-comp/analysis
 $ cd analysis
 $ make
 ```
+
 ## How to clean your computer
+
 - If you installed the package `coq-mathcomp-analysis` and wish to get rid of it, just type
 ```
 $ opam remove coq-mathcomp-analysis
