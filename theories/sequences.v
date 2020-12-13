@@ -413,8 +413,7 @@ move=> u_nd u_M; set S := _ @` _; set M0 := sup S.
 have supS : has_sup S.
   split; first by exists (u_ 0%N), 0%N.
   by exists M; apply/ubP => x -[n _ <-{x}].
-apply: cvg_distW; first exact: fmap_filter.
-move=> _/posnumP[e]; rewrite near_map.
+apply: cvg_distW => _/posnumP[e]; rewrite near_map.
 have [p /andP[M0u_p u_pM0]] : exists p, M0 - e%:num <= u_ p <= M0.
   have [x] := sup_adherent supS (posnum_gt0 e).
   move=> -[p _] <-{x} => /ltW M0u_p.
@@ -496,8 +495,7 @@ Proof. exact/ltW/harmonic_gt0. Qed.
 
 Lemma cvg_harmonic {R : archiFieldType} : harmonic --> (0 : R^o).
 Proof.
-apply: cvg_distW; first exact: fmap_filter.
-move=> _/posnumP[e]; rewrite near_map; near=> i.
+apply: cvg_distW => _/posnumP[e]; rewrite near_map; near=> i.
 rewrite distrC subr0 ger0_norm//= -lef_pinv ?qualifE// invrK.
 rewrite (le_trans (ltW (archi_boundP _)))// ler_nat -add1n -leq_subLR.
 by near: i; apply: nbhs_infty_ge.
@@ -529,8 +527,7 @@ move=> u0_cvg; have ssplit v_ m n : (m <= n)%N -> `|n%:R^-1 * series v_ n| <=
     n%:R^-1 * `|series v_ m| + n%:R^-1 * `|\sum_(m <= i < n) v_ i|.
   move=> /subnK<-; rewrite series_addn mulrDr (le_trans (ler_norm_add _ _))//.
   by rewrite !normrM ger0_norm ?invr_ge0 ?ler0n.
-apply/cvg_distP; first exact: fmap_filter.
-move=> _/posnumP[e]; rewrite near_simpl; near \oo => m; near=> n.
+apply/cvg_distP=> _/posnumP[e]; rewrite near_simpl; near \oo => m; near=> n.
 have {}/ssplit -/(_ _ [sequence l - u_ n]_n) : (m.+1 <= n.+1)%nat by near: n; exists m.
 rewrite /series /= big_split/= sumrN mulrBr sumr_const card_ord -(mulr_natl l) mulKf//.
 move=> /le_lt_trans->//; rewrite [e%:num]splitr ltr_add//.
@@ -559,8 +556,7 @@ Let cesaro_converse_off_by_one (u_ : R^o ^nat) :
   [sequence n.+1%:R^-1 * series u_ n.+1]_ n --> (0 : R^o) ->
   [sequence n.+1%:R^-1 * series u_ n]_ n --> (0 : R^o).
 Proof.
-move=> H; apply/cvg_distP; first exact: fmap_filter.
-move=> _/posnumP[e]; rewrite near_map.
+move=> H; apply/cvg_distP => _/posnumP[e]; rewrite near_map.
 move/cvg_distP : H => /(_ e%:num (posnum_gt0 e)); rewrite near_map => -[m _ mu].
 near=> n; rewrite sub0r normrN /=.
 have /andP[n0] : ((0 < n) && (m <= n.-1))%N.
@@ -772,8 +768,7 @@ Lemma normed_cvg {R : realType} (V : completeNormedModType R) (u_ : V ^nat) :
   cvg [normed series u_] -> cvg (series u_).
 Proof.
 move=> /cauchy_cvgP/cauchy_seriesP u_ncvg.
-apply/cauchy_cvgP; first exact: fmap_proper_filter.
-apply/cauchy_seriesP => e /u_ncvg.
+apply/cauchy_cvgP/cauchy_seriesP => e /u_ncvg.
 apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
@@ -828,8 +823,7 @@ Qed.
 Lemma dvg_ereal_cvg (R : realFieldType) (u_ : (R^o) ^nat) :
   u_ --> +oo -> (fun n => (u_ n)%:E) --> +oo%E.
 Proof.
-move/cvgPpinfty_lt => uoo; apply/cvg_ballP; first exact: fmap_filter.
-move=> _/posnumP[e]; rewrite near_map.
+move/cvgPpinfty_lt => uoo; apply/cvg_ballP => _/posnumP[e]; rewrite near_map.
 have [e1|e1] := lerP 1 e%:num.
   case: (uoo _ ltr01) => k _ k1un; near=> n.
   rewrite /ball /= /ereal_ball [contract +oo]/= ger0_norm ?subr_ge0; last first.
@@ -900,8 +894,7 @@ have [/eqP|lnoo] := boolP (l == -oo%E).
   move/ereal_sup_ninfty => loo.
   suff : u_ = (fun=> -oo%E) by [].
   by rewrite funeqE => m; apply (loo (u_ m)); exists m.
-apply/cvg_ballP; first exact: fmap_filter.
-move=> _/posnumP[e].
+apply/cvg_ballP => _/posnumP[e].
 have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo%E).
   rewrite near_map; near=> n; rewrite /ball /= /ereal_ball.
   have unoo : u_ n != -oo%E.

@@ -1096,7 +1096,7 @@ move=> FF; constructor => [|P Q|P Q PQ]; rewrite ?fmapE ?filter_ofE //=.
 - exact: filterI.
 - by apply: filterS=> ?/PQ.
 Qed.
-Typeclasses Opaque fmap.
+(*Typeclasses Opaque fmap.*)
 
 Global Instance fmap_proper_filter T U (f : T -> U) (F : set (set T)) :
   ProperFilter F -> ProperFilter (f @ F).

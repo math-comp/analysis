@@ -2199,8 +2199,7 @@ suff [a_ anx] : exists a_, forall n, a_ n != x /\ (U n `&` A) (a_ n).
   exists a_; split.
   - by move=> a [n _ <-]; have [? []] := anx n.
   - by move=> n; have [] := anx n.
-  - apply/cvg_distP; first by exact: fmap_filter.
-    move=> _/posnumP[e]; rewrite near_map; near=> n.
+  - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
     have [? [] xann Aan] := anx n.
     by rewrite (lt_le_trans xann) // ltW //; near: n; exact: near_infty_natSinv_lt.
 have @a_ : nat -> T^o.
@@ -2309,8 +2308,7 @@ rewrite /mkset le_eqVlt => /orP[/eqP <-{v}|]; last first.
 apply/subset_limit_point/limit_pointP; exists (fun n => z + n.+1%:R^-1); split.
 - by move=> u [] m _ <-; rewrite ltr_addl.
 - by move=> n; rewrite -subr_eq0 addrAC subrr add0r.
-- apply/cvg_distP; first exact: fmap_filter.
-  move=> _/posnumP[e]; rewrite near_map; near=> n.
+- apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
   rewrite opprD addrA subrr add0r normrN ger0_norm //.
   by near: n; exact: near_infty_natSinv_lt.
 Grab Existential Variables. all: end_near. Qed.
@@ -2324,8 +2322,7 @@ rewrite /mkset le_eqVlt => /orP[/eqP <-{z}|]; last first.
 apply/subset_limit_point/limit_pointP; exists (fun n => v - n.+1%:R^-1); split.
 - by move=> u [] m _ <-; rewrite ltr_subl_addl ltr_addr.
 - by move=> n; rewrite -subr_eq0 addrAC subrr add0r oppr_eq0.
-- apply/cvg_distP; first exact: fmap_filter.
-  move=> _/posnumP[e]; rewrite near_map; near=> n.
+- apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
   rewrite opprD addrA subrr add0r opprK ger0_norm //.
   by near: n; exact: near_infty_natSinv_lt.
 Grab Existential Variables. all: end_near. Qed.
