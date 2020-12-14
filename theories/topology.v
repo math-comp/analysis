@@ -2823,7 +2823,7 @@ Lemma open_hausdorff : hausdorff T =
                 [/\ open AB.1, open AB.2 & AB.1 `&` AB.2 == set0]).
 Proof.
 rewrite propeqE; split => [T_filterT2|T_openT2] x y.
-  have := contra_not (T_filterT2 x y); rewrite (rwP eqP) (rwP negP) => cl /cl.
+  have := contra_not _ _ (T_filterT2 x y); rewrite (rwP eqP) (rwP negP) => cl /cl.
   rewrite [cluster _ _](rwP forallp_asboolP) => /negP.
   rewrite forallbE => /existsp_asboolPn/=[A]/negP/existsp_asboolPn/=[B].
   rewrite [nbhs _ _ -> _](rwP imply_asboolP) => /negP.
