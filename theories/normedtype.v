@@ -81,19 +81,6 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope ring_scope.
-
-Section add_to_mathcomp.
-
-Lemma ltr_distW (R : realDomainType) (x y e : R) :
-  `|x - y| < e -> y - e < x.
-Proof. by rewrite ltr_distl => /andP[]. Qed.
-
-Lemma ler_distW (R : realDomainType) (x y e : R):
-  `|x - y| <= e -> y - e <= x.
-Proof. by rewrite ler_distl => /andP[]. Qed.
-
-End add_to_mathcomp.
-
 Local Open Scope classical_set_scope.
 
 Lemma nbhsN (R : numFieldType) (x : R^o) :
@@ -2065,9 +2052,8 @@ have /cauchy_ballP /cauchyP /(_ 1) [//|x0 x01] := F_cauchy.
 have D_has_sup : has_sup D; first split.
 - exists (x0 - 1) => A FA.
   near F => x.
-  apply/downP; exists x.
-  by near: x.
-  by rewrite ler_distW 1?distrC 1?ltW ?andbT //; near: x.
+  apply/downP; exists x; first by near: x.
+  by rewrite ler_distl_subl // ltW //; near: x.
 - exists (x0 + 1); apply/ubP => x /(_ _ x01) /downP [y].
   rewrite -[ball _ _ _]/(_ (_ < _)) ltr_distl ltr_subl_addr => /andP[/ltW].
   by move=> /(le_trans _) yx01 _ /yx01.
@@ -2584,7 +2570,7 @@ apply: segment_connected.
   exists i => //; apply/xe_fi; rewrite /ball_/= distrC ger0_norm.
     have lezy : z <= y by rewrite (itvP ayz).
     rewrite ltr_subl_addl; apply: le_lt_trans lezy _; rewrite -ltr_subl_addr.
-    by have := xe_y; rewrite /ball_ => /ltr_distW.
+    by have := xe_y; rewrite /ball_ => /ltr_distlC_subl.
   by rewrite subr_ge0; apply/ltW.
 exists A; last by rewrite predeqE => x; split=> [[] | []].
 move=> x clAx; have abx : x \in `[a, b].
@@ -2603,7 +2589,7 @@ exists i; first by rewrite /= !inE eq_refl.
 apply/xe_fi; rewrite /ball_/= ger0_norm; last first.
   by rewrite subr_ge0 (itvP axz).
 rewrite ltr_subl_addl -ltr_subl_addr; apply: lt_trans ltyz.
-by apply: ltr_distW; rewrite distrC.
+by apply: ltr_distlC_subl; rewrite distrC.
 Qed.
 
 End segment.
@@ -2660,7 +2646,7 @@ have /fcont /(_ _ (@nbhsx_ballx _ [normedModType R of R^o] _ e)) [_/posnumP[d] s
 have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
 have /supdfe /= : @ball _ [normedModType R of R^o] (sup A) d%:num x.
   by near: x; rewrite /= nbhs_simpl; exists d%:num => //.
-rewrite /= => /ltr_distW; apply: le_lt_trans.
+rewrite /= => /ltr_distlC_subl; apply: le_lt_trans.
 rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
   apply; rewrite inE; apply/andP; split; first by near: x; exists 1.
   near: x; exists (b - sup A) => /=.
