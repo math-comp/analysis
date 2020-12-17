@@ -2,9 +2,10 @@
 
 ## Requirements
 
-- [The Coq Proof Assistant version ≥ 8.12](https://coq.inria.fr)
+- [The Coq Proof Assistant version ≥ 8.11](https://coq.inria.fr)
 - [Mathematical Components version = 1.12.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 1.5.1](https://github.com/math-comp/finmap)
+- [Hierarchy builder version >= 0.10.0](https://github.com/math-comp/hierarchy-builder)
 
 These requirements can be installed in a custom way, or through
 [opam](https://opam.ocaml.org/) (the recommended way) using
@@ -20,8 +21,7 @@ Detailed instructions for possible installations of Mathematical Components are 
   + type `opam install coq-mathcomp-analysis.X.Y.Z` where `X.Y.Z` is the version number
     (all the dependencies should be automatically installed, assuming `opam` has been properly
     configured and `coq-released` repository is added)
-- Custom (assuming Coq ≥ 8.12, Mathematical Components version = 1.12.0, Finmap version ≥ 1.5.1,
-  and Hierarchy Builder ≥ 0.10.0 have been installed):
+- Custom (assuming the requirements are met):
   + type `make` to use the provided `Makefile`
 
 ## From scratch instructions
