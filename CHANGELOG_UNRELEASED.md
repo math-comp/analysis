@@ -4,6 +4,9 @@
 
 ### Added
 
+- in `classical_sets.v`:
+  + lemmas `predeqP`, `seteqP`
+
 ### Changed
 
 ### Renamed
