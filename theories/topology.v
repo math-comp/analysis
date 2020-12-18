@@ -4499,26 +4499,36 @@ Coercion realType_uniformType : realType >-> uniformType.
 Coercion realType_pseudoMetricType : realType >-> pseudoMetricType.
 
 
-(* Canonical numFieldType_regular_pointedType (R : numFieldType) := *)
-(*   [pointedType of R^o for pointed_of_zmodule R]. *)
-(* Canonical numFieldType_regular_filteredType (R : numFieldType) := *)
-(*   [filteredType R of R^o for filtered_of_normedZmod R]. *)
-(* Canonical numFieldType_regular_topologicalType (R : numFieldType) : topologicalType := *)
-(*   TopologicalType R^o (topologyOfEntourageMixin  (uniformityOfBallMixin *)
-(*       (@nbhs_ball_normE _ [normedZmodType R of R]) *)
-(*       (pseudoMetric_of_normedDomain [normedZmodType R of R]))). *)
-(* Canonical numFieldType_regular_uniformType (R : numFieldType) : uniformType := *)
-(*   UniformType R^o (uniformityOfBallMixin *)
-(*     (@nbhs_ball_normE _ [normedZmodType R of R]) *)
-(*     (pseudoMetric_of_normedDomain [normedZmodType R of R])). *)
-(* Canonical numFieldType_regular_pseudoMetricType (R : numFieldType) := *)
-(*   @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R *)
-(*   (Uniform.class (numFieldType_regular_uniformType R)) (@pseudoMetric_of_normedDomain R R)). *)
+Definition numFieldType_lalgType (R : numFieldType) : lalgType R :=
+  @GRing.regular_lalgType R.
 
-Definition numFieldType_lalgType (R : numFieldType) : lalgType R := @GRing.regular_lalgType R.
-
-(* Definition numFieldType_regular_lalgType (R : numFieldType) : lalgType R := @GRing.regular_lalgType R. *)
 End numFieldType_canonical.
+
+
+
+Module numFieldType_regular_canonical.
+
+Canonical numFieldType_regular_pointedType (R : numFieldType) :=
+  [pointedType of R^o for pointed_of_zmodule R].
+Canonical numFieldType_regular_filteredType (R : numFieldType) :=
+  [filteredType R of R^o for filtered_of_normedZmod R].
+Canonical numFieldType_regular_topologicalType (R : numFieldType) : topologicalType :=
+  TopologicalType R^o (topologyOfEntourageMixin  (uniformityOfBallMixin
+      (@nbhs_ball_normE _ [normedZmodType R of R])
+      (pseudoMetric_of_normedDomain [normedZmodType R of R]))).
+Canonical numFieldType_regular_uniformType (R : numFieldType) : uniformType :=
+  UniformType R^o (uniformityOfBallMixin
+    (@nbhs_ball_normE _ [normedZmodType R of R])
+    (pseudoMetric_of_normedDomain [normedZmodType R of R])).
+Canonical numFieldType_regular_pseudoMetricType (R : numFieldType) :=
+  @PseudoMetric.Pack R R^o (@PseudoMetric.Class R R
+  (Uniform.class (numFieldType_regular_uniformType R)) (@pseudoMetric_of_normedDomain R R)).
+
+
+Definition numFieldType_regular_lalgType (R : numFieldType) : lalgType R :=
+  @GRing.regular_lalgType R.
+
+End numFieldType_regular_canonical.
 
 Global Instance Proper_nbhs'_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter (nbhs' x).
