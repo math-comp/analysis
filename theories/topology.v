@@ -333,6 +333,7 @@ Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "A ~~> V"  (at level 100, format "A ~~> V").
 Reserved Notation "A '~cc~>' V"  (at level 100, format "A '~cc~>' V").
 
+Reserved Notation "f |`_ A" (at level 100, format "f |`_ A").
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -4695,7 +4696,7 @@ Notation eq_on := explode.
 Notation "A ~~> V" := 
   (@restricted_uniformType _ [uniformType of V^o] A) (at level 100).
 
-Notation "f `|_ A" := 
+Notation "f |`_ A" := 
   (restrict_fun A f) (at level 100).
 
 Ltac evar_last :=
@@ -4739,7 +4740,7 @@ Lemma cvg_restricted_subset: forall
   (F : set(set (U -> V)))
   (B : set U), 
   A `<=` B ->
-  F --> (f `|_ B) -> (F --> (f `|_ A)).
+  F --> (f |`_ B) -> (F --> (f |`_ A)).
 Proof.
   move => f F B S + P/= => /(_ P) /= W [/= I' [Q1 Q2]].
   apply: W.
@@ -4769,7 +4770,7 @@ Qed.
 Lemma cvg_restricted_setT : forall 
   (f : U -> V) 
   (F : filter_on (U -> V)),
-  (F --> (f`|_setT)) = (F --> f).
+  (F --> (f |`_ setT)) = (F --> f).
 Proof.
   move => f F /=.
   rewrite /restrict_fun /cvg_to /= /filter_of {1}/nbhs /=
@@ -4845,9 +4846,9 @@ Lemma cvg_restrictedU : forall
   (f : U -> V) 
   (F : filter_on (U -> V))
   A B,
-  (F --> (f`|_A)) ->
-  (F --> (f`|_B)) ->
-  (F --> (f`|_(A `|` B))).
+  (F --> (f|`_A)) ->
+  (F --> (f|`_B)) ->
+  (F --> (f|`_(A `|` B))).
 Proof.
   move => f F A B X Y.
   move => Q /= [Q' [/= [
@@ -4870,7 +4871,7 @@ Proof.
 Qed.
 
 Lemma cvg_set0 : forall (F : filter_on (U -> V)) (f: U -> V), 
-  F --> (f `|_ set0).
+  F --> (f |`_ set0).
 Proof.
   move => F f P /= G.
   have ->: (P = setT).
