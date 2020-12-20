@@ -4635,23 +4635,22 @@ Next Obligation.
   by exists (g',f').
 Qed.
 Next Obligation.
-  case: H => [I [/fct_ent_split [J eJ] S1 S2]].
-  move: eJ => [/=B eJ S3].
+  case: H => [I [/fct_ent_split [J eJ] JsubI eIsubA0]].
+  move: eJ => [/= B eB eBsubJ].
   pose B' := [set fg : ((U -> V) * (U -> V)) | (forall t, B (fg.1 t, fg.2 t))].
   exists (explode_pairs A B').
-  1: by apply: restricted_ent_explode; exists B.
-  apply: (subset_trans _ S2).
-  move => [f h] /= [g [[f' g1']] X1 [/=? M1]] [[g2' h'] Y1 [/=M2 ?]].
+  1: by apply: fct_ent_restricted_ent; exists B.
+  apply: (subset_trans _ eIsubA0).
+  move => [f h] /= [g [[f' g1']] X1 [/=? E1]] [[g2' h'] Y1 [/=E2 ?]].
   exists (patch g1' f', patch g1' h').
-  2: split => /=; apply: explode_trans; eauto; 
-     apply explode_sym, explode_patch. 
-  apply S1 => /=.
-  exists g1'; apply S3 => /= u;
-  rewrite /patch /=;
-  case uA : `[< A u >] => /=.
+  2: split => /=; apply: explode_trans; eauto;
+     apply: explode_sym; apply: explode_patch. 
+  apply: JsubI => /=.
+  exists g1'; apply eBsubJ => /= u;
+    rewrite /patch /=; case uA : `[< A u >] => /=.
   2,4: by apply entourage_refl.
-  1: apply: X1.
-  rewrite ?M1 -?M2; eauto.
+  1: by apply: X1.
+  rewrite ?E1 -?E2; eauto.
 Qed.
 
 Definition restricted_filteredType := 
