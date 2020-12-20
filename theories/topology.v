@@ -4711,7 +4711,7 @@ Context {U : choiceType} {V : uniformType} .
 
 Section FixedA.
 Variables (A : set U).
-Lemma close_explodes : 
+Lemma eq_on_close : 
   forall (f g : A ~~> V)  , eq_on A f g -> close f g.
 Proof.
   move => f g.
@@ -4721,6 +4721,44 @@ Proof.
   exists (f,f).
   1: by apply fct_ent_refl.
   split => //=.
+Qed.
+
+Lemma close_eq_onE :  forall (f g : A ~~> V), 
+  hausdorff V -> 
+  (close f g = eq_on A f g).
+Proof.
+  move => f g hv.
+  rewrite propeqE; split.
+  2: apply eq_on_close.
+  rewrite entourage_close.
+  move => C u uA.
+  apply: hv.
+  rewrite /cluster /= => X Y.
+  rewrite -nbhs_entourageE.
+  case => X' eX E1.
+  case => Y' eY E2.
+  rewrite /nbhs /=.
+  pose X'' := explode_pairs A [set fg  | forall t : U, X' (fg.1 t, fg.2 t)].
+  pose Y'' := explode_pairs A [set fg  | forall t : U, Y' (fg.1 t, fg.2 t)].
+  have :  (X'' (f,g)). {
+    apply: C; eexists; split.
+    2: rewrite /X'' => t M; exact M.
+    exists X' => //=.
+  }
+  have :  (Y'' (f,g)). {
+    apply: C; eexists; split.
+    2: rewrite /X'' => t M; exact M.
+    exists Y' => //=.
+  }
+  rewrite /X'' /Y'' /= => []
+    [/= [f1 g1] /(_ u)/= L1 [/=E3 E4]]
+    [/= [f2 g2] /(_ u)/= L2 [/=E5 E6]].
+  exists (g u).
+  split.
+  - apply: E1 => //=.
+    rewrite -?E5 -?E6 => //=.
+  - apply: E2 => //=.
+    apply entourage_refl => //=.
 Qed.
 
 Lemma explode_set_subset : forall B (P : set (U -> V)),
@@ -4965,3 +5003,5 @@ Definition compact_cvg_in {U : topologicalType} {V : uniformType} (A : set U) :=
   @family_cvg_topologicalType U V [set P | P `<=` A /\ compact P].
 
 Notation "A '~cc~>' V" := (@compact_cvg_in [topologicalType of _^o] [uniformType of V^o] A) (at level 100).
+
+
