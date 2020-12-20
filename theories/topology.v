@@ -4369,9 +4369,6 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
-(** If A is a subset of U, we'd like to build topologies for 
-    A -> V. But A would need to be 'Type'. So we build a
-    homoemorphic structure on U -> V.*)
 Section DomainRestrictions.
 Context {U V : Type}.
 Variable (A : set U).
@@ -4384,41 +4381,37 @@ Notation eq_on := (explode) (only parsing).
 Definition explode_set (X : set (U -> V)) := 
   \bigcup_(f in X) explode f.
 
-Lemma explode_refl: forall f, explode f f.
-Proof.
-  by rewrite /explode => //=.
-Qed.
+Lemma explode_ref f : explode f f.
+Proof. by []. Qed.
 
-Lemma explodeE : forall f g, 
-  explode f g <-> {in A, f =1 g}.
-Proof. done. Qed.
+Lemma explodeP f g : 
+  explode f g = {in A, f =1 g}.
+Proof. by []. Qed.
 
-Lemma explode_trans : forall f g h, 
+Lemma explode_trans f g h :
   explode f g -> explode g h -> explode f h.
 Proof.
-  move => ? ? ? /explodeE L /explodeE R.
-  apply/explodeE => ??.
-  rewrite ?L ?R //=.
+  rewrite ?explodeE => L R ? ?.
+  by rewrite ?L ?R.
 Qed.
 
-Lemma explode_sym : forall f g, 
+Lemma explode_sym f g :
   explode f g -> explode g f .
 Proof.
-  move => ? ? /explodeE L.
-  apply/explodeE => ??.
-  rewrite ?L //=.
+  rewrite ?explodeE => L ? ?.
+  by rewrite ?L.
 Qed.
 
 Lemma explode_setT : explode_set setT = setT.
 Proof.
   rewrite /explode_set /= eqEsubset; split => f //=.
-  move => ?; econstructor => //=.
+  by move=> ?; econstructor.
 Qed.
 
-Lemma explode_set_subset_same : forall P,
+Lemma explode_subset_id P : 
   P `<=` explode_set P.
 Proof.
-  by move => P f fP; exists f. 
+  by move=> f ?; exists f. 
 Qed.
 
 Definition restricted (F : set (set (U -> V))) :=
@@ -4426,46 +4419,43 @@ Definition restricted (F : set (set (U -> V))) :=
 
 Global Instance restricted_filter F: Filter F -> Filter (restricted F).
 Proof.
-  move => FF. rewrite /restricted; constructor.
-  - rewrite /=; exists setT; split => //=; apply filterT.
-  - move => /= P Q [P' [? a]] [Q' [? b]].
+  move=> FF; constructor.
+  - by exists setT; split => //=; apply: filterT.
+  - move=> /= P Q [P' [? FP']] [Q' [? FQ']].
     set R := [set f | P' f /\ (exists g, Q' g /\ {in A, f =1 g}) ].
-    exists R.
-    split.
+    exists R; split.
     + apply: (filter_app _ _ _ (P := Q' `&` P')).
       2: by apply: (filterI).
       apply: filterE.
       move => g [??] /=.
       rewrite /R /=; split; first by [].
       by exists g. 
-    + move => f [g [gP [g' [g'Q W]]] /explodeE E].
-        split; [apply: a| apply b];
-        rewrite /explode_set => /=;
+    + move=> f [g [gP [g' [g'Q W]]] E].
+        split; [apply: FP'| apply FQ'];
           first by (exists g; eauto).
         exists g'; first by eauto.
-        rewrite explodeE => t tA.
-        by apply: eq_trans; [symmetry; apply:W |apply:E].
-  - move => P Q W /= [P' [W1 W2]].
+        apply: explode_trans.
+          by apply: explode_sym; apply:W .
+          by apply:E.
+  - move=> P Q PsubQ /= [P' [? ?]].
     exists P'; split; first by [].
-    by apply: (subset_trans _ W). 
+    by apply: (subset_trans _ PsubQ). 
 Qed.
 
 Canonical restricted_filter_on (F: filter_on (U -> V)) := 
   FilterType (restricted F) (restricted_filter _) .
 
-Lemma restricted_filter_not_emtpy : forall (F: pfilter_on (U -> V)),
+Lemma restricted_filter_not_emtpy (F: pfilter_on (U -> V)) :
   ~ restricted F set0.
 Proof.
-  move => [F1 [N ?]] [P [M W]].
-  have  Q: (P = set0).
-  {
+  move: F => [F1 [? ?]] [P [PF Psub0]].
+  have P0: (P = set0).
     apply: funext => f.
     apply: propext; split; last by [].
-    move: W=> /(_ f) W L; apply: W.
-    exists f => //=.
-  }
-  have R: (set0 = xpredp0) by done.
-  move: M => /=; rewrite Q R //=.
+    move: Psub0 => /(_ f) W L; apply: W.
+    by exists f => //=.
+  have eq0: (set0 = xpredp0) by [].
+  by move: PF; rewrite P0 eq0 //=.
 Qed.
 
 Global Instance restricted_prop_filter F : 
@@ -4473,22 +4463,19 @@ Global Instance restricted_prop_filter F :
 Proof.
   move => [N ?]; constructor.
   2: apply: restricted_filter.
-  move => W. 
-  rewrite /restricted in W.
-  case: W => B [X W] .
-  have: ( B = xpredp0).
-  2: congruence.
+  move=> [B [X W]].
+  suff: ( B = xpredp0).
+    congruence.
   apply: funext => f.
   apply: propext; split; last by [].
-  move: W=> /(_ f) W L; apply: W.
-  exists f; first by [].
-  apply explode_refl.
+  move: W => /(_ f) W L; apply: W.
+  by exists f.
 Qed.
 
 Canonical restricted_pfilter_on (F: pfilter_on (U -> V)) := 
   PFilterType (restricted F) (@restricted_filter_not_emtpy _) .
 
-Definition explode_pair ( fg : (U -> V) * (U -> V)) :=
+Definition explode_pair (fg : (U -> V) * (U -> V)) :=
   explode (fg.1) `*` explode (fg.2).
 
 Definition explode_pairs ( X : set ((U -> V) * (U -> V))) :=
@@ -4508,27 +4495,23 @@ Definition restricted_nbhs_filter (p : U -> V) :=
 
 Definition restricted_ent := restrict_ent A (@fct_ent U V).
 
-Lemma restricted_ent_explode : forall i,
-  fct_ent i -> restricted_ent (explode_pairs A i).
+Lemma fct_ent_restricted_ent I : 
+  fct_ent I -> restricted_ent (explode_pairs A I).
 Proof.
-  move => i J.
-  pose proof J as J'.
-  move: J' => [j E L].
-  exists (explode_pairs A i).
-  split.
+  move=> eI.
+  pose proof eI as eI'.
+  case: eI => J eJ subI.
+  exists (explode_pairs A I); split.
   apply: filterS.
-  2: exact J.
-  - move => [f g] I.
+  2: exact eI'.
+  - move=> [f g] Ifg.
     rewrite /explode_pairs /explode_pair.
     exists (f,g); first by [].
-    move => /=; split; apply: explode_refl.
-  - move => [t1 t2] [[x1 x2] [[y1 y2] M]].
-    rewrite /explode_pairs /= /explode_pair /setM /=.
-    move => [/explodeE E1 /explodeE E2] [/explodeE E3 /explodeE E4].
+    by move => /=; split.
+  - move=> [t1 t2] [[x1 x2] [[y1 y2] Iy]].
+    move=> [/= E1 E2] [/= E3 E4].
     exists (y1,y2); first by [].
-    rewrite /explode_pair /= /setM /=.
-    split; apply/explodeE; move => t T;
-      apply: eq_trans.
+    split; move => t T; apply: eq_trans => /=.
     + by apply: E1.
     + by apply: E3.
     + by apply: E2.
@@ -4536,79 +4519,76 @@ Proof.
 Qed.
 
 Definition patch (f g : U -> V) := 
-  (fun u => 
-     if_expr (asbool (A u)) (g u) (f u)). 
+  (fun u => if_expr (asbool (A u)) (g u) (f u)). 
 
 Lemma explode_patch : forall f g,
   explode A g (patch f g).
 Proof.
-  move => f g. 
-  apply/explodeE => u.
-  rewrite /patch /in_mem /mem /= /in_set /= => -> //=.
+  move=> f g u. 
+  by rewrite /patch /in_mem /mem /= /in_set /= => ->.
 Qed.
 
-Lemma explode_set_monotone : forall (P Q : set (U -> V)),
+Lemma explode_set_monotone (P Q : set (U -> V)) :
   P `<=` Q -> explode_set A P `<=` explode_set A Q.
 Proof.
-  move => P Q R f [g gP E].
+  move=> PsubQ f [g ? ?].
   exists g => //=.
-  by apply: R.
+  by apply: PsubQ.
 Qed.
 
-Lemma explode_rhs_subset: forall (B : V * V -> Prop) I f, 
+Lemma explode_rhs_subset (B : V * V -> Prop) I f :
   entourage B ->
   let B' := [set fg | (forall t:U, B(fg.1 t, fg.2 t))] in
   B' `<=` I ->
   [set y | explode_pairs A B' (f, y)] `<=`
     explode_set A [set y | I (f,y)].
 Proof.
-  move => B I f eB /= S1 t /= W.
+  move=> eB /= subI t /= Ep.
   exists (patch f t) => /=.
   2: apply explode_sym, explode_patch.
-  apply: S1 => /= u.
+  apply: subI => /= u.
   rewrite /patch.
   case uA : `[< A u >] => /=.
   2: by apply entourage_refl. 
-  move: W => [[f' t']] /= L [/= /explodeE W1 /explodeE W2].
+  move: Ep => [[f' t']] /= L [/= W1 W2].
   by rewrite -?W1 -?W2.
 Qed.
 
-Lemma explode_rhs_eq: forall (B : V * V -> Prop) f, 
+Lemma explode_rhs_eq (B : V * V -> Prop) f : 
   entourage B ->
   let B' := [set fg | (forall t:U, B(fg.1 t, fg.2 t))] in
   [set y | explode_pairs A B' (f, y)] =
     explode_set A [set y | B' (f,y)].
 Proof.
-  move => B f eB B'.
+  move=> eB B'.
   rewrite eqEsubset; split.
-  1: apply: (@explode_rhs_subset B B' f) => //=.
-  move => g [/=g' g'B E1].
-  exists (f, g') => //=.
+  1: by apply: (@explode_rhs_subset B B' f).
+  move=> g [/=g' ? ?].
+  by exists (f, g').
 Qed.
   
-
 Lemma restricted_ent_eq :
   restricted_nbhs_filter = nbhs_ (restricted_ent).
 Proof.
   apply:funext => f.
   rewrite eqEsubset; split.
-  - move => P [Q [M N]].
-    have : (nbhs f Q) by apply: M.
-    rewrite nbhsP /nbhs_ /filter_from /= => /exists2P [I [[B L1]]].
-    set B' := [set fg : ((U -> V) * (U -> V)) | (forall t, B (fg.1 t, fg.2 t))].
-    move => L2 /explode_set_monotone S.
+  - move=> P [Q [fQ eQsubP]].
+    have : (nbhs f Q) by apply: fQ.
+    rewrite nbhsP /= => /exists2P [I [[B L1]]].
+    set B' := [set fg  | (forall t, B (fg.1 t, fg.2 t))].
+    move=> L2 /explode_set_monotone eAsubeQ.
     exists (explode_pairs A B').
-    1: by apply: restricted_ent_explode; exists B.
-    apply: (subset_trans _ N).
-    apply: (subset_trans _ S).
+    1: by apply: fct_ent_restricted_ent; exists B.
+    apply: (subset_trans _ eQsubP).
+    apply: (subset_trans _ eAsubeQ).
     by apply: explode_rhs_subset.
-  - move => P [rI [I [? S] N]].
+  - move=> P [rI [I [? eAsubrI] rIsubP]].
     exists [set y | I (f,y)]; split.
     1: by exists I.
-    apply: (subset_trans _ N).
-    move => g [g' /= gI] E.
-    apply S.
-    exists (f,g') => //=.
+    apply: (subset_trans _ rIsubP).
+    move=> g [g' /= gI] E.
+    apply: eAsubrI.
+    by exists (f,g').
 Qed.
     
 Lemma restricted_ent_filter : Filter restricted_ent.
@@ -4640,19 +4620,18 @@ Program Definition restricted_uniformMixin := @UniformMixin
   restricted_ent_eq
   .
 Next Obligation.
-  move => [f g /=] ->.
-  case: H => [I [eI J]].
-  apply J.
-  exists (g, g).
-  2: split => /=; apply explode_refl.
+  move=> [f g /=] ->.
+  case: H => [I [eI eAsubA0]].
+  apply: eAsubA0.
+  exists (g, g) => //=.
   by apply: entourage_refl.
 Qed.
 Next Obligation.
-  case: H => [I [/fct_ent_inv eI J]].
+  case: H => [I [/fct_ent_inv eI eAsubA0]].
   exists [set xy | I(xy.2, xy.1)].
-  split => //=.
-  move => [f g] [[f' g'] /= gfI] [/= L R].
-  apply: J.
+  split=> //=.
+  move=> [f g] [[f' g'] /= ?] [/= ? ?].
+  apply: eAsubA0.
   by exists (g',f').
 Qed.
 Next Obligation.
