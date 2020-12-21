@@ -27,6 +27,7 @@
 ### Removed
 
 - Drop support for MathComp 1.11
+- Typeclasses Opaque fmap.
 
 ### Infrastructure
 
