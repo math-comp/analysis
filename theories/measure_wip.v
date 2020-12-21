@@ -752,15 +752,17 @@ Variable R : realType.
 
 Definition set_of_interval (i : interval R) : set R :=
   match i with
-  | Interval (BOpen a) (BOpen b) => [set x | a < x < b]
-  | Interval (BClose a) (BClose b) => [set x | a <= x <= b]
-  | Interval (BOpen a) (BClose b) => [set x | a < x <= b]
-  | Interval (BClose a) (BOpen b) => [set x | a <= x < b]
-  | Interval BInfty (BOpen b) => [set x | x < b]
-  | Interval BInfty (BClose b) => [set x | x <= b]
-  | Interval BInfty BInfty => setT
-  | Interval (BOpen a) BInfty => [set x | a < x]
-  | Interval (BClose a) BInfty => [set x | a <= x]
+  | `]a, b[ => [set x | a < x < b]
+  | `[a, b] => [set x | a <= x <= b]
+  | `]a, b] => [set x | a < x <= b]
+  | `[a, b[ => [set x | a <= x < b]
+  | `]-oo, b[ => [set x | x < b]
+  | `]-oo, b] => [set x | x <= b]
+  | `]-oo, +oo[ => setT
+  | `]a, +oo[ => [set x | a < x]
+  | `[a, +oo[ => [set x | a <= x]
+  | Interval _ -oo%O => set0
+  | Interval +oo%O _ => set0
   end.
 
 (* finite union of intervals *)
@@ -800,17 +802,18 @@ Admitted.
 
 Definition length_interval (i : interval R) : {ereal R} :=
   match i with
-  | Interval (BOpen a) (BOpen b) => `|b - a|%:E
-  | Interval (BClose a) (BClose b) => `|b - a|%:E
-  | Interval (BOpen a) (BClose b) => `|b - a|%:E
-  | Interval (BClose a) (BOpen b) => `|b - a|%:E
-  | Interval BInfty _ => +oo
-  | Interval _ BInfty => +oo
+  | `]a, b[ => `|b - a|%:E
+  | `[a, b] => `|b - a|%:E
+  | `]a, b] => `|b - a|%:E
+  | `[a, b[ => `|b - a|%:E
+  | Interval (BInfty true) _ => +oo
+  | Interval _ (BInfty false) => +oo
+  | _ => 0%:E
   end.
 
 Lemma length_interval_ge0 i : (0%:E <= length_interval i)%E.
 Proof.
-by move: i => [] [[|]a | ] [[|]b | ] => /=; rewrite ?lee_fin // lee_pinfty.
+by move: i => [[[] r1|[]] [[] r2|[]]] /=; rewrite ?lee_pinfty // ?lee_fin.
 Qed.
 
 Definition countable_cover (A : set R) : set ((interval R) ^nat) :=
@@ -828,7 +831,7 @@ Definition lstar (A : set R) := ereal_inf
 Lemma lstar_set0 : lstar set0 = 0%:E.
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-- apply ereal_inf_lb; exists (fun=> Interval (BOpen 0) (BOpen 0)); split.
+- apply ereal_inf_lb; exists (fun=> `]0, 0[); split.
     by exists (fun=> 0), (fun=> 0); split.
   move=> u_.
   have u_E : u_ = fun=> 0%:E.
