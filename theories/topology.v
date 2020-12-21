@@ -942,7 +942,7 @@ Proof. by move=> FF FP; apply: filterS filterT. Qed.
 
 Lemma filterE {T : Type} {F : set (set T)} :
   Filter F -> forall P : set T, (forall x, P x) -> F P.
-Proof. by move=> ???; near=> x => //. Unshelve. end_near. Qed.
+Proof. by move=> [FT _ +] P fP => /(_ setT); apply. Qed.
 
 Lemma filter_app (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, F (fun x => P x -> Q x) -> F P -> F Q.
@@ -1096,7 +1096,7 @@ move=> FF; constructor => [|P Q|P Q PQ]; rewrite ?fmapE ?filter_ofE //=.
 - exact: filterI.
 - by apply: filterS=> ?/PQ.
 Qed.
-Typeclasses Opaque fmap.
+(*Typeclasses Opaque fmap.*)
 
 Global Instance fmap_proper_filter T U (f : T -> U) (F : set (set T)) :
   ProperFilter F -> ProperFilter (f @ F).
@@ -1121,7 +1121,7 @@ Proof. by []. Qed.
 Global Instance fmapi_filter T U (f : T -> set U) (F : set (set T)) :
   infer {near F, is_totalfun f} -> Filter F -> Filter (f `@ F).
 Proof.
-move=> f_totalfun FF; rewrite /fmapi; apply: Build_Filter. (* bug *)
+move=> f_totalfun FF; rewrite /fmapi; apply: Build_Filter.
 - by apply: filterS f_totalfun => x [[y Hy] H]; exists y.
 - move=> /= P Q FP FQ; near=> x.
     have [//|y [fxy Py]] := near FP x.
@@ -1323,9 +1323,8 @@ Lemma filter_pair_near_of (T T' : Type) (F : set (set T)) (F' : set (set T')) :
    filter_prod F F' Q.
 Proof.
 move=> FF FF' [P FP] [P' FP'] Q PQ; rewrite prop_ofE in FP FP' PQ.
-near=> x; have := PQ x.1 x.2; rewrite -surjective_pairing; apply; near: x;
-by [apply: cvg_fst|apply: cvg_snd].
-Grab Existential Variables. all: end_near. Qed.
+by exists (P, P') => //= -[t t'] [] /=; exact: PQ.
+Qed.
 
 Tactic Notation "near=>" ident(x) ident(y) :=
   (apply: filter_pair_near_of => x y ? ?).
@@ -1524,7 +1523,7 @@ rewrite nbhsE propeqE; split=> [[? ?]|[? [B [[? ?] BA]]]]; split => //;
   [by exists A; split | exact: BA].
 Qed.
 
-Definition interior (A : set T) := (@nbhs _ [filteredType T of T])^~ A.
+Definition interior (A : set T) := (@nbhs _ T)^~ A.
 
 Local Notation "A ^°" := (interior A).
 
@@ -3238,9 +3237,7 @@ Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
 Proof.
 split=> - cfx P /= fxP.
   rewrite /nbhs' !near_simpl near_withinE.
-  by rewrite /nbhs'; apply: cvg_within; apply/cfx.
- (* :BUG: ssr apply: does not work,
-    because the type of the filter is not inferred *)
+  by rewrite /nbhs'; apply: cvg_within; apply: cfx.
 rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].

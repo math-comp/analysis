@@ -1039,13 +1039,9 @@ Lemma continuous_cvg_dist {R : numFieldType}
   (V W : normedModType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof.
-move=> cf xl e.
-move/cvg_dist: (cf l) => /(_ _ (posnum_gt0 e)).
-rewrite nearE /= => /nbhs_ballP [i i0]; apply.
-have /@cvg_dist : Filter [filter of x] by apply: filter_on_Filter.
-move/(_ _ xl _ i0).
-rewrite nearE /= => /nbhs_ballP [j j0].
-by move/(_ _ (ballxx _ j0)); rewrite -ball_normE.
+move=> + + e => /(_ l)/cvg_dist/(_ _ (posnum_gt0 e)).
+rewrite near_map => /nbhs_ballP[_/posnumP[a]] + xl; apply.
+move/cvg_ball : xl => /(_ _ a)/nbhs_ballP[_/posnumP[b]]; apply; exact: ballxx.
 Qed.
 
 Module BigmaxBigminr.
@@ -1603,9 +1599,9 @@ Qed.
 
 Lemma norm_continuous : continuous ((@normr _ V) : V -> K^o).
 Proof.
-move=> x; apply/(@cvg_distP _ [normedModType K of K^o]) => _/posnumP[e] /=.
-rewrite !near_simpl; apply/nbhs_normP; exists e%:num => // y Hy.
-by rewrite -ball_normE in Hy; apply/(le_lt_trans (ler_dist_dist _ _)).
+move=> x; apply/cvg_distP => _/posnumP[e].
+rewrite near_map; apply/nbhs_normP; exists e%:num => // y.
+by rewrite -ball_normE; apply/(le_lt_trans (ler_dist_dist _ _)).
 Qed.
 
 End NVS_continuity_normedModType.
@@ -2165,8 +2161,7 @@ suff [a_ anx] : exists a_, forall n, a_ n != x /\ (U n `&` A) (a_ n).
   exists a_; split.
   - by move=> a [n _ <-]; have [? []] := anx n.
   - by move=> n; have [] := anx n.
-  - apply/cvg_distP; first by exact: fmap_filter.
-    move=> _/posnumP[e]; rewrite near_map; near=> n.
+  - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
     have [? [] xann Aan] := anx n.
     by rewrite (lt_le_trans xann) // ltW //; near: n; exact: near_infty_natSinv_lt.
 have @a_ : nat -> T^o.
@@ -2270,8 +2265,7 @@ rewrite /mkset le_eqVlt => /orP[/eqP <-{v}|]; last first.
 apply/subset_limit_point/limit_pointP; exists (fun n => z + n.+1%:R^-1); split.
 - by move=> u [] m _ <-; rewrite ltr_addl.
 - by move=> n; rewrite -subr_eq0 addrAC subrr add0r.
-- apply/cvg_distP; first exact: fmap_filter.
-  move=> _/posnumP[e]; rewrite near_map; near=> n.
+- apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
   rewrite opprD addrA subrr add0r normrN ger0_norm //.
   by near: n; exact: near_infty_natSinv_lt.
 Grab Existential Variables. all: end_near. Qed.
@@ -2285,8 +2279,7 @@ rewrite /mkset le_eqVlt => /orP[/eqP <-{z}|]; last first.
 apply/subset_limit_point/limit_pointP; exists (fun n => v - n.+1%:R^-1); split.
 - by move=> u [] m _ <-; rewrite ltr_subl_addl ltr_addr.
 - by move=> n; rewrite -subr_eq0 addrAC subrr add0r oppr_eq0.
-- apply/cvg_distP; first exact: fmap_filter.
-  move=> _/posnumP[e]; rewrite near_map; near=> n.
+- apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
   rewrite opprD addrA subrr add0r opprK ger0_norm //.
   by near: n; exact: near_infty_natSinv_lt.
 Grab Existential Variables. all: end_near. Qed.
@@ -3079,9 +3072,7 @@ Lemma continuous_withinNx (R : numFieldType) {U V : pseudoMetricType R}
 Proof.
 split=> - cfx P /= fxP.
   rewrite /nbhs' !near_simpl near_withinE.
-  by rewrite /nbhs'; apply: cvg_within; apply/cfx.
- (* :BUG: ssr apply: does not work,
-    because the type of the filter is not inferred *)
+  by apply: cvg_within; apply: cfx.
 rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
