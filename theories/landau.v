@@ -92,10 +92,12 @@ Require Import prodnormedzmodule.
 (*          "=O_(x \near F)", not in the syntax "=O_(x : U)".                 *)
 (*                                                                            *)
 (******************************************************************************)
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
+Declare Scope R_scope.
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Reserved Notation "{o_ F f }" (at level 0, F at level 0, format "{o_ F  f }").

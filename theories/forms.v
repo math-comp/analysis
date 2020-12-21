@@ -253,7 +253,7 @@ End BidirectionalLinearZ.
 
 End BilinearTheory.
 
-Canonical rev_mulmx (R : ringType) m n p := @RevOp _ _ _ (@mulmxr_head R m n p tt)
+Canonical rev_mulmx (R : ringType) m n p := @RevOp _ _ _ (@mulmxr R m n p)
   (@mulmx R m n p) (fun _ _ => erefl).
 
 Canonical mulmx_bilinear (R : comRingType) m n p := [bilinear of @mulmx R m n p].

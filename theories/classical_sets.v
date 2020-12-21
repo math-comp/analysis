@@ -98,6 +98,8 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Declare Scope classical_set_scope.
+
 Reserved Notation "[ 'set' x : T | P ]"
   (at level 0, x at level 99, only parsing).
 Reserved Notation "[ 'set' x | P ]"

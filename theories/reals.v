@@ -13,6 +13,8 @@ From mathcomp Require Import all_ssreflect all_algebra.
 
 Require Import Setoid.
 
+Declare Scope real_scope.
+
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
 Unset Strict Implicit.

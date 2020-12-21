@@ -1312,7 +1312,7 @@ Proof.
 move=> leab fcont; set imf := [set t | (f @` [set x | x \in `[a, b]]) t].
 have imf_sup : has_sup imf.
   split.
-    by exists (f a) => //; rewrite /imf; apply/imageP; rewrite /= inE /= lexx.
+    by exists (f a); apply/imageP; rewrite /= in_itv /= lexx.
   have [M [Mreal imfltM]] : bounded_set (f @` [set x | x \in `[a, b]] : set R^o).
     apply/compact_bounded/continuous_compact; last exact: segment_compact.
     by move=> ?; rewrite inE => /fcont.
@@ -1430,9 +1430,9 @@ apply/eqP; rewrite eq_le; apply/andP; split.
     by rewrite invr_ge0; apply: ltW; near: h; exists 1.
   rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
   exists (b - c); first by rewrite /= subr_gt0 (itvP cab).
-  move=> h; rewrite /= distrC subr0.
-  move=> /(le_lt_trans (ler_norm _)); rewrite ltr_subr_addr inE/= => ->.
-  by move=> /ltr_spsaddl -> //; rewrite (itvP cab).
+  move=> h; rewrite /= distrC subr0 /= in_itv /= -ltr_subr_addr.
+  move=> /(le_lt_trans (ler_norm _)) -> /ltr_spsaddl -> //.
+  by rewrite (itvP cab).
 rewrite ['D_1 f c]cvg_at_leftE; last exact: fdrvbl.
 apply: le0r_cvg_map; last first.
   have /fdrvbl dfc := cab; rewrite -(@cvg_at_leftE _ _ (fun h => h^-1 *: ((f \o shift c) _ - f c))) //.
@@ -1444,7 +1444,7 @@ near=> h; apply: mulr_le0.
 rewrite subr_le0 [_%:A]mulr1; apply: cmax; near: h.
 exists (c - a); first by rewrite /= subr_gt0 (itvP cab).
 move=> h; rewrite /= distrC subr0.
-move=> /ltr_normlP []; rewrite ltr_subr_addl ltr_subl_addl inE/= => -> _.
+move=> /ltr_normlP []; rewrite ltr_subr_addl ltr_subl_addl in_itv /= => -> _.
 by move=> /ltr_snsaddl -> //; rewrite (itvP cab).
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1471,24 +1471,24 @@ case: (pselect ([set a; b] cmax))=> [cmaxeaVb|]; last first.
   move=> /asboolPn; rewrite asbool_or => /norP.
   move=> [/asboolPn/eqP cnea /asboolPn/eqP cneb].
   have {}cmaxab : cmax \in `]a, b[.
-    by rewrite inE/= !lt_def !(itvP cmaxab) cnea eq_sym cneb.
+    by rewrite in_itv /= !lt_def !(itvP cmaxab) cnea eq_sym cneb.
   exists cmax => //; apply: derive1_at_max (ltW ltab) fdrvbl cmaxab _ => t tab.
-  by apply: fcmax; rewrite inE/= !ltW // (itvP tab).
+  by apply: fcmax; rewrite in_itv /= !ltW // (itvP tab).
 have [cmin cminab fcmin] := EVT_min (ltW ltab) fcont.
 case: (pselect ([set a; b] cmin))=> [cmineaVb|]; last first.
   move=> /asboolPn; rewrite asbool_or => /norP.
   move=> [/asboolPn/eqP cnea /asboolPn/eqP cneb].
   have {}cminab : cmin \in `]a, b[.
-    by rewrite inE/= !lt_def !(itvP cminab) cnea eq_sym cneb.
+    by rewrite in_itv /= !lt_def !(itvP cminab) cnea eq_sym cneb.
   exists cmin => //; apply: derive1_at_min (ltW ltab) fdrvbl cminab _ => t tab.
-  by apply: fcmin; rewrite inE/= !ltW // (itvP tab).
+  by apply: fcmin; rewrite in_itv /= !ltW // (itvP tab).
 have midab : (a + b) / 2 \in `]a, b[ by apply: mid_in_itvoo.
 exists ((a + b) / 2) => //; apply: derive1_at_max (ltW ltab) fdrvbl (midab) _.
 move=> t tab.
 suff fcst : forall s, s \in `]a, b[ -> f s = f cmax by rewrite !fcst.
 move=> s sab.
-apply/eqP; rewrite eq_le fcmax; last by rewrite inE/= !ltW ?(itvP sab).
-suff -> : f cmax = f cmin by rewrite fcmin // inE/= !ltW ?(itvP sab).
+apply/eqP; rewrite eq_le fcmax; last by rewrite in_itv /= !ltW ?(itvP sab).
+suff -> : f cmax = f cmin by rewrite fcmin // in_itv /= !ltW ?(itvP sab).
 by case: cmaxeaVb => ->; case: cmineaVb => ->.
 Qed.
 
@@ -1512,7 +1512,7 @@ have gaegb : g a = g b.
     by rewrite mul1r addrCA subrr addr0.
   by apply: lt0r_neq0; rewrite subr_gt0.
 have [c cab dgc0] := Rolle altb gdrvbl gcont gaegb.
-exists c; first by apply/andP; split; apply/ltW; rewrite (itvP cab).
+exists c; first by rewrite in_itv /= ltW (itvP cab).
 have /fdrvbl dfc := cab; move/@derive_val: dgc0; rewrite deriveB //; last first.
   exact/derivable1_diffP.
 move/eqP; rewrite [X in _ - X]deriveE // derive_val diff_val scale1r subr_eq0.
@@ -1526,7 +1526,8 @@ Lemma ler0_derive1_nincr (R : realType) (f : R^o -> R^o) (a b : R) :
   forall x y, a <= x -> x <= y -> y <= b -> f y <= f x.
 Proof.
 move=> fdrvbl dfle0 x y leax lexy leyb; rewrite -subr_ge0.
-have itvW : {subset `[x, y] <= `[a, b]} by apply/subitvP; rewrite /= leyb leax.
+have itvW : {subset `[x, y] <= `[a, b]}.
+  by apply/subitvP; rewrite /<=%O /= /<=%O /= leyb leax.
 have fdrv z : z \in `]x, y[ -> is_derive (z : R^o) 1 f (f^`()z).
   rewrite inE => /andP [/ltW lexz /ltW lezy].
   apply: DeriveDef; last by rewrite derive1E.
