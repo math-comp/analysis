@@ -261,13 +261,19 @@ Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
 Notation "f @` A" := (image f A) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) : classical_set_scope.
 
-Lemma eqEsubset T (F G : set T) : (F = G) = (F `<=` G /\ G `<=` F).
+Lemma predeqP {T} (P Q : set T) : (P = Q) <-> (forall x, P x <-> Q x).
+Proof. by rewrite predeqE. Qed.
+
+Lemma eqEsubset T (F G : set T) : (F = G) = (F `<=>` G).
 Proof.
 rewrite propeqE; split => [->|[FG GF]]; [by split|].
 by rewrite predeqE => t; split=> [/FG|/GF].
 Qed.
 
-Lemma eq_set T (P Q : T -> Prop): (forall x : T, P x = Q x) ->
+Lemma seteqP T (A B : set T) : (A = B) <-> (A `<=>` B).
+Proof. by rewrite eqEsubset. Qed.
+
+Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
   [set x | P x] = [set x | Q x].
 Proof. by move=> /funext->. Qed.
 
@@ -376,7 +382,7 @@ Lemma image_subset A B (f : A -> B) (X Y : set A) :
 Proof. by move=> XY _ [a Xa <-]; exists a => //; apply/XY. Qed.
 
 Lemma preimage_set0 T U (f : T -> U) : f @^-1` set0 = set0.
-Proof. by rewrite predeqE. Qed.
+Proof. exact/predeqP. Qed.
 
 Lemma nonempty_preimage {A B} (f : A -> B) (X : set B) :
   f @^-1` X !=set0 -> X !=set0.
@@ -400,7 +406,7 @@ Qed.
 
 Lemma preimage_setU {A B} (f : A -> B) (X Y : set B) :
   f @^-1` (X `|` Y) = f @^-1` X `|` f @^-1` Y.
-Proof. by rewrite predeqE. Qed.
+Proof. exact/predeqP. Qed.
 
 Lemma bigcup_sup A I j (P : set I) (F : I -> set A) :
   P j -> F j `<=` \bigcup_(i in P) F i.
@@ -408,15 +414,15 @@ Proof. by move=> Pj a Fja; exists j. Qed.
 
 Lemma preimage_bigcup {A B I} (P : set I) (f : A -> B) F :
   f @^-1` (\bigcup_ (i in P) F i) = \bigcup_(i in P) (f @^-1` F i).
-Proof. by rewrite predeqE. Qed.
+Proof. exact/predeqP. Qed.
 
 Lemma preimage_setI {A B} (f : A -> B) (X Y : set B) :
   f @^-1` (X `&` Y) = f @^-1` X `&` f @^-1` Y.
-Proof. by rewrite predeqE. Qed.
+Proof. exact/predeqP. Qed.
 
 Lemma preimage_bigcap {A B I} (P : set I) (f : A -> B) F :
   f @^-1` (\bigcap_ (i in P) F i) = \bigcap_(i in P) (f @^-1` F i).
-Proof. by rewrite predeqE. Qed.
+Proof. exact/predeqP. Qed.
 
 Lemma preimage_setC A B (f : A -> B) (X : set B) :
   ~` (f @^-1` X) = f @^-1` (~` X).
@@ -679,7 +685,7 @@ Lemma set0M T U (B : set U) : @set0 T `*` B = set0.
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 
 Lemma setMT {A B} : (@setT A) `*` (@setT B) = setT.
-Proof. by rewrite predeqE. Qed.
+Proof. exact/predeqP. Qed.
 
 Definition is_subset1 {A} (X : set A) := forall x y, X x -> X y -> x = y.
 Definition is_fun {A B} (f : A -> B -> Prop) := Logic.all (is_subset1 \o f).
