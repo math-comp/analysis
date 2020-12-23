@@ -330,10 +330,14 @@ Reserved Notation "E `@[ x --> F ]"
   (at level 60, x ident, format "E  `@[ x  -->  F ]").
 Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 Reserved Notation "A ^°" (at level 1, format "A ^°").
-Reserved Notation "A ~~> V"  (at level 100, format "A ~~> V").
-Reserved Notation "A '~cc~>' V"  (at level 100, format "A '~cc~>' V").
 
-Reserved Notation "f |`_ A" (at level 100, format "f |`_ A").
+Reserved Notation "F ~~> f"  (at level 100, format "F ~~> f").
+Reserved Notation "F ~~>_( A ) f"  (at level 100, format "F ~~>_( A ) f").
+Reserved Notation "F ~ptws~> f"  (at level 100, format "F ~ptws~> f").
+Reserved Notation "F ~ptws~>_( A ) f"  
+  (at level 100, format "F ~ptws~>_( A ) f").
+Reserved Notation "F ~ famA ~> f" 
+  (at level 100, format "F ~ famA ~> f").
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -4505,9 +4509,8 @@ Proof.
   apply: filterS.
   2: exact eI'.
   - move=> [f g] Ifg.
-    rewrite /explode_pairs /explode_pair.
     exists (f,g); first by [].
-    by move => /=; split.
+    by split.
   - move=> [t1 t2] [[x1 x2] [[y1 y2] Iy]].
     move=> [/= E1 E2] [/= E3 E4].
     exists (y1,y2); first by [].
@@ -4671,11 +4674,20 @@ End RestrictionTopology.
 
 Notation eq_on := explode.
 
-Notation "A ~~> V" := 
-  (@restricted_uniformType _ [uniformType of V^o] A) (at level 100).
+Notation "F ~~> f" := 
+  (F --> (f : @fct_uniformType _ _)) (at level 100).
 
-Notation "f |`_ A" := 
-  (restrict_fun A f) (at level 100).
+Notation "F ~~>_( A ) f" := 
+  (F --> (f : restricted_uniformType A))  (at level 100).
+
+Notation "F '~ptws~>' f" := 
+  (forall t, 
+    (fun k => k t) @ F --> (f t)) (at level 100). 
+
+Notation "F '~ptws~>_' A f" := 
+  ({in A, (forall t, 
+    (fun k => k t) @ F --> (f t))}) (at level 100). 
+    
 
 Ltac evar_last :=
   let arg := fresh "arg" in
@@ -4689,9 +4701,10 @@ Context {U : choiceType} {V : uniformType} .
 
 Section FixedA.
 Variables (A : set U).
-Lemma eq_on_close  (f g : A ~~> V) : eq_on A f g -> close f g.
+Lemma eq_on_close  (f g : U -> V) : 
+  eq_on A f g -> @close (restricted_uniformType A) f g.
 Proof.
-  rewrite (entourage_close f g) /=.
+  rewrite (@entourage_close (restricted_uniformType A) f g) /=.
   move=> G I [/= J [eJ E]].
   apply: E.
   exists (f,f).
@@ -4699,8 +4712,8 @@ Proof.
   - by split.
 Qed.
 
-Lemma hausdorrf_close_eq_on (f g : A ~~> V) : 
-  hausdorff V -> (close f g = eq_on A f g).
+Lemma hausdorrf_close_eq_on (f g : U -> V) : 
+  hausdorff V -> (@close (restricted_uniformType A) f g = eq_on A f g).
 Proof.
   move=> hV.
   rewrite propeqE; split.
@@ -4738,16 +4751,17 @@ Lemma cvg_restricted_subset
     (F : set(set (U -> V)))
     (B : set U) :
   A `<=` B ->
-  F --> (f |`_ B) -> (F --> (f |`_ A)).
+  (F ~~>_(B) f) -> 
+  (F ~~>_(A) f) .
 Proof.
   move => AsubB + P/= => /(_ P) /= W [/= I [nI eIsubP]].
   apply: W.
-  rewrite /restrict_fun in nI.
   apply: (filterS eIsubP).
   apply: (filterS ).
   - by apply: (@explode_set_subset B).
   - by eexists I; split.
 Qed.
+
 End FixedA.
 
 Lemma explode_setT_eq P :
@@ -4761,12 +4775,11 @@ Proof.
   - move => f fP /=.
     exists f => //=. 
 Qed.
-    
 
 Lemma cvg_restricted_setT 
     (f : U -> V) 
     (F : filter_on (U -> V)) :
-  (F --> (f |`_ setT)) = (F --> f).
+  (F ~~>_(setT) f) = (F ~~> f).
 Proof.
   rewrite /restrict_fun /cvg_to /= /filter_of {1}/nbhs /=
     /restricted_nbhs_filter /restricted /=.
@@ -4836,13 +4849,12 @@ Lemma cvg_restrictedU
     (f : U -> V) 
     (F : filter_on (U -> V))
     A B :
-  (F --> (f|`_A)) ->
-  (F --> (f|`_B)) ->
-  (F --> (f|`_(A `|` B))).
+  (F ~~>_(A) f) ->
+  (F ~~>_(B) f) ->
+  (F ~~>_(A `|` B) f).
 Proof.
   move=> X Y Q /= [Q' [/= [I [C eB S] /explode_set_monotone S1] M]].
   apply: (filterS M); apply: (filterS (S1 _)).
-  rewrite /restrict_fun.
   apply: (filterS (explode_rhs_subset _ _)); eauto.
   rewrite explode_pairsU //=.
   set L := (x in (x `&` _))%pattern.
@@ -4856,7 +4868,7 @@ Proof.
 Qed.
 
 Lemma cvg_restricted_set0 (F : filter_on (U -> V)) (f: U -> V) :
-  F --> (f |`_ set0).
+  F ~~>_(set0) f.
 Proof.
   move=> P /= [P' [/= [I L1 L2] R]].
   suff ->: (P = setT) by apply filterT.
@@ -4876,18 +4888,21 @@ Definition family_cvg_topologicalType
   (fam : (set U) -> Prop)
   := 
   @sup_topologicalType _ (sigT fam)
-  (fun k => Topological.class ((projT1 k) ~~> V) ).
+  (fun k => Topological.class (@restricted_uniformType _ V (projT1 k))).
+
+Notation "F ~ famA ~> f" := 
+  (F --> (f : family_cvg_topologicalType famA)) (at level 100).
 
 Lemma family_cvg_subset 
     (famA famB : (set U) -> Prop)
     (F : filter_on(U -> V)) (f : U -> V ) :
   famA `<=` famB -> 
-  (F --> (f : family_cvg_topologicalType famB))  -> 
-  (F --> (f : family_cvg_topologicalType famA)).
+  (F ~famB~> f) ->
+  (F ~famA~> f).
 Proof.
   move=> S.
-  rewrite ?cvg_sup => L [P fP].
-  by apply: (L (existT _ P (S P fP))). 
+  rewrite ?cvg_sup => L [? ?].
+  by apply: (L (existT _ _ (S _ _))). 
 Qed.
 
 Definition finCover (I : choiceType) (f : I -> set U) A :=
@@ -4912,8 +4927,8 @@ Lemma family_cvg_finite_covers
   (forall P, famA P -> 
     exists (I : choiceType) f , 
     (forall i, famB (f i )) /\ @finCover I f P) ->
-  (F --> (f : family_cvg_topologicalType famB))  -> 
-  (F --> (f : family_cvg_topologicalType famA))
+  (F ~famB~> f)  -> 
+  (F ~famA~> f)
 .
 Proof.
   move=> C .
@@ -4939,10 +4954,5 @@ Proof.
 Qed.
 
 End RestrictedFamilies.
-
-Definition compact_cvg_in {U : topologicalType} {V : uniformType} (A : set U) := 
-  @family_cvg_topologicalType U V [set P | P `<=` A /\ compact P].
-
-Notation "A '~cc~>' V" := (@compact_cvg_in [topologicalType of _^o] [uniformType of V^o] A) (at level 100).
 
 
