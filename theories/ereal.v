@@ -58,6 +58,7 @@ Unset Printing Implicit Defensive.
 Declare Scope ereal_scope.
 
 Import Order.TTheory GRing.Theory Num.Theory.
+Import nonforgetful_inheritance.Exports.
 
 Local Open Scope ring_scope.
 
@@ -220,10 +221,10 @@ Notation "x < y <= z"  := ((x < y) && (y <= z)) : ereal_scope.
 Notation "x <= y < z"  := ((x <= y) && (y < z)) : ereal_scope.
 Notation "x < y < z"   := ((x < y) && (y < z)) : ereal_scope.
 
-Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E) = (x <= y)%O.
+Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E) = (x <= y)%R.
 Proof. by []. Qed.
 
-Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E) = (x < y)%O.
+Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E) = (x < y)%R.
 Proof. by []. Qed.
 
 Lemma lte_pinfty (R : realDomainType) (x : R) : x%:E < +oo.
@@ -668,10 +669,10 @@ Lemma le0R (x : {ereal R}) :
   0%:E <= x -> (0 <= real_of_er(*TODO: coercion broken*) x)%R.
 Proof. by case: x. Qed.
 
-Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%O -> r0%:E <= r1%:E.
+Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
 Proof. by []. Qed.
 
-Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%O -> r0%:E < r1%:E.
+Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%R -> r0%:E < r1%:E.
 Proof. by []. Qed.
 
 End ERealOrderTheory.

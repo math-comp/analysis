@@ -25,6 +25,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
+Import nonforgetful_inheritance.Exports.
 
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
