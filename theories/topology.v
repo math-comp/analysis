@@ -4683,14 +4683,6 @@ Notation "F ~~>_( A ) f" :=
 Notation "F '~ptws~>' f" := 
   (F --> (f : @product_topologicalType _ (fun=> _))).
 
-Ltac evar_last :=
-  let arg := fresh "arg" in
-  let narg := fresh "narg" in
-  set arg := (x in _ x);
-  let q := (type of arg) in evar (narg : q );
-  replace arg with narg;[rewrite /narg|rewrite /narg /arg].
-
-Section PointwiseUniform.
 
 Lemma ptws_uniform_cvg 
     {U : choiceType} {V : uniformType} (f : U -> V)
@@ -4710,7 +4702,14 @@ Proof.
       by apply W; exists [set fg | forall t, B (fg.1 t, fg.2 t)];[exists B|].
     + move=> X Y XsubY [P FP EX].
       eexists ( P `|` [set g : U -> V | exists v, Y v /\ g = fun=>v]). 
-      1: by apply: @filterS.
+        1: by apply: (@filterS _ _ _ P) => //= t ?; left .
+      rewrite image_setU EX setUC.
+      apply setUidPl in XsubY.
+      set Y' := (x in x `|` _).
+      suff -> : Y' = Y by [].
+      rewrite eqEsubset; split; rewrite /Y' /=.
+      * by move => t /= [/= h [/= v [? ->] <-]].
+      * by move => t ?; exists (fun=> t) => //; exists t.
     + by move => v [/= g] + <-; apply.
   - rewrite eqEsubset; split => v.
     1: by [].
