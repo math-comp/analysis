@@ -4681,13 +4681,7 @@ Notation "F ~~>_( A ) f" :=
   (F --> (f : restricted_uniformType A))  (at level 100).
 
 Notation "F '~ptws~>' f" := 
-  (forall t, 
-    (fun k => k t) @ F --> (f t)) (at level 100). 
-
-Notation "F '~ptws~>_' A f" := 
-  ({in A, (forall t, 
-    (fun k => k t) @ F --> (f t))}) (at level 100). 
-    
+  (F --> (f : @product_topologicalType _ (fun=> _))).
 
 Ltac evar_last :=
   let arg := fresh "arg" in
@@ -4695,6 +4689,112 @@ Ltac evar_last :=
   set arg := (x in _ x);
   let q := (type of arg) in evar (narg : q );
   replace arg with narg;[rewrite /narg|rewrite /narg /arg].
+
+Section PointwiseUniform.
+
+Lemma ptws_uniform_cvg 
+    {U : choiceType} {V : uniformType} (f : U -> V)
+    (F : filter_on(U -> V)) :
+  (F ~~> f) -> (F ~ptws~> f).
+Proof.
+  rewrite cvg_sup.
+  move=> W i.
+  rewrite cvg_image.
+  - move => C /=.
+    rewrite -nbhs_entourageE nbhs_filterE; case=> B eB BsubC.
+    set l := (x in x _).
+    suff sub2 : @^~ i @` [set g | (forall t : U, B (f t, g t))] `<=` to_set B (f i).
+    suff weakL : forall X Y, X `<=` Y -> l X -> l Y.
+    apply: (weakL _ _ (subset_trans sub2 BsubC )).
+    + exists ([set g : U -> V | forall t : U, B(f t, g t)]) => //.
+      by apply W; exists [set fg | forall t, B (fg.1 t, fg.2 t)];[exists B|].
+    + move=> X Y XsubY [P FP EX].
+      eexists ( P `|` [set g : U -> V | exists v, Y v /\ g = fun=>v]). 
+      1: by apply: @filterS.
+    + by move => v [/= g] + <-; apply.
+  - rewrite eqEsubset; split => v.
+    1: by [].
+    by exists (fun=> v).
+Qed.
+(* Show that the notion of convergence from the restricted_uniformType A is  *) 
+(* the same as the one using dependent pairs.                                *)
+Section Restriction_DependentPairs.
+Context {U : choiceType} {V : uniformType} .
+Variables (A : set U).
+Definition restrict_dep (f : U -> V) : ({ x : U | `[<A x>]} -> V) := 
+  fun u => f (projT1 u).
+
+Lemma eq_on_restrict_dep (f g : U -> V) : 
+  eq_on A f g <-> restrict_dep f = restrict_dep g.
+Proof.
+  split.
+  - move => eq_f_g; apply: funext; case=> u ?.
+    have Au : (A u) by apply/asboolP.
+    rewrite /restrict_dep /=.
+    apply: eq_f_g; by rewrite in_setE.
+  - move=> Rfg u; rewrite in_setE => ?.
+    have Au : `[<A u>] by apply/asboolP.
+    suff ->: (f u = restrict_dep f (exist _ u Au)).
+      by rewrite Rfg /=.
+    by [].
+Qed.
+    
+Lemma explode_restrict (F : filter_on(U -> V))  P: 
+  explode_set A P = [set a | (restrict_dep @` P) (restrict_dep a)].
+Proof.
+  rewrite eqEsubset; split => f /=.
+  - move=> [g Pg eq_g_f] /=.
+    exists g => //=.
+    by rewrite /fmap /= /nbhs /= -eq_on_restrict_dep.
+  - move=> [g Pg /eq_on_restrict_dep] ?.
+    by exists g.
+Qed.
+Lemma cvg_restrict_dep (f : U -> V) (F : filter_on (U -> V)) :
+  (F ~~>_(A) f) <-> (restrict_dep @ F ~~> (restrict_dep f)).
+Proof.
+  split.
+  - move=> cvgF P' /= [I' [B eB BsubI'] I'subP'].
+    apply: (filterS I'subP').
+    apply: cvgF => /=.
+    rewrite /nbhs /= /restricted_nbhs_filter /= /restricted /=.
+    exists ([set g | forall t :U, B (f t, g t) ]).
+    rewrite explode_restrict => //=.
+    split.
+      1: exists [set fg | forall t, B(fg.1 t, fg.2 t)] => //=.
+      1: by exists B.
+    move => g /= [/= h] Bfh /eq_on_restrict_dep eq_on.
+    apply: BsubI' => /=; rewrite /restrict_dep.  
+    by case=> /= u /asboolP Au; rewrite -eq_on ?in_setE.
+  - move=> rcvgF P [/= Q [[I [B eB BsubI] IsubQ] QsubP]].
+    apply: (filterS QsubP).
+    rewrite explode_restrict //.
+    apply: rcvgF => /=.
+    apply (@image_subset _ _ restrict_dep) in IsubQ.
+    apply: (filterS IsubQ) => /=.
+      by apply: nbhs_filter.
+    exists ([set fg | (forall t, B (fg.1 t, fg.2 t))]).
+      by exists B.
+    move => /= g /= Bg.
+    exists (fun t : U => 
+      match pselect (`[<A t>]) with
+      | left p => (g (exist _ t p))
+      | right _ => (f t) end).
+    + apply: BsubI => /= t.
+      case (pselect (`[<A t>])) => /=.
+      2: by move=> *; apply entourage_refl.
+      move => At.
+      set t' := (x in B(_,g x)).
+      have -> : (f t = restrict_dep f t')
+        by rewrite /restrict_dep /=.
+      by apply Bg.
+    + apply funext; case=> t At.
+      rewrite /restrict_dep /=.
+      case (pselect `[< A t>]).
+      2: by [].
+      move => i; suff ->: (At = i) by [].
+      apply Prop_irrelevance.
+Qed.
+End Restriction_DependentPairs.
 
 Section RestrictLemmas.
 Context {U : choiceType} {V : uniformType} .
