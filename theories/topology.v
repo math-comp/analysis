@@ -334,8 +334,6 @@ Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "F ~~> f"  (at level 100, format "F ~~> f").
 Reserved Notation "F ~~>_( A ) f"  (at level 100, format "F ~~>_( A ) f").
 Reserved Notation "F ~ptws~> f"  (at level 100, format "F ~ptws~> f").
-Reserved Notation "F ~ptws~>_( A ) f"  
-  (at level 100, format "F ~ptws~>_( A ) f").
 Reserved Notation "F ~ famA ~> f" 
   (at level 100, format "F ~ famA ~> f").
 Set Implicit Arguments.
