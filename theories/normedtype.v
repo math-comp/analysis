@@ -2210,11 +2210,19 @@ have @a_ : nat -> T^o.
 by exists a_ => n; rewrite /a_ /= /ssr_have; case: cid => ? [].
 Grab Existential Variables. all: end_near. Qed.
 
-Module BanachAlgebra.
+Definition banach_alg_ax1 (K : numDomainType) (V : Type)
+  (normr : V -> K) (alg_prod : V -> V -> V) := 
+    (forall (x y : V), normr (alg_prod x y) <= (normr x ) * (normr y)).
+
+Definition banach_alg_ax2 (K : numDomainType) (V : Type) (one : V)
+  (normr : V -> K) := normr one = 1.
+
+Module UnitalBanachAlgebra.
 
 Record mixin_of (K : numDomainType) (V : Type)
-  (normr : V -> K) (alg_prod : V -> V -> V) := Mixin {
-  _ : forall (x y : V), normr (alg_prod x y) <= (normr x ) * (normr y);
+  (normr : V -> K) (alg_prod : V -> V -> V) (one : V) := Mixin {
+  _ : banach_alg_ax1 normr alg_prod;
+  _ : banach_alg_ax2 one normr;
 }.
 
 Section ClassDef.
@@ -2226,7 +2234,9 @@ Record class_of (V : Type) := Class {
   ring_mixin : GRing.Ring.mixin_of 
     (CompleteNormedModule.Pack (Phant K) base);
   lalg_mixin : GRing.Lalgebra.axiom (GRing.Ring.mul ring_mixin);
-  mixin : mixin_of normr (GRing.Ring.mul ring_mixin);
+  mixin : mixin_of normr 
+            (GRing.Ring.mul ring_mixin)
+            (GRing.Ring.one ring_mixin);
 }.
 
 Local Coercion base : class_of >-> CompleteNormedModule.class_of.
@@ -2262,7 +2272,7 @@ Definition pack (T:Type)
   fun b & phant_id (@CompleteNormedModule.class K (Phant K) cnm) b => 
   fun r0 & phant_id (GRing.Lalgebra.ringType alg) r0 => 
   fun l0 & phant_id (@GRing.Lalgebra.ext _ _ (GRing.Lalgebra.class alg)) l0 => 
-  fun m0 & phant_id (mixin_of normr (GRing.Ring.mul r0)) m0 =>
+  fun m0 & phant_id (mixin_of normr (GRing.Ring.mul r0) (GRing.Ring.one r0)) m0 =>
   (@Class T b r0 l0 m0).
 
 Definition eqType := @Equality.Pack cT xclass.
@@ -2347,17 +2357,37 @@ Notation banachAlgebraType K := (type (Phant K)).
 Notation "[ 'banachAlgebraType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
   (at level 0, format "[ 'banachAlgebraType'  K  'of'  T ]") : form_scope.
 End Exports.
-End BanachAlgebra.
+End UnitalBanachAlgebra.
 
-Export BanachAlgebra.Exports.
+Export UnitalBanachAlgebra.Exports.
 
 Section banach_algebra_lemmas.
 Context {K : numFieldType} {V : banachAlgebraType K}.
 
-Lemma foo (n : nat) (x : V) : 1 = `|(1:V)|.
-Unset Printing Notations.
-Print GRing.Ring.one.
-Print GRing.UnitRing.class_of.
+Lemma normB1 (x : V) : `|(1:V)| = 1.
+Proof.
+  move: V => [? [] ? ? ? [/= ? +]].
+  by rewrite /banach_alg_ax2 /= => ->.
+Qed.
+
+Lemma normBmul_le (x y: V) : `|x * y| <= `|x| * `|y|.
+Proof.
+  move: V x y => [? [] ? ? ? [/= ? +]].
+  by rewrite /banach_alg_ax1 /=.
+Qed.
+
+Lemma normBmul_le_n (n : nat) (x y: V) : `|x ^+n | <= `|x| ^n.
+Proof.
+  elim: n.
+    by rewrite expr0z expr0 normB1.
+  move=> n IH; rewrite exprS exprSz.
+  apply: le_trans;[by apply: normBmul_le|].
+  by apply: ler_pmul.
+Qed.
+
+Lemma 
+  
+
 
 
 
