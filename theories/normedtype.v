@@ -2210,6 +2210,157 @@ have @a_ : nat -> T^o.
 by exists a_ => n; rewrite /a_ /= /ssr_have; case: cid => ? [].
 Grab Existential Variables. all: end_near. Qed.
 
+Module BanachAlgebra.
+
+Record mixin_of (K : numDomainType) (V : Type)
+  (normr : V -> K) (alg_prod : V -> V -> V) := Mixin {
+  _ : forall (x y : V), normr (alg_prod x y) <= (normr x ) * (normr y);
+}.
+
+Section ClassDef.
+
+Variable K : numFieldType.
+
+Record class_of (V : Type) := Class {
+  base : CompleteNormedModule.class_of K V;
+  ring_mixin : GRing.Ring.mixin_of 
+    (CompleteNormedModule.Pack (Phant K) base);
+  lalg_mixin : GRing.Lalgebra.axiom (GRing.Ring.mul ring_mixin);
+  mixin : mixin_of normr (GRing.Ring.mul ring_mixin);
+}.
+
+Local Coercion base : class_of >-> CompleteNormedModule.class_of.
+Local Coercion mixin : class_of >-> mixin_of.
+Local Definition mkRingClass T (c : class_of T) : GRing.Ring.class_of T :=(GRing.Ring.Class (ring_mixin c)).
+Let mkRingType T (c : class_of T) : GRing.Ring.type :=
+  GRing.Ring.Pack (GRing.Ring.Class (ring_mixin c)).
+
+Local Definition base2 T (c : class_of T) : GRing.Lalgebra.class_of K T := 
+  @GRing.Lalgebra.Class K T 
+    (mkRingClass c) 
+    (NormedModule.lmodmixin c)
+    (@lalg_mixin T c) 
+.
+Local Coercion base2 : class_of >-> GRing.Lalgebra.class_of.
+Structure type (phK : phant K) := Pack { sort; _ : class_of sort }.
+Local Coercion sort : type >-> Sortclass.
+
+Variables (T : Type) (phK : phant K) (cT : type phK).
+
+Definition class := let: Pack _ c := cT return class_of cT in c.
+Definition clone c of phant_id class c := @Pack phK T c.
+Let xT := let: Pack T _ := cT in T.
+Notation xclass := (class : class_of xT).
+
+(* Note that we require the Lmodule structure from CompleteNormedModule
+   and Lalgebra to be identical*)
+Definition pack (T:Type) 
+  (cnm : CompleteNormedModule.type (Phant K)) :=
+  fun (alg : GRing.Lalgebra.type (Phant K)) & phant_id
+    (NormedModule.lmodmixin (NormedModule.class cnm)) 
+    (GRing.Lalgebra.mixin (GRing.Lalgebra.class alg)) => 
+  fun b & phant_id (@CompleteNormedModule.class K (Phant K) cnm) b => 
+  fun r0 & phant_id (GRing.Lalgebra.ringType alg) r0 => 
+  fun l0 & phant_id (@GRing.Lalgebra.ext _ _ (GRing.Lalgebra.class alg)) l0 => 
+  fun m0 & phant_id (mixin_of normr (GRing.Ring.mul r0)) m0 =>
+  (@Class T b r0 l0 m0).
+
+Definition eqType := @Equality.Pack cT xclass.
+Definition choiceType := @Choice.Pack cT xclass.
+Definition zmodType := @GRing.Zmodule.Pack cT xclass.
+Definition normedZmodType := @Num.NormedZmodule.Pack K phK cT xclass.
+Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
+Definition pointedType := @Pointed.Pack cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
+Definition topologicalType := @Topological.Pack cT xclass.
+Definition uniformType := @Uniform.Pack cT xclass.
+Definition pseudoMetricType := @PseudoMetric.Pack K cT xclass.
+Definition pseudoMetricNormedZmodType :=
+  @PseudoMetricNormedZmodule.Pack K phK cT xclass.
+Definition normedModType := @NormedModule.Pack K phK cT xclass.
+Definition completeType := @Complete.Pack cT xclass.
+Definition completePseudoMetricType := @CompletePseudoMetric.Pack K cT xclass.
+Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
+Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
+Definition ringType := @GRing.Ring.Pack cT xclass.
+Definition lalgebraType := @GRing.Lalgebra.Pack K phK cT xclass.
+Definition complete_normedZmodType := @Num.NormedZmodule.Pack K phK completeType xclass.
+Definition complete_pseudoMetricNormedZmodType :=
+  @PseudoMetricNormedZmodule.Pack K phK completeType xclass.
+Definition complete_normedModType := @NormedModule.Pack K phK completeType xclass.
+Definition completePseudoMetric_lmodType : GRing.Lmodule.type phK :=
+  @GRing.Lmodule.Pack K phK (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_zmodType : GRing.Zmodule.type :=
+  @GRing.Zmodule.Pack (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_normedModType : NormedModule.type phK :=
+  @NormedModule.Pack K phK (CompletePseudoMetric.sort completePseudoMetricType)
+  xclass.
+Definition completePseudoMetric_normedZmodType : Num.NormedZmodule.type phK :=
+  @Num.NormedZmodule.Pack K phK
+  (CompletePseudoMetric.sort completePseudoMetricType) xclass.
+Definition completePseudoMetric_pseudoMetricNormedZmodType :
+  PseudoMetricNormedZmodule.type phK :=
+  @PseudoMetricNormedZmodule.Pack K phK
+  (CompletePseudoMetric.sort completePseudoMetricType) xclass.
+End ClassDef.
+
+Module Exports.
+
+Coercion base : class_of >-> CompleteNormedModule.class_of.
+Coercion base2 : class_of >-> GRing.Lalgebra.class_of.
+Coercion sort : type >-> Sortclass.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion zmodType : type >-> GRing.Zmodule.type.
+Canonical zmodType.
+Coercion pseudoMetricNormedZmodType : type >-> PseudoMetricNormedZmodule.type.
+Canonical pseudoMetricNormedZmodType.
+Coercion normedZmodType : type >-> Num.NormedZmodule.type.
+Canonical normedZmodType.
+Coercion lmodType : type >-> GRing.Lmodule.type.
+Canonical lmodType.
+Coercion ringType : type >-> GRing.Ring.type.
+Canonical ringType.
+Coercion lalgebraType : type >-> GRing.Lalgebra.type.
+Canonical lalgebraType.
+Coercion pointedType : type >-> Pointed.type.
+Canonical pointedType.
+Coercion filteredType : type >-> Filtered.type.
+Canonical filteredType.
+Coercion topologicalType : type >-> Topological.type.
+Canonical topologicalType.
+Coercion uniformType : type >-> Uniform.type.
+Canonical uniformType.
+Coercion pseudoMetricType : type >-> PseudoMetric.type.
+Canonical pseudoMetricType.
+Coercion normedModType : type >-> NormedModule.type.
+Canonical normedModType.
+Coercion completeType : type >-> Complete.type.
+Canonical completeType.
+Coercion completePseudoMetricType : type >-> CompletePseudoMetric.type.
+Canonical completePseudoMetricType.
+Notation banachAlgebraType K := (type (Phant K)).
+Notation "[ 'banachAlgebraType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
+  (at level 0, format "[ 'banachAlgebraType'  K  'of'  T ]") : form_scope.
+End Exports.
+End BanachAlgebra.
+
+Export BanachAlgebra.Exports.
+
+Section banach_algebra_lemmas.
+Context {K : numFieldType} {V : banachAlgebraType K}.
+
+Lemma foo (n : nat) (x : V) : 1 = `|(1:V)|.
+Unset Printing Notations.
+Print GRing.Ring.one.
+Print GRing.UnitRing.class_of.
+
+
+
 Section open_closed_sets.
 Variable R : realFieldType (* TODO: can we generalize to numFieldType? *).
 Implicit Types y : R.
