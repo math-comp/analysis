@@ -2231,27 +2231,45 @@ Variable K : numFieldType.
 
 Record class_of (V : Type) := Class {
   base : CompleteNormedModule.class_of K V;
-  ring_mixin : GRing.Ring.mixin_of 
-    (CompleteNormedModule.Pack (Phant K) base);
-  lalg_mixin : GRing.Lalgebra.axiom (GRing.Ring.mul ring_mixin);
-  mixin : mixin_of normr 
+  ring_mixin : GRing.Ring.mixin_of (GRing.Zmodule.Pack base);
+  unit_mixin : GRing.UnitRing.mixin_of 
+    (GRing.Ring.Pack (GRing.Ring.Class ring_mixin));
+  lalg_mixin : @GRing.Lalgebra.axiom 
+    _
+    (GRing.Lmodule.Pack (Phant K) base)
+    (GRing.Ring.mul ring_mixin);
+  alg_mixin : GRing.Algebra.axiom 
+    (@GRing.Lalgebra.Pack _ _ V 
+      (@GRing.Lalgebra.Class K V (GRing.Ring.Class _) _ (lalg_mixin)));
+  mixin : @mixin_of K V 
+            (@normr K (CompleteNormedModule.Pack (Phant K) base)) 
             (GRing.Ring.mul ring_mixin)
             (GRing.Ring.one ring_mixin);
 }.
 
 Local Coercion base : class_of >-> CompleteNormedModule.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
-Local Definition mkRingClass T (c : class_of T) : GRing.Ring.class_of T :=(GRing.Ring.Class (ring_mixin c)).
-Let mkRingType T (c : class_of T) : GRing.Ring.type :=
-  GRing.Ring.Pack (GRing.Ring.Class (ring_mixin c)).
+Local Definition mkRingClass T (c : class_of T) : GRing.Ring.class_of T :=
+  (GRing.Ring.Class (ring_mixin c)).
+Local Definition mkURingClass T (c : class_of T) : GRing.UnitRing.class_of T :=
+  (GRing.UnitRing.Class (unit_mixin c)).
+Local Definition mkUnitRingType T (c : class_of T) : GRing.Ring.type :=
+  GRing.UnitRing.Pack (GRing.UnitRing.Class (unit_mixin c)).
 
-Local Definition base2 T (c : class_of T) : GRing.Lalgebra.class_of K T := 
+Local Definition lalgbase T (c : class_of T) : GRing.Lalgebra.class_of K T := 
   @GRing.Lalgebra.Class K T 
     (mkRingClass c) 
-    (NormedModule.lmodmixin c)
+    _ 
     (@lalg_mixin T c) 
 .
-Local Coercion base2 : class_of >-> GRing.Lalgebra.class_of.
+
+Local Definition algbase T (c : class_of T) : GRing.Algebra.class_of K T :=
+  GRing.Algebra.Class (@alg_mixin T c).
+
+Local Definition base2 T (c : class_of T) : GRing.UnitAlgebra.class_of K T :=
+  @GRing.UnitAlgebra.Class _ _ (algbase c) (@unit_mixin T c). 
+
+Local Coercion base2 : class_of >-> GRing.UnitAlgebra.class_of.
 Structure type (phK : phant K) := Pack { sort; _ : class_of sort }.
 Local Coercion sort : type >-> Sortclass.
 
@@ -2262,18 +2280,13 @@ Definition clone c of phant_id class c := @Pack phK T c.
 Let xT := let: Pack T _ := cT in T.
 Notation xclass := (class : class_of xT).
 
-(* Note that we require the Lmodule structure from CompleteNormedModule
-   and Lalgebra to be identical*)
 Definition pack (T:Type) 
-  (cnm : CompleteNormedModule.type (Phant K)) :=
-  fun (alg : GRing.Lalgebra.type (Phant K)) & phant_id
-    (NormedModule.lmodmixin (NormedModule.class cnm)) 
-    (GRing.Lalgebra.mixin (GRing.Lalgebra.class alg)) => 
-  fun b & phant_id (@CompleteNormedModule.class K (Phant K) cnm) b => 
-  fun r0 & phant_id (GRing.Lalgebra.ringType alg) r0 => 
-  fun l0 & phant_id (@GRing.Lalgebra.ext _ _ (GRing.Lalgebra.class alg)) l0 => 
-  fun m0 & phant_id (mixin_of normr (GRing.Ring.mul r0) (GRing.Ring.one r0)) m0 =>
-  (@Class T b r0 l0 m0).
+  (cnm : CompleteNormedModule.type phK)
+  (r : GRing.UnitRing.type) :=
+  fun b & phant_id (@CompleteNormedModule.class K _ cnm) b => 
+  fun r0 l0 m0 & phant_id (GRing.Ring.class r) r0 => 
+  fun u0 & phant_id (GRing.Ring.Pack (GRing.Ring.Class r0)) u0 =>
+  (@Class T b r0 u0 l0 m0).
 
 Definition eqType := @Equality.Pack cT xclass.
 Definition choiceType := @Choice.Pack cT xclass.
@@ -2290,10 +2303,14 @@ Definition pseudoMetricNormedZmodType :=
 Definition normedModType := @NormedModule.Pack K phK cT xclass.
 Definition completeType := @Complete.Pack cT xclass.
 Definition completePseudoMetricType := @CompletePseudoMetric.Pack K cT xclass.
+Definition completeNormedModType := @CompleteNormedModule.Pack K phK cT xclass.
 Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
 Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
 Definition ringType := @GRing.Ring.Pack cT xclass.
+Definition unitRingType : GRing.UnitRing.type := @GRing.UnitRing.Pack cT xclass.
 Definition lalgebraType := @GRing.Lalgebra.Pack K phK cT xclass.
+Definition algebraType := @GRing.Algebra.Pack K phK cT xclass.
+Definition unitAlgebraType := @GRing.UnitAlgebra.Pack K phK cT xclass.
 Definition complete_normedZmodType := @Num.NormedZmodule.Pack K phK completeType xclass.
 Definition complete_pseudoMetricNormedZmodType :=
   @PseudoMetricNormedZmodule.Pack K phK completeType xclass.
@@ -2319,7 +2336,7 @@ End ClassDef.
 Module Exports.
 
 Coercion base : class_of >-> CompleteNormedModule.class_of.
-Coercion base2 : class_of >-> GRing.Lalgebra.class_of.
+Coercion base2 : class_of >-> GRing.UnitAlgebra.class_of.
 Coercion sort : type >-> Sortclass.
 Coercion eqType : type >-> Equality.type.
 Canonical eqType.
@@ -2337,6 +2354,10 @@ Coercion ringType : type >-> GRing.Ring.type.
 Canonical ringType.
 Coercion lalgebraType : type >-> GRing.Lalgebra.type.
 Canonical lalgebraType.
+Coercion algebraType : type >-> GRing.Algebra.type.
+Canonical algebraType.
+Coercion unitAlgebraType : type >-> GRing.UnitAlgebra.type.
+Canonical unitAlgebraType.
 Coercion pointedType : type >-> Pointed.type.
 Canonical pointedType.
 Coercion filteredType : type >-> Filtered.type.
@@ -2353,26 +2374,28 @@ Coercion completeType : type >-> Complete.type.
 Canonical completeType.
 Coercion completePseudoMetricType : type >-> CompletePseudoMetric.type.
 Canonical completePseudoMetricType.
-Notation banachAlgebraType K := (type (Phant K)).
-Notation "[ 'banachAlgebraType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
-  (at level 0, format "[ 'banachAlgebraType'  K  'of'  T ]") : form_scope.
+Coercion completeNormedModType : type >-> CompleteNormedModule.type.
+Canonical completeNormedModType.
+Notation unitalBanachAlgType K := (type (Phant K)).
+Notation "[ 'unitalBanachAlgType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
+  (at level 0, format "[ 'unitalBanachAlgType'  K  'of'  T ]") : form_scope.
 End Exports.
 End UnitalBanachAlgebra.
 
 Export UnitalBanachAlgebra.Exports.
 
 Section banach_algebra_lemmas.
-Context {K : numFieldType} {V : banachAlgebraType K}.
+Context {K : numFieldType} {V : unitalBanachAlgType K}.
 
 Lemma normB1 (x : V) : `|(1:V)| = 1.
 Proof.
-  move: V => [? [] ? ? ? [/= ? +]].
+  move: V => [? [] ? ? ? ? ? [/= ? +]].
   by rewrite /banach_alg_ax2 /= => ->.
 Qed.
 
 Lemma normBmul_le (x y: V) : `|x * y| <= `|x| * `|y|.
 Proof.
-  move: V x y => [? [] ? ? ? [/= ? +]].
+  move: V x y => [? [] ? ? ? ? ? [/= ? +]].
   by rewrite /banach_alg_ax1 /=.
 Qed.
 
@@ -2384,12 +2407,75 @@ Proof.
   apply: le_trans;[by apply: normBmul_le|].
   by apply: ler_pmul.
 Qed.
+End banach_algebra_lemmas.
 
-Lemma 
-  
+Lemma numDomain_lalgAxiom {R: numDomainType} : 
+  GRing.Lalgebra.axiom (fun (x y:R^o) => x *y).
+Proof.
+  rewrite /GRing.Lalgebra.axiom=> ? ? ?.
+  by rewrite /GRing.scale /= GRing.mulrA.
+Qed.
 
+Lemma numDomain_algAxiom {R: numDomainType} : 
+  GRing.Algebra.axiom (GRing.regular_lalgType R).
+Proof.
+  move=> ? ? ?; rewrite /GRing.scale /=. 
+  by rewrite [LHS]mulrA [x in x * _ = _] mulrC mulrA.
+Qed.
 
+Section real_banach.
+Context {R: realType}.
 
+Program Definition realType_unitalBanachAlgebraMixin := 
+  @UnitalBanachAlgebra.Mixin R R normr (fun x y=> x * y) 1 _ _.
+Next Obligation.
+  rewrite /banach_alg_ax1 => ? ?.
+  by rewrite -R_normZ.
+Qed.
+Next Obligation.
+  by rewrite /banach_alg_ax2 normrE.
+Qed.
+
+Program Definition realType_unitalBanachAlgebraClass :=
+  (@UnitalBanachAlgebra.Class R R 
+    (CompleteNormedModule.class (R_CompleteNormedModule R))
+    (GRing.UnitRing.class [unitRingType of R])
+    (GRing.UnitRing.mixin (GRing.UnitRing.class [unitRingType of R])) 
+    numDomain_lalgAxiom
+    numDomain_algAxiom
+    realType_unitalBanachAlgebraMixin
+  ).
+Next Obligation.
+  congr (_ _).
+  set l := LHS; rewrite -/l.
+  by destruct l.
+Qed.
+
+Definition realType_unitalBanachAlgebraType := 
+  UnitalBanachAlgebra.Pack (Phant R) realType_unitalBanachAlgebraClass.
+End real_banach.
+
+Canonical realType_unitalBanachAlgebraType.
+
+Section matrix_banach.
+Context {R: realType}.
+Variable (n : nat).
+
+Local Notation M := 'M[R^o]_(n.+1, n.+1).
+Lemma mx_norm1 : `|(1 : M)| = 1.
+Proof.
+  rewrite /normr /= mx_normrE.
+  apply/eqP; rewrite mc_1_10.Num.Theory.eqr_le /= ?mx_normE.
+  apply/andP; split.
+  - apply/BigmaxBigminr.bigmaxr_lerP; split => //= [[? ?]] _.
+    rewrite {1}/GRing.one /= -pid_mx_1 /pid_mx /= mxE.
+    set l := (x in nat_of_bool x).
+    by rewrite /nat_of_bool; case:l; rewrite ?normr_nat ?mulr0n.
+  - set z := (ord0 : 'I_n.+1, ord0 : 'I_n.+1).
+    suff -> :  (1 = `|(1:M) z.1 z.2| ) by apply: BigmaxBigminr.ler_bigmaxr.
+    by rewrite {2}/GRing.one /= -pid_mx_1 /pid_mx /= mxE /= normrE.
+Qed.
+End matrix_banach.
 
 Section open_closed_sets.
 Variable R : realFieldType (* TODO: can we generalize to numFieldType? *).

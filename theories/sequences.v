@@ -675,10 +675,10 @@ Arguments arithmetic {R} a z n /.
 Lemma mulrn_arithmetic (R : zmodType) : @GRing.natmul R = arithmetic 0.
 Proof. by rewrite funeq2E => z n /=; rewrite add0r. Qed.
 
-Definition geometric (R : fieldType) a z : R^o ^nat := [sequence a * z ^+ n]_n.
+Definition geometric (R : ringType) a z : R^o ^nat := [sequence a * z ^+ n]_n.
 Arguments geometric {R} a z n /.
 
-Lemma exprn_geometric (R : fieldType) : (@GRing.exp R) = geometric 1.
+Lemma exprn_geometric (R : ringType) : (@GRing.exp R) = geometric 1.
 Proof. by rewrite funeq2E => z n /=; rewrite mul1r. Qed.
 
 Lemma cvg_arithmetic (R : archiFieldType) a (z : R^o) :
@@ -706,13 +706,28 @@ rewrite exprDn (bigD1 (inord 1)) ?inordK// subn1 expr1 bin1 ler_addl sumr_ge0//.
 by move=> i; rewrite ?(mulrn_wge0, mulr_ge0, exprn_ge0, subr_ge0)// ltW.
 Grab Existential Variables. all: end_near. Qed.
 
+Lemma geometric_mult (R : ringType) (z a : R) :
+  a *: geometric 1 z = geometric a z.
+Proof.
+  by rewrite funeqE => n; rewrite /GRing.scale /= /GRing.scale /= mul1r.
+Qed.
+
+Lemma geometric_series_ring_E (R : ringType) (z a : R) n :
+   series (geometric a z) n * (1 - z) = a * (1 - z ^+ n).
+Proof.
+  rewrite seriesEnat /= mulr_suml.
+  (under eq_bigr do rewrite -mulrA); rewrite -mulr_sumr.
+  congr (_ * _).
+  under eq_bigr do rewrite mulrBr mulr1 -exprSr -opprB.
+  by rewrite sumrN telescope_sumr // opprB.
+Qed.
+ 
 Lemma geometric_seriesE (R : numFieldType) (a z : R) : z != 1 ->
   series (geometric a z) = [sequence a * (1 - z ^+ n) / (1 - z)]_n.
 Proof.
-rewrite funeqE => z_neq1 n.
-apply: (@mulIf _ (1 - z)); rewrite ?mulfVK ?subr_eq0 1?eq_sym//.
-rewrite seriesEnat !mulrBr [in LHS]mulr1 mulr_suml -opprB -sumrB.
-by under eq_bigr do rewrite -mulrA -exprSr; rewrite telescope_sumr// opprB.
+  rewrite funeqE => z_neq1 n.
+  apply: (@mulIf _ (1 - z)); rewrite ?mulfVK ?subr_eq0 1?eq_sym//.
+  by rewrite geometric_series_ring_E.
 Qed.
 
 Lemma cvg_geometric_series (R : archiFieldType) (a z : R) : `|z| < 1 ->
@@ -777,6 +792,31 @@ apply/cauchy_seriesP => e /u_ncvg.
 apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
+
+Lemma geometric_cvgB 
+    {R : realType } {V : banachAlgebraType R} (z : V) :
+  `|z| < 1 -> 
+  cvg (series (geometric 1 z)).
+Proof.
+  move => z_lt. 
+  apply: (@normed_cvg R [completeNormedModType R of V]). 
+  apply: series_le_cvg. 
+  4: apply: (@is_cvg_geometric_series R 1 `|z|).
+  - by move=> ? //=.
+  - elim => //=.
+    move=> n IH; rewrite mul1r exprS.
+    apply: mulr_ge0 => //=.
+    by rewrite mul1r in IH.
+  - move=> n /=; rewrite ?mul1r.
+    by apply: normBmul_le_n.
+  - by rewrite normrE.
+Qed.
+  
+Locate "^-1".
+Lemma geometric_inv 
+    {R : realType } {V : banachAlgebraType R} (z : V) :
+  `|z| < 1 -> 
+  (series (geometric 1 z)) --> (1-z)^-1.
 
 Section sequences_of_extended_real_numbers.
 
