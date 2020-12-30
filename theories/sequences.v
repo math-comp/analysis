@@ -805,6 +805,15 @@ apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
 
+Lemma cvg_is_cvg {T : topologicalType} (F : set(set(T))) (a:T) :
+  ProperFilter F ->
+  hausdorff T ->
+  F --> a -> cvg F.
+Proof.
+  by move=> ? ? ?; have ->: (lim F) = a by apply: cvg_lim.
+Qed.
+
+
 Lemma geometric_cvgB 
     {R : realType } {V : unitalBanachAlgType R} (z : V) :
   `|z| < 1 -> 
@@ -830,14 +839,6 @@ Lemma cvg_expr_B
 Proof.
   move=> /geometric_cvgB/cvgP/cvg_series_cvg_0. 
   by rewrite geometric_exp.
-Qed.
-
-Lemma cvg_is_cvg {T : topologicalType} (F : set(set(T))) (a:T) :
-  ProperFilter F ->
-  hausdorff T ->
-  F --> a -> cvg F.
-Proof.
-  by move=> ? ? ?; have ->: (lim F) = a by apply: cvg_lim.
 Qed.
 
 Lemma geometric_inv_l
@@ -948,13 +949,20 @@ Proof.
   - by apply: geometric_inv_r.
 Qed.
 
-Lemma norm_lt_1_unit 
+Lemma geometric_cvg_inv 
     {R : realType } {V : unitalBanachAlgType R} (z : V) :
   `|z| < 1 -> 
-  (1 - z) \is a GRing.unit.
-  (series (geometric 1 z)) --> ((1-z):V)^-1.
+  (series (geometric 1 z)) --> (1-z)^-1.
 Proof.
-  
+  move=>?.
+  suff <-: ( lim (series(geometric 1 z)) = (1-z)^-1)
+    by apply: geometric_cvgB.
+  apply: mulrI.
+    1: by apply: norm_lt_1_unit; eauto. 
+  rewrite geometric_inv_r // mulrV //.
+  by apply: norm_lt_1_unit; eauto. 
+Qed.
+
 Section sequences_of_extended_real_numbers.
 
 Lemma ereal_cvgN (R : realFieldType) (f : {ereal R} ^nat) (a : {ereal R}) :
