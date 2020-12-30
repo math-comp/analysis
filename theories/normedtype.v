@@ -2419,80 +2419,54 @@ Proof.
   move=> [a b]; apply cvg_distP.
     by apply: fmap_filter.
   move=>  _/posnumP[eps].
+  have : continuous (fun (xy : V*V) => (`|a - xy.1| * `|xy.2|) : K^o). {
+    move=> ?.
+    apply: cvgM.
+    - apply: continuous_cvg.
+      1: by move=>?; apply: norm_continuous.
+      apply: cvgB.
+      1: by apply: cvg_cst.
+      by apply: cvg_fst.
+    - apply: continuous_cvg.
+      1: by move=>?; apply: norm_continuous.
+      by apply: cvg_snd.
+  }
+  move=> /(_ (a,b)) /cvg_distP /= /(_ ((eps)%:num /2)) W.
+  case: W => //= [[/=x y] [bX bY]] M.
   near=> l z => /=.
   rewrite (@distm_lt_split _ _ (a * z)) // -?mulrBr -?mulrBl. 
   all: apply: (le_lt_trans (normBmul_le _ _)).
   - set L := (x in x < _).
-    have ->: L = `| (`|a| * `|b - b|) - L| by admit.
+    have ->: L = `| (`|a| * `|b - b|) - L|. {
+      rewrite subrr normrE mulr0 add0r normrE /L.
+      by rewrite R_normZ ?normrE.
+    }
     rewrite {}/L; near: z. 
     have: ( 0 < (eps)%:num / 2 ) by [].
     move: ((eps)%:num / 2) => /=.
     move=>  _/posnumP[eps1]; move: eps1.
     apply: (@continuous_cvg_dist _ V [normedModType K of K^o] 
       (fun x => `|a| * `|b-x|)) => //=.
-    move=> x.
+    move=> ?.
     apply: cvgM;[apply: cst_continuous|].
     set f := (x in x @ _).
     have ->: f = normr \o (fun x => b - x) by 
       apply: funext => ?; rewrite /f //=.
     apply continuous_comp.
     2: by apply: norm_continuous.
-    move => ?.
     apply: continuousB => //=.
     by apply: continuous_cst.
   - set L := (x in x < _).
-    have ->: L = `| (`|a - a| * `|b|) - L| by admit.
+    have ->: L = `| (`|a - a| * `|b|) - L|. {
+      rewrite subrr normrE mul0r add0r normrE /L.
+      by rewrite R_normZ ?normrE.
+    }
     rewrite {}/L. 
-    near: z; rewrite unlock; near: l.
-
-    rewrite -[near_key]unlock.
-    near: l. 
-    have: ( 0 < (eps)%:num / 2 ) by [].
-    move: ((eps)%:num / 2) => /=.
-    move=>  _/posnumP[eps1]; move: eps1.
-    apply: (@continuous_cvg_dist _ V [normedModType K of K^o] 
-      (fun x => `|a-x| * `|b-x|)) => //=.
-    apply/ (@cvg_distP K V).
-    have: ( (fun x => `|a| * `|b - x|) @ nbhs b --> (0:K^o)) by admit.
-    Search cvgM.
-    move=> /(@cvg_distP _  [normedModType K of K^o]).
-    move=> /=.
-
-    rewrite /L.
-  - near:z;
-    case az: (`|a| == 0);move: az => /eqP R.
-      by near=> z;rewrite R mul0r; apply: divr_gt0.
-    have ?: (`|a| > 0) by admit.
-    near=> z; rewrite mulrC -ltr_pdivl_mulr //=.
-    near:z; apply: cvg_dist => //=.
-    by apply: divr_gt0.
-  - near: z; near: l.
-    case bz: (`|b| == 0);move: bz => /eqP R.
-      near=> l setoid_rewrite R. mul0r; apply: divr_gt0.
-    have ?: (`|a| > 0) by admit.
-    near=> z; rewrite mulrC -ltr_pdivl_mulr //=.
-    near:z; apply: cvg_dist => //=.
-    by apply: divr_gt0.
-    suff: (`|k| + 1) * `|x - z| < e%:num / 2.
-      by apply: le_lt_trans; rewrite ler_pmul// ler_addl.
-    rewrite -ltr_pdivl_mull // ?(lt_le_trans ltr01) ?ler_addr //; near: z.
-    by apply: cvg_dist; rewrite // mulr_gt0 // ?invr_gt0 ltr_paddl.
-  rewrite (le_lt_trans (ler_pmul _ _ (lexx _) zM)) // ?ltW // -ltr_pdivl_mulr//.
-  by near: l; apply: (cvg_dist (_ : K^o)); rewrite // mulr_gt0// invr_gt0.
-  Grab Existential Variables. all: end_near. Qed.
-
-  exists (ball (a) ((eps) %:num), (ball b (eps %:num) )).
-    by split; apply: nbhsx_ballx.
-  
-  near (ball (a*b) eps) => y'. Search (_ \is_near _).
-  exists (a + eps *: a, b + eps *: b).
-  have : (fun z: V*V => z.1 * z.2) = (fun z : V * V => z.1 *: z.2).
-  a b - (a - e1)(b - e2) = a b - e1e2 + a e1 + b e2 - a b = 
-    a e1 + b e2 - e1 e2
-  near=> y.
-
-  exists  eps  
-
+    move: M => /(_ (l,z)); apply.
+    split=> /=.
+    + by apply: (@near _ (nbhs a)). 
+    + by apply: (@near _ (nbhs b)). 
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma limB_M {T: topologicalType} [F : set (set T)] :
   ProperFilter F -> 
@@ -2512,19 +2486,8 @@ Proof.
     apply (@continuous_cvg T V ([topologicalType of K^o])) => //=.
     by apply PF.
     by apply: norm_continuous.
-  Check cvgM.
-
-    
-  Search (( _ \o _) @ _).
-  pose q := .
-  pose w := @cvg_to K q. 
-  pose e := [`|a|].
-  move=> eps pos.
-  near=>y'.
-
-  apply: subr0_eq.
-  rewrite -limB.
-  Search ( lim _ - lim _).
+    by apply: continuous_BM.
+Qed.
 End banach_algebra_lemmas.
 
 Lemma numDomain_lalgAxiom {R: numDomainType} : 
