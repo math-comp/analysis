@@ -794,30 +794,44 @@ by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
 
 Lemma geometric_cvgB 
-    {R : realType } {V : banachAlgebraType R} (z : V) :
+    {R : realType } {V : unitalBanachAlgType R} (z : V) :
   `|z| < 1 -> 
   cvg (series (geometric 1 z)).
 Proof.
   move => z_lt. 
-  apply: (@normed_cvg R [completeNormedModType R of V]). 
+  apply: normed_cvg. 
   apply: series_le_cvg. 
   4: apply: (@is_cvg_geometric_series R 1 `|z|).
   - by move=> ? //=.
-  - elim => //=.
-    move=> n IH; rewrite mul1r exprS.
+  - elim => //= n IH; rewrite mul1r exprS.
     apply: mulr_ge0 => //=.
     by rewrite mul1r in IH.
   - move=> n /=; rewrite ?mul1r.
     by apply: normBmul_le_n.
   - by rewrite normrE.
 Qed.
-  
-Locate "^-1".
-Lemma geometric_inv 
-    {R : realType } {V : banachAlgebraType R} (z : V) :
-  `|z| < 1 -> 
-  (series (geometric 1 z)) --> (1-z)^-1.
 
+Lemma lim_Ba_M :=
+  
+Lemma geometric_inv_l
+    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+  `|z| < 1 -> 
+  (lim (geometric 1 z)) * (1-z) = 1.
+Proof.
+  move=> z_lt.
+  have ->: (1-z) = lim((fun(_:nat)=> 1-z)).
+    by rewrite lim_cst.
+    Locate limM.
+  
+  
+
+Lemma norm_lt_1_unit 
+    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+  `|z| < 1 -> 
+  (1 - z) \is a GRing.unit.
+  (series (geometric 1 z)) --> ((1-z):V)^-1.
+Proof.
+  
 Section sequences_of_extended_real_numbers.
 
 Lemma ereal_cvgN (R : realFieldType) (f : {ereal R} ^nat) (a : {ereal R}) :
