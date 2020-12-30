@@ -712,6 +712,12 @@ Proof.
   by rewrite funeqE => n; rewrite /GRing.scale /= /GRing.scale /= mul1r.
 Qed.
 
+Lemma geometric_exp (R : ringType) (z : R) :
+  geometric 1 z = GRing.exp z .
+Proof.
+  by rewrite funeqE => n; rewrite /GRing.scale /= /GRing.scale /= mul1r.
+Qed.
+
 Lemma geometric_series_ring_E (R : ringType) (z a : R) n :
    series (geometric a z) n * (1 - z) = a * (1 - z ^+ n).
 Proof.
@@ -811,16 +817,38 @@ Proof.
   - by rewrite normrE.
 Qed.
 
-Lemma lim_Ba_M :=
-  
+Lemma cvg_expr_B
+    {R : realType } {V : unitalBanachAlgType R}
+    (z : V) : 
+  `|z| < 1 -> (GRing.exp z @ \oo --> (0 : V)).
+Proof.
+  move=> /geometric_cvgB/cvgP/cvg_series_cvg_0. 
+  by rewrite geometric_exp.
+Qed.
+
 Lemma geometric_inv_l
     {R : realType } {V : unitalBanachAlgType R} (z : V) :
   `|z| < 1 -> 
-  (lim (geometric 1 z)) * (1-z) = 1.
+  (lim (series (geometric 1 z))) * (1-z) = 1.
 Proof.
+
   move=> z_lt.
-  have ->: (1-z) = lim((fun(_:nat)=> 1-z)).
-    by rewrite lim_cst.
+  have c_cvg: ([sequence (1-z)]_n) --> 1-z.
+    by apply: cvg_cst.
+  pose geo_cvg := (geometric_cvgB z_lt).
+  pose Q := (limB_M eventually_filter geo_cvg c_cvg). 
+  move: Q.
+  under [X in X @ _ --> _]funext => n /=. 
+    rewrite /GRing.mul /= geometric_series_ring_E mul1r. 
+  over.
+  move=> Q; rewrite -(cvg_lim _ Q) //.
+  rewrite limB ?lim_cst //. 
+  by rewrite (cvg_lim _ (cvg_expr_B z_lt)) // subr0.
+  apply: cvg_cst.
+  unfold cvg.
+
+
+  cvg (series (geometric 1 z)).
     Locate limM.
   
   
