@@ -2488,6 +2488,7 @@ Proof.
     by apply: norm_continuous.
     by apply: continuous_BM.
 Qed.
+
 End banach_algebra_lemmas.
 
 Lemma numDomain_lalgAxiom {R: numDomainType} : 
