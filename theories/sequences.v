@@ -290,6 +290,9 @@ Variables (V : zmodType) (u_ : V ^nat).
 Definition series : V ^nat := [sequence \sum_(k < n) u_ k]_n.
 Definition telescope : V ^nat := [sequence u_ n.+1 - u_ n]_n.
 
+Lemma series0 : series (0)%nat = 0.
+Proof. by rewrite /series /= big_ord0. Qed.
+
 Lemma seriesSr n : series n.+1 = series n + u_ n.
 Proof. by rewrite /series/= big_ord_recr/=. Qed.
 
@@ -351,6 +354,18 @@ Lemma sumr_const_nat (V : zmodType) (m n : nat) (x : V) :
    \sum_(n <= i < m) x = x *+ (m - n).
 Proof. by rewrite big_const_nat; elim: (m - n)%N => //= k ->; rewrite mulrS. Qed.
 (* end missing mathcomp lemmas *)
+
+Lemma ler_series (R : numDomainType) (u_ v_ : (R^o)^nat) :
+  (forall n, (u_ n <= v_ n)) ->
+  forall n, series u_ n <= series v_ n .
+Proof.
+  move=> u_le_v.
+  elim.
+    1: by rewrite ?series0.
+  move=> n IH; rewrite ?seriesS; 
+  by apply: (le_trans (ler_add _ IH)).
+Qed.
+
 
 Section series_patched.
 
@@ -770,6 +785,17 @@ Proof.
 by move=> u_gt0; rewrite funeqE => n /=; apply: eq_bigr => k; rewrite ger0_norm.
 Qed.
 
+Lemma normed_series_le {K : numFieldType} {V : normedModType K} (u_ : (V)^nat) n :
+  `|series u_ n| <= [ normed series u_] n.
+Proof.
+  rewrite /series.
+  elim:n.
+    1: by rewrite /= seriesEord  /= ?big_ord0 normrE /=.
+  move=> n IH; rewrite /= seriesEord /= ?big_ord_recr /=.
+  apply: (le_trans (ler_norm_add _ _ )) .
+  by apply: ler_add.
+Qed.
+
 Lemma cauchy_seriesP {R : numFieldType} (V : normedModType R) (u_ : V ^nat) :
   cauchy (series u_ @ \oo) <->
   forall e : R, e > 0 ->
@@ -962,6 +988,181 @@ Proof.
   rewrite geometric_inv_r // mulrV //.
   by apply: norm_lt_1_unit; eauto. 
 Qed.
+
+Lemma geometric_norm_bound
+    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+  `|z| < 1 -> 
+  `|(1-z)^-1| <= (1-`|z|)^-1.
+Proof.
+  move=> ltz1.
+  rewrite -(cvg_lim _ (geometric_cvg_inv ltz1)) // -lim_norm.
+    2: by apply: geometric_cvgB.
+  apply: lim_le.
+    1: by apply: is_cvg_norm; apply: geometric_cvgB.
+  near=> n.
+  apply: le_trans. 
+    1: apply: normed_series_le.
+  move=> /=; apply: (le_trans (ler_series _ _)).
+  1: move=>?; rewrite mul1r; apply: normBmul_le_n.
+  exact 1.
+  under [x in series x]funext=>m. 
+    rewrite -[`|_| ^ _]mul1r. 
+    have -> :1 * `|z| ^ m = geometric 1 `|z| m by [].
+  over.
+  apply: le_trans.
+    - apply: nondecreasing_cvg_le.
+      2: by apply: is_cvg_geometric_series; rewrite normrE.
+      1: admit.
+  rewrite -normr_id in ltz1.
+  set F := series _.
+  rewrite (@cvg_lim [topologicalType of R^o] (ltac:(auto)) (F@\oo) _
+    ((1-`|z|)^-1)) //.
+  rewrite /F.
+  apply: geometric_cvg_inv.
+
+
+
+Lemma closed_sup {R : realType} (A : set R^o) :
+  has_sup A -> closed A -> A (sup A).
+Proof.
+  move=> supA cA.
+  case aIn :`[<A(sup A)>]; move/asboolP: aIn=> // notA.
+  have mkx: (forall n, {u : R^o | `|u - sup A| < harmonic n /\ A u}). {
+    move=> n.
+    pose proof sup_adherent supA  (harmonic_gt0 n) as Q.
+    move: Q =>/exists2P/cid [x [Ax xl]].
+    exists x; split=>//.
+    rewrite ltr_subl_addl addrC in xl.
+    rewrite distrC gtr0_norm ?ltr_subl_addl // subr_gt0.
+    apply: sup_ub_strict => //=.
+    by exists (sup A); apply: sup_upper_bound.
+  }
+  set f := fun n => projT1 (mkx n).
+  have cvgf : (f @ \oo --> (sup A : R^o)). {
+    apply/cvg_distP => eps pos.
+    move /cvg_dist: (@cvg_harmonic R)=> /(_ eps pos) [n _ /= N].
+    exists (n) => // m /= m_large.
+    apply: lt_trans.
+      2: by apply: (N (m)) => /=. 
+    rewrite /f distrC sub0r normrE [x in _ < x]ger0_norm.
+      2: by apply: harmonic_ge0.
+    by generalize (mkx m)=> [[/= x [+ Ax]]].
+  }
+  apply: (@closed_seq [topologicalType of R^o] f) => //=.
+  near=> n.
+  by rewrite /f; generalize (mkx n)=> [[/= x [+ Ax]]].
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma opprl_eq {R: ringType} (x y : R) : -x = y <-> x = -y .
+Proof.
+  rewrite -[q in -_ = q]opprK; split.
+  - by move=> /oppr_inj.
+  - by move=>?; congr (- _).
+Qed.
+
+Lemma closed_inf {R : realType} (A : set R^o) :
+  has_inf A -> closed A -> A (inf A).
+Proof.
+  rewrite has_inf_supN /inf => supNA /closedN cNA.
+  by move: (closed_sup supNA cNA) => [q Aq /opprl_eq <-].
+Qed.
+
+Definition cpt_within {U : topologicalType} (A : set U) :=
+  [set B | B `<=` A /\ compact B].
+
+Lemma closed_min_dist 
+  {R : realType} {U : normedModType R} (A : set U) z :
+  compact A ->
+  ~ A z ->
+  exists d, d > 0 /\ {in A, forall x, d <= `|z - x|  }.
+Proof.
+  case uA: `[<(A = set0)>];move:uA=> /asboolP. {
+    move=> -> ? ?; exists 1; split => // ? set0x.
+    by rewrite in_setE in set0x.
+  }
+  move=> /eqP/set0P [a Aa] cA nzA.
+  pose f := fun (x : U) => `|z - x|.
+  exists (inf (f @` A) ); split.
+  - have fAinf : has_inf (f @` A). {
+      have [M [Mreal imfltM]]: bounded_set (f @` A : set R^o). {
+        apply/compact_bounded/continuous_compact=> //. 
+        move => ? ?; rewrite /f; apply: cvg_comp.
+        2: by apply: norm_continuous.
+        by apply: cvgD;[apply: cvg_cst| apply: cvgN; apply: cvg_id].
+      }
+      split => //. 
+        1: by eexists; eexists; eauto.
+      exists (- (M + 1)); apply/lbP => y /imfltM yleM.
+      move: yleM => /(_ (M+1)) /= yleM.
+      apply lerNnormlW; apply yleM.
+      by rewrite (ltr_addl).
+    }
+    pose Q := closed_inf fAinf.
+    destruct Q.
+      apply: compact_closed => //; apply: continuous_compact => //.
+      move => ? ?; rewrite /f; apply: cvg_comp.
+      2: by apply: norm_continuous.
+    by apply: cvgD;[apply: cvg_cst| apply: cvgN; apply: cvg_id].
+    rewrite -H0 /f normr_gt0 subr_eq add0r.
+    by apply/eqP => ?; subst.
+  - move => x Ax. 
+    apply inf_lb.
+      2: by rewrite /f; exists x=>//; rewrite -in_setE. 
+    by exists 0 => y [y' _] <-; apply normrE.
+Qed.
+
+Lemma fmap_comp {U V W} (g : V -> W) (f : U -> V) (F : set (set (U))) :
+  g @ (f @ F) = (g\o f) @ F.
+Proof.
+  by rewrite eqEsubset; split => P; rewrite /fmap /= /nbhs /=.
+Qed.
+
+Lemma geometric_diff {R : unitRingType} (z:R) n :
+  (1-z) \is a GRing.unit -> 
+  (1-z)^-1 - series (geometric 1 z) n = (geometric 1 z n)/(1-z).
+Proof.
+  move=> zU; elim: n => /=.
+    1: by rewrite ?mul1r seriesEord /= big_ord0 subr0.
+  move=> n IH; rewrite seriesSr opprD addrA IH /= ?mul1r -[x in _ - x]mulr1 -mulrBr. 
+  have L : (1 = (1-z)/(1-z)) by rewrite divrr.
+  by rewrite [x in _^-1 - x]L -[x in x - _]mul1r -mulrBl mulrA subKr exprSr. 
+Qed.
+
+Lemma geometric_uniform_cvg
+  {R : realType} {V : unitalBanachAlgType R} :
+  (fun n (z:V) => series(geometric 1 z) n) @ \oo 
+    ~(cpt_within (ball (0:V) 1))~> 
+  (fun z:V => (1-z)^-1).
+Proof.
+  rewrite ?cvg_sup => [[A [AsubB1 cptA]]].
+  set F := (x in x --> _).
+  set f := (y in _ --> y).
+  apply (@cvg_restrict_dep V _ A _ F).
+    1: by apply fmap_filter; apply: eventually_filter.
+  rewrite /F fmap_comp.
+  apply/cvg_ballPpos=> eps; rewrite near_map.
+  have Anot1 : ~ (A 1). {
+    move/subsetC : AsubB1; apply.
+    rewrite /= -ball_normE /setC /= sub0r normrE normB1 ?ltrr //.
+    by exact 1.
+  }
+  have [d [dpos dmin]] := (closed_min_dist cptA Anot1).
+  near=> n.
+  rewrite /ball /= /fct_ball => [[t p]].
+  rewrite /restrict_dep /= -ball_normE /f /=.
+  (* now i have the tail of the sequence. It'll be bounded by some
+     series related to d*)
+  move/asboolP: p => p.
+  rewrite geometric_diff. 2:{
+    apply: norm_lt_1_unit; rewrite -normrN -sub0r.
+    by move/(_ t p): AsubB1; rewrite -ball_normE /=.
+  }
+  apply: (le_lt_trans (normBmul_le _ _)). 
+  have: ( `|(1-t)^-1| <= 1/d ). {
+    rewrite -in_setE in p.
+    move/(_ )
+  }
+
 
 Section sequences_of_extended_real_numbers.
 

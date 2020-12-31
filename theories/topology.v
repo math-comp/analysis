@@ -4684,11 +4684,11 @@ Notation "F '~ptws~>' f" :=
 
 Lemma ptws_uniform_cvg 
     {U : choiceType} {V : uniformType} (f : U -> V)
-    (F : filter_on(U -> V)) :
+    (F : set (set (U -> V))) :
+  Filter F ->
   (F ~~> f) -> (F ~ptws~> f).
 Proof.
-  rewrite cvg_sup.
-  move=> W i.
+  move => FF; rewrite cvg_sup => W i.
   rewrite cvg_image.
   - move => C /=.
     rewrite -nbhs_entourageE nbhs_filterE; case=> B eB BsubC.
@@ -4736,7 +4736,8 @@ Proof.
     by [].
 Qed.
     
-Lemma explode_restrict (F : filter_on(U -> V))  P: 
+Lemma explode_restrict (F : set(set(U -> V)))  P: 
+  Filter F ->
   explode_set A P = [set a | (restrict_dep @` P) (restrict_dep a)].
 Proof.
   rewrite eqEsubset; split => f /=.
@@ -4746,16 +4747,18 @@ Proof.
   - move=> [g Pg /eq_on_restrict_dep] ?.
     by exists g.
 Qed.
-Lemma cvg_restrict_dep (f : U -> V) (F : filter_on (U -> V)) :
+
+Lemma cvg_restrict_dep (f : U -> V) (F : set (set(U -> V))) :
+  Filter F ->
   (F ~~>_(A) f) <-> (restrict_dep @ F ~~> (restrict_dep f)).
 Proof.
-  split.
+  move=> FF; split.
   - move=> cvgF P' /= [I' [B eB BsubI'] I'subP'].
     apply: (filterS I'subP').
     apply: cvgF => /=.
     rewrite /nbhs /= /restricted_nbhs_filter /= /restricted /=.
     exists ([set g | forall t :U, B (f t, g t) ]).
-    rewrite explode_restrict => //=.
+    rewrite (explode_restrict _ FF) => //=.
     split.
       1: exists [set fg | forall t, B(fg.1 t, fg.2 t)] => //=.
       1: by exists B.
@@ -4764,7 +4767,7 @@ Proof.
     by case=> /= u /asboolP Au; rewrite -eq_on ?in_setE.
   - move=> rcvgF P [/= Q [[I [B eB BsubI] IsubQ] QsubP]].
     apply: (filterS QsubP).
-    rewrite explode_restrict //.
+    rewrite (explode_restrict _ FF) //.
     apply: rcvgF => /=.
     apply (@image_subset _ _ restrict_dep) in IsubQ.
     apply: (filterS IsubQ) => /=.
@@ -4875,11 +4878,12 @@ Qed.
 
 Lemma cvg_restricted_setT 
     (f : U -> V) 
-    (F : filter_on (U -> V)) :
+    (F : set (set (U -> V))) :
+  Filter F ->
   (F ~~>_(setT) f) = (F ~~> f).
 Proof.
   rewrite /restrict_fun /cvg_to /= /filter_of {1}/nbhs /=
-    /restricted_nbhs_filter /restricted /=.
+    /restricted_nbhs_filter /restricted /= => FF.
   apply:propext; split.
   - move=> ?. 
     apply: subset_trans.
@@ -4944,13 +4948,14 @@ Qed.
 
 Lemma cvg_restrictedU 
     (f : U -> V) 
-    (F : filter_on (U -> V))
+    (F : set(set(U -> V)))
     A B :
+  Filter F ->
   (F ~~>_(A) f) ->
   (F ~~>_(B) f) ->
   (F ~~>_(A `|` B) f).
 Proof.
-  move=> X Y Q /= [Q' [/= [I [C eB S] /explode_set_monotone S1] M]].
+  move=> FF X Y Q /= [Q' [/= [I [C eB S] /explode_set_monotone S1] M]].
   apply: (filterS M); apply: (filterS (S1 _)).
   apply: (filterS (explode_rhs_subset _ _)); eauto.
   rewrite explode_pairsU //=.
@@ -4964,10 +4969,10 @@ Proof.
   1,2: by exists [set fg | (forall t:U, C (fg.1 t, fg.2 t))]; [exists C |].
 Qed.
 
-Lemma cvg_restricted_set0 (F : filter_on (U -> V)) (f: U -> V) :
-  F ~~>_(set0) f.
+Lemma cvg_restricted_set0 (F : set(set(U -> V))) (f: U -> V) :
+  Filter F -> F ~~>_(set0) f.
 Proof.
-  move=> P /= [P' [/= [I L1 L2] R]].
+  move=> FF P /= [P' [/= [I L1 L2] R]].
   suff ->: (P = setT) by apply filterT.
   rewrite eqEsubset; split => //=.
   apply: (subset_trans _ R) => g _; exists f.
@@ -4987,17 +4992,18 @@ Definition family_cvg_topologicalType
   @sup_topologicalType _ (sigT fam)
   (fun k => Topological.class (@restricted_uniformType _ V (projT1 k))).
 
-Notation "F ~ famA ~> f" := 
+Local Notation "F ~ famA ~> f" := 
   (F --> (f : family_cvg_topologicalType famA)) (at level 100).
 
 Lemma family_cvg_subset 
     (famA famB : (set U) -> Prop)
-    (F : filter_on(U -> V)) (f : U -> V ) :
+    (F : set(set(U -> V))) (f : U -> V ) :
+  Filter F ->
   famA `<=` famB -> 
   (F ~famB~> f) ->
   (F ~famA~> f).
 Proof.
-  move=> S.
+  move=> FF S.
   rewrite ?cvg_sup => L [? ?].
   by apply: (L (existT _ _ (S _ _))). 
 Qed.
@@ -5020,7 +5026,8 @@ Qed.
 
 Lemma family_cvg_finite_covers  
     (famA famB : (set U) -> Prop)
-    (F : filter_on(U -> V)) (f : U -> V ) :
+    (F : set (set (U -> V))) (f : U -> V ) :
+  Filter F ->
   (forall P, famA P -> 
     exists (I : choiceType) f , 
     (forall i, famB (f i )) /\ @finCover I f P) ->
@@ -5028,7 +5035,7 @@ Lemma family_cvg_finite_covers
   (F ~famA~> f)
 .
 Proof.
-  move=> C .
+  move=> FF C .
   rewrite ?cvg_sup => B [P PA].
   move: C => /(_ P PA) [R [g [g_famB CgP]]].
   have -> : (projT1 (existT famA P PA) = P) by [].
@@ -5052,4 +5059,5 @@ Qed.
 
 End RestrictedFamilies.
 
-
+Notation "F ~ famA ~> f" := 
+  (F --> (f : family_cvg_topologicalType famA)) (at level 100).

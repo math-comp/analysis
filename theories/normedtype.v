@@ -2392,7 +2392,7 @@ Export UnitalBanachAlgebra.Exports.
 Section banach_algebra_lemmas.
 Context {K : numFieldType} {V : unitalBanachAlgType K}.
 
-Lemma normB1 (x : V) : `|(1:V)| = 1.
+Lemma normB1 : `|(1:V)| = 1.
 Proof.
   move: V => [? [] ? ? ? ? ? [/= ? +]].
   by rewrite /banach_alg_ax2 /= => ->.
@@ -2402,6 +2402,19 @@ Lemma normBmul_le (x y: V) : `|x * y| <= `|x| * `|y|.
 Proof.
   move: V x y => [? [] ? ? ? ? ? [/= ? +]].
   by rewrite /banach_alg_ax1 /=.
+Qed.
+
+Lemma normBinvr (x : V) : x \is a GRing.unit -> `|x|^-1 <= `|x^-1|.
+Proof.
+  move=> xU; rewrite -[x in x<= _]mul1r -[x in _<=x]mulr1.
+  have nxU : `|x| \is a GRing.unit.
+    rewrite unitfE; apply/eqP=> /normr0P/eqP ?; subst.
+    by rewrite unitr0 in xU.
+  rewrite -{2}(divrr nxU) mulrA.
+  apply: ler_pmul => //=.
+    1: by rewrite invr_ge0 normrE.
+  apply: le_trans (normBmul_le _ _).
+  by rewrite  mulVr // ?normB1.
 Qed.
 
 Lemma normBmul_le_n (n : nat) (x y: V) : `|x ^+n | <= `|x| ^n.
@@ -2487,6 +2500,58 @@ Proof.
     by apply PF.
     by apply: norm_continuous.
     by apply: continuous_BM.
+Qed.
+
+Definition spectrum (v : V) := 
+  [set k : K^o | ~ (v - k*: 1) \is a GRing.unit ].
+
+Lemma spectrum_0_unitP (v : V) : 
+  spectrum v 0 <-> ~ v \is a GRing.unit.
+Proof.
+  by rewrite /spectrum /= scale0r subr0. 
+Qed.
+
+Lemma spectrum_0 : spectrum 0 = [set 0].
+Proof.
+  rewrite eqEsubset /spectrum; split=> n /=; rewrite sub0r unitrN.
+  - case n0: (n == 0).
+      1: by move/eqP: n0.
+    rewrite scaler_unit.
+      1: by rewrite unitr1.
+    rewrite unitfE.
+    apply/eqP.
+    by move/eqP: n0.
+  - by move=> ->; rewrite scale0r unitr0.
+Qed.
+
+Lemma spectrum_1 : spectrum 1 = [set 1].
+  rewrite eqEsubset /spectrum; split=> n /=; rewrite -[x in x - _]scale1r -scalerBl.
+  - case n0: (1-n == 0).
+      1: by move/eqP: n0 => /subr0_eq ->. 
+    rewrite scaler_unit.
+      1: by rewrite unitr1.
+    rewrite unitfE; apply/eqP.
+    by move/eqP: n0.
+  - by move=> ->; rewrite subrr scale0r unitr0.
+Qed.
+
+(* Note: need this k!=0 condition when spectrum v is empty
+   but spectrum_0 governs that anyway.*)
+
+Lemma unit_spectrum_scale (v : V) (k : K^o): 
+  k != 0 ->
+  spectrum (k *: v) = (fun lam => k * lam) @` spectrum v.
+Proof.
+  rewrite eqEsubset; split=> lam; rewrite /spectrum /=.
+  - move=> kv_l1_NU.
+    have klam: (k * (lam/k) = lam) by rewrite mulrC -mulrA mulVf ?mulr1.
+    exists (lam/k) => //=.
+    have kU: (k \is a GRing.unit) by rewrite unitfE .
+    pose Q := (@scaler_unit K V k _ kU).
+    by rewrite -Q scalerBr scalerA klam.
+  - move=> [/= y vyU <-].
+    rewrite -scalerA -scalerBr scaler_unit //.
+    by rewrite unitfE.
 Qed.
 
 End banach_algebra_lemmas.
