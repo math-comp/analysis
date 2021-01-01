@@ -1155,6 +1155,7 @@ Proof.
       1: by apply normr_ge0.
       by rewrite in_setE; eauto.
   }
+  pose proof d_le_1 as d_le_1'.
   near=> n.
   rewrite /ball /= /fct_ball => [[t p]].
   rewrite /restrict_dep /= -ball_normE /f /=.
@@ -1172,8 +1173,15 @@ Proof.
     apply: le_trans.
       1: by apply: geometric_norm_bound; apply: A_lt_1.
     rewrite (@ler_pinv R (1-`|t|) (1-d) ).
-      2,3: admit.
     by apply: ler_sub =>//; apply: unif_le_d; rewrite in_setE.
+    1,2: apply/andP; rewrite unitfE; split.
+    - apply/eqP =>/subr0_eq Q.
+      rewrite Q in A_lt_1.
+      by move/(_ t p): A_lt_1; rewrite ltrr.
+    - by rewrite subr_cp0; apply A_lt_1.
+    - apply/eqP =>/subr0_eq Q; subst.
+      by move:d_le_1; rewrite ltrr.
+    - by rewrite subr_cp0.
   }
   apply: le_lt_trans. {
     eapply (ler_pmul (y1 := d ^+ n)).
@@ -1181,16 +1189,22 @@ Proof.
       1: by rewrite invr_ge0 subr_cp0 ltrW.
     apply: le_trans.
       1: by rewrite /= mul1r; apply: normBmul_le_n.
-    apply: ler_expn2r.
-      1,2: admit.
+    apply: ler_expn2r => //.
+      1: by apply normr_ge0.
     by apply: unif_le_d; rewrite in_setE.
   }
   rewrite ltr_pdivr_mulr ?subr_cp0 //. 
+  set dn := (x in x < _).
+  have <-: `|dn| = dn by 
+    apply/normr_idP; rewrite /dn; apply: exprn_ge0.
+  rewrite -[dn] mul1r -normrN -sub0r {}/dn.
   near: n.
-  have exp_cvg := @cvg_expr_B R R d.
-  have geo_cvg := cvg_geometric 1 .
-
-
+  have normd : `|d| < 1. by move/normr_idP:dpos=> ->.
+  have geo_cvg := @cvg_geometric R 1 d normd.
+  rewrite /filter_of {1}/nbhs /= in geo_cvg.
+  move/cvg_distP/(_ ((eps%:num * (1-d)))): geo_cvg => /=.
+  by apply; apply: mulr_gt0 => //; rewrite subr_cp0.
+Grab Existential Variables. end_near. Qed.
 
 Section sequences_of_extended_real_numbers.
 

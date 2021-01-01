@@ -2604,6 +2604,7 @@ End real_banach.
 
 Canonical realType_unitalBanachAlgebraType.
 
+
 Section matrix_banach.
 Context {R: realType}.
 Variable (n : nat).
