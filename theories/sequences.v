@@ -981,6 +981,7 @@ Lemma geometric_cvg_inv
   (series (geometric 1 z)) --> (1-z)^-1.
 Proof.
   move=>?.
+  Unset Printing Notations.
   suff <-: ( lim (series(geometric 1 z)) = (1-z)^-1)
     by apply: geometric_cvgB.
   apply: mulrI.
@@ -1012,15 +1013,15 @@ Proof.
   apply: le_trans.
     - apply: nondecreasing_cvg_le.
       2: by apply: is_cvg_geometric_series; rewrite normrE.
-      1: admit.
+      apply: nondecreasing_seqP=> m.
+      by rewrite seriesS ler_addr /= mul1r exprn_ge0.
   rewrite -normr_id in ltz1.
   set F := series _.
   rewrite (@cvg_lim [topologicalType of R^o] (ltac:(auto)) (F@\oo) _
     ((1-`|z|)^-1)) //.
-  rewrite /F.
-  apply: geometric_cvg_inv.
-
-
+  move: (@cvg_geometric_series R 1 `|z| ltz1).
+  by rewrite mul1r. 
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma closed_sup {R : realType} (A : set R^o) :
   has_sup A -> closed A -> A (sup A).
@@ -1070,45 +1071,37 @@ Qed.
 Definition cpt_within {U : topologicalType} (A : set U) :=
   [set B | B `<=` A /\ compact B].
 
-Lemma closed_min_dist 
-  {R : realType} {U : normedModType R} (A : set U) z :
+Lemma closed_strict_ub 
+  {R : realType} {U : normedModType R} (A : set U) (f : U -> R^o) m:
+  {in A, continuous f} ->
   compact A ->
-  ~ A z ->
-  exists d, d > 0 /\ {in A, forall x, d <= `|z - x|  }.
+  {in A, forall x, f x < m} ->
+  exists d, d < m /\ {in A, forall x, f x <= d  }.
 Proof.
   case uA: `[<(A = set0)>];move:uA=> /asboolP. {
-    move=> -> ? ?; exists 1; split => // ? set0x.
-    by rewrite in_setE in set0x.
+    move=> -> ? ?; exists (m-1); split => /=.
+    - by rewrite ltr_subl_addr ltr_addl.
+    - by move=> ? set0x; rewrite in_setE in set0x.
   }
   move=> /eqP/set0P [a Aa] cA nzA.
-  pose f := fun (x : U) => `|z - x|.
-  exists (inf (f @` A) ); split.
-  - have fAinf : has_inf (f @` A). {
-      have [M [Mreal imfltM]]: bounded_set (f @` A : set R^o). {
-        apply/compact_bounded/continuous_compact=> //. 
-        move => ? ?; rewrite /f; apply: cvg_comp.
-        2: by apply: norm_continuous.
-        by apply: cvgD;[apply: cvg_cst| apply: cvgN; apply: cvg_id].
-      }
+  exists (sup (f @` A) ); split.
+  - have fAsup: has_sup (f @` A). {
+      have [M [Mreal imfltM]]: bounded_set (f @` A : set R^o) by
+        apply/compact_bounded/continuous_compact. 
       split => //. 
         1: by eexists; eexists; eauto.
-      exists (- (M + 1)); apply/lbP => y /imfltM yleM.
+      exists (M + 1); apply/ubP => y /imfltM yleM.
       move: yleM => /(_ (M+1)) /= yleM.
-      apply lerNnormlW; apply yleM.
+      apply ler_normlW; apply yleM.
       by rewrite (ltr_addl).
     }
-    pose Q := closed_inf fAinf.
-    destruct Q.
+    case: (closed_sup fAsup).
       apply: compact_closed => //; apply: continuous_compact => //.
-      move => ? ?; rewrite /f; apply: cvg_comp.
-      2: by apply: norm_continuous.
-    by apply: cvgD;[apply: cvg_cst| apply: cvgN; apply: cvg_id].
-    rewrite -H0 /f normr_gt0 subr_eq add0r.
-    by apply/eqP => ?; subst.
+      by move => ? ? <-; apply H; rewrite in_setE.
   - move => x Ax. 
-    apply inf_lb.
-      2: by rewrite /f; exists x=>//; rewrite -in_setE. 
-    by exists 0 => y [y' _] <-; apply normrE.
+    apply sup_ub.
+      2: by exists x=>//; rewrite -in_setE. 
+    by exists m => y [y' _] <-; apply normrE.
 Qed.
 
 Lemma fmap_comp {U V W} (g : V -> W) (f : U -> V) (F : set (set (U))) :
