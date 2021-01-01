@@ -1101,7 +1101,8 @@ Proof.
   - move => x Ax. 
     apply sup_ub.
       2: by exists x=>//; rewrite -in_setE. 
-    by exists m => y [y' _] <-; apply normrE.
+    exists m => y [y' ?] <-; apply: ltrW. 
+    by apply: H; rewrite in_setE.
 Qed.
 
 Lemma fmap_comp {U V W} (g : V -> W) (f : U -> V) (F : set (set (U))) :
@@ -1128,18 +1129,32 @@ Lemma geometric_uniform_cvg
   (fun z:V => (1-z)^-1).
 Proof.
   rewrite ?cvg_sup => [[A [AsubB1 cptA]]].
+  case uA: `[<(A = set0)>];move:uA=> /asboolP. {
+    Unset Printing Notations.
+    set a' := projT1 _.
+    have -> : a' = A by [].
+    by move=> ->; apply: cvg_restricted_set0.
+  }
+  move/eqP/set0P=> [a' Aa'].
   set F := (x in x --> _).
   set f := (y in _ --> y).
   apply (@cvg_restrict_dep V _ A _ F).
     1: by apply fmap_filter; apply: eventually_filter.
   rewrite /F fmap_comp.
   apply/cvg_ballPpos=> eps; rewrite near_map.
-  have Anot1 : ~ (A 1). {
-    move/subsetC : AsubB1; apply.
-    rewrite /= -ball_normE /setC /= sub0r normrE normB1 ?ltrr //.
-    by exact 1.
+  have A_lt_1 : (forall t, A t -> `|t| < 1) by
+    move=> x => /AsubB1; rewrite -ball_normE /= sub0r normrN /=.
+  have := (@closed_strict_ub _ _ A (normr) 1 _ cptA).
+  case.
+    1: by move=>??; apply: norm_continuous.
+    1: by move=> x; rewrite in_setE; apply A_lt_1. 
+  move=> d [d_le_1 unif_le_d].
+  have dpos: 0 <= d. {
+    apply: le_trans.
+      2: apply unif_le_d.
+      1: by apply normr_ge0.
+      by rewrite in_setE; eauto.
   }
-  have [d [dpos dmin]] := (closed_min_dist cptA Anot1).
   near=> n.
   rewrite /ball /= /fct_ball => [[t p]].
   rewrite /restrict_dep /= -ball_normE /f /=.
@@ -1151,10 +1166,30 @@ Proof.
     by move/(_ t p): AsubB1; rewrite -ball_normE /=.
   }
   apply: (le_lt_trans (normBmul_le _ _)). 
-  have: ( `|(1-t)^-1| <= 1/d ). {
-    rewrite -in_setE in p.
-    move/(_ )
+  apply: le_lt_trans. {
+    eapply (ler_pmul (y2 := (1-d)^-1)).
+      1,2,3: by eauto.
+    apply: le_trans.
+      1: by apply: geometric_norm_bound; apply: A_lt_1.
+    rewrite (@ler_pinv R (1-`|t|) (1-d) ).
+      2,3: admit.
+    by apply: ler_sub =>//; apply: unif_le_d; rewrite in_setE.
   }
+  apply: le_lt_trans. {
+    eapply (ler_pmul (y1 := d ^+ n)).
+      1,4: by eauto.
+      1: by rewrite invr_ge0 subr_cp0 ltrW.
+    apply: le_trans.
+      1: by rewrite /= mul1r; apply: normBmul_le_n.
+    apply: ler_expn2r.
+      1,2: admit.
+    by apply: unif_le_d; rewrite in_setE.
+  }
+  rewrite ltr_pdivr_mulr ?subr_cp0 //. 
+  near: n.
+  have exp_cvg := @cvg_expr_B R R d.
+  have geo_cvg := cvg_geometric 1 .
+
 
 
 Section sequences_of_extended_real_numbers.
