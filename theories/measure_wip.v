@@ -747,27 +747,16 @@ Definition equality_mixin_of_Type (T : Type) : Equality.mixin_of T :=
 Definition choice_of_Type (T : Type) : choiceType :=
   Choice.Pack (Choice.Class (equality_mixin_of_Type T) boolp.gen_choiceMixin).
 
+Definition set_of_itv (R : numDomainType) (i : interval R) : set R :=
+  [set x | x \in i].
+Arguments set_of_itv {R}.
+
 Section real_measure.
 Variable R : realType.
 
-Definition set_of_interval (i : interval R) : set R :=
-  match i with
-  | `]a, b[ => [set x | a < x < b]
-  | `[a, b] => [set x | a <= x <= b]
-  | `]a, b] => [set x | a < x <= b]
-  | `[a, b[ => [set x | a <= x < b]
-  | `]-oo, b[ => [set x | x < b]
-  | `]-oo, b] => [set x | x <= b]
-  | `]-oo, +oo[ => setT
-  | `]a, +oo[ => [set x | a < x]
-  | `[a, +oo[ => [set x | a <= x]
-  | Interval _ -oo%O => set0
-  | Interval +oo%O _ => set0
-  end.
-
 (* finite union of intervals *)
 Definition fint : Type := {fset (choice_of_Type (interval R))}.
-Definition ufint (x : fint) : set R := \bigcup_(i in [set j | j \in x]) (set_of_interval i).
+Definition ufint (x : fint) : set R := \bigcup_(i in [set j | j \in x]) (set_of_itv i).
 
 Ltac Obligation Tactic := idtac.
 Program Definition interval_isRingOfSets : isRingOfSets R :=
@@ -819,7 +808,7 @@ Qed.
 Definition countable_cover (A : set R) : set ((interval R) ^nat) :=
   [set u_ | exists (a_ : R ^nat), exists (b_ : R ^nat),
     [/\ (forall n, (a_ n <= b_ n)),
-       (A `<=` \bigcup_n (set_of_interval `] (a_ n), (b_ n) [ )) &
+       (A `<=` \bigcup_n (set_of_itv `] (a_ n), (b_ n) [ )) &
        (u_ = fun n => `] (a_ n), (b_ n) [)] ].
 
 Definition lstar (A : set R) := ereal_inf
