@@ -21,7 +21,6 @@ From HB Require Import structures.
 (*                                                                            *)
 (******************************************************************************)
 
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -741,21 +740,594 @@ End Hahn.
 
 From mathcomp Require Import interval.
 
-(* NB: from infotheo *)
-Definition equality_mixin_of_Type (T : Type) : Equality.mixin_of T :=
-  EqMixin (fun x y : T => boolp.asboolP (x = y)).
-Definition choice_of_Type (T : Type) : choiceType :=
-  Choice.Pack (Choice.Class (equality_mixin_of_Type T) boolp.gen_choiceMixin).
+(* WIP *)
+Lemma bigcup_cons {T : choiceType} U (h : T) t (f : T -> set U) :
+  \bigcup_(i in [set i | i \in h :: t]) (f i) =
+  f h `|` \bigcup_(i in [set i | i \in t]) (f i).
+Proof.
+rewrite predeqE => u; split.
+- move=> [i]; rewrite /mkset inE => /orP[/eqP-> fhu|it fiu];
+    by [left|right; exists i].
+- case=> [fhu|]; first by exists h => //; rewrite /mkset mem_head.
+  by move=> [i it fiu]; exists i => //; rewrite /mkset inE it orbT.
+Qed.
 
-Definition set_of_itv (R : numDomainType) (i : interval R) : set R :=
-  [set x | x \in i].
+Lemma bigcup_nil {T : choiceType} U (f : T -> set U) :
+  \bigcup_(i in [set i | i \in [::]]) (f i) = set0.
+Proof. by rewrite predeqE => u; split => // -[t]; rewrite /mkset in_nil. Qed.
+
+Lemma subset_has_lbound (R : numDomainType) (A B : set R) : A `<=` B ->
+  has_lbound B -> has_lbound A.
+Proof. by move=> AB [l Bl]; exists l => a Aa; apply/Bl/AB. Qed.
+
+Lemma subset_has_ubound (R : numDomainType) (A B : set R) : A `<=` B ->
+  has_ubound B -> has_ubound A.
+Proof.
+by move=> AB [l Bl]; exists l => a Aa; apply/Bl/AB. (*NB: use has_lb_ubN ?*)
+Qed.
+
+Lemma sup_setU (R : realType) (A B : set R) : has_sup B ->
+  (forall a b, A a -> B b -> a <= b) -> sup (A `|` B) = sup B.
+Proof.
+move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
+- apply sup_le_ub => [|x [Ax|]]; first by apply: subset_nonempty B0 => ?; right.
+  by case: B0 => b Bb; rewrite (le_trans (AB _ _ Ax Bb)) // sup_ub //; exists l.
+- by move=> Bx; rewrite sup_ub //; exists l.
+- apply sup_le_ub => // b Bb; apply sup_ub; last by right.
+  by exists l => x [Ax|Bx]; [rewrite (le_trans (AB _ _ Ax Bb)) // Bl|exact: Bl].
+Qed.
+
+Lemma inf_setU (R : realType) (A B : set R) : has_inf A ->
+  (forall a b, A a -> B b -> a <= b) -> inf (A `|` B) = inf A.
+Proof.
+move=> hiA AB; congr (- _).
+rewrite image_setU setUC sup_setU //; first exact/has_inf_supN.
+by move=> _ _ [] b Bb <-{} [] a Aa <-{}; rewrite ler_oppl opprK; apply AB.
+Qed.
+
+Lemma le_pinfty_eq (R : numDomainType) (x : itv_bound R) : (+oo <= x)%O = (x == +oo)%O.
+Proof. by move: x => [[]|[]]. Qed.
+
+Lemma itv_bound_meet_minfty (R : realDomainType) (i : itv_bound R) : (i `&` -oo = -oo)%O.
+Proof. by rewrite meetEtotal /= minElt ifF //; case: i => [[]i|[]]. Qed.
+
+Lemma itv_bound_minfty_meet (R : realDomainType) (i : itv_bound R) : (-oo `&` i = -oo)%O.
+Proof. by rewrite meetC itv_bound_meet_minfty. Qed.
+
+Lemma itv_bound_join_pinfty (R : realDomainType) (i : itv_bound R) : (+oo `|` i = +oo)%O.
+Proof. by rewrite joinEtotal /= maxElt (@ifF _ (+oo < i)%O). Qed.
+
+Lemma itv_bound_pinfty_join (R : realDomainType) (i : itv_bound R) : (i `|` +oo = +oo)%O.
+Proof. by rewrite joinC itv_bound_join_pinfty. Qed.
+
+Definition itv_join_meet := (itv_bound_meet_minfty, itv_bound_minfty_meet,
+  itv_bound_join_pinfty, itv_bound_pinfty_join).
+
+Lemma itv_meet_minfty_open (R : realDomainType) (i1 i2 : itv_bound R) (j1 : R) :
+  itv_meet (Interval i1 i2) `]-oo, j1[ = Interval i1 (i2 `&` (BLeft j1))%O.
+Proof. by move: i1 i2 => [? i1|[]] ?. Qed.
+
+Lemma itv_meet_minfty_closed (R : realDomainType) (i1 i2 : itv_bound R) (j1 : R) :
+  itv_meet (Interval i1 i2) `]-oo, j1] = Interval i1 (i2 `&` (BRight j1))%O.
+Proof. by move: i1 i2 => [? i1|[]] ?. Qed.
+
+Lemma itv_meet_open_pinfty (R : realDomainType) (i1 i2 : itv_bound R) (j2 : R) :
+  itv_meet (Interval i1 i2) `]j2, +oo[ = (Interval (i1 `|` (BRight j2)) i2)%O.
+Proof. by move: i1 i2 => i1 [? i2|[]]. Qed.
+
+Lemma itv_meet_closed_pinfty (R : realDomainType) (i1 i2 : itv_bound R) (j2 : R) :
+  itv_meet (Interval i1 i2) `[j2, +oo[ = (Interval (i1 `|` (BLeft j2)) i2)%O.
+Proof. by move: i1 i2 => i1 [? i2|[]]. Qed.
+
+Definition itv_meet_infty := (itv_meet_minfty_open, itv_meet_minfty_closed,
+  itv_meet_open_pinfty, itv_meet_closed_pinfty).
+
+Lemma itv_meet_mem (R : realDomainType) (i1 i2 j1 j2 : itv_bound R) (x : R) :
+  x \in itv_meet (Interval i1 i2) (Interval j1 j2) <->
+  x \in Interval i1 i2 /\ x \in Interval j1 j2.
+Proof.
+split.
+  rewrite /= 3!itv_boundlr joinEtotal meetEtotal le_maxl le_minr.
+  by move=> /andP[/andP[-> ->] /andP[-> ->]].
+case; rewrite 2!itv_boundlr => /andP[i1x xi2] /andP[j1x xj2].
+by rewrite /= itv_boundlr joinEtotal meetEtotal le_maxl le_minr i1x j1x xj2 xi2.
+Qed.
+
+Section set_of_itv.
+Variable (R : numDomainType).
+Implicit Type i j : interval R.
+
+Definition set_of_itv i : set R := [set x | x \in i].
+
+Lemma is_interval_set_of_itv i : is_interval (set_of_itv i).
+Proof. exact: interval_is_interval. Qed.
+
+Lemma set_of_itv_mem i x : (set_of_itv i) x <-> x \in i.
+Proof. by move: i => [[[]i1|[]] [[]i2|[]]]. Qed.
+
+Lemma itv_set_of_itv_subset i j : {subset i <= j} <-> set_of_itv i `<=` set_of_itv j.
+Proof. by move: i j => [[[] ?|[]] [[] ?|[]]] [[[] ?|[]] [[] ?|[]]]. Qed.
+
+Lemma set_of_itv_empty_set0 (i1 i2 : itv_bound R) :
+  ~~ (i1 < i2)%O -> set_of_itv (Interval i1 i2) = set0.
+Proof.
+move/itv_ge => j0; rewrite predeqE /set_of_itv /mkset => r; split => //.
+by rewrite j0.
+Qed.
+
+Lemma set_of_itv_pinfty_set0 (a : itv_bound R) : set_of_itv (Interval +oo%O a) = set0.
+Proof. by rewrite set_of_itv_empty_set0. Qed.
+
+Lemma set_of_itv_minfty_set0 (a : itv_bound R) : set_of_itv (Interval a -oo%O) = set0.
+Proof. rewrite set_of_itv_empty_set0 //=; by case: a => [[]a|[]]. Qed.
+
+Definition set_of_itv_infty_set0 := (set_of_itv_minfty_set0, set_of_itv_pinfty_set0).
+
+Variables (a b : R).
+
+Lemma set_of_itv_open_open : set_of_itv `]a, b[ = (fun x => a < x < b).
+Proof. by []. Qed.
+
+Lemma set_of_itv_closed_closed : set_of_itv `[a, b] = (fun x => a <= x <= b).
+Proof. by []. Qed.
+
+Lemma set_of_itv_open_closed : set_of_itv `]a, b] = (fun x => a < x <= b).
+Proof. by []. Qed.
+
+Lemma set_of_itv_closed_open : set_of_itv `[a, b[ = (fun x => a <= x < b).
+Proof. by []. Qed.
+
+Lemma set_of_itv_minfty_pinfty : set_of_itv `]-oo, +oo[ = setT :> set R.
+Proof. by rewrite predeqE. Qed.
+
+Lemma set_of_itv_open_pinfty : set_of_itv `]a, +oo[ = (fun x => a < x).
+Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv andbT. Qed.
+
+Lemma set_of_itv_closed_pinfty : set_of_itv `[a, +oo[ = (fun x => a <= x).
+Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv andbT. Qed.
+
+Lemma set_of_itv_minfty_open : set_of_itv `]-oo, a[ = (fun x => x < a).
+Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv. Qed.
+
+Lemma set_of_itv_minfty_closed : set_of_itv `]-oo, a] = (fun x => x <= a).
+Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv. Qed.
+
+Definition set_of_itvE := (set_of_itv_open_open, set_of_itv_closed_closed,
+  set_of_itv_open_closed, set_of_itv_closed_open, set_of_itv_minfty_pinfty,
+  set_of_itv_open_pinfty, set_of_itv_closed_pinfty, set_of_itv_minfty_open,
+  set_of_itv_minfty_closed).
+
+Section punctured_interval.
+
+Lemma open_closed_set1 : a < b ->
+  set_of_itv `]a, b] = set_of_itv `]a, b[ `|` [set b].
+Proof.
+move=> ab; rewrite !set_of_itvE predeqE => r; split=>[/andP[ar]|].
+  by rewrite le_eqVlt => /orP[/eqP->|rb]; [by right|left; rewrite ar].
+by case=> [/andP[ar /ltW ->]|->]; [rewrite andbT|rewrite ab lexx].
+Qed.
+
+Lemma closed_open_set1 : a < b ->
+  set_of_itv `[a, b[ = [set a] `|` set_of_itv `]a, b[.
+Proof.
+move=> ab; rewrite !set_of_itvE predeqE => r; split=> [/andP[]|].
+  by rewrite le_eqVlt => /orP[/eqP->|ar rb]; [left|right; rewrite ar].
+by case=> [->|/andP[/ltW -> -> //]]; rewrite lexx.
+Qed.
+
+Lemma closed_closed_set1l : a <= b ->
+  set_of_itv `[a, b] = [set a] `|` set_of_itv `]a, b].
+Proof.
+move=> ab; rewrite !set_of_itvE predeqE => r; split=> [/andP[]|].
+  by rewrite le_eqVlt => /orP[/eqP->|ar rb]; [left|right; rewrite ar].
+by case=> [->|/andP[/ltW -> -> //]]; rewrite lexx.
+Qed.
+
+Lemma closed_closed_set1r : a <= b ->
+  set_of_itv `[a, b] = set_of_itv `[a, b[ `|` [set b].
+Proof.
+move=> ab; rewrite !set_of_itvE predeqE => r; split=> [/andP[ar]|].
+  by rewrite le_eqVlt => /orP[/eqP->|rb]; [right|left; rewrite ar].
+by case=> [/andP[-> /ltW //]|->]; rewrite lexx ab.
+Qed.
+
+Lemma closed_infty_set1 : set_of_itv `[a, +oo[ = [set a] `|` set_of_itv `]a, +oo[.
+Proof.
+rewrite predeqE => r; rewrite !set_of_itvE; split; last by case=> [->//|/ltW].
+by rewrite le_eqVlt => /orP[/eqP ->|ar]; [left|right].
+Qed.
+
+Lemma infty_closed_set1 : set_of_itv `]-oo, a] = set_of_itv `]-oo, a[ `|` [set a].
+Proof.
+rewrite predeqE => r; rewrite !set_of_itvE; split => [|[/ltW //|-> //=]].
+by rewrite le_eqVlt => /orP[/eqP ->|ar]; [right|left].
+Qed.
+
+End punctured_interval.
+
+End set_of_itv.
 Arguments set_of_itv {R}.
+
+Lemma itv_meetE (R : realDomainType) (i j : interval R) :
+  set_of_itv (itv_meet i j) = set_of_itv i `&` set_of_itv j.
+Proof.
+rewrite eqEsubset; split => x; move: i j => [i1 i2] [j1 j2].
+- move/set_of_itv_mem => /=.
+  rewrite itv_boundlr joinEtotal meetEtotal le_maxl le_minr => /andP[/andP[i1x j1x] /andP[xi2 xj2]].
+  by split; apply/set_of_itv_mem; rewrite itv_boundlr ?i1x ?xi2 // j1x xj2.
+- case => /set_of_itv_mem; rewrite itv_boundlr => /andP[i1x xi2] /set_of_itv_mem.
+  rewrite itv_boundlr => /andP[j1x xj2].
+  by apply/set_of_itv_mem; rewrite itv_boundlr joinEtotal meetEtotal le_maxl le_minr i1x xi2 j1x.
+Qed.
+
+Section set_of_itv_numFieldType.
+Variable R : numFieldType.
+
+Lemma set_of_itv_empty_eq0 (a b : itv_bound R) :
+  (set_of_itv (Interval a b) == set0) = ~~ (a < b)%O.
+Proof.
+apply/idP/idP => [/eqP|]; last first.
+  by move/set_of_itv_empty_set0 => ->.
+move: a b => [[]a|[]] [[]b|[]] //=; rewrite !set_of_itvE.
+- by rewrite predeqE => /(_ a); rewrite lexx /= => -[] /negP.
+- by rewrite predeqE => /(_ a); rewrite lexx /= => -[] /negP.
+- by rewrite predeqE => /(_ a); rewrite lexx /= => -[] /negP.
+- move=> i0; apply/negP => ab; move: i0.
+  rewrite predeqE => /(_ ((a + b) / 2)); rewrite !midf_lt //= => -[+ _].
+  exact.
+- by rewrite predeqE => /(_ b); rewrite lexx andbT /= => -[] /negP.
+- by rewrite predeqE => /(_ (a + 1)); rewrite ltr_addl ltr01 => -[] /negP.
+- rewrite predeqE => /(_ (b - 1)); rewrite ltr_subl_addl ltr_addr ltr01.
+  by case => /negP.
+- by rewrite predeqE => /(_ b); rewrite lexx => -[] /negP.
+- by rewrite predeqE => /(_ 0) [+ _]; rewrite falseE; apply.
+Qed.
+
+Lemma set_of_itv_empty_pred0 (i : interval R) :
+  set_of_itv i = set0 <-> i =i pred0.
+Proof.
+move: i => [a b]; split.
+  by move/eqP; rewrite set_of_itv_empty_eq0 => /itv_ge.
+move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?set_of_itvE.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move: ab => /(_ r); rewrite in_itv /= inE ir.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move: ab => /(_ r); rewrite in_itv /= inE ir.
+- move=> ab; rewrite predeqE => r; split => //.
+  by rewrite /set_of_itv /mkset in_itv /= andbF.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move: ab => /(_ r); rewrite in_itv /= inE ir.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move: ab => /(_ r); rewrite in_itv /= inE ir.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move: ab => /(_ r); rewrite in_itv /= inE ir.
+- move=> ab; rewrite predeqE => r; split => //.
+  by rewrite /set_of_itv /mkset in_itv /= andbF.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move: ab => /(_ r); rewrite in_itv /= inE ir.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move: ab => /(_ r); rewrite in_itv /= inE ir.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move: ab => /(_ r); rewrite in_itv /= inE ir.
+- move=> ab; rewrite predeqE => r; split => // ir.
+  by move/(_ 0); rewrite in_itv /= inE.
+- by move=> ?; rewrite predeqE.
+- by move=> ?; rewrite predeqE.
+- by move=> ?; rewrite predeqE.
+- by move=> ?; rewrite predeqE.
+Qed.
+
+End set_of_itv_numFieldType.
+
+Section itv_bound_lteE.
+Variable R : numDomainType.
+
+Lemma BLeft_ltE (a b : R) : (BLeft a < BLeft b)%O = (a < b).
+Proof. by []. Qed.
+Lemma BLeft_BRight_ltE (a b : R) : (BLeft a < BRight b)%O = (a <= b).
+Proof. by []. Qed.
+Lemma BRight_BSide_ltE (a b : R) b' : (BRight a < BSide b' b)%O = (a < b).
+Proof. by case: b'. Qed.
+Lemma BRight_BSide_leE (a b : R) b' : (BLeft a <= BSide b' b)%O = (a <= b).
+Proof. by case: b'. Qed.
+Lemma BRight_BLeft_leE (a b : R) : (BRight a <= BLeft b)%O = (a < b).
+Proof. by []. Qed.
+Lemma BRight_leE (a b : R) : (BRight a <= BRight b)%O = (a <= b).
+Proof. by []. Qed.
+
+Definition itv_bound_lteE := (BLeft_ltE, BLeft_BRight_ltE, BRight_BSide_ltE,
+  BRight_BSide_leE, BRight_BLeft_leE, BRight_leE).
+
+End itv_bound_lteE.
+
+Section interval_has_bound.
+Variable R : numDomainType.
+
+Lemma has_lbound_bounded (x y : R) (b0 b1 : bool) :
+  has_lbound (set_of_itv (Interval (BSide b0 x) (BSide b1 y))).
+Proof. by case: b0; exists x => r /andP[]; rewrite itv_bound_lteE // => /ltW. Qed.
+
+Lemma has_ubound_bounded (x y : R) (b0 b1 : bool) :
+  has_ubound (set_of_itv (Interval (BSide b0 x) (BSide b1 y))).
+Proof. by case: b1; exists y => r /andP[]; rewrite itv_bound_lteE // => _ /ltW. Qed.
+
+Lemma has_lbound_infty (x : R) b : has_lbound (set_of_itv (Interval (BSide b x) +oo%O)).
+Proof. by case: b; exists x => y; rewrite !set_of_itvE // => /ltW. Qed.
+
+Lemma has_ubound_infty (x : R) b : has_ubound (set_of_itv (Interval -oo%O (BSide b x))).
+Proof. by case: b; exists x => y // /ltW. Qed.
+
+End interval_has_bound.
+
+Hint Extern 0 (has_lbound (set_of_itv _)) =>
+  solve[apply: has_lbound_bounded | apply: has_lbound_infty] : core.
+Hint Extern 0 (has_ubound (set_of_itv _)) =>
+  solve[apply: has_ubound_bounded | apply: has_ubound_infty] : core.
+
+Section interval_hasNbound.
+
+Lemma hasNubound_setT (R : realDomainType) : ~ has_ubound (@set_of_itv R `]-oo, +oo[).
+Proof.
+case=> x; rewrite /ubound => /(_ (x + 1) erefl).
+by apply/negP; rewrite -ltNge ltr_addl.
+Qed.
+
+Lemma hasNlbound_setT (R : realDomainType) : ~ has_lbound (@set_of_itv R `]-oo, +oo[).
+Proof.
+case=> x; rewrite /ubound => /(_ (x - 1) erefl).
+by apply/negP; rewrite -ltNge ltr_subl_addr ltr_addl.
+Qed.
+
+Variable R : realType.
+
+Lemma hasNlbound_minfty (r : R) b : ~ has_lbound (set_of_itv (Interval -oo%O (BSide b r))).
+Proof.
+suff : ~ has_lbound (set_of_itv `]-oo, r[).
+  by case: b => //; apply/ssrbool.contra_not/subset_has_lbound => x /ltW.
+apply/has_lbPn => x; exists (minr (r - 1) (x - 1)).
+by rewrite !set_of_itvE lt_minl ltr_subl_addr ltr_addl ltr01.
+by rewrite lt_minl orbC ltr_subl_addr ltr_addl ltr01.
+Qed.
+
+Lemma hasNubound_pinfty (r : R) b : ~ has_ubound (set_of_itv (Interval (BSide b r) +oo%O)).
+Proof.
+suff : ~ has_ubound (set_of_itv `]r, +oo[).
+  case: b => //; apply/ssrbool.contra_not/subset_has_ubound => x.
+  by rewrite !set_of_itvE => /ltW.
+apply/has_ubPn => x; rewrite !set_of_itvE; exists (maxr (r + 1) (x + 1));
+by rewrite ?in_itv /= ?andbT lt_maxr ltr_addl ltr01 // orbT.
+Qed.
+
+End interval_hasNbound.
+
+Hint Extern 0 (~ has_lbound _) =>
+  solve[apply: hasNlbound_setT | apply: hasNlbound_minfty] : core.
+Hint Extern 0 (~ has_ubound _) =>
+  solve[apply: hasNubound_setT | apply: hasNubound_pinfty] : core.
+
+Section interval_has.
+Variable R : realType.
+Implicit Types x : R.
+
+Lemma has_sup1 x : has_sup [set x].
+Proof. by split; [exists x | exists x => y ->]. Qed.
+
+Lemma has_inf1 x : has_inf [set x].
+Proof. by split; [exists x | exists x => y ->]. Qed.
+
+Lemma has_sup_half x b (i : itv_bound R) : (i < BSide b x)%O ->
+  has_sup (set_of_itv (Interval i (BSide b x))).
+Proof.
+move: b i => [] [[]y|[]]; rewrite ?itv_bound_lteE => xy; try
+  (split => //; exists ((x + y) / 2); rewrite !set_of_itvE addrC !(midf_le,midf_lt) //; exact: ltW) ||
+  (by split => //; exists (x - 1); rewrite !set_of_itvE !(ltr_subl_addr,ler_subl_addr, ltr_addl,ler_addl)).
+Qed.
+
+Lemma has_inf_half x b (i : itv_bound R) : (BSide b x < i)%O ->
+  has_inf (set_of_itv (Interval (BSide b x) i)).
+Proof.
+move: b i => [] [[]y|[]]; rewrite ?itv_bound_lteE => xy; try
+  (split => //; exists ((x + y) / 2); rewrite !set_of_itvE !(midf_le,midf_lt) //; exact: ltW) ||
+  (by split => //; exists (x + 1); rewrite !set_of_itvE !(ltr_addl,ler_addl)).
+Qed.
+
+End interval_has.
+
+Hint Extern 0 (has_sup _) => solve[apply: has_sup1 | exact: has_sup_half] : core.
+Hint Extern 0 (has_inf _) => solve[apply: has_inf1 | exact: has_inf_half]: core.
+
+Lemma minus_open_pinfty (R : numDomainType) (y : R) b :
+  -%R @` set_of_itv (Interval (BSide b y) +oo%O) =
+  set_of_itv (Interval -oo%O (BSide (negb b) (- y))).
+Proof.
+rewrite predeqE /image => /= r; split=> [[x ax <-]|ra].
+  case: b ax; [by rewrite !set_of_itvE ler_oppl opprK |
+  by rewrite !set_of_itvE ltr_oppl opprK].
+exists (- r); rewrite ?opprK //.
+case: b ra; [by rewrite !set_of_itvE ler_oppr |
+  by rewrite !set_of_itvE ltr_oppr].
+Qed.
+
+Lemma minus_open_open (R : numDomainType) (x y : R) :
+  -%R @` set_of_itv (Interval (BRight x) (BLeft y)) =
+  set_of_itv (Interval (BRight (- y)) (BLeft (- x))).
+Proof.
+rewrite predeqE /image => /= r; split=> [[u /andP[xu uy <-]]|/andP[yr rx]].
+rewrite !itv_bound_lteE in xu, uy.
+by rewrite !set_of_itvE ltr_oppl opprK uy /= ltr_oppl opprK.
+exists (- r); last by rewrite opprK.
+rewrite !itv_bound_lteE in yr, rx.
+by rewrite !set_of_itvE ltr_oppr rx /= ltr_oppl.
+Qed.
+
+Section interval_sup_inf.
+Variable R : realType.
+Implicit Types x y : R.
+
+Lemma sup_minfty x b : sup (set_of_itv (Interval -oo%O (BSide b x))) = x.
+Proof.
+case: b; last first.
+  by rewrite infty_closed_set1 sup_setU ?sup1 // => ? ? ? ->; exact/ltW.
+set s := sup _; apply/eqP; rewrite eq_le; apply/andP; split.
+- apply sup_le_ub; last by move=> ? /ltW.
+  by exists (x - 1); rewrite !set_of_itvE ltr_subl_addr ltr_addl.
+- rewrite leNgt; apply/negP => sx; pose p := (s + x) / 2.
+  suff [/andP[?]]: (p < x) && (s < p) by apply/negP; rewrite -leNgt sup_ub.
+  by rewrite !midf_lt.
+Qed.
+
+Lemma inf_pinfty x b : inf (set_of_itv (Interval (BSide b x) +oo%O)) = x.
+Proof.
+case: b; last by rewrite /inf minus_open_pinfty sup_minfty opprK.
+by rewrite closed_infty_set1 inf_setU ?inf1 // => _ b ->; rewrite !set_of_itvE => /ltW.
+Qed.
+
+Let sup_open_side x y b : x < y ->
+  sup (set_of_itv (Interval (BRight x) (BSide b y))) = y.
+Proof.
+case: b => xy; last first.
+  by rewrite open_closed_set1 // sup_setU ?sup1 // => ? ? /andP[? /ltW ?] ->.
+set B := set_of_itv _; set A := set_of_itv `]-oo, x].
+rewrite -(@sup_setU _ A B) //.
+- rewrite -(sup_minfty y true); congr sup.
+  rewrite predeqE => u; split=> [[|/andP[]//]|yu].
+  by rewrite /A !set_of_itvE => /le_lt_trans; apply.
+  by have [xu|ux] := ltP x u; [right; rewrite /B !set_of_itvE xu| left].
+- by move=> u v; rewrite /A /B => ? /andP[xv _]; rewrite (le_trans _ (ltW xv)).
+Qed.
+
+Lemma sup_bounded x y a b : x < y ->
+  sup (set_of_itv (Interval (BSide a x) (BSide b y))) = y.
+Proof.
+case: a => xy; last exact: sup_open_side.
+case: b.
+  by rewrite closed_open_set1 // sup_setU ?sup_open_side // => ? ? -> /andP[/ltW].
+rewrite closed_closed_set1r; last exact/ltW.
+by rewrite  sup_setU ?sup1// => ? ? /andP[_ /ltW ? ->].
+Qed.
+
+Lemma sup_closed_closed x y : x <= y -> sup (set_of_itv `[x, y]) = y.
+Proof.
+by move=> xy; rewrite closed_closed_set1r // sup_setU ?sup1 // => ? ? /andP[_ /ltW ? ->].
+Qed.
+
+Let inf_side_open x y b : x < y ->
+  inf (set_of_itv (Interval (BSide b x) (BLeft y))) = x.
+Proof.
+case: b => xy.
+  by rewrite closed_open_set1// inf_setU ?inf1 // => _ ? -> /andP[/ltW].
+by rewrite /inf minus_open_open sup_open_side ?opprK // ltr_oppl opprK.
+Qed.
+
+Lemma inf_bounded x y a b : x < y ->
+  inf (set_of_itv (Interval (BSide a x) (BSide b y))) = x.
+Proof.
+case: b => xy; first exact: inf_side_open.
+case: a.
+  rewrite closed_closed_set1l; last exact: ltW.
+  by rewrite inf_setU ?inf1 // => ? ? -> /andP[/ltW].
+by rewrite open_closed_set1 // inf_setU ?inf_side_open // => ? ? /andP[? /ltW ?] ->.
+Qed.
+
+Lemma inf_closed_closed x y : x <= y -> inf (set_of_itv `[x, y]) = x.
+Proof.
+by move=> ?; rewrite closed_closed_set1l // inf_setU ?inf1 // => ? ? -> /andP[/ltW].
+Qed.
+
+End interval_sup_inf.
+
+Section set_of_itv_cancel.
+Variable R : realType.
+
+Lemma set_of_itvK :
+  {in [pred X : interval R | ~~ `[< X =i pred0 >] ], cancel set_of_itv (@Rhull _)}.
+Proof.
+move=> X /asboolP.
+move: X => [[[] i1|[]] [[] i2|[]]]; rewrite /Rhull //=.
+- move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => i12.
+  rewrite asboolT //= inf_bounded // {1}set_of_itvE lexx i12 asboolT //.
+  by rewrite asboolT // sup_bounded // {1}set_of_itvE /= ltW // ltxx asboolF.
+- move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => X0.
+  rewrite asboolT // inf_closed_closed // {1}set_of_itvE  lexx X0 asboolT //.
+  by rewrite asboolT // sup_closed_closed // {1}set_of_itvE X0 lexx asboolT.
+- by have := @itv_ge _ _ (BLeft i1) -oo%O erefl.
+- by move=> _; rewrite asboolT // {1}set_of_itvE inf_pinfty lexx asboolT // asboolF.
+- move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => i12.
+  rewrite asboolT // inf_bounded // {1}set_of_itvE ltxx asboolF // asboolT //.
+  by rewrite sup_bounded // {1}set_of_itvE ltxx andbF asboolF.
+- move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => i12.
+  rewrite asboolT // inf_bounded // {1}set_of_itvE ltxx asboolF // asboolT //.
+  by rewrite sup_bounded // {1}set_of_itvE i12 lexx asboolT.
+- by have := @itv_ge _ _ (BRight i1) -oo%O erefl.
+- by move=> _; rewrite asboolT // inf_pinfty {1}set_of_itvE ltxx asboolF // asboolF.
+- by move=> _; rewrite asboolF // asboolT // {1}set_of_itvE sup_minfty ltxx asboolF.
+- by move=> _; rewrite asboolF // asboolT // {1}set_of_itvE sup_minfty lexx asboolT.
+- by have := @itv_ge _ _ -oo%O -oo%O erefl.
+- by move=> _; rewrite asboolF // asboolF.
+- by have := @itv_ge _ _ +oo%O (BLeft i2) erefl.
+- by have := @itv_ge _ _ +oo%O (BRight i2) erefl.
+- by have := @itv_ge _ _ +oo%O -oo%O erefl.
+- by have := @itv_ge _ _ +oo%O +oo%O erefl.
+Qed.
+
+Lemma RhullK :
+  {in [pred X : set R | `[< is_interval X >]], cancel (@Rhull _) set_of_itv}.
+Proof.
+move=> X /asboolP iX; rewrite /Rhull /set_of_itv /mkset /= predeqE => r.
+case: ifPn => /asboolP bX; last first.
+  case: ifPn => /asboolP aX; last by rewrite (interval_unbounded_setT _ bX aX).
+  rewrite in_itv /= negbK; have [/asboolP XsupX /=|/asboolPn XsupX /=] := boolP `[< _ >].
+    split => [|Xr].
+      rewrite le_eqVlt => /orP[/eqP -> //|rX].
+      move/has_lbPn : bX => /(_ r)[y Xy yr].
+      by move: (iX _ _ Xy XsupX); apply; rewrite yr.
+    by rewrite /mkset sup_ub //; exact/asboolP.
+  split => [rX|Xr]; last exact: sup_ub_strict.
+  apply: (@interior_subset [topologicalType of R^o]).
+  by rewrite interval_left_unbounded_interior.
+case: ifPn => /asboolP uX.
+  have [/asboolP XinfX | /asboolPn XinfX ] := boolP `[< _ >].
+    rewrite in_itv /= negbK; have [/asboolP XsupX /=|/asboolP XsupX /=] := boolP `[< _ >].
+      split=> [|Xr]; last first.
+        by rewrite /mkset sup_ub // andbT inf_lb.
+      move => /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXr].
+      rewrite le_eqVlt => /orP[/eqP -> //|rsupX].
+      apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite interval_bounded_interior //; rewrite /mkset infXr.
+    split => [|Xr].
+      rewrite /mkset => /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXr rsupX].
+      apply: (@interior_subset [topologicalType of R^o]).
+      by rewrite interval_bounded_interior //; rewrite /mkset infXr.
+    by rewrite /mkset inf_lb //= sup_ub_strict.
+  have [/asboolP XsupX /=|/asboolP XsupX /=] := boolP `[< _ >].
+    rewrite in_itv /=; split=> [|Xr]; last first.
+      by rewrite inf_lb_strict // sup_ub.
+    move=> /andP[infXr]; rewrite le_eqVlt => /orP[/eqP -> //|rsupX].
+    apply: (@interior_subset [topologicalType of R^o]).
+    by rewrite interval_bounded_interior //; rewrite /mkset infXr.
+  rewrite in_itv /=; split=> [|Xr]; last first.
+    by rewrite inf_lb_strict // sup_ub_strict.
+  move => /andP[infXr rsupX].
+  apply: (@interior_subset [topologicalType of R^o]).
+  by rewrite interval_bounded_interior //; rewrite /mkset infXr.
+rewrite in_itv /=; have [/asboolP XinfX /=| /asboolPn XinfX /=] := boolP `[< _ >].
+  rewrite andbT; split => [|Xr]; last exact: inf_lb.
+  rewrite le_eqVlt => /orP[/eqP <- //|infXr].
+  move/has_ubPn : uX => /(_ r)[y Xy yr].
+  by move: (iX _ _ XinfX Xy); apply; rewrite infXr.
+rewrite andbT.
+split=> [infXr|Xr]; last exact: inf_lb_strict.
+apply: (@interior_subset [topologicalType of R^o]).
+by rewrite interval_right_unbounded_interior.
+Qed.
+
+End set_of_itv_cancel.
+(* WIP(end) *)
 
 Section real_measure.
 Variable R : realType.
 
-(* finite union of intervals *)
-Definition fint : Type := {fset (choice_of_Type (interval R))}.
+Definition fint : Type := {fset (interval R)}.
 Definition ufint (x : fint) : set R := \bigcup_(i in [set j | j \in x]) (set_of_itv i).
 
 Ltac Obligation Tactic := idtac.
@@ -787,6 +1359,7 @@ Qed.
 Next Obligation.
 rewrite /interval_isRingOfSets_obligation_1 in H *.
 case: H => a _ aA.
+rewrite /mkset.
 Admitted.
 
 Definition length_interval (i : interval R) : {ereal R} :=
