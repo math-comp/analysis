@@ -741,6 +741,15 @@ End Hahn.
 From mathcomp Require Import interval.
 
 (* WIP *)
+Lemma setDT {T} (A : set T) : A `\` setT = set0.
+Proof. by rewrite setDE setCT setI0. Qed.
+
+Lemma set0D {T} (A : set T) : set0 `\` A = set0.
+Proof. by rewrite setDE set0I. Qed.
+
+Lemma setD0 {T} (A : set T) : A `\` set0 = A.
+Proof. by rewrite setDE setC0 setIT. Qed.
+
 Lemma bigcup_cons {T : choiceType} U (h : T) t (f : T -> set U) :
   \bigcup_(i in [set i | i \in h :: t]) (f i) =
   f h `|` \bigcup_(i in [set i | i \in t]) (f i).
@@ -752,9 +761,23 @@ rewrite predeqE => u; split.
   by move=> [i it fiu]; exists i => //; rewrite /mkset inE it orbT.
 Qed.
 
+Lemma mkset0 {T : choiceType} : [set x | x \in [::]] = set0 :> set T.
+Proof. by rewrite predeqP. Qed.
+
 Lemma bigcup_nil {T : choiceType} U (f : T -> set U) :
   \bigcup_(i in [set i | i \in [::]]) (f i) = set0.
-Proof. by rewrite predeqE => u; split => // -[t]; rewrite /mkset in_nil. Qed.
+Proof. by rewrite predeqE => u; split => // -[t]; rewrite mkset0. Qed.
+
+Lemma bigcup_cons1 {T : choiceType} U (h : T) (f : T -> set U) :
+  \bigcup_(i in [set i | i \in [:: h]]) (f i) = f h.
+Proof. by rewrite bigcup_cons bigcup_nil setU0. Qed.
+
+Lemma bigcupC (T I : Type) (U : I -> set T) (E : set I) :
+  ~` (\bigcup_(i in E) U i) = \bigcap_(i in E) ~` U i.
+Proof.
+rewrite eqEsubset; split => [x nU i Ei Uix|x nU [i Ei Uix]];
+  [by apply nU; exists i | exact: (nU i Ei)].
+Qed.
 
 Lemma subset_has_lbound (R : numDomainType) (A B : set R) : A `<=` B ->
   has_lbound B -> has_lbound A.
@@ -787,6 +810,12 @@ Qed.
 
 Lemma le_pinfty_eq (R : numDomainType) (x : itv_bound R) : (+oo <= x)%O = (x == +oo)%O.
 Proof. by move: x => [[]|[]]. Qed.
+
+Lemma le_minfty_eq (R : numDomainType) (x : itv_bound R) : (x <= -oo)%O = (x == -oo%O).
+Proof. by case: x => // -[]. Qed.
+
+Lemma pinfty_lt (R : numDomainType) (x : itv_bound R) : (+oo%O < x)%O = false.
+Proof. by case: x. Qed.
 
 Lemma itv_bound_meet_minfty (R : realDomainType) (i : itv_bound R) : (i `&` -oo = -oo)%O.
 Proof. by rewrite meetEtotal /= minElt ifF //; case: i => [[]i|[]]. Qed.
@@ -836,6 +865,7 @@ Qed.
 Section set_of_itv.
 Variable (R : numDomainType).
 Implicit Type i j : interval R.
+Implicit Type x y : R.
 
 Definition set_of_itv i : set R := [set x | x \in i].
 
@@ -848,11 +878,11 @@ Proof. by move: i => [[[]i1|[]] [[]i2|[]]]. Qed.
 Lemma itv_set_of_itv_subset i j : {subset i <= j} <-> set_of_itv i `<=` set_of_itv j.
 Proof. by move: i j => [[[] ?|[]] [[] ?|[]]] [[[] ?|[]] [[] ?|[]]]. Qed.
 
-Lemma set_of_itv_empty_set0 (i1 i2 : itv_bound R) :
-  ~~ (i1 < i2)%O -> set_of_itv (Interval i1 i2) = set0.
+Lemma set_of_itv_empty_set0 (i j : itv_bound R) :
+  ~~ (i < j)%O -> set_of_itv (Interval i j) = set0.
 Proof.
-move/itv_ge => j0; rewrite predeqE /set_of_itv /mkset => r; split => //.
-by rewrite j0.
+move/itv_ge => ij0; rewrite predeqE => r; split => //.
+by rewrite /set_of_itv /mkset ij0.
 Qed.
 
 Lemma set_of_itv_pinfty_set0 (a : itv_bound R) : set_of_itv (Interval +oo%O a) = set0.
@@ -863,90 +893,152 @@ Proof. rewrite set_of_itv_empty_set0 //=; by case: a => [[]a|[]]. Qed.
 
 Definition set_of_itv_infty_set0 := (set_of_itv_minfty_set0, set_of_itv_pinfty_set0).
 
-Variables (a b : R).
-
-Lemma set_of_itv_open_open : set_of_itv `]a, b[ = (fun x => a < x < b).
+Lemma set_of_itv_open_open x y : set_of_itv `]x, y[ = (fun z => x < z < y).
 Proof. by []. Qed.
 
-Lemma set_of_itv_closed_closed : set_of_itv `[a, b] = (fun x => a <= x <= b).
+Lemma set_of_itv_closed_closed x y : set_of_itv `[x, y] = (fun z => x <= z <= y).
 Proof. by []. Qed.
 
-Lemma set_of_itv_open_closed : set_of_itv `]a, b] = (fun x => a < x <= b).
+Lemma set_of_itv_open_closed x y : set_of_itv `]x, y] = (fun z => x < z <= y).
 Proof. by []. Qed.
 
-Lemma set_of_itv_closed_open : set_of_itv `[a, b[ = (fun x => a <= x < b).
+Lemma set_of_itv_closed_open x y : set_of_itv `[x, y[ = (fun z => x <= z < y).
 Proof. by []. Qed.
 
 Lemma set_of_itv_minfty_pinfty : set_of_itv `]-oo, +oo[ = setT :> set R.
 Proof. by rewrite predeqE. Qed.
 
-Lemma set_of_itv_open_pinfty : set_of_itv `]a, +oo[ = (fun x => a < x).
+Lemma set_of_itv_open_pinfty x : set_of_itv `]x, +oo[ = (fun z => x < z).
 Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv andbT. Qed.
 
-Lemma set_of_itv_closed_pinfty : set_of_itv `[a, +oo[ = (fun x => a <= x).
+Lemma set_of_itv_closed_pinfty x : set_of_itv `[x, +oo[ = (fun z => x <= z).
 Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv andbT. Qed.
 
-Lemma set_of_itv_minfty_open : set_of_itv `]-oo, a[ = (fun x => x < a).
+Lemma set_of_itv_minfty_open x : set_of_itv `]-oo, x[ = (fun z => z < x).
 Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv. Qed.
 
-Lemma set_of_itv_minfty_closed : set_of_itv `]-oo, a] = (fun x => x <= a).
+Lemma set_of_itv_minfty_closed x : set_of_itv `]-oo, x] = (fun z => z <= x).
 Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv. Qed.
+
+Lemma set_of_itv_minfty_minfty : set_of_itv (Interval -oo%O -oo%O) = set0 :> set R.
+Proof. by rewrite set_of_itv_empty_set0. Qed.
+
+Lemma set_of_itv_pinfty_minfty : set_of_itv (Interval +oo%O -oo%O) = set0 :> set R.
+Proof. by rewrite set_of_itv_empty_set0. Qed.
+
+Lemma set_of_itv_pinfty_pinfty : set_of_itv (Interval +oo%O +oo%O) = set0 :> set R.
+Proof. by rewrite set_of_itv_empty_set0. Qed.
 
 Definition set_of_itvE := (set_of_itv_open_open, set_of_itv_closed_closed,
   set_of_itv_open_closed, set_of_itv_closed_open, set_of_itv_minfty_pinfty,
   set_of_itv_open_pinfty, set_of_itv_closed_pinfty, set_of_itv_minfty_open,
-  set_of_itv_minfty_closed).
+  set_of_itv_minfty_closed, set_of_itv_minfty_minfty, set_of_itv_pinfty_minfty,
+  set_of_itv_pinfty_pinfty).
 
 Section punctured_interval.
 
-Lemma open_closed_set1 : a < b ->
-  set_of_itv `]a, b] = set_of_itv `]a, b[ `|` [set b].
+Lemma open_closed_set1 x y : x < y ->
+  set_of_itv `]x, y] = set_of_itv `]x, y[ `|` [set y].
 Proof.
-move=> ab; rewrite !set_of_itvE predeqE => r; split=>[/andP[ar]|].
-  by rewrite le_eqVlt => /orP[/eqP->|rb]; [by right|left; rewrite ar].
+move=> ab; rewrite !set_of_itvE predeqE => r; split=>[/andP[xr]|].
+  by rewrite le_eqVlt => /orP[/eqP->|ry]; [by right|left; rewrite xr].
 by case=> [/andP[ar /ltW ->]|->]; [rewrite andbT|rewrite ab lexx].
 Qed.
 
-Lemma closed_open_set1 : a < b ->
-  set_of_itv `[a, b[ = [set a] `|` set_of_itv `]a, b[.
+Lemma closed_open_set1 x y : x < y ->
+  set_of_itv `[x, y[ = [set x] `|` set_of_itv `]x, y[.
 Proof.
-move=> ab; rewrite !set_of_itvE predeqE => r; split=> [/andP[]|].
-  by rewrite le_eqVlt => /orP[/eqP->|ar rb]; [left|right; rewrite ar].
+move=> xy; rewrite !set_of_itvE predeqE => r; split=> [/andP[]|].
+  by rewrite le_eqVlt => /orP[/eqP->|xr ry]; [left|right; rewrite xr].
 by case=> [->|/andP[/ltW -> -> //]]; rewrite lexx.
 Qed.
 
-Lemma closed_closed_set1l : a <= b ->
-  set_of_itv `[a, b] = [set a] `|` set_of_itv `]a, b].
+Lemma closed_closed_set1l x y : x <= y ->
+  set_of_itv `[x, y] = [set x] `|` set_of_itv `]x, y].
 Proof.
 move=> ab; rewrite !set_of_itvE predeqE => r; split=> [/andP[]|].
-  by rewrite le_eqVlt => /orP[/eqP->|ar rb]; [left|right; rewrite ar].
+  by rewrite le_eqVlt => /orP[/eqP->|xr ry]; [left|right; rewrite xr].
 by case=> [->|/andP[/ltW -> -> //]]; rewrite lexx.
 Qed.
 
-Lemma closed_closed_set1r : a <= b ->
-  set_of_itv `[a, b] = set_of_itv `[a, b[ `|` [set b].
+Lemma closed_closed_set1r x y : x <= y ->
+  set_of_itv `[x, y] = set_of_itv `[x, y[ `|` [set y].
 Proof.
-move=> ab; rewrite !set_of_itvE predeqE => r; split=> [/andP[ar]|].
-  by rewrite le_eqVlt => /orP[/eqP->|rb]; [right|left; rewrite ar].
-by case=> [/andP[-> /ltW //]|->]; rewrite lexx ab.
+move=> xy; rewrite !set_of_itvE predeqE => r; split=> [/andP[xr]|].
+  by rewrite le_eqVlt => /orP[/eqP->|ry]; [right|left; rewrite xr].
+by case=> [/andP[-> /ltW //]|->]; rewrite lexx xy.
 Qed.
 
-Lemma closed_infty_set1 : set_of_itv `[a, +oo[ = [set a] `|` set_of_itv `]a, +oo[.
+Lemma closed_infty_set1 x : set_of_itv `[x, +oo[ = [set x] `|` set_of_itv `]x, +oo[.
 Proof.
 rewrite predeqE => r; rewrite !set_of_itvE; split; last by case=> [->//|/ltW].
-by rewrite le_eqVlt => /orP[/eqP ->|ar]; [left|right].
+by rewrite le_eqVlt => /orP[/eqP ->|?]; [left|right].
 Qed.
 
-Lemma infty_closed_set1 : set_of_itv `]-oo, a] = set_of_itv `]-oo, a[ `|` [set a].
+Lemma infty_closed_set1 x : set_of_itv `]-oo, x] = set_of_itv `]-oo, x[ `|` [set x].
 Proof.
 rewrite predeqE => r; rewrite !set_of_itvE; split => [|[/ltW //|-> //=]].
-by rewrite le_eqVlt => /orP[/eqP ->|ar]; [right|left].
+by rewrite le_eqVlt => /orP[/eqP ->|xr]; [right|left].
 Qed.
 
 End punctured_interval.
 
 End set_of_itv.
 Arguments set_of_itv {R}.
+
+Lemma set_of_itvC_minfty_BSide (R : realDomainType) b (r : R) :
+  ~` set_of_itv (Interval -oo%O (BSide b r)) = set_of_itv (Interval (BSide b r) +oo%O).
+Proof.
+case: b; rewrite !set_of_itvE predeqE => x.
+by split; rewrite leNgt => /negP.
+by split; rewrite ltNge => /negP.
+Qed.
+
+Lemma set_of_itvC_BSide_pinfty (R : realDomainType) b (r : R) :
+  ~` set_of_itv (Interval (BSide b r) +oo%O) = set_of_itv (Interval -oo%O (BSide b r)).
+Proof. by rewrite -set_of_itvC_minfty_BSide setCK. Qed.
+
+Let set_of_itvC_BSide_BSide (R : realDomainType) a b (x y : R) :
+  ~` set_of_itv (Interval (BSide a x) (BSide b y)) =
+  set_of_itv (Interval -oo%O (BSide a x)) `|` set_of_itv (Interval (BSide b y) +oo%O).
+Proof.
+move: a b => [] []; rewrite !set_of_itvE predeqE => r; split.
+by move/negP; rewrite negb_and -ltNge -leNgt => /orP.
+by move/orP; rewrite leNgt (ltNge r x) -negb_and => /negP.
+by move/negP; rewrite negb_and -2!ltNge => /orP.
+by move/orP; rewrite 2!ltNge -negb_and => /negP.
+by move/negP; rewrite negb_and -2!leNgt => /orP.
+by move/orP; rewrite 2!leNgt -negb_and => /negP.
+by move/negP; rewrite negb_and -leNgt -ltNge => /orP.
+by move/orP; rewrite leNgt (ltNge y r) -negb_and => /negP.
+Qed.
+
+Lemma set_of_itvC_Interval (R : realDomainType) (a b : itv_bound R) :
+  ~` set_of_itv (Interval a b) =
+  set_of_itv (Interval -oo%O a) `|` set_of_itv (Interval b +oo%O).
+Proof.
+move: a b => [[] a|[]] [[] b|[]].
+by rewrite set_of_itvC_BSide_BSide.
+by rewrite set_of_itvC_BSide_BSide.
+by rewrite !set_of_itvE setUT set_of_itv_empty_set0 // setC0.
+by rewrite set_of_itvC_BSide_pinfty !set_of_itvE setU0.
+by rewrite set_of_itvC_BSide_BSide.
+by rewrite set_of_itvC_BSide_BSide.
+by rewrite set_of_itv_empty_set0 // setC0 !set_of_itvE setUT.
+by rewrite set_of_itvC_BSide_pinfty !set_of_itvE setU0.
+by rewrite set_of_itvC_minfty_BSide !set_of_itvE set0U.
+by rewrite set_of_itvC_minfty_BSide !set_of_itvE set0U.
+by rewrite set_of_itvE setC0 set0U set_of_itvE.
+by rewrite !set_of_itvE setCT set0U.
+by rewrite !set_of_itvE setTU set_of_itv_empty_set0 // setC0.
+by rewrite !set_of_itvE setTU set_of_itv_empty_set0 // setC0.
+by rewrite set_of_itv_empty_set0 // setC0 !set_of_itvE setTU.
+by rewrite !set_of_itvE setC0 setU0.
+Qed.
+
+Definition set_of_itvC := (set_of_itvC_minfty_BSide,
+                           set_of_itvC_BSide_pinfty,
+                           set_of_itvC_Interval).
 
 Lemma itv_meetE (R : realDomainType) (i j : interval R) :
   set_of_itv (itv_meet i j) = set_of_itv i `&` set_of_itv j.
@@ -1022,17 +1114,17 @@ End set_of_itv_numFieldType.
 Section itv_bound_lteE.
 Variable R : numDomainType.
 
-Lemma BLeft_ltE (a b : R) : (BLeft a < BLeft b)%O = (a < b).
+Lemma BLeft_ltE (x y : R) : (BLeft x < BLeft y)%O = (x < y).
 Proof. by []. Qed.
-Lemma BLeft_BRight_ltE (a b : R) : (BLeft a < BRight b)%O = (a <= b).
+Lemma BLeft_BRight_ltE (x y : R) : (BLeft x < BRight y)%O = (x <= y).
 Proof. by []. Qed.
-Lemma BRight_BSide_ltE (a b : R) b' : (BRight a < BSide b' b)%O = (a < b).
-Proof. by case: b'. Qed.
-Lemma BRight_BSide_leE (a b : R) b' : (BLeft a <= BSide b' b)%O = (a <= b).
-Proof. by case: b'. Qed.
-Lemma BRight_BLeft_leE (a b : R) : (BRight a <= BLeft b)%O = (a < b).
+Lemma BRight_BSide_ltE (x y : R) b : (BRight x < BSide b y)%O = (x < y).
+Proof. by case: b. Qed.
+Lemma BRight_BSide_leE (x y : R) b : (BLeft x <= BSide b y)%O = (x <= y).
+Proof. by case: b. Qed.
+Lemma BRight_BLeft_leE (x y : R) : (BRight x <= BLeft y)%O = (x < y).
 Proof. by []. Qed.
-Lemma BRight_leE (a b : R) : (BRight a <= BRight b)%O = (a <= b).
+Lemma BRight_leE (x y : R) : (BRight x <= BRight y)%O = (x <= y).
 Proof. by []. Qed.
 
 Definition itv_bound_lteE := (BLeft_ltE, BLeft_BRight_ltE, BRight_BSide_ltE,
@@ -1242,8 +1334,7 @@ Variable R : realType.
 Lemma set_of_itvK :
   {in [pred X : interval R | ~~ `[< X =i pred0 >] ], cancel set_of_itv (@Rhull _)}.
 Proof.
-move=> X /asboolP.
-move: X => [[[] i1|[]] [[] i2|[]]]; rewrite /Rhull //=.
+move=> [[[] i1|[]] [[] i2|[]]] /asboolP; rewrite /Rhull //=.
 - move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => i12.
   rewrite asboolT //= inf_bounded // {1}set_of_itvE lexx i12 asboolT //.
   by rewrite asboolT // sup_bounded // {1}set_of_itvE /= ltW // ltxx asboolF.
@@ -1322,19 +1413,929 @@ by rewrite interval_right_unbounded_interior.
 Qed.
 
 End set_of_itv_cancel.
+
+(* finite union of intervals *)
+Definition fint (R : numDomainType) : Type := {fset (interval R)}.
+Definition ufint (R : numDomainType) (x : seq (interval R)) : set R :=
+  \bigcup_(i in [set j | j \in x]) (set_of_itv i).
+
+Lemma mem_ufint (R : numDomainType) (s1 s2 : seq (interval R)) :
+  s1 =i s2 -> ufint s1 = ufint s2.
+Proof.
+move=> s12; rewrite eqEsubset; split => x [i]; rewrite /mkset => + ix.
+by rewrite s12 => ?; exists i.
+by rewrite -s12 => ?; exists i.
+Qed.
+
+Lemma ufint_filter_neq0 (R : numDomainType) (s : seq (interval R)) :
+  ufint [seq x <- s | set_of_itv x != set0] = ufint s.
+Proof.
+elim: s => // h t ih /=; case: ifPn => [h0|/negPn/eqP h0].
+  by rewrite {1}/ufint bigcup_cons -/(ufint _) ih {2}/ufint bigcup_cons.
+by rewrite ih {2}/ufint bigcup_cons h0 set0U.
+Qed.
+
+Definition bnd1 {R : numDomainType} (x : interval R) :=
+  let: Interval i _ := x in i.
+Definition bnd2 {R : numDomainType} (x : interval R) :=
+  let: Interval _ j := x in j.
+
+Section itv_cplt.
+Variable R : realType.
+
+Definition itv_cplt (s : seq (interval R)) : seq (interval R) :=
+  let a' := -oo%O :: map bnd2 s in
+  let b' := rcons (map bnd1 s) +oo%O in
+  map (uncurry (@Interval _)) (zip a' b').
+
+Lemma itv_cpltE1 (s : seq (interval R)) : ~` ufint s `<=` ufint (itv_cplt s).
+Proof.
+elim: s => [x _|[a1 b1] t ih x].
+  by rewrite /itv_cplt /= /ufint bigcup_cons1 set_of_itvE.
+rewrite {1}/ufint bigcup_cons -/(ufint _) setCU => -[] x_notin_h /ih {}ih.
+set a := map bnd1 (Interval a1 b1 :: t).
+set b := map bnd2 (Interval a1 b1 :: t).
+rewrite (_ : itv_cplt _ = Interval -oo%O a1 ::
+  map (uncurry (@Interval _)) (zip b (rcons (behead a) +oo%O))) //.
+rewrite /ufint bigcup_cons.
+have : (set_of_itv (Interval -oo%O a1) `|` set_of_itv (Interval b1 +oo%O)) x.
+  by rewrite set_of_itvC in x_notin_h.
+case=> [xa1|/set_of_itv_mem xb1]; [by left|right].
+have {ih}[j] : ufint (map (uncurry (@Interval _))
+  (zip (-oo%O :: behead b) (rcons (behead a) +oo%O))) x by [].
+rewrite {1}/mkset => + /set_of_itv_mem jx.
+rewrite {}/b {}/a.
+move: t => [|[a2 b2] t /=]; first by rewrite bigcup_cons1.
+rewrite inE => /orP[/eqP jb2|jb2].
+  exists (Interval b1 a2); first by rewrite /mkset inE eqxx.
+  apply/set_of_itv_mem; rewrite itv_splitI xb1 /=.
+  by move: jx; rewrite jb2 => /set_of_itv_mem.
+by exists j => //; rewrite /mkset inE jb2 orbT.
+Qed.
+
+Lemma itv_cpltE2 (s : seq (interval R)) :
+  path.sorted <=%O (map bnd2 s) /\ path.sorted <=%O (map bnd1 s) ->
+  ufint (itv_cplt s) `<=` ~` ufint s.
+Proof.
+set a := map bnd1 s.
+set b := map bnd2 s.
+move=> [sorted_b sorted_a] x.
+rewrite {1}/ufint => -[/= j] /mapP[[b' a']] /(nthP (+oo%O, -oo%O)) => -[k'].
+rewrite size_zip /= size_rcons 2!size_map minnn ltnS => k's.
+rewrite nth_zip; last by rewrite size_rcons /= !size_map.
+move=> -[kb' ka'] jba'.
+move/set_of_itv_mem => xj -[] i si /set_of_itv_mem xi.
+have [k [ks ik]] : exists k, (k < size s)%N /\
+    i = Interval (nth -oo%O a k) (nth +oo%O b k).
+  move/(nthP 0%O) : si => [k ks ki].
+  exists k; split => //.
+  by rewrite /a /b !(nth_map 0%O) // ki; case: i {xi ki}.
+move: xi; rewrite ik itv_boundlr => /andP[akx xbk].
+move: xj; rewrite jba' itv_boundlr => /andP[b'x xa'].
+rewrite -/a in ka'.
+rewrite -/b in kb'.
+have [kk'|k'k] := leP k k'.
+  case: k' => [|k'] in k's ka' kb' kk' *.
+    move: kk'; rewrite lex0 => /eqP k0.
+    rewrite {k's ks} /= in kb' jba' b'x xa'.
+    rewrite -{}kb' {b'x b'} in jba'.
+    rewrite -ka' /= in xa'.
+    rewrite k0 /a /= in akx.
+    rewrite {jba' k0 ka' xbk ik k sorted_a sorted_b a' b j}.
+    rewrite {}/a in xa'.
+    case: s => [//|s0 s1] in si akx xa' *.
+    have := le_trans xa' akx.
+    by rewrite itv_bound_lteE ltxx.
+  rewrite /= in kb'.
+  have : (k' <= (size s).-1)%N by move: k's; clear -si; case: s si.
+  rewrite leq_eqVlt => /orP[/eqP k's1|k's1].
+    move: ka'; rewrite nth_rcons size_map k's1 prednK //; last first.
+      by move: k's; clear -si; case: s si.
+    rewrite ltnn eqxx => ka'.
+    have : (BRight x <= BLeft x)%O.
+      rewrite (le_trans xbk) // (le_trans _ b'x) //= -kb'.
+      apply: (path.sorted_leq_nth le_trans) => //.
+      by rewrite inE /b size_map.
+      by rewrite inE size_map.
+      by rewrite -ltnS k's1 prednK // (leq_ltn_trans _ ks).
+    by rewrite itv_bound_lteE ltxx.
+  move: kk'; rewrite le_eqVlt => /orP[kk'|kk'].
+    have : (BRight x <= BLeft x)%O.
+      rewrite (@le_trans _ _ (nth -oo%O a k)) // (le_trans xa') // -ka'.
+      by rewrite nth_rcons size_map -(eqP kk') ks.
+    by rewrite itv_bound_lteE ltxx.
+  have : (BRight x <= BLeft x)%O.
+    rewrite (@le_trans _ _ (nth +oo%O b k)) // (le_trans _ b'x) //= -kb'.
+    apply: (path.sorted_leq_nth le_trans) => //.
+    by rewrite inE /b size_map.
+    by rewrite inE size_map.
+  by rewrite itv_bound_lteE ltxx.
+have : (BRight x <= BLeft x)%O.
+  rewrite (le_trans xa') //= (le_trans _ akx) //.
+  rewrite -ka' nth_rcons size_map (ltn_trans k'k ks).
+  apply: (path.sorted_leq_nth le_trans) => //.
+  by rewrite inE size_map (ltn_trans k'k).
+  by rewrite inE size_map.
+  by rewrite ltnW.
+by rewrite itv_bound_lteE ltxx.
+Qed.
+
+Lemma itv_cpltE (s : seq (interval R)) :
+  path.sorted <=%O (map bnd2 s) /\ path.sorted <=%O (map bnd1 s) ->
+  ufint (itv_cplt s) = ~` ufint s.
+Proof. by rewrite eqEsubset; split; [exact: itv_cpltE2 | exact: itv_cpltE1]. Qed.
+
+End itv_cplt.
+
+Section itv_diff.
+Variable R : realType.
+
+(* assumes ~ j <= i *)
+Definition itv_diff (i j : interval R) : interval R :=
+  if set_of_itv (itv_meet i j) == set0 then i
+  else
+    let: Interval i1 i2 := i in let: Interval j1 j2 := j in
+    if (j1 <= i1)%O then
+      (if (j2 <= i2)%O then Interval j2 i2 else 0%O)
+    else
+      (if (j2 <= i2)%O then 0%O else Interval i1 j1).
+
+Lemma itv_diffE (i j : interval R) : ~ {subset j <= i} ->
+  set_of_itv (itv_diff i j) = set_of_itv i `\` set_of_itv j.
+Proof.
+move=> ji.
+rewrite /itv_diff; case: ifPn => ij0.
+  by apply/esym/setDidPl; rewrite -itv_meetE (eqP ij0).
+move: i j => [i1 i2] [j1 j2] /= in ji ij0 *.
+have [ji1|ji1] := leP j1 i1.
+- have [ji2|ji2] := leP j2 i2.
+  + rewrite eqEsubset; split => x.
+    * move/set_of_itv_mem; rewrite itv_boundlr => /andP[j2x xi2]; split.
+        apply/set_of_itv_mem.
+        rewrite itv_boundlr xi2 andbT (@le_trans _ _ j2) // leNgt; apply/negP => j2j1.
+        move/negP : ij0; apply; apply/eqP.
+        rewrite joinEtotal meetEtotal maxElt ltNge ji1 /= minElt ltNge ji2 /=.
+        by rewrite set_of_itv_empty_set0 // -leNgt ltW.
+      move/set_of_itv_mem; rewrite itv_boundlr => /andP[j1x xj2].
+      by have := le_trans xj2 j2x; rewrite itv_bound_lteE ltxx.
+    * move=> -[/set_of_itv_mem]; rewrite itv_boundlr => /andP[i1x xi2 ix].
+      apply/set_of_itv_mem; rewrite itv_boundlr xi2 andbT.
+      rewrite leNgt; apply/negP => xj2.
+      apply: ix.
+      apply/set_of_itv_mem.
+      by rewrite itv_boundlr (le_trans ji1).
+  + rewrite set_of_itv_empty_set0 //.
+    apply/esym.
+    rewrite setD_eq0 => x.
+    move/set_of_itv_mem; rewrite itv_boundlr => /andP[i1x xi2].
+    apply/set_of_itv_mem; rewrite itv_boundlr (le_trans ji1) //=.
+    by rewrite (le_trans xi2) // ltW.
+- have [ji2|ji2] := leP j2 i2.
+    exfalso.
+    apply: ji => x; rewrite 2!itv_boundlr => /andP[j1x xj2].
+    by rewrite (le_trans xj2 ji2) andbT (le_trans _ j1x) // ltW.
+  rewrite eqEsubset; split => x.
+  * move/set_of_itv_mem; rewrite itv_boundlr => /andP[i1x xj1]; split.
+      apply/set_of_itv_mem; rewrite itv_boundlr i1x /= leNgt; apply/negP => i2j1.
+      move/eqP : ij0; apply.
+      rewrite set_of_itv_empty_set0 // meetEtotal minElt ji2 joinEtotal maxElt.
+      by rewrite ji1 -leNgt (le_trans _ xj1) // (le_trans (ltW i2j1)).
+    move/set_of_itv_mem; rewrite itv_boundlr => /andP[j1x xj2].
+    by have := le_trans xj1 j1x; rewrite itv_bound_lteE ltxx.
+  * move=> -[/set_of_itv_mem]; rewrite itv_boundlr => /andP[i1x xi2] /set_of_itv_mem.
+    rewrite itv_boundlr => /negP; rewrite negb_and -2!ltNge => /orP[xj1|j2x].
+      by apply/set_of_itv_mem; rewrite itv_boundlr i1x.
+    by have := lt_trans (le_lt_trans xi2 ji2) j2x; rewrite ltxx.
+Qed.
+
+Lemma itv_diffxx (a : interval R) : set_of_itv (itv_diff a a) = set0.
+Proof.
+have [[a0 aa0]|/set0P/negP/negPn/eqP a0] := pselect (set_of_itv a !=set0).
+  rewrite /itv_diff ifF; last first.
+    by rewrite itv_meetE; apply/negbTE/set0P; exists a0.
+  case: a aa0 => [a1 a2] aa0.
+  by rewrite !lexx set_of_itv_empty_set0 // ltxx.
+by rewrite /itv_diff ifT // itv_meetE a0 set0I.
+Qed.
+
+End itv_diff.
+
+Definition disjoint_itv {R : numDomainType} : rel (interval R) :=
+  fun a b => set_of_itv a `&` set_of_itv b == set0.
+
+Lemma lt_disjoint (R : numDomainType) (i j : interval R) :
+  (forall x y, x \in i -> y \in j -> x < y) -> disjoint_itv i j.
+Proof.
+move=> ij; apply/eqP; rewrite predeqE => x; split => // -[].
+move/set_of_itv_mem => xi /set_of_itv_mem xj.
+by have := ij _ _ xi xj; rewrite ltxx.
+Qed.
+
+Lemma path_disjoint_setT_eq0 (R : numDomainType) (t : seq (interval R)) :
+  (forall i, i \in t -> set_of_itv i !=set0) ->
+  path.path disjoint_itv `]-oo, +oo[ t ->
+  t = [::].
+Proof.
+case: t => // h t /= /(_ h); rewrite mem_head => /(_ erefl).
+move=> [x /set_of_itv_mem xh] /andP[hoo _]; exfalso.
+by move: hoo; rewrite /disjoint_itv; apply/negP/set0P; exists x.
+Qed.
+
+Section lt_itv.
+Variable R : realType.
+
+Definition lt_itv (i j : interval R) := match i, j with
+  | Interval i1 i2, Interval j1 j2 =>
+    if (i1 < j1)%O then true else if i1 == j1 then (i2 < j2)%O else false
+  end.
+
+Lemma lt_trans_itv : transitive lt_itv.
+Proof.
+move=> [k1 k2] [i1 i2] [j1 j2]; rewrite /lt_itv.
+case: (ltgtP i1 k1) => // [ik1 _| <-{k1} ik2].
+  case: (ltgtP k1 j1) => // [kj1 _|kj1]; last by rewrite -kj1 ik1.
+  by rewrite (lt_trans ik1).
+by case: (ltgtP i1 j1) => // _; apply: lt_trans.
+Qed.
+
+Definition le_itv i j := (i == j) || (lt_itv i j).
+
+Lemma total_le_itv : total le_itv.
+Proof.
+move=> [i1 i2] [j1 j2]; rewrite /le_itv /=.
+case/boolP : (_ == _) => ij //=.
+case: (ltgtP i1 j1) => //=; rewrite ?orbT // => ij1.
+rewrite eq_sym (negbTE ij) /= -neq_lt; apply/negP => /eqP ij2.
+by exfalso; move/negP : ij; apply; rewrite ij1 ij2.
+Qed.
+
+Lemma le_trans_itv : transitive le_itv.
+Proof.
+move=> y x z.
+rewrite /le_itv => /orP[/eqP -> //|xy] /orP[/eqP <-|yz]; first by rewrite orbC xy.
+by rewrite (lt_trans_itv xy yz) orbT.
+Qed.
+
+Lemma le_lt_trans_itv y x z : le_itv x y -> lt_itv y z -> lt_itv x z.
+Proof. by rewrite /le_itv => /orP[/eqP ->//|]; exact: lt_trans_itv. Qed.
+
+Lemma lt_le_trans_itv y x z : lt_itv x y -> le_itv y z -> lt_itv x z.
+Proof. by move=> xy; rewrite /le_itv => /orP[/eqP <- //|]; exact: lt_trans_itv. Qed.
+
+Lemma ltW_itv x y : lt_itv x y -> le_itv x y.
+Proof. by rewrite /le_itv => ->; rewrite orbT. Qed.
+
+Lemma lt_itvxx a : lt_itv a a = false.
+Proof. by case: a => ? ? /=; rewrite ltxx eqxx ltxx. Qed.
+
+Let lt_itv_lt (a b : interval R) : lt_itv a b ->
+  set_of_itv a `&` set_of_itv b = set0 ->
+  forall x y, x \in a -> y \in b -> x < y.
+Proof.
+move: a b => [i1 i2] [j1 j2].
+rewrite /lt_itv; case: (ltgtP i1 j1) => // [ij1 _|].
+- rewrite -itv_meetE => /set_of_itv_empty_pred0 ij0 x y.
+  rewrite 2!itv_boundlr => /andP[i1x xi2] /andP[j1y yj2].
+  have [i2j1|i2j1] := leP i2 j1.
+    by have := le_trans xi2 (le_trans i2j1 j1y).
+  rewrite ltNge; apply/negP => yx.
+  have /negP := ij0 y.
+  apply; apply/itv_meet_mem; rewrite 2!itv_boundlr.
+  by rewrite (le_trans (ltW ij1)) //= (le_trans _ xi2) // yj2 andbT j1y.
+- move=> <-{j1} ij2; rewrite -itv_meetE => /set_of_itv_empty_pred0 => ij0 x y.
+  rewrite 2!itv_boundlr => /andP[i1x xi2] /andP[i1y yj2].
+  rewrite ltNge; apply/negP => yx.
+  have /negP := ij0 x.
+  apply; apply/itv_meet_mem; split => //; rewrite itv_boundlr i1x //=.
+  by rewrite (le_trans xi2) // ltW.
+Qed.
+
+Lemma lt_itv_le (a b : interval R) : le_itv a b ->
+  set_of_itv a `&` set_of_itv b = set0 ->
+  forall x y, x \in a -> y \in b -> x < y.
+Proof.
+move: a b => [i1 i2] [j1 j2].
+move/orP => [/eqP[<-{j1} <-{j2}]|]; last exact: lt_itv_lt.
+have [i1i2|i1i2 _ x y] := ltP i1 i2.
+  move=> i1i20; exfalso; move/eqP: i1i20; apply/negP.
+  by rewrite -itv_meetE set_of_itv_empty_eq0 negbK meetxx joinxx.
+by rewrite itv_ge // -leNgt.
+Qed.
+
+Let lt_itv_subset (a b c : interval R) (x : R) :
+  x \in a -> x \in c -> x \notin b ->
+  lt_itv a b -> lt_itv b c ->
+  {subset a <= b} \/ {subset b <= a}.
+Proof.
+move: a b c => [a1 a2] [b1 b2] [c1 c2] + + + ab bc; move: bc ab => /=.
+case : (ltgtP b1 c1) => // [b1c1 _|<-{c1} b2c2]; last first.
+  case : (ltgtP a1 b1) => // [a1b1 _|<-{b1} a2b2]; last first.
+    rewrite 2!itv_boundlr => /andP[a1x xa2] /andP[_ xc2] _.
+    left => y.
+    by rewrite 2!itv_boundlr => /andP[-> /=] /le_trans; apply; exact: ltW.
+  rewrite 3!itv_boundlr => /andP[a1x xa2] /andP[b1x xc2].
+  rewrite negb_and -2!ltNge => xb1b2.
+  right => y; rewrite 2!itv_boundlr => /andP[b1y yb2].
+  case/orP: xb1b2 => [|?]; first by move/(le_lt_trans b1x); rewrite ltxx.
+  rewrite (le_trans (ltW a1b1)) //= (le_trans _ xa2) //= (le_trans yb2) //.
+  exact/ltW.
+case : (ltgtP a1 b1) => // [a1b1 _|-> // a2b2].
+  rewrite 3!itv_boundlr => /andP[a1x xa2] /andP[c1x xc2].
+  rewrite negb_and -2!ltNge => xb1b2; right => y.
+  rewrite 2!itv_boundlr => /andP[b1y yb2]; case/orP: xb1b2 => [xb1|b2x].
+    by have := lt_trans (lt_le_trans b1c1 c1x) xb1; rewrite ltxx.
+  rewrite (le_trans (ltW a1b1) b1y) /= (le_trans _ xa2) // (le_trans yb2) //.
+  exact/ltW.
+rewrite 3!itv_boundlr => /andP[b1x xa2] /andP[c1x xc2] _; left => y.
+by rewrite 2!itv_boundlr => /andP[-> /=] /le_trans; apply; exact: ltW.
+Qed.
+
+Lemma le_itv_subset (a b c : interval R) (x : R) :
+  x \in a -> x \in c -> x \notin b ->
+  le_itv a b -> le_itv b c ->
+  {subset a <= b} \/ {subset b <= a}.
+Proof.
+move=> xa xc xb /orP[/eqP <- _|ab]; [by left|].
+move/orP => [/eqP bc|]; last exact: (lt_itv_subset _ xc).
+by move: xb; rewrite bc xc.
+Qed.
+
+End lt_itv.
+Arguments lt_itv {R}.
+Arguments le_itv {R}.
+Arguments lt_trans_itv {R _ _ _}.
+Arguments le_trans_itv {R _ _ _}.
+
+Lemma ufint_sort_le_itv (R : realType) (s : seq (interval R)) :
+  ufint (path.sort le_itv s) = ufint s.
+Proof. exact/mem_ufint/path.mem_sort. Qed.
+
+Section lt_itv_diff.
+Variable R : realType.
+
+Lemma lt_itv_diff (a b : interval R) : lt_itv a b ->
+  ~ {subset b <= a} -> ~ {subset a <= b} ->
+  lt_itv (itv_diff a b) b.
+Proof.
+rewrite /itv_diff; case: ifPn => //; move: a b => [a1 a2] [b1 b2] /=.
+case: ltgtP => [a1b1 _ ab0 sba sab|//|<-{b1}].
+  have [b2a2|b2a2] /= := leP b2 a2; last by rewrite a1b1.
+  exfalso; apply: sba => x.
+  rewrite itv_boundlr => /andP[b1x xb2].
+  by rewrite itv_boundlr (le_trans (ltW a1b1) b1x) /= (le_trans _ b2a2).
+move=> ab0 a2b2 sba sab; rewrite leNgt a2b2 /=.
+exfalso; apply: sab => x.
+rewrite itv_boundlr => /andP[a1x xb2].
+by rewrite itv_boundlr a1x /= (le_trans xb2) // ltW.
+Qed.
+
+Lemma le_itv_diff (a b : interval R) : le_itv a b ->
+  ~ {subset b <= a} -> ~ {subset a <= b} ->
+  le_itv (itv_diff a b) b.
+Proof.
+rewrite /le_itv => /orP[/eqP <-{b}|]; first by move=> saa; exfalso; exact: saa.
+by move=> ab sba sab; apply/orP; right; exact: lt_itv_diff.
+Qed.
+
+Lemma lt_itv_itv_diff (y : interval R) a b :
+  ~ {subset b <= a} ->
+  set_of_itv y `&` set_of_itv a = set0 ->
+  lt_itv a b -> lt_itv y a -> lt_itv y b ->
+  lt_itv y (itv_diff a b).
+Proof.
+move: y a b => [y1 y2] [a1 a2] [b1 b2] /=.
+case: (ltgtP a1 b1) => [a1b1 ba + _| // | <-{b1}].
+  have a2b2 : (a2 < b2)%O.
+    rewrite ltNge; apply/negP => b2a2.
+    apply: ba => x; rewrite itv_boundlr => /andP[b1x xb2].
+    by rewrite itv_boundlr (le_trans (ltW _) b1x) //= (le_trans xb2).
+  move: ba a1b1; case: (ltgtP y1 a1) => [y1a1 _ a1b1 ya _| // | <-{a1} ba a1b1 ya y2a2 _].
+    rewrite (lt_trans y1a1) // /itv_diff => _.
+    case: ifPn => [_ |ab0]; first by rewrite y1a1.
+    by rewrite leNgt a1b1 /= leNgt a2b2 /= y1a1.
+  rewrite /itv_diff; case: ifPn => [_|ab0]; first by rewrite ltxx eqxx.
+  rewrite leNgt a1b1 /= leNgt a2b2 /= ltxx eqxx ltNge; apply/negP => b1y2.
+  move/eqP : ya; apply/negP.
+  rewrite -itv_meetE /= meetEtotal minElt y2a2 joinEtotal /= maxEle lexx.
+  by rewrite set_of_itv_empty_eq0 negbK (lt_le_trans a1b1).
+case: (ltgtP y1 a1) => [y1a1 ab ya a2b2 _ _| // |<-{a1} ab ya a2b2 y2a2 y2b2].
+  rewrite /itv_diff; case: ifPn => [_|ab0]; first by rewrite y1a1.
+  rewrite lexx leNgt a2b2 /=; case: ifPn => //.
+  rewrite -leNgt le_pinfty_eq => /eqP y1oo.
+  by move: y1a1; rewrite y1oo.
+rewrite /itv_diff; case: ifPn => [_|ab0]; first by rewrite ltxx eqxx.
+rewrite lexx leNgt a2b2 /=; case: ifPn => //.
+rewrite -leNgt le_pinfty_eq => /eqP y1oo.
+exfalso.
+move/eqP : ab0; apply.
+by rewrite /= y1oo itv_join_meet /= set_of_itv_empty_set0.
+Qed.
+
+Lemma le_itv_itv_diff (y : interval R) a b :
+  ~ {subset b <= a} ->
+  set_of_itv y `&` set_of_itv a = set0 ->
+  le_itv a b -> le_itv y a -> le_itv y b ->
+  le_itv y (itv_diff a b).
+Proof.
+move=> ba ya0; rewrite {1}/le_itv => /orP[/eqP[ab]|ab].
+  by exfalso; move: ba; rewrite -ab; exact.
+rewrite {1}/le_itv => /orP[/eqP ya|ya].
+  move: ya0; rewrite {}ya {y} => aa0.
+  have [[x xa] _|/set0P/negP/negPn/eqP a0 _] := pselect (set_of_itv a !=set0).
+    by exfalso; move/eqP : aa0; apply/negP/set0P; exists x.
+ (* lemma? *)
+ apply/orP; left.
+ by rewrite /itv_diff itv_meetE ifT // a0 set0I.
+move/orP => [/eqP yb|yb].
+by move: ya; rewrite yb => /(lt_trans_itv ab); rewrite lt_itvxx.
+by apply/orP; right; exact: lt_itv_itv_diff.
+Qed.
+
+End lt_itv_diff.
+
+Section lt_itv_disjoint.
+Variable R : realType.
+
+Lemma nonempty_sorted_disjoint_itv h (t : seq (interval R)) :
+  (forall i, i \in t -> set_of_itv i !=set0) ->
+  path.sorted le_itv (h :: t) ->
+  path.path disjoint_itv h t ->
+  (forall c, c \in t -> disjoint_itv h c).
+Proof.
+elim: t h => [h t0 _ _ c //|b t ih a t0 /= /andP[lt_ab lt_bt] /andP[dis_ab dis_bt] c].
+rewrite inE => /orP[/eqP ->{c} //|ct]; apply: ih => //.
+- move=> i it; apply t0 => //.
+  by rewrite inE it orbT.
+- rewrite (_ : _ :: _ = mask (true :: false :: nseq (size t) true) [:: a, b & t]); last first.
+    by rewrite /= mask_true.
+  apply (path.path_mask (@le_trans_itv R)).
+  by rewrite /= lt_ab.
+- case: t => [//|d t] in t0 lt_bt dis_bt ct *.
+  move: dis_bt; rewrite [in X in X -> _]/= => /andP[dis_bd dis_dt].
+  rewrite /= {}dis_dt andbT.
+  move: (lt_itv_le lt_ab (eqP dis_ab)) => {}lt_ab.
+  move/andP : lt_bt => [+ _] => /lt_itv_le/(_ (eqP dis_bd)) lt_bd.
+  apply/lt_disjoint => x y xa yd.
+  have [z bz] : set_of_itv b !=set0 by apply t0; rewrite mem_head.
+  by rewrite (@lt_trans _ _ z _ _ (lt_ab _ _ _ _) (lt_bd _ _ _ _)).
+Qed.
+
+Lemma nonempty_sorted_disjoint_itv_trivIset h (t : seq (interval R)) :
+  (forall c, c \in t -> set_of_itv c !=set0) ->
+  path.sorted le_itv (h :: t) ->
+  path.path disjoint_itv h t ->
+  trivIset (fun i => set_of_itv (nth 0%O (h :: t) i)).
+Proof.
+elim: t h => //= [h t0 _ _ i j ij|b t ih a t0 /andP[lt_ab lt_bt] /andP[dis_ab dis_bt]].
+  case: i => [|i] /= in ij *.
+    case: j => [|j] //= in ij *.
+    by rewrite nth_nil set_of_itv_empty_set0 // setI0.
+  by rewrite nth_nil set_of_itv_empty_set0 // set0I.
+move=> [|i] [|j] //= ?.
+- have [jbt|btj] := ltP j (size (b :: t)).
+    apply/eqP/(@nonempty_sorted_disjoint_itv _ (b :: t)) => //=.
+    by rewrite lt_ab.
+    by rewrite dis_ab.
+    by rewrite mem_nth.
+  by rewrite nth_default // set_of_itv_empty_set0 // setI0.
+- have [ibt|bti] := ltP i (size (b :: t)).
+    rewrite setIC.
+    apply/eqP/(@nonempty_sorted_disjoint_itv _ (b :: t)) => //=.
+    by rewrite lt_ab.
+    by rewrite dis_ab.
+    by rewrite mem_nth.
+  by rewrite nth_default // set_of_itv_empty_set0 // set0I.
+- by apply ih => // c ct; apply t0; rewrite inE ct orbT.
+Qed.
+
+Lemma path_disjoint_pinfty_eq0 (t : seq (interval R)) j :
+  (forall i, i \in t -> set_of_itv i !=set0) ->
+  path.path lt_itv (Interval j +oo%O) t ->
+  path.path disjoint_itv (Interval j +oo%O) t ->
+  t = [::].
+Proof.
+case: t => // h t ne.
+case: j => [b r|[]]; last 2 first.
+  by move=> _; apply path_disjoint_setT_eq0.
+  rewrite /=; case: h => h1 h2 in ne *.
+  by rewrite pinfty_lt if_same.
+case: h => h1 h2 /= in ne *.
+rewrite pinfty_lt if_same.
+case: ifPn => //= rh1 ht /andP[rooh Hdis].
+exfalso.
+move: rooh; apply/negP/set0P; rewrite -itv_meetE /=.
+rewrite joinEtotal maxElt rh1 meetEtotal minElt /=.
+by apply ne; rewrite mem_head.
+Qed.
+
+Lemma sorted_le_itv_bound (s : seq (interval R)) :
+  (forall i, i \in s -> set_of_itv i !=set0) ->
+  path.sorted le_itv s ->
+  path.path (fun x y => disjoint_itv x y) (head 0%O s) (behead s) ->
+  path.sorted <=%O (map bnd2 s) /\ path.sorted <=%O (map bnd1 s).
+Proof.
+elim: s => // -[h1 h2] [//|[t11 t12] t2] ih /= ne ht Hdis; split.
+  apply/andP; split.
+    case/andP : ht => + _.
+    move/orP => -[/eqP[_ <-]//|].
+    rewrite /lt_itv; case: ltgtP => //= [|_ /ltW] // h11t11 _.
+    move/andP : Hdis => [H _].
+    rewrite leNgt; apply/negP => t12h2.
+    move : H; apply/negP/set0P.
+    have [x t11t12x] : set_of_itv (Interval t11 t12) !=set0.
+      by apply ne; rewrite 2!inE eqxx orbT.
+    exists x; split => //.
+    apply/set_of_itv_mem; rewrite itv_boundlr.
+    move/set_of_itv_mem : t11t12x; rewrite itv_boundlr => /andP[t11x xt12].
+    by rewrite (le_trans (ltW _) t11x) // (le_trans xt12) // ltW.
+  apply: (proj1 (ih _ _ _)).
+  by move=> i it1t2; apply ne; rewrite inE it1t2 orbT.
+  by case/andP : ht => ? ht.
+  by rewrite /=; move/andP : Hdis => // -[].
+apply/andP; split.
+  move/andP : ht => -[] /orP[/eqP[<-//]|].
+  by rewrite /lt_itv; case: ltgtP.
+apply: (proj2 (ih _ _ _)).
+by move=> i it1t2; apply ne; rewrite inE it1t2 orbT.
+by case/andP : ht.
+by rewrite /=; move/andP : Hdis => // -[].
+Qed.
+
+End lt_itv_disjoint.
+
+Section decomposition.
+Variable R : realType.
+
+Program Definition decompose' (s : seq (interval R))
+  (f : forall s', (size s' < size s)%N -> seq (interval R)) : seq (interval R) :=
+  match s with
+  | [::] => [::] | [:: i] => [:: i]
+  | [:: i, j & tl] => match pselect {subset i <= j} with
+    | left _ => f (j :: tl) _
+    | right not_ij => match pselect {subset j <= i} with
+                     | left _ => f (i :: tl) _
+                     | right _ => itv_diff i j :: f (j :: tl) _
+                     end
+    end
+  end.
+
+Lemma wfr : well_founded (fun s' s : seq (interval R) => (size s' < size s)%N).
+Proof. by apply: (@Wf_nat.well_founded_lt_compat _ size) => s t /ssrnat.ltP. Qed.
+
+Definition decompose : seq (interval R) -> seq (interval R) :=
+  Fix wfr (fun _ => _ _) decompose'.
+
+Lemma decompose'_ext (x : seq (interval R))
+  (f g : forall y : seq (interval R), (size y < size x)%N -> seq (interval R)) :
+    (forall (y : seq (interval R)) (p : (size y < size x)%N), f y p = g y p) ->
+  decompose' f = decompose' g.
+Proof.
+move => fg; congr decompose'.
+by apply functional_extensionality_dep => ?; apply functional_extensionality_dep.
+Qed.
+
+Lemma decompose_nil : decompose [::] = [::].
+Proof. by rewrite /decompose Fix_eq //=; exact decompose'_ext. Qed.
+
+Lemma decompose_one i : decompose [:: i] = [:: i].
+Proof. rewrite /decompose Fix_eq //=; exact: decompose'_ext. Qed.
+
+Lemma decompose_two i j tl : decompose [:: i, j & tl] =
+    match pselect {subset i <= j} with
+    | left _ => decompose (j :: tl)
+    | right not_ij => match pselect {subset j <= i} with
+                     | left _ => decompose (i :: tl)
+                     | right _ => itv_diff i j :: decompose (j :: tl)
+                     end
+    end.
+Proof.
+rewrite {1}/decompose Fix_eq; last exact: decompose'_ext.
+by move: i j => [i1 i2] [j1 j2] //=; case: pselect => //; case: pselect.
+Qed.
+
+Lemma ufint_decompose (s : seq (interval R)) :
+  path.sorted le_itv s -> ufint (decompose s) = ufint s.
+Proof.
+move sn : (size s) => n; elim: n s sn => [|n ih [//|i [|j tl]]].
+  by case => // _ _; rewrite decompose_nil.
+  by move=> _ _; rewrite decompose_one.
+move=> [tln] Hsort.
+rewrite decompose_two.
+case: (pselect _) => ij.
+  rewrite /= ih //; last by move: Hsort; rewrite /= => /andP[].
+  rewrite /ufint 3!bigcup_cons setUA; congr setU.
+  by rewrite setUC; apply/esym/setUidPl/itv_set_of_itv_subset.
+case: (pselect _) => ji.
+  rewrite /= ih //; last first.
+    rewrite (_ : _ :: _ = mask (true :: false :: nseq (size tl) true) [:: i, j & tl]); last first.
+      by rewrite /= mask_true.
+    by apply (path.path_mask (@le_trans_itv _)).
+  rewrite /ufint 3!bigcup_cons setUA; congr setU.
+  by apply/esym/setUidPl/itv_set_of_itv_subset.
+rewrite /= {1}/ufint /= (bigcup_cons _ (decompose (j :: tl))).
+rewrite -/(ufint (decompose (j :: tl))) ih //; last first.
+  by move: Hsort => /andP[].
+rewrite {2}/ufint bigcup_cons -/(ufint _).
+rewrite /ufint bigcup_cons !setUA; congr (_ `|` _).
+have [i0|/set0P/negP/negPn/eqP i0] := pselect (set_of_itv i !=set0); last first.
+  move/itv_set_of_itv_subset in ij.
+  by exfalso; apply: ij; rewrite i0.
+rewrite itv_diffE // eqEsubset; split.
+  apply: subsetU; last by move=> x; right.
+  by move=> x ix; left; case: ix.
+move=> x [ix|jx]; last by right.
+by have [jx|jx] := pselect ((set_of_itv j) x); [right|left].
+Qed.
+
+Lemma decompose_nonempty (s : seq (interval R)) :
+  (forall i, i \in s -> set_of_itv i !=set0) ->
+  (forall i, i \in decompose s -> set_of_itv i !=set0).
+Proof.
+move sn : (size s) => n; elim: n s sn => [|n ih [//|i [|j tl]]].
+  by move=> s /size0nil ->{} _ i; rewrite decompose_nil.
+  by move=> _ H t; rewrite decompose_one /= inE => /eqP ->; apply H; rewrite inE.
+rewrite /= => -[tln] ne t.
+rewrite decompose_two.
+case: pselect => ij.
+  apply ih => // k kjtl; apply ne.
+  by rewrite inE kjtl orbT.
+case: pselect => ji.
+  apply ih => // k kjtl; apply ne.
+  move: kjtl; rewrite inE => /orP[/eqP ->|].
+  by rewrite mem_head.
+  by rewrite !inE => ->; rewrite !orbT.
+rewrite inE => /orP[/eqP ->|].
+  rewrite itv_diffE //.
+  suff : exists x, (set_of_itv i) x /\ ~ (set_of_itv j) x by case=> x [? ?]; exists x.
+  apply/not_existsP => xij.
+  apply ij.
+  apply/itv_set_of_itv_subset => x ix.
+  have := xij x.
+  by rewrite not_andP => -[//|/contrapT].
+apply ih => // k kjtl.
+apply ne.
+by rewrite inE kjtl orbT.
+Qed.
+
+Lemma path_disjoint_itv_decompose (s : seq (interval R)) :
+  path.sorted le_itv s ->
+  forall t, (forall c, c \in s -> disjoint_itv t c) ->
+  path.path disjoint_itv t (decompose s).
+Proof.
+move sn : (size s) => n.
+elim: n s sn => [|n ih [//|i [|j tl]]].
+  by move=> _ /size0nil ->{} _ t tc; rewrite decompose_nil.
+  by move=> _ _ t tc; rewrite decompose_one /= tc ?mem_head // eqxx.
+case.
+case: n => [//|n] in ih * => -[] tln H t tc.
+rewrite decompose_two.
+case: pselect => ij.
+  apply ih => //.
+    by rewrite /= tln.
+  by case/andP : H.
+  move=> c cjtl.
+  by rewrite tc // inE cjtl orbT.
+case: pselect => // ji.
+  apply ih; first by rewrite /= tln.
+  rewrite (_ : _ :: _ = mask (true :: false :: nseq (size tl) true) [:: i, j & tl]); last first.
+    by rewrite /= mask_true.
+  by apply (path.path_mask (@le_trans_itv _)).
+  move=> c; rewrite inE => citl.
+  by rewrite tc // !inE orbCA citl orbT.
+rewrite /=; apply/andP; split.
+  by apply/eqP; rewrite itv_diffE // setDE setIA (eqP (tc _ _)) ?set0I // mem_head.
+apply ih; first by rewrite /= tln.
+  apply: (path.subseq_sorted (@le_trans_itv _)) H.
+  exact: subseq_cons.
+move=> c cjtl.
+apply/eqP; rewrite itv_diffE //.
+move: cjtl.
+rewrite inE => /orP[/eqP ->|ctl].
+  by rewrite setDE -setIA setICl setI0.
+rewrite predeqE => x; split => // -[].
+rewrite setDE => -[] /set_of_itv_mem ix /set_of_itv_mem/negP jx /set_of_itv_mem cx.
+have jc : le_itv j c.
+  move: ctl.
+  rewrite -sub1seq.
+  move/path.subseq_path_in => /(_ le_itv j) /=; rewrite andbT; apply => //.
+    by move=> ? ? ? ? ? ?; exact: le_trans_itv.
+  by move: H => /= /andP[].
+have iijj : le_itv i j by move: H; rewrite /= => /andP[].
+apply ji.
+by have [|] := le_itv_subset ix cx jx iijj jc.
+Qed.
+
+Lemma path_disjoint_itv_decompose_head_behead (s : seq (interval R)) :
+  path.sorted le_itv s ->
+  path.path disjoint_itv (head 0%O (decompose s)) (behead (decompose s)).
+Proof.
+move sn : (size s) => n.
+elim: n s sn => [|n ih [//|i [|j tl]]].
+  by move=> _ /size0nil ->{} _; rewrite decompose_nil.
+  by move=> ic _; rewrite decompose_one /=.
+case.
+case: n => [//|n] in ih *=> -[] tln H.
+rewrite decompose_two.
+case: pselect => ij.
+  apply ih => //.
+    by rewrite /= tln.
+  by case/andP : H.
+case: pselect => // ji.
+  apply ih; first by rewrite /= tln.
+  rewrite (_ : _ :: _ = mask (true :: false :: nseq (size tl) true) [:: i, j & tl]); last first.
+    by rewrite /= mask_true.
+  by apply (path.path_mask (@le_trans_itv _)).
+rewrite /=.
+apply path_disjoint_itv_decompose.
+  by move: H => /= /andP[].
+move=> c cjtl.
+apply/eqP; rewrite itv_diffE //.
+move: cjtl.
+rewrite inE => /orP[/eqP ->|ctl].
+  by rewrite setDE -setIA setICl setI0.
+rewrite predeqE => x; split => // -[].
+rewrite setDE => -[] /set_of_itv_mem ix /set_of_itv_mem/negP jx /set_of_itv_mem cx.
+have jc : le_itv j c.
+  move: ctl.
+  rewrite -sub1seq.
+  move/path.subseq_path_in => /(_ le_itv j) /=; rewrite andbT; apply => //.
+    by move=> ? ? ? ? ? ?; exact: le_trans_itv.
+  by move: H => /= /andP[].
+have iijj : le_itv i j by move: H; rewrite /= => /andP[].
+apply ji.
+by have [|] := le_itv_subset ix cx jx iijj jc.
+Qed.
+
+Lemma all_decompose t y : path.sorted le_itv t ->
+  all (fun x => le_itv y x && disjoint_itv y x) t ->
+  all (fun x => le_itv y x && disjoint_itv y x) (decompose t).
+Proof.
+move: y.
+have [n] := ubnP (size t); elim: n t => // n ih.
+case.
+  by move=> _ y _ _; rewrite decompose_nil.
+move=> a [|b t].
+  by move=> /= n1 y _; by rewrite decompose_one /= andbT.
+move=> /=; rewrite ltnS => tn y /andP[ab bt] /and3P[ya yb yt].
+rewrite decompose_two.
+case: pselect.
+  move=> sab.
+  apply ih => //.
+  apply/allP => z.
+  rewrite inE => /orP[/eqP -> //| zt].
+  by move/allP : yt; apply.
+move=> sab.
+case: pselect => sba.
+  apply ih => //.
+  rewrite /=.
+  rewrite (_ : t = mask (false :: nseq (size t) true) [:: b & t]); last first.
+    by rewrite /= mask_true.
+  apply (path.path_mask (@le_trans_itv _)) => //.
+  by rewrite /= ab.
+  apply/allP => z.
+  rewrite inE => /orP[/eqP -> //|zt].
+  by move/allP : yt; apply.
+apply/allP.
+move=> z.
+rewrite inE => /orP[|]; last first.
+  move=> zbt.
+  have : all (fun x : interval R => le_itv y x && (disjoint_itv y x)) (decompose (b :: t)).
+    apply ih => //.
+    apply/allP => u.
+    rewrite inE => /orP[/eqP -> //|ut].
+    by move/allP : yt; apply.
+  move/allP => H.
+  by apply H.
+move/eqP=> ->{z}.
+apply/andP; split.
+  apply le_itv_itv_diff => //.
+  by move/andP : ya => -[_ /eqP].
+  by move/andP : ya => -[].
+  by move/andP : yb => -[].
+rewrite /disjoint_itv itv_diffE //=.
+apply/eqP.
+apply: (@subsetI_eq0 _ _ (set_of_itv y)_ (set_of_itv a)) => //.
+by move=> x [].
+by move/andP : ya => -[_ /eqP].
+Qed.
+
+Lemma sorted_decompose s : path.sorted le_itv s -> path.sorted le_itv (decompose s).
+Proof.
+have [n] := ubnP (size s); elim: n s => // n ih.
+case.
+  by move=> _ _; rewrite decompose_nil.
+move=> a [|b t].
+  by move=> _ _; rewrite decompose_one.
+rewrite ltnS => abtn abt.
+rewrite decompose_two.
+case: pselect => ab.
+  apply ih => //.
+  by move: abt => /= /andP[].
+case: pselect => ba.
+  apply ih => //.
+  rewrite (_ : _ :: _ = mask (true :: false :: nseq (size t) true) [:: a, b & t]); last first.
+    by rewrite /= mask_true.
+  apply path.path_mask => //.
+  by move=> y x z; apply le_trans_itv.
+rewrite /=.
+have bt : path.sorted le_itv (decompose (b :: t)).
+  by apply ih => //; move: abt => /= /andP[].
+rewrite path.path_min_sorted //.
+have bt' : path.sorted le_itv (b :: t).
+  by move: abt => /= /andP[].
+have : all (fun x => le_itv (itv_diff a b) x && (disjoint_itv (itv_diff a b) x)) (b :: t).
+  rewrite /=.
+  rewrite le_itv_diff //=; last first.
+    by move: abt => /= => /andP[].
+  apply/andP; split.
+    by apply/eqP; rewrite itv_diffE // setDE -setIA setICl setI0.
+  apply/allP => z zt.
+  apply/andP; split.
+    rewrite (@le_trans_itv _ b) //.
+      apply le_itv_diff => //.
+      by move: abt => /= /andP[].
+    move: abt => /= /andP[_ bt''].
+    by move/path.order_path_min : bt'' => /(_ (@le_trans_itv R)) /allP; apply.
+  rewrite /disjoint_itv itv_diffE //.
+  apply/negPn/negP => /set0P[x] -[[] ].
+  move/set_of_itv_mem => xa bx /set_of_itv_mem zx.
+  move: a b z => [a1 a2] [b1 b2] [z1 z2] in zt zx abtn abt ab ba bt bt' bx xa *.
+  apply: bx.
+  apply/set_of_itv_mem.
+  rewrite itv_boundlr in xa.
+  rewrite itv_boundlr in zx.
+  rewrite itv_boundlr.
+  case/andP : zx => zx1 zx2.
+  rewrite (le_trans _ zx1) //=; last first.
+     have : le_itv (Interval b1 b2) (Interval z1 z2).
+       have : path.path le_itv (Interval b1 b2) t.
+         by move: abt => /=.
+     by move/path.order_path_min => /(_ (@le_trans_itv R))/allP; apply.
+     rewrite /le_itv => /orP[/eqP[ <- //]|].
+     rewrite /=.
+     by case: ltgtP => //.
+   rewrite leNgt; apply/negP => b2x.
+   case/andP : xa => xa1 xa2.
+   apply: ba.
+   move=> u.
+   rewrite itv_boundlr => /andP[b1u ub2].
+   rewrite itv_boundlr; apply/andP; split.
+     rewrite (le_trans _ b1u) //.
+     move: abt; rewrite /= /le_itv => /andP[/orP[/eqP[<- //]| /=]].
+     by case: ltgtP.
+   by rewrite (le_trans _ xa2) // (le_trans _ (ltW b2x)).
+move/(@all_decompose (b :: t) (itv_diff a b) bt').
+by apply sub_all => z /andP[].
+Qed.
+
+(* NB: not used *)
+Lemma trivIset_decompose (s : seq (interval R)) :
+  path.sorted le_itv s ->
+  (forall c, c \in s -> set_of_itv c !=set0) ->
+  trivIset (fun i => set_of_itv (nth 0%O (decompose s) i)).
+Proof.
+move=> sorteds smem0.
+have [/eqP|s0] := boolP (size (decompose s) == 0%N).
+  move/size0nil => -> /= i j ij.
+  by rewrite nth_nil set_of_itv_empty_set0 // set0I.
+have head_behead : decompose s = head 0%O (decompose s) :: behead (decompose s).
+  by move: s0; case: (decompose s).
+rewrite head_behead.
+apply: nonempty_sorted_disjoint_itv_trivIset.
+by move=> c cs; exact/(decompose_nonempty smem0)/mem_behead.
+by rewrite -head_behead sorted_decompose.
+suff : path.path disjoint_itv 0%O (head 0%O (decompose s) :: behead (decompose s)).
+  by rewrite /= => /andP[].
+rewrite -head_behead path_disjoint_itv_decompose => // c cs.
+by apply/eqP; rewrite set_of_itv_empty_set0 // set0I.
+Qed.
+
+Lemma itv_cplt_decomposeE (s : seq (interval R)) :
+  ufint (itv_cplt (decompose (path.sort le_itv [seq x <- s | set_of_itv x != set0]))) = ~` ufint s.
+Proof.
+rewrite itv_cpltE.
+  rewrite ufint_decompose.
+    by rewrite ufint_sort_le_itv // ufint_filter_neq0.
+  exact: (path.sort_sorted (@total_le_itv _)).
+apply sorted_le_itv_bound.
+- apply decompose_nonempty => i.
+  by rewrite path.mem_sort mem_filter => /andP[/set0P].
+- apply: sorted_decompose; exact: (path.sort_sorted (@total_le_itv _)).
+- apply: path_disjoint_itv_decompose_head_behead.
+  exact: (path.sort_sorted (@total_le_itv _)).
+Qed.
+
+End decomposition.
 (* WIP(end) *)
 
 Section real_measure.
 Variable R : realType.
 
-Definition fint : Type := {fset (interval R)}.
-Definition ufint (x : fint) : set R := \bigcup_(i in [set j | j \in x]) (set_of_itv i).
-
 Ltac Obligation Tactic := idtac.
 Program Definition interval_isRingOfSets : isRingOfSets R :=
   @isRingOfSets.Build _ _ _ _ _.
 Next Obligation.
-exact [set ufint X | X in @setT fint].
+exact [set ufint X | X in @setT (@fint _)].
 Defined.
 Next Obligation.
 rewrite /interval_isRingOfSets_obligation_1.
@@ -1360,7 +2361,11 @@ Next Obligation.
 rewrite /interval_isRingOfSets_obligation_1 in H *.
 case: H => a _ aA.
 rewrite /mkset.
-Admitted.
+set s := itv_cplt (decompose (path.sort le_itv [seq x <- a | set_of_itv x != set0])).
+exists ([fset x | x in s]%fset) => //=.
+rewrite (@mem_ufint _ _ s) //; last by move=> i; rewrite inE.
+by rewrite /s itv_cplt_decomposeE aA.
+Qed.
 
 Definition length_interval (i : interval R) : {ereal R} :=
   match i with
