@@ -1,4 +1,0 @@
-(coq.theory
- (name mathcomp.analysis)
- (package coq-mathcomp-analysis)
- (synopsis "An analysis library for mathematical components"))

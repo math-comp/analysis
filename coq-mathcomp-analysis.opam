@@ -1,3 +1,6 @@
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+
 opam-version: "2.0"
 maintainer: "Reynald Affeldt <reynald.affeldt@aist.go.jp>"
 version: "dev"
@@ -15,14 +18,14 @@ the Coq proof-assistant and using the Mathematical Components library."""
 build: [make "-j%{jobs}%" ]
 install: [make "install"]
 depends: [
-  "coq" { (>= "8.11" & < "8.13~") | (= "dev") }
+  "coq" { (>= "8.11" & < "8.14~") | (= "dev") }
   "coq-mathcomp-ssreflect" { (>= "1.12.0" & < "1.13~") }
   "coq-mathcomp-fingroup" { (>= "1.12.0" & < "1.13~") }
   "coq-mathcomp-algebra" { (>= "1.12.0" & < "1.13~") }
   "coq-mathcomp-solvable" { (>= "1.12.0" & < "1.13~") }
   "coq-mathcomp-field" { (>= "1.12.0" & < "1.13~") }
   "coq-mathcomp-finmap" { (>= "1.5.1" & < "1.6~") }
-  "coq-hierarchy-builder" { (>= "0.10.0" & < "0.11~") }
+  "coq-hierarchy-builder" { >= "0.10.0" }
 ]
 
 tags: [

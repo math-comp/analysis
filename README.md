@@ -1,10 +1,14 @@
+<!---
+This file was generated from `meta.yml`, please do not edit manually.
+Follow the instructions on https://github.com/coq-community/templates to regenerate.
+--->
 # Analysis library compatible with Mathematical Components
 
-[![CI][action-shield]][action-link]
+[![Docker CI][docker-action-shield]][docker-action-link]
 [![Chat][chat-shield]][chat-link]
 
-[action-shield]: https://github.com/math-comp/analysis/workflows/CI/badge.svg?branch=master
-[action-link]: https://github.com/math-comp/analysis/actions?query=workflow%3ACI
+[docker-action-shield]: https://github.com/math-comp/analysis/workflows/Docker%20CI/badge.svg?branch=master
+[docker-action-link]: https://github.com/math-comp/analysis/actions?query=workflow:"Docker%20CI"
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
 [chat-link]: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
 
@@ -25,7 +29,7 @@ the Coq proof-assistant and using the Mathematical Components library.
   - Kazuhiko Sakaguchi
   - Pierre-Yves Strub (initial)
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: Coq 8.11 to 8.12
+- Compatible Coq versions: Coq 8.11 to 8.13 (or dev)
 - Additional dependencies:
   - [MathComp ssreflect 1.12](https://math-comp.github.io)
   - [MathComp fingroup 1.12](https://math-comp.github.io)
@@ -33,7 +37,7 @@ the Coq proof-assistant and using the Mathematical Components library.
   - [MathComp solvable 1.12](https://math-comp.github.io)
   - [MathComp field 1.12](https://math-comp.github.io)
   - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
-  - [Hierarchy Builder 0.10](https://github.com/math-comp/hierarchy-builder)
+  - [Hierarchy Builder >= 0.10](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
 - Related publication(s):
   - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)
