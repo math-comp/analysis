@@ -40,13 +40,17 @@ license:
   file: LICENSE
 
 supported_coq_versions:
-  text: Coq 8.11 to 8.12
-  opam: '{ (>= "8.11" & < "8.13~") | (= "dev") }'
+  text: Coq 8.11 to 8.13 (or dev)
+  opam: '{ (>= "8.11" & < "8.14~") | (= "dev") }'
 
 tested_coq_opam_versions:
 - version: '1.12.0-coq-8.11'
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.12'
+  repo: 'mathcomp/mathcomp'
+- version: '1.12.0-coq-8.13'
+  repo: 'mathcomp/mathcomp'
+- version: '1.12.0-coq-dev'
   repo: 'mathcomp/mathcomp'
 
 dependencies:
@@ -82,9 +86,9 @@ dependencies:
     [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
 - opam:
     name: coq-hierarchy-builder
-    version: '{ (>= "0.10.0" & < "0.11~") }'
+    version: '{ >= "0.10.0" }'
   description: |-
-    [Hierarchy Builder 0.10](https://github.com/math-comp/hierarchy-builder)
+    [Hierarchy Builder >= 0.10](https://github.com/math-comp/hierarchy-builder)
 namespace: mathcomp.analysis
 
 keywords:
