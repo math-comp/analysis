@@ -21,6 +21,9 @@ jobs:
           - 'mathcomp/mathcomp:1.12.0-coq-8.12'
           - 'mathcomp/mathcomp:1.12.0-coq-8.13'
           - 'mathcomp/mathcomp:1.12.0-coq-dev'
+          - 'mathcomp/mathcomp-dev:coq-8.11'
+          - 'mathcomp/mathcomp-dev:coq-8.12'
+          - 'mathcomp/mathcomp-dev:coq-dev'
       fail-fast: false
     steps:
       - uses: actions/checkout@v2

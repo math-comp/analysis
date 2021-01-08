@@ -52,41 +52,47 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-dev'
   repo: 'mathcomp/mathcomp'
+- version: 'coq-8.11'
+  repo: 'mathcomp/mathcomp-dev'
+- version: 'coq-8.12'
+  repo: 'mathcomp/mathcomp-dev'
+- version: 'coq-dev'
+  repo: 'mathcomp/mathcomp-dev'
 
 dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
-    version: '{ (>= "1.12.0" & < "1.13~") }'
+    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
   description: |-
     [MathComp ssreflect 1.12](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-fingroup
-    version: '{ (>= "1.12.0" & < "1.13~") }'
+    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
   description: |-
     [MathComp fingroup 1.12](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-algebra
-    version: '{ (>= "1.12.0" & < "1.13~") }'
+    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
   description: |-
     [MathComp algebra 1.12](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-solvable
-    version: '{ (>= "1.12.0" & < "1.13~") }'
+    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
   description: |-
     [MathComp solvable 1.12](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-field
-    version: '{ (>= "1.12.0" & < "1.13~") }'
+    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
   description: |-
     [MathComp field 1.12](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-finmap
-    version: '{ (>= "1.5.1" & < "1.6~") }'
+    version: '{ (>= "1.5.1" & < "1.6~") | (= "dev") }'
   description: |-
     [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
 - opam:
     name: coq-hierarchy-builder
-    version: '{ >= "0.10.0" }'
+    version: '{ >= "0.10.0" | (= "dev") }'
   description: |-
     [Hierarchy Builder >= 0.10](https://github.com/math-comp/hierarchy-builder)
 namespace: mathcomp.analysis
