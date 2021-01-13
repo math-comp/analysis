@@ -332,10 +332,10 @@ Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 Reserved Notation "A ^°" (at level 1, format "A ^°").
 
 Reserved Notation "F ~~> f"  (at level 70, format "F  ~~>  f").
-Reserved Notation "F ~~>_( A ) f"  (at level 70, format "F  ~~>_( A )  f").
-Reserved Notation "F ~ptws~> f"  (at level 70, format "F  ~ptws~>  f").
+Reserved Notation "F ~~>_( A ) f"  (at level 70, format "F  '~~>_(' A ')'  f").
+Reserved Notation "F ~ptws~> f"  (at level 70, format "F  '~ptws~>'  f").
 Reserved Notation "F '~~(' famA ')~>' f" (at level 70 ,
-  format "F  '~~('  famA  ')~>'  f").
+  format "F  '~~(' famA ')~>'  f").
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -4613,18 +4613,40 @@ End RestrictionTopology.
 
 Notation eq_on := explode.
 
-Definition unif_fun {U V} (f : U -> V) : (U -> V) := f.
+Definition unif_fun 
+  {U: choiceType} {V : uniformType} (f : U -> V) : (fct_uniformType U V) := f.
 Notation "F ~~> f" := 
   (F --> (unif_fun f)) : classical_set_scope.
 
+Lemma unif_cvgE
+    {U : topologicalType} {V : uniformType}
+    (F : set(set( U -> V))) 
+    (f : U -> V) :
+  (F ~~> f) = (F --> (f : fct_uniformType U V)).
+Proof. by []. Qed. 
+
 Notation "F ~~>_( A ) f" := 
-  (F --> (restrict_fun A f)) : classical_set_scope.
+  (F --> ( restrict_fun A f)) : classical_set_scope.
+
+Lemma restricted_cvgE
+    {U : topologicalType} {V : uniformType}
+    (F : set(set( U -> V))) 
+    A
+    (f : U -> V) :
+  (F ~~>_(A) f) = (F --> (f : restricted_uniformType A)).
+Proof. by []. Qed. 
 
 Definition ptws_fun
-    {U: choiceType} {V : uniformType} 
-    (f : U -> V) :  @product_topologicalType U (fun=> V) := f.
+  {U: choiceType} {V : uniformType} 
+  (f : U -> V) :  @product_topologicalType U (fun=> V) := f.
 Notation "F '~ptws~>' f" := (F --> (ptws_fun f)) : classical_set_scope.
 
+Lemma ptws_cvgE
+    {U : topologicalType} {V : uniformType}
+    (F : set(set( U -> V))) 
+    (f : U -> V) :
+  (F ~ptws~> f) = (F --> (f : @product_topologicalType U (fun=> V))).
+Proof. by []. Qed. 
 
 Lemma ptws_uniform_cvg 
     {U : choiceType} {V : uniformType} (f : U -> V)
@@ -4694,7 +4716,7 @@ Qed.
 
 Lemma cvg_restrict_dep (f : U -> V) (F : set (set(U -> V))) :
   Filter F ->
-  (F ~~>_(A) f) <-> ((restrict_dep @ F ~~> (restrict_dep f)).
+  (F ~~>_(A) f) <-> (restrict_dep @ F ~~> (restrict_dep f)).
 Proof.
   move=> FF; split.
   - move=> cvgF P' /= [I' [B eB BsubI'] I'subP'].
@@ -4705,7 +4727,7 @@ Proof.
       1: by exists [set fg | forall t, B(fg.1 t, fg.2 t)] => //=; exists B.
     rewrite (explode_restrict _ FF) => //=.
     move => g /= [/= h] Bfh /eq_on_restrict_dep eq_on.
-    apply: BsubI' => /=; rewrite /restrict_dep.  
+    apply: BsubI' => /=; rewrite /restrict_dep /unif_fun.  
     by case=> /= u /asboolP Au; rewrite -eq_on ?in_setE.
   - move=> rcvgF P [/= Q [I [B eB BsubI] IsubQ QsubP]].
     apply: (filterS QsubP).
@@ -4724,7 +4746,7 @@ Proof.
     + apply: BsubI => /= t.
       case (pselect (`[<A t>])) => /=.
       2: by move=> *; apply entourage_refl.
-      move => At.
+      move => At; rewrite /restrict_fun.
       set t' := (x in B(_,g x)).
       have -> : (f t = restrict_dep f t')
         by rewrite /restrict_dep /=.
@@ -4936,16 +4958,18 @@ Definition family_cvg_topologicalType
   @sup_topologicalType _ (sigT fam)
   (fun k => Topological.class (@restricted_uniformType _ V (projT1 k))).
 
-Local Notation "F ~ famA ~> f" := 
-  (F --> (f : family_cvg_topologicalType famA)) (at level 100).
+Definition restrict_fam fam (f : U -> V) : family_cvg_topologicalType fam := f.
+
+Local Notation "F '~~(' famA ')~>' f" := 
+  (F --> (restrict_fam famA f)) : classical_set_scope.
 
 Lemma family_cvg_subset 
     (famA famB : (set U) -> Prop)
     (F : set(set(U -> V))) (f : U -> V ) :
   Filter F ->
   famA `<=` famB -> 
-  (F ~famB~> f) ->
-  (F ~famA~> f).
+  (F ~~(famB)~> f) ->
+  (F ~~(famA)~> f).
 Proof.
   move=> FF S.
   rewrite ?cvg_sup => L [? ?].
@@ -4975,8 +4999,8 @@ Lemma family_cvg_finite_covers
   (forall P, famA P -> 
     exists (I : choiceType) f , 
     (forall i, famB (f i )) /\ @finCover I f P) ->
-  (F ~famB~> f)  -> 
-  (F ~famA~> f)
+  (F ~~(famB)~> f)  -> 
+  (F ~~(famA)~> f)
 .
 Proof.
   move=> FF C .
@@ -5001,20 +5025,22 @@ Proof.
   by apply: IH => //=.
 Qed.
 
+
 End RestrictedFamilies.
 
 Notation "F '~~(' famA ')~>' f" := 
-  (F --> (f : family_cvg_topologicalType famA)) (at level 30 ,
-  format "F  '~~('  famA  ')~>'  f") : classical_set_scope.
+  (F --> (restrict_fam famA f)) : classical_set_scope.
 
-Definition cpt_within {U : topologicalType} (A : set U) :=
+Lemma fam_cvgP
+    {U : topologicalType} {V : uniformType}
+    (F : set(set( U -> V))) 
+    (f : U -> V)
+    fam:
+  (F ~~(fam)~> f) = (F --> (f : family_cvg_topologicalType fam)).
+Proof. by []. Qed. 
+
+Definition compactly_in {U : topologicalType} (A : set U) :=
   [set B | B `<=` A /\ compact B].
-
-Section Foo.
-Context ( R: numFieldType).
-Variable (F : set (set (R -> R))).
-Check ( F ~~> (fun=> 0:R^o)).
-
 
 Lemma compact_cvg_within_compact 
     {U : topologicalType} {V : uniformType}
@@ -5022,16 +5048,14 @@ Lemma compact_cvg_within_compact
     (F : set(set( U -> V))) (f : U -> V) :
   Filter F ->
   compact C -> 
-  (F ~~>_(C) f) <-> (F ~~( cpt_within C )~> f).
+  (F ~~>_(C) f) <-> (F ~~(compactly_in C)~> f).
 Proof.
-  have : ( F ~~(cpt_within C)~> f).
   move=> FF CC.
   apply: iff_trans; last by (symmetry;apply: cvg_sup).
   split=> L.
   - case=> D [DsubC ?].
-    Unset Printing Notations.
     apply: (@cvg_restricted_subset _ _ D); eauto.
-  - have CCC: (cpt_within C C) by split.
+  - have CCC: (compactly_in C C) by split.
     move: (L (@existT _ _ C CCC)).
     rewrite /projT1 /filter_of; apply.
 Qed.
