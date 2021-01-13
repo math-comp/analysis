@@ -42,7 +42,7 @@ Proof. by case=> [r||] [s||] [t||] [u||]//=; rewrite addrACA. Qed.
 Lemma abseN (R : numDomainType) (x : {ereal R}) : (`|- x| = `|x|)%E.
 Proof. by case: x => [r||]; rewrite //= normrN. Qed.
 
-Definition sigma_finite (R : realType) (T : measurableType) (X : set T)
+Definition sigma_finite (R : realType) (T : ringOfSetsType) (X : set T)
    (mu : set T -> {ereal R}) :=
   exists2 Y : (set T)^nat,
     X = \bigcup_(i : nat) Y i &
