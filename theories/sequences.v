@@ -47,7 +47,6 @@ Require Import classical_sets posnum topology normedtype landau derive forms.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import mc_1_10.Num.Theory. (* because 1.11.0+beta1 does have bugs! *)
 Import Order.TTheory GRing.Theory Num.Def  Num.Theory.
 
 Local Open Scope classical_set_scope.
@@ -103,15 +102,15 @@ Proof. by apply: homo_leq (fun _ _ _ u v => le_trans v u). Qed.
 
 Lemma increasing_seqP (T : numDomainType) (u_ : T ^nat) :
   (forall n, u_ n < u_ n.+1) -> increasing_seq u_.
-Proof. by move=> u_nondec; apply: lenr_mono; apply: homo_ltn lt_trans _. Qed.
+Proof. by move=> u_nondec; apply: le_mono; apply: homo_ltn lt_trans _. Qed.
 
 Lemma decreasing_seqP (T : numDomainType) (u_ : T ^nat) :
   (forall n, u_ n > u_ n.+1) -> decreasing_seq u_.
 Proof.
 move=> u_noninc;
 (* FIXME: add shortcut to order.v *)
-apply: (@total_homo_mono _ _ _ leq ltn ger gtr leqnn (@lerr _)
-  ltn_neqAle _ (fun _ _ _ => esym (ler_anti _)) leq_total
+apply: (@total_homo_mono _ _ _ leq ltn ger gtr leqnn lexx
+  ltn_neqAle _ (fun _ _ _ => esym (le_anti _)) leq_total
   (homo_ltn (fun _ _ _ u v => lt_trans v u) _)) => //.
 by move=> x y; rewrite /= lt_neqAle eq_sym.
 Qed.
@@ -420,7 +419,7 @@ have [p /andP[M0u_p u_pM0]] : exists p, M0 - e%:num <= u_ p <= M0.
   exists p; rewrite M0u_p /=; have /ubP := sup_upper_bound supS.
   by apply; exists p.
 near=> n; have pn : (p <= n)%N by near: n; apply: nbhs_infty_ge.
-rewrite distrC ler_norml ler_sub_addl (ler_trans M0u_p (u_nd _ _ pn)) /=.
+rewrite distrC ler_norml ler_sub_addl (le_trans M0u_p (u_nd _ _ pn)) /=.
 rewrite ler_subl_addr (@le_trans _ _ M0) ?ler_addr //.
 by have /ubP := sup_upper_bound supS; apply; exists n.
 Grab Existential Variables. all: end_near. Qed.
@@ -949,7 +948,7 @@ have [re1|re1] := ltrP (`|contract l - e%:num|) 1; last first.
     by rewrite subr_le0 (le_trans (ltW l0)).
   rewrite opprB ler_subr_addr addrC -ler_subr_addr in re1.
   rewrite ltr_subl_addr (le_lt_trans re1) // -ltr_subl_addl addrAC subrr add0r.
-  rewrite ltr_neqAle eq_sym contract_eqN1 unoo /=.
+  rewrite lt_neqAle eq_sym contract_eqN1 unoo /=.
   by case/ler_normlP : (contract_le1 (u_ n)); rewrite ler_oppl.
 pose e' := r - real_of_er (expand (contract l - e%:num)).
 have e'0 : 0 < e'.
