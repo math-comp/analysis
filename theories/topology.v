@@ -4963,6 +4963,19 @@ Definition restrict_fam fam (f : U -> V) : family_cvg_topologicalType fam := f.
 Local Notation "F '~~(' famA ')~>' f" := 
   (F --> (restrict_fam famA f)) : classical_set_scope.
 
+Lemma fam_cvgP 
+    (fam : (set U) -> Prop)
+    (F : set(set(U -> V))) (f : U -> V ) :
+  Filter F ->
+  (F ~~(fam)~> f) <-> (forall A, fam A -> F ~~>_(A) f).
+Proof.
+  split.
+  - move=> /cvg_sup + A FA.
+    by move/(_ (existT _ _ FA)).
+  - move=> L /=.
+    by apply/cvg_sup=> [[? ?] FA]; apply: L.
+Qed.
+
 Lemma family_cvg_subset 
     (famA famB : (set U) -> Prop)
     (F : set(set(U -> V))) (f : U -> V ) :
@@ -4972,8 +4985,8 @@ Lemma family_cvg_subset
   (F ~~(famA)~> f).
 Proof.
   move=> FF S.
-  rewrite ?cvg_sup => L [? ?].
-  by apply: (L (existT _ _ (S _ _))). 
+  rewrite ?fam_cvgP => L ? ?.
+  by apply: L; apply S.
 Qed.
 
 Definition finCover (I : choiceType) (f : I -> set U) A :=
@@ -5004,9 +5017,8 @@ Lemma family_cvg_finite_covers
 .
 Proof.
   move=> FF C .
-  rewrite ?cvg_sup => B [P PA].
+  rewrite ?fam_cvgP => B P PA.
   move: C => /(_ P PA) [R [g [g_famB CgP]]].
-  have -> : (projT1 (existT famA P PA) = P) by [].
   case: CgP => D.
   set bigU := (x in P `<=` x).
   move=> Psub_bigU.
@@ -5021,7 +5033,7 @@ Proof.
   have ?: (Y `<` X)%fset by apply fproperD1.
   move : xD => /fsetD1K <-.
   rewrite bigcup_cons; apply: cvg_restrictedU.
-  -  by move: B => /(_ (existT _ (g x) (g_famB x))) B.
+  - by apply: B; apply: g_famB. 
   by apply: IH => //=.
 Qed.
 
@@ -5031,7 +5043,7 @@ End RestrictedFamilies.
 Notation "F '~~(' famA ')~>' f" := 
   (F --> (restrict_fam famA f)) : classical_set_scope.
 
-Lemma fam_cvgP
+Lemma fam_cvgE
     {U : topologicalType} {V : uniformType}
     (F : set(set( U -> V))) 
     (f : U -> V)
@@ -5051,11 +5063,10 @@ Lemma compact_cvg_within_compact
   (F ~~>_(C) f) <-> (F ~~(compactly_in C)~> f).
 Proof.
   move=> FF CC.
-  apply: iff_trans; last by (symmetry;apply: cvg_sup).
+  apply: iff_trans; last by (symmetry;apply: fam_cvgP).
   split=> L.
-  - case=> D [DsubC ?].
-    apply: (@cvg_restricted_subset _ _ D); eauto.
-  - have CCC: (compactly_in C C) by split.
-    move: (L (@existT _ _ C CCC)).
-    rewrite /projT1 /filter_of; apply.
+  - move=> D [? ?].
+    rewrite /restrict_fam /=. 
+    by apply: (@cvg_restricted_subset _ _ D); eauto.
+  - by apply L; split.
 Qed.
