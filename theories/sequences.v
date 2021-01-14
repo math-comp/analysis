@@ -981,7 +981,6 @@ Lemma geometric_cvg_inv
   (series (geometric 1 z)) --> (1-z)^-1.
 Proof.
   move=>?.
-  Unset Printing Notations.
   suff <-: ( lim (series(geometric 1 z)) = (1-z)^-1)
     by apply: geometric_cvgB.
   apply: mulrI.
@@ -1068,9 +1067,6 @@ Proof.
   by move: (closed_sup supNA cNA) => [q Aq /opprl_eq <-].
 Qed.
 
-Definition cpt_within {U : topologicalType} (A : set U) :=
-  [set B | B `<=` A /\ compact B].
-
 Lemma closed_strict_ub 
   {R : realType} {U : normedModType R} (A : set U) (f : U -> R^o) m:
   {in A, continuous f} ->
@@ -1125,19 +1121,16 @@ Qed.
 Lemma geometric_uniform_cvg
   {R : realType} {V : unitalBanachAlgType R} :
   (fun n (z:V) => series(geometric 1 z) n) @ \oo 
-    ~(cpt_within (ball (0:V) 1))~> 
+    ~~(compactly_in (ball (0:V) 1))~> 
   (fun z:V => (1-z)^-1).
 Proof.
-  rewrite ?cvg_sup => [[A [AsubB1 cptA]]].
+  rewrite ?fam_cvgP => A [AsubB1 cptA].
   case uA: `[<(A = set0)>];move:uA=> /asboolP. {
-    Unset Printing Notations.
-    set a' := projT1 _.
-    have -> : a' = A by [].
     by move=> ->; apply: cvg_restricted_set0.
   }
   move/eqP/set0P=> [a' Aa'].
-  set F := (x in x --> _).
-  set f := (y in _ --> y).
+  set F := (x in x ~~>_(_) _).
+  set f := (x in _ ~~>_(_) x).
   apply (@cvg_restrict_dep V _ A _ F).
     1: by apply fmap_filter; apply: eventually_filter.
   rewrite /F fmap_comp.
@@ -1159,12 +1152,10 @@ Proof.
   near=> n.
   rewrite /ball /= /fct_ball => [[t p]].
   rewrite /restrict_dep /= -ball_normE /f /=.
-  (* now i have the tail of the sequence. It'll be bounded by some
-     series related to d*)
-  move/asboolP: p => p.
+  have p' : (A t) by move/asboolP: p => p.
   rewrite geometric_diff. 2:{
     apply: norm_lt_1_unit; rewrite -normrN -sub0r.
-    by move/(_ t p): AsubB1; rewrite -ball_normE /=.
+    by move/(_ t p'): AsubB1; rewrite -ball_normE /=.
   }
   apply: (le_lt_trans (normBmul_le _ _)). 
   apply: le_lt_trans. {
@@ -1177,7 +1168,7 @@ Proof.
     1,2: apply/andP; rewrite unitfE; split.
     - apply/eqP =>/subr0_eq Q.
       rewrite Q in A_lt_1.
-      by move/(_ t p): A_lt_1; rewrite ltrr.
+      by move/(_ t p'): A_lt_1; rewrite ltrr.
     - by rewrite subr_cp0; apply A_lt_1.
     - apply/eqP =>/subr0_eq Q; subst.
       by move:d_le_1; rewrite ltrr.
