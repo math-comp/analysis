@@ -486,6 +486,15 @@ rewrite propeqE; split => [|BA].
 by apply/subsets_disjoint; rewrite setCK setIC; apply/subsets_disjoint.
 Qed.
 
+Lemma setDT A : A `\` setT = set0.
+Proof. by rewrite setDE setCT setI0. Qed.
+
+Lemma set0D A : set0 `\` A = set0.
+Proof. by rewrite setDE set0I. Qed.
+
+Lemma setD0 A : A `\` set0 = A.
+Proof. by rewrite setDE setC0 setIT. Qed.
+
 Lemma setDS A B C : A `<=` B -> C `\` B `<=` C `\` A.
 Proof. by rewrite !setDE -setCS; apply: setIS. Qed.
 

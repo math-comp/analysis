@@ -24,6 +24,7 @@
 - in `reals.v`, definition `ceil`, lemmas `RceilE`, `ceil_ge0`, `ceil_le0`
 
 - in `ereal.v`, lemmas `esum_fset_ninfty`, `esum_fset_pinfty`, `esum_pinfty`
+- in `classical_sets.v`, lemmas `setDT`, `set0D`, `setD0`
 
 ### Changed
 
