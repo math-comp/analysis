@@ -1761,20 +1761,20 @@ Lemma cvg_ereal_loc_seq (R : realType) (x : {ereal R}) :
 Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] Hp] |[d [dreal Hp]] |[d [dreal Hp]]]; last 2 first.
-    have /ZnatP [N Nfloor] : ifloor (Num.Def.maxr d 0) \is a Znat.
-      by rewrite Znat_def ifloor_ge0 le_maxr lexx orbC.
+    have /ZnatP [N Nfloor] : floor (Num.Def.maxr d 0) \is a Znat.
+      by rewrite Znat_def floor_ge0 le_maxr lexx orbC.
     exists N.+1 => // n ltNn; apply: Hp.
     have /le_lt_trans : (d <= Num.Def.maxr d 0)%R by rewrite le_maxr lexx.
-    apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
+    apply; apply: lt_le_trans (lt_succ_Rfloor _) _; rewrite RfloorE Nfloor.
     by rewrite -(@natrD R N 1) ler_nat addn1.
-  have /ZnatP [N Nfloor] : ifloor (Num.Def.maxr (- d)%R 0) \is a Znat.
-    by rewrite Znat_def ifloor_ge0 le_maxr lexx orbC.
+  have /ZnatP [N Nfloor] : floor (Num.Def.maxr (- d)%R 0) \is a Znat.
+    by rewrite Znat_def floor_ge0 le_maxr lexx orbC.
   exists N.+1 => // n ltNn; apply: Hp; rewrite lte_fin ltr_oppl.
   have /le_lt_trans : (- d <= Num.Def.maxr (- d) 0)%R by rewrite le_maxr lexx.
-  apply; apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor.
+  apply; apply: lt_le_trans (lt_succ_Rfloor _) _; rewrite RfloorE Nfloor.
   by rewrite -(@natrD R N 1) ler_nat addn1.
-have /ZnatP [N Nfloor] : ifloor (d%:num^-1) \is a Znat.
-  by rewrite Znat_def ifloor_ge0.
+have /ZnatP [N Nfloor] : floor (d%:num^-1) \is a Znat.
+  by rewrite Znat_def floor_ge0.
 exists N => // n leNn; have gt0Sn : (0 < n%:R + 1 :> R)%R.
   apply: ltr_spaddr => //; exact/ler0n.
 apply: Hp; last first.
@@ -1782,6 +1782,6 @@ apply: Hp; last first.
 rewrite /= opprD addrA subrr distrC subr0.
 rewrite gtr0_norm; last by rewrite invr_gt0.
 rewrite -[X in (X < _)%R]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
-apply: lt_le_trans (floorS_gtr _) _; rewrite floorE Nfloor ler_add //.
+apply: lt_le_trans (lt_succ_Rfloor _) _; rewrite RfloorE Nfloor ler_add //.
 by rewrite ler_nat.
 Qed.

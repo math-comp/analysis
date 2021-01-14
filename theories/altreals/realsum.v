@@ -140,16 +140,16 @@ Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > 1 / p.+1%:~R].
 set F := [pred x | _]; have le: {subset F <= [pred x | `[exists p, x \in E p]]}.
   move=> x; rewrite !inE => nz_fx; apply/existsbP.
-  pose j := `|ifloor (1 / `|f x|)|%N; exists j; rewrite inE.
+  pose j := `|floor (1 / `|f x|)|%N; exists j; rewrite inE.
   rewrite ltr_pdivr_mulr ?ltr0z // -ltr_pdivr_mull ?normr_gt0 //.
   rewrite mulr1 /j div1r -addn1 /= PoszD intrD mulr1z.
-  rewrite gez0_abs ?ifloor_ge0 ?invr_ge0 ?normr_ge0 //.
-  by rewrite -floorE; apply floorS_gtr.
+  rewrite gez0_abs ?floor_ge0 ?invr_ge0 ?normr_ge0 //.
+  by rewrite -RfloorE; apply lt_succ_Rfloor.
 apply/(countable_sub le)/cunion_countable=> i /=.
 case: (existsTP (fun s : seq T => {subset E i <= s}))=> /= [[s le_Eis]|].
   by apply/finite_countable/finiteP; exists s => x /le_Eis.
-move/finiteNP; pose j := `|ifloor (M / i.+1%:R)|.+1.
-pose K := (`|ifloor M|.+1 * i.+1)%N; move/(_ K)/existsp_asboolP/existsbP.
+move/finiteNP; pose j := `|floor (M / i.+1%:R)|.+1.
+pose K := (`|floor M|.+1 * i.+1)%N; move/(_ K)/existsp_asboolP/existsbP.
 move=> h; have /asboolP[] := xchooseP h.
 set s := xchoose h=> eq_si uq_s le_sEi; pose J := [fset x in s].
 suff: \sum_(x : J) `|f (val x)| > M by rewrite ltNge bM.
@@ -158,8 +158,8 @@ apply/(@lt_le_trans _ _ (\sum_(x : J) 1 / i.+1%:~R)); last first.
   by have:= fsvalP m; rewrite in_fset => /le_sEi.
 rewrite sumr_const -cardfE card_fseq undup_id // eq_si -mulr_natr -pmulrn.
 rewrite mul1r natrM mulrCA mulVf ?mulr1 ?pnatr_eq0 //.
-have /andP[_] := mem_rg1_floor M; rewrite floorE -addn1.
-by rewrite natrD /= mulr1n pmulrn -{1}[ifloor _]gez0_abs // ifloor_ge0.
+have /andP[_] := mem_rg1_Rfloor M; rewrite RfloorE -addn1.
+by rewrite natrD /= mulr1n pmulrn -{1}[floor _]gez0_abs // floor_ge0.
 Qed.
 End SummableCountable.
 
