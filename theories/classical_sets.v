@@ -1136,6 +1136,12 @@ Definition has_sup E := E !=set0 /\ has_ubound E.
 Definition has_lbound  E := lbound E !=set0.
 Definition has_inf E := E !=set0 /\ has_lbound E.
 
+Lemma subset_has_lbound A B : A `<=` B -> has_lbound B -> has_lbound A.
+Proof. by move=> AB [l Bl]; exists l => a Aa; apply/Bl/AB. Qed.
+
+Lemma subset_has_ubound A B : A `<=` B -> has_ubound B -> has_ubound A.
+Proof. by move=> AB [l Bl]; exists l => a Aa; apply/Bl/AB. Qed.
+
 Lemma has_ub_set1 x : has_ubound [set x].
 Proof. by exists x; rewrite ub_set1. Qed.
 
