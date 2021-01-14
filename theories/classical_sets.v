@@ -688,11 +688,16 @@ Proof. by rewrite eqEsubset; split => a // []. Qed.
 Lemma bigcup_set1 F i : \bigcup_(j in [set i]) F j = F i.
 Proof. by rewrite eqEsubset; split => ? => [[] ? -> //|]; exists i. Qed.
 
-Lemma bigcapCU F P : \bigcap_(i in P) (F i) = ~` (\bigcup_(i in P) (~` F i)).
+Lemma setC_bigcup P F : ~` (\bigcup_(i in P) F i) = \bigcap_(i in P) ~` F i.
 Proof.
-rewrite predeqE => t; split => [capF|cupF i Et].
-  by move=> -[n En]; apply; apply capF.
-by rewrite -(setCK (F i)) => CU; apply cupF; exists i.
+by rewrite eqEsubset; split => [t PFt i Pi ?|t PFt [i Pi ?]];
+  [apply PFt; exists i | exact: (PFt _ Pi)].
+Qed.
+
+Lemma setC_bigcap P F : ~` (\bigcap_(i in P) (F i)) = \bigcup_(i in P) ~` F i.
+Proof.
+rewrite eqEsubset; split=> [| t [i Pi Fit] /(_ _ Pi)//].
+by move=> t /existsNP[i /not_implyP[Pi Fit]]; exists i.
 Qed.
 
 End bigop_lemmas.

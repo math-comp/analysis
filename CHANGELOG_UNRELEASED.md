@@ -25,6 +25,7 @@
 
 - in `ereal.v`, lemmas `esum_fset_ninfty`, `esum_fset_pinfty`, `esum_pinfty`
 - in `classical_sets.v`, lemmas `setDT`, `set0D`, `setD0`
+- in `classical_sets.v`, lemmas `setC_bigcup`, `setC_bigcap`
 
 ### Changed
 
@@ -56,6 +57,7 @@
 
 - in `topology.v`:
   + `ball_le`
+- in `classical_sets.v`, lemma `bigcapCU`
 
 ### Infrastructure
 
