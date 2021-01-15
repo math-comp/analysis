@@ -42,11 +42,13 @@ Proof. by case=> [r||] [s||] [t||] [u||]//=; rewrite addrACA. Qed.
 Lemma abseN (R : numDomainType) (x : {ereal R}) : (`|- x| = `|x|)%E.
 Proof. by case: x => [r||]; rewrite //= normrN. Qed.
 
+(* PR in progress *)
 Definition sigma_finite (R : realType) (T : ringOfSetsType) (X : set T)
-   (mu : set T -> {ereal R}) :=
+  (mu : set T -> {ereal R}) :=
   exists2 Y : (set T)^nat,
     X = \bigcup_(i : nat) Y i &
      forall i, measurable (Y i) /\ (mu (Y i) < +oo)%E.
+(* end PR in progress *)
 
 Definition complete_measure (R : realType) (T : measurableType)
    (mu : set T -> {ereal R}) :=
