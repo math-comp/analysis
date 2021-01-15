@@ -3142,7 +3142,7 @@ Lemma closed_ball_closed (R : realFieldType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> closed (closed_ball x r).
 Proof. by move => r0; rewrite closed_ballE //; exact: closed_closed_ball_. Qed.
 
-Lemma sub_closed_ball (R : realFieldType) (M : normedModType R) (x : M)
+Lemma closed_ball_subset (R : realFieldType) (M : normedModType R) (x : M)
   (r0 r1 : R) : 0 < r0 -> r0 < r1 -> closed_ball x r0 `<=` ball x r1.
 Proof.
 move=> r00 r01; rewrite (_ : r0 = (PosNum r00)%:num) // closed_ballE //.
@@ -3156,15 +3156,15 @@ split=> [/nbhs_ballP[r r0 xrB]|[e xeB]]; last first.
   apply/nbhs_ballP; exists e%:num => //.
   exact: (subset_trans (@subset_closure _ _) xeB).
 have r20 : 0 < r / 2 by apply divr_gt0.
-exists (PosNum r20); apply: (subset_trans (sub_closed_ball _ _) xrB) => //=.
+exists (PosNum r20); apply: (subset_trans (closed_ball_subset _ _) xrB) => //=.
 by rewrite lter_pdivr_mulr // ltr_pmulr // ltr1n.
 Qed.
 
-Lemma ball_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
+Lemma subset_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> ball x r `<=` closed_ball x r.
 Proof. move=> r0; rewrite /closed_ball; apply: subset_closure. Qed.
 
-(*TBA topology.v*)
+(*TBA topology.v once ball_normE is there*)
 
 Lemma nbhs0_lt (K : numFieldType) (V : normedModType K) e :
   0 < e -> \forall x \near nbhs (0 : V), `|x| < e.
@@ -3179,6 +3179,19 @@ Proof.
 move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 by rewrite -ball_normE /= sub0r normrN.
 Qed.
+
+Lemma nbhs0_le (K : numFieldType) (V : normedModType K) e :
+  0 < e -> \forall x \near nbhs (0 : V), `|x| <= e.
+Proof.
+by move => e_gt0; near=> x; apply: ltW; near: x; apply: nbhs0_lt.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma nbhs'0_le (K : numFieldType) (V : normedModType K) e :
+  0 < e -> \forall x \near nbhs' (0 : V), `|x| <= e.
+Proof.
+by move => e_gt0; near=> x; apply: ltW; near: x; apply: nbhs'0_lt.
+Grab Existential Variables. all: end_near. Qed.
+
 
 Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> (closed_ball x r)^° = ball x r.
@@ -3197,7 +3210,7 @@ apply lt_le_trans; rewrite ltr_pmull; last by rewrite normr_gt0 subr_eq0 eq_sym.
 by rewrite ger0_norm // ltr_addl normr_gt0 //; near: e; exists 1.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma closed_neigh_ball (R : realType) (V : normedModType R) (x : V)
+Lemma open_nbhs_closed_ball (R : realType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> open_nbhs x (closed_ball x r)^°.
 Proof.
 move=> r0; split; first exact: open_interior.
