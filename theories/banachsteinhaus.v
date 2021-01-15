@@ -254,6 +254,12 @@ Proof.
   by move => P Q H; apply: or_asboolP; rewrite !asbool_neg -negb_and -asbool_and; apply /asboolPn.  
 Qed.
 
+Definition pointwise_bounded (F : set (V -> W)) :=
+  forall x, exists M, forall f, F f -> `|f x| <= M.
+
+Definition uniform_bounded (F : set (V -> W)) :=
+  forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
+
 Theorem Banach_Steinhauss (F: set ((V -> W))):
   (forall f, (F f) -> bounded_fun_norm f /\ linear f) ->
   pointwise_bounded F -> uniform_bounded F.
