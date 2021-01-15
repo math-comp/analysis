@@ -10,6 +10,8 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*                                                                            *)
 (* ball_ N == balls defined by the norm/absolute value N                      *)
 (*                                                                            *)
+(* Note that balls in topology.v are not necessarily open, here they are.     *)
+(*                                                                            *)
 (* * Normed Topological Abelian groups:                                       *)
 (*  pseudoMetricNormedZmodType R  == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
@@ -1007,9 +1009,8 @@ rewrite -subr_gt0 => /Fy; apply: filterS => y' yy'; apply: ltW.
 by rewrite -(@ltr_add2r _ (- `|y|)) (le_lt_trans (ler_sub_dist _ _))// distrC.
 Qed.
 
-Lemma normrZV (x : V) :
-  x != 0 -> `| `| x|^-1 *: x | = 1.
-Proof. by move=> x_neq0; rewrite normmZ normfV normr_id mulVf// normr_eq0. Qed.
+Lemma normrZV (x : V) : x != 0 -> `| `| x |^-1 *: x | = 1.
+Proof. by move=> ?; rewrite normmZ normfV normr_id mulVf ?normr_eq0. Qed.
 
 End NormedModule_numFieldType.
 Arguments cvg_bounded {_ _ F FF}.
@@ -3083,21 +3084,18 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Grab Existential Variables. all: end_near. Qed.
 
-
 Section Closed_Ball.
 
-(* balls in topology.v are not necessarily open, here they are *)
-Lemma ball_open (R : numDomainType) (V : normedModType R) (x : V)
-      (r : R) : 0 < r -> open (ball x r).
+Lemma ball_open (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
+  0 < r -> open (ball x r).
 Proof.
 rewrite openE -ball_normE /interior => r0 y /= Bxy; near=> z.
-rewrite /= (le_lt_trans (@ler_dist_add _ _ y _ _))// addrC -ltr_subr_addr.
+rewrite /= (le_lt_trans (ler_dist_add y _ _)) // addrC -ltr_subr_addr.
 by near: z; apply: cvg_dist; rewrite // subr_gt0.
-Grab Existential Variables. all: end_near.
-Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
-  (x : V) (e : R) := [set y | norm (x - y) <= e ].
+  (x : V) (e : R) := [set y | norm (x - y) <= e].
 
 Lemma closed_closed_ball_ (R : realFieldType) (V : normedModType R)
   (x : V) (e : R) : closed (closed_ball_ normr x e).
@@ -3116,7 +3114,7 @@ Lemma closed_ballxx (R: numDomainType) (V : pseudoMetricType R) (x : V)
 Proof. by move=> ?; exact/subset_closure/ballxx. Qed.
 
 Lemma closed_ballE (R : realFieldType) (V : normedModType R) (x : V)
-  (r : R) : 0<r -> closed_ball x r = closed_ball_ normr x r.
+  (r : R) : 0 < r -> closed_ball x r = closed_ball_ normr x r.
 Proof.
 move=> /posnumP[e]; rewrite eqEsubset; split => y.
   rewrite /closed_ball closureE; apply; split; first exact: closed_closed_ball_.
@@ -3141,7 +3139,7 @@ by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
 Qed.
 
 Lemma closed_ball_closed (R : realFieldType) (V : normedModType R) (x : V)
-  (r : R) : 0<r -> closed (closed_ball x r).
+  (r : R) : 0 < r -> closed (closed_ball x r).
 Proof. by move => r0; rewrite closed_ballE //; exact: closed_closed_ball_. Qed.
 
 Lemma sub_closed_ball (R : realFieldType) (M : normedModType R) (x : M)
@@ -3163,66 +3161,47 @@ by rewrite lter_pdivr_mulr // ltr_pmulr // ltr1n.
 Qed.
 
 Lemma ball_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
-      (r : R) : 0 < r -> ball x r `<=` (closed_ball x r).
-Proof. move=> r0 ; rewrite /closed_ball; apply: subset_closure. Qed.
-
+  (r : R) : 0 < r -> ball x r `<=` closed_ball x r.
+Proof. move=> r0; rewrite /closed_ball; apply: subset_closure. Qed.
 
 (*TBA topology.v*)
 
-Lemma nbhs0_lt  (K : numFieldType) (V : normedModType K) e :
-   0 < e -> \forall x \near (nbhs (0 : V)), `|x| < e.
+Lemma nbhs0_lt (K : numFieldType) (V : normedModType K) e :
+  0 < e -> \forall x \near nbhs (0 : V), `|x| < e.
 Proof.
 move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 by rewrite -ball_normE /= sub0r normrN.
 Qed.
 
-Lemma nbhs'0_lt  (K : numFieldType) (V : normedModType K) e :
-   0 < e -> \forall x \near (nbhs' (0 : V)), `|x| < e.
+Lemma nbhs'0_lt (K : numFieldType) (V : normedModType K) e :
+  0 < e -> \forall x \near nbhs' (0 : V), `|x| < e.
 Proof.
 move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 by rewrite -ball_normE /= sub0r normrN.
 Qed.
 
-Lemma closed_ball_int (R : realType) (V : normedModType R) (x : V)
+Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> (closed_ball x r)^° = ball x r.
 Proof.
 move=> r0; rewrite eqEsubset; split; last first.
-  rewrite -open_subsetE; last by apply: ball_open.
-  by apply: subset_closure.
-move=> /= t; rewrite closed_ballE /interior //= -nbhs_ballE //= => [[]] /= s s0.
-case : (t - x =P 0).
-  by move/eqP; rewrite subr_eq0=> /eqP -> _ ; exact: ballxx.
-move => /eqP nxt.
-near (nbhs' (0 : R^o) : set (set R^o)) => e.
-have ne0 : 0 < `|e| by rewrite normr_gt0; near:e; exists 1.
-pose z := t + `|e| *: (t -x).
-have lem : `|t -z| < s. rewrite /z opprD -{1}(opprK t) addKr.
-  rewrite normrN normmZ normr_id -ltr_pdivl_mulr ?normr_gt0 //.
-  by near: e; apply: nbhs'0_lt; rewrite divr_gt0 // normr_gt0.
-rewrite -ball_normE /closed_ball_ =>/(_ z lem) /=.
-rewrite /z opprD addrA -(opprB t x) -scaleN1r -scalerBl normmZ scaleN1r normrN.
-rewrite -normrN opprB addrC opprK => H.
-have lemM :  `| t -x | < `|1 + `|e| | * `|t - x| .
-rewrite ltr_pmull ?normr_gt0 // ger0_norm // ltr_addl //.
-by apply: lt_le_trans; first by exact: lemM.
-Grab Existential Variables. all: end_near.
-Qed.
-
-Lemma closed_neigh_ball' (R : realType) (V : normedModType R) (x : V)
-      (r: R) : 0<r -> open_nbhs x (closed_ball x r)^°.
-Proof.
-move=> r0; split; first by exact: open_interior.
-by rewrite closed_ball_int //; exact: ballxx.
-Qed.
+  by rewrite -open_subsetE; [exact: subset_closure | exact: ball_open].
+move=> /= t; rewrite closed_ballE // /interior /= -nbhs_ballE => [[]] s s0.
+have [/eqP -> _|nxt] := boolP (t == x); first exact: ballxx.
+near (nbhs' (0 : R^o)) => e; rewrite -ball_normE /closed_ball_ => tsxr.
+pose z := t + `|e| *: (t - x); have /tsxr /= : `|t - z| < s.
+  rewrite distrC addrAC subrr add0r normmZ normr_id.
+  rewrite -ltr_pdivl_mulr ?(normr_gt0,subr_eq0) //.
+  by near: e; apply/nbhs'0_lt; rewrite divr_gt0 // normr_gt0 subr_eq0.
+rewrite /z opprD addrA -scalerN -{1}(scale1r (x - t)) opprB -scalerDl normmZ.
+apply lt_le_trans; rewrite ltr_pmull; last by rewrite normr_gt0 subr_eq0 eq_sym.
+by rewrite ger0_norm // ltr_addl normr_gt0 //; near: e; exists 1.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma closed_neigh_ball (R : realType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> open_nbhs x (closed_ball x r)^°.
 Proof.
-split; first exact: open_interior.
-apply: nbhs_singleton; apply/nbhs_interior/nbhs_ballP.
-by exists r => //; exact: subset_closure.
+move=> r0; split; first exact: open_interior.
+by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
-
 End Closed_Ball.
-
