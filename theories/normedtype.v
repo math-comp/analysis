@@ -3267,37 +3267,23 @@ Grab Existential Variables. by end_near. by end_near. Qed.
 
 Lemma linear_continuous0 (f : {linear V -> W}) :
   {for 0, continuous f} -> bounded_on f (nbhs (0 : V)).
-Proof. (*TODO : rewrite with near ? *)
-(* move=> /cvg_distP; rewrite linear0 /= => Bf. *)
-(* apply/linear_boundedP; near=> r => x. *)
-(* have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mulr0.  *)
-(* rewrite -ler_pdivr_mulr; last by rewrite normr_gt0. *)
-(* rewrite -(normr_id x) mulrC -normrV  ?unitfE ?normr_eq0 // -normmZ -linearZ. *)
-(* have le01 : 0 < (1 : R) by []. *)
-(* apply: ltW; move: (Bf 1 le01); rewrite nearE => /nbhs_ex[[d d0]]. *)
-(* have lem: ball 0 d ((d/2) *: (`|x|^-1 *: x)). *)
-(*   rewrite -ball_normE /= sub0r normrN normmZ normrZV // mulr1. *)
-(*   rewrite ger0_norm; last by rewrite divr_ge0 ?ltW. *)
-(*   by rewrite gtr_pmulr ?invf_lt1 ?ltr1n.  *)
-(* move => /(_ _ lem) /=; rewrite sub0r normrN linearZ /= normmZ. *)
-(* rewrite -ltr_pdivl_mull ?normr_gt0 ?mulr1. *)
-move=> /cvg_ballP /(_ _ ltr01). 
-rewrite linear0 /= nearE => /nbhs_ex[tp ball_f]; apply/linear_boundedP.
-pose t := tp%:num; exists (2 * t^-1) ; split => [|d].
-   by apply: ger0_real; apply: divr_ge0.
-move => H x. 
- have [->|x0] := eqVneq x 0; first by  rewrite linear0 !normr0 mulr0.
-have /ball_f : ball 0 t ((`|x|^-1 * t /2) *: x).
-  apply: ball_sym; rewrite -ball_normE /ball_ /= subr0 normmZ mulrC 2!normrM.
-  rewrite 2!mulrA normrV ?unitfE ?normr_eq0 // normr_id.
-  rewrite divrr ?mul1r ?unitfE ?normr_eq0 // gtr0_norm // gtr_pmulr //.
-  by rewrite gtr0_norm // invr_lt1 // ?unitfE // ltr1n.
-rewrite -ball_normE //= sub0r normrN linearZ /= normmZ -mulrA normrM.
-rewrite normrV ?unitfE ?normr_eq0 // normr_id -mulrA.
-rewrite ltr_pdivr_mull ?mulr1 ?normr_gt0 // -ltr_pdivl_mull ?normr_gt0 //.
-rewrite gtr0_norm // invf_div => /ltW H'. apply: le_trans; first by exact: H'.
-by apply: ler_pmul => //; apply: ltW.
-Qed.
+Proof.
+move=> /cvg_ballP/(_ _ ltr01); rewrite linear0 nearE => /nbhs_ex[e ef1].
+apply/linear_boundedP; near=> d; move=> x.
+have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mulr0.
+have d0 : 0 < d.
+  by near: d; exists 1; rewrite real1; split => // r; apply le_lt_trans.
+pose dx := d * `|x|; have dx0 : 0 < dx by rewrite mulr_gt0 // normr_gt0.
+suff : `| f (dx^-1 *: x) | < 1.
+  rewrite linearZ normmZ normrV ?(unitfE,gt_eqF)//.
+  by rewrite ltr_pdivr_mull ?(normr_gt0,gt_eqF)// mulr1 gtr0_norm// => /ltW.
+suff /ef1 : ball 0 e%:num (dx^-1 *: x) by rewrite -ball_normE /= sub0r normrN.
+rewrite -ball_normE /ball_ /= sub0r normrN normmZ normrV ?(unitfE,gt_eqF)//.
+rewrite normrM normr_id (gtr0_norm d0) invrM ?(unitfE,normr_eq0,gt_eqF)//.
+rewrite mulrAC mulVr ?(unitfE,normr_eq0)// ltr_pdivr_mulr //.
+near: d; exists e%:num^-1; rewrite realE invr_ge0 posnum_ge0; split => // r.
+by rewrite -ltr_pdivr_mull ?mulr1.
+Grab Existential Variables. by end_near. Qed.
 
 Lemma linear_bounded0 (f : {linear V -> W}) :
   bounded_on f (nbhs (0 : V)) -> {for 0, continuous f} .
