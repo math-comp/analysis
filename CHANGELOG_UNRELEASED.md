@@ -4,7 +4,7 @@
 
 ### Added
 
-- in `normedtype.v`, lemma `normrZV`
+- in `normedtype.v`, lemmas `ereal_nbhs'_le`, `ereal_nbhs'_le_finite`
 
 - in `normedtype.v`, lemmas `ball_open`
 
@@ -44,6 +44,8 @@
   + lemma `closed_ereal_ge_ereal`
   + section "LinearContinuousBounded"
   + section "Closed_ball"
+- in `normedtype.v`, lemmas `linear_boundedP`, `linear_continuous0`, `linear_bounded0`,
+  `continuousfor0_continuous`, `linear_bounded_continuous`, `bounded_funP`
   
 ### Changed
 
