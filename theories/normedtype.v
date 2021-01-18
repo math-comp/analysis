@@ -3288,18 +3288,18 @@ Grab Existential Variables. by end_near. Qed.
 Lemma linear_bounded0 (f : {linear V -> W}) :
   bounded_on f (nbhs (0 : V)) -> {for 0, continuous f} .
 Proof.
-(*move=> /linear_boundedP [r]; rewrite le0r=>  [[/orP r0]]; case: r0.
-- move/eqP => -> fr; apply: near_cst_continuous; near=> y.
-  by move: (fr y); rewrite mul0r normr_le0; apply/eqP.
-- move => r0 fr;  apply/cvg_ballP => e e0.
-  rewrite nearE linear0 /= nbhs_ballP.
-  exists (e / 2 / r); first by rewrite /= !divr_gt0.
-  move=> x; rewrite -2!ball_normE /= 2!sub0r 2!normrN => xr.
-  have /le_lt_trans -> // : `|f x| <= e / 2.
-  by rewrite (le_trans (fr x)) // mulrC -ler_pdivl_mulr // ltW.
-  by rewrite gtr_pmulr // invr_lt1 // ?unitfE // ltr1n.
-Grab Existential Variables. by end_near. Qed.*) Admitted.
-
+move=> /linear_boundedP [y [yreal fr]]; near (@pinfty_nbhs R) => r.
+have r0  : 0 < r.
+  by near: r; exists 1; rewrite real1; split => // z; apply le_lt_trans.
+apply/cvg_ballP => _/posnumP[e]; rewrite nearE linear0 /= nbhs_ballP.
+exists (e%:num / 2 / r); first by rewrite /= divr_gt0.
+move=> x; rewrite -2!ball_normE /= 2!sub0r 2!normrN => xer.
+rewrite (@le_lt_trans _ _ (e%:num / 2)) //; last first.
+  by rewrite gtr_pmulr // invf_lt1 // ltr1n.
+move: xer; rewrite ltr_pdivl_mulr // => /ltW; apply le_trans.
+rewrite mulrC; apply fr; near: r; exists (y + 1) => //.
+by rewrite realD ?real1 //; split => // z; apply le_lt_trans; rewrite ler_addl.
+Grab Existential Variables. by end_near. Qed.
 
 Lemma continuousfor0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
