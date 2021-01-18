@@ -1998,174 +1998,6 @@ End CompleteNormedModule.
 
 Export CompleteNormedModule.Exports.
 
-Section ComplexNormTypes.
-Context {R: realType}.
-Let C := [numFieldType of R[i]].
-
-Program Definition complex_pseudoMetric_mixin 
-    {V} {ent} (M : @PseudoMetric.mixin_of C V ent) :=
-  @PseudoMetric.Mixin R V ent 
-    (fun x z y => (PseudoMetric.ball M) x (z +i* 0)%C y)
-       _ _ _ _.
-Next Obligation.
-  move=> V ent M x z zpos /=; apply: (PseudoMetric.ax1 M).
-  by rewrite ltcE /=; apply/andP; split.
-Qed.
-Next Obligation.
-  by move=> V ent M ? ? ? /= ?;  apply: (PseudoMetric.ax2).
-Qed.
-Next Obligation.
-  move=> V ent M p q r e1 e2 /= ? ?.
-  suff ->: (((e1 + e2) +i* 0) = (e1 +i*0) + (e2 +i*0) )%C by
-    apply: PseudoMetric.ax3; eauto.
-  by rewrite {2}/GRing.add /= add0r.
-Qed.
-Next Obligation.
-  move=> V ent M.
-  apply: eq_trans; first by apply (PseudoMetric.ax4 M).
-  rewrite eqEsubset; split => P [/=].
-  - move=> [eps im] epspos subP; exists eps => //=.
-      1: by rewrite ltcE /= in epspos; move/andP: epspos; tauto.
-    apply: (subset_trans _ subP) => [[z1 z2]] /= ?.
-    by move: epspos; rewrite ltcE /= => /andP[/eqP ->].
-  - move=> eps epspos subP; exists (eps +i* 0)%C => //=.
-      1: by rewrite ltcE /=; apply/andP; split => //=.
-Qed.
-
-Canonical Complex_PseudoMetricType {V : pseudoMetricType C} := 
-  PseudoMetric.Pack (PseudoMetric.Class  
-     (complex_pseudoMetric_mixin (PseudoMetric.class V))).
-    
-Lemma normc_Re {V}
-    (M : @Num.normed_mixin_of C V (Num.NumDomain.class C)) x :
-  (ComplexField.normc (Num.norm_op M x)) = (Re (Num.norm_op M x)).
-Proof.
-  move: V M x => [? b] M x.
-  have:= @normr_id (C) ( Num.NormedZmodule.Pack (Phant C) 
-      (@Num.NormedZmodule.Class C _ b M)).
-  move: M => [/= N M1 ? ? ?] idr. 
-  rewrite /normr /= /real_complex_def in idr.
-  by move/(_ x)/(f_equal (@Re R)): idr. 
-Qed.
-Lemma Re_add_morph : {morph (@Re R) : x y / x + y >-> x + y }.
-Proof. by move=> [? ?] [? ?] /=. Qed.
-Program Definition complex_normedZmod_mixin 
-    {V} (M : @Num.normed_mixin_of C V (Num.NumDomain.class C)) := 
-  @Num.NormedMixin R V (Real.class R)
-  (fun (t:V) => ComplexField.normc (Num.norm_op M t)) _ _ _ _.
-Next Obligation.
-  move=> V M /= x y. 
-  rewrite ?normc_Re -Re_add_morph.
-  move: M => [/= N M1 ? ? ?].
-  move/(_ x y): M1; set l := (N _); set r := (( _ + _)).
-  generalize l r => [[? ?] [? ?]]; rewrite /ComplexField.lec /=.
-  by move=> /andP [_].
-Qed.
-Next Obligation.
-  by move=> V [/= ? ? + ? ?] ? ?; apply; apply: ComplexField.eq0_normc.
-Qed.
-Next Obligation.
-  move=> [? b] M x n /=; rewrite ?normc_Re.
-  move: M => [/= N ? ? -> ?]; elim: n.
-    1: by rewrite mulr0n.
-  by move=> n IH; rewrite ?mulrS -IH Re_add_morph.
-Qed.
-Next Obligation.
-  by move=> V [/= N ? ? ? +] x => ->.
-Qed.
-
-
-Canonical Complex_NormedZModType (M : normedZmodType C) :=
-  Num.NormedZmodule.pack (Phant R)
-    (complex_normedZmod_mixin (Num.NormedZmodule.class M)).
-
-Program Definition complex_pseudoMetricNormedZMod_mixin {V} {ent} M'
-    (M : @PseudoMetricNormedZmodule.mixin_of C V ent M') :=
-  @PseudoMetricNormedZmodule.Mixin R (Complex_NormedZModType V) ent
-    (complex_pseudoMetric_mixin M') _.
-Next Obligation.
-  move=> V ent M' M; rewrite /ball_; apply: funext => x /=.
-  apply: funext => e /=; case: M => -> /=.
-  rewrite eqEsubset; split => y /=. 
-  - rewrite ltcE => /= /andP []. 
-    by rewrite /normr /= normc_Re.
-  - rewrite ltcE /= => zlte; apply/andP; split.
-    + by rewrite -normr_id /=.
-    + by move: zlte; rewrite /normr /= normc_Re.
-Qed.
-
-Definition RComplex_PseudoMetricNormedZModClass {T} (c: PseudoMetricNormedZmodule.class_of C T) :=
-  (@PseudoMetricNormedZmodule.Class R (T) 
-    (Num.NormedZmodule.Class (complex_normedZmod_mixin (c)))
-     c c c c
-    (complex_pseudoMetric_mixin c)
-    (complex_pseudoMetricNormedZMod_mixin (PseudoMetricNormedZmodule.mixin c))).
-
-Canonical RComplex_PseudoMetricNormedZModType 
-    (M : pseudoMetricNormedZmodType C) := 
-  PseudoMetricNormedZmodule.Pack (Phant R) 
-    (RComplex_PseudoMetricNormedZModClass (PseudoMetricNormedZmodule.class M)).
-
-Program Definition RComplex_lmodMixin 
-    {V} (M : GRing.Lmodule.mixin_of C V) := 
-  @GRing.Lmodule.Mixin R V 
-    (fun r x => GRing.Lmodule.scale M (r +i* 0)%C x) _ _ _ _.
-Next Obligation.
-  move=> V [/= S M1 ? ? ?] a b x /=; rewrite M1.
-  by rewrite {1}/GRing.mul /= ?mul0r ?mulr0 subr0 addr0.
-Qed.
-Next Obligation.
-  by move=> V [/= S ? M2 ? ?] x; rewrite M2. 
-Qed.
-Next Obligation.
-  by move=> V [/= S ? ? M3 ?] x. 
-Qed.
-Next Obligation.
-  move=> V [/= S ? ? ? M4] x r1 r2; rewrite -M4.
-  by rewrite {2}/GRing.add /= addr0.
-Qed.
-
-Program Definition RComplex_normedModule_mixin 
-    {V} s (M : @NormedModule.mixin_of C V s) :=
-   @NormedModule.Mixin R (RComplex_PseudoMetricNormedZModType V) 
-   (fun r x => s (r +i* 0)%C x) _. 
-Next Obligation.
-  move=> V s [+] r x => /(_ (r +i* 0)%C x).
-  rewrite -sqrtr_sqr.
-  rewrite -normr_id -[x in _ * x]normr_id /normr /= /real_complex_def.
-  by rewrite {1}/GRing.mul /= expr0n mulr0 ?subr0 ?addr0; case=> -> _.
-Qed.
-
-Definition RComplex_NormedModTypeClass 
-    {V} (M : NormedModule.class_of C V) :=
-  (@NormedModule.Class R V 
-      (RComplex_PseudoMetricNormedZModClass M)
-      (RComplex_lmodMixin M)
-      (RComplex_normedModule_mixin M)
-  ).
-Canonical asR_NormedModType
-    (M : normedModType C) := 
-  NormedModule.Pack (Phant R) 
-    (RComplex_NormedModTypeClass (NormedModule.class M))
-.
-
-Lemma RComplexComplete 
-    (V : normedModType C) (M : Complete.axiom V) :
-  Complete.axiom (asR_NormedModType V).
-Proof. by []. Qed. 
-
-Definition RComplex_CompleteNormedModClass 
-    {V} ( M : CompleteNormedModule.class_of C V) :=
-  CompleteNormedModule.Class 
-    (@RComplexComplete (CompleteNormedModule.Pack (Phant C) M) M).
-
-Canonical asR_CompleteNormedModType
-    (M : completeNormedModType C) := 
-  CompleteNormedModule.Pack (Phant R) (
-    RComplex_CompleteNormedModClass (CompleteNormedModule.class M))
-.
-
-End ComplexNormTypes.
 (** * Extended Types *)
 
 (** * The topology on real numbers *)
@@ -2340,7 +2172,7 @@ move=> A0 ?; have [|AsupA] := pselect (A (sup A)); first exact: subset_closure.
 rewrite closure_limit_point; right => U /nbhs_ballP[_ /posnumP[e]] supAeU.
 have [x [Ax /andP[sAex xsA]]] : exists x, A x /\ sup A - e%:num < x < sup A.
   apply: contrapT => /forallNP Ax.
-  have /(sup_le_ub A0) : ubound A (sup A - e%:num).
+  have /(sup_le_ub A0) : classical_sets.ubound A (sup A - e%:num).
     move=> y Ay; have /not_andP[//|/negP] := Ax y.
     rewrite negb_and -leNgt => /orP[//|sAy]; rewrite leNgt.
     apply: contra sAy => sAey; rewrite lt_neqAle sup_upper_bound // andbT.
@@ -2391,7 +2223,7 @@ Definition banach_alg_ax1 (K : numDomainType) (V : Type)
 Definition banach_alg_ax2 (K : numDomainType) (V : Type) (one : V)
   (normr : V -> K) := normr one = 1.
 
-Module UnitalBanachAlgebra.
+Module BanachAlgebra.
 
 Record mixin_of (K : numDomainType) (V : Type)
   (normr : V -> K) (alg_prod : V -> V -> V) (one : V) := Mixin {
@@ -2423,6 +2255,9 @@ Record class_of (V : Type) := Class {
 
 Local Coercion base : class_of >-> CompleteNormedModule.class_of.
 Local Coercion mixin : class_of >-> mixin_of.
+Local Coercion lalg_mixin : class_of >-> GRing.Lalgebra.axiom.
+Local Coercion alg_mixin : class_of >-> GRing.Algebra.axiom.
+
 Local Definition mkRingClass T (c : class_of T) : GRing.Ring.class_of T :=
   (GRing.Ring.Class (ring_mixin c)).
 Local Definition mkURingClass T (c : class_of T) : GRing.UnitRing.class_of T :=
@@ -2552,16 +2387,260 @@ Coercion completePseudoMetricType : type >-> CompletePseudoMetric.type.
 Canonical completePseudoMetricType.
 Coercion completeNormedModType : type >-> CompleteNormedModule.type.
 Canonical completeNormedModType.
-Notation unitalBanachAlgType K := (type (Phant K)).
-Notation "[ 'unitalBanachAlgType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
-  (at level 0, format "[ 'unitalBanachAlgType'  K  'of'  T ]") : form_scope.
+Notation banachAlgType K := (type (Phant K)).
+Notation "[ 'banachAlgType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
+  (at level 0, format "[ 'banachAlgType'  K  'of'  T ]") : form_scope.
 End Exports.
-End UnitalBanachAlgebra.
+End BanachAlgebra.
 
-Export UnitalBanachAlgebra.Exports.
+Export BanachAlgebra.Exports.
+
+Section ComplexNormTypes.
+Context {R: realType}.
+Let C := [numFieldType of R[i]].
+
+Program Definition complex_pseudoMetric_mixin 
+    {V} {ent} (M : @PseudoMetric.mixin_of C V ent) :=
+  @PseudoMetric.Mixin R V ent 
+    (fun x z y => (PseudoMetric.ball M) x (z +i* 0)%C y)
+       _ _ _ _.
+Next Obligation.
+  move=> V ent M x z zpos /=; apply: (PseudoMetric.ax1 M).
+  by rewrite ltcE /=; apply/andP; split.
+Qed.
+Next Obligation.
+  by move=> V ent M ? ? ? /= ?;  apply: (PseudoMetric.ax2).
+Qed.
+Next Obligation.
+  move=> V ent M p q r e1 e2 /= ? ?.
+  suff ->: (((e1 + e2) +i* 0) = (e1 +i*0) + (e2 +i*0) )%C by
+    apply: PseudoMetric.ax3; eauto.
+  by rewrite {2}/GRing.add /= add0r.
+Qed.
+Next Obligation.
+  move=> V ent M.
+  apply: eq_trans; first by apply (PseudoMetric.ax4 M).
+  rewrite eqEsubset; split => P [/=].
+  - move=> [eps im] epspos subP; exists eps => //=.
+      1: by rewrite ltcE /= in epspos; move/andP: epspos; tauto.
+    apply: (subset_trans _ subP) => [[z1 z2]] /= ?.
+    by move: epspos; rewrite ltcE /= => /andP[/eqP ->].
+  - move=> eps epspos subP; exists (eps +i* 0)%C => //=.
+      1: by rewrite ltcE /=; apply/andP; split => //=.
+Qed.
+
+Canonical Complex_PseudoMetricType {V : pseudoMetricType C} := 
+  PseudoMetric.Pack (PseudoMetric.Class  
+     (complex_pseudoMetric_mixin (PseudoMetric.class V))).
+    
+Lemma normc_Re {V}
+    (M : @Num.normed_mixin_of C V (Num.NumDomain.class C)) x :
+  (ComplexField.normc (Num.norm_op M x)) = (Re (Num.norm_op M x)).
+Proof.
+  move: V M x => [? b] M x.
+  have:= @normr_id (C) ( Num.NormedZmodule.Pack (Phant C) 
+      (@Num.NormedZmodule.Class C _ b M)).
+  move: M => [/= N M1 ? ? ?] idr. 
+  rewrite /normr /= /real_complex_def in idr.
+  by move/(_ x)/(f_equal (@Re R)): idr. 
+Qed.
+Lemma Re_add_morph : {morph (@Re R) : x y / x + y >-> x + y }.
+Proof. by move=> [? ?] [? ?] /=. Qed.
+Program Definition complex_normedZmod_mixin 
+    {V} (M : @Num.normed_mixin_of C V (Num.NumDomain.class C)) := 
+  @Num.NormedMixin R V (Real.class R)
+  (fun (t:V) => ComplexField.normc (Num.norm_op M t)) _ _ _ _.
+Next Obligation.
+  move=> V M /= x y. 
+  rewrite ?normc_Re -Re_add_morph.
+  move: M => [/= N M1 ? ? ?].
+  move/(_ x y): M1; set l := (N _); set r := (( _ + _)).
+  generalize l r => [[? ?] [? ?]]; rewrite /ComplexField.lec /=.
+  by move=> /andP [_].
+Qed.
+Next Obligation.
+  by move=> V [/= ? ? + ? ?] ? ?; apply; apply: ComplexField.eq0_normc.
+Qed.
+Next Obligation.
+  move=> [? b] M x n /=; rewrite ?normc_Re.
+  move: M => [/= N ? ? -> ?]; elim: n.
+    1: by rewrite mulr0n.
+  by move=> n IH; rewrite ?mulrS -IH Re_add_morph.
+Qed.
+Next Obligation.
+  by move=> V [/= N ? ? ? +] x => ->.
+Qed.
+
+
+Canonical Complex_NormedZModType (M : normedZmodType C) :=
+  Num.NormedZmodule.pack (Phant R)
+    (complex_normedZmod_mixin (Num.NormedZmodule.class M)).
+
+Program Definition complex_pseudoMetricNormedZMod_mixin {V} {ent} M'
+    (M : @PseudoMetricNormedZmodule.mixin_of C V ent M') :=
+  @PseudoMetricNormedZmodule.Mixin R (Complex_NormedZModType V) ent
+    (complex_pseudoMetric_mixin M') _.
+Next Obligation.
+  move=> V ent M' M; rewrite /ball_; apply: funext => x /=.
+  apply: funext => e /=; case: M => -> /=.
+  rewrite eqEsubset; split => y /=. 
+  - rewrite ltcE => /= /andP []. 
+    by rewrite /normr /= normc_Re.
+  - rewrite ltcE /= => zlte; apply/andP; split.
+    + by rewrite -normr_id /=.
+    + by move: zlte; rewrite /normr /= normc_Re.
+Qed.
+
+Definition RComplex_PseudoMetricNormedZModClass {T} (c: PseudoMetricNormedZmodule.class_of C T) :=
+  (@PseudoMetricNormedZmodule.Class R (T) 
+    (Num.NormedZmodule.Class (complex_normedZmod_mixin (c)))
+     c c c c
+    (complex_pseudoMetric_mixin c)
+    (complex_pseudoMetricNormedZMod_mixin (PseudoMetricNormedZmodule.mixin c))).
+
+Canonical RComplex_PseudoMetricNormedZModType 
+    (M : pseudoMetricNormedZmodType C) := 
+  PseudoMetricNormedZmodule.Pack (Phant R) 
+    (RComplex_PseudoMetricNormedZModClass (PseudoMetricNormedZmodule.class M)).
+
+Program Definition RComplex_lmodMixin 
+    {V} (M : GRing.Lmodule.mixin_of C V) := 
+  @GRing.Lmodule.Mixin R V 
+    (fun r x => GRing.Lmodule.scale M (r +i* 0)%C x) _ _ _ _.
+Next Obligation.
+  move=> V [/= S M1 ? ? ?] a b x /=; rewrite M1.
+  by rewrite {1}/GRing.mul /= ?mul0r ?mulr0 subr0 addr0.
+Qed.
+Next Obligation.
+  by move=> V [/= S ? M2 ? ?] x; rewrite M2. 
+Qed.
+Next Obligation.
+  by move=> V [/= S ? ? M3 ?] x. 
+Qed.
+Next Obligation.
+  move=> V [/= S ? ? ? M4] x r1 r2; rewrite -M4.
+  by rewrite {2}/GRing.add /= addr0.
+Qed.
+
+Program Definition RComplex_normedModule_mixin 
+    {V} s (M : @NormedModule.mixin_of C V s) :=
+   @NormedModule.Mixin R (RComplex_PseudoMetricNormedZModType V) 
+   (fun r x => s (r +i* 0)%C x) _. 
+Next Obligation.
+  move=> V s [+] r x => /(_ (r +i* 0)%C x).
+  rewrite -sqrtr_sqr.
+  rewrite -normr_id -[x in _ * x]normr_id /normr /= /real_complex_def.
+  by rewrite {1}/GRing.mul /= expr0n mulr0 ?subr0 ?addr0; case=> -> _.
+Qed.
+
+Definition RComplex_NormedModTypeClass 
+    {V} (M : NormedModule.class_of C V) :=
+  (@NormedModule.Class R V 
+      (RComplex_PseudoMetricNormedZModClass M)
+      (RComplex_lmodMixin M)
+      (RComplex_normedModule_mixin M)
+  ).
+Canonical asR_NormedModType
+    (M : normedModType C) := 
+  NormedModule.Pack (Phant R) 
+    (RComplex_NormedModTypeClass (NormedModule.class M))
+.
+
+Lemma RComplexComplete 
+    (V : normedModType C) (M : Complete.axiom V) :
+  Complete.axiom (asR_NormedModType V).
+Proof. by []. Qed. 
+
+Definition RComplex_CompleteNormedModClass 
+    {V} ( M : CompleteNormedModule.class_of C V) :=
+  CompleteNormedModule.Class 
+    (@RComplexComplete (CompleteNormedModule.Pack (Phant C) M) M).
+
+Canonical asR_CompleteNormedModType
+    (M : completeNormedModType C) := 
+  CompleteNormedModule.Pack (Phant R) (
+    RComplex_CompleteNormedModClass (CompleteNormedModule.class M))
+.
+
+Definition RComplex_lmodClass 
+    {V} (M : GRing.Lmodule.class_of C V) :=
+  (@GRing.Lmodule.Class R V M (RComplex_lmodMixin M)). 
+
+Canonical asR_lmodType (M : lmodType C) := 
+  GRing.Lmodule.Pack (Phant R)  
+    (RComplex_lmodClass  (GRing.Lmodule.class M)).
+
+Lemma RComplex_scaleE {V : lmodType C} (r : R) (x : asR_lmodType V) :
+  r *: x = (r +i* 0)%C *: x.
+Proof. by rewrite /GRing.scale /=. Qed.
+
+
+Lemma RComplex_lalg_mixin 
+    {V} m (M : @GRing.Lalgebra.axiom C V m) : 
+  (@GRing.Lalgebra.axiom R (asR_lmodType V) m).
+Proof.
+  by move=> r x y; rewrite RComplex_scaleE M -RComplex_scaleE.
+Qed.
+
+Canonical asR_lalgType ( M : lalgType C) := 
+  GRing.Lalgebra.Pack (Phant R) (
+    GRing.Lalgebra.Class (RComplex_lalg_mixin (
+      @GRing.Lalgebra.ext _ _ (GRing.Lalgebra.class M))
+    )
+  ).
+
+Lemma RComplex_alg_mixin 
+    {V} (M : @GRing.Algebra.axiom C V) : 
+  (@GRing.Algebra.axiom R (asR_lalgType V)).
+Proof.
+  by move=> r x y; rewrite RComplex_scaleE M -RComplex_scaleE.
+Qed.
+
+Definition RComplex_BanachAlg_Mixin 
+    {V } (M : @BanachAlgebra.class_of C V) : 
+@BanachAlgebra.mixin_of R V
+  (@normr R
+     (@CompleteNormedModule.Pack R (Phant R) V
+        (@RComplex_CompleteNormedModClass V M)))
+  (@GRing.Ring.mul
+     (@GRing.Zmodule.Pack V (@RComplex_CompleteNormedModClass V M)) M)
+  (@GRing.Ring.one
+     (@GRing.Zmodule.Pack V (@RComplex_CompleteNormedModClass V M)) M).
+Proof.
+  constructor.
+  - move=> x y; case: (BanachAlgebra.mixin M) => [/(_ x y) + _]; rewrite lecE.
+    move=> /andP [_].
+    set l := (x in (Re (x * _))).
+    set r := (x in (Re (_ * x))).
+    have : 0 <= l by [].
+    have : 0 <= r by [].
+    rewrite {}/l {}/r.
+    rewrite /normr /= ?normc_Re/= ?lecE /= =>
+      /andP [/eqP xI _] /andP [/eqP yI _].
+    rewrite [x in x * _]complexE [x in _ * x]complexE. 
+    by rewrite xI yI /= ?mul0r ?mulr0 ?subr0 ?addr0 ?mulr0 subr0.
+  - rewrite /banach_alg_ax2.
+    case: (BanachAlgebra.mixin M) => _ .
+    rewrite /banach_alg_ax2 /= /normr /= => ->.
+    by rewrite /= expr0n addr0 expr1n sqrtr1.
+Qed.
+
+Definition RComplex_BanachAlgClass 
+    {V} ( M : BanachAlgebra.class_of C V) :=
+  @BanachAlgebra.Class R V (RComplex_CompleteNormedModClass M)
+  M M (RComplex_lalg_mixin (@BanachAlgebra.lalg_mixin _ _ M))
+  (RComplex_alg_mixin (@BanachAlgebra.alg_mixin _ _ M))
+  (RComplex_BanachAlg_Mixin M)
+  .
+
+Canonical asR_banachAlgType (M : banachAlgType C) := 
+  BanachAlgebra.Pack (Phant R)  
+    (RComplex_BanachAlgClass (BanachAlgebra.class M)).
+
+End ComplexNormTypes.
 
 Section banach_algebra_lemmas.
-Context {K : numFieldType} {V : unitalBanachAlgType K}.
+Context {K : numFieldType} {V : banachAlgType K}.
 
 Lemma normB1 : `|(1:V)| = 1.
 Proof.
@@ -2744,8 +2823,8 @@ Qed.
 Section real_banach.
 Context {R: realType}.
 
-Program Definition realType_unitalBanachAlgebraMixin := 
-  @UnitalBanachAlgebra.Mixin R R normr (fun x y=> x * y) 1 _ _.
+Program Definition realType_banachAlgebraMixin := 
+  @BanachAlgebra.Mixin R R normr (fun x y=> x * y) 1 _ _.
 Next Obligation.
   rewrite /banach_alg_ax1 => ? ?.
   by rewrite -R_normZ.
@@ -2754,19 +2833,20 @@ Next Obligation.
   by rewrite /banach_alg_ax2 normrE.
 Qed.
 
-Program Definition realType_unitalBanachAlgebraClass :=
-  (@UnitalBanachAlgebra.Class R R 
+Program Definition realType_banachAlgebraClass :=
+  (@BanachAlgebra.Class R R 
     (CompleteNormedModule.class (R_CompleteNormedModule R))
     (GRing.UnitRing.class [unitRingType of R])
     (GRing.UnitRing.mixin (GRing.UnitRing.class [unitRingType of R])) 
     numDomain_lalgAxiom
     numDomain_algAxiom
-    realType_unitalBanachAlgebraMixin
+    realType_banachAlgebraMixin
   ).
 Next Obligation.
   congr (_ _).
+  Set Printing Coercions.
   set l := LHS; rewrite -/l.
-  by destruct l.
+  move: l.
 Qed.
 
 Definition realType_unitalBanachAlgebraType := 
