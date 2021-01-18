@@ -3747,9 +3747,6 @@ move=> le12 y. case: comparableP le12 => [lte12 _|//|//|->//].
 by rewrite -[e2](subrK e1); apply/ball_triangle/ballxx; rewrite subr_gt0.
 Qed.
 
-Lemma ball_le (x : M) (e1 e2 : R) : (e1 <= e2) -> ball x e1 `<=` ball x e2.
-Proof. by move=> /ball_ler. Qed.
-
 Global Instance entourage_proper_filter : ProperFilter (@entourage M).
 Proof.
 apply: Build_ProperFilter; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
