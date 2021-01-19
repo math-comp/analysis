@@ -43,12 +43,13 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*                                                                            *)
 (* * Domination notations:                                                    *)
 (*              dominated_by h k f F == `|f| <= k * `|h|, near F              *)
-(*                    bounded_on f F == f is bounded near F                   *)
+(*                  bounded_near f F == f is bounded near F                   *)
 (*            [bounded f x | x in A] == f is bounded on A, ie F := globally A *)
 (*   [locally [bounded f x | x in A] == f is locally bounded on A             *)
 (*                       bounded_set == set of bounded sets.                  *)
 (*                                   := [set A | [bounded x | x in A]]        *)
-(*                       bounded_fun == set of bounded functions.             *)
+(*                       bounded_fun == set of functions bounded on their     *)
+(*                                      whole domain.                         *)
 (*                                   := [set f | [bounded f x | x in setT]]   *)
 (*                  lipschitz_on f F == f is lipschitz near F                 *)
 (*          [lipschitz f x | x in A] == f is lipschitz on A                   *)
@@ -813,35 +814,35 @@ exists (M + 1); apply: filterS2 hN0 FM => x hN0 /le_lt_trans/= ->//.
 by rewrite ltr_pmul2r ?normr_gt0// ltr_addl.
 Qed.
 
-Definition bounded_on {T : Type} {K : numFieldType} {V : normedModType K}
+Definition bounded_near {T : Type} {K : numFieldType} {V : normedModType K}
   (f : T -> V) (F : set (set T)) :=
   \forall M \near +oo, F [set x | `|f x| <= M].
 
 Lemma boundedE {T : Type} {K : numFieldType} {V : normedModType K} :
-  @bounded_on T K V = fun f F => \forall M \near +oo, dominated_by fun1 M f F.
+  @bounded_near T K V = fun f F => \forall M \near +oo, dominated_by fun1 M f F.
 Proof. by rewrite dominated_by1. Qed.
 
 Lemma sub_boundedr (T : Type) (K : numFieldType) (V : normedModType K)
      (F G : set (set T)) : F `=>` G ->
-  (@bounded_on T K V)^~ G `<=` bounded_on^~ F.
-Proof. by move=> FG f; rewrite /bounded_on; apply: filterS => M; apply: FG. Qed.
+  (@bounded_near T K V)^~ G `<=` bounded_near^~ F.
+Proof. by move=> FG f; rewrite /bounded_near; apply: filterS=> M; apply: FG. Qed.
 
 Lemma sub_boundedl (T : Type) (K : numFieldType) (V : normedModType K)
      (f g : T -> V) (F : set (set T)) (FF : Filter F) :
-   (\forall x \near F, `|f x| <= `|g x|) ->  bounded_on g F -> bounded_on f F.
+ (\forall x \near F, `|f x| <= `|g x|) ->  bounded_near g F -> bounded_near f F.
 Proof.
-move=> le_fg; rewrite /bounded_on; apply: filterS => M.
+move=> le_fg; rewrite /bounded_near; apply: filterS => M.
 by apply: filterS2 le_fg => x; apply: le_trans.
 Qed.
 
 Lemma ex_bound {T : Type} {K : numFieldType} {V : normedModType K}
   (f : T -> V) (F : set (set T)) {PF : ProperFilter F}:
-  bounded_on f F <-> exists M, F [set x | `|f x| <= M].
+  bounded_near f F <-> exists M, F [set x | `|f x| <= M].
 Proof. by rewrite boundedE ex_dom_bound dominated_by1. Qed.
 
 Lemma ex_strict_bound {T : Type} {K : numFieldType} {V : normedModType K}
   (f : T -> V) (F : set (set T)) {PF : ProperFilter F}:
-  bounded_on f F <-> exists M, F [set x | `|f x| < M].
+  bounded_near f F <-> exists M, F [set x | `|f x| < M].
 Proof.
 rewrite boundedE ex_strict_dom_bound ?strictly_dominated_by1//.
 by near=> x; rewrite oner_eq0.
@@ -849,13 +850,13 @@ Grab Existential Variables. all: end_near. Qed.
 
 Lemma ex_strict_bound_gt0 {T : Type} {K : numFieldType} {V : normedModType K}
   (f : T -> V) (F : set (set T)) {PF : Filter F}:
-  bounded_on f F -> exists2 M, M > 0 & F [set x | `|f x| < M].
+  bounded_near f F -> exists2 M, M > 0 & F [set x | `|f x| < M].
 Proof.
 move=> /pinfty_ex_gt0[M M_gt0 FM]; exists (M + 1); rewrite ?addr_gt0//.
 by apply: filterS FM => x /le_lt_trans/= ->//; rewrite ltr_addl.
 Qed.
 
-Notation "[ 'bounded' E | x 'in' A ]" := (bounded_on (fun x => E) (globally A))
+Notation "[ 'bounded' E | x 'in' A ]" := (bounded_near (fun x => E) (globally A))
   (at level 0, x ident, format "[ 'bounded'  E  |  x  'in'  A ]").
 Notation bounded_set := [set A | [bounded x | x in A]].
 Notation bounded_fun := [set f | [bounded f x | x in setT]].
@@ -1002,7 +1003,7 @@ by apply: normm_leW => //; near: x; apply: cv.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma cvg_bounded {F : set (set V)} {FF : Filter F} (y : V) :
-  F --> y -> bounded_on id F.
+  F --> y -> bounded_near id F.
 Proof.
 move=> /cvg_dist Fy; exists `|y|; rewrite normr_real; split => //= M.
 rewrite -subr_gt0 => /Fy; apply: filterS => y' yy'; apply: ltW.
@@ -2118,7 +2119,7 @@ move=> /cvg_bounded/ex_bound => -[/= Moo]; rewrite !near_simpl/=.
 rewrite [(\near a, _ <= _)](near_map _ \oo) => -[N _ /(_ _) a_leM].
 have Moo_real : Moo \is Num.real
   by rewrite ger0_real ?(le_trans _ (a_leM N _))/=.
-rewrite /bounded_on /=; near=> M => n _.
+rewrite /bounded_near /=; near=> M => n _.
 have [nN|nN]/= := leqP N n.
   by apply: (le_trans (a_leM _ _)) => //; near: M; apply: nbhs_pinfty_ge_real.
 move: n nN; suff /(_ (Ordinal _)) : forall n : 'I_N, `|a n| <= M by [].
