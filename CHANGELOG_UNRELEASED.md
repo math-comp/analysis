@@ -21,7 +21,11 @@
 
 ### Changed
 
+- header in `normedtype.v`, precisions on `bounded_fun`
+
 ### Renamed
+
+- in `normedtype.v`, `bounded_on` -> `bounded_near`
 
 - in `topology.v`, `ball_ler` -> `le_ball`
 
