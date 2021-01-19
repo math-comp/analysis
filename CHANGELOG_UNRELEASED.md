@@ -23,6 +23,8 @@
 
 ### Renamed
 
+- in `topology.v`, `ball_ler` -> `le_ball`
+
 ### Removed
 
 - in `topology.v`:
