@@ -402,6 +402,17 @@ move=> nzE; split=> [/asboolPn|/has_ubPn h [_]] //.
 by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_ubPn.
 Qed.
 
+Lemma sup_setU (A B : set R) : has_sup B ->
+  (forall a b, A a -> B b -> a <= b) -> sup (A `|` B) = sup B.
+Proof.
+move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
+- apply sup_le_ub => [|x [Ax|]]; first by apply: subset_nonempty B0 => ?; right.
+  by case: B0 => b Bb; rewrite (le_trans (AB _ _ Ax Bb)) // sup_ub //; exists l.
+- by move=> Bx; rewrite sup_ub //; exists l.
+- apply sup_le_ub => // b Bb; apply sup_ub; last by right.
+  by exists l => x [Ax|Bx]; [rewrite (le_trans (AB _ _ Ax Bb)) // Bl|exact: Bl].
+Qed.
+
 End RealLemmas.
 
 (* -------------------------------------------------------------------- *)
@@ -452,6 +463,14 @@ Lemma has_infPn E : nonempty E ->
 Proof.
 move=> nzE; split=> [/asboolPn|/has_lbPn h [_] //].
 by rewrite asbool_and (asboolT nzE) /= => /asboolP/has_lbPn.
+Qed.
+
+Lemma inf_setU (A B : set R) : has_inf A ->
+  (forall a b, A a -> B b -> a <= b) -> inf (A `|` B) = inf A.
+Proof.
+move=> hiA AB; congr (- _).
+rewrite image_setU setUC sup_setU //; first exact/has_inf_supN.
+by move=> _ _ [] b Bb <-{} [] a Aa <-{}; rewrite ler_oppl opprK; apply AB.
 Qed.
 
 End InfTheory.

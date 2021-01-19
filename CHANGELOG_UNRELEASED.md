@@ -14,6 +14,9 @@
   `closed_ball_closed`, `closed_ball_subset`, `nbhs_closedballP`, `subset_closed_ball`
 
 - in `normedtype.v`, lemmas `nbhs0_lt`, `nbhs'0_lt`, `interior_closed_ballE`, open_nbhs_closed_ball`
+- in `classical_sets.v`, lemmas `subset_has_lbound`, `subset_has_ubound`
+
+- in `reals.v`, lemmas `sup_setU`, `inf_setU`
 
 ### Changed
 
