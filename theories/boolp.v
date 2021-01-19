@@ -370,7 +370,7 @@ Lemma iff_notr (P Q : Prop) : (P <-> ~ Q) <-> (~ P <-> Q).
 Proof. by split=> [/propext ->|/propext <-]; rewrite notK. Qed.
 
 Lemma iff_not2 (P Q : Prop) : (~ P <-> ~ Q) <-> (P <-> Q).
-Proof. by split=> [iff_notP|PQ]; [|apply/iff_notP]; rewrite notK. Qed.
+Proof. by split=> [/iff_notr|PQ]; [|apply/iff_notr]; rewrite notK. Qed.
 
 (* -------------------------------------------------------------------- *)
 (* assia : let's see if we need the simplpred machinery. In any case, we sould
