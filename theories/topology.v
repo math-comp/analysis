@@ -3741,7 +3741,7 @@ split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; apply:nbhsx_ballx.
 Qed.
 
-Lemma ball_ler (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
+Lemma le_ball (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
 Proof.
 move=> le12 y. case: comparableP le12 => [lte12 _|//|//|->//].
 by rewrite -[e2](subrK e1); apply/ball_triangle/ballxx; rewrite subr_gt0.
@@ -3909,7 +3909,7 @@ exists (\big[Num.min/1%:pos]_i \big[Num.min/1%:pos]_j xget 1%:pos
 move=> MN MN_min; apply: sPA => i j.
 have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
   by have [_/posnumP[e]] := entP i j; exists e.
-apply; apply: ball_ler (MN_min i j).
+apply; apply: le_ball (MN_min i j).
 by apply: le_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
 Qed.
 Definition matrix_pseudoMetricType_mixin :=
@@ -3947,8 +3947,8 @@ move=> [[_/posnumP[eA] sbA] [_/posnumP[eB] sbB] sABP].
 exists (Num.min eA eB)%:num => // - [[a b] [c d] [/= bac bbd]].
 suff /sABP [] : (A `*` B) ((a, c), (b, d)) by move=> [[??] [??]] ? [<-<-<-<-].
 split; [apply: sbA|apply: sbB] => /=.
-  by apply: ball_ler bac; rewrite -leEsub le_minl lexx.
-by apply: ball_ler bbd; rewrite -leEsub le_minl lexx orbT.
+  by apply: le_ball bac; rewrite -leEsub le_minl lexx.
+by apply: le_ball bbd; rewrite -leEsub le_minl lexx orbT.
 Qed.
 Definition prod_pseudoMetricType_mixin :=
   PseudoMetric.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_entourage.
