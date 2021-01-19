@@ -366,6 +366,12 @@ Lemma notLR P Q : (P = ~ Q) -> (~ P) = Q. Proof. exact: canLR notK. Qed.
 
 Lemma notRL P Q : (~ P) = Q -> P = ~ Q. Proof. exact: canRL notK. Qed.
 
+Lemma iff_notr (P Q : Prop) : (P <-> ~ Q) <-> (~ P <-> Q).
+Proof. by split=> [/propext ->|/propext <-]; rewrite notK. Qed.
+
+Lemma iff_not2 (P Q : Prop) : (~ P <-> ~ Q) <-> (P <-> Q).
+Proof. by split=> [/iff_notr|PQ]; [|apply/iff_notr]; rewrite notK. Qed.
+
 (* -------------------------------------------------------------------- *)
 (* assia : let's see if we need the simplpred machinery. In any case, we sould
    first try definitions + appropriate Arguments setting to see whether these

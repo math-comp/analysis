@@ -17,6 +17,7 @@
 - in `classical_sets.v`, lemmas `subset_has_lbound`, `subset_has_ubound`
 
 - in `reals.v`, lemmas `sup_setU`, `inf_setU`
+- in `boolp.v`, lemmas `iff_notr`, `iff_not2`
 
 ### Changed
 
