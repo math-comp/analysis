@@ -831,6 +831,25 @@ apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
 
+Lemma normed_lim_le 
+    {R : realType} (V : completeNormedModType R) (u_ : V ^nat) :
+  cvg [normed series u_] ->
+  `|lim (series u_)| <= lim [normed series u_].
+Proof.
+  move=> C. 
+  apply: (@closed_cvg_loc nat ([topologicalType of R^o]) 
+    \oo _ (normr \o (series u_) ) ([set x | x <= lim [normed series u_]])). 
+  - apply: cvg_comp => //; apply: cvg_fmap.
+      1: by apply: norm_continuous.
+    by apply: normed_cvg.
+  - exists 0%nat => // n /= _.
+    apply: le_trans.
+      1: by apply: normed_series_le.
+    apply: nondecreasing_cvg_le => //.
+    by apply: nondecreasing_series => ? //=.
+  - apply: closed_le.
+Qed.
+
 Lemma cvg_is_cvg {T : topologicalType} (F : set(set(T))) (a:T) :
   ProperFilter F ->
   hausdorff T ->
@@ -841,7 +860,7 @@ Qed.
 
 
 Lemma geometric_cvgB 
-    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+    {R : realType } {V : banachAlgType R} (z : V) :
   `|z| < 1 -> 
   cvg (series (geometric 1 z)).
 Proof.
@@ -859,7 +878,7 @@ Proof.
 Qed.
 
 Lemma cvg_expr_B
-    {R : realType } {V : unitalBanachAlgType R}
+    {R : realType } {V : banachAlgType R}
     (z : V) : 
   `|z| < 1 -> (GRing.exp z @ \oo --> (0 : V)).
 Proof.
@@ -868,7 +887,7 @@ Proof.
 Qed.
 
 Lemma geometric_inv_l
-    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+    {R : realType } {V : banachAlgType R} (z : V) :
   `|z| < 1 -> 
   (lim (series (geometric 1 z))) * (1-z) = 1.
 Proof.
@@ -890,7 +909,7 @@ Proof.
 Qed.
 
 Lemma sequence_commute 
-  {R : realType } {V : unitalBanachAlgType R} (f g: V ^nat) :
+  {R : realType } {V : banachAlgType R} (f g: V ^nat) :
   (forall n, GRing.comm (f n) (g n)) -> 
   GRing.comm f g.
 Proof.
@@ -899,7 +918,7 @@ Proof.
 Qed.
 
 Lemma series_commute
-  {R : realType } {V : unitalBanachAlgType R} (x : V) (f: V ^nat) :
+  {R : realType } {V : banachAlgType R} (x : V) (f: V ^nat) :
   (forall n, GRing.comm (f n) x) -> 
   (forall n, GRing.comm (series f n) x).
 Proof.
@@ -910,7 +929,7 @@ Proof.
 Qed.
 
 Lemma lim_commute_filter 
-  {R : realType } {V : unitalBanachAlgType R} 
+  {R : realType } {V : banachAlgType R} 
   (x y: V) (F : (set(set V))) :
   ProperFilter F ->
   (\near F, GRing.comm x F) ->
@@ -923,7 +942,7 @@ Proof.
     rewrite /g => z.
     apply: continuousB; apply: continuous2_cvg => //=.
     2,4: by apply: continuous_cst.
-    1,2: by apply: continuous_BM.
+    1,2: by apply: continuousBM.
   }
   apply: close_eq => //=; apply (cvg_close (F := g @ F)).
   - by apply: cvg_fmap => //= ?; apply: cts_g.
@@ -935,13 +954,13 @@ Proof.
   Grab Existential Variables. all: end_near. Qed.
 
 Lemma lim_series_commute 
-  {R : realType } {V : unitalBanachAlgType R} 
+  {R : realType } {V : banachAlgType R} 
   (x: V) (f : V^nat) :
   (forall n, GRing.comm x (f n)) ->
   (cvg (series f)) ->
   GRing.comm x (lim (series f)).
 Proof.
-  move=> xf_comm cvgf.
+  move=> xf_comm cvgf.  
   apply: (@lim_commute_filter R V x _ (series f @ \oo)).
   2: by apply: cvgf.
   near_simpl; near=> z.
@@ -951,7 +970,7 @@ Proof.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma geometric_inv_r
-    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+    {R : realType } {V : banachAlgType R} (z : V) :
   `|z| < 1 -> 
   (1-z) * (lim (series (geometric 1 z))) = 1.
 Proof.
@@ -965,7 +984,7 @@ Proof.
 Qed.
 
 Lemma norm_lt_1_unit 
-    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+    {R : realType } {V : banachAlgType R} (z : V) :
   `|z| < 1 -> 
   (1-z) \is a GRing.unit.
 Proof.
@@ -975,8 +994,10 @@ Proof.
   - by apply: geometric_inv_r.
 Qed.
 
+Hint Resolve norm_lt_1_unit : core.
+
 Lemma geometric_cvg_inv 
-    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+    {R : realType } {V : banachAlgType R} (z : V) :
   `|z| < 1 -> 
   (series (geometric 1 z)) --> (1-z)^-1.
 Proof.
@@ -989,8 +1010,16 @@ Proof.
   by apply: norm_lt_1_unit; eauto. 
 Qed.
 
+Lemma geometric_inv
+    {R : realType } {V : banachAlgType R} (z : V) :
+  `|z| < 1 -> 
+  lim (series (geometric 1 z)) = (1-z)^-1.
+Proof.
+  move=> zpos; by apply: (cvg_lim _ (geometric_cvg_inv zpos)). 
+Qed.
+
 Lemma geometric_norm_bound
-    {R : realType } {V : unitalBanachAlgType R} (z : V) :
+    {R : realType } {V : banachAlgType R} (z : V) :
   `|z| < 1 -> 
   `|(1-z)^-1| <= (1-`|z|)^-1.
 Proof.
@@ -1119,18 +1148,17 @@ Proof.
 Qed.
 
 Lemma geometric_uniform_cvg
-  {R : realType} {V : unitalBanachAlgType R} :
-  (fun n (z:V) => series(geometric 1 z) n) @ \oo 
-    ~~(compactly_in (ball (0:V) 1))~> 
-  (fun z:V => (1-z)^-1).
+  {R : realType} {V : banachAlgType R} :
+  {family (compactly_in (ball (0:V) 1)), 
+    (fun n (z:V) => series(geometric 1 z) n) @ \oo --> (fun z:V => (1-z)^-1)}.
 Proof.
   rewrite ?fam_cvgP => A [AsubB1 cptA].
   case uA: `[<(A = set0)>];move:uA=> /asboolP. {
     by move=> ->; apply: cvg_restricted_set0.
   }
   move/eqP/set0P=> [a' Aa'].
-  set F := (x in x ~~>_(_) _).
-  set f := (x in _ ~~>_(_) x).
+  set F := (x in x --> _).
+  set f := (x in _ --> x).
   apply (@cvg_restrict_dep V _ A _ F).
     1: by apply fmap_filter; apply: eventually_filter.
   rewrite /F fmap_comp.
@@ -1157,7 +1185,7 @@ Proof.
     apply: norm_lt_1_unit; rewrite -normrN -sub0r.
     by move/(_ t p'): AsubB1; rewrite -ball_normE /=.
   }
-  apply: (le_lt_trans (normBmul_le _ _)). 
+  apply: (le_lt_trans (normrM_le _ _)). 
   apply: le_lt_trans. {
     eapply (ler_pmul (y2 := (1-d)^-1)).
       1,2,3: by eauto.
@@ -1196,6 +1224,117 @@ Proof.
   move/cvg_distP/(_ ((eps%:num * (1-d)))): geo_cvg => /=.
   by apply; apply: mulr_gt0 => //; rewrite subr_cp0.
 Grab Existential Variables. end_near. Qed.
+
+Lemma series_headS {R : realType } {V : banachAlgType R} (u_ : V^nat) n: 
+  series u_ (n.+1) = u_ 0%nat + series (fun k => u_ (k.+1)) n.
+Proof.
+  elim: n.
+    1: by rewrite seriesS ?series0.
+  by move=> n IH; rewrite [LHS]seriesS IH seriesS addrCA.
+Qed.
+
+Lemma addf_cst {A} {B : zmodType} (f: A -> B) x :
+  (fun z => x + f z) = ((fun n => x) : A -> B) + f.
+Proof. by []. Qed.
+
+Lemma series_tail_cvg{ R : realType } {V : banachAlgType R} (u_ : V^nat) :
+  (cvg (series u_)) -> cvg(series (fun n => u_ (n .+1))).
+Proof.
+  rewrite -(@cvg_shiftS) /= [x in _ -> x]lock.
+  under [x in x --> _]funext do rewrite series_headS.
+  rewrite addf_cst -lock => C.
+  apply: (@cvg_is_cvg V (nbhs (_)) ((- (u_ 0%nat  )) + lim (series u_))) => //.
+  rewrite /nbhs /=.
+  set l := (x in x@\oo).
+  replace l with (-((fun=> u_ 0%nat) : V^nat) + (((fun=> u_ 0%nat) : V^nat)  + l)).
+    2: by rewrite addrA addrC addrA addrNK.
+  apply: cvgD.
+    2: by [].
+  apply: cvgN; apply: cvg_cst.
+Qed.
+Lemma series_lim_headS {R : realType } {V : banachAlgType R} (u_ : V^nat) :
+  (cvg (series u_)) ->
+  lim (series u_) = (u_ 0)%nat + lim(series (fun n => u_ (n .+1))).
+Proof.
+  move=> C; have C' := C; move: C.
+  rewrite -(@cvg_shiftS) /=.
+  under [x in x --> _]funext => x.
+    rewrite series_headS.
+  over.
+  rewrite addf_cst.
+  move=> C; have C'' := C; move: C.
+  move=> /cvg_lim <- //.
+  rewrite limD //= ?lim_cst //.
+    1: by apply: cvg_cst.
+  by apply: series_tail_cvg.
+Qed.
+
+Lemma geometric_shiftn {R : realType} {V : banachAlgType R} (z : V) :
+  series (fun n : nat => geometric 1 z (n.+1)) = 
+  z *: series (geometric 1 z).
+Proof.
+  apply: funext; elim.
+    1: by rewrite /GRing.scale /= ?series0 scaler0.
+  move=> n IH.
+  rewrite {1}/GRing.scale /= ?seriesS /= ?mul1r IH scalerDr exprS .
+  by rewrite {1 2}/GRing.scale /=. 
+Qed.
+
+Lemma limBZ {R : realType} {V : banachAlgType R} (z:V^o) (f : V^o ^nat) : 
+  cvg (f @\oo) ->
+  lim (z *: f) = z * lim (f@\oo).
+Proof.
+  move=> C; rewrite /GRing.scale /=.
+  unfold "\*:".
+  rewrite /GRing.scale /=.
+  apply: (@cvg_lim _ _ ((fun n => z * f n) @ \oo)) => //.
+  apply: continuous2_cvg.
+  - by apply: continuousBM.
+  - by apply: cvg_cst.
+  - by apply: C.
+Qed.
+
+Lemma continuous_Binv {R : realType} {V : banachAlgType R} (x : V) :
+  x \is a GRing.unit -> {for x, continuous [eta (@GRing.inv V)]}.
+Proof.
+  move=> Ux /=; rewrite continuous_withinNx; apply: cvg_trans.
+    1: by apply: cvg_app; apply: nbhs_nbhs'.
+  have xiipos : 0 < 1/ `|x^-1| by
+    apply: divr_gt0 => //; rewrite normr_gt0; apply unitr_not0;rewrite unitrV.
+  pose xii := PosNum xiipos.
+  apply/cvg_ballPpos=> eps.
+  near_simpl.
+  near=> y.
+  pose z := (x^-1*(x - y)).
+  have ? : `|z| < 1. {
+    rewrite /z; apply: le_lt_trans.
+      1: by apply: normrM_le.
+    rewrite mulrC -ltr_pdivl_mulr .
+      2: by rewrite normr_gt0; apply unitr_not0; rewrite unitrV.
+    suff : (ball_ normr x ((xii)%:num) y) by [].
+    by near: y; rewrite nearE; apply: nbhs_ball_norm.
+  }
+  have ->: y = x * (1-z) by
+    rewrite /z ?(mulrDr, mul1r, mulr1, mulrN, mulVr, mulrDr,mulrA, mulrV, subKr).
+  rewrite -ball_normE /= invrM //.
+    2: by apply norm_lt_1_unit.
+  rewrite -{1}[x^-1]mul1r -mulrBl. 
+  apply: le_lt_trans.
+    1: apply: normrM_le.
+  rewrite -ltr_pdivl_mulr.
+    2: by rewrite normr_gt0; apply unitr_not0;rewrite unitrV.
+  rewrite -geometric_inv // series_lim_headS.
+    2: by apply: geometric_cvgB.
+  set l := geometric _ _ _.
+  simpl in l.
+  rewrite {}/l expr0 mulr1 opprD addrA subrr sub0r normrE geometric_shiftn.
+  rewrite limBZ. 
+    2: by apply: geometric_cvgB.
+  apply: le_lt_trans.
+    1: by apply normrM_le.
+  rewrite geometric_inv //; apply: le_lt_trans.
+    1: apply: ler_pmul;[ | | eauto | apply: geometric_norm_bound ] => //.
+  apply: (@le_lt_trans _ _  (`|z|)).
 
 Section sequences_of_extended_real_numbers.
 

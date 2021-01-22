@@ -2540,7 +2540,7 @@ Definition RComplex_NormedModTypeClass
       (RComplex_lmodMixin M)
       (RComplex_normedModule_mixin M)
   ).
-Canonical asR_NormedModType
+Definition asR_NormedModType
     (M : normedModType C) := 
   NormedModule.Pack (Phant R) 
     (RComplex_NormedModTypeClass (NormedModule.class M))
@@ -2556,7 +2556,7 @@ Definition RComplex_CompleteNormedModClass
   CompleteNormedModule.Class 
     (@RComplexComplete (CompleteNormedModule.Pack (Phant C) M) M).
 
-Canonical asR_CompleteNormedModType
+Definition asR_CompleteNormedModType
     (M : completeNormedModType C) := 
   CompleteNormedModule.Pack (Phant R) (
     RComplex_CompleteNormedModClass (CompleteNormedModule.class M))
@@ -2582,7 +2582,7 @@ Proof.
   by move=> r x y; rewrite RComplex_scaleE M -RComplex_scaleE.
 Qed.
 
-Canonical asR_lalgType ( M : lalgType C) := 
+Definition asR_lalgType ( M : lalgType C) := 
   GRing.Lalgebra.Pack (Phant R) (
     GRing.Lalgebra.Class (RComplex_lalg_mixin (
       @GRing.Lalgebra.ext _ _ (GRing.Lalgebra.class M))
@@ -2633,7 +2633,7 @@ Definition RComplex_BanachAlgClass
   (RComplex_BanachAlg_Mixin M)
   .
 
-Canonical asR_banachAlgType (M : banachAlgType C) := 
+Definition asR_banachAlgType (M : banachAlgType C) := 
   BanachAlgebra.Pack (Phant R)  
     (RComplex_BanachAlgClass (BanachAlgebra.class M)).
 
@@ -2642,13 +2642,13 @@ End ComplexNormTypes.
 Section banach_algebra_lemmas.
 Context {K : numFieldType} {V : banachAlgType K}.
 
-Lemma normB1 : `|(1:V)| = 1.
+Lemma normr1 : `|(1:V)| = 1.
 Proof.
   move: V => [? [] ? ? ? ? ? [/= ? +]].
   by rewrite /banach_alg_ax2 /= => ->.
 Qed.
 
-Lemma normBmul_le (x y: V) : `|x * y| <= `|x| * `|y|.
+Lemma normrM_le (x y: V) : `|x * y| <= `|x| * `|y|.
 Proof.
   move: V x y => [? [] ? ? ? ? ? [/= ? +]].
   by rewrite /banach_alg_ax1 /=.
@@ -2663,20 +2663,20 @@ Proof.
   rewrite -{2}(divrr nxU) mulrA.
   apply: ler_pmul => //=.
     1: by rewrite invr_ge0 normrE.
-  apply: le_trans (normBmul_le _ _).
-  by rewrite  mulVr // ?normB1.
+  apply: le_trans (normrM_le _ _).
+  by rewrite  mulVr // ?normr1.
 Qed.
 
 Lemma normBmul_le_n (n : nat) (x y: V) : `|x ^+n | <= `|x| ^n.
 Proof.
   elim: n.
-    by rewrite expr0z expr0 normB1.
+    by rewrite expr0z expr0 normr1.
   move=> n IH; rewrite exprS exprSz.
-  apply: le_trans;[by apply: normBmul_le|].
+  apply: le_trans;[by apply: normrM_le|].
   by apply: ler_pmul.
 Qed.
 
-Lemma continuous_BM :
+Lemma continuousBM :
   continuous (fun z : V * V => z.1 * z.2).
 Proof.
   move=> [a b]; apply cvg_distP.
@@ -2698,7 +2698,7 @@ Proof.
   case: W => //= [[/=x y] [bX bY]] M.
   near=> l z => /=.
   rewrite (@distm_lt_split _ _ (a * z)) // -?mulrBr -?mulrBl. 
-  all: apply: (le_lt_trans (normBmul_le _ _)).
+  all: apply: (le_lt_trans (normrM_le _ _)).
   - set L := (x in x < _).
     have ->: L = `| (`|a| * `|b - b|) - L|. {
       rewrite subrr normrE mulr0 add0r normrE /L.
@@ -2749,7 +2749,14 @@ Proof.
     apply (@continuous_cvg T V ([topologicalType of K^o])) => //=.
     by apply PF.
     by apply: norm_continuous.
-    by apply: continuous_BM.
+    by apply: continuousBM.
+Qed.
+
+Lemma unitr_not0 (v : V) : 
+  (v \is a GRing.unit) -> (v != 0).
+Proof.
+  move=> U; apply/eqP => Q; subst.
+  by move: U; rewrite unitr0. 
 Qed.
 
 Definition spectrum (v : V) := 
@@ -2821,10 +2828,13 @@ Proof.
 Qed.
 
 Section real_banach.
-Context {R: realType}.
+Context {K: numFieldType} {KC : @Complete.axiom [pseudoMetricType K of K^o]}.
+Let CompleteK := CompleteType K^o KC.
+Let CompleteNormedK := 
+    (@CompleteNormedModule.pack _ (Phant K) K^o _ _ idfun CompleteK _ idfun).
 
 Program Definition realType_banachAlgebraMixin := 
-  @BanachAlgebra.Mixin R R normr (fun x y=> x * y) 1 _ _.
+  @BanachAlgebra.Mixin K K normr (fun x y=> x * y) 1 _ _.
 Next Obligation.
   rewrite /banach_alg_ax1 => ? ?.
   by rewrite -R_normZ.
@@ -2833,28 +2843,29 @@ Next Obligation.
   by rewrite /banach_alg_ax2 normrE.
 Qed.
 
-Program Definition realType_banachAlgebraClass :=
-  (@BanachAlgebra.Class R R 
-    (CompleteNormedModule.class (R_CompleteNormedModule R))
-    (GRing.UnitRing.class [unitRingType of R])
-    (GRing.UnitRing.mixin (GRing.UnitRing.class [unitRingType of R])) 
+Program Definition completeNumFieldType_banachAlgebraClass :=
+  (@BanachAlgebra.Class K K 
+    (CompleteNormedModule.class CompleteNormedK)
+    (GRing.UnitRing.class [unitRingType of K])
+    (GRing.UnitRing.mixin(
+      @GRing.UnitRing.Class _ 
+        (GRing.Ring.class [unitRingType of K])
+        (GRing.UnitRing.mixin ((GRing.UnitRing.class [unitRingType of K])))))
     numDomain_lalgAxiom
     numDomain_algAxiom
     realType_banachAlgebraMixin
   ).
 Next Obligation.
-  congr (_ _).
-  Set Printing Coercions.
-  set l := LHS; rewrite -/l.
-  move: l.
+  by congr (_ _) => /=; set l := LHS; rewrite -/l; case: l.
 Qed.
 
-Definition realType_unitalBanachAlgebraType := 
-  UnitalBanachAlgebra.Pack (Phant R) realType_unitalBanachAlgebraClass.
+Definition completeNumFieldType_unitalBanachAlgebraType := 
+  BanachAlgebra.Pack (Phant K) completeNumFieldType_banachAlgebraClass.
 End real_banach.
 
-Canonical realType_unitalBanachAlgebraType.
-
+Definition R_banachAlgType {R : realType} := 
+  (@completeNumFieldType_unitalBanachAlgebraType _ (@R_complete R)).
+Canonical R_banachAlgType.
 
 Section matrix_banach.
 Context {R: realType}.
