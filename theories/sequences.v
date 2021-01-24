@@ -1240,18 +1240,16 @@ Proof. by []. Qed.
 Lemma series_tail_cvg{ R : realType } {V : banachAlgType R} (u_ : V^nat) :
   (cvg (series u_)) -> cvg(series (fun n => u_ (n .+1))).
 Proof.
-  rewrite -(@cvg_shiftS) /= [x in _ -> x]lock.
-  under [x in x --> _]funext do rewrite series_headS.
-  rewrite addf_cst -lock => C.
-  apply: (@cvg_is_cvg V (nbhs (_)) ((- (u_ 0%nat  )) + lim (series u_))) => //.
-  rewrite /nbhs /=.
-  set l := (x in x@\oo).
-  replace l with (-((fun=> u_ 0%nat) : V^nat) + (((fun=> u_ 0%nat) : V^nat)  + l)).
-    2: by rewrite addrA addrC addrA addrNK.
-  apply: cvgD.
-    2: by [].
-  apply: cvgN; apply: cvg_cst.
+  rewrite -{1}(@cvg_shiftS) /= => C.
+  rewrite -(is_cvgDrE (f:= (fun (_: nat)=> u_ 0%nat))).
+    2: by apply: is_cvg_cst.
+  evar (e : V ^nat ); set l := (_ + _).
+  have -> : l = e.
+  2: apply: cvg_is_cvg => //; rewrite/e; apply: C. 
+  rewrite /e /l; apply: funext => n /=.
+  by rewrite /= series_headS {1}/GRing.add /=. 
 Qed.
+
 Lemma series_lim_headS {R : realType } {V : banachAlgType R} (u_ : V^nat) :
   (cvg (series u_)) ->
   lim (series u_) = (u_ 0)%nat + lim(series (fun n => u_ (n .+1))).
@@ -1265,8 +1263,8 @@ Proof.
   move=> C; have C'' := C; move: C.
   move=> /cvg_lim <- //.
   rewrite limD //= ?lim_cst //.
-    1: by apply: cvg_cst.
-  by apply: series_tail_cvg.
+  - by apply: cvg_cst.
+  - by apply: series_tail_cvg.
 Qed.
 
 Lemma geometric_shiftn {R : realType} {V : banachAlgType R} (z : V) :
@@ -1294,6 +1292,32 @@ Proof.
   - by apply: C.
 Qed.
 
+Lemma near_open_continuous 
+    { U T : topologicalType} (f : U -> T ) (x : U) (P : set T) :
+  open P -> 
+  {near x, continuous f} ->
+  P (f x) -> 
+  \forall y \near x, P (f y).
+Proof.
+  move=> oP + Pfx.
+  rewrite /prop_near1 nbhsE /=; case => [Q [[ oQ nbhsQ] Q_sub_lF]].
+  exists (f @^-1` P `&` Q); repeat split => //wdh y; repeat split => //.
+    2: by apply: (subset_trans (Y:= f@^-1` P)) => // ? [].
+  rewrite openE => y [/= Pfy Qy]; near=> z; split; near: z => /=.
+    - move/(_ _ Qy P): Q_sub_lF => /=; apply.
+      by rewrite nbhsE; exists P; repeat split.
+    - rewrite /prop_near1 {1}/nbhs nbhsE /=.
+      by exists Q; repeat split.
+Grab Existential Variables. all: end_near. Qed.
+  
+Lemma cvgM 
+    {R : numFieldType} {V : banachAlgType R} {T : topologicalType}
+    (F : set (set T)) {FF : Filter F}
+    (f g : T -> V) (a b : V) : f @ F --> a -> g @ F --> b -> (f * g) @ F --> a * b.
+Proof. 
+
+Qed.
+
 Lemma continuous_Binv {R : realType} {V : banachAlgType R} (x : V) :
   x \is a GRing.unit -> {for x, continuous [eta (@GRing.inv V)]}.
 Proof.
@@ -1304,18 +1328,19 @@ Proof.
   pose xii := PosNum xiipos.
   apply/cvg_ballPpos=> eps.
   near_simpl.
+  pose f y := x^-1 * (x - y).
   near=> y.
-  pose z := (x^-1*(x - y)).
-  have ? : `|z| < 1. {
-    rewrite /z; apply: le_lt_trans.
+
+  have fy_lt_1 : `|f y| < 1. {
+    apply: le_lt_trans.
       1: by apply: normrM_le.
     rewrite mulrC -ltr_pdivl_mulr .
       2: by rewrite normr_gt0; apply unitr_not0; rewrite unitrV.
     suff : (ball_ normr x ((xii)%:num) y) by [].
     by near: y; rewrite nearE; apply: nbhs_ball_norm.
   }
-  have ->: y = x * (1-z) by
-    rewrite /z ?(mulrDr, mul1r, mulr1, mulrN, mulVr, mulrDr,mulrA, mulrV, subKr).
+  have ->: y = x * (1-(f y)) by
+    rewrite ?(mulrDr, mul1r, mulr1, mulrN, mulVr, mulrDr,mulrA, mulrV, subKr).
   rewrite -ball_normE /= invrM //.
     2: by apply norm_lt_1_unit.
   rewrite -{1}[x^-1]mul1r -mulrBl. 
@@ -1333,8 +1358,56 @@ Proof.
   apply: le_lt_trans.
     1: by apply normrM_le.
   rewrite geometric_inv //; apply: le_lt_trans.
-    1: apply: ler_pmul;[ | | eauto | apply: geometric_norm_bound ] => //.
-  apply: (@le_lt_trans _ _  (`|z|)).
+    1: by apply: ler_pmul;[ | | eauto | apply: geometric_norm_bound ] => //.
+  near: y.
+  apply (@near_open_continuous _ _ _ x [set z :R^o | z < (eps)%:num / `|x^-1|]).
+    1: by apply: open_lt.
+    2: by rewrite /f subrr mulr0 /= normrE mul0r -[`|_|^-1]mul1r;
+       apply mulr_gt0.
+  near=> y. 
+  suff Cf: continuous f.
+  apply: cvgM.
+  - by apply: cvg_norm; apply: Cf.
+  - apply: cvgV. 
+    2: apply: cvgD.
+    2: by apply: cvg_cst.
+    2: by apply: cvgN; apply: cvg_norm; apply: Cf.
+    apply lt0r_neq0; rewrite ltr_subr_addl addr0.
+    apply: le_lt_trans.
+      1: by apply: normrM_le.
+    rewrite mulrC -ltr_pdivl_mulr .
+      2: by rewrite normr_gt0; apply unitr_not0; rewrite unitrV.
+    suff : (ball_ normr x ((xii)%:num) y) by [].
+    by near: y; rewrite nearE; apply: nbhs_ball_norm.
+  - rewrite /f => z.
+    apply continuousBM.
+    
+  
+  3: 
+     4: {}
+  - apply: cvgM => //=.
+     pose Q := (@continuousM R V _ _ q) => /=.
+    
+    apply: Q.
+  
+    Search ( 0 < _ * _ ).
+  rewrite -(@near_map _ _ f (nbhs x) [set z | `|z| /(1-`|z|) < _ ] ) /=.
+  have fx0 : f x = (0:V) by 
+  suff Cf : continuous f.
+  Search 
+  near_simpl=> /=.
+  have -> : (f @ nbhs x) = (nbhs (0:V)).
+    rewrite <- fx0.
+    
+    
+    rewrite /filter_of /= in Cf.
+    Unset Printing Notations.
+
+  sim
+
+  rewrite -(@near_map _ _ (fun y => x - y)).
+  have (`|z| )
+  have ?: (z \is_near (nbhs 0)) .
 
 Section sequences_of_extended_real_numbers.
 
