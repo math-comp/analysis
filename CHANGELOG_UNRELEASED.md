@@ -29,23 +29,9 @@
 
 - in `measure.v`, definition `sigma_finite`
 
-- in `classical_sets.v`:
-  + lemma `bigcup_distrl`
-  + definition `trivIset`
-  + lemmas `trivIset_bigUI`, `trivIset_setI`
-- in `ereal.v`:
-  + definition `mule` and its notation `*` (scope `ereal_scope`)
-  + definition `abse` and its notation `` `| | `` (scope `ereal_scope`)
-
-  + lemmas `setIIl`, `setIIr`, `setCS`, `setSD`, `setDS`, `setDSS`, `setCI`,
-    `setDUr`, `setDUl`, `setIDA`, `setDD`
-- in `normedtype.v`:
-  + lemma `closed_ereal_le_ereal`
-  + lemma `closed_ereal_ge_ereal`
-  + section "LinearContinuousBounded"
-  + section "Closed_ball"
-- in `normedtype.v`, lemmas `linear_boundedP`, `linear_continuous0`, `linear_bounded0`,
-  `continuousfor0_continuous`, `linear_bounded_continuous`, `bounded_funP`
+- in `normedtype.v`: section "LinearContinuousBounded"
+  + lemmas `linear_boundedP`, `linear_continuous0`, `linear_bounded0`,
+    `continuousfor0_continuous`, `linear_bounded_continuous`, `bounded_funP`
   
 ### Changed
 
