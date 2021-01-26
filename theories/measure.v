@@ -12,8 +12,10 @@ From HB Require Import structures.
 (* WIP.                                                                       *)
 (*                                                                            *)
 (* semiRingOfSetsType == the type of semirings of sets                        *)
-(* ringOfSetsType == the type of rings of sets                                *)
-(* measurableType == the type of sigma-algebras                               *)
+(*     ringOfSetsType == the type of rings of sets                            *)
+(*     measurableType == the type of sigma-algebras                           *)
+(*   sigma_finite A f == the measure f is sigma-finite on A : set T with      *)
+(*                       T : ringOfSetsType.                                  *)
 (*                                                                            *)
 (* {additive_measure set T -> {ereal R}} == type of a function over sets of   *)
 (*                    elements of type T where R is expected to be a          *)
@@ -30,7 +32,7 @@ From HB Require Import structures.
 (* {ae mu, forall x, P x} == P holds almost everywhere for the measure mu     *)
 (*                                                                            *)
 (* {outer_measure set T -> {ereal R}} == type of an outer measure over sets   *)
-(*                                 of elements o ftype T where R is expected  *)
+(*                                 of elements of type T where R is expected  *)
 (*                                 to be a numFieldType                       *)
 (*                                                                            *)
 (******************************************************************************)
@@ -218,6 +220,12 @@ exact: measurableC.
 Qed.
 
 End measurable_lemmas.
+
+Definition sigma_finite (R : numDomainType) (T : ringOfSetsType) (A : set T)
+    (mu : set T -> {ereal R}) :=
+  exists2 F : (set T)^nat,
+    A = \bigcup_(i : nat) F i &
+      forall i, measurable (F i) /\ (mu (F i) < +oo)%E.
 
 Section semi_additivity.
 Variables (R : numFieldType) (T : semiRingOfSetsType) (mu : set T -> {ereal R}).
