@@ -419,7 +419,7 @@ Module Measure.
 Section ClassDef.
 
 Variables (R : numFieldType) (T : semiRingOfSetsType).
-Record axioms (mu : set T -> {ereal R}) := Measure {
+Record axioms (mu : set T -> {ereal R}) := Axioms {
   _ : mu set0 = 0%:E ;
   _ : forall x, measurable x -> (0%:E <= mu x)%E ;
   _ : semi_sigma_additive mu }.
@@ -721,7 +721,7 @@ Module OuterMeasure.
 Section ClassDef.
 
 Variables (R : numFieldType) (T : Type).
-Record axioms (mu : set T -> {ereal R}) := OuterMeasure {
+Record axioms (mu : set T -> {ereal R}) := Axioms {
   _ : mu set0 = 0%:E ;
   _ : forall x, (0%:E <= mu x)%E ;
   _ : {homo mu : A B / A `<=` B >-> (A <= B)%E} ;

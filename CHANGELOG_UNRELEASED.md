@@ -53,6 +53,10 @@
   + `ifloor` -> `floor`
   + `ifloor_ge0` -> `floor_ge0`
 
+- in `measure.v`:
+  + `AdditiveMeasure.Measure` -> `AdditiveMeasure.Axioms`
+  + `OuterMeasure.OuterMeasure` -> `OuterMeasure.Axioms`
+
 ### Removed
 
 - in `topology.v`:
