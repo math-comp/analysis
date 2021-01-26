@@ -25,6 +25,8 @@
 
 - in `ereal.v`, lemmas `esum_fset_ninfty`, `esum_fset_pinfty`, `esum_pinfty`
 
+- in `measure.v`, definition `sigma_finite`
+
 ### Changed
 
 - header in `normedtype.v`, precisions on `bounded_fun`
@@ -50,6 +52,10 @@
   + `floor_le0` -> `Rfloor_le0`
   + `ifloor` -> `floor`
   + `ifloor_ge0` -> `floor_ge0`
+
+- in `measure.v`:
+  + `AdditiveMeasure.Measure` -> `AdditiveMeasure.Axioms`
+  + `OuterMeasure.OuterMeasure` -> `OuterMeasure.Axioms`
 
 ### Removed
 
