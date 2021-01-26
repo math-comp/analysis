@@ -18,16 +18,36 @@
 
 - in `reals.v`, lemmas `sup_setU`, `inf_setU`
 - in `boolp.v`, lemmas `iff_notr`, `iff_not2`
+- in `reals.v`, lemmas `RtointN`, `floor_le0`
+- in `reals.v`, definition `Rceil`, lemmas `isint_Rceil`, `Rceil0`, `le_Rceil`,
+  `Rceil_le`, `Rceil_ge0`
+- in `reals.v`, definition `ceil`, lemmas `RceilE`, `ceil_ge0`, `ceil_le0`
 
 ### Changed
 
 - header in `normedtype.v`, precisions on `bounded_fun`
+- in `reals.v`:
+  + `floor_ge0` generalized and renamed to `floorR_ge_int`
 
 ### Renamed
 
 - in `normedtype.v`, `bounded_on` -> `bounded_near`
 
 - in `topology.v`, `ball_ler` -> `le_ball`
+- in `reals.v`:
+  + `floor` -> `Rfloor`
+  + `isint_floor` -> `isint_Rfloor`
+  + `floorE` -> `RfloorE`
+  + `mem_rg1_floor` -> `mem_rg1_Rfloor`
+  + `floor_ler` -> `Rfloor_ler`
+  + `floorS_gtr` -> `RfloorS_gtr`
+  + `floor_natz` -> `Rfloor_natz`
+  + `Rfloor` -> `Rfloor0`
+  + `floor1` -> `Rfloor1`
+  + `ler_floor` -> `ler_Rfloor`
+  + `floor_le0` -> `Rfloor_le0`
+  + `ifloor` -> `floor`
+  + `ifloor_ge0` -> `floor_ge0`
 
 ### Removed
 

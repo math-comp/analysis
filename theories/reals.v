@@ -342,6 +342,13 @@ Proof. by rewrite -{1}mulrz_nat Rtointz. Qed.
 
 Lemma inj_Rtoint : {in Rint &, injective Rtoint}.
 Proof. by move=> x y Ix Iy /= /(congr1 (@intmul R 1)); rewrite !RtointK. Qed.
+
+Lemma RtointN x : x \is a Rint -> Rtoint (- x) = - Rtoint x.
+Proof.
+move=> Ir; apply/eqP.
+by rewrite -(@eqr_int R) RtointK // ?rpredN // mulrNz RtointK.
+Qed.
+
 End ToInt.
 
 (* -------------------------------------------------------------------- *)
@@ -351,11 +358,16 @@ Variable R : realType.
 Implicit Types x y : R.
 Definition floor_set x := [set y : R | (y \is a Rint) && (y <= x)].
 
-Definition floor x : R := sup (floor_set x).
+Definition Rfloor x : R := sup (floor_set x).
 
-Definition ifloor x : int := Rtoint (floor x).
+Definition floor x : int := Rtoint (Rfloor x).
 
 Definition range1 (x : R) := [set y | x <= y < x + 1].
+
+Definition Rceil x := - Rfloor (- x).
+
+Definition ceil x := - floor (- x).
+
 End RealDerivedOps.
 
 (*-------------------------------------------------------------------- *)
@@ -510,28 +522,28 @@ rewrite -[_-_]gez0_abs ?subr_ge0 // ltz_nat ltnS leqn0.
 by rewrite absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
 Qed.
 
-Lemma isint_floor x: floor x \is a Rint.
+Lemma isint_Rfloor x : Rfloor x \is a Rint.
 Proof. by case/andP: (sup_in_floor_set x). Qed.
 
-Lemma floorE x : floor x = (ifloor x)%:~R.
-Proof. by rewrite /ifloor RtointK ?isint_floor. Qed.
+Lemma RfloorE x : Rfloor x = (floor x)%:~R.
+Proof. by rewrite /floor RtointK ?isint_Rfloor. Qed.
 
-Lemma mem_rg1_floor (x : R) : (range1 (floor x)) x.
+Lemma mem_rg1_Rfloor (x : R) : (range1 (Rfloor x)) x.
 Proof.
 rewrite /range1/mkset.
 have /andP[_ ->] /= := sup_in_floor_set x.
-have [|] := pselect ((floor_set x) (floor x + 1)); last first.
+have [|] := pselect ((floor_set x) (Rfloor x + 1)); last first.
   rewrite /floor_set => /negP.
-  by rewrite negb_and -ltNge rpredD // ?(Rint1, isint_floor).
+  by rewrite negb_and -ltNge rpredD // ?(Rint1, isint_Rfloor).
 move/ubP : (sup_upper_bound (has_sup_floor_set x)) => h/h.
 by rewrite ger_addl ler10.
 Qed.
 
-Lemma floor_ler (x : R) : floor x <= x.
-Proof. by case/andP: (mem_rg1_floor x). Qed.
+Lemma ge_Rfloor (x : R) : Rfloor x <= x.
+Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
-Lemma floorS_gtr (x : R) : x < floor x + 1.
-Proof. by case/andP: (mem_rg1_floor x). Qed.
+Lemma lt_succ_Rfloor (x : R) : x < Rfloor x + 1.
+Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
 Lemma range1z_inj (x : R) (m1 m2 : int) :
   (range1 m1%:~R) x -> (range1 m2%:~R) x -> m1 = m2.
@@ -547,38 +559,81 @@ Lemma range1rr (x : R) : (range1 x) x.
 Proof. by rewrite /range1/mkset lexx /= ltr_addl ltr01. Qed.
 
 Lemma range1zP (m : int) (x : R) :
-  floor x = m%:~R <-> (range1 m%:~R) x.
+  Rfloor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
-split=> [<-|h]; first exact/mem_rg1_floor.
-apply/eqP; rewrite floorE eqr_int; apply/eqP/(@range1z_inj x) => //.
-by rewrite /range1/mkset -floorE mem_rg1_floor.
+split=> [<-|h]; first exact/mem_rg1_Rfloor.
+apply/eqP; rewrite RfloorE eqr_int; apply/eqP/(@range1z_inj x) => //.
+by rewrite /range1/mkset -RfloorE mem_rg1_Rfloor.
 Qed.
 
-Lemma floor_natz (x : int) : floor x%:~R = x%:~R :> R.
+Lemma Rfloor_natz (x : int) : Rfloor x%:~R = x%:~R :> R.
 Proof. by apply/range1zP/range1rr. Qed.
 
-Lemma floor0 : floor 0 = 0 :> R.
-Proof. by rewrite -{1}(mulr0z 1) floor_natz. Qed.
+Lemma Rfloor0 : Rfloor 0 = 0 :> R.
+Proof. by rewrite -{1}(mulr0z 1) Rfloor_natz. Qed.
 
-Lemma floor1 : floor 1 = 1 :> R.
-Proof. by rewrite -{1}(mulr1z 1) floor_natz. Qed.
+Lemma Rfloor1 : Rfloor 1 = 1 :> R.
+Proof. by rewrite -{1}(mulr1z 1) Rfloor_natz. Qed.
 
-Lemma ler_floor (x y : R) : x <= y -> floor x <= floor y.
+Lemma Rfloor_le : {homo (@Rfloor R) : x y / x <= y}.
 Proof.
-move=> le_xy; case: lerP=> //=; rewrite -Rint_ler_addr1 ?isint_floor //.
-move/(lt_le_trans (floorS_gtr y))/lt_le_trans/(_ (floor_ler x)).
+move=> x y le_xy; case: lerP=> //=; rewrite -Rint_ler_addr1 ?isint_Rfloor //.
+move/(lt_le_trans (lt_succ_Rfloor y))/lt_le_trans/(_ (ge_Rfloor x)).
 by rewrite ltNge le_xy.
 Qed.
 
-Lemma floor_ge0 (x : R) : (0 <= floor x) = (0 <= x).
+Lemma Rfloor_ge_int (x : R) (n : int) : (n%:~R <= x)= (n%:~R <= Rfloor x).
 Proof.
-apply/idP/idP; last by move/ler_floor; rewrite floor0.
-by move/le_trans=> -/(_ _ (floor_ler x)).
+apply/idP/idP; last by move/le_trans => /(_ _ (ge_Rfloor x)).
+by move/Rfloor_le; apply le_trans; rewrite Rfloor_natz.
 Qed.
 
-Lemma ifloor_ge0 (x : R) : (0 <= ifloor x) = (0 <= x).
-Proof. by rewrite -(@ler_int R) -floorE floor_ge0. Qed.
+Lemma Rfloor_le0 x : x <= 0 -> Rfloor x <= 0.
+Proof. by move=> ?; rewrite -Rfloor0 Rfloor_le. Qed.
+
+Lemma floor_ge0 (x : R) : (0 <= floor x) = (0 <= x).
+Proof. by rewrite -(@ler_int R) -RfloorE -Rfloor_ge_int. Qed.
+
+Lemma floor_le0 x : x <= 0 -> floor x <= 0.
+Proof. by move=> ?; rewrite -(@ler_int R) -RfloorE Rfloor_le0. Qed.
+
 End FloorTheory.
+
+Section CeilTheory.
+Variable R : realType.
+
+Implicit Types x y : R.
+
+Lemma isint_Rceil x : Rceil x \is a Rint.
+Proof. by rewrite /Rceil rpredN isint_Rfloor. Qed.
+
+Lemma Rceil0 : Rceil 0 = 0 :> R.
+Proof. by rewrite /Rceil oppr0 Rfloor0 oppr0. Qed.
+
+Lemma le_Rceil x : x <= Rceil x.
+Proof. by rewrite /Rceil ler_oppr ge_Rfloor. Qed.
+
+Lemma Rceil_le : {homo (@Rceil R) : x y / x <= y}.
+Proof.
+by move=> x y ?; rewrite /Rceil ler_oppl opprK Rfloor_le // ler_oppl opprK.
+Qed.
+
+Lemma Rceil_ge0 x : 0 <= x -> 0 <= Rceil x.
+Proof. by move=> ?; rewrite -Rceil0 Rceil_le. Qed.
+
+Lemma RceilE x : Rceil x = (ceil x)%:~R.
+Proof. by rewrite /Rceil /ceil RfloorE mulrNz. Qed.
+
+Lemma ceil_ge0 x : 0 <= x -> 0 <= ceil x.
+Proof. by move=> ?; rewrite -(@ler_int R) -RceilE Rceil_ge0. Qed.
+
+Lemma ceil_le0 x : x <= 0 -> ceil x <= 0.
+Proof.
+move=> ?; rewrite ler_oppl oppr0 -(@ler_int R).
+by rewrite (@le_trans _ _ 0) // -Rfloor0 -RfloorE Rfloor_le // ler_oppr oppr0.
+Qed.
+
+End CeilTheory.
 
 (* -------------------------------------------------------------------- *)
 Section Sup.
