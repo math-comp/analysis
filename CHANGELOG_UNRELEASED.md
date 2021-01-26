@@ -23,6 +23,8 @@
   `Rceil_le`, `Rceil_ge0`
 - in `reals.v`, definition `ceil`, lemmas `RceilE`, `ceil_ge0`, `ceil_le0`
 
+- in `ereal.v`, lemmas `esum_fset_ninfty`, `esum_fset_pinfty`, `esum_pinfty`
+
 ### Changed
 
 - header in `normedtype.v`, precisions on `bounded_fun`
