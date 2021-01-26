@@ -411,16 +411,46 @@ Lemma adde_Neq_ninfty x y : x != +oo -> y != +oo ->
   (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
+Lemma esum_fset_ninfty
+    (T : choiceType) (s : {fset T}) (P : pred T) (f : T -> {ereal R}) :
+  \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
+Proof.
+split=> [|[i [si Pi fi]]]; last by rewrite big_mkcond (bigD1_seq i) //= Pi fi.
+rewrite big_seq_cond; elim/big_ind: _ => // [[?| |] [?| |]//|].
+by move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
+Qed.
+
 Lemma esum_ninfty n (f : 'I_n -> {ereal R}) :
   (\sum_(i < n) f i == -oo) = [exists i, f i == -oo].
 Proof.
-apply/eqP/idP => [|/existsP [i fi]]; last by rewrite (bigD1 i) //= (eqP fi).
-elim: n f => [f|n ih f]; [by rewrite big_ord0 | rewrite big_ord_recl /=].
-have [/eqP f0 _|? /eqP] := boolP (f ord0 == -oo).
-  by apply/existsP; exists ord0; rewrite f0.
-rewrite adde_eq_ninfty => /orP[f0|/eqP/ih/existsP[i fi]].
-by apply/existsP; exists ord0.
-by apply/existsP; exists (lift ord0 i).
+rewrite -big_enum -(big_fset _ (mem_fin (fin_finpred (pred_of_simpl 'I_n)))).
+apply/idP/idP => [/eqP/esum_fset_ninfty|/existsP[i /eqP fioo]].
+  by move=> -[i [_ _ fioo]]; apply/existsP; exists i; exact/eqP.
+by apply/eqP/esum_fset_ninfty; exists i; split => //; rewrite inE.
+Qed.
+
+Lemma esum_fset_pinfty
+    (T : choiceType) (s : {fset T}) (P : pred T) (f : T -> {ereal R}) :
+  (forall i, P i -> f i != -oo) ->
+  \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
+Proof.
+move=> finoo; split=> [|[i [si Pi fi]]]; last first.
+  rewrite big_mkcond (bigD1_seq i) //= Pi fi addooe //.
+  apply/eqP => /esum_fset_ninfty; apply/forallNP => t [ts ti].
+  by case: ifPn => // Pt /eqP; apply/negP; rewrite finoo.
+rewrite big_seq_cond; elim/big_ind: _ => // [[x| |] [y| |] //|].
+by  move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
+Qed.
+
+Lemma esum_pinfty n (f : 'I_n -> {ereal R}) : (forall i, f i != -oo) ->
+  (\sum_(i < n) f i == +oo) = [exists i, f i == +oo].
+Proof.
+move=> finoo.
+rewrite -big_enum -(big_fset _ (mem_fin (fin_finpred (pred_of_simpl 'I_n)))).
+apply/idP/existsP => [/eqP /=|[/= i /eqP fioo]].
+  have {}finoo : (forall i, xpredT i -> f i != -oo) by move=> i _; exact: finoo.
+  by move/(esum_fset_pinfty _ finoo) => [i [_ _ fioo]]; exists i; rewrite fioo.
+by apply/eqP/esum_fset_pinfty => //; exists i; split => //; rewrite inE.
 Qed.
 
 Lemma adde_ge0 x y : 0%:E <= x -> 0%:E <= y -> 0%:E <= x + y.
