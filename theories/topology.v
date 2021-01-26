@@ -2354,7 +2354,7 @@ Qed.
 Lemma closureC E :
   ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
 Proof.
-rewrite closureE bigcapCU setCK eqEsubset; split => t [U [? EU Ut]].
+rewrite closureE setC_bigcap eqEsubset; split => t [U [? EU Ut]].
   by exists (~` U) => //; split; [exact: openC|exact: subsetC].
 by rewrite -(setCK E); exists (~` U)=> //; split; [exact:closedC|exact:subsetC].
 Qed.
