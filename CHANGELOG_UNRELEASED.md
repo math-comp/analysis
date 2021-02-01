@@ -65,6 +65,8 @@
   + `ball_le`
 - in `classical_sets.v`, lemma `bigcapCU`
 
+- in `sequences.v`, lemmas `ler_sum_nat`, `sumr_const_nat`
+
 ### Infrastructure
 
 ### Misc
