@@ -336,21 +336,6 @@ Lemma eq_sum_telescope (V : zmodType) (u_ : V ^nat) n :
   u_ n = u_ 0%N + series (telescope u_) n.
 Proof. by rewrite telescopeK/= addrC addrNK. Qed.
 
-(* TODO: port to mathcomp *)
-(* missing mathcomp lemmas *)
-Lemma ler_sum_nat  (R : numDomainType) (m n : nat) (F G : nat -> R) :
-  (forall i, (m <= i < n)%N -> (F i <= G i)%O) ->
-  (\sum_(m <= i < n) F i <= \sum_(m <= i < n) G i)%O.
-Proof.
-move=> leFG; rewrite big_nat_cond [in X in _ <= X]big_nat_cond.
-by rewrite ler_sum// => i; rewrite andbT => /leFG.
-Qed.
-
-Lemma sumr_const_nat (V : zmodType) (m n : nat) (x : V) :
-   \sum_(n <= i < m) x = x *+ (m - n).
-Proof. by rewrite big_const_nat; elim: (m - n)%N => //= k ->; rewrite mulrS. Qed.
-(* end missing mathcomp lemmas *)
-
 Section series_patched.
 
 Variables (N : nat) (K : numFieldType) (V : normedModType K).
@@ -1201,7 +1186,7 @@ Qed.
 Lemma ereal_limD (R : realType) (f g : nat -> {ereal R}) :
   cvg f -> cvg g -> ~~ adde_undef (lim f) (lim g) ->
   (lim (f \+ g) = lim f + lim g)%E.
-Proof. 
+Proof.
 move=> cf cg fg; apply/(@cvg_lim _ _ ((f \+ g)%E @ \oo)) => //=. (* BUG *)
 exact: ereal_cvgD.
 Qed.
