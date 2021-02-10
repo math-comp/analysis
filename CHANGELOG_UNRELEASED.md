@@ -35,6 +35,10 @@
 - in `measure.v`:
   + generalize lemma `bigUB_of`
   + generalize theorem `Boole_inequality`
+- in `classical_sets.v`:
+  + `bigcup_distrr`, `bigcup_distrl` generalized
+
+### Renamed
 
 - canonicals and coercions have been changed so that there is not need
   anymore for explicit types casts to `R^o`, `[filteredType R^o of R^o]`,
