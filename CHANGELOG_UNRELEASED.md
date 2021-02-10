@@ -35,6 +35,9 @@
 - in `reals.v`:
   + `floor_ge0` generalized and renamed to `floorR_ge_int`
 
+- in `classical_sets.v`:
+  + `bigcup_distrr`, `bigcup_distrl` generalized
+
 ### Renamed
 
 - in `normedtype.v`, `bounded_on` -> `bounded_near`
