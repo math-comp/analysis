@@ -3565,148 +3565,148 @@ have an1oo : an1 != -oo%O.
 apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite leNgt; apply/negP => b_lt_bn1.
   destruct b as [bb b|[]] => //.
-  destruct bn1 as [bbn1 bn1|[]] => //; last first.
-    destruct an1 as [ban1 an1|[]] => //; last first.
-      move: sne; rewrite all_rcons => /andP[+ _].
+  destruct bn1 as [bbn1 bn1|[]] => //.
+  - destruct an1 as [ban1 an1|[]] => //.
+    + have : (\big[setU/set0]_(k <- rcons h (Interval (BSide ban1 an1) (BSide bbn1 bn1))) set_of_itv k) (Mid (Interval ((BSide ban1 an1) `|` (BSide bb b))%O (BSide bbn1 bn1))).
+        rewrite -cats1 big_cat /= big_cons big_nil setU0; right.
+        have an1bn1 : an1 <= bn1.
+          rewrite leNgt; apply/negP => bn1an1.
+          move: sne; rewrite all_rcons => /andP[+ _].
+          rewrite set_of_itv_empty_eq0 negbK; apply/negP; rewrite -leNgt.
+          by destruct bbn1; destruct ban1 => //; rewrite itv_bound_lteE // ltW.
+        rewrite set_of_itv_mem itv_boundlr; apply/andP; split.
+          destruct ban1 => //; rewrite itv_bound_lteE.
+          by rewrite (@le_trans _ _ ((an1 + bn1)/2)) // ?midf_le // ler_pmul2r // ler_add2r lexUl.
+          move: an1bn1; rewrite le_eqVlt => /orP[/eqP an1bn1|an1bn1].
+            exfalso.
+            move: sne; rewrite all_rcons => /andP[+ _].
+            by rewrite set_of_itv_empty_eq0 negbK; apply/negP; rewrite -leNgt an1bn1 BSide_BRight_le.
+          by rewrite (@lt_le_trans _ _ ((an1 + bn1)/2)) // ?midf_lt // ler_pmul2r // ler_add2r lexUl.
+        destruct bbn1 => //; rewrite itv_bound_lteE.
+          move: an1bn1; rewrite le_eqVlt => /orP[/eqP an1bn1|an1bn1].
+            exfalso.
+            move: sne; rewrite all_rcons => /andP[+ _].
+            by rewrite set_of_itv_empty_eq0 negbK; apply/negP; rewrite -leNgt an1bn1 BLeft_BSide_leE.
+          destruct bb => //; rewrite itv_bound_lteE in b_lt_bn1 ;
+            ((rewrite (@lt_le_trans _ _ ((bn1 + bn1)/2)) //; last by rewrite midf_le) ;
+            by rewrite ltr_pmul2r // ltr_add2r // ltUx // an1bn1).
+          destruct bb => //; rewrite itv_bound_lteE in b_lt_bn1 ;
+            ((rewrite (@le_trans _ _ ((bn1 + bn1)/2)) //; last by rewrite midf_le) ;
+             by rewrite ler_pmul2r // ler_add2r // leUx // an1bn1 ?b_lt_bn1 //= ltW).
+      rewrite -Is.
+      rewrite set_of_itv_mem itv_boundlr /= => /andP[_].
+      apply/negP.
+      rewrite -ltNge.
+      destruct bb => //; rewrite itv_bound_lteE; destruct bbn1 => //; rewrite itv_bound_lteE in b_lt_bn1.
+      rewrite (@le_trans _ _ ((b + b)/2)) // ?midf_le// ler_pmul2r // ler_add //; last by rewrite ltW.
+      by rewrite lexUr.
+      by rewrite (@le_trans _ _ ((b + b)/2)) // ?midf_le// ler_pmul2r // ler_add // lexUr.
+      by rewrite (@lt_le_trans _ _ ((b + bn1)/2)) // ?midf_lt // ler_pmul2r // ler_add2r // lexUr.
+      by rewrite (@lt_le_trans _ _ ((b + bn1)/2)) // ?midf_lt // ler_pmul2r // ler_add2r // lexUr.
+    + by move: sne; rewrite all_rcons set_of_itv_empty_eq0.
+  - destruct an1 as [ban1 an1|[]] => //.
+    + have : (set_of_itv (Interval a (BSide bb b))) (Mid (Interval ((BSide bb b) `|` (BSide ban1 an1))%O +oo%O)).
+        rewrite Is -cats1 big_cat /= big_cons big_nil setU0; right.
+        rewrite set_of_itv_mem itv_boundlr; apply/andP; split => //.
+        destruct ban1; rewrite itv_bound_lteE.
+        by rewrite (@le_trans _ _ (an1 + 1)) // ?ler_addl// ler_add2r leUr.
+        by rewrite (@lt_le_trans _ _ (an1 + 1)) // ?ltr_addl// ler_add2r leUr.
+      rewrite set_of_itv_mem itv_boundlr => /andP[_].
+      apply/negP; rewrite -ltNge.
+      destruct bb; destruct ban1 => //; rewrite ?itv_bound_lteE /=.
+      by rewrite (@le_trans _ _ (b + 1)) // ?ler_addl// ler_add2r leUl.
+      by rewrite (@le_trans _ _ (b + 1)) // ?ler_addl// ler_add2r leUl.
+      by rewrite (@lt_le_trans _ _ (b + 1)) // ?ltr_addl// ler_add2r leUl.
+      by rewrite (@lt_le_trans _ _ (b + 1)) // ?ltr_addl// ler_add2r leUl.
+    + move: sne; rewrite all_rcons => /andP[+ _].
       by rewrite set_of_itv_empty_eq0.
-    have : (set_of_itv (Interval a (BSide bb b))) (Mid (Interval ((BSide bb b) `|` (BSide ban1 an1))%O +oo%O)).
-      rewrite Is -cats1 big_cat /= big_cons big_nil setU0; right.
-      rewrite set_of_itv_mem itv_boundlr; apply/andP; split => //.
-      destruct ban1; rewrite itv_bound_lteE.
-      by rewrite (@le_trans _ _ (an1 + 1)) // ?ler_addl// ler_add2r leUr.
-      by rewrite (@lt_le_trans _ _ (an1 + 1)) // ?ltr_addl// ler_add2r leUr.
-    rewrite set_of_itv_mem itv_boundlr => /andP[_].
-    apply/negP; rewrite -ltNge.
-    destruct bb; destruct ban1 => //; rewrite ?itv_bound_lteE /=.
-    by rewrite (@le_trans _ _ (b + 1)) // ?ler_addl// ler_add2r leUl.
-    by rewrite (@le_trans _ _ (b + 1)) // ?ler_addl// ler_add2r leUl.
-    by rewrite (@lt_le_trans _ _ (b + 1)) // ?ltr_addl// ler_add2r leUl.
-    by rewrite (@lt_le_trans _ _ (b + 1)) // ?ltr_addl// ler_add2r leUl.
-  destruct an1 as [ban1 an1|[]] => //; last first.
-    by move: sne; rewrite all_rcons set_of_itv_empty_eq0.
-  have : (\big[setU/set0]_(k <- rcons h (Interval (BSide ban1 an1) (BSide bbn1 bn1))) set_of_itv k) (Mid (Interval ((BSide ban1 an1) `|` (BSide bb b))%O (BSide bbn1 bn1))).
-    rewrite -cats1 big_cat /= big_cons big_nil setU0; right.
-    have an1bn1 : an1 <= bn1.
-      rewrite leNgt; apply/negP => bn1an1.
-      move: sne; rewrite all_rcons => /andP[+ _].
-      rewrite set_of_itv_empty_eq0 negbK; apply/negP; rewrite -leNgt.
-      by destruct bbn1; destruct ban1 => //; rewrite itv_bound_lteE // ltW.
-    rewrite set_of_itv_mem itv_boundlr; apply/andP; split.
-      destruct ban1 => //; rewrite itv_bound_lteE.
-      by rewrite (@le_trans _ _ ((an1 + bn1)/2)) // ?midf_le // ler_pmul2r // ler_add2r lexUl.
-      move: an1bn1; rewrite le_eqVlt => /orP[/eqP an1bn1|an1bn1].
-        exfalso.
-        move: sne; rewrite all_rcons => /andP[+ _].
-        by rewrite set_of_itv_empty_eq0 negbK; apply/negP; rewrite -leNgt an1bn1 BSide_BRight_le.
-      by rewrite (@lt_le_trans _ _ ((an1 + bn1)/2)) // ?midf_lt // ler_pmul2r // ler_add2r lexUl.
-    destruct bbn1 => //; rewrite itv_bound_lteE.
-      move: an1bn1; rewrite le_eqVlt => /orP[/eqP an1bn1|an1bn1].
-        exfalso.
-        move: sne; rewrite all_rcons => /andP[+ _].
-        by rewrite set_of_itv_empty_eq0 negbK; apply/negP; rewrite -leNgt an1bn1 BLeft_BSide_leE.
-      destruct bb => //; rewrite itv_bound_lteE in b_lt_bn1 ;
-        ((rewrite (@lt_le_trans _ _ ((bn1 + bn1)/2)) //; last by rewrite midf_le) ;
-        by rewrite ltr_pmul2r // ltr_add2r // ltUx // an1bn1).
-      destruct bb => //; rewrite itv_bound_lteE in b_lt_bn1 ;
-        ((rewrite (@le_trans _ _ ((bn1 + bn1)/2)) //; last by rewrite midf_le) ;
-         by rewrite ler_pmul2r // ler_add2r // leUx // an1bn1 ?b_lt_bn1 //= ltW).
-  rewrite -Is.
-  rewrite set_of_itv_mem itv_boundlr /= => /andP[_].
-  apply/negP.
-  rewrite -ltNge.
-  destruct bb => //; rewrite itv_bound_lteE; destruct bbn1 => //; rewrite itv_bound_lteE in b_lt_bn1.
-  rewrite (@le_trans _ _ ((b + b)/2)) // ?midf_le// ler_pmul2r // ler_add //; last by rewrite ltW.
-  by rewrite lexUr.
-  by rewrite (@le_trans _ _ ((b + b)/2)) // ?midf_le// ler_pmul2r // ler_add // lexUr.
-  by rewrite (@lt_le_trans _ _ ((b + bn1)/2)) // ?midf_lt // ler_pmul2r // ler_add2r // lexUr.
-  by rewrite (@lt_le_trans _ _ ((b + bn1)/2)) // ?midf_lt // ler_pmul2r // ler_add2r // lexUr.
 rewrite leNgt; apply/negP => bn1b.
 destruct bn1 as [bbn1 bn1|[]] => //.
-destruct b as [bb b|[]] => //; last first.
-  have abs : (\big[setU/set0]_(k <- rcons h (Interval an1 (BSide bbn1 bn1))) set_of_itv k) (Mid (Interval (a `|` BSide bbn1 bn1)%O +oo%O)).
+destruct b as [bb b|[]] => //.
+- have abs : (\big[setU/set0]_(k <- rcons h (Interval an1 (BSide bbn1 bn1))) set_of_itv k) (Mid (Interval (a `|` BSide bbn1 bn1)%O (BSide bb b))).
     rewrite -Is set_of_itv_mem itv_boundlr; apply/andP; split => //.
-    destruct a as [ba a|[]] => //; last first.
-      by rewrite set_of_itv_empty_eq0 in ab0.
-    destruct ba => //; rewrite itv_bound_lteE /=.
-      by rewrite (@le_trans _ _ (a + 1)) // ?ler_addl// ler_add2r lexUl.
-    by rewrite (@lt_le_trans _ _ (a + 1)) // ?ltr_addl// ler_add2r lexUl.
+      destruct a as [ba a|[]] => //.
+      + destruct ba => //; rewrite itv_bound_lteE /=.
+          rewrite (@le_trans _ _ ((a + b)/2)) // ?midf_le //.
+            rewrite leNgt.
+            apply: contra ab0 => ba.
+            by rewrite set_of_itv_empty_eq0 -leNgt; destruct bb => //; rewrite ltW.
+          by rewrite ler_pmul2r // ler_add2r lexUl.
+        rewrite (@lt_le_trans _ _ ((a + b)/2)) // ?midf_lt //.
+            rewrite ltNge.
+            apply: contra ab0 => ba.
+            by rewrite set_of_itv_empty_eq0 -leNgt; destruct bb => //; rewrite ltW.
+          by rewrite ler_pmul2r // ler_add2r lexUl.
+      + by rewrite set_of_itv_empty_eq0 in ab0.
+    destruct a as [ba a|[]].
+    - destruct bb; rewrite itv_bound_lteE.
+      + rewrite /=.
+        rewrite (@lt_le_trans _ _ ((b + b)/2)) // ?midf_le //.
+        rewrite ltr_pmul2r // ltr_add2r //; destruct bbn1 => //.
+        rewrite ltUx; apply/andP; split => //.
+        rewrite ltNge; apply: contra ab0 => ab; rewrite set_of_itv_empty_eq0 // -leNgt.
+        by destruct ba => //.
+        rewrite ltUx; apply/andP; split => //.
+        rewrite ltNge; apply: contra ab0 => ab; rewrite set_of_itv_empty_eq0 // -leNgt.
+        by destruct ba => //.
+      + rewrite /=.
+        rewrite (@le_trans _ _ ((b + b)/2)) // ?midf_le //.
+        rewrite ler_pmul2r // ler_add2r //; destruct bbn1 => //.
+        * rewrite leUx; apply/andP; split => //.
+          rewrite leNgt; apply: contra ab0 => ab; rewrite set_of_itv_empty_eq0 // -leNgt.
+          by destruct ba => //; rewrite ltW.
+        * rewrite leUx; apply/andP; split => //.
+            rewrite leNgt; apply: contra ab0 => ab; rewrite set_of_itv_empty_eq0 // -leNgt.
+            by destruct ba => //; rewrite ltW.
+          by rewrite ltW.
+    - rewrite join_r //.
+      destruct bb; rewrite itv_bound_lteE.
+        by rewrite /= midf_lt //; destruct bbn1.
+      by rewrite /= midf_le //; destruct bbn1 => //; rewrite ltW.
+    - by rewrite set_of_itv_empty_eq0 in ab0.
   have [_] := intervalUn_mem sne les ts abs false.
   apply/negP.
   rewrite -ltNge.
   rewrite -nth_last (nth_map 0%O); last first.
-     by rewrite size_map !size_rcons /=.
+     by rewrite size_map !size_rcons.
+  rewrite size_map size_rcons nth_rcons ltnn eqxx.
+  destruct bbn1; rewrite itv_bound_lteE.
+    destruct a as [ba a|[]] => //.
+    + rewrite /=.
+      rewrite (@le_trans _ _ ((bn1 + b)/2)) // ?midf_lt //.
+        destruct bb => //; rewrite midf_le //.
+        by rewrite ltW.
+      by rewrite ler_pmul2r // ler_add2r lexUr.
+    + by rewrite midf_le //; destruct bb => //; rewrite ltW.
+    + by rewrite set_of_itv_empty_eq0 in ab0.
+  destruct a as [ba a|[]] => //.
+  + rewrite /=.
+    rewrite (@lt_le_trans _ _ ((bn1 + b)/2)) // ?midf_lt //.
+    by rewrite ler_pmul2r // ler_add2r lexUr.
+  + by rewrite /= midf_lt.
+  + by rewrite set_of_itv_empty_eq0 in ab0.
+- have abs : (\big[setU/set0]_(k <- rcons h (Interval an1 (BSide bbn1 bn1))) set_of_itv k) (Mid (Interval (a `|` BSide bbn1 bn1)%O +oo%O)).
+    rewrite -Is set_of_itv_mem itv_boundlr; apply/andP; split => //.
+    destruct a as [ba a|[]] => //.
+    + destruct ba => //; rewrite itv_bound_lteE /=.
+        by rewrite (@le_trans _ _ (a + 1)) // ?ler_addl// ler_add2r lexUl.
+      by rewrite (@lt_le_trans _ _ (a + 1)) // ?ltr_addl// ler_add2r lexUl.
+    + by rewrite set_of_itv_empty_eq0 in ab0.
+  have [_] := intervalUn_mem sne les ts abs false.
+  apply/negP.
+  rewrite -ltNge.
+  rewrite -nth_last (nth_map 0%O); last first.
+     by rewrite size_map !size_rcons.
   rewrite size_map size_rcons nth_rcons ltnn eqxx.
   destruct bbn1; rewrite itv_bound_lteE.
     rewrite (@le_trans _ _ (bn1 + 1)) // ?ler_addl//=.
-    destruct a as [ba a|[]] => //; last first.
-      by rewrite set_of_itv_empty_eq0 in ab0.
-    by destruct ba => /=; rewrite ler_add2r lexUr.
+    destruct a as [ba a|[]] => //.
+      by destruct ba => /=; rewrite ler_add2r lexUr.
+    by rewrite set_of_itv_empty_eq0 in ab0.
   rewrite (@lt_le_trans _ _ (bn1 + 1)) // ?ltr_addl//=.
-  destruct a as [ba a|[]] => //; last first.
-    by rewrite set_of_itv_empty_eq0 in ab0.
-  by destruct ba => /=; rewrite ler_add2r lexUr.
-have abs : (\big[setU/set0]_(k <- rcons h (Interval an1 (BSide bbn1 bn1))) set_of_itv k) (Mid (Interval (a `|` BSide bbn1 bn1)%O (BSide bb b))).
-  rewrite -Is set_of_itv_mem itv_boundlr; apply/andP; split => //.
-    destruct a as [ba a|[]] => //; last first.
-      by rewrite set_of_itv_empty_eq0 in ab0.
-    destruct ba => //; rewrite itv_bound_lteE /=.
-      rewrite (@le_trans _ _ ((a + b)/2)) // ?midf_le //.
-        rewrite leNgt.
-        apply: contra ab0 => ba.
-        by rewrite set_of_itv_empty_eq0 -leNgt; destruct bb => //; rewrite ltW.
-      by rewrite ler_pmul2r // ler_add2r lexUl.
-    rewrite (@lt_le_trans _ _ ((a + b)/2)) // ?midf_lt //.
-        rewrite ltNge.
-        apply: contra ab0 => ba.
-        by rewrite set_of_itv_empty_eq0 -leNgt; destruct bb => //; rewrite ltW.
-      by rewrite ler_pmul2r // ler_add2r lexUl.
-  destruct a as [ba a|[]] => //; last first.
-    by rewrite set_of_itv_empty_eq0 in ab0.
-    rewrite join_r //.
-    destruct bb; rewrite itv_bound_lteE.
-    by rewrite /= midf_lt //; destruct bbn1 => //.
-    by rewrite /= midf_le //; destruct bbn1 => //; rewrite ltW.
-  destruct bb; rewrite itv_bound_lteE.
-    rewrite /=.
-    rewrite (@lt_le_trans _ _ ((b + b)/2)) // ?midf_le //.
-    rewrite ltr_pmul2r // ltr_add2r //; destruct bbn1 => //.
-    rewrite ltUx; apply/andP; split => //.
-    rewrite ltNge; apply: contra ab0 => ab; rewrite set_of_itv_empty_eq0 // -leNgt.
-    by destruct ba => //.
-    rewrite ltUx; apply/andP; split => //.
-    rewrite ltNge; apply: contra ab0 => ab; rewrite set_of_itv_empty_eq0 // -leNgt.
-    by destruct ba => //.
-  rewrite /=.
-  rewrite (@le_trans _ _ ((b + b)/2)) // ?midf_le //.
-  rewrite ler_pmul2r // ler_add2r //; destruct bbn1 => //.
-  rewrite leUx; apply/andP; split => //.
-  rewrite leNgt; apply: contra ab0 => ab; rewrite set_of_itv_empty_eq0 // -leNgt.
-  by destruct ba => //; rewrite ltW.
-  rewrite leUx; apply/andP; split => //.
-  rewrite leNgt; apply: contra ab0 => ab; rewrite set_of_itv_empty_eq0 // -leNgt.
-  by destruct ba => //; rewrite ltW.
-  by rewrite ltW.
-have [_] := intervalUn_mem sne les ts abs false.
-apply/negP.
-rewrite -ltNge.
-rewrite -nth_last (nth_map 0%O); last first.
-   by rewrite size_map !size_rcons /=.
-rewrite size_map size_rcons nth_rcons ltnn eqxx.
-destruct bbn1; rewrite itv_bound_lteE.
-  destruct a as [ba a|[]] => //; last first.
-    by rewrite set_of_itv_empty_eq0 in ab0.
-    by rewrite midf_le //; destruct bb => //; rewrite ltW.
-  rewrite /=.
-  rewrite (@le_trans _ _ ((bn1 + b)/2)) // ?midf_lt //.
-    destruct bb => //; rewrite midf_le //.
-    by rewrite ltW.
-  by rewrite ler_pmul2r // ler_add2r lexUr.
-destruct a as [ba a|[]] => //; last first.
+  destruct a as [ba a|[]] => //.
+    by destruct ba => /=; rewrite ler_add2r lexUr.
   by rewrite set_of_itv_empty_eq0 in ab0.
-  by rewrite /= midf_lt.
-rewrite /=.
-rewrite (@lt_le_trans _ _ ((bn1 + b)/2)) // ?midf_lt //.
-by rewrite ler_pmul2r // ler_add2r lexUr.
 Qed.
 
 End seq_interval_bounds.
@@ -3759,12 +3759,12 @@ Lemma intervalU_mem_a0 (s : seq (interval R)) x :
   (rbnd1 -oo%E (head 0%O s) <= x%:E)%E.
 Proof.
 move=> sne les ts sx.
-destruct s => /=.
+destruct s as [|h t] => /=.
   by move: sx; by rewrite big_nil.
 have [+ _] := intervalUn_mem sne les ts sx false.
 rewrite -nth0 (nth_map 0%O) //= => ix.
 rewrite /rbnd1.
-destruct i as [a b] => //=.
+destruct h as [a b] => //=.
 destruct a as [ba a|[]] => //=.
 by rewrite lee_ninfty.
 Qed.
@@ -3927,7 +3927,7 @@ have [n0|n1] := ltnP 1%N n; last first.
     move/negP : i0; apply.
     rewrite (IntervalE i) i1r i2r.
     rewrite set_of_itv_empty_eq0 -leNgt.
-    by destruct bi1; destruct bi2 => //; rewrite ?itv_bound_lteE ltW //.
+    by destruct bi1; destruct bi2 => //; rewrite ?itv_bound_lteE ltW.
   rewrite le_eqVlt => /orP[/eqP->|r12].
     by rewrite ltxx subrr.
   by rewrite r12 gtr0_norm // subr_gt0.
@@ -4043,7 +4043,6 @@ have Hi : forall i, i \in s1 -> length_itv i = (\sum_(j <- s2) length_itv (itv_m
   rewrite (@length_itvUitv i is2 is2_ne is2_dis is2U).
   rewrite big_imfset //=; last first.
     move=> x y /= /andP[/= xs2 ix] /andP[/= ys2 iy] ixy.
-    
     admit.
   rewrite big_filter undup_id; last admit.
   rewrite [RHS](bigID (fun x => set_of_itv (itv_meet i x) != set0)) /=.
