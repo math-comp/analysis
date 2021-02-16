@@ -1025,7 +1025,7 @@ by move=> /set0P; apply: contraNeq => /tDF->.
 Qed.
 
 Lemma trivIset_bigUI T (D : {pred nat}) (F : nat -> set T) : trivIset D F ->
-  forall n m, D m -> n <= m -> \big[setU/set0]_(i < n | D i) F i `&` F m = set0.
+  forall n m, D m -> (n <= m)%N -> \big[setU/set0]_(i < n | D i) F i `&` F m = set0.
 Proof.
 move=> /trivIsetP tA; elim => [|n IHn] m Dm.
   by move=> _; rewrite big_ord0 set0I.
