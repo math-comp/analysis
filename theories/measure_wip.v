@@ -2815,16 +2815,6 @@ Coercion ereal_of_itv_bound T (b : itv_bound T) : er T :=
   match b with BSide _ y => y%:E | +oo%O => +oo%E | -oo%O => -oo%E end.
 Arguments ereal_of_itv_bound T !b.
 
-Definition hlength {R : realType} (A : set R) : {ereal R} :=
-  let i := Rhull A in (i.2 - i.1)%E.
-
-Lemma hlength_itv {R : realType} (i : interval R) :
-  hlength (set_of_itv i) = if (i.2 > i.1)%E then (i.2 - i.1)%E else 0%:E.
-Proof.
-rewrite /hlength; case: ltP => i12.
-  rewrite set_of_itvK// inE.
-Admitted.
-
 (* backport to ereal *)
 
 Section hlength.
@@ -2842,6 +2832,75 @@ Lemma lt_erbnd a b : (a < b)%E -> (a < b)%O.
 Proof.
 by move: a b => -[[] a|[]] [[] b|[]] //=;
   rewrite ?(lee_pinfty,lee_ninfty,lte_fin)// => ab; rewrite itv_bound_lteE ltW.
+Qed.
+
+Definition hlength {R : realType} (A : set R) : {ereal R} :=
+  let i := Rhull A in (i.2 - i.1)%E.
+
+(* TODO: move *)
+Lemma interval_pred0_lee i : i =i pred0 -> (i.2 <= i.1)%E.
+Proof.
+move/set_of_itv_empty_pred0.
+by case: i => /= a b /eqP; rewrite set_of_itv_empty_eq0 -leNgt => /le_erbnd.
+Qed.
+
+Lemma hasNsup_pred0 (i : interval R) : i =i pred0 -> ~ has_sup (set_of_itv i).
+Proof.
+case: i => a b /= ab0; rewrite /has_sup not_andP; left.
+exact/set0P/negP/negPn/eqP/set_of_itv_empty_pred0.
+Qed.
+
+Lemma hasNinf_pred0 (i : interval R) : i =i pred0 -> ~ has_inf (set_of_itv i).
+Proof.
+case: i => a b /= ab0; rewrite /has_inf not_andP; left.
+exact/set0P/negP/negPn/eqP/set_of_itv_empty_pred0.
+Qed.
+
+Lemma has_inf0 : ~ has_inf (@set0 R).
+Proof. by rewrite /has_inf not_andP; left; apply/set0P/negP/negPn. Qed.
+
+Lemma has_sup0 : ~ has_sup (@set0 R).
+Proof. by rewrite /has_sup not_andP; left; apply/set0P/negP/negPn. Qed.
+
+Lemma has_lbound0 : has_lbound (@set0 R). Proof. by exists 0. Qed.
+
+Lemma has_ubound0 : has_ubound (@set0 R). Proof. by exists 0. Qed.
+
+Lemma sup0 : sup (@set0 R) = 0.
+Proof. by rewrite sup_out //; exact: has_sup0. Qed.
+
+Lemma inf0 : inf (@set0 R) = 0.
+Proof. by rewrite inf_out //; exact: has_inf0. Qed.
+
+Lemma Rhull0 : Rhull set0 = `]0, 0[ :> interval R.
+Proof.
+rewrite /Rhull (asboolT has_lbound0) (asboolT has_ubound0) /= asboolF //=.
+by rewrite sup0 inf0.
+Qed.
+
+Lemma fixed_hlength0 : hlength (set0 : set R) = 0%:E.
+Proof. by rewrite /hlength Rhull0 /= subrr. Qed.
+
+Lemma hlength_singleton (r : R) : hlength (set_of_itv `[r, r]) = 0%:E.
+Proof.
+rewrite /hlength /= asboolT // sup_closed_closed // {1}set_of_itvE lexx.
+by rewrite asboolT // asboolT // inf_closed_closed // set_of_itvE lexx /= subrr.
+Qed.
+
+Lemma hlength_itv (i : interval R) :
+  hlength (set_of_itv i) = if (i.2 > i.1)%E then (i.2 - i.1)%E else 0%:E.
+Proof.
+case: ltP => [i12|].
+  rewrite /hlength set_of_itvK// inE; move: i12.
+  by rewrite ltNge; apply: contra => /asboolP; exact: interval_pred0_lee.
+rewrite le_eqVlt => /orP[|/lt_erbnd i12]; last first.
+  by rewrite set_of_itv_empty_set0 ?fixed_hlength0// -leNgt ltW.
+case: i => -[ba a|[|]] [bb b|[|]] //=.
+- rewrite /= => /eqP[->{b}]; move: ba bb => -[] []; try
+    by rewrite set_of_itv_empty_set0 ?fixed_hlength0 //= itv_bound_lteE -leNgt.
+  by rewrite hlength_singleton.
+- by move=> _; rewrite set_of_itvE fixed_hlength0.
+- by move=> _; rewrite set_of_itvE fixed_hlength0.
 Qed.
 
 Lemma hlength_oo (i : interval R) : hlength (set_of_itv i) = +oo%E ->
@@ -2871,8 +2930,182 @@ move=> /= /le_erbnd ba; rewrite hlength_itv.
 by case: ifPn => //; rewrite ltNge ba.
 Qed.
 
+(* TODO: move *)
+Lemma lee_sub (x y z t : er R) : (x <= y)%E -> (t <= z)%E -> (x - z <= y - t)%E.
+Proof.
+move: x y z t => -[x| |] -[y| |] -[z| |] -[t| |] //=;
+  rewrite ?(lee_pinfty,lee_ninfty)//.
+by rewrite !lee_fin; exact: ler_sub.
+Qed.
+
+Lemma Rhull_pred0 (a : set R) : Rhull a =i pred0 -> a = set0.
+Proof.
+by move=> a0; rewrite predeqE => r; split => // /sub_Rhull; rewrite /mkset a0 inE.
+Qed.
+
+Lemma Rhull_involutive (a : set R) : Rhull (set_of_itv (Rhull a)) = Rhull a.
+Proof.
+have [/asboolP/Rhull_pred0 ->|a0] := boolP (`[< Rhull a =i pred0 >]).
+  by rewrite Rhull0 set_of_itv_empty_set0 //= ?itv_bound_lteE -?leNgt // Rhull0.
+have := @RhullK _ (set_of_itv (Rhull a)).
+by rewrite inE => /(_ (@is_interval_set_of_itv _ _)); by rewrite set_of_itvK.
+Qed.
+
+Lemma hlength_Rhull (a : set R) : hlength (set_of_itv (Rhull a)) = hlength a.
+Proof. by rewrite /hlength Rhull_involutive. Qed.
+
+Lemma N01 (t : R) : (0 <= t <= 1) = (0 <= 1 - t <= 1).
+Proof.
+apply/idP/idP => /andP[t0 t1]; apply/andP; split; first by rewrite subr_ge0.
+by rewrite ler_subl_addr addrC -ler_subl_addr subrr.
+by move: t1; rewrite ler_subl_addr addrC -ler_subl_addr subrr.
+by move: t0; rewrite subr_ge0.
+Qed.
+
+Definition conv (t : R) (a b : R) : R := (1 - t) * a + t * b.
+
+Lemma conv0 (a b : R) : conv 0 a b = a.
+Proof. by rewrite /conv subr0 mul1r mul0r addr0. Qed.
+
+Lemma conv1 (a b : R) : conv 1 a b = b.
+Proof. by rewrite /conv subrr mul0r add0r mul1r. Qed.
+
+Lemma convN (a b t : R) : conv t a b = conv (1 - t) b a.
+Proof. by rewrite /conv opprB addrCA subrr addr0 addrC. Qed.
+
+Lemma le_conv (a b t : R) : a <= b -> 0 <= t <= 1 -> a <= conv t a b <= b.
+Proof.
+move=> ab /andP[].
+rewrite le_eqVlt => /orP[/eqP/esym ->{t} _|t0]; first by rewrite conv0 lexx.
+rewrite le_eqVlt => /orP[/eqP ->{t0 t}|t1]; first by rewrite conv1 lexx andbT.
+have t1t : 1 - t + t = 1 by rewrite subrK.
+rewrite /conv; apply/andP; split.
+  by rewrite -{1}(mul1r a) -{1}t1t [in X in X <= _]mulrDl ler_add // ler_pmul2l.
+by rewrite -{2}(mul1r b) -{2}t1t [in X in _ <= X]mulrDl ler_add // ler_pmul2l // subr_gt0.
+Qed.
+
+Definition factor (a b x : R) := (x - a) / (b - a).
+
+Lemma factor01 (a b x : R) : a != b -> a <= x -> x <= b -> 0 <= factor a b x <= 1.
+Proof.
+move=> ab ax xb; rewrite divr_ge0 // ?subr_ge0 // ?(le_trans ax) //=.
+by rewrite ler_pdivr_mulr ?mul1r ?ler_sub// subr_gt0 lt_neqAle ab (le_trans ax).
+Qed.
+
+Lemma conv_factor (a b x : R) : a != b -> conv (factor a b x) a b = x.
+Proof.
+move=> ab; rewrite /conv -(@divff _ (b - a)) ?subr_eq0 1?eq_sym// -mulrBl.
+rewrite opprB addrA subrK mulrAC (mulrAC (x - a)) -mulrDl 2!mulrBl.
+rewrite -addrA (addrC (b * a)) -addrA (mulrC a b) subrK.
+by rewrite -mulrN addrC -mulrDr -mulrA mulfV ?mulr1 // subr_eq0 eq_sym.
+Qed.
+
+Lemma conv_subset_Rhull (A : set R) :
+  [set x | exists (a b t : R), [/\ A a, A b, 0 <= t <= 1 & x = conv t a b]]
+    `<=` set_of_itv (Rhull A).
+Proof.
+move=> r -[a [b [t [Aa Ab /andP[t0 t1] ->{r}]]]].
+have /is_intervalPle iRhullA := @is_interval_set_of_itv _ (Rhull A).
+have [ab|/ltW ba] := leP a b.
+  apply: (iRhullA a b); rewrite ?set_of_itv_mem; try exact/sub_Rhull.
+  by rewrite le_conv // t0.
+apply: (iRhullA b a); rewrite ?set_of_itv_mem; try exact/sub_Rhull.
+by rewrite convN le_conv => //; rewrite -N01 t0.
+Qed.
+
+Lemma Rhull_subset_conv (A : set R) : A !=set0 -> set_of_itv (Rhull A) `<=`
+  [set x | exists (a b t : R), [/\ A a, A b, 0 <= t <= 1 & x = conv t a b]].
+Proof.
+move=> A0 r; rewrite set_of_itv_mem /Rhull; set i : R := inf A; set s : R := sup A.
+have [|] := boolP (`[< has_lbound A >]) => /asboolP lA.
+- have [|]:= boolP (`[< has_ubound A >]) => /asboolP uA.
+  + have [|] := boolP (`[< A i >]) => /asboolP Ai.
+    * have [|] := boolP (`[< A s >]) => /asboolP As; rewrite in_itv /= => /andP[ir rs].
+      - have [/eqP si|si] := boolP (i == s).
+        + have /eqP <- : i == r by rewrite eq_le {2}si ir.
+          by exists i, s, 0; rewrite conv0 lexx ler01.
+        + by exists i, s, (factor i s r); rewrite factor01 // conv_factor.
+      - pose e := s - r.
+        have [u ? seu] : exists2 u, A u & s - e < u by apply sup_adherent; rewrite ?subr_gt0.
+        have ? : i < u by rewrite (le_lt_trans _ seu)// (le_trans ir)// opprB addrCA subrr addr0.
+        exists i, u, (factor i u r); rewrite factor01 ?conv_factor// ?lt_eqF//.
+        by rewrite (le_trans _ (ltW seu))// /e opprB addrCA subrr addr0.
+    * have [|] := boolP (`[< A s >]) => /asboolP As; rewrite in_itv /= => /andP[ir rs].
+      - pose e := r - i.
+        have [l ? lie] : exists2 l, A l & l < i + e by apply inf_adherent; rewrite ?subr_gt0.
+        have ? : l < s by rewrite (lt_le_trans lie)// (le_trans _ rs)// addrCA subrr addr0.
+        exists l, s, (factor l s r); rewrite factor01// ?conv_factor// ?lt_eqF//.
+        by rewrite (le_trans (ltW lie)) // /e addrCA subrr addr0.
+      - pose e := ((r - i) `&` (s - r))%O.
+        have [u ? seu] : exists2 u, A u & s - e < u by apply sup_adherent; rewrite ?ltxI 2?subr_gt0 ?ir.
+        have [l ? lie] : exists2 l, A l & l < i + e by apply inf_adherent; rewrite ?ltxI 2?subr_gt0 ?ir.
+        have ? : i + e <= r by rewrite -ler_sub_addl leIx lexx.
+        have ? : r <= s - e by rewrite -ler_sub_addr opprK -ler_sub_addl leIx lexx orbT.
+        have ? : l < u by rewrite (lt_le_trans lie)// (le_trans _ (ltW seu))// (@le_trans _ _ r).
+        exists l, u, (factor l u r); rewrite factor01// ?conv_factor// ?lt_eqF//.
+        by rewrite (le_trans (ltW lie)).
+        by rewrite (le_trans _ (ltW seu)).
+  + have [|] := boolP (`[< A i >]) => /asboolP Ai; rewrite in_itv /= andbT => ir.
+    * have [u Au ru] : exists2 u, A u & r < u by move/has_ubPn : uA => /(_ r).
+      have ? : i < u by rewrite (le_lt_trans ir).
+      by exists i, u, (factor i u r); rewrite factor01// ?conv_factor // ?lt_eqF// ltW.
+    * pose e := r - i.
+      have [l ? lie] : exists2 l, A l & l < i + e by apply inf_adherent; rewrite ?subr_gt0.
+      have [u ? ru] : exists2 u, A u & r < u by move/has_ubPn : uA => /(_ r).
+      have ? : l < u by rewrite (lt_le_trans lie) // addrCA subrr addr0 ltW.
+      have ? : l <= r by rewrite (le_trans (ltW lie)) // addrCA subrr addr0.
+      by exists l, u, (factor l u r); rewrite factor01// ?conv_factor// ?lt_eqF// ltW.
+- have [|]:= boolP (`[< has_ubound A >]) => /asboolP uA; last move=> _.
+  + have [|] := boolP (`[< A s >]) => /asboolP As; rewrite in_itv /= => rs.
+    * have [l ? lr] : exists2 l, A l & l < r by move/has_lbPn : lA => /(_ r).
+      have ? : l < s by rewrite (lt_le_trans lr).
+      by exists l, s, (factor l s r); rewrite factor01// ?conv_factor// ?lt_eqF// ltW.
+    * pose e := s - r.
+      have [u ? seu] : exists2 u, A u & s - e < u by apply sup_adherent; rewrite ?subr_gt0.
+      have [l ? lr] : exists2 l, A l & l < r by move/has_lbPn : lA => /(_ r).
+      have ? : l < u by rewrite (le_lt_trans _ seu)// (le_trans (ltW lr))// opprB addrCA subrr addr0.
+      have ? : r <= u by rewrite (le_trans _ (ltW seu))// opprB addrCA subrr addr0.
+      by exists l, u, (factor l u r); rewrite factor01// ?conv_factor// ?lt_eqF// ltW.
+  + have [l ? lr] : exists2 l, A l & l < r by move/has_lbPn : lA => /(_ r).
+    have [u ? ru] : exists2 u, A u & r < u by move/has_ubPn : uA => /(_ r).
+    have ? : l < u by rewrite (lt_trans lr).
+    by exists l, u, (factor l u r); rewrite factor01// ?conv_factor// ?lt_eqF// ltW.
+Qed.
+
+Lemma le_Rhull : {homo (@Rhull R) : A B / (A `<=` B) >-> {subset A <= B}}.
+Proof.
+move=> A; have [A0 B AB r|/set0P/negP/negPn/eqP ->{A} B _ r] := pselect (A !=set0); last first.
+  by rewrite Rhull0 in_itv /= lt_asym.
+move/(Rhull_subset_conv A0) => -[a [b [t [{A0} Aa Ab /andP[t0 t1] ->]]]].
+by apply/conv_subset_Rhull; exists a, b, t; split => //; try exact/AB; rewrite t0.
+Qed.
+
+Lemma le_hlength_itv (i j : interval R) : {subset i <= j} ->
+ (hlength (set_of_itv i) <= hlength (set_of_itv j))%E.
+Proof.
+set I := set_of_itv i; set J := set_of_itv j.
+have [I0|/set0P/negP/negPn/eqP -> _] := pselect (I !=set0); last first.
+  by rewrite fixed_hlength0 hlength_ge0.
+have [J0|/set0P/negP/negPn/eqP J0] := pselect (J !=set0); last first.
+  by move/itv_set_of_itv_subset; rewrite -/J J0 subset0 -/I; move/set0P/eqP : I0.
+move=> /itv_set_of_itv_subset ij; apply lee_sub => /=.
+- have [/asboolP ui|/asboolP ui] := boolP (`[< has_ubound I >]).
+  + have [/asboolP uj /=|/asboolP uj] := boolP (`[< has_ubound J >]); last by rewrite lee_pinfty.
+    by rewrite lee_fin le_sup // => r Ir; exists r; split => //; move : ij; apply.
+  + have [/asboolP uj /=|//] := boolP (`[< has_ubound J >]); exfalso.
+    by apply: ui; apply: subset_has_ubound uj.
+- have [/asboolP lj /=|/asboolP lj] := boolP (`[< has_lbound J >]); last by rewrite lee_ninfty.
+  have [/asboolP li /=|/asboolP li] := boolP (`[< has_lbound I >]).
+    rewrite lee_fin ler_oppl opprK le_sup // -?has_inf_supN//.
+    - by move=> r [r' Ir' <-{r}]; exists (- r'); split => //; exists r' => //; apply: ij.
+    - by case: I0 => x Ix; exists (- x), x.
+  by exfalso; apply: li; apply: subset_has_lbound lj.
+Qed.
+
 Lemma le_hlength : {homo (@hlength R) : A B / (A `<=` B) >-> (A <= B)%E}.
-Admitted.
+Proof.
+by move=> a b /le_Rhull /le_hlength_itv; by rewrite (hlength_Rhull a) (hlength_Rhull b).
+Qed.
 
 (* Proof. *)
 (* move=> [[ba a|[]] [bb b|[]]] [[bc c|[]] [bd d|[]]] //; *)
@@ -3706,17 +3939,20 @@ case: i => -[ba a|[]] [bb b|[]] //=.
 - by move=> _; rewrite set_of_itv_empty_set0.
 Qed.
 
-Lemma fixed_hlength0 : hlength (set0 : set R) = 0%:E.
-Proof. Admitted.
-
 Lemma set_of_itvP (i j : interval R) : set_of_itv i = set_of_itv j :> set _ <-> i =i j.
-Proof. Admitted.
+Proof.
+split => [ij x|ij].
+- by apply/idP/idP; rewrite -set_of_itv_mem;
+    [rewrite ij set_of_itv_mem | rewrite -ij set_of_itv_mem].
+- by rewrite predeqE => r; split; rewrite set_of_itv_mem;
+    [rewrite ij -set_of_itv_mem | rewrite -ij -set_of_itv_mem].
+Qed.
 
 Lemma set_of_itv0P (i : interval R) : set_of_itv i = set0 :> set _ <-> i =i pred0.
-Proof. Admitted.
+Proof. exact: set_of_itv_empty_pred0. Qed.
 
 Lemma set_of_itv0 : set_of_itv (0%O : interval R) = 0%O :> set _.
-Proof. Admitted.
+Proof. by rewrite set_of_itvE. Qed.
 
 Lemma hlength_itv0 (i : interval R) : i =i pred0 -> hlength (set_of_itv i) = 0%:E.
 Proof. by move=> /set_of_itv0P ->; rewrite fixed_hlength0. Qed.
@@ -3769,7 +4005,7 @@ transitivity (hlength (set_of_itv j) + hlength K)%E; last first.
   by congr (_ + _)%E; rewrite IHs// => i0 i1 _ _ /(ts i0.+1 i1.+1 I I)[].
 rewrite AE hlength_itvU// -?AE//; last exact: is_interval_set_of_itv.
 rewrite big_distrr/= big1_seq => //= i /(nthP 0%O)[ii ii_lt <-].
-by apply: contraTeq isT => /set0P-/(ts 0%N ii.+1 I I).
+  by apply: contraTeq isT => /set0P-/(ts 0%N ii.+1 I I).
 Qed.
 
 (* have [/eqP s0|s0] := boolP (fset0 == s). *)
