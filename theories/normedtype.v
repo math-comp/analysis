@@ -2905,6 +2905,19 @@ rewrite [in X in _ <= X]/normr /= mx_normrE.
 by apply/BigmaxBigminr.bigmaxr_gerP; right => /=; exists j.
 Qed.
 
+Lemma ereal_nbhs'_le (R : numFieldType) (x : {ereal R}) :
+  ereal_nbhs' x --> ereal_nbhs x.
+Proof.
+move: x => [x P [_/posnumP[e] HP] |x P|x P] //=.
+by exists e%:num => // ???; apply: HP.
+Qed.
+
+Lemma ereal_nbhs'_le_finite (R : numFieldType) (x : R) :
+  ereal_nbhs' x%:E --> nbhs x%:E.
+Proof.
+by move=> P [_/posnumP[e] HP] //=; exists e%:num => // ???; apply: HP.
+Qed.
+
 Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 Implicit Types x y : {ereal R}.
@@ -3219,3 +3232,102 @@ by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
 End Closed_Ball.
+
+Section LinearContinuousBounded.
+
+Variables (R : numFieldType) (V W : normedModType R).
+
+Lemma linear_boundedP (f : {linear V -> W}) : bounded_near f (nbhs (0 : V)) <->
+  \forall r \near +oo, forall x, `|f x| <= r * `|x|.
+Proof.
+split=> [|/pinfty_ex_gt0 [r r0 Bf]]; last first.
+  apply/ex_bound; exists r; apply/nbhs_ballP; exists 1 => // x.
+  rewrite -ball_normE //= sub0r normrN -(gtr_pmulr _ r0) => /ltW.
+  exact/le_trans/Bf.
+rewrite /bounded_near => /pinfty_ex_gt0 [M M0 /nbhs_ballP [_/posnumP[e] efM]].
+near (nbhs' 0 : set (set R^o)) => y; near=> r => x.
+have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mulr0.
+rewrite -ler_pdivr_mulr ?normr_gt0// -[ `|x|]normr_id mulrC.
+have y_gt0 : 0 < `|y| by rewrite normr_gt0; near: y; exists 1.
+rewrite -(ler_pmul2l y_gt0) -normfV -!normmZ scalerA -linearZ.
+rewrite (le_trans (efM _ _)) //; last first.
+  rewrite -ler_pdivr_mull //; near: r; apply: nbhs_pinfty_ge_real.
+  by rewrite rpredM// ?ger0_real ?invr_ge0// ltW.
+rewrite -ball_normE/= sub0r normrN normmZ normrM normfV //.
+rewrite normr_id -mulrA mulVf ?normr_eq0 // mulr1; near: y.
+by apply/nbhs_ballP; exists e%:num=> // z; rewrite -ball_normE /= sub0r normrN.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma linear_continuous0 (f : {linear V -> W}) :
+  {for 0, continuous f} -> bounded_near f (nbhs (0 : V)).
+Proof.
+move=> /cvg_ballP/(_ _ ltr01); rewrite linear0 nearE => /nbhs_ex[e ef1].
+apply/linear_boundedP; near=> d; move=> x.
+have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mulr0.
+have d0 : 0 < d.
+  by near: d; exists 1; rewrite real1; split => // r; apply le_lt_trans.
+pose dx := d * `|x|; have dx0 : 0 < dx by rewrite mulr_gt0 // normr_gt0.
+suff : `| f (dx^-1 *: x) | < 1.
+  rewrite linearZ normmZ normfV ?gt_eqF //.
+  by rewrite ltr_pdivr_mull ?(normr_gt0,gt_eqF)// mulr1 gtr0_norm// => /ltW.
+suff /ef1 : ball 0 e%:num (dx^-1 *: x) by rewrite -ball_normE /= sub0r normrN.
+rewrite -ball_normE /ball_ /= sub0r normrN normmZ normfV ?gt_eqF //.
+rewrite normrM normr_id (gtr0_norm d0) invfM ?(normr_eq0,gt_eqF)//.
+rewrite mulrAC -mulrA mulfV ?normr_eq0 // mulr1 -div1r ltr_pdivr_mulr //.
+near: d; exists e%:num^-1; rewrite realE invr_ge0 posnum_ge0; split => // r.
+by rewrite -ltr_pdivr_mull ?mulr1.
+Grab Existential Variables. by end_near. Qed.
+
+Lemma linear_bounded0 (f : {linear V -> W}) :
+  bounded_near f (nbhs (0 : V)) -> {for 0, continuous f}.
+Proof.
+move=> /linear_boundedP [y [yreal fr]]; near (@pinfty_nbhs R) => r.
+have r0  : 0 < r.
+  by near: r; exists 1; rewrite real1; split => // z; apply le_lt_trans.
+apply/cvg_ballP => _/posnumP[e]; rewrite nearE linear0 /= nbhs_ballP.
+exists (e%:num / 2 / r); first by rewrite /= divr_gt0.
+move=> x; rewrite -2!ball_normE /= 2!sub0r 2!normrN => xer.
+rewrite (@le_lt_trans _ _ (e%:num / 2)) //; last first.
+  by rewrite gtr_pmulr // invf_lt1 // ltr1n.
+move: xer; rewrite ltr_pdivl_mulr // => /ltW; apply le_trans.
+rewrite mulrC; apply fr; near: r; exists (y + 1) => //.
+by rewrite realD ?real1 //; split => // z; apply le_lt_trans; rewrite ler_addl.
+Grab Existential Variables. by end_near. Qed.
+
+Lemma continuousfor0_continuous (f : {linear V -> W}) :
+  {for 0, continuous f} -> continuous f.
+Proof.
+move=> /linear_continuous0 /linear_boundedP [y [yreal fr]].
+near (@pinfty_nbhs R) => r.
+have r0  : 0 < r.
+  by near: r; exists 1; rewrite real1; split => // z; apply le_lt_trans.
+move=> x; apply/cvg_ballP => _/posnumP[e]; rewrite nearE /= nbhs_ballP.
+exists (e%:num / r); first by rewrite /= divr_gt0.
+move=> z; rewrite -!ball_normE //= => xy; rewrite -linearB.
+move: xy; rewrite ltr_pdivl_mulr //; apply le_lt_trans.
+rewrite mulrC; apply fr.
+near: r; exists (y + 1); rewrite realD // ?real1 //; split => // x.
+by apply le_lt_trans; rewrite ler_addl.
+Grab Existential Variables. by end_near. Qed.
+
+Lemma linear_bounded_continuous (f : {linear V -> W}) :
+  bounded_near f (nbhs (0 : V)) <-> continuous f.
+Proof.
+split=> [/linear_bounded0|/(_ 0)/linear_continuous0//].
+exact: continuousfor0_continuous.
+Qed.
+
+Lemma bounded_funP (f : {linear V -> W}) :
+  (forall r, exists M, forall x, `|x| <= r -> `|f x| <= M) <->
+  bounded_near f (nbhs (0 : V)).
+Proof.
+split => [/(_ 1) [M Bf]|/linear_boundedP fr y].
+  apply/ex_bound; exists M; apply/nbhs_ballP; exists 1 => // x.
+  by rewrite -ball_normE /ball_ /= sub0r normrN => x1; exact/Bf/ltW.
+near (@pinfty_nbhs R) => r; exists (y * r) => x xe.
+rewrite mulrC (@le_trans _ _ (r * `|x|)) //; first by move: {xe} x; near: r.
+rewrite ler_pmul //; near: r; exists 1.
+by rewrite real1; split => // x /ltW; apply le_trans.
+Grab Existential Variables. by end_near. Qed.
+
+End LinearContinuousBounded.

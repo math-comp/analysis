@@ -4,7 +4,7 @@
 
 ### Added
 
-- in `normedtype.v`, lemma `normrZV`
+- in `normedtype.v`, lemmas `ereal_nbhs'_le`, `ereal_nbhs'_le_finite`
 
 - in `normedtype.v`, lemmas `ball_open`
 
@@ -29,6 +29,10 @@
 
 - in `measure.v`, definition `sigma_finite`
 
+- in `normedtype.v`: section "LinearContinuousBounded"
+  + lemmas `linear_boundedP`, `linear_continuous0`, `linear_bounded0`,
+    `continuousfor0_continuous`, `linear_bounded_continuous`, `bounded_funP`
+  
 ### Changed
 
 - header in `normedtype.v`, precisions on `bounded_fun`
