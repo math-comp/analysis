@@ -386,19 +386,20 @@ Qed.
 
 Lemma csum_csum (R : realType) (T : pointedType) (K : set nat)
     (J : nat -> set T) (a : T -> {ereal R}) : (forall x, 0%:E <= a x)%E ->
-  K !=set0 -> (forall k, J k !=set0) -> trivIset J ->
+  K !=set0 -> (forall k, J k !=set0) -> trivIset setT J ->
   csum (\bigcup_(k in K) (J k)) a = csum K (fun k => csum (J k) a).
 Proof.
-move=> a0 K0 J0 tJ; set I := \bigcup_(k in K) (J k).
+move=> a0 K0 J0 /trivIsetP tJ; set I := \bigcup_(k in K) (J k).
 have I0 : I !=set0 by case: K0 => k Kk; have [t Jkt] := J0 k; exists t; exists k.
 apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite {1}/csum; case: pselect => // _; apply ub_ereal_sup => /= _ [F FI <-].
   pose FJ := fun k => [fset x in F | x \in J k]%fset.
   have tFJ : forall i j, i != j -> [disjoint FJ i & FJ j]%fset.
+    (* TODO: use fdisjoint_cset *)
     move=> i j ij; rewrite -fsetI_eq0; apply/eqP/fsetP => t; apply/idP/idP=> //.
     apply/negP; rewrite inE => /andP[]; rewrite !inE /= => /andP[Ft].
     rewrite in_setE => tJi /andP[_]; rewrite in_setE => tJj.
-    by move: (tJ _ _ ij); rewrite predeqE => /(_ t) [] // /(_ (conj tJi tJj)).
+    by have /(congr1 (@^~ t))/= := tJ _ _ Logic.I Logic.I ij; rewrite /set0 mksetE => <-.
   pose KFJ := [set k | K k /\ FJ k != fset0].
 (* TODO:  pose g := fun t => xget 0%N [set n | t \in J n].
   have : [set k | FJ k != fset0] = [set k | k \in (g @` F)%fset].
@@ -415,9 +416,9 @@ apply/eqP; rewrite eq_le; apply/andP; split.
     have sur_g : surjective [set x | x \in F] [set k | FJ k != fset0] g.
       move=> i /fset0Pn[t]; rewrite /FJ !inE /= => /andP[Ft tJi].
       exists t; split => //; rewrite /g; case: xgetP; last by move/(_ i).
-      move=> j _ tJj; apply/eqP/negPn/negP => /(tJ i j).
-      rewrite predeqE => /(_ t); rewrite /mkset !in_setE in tJi, tJj.
-      by case=> /(_ (conj tJi tJj)).
+      move=> j _ tJj; apply/eqP/negPn/negP => /(tJ i j Logic.I Logic.I).
+      rewrite predeqE => /(_ t)[+ _]; apply.
+      by rewrite /= !inE in tJi tJj.
     by case: (surjective_set_finite sur_g (fset_set_finite F)).
   move/set_finite_fset => [L LKFJ].
   have LK : [set i | i \in L] `<=` K.
@@ -474,7 +475,7 @@ apply: (@le_trans _ _ (\sum_(i < #|`L|) (\sum_(j <- Fj i) a j)%E)%E); last first
   have tFj : (forall i j : 'I_#|`L|, i != j -> [disjoint Fj i & Fj j])%fset.
     move=> i j ij; rewrite -fsetI_eq0; rewrite -eq_set0_fset0.
     have Jij : J (nth 0%N L i) `&` J (nth 0%N L j) = set0.
-      apply tJ; apply: contra ij => /eqP /(congr1 (fun x => index x L)).
+      apply: tJ => //; apply: contra ij => /eqP /(congr1 (index^~ L)).
       by rewrite index_uniq // index_uniq // => /ord_inj ->.
     apply/eqP; rewrite predeqE => t; split => //; rewrite /mkset inE => /andP[].
     by move=> /(proj1 (csumFj i)) ? /(proj1 (csumFj j)) ?; rewrite -Jij; split.
