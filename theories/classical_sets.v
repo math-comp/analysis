@@ -230,6 +230,9 @@ Definition setM T1 T2 (A1 : set T1) (A2 : set T2) := [set z | A1 z.1 /\ A2 z.2].
 Definition fst_set T1 T2 (A : set (T1 * T2)) := [set x | exists y, A (x, y)].
 Definition snd_set T1 T2 (A : set (T1 * T2)) := [set y | exists x, A (x, y)].
 
+Lemma mksetE (P : T -> Prop) x : [set x | P x] x = P x.
+Proof. by []. Qed.
+
 Definition bigsetI T I (P : set I) (F : I -> set T) :=
   [set a | forall i, P i -> F i a].
 Definition bigsetU T I (P : set I) (F : I -> set T) :=
@@ -567,6 +570,15 @@ Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
 
 End basic_lemmas.
 
+(* TODO: other lemmas that relate fset and classical sets *)
+Lemma fdisjoint_cset (T : choiceType) (A B : {fset T}) :
+  [disjoint A & B]%fset = ([set x | x \in A] `&` [set x | x \in B] == set0).
+Proof.
+rewrite -fsetI_eq0; apply/idP/idP; apply: contraLR.
+by move=> /set0P[t [tA tB]]; apply/fset0Pn; exists t; rewrite inE; apply/andP.
+by move=> /fset0Pn[t]; rewrite inE => /andP[tA tB]; apply/set0P; exists t.
+Qed.
+
 Section SetMonoids.
 Variable (T : Type).
 
@@ -775,20 +787,6 @@ Lemma preimage_bigcap {aT rT I} (P : set I) (f : aT -> rT) F :
   f @^-1` (\bigcap_ (i in P) F i) = \bigcap_(i in P) (f @^-1` F i).
 Proof. exact/predeqP. Qed.
 
-Definition trivIset T (F : nat -> set T) :=
-  forall i j, i != j -> F i `&` F j = set0.
-
-Lemma trivIset_bigUI T (F : nat -> set T) : trivIset F ->
-  forall n m, n <= m -> \big[setU/set0]_(i < n) F i `&` F m = set0.
-Proof.
-move=> tF; elim => [|n ih m]; first by move=> m _; rewrite big_ord0 set0I.
-by rewrite ltn_neqAle => /andP[? ?]; rewrite big_ord_recr setIUl tF ?setU0 ?ih.
-Qed.
-
-Lemma trivIset_setI T (F : nat -> set T) : trivIset F ->
-  forall A, trivIset (fun n => A `&` F n).
-Proof. by move=> tF A j i /tF; apply: subsetI_eq0; apply subIset; right. Qed.
-
 Lemma setM0 T1 T2 (A1 : set T1) : A1 `*` set0 = set0 :> set (T1 * T2).
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 
@@ -943,6 +941,83 @@ Lemma getPN (P : set T) : (forall x, ~ P x) -> get P = point.
 Proof. exact: (xgetPN point). Qed.
 
 End PointedTheory.
+
+Section partitions.
+
+Definition trivIset T I (D : set I) (F : I -> set T) :=
+  forall i j : I, D i -> D j -> F i `&` F j !=set0 -> i = j.
+
+Lemma trivIsetP {T} {I : eqType} {D : set I} {F : I -> set T} :
+  trivIset D F <->
+  forall i j : I, D i -> D j -> i != j -> F i `&` F j = set0.
+Proof.
+split=> tDF i j Di Dj; first by apply: contraNeq => /set0P/tDF->.
+by move=> /set0P; apply: contraNeq => /tDF->.
+Qed.
+
+Lemma trivIset_bigUI T (D : {pred nat}) (F : nat -> set T) : trivIset D F ->
+  forall n m, D m -> n <= m -> \big[setU/set0]_(i < n | D i) F i `&` F m = set0.
+Proof.
+move=> /trivIsetP tA; elim => [|n IHn] m Dm.
+  by move=> _; rewrite big_ord0 set0I.
+move=> lt_nm; rewrite big_mkcond/= big_ord_recr -big_mkcond/=.
+rewrite setIUl IHn 1?ltnW// set0U.
+by case: ifPn => [Dn|NDn]; rewrite ?set0I// tA// ltn_eqF.
+Qed.
+
+Lemma trivIset_setI T I D (F : I -> set T) X :
+  trivIset D F -> trivIset D (fun i => X `&` F i).
+Proof.
+move=> tDF i j Di Dj; rewrite setIACA setIid => -[x [_ Fijx]].
+by apply: tDF => //; exists x.
+Qed.
+
+Definition cover T I D (F : I -> set T) := \bigcup_(i in D) F i.
+
+Definition partition T I D (F : I -> set T) (A : set T) :=
+  [/\ cover D F = A, trivIset D F & forall i, D i -> F i !=set0].
+
+Definition pblock_index T (I : pointedType) D (F : I -> set T) (x : T) :=
+  get (fun i => D i /\ F i x).
+
+Definition pblock T (I : pointedType) D (F : I -> set T) (x : T) :=
+  F (pblock_index D F x).
+
+(* TODO: theory of trivIset, cover, partition, pblock_index and pblock *)
+
+Lemma trivIset_sets T I D (F : I -> set T) :
+  trivIset D F -> trivIset [set F i | i in D] id.
+Proof. by move=> DF A B [i Di <-{A}] [j Dj <-{B}] /DF ->. Qed.
+
+Lemma trivIset_restr T I D' D (F : I -> set T) :
+(*  D `<=` D' -> (forall i, D i -> ~ D' i -> F i !=set0) ->*)
+  D `<=` D' -> (forall i, D' i -> ~ D i -> F i = set0) ->
+  trivIset D F = trivIset D' F.
+Proof.
+move=> DD' DD'F.
+rewrite propeqE; split=> [DF i j D'i D'j FiFj0|D'F i j Di Dj FiFj0].
+  have [Di|Di] := pselect (D i); last first.
+    by move: FiFj0; rewrite (DD'F i) // set0I => /set0P; rewrite eqxx.
+  have [Dj|Dj] := pselect (D j).
+  - exact: DF.
+  - by move: FiFj0; rewrite (DD'F j) // setI0 => /set0P; rewrite eqxx.
+by apply D'F => //; apply DD'.
+Qed.
+
+Lemma perm_eq_trivIset {T : eqType} (s1 s2 : seq (set T)) : perm_eq s1 s2 ->
+  trivIset setT (fun i => nth set0 s1 i) ->
+  trivIset setT (fun i => nth set0 s2 i).
+Proof.
+rewrite perm_sym => /(perm_iotaP set0)[s ss1 s12] /trivIsetP /(_ _ _ I I) ts1.
+apply/trivIsetP => i j _ _ ij.
+rewrite {}s12 {s2}; have [si|si] := ltnP i (size s); last first.
+  by rewrite (nth_default set0) ?size_map// set0I.
+rewrite (nth_map O) //; have [sj|sj] := ltnP j (size s); last first.
+  by rewrite (nth_default set0) ?size_map// setI0.
+by rewrite  (nth_map O) // ts1 // nth_uniq // (perm_uniq ss1) iota_uniq.
+Qed.
+
+End partitions.
 
 Definition total_on T (A : set T) (R : T -> T -> Prop) :=
   forall s t, A s -> A t -> R s t \/ R t s.
