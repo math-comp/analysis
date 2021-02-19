@@ -201,15 +201,24 @@ Notation gte := (@Order.gt ereal_display _) (only parsing).
 Notation "@ 'gte' R" :=
   (@Order.gt ereal_display R) (at level 10, R at level 8, only parsing).
 
-Notation "x <= y" := (lee x y) : ereal_scope.
-Notation "x < y"  := (lte x y) : ereal_scope.
+Notation "x <= y" := (lee x y) (only printing) : ereal_scope.
+Notation "x < y"  := (lte x y) (only printing) : ereal_scope.
+
+Notation "x <= y <= z" := ((lee x y) && (lee y z)) (only printing) : ereal_scope.
+Notation "x < y <= z"  := ((lte x y) && (lee y z)) (only printing) : ereal_scope.
+Notation "x <= y < z"  := ((lee x y) && (lte y z)) (only printing) : ereal_scope.
+Notation "x < y < z"   := ((lte x y) && (lte y z)) (only printing) : ereal_scope.
+
+Notation "x <= y" := (lee (x : er _) (y : er _)) : ereal_scope.
+Notation "x < y"  := (lte (x : er _) (y : er _)) : ereal_scope.
 Notation "x >= y" := (y <= x) (only parsing) : ereal_scope.
 Notation "x > y"  := (y < x) (only parsing) : ereal_scope.
+Notation "x > y"  := (y < x) (only parsing) : ereal_scope.
 
-Notation "x <= y <= z" := ((lee x y) && (lee y z)) : ereal_scope.
-Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
-Notation "x <= y < z"  := ((lee x y) && (lte y z)) : ereal_scope.
-Notation "x < y < z"   := ((lte x y) && (lte y z)) : ereal_scope.
+Notation "x <= y <= z" := ((x <= y) && (y <= z)) : ereal_scope.
+Notation "x < y <= z"  := ((x < y) && (y <= z)) : ereal_scope.
+Notation "x <= y < z"  := ((x <= y) && (y < z)) : ereal_scope.
+Notation "x < y < z"   := ((x < y) && (y < z)) : ereal_scope.
 
 Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E) = (x <= y)%O.
 Proof. by []. Qed.
