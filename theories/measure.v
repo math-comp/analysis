@@ -235,12 +235,12 @@ Definition semi_additive2 := forall A B, measurable A -> measurable B ->
   A `&` B = set0 -> mu (A `|` B) = (mu A + mu B)%E.
 
 Definition semi_additive :=
-  forall A, (forall i, measurable (A i)) -> trivIset A ->
+  forall A, (forall i : nat, measurable (A i)) -> trivIset setT A ->
   (forall n, measurable (\big[setU/set0]_(i < n) A i)) ->
   forall n, mu (\big[setU/set0]_(i < n) A i) = (\sum_(i < n) mu (A i))%E.
 
 Definition semi_sigma_additive :=
-  forall A, (forall i, measurable (A i)) -> trivIset A ->
+  forall A, (forall i : nat, measurable (A i)) -> trivIset setT A ->
   measurable (\bigcup_n A n) ->
   (fun n => (\sum_(i < n) mu (A i))%E) --> mu (\bigcup_n A n).
 
@@ -248,18 +248,19 @@ Definition additive2 := forall A B, measurable A -> measurable B ->
   A `&` B = set0 -> mu (A `|` B) = (mu A + mu B)%E.
 
 Definition additive :=
-  forall A, (forall i, measurable (A i)) -> trivIset A ->
+  forall A, (forall i : nat, measurable (A i)) -> trivIset setT A ->
   forall n, mu (\big[setU/set0]_(i < n) A i) = (\sum_(i < n) mu (A i))%E.
 
 Definition sigma_additive :=
-  forall A, (forall i, measurable (A i)) -> trivIset A ->
+  forall A, (forall i : nat, measurable (A i)) -> trivIset setT A ->
   (fun n => (\sum_(i < n) mu (A i))%E) --> mu (\bigcup_n A n).
 
 Lemma semi_additive2P : mu set0 = 0%:E -> semi_additive <-> semi_additive2.
 Proof.
-move=> mu0; split => [amx A B mA mB mAB AB|a2mx A mA ATI mbigA n].
+move=> mu0; split => [amx A B mA mB mAB AB|a2mx A mA /trivIsetP ATI mbigA n].
   set C := bigcup2 A B.
-  have tC : trivIset C by move=> [|[|i]] [|[|j]]; rewrite ?set0I ?setI0// setIC.
+  have tC : trivIset setT C.
+    by apply/trivIsetP => -[|[|i]] [|[|j]]; rewrite ?set0I ?setI0// setIC.
   have mC : forall i, measurable (C i).
     by move=> [|[]] //= i; exact: measurable0.
   have := amx _ mC tC _ 2%N; rewrite !big_ord_recl !big_ord0 adde0/= setU0.
@@ -272,12 +273,10 @@ move=> mu0; split => [amx A B mA mB mAB AB|a2mx A mA ATI mbigA n].
 elim: n => [|n IHn] in A mA ATI mbigA *.
   by rewrite !big_ord0.
 rewrite big_ord_recr /= a2mx //; last 3 first.
-   exact: mbigA.
-   have := mbigA n.+1.
-   by rewrite big_ord_recr.
-   rewrite big_distrl /= big1 // => i _; apply: ATI; rewrite lt_eqF //.
-   exact: ltn_ord.
-by rewrite IHn // [in RHS]big_ord_recr.
+- exact: mbigA.
+- by have := mbigA n.+1; rewrite big_ord_recr.
+- by rewrite big_distrl /= big1 // => i _; rewrite ATI// ltn_eqF.
+- by rewrite IHn // [in RHS]big_ord_recr.
 Qed.
 
 End semi_additivity.
@@ -309,7 +308,8 @@ Lemma semi_sigma_additive_is_additive
 Proof.
 move=> mu0 samu; apply/semi_additive2P => // A B mA mB mAB AB_eq0.
 pose C := bigcup2 A B.
-have tC : trivIset C by move=> [|[|i]] [|[|j]]; rewrite ?setI0 ?set0I// setIC.
+have tC : trivIset setT C.
+  by apply/trivIsetP=> -[|[|i]] [|[|j]]; rewrite ?setI0 ?set0I// setIC.
 have -> : A `|` B = \bigcup_i C i.
   rewrite predeqE => x; split.
     by case=> [Ax|Bx]; by [exists 0%N|exists 1%N].
@@ -516,12 +516,12 @@ Definition B_of (A : (set T) ^nat) :=
   fun n => if n isn't n'.+1 then A O else A n `\` A n'.
 
 Lemma trivIset_B_of (A : (set T) ^nat) :
-  {homo A : n m / (n <= m)%nat >-> n `<=` m} -> trivIset (B_of A).
+  {homo A : n m / (n <= m)%nat >-> n `<=` m} -> trivIset setT (B_of A).
 Proof.
-move=> ndA i j; wlog : i j / (i < j)%N.
-  move=> h; rewrite neq_ltn => /orP[|] ?; by
-    [rewrite h // ltn_eqF|rewrite setIC h // ltn_eqF].
-move=> ij _; move: j i ij; case => // j [_ /=|n].
+move=> ndA i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
+  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB->.
+move=> /set0P; apply: contraNeq => _; apply/eqP.
+case: j i ij => // j [_ /=|n].
   rewrite funeqE => x; rewrite propeqE; split => // -[A0 [Aj1 Aj]].
   exact/Aj/(ndA O).
 rewrite ltnS => nj /=; rewrite funeqE => x; rewrite propeqE; split => //.
@@ -586,7 +586,7 @@ Lemma cvg_mu_inc (A : (set T) ^nat) :
   mu \o A --> mu (\bigcup_n A n).
 Proof.
 move=> mA mbigcupA ndA.
-have Binter : trivIset (B_of A) := trivIset_B_of ndA.
+have Binter : trivIset setT (B_of A) := trivIset_B_of ndA.
 have ABE : forall n, A n.+1 = A n `|` B_of A n.+1 := UB_of ndA.
 have AE n : A n = \big[setU/set0]_(i < n.+1) (B_of A) i := eq_bigsetUB_of n ndA.
 have -> : \bigcup_n A n = \bigcup_n (B_of A) n := eq_bigcupB_of ndA.

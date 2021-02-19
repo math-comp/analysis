@@ -16,6 +16,13 @@
 - in `normedtype.v`, lemmas `nbhs0_lt`, `nbhs'0_lt`, `interior_closed_ballE`, open_nbhs_closed_ball`
 - in `classical_sets.v`, lemmas `subset_has_lbound`, `subset_has_ubound`
 
+- in `classical_sets.v`, lemma `mksetE`
+
+- in `classical_sets.v`:
+  + definitions `cover`, `partition`, `pblock_index`, `pblock`
+  + lemmas `trivIsetP`, `trivIset_sets`, `trivIset_restr`, `perm_eq_trivIset`
+  + lemma `fdisjoint_cset`
+
 - in `reals.v`, lemmas `sup_setU`, `inf_setU`
 - in `boolp.v`, lemmas `iff_notr`, `iff_not2`
 - in `reals.v`, lemmas `RtointN`, `floor_le0`
@@ -43,6 +50,9 @@
     `only printing` notation `x <= y` for `lee x y`
   + same change for `<`
   + change extended to notations `_ <= _ <= _`, `_ < _ <= _`, `_ <= _ < _`, `_ < _ < _`
+
+- in `classical_sets.v`:
+  + generalization and change of `trivIset` (and thus lemmas `trivIset_bigUI` and `trivIset_setI`)
 
 ### Renamed
 
