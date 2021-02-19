@@ -38,6 +38,11 @@
 - header in `normedtype.v`, precisions on `bounded_fun`
 - in `reals.v`:
   + `floor_ge0` generalized and renamed to `floorR_ge_int`
+- in `ereal.v`, `ereal_scope` notation scope:
+  + `x <= y` notation changed to `lee (x : er _) (y : er _)` and
+    `only printing` notation `x <= y` for `lee x y`
+  + same change for `<`
+  + change extended to notations `_ <= _ <= _`, `_ < _ <= _`, `_ <= _ < _`, `_ < _ < _`
 
 ### Renamed
 
