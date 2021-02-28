@@ -3755,11 +3755,56 @@ move=> HX; rewrite /length; case: pselect => [eX /=|H].
 by exfalso; apply H; exists fset0; rewrite /ufint big_nil.
 Qed.
 
+Lemma eq_bigcup_l_set_of_itv (i : interval R) (s : {fset interval R}) :
+  set_of_itv i = ufint s ->
+  \big[setU/set0]_(i0 <- s) set_of_itv i0 =
+  \big[setU/set0]_(i0 <- [:: i]) set_of_itv i0.
+Proof.
+move=> si.
+rewrite predeqE => r; split.
+  rewrite -bigcup_mkset.
+  case=> /= j js jr.
+  rewrite big_cons big_nil setU0.
+  rewrite si /ufint.
+  rewrite -bigcup_mkset.
+  by exists j.
+rewrite big_cons big_nil setU0 => ir.
+by rewrite si /ufint in ir.
+Qed.
+
 Lemma length_itv (i : interval R) :
   length (set_of_itv i) = hlength (set_of_itv i).
 Proof.
+have [/eqP ->|i0] := boolP (set_of_itv i == set0).
+  by rewrite length_set0 hlength0.
 rewrite /length; case: pselect => [[s [si s0]]|].
-Admitted.
+  case: cid => /= {s si s0} s [si s0].
+  transitivity ((hlength \o set_of_itv) i) => //.
+  rewrite -[RHS](big_seq1 adde_monoid i).
+  apply: hlengthUset.
+  + rewrite cover_set_of_itv_nthE//.
+    rewrite cover_set_of_itv_nthE//.
+    case: (decomposition_of_Decompose s) => H1 H2 H3.
+    rewrite {1}/ufint in H3.
+    rewrite H3.
+    rewrite /ufint.
+    by apply eq_bigcup_l_set_of_itv.
+  + rewrite /Decompose.
+    apply trivIset_decompose.
+      exact: (sort_sorted total_le_itv).
+    apply/allP => j.
+    by rewrite mem_sort /= mem_filter => /andP[].
+  + apply/trivIsetP.
+    move=> [|a] [|b] //=.
+    by rewrite nth_nil set_of_itvE setI0.
+    by rewrite nth_nil set_of_itvE set0I.
+    by move=> _ _ ab; rewrite nth_nil set_of_itvE set0I.
+move=> abs; exfalso; apply: abs.
+exists [fset i]%fset; split.
+  by rewrite /ufint /= big_seq_fset1.
+apply/allP => j.
+by rewrite inE => /eqP ->.
+Qed.
 
 Lemma length_sigma_finite : sigma_finite setT (length : set (ITVS.itvs_ringOfSetsType R) -> {ereal R}).
 Proof.
