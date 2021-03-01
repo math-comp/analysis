@@ -26,6 +26,11 @@
   + canonical `R_regular_completeType`, `R_regular_CompleteNormedModule`
 - in `reals.v`:
   + lemmas `Rfloor_lt0`, `floor_lt0`, `ler_floor`, `ceil_gt0`, `ler_ceil`
+- in `ereal.v`:
+  + lemmas `ereal_ballN`, `le_ereal_ball`, `ereal_ball_ninfty_oversize`,
+    `contract_ereal_ball_pinfty`, `expand_ereal_ball_pinfty`,
+    `contract_ereal_ball_fin_le`, `contract_ereal_ball_fin_lt`,
+    `expand_ereal_ball_fin_lt`, `ball_ereal_ball_fin_lt`, `ball_ereal_ball_fin_le`
 
 ### Changed
 
@@ -48,6 +53,10 @@
   `numFieldTopology.Exports`
 - `derive.v` now imports `numFieldNormedType.Exports`
 - `sequences.v` now imports `numFieldNormedType.Exports`
+- in `ereal.v`:
+  + lemmas `nbhs_oo_up_e1`, `nbhs_oo_down_e1`, `nbhs_oo_up_1e`, `nbhs_oo_down_1e`
+    `nbhs_fin_out_above`, `nbhs_fin_out_below`, `nbhs_fin_out_above_below`
+    `nbhs_fin_inbound`
 
 ### Renamed
 
