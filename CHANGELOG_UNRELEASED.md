@@ -54,6 +54,9 @@
 - in `classical_sets.v`:
   + generalization and change of `trivIset` (and thus lemmas `trivIset_bigUI` and `trivIset_setI`)
 
+- in `classical_sets.v`:
+  + `bigcup_distrr`, `bigcup_distrl` generalized
+
 ### Renamed
 
 - in `normedtype.v`, `bounded_on` -> `bounded_near`

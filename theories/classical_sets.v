@@ -740,15 +740,17 @@ rewrite predeqE => t; split => [[[|m] _ At]|[At|[i _ At]]].
   by exists i.+1 => //; rewrite -addSnnS.
 Qed.
 
-Lemma bigcup_distrr F A : A `&` \bigcup_i (F i) = \bigcup_i (A `&` F i).
+Lemma bigcup_distrr F (P : set nat) A :
+  A `&` \bigcup_(i in P) (F i) = \bigcup_(i in P) (A `&` F i).
 Proof.
-rewrite predeqE => t; split => [[At [k _ ?]]|[k _ [At ?]]];
+rewrite predeqE => t; split => [[At [k ? ?]]|[k ? [At ?]]];
   by [exists k |split => //; exists k].
 Qed.
 
-Lemma bigcup_distrl F A : \bigcup_i F i `&` A = \bigcup_i (F i `&` A).
+Lemma bigcup_distrl F (P : set nat) A :
+  \bigcup_(i in P) F i `&` A = \bigcup_(i in P) (F i `&` A).
 Proof.
-by rewrite predeqE => t; split => [[[n _ Ant ?]]|[n _ [Ant ?]]];
+by rewrite predeqE => t; split => [[[n ? Ant ?]]|[n ? [Ant ?]]];
   [exists n|split => //; exists n].
 Qed.
 
