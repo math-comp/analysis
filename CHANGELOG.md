@@ -1,6 +1,85 @@
 # Changelog
 
-Last releases: [[0.3.5] - 2020-12-21](#035---2020-12-21) and [[0.3.4] - 2020-12-12](#034---2020-12-12)
+Last releases: [[0.3.6] - 2021-03-04](#036---2021-03-04) and [[0.3.5] - 2020-12-21](#035---2020-12-21)
+
+## [0.3.6] - 2021-03-04
+
+### Added
+
+- in `boolp.v`:
+  + lemmas `iff_notr`, `iff_not2`
+- in `classical_sets.v`:
+  + lemmas `subset_has_lbound`, `subset_has_ubound`
+  + lemma `mksetE`
+  + definitions `cover`, `partition`, `pblock_index`, `pblock`
+  + lemmas `trivIsetP`, `trivIset_sets`, `trivIset_restr`, `perm_eq_trivIset`
+  + lemma `fdisjoint_cset`
+  + lemmas `setDT`, `set0D`, `setD0`
+  + lemmas `setC_bigcup`, `setC_bigcap`
+- in `reals.v`:
+  + lemmas `sup_setU`, `inf_setU`
+  + lemmas `RtointN`, `floor_le0`
+  + definition `Rceil`, lemmas `isint_Rceil`, `Rceil0`, `le_Rceil`, `Rceil_le`, `Rceil_ge0`
+  + definition `ceil`, lemmas `RceilE`, `ceil_ge0`, `ceil_le0`
+- in `ereal.v`:
+  + lemmas `esum_fset_ninfty`, `esum_fset_pinfty`, `esum_pinfty`
+- in `normedtype.v`:
+  + lemmas `ereal_nbhs'_le`, `ereal_nbhs'_le_finite`
+  + lemmas `ball_open`
+  + definition `closed_ball_`, lemmas `closed_closed_ball_`
+  + definition `closed_ball`, lemmas `closed_ballxx`, `closed_ballE`,
+    `closed_ball_closed`, `closed_ball_subset`, `nbhs_closedballP`, `subset_closed_ball`
+  + lemmas `nbhs0_lt`, `nbhs'0_lt`, `interior_closed_ballE`, open_nbhs_closed_ball`
+  + section "LinearContinuousBounded"
+    * lemmas `linear_boundedP`, `linear_continuous0`, `linear_bounded0`,
+      `continuousfor0_continuous`, `linear_bounded_continuous`, `bounded_funP`
+- in `measure.v`:
+  + definition `sigma_finite`
+
+### Changed
+
+- in `classical_sets.v`:
+  + generalization and change of `trivIset` (and thus lemmas `trivIset_bigUI` and `trivIset_setI`)
+  + `bigcup_distrr`, `bigcup_distrl` generalized
+- header in `normedtype.v`, precisions on `bounded_fun`
+- in `reals.v`:
+  + `floor_ge0` generalized and renamed to `floorR_ge_int`
+- in `ereal.v`, `ereal_scope` notation scope:
+  + `x <= y` notation changed to `lee (x : er _) (y : er _)` and
+    `only printing` notation `x <= y` for `lee x y`
+  + same change for `<`
+  + change extended to notations `_ <= _ <= _`, `_ < _ <= _`, `_ <= _ < _`, `_ < _ < _`
+
+### Renamed
+
+- in `reals.v`:
+  + `floor` -> `Rfloor`
+  + `isint_floor` -> `isint_Rfloor`
+  + `floorE` -> `RfloorE`
+  + `mem_rg1_floor` -> `mem_rg1_Rfloor`
+  + `floor_ler` -> `Rfloor_ler`
+  + `floorS_gtr` -> `RfloorS_gtr`
+  + `floor_natz` -> `Rfloor_natz`
+  + `Rfloor` -> `Rfloor0`
+  + `floor1` -> `Rfloor1`
+  + `ler_floor` -> `ler_Rfloor`
+  + `floor_le0` -> `Rfloor_le0`
+  + `ifloor` -> `floor`
+  + `ifloor_ge0` -> `floor_ge0`
+- in `topology.v`:
+  + `ball_ler` -> `le_ball`
+- in `normedtype.v`, `bounded_on` -> `bounded_near`
+- in `measure.v`:
+  + `AdditiveMeasure.Measure` -> `AdditiveMeasure.Axioms`
+  + `OuterMeasure.OuterMeasure` -> `OuterMeasure.Axioms`
+
+### Removed
+- in `topology.v`:
+  + `ball_le`
+- in `classical_sets.v`:
+  + lemma `bigcapCU`
+- in `sequences.v`:
+  + lemmas `ler_sum_nat`, `sumr_const_nat`
 
 ## [0.3.5] - 2020-12-21
 
