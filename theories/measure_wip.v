@@ -766,7 +766,7 @@ Proof. by move: x => [r _| |] //; rewrite -subERFin subrr. Qed.
 
 Lemma sube_le0 (R : realDomainType) (x y : er R) : (y - x <= 0%:E)%E = (y <= x)%E.
 Proof.
-move: x y => [x| |] [y| |]; apply/idP/idP => //=; try by
+by move: x y => [x| |] [y| |]; apply/idP/idP => //=; try
   (rewrite !(lee_pinfty,lee_ninfty) || rewrite !lee_fin subr_le0).
 Qed.
 
@@ -4204,10 +4204,31 @@ rewrite -addeA; congr adde.
 by rewrite -addERFin -mulrDl -mulr2n -mulr_natr -mulrA divff ?mulr1.
 Grab Existential Variables. all: end_near. Qed.
 
+Lemma length_sigma_additive_on_intervals_finite_case (i : interval R) (j : nat -> interval R) :
+  (forall k, set_of_itv (j k) != set0) ->
+  set_of_itv i = \bigcup_k set_of_itv (j k) ->
+  trivIset setT (fun k => set_of_itv (j k)) ->
+  (hlength (set_of_itv i) < +oo)%E ->
+  (length (set_of_itv i) = lim (fun n => \sum_(k < n) length (set_of_itv (j k))))%E.
+Proof.
+move=> sne ij tj i_finite.
+apply/eqP; rewrite eq_le; apply/andP; split; first exact: length_sigma_additive_on_intervals_helper.
+apply: ereal_lim_le.
+  apply: (@is_cvg_ereal_nneg_series _ (fun k => length (set_of_itv (j k))) xpredT) => n _.
+  by apply length_ge0; exists [:: j n]; rewrite /ufint big_seq1.
+near=> n.
+rewrite [X in (X <= _)%E](_ : _ = length (\big[setU/set0]_(k < n) set_of_itv (j k))) //; last first.
+  by apply/esym/(@length_additive (fun k => set_of_itv (j k))) => // k; exists [:: j k]; rewrite /ufint big_seq1.
+apply le_length.
+  exists (map (j \o @nat_of_ord n) (enum 'I_n)).
+  by rewrite /ufint big_map /= big_enum.
+  by exists [:: i]; rewrite /ufint big_seq1.
+by rewrite ij -bigcup_mkset /= => r [k /= _ jkr]; exists k.
+Grab Existential Variables. all: end_near. Qed.
+
 Lemma length_semi_sigma_additive :
   semi_sigma_additive (length : set (ITVS.itvs_ringOfSetsType R) -> {ereal R}).
 Proof.
-(* TODO: use length_sigma_additive_on_intervals_helper *)
 Admitted.
 
 Definition length_measure0 : {measure set (ITVS.itvs_ringOfSetsType R) -> {ereal R}} :=
