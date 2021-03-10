@@ -4162,7 +4162,7 @@ have [kA|kA] := ltnP k (size A).
 by rewrite nth_default //; exact: ITVS.itvs_ringOfSets_set0.
 Qed.
 
-Lemma length_sigma_additive_on_intervals_helper
+Lemma length_sub_sigma_additive_on_intervals
     (i : interval R) (j : nat -> interval R) (P : pred nat) :
   (hlength (\bigcup_(k in P) set_of_itv (j k)) < +oo)%E ->
   (forall k, P k -> set_of_itv (j k) != set0) ->
@@ -4375,7 +4375,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
     by rewrite -H3.
   have H2 : set_of_itv i `<=` \bigcup_(k in (fun x : nat => set_of_itv (j x) != set0)) set_of_itv (j k).
     by rewrite -H3.
-  move: (@length_sigma_additive_on_intervals_helper i j (fun i => set_of_itv (j i) != set0) H1 (fun x => id) H2).
+  move: (@length_sub_sigma_additive_on_intervals i j (fun i => set_of_itv (j i) != set0) H1 (fun x => id) H2).
   move/le_trans; apply.
   apply: lee_lim.
     apply: (@is_cvg_ereal_nneg_series _ (fun k => length (set_of_itv (j k))) (fun i => set_of_itv (j i) != set0)) => n _.
@@ -4564,22 +4564,30 @@ have H1 : forall i : interval R,
   move=> i iS.
   have iiS : set_of_itv i `<=` \bigcup_k (set_of_itv i `&` S k).
     by move=> r ir; move/iS : (ir) => [k _ Skr]; exists k.
+  pose i_inter_S (n : nat) := map (itv_meet i) (dec_of n).
   have H1 : forall n, set_of_itv i `&` S n =
-      \big[setU/set0]_(x <- map (itv_meet i) (dec_of n)) (set_of_itv x).
+      \big[setU/set0]_(x <- i_inter_S n) (set_of_itv x).
     move=> n; rewrite big_map.
     have [_ _] := decomposition_of_Decompose (seq_of n).
-      rewrite {1}/ufint -/(dec_of n) -Sseq_of => <-.
-      by rewrite big_distrr /=; apply eq_bigr => j _; rewrite itv_meetE.
-    pose i_inter_S (n : nat) := map (itv_meet i) (dec_of n).
-    have i_i_inter_S : set_of_itv i `<=` \bigcup_k (\big[setU/set0]_(x <- i_inter_S k) (set_of_itv x)).
-      move/subset_trans : iiS; apply => r [k _].
-      rewrite Sseq_of /ufint big_distrr /= => H2.
-      exists k => //; rewrite /i_inter_S big_map.
-      under eq_bigr do rewrite itv_meetE.
-      move: H2; rewrite -bigcup_mkset => -[/= j jk [ij jr]].
-      have [j' [j'k j'r]] := mem_Decompose jk jr.
-      by rewrite -bigcup_mkset; exists j'.
-  admit. (* TODO: sigma sub additivity *)
+    rewrite {1}/ufint -/(dec_of n) -Sseq_of => <-.
+    by rewrite big_distrr /=; apply eq_bigr => j _; rewrite itv_meetE.
+  have i_i_inter_S : set_of_itv i `<=`
+      \bigcup_k (\big[setU/set0]_(x <- i_inter_S k) (set_of_itv x)).
+    move/subset_trans : iiS; apply => r [k _].
+    rewrite Sseq_of /ufint big_distrr /= => H2.
+    exists k => //; rewrite /i_inter_S big_map.
+    under eq_bigr do rewrite itv_meetE.
+    move: H2; rewrite -bigcup_mkset => -[/= j jk [ij jr]].
+    have [j' [j'k j'r]] := mem_Decompose jk jr.
+    by rewrite -bigcup_mkset; exists j'.
+  rewrite (_ : (fun n : nat => _) = (fun n : nat => \sum_(k < n) (\sum_(x <- i_inter_S k) length (set_of_itv x))%E)%E); last first.
+    rewrite funeqE => n; apply eq_bigr => k _.
+    rewrite H1 (big_nth 0%O) big_mkord (@length_additive (fun n => set_of_itv (nth 0%O (i_inter_S k) n))); last 2 first.
+      by move=> m; apply ITVS.itvs_ringOfSets_set_itv.
+      exact/trivIset_itv_meet/trivIset_Decompose.
+    apply/esym.
+    by rewrite (big_nth 0%O) big_mkord.
+  admit. (* TODO: length_sub_sigma_additive_on_intervals *)
 have [I [SI tI]] : exists I : seq (interval R),
   \bigcup_k (S k) = ufint I /\
   trivIset setT (fun i => set_of_itv (nth 0%O I i)).
