@@ -280,20 +280,19 @@ End FsetPartitions.
 
 Definition csum (R : realFieldType) (T : choiceType) (S : set T)
     (a : T -> {ereal R}) :=
-  if pselect (S !=set0) is left _ then
-    ereal_sup [set (\sum_(i <- F) a i)%E |
-               F in [set F : {fset T} | [set i | i \in F] `<=` S]]
-  else 0%:E.
+  if S == set0 then 0%:E else
+  ereal_sup [set (\sum_(i <- F) a i)%E |
+               F in [set F : {fset T} | [set i | i \in F] `<=` S]].
 
 Lemma csum0 (R : realFieldType) (T : choiceType) (a : T -> {ereal R}) :
   csum set0 a = 0%:E.
-Proof. by rewrite /csum; case: pselect => // -[]. Qed.
+Proof. by rewrite /csum eqxx. Qed.
 
 Lemma csum_ge0 (R : realType) (T : choiceType) (a : T -> {ereal R})
     (a0 : forall x, (0%:E <= a x)%E) (I : set T) :
   (0%:E <= csum I a)%E.
 Proof.
-rewrite /csum; case: pselect => // -[] i Ii.
+rewrite /csum; case: ifPn => // _.
 by apply: ereal_sup_ub; exists fset0 => //; rewrite big_nil.
 Qed.
 
@@ -301,9 +300,8 @@ Lemma csum_fset (R : realType) (T : choiceType) (S : {fset T})
     (f : T -> {ereal R}) : (forall i, 0%:E <= f i)%E ->
   csum [set x | x \in S] f = (\sum_(i <- S) f i)%E.
 Proof.
-move=> f0; rewrite /csum; case: pselect => [S0|]; last first.
-  move/set0P/negP/negPn; rewrite eq_set0_fset0 => /eqP ->.
-  by rewrite big_seq_fset0.
+move=> f0; rewrite /csum; case: ifPn => [|S0].
+  by rewrite eq_set0_nil => /eqP ->; rewrite big_seq_fset0.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply ereal_sup_ub; exists S.
 by apply ub_ereal_sup => /= ? -[F FS <-]; exact/lee_sum_nneg_subfset.
@@ -331,10 +329,9 @@ Lemma csum_countable (R : realType) (T : pointedType) (a : T -> {ereal R})
   (e : nat -> T) (P : pred nat) : (forall n, 0%:E <= a n)%E -> injective e ->
   csum [set e i | i in P] a = lim (fun n => (\sum_(i < n | P i) a (e i))%E).
 Proof.
-move=> a0 ie; rewrite /csum; case: pselect => [S0|]; last first.
-  move=> P0; rewrite (_ : (fun _ => _) = fun=> 0%:E) ?lim_cst// funeqE => n.
-  rewrite big1 // => i Pi; move/set0P/negP/negPn/eqP/image_set0_set0 : P0.
-  by rewrite predeqE => /(_ i) [] /(_ Pi).
+move=> a0 ie; rewrite /csum; case: ifPn => [/eqP/image_set0_set0 P0|S0].
+  rewrite (_ : (fun _ => _) = fun=> 0%:E) ?lim_cst// funeqE => n.
+  by rewrite big1 // => i Pi; move: P0; rewrite predeqE => /(_ i) [] /(_ Pi).
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   apply: ereal_lim_le.
     by apply: (@is_cvg_ereal_nneg_series_cond _ (a \o e)) => *; exact: a0.
@@ -349,6 +346,7 @@ have [/eqP ->|F0] := boolP (F == fset0).
   rewrite big_nil ereal_lim_ge //.
     by apply: (@is_cvg_ereal_nneg_series_cond _ (a \o e)) => *; exact: a0.
   by near=> n; apply: sume_ge0 => *; exact: a0.
+(* TODO: see lemma lee_sum_lim *)
 have [n FnS] :
     exists n, (F `<=` [fset e (nat_of_ord i) | i in 'I_n & P i])%fset.
     have [n Fn] : exists n, forall x, x \in F -> forall i, e i = x -> (i <= n)%N.
@@ -362,8 +360,10 @@ have [n FnS] :
     have /set_finite_fset[eF eFE] : set_finite (e @^-1` [set x | x \in F]).
       by apply: (set_finite_preimage _ (fset_set_finite _)) => ? ? ? ?; exact/ie.
     have : eF != fset0.
-      rewrite -eq_set0_fset0 eFE; apply/set0P.
-      move: F0; rewrite -eq_set0_fset0 => /set0P[t tF].
+      suff : eF != nil :> seq _ by [].
+      rewrite -eq_set0_nil eFE; apply/set0P.
+      have : F != nil :> seq _ by [].
+      rewrite -eq_set0_nil => /set0P[t tF].
       by move: (tF) => /FS[i Pi eit]; exists i; rewrite /preimage /mkset eit.
     move/fset_maximum => [i [ieF eFi]]; exists i => t tF j eji; apply eFi.
     by move/predeqP : eFE => /(_ j) /iffRL; apply; rewrite /preimage /mkset eji.
@@ -386,13 +386,16 @@ Qed.
 
 Lemma csum_csum (R : realType) (T : pointedType) (K : set nat)
     (J : nat -> set T) (a : T -> {ereal R}) : (forall x, 0%:E <= a x)%E ->
-  K !=set0 -> (forall k, J k !=set0) -> trivIset setT J ->
+  (forall k, J k != set0) -> trivIset setT J ->
   csum (\bigcup_(k in K) (J k)) a = csum K (fun k => csum (J k) a).
 Proof.
-move=> a0 K0 J0 /trivIsetP tJ; set I := \bigcup_(k in K) (J k).
-have I0 : I !=set0 by case: K0 => k Kk; have [t Jkt] := J0 k; exists t; exists k.
+move=> a0.
+have [/eqP ->|K0] := boolP (K == set0); first by rewrite bigcup_set0 2!csum0.
+move=> J0 /trivIsetP tJ; set I := \bigcup_(k in K) (J k).
+have /set0P I0 : I !=set0.
+  by move/set0P : K0 => [k Kk]; have /set0P[t Jkt] := J0 k; exists t, k.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  rewrite {1}/csum; case: pselect => // _; apply ub_ereal_sup => /= _ [F FI <-].
+  rewrite {1}/csum (negbTE I0); apply ub_ereal_sup => /= _ [F FI <-].
   pose FJ := fun k => [fset x in F | x \in J k]%fset.
   have tFJ : forall i j, i != j -> [disjoint FJ i & FJ j]%fset.
     (* TODO: use fdisjoint_cset *)
@@ -435,12 +438,12 @@ apply/eqP; rewrite eq_le; apply/andP; split.
       by rewrite !inE /= => /negbT /negP; apply; rewrite tF /= in_setE.
     by rewrite /FJ !inE /= tF in_setE.
   apply: (@le_trans _ _ (\sum_(k <- L) (csum (J k) a))%E).
-    apply: lee_sum => i iM; rewrite /csum; case: pselect => // _.
+    apply: lee_sum => i _; rewrite /csum (negbTE (J0 _)).
     apply: ereal_sup_ub; exists (FJ i) => // t.
     by rewrite /FJ /mkset !inE /= => /andP[_]; rewrite in_setE.
-  rewrite [in X in (_ <= X)%E]/csum; case: pselect => // _.
-  by apply ereal_sup_ub; exists L.
-rewrite {1}[in X in (X <= _)%E]/csum; case: pselect => // _.
+  rewrite [in X in (_ <= X)%E]/csum (negbTE K0); apply ereal_sup_ub.
+  by exists L.
+rewrite {1}[in X in (X <= _)%E]/csum (negbTE K0).
 apply ub_ereal_sup => /= _ [L LK <-].
 have [/eqP ->|L0] := boolP (L == fset0); first by rewrite big_nil csum_ge0.
 have /gee0P[->|[r r0 csumIar]] := csum_ge0 a0 I; first by rewrite lee_pinfty.
@@ -453,12 +456,11 @@ set P := (fun (Fj : {fset T}%fset) (j : 'I_#|`L|) =>
 have [Fj csumFj] : exists F, forall j, P (F j) j.
   suff : forall j, exists Fj, P Fj j.
     by case/(@choice _ _ (fun i F => P F i)) => Fj ?; exists Fj.
-  move=> j; rewrite /P /csum; case: pselect => // _; set es := ereal_sup _.
+  move=> j; rewrite /P /csum (negbTE (J0 _)); set es := ereal_sup _.
   have [esoo|[c c0 esc]] : es = +oo%E \/ exists2 r, r >= 0 & es = r%:E.
     suff : (0%:E <= es)%E by move/gee0P.
     by apply ereal_sup_ub; exists fset0 => //; rewrite big_nil.
-  - move: csumIar; rewrite /csum; case: pselect => // _.
-    set es' := ereal_sup _ => es'r.
+  - move: csumIar; rewrite /csum (negbTE I0); set es' := ereal_sup _ => es'r.
     suff : (es <= es')%E by rewrite esoo es'r.
     apply: le_ereal_sup => x [F FJ Fx]; exists F => //.
     move/subset_trans : FJ; apply => t Jt.
@@ -468,12 +470,14 @@ have [Fj csumFj] : exists F, forall j, P (F j) j.
     exact: ub_ereal_sup_adherent2.
 pose F := \big[fsetU/fset0]_(i < #|`L|) Fj i.
 apply: (@le_trans _ _ (\sum_(i <- F) a i)%E); last first.
-  rewrite /csum; case pselect => // _; apply ereal_sup_ub; exists F => //.
+  rewrite /csum (negbTE I0); apply ereal_sup_ub; exists F => //.
   move=> t /bigfcupP[/= i _] /(proj1 (csumFj i)) Jt.
   by exists (nth 0%N L i) => //; apply LK; rewrite /mkset mem_nth.
 apply: (@le_trans _ _ (\sum_(i < #|`L|) (\sum_(j <- Fj i) a j)%E)%E); last first.
   have tFj : (forall i j : 'I_#|`L|, i != j -> [disjoint Fj i & Fj j])%fset.
-    move=> i j ij; rewrite -fsetI_eq0; rewrite -eq_set0_fset0.
+    move=> i j ij; rewrite -fsetI_eq0.
+    suff : (Fj i `&` Fj j)%fset == [::] :> seq _ by [].
+    rewrite -eq_set0_nil.
     have Jij : J (nth 0%N L i) `&` J (nth 0%N L j) = set0.
       apply: tJ => //; apply: contra ij => /eqP /(congr1 (index^~ L)).
       by rewrite index_uniq // index_uniq // => /ord_inj ->.

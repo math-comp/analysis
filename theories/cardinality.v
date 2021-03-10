@@ -533,11 +533,11 @@ have [/= i [ni ->]] := (sur_of_bij bij_f1) _ St.
 by exists i => //; rewrite mem_iota add0n.
 Qed.
 
-Lemma eq_set0_fset0 (T : choiceType) (S : {fset T}%fset) :
-  ([set x | x \in S] == set0) = (S == fset0).
+Lemma eq_set0_nil (T : choiceType) (S : seq T) :
+  ([set x | x \in S] == set0) = (S == [::]).
 Proof.
-apply/eqP/eqP=> [|->]; rewrite predeqE //.
-by move=> S0; apply/fsetP => t; apply/negbTE/negP=> /(proj1 (S0 t)).
+apply/eqP/eqP=> [|->]; rewrite predeqE //; case: S => // h t /(_ h).
+by rewrite /mkset mem_head => -[/(_ erefl)].
 Qed.
 
 Lemma fset0_set0 (T : choiceType) : [set x | x \in fset0] = @set0 T.
