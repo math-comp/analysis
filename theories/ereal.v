@@ -592,15 +592,17 @@ move=> QP PQf; rewrite big_mkcond [X in (_ <= X)%E]big_mkcond lee_sum// => i.
 by move/implyP: (QP i); move: (PQf i); rewrite !inE -!topredE/=; do !case: ifP.
 Qed.
 
-Lemma lee_sum_nneg_subfset (T : choiceType) (A B : {fset T}%fset)
+Lemma lee_sum_nneg_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
   (f : T -> {ereal R}) : {subset A <= B} ->
-  {in [predD B & A], forall t, 0%:E <= f t} ->
-  \sum_(t <- A) f t <= \sum_(t <- B) f t.
+  {in [predD B & A], forall t, P t -> 0%:E <= f t} ->
+  \sum_(t <- A | P t) f t <= \sum_(t <- B | P t) f t.
 Proof.
-move=> AB f0; rewrite (big_fsetID _ (mem A) B) /= -[X in X <= _]adde0 lee_add//.
-  rewrite [in X in X <= _](_ : A = [fset x in B | x \in A]%fset) //.
+move=> AB f0; rewrite [X in _ <= X]big_mkcond (big_fsetID _ (mem A) B) /=.
+rewrite -[X in X <= _]adde0 lee_add //.
+- rewrite -big_mkcond /= {1}(_ : A = [fset x in B | x \in A]%fset) //.
   by apply/fsetP=> t; rewrite !inE /= andbC; case: (boolP (_ \in _)) => // /AB.
-by rewrite big_fset /= big_seq_cond sume_ge0 // => t ?; rewrite f0 // inE andbC.
+- rewrite big_fset /= big_seq_cond sume_ge0 // => t /andP[tB tA].
+  by case: ifPn => // Pt; rewrite f0 // !inE tA.
 Qed.
 
 Lemma lte_subl_addr x (r : R) z : (x - r%:E < z) = (x < z + r%:E).

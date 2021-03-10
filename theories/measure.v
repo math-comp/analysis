@@ -537,15 +537,15 @@ by move=> -[|[]//]; apply: ndA.
 Qed.
 
 Lemma bigUB_of (A : (set T) ^nat) n :
-  \big[setU/set0]_(i < n.+1) A i = \big[setU/set0]_(i < n.+1) B_of A i.
+  \big[setU/set0]_(i < n) A i = \big[setU/set0]_(i < n) B_of A i.
 Proof.
+case: n => [|n]; first by rewrite 2!big_ord0.
 elim: n => [|n ih]; first by rewrite !big_ord_recl !big_ord0.
-rewrite big_ord_recr [in RHS]big_ord_recr /= predeqE => x; split=> [[Ax|An1x]|].
-    by rewrite -ih; left.
-  rewrite -ih.
-  have [Anx|Anx] := pselect (A n x); last by right.
+rewrite big_ord_recr [in RHS]big_ord_recr /= -{}ih predeqE => x; split.
+  move=> [?|?]; first by left.
+  have [?|?] := pselect (A n x); last by right.
   by left; rewrite big_ord_recr /=; right.
-move=> [summyB|[An1x NAnx]]; by [rewrite ih; left | right].
+by move=> [?|[? ?]]; [left | right].
 Qed.
 
 Lemma eq_bigsetUB_of (A : (set T) ^nat) n :
@@ -574,14 +574,10 @@ Qed.
 
 End trivIfy.
 
-Section boole_inequality.
-Variables (R : realFieldType) (T : ringOfSetsType).
-Variables (mu : {measure set T -> {ereal R}}).
-
 (* 401,p.43 measure is continuous from below *)
-Lemma cvg_mu_inc (A : (set T) ^nat) :
-  (forall i, measurable (A i)) ->
-  (measurable (\bigcup_n A n)) ->
+Lemma cvg_mu_inc (R : realFieldType) (T : ringOfSetsType)
+  (mu : {measure set T -> {ereal R}}) (A : (set T) ^nat) :
+  (forall i, measurable (A i)) -> measurable (\bigcup_n A n) ->
   {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
   mu \o A --> mu (\bigcup_n A n).
 Proof.
@@ -594,14 +590,16 @@ have mB : forall i, measurable (B_of A i).
   by elim=> [|i ih] //=; apply: measurableD.
 apply: cvg_trans (measure_semi_sigma_additive mB Binter _); last first.
   by rewrite -eq_bigcupB_of.
-apply: (@cvg_trans _ [filter of (fun n => (\sum_(i < n.+1) mu (B_of A i))%E)]); last first.
-  by move=> S [n _] nS; exists n => // m nm; apply/(nS m.+1)/(leq_trans nm).
-rewrite (_ : (fun n => \sum_(i < n.+1) mu (B_of A i))%E = mu \o A) //.
-rewrite funeqE => n; rewrite -measure_semi_additive // -?AE //.
-case=> [|k].
+apply: (@cvg_trans _ [filter of (fun n => (\sum_(i < n.+1) mu (B_of A i))%E)]).
+  rewrite [X in _ --> X](_ : _ = mu \o A) // funeqE => n.
+  rewrite -measure_semi_additive // -?AE// => -[|k]; last by rewrite -AE.
   by rewrite big_ord0; exact: measurable0.
-by rewrite -AE.
+by move=> S [n _] nS; exists n => // m nm; apply/(nS m.+1)/(leq_trans nm).
 Qed.
+
+Section boole_inequality.
+Variables (R : realFieldType) (T : ringOfSetsType).
+Variables (mu : {additive_measure set T -> {ereal R}}).
 
 Theorem Boole_inequality (A : (set T) ^nat) : (forall i, measurable (A i)) ->
   forall n, (mu (\big[setU/set0]_(i < n) A i) <= \sum_(i < n) mu (A i))%E.
@@ -610,23 +608,21 @@ move=> mA; elim => [|n ih]; first by rewrite !big_ord0 measure0.
 set B := \big[setU/set0]_(i < n) A i.
 set C := \big[setU/set0]_(i < n.+1) A i.
 have -> : C = B `|` (A n `\` B).
-  rewrite predeqE => x; split => [|].
-    rewrite /C big_ord_recr /= => -[sumA|]; first by left.
+  rewrite predeqE => x; split => [|[|[An1x _]]].
+  - rewrite /C big_ord_recr /= => -[sumA|]; first by left.
     by have [?|?] := pselect (B x); [left|right].
-  move=> -[|[An1x _]].
-    by rewrite /C big_ord_recr; left.
-  by rewrite /C big_ord_recr; right.
+  - by rewrite /C big_ord_recr; left.
+  - by rewrite /C big_ord_recr; right.
 have ? : measurable B by apply bigsetU_measurable.
 rewrite measure_additive2 //; last 2 first.
-  by apply measurableD.
-  rewrite setIC -setIA (_ : ~` _ `&` _ = set0) ?setI0 //.
-  by rewrite funeqE => x; rewrite propeqE; split => // -[].
-rewrite (@le_trans _ _ (mu B + mu (A n))%E) // ?lee_add2l //.
-  rewrite le_measure //; last 2 first.
-    by rewrite inE; apply mA.
-    by apply subIset; left.
-    by rewrite inE; apply measurableD.
-by rewrite big_ord_recr /= lee_add2r.
+  exact: measurableD.
+  by rewrite setIC -setIA (_ : ~` _ `&` _ = set0) ?setI0 // setICl.
+rewrite (@le_trans _ _ (mu B + mu (A n))%E) // ?lee_add2l //; last first.
+  by rewrite big_ord_recr /= lee_add2r.
+rewrite le_measure //.
+- by rewrite inE; apply: measurableD.
+- by rewrite inE; apply: mA.
+- by apply subIset; left.
 Qed.
 
 End boole_inequality.
@@ -662,8 +658,8 @@ have -> : lim (mu \o B) = ereal_sup ((mu \o B) @` setT).
   move=> n m nm; apply: le_measure => //; try by rewrite inE; apply mB.
   exact: subset_bigsetU.
 have BA : forall m, (mu (B m) <= lim (fun n : nat => \sum_(i < n) mu (A i)))%E.
-  move=> m; rewrite (le_trans (le_mu_bigsetU mu mA m.+1)) // -/(B m).
-  by apply: (@ereal_nneg_series_lim_ge _ (mu \o A)) => n; exact: measure_ge0.
+  move=> m; rewrite (le_trans (le_mu_bigsetU (measure_additive_measure mu) mA m.+1)) // -/(B m).
+  by apply: (@ereal_nneg_series_lim_ge _ (mu \o A) xpredT) => n _; exact: measure_ge0.
 by apply ub_ereal_sup => /= x [n _ <-{x}]; apply BA.
 Qed.
 
