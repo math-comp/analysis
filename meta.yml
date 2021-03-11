@@ -12,12 +12,12 @@ cachix:
 - name: coq
 - name: math-comp
   token: CACHIX_AUTH_TOKEN
-
-nix-auto-config:
-  src: ~/git/coq-nix-toolbox/master
-
+  
 nix-ci:
 - name: all
+
+nix-dependencies:
+- coquelicot
 
 synopsis: >-
   An analysis library for mathematical components

@@ -22,24 +22,23 @@
   ## the name of the nixpkgs attribute, if so, set it here:
   pname = "analysis";
 
-  ## Write here the Coq `-R <physical> <logical>` mapping
-  ## Multiple mappings are not suppported yet.
-  ## In the future we may read the designated `_CoqProject` instead
-  # namespace = "<physical>";
-  # realpath = "<logical>";
+  ## Indicate the relative location of your _CoqProject
+  ## If not specified, it defaults to "_CoqProject"
+  # coqproject = "_CoqProject";
 
   ## select an entry to build in the following `medleys` set
+  ## defaults to "default"
   # select = "default";
 
   ## write one `medleys.name` attribute set per
   ## alternative configuration, the can be used to
   ## compute several ci jobs as well
   # medleys.default = {
-  
+
   ## You can override Coq and other Coq coqPackages
   ## throught the following attribute
   # coqPackages.coq.override.version = "8.11";
- 
+
   ## In some cases, light overrides are not available/enough
   ## in which case you can use either
   # coqPackages.<coq-pkg>.overrideAttrs = o: <overrides>;
@@ -66,4 +65,4 @@
   ## nix-build --argstr ci "default" --arg ci-job "test";
 
   # }
-};
+}
