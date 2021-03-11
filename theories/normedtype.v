@@ -84,7 +84,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import nonforgetful_inheritance.Exports.
+Import numFieldTopology.Exports.
 
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
@@ -706,7 +706,7 @@ End Exports.
 End regular_topology.
 Export regular_topology.Exports.
 
-Module nonforgetful_inheritance.
+Module numFieldNormedType.
 
 Section realType.
 Variable (R : realType).
@@ -1038,7 +1038,7 @@ Definition normedMod_numDomainType := [numDomainType of numField_normedModType].
 End numFieldType.
 
 Module Exports.
-Export topology.nonforgetful_inheritance.Exports.
+Export topology.numFieldTopology.Exports.
 (* realType *)
 Canonical real_lmodType.
 Canonical real_lalgType.
@@ -1349,8 +1349,8 @@ Coercion numField_pseudoMetricNormedZmodType :
 Coercion numField_normedModType : numFieldType >-> normedModType.
 End Exports.
 
-End nonforgetful_inheritance.
-Import nonforgetful_inheritance.Exports.
+End numFieldNormedType.
+Import numFieldNormedType.Exports.
 
 Section NormedModule_numDomainType.
 Variables (R : numDomainType) (V : normedModType R).

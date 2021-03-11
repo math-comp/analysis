@@ -50,13 +50,11 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.13'
   repo: 'mathcomp/mathcomp'
-- version: '1.12.0-coq-dev'
-  repo: 'mathcomp/mathcomp'
 - version: 'coq-8.11'
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-8.12'
   repo: 'mathcomp/mathcomp-dev'
-- version: 'coq-dev'
+- version: 'coq-8.13'
   repo: 'mathcomp/mathcomp-dev'
 
 dependencies:
@@ -127,6 +125,14 @@ documentation: |-
   Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
   [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
   
+  MathComp-Analysis adds mathematical structures on top of MathComp's ones.
+  The following inheritance diagram displays the resulting hiearchy
+  (excluding `countalg` and `finalg` structures). MathComp-Analysis
+  mathematical structures are on the right, below `pointedType`
+  included.
+
+  ![Inheritance diagram](./hierarchy.png "Inheritance diagram")
+
   Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
 
   Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)

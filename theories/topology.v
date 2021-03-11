@@ -4358,7 +4358,7 @@ End Exports.
 End regular_topology.
 Export regular_topology.Exports.
 
-Module nonforgetful_inheritance.
+Module numFieldTopology.
 
 Section realType.
 Variable (R : realType).
@@ -4680,8 +4680,8 @@ Coercion numField_uniformType : numFieldType >-> uniformType.
 Coercion numField_pseudoMetricType : numFieldType >-> pseudoMetricType.
 End Exports.
 
-End nonforgetful_inheritance.
-Import nonforgetful_inheritance.Exports.
+End numFieldTopology.
+Import numFieldTopology.Exports.
 
 Global Instance Proper_nbhs'_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter (nbhs' x).

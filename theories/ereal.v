@@ -58,7 +58,7 @@ Unset Printing Implicit Defensive.
 Declare Scope ereal_scope.
 
 Import Order.TTheory GRing.Theory Num.Theory.
-Import nonforgetful_inheritance.Exports.
+Import numFieldTopology.Exports.
 
 Local Open Scope ring_scope.
 
