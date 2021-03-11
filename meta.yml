@@ -13,6 +13,9 @@ cachix:
 - name: math-comp
   token: CACHIX_AUTH_TOKEN
 
+nix-auto-config:
+  src: ~/git/coq-nix-toolbox/master
+
 nix-ci:
 - name: all
 
