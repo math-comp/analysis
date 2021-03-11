@@ -51,6 +51,17 @@
 - `derive.v` now imports `numFieldNormedType.Exports`
 - `sequences.v` now imports `numFieldNormedType.Exports`
 
+- canonicals and coercions have been changed so that there is not need
+  anymore for explicit types casts to `R^o`, `[filteredType R^o of R^o]`,
+  `[filteredType R^o * R^o of R^o * R^o]`, `[lmodType R of R^o]`,
+  `[normedModType R of R^o]`,`[topologicalType of R^o]`, `[pseudoMetricType R of R^o]`
+
+- `topology.v` now imports `reals`
+- `normedtype.v` now imports `vector`, `fieldext, `falgebra`,
+  `numFieldTopology.Exports`
+- `derive.v` now imports `numFieldNormedType.Exports`
+- `sequences.v` now imports `numFieldNormedType.Exports`
+
 ### Renamed
 
 ### Removed
