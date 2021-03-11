@@ -5,18 +5,18 @@
   namespace = "mathcomp.analysis";
   realpath = "theories";
   select = "coq-8.13";
-  inputs."coq-8.13".coqPackages = {
+  medleys."coq-8.13".coqPackages = {
     coq.override.version = "8.13";
     mathcomp.override.version = "1.12.0";
     mathcomp-real-closed.override.version = "1.1";
     mathcomp-finmap.override.version = "1.5";
     hierarchy-builder.override.version = "1.0.0";
     coq-elpi.override.version = "1.8.1"; };
-  inputs."coq-8.12".coqPackages = {
+  medleys."coq-8.12".coqPackages = {
     coq.override.version = "8.12";
     mathcomp.override.version = "1.12.0"; };
-  inputs."coq-8.11+multinomials".coqPackages = {
+  medleys."coq-8.11+multinomials".coqPackages = {
     coq.override.version = "8.11";
     mathcomp.override.version = "1.11.0";
-    multinomials.ci.step = "all"; };
+    multinomials.ci.job = "all"; };
 }
