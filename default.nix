@@ -8,7 +8,7 @@
 let auto = fetchGit {
   url = "https://github.com/coq-community/coq-nix-toolbox.git";
   ref = "master";
-  rev = import ./nix/.coq-nix-toolbox.nix;
+  rev = import ./.nix/coq-nix-toolbox.nix;
 }; in
 (import auto ({src = ./.;} // args)).nix-auto
 
