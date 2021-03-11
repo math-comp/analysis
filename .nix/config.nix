@@ -17,6 +17,6 @@
     mathcomp.override.version = "1.12.0"; };
   tasks."coq-8.11+multinomials".coqPackages = {
     coq.override.version = "8.11";
-    mathcomp.override.version = "1.11.0";
+    mathcomp.override.version = "1.12.0";
     multinomials.ci.job = "all"; };
 }
