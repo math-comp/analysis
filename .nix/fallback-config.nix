@@ -1,8 +1,9 @@
 # This file was generated from `meta.yml`, please do not edit manually.
 # Follow the instructions on https://github.com/coq-community/templates to regenerate.
 
-# HOWEVER, we encourage you to copy paste it to `config.nix`
+# *However*, you may copy paste it to `config.nix`
 # in the same subdirectory .nix and extend it as needed.
+# Note that this would completely deactivate this file.
 
 {
   ## DO NOT CHANGE THIS
@@ -22,18 +23,26 @@
   ## the name of the nixpkgs attribute, if so, set it here:
   pname = "analysis";
 
+  ## Lists the dependencies, phrased in terms of nix attributes.
+  ## No need to list Coq, it is already included.
+  ## These dependencies will systematically be added to the currently
+  ## known dependencies, if any more than Coq.
+  ## /!\ Remove this field as soon as the packaged is available on nixpkgs.
+  ## /!\ Manual overlays in `.nix/coq-overlays` should be preferred then.
+  #buildInputs = [ ];
+
   ## Indicate the relative location of your _CoqProject
   ## If not specified, it defaults to "_CoqProject"
   # coqproject = "_CoqProject";
 
-  ## select an entry to build in the following `medleys` set
+  ## select an entry to build in the following `tasks` set
   ## defaults to "default"
-  # select = "default";
+  select = "default";
 
-  ## write one `medleys.name` attribute set per
+  ## write one `tasks.name` attribute set per
   ## alternative configuration, the can be used to
   ## compute several ci jobs as well
-  # medleys.default = {
+  tasks.default = {
 
   ## You can override Coq and other Coq coqPackages
   ## throught the following attribute
@@ -64,5 +73,5 @@
   ## It can then be built throught
   ## nix-build --argstr ci "default" --arg ci-job "test";
 
-  # }
+  };
 }

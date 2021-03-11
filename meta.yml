@@ -16,9 +16,6 @@ cachix:
 nix-ci:
 - name: all
 
-nix-dependencies:
-- coquelicot
-
 synopsis: >-
   An analysis library for mathematical components
 description: |-
