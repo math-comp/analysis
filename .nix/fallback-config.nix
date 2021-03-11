@@ -27,7 +27,7 @@
   ## No need to list Coq, it is already included.
   ## These dependencies will systematically be added to the currently
   ## known dependencies, if any more than Coq.
-  ## /!\ Remove this field as soon as the packaged is available on nixpkgs.
+  ## /!\ Remove this field as soon as the package is available on nixpkgs.
   ## /!\ Manual overlays in `.nix/coq-overlays` should be preferred then.
   #buildInputs = [ ];
 
@@ -45,7 +45,7 @@
   tasks.default = {
 
   ## You can override Coq and other Coq coqPackages
-  ## throught the following attribute
+  ## through the following attribute
   # coqPackages.coq.override.version = "8.11";
 
   ## In some cases, light overrides are not available/enough
@@ -58,7 +58,7 @@
 
   ## You can override Coq and other Coq coqPackages
   ## throught the following attribute
-  ## If <ocaml-pkg> does not support lights overload,
+  ## If <ocaml-pkg> does not support lights overrides,
   ## you may use `overrideAttrs` or long overlays
   ## located in `.nix/ocaml-overlays`
   ## (there is no automation for this one)
