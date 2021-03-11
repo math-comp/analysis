@@ -5,9 +5,10 @@
   override ? {}, ocaml-override ? {}, global-override ? {},
   ci ? (!isNull ci-step),  inNixShell ? null
 }@args:
-let src = fetchGit {
+let auto = fetchGit {
   url = "https://github.com/coq-community/nix-toolbox.git";
   ref = "master";
+  rev = "4755bb40df95c6f7451d14ecb343606b5b83c115";
 }; in
-(import "${src}/auto-config.nix" ./. args).nix-auto
+(import auto ({src = ./.;} // args)).nix-auto
 
