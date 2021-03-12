@@ -3,6 +3,10 @@
 -arg -w -arg +undeclared-scope
 -arg -w -arg +non-primitive-record
 -arg -w -arg +undeclared-scope
+-arg -w -arg -deprecated-hint-without-locality
+-arg -w -arg -deprecated-grab-existentials
+-arg -w -arg -deprecated-ident-entry
+-arg -w -arg -ambiguous-paths
 
 theories/boolp.v
 theories/ereal.v
