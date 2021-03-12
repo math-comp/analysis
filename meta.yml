@@ -13,8 +13,8 @@ cachix:
 - name: math-comp
   token: CACHIX_AUTH_TOKEN
   
-nix-ci:
-- name: all
+# nix-ci:
+# - name: all
 
 synopsis: >-
   An analysis library for mathematical components
