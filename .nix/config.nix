@@ -37,8 +37,6 @@
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
-  bundles."8.11".coqPackages.coq.override.version = "8.11";
-  bundles."8.12".coqPackages.coq.override.version = "8.12";
   bundles."8.13".coqPackages.coq.override.version = "8.13";
   bundles."8.14".coqPackages.coq.override.version = "8.14";
 

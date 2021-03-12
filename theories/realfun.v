@@ -311,7 +311,7 @@ have fyab : f y \in `[f a, f b] by rewrite in_itv/= !fle// ?ltW.
 rewrite -[l <= _]gle -?[_ <= u]gle// ?fK//.
 apply: subset_itv_oo_cc; near: y; apply: near_in_itv; rewrite in_itv/= -[x]fK//.
 by rewrite !glt//= lt_minr lt_maxl !(itvP fxab) ?andbT ltr_subl_addr ltr_spaddr.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma segment_dec_surj_continuous a b f :
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
@@ -388,7 +388,7 @@ split; near=> y.
   by apply: (@segment_can_continuous (x - e) (x + e) f) => //; near: y.
 rewrite (@segment_continuous_can_sym (x - e) (x + e))//.
 by apply: subset_itv_oo_cc; near: y.
-Grab Existential Variables. all:end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma near_can_continuous f g (x : R) :
   {near x, cancel f g} -> {near x, continuous f} -> {near (f x), continuous g}.
@@ -435,7 +435,7 @@ move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
   have [ylt0|yge0] := ltrP y 0; first by rewrite ltr0_sqrtr//.
   have: `|y| < e%:num ^+ 2 by near: y; apply: nbhs0_lt.
   by rewrite -ltr_sqrt// ger0_norm// sqrtr_sqr ger0_norm.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 End real_inverse_function_instances.
 
@@ -473,7 +473,7 @@ near=> y.
 rewrite /= fxE /= addrK [_%:A]mulr1.
 suff yNZ : y != 0 by rewrite [RHS]mulrC mulfK.
 by near: y; rewrite near_withinE /= near_simpl; near=> x1.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma is_derive_0_is_cst (f : R -> R) x y :
   (forall x, is_derive x 1 f 0) -> f x = f y.
@@ -534,7 +534,7 @@ rewrite /g1; case: eqP => [_|/eqP x1Dfx]; first by rewrite subrr normr0.
 have -> : y - f x  = h (g y) * (g y - x) by rewrite -fE fgyE.
 rewrite gfxE invfM mulrC divfK ?subrr ?normr0 // subr_eq0.
 by apply: contra x1Dfx => /eqP<-; apply/eqP.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 End is_derive_inverse.
 

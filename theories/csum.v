@@ -161,7 +161,7 @@ apply: lee_sum_nneg_subfset => [x xF|t].
   by exists (widen_ord nm j') => //=; rewrite !inE.
 rewrite inE /= => /andP[tF /imfsetP[/= i /imfsetP[i' /=]]].
 by rewrite !inE /= => Pi' ->{i} -> _; apply a0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma ereal_pseries_csum (R : realType) (a : nat -> \bar R) (P : pred nat) :
   (forall n, P n -> 0 <= a n) ->

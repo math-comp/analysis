@@ -289,7 +289,7 @@ apply: (@lim_cvg_to_0_linear _
   rewrite normrM -!mulrA ler_wpmul2l //.
   rewrite (le_trans (pseries_diffs_P3 _ _ (ltW xLr) _))// ?mulrA -?normr_gt0//.
   by rewrite (le_trans (ler_norm_add _ _))// -(subrK `|x| r) ler_add2r ltW.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 End PseriesDiff.
 
@@ -303,7 +303,7 @@ apply: lim_near_cst => //.
 near=> m; rewrite -[m]prednK; last by near: m.
 rewrite -addn1 series_addn series_exp_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /exp_coeff /= expr0n mul0r.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma expR_ge1Dx x : 0 <= x -> 1 + x <= expR x.
 Proof.
@@ -319,7 +319,7 @@ apply: ler_lim; first by apply: is_cvg_near_cst; near=> n; apply: F; near: n.
 by near=> n; apply: ler_sum => [] [|[|i]] _;
   rewrite /f /exp_coeff /= !(mulr0n, mulr1n, expr0, expr1, divr1, addr0, add0r)
           // exp_coeff_ge0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma exp_coeffE x : exp_coeff x = (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n).
 Proof. by apply/funext => i; rewrite /exp_coeff /= mulrC. Qed.
@@ -561,7 +561,7 @@ Proof.
 move=> x_gt0; rewrite -[x]lnK//.
 apply: nbhs_singleton (near_can_continuous _ _); near=> z; first exact: expK.
 by apply: continuous_expR.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Global Instance is_derive1_ln (x : R) : 0 < x -> is_derive x 1 ln x^-1.
 Proof.
@@ -569,7 +569,7 @@ move=> x_gt0; rewrite -[x]lnK//.
 apply: (@is_derive_inverse R expR); first by near=> z; apply: expK.
   by near=>z; apply: continuous_expR.
 by rewrite lnK // lt0r_neq0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 End Ln.
 

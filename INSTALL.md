@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- [The Coq Proof Assistant version ≥ 8.11](https://coq.inria.fr)
+- [The Coq Proof Assistant version ≥ 8.12](https://coq.inria.fr)
 - [Mathematical Components version ≥ 1.12.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 1.5.1](https://github.com/math-comp/finmap)
 - [Hierarchy builder version >= 0.10.0](https://github.com/math-comp/hierarchy-builder)

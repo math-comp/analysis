@@ -81,7 +81,7 @@ rewrite /ball /= [in X in `|_ - X|]/series [in X in `|_ - X|]/= -big_nat_mul.
 have /nl : (n <= m * k)%N.
   by near: m; exists n.+1 => //= p /ltnW /leq_trans /(_ (leq_pmulr _ k0)).
 by rewrite /ball /= distrC.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma lt_sum_lim_series (R : realFieldType) (f : R ^nat) n : cvg (series f) ->
   (forall d, 0 < f (n + d.*2)%N + f (n + d.*2.+1)%N) ->
@@ -201,7 +201,7 @@ Proof.
 apply: lim_near_cst => //; near=> m; rewrite -[m]prednK; last by near: m.
 rewrite -addn1 series_addn series_sin_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /sin_coeff /= expr0n !(mulr0, mul0r).
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Definition cos_coeff x :=
   [sequence (~~ odd n)%:R * (-1)^n./2 * x ^+ n / n`!%:R]_n.
@@ -292,7 +292,7 @@ Proof.
 apply: lim_near_cst => //; near=> m; rewrite -[m]prednK; last by near: m.
 rewrite -addn1 series_addn series_cos_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /cos_coeff /= expr0n !(mulr0, mul0r).
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Global Instance is_derive_sin x : is_derive x 1 sin (cos x).
 Proof.
@@ -942,7 +942,7 @@ have /near_in_itv aI : acos x \in `]0, pi[.
 near=> z; apply: cosK.
 suff /itvP zI : z \in `]0, pi[ by have : 0 <= z <= pi by rewrite ltW ?zI.
 by near: z.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma is_derive1_acos (x : R) :
   -1 < x < 1 -> is_derive x 1 acos (- (Num.sqrt (1 - x ^+ 2))^-1).
@@ -960,7 +960,7 @@ apply: (@is_derive_inverse R cos).
 - rewrite oppr_eq0 sin_acos ?ltW // sqrtr_eq0 // -ltNge subr_gt0.
   rewrite -real_normK ?qualifE; last by case: ltrgt0P.
   by rewrite exprn_cp1 // ltr_norml x_gtN1.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 End Acos.
 
@@ -1041,7 +1041,7 @@ near=> z; apply: sinK.
 suff /itvP zI : z \in `](-(pi/2)), (pi/2)[.
   by have : - (pi / 2) <= z <= pi / 2 by rewrite ltW ?zI.
 by near: z.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma is_derive1_asin (x : R) :
   -1 < x < 1 -> is_derive x 1 asin ((Num.sqrt (1 - x ^+ 2))^-1).
@@ -1060,7 +1060,7 @@ apply: (@is_derive_inverse R sin).
 - rewrite cos_asin ?ltW // sqrtr_eq0 // -ltNge subr_gt0.
   rewrite -real_normK ?qualifE; last by case: ltrgt0P.
   by rewrite exprn_cp1 // ltr_norml x_gtN1.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 End Asin.
 
@@ -1130,7 +1130,7 @@ have /near_in_itv aI : atan x \in `](-(pi / 2)), (pi / 2)[.
 apply: nbhs_singleton (near_can_continuous _ _); last first.
   by near=> z; apply/continuous_tan/lt0r_neq0/cos_gt0_pihalf; near: z.
 by near=> z; apply: tanK; near: z.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma cos_atan x : cos (atan x) = (Num.sqrt (1 + x ^+ 2)) ^-1.
 Proof.
@@ -1157,7 +1157,6 @@ apply: (@is_derive_inverse R tan).
 - by near=> z; apply/continuous_tan/lt0r_neq0/cos_gt0_pihalf; near: z.
 - by rewrite -[X in 1 + X ^+ 2]atanK -cos2_tan2 //; exact: is_derive_tan.
 by apply/lt0r_neq0/(@lt_le_trans _ _ 1) => //; rewrite ler_addl sqr_ge0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 End Atan.
-

@@ -950,7 +950,7 @@ suff : \bigcup_n B n = X.
 transitivity (\big[setU/set0]_(i < 2) B i).
   by rewrite (bigcup_splitn 2) // -bigcup_mkord setUidl// => t -[].
 by rewrite 2!big_ord_recl big_ord0 setU0 /= -setIUr setUCr setIT.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Definition caratheodory_measurable (R : realType) (T : Type)
   (mu : {outer_measure set T -> \bar R}) (A : set T) := forall X,
@@ -1253,7 +1253,7 @@ rewrite (_ : (fun n => _) = EFin \o
 apply: cvg_comp; last apply cvg_refl.
 have := cvg_geometric_series_half e%:nngnum O.
 by rewrite expr0 divr1; apply: cvg_trans.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Section measurable_cover.
 Variable T : ringOfSetsType.
@@ -1287,14 +1287,14 @@ Proof.
 apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite ereal_lim_ge //=.
   by apply: is_cvg_ereal_nneg_series => // n _; exact: measure_ge0.
 by near=> n; rewrite sume_ge0 // => i _; apply: measure_ge0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma mu_ext0 : mu_ext set0 = 0.
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split; last exact/mu_ext_ge0.
 rewrite /mu_ext; apply ereal_inf_lb; exists (fun _ => set0); first by split.
 by apply: (@lim_near_cst _ _ _ _ _ 0) => //; near=> n => /=; rewrite big1.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma measurable_uncurry (G : ((set T)^nat)^nat) (x : nat * nat) :
   measurable (G x.1 x.2) -> measurable (uncurry G x).
@@ -1373,7 +1373,7 @@ apply lee_lim.
 - by apply: is_cvg_ereal_nneg_series => n _; apply: adde_ge0 => //;
     [exact: mu_ext_ge0 | rewrite lee_fin // divr_ge0].
 - by near=> n; apply: lee_sum => i _; exact: (PG i).2.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 End measure_extension.
 
