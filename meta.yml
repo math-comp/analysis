@@ -8,6 +8,10 @@ action: true
 coqdoc: false
 
 nix: true
+nix_name: mathcomp-analysis
+nix-default:
+  ref: master
+
 cachix:
 - name: coq
 - name: math-comp
