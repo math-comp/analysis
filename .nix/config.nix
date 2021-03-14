@@ -47,7 +47,7 @@
       coqPackages."real-closed".override.version = "1.1";
       coqPackages."finmap".override.version = "1.5";
       coqPackages."hierarchy-builder".override.version = "1.0.0";
-      coqPackages."coq-elpi".override.version = "1.8.1";
+      coqPackages."coq-elpi".override.version = "1.9.3";
   };
   tasks."coq-8.12" = {
       coqPackages."coq".override.version = "8.11";
