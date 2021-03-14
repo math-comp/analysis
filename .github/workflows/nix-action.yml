@@ -44,10 +44,10 @@ jobs:
   main:
     runs-on: ubuntu-latest
     needs:
-      - setup
-      - dependencies
+    - setup
+    - dependencies
     strategy:
-      matrix: ${{fromJson(needs.dependencies.outputs.matrix)}}
+      matrix: ${{fromJson(needs.setup.outputs.matrix)}}
     steps:
     - name: Cachix install
       uses: cachix/install-nix-action@v12
@@ -76,9 +76,9 @@ jobs:
   dependencies:
     runs-on: ubuntu-latest
     needs:
-      - setup
+    - setup
     strategy:
-      matrix: ${{fromJson(needs.dependencies.outputs.matrix)}}
+      matrix: ${{fromJson(needs.setup.outputs.matrix)}}
     steps:
     - name: Cachix install
       uses: cachix/install-nix-action@v12
