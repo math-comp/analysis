@@ -42,7 +42,7 @@ nix-tasks:
     - name: hierarchy-builder
       version: 1.0.0
     - name: coq-elpi
-      version: 1.8.1
+      version: 1.9.3
 - task: coq-8.12
   packages:
     - name: coq
