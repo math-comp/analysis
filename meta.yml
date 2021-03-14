@@ -13,10 +13,44 @@ cachix:
 - name: math-comp
   token: CACHIX_AUTH_TOKEN
   
-nix-ci:
+nix-jobs:
+- job: dependencies
 - job: main
   needs: [ dependencies ]
-- job: dependencies
+- job: all
+  needs: [ main ]
+
+nix-default-task: coq-8.13
+nix-tasks:
+- task: coq-8.13
+  packages:
+    - name: coq
+      version: 8.13
+    - name: mathcomp
+      version: 1.12.0
+    - name: real-closed
+      version: 1.1
+    - name: finmap
+      version: 1.5
+    - name: hierarchy-builder
+      version: 1.0.0
+    - name: coq-elpi
+      version: 1.8.1
+- task: coq-8.12
+  packages:
+    - name: coq
+      version: 8.11
+    - name: mathcomp
+      version: 1.12.0
+- task: coq-8.11+multinomials
+  packages:
+    - name: coq
+      version: 8.11
+    - name: mathcomp
+      version: 1.12.0
+    - name: multinomials
+      ci-job: all
+      version: 1.5.4
 
 synopsis: >-
   An analysis library for mathematical components
