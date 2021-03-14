@@ -16,13 +16,16 @@ cachix:
 - name: coq
 - name: math-comp
   token: CACHIX_AUTH_TOKEN
-  
+
 nix-jobs:
 - job: dependencies
 - job: main
-  needs: [ dependencies ]
+  needs:
+    - dependencies
 - job: all
-  needs: [ main ]
+  needs:
+    - dependencies
+    - main
 
 nix-default-task: coq-8.13
 nix-tasks:
@@ -153,7 +156,7 @@ keywords:
 publications:
 - pub_url: https://jfr.unibo.it/article/view/8124
   pub_title:  Formalization Techniques for Asymptotic Reasoning in Classical Analysis
-  pub_doi: 10.6092/issn.1972-5787/8124 
+  pub_doi: 10.6092/issn.1972-5787/8124
 - pub_url: https://hal.inria.fr/hal-02463336
   pub_title: Competing inheritance paths in dependent type theory---a case study in functional analysis
   pub_doi: 10.1007/978-3-030-51054-1_1
@@ -162,7 +165,7 @@ publications:
 
 documentation: |-
   ## Disclaimer
- 
+
   This library is still at an experimental stage.  Contents may
   change, definitions and theorems may be renamed, and inference
   mechanisms may be replaced at any major version bump.  Use at your
@@ -174,7 +177,7 @@ documentation: |-
 
   Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
   [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
-  
+
   Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
 
   Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
