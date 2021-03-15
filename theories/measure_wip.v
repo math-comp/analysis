@@ -2949,6 +2949,13 @@ apply nonempty_sorted_disjoint_itv_trivIset.
 - by have [] := decomposition_of_Decompose a.
 Qed.
 
+Lemma Decompose_nontempy (s : seq (interval R)) :
+  all (fun x => set_of_itv x != set0) (Decompose s).
+Proof.
+rewrite /Decompose; apply/decompose_nonempty.
+by rewrite all_sort; apply/allP => i; rewrite mem_filter => /andP[].
+Qed.
+
 End decomposition.
 
 Module ITVS.
@@ -4365,7 +4372,7 @@ Lemma length_sigma_additive_on_intervals_finite_case (i : interval R) (j : nat -
 Proof.
 move=> ij tj i_finite.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  have H3 : set_of_itv i = \bigcup_(k in (fun x : nat => set_of_itv (j x) != set0)) set_of_itv (j k).
+  have H3 : set_of_itv i = \bigcup_(k in (fun x => set_of_itv (j x) != set0)) set_of_itv (j k).
     rewrite ij; apply/predeqP => r; split => [[x _ jxr]|[x]].
       exists x => //.
       apply/set0P.
@@ -4544,6 +4551,105 @@ have [_ _] := decomposition_of_Decompose s.
 by rewrite /ufint => <-; rewrite -bigcup_mkset => -[j' sj' j'r]; exists j'.
 Qed.
 
+Section reindexing.
+Variable s : nat -> seq (interval R).
+Hypothesis s0 : forall n, size (s n) != O.
+
+(* no condition *)
+Fixpoint idx2 (b p : nat) : nat * nat :=
+  if p isn't p'.+1 then (b, O) else
+    if (p'.+1 < size (s b))%N then (b, p'.+1) else
+      idx2 b.+1 (p' - (size (s b)).-1)%N.
+
+Lemma idx2E b p : idx2 b p =
+ if (p < size (s b))%N then (b, p) else idx2 b.+1 (p - size (s b))%N.
+Proof.
+case: p b => [|p] b /=; first by rewrite lt0n s0.
+case: ifPn => //; rewrite -leqNgt => sbp1.
+by rewrite -{2}(@prednK (size (s b))) // lt0n.
+Qed.
+
+(* p < size (s b) *)
+Definition idx1 (b p : nat) := (\sum_(x < b) size (s x) + p)%N.
+
+Lemma idx12 (b p : nat) : (p < size (s b))%N -> uncurry idx1 (idx2 b p) = idx1 b p.
+Proof.
+elim: b p => [p s0p|b ih p psb1].
+  by rewrite idx2E s0p.
+by rewrite idx2E psb1.
+Qed.
+
+Lemma idx21 (n p k : nat) : (p < size (s (n + k)))%N -> idx2 k (idx1 (n + k) p - \sum_(i < k) size (s i)) = (n + k, p)%N.
+Proof.
+elim: n p k => [p k ps0|n ih p k psn1].
+  by rewrite add0n {1}/idx1 (addnC _ p) addnK idx2E ps0.
+rewrite idx2E ifF; last first.
+  apply/negbTE.
+  rewrite -leqNgt /idx1 (addnC _ p) (addnC _ k).
+  rewrite -(big_mkord xpredT (fun x => size (s x))) /index_iota subn0 iotaD big_cat -{2}(subn0 k) big_mkord add0n.
+  rewrite [n.+1]lock /= -lock (addnC (\sum_(i < k) size (s i))%N) addnA addnK.
+  by rewrite /= big_cons addnCA leq_addr.
+rewrite {1}addSnnS.
+rewrite (_ : _ - _ = idx1 (n + k.+1) p - \sum_(i < k.+1) size (s i))%N; last first.
+  by rewrite big_ord_recr /= subnDA.
+by rewrite ih ?addSnnS // -addSnnS.
+Qed.
+
+Definition nth_idx2 (n : nat) : interval R :=
+  let: (b, k) := idx2 O n in nth 0%O (s b) k.
+
+Lemma nth_nth_idx2 (n p : nat) : (p < size (s n))%N -> nth 0%O (s n) p = nth_idx2 (idx1 n p).
+Proof.
+move=> psn.
+rewrite /nth_idx2 (_ : idx2 _ _ = (n, p)) //.
+by move: (@idx21 n p O); rewrite addn0 big_ord0 subn0 => ->.
+Qed.
+
+Lemma map_nth_idx2 (n : nat) : s n = [seq nth_idx2 (idx1 n i) | i <- iota 0 (size (s n))].
+Proof.
+apply (@eq_from_nth _ 0%O).
+  by rewrite size_map size_iota.
+move=> i isn; by rewrite (nth_map 0%O) ?size_iota // nth_nth_idx2 // /nth_idx2 nth_iota.
+Qed.
+
+Lemma flatten_nth_idx2 n k : flatten [seq s i | i <- iota k n] =
+  [seq nth_idx2 i | i <- iota (idx1 k 0) (\sum_(x < (k + n)) size (s x) - \sum_(x < k) size (s x))].
+Proof.
+have [m nm] := ubnP n; elim: m => // m ih in n k nm *.
+destruct n as [|n].
+  by rewrite /= addn0 subnn.
+rewrite /= ih //.
+rewrite map_nth_idx2 map_comp -map_cat; congr map.
+rewrite -iotaDl -/(idx1 _ _) {2}/idx1 big_ord_recr /= addnAC -/(idx1 _ _) -iotaD; congr iota.
+rewrite addnC addSnnS subnDA subnK //.
+have lem : forall a b, (\sum_(i < a) size (s i) <= \sum_(x < a + b) size (s x))%N.
+  move=> a b.
+  rewrite -[X in (_ <= X)%N](big_mkord xpredT (fun x => size (s x))) /index_iota subn0 iotaD big_cat.
+  by rewrite -[in X in (_ <= X)%N](subn0 a) -/(index_iota _ _) big_mkord leq_addr.
+rewrite leq_subRL.
+  by rewrite -(big_ord_recr k (fun i => size (s i))) /= -addSnnS lem.
+by rewrite lem.
+Qed.
+
+Lemma flatten_prefix n : exists u, flatten [seq s i | i <- iota 0 n] = [seq nth_idx2 i | i <- iota 0 n] ++ u.
+Proof.
+exists [seq nth_idx2 i | i <- iota n (idx1 n O - n)].
+rewrite -map_cat -iotaD /idx1 addn0 (addnC n) subnK; last first.
+  rewrite -{1}(muln1 n) -{1}(subn0 n) -sum_nat_const_nat big_mkord leq_sum // => a _.
+  by rewrite lt0n.
+by rewrite flatten_nth_idx2 big_ord0 subn0 add0n /idx1 big_ord0 /= addn0.
+Qed.
+
+End reindexing.
+
+Lemma trivIset_subsequence (s : nat -> set R) (e : nat -> nat) : injective e ->
+  trivIset setT s -> trivIset setT (s \o e).
+Proof.
+move=> ie /trivIsetP H; apply/trivIsetP => a b _ _ ab /=.
+apply H => //.
+by apply: contra ab => /eqP ab; apply/eqP/ie.
+Qed.
+
 Lemma length_semi_sigma_additive :
   semi_sigma_additive (length : set (itvs_ringOfSetsType R) -> {ereal R}).
 Proof.
@@ -4556,7 +4662,9 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
   near=> n.
   exact: length_semi_sigma_additive_helper.
 have [seq_of Sseq_of] : {seq_of : nat -> seq (interval R) & forall k, S k = ufint (seq_of k)}.
-  by apply: (@choice _ _ (fun k s => S k = ufint s)) => k; have [x ?] := mS k; exists x.
+  apply: (@choice _ _ (fun k s => S k = ufint s)) => k.
+  have [x Hx] := mS k.
+  by exists x.
 pose dec_of (i : nat) := Decompose (seq_of i).
 have H1 : forall i : interval R,
   set_of_itv i `<=` \bigcup_k (S k) ->
@@ -4569,25 +4677,111 @@ have H1 : forall i : interval R,
       \big[setU/set0]_(x <- i_inter_S n) (set_of_itv x).
     move=> n; rewrite big_map.
     have [_ _] := decomposition_of_Decompose (seq_of n).
-    rewrite {1}/ufint -/(dec_of n) -Sseq_of => <-.
-    by rewrite big_distrr /=; apply eq_bigr => j _; rewrite itv_meetE.
+    rewrite {1}/ufint -/(dec_of n) -((Sseq_of _)) => <-.
+    rewrite big_distrr /=.
+    by apply eq_bigr => I I0; rewrite itv_meetE.
   have i_i_inter_S : set_of_itv i `<=`
       \bigcup_k (\big[setU/set0]_(x <- i_inter_S k) (set_of_itv x)).
     move/subset_trans : iiS; apply => r [k _].
-    rewrite Sseq_of /ufint big_distrr /= => H2.
+    rewrite ((Sseq_of _)) /ufint big_distrr /= => H2.
     exists k => //; rewrite /i_inter_S big_map.
     under eq_bigr do rewrite itv_meetE.
     move: H2; rewrite -bigcup_mkset => -[/= j jk [ij jr]].
     have [j' [j'k j'r]] := mem_Decompose jk jr.
-    by rewrite -bigcup_mkset; exists j'.
+    by rewrite -bigcup_mkset; exists j' => //.
   rewrite (_ : (fun n : nat => _) = (fun n : nat => \sum_(k < n) (\sum_(x <- i_inter_S k) length (set_of_itv x))%E)%E); last first.
     rewrite funeqE => n; apply eq_bigr => k _.
     rewrite H1 (big_nth 0%O) big_mkord (@length_additive (fun n => set_of_itv (nth 0%O (i_inter_S k) n))); last 2 first.
       by move=> m; apply ITVS.itvs_ringOfSets_set_itv.
-      exact/trivIset_itv_meet/trivIset_Decompose.
+      apply/trivIset_itv_meet.
+      by apply/trivIset_Decompose.
     apply/esym.
     by rewrite (big_nth 0%O) big_mkord.
-  admit. (* TODO: length_sub_sigma_additive_on_intervals *)
+  pose i_inter_S' := fun n => if size (i_inter_S n) == O then [:: 0%O] else i_inter_S n.
+  have ? : forall n, size (i_inter_S' n) != O.
+    move=> n.
+    rewrite /i_inter_S'.
+    by case: ifPn => //.
+  have Kj : \bigcup_k \big[setU/set0]_(x <- i_inter_S' k) set_of_itv x =
+            \bigcup_k set_of_itv (nth_idx2 i_inter_S' k).
+      rewrite eqEsubset; split => r.
+      move=> -[n Hn]; rewrite -bigcup_mkset => -[/= I].
+      move=> /(nthP 0%O)[p pn <-{I}] /set_of_itv_mem rnp.
+      exists (idx1 i_inter_S' n p) => //.
+      apply/set_of_itv_mem.
+      by rewrite -nth_nth_idx2.
+    move=> [n _ /set_of_itv_mem]; rewrite /nth_idx2.
+    move Hx : (idx2 _ _ _) => x.
+    destruct x as [x1 x2] => rx2.
+    exists x1 => //.
+    rewrite -bigcup_mkset.
+    exists (nth 0%O (i_inter_S' x1) x2); last by apply/set_of_itv_mem.
+    rewrite /mkset; apply/(nthP 0%O); exists x2 => //.
+    rewrite ltnNge.
+    apply: contraPN rx2 => /(nth_default 0%O) ->.
+    by rewrite in_itv /=.
+  have Hj : (lim (fun n => (\sum_(k < n) (length (set_of_itv (nth_idx2 i_inter_S' k))))%E)
+            <= lim (fun n => (\sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E)%E))%E.
+      apply: lee_lim.
+      apply: (@is_cvg_ereal_nneg_series _ (fun k => length (set_of_itv (nth_idx2 i_inter_S' k))) xpredT) => n _.
+      apply length_ge0.
+      exact: ITVS.itvs_ringOfSets_set_itv.
+      apply: (@is_cvg_ereal_nneg_series _ (fun k => (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E) xpredT) => n _.
+      apply sume_ge0 => I _.
+      apply length_ge0.
+      exact: ITVS.itvs_ringOfSets_set_itv.
+    near=> n.
+    have -> : (\sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E =
+           \sum_(k <- flatten (map i_inter_S' (iota 0 n))) length (set_of_itv k))%E.
+      rewrite big_flatten /=.
+      rewrite big_map.
+      rewrite -[in RHS](subn0 n).
+      rewrite -/(index_iota _ _).
+      by rewrite big_mkord.
+    have -> : (\sum_(k < n) length (set_of_itv (nth_idx2 i_inter_S' k)) =
+              \sum_(k <- map (nth_idx2 i_inter_S') (iota 0n)) length (set_of_itv k))%E.
+      rewrite big_map.
+      rewrite -[in RHS](subn0 n).
+      rewrite -/(index_iota _ _).
+      by rewrite big_mkord.
+    have [s ->] : exists s, flatten [seq i_inter_S' i | i <- iota 0 n] = [seq nth_idx2 i_inter_S' i | i <- iota 0 n] ++ s.
+      by apply: flatten_prefix.
+    rewrite big_cat /= lee_addl //.
+    apply: sume_ge0 => I _.
+    apply: length_ge0.
+    exact: ITVS.itvs_ringOfSets_set_itv.
+  rewrite (_ : (fun n : nat => \sum_(k < n) (\sum_(x <- i_inter_S k) length (set_of_itv x))%E)%E =
+               (fun n : nat => \sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E)%E)%E; last first.
+    rewrite funeqE => n.
+    apply eq_bigr => j _.
+    rewrite /i_inter_S'.
+    case: ifPn => [|//].
+    rewrite size_eq0 => /eqP ->.
+    by rewrite big_seq1 big_nil set_of_itvE length_set0.
+  rewrite (le_trans _ Hj) //.
+  have L1 : (\bigcup_k \big[setU/set0]_(x <- i_inter_S k) set_of_itv x = \bigcup_k \big[setU/set0]_(x <- i_inter_S' k) set_of_itv x).
+    congr bigsetU.
+    rewrite funeqE => j.
+    rewrite /i_inter_S'.
+    case: ifPn => [|//].
+    rewrite size_eq0 => /eqP ->.
+    by rewrite big_seq1 big_nil set_of_itvE.
+  rewrite L1 in i_i_inter_S.
+  rewrite Kj in i_i_inter_S.
+
+  rewrite (_ : (fun n : nat => \sum_(k < n) length (set_of_itv (nth_idx2 i_inter_S' k)))%E =
+               (fun n : nat => \sum_(k < n | set_of_itv (nth_idx2 i_inter_S' k) != set0) length (set_of_itv (nth_idx2 i_inter_S' k)))%E); last first.
+    rewrite funeqE => n.
+    rewrite (bigID (fun k : 'I_n => set_of_itv (nth_idx2 i_inter_S' (nat_of_ord k)) == set0)) /=.
+    rewrite big1 ?add0e // => j /eqP ->.
+    by rewrite length_set0.
+  have := lee_pinfty (hlength (\bigcup_(k in (fun x => set_of_itv (nth_idx2 i_inter_S' x) != set0)) set_of_itv (nth_idx2 i_inter_S' k))).
+  rewrite le_eqVlt => /orP[/eqP Uoo|?].
+    admit.
+  apply: (@length_sub_sigma_additive_on_intervals i (nth_idx2 i_inter_S') (fun k => set_of_itv (nth_idx2 i_inter_S' k) != set0)) => //.
+  apply: (subset_trans i_i_inter_S) => r [k _ kr].
+  exists k => //.
+  by apply/set0P; exists r.
 have [I [SI tI]] : exists I : seq (interval R),
   \bigcup_k (S k) = ufint I /\
   trivIset setT (fun i => set_of_itv (nth 0%O I i)).
