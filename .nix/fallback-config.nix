@@ -42,7 +42,7 @@
   tasks."default" = {};
 
   ## write one `tasks.name` attribute set per
-  ## alternative configuration, the can be used to
+  ## alternative configuration, they can be used to
   ## compute several ci jobs as well
   tasks.default = {
 

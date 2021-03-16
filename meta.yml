@@ -10,7 +10,7 @@ coqdoc: false
 nix: true
 nix_name: mathcomp-analysis
 nix-default:
-  ref: master
+  ref: renaming-ci
 
 cachix:
 - name: coq

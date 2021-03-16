@@ -16,8 +16,8 @@ jobs:
     outputs:
       task: ${{ steps.set-matrix.outputs.task }}
     steps:
-    - name: Doing nothing
-      run: echo "starting CI"
+    - name: Do nothing
+      run: echo "No setup, using meta.yml tasks"
     - name: Cachix install
       uses: cachix/install-nix-action@v12
       with:
@@ -71,7 +71,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Building/fetching current CI target
-      run: nix-build --no-out-link --argstr ci "${{ matrix.task }}" --argstr ci-job dependencies
+      run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job dependencies
 
   main:
     runs-on: ubuntu-latest
@@ -102,9 +102,9 @@ jobs:
       with:
         fetch-depth: 0
     - name: Building/fetching previous target dependencies
-      run: nix-build --no-out-link --argstr ci "${{ matrix.task }}" --argstr ci-job dependencies
+      run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job dependencies
     - name: Building/fetching current CI target
-      run: nix-build --no-out-link --argstr ci "${{ matrix.task }}" --argstr ci-job main
+      run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job main
 
   all:
     runs-on: ubuntu-latest
@@ -135,6 +135,6 @@ jobs:
       with:
         fetch-depth: 0
     - name: Building/fetching previous target main
-      run: nix-build --no-out-link --argstr ci "${{ matrix.task }}" --argstr ci-job main
+      run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job main
     - name: Building/fetching current CI target
-      run: nix-build --no-out-link --argstr ci "${{ matrix.task }}" --argstr ci-job all
+      run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job all
