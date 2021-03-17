@@ -50,13 +50,11 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.13'
   repo: 'mathcomp/mathcomp'
-- version: '1.12.0-coq-dev'
-  repo: 'mathcomp/mathcomp'
 - version: 'coq-8.11'
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-8.12'
   repo: 'mathcomp/mathcomp-dev'
-- version: 'coq-dev'
+- version: 'coq-8.13'
   repo: 'mathcomp/mathcomp-dev'
 
 dependencies:
