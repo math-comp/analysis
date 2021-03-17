@@ -19,12 +19,13 @@ cachix:
 
 nix-jobs:
 - job: "!"
-- job: main
+  name: dependencies
+- job: mathcomp-analysis
   needs:
-    - "!"
+    - dependencies
 - job: "**"
   needs:
-    - "!"
+    - dependencies
     - mathcomp-analysis
 
 nix-default-task: coq-8.13
