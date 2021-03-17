@@ -10,7 +10,7 @@ in
   format = "1.0.0";
   attribute = "mathcomp-analysis";
   pname = "analysis";
-  select = "mc-1.12-coq-8.13";
+  default-task = "mc-1.12-coq-8.13";
   tasks."mc-1.12-coq-8.13".coqPackages = {
     coq.override.version = "8.13"; } // mc-1-12;
   tasks."mc-1.12-coq-8.12".coqPackages = {
