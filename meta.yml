@@ -9,7 +9,7 @@ coqdoc: false
 
 nix: true
 nix-default:
-  ref: simpler-ci-jobs
+  ref: simplify_allJobs
 
 cachix:
 - name: coq
