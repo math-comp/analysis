@@ -38,7 +38,7 @@
   ## Select a task to build by default in the following `tasks` set
   ## It will be used when typing nix-shell or nix-build without argument
   ## defaults to "default"
-  select = "coq-8.13";
+  default-task = "coq-8.13";
   tasks."coq-8.13" = {};
 
   tasks."coq-8.13" = {
