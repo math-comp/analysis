@@ -86,7 +86,7 @@ jobs:
     - name: Building/fetching current CI target
       run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job "mathcomp-analysis"
 
-  "_inTask":
+  "_allJobs":
     runs-on: ubuntu-latest
     needs:
       - setup
@@ -123,4 +123,4 @@ jobs:
     - name: Building/fetching previous target mathcomp-analysis
       run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job "mathcomp-analysis"
     - name: Building/fetching current CI target
-      run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job "_inTask"
+      run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job "_allJobs"

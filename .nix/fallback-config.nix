@@ -44,8 +44,8 @@
   tasks."coq-8.13" = {
       coqPackages."coq".override.version = "8.13";
       coqPackages."mathcomp".override.version = "1.12.0";
-      coqPackages."real-closed".override.version = "1.1";
-      coqPackages."finmap".override.version = "1.5";
+      coqPackages."mathcomp-real-closed".override.version = "1.1";
+      coqPackages."mathcomp-finmap".override.version = "1.5";
       coqPackages."hierarchy-builder".override.version = "1.0.0";
       coqPackages."coq-elpi".override.version = "1.9.3";
   };
