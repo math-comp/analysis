@@ -13,11 +13,11 @@
 
   ## The attribute to build, either from nixpkgs
   ## of from the overlays located in `.nix/coq-overlays`
-  coq-attribute = "mathcomp-analysis";
+  attribute = "mathcomp-analysis";
 
   ## If you want to select a different attribute
   ## to serve as a basis for nix-shell edit this
-  # coq-shell-attribute = "mathcomp-analysis";
+  # shell-attribute = "mathcomp-analysis";
 
   ## Maybe the shortname of the library is different from
   ## the name of the nixpkgs attribute, if so, set it here:
@@ -38,7 +38,7 @@
   ## Select a task to build by default in the following `tasks` set
   ## It will be used when typing nix-shell or nix-build without argument
   ## defaults to "default"
-  select = "coq-8.13";
+  default-task = "coq-8.13";
   tasks."coq-8.13" = {};
 
   tasks."coq-8.13" = {

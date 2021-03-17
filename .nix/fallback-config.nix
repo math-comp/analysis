@@ -38,7 +38,7 @@
   ## Select a task to build by default in the following `tasks` set
   ## It will be used when typing nix-shell or nix-build without argument
   ## defaults to "default"
-  select = "default";
+  default-task = "default";
   tasks."default" = {};
 
   ## write one `tasks.name` attribute set per
