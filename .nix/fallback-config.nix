@@ -44,6 +44,7 @@
   tasks."coq-8.13" = {
       coqPackages."coq".override.version = "8.13";
       coqPackages."mathcomp".override.version = "1.12.0";
+      coqPackages."mathcomp".job = "_excluded";
       coqPackages."mathcomp-real-closed".override.version = "1.1";
       coqPackages."mathcomp-finmap".override.version = "1.5";
       coqPackages."hierarchy-builder".override.version = "1.0.0";

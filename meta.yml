@@ -10,19 +10,25 @@ coqdoc: false
 nix: true
 nix-default:
   ref: simpler-ci-jobs
+
 cachix:
 - name: coq
 - name: math-comp
   token: CACHIX_AUTH_TOKEN
+
 nix-jobs:
 - job: _deps
 - job: mathcomp-analysis
+  needs:
+    - _deps
+- job: multinomials
   needs:
     - _deps
 - job: _allJobs
   needs:
     - _deps
     - mathcomp-analysis
+
 nix-default-task: coq-8.13
 nix-tasks:
 - task: coq-8.13
@@ -31,6 +37,7 @@ nix-tasks:
       version: 8.13
     - name: mathcomp
       version: 1.12.0
+      job: _excluded
     - name: mathcomp-real-closed
       version: 1.1
     - name: mathcomp-finmap
