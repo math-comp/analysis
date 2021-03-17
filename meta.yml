@@ -27,6 +27,7 @@ nix-jobs:
 - job: _allJobs
   needs:
     - _deps
+    - multinomials
     - mathcomp-analysis
 
 nix-default-task: coq-8.13

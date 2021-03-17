@@ -127,6 +127,7 @@ jobs:
     needs:
       - setup
       - "_deps"
+      - "multinomials"
       - "mathcomp-analysis"
     strategy:
       matrix:
@@ -156,6 +157,8 @@ jobs:
         fetch-depth: 0
     - name: Building/fetching previous target _deps
       run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job "_deps"
+    - name: Building/fetching previous target multinomials
+      run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job "multinomials"
     - name: Building/fetching previous target mathcomp-analysis
       run: nix-build --no-out-link --argstr task "${{ matrix.task }}" --argstr job "mathcomp-analysis"
     - name: Building/fetching current CI target
