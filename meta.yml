@@ -18,14 +18,13 @@ cachix:
   token: CACHIX_AUTH_TOKEN
 
 nix-jobs:
-- job: "!"
-  name: dependencies
+- job: _deps
 - job: mathcomp-analysis
   needs:
-    - dependencies
-- job: "**"
+    - _deps
+- job: _inTask
   needs:
-    - dependencies
+    - _deps
     - mathcomp-analysis
 
 nix-default-task: coq-8.13
@@ -57,7 +56,6 @@ nix-tasks:
     - name: mathcomp
       version: 1.12.0
     - name: multinomials
-      ci-job: all
       version: 1.5.4
 
 synopsis: >-

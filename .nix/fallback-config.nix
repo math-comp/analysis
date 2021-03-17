@@ -57,6 +57,5 @@
       coqPackages."coq".override.version = "8.11";
       coqPackages."mathcomp".override.version = "1.12.0";
       coqPackages."multinomials".override.version = "1.5.4";
-      coqPackages."multinomials".ci.job = "all";
   };
 }
