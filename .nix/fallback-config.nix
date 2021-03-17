@@ -43,30 +43,20 @@
 
   tasks."coq-8.13" = {
       coqPackages."coq".override.version = "8.13";
-      coqPackages."coq".job = "_excluded";
       coqPackages."mathcomp".override.version = "1.12.0";
       coqPackages."mathcomp".job = "_excluded";
       coqPackages."mathcomp-real-closed".override.version = "1.1";
-      coqPackages."mathcomp-real-closed".job = "_excluded";
       coqPackages."mathcomp-finmap".override.version = "1.5";
-      coqPackages."mathcomp-finmap".job = "_excluded";
       coqPackages."hierarchy-builder".override.version = "1.0.0";
-      coqPackages."hierarchy-builder".job = "_excluded";
       coqPackages."coq-elpi".override.version = "1.9.3";
-      coqPackages."coq-elpi".job = "_excluded";
   };
   tasks."coq-8.12" = {
       coqPackages."coq".override.version = "8.12";
-      coqPackages."coq".job = "_excluded";
       coqPackages."mathcomp".override.version = "1.12.0";
-      coqPackages."mathcomp".job = "_excluded";
   };
   tasks."coq-8.11+multinomials" = {
       coqPackages."coq".override.version = "8.11";
-      coqPackages."coq".job = "_excluded";
       coqPackages."mathcomp".override.version = "1.12.0";
-      coqPackages."mathcomp".job = "_excluded";
       coqPackages."multinomials".override.version = "1.5.4";
-      coqPackages."multinomials".job = "_excluded";
   };
 }
