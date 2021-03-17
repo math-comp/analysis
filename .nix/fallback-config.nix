@@ -13,11 +13,11 @@
 
   ## The attribute to build, either from nixpkgs
   ## of from the overlays located in `.nix/coq-overlays`
-  coq-attribute = "mathcomp-analysis";
+  attribute = "mathcomp-analysis";
 
   ## If you want to select a different attribute
   ## to serve as a basis for nix-shell edit this
-  # coq-shell-attribute = "mathcomp-analysis";
+  # shell-attribute = "mathcomp-analysis";
 
   ## Maybe the shortname of the library is different from
   ## the name of the nixpkgs attribute, if so, set it here:

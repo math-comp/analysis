@@ -10,7 +10,7 @@ coqdoc: false
 nix: true
 nix_name: mathcomp-analysis
 nix-default:
-  ref: renaming-ci
+  ref: simpler-ci-jobs
 
 cachix:
 - name: coq
@@ -18,11 +18,11 @@ cachix:
   token: CACHIX_AUTH_TOKEN
   
 nix-jobs:
-- job: dependencies
-- job: main
-  needs: [ dependencies ]
-- job: all
-  needs: [ main ]
+- job: _deps
+- job: mathcomp-analysis
+  needs: [ _deps ]
+- job: _allJobs
+  needs: [ mathcomp-analysis ]
 
 # nix-default-task: coq-8.13
 # nix-tasks:

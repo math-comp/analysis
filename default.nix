@@ -8,7 +8,7 @@
 let
   auto = fetchGit {
     url = "https://github.com/coq-community/coq-nix-toolbox.git";
-    ref = "renaming-ci";
+    ref = "simpler-ci-jobs";
     rev = import ./.nix/coq-nix-toolbox.nix;
   };
 in
