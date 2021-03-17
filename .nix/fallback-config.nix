@@ -50,7 +50,7 @@
       coqPackages."coq-elpi".override.version = "1.9.3";
   };
   tasks."coq-8.12" = {
-      coqPackages."coq".override.version = "8.11";
+      coqPackages."coq".override.version = "8.12";
       coqPackages."mathcomp".override.version = "1.12.0";
   };
   tasks."coq-8.11+multinomials" = {
