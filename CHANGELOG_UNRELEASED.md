@@ -42,7 +42,7 @@
   `[normedModType R of R^o]`,`[topologicalType of R^o]`, `[pseudoMetricType R of R^o]`
 
 - `topology.v` now imports `reals`
-- `normedtype.v` now imports `vector`, `fieldext, `falgebra`,
+- `normedtype.v` now imports `vector`, `fieldext`, `falgebra`,
   `numFieldTopology.Exports`
 - `derive.v` now imports `numFieldNormedType.Exports`
 - `sequences.v` now imports `numFieldNormedType.Exports`
