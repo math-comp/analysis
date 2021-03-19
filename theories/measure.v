@@ -654,7 +654,7 @@ move/(@cvg_mu_inc _ _ mu _ mB _) : ndB => /(_ _)/cvg_lim <- //; last first.
   by rewrite -AB.
 have -> : lim (mu \o B) = ereal_sup ((mu \o B) @` setT).
   suff : nondecreasing_seq (mu \o B).
-    by move/nondecreasing_seq_ereal_cvg; apply/(@cvg_lim _ _ (mu \o B @ \oo)). (* bug *)
+    by move/nondecreasing_seq_ereal_cvg; apply/(@cvg_lim _ _ (mu \o B @ \oo)) (* bug *).
   move=> n m nm; apply: le_measure => //; try by rewrite inE; apply mB.
   exact: subset_bigsetU.
 have BA : forall m, (mu (B m) <= lim (fun n : nat => \sum_(i < n) mu (A i)))%E.
