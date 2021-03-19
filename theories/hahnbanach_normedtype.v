@@ -13,13 +13,14 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
+Import numFieldNormedType.Exports.
 
 Local Open Scope ring_scope .
 Local Open Scope classical_set_scope.
 
 Section HBGeom.
 
-Variable (R : realType) (V : normedModType R) (F : pred V) (f :  V -> R^o) (F0 : F 0).
+Variable (R : realType) (V : normedModType R) (F : pred V) (f :  V -> R) (F0 : F 0).
 Hypothesis (linF : (forall (v1 v2 : V) (l : R),
                        F v1 -> F v2 -> F (v1 + l *: v2))).
 Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 ->
@@ -31,11 +32,11 @@ Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
 
 
 (*Looked a long time for within *)
-Definition continuousR_on ( G : set V ) (g : V -> R^o) :=
+Definition continuousR_on ( G : set V ) (g : V -> R) :=
   (forall x, (g @ (within G (nbhs x))) --> g x).
 
 (*Do we need to have F x ?*)
-Definition continuousR_on_at (G : set V ) (x : V ) (g : V -> R^o)  :=
+Definition continuousR_on_at (G : set V ) (x : V ) (g : V -> R)  :=
   g @ (within G (nbhs x)) --> (g x).
 
 Lemma continuousR_scalar_on_bounded :
@@ -110,7 +111,7 @@ Notation myHB :=
 
 Theorem HB_geom_normed :
   continuousR_on_at F 0  f ->
-  exists g: {scalar V}, (continuous (g : V -> R^o)) /\ (forall x, F x -> (g x = f x)).
+  exists g: {scalar V}, (continuous (g : V -> R)) /\ (forall x, F x -> (g x = f x)).
 Proof.
  move=> H; move: (continuousR_scalar_on_bounded H) => [r [ltr0 fxrx]] {H}.
  pose p:= fun x : V => `|x|*r ;   have convp: convex p.
