@@ -4,15 +4,23 @@ From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
 From mathcomp Require Import ssralg ssrnum.
 From mathcomp Require Import finmap.
 Require Import boolp reals ereal classical_sets posnum topology.
-Require Import sequences cardinality (*TODO: essayer de faire sans*).
+Require Import sequences cardinality.
 
 (******************************************************************************)
-(*       summation of non-negative extended reals over countable sets         *)
+(*               About functions of extended real numbers (WIP)               *)
 (*                                                                            *)
-(* WIP.                                                                       *)
+(* This file provides some tools to deal with functions of extended real      *)
+(* real numbers. The contents of this file should not be considered as        *)
+(* definitive because they support on-going developments (including Lebesgue  *)
+(* integral) and will therefore undergo much revision.                        *)
 (*                                                                            *)
-(* csum I f == where I is a classical set and f a function with codomain      *)
-(*             included in the extended reals; it is 0 if I = set0 and o.w.   *)
+(*    f ^\+ == the function formed by the non-negative outputs of f (from a   *)
+(*             type to the type of extended eral numbers) and 0 otherwise     *)
+(*    f ^\+ == the function formed by the non-positive outputs of f and 0 o.w.*)
+(*  f \|_ D == the restriction of f on the domain D (and 0 o.w.)              *)
+(* csum I f == summation of non-negative extended reals over countable sets;  *)
+(*             I is a classical set and f a function with codomain included   *)
+(*             in the extended reals; it is 0 if I = set0 and o.w.            *)
 (*             sup(\sum_F a) where F is a finite set included in I            *)
 (*                                                                            *)
 (******************************************************************************)
@@ -25,7 +33,6 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* TODO: document *)
 Reserved Notation "f ^\+" (at level 1, format "f ^\+").
 Reserved Notation "f ^\-" (at level 1, format "f ^\-").
 Reserved Notation "f \|_ D" (at level 10).
@@ -47,28 +54,23 @@ Definition fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) :=
   fun x => if `[<D x>] then f x else 0%E.
 Local Notation "f \|_ D" := (fer f D).
 
-
 Lemma ferK T (R : realDomainType) (f : T -> {ereal R}) (D1 D2 : set T) :
   f \|_ D1 \|_ D2 = f \|_ (D1 `&` D2).
 Proof.
 by apply/funext=> x; rewrite /fer/= asbool_and; do 3?[case: asbool => //].
 Qed.
 
-
 Lemma mem_fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
   D x -> f \|_ D x = f x.
 Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
-
 
 Lemma memNfer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
   ~ D x -> f \|_ D x = 0%E.
 Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
 
-
 Lemma ferN0  T (R : realDomainType) (f : T -> {ereal R}) :
   f \|_ [set x | f x != 0%E] = f.
 Proof. by apply/funext => x; rewrite /fer asboolb; case: eqVneq => [->|]. Qed.
-
 
 Lemma funEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
   f = (fun x => f^\+ x - f^\- x)%E.
@@ -78,7 +80,6 @@ case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
 by case: ltgtP; rewrite /= ?sub0r ?subr0 ?oppr0 ?opprK// => ->.
 Qed.
 
-
 Lemma normfunEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
   (fun x => `|f x|)%E = (fun x => f^\+ x + f^\- x)%E.
 Proof.
@@ -87,16 +88,13 @@ case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
 by case: sgrP => //=; rewrite ?addr0 ?sub0r.
 Qed.
 
-
 Lemma funepos_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
   (forall x, 0 <= f^\+ x)%E.
 Proof. by move=> x; rewrite /funepos; case: (leP (f x)) => //= /ltW. Qed.
 
-
 Lemma funeneg_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
   (forall x, 0 <= f^\- x)%E.
 Proof. by move=> x; rewrite /funeneg; case: (leP (- f x)%E) => //= /ltW. Qed.
-
 
 Lemma funeposEgt0 T (R : realDomainType) (f : T -> {ereal R}) :
   (f^\+ = f \|_ [set x | 0 < f x])%E.
@@ -104,13 +102,11 @@ Proof.
 by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
 Qed.
 
-
 Lemma funeposEge0 T (R : realDomainType) (f : T -> {ereal R}) :
   (f^\+ = f \|_ [set x | 0 <= f x])%E.
 Proof.
 by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
 Qed.
-
 
 Lemma funenegElt0 T (R : realDomainType) (f : T -> {ereal R}) :
   (f^\- = fun x => - f \|_ [set x | f x < 0] x)%E.
@@ -120,13 +116,11 @@ case: f => //= [r||]; rewrite ?(oppr0, real0)//.
 by rewrite oppr_le0; case: leP; rewrite //= oppr0.
 Qed.
 
-
 Lemma funenegEle0 T (R : realDomainType) (f : T -> {ereal R}) :
   (f^\- = fun x => - f \|_ [set x | f x <= 0] x)%E.
 Proof.
 by rewrite funenegElt0 funeqE => x; rewrite /fer !asboolb/=; case: ltgtP => // ->.
 Qed.
-
 
 Hint Resolve funepos_ge0 funeneg_ge0 : core.
 End funpos.
@@ -148,135 +142,6 @@ move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
 rewrite not_implyE => -[[A AJj <-{x}] AS].
 by exists A; split => //; rewrite ltNge; apply/negP; rewrite subERFin -Sc.
 Qed.
-
-(*TODO: Pr to finmap in progress *)
-Section FsetPartitions.
-
-Variables T I : choiceType.
-Implicit Types (x y z : T) (A B D X : {fset T}) (P Q : {fset {fset T}}).
-Implicit Types (J : pred I) (F : I -> {fset T}).
-
-Definition fcover P := (\bigcup_(B <- P) B)%fset.
-Definition trivIfset P := (\sum_(B <- P) #|` B|)%N == #|` fcover P|.
-
-Lemma leq_card_fsetU A B :
-  ((#|` A `|` B|)%fset <= #|` A| + #|` B| ?= iff [disjoint A & B]%fset)%N.
-Proof.
-rewrite -(addn0 #|`_|) -fsetI_eq0 -cardfs_eq0 -cardfsUI eq_sym.
-by rewrite (mono_leqif (leq_add2l _)).
-Qed.
-
-Lemma leq_card_fcover P :
-  ((#|` fcover P|)%fset <= \sum_(A <- P) #|`A| ?= iff trivIfset P)%N.
-Proof.
-split; last exact: eq_sym.
-rewrite /fcover; elim/big_rec2: _ => [|A n U _ leUn]; first by rewrite cardfs0.
-by rewrite (leq_trans (leq_card_fsetU A U).1) ?leq_add2l.
-Qed.
-
-Lemma trivIfsetP P :
-  reflect {in P &, forall A B, A != B -> [disjoint A & B]%fset} (trivIfset P).
-Proof.
-have [l Pl ul] : {l | enum_fset P =i l & uniq l} by exists (enum_fset P).
-elim: l P Pl ul => [P P0 _|A e ih P PAe] /=.
-  rewrite /trivIfset /fcover.
-  have -> : P = fset0 by apply/fsetP => i; rewrite P0 !inE.
-  rewrite !big_seq_fset0 cardfs0 eqxx.
-  by left => x y; rewrite in_fset0.
-have {PAe} -> : P = [fset x | x in A :: e]%fset.
-  by apply/fsetP => i; rewrite !inE /= PAe inE.
-move=> {P} /andP[]; rewrite fset_cons => Ae ue.
-set E := [fset x | x in e]%fset; have Ee : E =i e by move=> x; rewrite !inE.
-rewrite -Ee in Ae; move: (ih _ Ee ue) => {}ih.
-rewrite /trivIfset /fcover !big_fsetU1 // eq_sym.
-have := leq_card_fcover E; rewrite -(mono_leqif (leq_add2l #|` A|)).
-move/(leqif_trans (leq_card_fsetU _ _)) => /= ->.
-have [dAcE|dAcE]/= := boolP [disjoint A & fcover E]%fset; last first.
-  right=> tI; move/negP : dAcE; apply.
-  rewrite -fsetI_eq0; apply/eqP/fsetP => t; apply/idP/idP => //; apply/negP.
-  rewrite inE => /andP[tA].
-  rewrite /fcover => /bigfcupP[/= B]; rewrite andbT => BE tB.
-  have AB : A != B by apply: contra Ae => /eqP ->.
-  move: (tI A B).
-  rewrite 2!inE eqxx /= => /(_ isT); rewrite 2!inE BE orbT => /(_ isT AB).
-  by move/disjoint_fsetI0 => /fsetP /(_ t); rewrite inE tA tB inE.
-apply: (iffP ih) => [tI B C|tI B C PB PC]; last first.
-  by apply: tI; rewrite !inE /= -Ee ?(PB,PC) orbT.
-rewrite 2!inE => /orP[/eqP->{B}|BE].
-  rewrite 2!inE => /orP[/eqP->|{tI}]; first by rewrite eqxx.
-  move: dAcE; rewrite -fsetI_eq0 => /eqP AE0 CE AC.
-  rewrite -fsetI_eq0; apply/eqP/fsetP => t; apply/idP/idP; apply/negP.
-  rewrite inE => /andP[tA tC].
-  move/fsetP : AE0 => /(_ t); rewrite !inE tA /= => /negbT/negP; apply.
-  by apply/bigfcupP; exists C => //; rewrite CE.
-rewrite 2!inE => /orP[/eqP-> BA|]; last exact: tI.
-rewrite -fsetI_eq0; apply/eqP/fsetP => t; apply/idP/idP; apply/negP.
-rewrite inE => /andP[tB tA]; move: dAcE.
-rewrite -fsetI_eq0 => /eqP/fsetP/(_ t); rewrite !inE tA /= => /negP; apply.
-by apply/bigfcupP; exists B => //; rewrite BE.
-Qed.
-
-Lemma fcover_imfset (J : {fset I}) F (P : pred I) :
-  fcover [fset F i | i in J & P i]%fset = (\bigcup_(i <- J | P i) F i)%fset.
-Proof.
-apply/fsetP=> x; apply/bigfcupP/bigfcupP => [[/= t]|[i /andP[iJ Pi xFi]]].
-  by rewrite andbT => /imfsetP[i /= Ji -> xFi]; exists i.
-exists (F i) => //; rewrite andbT; apply/imfsetP; exists i => //=.
-by rewrite inE Pi andbT.
-Qed.
-
-Section FsetBigOps.
-
-Variables (R : Type) (idx : R) (op : Monoid.com_law idx).
-Let rhs_cond P K E :=
-  (\big[op/idx]_(A <- P) \big[op/idx]_(x <- A | K x) E x)%fset.
-Let rhs P E := (\big[op/idx]_(A <- P) \big[op/idx]_(x <- A) E x)%fset.
-
-Lemma big_trivIfset P (E : T -> R) :
-  trivIfset P -> \big[op/idx]_(x <- fcover P) E x = rhs P E.
-Proof.
-rewrite /rhs /fcover => /trivIfsetP tI.
-have {tI} : {in enum_fset P &, forall A B, A != B -> [disjoint A & B]%fset}.
-  by [].
-elim: (enum_fset P) (fset_uniq P) => [_|h t ih /= /andP[ht ut] tP].
-  by rewrite !big_nil.
-rewrite !big_cons -ih //; last first.
-  by move=> x y xt yt xy; apply tP => //; rewrite !inE ?(xt,yt) orbT.
-rewrite {1}/fsetU big_imfset //= undup_cat /= big_cat !undup_id //.
-congr (op _ _).
-suff : [seq x <- h | x \notin (\bigcup_(j <- t) j)%fset] = h by move=>->.
-rewrite -[RHS]filter_predT; apply eq_in_filter => x xh.
-apply/negP/idP; apply/negP => /bigfcupP[/= A].
-rewrite andbT => At xA.
-have hA : h != A by move/negP : ht => /negP; apply: contra => /eqP ->.
-move: (tP h A).
-rewrite !inE eqxx => /(_ erefl);  rewrite At orbT => /(_ erefl hA).
-by rewrite -fsetI_eq0 => /eqP /fsetP /(_ x); rewrite !inE xh xA.
-Qed.
-
-Lemma partition_disjoint_bigfcup (f : T -> R) (F : I -> {fset T})
-  (K : {fset I}) :
-  (forall i j, i != j -> [disjoint F i & F j])%fset ->
-  \big[op/idx]_(i <- \big[fsetU/fset0]_(x <- K) (F x)) f i =
-  \big[op/idx]_(k <- K) (\big[op/idx]_(i <- F k) f i).
-Proof.
-move=> disjF; pose P := [fset F i | i in K & F i != fset0]%fset.
-have trivP : trivIfset P.
-  apply/trivIfsetP => _ _ /imfsetP[i _ ->] /imfsetP[j _ ->] neqFij.
-  by apply: disjF; apply: contraNneq neqFij => ->.
-have -> : (\bigcup_(i <- K) F i)%fset = fcover P.
-  apply/esym; rewrite /P fcover_imfset big_mkcond /=; apply eq_bigr => i _.
-  by case: ifPn => // /negPn/eqP.
-rewrite big_trivIfset // /rhs big_imfset => [|i j _ /andP[jK notFj0] eqFij] /=.
-  rewrite big_filter big_mkcond; apply eq_bigr => i _.
-  by case: ifPn => // /negPn /eqP ->;  rewrite big_seq_fset0.
-by apply: contraNeq (disjF _ _) _; rewrite -fsetI_eq0 eqFij fsetIid.
-Qed.
-
-End FsetBigOps.
-
-End FsetPartitions.
-(* NB: end of PR to finmap in progress *)
 
 Definition csum (R : realFieldType) (T : choiceType) (S : set T)
     (a : T -> {ereal R}) :=
@@ -301,29 +166,11 @@ Lemma csum_fset (R : realType) (T : choiceType) (S : {fset T})
   csum [set x | x \in S] f = (\sum_(i <- S) f i)%E.
 Proof.
 move=> f0; rewrite /csum; case: ifPn => [|S0].
-  by rewrite eq_set0_nil => /eqP ->; rewrite big_seq_fset0.
+  by rewrite eq_set0_fset0 => /eqP ->; rewrite big_seq_fset0.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply ereal_sup_ub; exists S.
 by apply ub_ereal_sup => /= ? -[F FS <-]; exact/lee_sum_nneg_subfset.
 Qed.
-
-(* TODO: move? *)
-Lemma fset_maximum (A : {fset nat}) : A != fset0 ->
-  (exists i, i \in A /\ forall j, j \in A -> j <= i)%nat.
-Proof.
-move=> A0; move/fset0Pn : (A0) => [a Aa].
-set f := nth a (enum_fset A).
-have [i [iA H]] := image_maximum (#|` A|.-1)%fset f.
-exists (f i); split => [|j Aj].
-  by rewrite /f mem_nth // -(@prednK #|` A|) ?ltnS // cardfs_gt0.
-have [k [kA <-]] : exists k, (k < #|` A|)%N /\ f k = j.
-  by exists (index j A); rewrite index_mem /f nth_index.
-rewrite H //.
-by move: kA; rewrite -(@prednK #|` A|) // cardfs_gt0.
-Qed.
-
-Lemma predeqP {T} (P Q : T -> Prop) : (P = Q) <-> (forall x, P x <-> Q x).
-Proof. by split => [->//|?]; rewrite predeqE. Qed.
 
 Lemma csum_countable (R : realType) (T : pointedType) (a : T -> {ereal R})
   (e : nat -> T) (P : pred nat) : (forall n, 0%:E <= a n)%E -> injective e ->
@@ -346,27 +193,18 @@ have [/eqP ->|F0] := boolP (F == fset0).
   rewrite big_nil ereal_lim_ge //.
     by apply: (@is_cvg_ereal_nneg_series_cond _ (a \o e)) => *; exact: a0.
   by near=> n; apply: sume_ge0 => *; exact: a0.
-(* TODO: see lemma lee_sum_lim *)
-have [n FnS] :
-    exists n, (F `<=` [fset e (nat_of_ord i) | i in 'I_n & P i])%fset.
-    have [n Fn] : exists n, forall x, x \in F -> forall i, e i = x -> (i <= n)%N.
-(*      have eF0 : e @^-1` [set x | x \in F] !=set0.
-        case/fset0Pn : F0 => t Ft.
-        by have [i _ eit] := FS _ Ft; exists i; rewrite /preimage eit.
-      have feF : set_finite (e @^-1` [set x | x \in F]).
-        by apply: (set_finite_preimage _ (fset_set_finite _)) => ? ? ? ?; exact/ie.
-      have [i []] := set_finite_maximum feF eF0.
-      by move=> eiF K; exists i => t tF j ejt; apply K; rewrite /preimage ejt.*)
-    have /set_finite_fset[eF eFE] : set_finite (e @^-1` [set x | x \in F]).
-      by apply: (set_finite_preimage _ (fset_set_finite _)) => ? ? ? ?; exact/ie.
+have [n FnS] : exists n, (F `<=` [fset e (nat_of_ord i) | i in 'I_n & P i])%fset.
+  have [n Fn] : exists n, forall x, x \in F -> forall i, e i = x -> (i <= n)%N.
+    have [eF eFE] : set_finite (e @^-1` [set x | x \in F]).
+      apply: set_finite_preimage; last by exists F.
+      by move=> ? ? ? ?; exact/ie.
     have : eF != fset0.
-      suff : eF != nil :> seq _ by [].
-      rewrite -eq_set0_nil eFE; apply/set0P.
-      have : F != nil :> seq _ by [].
-      rewrite -eq_set0_nil => /set0P[t tF].
+      rewrite -eq_set0_fset0 -eFE; apply/set0P.
+      have : F != fset0 by [].
+      rewrite -eq_set0_fset0 => /set0P[t tF].
       by move: (tF) => /FS[i Pi eit]; exists i; rewrite /preimage /mkset eit.
-    move/fset_maximum => [i [ieF eFi]]; exists i => t tF j eji; apply eFi.
-    by move/predeqP : eFE => /(_ j) /iffRL; apply; rewrite /preimage /mkset eji.
+    move/fset_nat_maximum => [i [ieF eFi]]; exists i => t tF j eji; apply eFi.
+    by move/predeqP : eFE => /(_ j) /iffLR; apply; rewrite /preimage /mkset eji.
   exists n.+1; apply/fsubsetP => x Fx; apply/imfsetP => /=.
   have [j Pj ejx] := FS _ Fx.
   by exists (inord j); rewrite ?inE inordK // ltnS (Fn _ Fx).
@@ -381,12 +219,11 @@ apply: lee_sum_nneg_subfset => // x xF; apply/imfsetP.
 have nm : (n <= m)%N by near: m; exists n.
 move/fsubsetP : FnS => /(_ _ xF) => /imfsetP[/= j ? ejx].
 by exists (widen_ord nm j).
-Grab Existential Variables. all: end_near.
-Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma csum_csum (R : realType) (T : pointedType) (K : set nat)
-    (J : nat -> set T) (a : T -> {ereal R}) : (forall x, 0%:E <= a x)%E ->
-  (forall k, J k != set0) -> trivIset setT J ->
+    (J : nat -> set T) (a : T -> {ereal R}) :
+  (forall x, 0%:E <= a x)%E -> (forall k, J k != set0) -> trivIset setT J ->
   csum (\bigcup_(k in K) (J k)) a = csum K (fun k => csum (J k) a).
 Proof.
 move=> a0.
@@ -409,8 +246,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
     rewrite predeqE => i; split.
       move/fset0Pn => [t]; rewrite !inE /= => /andP[tF tJi].
       apply/imfsetP; exists t => //; rewrite /g.
-      admit. (* utiliser les prop de triviset *)
-    admit. *)
+      (* utiliser les prop de triviset *) *)
   have : set_finite KFJ.
     suff suppFJ : set_finite [set k | FJ k != fset0].
       have KFJsuppF : KFJ `<=` [set k | FJ k != fset0] by move=> t [].
@@ -422,10 +258,10 @@ apply/eqP; rewrite eq_le; apply/andP; split.
       move=> j _ tJj; apply/eqP/negPn/negP => /(tJ i j Logic.I Logic.I).
       rewrite predeqE => /(_ t)[+ _]; apply.
       by rewrite /= !inE in tJi tJj.
-    by case: (surjective_set_finite sur_g (fset_set_finite F)).
-  move/set_finite_fset => [L LKFJ].
+    by apply: (proj1 (surjective_set_finite sur_g _)); exists F.
+  move=> [L LKFJ].
   have LK : [set i | i \in L] `<=` K.
-    by move=> /= i iL; move/predeqP : LKFJ => /(_ i) /iffLR /(_ iL) [].
+    by move=> /= i iL; move/predeqP : LKFJ => /(_ i) /iffRL /(_ iL) [].
   have -> : (\sum_(i <- F) a i = \sum_(k <- L) (\sum_(i <- FJ k) a i)%E)%E.
     suff -> : F = (\big[fsetU/fset0]_(x <- L) (FJ x))%fset.
       by apply/partition_disjoint_bigfcup; exact: tFJ.
@@ -433,7 +269,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
       by rewrite andbT => iM; rewrite /FJ !inE => /andP[].
     have := FI _ tF; move=> -[i Ki Jit].
     apply/bigfcupP ; exists i; rewrite ?andbT.
-      move/predeqP : LKFJ => /(_ i) /iffRL; apply; split => //.
+      move/predeqP : LKFJ => /(_ i) /iffLR; apply; split => //.
       apply/negP => /eqP/fsetP/(_ t).
       by rewrite !inE /= => /negbT /negP; apply; rewrite tF /= in_setE.
     by rewrite /FJ !inE /= tF in_setE.
@@ -476,8 +312,8 @@ apply: (@le_trans _ _ (\sum_(i <- F) a i)%E); last first.
 apply: (@le_trans _ _ (\sum_(i < #|`L|) (\sum_(j <- Fj i) a j)%E)%E); last first.
   have tFj : (forall i j : 'I_#|`L|, i != j -> [disjoint Fj i & Fj j])%fset.
     move=> i j ij; rewrite -fsetI_eq0.
-    suff : (Fj i `&` Fj j)%fset == [::] :> seq _ by [].
-    rewrite -eq_set0_nil.
+    suff : (Fj i `&` Fj j)%fset == fset0 by [].
+    rewrite -eq_set0_fset0.
     have Jij : J (nth 0%N L i) `&` J (nth 0%N L j) = set0.
       apply: tJ => //; apply: contra ij => /eqP /(congr1 (index^~ L)).
       by rewrite index_uniq // index_uniq // => /ord_inj ->.
