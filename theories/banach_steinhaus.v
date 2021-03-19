@@ -14,6 +14,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory Num.Def.
+Import numFieldNormedType.Exports.
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 
@@ -133,15 +134,15 @@ rewrite cvg_ex //= => -[l Hl]; exists l; split.
 Qed.
 
 End Baire.
-
+ 
 Definition bounded_fun_norm (K : realType) (V : completeNormedModType K)
-    (W : normedModType K) (f : V -> W) :=
+    (W : normedModType K) (f : V -> W) := 
   forall r, exists M, forall x, `|x| <= r -> `|f x| <= M.
 
 (* TODO: imp to define in normedtype.v *)
 Lemma bounded_landau (K : realType) (V : completeNormedModType K)
     (W : normedModType K) (f : {linear V -> W}) :
-  bounded_fun_norm f <-> ((f : V -> W) =O_ (0 : V) cst (1 : K^o)).
+  bounded_fun_norm f <-> ((f : V -> W) =O_ (0 : V) cst 1).
 Proof.
 rewrite eqOP; split => [|Bf].
 - move=> /(_ 1)[M bm].
@@ -173,7 +174,7 @@ move=> Propf BoundedF.
 set O := fun n => \bigcup_(f in F) (normr \o f)@^-1` [set y | y > n%:R].
 have O_open : forall n, open ( O n ).
   move=> n; apply: open_bigU => i Fi.
-  apply: (@open_comp _ _ ((normr : W -> K^o) \o i) [set y | y > n%:R]); last first.
+  apply: (@open_comp _ _ (normr \o i) [set y | y > n%:R]); last first.
     exact: open_gt.
   move=> x Hx; apply: continuous_comp; last exact: norm_continuous.
   have Li : linear i := proj2 (Propf _ Fi).
