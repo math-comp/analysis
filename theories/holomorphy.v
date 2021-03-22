@@ -11,6 +11,7 @@ Import Order.TTheory GRing.Theory Num.Theory ComplexField Num.Def complex.
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 Local Open Scope complex_scope.
+Import numFieldNormedType.Exports.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -19,6 +20,41 @@ Unset Printing Implicit Defensive.
 (* I need to import ComplexField to use its lemmas on RComplex,
 I don't want the canonical lmodtype structure on C,
 Therefore this is based on a fork of real-closed *)
+Section ComplexNumfieldType.
+Variable R : rcfType.
+Local Notation sqrtr := Num.sqrt.
+Local Notation C := R[i].
+
+Local Canonical complex_pointedType := [pointedType of C for [pointedType of C^o]].
+Local Canonical complex_filteredType :=
+  [filteredType C of C for [filteredType C of C^o]].
+Local Canonical complex_topologicalType :=
+  [topologicalType of C for [topologicalType of C^o]].
+Local Canonical complex_uniformType := [uniformType of C for [uniformType of C^o]].
+
+Local Canonical complex_pseudoMetricType :=
+  [pseudoMetricType [numDomainType of C] of C for [pseudoMetricType [numDomainType of C]  of C^o]].
+(* missing join ? is [numDomainType of C] ok here ? *)
+
+Local Canonical complex_lmodType := [lmodType C of C for [lmodType C of C^o]].
+Local Canonical complex_lalgType := [lalgType C of C for [lalgType C of C^o]].
+Local Canonical complex_algType := [algType C of C for [algType C of C^o]].
+Local Canonical complex_comAlgType := [comAlgType C of C].
+Local Canonical complex_unitAlgType := [unitAlgType C of C].
+Local Canonical complex_comUnitAlgType := [comUnitAlgType C of C].
+Local Canonical complex_vectType := [vectType C of C for [vectType C of C^o]].
+Local Canonical complex_FalgType := [FalgType C of C].
+Local Canonical complex_fieldExtType :=
+  [fieldExtType C of C for [fieldExtType C of C^o]].
+Local Canonical complex_pseudoMetricNormedZmodType :=
+  [pseudoMetricNormedZmodType C of C for [pseudoMetricNormedZmodType C of C^o]].
+Local Canonical complex_normedModType :=
+  [normedModType C of C for [normedModType C of C^o]]. 
+
+(* TODO : joins*)  
+
+End ComplexNumfieldType.
+
 
 Section complex_extras.
 Variable R : rcfType.
@@ -33,8 +69,8 @@ by move=> -> ; split.
 by case=> //= -> ->.
 Qed.
 
-Lemma Re0 : Re 0 = 0 :> R.
-Proof. by []. Qed.
+Lemma Re0 : Re 0 = 0 :> R.  
+Proof. by []. Qed.  
 
 Lemma Im0 : Im 0 = 0 :> R.
 Proof. by []. Qed.
@@ -42,13 +78,13 @@ Proof. by []. Qed.
 Lemma ReIm_eq0 (x : C) : (x = 0) = ((Re x = 0) /\ (Im x = 0)).
 Proof. by rewrite -[in Re x= _]Re0 -Im0 -eqE_complex. Qed.
 
-Lemma scalei_muli (z : C^o) : 'i * z = 'i *: z.
+Lemma scalei_muli (z : C) : 'i * z = 'i *: z.
 Proof. by []. Qed.
 
 Lemma iE : 'i%C = 'i :> C.
 Proof. by []. Qed.
 
-Lemma scalecM : forall (w  v : C^o), (v *: w = v * w).
+Lemma scalecM : forall (w  v : C), (v *: w = v * w).
 Proof. by []. Qed.
 
 Lemma normc0 : normc 0 = 0 :> R  .
@@ -125,7 +161,7 @@ Qed.
 Lemma realCM (a b :R) : a%:C * b%:C = (a * b)%:C.
 Proof. by rewrite eqE_complex /= !mulr0 mul0r addr0 subr0. Qed.
 
-Lemma complexA: forall (h : C^o), h%:A = h.
+Lemma complexA: forall (h : C), h%:A = h.
 Proof. by move => h; rewrite scalecM mulr1. Qed.
 
 Lemma lecM (a b : R) k : a +i* b *+ k = (a *+ k) +i* (b *+ k).
@@ -319,12 +355,12 @@ Lemma filter_compE ( T U V : topologicalType)
 Proof. by []. Qed. 
     
 Lemma within_continuous_withinNx
-  (R C : numFieldType) (U : normedModType C) (f : U -> R^o) :
+  (R C : numFieldType) (U : normedModType C) (f : U -> R) :
   {for (0 : U), continuous f} ->
-  (forall x,  f x = 0 -> x = 0) -> f @ nbhs' (0 :U) --> nbhs'  (0 : R^o).
+  (forall x,  f x = 0 -> x = 0) -> f @ nbhs' (0 :U) --> nbhs'  (0 : R).
 Proof.
   move => cf f0 A /=. 
-  rewrite !/nbhs /= /nbhs /= /nbhs' /within /= !nearE =>  H.  Admitted.
+  rewrite !/nbhs /= /nbhs /= /nbhs' /within /= !nearE =>  [].   Admitted.
 
 Notation  "f %:Rfun" :=
   (f : (Rcomplex_normedModType _) -> (Rcomplex_normedModType _))
@@ -353,7 +389,7 @@ apply/eqP; rewrite eq_complex; apply/andP.
 by split; simpl; apply/eqP; rewrite ?mulr1 ?mulr0.
 Qed.
 
-Lemma scalecr: forall w: C^o, forall r : R, r *: (w: Rcomplex) = r%:C *: w .
+Lemma scalecr: forall w: C, forall r : R, r *: (w: Rcomplex) = r%:C *: w .
 Proof.
 Proof. by move=> [a b] r; rewrite eqE_complex //=; split; simpc. Qed.
 
@@ -370,7 +406,7 @@ Proof. rewrite eqE_complex //=. Qed.
 End algebraic_lemmas.
 
 
-Section complex_topological.
+(* Section complex_topological.
 Variable R : realType.
 Local Notation C := R[i].
 
@@ -411,7 +447,7 @@ Canonical complex_pseudoMetricNormedZmodType :=
 Canonical complex_normedModType :=
   [normedModType C of C for [normedModType C of C^o]].
 
-End complex_topological.
+End complex_topological. *)
 
 Section Holomorphe_der.
 Variable R : realType.
@@ -430,10 +466,10 @@ Lemma limin_scaler (K : numFieldType) (V : normedModType K) (T : topologicalType
   cvg(f @ F) -> k *: lim (f @ F) = lim ((k \*: f) @ F ).
 Proof. by move => cv; apply/esym/cvg_lim => //; apply: cvgZr. Qed.
 
-Definition holomorphic (f : C^o -> C^o) (c : C) :=
-  cvg ((fun h => h^-1 *: (f (c + h) - f c)) @ (nbhs' (0:C^o))).
+Definition holomorphic (f : C-> C ) (c : C) :=
+  cvg ((fun h => h^-1 *: (f (c + h) - f c)) @ (nbhs' (0:C))).
 
-Lemma holomorphicP (f : C^o -> C^o)  (c: C^o) : holomorphic f c <-> derivable f c 1.
+Lemma holomorphicP (f : C -> C)  (c: C) : holomorphic f c <-> derivable f c 1.
 Proof.
 rewrite /holomorphic /derivable.
 suff -> : (fun h : C => h^-1 *: ((f(c + h) - f c))) =
@@ -445,16 +481,16 @@ Definition Rdifferentiable (f : C -> C) (c : C) := (differentiable f%:Rfun c%:Rc
 
 (* No Rmodule structure on C if we can avoid,
 so the following line shouldn't type check. *)
-Fail Definition Rderivable_fromcomplex_false (f : C^o -> C^o) (c v: C^o) :=
-  cvg (fun (h : R^o) =>  h^-1 *: (f (c +h *: v) - f c)) @ (nbhs' (0:R^o)).
+Fail Definition Rderivable_fromcomplex_false (f : C -> C) (c v: C) :=
+  cvg (fun (h : R) =>  h^-1 *: (f (c +h *: v) - f c)) @ (nbhs' (0:R)).
 
-Definition realC : R^o -> C := (fun r => r%:C).
+Definition realC : R -> C := (fun r => r%:C).
 
 Lemma continuous_realC: continuous realC.
 Proof.
 move => x A /= [] r /[dup] /realC_gt0 Rer0 /gt0_realC rRe H; exists (Re r); first by [].
 by move => z /= nz; apply: (H (realC z)); rewrite /= -realCB realC_norm rRe ltcR.
-Qed.
+Qed. 
 
 Lemma Rdiff1 (f : C -> C) c :
           lim ( (fun h : C =>  h^-1 *: ((f (c + h) - f c) ) )
@@ -462,27 +498,27 @@ Lemma Rdiff1 (f : C -> C) c :
          = 'D_1 (f%:Rfun) c%:Rc :> C.
 Proof.
 rewrite /derive.
-have -> : (fun h : C^o =>  h^-1 *: ((f (c + h) - f c))) @ (realC @  (nbhs' 0)) =
-         (fun h : C^o =>  h^-1 *: ((f (c + h) - f c)))
-                 \o realC @  (nbhs' (0 : R^o)) by [].
+have -> : (fun h : C =>  h^-1 *: ((f (c + h) - f c))) @ (realC @  (nbhs' 0)) =
+         (fun h : C =>  h^-1 *: ((f (c + h) - f c)))
+                 \o realC @  (nbhs' (0 : R)) by [].
 suff -> : ( (fun h : C => h^-1 *: (f (c + h) - f c)) \o realC)
-= (fun h : R^o => h^-1 *: ((f%:Rfun \o shift c) (h *: (1%:Rc)) - f c) ) :> (R -> C) .
-   by [].
+= (fun h : R => h^-1 *: ((f%:Rfun \o shift c) (h *: (1%:Rc)) - f c) ) :> (R -> C) .
+   by []. (*TODO : very long*)
 apply: funext => h /=.
 by  rewrite Inv_realC /= -!scalecr realC_alg [X in f X]addrC.
 Qed.
 
 
-Lemma Rdiffi (f : C^o -> C^o) c:
-         lim ( (fun h : C^o => h^-1 *: ((f (c + h * 'i) - f c)))
+Lemma Rdiffi (f : C -> C) c:
+         lim ( (fun h : C => h^-1 *: ((f (c + h * 'i) - f c)))
                  @ (realC @ (nbhs' (0 ))))
          = 'D_('i) (f%:Rfun)  c%:Rc :> C.
 Proof.
 rewrite /derive.
 have -> :
-  ((fun h : (R[i])^o => h^-1 *: (f (c + h * 'i) - f c)) @ (realC @ nbhs' 0))
-  = ((fun h : (R[i])^o => h^-1 *: (f (c + h * 'i) - f c)) \o realC) @ nbhs' 0 by [].
-suff -> :  (fun h : (R[i])^o => h^-1 * (f (c + h * 'i) - f c)) \o
+  ((fun h : (R[i]) => h^-1 *: (f (c + h * 'i) - f c)) @ (realC @ nbhs' 0))
+  = ((fun h : (R[i]) => h^-1 *: (f (c + h * 'i) - f c)) \o realC) @ nbhs' 0 by [].
+suff -> :  (fun h : (R[i]) => h^-1 * (f (c + h * 'i) - f c)) \o
 realC  = fun h : R => h^-1 *: ((f%:Rfun \o shift c) (h *: ('i%:Rc)) - f c).
   by [].
 apply: funext => h /=.
@@ -492,12 +528,12 @@ Qed.
 (* should be generalized to equivalent norms *)
 (* but there is no way to state it for now *)
 Lemma littleoCo (E : normedModType C) (h e : E -> C) (x : E) :
-   [o_x (e : E -> C^o) of (h : E -> C^o)] =
+   [o_x (e : E -> C) of (h : E -> C)] =
    [o_x (e : E -> Rc) of (h : E -> Rc)].
 Proof.
-suff heP : (h : E -> C^o) =o_x (e : E -> C^o) <->
+suff heP : (h : E -> C) =o_x (e : E -> C) <->
            (h : E -> Rc) =o_x (e : E -> Rc).
-  have [ho|hNo] := asboolP ((h : E -> C^o) =o_x (e : E -> C^o)).
+  have [ho|hNo] := asboolP ((h : E -> C) =o_x (e : E -> C)).
     by rewrite !littleoE// -!eqoP// -heP.
   by rewrite !littleoE0// -!eqoP// -heP.
 rewrite !eqoP; split => small _/posnumP[eps]; near=> y.
@@ -539,24 +575,24 @@ have realC'0:  realC @ nbhs' 0 --> nbhs' 0.
  by move => /= x /complexI.
 have HR0:(quotC \o (realC) @ nbhs' 0)  --> l.
  by apply: cvg_comp; last by exact: H.
-have lem : quotC \o  *%R^~ 'i%R @ (realC @ (nbhs' (0 : R^o))) --> l.
+have lem : quotC \o  *%R^~ 'i%R @ (realC @ (nbhs' (0 : R))) --> l.
   apply: cvg_comp; last by exact: H.
   rewrite (filter_compE _ realC); apply: cvg_comp; first by exact: realC'0.
   apply: within_continuous_withinNx; first by apply: scalel_continuous.
   move => x /eqP; rewrite mulIr_eq0 ; last by apply/rregP; apply: neq0Ci.
   by move/eqP.
-have HRcomp:  cvg (quotC \o *%R^~ 'i%R @ (realC @ (nbhs' (0 : R^o)))) .
+have HRcomp:  cvg (quotC \o *%R^~ 'i%R @ (realC @ (nbhs' (0 : R)))) .
   by apply/cvg_ex;  simpl; exists l.
-have ->: lim (quotR @ (realC @ (nbhs' (0 : R^o))))
-  = 'i *: lim (quotC \o ( fun h => h *'i) @ (realC @ (nbhs' (0 : R^o)))).
+have ->: lim (quotR @ (realC @ (nbhs' (0 : R))))
+  = 'i *: lim (quotC \o ( fun h => h *'i) @ (realC @ (nbhs' (0 : R)))).
   have: 'i \*:quotC \o ( fun h => h *'i) =1 quotR.
   move => h /= ;rewrite /quotC /quotR /=.
   rewrite invcM scalerA mulrC -mulrA mulVf ?mulr1 ?neq0Ci //.
   by move => /funext <-; rewrite (limin_scaler _ 'i HRcomp).
 rewrite scalecM.
-suff: lim (quotC @ (realC @ (nbhs' (0 : R^o))))
-      = lim (quotC \o  *%R^~ 'i%R @ (realC @ (nbhs' (0 : R^o)))) by move => -> .
-suff -> : lim (quotC @ (realC @ (nbhs' (0 : R^o)))) = l.
+suff: lim (quotC @ (realC @ (nbhs' (0 : R))))
+      = lim (quotC \o  *%R^~ 'i%R @ (realC @ (nbhs' (0 : R)))) by move => -> .
+suff -> : lim (quotC @ (realC @ (nbhs' (0 : R)))) = l.
   by apply/eqP; rewrite eq_sym; apply/eqP; apply: (cvg_map_lim _ lem).
 by apply: cvg_map_lim.
 Qed.
