@@ -386,6 +386,11 @@ Lemma littleoE (tag : unit) (F : filter_on T)
    littleo_def F f h -> the_littleo tag F phF f h = f.
 Proof. by move=> /asboolP?; rewrite /the_littleo /insubd insubT. Qed.
 
+Lemma littleoE0 (tag : unit) (F : filter_on T)
+   (phF : phantom (set (set T)) F) f h :
+   ~ littleo_def F f h -> the_littleo tag F phF f h = 0.
+Proof. by move=> ?; rewrite /the_littleo /insubd insubN//; apply/asboolP. Qed.
+
 Canonical the_littleo_littleo (tag : unit) (F : filter_on T)
   (phF : phantom (set (set T)) F) f h := [littleo of the_littleo tag F phF f h].
 
