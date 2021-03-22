@@ -173,7 +173,7 @@ by apply ub_ereal_sup => /= ? -[F FS <-]; exact/lee_sum_nneg_subfset.
 Qed.
 
 Lemma csum_countable (R : realType) (T : pointedType) (a : T -> {ereal R})
-  (e : nat -> T) (P : pred nat) : (forall n, 0%:E <= a n)%E -> injective e ->
+  (e : nat -> T) (P : pred nat) : (forall n, P n -> 0%:E <= a (e n))%E -> injective e ->
   csum [set e i | i in P] a = lim (fun n => (\sum_(i < n | P i) a (e i))%E).
 Proof.
 move=> a0 ie; rewrite /csum; case: ifPn => [/eqP/image_set0_set0 P0|S0].
@@ -214,12 +214,24 @@ near=> m.
 rewrite -(big_enum_cond _ 'I_m) -[X in (_ <= X)%E]big_filter /=.
 rewrite [X in (_ <= X)%E](_ : _ =
     \sum_(i <- [fset e (nat_of_ord j) | j in 'I_m & P j]%fset) a i)%E; last first.
-  by rewrite big_imfset //= => i j _ _ /ie/ord_inj.
-apply: lee_sum_nneg_subfset => // x xF; apply/imfsetP.
-have nm : (n <= m)%N by near: m; exists n.
-move/fsubsetP : FnS => /(_ _ xF) => /imfsetP[/= j ? ejx].
-by exists (widen_ord nm j).
+  by rewrite big_imfset //= => i j ? ? /ie/ord_inj.
+apply: lee_sum_nneg_subfset => [x xF|t].
+  apply/imfsetP.
+  have nm : (n <= m)%N by near: m; exists n.
+  move/fsubsetP : FnS => /(_ _ xF) => /imfsetP[/= j ? ejx].
+  by exists (widen_ord nm j).
+rewrite inE /= => /andP[tF /imfsetP[/= i]].
+rewrite inE => Pi tei _.
+by rewrite tei; apply a0.
 Grab Existential Variables. all: end_near. Qed.
+
+Lemma csum_nat_lim (R : realType) (a : nat -> {ereal R}) (P : pred nat) :
+  (forall n, P n -> 0%:E <= a n)%E ->
+  csum P a = lim (fun n => (\sum_(i < n | P i) a i)%E).
+Proof.
+move=> a0; rewrite -(@csum_countable _ _ _ id P) //; congr csum.
+by rewrite predeqE => /= n; split => [Pn|[m Pm <-//]]; exists n.
+Qed.
 
 Lemma csum_csum (R : realType) (T : pointedType) (K : set nat)
     (J : nat -> set T) (a : T -> {ereal R}) :
@@ -227,19 +239,17 @@ Lemma csum_csum (R : realType) (T : pointedType) (K : set nat)
   csum (\bigcup_(k in K) (J k)) a = csum K (fun k => csum (J k) a).
 Proof.
 move=> a0.
-have [/eqP ->|K0] := boolP (K == set0); first by rewrite bigcup_set0 2!csum0.
-move=> J0 /trivIsetP tJ; set I := \bigcup_(k in K) (J k).
-have /set0P I0 : I !=set0.
+have [/eqP ->|K0 J0] := boolP (K == set0); first by rewrite bigcup_set0 2!csum0.
+move=> /trivIsetP tJ; set UJ := \bigcup_(k in K) (J k).
+have /set0P/negbTE UJ_neq0 : UJ !=set0.
   by move/set0P : K0 => [k Kk]; have /set0P[t Jkt] := J0 k; exists t, k.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  rewrite {1}/csum (negbTE I0); apply ub_ereal_sup => /= _ [F FI <-].
+  rewrite {1}/csum UJ_neq0; apply ub_ereal_sup => /= _ [F FI <-].
   pose FJ := fun k => [fset x in F | x \in J k]%fset.
   have tFJ : forall i j, i != j -> [disjoint FJ i & FJ j]%fset.
-    (* TODO: use fdisjoint_cset *)
-    move=> i j ij; rewrite -fsetI_eq0; apply/eqP/fsetP => t; apply/idP/idP=> //.
-    apply/negP; rewrite inE => /andP[]; rewrite !inE /= => /andP[Ft].
-    rewrite in_setE => tJi /andP[_]; rewrite in_setE => tJj.
-    by have /(congr1 (@^~ t))/= := tJ _ _ Logic.I Logic.I ij; rewrite /set0 mksetE => <-.
+    move=> i j ij; rewrite fdisjoint_cset; apply/eqP.
+    by apply: subsetI_eq0 (tJ i j Logic.I Logic.I ij) => t /imfsetP[t0 /= ];
+      rewrite !inE /= => /andP[_]; rewrite inE => ? ->.
   pose KFJ := [set k | K k /\ FJ k != fset0].
 (* TODO:  pose g := fun t => xget 0%N [set n | t \in J n].
   have : [set k | FJ k != fset0] = [set k | k \in (g @` F)%fset].
@@ -282,9 +292,9 @@ apply/eqP; rewrite eq_le; apply/andP; split.
 rewrite {1}[in X in (X <= _)%E]/csum (negbTE K0).
 apply ub_ereal_sup => /= _ [L LK <-].
 have [/eqP ->|L0] := boolP (L == fset0); first by rewrite big_nil csum_ge0.
-have /gee0P[->|[r r0 csumIar]] := csum_ge0 a0 I; first by rewrite lee_pinfty.
+have /gee0P[->|[r r0 csumIar]] := csum_ge0 a0 UJ; first by rewrite lee_pinfty.
 apply lee_adde => e; rewrite -lee_subl_addr.
-suff : (\sum_(i < #|` L |) csum (J (nth O L i)) a - (e)%:num%:E <= csum I a)%E.
+suff : (\sum_(i < #|` L |) csum (J (nth O L i)) a - e%:num%:E <= csum UJ a)%E.
   by apply: le_trans; apply: lee_add2r; rewrite (big_nth O) big_mkord lee_sum.
 set P := (fun (Fj : {fset T}%fset) (j : 'I_#|`L|) =>
   [set x | x \in Fj] `<=` J (nth 0%N L j) /\
@@ -296,7 +306,7 @@ have [Fj csumFj] : exists F, forall j, P (F j) j.
   have [esoo|[c c0 esc]] : es = +oo%E \/ exists2 r, r >= 0 & es = r%:E.
     suff : (0%:E <= es)%E by move/gee0P.
     by apply ereal_sup_ub; exists fset0 => //; rewrite big_nil.
-  - move: csumIar; rewrite /csum (negbTE I0); set es' := ereal_sup _ => es'r.
+  - move: csumIar; rewrite /csum UJ_neq0; set es' := ereal_sup _ => es'r.
     suff : (es <= es')%E by rewrite esoo es'r.
     apply: le_ereal_sup => x [F FJ Fx]; exists F => //.
     move/subset_trans : FJ; apply => t Jt.
@@ -306,7 +316,7 @@ have [Fj csumFj] : exists F, forall j, P (F j) j.
     exact: ub_ereal_sup_adherent2.
 pose F := \big[fsetU/fset0]_(i < #|`L|) Fj i.
 apply: (@le_trans _ _ (\sum_(i <- F) a i)%E); last first.
-  rewrite /csum (negbTE I0); apply ereal_sup_ub; exists F => //.
+  rewrite /csum UJ_neq0; apply ereal_sup_ub; exists F => //.
   move=> t /bigfcupP[/= i _] /(proj1 (csumFj i)) Jt.
   by exists (nth 0%N L i) => //; apply LK; rewrite /mkset mem_nth.
 apply: (@le_trans _ _ (\sum_(i < #|`L|) (\sum_(j <- Fj i) a j)%E)%E); last first.
