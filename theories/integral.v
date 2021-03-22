@@ -1,9 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
-From mathcomp Require Import ssralg ssrnum.
+From mathcomp Require Import ssralg ssrnum interval.
 Require Import boolp reals ereal.
 Require Import classical_sets posnum topology normedtype sequences measure csum.
+Require Import measure_wip.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -22,11 +23,10 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Reserved Notation "{ 'ae' P }" (at level 0, format "{ 'ae'  P }").
-
 Notation "0" := 0%:E : ereal_scope.
 Notation "1" := 1%:E : ereal_scope.
 
+(* NB: PR in progress *)
 Lemma muleC (R : numDomainType) (x y : {ereal R}) : (x * y = y * x)%E.
 Proof. by case: x y => [r||] [s||]//=; rewrite mulrC. Qed.
 
@@ -41,14 +41,7 @@ Proof. by case=> [r||] [s||] [t||] [u||]//=; rewrite addrACA. Qed.
 
 Lemma abseN (R : numDomainType) (x : {ereal R}) : (`|- x| = `|x|)%E.
 Proof. by case: x => [r||]; rewrite //= normrN. Qed.
-
-(* PR in progress *)
-Definition sigma_finite (R : realType) (T : ringOfSetsType) (X : set T)
-  (mu : set T -> {ereal R}) :=
-  exists2 Y : (set T)^nat,
-    X = \bigcup_(i : nat) Y i &
-     forall i, measurable (Y i) /\ (mu (Y i) < +oo)%E.
-(* end PR in progress *)
+(* END NB: PR in progress *)
 
 Definition complete_measure (R : realType) (T : measurableType)
    (mu : set T -> {ereal R}) :=
@@ -87,14 +80,40 @@ Axiom measurableEreal_gee : forall x, measurable [set y : {ereal R} | x <= y]%E.
 Axiom measurableEreal_lee : forall x, measurable [set y : {ereal R} | y <= x]%E.
 Axiom measurableEreal_setT : measurable (setT : set {ereal R}).
 
+Lemma fer_preimage T D (f : T -> er R) Y :
+  f \|_ D @^-1` Y = ((f @^-1` Y) `&` D) `|`
+                    ((fun=> if `[< Y 0%:E >] then True else False) `&` ~` D).
+Proof.
+rewrite predeqE => t; split => [|].
+- rewrite /fer /=; case: ifPn => /asboolP Dt hY; first by left.
+  by rewrite asboolT //; right.
+- move=> [[fYt Dt]|[]].
+  + by rewrite /fer /= asboolT.
+  + by case: ifPn => // /asboolP Y0 _ Dt; rewrite /fer /= asboolF.
+Qed.
+
 Section integral.
 
 Variable T : measurableType.
 
 Lemma measurable_fun_ferE (D : set T) (f : T -> {ereal R}) :
+  measurable D ->
   measurable_fun D f = measurable_fun setT (f \|_ D).
 Proof.
-Admitted.
+move=> mD; rewrite propeqE; split => [Df Y mY|Df Y mY].
+  apply: measurableI; last exact: measurableT.
+  rewrite fer_preimage; apply: measurableU.
+    exact: Df.
+  apply: measurableI.
+    by case: ifP => // _; [exact: measurableT|exact: measurable0].
+  exact: measurableC.
+have := Df _ mY; rewrite setIT.
+rewrite fer_preimage.
+case: ifP => _ /=; rewrite ?(setTI,set0I,setU0) //.
+rewrite setUIl setUCr setIT => YUcD.
+have := measurableI _ _ YUcD mD.
+by rewrite setIUl setICl setU0.
+Qed.
 
 Lemma measurable_funN (D : set T) (f : T -> {ereal R}) :
   measurable_fun D (fun x => - f x)%E = measurable_fun D f.
@@ -106,8 +125,13 @@ Lemma measurable_fun_measurable (D : set T) (f : T -> {ereal R}) :
 Proof. by move=> /(_ _ measurableEreal_setT); rewrite setTI. Qed.
 
 Lemma measurable_fun_fer (D D' : set T) (f : T -> {ereal R}) :
+  measurable D -> measurable D' ->
   measurable_fun D (f \|_ D') = measurable_fun (D `&` D') f.
-Proof. by rewrite measurable_fun_ferE [RHS]measurable_fun_ferE ferK setIC. Qed.
+Proof.
+move=> mD mD'; rewrite measurable_fun_ferE // [RHS]measurable_fun_ferE; last first.
+  exact: measurableI.
+by rewrite ferK setIC.
+Qed.
 
 Parameter integral : forall (m : set T -> {ereal R}) (D : set T)
   (f : T -> {ereal R}), {ereal R}.
@@ -127,13 +151,13 @@ Axiom integralEposneg : forall (m : set T -> {ereal R}) (D : set T)
   (f : T -> {ereal R}), integral m D f = (integral m D f^\+ - integral m D f^\-)%E.
 
 Axiom integral1 : forall (m : set T -> {ereal R}) (D : set T),
-   integral m D (fun=> 1%:E) = m D.
+  integral m D (fun=> 1%:E) = m D.
 
 Axiom integral_domE : forall (m : set T -> {ereal R}) (D : set T)
-    (f : T -> {ereal R}), integral m D f = integral m setT (f \|_ D).
+  (f : T -> {ereal R}), integral m D f = integral m setT (f \|_ D).
 
 Lemma integral_fer (m : set T -> {ereal R}) (D D' : set T)
-    (f : T -> {ereal R}) : integral m D (f \|_ D') = integral m (D `&` D') f.
+  (f : T -> {ereal R}) : integral m D (f \|_ D') = integral m (D `&` D') f.
 Proof. by rewrite integral_domE [RHS]integral_domE ferK setIC. Qed.
 
 Axiom integral_is_linear : forall (m : set T -> {ereal R}) (D : set T)
@@ -221,15 +245,17 @@ Admitted.
 
 Lemma integrable_mesurable_pos (m : {measure set T -> {ereal R}}) (D : set T)
   (f : T -> {ereal R}) :
-  integrable m D f -> measurable_fun D f^\+%E.
+  measurable D -> integrable m D f -> measurable_fun D f^\+%E.
 Proof.
-move=>  [f_meas nf_int]; rewrite funeposEge0 measurable_fun_fer => X mX.
+move=> mD [f_meas nf_int]; rewrite funeposEge0 measurable_fun_fer //; last first.
+  admit.
+move=> X mX.
 have D_meas := measurable_fun_measurable f_meas.
 pose fpD := f @^-1` [set x | 0 <= x]%E `&` D; pose fXD := f @^-1` X `&` D.
 rewrite (_ : _ `&` _ = fXD `&` fpD).
   by apply: measurableI; apply: f_meas => //; apply: measurableEreal_gee.
 by rewrite /fpD /fXD setIACA setIid/= setIAC setIA.
-Qed.
+Admitted.
 
 Lemma integrable_mesurable_neg (m : {measure set T -> {ereal R}}) (D : set T)
   (f : T -> {ereal R}) :
