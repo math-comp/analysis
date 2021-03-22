@@ -5,13 +5,14 @@ From mathcomp Require Import ssrnat seq fintype bigop div prime path finmap.
 Require Import boolp classical_sets.
 
 (******************************************************************************)
-(*                             Cardinality (WIP)                              *)
+(*                            Cardinality (WIP)                               *)
 (*                                                                            *)
 (* This file provides an account of cardinality properties of classical sets. *)
 (* The contents of this file should not be considered as definitive because   *)
 (* it establishes too little connections with MathComp: finite sets are       *)
 (* defined using finmap's fsets but countability does not build on countType. *)
-(* Better interaction is explored in PR #83.                                  *)
+(* Better interaction is explored in PR #83. TODO: Look at                    *)
+(* fingroup/morphism.v for inspiration for better naming?                     *)
 (*                                                                            *)
 (*    surjective A B f == the function f whose domain is the set A and its    *)
 (*                        codomain is the B is surjective                     *)
