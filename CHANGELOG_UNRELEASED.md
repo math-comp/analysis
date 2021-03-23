@@ -35,6 +35,9 @@
   + notation `[disjoint ... & ..]`
   + lemmas `mkset_nil`, `bigcup_mkset`, `bigcup_nonempty`, `bigcup0`, `bigcup0P`,
     `subset_bigcup_r`, `eqbigcup_r`
+- in `ereal.v`:
+  + lemmas `adde_undefC`, `real_of_erD`, `is_real_add_undef`, `addeK`,
+    `subeK`, `subee`, `sube_le0`, `lee_sub`
 
 ### Changed
 

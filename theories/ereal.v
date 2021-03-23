@@ -354,6 +354,9 @@ Proof. by []. Qed.
 Definition adde_undef x y :=
   (x == +oo) && (y == -oo) || (x == -oo) && (y == +oo).
 
+Lemma adde_undefC x y : adde_undef x y = adde_undef y x.
+Proof. by rewrite /adde_undef andbC orbC andbC. Qed.
+
 Lemma adde0 : right_id (0%:E : {ereal R}) +%E.
 Proof. by case=> //= x; rewrite addr0. Qed.
 
@@ -403,8 +406,24 @@ Qed.
 Lemma is_realD x y : is_real (x + y) = (is_real x) && (is_real y).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
+Lemma real_of_erD x y : is_real x -> is_real y ->
+  (real_of_er (x + y) = real_of_er x + real_of_er y)%R.
+Proof. by move: x y => [r| |] [s| |]. Qed.
+
+Lemma is_real_adde_undef x y : is_real y -> ~~ adde_undef x y.
+Proof. by move: x y => [x| |] [y | |]. Qed.
+
 Lemma ERFin_real_of_er x : is_real x -> x = (real_of_er x)%:E.
 Proof. by case: x. Qed.
+
+Lemma addeK x y : is_real x -> y + x - x = y.
+Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin /= addrK. Qed.
+
+Lemma subeK x y : is_real y -> x - y + y = x.
+Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin subrK. Qed.
+
+Lemma subee x : is_real x -> x - x = 0%:E.
+Proof. by move: x => [r _| |] //; rewrite -subERFin subrr. Qed.
 
 Lemma adde_eq_ninfty x y : (x + y == -oo) = ((x == -oo) || (y == -oo)).
 Proof. by move: x y => [?| |] [?| |]. Qed.
@@ -484,6 +503,12 @@ move: x y => [r | |] [r'| |] //=; rewrite ?(lte_pinfty,lte_ninfty) //.
 by rewrite !lte_fin subr_gt0.
 Qed.
 
+Lemma sube_le0 x y : (y - x <= 0%:E) = (y <= x).
+Proof.
+by move: x y => [x| |] [y| |]; apply/idP/idP => //=; try
+  (rewrite !(lee_pinfty,lee_ninfty) || rewrite !lee_fin subr_le0).
+Qed.
+
 Lemma suber_ge0 r x : (0%:E <= x - r%:E) = (r%:E <= x).
 Proof.
 move: x => [x| |] //=; rewrite ?(lee_pinfty,lee_ninfty,lee_fin) //=.
@@ -561,6 +586,13 @@ Lemma lte_le_add r t x y : r%:E < x -> t%:E <= y -> r%:E + t%:E < x + y.
 Proof.
 move: x y => [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
 by rewrite !lte_fin; exact: ltr_le_add.
+Qed.
+
+Lemma lee_sub x y z t : x <= y -> t <= z -> x - z <= y - t.
+Proof.
+move: x y z t => -[x| |] -[y| |] -[z| |] -[t| |] //=;
+  rewrite ?(lee_pinfty,lee_ninfty)//.
+by rewrite !lee_fin; exact: ler_sub.
 Qed.
 
 Lemma lee_sum I (f g : I -> {ereal R}) s (P : pred I) :
