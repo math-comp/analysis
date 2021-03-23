@@ -38,6 +38,7 @@
 - in `ereal.v`:
   + lemmas `adde_undefC`, `real_of_erD`, `is_real_add_undef`, `addeK`,
     `subeK`, `subee`, `sube_le0`, `lee_sub`
+  + lemmas `addeACA`, `muleC`, `mule1`, `mul1e`, `abseN`
 
 ### Changed
 

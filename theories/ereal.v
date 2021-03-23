@@ -334,6 +334,31 @@ Notation "\sum_ ( i 'in' A | P ) F" :=
 Notation "\sum_ ( i 'in' A ) F" :=
   (\big[+%E/0%:E]_(i in A) F%R) : ereal_scope.
 
+Section ERealOrderTheory.
+Context {R : numDomainType}.
+Implicit Types x y z : {ereal R}.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
+  by case: x => [||?]; first by rewrite ?eqe; apply: lm.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
+  by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
+  by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
+Lemma le0R (x : {ereal R}) :
+  0%:E <= x -> (0 <= real_of_er(*TODO: coercion broken*) x)%R.
+Proof. by case: x. Qed.
+
+Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
+Proof. by []. Qed.
+
+Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%R -> r0%:E < r1%:E.
+Proof. by []. Qed.
+
+End ERealOrderTheory.
+
 Section ERealArithTh_numDomainType.
 
 Context {R : numDomainType}.
@@ -372,11 +397,14 @@ Proof. by case=> [x||] [y||] [z||] //=; rewrite addrA. Qed.
 Canonical adde_monoid := Monoid.Law addeA add0e adde0.
 Canonical adde_comoid := Monoid.ComLaw addeC.
 
-Lemma addeAC : right_commutative (S := {ereal R}) +%E.
+Lemma addeAC : @right_commutative {ereal R} _ +%E.
 Proof. by move=> x y z; rewrite -addeA (addeC y) addeA. Qed.
 
-Lemma addeCA : left_commutative (S := {ereal R}) +%E.
+Lemma addeCA : @left_commutative {ereal R} _ +%E.
 Proof. by move=> x y z; rewrite addeC -addeA (addeC x). Qed.
+
+Lemma addeACA : @interchange {ereal R} +%E +%E.
+Proof. by case=> [r||] [s||] [t||] [u||]//=; rewrite addrACA. Qed.
 
 Lemma oppe0 : - 0%:E = 0%:E :> {ereal R}.
 Proof. by rewrite /= oppr0. Qed.
@@ -386,6 +414,18 @@ Proof. by case=> [x||] //=; rewrite opprK. Qed.
 
 Lemma oppeD x (r : R) : - (x + r%:E) = - x - r%:E.
 Proof. by move: x => [x| |] //=; rewrite opprD. Qed.
+
+Lemma muleC x y : x * y = y * x.
+Proof. by case: x y => [r||] [s||]//=; rewrite mulrC. Qed.
+
+Lemma mule1 x : x * 1%:E = x.
+Proof. by case: x => [r||]/=; rewrite ?mulr1 ?lee_tofin ?lte_tofin. Qed.
+
+Lemma mul1e x : 1%:E * x = x.
+Proof. by rewrite muleC mule1. Qed.
+
+Lemma abseN x : `|- x| = `|x|.
+Proof. by case: x => [r||]; rewrite //= normrN. Qed.
 
 Lemma eqe_opp x y : (- x == - y) = (x == y).
 Proof.
@@ -680,33 +720,6 @@ by rewrite !lee_fin ler_oppl.
 Qed.
 
 End ERealArithTh_realDomainType.
-
-(* -------------------------------------------------------------------- *)
-(* TODO: Check for duplications with `order.v`. Remove them.            *)
-Section ERealOrderTheory.
-Context {R : numDomainType}.
-Implicit Types x y z : {ereal R}.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
-  by case: x => [||?]; first by rewrite ?eqe; apply: lm.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
-  by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
-  by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
-
-Lemma le0R (x : {ereal R}) :
-  0%:E <= x -> (0 <= real_of_er(*TODO: coercion broken*) x)%R.
-Proof. by case: x. Qed.
-
-Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
-Proof. by []. Qed.
-
-Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%R -> r0%:E < r1%:E.
-Proof. by []. Qed.
-
-End ERealOrderTheory.
 
 Lemma lee_opp2 {R : realDomainType} : {mono @oppe R : x y /~ x <= y}.
 Proof.
