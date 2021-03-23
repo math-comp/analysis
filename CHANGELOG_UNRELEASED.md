@@ -24,6 +24,8 @@
     * many canonicals and coercions
     * exports `Export numFieldTopology.Exports`
   + canonical `R_regular_completeType`, `R_regular_CompleteNormedModule`
+- in `reals.v`:
+  + lemmas `Rfloor_lt0`, `floor_lt0`, `ler_floor`, `ceil_gt0`, `ler_ceil`
 
 ### Changed
 

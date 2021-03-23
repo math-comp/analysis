@@ -528,7 +528,7 @@ Proof. by case/andP: (sup_in_floor_set x). Qed.
 Lemma RfloorE x : Rfloor x = (floor x)%:~R.
 Proof. by rewrite /floor RtointK ?isint_Rfloor. Qed.
 
-Lemma mem_rg1_Rfloor (x : R) : (range1 (Rfloor x)) x.
+Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
 Proof.
 rewrite /range1/mkset.
 have /andP[_ ->] /= := sup_in_floor_set x.
@@ -539,13 +539,16 @@ move/ubP : (sup_upper_bound (has_sup_floor_set x)) => h/h.
 by rewrite ger_addl ler10.
 Qed.
 
-Lemma ge_Rfloor (x : R) : Rfloor x <= x.
+Lemma ge_Rfloor x : Rfloor x <= x.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
-Lemma lt_succ_Rfloor (x : R) : x < Rfloor x + 1.
+Lemma ler_floor x : (floor x)%:~R <= x.
+Proof. by rewrite -RfloorE; exact: ge_Rfloor. Qed.
+
+Lemma lt_succ_Rfloor x : x < Rfloor x + 1.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
-Lemma range1z_inj (x : R) (m1 m2 : int) :
+Lemma range1z_inj x (m1 m2 : int) :
   (range1 m1%:~R) x -> (range1 m2%:~R) x -> m1 = m2.
 Proof.
 move=> /andP[m1x x_m1] /andP[m2x x_m2].
@@ -555,18 +558,17 @@ rewrite -(ler_add2r 1) lez_addr1 -(@ltr_int R) intrD.
 exact/(le_lt_trans m1x).
 Qed.
 
-Lemma range1rr (x : R) : (range1 x) x.
+Lemma range1rr x : (range1 x) x.
 Proof. by rewrite /range1/mkset lexx /= ltr_addl ltr01. Qed.
 
-Lemma range1zP (m : int) (x : R) :
-  Rfloor x = m%:~R <-> (range1 m%:~R) x.
+Lemma range1zP (m : int) x : Rfloor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
 split=> [<-|h]; first exact/mem_rg1_Rfloor.
 apply/eqP; rewrite RfloorE eqr_int; apply/eqP/(@range1z_inj x) => //.
 by rewrite /range1/mkset -RfloorE mem_rg1_Rfloor.
 Qed.
 
-Lemma Rfloor_natz (x : int) : Rfloor x%:~R = x%:~R :> R.
+Lemma Rfloor_natz (n : int) : Rfloor n%:~R = n%:~R :> R.
 Proof. by apply/range1zP/range1rr. Qed.
 
 Lemma Rfloor0 : Rfloor 0 = 0 :> R.
@@ -582,7 +584,7 @@ move/(lt_le_trans (lt_succ_Rfloor y))/lt_le_trans/(_ (ge_Rfloor x)).
 by rewrite ltNge le_xy.
 Qed.
 
-Lemma Rfloor_ge_int (x : R) (n : int) : (n%:~R <= x)= (n%:~R <= Rfloor x).
+Lemma Rfloor_ge_int x (n : int) : (n%:~R <= x)= (n%:~R <= Rfloor x).
 Proof.
 apply/idP/idP; last by move/le_trans => /(_ _ (ge_Rfloor x)).
 by move/Rfloor_le; apply le_trans; rewrite Rfloor_natz.
@@ -591,11 +593,19 @@ Qed.
 Lemma Rfloor_le0 x : x <= 0 -> Rfloor x <= 0.
 Proof. by move=> ?; rewrite -Rfloor0 Rfloor_le. Qed.
 
-Lemma floor_ge0 (x : R) : (0 <= floor x) = (0 <= x).
+Lemma Rfloor_lt0 x : x < 0 -> Rfloor x < 0.
+Proof. by move=> x0; rewrite (le_lt_trans _ x0) // ge_Rfloor. Qed.
+
+Lemma floor_ge0 x : (0 <= floor x) = (0 <= x).
 Proof. by rewrite -(@ler_int R) -RfloorE -Rfloor_ge_int. Qed.
 
 Lemma floor_le0 x : x <= 0 -> floor x <= 0.
 Proof. by move=> ?; rewrite -(@ler_int R) -RfloorE Rfloor_le0. Qed.
+
+Lemma floor_lt0 x : x < 0 -> floor x < 0.
+Proof.
+by move=> ?; rewrite /floor -(@ltrz0 R) RtointK ?isint_Rfloor // Rfloor_lt0.
+Qed.
 
 End FloorTheory.
 
@@ -627,11 +637,14 @@ Proof. by rewrite /Rceil /ceil RfloorE mulrNz. Qed.
 Lemma ceil_ge0 x : 0 <= x -> 0 <= ceil x.
 Proof. by move=> ?; rewrite -(@ler_int R) -RceilE Rceil_ge0. Qed.
 
+Lemma ceil_gt0 x : 0 < x -> 0 < ceil x.
+Proof. by move=> ?; rewrite /ceil oppr_gt0 floor_lt0 // ltr_oppl oppr0. Qed.
+
 Lemma ceil_le0 x : x <= 0 -> ceil x <= 0.
-Proof.
-move=> ?; rewrite ler_oppl oppr0 -(@ler_int R).
-by rewrite (@le_trans _ _ 0) // -Rfloor0 -RfloorE Rfloor_le // ler_oppr oppr0.
-Qed.
+Proof. by move=> x0; rewrite -ler_oppl oppr0 floor_ge0 -ler_oppr oppr0. Qed.
+
+Lemma ler_ceil x : x <= (ceil x)%:~R.
+Proof. by rewrite -RceilE; exact: le_Rceil. Qed.
 
 End CeilTheory.
 
