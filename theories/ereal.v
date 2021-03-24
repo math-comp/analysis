@@ -359,6 +359,21 @@ Proof. by []. Qed.
 
 End ERealOrderTheory.
 
+Section finNumPred.
+Context {R : numDomainType}.
+
+Definition fin_num := [qualify a x : er R | (x != -oo) && (x != +oo)].
+Fact fin_num_key : pred_key fin_num. by []. Qed.
+Canonical fin_num_keyd := KeyedQualifier fin_num_key.
+
+Lemma fin_numE x : (x \is a fin_num) = ((x != -oo) && (x != +oo)).
+Proof. by []. Qed.
+
+Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \in fin_num).
+Proof. by apply/(iffP idP) => [/andP//|/andP]. Qed.
+
+End finNumPred.
+
 Section ERealArithTh_numDomainType.
 
 Context {R : numDomainType}.
@@ -436,33 +451,30 @@ Qed.
 Lemma eqe_oppLR x y : (- x == y) = (x == - y).
 Proof. by move: x y => [r0| |] [r1| |] //=; rewrite !eqe eqr_oppLR. Qed.
 
-Definition is_real x := (x != -oo) && (x != +oo).
+Lemma fin_numN x : (- x \is a fin_num) = (x \is a fin_num).
+Proof. by rewrite !fin_numE 2!eqe_oppLR andbC. Qed.
 
-Lemma is_realN x : is_real (- x) = is_real x.
-Proof.
-by rewrite /is_real andbC -eqe_opp oppeK; congr (_ && _); rewrite -eqe_opp oppeK.
-Qed.
-
-Lemma is_realD x y : is_real (x + y) = (is_real x) && (is_real y).
+Lemma fin_numD x y :
+  (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma real_of_erD x y : is_real x -> is_real y ->
-  (real_of_er (x + y) = real_of_er x + real_of_er y)%R.
-Proof. by move: x y => [r| |] [s| |]. Qed.
+Lemma real_of_erD :
+  {in (@fin_num R) &, {morph real_of_er : x y / x + y >-> (x + y)%R}}.
+Proof. by move=> [r| |] [s| |]. Qed.
 
-Lemma is_real_adde_undef x y : is_real y -> ~~ adde_undef x y.
+Lemma fin_num_adde_undef x y : y \is a fin_num -> ~~ adde_undef x y.
 Proof. by move: x y => [x| |] [y | |]. Qed.
 
-Lemma ERFin_real_of_er x : is_real x -> x = (real_of_er x)%:E.
+Lemma ERFin_real_of_er x : x \is a fin_num -> x = (real_of_er x)%:E.
 Proof. by case: x. Qed.
 
-Lemma addeK x y : is_real x -> y + x - x = y.
+Lemma addeK x y : x \is a fin_num -> y + x - x = y.
 Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin /= addrK. Qed.
 
-Lemma subeK x y : is_real y -> x - y + y = x.
+Lemma subeK x y : y \is a fin_num -> x - y + y = x.
 Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin subrK. Qed.
 
-Lemma subee x : is_real x -> x - x = 0%:E.
+Lemma subee x : x \is a fin_num -> x - x = 0%:E.
 Proof. by move: x => [r _| |] //; rewrite -subERFin subrr. Qed.
 
 Lemma adde_eq_ninfty x y : (x + y == -oo) = ((x == -oo) || (y == -oo)).
@@ -530,7 +542,6 @@ Lemma sume_ge0 T (u_ : T -> {ereal R}) (P : pred T) :
 Proof. by move=> u0 l; elim/big_rec : _ => // t x Pt; apply/adde_ge0/u0. Qed.
 
 End ERealArithTh_numDomainType.
-Arguments is_real {R}.
 
 Section ERealArithTh_realDomainType.
 
