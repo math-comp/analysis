@@ -165,6 +165,8 @@ Reserved Notation "A `<=>` B" (at level 70, no associativity).
 Reserved Notation "f @^-1` A" (at level 24).
 Reserved Notation "f @` A" (at level 24).
 Reserved Notation "A !=set0" (at level 80).
+Reserved Notation "[ 'disjoint' A & B ]" (at level 0,
+  format "'[hv' [ 'disjoint' '/  '  A '/'  &  B ] ']'").
 
 Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
 Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
@@ -261,6 +263,7 @@ Notation "~` A" := (setC A) : classical_set_scope.
 Notation "[ 'set' ~ a ]" := (~` [set a]) : classical_set_scope.
 Notation "A `\` B" := (setD A B) : classical_set_scope.
 Notation "A `\ a" := (A `\` [set a]) : classical_set_scope.
+Notation "[ 'disjoint' A & B ]" := (A `&` B == set0) : classical_set_scope.
 
 Notation "\bigcup_ ( i 'in' P ) F" :=
   (bigsetU P (fun i => F)) : classical_set_scope.
@@ -570,9 +573,12 @@ Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
 
 End basic_lemmas.
 
+Lemma mkset_nil (T : choiceType) : [set x | x \in [::]] = @set0 T.
+Proof. by rewrite predeqP. Qed.
+
 (* TODO: other lemmas that relate fset and classical sets *)
 Lemma fdisjoint_cset (T : choiceType) (A B : {fset T}) :
-  [disjoint A & B]%fset = ([set x | x \in A] `&` [set x | x \in B] == set0).
+  [disjoint A & B]%fset = [disjoint [set x | x \in A] & [set x | x \in B]].
 Proof.
 rewrite -fsetI_eq0; apply/idP/idP; apply: contraLR.
 by move=> /set0P[t [tA tB]]; apply/fset0Pn; exists t; rewrite inE; apply/andP.
@@ -691,7 +697,7 @@ Qed.
 
 Section bigop_lemmas.
 Context {T I : Type}.
-Implicit Types (A : set T) (i : I) (P : set I) (F : I -> set T).
+Implicit Types (A : set T) (i : I) (P : set I) (F G : I -> set T).
 
 Lemma bigcup_sup i P F : P i -> F i `<=` \bigcup_(j in P) F j.
 Proof. by move=> Pi a Fia; exists i. Qed.
@@ -710,6 +716,39 @@ Proof. by rewrite eqEsubset; split => a // []. Qed.
 Lemma bigcup_set1 F i : \bigcup_(j in [set i]) F j = F i.
 Proof. by rewrite eqEsubset; split => ? => [[] ? -> //|]; exists i. Qed.
 
+Lemma bigcup_nonempty P F :
+  (\bigcup_(i in P) F i !=set0) <-> exists2 i, P i & F i !=set0.
+Proof.
+split=> [[t [i ? ?]]|[j ? [t ?]]]; by [exists i => //; exists t| exists t, j].
+Qed.
+
+Lemma bigcup0 P F :
+  (forall i, P i -> F i = set0) -> \bigcup_(i in P) F i = set0.
+Proof. by move=> PF; rewrite predeqE => t; split => // -[i /PF ->]. Qed.
+
+Lemma bigcup0P P F :
+  (\bigcup_(i in P) F i = set0) <-> (P = set0) \/ (forall i, P i -> F i = set0).
+Proof.
+split=> [|[->|]]; [|by rewrite bigcup_set0|exact: bigcup0].
+apply: contraPP => /not_orP[/eqP/set0P[i Pi]].
+move=> /existsNP[j /not_implyP[Pj /eqP/set0P[t Fit]]].
+ by apply/eqP/set0P; exists t, j.
+Qed.
+
+Lemma subset_bigcup_r P : {homo (fun x : I -> set T => \bigcup_(i in P) x i)
+  : F G / [set F i | i in P] `<=` [set G i | i in P] >-> F `<=` G}.
+Proof.
+move=> F G FG t [i Pi Fit]; have := FG (F i).
+by move=> /(_ (ex_intro2 _ _ _ Pi erefl))[j Pj ji]; exists j => //; rewrite ji.
+Qed.
+
+Lemma eqbigcup_r P F G : (forall i, P i -> F i = G i) ->
+  \bigcup_(i in P) F i = \bigcup_(i in P) G i.
+Proof.
+by move=> FG; rewrite eqEsubset; split; apply: subset_bigcup_r;
+  move=> A [i ? <-]; exists i => //; rewrite FG.
+Qed.
+
 Lemma setC_bigcup P F : ~` (\bigcup_(i in P) F i) = \bigcap_(i in P) ~` F i.
 Proof.
 by rewrite eqEsubset; split => [t PFt i Pi ?|t PFt [i Pi ?]];
@@ -723,6 +762,16 @@ by move=> t /existsNP[i /not_implyP[Pi Fit]]; exists i.
 Qed.
 
 End bigop_lemmas.
+
+Lemma bigcup_mkset (T : choiceType) U (s : seq T) (f : T -> set U) :
+  \bigcup_(t in [set x | x \in s]) (f t) = \big[setU/set0]_(t <- s) (f t).
+Proof.
+elim: s => [/=|h s ih]; first by rewrite mkset_nil bigcup_set0 big_nil.
+rewrite big_cons -ih predeqE => u; split => [[t]|[?|[t ts ?]]].
+- by rewrite /mkset inE => /orP[/eqP-> ?|? ?]; [left|right; exists t].
+- by exists h => //; rewrite /mkset mem_head.
+- by exists t => //; rewrite /mkset inE ts orbT.
+Qed.
 
 Section bigop_nat_lemmas.
 Context {T : Type}.
