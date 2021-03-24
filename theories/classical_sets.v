@@ -717,20 +717,19 @@ Lemma bigcup_set1 F i : \bigcup_(j in [set i]) F j = F i.
 Proof. by rewrite eqEsubset; split => ? => [[] ? -> //|]; exists i. Qed.
 
 Lemma bigcup_nonempty P F :
-  (\bigcup_(i in P) F i !=set0) <-> (exists i, P i /\ F i !=set0).
+  (\bigcup_(i in P) F i !=set0) <-> exists2 i, P i & F i !=set0.
 Proof.
-split=> [[t [i Pi Fit]]|[j [Dj [t Fjt]]]]; last by exists t, j.
-by exists i; split => //; exists t.
+split=> [[t [i ? ?]]|[j ? [t ?]]]; by [exists i => //; exists t| exists t, j].
 Qed.
 
-Lemma bigcup1 P F :
+Lemma bigcup0 P F :
   (forall i, P i -> F i = set0) -> \bigcup_(i in P) F i = set0.
 Proof. by move=> PF; rewrite predeqE => t; split => // -[i /PF ->]. Qed.
 
-Lemma bigcup_empty P F :
+Lemma bigcup0P P F :
   (\bigcup_(i in P) F i = set0) <-> (P = set0) \/ (forall i, P i -> F i = set0).
 Proof.
-split=> [|[->|]]; [|by rewrite bigcup_set0|exact: bigcup1].
+split=> [|[->|]]; [|by rewrite bigcup_set0|exact: bigcup0].
 apply: contraPP => /not_orP[/eqP/set0P[i Pi]].
 move=> /existsNP[j /not_implyP[Pj /eqP/set0P[t Fit]]].
  by apply/eqP/set0P; exists t, j.
@@ -743,9 +742,12 @@ move=> F G FG t [i Pi Fit]; have := FG (F i).
 by move=> /(_ (ex_intro2 _ _ _ Pi erefl))[j Pj ji]; exists j => //; rewrite ji.
 Qed.
 
-Lemma eqbigcup_r P F G : [set F i | i in P] = [set G i | i in P] ->
+Lemma eqbigcup_r P F G : (forall i, P i -> F i = G i) ->
   \bigcup_(i in P) F i = \bigcup_(i in P) G i.
-Proof. by rewrite 2!eqEsubset => -[FG GF]; split; apply: subset_bigcup_r. Qed.
+Proof.
+by move=> FG; rewrite eqEsubset; split; apply: subset_bigcup_r;
+  move=> A [i ? <-]; exists i => //; rewrite FG.
+Qed.
 
 Lemma setC_bigcup P F : ~` (\bigcup_(i in P) F i) = \bigcap_(i in P) ~` F i.
 Proof.

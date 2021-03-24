@@ -33,7 +33,7 @@
     `expand_ereal_ball_fin_lt`, `ball_ereal_ball_fin_lt`, `ball_ereal_ball_fin_le`
 - in `classical_sets.v`:
   + notation `[disjoint ... & ..]`
-  + lemmas `mkset_nil`, `bigcup_mkset`, `bigcup_nonempty`, `bigcup1`, `bigcup_empty`,
+  + lemmas `mkset_nil`, `bigcup_mkset`, `bigcup_nonempty`, `bigcup0`, `bigcup0P`,
     `subset_bigcup_r`, `eqbigcup_r`
 
 ### Changed
