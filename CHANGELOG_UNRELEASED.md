@@ -54,16 +54,14 @@
     `disjoint_caratheodoryIU`, `caratheodory_additive`,
     `caratheodory_lim_lee`, `caratheodory_measurable_trivIset_bigcup`,
    `caratheodory_measurable_bigcup`
-  + definitions `measurable`, `caratheodory_mixin`, `caratheodory_measurableType`
+  + definitions `caratheodory_type`, `caratheodory_mixin`, `caratheodory_measurableType`
   + lemmas `caratheodory_measure0`, `caratheodory_measure_ge0`,
     `caratheodory_measure_sigma_additive`,
-    defintions `caratheodory_measure_mixin`, `measure_of_outer_measure`,
+    definitions `caratheodory_measure_mixin`, `caratheodory_measure`,
     lemma `caratheodory_measure_complete`
 
 ### Changed
 
-- in `ereal.v`:
-  + generalize lemma `lee_sum_nneg_subfset`
 - in `sequences.v`:
   + notations `\sum_(i <oo) F i`
   + lemmas `ereal_pseries_sum_nat`, `lte_lim`
@@ -72,17 +70,6 @@
   + lemmas `ereal_sum_lim_psum`, `lte_lim`, `fun_big_mkord`
 
 ### Changed
-- `topology.v` now imports `reals`
-- `normedtype.v` now imports `vector`, `fieldext`, `falgebra`,
-  `numFieldTopology.Exports`
-- `derive.v` now imports `numFieldNormedType.Exports`
-- `sequences.v` now imports `numFieldNormedType.Exports`
-- in `ereal.v`:
-  + lemmas `nbhs_oo_up_e1`, `nbhs_oo_down_e1`, `nbhs_oo_up_1e`, `nbhs_oo_down_1e`
-    `nbhs_fin_out_above`, `nbhs_fin_out_below`, `nbhs_fin_out_above_below`
-    `nbhs_fin_inbound`
-- in `classical_sets.v`:
-  + lemma `subset_bigsetU` generalized
 
 - in `ereal.v`:
   + generalize `sume_ge0`

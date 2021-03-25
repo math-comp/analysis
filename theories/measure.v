@@ -37,14 +37,13 @@ From HB Require Import structures.
 (*                     i.e., forall Y, mu X = mu (X `&` Y) + mu (X `&` ~` Y)  *)
 (*                                                                            *)
 (* Caratheodory theorem:                                                      *)
-(* caratheodory_measurableType mu == measurableType built from the outer      *)
-(*                         measure mu, formed by mu.-measurable sets          *)
-(* measure_of_outer_measure mu == the restriction of the outer measure mu to  *)
-(*                          the sigma algebra of Caratheodory measurable sets *)
-(*                          is a measure                                      *)
-(* caratheodory_measure_complete == sets that are negligible for              *)
-(*                           measure_of_outer_measure are Caratheodory        *)
-(*                           measurable                                       *)
+(* caratheodory_type mu := T, where mu : {outer_measure set T -> {ereal R}}   *)
+(*                         it is a canonical mesurableType copy of T.         *)
+(* caratheodory_measure mu == the restriction of the outer measure mu to the  *)
+(*                         sigma algebra of Caratheodory measurable sets is a *)
+(*                         measure                                            *)
+(*                         Remark: sets that are negligible for               *)
+(*                         caratheodory_measure are Caratheodory measurable   *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -654,7 +653,7 @@ Variable (mu : {measure set T -> {ereal R}}).
 
 (* 404,p.44 measure satisfies generalized Boole's inequality *)
 Theorem generalized_Boole_inequality (A : (set T) ^nat) :
-  (forall i : nat, measurable (A i)) -> measurable (\bigcup_n A n) ->
+  (forall i, measurable (A i)) -> measurable (\bigcup_n A n) ->
   (mu (\bigcup_n A n) <= \sum_(i <oo) mu (A i))%E.
 Proof.
 move=> mA mbigcupA; set B := fun n => \big[setU/set0]_(i < n.+1) (A i).
@@ -795,7 +794,7 @@ Lemma le_outer_measureIC (R : realFieldType) T
 Proof.
 pose B : (set T) ^nat := bigcup2 (X `&` A) (X `&` ~` A).
 have cvg_mu :
-    (fun n => (\sum_(i < n) mu (B i))%E) --> (mu (B 0%N) + mu (B 1%N))%E.
+    (fun n => \sum_(i < n) mu (B i))%E --> (mu (B 0%N) + mu (B 1%N))%E.
   rewrite -2!cvg_shiftS /=.
   rewrite [X in X --> _](_ : _ = (fun=> mu (B 0%N) + mu (B 1%N)))%E; last first.
     rewrite funeqE => i; rewrite 2!big_ord_recl /= big1 ?adde0 // => j _.
@@ -977,8 +976,8 @@ rewrite [in X in (_ <= X)%E](caratheodory_measurable_bigsetU MA n) lee_add2r //.
 by rewrite caratheodory_additive.
 Qed.
 
-Lemma caratheodory_measurable_trivIset_bigcup (A : (set T) ^nat) : (forall n, M (A n)) ->
-  trivIset setT A -> M (\bigcup_k (A k)).
+Lemma caratheodory_measurable_trivIset_bigcup (A : (set T) ^nat) :
+  (forall n, M (A n)) -> trivIset setT A -> M (\bigcup_k (A k)).
 Proof.
 move=> MA tA; apply le_caratheodory_measurable => X /=.
 have /(lee_add2r (mu (X `&` ~` \bigcup_k A k))) := outer_measure_bigcup_lim A X.
@@ -999,30 +998,31 @@ Qed.
 
 End caratheodory_theorem_sigma_algebra.
 
-Definition measurables (R : realType) (T : Type)
+Definition caratheodory_type (R : realType) (T : Type)
   (mu : {outer_measure set T -> {ereal R}}) := T.
 
 Section caratheodory_sigma_algebra.
 Variables (R : realType) (T : Type) (mu : {outer_measure set T -> {ereal R}}).
 
-HB.instance Definition caratheodory_mixin := @isMeasurable.Build (measurables mu)
-  mu.-measurable
-  (caratheodory_measurable_set0 mu)
-  (@caratheodory_measurable_setC _ _ mu)
-  (@caratheodory_measurable_bigcup _ _ mu).
+HB.instance Definition caratheodory_mixin := @isMeasurable.Build
+  (caratheodory_type mu) mu.-measurable
+    (caratheodory_measurable_set0 mu)
+    (@caratheodory_measurable_setC _ _ mu)
+    (@caratheodory_measurable_bigcup _ _ mu).
 
-Definition caratheodory_measurableType := [the measurableType of measurables mu].
+Definition caratheodory_measurableType :=
+  [the measurableType of caratheodory_type mu].
 End caratheodory_sigma_algebra.
 
 Section caratheodory_measure.
 Variables (R : realType) (T : Type) (mu : {outer_measure set T -> {ereal R}}).
-Let U : measurableType := caratheodory_measurableType mu.
+Local Notation U := [the measurableType of caratheodory_type mu].
 
 Lemma caratheodory_measure0 : mu (set0 : set U) = 0%:E.
 Proof. exact: outer_measure0. Qed.
 
 Lemma caratheodory_measure_ge0 (x : set U) :
-  @measurable U x -> (0%:E <= (mu x : {ereal R}))%E.
+  @measurable U x -> (0%:E <= mu x)%E.
 Proof. by move=> mx; apply outer_measure_ge0. Qed.
 
 Lemma caratheodory_measure_sigma_additive : @semi_sigma_additive _ U mu.
@@ -1033,11 +1033,10 @@ suff : forall X, (mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B))%E.
   rewrite (_ : (fun n => _) = (fun n => (\sum_(k < n) mu (A k))%E)); last first.
     rewrite funeqE => n; rewrite big_mkord; apply eq_bigr => i _; congr (mu _).
     by rewrite setIC; apply/setIidPl => t Ait; exists i.
-  move=> ->; have : forall n, xpredT n -> (0%:E <= mu (A n))%E.
-    by move=> n _; apply outer_measure_ge0.
-  move/(@is_cvg_ereal_nneg_series _ (mu \o A)) => /cvg_ex[l] H.
+  move=> ->; have := fun n (_ : xpredT n) => outer_measure_ge0 mu (A n).
+  move/(@is_cvg_ereal_nneg_series _ _) => /cvg_ex[l] hl.
   under eq_fun do rewrite -(big_mkord xpredT (mu \o A)).
-  by move/(@cvg_lim _ (@ereal_hausdorff R)) : (H) => ->.
+  by move/(@cvg_lim _ (@ereal_hausdorff R)) : (hl) => ->.
 move=> X.
 have mB : mu.-measurable B := caratheodory_measurable_bigcup mA.
 apply/eqP; rewrite eq_le (caratheodory_lim_lee mA tA X) andbT.
@@ -1047,11 +1046,11 @@ Qed.
 
 Definition caratheodory_measure_mixin := Measure.Axioms caratheodory_measure0
   caratheodory_measure_ge0 caratheodory_measure_sigma_additive.
-Definition measure_of_outer_measure : {measure set (measurables mu) -> _} :=
+Definition caratheodory_measure : {measure set (caratheodory_type mu) -> _} :=
   Measure.Pack _ caratheodory_measure_mixin.
 
 Lemma caratheodory_measure_complete (B : set U) :
-  measure_of_outer_measure.-negligible B -> mu.-measurable B.
+  caratheodory_measure.-negligible B -> measurable B.
 Proof.
 move=> [A [mA muA0 BA]]; apply le_caratheodory_measurable => X.
 suff -> : mu (X `&` B) = 0%:E.
