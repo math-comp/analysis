@@ -19,7 +19,7 @@ Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 
 Definition dense (T : topologicalType) (S : T -> Prop) :=
-  forall (O : set T), (exists y, O y) -> open O -> exists x, (setI O S) x.
+  forall (O : set T), O =!set0 -> open O ->  O `&` S !=set0.
 
 Lemma denseNE (T : topologicalType) (S : set T) : not (dense S) ->
   exists O, (exists x, (open_nbhs x) O) /\ (O `&` S = set0).
