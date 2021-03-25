@@ -334,6 +334,46 @@ Notation "\sum_ ( i 'in' A | P ) F" :=
 Notation "\sum_ ( i 'in' A ) F" :=
   (\big[+%E/0%:E]_(i in A) F%R) : ereal_scope.
 
+Section ERealOrderTheory.
+Context {R : numDomainType}.
+Implicit Types x y z : {ereal R}.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
+  by case: x => [||?]; first by rewrite ?eqe; apply: lm.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
+  by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
+Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
+  by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
+Lemma le0R (x : {ereal R}) :
+  0%:E <= x -> (0 <= real_of_er(*TODO: coercion broken*) x)%R.
+Proof. by case: x. Qed.
+
+Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
+Proof. by []. Qed.
+
+Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%R -> r0%:E < r1%:E.
+Proof. by []. Qed.
+
+End ERealOrderTheory.
+
+Section finNumPred.
+Context {R : numDomainType}.
+
+Definition fin_num := [qualify a x : er R | (x != -oo) && (x != +oo)].
+Fact fin_num_key : pred_key fin_num. by []. Qed.
+Canonical fin_num_keyd := KeyedQualifier fin_num_key.
+
+Lemma fin_numE x : (x \is a fin_num) = ((x != -oo) && (x != +oo)).
+Proof. by []. Qed.
+
+Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \in fin_num).
+Proof. by apply/(iffP idP) => [/andP//|/andP]. Qed.
+
+End finNumPred.
+
 Section ERealArithTh_numDomainType.
 
 Context {R : numDomainType}.
@@ -354,6 +394,9 @@ Proof. by []. Qed.
 Definition adde_undef x y :=
   (x == +oo) && (y == -oo) || (x == -oo) && (y == +oo).
 
+Lemma adde_undefC x y : adde_undef x y = adde_undef y x.
+Proof. by rewrite /adde_undef andbC orbC andbC. Qed.
+
 Lemma adde0 : right_id (0%:E : {ereal R}) +%E.
 Proof. by case=> //= x; rewrite addr0. Qed.
 
@@ -369,11 +412,14 @@ Proof. by case=> [x||] [y||] [z||] //=; rewrite addrA. Qed.
 Canonical adde_monoid := Monoid.Law addeA add0e adde0.
 Canonical adde_comoid := Monoid.ComLaw addeC.
 
-Lemma addeAC : right_commutative (S := {ereal R}) +%E.
+Lemma addeAC : @right_commutative {ereal R} _ +%E.
 Proof. by move=> x y z; rewrite -addeA (addeC y) addeA. Qed.
 
-Lemma addeCA : left_commutative (S := {ereal R}) +%E.
+Lemma addeCA : @left_commutative {ereal R} _ +%E.
 Proof. by move=> x y z; rewrite addeC -addeA (addeC x). Qed.
+
+Lemma addeACA : @interchange {ereal R} +%E +%E.
+Proof. by case=> [r||] [s||] [t||] [u||]//=; rewrite addrACA. Qed.
 
 Lemma oppe0 : - 0%:E = 0%:E :> {ereal R}.
 Proof. by rewrite /= oppr0. Qed.
@@ -384,6 +430,18 @@ Proof. by case=> [x||] //=; rewrite opprK. Qed.
 Lemma oppeD x (r : R) : - (x + r%:E) = - x - r%:E.
 Proof. by move: x => [x| |] //=; rewrite opprD. Qed.
 
+Lemma muleC x y : x * y = y * x.
+Proof. by case: x y => [r||] [s||]//=; rewrite mulrC. Qed.
+
+Lemma mule1 x : x * 1%:E = x.
+Proof. by case: x => [r||]/=; rewrite ?mulr1 ?lee_tofin ?lte_tofin. Qed.
+
+Lemma mul1e x : 1%:E * x = x.
+Proof. by rewrite muleC mule1. Qed.
+
+Lemma abseN x : `|- x| = `|x|.
+Proof. by case: x => [r||]; rewrite //= normrN. Qed.
+
 Lemma eqe_opp x y : (- x == - y) = (x == y).
 Proof.
 move: x y => [r| |] [r'| |] //=; apply/idP/idP => [|/eqP[->]//].
@@ -393,18 +451,31 @@ Qed.
 Lemma eqe_oppLR x y : (- x == y) = (x == - y).
 Proof. by move: x y => [r0| |] [r1| |] //=; rewrite !eqe eqr_oppLR. Qed.
 
-Definition is_real x := (x != -oo) && (x != +oo).
+Lemma fin_numN x : (- x \is a fin_num) = (x \is a fin_num).
+Proof. by rewrite !fin_numE 2!eqe_oppLR andbC. Qed.
 
-Lemma is_realN x : is_real (- x) = is_real x.
-Proof.
-by rewrite /is_real andbC -eqe_opp oppeK; congr (_ && _); rewrite -eqe_opp oppeK.
-Qed.
-
-Lemma is_realD x y : is_real (x + y) = (is_real x) && (is_real y).
+Lemma fin_numD x y :
+  (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma ERFin_real_of_er x : is_real x -> x = (real_of_er x)%:E.
+Lemma real_of_erD :
+  {in (@fin_num R) &, {morph real_of_er : x y / x + y >-> (x + y)%R}}.
+Proof. by move=> [r| |] [s| |]. Qed.
+
+Lemma fin_num_adde_undef x y : y \is a fin_num -> ~~ adde_undef x y.
+Proof. by move: x y => [x| |] [y | |]. Qed.
+
+Lemma ERFin_real_of_er x : x \is a fin_num -> x = (real_of_er x)%:E.
 Proof. by case: x. Qed.
+
+Lemma addeK x y : x \is a fin_num -> y + x - x = y.
+Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin /= addrK. Qed.
+
+Lemma subeK x y : y \is a fin_num -> x - y + y = x.
+Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin subrK. Qed.
+
+Lemma subee x : x \is a fin_num -> x - x = 0%:E.
+Proof. by move: x => [r _| |] //; rewrite -subERFin subrr. Qed.
 
 Lemma adde_eq_ninfty x y : (x + y == -oo) = ((x == -oo) || (y == -oo)).
 Proof. by move: x y => [?| |] [?| |]. Qed.
@@ -471,7 +542,6 @@ Lemma sume_ge0 T (u_ : T -> {ereal R}) (P : pred T) :
 Proof. by move=> u0 l; elim/big_rec : _ => // t x Pt; apply/adde_ge0/u0. Qed.
 
 End ERealArithTh_numDomainType.
-Arguments is_real {R}.
 
 Section ERealArithTh_realDomainType.
 
@@ -482,6 +552,12 @@ Lemma sube_gt0 x y : (0%:E < y - x) = (x < y).
 Proof.
 move: x y => [r | |] [r'| |] //=; rewrite ?(lte_pinfty,lte_ninfty) //.
 by rewrite !lte_fin subr_gt0.
+Qed.
+
+Lemma sube_le0 x y : (y - x <= 0%:E) = (y <= x).
+Proof.
+by move: x y => [x| |] [y| |]; apply/idP/idP => //=; try
+  (rewrite !(lee_pinfty,lee_ninfty) || rewrite !lee_fin subr_le0).
 Qed.
 
 Lemma suber_ge0 r x : (0%:E <= x - r%:E) = (r%:E <= x).
@@ -561,6 +637,13 @@ Lemma lte_le_add r t x y : r%:E < x -> t%:E <= y -> r%:E + t%:E < x + y.
 Proof.
 move: x y => [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
 by rewrite !lte_fin; exact: ltr_le_add.
+Qed.
+
+Lemma lee_sub x y z t : x <= y -> t <= z -> x - z <= y - t.
+Proof.
+move: x y z t => -[x| |] -[y| |] -[z| |] -[t| |] //=;
+  rewrite ?(lee_pinfty,lee_ninfty)//.
+by rewrite !lee_fin; exact: ler_sub.
 Qed.
 
 Lemma lee_sum I (f g : I -> {ereal R}) s (P : pred I) :
@@ -648,33 +731,6 @@ by rewrite !lee_fin ler_oppl.
 Qed.
 
 End ERealArithTh_realDomainType.
-
-(* -------------------------------------------------------------------- *)
-(* TODO: Check for duplications with `order.v`. Remove them.            *)
-Section ERealOrderTheory.
-Context {R : numDomainType}.
-Implicit Types x y z : {ereal R}.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) :=
-  by case: x => [||?]; first by rewrite ?eqe; apply: lm.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
-  by case: x y => [?||] [?||]; first by rewrite ?eqe; apply: lm.
-
-Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
-  by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
-
-Lemma le0R (x : {ereal R}) :
-  0%:E <= x -> (0 <= real_of_er(*TODO: coercion broken*) x)%R.
-Proof. by case: x. Qed.
-
-Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
-Proof. by []. Qed.
-
-Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%R -> r0%:E < r1%:E.
-Proof. by []. Qed.
-
-End ERealOrderTheory.
 
 Lemma lee_opp2 {R : realDomainType} : {mono @oppe R : x y /~ x <= y}.
 Proof.

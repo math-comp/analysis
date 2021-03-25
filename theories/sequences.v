@@ -830,7 +830,7 @@ by rewrite -real_of_er_expand // lte_fin k1un//; near: n; exists k.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvg_real (R : realFieldType) (f : {ereal R} ^nat) a :
-  {near \oo, forall x, is_real (f x)} /\
+  {near \oo, forall x, f x \is a fin_num} /\
   (real_of_er \o f --> a) <-> f --> a%:E.
 Proof.
 split=> [[[N _ foo] fa]|fa].
@@ -1159,14 +1159,14 @@ move: a b => [a| |] [b| |] // _.
   case/ereal_cvg_real => [[nb _ goo] gb].
   apply/ereal_cvg_real; split.
     exists (maxn na nb) => // n; rewrite /= geq_max => /andP[nan nbn].
-    by rewrite /= is_realD; apply/andP; split; [exact: foo | exact: goo].
+    by rewrite /= fin_numD; apply/andP; split; [exact: foo | exact: goo].
   rewrite -(@cvg_shiftn (maxn na nb)).
   rewrite (_ : (fun n => _) = (fun n => real_of_er (f (n + maxn na nb)%N)
       + real_of_er (g (n + maxn na nb)%N))); last first.
     rewrite funeqE => n /=.
-    have /ERFin_real_of_er -> : is_real (f (n + maxn na nb)%N).
+    have /ERFin_real_of_er -> : f (n + maxn na nb)%N \is a fin_num.
       by apply/foo; apply (leq_trans (leq_maxl _ _) (leq_addl _ _)).
-    suff /ERFin_real_of_er -> : is_real (g (n + maxn na nb)%N) by [].
+    suff /ERFin_real_of_er -> : g (n + maxn na nb)%N \is a fin_num by [].
     by apply/goo; apply (leq_trans (leq_maxr _ _) (leq_addl _ _)).
   apply: cvgD.
     by rewrite (@cvg_shiftn _ _ (real_of_er \o f)).

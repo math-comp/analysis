@@ -35,6 +35,12 @@
   + notation `[disjoint ... & ..]`
   + lemmas `mkset_nil`, `bigcup_mkset`, `bigcup_nonempty`, `bigcup0`, `bigcup0P`,
     `subset_bigcup_r`, `eqbigcup_r`
+- in `ereal.v`:
+  + lemmas `adde_undefC`, `real_of_erD`, `fin_num_add_undef`, `addeK`,
+    `subeK`, `subee`, `sube_le0`, `lee_sub`
+  + lemmas `addeACA`, `muleC`, `mule1`, `mul1e`, `abseN`
+  + enable notation `x \is a fin_num`
+    * definition `fin_num`, fact `fin_num_key`, lemmas `fin_numE`, `fin_numP`
 
 ### Changed
 
@@ -64,6 +70,10 @@
 
 ### Renamed
 
+- in `ereal.v`:
+  + `is_realN` -> `fin_numN`
+  + `is_realD` -> `fin_numD`
+
 ### Removed
 
 - in `topology.v`:
@@ -76,6 +86,8 @@
   + lemma `R_normZ`
   + definition `numFieldType_NormedModMixin`
   + canonical `numFieldType_normedModType`
+- in `ereal.v`:
+  + definition `is_real`
 
 ### Infrastructure
 
