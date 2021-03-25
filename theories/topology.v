@@ -4704,3 +4704,18 @@ exists (x + e%:num / 2)%R; apply: Ae; last first.
 rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
+
+Section density.
+
+Definition dense (T : topologicalType) (S : set T) :=
+  forall (O : set T), O !=set0 -> open O ->  O `&` S !=set0.
+
+Lemma denseNE (T : topologicalType) (S : set T) : ~ dense S ->
+  exists O, (exists x, open_nbhs x O) /\ (O `&` S = set0).
+Proof.
+rewrite /dense /open_nbhs.
+move=> /existsNP[X /not_implyP[[x Xx] /not_implyP[ Ox /forallNP A]]].
+by exists X; split; [exists x | rewrite -subset0; apply/A].
+Qed.
+
+End density.
