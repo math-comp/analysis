@@ -46,10 +46,10 @@ From HB Require Import structures.
 (* length_measure == Lebesgue measure                                         *)
 (*   relies on lemmas:                                                        *)
 (*     length_additive                                                        *)
-(*     length_sub_sigma_additive_on_finite_intervals                          *)
+(*     length_sigma_subadditive_on_finite_intervals                           *)
 (*     length_sigma_additive_on_finite_intervals                              *)
-(*     length_sub_sigma_additive_on_infinite_intervals                        *)
-(*     length_sub_sigma_additive_on_intervals                                 *)
+(*     length_sigma_subadditive_on_infinite_intervals                         *)
+(*     length_sigma_subadditive_on_intervals                                  *)
 (*     length_sigma_additive_on_intervals                                     *)
 (*     length_semi_sigma_additive                                             *)
 (*                                                                            *)
@@ -69,55 +69,6 @@ Reserved Notation "mu .-measurable" (at level 2, format "mu .-measurable").
 
 Reserved Notation "'s<<' A '>>'".
 Reserved Notation "[ 'sset' 'of' s ]" (at level 0, format "[ 'sset'  'of'  s ]").
-
-(* NB: PR in progress *)
-Section realPred.
-Context {R : numDomainType}.
-
-Definition real := [qualify x : er R | (x != -oo%E) && (x != +oo%E)].
-Fact real_key : pred_key real. by []. Qed.
-Canonical real_keyd := KeyedQualifier real_key.
-
-Lemma real_def x : (x \is real) = ((x != -oo%E) && (x != +oo%E)).
-Proof. by []. Qed.
-End realPred.
-
-Lemma subee (R : numDomainType) (x : {ereal R}) :
-  x \is real -> (x - x = 0%:E)%E.
-Proof. by move: x => [r _| |] //; rewrite -subERFin subrr. Qed.
-
-Lemma sube_le0 (R : realDomainType) (x y : er R) : (y - x <= 0%:E)%E = (y <= x)%E.
-Proof.
-by move: x y => [x| |] [y| |]; apply/idP/idP => //=; try
-  (rewrite !(lee_pinfty,lee_ninfty) || rewrite !lee_fin subr_le0).
-Qed.
-
-Lemma addeK (R : realDomainType) (x y : er R) : x \is real -> (y + x - x)%E = y.
-Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin addrK. Qed.
-
-Lemma subeK (R : realDomainType) (y x : er R) : y \is real -> (x - y + y)%E = x.
-Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin subrK. Qed.
-
-Lemma lee_sub (R : realDomainType) (x y z t : er R) :
-  (x <= y)%E -> (t <= z)%E -> (x - z <= y - t)%E.
-Proof.
-move: x y z t => -[x| |] -[y| |] -[z| |] -[t| |] //=;
-  rewrite ?(lee_pinfty,lee_ninfty)//.
-by rewrite !lee_fin; exact: ler_sub.
-Qed.
-
-Lemma real_of_erD (R : numDomainType) :
-  {in real &, {morph (@real_of_er R) : x y / (x + y)%E >-> x + y}}.
-Proof. by move=> [r| |] [s| |]. Qed.
-
-Lemma is_real_adde_undef (R : numDomainType) (x y : {ereal R}) :
-  y \is real -> ~~ adde_undef x y.
-Proof. by move: x y => [x| |] [y | |]. Qed.
-
-Lemma adde_undefC (R : numDomainType) (x y : er R) :
-  adde_undef x y = adde_undef y x.
-Proof. by rewrite /adde_undef orbC andbC (andbC (x == +oo)%E). Qed.
-(* END NB: PR in progress *)
 
 (* NB: PR in progress *)
 Lemma subset_bigsetU (T : Type) (F : nat -> set T) (P : pred nat):
@@ -142,11 +93,25 @@ exact: (@subset_bigsetU _ _ xpredT).
 Qed.
 (* END NB: PR in progress *)
 
+(* NB: PR to MathComp in progress *)
+Lemma gez0_norm (R : numDomainType) (i : int) : 0 <= i -> `|i|%:R = i%:~R :> R.
+Proof. by move/gez0_abs => <-. Qed.
+
+Lemma gtz0_norm (R : numDomainType) (i : int) : 0 < i -> `|i|%:R = i%:~R :> R.
+Proof. by move/gtz0_abs => <-. Qed.
+
+Lemma ltz0_norm (R : numDomainType) (i : int) : i < 0 -> `|i|%:R = - i%:~R :> R.
+Proof.
+move/ltz0_abs/eqP; rewrite -eqr_oppLR => /eqP <-.
+by rewrite abszN absz_id mulrNz opprK.
+Qed.
+(* END NB: PR to MathComp in progress *)
+
 Definition eseries (R : realFieldType) (u_ : nat -> {ereal R}) : {ereal R} ^nat :=
   [sequence (\sum_(k < n) u_ k)%E]_n.
 
 Lemma ERFin_sum (R : numDomainType) n m (f : nat -> {ereal R}) :
-  (forall i, (n <= i < m)%nat -> f i \is real) ->
+  (forall i, (n <= i < m)%N -> f i \is a fin_num) ->
   (\sum_(n <= i < m) (f i))%E = (\sum_(n <= i < m) (real_of_er (f i)))%:E.
 Proof.
 move=> nim; rewrite (@big_morph _ _ (@ERFin R) 0%:E adde) //.
@@ -155,41 +120,28 @@ by rewrite andbT => /nim fi; rewrite -ERFin_real_of_er.
 Qed.
 
 Lemma telescope_sume (R : numDomainType) n m (f : nat -> {ereal R}) :
-  (forall i, (n <= i <= m)%nat -> f i \is real) ->
+  (forall i, (n <= i <= m)%N -> f i \is a fin_num) ->
   (n <= m)%N ->
   (\sum_(n <= k < m) (f k.+1 - f k)%E = f m - f n)%E.
 Proof.
 move=> foo nm.
 have [g fg] : exists g : nat -> R, forall i, (n <= i <= m)%N -> f i = (g i)%:E.
-  exists (fun i => real_of_er (f i)) => i nim.
-  rewrite -ERFin_real_of_er //.
-  have := foo _ nim.
-  by rewrite real_def.
+  by exists (real_of_er \o f) => i nim; rewrite -ERFin_real_of_er // foo.
 rewrite ERFin_sum //; last first.
-  move=> i /andP[ni im].
-  rewrite real_def.
-  rewrite -/(is_real _).
-  rewrite is_realD is_realN.
-  rewrite /is_real -!real_def (foo i) ?andbT ?ni ?(ltnW im) //.
-  by rewrite foo // im andbT (leq_trans ni).
+  move=> i /andP[ni im]; rewrite fin_numD foo/= ?im ?(leq_trans _ (leqnSn _))//.
+  by rewrite fin_numN foo// ni/= ltnW.
 rewrite [in LHS]big_nat_cond.
 (under eq_bigr) => [i|].
   rewrite andbT => /andP[ni im].
   rewrite real_of_erD //; last 2 first.
     by rewrite foo // im (leq_trans ni).
-    by rewrite real_def -/(is_real _) is_realN /is_real -real_def foo // ni /= (ltnW im).
+    by rewrite fin_numN foo// ni /= ltnW.
   rewrite real_of_erN.
   over.
 rewrite -big_nat_cond telescope_sumr // subERFin.
-rewrite -ERFin_real_of_er; last first.
-  by rewrite /is_real -real_def foo // nm leqnn.
-rewrite -ERFin_real_of_er //.
-by rewrite /is_real -real_def foo // nm leqnn.
+rewrite -ERFin_real_of_er; last by rewrite foo // nm leqnn.
+by rewrite -ERFin_real_of_er // foo// leqnn.
 Qed.
-
-(* NB: add to ssrint? *)
-Lemma gez0_norm (R : numDomainType) (i : int) : 0 <= i -> `|i|%:R = i%:~R :> R.
-Proof. by move/gez0_abs => <-. Qed.
 
 Definition uncurry A B C (f : A -> B -> C) := fun x : A * B => f x.1 x.2.
 
@@ -214,8 +166,18 @@ Qed.
 Reserved Notation "\sum^oo_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \sum^oo_ i '/  '  F ']'").
+Reserved Notation "\sum^oo_ ( i 'in' P ) F"
+  (at level 41, F at level 41, i, P at level 50,
+           format "'[' \sum^oo_ ( i  'in'  P ) '/  '  F ']'").
 
-Notation "\sum^oo_ n F" := (lim (fun m => (\sum_(n < m) F)%E)).
+Definition sumoo {R : realFieldType} (F : (er R)^nat) := (lim (fun n : nat => (\sum_(i < n) (F i))%E)).
+Definition sumoo_cond {R : realFieldType} (P : pred nat) (F : (er R)^nat) := (lim (fun n : nat => (\sum_(i < n | P i) (F i))%E)).
+
+Notation "\sum^oo_ i F" := (sumoo (fun i => F)).
+Notation "\sum^oo_ ( i 'in' P ) F" := (sumoo_cond P (fun i => F)).
+
+(*Notation "\sum^oo_ i F" := (lim (fun n : nat => (\sum_(i < n) F)%E)) (only parsing).
+Notation "\sum^oo_ ( i 'in' P ) F" := (lim (fun n : nat => (\sum_(i < n | P i) F)%E)) (only parsing).*)
 
 Section caratheodory_theorem_sigma_algebra.
 
@@ -345,7 +307,7 @@ Proof.
 move=> MA tA X.
 set A' := \bigcup_k A k; set B := fun n => \big[setU/set0]_(k < n) (A k).
 suff : forall n, (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X)%E.
-  move=> XA; rewrite (_ : lim _ = ereal_sup
+  move=> XA; rewrite (_ : sumoo _ = ereal_sup
       ((fun n => \sum_(k < n) mu (X `&` A k))%E @` setT)); last first.
     apply/cvg_lim => //; apply/nondecreasing_seq_ereal_cvg.
     apply: (@lee_sum_nneg_ord _ (fun n => mu (X `&` A n)) xpredT) => n _.
@@ -427,6 +389,7 @@ Proof.
 move=> A mA tA mbigcupA; set B := \bigcup_k A k.
 suff : forall X, (mu X = \sum^oo_k (mu (X `&` A k)) + mu (X `&` ~` B))%E.
   move/(_ B); rewrite setICr outer_measure0 adde0.
+  rewrite /sumoo.
   rewrite (_ : (fun n => _) = (fun n => (\sum_(k < n) mu (A k))%E)); last first.
     rewrite funeqE => n; apply eq_bigr => i _; congr (mu _).
     by rewrite setIC; apply/setIidPl => t Ait; exists i.
@@ -464,8 +427,8 @@ End caratheodory_measure.
 
 Lemma epsilon_trick (R : realType) (A : (er R) ^nat) (e : R) (P : pred nat) :
   0 <= e -> (forall n, 0%:E <= A n)%E ->
-  (lim (fun n => \sum_(i < n | P i) (A i + (e / (2 ^ i)%:R)%:E)%E) <=
-   lim (fun n => \sum_(i < n | P i) A i) + (2 * e)%R%:E)%E.
+  (\sum^oo_(i in P) (A i + (e / (2 ^ i)%:R)%:E)%E <=
+   \sum^oo_(i in P) A i + (2 * e)%R%:E)%E.
 Proof.
 move=> e0 A0; rewrite (@le_trans _ _ (lim (fun n =>
     (\sum_(i < n | P i) A i)%E + (\sum_(i < n) (e / (2 ^ i)%:R)%:E))%E)) //.
@@ -494,7 +457,7 @@ rewrite ereal_limD //.
 - exact: is_cvg_ereal_nneg_series.
 - apply: (@is_cvg_ereal_nneg_series _ (fun i => (e / (2 ^ i)%:R)%:E) xpredT).
   by move=> ?; rewrite lee_fin divr_ge0 // ler0n.
-- by rewrite (cvg_lim _ cvggeo) //= is_real_adde_undef.
+- by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_undef.
 Grab Existential Variables. all: end_near. Qed.
 
 Section measure_extension.
@@ -550,13 +513,14 @@ suff add2e : forall e : {posnum R}, (mu_ext (\bigcup_n A n) <=
   apply lee_adde => e; rewrite (_ : e%:num = 2 * (e%:num / 2)) ?add2e //.
   by rewrite mulrCA divff // mulr1.
 move=> e.
-set P := fun n u_ => measurable_cover (A n) u_ /\
-  (lim (fun n => \sum_(k < n) mu (u_ k)) <=
+rewrite (le_trans _ (@epsilon_trick _ (mu_ext \o A) e%:num xpredT _ _)) //;
+  last by move=> n; apply: mu_ext_ge0.
+set P := fun n G => measurable_cover (A n) G /\
+  (lim (fun n => \sum_(k < n) mu (G k)) <=
    mu_ext (A n) + (e%:num / (2 ^ n)%:R)%:E)%E.
 have [G GA] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
-  apply: (@choice _ _ P) => n.
-  rewrite /P /mu_ext; set S : set {ereal R} := fun _ : _ => _.
-  move infS : (ereal_inf S) => iS.
+  apply: (@choice _ _ P) => n; rewrite /P /mu_ext.
+  set S : set {ereal R} := fun _ : _ => _; move infS : (ereal_inf S) => iS.
   case: iS infS => [r Sr|Soo|Soo].
   - have en : 0 < e%:num / (2 ^ n.+1)%:R by rewrite divr_gt0 // ltr0n expn_gt0.
     (* TODO: (+,,,+) add to posnum *)
@@ -564,45 +528,35 @@ have [G GA] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
     exists B; split => //; rewrite muBx -Sr; apply/ltW.
     rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul //=.
     + by rewrite invr_ge0 // ler0n.
-    + rewrite ler_pinv // ?inE ?unitfE;
-        try by rewrite pnatr_eq0 expn_eq0 /= ltr0n expn_gt0.
-      by rewrite ler_nat leq_exp2l.
+    + by rewrite lef_pinv // ?(posrE,ltr0n,expn_gt0)// ler_nat leq_exp2l.
   - by have := Aoo n; rewrite /mu_ext Soo.
   - suff : lbound S 0%:E by move/lb_ereal_inf; rewrite Soo.
-    move=> /= _ [B [mB AnB] <-]; apply: (@ereal_nneg_series_lim_ge0 _ (mu \o B) xpredT).
+    move=> /= _ [B [mB AnB] <-].
+    apply: (@ereal_nneg_series_lim_ge0 _ (mu \o B) xpredT).
     by move=> ? _; exact: measure_ge0.
 have muG_ge0 : forall x, (0%:E <= (mu \o uncurry G) x)%E.
   by move=> x; exact/measure_ge0/(cover_measurable (proj1 (GA x.1))).
-apply: (le_trans _ (@epsilon_trick _ (mu_ext \o A) e%:num xpredT _ _)) => //; last first.
-  by move=> n; apply mu_ext_ge0.
-pose muG :=
-  lim [sequence (\sum_(i < n) (lim [sequence (\sum_(j < k) mu (G i j))%E]_k))%E ]_n.
-apply (@le_trans _ _ muG).
-  suff : (mu_ext (\bigcup_n A n) <=
-      lim [sequence (\sum_(i < n) (lim [sequence (\sum_(j < m) mu (G i j))%E]_m))%E]_n)%E.
-    exact/le_trans.
-  have AB : \bigcup_n A n `<=` \bigcup_n (\bigcup_k G n k).
-    move=> t [i _].
-    by move/(cover_subset (proj1 (GA i))) => -[j _ ?]; exists i => //; exists j.
-  have : (mu_ext (\bigcup_n A n) <= csum setT (mu \o uncurry G))%E.
-    rewrite /mu_ext; apply ereal_inf_lb.
-    have [f [TfT injf]] :
-        exists e, enumeration (@setT (nat * nat)) e /\ injective e.
-      have /countable_enumeration [|[f ef]] := countable_prod_nat.
-        by rewrite predeqE => /(_ (O%N, 0%N)) [] /(_ I).
-      by exists (enum_wo_rep infinite_prod_nat ef); split;
-       [exact: enumeration_enum_wo_rep | exact: injective_enum_wo_rep].
-    exists (uncurry G \o f).
-      split; first by move=> i; exact: (cover_measurable (proj1 (GA (f i).1))).
-      move/subset_trans : AB; apply => t [i _ [j _ Bijt]].
-      rewrite /enumeration in TfT.
-      have [k ijk] : exists k, f k = (i, j).
-        have : setT (i, j) by [].
-        by rewrite TfT => -[k _ fkij]; exists k.
-      by exists k => //=; rewrite ijk.
-    rewrite -(@csum_countable _ _ (mu \o uncurry G) _ xpredT) //.
-    by congr csum; rewrite TfT predeqE=> -[a b]; split=> -[n _ <-]; exists n.
-  move/le_trans; apply.
+apply (@le_trans _ _ (csum setT (mu \o uncurry G))).
+  rewrite /mu_ext; apply ereal_inf_lb.
+  have [f [TfT injf]] : exists e : nat -> nat * nat,
+      enumeration setT e /\ injective e.
+    have /countable_enumeration [|[f ef]] := countable_prod_nat.
+      by rewrite predeqE => /(_ (O%N, 0%N)) [] /(_ Logic.I).
+    by exists (enum_wo_rep infinite_prod_nat ef); split;
+     [exact: enumeration_enum_wo_rep | exact: injective_enum_wo_rep].
+  exists (uncurry G \o f).
+    split; first by move=> i; exact: (cover_measurable (proj1 (GA (f i).1))).
+    apply (@subset_trans _ _ (\bigcup_n (\bigcup_k G n k))).
+      move=> t [i _] /(cover_subset (proj1 (GA i))).
+      by move=> -[j _ ?]; exists i => //; exists j.
+    move=> t [i _ [j _ Bijt]].
+    have [k ijk] : exists k, f k = (i, j).
+      by have : setT (i, j) by []; rewrite TfT => -[k _ fkij]; exists k.
+    by exists k => //=; rewrite ijk.
+  rewrite -(@csum_countable _ _ (mu \o uncurry G) _ xpredT) //.
+  by congr csum; rewrite TfT predeqE=> -[a b]; split=> -[n _ <-]; exists n.
+rewrite (_ : csum _ _ = lim [sequence (\sum_(i < n)
+          (lim [sequence (\sum_(j < k) mu (G i j))%E]_k))%E ]_n); last first.
   pose J : nat -> set (nat * nat) := fun i => [set (i, j) | j in setT].
   rewrite (_ : setT = \bigcup_k J k); last first.
     by rewrite predeqE => -[a b]; split => // _; exists a => //; exists b.
@@ -614,30 +568,18 @@ apply (@le_trans _ _ muG).
     by move=> [x2' _] [] /esym/eqP; rewrite (negbTE ij).
   rewrite (_ : setT = [set id i | i in xpredT]); last first.
     by rewrite predeqE => n; split => // _; exists n.
-  rewrite csum_countable //; last first.
-  - by move=> n _; apply: csum_ge0.
-  apply lee_lim.
-  - apply: (@is_cvg_ereal_nneg_series _ (fun i => csum (J i) (mu \o uncurry G)) xpredT).
-    by move=> n _; apply: csum_ge0.
-  - apply: (@is_cvg_ereal_nneg_series _
-       (fun i => lim (fun m => (\sum_(j < m) mu (G i j))%E)) xpredT).
-    move=> n _; apply ereal_lim_ge.
-    + apply: (@is_cvg_ereal_nneg_series _ (mu \o G n) xpredT) => k _ //.
-      exact: (muG_ge0 (n, k)).
-    + by near=> m; apply sume_ge0 => i _; exact: (muG_ge0 (n, nat_of_ord i)).
-  - near=> n.
-    apply: lee_sum => j _.
-    pose x_j : nat -> nat * nat := fun y => (nat_of_ord j, y).
-    have [enux injx] : enumeration (J j) x_j /\ injective x_j.
-      split => [|x y [] //].
-      by rewrite /enumeration predeqE=> -[? ?]; split => //.
-    rewrite -(@csum_countable R _ (mu \o uncurry G) x_j predT) //=; last first.
-      by move=> x _; exact/muG_ge0.
-    rewrite le_eqVlt; apply/orP; left; apply/eqP; congr (csum _ _).
-    by rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
+  rewrite csum_countable //; last by move=> n _; apply: csum_ge0.
+  congr (lim _); rewrite funeqE => n; apply eq_bigr => /= j _.
+  pose x_j : nat -> nat * nat := fun y => (nat_of_ord j, y).
+  have [enux injx] : enumeration (J j) x_j /\ injective x_j.
+    by split => [|x y [] //]; rewrite /enumeration predeqE=> -[? ?]; split.
+  rewrite -(@csum_countable R _ (mu \o uncurry G) x_j predT) //=; last first.
+    by move=> x _; exact/muG_ge0.
+  by congr csum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
 apply lee_lim.
 - apply/cvg_ex; eexists; apply nondecreasing_seq_ereal_cvg => i j ij.
-  apply: (@lee_sum_nneg_ord _ (fun i => lim (fun n => (\sum_(j < n) mu (G i j))%E)) xpredT) => // n _.
+  apply: (@lee_sum_nneg_ord _
+    (fun i => lim (fun n => (\sum_(j < n) mu (G i j))%E)) xpredT) => // n _.
   apply ereal_lim_ge.
   + apply: (@is_cvg_ereal_nneg_series _ (mu \o G n) xpredT) => x _.
     exact: (muG_ge0 (n, x)).
@@ -656,31 +598,29 @@ Canonical outer_measure_of_measure (R : realType) (T : ringOfSetsType)
     OuterMeasure (OuterMeasure.Axioms (mu_ext0 mu) (mu_ext_ge0 mu)
       (le_mu_ext mu) (mu_ext_sigma_subadditive mu)).
 
-(* proposition 13.19 *)
 Lemma mu_ext_measurable (R : realType) (T : ringOfSetsType)
-  (mu : {measure set T -> {ereal R}}) X : measurable X -> [outer_measure of mu_ext mu] X = mu X.
+    (mu : {measure set T -> {ereal R}}) X :
+  measurable X -> [outer_measure of mu_ext mu] X = mu X.
 Proof.
 move=> mX; apply/eqP; rewrite eq_le; apply/andP; split.
   apply ereal_inf_lb; exists (fun n => if n is 0%N then X else set0).
     by split=> [[]// _|t Xt]; [exact: measurable0 | exists 0%N].
-  set F := (X in lim_in _ X); have : ProperFilter F by typeclasses eauto.
-  move/(@cvg_lim _ _ _); apply => //.
-  rewrite -cvg_shiftS (_ : [sequence _]_n = cst (mu X)); first exact: cvg_cst.
+  apply/cvg_lim => //; rewrite -cvg_shiftS.
+  rewrite (_ : [sequence _]_n = cst (mu X)); first exact: cvg_cst.
   by rewrite funeqE => n /=; rewrite big_ord_recl /= big1 ?adde0.
 apply/lb_ereal_inf => x [A [mA XA] <-{x}].
 have XUA : X = \bigcup_n (X `&` A n).
   rewrite predeqE => t; split => [Xt|[i _ []//]].
   by have [i _ Ait] := XA _ Xt; exists i; split.
-apply: (@le_trans _ _ (lim (fun n => \sum_(i < n) mu (X `&` A i)))%E).
-  rewrite {1}XUA; apply: generalized_Boole_inequality => //; by [
-    move=> i; exact: measurableI | rewrite -XUA].
+apply: (@le_trans _ _ (\sum^oo_i mu (X `&` A i))%E).
+  by rewrite {1}XUA; apply: generalized_Boole_inequality => //;
+    [move=> i; exact: measurableI | rewrite -XUA].
 apply lee_lim.
 - apply: (@is_cvg_ereal_nneg_series _ (fun i => mu (X `&` A i)) xpredT) => n _.
   exact/measure_ge0/measurableI.
 - apply: (@is_cvg_ereal_nneg_series _ (mu \o A) xpredT) => n _.
   exact/measure_ge0.
-- near=> n; apply: lee_sum => i  _.
-  apply: le_measure => //;
+- near=> n; apply: lee_sum => i  _; apply: le_measure => //;
     rewrite /mkset ?in_setE //; by [exact: measurableI | apply: subIset; right].
 Grab Existential Variables. all: end_near.
 Qed.
@@ -759,7 +699,7 @@ Inductive gen_salgebra M : set (set U) :=
     s<< M >> (\bigcup_i (A i)) where "'s<<' M '>>'" := (gen_salgebra M).
 
 Lemma gen_salgebraE M :
-  s<< M >> = \bigcap_(A in [set T | measurableP T /\ M `<=` T]) A.
+  s<< M >> = \bigcap_(A in [set T : set (set U) | measurableP T /\ M `<=` T]) A.
 Proof.
 rewrite predeqE => A; split => [|]. elim=>
   [ {}A ? N [?] | {}A [[]]| {}A ? MA N [[? NC ?] ?] | {}A ? MA N [[? ? NI] ?]];
@@ -772,7 +712,7 @@ Lemma measurableP_gen_salgebra M : measurableP (gen_salgebra M).
 Proof. by rewrite gen_salgebraE; apply measurableP_bigcap => /= ? [?]. Qed.
 
 Lemma gen_salgebra_smallest M :
-  forall T, measurableP T -> M `<=` T -> gen_salgebra M `<=` T.
+  forall T : set (set U), measurableP T -> M `<=` T -> gen_salgebra M `<=` T.
 Proof. by move=> T mT MT t; rewrite gen_salgebraE; exact. Qed.
 
 End gen_salgebra.
@@ -893,43 +833,59 @@ apply H => //.
 by apply: contra ab => /eqP ab; apply/eqP/ie.
 Qed.
 
-Lemma sum_lim_sumC (R : realType) N (f : nat -> nat -> {ereal R}) :
+(* NB: PR in progress *)
+Lemma ereal_sum_lim_sumC (R : realType) N (f : nat -> nat -> {ereal R}) :
   (forall a b, 0%:E <= f a b)%E ->
-  (\sum_(i < N) (lim (fun n => (\sum_(k < n) f i k)%E)) <=
-  lim (fun n : nat => \sum_(i < n) (\sum_(k < N) f k i)%E)%E)%E.
+  (\sum_(i < N) (lim (fun n => (\sum_(j < n) f i j)%E)) <=
+   lim (fun n => \sum_(j < n) (\sum_(i < N) f i j)%E))%E.
 Proof.
-move=> f0; elim: N => [|N ih].
-  rewrite big_ord0 (_ : (fun n : nat => _) = (fun n : nat => 0%:E)) ?lim_cst//.
-  by rewrite funeqE => i; rewrite exchange_big big_ord0.
-rewrite big_ord_recr /=.
-set x := (fun n => \sum_(i < n) (\sum_(k < N) f k i)%E)%E.
-set y := (fun n => \sum_(k < n) f N k)%E.
-set z := (fun n => \sum_(i < n) (\sum_(k < N.+1) f k i)%E)%E.
+move=> f0; elim: N => [|N ih]; [rewrite big_ord0|rewrite big_ord_recr /=].
+  rewrite (_ : (fun n => _) = (fun n => 0%:E)) ?lim_cst//.
+  by rewrite funeqE => n; rewrite exchange_big big_ord0.
+set x := (fun n => \sum_(j < n) (\sum_(i < N) f i j)%E)%E.
+set y := (fun n => \sum_(j < n) f N j)%E.
+set z := (fun n => \sum_(j < n) (\sum_(i < N.+1) f i j)%E)%E.
 have xyz : (x \+ y = z)%E.
-  rewrite funeqE => n; rewrite /x /y /z -big_split; apply eq_bigr => i _.
+  rewrite funeqE => n; rewrite -big_split; apply eq_bigr => i _ /=.
   by rewrite big_ord_recr.
 rewrite (@le_trans _ _ (lim x + lim y)%E) //; first exact: lee_add2r.
-have xcvg : x --> ereal_sup (x @` setT).
-  apply nondecreasing_seq_ereal_cvg.
-  apply: (@lee_sum_nneg_ord _ (fun n => \sum_(k < N) f k n)%E xpredT) => n _.
+have cx : x --> ereal_sup (x @` setT).
+  apply: nondecreasing_seq_ereal_cvg.
+  apply: (@lee_sum_nneg_ord _ (fun n => \sum_(i < N) f i n)%E xpredT) => n _.
   exact: sume_ge0.
 have ? : cvg x.
-  apply: (@is_cvg_ereal_nneg_series _ (fun i => (\sum_(k < N) f k i)%E) xpredT) => // i _.
-  exact: sume_ge0.
-have ? : cvg y by exact: (@is_cvg_ereal_nneg_series _ (f N) xpredT).
+  apply: (@is_cvg_ereal_nneg_series _ (fun j => (\sum_(i < N) f i j)%E) xpredT).
+  by move=> // j _; exact: sume_ge0.
+have ? : cvg y by exact: (@is_cvg_ereal_nneg_series _ _ xpredT).
 move: (lee_pinfty (ereal_sup (x @` setT))); rewrite le_eqVlt => /orP[/eqP|] xoo.
   suff : (lim x <= lim z)%E.
-    by rewrite (cvg_lim _ xcvg) // xoo lee_pinfty_eq => /eqP ->; rewrite lee_pinfty.
-  apply: lee_lim => //.
-  apply: (@is_cvg_ereal_nneg_series _ (fun i => (\sum_(k < N.+1) f k i)%E) xpredT) => // i _.
-  exact: sume_ge0.
-  by near=> n; apply: lee_sum => i _; rewrite big_ord_recr /= lee_addl.
+    by rewrite (cvg_lim _ cx)// xoo lee_pinfty_eq=> /eqP ->; rewrite lee_pinfty.
+  apply: lee_lim => //; last first.
+    by near=> n; apply: lee_sum => i _; rewrite big_ord_recr /= lee_addl.
+  apply: (@is_cvg_ereal_nneg_series _ (fun j => (\sum_(k < _) f k j)%E) xpredT).
+  by move=> j _; exact: sume_ge0.
 rewrite /x /y -ereal_limD // ?xyz // -/x.
-rewrite (cvg_lim _ xcvg) // adde_undefC is_real_adde_undef // real_def.
+rewrite (cvg_lim _ cx) // adde_undefC fin_num_adde_undef // fin_numE.
 rewrite (lt_eqF xoo) andbT gt_eqF // (@lt_le_trans _ _ 0%:E) ?lte_ninfty//.
 by apply: ereal_sup_ub; rewrite /x /=; exists O => //; rewrite big_ord0.
 Grab Existential Variables. all: end_near. Qed.
 
+(* NB: PR in progress *)
+Lemma lte_lim (R : realFieldType) (u : (er R)^nat) (M : R) :
+  nondecreasing_seq u -> cvg u -> (M%:E < lim u)%E ->
+  \forall n \near \oo, (M%:E <= u n)%E.
+Proof.
+move=> ndu cu Ml; have [[n Mun]|] := pselect (exists n, (M%:E <= u n)%E).
+  near=> m; suff : (u n <= u m)%E by exact: le_trans.
+  by near: m; exists n.+1 => // p q; apply/ndu/ltnW.
+move/forallNP => Mu.
+have {}Mu : forall x, (M%:E > u x)%E by move=> x; rewrite ltNge; apply/negP.
+have : (lim u <= M%:E)%E by apply ereal_lim_le => //; near=> m; apply/ltW/Mu.
+by move/(lt_le_trans Ml); rewrite ltxx.
+Grab Existential Variables. all: end_near. Qed.
+(* END NB: PR in progress *)
+
+(* NB: not used *)
 Lemma lt_lim (R : realFieldType) (u_ : R^o^nat) (M : R) :
   nondecreasing_seq u_ -> cvg u_ -> (M < lim u_)%R ->
   \forall n \near \oo, (M <= u_ n)%R.
@@ -943,50 +899,42 @@ have : lim u_ <= M by apply lim_le => //; near=> m; exact/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Grab Existential Variables. all: end_near. Qed.
 
-(* NB: too similar to lt_lim *)
-Lemma ereal_lt_lim (R : realFieldType) (u_ : {ereal R}^nat) (M : R) :
-  nondecreasing_seq u_ -> cvg u_ -> (M%:E < lim u_)%E ->
-  \forall n \near \oo, (M%:E <= u_ n)%E.
+Lemma sum_fset_nat_ub (R : realDomainType)
+  (u_ : (er R)^nat) (F : {fset nat}) (P : pred nat) n :
+  (forall i, P i -> 0%:E <= u_ i)%E ->
+  (F `<=` [fset nat_of_ord i | i in 'I_n])%fset ->
+  (\sum_(i <- F | P i) u_ i <= \sum_(i < n | P i) u_ i)%E.
 Proof.
-move=> ndu_ cu_ Ml; have [[n Mu_n]|] := pselect (exists n, (M%:E <= u_ n)%E).
-  near=> m; suff : (u_ n <= u_ m)%E by exact: le_trans.
-  by near: m; exists n.+1 => // p q; apply/ndu_/ltnW.
-move/forallNP => Mu.
-have {}Mu : forall x, (M%:E > u_ x)%E by move=> x; rewrite ltNge; apply/negP.
-have : (lim u_ <= M%:E)%E by apply ereal_lim_le => //; near=> m; apply/ltW/Mu.
-by move/(lt_le_trans Ml); rewrite ltxx.
-Grab Existential Variables. all: end_near. Qed.
+move=> u0 FSn.
+apply (@le_trans _ _ (\sum_(i <- [fset (nat_of_ord j) | j in 'I_n & P j]%fset) u_ i)%E); last first.
+  rewrite big_imfset /=; last by move=> i j _ _; apply ord_inj.
+  by rewrite big_filter big_enum_cond.
+apply (@le_trans _ _ (\sum_(i <- [fset (nat_of_ord j) | j in 'I_n]%fset | P i) u_ i)%E); last first.
+  rewrite big_imfset /=; last by move=> i j _ _; apply/ord_inj.
+  rewrite big_filter big_enum_cond /= big_mkcond /=.
+  rewrite big_imfset /=; last by move=> i j _ _; apply/ord_inj.
+  by rewrite -big_mkcond /= big_enum_cond.
+by apply/lee_sum_nneg_subfset; [exact/fsubsetP |move=> /= m _; apply u0].
+Qed.
 
 Lemma lee_sum_lim (R : realType)
-  (u_ : (er [topologicalType of R^o])^nat) (F : {fset nat}) (P : pred nat) :
+  (u_ : (er R)^nat) (F : {fset nat}) (P : pred nat) :
   (forall i, P i -> 0%:E <= u_ i)%E ->
   (\sum_(i <- F | P i) u_ i <= lim (fun n => \sum_(i < n | P i) u_ i))%E.
 Proof.
-move=> u0.
-have [/eqP ->|F0] := boolP (F == fset0).
-  by rewrite big_mkcond big_seq_fset0; exact: (@ereal_nneg_series_lim_ge0 _ _ P).
+move=> u0; have [/eqP ->|F0] := boolP (F == fset0).
+  by rewrite big_mkcond big_seq_fset0 ereal_nneg_series_lim_ge0.
 have [n FnS] : exists n, (F `<=` [fset (nat_of_ord i) | i in 'I_n])%fset.
   move/fset_nat_maximum : F0 => [i [ieF eFi]]; exists i.+1.
   apply/fsubsetP => j jF; apply/imfsetP => /=.
   by move/eFi : jF; rewrite -ltnS => jF; exists (Ordinal jF).
-apply: (le_trans _ (@ereal_nneg_series_lim_ge _ u_ P n u0)).
-rewrite [X in (_ <= X)%E](_ : _ = \sum_(i <- [fset (nat_of_ord j) | j in 'I_n & P j]%fset ) u_ i)%E; last first.
-  rewrite big_imfset /=; last by move=> i j _ _; apply ord_inj.
-  by rewrite big_filter big_enum_cond.
-rewrite [X in (_ <= X)%E](_ : _ = (\sum_(i <- [fset (nat_of_ord j) | j in 'I_n]%fset | P i) u_ i)%E) /=; last first.
-  rewrite big_imfset /=; last by move=> i j _ _; apply/ord_inj.
-  rewrite big_filter big_enum_cond /=.
-  apply/esym.
-  rewrite big_mkcond /= big_imfset /=; last by move=> i j _ _; apply/ord_inj.
-  by rewrite -big_mkcond /= big_enum_cond.
-apply: (@lee_sum_nneg_subfset _ _ F [fset (nat_of_ord i) | i in 'I_n]%fset P).
-by apply/fsubsetP.
-by move=> /= m _; apply u0.
+exact/(le_trans _ (ereal_nneg_series_lim_ge n u0))/sum_fset_nat_ub.
 Qed.
 
 Lemma head_behead {T : eqType} (s : seq T) def : s != [::] -> head def s :: behead s = s.
 Proof. by case: s. Qed.
 
+(* NB: PR in progress *)
 Lemma has_inf0 d (T : porderType d) : ~ has_inf (@set0 T).
 Proof. by rewrite /has_inf not_andP; left; apply/set0P/negP/negPn. Qed.
 
@@ -1008,35 +956,7 @@ Proof.
 rewrite /Rhull (asboolT has_lbound0) (asboolT has_ubound0) /= asboolF //=.
 by rewrite sup0 inf0.
 Qed.
-
-Lemma itv_boundNpinfty (R : numDomainType) (a : itv_bound R) :
-  a != +oo%O <-> (a = -oo%O \/ exists b r, a = BSide b r).
-Proof.
-move: a => [b r|[]] => /=; split => //.
-- by move=> _; right; exists b, r.
-- by move=> _; left.
-- by move=> [//|[b [r //]]].
-Qed.
-
-Lemma itv_boundNninfty (R : numDomainType) (a : itv_bound R) :
-  a != -oo%O <-> (a = +oo%O \/ exists b r, a = BSide b r).
-Proof.
-move: a => [b r|[]] => /=; split => //.
-- by move=> _; right; exists b, r.
-- by move=> [//|[b [r //]]].
-- by move=> _; left.
-Qed.
-
-Lemma itv_meet_mem (R : realDomainType) (i1 i2 j1 j2 : itv_bound R) (x : R) :
-  x \in itv_meet (Interval i1 i2) (Interval j1 j2) <->
-  x \in Interval i1 i2 /\ x \in Interval j1 j2.
-Proof.
-split.
-  rewrite /= 3!itv_boundlr joinEtotal meetEtotal le_maxl le_minr.
-  by move=> /andP[/andP[-> ->] /andP[-> ->]].
-case; rewrite 2!itv_boundlr => /andP[i1x xi2] /andP[j1x xj2].
-by rewrite /= itv_boundlr joinEtotal meetEtotal le_maxl le_minr i1x j1x xj2 xi2.
-Qed.
+(* END NB: PR in progress *)
 
 Coercion interval_to_pair T (I : interval T) : itv_bound T * itv_bound T :=
   let: Interval b1 b2 := I in (b1, b2).
@@ -1045,34 +965,39 @@ Section set_of_itv.
 Variable (R : numDomainType).
 Implicit Type i j : interval R.
 Implicit Type x y : R.
-
-Lemma IntervalE i : i = Interval i.1 i.2.
-Proof. by case: i. Qed.
+Implicit Type a : itv_bound R.
 
 Definition set_of_itv i : set R := [set x | x \in i].
 
-Lemma is_interval_set_of_itv i : is_interval (set_of_itv i).
-Proof. exact: interval_is_interval. Qed.
-
-Lemma set_of_itv_mem i x : (set_of_itv i) x <-> x \in i.
+Lemma set_of_itv_mem i x : set_of_itv i x <-> x \in i.
 Proof. by move: i => [[[]i1|[]] [[]i2|[]]]. Qed.
 
 Lemma subset_of_itvP i j : {subset i <= j} <-> set_of_itv i `<=` set_of_itv j.
 Proof. by move: i j => [[[] ?|[]] [[] ?|[]]] [[[] ?|[]] [[] ?|[]]]. Qed.
 
-Lemma set_of_itv_empty_set0 i : ~~ (i.1 < i.2)%O -> set_of_itv i = set0.
+Lemma set_of_itvNlt_set0 i : ~~ (i.1 < i.2)%O -> set_of_itv i = set0.
 Proof.
 case: i => a b /itv_ge ij0; rewrite predeqE => r; split => //.
 by rewrite /set_of_itv /mkset ij0.
 Qed.
 
-Lemma set_of_itv_pinfty_set0 (a : itv_bound R) : set_of_itv (Interval +oo%O a) = set0.
-Proof. by rewrite set_of_itv_empty_set0. Qed.
+Lemma set_of_itv_pinfty_set0 a : set_of_itv (Interval +oo%O a) = set0.
+Proof. by rewrite set_of_itvNlt_set0. Qed.
 
-Lemma set_of_itv_minfty_set0 (a : itv_bound R) : set_of_itv (Interval a -oo%O) = set0.
-Proof. rewrite set_of_itv_empty_set0 //=; by case: a => [[]a|[]]. Qed.
+Lemma set_of_itv_ninfty_set0 a : set_of_itv (Interval a -oo%O) = set0.
+Proof. by rewrite set_of_itvNlt_set0 //=; case: a => [[]a|[]]. Qed.
 
-Definition set_of_itv_infty_set0 := (set_of_itv_minfty_set0, set_of_itv_pinfty_set0).
+Definition set_of_itv_infty_set0 :=
+  (set_of_itv_ninfty_set0, set_of_itv_pinfty_set0).
+
+Lemma set_of_itv_pinfty_ninfty : set_of_itv (Interval +oo%O -oo%O) = @set0 R.
+Proof. by rewrite set_of_itvNlt_set0. Qed.
+
+Lemma set_of_itv_ninfty_ninfty : set_of_itv (Interval -oo%O -oo%O) = @set0 R.
+Proof. by rewrite set_of_itvNlt_set0. Qed.
+
+Lemma set_of_itv_pinfty_pinfty : set_of_itv (Interval +oo%O +oo%O) = @set0 R.
+Proof. by rewrite set_of_itvNlt_set0. Qed.
 
 Lemma set_of_itv_open_open x y : set_of_itv `]x, y[ = (fun z => x < z < y).
 Proof. by []. Qed.
@@ -1086,7 +1011,7 @@ Proof. by []. Qed.
 Lemma set_of_itv_closed_open x y : set_of_itv `[x, y[ = (fun z => x <= z < y).
 Proof. by []. Qed.
 
-Lemma set_of_itv_minfty_pinfty : set_of_itv `]-oo, +oo[ = setT :> set R.
+Lemma set_of_itv_ninfty_pinfty : set_of_itv `]-oo, +oo[ = @setT R.
 Proof. by rewrite predeqE. Qed.
 
 Lemma set_of_itv_open_pinfty x : set_of_itv `]x, +oo[ = (fun z => x < z).
@@ -1095,26 +1020,17 @@ Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv andbT. Qed.
 Lemma set_of_itv_closed_pinfty x : set_of_itv `[x, +oo[ = (fun z => x <= z).
 Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv andbT. Qed.
 
-Lemma set_of_itv_minfty_open x : set_of_itv `]-oo, x[ = (fun z => z < x).
+Lemma set_of_itv_ninfty_open x : set_of_itv `]-oo, x[ = (fun z => z < x).
 Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv. Qed.
 
-Lemma set_of_itv_minfty_closed x : set_of_itv `]-oo, x] = (fun z => z <= x).
+Lemma set_of_itv_ninfty_closed x : set_of_itv `]-oo, x] = (fun z => z <= x).
 Proof. by rewrite predeqE /set_of_itv /mkset => r; rewrite in_itv. Qed.
-
-Lemma set_of_itv_minfty_minfty : set_of_itv (Interval -oo%O -oo%O) = set0 :> set R.
-Proof. by rewrite set_of_itv_empty_set0. Qed.
-
-Lemma set_of_itv_pinfty_minfty : set_of_itv (Interval +oo%O -oo%O) = set0 :> set R.
-Proof. by rewrite set_of_itv_empty_set0. Qed.
-
-Lemma set_of_itv_pinfty_pinfty : set_of_itv (Interval +oo%O +oo%O) = set0 :> set R.
-Proof. by rewrite set_of_itv_empty_set0. Qed.
 
 Definition set_of_itvE := (set_of_itv_open_open, set_of_itv_closed_closed,
-  set_of_itv_open_closed, set_of_itv_closed_open, set_of_itv_minfty_pinfty,
-  set_of_itv_open_pinfty, set_of_itv_closed_pinfty, set_of_itv_minfty_open,
-  set_of_itv_minfty_closed, set_of_itv_minfty_minfty, set_of_itv_pinfty_minfty,
-  set_of_itv_pinfty_pinfty, set_of_itv_pinfty_set0, set_of_itv_minfty_set0).
+  set_of_itv_open_closed, set_of_itv_closed_open, set_of_itv_ninfty_pinfty,
+  set_of_itv_open_pinfty, set_of_itv_closed_pinfty, set_of_itv_ninfty_open,
+  set_of_itv_ninfty_closed, set_of_itv_ninfty_ninfty, set_of_itv_pinfty_ninfty,
+  set_of_itv_pinfty_pinfty, set_of_itv_infty_set0).
 
 Section punctured_interval.
 
@@ -1167,43 +1083,30 @@ End punctured_interval.
 End set_of_itv.
 Arguments set_of_itv {R}.
 
-Lemma trivIset_set_of_itv_nth (R : numDomainType) def (s : seq (interval R))
-  (D : set nat) : set_of_itv def = set0 ->
-  trivIset D (fun i => set_of_itv (nth def s i)) <->
-    trivIset D (fun i => nth set0 (map set_of_itv s) i).
-Proof.
-move=> def0; split=> /trivIsetP ss; apply/trivIsetP => i j Di Dj ij.
-- have [si|si] := ltP i (size s); last first.
-    by rewrite (nth_default set0) ?size_map// set0I.
-  have [sj|sj] := ltP j (size s); last first.
-    by rewrite setIC (nth_default set0) ?size_map// set0I.
-  by rewrite (nth_map def) // (nth_map def) // ss.
-- have [?|h] := ltP i (size s); last by rewrite (nth_default def h) def0 set0I.
-  have [?|h] := ltP j (size s); last by rewrite (nth_default def h) def0 setI0.
-  by have := ss _ _ Di Dj ij; rewrite (nth_map def) // (nth_map def).
-Qed.
-Arguments trivIset_set_of_itv_nth {R} _ {s}.
-
 Section set_of_itv_realDomainType.
 Variable R : realDomainType.
+Implicit Types x y : R.
 
-Lemma set_of_itvC_minfty_BSide b (r : R) :
-  ~` set_of_itv (Interval -oo%O (BSide b r)) = set_of_itv (Interval (BSide b r) +oo%O).
+Lemma set_of_itvC_ninfty_BSide b x :
+  ~` set_of_itv (Interval -oo%O (BSide b x)) =
+  set_of_itv (Interval (BSide b x) +oo%O).
 Proof.
-case: b; rewrite !set_of_itvE predeqE => x.
+case: b; rewrite !set_of_itvE predeqE => r.
 by split; rewrite leNgt => /negP.
 by split; rewrite ltNge => /negP.
 Qed.
 
-Lemma set_of_itvC_BSide_pinfty b (r : R) :
-  ~` set_of_itv (Interval (BSide b r) +oo%O) = set_of_itv (Interval -oo%O (BSide b r)).
-Proof. by rewrite -set_of_itvC_minfty_BSide setCK. Qed.
+Lemma set_of_itvC_BSide_pinfty b x :
+  ~` set_of_itv (Interval (BSide b x) +oo%O) =
+  set_of_itv (Interval -oo%O (BSide b x)).
+Proof. by rewrite -set_of_itvC_ninfty_BSide setCK. Qed.
 
-Let set_of_itvC_BSide_BSide a b (x y : R) :
-  ~` set_of_itv (Interval (BSide a x) (BSide b y)) =
-  set_of_itv (Interval -oo%O (BSide a x)) `|` set_of_itv (Interval (BSide b y) +oo%O).
+Let set_of_itvC_BSide_BSide (b0 b1 : bool) x y :
+  ~` set_of_itv (Interval (BSide b0 x) (BSide b1 y)) =
+  set_of_itv (Interval -oo%O (BSide b0 x)) `|`
+  set_of_itv (Interval (BSide b1 y) +oo%O).
 Proof.
-move: a b => [] []; rewrite !set_of_itvE predeqE => r; split.
+move: b0 b1 => [] []; rewrite !set_of_itvE predeqE => r; split.
 by move/negP; rewrite negb_and -ltNge -leNgt => /orP.
 by move/orP; rewrite leNgt (ltNge r x) -negb_and => /negP.
 by move/negP; rewrite negb_and -2!ltNge => /orP.
@@ -1214,29 +1117,29 @@ by move/negP; rewrite negb_and -leNgt -ltNge => /orP.
 by move/orP; rewrite leNgt (ltNge y r) -negb_and => /negP.
 Qed.
 
-Lemma set_of_itvC_Interval (a b : itv_bound R) : ~` set_of_itv (Interval a b) =
-  set_of_itv (Interval -oo%O a) `|` set_of_itv (Interval b +oo%O).
+Lemma set_of_itvC_Interval (i : interval R) : ~` set_of_itv i =
+  set_of_itv (Interval -oo%O i.1) `|` set_of_itv (Interval i.2 +oo%O).
 Proof.
-move: a b => [[] a|[]] [[] b|[]].
+case: i => -[[] x|[]] [[] y|[]] /=.
 by rewrite set_of_itvC_BSide_BSide.
 by rewrite set_of_itvC_BSide_BSide.
 by rewrite !set_of_itvE setUT setC0.
 by rewrite set_of_itvC_BSide_pinfty !set_of_itvE setU0.
 by rewrite set_of_itvC_BSide_BSide.
 by rewrite set_of_itvC_BSide_BSide.
-by rewrite set_of_itv_empty_set0 // setC0 !set_of_itvE setUT.
+by rewrite set_of_itvNlt_set0 // setC0 !set_of_itvE setUT.
 by rewrite set_of_itvC_BSide_pinfty !set_of_itvE setU0.
-by rewrite set_of_itvC_minfty_BSide !set_of_itvE set0U.
-by rewrite set_of_itvC_minfty_BSide !set_of_itvE set0U.
+by rewrite set_of_itvC_ninfty_BSide !set_of_itvE set0U.
+by rewrite set_of_itvC_ninfty_BSide !set_of_itvE set0U.
 by rewrite set_of_itvE setC0 set0U set_of_itvE.
 by rewrite !set_of_itvE setCT set0U.
 by rewrite !set_of_itvE setTU setC0.
 by rewrite !set_of_itvE setTU setC0.
-by rewrite set_of_itv_empty_set0 // setC0 !set_of_itvE setTU.
+by rewrite set_of_itvNlt_set0 // setC0 !set_of_itvE setTU.
 by rewrite !set_of_itvE setC0 setU0.
 Qed.
 
-Definition set_of_itvC := (set_of_itvC_minfty_BSide,
+Definition set_of_itvC := (set_of_itvC_ninfty_BSide,
                            set_of_itvC_BSide_pinfty,
                            set_of_itvC_Interval).
 
@@ -1245,23 +1148,24 @@ Lemma itv_meetE (i j : interval R) :
 Proof.
 rewrite eqEsubset; split => x; move: i j => [i1 i2] [j1 j2].
 - move/set_of_itv_mem => /=.
-  rewrite itv_boundlr joinEtotal meetEtotal le_maxl le_minr => /andP[/andP[i1x j1x] /andP[xi2 xj2]].
+  rewrite itv_boundlr joinEtotal meetEtotal le_maxl le_minr.
+  move=> /andP[/andP[i1x j1x] /andP[xi2 xj2]].
   by split; apply/set_of_itv_mem; rewrite itv_boundlr ?i1x ?xi2 // j1x xj2.
 - case => /set_of_itv_mem; rewrite itv_boundlr => /andP[i1x xi2] /set_of_itv_mem.
-  rewrite itv_boundlr => /andP[j1x xj2].
-  by apply/set_of_itv_mem; rewrite itv_boundlr joinEtotal meetEtotal le_maxl le_minr i1x xi2 j1x.
+  rewrite itv_boundlr => /andP[j1x xj2]; apply/set_of_itv_mem.
+  by rewrite itv_boundlr joinEtotal meetEtotal le_maxl le_minr i1x xi2 j1x.
 Qed.
 
 End set_of_itv_realDomainType.
 
 Section set_of_itv_numFieldType.
 Variable R : numFieldType.
+Implicit Types i : interval R.
 
-Lemma set_of_itv_empty_eq0 (a b : itv_bound R) :
-  (set_of_itv (Interval a b) == set0) = ~~ (a < b)%O.
+Lemma set_of_itv_eq0 i : (set_of_itv i == set0) = ~~ (i.1 < i.2)%O.
 Proof.
-apply/idP/idP => [/eqP|]; last by move=> ab; rewrite set_of_itv_empty_set0.
-move: a b => [[]a|[]] [[]b|[]] //=; rewrite !set_of_itvE/=.
+apply/idP/idP => [/eqP|]; last by move=> ?; rewrite set_of_itvNlt_set0.
+case: i => -[[]a|[]] [[]b|[]] //=; rewrite !set_of_itvE/=.
 - by rewrite predeqE => /(_ a)/=; rewrite lexx /= => -[] /negP.
 - by rewrite predeqE => /(_ a)/=; rewrite lexx /= => -[] /negP.
 - by rewrite predeqE => /(_ a)/=; rewrite lexx /= => -[] /negP.
@@ -1276,15 +1180,13 @@ move: a b => [[]a|[]] [[]b|[]] //=; rewrite !set_of_itvE/=.
 - by rewrite predeqE => /(_ 0)/= [+ _]; rewrite falseE; apply.
 Qed.
 
-Lemma set_of_itv_nonempty_lt (a b : itv_bound R) :
-  set_of_itv (Interval a b) != set0 -> (a < b)%O.
-Proof. by rewrite set_of_itv_empty_eq0 negbK. Qed.
+Lemma set_of_itv_neq0 i : (set_of_itv i != set0) = (i.1 < i.2)%O.
+Proof. by rewrite set_of_itv_eq0 negbK. Qed.
 
-Lemma set_of_itv_empty_pred0 (i : interval R) :
-  set_of_itv i = set0 <-> i =i pred0.
+Lemma set_of_itv0P i : set_of_itv i = set0 <-> i =i pred0.
 Proof.
 move: i => [a b]; split.
-  by move/eqP; rewrite set_of_itv_empty_eq0 => /itv_ge.
+  by move/eqP; rewrite set_of_itv_eq0 => /itv_ge.
 move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?set_of_itvE.
 - move=> ab; rewrite predeqE => r; split => // ir.
   by move: ab => /(_ r); rewrite in_itv /= inE ir.
@@ -1312,37 +1214,19 @@ move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?set_of_itvE.
 - by move=> ?; rewrite predeqE.
 Qed.
 
-Lemma hasNsup_pred0 (i : interval R) : i =i pred0 -> ~ has_sup (set_of_itv i).
+Lemma hasNsup_pred0 i : i =i pred0 -> ~ has_sup (set_of_itv i).
 Proof.
 case: i => a b /= ab0; rewrite /has_sup not_andP; left.
-exact/set0P/negP/negPn/eqP/set_of_itv_empty_pred0.
+exact/set0P/negP/negPn/eqP/set_of_itv0P.
 Qed.
 
-Lemma hasNinf_pred0 (i : interval R) : i =i pred0 -> ~ has_inf (set_of_itv i).
+Lemma hasNinf_pred0 i : i =i pred0 -> ~ has_inf (set_of_itv i).
 Proof.
 case: i => a b /= ab0; rewrite /has_inf not_andP; left.
-exact/set0P/negP/negPn/eqP/set_of_itv_empty_pred0.
+exact/set0P/negP/negPn/eqP/set_of_itv0P.
 Qed.
 
 End set_of_itv_numFieldType.
-
-Lemma non_empty_bnd1 (R : numFieldType) (s : seq (interval R)) :
-  all (fun j => [set x | x \in j] != set0 :> set _) s ->
-  forall i, i \in s -> i.1 != +oo%O.
-Proof.
-move=> /allP sne [a b] si /=; apply/negP => /eqP boo.
-move: si; rewrite boo => /sne/negP; apply.
-by rewrite set_of_itv_empty_eq0 // -leNgt.
-Qed.
-
-Lemma non_empty_bnd2 (R : numFieldType) (s : seq (interval R)) :
-  all (fun x => set_of_itv x != set0) s ->
-  forall i, i \in s -> i.2 != -oo%O.
-Proof.
-move=> /allP sne [a b] si /=; apply/negP => /eqP boo.
-move: si; rewrite boo => /sne/negP; apply.
-by rewrite set_of_itv_empty_eq0 // lt_ninfty.
-Qed.
 
 Section itv_bound_lteE.
 Variable R : numDomainType.
@@ -1377,6 +1261,7 @@ End itv_bound_lteE.
 Lemma ltBRight_le (R : realDomainType) (a : itv_bound R) (r : R) : (a < BRight r)%O -> (a <= BLeft r)%O.
 Proof. by move: a => [[] a|[]]. Qed.
 
+(* NB: not used *)
 Lemma set_of_itv_split (R : realDomainType) (a c b : itv_bound R) : (a <= c <= b)%O ->
   set_of_itv (Interval a b) = set_of_itv (Interval a c) `|` set_of_itv (Interval c b).
 Proof.
@@ -1394,46 +1279,14 @@ Coercion ereal_of_itv_bound T (b : itv_bound T) : er T :=
   match b with BSide _ y => y%:E | +oo%O => +oo%E | -oo%O => -oo%E end.
 Arguments ereal_of_itv_bound T !b.
 
-Lemma ereal_mem_Interval (R : realDomainType) (r : R) (a b : itv_bound R) :
-  (a < r%:E < b)%E -> r \in Interval a b.
-Proof.
-move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lte_fin ?in_itv //= => /andP[] //.
-- by move=> /ltW ->.
-- by move=> /ltW -> /ltW ->.
-- by move=> /ltW ->.
-- by move=> -> /ltW.
-- by move=> ->.
-- by move=> _ /ltW.
-Qed.
-
-Lemma Interval_ereal_mem (R : realDomainType) (r : R) (a b : itv_bound R) :
-  r \in Interval a b -> (a <= r%:E <= b)%E.
-Proof.
-move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lee_fin ?in_itv ?(andbT,andbF) //=.
-- by move=> /andP[-> /ltW ->].
-- by move=> ->; rewrite lee_pinfty.
-- by move=> /andP[/ltW -> /ltW ->].
-- by move=> /andP[/ltW ->].
-- by move=> /ltW ->; rewrite lee_pinfty.
-- by move=> /ltW ->; rewrite lee_ninfty.
-- by move=> ->; rewrite lee_ninfty.
-- by move=> _; rewrite lee_pinfty lee_ninfty.
-Qed.
-
-Lemma le_erbnd (R : realDomainType) (a b : itv_bound R) : (a <= b)%O -> (a <= b)%E.
+Lemma le_bnd_er (R : realDomainType) (a b : itv_bound R) : (a <= b)%O -> (a <= b)%E.
 Proof.
 move: a b => -[[] a|[]] [bb b|[]] //=; rewrite ?(lee_pinfty,lee_ninfty)//.
   by rewrite BLeft_BSide_leE lee_fin.
 by case: bb => //; rewrite BRight_BLeft_leE => /ltW; rewrite lee_fin.
 Qed.
 
-Lemma lt_erbndW (R : realDomainType) (a b : itv_bound R) : (a < b)%O -> (a <= b)%E.
-Proof.
-by move: a b => -[[] a|[]] [[] b|[]] //=; rewrite ?(lee_pinfty,lee_ninfty)//
-  ?itv_bound_lteE ?lee_fin => /ltW.
-Qed.
-
-Lemma lt_erbnd (R : realDomainType) (a b : itv_bound R) : (a < b)%E -> (a < b)%O.
+Lemma lt_er_bnd (R : realDomainType) (a b : itv_bound R) : (a < b)%E -> (a < b)%O.
 Proof.
 by move: a b => -[[] a|[]] [[] b|[]] //=;
   rewrite ?(lee_pinfty,lee_ninfty,lte_fin)// => ab; rewrite itv_bound_lteE ltW.
@@ -1475,7 +1328,8 @@ Qed.
 
 Variable R : realType.
 
-Lemma hasNlbound_minfty (r : R) b : ~ has_lbound (set_of_itv (Interval -oo%O (BSide b r))).
+Lemma hasNlbound_ninfty (r : R) b :
+  ~ has_lbound (set_of_itv (Interval -oo%O (BSide b r))).
 Proof.
 suff : ~ has_lbound (set_of_itv `]-oo, r[).
   by case: b => //; apply/ssrbool.contra_not/subset_has_lbound => x /ltW.
@@ -1484,7 +1338,8 @@ by rewrite !set_of_itvE lt_minl ltr_subl_addr ltr_addl ltr01.
 by rewrite lt_minl orbC ltr_subl_addr ltr_addl ltr01.
 Qed.
 
-Lemma hasNubound_pinfty (r : R) b : ~ has_ubound (set_of_itv (Interval (BSide b r) +oo%O)).
+Lemma hasNubound_pinfty (r : R) b :
+  ~ has_ubound (set_of_itv (Interval (BSide b r) +oo%O)).
 Proof.
 suff : ~ has_ubound (set_of_itv `]r, +oo[).
   case: b => //; apply/ssrbool.contra_not/subset_has_ubound => x.
@@ -1496,116 +1351,21 @@ Qed.
 End interval_hasNbound.
 
 Hint Extern 0 (~ has_lbound _) =>
-  solve[apply: hasNlbound_setT | apply: hasNlbound_minfty] : core.
+  solve[apply: hasNlbound_setT | apply: hasNlbound_ninfty] : core.
 Hint Extern 0 (~ has_ubound _) =>
   solve[apply: hasNubound_setT | apply: hasNubound_pinfty] : core.
-
-Definition Mid (R : numDomainType) (i : interval R) : R :=
-  match i with
-  | Interval (BSide ba a) (BSide bb b) => (a + b) / 2
-  | Interval -oo%O (BSide bb b) => b - 1
-  | Interval (BSide ba a) +oo%O => a + 1
-  | Interval -oo%O +oo%O => 0
-  | _ => 0
-  end.
-
-Lemma mem_Mid (R : numFieldType) (i : interval R) : set_of_itv i != set0 ->
-  Mid i \in i.
-Proof.
-move: i => [[[]a|[]] [[]b|[]]] //=;
-  rewrite set_of_itv_empty_eq0 negbK // ?itv_bound_lteE => ab; rewrite in_itv /=.
-by rewrite midf_lt // andbT midf_le // ltW.
-by rewrite midf_le // midf_le.
-by rewrite ler_addl ler01.
-by rewrite midf_lt // midf_lt.
-by rewrite midf_lt // midf_le // ltW.
-by rewrite ltr_addl ltr01.
-by rewrite ltr_subl_addr ltr_addl.
-by rewrite ler_subl_addr ler_addl.
-Qed.
-
-Lemma midf_in_itv ba bb (R : numFieldType) (a b : R) : a < b ->
-  (a + b) / 2 \in Interval (BSide ba a) (BSide bb b).
-Proof.
-move=> ab; rewrite (@mem_Mid _ (Interval (BSide ba a) (BSide bb b))) //.
-rewrite set_of_itv_empty_eq0 negbK.
-by move: ba bb => [] [] //; rewrite itv_bound_lteE ltW.
-Qed.
-
-Lemma Mid_bnd2 (R : numFieldType) (i : interval R) : set_of_itv i != set0 ->
-  forall b, (BSide b (Mid i) <= i.2)%O.
-Proof.
-move: i => [[[]a|[]] [[]b|[]]] //=;
-  rewrite set_of_itv_empty_eq0 negbK // ?itv_bound_lteE => ab; case; rewrite itv_bound_lteE.
-by rewrite midf_le // ltW.
-by rewrite midf_lt.
-by rewrite midf_le.
-by rewrite midf_le.
-by rewrite midf_le // ltW.
-by rewrite midf_lt.
-by rewrite midf_le // ltW.
-by rewrite midf_le // ltW.
-by rewrite ler_subl_addl ler_addr.
-by rewrite ltr_subl_addl ltr_addr.
-by rewrite ler_subl_addl ler_addr.
-by rewrite ler_subl_addl ler_addr.
-Qed.
-
-Lemma Mid_bnd1 (R : numFieldType) (i : interval R) : set_of_itv i != set0 ->
-  forall b, (i.1 <= BSide b (Mid i))%O.
-Proof.
-move: i => [[[]a|[]] [[]b|[]]] //=;
-  rewrite set_of_itv_empty_eq0 negbK // ?itv_bound_lteE => ab; case; rewrite itv_bound_lteE.
-by rewrite midf_le // ltW.
-by rewrite midf_le // ltW.
-by rewrite midf_le.
-by rewrite midf_le.
-by rewrite ler_addl.
-by rewrite ler_addl.
-by rewrite midf_lt.
-by rewrite midf_le // ltW.
-by rewrite midf_lt.
-by rewrite midf_le // ltW.
-by rewrite ltr_addl.
-by rewrite ler_addl.
-Qed.
-
-Lemma BLeft_Mid_lt (R : numFieldType) (a b : itv_bound R) : (a < b)%O -> (BLeft (Mid (Interval a b)) < b)%O.
-Proof.
-move: b a => [[]b|[]] [[]a|[]] //=; rewrite ?itv_bound_lteE => ab.
-by rewrite midf_lt.
-by rewrite midf_lt.
-by rewrite ltr_subl_addl ltr_addr.
-by rewrite midf_le.
-by rewrite midf_le // ltW.
-by rewrite ler_subl_addl ler_addr.
-Qed.
-
-Lemma lt_BLeft_Mid (R : numFieldType) (a b : itv_bound R) : (a < b)%O -> (a < BRight (Mid (Interval a b)))%O.
-Proof.
-move: b a => [[]b|[]] [[]a|[]] //=; rewrite ?itv_bound_lteE => ab.
-by rewrite midf_le // ltW.
-by rewrite midf_lt.
-by rewrite midf_le.
-by rewrite midf_lt.
-by rewrite ler_addl.
-by rewrite ltr_addl.
-Qed.
-
-(* subitvP : forall (disp : unit) (T : porderType disp) (i1 i2 : interval T), (i1 <= i2)%O -> {subset i1 <= i2} *)
-Lemma subitvP' (R : realFieldType) (i1 i2 : interval R) : {subset i1 <= i2} -> (i1 <= i2)%O.
-Proof.
-Abort.
 
 Section interval_has.
 Variable R : realType.
 Implicit Types x : R.
 
+(* NB: PR in progress *)
 Lemma has_sup1 x : has_sup [set x].
 Proof. by split; [exists x | exists x => y ->]. Qed.
 
 Lemma has_inf1 x : has_inf [set x].
 Proof. by split; [exists x | exists x => y ->]. Qed.
+(* END NB: PR in progress *)
 
 Lemma has_sup_half x b (i : itv_bound R) : (i < BSide b x)%O ->
   has_sup (set_of_itv (Interval i (BSide b x))).
@@ -1656,7 +1416,7 @@ Section interval_sup_inf.
 Variable R : realType.
 Implicit Types x y : R.
 
-Lemma sup_minfty x b : sup (set_of_itv (Interval -oo%O (BSide b x))) = x.
+Lemma sup_ninfty x b : sup (set_of_itv (Interval -oo%O (BSide b x))) = x.
 Proof.
 case: b; last first.
   by rewrite infty_closed_set1 sup_setU ?sup1 // => ? ? ? ->; exact/ltW.
@@ -1670,8 +1430,8 @@ Qed.
 
 Lemma inf_pinfty x b : inf (set_of_itv (Interval (BSide b x) +oo%O)) = x.
 Proof.
-case: b; last by rewrite /inf minus_open_pinfty sup_minfty opprK.
-by rewrite closed_infty_set1 inf_setU ?inf1 // => _ b ->; rewrite !set_of_itvE => /ltW.
+case: b; last by rewrite /inf minus_open_pinfty sup_ninfty opprK.
+by rewrite closed_infty_set1 inf_setU ?inf1 // => _ b->; rewrite !set_of_itvE => /ltW.
 Qed.
 
 Let sup_open_side x y b : x < y ->
@@ -1681,7 +1441,7 @@ case: b => xy; last first.
   by rewrite open_closed_set1 // sup_setU ?sup1 // => ? ? /andP[? /ltW ?] ->.
 set B := set_of_itv _; set A := set_of_itv `]-oo, x].
 rewrite -(@sup_setU _ A B) //.
-- rewrite -(sup_minfty y true); congr sup.
+- rewrite -(sup_ninfty y true); congr sup.
   rewrite predeqE => u; split=> [[|/andP[]//]|yu].
   by rewrite /A !set_of_itvE => /le_lt_trans; apply.
   by have [xu|ux] := ltP x u; [right; rewrite /B !set_of_itvE xu| left].
@@ -1735,24 +1495,24 @@ Lemma set_of_itvK :
   {in [pred X : interval R | ~~ `[< X =i pred0 >] ], cancel set_of_itv (@Rhull _)}.
 Proof.
 move=> [[[] i1|[]] [[] i2|[]]] /asboolP; rewrite /Rhull //=.
-- move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => i12.
+- move/set_of_itv0P/eqP; rewrite set_of_itv_neq0 itv_bound_lteE => i12.
   rewrite asboolT //= inf_bounded // {1}set_of_itvE lexx i12 asboolT //.
   by rewrite asboolT // sup_bounded // {1}set_of_itvE /= ltW // ltxx asboolF.
-- move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => X0.
+- move/set_of_itv0P/eqP; rewrite set_of_itv_neq0 itv_bound_lteE => X0.
   rewrite asboolT // inf_closed_closed // {1}set_of_itvE  lexx X0 asboolT //.
   by rewrite asboolT // sup_closed_closed // {1}set_of_itvE X0 lexx asboolT.
 - by have := @itv_ge _ _ (BLeft i1) -oo%O erefl.
 - by move=> _; rewrite asboolT // {1}set_of_itvE inf_pinfty lexx asboolT // asboolF.
-- move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => i12.
+- move/set_of_itv0P/eqP; rewrite set_of_itv_neq0 itv_bound_lteE => i12.
   rewrite asboolT // inf_bounded // {1}set_of_itvE ltxx asboolF // asboolT //.
   by rewrite sup_bounded // {1}set_of_itvE ltxx andbF asboolF.
-- move/set_of_itv_empty_pred0/eqP; rewrite set_of_itv_empty_eq0 negbK itv_bound_lteE => i12.
+- move/set_of_itv0P/eqP; rewrite set_of_itv_neq0 itv_bound_lteE => i12.
   rewrite asboolT // inf_bounded // {1}set_of_itvE ltxx asboolF // asboolT //.
   by rewrite sup_bounded // {1}set_of_itvE i12 lexx asboolT.
 - by have := @itv_ge _ _ (BRight i1) -oo%O erefl.
 - by move=> _; rewrite asboolT // inf_pinfty {1}set_of_itvE ltxx asboolF // asboolF.
-- by move=> _; rewrite asboolF // asboolT // {1}set_of_itvE sup_minfty ltxx asboolF.
-- by move=> _; rewrite asboolF // asboolT // {1}set_of_itvE sup_minfty lexx asboolT.
+- by move=> _; rewrite asboolF // asboolT // {1}set_of_itvE sup_ninfty ltxx asboolF.
+- by move=> _; rewrite asboolF // asboolT // {1}set_of_itvE sup_ninfty lexx asboolT.
 - by have := @itv_ge _ _ -oo%O -oo%O erefl.
 - by move=> _; rewrite set_of_itvE asboolF // asboolF.
 - by have := @itv_ge _ _ +oo%O (BLeft i2) erefl.
@@ -1819,12 +1579,173 @@ Lemma set_of_itv_setT (R : realType) (i : interval R) :
 Proof.
 have [i0 iT|i0 /(congr1 (@Rhull _))] := pselect (i =i pred0).
   exfalso.
-  move/set_of_itv_empty_pred0 : i0; rewrite iT predeqE => /(_ 0).
+  move/set_of_itv0P : i0; rewrite iT predeqE => /(_ 0).
   by case=> + _; exact.
 rewrite set_of_itvK.
   by move=> ->; rewrite /Rhull asboolF // asboolF.
 by rewrite inE; apply/negP => /asboolP.
 Qed.
+
+(* NB: not used *)
+Lemma itv_boundNpinfty (R : numDomainType) (a : itv_bound R) :
+  a != +oo%O <-> (a = -oo%O \/ exists b r, a = BSide b r).
+Proof.
+move: a => [b r|[]] => /=; split => //.
+- by move=> _; right; exists b, r.
+- by move=> _; left.
+- by move=> [//|[b [r //]]].
+Qed.
+
+(* NB: not used *)
+Lemma itv_boundNninfty (R : numDomainType) (a : itv_bound R) :
+  a != -oo%O <-> (a = +oo%O \/ exists b r, a = BSide b r).
+Proof.
+move: a => [b r|[]] => /=; split => //.
+- by move=> _; right; exists b, r.
+- by move=> [//|[b [r //]]].
+- by move=> _; left.
+Qed.
+
+Lemma itv_meet_mem (R : realDomainType) (i1 i2 j1 j2 : itv_bound R) (x : R) :
+  x \in itv_meet (Interval i1 i2) (Interval j1 j2) <->
+  x \in Interval i1 i2 /\ x \in Interval j1 j2.
+Proof.
+split.
+  rewrite /= 3!itv_boundlr joinEtotal meetEtotal le_maxl le_minr.
+  by move=> /andP[/andP[-> ->] /andP[-> ->]].
+case; rewrite 2!itv_boundlr => /andP[i1x xi2] /andP[j1x xj2].
+by rewrite /= itv_boundlr joinEtotal meetEtotal le_maxl le_minr i1x j1x xj2 xi2.
+Qed.
+
+Lemma trivIset_set_of_itv_nth (R : numDomainType) def (s : seq (interval R))
+  (D : set nat) : set_of_itv def = set0 ->
+  trivIset D (fun i => set_of_itv (nth def s i)) <->
+    trivIset D (fun i => nth set0 (map set_of_itv s) i).
+Proof.
+move=> def0; split=> /trivIsetP ss; apply/trivIsetP => i j Di Dj ij.
+- have [si|si] := ltP i (size s); last first.
+    by rewrite (nth_default set0) ?size_map// set0I.
+  have [sj|sj] := ltP j (size s); last first.
+    by rewrite setIC (nth_default set0) ?size_map// set0I.
+  by rewrite (nth_map def) // (nth_map def) // ss.
+- have [?|h] := ltP i (size s); last by rewrite (nth_default def h) def0 set0I.
+  have [?|h] := ltP j (size s); last by rewrite (nth_default def h) def0 setI0.
+  by have := ss _ _ Di Dj ij; rewrite (nth_map def) // (nth_map def).
+Qed.
+Arguments trivIset_set_of_itv_nth {R} _ {s}.
+
+Lemma non_empty_bnd1 (R : numFieldType) (s : seq (interval R)) :
+  all (fun j => [set x | x \in j] != set0 :> set _) s ->
+  forall i, i \in s -> i.1 != +oo%O.
+Proof.
+move=> /allP sne [a b] si /=; apply/negP => /eqP boo.
+by move: si; rewrite boo => /sne; rewrite set_of_itv_neq0.
+Qed.
+
+Lemma non_empty_bnd2 (R : numFieldType) (s : seq (interval R)) :
+  all (fun x => set_of_itv x != set0) s ->
+  forall i, i \in s -> i.2 != -oo%O.
+Proof.
+move=> /allP sne [a b] si /=; apply/negP => /eqP boo.
+by move: si; rewrite boo => /sne; rewrite set_of_itv_neq0 lt_ninfty.
+Qed.
+
+Definition Mid (R : numDomainType) (i : interval R) : R :=
+  match i with
+  | Interval (BSide ba a) (BSide bb b) => (a + b) / 2
+  | Interval -oo%O (BSide bb b) => b - 1
+  | Interval (BSide ba a) +oo%O => a + 1
+  | Interval -oo%O +oo%O => 0
+  | _ => 0
+  end.
+
+Lemma mem_Mid (R : numFieldType) (i : interval R) : set_of_itv i != set0 ->
+  Mid i \in i.
+Proof.
+move: i => [[[]a|[]] [[]b|[]]] //=;
+  rewrite set_of_itv_neq0 // ?itv_bound_lteE => ab; rewrite in_itv /=.
+by rewrite midf_lt // andbT midf_le // ltW.
+by rewrite midf_le // midf_le.
+by rewrite ler_addl ler01.
+by rewrite midf_lt // midf_lt.
+by rewrite midf_lt // midf_le // ltW.
+by rewrite ltr_addl ltr01.
+by rewrite ltr_subl_addr ltr_addl.
+by rewrite ler_subl_addr ler_addl.
+Qed.
+
+Lemma midf_in_itv ba bb (R : numFieldType) (a b : R) : a < b ->
+  (a + b) / 2 \in Interval (BSide ba a) (BSide bb b).
+Proof.
+move=> ab; rewrite (@mem_Mid _ (Interval (BSide ba a) (BSide bb b))) //.
+rewrite set_of_itv_neq0.
+by move: ba bb => [] [] //; rewrite itv_bound_lteE ltW.
+Qed.
+
+Lemma Mid_bnd2 (R : numFieldType) (i : interval R) : set_of_itv i != set0 ->
+  forall b, (BSide b (Mid i) <= i.2)%O.
+Proof.
+move: i => [[[]a|[]] [[]b|[]]] //=;
+  rewrite set_of_itv_neq0 // ?itv_bound_lteE => ab; case; rewrite itv_bound_lteE.
+by rewrite midf_le // ltW.
+by rewrite midf_lt.
+by rewrite midf_le.
+by rewrite midf_le.
+by rewrite midf_le // ltW.
+by rewrite midf_lt.
+by rewrite midf_le // ltW.
+by rewrite midf_le // ltW.
+by rewrite ler_subl_addl ler_addr.
+by rewrite ltr_subl_addl ltr_addr.
+by rewrite ler_subl_addl ler_addr.
+by rewrite ler_subl_addl ler_addr.
+Qed.
+
+Lemma Mid_bnd1 (R : numFieldType) (i : interval R) : set_of_itv i != set0 ->
+  forall b, (i.1 <= BSide b (Mid i))%O.
+Proof.
+move: i => [[[]a|[]] [[]b|[]]] //=;
+  rewrite set_of_itv_neq0 // ?itv_bound_lteE => ab; case; rewrite itv_bound_lteE.
+by rewrite midf_le // ltW.
+by rewrite midf_le // ltW.
+by rewrite midf_le.
+by rewrite midf_le.
+by rewrite ler_addl.
+by rewrite ler_addl.
+by rewrite midf_lt.
+by rewrite midf_le // ltW.
+by rewrite midf_lt.
+by rewrite midf_le // ltW.
+by rewrite ltr_addl.
+by rewrite ler_addl.
+Qed.
+
+Lemma BLeft_Mid_lt (R : numFieldType) (a b : itv_bound R) : (a < b)%O -> (BLeft (Mid (Interval a b)) < b)%O.
+Proof.
+move: b a => [[]b|[]] [[]a|[]] //=; rewrite ?itv_bound_lteE => ab.
+by rewrite midf_lt.
+by rewrite midf_lt.
+by rewrite ltr_subl_addl ltr_addr.
+by rewrite midf_le.
+by rewrite midf_le // ltW.
+by rewrite ler_subl_addl ler_addr.
+Qed.
+
+Lemma lt_BLeft_Mid (R : numFieldType) (a b : itv_bound R) : (a < b)%O -> (a < BRight (Mid (Interval a b)))%O.
+Proof.
+move: b a => [[]b|[]] [[]a|[]] //=; rewrite ?itv_bound_lteE => ab.
+by rewrite midf_le // ltW.
+by rewrite midf_lt.
+by rewrite midf_le.
+by rewrite midf_lt.
+by rewrite ler_addl.
+by rewrite ltr_addl.
+Qed.
+
+(* subitvP : forall (disp : unit) (T : porderType disp) (i1 i2 : interval T), (i1 <= i2)%O -> {subset i1 <= i2} *)
+Lemma subitvP' (R : realFieldType) (i1 i2 : interval R) : {subset i1 <= i2} -> (i1 <= i2)%O.
+Proof.
+Abort.
 
 Definition sset (R : numDomainType) (s : seq (interval R)) :=
   \big[setU/set0]_(x <- s) (set_of_itv x).
@@ -2018,7 +1939,7 @@ have [ji1|ji1] := leP j1 i1.
         rewrite itv_boundlr xi2 andbT (@le_trans _ _ j2) // leNgt; apply/negP => j2j1.
         move/negP : ij0; apply; apply/eqP.
         rewrite joinEtotal meetEtotal maxElt ltNge ji1 /= minElt ltNge ji2 /=.
-        by rewrite set_of_itv_empty_set0 // -leNgt ltW.
+        by rewrite set_of_itvNlt_set0 // -leNgt ltW.
       move/set_of_itv_mem; rewrite itv_boundlr => /andP[j1x xj2].
       by have := le_trans xj2 j2x; rewrite itv_bound_lteE ltxx.
     * move=> -[/set_of_itv_mem]; rewrite itv_boundlr => /andP[i1x xi2 ix].
@@ -2027,8 +1948,7 @@ have [ji1|ji1] := leP j1 i1.
       apply: ix.
       apply/set_of_itv_mem.
       by rewrite itv_boundlr (le_trans ji1).
-  + rewrite set_of_itv_empty_set0 //.
-    apply/esym.
+  + rewrite set_of_itvE; apply/esym.
     rewrite setD_eq0 => x.
     move/set_of_itv_mem; rewrite itv_boundlr => /andP[i1x xi2].
     apply/set_of_itv_mem; rewrite itv_boundlr (le_trans ji1) //=.
@@ -2043,7 +1963,7 @@ have [ji1|ji1] := leP j1 i1.
   * move/set_of_itv_mem; rewrite itv_boundlr => /andP[i1x xj1]; split.
       apply/set_of_itv_mem; rewrite itv_boundlr i1x /= leNgt; apply/negP => i2j1.
       move/eqP : ij0; apply.
-      rewrite set_of_itv_empty_set0 // meetEtotal minElt ji2 joinEtotal maxElt.
+      rewrite set_of_itvNlt_set0 // meetEtotal minElt ji2 joinEtotal maxElt.
       by rewrite ji1 -leNgt (le_trans _ xj1) // (le_trans (ltW i2j1)).
     move/set_of_itv_mem; rewrite itv_boundlr => /andP[j1x xj2].
     by have := le_trans xj1 j1x; rewrite itv_bound_lteE ltxx.
@@ -2055,12 +1975,10 @@ Qed.
 
 Lemma itv_diffxx (a : interval R) : set_of_itv (itv_diff a a) = set0.
 Proof.
-have [[a0 aa0]|/set0P/negP/negPn/eqP a0] := pselect (set_of_itv a !=set0).
-  rewrite /itv_diff ifF; last first.
-    by rewrite itv_meetE; apply/negbTE/set0P; exists a0.
-  case: a aa0 => [a1 a2] aa0.
-  by rewrite !lexx set_of_itv_empty_set0 // ltxx.
-by rewrite /itv_diff ifT // itv_meetE a0 set0I.
+have [/eqP a0|a0] := boolP (set_of_itv a == set0).
+  by rewrite /itv_diff itv_meetE a0 setI0 eqxx.
+rewrite /itv_diff ifF; last by apply/negbTE; rewrite itv_meetE setIid.
+by case: a a0 => [a1 a2] a0; rewrite 2!lexx set_of_itvNlt_set0 // ltxx.
 Qed.
 
 End itv_diff.
@@ -2072,8 +1990,8 @@ Lemma disjoint_itvP {R : realFieldType} (i j : interval R) :
   disjoint_itv i j <-> itv_meet i j =i pred0.
 Proof.
 case: i j => [a b] [c d]; rewrite /disjoint_itv /= -itv_meetE; split.
-  by move/eqP/set_of_itv_empty_pred0.
-by move=> ij0; apply/eqP/set_of_itv_empty_pred0.
+  by move/eqP/set_of_itv0P.
+by move=> ij0; apply/eqP/set_of_itv0P.
 Qed.
 
 Lemma lt_disjoint (R : numDomainType) (i j : interval R) :
@@ -2180,7 +2098,7 @@ Let lt_itv_lt (a b : interval R) : lt_itv a b -> disjoint_itv a b ->
 Proof.
 move: a b => [i1 i2] [j1 j2].
 rewrite /lt_itv; case: (ltgtP i1 j1) => // [ij1 _|].
-- rewrite /disjoint_itv -itv_meetE => /eqP/set_of_itv_empty_pred0 ij0 x y.
+- rewrite /disjoint_itv -itv_meetE => /eqP/set_of_itv0P ij0 x y.
   rewrite 2!itv_boundlr => /andP[i1x xi2] /andP[j1y yj2].
   have [i2j1|i2j1] := leP i2 j1.
     by have := le_trans xi2 (le_trans i2j1 j1y).
@@ -2188,7 +2106,7 @@ rewrite /lt_itv; case: (ltgtP i1 j1) => // [ij1 _|].
   have /negP := ij0 y.
   apply; apply/itv_meet_mem; rewrite 2!itv_boundlr.
   by rewrite (le_trans (ltW ij1)) //= (le_trans _ xi2) // yj2 andbT j1y.
-- move=> <-{j1} ij2; rewrite /disjoint_itv -itv_meetE => /eqP /set_of_itv_empty_pred0 => ij0 x y.
+- move=> <-{j1} ij2; rewrite /disjoint_itv -itv_meetE => /eqP /set_of_itv0P => ij0 x y.
   rewrite 2!itv_boundlr => /andP[i1x xi2] /andP[i1y yj2].
   rewrite ltNge; apply/negP => yx.
   have /negP := ij0 x.
@@ -2204,7 +2122,7 @@ move: a b => [i1 i2] [j1 j2].
 move/orP => [/eqP[<-{j1} <-{j2}]|]; last exact: lt_itv_lt.
 have [i1i2|i1i2 _ x y] := ltP i1 i2.
   move=> i1i20; exfalso; move/eqP: i1i20 => /eqP; apply/negP.
-  by rewrite -itv_meetE set_of_itv_empty_eq0 negbK meetxx joinxx.
+  by rewrite -itv_meetE set_of_itv_neq0 /= meetxx joinxx.
 by rewrite itv_ge // -leNgt.
 Qed.
 
@@ -2339,8 +2257,8 @@ case: (ltgtP a1 b1) => [a1b1 ba + _| // | <-{b1}].
   rewrite /itv_diff; case: ifPn => [_|ab0]; first by rewrite ltxx eqxx.
   rewrite leNgt a1b1 /= leNgt a2b2 /= ltxx eqxx ltNge; apply/negP => b1y2.
   move/disjoint_itvP : ya => /=.
-  rewrite joinxx (meet_l (ltW y2a2)) => /set_of_itv_empty_pred0/eqP.
-  by rewrite set_of_itv_empty_eq0; apply/negP; rewrite negbK (lt_le_trans a1b1).
+  rewrite joinxx (meet_l (ltW y2a2)) => /set_of_itv0P; apply/eqP.
+  by rewrite set_of_itv_neq0 (lt_le_trans a1b1).
 case: (ltgtP y1 a1) => [y1a1 ab ya a2b2 _ _| // |<-{a1} ab ya a2b2 y2a2 y2b2].
   rewrite /itv_diff; case: ifPn => [_|ab0]; first by rewrite y1a1.
   rewrite lexx leNgt a2b2 /=; case: ifPn => //.
@@ -2351,7 +2269,7 @@ rewrite lexx leNgt a2b2 /=; case: ifPn => //.
 rewrite -leNgt ge_pinfty => /eqP y1oo.
 exfalso.
 move/eqP : ab0; apply.
-by rewrite /= y1oo join_r // set_of_itv_empty_set0.
+by rewrite /= y1oo join_r // set_of_itvNlt_set0.
 Qed.
 
 Lemma le_itv_itv_diff0 (a b : interval R) : set_of_itv a = set0 -> le_itv a (itv_diff a b).
@@ -2370,9 +2288,9 @@ move=> ba ya0; rewrite {1}/le_itv => /orP[/eqP[ab]|ab].
   by exfalso; move: ba; rewrite -ab; exact.
 rewrite {1}/le_itv => /orP[/eqP ya|ya].
   move: ya0; rewrite {}ya {y} => aa0.
-  have [[x xa] _|/set0P/negP/negPn/eqP a0 _] := pselect (set_of_itv a !=set0).
-    by exfalso; move: aa0; apply/negP/set0P; exists x.
-  exact: le_itv_itv_diff0.
+  have [/eqP a0 _|a0 _] := boolP (set_of_itv a == set0).
+    exact: le_itv_itv_diff0.
+  by exfalso; move: aa0; apply/negP; rewrite /disjoint_itv setIid.
 move/orP => [/eqP yb|yb].
 by move: ya; rewrite yb => /(lt_itv_trans _ _ _ ab); rewrite lt_itvxx.
 by apply/orP; right; exact: lt_itv_itv_diff.
@@ -2519,7 +2437,7 @@ move=> ic; have : Mid i < Mid i + 1 by rewrite ltr_spaddr.
 rewrite lt_neqAle => /andP[/negP r1 _]; apply/r1/eqP.
 transitivity c.
   move/itv_subset1 : ic; apply.
-  by rewrite mem_Mid // set_of_itv_empty_eq0.
+  by rewrite mem_Mid // set_of_itv_neq0.
 apply/esym; move/itv_subset1 : ic; apply; rewrite in_itv /= andbT.
 by case: b => /= in i r1 *; [rewrite -addrA ler_addl|rewrite -addrA ltr_addl].
 Qed.
@@ -2536,33 +2454,31 @@ transitivity c.
   by rewrite -addrA -opprD ltr_subl_addl ltr_addr.
   by rewrite -addrA -opprD ler_subl_addl ler_addr.
 apply/esym; move/itv_subset1 : ic; apply.
-by rewrite mem_Mid // set_of_itv_empty_eq0.
+by rewrite mem_Mid // set_of_itv_neq0.
 Qed.
 
 (* NB: not used *)
 Lemma itv_subset1' (R : numFieldType) (i : interval R) c : {subset i <= `[c, c]} ->
   i =i pred0 \/ i = `[c, c].
 Proof.
-move=> ic; have [[r ir]|/set0P/negP/negPn/eqP i0] := pselect (set_of_itv i !=set0); last first.
+move=> ic; have [/eqP i0|i0] := boolP (set_of_itv i == set0).
   by left => r; apply/idP/idP => //; apply/negP; rewrite -(set_of_itv_mem i) i0.
-move: i ic ir => [[[]a|[]] [[]b|[]]] //= ic ir.
-- right; have ab : a < b.
-    by move: ir; rewrite set_of_itv_mem in_itv /= => /andP[ar rb]; rewrite (le_lt_trans ar).
+move: i ic i0 => [[[]a|[]] [[]b|[]]] //= ic i0.
+- right; have ab : a < b by move: i0; rewrite set_of_itv_neq0.
   have : a < Mid `[a, b[ by rewrite midf_lt.
   rewrite lt_neqAle => /andP[/negP ab2 _]; exfalso; apply/ab2/eqP.
   transitivity c.
     by move/itv_subset1 : ic; apply; rewrite in_itv /= lexx ab.
   apply/esym; move/itv_subset1 : ic; apply.
-  by rewrite mem_Mid // set_of_itv_empty_eq0 negbK.
+  by rewrite mem_Mid // set_of_itv_neq0.
 - right; suff : a = c /\ b = c by move=> [-> ->].
-  have ab : a <= b.
-    by move: ir; rewrite set_of_itv_mem in_itv /= => /andP[ar rb]; rewrite (le_trans ar).
+  have ab : a <= b by move: i0; rewrite set_of_itv_neq0 /= => /ltW.
   split.
     by move/itv_subset1 : ic; apply; rewrite in_itv /= lexx /=.
   by move/itv_subset1 : ic; apply; rewrite in_itv /= ab lexx.
 - by left; apply itv_ge.
 - by have := itv_subset1'_side_pinfty ic.
-- left; exfalso.
+- left; exfalso; move/set0P : i0 => -[r ir].
   have : r < (r + b) / 2 by rewrite midf_lt //; move: ir; rewrite set_of_itv_mem in_itv /= => /andP[_ ].
   rewrite lt_neqAle => /andP[/negP rb2 _]; apply rb2; apply/eqP.
   transitivity c.
@@ -2576,8 +2492,7 @@ move: i ic ir => [[[]a|[]] [[]b|[]]] //= ic ir.
     by move: ir; rewrite set_of_itv_mem in_itv /= => /andP[].
   rewrite midf_lt //.
   by move: ir; rewrite set_of_itv_mem in_itv /= => /andP[].
-- right; have ab : a < b.
-    by move: ir; rewrite set_of_itv_mem in_itv /= => /andP[ar rb]; rewrite (lt_le_trans ar).
+- right; have ab : a < b by move: i0; rewrite set_of_itv_neq0 /=.
   have : Mid `]a, b] < b by rewrite midf_lt.
   rewrite lt_neqAle=> /andP[/negP ab2 _]; exfalso; apply/ab2/eqP.
   transitivity c.
@@ -2589,17 +2504,17 @@ move: i ic ir => [[[]a|[]] [[]b|[]]] //= ic ir.
 - by have := itv_subset1'_side_pinfty ic.
 - by have := itv_subset1'_ninfty_side ic.
 - by have := itv_subset1'_ninfty_side ic.
-- exfalso; have : r < r + 1 by rewrite ltr_spaddr.
+- by move: i0; rewrite set_of_itvE eqxx.
+- move/set0P : i0 => -[r ir].
+  exfalso; have : r < r + 1 by rewrite ltr_spaddr.
   rewrite lt_neqAle => /andP[/negP r1 _]; apply/r1/eqP.
   transitivity c.
     by move/itv_subset1 : ic; apply; rewrite -set_of_itv_mem.
   by apply/esym; move/itv_subset1 : ic; apply; rewrite in_itv.
-Qed.
-
-Lemma interval_pred0_lee (R : realFieldType) (i : interval R) : i =i pred0 -> (i.2 <= i.1)%E.
-Proof.
-move/set_of_itv_empty_pred0.
-by case: i => /= a b /eqP; rewrite set_of_itv_empty_eq0 -leNgt => /le_erbnd.
+- by move: i0; rewrite set_of_itvE eqxx.
+- by move: i0; rewrite set_of_itvE eqxx.
+- by move: i0; rewrite set_of_itvE eqxx.
+- by move: i0; rewrite set_of_itvE eqxx.
 Qed.
 
 Section decomposition.
@@ -2611,10 +2526,10 @@ Program Definition decompose' (s : seq (interval R))
   | [::] => [::] | [:: i] => [:: i]
   | [:: i, j & tl] => match pselect {subset i <= j} with
     | left _ => f (j :: tl) _
-    | right not_ij => match pselect {subset j <= i} with
-                     | left _ => f (i :: tl) _
-                     | right _ => itv_diff i j :: f (j :: tl) _
-                     end
+    | right _ => match pselect {subset j <= i} with
+                | left _ => f (i :: tl) _
+                | right _ => itv_diff i j :: f (j :: tl) _
+                end
     end
   end.
 
@@ -2642,10 +2557,10 @@ Proof. rewrite /decompose Fix_eq //=; exact: decompose'_ext. Qed.
 Lemma decompose_two i j tl : decompose [:: i, j & tl] =
     match pselect {subset i <= j} with
     | left _ => decompose (j :: tl)
-    | right not_ij => match pselect {subset j <= i} with
-                     | left _ => decompose (i :: tl)
-                     | right _ => itv_diff i j :: decompose (j :: tl)
-                     end
+    | right _ => match pselect {subset j <= i} with
+                | left _ => decompose (i :: tl)
+                | right _ => itv_diff i j :: decompose (j :: tl)
+                end
     end.
 Proof.
 rewrite {1}/decompose Fix_eq; last exact: decompose'_ext.
@@ -2671,7 +2586,7 @@ case: (pselect _) => ji.
 rewrite (sset_cons _ (decompose (j :: tl))) ih //; last first.
   by move: Hsort => /andP[].
 rewrite [in RHS]sset_cons sset_cons !setUA; congr (_ `|` _).
-have [i0|/set0P/negP/negPn/eqP i0] := pselect (set_of_itv i !=set0); last first.
+have [/eqP i0|] := boolP (set_of_itv i == set0).
   move/subset_of_itvP in ij.
   by exfalso; apply: ij; rewrite i0.
 rewrite itv_diffE //; last by left.
@@ -2898,7 +2813,7 @@ Proof.
 move=> sorteds smem0.
 have [/eqP|s0] := boolP (size (decompose s) == 0%N).
   move/size0nil => ->; apply/trivIsetP => /= i j _ _ ij.
-  by rewrite nth_nil set_of_itv_empty_set0 // set0I.
+  by rewrite nth_nil set_of_itvNlt_set0 // set0I.
 have head_behead : decompose s = head 0%O (decompose s) :: behead (decompose s).
   by move: s0; case: (decompose s).
 rewrite head_behead.
@@ -2908,7 +2823,7 @@ by rewrite -head_behead sorted_decompose.
 suff : path.path disjoint_itv 0%O (head 0%O (decompose s) :: behead (decompose s)).
   by rewrite /= => /andP[].
 rewrite -head_behead path_disjoint_itv_decompose => // c cs.
-by apply/eqP; rewrite set_of_itv_empty_set0 // set0I.
+by apply/eqP; rewrite set_of_itvNlt_set0 // set0I.
 Qed.
 
 Definition Decompose (s : seq (interval R)) :=
@@ -3130,7 +3045,7 @@ Lemma conv_subset_Rhull (A : set R) :
     `<=` set_of_itv (Rhull A).
 Proof.
 move=> r -[a [b [t [Aa Ab /andP[t0 t1] ->{r}]]]].
-have /is_intervalPle iRhullA := @is_interval_set_of_itv _ (Rhull A).
+have /is_intervalPle iRhullA := @interval_is_interval _ (Rhull A).
 have [ab|/ltW ba] := leP a b.
   apply: (iRhullA a b); rewrite ?set_of_itv_mem; try exact/sub_Rhull.
   by rewrite le_conv // t0.
@@ -3199,9 +3114,9 @@ Qed.
 
 Lemma le_Rhull : {homo (@Rhull R) : A B / (A `<=` B) >-> {subset A <= B}}.
 Proof.
-move=> A; have [A0 B AB r|/set0P/negP/negPn/eqP ->{A} B _ r] := pselect (A !=set0); last first.
-  by rewrite Rhull0 in_itv /= lt_asym.
-move/(Rhull_subset_conv A0) => -[a [b [t [{A0} Aa Ab /andP[t0 t1] ->]]]].
+move=> A; have [/eqP A0 B AB r|/set0P A0 B AB r] := boolP (A == set0).
+  by rewrite A0 Rhull0 in_itv /= lt_asym.
+move/(Rhull_subset_conv A0) => -[a [b [t [Aa Ab /andP[t0 t1] ->]]]].
 by apply/conv_subset_Rhull; exists a, b, t; split => //; try exact/AB; rewrite t0.
 Qed.
 
@@ -3213,9 +3128,9 @@ Qed.
 Lemma Rhull_involutive (a : set R) : Rhull (set_of_itv (Rhull a)) = Rhull a.
 Proof.
 have [/asboolP/Rhull_pred0 ->|a0] := boolP (`[< Rhull a =i pred0 >]).
-  by rewrite Rhull0 set_of_itv_empty_set0 //= ?itv_bound_lteE -?leNgt // Rhull0.
+  by rewrite Rhull0 set_of_itvNlt_set0 //= ?itv_bound_lteE -?leNgt // Rhull0.
 have := @RhullK _ (set_of_itv (Rhull a)).
-by rewrite inE => /(_ (@is_interval_set_of_itv _ _)); by rewrite set_of_itvK.
+by rewrite inE => /(_ (@interval_is_interval _ _)); by rewrite set_of_itvK.
 Qed.
 
 End conv_Rhull.
@@ -3240,12 +3155,13 @@ Lemma hlength_itv (i : interval R) :
 Proof.
 case: ltP => [i12|].
   rewrite /hlength set_of_itvK// inE; move: i12.
-  by rewrite ltNge; apply: contra => /asboolP; exact: interval_pred0_lee.
-rewrite le_eqVlt => /orP[|/lt_erbnd i12]; last first.
-  by rewrite set_of_itv_empty_set0 ?hlength0// -leNgt ltW.
+  move/lt_er_bnd; rewrite ltNge; apply: contra => /asboolP.
+  by move/set_of_itv0P/eqP; rewrite set_of_itv_eq0 -leNgt.
+rewrite le_eqVlt => /orP[|/lt_er_bnd i12]; last first.
+  by rewrite set_of_itvNlt_set0 ?hlength0// -leNgt ltW.
 case: i => -[ba a|[|]] [bb b|[|]] //=.
 - rewrite /= => /eqP[->{b}]; move: ba bb => -[] []; try
-    by rewrite set_of_itv_empty_set0 ?hlength0 //= itv_bound_lteE -leNgt.
+    by rewrite set_of_itvNlt_set0 ?hlength0 //= itv_bound_lteE -leNgt.
   by rewrite hlength_singleton.
 - by move=> _; rewrite set_of_itvE hlength0.
 - by move=> _; rewrite set_of_itvE hlength0.
@@ -3255,12 +3171,12 @@ Qed.
 Lemma le_hlength0 (a b : itv_bound R) : (b <= a)%O ->
   hlength (set_of_itv (Interval a b)) = 0%:E.
 Proof.
-move=> /= /le_erbnd ba; rewrite hlength_itv.
+move=> /= /le_bnd_er ba; rewrite hlength_itv.
 by case: ifPn => //; rewrite ltNge ba.
 Qed.
 
 Lemma hlength_setT : hlength setT = +oo%E :> er R.
-Proof. by rewrite -set_of_itv_minfty_pinfty hlength_itv. Qed.
+Proof. by rewrite -set_of_itv_ninfty_pinfty hlength_itv. Qed.
 
 Lemma hlength_ninfty b r : hlength (set_of_itv (Interval -oo%O (BSide b r))) = +oo%E :> er R.
 Proof. by rewrite hlength_itv /= lte_ninfty. Qed.
@@ -3296,11 +3212,11 @@ Lemma le_hlength_itv (i j : interval R) : {subset i <= j} ->
  (hlength (set_of_itv i) <= hlength (set_of_itv j))%E.
 Proof.
 set I := set_of_itv i; set J := set_of_itv j.
-have [I0|/set0P/negP/negPn/eqP -> _] := pselect (I !=set0); last first.
+have [/eqP ->|/set0P I0] := boolP (I == set0).
   by rewrite hlength0 hlength_ge0.
-have [J0|/set0P/negP/negPn/eqP J0] := pselect (J !=set0); last first.
-  by move/subset_of_itvP; rewrite -/J J0 subset0 -/I; move/set0P/eqP : I0.
-move=> /subset_of_itvP ij; apply lee_sub => /=.
+have [/eqP J0|/set0P J0] := boolP (J == set0).
+  by move/subset_of_itvP; rewrite -/J J0 subset0 -/I => ->.
+move=> /subset_of_itvP ij; apply: lee_sub => /=.
 - have [/asboolP ui|/asboolP ui] := boolP (`[< has_ubound I >]).
   + have [/asboolP uj /=|/asboolP uj] := boolP (`[< has_ubound J >]); last by rewrite lee_pinfty.
     by rewrite lee_fin le_sup // => r Ir; exists r; split => //; move : ij; apply.
@@ -3321,6 +3237,9 @@ Qed.
 
 End hlength.
 Hint Extern 0 ((0%:E <= hlength _)%E) => solve[apply: hlength_ge0] : core.
+
+Lemma IntervalE (R : numDomainType) (i : interval R) : i = Interval i.1 i.2.
+Proof. by case: i. Qed.
 
 Section seq_interval_bounds.
 Variable R : realType.
@@ -3355,11 +3274,11 @@ have : (bnd1 i <= bnd1 j)%O by exact: le_itv_bnd1.
 have i2j2 : (bnd2 i <= bnd2 j)%O by apply le_itv_bnd2.
 rewrite le_eqVlt => /orP[/eqP i1j1 K1I2|I1K1 K1I2].
   rewrite lt_itvE i1j1 ltxx eqxx => {}I2K2.
-  rewrite -itv_meetE (IntervalE i) (IntervalE j) /= i1j1 join_l // meet_l; last exact/ltW.
-  by apply/set0P; rewrite set_of_itv_empty_eq0 negbK.
+  apply/set0P; rewrite -itv_meetE set_of_itv_neq0 /=.
+  by rewrite (IntervalE i) (IntervalE j) /= i1j1 join_l // meet_l.
 rewrite lt_itvE I1K1 => _.
 rewrite -itv_meetE (IntervalE i) (IntervalE j) /= join_r; last exact/ltW.
-by rewrite meet_l //; apply/set0P; rewrite set_of_itv_empty_eq0 negbK.
+by rewrite meet_l //; apply/set0P; rewrite set_of_itv_neq0.
 Qed.
 
 Lemma le_itv_disjoint_bnd2Noo (i j : interval R) :
@@ -3372,8 +3291,7 @@ have ii1 := le_itv_disjoint_bnd2_bnd1 i0 j0 ss ts.
 apply/negP => /eqP ioo.
 rewrite ioo ge_pinfty in ii1.
 move/set0P : j0 => /negP; apply.
-rewrite set_of_itv_empty_set0 // (eqP ii1).
-by rewrite -leNgt bound_lex1.
+by rewrite set_of_itv_eq0 (eqP ii1) -leNgt bound_lex1.
 Qed.
 
 Lemma le_itv_disjoint_bnd2r (i j : interval R) :
@@ -3399,9 +3317,8 @@ move=> i0 j0 ss ts.
 have ii1 := le_itv_disjoint_bnd2_bnd1 i0 j0 ss ts.
 apply/negP => /eqP ioo.
 rewrite ioo le_ninfty in ii1.
-have : set_of_itv i == set0.
-  by rewrite (IntervalE i) set_of_itv_empty_eq0 (eqP ii1) -leNgt.
-exact/negP/set0P.
+move/set0P : i0 => /eqP; apply; apply/eqP.
+by rewrite set_of_itv_eq0 (eqP ii1) -leNgt.
 Qed.
 
 Lemma le_itv_disjoint_bnd1r (i j : interval R) :
@@ -3416,7 +3333,7 @@ case: i1 => [b i1|[]] in i1E *.
 - by exfalso; move: i1E; apply/eqP/(@le_itv_disjoint_bnd1Noo i).
 - exfalso; move: i1E; apply/eqP.
   move/set0P : j0; apply: contra => /eqP j1oo.
-  by rewrite (IntervalE j) j1oo set_of_itv_empty_set0.
+  by rewrite set_of_itv_eq0 -leNgt j1oo bound_lex1.
 Qed.
 
 Lemma le_itv_disjoint_contiguous (i j : interval R) :
@@ -3436,13 +3353,13 @@ have xyW : x <= y.
   by move: b c {cy bx} xy => [] [] /=; rewrite itv_bound_lteE // => /ltW.
 have xys : Interval (BSide b x) (BSide c y) \in itv_cplt [:: i; j].
   rewrite /itv_cplt; apply/mapP; exists (BSide b x, BSide c y) => //.
-  apply/(nthP (+oo%O, -oo%O)); exists 1%nat; first by rewrite size_zip.
+  apply/(nthP (+oo%O, -oo%O)); exists 1%N; first by rewrite size_zip.
   by rewrite !nth_zip //= -bx -cy.
 have : m \in [sset of itv_cplt [:: i; j]].
   rewrite sset_bigcup in_setE.
   exists (Interval (BSide b x) (BSide c y)) => //.
   rewrite set_of_itv_mem /m -/(Mid (Interval (BSide b x) (BSide c y))).
-  by rewrite mem_Mid // set_of_itv_empty_eq0 // negbK.
+  by rewrite mem_Mid // set_of_itv_neq0.
 rewrite itv_cpltE; last first.
   by rewrite /= !andbT; split; [exact: le_itv_bnd2 | exact: le_itv_bnd1].
 rewrite inE; apply; rewrite sset_cons sset_cons1.
@@ -3462,9 +3379,9 @@ End seq_interval_bounds.
 Section seq_interval_rbnd.
 Variable R : realType.
 
-Lemma hlength_finite_is_real (i : interval R) : (set_of_itv i != set0) ->
+Lemma hlength_finite_fin_num (i : interval R) : (set_of_itv i != set0) ->
    (hlength (set_of_itv i) < +oo)%E ->
-  is_real i.1 /\ is_real i.2.
+  ((i.1 : er R) \is a fin_num) /\ ((i.2 : er R) \is a fin_num).
 Proof.
 move: i => [[ba a|[]] [bb b|[]]] //=; do ?by rewrite ?set_of_itvE ?eqxx.
 by move=> _; rewrite hlength_itv /= lte_pinfty.
@@ -3476,11 +3393,11 @@ Lemma set_of_itv_empty_erbnd (i : interval R) :
   (i.2 < i.1)%E -> set_of_itv i == set0.
 Proof.
 case: i => -[ba a|[]] [bb b|[]] //=.
-- rewrite lte_fin => ab; rewrite set_of_itv_empty_set0 //= -leNgt.
+- rewrite lte_fin => ab; rewrite set_of_itvNlt_set0 //= -leNgt.
   by move: ba bb => [] [] //; rewrite itv_bound_lteE // ltW.
-- by move=> _; rewrite set_of_itv_empty_set0.
-- by move=> _; rewrite set_of_itv_empty_set0.
-- by move=> _; rewrite set_of_itv_empty_set0.
+- by move=> _; rewrite set_of_itvNlt_set0.
+- by move=> _; rewrite set_of_itvNlt_set0.
+- by move=> _; rewrite set_of_itvNlt_set0.
 Qed.
 
 Lemma finite_hlengthE (i : interval R) : set_of_itv i != set0 ->
@@ -3488,7 +3405,7 @@ Lemma finite_hlengthE (i : interval R) : set_of_itv i != set0 ->
   (hlength (set_of_itv i) = (real_of_er i.2)%:E - (real_of_er i.1)%:E)%E.
 Proof.
 move=> i0 ioo.
-have [ri1 ri2] := hlength_finite_is_real i0 ioo.
+have [ri1 ri2] := hlength_finite_fin_num i0 ioo.
 rewrite -!ERFin_real_of_er // hlength_itv; case: ifPn => //.
 rewrite -leNgt le_eqVlt => /orP[/eqP ->|]; first by rewrite subee.
 by move/set_of_itv_empty_erbnd; rewrite (negbTE i0).
@@ -3502,9 +3419,6 @@ split => [ij x|ij].
 - by rewrite predeqE => r; split; rewrite set_of_itv_mem;
     [rewrite ij -set_of_itv_mem | rewrite -ij -set_of_itv_mem].
 Qed.
-
-Lemma set_of_itv0P (i : interval R) : set_of_itv i = set0 :> set _ <-> i =i pred0.
-Proof. exact: set_of_itv_empty_pred0. Qed.
 
 Lemma set_of_itv0 : set_of_itv (0%O : interval R) = 0%O :> set _.
 Proof. by rewrite set_of_itvE. Qed.
@@ -3593,15 +3507,13 @@ Lemma hlength_itvU (A B : set R) : A `&` B = set0 ->
   hlength (A `|` B) = (hlength A + hlength B)%E.
 Proof.
 move=> AB0 iA iB iAUB.
-have [A0|/set0P/negP/negPn/eqP ->] := pselect (A !=set0); last first.
-  by rewrite set0U hlength0 add0e.
-have [B0|/set0P/negP/negPn/eqP ->] := pselect (B !=set0); last first.
-  by rewrite setU0 hlength0 adde0.
+have [/eqP ->|/set0P A0] := boolP (A == set0); first by rewrite set0U hlength0 add0e.
+have [/eqP ->|/set0P B0] := boolP (B == set0); first by rewrite setU0 hlength0 adde0.
 wlog : A B A0 B0 AB0 iA iB iAUB / lt_itv (Rhull A) (Rhull B).
   move=> H; have [/eqP AB|AB] := boolP (Rhull A == Rhull B).
       move/(congr1 set_of_itv) : AB AB0.
       rewrite RhullK ?inE// RhullK ?inE// => ->.
-      by rewrite setIid; move/set0P/eqP : B0.
+      by rewrite setIid => /eqP; move/set0P : B0 => /negbTE ->.
   have /orP[|] := total_le_itv (Rhull A) (Rhull B).
     by rewrite /le_itv (negbTE AB) orFb; exact: H.
   rewrite /le_itv eq_sym (negbTE AB) orFb => {}AB.
@@ -3621,8 +3533,7 @@ destruct (Rhull B).1 as [b b1|[]] => //.
   move/set0P : A0.
   move/negP; apply.
   rewrite -(@RhullK _ A) ?inE //.
-  apply set_of_itv_empty_set0.
-  by rewrite A2B1 -leNgt.
+  by rewrite set_of_itvNlt_set0 // A2B1 -leNgt.
 - exfalso.
   move: A2B1; apply/eqP.
   apply: (@le_itv_disjoint_bnd2Noo _ _ (Rhull B)) => //; try by rewrite RhullK ?inE.
@@ -3753,7 +3664,7 @@ transitivity (hlength (set_of_itv j) + hlength K)%E; last first.
 rewrite -AE cover_set_of_itv_nthE// big_cons /= hlength_itvU//.
 - rewrite big_distrr/= big1_seq => //= i /(nthP 0%O)[ii ii_lt <-].
   by apply: contraTeq isT => /set0P-/(ts 0%N ii.+1 I I).
-- exact: is_interval_set_of_itv.
+- exact: interval_is_interval.
 - by move: AE; rewrite cover_set_of_itv_nthE// big_cons => ->.
 Qed.
 
@@ -3794,7 +3705,7 @@ have K_itv : is_interval K.
   by have /trivIsetP-/(_ 0%N ik.+1 I I isT) := ts.
 transitivity (hlength (set_of_itv j) + hlength K)%E; last first.
   by congr (_ + _)%E; rewrite IHs// => i0 i1 _ _ /(ts i0.+1 i1.+1 I I)[].
-rewrite AE hlength_itvU// -?AE//; last exact: is_interval_set_of_itv.
+rewrite AE hlength_itvU// -?AE//; last exact: interval_is_interval.
 rewrite big_distrr/= big1_seq => //= i /(nthP 0%O)[ii ii_lt <-].
   by apply: contraTeq isT => /set0P-/(ts 0%N ii.+1 I I).
 Qed.*)
@@ -3827,7 +3738,7 @@ have h : set_of_itv i = \big[setU/set0]_(j <- J) (set_of_itv i `&` set_of_itv j)
   move: iI => /(nthP 0%O)[k kI <-].
   exact: (@bigcup_sup _ _ k setT (fun i => set_of_itv (nth 0%O I i))).
 rewrite h (@hlengthUitv _ [seq (itv_meet i j) | j <- J]) // ?big_map//.
-- by rewrite -h; apply is_interval_set_of_itv.
+- by rewrite -h; apply: interval_is_interval.
 - rewrite -(@cover_restr _ _ _ [set k | (k < size J)%N]) //; last first.
     by move=> k _ /negP; rewrite -leqNgt => Jk; rewrite nth_default ?size_map// set_of_itvE.
   rewrite /cover -bigcup_ord (big_nth 0%O) big_mkord.
@@ -3872,6 +3783,32 @@ by rewrite {}jkoo leNgt => /negP; apply.
 Qed.
 
 End seq_interval_rbnd.
+
+Lemma ereal_mem_Interval (R : realDomainType) (r : R) (a b : itv_bound R) :
+  (a < r%:E < b)%E -> r \in Interval a b.
+Proof.
+move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lte_fin ?in_itv //= => /andP[] //.
+- by move=> /ltW ->.
+- by move=> /ltW -> /ltW ->.
+- by move=> /ltW ->.
+- by move=> -> /ltW.
+- by move=> ->.
+- by move=> _ /ltW.
+Qed.
+
+Lemma Interval_ereal_mem (R : realDomainType) (r : R) (a b : itv_bound R) :
+  r \in Interval a b -> (a <= r%:E <= b)%E.
+Proof.
+move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lee_fin ?in_itv ?(andbT,andbF) //=.
+- by move=> /andP[-> /ltW ->].
+- by move=> ->; rewrite lee_pinfty.
+- by move=> /andP[/ltW -> /ltW ->].
+- by move=> /andP[/ltW ->].
+- by move=> /ltW ->; rewrite lee_pinfty.
+- by move=> /ltW ->; rewrite lee_ninfty.
+- by move=> ->; rewrite lee_ninfty.
+- by move=> _; rewrite lee_pinfty lee_ninfty.
+Qed.
 
 Section length_measure.
 Variable R : realType.
@@ -3962,25 +3899,10 @@ apply: hlengthUset => //.
   by rewrite mem_sort /= mem_filter => /andP[].
 Qed.
 
-Lemma length_sigma_finite : sigma_finite setT (length : set (sset_ringOfSetsType R) -> {ereal R}).
-Proof.
-exists (fun n => set_of_itv `[ (- (n%:R)), (n%:R) ]).
-  rewrite predeqE => /= r; split => // _.
-  have [r0|r0] := leP 0 r.
-    exists (absz (ceil r)) => //; apply/set_of_itv_mem.
-    rewrite itv_boundlr /= 2!itv_bound_lteE (le_trans _ r0) // ?oppr_le0 //=.
-    rewrite (le_trans (le_Rceil _)) // RceilE pmulrn ler_int gez0_abs //.
-    by rewrite ceil_ge0.
-  exists (absz (floor r)) => //; apply/set_of_itv_mem.
-  rewrite itv_boundlr /= 2!itv_bound_lteE (le_trans (ltW r0)) // ?ler0n // andbT.
-  rewrite (le_trans _ (ge_Rfloor _)) // RfloorE pmulrn lez0_abs ?floor_le0 //; last exact/ltW.
-  by rewrite mulrNz opprK.
-move=> i; split.
-  by exists [fset `[ (- (i%:R)), i%:R ] ]%fset; rewrite ssetE /= big_seq_fset1.
-by rewrite length_itv hlength_itv /=; case: ifPn; rewrite lte_pinfty.
-Qed.
+(* centered closed interval *)
+Definition ccitv (N : nat) : interval R := `[ (-(N%:R))%R, N%:R].
 
-Lemma length_itv2n (n : nat) : length (set_of_itv `[(- n%:R), n%:R]) = n.*2%:R%:E.
+Lemma length_ccitv (n : nat) : length (set_of_itv (ccitv n)) = n.*2%:R%:E.
 Proof.
 rewrite length_itv hlength_itv /= lte_fin -{1}(add0r (-n%:R)) ltr_subl_addl.
 rewrite -natrD ltr0n addnn double_gt0; case: ifPn => [n0|].
@@ -3988,9 +3910,9 @@ rewrite -natrD ltr0n addnn double_gt0; case: ifPn => [n0|].
 by rewrite -leqNgt leqn0 => /eqP ->.
 Qed.
 
-Lemma length_itv2n_sym b r N :
-  length (set_of_itv (Interval (BSide b r) +oo%O) `&` set_of_itv `[(-N%:R), N%:R]) =
-  length (set_of_itv (Interval -oo%O (BSide b (- r)%R)) `&` set_of_itv `[(-N%:R), N%:R]).
+Lemma length_ccitv_sym b r N :
+  length (set_of_itv (Interval (BSide b r) +oo%O) `&` set_of_itv (ccitv N)) =
+  length (set_of_itv (Interval -oo%O (BSide b (- r)%R)) `&` set_of_itv (ccitv N)).
 Proof.
 rewrite -2!itv_meetE 2!length_itv 2!hlength_itv /= 2!lte_fin; case: ifPn.
 - rewrite ltUx => /andP[rN _]; case: ifPn.
@@ -4004,8 +3926,23 @@ rewrite -2!itv_meetE 2!length_itv 2!hlength_itv /= 2!lte_fin; case: ifPn.
      by rewrite N0 sub0r join_r // ?opprK // ltW //; move: rN; rewrite N0 oppr0.
 - case: ifPn => //.
   rewrite ltxI => /andP[]; rewrite -ltr_oppl opprK => rN _.
-  rewrite -leNgt lexU leNgt rN /= -subr_le0 opprK -natrD lern0 addnn.
-  by rewrite double_eq0 => /eqP N0; rewrite N0 addr0 meet_r // ler_oppr oppr0 ltW //; move: rN; rewrite N0.
+  rewrite -leNgt lexU leNgt rN /= -subr_le0 opprK -natrD lern0 addnn double_eq0.
+  by move=> /eqP N0; rewrite N0 addr0 meet_r // ler_oppr oppr0 ltW //; move: rN; rewrite N0.
+Qed.
+
+Lemma length_sigma_finite : sigma_finite setT (length : set (sset_ringOfSetsType R) -> {ereal R}).
+Proof.
+exists (set_of_itv \o ccitv).
+  rewrite predeqE => /= r; split => // _; have [r0|r0] := leP 0 r.
+  - exists (absz (ceil r)) => //; apply/set_of_itv_mem.
+    rewrite itv_boundlr/= 2!itv_bound_lteE (le_trans _ r0)/= ?oppr_le0 ?ler0n//.
+    by rewrite gez0_norm ?ceil_ge0 // ler_ceil.
+  - exists (absz (floor r)) => //; apply/set_of_itv_mem.
+    rewrite itv_boundlr /= 2!itv_bound_lteE (le_trans (ltW r0)) ?ler0n// andbT.
+    by rewrite ler_oppl ltz0_norm ?floor_lt0// ler_oppl opprK ler_floor.
+move=> n; split.
+  by exists [fset (ccitv n)]%fset; rewrite ssetE /= big_seq_fset1.
+by rewrite length_itv hlength_itv /=; case: ifPn; rewrite lte_pinfty.
 Qed.
 
 Lemma length_additive : additive (length : set (sset_ringOfSetsType R) -> {ereal R}).
@@ -4121,7 +4058,7 @@ rewrite funeqE => n; rewrite (bigID (fun k : 'I_n => set_of_itv (j k) == set0)) 
 by rewrite big1 ?add0e // => k /eqP ->; rewrite length_set0.
 Qed.
 
-Lemma length_sub_sigma_additive_on_finite_intervals (i : interval R)
+Lemma length_sigma_subadditive_on_finite_intervals (i : interval R)
   (j : nat -> interval R) (P : pred nat) :
   (hlength (set_of_itv i) < +oo)%E ->
   (forall k, P k -> set_of_itv (j k) != set0) ->
@@ -4144,7 +4081,7 @@ have [/eqP->|i0] := boolP (set_of_itv i == set0).
   rewrite length_set0.
   apply: (@ereal_nneg_series_lim_ge0 _ (length \o set_of_itv \o j) P) => k _.
   exact/length_ge0/Sset.is_sset_itv.
-have [ri1 ri2] := hlength_finite_is_real i0 iNoo.
+have [ri1 ri2] := hlength_finite_fin_num i0 iNoo.
 set a := real_of_er i.1; set b := real_of_er i.2.
 have [ab|ba] := ltP a b; last first.
   rewrite length_itv hlength_itv ltNge {1}(ERFin_real_of_er ri1).
@@ -4177,7 +4114,7 @@ have ia_b_ : set_of_itv i `<=` \bigcup_(k in P) set_of_itv `] (a'_ k) , (b'_ k) 
   have [/eqP ->//|jk0 /set_of_itv_mem] := boolP (set_of_itv (j k) == set0).
   rewrite (IntervalE (j k)) => /Interval_ereal_mem /andP[jk1r rjk2].
   move: (j_finite _ Pk).
-  move/(hlength_finite_is_real jk0) => [jk1 jk2].
+  move/(hlength_finite_fin_num jk0) => [jk1 jk2].
   exists k => //; apply/set_of_itv_mem; rewrite in_itv /=; apply/andP; split.
     rewrite -lte_fin (lt_le_trans _ jk1r) // /a'_ /a_.
     rewrite subERFin lte_subl_addr {2}(ERFin_real_of_er jk1) //.
@@ -4222,8 +4159,8 @@ have : (b'%:E - a'%:E <= lim (fun n => \sum_(k < n | P k) length (set_of_itv (j 
   rewrite (@le_trans _ _ (\sum_(k <- F') (b'_ k - a'_ k)%:E)%E) //.
     move: (@le_lengthU_sumlength [seq (set_of_itv `](a'_ k), (b'_ k)[) | k <- F'] F'_ringOfSets).
     rewrite big_map => /le_trans; apply.
-    rewrite big_map /F' 2!big_fset /= ; apply: lee_sum => k /set_of_itv_nonempty_lt.
-    rewrite itv_bound_lteE => a'b'k0.
+    rewrite big_map /F' 2!big_fset /= ; apply: lee_sum => k.
+    rewrite set_of_itv_neq0 itv_bound_lteE => a'b'k0.
     by rewrite length_itv hlength_itv /= lte_fin a'b'k0.
   rewrite (_ : e%:num / 2 = 2 * (e%:num / 4%:R)); last first.
     by rewrite (@natrM _ 2 2) mulrA -mulf_div divff // mul1r.
@@ -4271,24 +4208,23 @@ have : (b'%:E - a'%:E <= lim (fun n => \sum_(k < n | P k) length (set_of_itv (j 
         rewrite big_enum big_enum_cond; apply.
         move=> k _ _.
         by apply divr_ge0 => //; rewrite ler0n.
-      apply: is_real_adde_undef => //.
-      rewrite real_def gt_eqF /=; last by rewrite (lt_le_trans _ l0) // lte_ninfty.
+      apply: fin_num_adde_undef => //.
+      rewrite fin_numE gt_eqF /=; last by rewrite (lt_le_trans _ l0) // lte_ninfty.
       by rewrite lt_eqF // (le_lt_trans le2) // lte_pinfty.
     rewrite (_ : (fun x : nat => _) = (fun x => \sum_(k < x | P k) (length (set_of_itv (j k)) + (e%:num / 4%:R / (2 ^ k)%:R)%:E)%E)%E) //.
     by rewrite funeqE => n; rewrite big_split.
-  have Htmp : forall x, x \in F -> P x.
-    by move=> x; have := HF_ x.
-  have Htmp2 : forall f : nat -> {ereal R}, (\sum_(i1 <- F') (f i1) = \sum_(i1 <- F' | P i1) (f i1))%E.
+  have sum_F'_P : forall f : nat -> {ereal R},
+      (\sum_(i1 <- F') (f i1) = \sum_(i1 <- F' | P i1) (f i1))%E.
     move=> f; apply eq_fbigl_cond => //.
     move=> k; apply/idP/idP => /=.
       rewrite !inE andbT => /andP[/= kF -> /=].
       rewrite andbT; apply/andP; split => //.
-      by apply Htmp.
+      by apply/HF_.
      by rewrite !inE andbT => /andP[/=].
   apply: lee_add; last first.
     set f := (fun i : nat => \sum_(k < i | P k) (e%:num / 4%:R / (2 ^ i)%:R)%:E)%E.
     rewrite (@le_trans _ _ (lim (fun n => \sum_(k < n | P k) (e%:num / (2 ^ k.+2)%:R)%:E))%E) //.
-      rewrite Htmp2.
+      rewrite sum_F'_P.
       by apply: lee_sum_lim => n _; apply divr_ge0 => //; rewrite ler0n.
     apply lee_lim => //.
       apply: (@is_cvg_ereal_nneg_series _ (fun i => (e%:num / (2 ^ i.+2)%:R)%:E) P) => n _.
@@ -4302,18 +4238,18 @@ have : (b'%:E - a'%:E <= lim (fun n => \sum_(k < n | P k) length (set_of_itv (j 
     apply eq_fbigr => k /imfsetP[/= p]; rewrite !inE => /andP[pF a'b'p0 ->{k} ?].
     rewrite /b_ /a_.
     rewrite length_itv hlength_itv.
-    have [? ?] : is_real (j p).1 /\ is_real (j p).2.
-      apply hlength_finite_is_real.
+    have [? ?] : (((j p).1 : er R) \is a fin_num) /\ (((j p).2 : er R) \is a fin_num).
+      apply hlength_finite_fin_num.
         apply: jne => //.
         by move/HF_ : pF.
       apply j_finite => //.
       by move/HF_ : pF.
     rewrite subERFin -ERFin_real_of_er // -ERFin_real_of_er //.
     have /jne : P p by move/HF_ : pF.
-    rewrite {1}(IntervalE (j p)) => /set_of_itv_nonempty_lt/lt_erbndW.
+    rewrite set_of_itv_neq0 => /ltW/le_bnd_er.
     rewrite le_eqVlt => /orP[/eqP ->|->//].
     by rewrite ltxx subee.
-  rewrite Htmp2.
+  rewrite sum_F'_P.
   by apply: lee_sum_lim => k _; exact/length_ge0/Sset.is_sset_itv.
 have -> : (b'%:E - a'%:E = (b%:E - a%:E) - (e%:num / 2)%:E)%E.
   rewrite /a' /b' (addERFin a) oppeD (subERFin b) -addeA (addeCA (- (e%:num / 4%:R)%:E)%E) addeA; congr (_ + _)%E.
@@ -4341,7 +4277,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   pose P := fun x => set_of_itv (j x) != set0.
   have H2 : set_of_itv i `<=` \bigcup_(k in (fun x => set_of_itv (j x) != set0)) set_of_itv (j k).
     by rewrite -H3.
-  move: (@length_sub_sigma_additive_on_finite_intervals _ j P iNoo (fun x => id) H2).
+  move: (@length_sigma_subadditive_on_finite_intervals _ j P iNoo (fun x => id) H2).
   move/le_trans; apply.
   apply: lee_lim.
   + apply: (@is_cvg_sum_length (set_of_itv \o j)) => n jn0.
@@ -4365,144 +4301,143 @@ apply le_length.
 - by rewrite ij -bigcup_mkset /= => r [k /= _ jkr]; exists k.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma length_sigma_subadditive_on_infinite_intervals
-    (i : interval R) (j : nat -> interval R) (P : pred nat ) :
+Lemma ltz_opp (n : nat) : (0 < n)%N -> - n%:R < n%:R :> R.
+Proof.
+by move=> n0; rewrite -subr_lt0 -opprD -natrD oppr_lt0 ltr0n addn_gt0 n0.
+Qed.
+
+Lemma floor_le : {homo @floor R : x y / x <= y}.
+Proof.
+move=> x y ?.
+by rewrite /floor -(@ler_int R) !RtointK ?isint_Rfloor // Rfloor_le.
+Qed.
+
+Lemma ceil_le : {homo @ceil R : x y / x <= y}.
+Proof.
+by move=> x y xy; rewrite /ceil ler_oppl opprK floor_le // ler_oppl opprK.
+Qed.
+
+Lemma length_sigma_subadditive_on_infinite_intervals (i : interval R)
+    (j : nat -> interval R) (P : pred nat) :
   (hlength (set_of_itv i) = +oo)%E ->
- (forall k : nat, P k -> set_of_itv (j k) != set0) ->
+  (forall k, P k -> set_of_itv (j k) != set0) ->
   set_of_itv i `<=` \bigcup_(k in P) set_of_itv (j k) ->
-  (length (set_of_itv i) <= lim (fun n => \sum_(k < n | P k) length (set_of_itv (j k))))%E.
+  (length (set_of_itv i) <= \sum^oo_(k in P) length (set_of_itv (j k)))%E.
 Proof.
 move=> ioo jne ij.
-set IN := fun N => set_of_itv i `&` set_of_itv `[ (-(N%:R))%R, N%:R].
-set IkN := fun N k => set_of_itv (j k) `&` set_of_itv `[ (-(N%:R))%R, N%:R].
-have K6 : forall M, (M > 0)%R -> \forall n \near \oo, (M%:E <= (\sum_(k < n | P k) length (set_of_itv (j k)))%E)%E.
-  have K1 : forall M, (M > 0)%R -> exists N : nat, (N >= 1)%nat /\ (M%:E < length (IN N))%E.
-    move=> M M0.
-    have ? : (0 < `|ceil M|)%N by rewrite absz_gt0 gt_eqF // ceil_gt0.
-    move/hlength_oo : ioo => [[b [r iroo]]|ioo]; last first.
-      exists (absz (ceil M)); split => //.
-      rewrite /IN setIC (proj2 (setIidPl _ _)); last first.
-        by rewrite ioo set_of_itv_minfty_pinfty.
-      rewrite length_itv2n -addnn natrD addERFin lte_fin -{1}(addr0 M) ler_lt_add // ?ltr0n //.
-      by rewrite (le_trans (ler_ceil _)) // gez0_norm // ceil_ge0 // ltW.
-    rewrite /IN.
-    wlog : i {ij IN} b r {iroo} / i = Interval -oo%O (BSide b r).
-      move=> h; move: iroo => [->|iroo]; first exact: h.
-      have [N [N0 MN]] := h _ b (- r) erefl.
-      by exists N; split => //; rewrite iroo length_itv2n_sym.
-    move=> ->{i}.
-    have Nnn : forall n : nat, (0 < n)%N -> - n%:R < n%:R :> R.
-      move=> n n0.
-      by rewrite -subr_lt0 -opprD ltr_oppl oppr0 -natrD addnn ltr0n lt0n double_eq0 -lt0n.
-    have ? : (0 < `|ceil (`|r| + M)|)%N by rewrite absz_gt0 gt_eqF // ceil_gt0 // -(addr0 0) ler_lt_add.
-    have [r0|r0] := ler0P r.
-      exists (`|ceil (`| r | + M) |%N.+1); split => //.
-      rewrite -itv_meetE length_itv hlength_itv /= lte_fin ltxI Nnn // andbT ltr_oppl opprK.
-      case: ifPn => [rrM|].
-        rewrite meet_l ?(le_trans r0) // lte_fin mulrSr.
-        rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))//.
-        rewrite -ltr_subl_addl (@le_lt_trans _ _ (`|r| + M)) // ?ler_addr//.
-          by rewrite ler0_norm // addrC.
-        by rewrite (@lt_le_trans _ _ (`|r| + M + 1)) // ?ltr_addl // ler_add2r -RceilE le_Rceil.
-      move=> /negP; apply: absurd.
-      rewrite -(ler0_norm r0) mulrSr ltr_spaddr // (@le_trans _ _ (`|r| + M)) // ?ler_addl //; first exact/ltW.
-      by rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// ler_ceil.
-    exists (`|ceil (`| r | + M)|%N); split => //.
-    rewrite -itv_meetE length_itv hlength_itv /= lte_fin ltxI Nnn // ltr_oppl opprK andbT.
-    case: ifPn => [_|].
-      rewrite meet_l; last first.
-        rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
-        rewrite (@le_trans _ _ (r + M)) // ?ler_addl// ; first exact/ltW.
-        by rewrite ler_ceil.
-      rewrite lte_fin -{1}(add0r M) ltr_le_add //.
-      rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
-      rewrite (@le_trans _ _ (r + M)) // ?ler_addr //; first exact/ltW.
-      by rewrite ler_ceil.
-    move/negP; apply: absurd.
-    by rewrite (@lt_le_trans _ _ 0) // ltr_oppl oppr0.
+suff h : forall M, M > 0 -> \forall n \near \oo,
+    (M%:E <= \sum_(k < n | P k) length (set_of_itv (j k)))%E.
+  rewrite length_itv ioo lee_pinfty_eq; apply/eqP.
+  apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0; exact: h.
+set iIN := fun N => set_of_itv i `&` set_of_itv (ccitv N).
+have len_iIN_dvg : forall M, M > 0 -> exists N, (N >= 1)%N /\ (M%:E < length (iIN N))%E.
   move=> M M0.
-  have {K1} [N [N1 MINN]] := K1 _ M0.
-  have K2 : forall N, IN N `<=` \bigcup_(k in P) (IkN N k).
+  move/hlength_oo : ioo => [[b [r iroo]]|ioo]; last first.
+    have ? : (0 < `|ceil M|)%N by rewrite absz_gt0 gt_eqF // ceil_gt0.
+    exists `|ceil M|%N; split=> //; rewrite /iIN ioo set_of_itvE setTI.
+    rewrite length_ccitv lte_fin (le_lt_trans (ler_ceil _)) //.
+    by rewrite -gtz0_norm ?ceil_gt0// ltr_nat -addnn -ltn_subLR // subnn.
+  rewrite /iIN.
+  wlog : i {ij iIN} b r {iroo} / i = Interval -oo%O (BSide b r).
+    move=> h; move: iroo => [->|iroo]; first exact: h.
+    have [N [N0 MN]] := h _ b (- r) erefl.
+    by exists N; split => //; rewrite iroo length_ccitv_sym.
+  move=> ->{i}.
+  have [r0|r0] := ler0P r.
+    exists (`|ceil (`| r | + M) |%N.+1); split => //.
+    rewrite -itv_meetE length_itv hlength_itv /= lte_fin ltxI ltz_opp // andbT.
+    rewrite ltr_oppl opprK.
+    case: ifPn => [rrM|].
+      rewrite meet_l ?(le_trans r0) // lte_fin mulrSr.
+      rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))//.
+      rewrite -ltr_subl_addl (@le_lt_trans _ _ (`|r| + M)) // ?ler_addr//.
+        by rewrite ler0_norm // addrC.
+      rewrite (@lt_le_trans _ _ (`|r| + M + 1)) // ?ltr_addl // ler_add2r.
+      by rewrite -RceilE le_Rceil.
+    move=> /negP; apply: absurd.
+    rewrite -(ler0_norm r0) mulrSr ltr_spaddr //.
+    rewrite (@le_trans _ _ (`|r| + M)) // ?ler_addl //; first exact/ltW.
+    by rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// ler_ceil.
+  have crM : (0 < `|ceil (`|r| + M)|)%N.
+    by rewrite absz_gt0 gt_eqF // ceil_gt0 // -(addr0 0) ler_lt_add.
+  exists (`|ceil (`| r | + M)|%N); split => //.
+  rewrite -itv_meetE length_itv hlength_itv /= lte_fin ltxI ltz_opp // ltr_oppl.
+  rewrite opprK andbT.
+  case: ifPn => [_|].
+    rewrite meet_l; last first.
+      rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
+      by rewrite (le_trans (ler_ceil _)) // ler_int ceil_le // ler_addl ltW.
+    rewrite lte_fin -{1}(add0r M) ltr_le_add //.
+    rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
+    by rewrite (le_trans (ler_ceil _)) // ler_int ceil_le // ler_addr ltW.
+  move/negP; apply: absurd.
+  rewrite -(@ltr_nat R) in crM.
+  by rewrite (le_lt_trans _ crM) // ler_oppl oppr0 ltW.
+move=> M M0.
+have {len_iIN_dvg} [N [N0 MiIN]] := len_iIN_dvg _ M0.
+set jIN := fun N k => set_of_itv (j k) `&` set_of_itv (ccitv N).
+have len_jIN_dvg : \forall n \near \oo, (M%:E <= \sum_(k < n | P k) length (jIN N k))%E.
+  have iUj : forall N, iIN N `<=` \bigcup_(k in P) (jIN N k).
     move=> n.
-    rewrite /IN.
-    move/(@setSI _ _ _ (set_of_itv `[(1 *- n), n%:R] )) : ij.
-    by rewrite bigcup_distrl.
-  have K6 : (length (IN N) <= lim (fun n => \sum_(k < n | P k) length (IkN N k)))%E.
-    rewrite /IN.
-    rewrite -itv_meetE.
-    suff : (length (set_of_itv (itv_meet i `[(1 *- N), N%:R])) <= lim (fun n : nat => \sum_(k < n | P k) length (set_of_itv (itv_meet (j k) `[(1 *- N), N%:R]))))%E.
-      rewrite /IkN.
-      move/le_trans; apply.
-      rewrite le_eqVlt; apply/orP; left; apply/eqP.
-      rewrite (_ : (fun n : nat => (\sum_(k < n | P k) length (set_of_itv (itv_meet (j k) `[(1 *- N), N%:R])))%E) = (fun n : nat => (\sum_(k < n | P k) length (set_of_itv (j k) `&` set_of_itv `[(1 *- N), N%:R]))%E)) //.
-     by rewrite funeqE => /= n; under eq_bigr do rewrite /IkN itv_meetE.
-    rewrite (_ : (fun n : nat => \sum_(k < n | P k) length (set_of_itv (itv_meet (j k) `[(1 *- N), N%:R])))%E =
-                 (fun n : nat => \sum_(k < n | P k && (set_of_itv ((itv_meet (j k) `[(1 *- N), N%:R])) != set0)) length (set_of_itv (itv_meet (j k) `[(1 *- N), N%:R])))%E); last first.
+    by move/(@setSI _ _ _ (set_of_itv (ccitv n))) : ij; rewrite bigcup_distrl.
+  apply lte_lim => //.
+  + apply: (@lee_sum_nneg_ord _ (length \o jIN N)) => n Pn.
+    by apply: length_ge0; rewrite /jIN -itv_meetE; exact/Sset.is_sset_itv.
+  + apply: (@is_cvg_ereal_nneg_series _ (length \o jIN N) P) => n _.
+    by apply: length_ge0; rewrite /jIN -itv_meetE; exact/Sset.is_sset_itv.
+  + rewrite (lt_le_trans MiIN) //.
+    rewrite /iIN -itv_meetE [X in (_ <= X)%E](_ : _ = (\sum^oo_(k in P)
+      length (set_of_itv (itv_meet (j k) (ccitv N))))); last first.
+      congr (lim _).
+      by rewrite funeqE => /= n; under eq_bigr do rewrite /jIN -itv_meetE.
+    rewrite /sumoo_cond.
+    rewrite (_ : (fun n => _) =
+      (fun n => \sum_(k < n | P k && (set_of_itv (itv_meet (j k) (ccitv N)) != set0))
+      length (set_of_itv (itv_meet (j k) (ccitv N))))%E); last first.
       rewrite funeqE => /= n.
-      rewrite (bigID (fun k : 'I_n => set_of_itv (itv_meet (j k) `[(1 *- N), N%:R]) == set0)) /=.
-      rewrite big1 ?add0e // => k /andP[?] /eqP ->.
-      by rewrite length_set0.
-    apply: (@length_sub_sigma_additive_on_finite_intervals (itv_meet i `[(1 *- N), N%:R]) (fun k => itv_meet (j k) (`[(- N%:R), N%:R])) (fun k => P k && (set_of_itv ((itv_meet (j k) `[(1 *- N), N%:R])) != set0))) => //.
-    - rewrite (@le_lt_trans _ _ (hlength (set_of_itv `[(-N%:R), (N%:R)]))) //.
-        by apply le_hlength; rewrite itv_meetE; apply subIset; right.
-      by rewrite -length_itv length_itv2n lte_pinfty.
-    - by move=> k /andP[].
-    - apply: (@subset_trans _ _ (\bigcup_(k in P) (set_of_itv (j k) `&` set_of_itv `[(1 *- N), N%:R]))).
-        by move=> x; rewrite itv_meetE => /K2 [k ? Hk]; exists k.
-       move=> r [k ? kr].
-       exists k; last by rewrite itv_meetE.
-       apply/andP; split => //.
-       by apply/set0P; exists r; rewrite itv_meetE.
-  have K7 : (M%:E < lim (fun n => \sum_(k < n | P k) length (IkN N k)))%E.
-    by rewrite (lt_le_trans MINN) // K6.
-  have K8 : \forall n \near \oo, (M%:E <= \sum_(k < n | P k) length (IkN N k))%E.
-    apply ereal_lt_lim => //.
-      apply: (@lee_sum_nneg_ord _ (fun k => length (IkN N k))) => n Pn.
-      by apply length_ge0; rewrite /IkN -itv_meetE; exact/Sset.is_sset_itv.
-    apply: (@is_cvg_ereal_nneg_series _ (length \o IkN N) P) => n _.
-    by apply: length_ge0; rewrite /IkN -itv_meetE; exact/Sset.is_sset_itv.
-  have K5 : \forall n \near \oo, (M%:E <= (\sum_(k < n | P k) length (set_of_itv (j k)))%E)%E.
-    case: K8 => m [mN]; exists m => // p /= mp.
-    have := mN _ mp.
-    move/le_trans; apply.
-    apply: lee_sum => /= q _.
-    rewrite /IkN.
-    apply le_length => //.
-    by rewrite -itv_meetE; exact/Sset.is_sset_itv.
-    exact/Sset.is_sset_itv.
-    by apply: subIset; left.
-  case: K5 => m _ Hm.
-  near=> n.
-  have mn : (m <= n)%N by near: n; exists m.
-  have := Hm _ mn.
-  exact: le_trans.
-rewrite length_itv ioo lee_pinfty_eq; apply/eqP.
-apply/cvg_lim => //.
-apply/ereal_cvgPpinfty => M M0; exact: K6.
+      rewrite (bigID (fun k : 'I_n => set_of_itv (itv_meet (j k) (ccitv N)) == set0)) /=.
+      by rewrite big1 ?add0e // => k /andP[?] /eqP ->; rewrite length_set0.
+    apply: (@length_sigma_subadditive_on_finite_intervals _ (fun k => itv_meet (j k) (ccitv N))
+      (fun k => P k && (set_of_itv ((itv_meet (j k) (ccitv N))) != set0))) => //.
+    + rewrite (@le_lt_trans _ _ (hlength (set_of_itv (ccitv N)))) //.
+      by apply le_hlength; rewrite itv_meetE; apply subIset; right.
+    + by rewrite -length_itv length_ccitv lte_pinfty.
+    + by move=> k /andP[].
+    + apply: (@subset_trans _ _ (\bigcup_(k in P) (set_of_itv (itv_meet (j k) (ccitv N))))).
+        by move=> x; rewrite itv_meetE => /iUj [k ? Hk]; exists k => //; rewrite itv_meetE.
+      by move=> r [k Pk kr]; exists k => //; rewrite Pk /=; apply/set0P; exists r.
+have [m _ Hm] : \forall n \near \oo, (M%:E <= \sum_(k < n | P k) length (set_of_itv (j k)))%E.
+  case: len_jIN_dvg => m [mN]; exists m => // p /= mp.
+  have /le_trans := mN _ mp; apply; apply: lee_sum => /= q _.
+  rewrite /jIN; apply le_length => //.
+  - by rewrite -itv_meetE; exact/Sset.is_sset_itv.
+  - exact/Sset.is_sset_itv.
+  - by apply: subIset; left.
+near=> n.
+by have /Hm mn : (m <= n)%N by near: n; exists m.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma length_sigma_subadditive_on_intervals (i : interval R) (j : nat -> interval R) (P : pred nat) :
   (forall k, P k -> set_of_itv (j k) != set0) ->
   set_of_itv i `<=` \bigcup_(k in P) set_of_itv (j k) ->
-  (length (set_of_itv i) <= lim (fun n => \sum_(k < n | P k) length (set_of_itv (j k))))%E.
+  (length (set_of_itv i) <= \sum^oo_(k in P) length (set_of_itv (j k)))%E.
 Proof.
 move=> jne ij.
 have := lee_pinfty (hlength (set_of_itv i)).
 rewrite le_eqVlt => /orP[/eqP ioo|ioo]; last first.
-  by apply: length_sub_sigma_additive_on_finite_intervals.
+  by apply: length_sigma_subadditive_on_finite_intervals.
 exact: (@length_sigma_subadditive_on_infinite_intervals i j).
 Qed.
 
 Lemma length_sigma_additive_on_intervals (i : interval R) (j : nat -> interval R) :
   set_of_itv i = \bigcup_k set_of_itv (j k) ->
   trivIset setT (set_of_itv \o j) ->
-  (length (set_of_itv i) = lim (fun n => \sum_(k < n) length (set_of_itv (j k))))%E.
+  (length (set_of_itv i) = \sum^oo_k length (set_of_itv (j k)))%E.
 Proof.
 move=> ij tj.
 have := lee_pinfty (hlength (set_of_itv i)).
 rewrite le_eqVlt => /orP[/eqP ioo|iNoo].
-  rewrite sum_length_cond_neq0.
-  rewrite length_itv ioo.
+  rewrite length_itv ioo /sumoo sum_length_cond_neq0.
   apply/esym/eqP.
   rewrite -lee_pinfty_eq.
   rewrite -ioo.
@@ -4510,19 +4445,6 @@ rewrite le_eqVlt => /orP[/eqP ioo|iNoo].
   apply: (@length_sigma_subadditive_on_intervals i j (fun x => set_of_itv (j x) != set0)) => //.
   by move=> x; rewrite ij => -[n _ jnx]; exists n => //; apply/set0P; exists x.
 exact: length_sigma_additive_on_finite_intervals.
-Qed.
-
-Lemma length_semi_sigma_additive_helper (S : nat -> set (sset_ringOfSetsType R))
-  (mS : forall i, measurable (S i))
-  (US : measurable (\bigcup_n S n))
-  (tS : trivIset setT S) (n : nat) :
-  (\sum_(k < n) length (S k) <= length (\bigcup_k S k))%E.
-Proof.
-have : \big[setU/set0]_(i < n) S i `<=` \bigcup_i S i.
-  by move=> /= r; rewrite -bigcup_mkset => -[/= k _ Skr]; exists k.
-move: (@bigsetU_measurable _ _ (enum 'I_n) xpredT _ (fun i _ => mS i)).
-rewrite {1}big_enum => mU.
-by move/le_length => /= /(_ mU US); apply: le_trans; rewrite length_additive.
 Qed.
 
 Section reindexing.
@@ -4616,17 +4538,136 @@ Qed.
 
 End reindexing.
 
+Lemma length_semi_sigma_additive_helper (S : nat -> set (sset_ringOfSetsType R)) :
+  (forall i, measurable (S i)) -> measurable (\bigcup_n S n) -> trivIset setT S ->
+  forall n, (\sum_(k < n) length (S k) <= length (\bigcup_k S k))%E.
+Proof.
+move=> mS US tS n.
+have : \big[setU/set0]_(i < n) S i `<=` \bigcup_i S i.
+  by move=> /= r; rewrite -bigcup_mkset => -[/= k _ Skr]; exists k.
+move: (@bigsetU_measurable _ _ (enum 'I_n) xpredT _ (fun i _ => mS i)).
+rewrite {1}big_enum => mU.
+by move/le_length => /= /(_ mU US); apply: le_trans; rewrite length_additive.
+Qed.
+
+Lemma length_semi_sigma_additive_helper2 (S : nat -> set (sset_ringOfSetsType R))
+  (seq_of : nat -> seq (interval R))
+  (Sseq_of : forall k : nat, S k = [sset of seq_of k])
+  (Sdec_of := fun i : nat => Decompose (seq_of i)) :
+  forall i, set_of_itv i `<=` \bigcup_k (S k) ->
+  (length (set_of_itv i) <= lim (fun n => \sum_(k < n) length (set_of_itv i `&` S k))%E)%E.
+Proof.
+move=> i iS.
+have {iS}iiS : set_of_itv i `<=` \bigcup_k (set_of_itv i `&` S k).
+  by move=> r ir; move/iS : (ir) => [k _ Skr]; exists k.
+pose i_inter_S n := map (itv_meet i) (Sdec_of n).
+have i_i_inter_S : set_of_itv i `<=`
+    \bigcup_k (\big[setU/set0]_(x <- i_inter_S k) (set_of_itv x)).
+  move/subset_trans : iiS; apply => r [k _].
+  rewrite ((Sseq_of _)) ssetE big_distrr /= => H2.
+  exists k => //; rewrite /i_inter_S big_map.
+  under eq_bigr do rewrite itv_meetE.
+  move: H2; rewrite -bigcup_mkset => -[/= j jk [ij jr]].
+  have [j' [j'k j'r]] := mem_Decompose jk jr.
+  by rewrite -bigcup_mkset; exists j' => //.
+rewrite (_ : (fun n : nat => _) = (fun n : nat => \sum_(k < n) (\sum_(x <- i_inter_S k) length (set_of_itv x))%E)%E); last first.
+  have iSE : forall n, set_of_itv i `&` S n =
+      \big[setU/set0]_(x <- i_inter_S n) (set_of_itv x).
+    move=> n; rewrite big_map.
+    have [_ _] := decomposition_of_Decompose (seq_of n).
+    rewrite {1}ssetE -/(Sdec_of n) -((Sseq_of _)) => <-.
+    rewrite big_distrr /=.
+    by apply eq_bigr => I I0; rewrite itv_meetE.
+  rewrite funeqE => n; apply eq_bigr => k _.
+  rewrite iSE (big_nth 0%O) big_mkord (@length_additive (fun n => set_of_itv (nth 0%O (i_inter_S k) n))); last 2 first.
+    by move=> m; apply Sset.is_sset_itv.
+    exact/trivIset_itv_meet/trivIset_Decompose.
+  apply/esym.
+  by rewrite (big_nth 0%O) big_mkord.
+pose i_inter_S' := fun n => if size (i_inter_S n) == O then [:: 0%O] else i_inter_S n.
+have ? : forall n, size (i_inter_S' n) != O by move=> n; rewrite /i_inter_S'; case: ifPn.
+have Kj : \bigcup_k \big[setU/set0]_(x <- i_inter_S' k) set_of_itv x =
+          \bigcup_k set_of_itv (nth_idx2 i_inter_S' k).
+    rewrite eqEsubset; split => r.
+    move=> -[n Hn]; rewrite -bigcup_mkset => -[/= I].
+    move=> /(nthP 0%O)[p pn <-{I}] /set_of_itv_mem rnp.
+    exists (idx1 i_inter_S' n p) => //.
+    apply/set_of_itv_mem.
+    by rewrite -nth_nth_idx2.
+  move=> [n _ /set_of_itv_mem]; rewrite /nth_idx2.
+  move Hx : (idx2 _ _ _) => x.
+  destruct x as [x1 x2] => rx2.
+  exists x1 => //.
+  rewrite -bigcup_mkset.
+  exists (nth 0%O (i_inter_S' x1) x2); last by apply/set_of_itv_mem.
+  rewrite /mkset; apply/(nthP 0%O); exists x2 => //.
+  rewrite ltnNge.
+  apply: contraPN rx2 => /(nth_default 0%O) ->.
+  by rewrite in_itv /=.
+have Hj : (lim (fun n => (\sum_(k < n) (length (set_of_itv (nth_idx2 i_inter_S' k))))%E)
+          <= lim (fun n => (\sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E)%E))%E.
+    apply: lee_lim.
+    + apply: (@is_cvg_sum_length (fun k => set_of_itv (nth_idx2 i_inter_S' k)) xpredT) => k _.
+      exact: Sset.is_sset_itv.
+    + apply: (@is_cvg_ereal_nneg_series _ (fun k => (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E) xpredT) => n _.
+      apply sume_ge0 => I _.
+      exact/length_ge0/Sset.is_sset_itv.
+    + near=> n.
+      have -> : (\sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E =
+               \sum_(k <- flatten (map i_inter_S' (iota 0 n))) length (set_of_itv k))%E.
+        rewrite big_flatten /=.
+        rewrite big_map.
+        rewrite -[in RHS](subn0 n).
+        rewrite -/(index_iota _ _).
+        by rewrite big_mkord.
+      have -> : (\sum_(k < n) length (set_of_itv (nth_idx2 i_inter_S' k)) =
+                \sum_(k <- map (nth_idx2 i_inter_S') (iota 0 n)) length (set_of_itv k))%E.
+        rewrite big_map.
+        rewrite -[in RHS](subn0 n).
+        rewrite -/(index_iota _ _).
+      by rewrite big_mkord.
+    have [s ->] : exists s, flatten [seq i_inter_S' i | i <- iota 0 n] = [seq nth_idx2 i_inter_S' i | i <- iota 0 n] ++ s.
+      by apply: flatten_prefix.
+    rewrite big_cat /= lee_addl //.
+    apply: sume_ge0 => I _.
+    exact/length_ge0/Sset.is_sset_itv.
+rewrite (_ : (fun n => \sum_(k < n) (\sum_(x <- i_inter_S k) length (set_of_itv x))%E)%E =
+             (fun n => \sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E)%E)%E; last first.
+   rewrite funeqE => n; apply eq_bigr => j _.
+   rewrite /i_inter_S'.
+   case: ifPn => [|//].
+   rewrite size_eq0 => /eqP ->.
+   by rewrite big_seq1 big_nil set_of_itvE length_set0.
+rewrite (le_trans _ Hj) //.
+have L1 : (\bigcup_k \big[setU/set0]_(x <- i_inter_S k) set_of_itv x =
+           \bigcup_k \big[setU/set0]_(x <- i_inter_S' k) set_of_itv x).
+  congr bigsetU.
+  rewrite funeqE => j.
+  rewrite /i_inter_S'.
+  case: ifPn => [|//].
+  rewrite size_eq0 => /eqP ->.
+  by rewrite big_seq1 big_nil set_of_itvE.
+rewrite L1 in i_i_inter_S.
+rewrite Kj in i_i_inter_S.
+rewrite sum_length_cond_neq0.
+apply: (@length_sigma_subadditive_on_intervals i (nth_idx2 i_inter_S') (fun k => set_of_itv (nth_idx2 i_inter_S' k) != set0)) => //.
+apply: (subset_trans i_i_inter_S) => r [k _ kr].
+exists k => //.
+by apply/set0P; exists r.
+Grab Existential Variables. all: end_near. Qed.
+
 Lemma length_semi_sigma_additive :
   semi_sigma_additive (length : set (sset_ringOfSetsType R) -> {ereal R}).
 Proof.
 move=> S mS tS US.
-suff -> : length (\bigcup_k S k) = lim (fun n => \sum_(k < n) length (S k))%E.
+suff -> : length (\bigcup_k S k) = \sum^oo_k length (S k)%E.
   exact/(@is_cvg_sum_length _ xpredT).
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   apply: ereal_lim_le; first exact: (@is_cvg_sum_length _ xpredT).
   by near=> n; exact: length_semi_sigma_additive_helper.
 have [_|] := pselect (forall k, (length (S k) < +oo)%E); last first.
   move/existsNP => -[k /negP]; rewrite -leNgt lee_pinfty_eq => /eqP Skoo.
+  rewrite /sumoo.
   rewrite (@ereal_nneg_series_pinfty _ (fun k0 => length (S k0)) xpredT k) //.
     by rewrite lee_pinfty.
   by move=> n _; apply length_ge0 => //; exact/mS.
@@ -4634,110 +4675,8 @@ have [seq_of Sseq_of] : {seq_of : nat -> seq (interval R) & forall k, S k = [sse
   apply: (@choice _ _ (fun k s => S k = [sset of s])) => k.
   by have [x Hx] := mS k; exists x.
 pose dec_of (i : nat) := Decompose (seq_of i).
-have H1 : forall i, set_of_itv i `<=` \bigcup_k (S k) ->
-  (length (set_of_itv i) <= lim (fun n => \sum_(k < n) length (set_of_itv i `&` S k))%E)%E.
-  move=> i iS.
-  have iiS : set_of_itv i `<=` \bigcup_k (set_of_itv i `&` S k).
-    by move=> r ir; move/iS : (ir) => [k _ Skr]; exists k.
-  pose i_inter_S (n : nat) := map (itv_meet i) (dec_of n).
-  have H1 : forall n, set_of_itv i `&` S n =
-      \big[setU/set0]_(x <- i_inter_S n) (set_of_itv x).
-    move=> n; rewrite big_map.
-    have [_ _] := decomposition_of_Decompose (seq_of n).
-    rewrite {1}ssetE -/(dec_of n) -((Sseq_of _)) => <-.
-    rewrite big_distrr /=.
-    by apply eq_bigr => I I0; rewrite itv_meetE.
-  have i_i_inter_S : set_of_itv i `<=`
-      \bigcup_k (\big[setU/set0]_(x <- i_inter_S k) (set_of_itv x)).
-    move/subset_trans : iiS; apply => r [k _].
-    rewrite ((Sseq_of _)) ssetE big_distrr /= => H2.
-    exists k => //; rewrite /i_inter_S big_map.
-    under eq_bigr do rewrite itv_meetE.
-    move: H2; rewrite -bigcup_mkset => -[/= j jk [ij jr]].
-    have [j' [j'k j'r]] := mem_Decompose jk jr.
-    by rewrite -bigcup_mkset; exists j' => //.
-  rewrite (_ : (fun n : nat => _) = (fun n : nat => \sum_(k < n) (\sum_(x <- i_inter_S k) length (set_of_itv x))%E)%E); last first.
-    rewrite funeqE => n; apply eq_bigr => k _.
-    rewrite H1 (big_nth 0%O) big_mkord (@length_additive (fun n => set_of_itv (nth 0%O (i_inter_S k) n))); last 2 first.
-      by move=> m; apply Sset.is_sset_itv.
-      exact/trivIset_itv_meet/trivIset_Decompose.
-    apply/esym.
-    by rewrite (big_nth 0%O) big_mkord.
-  pose i_inter_S' := fun n => if size (i_inter_S n) == O then [:: 0%O] else i_inter_S n.
-  have ? : forall n, size (i_inter_S' n) != O.
-    move=> n.
-    rewrite /i_inter_S'.
-    by case: ifPn => //.
-  have Kj : \bigcup_k \big[setU/set0]_(x <- i_inter_S' k) set_of_itv x =
-            \bigcup_k set_of_itv (nth_idx2 i_inter_S' k).
-      rewrite eqEsubset; split => r.
-      move=> -[n Hn]; rewrite -bigcup_mkset => -[/= I].
-      move=> /(nthP 0%O)[p pn <-{I}] /set_of_itv_mem rnp.
-      exists (idx1 i_inter_S' n p) => //.
-      apply/set_of_itv_mem.
-      by rewrite -nth_nth_idx2.
-    move=> [n _ /set_of_itv_mem]; rewrite /nth_idx2.
-    move Hx : (idx2 _ _ _) => x.
-    destruct x as [x1 x2] => rx2.
-    exists x1 => //.
-    rewrite -bigcup_mkset.
-    exists (nth 0%O (i_inter_S' x1) x2); last by apply/set_of_itv_mem.
-    rewrite /mkset; apply/(nthP 0%O); exists x2 => //.
-    rewrite ltnNge.
-    apply: contraPN rx2 => /(nth_default 0%O) ->.
-    by rewrite in_itv /=.
-  have Hj : (lim (fun n => (\sum_(k < n) (length (set_of_itv (nth_idx2 i_inter_S' k))))%E)
-            <= lim (fun n => (\sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E)%E))%E.
-      apply: lee_lim.
-      + apply: (@is_cvg_sum_length (fun k => set_of_itv (nth_idx2 i_inter_S' k)) xpredT) => k _.
-        exact: Sset.is_sset_itv.
-      + apply: (@is_cvg_ereal_nneg_series _ (fun k => (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E) xpredT) => n _.
-        apply sume_ge0 => I _.
-        exact/length_ge0/Sset.is_sset_itv.
-      + near=> n.
-        have -> : (\sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E =
-                 \sum_(k <- flatten (map i_inter_S' (iota 0 n))) length (set_of_itv k))%E.
-          rewrite big_flatten /=.
-          rewrite big_map.
-          rewrite -[in RHS](subn0 n).
-          rewrite -/(index_iota _ _).
-          by rewrite big_mkord.
-        have -> : (\sum_(k < n) length (set_of_itv (nth_idx2 i_inter_S' k)) =
-                  \sum_(k <- map (nth_idx2 i_inter_S') (iota 0 n)) length (set_of_itv k))%E.
-          rewrite big_map.
-          rewrite -[in RHS](subn0 n).
-          rewrite -/(index_iota _ _).
-        by rewrite big_mkord.
-      have [s ->] : exists s, flatten [seq i_inter_S' i | i <- iota 0 n] = [seq nth_idx2 i_inter_S' i | i <- iota 0 n] ++ s.
-        by apply: flatten_prefix.
-      rewrite big_cat /= lee_addl //.
-      apply: sume_ge0 => I _.
-      exact/length_ge0/Sset.is_sset_itv.
-  rewrite (_ : (fun n => \sum_(k < n) (\sum_(x <- i_inter_S k) length (set_of_itv x))%E)%E =
-               (fun n => \sum_(k < n) (\sum_(x <- i_inter_S' k) length (set_of_itv x))%E)%E)%E; last first.
-     rewrite funeqE => n; apply eq_bigr => j _.
-     rewrite /i_inter_S'.
-     case: ifPn => [|//].
-     rewrite size_eq0 => /eqP ->.
-     by rewrite big_seq1 big_nil set_of_itvE length_set0.
-  rewrite (le_trans _ Hj) //.
-  have L1 : (\bigcup_k \big[setU/set0]_(x <- i_inter_S k) set_of_itv x = \bigcup_k \big[setU/set0]_(x <- i_inter_S' k) set_of_itv x).
-    congr bigsetU.
-    rewrite funeqE => j.
-    rewrite /i_inter_S'.
-    case: ifPn => [|//].
-    rewrite size_eq0 => /eqP ->.
-    by rewrite big_seq1 big_nil set_of_itvE.
-  rewrite L1 in i_i_inter_S.
-  rewrite Kj in i_i_inter_S.
-  rewrite sum_length_cond_neq0.
-  apply: (@length_sigma_subadditive_on_intervals i (nth_idx2 i_inter_S') (fun k => set_of_itv (nth_idx2 i_inter_S' k) != set0)) => //.
-  apply: (subset_trans i_i_inter_S) => r [k _ kr].
-  exists k => //.
-  by apply/set0P; exists r.
 have [I [SI tI]] : exists I : seq (interval R),
-  \bigcup_k (S k) = [sset of I] /\
-  trivIset setT (fun i => set_of_itv (nth 0%O I i)).
+  \bigcup_k (S k) = [sset of I] /\ trivIset setT (fun i => set_of_itv (nth 0%O I i)).
   have [I0 SI0] := US.
   exists (Decompose I0); split.
     by rewrite SI0; have [_ _ ->] := decomposition_of_Decompose I0.
@@ -4745,14 +4684,14 @@ have [I [SI tI]] : exists I : seq (interval R),
 rewrite SI ssetE (big_nth 0%O) big_mkord.
 rewrite (@length_additive (fun n => set_of_itv (nth 0%O I n))) //; last first.
   by move=> i; exact: Sset.is_sset_itv.
-rewrite (@le_trans _ _ (\sum_(i < size I) (lim (fun n => \sum_(k < n) length (set_of_itv (nth 0%O I i) `&` S k))%E))%E) //.
-apply: lee_sum => i _.
-  apply H1 => //.
+rewrite (@le_trans _ _ (\sum_(i < size I) (\sum^oo_k  length (set_of_itv (nth 0%O I i) `&` S k))%E)%E) //.
+  apply: lee_sum => i _.
+  apply (@length_semi_sigma_additive_helper2 S seq_of) => //.
   rewrite SI ssetE (big_nth 0%O) big_mkord => r ir.
   rewrite -bigcup_mkset; exists i => //.
   by rewrite /mkset /= /index_enum /= -enumT mem_enum.
 rewrite (@le_trans _ _ (lim (fun n => \sum_(i < n) (\sum_(k < size I) length (set_of_itv (nth 0%O I k) `&` S i))%E)%E)) //.
-  apply: (@sum_lim_sumC _ (size I) (fun i k => length (set_of_itv (nth 0%O I i) `&` S k))).
+  apply: (@ereal_sum_lim_sumC _ (size I) (fun i k => length (set_of_itv (nth 0%O I i) `&` S k))).
   move=> a b; apply length_ge0.
   by apply: (@measurableI (sset_ringOfSetsType R)) => //; exact: Sset.is_sset_itv.
 apply lee_lim.
