@@ -9,8 +9,6 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (******************************************************************************)
 (* This file extends the topological hierarchy with norm-related notions.     *)
 (*                                                                            *)
-(* ball_ N == balls defined by the norm/absolute value N                      *)
-(*                                                                            *)
 (* Note that balls in topology.v are not necessarily open, here they are.     *)
 (*                                                                            *)
 (* * Normed Topological Abelian groups:                                       *)
@@ -88,11 +86,6 @@ Import numFieldTopology.Exports.
 
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
-
-Definition ball_
-  (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V) (e : R) :=
-  [set y | norm (x - y) < e].
-Arguments ball_ {R} {V} norm x e%R y /.
 
 Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
 

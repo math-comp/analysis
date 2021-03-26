@@ -280,6 +280,8 @@ Require Import boolp reals classical_sets posnum.
 (* [completePseudoMetricType of T] == clone of a canonical                    *)
 (*                                   completePseudoMetricType structure on T. *)
 (*                                                                            *)
+(* ball_ N == balls defined by the norm/absolute value N                      *)
+(*                                                                            *)
 (* We endow several standard types with the types of topological notions:     *)
 (* - products: prod_topologicalType, prod_uniformType, prod_pseudoMetricType  *)
 (* - matrices: matrix_filtered, matrix_topologicalType, matrix_uniformType,   *)
