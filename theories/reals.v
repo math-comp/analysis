@@ -72,6 +72,10 @@ Proof.
 by split=> [[x /lb_ubN] | [x /ub_lbN]]; [|rewrite setNK]; exists (- x).
 Qed.
 
+Lemma has_lbound0 : has_lbound (@set0 R). Proof. by exists 0. Qed.
+
+Lemma has_ubound0 : has_ubound (@set0 R). Proof. by exists 0. Qed.
+
 End subr_image.
 
 Section has_bound_lemmas.
@@ -378,6 +382,9 @@ Variables (R : realType).
 Implicit Types E : set R.
 Implicit Types x : R.
 
+Lemma sup0 : sup (@set0 R) = 0.
+Proof. by rewrite sup_out //; exact: has_sup0. Qed.
+
 Lemma sup_ub {E} : has_ubound E -> (ubound E) (sup E).
 Proof.
 move=> ubE; apply/ubP=> x x_in_E; move: (x) (x_in_E).
@@ -461,6 +468,9 @@ Proof.
 move=> ninfE; rewrite -oppr0 -(@sup_out _ (-%R @` E)) => // supNE; apply: ninfE.
 exact/has_inf_supN.
 Qed.
+
+Lemma inf0 : inf (@set0 R) = 0.
+Proof. by rewrite inf_out //; exact: has_inf0. Qed.
 
 Lemma inf_lb E : has_lbound E -> (lbound E) (inf E).
 Proof. by move/has_lb_ubN/sup_ub/ub_lbN; rewrite setNK. Qed.

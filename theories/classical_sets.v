@@ -1293,6 +1293,12 @@ Definition has_sup A := A !=set0 /\ has_ubound A.
 Definition has_lbound A := lbound A !=set0.
 Definition has_inf A := A !=set0 /\ has_lbound A.
 
+Lemma has_inf0 : ~ has_inf (@set0 T).
+Proof. by rewrite /has_inf not_andP; left; apply/set0P/negP/negPn. Qed.
+
+Lemma has_sup0 : ~ has_sup (@set0 T).
+Proof. by rewrite /has_sup not_andP; left; apply/set0P/negP/negPn. Qed.
+
 Lemma subset_has_lbound A B : A `<=` B -> has_lbound B -> has_lbound A.
 Proof. by move=> AB [l Bl]; exists l => a Aa; apply/Bl/AB. Qed.
 
