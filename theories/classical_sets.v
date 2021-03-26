@@ -349,7 +349,7 @@ Qed.
 Lemma subset_nonempty A B : A `<=` B -> A !=set0 -> B !=set0.
 Proof. by move=> sAB [x Ax]; exists x; apply: sAB. Qed.
 
-Lemma subset_trans A B C : A `<=` B -> B `<=` C -> A `<=` C.
+Lemma subset_trans B A C : A `<=` B -> B `<=` C -> A `<=` C.
 Proof. by move=> sAB sBC ? ?; apply/sBC/sAB. Qed.
 
 Lemma subsetC A B : A `<=` B -> ~` B `<=` ~` A.

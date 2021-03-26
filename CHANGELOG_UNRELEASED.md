@@ -67,6 +67,8 @@
   + lemmas `nbhs_oo_up_e1`, `nbhs_oo_down_e1`, `nbhs_oo_up_1e`, `nbhs_oo_down_1e`
     `nbhs_fin_out_above`, `nbhs_fin_out_below`, `nbhs_fin_out_above_below`
     `nbhs_fin_inbound`
+- in `classical_sets.v`:
+  + change the order of arguments of `subset_trans`
 
 ### Renamed
 
