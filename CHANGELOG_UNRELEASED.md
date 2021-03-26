@@ -41,6 +41,7 @@
   + lemmas `addeACA`, `muleC`, `mule1`, `mul1e`, `abseN`
   + enable notation `x \is a fin_num`
     * definition `fin_num`, fact `fin_num_key`, lemmas `fin_numE`, `fin_numP`
+  + definition `dense` and lemma `denseNE`
 
 ### Changed
 
