@@ -131,12 +131,10 @@ End pseudoMetric_of_normedDomain.
 Lemma nbhsN (R : numFieldType) (x : R) :
   nbhs (- x) = [set [set - y | y in A] | A in nbhs x].
 Proof.
-rewrite -!(@filter_from_ballE).
-rewrite predeqE => A; split=> [[e egt0 oppxe_A]|[B [e egt0 xe_B] <-]];
-  last first.
+rewrite -!filter_from_ballE predeqE => A.
+split=> [[e egt0 oppxe_A]|[B [e egt0 xe_B] <-]]; last first.
   exists e => // y xe_y; exists (- y); last by rewrite opprK.
-  apply/xe_B.
-  by rewrite /ball /= opprK -normrN -mulN1r mulrDr !mulN1r.
+  by apply/xe_B; rewrite /ball /= opprK -normrN opprD.
 exists [set - y | y in A]; last first.
   rewrite predeqE => y; split=> [[z [t At <- <-]]|Ay]; first by rewrite opprK.
   by exists (- y); [exists y|rewrite opprK].
@@ -408,61 +406,22 @@ apply Build_ProperFilter.
   by move=> P [M [Mreal MP]]; exists (M + 1); apply MP; rewrite ltr_addl.
 split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
 - by exists 0; rewrite real0.
-- have [/eqP MP0|MP0] := boolP (MP == 0).
-    have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-      by exists 0; rewrite real0; split => // x x0; split;
-      [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
-    exists `|MQ|; rewrite realE normr_ge0; split => // x Hx; split.
-      by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0.
-    by apply gtMQ; rewrite (le_lt_trans _ Hx) // real_ler_normr // lexx.
-  have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-    exists `|MP|; rewrite realE normr_ge0; split => // x MPx; split.
-    by apply gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
-    by apply gtMQ; rewrite (le_lt_trans _ MPx) // MQ0.
-  have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
-  have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
-  exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
-  rewrite realE /= posnum_ge0 /=; split => // x.
-  rewrite posnum_max pos_lt_maxl /= => /andP[MPx MQx]; split.
-  by apply/gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
-  by apply/gtMQ; rewrite (le_lt_trans _ MQx) // real_ler_normr // lexx.
+- exists (Num.max MP MQ); split=> [|x]; first exact: max_real.
+  by rewrite comparable_lt_maxl ?real_comparable // => /andP[/gtMP ? /gtMQ].
 - by exists M; split => // ? /gtM /sPQ.
-Defined.
-Typeclasses Opaque proper_pinfty_nbhs.
+Qed.
 
 Global Instance proper_ninfty_nbhs : ProperFilter (ninfty_nbhs R).
 Proof.
 apply Build_ProperFilter.
-- move=> P [M [Mr ltMP]]; exists (M - 1).
+  move=> P [M [Mr ltMP]]; exists (M - 1).
   by apply: ltMP; rewrite gtr_addl oppr_lt0.
-- split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
-  + by exists 0; rewrite real0.
-  + have [/eqP MP0|MP0] := boolP (MP == 0).
-      have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-        by exists 0; rewrite real0; split => // x x0; split;
-        [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
-      exists (- `|MQ|); rewrite realN realE normr_ge0; split => // x xMQ; split.
-        by apply ltMP; rewrite (lt_le_trans xMQ) // MP0 ler_oppl oppr0.
-      apply ltMQ; rewrite (lt_le_trans xMQ) // ler_oppl -normrN.
-     by rewrite real_ler_normr ?realN // lexx.
-  + have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-      exists (- `|MP|); rewrite realN realE normr_ge0; split => // x MPx; split.
-        apply ltMP; rewrite (lt_le_trans MPx) // ler_oppl -normrN.
-        by rewrite real_ler_normr ?realN // lexx.
-      by apply ltMQ; rewrite (lt_le_trans MPx) // MQ0 ler_oppl oppr0.
-    have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
-    have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
-    exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
-    rewrite realN realE /= posnum_ge0 /=; split => // x.
-    rewrite ltr_oppr posnum_max pos_lt_maxl => /andP[].
-    rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
-      apply/ltMP; rewrite (lt_le_trans MPx) //= ler_oppl -normrN.
-      by rewrite real_ler_normr ?realN // lexx.
-    apply/ltMQ; rewrite (lt_le_trans MQx) //= ler_oppl -normrN.
-    by rewrite real_ler_normr ?realN // lexx.
-  + by exists M; split => // x /ltM /sPQ.
-Defined.
-Typeclasses Opaque proper_ninfty_nbhs.
+split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
+- by exists 0; rewrite real0.
+- exists (Num.min MP MQ); split=> [|x]; first exact: min_real.
+  by rewrite comparable_lt_minr ?real_comparable // => /andP[/ltMP ? /ltMQ].
+- by exists M; split => // x /ltM /sPQ.
+Qed.
 
 (*Global Instance ereal_locally'_filter :
   forall x : {ereal R}, ProperFilter (ereal_locally' x).
@@ -1724,12 +1683,11 @@ Section hausdorff.
 Lemma Rhausdorff (R : realFieldType) : hausdorff R.
 Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
-apply/(@in_segment_addgt0Pr _ x _ x) => _ /posnumP[e].
+apply/in_segment_addgt0Pr => _ /posnumP[e].
 rewrite in_itv /= -ler_distl; set he := (e%:num / 2)%:pos.
-have [z []] := clxy _ _ (nbhsx_ballx x he) (nbhsx_ballx y he).
-move=> zx_he yz_he.
-rewrite -(subrKA z) (le_trans (ler_norm_add _ _) _)// ltW //.
-by rewrite (splitr e%:num) (distrC z); apply: ltr_add.
+have [z [zx_he yz_he]] := clxy _ _ (nbhsx_ballx x he) (nbhsx_ballx y he).
+have := ball_triangle yz_he (ball_sym zx_he).
+by rewrite -mulr2n -mulr_natr divfK // => /ltW.
 Qed.
 
 End hausdorff.
@@ -2336,7 +2294,7 @@ Context {K : numFieldType}.
 Lemma mul_continuous : continuous (fun z : K * K => z.1 * z.2).
 Proof. exact: scale_continuous. Qed.
 
-Lemma inv_continuous x : x != 0 -> {for x, continuous (GRing.inv : K -> K)}.
+Lemma inv_continuous (x : K) : x != 0 -> {for x, continuous GRing.inv}.
 Proof.
 move=> x_neq0 /=; apply/cvg_distP => _/posnumP[e]; rewrite !nearE/=; near=> y.
 have y_gt : `|y| > `|x| / 2.
@@ -2841,22 +2799,22 @@ Grab Existential Variables. all: end_near. Qed.
 
 End cvg_seq_bounded.
 
-Lemma closure_sup (R : realType) (A : set R) : A !=set0 -> has_ubound A ->
-  (closure A) (sup A).
+Lemma closure_sup (R : realType) (A : set R) :
+  A !=set0 -> has_ubound A -> closure A (sup A).
 Proof.
 move=> A0 ?; have [|AsupA] := pselect (A (sup A)); first exact: subset_closure.
 rewrite closure_limit_point; right => U /nbhs_ballP[_ /posnumP[e]] supAeU.
-have [x [Ax /andP[sAex xsA]]] : exists x, A x /\ sup A - e%:num < x < sup A.
-  apply: contrapT => /forallNP Ax.
-  have /(sup_le_ub A0) : ubound A (sup A - e%:num).
-    move=> y Ay; have /not_andP[//|/negP] := Ax y.
-    rewrite negb_and -leNgt => /orP[//|sAy]; rewrite leNgt.
-    apply: contra sAy => sAey; rewrite lt_neqAle sup_upper_bound // andbT.
-    by apply/eqP; apply: contra_not AsupA => <-.
+suff [x [Ax /andP[sAex xsA]]] : exists x, A x /\ sup A - e%:num < x < sup A.
+  exists x; split => //; first by rewrite lt_eqF.
+  apply supAeU; rewrite /ball /= ltr_distl (addrC x e%:num) -ltr_subl_addl sAex.
+  by rewrite andbT (le_lt_trans _ xsA) // ler_subl_addl ler_addr.
+apply: contrapT => /forallNP Ax.
+suff /(sup_le_ub A0) : ubound A (sup A - e%:num).
   by rewrite leNgt => /negP; apply; rewrite ltr_subl_addl ltr_addr.
-exists x; split => //; first by rewrite lt_eqF.
-apply supAeU; rewrite /ball /= ltr_distl (addrC x e%:num) -ltr_subl_addl sAex.
-by rewrite andbT (le_lt_trans _ xsA) // ler_subl_addl ler_addr.
+move=> y Ay; have /not_andP[//|/negP] := Ax y.
+rewrite negb_and leNgt => /orP[//|]; apply: contra => sAey.
+rewrite lt_neqAle sup_upper_bound // andbT.
+by apply: contra_not_neq AsupA => <-.
 Qed.
 
 Lemma near_infty_natSinv_lt (R : archiFieldType) (z : R) (e : {posnum R}) :
