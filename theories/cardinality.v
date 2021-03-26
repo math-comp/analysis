@@ -60,7 +60,7 @@ Local Open Scope ring_scope.
 
 (* TODO: PR ?*)
 Lemma in_inj_comp (A B C : Type) (f : B -> A) (h : C -> B) (P : pred B) (Q : pred C) :
-  {in P &, injective f} -> {in Q &, injective h} -> (forall x, Q x -> P (h x)) ->
+  {in P &, injective f} -> {in Q &, injective h} -> {homo h : x / Q x >-> P x} ->
   {in Q &, injective (f \o h)}.
 Proof.
 by move=> Pf Qh QP x y xQ yQ xy; apply Qh => //; apply Pf => //; apply QP.
