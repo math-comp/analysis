@@ -388,6 +388,10 @@ Proof. by case: x => //=; rewrite oppr0. Qed.
 Lemma addERFin (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
 Proof. by []. Qed.
 
+Lemma sumERFin I r P (F : I -> R) :
+  \sum_(i <- r | P i) (F i)%:E = (\sum_(i <- r | P i) F i)%R%:E.
+Proof. by rewrite (big_morph _ addERFin erefl). Qed.
+
 Lemma subERFin (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
 Proof. by []. Qed.
 
