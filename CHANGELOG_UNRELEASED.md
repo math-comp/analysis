@@ -38,7 +38,7 @@
 - in `classical_sets.v`:
   + notation `[disjoint ... & ..]`
   + lemmas `mkset_nil`, `bigcup_mkset`, `bigcup_nonempty`, `bigcup0`, `bigcup0P`,
-    `subset_bigcup_r`, `eqbigcup_r`
+    `subset_bigcup_r`, `eqbigcup_r`, `eq_set_inl`, `set_in_in`
 - in `ereal.v`:
   + lemmas `adde_undefC`, `real_of_erD`, `fin_num_add_undef`, `addeK`,
     `subeK`, `subee`, `sube_le0`, `lee_sub`

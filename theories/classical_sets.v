@@ -288,6 +288,12 @@ Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
   [set x | P x] = [set x | Q x].
 Proof. by move=> /funext->. Qed.
 
+Lemma eq_set_inl T1 T2 (A : set T1) (f f' : T1 -> T2) :
+  (forall x, A x -> f x = f' x) -> [set f x | x in A] = [set f' x | x in A].
+Proof.
+by move=> h; rewrite predeqE=> y; split=> [][x ? <-]; exists x=> //; rewrite h.
+Qed.
+
 Section basic_lemmas.
 Context {T : Type}.
 Implicit Types A B C D : set T.
@@ -694,6 +700,10 @@ Proof.
 by rewrite eqEsubset; split => [x [b [a Aa] <- <-]|x [a Aa] <-];
   [apply/imageP |apply/imageP/imageP].
 Qed.
+
+Lemma set_in_in T1 T2 T3 A (f : T1 -> T2) (f' : T2 -> T3) :
+  [set f' x | x in [set f y | y in A]] = [set f' (f y) | y in A].
+Proof. exact: image_comp. Qed.
 
 Section bigop_lemmas.
 Context {T I : Type}.
