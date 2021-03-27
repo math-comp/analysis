@@ -452,8 +452,25 @@ move: x y => [r| |] [r'| |] //=; apply/idP/idP => [|/eqP[->]//].
 by move/eqP => -[] /eqP; rewrite eqr_opp => /eqP ->.
 Qed.
 
+Lemma eqe_oppP x y : (- x = - y) <-> (x = y).
+Proof. by split=> [/eqP | -> //]; rewrite eqe_opp => /eqP. Qed.
+
 Lemma eqe_oppLR x y : (- x == y) = (x == - y).
 Proof. by move: x y => [r0| |] [r1| |] //=; rewrite !eqe eqr_oppLR. Qed.
+
+Lemma eqe_oppLRP x y : (- x = y) <-> (x = - y).
+Proof.
+split=> /eqP; first by rewrite eqe_oppLR => /eqP.
+by rewrite -eqe_oppLR => /eqP.
+Qed.
+
+Lemma oppe_subset (A B : set {ereal R}) :
+  ((A `<=` B) <-> (-%E @` A `<=` -%E @` B))%classic.
+Proof.
+split=> [AB _ [] x ? <-|AB x Ax]; first by exists x => //; exact: AB.
+have /AB[y By] : ((-%E @` A) (- x)%E)%classic by exists x.
+by rewrite eqe_oppP => <-.
+Qed.
 
 Lemma fin_numN x : (- x \is a fin_num) = (x \is a fin_num).
 Proof. by rewrite !fin_numE 2!eqe_oppLR andbC. Qed.
@@ -820,6 +837,9 @@ Qed.
 Lemma ereal_inf0 : ereal_inf set0 = +oo.
 Proof. by rewrite /ereal_inf image_set0 ereal_sup0. Qed.
 
+Lemma ereal_inf1 x : ereal_inf [set x] = x.
+Proof. by rewrite /ereal_inf image_set1 ereal_sup1 oppeK. Qed.
+
 Lemma ub_ereal_sup S M : ubound S M -> ereal_sup S <= M.
 Proof.
 rewrite /ereal_sup /supremum; case: ifPn => [/eqP ->|].
@@ -915,6 +935,9 @@ Lemma ereal_inf_lb S : lbound S (ereal_inf S).
 Proof.
 by move=> x Sx; rewrite /ereal_inf lee_oppl; apply ereal_sup_ub; exists x.
 Qed.
+
+Lemma ereal_inf_pinfty S : ereal_inf S = +oo -> S `<=` [set +oo].
+Proof. rewrite eqe_oppLRP oppe_subset image_set1; exact: ereal_sup_ninfty. Qed.
 
 Lemma le_ereal_sup : {homo @ereal_sup R : A B / A `<=` B >-> A <= B}.
 Proof. by move=> A B AB; apply ub_ereal_sup => x Ax; apply/ereal_sup_ub/AB. Qed.
