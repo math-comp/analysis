@@ -46,6 +46,8 @@
   + lemmas `has_sup1`, `has_inf1`
 - in `nngnum.v`:
   + instance `invr_nngnum`
+- in `posnum.v`:
+  + instance `posnum_nngnum`
 
 ### Changed
 
