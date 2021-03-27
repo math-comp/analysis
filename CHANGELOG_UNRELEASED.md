@@ -44,6 +44,8 @@
   + definition `dense` and lemma `denseNE`
 - in `reals.v`:
   + lemmas `has_sup1`, `has_inf1`
+- in `nngnum.v`:
+  + instance `invr_nngnum`
 
 ### Changed
 
