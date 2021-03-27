@@ -64,6 +64,13 @@ Local Open Scope ring_scope.
 
 Inductive er (R : Type) := ERFin of R | ERPInf | ERNInf.
 
+Definition er_map T T' (f : T -> T') (x : er T) : er T' :=
+  match x with
+  | ERFin x => ERFin (f x)
+  | ERPInf => ERPInf _
+  | ERNInf => ERNInf _
+  end.
+
 Section ExtendedReals.
 Variable (R : numDomainType).
 

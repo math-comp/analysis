@@ -34,6 +34,7 @@
     `sumERFin`, `ereal_inf1`, `eqe_oppP`, `eqe_oppLRP`, `oppe_subset`,
     `ereal_inf_pinfty`
   + definition `er_map`
+  + definition `er_map`
 - in `classical_sets.v`:
   + notation `[disjoint ... & ..]`
   + lemmas `mkset_nil`, `bigcup_mkset`, `bigcup_nonempty`, `bigcup0`, `bigcup0P`,
