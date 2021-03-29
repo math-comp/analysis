@@ -103,10 +103,7 @@
   + instance `posnum_nngnum`
 
 - file `banach_steinhaus.v`:
-  + definition `dense`
-  + lemma `denseNE`
   + lemma `le_closed_ball`
-  + lemma `floor_nat_comp`
   + definition `Baire`
   + theorem `DeBaire`
   + definition `bounded_fun_norm`

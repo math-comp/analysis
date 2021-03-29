@@ -18,30 +18,20 @@ Import numFieldNormedType.Exports.
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 
-Definition dense (T : topologicalType) (S : T -> Prop) :=
-  forall (O : set T), O =!set0 -> open O ->  O `&` S !=set0.
-
-Lemma denseNE (T : topologicalType) (S : set T) : not (dense S) ->
-  exists O, (exists x, (open_nbhs x) O) /\ (O `&` S = set0).
-Proof.
-rewrite /dense /open_nbhs.
-move=> /existsNP[X /not_implyP[[x Xx] /not_implyP[ Ox /forallNP A]]].
-by exists X; split; [exists x | rewrite -subset0; apply/A].
-Qed.
-
 Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricNormedZmodType R)
   (x : M) (e1 e2 : R) : (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
 Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
 
-Lemma floor_nat_comp (R : realType) (M : R) : 0 <= M -> M < `|Rtoint (Rfloor M + 1%:~R)|%:R.
+(* NB: PR in progress *)
+Lemma gtz0_norm (R : numDomainType) (i : int) : 0 < i -> `|i|%:R = i%:~R :> R.
+Proof. by move/gtz0_abs => <-. Qed.
+
+Lemma lez_abs (i : int) : i <= `|i|%N.
 Proof.
-move=> M0; rewrite (lt_le_trans (lt_succ_Rfloor _)) //.
-have /RintP[z h] := isint_Rfloor M.
-rewrite h -intrD Rtointz.
-suff -> : z + 1 = Posz `|(z + 1)%R|%N by [].
-rewrite gez0_abs //= -(ler_int R) intrD -h (le_trans M0) //=.
-exact/ltW/lt_succ_Rfloor.
+have [i0|i0] := ltrP 0 i; first by rewrite gtz0_abs.
+by rewrite lez0_abs // -subr_ge0 addr_ge0 // oppr_ge0.
 Qed.
+(* END NB: PR in progress *)
 
 Section Baire.
 Variable K : realType.
@@ -96,11 +86,10 @@ have : cvg (a @ \oo).
   have [n rne] : exists n, 2 * (r n)%:num < e.
     pose eps := e / 2.
     have [n n1e] : exists n, n.+1%:R^-1 < eps.
-      pose z := `|Rtoint (Rfloor eps^-1 + 1%:~R)|%N.
-      exists z; rewrite -ltf_pinv // ?posrE// ?divr_gt0// invrK.
-      have /lt_le_trans -> // : eps^-1 < z%:R.
-        by apply: floor_nat_comp; rewrite invr_ge0// ler_pdivl_mulr// mul0r ltW.
-      by rewrite ler_nat.
+      exists `|ceil eps^-1|%N.
+      rewrite -ltf_pinv ?(posrE,divr_gt0)// invrK -addn1 natrD.
+      rewrite gtz0_norm ?(ceil_gt0,invr_gt0,divr_gt0)//.
+      by rewrite (le_lt_trans (ler_ceil _)) // ltr_addl.
     exists n.+1; rewrite -ltr_pdivl_mull //.
     have /lt_trans : (r n.+1)%:num < n.+1%:R^-1.
       have [_ ] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply: (Pf (n, ar n)).
@@ -134,9 +123,9 @@ rewrite cvg_ex //= => -[l Hl]; exists l; split.
 Qed.
 
 End Baire.
- 
+
 Definition bounded_fun_norm (K : realType) (V : completeNormedModType K)
-    (W : normedModType K) (f : V -> W) := 
+    (W : normedModType K) (f : V -> W) :=
   forall r, exists M, forall x, `|x| <= r -> `|f x| <= M.
 
 (* TODO: imp to define in normedtype.v *)
@@ -184,10 +173,9 @@ set O_inf := \bigcap_i (O i).
 have O_infempty : O_inf = set0.
   rewrite -subset0 => x.
   have [M FxM] := BoundedF x; rewrite /O_inf /O /=.
-  move=> /(_ `|Rtoint (Rfloor M + 1%:~R)|%N)[//|f Ff].
-  apply/negP; rewrite -leNgt.
-  rewrite (le_trans (FxM _ Ff)) // ltW // floor_nat_comp //.
-  exact/(le_trans _ (FxM _ Ff)).
+  move=> /(_ `|ceil M|%N Logic.I)[f Ff]; apply/negP; rewrite -leNgt.
+  rewrite (le_trans (FxM _ Ff))// (le_trans (ler_ceil _))//.
+  by have := lez_abs (ceil M); rewrite -(@ler_int K).
 have ContraBaire : exists i, not (dense (O i)).
   have dOinf : ~ dense O_inf.
     rewrite /dense O_infempty ; apply /existsNP; exists setT; elim.
@@ -211,7 +199,7 @@ case: (eqVneq y 0) => [-> | Zeroy].
 have majballi : forall f x, F f -> (ball x0 r%:num) x -> `|f x | <= n%:R.
   move=> g x Fg /(H x); rewrite leNgt.
   by rewrite /O /= setC_bigcup /= => /(_ _ Fg)/negP.
-have majball : forall f x, F f -> (ball x0 r%:num) x -> `|f (x - x0) | <= n%:R + n%:R.
+have majball : forall f x, F f -> (ball x0 r%:num) x -> `|f (x - x0)| <= n%:R + n%:R.
   move=> g x Fg; move: (Propf g Fg) => [Bg Lg].
   move: (linearB (Linear Lg)) => /= -> Ballx.
   apply/(le_trans (ler_norm_sub _ _))/ler_add; first exact: majballi.
