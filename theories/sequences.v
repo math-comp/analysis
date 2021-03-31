@@ -870,7 +870,7 @@ have [Snoo|Snoo] := pselect (u_ = fun=> -oo%E).
   rewrite /l (_ : S = [set -oo%E]); last first.
     rewrite predeqE => x; split => [-[n _ <-]|->]; first by rewrite Snoo.
     by exists O => //; rewrite Snoo.
-  by rewrite ereal_sup_set1 Snoo; exact: cvg_cst.
+  by rewrite ereal_sup1 Snoo; exact: cvg_cst.
 have [/eqP|lnoo] := boolP (l == -oo%E).
   move/ereal_sup_ninfty => loo.
   suff : u_ = (fun=> -oo%E) by [].

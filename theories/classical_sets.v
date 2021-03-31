@@ -635,8 +635,8 @@ Proof. by rewrite eqEsubset; split => [b [a' -> <-] //|b ->]; exact/imageP. Qed.
 
 Lemma subset_set1 A a : A `<=` [set a] -> A = set0 \/ A = [set a].
 Proof.
-move=> Aa; have [|/set0P/negP/negPn/eqP->] := pselect (A !=set0); [|by left].
-by case=> t At; right; rewrite eqEsubset; split => // ? ->; rewrite -(Aa _ At).
+move=> Aa; have [/eqP|/set0P[t At]] := boolP (A == set0); first by left.
+by right; rewrite eqEsubset; split => // ? ->; rewrite -(Aa _ At).
 Qed.
 
 Lemma sub_image_setI f A B : f @` (A `&` B) `<=` f @` A `&` f @` B.
@@ -1327,12 +1327,12 @@ by rewrite eq_le (ub_lb_ub Ex yE) (ub_lb_ub Ey xE).
 Qed.
 
 Definition supremum (x0 : T) A :=
-  if pselect (A !=set0) then xget x0 (supremums A) else x0.
+  if A == set0 then x0 else xget x0 (supremums A).
 
 Definition infimums A := lbound A `&` ubound (lbound A).
 
 Definition infimum (x0 : T) A :=
-  if pselect (A !=set0) then xget x0 (infimums A) else x0.
+  if A == set0 then x0 else xget x0 (infimums A).
 
 Lemma infimums_set1 x : infimums [set x] = [set x].
 Proof.
@@ -1357,16 +1357,14 @@ Implicit Types A : set T.
 Lemma ge_supremum_Nmem x0 A t :
   supremums A !=set0 -> A t -> (supremum x0 A >= t)%O.
 Proof.
-case=> x Ax; rewrite /supremum.
-case: pselect => /= [_ | /set0P/negP/negPn/eqP -> //].
+case=> x Ax; rewrite /supremum; case: ifPn => [/eqP -> //|_].
 by case: xgetP => [y yA [uAy _]|/(_ x) //]; exact: uAy.
 Qed.
 
 Lemma le_infimum_Nmem x0 A t :
   infimums A !=set0 -> A t -> (infimum x0 A <= t)%O.
 Proof.
-case=> x Ex; rewrite /infimum.
-case: pselect => /= [_ | /set0P/negP/negPn/eqP -> //].
+case=> x Ex; rewrite /infimum; case: ifPn => [/eqP -> //|_].
 by case: xgetP => [y yE [uEy _]|/(_ x) //]; exact: uEy.
 Qed.
 
