@@ -12,7 +12,9 @@
   + lemmas `ereal_pseries_sum_nat`, `lte_lim`
   + lemmas `is_cvg_ereal_nneg_natsum_cond`, `is_cvg_ereal_nneg_natsum`
   + lemma `ereal_pseriesD`, `ereal_pseries0`, `eq_ereal_pseries`
-- in `classical_sets.v`, lemma `subset_bigsetU_cond`
+- in `classical_sets.v`
+  + lemma `subset_bigsetU_cond`
+  + lemma `eq_imagel`
 - in `measure.v`:
   + lemma `eq_bigcupB_of_bigsetU`
   + definitions `caratheodory_type`
@@ -92,6 +94,9 @@
   + `is_cvg_ereal_nneg_series_cond`
 
 ### Removed
+
+- in `classical_sets.v`
+  + lemmas `eq_set_inl`, `set_in_in`
 
 ### Infrastructure
 
