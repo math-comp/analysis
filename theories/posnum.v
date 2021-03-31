@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum.
-Require Import boolp.
+Require Import boolp nngnum.
 
 (******************************************************************************)
 (* This file develops tools to make the manipulation of positive numbers      *)
@@ -99,6 +99,8 @@ Definition posnum_gt0_def x (phx : phantom R x%:num) := posnum_gt0 x.
 Lemma posnum_ge0 x : x%:num >= 0 :> R. Proof. by apply: ltW. Qed.
 Lemma posnum_eq0 x : (x%:num == 0 :> R) = false. Proof. by rewrite gt_eqF. Qed.
 Lemma posnum_neq0 x : (x%:num != 0 :> R). Proof. by rewrite gt_eqF. Qed.
+
+Canonical posnum_nngnum x := Nonneg.NngNum x%:num (posnum_ge0 x).
 
 Lemma posnum_eq : {mono numpos R : x y / x == y}. Proof. by []. Qed.
 Lemma posnum_le : {mono numpos R : x y / x <= y}. Proof. by []. Qed.

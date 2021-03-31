@@ -30,11 +30,15 @@
   + lemmas `ereal_ballN`, `le_ereal_ball`, `ereal_ball_ninfty_oversize`,
     `contract_ereal_ball_pinfty`, `expand_ereal_ball_pinfty`,
     `contract_ereal_ball_fin_le`, `contract_ereal_ball_fin_lt`,
-    `expand_ereal_ball_fin_lt`, `ball_ereal_ball_fin_lt`, `ball_ereal_ball_fin_le`
+    `expand_ereal_ball_fin_lt`, `ball_ereal_ball_fin_lt`, `ball_ereal_ball_fin_le`,
+    `sumERFin`, `ereal_inf1`, `eqe_oppP`, `eqe_oppLRP`, `oppe_subset`,
+    `ereal_inf_pinfty`
+  + definition `er_map`
+  + definition `er_map`
 - in `classical_sets.v`:
   + notation `[disjoint ... & ..]`
   + lemmas `mkset_nil`, `bigcup_mkset`, `bigcup_nonempty`, `bigcup0`, `bigcup0P`,
-    `subset_bigcup_r`, `eqbigcup_r`
+    `subset_bigcup_r`, `eqbigcup_r`, `eq_set_inl`, `set_in_in`
 - in `ereal.v`:
   + lemmas `adde_undefC`, `real_of_erD`, `fin_num_add_undef`, `addeK`,
     `subeK`, `subee`, `sube_le0`, `lee_sub`
@@ -44,6 +48,10 @@
   + definition `dense` and lemma `denseNE`
 - in `reals.v`:
   + lemmas `has_sup1`, `has_inf1`
+- in `nngnum.v`:
+  + instance `invr_nngnum`
+- in `posnum.v`:
+  + instance `posnum_nngnum`
 
 ### Changed
 
