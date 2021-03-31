@@ -42,6 +42,8 @@
   + enable notation `x \is a fin_num`
     * definition `fin_num`, fact `fin_num_key`, lemmas `fin_numE`, `fin_numP`
   + definition `dense` and lemma `denseNE`
+- in `reals.v`:
+  + lemmas `has_sup1`, `has_inf1`
 
 ### Changed
 
@@ -76,6 +78,9 @@
 - in `ereal.v`:
   + `is_realN` -> `fin_numN`
   + `is_realD` -> `fin_numD`
+  + `ereal_sup_set0` -> `ereal_sup0`
+  + `ereal_sup_set1` -> `ereal_sup1`
+  + `ereal_inf_set0` -> `ereal_inf0`
 
 ### Removed
 

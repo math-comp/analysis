@@ -3090,6 +3090,12 @@ Definition Rhull (X : set R) : interval R := Interval
   (if `[< has_ubound X >] then BSide (~~ `[< X (sup X) >]) (sup X)
                           else BInfty _ false).
 
+Lemma Rhull0 : Rhull set0 = `]0, 0[ :> interval R.
+Proof.
+rewrite /Rhull  (asboolT (has_lbound0 R)) (asboolT (has_ubound0 R)) asboolF //.
+by rewrite sup0 inf0.
+Qed.
+
 Lemma sub_Rhull (X : set R) : X `<=` [set x | x \in Rhull X].
 Proof.
 move=> x Xx/=; rewrite in_itv/=.

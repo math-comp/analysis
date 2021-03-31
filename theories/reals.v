@@ -72,6 +72,10 @@ Proof.
 by split=> [[x /lb_ubN] | [x /ub_lbN]]; [|rewrite setNK]; exists (- x).
 Qed.
 
+Lemma has_lbound0 : has_lbound (@set0 R). Proof. by exists 0. Qed.
+
+Lemma has_ubound0 : has_ubound (@set0 R). Proof. by exists 0. Qed.
+
 End subr_image.
 
 Section has_bound_lemmas.
@@ -378,6 +382,12 @@ Variables (R : realType).
 Implicit Types E : set R.
 Implicit Types x : R.
 
+Lemma sup0 : sup (@set0 R) = 0.
+Proof. by rewrite sup_out //; exact: has_sup0. Qed.
+
+Lemma has_sup1 x : has_sup [set x].
+Proof. by split; [exists x | exists x => y ->]. Qed.
+
 Lemma sup_ub {E} : has_ubound E -> (ubound E) (sup E).
 Proof.
 move=> ubE; apply/ubP=> x x_in_E; move: (x) (x_in_E).
@@ -442,6 +452,9 @@ by split; [apply/nonemptyN|exists (- x)].
 by split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
 Qed.
 
+Lemma has_inf1 x : has_inf [set x].
+Proof. by apply/has_inf_supN; rewrite image_set1; apply/has_sup1. Qed.
+
 Lemma inf_lower_bound E : has_inf E -> lbound E (inf E).
 Proof.
 move=> /has_inf_supN /sup_upper_bound /ubP inflb; apply/lbP => x.
@@ -461,6 +474,9 @@ Proof.
 move=> ninfE; rewrite -oppr0 -(@sup_out _ (-%R @` E)) => // supNE; apply: ninfE.
 exact/has_inf_supN.
 Qed.
+
+Lemma inf0 : inf (@set0 R) = 0.
+Proof. by rewrite inf_out //; exact: has_inf0. Qed.
 
 Lemma inf_lb E : has_lbound E -> (lbound E) (inf E).
 Proof. by move/has_lb_ubN/sup_ub/ub_lbN; rewrite setNK. Qed.
@@ -702,17 +718,12 @@ Qed.
 
 Lemma sup1 (c : R) : sup [set c] = c.
 Proof.
-have hs : has_sup [set c] by split; [exists c | exact: has_ub_set1].
-apply/eqP; rewrite eq_le; move/ubP: (sup_upper_bound hs) => -> //.
-by rewrite andbT; apply/sup_le_ub; [exists c | rewrite ub_set1].
+apply/eqP; rewrite eq_le sup_upper_bound // ?andbT; first exact: has_sup1.
+by rewrite sup_le_ub // ?ub_set1//; exists c.
 Qed.
 
 Lemma inf1 (c : R) : inf [set c] = c.
-Proof.
-rewrite /inf (_ : -%R @` (set1 c) = set1 (- c)).
-by rewrite predeqE => x; split => [[y <- <-] //|->]; exists c.
-by rewrite sup1 opprK.
-Qed.
+Proof. by rewrite /inf image_set1 sup1 opprK. Qed.
 
 Lemma lt_sup_imfset {T : Type} (F : T -> R) l :
   has_sup [set y | exists x, y = F x] ->

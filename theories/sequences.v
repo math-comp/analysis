@@ -867,12 +867,10 @@ have [Spoo|Spoo] := pselect (S +oo%E).
   rewrite (_ : f = (fun=> +oo%E)); first exact: cvg_cst.
   by rewrite funeqE => n; rewrite /f /= Nu // leq_addl.
 have [Snoo|Snoo] := pselect (u_ = fun=> -oo%E).
-  suff : l = -oo%E by move=> ->; rewrite Snoo; exact: cvg_cst.
-  rewrite /l.
-  suff -> : S = [set -oo%E] by rewrite ereal_sup_set1.
-  rewrite predeqE => x; split => [-[n _ <-]|->].
-  by rewrite Snoo.
-  by exists O => //; rewrite Snoo.
+  rewrite /l (_ : S = [set -oo%E]); last first.
+    rewrite predeqE => x; split => [-[n _ <-]|->]; first by rewrite Snoo.
+    by exists O => //; rewrite Snoo.
+  by rewrite ereal_sup1 Snoo; exact: cvg_cst.
 have [/eqP|lnoo] := boolP (l == -oo%E).
   move/ereal_sup_ninfty => loo.
   suff : u_ = (fun=> -oo%E) by [].
