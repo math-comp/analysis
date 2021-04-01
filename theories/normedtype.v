@@ -5283,6 +5283,10 @@ move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) [].
 by move=> y [+/ball_sym]; rewrite [t in ball x t z]splitr; apply: ball_triangle.
 Qed.
 
+Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricNormedZmodType R)
+  (x : M) (e1 e2 : R) : (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
+Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
+
 (*TBA topology.v once ball_normE is there*)
 
 Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
