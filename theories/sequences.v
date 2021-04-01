@@ -1,7 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice seq.
-From mathcomp Require Import bigop div ssralg ssrint ssrnum fintype order.
-From mathcomp Require Import binomial matrix interval rat.
+From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
+From mathcomp Require Import matrix interval rat.
 Require Import boolp reals ereal.
 Require Import classical_sets posnum topology normedtype landau derive forms.
 
@@ -40,7 +39,15 @@ Require Import classical_sets posnum topology normedtype landau derive forms.
 (*                                  then u_ is convergent                     *)
 (*                      adjacent == adjacent sequences lemma                  *)
 (*                        cesaro == Cesaro's lemma                            *)
+(*                                                                            *)
 (* Sections sequences_R_* contain properties of sequences of real numbers     *)
+(*                                                                            *)
+(* Section sequences_of_extended_real_numbers contain properties of sequences *)
+(* of extended real numbers.                                                  *)
+(*                                                                            *)
+(* \sum_<range> F i == lim (fun n => (\sum_<range>) F i)) where <range> can   *)
+(*                     be (i <oo), (i <oo | P i), (m <= i <oo), or            *)
+(*                     (m <= i <oo | P i)                                     *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -60,6 +67,32 @@ Reserved Notation "[ 'sequence' E ]_ n"
 Reserved Notation "[ 'series' E ]_ n"
   (at level 0, E at level 0, n ident, format "[ 'series'  E ]_ n").
 Reserved Notation "[ 'normed' E ]"  (at level 0, format "[ 'normed'  E ]").
+
+Reserved Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F"
+  (at level 36, F at level 36, op, idx at level 10, m, i at level 50,
+           format "'[' \big [ op / idx ]_ ( m  <=  i  <oo  |  P )  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( m <= i <oo ) F"
+  (at level 36, F at level 36, op, idx at level 10, i, m at level 50,
+           format "'[' \big [ op / idx ]_ ( m  <=  i  <oo ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i <oo | P ) F"
+  (at level 36, F at level 36, op, idx at level 10, i at level 50,
+           format "'[' \big [ op / idx ]_ ( i  <oo |  P ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i <oo ) F"
+  (at level 36, F at level 36, op, idx at level 10, i at level 50,
+           format "'[' \big [ op / idx ]_ ( i  <oo )  F ']'").
+
+Reserved Notation "\sum_ ( m <= i '<oo' | P ) F"
+  (at level 41, F at level 41, i, m at level 50,
+           format "'[' \sum_ ( m  <=  i  <oo  |  P ) '/  '  F ']'").
+Reserved Notation "\sum_ ( m <= i '<oo' ) F"
+  (at level 41, F at level 41, i, m at level 50,
+           format "'[' \sum_ ( m  <=  i  <oo ) '/  '  F ']'").
+Reserved Notation "\sum_ ( i '<oo' | P ) F"
+  (at level 41, F at level 41, i at level 50,
+           format "'[' \sum_ ( i  <oo  |  P ) '/  '  F ']'").
+Reserved Notation "\sum_ ( i '<oo' ) F"
+  (at level 41, F at level 41, i at level 50,
+           format "'[' \sum_ ( i  <oo ) '/  '  F ']'").
 
 Definition sequence R := nat -> R.
 Definition mk_sequence R f : sequence R := f.
@@ -251,7 +284,7 @@ Proof. by move=> /closed_cvg_loc V ?; elim/V: _. Qed.
 Lemma ler_lim (u_ v_ : R ^nat) : cvg u_ -> cvg v_ ->
   (\forall n \near \oo, u_ n <= v_ n) -> lim u_ <= lim v_.
 Proof.
-move=> uv cu cv; rewrite -subr_ge0 -limB //. 
+move=> uv cu cv; rewrite -subr_ge0 -limB //.
 apply: lim_ge; first exact: is_cvgB.
 by apply: filterS cv => n; rewrite subr_ge0.
 Qed.
@@ -469,7 +502,7 @@ Qed.
 End sequences_R_lemmas.
 
 Definition harmonic {R : fieldType} : R ^nat := [sequence n.+1%:R^-1]_n.
-Arguments harmonic {R} n /. 
+Arguments harmonic {R} n /.
 
 Lemma harmonic_gt0 {R : numFieldType} i : 0 < harmonic i :> R.
 Proof. by rewrite /= invr_gt0 ltr0n. Qed.
@@ -576,7 +609,7 @@ suff abel : forall n,
     apply/eqoP => _/posnumP[e] /=.
     near=> n; rewrite normr1 mulr1 normrM -ler_pdivl_mull ?normr_gt0 //.
     rewrite mulrC -normrV ?unitfE //.
-    near: n. 
+    near: n.
     by case: (eqoP eventually_filterType harmonic h) => Hh _; apply Hh.
   move: (cesaro a_o); rewrite /arithmetic_mean /series /= -/a_.
   exact: (@cesaro_converse_off_by_one (fun k : nat => k.+1%:R * a_ k)).
@@ -755,6 +788,24 @@ apply/cauchy_cvgP/cauchy_seriesP => e /u_ncvg.
 apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
+
+Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F" :=
+  (lim (fun n => (\big[ op / idx ]_(m <= i < n | P) F))) : big_scope.
+Notation "\big [ op / idx ]_ ( m <= i <oo ) F" :=
+  (lim (fun n => (\big[ op / idx ]_(m <= i < n) F))) : big_scope.
+Notation "\big [ op / idx ]_ ( i <oo | P ) F" :=
+  (lim (fun n => (\big[ op / idx ]_(i < n | P) F))) : big_scope.
+Notation "\big [ op / idx ]_ ( i <oo ) F" :=
+  (lim (fun n => (\big[ op / idx ]_(i < n) F))) : big_scope.
+
+Notation "\sum_ ( m <= i <oo | P ) F" :=
+  (\big[+%E/0%:E]_(m <= i <oo | P%B) F%E) : ring_scope.
+Notation "\sum_ ( m <= i <oo ) F" :=
+  (\big[+%E/0%:E]_(m <= i <oo) F%E) : ring_scope.
+Notation "\sum_ ( i <oo | P ) F" :=
+  (\big[+%E/0%:E]_(i <oo | P%B) F%E) : ring_scope.
+Notation "\sum_ ( i <oo ) F" :=
+  (\big[+%E/0%:E]_(i <oo) F%E) : ring_scope.
 
 Section sequences_of_extended_real_numbers.
 
@@ -1186,10 +1237,12 @@ Lemma ereal_limD (R : realType) (f g : nat -> {ereal R}) :
   (lim (f \+ g) = lim f + lim g)%E.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
-Lemma ereal_sum_lim_sumC (R : realType) N (f : nat -> nat -> {ereal R}) :
+Local Open Scope ereal_scope.
+
+Lemma ereal_sum_lim_psum (R : realType) N (f : nat -> nat -> {ereal R}) :
   (forall a b, 0%:E <= f a b)%E ->
-  (\sum_(i < N) (lim (fun n => (\sum_(j < n) f i j)%E)) <=
-   lim (fun n => \sum_(j < n) (\sum_(i < N) f i j)%E))%E.
+  (\sum_(i < N) (\sum_(j <oo) (f i j)) <=
+   \sum_(j <oo) (\sum_(i < N) f i j))%E.
 Proof.
 move=> f0; elim: N => [|N ih]; [rewrite big_ord0|rewrite big_ord_recr /=].
   rewrite (_ : (fun n => _) = (fun n => 0%:E)) ?lim_cst//.
