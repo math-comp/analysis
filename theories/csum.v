@@ -9,15 +9,12 @@ Require Import sequences cardinality.
 (******************************************************************************)
 (*               About functions of extended real numbers (WIP)               *)
 (*                                                                            *)
-(* This file provides some tools to deal with functions of extended real      *)
-(* real numbers. The contents of this file should not be considered as        *)
-(* definitive because they support on-going developments (including Lebesgue  *)
-(* integral) and will therefore undergo much revision.                        *)
+(* This file provides a definition of sum over general sets as well as lemmas *)
+(* in particular for the case of sums of non-negative terms. The contents of  *)
+(* this file should not be considered as definitive because they support      *)
+(* on-going developments (including Lebesgue integral) and are therefore      *)
+(* likely to undergo revisions.                                               *)
 (*                                                                            *)
-(*    f ^\+ == the function formed by the non-negative outputs of f (from a   *)
-(*             type to the type of extended eral numbers) and 0 otherwise     *)
-(*    f ^\+ == the function formed by the non-positive outputs of f and 0 o.w.*)
-(*  f \|_ D == the restriction of f on the domain D (and 0 o.w.)              *)
 (* csum I f == summation of non-negative extended reals over countable sets;  *)
 (*             I is a classical set and f a function with codomain included   *)
 (*             in the extended reals; it is 0 if I = set0 and o.w.            *)
@@ -32,102 +29,6 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-
-Reserved Notation "f ^\+" (at level 1, format "f ^\+").
-Reserved Notation "f ^\-" (at level 1, format "f ^\-").
-Reserved Notation "f \|_ D" (at level 10).
-
-Section funpos.
-
-Local Notation "0" := 0%:E : ereal_scope.
-Local Notation "1" := 1%:E : ereal_scope.
-Local Open Scope ereal_scope.
-
-Definition funepos T (R : realDomainType) (f : T -> {ereal R}) :=
-   fun x => Order.max (f x) 0%E.
-Definition funeneg T (R : realDomainType) (f : T -> {ereal R}) :=
-   fun x => Order.max (- f x)%E 0%E.
-Local Notation "f ^\+" := (funepos f).
-Local Notation "f ^\-" := (funeneg f).
-
-Definition fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) :=
-  fun x => if `[<D x>] then f x else 0%E.
-Local Notation "f \|_ D" := (fer f D).
-
-Lemma ferK T (R : realDomainType) (f : T -> {ereal R}) (D1 D2 : set T) :
-  f \|_ D1 \|_ D2 = f \|_ (D1 `&` D2).
-Proof.
-by apply/funext=> x; rewrite /fer/= asbool_and; do 3?[case: asbool => //].
-Qed.
-
-Lemma mem_fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
-  D x -> f \|_ D x = f x.
-Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
-
-Lemma memNfer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
-  ~ D x -> f \|_ D x = 0%E.
-Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
-
-Lemma ferN0  T (R : realDomainType) (f : T -> {ereal R}) :
-  f \|_ [set x | f x != 0%E] = f.
-Proof. by apply/funext => x; rewrite /fer asboolb; case: eqVneq => [->|]. Qed.
-
-Lemma funEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
-  f = (fun x => f^\+ x - f^\- x)%E.
-Proof.
-apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
-case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
-by case: ltgtP; rewrite /= ?sub0r ?subr0 ?oppr0 ?opprK// => ->.
-Qed.
-
-Lemma normfunEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
-  (fun x => `|f x|)%E = (fun x => f^\+ x + f^\- x)%E.
-Proof.
-apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
-case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
-by case: sgrP => //=; rewrite ?addr0 ?sub0r.
-Qed.
-
-Lemma funepos_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (forall x, 0 <= f^\+ x)%E.
-Proof. by move=> x; rewrite /funepos; case: (leP (f x)) => //= /ltW. Qed.
-
-Lemma funeneg_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (forall x, 0 <= f^\- x)%E.
-Proof. by move=> x; rewrite /funeneg; case: (leP (- f x)%E) => //= /ltW. Qed.
-
-Lemma funeposEgt0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (f^\+ = f \|_ [set x | 0 < f x])%E.
-Proof.
-by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
-Qed.
-
-Lemma funeposEge0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (f^\+ = f \|_ [set x | 0 <= f x])%E.
-Proof.
-by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
-Qed.
-
-Lemma funenegElt0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (f^\- = fun x => - f \|_ [set x | f x < 0] x)%E.
-Proof.
-apply/funext => x; rewrite /fer /funeneg/= maxEle asboolb leEereal ltEereal.
-case: f => //= [r||]; rewrite ?(oppr0, real0)//.
-by rewrite oppr_le0; case: leP; rewrite //= oppr0.
-Qed.
-
-Lemma funenegEle0 T (R : realDomainType) (f : T -> {ereal R}) :
-  (f^\- = fun x => - f \|_ [set x | f x <= 0] x)%E.
-Proof.
-by rewrite funenegElt0 funeqE => x; rewrite /fer !asboolb/=; case: ltgtP => // ->.
-Qed.
-
-Hint Resolve funepos_ge0 funeneg_ge0 : core.
-End funpos.
-
-Notation "f ^\+" := (funepos f) : ereal_scope.
-Notation "f ^\-" := (funeneg f) : ereal_scope.
-Notation "f \|_ D" := (fer f D) : ring_scope.
 
 Lemma ub_ereal_sup_adherent2 (R : realFieldType) (T : choiceType)
   (P : T -> Prop) (f : T -> {ereal R}) (e : {posnum R}) c :
