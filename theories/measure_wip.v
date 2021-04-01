@@ -546,7 +546,7 @@ apply (@le_trans _ _ (csum setT (mu \o uncurry G))).
      [exact: enumeration_enum_wo_rep | exact: injective_enum_wo_rep].
   exists (uncurry G \o f).
     split; first by move=> i; exact: (cover_measurable (proj1 (GA (f i).1))).
-    apply (@subset_trans _ _ (\bigcup_n (\bigcup_k G n k))).
+    apply (@subset_trans _  (\bigcup_n (\bigcup_k G n k))).
       move=> t [i _] /(cover_subset (proj1 (GA i))).
       by move=> -[j _ ?]; exists i => //; exists j.
     move=> t [i _ [j _ Bijt]].
@@ -834,7 +834,7 @@ by apply: contra ab => /eqP ab; apply/eqP/ie.
 Qed.
 
 (* NB: PR in progress *)
-Lemma ereal_sum_lim_sumC (R : realType) N (f : nat -> nat -> {ereal R}) :
+Lemma ereal_sum_lim_psum (R : realType) N (f : nat -> nat -> {ereal R}) :
   (forall a b, 0%:E <= f a b)%E ->
   (\sum_(i < N) (lim (fun n => (\sum_(j < n) f i j)%E)) <=
    lim (fun n => \sum_(j < n) (\sum_(i < N) f i j)%E))%E.
@@ -933,30 +933,6 @@ Qed.
 
 Lemma head_behead {T : eqType} (s : seq T) def : s != [::] -> head def s :: behead s = s.
 Proof. by case: s. Qed.
-
-(* NB: PR in progress *)
-Lemma has_inf0 d (T : porderType d) : ~ has_inf (@set0 T).
-Proof. by rewrite /has_inf not_andP; left; apply/set0P/negP/negPn. Qed.
-
-Lemma has_sup0 d (T : porderType d) : ~ has_sup (@set0 T).
-Proof. by rewrite /has_sup not_andP; left; apply/set0P/negP/negPn. Qed.
-
-Lemma has_lbound0 {R : numDomainType} : has_lbound (@set0 R). Proof. by exists 0. Qed.
-
-Lemma has_ubound0 {R : numDomainType} : has_ubound (@set0 R). Proof. by exists 0. Qed.
-
-Lemma sup0 (R : realType) : sup (@set0 R) = 0.
-Proof. by rewrite sup_out //; exact: has_sup0. Qed.
-
-Lemma inf0 (R : realType) : inf (@set0 R) = 0.
-Proof. by rewrite inf_out //; exact: has_inf0. Qed.
-
-Lemma Rhull0 (R : realType) : Rhull set0 = `]0, 0[ :> interval R.
-Proof.
-rewrite /Rhull (asboolT has_lbound0) (asboolT has_ubound0) /= asboolF //=.
-by rewrite sup0 inf0.
-Qed.
-(* END NB: PR in progress *)
 
 Coercion interval_to_pair T (I : interval T) : itv_bound T * itv_bound T :=
   let: Interval b1 b2 := I in (b1, b2).
@@ -4403,7 +4379,7 @@ have len_jIN_dvg : \forall n \near \oo, (M%:E <= \sum_(k < n | P k) length (jIN 
       by apply le_hlength; rewrite itv_meetE; apply subIset; right.
     + by rewrite -length_itv length_ccitv lte_pinfty.
     + by move=> k /andP[].
-    + apply: (@subset_trans _ _ (\bigcup_(k in P) (set_of_itv (itv_meet (j k) (ccitv N))))).
+    + apply: (@subset_trans _ (\bigcup_(k in P) (set_of_itv (itv_meet (j k) (ccitv N))))).
         by move=> x; rewrite itv_meetE => /iUj [k ? Hk]; exists k => //; rewrite itv_meetE.
       by move=> r [k Pk kr]; exists k => //; rewrite Pk /=; apply/set0P; exists r.
 have [m _ Hm] : \forall n \near \oo, (M%:E <= \sum_(k < n | P k) length (set_of_itv (j k)))%E.
@@ -4691,7 +4667,7 @@ rewrite (@le_trans _ _ (\sum_(i < size I) (\sum^oo_k  length (set_of_itv (nth 0%
   rewrite -bigcup_mkset; exists i => //.
   by rewrite /mkset /= /index_enum /= -enumT mem_enum.
 rewrite (@le_trans _ _ (lim (fun n => \sum_(i < n) (\sum_(k < size I) length (set_of_itv (nth 0%O I k) `&` S i))%E)%E)) //.
-  apply: (@ereal_sum_lim_sumC _ (size I) (fun i k => length (set_of_itv (nth 0%O I i) `&` S k))).
+  apply: (@ereal_sum_lim_psum _ (size I) (fun i k => length (set_of_itv (nth 0%O I i) `&` S k))).
   move=> a b; apply length_ge0.
   by apply: (@measurableI (sset_ringOfSetsType R)) => //; exact: Sset.is_sset_itv.
 apply lee_lim.

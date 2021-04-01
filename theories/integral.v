@@ -8,10 +8,21 @@ Require Import measure_wip.
 From HB Require Import structures.
 
 (******************************************************************************)
-(*           Scratch file for formalization of integrals (WIP)                *)
+(*                      Formalization of integrals (WIP)                      *)
 (*                                                                            *)
-(* Written by the participants to the mathcomp-analysis-dev meeting circa May *)
-(* 2019.                                                                      *)
+(* This file is a scratch file for formalization of integrals, whose first    *)
+(* version has been written by the participants to the mathcomp-analysis-dev  *)
+(* meeting circa May 2019.                                                    *)
+(*                                                                            *)
+(* This file starts by providing some tools to deal with functions of         *)
+(* extended real real numbers.                                                *)
+(*    f ^\+ == the function formed by the non-negative outputs of f (from a   *)
+(*             type to the type of extended eral numbers) and 0 otherwise     *)
+(*    f ^\+ == the function formed by the non-positive outputs of f and 0 o.w.*)
+(*  f \|_ D == the restriction of f on the domain D (and 0 o.w.)              *)
+(*                                                                            *)
+(* This is followed by a Module Type that specifies an interface for a theory *)
+(* of integration which is work-in-progress.                                  *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -22,6 +33,102 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+Reserved Notation "f ^\+" (at level 1, format "f ^\+").
+Reserved Notation "f ^\-" (at level 1, format "f ^\-").
+Reserved Notation "f \|_ D" (at level 10).
+
+Section funpos.
+
+Local Notation "0" := 0%:E : ereal_scope.
+Local Notation "1" := 1%:E : ereal_scope.
+Local Open Scope ereal_scope.
+
+Definition funepos T (R : realDomainType) (f : T -> {ereal R}) :=
+   fun x => Order.max (f x) 0%E.
+Definition funeneg T (R : realDomainType) (f : T -> {ereal R}) :=
+   fun x => Order.max (- f x)%E 0%E.
+Local Notation "f ^\+" := (funepos f).
+Local Notation "f ^\-" := (funeneg f).
+
+Definition fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) :=
+  fun x => if `[<D x>] then f x else 0%E.
+Local Notation "f \|_ D" := (fer f D).
+
+Lemma ferK T (R : realDomainType) (f : T -> {ereal R}) (D1 D2 : set T) :
+  f \|_ D1 \|_ D2 = f \|_ (D1 `&` D2).
+Proof.
+by apply/funext=> x; rewrite /fer/= asbool_and; do 3?[case: asbool => //].
+Qed.
+
+Lemma mem_fer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
+  D x -> f \|_ D x = f x.
+Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
+
+Lemma memNfer T (R : realDomainType) (f : T -> {ereal R}) (D : set T) x :
+  ~ D x -> f \|_ D x = 0%E.
+Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
+
+Lemma ferN0  T (R : realDomainType) (f : T -> {ereal R}) :
+  f \|_ [set x | f x != 0%E] = f.
+Proof. by apply/funext => x; rewrite /fer asboolb; case: eqVneq => [->|]. Qed.
+
+Lemma funEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
+  f = (fun x => f^\+ x - f^\- x)%E.
+Proof.
+apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
+case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
+by case: ltgtP; rewrite /= ?sub0r ?subr0 ?oppr0 ?opprK// => ->.
+Qed.
+
+Lemma normfunEeposneg T (R : realDomainType) (f : T -> {ereal R}) :
+  (fun x => `|f x|)%E = (fun x => f^\+ x + f^\- x)%E.
+Proof.
+apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
+case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
+by case: sgrP => //=; rewrite ?addr0 ?sub0r.
+Qed.
+
+Lemma funepos_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (forall x, 0 <= f^\+ x)%E.
+Proof. by move=> x; rewrite /funepos; case: (leP (f x)) => //= /ltW. Qed.
+
+Lemma funeneg_ge0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (forall x, 0 <= f^\- x)%E.
+Proof. by move=> x; rewrite /funeneg; case: (leP (- f x)%E) => //= /ltW. Qed.
+
+Lemma funeposEgt0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (f^\+ = f \|_ [set x | 0 < f x])%E.
+Proof.
+by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
+Qed.
+
+Lemma funeposEge0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (f^\+ = f \|_ [set x | 0 <= f x])%E.
+Proof.
+by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
+Qed.
+
+Lemma funenegElt0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (f^\- = fun x => - f \|_ [set x | f x < 0] x)%E.
+Proof.
+apply/funext => x; rewrite /fer /funeneg/= maxEle asboolb leEereal ltEereal.
+case: f => //= [r||]; rewrite ?(oppr0, real0)//.
+by rewrite oppr_le0; case: leP; rewrite //= oppr0.
+Qed.
+
+Lemma funenegEle0 T (R : realDomainType) (f : T -> {ereal R}) :
+  (f^\- = fun x => - f \|_ [set x | f x <= 0] x)%E.
+Proof.
+by rewrite funenegElt0 funeqE => x; rewrite /fer !asboolb/=; case: ltgtP => // ->.
+Qed.
+
+Hint Resolve funepos_ge0 funeneg_ge0 : core.
+End funpos.
+
+Notation "f ^\+" := (funepos f) : ereal_scope.
+Notation "f ^\-" := (funeneg f) : ereal_scope.
+Notation "f \|_ D" := (fer f D) : ereal_scope.
 
 Notation "0" := 0%:E : ereal_scope.
 Notation "1" := 1%:E : ereal_scope.
@@ -81,8 +188,8 @@ Axiom measurableEreal_lee : forall x, measurable [set y : {ereal R} | y <= x]%E.
 Axiom measurableEreal_setT : measurable (setT : set {ereal R}).
 
 Lemma fer_preimage T D (f : T -> er R) Y :
-  f \|_ D @^-1` Y = ((f @^-1` Y) `&` D) `|`
-                    ((fun=> if `[< Y 0%:E >] then True else False) `&` ~` D).
+  (f \|_ D @^-1` Y = ((f @^-1` Y) `&` D) `|`
+                    ((fun=> if `[< Y 0 >] then True else False) `&` ~` D))%E.
 Proof.
 rewrite predeqE => t; split => [|].
 - rewrite /fer /=; case: ifPn => /asboolP Dt hY; first by left.
@@ -98,7 +205,7 @@ Variable T : measurableType.
 
 Lemma measurable_fun_ferE (D : set T) (f : T -> {ereal R}) :
   measurable D ->
-  measurable_fun D f = measurable_fun setT (f \|_ D).
+  measurable_fun D f = measurable_fun setT (f \|_ D)%E.
 Proof.
 move=> mD; rewrite propeqE; split => [Df Y mY|Df Y mY].
   apply: measurableI; last exact: measurableT.
@@ -126,7 +233,7 @@ Proof. by move=> /(_ _ measurableEreal_setT); rewrite setTI. Qed.
 
 Lemma measurable_fun_fer (D D' : set T) (f : T -> {ereal R}) :
   measurable D -> measurable D' ->
-  measurable_fun D (f \|_ D') = measurable_fun (D `&` D') f.
+  measurable_fun D (f \|_ D')%E = measurable_fun (D `&` D') f.
 Proof.
 move=> mD mD'; rewrite measurable_fun_ferE // [RHS]measurable_fun_ferE; last first.
   exact: measurableI.
@@ -154,10 +261,10 @@ Axiom integral1 : forall (m : set T -> {ereal R}) (D : set T),
   integral m D (fun=> 1%:E) = m D.
 
 Axiom integral_domE : forall (m : set T -> {ereal R}) (D : set T)
-  (f : T -> {ereal R}), integral m D f = integral m setT (f \|_ D).
+  (f : T -> {ereal R}), integral m D f = integral m setT (f \|_ D)%E.
 
 Lemma integral_fer (m : set T -> {ereal R}) (D D' : set T)
-  (f : T -> {ereal R}) : integral m D (f \|_ D') = integral m (D `&` D') f.
+  (f : T -> {ereal R}) : integral m D (f \|_ D')%E = integral m (D `&` D') f.
 Proof. by rewrite integral_domE [RHS]integral_domE ferK setIC. Qed.
 
 Axiom integral_is_linear : forall (m : set T -> {ereal R}) (D : set T)
@@ -191,7 +298,7 @@ Proof. by move=> -> /eq_integralr. Qed.
 Lemma integral0 (m : {measure set T -> {ereal R}}) (D : set T) :
   integral m D (fun=> 0%E) = 0%E.
 Proof.
-transitivity (integral m setT ((fun=> 1%:E) \|_ set0)); last first.
+transitivity (integral m setT ((fun=> 1) \|_ set0)%E); last first.
   by rewrite -integral_domE integral1 measure0.
 rewrite integral_domE; apply/eq_integralr => x.
 by rewrite /fer/= if_same; case: asboolP.
