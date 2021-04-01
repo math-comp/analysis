@@ -209,9 +209,6 @@ Proof.
 by move=> mA; rewrite -setTD; apply measurableD => //; exact: measurableT.
 Qed.
 
-Lemma measurableT : measurable (setT : set T).
-Proof. by rewrite -setC0; apply measurableC; exact: measurable0. Qed.
-
 Lemma measurable_bigcap (F : (set T)^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcap_i (F i)).
 Proof.
