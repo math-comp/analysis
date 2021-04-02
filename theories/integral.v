@@ -3,9 +3,9 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
 From mathcomp Require Import ssralg ssrnum interval.
 Require Import boolp reals ereal.
+From HB Require Import structures.
 Require Import classical_sets posnum topology normedtype sequences measure csum.
 Require Import measure_wip.
-From HB Require Import structures.
 
 (******************************************************************************)
 (*                      Formalization of integrals (WIP)                      *)
