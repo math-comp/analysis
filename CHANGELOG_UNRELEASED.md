@@ -96,6 +96,10 @@
 - in `topology.v`:
   + change implicits of lemma `cvg_app`
 
+- in `ereal.v`:
+  + argument of `%:E` in `%R` by default
+  + `F` argument of `\sum` in `%E` by default
+
 ### Renamed
 
 - in `sequences,v`:
