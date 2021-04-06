@@ -659,18 +659,18 @@ Proof.
 move=> mA mbigcupA; set B := fun n => \big[setU/set0]_(i < n.+1) (A i).
 have AB : \bigcup_k A k = \bigcup_n B n.
   rewrite predeqE => x; split => [[k _ ?]|[m _]].
-    by move=> -; exists k => //; rewrite /B big_ord_recr /=; right.
-  rewrite /B big_ord_recr /= => -[|?]; last by exists m.
-  by rewrite bigcup_ord => -[k km Akx]; exists k.
+    by exists k => //; rewrite /B big_ord_recr /=; right.
+  rewrite /B big_ord_recr /= => -[|Amx]; last by exists m.
+  by rewrite bigcup_ord => -[k ? ?]; exists k.
 have ndB : {homo B : n m / (n <= m)%N >-> n `<=` m}.
   by move=> n m; rewrite -ltnS; exact/(@subset_bigsetU _ _ xpredT).
 have mB : forall i, measurable (B i) by move=> i; exact: bigsetU_measurable.
 rewrite AB.
-move/(@cvg_mu_inc _ _ mu _ mB _) : ndB => /(_ _)/cvg_lim <- //; last first.
+move/(@cvg_mu_inc _ _ mu _ mB) : ndB => /(_ _)/cvg_lim <- //; last first.
   by rewrite -AB.
 have -> : lim (mu \o B) = ereal_sup ((mu \o B) @` setT).
   suff : nondecreasing_seq (mu \o B).
-    by move/nondecreasing_seq_ereal_cvg; apply/cvg_lim.
+    by move/nondecreasing_seq_ereal_cvg; exact/cvg_lim.
   move=> n m nm; apply: le_measure => //; try by rewrite inE; apply mB.
   by move: nm; rewrite -ltnS; exact/(@subset_bigsetU _ _ xpredT).
 have BA : forall m, (mu (B m) <= \sum_(i <oo) mu (A i))%E.
