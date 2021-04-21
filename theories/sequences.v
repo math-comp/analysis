@@ -803,9 +803,9 @@ Notation "\sum_ ( m <= i <oo | P ) F" :=
 Notation "\sum_ ( m <= i <oo ) F" :=
   (\big[+%E/0%:E]_(m <= i <oo) F%E) : ring_scope.
 Notation "\sum_ ( i <oo | P ) F" :=
-  (\big[+%E/0%:E]_(i <oo | P%B) F%E) : ring_scope.
+  (\big[+%E/0%:E]_(0 <= i <oo | P%B) F%E) : ring_scope.
 Notation "\sum_ ( i <oo ) F" :=
-  (\big[+%E/0%:E]_(i <oo) F%E) : ring_scope.
+  (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
 
 Section sequences_of_extended_real_numbers.
 
@@ -1239,6 +1239,25 @@ Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
 Local Open Scope ereal_scope.
 
+(* Move me to ereal.v *)
+Lemma lee_sum_nneg_natr (R : realDomainType) (f : nat -> {ereal R})
+    (P : pred nat) m : (* TODO: fix implicits *)
+  (forall n, (m <= n)%N -> P n -> 0%:E <= f n) ->
+  {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
+Proof.
+move=> f0  i j le_ij; rewrite -[m]add0n !big_addn !big_mkord.
+apply: (@lee_sum_nneg_ord _ (fun k => f (k + m)%N) (fun k => P (k + m)%N)).
+  by move=> n /f0; apply; rewrite leq_addl.
+by rewrite leq_sub2r.
+Qed.
+
+Lemma lee_sum_nneg_natl (R : realDomainType) (f : nat -> {ereal R})
+    (P : pred nat) n : (* TODO: fix implicits *)
+  (forall m, (m <= n)%N -> P n -> 0%:E <= f n) ->
+  {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i >= j}.
+(* check whether to revert LHS or RHS (see {homo : _ _ /~ _} *)
+Proof. Admitted.
+
 Lemma ereal_sum_lim_psum (R : realType) N (f : nat -> nat -> {ereal R}) :
   (forall a b, 0%:E <= f a b)%E ->
   (\sum_(i < N) (\sum_(j <oo) (f i j)) <=
@@ -1247,33 +1266,33 @@ Proof.
 move=> f0; elim: N => [|N ih]; [rewrite big_ord0|rewrite big_ord_recr /=].
   rewrite (_ : (fun n => _) = (fun n => 0%:E)) ?lim_cst//.
   by rewrite funeqE => n; rewrite exchange_big big_ord0.
-set x := (fun n => \sum_(j < n) (\sum_(i < N) f i j)%E)%E.
-set y := (fun n => \sum_(j < n) f N j)%E.
-set z := (fun n => \sum_(j < n) (\sum_(i < N.+1) f i j)%E)%E.
+set x := (fun n => \sum_(0 <= j < n) (\sum_(i < N) f i j)%E)%E.
+set y := (fun n => \sum_(0 <= j < n) f N j)%E.
+set z := (fun n => \sum_(0 <= j < n) (\sum_(i < N.+1) f i j)%E)%E.
 have xyz : (x \+ y = z)%E.
   rewrite funeqE => n; rewrite -big_split; apply eq_bigr => i _ /=.
   by rewrite big_ord_recr.
 rewrite (@le_trans _ _ (lim x + lim y)%E) //; first exact: lee_add2r.
 have cx : x --> ereal_sup (x @` setT).
-  apply: nondecreasing_seq_ereal_cvg.
-  apply: (@lee_sum_nneg_ord _ (fun n => \sum_(i < N) f i n)%E xpredT) => n _.
-  exact: sume_ge0.
+  by apply/nondecreasing_seq_ereal_cvg/lee_sum_nneg_natr => n; rewrite sume_ge0.
 have ? : cvg x.
-  apply: (@is_cvg_ereal_nneg_series _ (fun j => (\sum_(i < N) f i j)%E) xpredT).
-  by move=> // j _; exact: sume_ge0.
-have ? : cvg y by exact: (@is_cvg_ereal_nneg_series _ _ xpredT).
+  (* apply: (@is_cvg_ereal_nneg_series _ (fun j => (\sum_(0 <= i < N) f i j)%E) xpredT). *)
+  (* by move=> // j _; exact: sume_ge0. *)
+  admit.
+have ? : cvg y by admit. (* exact: (@is_cvg_ereal_nneg_series _ _ xpredT). *)
 move: (lee_pinfty (ereal_sup (x @` setT))); rewrite le_eqVlt => /orP[/eqP|] xoo.
   suff : (lim x <= lim z)%E.
     by rewrite (cvg_lim _ cx)// xoo lee_pinfty_eq=> /eqP ->; rewrite lee_pinfty.
   apply: lee_lim => //; last first.
     by near=> n; apply: lee_sum => i _; rewrite big_ord_recr /= lee_addl.
-  apply: (@is_cvg_ereal_nneg_series _ (fun j => (\sum_(k < _) f k j)%E) xpredT).
-  by move=> j _; exact: sume_ge0.
+  (* apply: (@is_cvg_ereal_nneg_series _ (fun j => (\sum_(0 <= k < _) f k j)%E) xpredT). *)
+  (* by move=> j _; exact: sume_ge0. *)
+  admit.
 rewrite /x /y -ereal_limD // ?xyz // -/x.
 rewrite (cvg_lim _ cx) // adde_undefC fin_num_adde_undef // fin_numE.
 rewrite (lt_eqF xoo) andbT gt_eqF // (@lt_le_trans _ _ 0%:E) ?lte_ninfty//.
-by apply: ereal_sup_ub; rewrite /x /=; exists O => //; rewrite big_ord0.
-Grab Existential Variables. all: end_near. Qed.
+by by apply: ereal_sup_ub; rewrite /x /=; exists O => //; rewrite big_geq.
+Grab Existential Variables. all: end_near. Admitted. (* Qed. *)
 
 Lemma lte_lim (R : realFieldType) (u : (er R)^nat) (M : R) :
   nondecreasing_seq u -> cvg u -> (M%:E < lim u)%E ->
