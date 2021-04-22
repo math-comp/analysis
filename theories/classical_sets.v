@@ -822,11 +822,14 @@ rewrite big_ord_recl /= (IHn (fun i => F i.+1)) predeqE => x; split.
 by move=> [[|i] Fi]; [left|right; exists i].
 Qed.
 
-Lemma subset_bigsetU m n F : (m <= n)%N ->
-  \big[setU/set0]_(i < m) F i `<=` \big[setU/set0]_(i < n) F i.
+Lemma subset_bigsetU F (P : pred nat):
+  {homo (fun n => \big[setU/set0]_(i < n | P i) F i)
+    : n m / (n <= m)%N >-> n `<=` m}.
 Proof.
-rewrite !bigcup_ord => mn x [i im ?]; exists i => //.
-by rewrite /mkset (leq_trans im).
+move=> n m nm.
+rewrite -(subnKC nm) -[in X in _ `<=` X](big_mkord P) /index_iota.
+rewrite subn0 iotaD big_cat -[in X in (_ `<=` X `|` _)](subn0 n).
+by rewrite -/(index_iota _ _) big_mkord; move=> x ?; left.
 Qed.
 
 Lemma bigcap_ord n F :
