@@ -319,23 +319,23 @@ End sequences_R_lemmas_realFieldType.
 Section partial_sum.
 Variables (V : zmodType) (u_ : V ^nat).
 
-Definition series : V ^nat := [sequence \sum_(k < n) u_ k]_n.
+Definition series : V ^nat := [sequence \sum_(0 <= k < n) u_ k]_n.
 Definition telescope : V ^nat := [sequence u_ n.+1 - u_ n]_n.
 
+Lemma seriesEnat : series = [sequence \sum_(0 <= k < n) u_ k]_n.
+Proof. by []. Qed.
+
+Lemma seriesEord : series = [sequence \sum_(k < n) u_ k]_n.
+Proof. by rewrite funeqE => n; rewrite /series/= big_mkord. Qed.
+
 Lemma seriesSr n : series n.+1 = series n + u_ n.
-Proof. by rewrite /series/= big_ord_recr/=. Qed.
+Proof. by rewrite !seriesEord/= big_ord_recr. Qed.
 
 Lemma seriesS n : series n.+1 = u_ n + series n.
 Proof. by rewrite addrC seriesSr. Qed.
 
 Lemma seriesSB (n : nat) : series n.+1 - series n = u_ n.
 Proof. by rewrite seriesS addrK. Qed.
-
-Lemma seriesEord : series = [sequence \sum_(k < n) u_ k]_n.
-Proof. by []. Qed.
-
-Lemma seriesEnat : series = [sequence \sum_(0 <= k < n) u_ k]_n.
-Proof. by rewrite funeqE => n /=; rewrite big_mkord. Qed.
 
 Lemma series_addn m n : series (n + m)%N = series m + \sum_(m <= k < n + m) u_ k.
 Proof. by rewrite seriesEnat/= -big_cat_nat// leq_addl. Qed.
@@ -545,10 +545,12 @@ move=> u0_cvg; have ssplit v_ m n : (m <= n)%N -> `|n%:R^-1 * series v_ n| <=
   move=> /subnK<-; rewrite series_addn mulrDr (le_trans (ler_norm_add _ _))//.
   by rewrite !normrM ger0_norm ?invr_ge0 ?ler0n.
 apply/cvg_distP=> _/posnumP[e]; rewrite near_simpl; near \oo => m; near=> n.
-have {}/ssplit -/(_ _ [sequence l - u_ n]_n) : (m.+1 <= n.+1)%nat by near: n; exists m.
-rewrite /series /= big_split/= sumrN mulrBr sumr_const card_ord -(mulr_natl l) mulKf//.
+have {}/ssplit -/(_ _ [sequence l - u_ n]_n) : (m.+1 <= n.+1)%nat.
+  by near: n; exists m.
+rewrite !seriesEnat /= big_split/=.
+rewrite sumrN mulrBr sumr_const_nat -(mulr_natl l) mulKf//.
 move=> /le_lt_trans->//; rewrite [e%:num]splitr ltr_add//.
-  have [->|neq0] := eqVneq (\sum_(k < m.+1) (l - u_ k)) 0.
+  have [->|neq0] := eqVneq (\sum_(0 <= k < m.+1) (l - u_ k)) 0.
     by rewrite normr0 mulr0.
   rewrite -ltr_pdivl_mulr ?normr_gt0//.
   rewrite -ltf_pinv ?qualifE// ?mulr_gt0 ?invr_gt0 ?normr_gt0// invrK.
@@ -599,8 +601,8 @@ suff abel : forall n,
       (fun n => \sum_(1 <= k < n.+1) k%:R / n.+1%:R * a_ k.-1)); last first.
     by rewrite funeqE.
   rewrite {abel} /= (_ : (fun _ => _) =
-      fun n => n.+1%:R^-1 * \sum_(k < n) k.+1%:R * a_ k); last first.
-    rewrite funeqE => n; rewrite big_add1 /= big_mkord /= big_distrr /=.
+      fun n => n.+1%:R^-1 * \sum_(0 <= k < n) k.+1%:R * a_ k); last first.
+    rewrite funeqE => n; rewrite big_add1 /= /= big_distrr /=.
     by apply eq_bigr => i _; rewrite mulrCA mulrA.
   have {}a_o : [sequence n.+1%:R * telescope u_ n]_n --> (0 : R).
     apply: (@eqolim0 _ _ _ eventually_filterType).
@@ -614,16 +616,17 @@ suff abel : forall n,
   move: (cesaro a_o); rewrite /arithmetic_mean /series /= -/a_.
   exact: (@cesaro_converse_off_by_one (fun k : nat => k.+1%:R * a_ k)).
 case => [|n].
-  rewrite /arithmetic_mean /= invr1 mul1r /series /= big_ord_recl !big_ord0.
-  by rewrite addr0 subrr big_nil.
-rewrite /arithmetic_mean /= /series /= big_ord_recl /=.
-under eq_bigr do rewrite /bump /= add1n eq_sum_telescope.
-rewrite big_split /= big_const card_ord iter_addr addr0 addrA -mulrS mulrDr.
+  rewrite /arithmetic_mean/= invr1 mul1r !seriesEnat/=.
+  by rewrite big_nat1 subrr big_geq.
+rewrite /arithmetic_mean /= seriesEnat /= big_nat_recl //=.
+under eq_bigr do rewrite eq_sum_telescope.
+rewrite big_split /= big_const_nat iter_addr addr0 addrA -mulrS mulrDr.
 rewrite -(mulr_natl (u_ O)) mulrA mulVr ?unitfE ?pnatr_eq0 // mul1r opprD addrA.
 rewrite eq_sum_telescope (addrC (u_ O)) addrK.
 rewrite [X in _ - _ * X](_ : _ =
     \sum_(0 <= i < n.+1) \sum_(0 <= k < n.+1 | (k < i.+1)%N) a_ k); last first.
-  by rewrite big_mkord; apply eq_bigr => i _; rewrite big_mkord -big_ord_widen.
+  rewrite !big_mkord; apply eq_bigr => i _.
+  by rewrite seriesEord/= big_mkord -big_ord_widen//.
 rewrite (exchange_big_dep_nat xpredT) //=.
 rewrite [X in _ - _ * X](_ : _ =
     \sum_(0 <= i < n.+1) \sum_(i <= j < n.+1) a_ i ); last first.
@@ -643,7 +646,7 @@ rewrite [X in _ - _ * X](_ : _ =
     \sum_(0 <= i < n.+1) a_ i * (n.+1 - i)%:R); last first.
   by apply eq_bigr => i _; rewrite big_const_nat iter_addr addr0 mulr_natr.
 rewrite big_distrr /= big_mkord (big_morph _ (@opprD _) (@oppr0 _)).
-rewrite -big_split /= big_add1 /= big_mkord; apply eq_bigr => i _.
+rewrite seriesEord -big_split /= big_add1 /= big_mkord; apply eq_bigr => i _.
 rewrite mulrCA -[X in X - _]mulr1 -mulrBr [RHS]mulrC; congr (_ * _).
 rewrite -[X in X - _](@divrr _ (n.+2)%:R) ?unitfE ?pnatr_eq0 //.
 rewrite [in X in _ - X]mulrC -mulrBl; congr (_ / _).
@@ -669,14 +672,14 @@ Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) :
   (forall n, 0 <= u_ n) -> nondecreasing_seq (series u_).
 Proof.
 move=> u_ge0; apply: nondecreasing_seqP => n.
-by rewrite /series/= big_ord_recr ler_addl.
+by rewrite !seriesEord/= big_ord_recr ler_addl.
 Qed.
 
 Lemma increasing_series (R : numFieldType) (u_ : R ^nat) :
   (forall n, 0 < u_ n) -> increasing_seq (series u_).
 Proof.
 move=> u_ge0; apply: increasing_seqP => n.
-by rewrite /series/= big_ord_recr ltr_addl.
+by rewrite !seriesEord/= big_ord_recr ltr_addl.
 Qed.
 
 End series_convergence.
@@ -1004,38 +1007,44 @@ Grab Existential Variables. all: end_near. Qed.
 (* NB: see also nondecreasing_series *)
 Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : {ereal R} ^nat)
   (P : pred nat) : (forall n, P n -> 0%:E <= u_ n)%E ->
-  nondecreasing_seq (fun n => \sum_(i < n | P i) u_ i)%E.
-Proof.
-move=> u_ge0 n m /subnKC <-; rewrite -[X in (_ <= X)%E](big_mkord P).
-rewrite /index_iota subn0 iota_add big_cat -[in X in (_ <= X + _)%E](subn0 n).
-by rewrite big_mkord lee_addl // sume_ge0 // => x _ /u_ge0.
-Qed.
+  nondecreasing_seq (fun n => \sum_(0 <= i < n | P i) u_ i)%E.
+Proof. by move=> u_ge0 n m le_nm; rewrite lee_sum_nneg_natr// => k _ /u_ge0. Qed.
 
 Lemma ereal_nneg_series_lim_ge (R : realType) (u_ : {ereal R} ^nat)
   (P : pred nat) k : (forall n, P n -> (0%:E <= u_ n)%E) ->
-  (\sum_(i < k | P i) u_ i <= lim (fun n => \sum_(i < n | P i) u_ i))%E.
+  (\sum_(0 <= i < k | P i) u_ i <= \sum_(i <oo | P i) u_ i)%E.
 Proof.
 move/ereal_nondecreasing_series/nondecreasing_seq_ereal_cvg/cvg_lim => -> //.
-by apply ereal_sup_ub; exists k.
+by apply: ereal_sup_ub; exists k.
+Qed.
+
+Lemma is_cvg_ereal_nneg_natsum_cond (R : realType) m (u_ : {ereal R} ^nat)
+  (P : pred nat) : (forall n, (m <= n)%N -> P n -> (0%:E <= u_ n)%E) ->
+  cvg (fun n => (\sum_(m <= i < n | P i) u_ i)%E).
+Proof.
+move/lee_sum_nneg_natr/nondecreasing_seq_ereal_cvg => cu.
+by apply/cvg_ex; eexists; exact: cu.
 Qed.
 
 Lemma is_cvg_ereal_nneg_series_cond (R : realType) (u_ : {ereal R} ^nat)
   (P : pred nat) : (forall n, P n -> (0%:E <= u_ n)%E) ->
-  cvg (fun n => (\sum_(i < n | P i) u_ i)%E).
-Proof.
-move/lee_sum_nneg_ord/nondecreasing_seq_ereal_cvg => cu.
-by apply/cvg_ex; eexists; exact: cu.
-Qed.
+  cvg (fun n => (\sum_(0 <= i < n | P i) u_ i)%E).
+Proof. by move=> u_ge0; apply: is_cvg_ereal_nneg_natsum_cond => n _ /u_ge0. Qed.
+
+Lemma is_cvg_ereal_nneg_natsum (R : realType) m (u_ : {ereal R} ^nat)
+  (P : pred nat) : (forall n, (m <= n)%N -> (0%:E <= u_ n)%E) ->
+  cvg (fun n => (\sum_(m <= i < n) u_ i)%E).
+Proof. by move=> u_ge0; apply: is_cvg_ereal_nneg_natsum_cond => n /u_ge0. Qed.
 
 Lemma is_cvg_ereal_nneg_series (R : realType) (u_ : {ereal R} ^nat)
   (P : pred nat) : (forall n, P n -> (0%:E <= u_ n)%E) ->
-  cvg (fun n => (\sum_(i < n | P i) u_ i)%E).
+  cvg (fun n => (\sum_(0 <= i < n | P i) u_ i)%E).
 Proof. by move=> ?; exact: is_cvg_ereal_nneg_series_cond. Qed.
 Arguments is_cvg_ereal_nneg_series {R}.
 
 Lemma ereal_nneg_series_lim_ge0 (R : realType) (u_ : {ereal R} ^nat)
   (P : pred nat) : (forall n, P n -> (0%:E <= u_ n)%E) ->
-  (0%:E <= lim (fun n => \sum_(i < n | P i) u_ i))%E.
+  (0%:E <= \sum_(i <oo | P i) u_ i)%E.
 Proof.
 move=> u0; apply: (ereal_lim_ge (is_cvg_ereal_nneg_series _ _ u0)).
 by near=> k; rewrite sume_ge0 // => i; apply: u0.
@@ -1043,13 +1052,14 @@ Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_nneg_series_pinfty (R : realType) (u_ : {ereal R} ^nat)
   (P : pred nat) k : (forall n, P n -> (0%:E <= u_ n)%E) -> P k ->
-  u_ k = +oo%E -> (lim (fun n => \sum_(i < n | P i) u_ i) = +oo)%E.
+  u_ k = +oo%E -> (\sum_(i <oo | P i) u_ i = +oo)%E.
 Proof.
 move=> u0 Pk ukoo; apply/eqP; rewrite eq_le lee_pinfty /=.
 apply: le_trans (ereal_nneg_series_lim_ge k.+1 u0) => //.
-rewrite big_mkcond big_ord_recr -big_mkcond /= ukoo /= Pk.
-suff : (\sum_(i < k | P i) u_ i != -oo)%E by case: (\sum_(i < k | P i) _)%E.
-rewrite big_mkcond esum_ninfty negb_exists; apply/forallP => i; apply/negP.
+rewrite big_mkcond big_nat_recr// -big_mkcond /= ukoo /= Pk.
+suff : (\sum_(0 <= i < k | P i) u_ i != -oo)%E.
+  by case: (\sum_(0 <= i < k | P i) _)%E.
+rewrite big_mkcond big_mkord esum_ninfty; apply/existsPn => i; apply/negP.
 by move=> /eqP; case: ifPn => // /u0 + uioo; rewrite uioo.
 Qed.
 
@@ -1239,42 +1249,40 @@ Lemma ereal_limD (R : realType) (f g : nat -> {ereal R}) :
   (lim (f \+ g) = lim f + lim g)%E.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
-Lemma ereal_sum_lim_psum (R : realType) N (f : nat -> nat -> {ereal R}) :
-  (forall a b, 0%:E <= f a b)%E ->
-  (\sum_(i < N) (\sum_(j <oo) (f i j)) <= \sum_(j <oo) (\sum_(i < N) f i j))%E.
+Lemma ereal_pseriesD (R : realType) (f g : nat -> {ereal R}) :
+  (forall i, 0%:E <= f i)%E ->
+  (forall i, 0%:E <= g i)%E ->
+  (\sum_(i <oo) (f i + g i) = (\sum_(i <oo) f i) + (\sum_(i <oo) g i))%E.
 Proof.
-move=> f0; elim: N => [|N ih]; [rewrite big_ord0|rewrite big_ord_recr /=].
-  rewrite (_ : (fun n => _) = (fun n => 0%:E)) ?lim_cst//.
-  by rewrite funeqE => n; rewrite exchange_big big_ord0.
-set x := (fun n => \sum_(0 <= j < n) (\sum_(i < N) f i j)%E)%E.
-set y := (fun n => \sum_(0 <= j < n) f N j)%E.
-set z := (fun n => \sum_(0 <= j < n) (\sum_(i < N.+1) f i j)%E)%E.
-have xyz : (x \+ y = z)%E.
-  rewrite funeqE => n; rewrite -big_split; apply eq_bigr => i _ /=.
-  by rewrite big_ord_recr.
-rewrite (@le_trans _ _ (lim x + lim y)%E) //; first exact: lee_add2r.
-have cx : x --> ereal_sup (x @` setT).
-  by apply/nondecreasing_seq_ereal_cvg/lee_sum_nneg_natr => n; rewrite sume_ge0.
-have ? : cvg x.
-  rewrite /x; under eq_fun do rewrite big_mkord.
-  apply: (is_cvg_ereal_nneg_series (fun j => \sum_(i < N) f i j)%E xpredT).
-  by move=> // j _; exact: sume_ge0.
-have ? : cvg y.
-  rewrite /y; under eq_fun do rewrite big_mkord.
-  exact: (is_cvg_ereal_nneg_series _ xpredT).
-move: (lee_pinfty (ereal_sup (x @` setT))); rewrite le_eqVlt => /orP[/eqP|] xoo.
-  suff : (lim x <= lim z)%E.
-    by rewrite (cvg_lim _ cx)// xoo lee_pinfty_eq=> /eqP ->; rewrite lee_pinfty.
-  apply: lee_lim => //; last first.
-    by near=> n; apply: lee_sum => i _; rewrite big_ord_recr /= lee_addl.
-  rewrite /z; under eq_fun do rewrite big_mkord.
-  apply: (is_cvg_ereal_nneg_series (fun j => (\sum_(k < _) f k j)%E) xpredT).
-  by move=> j _; exact: sume_ge0.
-rewrite /x /y -ereal_limD // ?xyz // -/x.
-rewrite (cvg_lim _ cx) // adde_undefC fin_num_adde_undef // fin_numE.
-rewrite (lt_eqF xoo) andbT gt_eqF // (@lt_le_trans _ _ 0%:E) ?lte_ninfty//.
-by by apply: ereal_sup_ub; rewrite /x /=; exists O => //; rewrite big_geq.
-Grab Existential Variables. all: end_near. Qed.
+move=> f_eq0 g_eq0.
+transitivity (lim (fun n => \sum_(0 <= i < n) f i + \sum_(0 <= i < n) g i)%E).
+  by congr (lim _); apply/funext => n; rewrite big_split.
+rewrite ereal_limD /adde_undef//=; do ? exact: is_cvg_ereal_nneg_series.
+by rewrite ![_ == -oo%E]gt_eqF ?andbF// (@lt_le_trans _ _ 0%:E)
+           ?[(_ < _)%E]real0// ereal_nneg_series_lim_ge0.
+Qed.
+
+Lemma ereal_pseries0 (R : realType) (f : nat -> {ereal R}) :
+  (forall i, f i = 0%:E) -> \sum_(i <oo) f i = 0%:E.
+Proof. by move=> f0; under eq_fun do rewrite big1//; rewrite lim_cst. Qed.
+
+Lemma eq_ereal_pseries (R : realType) (f g : nat -> {ereal R}) :
+  (forall i, f i = g i) -> \sum_(i <oo) f i = \sum_(i <oo) g i.
+Proof.
+by move=> efg; congr (lim _); apply/funext => n; under eq_bigr do rewrite efg.
+Qed.
+
+Lemma ereal_sum_pseries (R : realType) n (f : nat -> nat -> {ereal R}) :
+  (forall i j, 0%:E <= f i j)%E ->
+  (\sum_(j <oo) (\sum_(0 <= i < n) f i j) =
+   \sum_(0 <= i < n) (\sum_(j <oo) (f i j)))%E.
+Proof.
+move=> f0; elim: n => [|n IHn].
+  by rewrite big_geq// ereal_pseries0// => i; rewrite big_geq.
+rewrite big_nat_recr// -IHn/= -ereal_pseriesD//;
+  last by move=> i; rewrite sume_ge0.
+by congr (lim _); apply/funext => m; apply: eq_bigr => i _; rewrite big_nat_recr.
+Qed.
 
 Lemma lte_lim (R : realFieldType) (u : (er R)^nat) (M : R) :
   nondecreasing_seq u -> cvg u -> (M%:E < lim u)%E ->
