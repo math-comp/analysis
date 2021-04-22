@@ -55,6 +55,30 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+(* TODO: add to bigop.v *)
+Lemma big_nat_widenl (R : Type) (idx : R) (op : Monoid.law idx) (m1 m2 n : nat)
+    (P : pred nat) (F : nat -> R) :
+  m2 <= m1 ->
+  \big[op/idx]_(m1 <= i < n | P i) F i =
+  \big[op/idx]_(m2 <= i < n | P i && (m1 <= i)) F i.
+Proof.
+move=> le_m21; have [le_nm1|lt_m1n] := leqP n m1.
+  rewrite big_geq// big_nat_cond big1//.
+  by move=> i /and3P[/andP[_ /leq_trans/(_ le_nm1)/ltn_geF->]].
+rewrite big_mkcond big_mkcondl (big_cat_nat _ _ _ le_m21) 1?ltnW//.
+rewrite [X in op X]big_nat_cond [X in op X]big_pred0; last first.
+  by move=> k; case: ltnP; rewrite andbF.
+by rewrite Monoid.mul1m; apply: congr_big_nat => // k /andP[].
+Qed.
+Arguments big_nat_widenl [R idx op].
+
+(* TODO: add to bigop.v *)
+Lemma big_geq_mkord (R : Type) (idx : R) (op : Monoid.law idx) (m n : nat)
+    (P : pred nat) (F : nat -> R) :
+  \big[op/idx]_(m <= i < n | P i) F i =
+  \big[op/idx]_(i < n | P i && (m <= i)) F i.
+Proof. by rewrite (big_nat_widenl _ 0)// big_mkord. Qed.
+
 Declare Scope ereal_scope.
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -678,12 +702,28 @@ Lemma lee_sum I (f g : I -> {ereal R}) s (P : pred I) :
   \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
 Proof. by move=> Pfg; elim/big_ind2 : _ => // *; apply lee_add. Qed.
 
+Lemma lee_sum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> {ereal R}) :
+  {subset Q <= P} -> {in [predD P & Q], forall i, 0%:E <= f i} ->
+  \sum_(i <- s | Q i) f i <= \sum_(i <- s | P i) f i.
+Proof.
+move=> QP PQf; rewrite big_mkcond [X in _ <= X]big_mkcond lee_sum// => i.
+by move/implyP: (QP i); move: (PQf i); rewrite !inE -!topredE/=; do !case: ifP.
+Qed.
+
+Lemma lee_sum_nneg (I : eqType) (s : seq I) (P Q : pred I)
+  (f : I -> {ereal R}) : (forall i, P i -> ~~ Q i -> 0%:E <= f i) ->
+  \sum_(i <- s | P i && Q i) f i <= \sum_(i <- s | P i) f i.
+Proof.
+move=> PQf; rewrite [X in _ <= X](bigID Q) /= -[X in X <= _]adde0 lee_add //.
+by rewrite sume_ge0// => i /andP[]; exact: PQf.
+Qed.
+
 Lemma lee_sum_nneg_ord (f : nat -> {ereal R}) (P : pred nat) :
   (forall n, P n -> 0%:E <= f n) ->
   {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
-move=> f0 m n ?; rewrite (big_ord_widen_cond n) // big_mkcondr /=.
-by rewrite lee_sum // => i ?; case: ifP => // _; exact: f0.
+move=> f0 i j le_ij; rewrite (big_ord_widen_cond j) // big_mkcondr /=.
+by rewrite lee_sum // => k ?; case: ifP => // _; exact: f0.
 Qed.
 
 Lemma lee_sum_nneg_natr (f : nat -> {ereal R}) (P : pred nat) m :
@@ -699,31 +739,9 @@ Lemma lee_sum_nneg_natl (f : nat -> {ereal R}) (P : pred nat) n :
   (forall m, (m < n)%N -> P m -> 0%:E <= f m) ->
   {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
-move=> f0 i j ij; have [|jn] := leqP n j; first rewrite -subn_eq0 => /eqP nj.
-  rewrite {1}/index_iota nj/= big_nil big_seq_cond sume_ge0// => k.
-  rewrite mem_iota -andbA => /and3P[ik].
-  have [|/ltnW /subnKC ->] := leqP n i; last exact: f0.
-  by rewrite -subn_eq0 => /eqP ->; rewrite addn0 ltnNge ik.
-rewrite (_ : index_iota i _ = iota i (j - i) ++ iota j (n - j)); last first.
-  by rewrite -{2}(subnKC ij) -iotaD addnBAC// (subnKC (ltnW jn)).
-rewrite big_cat lee_addr// big_seq_cond sume_ge0=>// k; rewrite mem_iota -andbA.
-by move=> /and3P[_]; rewrite (subnKC ij) => /ltn_trans kj ?; rewrite f0// kj.
-Qed.
-
-Lemma lee_sum_nneg I (s : seq I) (P Q : pred I)
-  (f : I -> {ereal R}) : (forall i, P i -> ~~ Q i -> 0%:E <= f i) ->
-  \sum_(i <- s | P i && Q i) f i <= \sum_(i <- s | P i) f i.
-Proof.
-move=> PQf; rewrite [X in _ <= X](bigID Q) /= -[X in X <= _]adde0 lee_add //.
-by rewrite sume_ge0// => i /andP[]; exact: PQf.
-Qed.
-
-Lemma lee_sum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> {ereal R}) :
-  {subset Q <= P} -> {in [predD P & Q], forall i, 0%:E <= f i} ->
-  \sum_(i <- s | Q i) f i <= \sum_(i <- s | P i) f i.
-Proof.
-move=> QP PQf; rewrite big_mkcond [X in _ <= X]big_mkcond lee_sum// => i.
-by move/implyP: (QP i); move: (PQf i); rewrite !inE -!topredE/=; do !case: ifP.
+move=> f0 i j le_ij; rewrite !big_geq_mkord/=.
+rewrite lee_sum_nneg_subset// => [k | k /and3P[_ /f0->//]].
+by rewrite ?inE -!topredE/= => /andP[-> /(leq_trans le_ij)->].
 Qed.
 
 Lemma lee_sum_nneg_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
@@ -733,10 +751,10 @@ Lemma lee_sum_nneg_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
 Proof.
 move=> AB f0; rewrite [X in _ <= X]big_mkcond (big_fsetID _ (mem A) B) /=.
 rewrite -[X in X <= _]adde0 lee_add //.
-- rewrite -big_mkcond /= {1}(_ : A = [fset x in B | x \in A]%fset) //.
+  rewrite -big_mkcond /= {1}(_ : A = [fset x in B | x \in A]%fset) //.
   by apply/fsetP=> t; rewrite !inE /= andbC; case: (boolP (_ \in _)) => // /AB.
-- rewrite big_fset /= big_seq_cond sume_ge0 // => t /andP[tB tA].
-  by case: ifPn => // Pt; rewrite f0 // !inE tA.
+rewrite big_fset /= big_seq_cond sume_ge0 // => t /andP[tB tA].
+by case: ifPn => // Pt; rewrite f0 // !inE tA.
 Qed.
 
 Lemma lte_subl_addr x (r : R) z : (x - r%:E < z) = (x < z + r%:E).
