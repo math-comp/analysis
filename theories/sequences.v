@@ -1272,7 +1272,7 @@ Proof.
 by move=> efg; congr (lim _); apply/funext => n; under eq_bigr do rewrite efg.
 Qed.
 
-Lemma ereal_sum_pseries (R : realType) n (f : nat -> nat -> {ereal R}) :
+Lemma ereal_pseries_sum_nat (R : realType) n (f : nat -> nat -> {ereal R}) :
   (forall i j, 0%:E <= f i j)%E ->
   (\sum_(j <oo) (\sum_(0 <= i < n) f i j) =
    \sum_(0 <= i < n) (\sum_(j <oo) (f i j)))%E.

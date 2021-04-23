@@ -9,7 +9,7 @@
   + lemmas `lee_sum_nneg_natr`, `lee_sum_nneg_natl`
 - in `sequences.v`:
   + notations `\sum_(i <oo) F i`
-  + lemmas `ereal_sum_pseries`, `lte_lim`
+  + lemmas `ereal_pseries_sum_nat`, `lte_lim`
   + lemmas `is_cvg_ereal_nneg_natsum_cond`, `is_cvg_ereal_nneg_natsum`
   + lemma `ereal_pseriesD`, `ereal_pseries0`, `eq_ereal_pseries`
 
