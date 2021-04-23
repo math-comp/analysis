@@ -588,7 +588,7 @@ rewrite -(@eq_bigcupB_of (fun n => \big[setU/set0]_(i < n.+1) A i)) //.
   rewrite eqEsubset; split => [t [i _]|t [i _ Ait]].
     by rewrite -bigcup_mkset => -[/= j _ Ajt]; exists j.
   by exists i => //; rewrite big_ord_recr /=; right.
-by move=> m n; rewrite -ltnS; exact/(@subset_bigsetU _ A xpredT).
+by move=> m n; rewrite -ltnS; exact/(@subset_bigsetU _ A).
 Qed.
 
 End trivIfy.
@@ -663,7 +663,7 @@ have AB : \bigcup_k A k = \bigcup_n B n.
   rewrite /B big_ord_recr /= => -[|Amx]; last by exists m.
   by rewrite bigcup_ord => -[k ? ?]; exists k.
 have ndB : {homo B : n m / (n <= m)%N >-> n `<=` m}.
-  by move=> n m; rewrite -ltnS; exact/(@subset_bigsetU _ _ xpredT).
+  by move=> n m; rewrite -ltnS; exact/subset_bigsetU.
 have mB : forall i, measurable (B i) by move=> i; exact: bigsetU_measurable.
 rewrite AB.
 move/(@cvg_mu_inc _ _ mu _ mB) : ndB => /(_ _)/cvg_lim <- //; last first.
@@ -672,7 +672,7 @@ have -> : lim (mu \o B) = ereal_sup ((mu \o B) @` setT).
   suff : nondecreasing_seq (mu \o B).
     by move/nondecreasing_seq_ereal_cvg; exact/cvg_lim.
   move=> n m nm; apply: le_measure => //; try by rewrite inE; apply mB.
-  by move: nm; rewrite -ltnS; exact/(@subset_bigsetU _ _ xpredT).
+  by move: nm; rewrite -ltnS; exact/subset_bigsetU.
 have BA : forall m, (mu (B m) <= \sum_(i <oo) mu (A i))%E.
   move=> m.
   rewrite (le_trans (le_mu_bigsetU (measure_additive_measure mu) mA m.+1)) //.
@@ -991,7 +991,7 @@ set C_of := B_of (fun n => \big[setU/set0]_(i < n.+1) A i).
 move=> MA; rewrite -eq_bigcupB_of_bigsetU.
 apply/caratheodory_measurable_trivIset_bigcup; last first.
   apply: (@trivIset_B_of _ (fun n => \big[setU/set0]_(i < n.+1) A i)).
-  by move=> n m; rewrite -ltnS; exact/(@subset_bigsetU _ _ xpredT).
+  by move=> n m; rewrite -ltnS; exact/subset_bigsetU.
 by case=> [|n /=]; [| apply/caratheodory_measurable_setD => //];
   exact/caratheodory_measurable_bigsetU.
 Qed.
@@ -1010,22 +1010,20 @@ HB.instance Definition caratheodory_mixin := @isMeasurable.Build
     (@caratheodory_measurable_setC _ _ mu)
     (@caratheodory_measurable_bigcup _ _ mu).
 
-Definition caratheodory_measurableType :=
-  [the measurableType of caratheodory_type mu].
 End caratheodory_sigma_algebra.
 
 Section caratheodory_measure.
 Variables (R : realType) (T : Type) (mu : {outer_measure set T -> {ereal R}}).
-Local Notation U := [the measurableType of caratheodory_type mu].
+Local Notation U := (caratheodory_type mu).
 
 Lemma caratheodory_measure0 : mu (set0 : set U) = 0%:E.
 Proof. exact: outer_measure0. Qed.
 
-Lemma caratheodory_measure_ge0 (x : set U) :
-  @measurable U x -> (0%:E <= mu x)%E.
+Lemma caratheodory_measure_ge0 (A : set U) :
+  measurable A -> (0%:E <= mu A)%E.
 Proof. by move=> mx; apply outer_measure_ge0. Qed.
 
-Lemma caratheodory_measure_sigma_additive : @semi_sigma_additive _ U mu.
+Lemma caratheodory_measure_sigma_additive : semi_sigma_additive (mu : set U -> _).
 Proof.
 move=> A mA tA mbigcupA; set B := \bigcup_k A k.
 suff : forall X, (mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B))%E.
@@ -1046,8 +1044,8 @@ Qed.
 
 Definition caratheodory_measure_mixin := Measure.Axioms caratheodory_measure0
   caratheodory_measure_ge0 caratheodory_measure_sigma_additive.
-Definition caratheodory_measure : {measure set (caratheodory_type mu) -> _} :=
-  Measure.Pack _ caratheodory_measure_mixin.
+Definition caratheodory_measure : {measure set U -> {ereal R}} :=
+  Measure caratheodory_measure_mixin.
 
 Lemma caratheodory_measure_complete (B : set U) :
   caratheodory_measure.-negligible B -> measurable B.
@@ -1062,4 +1060,5 @@ apply/eqP; rewrite eq_le outer_measure_ge0 andbT.
 have : X `&` B `<=` B by apply subIset; right.
 by move/(le_outer_measure mu); rewrite muB0 => ->.
 Qed.
+
 End caratheodory_measure.
