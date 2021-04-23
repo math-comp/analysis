@@ -631,9 +631,8 @@ Variable (mu : {measure set T -> {ereal R}}).
 
 (* 404,p.44 measure satisfies generalized Boole's inequality *)
 Theorem generalized_Boole_inequality (A : (set T) ^nat) :
-  (forall i : nat, measurable (A i)) ->
-  (measurable (\bigcup_n A n)) ->
-  (mu (\bigcup_n A n) <= lim (fun n => \sum_(i < n) mu (A i)))%E.
+  (forall i : nat, measurable (A i)) -> measurable (\bigcup_n A n) ->
+  (mu (\bigcup_n A n) <= \sum_(i <oo) mu (A i))%E.
 Proof.
 move=> mA mbigcupA; set B := fun n => \big[setU/set0]_(i < n.+1) (A i).
 have AB : \bigcup_k A k = \bigcup_n B n.
@@ -651,11 +650,12 @@ move/(@cvg_mu_inc _ _ mu _ mB _) : ndB => /(_ _)/cvg_lim <- //; last first.
   by rewrite -AB.
 have -> : lim (mu \o B) = ereal_sup ((mu \o B) @` setT).
   suff : nondecreasing_seq (mu \o B).
-    by move/nondecreasing_seq_ereal_cvg; apply/(@cvg_lim _ _ (mu \o B @ \oo)) (* bug *).
+    by move/nondecreasing_seq_ereal_cvg; apply/cvg_lim.
   move=> n m nm; apply: le_measure => //; try by rewrite inE; apply mB.
   exact: subset_bigsetU.
-have BA : forall m, (mu (B m) <= lim (fun n : nat => \sum_(i < n) mu (A i)))%E.
-  move=> m; rewrite (le_trans (le_mu_bigsetU (measure_additive_measure mu) mA m.+1)) // -/(B m).
+have BA : forall m, (mu (B m) <= \sum_(i <oo ) mu (A i))%E.
+  move=> m; rewrite (le_trans (le_mu_bigsetU (measure_additive_measure mu) mA m.+1)) //.
+  rewrite -(big_mkord xpredT (mu \o A)).
   by apply: (@ereal_nneg_series_lim_ge _ (mu \o A) xpredT) => n _; exact: measure_ge0.
 by apply ub_ereal_sup => /= x [n _ <-{x}]; apply BA.
 Qed.
