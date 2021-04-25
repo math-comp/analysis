@@ -810,7 +810,6 @@ Notation "\sum_ ( i <oo | P ) F" :=
 Notation "\sum_ ( i <oo ) F" :=
   (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
 
-
 Section sequences_of_extended_real_numbers.
 
 Lemma ereal_cvgN (R : realFieldType) (f : {ereal R} ^nat) (a : {ereal R}) :
