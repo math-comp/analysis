@@ -89,6 +89,8 @@
     * lemmas `is_cvg_ereal_nneg_series_cond`, `is_cvg_ereal_nneg_series`
     * lemmas `ereal_nneg_series_lim_ge0`, `ereal_nneg_series_pinfty`
 - in `classical_sets.v`, lemma `subset_bigsetU`
+- in `ereal.v`:
+  + change the notation `{ereal R}` to `\bar R` and attach it to the scope `ereal_scope`
 
 ### Renamed
 

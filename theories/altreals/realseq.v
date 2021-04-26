@@ -48,7 +48,7 @@ End FFTheory.
 Section Nbh.
 Context {R : realType}.
 
-Inductive nbh : {ereal R} -> predArgType :=
+Inductive nbh : \bar R -> predArgType :=
 | NFin  (c e : R) of (0 < e) : nbh c%:E
 | NPInf (M   : R) : nbh +oo
 | NNInf (M   : R) : nbh -oo.
@@ -109,7 +109,7 @@ Definition B {R : realType} (x e : R) :=
   @NFin R x (eclamp e) (gt0_clamp e).
 
 (* -------------------------------------------------------------------- *)
-Lemma separable_le {R : realType} (l1 l2 : {ereal R}) :
+Lemma separable_le {R : realType} (l1 l2 : \bar R) :
   (l1 < l2)%E -> exists (v1 : nbh l1) (v2 : nbh l2),
     forall x y, x \in v1 -> y \in v2 -> x < y.
 Proof.
@@ -131,7 +131,7 @@ rewrite ler_subr_addl addrCA -mulrDl -mulr2n -mulr_natr.
 by rewrite mulfK ?pnatr_eq0 //= /e addrCA subrr addr0.
 Qed.
 
-Lemma separable {R : realType} (l1 l2 : {ereal R}) :
+Lemma separable {R : realType} (l1 l2 : \bar R) :
   l1 != l2 -> exists (v1 : nbh l1) (v2 : nbh l2),
     forall x, x \notin [predI v1 & v2].
 Proof.
@@ -176,7 +176,7 @@ Notation "c %:S" := (fun _ : nat => c) (at level 2, format "c %:S").
 Section SeqLimTh.
 Variable (R : realType).
 
-Implicit Types (u v : nat -> R) (c : R) (l : {ereal R}).
+Implicit Types (u v : nat -> R) (c : R) (l : \bar R).
 
 Lemma ncvg_uniq u l1 l2 : ncvg u l1 -> ncvg u l2 -> l1 = l2.
 Proof.
@@ -197,7 +197,7 @@ Qed.
 Lemma ncvg_eq v u l : u =1 v -> ncvg v l -> ncvg u l.
 Proof. by move=> eq; apply: (@ncvg_eq_from 0). Qed.
 
-Lemma ncvg_le_from K v u (lv lu : {ereal R}) :
+Lemma ncvg_le_from K v u (lv lu : \bar R) :
   (forall n, (K <= n)%N -> u n <= v n) -> ncvg v lv -> ncvg u lu -> (lu <= lv)%E.
 Proof.
 move=> le_uv cv cu; rewrite leNgt; apply/negP=> /separable_le.
@@ -207,7 +207,7 @@ have []// := And3 (le_uv K' _) (vv1 K' _) (uv2 K' _). 2: by close.
 by move=> le h1 h2; have := h _ _ h1 h2; rewrite ltNge le.
 Qed.
 
-Lemma ncvg_le v u (lv lu : {ereal R}) :
+Lemma ncvg_le v u (lv lu : \bar R) :
   u <=1 v -> ncvg v lv -> ncvg u lu -> (lu <= lv)%E.
 Proof. by move=> le_uv; apply/(@ncvg_le_from 0). Qed.
 
@@ -322,11 +322,11 @@ Qed.
 Lemma ncvgZ c u lu : ncvg u lu%:E -> ncvg (c \*o u) (c * lu)%:E.
 Proof. by move=> cu; apply/ncvgM => //; apply/ncvgC. Qed.
 
-Lemma ncvg_leC c u (lu : {ereal R}) :
+Lemma ncvg_leC c u (lu : \bar R) :
   (forall n, u n <= c) -> ncvg u lu -> (lu <= c%:E)%E.
 Proof. by move=> le cu; apply/(@ncvg_le c%:S u)=> //; apply/ncvgC. Qed.
 
-Lemma ncvg_geC c u (lu : {ereal R}) :
+Lemma ncvg_geC c u (lu : \bar R) :
   (forall n, c <= u n) -> ncvg u lu -> (c%:E <= lu)%E.
 Proof. by move=> le cu; apply/(@ncvg_le u c%:S)=> //; apply/ncvgC. Qed.
 
@@ -382,7 +382,7 @@ Lemma iscvg_shift k (u : nat -> R) :
   iscvg u <-> iscvg (fun n => u (n + k)%N).
 Proof. by split=> -[l h]; exists l; apply/(ncvg_shift _ u). Qed.
 
-Lemma ncvg_gt (u : nat -> R) (l1 l2 : {ereal R}) :
+Lemma ncvg_gt (u : nat -> R) (l1 l2 : \bar R) :
   (l1 < l2)%E -> ncvg u l2 ->
     exists K, forall n, (K <= n)%N -> (l1 < (u n)%:E)%E.
 Proof.
@@ -396,7 +396,7 @@ rewrite ltr_distl => /andP[] /(le_lt_trans _) h _; apply: h.
 by rewrite {cv}/e opprB addrCA subrr addr0.
 Qed.
 
-Lemma ncvg_lt (u : nat -> R) (l1 l2 : {ereal R}) :
+Lemma ncvg_lt (u : nat -> R) (l1 l2 : \bar R) :
   (l1 < l2)%E -> ncvg u l1 ->
     exists K, forall n, (K <= n)%N -> ((u n)%:E < l2)%E.
 Proof.
@@ -405,7 +405,7 @@ move=> lt_12 cv_u_l1; case: (@ncvg_gt (\- u) (-l2) (-l1)).
 by move=> K cv; exists K => n /cv; rewrite (@lte_opp2 _ _ (u n)%:E).
 Qed.
 
-Lemma ncvg_homo_lt (u : nat -> R) (l1 l2 : {ereal R}) :
+Lemma ncvg_homo_lt (u : nat -> R) (l1 l2 : \bar R) :
     (forall m n, (m <= n)%N -> u m <= u n)
   -> (l1 < l2)%E -> ncvg u l1 -> forall n, ((u n)%:E < l2)%E.
 Proof.
@@ -414,7 +414,7 @@ case: (leqP n K) => [/homo_u|/ltnW /cv //].
 by move/lee_tofin/le_lt_trans; apply; apply/cv.
 Qed.
 
-Lemma ncvg_homo_le (u : nat -> R) (l : {ereal R}) :
+Lemma ncvg_homo_le (u : nat -> R) (l : \bar R) :
     (forall m n, (m <= n)%N -> u m <= u n)
   -> ncvg u l -> forall n, ((u n)%:E <= l)%E.
 Proof.
@@ -429,7 +429,7 @@ Context {R : realType}.
 
 Implicit Types (u v : nat -> R).
 
-Definition nlim u : {ereal R} :=
+Definition nlim u : \bar R :=
   if @idP `[exists l, `[< ncvg u l >]] is ReflectT Px then
     xchooseb Px else -oo.
 
@@ -458,13 +458,13 @@ case/boolP: `[exists l, `[< ncvg u l >]] => /existsp_asboolP.
 by move=> h; rewrite nlim_out //; apply/NLimOut.
 Qed.
 
-Lemma nlimE (u : nat -> R) (l : {ereal R}) : ncvg u l -> nlim u = l.
+Lemma nlimE (u : nat -> R) (l : \bar R) : ncvg u l -> nlim u = l.
 Proof.
 move=> cu; have: (ncvg u (nlim u)).
   by apply/nlim_ncvg; exists l. by move/(ncvg_uniq cu) => ->.
 Qed.
 
-Lemma nlimC c : nlim c%:S = c%:E :> {ereal R}.
+Lemma nlimC c : nlim c%:S = c%:E :> \bar R.
 Proof. by move/nlimE: (@ncvgC R c). Qed.
 
 Lemma nlimD (u v : nat -> R) : iscvg u -> iscvg v ->

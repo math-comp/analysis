@@ -36,7 +36,7 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
 (* TODO: move to sequences.v *)
-Lemma ereal_pseries_pred0 (R : realType) (P : pred nat) (f : nat -> {ereal R}) :
+Lemma ereal_pseries_pred0 (R : realType) (P : pred nat) (f : nat -> \bar R) :
   P =1 xpred0 -> \sum_(i <oo | P i) f i = 0%:E.
 Proof.
 move=> P0; rewrite (_ : (fun _ => _) = fun=> 0%:E) ?lim_cst// funeqE => n.
@@ -45,7 +45,7 @@ Qed.
 
 (* NB: worth putting near ub_ereal_sup_adherent? *)
 Lemma ub_ereal_sup_adherent_img (R : realFieldType) (T : choiceType)
-    (P : T -> Prop) (f : T -> {ereal R}) (e : {posnum R}) c :
+    (P : T -> Prop) (f : T -> \bar R) (e : {posnum R}) c :
   ereal_sup (f @` P) = c%:E -> exists t, P t /\ c%:E - e%:num%:E < f t.
 Proof.
 move=> fPc; have [x [[t Pt ftx] fPex]] := ub_ereal_sup_adherent e fPc.
@@ -104,7 +104,7 @@ Qed.
 
 Section csum.
 Variables (R : realFieldType) (T : choiceType).
-Implicit Types (S : set T) (a : T -> {ereal R}).
+Implicit Types (S : set T) (a : T -> \bar R).
 
 Definition csum S a := if S == set0 then 0%:E else
   ereal_sup [set \sum_(i <- F) a i | F in fsets S].
@@ -124,7 +124,7 @@ Notation "\csum_ ( i 'in' P ) F" := (csum P (fun i => F)) : ring_scope.
 
 Section csum_realType.
 Variables (R : realType) (T : choiceType).
-Implicit Types (a : T -> {ereal R}).
+Implicit Types (a : T -> \bar R).
 
 Lemma csum_ge0 (S : set T) a : (forall x, 0%:E <= a x) ->
   0%:E <= \csum_(i in S) a i.
@@ -147,7 +147,7 @@ Qed.
 
 End csum_realType.
 
-Lemma csum_image (R : realType) (T : pointedType) (a : T -> {ereal R})
+Lemma csum_image (R : realType) (T : pointedType) (a : T -> \bar R)
     (e : nat -> T) (P : pred nat) : (forall n, P n -> 0%:E <= a (e n)) ->
     injective e ->
   \csum_(i in e @` P) a i = \sum_(i <oo | P i) a (e i).
@@ -181,7 +181,7 @@ rewrite inE /= => /andP[tF /imfsetP[/= i /imfsetP[i' /=]]].
 by rewrite !inE /= => Pi' ->{i} -> _; apply a0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma ereal_pseries_csum (R : realType) (a : nat -> {ereal R}) (P : pred nat) :
+Lemma ereal_pseries_csum (R : realType) (a : nat -> \bar R) (P : pred nat) :
   (forall n, P n -> 0%:E <= a n) ->
   \sum_(i <oo | P i) a i = \csum_(i in [set x | P x]) a i.
 Proof.
@@ -193,7 +193,7 @@ Section csum_bigcup.
 Variables (R : realType) (T : pointedType) (K : set nat) (J : nat -> set T).
 Hypotheses (J0 : forall k, J k !=set0) (tJ : trivIset setT J).
 Let KJ := \bigcup_(k in K) (J k).
-Variable a : T -> {ereal R}.
+Variable a : T -> \bar R.
 Hypothesis a0 : forall x, 0%:E <= a x.
 
 Let tJ' : forall i j : nat, i != j -> J i `&` J j = set0.

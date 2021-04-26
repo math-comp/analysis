@@ -618,7 +618,7 @@ CoInductive dlim_spec f (x : T) : R -> Type :=
 | DLimCvg : forall l : R, 0 <= l -> l <= 1 ->
     ncvg (fun n => f n x) l%:E -> dlim_spec f x l
 
-| DLimOut : ~ (exists l : {ereal R}, ncvg (fun n => f n x) l) ->
+| DLimOut : ~ (exists l : \bar R, ncvg (fun n => f n x) l) ->
     dlim_spec f x 0.
 
 Lemma dlimP f x : dlim_spec f x (dlim f x).
@@ -1182,7 +1182,7 @@ End PrTheory.
 Section Jensen.
 Context {R : realType} {I : finType}.
 
-Definition convexon (a b : {ereal R}) (f : R -> R) :=
+Definition convexon (a b : \bar R) (f : R -> R) :=
   forall x y, (a <= x%:E <= b)%E -> (a <= y%:E <= b)%E ->
     forall t, 0 <= t <= 1 ->
       f (t * x + (1 - t) * y) <= t * (f x) + (1 - t) * (f y).

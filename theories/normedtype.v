@@ -3580,7 +3580,7 @@ rewrite [in X in _ <= X]/normr /= mx_normrE.
 by apply/BigmaxBigminr.bigmaxr_gerP; right => /=; exists j.
 Qed.
 
-Lemma ereal_nbhs'_le (R : numFieldType) (x : {ereal R}) :
+Lemma ereal_nbhs'_le (R : numFieldType) (x : \bar R) :
   ereal_nbhs' x --> ereal_nbhs x.
 Proof.
 move: x => [x P [_/posnumP[e] HP] |x P|x P] //=.
@@ -3595,94 +3595,94 @@ Qed.
 
 Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
-Implicit Types x y : {ereal R}.
+Local Open Scope ereal_scope.
+Implicit Types x y : \bar R.
 Implicit Types r : R.
 
-Lemma open_ereal_lt y : open [set r : R | r%:E < y]%E.
+Lemma open_ereal_lt y : open [set r : R | r%:E < y].
 Proof.
 case: y => [y||] /=; first exact: open_lt.
-rewrite [X in open X](_ : _ = setT); first exact: openT.
-by rewrite funeqE => ? /=; rewrite lte_pinfty trueE.
-rewrite [X in open X](_ : _ = set0); first exact: open0.
-by rewrite funeqE => ? /=; rewrite falseE.
+- rewrite (_ : [set _ | _] = setT); first exact: openT.
+  by rewrite funeqE => ? /=; rewrite lte_pinfty trueE.
+- rewrite (_ : [set _ | _] = set0); first exact: open0.
+  by rewrite funeqE => ? /=; rewrite falseE.
 Qed.
 
-Lemma open_ereal_gt y : open [set r : R | y < r%:E]%E.
+Lemma open_ereal_gt y : open [set r : R | y < r%:E].
 Proof.
 case: y => [y||] /=; first exact: open_gt.
-rewrite [X in open X](_ : _ = set0); first exact: open0.
-by rewrite funeqE => ? /=; rewrite falseE.
-rewrite [X in open X](_ : _ = setT); first exact: openT.
-by rewrite funeqE => ? /=; rewrite lte_ninfty trueE.
+- rewrite (_ : [set _ | _] = set0); first exact: open0.
+  by rewrite funeqE => ? /=; rewrite falseE.
+- rewrite (_ : [set _ | _] = setT); first exact: openT.
+  by rewrite funeqE => ? /=; rewrite lte_ninfty trueE.
 Qed.
 
-Lemma open_ereal_lt' x y : (x < y)%E -> ereal_nbhs x (fun u => u < y)%E.
+Lemma open_ereal_lt' x y : x < y -> ereal_nbhs x (fun u => u < y).
 Proof.
 case: x => [x|//|] xy; first exact: open_ereal_lt.
-case: y => [y||//] /= in xy *.
-exists y; rewrite num_real; split => //= x ? //.
-by exists 0.
-case: y => [y||//] /= in xy *.
-exists y; rewrite num_real; split => //= x ? //.
-exists 0; rewrite real0; split => // x.
-by move/lt_le_trans; apply; rewrite lee_pinfty.
+- case: y => [y||//] /= in xy *; last by exists 0.
+  by exists y; rewrite num_real; split => //= x ?.
+- case: y => [y||//] /= in xy *.
+  + by exists y; rewrite num_real; split => //= x ?.
+  + exists 0; rewrite real0; split => // x.
+    by move/lt_le_trans; apply; rewrite lee_pinfty.
 Qed.
 
-Lemma open_ereal_gt' x y : (y < x)%E -> ereal_nbhs x (fun u => y < u)%E.
+Lemma open_ereal_gt' x y : y < x -> ereal_nbhs x (fun u => y < u).
 Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
   case: y => [y||] //=; do ?by exists 0; rewrite real0.
-by exists y; rewrite num_real.
-move=> _; exists 0; rewrite real0; split => // x.
-by apply/le_lt_trans; rewrite lee_ninfty.
+- by exists y; rewrite num_real.
+- move=> _; exists 0; rewrite real0; split => // x.
+  by apply/le_lt_trans; rewrite lee_ninfty.
 Qed.
 
-Let open_ereal_lt_real r : open (fun x => x < r%:E)%E.
+Let open_ereal_lt_real r : open (fun x => x < r%:E).
 Proof.
 case => [? | // | ?]; [rewrite lte_fin => xy | by exists r].
 by move: (@open_ereal_lt r%:E); rewrite openE; apply; rewrite /= lte_fin.
 Qed.
 
-Lemma open_ereal_lt_ereal x : open [set y | y < x]%E.
+Lemma open_ereal_lt_ereal x : open [set y | y < x].
 Proof.
 case: x => [x | | [] // ] /=; first exact: open_ereal_lt_real.
-suff -> : ([set y | y < +oo] = \bigcup_r [set y : {ereal R} | y < r%:E])%E.
+suff -> : [set y | y < +oo] = \bigcup_r [set y : \bar R | y < r%:E].
   by apply open_bigU => x _; exact: open_ereal_lt_real.
 rewrite predeqE => -[r | | ]/=.
 - rewrite lte_pinfty; split => // _.
-  by exists (r + 1) => //=; rewrite lte_fin ltr_addl.
+  by exists (r + 1)%R => //=; rewrite lte_fin ltr_addl.
 - by rewrite ltxx; split => // -[] x /=; rewrite ltNge lee_pinfty.
 - by split => // _; exists 0 => //=; rewrite lte_ninfty.
 Qed.
 
-Let open_ereal_gt_real r : open (fun x => r%:E < x)%E.
+Let open_ereal_gt_real r : open (fun x => r%:E < x).
 Proof.
 case => [? | ? | //]; [rewrite lte_fin => xy | by exists r].
 by move: (@open_ereal_gt r%:E); rewrite openE; apply; rewrite /= lte_fin.
 Qed.
 
-Lemma open_ereal_gt_ereal x : open [set y | x < y]%E.
+Lemma open_ereal_gt_ereal x : open [set y | x < y].
 Proof.
 case: x => [x | [] // | ] /=; first exact: open_ereal_gt_real.
-suff -> : ([set y | -oo < y] = \bigcup_r [set y : {ereal R} | r%:E < y])%E.
+suff -> : [set y | -oo < y] = \bigcup_r [set y : \bar R | r%:E < y].
   by apply open_bigU => x _; exact: open_ereal_gt_real.
 rewrite predeqE => -[r | | ]/=.
 - rewrite lte_ninfty; split => // _.
-  by exists (r - 1) => //=; rewrite lte_fin ltr_subl_addr ltr_addl.
+  by exists (r - 1)%R => //=; rewrite lte_fin ltr_subl_addr ltr_addl.
 - by split => // _; exists 0 => //=; rewrite lte_pinfty.
 - by rewrite ltxx; split => // -[] x _ /=; rewrite ltNge lee_ninfty.
 Qed.
 
-Lemma closed_ereal_le_ereal y : closed [set x | (y <= x)%E].
+Lemma closed_ereal_le_ereal y : closed [set x | y <= x].
 Proof.
-rewrite (_ : [set x | y <= x]%E = ~` [set x | y > x]%E); last first.
+rewrite (_ : [set x | y <= x] = ~` [set x | y > x]); last first.
   by rewrite predeqE=> x; split=> [rx|/negP]; [apply/negP|]; rewrite -leNgt.
 exact/closedC/open_ereal_lt_ereal.
 Qed.
 
-Lemma closed_ereal_ge_ereal y : closed [set x | (y >= x)%E].
+Lemma closed_ereal_ge_ereal y : closed [set x | y >= x].
 Proof.
-rewrite (_ : [set x | y >= x]%E = ~` [set x | y < x]%E); last first.
+rewrite (_ : [set x | y >= x] = ~` [set x | y < x]); last first.
   by rewrite predeqE=> x; split=> [rx|/negP]; [apply/negP|]; rewrite -leNgt.
 exact/closedC/open_ereal_gt_ereal.
 Qed.
