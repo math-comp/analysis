@@ -31,6 +31,9 @@
   + definition `gsum`, lemmas `gsum0`, `gsumE`, `gsum_ge0`, `gsum_fset`
     `gsum_image`, `gsum_nat_lim`, `gsum_bigcup`
   + notation `\gsum_(i in S) a i`
+  + lemma `ub_ereal_sup_adherent2`
+  + definition `csum`, lemmas `csum0`, `csum_ge0`, `csum_fset`,
+    `csum_countable`, `csum_nat_lim`, `csum_bigcup`
 - file `cardinality.v`
   + defintion `surjective`
   + definition `set_bijective`

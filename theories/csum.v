@@ -207,18 +207,20 @@ pose FJ := fun k => [fset x in F | x \in J k]%fset.
 have dFJ : forall i j, i != j -> [disjoint FJ i & FJ j]%fset.
   move=> i j ij; rewrite fdisjoint_cset; apply/eqP.
   by apply: subsetI_eq0 (tJ' ij) => t /imfsetP[t0 /=];
-    rewrite !inE => /andP[_]; rewrite inE => ? ->.
+    rewrite !inE /= => /andP[_]; rewrite inE => ? ->.
 pose KFJ := [set k | K k /\ FJ k != fset0].
 have [L LKFJ] : set_finite KFJ.
-  suff : set_finite [set k | FJ k != fset0] by apply: subset_set_finite => t [].
-  suff : surjective [set x | x \in F] [set k | FJ k != fset0]
-                    (fun t => xget 0%N [set n | t \in J n]).
-    by move/surjective_set_finite; apply; exists F.
-  move=> i /fset0Pn[t]; rewrite /FJ !inE => /andP[/= Ft tJi].
-  exists t; split => //; case: xgetP; last by move/(_ i).
-  move=> j _ tJj; apply/eqP/negPn/negP => /(@tJ' i j).
-  rewrite predeqE => /(_ t)[+ _]; apply.
-  by rewrite /= !inE in tJi tJj.
+  suff suppFJ : set_finite [set k | FJ k != fset0].
+    have : KFJ `<=` [set k | FJ k != fset0] by move=> t [].
+      by move/subset_set_finite => /(_ suppFJ)[F' ->]; exists F'.
+  pose g := fun t => xget 0%N [set n | t \in J n].
+  have sur_g : surjective [set x | x \in F] [set k | FJ k != fset0] g.
+    move=> i /fset0Pn[t]; rewrite /FJ !inE /= => /andP[Ft tJi].
+    exists t; split => //; rewrite /g; case: xgetP; last by move/(_ i).
+    move=> j _ tJj; apply/eqP/negPn/negP => /(@tJ' i j).
+    rewrite predeqE => /(_ t)[+ _]; apply.
+    by rewrite /= !inE in tJi tJj.
+  by apply: (surjective_set_finite sur_g _); exists F.
 have LK : [set i | i \in L] `<=` K.
   by move=> /= i iL; move/predeqP : LKFJ => /(_ i) /iffRL /(_ iL) [].
 have -> : (\sum_(i <- F) a i = \sum_(k <- L) (\sum_(i <- FJ k) a i)%E)%E.
