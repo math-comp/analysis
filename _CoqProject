@@ -26,6 +26,7 @@ theories/trigo.v
 theories/nsatz_realtype.v
 theories/cardinality.v
 theories/csum.v
+theories/measure_wip.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
