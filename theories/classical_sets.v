@@ -217,7 +217,6 @@ Section basic_definitions.
 Context {T rT : Type}.
 Implicit Types (T : Type) (A B : set T) (f : T -> rT) (Y : set rT).
 
-Definition image f A : set rT := [set f a | a in A].
 Definition preimage f Y : set T := [set t | Y (f t)].
 
 Definition setT := [set _ : T | True].
@@ -281,18 +280,12 @@ Notation "A `<` B" := (proper A B) : classical_set_scope.
 
 Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) : classical_set_scope.
 Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
-Notation "f @` A" := (image f A) : classical_set_scope.
+Notation "f @` A" := [set f x | x in A] (only parsing) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) : classical_set_scope.
 
 Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
   [set x | P x] = [set x | Q x].
 Proof. by move=> /funext->. Qed.
-
-Lemma eq_set_inl T1 T2 (A : set T1) (f f' : T1 -> T2) :
-  (forall x, A x -> f x = f' x) -> [set f x | x in A] = [set f' x | x in A].
-Proof.
-by move=> h; rewrite predeqE=> y; split=> [][x ? <-]; exists x=> //; rewrite h.
-Qed.
 
 Section basic_lemmas.
 Context {T : Type}.
@@ -674,6 +667,12 @@ rewrite -fsurj => - [y _ fy_eqx]; exists y => //.
 by rewrite /preimage/= fy_eqx.
 Qed.
 
+Lemma eq_imagel T1 T2 (A : set T1) (f f' : T1 -> T2) :
+  (forall x, A x -> f x = f' x) -> f @` A = f' @` A.
+Proof.
+by move=> h; rewrite predeqE=> y; split=> [][x ? <-]; exists x=> //; rewrite h.
+Qed.
+
 Lemma preimage_setU f Y1 Y2 : f @^-1` (Y1 `|` Y2) = f @^-1` Y1 `|` f @^-1` Y2.
 Proof. exact/predeqP. Qed.
 
@@ -700,10 +699,6 @@ Proof.
 by rewrite eqEsubset; split => [x [b [a Aa] <- <-]|x [a Aa] <-];
   [apply/imageP |apply/imageP/imageP].
 Qed.
-
-Lemma set_in_in T1 T2 T3 A (f : T1 -> T2) (f' : T2 -> T3) :
-  [set f' x | x in [set f y | y in A]] = [set f' (f y) | y in A].
-Proof. exact: image_comp. Qed.
 
 Section bigop_lemmas.
 Context {T I : Type}.
