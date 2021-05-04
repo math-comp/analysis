@@ -979,15 +979,19 @@ case: xgetP => /=; first by move=> _ -> -[] /ubP geS _; apply geS.
 by case: (ereal_supremums_neq0 S) => /= x0 Sx0; move/(_ x0).
 Qed.
 
-Lemma ereal_sup_ninfty S : ereal_sup S = -oo -> S `<=` [set -oo].
-Proof. by move=> supS [r /ereal_sup_ub | /ereal_sup_ub |//]; rewrite supS. Qed.
+Lemma ereal_sup_ninfty S : ereal_sup S = -oo <-> S `<=` [set -oo].
+Proof.
+split.
+  by move=> supS [r /ereal_sup_ub | /ereal_sup_ub |//]; rewrite supS.
+move=> /(@subset_set1 _ S) [] ->; [exact: ereal_sup0|exact: ereal_sup1].
+Qed.
 
 Lemma ereal_inf_lb S : lbound S (ereal_inf S).
 Proof.
 by move=> x Sx; rewrite /ereal_inf lee_oppl; apply ereal_sup_ub; exists x.
 Qed.
 
-Lemma ereal_inf_pinfty S : ereal_inf S = +oo -> S `<=` [set +oo].
+Lemma ereal_inf_pinfty S : ereal_inf S = +oo <-> S `<=` [set +oo].
 Proof. rewrite eqe_oppLRP oppe_subset image_set1; exact: ereal_sup_ninfty. Qed.
 
 Lemma le_ereal_sup : {homo @ereal_sup R : A B / A `<=` B >-> A <= B}.

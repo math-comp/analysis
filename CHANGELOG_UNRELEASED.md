@@ -29,6 +29,7 @@
 
 - in `ereal.v`:
   + change implicits of lemma `lee_sum_nneg_ord`
+  + `ereal_sup_ninfty` and `ereal_inf_pinfty` made equivalences
 - in `sequences.v`:
   + change implicits of lemma `is_cvg_ereal_nneg_series`
   + statements changed from using sum of ordinals to sum of nats
