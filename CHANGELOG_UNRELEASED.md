@@ -7,6 +7,7 @@
 - in `ereal.v`:
   + lemmas `big_nat_widenl`, `big_geq_mkord`
   + lemmas `lee_sum_nneg_natr`, `lee_sum_nneg_natl`
+  + lemmas `ereal_sup_gt`, `ereal_inf_lt`
 - in `sequences.v`:
   + notations `\sum_(i <oo) F i`
   + lemmas `ereal_pseries_sum_nat`, `lte_lim`
@@ -79,6 +80,7 @@
 
 - in `ereal.v`:
   + change implicits of lemma `lee_sum_nneg_ord`
+  + `ereal_sup_ninfty` and `ereal_inf_pinfty` made equivalences
 - in `sequences.v`:
   + change implicits of lemma `is_cvg_ereal_nneg_series`
   + statements changed from using sum of ordinals to sum of nats

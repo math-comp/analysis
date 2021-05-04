@@ -924,6 +924,19 @@ move=> /(_ e) [x [[y Sy yx ex]]]; exists (- x); rewrite -yx oppeK; split => //.
 by rewrite -(oppeK y) yx lte_oppl oppeD /ereal_inf oppeK.
 Qed.
 
+Lemma ereal_sup_gt S x : x < ereal_sup S -> exists y, S y /\ x < y.
+Proof.
+rewrite not_existsP => + g; apply/negP; rewrite -leNgt.
+apply: ub_ereal_sup => y Sy; move: (g y).
+by rewrite not_andP => -[// | /negP]; rewrite leNgt.
+Qed.
+
+Lemma ereal_inf_lt S x : ereal_inf S < x -> exists y, S y /\ y < x.
+Proof.
+rewrite lte_oppl => /ereal_sup_gt [_ [[y Sy] <-]].
+by rewrite lte_oppl oppeK => xlty; exists y.
+Qed.
+
 End ereal_supremum.
 
 Section ereal_supremum_realType.
@@ -979,15 +992,19 @@ case: xgetP => /=; first by move=> _ -> -[] /ubP geS _; apply geS.
 by case: (ereal_supremums_neq0 S) => /= x0 Sx0; move/(_ x0).
 Qed.
 
-Lemma ereal_sup_ninfty S : ereal_sup S = -oo -> S `<=` [set -oo].
-Proof. by move=> supS [r /ereal_sup_ub | /ereal_sup_ub |//]; rewrite supS. Qed.
+Lemma ereal_sup_ninfty S : ereal_sup S = -oo <-> S `<=` [set -oo].
+Proof.
+split.
+  by move=> supS [r /ereal_sup_ub | /ereal_sup_ub |//]; rewrite supS.
+move=> /(@subset_set1 _ S) [] ->; [exact: ereal_sup0|exact: ereal_sup1].
+Qed.
 
 Lemma ereal_inf_lb S : lbound S (ereal_inf S).
 Proof.
 by move=> x Sx; rewrite /ereal_inf lee_oppl; apply ereal_sup_ub; exists x.
 Qed.
 
-Lemma ereal_inf_pinfty S : ereal_inf S = +oo -> S `<=` [set +oo].
+Lemma ereal_inf_pinfty S : ereal_inf S = +oo <-> S `<=` [set +oo].
 Proof. rewrite eqe_oppLRP oppe_subset image_set1; exact: ereal_sup_ninfty. Qed.
 
 Lemma le_ereal_sup : {homo @ereal_sup R : A B / A `<=` B >-> A <= B}.
