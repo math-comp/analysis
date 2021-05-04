@@ -1248,13 +1248,13 @@ Lemma ereal_limD (R : realType) (f g : nat -> {ereal R}) :
   (lim (f \+ g) = lim f + lim g)%E.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
-Lemma ereal_pseriesD (R : realType) (f g : nat -> {ereal R}) :
-  (forall i, 0%:E <= f i)%E ->
-  (forall i, 0%:E <= g i)%E ->
-  (\sum_(i <oo) (f i + g i) = (\sum_(i <oo) f i) + (\sum_(i <oo) g i))%E.
+Lemma ereal_pseriesD (R : realType) (f g : nat -> {ereal R}) (P : pred nat) :
+  (forall i, P i -> 0%:E <= f i)%E ->
+  (forall i, P i -> 0%:E <= g i)%E ->
+  (\sum_(i <oo | P i) (f i + g i) = (\sum_(i <oo | P i) f i) + (\sum_(i <oo | P i) g i))%E.
 Proof.
 move=> f_eq0 g_eq0.
-transitivity (lim (fun n => \sum_(0 <= i < n) f i + \sum_(0 <= i < n) g i)%E).
+transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i + \sum_(0 <= i < n | P i) g i)%E).
   by congr (lim _); apply/funext => n; rewrite big_split.
 rewrite ereal_limD /adde_undef//=; do ? exact: is_cvg_ereal_nneg_series.
 by rewrite ![_ == -oo%E]gt_eqF ?andbF// (@lt_le_trans _ _ 0%:E)
