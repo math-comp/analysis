@@ -924,6 +924,19 @@ move=> /(_ e) [x [[y Sy yx ex]]]; exists (- x); rewrite -yx oppeK; split => //.
 by rewrite -(oppeK y) yx lte_oppl oppeD /ereal_inf oppeK.
 Qed.
 
+Lemma ereal_sup_gt S x : x < ereal_sup S -> exists y, S y /\ x < y.
+Proof.
+rewrite not_existsP => + g; apply/negP; rewrite -leNgt.
+apply: ub_ereal_sup => y Sy; move: (g y).
+by rewrite not_andP => -[// | /negP]; rewrite leNgt.
+Qed.
+
+Lemma ereal_inf_lt S x : ereal_inf S < x -> exists y, S y /\ y < x.
+Proof.
+rewrite lte_oppl => /ereal_sup_gt [_ [[y Sy] <-]].
+by rewrite lte_oppl oppeK => xlty; exists y.
+Qed.
+
 End ereal_supremum.
 
 Section ereal_supremum_realType.
