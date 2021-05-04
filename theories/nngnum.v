@@ -34,8 +34,8 @@ Local Open Scope ring_scope.
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Reserved Notation "'{nonneg' R }" (at level 0, format "'{nonneg'  R }").
-Reserved Notation "x %:nng" (at level 0, format "x %:nng").
-Reserved Notation "x %:nngnum" (at level 0, format "x %:nngnum").
+Reserved Notation "x %:nng" (at level 2, left associativity, format "x %:nng").
+Reserved Notation "x %:nngnum" (at level 2, left associativity, format "x %:nngnum").
 Module Nonneg.
 Section nonnegative_numbers.
 

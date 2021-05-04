@@ -31,8 +31,8 @@ Require Import boolp nngnum.
 (******************************************************************************)
 
 Reserved Notation "'{posnum' R }" (at level 0, format "'{posnum'  R }").
-Reserved Notation "x %:pos" (at level 0, format "x %:pos").
-Reserved Notation "x %:num" (at level 0, format "x %:num").
+Reserved Notation "x %:pos" (at level 2, left associativity, format "x %:pos").
+Reserved Notation "x %:num" (at level 2, left associativity, format "x %:num").
 Reserved Notation "[gt0 'of' x ]" (format "[gt0 'of'  x ]").
 
 Set Implicit Arguments.
