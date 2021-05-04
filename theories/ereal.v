@@ -21,6 +21,9 @@ Require Import boolp classical_sets reals posnum topology.
 (*                    r%:E == injects real numbers into \bar R                *)
 (*           +%E, -%E, *%E == addition/opposite/multiplication for extended   *)
 (*                            reals                                           *)
+(*                    +%dE == dual addition for extended reals                *)
+(*                            (-oo + +oo = +oo instead of -oo)                *)
+(*                            Import DualAddTheory for related lemmas         *)
 (*                  x +? y == the addition of the extended real numbers x and *)
 (*                            and y is defined, i.e., it is neither +oo - oo  *)
 (*                            nor -oo + oo                                    *)
@@ -92,6 +95,7 @@ Proof. by rewrite (big_nat_widenl _ 0)// big_mkord. Qed.
 
 Reserved Notation "'\bar' x" (at level 2, format "'\bar'  x").
 
+Declare Scope ereal_dual_scope.
 Declare Scope ereal_scope.
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -102,14 +106,20 @@ Local Open Scope ring_scope.
 Variant extended (R : Type) := EFin of R | EPInf | ENInf.
 Arguments EFin {R}.
 
+Definition dual_extended := extended.
+
+Notation "+oo" := (@EPInf _ : dual_extended _) : ereal_dual_scope.
 Notation "+oo" := (@EPInf _) : ereal_scope.
+Notation "-oo" := (@ENInf _ : dual_extended _) : ereal_dual_scope.
 Notation "-oo" := (@ENInf _) : ereal_scope.
 Notation "r %:E" := (@EFin _ r%R).
 Notation "'\bar' R" := (extended R) : type_scope.
 Notation "0" := (0%R%:E) : ereal_scope.
 Notation "1" := (1%R%:E) : ereal_scope.
 
+Bind    Scope ereal_dual_scope with dual_extended.
 Bind    Scope ereal_scope with extended.
+Delimit Scope ereal_dual_scope with dE.
 Delimit Scope ereal_scope with E.
 
 Local Open Scope ereal_scope.
@@ -182,7 +192,7 @@ Variable (R : countType).
 Definition ereal_countMixin := PcanCountMixin (@codeK R).
 Canonical ereal_countType := CountType (extended R) ereal_countMixin.
 
- End ERealCount.
+End ERealCount.
 
 Section ERealOrder.
 Context {R : numDomainType}.
@@ -247,23 +257,36 @@ Notation gte := (@Order.gt ereal_display _) (only parsing).
 Notation "@ 'gte' R" :=
   (@Order.gt ereal_display R) (at level 10, R at level 8, only parsing).
 
+Notation "x <= y" := (lee x y) (only printing) : ereal_dual_scope.
 Notation "x <= y" := (lee x y) (only printing) : ereal_scope.
+Notation "x < y"  := (lte x y) (only printing) : ereal_dual_scope.
 Notation "x < y"  := (lte x y) (only printing) : ereal_scope.
 
+Notation "x <= y <= z" := ((lee x y) && (lee y z)) (only printing) : ereal_dual_scope.
 Notation "x <= y <= z" := ((lee x y) && (lee y z)) (only printing) : ereal_scope.
+Notation "x < y <= z"  := ((lte x y) && (lee y z)) (only printing) : ereal_dual_scope.
 Notation "x < y <= z"  := ((lte x y) && (lee y z)) (only printing) : ereal_scope.
+Notation "x <= y < z"  := ((lee x y) && (lte y z)) (only printing) : ereal_dual_scope.
 Notation "x <= y < z"  := ((lee x y) && (lte y z)) (only printing) : ereal_scope.
+Notation "x < y < z"   := ((lte x y) && (lte y z)) (only printing) : ereal_dual_scope.
 Notation "x < y < z"   := ((lte x y) && (lte y z)) (only printing) : ereal_scope.
 
+Notation "x <= y" := (lee (x%dE : dual_extended _) (y%dE : dual_extended _)) : ereal_dual_scope.
 Notation "x <= y" := (lee (x : extended _) (y : extended _)) : ereal_scope.
+Notation "x < y"  := (lte (x%dE : dual_extended _) (y%dE : dual_extended _)) : ereal_dual_scope.
 Notation "x < y"  := (lte (x : extended _) (y : extended _)) : ereal_scope.
+Notation "x >= y" := (y <= x) (only parsing) : ereal_dual_scope.
 Notation "x >= y" := (y <= x) (only parsing) : ereal_scope.
-Notation "x > y"  := (y < x) (only parsing) : ereal_scope.
+Notation "x > y"  := (y < x) (only parsing) : ereal_dual_scope.
 Notation "x > y"  := (y < x) (only parsing) : ereal_scope.
 
+Notation "x <= y <= z" := ((x <= y) && (y <= z)) : ereal_dual_scope.
 Notation "x <= y <= z" := ((x <= y) && (y <= z)) : ereal_scope.
+Notation "x < y <= z"  := ((x < y) && (y <= z)) : ereal_dual_scope.
 Notation "x < y <= z"  := ((x < y) && (y <= z)) : ereal_scope.
+Notation "x <= y < z"  := ((x <= y) && (y < z)) : ereal_dual_scope.
 Notation "x <= y < z"  := ((x <= y) && (y < z)) : ereal_scope.
+Notation "x < y < z"   := ((x < y) && (y < z)) : ereal_dual_scope.
 Notation "x < y < z"   := ((x < y) && (y < z)) : ereal_scope.
 
 Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E) = (x <= y)%R.
@@ -335,6 +358,17 @@ Definition adde_subdef x y :=
 
 Definition adde := nosimpl adde_subdef.
 
+Definition dual_adde_subdef x y :=
+  match x, y with
+  | x%:E , y%:E  => (x + y)%R%:E
+  | +oo, _     => +oo
+  | _    , +oo => +oo
+  | -oo, _     => -oo
+  | _    , -oo => -oo
+  end.
+
+Definition dual_adde := nosimpl dual_adde_subdef.
+
 Definition oppe x :=
   match x with
   | r%:E  => (- r)%:E
@@ -355,40 +389,71 @@ Definition abse x := if x is r%:E then `|r|%:E else +oo.
 
 End ERealArith.
 
+Notation "+%dE"   := dual_adde.
 Notation "+%E"   := adde.
 Notation "-%E"   := oppe.
+Notation "x + y" := (dual_adde x%dE y%dE) : ereal_dual_scope.
 Notation "x + y" := (adde x y) : ereal_scope.
+Notation "x - y" := (dual_adde x%dE (oppe y%dE)) : ereal_dual_scope.
 Notation "x - y" := (adde x (oppe y)) : ereal_scope.
+Notation "- x"   := (oppe (x%dE : dual_extended _)) : ereal_dual_scope.
 Notation "- x"   := (oppe x) : ereal_scope.
 Notation "*%E"   := mule.
+Notation "x * y" := (mule (x%dE : dual_extended _) (y%dE : dual_extended _)) : ereal_dual_scope.
 Notation "x * y" := (mule x y) : ereal_scope.
+Notation "`| x |" := (abse (x%dE : dual_extended _)) : ereal_dual_scope.
 Notation "`| x |" := (abse x) : ereal_scope.
 Arguments abse {R}.
 
+Notation "f \+ g" := (fun x => f x + g x)%dE : ereal_dual_scope.
 Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
 
 Notation "\sum_ ( i <- r | P ) F" :=
+  (\big[+%dE/0%:E]_(i <- r | P%B) F%dE) : ereal_dual_scope.
+Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%E/0%:E]_(i <- r | P%B) F%E) : ereal_scope.
+Notation "\sum_ ( i <- r ) F" :=
+  (\big[+%dE/0%:E]_(i <- r) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i <- r ) F" :=
   (\big[+%E/0%:E]_(i <- r) F%E) : ereal_scope.
 Notation "\sum_ ( m <= i < n | P ) F" :=
+  (\big[+%dE/0%:E]_(m <= i < n | P%B) F%dE) : ereal_dual_scope.
+Notation "\sum_ ( m <= i < n | P ) F" :=
   (\big[+%E/0%:E]_(m <= i < n | P%B) F%E) : ereal_scope.
+Notation "\sum_ ( m <= i < n ) F" :=
+  (\big[+%dE/0%:E]_(m <= i < n) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( m <= i < n ) F" :=
   (\big[+%E/0%:E]_(m <= i < n) F%E) : ereal_scope.
 Notation "\sum_ ( i | P ) F" :=
+  (\big[+%dE/0%:E]_(i | P%B) F%dE) : ereal_dual_scope.
+Notation "\sum_ ( i | P ) F" :=
   (\big[+%E/0%:E]_(i | P%B) F%E) : ereal_scope.
+Notation "\sum_ i F" :=
+  (\big[+%dE/0%:E]_i F%dE) : ereal_dual_scope.
 Notation "\sum_ i F" :=
   (\big[+%E/0%:E]_i F%E) : ereal_scope.
 Notation "\sum_ ( i : t | P ) F" :=
+  (\big[+%dE/0%:E]_(i : t | P%B) F%dE) (only parsing) : ereal_dual_scope.
+Notation "\sum_ ( i : t | P ) F" :=
   (\big[+%E/0%:E]_(i : t | P%B) F%E) (only parsing) : ereal_scope.
+Notation "\sum_ ( i : t ) F" :=
+  (\big[+%dE/0%:E]_(i : t) F%dE) (only parsing) : ereal_dual_scope.
 Notation "\sum_ ( i : t ) F" :=
   (\big[+%E/0%:E]_(i : t) F%E) (only parsing) : ereal_scope.
 Notation "\sum_ ( i < n | P ) F" :=
+  (\big[+%dE/0%:E]_(i < n | P%B) F%dE) : ereal_dual_scope.
+Notation "\sum_ ( i < n | P ) F" :=
   (\big[+%E/0%:E]_(i < n | P%B) F%E) : ereal_scope.
+Notation "\sum_ ( i < n ) F" :=
+  (\big[+%dE/0%:E]_(i < n) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i < n ) F" :=
   (\big[+%E/0%:E]_(i < n) F%E) : ereal_scope.
 Notation "\sum_ ( i 'in' A | P ) F" :=
+  (\big[+%dE/0%:E]_(i in A | P%B) F%dE) : ereal_dual_scope.
+Notation "\sum_ ( i 'in' A | P ) F" :=
   (\big[+%E/0%:E]_(i in A | P%B) F%E) : ereal_scope.
+Notation "\sum_ ( i 'in' A ) F" :=
+  (\big[+%dE/0%:E]_(i in A) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i 'in' A ) F" :=
   (\big[+%E/0%:E]_(i in A) F%E) : ereal_scope.
 
@@ -732,6 +797,7 @@ Lemma mule_ge0_le0 x y : 0 <= x -> y <= 0 -> x * y <= 0.
 Proof. by move=> x0 y0; rewrite muleC mule_le0_ge0. Qed.
 
 End ERealArithTh_numDomainType.
+Notation "x +? y" := (adde_def x%dE y%dE) : ereal_dual_scope.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
 
 Notation maxe := (@Order.max ereal_display _).
@@ -741,6 +807,169 @@ Notation "@ 'maxe' R" := (@Order.max ereal_display R)
 Notation mine := (@Order.min ereal_display _).
 Notation "@ 'mine' R" := (@Order.min ereal_display R)
   (at level 10, R at level 8, only parsing) : fun_scope.
+
+Module DualAddTheoryNumDomain.
+
+Section DualERealArithTh_numDomainType.
+
+Local Open Scope ereal_dual_scope.
+
+Context {R : numDomainType}.
+
+Implicit Types x y z : \bar R.
+
+Lemma dual_addeE x y : (x + y)%dE = - ((- x) + (- y))%E.
+Proof. by case: x => [x| |]; case: y => [y| |] //=; rewrite opprD !opprK. Qed.
+
+Lemma dual_sumeE I (r : seq I) (P : pred I) (F : I -> \bar R) :
+  (\sum_(i <- r | P i) F i)%dE = - (\sum_(i <- r | P i) (- F i)%E)%E.
+Proof.
+apply: (big_ind2 (fun x y => x = - y)%E) => [|_ x _ y -> ->|i _].
+- by rewrite oppe0.
+- by rewrite dual_addeE !oppeK.
+- by rewrite oppeK.
+Qed.
+
+Lemma dual_addeE_def x y : x +? y -> (x + y)%dE = (x + y)%E.
+Proof. by case: x => [x| |]; case: y. Qed.
+
+Lemma daddEFin (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
+Proof. by []. Qed.
+
+Lemma dsumEFin I r P (F : I -> R) :
+  \sum_(i <- r | P i) (F i)%:E = (\sum_(i <- r | P i) F i)%R%:E.
+Proof. by rewrite dual_sumeE sumEFin sumrN NEFin oppeK. Qed.
+
+Lemma dsubEFin (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
+Proof. by []. Qed.
+
+Lemma daddeC : commutative (S := \bar R) +%dE.
+Proof. by move=> x y; rewrite !dual_addeE addeC. Qed.
+
+Lemma dadde0 : right_id (0 : \bar R) +%dE.
+Proof. by move=> x; rewrite dual_addeE eqe_oppLRP oppe0 adde0. Qed.
+
+Lemma dadd0e : left_id (0 : \bar R) +%dE.
+Proof. by move=> x;rewrite dual_addeE eqe_oppLRP oppe0 add0e. Qed.
+
+Lemma daddeA : associative (S := \bar R) +%dE.
+Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeA. Qed.
+
+Canonical dadde_monoid := Monoid.Law daddeA dadd0e dadde0.
+Canonical dadde_comoid := Monoid.ComLaw daddeC.
+
+Lemma daddeAC : right_commutative (S := \bar R) +%dE.
+Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeAC. Qed.
+
+Lemma daddeCA : left_commutative (S := \bar R) +%dE.
+Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeCA. Qed.
+
+Lemma daddeACA : @interchange (\bar R) +%dE +%dE.
+Proof. by move=> x y z u; rewrite !dual_addeE !oppeK addeACA. Qed.
+
+Lemma doppeD x y : y \is a fin_num -> - (x + y) = - x - y.
+Proof. by move: y => [y| |] _ //; rewrite !dual_addeE !oppeK oppeD. Qed.
+
+Lemma dsube0 x : x - 0 = x.
+Proof. by move: x => [x| |] //; rewrite -dsubEFin subr0. Qed.
+
+Lemma dsub0e x : 0 - x = - x.
+Proof. by move: x => [x| |] //; rewrite -dsubEFin sub0r. Qed.
+
+Lemma dfin_numD x y :
+  (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
+Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma dreal_of_extendedD :
+  {in (@fin_num R) &, {morph real_of_extended : x y / x + y >-> (x + y)%R}}.
+Proof. by move=> [r| |] [s| |]. Qed.
+
+Lemma daddeK x y : x \is a fin_num -> y + x - x = y.
+Proof. by move=> fx; rewrite !dual_addeE oppeK addeK ?oppeK; case: x fx. Qed.
+
+Lemma dsubeK x y : y \is a fin_num -> x - y + y = x.
+Proof. by move=> fy; rewrite !dual_addeE oppeK subeK ?oppeK; case: y fy. Qed.
+
+Lemma dsubee x : x \is a fin_num -> x - x = 0.
+Proof. by move=> fx; rewrite dual_addeE subee ?oppe0; case: x fx. Qed.
+
+Lemma dsube_eq x y z : x \is a fin_num -> (y +? z) ->
+  (x - z == y) = (x == y + z).
+Proof.
+by move: x y z => [x| |] [y| |] [z| |] // _ _; rewrite !eqe subr_eq.
+Qed.
+
+Lemma dadde_eq_pinfty x y : (x + y == +oo) = ((x == +oo) || (y == +oo)).
+Proof. by move: x y => [?| |] [?| |]. Qed.
+
+Lemma daddooe x : x != +oo -> -oo + x = -oo.
+Proof. by case: x. Qed.
+
+Lemma dadde_Neq_pinfty x y : x != -oo -> y != -oo ->
+  (x + y != +oo) = (x != +oo) && (y != +oo).
+Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma dadde_Neq_ninfty x y : x != +oo -> y != +oo ->
+  (x + y != -oo) = (x != -oo) && (y != -oo).
+Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma desum_fset_pinfty
+    (T : choiceType) (s : {fset T}) (P : pred T) (f : T -> \bar R) :
+  \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
+Proof.
+rewrite dual_sumeE eqe_oppLRP /= esum_fset_ninfty.
+by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
+Qed.
+
+Lemma desum_pinfty n (f : 'I_n -> \bar R) :
+  (\sum_(i < n) f i == +oo) = [exists i, f i == +oo].
+Proof.
+rewrite dual_sumeE eqe_oppLR esum_ninfty.
+by under eq_existsb => i do rewrite eqe_oppLR.
+Qed.
+
+Lemma desum_fset_ninfty
+    (T : choiceType) (s : {fset T}) (P : pred T) (f : T -> \bar R) :
+  (forall i, P i -> f i != +oo) ->
+  \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
+Proof.
+move=> fioo.
+rewrite dual_sumeE eqe_oppLRP /= esum_fset_pinfty => [|i Pi]; last first.
+  by rewrite eqe_oppLR fioo.
+by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
+Qed.
+
+Lemma desum_ninfty n (f : 'I_n -> \bar R) : (forall i, f i != +oo) ->
+  (\sum_(i < n) f i == -oo) = [exists i, f i == -oo].
+Proof.
+move=> finoo.
+rewrite dual_sumeE eqe_oppLR /= esum_pinfty => [|i]; rewrite ?eqe_oppLR //.
+by under eq_existsb => i do rewrite eqe_oppLR.
+Qed.
+
+Lemma dadde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
+Proof. rewrite dual_addeE oppe_ge0 -!oppe_le0; exact: adde_le0. Qed.
+
+Lemma dadde_le0 x y : x <= 0 -> y <= 0 -> x + y <= 0.
+Proof. rewrite dual_addeE oppe_le0 -!oppe_ge0; exact: adde_ge0. Qed.
+
+Lemma dsume_ge0 T (f : T -> \bar R) (P : pred T) :
+  (forall n, P n -> 0 <= f n) -> forall l, 0 <= \sum_(i <- l | P i) f i.
+Proof.
+move=> u0 l; rewrite dual_sumeE oppe_ge0 sume_le0 // => t Pt.
+rewrite oppe_le0; exact: u0.
+Qed.
+
+Lemma dsume_le0 T (f : T -> \bar R) (P : pred T) :
+  (forall n, P n -> f n <= 0) -> forall l, \sum_(i <- l | P i) f i <= 0.
+Proof.
+move=> u0 l; rewrite dual_sumeE oppe_le0 sume_ge0 // => t Pt.
+rewrite oppe_ge0; exact: u0.
+Qed.
+
+End DualERealArithTh_numDomainType.
+
+End DualAddTheoryNumDomain.
 
 Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
@@ -1522,6 +1751,310 @@ Arguments lee_sum_npos_natr {R}.
 Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
 
+Module DualAddTheoryRealDomain.
+
+Section DualERealArithTh_realDomainType.
+
+Import DualAddTheoryNumDomain.
+
+Local Open Scope ereal_dual_scope.
+
+Context {R : realDomainType}.
+Implicit Types x y z a b : \bar R.
+
+Lemma dsube_lt0 x y : (x - y < 0) = (x < y).
+Proof. by rewrite dual_addeE oppe_lt0 sube_gt0 lte_opp. Qed.
+
+Lemma dsube_ge0 x y : (0 <= y - x) = (x <= y).
+Proof. by rewrite dual_addeE oppe_ge0 sube_le0 lee_opp. Qed.
+
+Lemma dsuber_le0 x y : y \is a fin_num -> (x - y <= 0) = (x <= y).
+Proof.
+by move=> ?; rewrite dual_addeE oppe_le0 suber_ge0 ?fin_numN// lee_opp.
+Qed.
+
+Lemma dsubre_le0 y x : y \is a fin_num -> (y - x <= 0) = (y <= x).
+Proof.
+by move=> ?; rewrite dual_addeE oppe_le0 subre_ge0 ?fin_numN// lee_opp.
+Qed.
+
+Lemma lte_dadd a b x y : a < b -> x < y -> a + x < b + y.
+Proof. rewrite !dual_addeE lte_opp -lte_opp -(lte_opp y); exact: lte_add. Qed.
+
+Lemma lee_daddl x y : 0 <= y -> x <= x + y.
+Proof. rewrite dual_addeE lee_oppr -oppe_le0; exact: gee_addl. Qed.
+
+Lemma lee_daddr x y : 0 <= y -> x <= y + x.
+Proof. rewrite dual_addeE lee_oppr -oppe_le0; exact: gee_addr. Qed.
+
+Lemma gee_daddl x y : y <= 0 -> x + y <= x.
+Proof. rewrite dual_addeE lee_oppl -oppe_ge0; exact: lee_addl. Qed.
+
+Lemma gee_daddr x y : y <= 0 -> y + x <= x.
+Proof. rewrite dual_addeE lee_oppl -oppe_ge0; exact: lee_addr. Qed.
+
+Lemma lte_daddl y x : y \is a fin_num -> 0 < x -> y < y + x.
+Proof. rewrite -fin_numN dual_addeE lte_oppr => ? ?; exact: gte_subl. Qed.
+
+Lemma lte_daddr y x : y \is a fin_num -> 0 < x -> y < x + y.
+Proof. rewrite -fin_numN dual_addeE lte_oppr addeC; exact: gte_subl. Qed.
+
+Lemma gte_dsubl y x : y \is a fin_num -> 0 < x -> y - x < y.
+Proof. rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addl. Qed.
+
+Lemma gte_dsubr y x : y \is a fin_num -> 0 < x -> - x + y < y.
+Proof. rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addr. Qed.
+
+Lemma lte_dadd2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
+Proof.
+by move=> ?; rewrite !dual_addeE lte_opp lte_add2lE ?fin_numN// lte_opp.
+Qed.
+
+Lemma lee_dadd2l x a b : a <= b -> x + a <= x + b.
+Proof. rewrite !dual_addeE lee_opp -lee_opp; exact: lee_add2l. Qed.
+
+Lemma lee_dadd2lE x a b : x \is a fin_num -> (x + a <= x + b) = (a <= b).
+Proof.
+by move=> ?; rewrite !dual_addeE lee_opp lee_add2lE ?fin_numN// lee_opp.
+Qed.
+
+Lemma lee_dadd2r x a b : a <= b -> a + x <= b + x.
+Proof. rewrite !dual_addeE lee_opp -lee_opp; exact: lee_add2r. Qed.
+
+Lemma lee_dadd a b x y : a <= b -> x <= y -> a + x <= b + y.
+Proof. rewrite !dual_addeE lee_opp -lee_opp -(lee_opp y); exact: lee_add. Qed.
+
+Lemma lte_le_dadd a b x y : a \is a fin_num -> b \is a fin_num ->
+  a < x -> b <= y -> a + b < x + y.
+Proof. rewrite -fin_numN !dual_addeE lte_opp -lte_opp; exact: lte_le_sub. Qed.
+
+Lemma lee_dsub x y z t : x <= y -> t <= z -> x - z <= y - t.
+Proof. rewrite !dual_addeE lee_oppl oppeK -lee_opp !oppeK; exact: lee_add. Qed.
+
+Lemma lte_le_dsub z u x y : z \is a fin_num -> u \is a fin_num ->
+  x < z -> u <= y -> x - y < z - u.
+Proof.
+rewrite -(fin_numN z) !dual_addeE lte_opp !oppeK -lte_opp; exact: lte_le_add.
+Qed.
+
+Lemma lee_dsum I (f g : I -> \bar R) s (P : pred I) :
+  (forall i, P i -> f i <= g i) ->
+  \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
+Proof.
+move=> Pfg; rewrite !dual_sumeE lee_opp.
+apply: lee_sum => i Pi; rewrite lee_opp; exact: Pfg.
+Qed.
+
+Lemma lee_dsum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar R) :
+  {subset Q <= P} -> {in [predD P & Q], forall i, 0 <= f i} ->
+  \sum_(i <- s | Q i) f i <= \sum_(i <- s | P i) f i.
+Proof.
+move=> QP PQf; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_npos_subset => [//|i iPQ]; rewrite oppe_le0; exact: PQf.
+Qed.
+
+Lemma lee_dsum_npos_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar R) :
+  {subset Q <= P} -> {in [predD P & Q], forall i, f i <= 0} ->
+  \sum_(i <- s | P i) f i <= \sum_(i <- s | Q i) f i.
+Proof.
+move=> QP PQf; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_nneg_subset => [//|i iPQ]; rewrite oppe_ge0; exact: PQf.
+Qed.
+
+Lemma lee_dsum_nneg (I : eqType) (s : seq I) (P Q : pred I)
+  (f : I -> \bar R) : (forall i, P i -> ~~ Q i -> 0 <= f i) ->
+  \sum_(i <- s | P i && Q i) f i <= \sum_(i <- s | P i) f i.
+Proof.
+move=> PQf; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_npos => i Pi nQi; rewrite oppe_le0; exact: PQf.
+Qed.
+
+Lemma lee_dsum_npos (I : eqType) (s : seq I) (P Q : pred I)
+  (f : I -> \bar R) : (forall i, P i -> ~~ Q i -> f i <= 0) ->
+  \sum_(i <- s | P i) f i <= \sum_(i <- s | P i && Q i) f i.
+Proof.
+move=> PQf; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_nneg => i Pi nQi; rewrite oppe_ge0; exact: PQf.
+Qed.
+
+Lemma lee_dsum_nneg_ord (f : nat -> \bar R) (P : pred nat) :
+  (forall n, P n -> 0 <= f n)%E ->
+  {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
+Proof.
+move=> f0 m n mlen; rewrite !dual_sumeE lee_opp.
+apply: (lee_sum_npos_ord (fun i => - f i)%E) => [i Pi|//].
+rewrite oppe_le0; exact: f0.
+Qed.
+
+Lemma lee_dsum_npos_ord (f : nat -> \bar R) (P : pred nat) :
+  (forall n, P n -> f n <= 0)%E ->
+  {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
+Proof.
+move=> f0 m n mlen; rewrite !dual_sumeE lee_opp.
+apply: (lee_sum_nneg_ord (fun i => - f i)%E) => [i Pi|//].
+rewrite oppe_ge0; exact: f0.
+Qed.
+
+Lemma lee_dsum_nneg_natr (f : nat -> \bar R) (P : pred nat) m :
+  (forall n, (m <= n)%N -> P n -> 0 <= f n) ->
+  {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
+Proof.
+move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_npos_natr => [n ? ?|//]; rewrite oppe_le0; exact: f0.
+Qed.
+
+Lemma lee_dsum_npos_natr (f : nat -> \bar R) (P : pred nat) m :
+  (forall n, (m <= n)%N -> P n -> f n <= 0) ->
+  {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
+Proof.
+move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_nneg_natr => [n ? ?|//]; rewrite oppe_ge0; exact: f0.
+Qed.
+
+Lemma lee_dsum_nneg_natl (f : nat -> \bar R) (P : pred nat) n :
+  (forall m, (m < n)%N -> P m -> 0 <= f m) ->
+  {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
+Proof.
+move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_npos_natl => [m ? ?|//]; rewrite oppe_le0; exact: f0.
+Qed.
+
+Lemma lee_dsum_npos_natl (f : nat -> \bar R) (P : pred nat) n :
+  (forall m, (m < n)%N -> P m -> f m <= 0) ->
+  {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
+Proof.
+move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_nneg_natl => [m ? ?|//]; rewrite oppe_ge0; exact: f0.
+Qed.
+
+Lemma lee_dsum_nneg_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
+  (f : T -> \bar R) : {subset A <= B} ->
+  {in [predD B & A], forall t, P t -> 0 <= f t} ->
+  \sum_(t <- A | P t) f t <= \sum_(t <- B | P t) f t.
+Proof.
+move=> AB f0; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_npos_subfset => [//|? ? ?]; rewrite oppe_le0; exact: f0.
+Qed.
+
+Lemma lee_dsum_npos_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
+  (f : T -> \bar R) : {subset A <= B} ->
+  {in [predD B & A], forall t, P t -> f t <= 0} ->
+  \sum_(t <- B | P t) f t <= \sum_(t <- A | P t) f t.
+Proof.
+move=> AB f0; rewrite !dual_sumeE lee_opp.
+apply: lee_sum_nneg_subfset => [//|? ? ?]; rewrite oppe_ge0; exact: f0.
+Qed.
+
+Lemma lte_dsubl_addr x y z : y \is a fin_num -> (x - y < z) = (x < z + y).
+Proof.
+by move=> ?; rewrite !dual_addeE lte_oppl lte_oppr oppeK lte_subl_addr.
+Qed.
+
+Lemma lte_dsubl_addl x y z : z \is a fin_num -> (x - y < z) = (x < y + z).
+Proof.
+move=> zfin.
+by rewrite !dual_addeE lte_oppl lte_oppr lte_subr_addr ?fin_numN// addeC.
+Qed.
+
+Lemma lte_dsubr_addr x y z : y \is a fin_num -> (x < y - z) = (x + z < y).
+Proof.
+move=> yfin.
+by rewrite !dual_addeE lte_oppl lte_oppr lte_subl_addl ?fin_numN// addeC.
+Qed.
+
+Lemma lee_dsubr_addr x y z : z \is a fin_num -> (x <= y - z) = (x + z <= y).
+Proof.
+by move=> ?; rewrite !dual_addeE lee_oppl lee_oppr lee_subl_addr ?fin_numN.
+Qed.
+
+Lemma lee_dsubl_addr x y z : y \is a fin_num -> (x - y <= z) = (x <= z + y).
+Proof.
+by move=> ?; rewrite !dual_addeE lee_oppl lee_oppr lee_subr_addr ?fin_numN.
+Qed.
+
+Lemma dmulrEDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
+Proof. by move=> *; rewrite !dual_addeE muleN mulrEDr ?adde_defNN// !muleN. Qed.
+
+Lemma dmulrEDl x y z : x \is a fin_num -> y +? z -> (y + z) * x = y * x + z * x.
+Proof. by move=> *; rewrite -!(muleC x) dmulrEDr. Qed.
+
+Lemma dge0_muleDl x y z : 0 <= y -> 0 <= z -> (y + z) * x = y * x + z * x.
+Proof. by move=> *; rewrite !dual_addeE mulNe le0_muleDl ?oppe_le0 ?mulNe. Qed.
+
+Lemma dge0_muleDr x y z : 0 <= y -> 0 <= z -> x * (y + z) = x * y + x * z.
+Proof. by move=> *; rewrite !dual_addeE muleN le0_muleDr ?oppe_le0 ?muleN. Qed.
+
+Lemma dle0_muleDl x y z : y <= 0 -> z <= 0 -> (y + z) * x = y * x + z * x.
+Proof. by move=> *; rewrite !dual_addeE mulNe ge0_muleDl ?oppe_ge0 ?mulNe. Qed.
+
+Lemma dle0_muleDr x y z : y <= 0 -> z <= 0 -> x * (y + z) = x * y + x * z.
+Proof. by move=> *; rewrite !dual_addeE muleN ge0_muleDr ?oppe_ge0 ?muleN. Qed.
+
+Lemma ge0_dsume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> 0 <= F i) ->
+  (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
+Proof.
+move=> F0; rewrite !dual_sumeE !mulNe le0_sume_distrl => [|i Pi].
+- by under eq_bigr => i _ do rewrite mulNe.
+- by rewrite oppe_le0 F0.
+Qed.
+
+Lemma ge0_dsume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> 0 <= F i) ->
+  x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
+Proof.
+by move=> F0; rewrite muleC ge0_dsume_distrl//; under eq_bigr do rewrite muleC.
+Qed.
+
+Lemma le0_dsume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> F i <= 0) ->
+  (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
+Proof.
+move=> F0; rewrite !dual_sumeE mulNe ge0_sume_distrl => [|i Pi].
+- by under eq_bigr => i _ do rewrite mulNe.
+- by rewrite oppe_ge0 F0.
+Qed.
+
+Lemma le0_dsume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> F i <= 0) ->
+  x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
+Proof.
+by move=> F0; rewrite muleC le0_dsume_distrl//; under eq_bigr do rewrite muleC.
+Qed.
+
+Lemma lee_abs_dadd x y : `|x + y| <= `|x| + `|y|.
+Proof.
+by move: x y => [x| |] [y| |] //; rewrite /abse -daddEFin lee_fin ler_norm_add.
+Qed.
+
+Lemma lee_abs_dsum (I : Type) (s : seq I) (F : I -> \bar R) (P : pred I) :
+  `|\sum_(i <- s | P i) F i| <= \sum_(i <- s | P i) `|F i|.
+Proof.
+elim/big_ind2 : _ => //; first by rewrite abse0.
+by move=> *; exact/(le_trans (lee_abs_dadd _ _) (lee_dadd _ _)).
+Qed.
+
+Lemma lee_abs_dsub x y : `|x - y| <= `|x| + `|y|.
+Proof.
+by move: x y => [x| |] [y| |] //; rewrite /abse -daddEFin lee_fin ler_norm_sub.
+Qed.
+
+Lemma dadde_minl : left_distributive (@dual_adde R) mine.
+Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxl oppe_max. Qed.
+
+Lemma dadde_minr : right_distributive (@dual_adde R) mine.
+Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxr oppe_max. Qed.
+
+End DualERealArithTh_realDomainType.
+Arguments lee_dsum_nneg_ord {R}.
+Arguments lee_dsum_npos_ord {R}.
+Arguments lee_dsum_nneg_natr {R}.
+Arguments lee_dsum_npos_natr {R}.
+Arguments lee_dsum_nneg_natl {R}.
+Arguments lee_dsum_npos_natl {R}.
+
+End DualAddTheoryRealDomain.
+
 Lemma lee_opp2 {R : realDomainType} : {mono @oppe R : x y /~ x <= y}.
 Proof.
 move=> x y; case: x y => [?||] [?||] //; first by rewrite !lee_fin !ler_opp2.
@@ -1677,6 +2210,32 @@ Lemma lee_ndivr_mulr r x y : (r < 0)%R -> (y * r^-1%:E <= x) = (x * r%:E <= y).
 Proof. by move=> r0; rewrite muleC lee_ndivr_mull// muleC. Qed.
 
 End realFieldType_lemmas.
+
+Module DualAddTheoryRealField.
+
+Section DualRealFieldType_lemmas.
+Local Open Scope ereal_dual_scope.
+Variable R : realFieldType.
+Implicit Types x y : \bar R.
+
+Lemma lee_dadde x y : (forall e : {posnum R}, x <= y + e%:num%:E) -> x <= y.
+Proof. by move=> xye; apply: lee_adde => e; case: x {xye} (xye e). Qed.
+
+Lemma lte_spdaddr (r : R) x y : 0 < y -> r%:E <= x -> r%:E < x + y.
+Proof.
+move: y x => [y| |] [x| |] //=; rewrite ?lte_fin ?ltt_fin ?lte_pinfty //.
+exact: ltr_spaddr.
+Qed.
+
+End DualRealFieldType_lemmas.
+
+End DualAddTheoryRealField.
+
+Module DualAddTheory.
+Export DualAddTheoryNumDomain.
+Export DualAddTheoryRealDomain.
+Export DualAddTheoryRealField.
+End DualAddTheory.
 
 Section ereal_supremum.
 Variable R : realFieldType.
