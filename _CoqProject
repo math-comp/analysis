@@ -20,6 +20,8 @@ theories/topology.v
 theories/prodnormedzmodule.v
 theories/normedtype.v
 theories/sequences.v
+theories/cardinality.v
+theories/csum.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
