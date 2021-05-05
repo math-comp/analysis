@@ -539,7 +539,7 @@ End DLetAlg.
 
 (* -------------------------------------------------------------------- *)
 Definition mlim T (f : nat -> distr T) : T -> R :=
-  fun x => real_of_er(*TODO: broken coercion*) (nlim (fun n => f n x)).
+  fun x => real_of_extended(*TODO: broken coercion*) (nlim (fun n => f n x)).
 
 Lemma isd_mlim T (f : nat -> distr T) : isdistr (mlim f).
 Proof. split=> [x|J]; rewrite /mlim.
@@ -547,7 +547,7 @@ Proof. split=> [x|J]; rewrite /mlim.
   by move=> n; apply/ge0_mu.
 move=> uqJ; pose F j :=
   if `[< iscvg (fun n => f n j) >] then fun n => f n j else 0%:S.
-apply/(@le_trans _ _ (\sum_(j <- J) (real_of_er (*TODO: broken coercion*) (nlim (F j) (*: R*))))).
+apply/(@le_trans _ _ (\sum_(j <- J) (real_of_extended(*TODO: broken coercion*) (nlim (F j) (*: R*))))).
   apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >] => //.
   move/asboolPn=> h; rewrite nlimC; case: nlimP=> //.
   by case=> // l cf; case: h; exists l.
@@ -574,7 +574,7 @@ Definition dlim T (f : nat -> distr T) :=
 Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
 Lemma dlimE T (f : nat -> distr T) x :
-  (\dlim_(n) f n) x = real_of_er(*TODO: broken coercion*) (nlim (fun n => f n x)).
+  (\dlim_(n) f n) x = real_of_extended(*TODO: broken coercion*) (nlim (fun n => f n x)).
 Proof. by unlock dlim. Qed.
 
 (* -------------------------------------------------------------------- *)

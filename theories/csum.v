@@ -293,8 +293,8 @@ rewrite (_ : \sum_(_ <- _) _ =
 rewrite (_ : e%:num = \sum_(i < #|`L|) (e%:num / #|`L|%:R))%R; last first.
   rewrite big_const iter_addr addr0 card_ord -mulr_natr.
   by rewrite -mulrA mulVr ?mulr1 // unitfE pnatr_eq0 cardfs_eq0.
-rewrite -NERFin (@big_morph _ _ _ 0 _ _ _ (@opprD R)) ?oppr0 //.
-rewrite (@big_morph _ _ _ 0%:E _ _ _ addERFin) // -big_split /=.
+rewrite -NEFin (@big_morph _ _ _ 0 _ _ _ (@opprD R)) ?oppr0 //.
+rewrite (@big_morph _ _ _ 0%:E _ _ _ addEFin) // -big_split /=.
 by apply: lee_sum => /= i _; exact: (ltW (proj2 (csumFj i))).
 Qed.
 

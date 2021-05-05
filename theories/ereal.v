@@ -79,6 +79,9 @@ Lemma big_geq_mkord (R : Type) (idx : R) (op : Monoid.law idx) (m n : nat)
   \big[op/idx]_(i < n | P i && (m <= i)) F i.
 Proof. by rewrite (big_nat_widenl _ 0)// big_mkord. Qed.
 
+Reserved Notation "'\bar' x" (at level 2, format "'\bar'  x").
+Reserved Notation "x %:E" (at level 2, format "x %:E").
+
 Declare Scope ereal_scope.
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -86,34 +89,33 @@ Import numFieldTopology.Exports.
 
 Local Open Scope ring_scope.
 
-Inductive er (R : Type) := ERFin of R | ERPInf | ERNInf.
+Inductive extended (R : Type) := EFin of R | EPInf | ENInf.
 
-Definition er_map T T' (f : T -> T') (x : er T) : er T' :=
+Notation "+oo" := (@EPInf _) : ereal_scope.
+Notation "-oo" := (@ENInf _) : ereal_scope.
+Notation "x %:E" := (@EFin _ x).
+Notation "'\bar' R" := (extended R) : type_scope.
+
+Bind    Scope ereal_scope with extended.
+Delimit Scope ereal_scope with E.
+
+Local Open Scope ereal_scope.
+
+Definition er_map T T' (f : T -> T') (x : \bar T) : \bar T' :=
   match x with
-  | ERFin x => ERFin (f x)
-  | ERPInf => ERPInf _
-  | ERNInf => ERNInf _
+  | x%:E => (f x)%:E
+  | +oo => +oo
+  | -oo => -oo
   end.
 
 Section ExtendedReals.
 Variable (R : numDomainType).
 
-Coercion real_of_er x : R :=
-  if x is ERFin v then v else 0.
+Coercion real_of_extended x : R :=
+  if x is EFin v then v else 0.
 
 End ExtendedReals.
-Arguments real_of_er {R}.
-
-Notation "+oo" := (@ERPInf _) : ereal_scope.
-Notation "-oo" := (@ERNInf _) : ereal_scope.
-Notation "x %:E" := (@ERFin _ x) (at level 2, format "x %:E").
-
-Notation "'\bar' x" := (er x) (at level 2, format "'\bar'  x") : type_scope.
-
-Bind    Scope ereal_scope with er.
-Delimit Scope ereal_scope with E.
-
-Local Open Scope ereal_scope.
+Arguments real_of_extended {R}.
 
 Section EqEReal.
 Variable (R : eqType).
@@ -157,7 +159,7 @@ Definition decode (x : GenTree.tree R) : option (\bar R) :=
 Lemma codeK : pcancel code decode. Proof. by case. Qed.
 
 Definition ereal_choiceMixin := PcanChoiceMixin codeK.
-Canonical ereal_choiceType  := ChoiceType (er R) ereal_choiceMixin.
+Canonical ereal_choiceType  := ChoiceType (extended R) ereal_choiceMixin.
 
 End ERealChoice.
 
@@ -165,7 +167,7 @@ Section ERealCount.
 Variable (R : countType).
 
 Definition ereal_countMixin := PcanCountMixin (@codeK R).
-Canonical ereal_countType := CountType (er R) ereal_countMixin.
+Canonical ereal_countType := CountType (extended R) ereal_countMixin.
 
  End ERealCount.
 
@@ -212,7 +214,7 @@ Definition ereal_porderMixin :=
   LePOrderMixin lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
 
 Canonical ereal_porderType :=
-  POrderType ereal_display (er R) ereal_porderMixin.
+  POrderType ereal_display (extended R) ereal_porderMixin.
 
 Lemma leEereal x y : (x <= y)%O = le_ereal x y. Proof. by []. Qed.
 Lemma ltEereal x y : (x < y)%O = lt_ereal x y. Proof. by []. Qed.
@@ -240,8 +242,8 @@ Notation "x < y <= z"  := ((lte x y) && (lee y z)) (only printing) : ereal_scope
 Notation "x <= y < z"  := ((lee x y) && (lte y z)) (only printing) : ereal_scope.
 Notation "x < y < z"   := ((lte x y) && (lte y z)) (only printing) : ereal_scope.
 
-Notation "x <= y" := (lee (x : er _) (y : er _)) : ereal_scope.
-Notation "x < y"  := (lte (x : er _) (y : er _)) : ereal_scope.
+Notation "x <= y" := (lee (x : extended _) (y : extended _)) : ereal_scope.
+Notation "x < y"  := (lte (x : extended _) (y : extended _)) : ereal_scope.
 Notation "x >= y" := (y <= x) (only parsing) : ereal_scope.
 Notation "x > y"  := (y < x) (only parsing) : ereal_scope.
 Notation "x > y"  := (y < x) (only parsing) : ereal_scope.
@@ -291,9 +293,9 @@ Proof.
 by move=> [?||][?||]//=; rewrite (ltEereal, leEereal)/= ?num_real ?le_total.
 Qed.
 
-Canonical ereal_latticeType := LatticeType (er R) le_total_ereal.
-Canonical ereal_distrLatticeType :=  DistrLatticeType (er R) le_total_ereal.
-Canonical ereal_orderType := OrderType (er R) le_total_ereal.
+Canonical ereal_latticeType := LatticeType (extended R) le_total_ereal.
+Canonical ereal_distrLatticeType :=  DistrLatticeType (extended R) le_total_ereal.
+Canonical ereal_orderType := OrderType (extended R) le_total_ereal.
 
 End ERealOrder_realDomainType.
 
@@ -378,7 +380,7 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
 Lemma le0R (x : \bar R) :
-  0%:E <= x -> (0 <= real_of_er(*TODO: coercion broken*) x)%R.
+  0%:E <= x -> (0 <= real_of_extended(*TODO: coercion broken*) x)%R.
 Proof. by case: x. Qed.
 
 Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
@@ -408,19 +410,19 @@ Section ERealArithTh_numDomainType.
 Context {R : numDomainType}.
 Implicit Types x y z : \bar R.
 
-Lemma NERFin (x : R) : (- x)%R%:E = (- x%:E). Proof. by []. Qed.
+Lemma NEFin (x : R) : (- x)%R%:E = (- x%:E). Proof. by []. Qed.
 
-Lemma real_of_erN x : real_of_er (- x) = (- real_of_er x)%R.
+Lemma real_of_extendedN x : real_of_extended (- x) = (- real_of_extended x)%R.
 Proof. by case: x => //=; rewrite oppr0. Qed.
 
-Lemma addERFin (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
+Lemma addEFin (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
 Proof. by []. Qed.
 
-Lemma sumERFin I r P (F : I -> R) :
+Lemma sumEFin I r P (F : I -> R) :
   \sum_(i <- r | P i) (F i)%:E = (\sum_(i <- r | P i) F i)%R%:E.
-Proof. by rewrite (big_morph _ addERFin erefl). Qed.
+Proof. by rewrite (big_morph _ addEFin erefl). Qed.
 
-Lemma subERFin (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
+Lemma subEFin (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
 Proof. by []. Qed.
 
 Definition adde_undef x y :=
@@ -507,24 +509,24 @@ Lemma fin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma real_of_erD :
-  {in (@fin_num R) &, {morph real_of_er : x y / x + y >-> (x + y)%R}}.
+Lemma real_of_extendedD :
+  {in (@fin_num R) &, {morph real_of_extended : x y / x + y >-> (x + y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
 
 Lemma fin_num_adde_undef x y : y \is a fin_num -> ~~ adde_undef x y.
 Proof. by move: x y => [x| |] [y | |]. Qed.
 
-Lemma ERFin_real_of_er x : x \is a fin_num -> x = (real_of_er x)%:E.
+Lemma EFin_real_of_extended x : x \is a fin_num -> x = (real_of_extended x)%:E.
 Proof. by case: x. Qed.
 
 Lemma addeK x y : x \is a fin_num -> y + x - x = y.
-Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin /= addrK. Qed.
+Proof. by move: x y => [x| |] [y| |] //; rewrite -addEFin /= addrK. Qed.
 
 Lemma subeK x y : y \is a fin_num -> x - y + y = x.
-Proof. by move: x y => [x| |] [y| |] //; rewrite -addERFin subrK. Qed.
+Proof. by move: x y => [x| |] [y| |] //; rewrite -addEFin subrK. Qed.
 
 Lemma subee x : x \is a fin_num -> x - x = 0%:E.
-Proof. by move: x => [r _| |] //; rewrite -subERFin subrr. Qed.
+Proof. by move: x => [r _| |] //; rewrite -subEFin subrr. Qed.
 
 Lemma adde_eq_ninfty x y : (x + y == -oo) = ((x == -oo) || (y == -oo)).
 Proof. by move: x y => [?| |] [?| |]. Qed.
@@ -942,8 +944,8 @@ Local Open Scope classical_set_scope.
 Implicit Types S : set (\bar R).
 Implicit Types x : \bar R.
 
-Let real_of_er_def r0 x : R := if x is r%:E then r else r0.
-(* NB: see also real_of_er above *)
+Let real_of_extended_def r0 x : R := if x is r%:E then r else r0.
+(* NB: see also real_of_extended above *)
 
 Lemma ereal_supremums_neq0 S : supremums S !=set0.
 Proof.
@@ -957,7 +959,7 @@ have [r Sr] : exists r, S r%:E.
   move: S0 => /set0P[] [r Sr| // |Snoo1]; first by exists r.
   apply/not_existsP => nS; move/negP : Snoo; apply.
   by apply/eqP; rewrite predeqE => -[] // r; split => // /nS.
-set U := [set x | (real_of_er_def r @` S) x ].
+set U := [set x | (real_of_extended_def r @` S) x ].
 have [/eqP|] := boolP (ubound U == set0).
   rewrite -subset0 => U0; exists +oo.
   split; [exact/ereal_ub_pinfty | apply/lbP => /= -[r0 /ubP Sr0|//|]].
@@ -1012,7 +1014,7 @@ Proof. by move=> A B AB; apply lb_ereal_inf => x Bx; exact/ereal_inf_lb/AB. Qed.
 
 End ereal_supremum_realType.
 
-Canonical ereal_pointed (R : numDomainType) := PointedType (er R) +oo.
+Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) +oo.
 
 Section ereal_nbhs.
 Context {R : numFieldType}.
@@ -1029,7 +1031,8 @@ Definition ereal_nbhs (a : \bar R) (P : \bar R -> Prop) : Prop :=
     | +oo => exists M, M \is Num.real /\ forall x, M%:E < x -> P x
     | -oo => exists M, M \is Num.real /\ forall x, x < M%:E -> P x
   end.
-Canonical ereal_ereal_filter := FilteredType (er R) (er R) (ereal_nbhs).
+Canonical ereal_ereal_filter :=
+  FilteredType (extended R) (extended R) (ereal_nbhs).
 End ereal_nbhs.
 
 Lemma ereal_nbhs_pinfty_ge (R : numFieldType) (c : {posnum R}) :
@@ -1359,7 +1362,8 @@ Proof. exact: can_mono_in (onW_can_in predT expandK) _ (in2W le_contract). Qed.
 Definition lt_expand := leW_mono_in le_expand_in.
 Definition expand_inj := mono_inj_in lexx le_anti le_expand_in.
 
-Lemma real_of_er_expand x : (`|x| < 1)%R -> (real_of_er (expand x))%:E = expand x.
+Lemma real_of_extended_expand x : (`|x| < 1)%R ->
+  (real_of_extended (expand x))%:E = expand x.
 Proof.
 by move=> x1; rewrite /expand 2!leNgt ltr_oppl; case/ltr_normlP : x1 => -> ->.
 Qed.
@@ -1547,7 +1551,7 @@ by rewrite ltr_subl_addl addrC -ltr_subl_addl -lt_expandLR ?inE ?ltW.
 Qed.
 
 Lemma ball_ereal_ball_fin_lt (r r' : R) (e : {posnum R}) :
-  let e' := (r - real_of_er (expand (contract r%:E - e%:num)))%R in
+  let e' := (r - real_of_extended (expand (contract r%:E - e%:num)))%R in
   ball r e' r' -> (r' < r)%R ->
   (`|contract r%:E - (e)%:num| < 1)%R ->
   ereal_ball r%:E (e)%:num r'%:E.
@@ -1557,12 +1561,12 @@ rewrite gtr0_norm ?subr_gt0// ?lt_contract ?lte_fin//.
 move: re'r'.
 rewrite /ball /= gtr0_norm // ?subr_gt0// /e'.
 rewrite -ltr_subl_addl addrAC subrr add0r ltr_oppl opprK -lte_fin.
-rewrite real_of_er_expand // lt_expandLR ?inE ?ltW//.
+rewrite real_of_extended_expand // lt_expandLR ?inE ?ltW//.
 by rewrite ltr_subl_addl addrC -ltr_subl_addl.
 Qed.
 
 Lemma ball_ereal_ball_fin_le (r r' : R) (e : {posnum R} ) :
-  let e' : R := (real_of_er (expand (contract r%:E + e%:num)) - r)%R in
+  let e' : R := (real_of_extended (expand (contract r%:E + e%:num)) - r)%R in
   ball r e' r' -> (r <= r')%R ->
   (`| contract r%:E + e%:num | < 1)%R ->
   (ereal_ball r%:E e%:num r'%:E).
@@ -1573,7 +1577,7 @@ move: rr'; rewrite le_eqVlt => /orP[/eqP->|rr'].
 rewrite /ball /= ltr0_norm ?subr_lt0// opprB in r'e'r.
 rewrite ltr0_norm ?subr_lt0 ?lt_contract ?lte_fin//.
 rewrite opprB; move: r'e'r.
-rewrite /e' -ltr_subl_addr opprK subrK -lte_fin real_of_er_expand //.
+rewrite /e' -ltr_subl_addr opprK subrK -lte_fin real_of_extended_expand //.
 by rewrite lt_expandRL ?inE ?ltW// ltr_subl_addl.
 Qed.
 
@@ -1581,9 +1585,9 @@ Lemma nbhs_oo_up_e1 (A : set (\bar R)) (e : {posnum R}) : (e%:num <= 1)%R ->
   ereal_ball +oo e%:num `<=` A -> nbhs +oo A.
 Proof.
 move=> e1 ooeA.
-exists (real_of_er (expand (1 - e%:num)%R)); rewrite num_real; split => //.
+exists (real_of_extended (expand (1 - e%:num)%R)); rewrite num_real; split => //.
 case => [r | | //].
-- rewrite real_of_er_expand; last first.
+- rewrite real_of_extended_expand; last first.
     by rewrite ger0_norm ?ltr_subl_addl ?ltr_addr // subr_ge0.
   by move=> ?; exact/ooeA/expand_ereal_ball_pinfty.
 - by move=> _; exact/ooeA/ereal_ball_center.
@@ -1644,10 +1648,10 @@ move=> reA reN1 re1.
 have er1 : (`|contract r%:E - e%:num| < 1)%R.
   rewrite ltr_norml reN1 andTb ltr_subl_addl ltr_spaddl //.
   by move: (contract_le1 r%:E); rewrite ler_norml => /andP[].
-pose e' := (r - real_of_er (expand (contract r%:E - e%:num)))%R.
+pose e' := (r - real_of_extended (expand (contract r%:E - e%:num)))%R.
 have e'0 : (0 < e')%R.
   rewrite subr_gt0 -lte_fin -[in X in _ < X](contractK r%:E).
-  rewrite real_of_er_expand // lt_expand ?inE ?contract_le1// ?ltW//.
+  rewrite real_of_extended_expand // lt_expand ?inE ?contract_le1// ?ltW//.
   by rewrite ltr_subl_addl ltr_addr.
 apply/nbhs_ballP; exists e' => // r' re'r'; apply reA.
 by have [?|?] := lerP r r';
@@ -1664,11 +1668,11 @@ move=> reA reN1 re1.
 have ? : (`|contract r%:E + e%:num| < 1)%R.
   rewrite ltr_norml re1 andbT (@lt_le_trans _ _ (contract r%:E)) // ?ler_addl //.
   by move: (contract_lt1 r); rewrite ltr_norml => /andP[].
-pose e' : R := (real_of_er (expand (contract r%:E + e%:num)) - r)%R.
+pose e' : R := (real_of_extended (expand (contract r%:E + e%:num)) - r)%R.
 have e'0 : (0 < e')%R.
-  rewrite /e'.
-  rewrite subr_gt0 -lte_fin -[in X in X < _](contractK r%:E).
-  by rewrite real_of_er_expand // lt_expand ?inE ?contract_le1 ?ltr_addl ?ltW.
+  rewrite /e' subr_gt0 -lte_fin -[in X in X < _](contractK r%:E).
+  rewrite real_of_extended_expand //.
+  by rewrite lt_expand ?inE ?contract_le1 ?ltr_addl ?ltW.
 apply/nbhs_ballP; exists e' => // r' r'e'r; apply reA.
 by have [?|?] := lerP r r';
   [exact: ball_ereal_ball_fin_le | exact: contract_ereal_ball_fin_lt].
@@ -1688,7 +1692,7 @@ case: x => [r'| |] //.
   + by apply contract_ereal_ball_fin_lt => //; exact/ltW.
 - exact/contract_ereal_ball_pinfty.
 - apply/ereal_ballN/contract_ereal_ball_pinfty.
-  by rewrite NERFin contractN -(opprK 1) ltr_oppl opprD opprK.
+  by rewrite NEFin contractN -(opprK 1) ltr_oppl opprD opprK.
 Qed.
 
 Lemma nbhs_fin_inbound (r : R) (e : {posnum R}) (A : set (\bar R)) :
@@ -1734,22 +1738,24 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
     have ? : (`|contract r%:E + e%:num| < 1)%R.
       rewrite ltr_norml re1 andbT -(addr0 (-1)) ler_lt_add //.
       by move: (contract_le1 r%:E); rewrite ler_norml => /andP[].
-    pose e' : R := Num.min (r - real_of_er (expand (contract r%:E - e%:num)))%R
-                           (real_of_er (expand (contract r%:E + e%:num)) - r)%R.
+    pose e' : R := Num.min
+      (r - real_of_extended (expand (contract r%:E - e%:num)))%R
+      (real_of_extended (expand (contract r%:E + e%:num)) - r)%R.
     have e'0 : (0 < e')%R.
       rewrite /e' lt_minr; apply/andP; split.
         rewrite subr_gt0 -lte_fin -[in X in _ < X](contractK r%:E).
-        rewrite real_of_er_expand // lt_expand// ?inE ?contract_le1 ?ltW//.
+        rewrite real_of_extended_expand // lt_expand// ?inE ?contract_le1 ?ltW//.
         by rewrite ltr_subl_addl ltr_addr.
       rewrite subr_gt0 -lte_fin -[in X in X < _](contractK r%:E).
-      by rewrite real_of_er_expand// lt_expand ?inE ?contract_le1 ?ltr_addl ?ltW.
+      rewrite real_of_extended_expand//.
+      by rewrite lt_expand ?inE ?contract_le1 ?ltr_addl ?ltW.
     apply/nbhs_ballP; exists e' => // r' re'r'; apply reA.
     have [|r'r] := lerP r r'.
       move=> rr'; apply: ball_ereal_ball_fin_le => //.
       by apply: le_ball re'r'; rewrite le_minl lexx orbT.
     move: re'r'; rewrite /ball /= lt_minr => /andP[].
     rewrite gtr0_norm ?subr_gt0 // -ltr_subl_addl addrAC subrr add0r ltr_oppl.
-    rewrite opprK -lte_fin real_of_er_expand // => r'e'r _.
+    rewrite opprK -lte_fin real_of_extended_expand // => r'e'r _.
     exact: expand_ereal_ball_fin_lt.
   by apply (@nbhs_fin_out_above _ e) => //; rewrite ltW.
 have [re1|re1] := ltrP 1 (contract r%:E + e%:num).
@@ -1906,10 +1912,10 @@ Definition ereal_uniformType_mixin : @Uniform.mixin_of (\bar R) nbhs :=
   uniformityOfBallMixin ereal_nbhsE ereal_pseudoMetricType_mixin.
 
 Canonical ereal_uniformType :=
-  UniformType (er R) ereal_uniformType_mixin.
+  UniformType (extended R) ereal_uniformType_mixin.
 
 Canonical ereal_pseudoMetricType :=
-  PseudoMetricType (er R) ereal_pseudoMetricType_mixin.
+  PseudoMetricType (extended R) ereal_pseudoMetricType_mixin.
 
 End ereal_PseudoMetric.
 

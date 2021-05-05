@@ -76,14 +76,14 @@ Qed.
 Lemma nbh_pinfW (P : forall x, nbh x -> Prop) :
   (forall M, P _ (@NPInf R M)) -> forall (v : nbh +oo), P _ v.
 Proof.
-move=> ih; move: {-2}+oo%E (erefl (@ERPInf R)).
+move=> ih; move: {-2}+oo%E (erefl (@EPInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 
 Lemma nbh_ninfW (P : forall x, nbh x -> Prop) :
   (forall M, P _ (@NNInf R M)) -> forall (v : nbh -oo), P _ v.
 Proof.
-move=> ih ; move: {-2}-oo%E (erefl (@ERNInf R)).
+move=> ih ; move: {-2}-oo%E (erefl (@ENInf R)).
 by move=> e eE v; case: v eE => // c' e' h [->].
 Qed.
 End NbhElim.
@@ -447,7 +447,7 @@ move=> h; rewrite /nlim; case: {-}_ / idP => // p.
 by case: h; case/existsbP: p => l /asboolP; exists l.
 Qed.
 
-CoInductive nlim_spec (u : nat -> R) : er R -> Type :=
+CoInductive nlim_spec (u : nat -> R) : \bar R -> Type :=
 | NLimCvg l : ncvg u l -> nlim_spec u l
 | NLimOut   : ~ (exists l, ncvg u l) -> nlim_spec u -oo.
 
@@ -521,9 +521,9 @@ by apply/eq_nlim=> n /=; rewrite big_cons.
 Qed.
 
 Lemma nlim_sumR {I : eqType} (u : I -> nat -> R) (r : seq I) :
-  (forall i, i \in r -> iscvg (u i)) ->
-      nlim (fun n => \sum_(i <- r) (u i) n)
-    = (\sum_(i <- r) (real_of_er(*TODO: coercion broken*) (nlim (u i)) : R))%:E.
+    (forall i, i \in r -> iscvg (u i)) ->
+  nlim (fun n => \sum_(i <- r) (u i) n) = (\sum_(i <- r)
+    (real_of_extended(*TODO: coercion broken*) (nlim (u i)) : R))%:E.
 Proof.
 move=> h; rewrite nlim_sum //; elim: r h => [|i r ih] h.
   by rewrite !big_nil.
