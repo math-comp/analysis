@@ -268,7 +268,7 @@ Definition sigma_additive :=
   forall A, (forall i : nat, measurable (A i)) -> trivIset setT A ->
   (fun n => \sum_(i < n) mu (A i)) --> mu (\bigcup_n A n).
 
-Lemma semi_additive2P : mu set0 = 0%:E -> semi_additive <-> semi_additive2.
+Lemma semi_additive2P : mu set0 = 0 -> semi_additive <-> semi_additive2.
 Proof.
 move=> mu0; split => [amx A B mA mB mAB AB|a2mx A mA /trivIsetP ATI mbigA n].
   set C := bigcup2 A B.
@@ -309,7 +309,7 @@ rewrite propeqE; split=> [amu A B ? ? ?|amu A B ? ? _ ?]; last by rewrite amu.
 by rewrite amu //; exact: measurableU.
 Qed.
 
-Lemma additive2P : mu set0 = 0%:E -> additive mu <-> additive2 mu.
+Lemma additive2P : mu set0 = 0 -> additive mu <-> additive2 mu.
 Proof. by rewrite -semi_additive2E -semi_additiveE; exact/semi_additive2P. Qed.
 
 End additivity.
@@ -317,7 +317,7 @@ End additivity.
 Lemma semi_sigma_additive_is_additive
   (R : realFieldType (*TODO: numFieldType if possible?*))
   (X : semiRingOfSetsType) (mu : set X -> \bar R) :
-  mu set0 = 0%:E -> semi_sigma_additive mu -> semi_additive mu.
+  mu set0 = 0 -> semi_sigma_additive mu -> semi_additive mu.
 Proof.
 move=> mu0 samu; apply/semi_additive2P => // A B mA mB mAB AB_eq0.
 pose C := bigcup2 A B.
@@ -346,7 +346,7 @@ Qed.
 
 Lemma sigma_additive_is_additive
   (R : realFieldType) (X : measurableType) (mu : set X -> \bar R) :
-  mu set0 = 0%:E -> sigma_additive mu -> additive mu.
+  mu set0 = 0 -> sigma_additive mu -> additive mu.
 Proof.
 move=> mu0; rewrite -semi_sigma_additiveE -semi_additiveE.
 exact: semi_sigma_additive_is_additive.
@@ -358,8 +358,8 @@ Section ClassDef.
 
 Variables (R : numFieldType) (T : semiRingOfSetsType).
 Record axioms (mu : set T -> \bar R) := Axioms {
-  _ : mu set0 = 0%:E ;
-  _ : forall x, measurable x -> 0%:E <= mu x ;
+  _ : mu set0 = 0 ;
+  _ : forall x, measurable x -> 0 <= mu x ;
   _ : semi_additive2 mu }.
 
 Structure map (phUV : phant (set T -> \bar R)) :=
@@ -393,11 +393,11 @@ Section additive_measure_on_semiring_of_sets.
 Variables (R : realFieldType) (T : semiRingOfSetsType)
   (mu : {additive_measure set T -> \bar R}).
 
-Lemma measure0 : mu set0 = 0%:E.
+Lemma measure0 : mu set0 = 0.
 Proof. by case: mu => ? []. Qed.
 Hint Resolve measure0.
 
-Lemma measure_ge0 : forall x, measurable x -> 0%:E <= mu x.
+Lemma measure_ge0 : forall x, measurable x -> 0 <= mu x.
 Proof. by case: mu => ? []. Qed.
 Hint Resolve measure_ge0.
 
@@ -433,8 +433,8 @@ Section ClassDef.
 
 Variables (R : numFieldType) (T : semiRingOfSetsType).
 Record axioms (mu : set T -> \bar R) := Axioms {
-  _ : mu set0 = 0%:E ;
-  _ : forall x, measurable x -> 0%:E <= mu x ;
+  _ : mu set0 = 0 ;
+  _ : forall x, measurable x -> 0 <= mu x ;
   _ : semi_sigma_additive mu }.
 
 Structure map (phUV : phant (set T -> \bar R)) :=
@@ -484,7 +484,7 @@ Qed.
 
 End measure_lemmas.
 
-Hint Extern 0 (_ set0 = 0%:E) => solve [apply: measure0] : core.
+Hint Extern 0 (_ set0 = 0) => solve [apply: measure0] : core.
 Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
 
@@ -693,12 +693,12 @@ Section negligible.
 Variables (R : realFieldType) (T : ringOfSetsType).
 
 Definition negligible (mu : set T -> \bar R) (N : set T) :=
-  exists A : set T, [/\ measurable A, mu A = 0%:E & N `<=` A].
+  exists A : set T, [/\ measurable A, mu A = 0 & N `<=` A].
 
 Local Notation "mu .-negligible" := (negligible mu).
 
 Lemma negligibleP (mu : {measure _ -> _}) A :
-  measurable A -> mu.-negligible A <-> mu A = 0%:E.
+  measurable A -> mu.-negligible A <-> mu A = 0.
 Proof.
 move=> mA; split => [[B [mB mB0 AB]]|mA0]; last by exists A; split.
 apply/eqP; rewrite eq_le measure_ge0 // andbT -mB0.
@@ -738,8 +738,8 @@ Section ClassDef.
 
 Variables (R : numFieldType) (T : Type).
 Record axioms (mu : set T -> \bar R) := Axioms {
-  _ : mu set0 = 0%:E ;
-  _ : forall x, 0%:E <= mu x ;
+  _ : mu set0 = 0 ;
+  _ : forall x, 0 <= mu x ;
   _ : {homo mu : A B / A `<=` B >-> A <= B} ;
   _ : sigma_subadditive mu }.
 
@@ -774,10 +774,10 @@ Section outer_measure_lemmas.
 Variables (R : numFieldType) (T : Type).
 Variable mu : {outer_measure set T -> \bar R}.
 
-Lemma outer_measure0 : mu set0 = 0%:E.
+Lemma outer_measure0 : mu set0 = 0.
 Proof. by case: mu => ? []. Qed.
 
-Lemma outer_measure_ge0 : forall x, 0%:E <= mu x.
+Lemma outer_measure_ge0 : forall x, 0 <= mu x.
 Proof. by case: mu => ? []. Qed.
 
 Lemma le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B}.
@@ -788,7 +788,7 @@ Proof. by case: mu => ? []. Qed.
 
 End outer_measure_lemmas.
 
-Hint Extern 0 (_ set0 = 0%:E) => solve [apply: outer_measure0] : core.
+Hint Extern 0 (_ set0 = 0) => solve [apply: outer_measure0] : core.
 Hint Extern 0 (sigma_subadditive _) =>
   solve [apply: outer_measure_sigma_subadditive] : core.
 
@@ -833,7 +833,7 @@ Section caratheodory_theorem_sigma_algebra.
 
 Variables (R : realType) (T : Type) (mu : {outer_measure set T -> \bar R}).
 
-Lemma outer_measure_bigcup_lim (A : (set T) ^nat)  X :
+Lemma outer_measure_bigcup_lim (A : (set T) ^nat) X :
   mu (X `&` \bigcup_k A k) <= \sum_(k <oo) mu (X `&` A k).
 Proof.
 apply: (le_trans _ (outer_measure_sigma_subadditive mu (fun n => X `&` A n))).
@@ -861,7 +861,7 @@ have /(lee_add2r (mu (X `&` ~` (A `|` B)))) :
     by move=> [_ ?|[_ ?|//]]; [left|right].
   rewrite (le_trans (outer_measure_sigma_subadditive mu Z)) //.
   suff : ((fun n => \sum_(i < n) mu (Z i)) -->
-    mu (X `&` A) + mu (X `&` B `&` ~` A)).
+      mu (X `&` A) + mu (X `&` B `&` ~` A)).
     move/cvg_lim => /=; under [in X in X <= _]eq_fun do rewrite big_mkord.
     by move=> ->.
   rewrite -(cvg_shiftn 2) /=; set l := (X in _ --> X).
@@ -1022,10 +1022,10 @@ Section caratheodory_measure.
 Variables (R : realType) (T : Type) (mu : {outer_measure set T -> \bar R}).
 Local Notation U := (caratheodory_type mu).
 
-Lemma caratheodory_measure0 : mu (set0 : set U) = 0%:E.
+Lemma caratheodory_measure0 : mu (set0 : set U) = 0.
 Proof. exact: outer_measure0. Qed.
 
-Lemma caratheodory_measure_ge0 (A : set U) : measurable A -> 0%:E <= mu A.
+Lemma caratheodory_measure_ge0 (A : set U) : measurable A -> 0 <= mu A.
 Proof. by move=> mx; apply outer_measure_ge0. Qed.
 
 Lemma caratheodory_measure_sigma_additive : semi_sigma_additive (mu : set U -> _).
@@ -1033,7 +1033,7 @@ Proof.
 move=> A mA tA mbigcupA; set B := \bigcup_k A k.
 suff : forall X, mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B).
   move/(_ B); rewrite setICr outer_measure0 adde0.
-  rewrite (_ : (fun n => _) = (fun n => \sum_(k < n) mu (A k))); last first.
+  rewrite (_ : (fun n => _) = fun n => \sum_(k < n) mu (A k)); last first.
     rewrite funeqE => n; rewrite big_mkord; apply eq_bigr => i _; congr (mu _).
     by rewrite setIC; apply/setIidPl => t Ait; exists i.
   move=> ->; have := fun n (_ : xpredT n) => outer_measure_ge0 mu (A n).
@@ -1055,9 +1055,9 @@ Definition caratheodory_measure : {measure set U -> \bar R} :=
 Lemma measure_is_complete_caratheodory : measure_is_complete caratheodory_measure.
 Proof.
 move=> B [A [mA muA0 BA]]; apply le_caratheodory_measurable => X.
-suff -> : mu (X `&` B) = 0%:E.
+suff -> : mu (X `&` B) = 0.
   by rewrite add0e le_outer_measure //; apply subIset; left.
-have muB0 : mu B = 0%:E.
+have muB0 : mu B = 0.
   apply/eqP; rewrite eq_le outer_measure_ge0 andbT.
   by apply: (le_trans (le_outer_measure mu BA)); rewrite -muA0.
 apply/eqP; rewrite eq_le outer_measure_ge0 andbT.

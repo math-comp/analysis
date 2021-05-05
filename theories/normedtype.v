@@ -3620,11 +3620,11 @@ Qed.
 Lemma open_ereal_lt' x y : x < y -> ereal_nbhs x (fun u => u < y).
 Proof.
 case: x => [x|//|] xy; first exact: open_ereal_lt.
-- case: y => [y||//] /= in xy *; last by exists 0.
+- case: y => [y||//] /= in xy *; last by exists 0%R.
   by exists y; rewrite num_real; split => //= x ?.
 - case: y => [y||//] /= in xy *.
   + by exists y; rewrite num_real; split => //= x ?.
-  + exists 0; rewrite real0; split => // x.
+  + exists 0%R; rewrite real0; split => // x.
     by move/lt_le_trans; apply; rewrite lee_pinfty.
 Qed.
 
@@ -3633,7 +3633,7 @@ Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
   case: y => [y||] //=; do ?by exists 0; rewrite real0.
 - by exists y; rewrite num_real.
-- move=> _; exists 0; rewrite real0; split => // x.
+- move=> _; exists 0%R; rewrite real0; split => // x.
   by apply/le_lt_trans; rewrite lee_ninfty.
 Qed.
 
@@ -3652,7 +3652,7 @@ rewrite predeqE => -[r | | ]/=.
 - rewrite lte_pinfty; split => // _.
   by exists (r + 1)%R => //=; rewrite lte_fin ltr_addl.
 - by rewrite ltxx; split => // -[] x /=; rewrite ltNge lee_pinfty.
-- by split => // _; exists 0 => //=; rewrite lte_ninfty.
+- by split => // _; exists 0%R => //=; rewrite lte_ninfty.
 Qed.
 
 Let open_ereal_gt_real r : open (fun x => r%:E < x).
@@ -3669,7 +3669,7 @@ suff -> : [set y | -oo < y] = \bigcup_r [set y : \bar R | r%:E < y].
 rewrite predeqE => -[r | | ]/=.
 - rewrite lte_ninfty; split => // _.
   by exists (r - 1)%R => //=; rewrite lte_fin ltr_subl_addr ltr_addl.
-- by split => // _; exists 0 => //=; rewrite lte_pinfty.
+- by split => // _; exists 0%R => //=; rewrite lte_pinfty.
 - by rewrite ltxx; split => // -[] x _ /=; rewrite ltNge lee_ninfty.
 Qed.
 

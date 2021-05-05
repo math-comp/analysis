@@ -37,9 +37,9 @@ Local Open Scope ereal_scope.
 
 (* TODO: move to sequences.v *)
 Lemma ereal_pseries_pred0 (R : realType) (P : pred nat) (f : nat -> \bar R) :
-  P =1 xpred0 -> \sum_(i <oo | P i) f i = 0%:E.
+  P =1 xpred0 -> \sum_(i <oo | P i) f i = 0.
 Proof.
-move=> P0; rewrite (_ : (fun _ => _) = fun=> 0%:E) ?lim_cst// funeqE => n.
+move=> P0; rewrite (_ : (fun _ => _) = fun=> 0) ?lim_cst// funeqE => n.
 by rewrite big1 // => i; rewrite P0.
 Qed.
 
@@ -106,12 +106,12 @@ Section csum.
 Variables (R : realFieldType) (T : choiceType).
 Implicit Types (S : set T) (a : T -> \bar R).
 
-Definition csum S a := if S == set0 then 0%:E else
+Definition csum S a := if S == set0 then 0 else
   ereal_sup [set \sum_(i <- F) a i | F in fsets S].
 
 Local Notation "\csum_ ( i 'in' P ) F" := (csum P (fun i => F)).
 
-Lemma csum0 a : \csum_(i in set0) a i = 0%:E.
+Lemma csum0 a : \csum_(i in set0) a i = 0.
 Proof. by rewrite /csum eqxx. Qed.
 
 Lemma csumE S a : S !=set0 ->
@@ -126,14 +126,13 @@ Section csum_realType.
 Variables (R : realType) (T : choiceType).
 Implicit Types (a : T -> \bar R).
 
-Lemma csum_ge0 (S : set T) a : (forall x, 0%:E <= a x) ->
-  0%:E <= \csum_(i in S) a i.
+Lemma csum_ge0 (S : set T) a : (forall x, 0 <= a x) -> 0 <= \csum_(i in S) a i.
 Proof.
 move=> a0; rewrite /csum; case: ifPn => // _.
 by apply: ereal_sup_ub; exists fset0; [exact: fsets_set0|rewrite big_nil].
 Qed.
 
-Lemma csum_fset (F : {fset T}) a : (forall i, i \in F -> 0%:E <= a i) ->
+Lemma csum_fset (F : {fset T}) a : (forall i, i \in F -> 0 <= a i) ->
   \csum_(i in [set x | x \in F]) a i = \sum_(i <- F) a i.
 Proof.
 move=> f0; rewrite /csum; case: ifPn => [|F0].
@@ -148,7 +147,7 @@ Qed.
 End csum_realType.
 
 Lemma csum_image (R : realType) (T : pointedType) (a : T -> \bar R)
-    (e : nat -> T) (P : pred nat) : (forall n, P n -> 0%:E <= a (e n)) ->
+    (e : nat -> T) (P : pred nat) : (forall n, P n -> 0 <= a (e n)) ->
     injective e ->
   \csum_(i in e @` P) a i = \sum_(i <oo | P i) a (e i).
 Proof.
@@ -182,7 +181,7 @@ by rewrite !inE /= => Pi' ->{i} -> _; apply a0.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_pseries_csum (R : realType) (a : nat -> \bar R) (P : pred nat) :
-  (forall n, P n -> 0%:E <= a n) ->
+  (forall n, P n -> 0 <= a n) ->
   \sum_(i <oo | P i) a i = \csum_(i in [set x | P x]) a i.
 Proof.
 move=> a0; rewrite -(@csum_image _ _ _ id) //; congr csum.
@@ -194,7 +193,7 @@ Variables (R : realType) (T : pointedType) (K : set nat) (J : nat -> set T).
 Hypotheses (J0 : forall k, J k !=set0) (tJ : trivIset setT J).
 Let KJ := \bigcup_(k in K) (J k).
 Variable a : T -> \bar R.
-Hypothesis a0 : forall x, 0%:E <= a x.
+Hypothesis a0 : forall x, 0 <= a x.
 
 Let tJ' : forall i j : nat, i != j -> J i `&` J j = set0.
 Proof. by move=> i j ij; move: tJ => /trivIsetP; apply. Qed.
@@ -220,7 +219,7 @@ have [L LKFJ] : set_finite KFJ.
   by rewrite predeqE => /(_ t)[+ _]; apply; rewrite /= !inE in tJi tJj.
 have LK : [set i | i \in L] `<=` K.
   by move=> /= i iL; move/predeqP : LKFJ => /(_ i) /iffRL /(_ iL) [].
-have -> : \sum_(i <- F) a i = \sum_(k <- L) (\sum_(i <- FJ k) a i)%E.
+have -> : \sum_(i <- F) a i = \sum_(k <- L) \sum_(i <- FJ k) a i.
   suff -> : F = (\big[fsetU/fset0]_(x <- L) FJ x)%fset.
     by apply/partition_disjoint_bigfcup; exact: dFJ.
   apply/fsetP => t; apply/idP/idP => [tF|/bigfcupP[i]]; last first.
@@ -258,7 +257,7 @@ have [Fj csumFj] : exists F, forall j, P (F j) j.
     by case/(@choice _ _ (fun i F => P F i)) => Fj ?; exists Fj.
   move=> j; rewrite /P csumE //; set es := ereal_sup _.
   have [esoo|[c c0 esc]] : es = +oo \/ exists2 r : R, (r >= 0)%R & es = r%:E.
-    suff : 0%:E <= es by move/gee0P.
+    suff : 0 <= es by move/gee0P.
     by apply ereal_sup_ub; exists fset0; [exact: fsets_set0|rewrite big_nil].
   - move: csumIar; rewrite csumE //; set es' := ereal_sup _ => es'r.
     suff : es <= es' by rewrite esoo es'r.
@@ -275,7 +274,7 @@ apply: (@le_trans _ _ (\sum_(i <- F) a i)); last first.
   apply/fsetsP => t /bigfcupP[/= i _] /(proj1 (csumFj i)) Jt.
   by exists (L \_ i) => //; apply: LK; rewrite /mkset mem_nth.
 rewrite (_ : \sum_(_ <- _) _ =
-             \sum_(i < #|`L|) (\sum_(j <- Fj i) a j)%E); last first.
+             \sum_(i < #|`L|) \sum_(j <- Fj i) a j); last first.
   have tFj : (forall i j : 'I_#|`L|, i != j -> [disjoint Fj i & Fj j])%fset.
     move=> i j ij; rewrite -fsetI_eq0.
     suff : (Fj i `&` Fj j)%fset == fset0 by [].
@@ -287,14 +286,14 @@ rewrite (_ : \sum_(_ <- _) _ =
     by move=> /(proj1 (csumFj i)) ? /(proj1 (csumFj j)) ?; rewrite -Jij; split.
   pose IL := [fset i | i in 'I_#|`L|]%fset.
   have -> : F = (\bigcup_(i <- IL) Fj i)%fset by rewrite big_imfset // big_enum.
-  transitivity (\sum_(i <- IL) (\sum_(j <- Fj i) a j)%E); last first.
+  transitivity (\sum_(i <- IL) \sum_(j <- Fj i) a j); last first.
     by rewrite /IL big_imfset //= big_enum.
   by apply partition_disjoint_bigfcup; exact: tFj.
 rewrite (_ : e%:num = \sum_(i < #|`L|) (e%:num / #|`L|%:R))%R; last first.
   rewrite big_const iter_addr addr0 card_ord -mulr_natr.
   by rewrite -mulrA mulVr ?mulr1 // unitfE pnatr_eq0 cardfs_eq0.
-rewrite -NEFin (@big_morph _ _ _ 0 _ _ _ (@opprD R)) ?oppr0 //.
-rewrite (@big_morph _ _ _ 0%:E _ _ _ addEFin) // -big_split /=.
+rewrite -NEFin (@big_morph _ _ _ 0%R _ _ _ (@opprD R)) ?oppr0 //.
+rewrite (@big_morph _ _ _ 0 _ _ _ addEFin) // -big_split /=.
 by apply: lee_sum => /= i _; exact: (ltW (proj2 (csumFj i))).
 Qed.
 
