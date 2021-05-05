@@ -1370,7 +1370,7 @@ Qed.
 
 Lemma contractK : cancel contract expand.
 Proof.
-apply: (onT_can [pred x | `|x| <= 1]%R contract_le1).
+apply: (onS_can [pred x | `|x| <= 1]%R contract_le1).
 exact: inj_can_sym_on expandK (in1W contract_inj).
 Qed.
 
