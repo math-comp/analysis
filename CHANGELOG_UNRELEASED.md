@@ -89,6 +89,10 @@
     * lemmas `is_cvg_ereal_nneg_series_cond`, `is_cvg_ereal_nneg_series`
     * lemmas `ereal_nneg_series_lim_ge0`, `ereal_nneg_series_pinfty`
 - in `classical_sets.v`, lemma `subset_bigsetU`
+- in `ereal.v`:
+  + change the notation `{ereal R}` to `\bar R` and attach it to the scope `ereal_scope`
+- in `topology.v`:
+  + change implicits of lemma `cvg_app`
 
 ### Renamed
 
@@ -99,6 +103,19 @@
     `onT_can_in` -> `onS_can_in`,
     `in_onT_can` -> ``in_onS_can`
     (now in MathComp)
+- in `ereal.v`:
+  + `er` -> `extended`
+  + `ERFin` -> `EFin`
+  + `ERPInf` -> `EPInf`
+  + `ERNInf` -> `ENInf`
+  + `real_of_er` -> `real_of_extended`
+  + `real_of_erD` -> `real_of_extendedD`
+  + `ERFin_real_of_er` -> `EFin_real_of_extended`
+  + `real_of_er_expand` -> `real_of_extended_expand`
+  + `NERFin` -> `NEFin`
+  + `addERFin` -> `addEFin`
+  + `sumERFin`-> `sumEFin`
+  + `subERFin` -> `subEFin`
 
 ### Removed
 

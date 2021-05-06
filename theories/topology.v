@@ -1073,6 +1073,7 @@ Proof. by []. Qed.
 Lemma cvg_app U V (F G : set (set U)) (f : U -> V) :
   F --> G -> f @ F --> f @ G.
 Proof. by move=> FG P /=; exact: FG. Qed.
+Arguments cvg_app {U V F G} _.
 
 Lemma cvgi_app U V (F G : set (set U)) (f : U -> set V) :
   F --> G -> f `@ F --> f `@ G.

@@ -495,7 +495,7 @@ Hypothesis smS     : summable S.
 Hypothesis homo_P  : forall n m, (n <= m)%N -> (P n `<=` P m).
 Hypothesis cover_P : forall x, S x != 0 -> exists n, x \in P n.
 
-Lemma psum_as_lim : psum S = real_of_er(*TODO: broken coercion*) (nlim (fun n => \sum_(j : P n) (S (val j)))).
+Lemma psum_as_lim : psum S = real_of_extended(*TODO: broken coercion*) (nlim (fun n => \sum_(j : P n) (S (val j)))).
 Proof.
 set v := fun n => _; have hm_v m n: (m <= n)%N -> v m <= v n.
   by move=> le_mn; apply/big_fset_subset/fsubsetP/homo_P.
