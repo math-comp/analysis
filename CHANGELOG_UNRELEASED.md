@@ -79,6 +79,8 @@
   + definition `measure_is_complete`
 - in `ereal.v`:
   + notation `0`/`1` for `0%R%:E`/`1%R:%E` in `ereal_scope`
+- file `reals.v`:
+  + lemmas `floor_le`, `ceil_le`
 
 ### Changed
 

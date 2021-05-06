@@ -623,6 +623,11 @@ Proof.
 by move=> ?; rewrite /floor -(@ltrz0 R) RtointK ?isint_Rfloor // Rfloor_lt0.
 Qed.
 
+Lemma floor_le : {homo @floor R : x y / x <= y}.
+Proof.
+by move=> x y ?; rewrite -(@ler_int R) !RtointK ?isint_Rfloor // Rfloor_le.
+Qed.
+
 End FloorTheory.
 
 Section CeilTheory.
@@ -661,6 +666,11 @@ Proof. by move=> x0; rewrite -ler_oppl oppr0 floor_ge0 -ler_oppr oppr0. Qed.
 
 Lemma ler_ceil x : x <= (ceil x)%:~R.
 Proof. by rewrite -RceilE; exact: le_Rceil. Qed.
+
+Lemma ceil_le : {homo @ceil R : x y / x <= y}.
+Proof.
+by move=> x y xy; rewrite /ceil ler_oppl opprK floor_le // ler_oppl opprK.
+Qed.
 
 End CeilTheory.
 
