@@ -100,6 +100,14 @@
   + lemmas `mule_le0_ge0`, `mule_ge0_le0`, `pmule_rle0`, `pmule_lle0`,
     `nmule_lle0`, `nmule_rle0`
   + lemma `sube0`
+  + lemmas `adde_le0`, `sume_le0`, `oppe_ge0`, `oppe_le0`,
+    `lte_opp`, `gee_addl`, `gee_addr`, `lte_addr`,
+    `gte_subl`, `gte_subr`, `lte_le_sub`, `lee_sum_npos_subset`,
+    `lee_sum_npos`, `lee_sum_npos_ord`, `lee_sum_npos_natr`,
+    `lee_sum_npos_natl`, `lee_sum_npos_subfset`, `lee_opp`,
+    `le0_muleDl`, `le0_muleDr`, `le0_sume_distrl`, `le0_sume_distrr`,
+    `adde_defNN`, `minEFin`, `mine_ninftyl`, `mine_ninftyr`, `mine_pinftyl`,
+    `mine_pinftyr`, `oppe_max`, `oppe_min`, `mineMr`, `mineMl`
 - in `normedtype.v`:
   + lemma `mule_continuous`
 - in `cardinality.v`:
