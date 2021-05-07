@@ -13,7 +13,14 @@ Require Import classical_sets posnum topology normedtype sequences measure.
 (* version has been written by the participants to the mathcomp-analysis-dev  *)
 (* meeting circa May 2019.                                                    *)
 (*                                                                            *)
-(* It contains a Module Type that specifies an interface for a theory         *)
+(* This file starts by providing some tools to deal with functions of         *)
+(* extended real real numbers.                                                *)
+(*    f ^\+ == the function formed by the non-negative outputs of f (from a   *)
+(*             type to the type of extended eral numbers) and 0 otherwise     *)
+(*    f ^\+ == the function formed by the non-positive outputs of f and 0 o.w.*)
+(*  f \|_ D == the restriction of f on the domain D (and 0 o.w.)              *)
+(*                                                                            *)
+(* This is followed by a Module Type that specifies an interface for a theory *)
 (* of integration which is work-in-progress.                                  *)
 (*                                                                            *)
 (******************************************************************************)
@@ -26,8 +33,121 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Reserved Notation "f ^\+" (at level 1, format "f ^\+").
+Reserved Notation "f ^\-" (at level 1, format "f ^\-").
+Reserved Notation "f \|_ D" (at level 10).
+
+Section funpos.
+
+Local Notation "0" := 0%:E : ereal_scope.
+Local Notation "1" := 1%:E : ereal_scope.
+Local Open Scope ereal_scope.
+
+Definition funepos T (R : realDomainType) (f : T -> \bar R) :=
+   fun x => Order.max (f x) 0%E.
+Definition funeneg T (R : realDomainType) (f : T -> \bar R) :=
+   fun x => Order.max (- f x)%E 0%E.
+Local Notation "f ^\+" := (funepos f).
+Local Notation "f ^\-" := (funeneg f).
+
+Definition fer T (R : realDomainType) (f : T -> \bar R) (D : set T) :=
+  fun x => if `[<D x>] then f x else 0%E.
+Local Notation "f \|_ D" := (fer f D).
+
+Lemma ferK T (R : realDomainType) (f : T -> \bar R) (D1 D2 : set T) :
+  f \|_ D1 \|_ D2 = f \|_ (D1 `&` D2).
+Proof.
+by apply/funext=> x; rewrite /fer/= asbool_and; do 3?[case: asbool => //].
+Qed.
+
+Lemma mem_fer T (R : realDomainType) (f : T -> \bar R) (D : set T) x :
+  D x -> f \|_ D x = f x.
+Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
+
+Lemma memNfer T (R : realDomainType) (f : T -> \bar R) (D : set T) x :
+  ~ D x -> f \|_ D x = 0%E.
+Proof. by move=> Dx; rewrite /fer; case: asboolP. Qed.
+
+Lemma ferN0  T (R : realDomainType) (f : T -> \bar R) :
+  f \|_ [set x | f x != 0%E] = f.
+Proof. by apply/funext => x; rewrite /fer asboolb; case: eqVneq => [->|]. Qed.
+
+Lemma funEeposneg T (R : realDomainType) (f : T -> \bar R) :
+  f = (fun x => f^\+ x - f^\- x)%E.
+Proof.
+apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
+case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
+by case: ltgtP; rewrite /= ?sub0r ?subr0 ?oppr0 ?opprK// => ->.
+Qed.
+
+Lemma normfunEeposneg T (R : realDomainType) (f : T -> \bar R) :
+  (fun x => `|f x|)%E = (fun x => f^\+ x + f^\- x)%E.
+Proof.
+apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
+case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
+by case: sgrP => //=; rewrite ?addr0 ?sub0r.
+Qed.
+
+Lemma funepos_ge0 T (R : realDomainType) (f : T -> \bar R) :
+  (forall x, 0 <= f^\+ x)%E.
+Proof. by move=> x; rewrite /funepos; case: (leP (f x)) => //= /ltW. Qed.
+
+Lemma funeneg_ge0 T (R : realDomainType) (f : T -> \bar R) :
+  (forall x, 0 <= f^\- x)%E.
+Proof. by move=> x; rewrite /funeneg; case: (leP (- f x)%E) => //= /ltW. Qed.
+
+Lemma funeposEgt0 T (R : realDomainType) (f : T -> \bar R) :
+  (f^\+ = f \|_ [set x | 0 < f x])%E.
+Proof.
+by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
+Qed.
+
+Lemma funeposEge0 T (R : realDomainType) (f : T -> \bar R) :
+  (f^\+ = f \|_ [set x | 0 <= f x])%E.
+Proof.
+by apply/funext => x; rewrite /fer /funepos/= maxEle asboolb; case: ltgtP.
+Qed.
+
+Lemma funenegElt0 T (R : realDomainType) (f : T -> \bar R) :
+  (f^\- = fun x => - f \|_ [set x | f x < 0] x)%E.
+Proof.
+apply/funext => x; rewrite /fer /funeneg/= maxEle asboolb leEereal ltEereal.
+case: f => //= [r||]; rewrite ?(oppr0, real0)//.
+by rewrite oppr_le0; case: leP; rewrite //= oppr0.
+Qed.
+
+Lemma funenegEle0 T (R : realDomainType) (f : T -> \bar R) :
+  (f^\- = fun x => - f \|_ [set x | f x <= 0] x)%E.
+Proof.
+by rewrite funenegElt0 funeqE => x; rewrite /fer !asboolb/=; case: ltgtP => // ->.
+Qed.
+
+Hint Resolve funepos_ge0 funeneg_ge0 : core.
+End funpos.
+
+Notation "f ^\+" := (funepos f) : ereal_scope.
+Notation "f ^\-" := (funeneg f) : ereal_scope.
+Notation "f \|_ D" := (fer f D) : ereal_scope.
+
 Notation "0" := 0%:E : ereal_scope.
 Notation "1" := 1%:E : ereal_scope.
+
+(* NB: PR in progress *)
+Lemma muleC (R : numDomainType) (x y : \bar R) : (x * y = y * x)%E.
+Proof. by case: x y => [r||] [s||]//=; rewrite mulrC. Qed.
+
+Lemma mule1 (R : numDomainType) (x : \bar R) : (x * 1)%E = x.
+Proof. by case: x => [r||]/=; rewrite ?mulr1 ?lee_tofin ?lte_tofin. Qed.
+
+Lemma mul1e (R : numDomainType) (x : \bar R) : (1 * x)%E = x.
+Proof. by rewrite muleC mule1. Qed.
+
+Lemma addeACA (R : numDomainType) : @interchange \bar R +%E +%E.
+Proof. by case=> [r||] [s||] [t||] [u||]//=; rewrite addrACA. Qed.
+
+Lemma abseN (R : numDomainType) (x : \bar R) : (`|- x| = `|x|)%E.
+Proof. by case: x => [r||]; rewrite //= normrN. Qed.
+(* END NB: PR in progress *)
 
 Definition complete_measure (R : realType) (T : measurableType)
    (mu : set T -> \bar R) :=
@@ -66,9 +186,40 @@ Axiom measurableEreal_gee : forall x, measurable [set y : \bar R | x <= y]%E.
 Axiom measurableEreal_lee : forall x, measurable [set y : \bar R | y <= x]%E.
 Axiom measurableEreal_setT : measurable (setT : set \bar R).
 
+Lemma fer_preimage T D (f : T -> \bar R) Y :
+  (f \|_ D @^-1` Y = ((f @^-1` Y) `&` D) `|`
+                    ((fun=> if `[< Y 0 >] then True else False) `&` ~` D))%E.
+Proof.
+rewrite predeqE => t; split => [|].
+- rewrite /fer /=; case: ifPn => /asboolP Dt hY; first by left.
+  by rewrite asboolT //; right.
+- move=> [[fYt Dt]|[]].
+  + by rewrite /fer /= asboolT.
+  + by case: ifPn => // /asboolP Y0 _ Dt; rewrite /fer /= asboolF.
+Qed.
+
 Section integral.
 
 Variable T : measurableType.
+
+Lemma measurable_fun_ferE (D : set T) (f : T -> \bar R) :
+  measurable D ->
+  measurable_fun D f = measurable_fun setT (f \|_ D)%E.
+Proof.
+move=> mD; rewrite propeqE; split => [Df Y mY|Df Y mY].
+  apply: measurableI; last exact: measurableT.
+  rewrite fer_preimage; apply: measurableU.
+    exact: Df.
+  apply: measurableI.
+    by case: ifP => // _; [exact: measurableT|exact: measurable0].
+  exact: measurableC.
+have := Df _ mY; rewrite setIT.
+rewrite fer_preimage.
+case: ifP => _ /=; rewrite ?(setTI,set0I,setU0) //.
+rewrite setUIl setUCr setIT => YUcD.
+have := measurableI _ _ YUcD mD.
+by rewrite setIUl setICl setU0.
+Qed.
 
 Lemma measurable_funN (D : set T) (f : T -> \bar R) :
   measurable_fun D (fun x => - f x)%E = measurable_fun D f.
@@ -78,6 +229,15 @@ Admitted.
 Lemma measurable_fun_measurable (D : set T) (f : T -> \bar R) :
   measurable_fun D f -> measurable D.
 Proof. by move=> /(_ _ measurableEreal_setT); rewrite setTI. Qed.
+
+Lemma measurable_fun_fer (D D' : set T) (f : T -> \bar R) :
+  measurable D -> measurable D' ->
+  measurable_fun D (f \|_ D')%E = measurable_fun (D `&` D') f.
+Proof.
+move=> mD mD'; rewrite measurable_fun_ferE // [RHS]measurable_fun_ferE; last first.
+  exact: measurableI.
+by rewrite ferK setIC.
+Qed.
 
 Parameter integral : forall (m : set T -> \bar R) (D : set T)
   (f : T -> \bar R), \bar R.
@@ -93,8 +253,18 @@ Lemma integrable_measurable
   integrable m D f -> measurable D.
 Proof. by move=> [/measurable_fun_measurable]. Qed.
 
+Axiom integralEposneg : forall (m : set T -> \bar R) (D : set T)
+  (f : T -> \bar R), integral m D f = (integral m D f^\+ - integral m D f^\-)%E.
+
 Axiom integral1 : forall (m : set T -> \bar R) (D : set T),
   integral m D (fun=> 1%:E) = m D.
+
+Axiom integral_domE : forall (m : set T -> \bar R) (D : set T)
+  (f : T -> \bar R), integral m D f = integral m setT (f \|_ D)%E.
+
+Lemma integral_fer (m : set T -> \bar R) (D D' : set T)
+  (f : T -> \bar R) : integral m D (f \|_ D')%E = integral m (D `&` D') f.
+Proof. by rewrite integral_domE [RHS]integral_domE ferK setIC. Qed.
 
 Axiom integral_is_linear : forall (m : set T -> \bar R) (D : set T)
   (k : \bar R) (f g : T -> \bar R),
@@ -110,6 +280,53 @@ Axiom integral_ler : forall (m : set T -> \bar R) (D : set T)
   measurable_fun D f -> measurable_fun D g ->
   {ae m, forall x, D x -> f x <= g x}%E -> (integral m D f <= integral m D g)%E.
 
+Lemma eq_integralr m (D : set T) (f g : T -> \bar R) :
+   (forall x, D x -> f x = g x) ->
+  integral m D f = integral m D g.
+Proof.
+move=> eqfg; rewrite !(integral_domE _ D); congr integral.
+by apply/funext=> x; rewrite /fer; case: asboolP => // /eqfg.
+Qed.
+
+Lemma eq_integral m (D D' : set T) (f g : T -> \bar R) :
+  D = D' ->
+   (forall x, D x -> f x = g x) ->
+  integral m D f = integral m D' g.
+Proof. by move=> -> /eq_integralr. Qed.
+
+Lemma integral0 (m : {measure set T -> \bar R}) (D : set T) :
+  integral m D (fun=> 0%E) = 0%E.
+Proof.
+transitivity (integral m setT ((fun=> 1) \|_ set0)%E); last first.
+  by rewrite -integral_domE integral1 measure0.
+rewrite integral_domE; apply/eq_integralr => x.
+by rewrite /fer/= if_same; case: asboolP.
+Qed.
+
+Lemma integral_ge0 (m : {measure set T -> \bar R})
+  (D : set T) (f : T -> \bar R) :
+    {ae m, forall t, D t -> 0 <= f t}%E ->
+    measurable_fun D f ->
+  (0 <= integral m D f)%E.
+Proof.
+move=> f_ge0 f_meas; have D_meas := measurable_fun_measurable f_meas.
+rewrite (le_trans _ (integral_ler _ f_ge0 _ f_meas f_ge0)) ?integral0//.
+  exact: aeW.
+move=> X X_meas /=; have [X0|XN0] := asboolP (X 0%E).
+  by rewrite (_ : (fun=> _) = setT) ?setTI// predeqE.
+by rewrite (_ : (fun=> _) = set0) ?set0I ?predeqE//; apply: measurable0.
+Qed.
+
+Lemma integralD (m : set T -> \bar R) (D : set T) (f g : T -> \bar R)  :
+  {ae m, forall t, D t -> 0 <= f t}%E ->
+  {ae m, forall t, D t -> 0 <= g t}%E ->
+  measurable_fun D f -> measurable_fun D g ->
+  integral m D (f \+ g)%E = (integral m D f + integral m D g)%E.
+Proof.
+move=> f_gt0 g_gt0 f_meas g_meas; under eq_integralr do rewrite -[g _]mul1e.
+by rewrite integral_is_linear// ?lee_tofin// mul1e.
+Qed.
+
 Lemma integral_disjoint_dom : forall (m : set T -> \bar R) (D1 D2 : set T)
     (f : T -> \bar R),
    measurable D1 -> measurable D2 -> m.-negligible (D1 `&` D2) ->
@@ -117,7 +334,77 @@ Lemma integral_disjoint_dom : forall (m : set T -> \bar R) (D1 D2 : set T)
 Proof.
 Admitted.
 
+Lemma aeq_integral m D (f g : T -> \bar R) : {ae m, f =1 g} ->
+  integral m D f = integral m D g.
+Proof.
+move=> aeqfg; gen have intE : f g aeqfg /
+  integral m D f = (integral m (D `&` [set x | f x = g x]) f); last first.
+  rewrite (intE _ g)// (intE _ f)//.
+    apply: eq_integral => [|? []//].
+    by rewrite predeqE// => x; split=> -[]; split.
+  have [N [Nmeas mN0 subN]] := aeqfg; exists N; split=> //.
+  by move=> x; rewrite /setC => /eqP; rewrite eq_sym => /eqP/subN.
+(* rewrite -integral_fer. apply: eq_integralr => x Dx. *)
+(* transitivitintegral m D fy (integral m [set x | D x /\ f x = g x] f). *)
+(*  rewrite  *)
+Admitted.
+
+Lemma integrable_mesurable_pos (m : {measure set T -> \bar R}) (D : set T)
+  (f : T -> \bar R) :
+  measurable D -> integrable m D f -> measurable_fun D f^\+%E.
+Proof.
+move=> mD [f_meas nf_int]; rewrite funeposEge0 measurable_fun_fer //; last first.
+  admit.
+move=> X mX.
+have D_meas := measurable_fun_measurable f_meas.
+pose fpD := f @^-1` [set x | 0 <= x]%E `&` D; pose fXD := f @^-1` X `&` D.
+rewrite (_ : _ `&` _ = fXD `&` fpD).
+  by apply: measurableI; apply: f_meas => //; apply: measurableEreal_gee.
+by rewrite /fpD /fXD setIACA setIid/= setIAC setIA.
+Admitted.
+
+Lemma integrable_mesurable_neg (m : {measure set T -> \bar R}) (D : set T)
+  (f : T -> \bar R) :
+  measurable D -> integrable m D f -> measurable_fun D f^\-%E.
+Proof.
+move=> D_meas [f_meas nf_int]; apply: (@integrable_mesurable_pos m) => //.
+by split; [rewrite measurable_funN | under eq_integralr do rewrite abseN].
+Qed.
+
+Lemma integral_funpos_ge0 (m : {measure set T -> \bar R}) (D : set T)
+  (f : T -> \bar R) :
+  measurable D -> integrable m D f -> (0 <= integral m D f^\+)%E.
+Proof.
+move=> D_meas f_int; rewrite integral_ge0//.
+  by apply: aeW => *; apply: funepos_ge0.
+exact: (@integrable_mesurable_pos m).
+Qed.
+
+Lemma integral_funneg_ge0 (m : {measure set T -> \bar R}) (D : set T)
+  (f : T -> \bar R) :
+  measurable D -> integrable m D f -> (0 <= integral m D f^\-)%E.
+Proof.
+move=> D_meas f_int; rewrite integral_ge0//.
+  by apply: aeW => *; apply: funepos_ge0.
+exact: (@integrable_mesurable_neg m).
+Qed.
+
 Variables (m : {measure set T -> \bar R}) (D : set T).
+
+Lemma RintegralE (f : T -> \bar R) :
+  measurable D -> integrable m D f ->
+  (Rintegral m D f)%:E = integral m D f.
+Proof.
+move=> D_meas f_int; rewrite /Rintegral/= integralEposneg.
+have mDfp : measurable_fun D f ^\+%E by apply: (@integrable_mesurable_pos m).
+have mDfn : measurable_fun D f ^\-%E by apply: (@integrable_mesurable_neg m).
+have [f_meas] := f_int; rewrite normfunEeposneg integralD//; first 1 last.
+- by apply: aeW => *; apply: funepos_ge0.
+- by apply: aeW => *; apply: funepos_ge0.
+have: (0 <= integral m D f ^\+)%E by apply: integral_funpos_ge0.
+have: (0 <= integral m D f ^\-)%E by apply: integral_funneg_ge0.
+by case: (integral m D f^\+)%E (integral m D f^\-)%E => [p||] [n||].
+Qed.
 
 (* TODO: order structure about functions
 Axiom fct_order : forall (T : Type) (f g : T -> R), bool.
@@ -139,6 +426,16 @@ Axiom cvg_monotone : forall (f_ : (T -> \bar R)^nat),
 
 (* section about other functions (returning finite values),
    requires preconditions about integrability, etc. *)
+
+Lemma integrable_is_linear  (k : R) (f g : T -> \bar R) :
+  integrable m D f -> integrable m D g ->
+  integrable m D (fun x => f x + k%:E * g x)%E.
+Proof.
+move=> f_int g_int.
+split.
+  admit.
+rewrite [f]funEeposneg [g]funEeposneg.
+Admitted.
 
 Axiom Rintegral_is_linear : forall (f g : T -> \bar R) (k : R),
   integrable m D f -> integrable m D g ->
