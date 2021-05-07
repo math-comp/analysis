@@ -26,6 +26,7 @@ theories/csum.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
+theories/integral.v
 theories/summability.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
