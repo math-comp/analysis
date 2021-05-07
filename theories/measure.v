@@ -33,8 +33,10 @@ From HB Require Import structures.
 (*                                 of elements of type T where R is expected  *)
 (*                                 to be a numFieldType                       *)
 (*                                                                            *)
-(* mu.-measurable X == X is Caratheodory measurable for the outer measure mu, *)
-(*                     i.e., forall Y, mu X = mu (X `&` Y) + mu (X `&` ~` Y)  *)
+(*    mu.-measurable X == X is Caratheodory measurable for the outer measure  *)
+(*                        mu, i.e.,                                           *)
+(*                        forall Y, mu X = mu (X `&` Y) + mu (X `&` ~` Y)     *)
+(* measure_is_complete mu == the measure mu is complete                       *)
 (*                                                                            *)
 (* Caratheodory theorem:                                                      *)
 (* caratheodory_type mu := T, where mu : {outer_measure set T -> {ereal R}}   *)
@@ -1012,6 +1014,10 @@ HB.instance Definition caratheodory_mixin := @isMeasurable.Build
 
 End caratheodory_sigma_algebra.
 
+Definition measure_is_complete (R : realType) (T : measurableType)
+    (mu : set T -> \bar R) :=
+  forall X, mu.-negligible X -> measurable X.
+
 Section caratheodory_measure.
 Variables (R : realType) (T : Type) (mu : {outer_measure set T -> \bar R}).
 Local Notation U := (caratheodory_type mu).
@@ -1046,10 +1052,9 @@ Definition caratheodory_measure_mixin := Measure.Axioms caratheodory_measure0
 Definition caratheodory_measure : {measure set U -> \bar R} :=
   Measure caratheodory_measure_mixin.
 
-Lemma caratheodory_measure_complete (B : set U) :
-  caratheodory_measure.-negligible B -> measurable B.
+Lemma measure_is_complete_caratheodory : measure_is_complete caratheodory_measure.
 Proof.
-move=> [A [mA muA0 BA]]; apply le_caratheodory_measurable => X.
+move=> B [A [mA muA0 BA]]; apply le_caratheodory_measurable => X.
 suff -> : mu (X `&` B) = 0%:E.
   by rewrite add0e le_outer_measure //; apply subIset; left.
 have muB0 : mu B = 0%:E.

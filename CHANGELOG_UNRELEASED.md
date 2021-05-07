@@ -75,6 +75,8 @@
     `set_bijective_enum_wo_rep`, `enumration_enum_wo_rep`, `countable_enumeration`
   + lemmas `infinite_nat`, `infinite_prod_nat`, `countable_prod_nat`,
     `countably_infinite_prod_nat`
+- in `measure.v`:
+  + definition `measure_is_complete`
 
 ### Changed
 
