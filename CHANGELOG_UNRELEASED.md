@@ -135,6 +135,8 @@
   + `ge_Rfloor` -> `Rfloor_le`
   + `ler_floor` -> `floor_le`
   + `Rfloor_le` -> `le_Rfloor`
+- in `forms.v`:
+  + `symmetric` -> `symmetric_form`
 
 ### Removed
 
