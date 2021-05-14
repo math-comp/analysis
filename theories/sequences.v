@@ -42,12 +42,14 @@ Require Import classical_sets posnum topology normedtype landau.
 (*                                                                            *)
 (* Sections sequences_R_* contain properties of sequences of real numbers     *)
 (*                                                                            *)
-(* Section sequences_of_extended_real_numbers contain properties of sequences *)
-(* of extended real numbers.                                                  *)
-(*                                                                            *)
 (* \sum_<range> F i == lim (fun n => (\sum_<range>) F i)) where <range> can   *)
 (*                     be (i <oo), (i <oo | P i), (m <= i <oo), or            *)
 (*                     (m <= i <oo | P i)                                     *)
+(*                                                                            *)
+(* is_cvg_series_exp_pos == convergence of \sum_n^+oo x^n / n!                *)
+(*                                                                            *)
+(* Section sequences_of_extended_real_numbers contain properties of sequences *)
+(* of extended real numbers.                                                  *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -809,6 +811,161 @@ Notation "\sum_ ( i <oo | P ) F" :=
   (\big[+%E/0%:E]_(0 <= i <oo | P%B) F%E) : ring_scope.
 Notation "\sum_ ( i <oo ) F" :=
   (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
+
+Section fact_facts.
+Local Open Scope nat_scope.
+
+Lemma leq_fact n : n <= n`!.
+Proof.
+elim: n => // n ih; rewrite factS mulSn -(add1n n) leq_add // ?fact_gt0 //.
+by rewrite leq_pmulr // fact_gt0.
+Qed.
+
+Lemma prod_rev n m :
+  \prod_(0 <= k < n - m) (n - k) = \prod_(m.+1 <= k < n.+1) k.
+Proof.
+rewrite [in RHS]big_nat_rev /= -{1}(add0n m.+1) big_addn subSS.
+by apply eq_bigr => i _; rewrite addnS subSS addnC subnDr.
+Qed.
+
+Lemma fact_split n m : m <= n -> n`! = \prod_(0 <= k < n - m) (n - k) * m`!.
+Proof.
+move=> ?; rewrite [in RHS]fact_prod mulnC prod_rev -big_cat [in RHS]/index_iota.
+rewrite subn1 -iota_add subSS addnBCA // subnn addn0 [in LHS]fact_prod.
+by rewrite [in RHS](_ : n = n.+1 - 1) // subn1.
+Qed.
+
+End fact_facts.
+
+Section exponential_series.
+Variable R : realType.
+Implicit Types x : R.
+
+Definition exp_coeff x := [sequence x ^+ n / n`!%:R]_n.
+Local Notation exp := exp_coeff.
+
+Lemma exp_coeff_ge0 x n : 0 <= x -> 0 <= exp x n.
+Proof. by move=> x0; rewrite /exp divr_ge0 // ?exprn_ge0 // ler0n. Qed.
+
+Lemma series_exp_coeff0 n : series (exp 0) n.+1 = 1.
+Proof.
+rewrite /series /= big_nat_recl// /exp/= expr0n eqxx fact0 divr1 addrC.
+by rewrite big1 ?add0r// => i _; rewrite expr0n /= mul0r.
+Qed.
+
+Section exponential_series_cvg.
+Variable x : R.
+Hypothesis x0 : 0 < x.
+
+Let S0 N n := (N ^ N)%:R * \sum_(N.+1 <= i < n) (x / N%:R) ^+ i.
+
+Let is_cvg_S0 N : x < N%:R -> cvg (S0 N).
+Proof.
+move=> xN; apply: is_cvgZr; rewrite is_cvg_series_restrict exprn_geometric.
+apply/is_cvg_geometric_series; rewrite ger0_norm ?(divr_ge0 (ltW _)) ?ler0n //.
+by rewrite ltr_pdivr_mulr ?mul1r // (lt_trans _ xN).
+Qed.
+
+Let S0_ge0 N n : 0 <= S0 N n.
+Proof.
+rewrite mulr_ge0 // ?ler0n //; apply sumr_ge0 => i _.
+by rewrite exprn_ge0 // divr_ge0 // ?ler0n // ltW.
+Qed.
+
+Let S0_sup N n : x < N%:R -> S0 N n <= sup [set of S0 N].
+Proof.
+move=> xN; apply/sup_upper_bound; [split; [by exists (S0 N n), n|]|by exists n].
+rewrite (_ : [set of _] = [set `|S0 N n0| | n0 in setT]).
+  exact: (cvg_has_ub (is_cvg_S0 xN)).
+by rewrite predeqE=> y; split=> -[z _ <-]; exists z; rewrite ?ger0_norm ?S0_ge0.
+Qed.
+
+Let S1 N n := \sum_(N.+1 <= i < n) exp x i.
+
+Lemma incr_S1 N : nondecreasing_seq (S1 N).
+Proof.
+apply/nondecreasing_seqP => n; rewrite /S1; have [nN|Nn] := leqP n N.
+- rewrite (_ : index_iota _ _ = [::]) ?big_nil; last first.
+    by apply/eqP; rewrite -size_eq0 size_iota subn_eq0 (leq_trans nN).
+  rewrite (_ : index_iota _ _ = [::]) ?big_nil //.
+  by apply/eqP; rewrite -size_eq0 size_iota subSS subn_eq0 (leq_trans nN).
+- by rewrite big_nat_recr//= ler_addl divr_ge0// ?ler0n// exprn_ge0// ltW.
+Qed.
+
+Let S1_sup N n : x < N%:R -> S1 N n <= sup [set of S0 N].
+Proof.
+move=> xN; rewrite (le_trans _ (S0_sup n xN)) // /S0 big_distrr /=.
+apply ler_sum => i _; have [Ni|iN] := ltnP N i; last first.
+  rewrite expr_div_n mulrCA ler_pmul2l ?exprn_gt0// (@le_trans _ _ 1) //.
+    rewrite invr_le1 ?ler1n ?ltr0n ?fact_gt0// unitfE pnatr_eq0 gtn_eqF//.
+    by rewrite fact_gt0.
+  rewrite natrX -exprB // ?unitfE; last by rewrite gt_eqF// (lt_trans _ xN).
+  move: iN; rewrite leq_eqVlt =>/orP[/eqP->|iN]; first by rewrite subnn expr0.
+  by rewrite exprn_ege1// ler1n (leq_trans _ iN).
+rewrite /exp expr_div_n /= (fact_split Ni) mulrCA.
+rewrite ler_pmul2l ?exprn_gt0 // natrX -invf_div -(exprB (ltnW Ni)); last first.
+  by rewrite unitfE gt_eqF // (lt_trans _ xN).
+have ? : (0 < \prod_(0 <= k < i - N.+1) (i - k))%N.
+  rewrite big_seq_cond prodn_cond_gt0 //= => j.
+  rewrite andbT /index_iota mem_iota add0n leq0n /= subn0 => jiN.
+  by rewrite subn_gt0 (leq_trans jiN) //= leq_subr.
+rewrite ler_pinv; last 2 first.
+  - rewrite inE unitfE natrM mulf_neq0 ?pnatr_eq0 -?lt0n ?fact_gt0 //= -natrM.
+    by rewrite ltr0n muln_gt0 fact_gt0 andbT.
+  - rewrite inE unitfE exprn_gt0// ?andbT ?(lt_trans _ xN)// gt_eqF//.
+    by rewrite exprn_gt0// (lt_trans _ xN).
+rewrite (@le_trans _ _
+    (\prod_(0 <= k < i - N.+1) (i - k) * N.+1 * N)%:R) //; last first.
+  by rewrite ler_nat -mulnA leq_mul2l factS leq_mul2l leq_fact 2!orbT.
+rewrite -mulnA prod_rev mulnA mulnC (mulnC _ N.+1) !mulnA.
+rewrite -(@prednK (i - N)) ?subn_gt0 // exprS !natrM -mulrA.
+rewrite ler_pmul2l ?(lt_trans _ xN) //.
+have [iN1|] := ltnP O (i - N).-1; last first.
+  rewrite leqn0 => /eqP->; rewrite expr0 -natrM ler1n muln_gt0 andTb.
+  by rewrite big_seq_cond prodn_cond_gt0// => -[|?]; rewrite mem_iota andbT.
+rewrite -(@prednK (i - N).-1)// exprS ler_pmul// ?ler_nat ?exprn_ge0 ?ler0n//.
+rewrite -subn1 /= subn_gt0 -addn1 ltn_subRL addn1 in iN1.
+rewrite -natrX ler_nat -subn2 -subnDA addn2 -prod_nat_const_nat big_nat_recr//=.
+rewrite -[X in (X <= _)%N]muln1 leq_mul// ?(leq_trans _ Ni)// -(@ler_nat R).
+rewrite !natr_prod big_seq_cond [X in _ <= X]big_seq_cond; apply ler_prod=> j.
+rewrite mem_iota andbT subnKC// => /andP[Nj ?].
+by rewrite ler0n ler_nat (leq_trans _ Nj)// (@leq_trans N.+1).
+Qed.
+
+Lemma is_cvg_series_exp_coeff_pos : cvg (series (exp x)).
+Proof.
+rewrite /series; near \oo => N; have xN : x < N%:R; last first.
+  rewrite -(@is_cvg_series_restrict N.+1).
+  exact: (nondecreasing_is_cvg (incr_S1 N) (fun n => S1_sup n xN)).
+near: N; exists (absz (floor x)).+1 => // m; rewrite /mkset -(@ler_nat R).
+move/lt_le_trans => -> //; rewrite (lt_le_trans (lt_succ_Rfloor x)) // -addn1.
+rewrite natrD (_ : 1%:R = 1%R) // ler_add2r RfloorE -(@gez0_abs (floor x)) //.
+by rewrite floor_ge0// ltW.
+Grab Existential Variables. all: end_near. Qed.
+
+End exponential_series_cvg.
+
+Lemma normed_series_exp_coeff x : [normed series (exp x)] = series (exp `|x|).
+Proof.
+rewrite funeqE => n /=; apply: eq_bigr => k _.
+by rewrite /exp normrM normfV normrX [`|_%:R|]@ger0_norm.
+Qed.
+
+Lemma is_cvg_series_exp_coeff x : cvg (series (exp x)).
+Proof.
+have [/eqP ->|x0] := boolP (x == 0).
+  apply/cvg_ex; exists 1; apply/cvg_distP => // => _/posnumP[e].
+  rewrite near_map; near=> n; have [m ->] : exists m, n = m.+1.
+    by exists n.-1; rewrite prednK //; near: n; exists 1%N.
+  by rewrite series_exp_coeff0 subrr normr0.
+apply: normed_cvg; rewrite normed_series_exp_coeff.
+by apply: is_cvg_series_exp_coeff_pos; rewrite normr_gt0.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma cvg_exp_coeff x : exp x --> (0 : R).
+Proof. exact: (cvg_series_cvg_0 (@is_cvg_series_exp_coeff x)). Qed.
+
+End exponential_series.
 
 Section sequences_of_extended_real_numbers.
 Local Open Scope ereal_scope.

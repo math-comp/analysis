@@ -81,6 +81,11 @@
   + notation `0`/`1` for `0%R%:E`/`1%R:%E` in `ereal_scope`
 - file `reals.v`:
   + lemmas `le_floor`, `le_ceil`
+- in `sequences,v`:
+  + lemmas `leq_fact`, `prod_rev`, `fact_split`
+  + definition `exp_coeff`
+  + lemmas `exp_coeff_ge0`, `series_exp_coeff0`, `is_cvg_series_exp_coeff_pos`,
+    ` normed_series_exp_coeff`, `is_cvg_series_exp_coeff `, `cvg_exp_coeff`
 
 ### Changed
 
