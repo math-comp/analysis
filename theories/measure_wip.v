@@ -63,7 +63,7 @@ Definition uncurry {A B C:Type} (f:A -> B -> C)
   (p:A * B) : C := match p with (x, y) => f x y end.
 
 (* NB: PR to MathComp in progress *)
-Lemma normrzE (R : numDomainType) i : `|i|%:R = `|i|%:~R :> R.
+Lemma natr_absz (R : numDomainType) i : `|i|%:R = `|i|%:~R :> R.
 Proof. by rewrite -abszE. Qed.
 (* END NB: PR to MathComp in progress *)
 
@@ -155,7 +155,7 @@ have cvggeo : (fun n => \sum_(0 <= i < n) (e / (2 ^ i)%:R)%:E) --> (2 * e)%R%:E.
   - by apply: cvg_geometric_series; rewrite ger0_norm // invf_lt1 // ltr1n.
   - rewrite (_ : [filter of _] = [filter of (2 * e)%R : R^o]) // filter_of_filterE.
     congr ([filter of _]); rewrite mulrC; congr (_ * _)%R; apply mulr1_eq.
-    by rewrite mulrBl mulVr ?unitfE// mul1r (_ : 1 = 1%:R)// -natrB.
+    by rewrite mulrBl mulVr ?unitfE// mul1r (_ : 1%R = 1%:R)// -natrB.
 rewrite ereal_limD //.
 - by rewrite lee_add2l // (cvg_lim _ cvggeo).
 - exact: is_cvg_ereal_nneg_series.
@@ -213,27 +213,29 @@ rewrite /mu_ext; apply ereal_inf_lb; exists (fun _ => set0).
 by apply: (@lim_near_cst _ _ _ _ _ 0%:E) => //; near=> n => /=; rewrite big1.
 Grab Existential Variables. all: end_near. Qed.
 
+Lemma measurable_uncurry (G : ((set T)^nat)^nat) (x : nat * nat) :
+  measurable (G x.1 x.2) -> measurable (uncurry G x).
+Proof. by case: x. Qed.
+
 Lemma mu_ext_sigma_subadditive : sigma_subadditive mu_ext.
 Proof.
-move=> A; rewrite /sigma_subadditive.
-have [[i ioo]|] := pselect (exists i, mu_ext (A i) = +oo).
-  rewrite (_ : lim _ = +oo) ?lee_pinfty //.
-  by apply: (ereal_nneg_series_pinfty _ _ ioo) => // n _; exact: mu_ext_ge0.
+move=> A; have [[i ioo]|] := pselect (exists i, mu_ext (A i) = +oo).
+  rewrite (ereal_nneg_series_pinfty _ _ ioo)// ?lee_pinfty// => n _.
+  exact: mu_ext_ge0.
 rewrite -forallNE => Aoo.
 suff add2e : forall e : {posnum R},
     mu_ext (\bigcup_n A n) <= \sum_(i <oo) mu_ext (A i) + (2 * e%:num)%R%:E.
-  apply lee_adde => e; rewrite (_ : e%:num = 2 * (e%:num / 2))%R ?add2e //.
-  by rewrite mulrCA divff // mulr1.
-move=> e.
-rewrite (le_trans _ (epsilon_trick _ _ _)) //; last by move=> n; apply: mu_ext_ge0.
-set P := fun n G => measurable_cover (A n) G /\
-  \sum_(k <oo) mu (G k) <= mu_ext (A n) + (e%:num / (2 ^ n)%:R)%:E.
-have [G GA] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
+  apply lee_adde => e.
+  by rewrite -(mul1r e%:num) -(@divff _ 2%:R)// -mulrAC -mulrA add2e.
+move=> e; rewrite (le_trans _ (epsilon_trick _ _ _)) //; last first.
+  by move=> n; apply: mu_ext_ge0.
+pose P n (B : (set T)^nat) := measurable_cover (A n) B /\
+  \sum_(k <oo) mu (B k) <= mu_ext (A n) + (e%:num / (2 ^ n)%:R)%:E.
+have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
   apply: (@choice _ _ P) => n; rewrite /P /mu_ext.
   set S : set (\bar R) := fun _ : _ => _; move infS : (ereal_inf S) => iS.
   case: iS infS => [r Sr|Soo|Soo].
   - have en : (0 < e%:num / (2 ^ n.+1)%:R)%R by rewrite divr_gt0 // ltr0n expn_gt0.
-    (* TODO: (+,,,+) add to posnum *)
     have [x [[B [mB AnB muBx]] xS]] := lb_ereal_inf_adherent (PosNum en) Sr.
     exists B; split => //; rewrite muBx -Sr; apply/ltW.
     rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul //=.
@@ -244,19 +246,19 @@ have [G GA] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
     move=> /= _ [B [mB AnB] <-].
     by apply: ereal_nneg_series_lim_ge0 => ? _; exact: measure_ge0.
 have muG_ge0 : forall x, 0%:E <= (mu \o uncurry G) x.
-  by move=> -[x1 x2]; exact/measure_ge0/(cover_measurable (proj1 (GA x1)) x2).
+  by move=> x; apply/measure_ge0/measurable_uncurry/(PG x.1).1.1.
 apply (@le_trans _ _ (\csum_(i in setT) (mu \o uncurry G) i)).
   rewrite /mu_ext; apply ereal_inf_lb.
-  have [f [TfT injf]] : exists e : nat -> nat * nat, enumeration setT e /\ injective e.
+  have [f [TfT injf]] : exists e, enumeration (@setT (nat * nat)) e /\ injective e.
     have /countable_enumeration [|[f ef]] := countable_prod_nat.
       by rewrite predeqE => /(_ (O%N, 0%N)) [] /(_ Logic.I).
     by exists (enum_wo_rep infinite_prod_nat ef); split;
      [exact: enumeration_enum_wo_rep | exact: injective_enum_wo_rep].
   exists (uncurry G \o f).
     split => [i|].
-      by move: (cover_measurable (proj1 (GA (f i).1))); rewrite /uncurry /=; case: (f i).
+      exact/measurable_uncurry/(PG (f i).1).1.1.
     apply (@subset_trans _  (\bigcup_n (\bigcup_k G n k))).
-      by move=> t [i _] /(cover_subset (proj1 (GA i))) -[j _ ?]; exists i => //; exists j.
+      by move=> t [i _] /(cover_subset (PG i).1) -[j _ ?]; exists i => //; exists j.
     move=> t [i _ [j _ Bijt]].
     have [k ijk] : exists k, f k = (i, j).
       by have : setT (i, j) by []; rewrite TfT => -[k _ fkij]; exists k.
@@ -273,7 +275,7 @@ rewrite (_ : csum _ _ = \sum_(i <oo) (\sum_(j <oo ) mu (G i j))); last first.
     rewrite predeqE => -[x1 x2] /=; split => //= -[] [_] _ [<-{x1} _].
     by move=> [x2' _] [] /esym/eqP; rewrite (negbTE ij).
   - move=> /= [x1 x2]; apply/measure_ge0.
-    by move: (cover_measurable (proj1 (GA x1)) x2).
+    by move: (cover_measurable (proj1 (PG x1)) x2).
   rewrite (_ : setT = id @` xpredT); last by rewrite predeqE => n; split => // _; exists n.
   rewrite csum_image //; last by move=> n _; apply: csum_ge0.
   apply eq_ereal_pseries => /= j.
@@ -288,7 +290,7 @@ apply lee_lim.
   exact: (muG_ge0 (n, m)).
 - by apply: is_cvg_ereal_nneg_series => n _; apply: adde_ge0 => //;
     [exact: mu_ext_ge0 | rewrite lee_fin // divr_ge0 // ler0n].
-- by near=> n; apply: lee_sum => i _; exact: (proj2 (GA i)).
+- by near=> n; apply: lee_sum => i _; exact: (proj2 (PG i)).
 Grab Existential Variables. all: end_near. Qed.
 
 End measure_extension.
@@ -597,19 +599,6 @@ Lemma ltz_opp (R : numDomainType) (n : nat) : (0 < n)%N -> - n%:R < n%:R :> R.
 Proof.
 by move=> n0; rewrite -subr_lt0 -opprD -natrD oppr_lt0 ltr0n addn_gt0 n0.
 Qed.
-
-(* NB: PR in progress *)
-Lemma floor_le (R : realType) : {homo @floor R : x y / x <= y}.
-Proof.
-move=> x y ?.
-by rewrite /floor -(@ler_int R) !RtointK ?isint_Rfloor // Rfloor_le.
-Qed.
-
-Lemma ceil_le (R : realType) : {homo @ceil R : x y / x <= y}.
-Proof.
-by move=> x y xy; rewrite /ceil ler_oppl opprK floor_le // ler_oppl opprK.
-Qed.
-(* /NB: PR in progress *)
 
 (* NB: of general interest? *)
 Section lte_bnd.
@@ -3561,10 +3550,10 @@ exists (set_of_itv \o ccitv).
   rewrite predeqE => /= r; split => // _; have [r0|r0] := leP 0 r.
   - exists (absz (ceil r)) => //; apply/set_of_itv_mem.
     rewrite itv_boundlr/= 2!lte_bnd (le_trans _ r0)/= ?oppr_le0 ?ler0n//.
-    by rewrite normrzE ger0_norm ?ceil_ge0// ler_ceil.
+    by rewrite natr_absz ger0_norm ?ceil_ge0// ceil_ge.
   - exists (absz (floor r)) => //; apply/set_of_itv_mem.
     rewrite itv_boundlr/= 2!lte_bnd (le_trans (ltW r0)) ?ler0n// andbT.
-    by rewrite normrzE ltr0_norm ?floor_lt0// mulrNz opprK ler_floor.
+    by rewrite natr_absz ltr0_norm ?floor_lt0// mulrNz opprK floor_le.
 move=> n; split.
   by exists [fset (ccitv n)]%fset; rewrite ssetE big_seq_fset1.
 by rewrite length_itv hlength_itv /= -(fun_if (@EFin _)) lte_pinfty.
@@ -3955,8 +3944,8 @@ have len_iIN_dvg : forall M, M > 0 -> exists N, (N >= 1)%N /\ (M%:E < length (iI
   move/hlength_oo : ioo => [[b [r iroo]]|ioo]; last first.
     have ? : (0 < `|ceil M|)%N by rewrite absz_gt0 gt_eqF // ceil_gt0.
     exists `|ceil M|%N; split=> //; rewrite /iIN ioo set_of_itvE setTI.
-    rewrite length_ccitv lte_fin (le_lt_trans (ler_ceil _)) // -muln2 natrM.
-    by rewrite normrzE gtr0_norm ?ceil_gt0// ltr_pmulr ?ltr1n// ltr0z ceil_gt0.
+    rewrite length_ccitv lte_fin (le_lt_trans (ceil_ge _)) // -muln2 natrM.
+    by rewrite natr_absz gtr0_norm ?ceil_gt0// ltr_pmulr ?ltr1n// ltr0z ceil_gt0.
   rewrite /iIN.
   wlog : i {ij iIN} b r {iroo} / i = Interval -oo%O (BSide b r).
     move=> h; move: iroo => [->|iroo]; first exact: h.
@@ -3967,23 +3956,23 @@ have len_iIN_dvg : forall M, M > 0 -> exists N, (N >= 1)%N /\ (M%:E < length (iI
     exists (`|ceil (`| r | + M) |%N.+1); split => //.
     rewrite -set_of_itv_meet length_itv hlength_itv /= lte_fin ltxI ltz_opp //.
     rewrite andbT ltr_oppl opprK meet_l ?(le_trans r0)//.
-    rewrite -addn1 natrD normrzE ger0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))//.
+    rewrite -addn1 natrD natr_absz ger0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))//.
     case: ifPn => [_|/negP].
       rewrite lte_fin -ltr_subl_addl ltr_spaddr//.
-      by rewrite (le_trans _ (ler_ceil _))// addrC ler_add2r ler0_norm.
+      by rewrite (le_trans _ (ceil_ge _))// addrC ler_add2r ler0_norm.
     apply: absurd; rewrite ltr_spaddr//.
-    by rewrite (le_trans _ (ler_ceil _)) // (ler_paddr (ltW _))// ler0_norm.
+    by rewrite (le_trans _ (ceil_ge _)) // (ler_paddr (ltW _))// ler0_norm.
   move=> [:crM]; exists (`|ceil (`| r | + M)|%N); split.
     abstract: crM.
     by rewrite absz_gt0 gt_eqF // ceil_gt0 // -(addr0 0) ler_lt_add.
   rewrite -set_of_itv_meet length_itv hlength_itv /= lte_fin ltxI ltz_opp //.
   rewrite ltr_oppl opprK andbT.
-  rewrite normrzE ger0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
+  rewrite natr_absz ger0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
   rewrite meet_l; last first.
-    by rewrite (le_trans (ler_ceil _)) // ler_int ceil_le // ler_addl ltW.
+    by rewrite (le_trans (ceil_ge _)) // ler_int le_ceil // ler_addl ltW.
   case: ifPn => [_|/negP].
     rewrite lte_fin -{1}(add0r M) ltr_le_add//.
-    by rewrite (le_trans (ler_ceil _)) // ler_int ceil_le // ler_addr ltW.
+    by rewrite (le_trans (ceil_ge _)) // ler_int le_ceil // ler_addr ltW.
   apply: absurd; rewrite -oppr_lt0 in r0.
   by rewrite (lt_le_trans r0)// ler0z ceil_ge0// addr_ge0// ?ltW// -oppr_lt0.
 move=> M M0.
