@@ -821,7 +821,7 @@ exact: oppe_continuous.
 Qed.
 
 Lemma ereal_cvg_ge0 (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
-  (forall n, 0%:E <= f n) -> f --> a -> 0%:E <= a.
+  (forall n, 0 <= f n) -> f --> a -> 0 <= a.
 Proof.
 move=> f0 /closed_cvg_loc V; elim/V : _; last exact: closed_ereal_le_ereal.
 by exists O => // ? _; exact: f0.
@@ -869,7 +869,7 @@ have [e1|e1] := lerP 1 e%:num.
   rewrite ltr_subl_addr addrC -ltr_subl_addr.
   have /le_lt_trans->// : (contract 1%:E < contract (u_ n)%:E)%R.
     by rewrite lt_contract lte_fin k1un//; near: n; exists k.
-  by rewrite (@le_trans _ _ 0) // ?subr_le0 //= normr1 divr_ge0.
+  by rewrite (@le_trans _ _ 0%R) // ?subr_le0 //= normr1 divr_ge0.
 have onee1 : (`|1 - e%:num| < 1)%R.
   by rewrite gtr0_norm // ?subr_gt0 // ltr_subl_addl addrC -ltr_subl_addl subrr.
 have : (0 < real_of_extended (expand (1 - e%:num)))%R.
@@ -960,7 +960,7 @@ have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo).
       by rewrite ler_subl_addr (le_trans (ltW e2)).
     by rewrite ler_subl_addr ler_addl.
 have [r lr] : exists r, l = r%:E by move: l lnoo lpoo => [] // r' _ _; exists r'.
-have [re1|re1] := ltrP `|contract l - e%:num|%R 1; last first.
+have [re1|re1] := (ltrP (`|contract l - e%:num|) 1)%R; last first.
   rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
   have unoo : u_ n != -oo.
     near: n.
@@ -1004,12 +1004,12 @@ Grab Existential Variables. all: end_near. Qed.
 
 (* NB: see also nondecreasing_series *)
 Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, P n -> 0%:E <= u_ n) ->
+  (P : pred nat) : (forall n, P n -> 0 <= u_ n) ->
   nondecreasing_seq (fun n => \sum_(0 <= i < n | P i) u_ i).
 Proof. by move=> u_ge0 n m le_nm; rewrite lee_sum_nneg_natr// => k _ /u_ge0. Qed.
 
 Lemma ereal_nneg_series_lim_ge (R : realType) (u_ : (\bar R)^nat)
-  (P : pred nat) k : (forall n, P n -> 0%:E <= u_ n) ->
+  (P : pred nat) k : (forall n, P n -> 0 <= u_ n) ->
   \sum_(0 <= i < k | P i) u_ i <= \sum_(i <oo | P i) u_ i.
 Proof.
 move/ereal_nondecreasing_series/nondecreasing_seq_ereal_cvg/cvg_lim => -> //.
@@ -1017,7 +1017,7 @@ by apply: ereal_sup_ub; exists k.
 Qed.
 
 Lemma is_cvg_ereal_nneg_natsum_cond (R : realType) m (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, (m <= n)%N -> P n -> 0%:E <= u_ n) ->
+  (P : pred nat) : (forall n, (m <= n)%N -> P n -> 0 <= u_ n) ->
   cvg (fun n => \sum_(m <= i < n | P i) u_ i).
 Proof.
 move/lee_sum_nneg_natr/nondecreasing_seq_ereal_cvg => cu.
@@ -1025,31 +1025,31 @@ by apply/cvg_ex; eexists; exact: cu.
 Qed.
 
 Lemma is_cvg_ereal_nneg_series_cond (R : realType) (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, P n -> 0%:E <= u_ n) ->
+  (P : pred nat) : (forall n, P n -> 0 <= u_ n) ->
   cvg (fun n => \sum_(0 <= i < n | P i) u_ i).
 Proof. by move=> u_ge0; apply: is_cvg_ereal_nneg_natsum_cond => n _ /u_ge0. Qed.
 
 Lemma is_cvg_ereal_nneg_natsum (R : realType) m (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, (m <= n)%N -> 0%:E <= u_ n) ->
+  (P : pred nat) : (forall n, (m <= n)%N -> 0 <= u_ n) ->
   cvg (fun n => \sum_(m <= i < n) u_ i).
 Proof. by move=> u_ge0; apply: is_cvg_ereal_nneg_natsum_cond => n /u_ge0. Qed.
 
 Lemma is_cvg_ereal_nneg_series (R : realType) (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, P n -> 0%:E <= u_ n) ->
+  (P : pred nat) : (forall n, P n -> 0 <= u_ n) ->
   cvg (fun n => \sum_(0 <= i < n | P i) u_ i).
 Proof. by move=> ?; exact: is_cvg_ereal_nneg_series_cond. Qed.
 Arguments is_cvg_ereal_nneg_series {R}.
 
 Lemma ereal_nneg_series_lim_ge0 (R : realType) (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, P n -> 0%:E <= u_ n) ->
-  0%:E <= \sum_(i <oo | P i) u_ i.
+  (P : pred nat) : (forall n, P n -> 0 <= u_ n) ->
+  0 <= \sum_(i <oo | P i) u_ i.
 Proof.
 move=> u0; apply: (ereal_lim_ge (is_cvg_ereal_nneg_series _ _ u0)).
 by near=> k; rewrite sume_ge0 // => i; apply: u0.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_nneg_series_pinfty (R : realType) (u_ : (\bar R)^nat)
-  (P : pred nat) k : (forall n, P n -> 0%:E <= u_ n) -> P k ->
+  (P : pred nat) k : (forall n, P n -> 0 <= u_ n) -> P k ->
   u_ k = +oo -> \sum_(i <oo | P i) u_ i = +oo.
 Proof.
 move=> u0 Pk ukoo; apply/eqP; rewrite eq_le lee_pinfty /=.
@@ -1061,27 +1061,27 @@ by move=> /eqP; case: ifPn => // /u0 + uioo; rewrite uioo.
 Qed.
 
 Lemma ereal_cvgPpinfty (R : realFieldType) (u_ : (\bar R)^nat) :
-  u_ --> +oo <-> (forall A : R, (0 < A)%R -> \forall n \near \oo, A%:E <= u_ n).
+  u_ --> +oo <-> (forall A, (0 < A)%R -> \forall n \near \oo, A%:E <= u_ n).
 Proof.
 split => [u_cvg _/posnumP[A]|u_ge X [A [Ar AX]]].
   rewrite -(near_map u_ \oo (fun x => A%:num%:E <= x)).
   by apply: u_cvg; apply: ereal_nbhs_pinfty_ge.
 rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
 apply: AX.
-rewrite (@lt_le_trans _ _ (maxr 0 A + 1)%R%:E) //.
+rewrite (@lt_le_trans _ _ (maxr 0 A + 1)%:E) //.
   by rewrite addEFin lte_spaddr // ?lte_fin// lee_fin le_maxr lexx orbT.
 by near: x; apply: u_ge; rewrite ltr_spaddr // le_maxr lexx.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgPninfty (R : realFieldType) (u_ : (\bar R)^nat) :
-  u_ --> -oo <-> (forall A : R, (A < 0)%R -> \forall n \near \oo, u_ n <= A%:E).
+  u_ --> -oo <-> (forall A, (A < 0)%R -> \forall n \near \oo, u_ n <= A%:E).
 Proof.
 split => [u_cvg A A0|u_le X [A [Ar AX]]].
   rewrite -(near_map u_ \oo (fun x => x <= A%:E)).
   by apply: u_cvg; apply: ereal_nbhs_ninfty_le.
 rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
 apply: AX.
-rewrite (@le_lt_trans _ _ (minr 0 A - 1)%R%:E) //.
+rewrite (@le_lt_trans _ _ (minr 0 A - 1)%:E) //.
   by near: x; apply: u_le; rewrite ltr_subl_addl addr0 lt_minl ltr01.
 by rewrite lte_fin ltr_subl_addl lt_minl ltr_addr ltr01 orbT.
 Grab Existential Variables. all: end_near. Qed.
@@ -1109,8 +1109,8 @@ case: l k => [l| |] [k| |] // in lu kv *.
   have /ereal_cvgPninfty voo : v_ --> -oo by rewrite -kv.
   have /cvg_has_inf[uT0 [M uTM]] : cvg (real_of_extended \o u_ ).
     by apply/cvg_ex; exists l.
-  have {}/voo[n1 _ vM] : (minr (M - 1) (-1) < 0)%R.
-     by rewrite lt_minl ltrN10 orbT.
+  have {}/voo [n1 _ vM] : (minr (M - 1) (-1) < 0)%R.
+    by rewrite lt_minl ltrN10 orbT.
   move: uv realu => [n2 _ uv] [n3 _ realu].
   near \oo => n.
   have : (n >= maxn n1 (maxn n2 n3))%N by near: n; exists (maxn n1 (maxn n2 n3)).
@@ -1145,7 +1145,7 @@ case: l k => [l| |] [k| |] // in lu kv *.
   have : (n >= maxn n1 (maxn n2 n3))%N by near: n; exists (maxn n1 (maxn n2 n3)).
   rewrite 2!geq_max => /and3P[n1n n2n n3n].
   suff : v_ n < u_ n by apply/negP; rewrite -leNgt; apply uv.
-  rewrite (@lt_trans _ _ 0%:E) //.
+  rewrite (@lt_trans _ _ 0) //.
     by rewrite (le_lt_trans (voo _ n3n)) // lte_fin ltrN10.
   by rewrite (lt_le_trans _ (uoo _ n2n)) // lte_fin ltr01.
 - by rewrite lee_ninfty.
@@ -1249,20 +1249,21 @@ Lemma ereal_limD (R : realType) (f g : (\bar R)^nat) :
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
 Lemma ereal_pseriesD (R : realType) (f g : nat -> \bar R) (P : pred nat) :
-  (forall i, P i -> 0%:E <= f i)%E ->
-  (forall i, P i -> 0%:E <= g i)%E ->
-  (\sum_(i <oo | P i) (f i + g i) = (\sum_(i <oo | P i) f i) + (\sum_(i <oo | P i) g i))%E.
+  (forall i, P i -> 0 <= f i) -> (forall i, P i -> 0 <= g i) ->
+  \sum_(i <oo | P i) (f i + g i) =
+  \sum_(i <oo | P i) f i + \sum_(i <oo | P i) g i.
 Proof.
 move=> f_eq0 g_eq0.
-transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i + \sum_(0 <= i < n | P i) g i)%E).
+transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i +
+                         \sum_(0 <= i < n | P i) g i)).
   by congr (lim _); apply/funext => n; rewrite big_split.
 rewrite ereal_limD /adde_undef//=; do ? exact: is_cvg_ereal_nneg_series.
-by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0%:E)
-           ?[(_ < _)%E]real0// ereal_nneg_series_lim_ge0.
+by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
+           ?[_ < _]real0// ereal_nneg_series_lim_ge0.
 Qed.
 
 Lemma ereal_pseries0 (R : realType) (f : (\bar R)^nat) :
-  (forall i, f i = 0%:E) -> \sum_(i <oo) f i = 0%:E.
+  (forall i, f i = 0) -> \sum_(i <oo) f i = 0.
 Proof. by move=> f0; under eq_fun do rewrite big1//; rewrite lim_cst. Qed.
 
 Lemma eq_ereal_pseries (R : realType) (f g : (\bar R)^nat) :
@@ -1272,7 +1273,7 @@ by move=> efg; congr (lim _); apply/funext => n; under eq_bigr do rewrite efg.
 Qed.
 
 Lemma ereal_pseries_sum_nat (R : realType) n (f : nat -> nat -> \bar R) :
-  (forall i j, 0%:E <= f i j) ->
+  (forall i j, 0 <= f i j) ->
   \sum_(j <oo) (\sum_(0 <= i < n) f i j) =
   \sum_(0 <= i < n) (\sum_(j <oo) (f i j)).
 Proof.
@@ -1288,7 +1289,7 @@ Lemma lte_lim (R : realFieldType) (u : (\bar R)^nat) (M : R) :
   \forall n \near \oo, M%:E <= u n.
 Proof.
 move=> ndu cu Ml; have [[n Mun]|] := pselect (exists n, M%:E <= u n).
-  near=> m; suff : (u n <= u m)%E by exact: le_trans.
+  near=> m; suff : u n <= u m by exact: le_trans.
   by near: m; exists n.+1 => // p q; apply/ndu/ltnW.
 move/forallNP => Mu.
 have {}Mu : forall x, M%:E > u x by move=> x; rewrite ltNge; apply/negP.

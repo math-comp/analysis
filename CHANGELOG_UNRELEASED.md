@@ -77,6 +77,8 @@
     `countably_infinite_prod_nat`
 - in `measure.v`:
   + definition `measure_is_complete`
+- in `ereal.v`:
+  + notation `0`/`1` for `0%R%:E`/`1%R:%E` in `ereal_scope`
 
 ### Changed
 
@@ -95,6 +97,10 @@
   + change the notation `{ereal R}` to `\bar R` and attach it to the scope `ereal_scope`
 - in `topology.v`:
   + change implicits of lemma `cvg_app`
+
+- in `ereal.v`:
+  + argument of `%:E` in `%R` by default
+  + `F` argument of `\sum` in `%E` by default
 
 ### Renamed
 
