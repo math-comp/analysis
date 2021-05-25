@@ -813,12 +813,12 @@ Notation "\sum_ ( i <oo ) F" :=
   (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
 
 Section fact_facts.
+
 Local Open Scope nat_scope.
 
 Lemma leq_fact n : n <= n`!.
 Proof.
-elim: n => // n ih; rewrite factS mulSn -(add1n n) leq_add // ?fact_gt0 //.
-by rewrite leq_pmulr // fact_gt0.
+by case: n => // n;  rewrite dvdn_leq ?fact_gt0 // dvdn_fact ?andTb.
 Qed.
 
 Lemma prod_rev n m :
@@ -838,10 +838,12 @@ Qed.
 End fact_facts.
 
 Section exponential_series.
+
 Variable R : realType.
 Implicit Types x : R.
 
 Definition exp_coeff x := [sequence x ^+ n / n`!%:R]_n.
+
 Local Notation exp := exp_coeff.
 
 Lemma exp_coeff_ge0 x n : 0 <= x -> 0 <= exp x n.
@@ -849,11 +851,12 @@ Proof. by move=> x0; rewrite /exp divr_ge0 // ?exprn_ge0 // ler0n. Qed.
 
 Lemma series_exp_coeff0 n : series (exp 0) n.+1 = 1.
 Proof.
-rewrite /series /= big_nat_recl// /exp/= expr0n eqxx fact0 divr1 addrC.
-by rewrite big1 ?add0r// => i _; rewrite expr0n /= mul0r.
+rewrite /series /= big_mkord big_ord_recl /= /exp /= expr0n divr1.
+by rewrite big1 ?addr0 // => i _; rewrite expr0n mul0r.
 Qed.
 
 Section exponential_series_cvg.
+
 Variable x : R.
 Hypothesis x0 : 0 < x.
 
@@ -862,8 +865,8 @@ Let S0 N n := (N ^ N)%:R * \sum_(N.+1 <= i < n) (x / N%:R) ^+ i.
 Let is_cvg_S0 N : x < N%:R -> cvg (S0 N).
 Proof.
 move=> xN; apply: is_cvgZr; rewrite is_cvg_series_restrict exprn_geometric.
-apply/is_cvg_geometric_series; rewrite ger0_norm ?(divr_ge0 (ltW _)) ?ler0n //.
-by rewrite ltr_pdivr_mulr ?mul1r // (lt_trans _ xN).
+apply/is_cvg_geometric_series; rewrite normrM normfV.
+by rewrite ltr_pdivr_mulr ?mul1r !ger0_norm // 1?ltW // (lt_trans x0).
 Qed.
 
 Let S0_ge0 N n : 0 <= S0 N n.
@@ -876,7 +879,7 @@ Let S0_sup N n : x < N%:R -> S0 N n <= sup [set of S0 N].
 Proof.
 move=> xN; apply/sup_upper_bound; [split; [by exists (S0 N n), n|]|by exists n].
 rewrite (_ : [set of _] = [set `|S0 N n0| | n0 in setT]).
-  exact: (cvg_has_ub (is_cvg_S0 xN)).
+  by apply: cvg_has_ub (is_cvg_S0 xN).
 by rewrite predeqE=> y; split=> -[z _ <-]; exists z; rewrite ?ger0_norm ?S0_ge0.
 Qed.
 
@@ -884,52 +887,33 @@ Let S1 N n := \sum_(N.+1 <= i < n) exp x i.
 
 Lemma incr_S1 N : nondecreasing_seq (S1 N).
 Proof.
-apply/nondecreasing_seqP => n; rewrite /S1; have [nN|Nn] := leqP n N.
-- rewrite (_ : index_iota _ _ = [::]) ?big_nil; last first.
-    by apply/eqP; rewrite -size_eq0 size_iota subn_eq0 (leq_trans nN).
-  rewrite (_ : index_iota _ _ = [::]) ?big_nil //.
-  by apply/eqP; rewrite -size_eq0 size_iota subSS subn_eq0 (leq_trans nN).
-- by rewrite big_nat_recr//= ler_addl divr_ge0// ?ler0n// exprn_ge0// ltW.
+apply/nondecreasing_seqP => n; rewrite /S1.
+have [nN|Nn] := leqP n N; first by rewrite !big_geq // (leq_trans nN).
+by rewrite big_nat_recr//= ler_addl exp_coeff_ge0 // ltW.
 Qed.
 
 Let S1_sup N n : x < N%:R -> S1 N n <= sup [set of S0 N].
 Proof.
 move=> xN; rewrite (le_trans _ (S0_sup n xN)) // /S0 big_distrr /=.
-apply ler_sum => i _; have [Ni|iN] := ltnP N i; last first.
-  rewrite expr_div_n mulrCA ler_pmul2l ?exprn_gt0// (@le_trans _ _ 1) //.
-    rewrite invr_le1 ?ler1n ?ltr0n ?fact_gt0// unitfE pnatr_eq0 gtn_eqF//.
-    by rewrite fact_gt0.
-  rewrite natrX -exprB // ?unitfE; last by rewrite gt_eqF// (lt_trans _ xN).
-  move: iN; rewrite leq_eqVlt =>/orP[/eqP->|iN]; first by rewrite subnn expr0.
-  by rewrite exprn_ege1// ler1n (leq_trans _ iN).
+have N_gt0 := lt_trans x0 xN.
+apply ler_sum => i _.
+have [Ni|iN] := ltnP N i; last first.
+  rewrite expr_div_n mulrCA ler_pmul2l ?exprn_gt0 // (@le_trans _ _ 1) //.
+    by rewrite invf_le1 ?ler1n ?ltr0n // fact_gt0.
+  rewrite natrX -expfB_cond ?(negPf (lt0r_neq0 N_gt0)) //.
+  by rewrite exprn_ege1 // ler1n; case: (N) xN x0; case: ltrgt0P.
 rewrite /exp expr_div_n /= (fact_split Ni) mulrCA.
-rewrite ler_pmul2l ?exprn_gt0 // natrX -invf_div -(exprB (ltnW Ni)); last first.
-  by rewrite unitfE gt_eqF // (lt_trans _ xN).
-have ? : (0 < \prod_(0 <= k < i - N.+1) (i - k))%N.
-  rewrite big_seq_cond prodn_cond_gt0 //= => j.
-  rewrite andbT /index_iota mem_iota add0n leq0n /= subn0 => jiN.
-  by rewrite subn_gt0 (leq_trans jiN) //= leq_subr.
-rewrite ler_pinv; last 2 first.
-  - rewrite inE unitfE natrM mulf_neq0 ?pnatr_eq0 -?lt0n ?fact_gt0 //= -natrM.
-    by rewrite ltr0n muln_gt0 fact_gt0 andbT.
-  - rewrite inE unitfE exprn_gt0// ?andbT ?(lt_trans _ xN)// gt_eqF//.
-    by rewrite exprn_gt0// (lt_trans _ xN).
-rewrite (@le_trans _ _
-    (\prod_(0 <= k < i - N.+1) (i - k) * N.+1 * N)%:R) //; last first.
-  by rewrite ler_nat -mulnA leq_mul2l factS leq_mul2l leq_fact 2!orbT.
-rewrite -mulnA prod_rev mulnA mulnC (mulnC _ N.+1) !mulnA.
-rewrite -(@prednK (i - N)) ?subn_gt0 // exprS !natrM -mulrA.
-rewrite ler_pmul2l ?(lt_trans _ xN) //.
-have [iN1|] := ltnP O (i - N).-1; last first.
-  rewrite leqn0 => /eqP->; rewrite expr0 -natrM ler1n muln_gt0 andTb.
-  by rewrite big_seq_cond prodn_cond_gt0// => -[|?]; rewrite mem_iota andbT.
-rewrite -(@prednK (i - N).-1)// exprS ler_pmul// ?ler_nat ?exprn_ge0 ?ler0n//.
-rewrite -subn1 /= subn_gt0 -addn1 ltn_subRL addn1 in iN1.
-rewrite -natrX ler_nat -subn2 -subnDA addn2 -prod_nat_const_nat big_nat_recr//=.
-rewrite -[X in (X <= _)%N]muln1 leq_mul// ?(leq_trans _ Ni)// -(@ler_nat R).
-rewrite !natr_prod big_seq_cond [X in _ <= X]big_seq_cond; apply ler_prod=> j.
-rewrite mem_iota andbT subnKC// => /andP[Nj ?].
-by rewrite ler0n ler_nat (leq_trans _ Nj)// (@leq_trans N.+1).
+rewrite ler_pmul2l ?exprn_gt0 // natrX -invf_div -expfB //.
+rewrite lef_pinv ?qualifE; last 2 first.
+- rewrite ltr0n muln_gt0 fact_gt0 andbT.
+  rewrite big_mkord prodn_gt0  // => j.
+  by rewrite subn_gt0 (leq_trans (ltn_ord _) (leq_subr _ _)).
+- by rewrite exprn_gt0.
+rewrite prod_rev -natrX ler_nat -prod_nat_const_nat big_add1 /= big_ltn //.
+rewrite mulnC leq_mul //; last by apply: leq_trans (leq_fact _).
+rewrite -(subnK Ni); elim: (_ - _)%N => [|k IH]; first by rewrite !big_geq.
+rewrite !addSn !big_nat_recr //= ?leq_mul ?leq_addl //.
+by rewrite -addSn -addSnnS leq_addl.
 Qed.
 
 Lemma is_cvg_series_exp_coeff_pos : cvg (series (exp x)).
