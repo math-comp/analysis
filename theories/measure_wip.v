@@ -63,17 +63,8 @@ Definition uncurry {A B C:Type} (f:A -> B -> C)
   (p:A * B) : C := match p with (x, y) => f x y end.
 
 (* NB: PR to MathComp in progress *)
-Lemma gez0_norm (R : numDomainType) (i : int) : 0 <= i -> `|i|%:R = i%:~R :> R.
-Proof. by move/gez0_abs => <-. Qed.
-
-Lemma gtz0_norm (R : numDomainType) (i : int) : 0 < i -> `|i|%:R = i%:~R :> R.
-Proof. by move/gtz0_abs => <-. Qed.
-
-Lemma ltz0_norm (R : numDomainType) (i : int) : i < 0 -> `|i|%:R = - i%:~R :> R.
-Proof.
-move/ltz0_abs/eqP; rewrite -eqr_oppLR => /eqP <-.
-by rewrite abszN absz_id mulrNz opprK.
-Qed.
+Lemma normrzE (R : numDomainType) i : `|i|%:R = `|i|%:~R :> R.
+Proof. by rewrite -abszE. Qed.
 (* END NB: PR to MathComp in progress *)
 
 Section eseries.
@@ -3570,13 +3561,13 @@ exists (set_of_itv \o ccitv).
   rewrite predeqE => /= r; split => // _; have [r0|r0] := leP 0 r.
   - exists (absz (ceil r)) => //; apply/set_of_itv_mem.
     rewrite itv_boundlr/= 2!lte_bnd (le_trans _ r0)/= ?oppr_le0 ?ler0n//.
-    by rewrite gez0_norm ?ceil_ge0 // ler_ceil.
+    by rewrite normrzE ger0_norm ?ceil_ge0// ler_ceil.
   - exists (absz (floor r)) => //; apply/set_of_itv_mem.
-    rewrite itv_boundlr /= 2!lte_bnd (le_trans (ltW r0)) ?ler0n// andbT.
-    by rewrite ler_oppl ltz0_norm ?floor_lt0// ler_oppl opprK ler_floor.
+    rewrite itv_boundlr/= 2!lte_bnd (le_trans (ltW r0)) ?ler0n// andbT.
+    by rewrite normrzE ltr0_norm ?floor_lt0// mulrNz opprK ler_floor.
 move=> n; split.
-  by exists [fset (ccitv n)]%fset; rewrite ssetE /= big_seq_fset1.
-by rewrite length_itv hlength_itv /=; case: ifPn; rewrite lte_pinfty.
+  by exists [fset (ccitv n)]%fset; rewrite ssetE big_seq_fset1.
+by rewrite length_itv hlength_itv /= -(fun_if (@EFin _)) lte_pinfty.
 Qed.
 
 Lemma length_additive : additive (length : set (sset_ringOfSetsType R) -> \bar R).
@@ -3964,8 +3955,8 @@ have len_iIN_dvg : forall M, M > 0 -> exists N, (N >= 1)%N /\ (M%:E < length (iI
   move/hlength_oo : ioo => [[b [r iroo]]|ioo]; last first.
     have ? : (0 < `|ceil M|)%N by rewrite absz_gt0 gt_eqF // ceil_gt0.
     exists `|ceil M|%N; split=> //; rewrite /iIN ioo set_of_itvE setTI.
-    rewrite length_ccitv lte_fin (le_lt_trans (ler_ceil _)) //.
-    by rewrite -gtz0_norm ?ceil_gt0// ltr_nat -addnn -ltn_subLR // subnn.
+    rewrite length_ccitv lte_fin (le_lt_trans (ler_ceil _)) // -muln2 natrM.
+    by rewrite normrzE gtr0_norm ?ceil_gt0// ltr_pmulr ?ltr1n// ltr0z ceil_gt0.
   rewrite /iIN.
   wlog : i {ij iIN} b r {iroo} / i = Interval -oo%O (BSide b r).
     move=> h; move: iroo => [->|iroo]; first exact: h.
@@ -3974,34 +3965,27 @@ have len_iIN_dvg : forall M, M > 0 -> exists N, (N >= 1)%N /\ (M%:E < length (iI
   move=> ->{i}.
   have [r0|r0] := ler0P r.
     exists (`|ceil (`| r | + M) |%N.+1); split => //.
-    rewrite -set_of_itv_meet length_itv hlength_itv /= lte_fin ltxI ltz_opp // andbT.
-    rewrite ltr_oppl opprK.
-    case: ifPn => [rrM|].
-      rewrite meet_l ?(le_trans r0) // lte_fin mulrSr.
-      rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))//.
-      rewrite -ltr_subl_addl (@le_lt_trans _ _ (`|r| + M)) // ?ler_addr//.
-        by rewrite ler0_norm // addrC.
-      rewrite (@lt_le_trans _ _ (`|r| + M + 1)) // ?ltr_addl // ler_add2r.
-      by rewrite -RceilE le_Rceil.
-    move=> /negP; apply: absurd.
-    rewrite -(ler0_norm r0) mulrSr ltr_spaddr //.
-    rewrite (@le_trans _ _ (`|r| + M)) // ?ler_addl //; first exact/ltW.
-    by rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// ler_ceil.
-  have crM : (0 < `|ceil (`|r| + M)|)%N.
+    rewrite -set_of_itv_meet length_itv hlength_itv /= lte_fin ltxI ltz_opp //.
+    rewrite andbT ltr_oppl opprK meet_l ?(le_trans r0)//.
+    rewrite -addn1 natrD normrzE ger0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))//.
+    case: ifPn => [_|/negP].
+      rewrite lte_fin -ltr_subl_addl ltr_spaddr//.
+      by rewrite (le_trans _ (ler_ceil _))// addrC ler_add2r ler0_norm.
+    apply: absurd; rewrite ltr_spaddr//.
+    by rewrite (le_trans _ (ler_ceil _)) // (ler_paddr (ltW _))// ler0_norm.
+  move=> [:crM]; exists (`|ceil (`| r | + M)|%N); split.
+    abstract: crM.
     by rewrite absz_gt0 gt_eqF // ceil_gt0 // -(addr0 0) ler_lt_add.
-  exists (`|ceil (`| r | + M)|%N); split => //.
-  rewrite -set_of_itv_meet length_itv hlength_itv /= lte_fin ltxI ltz_opp // ltr_oppl.
-  rewrite opprK andbT.
-  case: ifPn => [_|].
-    rewrite meet_l; last first.
-      rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
-      by rewrite (le_trans (ler_ceil _)) // ler_int ceil_le // ler_addl ltW.
-    rewrite lte_fin -{1}(add0r M) ltr_le_add //.
-    rewrite gez0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
+  rewrite -set_of_itv_meet length_itv hlength_itv /= lte_fin ltxI ltz_opp //.
+  rewrite ltr_oppl opprK andbT.
+  rewrite normrzE ger0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
+  rewrite meet_l; last first.
+    by rewrite (le_trans (ler_ceil _)) // ler_int ceil_le // ler_addl ltW.
+  case: ifPn => [_|/negP].
+    rewrite lte_fin -{1}(add0r M) ltr_le_add//.
     by rewrite (le_trans (ler_ceil _)) // ler_int ceil_le // ler_addr ltW.
-  move/negP; apply: absurd.
-  rewrite -(@ltr_nat R) in crM.
-  by rewrite (le_lt_trans _ crM) // ler_oppl oppr0 ltW.
+  apply: absurd; rewrite -oppr_lt0 in r0.
+  by rewrite (lt_le_trans r0)// ler0z ceil_ge0// addr_ge0// ?ltW// -oppr_lt0.
 move=> M M0.
 have {len_iIN_dvg} [N [N0 MiIN]] := len_iIN_dvg _ M0.
 set jIN := fun N k => set_of_itv (j k) `&` set_of_itv (ccitv N).
