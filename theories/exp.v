@@ -166,21 +166,45 @@ Proof. exact: (cvg_series_cvg_0 (@is_cvg_series_exp_coeff x)). Qed.
 
 End exponential_series.
 
+Notation "\sum_ ( m <= i <oo | P ) F" :=
+  (\big[+%R/0]_(m <= i <oo | P%B) F%R) : ring_scope.
+Notation "\sum_ ( m <= i <oo ) F" :=
+  (\big[+%R/0]_(m <= i <oo) F%R) : ring_scope.
+Notation "\sum_ ( i <oo | P ) F" :=
+  (\big[+%R/0]_(0 <= i <oo | P%B) F%R) : ring_scope.
+Notation "\sum_ ( i <oo ) F" :=
+  (\big[+%R/0]_(0 <= i <oo) F%R) : ring_scope.
+
 Section exp.
 
 Variable R : realType.
 
-Definition exp (x : R) : R := 
- real_of_extended (\sum_(i <oo) (exp_coeff x i)%:E) : R.
+Definition exp (x : R) : R := \sum_(i <oo) (exp_coeff x i).
 
 Lemma exp0 : exp 0 = 1.
 Proof.
-rewrite -[1]/(real_of_extended 1%E); congr real_of_extended.
 apply: lim_near_cst => //.
 near=> m; rewrite -[m]prednK; last by near: m.
   rewrite big_nat_recl // big1 => [|i _]; last first.
     by rewrite /exp_coeff /= expr0n mul0r.
   by rewrite /exp_coeff /= expr0n divr1 addr0.
+Grab Existential Variables. all: end_near.
+Qed.
+
+Lemma exp_ge x : 0 <= x -> 1 + x <= exp x.
+Proof.
+move=> xP; rewrite /exp.
+pose f (x : R) i := (i == 0%nat)%:R + x *+ (i == 1%nat).
+have F n : (1 < n)%nat -> \sum_(0 <= i < n) (f x i) = 1 + x.
+  move=> /subnK<-.
+  by rewrite addn2 !big_nat_recl //= /f /= mulr1n !mulr0n big1 ?add0r ?addr0.
+have -> : 1 + x =  \sum_(i <oo) (f x i).
+  by apply/sym_equal/lim_near_cst => //; near=> n; apply: F; near: n.
+apply: ler_lim; first by apply: is_cvg_near_cst; near=> n; apply: F; near: n.
+  by apply: is_cvg_series_exp_coeff.
+by near=> n; apply: ler_sum => [] [|[|i]] _; 
+  rewrite /f /exp_coeff /= !(mulr0n, mulr1n, expr0, expr1, divr1, addr0, add0r)
+          // exp_coeff_ge0.
 Grab Existential Variables. all: end_near.
 Qed.
 
