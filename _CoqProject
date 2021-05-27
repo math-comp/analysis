@@ -21,6 +21,7 @@ theories/prodnormedzmodule.v
 theories/normedtype.v
 theories/realfun.v
 theories/sequences.v
+theories/exp.v
 theories/cardinality.v
 theories/csum.v
 theories/forms.v
