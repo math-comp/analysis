@@ -193,7 +193,7 @@ Qed.
 
 Lemma exp_ge x : 0 <= x -> 1 + x <= exp x.
 Proof.
-move=> xP; rewrite /exp.
+move=> xP.
 pose f (x : R) i := (i == 0%nat)%:R + x *+ (i == 1%nat).
 have F n : (1 < n)%nat -> \sum_(0 <= i < n) (f x i) = 1 + x.
   move=> /subnK<-.
@@ -206,6 +206,13 @@ by near=> n; apply: ler_sum => [] [|[|i]] _;
   rewrite /f /exp_coeff /= !(mulr0n, mulr1n, expr0, expr1, divr1, addr0, add0r)
           // exp_coeff_ge0.
 Grab Existential Variables. all: end_near.
+Qed.
+
+Lemma exp_gt1 x : 0 < x  -> 1 < exp x.
+Proof.
+move=> xP.
+apply: lt_le_trans (exp_ge (ltW xP)).
+by rewrite -subr_gt0 addrAC subrr add0r.
 Qed.
 
 End exp.
