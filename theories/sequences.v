@@ -728,7 +728,7 @@ move=> cvg_series.
 rewrite (_ : u_ = fun n => series u_ (n + 1)%nat - series u_ n); last first.
   by rewrite funeqE => i; rewrite addn1 seriesSB.
 rewrite -(subrr (lim (series u_))).
-by apply: cvgD; rewrite ?cvg_shiftn//; apply: cvgN.
+by apply: cvgB => //; rewrite ?cvg_shiftn.
 Qed.
 
 Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) :
