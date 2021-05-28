@@ -176,11 +176,6 @@ Proof. by rewrite !nng_max maxr_pmulr. Qed.
 
 End NngNum.
 
-(* TODO: general purpose lemma? add to mathcomp? *)
-Lemma filter_andb I r (a P : pred I) :
-  [seq i <- r | P i && a i] = [seq i <- [seq j <- r | P j] | a i].
-Proof. by elim: r => //= i r ->; case P. Qed.
-
 Import Num.Def.
 
 Module BigmaxrNonneg.
@@ -217,7 +212,9 @@ Lemma bigmaxrID I r (a P : pred I) (F : I -> {nonneg R}) x :
   maxr (\big[maxr/x]_(i <- r | P i && a i) F i)
     (\big[maxr/x]_(i <- r | P i && ~~ a i) F i).
 Proof.
-rewrite -!(big_filter _ (fun _ => _ && _)) !filter_andb !big_filter.
+under [in X in maxr X _]eq_bigl do rewrite andbC.
+under [in X in maxr _ X]eq_bigl do rewrite andbC.
+rewrite -!(big_filter _ (fun _ => _ && _)) !filter_predI !big_filter.
 rewrite ![in RHS](bigmaxr_mkcond _ _ F) !big_filter -bigmaxr_split.
 have eqmax : forall i, P i ->
   maxr (if a i then F i else x) (if ~~ a i then F i else x) = maxr (F i) x.
@@ -234,8 +231,7 @@ Proof. by rewrite big_cons big_nil. Qed.
 Lemma bigmaxr_pred1_eq (I : finType) (i : I) (F : I -> {nonneg R}) x :
   \big[maxr/x]_(j | j == i) F j = maxr (F i) x.
 Proof.
-have [e1 <- _ [e_enum _]] := big_enumP (pred1 i).
-by rewrite (perm_small_eq _ e_enum) enum1 ?bigmaxr_seq1.
+by rewrite -big_filter filter_pred1_uniq ?index_enum_uniq// bigmaxr_seq1.
 Qed.
 
 Lemma bigmaxr_pred1 (I : finType) i (P : pred I) (F : I -> {nonneg R}) x :

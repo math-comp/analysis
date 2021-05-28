@@ -1712,7 +1712,7 @@ have := ball_triangle yz_he (ball_sym zx_he).
 by rewrite -mulr2n -mulr_natr divfK // => /ltW.
 Qed.
 
-Lemma pseudoMetricNormedZModType_hausdorff (R : realFieldType) 
+Lemma pseudoMetricNormedZModType_hausdorff (R : realFieldType)
 (V : pseudoMetricNormedZmodType R) :
   hausdorff V.
 Proof.
@@ -1750,135 +1750,6 @@ rewrite near_map => /nbhs_ballP[_/posnumP[a]] + xl; apply.
 move/(cvg_ball (y :=l)): xl=> /(_ _ a)/nbhs_ballP[_/posnumP[b]]; apply; exact: ballxx.
 Qed.
 (*NB: was /cvg_ball before *)
-
-(* TODO: general purpose lemma? *)
-Lemma filter_andb I r (a P : pred I) :
-  [seq i <- r | P i && a i] = [seq i <- [seq j <- r | P j] | a i].
-Proof. by elim: r => //= i r ->; case P. Qed.
-
-Module BigmaxrNonneg.
-Section bigmaxr_nonneg.
-Variable (R : numDomainType).
-
-Lemma bigmaxr_mkcond I r (P : pred I) (F : I -> {nonneg R}) x :
-  \big[maxr/x]_(i <- r | P i) F i =
-     \big[maxr/x]_(i <- r) (if P i then F i else x).
-Proof.
-rewrite unlock; elim: r x => //= i r ihr x.
-case P; rewrite ihr // max_r //; elim: r {ihr} => //= j r ihr.
-by rewrite le_maxr ihr orbT.
-Qed.
-
-Lemma bigmaxr_split I r (P : pred I) (F1 F2 : I -> {nonneg R}) x :
-  \big[maxr/x]_(i <- r | P i) (maxr (F1 i) (F2 i)) =
-  maxr (\big[maxr/x]_(i <- r | P i) F1 i) (\big[maxr/x]_(i <- r | P i) F2 i).
-Proof.
-elim/big_rec3: _ => [|i y z _ _ ->]; rewrite ?maxxx //.
-by rewrite maxCA -!maxA maxCA.
-Qed.
-
-Lemma bigmaxr_idl I r (P : pred I) (F : I -> {nonneg R}) x :
-  \big[maxr/x]_(i <- r | P i) F i = maxr x (\big[maxr/x]_(i <- r | P i) F i).
-Proof.
-rewrite -big_filter; elim: [seq i <- r | P i] => [|i l ihl].
-  by rewrite big_nil maxxx.
-by rewrite big_cons maxCA -ihl.
-Qed.
-
-Lemma bigmaxrID I r (a P : pred I) (F : I -> {nonneg R}) x :
-  \big[maxr/x]_(i <- r | P i) F i =
-  maxr (\big[maxr/x]_(i <- r | P i && a i) F i)
-    (\big[maxr/x]_(i <- r | P i && ~~ a i) F i).
-Proof.
-rewrite -!(big_filter _ (fun _ => _ && _)) !filter_andb !big_filter.
-rewrite ![in RHS](bigmaxr_mkcond _ _ F) !big_filter -bigmaxr_split.
-have eqmax : forall i, P i ->
-  maxr (if a i then F i else x) (if ~~ a i then F i else x) = maxr (F i) x.
-  by move=> i _; case: (a i) => //=; rewrite maxC.
-rewrite [RHS](eq_bigr _ eqmax) -!(big_filter _ P).
-elim: [seq j <- r | P j] => [|j l ihl]; first by rewrite !big_nil.
-by rewrite !big_cons -maxA -bigmaxr_idl ihl.
-Qed.
-
-Lemma bigmaxr_seq1 I (i : I) (F : I -> {nonneg R}) x :
-  \big[maxr/x]_(j <- [:: i]) F j = maxr (F i) x.
-Proof. by rewrite unlock /=. Qed.
-
-Lemma bigmaxr_pred1_eq (I : finType) (i : I) (F : I -> {nonneg R}) x :
-  \big[maxr/x]_(j | j == i) F j = maxr (F i) x.
-Proof. by rewrite -big_filter filter_index_enum enum1 bigmaxr_seq1. Qed.
-
-Lemma bigmaxr_pred1 (I : finType) i (P : pred I) (F : I -> {nonneg R}) x :
-  P =1 pred1 i -> \big[maxr/x]_(j | P j) F j = maxr (F i) x.
-Proof. by move/(eq_bigl _ _)->; apply: bigmaxr_pred1_eq. Qed.
-
-Lemma bigmaxrD1 (I : finType) j (P : pred I) (F : I -> {nonneg R}) x :
-  P j -> \big[maxr/x]_(i | P i) F i
-    = maxr (F j) (\big[maxr/x]_(i | P i && (i != j)) F i).
-Proof.
-move=> Pj; rewrite (bigmaxrID _ (pred1 j)) [in RHS]bigmaxr_idl maxA.
-by congr maxr; apply: bigmaxr_pred1 => i; rewrite /= andbC; case: eqP => //->.
-Qed.
-
-Lemma ler_bigmaxr_cond (I : finType) (P : pred I) (F : I -> {nonneg R}) x i0 :
-  P i0 -> F i0 <= \big[maxr/x]_(i | P i) F i.
-Proof. by move=> Pi0; rewrite (bigmaxrD1 _ _ Pi0) le_maxr lexx. Qed.
-
-Lemma ler_bigmaxr (I : finType) (F : I -> {nonneg R}) (i0 : I) x :
-  F i0 <= \big[maxr/x]_i F i.
-Proof. exact: ler_bigmaxr_cond. Qed.
-
-Lemma bigmaxr_lerP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
-  reflect (x <= m /\ forall i, P i -> F i <= m)
-    (\big[maxr/x]_(i | P i) F i <= m).
-Proof.
-apply: (iffP idP) => [|[lexm leFm]]; last first.
-  by elim/big_ind: _ => // ??; rewrite le_maxl =>->.
-rewrite bigmaxr_idl le_maxl => /andP[-> leFm]; split=> // i Pi.
-by apply: le_trans leFm; apply: ler_bigmaxr_cond.
-Qed.
-
-Lemma bigmaxr_sup (I : finType) i0 (P : pred I) m (F : I -> {nonneg R}) x :
-  P i0 -> m <= F i0 -> m <= \big[maxr/x]_(i | P i) F i.
-Proof. by move=> Pi0 ?; apply: le_trans (ler_bigmaxr_cond _ _ Pi0). Qed.
-
-Lemma bigmaxr_ltrP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
-  reflect (x < m /\ forall i, P i -> F i < m)
-    (\big[maxr/x]_(i | P i) F i < m).
-Proof.
-apply: (iffP idP) => [|[ltxm ltFm]]; last first.
-  by elim/big_ind: _ => // ??; rewrite lt_maxl =>->.
-rewrite bigmaxr_idl lt_maxl => /andP[-> ltFm]; split=> // i Pi.
-by apply: le_lt_trans ltFm; apply: ler_bigmaxr_cond.
-Qed.
-
-Lemma bigmaxr_gerP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
-  reflect (m <= x \/ exists2 i, P i & m <= F i)
-  (m <= \big[maxr/x]_(i | P i) F i).
-Proof.
-apply: (iffP idP) => [|[lemx|[i Pi lemFi]]]; last 2 first.
-- by rewrite bigmaxr_idl le_maxr lemx.
-- by rewrite (bigmaxrD1 _ _ Pi) le_maxr lemFi.
-rewrite leNgt => /bigmaxr_ltrP /asboolPn.
-rewrite asbool_and negb_and => /orP [/asboolPn/negP|/existsp_asboolPn [i]].
-  by rewrite -leNgt; left.
-by move=> /asboolPn/imply_asboolPn [Pi /negP]; rewrite -leNgt; right; exists i.
-Qed.
-
-Lemma bigmaxr_gtrP (I : finType) (P : pred I) m (F : I -> {nonneg R}) x :
-  reflect (m < x \/ exists2 i, P i & m < F i)
-  (m < \big[maxr/x]_(i | P i) F i).
-Proof.
-apply: (iffP idP) => [|[ltmx|[i Pi ltmFi]]]; last 2 first.
-- by rewrite bigmaxr_idl lt_maxr ltmx.
-- by rewrite (bigmaxrD1 _ _ Pi) lt_maxr ltmFi.
-rewrite ltNge => /bigmaxr_lerP /asboolPn.
-rewrite asbool_and negb_and => /orP [/asboolPn/negP|/existsp_asboolPn [i]].
-  by rewrite -ltNge; left.
-by move=> /asboolPn/imply_asboolPn [Pi /negP]; rewrite -ltNge; right; exists i.
-Qed.
-End bigmaxr_nonneg.
-End BigmaxrNonneg.
 
 Module BigmaxBigminr.
 Section bigmax_bigmin.
@@ -1940,7 +1811,9 @@ Lemma bigmaxrID I r (a P : pred I) (F : I -> R) x :
   maxr (\big[maxr/x]_(i <- r | P i && a i) F i)
     (\big[maxr/x]_(i <- r | P i && ~~ a i) F i).
 Proof.
-rewrite -!(big_filter _ (fun _ => _ && _)) !filter_andb !big_filter.
+under [in X in maxr X _]eq_bigl do rewrite andbC.
+under [in X in maxr _ X]eq_bigl do rewrite andbC.
+rewrite -!(big_filter _ (fun _ => _ && _)) !filter_predI !big_filter.
 rewrite ![in RHS](bigmaxr_mkcond _ _ F) !big_filter -bigmaxr_split.
 have eqmax : forall i, P i ->
   maxr (if a i then F i else x) (if ~~ a i then F i else x) = maxr (F i) x.
