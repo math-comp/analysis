@@ -1311,7 +1311,7 @@ Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
 End NormedModule_numDomainType.
 
-Section PseudoNormedZmod_numDomainType. (* to be lifted *)
+Section PseudoNormedZmod_numDomainType.
 Variables (R : numDomainType) (V : pseudoMetricNormedZmodType R).
 
 Local Notation ball_norm := (ball_ (@normr R V)).
@@ -1320,8 +1320,8 @@ Local Notation nbhs_norm := (@nbhs_ball _ V).
 
 (* if we do not give the V argument to nbhs, the universally quantified set that
 appears inside the notation for cvg_to has type
-set (let '{| PseudoMetricNormedZmodule.sort := T |} := V in T) instead V, which
-causes an inference problem in derive.v *)
+set (let '{| PseudoMetricNormedZmodule.sort := T |} := V in T) instead of set V,
+which causes an inference problem in derive.v *)
 Lemma nbhs_le_nbhs_norm (x : V) : @nbhs V _ x `=>` nbhs_norm x.
 Proof.
 move=> P [_ /posnumP[e] subP]; apply/nbhs_ballP.
@@ -1715,7 +1715,7 @@ by rewrite -mulr2n -mulr_natr divfK // => /ltW.
 Qed.
 
 Lemma pseudoMetricNormedZModType_hausdorff (R : realFieldType)
-(V : pseudoMetricNormedZmodType R) :
+    (V : pseudoMetricNormedZmodType R) :
   hausdorff V.
 Proof.
 move=> p q clp_q; apply/subr0_eq/normr0_eq0/Rhausdorff => A B pq_A.
@@ -1729,11 +1729,6 @@ rewrite -ball_normE /= => re_s.
 apply: pre_C; apply: le_lt_trans (ler_dist_dist _ _) _.
 by rewrite opprB addrC subrKA distrC.
 Qed.
-
-(* NB: maybe not useful *)
-Lemma normedModType_hausdorff' (R : realFieldType) (V : normedModType R) :
-  hausdorff V.
-Proof. exact: norm_hausdorff. Qed.
 
 End hausdorff.
 
@@ -2249,7 +2244,7 @@ Canonical AbsRing_NormedModType (K : absRingType) :=
 
 
 (** Normed vector spaces have some continuous functions *)
- (** that are in fact continuous on Pseudometricnormedzmodtype  *)
+(** that are in fact continuous on pseudoMetricNormedZmodType *)
 
 Lemma add_continuous {K : numFieldType} {V : pseudoMetricNormedZmodType K} :
   continuous (fun z : V * V => z.1 + z.2).
@@ -2260,7 +2255,6 @@ by rewrite normm_lt_split //; [near: a|near: b]; apply: cvg_dist.
 Grab Existential Variables. all: end_near. Qed.
 
 (* kludge *)
-
 Global Instance filter_nbhs (K' : numFieldType) (k : K') :
   Filter (nbhs k).
 Proof.
@@ -2271,13 +2265,6 @@ Qed.
 Section NVS_continuity_normedModType.
 Context {K : numFieldType} {V : normedModType K}.
 Local Notation "'+oo'" := (pinfty_nbhs K).
-(* 
-Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
-Proof.
-move=> [/=x y]; apply/cvg_distP=> _/posnumP[e].
-rewrite !near_simpl /=; near=> a b => /=; rewrite opprD addrACA.
-by rewrite normm_lt_split //; [near: a|near: b]; apply: cvg_dist.
-Grab Existential Variables. all: end_near. Qed. *)
 
 Lemma natmul_continuous n : continuous (fun x : V => x *+ n).
 Proof.
@@ -2315,7 +2302,8 @@ Proof.
 by move=> k; apply: (cvg_comp2 cvg_id (cvg_cst _) (scale_continuous (_, _))).
 Qed.
 
-Lemma opp_continuous : continuous (@GRing.opp V). (*TODO: generalize to pseudometricnormedzmod*)
+(* TODO: generalize to pseudometricnormedzmod *)
+Lemma opp_continuous : continuous (@GRing.opp V).
 Proof.
 move=> x; rewrite -scaleN1r => P /scaler_continuous /=.
 by rewrite !nbhs_nearE near_map; apply: filterS => x'; rewrite scaleN1r.
