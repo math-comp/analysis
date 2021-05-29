@@ -1311,14 +1311,18 @@ Proof. by case: V x => V0 [a b [c]] //= v; rewrite c. Qed.
 
 End NormedModule_numDomainType.
 
-Section PseudoNormedZmod_numDomainType. (*to be lifted *)
+Section PseudoNormedZmod_numDomainType. (* to be lifted *)
 Variables (R : numDomainType) (V : pseudoMetricNormedZmodType R).
 
 Local Notation ball_norm := (ball_ (@normr R V)).
 
 Local Notation nbhs_norm := (@nbhs_ball _ V).
 
-Lemma nbhs_le_nbhs_norm (x : V) : nbhs x `=>` nbhs_norm x.
+(* if we do not give the V argument to nbhs, the universally quantified set that
+appears inside the notation for cvg_to has type
+set (let '{| PseudoMetricNormedZmodule.sort := T |} := V in T) instead V, which
+causes an inference problem in derive.v *)
+Lemma nbhs_le_nbhs_norm (x : V) : @nbhs V _ x `=>` nbhs_norm x.
 Proof.
 move=> P [_ /posnumP[e] subP]; apply/nbhs_ballP.
 by eexists; last (move=> y Py; apply/subP; apply/Py).
@@ -1401,8 +1405,7 @@ Definition self_sub (K : numDomainType) (V W : normedModType K)
   (f : V -> W) (x : V * V) : W := f x.1 - f x.2.
 Arguments self_sub {K V W} f x /.
 
-Definition fun1 {T : Type} {K : numFieldType} :
-  T -> K := fun=> 1.
+Definition fun1 {T : Type} {K : numFieldType} : T -> K := fun=> 1.
 Arguments fun1 {T K} x /.
 
 Definition dominated_by {T : Type} {K : numDomainType} {V W : pseudoMetricNormedZmodType K}
@@ -1431,7 +1434,7 @@ rewrite funeq3E => k f F.
 by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
 Qed.
 
-Lemma strictly_dominated_by1 {T : Type} {K : numFieldType} 
+Lemma strictly_dominated_by1 {T : Type} {K : numFieldType}
     {V : pseudoMetricNormedZmodType K} :
   @strictly_dominated_by T K _ V fun1 = fun k f F => F [set x | `|f x| < k].
 Proof.
@@ -1457,7 +1460,7 @@ exists M; split => // k Mk; apply: filterS FM => x /le_trans/= ->//.
 by rewrite ler_wpmul2r// ltW.
 Qed.
 
-Lemma ex_strict_dom_bound {T : Type} {K : numFieldType} 
+Lemma ex_strict_dom_bound {T : Type} {K : numFieldType}
     {V W : pseudoMetricNormedZmodType K}
     (h : T -> V) (f : T -> W) (F : set (set T)) {PF : ProperFilter F} :
   (\forall x \near F, h x != 0) ->
@@ -1470,7 +1473,7 @@ exists (M + 1); apply: filterS2 hN0 FM => x hN0 /le_lt_trans/= ->//.
 by rewrite ltr_pmul2r ?normr_gt0// ltr_addl.
 Qed.
 
-Definition bounded_near {T : Type} {K : numFieldType} 
+Definition bounded_near {T : Type} {K : numFieldType}
     {V : pseudoMetricNormedZmodType K}
   (f : T -> V) (F : set (set T)) :=
   \forall M \near +oo, F [set x | `|f x| <= M].
@@ -1489,7 +1492,7 @@ Lemma sub_boundedl (T : Type) (K : numFieldType) (V : pseudoMetricNormedZmodType
  (\forall x \near F, `|f x| <= `|g x|) ->  bounded_near g F -> bounded_near f F.
 Proof.
 move=> le_fg; rewrite /bounded_near; apply: filterS => M.
-by apply: filterS2 le_fg => x; apply: le_trans. 
+by apply: filterS2 le_fg => x; apply: le_trans.
 Qed.
 
 Lemma ex_bound {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
@@ -1573,7 +1576,6 @@ Lemma lipschitz_id (R : numFieldType) (V : normedModType R) : 1.-lipschitz (@id 
 Proof. by move=> [/= x y] _; rewrite mul1r. Qed.
 Arguments lipschitz_id {R V}.
 
-(* was Section NormedModule_numFieldType. *)
 Section PseudoNormedZMod_numFieldType.
 Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
 
@@ -1728,7 +1730,7 @@ apply: pre_C; apply: le_lt_trans (ler_dist_dist _ _) _.
 by rewrite opprB addrC subrKA distrC.
 Qed.
 
-(* maybe not useful *)
+(* NB: maybe not useful *)
 Lemma normedModType_hausdorff' (R : realFieldType) (V : normedModType R) :
   hausdorff V.
 Proof. exact: norm_hausdorff. Qed.
@@ -1747,7 +1749,7 @@ Lemma continuous_cvg_dist {R : numFieldType}
 Proof.
  move=> + + e => /(_ l)/cvg_dist/(_ _ (posnum_gt0 e)).
 rewrite near_map => /nbhs_ballP[_/posnumP[a]] + xl; apply.
-move/(cvg_ball (y :=l)): xl=> /(_ _ a)/nbhs_ballP[_/posnumP[b]]; apply; exact: ballxx.
+move/(cvg_ball (y := l)): xl=> /(_ _ a)/nbhs_ballP[_/posnumP[b]]; apply; exact: ballxx.
 Qed.
 (*NB: was /cvg_ball before *)
 

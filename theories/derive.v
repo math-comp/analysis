@@ -1,4 +1,3 @@
-
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop order matrix interval.
@@ -625,7 +624,7 @@ move=> dfx; apply: DiffDef; first exact: differentiableZ.
 by rewrite diffZ // diff_val.
 Qed.
 
-Lemma diffZl (k : V -> R) (f : W) x : differentiable k x -> 
+Lemma diffZl (k : V -> R) (f : W) x : differentiable k x ->
   'd (fun z => k z *: f) x = (fun z => 'd k x z *: f) :> (_ -> _).
 Proof.
 move=> df; set g := RHS; have glin : linear g.
@@ -786,10 +785,9 @@ apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (le_trans (fschwarz _ _))//.
 rewrite ler_pmul ?pmulr_rge0 //; last by rewrite nng_le_maxr /= lexx orbT.
 rewrite -ler_pdivl_mull //.
 suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite nng_le_maxr /= lexx.
-near: x; rewrite !near_simpl; apply/(@nbhs_le_nbhs_norm R (@prod_normedModType R U V')).
-+(*tentative fix*)
-+by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite -ball_normE /= distrC subr0 => /ltW.
-+Grab Existential Variables. all: end_near. Qed.
+near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
+by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite -ball_normE /= distrC subr0 => /ltW.
+Grab Existential Variables. all: end_near. Qed.
 
 Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
   continuous (fun p => f p.1 p.2) ->
