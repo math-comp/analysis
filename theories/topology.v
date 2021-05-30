@@ -4619,13 +4619,6 @@ Definition restricted_topologicalType_mixin :=
   @topologyOfEntourageMixin (U -> V) 
     restricted_nbhs_filter restricted_uniformMixin.
 
-Definition restricted_topologicalType :=
-  TopologicalType restricted_filteredType restricted_topologicalType_mixin .
-
-Canonical restricted_uniformType := 
-  UniformType restricted_topologicalType restricted_uniformMixin.
-
-Definition restrict_fun (f : U -> V) : restricted_uniformType := f.
 End RestrictionTopology.
 
 Notation eq_on := explode.
@@ -4637,7 +4630,7 @@ Definition unif_fun
 
 (* Note, we define things in terms of projection functions rather than 
    casts like ( f : {restricted A -> f}) so the pretty printer picks the 
-   right syntax. Otherwise you get goals unhelpfully goals like  
+   right syntax. Otherwise you get unhelpful goals like  
     A `<=` B -> (F --> f) -> (F --> f)
    when you want something like
     A `<=` B -> {restricted B, F --> f} -> {restricted A, F --> f} 
@@ -4652,6 +4645,15 @@ Lemma unif_cvgE
   {unif, F --> f} = (F --> (f : {unif, U -> V})).
 Proof. by []. Qed. 
 
+Canonical restricted_topologicalType {U : choiceType} V A :=
+  TopologicalType (@restricted_filteredType U A V) (restricted_topologicalType_mixin V) .
+
+Canonical restricted_uniformType {U : choiceType} V (A: set U) := 
+  UniformType (@restricted_topologicalType U A V) (restricted_uniformMixin _).
+
+Definition restrict_fun 
+  {U: choiceType} {V: uniformType} (A : set U) 
+  (f : U -> V) : restricted_uniformType V A := f.
 Notation "'{restricted' A -> V }" :=
     (@restricted_uniformType _ V A) :  classical_set_scope.
 Notation "'{restricted' A , F --> f }" :=
@@ -4665,7 +4667,10 @@ Lemma restricted_cvgE
   {restricted A, F --> f} = (F --> (f : {restricted A -> V})).
 Proof. by []. Qed. 
 
-Notation "'{ptws,' U -> V }"  := (@product_topologicalType U (fun=> V)).
+Canonical fct_Pointwise U V :=
+  [topologicalType of (@product_topologicalType U (fun=> V))].
+
+Notation "'{ptws,' U -> V }"  := (fct_Pointwise U V).
 Definition ptws_fun
   {U: Type} {V : topologicalType} 
   (f : U -> V) : {ptws, U -> V} := f.
@@ -5069,11 +5074,11 @@ Proof.
   by apply: IH => //=.
 Qed.
 
-
 End RestrictedFamilies.
 
 Notation "'{family' fam , U -> V }" :=  
   (@family_cvg_topologicalType U V fam).
+Check [unifromType of (@family_cvg_topologicalType U V fam)].
 Notation "'{family' fam , F --> f }"  :=
   (F --> (restrict_fam fam f)) : classical_set_scope.
 
