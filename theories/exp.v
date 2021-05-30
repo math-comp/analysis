@@ -216,13 +216,17 @@ rewrite -subr_ge0 [1 + _]addrC addrK //.
 by apply: sumr_ge0 => *; apply: addr_ge0.
 Qed.
 
-Lemma cvg_ext (f g : R^nat) (x : R) : f = g -> (f --> x) = (g --> x).
+Lemma cvg_ext : forall (R : realType) (f g : (R) ^nat),
+  f = g -> (f --> lim f) = (g --> lim g).
+Proof. by move=> R1 f1 g1 ->. Qed.
+
+Lemma cvg_extl (f g : R^nat) (x : R) : f = g -> (f --> x) = (g --> x).
 Proof. by move->. Qed. 
 
 Lemma cvgS (f : R^nat) (x : R) : (f \o S --> x) = (f --> x).
 Proof.
 have <- /= := @cvg_shiftn 1 _ f x.
-by apply/cvg_ext/funext => i; rewrite addn1.
+by apply/cvg_extl/funext => i; rewrite addn1.
 Qed.
 
 Lemma is_cvg_seriesN (f : R^nat) : cvg (series f) -> cvg (series (-f)).
@@ -301,10 +305,8 @@ Lemma lim_series_le (f g : (R) ^nat) :
   cvg (series f) -> cvg (series g) -> (forall n : nat, f n <= g n) -> 
   lim (series f) <= lim (series g).
 Proof.
-move=> Cf Cg fLg.
-apply ler_lim => [//|//|].
-near=> x.
-by rewrite /series /= ler_sum.
+move=> Cf Cg fLg; apply ler_lim => [//|//|].
+by near=> x; rewrite /series /= ler_sum.
 Grab Existential Variables. all: end_near. Qed.
 
 End Cvg.
@@ -348,23 +350,9 @@ apply: lt_le_trans (exp_ge (ltW xP)).
 by rewrite -subr_gt0 addrAC subrr add0r.
 Qed.
 
-Fact powdiff n (x y : R) : 
-  \sum_(0 <= i < n.+1) x ^+ i  * y ^+ (n.+1 - i) =   
-  y * \sum_(0 <= i < n.+1) x ^+ i  * y ^+ (n - i).
-Proof.
-rewrite !big_mkord mulr_sumr; apply: eq_bigr => i _.
-by rewrite mulrCA -exprS subSn // -ltnS.
-Qed.
-
-Lemma powdiffE n (x y : R) : 
-   x ^+ n.+1 - y ^+ n.+1 = (x - y) * \sum_(0 <= i < n.+1) x ^+ i * y ^+ (n - i).
-Proof.
-rewrite big_nat_rev /= subrXX /= big_mkord //.
-by congr (_ * _); apply: eq_bigr => i _; rewrite subKn // -ltnS.
-Qed.
 
 Fact pow_ser_inside_a f (x z : R) :
-  cvg (series (fun i => f i * x ^+ i)) -> `|z| < `|x| ->
+  cvg (series (fun i =>    f i * x ^+ i)) -> `|z| < `|x| ->
   cvg (series (fun i => `|f i| * z ^+ i)).
 Proof.
 move=> Cx zLx.
@@ -404,7 +392,7 @@ Lemma diffsN (f : nat -> R) :  diffs (- f) = -(diffs f).
 Proof. by apply/funext => i; rewrite /diffs /= -mulrN. Qed.
 
 Lemma diffs_sumE n f x :
- \sum_(0 <= i < n) diffs f i * x ^+ i =
+  \sum_(0 <= i < n)  diffs f i * x ^+ i =
  (\sum_(0 <= i < n) i%:R * f i * x ^+ i.-1) + n%:R * f n * x ^+ n.-1.
 Proof.
 case: n => [|n]; first by rewrite !big_nil !mul0r add0r.
@@ -412,38 +400,32 @@ under eq_bigr do unfold diffs.
 by rewrite big_nat_recr //= big_nat_recl //= !mul0r add0r.
 Qed.
 
-Lemma cvg_ext1 : forall (R : realType) (f g : (R) ^nat),
-  f = g -> (f --> lim f) = (g --> lim g).
-Proof. by move=> R1 f1 g1 ->. Qed.
-
 Lemma diffs_equiv f x :
-  cvg (series (fun i => diffs f i * x ^+ i)) ->
-  series (fun i => i%:R * f i * x ^+ i.-1) -->
-  lim (series (fun i => diffs f i * x ^+ i)).
+  let s1 i := diffs f i * x ^+ i in
+  let s2 i := i%:R * f i * x ^+ i.-1 in
+  cvg (series s1) -> series s2 --> lim (series s1).
 Proof.
-move=> Cx.
-rewrite -[lim _]subr0.
-rewrite {2}/series /=.
-have F n : \sum_(0 <= i < n) i%:R * f i * x ^+ i.-1 =
-           (\sum_(0 <= i < n) diffs f i * x ^+ i) - n%:R * f n * x ^+ n.-1.
-    by rewrite diffs_sumE addrK. 
-rewrite (cvg_ext _ (funext F)).
+move=> s1 s2 Cx; rewrite -[lim _]subr0 {2}/series /=.
+have s2E n : 
+  \sum_(0 <= i < n) s2 i = \sum_(0 <= i < n) s1 i - n%:R * f n * x ^+ n.-1.
+  by rewrite diffs_sumE addrK. 
+rewrite (cvg_extl _ (funext s2E)).
 apply: cvgB => //; rewrite -cvgS.
 by apply: cvg_series_cvg_0.
 Qed.
 
 Lemma cvg_diffs_equiv f x :
-  cvg (series (fun i => diffs f i * x ^+ i)) ->
-  cvg (series (fun i => i%:R * f i * x ^+ i.-1)).
+  let s1 i := diffs f i * x ^+ i in
+  let s2 i := i%:R * f i * x ^+ i.-1 in cvg (series s1) -> cvg (series s2).
 Proof.
-move=> Cx.
+move=> s1 s2 Cx; rewrite /s1 /s2 in Cx.
 have F1 := diffs_equiv Cx.
 by rewrite (cvg_lim _ (F1)).
 Qed.
 
 Lemma termdiff_P1 m (z h : R) :
-  \sum_(0 <= i < m) ((z + h) ^+ (m - i) * z ^+ i - z ^+ m) =
-  \sum_(0 <= i < m) z ^+ i * ((z + h) ^+ (m - i) - z ^+ (m - i)).
+  \sum_(0 <= i < m) ((h + z) ^+ (m - i) * z ^+ i - z ^+ m) =
+  \sum_(0 <= i < m) z ^+ i * ((h + z) ^+ (m - i) - z ^+ (m - i)).
 Proof.
 rewrite !big_mkord; apply: eq_bigr => i _.
 by rewrite mulrDr mulrN -exprD mulrC addnC subnK // ltnW.
@@ -451,29 +433,29 @@ Qed.
 
 Lemma termdiff_P2 n (z h : R) :
   h != 0 ->
-  ((z + h) ^+ n - (z ^+ n)) / h - n%:R * z ^+ n.-1 =
+  ((h + z) ^+ n - (z ^+ n)) / h - n%:R * z ^+ n.-1 =
   h * \sum_(0 <= i < n.-1) z ^+ i *
-      \sum_(0 <= j < n.-1 - i) (z + h) ^+ j * z ^+ (n.-2 - i - j).
+      \sum_(0 <= j < n.-1 - i) (h + z) ^+ j * z ^+ (n.-2 - i - j).
 Proof.
 move=> hNZ; apply: (mulfI hNZ).
 rewrite mulrBr mulrC divfK //.
 case: n => [|n].
   by rewrite !expr0 !(mul0r, mulr0, subr0, subrr, big_geq).
-rewrite subrXX /= {1}[z + _]addrC addrK -mulrBr; congr (_ * _).
-rewrite -(big_mkord xpredT (fun i : nat => (z + h) ^+ (n - i) * z ^+ i)).
+rewrite subrXX addrK -mulrBr; congr (_ * _).
+rewrite -(big_mkord xpredT (fun i : nat => (h + z) ^+ (n - i) * z ^+ i)).
 rewrite big_nat_recr //= subnn expr0 -addrA -mulrBl.
 rewrite  -add1n natrD opprD addrA subrr sub0r mulNr.
 rewrite mulr_natl -{4}(subn0 n) -sumr_const_nat -sumrB.
 rewrite termdiff_P1 mulr_sumr !big_mkord; apply: eq_bigr => i _.
 rewrite mulrCA; congr (_ * _).
-rewrite subrXX {1}[z + _]addrC addrK big_nat_rev /= big_mkord.
+rewrite subrXX addrK big_nat_rev /= big_mkord.
 congr (_ * _); apply: eq_bigr => k _.
 by rewrite -!predn_sub subKn // -subnS.
 Qed.
 
 Lemma termdiff_P3 (z h : R) n K :
- h != 0 -> `|z| <= K -> `|z + h| <= K ->
-    `|((z + h) ^+ n - z ^+ n) / h - n%:R * z ^+ n.-1|
+ h != 0 -> `|z| <= K -> `|h + z| <= K ->
+    `|((h +z) ^+ n - z ^+ n) / h - n%:R * z ^+ n.-1|
         <= n%:R * n.-1%:R * K ^+ n.-2 * `|h|.
 Proof.
 move=> hNZ zLK zhLk.
@@ -521,34 +503,23 @@ have : 0 <= K.
 rewrite le_eqVlt => /orP[/eqP K_eq0| K_gt0].
   pose k3 := if k2 < eps then k2 else eps.
   have k3_gt0 : 0 < k3 by rewrite /k3; case: (k2 < _).
-  have k3Lk : k3 < k.
-    by rewrite /k3; case: (ltrP k2) => // /le_lt_trans ->.
-  exists k3 => //= t /=; rewrite !sub0r !normrN.
-  move=> H1 Ht.
-  apply: le_lt_trans (H _ _) _.
-    apply/andP; split; first by rewrite normr_gt0.
-    by apply: lt_trans H1 _.
-  by rewrite -K_eq0 mul0r.
+  have k3Lk : k3 < k by rewrite /k3; case: (ltrP k2) => // /le_lt_trans ->. 
+  exists k3 => //= t /=; rewrite !sub0r !normrN => H1 Ht.
+  apply: le_lt_trans (H _ _) _; last by rewrite -K_eq0 mul0r.
+  by apply/andP; split; [rewrite normr_gt0 | apply: lt_trans H1 _].
+have KNZ : K != 0 by case: (ltrgt0P K) K_gt0.
 pose k3 := if k2 < eps / K then k2 else eps / K.
-have k3_gt0 : 0 < k3.
-  by rewrite /k3; case: (k2 < _); rewrite // divr_gt0.
-have k3Lk : k3 < k.
-  by rewrite /k3; case: (ltrP k2) => // /le_lt_trans ->.
+have k3_gt0 : 0 < k3 by rewrite /k3; case: (k2 < _); rewrite // divr_gt0.
+have k3Lk : k3 < k by rewrite /k3; case: (ltrP k2) => // /le_lt_trans ->.
 have k3Le : K * k3 <= eps.
-  rewrite -[eps](divfK (_ : K != 0)).
-    rewrite mulrC ler_pmul2r //.
-    rewrite /k3; case: (ltrP k2) => //.
-    by move/ltW.
-  by case: (ltrgt0P K) K_gt0.
-exists k3 => //= t /=; rewrite !sub0r !normrN.
-move=> H1 H2.
-have : `|f t| <= K * `|t|.
-  apply/H/andP; split.
-    by rewrite normr_gt0.
-  by apply: lt_trans H1 _.
-  move=> /le_lt_trans ->//.
-  apply: lt_le_trans k3Le.
-  by rewrite ltr_pmul2l //.
+  rewrite -[eps](divfK (_ : K != 0)) // mulrC ler_pmul2r //.
+  by rewrite /k3; case: (ltrP k2) => // /ltW.
+exists k3 => //= t /=; rewrite !sub0r !normrN => tLk3 tNZ.
+have /le_lt_trans ->// : `|f t| <= K * `|t|.
+  apply/H/andP; split; first by rewrite normr_gt0.
+  by apply: lt_trans tLk3 _.
+apply: lt_le_trans k3Le.
+by rewrite ltr_pmul2l //.
 Qed.
 
 Lemma termdiff_P (f : nat -> R) (g : R -> nat -> R) k :
@@ -563,13 +534,12 @@ have Lkf := lim_seriesZr `|h| Cf.
 have Cng : cvg [normed series (g h)].
   apply: series_le_cvg (Hg _ hLk) _  => //.
     by move=> h1; apply: le_trans (Hg _ hLk _).
-  by rewrite (funext (fun n => (@mulrC R _ _))).
+  by rewrite (funext (fun _ => (@mulrC R _ _))).
 apply: le_trans (_ : lim [normed series (g h)] <= _).
   by apply: lim_series_norm.
 rewrite -[_ * _]lim_seriesZr //.
-apply: lim_series_le => //=.
-move=> n; rewrite [X in _ <= X]mulrC.
-by apply: Hg.
+apply: lim_series_le => //= => n.
+by rewrite [X in _ <= X]mulrC; apply: Hg.
 Qed.
 
 Lemma termdiff (c : R^nat) K x :
@@ -580,21 +550,18 @@ Lemma termdiff (c : R^nat) K x :
   (fun x => lim (series (fun n => c(n) * x ^+ n)))^`() x =
     lim (series (fun n => diffs c n * x ^+ n)).
 Proof.
-move=> Ck CdK CddK xLK.
-set s := (fun n : nat => _).
+move=> Ck CdK CddK xLK; set s := (fun n : nat => _).
 apply: cvg_lim => //.
-pose sx := fun n : nat => c n * x ^+ n.
+set sx := fun n : nat => c n * x ^+ n.
 have Csx : cvg (series sx) by apply: pow_ser_inside Ck _.
 pose shx h := fun n : nat => c n * (h + x) ^+ n.
 suff Cc :
       lim (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> lim (series s).
   apply: cvg_trans Cc.
-  apply/cvg_distP => eps eps_gt0 /=.
-  rewrite !near_simpl /=.
+  apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
   near=> h; rewrite sub0r normrN /=.
   apply: le_lt_trans eps_gt0.
-  rewrite normr_le0 subr_eq0; apply/eqP.
-  rewrite -/sx -/(shx _).
+  rewrite normr_le0 subr_eq0 -/sx -/(shx _); apply/eqP.
   have Cshx : cvg (series (shx h)).
     apply: pow_ser_inside Ck _.
     apply: le_lt_trans (ler_norm_add _ _) _.
@@ -609,7 +576,6 @@ suff Cc :
   rewrite limZr; last by apply: is_cvg_seriesB.
   by rewrite lim_seriesB.
 apply: cvg_zero => /=.
-(* Need cleaning *)
 suff Cc : 
   lim (series
        (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
@@ -622,8 +588,7 @@ suff Cc :
   rewrite normr_le0 subr_eq0; apply/eqP.
   set u := (fun n => _); set v := (fun _ => _); set w := (fun n => _).
   rewrite /-%R /+%R /= {}/u {}/v {}/w.
-  have Cs : cvg (series s).
-    by apply: pow_ser_inside CdK _.
+  have Cs : cvg (series s) by apply: pow_ser_inside CdK _.
   have Cs1 := cvg_diffs_equiv (Cs).
   have Fs1 := diffs_equiv (Cs).
   set s1 := (fun i => _) in Cs1.
@@ -640,10 +605,9 @@ suff Cc :
     by rewrite ler_paddr // subr_ge0 ltW.
   have C1 := is_cvg_seriesB Cshx Csx.
   have Ckf := @is_cvg_seriesZr _ _ h^-1 C1.
-  have Cu : (series (h^-1 *: (shx h - sx)) -
-             series s1) x0 @[x0 --> \oo] --> 
-            lim (series (h^-1 *: (shx h - sx))) -
-            lim (series s).
+  have Cu : 
+   (series (h^-1 *: (shx h - sx)) - series s1) x0 @[x0 --> \oo] --> 
+    lim (series (h^-1 *: (shx h - sx))) - lim (series s).
     by apply: cvgB.
   set w := fun n : nat => _.
   have -> : w = h^-1 *: (shx h - sx)  - s1.
@@ -654,28 +618,23 @@ suff Cc :
   have -> : series (h^-1 *: (shx h - sx) - s1) = 
             series (h^-1 *: (shx h - sx)) - (series s1).
     by apply/funext => i; rewrite /series /= sumrB.
-  have -> : h^-1 *: series (shx h - sx) =
-            series (h^-1 *: (shx h - sx)).
+  have -> : h^-1 *: series (shx h - sx) = series (h^-1 *: (shx h - sx)).
     by apply/funext => i; rewrite /series /= -scaler_sumr.
   by apply/sym_equal/cvg_lim.
 pose r := (`|x| + `|K|) / 2.
-have xLr : `|x| < r.
-  by rewrite ltr_pdivl_mulr // mulr2n mulrDr mulr1 ltr_add2l.
-have rLx : r < `|K| .
-  by rewrite ltr_pdivr_mulr // mulr2n mulrDr mulr1 ltr_add2r.
-have rNZ : r != 0.
-  have : 0 < r by apply: le_lt_trans xLr.
-  by case: ltrgt0P.
+have xLr : `|x| < r by rewrite ltr_pdivl_mulr // mulr2n mulrDr mulr1 ltr_add2l.
+have rLx : r < `|K| by rewrite ltr_pdivr_mulr // mulr2n mulrDr mulr1 ltr_add2r.
+have r_gt0 : 0 < r by apply: le_lt_trans xLr.
+have rNZ : r != 0by case: ltrgt0P r_gt0.
 apply: (@termdiff_P
   (fun n => `|c n| * n%:R * (n.-1)%:R * r ^+ n.-2)
   (fun h n => c n * (((h + x) ^+ n - x ^+ n) / h -
                      n%:R * x ^+ n.-1))
-  (r - `|x|)) => //.
-- by rewrite subr_gt0.
+  (r - `|x|)); first by rewrite subr_gt0.
 - have : cvg (series (fun n => `|diffs (diffs c) n| * r ^+ n)).
     apply: pow_ser_inside_a CddK _.
     by rewrite ger0_norm // ltW // (le_lt_trans _ xLr).
-  have -> : (fun n : nat => `|diffs (diffs c) n| * r ^+ n) =
+  have -> : (fun n => `|diffs (diffs c) n| * r ^+ n) = 
             (fun n => diffs (diffs (fun m => `|c m|)) n * r ^+ n).
     apply/funext => i.
     by rewrite /diffs !normrM !mulrA ger0_norm // ger0_norm.
@@ -690,23 +649,46 @@ apply: (@termdiff_P
     rewrite [_%:R *_]mulrC !mulrA -[RHS]mulrA exprS.
     by rewrite [_^-1 * _]mulrA mulVf ?mul1r.
   move/cvg_diffs_equiv.
-  have ->// : (fun i : nat => i%:R * (i.-1%:R * `|c i| / r) * r ^+ i.-1) =
+  have ->// : (fun n : nat => n%:R * (n.-1%:R * `|c n| / r) * r ^+ n.-1) =
               (fun n : nat => `|c n| * n%:R * n.-1%:R * r ^+ n.-2).
   apply/funext => [] [|[|i]]; rewrite ?(mul0r, mulr0) //=.
   rewrite mulrA -mulrA exprS [_^-1 * _]mulrA mulVf //.
   rewrite mul1r !mulrA; congr (_ * _).
   by rewrite mulrC mulrA.
-move=> h H1 n.
+move=> h /andP[h_gt0 hLrBx] n.
+have hNZ : h != 0 by rewrite -normr_gt0.
 rewrite normrM -!mulrA ler_wpmul2l //.
-rewrite [h + _]addrC.
-apply: le_trans (termdiff_P3 _ _ _ _) _.
-- case/andP: H1.
-  by case: (ltrgt0P h) => //; rewrite ltxx.
-- by apply/ltW/xLr.
-- apply: le_trans (ler_norm_add _ _) _.
-  rewrite -(subrK `|x| r) addrC ler_add2r ltW //.
-  by case/andP: H1.
-by rewrite !mulrA.
+apply: le_trans (termdiff_P3 _ hNZ (ltW xLr) _) _; last by rewrite !mulrA.
+apply: le_trans (ler_norm_add _ _) _.
+by rewrite -(subrK `|x| r) ler_add2r ltW.
 Grab Existential Variables. all: end_near. Qed.
+
+Lemma exp_coeffE (x : R) : 
+  exp_coeff x = (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n).
+Proof. by apply/funext => i; rewrite /exp_coeff /= mulrC. Qed.
+
+Lemma expE : 
+  exp = fun x => lim (series (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n)).
+Proof. by apply/funext => x; rewrite -exp_coeffE. Qed.
+
+Lemma diffs_exp : diffs (fun n => (n`!%:R)^-1) = (fun n => (n`!%:R)^-1).
+Proof.
+by apply/funext => i; rewrite /diffs factS natrM invfM mulrA mulfV ?mul1r.
+Qed.
+
+Lemma deriv_exp x : (exp)^`() x = exp x.
+Proof.
+rewrite expE /= (@termdiff _ (`|x| + 1)) //.
+- by congr (lim (series _)); apply/funext => i; rewrite diffs_exp.
+- rewrite -exp_coeffE; apply: is_cvg_series_exp_coeff.
+- rewrite (_ : (fun n : nat => _) = exp_coeff (`|x| + 1)).
+    by apply: is_cvg_series_exp_coeff.
+  by apply/funext => i; rewrite diffs_exp exp_coeffE.
+- rewrite (_ : (fun n : nat => _) = exp_coeff (`|x| + 1)).
+    by apply: is_cvg_series_exp_coeff.
+  by apply/funext => i; rewrite !diffs_exp exp_coeffE.
+by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+Qed.
+
 
 End exp.
