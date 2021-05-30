@@ -86,6 +86,7 @@
   + definition `exp_coeff`
   + lemmas `exp_coeff_ge0`, `series_exp_coeff0`, `is_cvg_series_exp_coeff_pos`,
     ` normed_series_exp_coeff`, `is_cvg_series_exp_coeff `, `cvg_exp_coeff`
+  + definition `expR`
 
 ### Changed
 

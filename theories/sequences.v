@@ -8,9 +8,10 @@ Require Import classical_sets posnum topology normedtype landau.
 (*                Definitions and lemmas about sequences                      *)
 (*                                                                            *)
 (* The purpose of this file is to gather generic definitions and lemmas about *)
-(* sequences. Since it is an early version, it is likely to undergo changes.  *)
-(* Here follow sample definitions and lemmas to give an idea of contents.     *)
-(* See file sequences_applications.v for small scale usage examples.          *)
+(* sequences. The first part is essentially about sequences of realType       *)
+(* numbers while the last part is about extended real numbers. It is an early *)
+(* version that is likely to undergo changes. The documentation lists up      *)
+(* sample definitions and lemmas to give an idea of contents.                 *)
 (*                                                                            *)
 (* Definitions:                                                               *)
 (*           R ^nat == notation for sequences,                                *)
@@ -27,29 +28,30 @@ Require Import classical_sets posnum topology normedtype landau.
 (*                        cvg [norm S_n])                                     *)
 (*                                                                            *)
 (* Lemmas:                                                                    *)
-(*                       squeeze == squeeze lemma                             *)
-(*                 cvgNpinfty u_ == (- u_ --> +oo) = (u_ --> -oo).            *)
-(*    nonincreasing_cvg_ge u_ == if u_ is nonincreasing and convergent then   *)
-(*                                  forall n, lim u_ <= u_ n                  *)
-(*    nondecreasing_cvg_le u_ == if u_ is nondecreasing and convergent then   *)
-(*                                  forall n, lim u_ >= u_ n                  *)
-(*       nondecreasing_cvg u_ == if u_ is nondecreasing and bounded then u_   *)
-(*                                  is convergent and its limit is sup u_n    *)
-(*       nonincreasing_cvg u_ == if u_ is nonincreasing u_ and bound by below *)
-(*                                  then u_ is convergent                     *)
-(*                      adjacent == adjacent sequences lemma                  *)
-(*                        cesaro == Cesaro's lemma                            *)
+(*                  squeeze == squeeze lemma                                  *)
+(*            cvgNpinfty u_ == (- u_ --> +oo) = (u_ --> -oo).                 *)
+(*  nonincreasing_cvg_ge u_ == if u_ is nonincreasing and convergent then     *)
+(*                             forall n, lim u_ <= u_ n                       *)
+(*  nondecreasing_cvg_le u_ == if u_ is nondecreasing and convergent then     *)
+(*                             forall n, lim u_ >= u_ n                       *)
+(*     nondecreasing_cvg u_ == if u_ is nondecreasing and bounded then u_     *)
+(*                             is convergent and its limit is sup u_n         *)
+(*     nonincreasing_cvg u_ == if u_ is nonincreasing u_ and bound by below   *)
+(*                             then u_ is convergent                          *)
+(*                 adjacent == adjacent sequences lemma                       *)
+(*                   cesaro == Cesaro's lemma                                 *)
 (*                                                                            *)
-(* Sections sequences_R_* contain properties of sequences of real numbers     *)
+(* Sections sequences_R_* contain properties of sequences of real numbers.    *)
+(*                                                                            *)
+(* is_cvg_series_exp_coeff == convergence of \sum_n^+oo x^n / n!              *)
+(*                  expR x == the exponential function defined on a realType  *)
 (*                                                                            *)
 (* \sum_<range> F i == lim (fun n => (\sum_<range>) F i)) where <range> can   *)
 (*                     be (i <oo), (i <oo | P i), (m <= i <oo), or            *)
 (*                     (m <= i <oo | P i)                                     *)
 (*                                                                            *)
-(* is_cvg_series_exp_pos == convergence of \sum_n^+oo x^n / n!                *)
-(*                                                                            *)
-(* Section sequences_of_extended_real_numbers contain properties of sequences *)
-(* of extended real numbers.                                                  *)
+(* Section sequences_ereal contain properties of sequences of extended real   *)
+(* numbers.                                                                   *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -794,24 +796,7 @@ apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
 
-Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F" :=
-  (lim (fun n => (\big[ op / idx ]_(m <= i < n | P) F))) : big_scope.
-Notation "\big [ op / idx ]_ ( m <= i <oo ) F" :=
-  (lim (fun n => (\big[ op / idx ]_(m <= i < n) F))) : big_scope.
-Notation "\big [ op / idx ]_ ( i <oo | P ) F" :=
-  (lim (fun n => (\big[ op / idx ]_(i < n | P) F))) : big_scope.
-Notation "\big [ op / idx ]_ ( i <oo ) F" :=
-  (lim (fun n => (\big[ op / idx ]_(i < n) F))) : big_scope.
-
-Notation "\sum_ ( m <= i <oo | P ) F" :=
-  (\big[+%E/0%:E]_(m <= i <oo | P%B) F%E) : ring_scope.
-Notation "\sum_ ( m <= i <oo ) F" :=
-  (\big[+%E/0%:E]_(m <= i <oo) F%E) : ring_scope.
-Notation "\sum_ ( i <oo | P ) F" :=
-  (\big[+%E/0%:E]_(0 <= i <oo | P%B) F%E) : ring_scope.
-Notation "\sum_ ( i <oo ) F" :=
-  (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
-
+(* TODO: backport to MathComp? *)
 Section fact_facts.
 
 Local Open Scope nat_scope.
@@ -951,7 +936,28 @@ Proof. exact: (cvg_series_cvg_0 (@is_cvg_series_exp_coeff x)). Qed.
 
 End exponential_series.
 
-Section sequences_of_extended_real_numbers.
+(* TODO: generalize *)
+Definition expR (R : realType) (x : R) : R := lim (series (exp_coeff x)).
+
+Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F" :=
+  (lim (fun n => (\big[ op / idx ]_(m <= i < n | P) F))) : big_scope.
+Notation "\big [ op / idx ]_ ( m <= i <oo ) F" :=
+  (lim (fun n => (\big[ op / idx ]_(m <= i < n) F))) : big_scope.
+Notation "\big [ op / idx ]_ ( i <oo | P ) F" :=
+  (lim (fun n => (\big[ op / idx ]_(i < n | P) F))) : big_scope.
+Notation "\big [ op / idx ]_ ( i <oo ) F" :=
+  (lim (fun n => (\big[ op / idx ]_(i < n) F))) : big_scope.
+
+Notation "\sum_ ( m <= i <oo | P ) F" :=
+  (\big[+%E/0%:E]_(m <= i <oo | P%B) F%E) : ring_scope.
+Notation "\sum_ ( m <= i <oo ) F" :=
+  (\big[+%E/0%:E]_(m <= i <oo) F%E) : ring_scope.
+Notation "\sum_ ( i <oo | P ) F" :=
+  (\big[+%E/0%:E]_(0 <= i <oo | P%B) F%E) : ring_scope.
+Notation "\sum_ ( i <oo ) F" :=
+  (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
+
+Section sequences_ereal.
 Local Open Scope ereal_scope.
 
 Lemma ereal_cvgN (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
@@ -1438,4 +1444,4 @@ have : lim u <= M%:E by apply ereal_lim_le => //; near=> m; apply/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Grab Existential Variables. all: end_near. Qed.
 
-End sequences_of_extended_real_numbers.
+End sequences_ereal.
