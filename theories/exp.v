@@ -901,3 +901,73 @@ by case: ltrgt0P (exp_gt0 x).
 Qed.
 
 End exp.
+
+Section Cos.
+
+Variable R : realType.
+
+Definition cos_coeff (x : R) :=
+   [sequence  (odd n)%:R * (-1)^n.-1./2 * x ^+ n / n`!%:R]_n.
+
+Lemma cos_coeffE (x : R) : 
+  cos_coeff x = (fun n => (fun n => (odd n)%:R * (-1)^n.-1./2 *
+                                    (n`!%:R)^-1) n * x ^+ n).
+Proof.
+by apply/funext => i; rewrite /cos_coeff /= -!mulrA [_ / _]mulrC.
+Qed.
+
+Lemma is_cvg_series_cos_coeff x : cvg (series (cos_coeff x)).
+Proof.
+apply: normed_cvg.
+apply: series_le_cvg; last by apply: (@is_cvg_series_exp_coeff _ `|x|).
+- by move=> n; rewrite normr_ge0.
+- by move=> n; rewrite divr_ge0 ?exprn_ge0 // ler0n.
+move=> n /=.
+rewrite /exp_coeff /cos_coeff /=.
+rewrite !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
+case: odd; first by rewrite mul1r.
+by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
+Qed.
+
+Definition cos x := lim (series (cos_coeff x)).
+
+Lemma cosE : 
+  cos = fun x => 
+    lim (series (fun n => 
+                  (fun n => (odd n)%:R * (-1)^n.-1./2 * (n`!%:R)^-1) n 
+                  * x ^+ n)).
+Proof. by apply/funext => x; rewrite -cos_coeffE. Qed.
+
+Definition sin_coeff (x : R) :=
+   [sequence  (~~(odd n))%:R * (-1)^n./2 * x ^+ n / n`!%:R]_n.
+
+Lemma sin_coeffE (x : R) : 
+  sin_coeff x = (fun n => (fun n => (~~(odd n))%:R * (-1)^n./2 *
+                                    (n`!%:R)^-1) n * x ^+ n).
+Proof.
+by apply/funext => i; rewrite /sin_coeff /= -!mulrA [_ / _]mulrC.
+Qed.
+
+Lemma is_cvg_series_sin_coeff x : cvg (series (sin_coeff x)).
+Proof.
+apply: normed_cvg.
+apply: series_le_cvg; last by apply: (@is_cvg_series_exp_coeff _ `|x|).
+- by move=> n; rewrite normr_ge0.
+- by move=> n; rewrite divr_ge0 ?exprn_ge0 // ler0n.
+move=> n /=.
+rewrite /exp_coeff /sin_coeff /=.
+rewrite !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
+case: odd; last by rewrite mul1r.
+by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
+Qed.
+
+Definition sin x := lim (series (sin_coeff x)).
+
+Lemma sinE : 
+  sin = fun x => 
+    lim (series (fun n => 
+                  (fun n => (~~(odd n))%:R * (-1)^n./2 * (n`!%:R)^-1) n 
+                  * x ^+ n)).
+Proof. by apply/funext => x; rewrite -sin_coeffE. Qed.
+
+End Cos.
