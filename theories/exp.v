@@ -863,7 +863,7 @@ apply: differentiable_continuous.
 by apply/derivable1_diffP/derivable_exp.
 Qed.
 
-Lemma expxDyMexpx x y: exp (x + y) * exp (-x) = exp y.
+Lemma expxDyMexpx x y : exp (x + y) * exp (- x) = exp y.
 Proof.
 apply: etrans (_ : exp(0 + y) * exp (- 0) = _); last first.
   by rewrite add0r oppr0 exp0 mulr1.
@@ -902,47 +902,15 @@ Qed.
 
 End exp.
 
-Section Cos.
+Section CosSin.
 
 Variable R : realType.
 
-Definition cos_coeff (x : R) :=
-   [sequence  (odd n)%:R * (-1)^n.-1./2 * x ^+ n / n`!%:R]_n.
-
-Lemma cos_coeffE (x : R) : 
-  cos_coeff x = (fun n => (fun n => (odd n)%:R * (-1)^n.-1./2 *
-                                    (n`!%:R)^-1) n * x ^+ n).
-Proof.
-by apply/funext => i; rewrite /cos_coeff /= -!mulrA [_ / _]mulrC.
-Qed.
-
-Lemma is_cvg_series_cos_coeff x : cvg (series (cos_coeff x)).
-Proof.
-apply: normed_cvg.
-apply: series_le_cvg; last by apply: (@is_cvg_series_exp_coeff _ `|x|).
-- by move=> n; rewrite normr_ge0.
-- by move=> n; rewrite divr_ge0 ?exprn_ge0 // ler0n.
-move=> n /=.
-rewrite /exp_coeff /cos_coeff /=.
-rewrite !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
-case: odd; first by rewrite mul1r.
-by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
-Qed.
-
-Definition cos x := lim (series (cos_coeff x)).
-
-Lemma cosE : 
-  cos = fun x => 
-    lim (series (fun n => 
-                  (fun n => (odd n)%:R * (-1)^n.-1./2 * (n`!%:R)^-1) n 
-                  * x ^+ n)).
-Proof. by apply/funext => x; rewrite -cos_coeffE. Qed.
-
 Definition sin_coeff (x : R) :=
-   [sequence  (~~(odd n))%:R * (-1)^n./2 * x ^+ n / n`!%:R]_n.
+   [sequence  (odd n)%:R * (-1) ^+ n.-1./2 * x ^+ n / n`!%:R]_n.
 
 Lemma sin_coeffE (x : R) : 
-  sin_coeff x = (fun n => (fun n => (~~(odd n))%:R * (-1)^n./2 *
+  sin_coeff x = (fun n => (fun n => (odd n)%:R * (-1) ^+ n.-1./2 *
                                     (n`!%:R)^-1) n * x ^+ n).
 Proof.
 by apply/funext => i; rewrite /sin_coeff /= -!mulrA [_ / _]mulrC.
@@ -957,7 +925,7 @@ apply: series_le_cvg; last by apply: (@is_cvg_series_exp_coeff _ `|x|).
 move=> n /=.
 rewrite /exp_coeff /sin_coeff /=.
 rewrite !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
-case: odd; last by rewrite mul1r.
+case: odd; first by rewrite mul1r.
 by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
 Qed.
 
@@ -966,8 +934,156 @@ Definition sin x := lim (series (sin_coeff x)).
 Lemma sinE : 
   sin = fun x => 
     lim (series (fun n => 
-                  (fun n => (~~(odd n))%:R * (-1)^n./2 * (n`!%:R)^-1) n 
+                  (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) n 
                   * x ^+ n)).
 Proof. by apply/funext => x; rewrite -sin_coeffE. Qed.
 
-End Cos.
+Lemma diffs_sin : 
+  diffs (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) =
+   (fun n => (~~(odd n))%:R * (-1) ^+ n./2 * (n`!%:R)^-1 : R).
+Proof.
+apply/funext => i.
+rewrite /diffs /= factS natrM invfM.
+by rewrite [_.+1%:R * _]mulrC -!mulrA [_.+1%:R^-1 * _]mulrC mulfK.
+Qed.
+
+Lemma series_sin_coeff0 n : series (sin_coeff 0) n.+1 = 0.
+Proof.
+rewrite /series /= big_nat_recl //= /sin_coeff /= expr0n divr1 !mulr1.
+by rewrite big1 ?addr0 // => i _; rewrite expr0n !(mul0r, mulr0).
+Qed.
+
+Lemma sin0 : sin 0 = 0.
+Proof.
+apply: lim_near_cst => //.
+near=> m; rewrite -[m]prednK; last by near: m.
+rewrite -addn1 series_addn series_sin_coeff0 big_add1 big1 ?addr0//.
+by move=> i _; rewrite /sin_coeff /= expr0n !(mulr0, mul0r).
+Grab Existential Variables. all: end_near. 
+Qed.
+
+Definition cos_coeff (x : R) :=
+   [sequence  (~~(odd n))%:R * (-1)^n./2 * x ^+ n / n`!%:R]_n.
+
+Lemma cos_coeffE (x : R) : 
+  cos_coeff x = (fun n => (fun n => (~~(odd n))%:R * (-1) ^+ n./2 *
+                                    (n`!%:R)^-1) n * x ^+ n).
+Proof.
+by apply/funext => i; rewrite /cos_coeff /= -!mulrA [_ / _]mulrC.
+Qed.
+
+Lemma is_cvg_series_cos_coeff x : cvg (series (cos_coeff x)).
+Proof.
+apply: normed_cvg.
+apply: series_le_cvg; last by apply: (@is_cvg_series_exp_coeff _ `|x|).
+- by move=> n; rewrite normr_ge0.
+- by move=> n; rewrite divr_ge0 ?exprn_ge0 // ler0n.
+move=> n /=.
+rewrite /exp_coeff /cos_coeff /=.
+rewrite !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
+case: odd; last by rewrite mul1r.
+by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
+Qed.
+
+Definition cos x := lim (series (cos_coeff x)).
+
+Lemma cosE : 
+  cos = fun x => 
+    lim (series (fun n => 
+                  (fun n => (~~(odd n))%:R * (-1)^+ n./2 * (n`!%:R)^-1) n 
+                  * x ^+ n)).
+Proof. by apply/funext => x; rewrite -cos_coeffE. Qed.
+
+Lemma diffs_cos : 
+  diffs (fun n => (~~(odd n))%:R * (-1) ^+ n./2 * (n`!%:R)^-1) =
+  (fun n => - ((odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1): R).
+Proof.
+apply/funext => [] [|i] /=.
+  by rewrite /diffs /= !mul0r mulr0 oppr0.
+rewrite /diffs /= negbK exprS mulN1r !(mulNr, mulrN).
+rewrite  factS natrM invfM.
+by rewrite [_.+1%:R * _]mulrC -!mulrA [_.+1%:R^-1 * _]mulrC mulfK.
+Qed.
+
+Lemma series_cos_coeff0 n : series (cos_coeff 0) n.+1 = 1.
+Proof.
+rewrite /series /= big_nat_recl //= /cos_coeff /= expr0n divr1 !mulr1.
+by rewrite big1 ?addr0 // => i _; rewrite expr0n !(mul0r, mulr0).
+Qed.
+
+Lemma cos0 : cos 0 = 1.
+Proof.
+apply: lim_near_cst => //.
+near=> m; rewrite -[m]prednK; last by near: m.
+rewrite -addn1 series_addn series_cos_coeff0 big_add1 big1 ?addr0//.
+by move=> i _; rewrite /cos_coeff /= expr0n !(mulr0, mul0r).
+Grab Existential Variables. all: end_near. 
+Qed.
+
+Global Instance is_derive_sin x : is_derive x 1 sin (cos x).
+Proof.
+rewrite sinE /=.
+pose s : R^nat := fun n => (odd n)%:R * (-1) ^+ (n.-1)./2 / n`!%:R.
+pose s1 n := diffs s n * x ^+ n.
+rewrite cosE /=.
+rewrite (_ : (fun n => _) = s1); last first.
+  by apply/funext => i; rewrite /s1 diffs_sin.
+apply: (@termdiff _ _ (`|x| + 1)).
+- rewrite -sin_coeffE; apply: is_cvg_series_sin_coeff.
+- rewrite (_ : (fun n : nat => _) = cos_coeff (`|x| + 1)).
+    by apply: is_cvg_series_cos_coeff.
+  by apply/funext => i; rewrite diffs_sin cos_coeffE.
+- rewrite (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
+  apply: is_cvg_seriesN.
+    by apply: is_cvg_series_sin_coeff.
+  apply/funext => i.
+  by rewrite diffs_sin diffs_cos sin_coeffE {1}[in RHS]/-%R /= !mulNr.
+by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+Qed.
+
+Global Instance is_derive_cos x : is_derive x 1 cos (- (sin x)).
+Proof.
+rewrite cosE /=.
+pose s : R^nat := fun n => (~~ odd n)%:R * (-1) ^+ n./2 / n`!%:R.
+pose s1 n := diffs s n * x ^+ n.
+rewrite sinE /=.
+rewrite (_ : (fun n => _) = - s1); last first.
+  by apply/funext => i; rewrite /s1 diffs_cos {1}[in RHS]/-%R /= mulNr opprK.
+rewrite lim_seriesN ?opprK; last first.
+  rewrite (_ : s1 = - sin_coeff x).
+    apply: is_cvg_seriesN.
+    by apply: is_cvg_series_sin_coeff.
+  apply/funext => i.
+  by rewrite /s1 diffs_cos sin_coeffE {1}[in RHS]/-%R /= mulNr.
+apply: (@termdiff _ _ (`|x| + 1)).
+- by rewrite -cos_coeffE; apply: is_cvg_series_cos_coeff.
+- rewrite (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
+    apply: is_cvg_seriesN.
+    by apply: is_cvg_series_sin_coeff.
+  by apply/funext => i; rewrite diffs_cos sin_coeffE {1}[in RHS]/-%R /= mulNr.
+- rewrite (_ : (fun n : nat => _) = - cos_coeff (`|x| + 1)).
+  apply: is_cvg_seriesN.
+    by apply: is_cvg_series_cos_coeff.
+  apply/funext => i.
+  rewrite diffs_cos.
+  pose f n : R := ((odd n)%:R * (-1) ^+ (n.-1)./2 / n`!%:R) .
+  rewrite (_ : (fun n => _) = - f); last first.
+    by apply/funext=> j /=; rewrite [in RHS]/-%R.
+  rewrite diffsN diffs_sin cos_coeffE {1}[in LHS]/-%R {1}[in RHS]/-%R /=.
+  by rewrite mulNr. 
+by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+Qed.
+
+Lemma cos2Dsin2 a : (cos a) ^+ 2 + (sin a) ^+ 2 = 1.
+Proof.
+apply: etrans (_ : (cos 0) ^+ 2 + (sin 0) ^+ 2 = 1); last first.
+  by rewrite cos0 sin0 expr1n expr0n addr0. 
+apply: (@is_derive_0_cst _ (fun x => (cos x) ^ 2 + (sin x)^2)) => x1.
+have -> : 0 = (2 * cos x1) * (- sin x1) + (2 * sin x1) * cos x1.
+  by rewrite ?expr1 mulrN mulrAC addrC subrr.
+apply: is_deriveD.
+apply: (@is_deriveX _ _ cos 1).
+apply: (@is_deriveX _ _ sin 1).
+Qed.
+
+End CosSin.
