@@ -485,7 +485,7 @@ End Sesquilinear.
 
 Notation "eps_theta .-sesqui" := (sesqui _ eps_theta) : ring_scope.
 
-Notation symmetric := (false, [rmorphism of idfun]).-sesqui.
+Notation symmetric_form := (false, [rmorphism of idfun]).-sesqui.
 Notation skew := (true, [rmorphism of idfun]).-sesqui.
 Notation hermitian := (false, @conjC _).-sesqui.
 
