@@ -25,10 +25,14 @@ authors:
   initial: true
 - name: Damien Rouhling
   initial: true
+- name: Pierre Roux
+  initial: false
 - name: Kazuhiko Sakaguchi
   initial: false
 - name: Pierre-Yves Strub
   initial: true
+- name: Laurent Thery
+  initial: false
 
 opam-file-maintainer: Reynald Affeldt <reynald.affeldt@aist.go.jp>
 
