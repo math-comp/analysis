@@ -2,6 +2,7 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
 From mathcomp Require Import matrix interval rat.
 Require Import boolp reals ereal.
+Require Import nsatz_realtype.
 Require Import classical_sets posnum topology normedtype landau sequences.
 Require Import derive.
 
@@ -10,7 +11,6 @@ Require Import derive.
 (*                                                                            *)
 (*                                                                            *)
 (******************************************************************************)
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -293,6 +293,19 @@ by rewrite (negPf F) fE gE -mulrA mulfK // subr_eq0.
 Grab Existential Variables. all: end_near. Qed.
 
 End is_derive.
+(******************************************************************************)
+(* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
+(******************************************************************************)
+
+Ltac rcfE := 
+repeat  rewrite /(@GRing.mul (fct_ringType _ _)) /=
+          /(@GRing.exp (fct_ringType _ _)) /=
+          /(@GRing.add (fct_ringType _ _)) /=
+          /(@GRing.add (fct_zmodType _ _)) /=
+          /(@GRing.scale _ (fct_lmodType _ _)) /=
+          /(@GRing.opp (fct_ringType _ _)) /=
+          /(@GRing.opp (fct_zmodType _ _)) /=.
+
 
 (******************************************************************************)
 (* Differentiability of series inspired by HOL-Light transc.ml                *)
@@ -569,7 +582,7 @@ suff Cc :
     by apply: cvgB.
   set w := fun n : nat => _.
   have -> : w = h^-1 *: (shx h - sx)  - s1.
-    apply: funext => i /=; rewrite /-%R  /+%R /*:%R /=.
+    apply: funext => i /=; rcfE.
     rewrite /w /shx /sx /s1 /= mulrBr; congr (_ - _); last first.
       by rewrite mulrCA !mulrA.
     by rewrite -mulrBr [RHS]mulrCA [_^-1 * _]mulrC.
@@ -929,7 +942,7 @@ case: odd; first by rewrite mul1r.
 by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
 Qed.
 
-Definition sin x := lim (series (sin_coeff x)).
+Definition sin (x : R) : R := lim (series (sin_coeff x)).
 
 Lemma sinE : 
   sin = fun x => 
@@ -985,7 +998,7 @@ case: odd; last by rewrite mul1r.
 by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
 Qed.
 
-Definition cos x := lim (series (cos_coeff x)).
+Definition cos (x : R) : R := lim (series (cos_coeff x)).
 
 Lemma cosE : 
   cos = fun x => 
@@ -1086,4 +1099,104 @@ apply: (@is_deriveX _ _ cos 1).
 apply: (@is_deriveX _ _ sin 1).
 Qed.
 
+Fact sinD_aux x y :
+  (sin (x + y) - (sin x * cos y + cos x * sin y)) ^+ 2 +
+  (cos (x + y) - (cos x * cos y - sin x * sin y)) ^+ 2 = 0.
+Proof.
+pose f := (sin \o +%R^~ y - (sin * cst (cos y) + cos * cst (sin y)))^+2 +
+          (cos \o +%R^~ y - (cos * cst (cos y) - sin * cst (sin y)))^+2.
+apply: etrans (_ : f x = 0); first by [].
+apply: etrans (_ : f 0 = 0); last first.
+  rewrite /f /cst; rcfE.
+  by rewrite cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
+apply: is_derive_0_cst => {}x.
+have F x1 y1 : x1 = y1 -> is_derive x 1 f x1 -> is_derive x 1 f y1.
+  by move->.
+eapply F; last first.
+do 7 (apply is_deriveB || apply is_deriveD || apply is_deriveX ||
+      apply is_deriveM || apply is_derive1_chain || apply is_derive1_id || 
+      apply is_derive_sin || apply is_derive_cos || apply is_derive_cst).
+rewrite /cst; rcfE.
+rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n.
+nsatz.
+Qed.
+
+Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
+Proof.
+have /eqP := sinD_aux x y.
+rewrite paddr_eq0 => [/andP[]||]; try by apply: sqr_ge0.
+by rewrite sqrf_eq0 subr_eq0 => /eqP.
+Qed.
+
+Lemma cosD x y : cos (x + y) = cos x * cos y - sin x * sin y.
+Proof.
+have /eqP := sinD_aux x y.
+rewrite paddr_eq0 => [/andP[_]||]; try by apply: sqr_ge0.
+by rewrite sqrf_eq0 subr_eq0 => /eqP.
+Qed.
+
+Lemma sin2cos2 a : sin a ^+ 2 = 1 - cos a ^+ 2.
+Proof. move/eqP: (cos2Dsin2 a); by rewrite eq_sym addrC -subr_eq => /eqP. Qed.
+
+Lemma cos2sin2 a : cos a ^+ 2 = 1 - sin a ^+ 2.
+Proof. move/eqP: (cos2Dsin2 a); by rewrite eq_sym -subr_eq => /eqP. Qed.
+
+Lemma sin_mulr2n a : sin (a *+ 2) = (cos a * sin a) *+ 2.
+Proof. by rewrite mulr2n sinD mulrC -mulr2n. Qed.
+
+Lemma sinN_aux x :
+    (sin (- x ) + (sin x)) ^+ 2 + (cos (- x) - (cos x)) ^+ 2 = 0.
+Proof.
+pose f := (sin \o -%R + sin)^+2 + (cos \o -%R - cos )^+2.
+apply: etrans (_ : f x = 0); first by [].
+apply: etrans (_ : f 0 = 0); last first.
+  rewrite /f /cst; rcfE.
+  by rewrite oppr0 cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
+apply: is_derive_0_cst => {}x.
+have F x1 y1 : x1 = y1 -> is_derive x 1 f x1 -> is_derive x 1 f y1.
+  by move->.
+eapply F; last first.
+do 8 (apply is_deriveB || apply is_deriveD || apply is_deriveX ||
+      apply is_deriveM || apply is_derive1_chain || apply is_derive1_id || 
+      apply is_derive_sin || apply is_derive_cos || apply is_derive_cst ||
+      apply is_deriveN).
+- by apply: is_deriveN; apply: is_derive1_id.
+- by apply: is_derive1_id.
+- by apply: is_deriveN; apply: is_derive1_id.
+- by apply: is_derive1_id.
+rewrite /cst; rcfE.
+rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n.
+nsatz.
+Qed.
+
+Lemma sinN a : sin (- a) = - sin a.
+Proof.
+have /eqP := sinN_aux a.
+rewrite paddr_eq0 => [/andP[]||]; try by apply: sqr_ge0.
+by rewrite sqrf_eq0 addr_eq0 => /eqP.
+Qed.
+
+Lemma cosN a : cos (- a) = cos a.
+Proof.
+have /eqP := sinN_aux a.
+rewrite paddr_eq0 => [/andP[_]||]; try by apply: sqr_ge0.
+by rewrite sqrf_eq0 subr_eq0 => /eqP.
+Qed.
+
+Lemma cosB a b : cos (a - b) = cos a * cos b + sin a * sin b.
+Proof. by rewrite cosD cosN sinN mulrN opprK. Qed.
+
+Lemma sinB a b : sin (a - b) = sin a * cos b - cos a * sin b.
+Proof. by rewrite sinD cosN sinN mulrN. Qed.
+
 End CosSin.
+
+Section Pi.
+
+Variable R : realType.
+
+Definition pi :=
+  if pselect (exists x : R, 0 <= x <= 2 /\ cos x = 0) is left e 
+  then (projT1 (cid e)) *+ 2 else 0.
+
+End Pi.
