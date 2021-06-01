@@ -32,27 +32,17 @@ Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
 Context (F : set (set T)) {FF : Filter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
 
-Lemma cvg_trans f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
+Lemma cvg_sub0 f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
 Proof.
 by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; apply.
 Qed.
 
 Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
-Proof. by move=> Cfa; apply: cvg_trans Cfa (cvg_cst _). Qed.
+Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
 
 Lemma cvg_equiv (f g : T -> V) (a : V) :
-      (\forall x \near F, g x = f x) ->
-       f x @[x --> F] --> a -> g x @[x --> F] --> a.
-Proof.
-move=> Hnear Cf.
-rewrite -(subrK f g) -[a]add0r.
-apply: cvgD => //.
-apply/cvg_distP => eps eps_gt0.
-rewrite near_simpl; near=> i.
-rewrite sub0r normrN /= /+%R /-%R /=.
-suff -> : g i = f i by rewrite subrr normr0.
-by near: i.
-Grab Existential Variables. all: end_near. Qed.
+  {near F, f =1 g} -> f x @[x --> F] --> a -> g x @[x --> F] --> a.
+Proof. by move=> /near_eq_cvg; exact: cvg_trans. Qed.
 
 End cvg_extra.
 
@@ -261,7 +251,7 @@ have F1 :  (g \o shift x) y @[y --> 0^'] --> a.
 apply: cvg_equiv F1.
 near=> y.
 rewrite /= fxE /= addrK [_%:A]mulr1.
-suff yNZ : y != 0 by rewrite [LHS]mulrC mulfK.
+suff yNZ : y != 0 by rewrite [RHS]mulrC mulfK.
 by near: y; rewrite near_withinE /= near_simpl; near=> x1.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -530,7 +520,7 @@ have Csx : cvg (series sx) by apply: cvg_series_Xn_inside Ck _.
 pose shx h := fun n : nat => c n * (h + x) ^+ n.
 suff Cc :
       lim (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> lim (series s).
-  apply: cvg_trans Cc.
+  apply: cvg_sub0 Cc.
   apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
   near=> h; rewrite sub0r normrN /=.
   apply: le_lt_trans eps_gt0.
@@ -553,7 +543,7 @@ suff Cc :
   lim (series
        (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
    @[h --> 0^'] --> (0 : R).
-  apply: cvg_trans Cc.
+  apply: cvg_sub0 Cc.
   apply/cvg_distP => eps eps_gt0 /=.
   rewrite !near_simpl /=.
   near=> h; rewrite sub0r normrN /=.
