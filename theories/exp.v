@@ -49,26 +49,11 @@ End cvg_extra.
 Variable R : realType.
 
 Lemma cvg_series_bounded (f : R^nat) :
-  cvg (series f) ->  exists2 K, 0 < K & (forall i, `|f i| < K).
+  cvg (series f) -> exists2 K, 0 < K & (forall i, `|f i| < K).
 Proof.
-(* There should be something simpler *)
-move=> Cf.
-have F1 := cvg_series_cvg_0 Cf.
-have F2 : bounded_near id [filter of f] by apply: cvg_bounded F1.
-have [K1 K1_gt0 KF]:= ex_strict_bound_gt0 F2.
-case: KF => x _ Hx.
-pose K2 := \sum_(i < x) (1 + `|f i|).
-have K2_ge0 : 0 <= K2 by apply: sumr_ge0 => *; apply: addr_ge0.
-have K1LK1DK2 : K1 <= K1 + K2 by rewrite -{1}[K1]addr0 ler_add2l.
-have K2LK1DK2 : K2 <= K1 + K2 by rewrite -{1}[K2]add0r ler_add2r ltW.
-exists (K1 + K2) => [|i]; first by apply: lt_le_trans K1_gt0 _.
-have [iLx|xLi] := leqP x i; first by apply: lt_le_trans (Hx i iLx) _.
-apply: lt_le_trans K2LK1DK2.
-rewrite /K2 (bigD1 (Ordinal xLi)) //=.
-rewrite -subr_gt0 addrC !addrA [- _ + _]addrC subrK.
-apply: lt_le_trans (_ : 1 <= _) => //.
-rewrite -subr_ge0 [1 + _]addrC addrK //.
-by apply: sumr_ge0 => *; apply: addr_ge0.
+move=> /cvg_series_cvg_0/cvgP/cvg_seq_bounded[r [_ /(_ (r + 1)) fr]].
+exists (maxr 1 (r + 2)); [by rewrite lt_maxr ltr01 | move=> n].
+by rewrite (le_lt_trans (fr _ _ _)) ?ltr_spaddr// lt_maxr ltr_add2l ltr1n orbT.
 Qed.
 
 Lemma eq_cvg_lim : forall (R : realType) (f g : (R) ^nat),
