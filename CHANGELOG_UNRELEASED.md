@@ -103,6 +103,8 @@
 - in `ereal.v`:
   + argument of `%:E` in `%R` by default
   + `F` argument of `\sum` in `%E` by default
+- in `normedtype.v`:
+  + `coord_continuous` generalized
 
 ### Renamed
 

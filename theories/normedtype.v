@@ -356,12 +356,11 @@ by split=> zxy e /zxy; rewrite [z + _]addrC [_ + x]addrC.
 Qed.
 
 Lemma coord_continuous {K : numFieldType} m n i j :
-  continuous (fun M : 'M[K]_(m.+1, n.+1) => M i j).
+  continuous (fun M : 'M[K]_(m, n) => M i j).
 Proof.
 move=> /= M s /= /(nbhs_ballP (M i j)) [e e0 es].
 apply/nbhs_ballP; exists e => //= N MN; exact/es/MN.
 Qed.
-
 
 Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R) :
   ProperFilter (nbhs' x).
