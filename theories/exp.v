@@ -229,7 +229,13 @@ have F : z != x.
 by rewrite (negPf F) fE gE -mulrA mulfK // subr_eq0.
 Grab Existential Variables. all: end_near. Qed.
 
+(* Trick to trigger type class resolution *)
+Lemma trigger_derive (f : R -> R) x x1 y1 : 
+  is_derive x 1 f x1 -> x1 = y1 -> is_derive x 1 f y1.
+Proof. by move=> Hi <-. Qed.
+
 End is_derive.
+
 (******************************************************************************)
 (* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
 (******************************************************************************)
@@ -1044,14 +1050,12 @@ Qed.
 
 Lemma cos2Dsin2 a : (cos a) ^+ 2 + (sin a) ^+ 2 = 1.
 Proof.
-apply: etrans (_ : (cos 0) ^+ 2 + (sin 0) ^+ 2 = 1); last first.
-  by rewrite cos0 sin0 expr1n expr0n addr0. 
-apply: (@is_derive_0_cst _ (fun x => (cos x) ^ 2 + (sin x)^2)) => x1.
-have -> : 0 = (2 * cos x1) * (- sin x1) + (2 * sin x1) * cos x1.
-  by rewrite ?expr1 mulrN mulrAC addrC subrr.
-apply: is_deriveD.
-apply: (@is_deriveX _ _ cos 1).
-apply: (@is_deriveX _ _ sin 1).
+pose f := cos ^+2 + sin^+2; rewrite -[LHS]/(f a).
+apply: etrans (_ : f 0 = 1); last first.
+  by rewrite /f; rcfE; rewrite sin0 cos0 mul1r mul0r addr0.
+apply: is_derive_0_cst => {}x.
+apply: trigger_derive; rewrite /GRing.scale /=.
+by rewrite ?expr1 mulrN mulrAC addrC subrr.
 Qed.
 
 Fact sinD_aux x y :
@@ -1060,21 +1064,12 @@ Fact sinD_aux x y :
 Proof.
 pose f := (sin \o +%R^~ y - (sin * cst (cos y) + cos * cst (sin y)))^+2 +
           (cos \o +%R^~ y - (cos * cst (cos y) - sin * cst (sin y)))^+2.
-apply: etrans (_ : f x = 0); first by [].
-apply: etrans (_ : f 0 = 0); last first.
+rewrite -[LHS]/(f x); apply: etrans (_ : f 0 = 0); last first.
   rewrite /f; rcfE.
   by rewrite cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
 apply: is_derive_0_cst => {}x.
-have F x1 y1 : x1 = y1 -> is_derive x 1 f x1 -> is_derive x 1 f y1.
-  by move->.
-eapply F; last first.
-do 6! first [apply is_deriveB| apply is_deriveD| apply is_deriveX|
-        apply is_deriveM| apply is_derive1_id| 
-        apply is_derive_sin| apply is_derive_cos| apply is_derive_cst|
-        apply is_deriveN| apply is_derive1_chain].
-rcfE.
-rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n.
-nsatz.
+apply: trigger_derive.
+by rcfE; rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n; nsatz.
 Qed.
 
 Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
@@ -1101,24 +1096,18 @@ Lemma sin_mulr2n a : sin (a *+ 2) = (cos a * sin a) *+ 2.
 Proof. by rewrite mulr2n sinD mulrC -mulr2n. Qed.
 
 Lemma sinN_aux x :
-    (sin (- x ) + (sin x)) ^+ 2 + (cos (- x) - (cos x)) ^+ 2 = 0.
+    (sin (- x ) + sin x) ^+ 2 + (cos (- x) - cos x) ^+ 2 = 0.
 Proof.
 pose f := (sin \o -%R + sin)^+2 + (cos \o -%R - cos )^+2.
 apply: etrans (_ : f x = 0); first by [].
 apply: etrans (_ : f 0 = 0); last first.
-  rewrite /f ; rcfE.
-  by rewrite oppr0 cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
+  by rewrite /f ; rcfE;
+     rewrite oppr0 cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
 apply: is_derive_0_cst => {}x.
-have F x1 y1 : x1 = y1 -> is_derive x 1 f x1 -> is_derive x 1 f y1.
-  by move->.
-eapply F; last first.
-do 6! first [apply is_deriveB| apply is_deriveD| apply is_deriveX|
-        apply is_deriveM| apply is_derive1_id| 
-        apply is_derive_sin| apply is_derive_cos| apply is_derive_cst|
-        apply is_deriveN| apply is_derive1_chain].
-rcfE.
-rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n.
-nsatz.
+apply: trigger_derive.
+  by  apply: is_deriveD; apply: is_deriveX; 
+      apply: is_deriveD; apply: is_derive1_chain; apply: is_deriveN.
+rcfE; rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n; nsatz.
 Qed.
 
 Lemma sinN a : sin (- a) = - sin a.
