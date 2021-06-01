@@ -79,6 +79,8 @@
   + definition `measure_is_complete`
 - in `ereal.v`:
   + notation `0`/`1` for `0%R%:E`/`1%R:%E` in `ereal_scope`
+- file `reals.v`:
+  + lemmas `le_floor`, `le_ceil`
 
 ### Changed
 
@@ -124,6 +126,13 @@
   + `addERFin` -> `addEFin`
   + `sumERFin`-> `sumEFin`
   + `subERFin` -> `subEFin`
+- in `reals.v`:
+  + `ler_ceil` -> `ceil_ge`
+  + `Rceil_le` -> `le_Rceil`
+  + `le_Rceil` -> `Rceil_ge`
+  + `ge_Rfloor` -> `Rfloor_le`
+  + `ler_floor` -> `floor_le`
+  + `Rfloor_le` -> `le_Rfloor`
 
 ### Removed
 
