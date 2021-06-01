@@ -48,7 +48,7 @@ End cvg_extra.
 
 Variable R : realType.
 
-Lemma cvg_series_bounded (f : R^nat) :
+Lemma cvg_series_bounded (f : R ^nat) :
   cvg (series f) -> exists2 K, 0 < K & (forall i, `|f i| < K).
 Proof.
 move=> /cvg_series_cvg_0/cvgP/cvg_seq_bounded[r [_ /(_ (r + 1)) fr]].
@@ -57,11 +57,11 @@ by rewrite (le_lt_trans (fr _ _ _)) ?ltr_spaddr// lt_maxr ltr_add2l ltr1n orbT.
 Qed.
 
 (* NB: useful? *)
-Lemma eq_cvg_lim : forall (R : realType) (f g : (R) ^nat),
+Lemma eq_cvg_lim : forall (R : realType) (f g : R ^nat),
   f = g -> (f --> lim f) = (g --> lim g).
 Proof. by move=> R1 f1 g1 ->. Qed.
 
-Lemma eq_cvgl (f g : R^nat) (x : R) : f = g -> (f --> x) = (g --> x).
+Lemma eq_cvgl (f g : R ^nat) (x : R) : f = g -> (f --> x) = (g --> x).
 Proof. by move->. Qed.
 
 Lemma seriesN (f : R ^nat) : series (- f) = - series f.
@@ -81,7 +81,7 @@ Lemma lim_seriesN (f : R ^nat) : cvg (series f) ->
 Proof. by move=> cf; rewrite seriesN limN. Qed.
 
 Lemma is_cvg_seriesZr (f : R ^nat) k : cvg (series f) -> cvg (series (k *: f)).
-Proof. by move=> c; rewrite seriesZr; exact: is_cvgZr. Qed.
+Proof. by move=> cf; rewrite seriesZr; exact: is_cvgZr. Qed.
 
 Lemma lim_seriesZr (f : R ^nat) k : cvg (series f) ->
   lim (series (k *: f)) = k *: lim (series f).
@@ -147,19 +147,27 @@ End continuous.
 (*  Some addition for  is_derive                                              *)
 (******************************************************************************)
 
+Lemma chain_rule (R : realFieldType) (f g : R -> R) x :
+  derivable f x 1 -> derivable g (f x) 1 ->
+  derive1 (g \o f) x = derive1 g (f x) * derive1 f x.
+Proof.
+move=> /derivable1_diffP df /derivable1_diffP dg.
+rewrite derive1E'; last exact/differentiable_comp.
+rewrite diff_comp // !derive1E' //= -{1}[X in 'd  _ _ X = _]mulr1.
+by rewrite {1}linearZ mulrC.
+Qed.
+
 Section is_derive.
 
 Variable R : realType.
 
 Global Instance is_derive1_id (x : R) : is_derive x 1 id 1.
 Proof.
-have Did := (@linear_differentiable _ _ _ [linear of idfun]).
-constructor; first by apply/derivable1_diffP.
-rewrite deriveE //.
-by have /= -> := (@diff_lin _ _ _ [linear of idfun] x).
+constructor; first exact/derivable1_diffP.
+by rewrite deriveE // (@diff_lin _ _ _ [linear of idfun]).
 Qed.
 
-Lemma is_derive_0_cst (f : R -> R) x y : 
+Lemma is_derive_0_cst (f : R -> R) x y :
   (forall x, is_derive x 1 f 0) -> f x = f y.
 Proof.
 move=> Hd.
@@ -171,63 +179,15 @@ case: (MVT xLy) => [x1 _|_ _].
 by rewrite mul0r => ->; rewrite subr0.
 Qed.
 
-Lemma is_derive1_carat (f : R -> R) (x a : R) :
-  is_derive x 1 f a <-> 
-  exists g, [/\ forall z, f z - f x = g z * (z - x),
-        {for x, continuous g} & g x = a].
-Proof.
-split => [Hd|[g [fxE Cg gxE]]].
-  exists (fun z => if z == x then a else (f(z) - f(x)) / (z - x)); split.
-  - move=> z; case: eqP => [->|/eqP]; first by rewrite !subrr mulr0.
-    by rewrite -subr_eq0 => /divfK->.
-  - apply/continuous_withinNshiftx; rewrite eqxx /=.
-    pose g1 h := (h^-1 *: ((f \o shift x) h%:A - f x)).
-    have F1 : g1 @ 0^' --> a by case: Hd => H1 <-.
-    apply: cvg_equiv F1.
-    near=> i.
-    rewrite ifN; first by rewrite addrK mulrC /= [_%:A]mulr1.
-    rewrite -subr_eq0 addrK.
-    by near: i; rewrite near_withinE /= near_simpl; near=> x1.
-  by rewrite eqxx.
-suff Hf : h^-1 *: ((f \o shift x) h%:A - f x) @[h --> 0^'] --> a.
-  have F1 : 'D_1 f x = a by apply: cvg_lim.
-  rewrite -F1 in Hf.
-  by constructor.
-have F1 :  (g \o shift x) y @[y --> 0^'] --> a.
-  by rewrite -gxE; apply/continuous_withinNshiftx.
-apply: cvg_equiv F1.
-near=> y.
-rewrite /= fxE /= addrK [_%:A]mulr1.
-suff yNZ : y != 0 by rewrite [RHS]mulrC mulfK.
-by near: y; rewrite near_withinE /= near_simpl; near=> x1.
-Grab Existential Variables. all: end_near. Qed.
-
 Global Instance is_derive1_chain (f g : R -> R) (x a b : R) :
   is_derive (g x) 1 f a -> is_derive x 1 g b ->
   is_derive x 1 (f \o g) (a * b).
 Proof.
-move=> Df Dg.
-have Cg : {for x, continuous g}.
-  apply: differentiable_continuous.
-  by case: Dg => /derivable1_diffP.
-have /is_derive1_carat[g' [gE Cg' g'E]] := Dg.
-have /is_derive1_carat[f' [fE Cf' f'gE]] := Df.
-apply/is_derive1_carat.
-exists (fun z => if z == x then a * b else (f (g z) - f (g x)) / (z - x)).
-split; last by rewrite eqxx.
-- move=> z /=.
-  case: eqP => [->|/eqP]; first by rewrite !subrr mulr0.
-  by rewrite -subr_eq0 => zBxNZ; rewrite divfK.
-apply/continuous_withinNx; rewrite eqxx.
-have /continuous_withinNx : {for x, continuous ((f' \o g) * g')}.
-  apply: continuousM => [| //].
-  by apply: continuous_comp.
-rewrite [(_ * g')]/*%R /= f'gE g'E => Cab.
-apply: cvg_equiv Cab; near=> z.
-have F : z != x.
-  by near: z; rewrite near_withinE /= near_simpl; near=> z.
-by rewrite (negPf F) fE gE -mulrA mulfK // subr_eq0.
-Grab Existential Variables. all: end_near. Qed.
+move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
+  apply/derivable1_diffP/differentiable_comp; first exact/derivable1_diffP.
+  by move/derivable1_diffP in fgxv.
+by rewrite -derive1E (chain_rule gv fgxv) 2!derive1E.
+Qed.
 
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (f : R -> R) x x1 y1 : 
@@ -1136,8 +1096,6 @@ Section Pi.
 
 Variable R : realType.
 
-Definition pi :=
-  if pselect (exists x : R, 0 <= x <= 2 /\ cos x = 0) is left e 
-  then (projT1 (cid e)) *+ 2 else 0.
+Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
 
 End Pi.
