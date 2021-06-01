@@ -272,15 +272,33 @@ End is_derive.
 (* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
 (******************************************************************************)
 
-Ltac rcfE := 
-repeat  rewrite /(@GRing.mul (fct_ringType _ _)) /=
-          /(@GRing.exp (fct_ringType _ _)) /=
-          /(@GRing.add (fct_ringType _ _)) /=
-          /(@GRing.add (fct_zmodType _ _)) /=
-          /(@GRing.scale _ (fct_lmodType _ _)) /=
-          /(@GRing.opp (fct_ringType _ _)) /=
-          /(@GRing.opp (fct_zmodType _ _)) /=.
+Ltac rcfE :=
+repeat (
+(let u := fresh "u" in
+set u := (@GRing.exp (fct_ringType _ _) _ _ _);
+move: @u; rewrite {1}/GRing.exp /=) ||
+(let u := fresh "u" in
+set u := (@GRing.scale (fct_ringType _ _) _ _ _);
+move: @u; rewrite {1}/GRing.scale /=) ||
 
+(let u := fresh "u" in
+set u := (@GRing.scale (fct_ringType _ _) _ _ _);
+move: @u; rewrite {1}/GRing.scale /=) ||
+(let u := fresh "u" in
+set u := (@GRing.add (fct_zmodType _ _) _ _ _);
+move: @u; rewrite {1}/+%R /=) ||
+(let u := fresh "u" in
+set u := (@GRing.mul (fct_ringType _ _) _ _ _);
+move: @u; rewrite {1}/*%R /=) ||
+(let u := fresh "u" in
+set u := (@GRing.opp (fct_ringType _ _) _ _);
+move: @u; rewrite {1}/-%R /=) ||
+(let u := fresh "u" in
+set u := (cst _ _);
+move: @u; rewrite {1}/cst/=) ||
+(let u := fresh "u" in
+set u := (@comp _ _ _ _ _);
+move: @u; rewrite {1}/comp /=) ).
 
 (******************************************************************************)
 (* Differentiability of series inspired by HOL-Light transc.ml                *)
@@ -1082,16 +1100,17 @@ pose f := (sin \o +%R^~ y - (sin * cst (cos y) + cos * cst (sin y)))^+2 +
           (cos \o +%R^~ y - (cos * cst (cos y) - sin * cst (sin y)))^+2.
 apply: etrans (_ : f x = 0); first by [].
 apply: etrans (_ : f 0 = 0); last first.
-  rewrite /f /cst; rcfE.
+  rewrite /f; rcfE.
   by rewrite cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
 apply: is_derive_0_cst => {}x.
 have F x1 y1 : x1 = y1 -> is_derive x 1 f x1 -> is_derive x 1 f y1.
   by move->.
 eapply F; last first.
-do 7 (apply is_deriveB || apply is_deriveD || apply is_deriveX ||
-      apply is_deriveM || apply is_derive1_chain || apply is_derive1_id || 
-      apply is_derive_sin || apply is_derive_cos || apply is_derive_cst).
-rewrite /cst; rcfE.
+do 6! first [apply is_deriveB| apply is_deriveD| apply is_deriveX|
+        apply is_deriveM| apply is_derive1_id| 
+        apply is_derive_sin| apply is_derive_cos| apply is_derive_cst|
+        apply is_deriveN| apply is_derive1_chain].
+rcfE.
 rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n.
 nsatz.
 Qed.
@@ -1125,21 +1144,17 @@ Proof.
 pose f := (sin \o -%R + sin)^+2 + (cos \o -%R - cos )^+2.
 apply: etrans (_ : f x = 0); first by [].
 apply: etrans (_ : f 0 = 0); last first.
-  rewrite /f /cst; rcfE.
+  rewrite /f ; rcfE.
   by rewrite oppr0 cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
 apply: is_derive_0_cst => {}x.
 have F x1 y1 : x1 = y1 -> is_derive x 1 f x1 -> is_derive x 1 f y1.
   by move->.
 eapply F; last first.
-do 8 (apply is_deriveB || apply is_deriveD || apply is_deriveX ||
-      apply is_deriveM || apply is_derive1_chain || apply is_derive1_id || 
-      apply is_derive_sin || apply is_derive_cos || apply is_derive_cst ||
-      apply is_deriveN).
-- by apply: is_deriveN; apply: is_derive1_id.
-- by apply: is_derive1_id.
-- by apply: is_deriveN; apply: is_derive1_id.
-- by apply: is_derive1_id.
-rewrite /cst; rcfE.
+do 6! first [apply is_deriveB| apply is_deriveD| apply is_deriveX|
+        apply is_deriveM| apply is_derive1_id| 
+        apply is_derive_sin| apply is_derive_cos| apply is_derive_cst|
+        apply is_deriveN| apply is_derive1_chain].
+rcfE.
 rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n.
 nsatz.
 Qed.
