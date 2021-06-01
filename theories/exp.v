@@ -56,97 +56,66 @@ exists (maxr 1 (r + 2)); [by rewrite lt_maxr ltr01 | move=> n].
 by rewrite (le_lt_trans (fr _ _ _)) ?ltr_spaddr// lt_maxr ltr_add2l ltr1n orbT.
 Qed.
 
+(* NB: useful? *)
 Lemma eq_cvg_lim : forall (R : realType) (f g : (R) ^nat),
   f = g -> (f --> lim f) = (g --> lim g).
 Proof. by move=> R1 f1 g1 ->. Qed.
 
 Lemma eq_cvgl (f g : R^nat) (x : R) : f = g -> (f --> x) = (g --> x).
-Proof. by move->. Qed. 
+Proof. by move->. Qed.
 
-Lemma cvgS (f : R^nat) (x : R) : (f \o S --> x) = (f --> x).
-Proof.
-have <- /= := @cvg_shiftn 1 _ f x.
-by apply/eq_cvgl/funext => i; rewrite addn1.
-Qed.
+Lemma seriesN (f : R ^nat) : series (- f) = - series f.
+Proof. by rewrite funeqE => n; rewrite /series /= sumrN. Qed.
 
-Lemma is_cvg_seriesN (f : R^nat) : cvg (series f) -> cvg (series (-f)).
-Proof.
-move=> Cf.
-rewrite /series /= (funext (fun n => sumrN (index_iota 0 n) _ _)).
-by apply: is_cvgN => //; apply: is_cvg_cst.
-Qed.
+Lemma seriesZr (f : R ^nat) k : series (k *: f) = k *: series f.
+Proof. by rewrite funeqE => n; rewrite /series /= -scaler_sumr. Qed.
 
-Lemma lim_seriesN (f : R^nat) : 
-  cvg (series f) -> lim (series (-f)) = - lim (series f).
-Proof.
-move=> Cf.
-rewrite /series /= (funext (fun n => sumrN (index_iota 0 n) _ _)).
-by rewrite limN.
-Qed.
+Lemma seriesD (f g : R ^nat) : series (f + g) = series f + series g.
+Proof. by rewrite /series /= funeqE => n; rewrite big_split. Qed.
 
-Lemma is_cvg_seriesZr (f : R^nat) k : cvg (series f) -> cvg (series (k *: f)).
-Proof.
-move=> Cf.
-rewrite /series /= -(funext (fun n => scaler_sumr k (index_iota 0 n) _ _)).
-by apply: is_cvgZr => //; apply: is_cvg_cst.
-Qed.
+Lemma is_cvg_seriesN (f : R ^nat) : cvg (series (- f)) = cvg (series f).
+Proof. by rewrite seriesN is_cvgNE. Qed.
 
-Lemma lim_seriesZr (f : R^nat) k : 
-  cvg (series f) -> lim (series (k *: f)) = k *: lim (series f).
-Proof.
-move=> Cf.
-rewrite /series /= -(funext (fun n => scaler_sumr k (index_iota 0 n) _ _)).
-by rewrite limZr.
-Qed.
+Lemma lim_seriesN (f : R ^nat) : cvg (series f) ->
+  lim (series (- f)) = - lim (series f).
+Proof. by move=> cf; rewrite seriesN limN. Qed.
 
-Lemma is_cvg_seriesD (f g : R^nat) :
+Lemma is_cvg_seriesZr (f : R ^nat) k : cvg (series f) -> cvg (series (k *: f)).
+Proof. by move=> c; rewrite seriesZr; exact: is_cvgZr. Qed.
+
+Lemma lim_seriesZr (f : R ^nat) k : cvg (series f) ->
+  lim (series (k *: f)) = k *: lim (series f).
+Proof. by move=> cf; rewrite seriesZr limZr. Qed.
+
+Lemma is_cvg_seriesD (f g : R ^nat) :
   cvg (series f) -> cvg (series g) -> cvg (series (f + g)).
-Proof.
-move=> Cf Cg.
-rewrite /series /= (funext (fun n => big_split _ (index_iota 0 n) _ _ _)) /=.
-by apply: is_cvgD.
-Qed.
+Proof. by move=> cf cg; rewrite seriesD; exact: is_cvgD. Qed.
 
-Lemma lim_seriesD (f g : R^nat) : 
-  cvg (series f) -> cvg (series g) -> 
+Lemma lim_seriesD (f g : R ^nat) : cvg (series f) -> cvg (series g) ->
   lim (series (f + g)) = lim (series f) + lim (series g).
-Proof.
-move=> Cf Cg.
-rewrite /series /= (funext (fun n => big_split _ (index_iota 0 n) _ _ _)) /=.
-by apply: limD.
-Qed.
+Proof. by move=> cf cg; rewrite seriesD limD. Qed.
 
-Lemma is_cvg_seriesB (f g : R^nat) :
+Lemma is_cvg_seriesB (f g : R ^nat) :
   cvg (series f) -> cvg (series g) -> cvg (series (f - g)).
-Proof.
-by move=> Cf Cg; apply: is_cvg_seriesD => //; apply: is_cvg_seriesN.
-Qed.
+Proof. by move=> cf cg; apply: is_cvg_seriesD; rewrite ?is_cvg_seriesN. Qed.
 
-Lemma lim_seriesB (f g : R^nat) : 
-  cvg (series f) -> cvg (series g) -> 
+Lemma lim_seriesB (f g : R ^nat) : cvg (series f) -> cvg (series g) ->
   lim (series (f - g)) = lim (series f) - lim (series g).
-Proof.
-move=> Cf Cg; rewrite lim_seriesD //; last by apply: is_cvg_seriesN.
-by rewrite lim_seriesN.
-Qed.
+Proof. by move=> Cf Cg; rewrite lim_seriesD ?is_cvg_seriesN// lim_seriesN. Qed.
 
-Lemma lim_series_norm (f : R^nat) :
+Lemma lim_series_norm (f : R ^nat) :
   cvg [normed series f] -> `|lim (series f)| <= lim [normed series f].
 Proof.
-move=> Cnf.
-have Cf : cvg (series f) by apply: normed_cvg.
-rewrite -lim_norm //.
-apply: ler_lim => [|//|]; first by apply: is_cvg_norm.
-near=> x.
-by rewrite /series /= /series /= ler_norm_sum.
+move=> cnf; have cf := normed_cvg cnf.
+rewrite -lim_norm // (ler_lim (is_cvg_norm cf) cnf) //.
+by near=> x; rewrite ler_norm_sum.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma lim_series_le (f g : (R) ^nat) : 
-  cvg (series f) -> cvg (series g) -> (forall n : nat, f n <= g n) -> 
+Lemma lim_series_le (f g : R ^nat) :
+  cvg (series f) -> cvg (series g) -> (forall n, f n <= g n) ->
   lim (series f) <= lim (series g).
 Proof.
-move=> Cf Cg fLg; apply ler_lim => [//|//|].
-by near=> x; rewrite /series /= ler_sum.
+by move=> cf cg fg; apply (ler_lim cf cg); near=> x; rewrite ler_sum.
 Grab Existential Variables. all: end_near. Qed.
 
 End Cvg.
@@ -158,26 +127,19 @@ End Cvg.
 (* About continuous *)
 
 Section continuous.
+Variables (K : numFieldType) (U V : normedModType K).
 
-Lemma continuous_withinNshiftx 
-  {K : numFieldType} {U V : normedModType K} 
-    (f : U -> V) x :
-  f \o shift x @ 0^' --> f x <-> {for x, continuous f}.
+Lemma continuous_shift (f : U -> V) u :
+  {for u, continuous f} = {for 0, continuous (f \o shift u)}.
+Proof. by rewrite [in RHS]forE /= add0r cvg_comp_shift add0r. Qed.
+
+Lemma continuous_withinNshiftx (f : U -> V) u :
+  f \o shift u @ 0^' --> f u <-> {for u, continuous f}.
 Proof.
-split=> [cfx P /= fxP|].
-  rewrite !nbhs_nearE !near_map !near_nbhs in fxP *.
-  rewrite (@near_shift _ _ 0) subr0 /=.
-  have /= := cfx P fxP.
-  rewrite !near_simpl near_withinE near_simpl /= => Pf; near=> y.
-  have [->|] := eqVneq y 0.
-    by rewrite /= add0r; apply: nbhs_singleton.
-  by near: y.
-move=> Cf.
-apply: continuous_cvg => //.
-rewrite -[X in _ --> X]add0r.
-apply: cvgD; last by apply: cvg_cst.
-by apply: nbhs_dnbhs.
-Grab Existential Variables. all: end_near. Qed.
+rewrite continuous_shift; split=> [cfu|].
+  by apply/(continuous_withinNx _ _).2/(cvg_trans cfu); rewrite /= add0r.
+by move/(continuous_withinNx _ _).1/cvg_trans; apply; rewrite /= add0r.
+Qed.
 
 End continuous.
 
@@ -241,8 +203,8 @@ by near: y; rewrite near_withinE /= near_simpl; near=> x1.
 Grab Existential Variables. all: end_near. Qed.
 
 Global Instance is_derive1_chain (f g : R -> R) (x a b : R) :
-  is_derive (g x) 1 f a -> is_derive x 1 g b -> 
-  is_derive x  1 (f \o g) (a * b).
+  is_derive (g x) 1 f a -> is_derive x 1 g b ->
+  is_derive x 1 (f \o g) (a * b).
 Proof.
 move=> Df Dg.
 have Cg : {for x, continuous g}.
@@ -367,7 +329,7 @@ have s2E n :
   \sum_(0 <= i < n) s2 i = \sum_(0 <= i < n) s1 i - n%:R * f n * x ^+ n.-1.
   by rewrite diffs_sumE addrK. 
 rewrite (eq_cvgl _ (funext s2E)).
-apply: cvgB => //; rewrite -cvgS.
+apply: cvgB => //; rewrite -cvg_shiftS.
 by apply: cvg_series_cvg_0.
 Qed.
 
@@ -1040,7 +1002,7 @@ apply: (@termdiff _ _ (`|x| + 1)).
     by apply: is_cvg_series_cos_coeff.
   by apply/funext => i; rewrite diffs_sin cos_coeffE.
 - rewrite (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
-  apply: is_cvg_seriesN.
+  rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   apply/funext => i.
   by rewrite diffs_sin diffs_cos sin_coeffE {1}[in RHS]/-%R /= !mulNr.
@@ -1057,18 +1019,18 @@ rewrite (_ : (fun n => _) = - s1); last first.
   by apply/funext => i; rewrite /s1 diffs_cos {1}[in RHS]/-%R /= mulNr opprK.
 rewrite lim_seriesN ?opprK; last first.
   rewrite (_ : s1 = - sin_coeff x).
-    apply: is_cvg_seriesN.
+    rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   apply/funext => i.
   by rewrite /s1 diffs_cos sin_coeffE {1}[in RHS]/-%R /= mulNr.
 apply: (@termdiff _ _ (`|x| + 1)).
 - by rewrite -cos_coeffE; apply: is_cvg_series_cos_coeff.
 - rewrite (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
-    apply: is_cvg_seriesN.
+    rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   by apply/funext => i; rewrite diffs_cos sin_coeffE {1}[in RHS]/-%R /= mulNr.
 - rewrite (_ : (fun n : nat => _) = - cos_coeff (`|x| + 1)).
-  apply: is_cvg_seriesN.
+  rewrite is_cvg_seriesN.
     by apply: is_cvg_series_cos_coeff.
   apply/funext => i.
   rewrite diffs_cos.
