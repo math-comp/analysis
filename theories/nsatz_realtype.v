@@ -65,7 +65,6 @@ constructor.
   rewrite -[_ _ Algebra_syntax.zero]/(x * y = 0)%R => /eqP.
   by rewrite mulf_eq0 => /orP[] /eqP->; [left | right].
 rewrite -[_ _ Algebra_syntax.zero]/(1 = 0)%R; apply/eqP.
-Locate eqr_nat.
 by rewrite (eqr_nat T 1 0).
 Defined.
 
