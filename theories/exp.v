@@ -559,6 +559,7 @@ End TermDiff.
 (*  Exponentiel series                                                        *)
 (******************************************************************************)
 
+(* TODO: rebase: this section is not in master/sequences.v *)
 Section fact_facts.
 
 Local Open Scope nat_scope.
@@ -584,6 +585,7 @@ Qed.
 
 End fact_facts.
 
+(* TODO: rebase: this section is not in master/sequences.v *)
 Section exponential_series.
 
 Variable R : realType.
@@ -711,11 +713,11 @@ End exponential_series.
 (*   Starting with the exponentiel function                                   *)
 (******************************************************************************)
 
-
 Section exp.
 
 Variable R : realType.
 
+(* TODO: rebase: exp is not in master and called expR *)
 Definition exp (x : R) : R := lim (series (exp_coeff x)).
 
 Lemma exp0 : exp 0 = 1.
@@ -724,8 +726,7 @@ apply: lim_near_cst => //.
 near=> m; rewrite -[m]prednK; last by near: m.
 rewrite -addn1 series_addn series_exp_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /exp_coeff /= expr0n mul0r.
-Grab Existential Variables. all: end_near. 
-Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma exp_ge1Dx x : 0 <= x -> 1 + x <= exp x.
 Proof.
@@ -741,18 +742,17 @@ apply: ler_lim; first by apply: is_cvg_near_cst; near=> n; apply: F; near: n.
 by near=> n; apply: ler_sum => [] [|[|i]] _;
   rewrite /f /exp_coeff /= !(mulr0n, mulr1n, expr0, expr1, divr1, addr0, add0r)
           // exp_coeff_ge0.
-Grab Existential Variables. all: end_near. 
-Qed.
+Grab Existential Variables. all: end_near. Qed.
 
-Lemma exp_coeffE (x : R) : 
+Lemma exp_coeffE (x : R) :
   exp_coeff x = (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n).
 Proof. by apply/funext => i; rewrite /exp_coeff /= mulrC. Qed.
 
-Lemma expE : 
+Lemma expE :
   exp = fun x => lim (series (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n)).
 Proof. by apply/funext => x; rewrite -exp_coeffE. Qed.
 
-Lemma diffs_exp : 
+Lemma diffs_exp :
   diffs (fun n => (n`!%:R)^-1) = (fun n => (n`!%:R)^-1 : R).
 Proof.
 by apply/funext => i; rewrite /diffs factS natrM invfM mulrA mulfV ?mul1r.
@@ -790,7 +790,7 @@ Proof.
 apply: etrans (_ : exp(0 + y) * exp (- 0) = _); last first.
   by rewrite add0r oppr0 exp0 mulr1.
 apply: (@is_derive_0_cst _ (fun x => exp (x + y) * exp (- x))) => x1.
-have -> : 0 = exp (x1 + y) * (exp (-x1) * (- 1)) + 
+have -> : 0 = exp (x1 + y) * (exp (-x1) * (- 1)) +
               exp (- x1) * (exp (x1 + y) * (1 + 0)).
   by rewrite mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
 apply: is_deriveM.
@@ -893,7 +893,7 @@ Proof.
 by move=> x; rewrite /ln; case: xgetP => [x1 _ /eqP/expI //|/(_ x)[]/=].
 Qed.
 
-Lemma exp_total_gt1 x : 
+Lemma exp_total_gt1 x :
   1 <= x -> exists y, [/\ 0 <= y, 1 + y <= x & exp y = x].
 Proof.
 move=> x_ge1; have x_ge0 : 0 <= x by apply: le_trans x_ge1.
@@ -997,7 +997,7 @@ Variable R : realType.
 Definition sin_coeff (x : R) :=
    [sequence  (odd n)%:R * (-1) ^+ n.-1./2 * x ^+ n / n`!%:R]_n.
 
-Lemma sin_coeffE (x : R) : 
+Lemma sin_coeffE (x : R) :
   sin_coeff x = (fun n => (fun n => (odd n)%:R * (-1) ^+ n.-1./2 *
                                     (n`!%:R)^-1) n * x ^+ n).
 Proof.
@@ -1019,14 +1019,13 @@ Qed.
 
 Definition sin (x : R) : R := lim (series (sin_coeff x)).
 
-Lemma sinE : 
-  sin = fun x => 
-    lim (series (fun n => 
-                  (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) n 
-                  * x ^+ n)).
+Lemma sinE : sin = fun x =>
+  lim (series (fun n =>
+                (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) n
+                * x ^+ n)).
 Proof. by apply/funext => x; rewrite -sin_coeffE. Qed.
 
-Lemma diffs_sin : 
+Lemma diffs_sin :
   diffs (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) =
    (fun n => (~~(odd n))%:R * (-1) ^+ n./2 * (n`!%:R)^-1 : R).
 Proof.
@@ -1047,13 +1046,12 @@ apply: lim_near_cst => //.
 near=> m; rewrite -[m]prednK; last by near: m.
 rewrite -addn1 series_addn series_sin_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /sin_coeff /= expr0n !(mulr0, mul0r).
-Grab Existential Variables. all: end_near. 
-Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 Definition cos_coeff (x : R) :=
    [sequence  (~~(odd n))%:R * (-1)^n./2 * x ^+ n / n`!%:R]_n.
 
-Lemma cos_coeffE (x : R) : 
+Lemma cos_coeffE (x : R) :
   cos_coeff x = (fun n => (fun n => (~~(odd n))%:R * (-1) ^+ n./2 *
                                     (n`!%:R)^-1) n * x ^+ n).
 Proof.
@@ -1075,14 +1073,13 @@ Qed.
 
 Definition cos (x : R) : R := lim (series (cos_coeff x)).
 
-Lemma cosE : 
-  cos = fun x => 
-    lim (series (fun n => 
-                  (fun n => (~~(odd n))%:R * (-1)^+ n./2 * (n`!%:R)^-1) n 
-                  * x ^+ n)).
+Lemma cosE : cos = fun x =>
+  lim (series (fun n =>
+                (fun n => (~~(odd n))%:R * (-1)^+ n./2 * (n`!%:R)^-1) n
+                * x ^+ n)).
 Proof. by apply/funext => x; rewrite -cos_coeffE. Qed.
 
-Lemma diffs_cos : 
+Lemma diffs_cos :
   diffs (fun n => (~~(odd n))%:R * (-1) ^+ n./2 * (n`!%:R)^-1) =
   (fun n => - ((odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1): R).
 Proof.
@@ -1105,8 +1102,7 @@ apply: lim_near_cst => //.
 near=> m; rewrite -[m]prednK; last by near: m.
 rewrite -addn1 series_addn series_cos_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /cos_coeff /= expr0n !(mulr0, mul0r).
-Grab Existential Variables. all: end_near. 
-Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 Global Instance is_derive_sin x : is_derive x 1 sin (cos x).
 Proof.
@@ -1168,7 +1164,7 @@ apply: (@termdiff _ _ (`|x| + 1)).
   rewrite (_ : (fun n => _) = - f); last first.
     by apply/funext=> j /=; rewrite [in RHS]/-%R.
   rewrite diffsN diffs_sin cos_coeffE {1}[in LHS]/-%R {1}[in RHS]/-%R /=.
-  by rewrite mulNr. 
+  by rewrite mulNr.
 by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
@@ -1263,8 +1259,8 @@ apply: etrans (_ : f 0 = 0); last first.
      rewrite oppr0 cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
 apply: is_derive_0_cst => {}x.
 apply: trigger_derive.
-  by  apply: is_deriveD; apply: is_deriveX; 
-      apply: is_deriveD; apply: is_derive1_chain; apply: is_deriveN.
+  by apply: is_deriveD; apply: is_deriveX;
+     apply: is_deriveD; apply: is_derive1_chain; apply: is_deriveN.
 rcfE; rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n; nsatz.
 Qed.
 
@@ -1315,9 +1311,122 @@ Proof. by case: (ler0P a); rewrite ?cosN. Qed.
 End CosSin.
 
 Section Pi.
-
 Variable R : realType.
 
 Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
+
+Lemma cos_coeff_odd n (x : R) : cos_coeff x n.*2.+1 = 0.
+Proof. by rewrite /cos_coeff /= odd_double /= !mul0r. Qed.
+
+Lemma cos_coeff_2_0 : cos_coeff 2 0%N = 1 :> R.
+Proof. by rewrite /cos_coeff /= mul1r expr0 mulr1 expr0z divff. Qed.
+
+Lemma cos_coeff_2_2 : cos_coeff 2 2%N = - 2%:R :> R.
+Proof.
+by rewrite /cos_coeff /= mul1r expr1z mulN1r expr2 mulNr -mulrA divff// mulr1.
+Qed.
+
+Lemma cos_coeff_2_4 : cos_coeff 2 4 = 2%:R / 3%:R :> R.
+Proof.
+rewrite /cos_coeff /= mul1r -exprnP sqrrN expr1n mul1r 2!factS mulnCA mulnC.
+by rewrite 3!exprS expr1 2!mulrA natrM -mulf_div -2!natrM divff// mul1r.
+Qed.
+
+Lemma SUM_GROUP (f : R ^nat) (n k : nat) :
+  \sum_(0 <= i < n) \sum_(i * k <= j < i.+1 * k) f j =
+  \sum_(0 <= i < n * k) f i.
+Proof.
+elim: n => [|n ih]; first by rewrite mul0n 2!big_nil.
+rewrite big_nat_recr//= ih mulSn addnC [in RHS]/index_iota subn0 iota_add.
+rewrite big_cat /= [in X in X + _ = _]/index_iota subn0; congr (_ + _).
+by rewrite /index_iota addnC addnK.
+Qed.
+
+Lemma SER_GROUP (f : R ^nat) (k : nat) : cvg (series f) -> (0 < k)%N ->
+  series (fun n => \sum_(n * k <= i < n.+1 * k) f i) --> lim (series f).
+Proof.
+move=> /cvg_ballP cf k0; apply/cvg_ballP => _/posnumP[e].
+have := cf _ (posnum_gt0 e); rewrite near_map => -[n _ nl].
+rewrite near_map; near=> m.
+rewrite /ball /= [in X in `|_ - X|]/series [in X in `|_ - X|]/= SUM_GROUP.
+have /nl : (n <= m * k)%N.
+  by near: m; exists n.+1 => //= p /ltnW /leq_trans /(_ (leq_pmulr _ k0)).
+by rewrite /ball /= distrC.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma SER_PAIR (f : R ^nat) : cvg (series f) ->
+ series (fun n => \sum_(n.*2 <= i < n.*2 + 2) f i) --> lim (series f).
+Proof.
+move=> cf; rewrite [X in series X --> _](_ : _ =
+    (fun n => \sum_(n * 2 <= k < n.+1 * 2) f k)); last first.
+  by rewrite funeqE => n; rewrite /= addnC -(muln2 n) -mulSn.
+exact: SER_GROUP.
+Qed.
+
+Definition cos_coeff' (x : R) (n : nat) := (-1)^n * x ^+ n.*2 / n.*2`!%:R.
+
+Lemma cos_coeff'E (x : R) (n : nat) : cos_coeff' x n = cos_coeff x n.*2.
+Proof.
+rewrite /cos_coeff' /cos_coeff /= odd_double /= mul1r -2!mulrA; congr (_ * _).
+by rewrite (half_bit_double n false).
+Qed.
+
+Lemma cvg_cos_coeff' (x : R) : series (cos_coeff' x) --> cos x.
+Proof.
+have /SER_PAIR := (@is_cvg_series_cos_coeff _ x).
+apply: cvg_trans.
+rewrite [X in _ --> series X](_ : _ = (fun n => cos_coeff x n.*2)); last first.
+  rewrite funeqE=> n; rewrite addn2 big_nat_recr //= cos_coeff_odd addr0.
+  by rewrite  big_nat_recl//= /index_iota subnn big_nil addr0.
+rewrite [X in series X --> _](_ : _ = (fun n => cos_coeff x n.*2)) //.
+by rewrite funeqE => n; exact: cos_coeff'E.
+Qed.
+
+Lemma SER_POS_LT_PAIR (f : R ^nat) n : cvg (series f) ->
+  (forall d, 0 < f (n + d.*2)%N + f (n + d.*2.+1)%N) ->
+  \sum_(0 <= i < n) f i < lim (series f).
+Proof.
+move=> /cvg_ballP cf fn.
+have fn0 : 0 < f n + f n.+1 by have := fn 0%N; rewrite double0 addn0 addn1.
+rewrite ltNge; apply: contraPN cf => ffn /(_ _ fn0).
+rewrite near_map /ball /=.
+have nf_ub N : \sum_(0 <= i < n.+2) f i <= \sum_(0 <= i < N.+1.*2 + n) f i.
+  elim: N => // N /le_trans ->//; rewrite -(addn1 (N.+1)) doubleD addnAC.
+  rewrite [in X in _ <= X]/index_iota subn0 iota_add big_cat.
+  rewrite -[in X in _ <= X + _](subn0 (N.+1.*2 + n)%N) ler_addl /= add0n.
+  by rewrite 2!big_cons big_nil addr0 -(addnC n) ltW// -addnS fn.
+case=> N _ Nfn; have /Nfn/ltr_distlC_addr : (N.+1.*2 + n >= N)%N.
+  by rewrite doubleS -addn2 -addnn -2!addnA leq_addr.
+rewrite addrA => ffnfn.
+have : lim (series f) + f n + f n.+1 <= \sum_(0 <= i < N.+1.*2 + n) f i.
+  apply: (le_trans _ (nf_ub N)).
+  by do 2 rewrite big_nat_recr //=; by rewrite -2!addrA ler_add2r.
+by move/(lt_le_trans ffnfn); rewrite ltxx.
+Qed.
+
+Lemma cos2_lt0 : cos 2 < 0 :> R.
+Proof.
+rewrite -(opprK (cos _)) oppr_lt0; have /cvgN H := @cvg_cos_coeff' 2.
+rewrite -(cvg_lim (@Rhausdorff R) H).
+apply: (@lt_trans _ _ (\sum_(0 <= i < 3) - cos_coeff' 2 i)).
+  do 3 rewrite big_nat_recl//; rewrite big_nil addr0 3!cos_coeff'E double0.
+  rewrite cos_coeff_2_0 cos_coeff_2_2 -muln2 cos_coeff_2_4 addrA -(opprD 1).
+  rewrite opprB -(@natrB _ 2 1)// subn1/= -{1}(@divff _ 3%:R)// -mulrBl.
+  by rewrite divr_gt0// -natrB.
+rewrite -seriesN SER_POS_LT_PAIR //.
+  by move/cvgP in H; by rewrite seriesN.
+move=> d.
+rewrite /cos_coeff' 2!exprzD_nat (exprSz _ d.*2) -[in (-1) ^ d.*2](muln2 d).
+rewrite -(exprnP _ (d * 2)) (exprM (-1)) sqrr_sign 2!mulr1 -exprSzr.
+rewrite (_ : 4 = 2 * 2)%N // -(exprnP _ (2 * 2)) (exprM (-1)) sqrr_sign.
+rewrite mul1r [(-1) ^ 3](_ : _ = -1) ?mulN1r ?mulNr ?opprK; last first.
+  by rewrite -exprnP 2!exprS expr1 mulrN1 opprK mulr1.
+rewrite subr_gt0.
+rewrite addnS doubleS -[X in 2 ^+ X]addn2 exprD -mulrA ltr_pmul2l ?exprn_gt0//.
+rewrite factS factS 2!natrM mulrA invfM !mulrA.
+rewrite ltr_pdivr_mulr ?ltr0n ?fact_gt0// mulVf ?pnatr_eq0 ?gtn_eqF ?fact_gt0//.
+rewrite ltr_pdivr_mulr ?mul1r //.
+by rewrite expr2 -!natrM ltr_nat !mulSn !add2n mul0n !addnS.
+Qed.
 
 End Pi.
