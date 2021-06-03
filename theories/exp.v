@@ -969,7 +969,6 @@ Proof.
 move=> x_ge0; rewrite -ler_exp lnK ?exp_ge1Dx //.
 by apply: lt_le_trans (_ : 0 < 1) _; rewrite // ler_addl.
 Qed.
-Search (_ < exp.exp _).
 
 Lemma ln_sublinear x : 0 < x -> ln x < x.
 Proof.
@@ -1311,6 +1310,7 @@ Proof. by case: (ler0P a); rewrite ?cosN. Qed.
 End CosSin.
 
 Section Pi.
+
 Variable R : realType.
 
 Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
@@ -1427,6 +1427,87 @@ rewrite factS factS 2!natrM mulrA invfM !mulrA.
 rewrite ltr_pdivr_mulr ?ltr0n ?fact_gt0// mulVf ?pnatr_eq0 ?gtn_eqF ?fact_gt0//.
 rewrite ltr_pdivr_mulr ?mul1r //.
 by rewrite expr2 -!natrM ltr_nat !mulSn !add2n mul0n !addnS.
+Qed.
+
+Lemma cos_exists : exists2 hpi : R, 0 <= hpi <= 2 & cos hpi = 0.
+Proof.
+have /IVT[]// : minr (cos 0) (cos 2) <= (0 : R) <= maxr (cos 0) (cos 2).
+  rewrite /minr /maxr cos0 !ifN; 
+      try  by rewrite -leNgt ltW // (lt_trans cos2_lt0).
+  by rewrite (ler_nat R 0 1) andbT ?ltW // cos2_lt0 //.
+by move=> *; apply: continuous_cos.
+by move=> hpi /itvP hpiI chpi_eq0; exists hpi; rewrite ?hpiI.
+Qed.
+
+Definition sin_coeff' (x : R) (n : nat) := (-1)^n * x ^+ n.*2.+1 / n.*2.+1`!%:R.
+
+Lemma sin_coeff'E (x : R) (n : nat) : sin_coeff' x n = sin_coeff x n.*2.+1.
+Proof.
+rewrite /sin_coeff' /sin_coeff /= odd_double mul1r -2!mulrA; congr (_ * _).
+by rewrite doubleK.
+Qed.
+
+Lemma sin_coeff_even n (x : R) : sin_coeff x n.*2 = 0.
+Proof. by rewrite /sin_coeff /= odd_double /= !mul0r. Qed.
+
+Lemma cvg_sin_coeff' (x : R) : series (sin_coeff' x) --> sin x.
+Proof.
+have /SER_PAIR := (@is_cvg_series_sin_coeff _ x).
+apply: cvg_trans.
+rewrite [X in _ --> series X](_ : _ = (fun n => sin_coeff x n.*2.+1)); last first.
+  rewrite funeqE=> n; rewrite addn2 big_nat_recl //= sin_coeff_even add0r.
+  by rewrite  big_nat_recl // big_geq // addr0.
+rewrite [X in series X --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
+by rewrite funeqE => n; exact: sin_coeff'E.
+Qed.
+
+Lemma sin2_gt0 (x : R) : 0 < x < 2 -> 0 < sin x.
+Proof.
+move=> /andP[x_gt0 x_lt2].
+have H := @cvg_sin_coeff' x.
+rewrite -(cvg_lim (@Rhausdorff R) H).
+rewrite [X in X < _](_ : 0 = \sum_(0 <= i < 0) sin_coeff' x i :> R); last first.
+  by rewrite big_nil.
+rewrite SER_POS_LT_PAIR //; first by move/cvgP in H.
+move=> d.
+rewrite /sin_coeff' 2!exprzD_nat (exprSz _ d.*2) -[in (-1) ^ d.*2](muln2 d).
+rewrite -(exprnP _ (d * 2)) (exprM (-1)) sqrr_sign 2!mulr1 -exprSzr.
+rewrite !add0n!mul1r mulN1r -[d.*2.+1]addn1 doubleD -addSn exprD.
+rewrite -(ffact_fact (leq_addl _ _)) addnK.
+rewrite mulNr -!mulrA -mulrBr mulr_gt0 ?exprn_gt0 //.
+rewrite natrM invfM -{1}[_^-1]mul1r !mulrA -mulrBl divr_gt0 //; last first.
+  by rewrite (ltr_nat _ 0) fact_gt0.
+rewrite subr_gt0.
+rewrite -{2}(divff (_ : (((d.*2).*2.+1 + 1.*2) ^_ 1.*2)%:R != 0)); last first.
+  by rewrite lt0r_neq0 // (ltr_nat _ 0) ffact_gt0 leq_addl.
+rewrite ltr_pmul2r; last by rewrite invr_gt0 (ltr_nat _ 0) ffact_gt0 leq_addl.
+rewrite !addnS addn0 !ffactnS ffactn0 muln1 /= natrM.
+apply: ltr_pmul; try by apply: ltW.
+  apply: lt_le_trans (_ : 2%:R <= _) => //.
+  by rewrite ler_nat.
+apply: lt_le_trans (_ : 2%:R <= _) => //.
+by rewrite ler_nat.
+Qed.
+
+Lemma coshpi_uniq (x y : R) : 
+  0 <= x <= 2 -> cos x = 0 -> 0 <= y <= 2 -> cos y = 0 -> x = y.
+Proof.
+wlog xLy : x y / x <= y => [H xB cx0 yB cy0|].
+  case: (lerP x y) => [/H //| /ltW /H H1]; first by apply.
+  by apply/esym/H1.
+move=> /andP[x_ge0 x_le2] cx0 /andP[y_ge0 y_le2] cy0. 
+case: (x =P y) => // /eqP xDy.
+have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
+have /(Rolle xLLs)[x1 _|x1 _|x1 x1I [_ x1D]] : cos x = cos y by rewrite cy0.
+- by apply: derivable_cos.
+- by apply: continuous_cos.
+have [_ /esym/eqP] := is_derive_cos x1; rewrite x1D oppr_eq0 => /eqP Hs.
+suff: 0 < sin x1 by rewrite Hs ltxx. 
+apply/sin2_gt0/andP; split => //.
+  apply: le_lt_trans x_ge0 _.
+  by rewrite (itvP x1I).
+apply: lt_le_trans _ y_le2.
+by rewrite (itvP x1I).
 Qed.
 
 End Pi.
