@@ -1,6 +1,6 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import classical_sets posnum topology
-  normedtype landau sequences boolp reals ereal.
+  normedtype landau sequences boolp reals ereal derive.
 
 Import GRing.Theory Num.Theory Num.ExtraDef.
 Import Order.POrderTheory Order.TotalTheory.
@@ -142,5 +142,56 @@ have gK : {in `]a, b[, cancel g f}.
   by move=> u uin; rewrite /f /g sqr_sqrtr ?ltW ?(lt_trans agt0) ?(itvP uin).
 apply: (inverse_increasing_continuous sagt0 incr gK).
 Unshelve. all: end_near. Qed.
+
+Section logarithm.
+
+Variable exp : R -> R.
+Hypothesis exp_gt0 : forall x, 0 < exp x.
+Hypothesis exp_total : forall x, 0 < x -> exists y, exp y = x.
+Hypothesis expD : forall x y, exp (x + y) = exp x * exp y.
+Hypothesis exp_ge1Dx : forall x, 0 <= x -> 1 + x <= exp x.
+Hypothesis ltr_exp : {mono exp : x y / x < y}.
+Hypothesis is_derive_exp : forall x, is_derive x 1 exp (exp x).
+Variable ln : R -> R.
+Hypothesis expK : cancel exp ln.
+
+Lemma lnK : {in `]0, +oo[, cancel ln exp}.
+Proof.
+move=> x xgt0.
+have /exp_total [vl Pvl] : 0 < x by rewrite (itvP xgt0).
+by rewrite -Pvl expK.
+Qed.
+
+Lemma ln_continuous : {in > 0, continuous ln}.
+Proof.
+suff main : forall a b, 0 < a -> {in `]a, b[, continuous ln}.
+  move=> x xgt0.
+  have halfxgt0 : 0 < x / 2 by apply: divr_gt0.
+  have xltxp1 : x < x + 1 by rewrite ltr_addl.
+  have halfltx : x / 2 < x by case: (midf_lt xgt0); rewrite add0r.
+  by apply: (main (x / 2) (x + 1) halfxgt0); rewrite in_itv /= halfltx xltxp1.
+move=> a b agt0.
+apply: (inverse_increasing_continuous agt0 (f := exp)).
+  move=> x y; rewrite !inE /= => [][lx lxin Plx] [ly lyin Ply] xlty.
+  rewrite [X in _ < exp X - _](_ : y = y - x + x); last by rewrite subrK.
+  rewrite expD -[X in _ < _ - X]mul1r -mulrBl mulrC.
+  have /ltW/exp_ge1Dx : 0 < y - x by rewrite subr_gt0.
+  have altexpx : a < exp x.
+    have lxgt0 : 0 < lx by rewrite (lt_trans agt0) // (itvP lxin).
+    by rewrite -Plx lnK ?in_itv /= ?andbT ?(itvP lxin).
+  rewrite le_eqVlt (addrC 1)=> /orP[/eqP <- | expgt].
+    by rewrite addrK ltr_pmul2l ?subr_gt0.
+  by apply ltr_pmul; rewrite // ?ltW ?subr_gt0 // ltr_subr_addr.
+by move=> x xin; apply:lnK; rewrite in_itv /= andbT (lt_trans agt0) ?(itvP xin).
+Qed.
+
+(*
+Lemma is_derive_ln x : 0 < x -> is_derive x 1 ln (x ^-1).
+Proof.
+move=> xgt0.
+have : derivable ln 1 1.
+  apply/cvg_ex; exists 1.
+*)
+End logarithm.
 
 End real_inverse_functions.
