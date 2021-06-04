@@ -177,6 +177,15 @@ move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
 by rewrite -derive1E (chain_rule gv fgxv) 2!derive1E.
 Qed.
 
+Global Instance is_deriveV (f : R -> R) (x t v : R) : 
+   f x != 0 -> is_derive x v f t ->
+   is_derive x v [fun y => (f y)^-1]  (- (f x) ^- 2 *: t).
+Proof.
+move=> fxNZ Df.
+constructor; first by apply: derivableV => //; case: Df.
+by rewrite deriveV //; case: Df => _ ->.
+Qed.
+
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (f : R -> R) x x1 y1 :
   is_derive x 1 f x1 -> x1 = y1 -> is_derive x 1 f y1.
@@ -1356,6 +1365,35 @@ apply/eqP => pih0; have := @cos0 R.
 by rewrite pih0 cpih; apply/eqP; rewrite eq_sym oner_eq0.
 Qed.
 
+Lemma pi_gt0 : 0 < pi.
+Proof.
+by rewrite -[pi](divfK (_ : 2 != 0)) // mulr_gt0 //; case/andP: pihalf_02.
+Qed.  
+
+Lemma sin_gt0_halfpi x : 0 < x < pi / 2 -> 0 < sin x.
+Proof.
+move=> /andP[x_gt0 xLpi].
+apply: sin2_gt0; rewrite x_gt0 /=.
+by apply: lt_trans xLpi _; have /andP[] := pihalf_02.
+Qed.
+
+Lemma cos_gt0_halfpi x : 0 < x < pi / 2 -> 0 < cos x.
+Proof.
+have /andP[pi2_gt0 pi2L2] := pihalf_02.
+move=> /andP[x_gt0 xLpi2]; case: (ler0P (cos x)) => // cx_le0.
+have /IVT[] : minr (cos 0) (cos x) <= 0 <= maxr (cos 0) (cos x).
+  by rewrite cos0 /minr /maxr !ifN ?cx_le0 //= -leNgt (le_trans cx_le0).
+- by apply: ltW.
+- by move=> *; apply: continuous_cos.
+move=> x1 /itvP Hx1 cx1_eq0.
+suff x1E : x1 = pi/2.
+  have : x1 < pi / 2 by apply: le_lt_trans xLpi2; rewrite Hx1.
+  by rewrite x1E ltxx. 
+apply: cos_pihalf_uniq=> //; last by (case cos_pihalf' => _ ->).
+  by rewrite Hx1 ltW // (lt_trans _ pi2L2) // (le_lt_trans _ xLpi2) // Hx1.
+by rewrite !ltW.
+Qed.
+ 
 Lemma cos_pihalf : cos (pi / 2) = 0. Proof. exact: cos_pihalf'.2. Qed.
 
 Lemma sin_pihalf : sin (pi / 2) = 1.
@@ -1451,6 +1489,37 @@ Qed.
 Lemma tan_halfpi : tan (pi / 2) = 0.
 Proof. by rewrite /tan cos_pihalf invr0 mulr0. Qed.
 
+Lemma tan_quaterpi : tan (pi / 4%:R) = 1.
+Proof. 
+rewrite /tan -cosBpihalf -mulNr addf_div // mulNr -mulrBr.
+rewrite -opprB -natrB //= !(mulrN, mulNr) cosN invfM [_/2]mulrC mulrA mulfK //.
+rewrite divff // lt0r_neq0 // cos_gt0_halfpi ?divr_gt0 ?pi_gt0 //=.
+rewrite ltr_pmul2l ?pi_gt0 //.
+rewrite -(ltr_pmul2l (_ : 0 < (2 * 2)%:R)) //.
+by rewrite divff // natrM mulfK // (ltr_nat _ 1 2).
+Qed.
+
+Lemma continuous_tan x : cos x != 0 -> {for x, continuous tan}.
+Proof.
+move=> cxNZ.
+apply: continuousM; first by apply: continuous_sin.
+apply: continuousV => //.
+by apply: continuous_cos.
+Qed.
+
+Global Instance is_derive_tan x :
+  cos x != 0 -> is_derive x 1 tan ((cos x)^-2).
+Proof.
+move=> cxNZ.
+apply: trigger_derive; first by apply: is_deriveM; apply: is_deriveV.
+rewrite /= ![_ *: - _]mulrN mulNr mulrN opprK [_^-1 *: _]mulVf //.
+rewrite mulrCA -expr2 [X in _ * X + _ = _]sin2cos2.
+by rewrite mulrBr mulr1 mulVf ?sqrf_eq0 // subrK.
+Qed.
+
+Lemma derivable_tan x : cos x != 0 -> derivable tan x 1.
+Proof. by move=> /is_derive_tan[]. Qed.
+
 End Tan.
 
 From mathcomp Require Import complex.
@@ -1460,7 +1529,8 @@ Variable R : realType.
 Local Open Scope complex_scope.
 Implicit Types n : nat.
 
-Lemma demoivre n (a : R) : (cos a +i* sin a) ^+ n = cos (a *+ n) +i* sin (a *+ n).
+Lemma demoivre n (a : R) :
+ (cos a +i* sin a) ^+ n = cos (a *+ n) +i* sin (a *+ n).
 Proof.
 elim: n => [|n ih]; first by rewrite expr0 mulr0n cos0 sin0.
 by rewrite exprS ih mulrS cosD sinD; simpc; rewrite [in X in _ +i* X = _]addrC.
