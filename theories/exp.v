@@ -34,7 +34,6 @@ Section cvg_extra.
 Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
 Context (F : set (set T)) {FF : Filter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
-
 Lemma cvg_sub0 f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
 Proof.
 by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; apply.
@@ -1197,9 +1196,8 @@ by move/(lt_le_trans ffnfn); rewrite ltxx.
 Qed.
 
 Section Pi.
-
 Variable R : realType.
-Implicit Types (x : R) (n k : nat).
+Implicit Types (x y : R) (n k : nat).
 
 Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
 
@@ -1268,14 +1266,14 @@ rewrite ltr_pdivr_mulr ?mul1r //.
 by rewrite expr2 -!natrM ltr_nat !mulSn !add2n mul0n !addnS.
 Qed.
 
-Lemma cos_exists : exists2 hpi : R, 0 <= hpi <= 2 & cos hpi = 0.
+Lemma cos_exists : exists2 pih : R, 0 <= pih <= 2 & cos pih = 0.
 Proof.
 have /IVT[]// : minr (cos 0) (cos 2) <= (0 : R) <= maxr (cos 0) (cos 2).
   rewrite /minr /maxr cos0 !ifN;
       try  by rewrite -leNgt ltW // (lt_trans cos2_lt0).
   by rewrite (ler_nat R 0 1) andbT ?ltW // cos2_lt0 //.
 by move=> *; apply: continuous_cos.
-by move=> hpi /itvP hpiI chpi_eq0; exists hpi; rewrite ?hpiI.
+by move=> pih /itvP pihI chpi_eq0; exists pih; rewrite ?pihI.
 Qed.
 
 (* TODO: move closed to sin? *)
@@ -1318,23 +1316,18 @@ rewrite mulNr -!mulrA -mulrBr mulr_gt0 ?exprn_gt0 //.
 rewrite natrM invfM -{1}[_^-1]mul1r !mulrA -mulrBl divr_gt0 //; last first.
   by rewrite (ltr_nat _ 0) fact_gt0.
 rewrite subr_gt0.
-rewrite -{2}(divff (_ : (((d.*2).*2.+1 + 1.*2) ^_ 1.*2)%:R != 0)); last first.
+rewrite -{2}(divff (_ : ((d.*2.*2.+1 + 1.*2) ^_ 1.*2)%:R != 0)); last first.
   by rewrite lt0r_neq0 // (ltr_nat _ 0) ffact_gt0 leq_addl.
 rewrite ltr_pmul2r; last by rewrite invr_gt0 (ltr_nat _ 0) ffact_gt0 leq_addl.
 rewrite !addnS addn0 !ffactnS ffactn0 muln1 /= natrM.
-apply: ltr_pmul; try by apply: ltW.
-  apply: lt_le_trans (_ : 2%:R <= _) => //.
-  by rewrite ler_nat.
-apply: lt_le_trans (_ : 2%:R <= _) => //.
-by rewrite ler_nat.
+by rewrite (ltr_pmul (ltW _ ) (ltW _)) // (lt_le_trans x_lt2) // ler_nat.
 Qed.
 
-Lemma coshpi_uniq (x y : R) :
+Lemma cos_pihalf_uniq x y :
   0 <= x <= 2 -> cos x = 0 -> 0 <= y <= 2 -> cos y = 0 -> x = y.
 Proof.
 wlog xLy : x y / x <= y => [H xB cx0 yB cy0|].
-  case: (lerP x y) => [/H //| /ltW /H H1]; first by apply.
-  by apply/esym/H1.
+  by case: (lerP x y) => [/H //| /ltW /H H1]; [exact|exact/esym/H1].
 move=> /andP[x_ge0 x_le2] cx0 /andP[y_ge0 y_le2] cy0.
 case: (x =P y) => // /eqP xDy.
 have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
@@ -1342,12 +1335,10 @@ have /(Rolle xLLs)[x1 _|x1 _|x1 x1I [_ x1D]] : cos x = cos y by rewrite cy0.
 - by apply: derivable_cos.
 - by apply: continuous_cos.
 have [_ /esym/eqP] := is_derive_cos x1; rewrite x1D oppr_eq0 => /eqP Hs.
-suff: 0 < sin x1 by rewrite Hs ltxx.
-apply/sin2_gt0/andP; split => //.
-  apply: le_lt_trans x_ge0 _.
-  by rewrite (itvP x1I).
-apply: lt_le_trans _ y_le2.
-by rewrite (itvP x1I).
+suff : 0 < sin x1 by rewrite Hs ltxx.
+apply/sin2_gt0/andP; split.
+- by apply: le_lt_trans x_ge0 _; rewrite (itvP x1I).
+- by apply: lt_le_trans _ y_le2; rewrite (itvP x1I).
 Qed.
 
 Local Lemma cos_pihalf' : 0 <= pi / 2 <= 2 /\ cos (pi / 2) = 0.
@@ -1355,8 +1346,6 @@ Proof.
 have [x ? ?] := cos_exists; rewrite pihalfE.
 by case: xgetP => [_->[]//|/(_ x)/=]; last tauto.
 Qed.
-
-Lemma cos_pihalf : cos (pi / 2) = 0. Proof. exact: cos_pihalf'.2. Qed.
 
 Lemma pihalf_02 : 0 < pi / 2 < 2.
 Proof.
@@ -1366,6 +1355,8 @@ rewrite 2!lt_neqAle andbCA -andbA pih02 andbT; apply/andP; split.
 apply/eqP => pih0; have := @cos0 R.
 by rewrite pih0 cpih; apply/eqP; rewrite eq_sym oner_eq0.
 Qed.
+
+Lemma cos_pihalf : cos (pi / 2) = 0. Proof. exact: cos_pihalf'.2. Qed.
 
 Lemma sin_pihalf : sin (pi / 2) = 1.
 Proof.
@@ -1378,10 +1369,34 @@ have := @ler01 R; rewrite -{}Nspi21 ler_oppr oppr0 leNgt => /negP; apply.
 exact/sin2_gt0/pihalf_02.
 Qed.
 
-Lemma cos_pi : cos pi = - 1.
+Lemma cospi : cos pi = - 1.
 Proof.
 by rewrite /pi mulr2n cosD -pihalfE sin_pihalf mulr1 cos_pihalf mulr0 add0r.
 Qed.
+
+Lemma sinpi : sin pi = 0.
+Proof.
+have := sinD (pi / 2) (pi / 2); rewrite cos_pihalf mulr0 mul0r.
+by rewrite -mulrDl -mulr2n -mulr_natr -mulrA divff// mulr1 addr0.
+Qed.
+
+Lemma sinDpi a : sin (a + pi) = - sin a.
+Proof. by rewrite sinD cospi mulrN1 sinpi mulr0 addr0. Qed.
+
+Lemma cosDpi a : cos (a + pi) = - cos a.
+Proof. by rewrite cosD cospi mulrN1 sinpi mulr0 subr0. Qed.
+
+Lemma cosDpihalf a : cos (a + pi / 2) = - sin a.
+Proof. by rewrite cosD cos_pihalf mulr0 add0r sin_pihalf mulr1. Qed.
+
+Lemma cosBpihalf a : cos (a - pi / 2) = sin a.
+Proof. by rewrite cosB cos_pihalf mulr0 add0r sin_pihalf mulr1. Qed.
+
+Lemma sinDpihalf a : sin (a + pi / 2) = cos a.
+Proof. by rewrite sinD cos_pihalf mulr0 add0r sin_pihalf mulr1. Qed.
+
+Lemma sinBpihalt a : sin (a - pi / 2) = - cos a.
+Proof. by rewrite sinB cos_pihalf mulr0 add0r sin_pihalf mulr1. Qed.
 
 End Pi.
 
@@ -1389,9 +1404,6 @@ Section Tan.
 
 Variable R : realType.
 Notation pi := (@pi R).
-
-
-Axiom sinpi : sin pi = 0.
 
 Definition tan (a : R) := sin a / cos a.
 
@@ -1405,7 +1417,7 @@ Lemma tanN x : tan (- x) = - tan x.
 Proof. by rewrite /tan sinN cosN mulNr. Qed.
 
 Lemma tanD x y :
-  cos x != 0 -> cos y != 0 -> 
+  cos x != 0 -> cos y != 0 ->
   tan(x + y) = (tan x + tan y) / (1 - tan x * tan y).
 Proof.
 move=> cxNZ cyNZ.
@@ -1416,7 +1428,7 @@ rewrite -[_ * _ * sin x]mulrA [cos x * (_ * _)]mulrC mulfK //.
 by rewrite -[_ * _ * sin y]mulrA [cos y * (_ * _)]mulrC mulfK.
 Qed.
 
-Lemma tan_mulr2n x : 
+Lemma tan_mulr2n x :
   cos x != 0 -> tan (x *+ 2) = tan x *+ 2 / (1 -  tan x ^+ 2).
 Proof.
 move=> cxNZ.
@@ -1428,7 +1440,7 @@ rewrite mul1r mulr1 -!mulrA -invfM -expr2; congr (_ / _).
 rewrite mulrCA mulrA mulfK  ?sqrf_eq0 // [X in _ = _ - X]sin2cos2.
 by rewrite opprB addrA.
 Qed.
- 
+
 Lemma cos2_tan2 x : cos x != 0 -> 1 / (cos x) ^+ 2 = 1 + (tan x) ^+ 2.
 Proof.
 move=> cosx.
@@ -1440,3 +1452,18 @@ Lemma tan_halfpi : tan (pi / 2) = 0.
 Proof. by rewrite /tan cos_pihalf invr0 mulr0. Qed.
 
 End Tan.
+
+From mathcomp Require Import complex.
+
+Section expC.
+Variable R : realType.
+Local Open Scope complex_scope.
+Implicit Types n : nat.
+
+Lemma demoivre n (a : R) : (cos a +i* sin a) ^+ n = cos (a *+ n) +i* sin (a *+ n).
+Proof.
+elim: n => [|n ih]; first by rewrite expr0 mulr0n cos0 sin0.
+by rewrite exprS ih mulrS cosD sinD; simpc; rewrite [in X in _ +i* X = _]addrC.
+Qed.
+
+End expC.
