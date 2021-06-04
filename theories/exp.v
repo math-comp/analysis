@@ -1079,6 +1079,9 @@ Proof. move/eqP: (cos2Dsin2 a); by rewrite eq_sym -subr_eq => /eqP. Qed.
 Lemma sin_mulr2n a : sin (a *+ 2) = (cos a * sin a) *+ 2.
 Proof. by rewrite mulr2n sinD mulrC -mulr2n. Qed.
 
+Lemma cos_mulr2n a : cos (a *+ 2) = cos a ^+2 *+ 2 - 1.
+Proof. by rewrite mulr2n cosD -!expr2 sin2cos2 opprB addrA mulr2n. Qed.
+
 Lemma sinN_aux x :
     (sin (- x ) + sin x) ^+ 2 + (cos (- x) - cos x) ^+ 2 = 0.
 Proof.
@@ -1381,3 +1384,59 @@ by rewrite /pi mulr2n cosD -pihalfE sin_pihalf mulr1 cos_pihalf mulr0 add0r.
 Qed.
 
 End Pi.
+
+Section Tan.
+
+Variable R : realType.
+Notation pi := (@pi R).
+
+
+Axiom sinpi : sin pi = 0.
+
+Definition tan (a : R) := sin a / cos a.
+
+Lemma tan0 : tan 0 = 0 :> R.
+Proof. by rewrite /tan sin0 cos0 mul0r. Qed.
+
+Lemma tanpi : tan pi = 0.
+Proof. by rewrite /tan sinpi mul0r. Qed.
+
+Lemma tanN x : tan (- x) = - tan x.
+Proof. by rewrite /tan sinN cosN mulNr. Qed.
+
+Lemma tanD x y :
+  cos x != 0 -> cos y != 0 -> 
+  tan(x + y) = (tan x + tan y) / (1 - tan x * tan y).
+Proof.
+move=> cxNZ cyNZ.
+rewrite /tan sinD  cosD !addf_div // [sin y * cos x]mulrC -!mulrA -invfM.
+congr (_ / _).
+rewrite mulrBr mulr1 !mulrA.
+rewrite -[_ * _ * sin x]mulrA [cos x * (_ * _)]mulrC mulfK //.
+by rewrite -[_ * _ * sin y]mulrA [cos y * (_ * _)]mulrC mulfK.
+Qed.
+
+Lemma tan_mulr2n x : 
+  cos x != 0 -> tan (x *+ 2) = tan x *+ 2 / (1 -  tan x ^+ 2).
+Proof.
+move=> cxNZ.
+rewrite /tan cos_mulr2n sin_mulr2n.
+rewrite !mulr2n exprMn exprVn -{2}(divff (_ : 1 != 0)) //.
+rewrite -mulNr !addf_div ?sqrf_eq0 //.
+rewrite mul1r mulr1 -!mulrA -invfM -expr2; congr (_ / _).
+  by rewrite [cos x * _]mulrC.
+rewrite mulrCA mulrA mulfK  ?sqrf_eq0 // [X in _ = _ - X]sin2cos2.
+by rewrite opprB addrA.
+Qed.
+ 
+Lemma cos2_tan2 x : cos x != 0 -> 1 / (cos x) ^+ 2 = 1 + (tan x) ^+ 2.
+Proof.
+move=> cosx.
+rewrite /tan exprMn [X in _ = 1 + X * _]sin2cos2 mulrBl -exprMn divff //.
+by rewrite expr1n addrCA subrr addr0 div1r mul1r exprVn.
+Qed.
+
+Lemma tan_halfpi : tan (pi / 2) = 0.
+Proof. by rewrite /tan cos_pihalf invr0 mulr0. Qed.
+
+End Tan.
