@@ -7,10 +7,17 @@ Require Import classical_sets posnum topology normedtype landau sequences.
 Require Import derive.
 
 (******************************************************************************)
-(*                Definitions and lemmas about exponential                    *)
+(*            Lemmas about expR, theory for ln, sin, and cos                  *)
 (*                                                                            *)
+(*  ln x == the natural logarithm                                             *)
+(* sin x == the sine function                                                 *)
+(* cos x == the cosine function                                               *)
+(*    pi == pi                                                                *)
+(*                                                                            *)
+(* TODO: credit HOL-light                                                     *)
 (*                                                                            *)
 (******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -20,11 +27,7 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(******************************************************************************)
-(*  Some addition for  _ --> _                                                *)
-(******************************************************************************)
-
-Section Cvg.
+Section AboutCvg.
 
 Section cvg_extra.
 
@@ -114,13 +117,7 @@ Proof.
 by move=> cf cg fg; apply (ler_lim cf cg); near=> x; rewrite ler_sum.
 Grab Existential Variables. all: end_near. Qed.
 
-End Cvg.
-
-(******************************************************************************)
-(*  Some addition for  continuous                                             *)
-(******************************************************************************)
-
-(* About continuous *)
+End AboutCvg.
 
 Section continuous.
 Variables (K : numFieldType) (U V : normedModType K).
@@ -138,10 +135,6 @@ by move/(continuous_withinNx _ _).1/cvg_trans; apply; rewrite /= add0r.
 Qed.
 
 End continuous.
-
-(******************************************************************************)
-(*  Some addition for  is_derive                                              *)
-(******************************************************************************)
 
 Lemma chain_rule (R : realFieldType) (f g : R -> R) x :
   derivable f x 1 -> derivable g (f x) 1 ->
@@ -186,7 +179,7 @@ by rewrite -derive1E (chain_rule gv fgxv) 2!derive1E.
 Qed.
 
 (* Trick to trigger type class resolution *)
-Lemma trigger_derive (f : R -> R) x x1 y1 : 
+Lemma trigger_derive (f : R -> R) x x1 y1 :
   is_derive x 1 f x1 -> x1 = y1 -> is_derive x 1 f y1.
 Proof. by move=> Hi <-. Qed.
 
@@ -195,7 +188,6 @@ End is_derive.
 (******************************************************************************)
 (* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
 (******************************************************************************)
-
 Ltac rcfE :=
 repeat (
 (let u := fresh "u" in
@@ -287,9 +279,9 @@ Lemma diffs_equiv f x :
   cvg (series s1) -> series s2 --> lim (series s1).
 Proof.
 move=> s1 s2 Cx; rewrite -[lim _]subr0 {2}/series /=.
-have s2E n : 
+have s2E n :
   \sum_(0 <= i < n) s2 i = \sum_(0 <= i < n) s1 i - n%:R * f n * x ^+ n.-1.
-  by rewrite diffs_sumE addrK. 
+  by rewrite diffs_sumE addrK.
 rewrite (eq_cvgl _ (funext s2E)).
 apply: cvgB => //; rewrite -cvg_shiftS.
 by apply: cvg_series_cvg_0.
@@ -384,7 +376,7 @@ have : 0 <= K.
 rewrite le_eqVlt => /orP[/eqP K_eq0| K_gt0].
   pose k3 := if k2 < eps then k2 else eps.
   have k3_gt0 : 0 < k3 by rewrite /k3; case: (k2 < _).
-  have k3Lk : k3 < k by rewrite /k3; case: (ltrP k2) => // /le_lt_trans ->. 
+  have k3Lk : k3 < k by rewrite /k3; case: (ltrP k2) => // /le_lt_trans ->.
   exists k3 => //= t /=; rewrite !sub0r !normrN => H1 Ht.
   apply: le_lt_trans (H _ _) _; last by rewrite -K_eq0 mul0r.
   by apply/andP; split; [rewrite normr_gt0 | apply: lt_trans H1 _].
@@ -429,15 +421,15 @@ Lemma termdiff (c : R^nat) K x :
   cvg (series (fun n => diffs (diffs c) n * K ^+ n)) ->
   `|x| < `|K| ->
   is_derive x 1
-    (fun x => lim (series (fun n => c(n) * x ^+ n))) 
+    (fun x => lim (series (fun n => c(n) * x ^+ n)))
     (lim (series (fun n => diffs c n * x ^+ n))).
 Proof.
 move=> Ck CdK CddK xLK; set s := (fun n : nat => _).
 set (f := fun x => _).
-suff Hf : 
+suff Hf :
   h^-1 *: (f (h + x) - f x) @[h --> 0^'] --> lim (series s).
   have F : f^`() x = lim (series s) by  apply: cvg_lim Hf.
-  rewrite (_ : (fun h => h^-1 *: (f (h + x) - f x)) = 
+  rewrite (_ : (fun h => h^-1 *: (f (h + x) - f x)) =
               (fun h => h^-1 *: (f (h%:A + x) - f x))) in Hf; last first.
     by apply/funext => i //=; rewrite [i%:A]mulr1.
   have Df : derivable f x 1 by rewrite /derivable (cvg_lim _ Hf).
@@ -445,8 +437,7 @@ suff Hf :
 set sx := fun n : nat => c n * x ^+ n.
 have Csx : cvg (series sx) by apply: cvg_series_Xn_inside Ck _.
 pose shx h := fun n : nat => c n * (h + x) ^+ n.
-suff Cc :
-      lim (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> lim (series s).
+suff Cc : lim (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> lim (series s).
   apply: cvg_sub0 Cc.
   apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
   near=> h; rewrite sub0r normrN /=.
@@ -466,7 +457,7 @@ suff Cc :
   rewrite limZr; last by apply: is_cvg_seriesB.
   by rewrite lim_seriesB.
 apply: cvg_zero => /=.
-suff Cc : 
+suff Cc :
   lim (series
        (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
    @[h --> 0^'] --> (0 : R).
@@ -493,8 +484,8 @@ suff Cc :
     by rewrite ler_paddr // subr_ge0 ltW.
   have C1 := is_cvg_seriesB Cshx Csx.
   have Ckf := @is_cvg_seriesZr _ _ h^-1 C1.
-  have Cu : 
-   (series (h^-1 *: (shx h - sx)) - series s1) x0 @[x0 --> \oo] --> 
+  have Cu :
+   (series (h^-1 *: (shx h - sx)) - series s1) x0 @[x0 --> \oo] -->
     lim (series (h^-1 *: (shx h - sx))) - lim (series s).
     by apply: cvgB.
   set w := fun n : nat => _.
@@ -504,7 +495,7 @@ suff Cc :
       by rewrite mulrCA !mulrA.
     by rewrite -mulrBr [RHS]mulrCA [_^-1 * _]mulrC.
   rewrite [X in X h = _]/+%R /= [X in _ + X h = _]/-%R /=.
-  have -> : series (h^-1 *: (shx h - sx) - s1) = 
+  have -> : series (h^-1 *: (shx h - sx) - s1) =
             series (h^-1 *: (shx h - sx)) - (series s1).
     by apply/funext => i; rewrite /series /= sumrB.
   have -> : h^-1 *: series (shx h - sx) = series (h^-1 *: (shx h - sx)).
@@ -523,7 +514,7 @@ apply: (@lim_cvg_to_0_linear
 - have : cvg (series (fun n => `|diffs (diffs c) n| * r ^+ n)).
     apply: cvg_series_Xn_inside_norm CddK _.
     by rewrite ger0_norm // ltW // (le_lt_trans _ xLr).
-  have -> : (fun n => `|diffs (diffs c) n| * r ^+ n) = 
+  have -> : (fun n => `|diffs (diffs c) n| * r ^+ n) =
             (fun n => diffs (diffs (fun m => `|c m|)) n * r ^+ n).
     apply/funext => i.
     by rewrite /diffs !normrM !mulrA ger0_norm // ger0_norm.
@@ -554,173 +545,12 @@ Grab Existential Variables. all: end_near. Qed.
 
 End TermDiff.
 
-
-(******************************************************************************)
-(*  Exponentiel series                                                        *)
-(******************************************************************************)
-
-(* TODO: rebase: this section is not in master/sequences.v *)
-Section fact_facts.
-
-Local Open Scope nat_scope.
-
-Lemma leq_fact n : n <= n`!.
-Proof.
-by case: n => // n;  rewrite dvdn_leq ?fact_gt0 // dvdn_fact ?andTb.
-Qed.
-
-Lemma prod_rev n m :
-  \prod_(0 <= k < n - m) (n - k) = \prod_(m.+1 <= k < n.+1) k.
-Proof.
-rewrite [in RHS]big_nat_rev /= -{1}(add0n m.+1) big_addn subSS.
-by apply eq_bigr => i _; rewrite addnS subSS addnC subnDr.
-Qed.
-
-Lemma fact_split n m : m <= n -> n`! = \prod_(0 <= k < n - m) (n - k) * m`!.
-Proof.
-move=> ?; rewrite [in RHS]fact_prod mulnC prod_rev -big_cat [in RHS]/index_iota.
-rewrite subn1 -iota_add subSS addnBCA // subnn addn0 [in LHS]fact_prod.
-by rewrite [in RHS](_ : n = n.+1 - 1) // subn1.
-Qed.
-
-End fact_facts.
-
-(* TODO: rebase: this section is not in master/sequences.v *)
-Section exponential_series.
+Section expR.
 
 Variable R : realType.
 Implicit Types x : R.
 
-Import Order.TTheory.
-Import Num.Theory.
-Import GRing.Theory.
-Import numFieldNormedType.Exports.
-
-Local Open Scope classical_set_scope.
-Local Open Scope ring_scope.
-
-Definition exp_coeff x := [sequence x ^+ n / n`!%:R]_n.
-
-Local Notation exp := exp_coeff.
-
-Lemma exp_coeff_ge0 x n : 0 <= x -> 0 <= exp x n.
-Proof. by move=> x0; rewrite /exp divr_ge0 // ?exprn_ge0 // ler0n. Qed.
-
-Lemma series_exp_coeff0 n : series (exp 0) n.+1 = 1.
-Proof.
-rewrite /series /= big_nat_recl //= /exp /= expr0n divr1 big1 ?addr0 // => i _.
-by rewrite expr0n mul0r.
-Qed.
-
-Section exponential_series_cvg.
-
-Variable x : R.
-Hypothesis x0 : 0 < x.
-
-Let S0 N n := (N ^ N)%:R * \sum_(N.+1 <= i < n) (x / N%:R) ^+ i.
-
-Let is_cvg_S0 N : x < N%:R -> cvg (S0 N).
-Proof.
-move=> xN; apply: is_cvgZr; rewrite is_cvg_series_restrict exprn_geometric.
-apply/is_cvg_geometric_series; rewrite normrM normfV.
-by rewrite ltr_pdivr_mulr ?mul1r !ger0_norm // 1?ltW // (lt_trans x0).
-Qed.
-
-Let S0_ge0 N n : 0 <= S0 N n.
-Proof.
-rewrite mulr_ge0 // ?ler0n //; apply sumr_ge0 => i _.
-by rewrite exprn_ge0 // divr_ge0 // ?ler0n // ltW.
-Qed.
-
-Let S0_sup N n : x < N%:R -> S0 N n <= sup [set of S0 N].
-Proof.
-move=> xN; apply/sup_upper_bound; [split; [by exists (S0 N n), n|]|by exists n].
-rewrite (_ : [set of _] = [set `|S0 N n0| | n0 in setT]).
-  by apply: cvg_has_ub (is_cvg_S0 xN).
-by rewrite predeqE=> y; split=> -[z _ <-]; exists z; rewrite ?ger0_norm ?S0_ge0.
-Qed.
-
-Let S1 N n := \sum_(N.+1 <= i < n) exp x i.
-
-Lemma incr_S1 N : nondecreasing_seq (S1 N).
-Proof.
-apply/nondecreasing_seqP => n; rewrite /S1.
-have [nN|Nn] := leqP n N; first by rewrite !big_geq // (leq_trans nN).
-by rewrite big_nat_recr//= ler_addl exp_coeff_ge0 // ltW.
-Qed.
-
-Let S1_sup N : x < N%:R -> has_ubound [set of S1 N].
-Proof.
-move=> xN; exists (sup [set of S0 N]) => _ [n _ <-].
-rewrite (le_trans _ (S0_sup n xN)) // /S0 big_distrr /=.
-have N_gt0 := lt_trans x0 xN.
-apply ler_sum => i _.
-have [Ni|iN] := ltnP N i; last first.
-  rewrite expr_div_n mulrCA ler_pmul2l ?exprn_gt0 // (@le_trans _ _ 1) //.
-    by rewrite invf_le1 ?ler1n ?ltr0n // fact_gt0.
-  rewrite natrX -expfB_cond ?(negPf (lt0r_neq0 N_gt0)) //.
-  by rewrite exprn_ege1 // ler1n; case: (N) xN x0; case: ltrgt0P.
-rewrite /exp expr_div_n /= (fact_split Ni) mulrCA.
-rewrite ler_pmul2l ?exprn_gt0 // natrX -invf_div -expfB //.
-rewrite lef_pinv ?qualifE; last 2 first.
-- rewrite ltr0n muln_gt0 fact_gt0 andbT.
-  rewrite big_mkord prodn_gt0  // => j.
-  by rewrite subn_gt0 (leq_trans (ltn_ord _) (leq_subr _ _)).
-- by rewrite exprn_gt0.
-rewrite prod_rev -natrX ler_nat -prod_nat_const_nat big_add1 /= big_ltn //.
-rewrite mulnC leq_mul //; last by apply: leq_trans (leq_fact _).
-rewrite -(subnK Ni); elim: (_ - _)%N => [|k IH]; first by rewrite !big_geq.
-rewrite !addSn !big_nat_recr //= ?leq_mul ?leq_addl //.
-by rewrite -addSn -addSnnS leq_addl.
-Qed.
-
-Lemma is_cvg_series_exp_coeff_pos : cvg (series (exp x)).
-Proof.
-rewrite /series; near \oo => N; have xN : x < N%:R; last first.
-  rewrite -(@is_cvg_series_restrict N.+1).
-  exact/(nondecreasing_is_cvg (incr_S1 N))/S1_sup.
-near: N; exists (absz (floor x)).+1 => // m; rewrite /mkset -(@ler_nat R).
-move/lt_le_trans => -> //; rewrite (lt_le_trans (lt_succ_Rfloor x)) // -addn1.
-rewrite natrD (_ : 1%:R = 1%R) // ler_add2r RfloorE -(@gez0_abs (floor x)) //.
-by rewrite floor_ge0// ltW.
-Grab Existential Variables. all: end_near. Qed.
-
-End exponential_series_cvg.
-
-Lemma normed_series_exp_coeff x : [normed series (exp x)] = series (exp `|x|).
-Proof.
-rewrite funeqE => n /=; apply: eq_bigr => k _.
-by rewrite /exp normrM normfV normrX [`|_%:R|]@ger0_norm.
-Qed.
-
-Lemma is_cvg_series_exp_coeff x : cvg (series (exp x)).
-Proof.
-have [/eqP ->|x0] := boolP (x == 0).
-  apply/cvg_ex; exists 1; apply/cvg_distP => // => _/posnumP[e].
-  rewrite near_map; near=> n; have [m ->] : exists m, n = m.+1.
-    by exists n.-1; rewrite prednK //; near: n; exists 1%N.
-  by rewrite series_exp_coeff0 subrr normr0.
-apply: normed_cvg; rewrite normed_series_exp_coeff.
-by apply: is_cvg_series_exp_coeff_pos; rewrite normr_gt0.
-Grab Existential Variables. all: end_near. Qed.
-
-Lemma cvg_exp_coeff x : exp x --> (0 : R).
-Proof. exact: (cvg_series_cvg_0 (@is_cvg_series_exp_coeff x)). Qed.
-
-End exponential_series.
-
-(******************************************************************************)
-(*   Starting with the exponentiel function                                   *)
-(******************************************************************************)
-
-Section exp.
-
-Variable R : realType.
-
-(* TODO: rebase: exp is not in master and called expR *)
-Definition exp (x : R) : R := lim (series (exp_coeff x)).
-
-Lemma exp0 : exp 0 = 1.
+Lemma expR0 : expR 0 = 1 :> R.
 Proof.
 apply: lim_near_cst => //.
 near=> m; rewrite -[m]prednK; last by near: m.
@@ -728,9 +558,9 @@ rewrite -addn1 series_addn series_exp_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /exp_coeff /= expr0n mul0r.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma exp_ge1Dx x : 0 <= x -> 1 + x <= exp x.
+Lemma expR_ge1Dx x : 0 <= x -> 1 + x <= expR x.
 Proof.
- move=> x_gt0; rewrite /exp.
+move=> x_gt0; rewrite /expR.
 pose f (x : R) i := (i == 0%nat)%:R + x *+ (i == 1%nat).
 have F n : (1 < n)%nat -> \sum_(0 <= i < n) (f x i) = 1 + x.
   move=> /subnK<-.
@@ -744,200 +574,200 @@ by near=> n; apply: ler_sum => [] [|[|i]] _;
           // exp_coeff_ge0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma exp_coeffE (x : R) :
+Lemma exp_coeffE x :
   exp_coeff x = (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n).
 Proof. by apply/funext => i; rewrite /exp_coeff /= mulrC. Qed.
 
-Lemma expE :
-  exp = fun x => lim (series (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n)).
+Import GRing.Theory.
+Local Open Scope ring_scope.
+
+Lemma expRE :
+  expR = fun x => lim (series (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n)).
 Proof. by apply/funext => x; rewrite -exp_coeffE. Qed.
 
-Lemma diffs_exp :
+Lemma diffs_inv_fact :
   diffs (fun n => (n`!%:R)^-1) = (fun n => (n`!%:R)^-1 : R).
 Proof.
 by apply/funext => i; rewrite /diffs factS natrM invfM mulrA mulfV ?mul1r.
 Qed.
 
-Global Instance is_derive_exp x : is_derive x 1 exp (exp x).
+Global Instance is_derive_expR x : is_derive x 1 expR (expR x).
 Proof.
 pose s1 n := diffs (fun n => n`!%:R^-1) n * x ^+ n.
-rewrite expE /=.
+rewrite expRE /=.
 rewrite (_ : (fun n => _) = s1); last first.
-  by apply/funext => i; rewrite /s1 diffs_exp.
+  by apply/funext => i; rewrite /s1 diffs_inv_fact.
 apply: (@termdiff _ _ (`|x| + 1)).
 - rewrite -exp_coeffE; apply: is_cvg_series_exp_coeff.
 - rewrite (_ : (fun n : nat => _) = exp_coeff (`|x| + 1)).
     by apply: is_cvg_series_exp_coeff.
-  by apply/funext => i; rewrite diffs_exp exp_coeffE.
+  by apply/funext => i; rewrite diffs_inv_fact exp_coeffE.
 - rewrite (_ : (fun n : nat => _) = exp_coeff (`|x| + 1)).
     by apply: is_cvg_series_exp_coeff.
-  by apply/funext => i; rewrite !diffs_exp exp_coeffE.
+  by apply/funext => i; rewrite !diffs_inv_fact exp_coeffE.
 by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
-Lemma derivable_exp x : derivable exp x 1.
+Lemma derivable_expR x : derivable expR x 1.
 Proof. by apply: ex_derive; apply: is_derive_exp. Qed.
 
-Lemma continuous_exp : continuous exp.
+Lemma continuous_expR : continuous (@expR R).
 Proof.
 move=> x.
 apply: differentiable_continuous.
-by apply/derivable1_diffP/derivable_exp.
+by apply/derivable1_diffP/derivable_expR.
 Qed.
 
-Lemma expxDyMexpx x y : exp (x + y) * exp (- x) = exp y.
+Lemma expRxDyMexpx x y : expR (x + y) * expR (- x) = expR y.
 Proof.
-apply: etrans (_ : exp(0 + y) * exp (- 0) = _); last first.
-  by rewrite add0r oppr0 exp0 mulr1.
-apply: (@is_derive_0_cst _ (fun x => exp (x + y) * exp (- x))) => x1.
-have -> : 0 = exp (x1 + y) * (exp (-x1) * (- 1)) +
-              exp (- x1) * (exp (x1 + y) * (1 + 0)).
+apply: etrans (_ : expR (0 + y) * expR (- 0) = _); last first.
+  by rewrite add0r oppr0 expR0 mulr1.
+apply: (@is_derive_0_cst _ (fun x => expR (x + y) * expR (- x))) => x1.
+have -> : 0 = expR (x1 + y) * (expR (- x1) * (- 1)) +
+              expR (- x1) * (expR (x1 + y) * (1 + 0)).
   by rewrite mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
 apply: is_deriveM.
 apply: is_derive1_chain.
 apply: is_deriveN.
 Qed.
 
-Lemma expxMexpNx_1 x : exp x * exp (-x) = 1.
-Proof. by rewrite -{1}[x]addr0 expxDyMexpx exp0. Qed.
+Lemma expRxMexpNx_1 x : expR x * expR (- x) = 1.
+Proof. by rewrite -{1}[x]addr0 expRxDyMexpx expR0. Qed.
 
-Lemma pexp_gt1 x: 0 < x -> 1 < exp x.
+Lemma pexpR_gt1 x: 0 < x -> 1 < expR x.
 Proof.
 move=> x_gt0.
-apply: lt_le_trans (exp_ge1Dx (ltW x_gt0)).
+apply: lt_le_trans (expR_ge1Dx (ltW x_gt0)).
 by rewrite -subr_gt0 addrAC subrr add0r.
 Qed.
 
-Lemma exp_gt0 x : 0 < exp x.
+Lemma expR_gt0 x : 0 < expR x.
 Proof.
 case: (ltrgt0P x) => [x_gt0|x_gt0|->].
-- by apply: lt_trans (pexp_gt1 x_gt0).
-- have F : 0 < exp (- x) by apply: lt_trans (pexp_gt1 _); rewrite ?oppr_gt0.
-  by rewrite -(pmulr_lgt0 _ F) expxMexpNx_1.
-by rewrite exp0.
+- by apply: lt_trans (pexpR_gt1 x_gt0).
+- have F : 0 < expR (- x) by apply: lt_trans (pexpR_gt1 _); rewrite ?oppr_gt0.
+  by rewrite -(pmulr_lgt0 _ F) expRxMexpNx_1.
+by rewrite expR0.
 Qed.
 
-Lemma expN x : exp (-x) = (exp x)^-1.
+Lemma expRN x : expR (- x) = (expR x)^-1.
 Proof.
-apply: (mulfI (lt0r_neq0 (exp_gt0 x))).
-by rewrite expxMexpNx_1 mulfV // (lt0r_neq0 (exp_gt0 x)).
+apply: (mulfI (lt0r_neq0 (expR_gt0 x))).
+by rewrite expRxMexpNx_1 mulfV // (lt0r_neq0 (expR_gt0 x)).
 Qed.
 
-Lemma expD x y : exp (x + y) = exp x * exp y.
+Lemma expRD x y : expR (x + y) = expR x * expR y.
 Proof.
-apply: (mulIf (lt0r_neq0 (exp_gt0 (- x)))).
-rewrite expxDyMexpx expN [_ * exp y]mulrC mulfK //.
-by case: ltrgt0P (exp_gt0 x).
+apply: (mulIf (lt0r_neq0 (expR_gt0 (- x)))).
+rewrite expRxDyMexpx expRN [_ * expR y]mulrC mulfK //.
+by case: ltrgt0P (expR_gt0 x).
 Qed.
 
-Lemma expMm n x : exp (n%:R * x) = exp x ^+ n.
+Lemma expRMm n x : expR (n%:R * x) = expR x ^+ n.
 Proof.
-elim: n x => [x|n IH x] /=; first by rewrite mul0r expr0 exp0.
-by rewrite exprS -add1n natrD mulrDl mul1r expD IH.
+elim: n x => [x|n IH x] /=; first by rewrite mul0r expr0 expR0.
+by rewrite exprS -add1n natrD mulrDl mul1r expRD IH.
 Qed.
 
-Lemma exp_gt1 x:  (1 < exp x) = (0 < x).
+Lemma expR_gt1 x:  (1 < expR x) = (0 < x).
 Proof.
 case: ltrgt0P => [x_gt0|xN|->]; first 2 last.
-- by rewrite exp0.
-- by rewrite (pexp_gt1 x_gt0).
+- by rewrite expR0.
+- by rewrite (pexpR_gt1 x_gt0).
 apply/idP/negP.
-rewrite -[x]opprK expN -leNgt invf_cp1 ?exp_gt0 //.
-by rewrite ltW // pexp_gt1 // lter_oppE.
+rewrite -[x]opprK expRN -leNgt invf_cp1 ?expR_gt0 //.
+by rewrite ltW // pexpR_gt1 // lter_oppE.
 Qed.
 
-Lemma exp_lt1 x:  (exp x < 1) = (x < 0).
+Lemma expR_lt1 x:  (expR x < 1) = (x < 0).
 Proof.
 case: ltrgt0P => [x_gt0|xN|->]; first 2 last.
-- by rewrite exp0 //.
-- by apply/idP/negP; rewrite -leNgt ltW // exp_gt1.
-by rewrite -[x]opprK expN invf_cp1 ?exp_gt0 // exp_gt1 lter_oppE.
+- by rewrite expR0 //.
+- by apply/idP/negP; rewrite -leNgt ltW // expR_gt1.
+by rewrite -[x]opprK expRN invf_cp1 ?expR_gt0 // expR_gt1 lter_oppE.
 Qed.
 
-Lemma expB x y : exp (x - y) = exp x / exp y.
-Proof. by rewrite expD expN. Qed.
+Lemma expRB x y : expR (x - y) = expR x / expR y.
+Proof. by rewrite expRD expRN. Qed.
 
-Lemma ltr_exp : {mono exp : x y / x < y}.
+Lemma ltr_expR : {mono (@expR R) : x y / x < y}.
 Proof.
 move=> x y.
-by rewrite -{1}(subrK x y) expD ltr_pmull ?exp_gt0 // exp_gt1 subr_gt0.
+by rewrite -{1}(subrK x y) expRD ltr_pmull ?expR_gt0 // expR_gt1 subr_gt0.
 Qed.
 
-Lemma ler_exp : {mono exp : x y / x <= y}.
+Lemma ler_expR : {mono (@expR R) : x y / x <= y}.
 Proof.
 move=> x y.
 case: (ltrgtP x y) => [xLy|yLx|<-].
-- by rewrite ltW // ltr_exp.
-- by rewrite leNgt ltr_exp yLx.
+- by rewrite ltW // ltr_expR.
+- by rewrite leNgt ltr_expR yLx.
 by rewrite lexx.
 Qed.
 
-Lemma expI : injective exp.
+Lemma expRI : injective (@expR R).
 Proof.
 move=> x y exE.
-by have [] := (ltr_exp x y, ltr_exp y x); rewrite exE ltxx; case: ltrgtP.
+by have [] := (ltr_expR x y, ltr_expR y x); rewrite exE ltxx; case: ltrgtP.
 Qed.
 
-End exp.
+Lemma expR_total_gt1 x :
+  1 <= x -> exists y, [/\ 0 <= y, 1 + y <= x & expR y = x].
+Proof.
+move=> x_ge1; have x_ge0 : 0 <= x by apply: le_trans x_ge1.
+case: (@IVT _ (fun y => expR y - x) 0 x 0) => //.
+- by move=> x1 x1Ix; apply: continuousB => // y1;
+    [exact: continuous_expR|exact: cst_continuous].
+- rewrite expR0; case: (ltrgtP (1- x) (expR x - x)) => [_| |].
+  + rewrite subr_le0 x_ge1 subr_ge0.
+    by apply: le_trans (expR_ge1Dx _); rewrite ?ler_addr.
+  + by rewrite ltr_add2r expR_lt1 ltNge x_ge0.
+  + rewrite subr_le0 x_ge1 => -> /=; rewrite subr_ge0.
+    by apply: le_trans (expR_ge1Dx x_ge0); rewrite ler_addr.
+- move=> x1 _ /eqP; rewrite subr_eq0 => /eqP Hx1.
+  exists x1; split => //; first by rewrite -ler_expR expR0 Hx1.
+  by rewrite -Hx1 expR_ge1Dx // -ler_expR Hx1 expR0.
+Qed.
+
+Lemma expR_total x : 0 < x -> exists y, expR y = x.
+Proof.
+case: (lerP 1 x) => [/expR_total_gt1[y [_ _ Hy]]|x_lt1 x_gt0].
+  by exists y.
+have /expR_total_gt1[y [H1y H2y H3y]] : 1 <= x^-1 by rewrite ltW // !invf_cp1.
+by exists (-y); rewrite expRN H3y invrK.
+Qed.
+
+End expR.
 
 Section Ln.
 
 Variable R : realType.
+Implicit Types x : R.
 
-Notation exp := (@exp R).
+Notation exp := (@expR R).
 
 Definition ln x : R := xget 0 [set y | exp y == x ].
 
 Lemma expK : cancel exp ln.
 Proof.
-by move=> x; rewrite /ln; case: xgetP => [x1 _ /eqP/expI //|/(_ x)[]/=].
-Qed.
-
-Lemma exp_total_gt1 x :
-  1 <= x -> exists y, [/\ 0 <= y, 1 + y <= x & exp y = x].
-Proof.
-move=> x_ge1; have x_ge0 : 0 <= x by apply: le_trans x_ge1.
-case: (@IVT _ (fun y => exp y - x) 0 x 0) => //.
-- move=> x1 x1Ix; apply: continuousB => // y1.
-    by apply: continuous_exp.
-  by apply: continuous_cst.
-rewrite exp0; case: (ltrgtP (1- x) (exp x - x)) => [_||].
-- rewrite subr_le0 x_ge1 subr_ge0.
-  by apply: le_trans (exp_ge1Dx _); rewrite ?ler_addr.
-- by rewrite ltr_add2r exp_lt1 ltNge x_ge0.
-- rewrite subr_le0 x_ge1 => -> /=; rewrite subr_ge0.
-  by apply: le_trans (exp_ge1Dx x_ge0); rewrite ler_addr.
-move=> x1 _ /eqP; rewrite subr_eq0 => /eqP Hx1.
-exists x1; split => //; first by rewrite -ler_exp exp0 Hx1.
-by rewrite -Hx1 exp_ge1Dx // -ler_exp Hx1 exp0.
-Qed.
-
-Lemma exp_total x :  0 < x -> exists y, exp y = x.
-Proof.
-case: (lerP 1 x) => [/exp_total_gt1[y [_ _ Hy]]|x_lt1 x_gt0].
-  by exists y.
-have /exp_total_gt1[y [H1y H2y H3y]] : 1 <= x^-1 by rewrite ltW // !invf_cp1.
-by exists (-y); rewrite expN H3y invrK.
+by move=> x; rewrite /ln; case: xgetP => [x1 _ /eqP/expRI //|/(_ x)[]/=].
 Qed.
 
 Lemma lnK x : 0 < x -> exp (ln x) = x.
 Proof.
 move=> x_gt0; rewrite /ln; case: xgetP=> [x1 _ /eqP// |H].
-by case: (exp_total x_gt0) => y /eqP Hy; case: (H y).
+by case: (expR_total x_gt0) => y /eqP Hy; case: (H y).
 Qed.
 
 Lemma lnK_eq x : (exp (ln x) == x) = (0 < x).
-Proof.
-apply/eqP/idP=> [<-|]; last by apply: lnK.
-by apply: exp_gt0.
-Qed.
+Proof. by apply/eqP/idP=> [<-|]; [exact: expR_gt0|exact: lnK]. Qed.
 
 Lemma ln1 : ln 1 = 0.
-Proof. by apply/expI; rewrite lnK // exp0. Qed.
+Proof. by apply/expRI; rewrite lnK // expR0. Qed.
 
 Lemma lnM x y : 0 < x -> 0 < y -> ln (x * y) = ln x + ln y.
 Proof.
-by move=> x_gt0 y_gt0; apply: expI; rewrite ?expD !lnK // mulr_gt0.
+by move=> x_gt0 y_gt0; apply: expRI; rewrite ?expRD !lnK // mulr_gt0.
 Qed.
 
 Lemma lnI x y : 0 < x -> 0 < y -> ln x = ln y -> x = y.
@@ -946,17 +776,17 @@ Proof. by move=> /lnK {2}<- /lnK {2}<- ->. Qed.
 Lemma lnV x : 0 < x -> ln (x^-1) = - ln x.
 Proof.
 move=> x_gt0; have xVP : 0 < x^-1 by rewrite invr_gt0.
-by apply: expI; rewrite lnK // expN lnK.
+by apply: expRI; rewrite lnK // expRN lnK.
 Qed.
 
 Lemma ln_div x y : 0 < x -> 0 < y -> ln (x / y) = ln x - ln y.
 Proof. by move=> x_gt0 y_gt0; rewrite lnM  ?invr_gt0 // lnV. Qed.
 
 Lemma ltr_ln : {in Num.pos &, {mono ln : x y / x < y}}.
-Proof. by move=> x y x_gt0 y_gt0; rewrite -ltr_exp !lnK. Qed.
+Proof. by move=> x y x_gt0 y_gt0; rewrite -ltr_expR !lnK. Qed.
 
 Lemma ler_ln : {in Num.pos &, {mono ln : x y / x <= y}}.
-Proof. by move=> x y x_gt0 y_gt0; rewrite -ler_exp !lnK. Qed.
+Proof. by move=> x y x_gt0 y_gt0; rewrite -ler_expR !lnK. Qed.
 
 Lemma lnX n x : 0 < x -> ln(x ^+ n) = ln x *+ n.
 Proof.
@@ -966,25 +796,25 @@ Qed.
 
 Lemma ln_le1Dx x : 0 <= x -> ln (1 + x) <= x.
 Proof.
-move=> x_ge0; rewrite -ler_exp lnK ?exp_ge1Dx //.
+move=> x_ge0; rewrite -ler_expR lnK ?expR_ge1Dx //.
 by apply: lt_le_trans (_ : 0 < 1) _; rewrite // ler_addl.
 Qed.
 
 Lemma ln_sublinear x : 0 < x -> ln x < x.
 Proof.
 move=> x_gt0; apply: lt_le_trans (_ : ln (1 + x) <= _).
-  by rewrite -ltr_exp !lnK ?addr_gt0 // ltr_addr.
-by rewrite -ler_exp lnK ?addr_gt0 // exp_ge1Dx // ltW.
+  by rewrite -ltr_expR !lnK ?addr_gt0 // ltr_addr.
+by rewrite -ler_expR lnK ?addr_gt0 // expR_ge1Dx // ltW.
 Qed.
 
 Lemma ln_ge0 x : 1 <= x -> 0 <= ln x.
 Proof.
-by move=> x_ge1; rewrite -ler_exp exp0 lnK // (lt_le_trans _ x_ge1).
+by move=> x_ge1; rewrite -ler_expR expR0 lnK // (lt_le_trans _ x_ge1).
 Qed.
 
 Lemma ln_gt0 x : 1 < x -> 0 < ln x.
 Proof.
-by move=> x_gt1; rewrite -ltr_exp exp0 lnK // (lt_trans _ x_gt1).
+by move=> x_gt1; rewrite -ltr_expR expR0 lnK // (lt_trans _ x_gt1).
 Qed.
 
 End Ln.
@@ -992,11 +822,12 @@ End Ln.
 Section CosSin.
 
 Variable R : realType.
+Implicit Types x : R.
 
-Definition sin_coeff (x : R) :=
+Definition sin_coeff x :=
    [sequence  (odd n)%:R * (-1) ^+ n.-1./2 * x ^+ n / n`!%:R]_n.
 
-Lemma sin_coeffE (x : R) :
+Lemma sin_coeffE x :
   sin_coeff x = (fun n => (fun n => (odd n)%:R * (-1) ^+ n.-1./2 *
                                     (n`!%:R)^-1) n * x ^+ n).
 Proof.
@@ -1016,7 +847,7 @@ case: odd; first by rewrite mul1r.
 by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
 Qed.
 
-Definition sin (x : R) : R := lim (series (sin_coeff x)).
+Definition sin x : R := lim (series (sin_coeff x)).
 
 Lemma sinE : sin = fun x =>
   lim (series (fun n =>
@@ -1047,7 +878,7 @@ rewrite -addn1 series_addn series_sin_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /sin_coeff /= expr0n !(mulr0, mul0r).
 Grab Existential Variables. all: end_near. Qed.
 
-Definition cos_coeff (x : R) :=
+Definition cos_coeff x :=
    [sequence  (~~(odd n))%:R * (-1)^n./2 * x ^+ n / n`!%:R]_n.
 
 Lemma cos_coeffE (x : R) :
@@ -1070,7 +901,7 @@ case: odd; last by rewrite mul1r.
 by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
 Qed.
 
-Definition cos (x : R) : R := lim (series (cos_coeff x)).
+Definition cos x : R := lim (series (cos_coeff x)).
 
 Lemma cosE : cos = fun x =>
   lim (series (fun n =>
@@ -1309,30 +1140,7 @@ Proof. by case: (ler0P a); rewrite ?cosN. Qed.
 
 End CosSin.
 
-Section Pi.
-
-Variable R : realType.
-
-Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
-
-Lemma cos_coeff_odd n (x : R) : cos_coeff x n.*2.+1 = 0.
-Proof. by rewrite /cos_coeff /= odd_double /= !mul0r. Qed.
-
-Lemma cos_coeff_2_0 : cos_coeff 2 0%N = 1 :> R.
-Proof. by rewrite /cos_coeff /= mul1r expr0 mulr1 expr0z divff. Qed.
-
-Lemma cos_coeff_2_2 : cos_coeff 2 2%N = - 2%:R :> R.
-Proof.
-by rewrite /cos_coeff /= mul1r expr1z mulN1r expr2 mulNr -mulrA divff// mulr1.
-Qed.
-
-Lemma cos_coeff_2_4 : cos_coeff 2 4 = 2%:R / 3%:R :> R.
-Proof.
-rewrite /cos_coeff /= mul1r -exprnP sqrrN expr1n mul1r 2!factS mulnCA mulnC.
-by rewrite 3!exprS expr1 2!mulrA natrM -mulf_div -2!natrM divff// mul1r.
-Qed.
-
-Lemma SUM_GROUP (f : R ^nat) (n k : nat) :
+Lemma SUM_GROUP (R : zmodType) (f : R ^nat) (n k : nat) :
   \sum_(0 <= i < n) \sum_(i * k <= j < i.+1 * k) f j =
   \sum_(0 <= i < n * k) f i.
 Proof.
@@ -1342,7 +1150,7 @@ rewrite big_cat /= [in X in X + _ = _]/index_iota subn0; congr (_ + _).
 by rewrite /index_iota addnC addnK.
 Qed.
 
-Lemma SER_GROUP (f : R ^nat) (k : nat) : cvg (series f) -> (0 < k)%N ->
+Lemma SER_GROUP (R : realFieldType) (f : R ^nat) k : cvg (series f) -> (0 < k)%N ->
   series (fun n => \sum_(n * k <= i < n.+1 * k) f i) --> lim (series f).
 Proof.
 move=> /cvg_ballP cf k0; apply/cvg_ballP => _/posnumP[e].
@@ -1354,7 +1162,7 @@ have /nl : (n <= m * k)%N.
 by rewrite /ball /= distrC.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma SER_PAIR (f : R ^nat) : cvg (series f) ->
+Lemma SER_PAIR (R : realFieldType) (f : R ^nat) : cvg (series f) ->
  series (fun n => \sum_(n.*2 <= i < n.*2 + 2) f i) --> lim (series f).
 Proof.
 move=> cf; rewrite [X in series X --> _](_ : _ =
@@ -1363,26 +1171,7 @@ move=> cf; rewrite [X in series X --> _](_ : _ =
 exact: SER_GROUP.
 Qed.
 
-Definition cos_coeff' (x : R) (n : nat) := (-1)^n * x ^+ n.*2 / n.*2`!%:R.
-
-Lemma cos_coeff'E (x : R) (n : nat) : cos_coeff' x n = cos_coeff x n.*2.
-Proof.
-rewrite /cos_coeff' /cos_coeff /= odd_double /= mul1r -2!mulrA; congr (_ * _).
-by rewrite (half_bit_double n false).
-Qed.
-
-Lemma cvg_cos_coeff' (x : R) : series (cos_coeff' x) --> cos x.
-Proof.
-have /SER_PAIR := (@is_cvg_series_cos_coeff _ x).
-apply: cvg_trans.
-rewrite [X in _ --> series X](_ : _ = (fun n => cos_coeff x n.*2)); last first.
-  rewrite funeqE=> n; rewrite addn2 big_nat_recr //= cos_coeff_odd addr0.
-  by rewrite  big_nat_recl//= /index_iota subnn big_nil addr0.
-rewrite [X in series X --> _](_ : _ = (fun n => cos_coeff x n.*2)) //.
-by rewrite funeqE => n; exact: cos_coeff'E.
-Qed.
-
-Lemma SER_POS_LT_PAIR (f : R ^nat) n : cvg (series f) ->
+Lemma SER_POS_LT_PAIR (R : realFieldType) (f : R ^nat) n : cvg (series f) ->
   (forall d, 0 < f (n + d.*2)%N + f (n + d.*2.+1)%N) ->
   \sum_(0 <= i < n) f i < lim (series f).
 Proof.
@@ -1402,6 +1191,53 @@ have : lim (series f) + f n + f n.+1 <= \sum_(0 <= i < N.+1.*2 + n) f i.
   apply: (le_trans _ (nf_ub N)).
   by do 2 rewrite big_nat_recr //=; by rewrite -2!addrA ler_add2r.
 by move/(lt_le_trans ffnfn); rewrite ltxx.
+Qed.
+
+Section Pi.
+
+Variable R : realType.
+Implicit Types (x : R) (n k : nat).
+
+Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
+
+Lemma pihalfE : pi / 2 = get [set x | 0 <= x <= 2 /\ cos x = 0].
+Proof. by rewrite /pi -(mulr_natr (get _)) -mulrA divff ?mulr1. Qed.
+
+(* TODO: move closer to cos? *)
+Lemma cos_coeff_odd n x : cos_coeff x n.*2.+1 = 0.
+Proof. by rewrite /cos_coeff /= odd_double /= !mul0r. Qed.
+
+Lemma cos_coeff_2_0 : cos_coeff 2 0%N = 1 :> R.
+Proof. by rewrite /cos_coeff /= mul1r expr0 mulr1 expr0z divff. Qed.
+
+Lemma cos_coeff_2_2 : cos_coeff 2 2%N = - 2%:R :> R.
+Proof.
+by rewrite /cos_coeff /= mul1r expr1z mulN1r expr2 mulNr -mulrA divff// mulr1.
+Qed.
+
+Lemma cos_coeff_2_4 : cos_coeff 2 4 = 2%:R / 3%:R :> R.
+Proof.
+rewrite /cos_coeff /= mul1r -exprnP sqrrN expr1n mul1r 2!factS mulnCA mulnC.
+by rewrite 3!exprS expr1 2!mulrA natrM -mulf_div -2!natrM divff// mul1r.
+Qed.
+
+Definition cos_coeff' x n := (-1)^n * x ^+ n.*2 / n.*2`!%:R.
+
+Lemma cos_coeff'E x n : cos_coeff' x n = cos_coeff x n.*2.
+Proof.
+rewrite /cos_coeff' /cos_coeff /= odd_double /= mul1r -2!mulrA; congr (_ * _).
+by rewrite (half_bit_double n false).
+Qed.
+
+Lemma cvg_cos_coeff' x : series (cos_coeff' x) --> cos x.
+Proof.
+have /SER_PAIR := (@is_cvg_series_cos_coeff _ x).
+apply: cvg_trans.
+rewrite [X in _ --> series X](_ : _ = (fun n => cos_coeff x n.*2)); last first.
+  rewrite funeqE=> n; rewrite addn2 big_nat_recr //= cos_coeff_odd addr0.
+  by rewrite  big_nat_recl//= /index_iota subnn big_nil addr0.
+rewrite [X in series X --> _](_ : _ = (fun n => cos_coeff x n.*2)) //.
+by rewrite funeqE => n; exact: cos_coeff'E.
 Qed.
 
 Lemma cos2_lt0 : cos 2 < 0 :> R.
@@ -1432,25 +1268,26 @@ Qed.
 Lemma cos_exists : exists2 hpi : R, 0 <= hpi <= 2 & cos hpi = 0.
 Proof.
 have /IVT[]// : minr (cos 0) (cos 2) <= (0 : R) <= maxr (cos 0) (cos 2).
-  rewrite /minr /maxr cos0 !ifN; 
+  rewrite /minr /maxr cos0 !ifN;
       try  by rewrite -leNgt ltW // (lt_trans cos2_lt0).
   by rewrite (ler_nat R 0 1) andbT ?ltW // cos2_lt0 //.
 by move=> *; apply: continuous_cos.
 by move=> hpi /itvP hpiI chpi_eq0; exists hpi; rewrite ?hpiI.
 Qed.
 
-Definition sin_coeff' (x : R) (n : nat) := (-1)^n * x ^+ n.*2.+1 / n.*2.+1`!%:R.
+(* TODO: move closed to sin? *)
+Definition sin_coeff' x n := (-1)^n * x ^+ n.*2.+1 / n.*2.+1`!%:R.
 
-Lemma sin_coeff'E (x : R) (n : nat) : sin_coeff' x n = sin_coeff x n.*2.+1.
+Lemma sin_coeff'E x n : sin_coeff' x n = sin_coeff x n.*2.+1.
 Proof.
 rewrite /sin_coeff' /sin_coeff /= odd_double mul1r -2!mulrA; congr (_ * _).
 by rewrite doubleK.
 Qed.
 
-Lemma sin_coeff_even n (x : R) : sin_coeff x n.*2 = 0.
+Lemma sin_coeff_even n x : sin_coeff x n.*2 = 0.
 Proof. by rewrite /sin_coeff /= odd_double /= !mul0r. Qed.
 
-Lemma cvg_sin_coeff' (x : R) : series (sin_coeff' x) --> sin x.
+Lemma cvg_sin_coeff' x : series (sin_coeff' x) --> sin x.
 Proof.
 have /SER_PAIR := (@is_cvg_series_sin_coeff _ x).
 apply: cvg_trans.
@@ -1461,7 +1298,7 @@ rewrite [X in series X --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
 by rewrite funeqE => n; exact: sin_coeff'E.
 Qed.
 
-Lemma sin2_gt0 (x : R) : 0 < x < 2 -> 0 < sin x.
+Lemma sin2_gt0 x : 0 < x < 2 -> 0 < sin x.
 Proof.
 move=> /andP[x_gt0 x_lt2].
 have H := @cvg_sin_coeff' x.
@@ -1489,25 +1326,58 @@ apply: lt_le_trans (_ : 2%:R <= _) => //.
 by rewrite ler_nat.
 Qed.
 
-Lemma coshpi_uniq (x y : R) : 
+Lemma coshpi_uniq (x y : R) :
   0 <= x <= 2 -> cos x = 0 -> 0 <= y <= 2 -> cos y = 0 -> x = y.
 Proof.
 wlog xLy : x y / x <= y => [H xB cx0 yB cy0|].
   case: (lerP x y) => [/H //| /ltW /H H1]; first by apply.
   by apply/esym/H1.
-move=> /andP[x_ge0 x_le2] cx0 /andP[y_ge0 y_le2] cy0. 
+move=> /andP[x_ge0 x_le2] cx0 /andP[y_ge0 y_le2] cy0.
 case: (x =P y) => // /eqP xDy.
 have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
 have /(Rolle xLLs)[x1 _|x1 _|x1 x1I [_ x1D]] : cos x = cos y by rewrite cy0.
 - by apply: derivable_cos.
 - by apply: continuous_cos.
 have [_ /esym/eqP] := is_derive_cos x1; rewrite x1D oppr_eq0 => /eqP Hs.
-suff: 0 < sin x1 by rewrite Hs ltxx. 
+suff: 0 < sin x1 by rewrite Hs ltxx.
 apply/sin2_gt0/andP; split => //.
   apply: le_lt_trans x_ge0 _.
   by rewrite (itvP x1I).
 apply: lt_le_trans _ y_le2.
 by rewrite (itvP x1I).
+Qed.
+
+Local Lemma cos_pihalf' : 0 <= pi / 2 <= 2 /\ cos (pi / 2) = 0.
+Proof.
+have [x ? ?] := cos_exists; rewrite pihalfE.
+by case: xgetP => [_->[]//|/(_ x)/=]; last tauto.
+Qed.
+
+Lemma cos_pihalf : cos (pi / 2) = 0. Proof. exact: cos_pihalf'.2. Qed.
+
+Lemma pihalf_02 : 0 < pi / 2 < 2.
+Proof.
+have [pih02 cpih] := cos_pihalf'.
+rewrite 2!lt_neqAle andbCA -andbA pih02 andbT; apply/andP; split.
+  by apply/eqP => pih2; have := cos2_lt0; rewrite -pih2 cpih ltxx.
+apply/eqP => pih0; have := @cos0 R.
+by rewrite pih0 cpih; apply/eqP; rewrite eq_sym oner_eq0.
+Qed.
+
+Lemma sin_pihalf : sin (pi / 2) = 1.
+Proof.
+have := cos2Dsin2 (pi / 2); rewrite cos_pihalf expr0n add0r.
+rewrite -[in X in _ = X -> _](expr1n _ 2%N) => /eqP; rewrite -subr_eq0 subr_sqr.
+rewrite mulf_eq0=> /orP[|]; first by rewrite subr_eq0=> /eqP.
+move/eqP/absurd; apply; apply/eqP; rewrite addr_eq0 -eqr_oppLR.
+apply/eqP => Nspi21.
+have := @ler01 R; rewrite -{}Nspi21 ler_oppr oppr0 leNgt => /negP; apply.
+exact/sin2_gt0/pihalf_02.
+Qed.
+
+Lemma cos_pi : cos pi = - 1.
+Proof.
+by rewrite /pi mulr2n cosD -pihalfE sin_pihalf mulr1 cos_pihalf mulr0 add0r.
 Qed.
 
 End Pi.

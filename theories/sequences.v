@@ -1003,7 +1003,7 @@ Proof. exact: (cvg_series_cvg_0 (@is_cvg_series_exp_coeff x)). Qed.
 End exponential_series.
 
 (* TODO: generalize *)
-Definition expR (R : realType) (x : R) : R := lim (series (exp_coeff x)).
+Definition expR {R : realType} (x : R) : R := lim (series (exp_coeff x)).
 
 Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F" :=
   (lim (fun n => (\big[ op / idx ]_(m <= i < n | P) F))) : big_scope.
