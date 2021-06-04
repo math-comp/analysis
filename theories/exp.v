@@ -7,14 +7,18 @@ Require Import classical_sets posnum topology normedtype landau sequences.
 Require Import derive.
 
 (******************************************************************************)
-(*            Lemmas about expR, theory for ln, sin, and cos                  *)
+(* Lemmas about exponential/logarithm functions, theory for sin, cos, and tan *)
 (*                                                                            *)
-(*  ln x == the natural logarithm                                             *)
-(* sin x == the sine function                                                 *)
-(* cos x == the cosine function                                               *)
-(*    pi == pi                                                                *)
+(*       ln x == the natural logarithm                                        *)
+(*     a `^ x == exponential functions                                        *)
+(* riemannR a == sequence n |-> 1 / (n.+1) ^ a where a has a type of type     *)
+(*               realType                                                     *)
+(*      sin x == the sine function                                            *)
+(*      cos x == the cosine function                                          *)
+(*         pi == pi                                                           *)
+(*      tan x == the tangent function                                         *)
 (*                                                                            *)
-(* TODO: credit HOL-light                                                     *)
+(* TODO: credit HOL-light (and coq-robot?)                                    *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -756,6 +760,12 @@ Notation exp := (@expR R).
 
 Definition ln x : R := xget 0 [set y | exp y == x ].
 
+Fact ln0 x : x <= 0 -> ln x = 0.
+Proof.
+rewrite /ln; case: xgetP => //= y _ /eqP yx x0.
+by have := expR_gt0 y; rewrite yx => /(le_lt_trans x0); rewrite ltxx.
+Qed.
+
 Lemma expK : cancel exp ln.
 Proof.
 by move=> x; rewrite /ln; case: xgetP => [x1 _ /eqP/expRI //|/(_ x)[]/=].
@@ -826,6 +836,78 @@ by move=> x_gt1; rewrite -ltr_expR expR0 lnK // (lt_trans _ x_gt1).
 Qed.
 
 End Ln.
+
+Section ExpFun.
+Variable R : realType.
+Implicit Types a x : R.
+
+Definition exp_fun a x := expR (x * ln a).
+
+Local Notation "a `^ x" := (exp_fun a x).
+
+Lemma exp_fun_gt0 a x : 0 < a `^ x. Proof. by rewrite expR_gt0. Qed.
+
+Lemma exp_funa1 a : 0 < a -> a `^ 1 = a.
+Proof. by move=> a0; rewrite /exp_fun mul1r lnK. Qed.
+
+Lemma exp_fun1 : exp_fun 1 = fun=> 1.
+Proof. by rewrite funeqE => x; rewrite /exp_fun ln1 mulr0 expR0. Qed.
+
+Lemma ler_exp_fun a : 1 < a -> {homo exp_fun a : x y / x <= y}.
+Proof. by move=> a1 x y xy; rewrite /exp_fun ler_expR ler_pmul2r // ln_gt0. Qed.
+
+Lemma exp_funD a : 0 < a -> {morph exp_fun a : x y / x + y >-> x * y}.
+Proof. by move=> a0 x y; rewrite {1}/exp_fun mulrDl expRD. Qed.
+
+Lemma exp_funa0 a : 0 < a -> a `^ 0 = 1.
+Proof. by move=> a0; rewrite /exp_fun mul0r expR0. Qed.
+
+Lemma exp_fun_inv a : 0 < a -> a `^ (-1) = a ^-1.
+Proof.
+move=> a0.
+apply/(@mulrI _ a); first by rewrite unitfE gt_eqF.
+rewrite -{1}(exp_funa1 a0) -exp_funD // subrr exp_funa0 //.
+by rewrite divrr // unitfE gt_eqF.
+Qed.
+
+Lemma exp_fun_mulrn a n : 0 < a -> exp_fun a n%:R = a ^+ n.
+Proof.
+move=> a0; elim: n => [|n ih]; first by rewrite mulr0n expr0 exp_funa0.
+by rewrite -addn1 natrD exp_funD // exprD ih exp_funa1.
+Qed.
+
+End ExpFun.
+Notation "a `^ x" := (exp_fun a x).
+
+Lemma dvg_harmonic (R : numFieldType) : ~ cvg (@series [zmodType of R^o] harmonic).
+Admitted. (* NB(rei): this is in master, we just need to rebase *)
+
+Section riemannR_series.
+Variable R : realType.
+Implicit Types a : R.
+Local Open Scope ring_scope.
+
+Definition riemannR a : R ^nat := fun n => (n.+1%:R `^ a)^-1.
+Arguments riemannR a n /.
+
+Lemma riemannR_gt0 a i : 0 < a -> 0 < riemannR a i.
+Proof. move=> ?; by rewrite /riemannR invr_gt0 exp_fun_gt0. Qed.
+
+Lemma dvg_riemannR a : 0 < a <= 1 -> ~ cvg (series (riemannR a)).
+Proof.
+case/andP => a0; rewrite le_eqVlt => /orP[/eqP ->|a1].
+  rewrite (_ : riemannR 1 = harmonic); first exact: dvg_harmonic.
+  by rewrite funeqE => i /=; rewrite exp_funa1.
+have : forall n, harmonic n <= riemannR a n.
+  case=> /= [|n]; first by rewrite exp_fun1 invr1.
+  rewrite -[X in _ <= X]div1r ler_pdivl_mulr ?exp_fun_gt0 // mulrC.
+  rewrite ler_pdivr_mulr // mul1r -[X in _ <= X]exp_funa1 //.
+  by rewrite (ler_exp_fun) // ?ltr1n // ltW.
+move/(series_le_cvg harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
+by move/contra_not; apply; exact: dvg_harmonic.
+Qed.
+
+End riemannR_series.
 
 Section CosSin.
 
