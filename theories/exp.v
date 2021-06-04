@@ -1581,6 +1581,10 @@ rewrite -(ltr_pmul2l (_ : 0 < (2 * 2)%:R)) //.
 by rewrite divff // natrM mulfK // (ltr_nat _ 1 2).
 Qed.
 
+Search (sin (_ + _)).
+Lemma tanDpi x : tan (x + pi) = tan x.
+Proof. by rewrite /tan cosDpi sinDpi mulNr invrN mulrN opprK. Qed.
+
 Lemma continuous_tan x : cos x != 0 -> {for x, continuous tan}.
 Proof.
 move=> cxNZ.
@@ -1603,6 +1607,40 @@ Lemma derivable_tan x : cos x != 0 -> derivable tan x 1.
 Proof. by move=> /is_derive_tan[]. Qed.
 
 End Tan.
+
+Section Acos.
+
+Variable R : realType.
+Local Notation pi := (@pi R).
+
+Definition acos (x : R) := get [set y | 0 <= y <= pi /\ cos y = x].
+
+Lemma acos_def x : 
+  -1 <= x <= 1 -> 0 <= acos x <= pi /\ cos (acos x) = x.
+Proof.
+move=> xB; rewrite /acos; case: xgetP => //= He.
+pose f y := cos y - x. 
+have /IVT[] // :  minr (f 0) (f pi) <= 0 <= maxr (f 0) (f pi).
+  rewrite /f cos0 cospi /minr /maxr ltr_add2r (_ : 1 < -1 = false) .
+    by rewrite subr_le0 subr_ge0.
+  by rewrite -subr_lt0 opprK -mulr2n (ltr_nat _ 2  0).
+- by apply/ltW/pi_gt0.
+- move=> *; apply: continuousB => //.
+    by apply: continuous_cos.
+  by apply: continuous_cst.
+rewrite /f => x1 /itvP x1I /eqP; rewrite subr_eq0 => /eqP cosx1E.
+by case: (He x1); rewrite !x1I.
+Qed.
+(* 
+let asn = new_definition
+  `asn(y) = @x. --(pi / &2) <= x /\ x <= pi / &2 /\ (sin x = y)`;;
+
+let acs = new_definition
+  `acs(y) = @x. &0 <= x /\ x <= pi /\ (cos x = y)`;;
+
+let atn = new_definition
+  `atn(y) = @x. --(pi / &2) < x /\ x < pi / &2 /\ (tan x = y)`;;
+*)
 
 From mathcomp Require Import complex.
 
