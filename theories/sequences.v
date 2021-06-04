@@ -522,11 +522,24 @@ rewrite (le_trans (ltW (archi_boundP _)))// ler_nat -add1n -leq_subLR.
 by near: i; apply: nbhs_infty_ge.
 Grab Existential Variables. all: end_near. Qed.
 
-(* TODO: is there an equivalent in mathcomp? *)
-Lemma iter_addr (V : zmodType) n (r : V) p : iter n (+%R r) p = r *+ n + p.
+Lemma dvg_harmonic (R : numFieldType) : ~ cvg (series (@harmonic R)).
 Proof.
-elim: n => /= [|n ih]; by [rewrite mulr0n add0r|rewrite ih mulrS addrA].
-Qed.
+have ge_half n : (0 < n)%N -> 2^-1 <= \sum_(n <= i < n.*2) harmonic i.
+  case: n => // n _.
+  rewrite (@le_trans _ _ (\sum_(n.+1 <= i < n.+1.*2) n.+1.*2%:R^-1)) //=.
+    rewrite sumr_const_nat -addnn addnK addnn -mul2n natrM invfM.
+    by rewrite -[_ *+ n.+1]mulr_natr divfK.
+  by apply: ler_sum_nat => i /andP[? ?]; rewrite lef_pinv ?qualifE ?ler_nat.
+move/cvg_cauchy/cauchy_ballP => /(_ _ 2^-1%:pos); rewrite !near_map2.
+rewrite -ball_normE => /nearP_dep hcvg; near \oo => n; near \oo => m.
+have: `|series harmonic n - series harmonic m| < 2^-1 :> R by near: m; near: n.
+rewrite le_gtF// distrC -[X in X - _](addrNK (series harmonic n.*2)).
+rewrite sub_series_geq; last by near: m; apply: nbhs_infty_ge.
+rewrite -addrA sub_series_geq -addnn ?leq_addr// addnn.
+have sh_ge0 i j : 0 <= \sum_(i <= k < j) harmonic k :> R.
+  by rewrite ?sumr_ge0//; move=> k _; apply: harmonic_ge0.
+by rewrite ger0_norm ?addr_ge0// ler_paddl// ge_half//; near: n.
+Grab Existential Variables. all: end_near. Qed.
 
 Definition arithmetic_mean (R : numDomainType) (u_ : R ^nat) : R ^nat :=
   [sequence n.+1%:R^-1 * (series u_ n.+1)]_n.
