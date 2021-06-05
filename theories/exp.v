@@ -9,14 +9,16 @@ Require Import derive.
 (******************************************************************************)
 (* Lemmas about exponential/logarithm functions, theory for sin, cos, and tan *)
 (*                                                                            *)
-(*       ln x == the natural logarithm                                        *)
-(*     a `^ x == exponential functions                                        *)
-(* riemannR a == sequence n |-> 1 / (n.+1) ^ a where a has a type of type     *)
-(*               realType                                                     *)
-(*      sin x == the sine function                                            *)
-(*      cos x == the cosine function                                          *)
-(*         pi == pi                                                           *)
-(*      tan x == the tangent function                                         *)
+(*            ln x == the natural logarithm                                   *)
+(*          a `^ x == exponential functions                                   *)
+(*      riemannR a == sequence n |-> 1 / (n.+1) ^ a where a has a type of     *)
+(*                    type realType                                           *)
+(*           sin x == the sine function                                       *)
+(*           cos x == the cosine function                                     *)
+(*    periodic f T == f is a periodic function of period T                    *)
+(* alternating f T == f is a periodic function of period T                    *)
+(*              pi == pi                                                      *)
+(*           tan x == the tangent function                                    *)
 (*                                                                            *)
 (* TODO: credit HOL-light (and coq-robot?)                                    *)
 (*                                                                            *)
@@ -181,9 +183,9 @@ move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
 by rewrite -derive1E (chain_rule gv fgxv) 2!derive1E.
 Qed.
 
-Global Instance is_deriveV (f : R -> R) (x t v : R) : 
-   f x != 0 -> is_derive x v f t ->
-   is_derive x v [fun y => (f y)^-1]  (- (f x) ^- 2 *: t).
+Global Instance is_deriveV (f : R -> R) (x t v : R) :
+ f x != 0 -> is_derive x v f t ->
+ is_derive x v [fun y => (f y)^-1]  (- (f x) ^- 2 *: t).
 Proof.
 move=> fxNZ Df.
 constructor; first by apply: derivableV => //; case: Df.
@@ -1232,6 +1234,8 @@ Lemma cos_norm a : cos `|a| = cos a.
 Proof. by case: (ler0P a); rewrite ?cosN. Qed.
 
 End CosSin.
+Arguments sin {R}.
+Arguments cos {R}.
 
 Lemma SUM_GROUP (R : zmodType) (f : R ^nat) (n k : nat) :
   \sum_(0 <= i < n) \sum_(i * k <= j < i.+1 * k) f j =
@@ -1285,6 +1289,34 @@ have : lim (series f) + f n + f n.+1 <= \sum_(0 <= i < N.+1.*2 + n) f i.
   by do 2 rewrite big_nat_recr //=; by rewrite -2!addrA ler_add2r.
 by move/(lt_le_trans ffnfn); rewrite ltxx.
 Qed.
+
+Section periodic.
+Variables U V : zmodType.
+Implicit Type f : U -> V.
+
+Definition periodic f (T : U) := forall u, f (u + T) = f u.
+
+Lemma periodicn f (T : U) : periodic f T -> forall n a, f (a + T *+ n) = f a.
+Proof.
+move=> fT; elim => [a|n ih a]; first by rewrite mulr0n addr0.
+by rewrite mulrS addrA ih fT.
+Qed.
+End periodic.
+
+Section alternating.
+Variables (U : zmodType) (V : ringType).
+Implicit Type f : U -> V.
+
+Definition alternating f (T : U) := forall x, f (x + T) = - f x.
+
+Lemma alternatingn f (T : U) : alternating f T ->
+  forall n a, f (a + T *+ n) = (- 1) ^+ n * f a.
+Proof.
+move=> fT; elim => [a|n ih a]; first by rewrite mulr0n expr0 addr0 mul1r.
+by rewrite mulrS addrA ih fT exprS mulrN mulN1r mulNr.
+Qed.
+
+End alternating.
 
 Section Pi.
 Variable R : realType.
@@ -1450,7 +1482,7 @@ Qed.
 Lemma pi_gt0 : 0 < pi.
 Proof.
 by rewrite -[pi](divfK (_ : 2 != 0)) // mulr_gt0 //; case/andP: pihalf_02.
-Qed.  
+Qed.
 
 Lemma sin_gt0_halfpi x : 0 < x < pi / 2 -> 0 < sin x.
 Proof.
@@ -1470,12 +1502,12 @@ have /IVT[] : minr (cos 0) (cos x) <= 0 <= maxr (cos 0) (cos x).
 move=> x1 /itvP Hx1 cx1_eq0.
 suff x1E : x1 = pi/2.
   have : x1 < pi / 2 by apply: le_lt_trans xLpi2; rewrite Hx1.
-  by rewrite x1E ltxx. 
+  by rewrite x1E ltxx.
 apply: cos_pihalf_uniq=> //; last by (case cos_pihalf' => _ ->).
   by rewrite Hx1 ltW // (lt_trans _ pi2L2) // (le_lt_trans _ xLpi2) // Hx1.
 by rewrite !ltW.
 Qed.
- 
+
 Lemma cos_pihalf : cos (pi / 2) = 0. Proof. exact: cos_pihalf'.2. Qed.
 
 Lemma sin_pihalf : sin (pi / 2) = 1.
@@ -1500,11 +1532,23 @@ have := sinD (pi / 2) (pi / 2); rewrite cos_pihalf mulr0 mul0r.
 by rewrite -mulrDl -mulr2n -mulr_natr -mulrA divff// mulr1 addr0.
 Qed.
 
-Lemma sinDpi a : sin (a + pi) = - sin a.
-Proof. by rewrite sinD cospi mulrN1 sinpi mulr0 addr0. Qed.
+Lemma cos2pi : cos (pi *+ 2) = 1.
+Proof. by rewrite mulr2n cosD cospi sinpi !mulrN1 mulr0 subr0 opprK. Qed.
 
-Lemma cosDpi a : cos (a + pi) = - cos a.
-Proof. by rewrite cosD cospi mulrN1 sinpi mulr0 subr0. Qed.
+Lemma sin2pi : sin (pi *+ 2) = 0.
+Proof. by rewrite mulr2n sinD sinpi cospi !mulrN1 mulr0 oppr0 addr0. Qed.
+
+Lemma alternating_sin_pi : alternating sin pi.
+Proof. by move=> a; rewrite sinD cospi mulrN1 sinpi mulr0 addr0. Qed.
+
+Lemma alternating_cos_pi : alternating cos pi.
+Proof. by move=> a; rewrite cosD cospi mulrN1 sinpi mulr0 subr0. Qed.
+
+Lemma periodic_sin_2pi : periodic sin (pi *+ 2).
+Proof. by move=> a; rewrite sinD cos2pi sin2pi mulr0 mulr1 addr0. Qed.
+
+Lemma periodic_cos_2pi : periodic cos (pi *+ 2).
+Proof. by move=> a; rewrite cosD cos2pi mulr1 sin2pi mulr0 subr0. Qed.
 
 Lemma cosDpihalf a : cos (a + pi / 2) = - sin a.
 Proof. by rewrite cosD cos_pihalf mulr0 add0r sin_pihalf mulr1. Qed.
@@ -1515,7 +1559,7 @@ Proof. by rewrite cosB cos_pihalf mulr0 add0r sin_pihalf mulr1. Qed.
 Lemma sinDpihalf a : sin (a + pi / 2) = cos a.
 Proof. by rewrite sinD cos_pihalf mulr0 add0r sin_pihalf mulr1. Qed.
 
-Lemma sinBpihalt a : sin (a - pi / 2) = - cos a.
+Lemma sinBpihalf a : sin (a - pi / 2) = - cos a.
 Proof. by rewrite sinB cos_pihalf mulr0 add0r sin_pihalf mulr1. Qed.
 
 End Pi.
@@ -1572,7 +1616,7 @@ Lemma tan_halfpi : tan (pi / 2) = 0.
 Proof. by rewrite /tan cos_pihalf invr0 mulr0. Qed.
 
 Lemma tan_quaterpi : tan (pi / 4%:R) = 1.
-Proof. 
+Proof.
 rewrite /tan -cosBpihalf -mulNr addf_div // mulNr -mulrBr.
 rewrite -opprB -natrB //= !(mulrN, mulNr) cosN invfM [_/2]mulrC mulrA mulfK //.
 rewrite divff // lt0r_neq0 // cos_gt0_halfpi ?divr_gt0 ?pi_gt0 //=.
@@ -1607,6 +1651,7 @@ Lemma derivable_tan x : cos x != 0 -> derivable tan x 1.
 Proof. by move=> /is_derive_tan[]. Qed.
 
 End Tan.
+Arguments tan {R}.
 
 Section Acos.
 
