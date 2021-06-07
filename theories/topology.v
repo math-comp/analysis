@@ -592,7 +592,7 @@ Notation "[ 'filteredType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
 Notation "[ 'filteredType' U 'of' T ]" := (@clone U T _ _ id)
   (at level 0, format "[ 'filteredType'  U  'of'  T ]") : form_scope.
 
-(* The default filter for an arbitrary element is the one obtained *)
+(* The default filter f r an arbitrary element is the one obtained *)
 (* from its type *)
 Canonical default_arrow_filter Y (Z : pointedType) (X : source Z Y) :=
   FilteredType Y (X -> Z) (@source_filter _ _ X).
@@ -4388,9 +4388,46 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
+(* Special notation for functions, considered as converging uniformly
+   over their whole domain *)
+Section DomainUniform.
+Context (U : choiceType) (V : uniformType).
+
+Definition fct_DomainUniform := U -> V.
+
+Canonical fct_DomainUniformFilteredType:= 
+   [filteredType (fct_DomainUniform) of (fct_DomainUniform) for (fct_uniformType U V) ].
+Canonical fct_DomainUniformTopologicalType := 
+   [topologicalType of (fct_DomainUniform) for (fct_uniformType U V) ].
+Canonical fct_DomainUniformUniformType := 
+  [uniformType of (fct_DomainUniform) for (fct_uniformType U V) ].
+
+Definition unif_fun (f : U -> V) : fct_DomainUniform := f.
+
+End DomainUniform.
+
+Notation "'{unif,' U -> V }" := (fct_DomainUniform U V) : classical_set_scope.
+
+(* We define our notation using these conversion functions
+   to convince the coq syntax printer to use this syntax.
+   Otherwise you get 
+     (F --> f) -> (F --> F)
+   when you really want 
+     {unif, F --> f} -> {ptws, F --> f}
+*)
+Notation "'{unif,' F --> f }" :=
+  (F --> unif_fun f) : classical_set_scope.
+
+Lemma unif_cvgE
+    {U : choiceType} {V : uniformType}
+    (F : set(set( U -> V))) 
+    (f : U -> V) :
+  {unif, F --> f} = (F --> (f : {unif, U -> V})).
+Proof. by []. Qed. 
+
 Section DomainRestrictions.
-Context {U V : Type}.
-Variable (A : set U).
+Context {U : Type}.
+Variable (A : set U) (V : Type).
 
 Definition explode (f : U -> V) :=
   [set g : U -> V | {in A, f =1 g} ].
@@ -4446,9 +4483,15 @@ Definition restrict_ent (E : set(set((U -> V) * (U -> V)))) :=
 
 End DomainRestrictions.
 
+Definition patch {U V} (A: set U) (f g : U -> V) := 
+  (fun u => if_expr (asbool (A u)) (g u) (f u)). 
+
+Definition restrict {U: Type} {V: pointedType} (A: set U) (f: U -> V) :=
+  @patch U V A (fun=> point (M:=V)) f.
+
 Section RestrictionTopology.
-Context {U : choiceType} {V : uniformType}.
-Variable (A : set U).
+Context {U : choiceType}.
+Variable (A : set U) (V : uniformType).
 
 Definition restricted_nbhs_filter (p : U -> V) := 
   restricted A [filter of p].
@@ -4477,14 +4520,12 @@ Proof.
     + by apply: E4.
 Qed.
 
-Definition patch (f g : U -> V) := 
-  (fun u => if_expr (asbool (A u)) (g u) (f u)). 
-
+Let patch := @patch U V A.
 Lemma explode_patch : forall f g,
   explode A g (patch f g).
 Proof.
   move=> f g u. 
-  by rewrite /patch /in_mem /mem /= /in_set /= => ->.
+  by rewrite /patch /topology.patch /in_mem /mem /= /in_set /= => ->.
 Qed.
 
 Lemma explode_set_monotone (P Q : set (U -> V)) :
@@ -4506,7 +4547,7 @@ Proof.
   exists (patch f t) => /=.
   2: apply explode_sym, explode_patch.
   apply: subI => /= u.
-  rewrite /patch.
+  rewrite /patch /topology.patch.
   case uA : `[< A u >] => /=.
   2: by apply entourage_refl. 
   move: Ep => [[f' t']] /= L [/= W1 W2].
@@ -4604,7 +4645,7 @@ Next Obligation.
   exists (patch g1' f', patch g1' h').
   2: split => /=; apply: explode_trans; eauto;
      apply: explode_sym; apply: explode_patch. 
-  rewrite /patch; apply: JsubI => /=.
+  rewrite /patch/topology.patch; apply: JsubI => /=.
   exists g1'; apply eBsubJ => /= u; case uA : `[< A u >] => /=.
   - by apply: X1.
   - by apply entourage_refl.
@@ -4619,58 +4660,49 @@ Definition restricted_topologicalType_mixin :=
   @topologyOfEntourageMixin (U -> V) 
     restricted_nbhs_filter restricted_uniformMixin.
 
+Definition fct_Restricted := let _ := A in U -> V.
+
+Definition restricted_topologicalType :=
+  TopologicalType (restricted_filteredType) (restricted_topologicalType_mixin) .
+
+Definition restricted_uniformType:= 
+  UniformType (restricted_topologicalType) (restricted_uniformMixin).
+
+Canonical fct_RestrictedFilteredType:= 
+   [filteredType (fct_Restricted) of (fct_Restricted) for (restricted_uniformType) ].
+Canonical fct_RestrictedTopologicalType := 
+   [topologicalType of (fct_Restricted) for (restricted_uniformType) ].
+Canonical fct_RestrictedUniformType := 
+   [uniformType of (fct_Restricted) for (restricted_uniformType) ].
+
 End RestrictionTopology.
 
+Definition restrict_fun 
+  {U : choiceType} (A : set U) (V: uniformType) (f : U -> V) : fct_Restricted A V := f.
 Notation eq_on := explode.
 
-Notation "'{unif,' U -> V }" := (fct_uniformType U V) : classical_set_scope.
+Notation "'{restricted' A -> V }" := 
+    (fct_Restricted A V) :  classical_set_scope.
 
-Definition unif_fun 
-  {U: choiceType} {V : uniformType} (f : U -> V) : {unif, U -> V} := f.
-
-(* Note, we define things in terms of projection functions rather than 
-   casts like ( f : {restricted A -> f}) so the pretty printer picks the 
-   right syntax. Otherwise you get unhelpful goals like  
-    A `<=` B -> (F --> f) -> (F --> f)
-   when you want something like
-    A `<=` B -> {restricted B, F --> f} -> {restricted A, F --> f} 
-*)
-Notation "'{unif,' F --> f }" :=
-  (F --> (unif_fun f)) : classical_set_scope.
-
-Lemma unif_cvgE
-    {U : topologicalType} {V : uniformType}
-    (F : set(set( U -> V))) 
-    (f : U -> V) :
-  {unif, F --> f} = (F --> (f : {unif, U -> V})).
-Proof. by []. Qed. 
-
-Canonical restricted_topologicalType {U : choiceType} V A :=
-  TopologicalType (@restricted_filteredType U A V) (restricted_topologicalType_mixin V) .
-
-Canonical restricted_uniformType {U : choiceType} V (A: set U) := 
-  UniformType (@restricted_topologicalType U A V) (restricted_uniformMixin _).
-
-Definition restrict_fun 
-  {U: choiceType} {V: uniformType} (A : set U) 
-  (f : U -> V) : restricted_uniformType V A := f.
-Notation "'{restricted' A -> V }" :=
-    (@restricted_uniformType _ V A) :  classical_set_scope.
 Notation "'{restricted' A , F --> f }" :=
   (F --> (restrict_fun A f)) : classical_set_scope.
 
 Lemma restricted_cvgE
     {U : topologicalType} {V : uniformType}
-    (F : set(set( U -> V))) 
-    A
+    (F : set(set(U -> V))) 
+    (A: set U)
     (f : U -> V) :
-  {restricted A, F --> f} = (F --> (f : {restricted A -> V})).
-Proof. by []. Qed. 
+  {restricted A, F --> f} = (F --> (f : restricted_uniformType A V)).
+Proof.  by []. Qed.
 
-Canonical fct_Pointwise U V :=
-  [topologicalType of (@product_topologicalType U (fun=> V))].
 
-Notation "'{ptws,' U -> V }"  := (fct_Pointwise U V).
+Definition fct_Pointwise U (V: topologicalType) := U -> V.
+Canonical fct_PointwiseFilteredType U V :=
+  [filteredType (fct_Pointwise U V) of (fct_Pointwise U V) for (@product_topologicalType U (fun=> V))].
+Canonical fct_PointwiseTopologicalType U V :=
+  [topologicalType of (fct_Pointwise U V) for (@product_topologicalType U (fun=> V))].
+
+Notation "'{ptws,' U -> V }" := (fct_Pointwise U V).
 Definition ptws_fun
   {U: Type} {V : topologicalType} 
   (f : U -> V) : {ptws, U -> V} := f.
@@ -4682,14 +4714,14 @@ Lemma ptws_cvgE
     {U : Type} {V : topologicalType}
     (F : set(set(U -> V))) 
     (f : U -> V) :
-  {ptws, F --> f} = (F --> (f : {ptws, U -> V})).
+  {ptws, F --> f} = (F --> (f : (@product_topologicalType U (fun=> V)))).
 Proof. by []. Qed. 
 
 Lemma ptws_uniform_cvg 
     {U : choiceType} {V : uniformType} (f : U -> V)
     (F : set (set (U -> V))) :
   Filter F ->
-  {unif, F --> f} -> {ptws, F --> (f : U -> [topologicalType of V])}.
+  {unif, F --> f} -> {ptws, F --> f}.
 Proof.
   move => FF; rewrite cvg_sup => W i.
   rewrite cvg_image.
@@ -4716,11 +4748,42 @@ Proof.
     1: by [].
     by exists (fun=> v).
 Qed.
+
 (* Show that the notion of convergence from the restricted_uniformType A is  *) 
 (* the same as the one using dependent pairs.                                *)
 Section Restriction_DependentPairs.
-Context {U : choiceType} {V : uniformType} .
+Context {U : choiceType} {X: pointedType} {V : uniformType} .
 Variables (A : set U).
+
+Parameter xrestrict : (U -> V) -> (X -> V).
+Parameter xlift : X -> U.
+Parameter xrestrict_case :
+  forall f (x : X), 
+    (A (xlift x) /\ xrestrict f x = f (xlift x))
+                    \/ 
+    (~(A (xlift x)) /\ xrestrict f x = point ).
+Parameter xlift_surjectiveA:
+  forall u, A u -> {x : X & xlift x = u}.
+Parameter xlift_inj:
+  forall x1 x2, xlift x1 = xlift x2 -> x1 = x2.
+
+Lemma xrestrict_eq_on (f g: U -> V): 
+  eq_on A f g <-> xrestrict f = xrestrict g.
+Proof.
+  split.
+  - move => eq_f_g; apply: funext => x.
+    case Au:`[<A (xlift x)>]; move/asboolP:Au;
+    have:= xrestrict_case f x => [[][]] //= _ ->;
+    have:= xrestrict_case g x => [[][]] //= _ -> ?.
+    by apply eq_f_g; rewrite in_setE.
+  + move=> f_g_eq => u; rewrite in_setE => Au. 
+    have [x ?] := xlift_surjectiveA Au; subst.
+    have:= xrestrict_case f x => [[][]] //= _ <-. 
+    have:= xrestrict_case g x => [[][]] //= _ <-. 
+    by rewrite f_g_eq.
+Qed.
+
+(*
 Definition restrict_dep (f : U -> V) : ({ x : U | `[<A x>]} -> V) := 
   fun u => f (projT1 u).
 
@@ -4738,22 +4801,27 @@ Proof.
       by rewrite Rfg /=.
     by [].
 Qed.
-    
+*)    
 Lemma explode_restrict (F : set(set(U -> V)))  P: 
   Filter F ->
-  explode_set A P = [set a | (restrict_dep @` P) (restrict_dep a)].
+  explode_set A P = [set a | (xrestrict @` P) (xrestrict a)].
 Proof.
   rewrite eqEsubset; split => f /=.
   - move=> [g Pg eq_g_f] /=.
     exists g => //=.
-    by rewrite /fmap /= /nbhs /= -eq_on_restrict_dep.
-  - move=> [g Pg /eq_on_restrict_dep] ?.
+    by rewrite /fmap /= /nbhs /= -xrestrict_eq_on.
+  - move=> [g Pg /xrestrict_eq_on] ?.
     by exists g.
 Qed.
 
-Lemma cvg_restrict_dep (f : U -> V) (F : set (set(U -> V))) :
+Definition xpatch f (g : X -> V) (t : U):= 
+      match pselect (`[<A t>]) with
+      | left p => g (projT1 (xlift_surjectiveA (ltac: (apply/asboolP; exact p))))
+      | right _ => f t end.
+
+Lemma cvg_restrict_dep (f : U -> V) (F : set (set(U -> V))): 
   Filter F ->
-  {restricted A, F --> f} <-> {unif, restrict_dep @ F --> (restrict_dep f)}.
+  {restricted A, F --> f} <-> {unif, xrestrict @ F --> (xrestrict f)}.
 Proof.
   move=> FF; split.
   - move=> cvgF P' /= [I' [B eB BsubI'] I'subP'].
@@ -4763,39 +4831,147 @@ Proof.
     exists ([set g | forall t :U, B (f t, g t) ])=> /=.
       1: by exists [set fg | forall t, B(fg.1 t, fg.2 t)] => //=; exists B.
     rewrite (explode_restrict _ FF) => //=.
-    move => g /= [/= h] Bfh /eq_on_restrict_dep eq_on.
-    apply: BsubI' => /=; rewrite /restrict_dep /unif_fun.  
-    by case=> /= u /asboolP Au; rewrite -eq_on ?in_setE.
+    move => g /= [/= h] Bfh <-.
+    apply: BsubI' => /=; rewrite /unif_fun => x.
+    have:= xrestrict_case f x => [[][]] //= ? ->; 
+      have:= xrestrict_case h x => [[][]] //= ? ->.
+    + by apply Bfh.
+    + by apply entourage_refl.
   - move=> rcvgF P [/= Q [I [B eB BsubI] IsubQ QsubP]].
     apply: (filterS QsubP).
     rewrite (explode_restrict _ FF) //.
     apply: rcvgF => /=.
-    apply (@image_subset _ _ restrict_dep) in IsubQ.
+    apply (@image_subset _ _ xrestrict) in IsubQ.
     apply: (filterS IsubQ) => /=.
-      by apply: nbhs_filter.
-    exists ([set fg | (forall t, B (fg.1 t, fg.2 t))]).
-      by exists B.
+    exists ([set fg | (forall t: X, B (
+        fg.1 t,  xrestrict (xpatch (fun=>point) fg.2) t))]).
+      by admit.
     move => /= g /= Bg.
     exists (fun t : U => 
       match pselect (`[<A t>]) with
-      | left p => (g (exist _ t p))
-      | right _ => (f t) end).
+      | left p => g (projT1 (xlift_surjectiveA (ltac: (apply/asboolP; exact p))))
+      | right _ => f t end).
     + apply: BsubI => /= t.
       case (pselect (`[<A t>])) => /=.
       2: by move=> *; apply entourage_refl.
       move => At; rewrite /restrict_fun.
-      set t' := (x in B(_,g x)).
-      have -> : (f t = restrict_dep f t')
-        by rewrite /restrict_dep /=.
-      by apply Bg.
-    + apply funext; case=> t At.
-      rewrite /restrict_dep /=.
-      case (pselect `[< A t>]).
-      2: by [].
-      move => i; suff ->: (At = i) by [].
-      apply Prop_irrelevance.
+      set p := xlift_surjectiveA _.
+      case: p => x ?; subst => //=.
+      move/asboolP:At => ?.
+      have:= xrestrict_case f x => [[][]] //= _ <-. 
+      by admit. (* apply: Bg.*)
+    + apply funext=> x //=.
+      set f' := ( q in xrestrict q _).
+      have:= xrestrict_case f' x => [[][]] //= /asboolP? ->. 
+      * rewrite /f'.
+        case (pselect (`[<A (xlift x)>])) => //= ?.
+        set t := (xlift_surjectiveA _).
+        by case: t => //= ? /xlift_inj ->.
+      * 
 Qed.
 End Restriction_DependentPairs.
+
+Section Restriction_restrict. 
+
+Context {U : choiceType} {V : uniformType} .
+Variables (A : set U).
+
+
+Program Definition patch_dep 
+  (g: U -> V) (f: {x : U | `[< A x >]} -> V) (u:U) : V := 
+    match pselect (A u) with 
+    | left _ => f u 
+    | right _ => g u
+    end.
+Next Obligation.
+  by apply /asboolP.
+Qed.
+
+Lemma patch_dep_restrictE f g: 
+  patch_dep g (restrict_dep f) = patch A g f.
+Proof.
+  rewrite funeqE /patch/patch_dep/restrict_dep //= => u.
+  case: (pselect (A u)) => //=; rewrite -ifE.
+  - by move/asboolT => ->.
+  - by move/asboolT; rewrite asbool_neg -if_neg => ->.
+Qed.
+    
+Lemma restrict_dep_patch_depE: 
+  comp (restrict_dep (A:=A)) (patch_dep (fun=> point)) = id.
+Proof.
+  rewrite /comp funeqE => f; rewrite funeqE /restrict_dep/patch_dep //=.
+  move=> [u Au] //=.
+  case: (pselect (A u)) => //=.
+  - by move=> ?; repeat f_equal; apply Prop_irrelevance.
+  - by move=> N; contradict N; apply/asboolP.
+Qed.
+
+Lemma restrict_dep_patch_depE' f: 
+  (restrict_dep (A:=A) (patch_dep (fun=> point) f)) = f.
+Proof.
+  by have := restrict_dep_patch_depE; rewrite /comp funeqE.
+Qed.
+
+
+Lemma cvg_restrict (f : U -> V) (F : set (set(U -> V))) :
+  Filter F ->
+  {restricted A, F --> f} <-> {unif, restrict A @ F --> (restrict A f)}.
+Proof.
+  move=> FF; rewrite cvg_restrict_dep ?unif_cvgE.
+  - rewrite /restrict -patch_dep_restrictE //=.
+    have -> : 
+      ([eta patch A (fun=> point)] = 
+      (patch_dep (fun=> point) \o (restrict_dep (A:= A))))%FUN by
+      (rewrite /comp funeqE=> h; rewrite patch_dep_restrictE //=).
+    split.
+    - apply: cvg_fmap.
+      apply continuousP => B openB //=.
+
+      move=> g I //=; rewrite /nbhs //= /nbhs //= ?nbhs_E.
+      case=> E [J eJ] JsubE EsubI.
+      exists [set h | (exists w1 w2, 
+          (fst h = restrict_dep w1 /\ 
+          snd h = restrict_dep w2 /\ 
+          E(w1, w2))) ].
+      + exists J => //=.
+        move => [h1 h2] //= Jh.
+        exists  (patch_dep (fun=> point) h1).
+        exists  (patch_dep (fun=> point) h2);
+        repeat split.
+        1:  symmetry. 
+
+      rewrite /subset //=.
+    - move=> patch_cvg.
+      rewrite -(restrict_dep_patch_depE (fun=> point)).
+      apply: continuous_cvg => //.
+      move=> g //=.
+      apply: (continuous_cvg _ _ _ _ .
+
+    move=> cvgDep.
+    apply (@continuous_cvg _ _ _ _ _
+      (restrict A) (patch_dep (fun=> point))).
+    
+    apply cvg_fmap2.
+    simpl.
+
+    move=> cvgDep I //= nbhsI; rewrite /nbhs //= /nbhs //=.
+    rewrite -patch_dep_restrictE in nbhsI.
+    simpl in *.
+    set I' := ([set g | I (fun u => patch_dep (fun=>point) g u)]).
+    evar (x : set (U -> V)).
+    set T := (x in F x).
+    have ->: T = x; unfold x.
+    2: move: (cvgDep I' ); unfold I'; apply.
+    1: {
+      rewrite {}/T; apply: eq_set => g //=.
+      by f_equal; rewrite patch_dep_restrictE.
+    }
+    simpl.
+    move: nbhsI.
+
+    move: nbhsI.
+    Search (nbhs (_ _) _).
+    
 
 Section RestrictLemmas.
 Context {U : choiceType} {V : uniformType} .
@@ -4803,9 +4979,9 @@ Context {U : choiceType} {V : uniformType} .
 Section FixedA.
 Variables (A : set U).
 Lemma eq_on_close  (f g : U -> V) : 
-  eq_on A f g -> @close (restricted_uniformType A) f g.
+  eq_on A f g -> @close (restricted_uniformType A V) f g.
 Proof.
-  rewrite (@entourage_close (restricted_uniformType A) f g) /=.
+  rewrite (@entourage_close (restricted_uniformType A V) f g) /=.
   move=> G I [/= J [eJ E]].
   apply: E.
   exists (f,f).
@@ -4814,7 +4990,7 @@ Proof.
 Qed.
 
 Lemma hausdorrf_close_eq_on (f g : U -> V) : 
-  hausdorff V -> (@close (restricted_uniformType A) f g = eq_on A f g).
+  hausdorff V -> (@close (restricted_uniformType A V) f g = eq_on A f g).
 Proof.
   move=> hV.
   rewrite propeqE; split.
@@ -4858,9 +5034,9 @@ Proof.
   move => AsubB + P/= => /(_ P) /= W [/= I nI eIsubP].
   apply: W.
   apply: (filterS eIsubP). 
-    1: by apply: (nbhs_filter (f : @restricted_uniformType U V B)).
+    1: by apply: (nbhs_filter (f : restricted_uniformType B V)).
   apply: (filterS ).
-  - by apply: (nbhs_filter (f : @restricted_uniformType U V B)).
+  - by apply: (nbhs_filter (f : restricted_uniformType B V)).
   - by apply: (@explode_set_subset B).
   - by eexists I.
 Qed.
@@ -4989,11 +5165,14 @@ End RestrictLemmas.
 
 Section RestrictedFamilies.
 Context {U : choiceType} {V : uniformType}.
+
+Definition fct_UniformFamily (fam : (set U) -> Prop) := U -> V.
+
 Definition family_cvg_topologicalType 
   (fam : (set U) -> Prop)
   := 
   @sup_topologicalType _ (sigT fam)
-  (fun k => Topological.class (@restricted_uniformType _ V (projT1 k))).
+  (fun k => Topological.class (restricted_uniformType (projT1 k) V)).
 
 Definition restrict_fam fam (f : U -> V) : family_cvg_topologicalType fam := f.
 
@@ -5076,9 +5255,14 @@ Qed.
 
 End RestrictedFamilies.
 
+
+Canonical fct_UniformFamilyFilteredType (U : choiceType) (V: uniformType) fam := 
+  [filteredType (@fct_UniformFamily U V fam) of (@fct_UniformFamily U V fam) for @family_cvg_topologicalType U V fam].
+Canonical fct_UniformFamilyTopologicalType (U : choiceType) (V: uniformType) fam := 
+  [topologicalType of (@fct_UniformFamily U V fam) for @family_cvg_topologicalType U V fam].
+Definition restrict_fam {U V} fam (f : U -> V) : @fct_UniformFamily U V fam := f.
 Notation "'{family' fam , U -> V }" :=  
-  (@family_cvg_topologicalType U V fam).
-Check [unifromType of (@family_cvg_topologicalType U V fam)].
+  (@fct_UniformFamily U V fam).
 Notation "'{family' fam , F --> f }"  :=
   (F --> (restrict_fam fam f)) : classical_set_scope.
 
