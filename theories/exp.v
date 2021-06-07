@@ -27,11 +27,15 @@ Require Import derive.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def  Num.Theory.
+Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+Lemma normr_nneg (R : numDomainType) (x : R) : `|x| \is Num.nneg.
+Proof. by rewrite qualifE. Qed.
+Hint Resolve normr_nneg : core.
 
 Section AboutCvg.
 
@@ -341,73 +345,55 @@ by rewrite -!predn_sub subKn // -subnS.
 Qed.
 
 Let termdiff_P3 (z h : R) n K :
- h != 0 -> `|z| <= K -> `|h + z| <= K ->
+  h != 0 -> `|z| <= K -> `|h + z| <= K ->
     `|((h +z) ^+ n - z ^+ n) / h - n%:R * z ^+ n.-1|
-        <= n%:R * n.-1%:R * K ^+ n.-2 * `|h|.
+      <= n%:R * n.-1%:R * K ^+ n.-2 * `|h|.
 Proof.
 move=> hNZ zLK zhLk.
-have KP : 0 <= K by apply: le_trans zLK.
-rewrite termdiff_P2 // normrM mulrC.
-rewrite ler_pmul2r ?normr_gt0 //.
-apply: le_trans (ler_norm_sum _ _ _) _.
+rewrite termdiff_P2// normrM mulrC.
+rewrite ler_pmul2r ?normr_gt0//.
+rewrite (le_trans (ler_norm_sum _ _ _))//.
 rewrite -mulrA mulrC -mulrA.
-rewrite -{4}[n.-1]subn0 mulr_natl -sumr_const_nat.
-rewrite !big_mkord; apply: ler_sum => i _.
-rewrite normrM /=.
-case: n i => //= [[]//| n i].
+rewrite mulr_natl -[X in _ *+ X]subn0 -sumr_const_nat.
+apply ler_sum_nat => i /=.
+case: n => //= n ni.
+rewrite normrM.
 pose d := (n.-1 - i)%nat.
-rewrite -[(n - i)%nat]prednK ?subn_gt0 // predn_sub -/d.
+rewrite -[(n - i)%nat]prednK ?subn_gt0// predn_sub -/d.
 rewrite -(subnK (_ : i <= n.-1)%nat) -/d; last first.
-  by rewrite -ltnS prednK // (leq_trans _ (ltn_ord i)).
+  by rewrite -ltnS prednK// (leq_ltn_trans _ ni).
 rewrite addnC exprD mulrAC -mulrA.
 apply: ler_pmul => //.
-  by rewrite normrX ler_expn2r ?qualifE // (le_trans _ zLK).
+  by rewrite normrX ler_expn2r// qualifE (le_trans _ zLK).
 apply: le_trans (_ : d.+1%:R * K ^+ d <= _); last first.
   rewrite ler_wpmul2r //; first by rewrite exprn_ge0 // (le_trans _ zLK).
-  rewrite ler_nat ltnS (leq_trans (leq_subr _ _)) // -ltnS prednK //.
-  by rewrite (leq_ltn_trans _ (ltn_ord i)).
-apply: le_trans (ler_norm_sum _ _ _) _.
-rewrite -{2}[d.+1]subn0 mulr_natl -sumr_const_nat.
-rewrite !big_mkord; apply: ler_sum => j _.
-rewrite -{4}(subnK (_ : j <= d)%nat) -1?ltnS // addnC exprD normrM.
-by apply: ler_pmul; rewrite // normrX ler_expn2r ?qualifE.
+  by rewrite ler_nat ltnS /d -subn1 -subnDA leq_subr.
+rewrite (le_trans (ler_norm_sum _ _ _))//.
+rewrite mulr_natl -[X in _ *+ X]subn0 -sumr_const_nat ler_sum_nat//= => j jd1.
+rewrite -{2}(subnK (_ : j <= d)%nat) -1?ltnS // addnC exprD normrM.
+by rewrite ler_pmul// ?normr_ge0// normrX ler_expn2r// qualifE (le_trans _ zLK).
 Qed.
 
 Lemma cvg_to_0_linear (f : R -> R) K k :
   0 < k -> (forall h, 0 < `|h| < k -> `|f h| <= K * `|h|) ->
     f x @[x --> 0^'] --> (0 : R).
 Proof.
-(* There should be a shorter proof *)
-move=> k_gt0 H; apply/cvg_distP => /= eps eps_gt0; rewrite !near_simpl.
-pose k2 : R := k / 2.
-have k2_gt0 : 0 < k2 by rewrite divr_gt0.
-have k2Lk : k2 < k.
-  by rewrite ltr_pdivr_mulr // mulr2n mulrDr mulr1 -subr_gt0 addrK.
-have : 0 <= K.
-  rewrite -(pmulr_rge0 _ k2_gt0) mulrC -(gtr0_norm k2_gt0).
-  apply: le_trans (H _ _) => //.
-  by rewrite ger0_norm  ?k2_gt0 // ltW.
-rewrite le_eqVlt => /orP[/eqP K_eq0| K_gt0].
-  pose k3 := if k2 < eps then k2 else eps.
-  have k3_gt0 : 0 < k3 by rewrite /k3; case: (k2 < _).
-  have k3Lk : k3 < k by rewrite /k3; case: (ltrP k2) => // /le_lt_trans ->.
-  exists k3 => //= t /=; rewrite !sub0r !normrN => H1 Ht.
-  apply: le_lt_trans (H _ _) _; last by rewrite -K_eq0 mul0r.
-  by apply/andP; split; [rewrite normr_gt0 | apply: lt_trans H1 _].
-have KNZ : K != 0 by case: (ltrgt0P K) K_gt0.
-pose k3 := if k2 < eps / K then k2 else eps / K.
-have k3_gt0 : 0 < k3 by rewrite /k3; case: (k2 < _); rewrite // divr_gt0.
-have k3Lk : k3 < k by rewrite /k3; case: (ltrP k2) => // /le_lt_trans ->.
-have k3Le : K * k3 <= eps.
-  rewrite -[eps](divfK (_ : K != 0)) // mulrC ler_pmul2r //.
-  by rewrite /k3; case: (ltrP k2) => // /ltW.
-exists k3 => //= t /=; rewrite !sub0r !normrN => tLk3 tNZ.
-have /le_lt_trans ->// : `|f t| <= K * `|t|.
-  apply/H/andP; split; first by rewrite normr_gt0.
-  by apply: lt_trans tLk3 _.
-apply: lt_le_trans k3Le.
-by rewrite ltr_pmul2l //.
-Qed.
+move=> k0 kfK; have [K0|K0] := lerP K 0.
+- apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> x.
+  rewrite distrC subr0 (le_lt_trans (kfK _ _)) //; last first.
+    by rewrite (@le_lt_trans _ _ 0)// mulr_le0_ge0.
+  near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
+  move=> t /=; rewrite distrC subr0 => tk2 t0.
+  by rewrite normr_gt0 t0 (lt_trans tk2) // -{1}(add0r k) midf_lt.
+- apply/eqolim0/eqoP => _/posnumP[e]; near=> x.
+  rewrite (le_trans (kfK _ _)) //=.
+  + near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
+    move=> t /=; rewrite distrC subr0 => tk2 t0.
+    by rewrite normr_gt0 t0 (lt_trans tk2) // -{1}(add0r k) midf_lt.
+  + rewrite normr1 mulr1 mulrC -ler_pdivl_mulr //.
+    near: x; exists (e%:num / K); first by rewrite /mkset divr_gt0.
+    by move=> t /=; rewrite distrC subr0 => /ltW.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma lim_cvg_to_0_linear (f : nat -> R) (g : R -> nat -> R) k :
   0 < k -> cvg (series f) ->
@@ -1610,7 +1596,7 @@ move=> xB yB sinE.
 have : - sin x = - sin y by rewrite sinE.
 rewrite -!cosDpihalf => {}sinE.
 by apply/(addIr (pi/2))/cosI => //;
-   rewrite -{1}[pi/2]opprK subr_ge0 -{3}[pi](divfK (_ : 2 != 0)) // 
+   rewrite -{1}[pi/2]opprK subr_ge0 -{3}[pi](divfK (_ : 2 != 0)) //
            mulr_natr [(pi/2) *+ 2]mulr2n ler_add2r.
 Qed.
 
@@ -1655,16 +1641,16 @@ rewrite -mulNr opprK mulr_gt0 //; apply: sin_gt0_pi.
 by rewrite (lt_le_trans x_gt0) ?zI //= (le_lt_trans _ y_ltpi) ?zI.
 Qed.
 
-Lemma sin_mono x y : 
+Lemma sin_mono x y :
  -(pi/2) <= x <= pi/2 -> -(pi/2) <= y <= pi/2 -> (sin x < sin y) = (x < y).
 Proof.
 move=> xB yB; rewrite -[sin x]opprK ltr_oppl.
 rewrite -!cosDpihalf -[x < y](ltr_add2r (pi /2)).
 by apply: cos_nmono;
-   rewrite -{1}[pi /2]opprK subr_ge0 -{3}[pi](divfK (_ : 2 != 0)) // 
+   rewrite -{1}[pi /2]opprK subr_ge0 -{3}[pi](divfK (_ : 2 != 0)) //
            mulr_natr [_/_ *+ 2]mulr2n ler_add2r.
 Qed.
-  
+
 End Pi.
 
 Section Tan.
@@ -1789,7 +1775,7 @@ Lemma derivable_tan x : cos x != 0 -> derivable tan x 1.
 Proof. by move=> /is_derive_tan[]. Qed.
 
 (* Maybe this should be stated with mono *)
-Lemma tan_mono x y : 
+Lemma tan_mono x y :
   -(pi /2) < x < pi/2 -> -(pi /2) < y < pi/2 -> (tan x < tan y) = (x < y).
 Proof.
 wlog xLy : x y / x <= y => [H xB yB|xB yB].
@@ -1816,7 +1802,7 @@ rewrite (lt_le_trans (_ : _ < x)); last by rewrite x1I.
 by case/andP: xB.
 Qed.
 
-Lemma tanI x y : 
+Lemma tanI x y :
   -(pi /2) < x < pi/2 -> -(pi /2) < y < pi/2 -> tan x = tan y -> x = y.
 Proof.
 move=> xB yB tanE.
@@ -1833,11 +1819,11 @@ Local Notation pi := (@pi R).
 
 Definition acos (x : R) := get [set y | 0 <= y <= pi /\ cos y = x].
 
-Lemma acos_def x : 
+Lemma acos_def x :
   -1 <= x <= 1 -> 0 <= acos x <= pi /\ cos (acos x) = x.
 Proof.
 move=> xB; rewrite /acos; case: xgetP => //= He.
-pose f y := cos y - x. 
+pose f y := cos y - x.
 have /IVT[] // :  minr (f 0) (f pi) <= 0 <= maxr (f 0) (f pi).
   rewrite /f cos0 cospi /minr /maxr ltr_add2r (_ : 1 < -1 = false) .
     by rewrite subr_le0 subr_ge0.
@@ -1898,11 +1884,11 @@ Notation pi := (@pi R).
 
 Definition asin (x : R) := get [set y | -(pi / 2) <= y <= pi / 2 /\ sin y = x].
 
-Lemma asin_def x : 
+Lemma asin_def x :
   -1 <= x <= 1 -> -(pi / 2) <= asin x <= pi / 2 /\ sin (asin x) = x.
 Proof.
 move=> xB; rewrite /asin; case: xgetP => //= He.
-pose f y := sin y - x. 
+pose f y := sin y - x.
 have /IVT[] // :
     minr (f (-(pi/2))) (f (pi/2)) <= 0 <= maxr (f (-(pi/2))) (f (pi/2)).
   rewrite /f sinN sin_pihalf /minr /maxr ltr_add2r (_ : -1 < 1 = true) .
@@ -1939,7 +1925,7 @@ Proof.
 move=> /andP[x_gtN1 x_le1]; move: (x_gtN1).
 have : - (pi / 2) <= asin x by rewrite asin_geNpi2 // x_le1 ltW.
 have : sin (asin x) = x by rewrite asinK // x_le1 ltW.
-by case: (ltrgtP (asin x)) => // ->; 
+by case: (ltrgtP (asin x)) => // ->;
    rewrite sinN sin_pihalf => <-; rewrite ltxx.
 Qed.
 
@@ -2005,7 +1991,7 @@ case: (He (Num.sg x * acos x1)); split; last first.
   rewrite /tan sin_sg cos_sg // acosK ?sin_acos //.
   rewrite /x1 sqr_sqrtr ?invr_ge0 //.
   rewrite -{1}[_^-1]mul1r -{1}[1](divff (_: 1 != 0)) //.
-  rewrite -mulNr addf_div ?lt0r_neq0 //. 
+  rewrite -mulNr addf_div ?lt0r_neq0 //.
   rewrite mul1r mulr1 {1}[1 + _]addrC addrK // sqrtrM ?sqr_ge0 //.
   rewrite sqrtrV // invrK // mulrA divfK //; last by rewrite sqrtr_eq0 -ltNge.
   by rewrite sqrtr_sqr mulr_sg_norm.
@@ -2015,7 +2001,7 @@ case: (x =P 0) => [->|/eqP xD0]; first by rewrite sgr0 normr0 mul0r.
 rewrite normr_sg xD0 mul1r ltr_norml.
 rewrite (lt_le_trans (_ : _ < 0)) ?acos_ge0 ?oppr_cp0 //=.
 rewrite -cos_nmono ?(acos_ge0, acos_lepi) //; last first.
-   by rewrite ltW //= ler_pdivr_mulr // mulr2n mulrDr mulr1 
+   by rewrite ltW //= ler_pdivr_mulr // mulr2n mulrDr mulr1
               ler_addr ltW // pi_gt0.
 by rewrite cos_pihalf acosK // ?sqrtr_gt0 ?invr_gt0.
 Qed.
