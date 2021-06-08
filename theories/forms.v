@@ -33,36 +33,6 @@ Notation "u '``_' i" := (u (GRing.zero (Zp_zmodType O)) i) : ring_scope.
 Notation "''e_' i" := (delta_mx 0 i)
  (format "''e_' i", at level 3) : ring_scope.
 
-Lemma mxdirect_delta (F : fieldType) (T : finType) (n : nat) (P : pred T) f :
-  {in P & , injective f} ->
-  mxdirect (\sum_(i | P i) <<'e_(f i) : 'rV[F]_n>>)%MS.
-Proof.
-pose fP := image f P => Uf; have UfP: uniq fP by apply/dinjectiveP.
-suffices /mxdirectP: mxdirect (\sum_i <<'e_i : 'rV[F]_n>>).
-  rewrite /= !(bigID [mem fP] predT) -!big_uniq //= !big_map !big_filter.
-  by move/mxdirectP; rewrite mxdirect_addsE => /andP[].
-apply/mxdirectP=> /=; transitivity (mxrank (1%:M : 'M[F]_n)).
-  apply/eqmx_rank; rewrite submx1 mx1_sum_delta summx_sub_sums // => i _.
-  by rewrite -(mul_delta_mx (0 : 'I_1)) genmxE submxMl.
-rewrite mxrank1 -[LHS]card_ord -sum1_card.
-by apply/eq_bigr=> i _; rewrite /= mxrank_gen mxrank_delta.
-Qed.
-
-Lemma row_mx_eq0 (M : zmodType) (m n1 n2 : nat)
- (A1 : 'M[M]_(m, n1)) (A2 : 'M_(m, n2)):
- (row_mx A1 A2 == 0) = (A1 == 0) && (A2 == 0).
-Proof.
-apply/eqP/andP; last by case=> /eqP-> /eqP->; rewrite row_mx0.
-by rewrite -row_mx0 => /eq_row_mx [-> ->].
-Qed.
-
-Lemma col_mx_eq0 (M : zmodType) (m1 m2 n : nat)
- (A1 : 'M[M]_(m1, n)) (A2 : 'M_(m2, n)):
- (col_mx A1 A2 == 0) = (A1 == 0) && (A2 == 0).
-Proof.
-by rewrite -![_ == 0](inj_eq (@trmx_inj _ _ _)) !trmx0 tr_col_mx row_mx_eq0.
-Qed.
-
 Local Notation "M ^ phi" := (map_mx phi M).
 Local Notation "M ^t phi" := (map_mx phi (M ^T)) (phi at level 30, at level 30).
 
@@ -70,10 +40,6 @@ Structure revop X Y Z (f : Y -> X -> Z) := RevOp {
   fun_of_revop :> X -> Y -> Z;
   _ : forall x, f x =1 fun_of_revop^~ x
 }.
-
-Lemma map_mx_comp (R S T : ringType) m n (M : 'M[R]_(m,n))
-      (f : R -> S) (g : S -> T) : M ^ (g \o f) = (M ^ f) ^ g.
-Proof. by apply/matrixP=> i j; rewrite !mxE. Qed.
 
 Lemma eq_map_mx (R S : ringType) m n (M : 'M[R]_(m,n))
       (g f : R -> S) : f =1 g -> M ^ f = M ^ g.
@@ -118,16 +84,16 @@ Definition class (phUU'V : _)  (cF : map phUU'V) :=
 
 Canonical additiver phU'V phUU'V (u : U) cF := GRing.Additive.Pack phU'V
   (baser (@class phUU'V cF) u).
-Canonical linearr phU'V  phUU'V (u : U) cF := GRing.Linear.Pack phU'V 
+Canonical linearr phU'V  phUU'V (u : U) cF := GRing.Linear.Pack phU'V
   (baser (@class phUU'V cF) u).
 
 (* Fact applyr_key : unit. Proof. exact. Qed. *)
 Definition applyr_head t (f : U -> U' -> V) u v := let: tt := t in f v u.
 Notation applyr := (@applyr_head tt).
 
-Canonical additivel phUV phUU'V (u' : U') (cF : map _) := 
+Canonical additivel phUV phUU'V (u' : U') (cF : map _) :=
   @GRing.Additive.Pack _ _ phUV (applyr cF u') (basel (@class phUU'V cF) u').
-Canonical linearl phUV phUU'V  (u' : U') (cF : map _) := 
+Canonical linearl phUV phUU'V  (u' : U') (cF : map _) :=
   @GRing.Linear.Pack _ _ _ _ phUV (applyr cF u') (basel (@class phUU'V cF) u').
 
 Definition pack (phUV : phant (U -> V)) (phU'V : phant (U' -> V))
@@ -168,8 +134,8 @@ Notation "{ 'bilinear' fUV }" := {bilinear fUV | *:%R & *:%R}
   (at level 0, format "{ 'bilinear'  fUV }") : ring_scope.
 Notation "{ 'biscalar' U }" := {bilinear U -> U -> _ | *%R & *%R}
   (at level 0, format "{ 'biscalar'  U }") : ring_scope.
-Notation "[ 'bilinear' 'of' f 'as' g ]" := 
-  (@pack  _ _ _ _ _ _ _ _ _ _ f g erefl _ _ 
+Notation "[ 'bilinear' 'of' f 'as' g ]" :=
+  (@pack  _ _ _ _ _ _ _ _ _ _ f g erefl _ _
          (fun=> erefl) (fun=> idfun) _ _ (fun=> erefl) (fun=> idfun)).
 Notation "[ 'bilinear' 'of' f ]" :=  [bilinear of f as f]
   (at level 0, format "[ 'bilinear'  'of'  f ]") : form_scope.
@@ -253,7 +219,7 @@ End BidirectionalLinearZ.
 
 End BilinearTheory.
 
-Canonical rev_mulmx (R : ringType) m n p := @RevOp _ _ _ (@mulmxr_head R m n p tt)
+Canonical rev_mulmx (R : ringType) m n p := @RevOp _ _ _ (@mulmxr R m n p)
   (@mulmx R m n p) (fun _ _ => erefl).
 
 Canonical mulmx_bilinear (R : comRingType) m n p := [bilinear of @mulmx R m n p].
@@ -353,7 +319,7 @@ Local Notation "''[' u ]" := '[u, u] : ring_scope.
 Lemma sesquiE : (M \is (eps,theta).-sesqui) = (M == (-1) ^+ eps *: M ^t theta).
 Proof. by rewrite qualifE. Qed.
 
-Lemma sesquiP : reflect (M = (-1) ^+ eps *: M ^t theta) 
+Lemma sesquiP : reflect (M = (-1) ^+ eps *: M ^t theta)
                         (M \is (eps,theta).-sesqui).
 Proof. by rewrite sesquiE; apply/eqP. Qed.
 
@@ -375,14 +341,12 @@ Lemma formC u v : '[u, v] = (-1) ^+ eps * theta '[v, u].
 Proof.
 rewrite /form [M in LHS](sesquiP _) // -mulmxA !mxE rmorph_sum mulr_sumr.
 apply: eq_bigr => /= i _; rewrite !(mxE, mulr_sumr, mulr_suml, rmorph_sum).
-apply: eq_bigr => /= j _; rewrite !mxE !rmorphM  mulrCA -!mulrA. 
+apply: eq_bigr => /= j _; rewrite !mxE !rmorphM  mulrCA -!mulrA.
 by congr (_ * _); rewrite mulrA mulrC thetaK.
 Qed.
 
 Lemma form_eq0C u v : ('[u, v] == 0) = ('[v, u] == 0).
 Proof. by rewrite formC mulf_eq0 signr_eq0 /= fmorph_eq0. Qed.
-
-
 
 Definition ortho m (B : 'M_(m,n)) := (kermx (M *m (B ^t theta))).
 Local Notation "B ^_|_" := (ortho B) : ring_scope.
@@ -406,7 +370,7 @@ apply: (iffP idP) => AnB.
   rewrite trmx_mul map_mxM !mulmxA -[kermx _ *m _ *m _]mulmxA.
   by rewrite [kermx _ *m _](sub_kermxP _) // mul0mx.
 apply/rV_subP => u /AnB /(_ _) /sub_kermxP uMv; apply/sub_kermxP.
-suff: forall m (v : 'rV[R]_m), 
+suff: forall m (v : 'rV[R]_m),
   (forall i, v *m 'e_i ^t theta = 0 :> 'M_1) -> v = 0.
   apply => i; rewrite !mulmxA -!mulmxA -map_mxM -trmx_mul uMv //.
   by apply/submxP; exists 'e_i.
@@ -432,7 +396,7 @@ Proof. by rewrite normalC. Qed.
 
 Lemma rank_normal u : (\rank (u ^_|_) >= n.-1)%N.
 Proof.
-rewrite mxrank_ker -subn1 leq_sub2l //. 
+rewrite mxrank_ker -subn1 leq_sub2l //.
 by rewrite (leq_trans (mxrankM_maxr  _ _)) // rank_leq_col.
 Qed.
 
@@ -517,17 +481,13 @@ Qed.
 (* by rewrite cfnorm_eq0 => /eqP->; apply: rpred0. *)
 (* Qed. *)
 
-
 End Sesquilinear.
 
 Notation "eps_theta .-sesqui" := (sesqui _ eps_theta) : ring_scope.
 
-Notation symmetric := (false, [rmorphism of idfun]).-sesqui.
+Notation symmetric_form := (false, [rmorphism of idfun]).-sesqui.
 Notation skew := (true, [rmorphism of idfun]).-sesqui.
 Notation hermitian := (false, @conjC _).-sesqui.
-
-
-
 
 (* Section ClassificationForm. *)
 
@@ -553,42 +513,21 @@ Notation hermitian := (false, @conjC _).-sesqui.
 (*   right; split; first by exists ('e_i). *)
 (*   apply/eqP; *)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 (*  contraT *)
 
 
 (* suff [f_eq0|] : (forall u, '[u] = 0) \/ (exists u, '[u] != 0). *)
 (*   left; split=> //. *)
-    
-   
-  
 
 (* have [] := boolP [forall i : 'I_n, '['e_i] == 0]. *)
-   
+
 (* suff /eqP : eps ^+ 2 = 1. *)
 (*   rewrite -subr_eq0 subr_sqr_1 mulf_eq0. *)
 (*   move => /orP[]; rewrite addr_eq0 ?opprK=> /eqP eps_eq. *)
 (*     right; split=> //. *)
-  
+
 (* have [] := boolP [forall i : 'I_n, '['e_i] == 0]. *)
-  
+
 (* have := sesquiC u u. *)
 
 

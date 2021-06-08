@@ -1,4 +1,6 @@
-name: CI
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+name: Docker CI
 
 on:
   push:
@@ -17,6 +19,10 @@ jobs:
         image:
           - 'mathcomp/mathcomp:1.12.0-coq-8.11'
           - 'mathcomp/mathcomp:1.12.0-coq-8.12'
+          - 'mathcomp/mathcomp:1.12.0-coq-8.13'
+          - 'mathcomp/mathcomp-dev:coq-8.11'
+          - 'mathcomp/mathcomp-dev:coq-8.12'
+          - 'mathcomp/mathcomp-dev:coq-8.13'
       fail-fast: false
     steps:
       - uses: actions/checkout@v2

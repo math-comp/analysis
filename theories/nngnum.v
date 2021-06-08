@@ -34,8 +34,8 @@ Local Open Scope ring_scope.
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Reserved Notation "'{nonneg' R }" (at level 0, format "'{nonneg'  R }").
-Reserved Notation "x %:nng" (at level 0, format "x %:nng").
-Reserved Notation "x %:nngnum" (at level 0, format "x %:nngnum").
+Reserved Notation "x %:nng" (at level 2, left associativity, format "x %:nng").
+Reserved Notation "x %:nngnum" (at level 2, left associativity, format "x %:nngnum").
 Module Nonneg.
 Section nonnegative_numbers.
 
@@ -107,6 +107,10 @@ Canonical mulr_nngnum x y := NngNum (x%:nngnum * y%:nngnum) (mulr_ge0 x y).
 Canonical mulrn_nngnum x n := NngNum (x%:nngnum *+ n) (mulrn_wge0 n x).
 Canonical zeror_nngnum := @NngNum R 0 (lexx 0).
 Canonical oner_nngnum := @NngNum R 1 ler01.
+
+Lemma inv_nng_ge0 (x : R) : 0 <= x -> 0 <= x^-1.
+Proof. by rewrite invr_ge0. Qed.
+Canonical invr_nngnum x := NngNum (x%:nngnum^-1) (inv_nng_ge0 x).
 
 Lemma nngnum_lt0 x : (x%:nngnum < 0 :> R) = false.
 Proof. by rewrite le_gtF. Qed.

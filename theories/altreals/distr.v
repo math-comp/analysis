@@ -539,7 +539,7 @@ End DLetAlg.
 
 (* -------------------------------------------------------------------- *)
 Definition mlim T (f : nat -> distr T) : T -> R :=
-  fun x => real_of_er(*TODO: broken coercion*) (nlim (fun n => f n x)).
+  fun x => real_of_extended(*TODO: broken coercion*) (nlim (fun n => f n x)).
 
 Lemma isd_mlim T (f : nat -> distr T) : isdistr (mlim f).
 Proof. split=> [x|J]; rewrite /mlim.
@@ -547,7 +547,7 @@ Proof. split=> [x|J]; rewrite /mlim.
   by move=> n; apply/ge0_mu.
 move=> uqJ; pose F j :=
   if `[< iscvg (fun n => f n j) >] then fun n => f n j else 0%:S.
-apply/(@le_trans _ _ (\sum_(j <- J) (real_of_er (*TODO: broken coercion*) (nlim (F j) (*: R*))))).
+apply/(@le_trans _ _ (\sum_(j <- J) (real_of_extended(*TODO: broken coercion*) (nlim (F j) (*: R*))))).
   apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >] => //.
   move/asboolPn=> h; rewrite nlimC; case: nlimP=> //.
   by case=> // l cf; case: h; exists l.
@@ -574,7 +574,7 @@ Definition dlim T (f : nat -> distr T) :=
 Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 
 Lemma dlimE T (f : nat -> distr T) x :
-  (\dlim_(n) f n) x = real_of_er(*TODO: broken coercion*) (nlim (fun n => f n x)).
+  (\dlim_(n) f n) x = real_of_extended(*TODO: broken coercion*) (nlim (fun n => f n x)).
 Proof. by unlock dlim. Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -618,7 +618,7 @@ CoInductive dlim_spec f (x : T) : R -> Type :=
 | DLimCvg : forall l : R, 0 <= l -> l <= 1 ->
     ncvg (fun n => f n x) l%:E -> dlim_spec f x l
 
-| DLimOut : ~ (exists l : {ereal R}, ncvg (fun n => f n x) l) ->
+| DLimOut : ~ (exists l : \bar R, ncvg (fun n => f n x) l) ->
     dlim_spec f x 0.
 
 Lemma dlimP f x : dlim_spec f x (dlim f x).
@@ -1182,7 +1182,7 @@ End PrTheory.
 Section Jensen.
 Context {R : realType} {I : finType}.
 
-Definition convexon (a b : {ereal R}) (f : R -> R) :=
+Definition convexon (a b : \bar R) (f : R -> R) :=
   forall x y, (a <= x%:E <= b)%E -> (a <= y%:E <= b)%E ->
     forall t, 0 <= t <= 1 ->
       f (t * x + (1 - t) * y) <= t * (f x) + (1 - t) * (f y).

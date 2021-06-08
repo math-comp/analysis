@@ -1,10 +1,14 @@
+<!---
+This file was generated from `meta.yml`, please do not edit manually.
+Follow the instructions on https://github.com/coq-community/templates to regenerate.
+--->
 # Analysis library compatible with Mathematical Components
 
-[![CI][action-shield]][action-link]
+[![Docker CI][docker-action-shield]][docker-action-link]
 [![Chat][chat-shield]][chat-link]
 
-[action-shield]: https://github.com/math-comp/analysis/workflows/CI/badge.svg?branch=master
-[action-link]: https://github.com/math-comp/analysis/actions?query=workflow%3ACI
+[docker-action-shield]: https://github.com/math-comp/analysis/workflows/Docker%20CI/badge.svg?branch=master
+[docker-action-link]: https://github.com/math-comp/analysis/actions?query=workflow:"Docker%20CI"
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
 [chat-link]: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
 
@@ -22,18 +26,20 @@ the Coq proof-assistant and using the Mathematical Components library.
   - Marie Kerjean
   - Assia Mahboubi (initial)
   - Damien Rouhling (initial)
+  - Pierre Roux
   - Kazuhiko Sakaguchi
   - Pierre-Yves Strub (initial)
+  - Laurent Thery
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: Coq 8.11 to 8.12
+- Compatible Coq versions: Coq 8.11 to 8.13 (or dev)
 - Additional dependencies:
-  - [MathComp ssreflect 1.11](https://math-comp.github.io)
-  - [MathComp fingroup 1.11](https://math-comp.github.io)
-  - [MathComp algebra 1.11](https://math-comp.github.io)
-  - [MathComp solvable 1.11](https://math-comp.github.io)
-  - [MathComp field 1.11](https://math-comp.github.io)
-  - [MathComp finmap 1.5](https://github.com/math-comp/finmap)
-  - [Hierarchy Builder 0.10](https://github.com/math-comp/hierarchy-builder)
+  - [MathComp ssreflect 1.12](https://math-comp.github.io)
+  - [MathComp fingroup 1.12](https://math-comp.github.io)
+  - [MathComp algebra 1.12](https://math-comp.github.io)
+  - [MathComp solvable 1.12](https://math-comp.github.io)
+  - [MathComp field 1.12](https://math-comp.github.io)
+  - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
+  - [Hierarchy Builder >= 0.10](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
 - Related publication(s):
   - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)
@@ -73,6 +79,14 @@ Each file is documented in its header.
 
 Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
 [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
+
+MathComp-Analysis adds mathematical structures on top of MathComp's ones.
+The following inheritance diagram displays the resulting hiearchy
+(excluding `countalg` and `finalg` structures). MathComp-Analysis
+mathematical structures are on the right, below `pointedType`
+included.
+
+![Inheritance diagram](./hierarchy.png "Inheritance diagram")
 
 Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
 

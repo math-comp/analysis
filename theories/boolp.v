@@ -11,6 +11,9 @@ Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Declare Scope box_scope.
+Declare Scope quant_scope.
+
 (* Copy of the ssrbool shim to ensure compatibility with MathComp v1.8.0. *)
 Definition PredType : forall T pT, (pT -> pred T) -> predType T.
 exact PredType || exact mkPredType.
@@ -325,29 +328,6 @@ by case=> x bPx; apply/asboolP; exists x; apply/asboolP.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma contra_not (Q P : Prop) : (Q -> P) -> ~ P -> ~ Q.
-Proof.
-move=> cb /asboolPn nb; apply/asboolPn.
-by apply: contra nb => /asboolP /cb /asboolP.
-Qed.
-
-(** subsumed by mathcomp 1.12, to be removed *)
-Lemma contra_notT (P: Prop) (b:bool) : (~~ b -> P) -> ~ P -> b.
-Proof. by case: b => //= /(_ isT) HP /(_ HP). Qed.
-
-(** subsumed by mathcomp 1.12, to be removed *)
-Lemma contra_notN (P: Prop) (b:bool) : (b -> P) -> ~ P -> ~~ b.
-Proof. rewrite -{1}[b]negbK; exact: contra_notT. Qed.
-
-(** subsumed by mathcomp 1.12, to be removed *)
-Lemma contra_not_neq (T: eqType)  (P: Prop) (x y:T) : (x = y -> P) -> ~ P -> x != y.
-Proof. by move=> imp; apply: contra_notN => /eqP. Qed.
-
-Lemma contraPnot (Q P : Prop) : (Q -> ~ P) -> P -> ~ Q.
-Proof.
-move=> cb /asboolP hb; apply/asboolPn.
-by apply: contraL hb => /asboolP /cb /asboolPn.
-Qed.
 
 Lemma contra_notP (Q P : Prop) : (~ Q -> P) -> ~ P -> Q.
 Proof.
@@ -385,6 +365,12 @@ Lemma not_inj : injective not. Proof. exact: can_inj notK. Qed.
 Lemma notLR P Q : (P = ~ Q) -> (~ P) = Q. Proof. exact: canLR notK. Qed.
 
 Lemma notRL P Q : (~ P) = Q -> P = ~ Q. Proof. exact: canRL notK. Qed.
+
+Lemma iff_notr (P Q : Prop) : (P <-> ~ Q) <-> (~ P <-> Q).
+Proof. by split=> [/propext ->|/propext <-]; rewrite notK. Qed.
+
+Lemma iff_not2 (P Q : Prop) : (~ P <-> ~ Q) <-> (P <-> Q).
+Proof. by split=> [/iff_notr|PQ]; [|apply/iff_notr]; rewrite notK. Qed.
 
 (* -------------------------------------------------------------------- *)
 (* assia : let's see if we need the simplpred machinery. In any case, we sould

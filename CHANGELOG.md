@@ -1,6 +1,363 @@
 # Changelog
 
-Last releases: [[0.3.4] - 2020-12-12](#034---2020-12-12) and [[0.3.3] - 2020-11-11](#033---2020-11-11)
+Last releases: [[0.3.8] - 2021-06-01](#038---2021-06-01) and [[0.3.7] - 2021-04-01](#037---2021-04-01)
+
+## [0.3.8] - 2021-06-01
+
+### Added
+
+- file `reals.v`:
+  + lemmas `le_floor`, `le_ceil`
+- in `ereal.v`:
+  + lemmas `big_nat_widenl`, `big_geq_mkord`
+  + lemmas `lee_sum_nneg_natr`, `lee_sum_nneg_natl`
+  + lemmas `ereal_sup_gt`, `ereal_inf_lt`
+  + notation `0`/`1` for `0%R%:E`/`1%R:%E` in `ereal_scope`
+- in `classical_sets.v`
+  + lemma `subset_bigsetU_cond`
+  + lemma `eq_imagel`
+- in `sequences.v`:
+  + notations `\sum_(i <oo) F i`
+  + lemmas `ereal_pseries_sum_nat`, `lte_lim`
+  + lemmas `is_cvg_ereal_nneg_natsum_cond`, `is_cvg_ereal_nneg_natsum`
+  + lemma `ereal_pseriesD`, `ereal_pseries0`, `eq_ereal_pseries`
+  + lemmas `leq_fact`, `prod_rev`, `fact_split`
+  + definition `exp_coeff`
+  + lemmas `exp_coeff_ge0`, `series_exp_coeff0`, `is_cvg_series_exp_coeff_pos`,
+    ` normed_series_exp_coeff`, `is_cvg_series_exp_coeff `, `cvg_exp_coeff`
+  + definition `expR`
+- in `measure.v`:
+  + lemma `eq_bigcupB_of_bigsetU`
+  + definitions `caratheodory_type`
+  + definition `caratheodory_measure` and lemma `caratheodory_measure_complete`
+  + internal definitions and lemmas that may be deprecated and hidden in the future:
+    * `caratheodory_measurable`, notation `... .-measurable`,
+    * `le_caratheodory_measurable`, `outer_measure_bigcup_lim`,
+      `caratheodory_measurable_{set0,setC,setU_le,setU,bigsetU,setI,setD}`
+      `disjoint_caratheodoryIU`, `caratheodory_additive`,
+          `caratheodory_lim_lee`, `caratheodory_measurable_trivIset_bigcup`,
+      `caratheodory_measurable_bigcup`
+  + definition `measure_is_complete`
+- file `csum.v`:
+  + lemmas `ereal_pseries_pred0`, `ub_ereal_sup_adherent_img`
+  + definition `fsets`, lemmas `fsets_set0`, `fsets_self`, `fsetsP`, `fsets_img`
+  + definition `fsets_ord`, lemmas `fsets_ord_nat`, `fsets_ord_subset`
+  + definition `csum`, lemmas `csum0`, `csumE`, `csum_ge0`, `csum_fset`
+    `csum_image`, `ereal_pseries_csum`, `csum_bigcup`
+  + notation `\csum_(i in S) a i`
+- file `cardinality.v`
+  + lemmas `in_inj_comp`, `enum0`, `enum_recr`, `eq_set0_nil`, `eq_set0_fset0`,
+    `image_nat_maximum`, `fset_nat_maximum`
+  + defintion `surjective`, lemmas `surjective_id`, `surjective_set0`,
+    `surjective_image`, `surjective_image_eq0`, `surjective_comp`
+  + definition `set_bijective`,
+  + lemmas `inj_of_bij`, `sur_of_bij`, `set_bijective1`, `set_bijective_image`,
+    `set_bijective_subset`, `set_bijective_comp`
+  + definition `inverse`
+  + lemmas `injective_left_inverse`, `injective_right_inverse`,
+    `surjective_right_inverse`,
+  + notation `` `I_n ``
+  + lemmas `II0`, `II1`, `IIn_eq0`, `II_recr`
+  + lemmas `set_bijective_D1`, `pigeonhole`, `Cantor_Bernstein`
+  + definition `card_le`, notation `_ #<= _`
+  + lemmas `card_le_surj`, `surj_card_le`, `card_lexx`, `card_le0x`,
+    `card_le_trans`, `card_le0P`, `card_le_II`
+  + definition `card_eq`, notation `_ #= _`
+  + lemmas `card_eq_sym`, `card_eq_trans`, `card_eq00`, `card_eqP`, `card_eqTT`,
+    `card_eq_II`, `card_eq_le`, `card_eq_ge`, `card_leP`
+  + lemma `set_bijective_inverse`
+  + definition `countable`
+  + lemmas `countable0`, `countable_injective`, `countable_trans`
+  + definition `set_finite`
+  + lemmas `set_finiteP`, `set_finite_seq`, `set_finite_countable`, `set_finite0`
+  + lemma `set_finite_bijective`
+  + lemmas `subset_set_finite`, `subset_card_le`
+  + lemmas `injective_set_finite`, `injective_card_le`, `set_finite_preimage`
+  + lemmas `surjective_set_finite`, `surjective_card_le`
+  + lemmas `set_finite_diff`, `card_le_diff`
+  + lemmas `set_finite_inter_set0_union`, `set_finite_inter`
+  + lemmas `ex_in_D`, definitions `min_of_D`, `min_of_D_seq`, `infsub_enum`, lemmas
+    `min_of_D_seqE`, `increasing_infsub_enum`, `sorted_infsub_enum`,
+   `injective_infsub_enum`, `subset_infsub_enum`, `infinite_nat_subset_countable`
+  + definition `enumeration`, lemmas `enumeration_id`, `enumeration_set0`.
+  + lemma `ex_enum_notin`, definitions `min_of`, `minf_of_e_seq`, `smallest_of`
+  + definition `enum_wo_rep`, lemmas `enum_wo_repE`, `min_of_e_seqE`,
+    `smallest_of_e_notin_enum_wo_rep`, `injective_enum_wo_rep`, `surjective_enum_wo_rep`,
+    `set_bijective_enum_wo_rep`, `enumration_enum_wo_rep`, `countable_enumeration`
+  + lemmas `infinite_nat`, `infinite_prod_nat`, `countable_prod_nat`,
+    `countably_infinite_prod_nat`
+
+### Changed
+
+- in `classical_sets.v`, lemma `subset_bigsetU`
+- in `ereal.v`:
+  + change implicits of lemma `lee_sum_nneg_ord`
+  + `ereal_sup_ninfty` and `ereal_inf_pinfty` made equivalences
+  + change the notation `{ereal R}` to `\bar R` and attach it to the scope `ereal_scope`
+  + argument of `%:E` in `%R` by default
+  + `F` argument of `\sum` in `%E` by default
+- in `topology.v`:
+  + change implicits of lemma `cvg_app`
+- in `normedtype.v`:
+  + `coord_continuous` generalized
+- in `sequences.v`:
+  + change implicits of lemma `is_cvg_ereal_nneg_series`
+  + statements changed from using sum of ordinals to sum of nats
+    * definition `series`
+    * lemmas `ereal_nondecreasing_series`, `ereal_nneg_series_lim_ge`
+    * lemmas `is_cvg_ereal_nneg_series_cond`, `is_cvg_ereal_nneg_series`
+    * lemmas `ereal_nneg_series_lim_ge0`, `ereal_nneg_series_pinfty`
+
+### Renamed
+
+- in `ereal.v`:
+  + `er` -> `extended`
+  + `ERFin` -> `EFin`
+  + `ERPInf` -> `EPInf`
+  + `ERNInf` -> `ENInf`
+  + `real_of_er` -> `real_of_extended`
+  + `real_of_erD` -> `real_of_extendedD`
+  + `ERFin_real_of_er` -> `EFin_real_of_extended`
+  + `real_of_er_expand` -> `real_of_extended_expand`
+  + `NERFin` -> `NEFin`
+  + `addERFin` -> `addEFin`
+  + `sumERFin`-> `sumEFin`
+  + `subERFin` -> `subEFin`
+- in `reals.v`:
+  + `ler_ceil` -> `ceil_ge`
+  + `Rceil_le` -> `le_Rceil`
+  + `le_Rceil` -> `Rceil_ge`
+  + `ge_Rfloor` -> `Rfloor_le`
+  + `ler_floor` -> `floor_le`
+  + `Rfloor_le` -> `le_Rfloor`
+- in `topology.v`:
+  + lemmas `onT_can` -> `onS_can`,
+    `onT_can_in` -> `onS_can_in`,
+    `in_onT_can` -> ``in_onS_can`
+    (now in MathComp)
+- in `sequences,v`:
+  + `is_cvg_ereal_nneg_series_cond`
+- in `forms.v`:
+  + `symmetric` -> `symmetric_form`
+
+### Removed
+
+- in `classical_sets.v`
+  + lemmas `eq_set_inl`, `set_in_in`
+- from `topology.v`:
+  + lemmas `homoRL_in`, `homoLR_in`, `homo_mono_in`, `monoLR_in`,
+    `monoRL_in`, `can_mono_in`, `onW_can`, `onW_can_in`, `in_onW_can`,
+    `onT_can`, `onT_can_in`, `in_onT_can` (now in MathComp)
+- in `forms.v`:
+  + lemma `mxdirect_delta`, `row_mx_eq0`, `col_mx_eq0`, `map_mx_comp`
+
+## [0.3.7] - 2021-04-01
+
+### Added
+
+- in `topology.v`:
+  + global instance `ball_filter`
+  + module `regular_topology` with an `Exports` submodule
+    * canonicals `pointedType`, `filteredType`, `topologicalType`,
+      `uniformType`, `pseudoMetricType`
+  + module `numFieldTopology` with an `Exports` submodule
+    * many canonicals and coercions
+  + global instance `Proper_nbhs'_regular_numFieldType`
+  + definition `dense` and lemma `denseNE`
+- in `normedtype.v`:
+  + definitions `ball_`, `pointed_of_zmodule`, `filtered_of_normedZmod`
+  + lemmas `ball_norm_center`, `ball_norm_symmetric`, `ball_norm_triangle`
+  + definition `pseudoMetric_of_normedDomain`
+  + lemma `nbhs_ball_normE`
+  + global instances `Proper_nbhs'_numFieldType`, `Proper_nbhs'_realType`
+  + module `regular_topology` with an `Exports` submodule
+    * canonicals `pseudoMetricNormedZmodType`, `normedModType`.
+  + module `numFieldNormedType` with an `Exports` submodule
+    * many canonicals and coercions
+    * exports `Export numFieldTopology.Exports`
+  + canonical `R_regular_completeType`, `R_regular_CompleteNormedModule`
+- in `reals.v`:
+  + lemmas `Rfloor_lt0`, `floor_lt0`, `ler_floor`, `ceil_gt0`, `ler_ceil`
+  + lemmas `has_sup1`, `has_inf1`
+- in `ereal.v`:
+  + lemmas `ereal_ballN`, `le_ereal_ball`, `ereal_ball_ninfty_oversize`,
+    `contract_ereal_ball_pinfty`, `expand_ereal_ball_pinfty`,
+    `contract_ereal_ball_fin_le`, `contract_ereal_ball_fin_lt`,
+    `expand_ereal_ball_fin_lt`, `ball_ereal_ball_fin_lt`, `ball_ereal_ball_fin_le`,
+    `sumERFin`, `ereal_inf1`, `eqe_oppP`, `eqe_oppLRP`, `oppe_subset`,
+    `ereal_inf_pinfty`
+  + definition `er_map`
+  + definition `er_map`
+  + lemmas `adde_undefC`, `real_of_erD`, `fin_num_add_undef`, `addeK`,
+    `subeK`, `subee`, `sube_le0`, `lee_sub`
+  + lemmas `addeACA`, `muleC`, `mule1`, `mul1e`, `abseN`
+  + enable notation `x \is a fin_num`
+    * definition `fin_num`, fact `fin_num_key`, lemmas `fin_numE`, `fin_numP`
+- in `classical_sets.v`:
+  + notation `[disjoint ... & ..]`
+  + lemmas `mkset_nil`, `bigcup_mkset`, `bigcup_nonempty`, `bigcup0`, `bigcup0P`,
+    `subset_bigcup_r`, `eqbigcup_r`, `eq_set_inl`, `set_in_in`
+- in `nngnum.v`:
+  + instance `invr_nngnum`
+- in `posnum.v`:
+  + instance `posnum_nngnum`
+
+## Changed
+
+- in `ereal.v`:
+  + generalize lemma `lee_sum_nneg_subfset`
+  + lemmas `nbhs_oo_up_e1`, `nbhs_oo_down_e1`, `nbhs_oo_up_1e`, `nbhs_oo_down_1e`
+    `nbhs_fin_out_above`, `nbhs_fin_out_below`, `nbhs_fin_out_above_below`
+    `nbhs_fin_inbound`
+- in `sequences.v`:
+  + generalize lemmas `ereal_nondecreasing_series`, `is_cvg_ereal_nneg_series`,
+    `ereal_nneg_series_lim_ge0`, `ereal_nneg_series_pinfty`
+- in `measure.v`:
+  + generalize lemma `bigUB_of`
+  + generalize theorem `Boole_inequality`
+- in `classical_sets.v`:
+  + change the order of arguments of `subset_trans`
+
+- canonicals and coercions have been changed so that there is not need
+  anymore for explicit types casts to `R^o`, `[filteredType R^o of R^o]`,
+  `[filteredType R^o * R^o of R^o * R^o]`, `[lmodType R of R^o]`,
+  `[normedModType R of R^o]`,`[topologicalType of R^o]`, `[pseudoMetricType R of R^o]`
+- `sequences.v` now imports `numFieldNormedType.Exports`
+- `topology.v` now imports `reals`
+- `normedtype.v` now imports `vector`, `fieldext`, `falgebra`,
+  `numFieldTopology.Exports`
+- `derive.v` now imports `numFieldNormedType.Exports`
+
+### Renamed
+
+- in `ereal.v`:
+  + `is_realN` -> `fin_numN`
+  + `is_realD` -> `fin_numD`
+  + `ereal_sup_set0` -> `ereal_sup0`
+  + `ereal_sup_set1` -> `ereal_sup1`
+  + `ereal_inf_set0` -> `ereal_inf0`
+
+### Removed
+
+- in `topology.v`:
+  + section `numFieldType_canonical`
+- in `normedtype.v`:
+  + lemma `R_ball`
+  + definition `numFieldType_pseudoMetricNormedZmodMixin`
+  + canonical `numFieldType_pseudoMetricNormedZmodType`
+  + global instance `Proper_nbhs'_realType`
+  + lemma `R_normZ`
+  + definition `numFieldType_NormedModMixin`
+  + canonical `numFieldType_normedModType`
+- in `ereal.v`:
+  + definition `is_real`
+
+## [0.3.6] - 2021-03-04
+
+### Added
+
+- in `boolp.v`:
+  + lemmas `iff_notr`, `iff_not2`
+- in `classical_sets.v`:
+  + lemmas `subset_has_lbound`, `subset_has_ubound`
+  + lemma `mksetE`
+  + definitions `cover`, `partition`, `pblock_index`, `pblock`
+  + lemmas `trivIsetP`, `trivIset_sets`, `trivIset_restr`, `perm_eq_trivIset`
+  + lemma `fdisjoint_cset`
+  + lemmas `setDT`, `set0D`, `setD0`
+  + lemmas `setC_bigcup`, `setC_bigcap`
+- in `reals.v`:
+  + lemmas `sup_setU`, `inf_setU`
+  + lemmas `RtointN`, `floor_le0`
+  + definition `Rceil`, lemmas `isint_Rceil`, `Rceil0`, `le_Rceil`, `Rceil_le`, `Rceil_ge0`
+  + definition `ceil`, lemmas `RceilE`, `ceil_ge0`, `ceil_le0`
+- in `ereal.v`:
+  + lemmas `esum_fset_ninfty`, `esum_fset_pinfty`, `esum_pinfty`
+- in `normedtype.v`:
+  + lemmas `ereal_nbhs'_le`, `ereal_nbhs'_le_finite`
+  + lemmas `ball_open`
+  + definition `closed_ball_`, lemmas `closed_closed_ball_`
+  + definition `closed_ball`, lemmas `closed_ballxx`, `closed_ballE`,
+    `closed_ball_closed`, `closed_ball_subset`, `nbhs_closedballP`, `subset_closed_ball`
+  + lemmas `nbhs0_lt`, `nbhs'0_lt`, `interior_closed_ballE`, open_nbhs_closed_ball`
+  + section "LinearContinuousBounded"
+    * lemmas `linear_boundedP`, `linear_continuous0`, `linear_bounded0`,
+      `continuousfor0_continuous`, `linear_bounded_continuous`, `bounded_funP`
+- in `measure.v`:
+  + definition `sigma_finite`
+
+### Changed
+
+- in `classical_sets.v`:
+  + generalization and change of `trivIset` (and thus lemmas `trivIset_bigUI` and `trivIset_setI`)
+  + `bigcup_distrr`, `bigcup_distrl` generalized
+- header in `normedtype.v`, precisions on `bounded_fun`
+- in `reals.v`:
+  + `floor_ge0` generalized and renamed to `floorR_ge_int`
+- in `ereal.v`, `ereal_scope` notation scope:
+  + `x <= y` notation changed to `lee (x : er _) (y : er _)` and
+    `only printing` notation `x <= y` for `lee x y`
+  + same change for `<`
+  + change extended to notations `_ <= _ <= _`, `_ < _ <= _`, `_ <= _ < _`, `_ < _ < _`
+
+### Renamed
+
+- in `reals.v`:
+  + `floor` -> `Rfloor`
+  + `isint_floor` -> `isint_Rfloor`
+  + `floorE` -> `RfloorE`
+  + `mem_rg1_floor` -> `mem_rg1_Rfloor`
+  + `floor_ler` -> `Rfloor_ler`
+  + `floorS_gtr` -> `RfloorS_gtr`
+  + `floor_natz` -> `Rfloor_natz`
+  + `Rfloor` -> `Rfloor0`
+  + `floor1` -> `Rfloor1`
+  + `ler_floor` -> `ler_Rfloor`
+  + `floor_le0` -> `Rfloor_le0`
+  + `ifloor` -> `floor`
+  + `ifloor_ge0` -> `floor_ge0`
+- in `topology.v`:
+  + `ball_ler` -> `le_ball`
+- in `normedtype.v`, `bounded_on` -> `bounded_near`
+- in `measure.v`:
+  + `AdditiveMeasure.Measure` -> `AdditiveMeasure.Axioms`
+  + `OuterMeasure.OuterMeasure` -> `OuterMeasure.Axioms`
+
+### Removed
+- in `topology.v`:
+  + `ball_le`
+- in `classical_sets.v`:
+  + lemma `bigcapCU`
+- in `sequences.v`:
+  + lemmas `ler_sum_nat`, `sumr_const_nat`
+
+## [0.3.5] - 2020-12-21
+
+### Added
+
+- in `classical_sets.v`:
+  + lemmas `predeqP`, `seteqP`
+
+### Changed
+
+- Requires:
+  + MathComp >= 1.12
+- in `boolp.v`:
+  + lemmas `contra_not`, `contra_notT`, `contra_notN`, `contra_not_neq`, `contraPnot`
+    are now provided by MathComp 1.12
+- in `normedtype.v`:
+  + lemmas `ltr_distW`, `ler_distW` are now provided by MathComp 1.12 as lemmas
+    `ltr_distlC_subl` and `ler_distl_subl`
+  + lemmas `maxr_real` and `bigmaxr_real` are now provided by MathComp 1.12 as
+    lemmas `max_real` and `bigmax_real`
+  + definitions `isBOpen` and `isBClosed` are replaced by the definition `bound_side`
+  + definition `Rhull` now uses `BSide` instead of `BOpen_if`
+
+### Removed
+
+- Drop support for MathComp 1.11
+- in `topology.v`:
+  + `Typeclasses Opaque fmap.`
 
 ## [0.3.4] - 2020-12-12
 
