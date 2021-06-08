@@ -13,7 +13,7 @@ Require Import derive exp.
 (* develops their theories.                                                   *)
 (*                                                                            *)
 (*    periodic f T == f is a periodic function of period T                    *)
-(* alternating f T == f is a periodic function of period T                    *)
+(* alternating f T == f is an alternating function of period T                *)
 (*           sin x == the sine function                                       *)
 (*           cos x == the cosine function                                     *)
 (*              pi == pi                                                      *)
