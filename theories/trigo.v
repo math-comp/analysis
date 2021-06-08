@@ -849,11 +849,11 @@ case: (x =P y) => // /eqP xDy.
 have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
 *)
 
-Lemma cos2_tan2 x : cos x != 0 -> 1 / (cos x) ^+ 2 = 1 + (tan x) ^+ 2.
+Lemma cos2_tan2 x : cos x != 0 -> (cos x) ^- 2 = 1 + (tan x) ^+ 2.
 Proof.
 move=> cosx.
 rewrite /tan exprMn [X in _ = 1 + X * _]sin2cos2 mulrBl -exprMn divff //.
-by rewrite expr1n addrCA subrr addr0 div1r mul1r exprVn.
+by rewrite expr1n addrCA subrr addr0 mul1r exprVn.
 Qed.
 
 Lemma tan_pihalf : tan (pi / 2) = 0.
@@ -982,6 +982,64 @@ rewrite -[LHS]ger0_norm; last by rewrite sin_ge0_pi // acos_ge0 ?acos_lepi.
 by rewrite -sqrtr_sqr sin2cos2 acosK.
 Qed.
 
+Lemma near_lift (P : R -> Prop) (x : R) :
+ (\forall y \near x, P y) -> \forall y \near x, \forall z \near y, P z.
+Proof.
+move=> /nbhs_ballP[d /= d_gt0 dB].
+apply/nbhs_ballP; exists (d/2) => [|t1 Bt1] //=; first by rewrite divr_gt0.
+apply/nbhs_ballP; exists (d/2) => [|t2 Bt2] //=; first by rewrite divr_gt0.
+by apply/dB/(ball_split Bt1).
+Qed.
+
+Lemma near_in_interval (a b : R) :
+  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
+Proof.
+move=> y ayb; rewrite (near_shift 0 y).
+have minlt : 0 < minr (y - a) (b - y).
+  have : 0 < y - a by rewrite subr_gt0 (itvP ayb).
+  have : 0 < b - y by rewrite subr_gt0 (itvP ayb).
+  by case: (ltrP (y - a) (b - y)).
+near=> z; rewrite /= subr0.
+rewrite in_itv /= -ltr_subl_addl -ltr_subr_addl ltr_normlW /=; last first.
+  rewrite normrN.
+  by near: z; apply: nbhs0_lt; rewrite (lt_le_trans minlt) // le_minl lexx.
+rewrite -ltr_subr_addr ltr_normlW //.
+near: z; apply: nbhs0_lt; rewrite (lt_le_trans minlt) //.
+by rewrite le_minl lexx orbT.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma continuous_acos x : -1 < x < 1 -> {for x, continuous acos}.
+Proof.
+move=> /andP[x_gtN1 x_lt1]; rewrite -[x]acosK; first last.
+  by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
+apply: (@continuous_inverse R cos); last by near=> z; apply: continuous_cos.
+have /near_in_interval aI : acos x \in `]0, pi[.
+  suff : 0 < acos x < pi by [].
+  by rewrite acos_gt0 ?ltW //= acos_ltpi // ltW ?andbT.
+near=> z; apply: cosK.
+suff /itvP zI : z \in `]0, pi[.
+  by have : 0 <= z <= pi by rewrite ltW ?zI.
+by near: z.
+Grab Existential Variables. all: end_near. Qed.
+
+Global Instance is_derive1_acos (x : R) :
+  -1 < x < 1 -> is_derive x 1 acos (- (Num.sqrt (1 - x ^+ 2))^-1).
+Proof.
+move=> /andP[x_gtN1 x_lt1]; rewrite -sin_acos ?ltW // -invrN.
+rewrite -{1}[x]acosK; last by have : -1 <= x <= 1 by rewrite ltW // ltW.
+have /near_in_interval aI : acos x \in `]0, pi[.
+  suff : 0 < acos x < pi by [].
+  by rewrite acos_gt0 ?ltW //= acos_ltpi // ltW ?andbT.
+apply: (@is_derive_inverse R cos).
+- near=> z; apply: cosK.
+  suff /itvP zI : z \in `]0, pi[ by have : 0 <= z <= pi by rewrite ltW ?zI.
+  by near: z.
+- by near=> z; apply: continuous_cos.
+rewrite oppr_eq0 sin_acos ?ltW // sqrtr_eq0 // -ltNge subr_gt0.
+rewrite -real_normK ?qualifE; last by case: ltrgt0P.
+by rewrite exprn_cp1 // ltr_norml x_gtN1.
+Grab Existential Variables. all: end_near. Qed.
+
 End Acos.
 
 Section Asin.
@@ -1015,7 +1073,7 @@ Proof. by move=> /asin_def[/andP[]]. Qed.
 Lemma asinK : {in `[(-1),1], cancel asin sin}.
 Proof. by move=> x; rewrite in_itv/= => /asin_def[/andP[]]. Qed.
 
-Lemma asin_gtpi x : -1 <= x < 1 -> asin x < pi/2.
+Lemma asin_ltpi2 x : -1 <= x < 1 -> asin x < pi/2.
 Proof.
 move=> /andP[x_geN1 x_lt1]; move: (x_lt1).
 have : asin x <= pi / 2 by rewrite asin_lepi2 // x_geN1 ltW.
@@ -1047,6 +1105,39 @@ rewrite -[LHS]ger0_norm; last first.
   by apply: cos_ge0_pihalf; rewrite asin_lepi2 // asin_geNpi2.
 by rewrite -sqrtr_sqr cos2sin2 asinK.
 Qed.
+
+Lemma continuous_asin x : -1 < x < 1 -> {for x, continuous asin}.
+Proof.
+move=> /andP[x_gtN1 x_lt1]; rewrite -[x]asinK; first last.
+  by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
+apply: (@continuous_inverse R sin); last by near=> z; apply: continuous_sin.
+have /near_in_interval aI : asin x \in `](-(pi/2)), (pi/2)[.
+  suff : -(pi/2) < asin x < pi/2 by [].
+  by rewrite asin_gtNpi2 ?ltW ?andbT //= asin_ltpi2 // ltW.
+near=> z; apply: sinK.
+suff /itvP zI : z \in `](-(pi/2)), (pi/2)[.
+  by have : -(pi/2) <= z <= pi/2 by rewrite ltW ?zI.
+by near: z.
+Grab Existential Variables. all: end_near. Qed.
+
+Global Instance is_derive1_asin (x : R) :
+  -1 < x < 1 -> is_derive x 1 asin ((Num.sqrt (1 - x ^+ 2))^-1).
+Proof.
+move=> /andP[x_gtN1 x_lt1]; rewrite -cos_asin ?ltW //.
+rewrite -{1}[x]asinK; last by have : -1 <= x <= 1 by rewrite ltW // ltW.
+have /near_in_interval aI : asin x \in `](-(pi/2)), (pi/2)[.
+  suff : -(pi/2) < asin x < pi/2 by [].
+  by rewrite asin_gtNpi2 ?ltW ?andbT //= asin_ltpi2 // ltW.
+apply: (@is_derive_inverse R sin).
+- near=> z; apply: sinK.
+  suff /itvP zI : z \in `](-(pi/2)), (pi/2)[.
+    by have : -(pi/2) <= z <= pi/2 by rewrite ltW ?zI.
+  by near: z.
+- near=> z; apply: continuous_sin.
+rewrite cos_asin ?ltW // sqrtr_eq0 // -ltNge subr_gt0.
+rewrite -real_normK ?qualifE; last by case: ltrgt0P.
+by rewrite exprn_cp1 // ltr_norml x_gtN1.
+Grab Existential Variables. all: end_near. Qed.
 
 End Asin.
 
@@ -1115,6 +1206,52 @@ Proof.
 move=> x xB; apply tan_inj => //; rewrite ?atanK//.
 by rewrite in_itv/= atan_gtNpi2 atan_ltpi2.
 Qed.
+
+Lemma continuous_atan x : {for x, continuous atan}.
+Proof.
+rewrite -[x]atanK.
+have /near_in_interval aI : atan x \in `](-(pi/2)), (pi/2)[.
+  suff : -(pi/2) < atan x < pi/2 by [].
+  by rewrite atan_gtNpi2 atan_ltpi2.
+apply: (@continuous_inverse R tan); last first.
+  near=> z; apply: continuous_tan.
+  apply/lt0r_neq0; apply: cos_gt0_pihalf.
+  by near: z.
+by near=> z; apply: tanK; near: z.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma cos_atan x : cos (atan x) = (Num.sqrt (1 + x ^+ 2)) ^-1.
+Proof.
+have cos_gt0 : 0 < cos (atan x).
+  by apply: cos_gt0_pihalf;rewrite atan_gtNpi2 atan_ltpi2.
+have cosD0 : cos (atan x) != 0 by apply: lt0r_neq0.
+have /eqP : cos (atan x) ^+2 = (Num.sqrt (1 + x ^+ 2))^-2.
+  by rewrite -[LHS]invrK cos2_tan2 // atanK sqr_sqrtr // addr_ge0 // sqr_ge0.
+rewrite -exprVn eqf_sqr => /orP[] /eqP // cosE.
+move: cos_gt0; rewrite cosE ltNge; case/negP.
+by rewrite oppr_le0 invr_ge0 sqrtr_ge0.
+Qed.
+
+Global Instance is_derive1_atan (x : R) : is_derive x 1 atan (1 + x ^+ 2)^-1.
+Proof.
+rewrite -{1}[x]atanK.
+have cosD0 : cos (atan x) != 0.
+  apply/lt0r_neq0; apply: cos_gt0_pihalf.
+  by rewrite atan_gtNpi2 atan_ltpi2.
+have /near_in_interval aI : atan x \in `](-(pi/2)), (pi/2)[.
+  suff : -(pi/2) < atan x < pi/2 by [].
+  by rewrite atan_gtNpi2 atan_ltpi2.
+apply: (@is_derive_inverse R tan).
+- by near=> z; apply: tanK; near: z.
+- near=> z; apply: continuous_tan.
+  apply/lt0r_neq0; apply: cos_gt0_pihalf.
+  by near: z.
+- rewrite -[X in 1 + X ^+ 2]atanK -cos2_tan2 //.
+  by apply: is_derive_tan.
+apply: lt0r_neq0.
+apply: lt_le_trans (_ : 1 <= _) => //.
+by rewrite ler_addl sqr_ge0.
+Grab Existential Variables. all: end_near. Qed.
 
 End Atan.
 

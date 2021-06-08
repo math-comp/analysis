@@ -195,9 +195,92 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
+Section continuous.
+
+Variable R : realType.
+
+(* This two lemmas should be given by Yves *)
+Lemma continuous_inverse (f g : R -> R) x :  
+  (\forall z \near x, g (f z) = z)  ->
+  (\forall z \near x, {for z, continuous f})  ->
+  {for f x, continuous g}.
+Admitted.
+
+Lemma continuous_inverse_cor (f g : R -> R) x :  
+  (\forall z \near x, g (f z) = z)  ->
+  (\forall z \near x, {for z, continuous f})  ->
+  \forall y \near f x, f (g y) = y.
+Admitted.
+
+End continuous.
+
+(******************************************************************************)
+(* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
+(******************************************************************************)
+Ltac rcfE :=
+repeat (
+(let u := fresh "u" in
+set u := (@GRing.exp (fct_ringType _ _) _ _ _);
+move: @u; rewrite {1}/GRing.exp /=) ||
+(let u := fresh "u" in
+set u := (@GRing.scale (fct_ringType _ _) _ _ _);
+move: @u; rewrite {1}/GRing.scale /=) ||
+
+(let u := fresh "u" in
+set u := (@GRing.scale (fct_ringType _ _) _ _ _);
+move: @u; rewrite {1}/GRing.scale /=) ||
+(let u := fresh "u" in
+set u := (@GRing.add (fct_zmodType _ _) _ _ _);
+move: @u; rewrite {1}/+%R /=) ||
+(let u := fresh "u" in
+set u := (@GRing.mul (fct_ringType _ _) _ _ _);
+move: @u; rewrite {1}/*%R /=) ||
+(let u := fresh "u" in
+set u := (@GRing.opp (fct_ringType _ _) _ _);
+move: @u; rewrite {1}/-%R /=) ||
+(let u := fresh "u" in
+set u := (cst _ _);
+move: @u; rewrite {1}/cst/=) ||
+(let u := fresh "u" in
+set u := (@comp _ _ _ _ _);
+move: @u; rewrite {1}/comp /=) ).
+
 Section is_derive.
 
 Variable R : realType.
+
+(* Attempt to prove the diff of inverse *)
+
+Lemma is_derive1_caratheodory (f : R -> R) (x a : R) :
+  is_derive x 1 f a <-> 
+  exists g, [/\ forall z, f z - f x = g z * (z - x),
+        {for x, continuous g} & g x = a].
+Proof.
+split => [Hd|[g [fxE Cg gxE]]].
+  exists (fun z => if z == x then a else (f(z) - f(x)) / (z - x)); split.
+  - move=> z; case: eqP => [->|/eqP]; first by rewrite !subrr mulr0.
+    by rewrite -subr_eq0 => /divfK->.
+  - apply/continuous_withinNshiftx; rewrite eqxx /=.
+    pose g1 h := (h^-1 *: ((f \o shift x) h%:A - f x)).
+    have F1 : g1 @ nbhs' 0 --> a by case: Hd => H1 <-.
+    apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1; rcfE.
+    near=> i.
+    rewrite ifN; first by rewrite addrK mulrC /= [_%:A]mulr1.
+    rewrite -subr_eq0 addrK.
+    by near: i; rewrite near_withinE /= near_simpl; near=> x1.
+  by rewrite eqxx.
+suff Hf : h^-1 *: ((f \o shift x) h%:A - f x) @[h --> nbhs' 0] --> a.
+  have F1 : 'D_1 f x = a by apply: cvg_lim.
+  rewrite -F1 in Hf.
+    by constructor.
+  have F1 :  (g \o shift x) y @[y --> nbhs' 0] --> a.
+  by rewrite -gxE; apply/continuous_withinNshiftx.
+apply: cvg_trans F1; apply: near_eq_cvg.
+near=> y.
+rewrite /= fxE /= addrK [_%:A]mulr1.
+suff yNZ : y != 0 by rewrite [RHS]mulrC mulfK.
+by near: y; rewrite near_withinE /= near_simpl; near=> x1.
+Grab Existential Variables. all: end_near. Qed.
 
 Global Instance is_derive1_id (x : R) : is_derive x 1 id 1.
 Proof.
@@ -236,6 +319,35 @@ constructor; first by apply: derivableV => //; case: Df.
 by rewrite deriveV //; case: Df => _ ->.
 Qed.
 
+Lemma is_derive_inverse (f g : R ->R) l x :  
+  (\forall z \near x, g (f z) = z)  ->
+  (\forall z \near x, {for z, continuous f})  ->
+  is_derive x 1 f l -> l != 0 -> is_derive (f x) 1 g l^-1.
+Proof.
+move=> fgK fC fD lNZ.
+have /is_derive1_caratheodory [h [fE hC hxE]] := fD.
+(* There should be something simpler *)
+have gfxE :  g (f x) = x by have [d Hd]:= nbhs_ex fgK; apply: Hd.
+pose g1 y := if y == f x then (h (g y))^-1 
+             else (g y - g (f x)) / (y - f x).
+apply/is_derive1_caratheodory.
+exists g1; split; first 2 last.
+- by rewrite /g1 eqxx gfxE hxE.
+- move=> z; rewrite /g1; case: eqP => [->|/eqP]; first by rewrite !subrr mulr0.
+  by rewrite -subr_eq0 => /divfK.
+have F1 : (h (g x))^-1 @[x --> f x] --> g1 (f x).
+  rewrite /g1 eqxx; apply: continuousV; first by rewrite /= gfxE hxE.
+  by apply: continuous_comp; [apply: continuous_inverse | rewrite gfxE].
+apply: cvg_sub0 F1.
+apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
+near=> y; rewrite sub0r normrN; rcfE.
+have fgyE : f (g y) = y by near: y; apply: continuous_inverse_cor.
+rewrite /g1; case: eqP => [_|/eqP x1Dfx]; first by rewrite subrr normr0.
+have -> : y - f x  = h (g y) * (g y - x) by rewrite -fE fgyE.
+rewrite gfxE invfM mulrC divfK ?subrr ?normr0 // subr_eq0.
+by apply: contra x1Dfx => /eqP<-; apply/eqP.
+Grab Existential Variables. all: end_near. Qed.
+
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (f : R -> R) x x1 y1 :
   is_derive x 1 f x1 -> x1 = y1 -> is_derive x 1 f y1.
@@ -243,36 +355,6 @@ Proof. by move=> Hi <-. Qed.
 
 End is_derive.
 
-(******************************************************************************)
-(* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
-(******************************************************************************)
-Ltac rcfE :=
-repeat (
-(let u := fresh "u" in
-set u := (@GRing.exp (fct_ringType _ _) _ _ _);
-move: @u; rewrite {1}/GRing.exp /=) ||
-(let u := fresh "u" in
-set u := (@GRing.scale (fct_ringType _ _) _ _ _);
-move: @u; rewrite {1}/GRing.scale /=) ||
-
-(let u := fresh "u" in
-set u := (@GRing.scale (fct_ringType _ _) _ _ _);
-move: @u; rewrite {1}/GRing.scale /=) ||
-(let u := fresh "u" in
-set u := (@GRing.add (fct_zmodType _ _) _ _ _);
-move: @u; rewrite {1}/+%R /=) ||
-(let u := fresh "u" in
-set u := (@GRing.mul (fct_ringType _ _) _ _ _);
-move: @u; rewrite {1}/*%R /=) ||
-(let u := fresh "u" in
-set u := (@GRing.opp (fct_ringType _ _) _ _);
-move: @u; rewrite {1}/-%R /=) ||
-(let u := fresh "u" in
-set u := (cst _ _);
-move: @u; rewrite {1}/cst/=) ||
-(let u := fresh "u" in
-set u := (@comp _ _ _ _ _);
-move: @u; rewrite {1}/comp /=) ).
 
 Section TermDiff.
 
@@ -825,6 +907,21 @@ Lemma ln_gt0 x : 1 < x -> 0 < ln x.
 Proof.
 by move=> x_gt1; rewrite -ltr_expR expR0 lnK // qualifE (lt_trans _ x_gt1).
 Qed.
+
+Lemma continuous_ln x : 0 < x -> {for x, continuous ln}.
+Proof.
+move=> x_gt0; rewrite -[x]lnK//.
+apply: (@continuous_inverse R expR); near=> z; first by apply: expK.
+by apply: continuous_expR.
+Grab Existential Variables. all: end_near. Qed.
+
+Global Instance is_derive1_ln (x : R) : 0 < x -> is_derive x 1 ln x^-1.
+Proof.
+move=> x_gt0; rewrite -[x]lnK//.
+apply: (@is_derive_inverse R expR); first by near=> z; apply: expK.
+  by near=>z; apply: continuous_expR.
+by rewrite lnK // lt0r_neq0.
+Grab Existential Variables. all: end_near. Qed.
 
 End Ln.
 
