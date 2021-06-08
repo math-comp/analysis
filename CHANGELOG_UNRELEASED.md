@@ -21,6 +21,119 @@
   + lemma `eqe_absl`
   + lemma `lee_pmul`
   + lemmas `cover_restr`, `eqcover_r`
+  + lemmas `ge0_adde_def`, `onee_neq0`, `mule0`, `mul0e`
+  + lemmas `mulrEDr`, `mulrEDl`, `ge0_muleDr`, `ge0_muleDl`
+  + lemmas `ge0_sume_distrl`, `ge0_sume_distrr`
+  + lemmas `mulEFin`, `mule_neq0`, `mule_ge0`, `muleA`
+  + lemma `muleE`
+  + lemmas `muleN`, `mulNe`, `muleNN`, `gee_pmull`, `lee_mul01Pr`
+  + lemmas `lte_pdivr_mull`, `lte_pdivr_mulr`, `lte_pdivl_mull`, `lte_pdivl_mulr`,
+    `lte_ndivl_mulr`, `lte_ndivl_mull`, `lte_ndivr_mull`, `lte_ndivr_mulr`
+  + lemmas `lee_pdivr_mull`, `lee_pdivr_mulr`, `lee_pdivl_mull`, `lee_pdivl_mulr`,
+    `lee_ndivl_mulr`, `lee_ndivl_mull`, `lee_ndivr_mull`, `lee_ndivr_mulr`
+  + lemmas `mulrpinfty`, `mulrninfty`, `mulpinftyr`, `mulninftyr`, `mule_gt0`
+  + definition `mulrinfty`
+  + lemmas `mulN1e`, `muleN1`
+  + lemmas `mule_ninfty_pinfty`, `mule_pinfty_ninfty`, `mule_pinfty_pinfty`
+  + lemmas `mule_le0_ge0`, `mule_ge0_le0`, `pmule_rle0`, `pmule_lle0`,
+    `nmule_lle0`, `nmule_rle0`
+  + lemma `sube0`
+- in `normedtype.v`:
+  + lemma `mule_continuous`
+- in `cardinality.v`:
+  + definition `nat_of_pair`, lemma `nat_of_pair_inj`
+- in `topology.v`
+  + lemma `le_bigmax`
+- in `real.v`:
+  + lemmas `floor1`, `floor_neq0`
+- in `sequences.v`:
+  + lemmas `ereal_nondecreasing_opp`, `ereal_nondecreasing_is_cvg`, `ereal_nonincreasing_cvg`,
+    `ereal_nonincreasing_is_cvg`
+- in `normedtype.v`:
+  + lemmas `ereal_is_cvgN`, `ereal_cvgZr`, `ereal_is_cvgZr`, `ereal_cvgZl`, `ereal_is_cvgZl`,
+    `ereal_limZr`, `ereal_limZl`, `ereal_limN`
+- in `topology.v`:
+  + definition `monotonous`
+  + lemma `and_prop_in`
+  + lemmas `mem_inc_segment`, `mem_dec_segment`
+  + lemmas `ltr_distlC`, `ler_distlC`
+  + lemmas `subset_ball_prop_in_itv`, `subset_ball_prop_in_itvcc`
+- in `normedtype.v`:
+  + lemma `bound_itvE`
+  + lemmas `nearN`, `near_in_itv`
+  + lemmas `itvxx`, `itvxxP`, `subset_itv_oo_cc`
+  + lemma `at_right_in_segment`
+  + notations ``f @`[a, b]``, ``g @`]a , b[``
+  + lemmas `mono_mem_image_segment`, `mono_mem_image_itvoo`, `mono_surj_image_segment`,
+    `inc_segment_image`, `dec_segment_image`, `inc_surj_image_segment`, `dec_surj_image_segment`,
+    `inc_surj_image_segmentP`, `dec_surj_image_segmentP`, ``mono_surj_image_segmentP``
+- in `cardinality.v`:
+  + lemmas `surjectiveE`, `surj_image_eq`, `can_surjective`
+- file `realfun.v`:
+  + lemmas `itv_continuous_inj_le`, `itv_continuous_inj_ge`, `itv_continuous_inj_mono`
+  + lemmas `segment_continuous_inj_le`, `segment_continuous_inj_ge`,
+    `segment_can_le`, `segment_can_ge`, `segment_can_mono`
+  + lemmas `segment_continuous_surjective`, `segment_continuous_le_surjective`,
+    `segment_continuous_ge_surjective`
+  + lemmas `continuous_inj_image_segment`, `continuous_inj_image_segmentP`,
+    `segment_continuous_can_sym`, `segment_continuous_le_can_sym`, `segment_continuous_ge_can_sym`,
+    `segment_inc_surj_continuous`, `segment_dec_surj_continuous`, `segment_mono_surj_continuous`
+  + lemmas `segment_can_le_continuous`, `segment_can_ge_continuous`, `segment_can_continuous`
+  + lemmas `near_can_continuousAcan_sym`, `near_can_continuous`, `near_continuous_can_sym`
+  + lemmas `exp_continuous`, `sqr_continuous`, `sqrt_continuous`.
+  + lemma `dvg_harmonic`
+- new file `nsatz_realType`
+- new file `exp.v`
+  + definition `diffs`
+  + lemmas `diffsN`, `diffs_sumE`, `diffs_equiv`, `cvg_diffs_equiv`, `termdiffs`
+  + lemmas `expR0`, `expR_ge1Dx`, `exp_coeffE`, `expRE`
+  + instance `is_derive_expR`
+  + lemmas `derivable_expR`, `continuous_expR`, `expRxDyMexpx`, `expRxMexpNx_1`
+  + lemmas `pexpR_gt1`, `expR_gt0`, `expRN`, `expRD`, `expRMm`
+  + lemmas `expR_gt1`, `expR_lt1, `expRB`, `ltr_expR`, `ler_expR`, `expR_inj`,
+    `expR_total_gt1`, `expR_total`
+  + definition `ln`
+  + fact `ln0`
+  + lemmas `expK`, `lnK`, `ln1`, `lnM`, `ln_inj`, `lnV`, `ln_div`, `ltr_ln`, `ler_ln`, `lnX`
+  + lemmas `le_ln1Dx`, `ln_sublinear`, `ln_ge0`, `ln_gt0`
+  + definition `exp_fun`, notation `^
+  + lemmas `exp_fun_gt0`, `exp_funr1`, `exp_funr0`, `exp_fun1`, `ler_exp_fun`,
+    `exp_funD`, `exp_fun_inv`, `exp_fun_mulrn`
+  + definition `riemannR`, lemmas `riemannR_gt0`, `dvg_riemannR`
+- new file `trigo.v`
+  + definitions `periodic`, `alternating`
+  + lemmas `periodicn`, `alternatingn`
+  + definition `sin_coeff`
+  + lemmas `sin_coeffE`, `sin_coeff_even`, `is_cvg_series_sin_coeff`
+  + definition `sin`
+  + lemmas `sinE`
+  + definition `sin_coeff'`
+  + lemmas `sin_coeff'E`, `cvg_sin_coeff'`, `diffs_sin`, `series_sin_coeff0`
+  + lemma `sin0`
+  + definition `cos_coeff`
+  + lemmas `cos_ceff_2_0`, `cos_coeff_2_2`, `cos_coeff_2_4`, `cos_coeffE`, `is_cvg_series_cos_coeff`
+  + definition `cos`
+  + lemma `cosE`
+  + definition `cos_coeff'`
+  + lemmas `cos_coeff'E`, `cvg_cos_coeff'`, `diffs_cos`, `series_cos_coeff0`, `cos0`
+  + lemmas `is_derive_sin`, `derivable_sin`, `continuous_sin`, `is_derive_cos`, `derivable_cos`, `continuous_cos`
+  + lemmas `cos2Dsin2`, `cosD`, `sinN`, `sinB`
+  + definition `pi`
+  + lemmas `pihalfE`, `cos2_lt0`, `cos_exists`
+  + lemmas `pi_gt0`, `pi_ge0`
+  + lemmas `cos_inj`, `sin_inj`, `ltr_cos`, `ltr_sin`
+  + definition `tan`
+  + lemmas `tan0`, `tanpi`
+  + lemmas `tanN`, `tanD`, `tan_mulr2n`, `cos2_tan2`
+  + lemmas `tan_pihalf`, `tan_piquarter`, `tanDpi`, `continuous_tan`
+  + instance `is_derive_tan`
+  + lemmas `derivable_tan`, `ltr_tan`, `tan_inj`
+  + definition `acos`
+  + lemmas `acosK`, `cosK`
+  + definition `asin`
+  + lemmas `asinK`, `sinK`
+  + definition `atan`
+  + lemmas `atanK`, `tanK`
 
 ### Changed
 

@@ -22,6 +22,7 @@ theories/normedtype.v
 theories/realfun.v
 theories/sequences.v
 theories/exp.v
+theories/trigo.v
 theories/nsatz_realtype.v
 theories/cardinality.v
 theories/csum.v
