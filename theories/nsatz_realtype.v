@@ -1,14 +1,21 @@
 Require Import Nsatz.
-
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
 Require Import boolp reals ereal.
+
+(******************************************************************************)
+(*                           nsatz for realType                               *)
+(*                                                                            *)
+(* This file registers the ring corresponding to the MathComp-Analysis type   *)
+(* realType to the tactic nsatz of Coq. This enables some automation used for *)
+(* example in the file trigo.v.                                               *)
+(*                                                                            *)
+(* ref: https://coq.inria.fr/refman/addendum/nsatz.html                       *)
+(*                                                                            *)
+(******************************************************************************)
 
 Import GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
-(******************************************************************************)
-(* Just to have ring for realType                                             *)
-(******************************************************************************)
 
 Section Nsatz_realType.
 Variable T : realType.
