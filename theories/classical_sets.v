@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect ssralg matrix finmap.
+From mathcomp Require Import all_ssreflect ssralg matrix finmap order.
 Require Import boolp.
 
 (******************************************************************************)
@@ -66,6 +66,8 @@ Require Import boolp.
 (*                                P must be a set on a choiceType.            *)
 (*             fun_of_rel f0 f == function that maps x to an element of f x   *)
 (*                                if there is one, to f0 x otherwise.         *)
+(*                    F `#` G <-> intersections beween elements of F an G are *)
+(*                                all non empty.                              *)
 (*                                                                            *)
 (* * Pointed types:                                                           *)
 (*                 pointedType == interface type for types equipped with a    *)
@@ -144,6 +146,7 @@ Reserved Notation "\bigcap_ ( i : T ) F"
 Reserved Notation "\bigcap_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \bigcap_ i '/  '  F ']'").
+Reserved Notation "A `<` B" (at level 70, no associativity).
 Reserved Notation "A `<=` B" (at level 70, no associativity).
 Reserved Notation "A `<=>` B" (at level 70, no associativity).
 Reserved Notation "f @^-1` A" (at level 24).
@@ -185,7 +188,10 @@ Bind Scope classical_set_scope with set.
 Local Open Scope classical_set_scope.
 Delimit Scope classical_set_scope with classic.
 
-Notation "[ 'set' x : T | P ]" := ((fun x => P) : set T) : classical_set_scope.
+Definition mkset {T} (P : T -> Prop) : set T := P.
+Arguments mkset _ _ _ /.
+
+Notation "[ 'set' x : T | P ]" := (mkset (fun x : T => P)) : classical_set_scope.
 Notation "[ 'set' x | P ]" := [set x : _ | P] : classical_set_scope.
 Notation "[ 'set' E | x 'in' A ]" :=
   [set y | exists2 x, A x & E = y] : classical_set_scope.
@@ -243,15 +249,25 @@ Notation "\bigcap_ ( i : T ) F" :=
 Notation "\bigcap_ i F" := (\bigcap_(i : _) F) : classical_set_scope.
 
 Definition subset {A} (X Y : set A) := forall a, X a -> Y a.
-
 Notation "A `<=` B" := (subset A B) : classical_set_scope.
+
+Definition proper {A} (X Y : set A) := X `<=` Y /\ ~ (Y `<=` X).
+Notation "A `<` B" := (proper A B) : classical_set_scope.
+
 Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) : classical_set_scope.
 Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
 Notation "f @` A" := (image f A) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) : classical_set_scope.
 
-Lemma eqEsubset T (F G : set T) : F `<=` G -> G `<=` F -> F = G.
-Proof. by move=> H K; rewrite funeqE=> s; rewrite propeqE; split=> [/H|/K]. Qed.
+Lemma eqEsubset T (F G : set T) : (F = G) = (F `<=` G /\ G `<=` F).
+Proof.
+rewrite propeqE; split => [->|[FG GF]]; [by split|].
+by rewrite predeqE => t; split=> [/FG|/GF].
+Qed.
+
+Lemma eq_set T (P Q : T -> Prop): (forall x : T, P x = Q x) ->
+  [set x | P x] = [set x | Q x].
+Proof. by move=> /funext->. Qed.
 
 Lemma sub0set T (X : set T) : set0 `<=` X.
 Proof. by []. Qed.
@@ -289,12 +305,13 @@ Lemma setDv T (A : set T) : A `\` A = set0.
 Proof. by rewrite predeqE => t; split => // -[]. Qed.
 
 Lemma subset0 T (X : set T) : (X `<=` set0) = (X = set0).
-Proof. rewrite propeqE; split => [?|-> //]; exact/eqEsubset. Qed.
+Proof. by rewrite eqEsubset propeqE; split => [X0|[]//]; split. Qed.
 
 Lemma set0P T (X : set T) : (X != set0) <-> (X !=set0).
 Proof.
 split=> [/negP X_neq0|[t tX]]; last by apply/negP => /eqP X0; rewrite X0 in tX.
-by apply: contrapT => /asboolPn/forallp_asboolPn X0; apply/X_neq0/eqP/eqEsubset.
+apply: contrapT => /asboolPn/forallp_asboolPn X0; apply/X_neq0/eqP.
+by rewrite eqEsubset; split.
 Qed.
 
 Lemma imageP {A B} (f : A -> B) (X : set A) a : X a -> (f @` X) (f a).
@@ -307,25 +324,26 @@ by move=> f_inj; rewrite propeqE; split => [[b Xb /f_inj <-]|/(imageP f)//].
 Qed.
 Arguments image_inj {A B} [f X a].
 
-Lemma image_comp T U V (f : T -> U) (g : U -> V) A : g @` (f @` A) = (g \o f) @` A.
+Lemma image_comp T U V (f : T -> U) (g : U -> V) A :
+  g @` (f @` A) = (g \o f) @` A.
 Proof.
-apply eqEsubset => c.
+rewrite eqEsubset; split => x.
 - by case => b [] a Xa <- <-; apply/imageP.
 - by case => a Xa <-; apply/imageP/imageP.
 Qed.
 
 Lemma image_id T (A : set T) : id @` A = A.
-Proof. by apply eqEsubset => a; [case=> /= x Xx <-|exists a]. Qed.
+Proof. by rewrite eqEsubset; split => a; [case=> /= x Xx <-|exists a]. Qed.
 
 Lemma image_setU T U (f : T -> U) A B : f @` (A `|` B) = f @` A `|` f @` B.
 Proof.
-apply eqEsubset => b.
+rewrite eqEsubset; split => b.
 - by case=> a [] Ha <-; [left | right]; apply imageP.
 - by case=> -[] a Ha <-; apply imageP; [left | right].
 Qed.
 
 Lemma image_set0 T U (f : T -> U) : f @` set0 = set0.
-Proof. by apply eqEsubset => b // -[]. Qed.
+Proof. by rewrite eqEsubset; split => b // -[]. Qed.
 
 Lemma image_set0_set0 T U (A : set T) (f : T -> U) : f @` A = set0 -> A = set0.
 Proof.
@@ -334,12 +352,12 @@ by have : set0 (f t) by rewrite -fA0; exists t.
 Qed.
 
 Lemma image_set1 T U (f : T -> U) (t : T) : f @` [set t] = [set f t].
-Proof. by apply eqEsubset => b; [case=> a' -> <- | move->; apply imageP]. Qed.
+Proof. by rewrite eqEsubset; split => [b [a' -> <-] //|b ->]; exact/imageP. Qed.
 
 Lemma subset_set1 T (A : set T) a : A `<=` [set a] -> A = set0 \/ A = [set a].
 Proof.
 move=> Aa; have [|/set0P/negP/negPn/eqP->] := pselect (A !=set0); [|by left].
-by case=> t At; right; apply: eqEsubset => // ? ->; rewrite -(Aa _ At).
+by case=> t At; right; rewrite eqEsubset; split => // ? ->; rewrite -(Aa _ At).
 Qed.
 
 Lemma sub_image_setI {A B} (f : A -> B) (X Y : set A) :
@@ -374,12 +392,17 @@ Lemma image_preimage A B (f : A -> B) (X : set B) :
 Proof.
 move=> fsurj; rewrite predeqE => x; split; first by move=> [?? <-].
 move=> Xx; have : setT x by [].
-by rewrite -fsurj => - [y _ fy_eqx]; exists y => //; rewrite /preimage fy_eqx.
+rewrite -fsurj => - [y _ fy_eqx]; exists y => //.
+by rewrite /preimage/= fy_eqx.
 Qed.
 
 Lemma preimage_setU {A B} (f : A -> B) (X Y : set B) :
   f @^-1` (X `|` Y) = f @^-1` X `|` f @^-1` Y.
 Proof. by rewrite predeqE. Qed.
+
+Lemma bigcup_sup A I j (P : set I) (F : I -> set A) :
+  P j -> F j `<=` \bigcup_(i in P) F i.
+Proof. by move=> Pj a Fja; exists j. Qed.
 
 Lemma preimage_bigcup {A B I} (P : set I) (f : A -> B) F :
   f @^-1` (\bigcup_ (i in P) F i) = \bigcup_(i in P) (f @^-1` F i).
@@ -401,7 +424,7 @@ Lemma preimage_subset A B (f : A -> B) (X Y : set B) :
   X `<=` Y -> f @^-1` X `<=` f @^-1` Y.
 Proof. by move=> XY a /XY. Qed.
 
-Lemma subset_empty {A} (X Y : set A) : X `<=` Y -> X !=set0 -> Y !=set0.
+Lemma subset_nonempty {A} (X Y : set A) : X `<=` Y -> X !=set0 -> Y !=set0.
 Proof. by move=> sXY [x Xx]; exists x; apply: sXY. Qed.
 
 Lemma subset_trans {A} (Y X Z : set A) : X `<=` Y -> Y `<=` Z -> X `<=` Z.
@@ -465,7 +488,14 @@ rewrite propeqE; split=> [XDY0 a|sXY].
 by rewrite predeqE => ?; split=> // - [?]; apply; apply: sXY.
 Qed.
 
-Lemma nonsubset {A} (X Y:set A): ~ (X `<=` Y) -> X `&` ~` Y !=set0.
+Lemma properEneq {A} (X Y : set A) : (X `<` Y) = (X != Y /\ X `<=` Y).
+Proof.
+rewrite /proper andC propeqE; split => [[YX XY]|[/eqP]].
+by split => //; apply/negP; apply: contra_not YX => /eqP ->.
+by rewrite eqEsubset => XY YX; split => //; exact: contra_not XY.
+Qed.
+
+Lemma nonsubset {A} (X Y : set A) : ~ (X `<=` Y) -> X `&` ~` Y !=set0.
 Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
 
 Lemma setIC {A} (X Y : set A) : X `&` Y = Y `&` X.
@@ -524,13 +554,13 @@ Lemma setIIr T (A B C : set T) : A `&` (B `&` C) = (A `&` B) `&` (A `&` C).
 Proof. by rewrite !(setIC A) setIIl. Qed.
 
 Lemma setUA A : associative (@setU A).
-Proof. move=> p q r; rewrite /setU predeqE => a; tauto. Qed.
+Proof. move=> p q r; rewrite /setU/mkset predeqE => a; tauto. Qed.
 
 Lemma setUid A : idempotent (@setU A).
-Proof. move=> p; rewrite /setU predeqE => a; tauto. Qed.
+Proof. move=> p; rewrite /setU/mkset predeqE => a; tauto. Qed.
 
 Lemma setUC A : commutative (@setU A).
-Proof. move=> p q; rewrite /setU predeqE => a; tauto. Qed.
+Proof. move=> p q; rewrite /setU/mkset predeqE => a; tauto. Qed.
 
 Lemma set0U T (X : set T) : set0 `|` X = X.
 Proof. by rewrite predeqE => t; split; [case|right]. Qed.
@@ -603,8 +633,19 @@ by move=> [[Xt|Zt] [Yt|Zt']]; by [left|right].
 Qed.
 
 Lemma setUIr T : right_distributive (@setU T) (@setI T).
-move.
 Proof. by move=> X Y Z; rewrite ![X `|` _]setUC setUIl. Qed.
+
+Lemma setUK T (A B : set T) : (A `|` B) `&` A = A.
+Proof. by rewrite eqEsubset; split => [t []//|t ?]; split => //; left. Qed.
+
+Lemma setKU T (A B : set T) : A `&` (B `|` A) = A.
+Proof. by rewrite eqEsubset; split => [t []//|t ?]; split => //; right. Qed.
+
+Lemma setIK T (A B : set T) : (A `&` B) `|` A = A.
+Proof. by rewrite eqEsubset; split => [t [[]//|//]|t At]; right. Qed.
+
+Lemma setKI T (A B : set T) : A `|` (B `&` A) = A.
+Proof. by rewrite eqEsubset; split => [t [//|[]//]|t At]; left. Qed.
 
 Lemma setDUl T (A B C : set T) : (A `|` B) `\` C = (A `\` C) `|` (B `\` C).
 Proof. by rewrite !setDE setIUl. Qed.
@@ -616,10 +657,10 @@ Lemma setDD T (A B : set T) : A `\` (A `\` B) = A `&` B.
 Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
 
 Lemma bigcup_set0 T U (X : U -> set T) : \bigcup_(i in set0) X i = set0.
-Proof. by apply eqEsubset => a // []. Qed.
+Proof. by rewrite eqEsubset; split => a // []. Qed.
 
 Lemma bigcup_set1 T V (U : V -> set T) v : \bigcup_(i in [set v]) U i = U v.
-Proof. by apply: eqEsubset => ? => [[] ? -> //|]; exists v. Qed.
+Proof. by rewrite eqEsubset; split => ? => [[] ? -> //|]; exists v. Qed.
 
 Lemma bigcapCU T I (U : I -> set T) E :
   \bigcap_(i in E) (U i) = ~` (\bigcup_(i in E) (~` U i)).
@@ -652,7 +693,8 @@ CoInductive xget_spec {T : choiceType} x0 (P : set T) : T -> Prop -> Type :=
 | XGetSome x of x = xget x0 P & P x : xget_spec x0 P x True
 | XGetNone of (forall x, ~ P x) : xget_spec x0 P x0 False.
 
-Lemma xgetP {T : choiceType} x0 (P : set T) : xget_spec x0 P (xget x0 P) (P (xget x0 P)).
+Lemma xgetP {T : choiceType} x0 (P : set T) :
+  xget_spec x0 P (xget x0 P) (P (xget x0 P)).
 Proof.
 move: (erefl (xget x0 P)); set y := {2}(xget x0 P).
 rewrite /xget; case: pselect => /= [?|neqP _].
@@ -675,7 +717,8 @@ Lemma xget_unique  {T : choiceType} x0 (P : set T) (x : T) :
   P x -> (forall y, P y -> y = x) -> xget x0 P = x.
 Proof. by move=> /xget_subset1 gPx eqx; apply: gPx=> y z /eqx-> /eqx. Qed.
 
-Lemma xgetPN {T : choiceType} x0 (P : set T) : (forall x, ~ P x) -> xget x0 P = x0.
+Lemma xgetPN {T : choiceType} x0 (P : set T) :
+  (forall x, ~ P x) -> xget x0 P = x0.
 Proof. by case: xgetP => // x _ Px /(_ x). Qed.
 
 Definition fun_of_rel {A} {B : choiceType} (f0 : A -> B) (f : A -> B -> Prop) :=
@@ -685,9 +728,10 @@ Lemma fun_of_relP {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
   f a !=set0 -> f a (fun_of_rel f0 f a).
 Proof. by move=> [b fab]; rewrite /fun_of_rel; apply: xgetI fab. Qed.
 
-Lemma fun_of_rel_uniq {A} {B : choiceType} (f : A -> B -> Prop) (f0 : A -> B) a :
+Lemma fun_of_rel_uniq {A} {B : choiceType}
+    (f : A -> B -> Prop) (f0 : A -> B) a :
   is_subset1 (f a) -> forall b, f a b ->  fun_of_rel f0 f a = b.
-Proof. by move=> fa_prop b /xget_subset1 xgeteq; rewrite /fun_of_rel xgeteq. Qed.
+Proof. by move=> fa1 b /xget_subset1 xgeteq; rewrite /fun_of_rel xgeteq. Qed.
 
 Section SetMonoids.
 Variable (T : Type).
@@ -723,6 +767,13 @@ rewrite predeqE => t; split => [[Xt [k _ Akt]]|[k _ [Xt Akt]]];
   by [exists k |split => //; exists k].
 Qed.
 
+Lemma bigcup_distrl T (A : nat -> set T) X :
+  \bigcup_i A i `&` X = \bigcup_i (A i `&` X).
+Proof.
+by rewrite predeqE => t; split => [[[n _ Ant Xt]]|[n _ [Ant Xt]]];
+  [exists n|split => //; exists n].
+Qed.
+
 Lemma bigcup_ord T n (A : nat -> set T) :
  \big[setU/set0]_(i < n) A i = \bigcup_(i in [set k | (k < n)%N]) A i.
 Proof.
@@ -735,7 +786,8 @@ Qed.
 Lemma subset_bigsetU T m n (U : nat -> set T) : (m <= n)%N ->
   \big[setU/set0]_(i < m) U i `<=` \big[setU/set0]_(i < n) U i.
 Proof.
-by rewrite !bigcup_ord => mn x [i im ?]; exists i => //; rewrite (leq_trans im).
+rewrite !bigcup_ord => mn x [i im ?]; exists i => //.
+by rewrite /mkset (leq_trans im).
 Qed.
 
 Lemma bigcap_ord T n (A : nat -> set T) :
@@ -746,6 +798,20 @@ rewrite big_ord_recl /= (IHn (fun i => A i.+1)) predeqE => x; split.
   by move=> [A0 AS] [|i]// /AS.
 by move=> AP; split => [|i i_lt]; apply: AP.
 Qed.
+
+Definition trivIset T (A : nat -> set T) :=
+  forall i j, i != j -> A i `&` A j = set0.
+
+Lemma trivIset_bigUI T (A : nat -> set T) : trivIset A ->
+  forall n m, n <= m -> \big[setU/set0]_(i < n) A i `&` A m = set0.
+Proof.
+move=> tA; elim => [|n ih m]; first by move=> m _; rewrite big_ord0 set0I.
+by rewrite ltn_neqAle => /andP[? ?]; rewrite big_ord_recr setIUl tA ?setU0 ?ih.
+Qed.
+
+Lemma trivIset_setI T (A : nat -> set T) : trivIset A ->
+  forall X, trivIset (fun n => X `&` A n).
+Proof. by move=> tA X j i /tA; apply: subsetI_eq0; apply subIset; right. Qed.
 
 Module Pointed.
 
@@ -804,7 +870,8 @@ Canonical arrow_pointedType (T : Type) (T' : pointedType) :=
   PointedType (T -> T') (fun=> point).
 
 Definition dep_arrow_pointedType (T : Type) (T' : T -> pointedType) :=
-  Pointed.Pack (Pointed.Class (dep_arrow_choiceClass T') (fun i => @point (T' i))).
+  Pointed.Pack
+   (Pointed.Class (dep_arrow_choiceClass T') (fun i => @point (T' i))).
 
 Canonical bool_pointedType := PointedType bool false.
 Canonical Prop_pointedType := PointedType Prop False.
@@ -1136,3 +1203,136 @@ exists n.+1; split => // m Em; case/existsNP : En => k /not_implyP[Ek /negP].
 rewrite -Order.TotalTheory.ltNge => kn.
 by rewrite (Order.POrderTheory.le_trans _ (Em _ Ek)).
 Qed.
+
+(** ** Intersection of classes of set *)
+
+Definition meets T (F G : set (set T)) :=
+  forall A B, F A -> G B -> A `&` B !=set0.
+
+Reserved Notation "A `#` B"
+ (at level 48, left associativity, format "A  `#`  B").
+
+Notation "F `#` G" := (meets F G) : classical_set_scope.
+
+Section meets.
+
+Lemma meetsC T (F G : set (set T)) : F `#` G = G `#` F.
+Proof.
+gen have sFG : F G / F `#` G -> G `#` F.
+  by move=> FG B A => /FG; rewrite setIC; apply.
+by rewrite propeqE; split; apply: sFG.
+Qed.
+
+Lemma sub_meets T (F F' G G' : set (set T)) :
+  F `<=` F' -> G `<=` G' -> F' `#` G' -> F `#` G.
+Proof. by move=> sF sG FG A B /sF FA /sG GB; apply: (FG A B). Qed.
+
+Lemma meetsSr T (F G G' : set (set T)) :
+  G `<=` G' -> F `#` G' -> F `#` G.
+Proof. exact: sub_meets. Qed.
+
+Lemma meetsSl T (G F F' : set (set T)) :
+  F `<=` F' -> F' `#` G -> F `#` G.
+Proof. by move=> /sub_meets; apply. Qed.
+
+End meets.
+
+Fact set_display : unit. Proof. by []. Qed.
+
+Module SetOrder.
+Module Internal.
+Section SetOrder.
+
+Context {T : Type}.
+Implicit Types X Y : set T.
+
+Lemma le_def X Y : `[< X `<=` Y >] = (X `&` Y == X).
+Proof. by apply/asboolP/eqP; rewrite setIidPl. Qed.
+
+Lemma lt_def X Y : `[< X `<` Y >] = (Y != X) && `[< X `<=` Y >].
+Proof.
+apply/idP/idP => [/asboolP|/andP[YX /asboolP XY]]; rewrite properEneq eq_sym;
+  by [move=> [] -> /asboolP|apply/asboolP].
+Qed.
+
+Fact SetOrder_joinKI (Y X : set T) : X `&` (X `|` Y) = X.
+Proof. by rewrite setUC setKU. Qed.
+
+Fact SetOrder_meetKU (Y X : set T) : X `|` (X `&` Y) = X.
+Proof. by rewrite setIC setKI. Qed.
+
+Definition orderMixin := @MeetJoinMixin _ _ (fun X Y => `[<proper X Y>]) setI
+  setU le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _) SetOrder_joinKI
+  SetOrder_meetKU (@setIUl _) setIid.
+
+Local Canonical porderType := POrderType set_display (set T) orderMixin.
+Local Canonical latticeType := LatticeType (set T) orderMixin.
+Local Canonical distrLatticeType := DistrLatticeType (set T) orderMixin.
+
+Fact SetOrder_sub0set (x : set T) : (set0 <= x)%O.
+Proof. by apply/asboolP; apply: sub0set. Qed.
+
+Fact SetOrder_setTsub (x : set T) : (x <= setT)%O.
+Proof. exact/asboolP. Qed.
+
+Local Canonical bLatticeType :=
+  BLatticeType (set T) (Order.BLattice.Mixin  SetOrder_sub0set).
+Local Canonical tbLatticeType :=
+  TBLatticeType (set T) (Order.TBLattice.Mixin SetOrder_setTsub).
+Local Canonical bDistrLatticeType := [bDistrLatticeType of set T].
+Local Canonical tbDistrLatticeType := [tbDistrLatticeType of set T].
+
+Lemma subKI X Y : Y `&` (X `\` Y) = set0.
+Proof. by rewrite setDE setICA setICr setI0. Qed.
+
+Lemma joinIB X Y : (X `&` Y) `|` X `\` Y = X.
+Proof. by rewrite setDE -setIUr setUCr setIT. Qed.
+
+Local Canonical cbDistrLatticeType := CBDistrLatticeType (set T)
+  (@CBDistrLatticeMixin _ _ (fun X Y => X `\` Y) subKI joinIB).
+
+Local Canonical ctbDistrLatticeType := CTBDistrLatticeType (set T)
+  (@CTBDistrLatticeMixin _ _ _ (fun X => ~` X) (fun x => esym (setTD x))).
+
+End SetOrder.
+End Internal.
+
+Module Exports.
+
+Canonical Internal.porderType.
+Canonical Internal.latticeType.
+Canonical Internal.distrLatticeType.
+Canonical Internal.bLatticeType.
+Canonical Internal.tbLatticeType.
+Canonical Internal.bDistrLatticeType.
+Canonical Internal.tbDistrLatticeType.
+Canonical Internal.cbDistrLatticeType.
+Canonical Internal.ctbDistrLatticeType.
+
+Lemma subsetEset {T} (X Y : set T) : (X <= Y)%O = (X `<=` Y) :> Prop.
+Proof. by rewrite asboolE. Qed.
+
+Lemma properEset  {T} (X Y : set T) : (X < Y)%O = (X `<` Y) :> Prop.
+Proof. by rewrite asboolE. Qed.
+
+Lemma subEset {T} (X Y : set T) : (X `\` Y)%O = (X `\` Y). Proof. by []. Qed.
+
+Lemma complEset {T} (X Y : set T) : (~` X)%O = ~` X. Proof. by []. Qed.
+
+Lemma botEset {T} (X Y : set T) : 0%O = @set0 T. Proof. by []. Qed.
+
+Lemma topEset {T} (X Y : set T) : 1%O = @setT T. Proof. by []. Qed.
+
+Lemma meetEset {T} (X Y : set T) : (X `&` Y)%O = (X `&` Y). Proof. by []. Qed.
+
+Lemma joinEset {T} (X Y : set T) : (X `|` Y)%O = (X `|` Y). Proof. by []. Qed.
+
+Lemma subsetPset {T} (X Y : set T) : reflect (X `<=` Y) (X <= Y)%O.
+Proof. by apply: (iffP idP); rewrite subsetEset. Qed.
+
+Lemma properPset {T} (X Y : set T) : reflect (X `<` Y) (X < Y)%O.
+Proof. by apply: (iffP idP); rewrite properEset. Qed.
+
+End Exports.
+End SetOrder.
+Export SetOrder.Exports.

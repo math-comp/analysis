@@ -27,6 +27,78 @@ Delimit Scope real_scope with real.
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 
+Section subr_image.
+Variable R : numDomainType.
+Implicit Types E : set R.
+Implicit Types x : R.
+
+Lemma setNK : involutive (fun E => -%R @` E).
+Proof.
+move=> F; rewrite predeqE => y; split => [|Fy].
+  by case=> z -[u xu <-{z} <-{y}]; rewrite opprK.
+by exists (- y); rewrite ?opprK //; exists y.
+Qed.
+
+Lemma memNE E x : E x = (-%R @` E) (- x).
+Proof.
+rewrite propeqE; split => [Ex|[y Ey]]; [by exists x|].
+by move/eqP; rewrite eqr_opp => /eqP <-.
+Qed.
+
+Lemma lb_ubN E x : lbound E x <-> ubound (-%R @` E) (- x).
+Proof.
+split=> [/lbP xlbE|/ubP xlbE].
+by apply/ubP=> y [z Ez <-{y}]; rewrite ler_oppr opprK; apply xlbE.
+by apply/lbP => y Ey; rewrite -(opprK x) ler_oppl; apply xlbE; exists y.
+Qed.
+
+Lemma ub_lbN E x : ubound E x <-> lbound (-%R @` E) (- x).
+Proof.
+split=> [? | /lb_ubN].
+by apply/lb_ubN; rewrite opprK setNK.
+by rewrite opprK setNK.
+Qed.
+
+Lemma nonemptyN E : nonempty (-%R @` E) <-> nonempty E.
+Proof.
+split=> [[x ENx]|[x Ex]]; exists (- x); last by rewrite -memNE.
+by rewrite memNE opprK.
+Qed.
+
+Lemma has_lb_ubN E : has_lbound E <-> has_ubound (-%R @` E).
+Proof.
+by split=> [[x /lb_ubN] | [x /ub_lbN]]; [|rewrite setNK]; exists (- x).
+Qed.
+
+End subr_image.
+
+Section has_bound_lemmas.
+Variable R : realDomainType.
+Implicit Types E : set R.
+Implicit Types x : R.
+
+Lemma has_ubPn {E} : ~ has_ubound E <-> (forall x, exists2 y, E y & x < y).
+Proof.
+split; last first.
+  move=> h [x] /ubP hle; case/(_ x): h => y /hle.
+  by rewrite leNgt => /negbTE ->.
+move/forallNP => h x; have {h} := h x.
+move=> /ubP /existsNP => -[y /not_implyP[Ey /negP]].
+by rewrite -ltNge => ltx; exists y.
+Qed.
+
+Lemma has_lbPn E : ~ has_lbound E <-> (forall x, exists2 y, E y & y < x).
+Proof.
+split=> [/has_lb_ubN /has_ubPn NEnub x|Enlb /has_lb_ubN].
+  have [y ENy ltxy] := NEnub (- x); exists (- y); rewrite 1?ltr_oppl //.
+  by case: ENy => z Ez <-; rewrite opprK.
+apply/has_ubPn => x; have [y Ey ltyx] := Enlb (- x).
+exists (- y); last by rewrite ltr_oppr.
+by exists y => //; rewrite opprK.
+Qed.
+
+End has_bound_lemmas.
+
 (* -------------------------------------------------------------------- *)
 Module Real.
 Section Mixin.
@@ -321,16 +393,6 @@ rewrite -(ler_add2r y) -Dz -mulr2n -[X in X<=_]mulr_natl.
 by rewrite ler_pmul2l ?ltr0Sn.
 Qed.
 
-Lemma has_ubPn {E} : ~ has_ubound E <-> (forall x, exists2 y, E y & x < y).
-Proof.
-split; last first.
-  move=> h [x] /ubP hle; case/(_ x): h => y /hle.
-  by rewrite leNgt => /negbTE ->.
-move/forallNP => h x; have {h} := h x.
-move=> /ubP /existsNP => -[y /not_implyP[Ey /negP]].
-by rewrite -ltNge => ltx; exists y.
-Qed.
-
 Lemma has_supPn {E} : E !=set0 ->
   ~ has_sup E <-> (forall x, exists2 y, E y & x < y).
 Proof.
@@ -347,39 +409,6 @@ Variables (R : realType).
 
 Implicit Types E : set R.
 Implicit Types x : R.
-
-Lemma setNK : involutive (fun E : set R => -%R @` E).
-Proof.
-move=> F; rewrite predeqE => y; split => [|Fy].
-  by case=> z -[u xu <-{z} <-{y}]; rewrite opprK.
-by exists (- y); rewrite ?opprK //; exists y.
-Qed.
-
-Lemma memNE E x : E x = (-%R @` E) (- x).
-Proof.
-rewrite propeqE; split => [Ex|[y Ey]]; [by exists x|].
-by move/eqP; rewrite eqr_opp => /eqP <-.
-Qed.
-
-Lemma lb_ubN E x : lbound E x <-> ubound (-%R @` E) (- x).
-Proof.
-split=> [/lbP xlbE|/ubP xlbE].
-by apply/ubP=> y [z Ez <-{y}]; rewrite ler_oppr opprK; apply xlbE.
-by apply/lbP => y Ey; rewrite -(opprK x) ler_oppl; apply xlbE; exists y.
-Qed.
-
-Lemma ub_lbN E x : ubound E x <-> lbound (-%R @` E) (- x).
-Proof.
-split=> [? | /lb_ubN].
-by apply/lb_ubN; rewrite opprK setNK.
-by rewrite opprK setNK.
-Qed.
-
-Lemma nonemptyN E : nonempty (-%R @` E) <-> nonempty E.
-Proof.
-split=> [[x ENx]|[x Ex]]; exists (- x); last by rewrite -memNE.
-by rewrite memNE opprK.
-Qed.
 
 Lemma has_inf_supN E : has_inf E <-> has_sup (-%R @` E).
 Proof.
@@ -408,27 +437,12 @@ move=> ninfE; rewrite -oppr0 -(@sup_out _ (-%R @` E)) => // supNE; apply: ninfE.
 exact/has_inf_supN.
 Qed.
 
-Lemma has_lb_ubN E : has_lbound E <-> has_ubound (-%R @` E).
-Proof.
-by split=> [[x /lb_ubN] | [x /ub_lbN]]; [|rewrite setNK]; exists (- x).
-Qed.
-
 Lemma inf_lb E : has_lbound E -> (lbound E) (inf E).
 Proof. by move/has_lb_ubN/sup_ub/ub_lbN; rewrite setNK. Qed.
 
 Lemma lb_le_inf E x : nonempty E -> (lbound E) x -> x <= inf E.
 Proof.
 by move=> /(nonemptyN E) En0 /lb_ubN /(sup_le_ub En0); rewrite ler_oppr.
-Qed.
-
-Lemma has_lbPn E : ~ has_lbound E <-> (forall x, exists2 y, E y & y < x).
-Proof.
-split=> [/has_lb_ubN /has_ubPn NEnub x|Enlb /has_lb_ubN].
-  have [y ENy ltxy] := NEnub (- x); exists (- y); rewrite 1?ltr_oppl //.
-  by case: ENy => z Ez <-; rewrite opprK.
-apply/has_ubPn => x; have [y Ey ltyx] := Enlb (- x).
-exists (- y); last by rewrite ltr_oppr.
-by exists y => //; rewrite opprK.
 Qed.
 
 Lemma has_infPn E : nonempty E ->
@@ -449,7 +463,7 @@ Implicit Types x y : R.
 Lemma has_sup_floor_set x : has_sup (floor_set x).
 Proof.
 split; [exists (- (Num.bound (-x))%:~R) | exists (Num.bound x)%:~R].
-  rewrite /floor_set rpredN rpred_int /= ler_oppl.
+  rewrite /floor_set/mkset rpredN rpred_int /= ler_oppl.
   case: (ger0P (-x)) => [/archi_boundP/ltW//|].
   by move/ltW/le_trans; apply; rewrite ler0z.
 apply/ubP=> y /andP[_] /le_trans; apply.
@@ -483,7 +497,7 @@ Proof. by rewrite /ifloor RtointK ?isint_floor. Qed.
 
 Lemma mem_rg1_floor (x : R) : (range1 (floor x)) x.
 Proof.
-rewrite /range1.
+rewrite /range1/mkset.
 have /andP[_ ->] /= := sup_in_floor_set x.
 have [|] := pselect ((floor_set x) (floor x + 1)); last first.
   rewrite /floor_set => /negP.
@@ -509,14 +523,14 @@ exact/(le_lt_trans m1x).
 Qed.
 
 Lemma range1rr (x : R) : (range1 x) x.
-Proof. by rewrite /range1 lexx /= ltr_addl ltr01. Qed.
+Proof. by rewrite /range1/mkset lexx /= ltr_addl ltr01. Qed.
 
 Lemma range1zP (m : int) (x : R) :
   floor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
 split=> [<-|h]; first exact/mem_rg1_floor.
 apply/eqP; rewrite floorE eqr_int; apply/eqP/(@range1z_inj x) => //.
-by rewrite /range1 -floorE mem_rg1_floor.
+by rewrite /range1/mkset -floorE mem_rg1_floor.
 Qed.
 
 Lemma floor_natz (x : int) : floor x%:~R = x%:~R :> R.

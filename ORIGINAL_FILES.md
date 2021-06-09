@@ -6,8 +6,8 @@ This description corresponds to the first releases.
 
 - `posnum.v`
 - `classical_set.v`
-- `topology.v`
-- `normedtype.v`
+- `topology.v` (with uniform space (now renamed pseudo metric space) and complete space inspired from Coquelicot's `hierarchy.v`)
+- `normedtype.v` (with normed and complete normed spaces inspired from Coquelicot's `hierarchy.v`)
 - `landau.v`
 - `derive.v`
 - `README.md`
@@ -19,18 +19,18 @@ This description corresponds to the first releases.
 - `Licence_CeCILL-C_V1-en.txt`
 
 ## Files from the former library coq-alternate-reals are now here and should be merged at some point:
-- boolp.v
-- dedekind.v
-- discrete.v
-- distr.v
-- reals.v
-- realseq.v
-- realsum.v
-- xfinmap.v
-- xsets.v
+- `boolp.v`
+- `dedekind.v`
+- `discrete.v`
+- `distr.v`
+- `reals.v`
+- `realseq.v`
+- `realsum.v`
+- `xfinmap.v`
+- `xsets.v`
 
 ## Files modified from Coquelicot 3.0.1
-- `Rbar.v`
+- `Rbar.v` (now removed in favor of `ereal.v`)
 
 ## Other files
 - `Rstruct.v` from CoqApprox, with contributions from Sophie Bernard, from her repository (https://github.com/Sobernard/Struct/blob/master/Rstruct.v), and modified to instantiate structures from coq-alternate-reals.

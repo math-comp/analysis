@@ -201,8 +201,8 @@ Notation "@ 'gte' R" :=
 
 Notation "x <= y" := (lee x y) : ereal_scope.
 Notation "x < y"  := (lte x y) : ereal_scope.
-Notation "x >= y" := (gee x y) : ereal_scope.
-Notation "x > y"  := (gte x y) : ereal_scope.
+Notation "x >= y" := (y <= x) (only parsing) : ereal_scope.
+Notation "x > y"  := (y < x) (only parsing) : ereal_scope.
 
 Notation "x <= y <= z" := ((lee x y) && (lee y z)) : ereal_scope.
 Notation "x < y <= z"  := ((lte x y) && (lee y z)) : ereal_scope.
@@ -275,6 +275,16 @@ Definition oppe x :=
   | -oo => +oo
   | +oo => -oo
   end.
+
+Definition mule x y :=
+  match x, y with
+  | x%:E , y%:E => (x * y)%:E
+  | -oo, y | y, -oo => if 0%:E <= y then -oo else +oo
+  | +oo, y | y, +oo => if 0%:E < y then +oo else -oo
+  end.
+
+Definition abse x := if x is r%:E then `|r|%:E else +oo.
+
 End ERealArith.
 
 Notation "+%E"   := adde.
@@ -282,6 +292,9 @@ Notation "-%E"   := oppe.
 Notation "x + y" := (adde x y) : ereal_scope.
 Notation "x - y" := (adde x (oppe y)) : ereal_scope.
 Notation "- x"   := (oppe x) : ereal_scope.
+Notation "*%E"   := mule.
+Notation "x * y" := (mule x y) : ereal_scope.
+Notation "`| x |" := (abse x) : ereal_scope.
 
 Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
 
@@ -864,11 +877,11 @@ case=> [x||].
       have [/eqP MQ0|MQ0] := boolP (MQ == 0).
         by exists 0; rewrite real0; split => // x x0; split;
         [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
-      exists `|MQ|; rewrite realE normr_ge0; split => // x Hx; split.
+      exists `|MQ|%R; rewrite realE normr_ge0; split => // x Hx; split.
         by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0 lee_fin.
       by apply gtMQ; rewrite (le_lt_trans _ Hx) // lee_fin real_ler_normr // lexx.
     have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-      exists `|MP|; rewrite realE normr_ge0; split => // x MPx; split.
+      exists `|MP|%R; rewrite realE normr_ge0; split => // x MPx; split.
       by apply gtMP; rewrite (le_lt_trans _ MPx) // lee_fin real_ler_normr // lexx.
       by apply gtMQ; rewrite (le_lt_trans _ MPx) // lee_fin MQ0.
     have {}MP0 : (0 < `|MP|)%R by rewrite normr_gt0.
@@ -1568,10 +1581,10 @@ rewrite predeq2E => x A; split.
                         (contract (r%:E + e%:num%:E) - contract r%:E)%R.
     exists (diag e'); rewrite /diag.
       exists e' => //.
-      rewrite /e' lt_minr; apply/andP; split.
+      rewrite /= /e' lt_minr; apply/andP; split.
         by rewrite subr_gt0 lt_contract lte_fin ltr_subl_addr ltr_addl.
       by rewrite subr_gt0 lt_contract lte_fin ltr_addl.
-    case=> [r' re'r'| |].
+    case=> [r' /= re'r'| |]/=.
     * rewrite /ereal_ball in re'r'.
       have [r'r|rr'] := lerP (contract r'%:E) (contract r%:E).
         apply reA.
@@ -1625,9 +1638,9 @@ rewrite predeq2E => x A; split.
       move: h; apply/negP; rewrite -leNgt -ler_oppl.
       by move: (contract_le1 (r%:E - e%:num%:E)); rewrite ler_norml => /andP[].
   + exists (diag (1 - contract M%:E))%R; rewrite /diag.
-      exists (1 - contract M%:E)%R => //.
+      exists (1 - contract M%:E)%R => //=.
       by rewrite subr_gt0 (le_lt_trans _ (contract_lt1 M)) // ler_norm.
-    case=> [r| |].
+    case=> [r| |]/=.
     * rewrite /ereal_ball [_ +oo%E]/= => rM1.
       apply MA.
       rewrite lte_fin.
@@ -1644,11 +1657,11 @@ rewrite predeq2E => x A; split.
       rewrite -/(contract M%:E) addrC -ler_subl_addr opprD addrA subrr sub0r.
       by move: (contract_le1 M%:E); rewrite ler_norml => /andP[].
   + exists (diag (1 + contract M%:E)%R); rewrite /diag.
-      exists (1 + contract M%:E)%R => //.
+      exists (1 + contract M%:E)%R => //=.
       rewrite -ltr_subl_addl sub0r.
       by move: (contract_lt1 M); rewrite ltr_norml => /andP[].
     case=> [r| |].
-    * rewrite /ereal_ball [_ -oo%E]/= => rM1.
+    * rewrite /ereal_ball => /= rM1.
       apply MA.
       rewrite lte_fin.
       rewrite ler0_norm in rM1; last first.
