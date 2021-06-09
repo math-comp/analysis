@@ -362,6 +362,58 @@ Arguments series {V} u_ n : simpl never.
 Arguments telescope {V} u_ n : simpl never.
 Notation "[ 'series' E ]_ n" := (series [sequence E]_n) : ring_scope.
 
+Lemma seriesN (V : zmodType) (f : V ^nat) : series (- f) = - series f.
+Proof. by rewrite funeqE => n; rewrite /series /= sumrN. Qed.
+
+Lemma seriesD (V : zmodType) (f g : V ^nat) : series (f + g) = series f + series g.
+Proof. by rewrite /series /= funeqE => n; rewrite big_split. Qed.
+
+Lemma seriesZ (R : ringType) (V : lmodType R) (f : V ^nat) k :
+  series (k *: f) = k *: series f.
+Proof. by rewrite funeqE => n; rewrite /series /= -scaler_sumr. Qed.
+
+Section partial_sum_numFieldType.
+Variables V : numFieldType.
+Implicit Types f g : V ^nat.
+
+Lemma is_cvg_seriesN f : cvg (series (- f)) = cvg (series f).
+Proof. by rewrite seriesN is_cvgNE. Qed.
+
+Lemma lim_seriesN f : cvg (series f) -> lim (series (- f)) = - lim (series f).
+Proof. by move=> cf; rewrite seriesN limN. Qed.
+
+Lemma is_cvg_seriesZ f k : cvg (series f) -> cvg (series (k *: f)).
+Proof. by move=> cf; rewrite seriesZ; exact: is_cvgZr. Qed.
+
+Lemma lim_seriesZ f k : cvg (series f) ->
+  lim (series (k *: f)) = k *: lim (series f).
+Proof. by move=> cf; rewrite seriesZ limZr. Qed.
+
+Lemma is_cvg_seriesD f g :
+  cvg (series f) -> cvg (series g) -> cvg (series (f + g)).
+Proof. by move=> cf cg; rewrite seriesD; exact: is_cvgD. Qed.
+
+Lemma lim_seriesD f g : cvg (series f) -> cvg (series g) ->
+  lim (series (f + g)) = lim (series f) + lim (series g).
+Proof. by move=> cf cg; rewrite seriesD limD. Qed.
+
+Lemma is_cvg_seriesB f g :
+  cvg (series f) -> cvg (series g) -> cvg (series (f - g)).
+Proof. by move=> cf cg; apply: is_cvg_seriesD; rewrite ?is_cvg_seriesN. Qed.
+
+Lemma lim_seriesB f g : cvg (series f) -> cvg (series g) ->
+  lim (series (f - g)) = lim (series f) - lim (series g).
+Proof. by move=> Cf Cg; rewrite lim_seriesD ?is_cvg_seriesN// lim_seriesN. Qed.
+
+End partial_sum_numFieldType.
+
+Lemma lim_series_le (V : realFieldType) (f g : V ^nat) :
+  cvg (series f) -> cvg (series g) -> (forall n, f n <= g n) ->
+  lim (series f) <= lim (series g).
+Proof.
+by move=> cf cg fg; apply (ler_lim cf cg); near=> x; rewrite ler_sum.
+Grab Existential Variables. all: end_near. Qed.
+
 Lemma telescopeK (V : zmodType) (u_ : V ^nat) :
   series (telescope u_) = [sequence u_ n - u_ 0%N]_n.
 Proof. by rewrite funeqE => n; rewrite seriesEnat/= telescope_sumr. Qed.
@@ -808,6 +860,14 @@ apply/cauchy_cvgP/cauchy_seriesP => e /u_ncvg.
 apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
+
+Lemma lim_series_norm {R : realType} (V : completeNormedModType R) (f : V ^nat) :
+  cvg [normed series f] -> `|lim (series f)| <= lim [normed series f].
+Proof.
+move=> cnf; have cf := normed_cvg cnf.
+rewrite -lim_norm // (ler_lim (is_cvg_norm cf) cnf) //.
+by near=> x; rewrite ler_norm_sum.
+Grab Existential Variables. all: end_near. Qed.
 
 (* TODO: backport to MathComp? *)
 Section fact_facts.
