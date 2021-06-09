@@ -71,6 +71,7 @@ Proof. by move=> R1 f1 g1 ->. Qed.*)
 Lemma eq_cvgl (f g : R ^nat) (x : R) : f = g -> (f --> x) = (g --> x).
 Proof. by move->. Qed.
 
+(* NB: PR in progress *)
 Lemma seriesN (f : R ^nat) : series (- f) = - series f.
 Proof. by rewrite funeqE => n; rewrite /series /= sumrN. Qed.
 
@@ -124,6 +125,7 @@ Lemma lim_series_le (f g : R ^nat) :
 Proof.
 by move=> cf cg fg; apply (ler_lim cf cg); near=> x; rewrite ler_sum.
 Grab Existential Variables. all: end_near. Qed.
+(* /NB: PR in progress *)
 
 Lemma cvg_to_0_linear (f : R -> R) K k :
   0 < k -> (forall h, 0 < `|h| < k -> `|f h| <= K * `|h|) ->

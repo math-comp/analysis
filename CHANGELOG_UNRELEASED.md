@@ -94,6 +94,8 @@
   + instance `is_derive1_chain`, `is_deriveV`
   + lemma `trigger_derive`
   + ltac `rcfE`
+  + lemma `is_derive1_caratheodory`, `is_derive_inverse`, `continuous_ln`
+  + instance `is_derive1_ln`
   + facts `is_cvg_series_Xn_inside_norm`, `is_cvg_series_Xn_inside`
   + definition `diffs`
   + lemmas `diffsN`, `diffs_inv_fact`, `diffs_sumE`, `diffs_equiv`, `is_cvg_diffs_equiv`, `termdiffs`
