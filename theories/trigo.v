@@ -4,7 +4,7 @@ From mathcomp Require Import matrix interval rat.
 Require Import boolp reals ereal.
 Require Import nsatz_realtype.
 Require Import classical_sets posnum topology normedtype landau sequences.
-Require Import derive exp inverse_continuous.
+Require Import derive realfun exp.
 
 (******************************************************************************)
 (*                     Theory of trigonometric functions                      *)
@@ -38,6 +38,7 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+(* NB: backport to mathcomp in progress *)
 Lemma sqrtrV (R : rcfType) (x : R) : 0 <= x -> Num.sqrt (x^-1) = (Num.sqrt x)^-1.
 Proof.
 move=> x_ge0.
@@ -47,7 +48,7 @@ rewrite -[LHS]mul1r -(mulVf (_ : Num.sqrt x != 0)); last first.
 by rewrite -mulrA -sqrtrM // divff // sqrtr1 mulr1.
 Qed.
 
-Lemma divr_eq (R : numFieldType) (x y z t : R):
+Lemma eqr_div (R : numFieldType) (x y z t : R):
   y != 0 -> t != 0 -> (x / y == z / t) = (x * t == z * y).
 Proof.
 move=> yD0 tD0.
@@ -56,29 +57,32 @@ apply/eqP/eqP=> [->//|H].
 by apply/(mulIf tD0)/(mulIf yD0).
 Qed.
 
-Lemma sum_group (R : zmodType) (f : R ^nat) (n k : nat) :
-  \sum_(0 <= i < n) \sum_(i * k <= j < i.+1 * k) f j =
-  \sum_(0 <= i < n * k) f i.
+Lemma big_nat_mul (R : zmodType) (f : R ^nat) (n k : nat) :
+  \sum_(0 <= i < n * k) f i =
+  \sum_(0 <= i < n) \sum_(i * k <= j < i.+1 * k) f j.
 Proof.
 elim: n => [|n ih]; first by rewrite mul0n 2!big_nil.
-rewrite big_nat_recr//= ih mulSn addnC [in RHS]/index_iota subn0 iota_add.
-rewrite big_cat /= [in X in X + _ = _]/index_iota subn0; congr (_ + _).
-by rewrite /index_iota addnC addnK.
+rewrite [in RHS]big_nat_recr//= -ih mulSn addnC [in LHS]/index_iota subn0 iotaD.
+rewrite big_cat /= [in X in _ = X  _]/index_iota subn0; congr (_ + _).
+by rewrite add0n /index_iota (addnC _ k) addnK.
 Qed.
+(* /NB: backport to mathcomp in progress *)
 
-Lemma cvg_series_cvg_series_group (R : realFieldType) (f : R ^nat) k : cvg (series f) -> (0 < k)%N ->
+Lemma cvg_series_cvg_series_group (R : realFieldType) (f : R ^nat) k :
+  cvg (series f) -> (0 < k)%N ->
   series (fun n => \sum_(n * k <= i < n.+1 * k) f i) --> lim (series f).
 Proof.
 move=> /cvg_ballP cf k0; apply/cvg_ballP => _/posnumP[e].
 have := cf _ (posnum_gt0 e); rewrite near_map => -[n _ nl].
 rewrite near_map; near=> m.
-rewrite /ball /= [in X in `|_ - X|]/series [in X in `|_ - X|]/= sum_group.
+rewrite /ball /= [in X in `|_ - X|]/series [in X in `|_ - X|]/= -big_nat_mul.
 have /nl : (n <= m * k)%N.
   by near: m; exists n.+1 => //= p /ltnW /leq_trans /(_ (leq_pmulr _ k0)).
 by rewrite /ball /= distrC.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma cvg_series_cvg_series_group2 (R : realFieldType) (f : R ^nat) : cvg (series f) ->
+Lemma cvg_series_cvg_series_group2 (R : realFieldType) (f : R ^nat) :
+  cvg (series f) ->
   series (fun n => \sum_(n.*2 <= i < n.*2 + 2) f i) --> lim (series f).
 Proof.
 move=> cf; rewrite [X in series X --> _](_ : _ =
@@ -937,7 +941,7 @@ have /(IVT (@pi_ge0 _))[] // : minr (f 0) (f pi) <= 0 <= maxr (f 0) (f pi).
 - rewrite /f cos0 cospi /minr /maxr ltr_add2r -subr_lt0 opprK (_ : 1 + 1 = 2)//.
   by rewrite ltrn0 subr_le0 subr_ge0.
 - move=> y ?.
-  by apply: continuousB; [exact: continuous_cos|exact: continuous_cst].
+  by apply: continuousB; [exact: continuous_cos|exact: cst_continuous].
 rewrite /f => x1 /itvP x1I /eqP; rewrite subr_eq0 => /eqP cosx1E.
 by case: (He x1); rewrite !x1I.
 Qed.
@@ -982,6 +986,7 @@ rewrite -[LHS]ger0_norm; last by rewrite sin_ge0_pi // acos_ge0 ?acos_lepi.
 by rewrite -sqrtr_sqr sin2cos2 acosK.
 Qed.
 
+(* NB: not used? *)
 Lemma near_lift (P : R -> Prop) (x : R) :
  (\forall y \near x, P y) -> \forall y \near x, \forall z \near y, P z.
 Proof.
@@ -991,30 +996,13 @@ apply/nbhs_ballP; exists (d/2) => [|t2 Bt2] //=; first by rewrite divr_gt0.
 by apply/dB/(ball_split Bt1).
 Qed.
 
-Lemma near_in_interval (a b : R) :
-  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
-Proof.
-move=> y ayb; rewrite (near_shift 0 y).
-have minlt : 0 < minr (y - a) (b - y).
-  have : 0 < y - a by rewrite subr_gt0 (itvP ayb).
-  have : 0 < b - y by rewrite subr_gt0 (itvP ayb).
-  by case: (ltrP (y - a) (b - y)).
-near=> z; rewrite /= subr0.
-rewrite in_itv /= -ltr_subl_addl -ltr_subr_addl ltr_normlW /=; last first.
-  rewrite normrN.
-  by near: z; apply: nbhs0_lt; rewrite (lt_le_trans minlt) // le_minl lexx.
-rewrite -ltr_subr_addr ltr_normlW //.
-near: z; apply: nbhs0_lt; rewrite (lt_le_trans minlt) //.
-by rewrite le_minl lexx orbT.
-Grab Existential Variables. all: end_near. Qed.
-
 Lemma continuous_acos x : -1 < x < 1 -> {for x, continuous acos}.
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -[x]acosK; first last.
   by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
-apply: nbhs_singleton (continuous_inverse _ _); last first.
+apply: nbhs_singleton (near_can_continuous _ _); last first.
    by near=> z; apply: continuous_cos.
-have /near_in_interval aI : acos x \in `]0, pi[.
+have /near_in_itv aI : acos x \in `]0, pi[.
   suff : 0 < acos x < pi by [].
   by rewrite acos_gt0 ?ltW //= acos_ltpi // ltW ?andbT.
 near=> z; apply: cosK.
@@ -1028,7 +1016,7 @@ Global Instance is_derive1_acos (x : R) :
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -sin_acos ?ltW // -invrN.
 rewrite -{1}[x]acosK; last by have : -1 <= x <= 1 by rewrite ltW // ltW.
-have /near_in_interval aI : acos x \in `]0, pi[.
+have /near_in_itv aI : acos x \in `]0, pi[.
   suff : 0 < acos x < pi by [].
   by rewrite acos_gt0 ?ltW //= acos_ltpi // ltW ?andbT.
 apply: (@is_derive_inverse R cos).
@@ -1060,7 +1048,8 @@ have /IVT[] // :
   rewrite /f sinN sin_pihalf /minr /maxr ltr_add2r -subr_gt0 opprK.
   by rewrite (_ : 1 + 1 = 2)// ltr0n/= subr_le0 subr_ge0.
 - by rewrite -subr_ge0 opprK -splitr pi_ge0.
-- by move=> *; apply: continuousB; [exact: continuous_sin|exact: continuous_cst].
+- by move=> *; apply: continuousB; [exact: continuous_sin|
+                                   exact: cst_continuous].
 rewrite /f => x1 /itvP x1I /eqP; rewrite subr_eq0 => /eqP sinx1E.
 by case: (He x1); rewrite !x1I.
 Qed.
@@ -1111,9 +1100,9 @@ Lemma continuous_asin x : -1 < x < 1 -> {for x, continuous asin}.
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -[x]asinK; first last.
   by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
-apply: nbhs_singleton (continuous_inverse _ _); last first.
+apply: nbhs_singleton (near_can_continuous _ _); last first.
   by near=> z; apply: continuous_sin.
-have /near_in_interval aI : asin x \in `](-(pi/2)), (pi/2)[.
+have /near_in_itv aI : asin x \in `](-(pi/2)), (pi/2)[.
   suff : -(pi/2) < asin x < pi/2 by [].
   by rewrite asin_gtNpi2 ?ltW ?andbT //= asin_ltpi2 // ltW.
 near=> z; apply: sinK.
@@ -1127,7 +1116,7 @@ Global Instance is_derive1_asin (x : R) :
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -cos_asin ?ltW //.
 rewrite -{1}[x]asinK; last by have : -1 <= x <= 1 by rewrite ltW // ltW.
-have /near_in_interval aI : asin x \in `](-(pi/2)), (pi/2)[.
+have /near_in_itv aI : asin x \in `](-(pi/2)), (pi/2)[.
   suff : -(pi/2) < asin x < pi/2 by [].
   by rewrite asin_gtNpi2 ?ltW ?andbT //= asin_ltpi2 // ltW.
 apply: (@is_derive_inverse R sin).
@@ -1156,10 +1145,10 @@ Notation pi := (@pi R).
 Definition atan (x : R) :=
   get [set y | -(pi / 2) < y < pi / 2 /\ tan y = x].
 
-Lemma sin_sg (x y : R) : sin(Num.sg x * y) = Num.sg x * sin y.
+Lemma sin_sg (x y : R) : sin (Num.sg x * y) = Num.sg x * sin y.
 Proof. by case: sgrP; rewrite ?mul1r ?mulN1r ?sinN // !mul0r sin0. Qed.
 
-Lemma cos_sg (x y : R) : x != 0 -> cos(Num.sg x * y) = cos y.
+Lemma cos_sg (x y : R) : x != 0 -> cos (Num.sg x * y) = cos y.
 Proof. by case: sgrP; rewrite ?mul1r ?mulN1r ?cosN. Qed.
 
 (* Did not see how to use ITV like in the other *)
@@ -1212,10 +1201,10 @@ Qed.
 Lemma continuous_atan x : {for x, continuous atan}.
 Proof.
 rewrite -[x]atanK.
-have /near_in_interval aI : atan x \in `](-(pi/2)), (pi/2)[.
-  suff : -(pi/2) < atan x < pi/2 by [].
+have /near_in_itv aI : atan x \in `](-(pi / 2)), (pi / 2)[.
+  suff : - (pi / 2) < atan x < pi / 2 by [].
   by rewrite atan_gtNpi2 atan_ltpi2.
-apply: nbhs_singleton (continuous_inverse _ _); last first.
+apply: nbhs_singleton (near_can_continuous _ _); last first.
   near=> z; apply: continuous_tan.
   apply/lt0r_neq0; apply: cos_gt0_pihalf.
   by near: z.
@@ -1225,7 +1214,7 @@ Grab Existential Variables. all: end_near. Qed.
 Lemma cos_atan x : cos (atan x) = (Num.sqrt (1 + x ^+ 2)) ^-1.
 Proof.
 have cos_gt0 : 0 < cos (atan x).
-  by apply: cos_gt0_pihalf;rewrite atan_gtNpi2 atan_ltpi2.
+  by apply: cos_gt0_pihalf; rewrite atan_gtNpi2 atan_ltpi2.
 have cosD0 : cos (atan x) != 0 by apply: lt0r_neq0.
 have /eqP : cos (atan x) ^+2 = (Num.sqrt (1 + x ^+ 2))^-2.
   by rewrite -[LHS]invrK cos2_tan2 // atanK sqr_sqrtr // addr_ge0 // sqr_ge0.
@@ -1240,7 +1229,7 @@ rewrite -{1}[x]atanK.
 have cosD0 : cos (atan x) != 0.
   apply/lt0r_neq0; apply: cos_gt0_pihalf.
   by rewrite atan_gtNpi2 atan_ltpi2.
-have /near_in_interval aI : atan x \in `](-(pi/2)), (pi/2)[.
+have /near_in_itv aI : atan x \in `](-(pi/2)), (pi/2)[.
   suff : -(pi/2) < atan x < pi/2 by [].
   by rewrite atan_gtNpi2 atan_ltpi2.
 apply: (@is_derive_inverse R tan).

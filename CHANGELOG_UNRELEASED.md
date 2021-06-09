@@ -81,7 +81,6 @@
   + lemmas `segment_can_le_continuous`, `segment_can_ge_continuous`, `segment_can_continuous`
   + lemmas `near_can_continuousAcan_sym`, `near_can_continuous`, `near_continuous_can_sym`
   + lemmas `exp_continuous`, `sqr_continuous`, `sqrt_continuous`.
-  + lemma `dvg_harmonic`
 - new file `nsatz_realType`
 - new file `exp.v`
   + lemma `normr_nneg` (hint)
@@ -114,7 +113,7 @@
     `exp_funD`, `exp_fun_inv`, `exp_fun_mulrn`
   + definition `riemannR`, lemmas `riemannR_gt0`, `dvg_riemannR`
 - new file `trigo.v`
-  + lemmas `sqrtvR`, `divr_eq`, `sum_group`, `cvg_series_cvg_series_group`,
+  + lemmas `sqrtvR`, `eqr_div`, `big_nat_mul`, `cvg_series_cvg_series_group`,
     `cvg_series_cvg_series_group2`, `lt_sum_lim_series`
   + definitions `periodic`, `alternating`
   + lemmas `periodicn`, `alternatingn`

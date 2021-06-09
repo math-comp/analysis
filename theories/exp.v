@@ -4,7 +4,7 @@ From mathcomp Require Import matrix interval rat.
 Require Import boolp reals ereal.
 Require Import nsatz_realtype.
 Require Import classical_sets posnum topology normedtype landau sequences.
-Require Import derive continuous_inverse.
+Require Import derive realfun.
 
 (******************************************************************************)
 (*               Theory of exponential/logarithm functions                    *)
@@ -53,9 +53,7 @@ Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
 
 End cvg_extra.
 
-Variable R : realType.
-
-Lemma cvg_series_bounded (f : R ^nat) :
+Lemma cvg_series_bounded (R : realFieldType) (f : R ^nat) :
   cvg (series f) -> exists2 K, 0 < K & (forall i, `|f i| < K).
 Proof.
 move=> /cvg_series_cvg_0/cvgP/cvg_seq_bounded[r [_ /(_ (r + 1)) fr]].
@@ -68,68 +66,13 @@ Qed.
   f = g -> (f --> lim f) = (g --> lim g).
 Proof. by move=> R1 f1 g1 ->. Qed.*)
 
-Lemma eq_cvgl (f g : R ^nat) (x : R) : f = g -> (f --> x) = (g --> x).
-Proof. by move->. Qed.
+(* NB: useful? *)
+(*Lemma eq_cvgl (f g : R ^nat) (x : R) : f = g -> (f --> x) = (g --> x).
+Proof. by move->. Qed.*)
 
-(* NB: PR in progress *)
-Lemma seriesN (f : R ^nat) : series (- f) = - series f.
-Proof. by rewrite funeqE => n; rewrite /series /= sumrN. Qed.
-
-Lemma seriesZr (f : R ^nat) k : series (k *: f) = k *: series f.
-Proof. by rewrite funeqE => n; rewrite /series /= -scaler_sumr. Qed.
-
-Lemma seriesD (f g : R ^nat) : series (f + g) = series f + series g.
-Proof. by rewrite /series /= funeqE => n; rewrite big_split. Qed.
-
-Lemma is_cvg_seriesN (f : R ^nat) : cvg (series (- f)) = cvg (series f).
-Proof. by rewrite seriesN is_cvgNE. Qed.
-
-Lemma lim_seriesN (f : R ^nat) : cvg (series f) ->
-  lim (series (- f)) = - lim (series f).
-Proof. by move=> cf; rewrite seriesN limN. Qed.
-
-Lemma is_cvg_seriesZr (f : R ^nat) k : cvg (series f) -> cvg (series (k *: f)).
-Proof. by move=> cf; rewrite seriesZr; exact: is_cvgZr. Qed.
-
-Lemma lim_seriesZr (f : R ^nat) k : cvg (series f) ->
-  lim (series (k *: f)) = k *: lim (series f).
-Proof. by move=> cf; rewrite seriesZr limZr. Qed.
-
-Lemma is_cvg_seriesD (f g : R ^nat) :
-  cvg (series f) -> cvg (series g) -> cvg (series (f + g)).
-Proof. by move=> cf cg; rewrite seriesD; exact: is_cvgD. Qed.
-
-Lemma lim_seriesD (f g : R ^nat) : cvg (series f) -> cvg (series g) ->
-  lim (series (f + g)) = lim (series f) + lim (series g).
-Proof. by move=> cf cg; rewrite seriesD limD. Qed.
-
-Lemma is_cvg_seriesB (f g : R ^nat) :
-  cvg (series f) -> cvg (series g) -> cvg (series (f - g)).
-Proof. by move=> cf cg; apply: is_cvg_seriesD; rewrite ?is_cvg_seriesN. Qed.
-
-Lemma lim_seriesB (f g : R ^nat) : cvg (series f) -> cvg (series g) ->
-  lim (series (f - g)) = lim (series f) - lim (series g).
-Proof. by move=> Cf Cg; rewrite lim_seriesD ?is_cvg_seriesN// lim_seriesN. Qed.
-
-Lemma lim_series_norm (f : R ^nat) :
-  cvg [normed series f] -> `|lim (series f)| <= lim [normed series f].
-Proof.
-move=> cnf; have cf := normed_cvg cnf.
-rewrite -lim_norm // (ler_lim (is_cvg_norm cf) cnf) //.
-by near=> x; rewrite ler_norm_sum.
-Grab Existential Variables. all: end_near. Qed.
-
-Lemma lim_series_le (f g : R ^nat) :
-  cvg (series f) -> cvg (series g) -> (forall n, f n <= g n) ->
-  lim (series f) <= lim (series g).
-Proof.
-by move=> cf cg fg; apply (ler_lim cf cg); near=> x; rewrite ler_sum.
-Grab Existential Variables. all: end_near. Qed.
-(* /NB: PR in progress *)
-
-Lemma cvg_to_0_linear (f : R -> R) K k :
-  0 < k -> (forall h, 0 < `|h| < k -> `|f h| <= K * `|h|) ->
-    f x @[x --> 0^'] --> (0 : R).
+Lemma cvg_to_0_linear (R : realFieldType) (f : R -> R) K k :
+  0 < k -> (forall r, 0 < `| r | < k -> `|f r| <= K * `| r |) ->
+    f x @[x --> 0^'] --> 0.
 Proof.
 move=> k0 kfK; have [K0|K0] := lerP K 0.
 - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> x.
@@ -148,23 +91,20 @@ move=> k0 kfK; have [K0|K0] := lerP K 0.
     by move=> t /=; rewrite distrC subr0 => /ltW.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma lim_cvg_to_0_linear (f : nat -> R) (g : R -> nat -> R) k :
+Lemma lim_cvg_to_0_linear (R : realType) (f : nat -> R) (g : R -> nat -> R) k :
   0 < k -> cvg (series f) ->
-  (forall h : R, 0 < `|h| < k -> forall n, `|g h n| <= f n * `|h|) ->
-  lim (series (g x)) @[x --> 0^'] --> (0 : R).
+  (forall r, 0 < `|r| < k -> forall n, `|g r n| <= f n * `| r |) ->
+  lim (series (g x)) @[x --> 0^'] --> 0.
 Proof.
 move=> k_gt0 Cf Hg.
-apply: (@cvg_to_0_linear _ (lim (series f)) k) => // h hLk; rewrite mulrC.
-have Ckf := @is_cvg_seriesZr _ `|h| Cf.
-have Lkf := lim_seriesZr `|h| Cf.
+apply: (@cvg_to_0_linear _ _ (lim (series f)) k) => // h hLk; rewrite mulrC.
+have Ckf := @is_cvg_seriesZ _ _ `|h| Cf.
 have Cng : cvg [normed series (g h)].
-  apply: series_le_cvg (Hg _ hLk) _  => //.
-    by move=> h1; apply: le_trans (Hg _ hLk _).
-  by rewrite (funext (fun _ => (@mulrC R _ _))).
-apply: le_trans (_ : lim [normed series (g h)] <= _).
-  by apply: lim_series_norm.
-rewrite -[_ * _]lim_seriesZr //.
-apply: lim_series_le => //= => n.
+  apply: series_le_cvg (Hg _ hLk) _ => [//|?|].
+    exact: le_trans (Hg _ hLk _).
+  by under eq_fun do rewrite mulrC.
+apply: (le_trans (lim_series_norm Cng)).
+rewrite -[_ * _](lim_seriesZ _ Cf) (lim_series_le Cng Ckf) // => n.
 by rewrite [X in _ <= X]mulrC; apply: Hg.
 Qed.
 
@@ -197,7 +137,6 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
-
 (******************************************************************************)
 (* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
 (******************************************************************************)
@@ -229,6 +168,27 @@ move: @u; rewrite {1}/cst/=) ||
 set u := (@comp _ _ _ _ _);
 move: @u; rewrite {1}/comp /=) ).
 
+Section is_derive_instances.
+Variables (R : numFieldType) (V : normedModType R).
+
+Lemma derivable_cst (x : V) : derivable (fun=> x) 0 1.
+Proof. exact/derivable1_diffP/differentiable_cst. Qed.
+
+Lemma derivable_id (x v : V) : derivable id x v.
+Proof.
+apply/derivable1P/derivableD.
+  exact/derivable1_diffP/differentiableZl.
+exact/derivable_cst.
+Qed.
+
+Global Instance is_derive_id (x v : V) : is_derive x v id v.
+Proof.
+apply: (DeriveDef (@derivable_id _ _)).
+by rewrite deriveE// (@diff_lin _ _ _ [linear of idfun]).
+Qed.
+
+End is_derive_instances.
+
 Section is_derive.
 
 Variable R : realType.
@@ -236,7 +196,7 @@ Variable R : realType.
 (* Attempt to prove the diff of inverse *)
 
 Lemma is_derive1_caratheodory (f : R -> R) (x a : R) :
-  is_derive x 1 f a <-> 
+  is_derive x 1 f a <->
   exists g, [/\ forall z, f z - f x = g z * (z - x),
         {for x, continuous g} & g x = a].
 Proof.
@@ -246,18 +206,18 @@ split => [Hd|[g [fxE Cg gxE]]].
     by rewrite -subr_eq0 => /divfK->.
   - apply/continuous_withinNshiftx; rewrite eqxx /=.
     pose g1 h := (h^-1 *: ((f \o shift x) h%:A - f x)).
-    have F1 : g1 @ nbhs' 0 --> a by case: Hd => H1 <-.
+    have F1 : g1 @ 0^' --> a by case: Hd => H1 <-.
     apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1; rcfE.
     near=> i.
     rewrite ifN; first by rewrite addrK mulrC /= [_%:A]mulr1.
     rewrite -subr_eq0 addrK.
     by near: i; rewrite near_withinE /= near_simpl; near=> x1.
   by rewrite eqxx.
-suff Hf : h^-1 *: ((f \o shift x) h%:A - f x) @[h --> nbhs' 0] --> a.
+suff Hf : h^-1 *: ((f \o shift x) h%:A - f x) @[h --> 0^'] --> a.
   have F1 : 'D_1 f x = a by apply: cvg_lim.
   rewrite -F1 in Hf.
     by constructor.
-  have F1 :  (g \o shift x) y @[y --> nbhs' 0] --> a.
+  have F1 :  (g \o shift x) y @[y --> 0^'] --> a.
   by rewrite -gxE; apply/continuous_withinNshiftx.
 apply: cvg_trans F1; apply: near_eq_cvg.
 near=> y.
@@ -265,12 +225,6 @@ rewrite /= fxE /= addrK [_%:A]mulr1.
 suff yNZ : y != 0 by rewrite [RHS]mulrC mulfK.
 by near: y; rewrite near_withinE /= near_simpl; near=> x1.
 Grab Existential Variables. all: end_near. Qed.
-
-Global Instance is_derive1_id (x : R) : is_derive x 1 id 1.
-Proof.
-constructor; first exact/derivable1_diffP.
-by rewrite deriveE // (@diff_lin _ _ _ [linear of idfun]).
-Qed.
 
 Lemma is_derive_0_cst (f : R -> R) x y :
   (forall x, is_derive x 1 f 0) -> f x = f y.
@@ -303,7 +257,7 @@ constructor; first by apply: derivableV => //; case: Df.
 by rewrite deriveV //; case: Df => _ ->.
 Qed.
 
-Lemma is_derive_inverse (f g : R ->R) l x :  
+Lemma is_derive_inverse (f g : R ->R) l x :
   {near x, cancel f g}  ->
   {near x, continuous f}  ->
   is_derive x 1 f l -> l != 0 -> is_derive (f x) 1 g l^-1.
@@ -312,7 +266,7 @@ move=> fgK fC fD lNZ.
 have /is_derive1_caratheodory [h [fE hC hxE]] := fD.
 (* There should be something simpler *)
 have gfxE :  g (f x) = x by have [d Hd]:= nbhs_ex fgK; apply: Hd.
-pose g1 y := if y == f x then (h (g y))^-1 
+pose g1 y := if y == f x then (h (g y))^-1
              else (g y - g (f x)) / (y - f x).
 apply/is_derive1_caratheodory.
 exists g1; split; first 2 last.
@@ -322,11 +276,11 @@ exists g1; split; first 2 last.
 have F1 : (h (g x))^-1 @[x --> f x] --> g1 (f x).
   rewrite /g1 eqxx; apply: continuousV; first by rewrite /= gfxE hxE.
   apply: continuous_comp; last by rewrite gfxE.
-  by apply: nbhs_singleton (continuous_inverse _ _).
+  by apply: nbhs_singleton (near_can_continuous _ _).
 apply: cvg_sub0 F1.
 apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
 near=> y; rewrite sub0r normrN; rcfE.
-have fgyE : f (g y) = y by near: y; apply: inverse_swap_continuous.
+have fgyE : f (g y) = y by near: y; apply: near_continuous_can_sym.
 rewrite /g1; case: eqP => [_|/eqP x1Dfx]; first by rewrite subrr normr0.
 have -> : y - f x  = h (g y) * (g y - x) by rewrite -fE fgyE.
 rewrite gfxE invfM mulrC divfK ?subrr ?normr0 // subr_eq0.
@@ -406,12 +360,10 @@ Lemma diffs_equiv f x :
   cvg (series s1) -> series s2 --> lim (series s1).
 Proof.
 move=> s1 s2 Cx; rewrite -[lim _]subr0 [X in X --> _]/series /=.
-have s2E n :
-  \sum_(0 <= i < n) s2 i = \sum_(0 <= i < n) s1 i - n%:R * f n * x ^+ n.-1.
-  by rewrite diffs_sumE addrK.
-rewrite (eq_cvgl _ (funext s2E)).
-apply: cvgB => //; rewrite -cvg_shiftS.
-by apply: cvg_series_cvg_0.
+rewrite (_ : (fun n => _) =
+    (fun n => \sum_(0 <= i < n) s1 i - n%:R * f n * x ^+ n.-1)); last first.
+  by rewrite funeqE => n; rewrite diffs_sumE addrK.
+by apply: cvgB => //; rewrite -cvg_shiftS; exact: cvg_series_cvg_0.
 Qed.
 
 Lemma is_cvg_diffs_equiv f x :
@@ -551,7 +503,7 @@ suff Cc :
     rewrite ler_pdivr_mulr // mulr2n mulrDr mulr1.
     by rewrite ler_paddr // subr_ge0 ltW.
   have C1 := is_cvg_seriesB Cshx Csx.
-  have Ckf := @is_cvg_seriesZr _ _ h^-1 C1.
+  have Ckf := @is_cvg_seriesZ _ _ h^-1 C1.
   have Cu :
    (series (h^-1 *: (shx h - sx)) - series s1) x0 @[x0 --> \oo] -->
     lim (series (h^-1 *: (shx h - sx))) - lim (series s).
@@ -786,9 +738,9 @@ case: (@IVT _ (fun y => expR y - x) 0 x 0) => //.
   + by rewrite ltr_add2r expR_lt1 ltNge x_ge0.
   + rewrite subr_le0 x_ge1 => -> /=; rewrite subr_ge0.
     by apply: le_trans (expR_ge1Dx x_ge0); rewrite ler_addr.
-- move=> x1 _ /eqP; rewrite subr_eq0 => /eqP Hx1.
-  exists x1; split => //; first by rewrite -ler_expR expR0 Hx1.
-  by rewrite -Hx1 expR_ge1Dx // -ler_expR Hx1 expR0.
+- move=> x1 _ /eqP; rewrite subr_eq0 => /eqP x1_x.
+  exists x1; split => //; first by rewrite -ler_expR expR0 x1_x.
+  by rewrite -x1_x expR_ge1Dx // -ler_expR x1_x expR0.
 Qed.
 
 Lemma expR_total x : 0 < x -> exists y, expR y = x.
@@ -896,7 +848,7 @@ Qed.
 Lemma continuous_ln x : 0 < x -> {for x, continuous ln}.
 Proof.
 move=> x_gt0; rewrite -[x]lnK//.
-apply: nbhs_singleton (continuous_inverse _ _); near=> z; first by apply: expK.
+apply: nbhs_singleton (near_can_continuous _ _); near=> z; first exact: expK.
 by apply: continuous_expR.
 Grab Existential Variables. all: end_near. Qed.
 
