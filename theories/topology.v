@@ -4920,7 +4920,10 @@ rewrite cvg_image.
   + move=> X Y /setUidPl XsubY [P FP EX].
     exists ( P `|` [set g : U -> V | exists v, Y v /\ g = cst v]).
       by apply: (@filterS _ _ _ P) => //= t ?; left.
-    rewrite image_setU EX setUC (_ : _ @` _ = Y) // eqEsubset; split.
+    rewrite image_setU  EX setUC. 
+    set Y' := (x in x `|` _);  
+    suff ->: Y' = Y; first by [].
+    rewrite eqEsubset; split.
     * by move => t /= [/= h [/= v [? ->] <-]].
     * by move => t ?; exists (cst t) => //; exists t.
   + by move => v [/= g] + <-; apply.
@@ -5031,7 +5034,6 @@ apply: W; apply: (filterS eIsubP); apply: filterS.
 - by exists I.
 Qed.
 
-Check restrict_dep.
 Definition extend_dep (f : {x | `[< A x >]} -> V) (u : U) :=
   match pselect `[< A u>] with 
   | left w => f (exist _ u w) 
