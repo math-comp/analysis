@@ -3544,7 +3544,7 @@ move=> C D FC f_D; have {}f_D :
     move=> g Pg; apply: sED => i j; rewrite ord1 row_simpl'.
     by have /getPex [_ /(_ _ (Pg j))] := exPj j.
   split; last by move=> j; have /getPex [[]] := exPj j.
-  exists [set [set g | forall j, get (Pj j) (g j)] | k in 'I_n.+1];
+  exists [set [set g | forall j, get (Pj j) (g j)] | k in [set x | 'I_n.+1 x]];
     last first.
     rewrite predeqE => g; split; first by move=> [_ [_ _ <-]].
     move=> Pg; exists [set g | forall j, get (Pj j) (g j)] => //.
