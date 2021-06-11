@@ -145,7 +145,7 @@ Proof. by move=> u_nondec; apply: le_mono; apply: homo_ltn lt_trans _. Qed.
 Lemma decreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
   (forall n, u_ n > u_ n.+1)%O -> decreasing_seq u_.
 Proof.
-move=> u_noninc.
+move=> u_noninc;
 (* FIXME: add shortcut to order.v *)
 apply: (@total_homo_mono _ T u_ leq ltn _ _ leqnn _ ltn_neqAle
   _ (fun _ _ _ => esym (le_anti _)) leq_total
