@@ -130,27 +130,27 @@ Lemma increasing_opp (T : numDomainType) (u_ : T ^nat) :
   increasing_seq (- u_) = decreasing_seq u_.
 Proof. by rewrite propeqE; split => du x y; rewrite -du ler_opp2. Qed.
 
-Lemma nondecreasing_seqP (T : numDomainType) (u_ : T ^nat) :
-  (forall n, u_ n <= u_ n.+1) -> nondecreasing_seq u_.
+Lemma nondecreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+  (forall n, u_ n <= u_ n.+1)%O -> nondecreasing_seq u_.
 Proof. exact: homo_leq le_trans. Qed.
 
-Lemma nonincreasing_seqP (T : numDomainType) (u_ : T ^nat) :
-  (forall n, u_ n >= u_ n.+1) -> nonincreasing_seq u_.
+Lemma nonincreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+  (forall n, u_ n >= u_ n.+1)%O -> nonincreasing_seq u_.
 Proof. by apply: homo_leq (fun _ _ _ u v => le_trans v u). Qed.
 
-Lemma increasing_seqP (T : numDomainType) (u_ : T ^nat) :
-  (forall n, u_ n < u_ n.+1) -> increasing_seq u_.
+Lemma increasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+  (forall n, u_ n < u_ n.+1)%O -> increasing_seq u_.
 Proof. by move=> u_nondec; apply: le_mono; apply: homo_ltn lt_trans _. Qed.
 
-Lemma decreasing_seqP (T : numDomainType) (u_ : T ^nat) :
-  (forall n, u_ n > u_ n.+1) -> decreasing_seq u_.
+Lemma decreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+  (forall n, u_ n > u_ n.+1)%O -> decreasing_seq u_.
 Proof.
-move=> u_noninc;
+move=> u_noninc.
 (* FIXME: add shortcut to order.v *)
-apply: (@total_homo_mono _ _ _ leq ltn ger gtr leqnn lexx
-  ltn_neqAle _ (fun _ _ _ => esym (le_anti _)) leq_total
-  (homo_ltn (fun _ _ _ u v => lt_trans v u) _)) => //.
-by move=> x y; rewrite /= lt_neqAle eq_sym.
+apply: (@total_homo_mono _ T u_ leq ltn _ _ leqnn _ ltn_neqAle
+  _ (fun _ _ _ => esym (le_anti _)) leq_total
+  (homo_ltn (fun _ _ _ u v => lt_trans v u) u_noninc)) => //.
+by move=> x y; rewrite eq_sym -lt_neqAle.
 Qed.
 (* TODO (maybe): variants for near \oo ?? *)
 
