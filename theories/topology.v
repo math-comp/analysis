@@ -4841,6 +4841,7 @@ Lemma ptws_cvgE {U : Type} {V : topologicalType}
   {ptws F --> f} = (F --> (f : {ptws U -> V})).
 Proof. by []. Qed.
 
+<<<<<<< HEAD
 Section UniformCvgLemmas.
 Context {U : choiceType} {V : uniformType}.
 
@@ -4879,6 +4880,71 @@ Qed.
 
 Lemma cvg_restrict_dep (A : set U) (f : U -> V) (F : set (set (U -> V))) : Filter F ->
   {uniform A, F --> f} <-> {uniform setT, restrict_dep A @ F --> (restrict_dep A f)}.
+=======
+Lemma ptws_uniform_cvg {U : choiceType} {V : uniformType} (f : U -> V)
+    (F : set (set (U -> V))) : Filter F ->
+  {unif, F --> f} -> {ptws, F --> f}.
+Proof.
+move => FF; rewrite cvg_sup => W i.
+rewrite cvg_image.
+- move=> C /=.
+  rewrite -nbhs_entourageE nbhs_filterE => -[B eB BsubC].
+  suff sub2 : @^~ i @` [set g | (forall u, B (f u, g u))] `<=` to_set B (f i).
+  set l := (x in x _); suff weakL : forall X Y, X `<=` Y -> l X -> l Y.
+  apply: (weakL _ _ (subset_trans sub2 BsubC)).
+  + exists ([set g : U -> V | forall u, B (f u, g u)]) => //.
+    by apply W; exists [set fg | forall u, B (fg.1 u, fg.2 u)]; [exists B|].
+  + move=> X Y /setUidPl XsubY [P FP EX].
+    exists ( P `|` [set g : U -> V | exists v, Y v /\ g = cst v]).
+      by apply: (@filterS _ _ _ P) => //= t ?; left.
+    rewrite image_setU  EX setUC. 
+    set Y' := (x in x `|` _);  
+    suff ->: Y' = Y; first by [].
+    rewrite eqEsubset; split.
+    * by move => t /= [/= h [/= v [? ->] <-]].
+    * by move => t ?; exists (cst t) => //; exists t.
+  + by move => v [/= g] + <-; apply.
+- by rewrite eqEsubset; split => v // _; exists (cst v).
+Qed.
+
+Lemma ptws_unif_nbhs {U : choiceType} {V : uniformType} f : 
+    nbhs (f : {unif, U -> V}) `=>` nbhs (f : {ptws, U -> V}).
+Proof.
+  move: (@ptws_uniform_cvg U V f (nbhs (f : {unif, U -> V}))).
+  apply; apply cvg_id.
+Qed.
+
+
+Section Restriction_DependentPairs.
+Context {U : choiceType} {V : uniformType} .
+Variables (A : set U).
+Definition restrict_dep (f : U -> V) : ({ x : U | `[< A x>]} -> V) :=
+  fun u => f (projT1 u).
+
+Lemma eq_on_restrict_dep (f g : U -> V) :
+  eq_on A f g <-> restrict_dep f = restrict_dep g.
+Proof.
+split => [eq_f_g|Rfg u].
+- rewrite funeqE => -[u Au].
+  rewrite /restrict_dep /=; apply: eq_f_g.
+  by rewrite in_setE; exact/asboolP.
+- rewrite in_setE => /asboolP Au.
+  suff -> : f u = restrict_dep f (exist _ u Au) by rewrite Rfg.
+  by [].
+Qed.
+
+Lemma explode_restrict (F : set (set (U -> V))) P : Filter F ->
+  explode_set A P = [set a | (restrict_dep @` P) (restrict_dep a)].
+Proof.
+rewrite eqEsubset; split => f /=.
+- move=> [g Pg eq_g_f] /=; exists g => //.
+  by rewrite /fmap /= /nbhs /= -eq_on_restrict_dep.
+- by move=> [g Pg /eq_on_restrict_dep] ?; by exists g.
+Qed.
+
+Lemma cvg_restrict_dep (f : U -> V) (F : set (set (U -> V))) : Filter F ->
+  {restricted A, F --> f} <-> {unif, restrict_dep @ F --> (restrict_dep f)}.
+>>>>>>> equicontinuous closures
 Proof.
 move=> FF; split.
 - move=> cvgF P' /= /restricted_nbhs [ E [/= entE EsubP]].
@@ -5237,6 +5303,22 @@ Proof.
       rewrite closureE /=.
       move => q /=; apply; split => //.
 Qed.
+  
+Lemma nbhs_entourage_ptws (f : {ptws, X -> V}) x B : 
+  entourage B -> nbhs f (fun g : {ptws, X -> V} => B (g x, f x)).
+Proof.
+move=> entB; apply: nbhd_comp => //=.
+- move => t _. 
+  apply: cvg_pair => //=; first by apply: nbhs_filter.
+  + exact: evaluator_dep_continuous.
+  + by apply: cvg_cst; apply: nbhs_filter.
+- set C := (split_ent B); have entC: entourage C by exact: entourage_split_ent.
+  have entCinv: entourage (C^-1)%classic by exact: entourage_inv.
+  exists (to_set ((C^-1)%classic) (f x), to_set C (f x)) => //=.
+  + split => //=; exact: (@nbhs_entourage _ _ ((C^-1)%classic)).
+  + move=> v [/=X1 X2]; rewrite [v]surjective_pairing.
+    by apply: entourage_split => //=; first apply: X1.
+Qed.
 
 Lemma ArzelaAscoli_aux2  (W : set ({ptws, X -> V})):
   equicontinuous W ->
@@ -5249,39 +5331,22 @@ Proof.
   exists U; split => // g x cWf Ux.
   set R := [set h : {ptws, X -> V} | 
       B (h x, g x) /\ A (g x0, h x0) ].
-  have ptwsunif : forall f Q, 
-    nbhs (f : {unif, X -> V}) Q -> nbhs (f : {ptws, X -> V}) Q
-  by admit.
   have nR: nbhs (g : {ptws, X -> V}) R. {
     apply: filterI => //.
-    - apply: (ptwsunif g).
-      exists [set fg | forall x, (B^-1)%classic (fg.1 x, fg.2 x)] => /=.
-      + by exists (B^-1)%classic => //=; apply entourage_inv.
-      + by move => h ? //=.
-    - apply: (ptwsunif g).
-      exists [set fg | forall x, A (fg.1 x, fg.2 x)] => /=.
-      + by exists A => //=.
-      + by move => h ? //=.
-        
-  }.
+    - exact: nbhs_entourage_ptws.
+    - under eq_fun => h. 
+        rewrite ((ltac:(by [])): A (g x0, h x0) = (A^-1)%classic (h x0, g x0)). 
+      over.
+      by apply: nbhs_entourage_ptws; exact: entourage_inv.
+  } 
   move: (cWf R nR) => [h /= [Wh [Ah Bh]]]. 
   apply: entourage_split => //; first by apply: Bh.
   apply: entourage_split => //; last by apply: Ah.
   apply: eqctsU => //.
-Qed
+Qed.
 
-  }
 End Precompact.
   (*
-Lemma evaluator_continuous x: continuous (evaluator x).
-Proof.
-  move=> /= f Q /=; rewrite evaluatorE; case/nbhsP => I eI IsubQ.
-  exists [set fg | I (fg.1 x, fg.2 x) ] => //=. 
-  - exists [set xy | I (xy.1, xy.2)] => //=; last by (move=> ? //=).
-    under eq_fun do rewrite -surjective_pairing.
-    exact: eI.
-  - by move=> y /=; apply: IsubQ.
-Qed.
 Lemma ArzelaAscoli_aux1 (W : set ({unif, X -> V})):
   precompact W ->
   pointwisePrecomact W.
