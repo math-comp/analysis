@@ -1505,6 +1505,7 @@ Canonical Internal.tbDistrLatticeType.
 Canonical Internal.cbDistrLatticeType.
 Canonical Internal.ctbDistrLatticeType.
 
+Section exports.
 Context {T : Type}.
 Implicit Types A B : set T.
 
@@ -1532,6 +1533,7 @@ Proof. by apply: (iffP idP); rewrite subsetEset. Qed.
 Lemma properPset A B : reflect (A `<` B) (A < B)%O.
 Proof. by apply: (iffP idP); rewrite properEset. Qed.
 
+End exports.
 End Exports.
 End SetOrder.
 Export SetOrder.Exports.
