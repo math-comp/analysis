@@ -5370,6 +5370,22 @@ Proof.
   by move=> g Wg /=; exists g. 
 Qed.
 
+Lemma hausdorff_pointwise  : 
+  (forall x, hausdorff (K x)) ->
+  hausdorff (@product_topologicalType X K).
+Proof.
+  move=> hsdfV => p q /= clstr.
+  apply: functional_extensionality_dep => x.
+  apply: hsdfV.
+  move: clstr; rewrite ?cluster_cvgE /= => [[G PG [GtoQ psubG]]].
+  exists (evaluator_dep x @ G); first exact: fmap_proper_filter; split.
+  - rewrite -(evaluator_depE x).
+    apply: cvg_trans; last apply: (@evaluator_dep_continuous x q).
+    apply: cvg_app; exact GtoQ.
+  - move/(cvg_app (evaluator_dep x)):psubG => xpsubxG.
+    apply: cvg_trans; first exact: xpsubxG.
+    apply: evaluator_dep_continuous.
+Qed.
 End Evaluators.
 Section Precompact.
 
@@ -5388,7 +5404,7 @@ Qed.
 Context {V : uniformType}.
 Context {hsdf : hausdorff V}.
 
-Definition evaluator (x : X) (f : {unif, X -> V}) := f x.
+Definition evaluator (x : X) (f : {family compactly, X -> V}) := f x.
 
 Lemma evaluatorE x f : evaluator x f = f x.
 Proof. by []. Qed.
@@ -5396,54 +5412,7 @@ Proof. by []. Qed.
 Definition pointwisePrecomact {V : topologicalType} (W : set (X -> V)):=
   forall x, precompact [set (f x) | f in W].
 
-Lemma evaluator_continuous x: continuous (evaluator x).
-Proof.
-  move=> /= f Q /=; rewrite evaluatorE; case/nbhsP => I eI IsubQ.
-  exists [set fg | I (fg.1 x, fg.2 x) ] => //=. 
-  - exists [set xy | I (xy.1, xy.2)] => //=; last by (move=> ? //=).
-    under eq_fun do rewrite -surjective_pairing.
-    exact: eI.
-  - by move=> y /=; apply: IsubQ.
-Qed.
-
-Lemma ArzelaAscoli_aux1 (W : set ({unif, X -> V})):
-  precompact W ->
-  pointwisePrecomact W.
-Proof.
-  move=> /= cptW x. 
-  have cmptfW : compact [set f x | f in closure W] by
-    (move/(continuous_compact (f := evaluator x)): cptW => cptW;
-     apply: cptW => ? ?; apply: evaluator_continuous).
-  apply: subclosed_compact.
-  - exact: closed_closure .
-  - exact: cmptfW.
-  - set Q := (x in _ `<=` x).
-    rewrite {1}closureE /bigsetI /= => z /=.
-    move=> /(_ Q); apply; rewrite /Q; split.
-    + exact: compact_closed.
-    + by rewrite closure_limit_point image_setU => ? ?; left.
-Qed.
-
-Lemma hausdorff_pointwise {K : forall x, topologicalType} : 
-  (forall x, hausdorff (K x)) ->
-  hausdorff (@product_topologicalType X K).
-Proof.
-  move=> hsdfV => p q /= clstr.
-  apply: functional_extensionality_dep => x.
-  apply: hsdfV.
-  move: clstr; rewrite ?cluster_cvgE /= => [[G PG [GtoQ psubG]]].
-  exists (evaluator_dep x @ G); first exact: fmap_proper_filter; split.
-  - rewrite -(evaluator_depE x).
-    apply: cvg_trans; last apply: (@evaluator_dep_continuous _ _ x q).
-    apply: cvg_app; exact GtoQ.
-  - move/(cvg_app (evaluator_dep x)):psubG => xpsubxG.
-    apply: cvg_trans; first exact: xpsubxG.
-    apply: evaluator_dep_continuous.
-Qed.
-
-Hint Resolve hausdorff_pointwise: core.
-
-Lemma ArzelaAscoli_aux2  (W : set ({ptws, X -> V})):
+Lemma ArzelaAscoli_aux1  (W : set ({ptws, X -> V})):
   pointwisePrecomact W -> precompact W.
 Proof.
   move=> ptwsPreW.
@@ -5465,7 +5434,65 @@ Proof.
       move => q /=; apply; split => //.
 Qed.
 
+Lemma ArzelaAscoli_aux2  (W : set ({ptws, X -> V})):
+  equicontinuous W ->
+  equicontinuous (closure W) .
+Proof.
+  move=> ectsW x0 E entE.
+  set A := (split_ent E); have entA: entourage A by exact: entourage_split_ent.
+  set B := (split_ent A); have entB: entourage B by exact: entourage_split_ent.
+  move: (ectsW x0 B entB) => [U [nbdU eqctsU]].
+  exists U; split => // g x cWf Ux.
+  set R := [set h : {ptws, X -> V} | 
+      B (h x, g x) /\ A (g x0, h x0) ].
+  have nR: nbhs (g : {ptws, X -> V}) R by admit.
+  move: (cWf R nR) => [h /= [Wh [Ah Bh]]]. 
+  apply: entourage_split => //; first by apply: Bh.
+  apply: entourage_split => //; last by apply: Ah.
+  apply: eqctsU => //.
+Qed
+
+  }
 End Precompact.
+  (*
+Lemma evaluator_continuous x: continuous (evaluator x).
+Proof.
+  move=> /= f Q /=; rewrite evaluatorE; case/nbhsP => I eI IsubQ.
+  exists [set fg | I (fg.1 x, fg.2 x) ] => //=. 
+  - exists [set xy | I (xy.1, xy.2)] => //=; last by (move=> ? //=).
+    under eq_fun do rewrite -surjective_pairing.
+    exact: eI.
+  - by move=> y /=; apply: IsubQ.
+Qed.
+Lemma ArzelaAscoli_aux1 (W : set ({unif, X -> V})):
+  precompact W ->
+  pointwisePrecomact W.
+Proof.
+  move=> /= cptW x. 
+  have cmptfW : compact [set f x | f in closure W] by
+    (move/(continuous_compact (f := evaluator x)): cptW => cptW;
+     apply: cptW => ? ?; apply: evaluator_continuous).
+  apply: subclosed_compact.
+  - exact: closed_closure .
+  - exact: cmptfW.
+  - set Q := (x in _ `<=` x).
+    rewrite {1}closureE /bigsetI /= => z /=.
+    move=> /(_ Q); apply; rewrite /Q; split.
+    + exact: compact_closed.
+    + by rewrite closure_limit_point image_setU => ? ?; left.
+Qed.
+
+*)
+End Precompact.
+
+Section Ascoli1.
+
+Context {X : choiceType}.
+Context {V : uniformType}.
+Context {hsdf : hausdorff V}.
+
+
+
 Section ArzelaAscoli.
 Context {X V : uniformType}.
 Context {hsdfV : hausdorff V}.
