@@ -5245,6 +5245,8 @@ Proof. by []. Qed.
 Definition compactly_in {U : topologicalType} (A : set U) :=
   [set B | B `<=` A /\ compact B].
 
+Definition compactly {U : topologicalType} := compactly_in (@setT U).
+
 Lemma compact_cvg_within_compact {U : topologicalType} {V : uniformType}
     (C : set U) (F : set (set (U -> V))) (f : U -> V) :
   Filter F -> compact C ->
@@ -5280,3 +5282,341 @@ by exists X; split; [exists x | rewrite -subset0; apply/A].
 Qed.
 
 End density.
+
+
+Lemma nbhd_comp {X Y : topologicalType} (f : X -> Y) U x: 
+  {in f@^-1`U, continuous f} ->
+  nbhs (f x) U -> nbhs x (f @^-1` U).
+Proof.
+  rewrite ?nbhsE /= => ctsF [A [[openA nbhsA] AsubU]].
+  have oAInv: (open (f @^-1` A)).  {
+    apply: open_comp => //.
+    move=> u ufA; apply: ctsF; rewrite in_setE; apply: AsubU.
+    by rewrite in_setE /= in ufA.
+  }
+  exists (f @^-1` A); rewrite open_nbhsE; repeat split => //.
+  - rewrite openE //= in oAInv; exact: (oAInv).
+  - by move=> y /=; apply: AsubU.
+Qed.
+
+Lemma preimage_closure {X Y : topologicalType} (f : X -> Y) U :
+  continuous f ->
+  closure (f @^-1` U) `<=` f @^-1` (closure U) .
+Proof.
+  rewrite ?closureEnbhs => cstF x /=. 
+  rewrite ?meets_globallyl /= => meetx P nbhsP.
+  apply: (nonempty_preimage (f:=f)); rewrite preimage_setI /=.
+  by apply: meetx; apply: nbhd_comp.
+Qed.
+
+Lemma continuous_image_closure {X Y : topologicalType} (f : X -> Y) U :
+  continuous f -> (f @` closure U) `<=` closure  (f @` U) .
+Proof.
+  move=> ctsF y /= [x + <-].
+  rewrite ?closureEnbhs /= ?meets_globallyl => nbhdx Q nbhsfx.
+  apply: (nonempty_preimage (f:=f)); rewrite preimage_setI.
+  apply: subsetI_neq0;
+    last by (apply: nbhdx; apply: nbhd_comp => //=; apply: nbhsfx).
+  - move=> z  Uz /=; exists z; tauto.
+  - by [].
+Qed.
+
+Definition equicontinuous {X : topologicalType} {V : uniformType}
+  (W : set (X -> V)) :=
+  forall x (E: set (V * V)), entourage E -> exists (U : set (X)), 
+    nbhs x U /\ forall f y, W f -> U x -> E(f x, f y).
+
+Definition uniformlyEquicontinuous {X V : uniformType} (W : set (X -> V)):=
+  forall (E: set (V * V)), entourage E -> exists (D : set (X*X)), 
+    entourage D /\ forall f x y, W f -> D(x,y) -> E(f x, f y).
+
+Section Evaluators.
+Context {X : choiceType}.
+Context {K : forall x:X, topologicalType}.
+Definition evaluator (x : X) (f : product_topologicalType K) := f x.
+
+Lemma evaluatorE x f : evaluator x f = f x.
+Proof. by []. Qed.
+
+Program Definition xval {x : X} (y : K x) i : K i := 
+        match (pselect `[< x = i >]) return K i with 
+        | left r => _
+        | right _ => point
+        end.
+Next Obligation.
+  move/asboolP: r <-.
+  exact: y.
+Qed.
+
+Lemma evaluator_continuous x: continuous (evaluator x).
+Proof.
+  move=> f.
+  have /cvg_sup/(_ x)/cvg_image : (f --> f) by admit.
+  set P := ( x in (x -> _) -> _).
+  have P' : P. {
+    rewrite /P eqEsubset; split => y /=.
+    - by [].
+    - move=> _. exists (xval y) => //.
+      rewrite /xval.
+      Search `[< _ = _ >].
+             
+
+  } 
+  move/(_ P') => Ff.
+  apply: cvg_trans; last exact: Ff.
+  rewrite /= /evaluator=> Q /=. rewrite {1}/nbhs /=.
+  move=> [W nbdW <-].
+  rewrite /nbhs /=.
+  apply: filterS; last exact: nbdW.
+  by move=> g Wg /=; exists g. 
+Qed.
+
+
+  Search (nbhs (_ _)).
+
+
+  set F1 := (x in x --> _ -> _).
+  set F2 := (x in _ -> x --> _).
+
+  suff: (F1 `=>` F2). by applyl 
+  rewrite /F1/F2 eqEsubset /evaluator/=.
+  split=> Q /=.
+  - move => [W nbdA <- /=].
+    set W' := (x in nbhs _ x).
+    suff: W = W' by move=> <- //.
+    rewrite /W' eqEsubset; split => g /=.
+    + move=> ?; exists g; tauto.
+    + move=> [h Wh].
+  
+  rewrite  /evaluator.
+  move=> H Q fQ /=.
+
+
+
+
+  rewrite /evaluator.
+  rewrite /filter_of {1}/nbhs/=.
+  done.
+  (*
+  have := @weak_continuous 
+    (dep_arrow_pointedType K) (K x) (evaluator x) f.
+    *)
+  have : continuous (@id (product_topologicalType K)) by 
+      move=> ?; apply: cvg_id.
+  have ? : Filter (id @ f) by admit.
+  have : (f --> (f : (dep_arrow_pointedType (fun x : X => K x)))).
+  move/(_ f)/cvg_sup.
+  rewrite /evaluator/cvg_to/filter_of.
+  apply.
+
+
+  
+
+
+  2: admit.
+
+
+    (dep_arrow_pointedType K) (K x) (evaluator x) f.
+  rewrite cvg_sup
+  
+  
+  move/continuousP/(_ A oA).
+  rewrite /product_topologicalType/evaluator.
+
+
+  rewrite /product_topologicalType/sup_topologicalType /=.
+  apply.
+  move => [P /= [[A oA AP] [Pf PsubQ]]]; subst.
+  eexists;eexists; last by split; eauto.
+  exists ([set (evaluator x @^-1` A)]); last exact: bigcup_set1.
+  rewrite /set1 /evaluator => U /= ->.
+  exists (fset1 [set t | A (t x)]) => /=.
+  - move=> R /fset1P ->; rewrite in_setE /=; exists x => //.
+    apply: open_comp  => /=.
+    move=> q qA.
+    admit.
+  - rewrite /bigsetI /= eqEsubset; split =>t /=.
+    + apply; apply: fset11.
+    + by move=> ? ? /fset1P -> //.
+
+
+
+  
+
+  ko: move => P /= ->; exists 
+  Search bigsetU.
+
+  exists [set fg | I (fg.1 x, fg.2 x) ] => //=. 
+  - exists [set xy | I (xy.1, xy.2)] => //=; last by (move=> ? //=).
+    under eq_fun do rewrite -surjective_pairing.
+    exact: eI.
+  - by move=> y /=; apply: IsubQ.
+Qed.
+Section Precompact.
+
+Context {X : topologicalType}.
+Definition precompact {X : topologicalType} (C: set X) := 
+  compact (closure C).
+
+Lemma precompact_subset (A B: set X) : A `<=` B -> precompact B -> precompact A.
+Proof.
+move=> AsubB precompactB.
+apply: (subclosed_compact (B := closure B)) => //.
+- exact: closed_closure.
+- exact: closure_subset.
+Qed.
+
+Definition pointwisePrecomact {V : topologicalType} (W : set (X -> V)):=
+  forall x, precompact [set (f x) | f in W].
+  
+Context {V : uniformType}.
+Context {hsdf : hausdorff V}.
+Definition evaluator (x : X) (f : {unif, X -> V}) := f x.
+
+Lemma evaluatorE x f : evaluator x f = f x.
+Proof. by []. Qed.
+
+Lemma evaluator_continuous x: continuous (evaluator x).
+Proof.
+  move=> /= f Q /=; rewrite evaluatorE; case/nbhsP => I eI IsubQ.
+  exists [set fg | I (fg.1 x, fg.2 x) ] => //=. 
+  - exists [set xy | I (xy.1, xy.2)] => //=; last by (move=> ? //=).
+    under eq_fun do rewrite -surjective_pairing.
+    exact: eI.
+  - by move=> y /=; apply: IsubQ.
+Qed.
+
+Lemma ArzelaAscoli_aux1 (W : set ({unif, X -> V})):
+  precompact W ->
+  pointwisePrecomact W.
+Proof.
+  move=> /= cptW x. 
+  have cmptfW : compact [set f x | f in closure W] by
+    (move/(continuous_compact (f := evaluator x)): cptW => cptW;
+     apply: cptW => ? ?; apply: evaluator_continuous).
+  apply: subclosed_compact.
+  - exact: closed_closure .
+  - exact: cmptfW.
+  - set Q := (x in _ `<=` x).
+    rewrite {1}closureE /bigsetI /= => z /=.
+    move=> /(_ Q); apply; rewrite /Q; split.
+    + exact: compact_closed.
+    + by rewrite closure_limit_point image_setU => ? ?; left.
+Qed.
+
+End Precompact.
+Lemma hausdorff_pointwise {X : choiceType} {K : forall x, topologicalType} : 
+  (forall x, hausdorff (K x)) ->
+  hausdorff (@product_topologicalType X K).
+Proof.
+  move=> hsdfV => p q /= clstr.
+  apply: functional_extensionality_dep => x.
+  apply: hsdfV.
+  move: clstr; rewrite ?cluster_cvgE /= => [[G PG [GtoQ psubG]]].
+  set f := (fun (f : forall y, K y) => f x ).
+  exists (f @ G); first exact: fmap_proper_filter. 
+  
+  Search (ProperFilter ( _ @ _)).
+  apply: hsdfV => A B pxA qxB.
+  rewrite /cluster /= /meets /=.
+Lemma ArzelaAscoli_aux2  (W : set ({ptws, X -> V})):
+  pointwisePrecomact W -> precompact W.
+Proof.
+  move=> ptwsPreW.
+    set K := fun x => closure [set (f x) | f in W].
+    have C : compact  
+        [set f : ({ptws, X -> V}) | (forall x : X, K x (f x))] by
+      apply: tychonoff => x; apply: ptwsPreW => //.
+    apply: subclosed_compact.
+    - apply: closed_closure.
+    - exact: C.
+    - set R := (x in _`<=` x).
+      have cR : closed R.
+        apply: compact_closed => //.
+      suff /closure_subset WsubR: W `<=` R.
+      apply: subset_trans; first exact:WsubR.
+
+      Search closure.
+       {
+        rewrite /R/K => f /= Wf x; rewrite closure_limit_point /=.
+        left => /=; exists f; tauto.
+      }
+      ]
+      
+      have := (continuous_image_closure (f:= evaluator x) (U := W) 
+          (ltac: (apply: evaluator_continuous))).
+      rewrite /evaluator => G clWf.
+      by apply: G => /=; exists f.
+    
+    rewrite {}/K; set D := (x in compact x) => cptD.
+
+
+Section ArzelaAscoli.
+Context {X V : uniformType}.
+Context {hsdfV : hausdorff V}.
+(*
+Lemma ArzelaAscoli_aux2 (W : set ({unif, X -> V})):
+  pointwisePrecomact W -> equicontinuous W -> uniformlyEquicontinuous W.
+Proof.
+  move=> ptwsPreW ectsW E entE.
+
+  move=> /= cptW x. 
+  have cmptfW : compact [set f x | f in closure W] by
+    (move/(continuous_compact (f := evaluator x)): cptW => cptW;
+     apply: cptW => ? ?; apply: evaluator_continuous).
+  apply: subclosed_compact.
+  - exact: closed_closure .
+  - exact: cmptfW.
+  - set Q := (x in _ `<=` x).
+    rewrite {1}closureE /bigsetI /= => z /=.
+    move=> /(_ Q); apply; rewrite /Q; split.
+    + exact: compact_closed.
+    + by rewrite closure_limit_point image_setU => ? ?; left.
+Qed.
+Lemma equicontinuous_filter W x:
+  equicontinuous W x = (nbhs x) .
+*)
+Lemma ArzelaAscoli (W : set ({unif, X -> V})):
+  (forall f, W f -> continuous f) ->
+  precompact W = ((equicontinuous W) /\ pointwisePrecomact W).
+Proof.
+  move=> ctsW; rewrite propeqE //=; split. 
+  - move=> cptW; split; last apply: ArzelaAscoli_aux1 => //.
+    admit.
+  - move=> [ectsW].
+    rewrite /pointwisePrecomact /precompact ?compact_ultra /= => pcptW F UF FW.
+    have : forall x, 
+        closure [set f x | f in W] `&` [set p | evaluator x @ F --> p] !=set0. {
+      move=> x; apply: pcptW.
+      - apply: ultra_image.
+
+    }
+
+    set K := fun x => closure [set (f x) | f in W].
+    set ptwsTop := ([topologicalType of {ptws, X -> V}]).
+
+    have : @compact ptwsTop [set f | (forall x : X, K x (f x))] by
+      apply: tychonoff => x; apply: pcptW => //.
+    rewrite {}/K; set D := (x in compact x) => cptD.
+    apply: subclosed_compact.
+    + apply: closed_closure.
+    + apply cptD.
+    move=> x E entE.
+    set P := [set f | ]
+    have := @tychonoff _ (fun=> V) K 
+        (ltac:(move=> i; apply ArzelaAscoli_aux1 => //)).
+    
+
+    split.
+    rewrite /cover_compact in cptW.
+    move=> x.
+    set q := [set g | E (f x, g )]
+    + move=> x E entE.
+      set Q := [set f | forall y, E (f x, f y)].
+      unfold compact in *.
+      eexists.
+
+
+
+
+
