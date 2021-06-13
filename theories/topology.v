@@ -5445,7 +5445,21 @@ Proof.
   exists U; split => // g x cWf Ux.
   set R := [set h : {ptws, X -> V} | 
       B (h x, g x) /\ A (g x0, h x0) ].
-  have nR: nbhs (g : {ptws, X -> V}) R by admit.
+  have ptwsunif : forall f Q, 
+    nbhs (f : {unif, X -> V}) Q -> nbhs (f : {ptws, X -> V}) Q
+  by admit.
+  have nR: nbhs (g : {ptws, X -> V}) R. {
+    apply: filterI => //.
+    - apply: (ptwsunif g).
+      exists [set fg | forall x, (B^-1)%classic (fg.1 x, fg.2 x)] => /=.
+      + by exists (B^-1)%classic => //=; apply entourage_inv.
+      + by move => h ? //=.
+    - apply: (ptwsunif g).
+      exists [set fg | forall x, A (fg.1 x, fg.2 x)] => /=.
+      + by exists A => //=.
+      + by move => h ? //=.
+        
+  }.
   move: (cWf R nR) => [h /= [Wh [Ah Bh]]]. 
   apply: entourage_split => //; first by apply: Bh.
   apply: entourage_split => //; last by apply: Ah.
