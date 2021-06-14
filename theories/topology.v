@@ -4914,6 +4914,21 @@ Proof.
   apply; apply cvg_id.
 Qed.
 
+(*
+Lemma restrict_ptws_continuous {U : choiceType} {V : uniformType} (A: set U): 
+  continuous (restrict A : {ptws, U -> V} -> {ptws, U -> V}).
+Proof.
+  move=> f; apply/cvg_sup; first by apply:fmap_filter; apply: nbhs_filter.
+  move=> i; apply/cvg_image; first by apply:fmap_filter; apply: nbhs_filter.
+  - by rewrite eqEsubset; split => //= t /= _; exists (fun=> t) => //=.
+  - move=> Q /= nbhsQ; exists [set f | Q(f i)] => //=.
+    + 
+    + rewrite eqEsubset; split => g /=.
+      * by move=> [? ? <-].
+      * by move=> Qg; exists (fun=> g); tauto.
+Admitted.
+*)
+
 
 Section Restriction_DependentPairs.
 Context {U : choiceType} {V : uniformType} .
@@ -5117,6 +5132,13 @@ Definition compactly_in {U : topologicalType} (A : set U) :=
 
 Definition compactly {U : topologicalType} := compactly_in (@setT U).
 
+Lemma compactly_compact {U : topologicalType} : 
+  compactly = @compact U.
+Proof.
+rewrite predeqE => A; split => //=. 
+rewrite /compactly/compactly_in /=; tauto.
+Qed.
+
 Lemma compact_cvg_within_compact {U : topologicalType} {V : uniformType}
     (C : pred U) (F : set (set (U -> V))) (f : U -> V) :
   Filter F -> compact C ->
@@ -5154,7 +5176,7 @@ Qed.
 End density.
 
 
-Lemma nbhd_comp {X Y : topologicalType} (f : X -> Y) U x: 
+Lemma nbhs_comp {X Y : topologicalType} (f : X -> Y) U x: 
   {in f@^-1`U, continuous f} ->
   nbhs (f x) U -> nbhs x (f @^-1` U).
 Proof.
@@ -5176,7 +5198,7 @@ Proof.
   rewrite ?closureEnbhs => cstF x /=. 
   rewrite ?meets_globallyl /= => meetx P nbhsP.
   apply: (nonempty_preimage (f:=f)); rewrite preimage_setI /=.
-  by apply: meetx; apply: nbhd_comp.
+  by apply: meetx; apply: nbhs_comp.
 Qed.
 
 Lemma continuous_image_closure {X Y : topologicalType} (f : X -> Y) U :
@@ -5186,7 +5208,7 @@ Proof.
   rewrite ?closureEnbhs /= ?meets_globallyl => nbhdx Q nbhsfx.
   apply: (nonempty_preimage (f:=f)); rewrite preimage_setI.
   apply: subsetI_neq0;
-    last by (apply: nbhdx; apply: nbhd_comp => //=; apply: nbhsfx).
+    last by (apply: nbhdx; apply: nbhs_comp => //=; apply: nbhsfx).
   - move=> z  Uz /=; exists z; tauto.
   - by [].
 Qed.
@@ -5222,9 +5244,8 @@ Proof.
   have P' : P. {
     rewrite /P eqEsubset; split => y /=.
     - by [].
-    - move=> _. exists (xval y) => //.
-      rewrite /xval.
-      case (pselect _).
+    - move=> _; exists (xval y) => //.
+      rewrite /xval; case (pselect _).
       + move/asboolP => Q.
         rewrite -Eqdep_dec.eq_rect_eq_dec => //.
         move=> p q .
@@ -5274,7 +5295,7 @@ Qed.
 Context {V : uniformType}.
 Context {hsdf : hausdorff V}.
 
-Definition evaluator (x : X) (f : {family compactly, X -> V}) := f x.
+Definition evaluator (x : X) (f : {family compact, X -> V}) := f x.
 
 Lemma evaluatorE x f : evaluator x f = f x.
 Proof. by []. Qed.
@@ -5307,7 +5328,7 @@ Qed.
 Lemma nbhs_entourage_ptws (f : {ptws, X -> V}) x B : 
   entourage B -> nbhs f (fun g : {ptws, X -> V} => B (g x, f x)).
 Proof.
-move=> entB; apply: nbhd_comp => //=.
+move=> entB; apply: nbhs_comp => //=.
 - move => t _. 
   apply: cvg_pair => //=; first by apply: nbhs_filter.
   + exact: evaluator_dep_continuous.
@@ -5344,6 +5365,59 @@ Proof.
   apply: entourage_split => //; last by apply: Ah.
   apply: eqctsU => //.
 Qed.
+
+Axiom magic: False.
+
+Lemma foo F f A C (W : set (X -> V)): 
+  {ptws, F --> f} -> 
+  UltraFilter F ->
+  W f -> equicontinuous W -> F W -> compact A ->
+  entourage C -> 
+  exists z U, F U /\ A z /\ {in U, forall g, C (f z, g z)}. 
+Proof.
+  move: magic => M; contradict M.
+Qed.
+    
+
+
+Lemma ArzelaAscoli_aux3 (W : set ({ptws, X -> V})):
+  @compact ([topologicalType of {ptws, X -> V}]) W ->
+  equicontinuous W ->
+  @compact ([topologicalType of {family compact, X -> V}]) W.
+Proof.
+  move=> cptPtwsW ectsW; move: (cptPtwsW).
+  rewrite compact_ultra compact_ultra /= =>+ F UF FW => /(_ F UF FW) [f [Wf /=ptwsF]].
+  exists f;split => //=; apply/fam_cvgP => A cptA.
+  apply/restricted_restrict_cvg/cvg_app_entourageP => /= E entE.
+  move: (entE) => [B entB BsubE]; rewrite /unif_fun.
+  set C := (split_ent B); have entC: entourage C by exact: entourage_split_ent.
+  set D := (split_ent C); have entD: entourage D by exact: entourage_split_ent.
+  have [z [R [FR [Az RD]]]] := foo ptwsF UF Wf ectsW FW cptA entD.
+  near=> q; rewrite /unif_fun; apply: BsubE=> /= x.
+  (*
+  match goal with 
+  |  H : _ \is_near _ |- _ => unfold nbhs in H; simpl in H
+  end.
+  *)
+  rewrite /restrict/patch /=; case Ax : `[<A x>] => /=; last by apply: entourage_refl.
+  move: (ectsW x C entC) => [ U [nbhstU /(_ f z) G]].
+  apply: entourage_split => //=; rewrite -/C; 
+    first by  apply G => //=; apply: nbhs_singleton.
+  have entDinv := @entourage_inv _ D (entD).
+  move: (ectsW x _ entDinv) => [ U2 [nbhsvU2 /(_ q z) /= GD]].
+  apply: entourage_split => //=; rewrite -/D.
+  2: apply: (GD) => /=.
+  3: exact: nbhs_singleton.
+  2: exact: (near FW).
+  move: entD => /=; near: q.
+  near_simpl.
+
+
+    first by  apply GD => //=; apply: nbhs_singleton.
+
+  rewrite /evaluator/evaluator_dep. 
+
+  apply G in 
 
 End Precompact.
   (*
