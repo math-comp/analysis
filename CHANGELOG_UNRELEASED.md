@@ -6,6 +6,9 @@
 
 ### Changed
 
+- in `measure.v`:
+  + generalize lemma `eq_bigcupB_of`
+
 ### Renamed
 
 ### Removed
