@@ -5439,27 +5439,25 @@ Definition pointwisePrecomact {V : topologicalType} (W : set (X -> V)):=
   forall x, precompact [set (f x) | f in W].
 
 Lemma ArzelaAscoli_aux1  (W : set ({ptws, X -> V})):
-  pointwisePrecomact W <-> precompact W.
+  pointwisePrecomact W -> precompact W.
 Proof.
-split.
-- move=> ptwsPreW.
-    set K := fun x => closure [set (f x) | f in W].
-    have C : compact  
-        [set f : ({ptws, X -> V}) | (forall x : X, K x (f x))] by
-      apply: tychonoff => x; apply: ptwsPreW => //.
-    apply: subclosed_compact.
-    + apply: closed_closure.
-    + exact: C.
-    + set R := (x in _`<=` x).
-      have WsubR : W `<=` R. {
-        rewrite /R/K => f /= Wf x; rewrite closure_limit_point /=.
-        by left => /=; exists f; tauto.
-      }
-      have cR : closed R by
-        by apply: compact_closed => //; apply: hausdorff_pointwise.
-      rewrite closureE /=.
-      move => q /=; apply; split => //.
-- move=> 
+move=> ptwsPreW.
+set K := fun x => closure [set (f x) | f in W].
+have C : compact  
+    [set f : ({ptws, X -> V}) | (forall x : X, K x (f x))] by
+  apply: tychonoff => x; apply: ptwsPreW => //.
+apply: subclosed_compact.
++ apply: closed_closure.
++ exact: C.
++ set R := (x in _`<=` x).
+  have WsubR : W `<=` R. {
+    rewrite /R/K => f /= Wf x; rewrite closure_limit_point /=.
+    by left => /=; exists f; tauto.
+  }
+  have cR : closed R by
+    by apply: compact_closed => //; apply: hausdorff_pointwise.
+  rewrite closureE /=.
+  move => q /=; apply; split => //.
 Qed.
   
 Lemma nbhs_entourage_ptws (f : {ptws, X -> V}) x B : 
@@ -5540,6 +5538,13 @@ Proof.
   2: exact: (near FW).
   (have : (R q) by apply (near FR)); apply.
 Grab Existential Variables. by end_near. Qed.
+
+Lemma ArzelaAscoliForward  (W : set (X -> Y)) fam: 
+  pointwisePrecomact W -> 
+  equicontinuous W -> 
+  @compact {family fam}
+
+pointwisePrecomact W
 
 
   move: entD=> /=; near: q.
