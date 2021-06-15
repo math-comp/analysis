@@ -5435,24 +5435,22 @@ Context {hsdf : hausdorff V}.
 
 Definition evaluator (x : X) (f : {family compact, X -> V}) := f x.
 
-Lemma evaluatorE x f : evaluator x f = f x.
-Proof. by []. Qed.
-
 Definition pointwisePrecomact {V : topologicalType} (W : set (X -> V)):=
   forall x, precompact [set (f x) | f in W].
 
 Lemma ArzelaAscoli_aux1  (W : set ({ptws, X -> V})):
-  pointwisePrecomact W -> precompact W.
+  pointwisePrecomact W <-> precompact W.
 Proof.
-  move=> ptwsPreW.
+split.
+- move=> ptwsPreW.
     set K := fun x => closure [set (f x) | f in W].
     have C : compact  
         [set f : ({ptws, X -> V}) | (forall x : X, K x (f x))] by
       apply: tychonoff => x; apply: ptwsPreW => //.
     apply: subclosed_compact.
-    - apply: closed_closure.
-    - exact: C.
-    - set R := (x in _`<=` x).
+    + apply: closed_closure.
+    + exact: C.
+    + set R := (x in _`<=` x).
       have WsubR : W `<=` R. {
         rewrite /R/K => f /= Wf x; rewrite closure_limit_point /=.
         by left => /=; exists f; tauto.
@@ -5461,6 +5459,7 @@ Proof.
         by apply: compact_closed => //; apply: hausdorff_pointwise.
       rewrite closureE /=.
       move => q /=; apply; split => //.
+- move=> 
 Qed.
   
 Lemma nbhs_entourage_ptws (f : {ptws, X -> V}) x B : 
@@ -5504,39 +5503,31 @@ Proof.
   apply: eqctsU => //.
 Qed.
 
-Axiom magic: False.
-
-Lemma foo F f A C (W : set (X -> V)): 
-  {ptws, F --> f} -> 
-  UltraFilter F ->
-  W f -> equicontinuous W -> F W -> compact A ->
-  entourage C -> 
-  exists z U, F U /\ A z /\ {in U, forall g, C (f z, g z)}. 
-Proof.
-  move: magic => M; contradict M.
-Qed.
-    
-
-
-Lemma ArzelaAscoli_aux3 (W : set ({ptws, X -> V})):
+Lemma ArzelaAscoli_aux3 (W : set ({ptws, X -> V})) fam:
   @compact ([topologicalType of {ptws, X -> V}]) W ->
   equicontinuous W ->
-  @compact ([topologicalType of {family compact, X -> V}]) W.
+  @compact ([topologicalType of {family fam, X -> V}]) W.
 Proof.
   move=> cptPtwsW ectsW; move: (cptPtwsW).
   rewrite compact_ultra compact_ultra /= =>+ F UF FW => /(_ F UF FW) [f [Wf /=ptwsF]].
   exists f;split => //=; apply/fam_cvgP => A cptA.
+  case E : `[< A !=set0>].
+  2: (suff ->: A = set0 by exact: cvg_restricted_set0);
+    by move /asboolP: E; rewrite -set0P=> /negP/negbNE/eqP ->. 
+  move/asboolP: E => [z Az].
   apply/restricted_restrict_cvg/cvg_app_entourageP => /= E entE.
   move: (entE) => [B entB BsubE]; rewrite /unif_fun.
   set C := (split_ent B); have entC: entourage C by exact: entourage_split_ent.
   set D := (split_ent C); have entD: entourage D by exact: entourage_split_ent.
-  have [z [R [FR [Az RD]]]] := foo ptwsF UF Wf ectsW FW cptA entD.
+  set R := [set g | D (f z, g z) ] .
+  have FR : (F R). {
+    apply (cvg_fmap (f:= evaluator_dep z)) in ptwsF; last by move=>??; 
+      apply:evaluator_dep_continuous.
+    rewrite /evaluator_dep /ptws_fun in ptwsF.
+    move/cvg_entourageP/(_ D entD):ptwsF => /=.
+    by near_simpl.
+  }
   near=> q; rewrite /unif_fun; apply: BsubE=> /= x.
-  (*
-  match goal with 
-  |  H : _ \is_near _ |- _ => unfold nbhs in H; simpl in H
-  end.
-  *)
   rewrite /restrict/patch /=; case Ax : `[<A x>] => /=; last by apply: entourage_refl.
   move: (ectsW x C entC) => [ U [nbhstU /(_ f z) G]].
   apply: entourage_split => //=; rewrite -/C; 
@@ -5547,7 +5538,11 @@ Proof.
   2: apply: (GD) => /=.
   3: exact: nbhs_singleton.
   2: exact: (near FW).
-  move: entD => /=; near: q.
+  (have : (R q) by apply (near FR)); apply.
+Grab Existential Variables. by end_near. Qed.
+
+
+  move: entD=> /=; near: q.
   near_simpl.
 
 
