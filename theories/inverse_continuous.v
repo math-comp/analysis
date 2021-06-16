@@ -22,178 +22,84 @@ Definition strict_increasing (f : R -> R) :=
 Definition monotone (f : R -> R) :=
   {mono f : y z / y <= z} \/ {mono f : y z /~ y <= z}.
 
+Let Cf (f : R -> R) a b := {in `[a, b], continuous f}.
+Let If (f : R -> R) a b := {in `[a, b] &, injective f}.
+Let Mf (f : R -> R) a b := {in `[a, b] &, {mono f : x y / x <= y}}.
+
 Lemma near_injective_monotone (f : R -> R) (a b : R) :
-  {in `]a, b[ &, injective f} -> 
-  {in `]a, b[, continuous f} ->
-  {in `]a, b[ &, {mono f : x y / x <= y}} \/
-  {in `]a, b[ &, {mono f : x y /~ x <= y}}.
-Proof.  
-move=> ijf ctf; have [altb | blea ] := boolP(a < b); last first.
-  left=> x y; rewrite in_itv /= => /andP[] ax xb; case/negP: blea.
-  by apply: lt_trans xb.
-set ctxt := fun (g : R -> R) => {in `]a, b[ &, injective g} /\
-    {in `]a, b[, continuous g}.
-have ctxtg' g : ctxt g -> ctxt (-%R \o g).
-  move=> [ijg ctg]; split; first by move=> u v uin vin /= /oppr_inj /ijg=> ->.
-  move=> u uin; apply: continuous_comp; first by apply: ctg.
-  by apply: opp_continuous.
-have keepin : {in `]a, b[, forall x, a + b - x \in `]a, b[}.
-  move=> x xin; rewrite in_itv /= !ltr_sub_addl !ltr_add2r (addrC x a).
-  by rewrite !ltr_add2l !(itvP xin).
-have ctxtg2 g : ctxt g -> ctxt (g \o (fun x => a + b - x)).
-  move=> [ijg ctg]; split.
-    move=> u v uin vin /= /ijg; rewrite !keepin // => /(_ isT isT)/eqP.
-    by rewrite -subr_eq0 (addrC (a + b)) addrKA subr_eq0 eqr_opp=>/eqP.
-  move=> u uin; apply: continuous_comp; last first.
-    by rewrite forE; apply/ctg/keepin.
-  by apply: continuousB;[apply: continuous_cst |].
-have allin : {in `]a, b[ &, forall x z u, x <= u <= z -> u \in `]a, b[}.
-    move=> x z xin zin u /andP[] xleu ulez; rewrite in_itv /=.
-    by rewrite (lt_le_trans _ xleu) ?(le_lt_trans ulez) ?(itvP zin)
-         ?(itvP xin).
-have keepy : {in `]a, b[ &, forall x z y, x < y < z -> y \in `]a, b[}.
-  move=> x z xin zin y /andP[xlty yltz]; apply: (allin x z)=> //.
-  by rewrite !le_eqVlt xlty yltz !orbT.
-have reverse : {in `]a, b[ &, forall x z y, x < y < z ->
-                  a + b - z < a + b - y < a + b - x}.
-  by move=> x z xin zin y xyz; rewrite !ltr_add2l !ltr_opp2 andbC.
-have noturn : forall g, ctxt g ->
-   {in `]a, b[ &, forall x z y, x < y < z -> g x < g y -> g y < g z}.
-  move=> g [ijg ctg] x z xin zin y /andP[xlty yltz] glt; rewrite ltNge le_eqVlt.
-  have gctuw : {in `]a, b[ &, forall u w, {in `[u,w], continuous g}}.
-    move=> u w uin win.
-    move=> v vin; apply ctg.
-    rewrite in_itv /= (lt_le_trans (_ : a < u) _) ?(itvP vin) ?(itvP uin) //.
-    rewrite (le_lt_trans _ (_ : w < b)) ?(itvP win) //.
-      by rewrite ?(itvP vin).
-  have yin : y \in `]a, b[ by apply: (keepy _ _ xin zin); rewrite xlty.
-  apply/negP=> /orP[/eqP gygz | gzltgy].
-    by move: yltz; rewrite lt_neqAle (ijg _ _ yin zin (esym gygz)) eqxx.
-  have [ gxltgz | ] := boolP(g x < g z).
-    have gzmid : Num.min (g x) (g y) <= g z <= Num.max (g x) (g y).
-      by rewrite /Num.min  /Num.max glt !ltW ?gzltgy.
-    have [u uin Pu] := IVT (ltW xlty) (gctuw _ _ xin yin) gzmid.
-    have ultz : u < z by rewrite (le_lt_trans _ yltz) ?(itvP uin).
-    have uab : u \in `]a, b[.
-      by apply: (allin _ _ xin zin); rewrite (itvP uin) ltW.
-    by move: ultz; rewrite lt_neqAle (ijg _ _ uab zin Pu) eqxx.
-  rewrite -leNgt=> gzlegx.
-  have gzmid : Num.min (g y) (g z) <= g x <= Num.max (g y) (g z).
-    by rewrite minC maxC /Num.min  /Num.max gzltgy ?gzlegx ltW.
-  have [u uin Pu] := IVT (ltW yltz) (gctuw _ _ yin zin) gzmid.
-  have xltu : x < u by rewrite (lt_le_trans xlty _) ?(itvP uin).
-  have uab : u \in `]a, b[.
-    by apply: (allin x z xin zin); rewrite (itvP uin) le_eqVlt xltu orbT.
-  by move: xltu; rewrite lt_neqAle (ijg _ _ uab xin Pu) eqxx.
-have noturn2 g : ctxt g ->
-   {in `]a, b[ &, forall x z y, x < y < z -> g y < g x -> g z < g y}.
-  move=> ctg x z xin zin y xyz flt.
-  rewrite -(opprK (g y)) ltr_oppr.
-  apply: (noturn _ (ctxtg' _ ctg) x z xin zin y xyz)=> /=.
-  by rewrite ltr_oppr opprK.
-have noturn3 g : ctxt g ->
-  {in `]a, b[ &, forall x z y, x < y < z -> g z < g y -> g y < g x}.
-  move=> ctg x z xin zin y xyz flt.
-  have := noturn _ (ctxtg2 _ ctg) _ _
-     (keepin _ zin) (keepin _ xin) _ (reverse _ _ xin zin _ xyz).
-  by rewrite /= !subKr; apply.
-have noturn4 g : ctxt g ->
-  {in `]a, b[ &, forall x z y, x < y < z -> g y < g z -> g x < g y}.
-  move=> ctg x z xin zin y xyz flt.
-  rewrite -(opprK (g y)) ltr_oppr.
-  apply: (noturn3 _ (ctxtg' _ ctg) x z xin zin y xyz)=> /=.
-  by rewrite ltr_oppr opprK.
-have noturn5 g : ctxt g ->
-  {in `]a, b[ &, forall x z y, x < y < z -> g x < g z -> g x < g y}.
-  move=> ctg x z xin zin y xyz flt; have [xlty yltz] := andP(xyz).
-  have yin : y \in `]a, b[ by apply: (keepy x z).
-  rewrite ltNge le_eqVlt negb_or eq_sym; apply/andP; split.
-    by apply/eqP=>/(proj1 ctg x y xin yin) xy; move: xlty; rewrite xy ltxx.
-  apply/negP=> gyltgx.
-  have := flt; apply/negP; rewrite -leNgt le_eqVlt.
-  by rewrite (lt_trans _ gyltgx) ?orbT // (noturn2 _ ctg x z xin zin y xyz).
-have noturn6 g : ctxt g ->
-  {in `]a, b[ &, forall x z y, x < y < z -> g z < g x -> g y < g x}.
-  move=> ctg x z xin zin y xyz flt.
-  rewrite -(opprK (g x)) ltr_oppr.
-  apply: (noturn5 _  (ctxtg' _ ctg) x z xin zin y xyz)=> /=.
-  by rewrite ltr_oppr opprK.
-have noturn7 g : ctxt g ->
-  {in `]a, b[ &, forall x z y, x < y < z -> g x < g z -> g y < g z}.
-  move=> ctg x z xin zin y xyz flt.
-  have := noturn5 _  (ctxtg2 _ (ctxtg' _ ctg)) _ _
-                  (keepin _ zin) (keepin _ xin) _ (reverse _ _ xin zin _ xyz).
-  by rewrite /= !subKr !ltr_opp2; apply.
-have noturn8 g : ctxt g ->
-  {in `]a, b[ &, forall x z y, x < y < z -> g z < g x -> g z < g y}.
-  move=> ctg x z xin zin y xyz flt.
-  have := noturn6 _  (ctxtg2 _ (ctxtg' _ ctg)) _ _
-                  (keepin _ zin) (keepin _ xin) _ (reverse _ _ xin zin _ xyz).
-  by rewrite /= !subKr !ltr_opp2; apply.
-apply: contrapT; rewrite not_orP /prop_in2 -!existsNE=> [][[x1 Px1][x2 Px2]].
-move:Px1 Px2; rewrite -!existsNE=> [] [x3 Px3][x4 Px4].
-move: Px3 Px4; rewrite !not_implyE=> [][x1in [x3in decr]][x2in [x4in incr]].
-have x1nx3 : x1 != x3.
-  by apply/eqP=> x1x3; move: decr; rewrite x1x3 !lexx.
-have x2nx4 : x2 != x4.
-  by apply/eqP=> x2x4; move: incr; rewrite x2x4 !lexx.
-have fx1nfx3 : f x1 != f x3.
-  apply/negP=>/eqP/(ijf _ _ x1in x3in)=> x1x3.
-  by move: x1nx3; rewrite x1x3 eqxx.
-have fx2nfx4 : f x2 != f x4.
-  apply/negP=>/eqP/(ijf _ _ x2in x4in)=> x2x4.
-  by move: x2nx4; rewrite x2x4 eqxx.
-move: decr; rewrite !le_eqVlt (negbTE x1nx3) (negbTE fx1nfx3) /= => decr.
-move: incr; rewrite !le_eqVlt (negbTE fx2nfx4) eq_sym (negbTE x2nx4) /= => incr.
-wlog x1ltx3 : x1 x3 x1in x3in decr {x1nx3} fx1nfx3 / x1 < x3.
-  move=> special.
-  have [ | ] := boolP(x1 <= x3).
-    by rewrite le_eqVlt (negbTE x1nx3)=>/special; apply.
-  rewrite -ltNge=>/special; apply=> //.
-  rewrite !ltNge !le_eqVlt (negbTE x1nx3) (negbTE fx1nfx3) /=.
-    by apply/eqP; rewrite eqb_negLR negbK; apply/eqP.
-  by rewrite eq_sym.
-wlog x2ltx4 : x2 x4 x2in x4in {x2nx4} fx2nfx4 incr / x2 < x4.
-  move=> special.
-  have [ | ] := boolP(x2 <= x4).
-    by rewrite le_eqVlt (negbTE x2nx4)=> /special; apply.
-  rewrite -ltNge=>/special; apply=> //.
-    by rewrite eq_sym.
-  rewrite !ltNge !le_eqVlt (negbTE fx2nfx4) eq_sym (negbTE x2nx4) /=.
-  by apply/eqP; rewrite eqb_negLR negbK; apply/eqP.
-have fx2ltfx4 : f x2 < f x4.
-  move/eqP: incr; rewrite (ltNge x4 x2) le_eqVlt x2ltx4 orbT.
-  by case: (f x2 < f x4).
-suff : f x1 < f x3 by move=> fx1ltfx3; move: decr; rewrite fx1ltfx3 x1ltx3.
-have [ x1ltx2 | ] := boolP(x1 < x2).
-  have fx1ltfx2 : f x1 < f x2.
-  suff /(noturn4 _ (conj ijf ctf)) : x1 < x2 < x4 by apply.
-    by rewrite x1ltx2.
-  have [ x3ltx2 | ] := boolP(x3 < x2).
-    have /(noturn5 _ (conj ijf ctf)) : x1 < x3 < x2 by rewrite x1ltx3.
-      by apply.
-  rewrite -leNgt le_eqVlt=> /orP[/eqP <- //| x2ltx3].
-  have : f x2 < f x3.
-    by apply: (noturn _ (conj ijf ctf) x1)=> //; rewrite x1ltx2.
-  by apply lt_trans.
-rewrite -leNgt le_eqVlt eq_sym=> /orP[/eqP x1x2 | x2ltx1 ].
-  rewrite x1x2; have [x3ltx4 | ] := boolP(x3 < x4).
-    apply: (noturn5 _ (conj ijf ctf) _ x4) => //.
-      by rewrite -x1x2 x1ltx3.
-    rewrite -leNgt le_eqVlt eq_sym=> /orP[/eqP -> // | x4ltx3].
-  apply: (lt_trans fx2ltfx4).
-  by apply: (noturn _ (conj ijf ctf) x2)=> //; rewrite x2ltx4.
-have [x1ltx4 | ] := boolP(x1 < x4).
-  have fx2ltfx1 : f x2 < f x1.
-    by apply: (noturn5 _ (conj ijf ctf) _ x4)=> //; rewrite x2ltx1.
-  by apply: (noturn _ (conj ijf ctf) x2)=> //; rewrite x2ltx1.    
-rewrite -leNgt le_eqVlt eq_sym=> /orP[/eqP x1x4 | x4ltx1].
-  rewrite x1x4.
-  by apply: (noturn _ (conj ijf ctf) x2)=> //; rewrite x2ltx4 -x1x4.
-have fx2ltfx1 : f x2 < f x1.
-  apply: (lt_trans fx2ltfx4).
-  by apply: (noturn _ (conj ijf ctf) x2)=> //; rewrite x2ltx4.
-by apply: (noturn _ (conj ijf ctf) x2)=> //; rewrite x2ltx1.
+  If f a b -> Cf f a b ->
+  {in `[a, b] &, {mono f : x y / x <= y}} \/
+  {in `[a, b] &, {mono f : x y /~ x <= y}}.
+Proof.
+move: f.
+suff F (f : R -> R) : f a <= f b -> If f a b -> Cf f a b -> Mf f a b.
+  move=> f fI fC.
+  have [faLfb|fbLfa] : f a <= f b \/ f b <= f a.
+  - by case: ltrgtP; try (by left); right.
+  - by left; apply: F.
+  right => x y xI yI.
+  suff : (- f) y <= (- f) x = (y <= x) by rewrite ler_oppl opprK.
+  apply: F xI => // [|x1 x2 x1I y1I U| x1 x1I].
+  - by rewrite ler_oppl opprK.
+  - by apply: fI => //; rewrite -[LHS]opprK [- f _]U opprK.
+  by apply/continuousN/fC.
+move: a b f.
+suff F (f : R -> R) (a b c : R) :
+  f a <= f b -> If f a b -> Cf f a b -> a <= c <= b -> f a <= f c <= f b.
+  move=> a b f faLfb fI fC x y /itvP xI /itvP yI.
+  have aLb : a <= b by apply: le_trans (_ : x <= b); rewrite xI.
+  have : x <= y -> f x <= f y.
+    move=> xLy.
+    have /andP[faLfx fxLfb] : f a <= f x <= f b.
+      by apply: F; rewrite ?xI.
+    suff /andP[-> //] : f x <= f y <= f b.
+    apply: F => [|x1 x2 /itvP x1I /itvP x2I |x1 /itvP x1I|] //.
+    - by apply: fI; rewrite in_itv /= (le_trans (_ : a <= x)) !(xI, x1I,
+x2I).
+    - by apply: fC; rewrite in_itv /= (le_trans (_ : a <= x)) !(xI, x1I).
+    by rewrite xLy yI.
+  have : y <= x -> f y <= f x.
+    move=> yLx.
+    have /andP[faLfx fxLfb] : f a <= f y <= f b by apply: F; rewrite ?yI.
+    suff /andP[-> //] : f y <= f x <= f b.
+    apply: F => [|x1 x2 /itvP x1I /itvP x2I |x1 /itvP x1I|] //.
+    - by apply: fI; rewrite in_itv /= (le_trans (_ : a <= y)) !(yI, x1I,
+x2I).
+    - by apply: fC; rewrite in_itv /= (le_trans (_ : a <= y)) !(yI, x1I).
+    by rewrite yLx xI.
+  have : f x == f y -> x == y.
+    by move=> /eqP/fI-> //; rewrite in_itv /= !(xI, yI).
+  by case: (ltrgtP x y); case: (ltrgtP (f x) (f y)) => // _ _ H1 H2 H3;
+     (case: (H1 isT) || case: (H2 isT) || case: (H3 isT)).
+move=> faLfb fI fC /andP[aLc cLb].
+have aLb : a <= b  by apply: le_trans cLb.
+have cIab : c \in `[a,b] by rewrite in_itv /= aLc.
+have acIab d : d \in `[a,c] -> d \in `[a,b].
+  by move=> /itvP dI; rewrite in_itv /= (le_trans _ cLb) // dI.
+have cbIab d : d \in `[c,b] -> d \in `[a,b].
+  by move=> /itvP dI; rewrite in_itv /= (le_trans aLc) // dI.
+case: (ltrgtP (f a) (f c)) => /= [faLfc|fcLfa|faEfc]; last first.
+- by rewrite -(fI _  _ _ _ faEfc) // in_itv /= lexx.
+- case: (ltrgtP (f b) (f c))=> /= [fbLfc|fcLfb|fbEfc]; last first.
+  + by move: fcLfa; rewrite -fbEfc ltNge faLfb.
+  + have [d dI]: exists2 d, d \in `[c, b] & f d = f a.
+      apply: IVT => //; first by move=> d dIab; apply/fC/cbIab.
+      by case: ltrgtP fcLfb => // _ _; rewrite ltW.
+    move=> fdEfa; move: fcLfa.
+    have : a <= c <= d by rewrite aLc  (itvP dI).
+    rewrite (fI _  _ _ _ fdEfa) ?in_itv /= ?lexx ?(itvP dI) //.
+      by case: (ltrgtP a) => // ->; rewrite ltxx.
+    by rewrite (le_trans aLc) //  (itvP dI).
+  by have := lt_trans fbLfc fcLfa; rewrite ltNge faLfb.
+case: (ltrgtP (f b) (f c))=> //= fbLfc.
+have [d dI]: exists2 d, d \in `[a, c] & f d = f b.
+  apply: IVT => //; first by move=> d dIab; apply/fC/acIab.
+  by case: ltrgtP faLfc; rewrite // faLfb // ltW.
+move=> fdEfb; move: fbLfc.
+have : d <= c <= b by rewrite cLb  (itvP dI).
+rewrite (fI _  _ _ _ fdEfb) ?in_itv /= ?lexx ?(itvP dI) ?aLb //.
+  by case: (ltrgtP b) => //= ->; rewrite ltxx.
+by rewrite (le_trans _ cLb) //  (itvP dI).
 Qed.
 
 (* Maybe this belongs in normedtype. *)
