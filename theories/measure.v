@@ -1104,9 +1104,9 @@ Qed.
 End caratheodory_measure.
 
 Lemma epsilon_trick (R : realType) (A : (\bar R)^nat) (e : {nonneg R})
-  (P : pred nat) : (forall n, 0%E <= A n) ->
+  (P : pred nat) : (forall n, 0 <= A n) ->
   \sum_(i <oo | P i) (A i + (e%:nngnum / (2 ^ i)%:R)%:E) <=
-  \sum_(i <oo | P i) A i + (2 * e%:nngnum)%R%:E.
+  \sum_(i <oo | P i) A i + (2 * e%:nngnum)%:E.
 Proof.
 move=> A0; rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
     \sum_(0 <= i < n) (e%:nngnum / (2 ^ i)%:R)%:E))) //.
@@ -1118,7 +1118,7 @@ move=> A0; rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
     + by near=> n; apply: lee_sum_nneg_subset => // i _; apply divr_ge0.
   - exact: is_cvg_ereal_nneg_series.
   - by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
-  - by apply: adde_undef_nneg_series => // n _; apply: divr_ge0.
+  - by apply: adde_def_nneg_series => // n _; apply: divr_ge0.
 have cvggeo : (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ i)%:R)%:E) -->
     (2 * e%:nngnum)%:E.
   rewrite (_ : (fun n => _) = @EFin _ \o series (geometric e%:nngnum 2^-1)).
@@ -1129,13 +1129,13 @@ have cvggeo : (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ i)%:R)%:E) -->
       congr (_ * _)%R; apply mulr1_eq.
       by rewrite mulrBl mulVr ?unitfE// mul1r (_ : 1%R = 1%:R)// -natrB.
   rewrite funeqE => n /=.
-  rewrite /series (@big_morph _ _ (@EFin _) 0%E adde) //=.
+  rewrite /series (@big_morph _ _ (@EFin _) 0 adde) //=.
   by apply eq_bigr => i _; rewrite natrX exprVn.
 rewrite ereal_limD //.
 - by rewrite lee_add2l // (cvg_lim _ cvggeo).
 - exact: is_cvg_ereal_nneg_series.
 - by apply: is_cvg_ereal_nneg_series => ?; rewrite lee_fin divr_ge0.
-- by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_undef.
+- by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_def.
 Grab Existential Variables. all: end_near. Qed.
 
 Section measurable_cover.
@@ -1165,20 +1165,20 @@ move=> A B AB; apply/le_ereal_inf => x [B' [mB' BB']].
 by move=> <-{x}; exists B' => //; split => //; apply: subset_trans AB BB'.
 Qed.
 
-Lemma mu_ext_ge0 A : 0%:E <= mu_ext A.
+Lemma mu_ext_ge0 A : 0 <= mu_ext A.
 Proof.
 apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite ereal_lim_ge //=.
   by apply: is_cvg_ereal_nneg_series => // n _; exact: measure_ge0.
 by near=> n; rewrite sume_ge0 // => i _; apply: measure_ge0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma mu_ext0 : mu_ext set0 = 0%:E.
+Lemma mu_ext0 : mu_ext set0 = 0.
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply: mu_ext_ge0; exact: measurable0.
 rewrite /mu_ext; apply ereal_inf_lb; exists (fun _ => set0).
   by split => // _; exact: measurable0.
-by apply: (@lim_near_cst _ _ _ _ _ 0%:E) => //; near=> n => /=; rewrite big1.
+by apply: (@lim_near_cst _ _ _ _ _ 0) => //; near=> n => /=; rewrite big1.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma measurable_uncurry (G : ((set T)^nat)^nat) (x : nat * nat) :
@@ -1210,10 +1210,10 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
     rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul //=.
     by rewrite lef_pinv // ?(posrE,ltr0n,expn_gt0) // ler_nat leq_exp2l.
   - by have := Aoo n; rewrite /mu_ext Soo.
-  - suff : lbound S 0%E by move/lb_ereal_inf; rewrite Soo.
+  - suff : lbound S 0 by move/lb_ereal_inf; rewrite Soo.
     move=> /= _ [B [mB AnB] <-].
     by apply: ereal_nneg_series_lim_ge0 => ? _; exact: measure_ge0.
-have muG_ge0 : forall x, 0%E <= (mu \o uncurry G) x.
+have muG_ge0 : forall x, 0 <= (mu \o uncurry G) x.
   by move=> x; apply/measure_ge0/measurable_uncurry/(PG x.1).1.1.
 apply (@le_trans _ _ (\csum_(i in setT) (mu \o uncurry G) i)).
   rewrite /mu_ext; apply ereal_inf_lb.
@@ -1256,7 +1256,7 @@ apply lee_lim.
 - apply: is_cvg_ereal_nneg_series => n _.
   by apply: ereal_nneg_series_lim_ge0 => m _; exact: (muG_ge0 (n, m)).
 - by apply: is_cvg_ereal_nneg_series => n _; apply: adde_ge0 => //;
-    [exact: mu_ext_ge0 | rewrite lee_fin // divr_ge0 // ler0n].
+    [exact: mu_ext_ge0 | rewrite lee_fin // divr_ge0].
 - by near=> n; apply: lee_sum => i _; exact: (PG i).2.
 Grab Existential Variables. all: end_near. Qed.
 

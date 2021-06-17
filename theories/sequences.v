@@ -1259,12 +1259,12 @@ move=> u0; apply: (ereal_lim_ge (is_cvg_ereal_nneg_series _ _ u0)).
 by near=> k; rewrite sume_ge0 // => i; apply: u0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma adde_undef_nneg_series (R : realType) (f g : (\bar R)^nat)
+Lemma adde_def_nneg_series (R : realType) (f g : (\bar R)^nat)
     (P Q : pred nat) :
   (forall n, P n -> 0 <= f n) -> (forall n, Q n -> 0 <= g n) ->
-  ~~ adde_undef (\sum_(i <oo | P i) f i) (\sum_(i <oo | Q i) g i).
+  adde_def (\sum_(i <oo | P i) f i) (\sum_(i <oo | Q i) g i).
 Proof.
-move=> f0 g0; rewrite /adde_undef negb_or !negb_and; apply/andP; split.
+move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split.
 - apply/orP; right; apply/eqP => Qg.
   by have := ereal_nneg_series_lim_ge0 g0; rewrite Qg.
 - apply/orP; left; apply/eqP => Pf.
