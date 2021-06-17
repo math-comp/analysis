@@ -2,8 +2,8 @@
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
 From mathcomp Require Import ssralg ssrnum finmap.
-Require Import boolp classical_sets reals ereal posnum topology normedtype.
-Require Import sequences.
+Require Import boolp classical_sets reals ereal posnum nngnum topology.
+Require Import normedtype sequences cardinality csum.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -51,6 +51,15 @@ From HB Require Import structures.
 (*                         measure                                            *)
 (*                         Remark: sets that are negligible for               *)
 (*                         caratheodory_measure are Caratheodory measurable   *)
+(*                                                                            *)
+(* Extension theorem:                                                         *)
+(* measurable_cover X == the set of sequences F such that                     *)
+(*                       - forall i, F i is measurable                        *)
+(*                       - X `<=` \bigcup_i (F i)                             *)
+(*          mu_ext mu == the extension of the measure mu, a measure over a    *)
+(*                       ring of sets; it is an outer measure, declared as    *)
+(*                       canonical (i.e., we have the notation                *)
+(*                       [outer_measure of mu_ext mu])                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -1088,3 +1097,167 @@ by move/(le_outer_measure mu); rewrite muB0 => ->.
 Qed.
 
 End caratheodory_measure.
+
+Lemma epsilon_trick (R : realType) (A : (\bar R)^nat) (e : {nonneg R})
+  (P : pred nat) : (forall n, 0%E <= A n) ->
+  \sum_(i <oo | P i) (A i + (e%:nngnum / (2 ^ i)%:R)%:E) <=
+  \sum_(i <oo | P i) A i + (2 * e%:nngnum)%R%:E.
+Proof.
+move=> A0; rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
+    \sum_(0 <= i < n) (e%:nngnum / (2 ^ i)%:R)%:E))) //.
+  rewrite ereal_pseriesD //; last by move=> n _; apply: divr_ge0.
+  rewrite ereal_limD //.
+  - rewrite lee_add2l //; apply: lee_lim => //.
+    + by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
+    + by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
+    + by near=> n; apply: lee_sum_nneg_subset => // i _; apply divr_ge0.
+  - exact: is_cvg_ereal_nneg_series.
+  - by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
+  - by apply: adde_undef_nneg_series => // n _; apply: divr_ge0.
+have cvggeo : (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ i)%:R)%:E) -->
+    (2 * e%:nngnum)%:E.
+  rewrite (_ : (fun n => _) = @EFin _ \o series (geometric e%:nngnum 2^-1)).
+    apply: cvg_comp.
+    - by apply: cvg_geometric_series; rewrite ger0_norm // invf_lt1 // ltr1n.
+    - rewrite (_ : [filter of _] = [filter of (2 * e%:nngnum)%R : R^o]) //.
+      rewrite filter_of_filterE; congr ([filter of _]); rewrite mulrC.
+      congr (_ * _)%R; apply mulr1_eq.
+      by rewrite mulrBl mulVr ?unitfE// mul1r (_ : 1%R = 1%:R)// -natrB.
+  rewrite funeqE => n /=.
+  rewrite /series (@big_morph _ _ (@EFin _) 0%E adde) //=.
+  by apply eq_bigr => i _; rewrite natrX exprVn.
+rewrite ereal_limD //.
+- by rewrite lee_add2l // (cvg_lim _ cvggeo).
+- exact: is_cvg_ereal_nneg_series.
+- by apply: is_cvg_ereal_nneg_series => ?; rewrite lee_fin divr_ge0.
+- by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_undef.
+Grab Existential Variables. all: end_near. Qed.
+
+Section measurable_cover.
+Variable T : ringOfSetsType.
+Implicit Types (X : set T) (F : (set T)^nat).
+
+Definition measurable_cover X := [set F : (set T)^nat |
+  (forall i, measurable (F i)) /\ X `<=` \bigcup_k (F k)].
+
+Lemma cover_measurable X F : measurable_cover X F -> forall k, measurable (F k).
+Proof. by move=> + k; rewrite /measurable_cover => -[] /(_ k). Qed.
+
+Lemma cover_subset X F : measurable_cover X F -> X `<=` \bigcup_k (F k).
+Proof. by case. Qed.
+
+End measurable_cover.
+
+Section measure_extension.
+Variables (R : realType) (T : ringOfSetsType) (mu : {measure set T -> \bar R}).
+
+Definition mu_ext (X : set T) : \bar R :=
+  ereal_inf [set \sum_(i <oo) mu (A i) | A in measurable_cover X].
+
+Lemma le_mu_ext : {homo mu_ext : A B / A `<=` B >-> A <= B}.
+Proof.
+move=> A B AB; apply/le_ereal_inf => x [B' [mB' BB']].
+by move=> <-{x}; exists B' => //; split => //; apply: subset_trans AB BB'.
+Qed.
+
+Lemma mu_ext_ge0 A : 0%:E <= mu_ext A.
+Proof.
+apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite ereal_lim_ge //=.
+  by apply: is_cvg_ereal_nneg_series => // n _; exact: measure_ge0.
+by near=> n; rewrite sume_ge0 // => i _; apply: measure_ge0.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma mu_ext0 : mu_ext set0 = 0%:E.
+Proof.
+apply/eqP; rewrite eq_le; apply/andP; split; last first.
+  by apply: mu_ext_ge0; exact: measurable0.
+rewrite /mu_ext; apply ereal_inf_lb; exists (fun _ => set0).
+  by split => // _; exact: measurable0.
+by apply: (@lim_near_cst _ _ _ _ _ 0%:E) => //; near=> n => /=; rewrite big1.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma measurable_uncurry (G : ((set T)^nat)^nat) (x : nat * nat) :
+  measurable (G x.1 x.2) -> measurable (uncurry G x).
+Proof. by case: x. Qed.
+
+Lemma mu_ext_sigma_subadditive : sigma_subadditive mu_ext.
+Proof.
+move=> A; have [[i ioo]|] := pselect (exists i, mu_ext (A i) = +oo).
+  rewrite (ereal_nneg_series_pinfty _ _ ioo)// ?lee_pinfty// => n _.
+  exact: mu_ext_ge0.
+rewrite -forallNE => Aoo.
+suff add2e : forall e : {posnum R},
+    mu_ext (\bigcup_n A n) <= \sum_(i <oo) mu_ext (A i) + (2 * e%:num)%:E.
+  apply lee_adde => e.
+  by rewrite -(mul1r e%:num) -(@divff _ 2%:R)// -mulrAC -mulrA add2e.
+move=> e; rewrite (le_trans _ (epsilon_trick _ _ _))//; last first.
+  by move=> n; apply: mu_ext_ge0.
+pose P n (B : (set T)^nat) := measurable_cover (A n) B /\
+  \sum_(k <oo) mu (B k) <= mu_ext (A n) + (e%:num / (2 ^ n)%:R)%:E.
+have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
+  apply: (@choice _ _ P) => n; rewrite /P /mu_ext.
+  set S := (X in ereal_inf X); move infS : (ereal_inf S) => iS.
+  case: iS infS => [r Sr|Soo|Soo].
+  - have en1 : (0 < e%:num / (2 ^ n.+1)%:R)%R.
+      by rewrite divr_gt0 // ltr0n expn_gt0.
+    have [x [[B [mB AnB muBx]] xS]] := lb_ereal_inf_adherent (PosNum en1) Sr.
+    exists B; split => //; rewrite muBx -Sr; apply/ltW.
+    rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul //=.
+    by rewrite lef_pinv // ?(posrE,ltr0n,expn_gt0) // ler_nat leq_exp2l.
+  - by have := Aoo n; rewrite /mu_ext Soo.
+  - suff : lbound S 0%E by move/lb_ereal_inf; rewrite Soo.
+    move=> /= _ [B [mB AnB] <-].
+    by apply: ereal_nneg_series_lim_ge0 => ? _; exact: measure_ge0.
+have muG_ge0 : forall x, 0%E <= (mu \o uncurry G) x.
+  by move=> x; apply/measure_ge0/measurable_uncurry/(PG x.1).1.1.
+apply (@le_trans _ _ (\csum_(i in setT) (mu \o uncurry G) i)).
+  rewrite /mu_ext; apply ereal_inf_lb.
+  have [f [Tf fi]] : exists e, enumeration (@setT (nat * nat)) e /\ injective e.
+    have /countable_enumeration [|[f ef]] := countable_prod_nat.
+      by rewrite predeqE => /(_ (0%N, 0%N)) [] /(_ Logic.I).
+    by exists (enum_wo_rep infinite_prod_nat ef); split;
+     [exact: enumeration_enum_wo_rep | exact: injective_enum_wo_rep].
+  exists (uncurry G \o f).
+    split => [i|]; first exact/measurable_uncurry/(PG (f i).1).1.1.
+    apply: (@subset_trans _  (\bigcup_n \bigcup_k G n k)) => [t [i _]|].
+      by move=> /(cover_subset (PG i).1) -[j _ ?]; exists i => //; exists j.
+    move=> t [i _ [j _ Bijt]].
+    have [k fkij] : exists k, f k = (i, j).
+      by have : setT (i, j) by []; rewrite Tf => -[k _ fkij]; exists k.
+    by exists k => //=; rewrite fkij.
+  rewrite -(@csum_image _ _ (mu \o uncurry G) _ xpredT) //; congr csum.
+  by rewrite Tf predeqE=> -[a b]; split=> -[n _ <-]; exists n.
+rewrite (_ : csum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
+  pose J : nat -> set (nat * nat) := fun i => [set (i, j) | j in setT].
+  rewrite (_ : setT = \bigcup_k J k); last first.
+    by rewrite predeqE => -[a b]; split => // _; exists a => //; exists b.
+  rewrite csum_bigcup /=; last 3 first.
+    - by move=> k; exists (k, O), O.
+    - apply/trivIsetP => i j _ _ ij.
+      rewrite predeqE => -[n m] /=; split => //= -[] [_] _ [<-{n} _].
+      by move=> [m' _] [] /esym/eqP; rewrite (negbTE ij).
+    - by move=> /= [n m]; apply/measure_ge0; exact: (cover_measurable (PG n).1).
+  rewrite (_ : setT = id @` xpredT); last first.
+    by rewrite image_id funeqE => x; rewrite trueE.
+  rewrite csum_image //; last by move=> n _; apply: csum_ge0.
+  apply eq_ereal_pseries => /= j.
+  pose x_j : nat -> nat * nat := fun y => (j, y).
+  have [enux injx] : enumeration (J j) x_j /\ injective x_j.
+    by split => [|x y [] //]; rewrite /enumeration predeqE=> -[? ?]; split.
+  rewrite -(@csum_image R _ (mu \o uncurry G) x_j predT) //=; last first.
+    by move=> x _; move: (muG_ge0 (j, x)).
+  by congr csum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
+apply lee_lim.
+- apply: is_cvg_ereal_nneg_series => n _.
+  by apply: ereal_nneg_series_lim_ge0 => m _; exact: (muG_ge0 (n, m)).
+- by apply: is_cvg_ereal_nneg_series => n _; apply: adde_ge0 => //;
+    [exact: mu_ext_ge0 | rewrite lee_fin // divr_ge0 // ler0n].
+- by near=> n; apply: lee_sum => i _; exact: (PG i).2.
+Grab Existential Variables. all: end_near. Qed.
+
+End measure_extension.
+
+Canonical outer_measure_of_measure (R : realType) (T : ringOfSetsType)
+  (mu : {measure set T -> \bar R}) : {outer_measure set T -> \bar R} :=
+    OuterMeasure (OuterMeasure.Axioms (mu_ext0 mu) (mu_ext_ge0 mu)
+      (le_mu_ext mu) (mu_ext_sigma_subadditive mu)).
