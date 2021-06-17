@@ -395,15 +395,15 @@ Variables (R : realFieldType) (T : semiRingOfSetsType)
 
 Lemma measure0 : mu set0 = 0.
 Proof. by case: mu => ? []. Qed.
-Hint Resolve measure0.
+Hint Resolve measure0 : core.
 
 Lemma measure_ge0 : forall x, measurable x -> 0 <= mu x.
 Proof. by case: mu => ? []. Qed.
-Hint Resolve measure_ge0.
+Hint Resolve measure_ge0 : core.
 
 Lemma measure_semi_additive2 : semi_additive2 mu.
 Proof. by case: mu => ? []. Qed.
-Hint Resolve measure_semi_additive2.
+Hint Resolve measure_semi_additive2 : core.
 
 Lemma measure_semi_additive : semi_additive mu.
 Proof. exact/semi_additive2P. Qed.
@@ -575,24 +575,22 @@ move=> ndA; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
 Qed.
 
 Lemma eq_bigcupB_of (A : (set T) ^nat) :
-  {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
   \bigcup_n A n = \bigcup_n (B_of A) n.
 Proof.
-move=> ndA; rewrite funeqE => x; rewrite propeqE; split.
-  move=> -[n _]; rewrite (eq_bigsetUB_of _ ndA) bigcup_ord => -[m mn ?].
-  by exists m.
-move=> -[m _] myBAmx; exists m => //=.
-by rewrite (eq_bigsetUB_of _ ndA) bigcup_ord; exists m => /=.
+rewrite funeqE => x; rewrite propeqE; split.
+  case; elim=> [_ A0x|n ih _ An1x]; first by exists O.
+  have [|Anx] := pselect (A n x); last by exists n.+1.
+  by move=> /(ih I)[m _ Amx]; exists m.
+case; elim=> [_ /= A0x|n ih _ /= [An1x Anx]]; by [exists O | exists n.+1].
 Qed.
 
 Lemma eq_bigcupB_of_bigsetU (A : (set T) ^nat) :
   \bigcup_n (B_of (fun n => \big[setU/set0]_(i < n.+1) A i) n) = \bigcup_n A n.
 Proof.
-rewrite -(@eq_bigcupB_of (fun n => \big[setU/set0]_(i < n.+1) A i)) //.
-  rewrite eqEsubset; split => [t [i _]|t [i _ Ait]].
-    by rewrite -bigcup_mkset => -[/= j _ Ajt]; exists j.
-  by exists i => //; rewrite big_ord_recr /=; right.
-by move=> m n; rewrite -ltnS; exact/(@subset_bigsetU _ A).
+rewrite -(@eq_bigcupB_of (fun n => \big[setU/set0]_(i < n.+1) A i)).
+rewrite eqEsubset; split => [t [i _]|t [i _ Ait]].
+  by rewrite -bigcup_mkset => -[/= j _ Ajt]; exists j.
+by exists i => //; rewrite big_ord_recr /=; right.
 Qed.
 
 End trivIfy.
@@ -608,7 +606,7 @@ move=> mA mbigcupA ndA.
 have Binter : trivIset setT (B_of A) := trivIset_B_of ndA.
 have ABE : forall n, A n.+1 = A n `|` B_of A n.+1 := UB_of ndA.
 have AE n : A n = \big[setU/set0]_(i < n.+1) (B_of A) i := eq_bigsetUB_of n ndA.
-have -> : \bigcup_n A n = \bigcup_n (B_of A) n := eq_bigcupB_of ndA.
+rewrite eq_bigcupB_of.
 have mB : forall i, measurable (B_of A i).
   by elim=> [|i ih] //=; apply: measurableD.
 apply: cvg_trans (measure_semi_sigma_additive mB Binter _); last first.
