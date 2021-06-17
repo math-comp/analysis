@@ -13,6 +13,11 @@
 
 - in `measure.v`:
   + generalize lemma `eq_bigcupB_of`
+- in `ereal.v`, definition `adde_undef` changed to `adde_def`
+  + consequently, the following lemmas changed:
+    * in `ereal.v`, `adde_undefC` renamed to `adde_defC`,
+      `fin_num_adde_undef` renamed to `fin_num_adde_def`
+    * in `sequences.v`, `ereal_cvgD` and `ereal_limD` now use hypotheses with `adde_def`
 
 ### Renamed
 
