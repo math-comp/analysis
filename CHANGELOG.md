@@ -17,6 +17,8 @@ Last releases: [[0.3.9] - 2021-06-12](#039---2021-06-12) and [[0.3.8] - 2021-06-
   + notations `[set E | x in A]` and `[set E | x in A & y in B]`
     now use definitions `image` and `image2` resp.
   + notation ``f @` A`` now uses the definition `image`
+  + the order of arguments of `image` has changed compared to version 0.3.7:
+    it is now `image A f` (it used to be `image f A`)
 
 ### Removed
 

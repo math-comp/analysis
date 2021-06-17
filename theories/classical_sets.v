@@ -56,7 +56,7 @@ Require Import boolp.
 (*                   A `<=` B <-> A is included in B.                         *)
 (*                  A `<=>` B <-> double inclusion A `<=` B and B `<=` A.     *)
 (*                   f @^-1` A == preimage of A by f.                         *)
-(*                      f @` A == image of A by f.                            *)
+(*                      f @` A == image of A by f. Notation for `image A f`.  *)
 (*                    A !=set0 := exists x, A x.                              *)
 (*               is_subset1 A <-> A contains only 1 element.                  *)
 (*                   is_fun f <-> for each a, f a contains only 1 element.    *)
