@@ -75,6 +75,11 @@ Reserved Notation "mu .-measurable" (at level 2, format "mu .-measurable").
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+(* TODO: remove when available in all the Coq versions supported by the CI
+   (as of today, only in Coq 8.13) *)
+Definition uncurry {A B C : Type} (f : A -> B -> C)
+  (p : A * B) : C := match p with (x, y) => f x y end.
+
 Definition bigcup2 T (A B : set T) : nat -> set T :=
   fun i => if i == 0%N then A else if i == 1%N then B else set0.
 
