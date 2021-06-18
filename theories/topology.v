@@ -2217,6 +2217,26 @@ have [?|Et] := pselect (E t); [by left|right=> U tU; have [p []] := cEt _ tU].
 by exists p; split => //; apply/eqP => pt; apply: Et; rewrite -pt.
 Qed.
 
+Lemma closureEcvg E : 
+  closure E = [set f | exists F, ProperFilter F /\ F E /\ F --> f].
+Proof.
+rewrite eqEsubset; split => f /=.
+- move=> clEf; exists (filter_from (nbhs f) (fun X => X `&` E)); split;[|split].
+  + apply: Build_ProperFilter; last apply: filter_from_filter.
+    * move=> P [Q nbhsQ QEsubP].
+      case/(_ Q nbhsQ): clEf => x EQx; exists x.
+      by apply QEsubP; rewrite setIC.
+    * by exists setT; apply: filter_nbhsT.
+    * move=> I J ? ?; exists ( I `&` J); last by move=> ? [[]]; repeat split.
+      exact: filterI.
+  + exists setT; first exact: filter_nbhsT.
+    by move=> ? [].
+  + by move=> U /= ?; exists U => // ? [].
+- move=> [F [FF [FE Ff]]] U /= nbhsU.
+  have: F (E `&` U) by apply: filterI => //; exact: Ff.
+  exact: filter_ex.
+Qed.
+
 Definition closed (D : set T) := closure D `<=` D.
 
 Lemma closedC (D : set T) : open D -> closed (~` D).
@@ -2476,6 +2496,16 @@ have /Aco [p [Ap]] : G A by apply: sFG.
 rewrite /= -[_ --> p]/([set _ | _] p) -ultra_cvg_clusterE.
 by move=> /(cvg_cluster sFG); exists p.
 Qed.
+
+Lemma compact_singleton (T: topologicalType) (x : T) : compact [set x].
+Proof.
+  move=> F PF Fx; exists x; split; first by [].
+  move=> P B nbhsB; exists x; split; last by exact: nbhs_singleton.
+  have [y [Py]] : (P `&` [set x] !=set0) by
+    apply: filter_ex; [exact: PF| exact: filterI].
+  by move=> <-.
+Qed.
+  
 
 Lemma filter_image (T U : Type) (f : T -> U) (F : set (set T)) :
   Filter F -> f @` setT = setT -> Filter [set f @` A | A in F].
@@ -4841,7 +4871,6 @@ Lemma ptws_cvgE {U : Type} {V : topologicalType}
   {ptws F --> f} = (F --> (f : {ptws U -> V})).
 Proof. by []. Qed.
 
-<<<<<<< HEAD
 Section UniformCvgLemmas.
 Context {U : choiceType} {V : uniformType}.
 
@@ -4880,86 +4909,6 @@ Qed.
 
 Lemma cvg_restrict_dep (A : set U) (f : U -> V) (F : set (set (U -> V))) : Filter F ->
   {uniform A, F --> f} <-> {uniform setT, restrict_dep A @ F --> (restrict_dep A f)}.
-=======
-Lemma ptws_uniform_cvg {U : choiceType} {V : uniformType} (f : U -> V)
-    (F : set (set (U -> V))) : Filter F ->
-  {unif, F --> f} -> {ptws, F --> f}.
-Proof.
-move => FF; rewrite cvg_sup => W i.
-rewrite cvg_image.
-- move=> C /=.
-  rewrite -nbhs_entourageE nbhs_filterE => -[B eB BsubC].
-  suff sub2 : @^~ i @` [set g | (forall u, B (f u, g u))] `<=` to_set B (f i).
-  set l := (x in x _); suff weakL : forall X Y, X `<=` Y -> l X -> l Y.
-  apply: (weakL _ _ (subset_trans sub2 BsubC)).
-  + exists ([set g : U -> V | forall u, B (f u, g u)]) => //.
-    by apply W; exists [set fg | forall u, B (fg.1 u, fg.2 u)]; [exists B|].
-  + move=> X Y /setUidPl XsubY [P FP EX].
-    exists ( P `|` [set g : U -> V | exists v, Y v /\ g = cst v]).
-      by apply: (@filterS _ _ _ P) => //= t ?; left.
-    rewrite image_setU  EX setUC. 
-    set Y' := (x in x `|` _);  
-    suff ->: Y' = Y; first by [].
-    rewrite eqEsubset; split.
-    * by move => t /= [/= h [/= v [? ->] <-]].
-    * by move => t ?; exists (cst t) => //; exists t.
-  + by move => v [/= g] + <-; apply.
-- by rewrite eqEsubset; split => v // _; exists (cst v).
-Qed.
-
-Lemma ptws_unif_nbhs {U : choiceType} {V : uniformType} f : 
-    nbhs (f : {unif, U -> V}) `=>` nbhs (f : {ptws, U -> V}).
-Proof.
-  move: (@ptws_uniform_cvg U V f (nbhs (f : {unif, U -> V}))).
-  apply; apply cvg_id.
-Qed.
-
-(*
-Lemma restrict_ptws_continuous {U : choiceType} {V : uniformType} (A: set U): 
-  continuous (restrict A : {ptws, U -> V} -> {ptws, U -> V}).
-Proof.
-  move=> f; apply/cvg_sup; first by apply:fmap_filter; apply: nbhs_filter.
-  move=> i; apply/cvg_image; first by apply:fmap_filter; apply: nbhs_filter.
-  - by rewrite eqEsubset; split => //= t /= _; exists (fun=> t) => //=.
-  - move=> Q /= nbhsQ; exists [set f | Q(f i)] => //=.
-    + 
-    + rewrite eqEsubset; split => g /=.
-      * by move=> [? ? <-].
-      * by move=> Qg; exists (fun=> g); tauto.
-Admitted.
-*)
-
-
-Section Restriction_DependentPairs.
-Context {U : choiceType} {V : uniformType} .
-Variables (A : set U).
-Definition restrict_dep (f : U -> V) : ({ x : U | `[< A x>]} -> V) :=
-  fun u => f (projT1 u).
-
-Lemma eq_on_restrict_dep (f g : U -> V) :
-  eq_on A f g <-> restrict_dep f = restrict_dep g.
-Proof.
-split => [eq_f_g|Rfg u].
-- rewrite funeqE => -[u Au].
-  rewrite /restrict_dep /=; apply: eq_f_g.
-  by rewrite in_setE; exact/asboolP.
-- rewrite in_setE => /asboolP Au.
-  suff -> : f u = restrict_dep f (exist _ u Au) by rewrite Rfg.
-  by [].
-Qed.
-
-Lemma explode_restrict (F : set (set (U -> V))) P : Filter F ->
-  explode_set A P = [set a | (restrict_dep @` P) (restrict_dep a)].
-Proof.
-rewrite eqEsubset; split => f /=.
-- move=> [g Pg eq_g_f] /=; exists g => //.
-  by rewrite /fmap /= /nbhs /= -eq_on_restrict_dep.
-- by move=> [g Pg /eq_on_restrict_dep] ?; by exists g.
-Qed.
-
-Lemma cvg_restrict_dep (f : U -> V) (F : set (set (U -> V))) : Filter F ->
-  {restricted A, F --> f} <-> {unif, restrict_dep @ F --> (restrict_dep f)}.
->>>>>>> equicontinuous closures
 Proof.
 move=> FF; split.
 - move=> cvgF P' /= /restricted_nbhs [ E [/= entE EsubP]].
@@ -5149,6 +5098,29 @@ apply: (iff_trans _ (iff_sym (fam_cvgP _ _ FF))); split.
 - by move=> CFf D [/restricted_subset_cvg + _]; apply.
 - by apply; split.
 Qed.
+
+Definition singletons {X : Type} := [set P | exists (x:X), P = [set x]].
+
+Lemma ptws_cvg_family_singleton {U : topologicalType} {V : uniformType} F (f: U -> V):
+  Filter F ->
+  {ptws, F --> f} = {family (@singletons U), F --> f}.
+Proof.
+  move=> FF; rewrite propeqE fam_cvgP cvg_sup /ptws_fun; split.
+  - move=> + A [x ->] => /(_ x) Ff; apply/cvg_restricted_entourageP => E entE.
+    near=> q => t ->; near:q; apply: Ff => /=.
+    move: (nbhs_entourage (f x) entE).
+    rewrite nbhsE /= => [[B [onbhsB BsubE]]].
+    exists [set q | B (q x)];split;[|split] => //=.
+    + exists B; first by case: onbhsB.
+      by [].
+    + by apply: nbhs_singleton; apply: open_nbhs_nbhs.
+    + by move=> q /= Bq; apply BsubE.
+  - move=> + x => /(_ [set x]); pull1; first by exists x.
+    move=> /cvg_restricted_entourageP Ef => /= P /= [P' [[A oA /= <- /=] [Afx AsubP]]].
+    rewrite openE /interior in oA; case/nbhsP: (oA (f x) (Afx))=> E entE EsubA.
+    move:(Ef _ entE) => EF.
+    by near=> g; apply: AsubP; apply: EsubA; apply (near EF).
+Grab Existential Variables. end_near. end_near. Qed.
 
 Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R) :
   ProperFilter (nbhs' x).
@@ -5401,16 +5373,127 @@ Proof.
   (have : (R q) by apply (near FR)); apply.
 Grab Existential Variables. by end_near. Qed.
 
-Lemma ArzelaAscoliForward  (W : set (X -> Y)) fam: 
+Lemma ArzelaAscoli_aux4 (W : (set (X -> V))) fam: 
   pointwisePrecomact W -> 
   equicontinuous W -> 
-  @compact {family fam}
+  @compact [topologicalType of {family fam, X -> V }] 
+    (@closure [topologicalType of {ptws, X -> V}] W).
+Proof.
+  move=> ? ?; apply ArzelaAscoli_aux3.
+  - exact: ArzelaAscoli_aux1.
+  - exact: ArzelaAscoli_aux2.
+Qed.
 
-pointwisePrecomact W
+Lemma ArzelaAscoli_aux5 (W : set ({ptws, X -> V})) F f:
+  pointwisePrecomact W -> 
+  equicontinuous W -> 
+  ProperFilter F-> 
+  F W -> 
+  {ptws, F --> f} = 
+  {family compact, F --> f}.
+Proof.
+move=> pctpW /ArzelaAscoli_aux2 ectsW PF FW. rewrite propeqE; split.
+- move=> ptwsF; apply/fam_cvgP => A cptA.
+  apply/cvg_restricted_entourageP => E1 entE1.
+  set E2 := (split_ent E1); have entE2: entourage E2 by 
+      exact: entourage_split_ent.
+  set E3 := (split_ent E2); have entE3: entourage E3 by 
+      exact: entourage_split_ent.
+  set E4 := E3 `&` (E3 ^-1)%classic; have entE4 : entourage E4 by
+    apply: filterI => //; exact: entourage_inv.
+  rewrite compact_cover cover_compactE /= in cptA.
+  have mkR: forall x, exists R, open_nbhs x R /\ 
+          (forall (y:X) (q : X -> V), closure W q -> R y -> E4(q x, q y)). {
+      move=> x; move: (ectsW x E4 entE4) => [R' [+ R'E]].
+      rewrite nbhsE /= => [[R [onbhsR RsubR']]].
+      exists R; split => // y q Wq Ry /=;  apply: R'E => //.
+      by apply: RsubR'; apply: nbhs_singleton; apply: open_nbhs_nbhs.
+  }
+  set Rnbhd := fun (x : X) => A `&` projT1 (cid (mkR x)).
+  move/(_ X A Rnbhd): cptA.
+  pull1. {
+    rewrite /open_fam_of; exists (fun x => projT1 (cid (mkR x))).
+    - move=> x Ax; rewrite /Rnbhd /=; set R := cid _; case R => /=.
+      move=> R'; rewrite open_nbhsE; tauto.
+    - by [].
+  }
+  pull1. {
+    rewrite /Rnbhd.
+    move=> x Ax /=; exists x => //; split => //.
+    set R := cid _; case R => /= R' [? ?]; apply nbhs_singleton.
+    exact: open_nbhs_nbhs.
+  }
+  move=> [D' D'subA AsubRnbhd].
+  have Fx0: F (\bigcap_( x0 in [set x0 | x0 \in D']) [set q | E4(f x0, q x0)]). {
+    apply: filter_bigI => x0 x0D'. 
+    move/cvg_sup/(_ x0):ptwsF; rewrite /ptws_fun; apply => /=.
+    move: (nbhs_entourage (f x0) entE4).
+    rewrite nbhsE /= => [[B [onbhsB BsubE4]]].
+    exists [set q | B (q x0)];split;[|split] => //=.
+    - exists B; first by case: onbhsB.
+      by [].
+    - by apply: nbhs_singleton; apply: open_nbhs_nbhs.
+    - by move=> q /= Bq; apply BsubE4.
+  }
+
+  near=> q => t At.
+  have Wq: W q by apply: (near FW).
+  case /(_ t At) : AsubRnbhd => x0 /= xD' Rx0t.
+  have E4q : E4(q x0, q t). {
+    move: Rx0t;rewrite /Rnbhd /= => [[_ ]]; set R' := cid _; case R' => /=.
+    move=> R; rewrite open_nbhsE => [[[oR nbhsR] /(_ t q) ]] + Rt; apply => //.
+    by rewrite closure_limit_point; left.
+  }
+  have E4f : E4(f t, f x0). {
+    move: Rx0t;rewrite /Rnbhd /= => [[_ ]]; set R' := cid _; case R' => /=.
+    move=> R; rewrite open_nbhsE /E4 => [[[oR nbhsR] /(_ t f) ]] + Rt. 
+    rewrite closureEcvg /=.
+    pull1; first by exists F; split => //=.
+    by move=> E4f; split; simpl; apply E4f => //.
+  }
+  have E4subE3: E4 `<=` E3 by rewrite /E4 => ? [] //=.
+  do 2 (apply: entourage_split; first by []); apply: E4subE3.
+  1: exact: E4f.
+  3: exact: E4q.
+  1: exact: entourage_refl.
+  by have := (near Fx0 q); (pull1; first by done); apply.
+- rewrite ptws_cvg_family_singleton; apply: family_cvg_subset.
+  move=> A [x ->]; apply: compact_singleton.
+Grab Existential Variables. end_near. Qed.    
+
+Lemma ArzelaAscoliForward (W : (set (X -> V))): 
+  pointwisePrecomact W -> 
+  equicontinuous W -> 
+  @precompact [topologicalType of {family compact, X -> V }] W.
+Proof.
+  move=> ? ?. 
+  rewrite /precompact.
+  suff -> :@closure ([topologicalType of {family compact, X -> V}]) W =
+               @closure ([topologicalType of {ptws, X -> V}]) W
+      by apply ArzelaAscoli_aux4.
+  rewrite ?closureEcvg; rewrite predeqE => g /=.
+  split; move => [F [PF [FW ?]]]; exists F.
+  - by rewrite (ArzelaAscoli_aux5 (W:=W)).
+  - by rewrite -(ArzelaAscoli_aux5 (W:=W)).
+Qed.
 
 
-  move: entD=> /=; near: q.
-  near_simpl.
+
+  @closure [topologicalType of {ptws, X -> V}] W = 
+  @closure [topologicalType of {family compact, X -> V}] W.
+Proof.
+  move=> ptwsW ectsW; rewrite ?closure_limit_point. 
+  congr (_ `|` _); rewrite eqEsubset /=; split => f /=.
+  - rewrite limit_pointEnbhs limit_pointEonbhs /= ?meets_globallyl. 
+    move=> meetL B; rewrite open_nbhsE family_nbhsE => [[oB [A [cptA  nbhsB]]]].
+
+
+    rewrite /nbhs in nbhsB.
+  rewrite ?meets_globallyl => ptwsM B onhbsB.
+  - 
+  apply: ptwsM.
+  exists .
+
 
 
     first by  apply GD => //=; apply: nbhs_singleton.
