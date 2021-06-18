@@ -5338,15 +5338,6 @@ Proof. by []. Qed.
 Definition compactly_in {U : topologicalType} (A : set U) :=
   [set B | B `<=` A /\ compact B].
 
-Definition compactly {U : topologicalType} := compactly_in (@setT U).
-
-Lemma compactly_compact {U : topologicalType} : 
-  compactly = @compact U.
-Proof.
-rewrite predeqE => A; split => //=. 
-rewrite /compactly/compactly_in /=; tauto.
-Qed.
-
 Lemma compact_cvg_within_compact {U : topologicalType} {V : uniformType}
     (C : set U) (F : set (set (U -> V))) (f : U -> V) :
   Filter F -> compact C ->
@@ -5380,6 +5371,15 @@ Proof.
     move:(Ef _ entE) => EF.
     by near=> g; apply: AsubP; apply: EsubA; apply (near EF).
 Grab Existential Variables. end_near. end_near. Qed.
+
+Lemma ptws_cvg_compact_family {X : topologicalType} {Y : uniformType} F (f: X -> Y):
+  ProperFilter F -> 
+  {family compact, F --> f} ->
+  {ptws, F --> f}.
+Proof.
+move=> PF; rewrite ptws_cvg_family_singleton; apply: family_cvg_subset.
+move=> A [x ->]; apply: compact_singleton.
+Qed.
 
 Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R) :
   ProperFilter (nbhs' x).
@@ -5447,7 +5447,7 @@ Qed.
 Definition equicontinuous {X : topologicalType} {V : uniformType}
   (W : set (X -> V)) :=
   forall x (E: set (V * V)), entourage E -> exists (U : set (X)), 
-    nbhs x U /\ forall f y, W f -> U x -> E(f x, f y).
+    nbhs x U /\ (forall f y, W f -> U y -> E(f x, f y)).
 
 Definition uniformlyEquicontinuous {X V : uniformType} (W : set (X -> V)):=
   forall (E: set (V * V)), entourage E -> exists (D : set (X*X)), 
@@ -5509,9 +5509,10 @@ Proof.
     apply: evaluator_dep_continuous.
 Qed.
 End Evaluators.
-Section Precompact.
 
+Section ArzelaAscoli.
 Context {X : topologicalType}.
+
 Definition precompact {X : topologicalType} (C: set X) := 
   compact (closure C).
 
@@ -5523,21 +5524,19 @@ apply: (subclosed_compact (B := closure B)) => //.
 - exact: closure_subset.
 Qed.
   
-Context {V : uniformType}.
-Context {hsdf : hausdorff V}.
+Context {Y : uniformType}.
+Context {hsdf : hausdorff Y}.
 
-Definition evaluator (x : X) (f : {family compact, X -> V}) := f x.
-
-Definition pointwisePrecomact {V : topologicalType} (W : set (X -> V)):=
+Definition pointwisePrecomact (W : set (X -> Y)):=
   forall x, precompact [set (f x) | f in W].
 
-Lemma ArzelaAscoli_aux1  (W : set ({ptws, X -> V})):
+Lemma ArzelaAscoli_aux1  (W : set ({ptws, X -> Y})):
   pointwisePrecomact W -> precompact W.
 Proof.
 move=> ptwsPreW.
 set K := fun x => closure [set (f x) | f in W].
 have C : compact  
-    [set f : ({ptws, X -> V}) | (forall x : X, K x (f x))] by
+    [set f : ({ptws, X -> Y}) | (forall x : X, K x (f x))] by
   apply: tychonoff => x; apply: ptwsPreW => //.
 apply: subclosed_compact.
 + apply: closed_closure.
@@ -5553,8 +5552,8 @@ apply: subclosed_compact.
   move => q /=; apply; split => //.
 Qed.
   
-Lemma nbhs_entourage_ptws (f : {ptws, X -> V}) x B : 
-  entourage B -> nbhs f (fun g : {ptws, X -> V} => B (g x, f x)).
+Lemma nbhs_entourage_ptws (f : {ptws, X -> Y}) x B : 
+  entourage B -> nbhs f (fun g : {ptws, X -> Y} => B (g x, f x)).
 Proof.
 move=> entB; apply: nbhs_comp => //=.
 - move => t _. 
@@ -5569,7 +5568,7 @@ move=> entB; apply: nbhs_comp => //=.
     by apply: entourage_split => //=; first apply: X1.
 Qed.
 
-Lemma ArzelaAscoli_aux2  (W : set ({ptws, X -> V})):
+Lemma ArzelaAscoli_aux2  (W : set ({ptws, X -> Y})):
   equicontinuous W ->
   equicontinuous (closure W) .
 Proof.
@@ -5578,9 +5577,8 @@ Proof.
   set B := (split_ent A); have entB: entourage B by exact: entourage_split_ent.
   move: (ectsW x0 B entB) => [U [nbdU eqctsU]].
   exists U; split => // g x cWf Ux.
-  set R := [set h : {ptws, X -> V} | 
-      B (h x, g x) /\ A (g x0, h x0) ].
-  have nR: nbhs (g : {ptws, X -> V}) R. {
+  set R := [set h : {ptws, X -> Y} | B (h x, g x) /\ A (g x0, h x0) ].
+  have nR: nbhs (g : {ptws, X -> Y}) R. {
     apply: filterI => //.
     - exact: nbhs_entourage_ptws.
     - under eq_fun => h. 
@@ -5594,64 +5592,21 @@ Proof.
   apply: eqctsU => //.
 Qed.
 
-Lemma ArzelaAscoli_aux3 (W : set ({ptws, X -> V})) fam:
-  @compact ([topologicalType of {ptws, X -> V}]) W ->
-  equicontinuous W ->
-  @compact ([topologicalType of {family fam, X -> V}]) W.
-Proof.
-  move=> cptPtwsW ectsW; move: (cptPtwsW).
-  rewrite compact_ultra compact_ultra /= =>+ F UF FW => /(_ F UF FW) [f [Wf /=ptwsF]].
-  exists f;split => //=; apply/fam_cvgP => A cptA.
-  case E : `[< A !=set0>].
-  2: (suff ->: A = set0 by exact: cvg_restricted_set0);
-    by move /asboolP: E; rewrite -set0P=> /negP/negbNE/eqP ->. 
-  move/asboolP: E => [z Az].
-  apply/restricted_restrict_cvg/cvg_app_entourageP => /= E entE.
-  move: (entE) => [B entB BsubE]; rewrite /unif_fun.
-  set C := (split_ent B); have entC: entourage C by exact: entourage_split_ent.
-  set D := (split_ent C); have entD: entourage D by exact: entourage_split_ent.
-  set R := [set g | D (f z, g z) ] .
-  have FR : (F R). {
-    apply (cvg_fmap (f:= evaluator_dep z)) in ptwsF; last by move=>??; 
-      apply:evaluator_dep_continuous.
-    rewrite /evaluator_dep /ptws_fun in ptwsF.
-    move/cvg_entourageP/(_ D entD):ptwsF => /=.
-    by near_simpl.
-  }
-  near=> q; rewrite /unif_fun; apply: BsubE=> /= x.
-  rewrite /restrict/patch /=; case Ax : `[<A x>] => /=; last by apply: entourage_refl.
-  move: (ectsW x C entC) => [ U [nbhstU /(_ f z) G]].
-  apply: entourage_split => //=; rewrite -/C; 
-    first by  apply G => //=; apply: nbhs_singleton.
-  have entDinv := @entourage_inv _ D (entD).
-  move: (ectsW x _ entDinv) => [ U2 [nbhsvU2 /(_ q z) /= GD]].
-  apply: entourage_split => //=; rewrite -/D.
-  2: apply: (GD) => /=.
-  3: exact: nbhs_singleton.
-  2: exact: (near FW).
-  (have : (R q) by apply (near FR)); apply.
-Grab Existential Variables. by end_near. Qed.
-
-Lemma ArzelaAscoli_aux4 (W : (set (X -> V))) fam: 
-  pointwisePrecomact W -> 
+Lemma ArzelaAscoli_aux3 (W : set ({ptws, X -> Y})) F f:
   equicontinuous W -> 
-  @compact [topologicalType of {family fam, X -> V }] 
-    (@closure [topologicalType of {ptws, X -> V}] W).
-Proof.
-  move=> ? ?; apply ArzelaAscoli_aux3.
-  - exact: ArzelaAscoli_aux1.
-  - exact: ArzelaAscoli_aux2.
-Qed.
-
-Lemma ArzelaAscoli_aux5 (W : set ({ptws, X -> V})) F f:
-  pointwisePrecomact W -> 
-  equicontinuous W -> 
-  ProperFilter F-> 
+  ProperFilter F -> 
   F W -> 
-  {ptws, F --> f} = 
+  {ptws, F --> f} =
   {family compact, F --> f}.
 Proof.
-move=> pctpW /ArzelaAscoli_aux2 ectsW PF FW. rewrite propeqE; split.
+move=> + PF; wlog Wf : W f / W f. {
+  move=> + /ArzelaAscoli_aux2 ectsCW FW => /(_ _ _ _ ectsCW) H. 
+  rewrite propeqE; split; last by apply ptws_cvg_compact_family.
+  move=> Ftof; rewrite -H //. 
+  - by rewrite closureEcvg; exists F; tauto.
+  - by apply: (filterS _ FW); rewrite closure_limit_point=>?; left.
+} 
+move=> ectsW FW; rewrite propeqE; split.
 - move=> ptwsF; apply/fam_cvgP => A cptA.
   apply/cvg_restricted_entourageP => E1 entE1.
   set E2 := (split_ent E1); have entE2: entourage E2 by 
@@ -5662,11 +5617,11 @@ move=> pctpW /ArzelaAscoli_aux2 ectsW PF FW. rewrite propeqE; split.
     apply: filterI => //; exact: entourage_inv.
   rewrite compact_cover cover_compactE /= in cptA.
   have mkR: forall x, exists R, open_nbhs x R /\ 
-          (forall (y:X) (q : X -> V), closure W q -> R y -> E4(q x, q y)). {
+          (forall (y:X) (q : X -> Y), W q -> R y -> E4(q x, q y)). {
       move=> x; move: (ectsW x E4 entE4) => [R' [+ R'E]].
       rewrite nbhsE /= => [[R [onbhsR RsubR']]].
-      exists R; split => // y q Wq Ry /=;  apply: R'E => //.
-      by apply: RsubR'; apply: nbhs_singleton; apply: open_nbhs_nbhs.
+      exists R; split => // y q Wq Ry /=; apply: R'E => //.
+      by apply: RsubR'. 
   }
   set Rnbhd := fun (x : X) => A `&` projT1 (cid (mkR x)).
   move/(_ X A Rnbhd): cptA.
@@ -5701,13 +5656,11 @@ move=> pctpW /ArzelaAscoli_aux2 ectsW PF FW. rewrite propeqE; split.
   have E4q : E4(q x0, q t). {
     move: Rx0t;rewrite /Rnbhd /= => [[_ ]]; set R' := cid _; case R' => /=.
     move=> R; rewrite open_nbhsE => [[[oR nbhsR] /(_ t q) ]] + Rt; apply => //.
-    by rewrite closure_limit_point; left.
   }
   have E4f : E4(f t, f x0). {
     move: Rx0t;rewrite /Rnbhd /= => [[_ ]]; set R' := cid _; case R' => /=.
     move=> R; rewrite open_nbhsE /E4 => [[[oR nbhsR] /(_ t f) ]] + Rt. 
-    rewrite closureEcvg /=.
-    pull1; first by exists F; split => //=.
+    pull1 => //; pull1 => //. 
     by move=> E4f; split; simpl; apply E4f => //.
   }
   have E4subE3: E4 `<=` E3 by rewrite /E4 => ? [] //=.
@@ -5716,148 +5669,26 @@ move=> pctpW /ArzelaAscoli_aux2 ectsW PF FW. rewrite propeqE; split.
   3: exact: E4q.
   1: exact: entourage_refl.
   by have := (near Fx0 q); (pull1; first by done); apply.
-- rewrite ptws_cvg_family_singleton; apply: family_cvg_subset.
-  move=> A [x ->]; apply: compact_singleton.
+- exact: ptws_cvg_compact_family. 
 Grab Existential Variables. end_near. Qed.    
 
-Lemma ArzelaAscoliForward (W : (set (X -> V))): 
+Lemma ArzelaAscoliForward (W : (set (X -> Y))): 
   pointwisePrecomact W -> 
   equicontinuous W -> 
-  @precompact [topologicalType of {family compact, X -> V }] W.
+  @precompact [topologicalType of {family compact, X -> Y }] W.
 Proof.
-  move=> ? ?. 
-  rewrite /precompact.
-  suff -> :@closure ([topologicalType of {family compact, X -> V}]) W =
-               @closure ([topologicalType of {ptws, X -> V}]) W
-      by apply ArzelaAscoli_aux4.
-  rewrite ?closureEcvg; rewrite predeqE => g /=.
-  split; move => [F [PF [FW ?]]]; exists F.
-  - by rewrite (ArzelaAscoli_aux5 (W:=W)).
-  - by rewrite -(ArzelaAscoli_aux5 (W:=W)).
+  move=> /ArzelaAscoli_aux1 + ectsW; rewrite /precompact compact_ultra compact_ultra. 
+  have -> :@closure ([topologicalType of {family compact, X -> Y}]) W =
+               @closure ([topologicalType of {ptws, X -> Y}]) W. {
+    rewrite ?closureEcvg; rewrite predeqE => g /=.
+    split; move => [F [PF [FW ?]]]; exists F.
+    - by rewrite (ArzelaAscoli_aux3 (W:=W)).
+    - by rewrite -(ArzelaAscoli_aux3 (W:=W)).
+  }
+  move=> /= + F UF FcW => /(_ F UF FcW); case=> p [cWp Fp]; exists p.
+  split => //=.
+  rewrite -(ArzelaAscoli_aux3 (W:=(@closure [topologicalType of {ptws, X -> Y}] W))) => //.
+  exact: ArzelaAscoli_aux2.
 Qed.
 
-
-
-  @closure [topologicalType of {ptws, X -> V}] W = 
-  @closure [topologicalType of {family compact, X -> V}] W.
-Proof.
-  move=> ptwsW ectsW; rewrite ?closure_limit_point. 
-  congr (_ `|` _); rewrite eqEsubset /=; split => f /=.
-  - rewrite limit_pointEnbhs limit_pointEonbhs /= ?meets_globallyl. 
-    move=> meetL B; rewrite open_nbhsE family_nbhsE => [[oB [A [cptA  nbhsB]]]].
-
-
-    rewrite /nbhs in nbhsB.
-  rewrite ?meets_globallyl => ptwsM B onhbsB.
-  - 
-  apply: ptwsM.
-  exists .
-
-
-
-    first by  apply GD => //=; apply: nbhs_singleton.
-
-  rewrite /evaluator/evaluator_dep. 
-
-  apply G in 
-
-End Precompact.
-  (*
-Lemma ArzelaAscoli_aux1 (W : set ({unif, X -> V})):
-  precompact W ->
-  pointwisePrecomact W.
-Proof.
-  move=> /= cptW x. 
-  have cmptfW : compact [set f x | f in closure W] by
-    (move/(continuous_compact (f := evaluator x)): cptW => cptW;
-     apply: cptW => ? ?; apply: evaluator_continuous).
-  apply: subclosed_compact.
-  - exact: closed_closure .
-  - exact: cmptfW.
-  - set Q := (x in _ `<=` x).
-    rewrite {1}closureE /bigsetI /= => z /=.
-    move=> /(_ Q); apply; rewrite /Q; split.
-    + exact: compact_closed.
-    + by rewrite closure_limit_point image_setU => ? ?; left.
-Qed.
-
-*)
-End Precompact.
-
-Section Ascoli1.
-
-Context {X : choiceType}.
-Context {V : uniformType}.
-Context {hsdf : hausdorff V}.
-
-
-
-Section ArzelaAscoli.
-Context {X V : uniformType}.
-Context {hsdfV : hausdorff V}.
-(*
-Lemma ArzelaAscoli_aux2 (W : set ({unif, X -> V})):
-  pointwisePrecomact W -> equicontinuous W -> uniformlyEquicontinuous W.
-Proof.
-  move=> ptwsPreW ectsW E entE.
-
-  move=> /= cptW x. 
-  have cmptfW : compact [set f x | f in closure W] by
-    (move/(continuous_compact (f := evaluator x)): cptW => cptW;
-     apply: cptW => ? ?; apply: evaluator_continuous).
-  apply: subclosed_compact.
-  - exact: closed_closure .
-  - exact: cmptfW.
-  - set Q := (x in _ `<=` x).
-    rewrite {1}closureE /bigsetI /= => z /=.
-    move=> /(_ Q); apply; rewrite /Q; split.
-    + exact: compact_closed.
-    + by rewrite closure_limit_point image_setU => ? ?; left.
-Qed.
-Lemma equicontinuous_filter W x:
-  equicontinuous W x = (nbhs x) .
-*)
-Lemma ArzelaAscoli (W : set ({unif, X -> V})):
-  (forall f, W f -> continuous f) ->
-  precompact W = ((equicontinuous W) /\ pointwisePrecomact W).
-Proof.
-  move=> ctsW; rewrite propeqE //=; split. 
-  - move=> cptW; split; last apply: ArzelaAscoli_aux1 => //.
-    admit.
-  - move=> [ectsW].
-    rewrite /pointwisePrecomact /precompact ?compact_ultra /= => pcptW F UF FW.
-    have : forall x, 
-        closure [set f x | f in W] `&` [set p | evaluator x @ F --> p] !=set0. {
-      move=> x; apply: pcptW.
-      - apply: ultra_image.
-
-    }
-
-    set K := fun x => closure [set (f x) | f in W].
-    set ptwsTop := ([topologicalType of {ptws, X -> V}]).
-
-    have : @compact ptwsTop [set f | (forall x : X, K x (f x))] by
-      apply: tychonoff => x; apply: pcptW => //.
-    rewrite {}/K; set D := (x in compact x) => cptD.
-    apply: subclosed_compact.
-    + apply: closed_closure.
-    + apply cptD.
-    move=> x E entE.
-    set P := [set f | ]
-    have := @tychonoff _ (fun=> V) K 
-        (ltac:(move=> i; apply ArzelaAscoli_aux1 => //)).
-    
-
-    split.
-    rewrite /cover_compact in cptW.
-    move=> x.
-    set q := [set g | E (f x, g )]
-    + move=> x E entE.
-      set Q := [set f | forall y, E (f x, f y)].
-      unfold compact in *.
-      eexists.
-
-
-
-
-
+End ArzelaAscoli.
