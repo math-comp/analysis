@@ -130,11 +130,11 @@ Qed.
 Notation ssum u := (lim (series u)).
 
 (* TODO: move *)
-Lemma adde_undef_nneg_series (R : realType) (f g : (\bar R)^nat) (P Q : pred nat) :
+Lemma adde_def_nneg_series (R : realType) (f g : (\bar R)^nat) (P Q : pred nat) :
   (forall n, P n -> 0%:E <= f n) -> (forall n, Q n -> 0%:E <= g n) ->
-  ~~ adde_undef (\sum_(i <oo | P i) f i) (\sum_(i <oo | Q i) g i).
+  adde_def (\sum_(i <oo | P i) f i) (\sum_(i <oo | Q i) g i).
 Proof.
-move=> f0 g0; rewrite /adde_undef negb_or !negb_and; apply/andP; split.
+move=> f0 g0; rewrite /adde_def negb_and !negb_and; apply/andP; split.
 - apply/orP; right; apply/eqP => Qg.
   by have := ereal_nneg_series_lim_ge0 g0; rewrite Qg.
 - apply/orP; left; apply/eqP => Pf.
@@ -157,7 +157,7 @@ move=> e0 A0; rewrite (@le_trans _ _ (lim (fun n =>
     + by near=> n; apply: lee_sum_nneg_subset => //= i _; apply divr_ge0 => //; rewrite ler0n.
   - exact: is_cvg_ereal_nneg_series.
   - by apply: is_cvg_ereal_nneg_series => n _; apply divr_ge0 => //; rewrite ler0n.
-  - by apply: adde_undef_nneg_series => // => n _; apply divr_ge0 => //; rewrite ler0n.
+  - by apply: adde_def_nneg_series => // => n _; apply divr_ge0 => //; rewrite ler0n.
 have cvggeo : (fun n => \sum_(0 <= i < n) (e / (2 ^ i)%:R)%:E) --> (2 * e)%R%:E.
   rewrite (_ : (fun n => _) = (@EFin _) \o series (geometric e (2^-1))); last first.
     rewrite funeqE => n /=; rewrite /series (@big_morph _ _ (@EFin _) 0%:E adde) //=.
@@ -171,7 +171,7 @@ rewrite ereal_limD //.
 - by rewrite lee_add2l // (cvg_lim _ cvggeo).
 - exact: is_cvg_ereal_nneg_series.
 - by apply: is_cvg_ereal_nneg_series => ?; rewrite lee_fin divr_ge0 // ler0n.
-- by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_undef.
+- by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_def.
 Grab Existential Variables. all: end_near. Qed.
 
 (* TODO: move? not used *)
@@ -815,7 +815,8 @@ have ? : cvg BA.
   by apply: measure_ge0 => //; apply: measurableI.
 have ? : cvg (eseries (mu \o B)).
   by apply/is_cvg_ereal_nneg_series => n _; exact: measure_ge0.
-have [|undef] := boolP (adde_undef (lim BA) (lim BNA)).
+have [undef|] := boolP (adde_def (lim BA) (lim BNA)); last first.
+  rewrite /adde_def negb_and 2!negbK.
   case/orP => [/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
   - suff -> : lim (eseries (mu \o B)) = +oo by rewrite lee_pinfty.
     apply/eqP; rewrite -lee_pinfty_eq -(eqP BAoo); apply/lee_lim => //.
@@ -2917,7 +2918,7 @@ End is_sset.
 Section ring_of_sets_instance.
 Variable R : realType.
 
-HB.instance Definition sset_ringOfSets := @isRingOfSets.Build (Real.sort R)
+HB.instance Definition sset_algebraOfSets := @isAlgebraOfSets.Build (Real.sort R)
     (@is_sset R) (@is_sset0 R) (@is_ssetU R) (@is_ssetC R).
 
 Definition sset_ringOfSetsType := [the ringOfSetsType of (Real.sort R)].
@@ -4203,7 +4204,7 @@ have : (b'%:E - a'%:E <= \sum_(k <oo | P k) slength (set_of_itv (j k)) + (e%:num
         rewrite big_enum big_enum_cond; apply.
         move=> k _ _.
         by apply divr_ge0 => //; rewrite ler0n.
-      apply: fin_num_adde_undef => //.
+      apply: fin_num_adde_def => //.
       rewrite fin_numE gt_eqF /=; last by rewrite (lt_le_trans _ l0) // lte_ninfty.
       by rewrite lt_eqF // (le_lt_trans le2) // lte_pinfty.
     rewrite (_ : (fun x : nat => _) = (fun x => (\sum_(0 <= k < x | P k) (slength (set_of_itv (j k)) + (e%:num / 4%:R / (2 ^ k)%:R)%:E)%E))%E) //.
