@@ -12,6 +12,10 @@
   + lemmas `bigcup_image`, `bigcup_of_set1`
 - in `boolp.v`:
   + definitions `equality_mixin_of_Type`, `choice_of_Type`
+- in `measure.v`:
+  + HB.mixin `AlgebraOfSets_from_RingOfSets`
+  + HB.structure `AlgebraOfSets` and notation `algebraOfSetsType`
+  + HB.instance `T_isAlgebraOfSets` in HB.builders `isAlgebraOfSets`
 
 ### Changed
 
@@ -25,8 +29,15 @@
 - in `sequences.v`:
   + generalize `{in,de}creasing_seqP`, `non{in,de}creasing_seqP` from `numDomainType`
     to `porderType`
+- in `measure.v`:
+  + HB.mixin `Measurable_from_ringOfSets` changed to `Measurable_from_algebraOfSets`
+  + HB.instance `T_isRingOfSets` becomes `T_isAlgebraOfSets` in HB.builders `isMeasurable`
+  + lemma `measurableC` now applies to `algebraOfSetsType` instead of `measureableType`
 
 ### Renamed
+
+- in `measure.v`:
+  + `isRingOfSets` -> `isAlgebraOfSets`
 
 ### Removed
 
