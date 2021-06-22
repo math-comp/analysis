@@ -5047,7 +5047,7 @@ move=> FF; split.
   apply: cvgF => /=.
   rewrite /nbhs /= /restricted_nbhs_filter /= /restricted /=.
   exists ([set g | forall u, B (f u, g u) ])=> /=.
-    1: by exists [set fg | forall t, B (fg.1 t, fg.2 t)] => //=; exists B.
+    by exists [set fg | forall t, B (fg.1 t, fg.2 t)] => //=; exists B.
   rewrite (explode_restrict _ FF) => //=.
   move => g /= [/= h] Bfh /eq_on_restrict_dep eq_on.
   apply: BsubI' => /=; rewrite /restrict_dep /unif_fun.
@@ -5636,10 +5636,8 @@ have E4f : E4(f t, f x0). {
   by do 2 (pull1 => //);  move=> E4f; split; apply E4f => //.
 }
 have E4subE3: E4 `<=` E3 by rewrite /E4 => ? [] //=.
-do 2 (apply: entourage_split; first by []); apply: E4subE3.
-1: exact: E4f.
-3: exact: E4q.
-1: exact: entourage_refl.
+do 2 (apply: entourage_split; first by []); apply: E4subE3; first exact: E4f; last exact: E4q.
+  by exact: entourage_refl.
 by have := (near Fx0 q); (pull1; first by done); apply.
 Grab Existential Variables. end_near. Qed.    
 
