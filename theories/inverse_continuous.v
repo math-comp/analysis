@@ -205,47 +205,54 @@ have [incr | abs] := near_injective_monotone ifab ctf; last first.
   move: (abs a b); rewrite !in_itv /= !lexx ltW // ltW // leNgt aLb.
   by move=> /(_ isT isT).
 apply/cvg_distP=> _ /posnumP[e].
+wlog /andP [esmall_a esmall_b] : e / (a <= x - e%:num) && (x + e%:num <= b).
+  move=> main.
+  set e' := Num.min e%:num (Num.min (x - a) (b - x)).  
+  have e'gt0 : 0 < e'.
+    rewrite /e'; case: (lerP e%:num (Num.min (x - a) (b - x))) => // _.
+    by case: (lerP (x - a) (b - x)) => _; rewrite subr_gt0.
+  have e'in : (a <= x - e') && (x + e' <= b).
+    rewrite ler_subr_addr -ler_subr_addl -[X in _ && X]ler_subr_addl /e'.
+    case: (lerP e%:num (Num.min (x - a) (b - x)));
+    case: (lerP (x - a) (b - x))=> //.
+    + by move=> cmp2 cmp1; rewrite (le_trans _ cmp2) ?andbT.
+    + by move=> /ltW cmp2 cmp1; rewrite (le_trans _ cmp2) ?andbT.
+    + by move=> cmp2 cmp1; rewrite lexx.
+    by move=> /ltW cmp2 cmp1; rewrite lexx ?andbT.
+  have e'lee : e' <= e%:num.
+    by rewrite /e'; case: (lerP e%:num (Num.min (x - a) (b - x)))=> // /ltW.
+  have main' := (main (PosNum e'gt0) e'in).
+  near=> y'; apply: (lt_le_trans _ e'lee).
+  rewrite -[e']/(num_of_pos (PosNum e'gt0)).
+  near: y'; exact main'.
 have /andP [xmex xxpe] : x - e%:num < x < x + e%:num.
   by rewrite ltr_subl_addr cpr_add; apply/andP.
-set c := Num.max a (x - e%:num); set d := Num.min (x + e%:num) b.
 have xedif : x - e%:num < x + e%:num by rewrite (lt_trans xmex).
-have cLd : c < d.
-  rewrite /c /d; case: (ltrgtP a (x - e%:num));
-    case: (ltrgtP (x + e%:num) b) => //=.
-  + by move=> bxpe axme; rewrite (lt_trans xmex).
-  + by move=> xpeb xmea; rewrite (lt_trans aLx).
-  + by move=> xpeb xmea; rewrite (lt_trans aLx).
-  + by move=> xpeb axme; rewrite axme.
-  by move=> xpeb axme; rewrite axme.
-have [aLc [xmeLc cLb]] : (a <= c) /\ (x - e%:num <= c) /\ (c <= b).
-  rewrite /c; case: (ltrgtP a (x - e%:num))=> // ax;
-  by rewrite ?ax ?lexx // !ltW // (lt_trans xmex).
-have [dLb [dLxpe aLd]] : (d <= b) /\ (d <= x + e%:num) /\ (a <= d).
-  rewrite /d; case: (ltrgtP (x + e%:num) b)=> // xb;
-  by rewrite -?xb ?lexx // !ltW // (lt_trans _ xxpe).
-have aLd' : a < d by rewrite (le_lt_trans aLc).
-have cLb' : c < b by rewrite (lt_le_trans cLd).
 have [aab bab] : a \in `[a, b] /\ b \in `[a, b]
   by rewrite !in_itv /= !lexx !ltW.
+have xmeab : x - e%:num \in `[a, b].
+  by rewrite in_itv /= esmall_a ltW // (lt_le_trans xedif).
+have xpeab : x + e%:num \in `[a, b].
+  by rewrite in_itv /= esmall_b ltW // (le_lt_trans _ xedif).
 have gyx : g y = x by rewrite fxy fK // strict_to_large_itv.
-have infcfd : {in `](f c), (f d)[, forall u, `|g y - g u| < e%:num}.
-  move=> u uin; move: (uin); rewrite in_itv /= => /andP[] fcLu uLfd.
+have infcfd : {in `](f (x - e%:num)), (f (x + e%:num))[,
+   forall u, `|g y - g u| < e%:num}.
+  move=> u uin; move: (uin); rewrite in_itv /= => /andP[] fxmeLu uLfxpe.
   have uinab : u \in `](f a), (f b)[.
-    by rewrite in_itv /= (le_lt_trans _ fcLu) ?(lt_le_trans uLfd) //;
-      rewrite incr // in_itv //= ?aLc ?aLd ?dLb.
-  have uin' : u \in `[(f c), (f d)] by rewrite strict_to_large_itv.
+    rewrite in_itv /= (le_lt_trans _ fxmeLu) ?(lt_le_trans uLfxpe) //.
+      by rewrite incr // in_itv /= ?esmall_b (le_trans esmall_a) // ltW.
+    by rewrite incr // in_itv /= ?esmall_a ?(le_trans _ esmall_b) // ltW.
   have:= ivt _ uinab => [][v vin fvu]; move/andP: (vin)=> [altv vltb].
   have guv : g u = v by rewrite fvu fK // strict_to_large_itv.
   rewrite guv gyx ?in_itv /=.
-  have vnc : v != c by apply/eqP=> vc; move: fcLu; rewrite fvu vc ltxx.
-  have vnd : v != d by apply/eqP=> vc; move: uLfd; rewrite fvu vc ltxx.
-  rewrite distrC lter_distl (lt_le_trans _ dLxpe) ?(le_lt_trans xmeLc) //.
-    rewrite lt_neqAle eq_sym vnc /= -incr; last first.
-    + by rewrite strict_to_large_itv.
-    + by rewrite in_itv /= aLc.
-    by rewrite -fvu ltW.
-  rewrite lt_neqAle vnd /= -incr; last first.
-      by rewrite in_itv /= aLd.
+  have vnxme : v != x - e%:num.
+    by apply/eqP=> vxme; move: fxmeLu; rewrite fvu vxme ltxx.
+  have vnxpe : v != x + e%:num.
+    by apply/eqP=> vxpe; move: uLfxpe; rewrite fvu vxpe ltxx.
+  rewrite distrC lter_distl //.
+  rewrite lt_neqAle eq_sym vnxme /= -incr //; last first.
+    by rewrite strict_to_large_itv.
+  rewrite -fvu ltW // lt_neqAle vnxpe /= -incr //; last first.
     by rewrite strict_to_large_itv.
   by rewrite -fvu ltW.
 have fanfx : f a != f x.
@@ -254,22 +261,14 @@ have fxnfb : f x != f b.
   by apply/eqP=>/ifab fxfb; move: (xLb); rewrite fxfb ?ltxx.
 have fxLfb : f x <= f b by rewrite incr // ?ltW.
 have faLfx : f a <= f x by rewrite incr // ?ltW.
-have fcy : f c < y.
-  rewrite /c; case: (ltrgtP a (x - e%:num))=> ax;
-  rewrite fxy lt_neqAle -?ax ?fanfx ?faLfx //.
-  have xmeab : x - e%:num \in `[a, b].
-    by rewrite strict_to_large_itv // in_itv /= andbC (lt_trans xmex _).
-  rewrite andbC incr // (ltW xmex); apply/eqP=>/ifab => /(_ xmeab xab) abs.
-  by move: xmex; rewrite abs ltxx.
-have yfd : y < f d.
-  rewrite /d; case: (ltrgtP (x + e%:num) b)=> bx;
-  rewrite fxy lt_neqAle ?bx ?fxnfb ?fxLfb //.
-  have xpeab : x + e%:num \in `[a, b].
-    by rewrite strict_to_large_itv // in_itv /= (lt_trans aLx xxpe).
-  rewrite andbC incr // (ltW xxpe); apply/eqP=>/ifab => /(_ xab xpeab) abs.
-  by move: xxpe; rewrite -abs ltxx.
-have yfcfd : y \in `](f c), (f d)[.
-  by rewrite in_itv /= fcy.
+have fxmey : f (x - e%:num) < y.
+  rewrite fxy lt_neqAle andbC incr // (ltW xmex) /=.
+  by apply/eqP=>/ifab => /(_ xmeab xab) abs; move: xmex; rewrite abs ltxx.
+have fyxpe : y < f (x + e%:num).
+  rewrite fxy lt_neqAle andbC incr // (ltW xxpe) /=.
+  by apply/eqP=>/ifab => /(_ xab xpeab) abs; move: xxpe; rewrite -abs ltxx.
+have yfcfd : y \in `](f (x - e%:num)), (f (x + e%:num))[.
+  by rewrite in_itv /= fxmey.
 rewrite !near_simpl; near=> z; apply: infcfd; near: z.
 by rewrite !near_simpl; apply: near_in_interval.
 Grab Existential Variables. all: end_near. Qed.
