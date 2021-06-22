@@ -851,6 +851,27 @@ Lemma preimage_bigcap {aT rT I} (P : set I) (f : aT -> rT) F :
   f @^-1` (\bigcap_ (i in P) F i) = \bigcap_(i in P) (f @^-1` F i).
 Proof. exact/predeqP. Qed.
 
+Lemma bigcup_setU1 {T U : choiceType} (F : T -> set U) (x : T) (X : {fset T}) :
+  \bigcup_(i in [set j | j \in x |` X]%fset) F i =
+  F x `|` \bigcup_(i in [set j | j \in X]) F i.
+Proof.
+rewrite eqEsubset; split => [u|u [?|[/= t ? ?]]].
+- by move=> [/= t /fset1UP [->| ?] ?]; [left|right; exists t].
+- by exists x => //; apply/fset1UP; left.
+- by exists t => //; apply/fset1UP; right.
+Qed.
+
+Lemma bigcap_setU1 {T U : choiceType} (F : T -> set U) (x : T) (X : {fset T}) :
+  \bigcap_(i in [set j | j \in x |` X]%fset) F i =
+  F x `&` \bigcap_(i in [set j | j \in X]) F i.
+Proof.
+rewrite eqEsubset; split => [u |u [/= Fx ]] IFu.
+- split. 
+  + by move/(_ x):IFu => /=; apply; apply/fset1UP; left.
+  + by move=> y yX; move/(_ y):IFu => /=; apply; apply/fset1UP; right.
+- by move=> y /= /fset1UP [->| yX] //; apply IFu.
+Qed.
+
 Lemma setM0 T1 T2 (A1 : set T1) : A1 `*` set0 = set0 :> set (T1 * T2).
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 

@@ -5187,17 +5187,6 @@ Qed.
 Definition finCover (I : choiceType) (F : I -> pred U) (A : pred U) :=
   exists D : {fset I}, {subset A <= \bigcup_(i in [set i | i \in D]) F i}.
 
-(* NB: of general interest? *)
-Lemma bigcup_setU1 {T : choiceType} (F : T -> set U) (x : T) (X : {fset T}) :
-  \bigcup_(i in [set j | j \in x |` X]%fset) F i =
-  F x `|` \bigcup_(i in [set j | j \in X]) F i.
-Proof.
-rewrite eqEsubset; split => [u|u [?|[/= t ? ?]]].
-- by move=> [/= t /fset1UP [->| ?] ?]; [left|right; exists t].
-- by exists x => //; apply/fset1UP; left.
-- by exists t => //; apply/fset1UP; right.
-Qed.
-
 Lemma family_cvg_finite_covers (famA famB : pred U -> Prop)
   (F : set (set (U -> V))) (f : U -> V) : Filter F ->
   (forall P, famA P ->
