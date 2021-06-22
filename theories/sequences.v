@@ -1431,8 +1431,7 @@ by rewrite (splitr A) addEFin lee_add // ?foo // goo.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD (R : realType) (f g : (\bar R)^nat) a b :
-  ~~ adde_undef a b ->
-  f --> a -> g --> b -> f \+ g --> a + b.
+  adde_def a b -> f --> a -> g --> b -> f \+ g --> a + b.
 Proof.
 move: a b => [a| |] [b| |] // _.
 - case/ereal_cvg_real => [[na _ foo] fa].
@@ -1464,7 +1463,7 @@ move: a b => [a| |] [b| |] // _.
 Qed.
 
 Lemma ereal_limD (R : realType) (f g : (\bar R)^nat) :
-  cvg f -> cvg g -> ~~ adde_undef (lim f) (lim g) ->
+  cvg f -> cvg g -> adde_def (lim f) (lim g) ->
   lim (f \+ g) = lim f + lim g.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
@@ -1477,7 +1476,7 @@ move=> f_eq0 g_eq0.
 transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i +
                          \sum_(0 <= i < n | P i) g i)).
   by congr (lim _); apply/funext => n; rewrite big_split.
-rewrite ereal_limD /adde_undef//=; do ? exact: is_cvg_ereal_nneg_series.
+rewrite ereal_limD /adde_def //=; do ? exact: is_cvg_ereal_nneg_series.
 by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
            ?[_ < _]real0// ereal_nneg_series_lim_ge0.
 Qed.
