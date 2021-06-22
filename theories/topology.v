@@ -5134,7 +5134,6 @@ Lemma ptws_cvg_family_singleton {U : topologicalType} {V : uniformType} F (f: U 
   Filter F ->
   {ptws, F --> f} = {family (@singletons U), F --> f}.
 Proof.
-<<<<<<< HEAD
   move=> FF; rewrite propeqE fam_cvgP cvg_sup /ptws_fun; split.
   - move=> + A [x ->] => /(_ x) Ff; apply/cvg_restricted_entourageP => E entE.
     near=> q => t ->; near:q; apply: Ff => /=.
@@ -5150,23 +5149,6 @@ Proof.
     rewrite openE /interior in oA; case/nbhsP: (oA (f x) (Afx))=> E entE EsubA.
     move:(Ef _ entE) => EF.
     by near=> g; apply: AsubP; apply: EsubA; apply (near EF).
-=======
-move=> FF; rewrite propeqE fam_cvgP cvg_sup /ptws_fun; split.
-- rewrite /singletons /= => + A [x /= ->] => /(_ x) Ff; apply/cvg_restricted_entourageP => E entE.
-  near=> q => t /eqP <-; near:q; apply: Ff => /=.
-  move: (nbhs_entourage (f x) entE).
-  rewrite nbhsE /= => [[B [onbhsB BsubE]]].
-  exists [set q | B (q x)];split;[|split] => //=.
-  + exists B; first by case: onbhsB.
-    by [].
-  + by apply: nbhs_singleton; apply: open_nbhs_nbhs.
-  + by move=> q /= Bq; apply BsubE.
-- move=> + x => /(_ (eq_op x)); pull1; first by exists x.
-  move=> /cvg_restricted_entourageP Ef => /= P /= [P' [[A oA /= <- /=] [Afx AsubP]]].
-  rewrite openE /interior in oA; case/nbhsP: (oA (f x) (Afx))=> E entE EsubA.
-  move:(Ef _ entE) => EF.
-  by near=> g; apply: AsubP; apply: EsubA; apply (near EF).
->>>>>>> various style improvements
 Grab Existential Variables. end_near. end_near. Qed.
 
 Lemma ptws_cvg_compact_family {X : topologicalType} {Y : uniformType} F (f: X -> Y):
@@ -5404,10 +5386,8 @@ have E4f : E4(f t, f x0). {
   by do 2 (pull1 => //);  move=> E4f; split; apply E4f => //.
 }
 have E4subE3: E4 `<=` E3 by rewrite /E4 => ? [] //=.
-do 2 (apply: entourage_split; first by []); apply: E4subE3.
-1: exact: E4f.
-3: exact: E4q.
-1: exact: entourage_refl.
+do 2 (apply: entourage_split; first by []); apply: E4subE3; first exact: E4f; last exact: E4q.
+  by exact: entourage_refl.
 by have := (near Fx0 q); (pull1; first by done); apply.
 Grab Existential Variables. end_near. Qed.    
 
