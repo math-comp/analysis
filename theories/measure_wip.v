@@ -72,12 +72,11 @@ Local Open Scope ereal_scope.
 Definition uncurry {A B C:Type} (f:A -> B -> C)
   (p:A * B) : C := match p with (x, y) => f x y end.
 
-(* TODO: move *)
 Lemma adde_def_nneg_series (R : realType) (f g : (\bar R)^nat) (P Q : pred nat) :
-  (forall n, P n -> 0%:E <= f n) -> (forall n, Q n -> 0%:E <= g n) ->
+  (forall n, P n -> 0 <= f n) -> (forall n, Q n -> 0 <= g n) ->
   adde_def (\sum_(i <oo | P i) f i) (\sum_(i <oo | Q i) g i).
 Proof.
-move=> f0 g0; rewrite /adde_def negb_and !negb_and; apply/andP; split.
+move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split.
 - apply/orP; right; apply/eqP => Qg.
   by have := ereal_nneg_series_lim_ge0 g0; rewrite Qg.
 - apply/orP; left; apply/eqP => Pf.
@@ -854,9 +853,8 @@ have ? : cvg BA.
   by apply: measure_ge0 => //; apply: measurableI.
 have ? : cvg (eseries (mu \o B)).
   by apply/is_cvg_ereal_nneg_series => n _; exact: measure_ge0.
-have [undef|] := boolP (adde_def (lim BA) (lim BNA)); last first.
-  rewrite /adde_def negb_and 2!negbK.
-  case/orP => [/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
+have [def|] := boolP (adde_def (lim BA) (lim BNA)); last first.
+  rewrite /adde_def negb_and 2!negbK => /orP[/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
   - suff -> : lim (eseries (mu \o B)) = +oo by rewrite lee_pinfty.
     apply/eqP; rewrite -lee_pinfty_eq -(eqP BAoo); apply/lee_lim => //.
     near=> n; apply: lee_sum => m _; apply: le_measure; rewrite /mkset; by
