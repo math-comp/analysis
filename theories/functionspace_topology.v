@@ -291,6 +291,21 @@ apply: entourage_split => //; last by apply: Ah.
 exact: eqctsU.
 Qed.
 
+Lemma equicontinuous_cts (W : set (X -> Y)) f: 
+  equicontinuous W -> W f -> continuous f.
+Proof. 
+  move=> ectsW Wf x; apply/cvg_entourageP => E entE.
+  case: (ectsW x _ entE) => U [nbhsU Ef]; near_simpl; near=> y.
+  by apply: Ef => //; apply (near nbhsU).
+Grab Existential Variables. end_near. Qed.
+
+Lemma equicontinuous_subset (W V : set (X -> Y)): 
+  W `<=` V -> equicontinuous V -> equicontinuous W.
+Proof. 
+  move=> WsubV + x E entE => /(_ x E entE) [U [? Ef]].
+  by exists U; split => // f y Wy Uy; apply Ef => //; apply WsubV.
+Qed.
+
 Lemma ptws_compact_cvg (W : set ({ptws, X -> Y})) F f:
   equicontinuous W -> 
   ProperFilter F -> 
@@ -386,11 +401,11 @@ exact: closure_equicontinuous.
 Qed.
 
 
-Lemma foo (W : (set (X -> Y))) :
+Lemma compact_equicontinuous (W : (set (X -> Y))) :
   locally_compact X -> 
   hausdorff X -> 
   (forall f, W f -> continuous f) ->
-  @compact [topologicalType of {family compact, X -> Y}] W -> 
+  @precompact [topologicalType of {family compact, X -> Y}] W -> 
   equicontinuous W.
 Proof.
   move=> locCptX hsdfX ctsW cptW => x E1 entE1.  
@@ -411,9 +426,9 @@ Proof.
   have E4invsubE3 : (E4 ^-1)%classic `<=` E3 by move=> [p q []/=]. 
   set cptTop := [topologicalType of {family compact, X -> Y}].
   set R1 := fun f => [set h : cptTop | forall y, B y -> E4 (f y, h y)]^°.
-  set R := fun f => W `&` R1 f.
-  rewrite compact_cover cover_compactE /= in cptW.
-  move/(_ [choiceType of {family compact, X -> Y}] W R): cptW.
+  set R := fun f => @closure cptTop W `&` R1 f.
+  rewrite /precompact compact_cover cover_compactE  /= in cptW.
+  move/(_ [choiceType of {family compact, X -> Y}] (@closure cptTop W) R): cptW.
   pull1. {
       exists R1.
       - by move=> f Wf /=; exact: open_interior.
@@ -439,7 +454,7 @@ Proof.
   - apply: filterI => //; apply: filter_bigI => g Dg.
     apply: nbhs_comp. 
     + move=> h; rewrite inE /= => Eh; apply: cvg_pair; first exact: cvg_cst.
-      by apply: ctsW; rewrite -inE; apply DsubW.
+      admit.
     + exists (to_set E6 (g x), to_set E6 (g x)) => /=; first split; 
         try (by apply: nbhs_entourage).
       move=> [p q] [/=] P Q; apply: (entourage_split (g x)) => //. 
@@ -454,4 +469,41 @@ Proof.
     apply E4subE3; by case: Uy=> [/(_ _ f0D) /= ].
 Qed.
 
+Lemma compact_pointwisePrecompact (W : set(X -> Y)): 
+  hausdorff X -> 
+  @compact [topologicalType of {family compact, X -> Y}] W -> 
+  pointwisePrecomact W.
+Proof.
+  move=> hsdfX cptFamW x.
+  have: @compact [topologicalType of {ptws, X -> Y}] W. {
+    rewrite compact_ultra /= => F UF FW. 
+    move: cptFamW; rewrite compact_ultra=> /(_ F UF FW) [h [Wh Fh]].
+    exists h; split => //.
+    by move=> /= Q Fq; apply: ptws_cvg_compact_family; first exact: Fh.
+  }
+  move/(continuous_compact (f := evaluator_dep x)).
+  set C := (x in compact x).
+  pull1; first ((move=> + _); apply: evaluator_dep_continuous). 
+  move=> cptC; rewrite /precompact. 
+  rewrite -(_ : [set f x | f in W] = closure [set f x | f in W] ) //.
+  apply closure_id; apply: compact_closed => //.
+Qed.
+
+Lemma ArzelaAscoli (W : (set ({family compact, X -> Y}))) : 
+  locally_compact X ->
+  hausdorff X ->
+  (equicontinuous W /\ pointwisePrecomact W) <->
+  (@precompact [topologicalType of {family compact, X -> Y}] W /\ 
+    (forall f, W f -> continuous f)).
+Proof.
+move=> lcptX hsdfX; split.
+- case => ectsW ?; split; first apply: ascoli_forward => //.
+  by move=> ? ?; apply: equicontinuous_cts; eauto.
+- case=> cptWcl ctsW; split.
+  + apply: equicontinuous_subset; first exact: 
+      (subset_closure (T:= [topologicalType of {family compact, X -> Y}])). 
+    apply: (compact_equicontinuous) => //.
+    move=> f cFamWf; apply: (equicontinuous_cts ( W := @closure [topologicalType of {ptws, X -> Y}] W)).
+    * apply: equicontinuous_subset.
+    apply: compact_equicontinuous => //.
 End Ascoli.
