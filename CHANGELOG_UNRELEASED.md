@@ -18,6 +18,9 @@
     * in `ereal.v`, `adde_undefC` renamed to `adde_defC`,
       `fin_num_adde_undef` renamed to `fin_num_adde_def`
     * in `sequences.v`, `ereal_cvgD` and `ereal_limD` now use hypotheses with `adde_def`
+- in `sequences.v`:
+  + generalize `{in,de}creasing_seqP`, `non{in,de}creasing_seqP` from `numDomainType`
+    to `porderType`
 
 ### Renamed
 
