@@ -389,31 +389,69 @@ Qed.
 Lemma foo (W : (set (X -> Y))) :
   locally_compact X -> 
   hausdorff X -> 
+  (forall f, W f -> continuous f) ->
   @compact [topologicalType of {family compact, X -> Y}] W -> 
   equicontinuous W.
 Proof.
-  move=> locCptX hsdfX cptW => x E entE.  
+  move=> locCptX hsdfX ctsW cptW => x E1 entE1.  
   case/(_ x) : locCptX => B cptB nbhsB.
-  set R := fun f => W `&` [set h | forall y, B y -> E (f y, h y)].
+  set E2 := (split_ent E1); have entE2: entourage E2 by 
+      exact: entourage_split_ent.
+  set E3 := (split_ent E2); have entE3: entourage E3 by 
+      exact: entourage_split_ent.
+  set E4 := E3 `&` (E3 ^-1)%classic; have entE4 : entourage E4 by
+      apply: filterI => //; exact: entourage_inv.
+  set E5 := (split_ent E4); have entE5: entourage E5 by 
+      exact: entourage_split_ent.
+  set E6 := E5 `&` (E5 ^-1)%classic; have entE6 : entourage E6 by
+      apply: filterI => //; exact: entourage_inv.
+  have E3subE2 : E3 `<=` E2.
+    move=>[??] ?; apply: entourage_split => //; eauto; exact: entourage_refl.
+  have E4subE3 : E4 `<=` E3 by move =>? [] //.
+  have E4invsubE3 : (E4 ^-1)%classic `<=` E3 by move=> [p q []/=]. 
+  set cptTop := [topologicalType of {family compact, X -> Y}].
+  set R1 := fun f => [set h : cptTop | forall y, B y -> E4 (f y, h y)]^°.
+  set R := fun f => W `&` R1 f.
   rewrite compact_cover cover_compactE /= in cptW.
   move/(_ [choiceType of {family compact, X -> Y}] W R): cptW.
   pull1. {
-      exists (fun f => [set h | forall y, B y -> E (f y, h y)]).
-      - move=> g Wg; rewrite openE/= => h /= HE.
-        have FNh : Filter (nbhs h) by exact: nbhs_filter h.
-        case: (@fam_cvgP X Y compact (nbhs h) h FNh) => + _.
-        pull1; first exact:cvg_id; move/(_ (fun x => `[<B x>])).
-        set B' := (x in compact x). have -> : B' = B  by 
-            rewrite /B' funeqE=> z; rewrite asboolE.
-        pull1; first by [].
-        move/( _ [set h |forall y, B y -> E (g y, h y)]); apply => /=.
-        rewrite /restrict_fun; exists [set k | forall y, split_ent E (g x, k y)] => /=.
-        + exists [set fg | forall y, split_ent E (fg.1 y, fg.2 y)] => //=.
-          * by exists (split_ent E) => //= ?.
-          * move=> ? + y => /(_ y) spE; move/(_ y ): HE.
-        + admit.
-      - by rewrite /R.
+      exists R1.
+      - by move=> f Wf /=; exact: open_interior.
+      - by move=> ??; rewrite /R //=.
   }
+  pull1. {
+    move=> h Wh; exists h => //; rewrite /R/R1; split => //.
+    rewrite /interior. 
+    have FNh : Filter (nbhs h) by exact: nbhs_filter h.
+    case: (@fam_cvgP X Y compact (nbhs h) h FNh) => + _.
+    pull1; first exact:cvg_id; move/(_ (fun x => `[<B x>])).
+    set B' := (x in compact x). have -> : B' = B  by 
+        rewrite /B' funeqE=> z; rewrite asboolE.
+    pull1; first by [].
+    move/cvg_restricted_entourageP/(_ _ entE4).
+    rewrite /cptTop near_simpl => [[Q [Q1 [Q2 Q3]]]].
+    exists Q; (do 2 split=> //); move=> // t /= Qt y By; apply: Q3 =>//.
+    by rewrite asboolE.
+  }
+  move=> [D DsubW Dcovers].
+  set U := \bigcap_(g in [set i | i \in D]) [set y | E4 (g x, g y)].
+  exists (U `&` B); split.
+  - apply: filterI => //; apply: filter_bigI => g Dg.
+    apply: nbhs_comp. 
+    + move=> h; rewrite inE /= => Eh; apply: cvg_pair; first exact: cvg_cst.
+      by apply: ctsW; rewrite -inE; apply DsubW.
+    + exists (to_set E6 (g x), to_set E6 (g x)) => /=; first split; 
+        try (by apply: nbhs_entourage).
+      move=> [p q] [/=] P Q; apply: (entourage_split (g x)) => //. 
+      * by move: P => [].
+      * by move: Q => [].
+  - move=> f y Wf Uy; case: (Dcovers _ Wf)=> /= f0.
+    rewrite /R/R1 => f0D [_ /interior_subset /= E4f].
+    apply: (entourage_split (f0 y)) => //; last by 
+      apply E3subE2, E4subE3, E4f, Uy.
+    apply: (entourage_split (f0 x)) => //; first by 
+      apply E4invsubE3, E4f, nbhs_singleton.
+    apply E4subE3; by case: Uy=> [/(_ _ f0D) /= ].
+Qed.
 
-  
 End Ascoli.
