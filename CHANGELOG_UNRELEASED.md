@@ -8,6 +8,15 @@
   + lemmas `seriesN`, `seriesD`, `seriesZ`, `is_cvg_seriesN`, `lim_seriesN`,
     `is_cvg_seriesZ`, `lim_seriesZ`, `is_cvg_seriesD`, `lim_seriesD`,
     `is_cvg_seriesB`, `lim_seriesB`, `lim_series_le`, `lim_series_norm`
+  + lemma `adde_def_nneg_series`
+- in `measure.v`:
+  + lemmas `epsilon_trick`, 
+  + definition `measurable_cover`
+  + lemmas `cover_measurable`, `cover_subset`
+  + definition `mu_ext`
+  + lemmas `le_mu_ext`, `mu_ext_ge0`, `mu_ext0`, `measurable_uncurry`,
+    `mu_ext_sigma_subadditive`
+  + canonical `outer_measure_of_measure`
 
 ### Changed
 
