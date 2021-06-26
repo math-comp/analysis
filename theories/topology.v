@@ -4732,8 +4732,26 @@ Qed.
 
 Canonical fct_restrictedUniformType := 
   UniformType (fct_RestrictedUniform) restrict_uniform_mixin.
+
+Lemma restricted_cvgP (F : set(set(U -> V))) (f : fct_RestrictedUniform) : 
+  Filter F ->
+  (F --> f) <-> (forall E, entourage E -> \near F, (forall y, A y -> E (f y, F y))).
+Proof.
+move=> FF; split.
+- move=> + E entE; apply; apply/restricted_nbhs; exists E; split => //.
+  by move=> ?.
+- move=> Ef => Q /restricted_nbhs [E [entE subQ]].
+  by apply: (filterS subQ); apply Ef.
+Qed.
+
+
 End RestrictedTopology.
 
+Ltac pull1 :=
+  match goal with
+  | |- (?x -> _) -> _ => let Q := fresh in 
+    have Q : x; last move=>/(_ Q)
+  end.
 (* We use this function to help coq identify the correct notation to use
    when printing. Otherwise you get goals like `F --> f -> F --> f`      *)
 Definition restrict_fun {U : choiceType} A (V : uniformType)
@@ -4942,6 +4960,16 @@ split; first by move=> /cvg_sup + A FA; move/(_ (existT _ _ FA)).
 by move=> famFf /=; apply/cvg_sup => [[? ?] FA]; apply: famFf.
 Qed.
 
+Lemma fam_entourage_cvgP (fam : set U -> Prop) (F : set (set (U -> V))) (f : U -> V) :
+  Filter F -> {family fam, F --> f} <->
+  (forall (A : set U) E, fam A -> entourage E -> \near F, forall y, A y -> E (f y, F y) ).
+Proof.
+move=> FF; apply: iff_trans; first exact: fam_cvgP; split.
+- by move=> + A + famA + => /(_ A famA)/restricted_cvgP .
+- move=> Ff A famA; apply/restricted_cvgP => E entE. 
+  exact: (Ff A E famA entE).
+Qed.
+  
 Lemma family_cvg_subset (famA famB : set U -> Prop) (F : set (set (U -> V)))
     (f : U -> V) : Filter F ->
   famA `<=` famB -> {family famB, F --> f} -> {family famA, F --> f}.
@@ -4985,7 +5013,7 @@ Definition compactly_in {U : topologicalType} (A : set U) :=
   [set B | B `<=` A /\ compact B].
 
 Lemma compact_cvg_within_compact {U : topologicalType} {V : uniformType}
-    (C : pred U) (F : set (set (U -> V))) (f : U -> V) :
+    (C : set U) (F : set (set (U -> V))) (f : U -> V) :
   Filter F -> compact C ->
   {uniform C, F --> f} <-> {family (compactly_in C), F --> f}.
 Proof.
@@ -4999,10 +5027,10 @@ Definition singletons {X : Type} := [set P | exists (x:X), P = [set x]].
 
 Lemma ptws_cvg_family_singleton {U : topologicalType} {V : uniformType} F (f: U -> V):
   Filter F ->
-  {ptws, F --> f} = {family (@singletons U), F --> f}.
+  {ptws F --> f} = {family (@singletons U), F --> f}.
 Proof.
   move=> FF; rewrite propeqE fam_cvgP cvg_sup /ptws_fun; split.
-  - move=> + A [x ->] => /(_ x) Ff; apply/cvg_restricted_entourageP => E entE.
+  - move=> + A [x ->] => /(_ x) Ff; apply/restricted_cvgP => E entE.
     near=> q => t ->; near:q; apply: Ff => /=.
     move: (nbhs_entourage (f x) entE).
     rewrite nbhsE /= => [[B [onbhsB BsubE]]].
@@ -5012,14 +5040,14 @@ Proof.
     + by apply: nbhs_singleton; apply: open_nbhs_nbhs.
     + by move=> q /= Bq; apply BsubE.
   - move=> + x => /(_ [set x]); pull1; first by exists x.
-    move=> /cvg_restricted_entourageP Ef => /= P /= [P' [[A oA /= <- /=] [Afx AsubP]]].
+    move=> /restricted_cvgP Ef => /= P /= [P' [[A oA /= <- /=] [Afx AsubP]]].
     rewrite openE /interior in oA; case/nbhsP: (oA (f x) (Afx))=> E entE EsubA.
     move:(Ef _ entE) => EF.
     by near=> g; apply: AsubP; apply: EsubA; apply (near EF).
 Grab Existential Variables. end_near. end_near. Qed.
 
 Lemma ptws_cvg_compact_family {X : topologicalType} {Y : uniformType} F (f: X -> Y):
-  ProperFilter F -> {family compact, F --> f} -> {ptws, F --> f}.
+  ProperFilter F -> {family compact, F --> f} -> {ptws F --> f}.
 Proof.
 move=> PF; rewrite ptws_cvg_family_singleton; apply: family_cvg_subset.
 move=> A [x ->]; apply: compact_singleton.

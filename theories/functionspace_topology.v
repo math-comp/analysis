@@ -240,11 +240,11 @@ Context {hsdf : hausdorff Y}.
 Definition pointwisePrecomact (W : set (X -> Y)):=
   forall x, precompact [set (f x) | f in W].
 
-Lemma pointwisePrecompact_precompact  (W : set ({ptws, X -> Y})):
+Lemma pointwisePrecompact_precompact  (W : set ({ptws X -> Y})):
   pointwisePrecomact W -> precompact W.
 Proof.
 move=> ptwsPreW; set K := fun x => closure [set f x | f in W].
-set R := [set f : {ptws, X -> Y} | forall x : X, K x (f x)].
+set R := [set f : {ptws X -> Y} | forall x : X, K x (f x)].
 have C : compact R by apply: tychonoff => x; apply: ptwsPreW => //.
 apply: subclosed_compact.
 + apply: closed_closure.
@@ -258,8 +258,8 @@ apply: subclosed_compact.
   by rewrite closureE /= => q /=; apply; split => //.
 Qed.
   
-Lemma nbhs_entourage_ptws (f : {ptws, X -> Y}) x B : 
-  entourage B -> nbhs f (fun g : {ptws, X -> Y} => B (g x, f x)).
+Lemma nbhs_entourage_ptws (f : {ptws X -> Y}) x B : 
+  entourage B -> nbhs f (fun g : {ptws X -> Y} => B (g x, f x)).
 Proof.
 move=> entB; apply: nbhs_comp => //=.
 - move => t _; apply: cvg_pair => //=; first by apply: nbhs_filter.
@@ -273,15 +273,15 @@ move=> entB; apply: nbhs_comp => //=.
     by apply: entourage_split => //=; first apply: X1.
 Qed.
 
-Lemma closure_equicontinuous  (W : set ({ptws, X -> Y})):
+Lemma closure_equicontinuous  (W : set ({ptws X -> Y})):
   equicontinuous W -> equicontinuous (closure W) .
 Proof.
 move=> ectsW x0 E entE.
 set A := (split_ent E); have entA: entourage A by exact: entourage_split_ent.
 set B := (split_ent A); have entB: entourage B by exact: entourage_split_ent.
 move: (ectsW x0 B entB) => [U [nbdU eqctsU]]; exists U; split => // g x cWf Ux.
-set R := [set h : {ptws, X -> Y} | B (h x, g x) /\ A (g x0, h x0) ].
-have nR: nbhs (g : {ptws, X -> Y}) R. {
+set R := [set h : {ptws X -> Y} | B (h x, g x) /\ A (g x0, h x0) ].
+have nR: nbhs (g : {ptws X -> Y}) R. {
   apply: filterI => //.
   - exact: nbhs_entourage_ptws.
   - under eq_fun => h do
@@ -318,8 +318,7 @@ Proof.
 Qed.
 
 Lemma compact_cvg_nbhs (f : {family compact, X -> Y}) B E: 
-  entourage E -> 
-  compact B ->
+  entourage E -> compact B ->
   nbhs f [set q | forall x, B x -> E (f x, q x)].
 Proof.
 move=> entE cptB.
@@ -329,17 +328,17 @@ pull1; first exact:cvg_id; move/(_ (fun x => `[<B x>])).
 set B' := (x in compact x). have -> : B' = B  by 
     rewrite /B' funeqE=> z; rewrite asboolE.
 pull1; first by [].
-move/cvg_restricted_entourageP/(_ _ entE).
+move/restricted_cvgP/(_ _ entE).
 rewrite near_simpl => [[Q [Q1 [Q2 Q3]]]].
 exists Q; (do 2 split=> //); move=> // t /= Qt y By; apply: Q3 =>//.
 by rewrite asboolE.
 Qed.
 
-Lemma ptws_compact_cvg (W : set ({ptws, X -> Y})) F f:
+Lemma ptws_compact_cvg (W : set ({ptws X -> Y})) F f:
   equicontinuous W -> 
   ProperFilter F -> 
   F W -> 
-  {ptws, F --> f} = {family compact, F --> f}.
+  {ptws F --> f} = {family compact, F --> f}.
 Proof.
 move=> + PF; wlog Wf : f W / W f. {
   move=> + /closure_equicontinuous ectsCW FW => /(_ _ _ _ ectsCW) H. 
@@ -350,7 +349,7 @@ move=> + PF; wlog Wf : f W / W f. {
 } 
 move=> ectsW FW; rewrite propeqE; split; last exact: ptws_cvg_compact_family. 
 move=> ptwsF; apply/fam_cvgP => A cptA.
-apply/cvg_restricted_entourageP => E1 entE1.
+apply/restricted_cvgP => E1 entE1.
 set E2 := (split_ent E1); have entE2: entourage E2 by 
     exact: entourage_split_ent.
 set E3 := (split_ent E2); have entE3: entourage E3 by 
@@ -417,7 +416,7 @@ Proof.
 move=> /pointwisePrecompact_precompact + ectsW.
 rewrite /precompact compact_ultra compact_ultra. 
 have -> :@closure ([topologicalType of {family compact, X -> Y}]) W =
-             @closure ([topologicalType of {ptws, X -> Y}]) W. {
+             @closure ([topologicalType of {ptws X -> Y}]) W. {
   rewrite ?closureEcvg; rewrite predeqE => g /=.
   split; move => [F [PF [FW ?]]]; exists F.
   - by rewrite (ptws_compact_cvg (W:=W)).
@@ -425,7 +424,7 @@ have -> :@closure ([topologicalType of {family compact, X -> Y}]) W =
 }
 move=> /= + F UF FcW => /(_ F UF FcW); case=> p [cWp Fp]; exists p.
 split=> //=.
-rewrite -(ptws_compact_cvg (W:=(@closure [topologicalType of {ptws, X -> Y}] W))) => //.
+rewrite -(ptws_compact_cvg (W:=(@closure [topologicalType of {ptws X -> Y}] W))) => //.
 exact: closure_equicontinuous.
 Qed.
 
@@ -508,7 +507,7 @@ Lemma compact_pointwisePrecompact (W : set(X -> Y)):
   pointwisePrecomact W.
 Proof.
   move=> hsdfX cptFamW x.
-  have: @compact [topologicalType of {ptws, X -> Y}] W. {
+  have: @compact [topologicalType of {ptws X -> Y}] W. {
     rewrite compact_ultra /= => F UF FW. 
     move: cptFamW; rewrite compact_ultra=> /(_ F UF FW) [h [Wh Fh]].
     exists h; split => //.
