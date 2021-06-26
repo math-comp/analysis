@@ -216,7 +216,7 @@ End Evaluators.
 Definition locally_compact (X : topologicalType) :=
     forall (x:X), exists2 U, compact U & nbhs x U.
 
-Section Ascoli.
+Section Precompact.
 Context {X : topologicalType}.
 
 Definition precompact {X : topologicalType} (C: set X) := 
@@ -230,7 +230,10 @@ apply: (subclosed_compact (B := closure B)) => //.
 - exact: closed_closure.
 - exact: closure_subset.
 Qed.
+End Precompact.
   
+Section Arzela.
+Context {X : topologicalType}.
 Context {Y : uniformType}.
 Context {hsdf : hausdorff Y}.
 
@@ -304,6 +307,32 @@ Lemma equicontinuous_subset (W V : set (X -> Y)):
 Proof. 
   move=> WsubV + x E entE => /(_ x E entE) [U [? Ef]].
   by exists U; split => // f y Wy Uy; apply Ef => //; apply WsubV.
+Qed.
+
+Lemma pointwisePrecomact_subset (W V : set (X -> Y)): 
+  W `<=` V -> pointwisePrecomact V -> pointwisePrecomact W.
+Proof. 
+  move=> WsubV + x => /(_ x) pcptV.
+  apply: precompact_subset; last exact: pcptV.
+  exact: image_subset.
+Qed.
+
+Lemma compact_cvg_nbhs (f : {family compact, X -> Y}) B E: 
+  entourage E -> 
+  compact B ->
+  nbhs f [set q | forall x, B x -> E (f x, q x)].
+Proof.
+move=> entE cptB.
+have FNh : Filter (nbhs f) by exact: nbhs_filter f.
+case: (@fam_cvgP X Y compact (nbhs f) f FNh) => + _.
+pull1; first exact:cvg_id; move/(_ (fun x => `[<B x>])).
+set B' := (x in compact x). have -> : B' = B  by 
+    rewrite /B' funeqE=> z; rewrite asboolE.
+pull1; first by [].
+move/cvg_restricted_entourageP/(_ _ entE).
+rewrite near_simpl => [[Q [Q1 [Q2 Q3]]]].
+exists Q; (do 2 split=> //); move=> // t /= Qt y By; apply: Q3 =>//.
+by rewrite asboolE.
 Qed.
 
 Lemma ptws_compact_cvg (W : set ({ptws, X -> Y})) F f:
@@ -420,10 +449,17 @@ Proof.
       exact: entourage_split_ent.
   set E6 := E5 `&` (E5 ^-1)%classic; have entE6 : entourage E6 by
       apply: filterI => //; exact: entourage_inv.
-  have E3subE2 : E3 `<=` E2.
+  set E7 := (split_ent E6); have entE7: entourage E7 by 
+      exact: entourage_split_ent.
+  have E3subE2 : E3 `<=` E2 by
     move=>[??] ?; apply: entourage_split => //; eauto; exact: entourage_refl.
   have E4subE3 : E4 `<=` E3 by move =>? [] //.
   have E4invsubE3 : (E4 ^-1)%classic `<=` E3 by move=> [p q []/=]. 
+  have E5subE4 : E5 `<=` E4 by
+    move=>[??] ?; apply: entourage_split => //; eauto; exact: entourage_refl.
+  have E6subE5 : E6 `<=` E5 by move=>?[].
+  have E7subE6 : E7 `<=` E6 by
+    move=>[??] ?; apply: entourage_split => //; eauto; exact: entourage_refl.
   set cptTop := [topologicalType of {family compact, X -> Y}].
   set R1 := fun f => [set h : cptTop | forall y, B y -> E4 (f y, h y)]^°.
   set R := fun f => @closure cptTop W `&` R1 f.
@@ -436,38 +472,35 @@ Proof.
   }
   pull1. {
     move=> h Wh; exists h => //; rewrite /R/R1; split => //.
-    rewrite /interior. 
-    have FNh : Filter (nbhs h) by exact: nbhs_filter h.
-    case: (@fam_cvgP X Y compact (nbhs h) h FNh) => + _.
-    pull1; first exact:cvg_id; move/(_ (fun x => `[<B x>])).
-    set B' := (x in compact x). have -> : B' = B  by 
-        rewrite /B' funeqE=> z; rewrite asboolE.
-    pull1; first by [].
-    move/cvg_restricted_entourageP/(_ _ entE4).
-    rewrite /cptTop near_simpl => [[Q [Q1 [Q2 Q3]]]].
-    exists Q; (do 2 split=> //); move=> // t /= Qt y By; apply: Q3 =>//.
-    by rewrite asboolE.
+    exact: compact_cvg_nbhs.
   }
   move=> [D DsubW Dcovers].
-  set U := \bigcap_(g in [set i | i \in D]) [set y | E4 (g x, g y)].
+  set U := \bigcap_(g in [set i | i \in D]) [set y | B y -> E4 (g x, g y)].
   exists (U `&` B); split.
   - apply: filterI => //; apply: filter_bigI => g Dg.
-    apply: nbhs_comp. 
-    + move=> h; rewrite inE /= => Eh; apply: cvg_pair; first exact: cvg_cst.
-      admit.
-    + exists (to_set E6 (g x), to_set E6 (g x)) => /=; first split; 
-        try (by apply: nbhs_entourage).
-      move=> [p q] [/=] P Q; apply: (entourage_split (g x)) => //. 
-      * by move: P => [].
-      * by move: Q => [].
-  - move=> f y Wf Uy; case: (Dcovers _ Wf)=> /= f0.
-    rewrite /R/R1 => f0D [_ /interior_subset /= E4f].
+    have : (@closure cptTop W)g by rewrite -inE; apply: DsubW.
+    move=> /(_ [set h | (forall x, B x -> (split_ent E5) (g x, h x)) /\ (forall x, B x -> (split_ent E5) (h x, g x))]).
+    pull1. { apply: filterI; first exact: compact_cvg_nbhs.
+      apply: (@compact_cvg_nbhs g B (((split_ent E5)^-1)%classic)) => //.
+      exact: entourage_inv.
+    }
+    case=> g' [Wg' [P Q]]. 
+    move/cvg_entourageP: (ctsW _ Wg' x) => /( _ (split_ent (split_ent E4))).
+    pull1; first by []. 
+    near_simpl=> G'; near=> y=> By.
+    (do 2 apply: entourage_split => //).
+    + by apply P; apply: nbhs_singleton.
+    + exact: (near G' y).
+    + exact: Q. 
+    + exact: entourage_refl.
+  - move=> f y Wf Uy; case: (Dcovers f); first exact: subset_closure.
+    rewrite /R/R1 => f0 f0D [_ /interior_subset /= E4f].
     apply: (entourage_split (f0 y)) => //; last by 
       apply E3subE2, E4subE3, E4f, Uy.
     apply: (entourage_split (f0 x)) => //; first by 
       apply E4invsubE3, E4f, nbhs_singleton.
     apply E4subE3; by case: Uy=> [/(_ _ f0D) /= ].
-Qed.
+Grab Existential Variables. end_near. Qed.
 
 Lemma compact_pointwisePrecompact (W : set(X -> Y)): 
   hausdorff X -> 
@@ -500,10 +533,12 @@ move=> lcptX hsdfX; split.
 - case => ectsW ?; split; first apply: ascoli_forward => //.
   by move=> ? ?; apply: equicontinuous_cts; eauto.
 - case=> cptWcl ctsW; split.
-  + apply: equicontinuous_subset; first exact: 
-      (subset_closure (T:= [topologicalType of {family compact, X -> Y}])). 
-    apply: (compact_equicontinuous) => //.
-    move=> f cFamWf; apply: (equicontinuous_cts ( W := @closure [topologicalType of {ptws, X -> Y}] W)).
-    * apply: equicontinuous_subset.
-    apply: compact_equicontinuous => //.
-End Ascoli.
+  + exact: compact_equicontinuous.
+  + apply: (@pointwisePrecomact_subset _ (@closure
+      [topologicalType of {family compact, X -> Y}] W)). 
+    - by rewrite closure_limit_point => ??; left.
+    - exact: compact_pointwisePrecompact.
+Qed.
+
+End Arzela.
+    
