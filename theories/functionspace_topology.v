@@ -1045,11 +1045,10 @@ Proof.
 Grab Existential Variables. end_near. Qed.
 
 Lemma compact_pointwisePrecompact (W : set(X -> Y)): 
-  hausdorff X -> 
   @compact [topologicalType of {family compact, X -> Y}] W -> 
   pointwisePrecomact W.
 Proof.
-  move=> hsdfX cptFamW x.
+  move=> cptFamW x.
   have: @compact [topologicalType of {ptws X -> Y}] W. {
     rewrite compact_ultra /= => F UF FW. 
     move: cptFamW; rewrite compact_ultra=> /(_ F UF FW) [h [Wh Fh]].
