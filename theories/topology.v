@@ -204,7 +204,7 @@ Require Import boolp reals classical_sets posnum.
 (* * Function space topologies :                                              *)
 (*      {uniform A -> V} == The space U -> V, equipped with the topology of   *)
 (*                          uniform convergence from a set A to V, where      *)
-(*                          V is a uniformTyp.                                *)
+(*                          V is a uniformType.                                *)
 (*  {uniform A, F --> f} == F converges to f in {uniform A -> V}.             *)
 (*         {ptws U -> V} == The space U -> V, equipped with the topology of   *)
 (*                          pointwise convergence from U to V, where V is a   *)
@@ -4709,7 +4709,7 @@ End Restrictions.
 
 Local Notation restrict := (fun A f => patch A (fun=> point) f).
 Arguments restrict_dep {U} (A) {V} (f).
-Arguments restrict_dep {U} (A) {V} (f).
+Arguments extend_dep {U} {A} {V} (f).
 
 Section RestrictedTopology.
 Context {U : choiceType} (A : set U) {V : uniformType} .
@@ -4800,6 +4800,8 @@ Canonical fct_restrictedUniformType :=
   UniformType (fct_RestrictedUniform) restrict_uniform_mixin.
 End RestrictedTopology.
 
+(* We use this function to help coq identify the correct notation to use
+   when printing. Otherwise you get goals like `F --> f -> F --> f`      *)
 Definition restrict_fun {U : choiceType} A (V : uniformType)
   (f : U -> V) : @fct_RestrictedUniform U A V := f.
 
@@ -5013,6 +5015,7 @@ Proof.
 by move=> FF S /fam_cvgP famBFf; apply/fam_cvgP => A ?; apply/famBFf/S.
 Qed.
 
+(* TODO (zstone): integrate this into the compactness section *)
 Definition finCover (I : choiceType) (F : I -> set U) (A : set U) :=
   exists D : {fset I}, A `<=` \bigcup_(i in [set i | i \in D]) F i.
 
