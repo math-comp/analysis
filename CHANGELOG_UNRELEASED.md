@@ -7,29 +7,38 @@
 - in `sequences.v`:
   + lemma `dvg_harmonic`
 - in `topology.v`:
-  + notation `{unif, U -> V }`
-  + notation `{unif, F --> f }`
+  + lemma `fmap_comp`
   + definition `patch`
-  + definition `restrict`
-  + lemma `restricted_ent_eq`
-  + lemma `restricted_ent_filter`
-  + definition `restricted_uniformType`
-  + lemma `unif_cvgE`
-  + notation `{restricted A -> V }`
-  + notation `{restricted A, F --> f }`
-  + lemma `restricted_cvgE
-  + notation `{ptws, U -> V}`
-  + notation `{ptws, F --> f }`
+  + notation `restrict`
+  + definition `restrict_dep`
+  + definition `extend_dep`
+  + definition `fun_eq_on`
+  + lemma `extend_restrict_dep`
+  + lemma `restrict_extend_dep`
+  + lemma `restrict_dep_restrict`
+  + lemma `restrict_dep_setT`
+  + lemma `forall_sigP`
+  + definition `fct_RestrictedUniformTopology`
+  + lemma `restricted_nbhs`
+  + notation `{uniform A -> V }`
+  + notation `{uniform A, F --> f }`
+  + lemma `restricted_cvgE`
+  + definition `fct_PointwiseTopology`
+  + notation `{ptws U -> V}`
+  + notation `{ptws F --> f }`
   + lemma `ptws_cvgE`
   + lemma `ptws_uniform_cvg`
+  + lemma `fun_eq_onP`
   + lemma `cvg_restrict_dep`
+  + lemma `eq_on_close`
   + lemma `hausdorrf_close_eq_on`
-  + lemma `cvg_restricted_subset`
+  + lemma `restricted_subset_nbhs`
+  + lemma `restricted_subset_cvg`
   + lemma `restricted_restrict_cvg`
-  + lemma `cvg_restricted_setT`
   + lemma `cvg_restrictedU`
-  + lemma `cvg_restricted_pred0`
-  + definition family_cvg_topologicaltype
+  + lemma `cvg_restricted_set0`
+  + definition `family_cvg_topologicalType`
+  + notation `{family fam, U -> V}`
   + notation `{family fam, F --> f}`
   + lemma `fam_cvgP`
   + lemma `fam_cvgE`
