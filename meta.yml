@@ -31,7 +31,7 @@ authors:
   initial: false
 - name: Pierre-Yves Strub
   initial: true
-- name: Laurent Thery
+- name: Laurent Théry
   initial: false
 
 opam-file-maintainer: Reynald Affeldt <reynald.affeldt@aist.go.jp>

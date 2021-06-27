@@ -56,7 +56,7 @@ Require Import boolp.
 (*                   A `<=` B <-> A is included in B.                         *)
 (*                  A `<=>` B <-> double inclusion A `<=` B and B `<=` A.     *)
 (*                   f @^-1` A == preimage of A by f.                         *)
-(*                      f @` A == image of A by f.                            *)
+(*                      f @` A == image of A by f. Notation for `image A f`.  *)
 (*                    A !=set0 := exists x, A x.                              *)
 (*               is_subset1 A <-> A contains only 1 element.                  *)
 (*                   is_fun f <-> for each a, f a contains only 1 element.    *)
@@ -208,10 +208,18 @@ Arguments mkset _ _ _ /.
 
 Notation "[ 'set' x : T | P ]" := (mkset (fun x : T => P)) : classical_set_scope.
 Notation "[ 'set' x | P ]" := [set x : _ | P] : classical_set_scope.
+
+Definition image {T rT} (A : set T) (f : T -> rT) :=
+  [set y | exists2 x, A x & f x = y].
+Arguments image _ _ _ _ _ /.
 Notation "[ 'set' E | x 'in' A ]" :=
-  [set y | exists2 x, A x & E = y] : classical_set_scope.
+  (image A (fun x => E)) : classical_set_scope.
+
+Definition image2 {TA TB rT} (A : set TA) (B : set TB) (f : TA -> TB -> rT) :=
+  [set z | exists2 x, A x & exists2 y, B y & f x y = z].
+Arguments image2 _ _ _ _ _ _ _ /.
 Notation "[ 'set' E | x 'in' A & y 'in' B ]" :=
-  [set z | exists2 x, A x & exists2 y, B y & E = z] : classical_set_scope.
+  (image2 A B (fun x y => E)) : classical_set_scope.
 
 Section basic_definitions.
 Context {T rT : Type}.
@@ -280,7 +288,7 @@ Notation "A `<` B" := (proper A B) : classical_set_scope.
 
 Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) : classical_set_scope.
 Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
-Notation "f @` A" := [set f x | x in A] (only parsing) : classical_set_scope.
+Notation "f @` A" := (image A f) (only parsing) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) : classical_set_scope.
 
 Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
@@ -1518,6 +1526,7 @@ Canonical Internal.tbDistrLatticeType.
 Canonical Internal.cbDistrLatticeType.
 Canonical Internal.ctbDistrLatticeType.
 
+Section exports.
 Context {T : Type}.
 Implicit Types A B : set T.
 
@@ -1545,6 +1554,7 @@ Proof. by apply: (iffP idP); rewrite subsetEset. Qed.
 Lemma properPset A B : reflect (A `<` B) (A < B)%O.
 Proof. by apply: (iffP idP); rewrite properEset. Qed.
 
+End exports.
 End Exports.
 End SetOrder.
 Export SetOrder.Exports.
