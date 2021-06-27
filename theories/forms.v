@@ -3,7 +3,7 @@ Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq div choice fintype.
 From mathcomp
 Require Import bigop ssralg finset fingroup zmodp poly ssrnum.
 From mathcomp
-Require Import matrix mxalgebra vector falgebra ssrnum algC algnum.
+Require Import matrix mxalgebra vector falgebra ssrnum.
 From mathcomp
 Require Import fieldext.
 From mathcomp Require Import vector.
