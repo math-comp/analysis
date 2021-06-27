@@ -342,15 +342,15 @@ Reserved Notation "'{unif,' U -> V }"
   (at level 70, U at level 69, format "'{unif,'  U  ->  V }").
 Reserved Notation "'{unif,' F --> f }"
   (at level 70, F at level 69, format "'{unif,'  F  -->  f }").
-Reserved Notation "'{restricted' A -> V }"
-  (at level 70, A at level 69, format "'{restricted'  A  ->  V }").
-Reserved Notation "'{restricted' A , F --> f }"
+Reserved Notation "'{uniform' A -> V }"
+  (at level 70, A at level 69, format "'{uniform'  A  ->  V }").
+Reserved Notation "'{uniform' A , F --> f }"
   (at level 70, A at level 69, F at level 69,
-   format "'{restricted'  A ,  F  -->  f }").
-Reserved Notation "'{ptws,' U -> V }"
-  (at level 70, U at level 69, format "'{ptws,'  U  ->  V }").
-Reserved Notation "'{ptws,' F --> f }"
-  (at level 70, F at level 69, format "'{ptws,'  F  -->  f }").
+   format "'{uniform'  A ,  F  -->  f }").
+Reserved Notation "'{ptws' U -> V }"
+  (at level 70, U at level 69, format "'{ptws'  U  ->  V }").
+Reserved Notation "'{ptws' F --> f }"
+  (at level 70, F at level 69, format "'{ptws'  F  -->  f }").
 Reserved Notation "'{family' fam , U -> V }"
   (at level 70, U at level 69, format "'{family'  fam ,  U  ->  V }").
 Reserved Notation "'{family' fam , F --> f }"
@@ -4648,240 +4648,105 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
-(* Special notation for functions, considered as converging uniformly
-   over their whole domain *)
-Section DomainUniform.
-Context (U : choiceType) (V : uniformType).
-
-Definition fct_DomainUniform := U -> V.
-
-Canonical fct_DomainUniformFilteredType:=
-  [filteredType fct_DomainUniform of fct_DomainUniform for fct_uniformType U V].
-Canonical fct_DomainUniformTopologicalType :=
-  [topologicalType of fct_DomainUniform for fct_uniformType U V].
-Canonical fct_DomainUniformUniformType :=
-  [uniformType of fct_DomainUniform for fct_uniformType U V].
-
-Definition unif_fun (f : U -> V) : fct_DomainUniform := f.
-
-End DomainUniform.
-
-Notation "'{unif,' U -> V }" := (fct_DomainUniform U V) : classical_set_scope.
-
-(* We define our notation using these conversion functions
-   to convince the coq syntax printer to use this syntax.
-   Otherwise you get
-     (F --> f) -> (F --> F)
-   when you really want
-     {unif, F --> f} -> {ptws, F --> f}
-*)
-Notation "'{unif,' F --> f }" :=
-  (F --> unif_fun f) : classical_set_scope.
-
-Lemma unif_cvgE
-    {U : choiceType} {V : uniformType}
-    (F : set (set (U -> V)))
-    (f : U -> V) :
-  {unif, F --> f} = (F --> (f : {unif, U -> V})).
-Proof. by []. Qed.
-
-Section DomainRestrictions.
-Context {U : Type}.
-Variable (A : pred U) (V : Type).
-
-Definition explode (f : U -> V) := [set g : U -> V | {in A, f =1 g}].
-
-Notation eq_on := (explode) (only parsing).
-
-Definition explode_set (X : set (U -> V)) := \bigcup_(f in X) explode f.
-
-Lemma explode_ref f : explode f f. Proof. by []. Qed.
-
-Lemma explodeP f g : explode f g = {in A, f =1 g}. Proof. by []. Qed.
-
-Lemma explode_trans f g h : explode f g -> explode g h -> explode f h.
-Proof. by move=> fg gh ? ?; rewrite fg // gh. Qed.
-
-Lemma explode_sym f g : explode f g -> explode g f .
-Proof. by move=> fg ? ?; rewrite fg. Qed.
-
-Lemma explode_setT : explode_set setT = setT.
-Proof. by rewrite eqEsubset; split => f // _; exists f. Qed.
-
-Lemma explode_subset_id P : P `<=` explode_set P.
-Proof. by move=> f ?; exists f. Qed.
-
-Definition restricted (F : set (set (U -> V))) := filter_from F explode_set.
-
-Definition explode_pair (fg : (U -> V) * (U -> V)) :=
-  explode fg.1 `*` explode fg.2.
-
-Definition explode_pairs (X : set ((U -> V) * (U -> V))) :=
-  \bigcup_(f in X) explode_pair f.
-
-Definition restrict_ent (E : set (set ((U -> V) * (U -> V)))) :=
-  [set Q | (exists P, E P /\ explode_pairs P `<=` Q)].
-
-End DomainRestrictions.
-
-Definition patch {U V} (A : pred U) (f g : U -> V) u :=
+Definition patch {U V} (A : set U) (f g : U -> V) u :=
   if u \in A then g u else f u.
 
-Definition restrict {U : Type} {V : pointedType} (A : pred U) (f : U -> V) :=
+Definition restrict {U : Type} {V : pointedType} (A : set U) (f : U -> V) :=
   patch A (fun=> point) f.
 
-Section RestrictionTopology.
-Context {U : choiceType}.
-Variable (A : pred U) (V : uniformType).
+Definition fun_eq_on {U : Type} {V : pointedType} (A : set U) (f : U -> V) (g : U -> V) : Prop :=
+  forall y, A y -> f y = g y.
 
-Definition restricted_nbhs_filter (p : U -> V) := restricted A [filter of p].
+Definition fct_RestrictedUniform U V (A: set U) := U -> V.
 
-Definition restricted_ent := restrict_ent A (@fct_ent U V).
+Section RestrictedTopology.
+Context {U : choiceType} {V : uniformType} .
+Variables (A : set U).
+Definition restrict_dep (f : U -> V) : { x : U | x \in A } -> V :=
+  fun u => f (projT1 u).
 
-Lemma fct_ent_restricted_ent I :
-  fct_ent I -> restricted_ent (explode_pairs A I).
+Definition fct_RestrictedUniformTopology := 
+  @weak_topologicalType 
+    ([pointedType of @fct_RestrictedUniform U V A]) 
+    (fct_uniformType [choiceType of { x : U | x \in A }] V) restrict_dep.
+
+Canonical fct_DomainUniformFilteredType:=
+  [filteredType @fct_RestrictedUniform U V A of @fct_RestrictedUniform U V A for fct_RestrictedUniformTopology].
+Canonical fct_DomainUniformTopologicalType :=
+  [topologicalType of @fct_RestrictedUniform U V A for fct_RestrictedUniformTopology].
+
+Definition extend_dep (f : {x | x \in A } -> V) (u : U) :=
+  if pselect (u \in A) is left w then f (exist _ u w) else point.
+
+Open Scope fun_scope.
+Lemma extend_restrict_dep :
+  (extend_dep \o (@restrict_dep)) = restrict A.
 Proof.
-move=> eI; case: (eI) => J eJ subI; exists (explode_pairs A I); split.
-- by apply: (filterS _ eI) => fg Ifg; exists fg.
-- move=> t [x [y Iy]] [/= /explode_trans yx1 /explode_trans yx2] [/= xt1 xt2].
-  exists y => //; split; [exact: yx1 | exact: yx2].
+rewrite funeq2E => f u /=.
+rewrite /restrict_dep /restrict /extend_dep /patch.
+by case: pselect => [/= ->//|/negP/negbTE ->].
 Qed.
 
-Let patch := @patch U V A.
-Lemma explode_patch f g : explode A g (patch f g).
-Proof. by move=> u uA; rewrite /patch /topology.patch uA. Qed.
-
-Lemma explode_set_monotone : {homo (explode_set (V:=V) A) : P Q / P `<=` Q}.
-Proof. by move=> P Q PQ f [g ? ?]; exists g => //; exact: PQ. Qed.
-
-Lemma explode_rhs_subset (B : V * V -> Prop) I f : entourage B ->
-  let B' := [set fg | (forall u, B (fg.1 u, fg.2 u))] in
-  B' `<=` I ->
-  [set y | explode_pairs A B' (f, y)] `<=` explode_set A [set y | I (f, y)].
+Lemma restrict_extend_dep f:
+  (restrict_dep (extend_dep f)) = f.
 Proof.
-move=> eB /= subI t /= Ep.
-exists (patch f t) => /=; last exact/explode_sym/explode_patch.
-apply: subI => /= u; rewrite /patch/topology.patch.
-have [uA|uA] := ifPn; last exact: entourage_refl.
-by move: Ep => [f't'] /= L [/= <- // <-].
+rewrite funeqE => u.
+rewrite /restrict_dep /restrict /extend_dep /patch /=. 
+case: pselect.
+- by move=> Au; f_equal; destruct u; apply exist_congr.
+- by move=> Q; contradict Q; destruct u.
 Qed.
 
-Lemma explode_rhs_eq (B : V * V -> Prop) f :
-  entourage B ->
-  let B' := [set fg | (forall t:U, B(fg.1 t, fg.2 t))] in
-  [set y | explode_pairs A B' (f, y)] =
-    explode_set A [set y | B' (f,y)].
+Lemma restrict_dep_restrict :
+  (restrict_dep) \o restrict A = (restrict_dep).
 Proof.
-by move=> eB B'; rewrite eqEsubset; split => [|g [g' ? ?]];
-  [exact: (@explode_rhs_subset B B' f) | exists (f, g')].
+rewrite funeq2E => f -[u Au] /=.
+by rewrite /restrict_dep /restrict /extend_dep /patch /= Au.
 Qed.
 
-Lemma restricted_ent_eq :
-  restricted_nbhs_filter = nbhs_ (restricted_ent).
+Lemma restrict_dep_setT : [set of restrict_dep] = setT.
 Proof.
-rewrite funeqE => f; rewrite eqEsubset; split.
-- move=> P [Q fQ eQsubP].
-  have : (nbhs f Q) := fQ.
-  rewrite nbhsP /= => /exists2P [I [[B L1]]].
-  set B' := [set fg | forall u, B (fg.1 u, fg.2 u)].
-  move=> L2 /explode_set_monotone eAsubeQ.
-  exists (explode_pairs A B').
-    by apply: fct_ent_restricted_ent; exists B.
-  apply: (subset_trans _ eQsubP).
-  apply: (subset_trans _ eAsubeQ).
-  exact: explode_rhs_subset.
-- move=> P [rI [I [? eAsubrI] rIsubP]].
-  exists [set y | I (f, y)].
-    by exists I.
-  apply: (subset_trans _ rIsubP) => g [g' /= gI] E.
-  by apply: eAsubrI; exists (f, g').
+  rewrite eqEsubset; split => //= f _; exists (extend_dep f)=>//.
+  apply restrict_extend_dep.
 Qed.
 
-Lemma restricted_ent_filter : Filter restricted_ent.
+Lemma restricted_nbhs (f : fct_RestrictedUniformTopology) (E : set (V * V)) : 
+  entourage E -> nbhs f [set h | forall y, A y -> E(f y, h y)].
 Proof.
-apply Build_Filter.
-- by exists setT; split; apply: filterT.
-- move => P Q [P' [? eP'P]] [Q' [? eQ'Q]].
-  exists (P' `&` Q'); split; first exact: filterI.
-  move=> fg [/= f'g' [? ?] ?].
-  by split; [apply: eP'P | apply: eQ'Q]; exists f'g'.
-- move => P Q S [P' [eP' eP'P]]; exists P'; split => //.
-  exact: (subset_trans eP'P).
+move=> entE.
+apply : (filterS  (P := [set h | forall y, E (restrict_dep f y, restrict_dep h y)])).
+- move=> g /= + y Ay => /( _ (exist (fun x => x \in A) y _)) /=; apply.
+  by rewrite inE.
+- move: (cvg_image (f := restrict_dep) (F:= nbhs f) f (nbhs_filter f) restrict_dep_setT).
+  case => /(_ cvg_id) + _ => /(_ [set h : ({x : U | x \in  A}) -> V | forall y, E (restrict_dep f y, h y)]) /=. 
+  case; first by exists [set fg | forall y, E (fg.1 y, fg.2 y)]; [exists E|].
+  move=> B nbhsB rBrE.
+  apply: (filterS _ nbhsB) => g Bg /= [y yA /=].
+  by move: rBrE; rewrite eqEsubset; case => [+ _]; apply; exists g.
 Qed.
 
-Section restricted_uniformMixin.
-Local Obligation Tactic := idtac.
-Program Definition restricted_uniformMixin := @UniformMixin (U -> V)
-  restricted_nbhs_filter restricted_ent restricted_ent_filter
-  _ _ _ restricted_ent_eq.
-Next Obligation.
-move=> E [I [eI eAsubA0]] -[f g /=] ->.
-by apply: eAsubA0; exists (g, g) => //; exact: entourage_refl.
+Lemma nbhs_restricted (f : fct_RestrictedUniformTopology) P: 
+  nbhs f P -> exists E, entourage E /\ [set h | forall y, A y -> E(f y, h y) ] `<=` P.
+Proof.
+  move=> [Q [[/= W oW <- /=] [Wf subP]]].
+  rewrite openE /= /interior in oW; case: (oW _ Wf) => ? [ /= E entE] Esub subW.
+  exists E; split => // h Eh; apply subP, subW, Esub => /= [[u Au]].
+  by apply: Eh => /=; rewrite -inE.
 Qed.
-Next Obligation.
-move=> E; case => [I [/fct_ent_inv eI eAsubA0]].
-exists [set xy | I(xy.2, xy.1)]; split=> // fg [[f' g'] /= ?] [/= ? ?].
-by apply: eAsubA0; exists (g',f').
-Qed.
-Next Obligation.
-move=> E.
-case=> [I [/fct_ent_split [J [/= B eB eBsubJ]] JsubI eIsubA0]].
-pose B' := [set fg : (U -> V) * (U -> V) | (forall u, B (fg.1 u, fg.2 u))].
-exists (explode_pairs A B'); first by apply: fct_ent_restricted_ent; exists B.
-apply: (subset_trans _ eIsubA0).
-move=> fh /= [g [[f' g1']] X1 [/= E1' E1]] [[g2' h'] Y1 [/= E2 E2']].
-exists (patch g1' f', patch g1' h'); last first.
-   split; [exact/(explode_trans _ E1')/explode_sym/explode_patch|
-           exact/(explode_trans _ E2')/explode_sym/explode_patch].
-rewrite /patch/topology.patch; apply: JsubI => /=.
-exists g1'; apply eBsubJ => /= u; have [uA|uA] := ifPn _ => //.
-- exact: entourage_refl.
-- by rewrite E1 // -E2.
-- exact: entourage_refl.
-Qed.
-End restricted_uniformMixin.
 
-Definition restricted_filteredType :=
-  FilteredType (U -> V) (U -> V) restricted_nbhs_filter.
-
-Definition restricted_topologicalType_mixin :=
-  @topologyOfEntourageMixin (U -> V)
-    restricted_nbhs_filter restricted_uniformMixin.
-
-(* need the dummy A so it doesn't lose the A parameter, which
-   we need for the topology. *)
-Definition fct_Restricted := let _ := A in U -> V.
-
-Definition restricted_topologicalType :=
-  TopologicalType (restricted_filteredType) (restricted_topologicalType_mixin) .
-
-(* This is a topology on U -> V, but we only want this to be canonical on the *)
-(* more specific type fct_Restricted A U V                                    *)
-Definition restricted_uniformType:=
-  UniformType (restricted_topologicalType) (restricted_uniformMixin).
-
-Canonical fct_RestrictedFilteredType:=
-  [filteredType fct_Restricted of fct_Restricted for restricted_uniformType].
-Canonical fct_RestrictedTopologicalType :=
-  [topologicalType of fct_Restricted for restricted_uniformType].
-Canonical fct_RestrictedUniformType :=
-  [uniformType of fct_Restricted for restricted_uniformType].
-
-End RestrictionTopology.
+End RestrictedTopology.
 
 Definition restrict_fun {U : choiceType} A (V : uniformType)
-  (f : U -> V) : fct_Restricted A V := f.
+  (f : U -> V) : @fct_RestrictedUniform U V A := f.
 
-Notation eq_on := explode.
+Notation "'{uniform' A -> V }" := (@fct_RestrictedUniform _ V A) : classical_set_scope.
 
-Notation "'{restricted' A -> V }" := (fct_Restricted A V) : classical_set_scope.
-
-Notation "'{restricted' A , F --> f }" :=
+Notation "'{uniform' A , F --> f }" :=
   (F --> (restrict_fun A f)) : classical_set_scope.
 
 Lemma restricted_cvgE {U : choiceType} {V : uniformType}
     (F : set (set (U -> V))) A (f : U -> V) :
-  {restricted A, F --> f} = (F --> (f : restricted_uniformType A V)).
+  {uniform A, F --> f} = (F --> (f : @fct_RestrictedUniform U V A)).
 Proof. by []. Qed.
 
 
@@ -4891,78 +4756,67 @@ Canonical fct_PointwiseFilteredType U V :=
 Canonical fct_PointwiseTopologicalType U V :=
   [topologicalType of fct_Pointwise U V for @product_topologicalType U (fun=> V)].
 
-Notation "'{ptws,' U -> V }" := (fct_Pointwise U V).
+Notation "'{ptws' U -> V }" := (fct_Pointwise U V).
 Definition ptws_fun
   {U : Type} {V : topologicalType}
-  (f : U -> V) : {ptws, U -> V} := f.
+  (f : U -> V) : {ptws U -> V} := f.
 
-Notation "'{ptws,' F --> f }" := (F --> (ptws_fun f)) : classical_set_scope.
+Notation "'{ptws' F --> f }" := (F --> (ptws_fun f)) : classical_set_scope.
 
 Lemma ptws_cvgE {U : Type} {V : topologicalType}
     (F : set (set(U -> V))) (f : U -> V) :
-  {ptws, F --> f} = (F --> (f : {ptws, U -> V})).
+  {ptws F --> f} = (F --> (f : {ptws U -> V})).
 Proof. by []. Qed.
 
-Lemma ptws_uniform_cvg {U : choiceType} {V : uniformType} (f : U -> V)
-    (F : set (set (U -> V))) : Filter F ->
-  {unif, F --> f} -> {ptws, F --> f}.
+Section UniformCvgLemmas.
+Context {U : choiceType} {V : uniformType}.
+Lemma ptws_uniform_cvg  (f : U -> V) (F : set (set (U -> V))) : 
+  Filter F -> {uniform setT, F --> f} -> {ptws F --> f}.
 Proof.
 move=> FF; rewrite cvg_sup => W i.
-rewrite cvg_image.
-- move=> C /=.
-  rewrite -nbhs_entourageE nbhs_filterE => -[B eB BsubC].
-  suff sub2 : @^~ i @` [set g | forall u, B (f u, g u)] `<=` to_set B (f i).
-  set l := (x in x _); suff weakL : forall X Y, X `<=` Y -> l X -> l Y.
-  apply: (weakL _ _ (subset_trans sub2 BsubC)).
-  + exists [set g : U -> V | forall u, B (f u, g u)] => //.
-    by apply W; exists [set fg | forall u, B (fg.1 u, fg.2 u)]; [exists B|].
-  + move=> X Y /setUidPl XsubY [P FP EX].
-    exists ( P `|` [set g : U -> V | exists v, Y v /\ g = cst v]).
-      by apply: (@filterS _ _ _ P) => //= t ?; left.
-    rewrite image_setU EX setUC.
-    rewrite [x in x `|` _](_ : _ = Y) //.
-    rewrite eqEsubset; split.
-    * by move => t /= [/= h [/= v [? ->] <-]].
-    * by move => t ?; exists (cst t) => //; exists t.
-  + by move => v [/= g] + <-; apply.
-- by rewrite eqEsubset; split => v // _; exists (cst v).
+rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
+move=> C /=; rewrite -nbhs_entourageE nbhs_filterE => -[B eB BsubC].
+suff sub2 : @^~ i @` [set g | forall u, B (f u, g u)] `<=` to_set B (f i).
+set l := (x in x _); suff weakL : forall X Y, X `<=` Y -> l X -> l Y.
+apply: (weakL _ _ (subset_trans sub2 BsubC)).
+- exists [set g : U -> V | forall u, B (f u, g u)] => //.
+  apply W => /=; apply: (filterS _ (restricted_nbhs _ eB)). 
+  by move=> ? Q ? //=; apply Q.
+- move=> X Y /setUidPl XsubY [P FP EX].
+  exists ( P `|` [set g : U -> V | exists v, Y v /\ g = cst v]).
+    by apply: (@filterS _ _ _ P) => //= t ?; left.
+  rewrite image_setU EX setUC [x in x `|` _](_ : _ = Y) // eqEsubset; split.
+  * by move => t /= [/= h [/= v [? ->] <-]].
+  * by move => t ?; exists (cst t) => //; exists t.
+- by move => v [/= g] + <-; apply.
 Qed.
 
-Section Restriction_DependentPairs.
-Context {U : choiceType} {V : uniformType} .
-Variables (A : pred U).
-Definition restrict_dep (f : U -> V) : { x : U | x \in A } -> V :=
-  fun u => f (projT1 u).
-
-Lemma eq_on_restrict_dep (f g : U -> V) :
-  eq_on A f g <-> restrict_dep f = restrict_dep g.
+Lemma fun_eq_onP (f g : U -> V) (A : set U) :
+  fun_eq_on A f g <-> restrict_dep (A:=A) f = restrict_dep (A:=A) g.
 Proof.
-split=> [eq_f_g | Rfg u uA].
-- by rewrite funeqE => -[u uA]; exact: eq_f_g.
-- by rewrite (_ : f u = restrict_dep f (exist _ u uA)) // Rfg.
+rewrite /fun_eq_on; split=> [eq_f_g | Rfg u uA].
+- rewrite funeqE /restrict_dep => [[??]]; rewrite eq_f_g //.
+  by set u := (x in projT1 x); case u=> //= ?; rewrite inE.
+- rewrite -inE in uA.
+  rewrite (_ : f u = restrict_dep f (exist _ u uA)) //.
+  rewrite (_ : g u = restrict_dep g (exist _ u uA)) //.
+  by move: Rfg; rewrite funeqE; apply.
 Qed.
 
-Lemma explode_restrict (F : set (set (U -> V))) P : Filter F ->
-  explode_set A P = [set a | (restrict_dep @` P) (restrict_dep a)].
-Proof.
-by rewrite eqEsubset; split => f /= -[g Pg /eq_on_restrict_dep ?]; exists g.
-Qed.
-
-Lemma cvg_restrict_dep (f : U -> V) (F : set (set (U -> V))) : Filter F ->
-  {restricted A, F --> f} <-> {unif, restrict_dep @ F --> (restrict_dep f)}.
+Lemma cvg_restrict_dep (A : set U) (f : U -> V) (F : set (set (U -> V))) : Filter F ->
+  {uniform A, F --> f} <-> {uniform setT, restrict_dep (A:=A) @ F --> (restrict_dep (A:= A) f)}.
 Proof.
 move=> FF; split.
-- move=> cvgF P' /= [I' [B eB BsubI'] I'subP'].
-  apply: (filterS I'subP').
-  apply: cvgF => /=.
-  rewrite /nbhs /= /restricted_nbhs_filter /= /restricted /=.
-  exists ([set g | forall u, B (f u, g u) ])=> /=.
-    1: by exists [set fg | forall t, B (fg.1 t, fg.2 t)] => //=; exists B.
-  rewrite (explode_restrict _ FF) => //=.
-  move => g /= [/= h] Bfh /eq_on_restrict_dep eq_on.
-  apply: BsubI' => /=; rewrite /restrict_dep /unif_fun.
-  by case=> /= u Au; rewrite -eq_on ?in_setE.
-- move=> rcvgF P [/= Q [I [B eB BsubI] /(@image_subset _ _ restrict_dep) IsubQ QsubP]].
+- move=> cvgF P' /= /nbhs_restricted [ E [/= entE EsubP]].
+  apply: (filterS EsubP); apply: cvgF => /=; rewrite /restrict_fun. 
+  apply: (filterS ( P:= [set h | forall y, A y -> E(f y, h y)]));
+    last by apply: (restricted_nbhs).
+  by move=> h/= Eh [y Ay] _; rewrite /restrict_dep /=; apply Eh; rewrite -inE.
+- move=> cvgF P' /= /nbhs_restricted [ E [/= entE EsubP]].
+  apply: (filterS EsubP); rewrite /restrict_fun.
+  move: (cvgF  [set h | (forall y , E (restrict_dep f y, h y))]).
+  rewrite /restrict_fun; near_simpl => //=.
+  move=> Q; near=> g  => /= y Ay.
   apply: (filterS QsubP).
   rewrite (explode_restrict _ FF) //.
   apply: rcvgF => /=.
@@ -5024,24 +4878,6 @@ apply: W; apply: (filterS eIsubP); apply: filterS.
 - by exists I.
 Qed.
 
-Definition extend_dep (f : {x | x \in A } -> V) (u : U) :=
-  if pselect (u \in A) is left w then f (exist _ u w) else point.
-
-Open Scope fun_scope.
-Lemma extend_restrict_dep :
-  (extend_dep \o (@restrict_dep _ _ A)) = restrict A.
-Proof.
-rewrite funeq2E => f u /=.
-rewrite /restrict_dep /restrict /extend_dep /patch.
-by case: pselect => [/= ->//|/negP/negbTE ->].
-Qed.
-
-Lemma restrict_dep_restrict :
-  (restrict_dep (A := A) (V:=V)) \o restrict A = (restrict_dep (A:=A) (V:=V)).
-Proof.
-rewrite funeq2E => f -[u Au] /=.
-by rewrite /restrict_dep /restrict /extend_dep /patch /= Au.
-Qed.
 
 Lemma restricted_restrict_cvg (F : set (set (U -> V))) (f : U -> V) : Filter F ->
   {restricted A, F --> f} <-> {unif, restrict A @ F --> restrict A f }.
