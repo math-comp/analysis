@@ -103,6 +103,17 @@
   + `isRingOfSets` -> `isAlgebraOfSets`
 - in `classical_sets.v`:
   + `bigcup_mkset` -> `bigcup_set`
+  + `bigsetU` -> `bigcup`
+  + `bigsetI` -> `bigcap`
+  + `trivIset_bigUI` -> `trivIset_bigsetUI`
+- in `measure.v`:
+  + `B_of` -> `seqD`
+  + `trivIset_B_of` -> `trivIset_seqD`
+  + `UB_of` -> `setU_seqD`
+  + `bigUB_of` -> `bigsetU_seqD`
+  + `eq_bigsetUB_of` -> `eq_bigsetU_seqD`
+  + `eq_bigcupB_of` -> `eq_bigcup_seqD`
+  + `eq_bigcupB_of_bigsetU` -> `eq_bigcup_seqD_bigsetU`
 
 ### Removed
 
