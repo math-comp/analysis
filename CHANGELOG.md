@@ -1,6 +1,29 @@
 # Changelog
 
-Last releases: [[0.3.8] - 2021-06-01](#038---2021-06-01) and [[0.3.7] - 2021-04-01](#037---2021-04-01)
+Last releases: [[0.3.9] - 2021-06-12](#039---2021-06-12) and [[0.3.8] - 2021-06-01](#038---2021-06-01)
+
+## [0.3.9] - 2021-06-12
+
+### Added
+
+- in `sequences.v`:
+  + lemma `dvg_harmonic`
+- in `classical_sets.v`:
+  + definitions `image`, `image2`
+
+### Changed
+
+- in `classical_sets.v`
+  + notations `[set E | x in A]` and `[set E | x in A & y in B]`
+    now use definitions `image` and `image2` resp.
+  + notation ``f @` A`` now uses the definition `image`
+  + the order of arguments of `image` has changed compared to version 0.3.7:
+    it is now `image A f` (it used to be `image f A`)
+
+### Removed
+
+- in `sequences.v`:
+  + lemma `iter_addr`
 
 ## [0.3.8] - 2021-06-01
 
@@ -89,7 +112,9 @@ Last releases: [[0.3.8] - 2021-06-01](#038---2021-06-01) and [[0.3.7] - 2021-04-
 
 ### Changed
 
-- in `classical_sets.v`, lemma `subset_bigsetU`
+- in `classical_sets.v`
+  + lemma `subset_bigsetU`
+  + notation ``f @` A`` defined as `[set f x | x in A]` instead of using `image`
 - in `ereal.v`:
   + change implicits of lemma `lee_sum_nneg_ord`
   + `ereal_sup_ninfty` and `ereal_inf_pinfty` made equivalences
@@ -144,6 +169,7 @@ Last releases: [[0.3.8] - 2021-06-01](#038---2021-06-01) and [[0.3.7] - 2021-04-
 
 - in `classical_sets.v`
   + lemmas `eq_set_inl`, `set_in_in`
+  + definition `image`
 - from `topology.v`:
   + lemmas `homoRL_in`, `homoLR_in`, `homo_mono_in`, `monoLR_in`,
     `monoRL_in`, `can_mono_in`, `onW_can`, `onW_can_in`, `in_onW_can`,

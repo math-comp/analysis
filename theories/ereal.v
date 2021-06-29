@@ -429,11 +429,11 @@ Proof. by rewrite (big_morph _ addEFin erefl). Qed.
 Lemma subEFin (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
 Proof. by []. Qed.
 
-Definition adde_undef x y :=
-  (x == +oo) && (y == -oo) || (x == -oo) && (y == +oo).
+Definition adde_def x y :=
+  ~~ ((x == +oo) && (y == -oo)) && ~~ ((x == -oo) && (y == +oo)).
 
-Lemma adde_undefC x y : adde_undef x y = adde_undef y x.
-Proof. by rewrite /adde_undef andbC orbC andbC. Qed.
+Lemma adde_defC x y : adde_def x y = adde_def y x.
+Proof. by rewrite /adde_def andbC (andbC (x == -oo)) (andbC (x == +oo)). Qed.
 
 Lemma adde0 : right_id (0 : \bar R) +%E.
 Proof. by case=> //= x; rewrite addr0. Qed.
@@ -517,7 +517,7 @@ Lemma real_of_extendedD :
   {in (@fin_num R) &, {morph real_of_extended : x y / x + y >-> (x + y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
 
-Lemma fin_num_adde_undef x y : y \is a fin_num -> ~~ adde_undef x y.
+Lemma fin_num_adde_def x y : y \is a fin_num -> adde_def x y.
 Proof. by move: x y => [x| |] [y | |]. Qed.
 
 Lemma EFin_real_of_extended x : x \is a fin_num -> x = (real_of_extended x)%:E.

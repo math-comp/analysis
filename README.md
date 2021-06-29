@@ -29,7 +29,7 @@ the Coq proof-assistant and using the Mathematical Components library.
   - Pierre Roux
   - Kazuhiko Sakaguchi
   - Pierre-Yves Strub (initial)
-  - Laurent Thery
+  - Laurent Théry
 - License: [CeCILL-C](LICENSE)
 - Compatible Coq versions: Coq 8.11 to 8.13 (or dev)
 - Additional dependencies:

@@ -130,27 +130,27 @@ Lemma increasing_opp (T : numDomainType) (u_ : T ^nat) :
   increasing_seq (- u_) = decreasing_seq u_.
 Proof. by rewrite propeqE; split => du x y; rewrite -du ler_opp2. Qed.
 
-Lemma nondecreasing_seqP (T : numDomainType) (u_ : T ^nat) :
-  (forall n, u_ n <= u_ n.+1) -> nondecreasing_seq u_.
+Lemma nondecreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+  (forall n, u_ n <= u_ n.+1)%O -> nondecreasing_seq u_.
 Proof. exact: homo_leq le_trans. Qed.
 
-Lemma nonincreasing_seqP (T : numDomainType) (u_ : T ^nat) :
-  (forall n, u_ n >= u_ n.+1) -> nonincreasing_seq u_.
+Lemma nonincreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+  (forall n, u_ n >= u_ n.+1)%O -> nonincreasing_seq u_.
 Proof. by apply: homo_leq (fun _ _ _ u v => le_trans v u). Qed.
 
-Lemma increasing_seqP (T : numDomainType) (u_ : T ^nat) :
-  (forall n, u_ n < u_ n.+1) -> increasing_seq u_.
+Lemma increasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+  (forall n, u_ n < u_ n.+1)%O -> increasing_seq u_.
 Proof. by move=> u_nondec; apply: le_mono; apply: homo_ltn lt_trans _. Qed.
 
-Lemma decreasing_seqP (T : numDomainType) (u_ : T ^nat) :
-  (forall n, u_ n > u_ n.+1) -> decreasing_seq u_.
+Lemma decreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+  (forall n, u_ n > u_ n.+1)%O -> decreasing_seq u_.
 Proof.
-move=> u_noninc;
+move=> u_noninc.
 (* FIXME: add shortcut to order.v *)
-apply: (@total_homo_mono _ _ _ leq ltn ger gtr leqnn lexx
-  ltn_neqAle _ (fun _ _ _ => esym (le_anti _)) leq_total
-  (homo_ltn (fun _ _ _ u v => lt_trans v u) _)) => //.
-by move=> x y; rewrite /= lt_neqAle eq_sym.
+apply: (@total_homo_mono _ T u_ leq ltn _ _ leqnn _ ltn_neqAle
+  _ (fun _ _ _ => esym (le_anti _)) leq_total
+  (homo_ltn (fun _ _ _ u v => lt_trans v u) u_noninc)) => //.
+by move=> x y; rewrite eq_sym -lt_neqAle.
 Qed.
 (* TODO (maybe): variants for near \oo ?? *)
 
@@ -361,6 +361,58 @@ End partial_sum.
 Arguments series {V} u_ n : simpl never.
 Arguments telescope {V} u_ n : simpl never.
 Notation "[ 'series' E ]_ n" := (series [sequence E]_n) : ring_scope.
+
+Lemma seriesN (V : zmodType) (f : V ^nat) : series (- f) = - series f.
+Proof. by rewrite funeqE => n; rewrite /series /= sumrN. Qed.
+
+Lemma seriesD (V : zmodType) (f g : V ^nat) : series (f + g) = series f + series g.
+Proof. by rewrite /series /= funeqE => n; rewrite big_split. Qed.
+
+Lemma seriesZ (R : ringType) (V : lmodType R) (f : V ^nat) k :
+  series (k *: f) = k *: series f.
+Proof. by rewrite funeqE => n; rewrite /series /= -scaler_sumr. Qed.
+
+Section partial_sum_numFieldType.
+Variables V : numFieldType.
+Implicit Types f g : V ^nat.
+
+Lemma is_cvg_seriesN f : cvg (series (- f)) = cvg (series f).
+Proof. by rewrite seriesN is_cvgNE. Qed.
+
+Lemma lim_seriesN f : cvg (series f) -> lim (series (- f)) = - lim (series f).
+Proof. by move=> cf; rewrite seriesN limN. Qed.
+
+Lemma is_cvg_seriesZ f k : cvg (series f) -> cvg (series (k *: f)).
+Proof. by move=> cf; rewrite seriesZ; exact: is_cvgZr. Qed.
+
+Lemma lim_seriesZ f k : cvg (series f) ->
+  lim (series (k *: f)) = k *: lim (series f).
+Proof. by move=> cf; rewrite seriesZ limZr. Qed.
+
+Lemma is_cvg_seriesD f g :
+  cvg (series f) -> cvg (series g) -> cvg (series (f + g)).
+Proof. by move=> cf cg; rewrite seriesD; exact: is_cvgD. Qed.
+
+Lemma lim_seriesD f g : cvg (series f) -> cvg (series g) ->
+  lim (series (f + g)) = lim (series f) + lim (series g).
+Proof. by move=> cf cg; rewrite seriesD limD. Qed.
+
+Lemma is_cvg_seriesB f g :
+  cvg (series f) -> cvg (series g) -> cvg (series (f - g)).
+Proof. by move=> cf cg; apply: is_cvg_seriesD; rewrite ?is_cvg_seriesN. Qed.
+
+Lemma lim_seriesB f g : cvg (series f) -> cvg (series g) ->
+  lim (series (f - g)) = lim (series f) - lim (series g).
+Proof. by move=> Cf Cg; rewrite lim_seriesD ?is_cvg_seriesN// lim_seriesN. Qed.
+
+End partial_sum_numFieldType.
+
+Lemma lim_series_le (V : realFieldType) (f g : V ^nat) :
+  cvg (series f) -> cvg (series g) -> (forall n, f n <= g n) ->
+  lim (series f) <= lim (series g).
+Proof.
+by move=> cf cg fg; apply (ler_lim cf cg); near=> x; rewrite ler_sum.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma telescopeK (V : zmodType) (u_ : V ^nat) :
   series (telescope u_) = [sequence u_ n - u_ 0%N]_n.
@@ -808,6 +860,14 @@ apply/cauchy_cvgP/cauchy_seriesP => e /u_ncvg.
 apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
+
+Lemma lim_series_norm {R : realType} (V : completeNormedModType R) (f : V ^nat) :
+  cvg [normed series f] -> `|lim (series f)| <= lim [normed series f].
+Proof.
+move=> cnf; have cf := normed_cvg cnf.
+rewrite -lim_norm // (ler_lim (is_cvg_norm cf) cnf) //.
+by near=> x; rewrite ler_norm_sum.
+Grab Existential Variables. all: end_near. Qed.
 
 (* TODO: backport to MathComp? *)
 Section fact_facts.
@@ -1371,8 +1431,7 @@ by rewrite (splitr A) addEFin lee_add // ?foo // goo.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD (R : realType) (f g : (\bar R)^nat) a b :
-  ~~ adde_undef a b ->
-  f --> a -> g --> b -> f \+ g --> a + b.
+  adde_def a b -> f --> a -> g --> b -> f \+ g --> a + b.
 Proof.
 move: a b => [a| |] [b| |] // _.
 - case/ereal_cvg_real => [[na _ foo] fa].
@@ -1404,7 +1463,7 @@ move: a b => [a| |] [b| |] // _.
 Qed.
 
 Lemma ereal_limD (R : realType) (f g : (\bar R)^nat) :
-  cvg f -> cvg g -> ~~ adde_undef (lim f) (lim g) ->
+  cvg f -> cvg g -> adde_def (lim f) (lim g) ->
   lim (f \+ g) = lim f + lim g.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
@@ -1417,7 +1476,7 @@ move=> f_eq0 g_eq0.
 transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i +
                          \sum_(0 <= i < n | P i) g i)).
   by congr (lim _); apply/funext => n; rewrite big_split.
-rewrite ereal_limD /adde_undef//=; do ? exact: is_cvg_ereal_nneg_series.
+rewrite ereal_limD /adde_def //=; do ? exact: is_cvg_ereal_nneg_series.
 by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
            ?[_ < _]real0// ereal_nneg_series_lim_ge0.
 Qed.
