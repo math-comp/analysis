@@ -4509,38 +4509,7 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
-
-
 Definition singletons {X : eqType} (P : pred X) : Prop := exists x, P = eq_op x.
-
-Lemma ptws_cvg_family_singleton {U : topologicalType} {V : uniformType} F (f: U -> V):
-  Filter F ->
-  {ptws, F --> f} = {family (@singletons U), F --> f}.
-Proof.
-move=> FF; rewrite propeqE fam_cvgP cvg_sup /ptws_fun; split.
-- rewrite /singletons /= => + A [x /= ->] => /(_ x) Ff; apply/cvg_restricted_entourageP => E entE.
-  near=> q => t /eqP <-; near:q; apply: Ff => /=.
-  move: (nbhs_entourage (f x) entE).
-  rewrite nbhsE /= => [[B [onbhsB BsubE]]].
-  exists [set q | B (q x)];split;[|split] => //=.
-  + exists B; first by case: onbhsB.
-    by [].
-  + by apply: nbhs_singleton; apply: open_nbhs_nbhs.
-  + by move=> q /= Bq; apply BsubE.
-- move=> + x => /(_ (eq_op x)); pull1; first by exists x.
-  move=> /cvg_restricted_entourageP Ef => /= P /= [P' [[A oA /= <- /=] [Afx AsubP]]].
-  rewrite openE /interior in oA; case/nbhsP: (oA (f x) (Afx))=> E entE EsubA.
-  move:(Ef _ entE) => EF.
-  by near=> g; apply: AsubP; apply: EsubA; apply (near EF).
-Grab Existential Variables. end_near. end_near. Qed.
-
-Lemma ptws_cvg_compact_family {X : topologicalType} {Y : uniformType} F (f: X -> Y):
-  ProperFilter F -> {family compact, F --> f} -> {ptws, F --> f}.
-Proof.
-move=> PF; rewrite ptws_cvg_family_singleton; apply: family_cvg_subset.
-move=> A [x ->]; rewrite [z in compact z](_: _ = [set x]); first exact: compact_singleton.
-rewrite predeqE => y /=; split; by [move/eqP => -> | by move->].
-Qed.
 
 Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R) :
   ProperFilter (nbhs' x).

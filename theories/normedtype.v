@@ -3,7 +3,7 @@ From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 Require Import boolp ereal reals.
-Require Import classical_sets posnum nngnum topology prodnormedzmodule.
+Require Import classical_sets posnum nngnum topology functionspace_topology prodnormedzmodule.
 
 
 (******************************************************************************)
