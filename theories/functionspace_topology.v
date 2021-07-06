@@ -305,7 +305,7 @@ Qed.
 
 End RestrictedTopology.
 
-Ltac pull1 :=
+Ltac case_first :=
   match goal with
   | |- (?x -> _) -> _ => let Q := fresh in 
     have Q : x; last move=>/(_ Q)
@@ -597,7 +597,7 @@ Proof.
       by [].
     + by apply: nbhs_singleton; apply: open_nbhs_nbhs.
     + by move=> q /= Bq; apply BsubE.
-  - move=> + x => /(_ [set x]); pull1; first by exists x.
+  - move=> + x => /(_ [set x]); case_first; first by exists x.
     move=> /restricted_cvgP Ef => /= P /= [P' [[A oA /= <- /=] [Afx AsubP]]].
     rewrite openE /interior in oA; case/nbhsP: (oA (f x) (Afx))=> E entE EsubA.
     move:(Ef _ entE) => EF.
@@ -860,17 +860,17 @@ Proof.
   exact: image_subset.
 Qed.
 
-Lemma compact_cvg_nbhs (f : {family compact, X -> Y}) B E: 
-  entourage E -> compact B ->
+Lemma family_cvg_nbhs {fam} (f : {family fam, X -> Y}) B E: 
+  entourage E -> fam B ->
   nbhs f [set q | forall x, B x -> E (f x, q x)].
 Proof.
 move=> entE cptB.
 have FNh : Filter (nbhs f) by exact: nbhs_filter f.
-case: (@fam_cvgP X Y compact (nbhs f) f FNh) => + _.
-pull1; first exact:cvg_id; move/(_ (fun x => `[<B x>])).
-set B' := (x in compact x). have -> : B' = B  by 
+case: (@fam_cvgP X Y fam (nbhs f) f FNh) => + _.
+case_first; first exact:cvg_id; move/(_ (fun x => `[<B x>])).
+set B' := (x in fam x). have -> : B' = B  by 
     rewrite /B' funeqE=> z; rewrite asboolE.
-pull1; first by [].
+case_first; first by [].
 move/restricted_cvgP/(_ _ entE).
 rewrite near_simpl => [[Q [Q1 [Q2 Q3]]]].
 exists Q; (do 2 split=> //); move=> // t /= Qt y By; apply: Q3 =>//.
@@ -909,13 +909,13 @@ have mkR: forall x, exists R, open_nbhs x R /\
 }
 set Rnbhd := fun (x : X) => A `&` projT1 (cid (mkR x)).
 move/(_ X A Rnbhd): cptA.
-pull1. {
+case_first. {
   rewrite /open_fam_of; exists (fun x => projT1 (cid (mkR x))).
   - move=> x Ax; rewrite /Rnbhd /=; set R := cid _; case R => /=.
     move=> R'; rewrite open_nbhsE; tauto.
   - by [].
 }
-pull1. {
+case_first. {
   rewrite /Rnbhd.
   move=> x Ax /=; exists x => //; split => //.
   set R := cid _; case R => /= R' [? ?]; apply nbhs_singleton.
@@ -943,12 +943,12 @@ have E4q : E4(q x0, q t). {
 have E4f : E4(f t, f x0). {
   move: Rx0t;rewrite /Rnbhd /= => [[_ ]]; set R' := cid _; case R' => /=.
   move=> R; rewrite open_nbhsE /E4 => [[[oR nbhsR] /(_ t f) ]] + Rt. 
-  by do 2 (pull1 => //);  move=> E4f; split; apply E4f => //.
+  by do 2 (case_first => //);  move=> E4f; split; apply E4f => //.
 }
 have E4subE3: E4 `<=` E3 by rewrite /E4 => ? [] //=.
 do 2 (apply: entourage_split; first by []); apply: E4subE3; first exact: E4f; last exact: E4q.
   by exact: entourage_refl.
-by have := (near Fx0 q); (pull1; first by done); apply.
+by have := (near Fx0 q); (case_first; first by done); apply.
 Grab Existential Variables. end_near. Qed.    
 
 Lemma ascoli_forward (W : (set (X -> Y))): 
@@ -972,14 +972,13 @@ exact: closure_equicontinuous.
 Qed.
 
 
-Lemma compact_equicontinuous (W : (set (X -> Y))) :
-  locally_compact X -> 
-  hausdorff X -> 
+Lemma compact_equicontinuous fam (W : (set (X -> Y))) :
+  (forall (x:X), exists2 U, fam U & nbhs x U) ->
   (forall f, W f -> continuous f) ->
-  @precompact [topologicalType of {family compact, X -> Y}] W -> 
+  @precompact [topologicalType of {family fam, X -> Y}] W -> 
   equicontinuous W.
 Proof.
-  move=> locCptX hsdfX ctsW cptW => x E1 entE1.  
+  move=> locCptX ctsW cptW => x E1 entE1.  
   case/(_ x) : locCptX => B cptB nbhsB.
   set E2 := (split_ent E1); have entE2: entourage E2 by 
       exact: entourage_split_ent.
@@ -1002,19 +1001,19 @@ Proof.
   have E6subE5 : E6 `<=` E5 by move=>?[].
   have E7subE6 : E7 `<=` E6 by
     move=>[??] ?; apply: entourage_split => //; eauto; exact: entourage_refl.
-  set cptTop := [topologicalType of {family compact, X -> Y}].
+  set cptTop := [topologicalType of {family fam, X -> Y}].
   set R1 := fun f => [set h : cptTop | forall y, B y -> E4 (f y, h y)]^°.
   set R := fun f => @closure cptTop W `&` R1 f.
   rewrite /precompact compact_cover cover_compactE  /= in cptW.
-  move/(_ [choiceType of {family compact, X -> Y}] (@closure cptTop W) R): cptW.
-  pull1. {
+  move/(_ [choiceType of {family fam, X -> Y}] (@closure cptTop W) R): cptW.
+  case_first. {
       exists R1.
       - by move=> f Wf /=; exact: open_interior.
       - by move=> ??; rewrite /R //=.
   }
-  pull1. {
+  case_first. {
     move=> h Wh; exists h => //; rewrite /R/R1; split => //.
-    exact: compact_cvg_nbhs.
+    exact: family_cvg_nbhs.
   }
   move=> [D DsubW Dcovers].
   set U := \bigcap_(g in [set i | i \in D]) [set y | B y -> E4 (g x, g y)].
@@ -1022,13 +1021,13 @@ Proof.
   - apply: filterI => //; apply: filter_bigI => g Dg.
     have : (@closure cptTop W)g by rewrite -inE; apply: DsubW.
     move=> /(_ [set h | (forall x, B x -> (split_ent E5) (g x, h x)) /\ (forall x, B x -> (split_ent E5) (h x, g x))]).
-    pull1. { apply: filterI; first exact: compact_cvg_nbhs.
-      apply: (@compact_cvg_nbhs g B (((split_ent E5)^-1)%classic)) => //.
+    case_first. { apply: filterI; first exact: family_cvg_nbhs.
+      apply: (@family_cvg_nbhs _ g B (((split_ent E5)^-1)%classic)) => //.
       exact: entourage_inv.
     }
     case=> g' [Wg' [P Q]]. 
     move/cvg_entourageP: (ctsW _ Wg' x) => /( _ (split_ent (split_ent E4))).
-    pull1; first by []. 
+    case_first; first by []. 
     near_simpl=> G'; near=> y=> By.
     (do 2 apply: entourage_split => //).
     + by apply P; apply: nbhs_singleton.
@@ -1057,7 +1056,7 @@ Proof.
   }
   move/(continuous_compact (f := evaluator_dep x)).
   set C := (x in compact x).
-  pull1; first ((move=> + _); apply: evaluator_dep_continuous). 
+  case_first; first ((move=> + _); apply: evaluator_dep_continuous). 
   move=> cptC; rewrite /precompact. 
   rewrite -(_ : [set f x | f in W] = closure [set f x | f in W] ) //.
   apply closure_id; apply: compact_closed => //.
@@ -1065,12 +1064,11 @@ Qed.
 
 Lemma arzela_ascoli (W : (set ({family compact, X -> Y}))) : 
   locally_compact X ->
-  hausdorff X ->
   (equicontinuous W /\ pointwisePrecomact W) <->
   (@precompact [topologicalType of {family compact, X -> Y}] W /\ 
     (forall f, W f -> continuous f)).
 Proof.
-move=> lcptX hsdfX; split.
+move=> lcptX; split.
 - case => ectsW ?; split; first apply: ascoli_forward => //.
   by move=> ? ?; apply: equicontinuous_cts; eauto.
 - case=> cptWcl ctsW; split.
