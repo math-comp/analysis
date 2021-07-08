@@ -8,6 +8,10 @@
   + lemmas `seriesN`, `seriesD`, `seriesZ`, `is_cvg_seriesN`, `lim_seriesN`,
     `is_cvg_seriesZ`, `lim_seriesZ`, `is_cvg_seriesD`, `lim_seriesD`,
     `is_cvg_seriesB`, `lim_seriesB`, `lim_series_le`, `lim_series_norm`
+- in `ereal.v`:
+  + lemmas `ge0_adde_def`, `onee_neq0`, `mule0`, `mul0e`
+  + lemmas `mulrEDr`, `mulrEDl`, `ge0_muleDr`, `ge0_muleDl`
+  + lemmas `sume_distrl`, `sume_distrr`
 
 ### Changed
 
@@ -21,6 +25,8 @@
 - in `sequences.v`:
   + generalize `{in,de}creasing_seqP`, `non{in,de}creasing_seqP` from `numDomainType`
     to `porderType`
+- in `ereal.v`:
+  + change defintion `mule` such that 0 x oo = 0
 
 ### Renamed
 

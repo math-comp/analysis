@@ -326,8 +326,8 @@ Definition oppe x :=
 Definition mule x y :=
   match x, y with
   | x%:E , y%:E => (x * y)%:E
-  | -oo, y | y, -oo => if 0 <= y then -oo else +oo
-  | +oo, y | y, +oo => if 0 < y then +oo else -oo
+  | -oo, y | y, -oo => if y == 0 then 0 else if 0 < y then -oo else +oo
+  | +oo, y | y, +oo => if y == 0 then 0 else if 0 < y then +oo else -oo
   end.
 
 Definition abse x := if x is r%:E then `|r|%:E else +oo.
@@ -435,6 +435,9 @@ Definition adde_def x y :=
 Lemma adde_defC x y : adde_def x y = adde_def y x.
 Proof. by rewrite /adde_def andbC (andbC (x == -oo)) (andbC (x == +oo)). Qed.
 
+Lemma ge0_adde_def : {in [pred x | x >= 0] &, forall x y, adde_def x y}.
+Proof. by move=> [x| |] [y| |]. Qed.
+
 Lemma adde0 : right_id (0 : \bar R) +%E.
 Proof. by case=> //= x; rewrite addr0. Qed.
 
@@ -471,11 +474,20 @@ Proof. by move: x => [x| |] //=; rewrite opprD. Qed.
 Lemma muleC x y : x * y = y * x.
 Proof. by case: x y => [r||] [s||]//=; rewrite mulrC. Qed.
 
+Lemma onee_neq0 : 1 != 0 :> \bar R.
+Proof. by rewrite oner_neq0. Qed.
+
 Lemma mule1 x : x * 1 = x.
-Proof. by case: x => [r||]/=; rewrite ?mulr1 ?lee_tofin ?lte_tofin. Qed.
+Proof. by case: x=> [r||]/=; rewrite ?mulr1 ?(negbTE onee_neq0) ?lte_tofin. Qed.
 
 Lemma mul1e x : 1 * x = x.
 Proof. by rewrite muleC mule1. Qed.
+
+Lemma mule0 x : x * 0 = 0.
+Proof. by case: x => [r| |] //=; rewrite ?mulr0// eqxx. Qed.
+
+Lemma mul0e x : 0 * x = 0.
+Proof. by case: x => [r| |]/=; rewrite ?mul0r// eqxx. Qed.
 
 Lemma abseN x : `|- x| = `|x|.
 Proof. by case: x => [r||]; rewrite //= normrN. Qed.
@@ -800,6 +812,63 @@ Lemma lee_oppl x y : (- x <= y) = (- y <= x).
 Proof.
 move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_oppl.
+Qed.
+
+Lemma mulrEDr (r : R) y z : adde_def y z -> r%:E * (y + z) = r%:E * y + r%:E * z.
+Proof.
+move: r y z => r [y| |] [z| |] //= _; try
+  (by case: ltgtP => // -[] <-; rewrite ?(mul0r,add0r,adde0))
+  || (by case: ltgtP => //; rewrite adde0).
+by rewrite mulrDr.
+Qed.
+
+Lemma mulrEDl (r : R) y z : adde_def y z -> (y + z) * r%:E = y * r%:E + z * r%:E.
+Proof. by move=> ?; rewrite -!(muleC r%:E) mulrEDr. Qed.
+
+Lemma ge0_muleDr x y z : 0 <= y -> 0 <= z -> (y + z) * x = y * x + z * x.
+Proof.
+move: x y z => [r| |] [s| |] [t| |] // s0 t0.
+- by rewrite mulrEDl.
+- by rewrite /=; case: ltgtP => // -[] <-; rewrite mulr0 addr0.
+- by rewrite /=; case: ltgtP => // -[] <-; rewrite mulr0 adde0.
+- by rewrite /=; case: ltgtP => //; rewrite adde0.
+- rewrite /= !eqe paddr_eq0 //; move: s0; rewrite lee_fin.
+  case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0r.
+  + rewrite lte_fin -[in LHS](addr0 0%R) ltr_le_add // lte_fin s0.
+    by case: ltgtP t0 => // [t0|[<-{t}]] _; [rewrite gt_eqF|rewrite eqxx].
+  + by move: t0; rewrite lee_fin; case: (ltgtP t) => // [t0|] _;
+      [rewrite lte_fin t0|rewrite addr0].
+- by rewrite /= lte_pinfty; case: ltgtP s0.
+- by rewrite /= lte_pinfty; case: ltgtP t0.
+- by rewrite /= lte_pinfty.
+- rewrite /= !eqe paddr_eq0 //; move: s0; rewrite lee_fin.
+  case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0r.
+  + rewrite lte_fin -[in LHS](addr0 0%R) ltr_le_add // lte_fin s0.
+    by case: ltgtP t0 => // [t0|[<-{t}]].
+  + by move: t0; rewrite lee_fin; case: (ltgtP t) => // [t0|] _;
+      [rewrite lte_fin t0|rewrite addr0].
+- by rewrite /= lte_pinfty; case: ltgtP s0.
+- by rewrite /= lte_pinfty; case: ltgtP s0.
+- by rewrite /= lte_pinfty; case: ltgtP s0.
+Qed.
+
+Lemma ge0_muleDl x y z : 0 <= y -> 0 <= z -> x * (y + z) = x * y + x * z.
+Proof. by move=> y0 z0; rewrite !(muleC x) ge0_muleDr. Qed.
+
+Lemma sume_distrl (I : Type) (r : seq I) x (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> 0 <= F i) ->
+  (\sum_(i <- r | P i) F i) * x = \sum_(i <- r | P i) (F i * x).
+Proof.
+elim: r x P F => [x P F F0|h t ih x P F F0]; first by rewrite 2!big_nil mul0e.
+rewrite big_cons; case: ifPn => Ph; last by rewrite big_cons (negbTE Ph) ih.
+by rewrite ge0_muleDr ?sume_ge0// ?F0// ih// big_cons Ph.
+Qed.
+
+Lemma sume_distrr (I : Type) (r : seq I) x (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> 0 <= F i) ->
+  x * (\sum_(i <- r | P i) F i) = \sum_(i <- r | P i) (x * F i).
+Proof.
+by move=> F0; rewrite muleC sume_distrl//; under eq_bigr do rewrite muleC.
 Qed.
 
 End ERealArithTh_realDomainType.
