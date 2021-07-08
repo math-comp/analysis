@@ -4,7 +4,7 @@ From mathcomp Require Import matrix interval rat.
 Require Import boolp reals ereal.
 Require Import nsatz_realtype.
 Require Import classical_sets posnum topology normedtype landau sequences.
-Require Import derive exp.
+Require Import derive exp inverse_continuous.
 
 (******************************************************************************)
 (*                     Theory of trigonometric functions                      *)
@@ -1012,7 +1012,8 @@ Lemma continuous_acos x : -1 < x < 1 -> {for x, continuous acos}.
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -[x]acosK; first last.
   by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
-apply: (@continuous_inverse R cos); last by near=> z; apply: continuous_cos.
+apply: nbhs_singleton (continuous_inverse _ _); last first.
+   by near=> z; apply: continuous_cos.
 have /near_in_interval aI : acos x \in `]0, pi[.
   suff : 0 < acos x < pi by [].
   by rewrite acos_gt0 ?ltW //= acos_ltpi // ltW ?andbT.
@@ -1110,7 +1111,8 @@ Lemma continuous_asin x : -1 < x < 1 -> {for x, continuous asin}.
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -[x]asinK; first last.
   by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
-apply: (@continuous_inverse R sin); last by near=> z; apply: continuous_sin.
+apply: nbhs_singleton (continuous_inverse _ _); last first.
+  by near=> z; apply: continuous_sin.
 have /near_in_interval aI : asin x \in `](-(pi/2)), (pi/2)[.
   suff : -(pi/2) < asin x < pi/2 by [].
   by rewrite asin_gtNpi2 ?ltW ?andbT //= asin_ltpi2 // ltW.
@@ -1213,7 +1215,7 @@ rewrite -[x]atanK.
 have /near_in_interval aI : atan x \in `](-(pi/2)), (pi/2)[.
   suff : -(pi/2) < atan x < pi/2 by [].
   by rewrite atan_gtNpi2 atan_ltpi2.
-apply: (@continuous_inverse R tan); last first.
+apply: nbhs_singleton (continuous_inverse _ _); last first.
   near=> z; apply: continuous_tan.
   apply/lt0r_neq0; apply: cos_gt0_pihalf.
   by near: z.

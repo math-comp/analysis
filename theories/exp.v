@@ -4,7 +4,7 @@ From mathcomp Require Import matrix interval rat.
 Require Import boolp reals ereal.
 Require Import nsatz_realtype.
 Require Import classical_sets posnum topology normedtype landau sequences.
-Require Import derive.
+Require Import derive continuous_inverse.
 
 (******************************************************************************)
 (*               Theory of exponential/logarithm functions                    *)
@@ -197,24 +197,6 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
-Section continuous.
-
-Variable R : realType.
-
-(* This two lemmas should be given by Yves *)
-Lemma continuous_inverse (f g : R -> R) x :  
-  (\forall z \near x, g (f z) = z)  ->
-  (\forall z \near x, {for z, continuous f})  ->
-  {for f x, continuous g}.
-Admitted.
-
-Lemma continuous_inverse_cor (f g : R -> R) x :  
-  (\forall z \near x, g (f z) = z)  ->
-  (\forall z \near x, {for z, continuous f})  ->
-  \forall y \near f x, f (g y) = y.
-Admitted.
-
-End continuous.
 
 (******************************************************************************)
 (* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
@@ -322,8 +304,8 @@ by rewrite deriveV //; case: Df => _ ->.
 Qed.
 
 Lemma is_derive_inverse (f g : R ->R) l x :  
-  (\forall z \near x, g (f z) = z)  ->
-  (\forall z \near x, {for z, continuous f})  ->
+  {near x, cancel f g}  ->
+  {near x, continuous f}  ->
   is_derive x 1 f l -> l != 0 -> is_derive (f x) 1 g l^-1.
 Proof.
 move=> fgK fC fD lNZ.
@@ -339,11 +321,12 @@ exists g1; split; first 2 last.
   by rewrite -subr_eq0 => /divfK.
 have F1 : (h (g x))^-1 @[x --> f x] --> g1 (f x).
   rewrite /g1 eqxx; apply: continuousV; first by rewrite /= gfxE hxE.
-  by apply: continuous_comp; [apply: continuous_inverse | rewrite gfxE].
+  apply: continuous_comp; last by rewrite gfxE.
+  by apply: nbhs_singleton (continuous_inverse _ _).
 apply: cvg_sub0 F1.
 apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
 near=> y; rewrite sub0r normrN; rcfE.
-have fgyE : f (g y) = y by near: y; apply: continuous_inverse_cor.
+have fgyE : f (g y) = y by near: y; apply: inverse_swap_continuous.
 rewrite /g1; case: eqP => [_|/eqP x1Dfx]; first by rewrite subrr normr0.
 have -> : y - f x  = h (g y) * (g y - x) by rewrite -fE fgyE.
 rewrite gfxE invfM mulrC divfK ?subrr ?normr0 // subr_eq0.
@@ -913,7 +896,7 @@ Qed.
 Lemma continuous_ln x : 0 < x -> {for x, continuous ln}.
 Proof.
 move=> x_gt0; rewrite -[x]lnK//.
-apply: (@continuous_inverse R expR); near=> z; first by apply: expK.
+apply: nbhs_singleton (continuous_inverse _ _); near=> z; first by apply: expK.
 by apply: continuous_expR.
 Grab Existential Variables. all: end_near. Qed.
 

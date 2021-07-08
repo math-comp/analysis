@@ -35,5 +35,6 @@ theories/altreals/discrete.v
 theories/altreals/realseq.v
 theories/altreals/realsum.v
 theories/altreals/distr.v
+theories/inverse_continuous.v
 
 -R theories mathcomp.analysis
