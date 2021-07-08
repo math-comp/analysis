@@ -323,12 +323,14 @@ Definition oppe x :=
   | +oo => -oo
   end.
 
-Definition mule x y :=
+Definition mule_def x y :=
   match x, y with
   | x%:E , y%:E => (x * y)%:E
-  | -oo, y | y, -oo => if 0 <= y then -oo else +oo
-  | +oo, y | y, +oo => if 0 < y then +oo else -oo
+  | -oo, y | y, -oo => if y == 0 then 0 else if 0 < y then -oo else +oo
+  | +oo, y | y, +oo => if y == 0 then 0 else if 0 < y then +oo else -oo
   end.
+
+Definition mule := nosimpl mule_def.
 
 Definition abse x := if x is r%:E then `|r|%:E else +oo.
 
@@ -412,21 +414,24 @@ End finNumPred.
 
 Section ERealArithTh_numDomainType.
 Context {R : numDomainType}.
-Implicit Types x y z : \bar R.
+Implicit Types (x y z : \bar R) (r : R).
 
-Lemma NEFin (x : R) : (- x)%R%:E = (- x%:E). Proof. by []. Qed.
+Lemma NEFin r : (- r)%:E = (- r%:E). Proof. by []. Qed.
 
 Lemma real_of_extendedN x : real_of_extended (- x) = (- real_of_extended x)%R.
 Proof. by case: x => //=; rewrite oppr0. Qed.
 
-Lemma addEFin (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
+Lemma addEFin r r' : (r + r')%:E = r%:E + r'%:E.
 Proof. by []. Qed.
 
-Lemma sumEFin I r P (F : I -> R) :
-  \sum_(i <- r | P i) (F i)%:E = (\sum_(i <- r | P i) F i)%R%:E.
+Lemma mulEFin r r' : (r * r')%:E = (r%:E * r'%:E)%E.
+Proof. by []. Qed.
+
+Lemma sumEFin I s P (F : I -> R) :
+  \sum_(i <- s | P i) (F i)%:E = (\sum_(i <- s | P i) F i)%R%:E.
 Proof. by rewrite (big_morph _ addEFin erefl). Qed.
 
-Lemma subEFin (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
+Lemma subEFin r r' : (r - r')%:E = r%:E - r'%:E.
 Proof. by []. Qed.
 
 Definition adde_def x y :=
@@ -434,6 +439,9 @@ Definition adde_def x y :=
 
 Lemma adde_defC x y : adde_def x y = adde_def y x.
 Proof. by rewrite /adde_def andbC (andbC (x == -oo)) (andbC (x == +oo)). Qed.
+
+Lemma ge0_adde_def : {in [pred x | x >= 0] &, forall x y, adde_def x y}.
+Proof. by move=> [x| |] [y| |]. Qed.
 
 Lemma adde0 : right_id (0 : \bar R) +%E.
 Proof. by case=> //= x; rewrite addr0. Qed.
@@ -465,17 +473,28 @@ Proof. by rewrite /= oppr0. Qed.
 Lemma oppeK : involutive (A := \bar R) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
 
-Lemma oppeD x (r : R) : - (x + r%:E) = - x - r%:E.
+Lemma oppeD x r : - (x + r%:E) = - x - r%:E.
 Proof. by move: x => [x| |] //=; rewrite opprD. Qed.
 
 Lemma muleC x y : x * y = y * x.
-Proof. by case: x y => [r||] [s||]//=; rewrite mulrC. Qed.
+Proof. by move: x y => [r||] [s||]//=; rewrite -mulEFin mulrC. Qed.
+
+Lemma onee_neq0 : 1 != 0 :> \bar R.
+Proof. by rewrite oner_neq0. Qed.
 
 Lemma mule1 x : x * 1 = x.
-Proof. by case: x => [r||]/=; rewrite ?mulr1 ?lee_tofin ?lte_tofin. Qed.
+Proof.
+by move: x=> [r||]/=; rewrite /mule/= ?mulr1 ?(negbTE onee_neq0) ?lte_tofin.
+Qed.
 
 Lemma mul1e x : 1 * x = x.
 Proof. by rewrite muleC mule1. Qed.
+
+Lemma mule0 x : x * 0 = 0.
+Proof. by move: x => [r| |] //=; rewrite /mule/= ?mulr0// eqxx. Qed.
+
+Lemma mul0e x : 0 * x = 0.
+Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
 Lemma abseN x : `|- x| = `|x|.
 Proof. by case: x => [r||]; rewrite //= normrN. Qed.
@@ -638,6 +657,34 @@ move: x y => [r| |] [r'| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_oppr.
 Qed.
 
+Lemma lee_oppr x y : (x <= - y) = (y <= - x).
+Proof.
+move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
+by rewrite !lee_fin ler_oppr.
+Qed.
+
+Lemma lee_oppl x y : (- x <= y) = (- y <= x).
+Proof.
+move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
+by rewrite !lee_fin ler_oppl.
+Qed.
+
+Lemma muleN x y : x * - y = - (x * y).
+Proof.
+move: x y => [x| |] [y| |] //=; rewrite /mule/=; try by rewrite lte_pinfty.
+- by rewrite mulrN.
+- by rewrite !eqe !lte_fin; case: ltrgtP => //; rewrite oppe0.
+- by rewrite !eqe !lte_fin; case: ltrgtP => //; rewrite oppe0.
+- rewrite !eqe oppr_eq0 eq_sym; case: ifP; rewrite ?oppe0// => y0.
+  by rewrite [RHS]fun_if ltNge if_neg NEFin lee_oppl oppe0 le_eqVlt eqe y0.
+- rewrite !eqe oppr_eq0 eq_sym; case: ifP; rewrite ?oppe0// => y0.
+  by rewrite [RHS]fun_if ltNge if_neg NEFin lee_oppl oppe0 le_eqVlt eqe y0.
+Qed.
+
+Lemma mulNe x y : - x * y = - (x * y). Proof. by rewrite muleC muleN muleC. Qed.
+
+Lemma muleNN x y : - x * - y = x * y. Proof. by rewrite mulNe muleN oppeK. Qed.
+
 Lemma lte_add a b x y : a < b -> x < y -> a + x < b + y.
 Proof.
 move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
@@ -790,16 +837,135 @@ move: x r z => [x| |] r [z| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_subl_addr.
 Qed.
 
-Lemma lee_oppr x y : (x <= - y) = (y <= - x).
+Lemma mule_neq0 x y : x != 0 -> y != 0 -> x * y != 0.
 Proof.
-move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
-by rewrite !lee_fin ler_oppr.
+move: x y => [x| |] [y| |] x0 y0 //=; rewrite /mule/= ?(lte_pinfty,mulf_neq0)//;
+  try by (rewrite (negbTE x0); case: ifPn) ||
+      by (rewrite (negbTE y0); case: ifPn).
 Qed.
 
-Lemma lee_oppl x y : (- x <= y) = (- y <= x).
+Lemma mule_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x * y.
 Proof.
-move: x y => [r0| |] [r1| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
-by rewrite !lee_fin ler_oppl.
+move: x y => [x||] [y||] //=; rewrite /mule/= ?(lee_fin,eqe,lte_fin,lte_pinfty)//.
+- exact: mulr_ge0.
+- rewrite le_eqVlt => /orP[/eqP <- _|x0 _]; first by rewrite eqxx.
+  by rewrite gt_eqF // x0 lee_pinfty.
+- move=> _; rewrite le_eqVlt => /orP[/eqP <-|y0]; first by rewrite eqxx.
+  by rewrite gt_eqF // y0 lee_pinfty.
+Qed.
+
+Lemma muleA : associative (S := \bar R) *%E.
+Proof.
+move=> [x||] [y||] [z||] //; rewrite /mule/mule_def/= ?(lte_pinfty,eqe,lte_fin,mulrA)//=.
+- case: ltrgtP => [y0|y0|<-{y}]; last by rewrite mulr0 eqxx.
+    case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
+      by rewrite gt_eqF mulr_gt0.
+    by rewrite lt_eqF ?nmulr_rlt0// nmulr_rgt0// ltNge (ltW y0).
+  case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
+    by rewrite lt_eqF ?nmulr_llt0// nmulr_lgt0// ltNge (ltW x0).
+  by rewrite gt_eqF ?nmulr_rgt0// y0.
+- case: ltrgtP => [y0|y0|<-{y}]; last by rewrite mulr0 eqxx.
+    case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
+      by rewrite gt_eqF mulr_gt0.
+    by rewrite lt_eqF ?nmulr_rlt0// nmulr_rgt0// ltNge (ltW y0).
+  case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
+    by rewrite lt_eqF ?nmulr_llt0// nmulr_lgt0// ltNge (ltW x0).
+  by rewrite gt_eqF ?nmulr_rgt0// y0.
+- case: ltrgtP => [z0|z0|<-{z}]; try
+    by case: ltrgtP => [x0|x0|_] //; rewrite mul0r.
+  by case: ltrgtP; rewrite !mulr0.
+- by case: ltrgtP => //=; rewrite ?lte_pinfty// eqxx.
+- by case: ltrgtP => /=; rewrite ?lte_pinfty// eqxx.
+- case: ltrgtP => //= [z0|z0|<-{z}]; try by case: ltrgtP => //=; rewrite mul0r.
+  by case: ltrgtP; rewrite !mulr0.
+- by case: ltrgtP => //=; rewrite ?lte_pinfty ?eqxx.
+- by case: ltrgtP => //=; rewrite ?lte_pinfty ?eqxx.
+- case: (ltrgtP 0 y) => [y0/=|y0/=|<-{y}]; last by rewrite mul0r eqxx.
+    case: (ltrgtP 0 z) => [z0/=|z0|<-{z}]; last by rewrite mulr0 eqxx.
+      by rewrite (negbTE (mulf_neq0 _ _)) ?gt_eqF // mulr_gt0// lte_fin z0.
+    by rewrite lt_eqF ?nmulr_llt0// ltNge nmulr_lle0// (ltW y0).
+  case: (ltrgtP 0 z) => [z0/=|z0|<-{z}]; last by rewrite mulr0 eqxx.
+    by rewrite lt_eqF ?nmulr_rlt0// ltNge nmulr_rle0// (ltW z0).
+  by rewrite gt_eqF nmulr_lgt0// y0.
+- by case: ltrgtP => //=; rewrite lte_pinfty.
+- by case: ltrgtP; rewrite /= ?lte_pinfty// eqxx.
+- by case: ltrgtP; rewrite /= ?lte_pinfty// eqxx.
+- by case: ltrgtP; rewrite /= ?lte_pinfty// eqxx.
+- case: (ltrgtP 0 y) => [y0/=|y0/=|<-{y}]; last by rewrite mul0r eqxx.
+    case: (ltrgtP 0 z) => [z0/=|z0|<-{z}]; last by rewrite mulr0 eqxx.
+      by rewrite (negbTE (mulf_neq0 _ _)) ?gt_eqF // mulr_gt0// lte_fin z0.
+    by rewrite lt_eqF ?nmulr_llt0// ltNge nmulr_lle0// (ltW y0).
+  case: (ltrgtP 0 z) => [z0/=|z0|<-{z}]; last by rewrite mulr0 eqxx.
+    by rewrite lt_eqF ?nmulr_rlt0// ltNge nmulr_rle0// (ltW z0).
+  by rewrite gt_eqF nmulr_lgt0// y0.
+- by case: ltrgtP; rewrite ?eqxx// ?mul0e//= lte_pinfty.
+- by case: ltrgtP.
+- by case: ltrgtP => //= [z0|z0]; rewrite ?eqxx// lte_pinfty.
+- by case: ltrgtP; rewrite ?eqxx// lte_pinfty.
+Qed.
+
+Lemma mulrEDr r y z : adde_def y z -> r%:E * (y + z) = r%:E * y + r%:E * z.
+Proof.
+rewrite /mule/=; move: r y z => r [y| |] [z| |] //= _; try
+  (by case: ltgtP => // -[] <-; rewrite ?(mul0r,add0r,adde0))
+  || (by case: ltgtP => //; rewrite adde0).
+by rewrite mulrDr.
+Qed.
+
+Lemma mulrEDl r y z : adde_def y z -> (y + z) * r%:E = y * r%:E + z * r%:E.
+Proof. by move=> ?; rewrite -!(muleC r%:E) mulrEDr. Qed.
+
+Lemma ge0_muleDl x y z : 0 <= y -> 0 <= z -> (y + z) * x = y * x + z * x.
+Proof.
+rewrite /mule/=; move: x y z => [r| |] [s| |] [t| |] //= s0 t0.
+- by rewrite mulrDl.
+- by case: ltgtP => // -[] <-; rewrite mulr0 addr0.
+- by case: ltgtP => // -[] <-; rewrite mulr0 adde0.
+- by case: ltgtP => //; rewrite adde0.
+- rewrite !eqe paddr_eq0 //; move: s0; rewrite lee_fin.
+  case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0r.
+  + rewrite lte_fin -[in LHS](addr0 0%R) ltr_le_add // lte_fin s0.
+    by case: ltgtP t0 => // [t0|[<-{t}]] _; [rewrite gt_eqF|rewrite eqxx].
+  + by move: t0; rewrite lee_fin; case: (ltgtP t) => // [t0|] _;
+      [rewrite lte_fin t0|rewrite addr0].
+- by rewrite lte_pinfty; case: ltgtP s0.
+- by rewrite lte_pinfty; case: ltgtP t0.
+- by rewrite lte_pinfty.
+- rewrite !eqe paddr_eq0 //; move: s0; rewrite lee_fin.
+  case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0r.
+  + rewrite lte_fin -[in LHS](addr0 0%R) ltr_le_add // lte_fin s0.
+    by case: ltgtP t0 => // [t0|[<-{t}]].
+  + by move: t0; rewrite lee_fin; case: (ltgtP t) => // [t0|] _;
+      [rewrite lte_fin t0|rewrite addr0].
+- by rewrite lte_pinfty; case: ltgtP s0.
+- by rewrite lte_pinfty; case: ltgtP s0.
+- by rewrite lte_pinfty; case: ltgtP s0.
+Qed.
+
+Lemma ge0_muleDr x y z : 0 <= y -> 0 <= z -> x * (y + z) = x * y + x * z.
+Proof. by move=> y0 z0; rewrite !(muleC x) ge0_muleDl. Qed.
+
+Lemma gee_pmull (r : R) x : 0 < x -> (r <= 1)%R -> r%:E * x <= x.
+Proof.
+move: x => [x| |] //=.
+- by rewrite lte_fin => x0 r0; rewrite /mule/= lee_fin ger_pmull.
+- by move=> _; rewrite /mule/= eqe => r1; rewrite lee_pinfty.
+Qed.
+
+Lemma sume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> 0 <= F i) ->
+  (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
+Proof.
+elim: s x P F => [x P F F0|h t ih x P F F0]; first by rewrite 2!big_nil mul0e.
+rewrite big_cons; case: ifPn => Ph; last by rewrite big_cons (negbTE Ph) ih.
+by rewrite ge0_muleDl ?sume_ge0// ?F0// ih// big_cons Ph.
+Qed.
+
+Lemma sume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> 0 <= F i) ->
+  x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
+Proof.
+by move=> F0; rewrite muleC sume_distrl//; under eq_bigr do rewrite muleC.
 Qed.
 
 End ERealArithTh_realDomainType.
@@ -839,6 +1005,50 @@ Lemma lte_spaddr (r : R) x y : 0 < y -> r%:E <= x -> r%:E < x + y.
 Proof.
 move: y x => [y| |] [x| |] //=; rewrite ?lte_fin ?ltt_fin ?lte_pinfty //.
 exact: ltr_spaddr.
+Qed.
+
+Lemma lee_addgt0Pr x y : 0 <= x -> 0 <= y ->
+  reflect (forall r, (0 < r < 1)%R -> r%:E * x <= y) (x <= y).
+Proof.
+move=> x0 y0; apply/(iffP idP) => [xy r /andP[r0 r1]|h].
+  move: x0 xy; rewrite le_eqVlt => /orP[/eqP <-|x0 xy]; first by rewrite mule0.
+  by rewrite (le_trans _ xy) // gee_pmull // ltW.
+move: x y => [x| |] [y| |] // in x0 y0 h *.
+- rewrite !lee_fin in x0 y0.
+  move: x0; rewrite le_eqVlt => /orP[/eqP <-|x0]; first by rewrite lee_fin.
+  move: y0; rewrite le_eqVlt => /orP[/eqP y0|y0].
+    have /h : (0 < (2^-1 : R) < 1)%R.
+      by rewrite invr_gt0//= invf_lt1// ltr0n /= ltr1n.
+    by rewrite -y0 lee_fin /mule/= lee_fin (pmulr_lle0 _ x0) invr_le0 lern0.
+  rewrite lee_fin leNgt; apply/negP => yx.
+  have /h : (0 < (y + x) / (2 * x) < 1)%R.
+    apply/andP; split; first by rewrite divr_gt0 // ?addr_gt0// ?mulr_gt0.
+    by rewrite ltr_pdivr_mulr ?mulr_gt0// mul1r mulr_natl mulr2n ltr_add2r.
+  rewrite /mule/= lee_fin invrM ?unitfE// ?gt_eqF// -mulrA (mulrAC _ _ x).
+  by rewrite mulVr ?unitfE ?gt_eqF// mul1r; apply/negP; rewrite -ltNge midf_lt.
+- by rewrite lee_pinfty.
+- have /h : (0 < (2^-1 : R) < 1)%R.
+    by rewrite invr_gt0//= invf_lt1// ltr0n /= ltr1n.
+  apply: le_trans => /=.
+  by rewrite /mule/= eqe invr_eq0 pnatr_eq0 /= lte_fin invr_gt0 ltr0n.
+Qed.
+
+Lemma lte_pdivr_mull (c r : R) x : (0 < c)%R ->
+  (c^-1%:E * r%:E < x) = (r%:E < c%:E * x).
+Proof.
+move=> c0; move: x => [x| |] //=.
+- by rewrite 2!lte_fin ltr_pdivr_mull.
+- by rewrite lte_pinfty muleC /mule/= eqe gt_eqF// lte_fin c0 lte_pinfty.
+- by rewrite muleC /mule/= /= eqe gt_eqF// lte_fin c0.
+Qed.
+
+Lemma lte_pdivl_mull (c r : R) x : (0 < c)%R ->
+  (x < c^-1%:E * r%:E) = (c%:E * x < r%:E).
+Proof.
+move=> c0; move: x => [x| |] //=.
+- by rewrite 2!lte_fin ltr_pdivl_mull.
+- by rewrite muleC /mule/= eqe gt_eqF// lte_fin c0.
+- by rewrite lte_ninfty muleC /mule/= eqe gt_eqF// lte_fin c0 lte_ninfty.
 Qed.
 
 End realFieldType_lemmas.
