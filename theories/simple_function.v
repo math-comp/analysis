@@ -6,11 +6,18 @@ From HB Require Import structures.
 Require Import classical_sets posnum topology normedtype sequences measure.
 
 (******************************************************************************)
-(* wip                                                                        *)
+(*                     WIP about Simple Functions                             *)
 (*                                                                            *)
-(* sfun == type of simple functions                                           *)
-(* nnsfun == type of non-negative simple functions                            *)
-(* sintegral == integral of a simple function                                 *)
+(* This file contains a tentative definition of simple functions and of their *)
+(* integration with the proof that the latter is semi-linear for non-negative *)
+(* simple functions.                                                          *)
+(*                                                                            *)
+(*         sfun == type of simple functions                                   *)
+(*     sfun_cst == constant simple function                                   *)
+(*   sfun_scale == scaling of simple functions                                *)
+(* sfun_add f g == addition of simple functions                               *)
+(*       nnsfun == type of non-negative simple functions                      *)
+(*    sintegral == integral of a simple function                              *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -100,7 +107,7 @@ Record t := mk {
   codom : seq R ;
   uniq_codom : uniq codom ;
   fcodom : forall t, f t \in codom ;
-  pi := fun k => f @^-1` [set codom`_k] ;
+  pi := fun k : 'I_(size codom) => f @^-1` [set codom`_k] ;
   mpi : forall k, measurable (pi k) }.
 Definition ssize f := size (codom f).
 End sfun.
@@ -112,40 +119,6 @@ End SFun.
 Export SFun.Exports.
 Arguments SFun.pi {T} {R} _.
 Coercion SFun.f : sfun >-> Funclass.
-
-Section sfun_lemmas.
-Variables (T : measurableType) (R : realType) (f : sfun T R).
-Let n := ssize f.
-
-Local Lemma ltn_pidx x : (index (f x) (SFun.codom f) < n)%N.
-Proof. by rewrite index_mem SFun.fcodom. Qed.
-
-Definition pidx x := Ordinal (ltn_pidx x).
-
-Lemma nth_pidx x : (SFun.codom f)`_(pidx x) = f x.
-Proof. by rewrite nth_index //; exact: SFun.fcodom. Qed.
-
-Lemma pi_pidx x : SFun.pi f (pidx x) x.
-Proof. by rewrite /SFun.pi /preimage /set1 /mkset nth_pidx. Qed.
-
-Lemma pi_nth i x : SFun.pi f i x -> (SFun.codom f)`_i = f x.
-Proof. by []. Qed.
-
-End sfun_lemmas.
-
-Module NNSFun.
-Section nnsfun.
-Variables (T : measurableType) (R : realType).
-Record t := mk {
-  f : sfun T R ;
-  ge0 : forall k, 0 <= (SFun.codom f)`_k }.
-End nnsfun.
-Module Exports.
-Notation nnsfun := NNSFun.t.
-End Exports.
-End NNSFun.
-Export NNSFun.Exports.
-Coercion NNSFun.f : nnsfun >-> sfun.
 
 Section simple_function_partition.
 Variables (T : measurableType) (R : realType) (f : sfun T R).
@@ -170,16 +143,92 @@ Qed.
 
 End simple_function_partition.
 
-Section simple_function_integral.
+Section sfun_lemmas.
 Variables (T : measurableType) (R : realType) (f : sfun T R).
 Let n := ssize f.
-Let A := SFun.pi f.
-Let a := SFun.codom f.
 
-Definition sintegral (m : {measure set T -> \bar R}) : \bar R :=
-  (\sum_(k < n) (a`_k)%:E * m (A k))%E.
+Local Lemma ltn_pidx x : (index (f x) (SFun.codom f) < n)%N.
+Proof. by rewrite index_mem SFun.fcodom. Qed.
 
-End simple_function_integral.
+Definition pidx x := Ordinal (ltn_pidx x).
+
+Lemma nth_pidx x : (SFun.codom f)`_(pidx x) = f x.
+Proof. by rewrite nth_index //; exact: SFun.fcodom. Qed.
+
+Lemma pi_pidx x : SFun.pi f (pidx x) x.
+Proof. by rewrite /SFun.pi /preimage /set1 /mkset nth_pidx. Qed.
+
+Lemma pi_nth i x : SFun.pi f i x -> (SFun.codom f)`_i = f x.
+Proof. by []. Qed.
+
+End sfun_lemmas.
+
+Section sfun_cst.
+Variables (T : measurableType) (R : realType) (r : R).
+Let a := [:: r].
+
+Local Lemma sfun_cst_uniq : uniq a. Proof. by []. Qed.
+
+Local Lemma sfun_cst_fcodom (t : T) : (cst r) t \in a.
+Proof. by rewrite inE eqxx. Qed.
+
+Local Lemma sfun_cst_mpi : let pi := fun k : 'I_1 => (@cst T R r) @^-1` [set a`_k] in
+  (forall k : 'I_1, measurable (pi k)).
+Proof.
+move=> pi k; rewrite (_ : pi _ = setT); last first.
+  by rewrite predeqE => t; split => // _; rewrite (ord1 k).
+exact: measurableT.
+Qed.
+
+Definition sfun_cst : sfun T R :=
+  @SFun.mk T R (cst r) a sfun_cst_uniq sfun_cst_fcodom sfun_cst_mpi.
+
+Lemma ssize_sfun_cst : ssize sfun_cst = 1%N.
+Proof. by []. Qed.
+
+End sfun_cst.
+
+Section simple_function_scale.
+Variables (T : measurableType) (R : realType) (r : R) (f : sfun T R).
+Let n := ssize f.
+Let a : seq R := if r == 0 then [:: 0] else [seq r * x | x <- SFun.codom f].
+
+Local Lemma sfun_scale_uniq : uniq a.
+Proof.
+have [/eqP r0|r0] := boolP (r == 0).
+  by rewrite /a r0 eqxx.
+rewrite /a (negbTE r0) map_inj_uniq; first exact: SFun.uniq_codom.
+by apply: mulrI; rewrite unitfE.
+Qed.
+
+Local Lemma sfun_scale_fcodom t : (fun x => r * f x) t \in a.
+Proof.
+have [/eqP r0|r0] := boolP (r == 0); first by rewrite r0 mul0r /a r0 eqxx inE.
+by rewrite /a (negbTE r0); apply/mapP; exists (f t) => //; exact: SFun.fcodom.
+Qed.
+
+Local Lemma sfun_scale_mpi (k : 'I_(size a)) : measurable ((fun x => r * f x) @^-1` [set a`_k]).
+Proof.
+have [/eqP r0|r0] := boolP (r == 0).
+  move: k.
+  rewrite /a r0 eqxx /= => k; rewrite (_ : mkset _ = setT); first exact: measurableT.
+  by rewrite predeqE => t; split => // _; rewrite /set1 /mkset (ord1 k) mul0r.
+move=> [:k'n].
+have @k' : 'I_(ssize f).
+  apply: (@Ordinal _ k); abstract: k'n.
+  by rewrite /ssize /= (leq_trans (ltn_ord k)) // /a (negbTE r0) size_map.
+rewrite (_ : _ @^-1` _ = SFun.pi f k'); first exact: SFun.mpi.
+rewrite predeqE => t; split => //.
+  rewrite /a /preimage /set1 /mkset {1}(negbTE r0).
+  by rewrite  (nth_map 0) //; apply: mulrI; rewrite unitfE.
+rewrite /SFun.pi /preimage /set1 /mkset => ->.
+by rewrite /a {1}(negbTE r0) (nth_map 0).
+Qed.
+
+Definition sfun_scale : sfun T R :=
+  SFun.mk sfun_scale_uniq sfun_scale_fcodom  sfun_scale_mpi.
+
+End simple_function_scale.
 
 Section simple_function_addition.
 Variables (T : measurableType) (R : realType) (f g : sfun T R).
@@ -193,13 +242,13 @@ rewrite /a mem_undup; apply/allpairsP; exists (f t, g t) => /=.
 by split => //; [exact: SFun.fcodom | exact: SFun.fcodom].
 Qed.
 
-Let mfg k : measurable ((f \+ g) @^-1` [set a`_k]).
+Let mfg (k : 'I_(size a)) : measurable ((f \+ g) @^-1` [set a`_k]).
 Proof.
 rewrite (_ : _ @^-1` _ =
-    \bigcup_(x in [set x | a`_k == (SFun.codom f)`_x.1 + (SFun.codom g)`_x.2])
+    \bigcup_(x in [set x : 'I_n * 'I_p | a`_k == (SFun.codom f)`_x.1 + (SFun.codom g)`_x.2])
     (SFun.pi f x.1 `&` SFun.pi g x.2)); last first.
   rewrite predeqE => t; split=> [fgt|[[i j] /= /eqP -> [] -> ->]//].
-  exists (nat_of_ord (pidx f t), nat_of_ord (pidx g t)) => /=.
+  exists (pidx f t, pidx g t) => /=.
     by rewrite !nth_pidx -fgt.
   by split => //; exact: pi_pidx.
 rewrite (_ : \bigcup_(_ in _) _ =
@@ -213,7 +262,7 @@ rewrite (_ : \bigcup_(_ in _) _ =
         by apply/mapP; exists (pidx f t) => //; rewrite mem_enum.
       by apply/mapP; exists (pidx g t) => //; rewrite mem_enum.
     by rewrite (eqP afg) !nth_pidx (pi_nth ft) (pi_nth gt).
-  by case => /= -[i j] /= /andP[H aij] [? ?]; exists (i : nat, j : nat).
+  by case => /= -[i j] /= /andP[H aij] [? ?]; exists (i, j).
 by apply: bigsetU_measurable => -[i j] aij; apply: measurableI; apply SFun.mpi.
 Qed.
 
@@ -271,6 +320,84 @@ Qed.
 
 End simple_function_addition.
 
+Module NNSFun.
+Section nnsfun.
+Variables (T : measurableType) (R : realType).
+Record t := mk {
+  f : sfun T R ;
+  ge0 : forall k, 0 <= (SFun.codom f)`_k }.
+End nnsfun.
+Module Exports.
+Notation nnsfun := NNSFun.t.
+End Exports.
+End NNSFun.
+Export NNSFun.Exports.
+Coercion NNSFun.f : nnsfun >-> sfun.
+
+Section simple_function_scale_lemmas.
+Variables (T : measurableType) (R : realType) (r : R) (f : nnsfun T R).
+Variables (m : {measure set T -> \bar R}).
+
+Lemma ssize_sfun_scale0 : ssize (sfun_scale 0 f) = 1%N.
+Proof. by rewrite /ssize /= eqxx. Qed.
+
+Lemma ssize_sfun_scale_neq0 : r != 0 -> ssize (sfun_scale r f) = ssize f.
+Proof. by move=> r0; rewrite /ssize /= (negbTE r0) size_map. Qed.
+
+End simple_function_scale_lemmas.
+
+Section simple_function_integral.
+Variables (T : measurableType) (R : realType) (f : sfun T R).
+Let n := ssize f.
+Let A := SFun.pi f.
+Let a := SFun.codom f.
+
+Definition sintegral (m : {measure set T -> \bar R}) : \bar R :=
+  (\sum_(k < n) (a`_k)%:E * m (A k))%E.
+
+End simple_function_integral.
+
+Section sintegralK.
+Variables (T : measurableType) (R : realType) (r : R) (f : nnsfun T R).
+Variables (m : {measure set T -> \bar R}).
+
+Lemma sintegralK : sintegral (sfun_scale r f) m = (r%:E * sintegral f m)%E.
+Proof.
+have [/eqP ->|r0] := boolP (r == 0).
+  rewrite mul0e /sintegral big1 // => i _; rewrite /= eqxx /=.
+  case: (m (SFun.pi _ _)) => [x| |]; move: i; rewrite ssize_sfun_scale0 => i.
+  by rewrite (ord1 i) /= mul0r.
+  by rewrite (ord1 i) /= eqxx.
+  by rewrite (ord1 i) /= eqxx.
+rewrite /sintegral.
+pose cast := cast_ord (ssize_sfun_scale_neq0 f r0).
+rewrite [LHS](eq_bigr (fun k : 'I_(ssize (sfun_scale r f)) =>
+  (r * (SFun.codom f)`_(cast k))%:E * m (SFun.pi f (cast k)))%E); last first.
+  move=> i _; congr (_%:E * m _)%E.
+    rewrite /= (negbTE r0) (nth_map 0) //.
+    by rewrite (leq_trans (ltn_ord i)) // ssize_sfun_scale_neq0.
+  rewrite predeqE => x; split.
+    rewrite /SFun.pi /= /set1 /= {1}(negbTE r0) (nth_map 0); last first.
+      by rewrite (leq_trans (ltn_ord i)) // ssize_sfun_scale_neq0.
+    by move/mulrI; apply; rewrite unitfE.
+  rewrite /SFun.pi /set1 /= => ->.
+  rewrite {1}(negbTE r0) (nth_map 0) //.
+  by rewrite (leq_trans (ltn_ord i)) // ssize_sfun_scale_neq0.
+rewrite sume_distrr; last first.
+  move=> i _; rewrite mule_ge0 //; first exact: NNSFun.ge0.
+  by apply: measure_ge0; apply: SFun.mpi.
+pose castK := cast_ord (esym (ssize_sfun_scale_neq0 f r0)).
+rewrite (@reindex _ _ _ [finType of 'I_(ssize (sfun_scale r f))]
+    [finType of 'I_(ssize f)] castK); last first.
+  exists cast => i.
+    by rewrite /cast /castK /= cast_ordKV.
+  by rewrite /cast /castK /= cast_ordK.
+apply eq_bigr => i _.
+by rewrite /cast /castK cast_ordKV mulEFin muleA.
+Qed.
+
+End sintegralK.
+
 Section sintegralD.
 Variables (T : measurableType) (R : realType) (f g : nnsfun T R).
 Variables (m : {measure set T -> \bar R}).
@@ -322,7 +449,7 @@ rewrite [X in _ = (X + _)%E]exchange_big.
 rewrite -big_split; apply eq_bigr => i _.
 rewrite -big_split; apply eq_bigr => j _.
 rewrite [in RHS]setIC.
-rewrite addEFin ge0_muleDr; try exact: NNSFun.ge0.
+rewrite addEFin ge0_muleDl; try exact: NNSFun.ge0.
 by rewrite addeC.
 Qed.
 
