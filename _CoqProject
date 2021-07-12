@@ -25,6 +25,7 @@ theories/csum.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
+theories/simple_function.v
 theories/summability.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
