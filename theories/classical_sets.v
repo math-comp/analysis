@@ -851,13 +851,26 @@ Qed.
 
 End bigop_nat_lemmas.
 
-Lemma preimage_bigcup {aT rT I} (P : set I) (f : aT -> rT) A :
-  f @^-1` (\bigcup_ (i in P) A i) = \bigcup_(i in P) (f @^-1` A i).
+Lemma preimage_bigcup {aT rT I} (P : set I) (f : aT -> rT) (F : I -> set rT) :
+  f @^-1` (\bigcup_ (i in P) F i) = \bigcup_(i in P) (f @^-1` F i).
 Proof. exact/predeqP. Qed.
 
-Lemma preimage_bigcap {aT rT I} (P : set I) (f : aT -> rT) F :
+Lemma preimage_bigcap {aT rT I} (P : set I) (f : aT -> rT) (F : I -> set rT) :
   f @^-1` (\bigcap_ (i in P) F i) = \bigcap_(i in P) (f @^-1` F i).
 Proof. exact/predeqP. Qed.
+
+Lemma bigcup_image {aT rT I} (P : set aT) (f : aT -> I) (F : I -> set rT) :
+  \bigcup_(x in f @` P) F x = \bigcup_(x in P) F (f x).
+Proof.
+rewrite eqEsubset; split=> x; first by case=> j [] i pi <- Xfix; exists i.
+by case=> i Pi Ffix; exists (f i); [exists i|].
+Qed.
+
+Lemma bigcup_of_set1 {rT I} (P : set I) (f : I -> rT) :
+  \bigcup_(x in P) [set f x] = f @` P.
+Proof.
+by rewrite eqEsubset; split=>[a [i ?]->| a [i ?]<-]; [apply: imageP | exists i].
+Qed.
 
 Lemma setM0 T1 T2 (A1 : set T1) : A1 `*` set0 = set0 :> set (T1 * T2).
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
