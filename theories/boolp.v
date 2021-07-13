@@ -238,6 +238,12 @@ Proof. by case: asboolP. Qed.
 Lemma asboolF (P : Prop) : ~ P -> `[<P>] = false.
 Proof. by apply/introF/asboolP. Qed.
 
+Definition equality_mixin_of_Type (T : Type) : Equality.mixin_of T :=
+  EqMixin (fun x y : T => asboolP (x = y)).
+
+Definition choice_of_Type (T : Type) : choiceType :=
+  Choice.Pack (Choice.Class (equality_mixin_of_Type T) gen_choiceMixin).
+
 Lemma is_true_inj : injective is_true.
 Proof. by move=> [] []; rewrite ?(trueE, falseE) ?propeqE; tauto. Qed.
 
