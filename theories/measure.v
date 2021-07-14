@@ -41,6 +41,8 @@ From HB Require Import structures.
 (*                        forall Y, mu X = mu (X `&` Y) + mu (X `&` ~` Y)     *)
 (* measure_is_complete mu == the measure mu is complete                       *)
 (*                                                                            *)
+(*     measurable_fun D f == the function f with domain D is measurable       *)
+(*                                                                            *)
 (* Caratheodory theorem:                                                      *)
 (* caratheodory_type mu := T, where mu : {outer_measure set T -> {ereal R}}   *)
 (*                         it is a canonical mesurableType copy of T.         *)
@@ -1034,6 +1036,9 @@ End caratheodory_sigma_algebra.
 Definition measure_is_complete (R : realType) (T : measurableType)
     (mu : set T -> \bar R) :=
   forall X, mu.-negligible X -> measurable X.
+
+Definition measurable_fun (T U : measurableType) (D : set T) (f : T -> U) :=
+  forall Y, measurable Y -> measurable ((f @^-1` Y) `&` D).
 
 Section caratheodory_measure.
 Variables (R : realType) (T : Type) (mu : {outer_measure set T -> \bar R}).
