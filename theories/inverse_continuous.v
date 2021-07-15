@@ -31,63 +31,171 @@ Proof.  by rewrite in_itv /= lexx. Qed.
 Lemma itvcr (a b : R) : (b \in `[a, b]) = (a <= b).
 Proof. by rewrite in_itv /= lexx andbT. Qed.
 
-Lemma continuous_inj_le_itvcc (f : R -> R) (a b : R) :
-  f a <= f b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
-  {in `[a, b] &, {mono f : x y / x <= y}}.
+Lemma itvcc_le (x y : R) (I : interval R) :
+  x <= y ->
+  (`[x, y] <= I)%O = ((x \in I) && (y \in I)).
 Proof.
-move: f a b.
+move=> xLy.
+apply/idP/idP.
+  case: I => [[b1 lb| b] [b2 ub| b']]; rewrite !subitvE /Order.le /=
+   !in_itv /=.
+  - move=> /andP[xl yu]; rewrite xl yu; case: b1 xl; case: b2 yu=> /= yu xl.
+    + by rewrite (le_lt_trans xLy _) // (le_trans xl).
+    + by rewrite (le_trans xLy) // (le_trans xl).
+    + by rewrite (le_lt_trans xLy) // (lt_le_trans _ xLy).
+    by rewrite (le_trans xLy) // (lt_le_trans _ xLy).
+  - case: b'; move=>/andP[xl yu] //; rewrite xl {yu}.
+    by case: b1 xl=> /= xl; rewrite ?(le_trans _ xLy) ?(lt_le_trans _ xLy).
+  - case: b => //=; case: b2 => /= yu; rewrite yu ?(le_lt_trans xLy) //.
+    by rewrite (le_trans xLy).
+  - by case: b; case: b'.
+case: I => [[b1 lb| b] [b2 ub| b']]; rewrite !subitvE /Order.le /=
+   !in_itv /=.
+- by case: b1; case:b2=> /= /andP[/andP[-> _] /andP[_ ->]].
+- by case: b'; case: b1; rewrite /= ?andbF //; move/andP=> [/andP[] -> ].
+- by case: b; case: b2; rewrite /= ?andbF //; move/andP=> [] _ ->.
+by case: b; case: b'.
+Qed.
+
+Lemma itvcc_sub (x y : R) (I : interval R) : x <= y ->
+  {subset `[x, y] <= I} <-> ((x \in I) && (y \in I)).
+Proof.
+move=> xLy; split.
+  by move=> itvI; apply/andP; split; apply itvI; rewrite ?itvlc ?itvcr.
+by move=> xIyI; apply/subitvP; rewrite itvcc_le.
+Qed.
+
+Lemma interval_connected_le (I : interval R) (a b c : R) :
+  a <= c <= b ->  a \in I -> b \in I -> c \in I.
+Proof.
+move=> /andP[aLc cLb] aI bI.
+have /subitvP : (`[a, b] <= I)%O by rewrite itvcc_le ?aI ?(le_trans aLc cLb).
+by apply; rewrite in_itv/= ?aLc.
+Qed.
+
+Lemma continuous_inj_le_itv (f : R -> R) (I : interval R) :
+  (exists x y, x \in I /\ y \in I /\ x < y /\ f x <= f y) ->
+  {in I, continuous f} -> {in I &, injective f} ->
+  {in I &, {mono f : x y / x <= y}}.
+Proof.
+move: f.
 have triplet_injective_increasing (f : R -> R) (a c b : R) :
-  f a <= f b -> If f a b -> Cf f a b -> a <= c <= b -> f a <= f c <= f b.
-  move=> faLfb fI fC /andP[aLc cLb].
-  have [acIab cbIab] : {subset `[a,c] <= `[a,b]} /\ {subset `[c,b] <= `[a,b]}.
-    by split; (apply/subitvP; rewrite subitvE /Order.le /= lexx ?andbT).
+  {in I, continuous f} -> {in I &, injective f} ->
+  f a <= f b -> a \in I -> b \in I -> a <= c -> c <= b -> f a <= f c <= f b.
+  move=> fC fI faLfb aI bI aLc cLb.
+  have aLb : a <= b by rewrite (le_trans aLc).
+  have abI : (`[a, b] <= I)%O by rewrite itvcc_le ?aI.
+  have [acI cbI] : (`[a,c] <= I)%O /\ (`[c,b] <= I)%O.
+    by split; apply: (le_trans _ abI); rewrite subitvE /Order.le /= ?lexx ?aLc.
   have [faLfc|fcLfa|faEfc] /= := ltrgtP (f a) (f c).
   - rewrite leNgt; apply/negP => fbLfc.
     move: (fbLfc); suff /eqP -> : c == b by rewrite ltxx.
     rewrite eq_le cLb /=.
     have [d dI fdEfb] : exists2 d, d \in `[a, c] & f d = f b.
       apply: IVT => //; last by case: ltrgtP faLfc; rewrite // faLfb // ltW.
-      by apply: subset_prop_in1 fC.
+      apply: subset_prop_in1 fC; rewrite itvcc_sub ?aI //=.
+      by apply: (subitvP acI); rewrite itvcr.
     suff <- : d = b by rewrite (itvP dI).
-    by apply: fI fdEfb; [apply/acIab | apply/cbIab; rewrite in_itv/= cLb lexx].
+    by apply: fI fdEfb => //; rewrite (subitvP acI).
   - have [fbLfc|fcLfb|fbEfc] /= := ltrgtP (f b) (f c).
     + by have := lt_trans fbLfc fcLfa; rewrite ltNge faLfb.
     + move: (fcLfa); suff /eqP -> : c == a by rewrite ltxx.
       rewrite eq_le aLc andbT.
       have [d dI fdEfa] : exists2 d, d \in `[c, b] & f d = f a.
         apply: IVT => //; last by case: ltrgtP fcLfb => // _ _; rewrite ltW.
-        by apply: subset_prop_in1 fC.
+        by apply: subset_prop_in1 fC; apply/subitvP.
       suff <- : d = a by rewrite (itvP dI).
-      by apply: fI fdEfa;[apply/cbIab | apply/acIab; rewrite in_itv/= lexx].
+      by apply: fI fdEfa => //; rewrite (subitvP cbI).
     + by move: fcLfa; rewrite -fbEfc ltNge faLfb.
-  - by rewrite -(fI _  _ _ _ faEfc) // in_itv /= ?lexx (le_trans aLc).
-move=> f a b faLfb fC fI x y /itvP xI /itvP yI.
-have aLb : a <= b by apply: le_trans (_ : x <= b); rewrite xI.
-have : x <= y -> f x <= f y.
-  move=> xLy.
-  have /andP[faLfx fxLfb] : f a <= f x <= f b.
-    by apply: triplet_injective_increasing ; rewrite ?xI.
-  suff /andP[-> //] : f x <= f y <= f b.
-  apply: triplet_injective_increasing
-    => [|x1 x2 /itvP x1I /itvP x2I |x1 /itvP x1I|] //.
-    - by apply: fI; rewrite in_itv /= (le_trans (_ : a <= x)) !(xI, x1I,
-x2I).
-    - by apply: fC; rewrite in_itv /= (le_trans (_ : a <= x)) !(xI, x1I).
-    by rewrite xLy yI.
-have : y <= x -> f y <= f x.
-  move=> yLx.
-  have /andP[faLfx fxLfb] : f a <= f y <= f b.
-    by apply: triplet_injective_increasing; rewrite ?yI.
-  suff /andP[-> //] : f y <= f x <= f b.
-  apply: triplet_injective_increasing
-     => [|x1 x2 /itvP x1I /itvP x2I |x1 /itvP x1I|] //.
-  - by apply: fI; rewrite in_itv /= (le_trans (_ : a <= y)) !(yI, x1I, x2I).
-  - by apply: fC; rewrite in_itv /= (le_trans (_ : a <= y)) !(yI, x1I).
-  by rewrite yLx xI.
-have : f x == f y -> x == y.
-  by move=> /eqP/fI-> //; rewrite in_itv /= !(xI, yI).
-by case: (ltrgtP x y); case: (ltrgtP (f x) (f y)) => // _ _ H1 H2 H3;
-     (case: (H1 isT) || case: (H2 isT) || case: (H3 isT)).
+  by rewrite -(fI _ _ _ _ faEfc) // (subitvP cbI) // itvlc.
+move=> f [u [v [uI [vI [ulv fuLfv]]]]] fC fI.
+move: fuLfv; rewrite le_eqVlt=> /orP[/eqP fufv | fuLfv].
+  by move/fI: fufv => /(_ uI vI) uv; move: ulv; rewrite uv ltxx.
+have tid a c b:
+  f b < f a -> a \in I -> b \in I -> a < c -> c < b -> f b < f c < f a.
+  have ofC : {in I, continuous (-f)} by move=> x xin; apply/continuousN/fC.
+  have ofI : {in I &, injective (-f)} by move=> x y xin yin /oppr_inj/fI ->.
+  move=> fbLfa aI bI aLc cLb.
+  have aLb : a < b by apply: (lt_trans aLc).
+  have cI : c \in I by rewrite (@interval_connected_le _ a b) // !ltW ?aLc.
+  have fanfc : f a != f c.
+    by apply/eqP=> /fI => /(_ aI cI)=> abs; move: aLc; rewrite abs ltxx.
+  have fcnfb : f c != f b.
+    by apply/eqP=> /fI => /(_ cI bI)=> abs; move: cLb; rewrite abs ltxx.
+  have := triplet_injective_increasing (-f) a c b ofC ofI (ltW _) aI bI.
+  rewrite ltr_oppl opprK (ltW aLc) (ltW cLb) => /(_ fbLfa isT).
+  rewrite ler_oppl opprK ler_oppl opprK le_eqVlt eq_sym (negbTE fanfc) /=.
+  by rewrite le_eqVlt eq_sym (negbTE fcnfb) /= andbC; apply.
+have tii a c b := triplet_injective_increasing f a c b fC fI.
+have tii1 a c b : f a < f c -> a \in I -> b \in I ->
+       a < c -> c < b -> f a < f b /\ f c < f b.
+    move=> faLfc aI bI aLc cLb; suff faLfb : f a < f b.
+    have cI : c \in I by rewrite (@interval_connected_le _ a b) ?ltW ?aLc.
+    split; first by [].
+    rewrite lt_neqAle (_ : f c != f b) /=; last first.
+      by apply/eqP=> /fI => /(_ cI bI) cb; move: cLb; rewrite cb ltxx.
+    by have := tii a c b (ltW faLfb) aI bI (ltW aLc) (ltW cLb)=> /andP[].
+  rewrite lt_neqAle (_ : f a != f b) /=; last first.
+    apply/eqP=> /fI=> /(_ aI bI) Q.
+    by move: (lt_trans aLc cLb); rewrite Q ltxx.
+  rewrite leNgt; apply/negP=> /tid => /(_ c aI bI aLc cLb)=> /andP[_ fcLfa].
+  by case: (ltrgtP (f c) (f a)) faLfc fcLfa.
+have tii2 a c b : f c < f b -> a \in I -> b \in I ->
+     a < c -> c < b -> f a < f b /\ f a < f c.
+    move=> fcLfb aI bI aLc cLb; suff faLfb : f a < f b.
+    have cI : c \in I by rewrite (@interval_connected_le _ a b) ?ltW ?aLc.
+    split; first by [].
+    rewrite lt_neqAle (_ : f a != f c) /=; last first.
+      by apply/eqP=> /fI => /(_ aI cI) ac; move: aLc; rewrite ac ltxx.
+    by have := tii a c b (ltW faLfb) aI bI (ltW aLc) (ltW cLb)=> /andP[].
+  rewrite lt_neqAle (_ : f a != f b) /=; last first.
+    apply/eqP=> /fI=> /(_ aI bI) Q.
+    by move: (lt_trans aLc cLb); rewrite Q ltxx.
+  rewrite leNgt; apply/negP=> /tid => /(_ c aI bI aLc cLb)=> /andP[fbLfc _].
+  by case: (ltrgtP (f c) (f b)) fbLfc fcLfb.
+suff main : {in I &, forall x y, x <= y -> f x <= f y}.
+  move=> x y xI yI; case : (lerP x y) => [xLy | yLx ].
+    by move/main: (xLy) => /(_ xI yI) ->.
+    rewrite leNgt lt_neqAle main ?ltW // andbT negbK; apply/eqP=> fyfx.
+    by have := fI y x yI xI fyfx => yx; move: yLx; rewrite yx ltxx.
+move=> x y xI yI xLy; case: (lerP u x)=> [uLx | xLu].
+  case: (lerP x v) => [xLv | vLx].
+    case: (lerP v y)=> [vLy | yLv].
+      have fxLfv : f x <= f v.
+        by have/andP[] := tii u x v (ltW fuLfv) uI vI uLx xLv.
+      move: xLv; rewrite le_eqVlt=> /orP[/eqP xv | xLv ]; last first.
+        move: vLy; rewrite le_eqVlt=>/orP[/eqP <- //| vLy].
+        rewrite leNgt; apply/negP=> fyLfx.
+        have /andP[_]:= tid x v y fyLfx xI yI xLv vLy.
+        by apply/negP; rewrite -leNgt.
+      move: vLy; rewrite le_eqVlt=> /orP[/eqP <- | vLy].
+        by rewrite xv lexx.
+      by have [_ fL]:= tii1 u v y fuLfv uI yI ulv vLy; rewrite xv ltW.
+    have uLy : u <= y by rewrite (le_trans uLx).
+    have fuLfy : f u <= f y.
+      by have /andP[]:=tii u y v (ltW fuLfv) uI vI uLy (ltW yLv).
+    by have /andP[] := tii u x y fuLfy uI yI uLx xLy.
+    have fuLfx : f u < f x.
+      by apply: (lt_trans fuLfv); have []:= tii1 u v x fuLfv uI xI ulv vLx.
+    move: xLy; rewrite le_eqVlt=> /orP[/eqP -> | xLy]; first by rewrite lexx.
+    by apply: ltW; have [] := tii1 u x y fuLfx uI yI (lt_trans ulv vLx) xLy.
+  have fxLfu : f x < f u by have [] := tii2 x u v fuLfv xI vI xLu ulv.
+  case: (lerP y u) => [yLu | uLy].
+    by have /andP[] := tii x y u (ltW fxLfu) xI uI xLy yLu.
+by have [/ltW ] := tii1 x u y fxLfu xI yI xLu uLy.
+Qed.
+
+Lemma continuous_inj_le_itvcc (f : R -> R) (a b : R) :
+  f a <= f b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
+  {in `[a, b] &, {mono f : x y / x <= y}}.
+Proof.
+case: (ltrgtP a b)=> [aLb | bLa | ab].
+- move=> faLfb fC fI; apply: continuous_inj_le_itv => //.
+  by exists a, b; rewrite itvlc itvcr faLfb !ltW.
+- move=> _ _ _ x y; rewrite in_itv /= => /andP[aLx xLb]; move: bLa.
+  by rewrite ltNge (le_trans aLx).
+move=> _ _ _ x y; rewrite !in_itv /= -ab=> /le_anti -> /le_anti ->.
+by rewrite !lexx.
 Qed.
 
 Lemma segment_continuous_inj_monotone (f : R -> R) (a b : R) :
