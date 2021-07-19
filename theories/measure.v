@@ -11,6 +11,7 @@ From HB Require Import structures.
 (*                                                                            *)
 (* semiRingOfSetsType == the type of semirings of sets                        *)
 (*     ringOfSetsType == the type of rings of sets                            *)
+(*  algebraOfSetsType == the type of algebras of sets                         *)
 (*     measurableType == the type of sigma-algebras                           *)
 (*   sigma_finite A f == the measure f is sigma-finite on A : set T with      *)
 (*                       T : ringOfSetsType.                                  *)
@@ -99,24 +100,31 @@ HB.structure Definition RingOfSets := {T of RingOfSets_from_semiRingOfSets T &}.
 
 Notation ringOfSetsType := RingOfSets.type.
 
-HB.mixin Record Measurable_from_ringOfSets T of RingOfSets T := {
-  measurableT : measurable (@setT T) ;
+HB.mixin Record AlgebraOfSets_from_RingOfSets T of RingOfSets T := {
+  measurableT : measurable (@setT T)
+}.
+
+HB.structure Definition AlgebraOfSets := {T of AlgebraOfSets_from_RingOfSets T &}.
+
+Notation algebraOfSetsType := AlgebraOfSets.type.
+
+HB.mixin Record Measurable_from_algebraOfSets T of AlgebraOfSets T := {
   measurable_bigcup : forall U : (set T)^nat, (forall i, measurable (U i)) ->
     measurable (\bigcup_i (U i))
 }.
 
-HB.structure Definition Measurable := {T of Measurable_from_ringOfSets T &}.
+HB.structure Definition Measurable := {T of Measurable_from_algebraOfSets T &}.
 
 Notation measurableType := Measurable.type.
 
-HB.factory Record isRingOfSets T := {
+HB.factory Record isAlgebraOfSets T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : forall A B, measurable A -> measurable B -> measurable (A `|` B) ;
   measurableC : forall A, measurable A -> measurable (~` A)
 }.
 
-HB.builders Context T of isRingOfSets T.
+HB.builders Context T of isAlgebraOfSets T.
 
 Lemma semiRingOfSets_measurableI (A B : set T) :
   measurable A -> measurable B -> measurable (A `&` B).
@@ -161,6 +169,14 @@ Definition T_isRingOfSets : RingOfSets_from_semiRingOfSets T :=
 
 HB.instance T T_isRingOfSets.
 
+Lemma measurableT : measurable (@setT T).
+Proof. by rewrite -setC0; apply measurableC; exact: measurable0. Qed.
+
+Definition T_isAlgebraOfSets : AlgebraOfSets_from_RingOfSets T :=
+  AlgebraOfSets_from_RingOfSets.Build T measurableT.
+
+HB.instance T T_isAlgebraOfSets.
+
 HB.end.
 
 HB.factory Record isMeasurable T := {
@@ -175,21 +191,18 @@ HB.builders Context T of isMeasurable T.
 
 Obligation Tactic := idtac.
 
-Program Definition T_isRingOfSets : isRingOfSets T :=
-  @isRingOfSets.Build T measurable measurable0 _ _.
+Program Definition T_isAlgebraOfSets : isAlgebraOfSets T :=
+  @isAlgebraOfSets.Build T measurable measurable0 _ _.
 Next Obligation.
 move=> A B mA mB; rewrite -bigcup2E.
 by apply measurable_bigcup => -[//|[//|i]]; exact: measurable0.
 Qed.
 Next Obligation. by move=> A mA; apply: measurableC. Qed.
 
-HB.instance T T_isRingOfSets.
+HB.instance T T_isAlgebraOfSets.
 
-Program Definition T_isMeasurable : Measurable_from_ringOfSets T :=
-  @Measurable_from_ringOfSets.Build _ _ measurable_bigcup.
-Next Obligation.
-by rewrite -setC0; apply: measurableC; apply: measurable0.
-Qed.
+Definition T_isMeasurable : Measurable_from_algebraOfSets T :=
+  @Measurable_from_algebraOfSets.Build _ measurable_bigcup.
 
 HB.instance T T_isMeasurable.
 
@@ -214,14 +227,20 @@ Qed.
 
 End ringofsets_lemmas.
 
-Section measurable_lemmas.
-Variables T : measurableType.
+Section algebraofsets_lemmas.
+Variables T : algebraOfSetsType.
 Implicit Types A B : set T.
 
 Lemma measurableC A : measurable A -> measurable (~` A).
 Proof.
-by move=> mA; rewrite -setTD; apply measurableD => //; exact: measurableT.
+by move=> mA; rewrite -setTD; apply: measurableD => //; exact: measurableT.
 Qed.
+
+End algebraofsets_lemmas.
+
+Section measurable_lemmas.
+Variables T : measurableType.
+Implicit Types A B : set T.
 
 Lemma measurable_bigcap (F : (set T)^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcap_i (F i)).
