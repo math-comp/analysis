@@ -24,7 +24,7 @@
   + lemma `adde_undef_nneg_series`
   + lemma `adde_def_nneg_series`
 - in `measure.v`:
-  + lemmas `epsilon_trick`, 
+  + lemmas `cvg_geometric_series_half`, `epsilon_trick`
   + definition `measurable_cover`
   + lemmas `cover_measurable`, `cover_subset`
   + definition `mu_ext`

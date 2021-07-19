@@ -1103,13 +1103,28 @@ Qed.
 
 End caratheodory_measure.
 
+(* TODO: move? *)
+Lemma cvg_geometric_series_half (R : archiFieldType) (r : R) n :
+  series (fun k => r / (2 ^ (k + n.+1))%:R : R^o) --> (r / 2 ^+ n : R^o).
+Proof.
+rewrite (_ : series _ = series (geometric (r / (2 ^ n.+1)%:R) 2^-1%R)); last first.
+  rewrite funeqE => m; rewrite /series /=; apply eq_bigr => k _.
+  by rewrite expnD natrM (mulrC (2 ^ k)%:R) invfM exprVn (natrX _ 2 k) mulrA.
+apply: cvg_trans.
+  apply: cvg_geometric_series.
+  by rewrite ger0_norm // invr_lt1 // ?ltr1n // unitfE.
+rewrite [X in (X - _)%R](splitr 1) div1r addrK.
+by rewrite -mulrA -invfM expnSr natrM -mulrA divff// mulr1 natrX.
+Qed.
+Arguments cvg_geometric_series_half {R} _ _.
+
 Lemma epsilon_trick (R : realType) (A : (\bar R)^nat) (e : {nonneg R})
-  (P : pred nat) : (forall n, 0 <= A n) ->
-  \sum_(i <oo | P i) (A i + (e%:nngnum / (2 ^ i)%:R)%:E) <=
-  \sum_(i <oo | P i) A i + (2 * e%:nngnum)%:E.
+    (P : pred nat) : (forall n, 0 <= A n) ->
+  \sum_(i <oo | P i) (A i + (e%:nngnum / (2 ^ i.+1)%:R)%:E) <=
+  \sum_(i <oo | P i) A i + e%:nngnum%:E.
 Proof.
 move=> A0; rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
-    \sum_(0 <= i < n) (e%:nngnum / (2 ^ i)%:R)%:E))) //.
+    \sum_(0 <= i < n) (e%:nngnum / (2 ^ i.+1)%:R)%:E))) //.
   rewrite ereal_pseriesD //; last by move=> n _; apply: divr_ge0.
   rewrite ereal_limD //.
   - rewrite lee_add2l //; apply: lee_lim => //.
@@ -1119,23 +1134,20 @@ move=> A0; rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
   - exact: is_cvg_ereal_nneg_series.
   - by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
   - by apply: adde_def_nneg_series => // n _; apply: divr_ge0.
-have cvggeo : (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ i)%:R)%:E) -->
-    (2 * e%:nngnum)%:E.
-  rewrite (_ : (fun n => _) = @EFin _ \o series (geometric e%:nngnum 2^-1)).
-    apply: cvg_comp.
-    - by apply: cvg_geometric_series; rewrite ger0_norm // invf_lt1 // ltr1n.
-    - rewrite (_ : [filter of _] = [filter of (2 * e%:nngnum)%R : R^o]) //.
-      rewrite filter_of_filterE; congr ([filter of _]); rewrite mulrC.
-      congr (_ * _)%R; apply mulr1_eq.
-      by rewrite mulrBl mulVr ?unitfE// mul1r (_ : 1%R = 1%:R)// -natrB.
-  rewrite funeqE => n /=.
-  rewrite /series (@big_morph _ _ (@EFin _) 0 adde) //=.
-  by apply eq_bigr => i _; rewrite natrX exprVn.
-rewrite ereal_limD //.
-- by rewrite lee_add2l // (cvg_lim _ cvggeo).
-- exact: is_cvg_ereal_nneg_series.
-- by apply: is_cvg_ereal_nneg_series => ?; rewrite lee_fin divr_ge0.
-- by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_def.
+suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ i.+1)%:R)%:E) -->
+    e%:nngnum%:E.
+  rewrite ereal_limD //.
+  - by rewrite lee_add2l // (cvg_lim _ cvggeo).
+  - exact: is_cvg_ereal_nneg_series.
+  - by apply: is_cvg_ereal_nneg_series => ?; rewrite lee_fin divr_ge0.
+  - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_def.
+rewrite (_ : (fun n => _) = @EFin _ \o
+    (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ (i + 1))%:R))%R); last first.
+  rewrite funeqE => n /=; rewrite (@big_morph _ _ (@EFin _) 0 adde)//.
+  by under [in RHS]eq_bigr do rewrite addn1.
+apply: cvg_comp; last apply cvg_refl.
+have := cvg_geometric_series_half e%:nngnum O.
+by rewrite expr0 divr1; apply: cvg_trans.
 Grab Existential Variables. all: end_near. Qed.
 
 Section measurable_cover.
@@ -1192,13 +1204,13 @@ move=> A; have [[i ioo]|] := pselect (exists i, mu_ext (A i) = +oo).
   exact: mu_ext_ge0.
 rewrite -forallNE => Aoo.
 suff add2e : forall e : {posnum R},
-    mu_ext (\bigcup_n A n) <= \sum_(i <oo) mu_ext (A i) + (2 * e%:num)%:E.
+    mu_ext (\bigcup_n A n) <= \sum_(i <oo) mu_ext (A i) + e%:num%:E.
   apply lee_adde => e.
   by rewrite -(mul1r e%:num) -(@divff _ 2%:R)// -mulrAC -mulrA add2e.
 move=> e; rewrite (le_trans _ (epsilon_trick _ _ _))//; last first.
   by move=> n; apply: mu_ext_ge0.
 pose P n (B : (set T)^nat) := measurable_cover (A n) B /\
-  \sum_(k <oo) mu (B k) <= mu_ext (A n) + (e%:num / (2 ^ n)%:R)%:E.
+  \sum_(k <oo) mu (B k) <= mu_ext (A n) + (e%:num / (2 ^ n.+1)%:R)%:E.
 have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
   apply: (@choice _ _ P) => n; rewrite /P /mu_ext.
   set S := (X in ereal_inf X); move infS : (ereal_inf S) => iS.
@@ -1207,8 +1219,7 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
       by rewrite divr_gt0 // ltr0n expn_gt0.
     have [x [[B [mB AnB muBx]] xS]] := lb_ereal_inf_adherent (PosNum en1) Sr.
     exists B; split => //; rewrite muBx -Sr; apply/ltW.
-    rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul //=.
-    by rewrite lef_pinv // ?(posrE,ltr0n,expn_gt0) // ler_nat leq_exp2l.
+    by rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul.
   - by have := Aoo n; rewrite /mu_ext Soo.
   - suff : lbound S 0 by move/lb_ereal_inf; rewrite Soo.
     move=> /= _ [B [mB AnB] <-].
