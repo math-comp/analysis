@@ -1668,14 +1668,10 @@ Variables (R : numFieldType) (V : normedModType R).
 
 Lemma cvg_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y ->
-  \forall M \near +oo, M \is Num.real /\ \forall y' \near F, `|y'| < M.
+  \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof.
 move=> /cvg_dist Fy; exists `|y|; rewrite normr_real; split => // M.
-rewrite -subr_gt0 => subM_gt0; split.
-  rewrite -comparabler0 (@comparabler_trans _ (M - `|y|)) //.
-    by rewrite -subr_comparable0 opprD addrA subrr add0r opprK comparabler0
-      normr_real.
-  by rewrite comparablerE subr0 realE ltW.
+rewrite -subr_gt0 => subM_gt0.
 have := Fy _ subM_gt0.
 apply: filterS => y' yy'; rewrite -(@ltr_add2r _ (- `|y|)).
 rewrite (le_lt_trans _ yy') // (le_trans _ (ler_dist_dist _ _)) // distrC.
