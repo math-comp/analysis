@@ -149,6 +149,21 @@ have /(nthP 0)[i ni fit] := SFunfcodom t.
 by exists (Ordinal ni) => //=; rewrite mem_index_enum.
 Qed.
 
+Lemma mpi2 (r : R) : measurable (f @^-1` [set r]).
+Proof.
+have [[k fkr]|] := pselect (exists k : 'I_(ssize f), (SFun.codom f)`_k = r).
+  have := SFun.mpi k.
+  by rewrite /SFun.pi fkr.
+move/forallNP => fr.
+rewrite (_ : _ @^-1` _ = set0); first exact: measurable0.
+rewrite predeqE => t; split => //=.
+rewrite /set1 /mkset => ftr.
+have : f t \in SFun.codom f by apply SFunfcodom.
+move/(nthP 0) => [i fi] fift.
+have := fr (Ordinal fi).
+by rewrite fift.
+Qed.
+
 End simple_function_partition.
 
 Section sfun_lemmas1.
@@ -459,11 +474,16 @@ Coercion NNSFun.f : nnsfun >-> sfun.
 Section nnsfun_lemmas.
 Variables (T : measurableType) (R : realType).
 
-Lemma NNSFun_ge0  (f : nnsfun T R) (x : T) : 0 <= f x.
+Lemma NNSFun_ge0 (f : nnsfun T R) (x : T) : 0 <= f x.
 Proof.
 have : (f @` @setT T) (f x) by exists x.
 rewrite (SFun.fcodom f) /mkset => /(nthP 0)[k kf <-].
 by have := NNSFun.ge0 (Ordinal kf).
+Qed.
+
+Lemma SFuncodom_ge0 (f : nnsfun T R) (r : R) : (r \in SFun.codom f) -> (0 <= r%:E)%E.
+Proof.
+by move=> /(nthP 0)[i fi <-]; rewrite lee_fin (NNSFun.ge0 (Ordinal fi)).
 Qed.
 
 Definition mk_nnsfun (f : sfun T R) (H : forall t, 0 <= f t) : nnsfun T R :=
@@ -509,9 +529,9 @@ Proof.
 have [/eqP ->|r0] := boolP (r == 0).
   rewrite mul0e /sintegral big1 // => i _; rewrite /= eqxx /=.
   case: (m (SFun.pi _ _)) => [x| |]; move: i; rewrite ssize_sfun_scale0 => i.
-  by rewrite (ord1 i) /= mul0r.
-  by rewrite (ord1 i) /= eqxx.
-  by rewrite (ord1 i) /= eqxx.
+  by rewrite (ord1 i) mul0e.
+  by rewrite (ord1 i) /= mul0e.
+  by rewrite (ord1 i) /= mul0e.
 rewrite /sintegral.
 pose cast := cast_ord (ssize_sfun_scale_neq0 point f r0).
 rewrite [LHS](eq_bigr (fun k : 'I_(ssize (sfun_scale point r f)) =>
@@ -611,11 +631,204 @@ Qed.
 End sintegralD.
 
 (* TODO: move *)
+Definition nondecreasing_seq_fun (T : measurableType) (R : realType) (f : (T -> R)^nat) :=
+  (forall x, {homo f^~x : m n / (m <= n)%N >-> (m <= n)}).
+
+(* TODO: move *)
 Lemma eq_preimage (aT rT : Type) (f g : aT -> rT) (A : set rT) :
   f =1 g -> f @^-1` A = g @^-1` A.
 Proof.
 by move=> fg; rewrite predeqE => r; split; rewrite /preimage /mkset fg.
 Qed.
+
+
+Lemma gee_pmull (R : realDomainType) (r : R) (y : \bar R) : (0 < y)%E ->
+  r <= 1 -> (r%:E * y <= y)%E.
+Proof.
+move: y => [y| |] //=.
+- by rewrite lte_fin => y0 r0; rewrite muleE lee_fin ger_pmull.
+- by move=> _; rewrite muleE eqe => r1; rewrite lee_pinfty.
+Qed.
+
+Lemma lee_addgt0Pr (R : realFieldType) (x y : \bar R) : (0 <= x)%E -> (0 <= y)%E ->
+  reflect (forall r : R, (0 < r < 1)%R -> r%:E * x <= y)%E (x <= y)%E.
+Proof.
+move=> x0 y0.
+apply/(iffP idP) => [xy r /andP[r0 r1]|h].
+  move: x0 xy; rewrite le_eqVlt => /orP[/eqP <-|x0 xy]; first by rewrite mule0.
+  by rewrite (le_trans _ xy) // gee_pmull // ltW.
+move: x y => [x| |] [y| |] // in x0 y0 h *.
+- rewrite !lee_fin in x0 y0.
+  move: x0; rewrite le_eqVlt => /orP[/eqP <-|x0]; first by rewrite lee_fin.
+  move: y0; rewrite le_eqVlt => /orP[/eqP y0|y0].
+    have /h : 0 < (2^-1 : R) < 1.
+      by rewrite invr_gt0//= invf_lt1// ltr0n /= ltr1n.
+    by rewrite -y0 lee_fin muleE /= lee_fin (pmulr_lle0 _ x0) invr_le0 lern0.
+  rewrite lee_fin leNgt; apply/negP => yx.
+  have /h : 0 < (y + x) / (2 * x) < 1.
+    apply/andP; split.
+      by rewrite divr_gt0 // ?addr_gt0// ?mulr_gt0.
+    by rewrite ltr_pdivr_mulr ?mulr_gt0// mul1r mulr_natl mulr2n ltr_add2r.
+  rewrite muleE lee_fin invrM ?unitfE// ?gt_eqF//.
+  rewrite -mulrA (mulrAC _ _ x) mulVr ?unitfE ?gt_eqF// mul1r.
+  by apply/negP; rewrite -ltNge midf_lt.
+- by rewrite lee_pinfty.
+- have /h : 0 < (2^-1 : R) < 1.
+    by rewrite invr_gt0//= invf_lt1// ltr0n /= ltr1n.
+  apply: le_trans => /=.
+  by rewrite muleE eqe invr_eq0 pnatr_eq0 /= lte_fin invr_gt0 ltr0n.
+Qed.
+
+(* TODO: move *)
+Lemma setTP (T : Type) (A : set T) : A != setT <-> exists t, ~ A t.
+Proof.
+split => [/negP|[t]]; last by apply: contra_notP => /negP/negPn/eqP ->.
+apply: contra_notP => /forallNP h.
+by apply/eqP; rewrite predeqE => t; split => // _; apply: contrapT.
+Qed.
+
+
+(* NB: equivalent of lte_lim for realFieldType *)
+Lemma lt_lim (R : realFieldType) (u : (R^o)^nat) (M : R) :
+  nondecreasing_seq u -> cvg u -> M < lim u ->
+  \forall n \near \oo, M <= u n.
+Proof.
+move=> ndu cu Ml; have [[n Mun]|] := pselect (exists n, M <= u n).
+  near=> m; suff : u n <= u m by exact: le_trans.
+  by near: m; exists n.+1 => // p q; apply/ndu/ltnW.
+move/forallNP => Mu.
+have {}Mu : forall x, M > u x by move=> x; rewrite ltNge; apply/negP.
+have : lim u <= M by apply lim_le => //; near=> m; apply/ltW/Mu.
+by move/(lt_le_trans Ml); rewrite ltxx.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma nondecreasing_dvg_lt (R : realType) (u_ : R^o ^nat) : nondecreasing_seq u_ -> ~ cvg u_ ->
+  forall M, exists n, forall m, (m >= n)%N -> M <= u_ m.
+Proof.
+move=> nu du M; apply/not_existsP; apply: contra_not du => Mu.
+apply: (@nondecreasing_is_cvg _ _ M) => // n.
+have := Mu n => /existsNP[m] /not_implyP [nm] /negP; rewrite -ltNge => /ltW.
+by apply: le_trans; apply: nu.
+Qed.
+
+Lemma lte_pdivr_mull (R : realFieldType) (c : R) (r : R) (x : \bar R) : 0 < c ->
+  ((c^-1)%:E * r%:E < x)%E = (r%:E < c%:E * x)%E.
+Proof.
+move=> c0; move: x => [x| |] //=.
+- by rewrite -!mulEFin 2!lte_fin ltr_pdivr_mull.
+- by rewrite -mulEFin lte_pinfty muleC muleE eqe gt_eqF// lte_fin c0 lte_pinfty.
+- by rewrite -mulEFin muleC muleE /= eqe gt_eqF// lte_fin c0.
+Qed.
+
+Lemma lte_pdivl_mull (R : realFieldType) (c : R) (r : R) (x : \bar R) : 0 < c ->
+  (x < (c^-1)%:E * r%:E)%E = (c%:E * x < r%:E)%E.
+Proof.
+move=> c0; move: x => [x| |] //=.
+- by rewrite -!mulEFin 2!lte_fin ltr_pdivl_mull.
+- by rewrite -mulEFin muleC muleE /= eqe gt_eqF// lte_fin c0.
+- by rewrite -mulEFin lte_ninfty muleC muleE eqe gt_eqF// lte_fin c0 lte_ninfty.
+Qed.
+
+Lemma mule_continuous (R : realFieldType) (c : R) : 0 < c -> continuous (mule c%:E).
+Proof.
+move=> c0; move=> [x| |] /=.
+- apply: (@cvg_trans _ [filter of (c%:E * x%:E)%E @[x --> x : R^o]]).
+    apply: near_eq_cvg.
+    by near=> y.
+  suff : ((c * x0)%:E @[x0 --> x : R^o]) --> (c * x)%:E.
+    rewrite mulEFin; apply: cvg_trans; apply: near_eq_cvg; near=> y.
+    by rewrite mulEFin.
+  exact: (@cvg_comp _ _ _ _ (fun x => x%:E) _ _ _ (@scaler_continuous _ [normedModType R of R^o] c x)).
+- rewrite (_ : (_ * _) = +oo)%E; last by rewrite muleC muleE eqe gt_eqF // lte_fin c0.
+  move=> A [r [realr rA]]; exists (c^-1 * r); split.
+    by rewrite realM // realV // realE (ltW c0).
+  move=> x crx; apply rA.
+  by move: crx; rewrite mulEFin lte_pdivr_mull.
+- rewrite (_ : (_ * _) = -oo)%E; last by rewrite muleC muleE eqe gt_eqF // lte_fin c0.
+  move=> A [r [realr rA]]; exists (c^-1 * r); split.
+    by rewrite realM // realV // realE (ltW c0).
+  move=> x crx; apply rA.
+  by move: crx; rewrite mulEFin lte_pdivl_mull.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma muleN (R : realDomainType) (x y : \bar R) : (x * - y = - (x * y))%E.
+Proof.
+move: x y => [x| |] [y| |] //=; try by rewrite !muleE /= lte_pinfty.
+- by rewrite -2!mulEFin mulrN.
+- by rewrite !muleE !eqe !lte_fin; case: ltrgtP => //; rewrite oppe0.
+- by rewrite !muleE !eqe !lte_fin; case: ltrgtP => //; rewrite oppe0.
+- rewrite !muleE !eqe oppr_eq0; case: (ltrgtP y 0); rewrite ?oppe0// => y0.
+  by rewrite !lte_fin oppr_gt0 y0 ltNge (ltW y0).
+  by rewrite !lte_fin oppr_gt0 y0 ltNge (ltW y0).
+- rewrite !muleE !eqe oppr_eq0; case: (ltrgtP y 0); rewrite ?oppe0// => y0.
+  by rewrite !lte_fin oppr_gt0 y0 ltNge (ltW y0).
+  by rewrite !lte_fin oppr_gt0 y0 ltNge (ltW y0).
+Qed.
+
+Lemma mulNe (R : realDomainType) (x y : \bar R) : (- x * y = - (x * y))%E.
+Proof. by rewrite muleC muleN muleC. Qed.
+
+Lemma muleNN (R : realDomainType) (x y : \bar R) : (- x * - y = x * y)%E.
+Proof. by rewrite mulNe muleN oppeK. Qed.
+
+Local Lemma ereal_cvgZp (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) c : 0 < c ->
+  f --> a -> (fun n => c%:E * f n)%E --> (c%:E * a)%E.
+Proof.
+move=> c0; rewrite (_ : (fun n => c%:E * f n)%E = (mule c%:E) \o f) // => /cvg_comp; apply.
+exact: mule_continuous.
+Qed.
+
+Lemma ereal_cvgZ (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) c :
+  f --> a -> (fun n => c%:E * f n)%E --> (c%:E * a)%E.
+Proof.
+have [c0| |<-{c} _] := ltrgtP 0 c; first exact: ereal_cvgZp.
+- rewrite -oppr_gt0 => c0 /ereal_cvgN fa.
+  rewrite -muleNN (_ : (fun _ => _) = (fun n => (- c%:E * - f n)))%E.
+    exact: ereal_cvgZp.
+ by rewrite funeqE => n; rewrite muleNN.
+- rewrite mul0e (_ : (fun _ => _) = (fun=> 0%E)).
+    exact: cvg_cst.
+  by under eq_fun do rewrite mul0e.
+Qed.
+
+Lemma elimZ (R : realType) (f : (\bar R)^nat) c : cvg f ->
+  lim (fun n => c%:E * f n)%E = (c%:E * lim f)%E.
+Proof. by move=> cf; apply/cvg_lim => //; apply: ereal_cvgZ. Qed.
+
+Lemma is_cvg_ereal_cvgZ (R : realFieldType) (f : (\bar R)^nat) c :
+  cvg f -> cvg (fun n => c%:E * f n)%E.
+Proof.
+move=> /cvg_ex[l fl]; apply/cvg_ex; eexists.
+by apply: ereal_cvgZ => //; exact: fl.
+Qed.
+
+Lemma ereal_lim_sum (R : realType) (I : Type) (r : seq I) (f : I -> (\bar R)^nat) (l : I -> \bar R) (P : pred I) :
+  (forall n x, P x -> 0 <= f x n)%E ->
+  (forall k, f k --> l k) ->
+  (fun n : nat => \sum_(k <- r | P k) f k n)%E --> (\sum_(k <- r | P k) l k)%E.
+Proof.
+elim: r => [h fl|a b ih h fl].
+  rewrite !big_nil.
+  rewrite (_ : (fun _ => _) = (fun=> 0%E)).
+    exact: cvg_cst.
+  by under eq_fun do rewrite big_nil.
+rewrite big_cons.
+rewrite (_ : (fun _ => _) = (fun n : nat => (if P a then f a n + \sum_(k <- b | P k) f k n else \sum_(k <- b | P k) f k n )%E)); last first.
+  by under eq_fun do rewrite big_cons.
+case: ifPn => Pa.
+  apply: ereal_cvgD => //.
+    apply ge0_adde_def; rewrite !inE.
+    (* TODO: lemma? *)
+    rewrite -(cvg_lim _ (fl a)) //; apply: ereal_lim_ge.
+      by apply/cvg_ex; exists (l a); exact: (fl a).
+    by near=> n; apply h => //.
+    apply sume_ge0 => t Pt.
+    rewrite -(cvg_lim _ (fl t)) //; apply: ereal_lim_ge.
+      by apply/cvg_ex; exists (l t); exact: (fl t).
+    by near=> n; apply h => //.
+  by apply ih => //.
+by apply ih => //.
+Grab Existential Variables. all: end_near. Qed.
 
 Section le_sintegral.
 Variables (T : measurableType) (point : T) (R : realType).
@@ -642,20 +855,368 @@ have gfgf : g =1 sfun_add f gNf.
 by rewrite (eq_sintegral gfgf) sintegralD lee_addl // sintegral_ge0.
 Qed.
 
+Lemma is_cvg_sintegral (f : (nnsfun T R)^nat) :
+  nondecreasing_seq_fun f -> cvg (fun n => sintegral m (f n)).
+Proof.
+move=> f_ndecr; apply/cvg_ex; eexists.
+apply/nondecreasing_seq_ereal_cvg => a b ab.
+by apply: le_sintegral => // x; exact: f_ndecr.
+Qed.
+
 End le_sintegral.
 
-Definition nondecreasing_seq_fun (T : measurableType) (R : realType) (f : (T -> R)^nat) :=
-  (forall x, {homo f^~x : m n / (m <= n)%N >-> (m <= n)}).
+Section g1.
+Variables (T : measurableType) (R : realType) (g : nnsfun T R).
+
+Lemma gSxE (S : set T) (x : R) :
+  [set t | [set x] (g t * (t \in S)%:R)] =
+    ((S `&` (g @^-1` [set x])) `|` (~` S `&` (fun _ => x = 0))).
+Proof.
+rewrite (_ : (fun t : T => _) = (fun t => if t \in S then g t = x else x = 0)); last first.
+  rewrite predeqE => t; split;
+    by have [tS|tS] := boolP (t \in S); rewrite !(mulr1,mulr0).
+rewrite (_ : (fun t : T => _) = ((S `&` (g @^-1` [set x])) `|` (~` S `&` (fun _ => x = 0)))) //.
+rewrite predeqE => t; split.
+  case: ifPn => [tS <-|tS].
+    by left; split => //; rewrite -in_setE.
+  by right; split => //; apply: contraNnot tS; rewrite in_setE.
+case: ifPn => [tS [[_ <-//]|[]] |tS [[]|[]//]].
+- by rewrite in_setE in tS.
+- by rewrite -in_setE (negbTE tS).
+Qed.
+
+Local Obligation Tactic := idtac.
+
+Definition g1_codom (S : set T) :=
+  let s := [seq x <- SFun.codom g | (g @^-1` [set x]) `&` S != set0] in
+  if (0 \in s) || (S == setT) then s else rcons s 0.
+
+Program Definition mk_nnsfun_mem (S : set T) (mS : measurable S) : sfun T R :=
+  @SFun.mk _ _ (fun x => g x * (x \in S)%:R)
+  (g1_codom S) _ _ _.
+Next Obligation.
+move=> S _.
+rewrite /g1_codom.
+set s := seq.filter _ _ => /=.
+have [_|] := ifPn.
+  by rewrite filter_uniq // SFun.uniq_codom.
+rewrite negb_or => /andP[s0 _].
+by rewrite rcons_uniq s0 /= filter_uniq // SFun.uniq_codom.
+Qed.
+Next Obligation.
+move=> S _.
+rewrite /g1_codom.
+set s := seq.filter _ _ => /=.
+rewrite predeqE => x; split => [[t _ <-{x}]|] /=.
+  have [tS|tS] /= := boolP (t \in S).
+    rewrite mulr1.
+    have [_|_] := ifPn.
+      rewrite mem_filter SFunfcodom andbT; apply/set0P.
+      by exists t => //; split => //=; rewrite -in_setE.
+    rewrite mem_rcons inE; apply/orP; right.
+    rewrite mem_filter SFunfcodom andbT; apply/set0P.
+    by exists t; split => //=; rewrite -in_setE.
+  rewrite mulr0.
+  have [/orP[//|/eqP]|] := ifPn.
+    by rewrite predeqE => /(_ t)[_]/(_ Logic.I); rewrite -in_setE (negbTE tS).
+  by rewrite negb_or => /andP[s0 ST]; rewrite mem_rcons inE eqxx.
+have [_|] := ifPn.
+  rewrite mem_filter => /andP[/set0P[t [/= gtx]]].
+  by rewrite -in_setE => St xg; exists t => //; rewrite St mulr1.
+rewrite negb_or => /andP[s0 ST]; rewrite mem_rcons inE => /orP[/eqP ->{x}|].
+  suff [t St] : exists t, t \notin S.
+    by exists t => //; rewrite (negbTE St) mulr0.
+  by move/setTP : ST => [t St]; exists t; apply/negP; rewrite in_setE.
+rewrite mem_filter => /andP[+ _] => /set0P[t [gtx]].
+by rewrite -in_setE => tS;exists t => //; rewrite tS mulr1.
+Qed.
+Next Obligation.
+move=> S mS.
+rewrite /g1_codom.
+set s := seq.filter _ _ => /=.
+have sg : (size s <= ssize g)%N by rewrite size_filter count_size.
+have [|] := ifPn.
+  move=> /orP[s0 k|/eqP ST k].
+  - have [k' kk'] : exists k' : 'I_(ssize g), s`_k = (SFun.codom g)`_k'.
+      have : s`_k \in SFun.codom g.
+        have : s`_k \in s by apply/(nthP 0); exists k.
+        by rewrite mem_filter => /andP[].
+      by move=> /(nthP 0)[i ig <-]; exists (Ordinal ig).
+    rewrite gSxE.
+    apply: measurableU.
+      apply: measurableI => //.
+      have := @SFun.mpi _ _ g k'.
+      by rewrite /SFun.pi /= -kk'.
+    apply: measurableI.
+      exact: measurableC.
+    have [sk0|sk0] := pselect (s`_k = 0).
+      by rewrite (_ : (fun _ => _) = setT) ?predeqE//; exact: measurableT.
+    by rewrite (_ : (fun _ => _) = set0) ?predeqE//; exact: measurable0.
+  - (*copipe*) have [k' kk'] : exists k' : 'I_(ssize g), s`_k = (SFun.codom g)`_k'.
+      have : s`_k \in SFun.codom g.
+        have : s`_k \in s by apply/(nthP 0); exists k.
+        by rewrite mem_filter => /andP[].
+      by move=> /(nthP 0)[i ig <-]; exists (Ordinal ig).
+    rewrite [X in _ X](_ : _ = [set t | [set s`_k] (g t)]).
+      have := @SFun.mpi _ _ g k'.
+      by rewrite /SFun.pi /= -kk'.
+    rewrite predeqE => t.
+    rewrite /mkset /set1 /mkset.
+    by rewrite (_ : _ \in _) ?mulr1// in_setE ST.
+rewrite negb_or => /andP[s0 ST] k.
+rewrite gSxE.
+have [ks|ks] := boolP (k == size s :> nat).
+  rewrite nth_rcons (eqP ks) ltnn eqxx.
+  apply: measurableU.
+    have [/eqP H|/set0P[t [St g0t]]] := boolP ((S `&` g @^-1` [set 0]) == set0).
+      by rewrite H; exact: measurable0.
+    have : 0 \in s.
+      rewrite mem_filter; apply/andP; split.
+        by apply/set0P; exists t.
+      by rewrite -g0t SFunfcodom.
+    by rewrite (negbTE s0).
+  apply: measurableI => //.
+    by apply measurableC.
+  rewrite (_ : (fun _ => _) = setT); first exact: measurableT.
+  by rewrite predeqE.
+have [k' kk'] : exists k' : 'I_(ssize g), (rcons s 0)`_k = (SFun.codom g)`_k'.
+  have @k' : 'I_(size s).
+    apply: (@Ordinal _ k).
+    rewrite ltn_neqAle ks /=.
+    by rewrite -ltnS -(size_rcons s 0) ltn_ord.
+  have : s`_k' \in s.
+    apply/(nthP 0).
+    by exists k'.
+  rewrite mem_filter => /andP[_].
+  move/(nthP 0) => [i ig] gisk'.
+  exists (Ordinal ig) => //=.
+  rewrite nth_rcons ifT //.
+  rewrite ltn_neqAle ks /=.
+  rewrite -ltnS -(size_rcons s 0).
+  by rewrite ltn_ord.
+apply: measurableU.
+  apply: measurableI => //.
+  have := @SFun.mpi _ _ g k'.
+  by rewrite /SFun.pi /= -kk'.
+apply: measurableI.
+  exact: measurableC.
+have [sk0|sk0] := pselect ((rcons s 0)`_k = 0).
+  by rewrite (_ : (fun _ => _) = setT) ?predeqE//; exact: measurableT.
+by rewrite (_ : (fun _ => _) = set0) ?predeqE//; exact: measurable0.
+Qed.
+
+End g1.
+
+Section sintegral_nondecreasing_limit_lemma.
+Variables (T : measurableType) (point : T).
+Variables (R : realType) (mu : {measure set T -> \bar R}).
+Variables (f : (nnsfun T R)^nat).
+Hypothesis f_ndecr : nondecreasing_seq_fun f.
+Variables (g : nnsfun T R).
+Hypothesis gf : forall x : T, g x <= lim (f^~ x : nat -> R^o).
+
+Lemma sintegral_nondecreasing_limit_lemma :
+  (sintegral mu g <= lim (sintegral mu \o f))%E.
+Proof.
+suff h : forall c, 0 < c < 1 ->
+  (c%:E * sintegral mu g <= lim (sintegral mu \o f))%E.
+  apply/lee_addgt0Pr => //; first exact: sintegral_ge0.
+  apply: ereal_lim_ge; first exact: is_cvg_sintegral.
+  near=> n; exact: sintegral_ge0.
+move=> c /andP[c0 c1].
+pose S_ n := [set x : T | c * g x <= f n x].
+have S_ndecr : nondecreasing_seq S_.
+  by move=> n m nm; apply/subsetPset => x /= /le_trans; apply; exact: f_ndecr.
+have S_total : \bigcup_n S_ n = @setT T.
+  rewrite predeqE => x; split => // _.
+  have := NNSFun_ge0 g x; rewrite le_eqVlt => /orP[/eqP gx0|gx0].
+    by exists O => //; rewrite /S_ /= -gx0 mulr0 NNSFun_ge0.
+  have [cf|df] := pselect (cvg (f^~ x : nat -> R^o)).
+    have fcg : lim (f^~ x : nat -> R^o) > c * g x.
+      by rewrite (lt_le_trans _ (gf x)) // gtr_pmull.
+    have [n fcgn] : exists n, f n x >= c * g x.
+      move: (@lt_lim _ (f^~ x) (c * g x) (f_ndecr x) cf fcg) => [n _ nf].
+      by exists n; apply: nf => /=.
+    by exists n => //; rewrite /S_ /= ltW.
+  have [n ncgf] := nondecreasing_dvg_lt (f_ndecr x) df (c * g x).
+  by exists n => //; rewrite /S_ /= ncgf.
+have mS_ n : measurable (S_ n).
+  rewrite /S_.
+  rewrite [X in _ X](_ : _ =
+    \big[setU/set0]_(y <- SFun.codom g)
+      \big[setU/set0]_(x <- SFun.codom (f n) | c * y <= x)
+          (((fun x => g x) @^-1` [set y]) `&` ((f n @^-1` [set x])))); last first.
+    rewrite predeqE => t; split.
+      rewrite /= => cgf.
+      rewrite -bigcup_mkset.
+      exists (g t).
+        by apply: SFunfcodom.
+      rewrite -bigcup_mkset_cond.
+      exists (f n t) => //.
+      by apply/andP; split => //; apply SFunfcodom.
+    rewrite -bigcup_mkset => -[r /= gr].
+    by rewrite -bigcup_mkset_cond => -[r' /andP[r'f crr']] [/= -> ->].
+  apply bigsetU_measurable => x _.
+  apply bigsetU_measurable => y xcy.
+  apply: measurableI.
+    by apply mpi2.
+  by apply mpi2.
+pose g1 (n : nat) :=  mk_nnsfun_mem g (mS_ n).
+have h13 : forall n, forall x, (f n x >= c * g1 n x).
+  move=> n x; rewrite /g1 /=; have [xSn|xSn] := boolP (x \in _).
+    by rewrite mulr1; rewrite in_setE in xSn.
+  by rewrite 2!mulr0 NNSFun_ge0.
+have g10 : forall n x, 0 <= g1 n x.
+  move=> n x; rewrite /g1 /=.
+  by rewrite mulr_ge0 //; [exact: NNSFun_ge0 | rewrite ler0n].
+have g10' : forall n x, 0 <= (sfun_scale point c (mk_nnsfun (g10 n))) x.
+  by move=> n x; rewrite mulr_ge0 //; [exact: ltW | exact: NNSFun_ge0].
+have h14 : forall n, (sintegral mu (f n) >= c%:E * sintegral mu (g1 n))%E.
+  move=> n; rewrite -(sintegralK point mu c (mk_nnsfun (g10 n))).
+  apply: (@le_sintegral _ point _ mu (mk_nnsfun (g10' n)) (f n)) => x /=.
+  by rewrite h13.
+suff <- : lim (fun n => sintegral mu (g1 n)) = sintegral mu g.
+  have cg1 : cvg (fun n : nat => sintegral mu (g1 n)).
+    apply: (@is_cvg_sintegral _ point _ mu (fun n => mk_nnsfun (g10 n))) => //=.
+    (* TODO: lemma *)
+    move=> t n m nm.
+    rewrite ler_pmul // ?NNSFun_ge0// ?ler0n// ler_nat.
+    have [/=|//] := boolP (t \in S_ n).
+    rewrite in_setE => Snt.
+    by have := S_ndecr n m nm => /subsetPset /(_ _ Snt); rewrite -in_setE => ->.
+  rewrite -elimZ //.
+  apply: lee_lim => //; [exact: is_cvg_ereal_cvgZ | exact: is_cvg_sintegral |].
+  by near=> n; exact: h14.
+suff : (fun n => sintegral mu (g1 n)) --> sintegral mu g by apply/cvg_lim.
+have H : forall n, sintegral mu (g1 n) =
+  (\sum_(k < ssize g) ((SFun.codom g)`_k)%:E * mu ((g @^-1` [set (SFun.codom g)`_k]) `&` S_ n))%E.
+  move=> n.
+  rewrite sintegralE.
+  transitivity (\sum_(x <- SFun.codom g) x%:E * mu (g1 n @^-1` [set x]))%E.
+    rewrite (_ : SFun.codom _ = g1_codom g (S_ n)) //.
+    rewrite /g1_codom /=.
+    case: ifPn.
+      case/orP => [|ST].
+        rewrite mem_filter /= => /andP[]; rewrite /set1 /mkset /= => /set0P[t [ gt0 St]] g0.
+        rewrite big_filter big_mkcond; apply eq_bigr => r _.
+        case: ifPn => // /negPn/eqP I0.
+        rewrite [X in mu X](_ : _ = set0) ?measure0 ?mule0//.
+        rewrite predeqE => t0; split => //=.
+        have [t0S|] := boolP (t0 \in _).
+          rewrite mulr1 => gt0r.
+          rewrite -I0; split => //.
+          by rewrite in_setE in t0S.
+        move=> t0S; rewrite mulr0 => r0; subst r.
+        by move: I0; rewrite predeqE => /(_ t)[+ _]; apply.
+      rewrite big_filter big_mkcond; apply eq_bigr => r _.
+      case: ifPn => // /negPn/eqP I0.
+      rewrite [X in mu X](_ : _ = set0) ?measure0 ?mule0 //.
+      rewrite predeqE => t; split => //=; rewrite /set1 /mkset.
+      rewrite (eqP ST).
+      have [tT|] := boolP (t \in _).
+        rewrite mulr1 => gtr.
+        rewrite -I0; split => //.
+        by rewrite (eqP ST).
+      have : setT t by [].
+      by rewrite -in_setE => ->.
+    rewrite negb_or => /andP[H1 H2].
+    rewrite -cats1 big_cat /= big_cons big_nil mul0e !adde0.
+    rewrite big_filter big_mkcond; apply eq_bigr => r _.
+    case: ifPn => // /negPn/eqP I0.
+    have [/eqP ->|r0] := boolP (r == 0).
+      by rewrite mul0e.
+    rewrite [X in mu X](_ : _ = set0) ?measure0 ?mule0 //.
+    rewrite predeqE => t; split => //=; rewrite /set1 /mkset.
+    have [tT|] := boolP (t \in _).
+      rewrite mulr1 => gtr.
+      rewrite -I0; split => //.
+      by rewrite in_setE in tT.
+    rewrite mulr0 => ? /esym/eqP.
+    by rewrite (negbTE r0).
+  rewrite big_tnth; apply eq_bigr => i _.
+  rewrite /tnth [in LHS](set_nth_default 0) //=.
+  have [/eqP gi0|gi0] := boolP ((SFun.codom g)`_i == 0).
+    by rewrite gi0 // 2!mul0e.
+  congr (_%:E * mu _)%E.
+  rewrite predeqE => t; split => /=.
+    rewrite /mkset /set1 /mkset /=.
+    have [tSn|tSn] := boolP (_ \in S_ n).
+      rewrite mulr1 => <-.
+      split => //.
+      by rewrite -in_setE.
+    rewrite mulr0 => /esym/eqP.
+    by rewrite (negbTE gi0).
+  move=> -[/=].
+  rewrite /set1 /mkset => ->.
+  rewrite -in_setE => ->.
+  by rewrite mulr1.
+rewrite (_ : (fun n : nat => sintegral mu (g1 n)) =
+  (fun n : nat => (\sum_(k < ssize g) ((SFun.codom g)`_k)%:E * mu (g @^-1` [set (SFun.codom g)`_k] `&` S_ n))%E)); last first.
+  by rewrite funeqE => n; rewrite H.
+rewrite sintegralE.
+rewrite (_ :
+  (fun n => \sum_(k < ssize g) ((SFun.codom g)`_k)%:E * mu (g @^-1` [set (SFun.codom g)`_k] `&` S_ n))%E =
+  (fun n => \sum_(x <- SFun.codom g) x%:E * mu (g @^-1` [set x] `&` S_ n))%E); last first.
+  rewrite funeqE => n.
+  rewrite [in RHS]big_tnth /=.
+  apply/eq_bigr => i _.
+  rewrite /tnth [in LHS](set_nth_default 0) //=; congr (_%:E * mu (_ `&` _))%E.
+  by apply set_nth_default.
+  rewrite predeqE => t /=.
+  rewrite /set1 /mkset.
+  rewrite -propeqE.
+  f_equal.
+  by apply set_nth_default.
+rewrite big_seq.
+under [in X in X --> _]eq_fun do rewrite big_seq.
+apply: ereal_lim_sum => k.
+  move=> x xg.
+  apply: mule_ge0; first by move/SFuncodom_ge0 : xg.
+  by apply: measure_ge0; apply: measurableI => //; apply: mpi2.
+suff : (fun n => mu (g @^-1` [set k] `&` S_ n)) --> mu (g @^-1` [set k]).
+  exact: ereal_cvgZ.
+rewrite (_ : mu (g @^-1` [set k]) = mu (\bigcup_n (g @^-1` [set k] `&` S_ n))); last first.
+  congr (mu _).
+  by rewrite -bigcup_distrr S_total setIT.
+rewrite (_ : (fun _ => _) = (mu \o (fun i => (g @^-1` [set k] `&` S_ i)))); last first.
+  done.
+apply: cvg_mu_inc => //.
+  move=> i.
+  apply: measurableI => //.
+  by apply: mpi2.
+apply measurable_bigcup.
+  move=> i.
+  apply: measurableI => //.
+  by apply: mpi2.
+move => n m nm.
+apply: setIS.
+by move/S_ndecr : nm => /subsetPset.
+Grab Existential Variables. all: end_near. Qed.
+
+End sintegral_nondecreasing_limit_lemma.
 
 Section sintegral_nondecreasing_limit.
-Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
-Variables (f : (nnsfun T R)^nat) (F : nnsfun T R).
-Hypothesis f_nndecr : nondecreasing_seq_fun f.
-Hypothesis fF : forall x : T, F x = lim (f^~ x : nat -> R^o).
+Variables (T : measurableType) (point : T).
+Variables (R : realType) (mu : {measure set T -> \bar R}).
+Variables (f : (nnsfun T R)^nat).
+Hypothesis f_ndecr : nondecreasing_seq_fun f.
+Variables (F : nnsfun T R).
+Hypothesis fF : forall x : T, (f^~ x : nat -> R^o) --> (F x : R^o).
+Let fF' : forall x : T, lim (f^~ x : nat -> R^o) = (F x : R^o).
+Proof. by move=> x; apply/cvg_lim => //; apply: fF. Qed.
 
-Lemma sintegral_nondecreasing_limit :
-  sintegral m F = lim (sintegral m \o f).
+Lemma sintegral_nondecreasing_limit : sintegral mu F = lim (sintegral mu \o f).
 Proof.
-Abort.
+apply/eqP; rewrite eq_le; apply/andP; split; last first.
+  have : nondecreasing_seq (sintegral mu \o f).
+    by move=> m n mn; apply (le_sintegral point) => // x; exact: f_ndecr.
+  move=> /nondecreasing_seq_ereal_cvg/cvg_lim -> //.
+  apply: ub_ereal_sup => x [n _ <-{x}] /=.
+  apply le_sintegral => // x.
+  rewrite -fF'.
+  apply: (@nondecreasing_cvg_le _ (f^~ x : nat -> R^o)) => //.
+  by apply/cvg_ex; exists (F x); exact: fF.
+by apply: sintegral_nondecreasing_limit_lemma => // x; rewrite -fF'.
+Qed.
 
 End sintegral_nondecreasing_limit.
