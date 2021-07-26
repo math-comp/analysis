@@ -206,7 +206,7 @@ Definition choiceType := @Choice.Pack cT xclass.
 Definition zmodType := @GRing.Zmodule.Pack cT xclass.
 Definition normedZmodType := @Num.NormedZmodule.Pack R phR cT xclass.
 Definition pointedType := @Pointed.Pack cT xclass.
-Definition filteredType := @Filtered.Pack xT cT xclass.
+Definition filteredType := @Filtered.Pack cT cT xclass.
 Definition topologicalType := @Topological.Pack cT xclass.
 Definition uniformType := @Uniform.Pack cT xclass.
 Definition pseudoMetricType := @PseudoMetric.Pack R cT xclass.
@@ -1738,11 +1738,10 @@ Lemma continuous_cvg_dist {R : numFieldType}
   (V W : pseudoMetricNormedZmodType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof.
- move=> + + e => /(_ l)/cvg_dist/(_ _ (posnum_gt0 e)).
+move=> + + e => /(_ l)/cvg_dist/(_ _ (posnum_gt0 e)).
 rewrite near_map => /nbhs_ballP[_/posnumP[a]] + xl; apply.
-move/(cvg_ball (y := l)): xl=> /(_ _ a)/nbhs_ballP[_/posnumP[b]]; apply; exact: ballxx.
+by move/cvg_ball : xl => /(_ _ a)/nbhs_ballP[_/posnumP[b]]; apply.
 Qed.
-(*NB: was /cvg_ball before *)
 
 Module BigmaxBigminr.
 Section bigmax_bigmin.
