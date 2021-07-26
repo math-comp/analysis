@@ -91,6 +91,10 @@
     * `cvg_distW`
     * `continuous_cvg_dist`
     * `add_continuous`
+- moved from `normedtype.v` to `reals.v`:
+  + lemmas `inf_lb_strict`, `sup_ub_strict`
+- moved from `sequences.v` to `reals.v`:
+  + lemma `has_ub_image_norm`
 
 ### Renamed
 

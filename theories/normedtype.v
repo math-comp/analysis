@@ -1607,9 +1607,9 @@ Lemma norm_cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : V | F --> 
 Proof. exact: cvg_unique. Qed.
 
 Lemma norm_cvg_eq (x y : V) : x --> y -> x = y. Proof. exact: (@cvg_eq V). Qed.
-Lemma norm_lim_id x : [lim x in V](*NB: was lim x*) = x. Proof. exact: lim_id. Qed.
+Lemma norm_lim_id (x : V) : lim x = x. Proof. exact: lim_id. Qed.
 
-Lemma norm_cvg_lim {F} {FF : ProperFilter F} (l : V) : F --> l -> [lim F in V](*NB: was lim F*) = l.
+Lemma norm_cvg_lim {F} {FF : ProperFilter F} (l : V) : F --> l -> lim F = l.
 Proof. exact: (@cvg_lim V). Qed.
 
 Lemma norm_lim_near_cst U {F} {FF : ProperFilter F} (l : V) (f : U -> V) :
@@ -2110,22 +2110,21 @@ Canonical matrix_normedZmodType (K : numDomainType) (m n : nat) :=
 Section matrix_NormedModule.
 Variables (K : numFieldType) (m n : nat).
 
+Local Lemma ball_gt0 (x y : 'M[K]_(m.+1, n.+1)) e : ball x e y -> 0 < e.
+Proof. by move/(_ ord0 ord0); apply: le_lt_trans. Qed.
+
 Lemma mx_norm_ball :
   @ball _ [pseudoMetricType K of 'M[K]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
 Proof.
-rewrite /= /normr /= predeq3E => x e y; split.
-- move=> xe_y; rewrite /ball_/= mx_normE.
-  (* TODO:  lemma : ball x e y -> 0 < e *)
-  have lee0 : ( 0 < e) by rewrite (le_lt_trans _ (xe_y ord0 ord0)) //.
+rewrite /normr /ball_ predeq3E => x e y /=; rewrite mx_normE; split => xey.
+- have lee0 : 0 < e := ball_gt0 xey.
   have -> : e = (Nonneg.NngNum _ (ltW lee0))%:nngnum by [].
-  rewrite nng_lt; apply/BigmaxrNonneg.bigmaxr_ltrP.
-- split; [rewrite -nng_lt //= | move=> ??; rewrite !mxE; exact: xe_y].
-  rewrite /ball_/= mx_normE => H.
-  have lee0 : (0 < e) by rewrite (le_lt_trans _ H) // nonnegnum_ge0.
-  move : H.
-  have -> : e = (Nonneg.NngNum _ (ltW lee0))%:nngnum by [].
-  move => /BigmaxrNonneg.bigmaxr_ltrP => -[e0 xey] i j.
-  move: (xey (i, j)); rewrite !mxE; exact.
+  rewrite nng_lt; apply/BigmaxrNonneg.bigmaxr_ltrP => /=.
+  by rewrite -nng_lt /=; split => // -[? ?] _; rewrite !mxE; exact: xey.
+- have lee0 : 0 < e by rewrite (le_lt_trans _ xey).
+  move: xey; have -> : e = (Nonneg.NngNum _ (ltW lee0))%:nngnum by [].
+  move=> /BigmaxrNonneg.bigmaxr_ltrP /= [e0 xey] i j.
+  by move: (xey (i, j)); rewrite !mxE; exact.
 Qed.
 
 Definition matrix_PseudoMetricNormedZmodMixin :=
@@ -2255,7 +2254,6 @@ Global Instance filter_nbhs (K' : numFieldType) (k : K') :
 Proof.
 exact: (@nbhs_filter).
 Qed.
-
 
 Section NVS_continuity_normedModType.
 Context {K : numFieldType} {V : normedModType K}.
@@ -3060,21 +3058,6 @@ have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
   by rewrite addr0 gtr0_norm // ltr_pdivr_mulr // ltr_pmulr // ltr1n.
 have : inf X <= inf X - f%:num by apply inf_lb.
 by apply/negP; rewrite -ltNge; rewrite ltr_subl_addr ltr_addl.
-Qed.
-
-(* TODO: move to reals.v? *)
-Lemma inf_lb_strict (R : realType) (X : set R) : has_lbound X ->
-  ~ X (inf X) -> X `<=` [set r | inf X < r].
-Proof.
-move=> lX XinfX r Xr; rewrite /mkset lt_neqAle inf_lb // andbT.
-by apply/negP => /eqP infXr; move: XinfX; rewrite infXr.
-Qed.
-
-Lemma sup_ub_strict (R : realType) (X : set R) : has_ubound X ->
-  ~ X (sup X) -> X `<=` [set r | r < sup X].
-Proof.
-move=> ubX XsupX r Xr; rewrite /mkset lt_neqAle sup_ub // andbT.
-by apply/negP => /eqP supXr; move: XsupX; rewrite -supXr.
 Qed.
 
 Section interval_realType.
