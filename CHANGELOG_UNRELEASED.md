@@ -22,6 +22,20 @@
   + `nbhs_minfty_le` renamed to `nbhs_ninfty_le_pos` and changed to not use `{posnum R}`
 - in `sequences.v`:
   + lemma `is_cvg_ereal_nneg_natsum`: remove superfluous `P` parameter
+  + lemmas `notin_set`
+- in `boolp.v`:
+  + lemmas `not_True`, `not_False`
+- in `topology.v`
+  + lemmas `within_interior`, `within_subset,` `withinE`, `fmap_within_eq`
+  + definitions `subspace`, `incl_subspace`.
+  + canonical instances of `pointedType`, `filterType`, `topologicalType`,
+    `uniformType` and `pseudoMetricType` on `subspace`.
+  + lemmas `nbhs_subspaceP`, `nbhs_subspace_in`, `nbhs_subspace_out`, `subspace_cvgP`,
+    `subspace_continuousP`, `subspace_eq_continuous`,  `nbhs_subspace_interior`,
+    `nbhs_subspace_ex`, `incl_subspace_continuous`, `open_subspace1out`,
+    `open_subspace_out`, `open_subspaceT`, `open_subspaceIT`, `open_subspaceTI`,
+    `closed_subspaceT`, `open_subspaceP`, `open_subspaceW`, `subspace_hausdorff`,
+    and `compact_subspaceIP`.
 
 ### Renamed
 

@@ -309,6 +309,10 @@ Require Import boolp reals classical_sets posnum.
 (*                                   completePseudoMetricType structure cT.   *)
 (* [completePseudoMetricType of T] == clone of a canonical structure of       *)
 (*                                   completePseudoMetricType on T.           *)
+(* * Subspaces of topological spaces :                                        *)
+(*                 subspace A == For (A : set X), this is a copy of X with    *)
+(*                               a topology that ignores points outside A     *)
+(*            incl_subspace x == inclusion of subspace A into X               *)
 (*                                                                            *)
 (* ball_ N == balls defined by the norm/absolute value N                      *)
 (*                                                                            *)
@@ -374,9 +378,13 @@ Reserved Notation "'{family' fam , U -> V }"
   (at level 70, U at level 69, format "'{family'  fam ,  U  ->  V }").
 Reserved Notation "'{family' fam , F --> f }"
   (at level 70, F at level 69, format "'{family'  fam ,  F  -->  f }").
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
+(* Making sure that [Program] does not automatically introduce *)
+Obligation Tactic := idtac.
 
 (********************************)
 (* Missing lemmas for mathcommp *)
@@ -607,36 +615,40 @@ Definition cst {T T' : Type} (x : T') : T -> T' := fun=> x.
 
 Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
   @ZmodMixin (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g) _ _ _ _.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
-Next Obligation. by move=> f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite add0r. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite addNr. Qed.
+Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
+Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
 Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
 
 Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
   @RingMixin [zmodType of T -> M] (cst 1) (fun f g x => f x * g x)
              _ _ _ _ _ _.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDl. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrDr. Qed.
+Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
+Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDl. Qed.
+Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDr. Qed.
 Next Obligation.
-by apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
+by move=> T M ; apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
 Qed.
 Canonical fct_ringType (T : pointedType) (M : ringType) :=
   RingType (T -> M) (fct_ringMixin T M).
 
 Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
   ComRingType (T -> M) _.
-Next Obligation. by move=> f g; rewrite funeqE => x; rewrite mulrC. Qed.
+Next Obligation. by move=> T M f g; rewrite funeqE => x/=; rewrite mulrC. Qed.
 
 Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
   := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
-Next Obligation. rewrite funeqE => x; exact: scalerA. Qed.
-Next Obligation. by move=> f; rewrite funeqE => x /=; rewrite scale1r. Qed.
-Next Obligation. by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. Qed.
-Next Obligation. by move=> f g; rewrite funeqE => x /=; rewrite scalerDl. Qed.
+Next Obligation. by move=> U R V k f v; rewrite funeqE=> x; exact: scalerA. Qed.
+Next Obligation. by move=> U R V f; rewrite funeqE=> x /=; rewrite scale1r. Qed.
+Next Obligation.
+by move=> U R V f g h; rewrite funeqE => x /=; rewrite scalerDr.
+Qed.
+Next Obligation.
+by move=> U R V f g h; rewrite funeqE => x /=; rewrite scalerDl.
+Qed.
 Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
   LmodType _ (U -> V) (fct_lmodMixin U V).
 
@@ -1426,6 +1438,7 @@ Program Definition in_filter_prod {T U} {F : set (set T)} {G : set (set U)}
   (P : in_filter F) (Q : in_filter G) : in_filter (filter_prod F G) :=
   @InFilter _ _ (fun x => prop_of P x.1 /\ prop_of Q x.2) _.
 Next Obligation.
+move=> T U F G P Q.
 by exists (prop_of P, prop_of Q) => //=; split; apply: prop_ofP.
 Qed.
 
@@ -1907,11 +1920,12 @@ Definition open_of_nbhs := [set A : set T | A `<=` nbhs'^~ A].
 Program Definition topologyOfFilterMixin : Topological.mixin_of nbhs' :=
   @Topological.Mixin T nbhs' open_of_nbhs _ _ _.
 Next Obligation.
-rewrite predeqE => A; split=> [p_A|]; last first.
+move=> p; rewrite predeqE => A; split=> [p_A|]; last first.
   by move=> [B [Bop [Bp sBA]]]; apply: filterS sBA _; apply: Bop.
 exists (nbhs'^~ A); split; first by move=> ?; apply: nbhs'_nbhs'.
 by split => // q /nbhs'_singleton.
 Qed.
+Next Obligation. done. Qed.
 
 End TopologyOfFilter.
 
@@ -1931,7 +1945,7 @@ Definition nbhs_of_open (p : T) (A : set T) :=
 Program Definition topologyOfOpenMixin : Topological.mixin_of nbhs_of_open :=
   @Topological.Mixin T nbhs_of_open op _ _ _.
 Next Obligation.
-apply Build_ProperFilter.
+move=> p; apply: Build_ProperFilter.
   by move=> A [B [_ [Bp sBA]]]; exists p; apply: sBA.
 split; first by exists setT.
   move=> A B [C [Cop [Cp sCA]]] [D [Dop [Dp sDB]]].
@@ -1940,6 +1954,7 @@ split; first by exists setT.
 move=> A B sAB [C [Cop [p_C sCA]]].
 by exists C; split=> //; split=> //; apply: subset_trans sAB.
 Qed.
+Next Obligation. done. Qed.
 Next Obligation.
 rewrite predeqE => A; split=> [Aop p Ap|Aop].
   by exists A; split=> //; split.
@@ -1970,7 +1985,7 @@ Hypothesis (b_join : forall i j t, D i -> D j -> b i t -> b j t ->
 Program Definition topologyOfBaseMixin :=
   @topologyOfOpenMixin _ (open_from D b) (open_fromT b_cover) _ _.
 Next Obligation.
-have [DA sDAD AeUbA] := H; have [DB sDBD BeUbB] := H0.
+move=> A B [DA sDAD AeUbA] [DB sDBD BeUbB].
 have ABU : forall t, (A `&` B) t ->
   exists it, D it /\ b it t /\ b it `<=` A `&` B.
   move=> t [At Bt].
@@ -1990,6 +2005,7 @@ rewrite predeqE => t; split=> [[_ [s ABs <-] bDtst]|ABt].
 by exists (get (Dt t)); [exists t| have /ABU/getPex [? []]:= ABt].
 Qed.
 Next Obligation.
+move=> I0 f.
 set fop := fun j => [set Dj | Dj `<=` D /\ f j = \bigcup_(i in Dj) b i].
 exists (\bigcup_j get (fop j)).
   move=> i [j _ fopji].
@@ -2033,7 +2049,7 @@ Variable (I : pointedType) (T : Type) (D : set I) (b : I -> set T).
 Program Definition topologyOfSubbaseMixin :=
   @topologyOfBaseMixin _ _ (finI_from D b) id (finI_from_cover D b) _.
 Next Obligation.
-move: i j t H H0 H1 H2 => A B t [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
+move=> A B t [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
 exists (A `&` B); split; last by split.
 exists (DA `|` DB)%fset; first by move=> i /fsetUP [/sDAD|/sDBD].
 rewrite predeqE => s; split=> [Ifs|[As Bs] i /fsetUP].
@@ -3279,6 +3295,7 @@ Program Definition topologyOfEntourageMixin (T : Type)
   (nbhs : T -> set (set T)) (m : Uniform.mixin_of nbhs) :
   Topological.mixin_of nbhs := topologyOfFilterMixin _ _ _.
 Next Obligation.
+move=> T nbhsT m p.
 rewrite (Uniform.ax5 m) nbhs_E; apply filter_from_proper; last first.
   by move=> A entA; exists p; apply: Uniform.ax2 entA _ _.
 apply: filter_from_filter.
@@ -3287,11 +3304,11 @@ move=> A B entA entB; exists (A `&` B) => //.
 exact: (@filterI _ _ (Uniform.ax1 m)).
 Qed.
 Next Obligation.
-move: H; rewrite (Uniform.ax5 m) nbhs_E  => - [B entB sBpA].
+move=> T nbhsT m p A; rewrite (Uniform.ax5 m) nbhs_E  => - [B entB sBpA].
 by apply: sBpA; apply: Uniform.ax2 entB _ _.
 Qed.
 Next Obligation.
-move: H; rewrite (Uniform.ax5 m) nbhs_E => - [B entB sBpA].
+move=> T nbhsT m p A; rewrite (Uniform.ax5 m) nbhs_E => - [B entB sBpA].
 have /Uniform.ax4 [C entC sC2B] := entB.
 exists C => // q Cpq; rewrite nbhs_E; exists C => // r Cqr.
 by apply/sBpA/sC2B; exists q.
@@ -3790,7 +3807,6 @@ suff : PseudoMetric.ball m x (PosNum lt12)%:num x by [].
 exact: PseudoMetric.ax1.
 Qed.
 
-Obligation Tactic := idtac.
 Program Definition uniformityOfBallMixin (R : numFieldType) (T : Type)
   (ent : set (set (T * T))) (nbhs : T -> set (set T)) (nbhsE : nbhs = nbhs_ ent)
   (m : PseudoMetric.mixin_of R ent) : Uniform.mixin_of nbhs :=
@@ -4901,7 +4917,6 @@ move=> B nbhsB rBrE; apply: (filterS _ nbhsB) => g Bg /= [y yA /=].
 by move: rBrE; rewrite eqEsubset; case => [+ _]; apply; exists g.
 Grab Existential Variables. all: by end_near. Qed.
 
-Obligation Tactic := idtac.
 Definition fct_restrict_ent := filter_from
   (@entourage V) (fun P => [set fg | forall t : U, A t -> P (fg.1 t, fg.2 t)]).
 Program Definition restrict_uniform_mixin :=
@@ -5232,3 +5247,347 @@ exists (ratr q) => //; split; last by exists q.
 apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
 by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
 Qed.
+
+Section WithinExtras.
+
+Context {X : topologicalType} (A : set X).
+
+Lemma within_interior (x : X) : A^° x ->  within A (nbhs x) = nbhs x.
+Proof.
+move=> Aox; rewrite eqEsubset; split; last first.
+  by move=> W nbhsW; apply: cvg_within.
+rewrite ?nbhsE => W /= => [[B [+ BsubW ]]].
+rewrite open_nbhsE => [[oB nbhsB]].
+exists (B `&` A^°); split; last first.
+  by move=> t /= [] /BsubW + /interior_subset; apply.
+rewrite open_nbhsE; split; first by apply: openI => //; exact: open_interior.
+by apply: filterI => //; move:(open_interior A); rewrite openE; exact.
+Qed.
+
+Lemma within_subset (B : set X) F:
+  Filter F -> A `<=` B -> within A F `=>` within B F.
+Proof.
+move=> FF AsubB W; rewrite /within; apply: filter_app; rewrite nbhs_simpl.
+by apply: filterE => ? + ?; apply; exact: AsubB.
+Qed.
+
+Lemma withinE F :  Filter F ->
+  within A F = [set U | exists2 V, F V & U `&` A = V `&` A].
+Proof.
+move=> FF; rewrite eqEsubset; split=> U.
+  move=> Wu; exists [set x | A x -> U x] => //.
+  by rewrite eqEsubset; split => t [L R]; split=> //; apply: L.
+move=> [V FV AU]; rewrite /within /prop_near1 nbhs_simpl; near=> w => Aw.
+by have []// : (U `&` A) w; rewrite AU; split => //; apply: (near FV).
+Grab Existential Variables. end_near. Qed.
+
+Lemma fmap_within_eq {Y : topologicalType} (F: set(set X)) (f g : X -> Y) :
+  Filter F -> {in A, f =1 g} -> f @ within A F --> g @ within A F.
+Proof.
+move=> FF feq U /=; near_simpl; apply: filter_app.
+rewrite ?nbhs_simpl; near_simpl; near=> w; rewrite (feq w) // in_setE.
+exact: (near (withinT A FF) w).
+Grab Existential Variables. end_near. Qed.
+
+End WithinExtras.
+
+Definition subspace {X : Type} (A : set X) := X.
+Definition incl_subspace {X A} (x : subspace A) : X := x.
+
+Section Subspace.
+Context {X : topologicalType} (A : set X).
+
+Definition nbhs_subspace (x : subspace A) : set (set (subspace A)) :=
+  if x \in A then within A (nbhs x) else globally [set x].
+
+Variant nbhs_subspace_spec x : Prop -> Prop -> bool -> set (set X) -> Type :=
+  | WithinSubspace : A x -> nbhs_subspace_spec x True False true (within A (nbhs x))
+  | WithoutSubspace : ~ A x -> nbhs_subspace_spec x False True false (globally [set x]).
+
+Lemma nbhs_subspaceP x : nbhs_subspace_spec x (A x) (~ A x) (x \in A) (nbhs_subspace x).
+Proof.
+rewrite /nbhs_subspace; case: (boolP (x \in A)); rewrite ?(inE, notin_set) => xA.
+  by rewrite (@propext (A x) True)// not_True; constructor.
+by rewrite (@propext (A x) False)// not_False; constructor.
+Qed.
+
+Lemma nbhs_subspace_in (x : X) :
+  A x -> within A (nbhs x) = nbhs_subspace x.
+Proof. by case: nbhs_subspaceP. Qed.
+
+Lemma nbhs_subspace_out (x : X) :
+  ~ A x -> globally [set x] = nbhs_subspace x.
+Proof. by case: nbhs_subspaceP. Qed.
+
+Lemma nbhs_subspace_filter (x : subspace A) : ProperFilter (nbhs_subspace x).
+Proof.
+case: nbhs_subspaceP => ?.
+  by apply: within_nbhs_proper; apply: subset_closure.
+exact: globally_properfilter.
+Qed.
+
+Definition subspace_pointedType := PointedType (subspace A) point.
+
+Canonical subspace_filteredType :=
+  FilteredType (subspace A) (subspace A) nbhs_subspace.
+
+Program Definition subspace_topologicalMixin :
+  Topological.mixin_of (nbhs_subspace) := @topologyOfFilterMixin
+    (subspace A) nbhs_subspace nbhs_subspace_filter _ _.
+Next Obligation.
+by move=> p A0; case: nbhs_subspaceP => ? => [/nbhs_singleton|]; apply.
+Qed.
+Next Obligation.
+move=> p A0; case: nbhs_subspaceP => ?.
+  move=> /nbhs_interior wA0; apply: filterS wA0 => y A0y Ay.
+  by case: nbhs_subspaceP.
+by move=> E x ->; case: nbhs_subspaceP.
+Qed.
+
+Canonical subspace_topologicalType :=
+  TopologicalType (subspace A) subspace_topologicalMixin.
+
+Lemma subspace_cvgP (F : set (set X)) (x : X) :
+  Filter F -> A x ->
+  (F --> (x : subspace A)) <-> (F --> within A (nbhs x)).
+Proof. by case: (y in F --> y) / nbhs_subspaceP => //=. Qed.
+
+Lemma subspace_continuousP {Y : topologicalType} (f : X -> Y) :
+  continuous (f : subspace A -> Y) <->
+  (forall x, A x -> f @ within A (nbhs x) --> f x) .
+Proof.
+split => [ctsf x Ax W /=|wA x].
+  by rewrite nbhs_simpl //= nbhs_subspace_in //=; apply ctsf.
+case: (y in _ @[_ --> y]) / (nbhs_subspaceP x) => Ax.
+  by apply: cvg_trans; last exact: (wA _ _); apply: cvg_app.
+by move=> ? /nbhs_singleton //= ?; rewrite nbhs_simpl => ? ->.
+Qed.
+
+Lemma subspace_eq_continuous {Y : topologicalType} (f g : subspace A -> Y) :
+  {in A, f =1 g} -> continuous f -> continuous g.
+Proof.
+rewrite ?subspace_continuousP=> feq L x Ax; rewrite -(feq x) ?inE //.
+by apply: cvg_trans _ (L x Ax); apply: fmap_within_eq=> ? ?; rewrite feq.
+Qed.
+
+Lemma nbhs_subspace_interior (x : X) : A^° x -> nbhs x = (nbhs (x : subspace A)).
+Proof.
+move=> /[dup] /[dup] /interior_subset ? /within_interior <- ?.
+by case: RHS / nbhs_subspaceP.
+Qed.
+
+Lemma nbhs_subspace_ex (U : set X) (x : X) : A x ->
+  nbhs (x : subspace A) (U) <->
+  exists2 V, nbhs (x : X) V & U `&` A = V `&` A.
+Proof. by case: (nbhs _) / nbhs_subspaceP; rewrite // ?withinE. Qed.
+
+Lemma incl_subspace_continuous: continuous incl_subspace.
+Proof. by apply/subspace_continuousP => x Ax; apply: cvg_within. Qed.
+
+Section SubspaceOpen.
+
+Lemma open_subspace1out (x : subspace A) :
+  ~ A x -> open [set x].
+Proof.
+move=> /nbhs_subspace_out E; have : nbhs x [set x] by rewrite /nbhs //= -E.
+rewrite nbhsE => [[U [[]]]] oU Ux Usub; suff : U = [set x] by move=> <-.
+by rewrite eqEsubset; split => // t ->.
+Qed.
+
+Lemma open_subspace_out (U : set (subspace A)):
+  U `<=` ~` A -> open U.
+Proof.
+move=> Usub; rewrite (_ : U = \bigcup_(i in U) [set i]).
+  by apply: open_bigU => ? ?; apply: open_subspace1out; exact: Usub.
+rewrite eqEsubset; split => x; first by move=> ?; exists x.
+by case=> i ? ->.
+Qed.
+
+Lemma open_subspaceT : open (A : set (subspace A)).
+Proof. by move=> ?; case: nbhs_subspaceP => //= ? ?; apply: withinT. Qed.
+
+Lemma open_subspaceIT (U : set (subspace A)) : open (U `&` A) = open U.
+Proof.
+apply/propext; split; last first.
+  by move=> oU; apply: openI => //; apply: open_subspaceT.
+move=> oUA; rewrite (_ : U = (U `&` A) `|` (U `&` ~`A)).
+  by apply: openU => //; apply: open_subspace_out => ? [].
+by rewrite -setIUr setUCr setIT.
+Qed.
+
+Lemma open_subspaceTI (U : set (subspace A)) :
+  open (A `&` U : set (subspace A)) = open U.
+Proof. by rewrite setIC open_subspaceIT. Qed.
+
+Lemma closed_subspaceT  : closed (A : set (subspace A)).
+Proof.
+rewrite (_ : A = ~`( ~` (A))); last by rewrite setCK.
+by apply: closedC; rewrite -open_subspaceIT setICl; exact: open0.
+Qed.
+
+Lemma open_subspaceP ( U : set X) :
+  open (U : set (subspace A)) <->
+  exists V, (open (V : set X)) /\ V `&` A = U `&` A.
+Proof.
+split; first last.
+  case=> V [oV UV]; rewrite -open_subspaceIT -UV.
+  move=> x //= []; case: nbhs_subspaceP => //=; rewrite withinE /=.
+  move=> ? ? _; exists V; last by rewrite -setIA setIid.
+  by move: oV; rewrite openE /interior; apply.
+rewrite -open_subspaceIT => oUA.
+have oxF: (forall (x:X), (U `&` A) x -> exists V, (open_nbhs (x : X) V) /\
+  ((V `&` A) `<=` (U `&` A))).
+  move=> x /[dup] UAx /= [??]; move: (oUA _ UAx); case: nbhs_subspaceP => // ?.
+  rewrite withinE /= => [[V nbhsV UV]]; rewrite -setIA setIid in UV.
+  exists V^°; split; first rewrite open_nbhsE; first split => //.
+  - exact: open_interior.
+  - exact: nbhs_interior.
+  - by rewrite UV=> t [/interior_subset] ??; split.
+pose f (x : X) :=
+  if pselect ((U `&` A) x) is left e then projT1 (cid (oxF x e)) else set0.
+set V := \bigcup_(x in (U `&` A)) (f x); exists V; split.
+  apply: open_bigU => i UAi; rewrite /f; case: pselect => // ?; case: (cid _).
+  by move=> //= W; rewrite open_nbhsE=> -[[]].
+rewrite eqEsubset /V /f; split.
+  move=> t [[u]] UAu /=; case: pselect => //= ?.
+  by case: (cid _) => //= W [] _ + ? ?; apply; split.
+move=> t UAt; split => //; last by case: UAt.
+exists t => //; case: pselect => //= [[? ?]].
+by case: (cid _) => //= W [] [] _.
+Qed.
+
+Lemma open_subspaceW (U : set X) :
+  open (U : set X) -> open (U : set (subspace A)).
+Proof. by move=> oU; apply/open_subspaceP; exists U. Qed.
+
+Lemma subspace_hausdorff :
+  hausdorff X -> hausdorff [topologicalType of subspace A].
+Proof.
+rewrite ?open_hausdorff => + x y xNy => /(_ x y xNy).
+move=> [[P Q]] /= [Px Qx] /= [/open_subspaceW oP /open_subspaceW oQ].
+by move=> ?; exists (P,Q).
+Qed.
+End SubspaceOpen.
+
+Lemma compact_subspaceIP (U: set X) :
+  compact (U `&` A : set (subspace A)) <-> compact (U `&` A : set X).
+Proof.
+rewrite ?compact_ultra /=.
+split=> + F UF FUA => /(_ F UF FUA) [x] [[Ux Ax] Fp].
+  exists x; split=> //; move/subspace_cvgP: Fp => /(_ Ax) Fx.
+  by apply: cvg_trans; [exact: Fx | exact: cvg_within].
+exists x; split=> //; apply/subspace_cvgP => //.
+rewrite withinE => W/= -[V nbhsV WV]; apply: filterS (V `&` (U `&` A)) _ _ _.
+  by rewrite setIC -setIA [A `&` _]setIC -WV=>?[]?[].
+by apply: filterI; rewrite nbhs_simpl //; exact: Fp.
+Qed.
+
+End Subspace.
+
+Section SubspaceUniform.
+Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
+Context {X : uniformType} (A : set X).
+
+Definition subspace_ent :=
+  filter_from (@entourage X)
+  (fun E => [set xy | (xy.1 = xy.2) \/ (A xy.1 /\ A xy.2 /\ E xy)]).
+
+Program Definition subspace_uniformMixin :=
+  @Uniform.Mixin (subspace A) (@nbhs_subspace _ _) subspace_ent _ _ _ _ _.
+Next Obligation.
+apply: filter_from_filter; first by (exists setT; exact: filterT).
+move=> P Q entP entQ; exists (P `&` Q); first exact: filterI.
+move=> [x y] /=; case; first (by move=> ->; split=> /=; left).
+by move=> [Ax [Ay [Pxy Qxy]]]; split=> /=; right.
+Qed.
+Next Obligation. by move=> ? + [x y]/= ->; case=> V entV; apply; left. Qed.
+Next Obligation.
+move=> ?; case=> V ? Vsub; exists (V^-1)%classic; first exact: entourage_inv.
+move=> [x y] /= G; apply: Vsub; case: G; first by (move=> <-; left).
+by move=> [? [? Vxy]]; right; repeat split => //.
+Qed.
+Next Obligation.
+move=> ?; case=> E entE Esub.
+exists  [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2 /\ split_ent E xy].
+  by exists (split_ent E).
+move=> [x y] [z /= Ez zE] /=; case: Ez; case: zE.
+  - by move=> -> ->; apply Esub; left.
+  - move=> [ ? []] ? G xy; subst; apply Esub; right; repeat split => //=.
+    by apply: entourage_split => //=; first exact: G; exact: entourage_refl.
+  - move=> -> [ ? []] ? G; apply Esub; right; repeat split => //=.
+    by apply: entourage_split => //=; first exact: G; exact: entourage_refl.
+  - move=> []? []? ?[]?[]??; apply Esub; right; repeat split => //=.
+    by apply: subset_split_ent => //; exists z.
+Qed.
+Next Obligation.
+pose  EA := [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2].
+have entEA : subspace_ent EA.
+  exists setT; first exact: filterT.
+  by move=> [??] /= [ ->|[?] [?]];[left|right].
+rewrite funeq2E=> x U.
+case: (@nbhs_subspaceP X A x); rewrite propeqE; split => //=.
+- rewrite withinE; case=> V /[dup] nbhsV => [/nbhsP [E entE Esub] UV].
+  exists [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2 /\ E xy].
+    by exists E => //= [[??]] /= [->| [?[]]//]; exact: entourage_refl.
+  move=> y /= [<-|].
+    suff : (U `&` A) x by case.
+    by rewrite UV; split => //; apply: (@nbhs_singleton X).
+  case=> _ [Ay Ey]; suff : (U `&` A) y by case.
+  by rewrite UV; split => //; apply: Esub.
+- move=> [] W [E eentE subW] subU //=.
+  near=> w; apply: subU; apply: subW; right; repeat split => //=.
+    by exact: (near (withinT _ (@nbhs_filter X _))).
+  by near: w; apply/nbhsP; exists E => // y /= Ey.
+- move=> //= Ux; exists EA => //.
+  by move=> y /= [|[]] //= <-; apply: Ux.
+- rewrite //= => [[W [W' entW' subW] subU]] ? ->.
+  by apply: subU; apply: subW; left.
+Grab Existential Variables. end_near. Qed.
+
+Canonical subspace_uniformType :=
+  UniformType (subspace A) subspace_uniformMixin.
+End SubspaceUniform.
+
+Section SubspacePseudoMetric.
+Context {R : numDomainType} {X : pseudoMetricType R} (A : set X).
+
+Definition subspace_ball (x : subspace A) (r : R) :=
+  if x \in A then A `&` ball (x : X) r else [set x].
+
+Program Definition subspace_pseudoMetricType_mixin :=
+  @PseudoMetric.Mixin R (subspace A) (subspace_ent A) (subspace_ball)
+  _ _ _ _.
+Next Obligation.
+move=> x e; rewrite /subspace_ball; case: ifP => //= /asboolP ? ?.
+by split=> //; exact: ballxx.
+Qed.
+Next Obligation.
+move=> x y e; rewrite /subspace_ball; case: ifP => //= /asboolP ?.
+  by move=> [] Ay /ball_sym yBx; case: ifP => /asboolP.
+by move=> ->; case: ifP => /asboolP.
+Qed.
+Next Obligation.
+move=> x y z e1 e2; rewrite /subspace_ball; (repeat case: ifP => /asboolP).
+- by move=>?? [??] [??]; split => //=; apply: ball_triangle; eauto.
+- by move=> ?? [??] ->.
+- by move=> + /[swap] => /[swap] => ->.
+- by move=> _ _ -> ->.
+Qed.
+Next Obligation.
+rewrite eqEsubset; split; rewrite /subspace_ball.
+  move=> U [W + subU]; rewrite -entourage_ballE => [[eps] nneg subW].
+  exists eps => //; apply: (subset_trans _ subU).
+  move=> [x y] /=; case: ifP => /asboolP ?.
+    by move=> [Ay xBy]; right; repeat split => //; exact: subW.
+  by move=> ->; left.
+move=> E [eps nneg subE]; exists [set xy | ball (xy.1 : X) eps xy.2].
+  by rewrite -entourage_ballE; exists eps.
+move=> [x y] /= [->|[]Ax []Ay xBy]; apply: subE => //=.
+  by case: ifP => /asboolP; split => //; exact: ballxx.
+by case: ifP => /asboolP.
+Qed.
+
+Canonical subspace_pseudoMetricType :=
+  PseudoMetricType (subspace A)  subspace_pseudoMetricType_mixin.
+
+End SubspacePseudoMetric.

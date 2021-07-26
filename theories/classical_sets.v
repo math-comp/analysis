@@ -719,6 +719,9 @@ rewrite predeqE => -[x y]; split; first by move=> [[n Pn Fnx] Ax]; exists n.
 by move=> [n Pn [/= Ax Fny]]; split => //; exists n.
 Qed.
 
+Lemma notin_set (A : set T) x : (x \notin A : Prop) = ~ (A x).
+Proof. by apply/propext; split=> /asboolPn. Qed.
+
 End basic_lemmas.
 
 Lemma mkset_nil (T : choiceType) : [set x | x \in [::]] = @set0 T.

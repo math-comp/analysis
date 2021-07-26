@@ -246,6 +246,9 @@ Definition choice_of_Type (T : Type) : choiceType :=
 Lemma is_true_inj : injective is_true.
 Proof. by move=> [] []; rewrite ?(trueE, falseE) ?propeqE; tauto. Qed.
 
+Lemma not_True : (~ True) = False. Proof. exact/propext. Qed.
+Lemma not_False : (~ False) = True. Proof. by apply/propext; split=> // _. Qed.
+
 (* -------------------------------------------------------------------- *)
 Lemma asbool_equiv_eq {P Q : Prop} : (P <-> Q) -> `[<P>] = `[<Q>].
 Proof. by rewrite -propeqE => ->. Qed.
