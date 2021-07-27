@@ -26,12 +26,10 @@ theories/forms.v
 theories/derive.v
 theories/measure.v
 theories/summability.v
-theories/inverse_continuous.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v
 theories/altreals/realsum.v
 theories/altreals/distr.v
-
 
 -R theories mathcomp.analysis
