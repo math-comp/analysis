@@ -21,7 +21,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
-Import Order.TTheory Order.Syntax GRing.Theory Num.Theory.
+Import Order.TTheory Order.Syntax GRing.Theory Num.Def Num.Theory.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -394,6 +394,13 @@ move=> ubE; apply/ubP=> x x_in_E; move: (x) (x_in_E).
 by apply/ubP/sup_upper_bound=> //; split; first by exists x.
 Qed.
 
+Lemma sup_ub_strict E : has_ubound E ->
+  ~ E (sup E) -> E `<=` [set r | r < sup E].
+Proof.
+move=> ubE EsupE r Er; rewrite /mkset lt_neqAle sup_ub // andbT.
+by apply/negP => /eqP supEr; move: EsupE; rewrite -supEr.
+Qed.
+
 Lemma sup_total {E} x : has_sup E -> (down E) x \/ sup E <= x.
 Proof.
 move=> has_supE; rewrite orC.
@@ -433,6 +440,14 @@ move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
 - by move=> Bx; rewrite sup_ub //; exists l.
 - apply sup_le_ub => // b Bb; apply sup_ub; last by right.
   by exists l => x [Ax|Bx]; [rewrite (le_trans (AB _ _ Ax Bb)) // Bl|exact: Bl].
+Qed.
+
+Lemma has_ub_image_norm (S : set R) : has_ubound (normr @` S) -> has_ubound S.
+Proof.
+case => M /ubP uM; exists `|M|; apply/ubP => r rS.
+rewrite (le_trans (real_ler_norm _)) ?num_real //.
+rewrite (le_trans (uM _ _)) ?real_ler_norm ?num_real //.
+by exists r.
 Qed.
 
 End RealLemmas.
@@ -480,6 +495,13 @@ Proof. by rewrite inf_out //; exact: has_inf0. Qed.
 
 Lemma inf_lb E : has_lbound E -> (lbound E) (inf E).
 Proof. by move/has_lb_ubN/sup_ub/ub_lbN; rewrite setNK. Qed.
+
+Lemma inf_lb_strict E : has_lbound E ->
+  ~ E (inf E) -> E `<=` [set r | inf E < r].
+Proof.
+move=> lE EinfE r Er; rewrite /mkset lt_neqAle inf_lb // andbT.
+by apply/negP => /eqP infEr; move: EinfE; rewrite infEr.
+Qed.
 
 Lemma lb_le_inf E x : nonempty E -> (lbound E) x -> x <= inf E.
 Proof.

@@ -58,7 +58,7 @@ Require Import classical_sets posnum topology normedtype landau.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def  Num.Theory.
+Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -453,15 +453,6 @@ move=> /cvg_seq_bounded/pinfty_ex_gt0[M M_gt0 /= uM].
 by exists M; apply/ubP => x -[n _ <-{x}]; exact: uM.
 Qed.
 
-(* TODO: move *)
-Lemma has_ub_image_norm (S : set R) : has_ubound (normr @` S) -> has_ubound S.
-Proof.
-case => M /ubP uM; exists `|M|; apply/ubP => r rS.
-rewrite (le_trans (real_ler_norm _)) ?num_real //.
-rewrite (le_trans (uM _ _)) ?real_ler_norm ?num_real //.
-by exists r.
-Qed.
-
 Lemma cvg_has_sup (u_ : R ^nat) : cvg u_ -> has_sup (u_ @` setT).
 Proof.
 move/cvg_has_ub; rewrite -/(_ @` _) -(image_comp u_ normr setT).
@@ -509,7 +500,7 @@ Lemma near_nondecreasing_is_cvg (u_ : R ^nat) (M : R) :
 Proof.
 move=> [k _ u_nd] [k' _ u_M]; suff : cvg [sequence u_ (n + maxn k k')%N]_n.
   by case/cvg_ex => /= l; rewrite cvg_shiftn => ul; apply/cvg_ex; exists l.
-apply (@nondecreasing_is_cvg _ M) => [/= ? ? ? | ?].
+apply: (@nondecreasing_is_cvg _ M) => [/= ? ? ? | ?].
   by rewrite u_nd ?leq_add2r//= (leq_trans (leq_maxl _ _) (leq_addl _ _)).
 by rewrite u_M //= (leq_trans (leq_maxr _ _) (leq_addl _ _)).
 Qed.
@@ -683,7 +674,7 @@ suff abel : forall n,
     near: n.
     by case: (eqoP eventually_filterType harmonic h) => Hh _; apply Hh.
   move: (cesaro a_o); rewrite /arithmetic_mean /series /= -/a_.
-  exact: (@cesaro_converse_off_by_one (fun k : nat => k.+1%:R * a_ k)).
+  exact: (@cesaro_converse_off_by_one (fun k => k.+1%:R * a_ k)).
 case => [|n].
   rewrite /arithmetic_mean/= invr1 mul1r !seriesEnat/=.
   by rewrite big_nat1 subrr big_geq.
@@ -1313,8 +1304,7 @@ move=> cu cv uv; move lu : (lim u_) => l; move kv : (lim v_) => k.
 case: l k => [l| |] [k| |] // in lu kv *.
 - have /ereal_cvg_real[realu ul] : u_ --> l%:E by rewrite -lu.
   have /ereal_cvg_real[realv vk] : v_ --> k%:E by rewrite -kv.
-  rewrite -(cvg_lim (@Rhausdorff R) ul) -(cvg_lim (@Rhausdorff R) vk).
-  apply: ler_lim.
+  rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk)//; apply: ler_lim.
   + by apply/cvg_ex; eexists; exact: ul.
   + by apply/cvg_ex; eexists; exact: vk.
   + move: uv realu realv => [n1 _ uv] [n2 _ realu] [n3 _ realv].

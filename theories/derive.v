@@ -624,7 +624,7 @@ move=> dfx; apply: DiffDef; first exact: differentiableZ.
 by rewrite diffZ // diff_val.
 Qed.
 
-Lemma diffZl (k : V -> R) (f : W) x : differentiable k x -> 
+Lemma diffZl (k : V -> R) (f : W) x : differentiable k x ->
   'd (fun z => k z *: f) x = (fun z => 'd k x z *: f) :> (_ -> _).
 Proof.
 move=> df; set g := RHS; have glin : linear g.
