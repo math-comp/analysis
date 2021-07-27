@@ -776,15 +776,32 @@ Qed.
 
 End bigop_lemmas.
 
-Lemma bigcup_mkset (T : choiceType) U (s : seq T) (f : T -> set U) :
-  \bigcup_(t in [set x | x \in s]) (f t) = \big[setU/set0]_(t <- s) (f t).
+Section bigcup_set.
+Variables (T : choiceType) (U : Type).
+
+Lemma bigcup_set_cond (s : seq T) (f : T -> set U) (P : pred T) :
+  \bigcup_(t in [set x | (x \in s) && P x]) (f t) =
+  \big[setU/set0]_(t <- s | P t) (f t).
 Proof.
 elim: s => [/=|h s ih]; first by rewrite mkset_nil bigcup_set0 big_nil.
-rewrite big_cons -ih predeqE => u; split => [[t]|[?|[t ts ?]]].
-- by rewrite /mkset inE => /orP[/eqP-> ?|? ?]; [left|right; exists t].
-- by exists h => //; rewrite /mkset mem_head.
-- by exists t => //; rewrite /mkset inE ts orbT.
+rewrite big_cons -ih predeqE => u; split=> [[t /andP[]]|].
+- rewrite inE => /orP[/eqP ->{t} -> fhu|ts Pt ftu]; first by left.
+  case: ifPn => Ph; first by right; exists t => //; apply/andP; split.
+  by exists t => //; apply/andP; split.
+- case: ifPn => [Ph [fhu|[t /andP[ts Pt] ftu]]|Ph [t /andP[ts Pt ftu]]].
+  + by exists h => //; apply/andP; split => //; rewrite mem_head.
+  + by exists t => //; apply/andP; split => //; rewrite inE orbC ts.
+  + by exists t => //; apply/andP; split => //; rewrite inE orbC ts.
 Qed.
+
+Lemma bigcup_set (s : seq T) (f : T -> set U) :
+  \bigcup_(t in [set x | x \in s]) (f t) = \big[setU/set0]_(t <- s) (f t).
+Proof.
+rewrite -(bigcup_set_cond s f xpredT); congr (\bigcup_(t in mkset _) _).
+by rewrite funeqE => t; rewrite andbT.
+Qed.
+
+End bigcup_set.
 
 Section bigop_nat_lemmas.
 Context {T : Type}.

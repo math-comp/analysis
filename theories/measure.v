@@ -608,7 +608,7 @@ Lemma eq_bigcupB_of_bigsetU (A : (set T) ^nat) :
 Proof.
 rewrite -(@eq_bigcupB_of (fun n => \big[setU/set0]_(i < n.+1) A i)).
 rewrite eqEsubset; split => [t [i _]|t [i _ Ait]].
-  by rewrite -bigcup_mkset => -[/= j _ Ajt]; exists j.
+  by rewrite -bigcup_set_cond => -[/= j _ Ajt]; exists j.
 by exists i => //; rewrite big_ord_recr /=; right.
 Qed.
 

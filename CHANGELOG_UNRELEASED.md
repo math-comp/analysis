@@ -16,6 +16,7 @@
   + HB.mixin `AlgebraOfSets_from_RingOfSets`
   + HB.structure `AlgebraOfSets` and notation `algebraOfSetsType`
   + HB.instance `T_isAlgebraOfSets` in HB.builders `isAlgebraOfSets`
+  + lemma `bigcup_set_cond`
 
 ### Changed
 
@@ -38,6 +39,8 @@
 
 - in `measure.v`:
   + `isRingOfSets` -> `isAlgebraOfSets`
+- in `classical_sets.v`:
+  + `bigcup_mkset` -> `bigcup_set`
 
 ### Removed
 
