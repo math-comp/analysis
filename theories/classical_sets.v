@@ -774,6 +774,22 @@ rewrite eqEsubset; split=> [| t [i Pi Fit] /(_ _ Pi)//].
 by move=> t /existsNP[i /not_implyP[Pi Fit]]; exists i.
 Qed.
 
+Lemma bigcupD1 j P F : P j ->
+  \bigcup_(i in P) F i = F j `|` \bigcup_(i in P `&` ~` [set j]) F i.
+Proof.
+move=> Pj; rewrite predeqE => t; split=> [[i Pi Fit]|[Fjt|]].
+- by have [<-|ij] := pselect (i = j); [left | right; exists i].
+- by exists j.
+- by move=> [i [Pi ij] Fit]; exists i.
+Qed.
+
+Lemma bigcapD1 j P F : P j ->
+  \bigcap_(i in P) F i = F j `&` \bigcap_(i in P `&` ~` [set j]) F i.
+Proof.
+move=> Pj; rewrite -[RHS]setCK setCI setC_bigcap -bigcupD1 //.
+by rewrite -setC_bigcap setCK.
+Qed.
+
 End bigop_lemmas.
 
 Section bigcup_set.

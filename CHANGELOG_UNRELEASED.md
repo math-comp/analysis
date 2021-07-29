@@ -17,6 +17,8 @@
   + HB.structure `AlgebraOfSets` and notation `algebraOfSetsType`
   + HB.instance `T_isAlgebraOfSets` in HB.builders `isAlgebraOfSets`
   + lemma `bigcup_set_cond`
+- in `classical_sets.v`:
+  + lemmas `bigcupD1`, `bigcapD1`
 
 ### Changed
 
