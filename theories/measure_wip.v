@@ -551,11 +551,10 @@ rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
 by rewrite setCU setIAC !setIA setICl !set0I.
 Qed.
 
-(* PR: in progress *)
+(* TODO: remove *)
 Lemma trivIset_setIC T I (D : set I) (F : I -> set T) X :
   trivIset D (fun i => F i `&` X) = trivIset D (fun i => X `&` F i).
-Proof. by congr trivIset; under eq_fun do rewrite setIC. Qed.
-(* /PR: in progress *)
+Proof. by under eq_fun do rewrite setIC. Qed.
 
 Lemma lim_mkord (R : realType) (f : (\bar R)^nat) :
   lim (fun n => \sum_(k < n) f k)%E = \sum_(k <oo) f k.
@@ -902,7 +901,7 @@ Qed.
 End Hahn_extension.
 
 (* NB: not used *)
-Lemma subset_B_of (R : numDomainType) (A : (set R)^nat) k : B_of A k `<=` A k.
+Lemma subset_seqD (R : numDomainType) (A : (set R)^nat) k : seqD A k `<=` A k.
 Proof. by case: k => [|k] //= r []. Qed.
 
 (* NB: not used *)
@@ -4424,7 +4423,7 @@ Qed.
 Lemma nil_cons0_bigcup_bigU (f : (seq (interval R))^nat) :
   \bigcup_k \big[setU/set0]_(x <- f k) set_of_itv x =
   \bigcup_k \big[setU/set0]_(x <- nil_cons0 f k) set_of_itv x.
-Proof. by congr bigsetU; rewrite funeqE => j; exact: nil_cons0_bigU. Qed.
+Proof. by congr bigcup; rewrite funeqE => j; exact: nil_cons0_bigU. Qed.
 
 Lemma nil_cons0_sum (f : (seq (interval R))^nat) k :
   (\sum_(x <- f k) slength (set_of_itv x) =
@@ -4585,3 +4584,152 @@ exact: slength_sigma_finite.
 Qed.
 
 End lebesgue_measure.
+
+(* PR in progress *)
+Definition measurable_fun (T U : measurableType) (D : set T) (f : T -> U) : Prop :=
+  forall Y, measurable Y -> measurable ((f @^-1` Y) `&` D).
+(* /PR in progress *)
+
+Lemma bigcup_setU (T I : Type) (P : set I) (F G : I -> set T) :
+  \bigcup_(i in P) (F i `|` G i) = (\bigcup_(i in P) F i) `|` (\bigcup_(i in P) G i).
+Proof.
+rewrite predeqE => x; split=> [[i Pi [Fix|Gix]]|[[i Pi Fix]|[i Pi Gix]]];
+  by [left; exists i | right; exists i | exists i => //; left | exists i => //; right].
+Qed.
+
+Lemma orA : associative or.
+Proof. by move=> P Q R; rewrite propeqE; split=> [|]; tauto. Qed.
+
+Lemma subset_set2 T (A : set T) a b : A `<=` [set a; b] ->
+  A = set0 \/ A = [set a] \/ A = [set b] \/ A = [set a; b].
+Proof.
+have [<-|ab Aab] := pselect (a = b).
+  by rewrite setUid => Aa; have [|] := subset_set1 Aa; tauto.
+have [Aa|Aa] := pselect (A `<=` [set a]).
+  by rewrite orA; left; exact/subset_set1.
+have [Ab|Ab] := pselect (A `<=` [set b]).
+  have [A0|{}Ab] := subset_set1 Ab; first by left.
+  by rewrite orA; right; left.
+rewrite 2!orA; right; rewrite eqEsubset; split => //.
+move/nonsubset : Ab => -[y [Ay yb]].
+have <- : y = a by apply: contrapT => ya; move/Aab : Ay => [|].
+move/nonsubset : Aa => -[z [Az za]].
+have <- : z = b by apply: contrapT => zb; move/Aab : Az => [|].
+by move=> _ [|] ->.
+Qed.
+
+Lemma EFin_inj (R : numDomainType) : injective (@EFin R).
+Proof. by move=> a b; case. Qed.
+
+Section sigma_algebra_R_Rbar.
+Variable R : realType.
+
+Fail Check forall (T : measurableType) (f : T -> R), measurable_fun setT f.
+
+Let measurableTypeR :=
+  g_salgebra_measurableType (@measurable (@sset_algebraOfSetsType R)).
+
+Definition measurableR : set (set R) := @measurable measurableTypeR.
+
+Definition R_isMeasurable : isMeasurable R :=
+  isMeasurable.Build measurableTypeR
+  measurable0 (@measurableC _) (@measurable_bigcup _).
+
+HB.instance (Real.sort R) R_isMeasurable.
+
+Check forall (T : measurableType) (f : T -> R), measurable_fun setT f.
+
+(* powerset to extend the sigma-algebra for R *)
+Definition PSoo : set (set \bar R) :=
+  [set set0; [set -oo]; [set +oo]; [set -oo; +oo]]%E.
+
+Inductive PSoo' : set \bar R -> Prop :=
+| PS0 : PSoo' set0
+| PSnoo : PSoo' [set -oo]%E
+| PSpoo : PSoo' [set +oo]%E
+| PSnpoo : PSoo' [set -oo; +oo]%E.
+
+Lemma PSoo'P (A : set \bar R) : PSoo' A <-> A `<=` [set -oo; +oo]%E.
+Proof.
+split => [[]//|Aoo]; [by left|by right| ].
+by have [|[|[|]]] := subset_set2 Aoo; move=> ->; constructor.
+Qed.
+
+Definition measurableRbar : set (set \bar R) :=
+  [set (@EFin _ @` A) `|` B | A in measurableR & B in PSoo'].
+
+Lemma measurableRbar0 : measurableRbar set0.
+Proof.
+exists set0; first exact: measurable0.
+by exists set0; rewrite ?setU0// ?image_set0//; constructor.
+Qed.
+
+Lemma setCU_R_Rbar (A : set R) (B : set \bar R) : PSoo' B ->
+  ~` ([set x%:E | x in A] `|` B) =
+  [set x%:E | x in ~` A] `|` [set -oo%E; +oo%E] `&` ~` B.
+Proof.
+move=> PSoo'B; rewrite setCU.
+have -> : ~` [set x%:E | x in A] = [set x%:E | x in ~` A] `|` [set -oo; +oo]%E.
+  rewrite predeqE => -[x| |]; split.
+  - by move=> Ax; left; exists x => //; apply: contra_not Ax => Ax; exists x.
+  - by move=> [[r Ar [<-{x}]]|[]//]; apply: contra_not Ar => -[x Ax [<-]].
+  - by move=> _; right; right.
+  - by move=> [[]|[] _ []].
+  - by move=> _; right; left.
+  - by move=> [[]|[_ []|]].
+rewrite setIUl; congr (_ `|` _).
+rewrite predeqE => -[x| |]; split; try by case.
+move=> [] x' Ax' [] <-{x}; split; first by exists x'.
+by case: PSoo'B => // -[].
+Qed.
+
+Lemma measurableRbarC (X : set \bar R) :
+  measurableRbar X -> measurableRbar (~` X).
+Proof.
+move => -[A mA] [B PooB <-]; rewrite setCU_R_Rbar //.
+exists (~` A); first exact: measurableC.
+exists ([set -oo%E; +oo%E] `&` ~` B) => //.
+case: PooB.
+- by rewrite setC0 setIT; constructor.
+- rewrite setIUl setICr set0U -setDE.
+  have [_ ->] := @setDidPl (\bar R) [set +oo%E] [set -oo%E].
+    by constructor.
+  by rewrite predeqE => x; split => // -[->].
+- rewrite setIUl setICr setU0 -setDE.
+  have [_ ->] := @setDidPl (\bar R) [set -oo%E] [set +oo%E].
+    by constructor.
+  by rewrite predeqE => x; split => // -[->].
+- by rewrite setICr; constructor.
+Qed.
+
+Lemma measurableRbar_bigcup (F : (set \bar R)^nat) :
+  (forall i, measurableRbar (F i)) ->
+  measurableRbar (\bigcup_i (F i)).
+Proof.
+move=> mF.
+pose P := fun i j => measurable j.1 /\ PSoo' j.2 /\
+                  F i = [set x%:E | x in j.1] `|` j.2.
+have [f fi] : {f : nat -> (set R) * (set \bar R) & forall i, P i (f i) }.
+  by apply: choice => i; have [x mx [y PSoo'y] xy] := mF i; exists (x, y).
+exists (\bigcup_i (f i).1).
+  by apply: measurable_bigcup => i; exact: (fi i).1.
+exists (\bigcup_i (f i).2).
+  apply/PSoo'P => x [n _] fn2x.
+  have /PSoo'P : PSoo' (f n).2 by have [_ []] := fi n.
+  exact.
+rewrite [RHS](@eqbigcup_r _ _ _ _
+    (fun i => [set x%:E | x in (f i).1] `|` (f i).2)); last first.
+  by move=> i; have [_ []] := fi i.
+rewrite bigcup_setU; congr (_ `|` _).
+rewrite predeqE => i /=; split=> [[r [n _ fn1r <-{i}]]|[n _ [r fn1r <-{i}]]];
+ by [exists n => //; exists r | exists r => //; exists n].
+Qed.
+
+Definition Rbar_isMeasurable : isMeasurable \bar R :=
+  isMeasurable.Build _ measurableRbar0 measurableRbarC measurableRbar_bigcup.
+
+HB.instance (\bar (Real.sort R)) Rbar_isMeasurable.
+
+Check forall (T : measurableType) (f : T -> \bar R), measurable_fun setT f.
+
+End sigma_algebra_R_Rbar.
