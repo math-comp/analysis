@@ -551,9 +551,11 @@ rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
 by rewrite setCU setIAC !setIA setICl !set0I.
 Qed.
 
+(* PR: in progress *)
 Lemma trivIset_setIC T I (D : set I) (F : I -> set T) X :
   trivIset D (fun i => F i `&` X) = trivIset D (fun i => X `&` F i).
 Proof. by congr trivIset; under eq_fun do rewrite setIC. Qed.
+(* /PR: in progress *)
 
 Lemma lim_mkord (R : realType) (f : (\bar R)^nat) :
   lim (fun n => \sum_(k < n) f k)%E = \sum_(k <oo) f k.
@@ -1765,7 +1767,7 @@ Proof. by rewrite sset_cons sset_nil setU0. Qed.
 
 Lemma sset_bigcup s :
   [sset of s] = \bigcup_(i in [set j | j \in s]) (set_of_itv i).
-Proof. by rewrite bigcup_mkset. Qed.
+Proof. by rewrite bigcup_set. Qed.
 
 Lemma ssetP s x :
   [sset of s] x <-> (\bigcup_(i in [set j | j \in s]) (set_of_itv i)) x.
@@ -3492,9 +3494,9 @@ Lemma cover_set_of_itv_nthE (s : seq (interval R)) (D : set nat) :
     \big[setU/set0]_(i <- s) (set_of_itv i).
 Proof.
 move=> sD; rewrite eqEsubset; split => [r [i Di ri]|r].
-- rewrite -bigcup_mkset; exists (nth 0%O s i) => //; apply/mem_nth.
+- rewrite -bigcup_set; exists (nth 0%O s i) => //; apply/mem_nth.
   by rewrite ltnNge; apply: contraPN ri => si; rewrite nth_default.
-- rewrite -bigcup_mkset => -[/= i /(nthP 0%O)[k ks <-{i} kr]]; exists k => //.
+- rewrite -bigcup_set => -[/= i /(nthP 0%O)[k ks <-{i} kr]]; exists k => //.
   exact: sD.
 Qed.
 
@@ -3541,7 +3543,7 @@ have K_itv : is_interval K.
       by rewrite -AE cover_set_of_itv_nthE// big_cons; right.
   rewrite -AE /= cover_set_of_itv_nthE// big_cons=> -[]//.
   move=> /set_of_itv_mem jy; move: Kx; rewrite /K.
-  rewrite -bigcup_mkset => -[k/= ks /set_of_itv_mem kx].
+  rewrite -bigcup_set => -[k/= ks /set_of_itv_mem kx].
   suff: x > y by case: ltgtP xy.
   apply: (lt_itv_le (j_small k ks)) => //.
   have /(nthP 0%O)[ik ik_small <-] := ks.
@@ -3675,7 +3677,7 @@ Lemma le_sum_measure_bigcup (R : realType)
 Proof.
 move=> mS US tS n.
 have : \big[setU/set0]_(i < n) S i `<=` \bigcup_i S i.
-  by move=> /= r; rewrite -bigcup_mkset => -[/= k _ Skr]; exists k.
+  by move=> /= r; rewrite -bigcup_set => -[/= k _ Skr]; exists k.
 move: (@bigsetU_measurable _ _ (enum 'I_n) xpredT _ (fun k _ => mS k)).
 rewrite [in X in X -> _]big_enum => mU /(le_measure l) /=.
 rewrite !inE /=.
@@ -4001,7 +4003,7 @@ have : (b'%:E - a'%:E <= \sum_(k <oo | P k) slength (set_of_itv (j k)) + (e%:num
     apply/le_measure => //.
       by rewrite inE /=; exact/Sset.is_sset_itv.
       by rewrite inE /=; apply: bigsetU_measurable => n _; exact/Sset.is_sset_itv.
-    by move/subset_trans : HF'; apply; rewrite bigcup_mkset.
+    by move/subset_trans : HF'; apply; rewrite bigcup_set.
   rewrite (@le_trans _ _ (\sum_(k <- F') (b'_ k - a'_ k)%:E)%E) //.
     move: (@le_slengthU_sumslength _ [seq (set_of_itv `](a'_ k), (b'_ k)[) | k <- F'] F'_ringOfSets).
     rewrite big_map => /le_trans; apply.
@@ -4026,18 +4028,6 @@ have : (b'%:E - a'%:E <= \sum_(k <oo | P k) slength (set_of_itv (j k)) + (e%:num
     apply: cvg_comp; last apply cvg_refl.
     have := @cvg_geometric_series_half _ e%:num 1.
     by rewrite expr1.
-(*  have cvggeo : (fun n => \sum_(i < n) (e%:num / (2 ^ i.+2)%:R)%:E)%E --> (e%:num / 2)%:E.
-    rewrite (_ : (fun n => _) = (@EFin _) \o series (geometric (e%:num / 4%:R) 2^-1%R)); last first.
-      rewrite funeqE => n; rewrite /series /=.
-      rewrite (@big_morph _ _ (@EFin _) 0%:E adde) // big_mkord.
-      by apply eq_bigr => ? _; rewrite 2!expnS mulnA natrM invfM mulrA exprVn natrX.
-    apply: cvg_comp.
-      apply: cvg_geometric_series.
-      by rewrite ger0_norm // invr_lt1 // ?ltr1n // unitfE.
-    rewrite (_ : [filter of _] = [filter of e%:num / 2 : R^o]) // !filter_of_filterE.
-    congr ([filter of _]); rewrite -mulrA; congr (_ * _)%R.
-    rewrite [X in X - _](splitr 1) div1r addrK.
-    by rewrite (natrM _ 2 2) invfM // mulrAC divff // div1r.*)
   have ? : cvg (fun n => \sum_(k < n | P k) (e%:num / (2 ^ k.+2)%:R)%:E)%E.
     under eq_fun do rewrite -(big_mkord P (fun k => (e%:num / (2 ^ k.+2)%:R)%:E)).
     by apply: is_cvg_ereal_nneg_series => n _; rewrite lee_fin divr_ge0// ler0n.
@@ -4134,7 +4124,7 @@ rewrite [X in (X <= _)%E](_ : _ = slength (\big[setU/set0]_(k < n) set_of_itv (j
 apply: le_measure.
 - by rewrite inE /=; apply: bigsetU_measurable => k _; exact/Sset.is_sset_itv.
 - by rewrite inE /=; exact/Sset.is_sset_itv.
-- by rewrite ij -bigcup_mkset /= => r [k /= _ jkr]; exists k.
+- by rewrite ij -bigcup_set /= => r [k /= _ jkr]; exists k.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma slength_sigma_subadditive_on_infinite_intervals i (j : (interval R)^nat) (P : pred nat) :
@@ -4372,7 +4362,7 @@ Lemma bigcup_bigU_bigcup (R : realType) (f : (seq (interval R))^nat) :
   \bigcup_k \big[setU/set0]_(i <- f k) set_of_itv i = \bigcup_k set_of_itv (nth_interval f k).
 Proof.
 move=> f0; rewrite eqEsubset; split => r.
-  move=> -[n Hn]; rewrite -bigcup_mkset => -[/= I].
+  move=> -[n Hn]; rewrite -bigcup_set => -[/= I].
   move=> /(nthP 0%O)[p pn <-{I}] /set_of_itv_mem rnp.
   exists (diraddr f (n, p)) => //.
   apply/set_of_itv_mem.
@@ -4381,7 +4371,7 @@ move=> [n _ /set_of_itv_mem] ; rewrite /nth_interval.
 move Hx : (indaddr _ _ _) => x.
 destruct x as [x1 x2] => rx2.
 exists x1 => //.
-rewrite -bigcup_mkset.
+rewrite -bigcup_set.
 exists (nth 0%O (f x1) x2); last by apply/set_of_itv_mem.
 rewrite /mkset; apply/(nthP 0%O); exists x2 => //.
 rewrite ltnNge; apply: contraPN rx2 => /(nth_default 0%O) ->.
@@ -4470,9 +4460,9 @@ have {iiF} :
   rewrite [in X in X -> _]Fs ssetE big_distrr /= => sir.
   exists n => //; rewrite /iDs big_map.
   under eq_bigr do rewrite set_of_itv_meet.
-  move: sir; rewrite -bigcup_mkset => -[/= j jsn [ir jr]].
+  move: sir; rewrite -bigcup_set => -[/= j jsn [ir jr]].
   have [i' [i'sn i'r]] := mem_Decompose jsn jr.
-  by rewrite -bigcup_mkset; exists i'.
+  by rewrite -bigcup_set; exists i'.
 rewrite nil_cons0_bigcup_bigU bigcup_bigU_bigcup //; last exact: nil_cons0P.
 move=> iiF.
 rewrite (_ : (fun _ => _) = (fun n => \sum_(0 <= k < n)
@@ -4529,7 +4519,7 @@ rewrite (@measure_additive(*slength_additive*) _ _ (@slength_additive_measure R)
 rewrite (@le_trans _ _ (\sum_(0 <= n < size j) (\sum_(k <oo) slength (set_of_itv (nth 0%O j n) `&` F k))))%E //.
   rewrite big_mkord; apply: lee_sum => n _.
   rewrite (@le_slength_itv_sumI F seq_of) // Fj ssetE (big_nth 0%O) big_mkord => r jnr.
-  by rewrite -bigcup_mkset; exists n => //=; rewrite mem_index_enum.
+  by rewrite -bigcup_set; exists n => //=; rewrite mem_index_enum.
 rewrite (@le_trans _ _ (\sum_(n <oo) (\sum_(0 <= k < size j) slength (set_of_itv (nth 0%O j k) `&` F n))))%E //.
   rewrite (@ereal_pseries_sum_nat _ (size j) (fun n k => slength (set_of_itv (nth 0%O j n) `&` F k))) //.
   by move=> a b; apply slength_ge0.
