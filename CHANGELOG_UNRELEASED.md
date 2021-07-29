@@ -11,6 +11,24 @@
   + lemmas `trivIset_seqDU`, `bigsetU_seqDU`, `seqDU_bigcup_eq`, `seqDUE`
 - in `ereal.v`:
   + notation `x +? y` for `adde_def x y`
+  + HB.mixin `AlgebraOfSets_from_RingOfSets`
+  + HB.structure `AlgebraOfSets` and notation `algebraOfSetsType`
+  + HB.instance `T_isAlgebraOfSets` in HB.builders `isAlgebraOfSets`
+  + lemma `bigcup_set_cond`
+- in `classical_sets.v`:
+  + lemmas `bigcupD1`, `bigcapD1`
+- in `normedtypes.v`:
+  + lemma `is_intervalPlt`
+
+### Changed
+
+- in `measure.v`:
+  + generalize lemma `eq_bigcupB_of`
+- in `ereal.v`, definition `adde_undef` changed to `adde_def`
+  + consequently, the following lemmas changed:
+    * in `ereal.v`, `adde_undefC` renamed to `adde_defC`,
+      `fin_num_adde_undef` renamed to `fin_num_adde_def`
+    * in `sequences.v`, `ereal_cvgD` and `ereal_limD` now use hypotheses with `adde_def`
 - in `sequences.v`:
   + lemmas `lt_lim`, `nondecreasing_dvg_lt`, `ereal_lim_sum`
 - in `ereal.v`:
@@ -45,6 +63,9 @@
 - in `normedtype.v`:
   + lemmas `ereal_is_cvgN`, `ereal_cvgZr`, `ereal_is_cvgZr`, `ereal_cvgZl`, `ereal_is_cvgZl`,
     `ereal_limZr`, `ereal_limZl`, `ereal_limN`
+  + lemma `cvg_bounded_real`
+  + lemma `pseudoMetricNormedZModType_hausdorff`
+  + definition `is_interval`
 
 ### Changed
 
@@ -119,6 +140,9 @@
       `bigmaxr_ltrP`, `bigmaxr_gerP`, `bigmaxr_gtrP`
 - in `sequences.v`:
   + lemma `closed_seq`
+
+- in `normedtype.v`:
+  + lemma `is_intervalPle`
 
 ### Infrastructure
 
