@@ -25,6 +25,8 @@ From HB Require Import structures.
 (*                   that this function maps set0 to 0, is non-negative over  *)
 (*                   measurable sets and is semi-sigma-additive               *)
 (*                                                                            *)
+(*           seqD F == the sequence F_0, F_1 \ F_0, F_2 \ F_1,...             *)
+(*                                                                            *)
 (* Theorems: Boole_inequality, generalized_Boole_inequality                   *)
 (*                                                                            *)
 (* mu.-negligible A == A is mu negligible                                     *)
@@ -544,11 +546,11 @@ Qed.
 Section trivIfy.
 Variables (T : Type).
 
-Definition B_of (A : (set T) ^nat) :=
+Definition seqD (A : (set T) ^nat) :=
   fun n => if n isn't n'.+1 then A O else A n `\` A n'.
 
-Lemma trivIset_B_of (A : (set T) ^nat) :
-  {homo A : n m / (n <= m)%nat >-> n `<=` m} -> trivIset setT (B_of A).
+Lemma trivIset_seqD (A : (set T) ^nat) :
+  {homo A : n m / (n <= m)%nat >-> n `<=` m} -> trivIset setT (seqD A).
 Proof.
 move=> ndA i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
   by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB->.
@@ -560,16 +562,16 @@ rewrite ltnS => nj /=; rewrite funeqE => x; rewrite propeqE; split => //.
 by move=> -[[An1 An] [Aj1 Aj]]; apply/Aj/(ndA n.+1).
 Qed.
 
-Lemma UB_of (A : (set T) ^nat) : {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
-  forall n, A n.+1 = A n `|` B_of A n.+1.
+Lemma setU_seqD (A : (set T) ^nat) : {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
+  forall n, A n.+1 = A n `|` seqD A n.+1.
 Proof.
-move=> ndA n; rewrite /B_of funeqE => x; rewrite propeqE; split.
+move=> ndA n; rewrite /seqD funeqE => x; rewrite propeqE; split.
 by move=> ?; have [?|?] := pselect (A n x); [left | right].
 by move=> -[|[]//]; apply: ndA.
 Qed.
 
-Lemma bigUB_of (A : (set T) ^nat) n :
-  \big[setU/set0]_(i < n) A i = \big[setU/set0]_(i < n) B_of A i.
+Lemma bigsetU_seqD (A : (set T) ^nat) n :
+  \big[setU/set0]_(i < n) A i = \big[setU/set0]_(i < n) seqD A i.
 Proof.
 case: n => [|n]; first by rewrite 2!big_ord0.
 elim: n => [|n ih]; first by rewrite !big_ord_recl !big_ord0.
@@ -580,21 +582,20 @@ rewrite big_ord_recr [in RHS]big_ord_recr /= -{}ih predeqE => x; split.
 by move=> [?|[? ?]]; [left | right].
 Qed.
 
-Lemma eq_bigsetUB_of (A : (set T) ^nat) n :
+Lemma eq_bigsetU_seqD (A : (set T) ^nat) n :
   {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
-  A n = \big[setU/set0]_(i < n.+1) B_of A i.
+  A n = \big[setU/set0]_(i < n.+1) seqD A i.
 Proof.
 move=> ndA; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
 - by move=> ?; rewrite big_ord_recl big_ord0; left.
 - by rewrite big_ord_recl big_ord0 setU0.
-- rewrite (UB_of ndA) => -[|/=].
+- rewrite (setU_seqD ndA) => -[|/=].
   by rewrite big_ord_recr /= -ih => Anx; left.
   by move=> -[An1x Anx]; rewrite big_ord_recr /=; right.
 - rewrite big_ord_recr /= -ih => -[|[]//]; exact: ndA.
 Qed.
 
-Lemma eq_bigcupB_of (A : (set T) ^nat) :
-  \bigcup_n A n = \bigcup_n (B_of A) n.
+Lemma eq_bigcup_seqD (A : (set T) ^nat) : \bigcup_n A n = \bigcup_n (seqD A) n.
 Proof.
 rewrite funeqE => x; rewrite propeqE; split.
   case; elim=> [_ A0x|n ih _ An1x]; first by exists O.
@@ -603,10 +604,10 @@ rewrite funeqE => x; rewrite propeqE; split.
 case; elim=> [_ /= A0x|n ih _ /= [An1x Anx]]; by [exists O | exists n.+1].
 Qed.
 
-Lemma eq_bigcupB_of_bigsetU (A : (set T) ^nat) :
-  \bigcup_n (B_of (fun n => \big[setU/set0]_(i < n.+1) A i) n) = \bigcup_n A n.
+Lemma eq_bigcup_seqD_bigsetU (A : (set T) ^nat) :
+  \bigcup_n (seqD (fun n => \big[setU/set0]_(i < n.+1) A i) n) = \bigcup_n A n.
 Proof.
-rewrite -(@eq_bigcupB_of (fun n => \big[setU/set0]_(i < n.+1) A i)).
+rewrite -(@eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) A i)).
 rewrite eqEsubset; split => [t [i _]|t [i _ Ait]].
   by rewrite -bigcup_set_cond => -[/= j _ Ajt]; exists j.
 by exists i => //; rewrite big_ord_recr /=; right.
@@ -622,15 +623,15 @@ Lemma cvg_mu_inc (R : realFieldType) (T : ringOfSetsType)
   mu \o A --> mu (\bigcup_n A n).
 Proof.
 move=> mA mbigcupA ndA.
-have Binter : trivIset setT (B_of A) := trivIset_B_of ndA.
-have ABE : forall n, A n.+1 = A n `|` B_of A n.+1 := UB_of ndA.
-have AE n : A n = \big[setU/set0]_(i < n.+1) (B_of A) i := eq_bigsetUB_of n ndA.
-rewrite eq_bigcupB_of.
-have mB : forall i, measurable (B_of A i).
+have Binter : trivIset setT (seqD A) := trivIset_seqD ndA.
+have ABE : forall n, A n.+1 = A n `|` seqD A n.+1 := setU_seqD ndA.
+have AE n : A n = \big[setU/set0]_(i < n.+1) (seqD A) i := eq_bigsetU_seqD n ndA.
+rewrite eq_bigcup_seqD.
+have mB : forall i, measurable (seqD A i).
   by elim=> [|i ih] //=; apply: measurableD.
 apply: cvg_trans (measure_semi_sigma_additive mB Binter _); last first.
-  by rewrite -eq_bigcupB_of.
-apply: (@cvg_trans _ [filter of (fun n => \sum_(i < n.+1) mu (B_of A i))]).
+  by rewrite -eq_bigcup_seqD.
+apply: (@cvg_trans _ [filter of (fun n => \sum_(i < n.+1) mu (seqD A i))]).
   rewrite [X in _ --> X](_ : _ = mu \o A) // funeqE => n.
   rewrite -measure_semi_additive // -?AE// => -[|k]; last by rewrite -AE.
   by rewrite big_ord0; exact: measurable0.
@@ -964,7 +965,7 @@ Proof.
 move=> MA ta; elim=> [|n ih] X; first by rewrite !big_ord0 setI0 outer_measure0.
 rewrite big_ord_recr /= disjoint_caratheodoryIU // ?ih ?big_ord_recr //.
 - exact: caratheodory_measurable_bigsetU.
-- by apply/eqP/(@trivIset_bigUI _ predT) => //; rewrite /predT /= trueE.
+- by apply/eqP/(@trivIset_bigsetUI _ predT) => //; rewrite /predT /= trueE.
 Qed.
 
 Lemma caratheodory_lim_lee (A : (set T) ^nat) : (forall n, M (A n)) ->
@@ -1006,10 +1007,9 @@ Qed.
 Lemma caratheodory_measurable_bigcup (A : (set T) ^nat) : (forall n, M (A n)) ->
   M (\bigcup_k (A k)).
 Proof.
-set C_of := B_of (fun n => \big[setU/set0]_(i < n.+1) A i).
-move=> MA; rewrite -eq_bigcupB_of_bigsetU.
+move=> MA; rewrite -eq_bigcup_seqD_bigsetU.
 apply/caratheodory_measurable_trivIset_bigcup; last first.
-  apply: (@trivIset_B_of _ (fun n => \big[setU/set0]_(i < n.+1) A i)).
+  apply: (@trivIset_seqD _ (fun n => \big[setU/set0]_(i < n.+1) A i)).
   by move=> n m; rewrite -ltnS; exact/subset_bigsetU.
 by case=> [|n /=]; [| apply/caratheodory_measurable_setD => //];
   exact/caratheodory_measurable_bigsetU.

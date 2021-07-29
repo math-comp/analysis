@@ -242,9 +242,9 @@ Definition snd_set T1 T2 (A : set (T1 * T2)) := [set y | exists x, A (x, y)].
 Lemma mksetE (P : T -> Prop) x : [set x | P x] x = P x.
 Proof. by []. Qed.
 
-Definition bigsetI T I (P : set I) (F : I -> set T) :=
+Definition bigcap T I (P : set I) (F : I -> set T) :=
   [set a | forall i, P i -> F i a].
-Definition bigsetU T I (P : set I) (F : I -> set T) :=
+Definition bigcup T I (P : set I) (F : I -> set T) :=
   [set a | exists2 i, P i & F i a].
 
 Definition subset A B := forall t, A t -> B t.
@@ -273,12 +273,12 @@ Notation "A `\ a" := (A `\` [set a]) : classical_set_scope.
 Notation "[ 'disjoint' A & B ]" := (A `&` B == set0) : classical_set_scope.
 
 Notation "\bigcup_ ( i 'in' P ) F" :=
-  (bigsetU P (fun i => F)) : classical_set_scope.
+  (bigcup P (fun i => F)) : classical_set_scope.
 Notation "\bigcup_ ( i : T ) F" :=
   (\bigcup_(i in @setT T) F) : classical_set_scope.
 Notation "\bigcup_ i F" := (\bigcup_(i : _) F) : classical_set_scope.
 Notation "\bigcap_ ( i 'in' P ) F" :=
-  (bigsetI P (fun i => F)) : classical_set_scope.
+  (bigcap P (fun i => F)) : classical_set_scope.
 Notation "\bigcap_ ( i : T ) F" :=
   (\bigcap_(i in @setT T) F) : classical_set_scope.
 Notation "\bigcap_ i F" := (\bigcap_(i : _) F) : classical_set_scope.
@@ -1073,7 +1073,7 @@ split=> tDF i j Di Dj; first by apply: contraNeq => /set0P/tDF->.
 by move=> /set0P; apply: contraNeq => /tDF->.
 Qed.
 
-Lemma trivIset_bigUI T (D : {pred nat}) (F : nat -> set T) : trivIset D F ->
+Lemma trivIset_bigsetUI T (D : {pred nat}) (F : nat -> set T) : trivIset D F ->
   forall n m, D m -> n <= m -> \big[setU/set0]_(i < n | D i) F i `&` F m = set0.
 Proof.
 move=> /trivIsetP tA; elim => [|n IHn] m Dm.
