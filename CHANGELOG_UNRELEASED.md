@@ -19,6 +19,8 @@
   + lemma `bigcup_set_cond`
 - in `classical_sets.v`:
   + lemmas `bigcupD1`, `bigcapD1`
+- in `measure.v`:
+  + definition `measurable_fun`
 
 ### Changed
 
