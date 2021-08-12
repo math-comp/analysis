@@ -104,6 +104,9 @@ keywords:
 - name: topology
 - name: real numbers
 
+categories:
+- name: Mathematics/Real Calculus and Topology
+
 publications:
 - pub_url: https://jfr.unibo.it/article/view/8124
   pub_title:  Formalization Techniques for Asymptotic Reasoning in Classical Analysis
