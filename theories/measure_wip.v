@@ -56,7 +56,8 @@ Require Import sequences measure csum cardinality.
 (* Section slength_measure:                                                   *)
 (*   slength_semi_sigma_additive                                              *)
 (*                                                                            *)
-(* length == Lebesgue measure                                                 *)
+(* lebesgue_measure == the Lebesgue measure                                   *)
+(* ereal_lebesgue_measure == the Lebesgue measure extended to \bar R          *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -309,10 +310,32 @@ Qed.
 
 End measure_setD.
 
-(* TODO: move *)
+(* NB: PR in progress *)
 Definition seqDU T (F : (set T)^nat) n := F n `\` (\big[setU/set0]_(m < n) F m).
 
-Lemma seqDU_eq T (F : (set T)^nat) n :
+Lemma seqDUE T (F : (set T)^nat) : nondecreasing_seq F -> seqDU F = seqD F.
+Proof.
+move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
+rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
+by rewrite bigcup_ord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
+Qed.
+
+Lemma trivIset_seqDU T (F : (set T)^nat) : trivIset setT (seqDU F).
+Proof.
+move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
+  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB->.
+move=> /set0P; apply: contraNeq => _; apply/eqP.
+rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
+by rewrite setCU setIAC !setIA setICl !set0I.
+Qed.
+
+Lemma trivIset_seqD_new T (A : (set T) ^nat) :
+  nondecreasing_seq A -> trivIset setT (seqD A).
+Proof.
+by move=> ndF; rewrite -seqDUE //; exact: trivIset_seqDU.
+Qed.
+
+Lemma bigsetU_seqDU T (F : (set T)^nat) n :
   \big[setU/set0]_(m < n) F m = \big[setU/set0]_(m < n) seqDU F m.
 Proof.
 elim: n => [|n ih]; first by rewrite 2!big_ord0.
@@ -339,15 +362,7 @@ have [?|] := pselect (forall k0 : nat, (k0 < k.+1)%N -> ~ F k0 t); first by exis
 move=> /existsNP[i] /not_implyP[ik1] /contrapT Fit; apply (ih t i) => //.
 by rewrite ltnS in ik1; rewrite (leq_ltn_trans ik1).
 Qed.
-
-Lemma trivIset_seqDU T (F : (set T)^nat) : trivIset setT (seqDU F).
-Proof.
-move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
-  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB->.
-move=> /set0P; apply: contraNeq => _; apply/eqP.
-rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
-by rewrite setCU setIAC !setIA setICl !set0I.
-Qed.
+(* /end PR in progress *)
 
 Lemma lim_mkord (R : realType) (f : (\bar R)^nat) :
   lim (fun n => \sum_(k < n) f k)%E = \sum_(k <oo) f k.
@@ -3696,7 +3711,7 @@ rewrite addeC big1 ?add0e // => k; rewrite -set_of_itv_neq0 => /negPn/eqP ->.
 by rewrite slength0.
 Qed.
 
-Lemma measurable_itv (R : realType) (i : interval R) :
+Lemma measurable_sset_itv (R : realType) (i : interval R) :
   measurable (set_of_itv i : set (sset_algebraOfSetsType R)).
 Proof. exact/Sset.is_sset_itv. Qed.
 
@@ -3718,16 +3733,16 @@ have [j_finite|] := pselect (forall k, P k -> hlength (set_of_itv (j k)) < +oo)%
   move/existsNP => -[k /not_implyP[Pk] /negP].
   rewrite -leNgt lee_pinfty_eq => /eqP jkoo.
   rewrite /l (ereal_nneg_series_pinfty _ Pk) // ?lee_pinfty// ?slength_itv//.
-  by move=> n _; apply/measure_ge0/measurable_itv.
+  by move=> n _; apply/measure_ge0/measurable_sset_itv.
 have [/eqP->|] := boolP (set_of_itv i == set0).
-  by rewrite slength0 ereal_nneg_series_lim_ge0// => k _; apply/measure_ge0/measurable_itv.
+  by rewrite slength0 ereal_nneg_series_lim_ge0// => k _; apply/measure_ge0/measurable_sset_itv.
 rewrite set_of_itv_neq0 => i0.
 have [ri1 ri2] := hlength_finite_fin_num i0 iNoo.
 set a := real_of_extended i.1; set b := real_of_extended i.2.
 have [ab|ba] := ltP a b; last first.
   rewrite slength_itv hlength_itv ltNge {1}(EFin_real_of_extended ri1).
   rewrite {1}(EFin_real_of_extended ri2) -/a -/b lee_fin ba /=.
-  by rewrite ereal_nneg_series_lim_ge0// => k _; apply/measure_ge0/measurable_itv.
+  by rewrite ereal_nneg_series_lim_ge0// => k _; apply/measure_ge0/measurable_sset_itv.
 suff baj : forall e : {posnum R},
     (b%:E - a%:E <= \sum_(k <oo | P k) slength (set_of_itv (j k)) + e%:num%:E)%E.
   rewrite (@le_trans _ _ (b%:E - a%:E)%E) //.
@@ -3826,7 +3841,7 @@ have : (b'%:E - a'%:E <= \sum_(k <oo | P k) slength (set_of_itv (j k)) + (e%:num
   apply (@le_trans _ _ (\sum_(k <oo | P k) slength (set_of_itv (j k)) +
                         \sum_(k <oo | P k) (e%:num / (2 ^ k.+2)%:R)%:E))%E; last first.
     rewrite -ereal_limD //; last 3 first.
-      by apply: is_cvg_sum_slength => k Pk; exact/measurable_itv.
+      by apply: is_cvg_sum_slength => k Pk; exact/measurable_sset_itv.
       by under eq_fun do rewrite big_mkord.
       have /andP[l0 le2] : (0 <= \sum_(k <oo | P k) (e%:num / (2 ^ k.+2)%:R)%:E <= (e%:num / 2)%:E)%E.
         apply/andP; split.
@@ -4307,7 +4322,7 @@ have [j [Fj tj]] : exists j : seq (interval R), \bigcup_k (F k) = [sset of j] /\
 rewrite Fj ssetE (big_nth 0%O) big_mkord.
 rewrite (@measure_additive(*slength_additive*) _ _ (@slength_additive_measure R)
     (fun n => set_of_itv (nth 0%O j n))) //; last first.
-  by move=> i; exact/measurable_itv.
+  by move=> i; exact/measurable_sset_itv.
 rewrite (@le_trans _ _ (\sum_(0 <= n < size j) (\sum_(k <oo) slength (set_of_itv (nth 0%O j n) `&` F k))))%E //.
   rewrite big_mkord; apply: lee_sum => n _.
   rewrite (@le_slength_itv_sumI F seq_of) // Fj ssetE (big_nth 0%O) big_mkord => r jnr.
@@ -4328,7 +4343,7 @@ apply lee_lim.
     rewrite ssetE (big_nth 0%O) big_mkord (bigcup_recl (size j)) bigcup0 ?setU0// => i _.
     by rewrite nth_default ?set_of_itvE// leq_addr.
   rewrite {2}Fkj big_mkord le_sum_measure_bigcup//.
-  + by move=> i; apply: measurableI => //; exact/measurable_itv.
+  + by move=> i; apply: measurableI => //; exact/measurable_sset_itv.
   + by rewrite -Fkj.
   + by under eq_fun do rewrite setIC; exact: trivIset_setI.
 Grab Existential Variables. all: end_near. Qed.
@@ -4354,7 +4369,7 @@ Let M := [the measurableType of caratheodory_type (@slength_ext_outer_measure R)
 
 Lemma measurable_itv' (i : interval M) : (@measurable M) (set_of_itv i : set M).
 Proof.
-exact/subset_g_salgebra_caratheodory/g_salgebra_self/measurable_itv.
+exact/subset_g_salgebra_caratheodory/g_salgebra_self/measurable_sset_itv.
 Qed.
 
 End intervals_are_measurable.
@@ -4385,8 +4400,10 @@ rewrite predeqE => x; split=> [[i Pi [Fix|Gix]]|[[i Pi Fix]|[i Pi Gix]]];
   by [left; exists i | right; exists i | exists i => //; left | exists i => //; right].
 Qed.
 
+(* NB: PR in progress *)
 Lemma orA : associative or.
 Proof. by move=> P Q R; rewrite propeqE; split=> [|]; tauto. Qed.
+(* /NB: PR in progress *)
 
 Lemma subset_set2 T (A : set T) a b : A `<=` [set a; b] ->
   A = set0 \/ A = [set a] \/ A = [set b] \/ A = [set a; b].
@@ -4426,6 +4443,9 @@ Definition R_isMeasurable : isMeasurable R :=
 HB.instance (Real.sort R) R_isMeasurable.
 
 Check forall (T : measurableType) (f : T -> R), measurable_fun setT f.
+
+Lemma measurable_itv (i : interval R) : measurable (set_of_itv i).
+Proof. exact/g_salgebra_self/measurable_sset_itv. Qed.
 
 (* powerset to extend the sigma-algebra for R *)
 Definition PSoo : set (set \bar R) :=
@@ -4519,5 +4539,203 @@ Definition Rbar_isMeasurable : isMeasurable \bar R :=
 HB.instance (\bar (Real.sort R)) Rbar_isMeasurable.
 
 Check forall (T : measurableType) (f : T -> \bar R), measurable_fun setT f.
+
+Lemma measurable_EFin (A : set R) : measurable A -> measurable (@EFin _ @` A).
+Proof.
+move=> mA.
+exists A => //.
+exists set0.
+  by constructor.
+by rewrite setU0.
+Qed.
+
+Lemma measurable_coo (y : \bar R) : measurable [set x | (y <= x)%E].
+Proof.
+move: y => [y| |].
+  exists (set_of_itv `[y, +oo[).
+    exact: measurable_itv.
+  exists [set +oo%E].
+    by constructor.
+  (* TODO: lemma? *)
+  rewrite predeqE => x; split => [[[z /set_of_itv_mem /itvP yz] <-{x}|->]|]/=.
+  by rewrite lee_fin yz.
+  by rewrite lee_pinfty.
+  move: x => [x yx|_|//].
+    by left => /=; exists x => //; apply/set_of_itv_mem; rewrite in_itv /= andbT -lee_fin.
+  by right.
+(* TODO: lemma? *)
+rewrite [X in measurable X](_ : _ = [set +oo]%E).
+  (* TODO: lemma? *)
+  rewrite /measurable /= /measurableRbar /=.
+  exists set0.
+    exact: measurable0.
+  exists [set +oo%E].
+    by constructor.
+  by rewrite image_set0 set0U.
+rewrite predeqE => t; split => /=.
+  by rewrite lee_pinfty_eq => /eqP ->.
+by move=> <-.
+rewrite [X in measurable X](_ : _ = setT).
+  exact: measurableT.
+rewrite predeqE => t; split => //= _.
+by rewrite lee_ninfty.
+Qed.
+
+Definition ereal_lebesgue_measure' : set \bar R -> \bar R :=
+  fun S : set \bar R => lebesgue_measure R ((real_of_extended @` (S `\` [set -oo; +oo]%E))).
+
+Lemma ereal_lebesgue_measure'0 : ereal_lebesgue_measure' set0 = 0%E.
+Proof.
+by rewrite /ereal_lebesgue_measure' set0D image_set0 measure0.
+Qed.
+
+(* TODO: move *)
+Lemma measurable_set1 (r : R) : measurable [set r].
+Proof.
+apply: g_salgebra_self => /=.
+exists [:: `[r, r]] => //=.
+rewrite /sset /= big_cons /= big_nil setU0 /=.
+rewrite set_of_itv_closed_closed // predeqE => t; split => [<-|].
+  by rewrite lexx.
+by rewrite -eq_le => /eqP <-.
+Qed.
+
+Lemma ereal_lebesgue_measure'_ge0 : forall x, measurable x -> (0 <= ereal_lebesgue_measure' x)%E.
+Proof.
+move=> /= X mX; rewrite /ereal_lebesgue_measure'.
+apply: measure_ge0.
+case: mX => Y mY [_ []].
+- rewrite setU0 => <-{X}.
+  rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.
+    by move=> [x [[x' Yx' <-{x}/= _ <-//]]].
+  move=> Yr; exists r%:E; split; last by case.
+  by exists r.
+- move=> <-{X}.
+  rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.
+    move=> [x [[[x' Yx' <- _ <-//]|]]].
+    by move=> <-; rewrite not_orP => -[]/(_ erefl).
+  move=> Yr; exists r%:E => //; split; last by case.
+  by left; exists r.
+- move=> <-{X}.
+  rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.
+    move=> [x [[[x' Yx' <-{x} _ <-//]|]]].
+    by move=> ->; rewrite not_orP => -[_]/(_ erefl).
+  move=> Yr; exists r%:E => //; split; last by case.
+  by left; exists r.
+- move=> <-{X}.
+  rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.
+    move=> [x [[[x' Yx' <-{x} _ <-//]|]]].
+    move=> [|] ->.
+      by rewrite not_orP => -[]/(_ erefl).
+    by rewrite not_orP => -[_]/(_ erefl).
+  move=> Yr; exists r%:E => //; split; last by case.
+  by left; exists r.
+Qed.
+
+Lemma semi_sigma_additive_ereal_lebesgue_measure' :
+  semi_sigma_additive ereal_lebesgue_measure'.
+Proof.
+move=> /= F mF tF mUF.
+rewrite /ereal_lebesgue_measure'.
+pose tmp := \bigcup_n [set real_of_extended x | x in F n `\` [set -oo%E; +oo%E]].
+rewrite [X in lebesgue_measure _ X](_ : _ = tmp); last first.
+  rewrite predeqE => r; split.
+    move=> [x [[n _ Fnx xoo <-]]].
+    by exists n => //; exists x.
+  move=> [n _ [x [Fnx xoo <-{r}]]].
+  by exists x => //; split => //; exists n.
+have := @measure_semi_sigma_additive _ _ (@lebesgue_measure R) (fun n => real_of_extended @` (F n `\` [set -oo;+oo]%E)).
+apply.
+- move=> n.
+  have := mF n.
+  move=> [X mX [X' mX']] XX'Fn.
+  case: mX' XX'Fn => /=.
+  + rewrite setU0 => <-.
+    rewrite [X in measurable X](_ : _ = X) //.
+    rewrite predeqE => r; split.
+      by move=> -[x [[x' Xx' <-{x} _ <-//]]].
+    move=> Xr; exists r%:E => //; split; last by case.
+    by exists r.
+  + move=> <-.
+    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split.
+      move=> [x [[[x' Xx' <-{x} _ <- //]|]]].
+      by move=> ->; rewrite not_orP => -[]/(_ erefl).
+    move=> Xr; exists r%:E => //; split; last by case.
+    by left; exists r.
+  - move=> <-.
+    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split.
+      move=> [x [[[x' Xx' <-{x} _ <-//]|]]].
+      by move=> ->; rewrite not_orP => -[_]/(_ erefl).
+    move=> Xr; exists r%:E; split; last by case.
+    by left; exists r.
+  - move=> <-.
+    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split.
+      move=> [x [[[x' Xx' <-{x} _ <-//]|]]].
+      move=> [|] ->; rewrite not_orP => -[].
+        by move=> /(_ erefl).
+      by move=> _ => /(_ erefl).
+    move=> Xr; exists r%:E => //; split; last by case.
+    by left; exists r.
+- move=> i j _ _ [x [[a [Fia aoo ax] [b [Fjb boo] bx]]]].
+  move: tF => /(_ i j Logic.I Logic.I); apply.
+  suff ab : a = b by exists a; split => //; rewrite ab.
+  move: a b {Fia Fjb} aoo boo ax bx.
+  move=> [a| |] [b| |] /=.
+  by move=> _ _ -> ->.
+  by move=> _; rewrite not_orP => -[_]/(_ erefl).
+  by move=> _; rewrite not_orP => -[]/(_ erefl).
+  by rewrite not_orP => -[_]/(_ erefl).
+  by rewrite not_orP => -[_]/(_ erefl).
+  by rewrite not_orP => -[_]/(_ erefl).
+  by rewrite not_orP => -[]/(_ erefl).
+  by rewrite not_orP => -[]/(_ erefl).
+  by rewrite not_orP => -[]/(_ erefl).
+- move: mUF.
+  rewrite {1}/measurable /= /measurableRbar => -[X mX [Y []]] {Y}.
+  - rewrite setU0 => h.
+    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split.
+      move=> -[n _ [x [Fnx xoo <-{r}]]].
+      have : (\bigcup_n F n) x by exists n.
+      by rewrite -h => -[x' Xx' <-].
+    move=> Xr.
+    have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; exists r.
+    by exists n => //; exists r%:E => //; split => //; case.
+  - move=> h.
+    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split.
+      move=> -[n _ [x [Fnx xoo <-]]].
+      have : (\bigcup_n F n) x by exists n.
+      rewrite -h => -[[x' Xx' <-//]|xoo'].
+      by exfalso; apply xoo; left.
+    move=> Xr.
+    have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; left; exists r.
+    by exists n => //; exists r%:E => //; split => //; case.
+  - (* TODO: almost the same as the previous one, factorize*)
+    move=> h.
+    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split.
+      move=> -[n _ [x [Fnx xoo <-]]].
+      have : (\bigcup_n F n) x by exists n.
+      rewrite -h => -[[x' Xx' <-//]|xoo'].
+      by exfalso; apply xoo; right.
+    move=> Xr.
+    have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; left; exists r.
+    by exists n => //; exists r%:E => //; split => //; case.
+  - move=> h.
+    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split.
+      move=> -[n _ [x [Fnx xoo <-]]].
+      have : (\bigcup_n F n) x by exists n.
+      rewrite -h => -[[x' Xx' <-//]|xoo'].
+      by exfalso; apply xoo; right.
+    move=> Xr.
+    have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; left; exists r.
+    by exists n => //; exists r%:E => //; split => //; case.
+Qed.
+
+Definition ereal_lebesgue_measure_isMeasure : is_measure ereal_lebesgue_measure' :=
+  Measure.Axioms ereal_lebesgue_measure'0
+                 ereal_lebesgue_measure'_ge0
+                 semi_sigma_additive_ereal_lebesgue_measure'.
+
+Definition ereal_lebesgue_measure : {measure set \bar R -> \bar R} :=
+  Measure.Pack _ ereal_lebesgue_measure_isMeasure.
 
 End sigma_algebra_R_Rbar.
