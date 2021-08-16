@@ -2853,7 +2853,7 @@ rewrite lt_neqAle sup_upper_bound // andbT.
 by apply: contra_not_neq AsupA => <-.
 Qed.
 
-Lemma near_infty_natSinv_lt (R : archiFieldType) (z : R) (e : {posnum R}) :
+Lemma near_infty_natSinv_lt (R : archiFieldType) (e : {posnum R}) :
   \forall n \near \oo, n.+1%:R^-1 < e%:num.
 Proof.
 near=> n; rewrite -(@ltr_pmul2r _ n.+1%:R) // mulVr ?unitfE //.
@@ -2876,8 +2876,8 @@ suff [a_ anx] : exists a_, forall n, a_ n != x /\ (U n `&` A) (a_ n).
   - by move=> a [n _ <-]; have [? []] := anx n.
   - by move=> n; have [] := anx n.
   - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
-    have [? [] xann Aan] := anx n.
-    by rewrite (lt_le_trans xann) // ltW //; near: n; exact: near_infty_natSinv_lt.
+    have [? [] Uan Aan] := anx n.
+    by rewrite (lt_le_trans Uan)// ltW//; near: n; exact: near_infty_natSinv_lt.
 have @a_ : nat -> T.
   move=> n; have : nbhs (x : T) (U n).
     by apply/(nbhs_ballP (x:T) (U n)); rewrite nbhs_ballE; exists n.+1%:R^-1.
