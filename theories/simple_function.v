@@ -13,12 +13,12 @@ Require Import classical_sets posnum topology normedtype sequences measure.
 (* simple functions.                                                          *)
 (*                                                                            *)
 (*         sfun == type of simple functions                                   *)
-(*     sfun_cst == constant simple function                                   *)
+(*     sfun_cst == constant simple functions                                  *)
 (*   sfun_scale == scaling of simple functions                                *)
 (* sfun_add f g == addition of simple functions                               *)
 (*       nnsfun == type of non-negative simple functions                      *)
 (*    sintegral == integral of a simple function                              *)
-(*     integral == integral of a nonnegtive measurable function               *)
+(*     integral == integral of a nonnegative measurable function              *)
 (*   integrable == the integral is < +oo                                      *)
 (*                                                                            *)
 (******************************************************************************)
@@ -762,7 +762,7 @@ rewrite [LHS](eq_bigr (fun k : 'I_(ssize (sfun_scale point r f)) =>
   rewrite /SFun.pi /set1 /= => ->.
   rewrite {1}(negbTE r0) (nth_map 0) //.
   by rewrite (leq_trans (ltn_ord i)) // ssize_sfun_scale_neq0.
-rewrite sume_distrr; last first.
+rewrite ge0_sume_distrr; last first.
   move=> i _; rewrite mule_ge0 //; first exact: NNSFun_ge0.
   by apply: measure_ge0; exact: SFun.mpi.
 pose castK := cast_ord (esym (ssize_sfun_scale_neq0 point f r0)).
@@ -788,7 +788,7 @@ transitivity (\sum_(i < n) \sum_(l < p)
   under eq_bigr do rewrite measure_sfun_add_pi.
   transitivity (\sum_(i : 'I_(ssize (sfun_add f g))) (\sum_(x in sfun_add_pidx i)
     ((SFun.codom f)`_x.1 + (SFun.codom g)`_x.2)%:E * m (SFun.pi f x.1 `&` SFun.pi g x.2)))%E.
-    apply eq_bigr => i _; rewrite sume_distrr //; last first.
+    apply eq_bigr => i _; rewrite ge0_sume_distrr //; last first.
       by move=> kl _; rewrite measure_ge0 //; apply: measurableI; exact: SFun.mpi.
     by apply eq_bigr => x; rewrite !inE => /andP[] /eqP ->.
   rewrite [in RHS]pair_big.
@@ -821,7 +821,7 @@ transitivity
   (\sum_(i < p) (\sum_(j < n) ((SFun.codom g)`_i)%:E * m (SFun.pi g i `&` SFun.pi f j)) +
    \sum_(k < n) ((SFun.codom f)`_k)%:E * m (SFun.pi f k))%E; last first.
   congr adde; apply eq_bigr => i _.
-  rewrite sume_distrr // => j _; rewrite measure_ge0 //.
+  rewrite ge0_sume_distrr // => j _; rewrite measure_ge0 //.
   by apply: measurableI => //; exact: SFun.mpi.
 have ffg : forall k, m (SFun.pi f k) = (\sum_(l < p) m (SFun.pi f k `&` SFun.pi g l))%E.
   move=> k; rewrite -[in LHS](setIT (SFun.pi f k)) -(bigcup_sfun g) big_distrr /=.
@@ -831,7 +831,7 @@ under [X in _ = (_ + X)%E]eq_bigr do rewrite ffg; rewrite {ffg}.
 transitivity (\sum_(i < p) \sum_(i0 < n) ((SFun.codom g)`_i)%:E * m (SFun.pi g i `&` SFun.pi f i0) +
   \sum_(i < n) \sum_(l < p) ((SFun.codom f)`_i)%:E * m (SFun.pi f i `&` SFun.pi g l))%E; last first.
   congr adde; apply eq_bigr => i _.
-  rewrite sume_distrr // => j _; rewrite measure_ge0 //.
+  rewrite ge0_sume_distrr // => j _; rewrite measure_ge0 //.
   by apply: measurableI => //; exact: SFun.mpi.
 rewrite [X in _ = (X + _)%E]exchange_big.
 rewrite -big_split; apply eq_bigr => i _.
@@ -846,13 +846,6 @@ End sintegralD.
 (* TODO: move *)
 Definition nondecreasing_seq_fun (T : measurableType) d (R : porderType d) (f : (T -> R)^nat) :=
   (forall x, nondecreasing_seq (f^~x)).
-
-(* TODO: move *)
-Lemma eq_preimage (aT rT : Type) (f g : aT -> rT) (A : set rT) :
-  f =1 g -> f @^-1` A = g @^-1` A.
-Proof.
-by move=> fg; rewrite predeqE => r; split; rewrite /preimage /mkset fg.
-Qed.
 
 (* NB: equivalent of lte_lim for realFieldType *)
 Lemma lt_lim (R : realFieldType) (u : (R^o)^nat) (M : R) :
@@ -900,7 +893,7 @@ Lemma ereal_lim_sum (R : realType) (I : Type) (r : seq I) (f : I -> (\bar R)^nat
   (forall k, f k --> l k) ->
   (fun n : nat => \sum_(k <- r | P k) f k n)%E --> (\sum_(k <- r | P k) l k)%E.
 Proof.
-elim: r => [h fl|a b ih h fl].
+elim: r => [_ fl|a b ih h fl].
   rewrite !big_nil.
   rewrite (_ : (fun _ => _) = (fun=> 0%E)).
     exact: cvg_cst.
@@ -910,7 +903,7 @@ rewrite (_ : (fun _ => _) = (fun n : nat => (if P a then f a n + \sum_(k <- b | 
   by under eq_fun do rewrite big_cons.
 case: ifPn => Pa.
   apply: ereal_cvgD => //.
-    apply ge0_adde_def; rewrite !inE.
+    apply ge0_adde_defined; rewrite !inE.
     (* TODO: lemma? *)
     rewrite -(cvg_lim _ (fl a)) //; apply: ereal_lim_ge.
       by apply/cvg_ex; exists (l a); exact: (fl a).
@@ -931,7 +924,8 @@ Lemma eq_sintegral (f g : sfun T R) : f =1 g -> sintegral m f = sintegral m g.
 Proof.
 move=> fg.
 rewrite 2!sintegralE (perm_big (SFun.codom g)); last exact: sfun_ext.
-by apply: eq_bigr => r _; congr (_ * m _)%E; exact: eq_preimage.
+apply: eq_bigr => r _.
+by move: fg; rewrite -funeqE => ->.
 Qed.
 
 (* TODO: order structure on functions *)
@@ -1113,9 +1107,7 @@ Lemma nondecreasing_sintegral_lim_lemma :
 Proof.
 suff h : forall c, 0 < c < 1 ->
   (c%:E * sintegral mu g <= lim (sintegral mu \o f))%E.
-  apply/lee_addgt0Pr => //; first exact: sintegral_ge0.
-  apply: ereal_lim_ge; first exact: is_cvg_sintegral.
-  near=> n; exact: sintegral_ge0.
+  apply/lee_mul01Pr => //; first exact: sintegral_ge0.
 move=> c /andP[c0 c1].
 pose S_ n := [set x : T | c * g x <= f n x].
 have S_ndecr : nondecreasing_seq S_.
@@ -2156,47 +2148,62 @@ Hypothesis mf : measurable_fun setT f.
 Hypothesis g0 : forall x, (0 <= g x)%E.
 Hypothesis mg : measurable_fun setT g.
 
-Lemma integralK k (k0 : 0 <= k) : integral mu (fun x => k%:E * f x)%E = (k%:E * integral mu f)%E.
+Lemma integralK k : 0 <= k ->
+  integral mu (fun x => k%:E * f x)%E = (k%:E * integral mu f)%E.
 Proof.
-move: k0; rewrite le_eqVlt => /orP[/eqP k0|k0].
-  rewrite -k0 mul0e.
+rewrite le_eqVlt => /orP[/eqP <-|k0].
   under eq_fun do rewrite mul0e.
-  by rewrite integral0.
+  by rewrite mul0e integral0.
 have [f_ [f_ndecr cf]] := approximation point mf f0.
-pose kf_' := (fun n => nnsfun_scale point (f_ n) (ltW k0)).
-rewrite (@nondecreasing_integral_lim _ point _ mu (fun x : T => k%:E * f x)%E _ kf_'); last 3 first.
-  move=> t; rewrite mule_ge0 //.
-  exact: ltW.
-  move=> t m n mn /=; rewrite ler_pmul //.
-  exact: ltW.
-  exact: NNSFun.ge0.
-  exact: f_ndecr.
-  move=> t.
-  have := cf t.
-  case: pselect => //= [cft|cft ftoo].
-    case: pselect => [/= ckft|].
-      move/(@ereal_cvgZ _ _ _ k).
-      by apply: cvg_trans => //.
-    move=> cft'.
-    exfalso.
-    apply cft'.
-    by apply: is_cvgZr.
-  case: pselect => h /=.
-    exfalso.
-    apply: cft.
-    by rewrite -(@is_cvgZrE _ _ _ _ _ k) ?gt_eqF//.
-  (* NB: lemma? *)
-  by rewrite ftoo /mule /= gt_eqF// lte_fin k0.
-rewrite (_ : sintegral mu \o _ = fun n => sintegral mu (sfun_scale point k (f_ n))); last first.
-  by [].
-transitivity (lim (fun n : nat => k%:E * sintegral mu (f_ n))%E).
-  congr (lim _).
-  rewrite funeqE => n.
-  by rewrite sintegralK.
-rewrite elimZ; last first.
- by apply is_cvg_sintegral => //.
-congr (_ * _)%E.
-rewrite -(nondecreasing_integral_lim point mu f0) //.
+pose kf := fun n => nnsfun_scale point (f_ n) (ltW k0).
+rewrite (@nondecreasing_integral_lim _ point _ mu (fun x => k%:E * f x)%E _ kf); last 3 first.
+  - by move=> t; rewrite mule_ge0 //; exact: ltW.
+  - by move=> t m n mn; rewrite ler_pmul //;[exact: ltW|exact: NNSFun.ge0|exact: f_ndecr].
+  - move=> t.
+    have := cf t.
+    case: pselect => /= [cft|cft ftoo].
+      case: pselect => [/= ckft /(@ereal_cvgZ _ _ _ k)|ckft]; first exact: cvg_trans.
+      by exfalso; apply: ckft; apply: is_cvgZr.
+    case: pselect => h /=.
+      exfalso.
+      apply: cft; move: h.
+      by rewrite is_cvgZrE // gt_eqF.
+    (* NB: lemma? *)
+    by rewrite ftoo /mule /= gt_eqF// lte_fin k0.
+rewrite (_ : sintegral mu \o _ = fun n => sintegral mu (sfun_scale point k (f_ n))) //.
+rewrite (_ : (fun _ => _) = (fun n => k%:E * sintegral mu (f_ n))%E); last first.
+  by rewrite funeqE => n; rewrite sintegralK.
+rewrite elimZ; last exact: is_cvg_sintegral.
+by rewrite -(nondecreasing_integral_lim point mu f0).
 Qed.
 
+Lemma integralD : integral mu (f \+ g)%E = (integral mu f + integral mu g)%E.
+Admitted.
+
+Lemma le_integral : (forall x : T, f x <= g x)%E -> (integral mu f <= integral mu g)%E.
+Admitted.
+
 End semi_linearity.
+
+Section monotone_convergence_theorem.
+Variables (T : measurableType) (point : T) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (f : (T -> \bar R)^nat).
+Hypothesis mf : forall n, measurable_fun setT (f n).
+Hypothesis f0 : forall n x, (0 <= f n x)%E.
+Hypothesis ndecr_f : nondecreasing_seq_fun f.
+
+Lemma monotone_convergence : integral mu (fun x => lim (f^~ x)) = lim (fun n => integral mu (f n)).
+Admitted.
+
+End monotone_convergence_theorem.
+
+Section fatou.
+Variables (T : measurableType) (point : T) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (f : (T -> \bar R)^nat).
+Hypothesis mf : forall n, measurable_fun setT (f n).
+Hypothesis f0 : forall n x, (0 <= f n x)%E.
+
+Lemma fatou : (integral mu (fun x => lim (f^~ x)) <= lim (fun n => integral mu (f n)))%E.
+Admitted.
+
+End fatou.
