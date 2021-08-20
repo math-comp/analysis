@@ -1175,14 +1175,14 @@ move=> A0; rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
     + by near=> n; apply: lee_sum_nneg_subset => // i _; apply divr_ge0.
   - exact: is_cvg_ereal_nneg_series.
   - by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
-  - by apply: adde_def_nneg_series => // n _; apply: divr_ge0.
+  - by apply: adde_defined_nneg_series => // n _; apply: divr_ge0.
 suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ i.+1)%:R)%:E) -->
     e%:nngnum%:E.
   rewrite ereal_limD //.
   - by rewrite lee_add2l // (cvg_lim _ cvggeo).
   - exact: is_cvg_ereal_nneg_series.
   - by apply: is_cvg_ereal_nneg_series => ?; rewrite lee_fin divr_ge0.
-  - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_def.
+  - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_defined.
 rewrite (_ : (fun n => _) = @EFin _ \o
     (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ (i + 1))%:R))%R); last first.
   rewrite funeqE => n /=; rewrite (@big_morph _ _ (@EFin _) 0 adde)//.

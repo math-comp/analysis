@@ -1208,7 +1208,7 @@ move: Se'y; rewrite -{}umx {y} /= => le'um.
 have leum : (contract l - e%:num < contract (u_ m))%R.
   rewrite -lt_expandLR ?inE ?ltW//.
   move: le'um; rewrite /e' NEFin -/l [in X in (X - _ < _) -> _]lr /= opprB.
-  by rewrite addrCA subrr addr0 real_of_extended_expand.
+  by rewrite -addEFin addrCA subrr addr0 real_of_extended_expand.
 rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
 by rewrite le_contract nd_u_//; near: n; exists m.
 Grab Existential Variables. all: end_near. Qed.
@@ -1259,12 +1259,12 @@ move=> u0; apply: (ereal_lim_ge (is_cvg_ereal_nneg_series _ _ u0)).
 by near=> k; rewrite sume_ge0 // => i; apply: u0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma adde_def_nneg_series (R : realType) (f g : (\bar R)^nat)
+Lemma adde_defined_nneg_series (R : realType) (f g : (\bar R)^nat)
     (P Q : pred nat) :
   (forall n, P n -> 0 <= f n) -> (forall n, Q n -> 0 <= g n) ->
-  adde_def (\sum_(i <oo | P i) f i) (\sum_(i <oo | Q i) g i).
+  adde_defined (\sum_(i <oo | P i) f i) (\sum_(i <oo | Q i) g i).
 Proof.
-move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split.
+move=> f0 g0; rewrite /adde_defined !negb_and; apply/andP; split.
 - apply/orP; right; apply/eqP => Qg.
   by have := ereal_nneg_series_lim_ge0 g0; rewrite Qg.
 - apply/orP; left; apply/eqP => Pf.
@@ -1433,7 +1433,7 @@ by rewrite (splitr A) addEFin lee_add // ?foo // goo.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD (R : realType) (f g : (\bar R)^nat) a b :
-  adde_def a b -> f --> a -> g --> b -> f \+ g --> a + b.
+  adde_defined a b -> f --> a -> g --> b -> f \+ g --> a + b.
 Proof.
 move: a b => [a| |] [b| |] // _.
 - case/ereal_cvg_real => [[na _ foo] fa].
@@ -1465,7 +1465,7 @@ move: a b => [a| |] [b| |] // _.
 Qed.
 
 Lemma ereal_limD (R : realType) (f g : (\bar R)^nat) :
-  cvg f -> cvg g -> adde_def (lim f) (lim g) ->
+  cvg f -> cvg g -> adde_defined (lim f) (lim g) ->
   lim (f \+ g) = lim f + lim g.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
@@ -1478,7 +1478,7 @@ move=> f_eq0 g_eq0.
 transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i +
                          \sum_(0 <= i < n | P i) g i)).
   by congr (lim _); apply/funext => n; rewrite big_split.
-rewrite ereal_limD /adde_def //=; do ? exact: is_cvg_ereal_nneg_series.
+rewrite ereal_limD /adde_defined //=; do ? exact: is_cvg_ereal_nneg_series.
 by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
            ?[_ < _]real0// ereal_nneg_series_lim_ge0.
 Qed.
