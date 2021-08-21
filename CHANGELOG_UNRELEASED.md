@@ -13,6 +13,10 @@
 
 ### Removed
 
+- in `boolp.v`:
+  + definition `PredType`
+  + local notation `predOfType`
+
 ### Infrastructure
 
 ### Misc
