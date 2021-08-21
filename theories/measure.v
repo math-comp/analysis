@@ -25,6 +25,7 @@ From HB Require Import structures.
 (*                   that this function maps set0 to 0, is non-negative over  *)
 (*                   measurable sets and is semi-sigma-additive               *)
 (*                                                                            *)
+(*          seqDU F == the sequence F_0, F_1 \ F_0, F_2 \ (F_0 U F_1),...     *)
 (*           seqD F == the sequence F_0, F_1 \ F_0, F_2 \ F_1,...             *)
 (*                                                                            *)
 (* Theorems: Boole_inequality, generalized_Boole_inequality                   *)
@@ -559,83 +560,124 @@ rewrite measure_semi_additive2 // ?lee_addl // ?measure_ge0 //.
 by rewrite setDE setICA (_ : _ `&` ~` _ = set0) ?setI0 // setICr.
 Qed.
 
-Section trivIfy.
+Section seqDU.
 Variables (T : Type).
+Implicit Types F : (set T)^nat.
 
-Definition seqD (A : (set T) ^nat) :=
-  fun n => if n isn't n'.+1 then A O else A n `\` A n'.
+Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
 
-Lemma trivIset_seqD (A : (set T) ^nat) :
-  {homo A : n m / (n <= m)%nat >-> n `<=` m} -> trivIset setT (seqD A).
+Lemma trivIset_seqDU F : trivIset setT (seqDU F).
 Proof.
-move=> ndA i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
-  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB->.
+move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
+  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB ->.
 move=> /set0P; apply: contraNeq => _; apply/eqP.
-case: j i ij => // j [_ /=|n].
-  rewrite funeqE => x; rewrite propeqE; split => // -[A0 [Aj1 Aj]].
-  exact/Aj/(ndA O).
-rewrite ltnS => nj /=; rewrite funeqE => x; rewrite propeqE; split => //.
-by move=> -[[An1 An] [Aj1 Aj]]; apply/Aj/(ndA n.+1).
+rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
+by rewrite setCU setIAC !setIA setICl !set0I.
 Qed.
 
-Lemma setU_seqD (A : (set T) ^nat) : {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
-  forall n, A n.+1 = A n `|` seqD A n.+1.
+Lemma bigsetU_seqDU F n :
+  \big[setU/set0]_(k < n) F k = \big[setU/set0]_(k < n) seqDU F k.
 Proof.
-move=> ndA n; rewrite /seqD funeqE => x; rewrite propeqE; split.
-by move=> ?; have [?|?] := pselect (A n x); [left | right].
-by move=> -[|[]//]; apply: ndA.
+elim: n => [|n ih]; first by rewrite 2!big_ord0.
+rewrite !big_ord_recr /= predeqE => t; split=> [[Ft|Fnt]|[Ft|[Fnt Ft]]].
+- by left; rewrite -ih.
+- have [?|?] := pselect ((\big[setU/set0]_(i < n) seqDU F i) t); first by left.
+  by right; split => //; rewrite ih.
+- by left; rewrite ih.
+- by right.
 Qed.
 
-Lemma bigsetU_seqD (A : (set T) ^nat) n :
-  \big[setU/set0]_(i < n) A i = \big[setU/set0]_(i < n) seqD A i.
+Lemma seqDU_bigcup_eq F : \bigcup_k F k = \bigcup_k seqDU F k.
+Proof.
+rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
+  by rewrite setDE => -[? _]; exists n.
+have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
+suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
+  by exists m => //; split => //; rewrite bigcup_ord => -[k /= kj]; exact: FNmt.
+move: UFnt; rewrite bigcup_ord => -[/= k _ Fkt] {Fnt n}.
+have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
+case: k => [|k] in Fkt kn *; first by exists O.
+have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
+move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply (ih t i) => //.
+by rewrite (leq_ltn_trans ik).
+Qed.
+
+End seqDU.
+
+Section seqD.
+Variables (T : Type).
+Implicit Types F : (set T) ^nat.
+
+Definition seqD F :=
+  fun n => if n isn't n'.+1 then F O else F n `\` F n'.
+
+Lemma seqDUE F : nondecreasing_seq F -> seqDU F = seqD F.
+Proof.
+move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
+rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
+by rewrite bigcup_ord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
+Qed.
+
+Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
+Proof. by move=> ndF; rewrite -seqDUE //; exact: trivIset_seqDU. Qed.
+
+Lemma bigsetU_seqD F n :
+  \big[setU/set0]_(i < n) F i = \big[setU/set0]_(i < n) seqD F i.
 Proof.
 case: n => [|n]; first by rewrite 2!big_ord0.
 elim: n => [|n ih]; first by rewrite !big_ord_recl !big_ord0.
 rewrite big_ord_recr [in RHS]big_ord_recr /= -{}ih predeqE => x; split.
   move=> [?|?]; first by left.
-  have [?|?] := pselect (A n x); last by right.
+  have [?|?] := pselect (F n x); last by right.
   by left; rewrite big_ord_recr /=; right.
 by move=> [?|[? ?]]; [left | right].
 Qed.
 
-Lemma eq_bigsetU_seqD (A : (set T) ^nat) n :
-  {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
-  A n = \big[setU/set0]_(i < n.+1) seqD A i.
+Lemma setU_seqD F : nondecreasing_seq F ->
+  forall n, F n.+1 = F n `|` seqD F n.+1.
 Proof.
-move=> ndA; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
+move=> ndF n; rewrite /seqD funeqE => x; rewrite propeqE; split.
+by move=> ?; have [?|?] := pselect (F n x); [left | right].
+by move=> -[|[]//]; move: x; exact/subsetPset/ndF.
+Qed.
+
+Lemma eq_bigsetU_seqD F n : nondecreasing_seq F ->
+  F n = \big[setU/set0]_(i < n.+1) seqD F i.
+Proof.
+move=> ndF; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
 - by move=> ?; rewrite big_ord_recl big_ord0; left.
 - by rewrite big_ord_recl big_ord0 setU0.
-- rewrite (setU_seqD ndA) => -[|/=].
-  by rewrite big_ord_recr /= -ih => Anx; left.
-  by move=> -[An1x Anx]; rewrite big_ord_recr /=; right.
-- rewrite big_ord_recr /= -ih => -[|[]//]; exact: ndA.
+- rewrite (setU_seqD ndF) => -[|/=].
+  by rewrite big_ord_recr /= -ih => Fnx; left.
+  by move=> -[Fn1x Fnx]; rewrite big_ord_recr /=; right.
+- by rewrite big_ord_recr /= -ih => -[|[]//]; move: x; exact/subsetPset/ndF.
 Qed.
 
-Lemma eq_bigcup_seqD (A : (set T) ^nat) : \bigcup_n A n = \bigcup_n (seqD A) n.
+Lemma eq_bigcup_seqD F : \bigcup_n F n = \bigcup_n seqD F n.
 Proof.
 rewrite funeqE => x; rewrite propeqE; split.
-  case; elim=> [_ A0x|n ih _ An1x]; first by exists O.
-  have [|Anx] := pselect (A n x); last by exists n.+1.
-  by move=> /(ih I)[m _ Amx]; exists m.
-case; elim=> [_ /= A0x|n ih _ /= [An1x Anx]]; by [exists O | exists n.+1].
+  case; elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
+  have [|Fnx] := pselect (F n x); last by exists n.+1.
+  by move=> /(ih I)[m _ Fmx]; exists m.
+case; elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; by [exists O | exists n.+1].
 Qed.
 
-Lemma eq_bigcup_seqD_bigsetU (A : (set T) ^nat) :
-  \bigcup_n (seqD (fun n => \big[setU/set0]_(i < n.+1) A i) n) = \bigcup_n A n.
+Lemma eq_bigcup_seqD_bigsetU F :
+  \bigcup_n (seqD (fun n => \big[setU/set0]_(i < n.+1) F i) n) = \bigcup_n F n.
 Proof.
-rewrite -(@eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) A i)).
-rewrite eqEsubset; split => [t [i _]|t [i _ Ait]].
-  by rewrite -bigcup_set_cond => -[/= j _ Ajt]; exists j.
+rewrite -(@eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) F i)).
+rewrite eqEsubset; split => [t [i _]|t [i _ Fit]].
+  by rewrite -bigcup_set_cond => -[/= j _ Fjt]; exists j.
 by exists i => //; rewrite big_ord_recr /=; right.
 Qed.
 
-End trivIfy.
+End seqD.
 
 (* 401,p.43 measure is continuous from below *)
 Lemma cvg_mu_inc (R : realFieldType) (T : ringOfSetsType)
   (mu : {measure set T -> \bar R}) (A : (set T) ^nat) :
   (forall i, measurable (A i)) -> measurable (\bigcup_n A n) ->
-  {homo A : n m / (n <= m)%nat >-> n `<=` m} ->
+  nondecreasing_seq A ->
   mu \o A --> mu (\bigcup_n A n).
 Proof.
 move=> mA mbigcupA ndA.
@@ -700,8 +742,8 @@ have AB : \bigcup_k A k = \bigcup_n B n.
     by exists k => //; rewrite /B big_ord_recr /=; right.
   rewrite /B big_ord_recr /= => -[|Amx]; last by exists m.
   by rewrite bigcup_ord => -[k ? ?]; exists k.
-have ndB : {homo B : n m / (n <= m)%N >-> n `<=` m}.
-  by move=> n m; rewrite -ltnS; exact/subset_bigsetU.
+have ndB : nondecreasing_seq B.
+  by move=> n m nm; exact/subsetPset/subset_bigsetU.
 have mB : forall i, measurable (B i) by move=> i; exact: bigsetU_measurable.
 rewrite AB.
 move/(@cvg_mu_inc _ _ mu _ mB) : ndB => /(_ _)/cvg_lim <- //; last first.
@@ -1026,7 +1068,7 @@ Proof.
 move=> MA; rewrite -eq_bigcup_seqD_bigsetU.
 apply/caratheodory_measurable_trivIset_bigcup; last first.
   apply: (@trivIset_seqD _ (fun n => \big[setU/set0]_(i < n.+1) A i)).
-  by move=> n m; rewrite -ltnS; exact/subset_bigsetU.
+  by move=> n m nm; exact/subsetPset/subset_bigsetU.
 by case=> [|n /=]; [| apply/caratheodory_measurable_setD => //];
   exact/caratheodory_measurable_bigsetU.
 Qed.
