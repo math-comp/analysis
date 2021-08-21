@@ -14,14 +14,6 @@ Unset Printing Implicit Defensive.
 Declare Scope box_scope.
 Declare Scope quant_scope.
 
-(* Copy of the ssrbool shim to ensure compatibility with MathComp v1.8.0. *)
-Definition PredType : forall T pT, (pT -> pred T) -> predType T.
-exact PredType || exact mkPredType.
-Defined.
-Arguments PredType [T pT] toP.
-
-Local Notation predOfType T := (pred_of_simpl (@pred_of_argType T)).
-
 (* -------------------------------------------------------------------- *)
 
 Axiom functional_extensionality_dep :
