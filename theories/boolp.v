@@ -628,8 +628,14 @@ Proof. by rewrite propeqE not_implyP. Qed.
 Lemma orC (P Q : Prop) : (P \/ Q) = (Q \/ P).
 Proof. by rewrite propeqE; split=> [[]|[]]; [right|left|right|left]. Qed.
 
+Lemma orA : associative or.
+Proof. by move=> P Q R; rewrite propeqE; split=> [|]; tauto. Qed.
+
 Lemma andC (P Q : Prop) : (P /\ Q) = (Q /\ P).
 Proof. by rewrite propeqE; split=> [[]|[]]. Qed.
+
+Lemma andA : associative and.
+Proof. by move=> P Q R; rewrite propeqE; split=> [|]; tauto. Qed.
 
 Lemma forallNE {T} (P : T -> Prop) : (forall x, ~ P x) = ~ exists x, P x.
 Proof.
