@@ -847,7 +847,8 @@ End sintegralD.
 Definition nondecreasing_seq_fun (T : measurableType) d (R : porderType d) (f : (T -> R)^nat) :=
   (forall x, nondecreasing_seq (f^~x)).
 
-(* NB: equivalent of lte_lim for realFieldType *)
+(* NB: PR in progress *)
+(* NB: proof similar to lte_lim *)
 Lemma lt_lim (R : realFieldType) (u : (R^o)^nat) (M : R) :
   nondecreasing_seq u -> cvg u -> M < lim u ->
   \forall n \near \oo, M <= u n.
@@ -861,7 +862,9 @@ have : lim u <= M by apply lim_le => //; near=> m; apply/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma nondecreasing_dvg_lt (R : realType) (u_ : R^o ^nat) : nondecreasing_seq u_ -> ~ cvg u_ ->
+(* NB: see also cvgPpinfty *)
+Lemma nondecreasing_dvg_lt (R : realType) (u_ : (R^o)^nat) :
+  nondecreasing_seq u_ -> ~ cvg u_ ->
   forall M, exists n, forall m, (m >= n)%N -> M <= u_ m.
 Proof.
 move=> nu du M; apply/not_existsP; apply: contra_not du => Mu.
@@ -869,6 +872,26 @@ apply: (@nondecreasing_is_cvg _ _ M) => // n.
 have := Mu n => /existsNP[m] /not_implyP [nm] /negP; rewrite -ltNge => /ltW.
 by apply: le_trans; apply: nu.
 Qed.
+
+Lemma ereal_lim_sum (R : realType) (I : Type) (r : seq I) (f : I -> (\bar R)^nat)
+    (l : I -> \bar R) (P : pred I) :
+  (forall n x, P x -> 0 <= f x n)%E ->
+  (forall k, f k --> l k) ->
+  (fun n : nat => \sum_(k <- r | P k) f k n)%E --> (\sum_(k <- r | P k) l k)%E.
+Proof.
+elim: r => [_ fl|a b ih h fl].
+  rewrite !big_nil [X in X --> _](_ : _ = fun=> 0%E); first exact: cvg_cst.
+  by under eq_fun do rewrite big_nil.
+rewrite big_cons; under eq_fun do rewrite big_cons.
+case: ifPn => Pa; last exact: ih.
+apply: ereal_cvgD => //; last exact: ih.
+have P0l : forall i, P i -> (0 <= l i)%E.
+  move=> i Pi; rewrite -(cvg_lim _ (fl i)) // ereal_lim_ge //.
+  - by apply/cvg_ex; exists (l i); exact: (fl i).
+  - by apply: nearW => // n; exact: h.
+by apply ge0_adde_defined; rewrite !inE ?P0l// sume_ge0.
+Grab Existential Variables. all: end_near. Qed.
+(* /NB: PR in progress *)
 
 Lemma ereal_cvgZ (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) c :
   f --> a -> (fun n => c%:E * f n)%E --> (c%:E * a)%E.
@@ -887,34 +910,6 @@ Proof.
 move=> /cvg_ex[l fl]; apply/cvg_ex; eexists.
 by apply: ereal_cvgZ => //; exact: fl.
 Qed.
-
-Lemma ereal_lim_sum (R : realType) (I : Type) (r : seq I) (f : I -> (\bar R)^nat) (l : I -> \bar R) (P : pred I) :
-  (forall n x, P x -> 0 <= f x n)%E ->
-  (forall k, f k --> l k) ->
-  (fun n : nat => \sum_(k <- r | P k) f k n)%E --> (\sum_(k <- r | P k) l k)%E.
-Proof.
-elim: r => [_ fl|a b ih h fl].
-  rewrite !big_nil.
-  rewrite (_ : (fun _ => _) = (fun=> 0%E)).
-    exact: cvg_cst.
-  by under eq_fun do rewrite big_nil.
-rewrite big_cons.
-rewrite (_ : (fun _ => _) = (fun n : nat => (if P a then f a n + \sum_(k <- b | P k) f k n else \sum_(k <- b | P k) f k n )%E)); last first.
-  by under eq_fun do rewrite big_cons.
-case: ifPn => Pa.
-  apply: ereal_cvgD => //.
-    apply ge0_adde_defined; rewrite !inE.
-    (* TODO: lemma? *)
-    rewrite -(cvg_lim _ (fl a)) //; apply: ereal_lim_ge.
-      by apply/cvg_ex; exists (l a); exact: (fl a).
-    by near=> n; apply h => //.
-    apply sume_ge0 => t Pt.
-    rewrite -(cvg_lim _ (fl t)) //; apply: ereal_lim_ge.
-      by apply/cvg_ex; exists (l t); exact: (fl t).
-    by near=> n; apply h => //.
-  by apply ih => //.
-by apply ih => //.
-Grab Existential Variables. all: end_near. Qed.
 
 Section le_sintegral.
 Variables (T : measurableType) (point : T) (R : realType).
@@ -2159,7 +2154,7 @@ pose kf := fun n => nnsfun_scale point (f_ n) (ltW k0).
 rewrite (@nondecreasing_integral_lim _ point _ mu (fun x => k%:E * f x)%E _ kf); last 3 first.
   - by move=> t; rewrite mule_ge0 //; exact: ltW.
   - by move=> t m n mn; rewrite ler_pmul //;[exact: ltW|exact: NNSFun.ge0|exact: f_ndecr].
-  - move=> t.
+  - (* TODO: lemma? *) move=> t.
     have := cf t.
     case: pselect => /= [cft|cft ftoo].
       case: pselect => [/= ckft /(@ereal_cvgZ _ _ _ k)|ckft]; first exact: cvg_trans.
@@ -2178,9 +2173,67 @@ by rewrite -(nondecreasing_integral_lim point mu f0).
 Qed.
 
 Lemma integralD : integral mu (f \+ g)%E = (integral mu f + integral mu g)%E.
-Admitted.
+Proof.
+have [f_ [f_ndecr cf]] := approximation point mf f0.
+have [g_ [g_ndecr cg]] := approximation point mg g0.
+pose fg := fun n => nnsfun_add (f_ n) (g_ n).
+rewrite (@nondecreasing_integral_lim _ point _ _ _ _ fg); last 3 first.
+  by move=> x; rewrite adde_ge0.
+  (* TODO: lemma *)
+  move=> t m n mn.
+  by apply: ler_add; [exact: f_ndecr | exact: g_ndecr].
+  (* TODO: lemma *)
+  move=> t.
+  have := cf t.
+  case: pselect => [cf_ /= f_f|cf_ /= ftoo].
+    have := cg t.
+    case: pselect => [cg_ /= g_g|g_dvg /= gtoo].
+      have : cvg (fun n => f_ n t + g_ n t : R^o) by exact: is_cvgD.
+      case: pselect => //= _ _.
+      rewrite [X in X --> _](_ : _ = (fun n => (@EFin _ \o f_^~ t) n + (@EFin _ \o g_^~ t) n)%E) //.
+      by apply: ereal_cvgD => //; apply: ge0_adde_defined => /=; rewrite inE.
+    case: pselect => [cf_g_|_]/=.
+      exfalso; apply: g_dvg.
+      by move: cf_g_; rewrite is_cvgDrE.
+    by rewrite gtoo addeC addooe // gt_eqF // (lt_le_trans _ (f0 t)) // lte_ninfty.
+  case: pselect => [cf_g_ /=|/= _].
+    have [cg_|cg_] := pselect (cvg (fun n => g_ n t : R^o)).
+      exfalso; apply: cf_.
+      by move: cf_g_; rewrite is_cvgDlE.
+    exfalso.
+    move/cvg_ex : (cf_g_) => [l f_g_l].
+    have [n nl] := nondecreasing_dvg_lt (f_ndecr t) cf_ (l + 1).
+    have [m ml] := nondecreasing_dvg_lt (g_ndecr t) cg_ 0.
+    have f_g_nd : {homo (fun n : nat => f_ n t + g_ n t) : n m / (n <= m)%N >-> n <= m}.
+      (* NB: use nondecreasing_seq_fun? *)
+      (* TODO: lemma? *)
+      move=> a b ab.
+      by apply: ler_add; [exact: f_ndecr | exact: g_ndecr].
+    have := nondecreasing_cvg_le f_g_nd cf_g_ (maxn n m).
+    rewrite (cvg_lim _ f_g_l) //.
+    apply/negP.
+    rewrite -ltNge (@lt_le_trans _ _ (l + 1 + 0)) //.
+      by rewrite addr0 ltr_addl.
+    rewrite ler_add //.
+      by apply: nl; rewrite leq_maxl.
+    by apply ml; rewrite leq_maxr.
+  by rewrite ftoo addooe // gt_eqF// (lt_le_trans _ (g0 t))// lte_ninfty.
+rewrite (_ : sintegral mu \o _ = fun n => sintegral mu (f_ n) + sintegral mu (g_ n))%E; last first.
+  by rewrite funeqE /= => n /=; rewrite sintegralD.
+rewrite (nondecreasing_integral_lim point _ f0 f_ndecr cf).
+rewrite (nondecreasing_integral_lim point _ g0 g_ndecr cg).
+rewrite ereal_limD //; try exact: is_cvg_sintegral.
+rewrite ge0_adde_defined => //; rewrite inE.
+- apply: ereal_lim_ge.
+  exact: is_cvg_sintegral.
+  by apply: nearW => n; exact: sintegral_ge0.
+- apply: ereal_lim_ge.
+  exact: is_cvg_sintegral.
+  by apply: nearW => n; exact: sintegral_ge0.
+Qed.
 
 Lemma le_integral : (forall x : T, f x <= g x)%E -> (integral mu f <= integral mu g)%E.
+Proof.
 Admitted.
 
 End semi_linearity.
