@@ -2234,29 +2234,25 @@ Qed.
 
 Lemma le_integral : (forall x : T, f x <= g x)%E -> (integral mu f <= integral mu g)%E.
 Proof.
-Admitted.
+move=> fg.
+have [f_ [f_ndecr cf]] := approximation point mf f0.
+rewrite (nondecreasing_integral_lim point _ f0 f_ndecr cf).
+apply: ereal_lim_le; first exact: is_cvg_sintegral.
+near=> n; apply ereal_sup_ub => /=; exists (f_ n) => // t.
+rewrite (le_trans _ (fg t)) //.
+have := cf t.
+case: pselect => [/= cf_ f_ft|/= _ ->]; last by rewrite lee_pinfty.
+have := lee_pinfty (f t).
+rewrite le_eqVlt => /orP[/eqP ->|ftoo]; first by rewrite lee_pinfty.
+have /EFin_real_of_extended ftE : f t \is a fin_num.
+  rewrite fin_numE gt_eqF/= ?lt_eqF//.
+  by rewrite (lt_le_trans _ (f0 t))// lte_ninfty.
+move: f_ft; rewrite ftE => /ereal_cvg_real[ft_near f_ft].
+set u_ := (X in X --> _) in f_ft.
+have <- : lim (u_ : R^o^nat) = real_of_extended (f t) by apply/cvg_lim.
+rewrite lee_fin.
+apply: nondecreasing_cvg_le => // a b ab.
+by rewrite /u_ /=; exact: f_ndecr.
+Grab Existential Variables. all: end_near. Qed.
 
 End semi_linearity.
-
-Section monotone_convergence_theorem.
-Variables (T : measurableType) (point : T) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (f : (T -> \bar R)^nat).
-Hypothesis mf : forall n, measurable_fun setT (f n).
-Hypothesis f0 : forall n x, (0 <= f n x)%E.
-Hypothesis ndecr_f : nondecreasing_seq_fun f.
-
-Lemma monotone_convergence : integral mu (fun x => lim (f^~ x)) = lim (fun n => integral mu (f n)).
-Admitted.
-
-End monotone_convergence_theorem.
-
-Section fatou.
-Variables (T : measurableType) (point : T) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (f : (T -> \bar R)^nat).
-Hypothesis mf : forall n, measurable_fun setT (f n).
-Hypothesis f0 : forall n x, (0 <= f n x)%E.
-
-Lemma fatou : (integral mu (fun x => lim (f^~ x)) <= lim (fun n => integral mu (f n)))%E.
-Admitted.
-
-End fatou.
