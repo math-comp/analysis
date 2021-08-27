@@ -210,6 +210,7 @@ End sequences_patched.
 
 Section sequences_R_lemmas_realFieldType.
 Variable R : realFieldType.
+Implicit Types u v : R ^nat.
 
 Lemma squeeze T (f g h : T -> R) (a : filter_on T) :
   (\forall x \near a, f x <= g x <= h x) -> forall (l : R),
@@ -221,7 +222,7 @@ rewrite ![`|l - _|]distrC; rewrite !ltr_distl => /andP[lf _] /andP[_ hl].
 by rewrite (lt_le_trans lf)? (le_lt_trans gh).
 Qed.
 
-Lemma cvgPpinfty (u_ : R ^nat) :
+Lemma cvgPpinfty u_ :
   u_ --> +oo <-> forall A, A > 0 -> \forall n \near \oo, A <= u_ n.
 Proof.
 split => [u_cvg _/posnumP[A]|u_ge X [A [Ar AX]]].
@@ -233,7 +234,7 @@ apply: AX; rewrite (@lt_le_trans _ _ ((maxr 0 A) +1)) //.
 by near: x; apply: u_ge; rewrite ltr_spaddr // le_maxr lexx.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma cvgNpinfty (u_ : R ^nat) : (- u_ --> +oo) = (u_ --> -oo).
+Lemma cvgNpinfty u_ : (- u_ --> +oo) = (u_ --> -oo).
 Proof.
 rewrite propeqE; split => u_cvg P [/= l [l_real Pl]];
 rewrite !near_simpl [\forall x \near _, P _](near_map _ \oo);
@@ -243,24 +244,24 @@ have [|/=n _]:= u_cvg (fun x => P (- x)); do ?by [exists n
 by under [X in _ `<=` X]funext do rewrite /= opprK; exists n.
 Qed.
 
-Lemma cvgNminfty (u_ : R ^nat) : (- u_ --> -oo) = (u_ --> +oo).
+Lemma cvgNminfty u_ : (- u_ --> -oo) = (u_ --> +oo).
 Proof. by rewrite -cvgNpinfty opprK. Qed.
 
-Lemma cvgPminfty (u_ : R ^nat) :
+Lemma cvgPminfty u_ :
   u_ --> -oo <-> forall A, A > 0 -> \forall n \near \oo, - A >= u_ n.
 Proof.
 rewrite -cvgNpinfty; rewrite cvgPpinfty.
 by split => uA A A_gt0; near=> n; rewrite ler_oppr; near: n; apply: uA.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma ger_cvg_pinfty (u_ v_ : R ^nat) : (\forall n \near \oo, u_ n <= v_ n) ->
+Lemma ger_cvg_pinfty u_ v_ : (\forall n \near \oo, u_ n <= v_ n) ->
   u_ --> +oo -> v_ --> +oo.
 Proof.
 move=> uv /cvgPpinfty ucvg; apply/cvgPpinfty => _/posnumP[A].
 by apply: filterS2 (ucvg _ A) uv => x; apply: le_trans.
 Qed.
 
-Lemma ler_cvg_minfty (v_ u_ : R ^nat) : (\forall n \near \oo, u_ n <= v_ n) ->
+Lemma ler_cvg_minfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
   v_ --> -oo -> u_ --> -oo.
 Proof.
 move=> uv /cvgPminfty ucvg; apply/cvgPminfty => _/posnumP[A].
@@ -277,15 +278,24 @@ Lemma closed_seq {V : topologicalType} (u_ : V ^nat) (A : V -> Prop) :
 Proof. by move=> A_closed u_A l /closed_cvg_loc; apply. Qed.
 Arguments closed_seq {V}.
 
-Lemma lim_ge x (u_ : R ^nat) : cvg u_ ->
-  (\forall n \near \oo, x <= u_ n) -> x <= lim u_.
+Lemma lim_ge x u_ : cvg u_ -> (\forall n \near \oo, x <= u_ n) -> x <= lim u_.
 Proof. by move=> /closed_cvg_loc V ?; elim/V: _. Qed.
 
-Lemma lim_le x (u_ : R ^nat) : cvg u_ ->
-  (\forall n \near \oo, x >= u_ n) -> x >= lim u_.
+Lemma lim_le x u_ : cvg u_ -> (\forall n \near \oo, x >= u_ n) -> x >= lim u_.
 Proof. by move=> /closed_cvg_loc V ?; elim/V: _. Qed.
 
-Lemma ler_lim (u_ v_ : R ^nat) : cvg u_ -> cvg v_ ->
+Lemma lt_lim u (M : R) : nondecreasing_seq u -> cvg u -> M < lim u ->
+  \forall n \near \oo, M <= u n.
+Proof.
+move=> ndu cu Ml; have [[n Mun]|/forallNP Mu] := pselect (exists n, M <= u n).
+  near=> m; suff : u n <= u m by exact: le_trans.
+  by near: m; exists n.+1 => // p q; apply/ndu/ltnW.
+have {}Mu : forall x, M > u x by move=> x; rewrite ltNge; apply/negP.
+have : lim u <= M by apply lim_le => //; near=> m; apply/ltW/Mu.
+by move/(lt_le_trans Ml); rewrite ltxx.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma ler_lim u_ v_ : cvg u_ -> cvg v_ ->
   (\forall n \near \oo, u_ n <= v_ n) -> lim u_ <= lim v_.
 Proof.
 move=> uv cu cv; rewrite -subr_ge0 -limB //.
@@ -293,7 +303,7 @@ apply: lim_ge; first exact: is_cvgB.
 by apply: filterS cv => n; rewrite subr_ge0.
 Qed.
 
-Lemma nonincreasing_cvg_ge (u_ : R ^nat) : nonincreasing_seq u_ -> cvg u_ ->
+Lemma nonincreasing_cvg_ge u_ : nonincreasing_seq u_ -> cvg u_ ->
   forall n, lim u_ <= u_ n.
 Proof.
 move=> du ul p; rewrite leNgt; apply/negP => up0.
@@ -310,12 +320,33 @@ have : `|lim u_ - u_ N| >= `|u_ p - lim u_|%R.
 rewrite leNgt => /negP; apply; by near: N.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma nondecreasing_cvg_le (u_ : R ^nat) : nondecreasing_seq u_ -> cvg u_ ->
+Lemma nondecreasing_cvg_le u_ : nondecreasing_seq u_ -> cvg u_ ->
   forall n, u_ n <= lim u_.
 Proof.
 move=> iu cu n; move: (@nonincreasing_cvg_ge (- u_)).
 rewrite -nondecreasing_opp opprK => /(_ iu); rewrite is_cvgNE => /(_ cu n).
 by rewrite limN // ler_oppl opprK.
+Qed.
+
+Lemma cvg_has_ub u_ : cvg u_ -> has_ubound [set `|u_ n| | n in setT].
+Proof.
+move=> /cvg_seq_bounded/pinfty_ex_gt0[M M_gt0 /= uM].
+by exists M; apply/ubP => x -[n _ <-{x}]; exact: uM.
+Qed.
+
+Lemma cvg_has_sup u_ : cvg u_ -> has_sup (u_ @` setT).
+Proof.
+move/cvg_has_ub; rewrite -/(_ @` _) -(image_comp u_ normr setT).
+by move=> /has_ub_image_norm uM; split => //; exists (u_ 0%N), 0%N.
+Qed.
+
+Lemma cvg_has_inf u_ : cvg u_ -> has_inf (u_ @` setT).
+Proof.
+move/is_cvgN/cvg_has_sup; rewrite has_inf_supN.
+suff -> : (- u_) @` setT = -%R @` (u_ @` setT) by [].
+rewrite predeqE => x; split.
+by case=> n _ <-; exists (u_ n) => //; exists n.
+by case=> y [] n _ <- <-; exists n.
 Qed.
 
 End sequences_R_lemmas_realFieldType.
@@ -446,29 +477,6 @@ End series_patched.
 Section sequences_R_lemmas.
 Variable R : realType.
 
-Lemma cvg_has_ub (u_ : R ^nat) :
-  cvg u_ -> has_ubound [set `|u_ n| | n in setT].
-Proof.
-move=> /cvg_seq_bounded/pinfty_ex_gt0[M M_gt0 /= uM].
-by exists M; apply/ubP => x -[n _ <-{x}]; exact: uM.
-Qed.
-
-Lemma cvg_has_sup (u_ : R ^nat) : cvg u_ -> has_sup (u_ @` setT).
-Proof.
-move/cvg_has_ub; rewrite -/(_ @` _) -(image_comp u_ normr setT).
-move=> /has_ub_image_norm uM; split => //.
-by exists (u_ 0%N), 0%N.
-Qed.
-
-Lemma cvg_has_inf (u_ : R ^nat) : cvg u_ -> has_inf (u_ @` setT).
-Proof.
-move/is_cvgN/cvg_has_sup; rewrite has_inf_supN.
-suff -> : (- u_) @` setT = -%R @` (u_ @` setT) by [].
-rewrite predeqE => x; split.
-by case=> n _ <-; exists (u_ n) => //; exists n.
-by case=> y [] n _ <- <-; exists n.
-Qed.
-
 Lemma nondecreasing_cvg (u_ : R ^nat) (M : R) :
     nondecreasing_seq u_ -> (forall n, u_ n <= M) ->
   u_ --> sup (u_ @` setT) .
@@ -492,6 +500,16 @@ Grab Existential Variables. all: end_near. Qed.
 Lemma nondecreasing_is_cvg (u_ : R ^nat) (M : R) :
   nondecreasing_seq u_ -> (forall n, u_ n <= M) -> cvg u_.
 Proof. by move=> u_incr u_bnd; apply: cvgP; apply: nondecreasing_cvg. Qed.
+
+Lemma nondecreasing_dvg_lt (u_ : R ^nat) :
+  nondecreasing_seq u_ -> ~ cvg u_ ->
+  forall M, exists n, forall m, (m >= n)%N -> M <= u_ m.
+Proof.
+move=> nu du M; apply/not_existsP; apply: contra_not du => Mu.
+apply: (@nondecreasing_is_cvg _ M) => // n.
+have := Mu n => /existsNP[m] /not_implyP [nm] /negP; rewrite -ltNge => /ltW.
+exact: (le_trans (nu _ _ nm)).
+Qed.
 
 Lemma near_nondecreasing_is_cvg (u_ : R ^nat) (M : R) :
     {near \oo, nondecreasing_seq u_} ->
@@ -1463,6 +1481,25 @@ move: a b => [a| |] [b| |] // _.
 - exact: ereal_cvgD_ninfty_fin.
 - exact: ereal_cvgD_ninfty_ninfty.
 Qed.
+
+Lemma ereal_lim_sum (R : realType) (I : Type) (r : seq I) (f : I -> (\bar R)^nat)
+    (l : I -> \bar R) (P : pred I) :
+  (forall n x, P x -> 0 <= f x n)%E ->
+  (forall k, f k --> l k) ->
+  (fun n => \sum_(k <- r | P k) f k n)%E --> (\sum_(k <- r | P k) l k)%E.
+Proof.
+elim: r => [_ fl|a b ih f0 fl].
+  rewrite !big_nil [X in X --> _](_ : _ = fun=> 0%E); first exact: cvg_cst.
+  by under eq_fun do rewrite big_nil.
+rewrite big_cons; under eq_fun do rewrite big_cons.
+case: ifPn => Pa; last exact: ih.
+apply: ereal_cvgD => //; last exact: ih.
+have P0l : forall i, P i -> (0 <= l i)%E.
+  move=> i Pi; rewrite -(cvg_lim _ (fl i)) // ereal_lim_ge //.
+  - by apply/cvg_ex; exists (l i); exact: (fl i).
+  - by apply: nearW => // n; exact: f0.
+by apply ge0_adde_defined; rewrite !inE ?P0l// sume_ge0.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_limD (R : realType) (f g : (\bar R)^nat) :
   cvg f -> cvg g -> lim f +? lim g ->

@@ -11,6 +11,20 @@
   + lemmas `trivIset_seqDU`, `bigsetU_seqDU`, `seqDU_bigcup_eq`, `seqDUE`
 - in `ereal.v`:
   + notation `x +? y` for `adde_def x y`
+- in `sequences.v`:
+  + lemmas `lt_lim`, `nondecreasing_dvg_lt`, `ereal_lim_sum`
+
+### Changed
+
+- in `normedtype.v`:
+  + remove useless parameter from lemma `near_infty_natSinv_lt`
+- in `real.v`:
+  + generalize from `realType` to `realDomainType` lemmas
+    `has_ub_image_norm`, `has_inf_supN`
+- in `sequences.v`:
+  + generalize from `realType` to `realFieldType` lemmas
+    `cvg_has_ub`, `cvg_has_sup`, `cvg_has_inf`
+
 - in `ereal.v`:
   + lemmas `ge0_adde_def`, `onee_neq0`, `mule0`, `mul0e`
   + lemmas `mulrEDr`, `mulrEDl`, `ge0_muleDr`, `ge0_muleDl`
