@@ -6,6 +6,9 @@
 
 - in `boolp.v`:
   + lemmas `orA`, `andA`
+- in `measure.v`:
+  + definition `seqDU`
+  + lemmas `trivIset_seqDU`, `bigsetU_seqDU`, `seqDU_bigcup_eq`, `seqDUE`
 
 ### Changed
 
