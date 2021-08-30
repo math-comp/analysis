@@ -56,6 +56,10 @@
   + change definition `mule` such that 0 x oo = 0
   + `adde` now defined using `nosimpl` and `adde_subdef`
   + `mule` now defined using `nosimpl` and `mule_subdef`
+  + `adde` now defined using `nosimpl` and `adde_def`
+- in `sequences.v`:
+  + change the statements of `cvgPpinfty`, `cvgPminfty`,
+    `cvgPpinfty_lt`
 
 ### Renamed
 

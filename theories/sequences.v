@@ -222,12 +222,12 @@ rewrite ![`|l - _|]distrC; rewrite !ltr_distl => /andP[lf _] /andP[_ hl].
 by rewrite (lt_le_trans lf)? (le_lt_trans gh).
 Qed.
 
-Lemma cvgPpinfty u_ :
-  u_ --> +oo <-> forall A, A > 0 -> \forall n \near \oo, A <= u_ n.
+Lemma cvgPpinfty (u_ : R ^nat) :
+  u_ --> +oo <-> forall A, \forall n \near \oo, A <= u_ n.
 Proof.
-split => [u_cvg _/posnumP[A]|u_ge X [A [Ar AX]]].
-  rewrite -(near_map u_ \oo (<=%R A%:num)).
-  by apply: u_cvg; apply: nbhs_pinfty_ge.
+split => [u_cvg A|u_ge X [A [Ar AX]]].
+  rewrite -(near_map u_ \oo (<=%R A)).
+  by apply: u_cvg; apply: nbhs_pinfty_ge_real; rewrite num_real.
 rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
 apply: AX; rewrite (@lt_le_trans _ _ ((maxr 0 A) +1)) //.
   by rewrite ltr_spaddr // le_maxr lexx orbT.
@@ -247,25 +247,25 @@ Qed.
 Lemma cvgNminfty u_ : (- u_ --> -oo) = (u_ --> +oo).
 Proof. by rewrite -cvgNpinfty opprK. Qed.
 
-Lemma cvgPminfty u_ :
-  u_ --> -oo <-> forall A, A > 0 -> \forall n \near \oo, - A >= u_ n.
+Lemma cvgPminfty (u_ : R ^nat) :
+  u_ --> -oo <-> forall A, \forall n \near \oo, - A >= u_ n.
 Proof.
 rewrite -cvgNpinfty; rewrite cvgPpinfty.
-by split => uA A A_gt0; near=> n; rewrite ler_oppr; near: n; apply: uA.
+by split => uA A; near=> n; rewrite ler_oppr; near: n; apply: uA.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ger_cvg_pinfty u_ v_ : (\forall n \near \oo, u_ n <= v_ n) ->
   u_ --> +oo -> v_ --> +oo.
 Proof.
-move=> uv /cvgPpinfty ucvg; apply/cvgPpinfty => _/posnumP[A].
-by apply: filterS2 (ucvg _ A) uv => x; apply: le_trans.
+move=> uv /cvgPpinfty ucvg; apply/cvgPpinfty => A.
+by apply: filterS2 (ucvg A) uv => x; apply: le_trans.
 Qed.
 
 Lemma ler_cvg_minfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
   v_ --> -oo -> u_ --> -oo.
 Proof.
-move=> uv /cvgPminfty ucvg; apply/cvgPminfty => _/posnumP[A].
-by apply: filterS2 uv (ucvg _ A) => x; apply: le_trans.
+move=> uv /cvgPminfty ucvg; apply/cvgPminfty => A.
+by apply: filterS2 uv (ucvg A) => x; apply: le_trans.
 Qed.
 
 (* TODO: rewrite closed_cvg_loc with the right implicits to do elim *)
@@ -502,14 +502,13 @@ Lemma nondecreasing_is_cvg (u_ : R ^nat) (M : R) :
 Proof. by move=> u_incr u_bnd; apply: cvgP; apply: nondecreasing_cvg. Qed.
 
 Lemma nondecreasing_dvg_lt (u_ : R ^nat) :
-  nondecreasing_seq u_ -> ~ cvg u_ ->
-  forall M, exists n, forall m, (m >= n)%N -> M <= u_ m.
+  nondecreasing_seq u_ -> ~ cvg u_ -> u_ --> +oo.
 Proof.
-move=> nu du M; apply/not_existsP; apply: contra_not du => Mu.
-apply: (@nondecreasing_is_cvg _ M) => // n.
-have := Mu n => /existsNP[m] /not_implyP [nm] /negP; rewrite -ltNge => /ltW.
-exact: (le_trans (nu _ _ nm)).
-Qed.
+move=> nu du; apply: contrapT => /cvgPpinfty uoo; apply: du.
+move : uoo => /existsNP[l h]; apply: (@nondecreasing_is_cvg _ l) => // n.
+rewrite leNgt; apply/negP => lun; apply: h; near=> m.
+by rewrite (le_trans (ltW lun)) //; apply: nu; near: m; exists n.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma near_nondecreasing_is_cvg (u_ : R ^nat) (M : R) :
     {near \oo, nondecreasing_seq u_} ->
@@ -777,7 +776,7 @@ Proof. by rewrite funeq2E => z n /=; rewrite mul1r. Qed.
 Lemma cvg_arithmetic (R : archiFieldType) a (z : R) :
   z > 0 -> arithmetic a z --> +oo.
 Proof.
-move=> z_gt0; apply/cvgPpinfty => _ /posnumP[A]; near=> n => /=.
+move=> z_gt0; apply/cvgPpinfty => A; near=> n => /=.
 rewrite -ler_subl_addl -mulr_natl -ler_pdivr_mulr//; set x := (X in X <= _).
 rewrite ler_normlW// ltW// (lt_le_trans (archi_boundP _))// ler_nat.
 by near: n; apply: nbhs_infty_ge.
@@ -1078,13 +1077,13 @@ Grab Existential Variables. all: end_near. Qed.
 
 (* NB: worth keeping in addition to cvgPpinfty? *)
 Lemma cvgPpinfty_lt (R : realFieldType) (u_ : R ^nat) :
-  u_ --> +oo%R <-> forall A, (A > 0)%R -> \forall n \near \oo, (A < u_ n)%R.
+  u_ --> +oo%R <-> forall A, \forall n \near \oo, (A < u_ n)%R.
 Proof.
-split => [/cvgPpinfty uoo A A0|uoo]; last first.
-  by apply/cvgPpinfty => A {}/uoo [n _ uoo]; exists n => // m nm; apply/ltW/uoo.
-have /uoo[n _ {}uoo] : (0 < A *+ 2)%R by rewrite pmulrn_lgt0.
-exists n => // m nm; rewrite (@lt_le_trans _ _ (A *+ 2)) // ?mulr2n ?ltr_addr //.
-exact: uoo.
+split => [/cvgPpinfty uoo A|uoo]; last first.
+  apply/cvgPpinfty=> A; have [n _ nA] := uoo A.
+  by exists n => // m /= nm; apply/ltW/nA.
+have [n _ nA] := uoo (A + 1)%R.
+by exists n => // m nm; rewrite (@lt_le_trans _ _ (A + 1)%R) // ?ltr_addl// nA.
 Qed.
 
 Lemma dvg_ereal_cvg (R : realFieldType) (u_ : R ^nat) :
@@ -1092,7 +1091,7 @@ Lemma dvg_ereal_cvg (R : realFieldType) (u_ : R ^nat) :
 Proof.
 move/cvgPpinfty_lt => uoo; apply/cvg_ballP => _/posnumP[e]; rewrite near_map.
 have [e1|e1] := lerP 1 e%:num.
-  case: (uoo _ ltr01) => k _ k1un; near=> n.
+  case: (uoo 1%R) => k _ k1un; near=> n.
   rewrite /ball /= /ereal_ball [contract +oo]/= ger0_norm ?subr_ge0; last first.
     by move: (contract_le1 (u_ n)%:E); rewrite ler_norml => /andP[].
   rewrite ltr_subl_addr addrC -ltr_subl_addr.
@@ -1101,10 +1100,7 @@ have [e1|e1] := lerP 1 e%:num.
   by rewrite (@le_trans _ _ 0%R) // ?subr_le0 //= normr1 divr_ge0.
 have onee1 : (`|1 - e%:num| < 1)%R.
   by rewrite gtr0_norm // ?subr_gt0 // ltr_subl_addl addrC -ltr_subl_addl subrr.
-have : (0 < real_of_extended (expand (1 - e%:num)))%R.
-  rewrite -lte_fin real_of_extended_expand //.
-  by rewrite lt_expandRL ?inE ?ltW// contract0 subr_gt0.
-case/uoo => k _ k1un; near=> n.
+have [k _ k1un] := uoo (real_of_extended (expand (1 - e%:num))%R); near=> n.
 rewrite /ball /= /ereal_ball [contract +oo]/= ger0_norm ?subr_ge0; last first.
   by move: (contract_le1 (u_ n)%:E); rewrite ler_norml => /andP[].
 rewrite ltr_subl_addr addrC -ltr_subl_addr.
@@ -1498,7 +1494,7 @@ have P0l : forall i, P i -> (0 <= l i)%E.
   move=> i Pi; rewrite -(cvg_lim _ (fl i)) // ereal_lim_ge //.
   - by apply/cvg_ex; exists (l i); exact: (fl i).
   - by apply: nearW => // n; exact: f0.
-by apply ge0_adde_defined; rewrite !inE ?P0l// sume_ge0.
+by apply ge0_adde_def; rewrite !inE ?P0l// sume_ge0.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_limD (R : realType) (f g : (\bar R)^nat) :
