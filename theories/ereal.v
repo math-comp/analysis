@@ -19,6 +19,9 @@ Require Import boolp classical_sets reals posnum topology.
 (*                                                                            *)
 (*                    r%:E == injects real numbers into \bar R                *)
 (*                +%E, -%E == addition/opposite for extended reals            *)
+(*                  x +? y == the addition of the extended real numbers x and *)
+(*                            and y is defined, i.e., it is neither +oo - oo  *)
+(*                            not -oo + oo                                    *)
 (*  (_ <= _)%E, (_ < _)%E, == comparison relations for extended reals         *)
 (*  (_ >= _)%E, (_ > _)%E                                                     *)
 (*   (\sum_(i in A) f i)%E == bigop-like notation in scope %E                 *)
@@ -56,6 +59,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Reserved Notation "x %:E" (at level 2, format "x %:E").
+Reserved Notation "x +? y" (at level 50, format "x  +?  y").
 
 (* TODO: add to bigop.v *)
 Lemma big_nat_widenl (R : Type) (idx : R) (op : Monoid.law idx) (m1 m2 n : nat)
@@ -307,7 +311,7 @@ Section ERealArith.
 Context {R : numDomainType}.
 Implicit Types x y z : \bar R.
 
-Definition adde_def x y :=
+Definition adde_subdef x y :=
   match x, y with
   | x%:E , y%:E  => (x + y)%:E
   | -oo, _     => -oo
@@ -316,7 +320,7 @@ Definition adde_def x y :=
   | _    , +oo => +oo
   end.
 
-Definition adde := nosimpl adde_def.
+Definition adde := nosimpl adde_subdef.
 
 Definition oppe x :=
   match x with
@@ -325,14 +329,14 @@ Definition oppe x :=
   | +oo => -oo
   end.
 
-Definition mule_def x y :=
+Definition mule_subdef x y :=
   match x, y with
   | x%:E , y%:E => (x * y)%:E
   | -oo, y | y, -oo => if y == 0 then 0 else if 0 < y then -oo else +oo
   | +oo, y | y, +oo => if y == 0 then 0 else if 0 < y then +oo else -oo
   end.
 
-Definition mule := nosimpl mule_def.
+Definition mule := nosimpl mule_subdef.
 
 Definition abse x := if x is r%:E then `|r|%:E else +oo.
 
@@ -436,15 +440,15 @@ Proof. by rewrite (big_morph _ addEFin erefl). Qed.
 Lemma subEFin r r' : (r - r')%:E = r%:E - r'%:E.
 Proof. by []. Qed.
 
-Definition adde_defined x y :=
+Definition adde_def x y :=
   ~~ ((x == +oo) && (y == -oo)) && ~~ ((x == -oo) && (y == +oo)).
 
-Lemma adde_definedC x y : adde_defined x y = adde_defined y x.
-Proof.
-by rewrite /adde_defined andbC (andbC (x == -oo)) (andbC (x == +oo)).
-Qed.
+Local Notation "x +? y" := (adde_def x y).
 
-Lemma ge0_adde_defined : {in [pred x | x >= 0] &, forall x y, adde_defined x y}.
+Lemma adde_defC x y : x +? y = y +? x.
+Proof. by rewrite /adde_def andbC (andbC (x == -oo)) (andbC (x == +oo)). Qed.
+
+Lemma ge0_adde_def : {in [pred x | x >= 0] &, forall x y, x +? y}.
 Proof. by move=> [x| |] [y| |]. Qed.
 
 Lemma addeC : commutative (S := \bar R) +%E.
@@ -540,7 +544,7 @@ Lemma real_of_extendedD :
   {in (@fin_num R) &, {morph real_of_extended : x y / x + y >-> (x + y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
 
-Lemma fin_num_adde_defined x y : y \is a fin_num -> adde_defined x y.
+Lemma fin_num_adde_def x y : y \is a fin_num -> x +? y.
 Proof. by move: x y => [x| |] [y | |]. Qed.
 
 Lemma EFin_real_of_extended x : x \is a fin_num -> x = (real_of_extended x)%:E.
@@ -619,9 +623,9 @@ Lemma sume_ge0 T (f : T -> \bar R) (P : pred T) :
 Proof. by move=> f0 l; elim/big_rec : _ => // t x Pt; apply/adde_ge0/f0. Qed.
 
 End ERealArithTh_numDomainType.
+Notation "x +? y" := (adde_def x y) : ereal_scope.
 
 Section ERealArithTh_realDomainType.
-
 Context {R : realDomainType}.
 Implicit Types x y z a b : \bar R.
 Implicit Types r : R.
@@ -690,7 +694,7 @@ Lemma mulNe x y : - x * y = - (x * y). Proof. by rewrite muleC muleN muleC. Qed.
 
 Lemma muleNN x y : - x * - y = x * y. Proof. by rewrite mulNe muleN oppeK. Qed.
 
-Lemma mulrpinfty r : r%:E * +oo%E = (Num.sg r)%:E * +oo%E.
+Lemma mulr_pinfty r : r%:E * +oo%E = (Num.sg r)%:E * +oo%E.
 Proof.
 rewrite /mule /= !eqe; have [r0|r0|<-/=] := ltgtP 0%R r.
 - by rewrite lte_fin r0 gtr0_sg// oner_eq0 lte_fin ltr01.
@@ -699,13 +703,13 @@ rewrite /mule /= !eqe; have [r0|r0|<-/=] := ltgtP 0%R r.
 - by rewrite sgr0 eqxx.
 Qed.
 
-Lemma mulrninfty r : r%:E * -oo%E = (Num.sg r)%:E * -oo%E.
+Lemma mulr_ninfty r : r%:E * -oo%E = (Num.sg r)%:E * -oo%E.
 Proof.
 rewrite {1}(_ : -oo%E = - +oo%E)// muleN -mulNe.
-by rewrite mulrpinfty sgrN NEFin mulNe -muleN.
+by rewrite mulr_pinfty sgrN NEFin mulNe -muleN.
 Qed.
 
-Definition mulroo := (mulrpinfty,mulrninfty).
+Definition mulroo := (mulr_pinfty,mulr_ninfty).
 
 Lemma lte_add a b x y : a < b -> x < y -> a + x < b + y.
 Proof.
@@ -882,9 +886,10 @@ rewrite !lt_neqAle eq_sym => /andP[x0 x_ge0]; rewrite eq_sym => /andP[y0 y_ge0].
 by rewrite eq_sym mule_neq0//= mule_ge0.
 Qed.
 
-Lemma muleA : associative (S := \bar R) *%E.
+Lemma muleA : associative ( *%E : \bar R -> \bar R -> \bar R ).
 Proof.
-move=> [x||] [y||] [z||] //; rewrite /mule/mule_def/= ?(lte_pinfty,eqe,lte_fin,mulrA)//=.
+move=> [x||] [y||] [z||] //;
+  rewrite /mule/mule_subdef/= ?(lte_pinfty,eqe,lte_fin,mulrA)//=.
 - case: ltrgtP => [y0|y0|<-{y}]; last by rewrite mulr0 eqxx.
     case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
       by rewrite gt_eqF mulr_gt0.
@@ -932,7 +937,9 @@ move=> [x||] [y||] [z||] //; rewrite /mule/mule_def/= ?(lte_pinfty,eqe,lte_fin,m
 - by case: ltrgtP; rewrite ?eqxx// lte_pinfty.
 Qed.
 
-Lemma mulrEDr r y z : adde_defined y z -> r%:E * (y + z) = r%:E * y + r%:E * z.
+Local Open Scope ereal_scope.
+
+Lemma mulrEDr r y z : y +? z -> r%:E * (y + z) = r%:E * y + r%:E * z.
 Proof.
 rewrite /mule/=; move: r y z => r [y| |] [z| |] //= _; try
   (by case: ltgtP => // -[] <-; rewrite ?(mul0r,add0r,adde0))
@@ -940,7 +947,7 @@ rewrite /mule/=; move: r y z => r [y| |] [z| |] //= _; try
 by rewrite mulrDr.
 Qed.
 
-Lemma mulrEDl r y z : adde_defined y z -> (y + z) * r%:E = y * r%:E + z * r%:E.
+Lemma mulrEDl r y z : y +? z -> (y + z) * r%:E = y * r%:E + z * r%:E.
 Proof. by move=> ?; rewrite -!(muleC r%:E) mulrEDr. Qed.
 
 Lemma ge0_muleDl x y z : 0 <= y -> 0 <= z -> (y + z) * x = y * x + z * x.

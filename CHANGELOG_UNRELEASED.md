@@ -9,6 +9,8 @@
 - in `measure.v`:
   + definition `seqDU`
   + lemmas `trivIset_seqDU`, `bigsetU_seqDU`, `seqDU_bigcup_eq`, `seqDUE`
+- in `ereal.v`:
+  + notation `x +? y` for `adde_def x y`
 
 ### Changed
 
@@ -26,25 +28,20 @@
     `lte_ndivl_mulr`, `lte_ndivl_mull`, `lte_ndivr_mull`, `lte_ndivr_mulr`
   + lemmas `lee_pdivr_mull`, `lee_pdivr_mulr`, `lee_pdivl_mull`, `lee_pdivl_mulr`,
     `lee_ndivl_mulr`, `lee_ndivl_mull`, `lee_ndivr_mull`, `lee_ndivr_mulr`
-  + lemmas `mulrpinfty`, `mulrninfty`, `mule_gt0`
+  + lemmas `mulr_pinfty`, `mulr_ninfty`, `mule_gt0`
 - in `normedtype.v`:
   + lemma `mule_continuous`
 
-### Changed
-
 - in `ereal.v`:
   + change definition `mule` such that 0 x oo = 0
-  + `adde` now defined using `nosimpl` and `adde_def`
+  + `adde` now defined using `nosimpl` and `adde_subdef`
+  + `mule` now defined using `nosimpl` and `mule_subdef`
 
 ### Renamed
 
 - in `ereal.v`:
-  + `adde` -> `adde_def`
-  + `adde_def` -> `adde_defined`
-  + `adde_defC` -> `adde_definedC`
-  + `ge0_adde_def`-> `ge0_adde_defined`
-  + `fin_num_adde_def` -> `fin_num_adde_defined`
-  + `adde_def_nneg_series` -> `adde_defined_nneg_series`
+  + `adde` -> `adde_subdef`
+  + `mule` -> `mule_subdef`
 
 ### Removed
 
