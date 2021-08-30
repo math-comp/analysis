@@ -60,6 +60,8 @@
     `decreasing_seqP` to equivalences
   + generalize `lee_lim`, `ereal_cvgD_pinfty_fin`, `ereal_cvgD_ninfty_fin`,
     `ereal_cvgD`, `ereal_limD`, `ereal_pseries0`, `eq_ereal_pseries` from `realType` to `realFieldType`
+- in `topology.v`:
+  + replace `closed_cvg_loc` and `closed_cvg` by a more general lemma `closed_cvg`
 
 ### Renamed
 
@@ -104,6 +106,8 @@
       `bigmaxr_seq1`, `bigmaxr_pred1_eq`, `bigmaxr_pred1`, `bigmaxrD1`,
       `ler_bigmaxr_cond`, `ler_bigmaxr`, `bigmaxr_lerP`, `bigmaxr_sup`,
       `bigmaxr_ltrP`, `bigmaxr_gerP`, `bigmaxr_gtrP`
+- in `sequences.v`:
+  + lemma `closed_seq`
 
 ### Infrastructure
 

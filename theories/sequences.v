@@ -277,21 +277,11 @@ move=> uv /cvgPminfty ucvg; apply/cvgPminfty => A.
 by apply: filterS2 uv (ucvg A) => x; apply: le_trans.
 Qed.
 
-(* TODO: rewrite closed_cvg_loc with the right implicits to do elim *)
-(*       and using `\forall x \near F, D (f x)` instead of F ...    *)
-(* it should be renamed closed_cvg and replace closed_seq below     *)
-Lemma closed_seq {V : topologicalType} (u_ : V ^nat) (A : V -> Prop) :
-   (* BUG: elim does not see this as an elimination principle if A : set V *)
-   closed A -> (\forall n \near \oo, A (u_ n)) ->
-   forall l, u_ --> l -> A l.
-Proof. by move=> A_closed u_A l /closed_cvg_loc; apply. Qed.
-Arguments closed_seq {V}.
+Lemma lim_ge x u : cvg u -> (\forall n \near \oo, x <= u n) -> x <= lim u.
+Proof. by move=> /[swap] /(closed_cvg (>= x)); exact. Qed.
 
-Lemma lim_ge x u_ : cvg u_ -> (\forall n \near \oo, x <= u_ n) -> x <= lim u_.
-Proof. by move=> /closed_cvg_loc V ?; elim/V: _. Qed.
-
-Lemma lim_le x u_ : cvg u_ -> (\forall n \near \oo, x >= u_ n) -> x >= lim u_.
-Proof. by move=> /closed_cvg_loc V ?; elim/V: _. Qed.
+Lemma lim_le x u : cvg u -> (\forall n \near \oo, x >= u n) -> x >= lim u.
+Proof. by move=> /[swap] /(closed_cvg (fun y => y <= x)); exact. Qed.
 
 Lemma lt_lim u (M : R) : nondecreasing_seq u -> cvg u -> M < lim u ->
   \forall n \near \oo, M <= u n.
@@ -1054,28 +1044,22 @@ Qed.
 Lemma ereal_cvg_ge0 (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
   (forall n, 0 <= f n) -> f --> a -> 0 <= a.
 Proof.
-move=> f0 /closed_cvg_loc V; elim/V : _; last exact: closed_ereal_le_ereal.
-by exists O => // ? _; exact: f0.
+move=> f0; apply: (closed_cvg (fun x => 0 <= x)) => //;
+  [exact: closed_ereal_le_ereal | exact: nearW].
 Qed.
 
 Lemma ereal_lim_ge (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
   (\forall n \near \oo, x <= u_ n) -> x <= lim u_.
 Proof.
-move=> /closed_cvg_loc V xu_; elim/V: _; last exact: closed_ereal_le_ereal.
-case: xu_ => m _ xu_.
-near \oo => n.
-have mn : (n >= m)%N by near: n; exists m.
-by exists n => // k nk /=; exact: (xu_ _ (leq_trans mn nk)).
+move=> /[swap] /(closed_cvg (fun y => x <= y)); apply.
+exact: closed_ereal_le_ereal.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_lim_le (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
   (\forall n \near \oo, u_ n <= x) -> lim u_ <= x.
 Proof.
-move=> /closed_cvg_loc V xu_; elim/V: _; last exact: closed_ereal_ge_ereal.
-case: xu_ => m _ xu_.
-near \oo => n.
-have mn : (n >= m)%N by near: n; exists m.
-by exists n => // k nk /=; exact: (xu_ _ (leq_trans mn nk)).
+move=> /[swap] /(closed_cvg (fun y => y <= x)); apply.
+exact: closed_ereal_ge_ereal.
 Grab Existential Variables. all: end_near. Qed.
 
 (* NB: worth keeping in addition to cvgPpinfty? *)
