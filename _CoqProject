@@ -33,7 +33,7 @@ theories/lebesgue_measure.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
-theories/simple_function.v
+theories/lebesgue_integral.v
 theories/summability.v
 theories/functions.v
 theories/altreals/xfinmap.v
