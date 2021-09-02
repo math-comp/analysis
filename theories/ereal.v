@@ -694,6 +694,10 @@ Lemma mulNe x y : - x * y = - (x * y). Proof. by rewrite muleC muleN muleC. Qed.
 
 Lemma muleNN x y : - x * - y = x * y. Proof. by rewrite mulNe muleN oppeK. Qed.
 
+Lemma mulN1e x : - 1%:E * x = - x. Proof. by rewrite mulNe mul1e. Qed.
+
+Lemma muleN1 x : x * - 1%:E = - x. Proof. by rewrite muleC mulN1e. Qed.
+
 Lemma mulr_pinfty r : r%:E * +oo%E = (Num.sg r)%:E * +oo%E.
 Proof.
 rewrite /mule /= !eqe; have [r0|r0|<-/=] := ltgtP 0%R r.

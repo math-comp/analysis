@@ -11,12 +11,6 @@
   + lemmas `trivIset_seqDU`, `bigsetU_seqDU`, `seqDU_bigcup_eq`, `seqDUE`
 - in `ereal.v`:
   + notation `x +? y` for `adde_def x y`
-
-### Changed
-
-- in `normedtype.v`:
-  + remove useless parameter from lemma `near_infty_natSinv_lt`
-
 - in `ereal.v`:
   + lemmas `ge0_adde_def`, `onee_neq0`, `mule0`, `mul0e`
   + lemmas `mulrEDr`, `mulrEDl`, `ge0_muleDr`, `ge0_muleDl`
@@ -29,9 +23,14 @@
   + lemmas `lee_pdivr_mull`, `lee_pdivr_mulr`, `lee_pdivl_mull`, `lee_pdivl_mulr`,
     `lee_ndivl_mulr`, `lee_ndivl_mull`, `lee_ndivr_mull`, `lee_ndivr_mulr`
   + lemmas `mulr_pinfty`, `mulr_ninfty`, `mule_gt0`
+  + lemmas `mulN1e`, `muleN1`
 - in `normedtype.v`:
   + lemma `mule_continuous`
 
+### Changed
+
+- in `normedtype.v`:
+  + remove useless parameter from lemma `near_infty_natSinv_lt`
 - in `ereal.v`:
   + change definition `mule` such that 0 x oo = 0
   + `adde` now defined using `nosimpl` and `adde_subdef`
