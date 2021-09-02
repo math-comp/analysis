@@ -37,6 +37,8 @@
   + definition `nat_of_pair`, lemma `nat_of_pair_inj`
 - in `topology.v`
   + lemma `le_bigmax`
+- in `real.v`:
+  + lemmas `floor1`, `floor_neq0`
 
 ### Changed
 
