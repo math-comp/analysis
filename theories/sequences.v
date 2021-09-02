@@ -131,26 +131,34 @@ Lemma increasing_opp (T : numDomainType) (u_ : T ^nat) :
 Proof. by rewrite propeqE; split => du x y; rewrite -du ler_opp2. Qed.
 
 Lemma nondecreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
-  (forall n, u_ n <= u_ n.+1)%O -> nondecreasing_seq u_.
-Proof. exact: homo_leq le_trans. Qed.
+  (forall n, u_ n <= u_ n.+1)%O <-> nondecreasing_seq u_.
+Proof. by split=> [|h n]; [exact: homo_leq le_trans | exact: h]. Qed.
 
 Lemma nonincreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
-  (forall n, u_ n >= u_ n.+1)%O -> nonincreasing_seq u_.
-Proof. by apply: homo_leq (fun _ _ _ u v => le_trans v u). Qed.
+  (forall n, u_ n >= u_ n.+1)%O <-> nonincreasing_seq u_.
+Proof.
+split; first by apply: homo_leq (fun _ _ _ u v => le_trans v u).
+by move=> u_nincr n; exact: u_nincr.
+Qed.
 
 Lemma increasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
-  (forall n, u_ n < u_ n.+1)%O -> increasing_seq u_.
-Proof. by move=> u_nondec; apply: le_mono; apply: homo_ltn lt_trans _. Qed.
+  (forall n, u_ n < u_ n.+1)%O <-> increasing_seq u_.
+Proof.
+split; first by move=> u_nondec; apply: le_mono; apply: homo_ltn lt_trans _.
+by move=> u_incr n; rewrite lt_neqAle eq_le !u_incr leqnSn ltnn.
+Qed.
 
 Lemma decreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
-  (forall n, u_ n > u_ n.+1)%O -> decreasing_seq u_.
+  (forall n, u_ n > u_ n.+1)%O <-> decreasing_seq u_.
 Proof.
-move=> u_noninc.
-(* FIXME: add shortcut to order.v *)
-apply: (@total_homo_mono _ T u_ leq ltn _ _ leqnn _ ltn_neqAle
-  _ (fun _ _ _ => esym (le_anti _)) leq_total
-  (homo_ltn (fun _ _ _ u v => lt_trans v u) u_noninc)) => //.
-by move=> x y; rewrite eq_sym -lt_neqAle.
+split.
+  move=> u_noninc.
+  (* FIXME: add shortcut to order.v *)
+  apply: (@total_homo_mono _ T u_ leq ltn _ _ leqnn _ ltn_neqAle
+    _ (fun _ _ _ => esym (le_anti _)) leq_total
+    (homo_ltn (fun _ _ _ u v => lt_trans v u) u_noninc)) => //.
+  by move=> x y; rewrite eq_sym -lt_neqAle.
+by move=> u_decr n; rewrite lt_neqAle eq_le !u_decr !leqnSn ltnn.
 Qed.
 (* TODO (maybe): variants for near \oo ?? *)
 
@@ -748,14 +756,14 @@ Qed.
 Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) :
   (forall n, 0 <= u_ n) -> nondecreasing_seq (series u_).
 Proof.
-move=> u_ge0; apply: nondecreasing_seqP => n.
+move=> u_ge0; apply/nondecreasing_seqP => n.
 by rewrite !seriesEord/= big_ord_recr ler_addl.
 Qed.
 
 Lemma increasing_series (R : numFieldType) (u_ : R ^nat) :
   (forall n, 0 < u_ n) -> increasing_seq (series u_).
 Proof.
-move=> u_ge0; apply: increasing_seqP => n.
+move=> u_ge0; apply/increasing_seqP => n.
 by rewrite !seriesEord/= big_ord_recr ltr_addl.
 Qed.
 
@@ -1323,7 +1331,7 @@ rewrite (@le_lt_trans _ _ (minr 0 A - 1)%:E) //.
 by rewrite lte_fin ltr_subl_addl lt_minl ltr_addr ltr01 orbT.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma lee_lim (R : realType) (u_ v_ : (\bar R)^nat) : cvg u_ -> cvg v_ ->
+Lemma lee_lim (R : realFieldType) (u_ v_ : (\bar R)^nat) : cvg u_ -> cvg v_ ->
   (\forall n \near \oo, u_ n <= v_ n) -> lim u_ <= lim v_.
 Proof.
 move=> cu cv uv; move lu : (lim u_) => l; move kv : (lim v_) => k.
@@ -1387,7 +1395,7 @@ case: l k => [l| |] [k| |] // in lu kv *.
 - by rewrite lee_ninfty.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma ereal_cvgD_pinfty_fin (R : realType) (f g : (\bar R)^nat) b :
+Lemma ereal_cvgD_pinfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
   f --> +oo -> g --> b%:E -> f \+ g --> +oo.
 Proof.
 move=> /ereal_cvgPpinfty foo /ereal_cvg_real -[realg gb].
@@ -1403,7 +1411,7 @@ rewrite -lee_subl_addr -subEFin (le_trans _ (foo _ mn)) // lee_fin.
 by rewrite le_maxr; apply/orP; right; apply ler_sub => //; apply gtM; exists n.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma ereal_cvgD_ninfty_fin (R : realType) (f g : (\bar R)^nat) b :
+Lemma ereal_cvgD_ninfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
   f --> -oo -> g --> b%:E -> f \+ g --> -oo.
 Proof.
 move=> /ereal_cvgPninfty foo /ereal_cvg_real -[realg gb].
@@ -1446,7 +1454,7 @@ rewrite geq_max => /andP[mn kn].
 by rewrite (splitr A) addEFin lee_add // ?foo // goo.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma ereal_cvgD (R : realType) (f g : (\bar R)^nat) a b :
+Lemma ereal_cvgD (R : realFieldType) (f g : (\bar R)^nat) a b :
   a +? b -> f --> a -> g --> b -> f \+ g --> a + b.
 Proof.
 move: a b => [a| |] [b| |] // _.
@@ -1478,7 +1486,7 @@ move: a b => [a| |] [b| |] // _.
 - exact: ereal_cvgD_ninfty_ninfty.
 Qed.
 
-Lemma ereal_lim_sum (R : realType) (I : Type) (r : seq I) (f : I -> (\bar R)^nat)
+Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I) (f : I -> (\bar R)^nat)
     (l : I -> \bar R) (P : pred I) :
   (forall n x, P x -> 0 <= f x n)%E ->
   (forall k, f k --> l k) ->
@@ -1497,7 +1505,7 @@ have P0l : forall i, P i -> (0 <= l i)%E.
 by apply ge0_adde_def; rewrite !inE ?P0l// sume_ge0.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma ereal_limD (R : realType) (f g : (\bar R)^nat) :
+Lemma ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
   cvg f -> cvg g -> lim f +? lim g ->
   lim (f \+ g) = lim f + lim g.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
@@ -1516,11 +1524,11 @@ by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
            ?[_ < _]real0// ereal_nneg_series_lim_ge0.
 Qed.
 
-Lemma ereal_pseries0 (R : realType) (f : (\bar R)^nat) :
+Lemma ereal_pseries0 (R : realFieldType) (f : (\bar R)^nat) :
   (forall i, f i = 0) -> \sum_(i <oo) f i = 0.
 Proof. by move=> f0; under eq_fun do rewrite big1//; rewrite lim_cst. Qed.
 
-Lemma eq_ereal_pseries (R : realType) (f g : (\bar R)^nat) :
+Lemma eq_ereal_pseries (R : realFieldType) (f g : (\bar R)^nat) :
   (forall i, f i = g i) -> \sum_(i <oo) f i = \sum_(i <oo) g i.
 Proof.
 by move=> efg; congr (lim _); apply/funext => n; under eq_bigr do rewrite efg.

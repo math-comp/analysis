@@ -13,18 +13,6 @@
   + notation `x +? y` for `adde_def x y`
 - in `sequences.v`:
   + lemmas `lt_lim`, `nondecreasing_dvg_lt`, `ereal_lim_sum`
-
-### Changed
-
-- in `normedtype.v`:
-  + remove useless parameter from lemma `near_infty_natSinv_lt`
-- in `real.v`:
-  + generalize from `realType` to `realDomainType` lemmas
-    `has_ub_image_norm`, `has_inf_supN`
-- in `sequences.v`:
-  + generalize from `realType` to `realFieldType` lemmas
-    `cvg_has_ub`, `cvg_has_sup`, `cvg_has_inf`
-
 - in `ereal.v`:
   + lemmas `ge0_adde_def`, `onee_neq0`, `mule0`, `mul0e`
   + lemmas `mulrEDr`, `mulrEDl`, `ge0_muleDr`, `ge0_muleDl`
@@ -56,10 +44,20 @@
   + change definition `mule` such that 0 x oo = 0
   + `adde` now defined using `nosimpl` and `adde_subdef`
   + `mule` now defined using `nosimpl` and `mule_subdef`
-  + `adde` now defined using `nosimpl` and `adde_def`
+- in `real.v`:
+  + generalize from `realType` to `realDomainType` lemmas
+    `has_ub_image_norm`, `has_inf_supN`
+- in `sequences.v`:
+  + generalize from `realType` to `realFieldType` lemmas
+    `cvg_has_ub`, `cvg_has_sup`, `cvg_has_inf`
 - in `sequences.v`:
   + change the statements of `cvgPpinfty`, `cvgPminfty`,
     `cvgPpinfty_lt`
+- in `sequences.v`:
+  + generalize `nondecreasing_seqP`, `nonincreasing_seqP`, `increasing_seqP`,
+    `decreasing_seqP` to equivalences
+  + generalize `lee_lim`, `ereal_cvgD_pinfty_fin`, `ereal_cvgD_ninfty_fin`,
+    `ereal_cvgD`, `ereal_limD`, `ereal_pseries0`, `eq_ereal_pseries` from `realType` to `realFieldType`
 
 ### Renamed
 
