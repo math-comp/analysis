@@ -21,7 +21,7 @@ Require Import boolp classical_sets reals posnum topology.
 (*                +%E, -%E == addition/opposite for extended reals            *)
 (*                  x +? y == the addition of the extended real numbers x and *)
 (*                            and y is defined, i.e., it is neither +oo - oo  *)
-(*                            not -oo + oo                                    *)
+(*                            nor -oo + oo                                    *)
 (*  (_ <= _)%E, (_ < _)%E, == comparison relations for extended reals         *)
 (*  (_ >= _)%E, (_ > _)%E                                                     *)
 (*   (\sum_(i in A) f i)%E == bigop-like notation in scope %E                 *)
