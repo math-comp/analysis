@@ -267,25 +267,6 @@ Proof. by []. Qed.
 Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E) = (x < y)%R.
 Proof. by []. Qed.
 
-Lemma lte_pinfty (R : realDomainType) (x : R) : x%:E < +oo.
-Proof. exact: num_real. Qed.
-
-Lemma lee_pinfty (R : realDomainType) (x : \bar R) : x <= +oo.
-Proof. case: x => //= r; exact: num_real. Qed.
-
-Lemma gee0P (R : realDomainType) (x : \bar R) :
-  0 <= x <-> x = +oo \/ exists2 r, (r >= 0)%R & x = r%:E.
-Proof.
-split=> [|[->|[r r0 ->//]]]; last exact: lee_pinfty.
-by case: x => [r r0 | _ |//]; [right; exists r|left].
-Qed.
-
-Lemma lte_ninfty (R : realDomainType) (x : R) : (-oo < x%:E).
-Proof. exact: num_real. Qed.
-
-Lemma lee_ninfty (R : realDomainType) (x : \bar R) : -oo <= x.
-Proof. case: x => //= r; exact: num_real. Qed.
-
 Lemma lee_ninfty_eq (R : numDomainType) (x : \bar R) : (x <= -oo) = (x == -oo).
 Proof. by case: x. Qed.
 
@@ -294,7 +275,21 @@ Proof. by case: x. Qed.
 
 Section ERealOrder_realDomainType.
 Context {R : realDomainType}.
-Implicit Types x y : \bar R.
+Implicit Types (x y : \bar R) (r : R).
+
+Lemma lte_pinfty r : r%:E < +oo. Proof. exact: num_real. Qed.
+
+Lemma lte_ninfty r : -oo < r%:E. Proof. exact: num_real. Qed.
+
+Lemma lee_pinfty x : x <= +oo. Proof. by case: x => //= r; exact: num_real. Qed.
+
+Lemma lee_ninfty x : -oo <= x. Proof. by case: x => //= r; exact: num_real. Qed.
+
+Lemma gee0P x : 0 <= x <-> x = +oo \/ exists2 r, (r >= 0)%R & x = r%:E.
+Proof.
+split=> [|[->|[r r0 ->//]]]; last exact: lee_pinfty.
+by case: x => [r r0 | _ |//]; [right; exists r|left].
+Qed.
 
 Lemma le_total_ereal : totalPOrderMixin [porderType of \bar R].
 Proof.
@@ -430,11 +425,11 @@ Proof. by case: x => //=; rewrite oppr0. Qed.
 Lemma addEFin r r' : (r + r')%:E = r%:E + r'%:E.
 Proof. by []. Qed.
 
-Lemma mulEFin r r' : (r * r')%:E = (r%:E * r'%:E)%E.
+Lemma mulEFin r r' : (r * r')%:E = r%:E * r'%:E.
 Proof. by []. Qed.
 
 Lemma sumEFin I s P (F : I -> R) :
-  \sum_(i <- s | P i) (F i)%:E = (\sum_(i <- s | P i) F i)%R%:E.
+  \sum_(i <- s | P i) (F i)%:E = (\sum_(i <- s | P i) F i)%:E.
 Proof. by rewrite (big_morph _ addEFin erefl). Qed.
 
 Lemma subEFin r r' : (r - r')%:E = r%:E - r'%:E.
@@ -627,8 +622,16 @@ Notation "x +? y" := (adde_def x y) : ereal_scope.
 
 Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
-Implicit Types x y z a b : \bar R.
-Implicit Types r : R.
+Implicit Types (x y z a b : \bar R) (r : R).
+
+Lemma mule_ninfty_pinfty : -oo * +oo = -oo :> \bar R.
+Proof. by rewrite /mule /= lte_pinfty. Qed.
+
+Lemma mule_pinfty_ninfty : +oo * -oo = -oo :> \bar R.
+Proof. by rewrite muleC mule_ninfty_pinfty. Qed.
+
+Lemma mule_pinfty_pinfty : +oo * +oo = +oo :> \bar R.
+Proof. by rewrite /mule /= lte_pinfty. Qed.
 
 Lemma sube_gt0 x y : (0 < y - x) = (x < y).
 Proof.
@@ -889,6 +892,44 @@ Proof.
 rewrite !lt_neqAle eq_sym => /andP[x0 x_ge0]; rewrite eq_sym => /andP[y0 y_ge0].
 by rewrite eq_sym mule_neq0//= mule_ge0.
 Qed.
+
+Lemma mule_le0_ge0 x y : x <= 0 -> 0 <= y -> x * y <= 0.
+Proof.
+move: x y => [x| |] [y| |] //; rewrite ?lee_fin; first exact: mulr_le0_ge0.
+- rewrite le_eqVlt => /orP[/eqP->|x0 _]; first by rewrite mul0e.
+  by rewrite mulr_pinfty ltr0_sg // mulN1e lee_ninfty.
+- move=> _; rewrite le_eqVlt => /orP[/eqP <-|y0]; first by rewrite mule0.
+  by rewrite muleC mulr_ninfty gtr0_sg // mul1e lee_ninfty.
+- by move=> _ _; rewrite mule_ninfty_pinfty lee_ninfty.
+Qed.
+
+Lemma mule_ge0_le0 x y : 0 <= x -> y <= 0 -> x * y <= 0.
+Proof. by move=> x0 y0; rewrite muleC mule_le0_ge0. Qed.
+
+Lemma pmule_rle0 x y : 0 < x -> (x * y <= 0) = (y <= 0).
+Proof.
+move: x y => [x| |] [y| |] //.
+- by rewrite lte_fin => x0; rewrite -mulEFin 2!lee_fin pmulr_rle0.
+- by rewrite lte_fin => x0; rewrite mulr_pinfty gtr0_sg// mul1e.
+- by rewrite lte_fin => x0; rewrite mulr_ninfty gtr0_sg// mul1e.
+- move=> _; have [| |/eqP] := ltgtP 0%E y%:E.
+  + by rewrite lte_fin => x0; apply/negbTE; rewrite -ltNge mule_gt0// lte_pinfty.
+  + by rewrite lte_fin => x0; rewrite mule_ge0_le0// ?lee_pinfty// lee_fin ltW.
+  + by rewrite eqe => /eqP <-; rewrite mule0 lexx.
+- by move=> _; rewrite mule_pinfty_pinfty.
+- by move=> _; rewrite mule_pinfty_ninfty.
+Qed.
+
+Lemma pmule_lle0 x y : 0 < x -> (y * x <= 0) = (y <= 0).
+Proof. by move=> x0; rewrite muleC pmule_rle0. Qed.
+
+Lemma nmule_lle0 x y : x < 0 -> (y * x <= 0) = (0 <= y).
+Proof.
+by move=> x0; rewrite -muleNN pmule_lle0 1?lee_oppl ?oppe0// -lte_oppr oppe0.
+Qed.
+
+Lemma nmule_rle0 x y : x < 0 -> (x * y <= 0) = (0 <= y).
+Proof. by move=> x0; rewrite muleC nmule_lle0. Qed.
 
 Lemma muleA : associative ( *%E : \bar R -> \bar R -> \bar R ).
 Proof.
