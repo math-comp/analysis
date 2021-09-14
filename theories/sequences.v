@@ -256,10 +256,11 @@ Lemma cvgNminfty u_ : (- u_ --> -oo) = (u_ --> +oo).
 Proof. by rewrite -cvgNpinfty opprK. Qed.
 
 Lemma cvgPminfty (u_ : R ^nat) :
-  u_ --> -oo <-> forall A, \forall n \near \oo, - A >= u_ n.
+  u_ --> -oo <-> forall A, \forall n \near \oo, A >= u_ n.
 Proof.
-rewrite -cvgNpinfty; rewrite cvgPpinfty.
-by split => uA A; near=> n; rewrite ler_oppr; near: n; apply: uA.
+rewrite -cvgNpinfty cvgPpinfty; split => uA A; near=> n.
+- by rewrite -(opprK A) ler_oppr; near: n; apply: uA.
+- by rewrite ler_oppr; near: n; apply: uA.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ger_cvg_pinfty u_ v_ : (\forall n \near \oo, u_ n <= v_ n) ->
@@ -349,13 +350,7 @@ by move=> /has_ub_image_norm uM; split => //; exists (u_ 0%N), 0%N.
 Qed.
 
 Lemma cvg_has_inf u_ : cvg u_ -> has_inf (u_ @` setT).
-Proof.
-move/is_cvgN/cvg_has_sup; rewrite has_inf_supN.
-suff -> : (- u_) @` setT = -%R @` (u_ @` setT) by [].
-rewrite predeqE => x; split.
-by case=> n _ <-; exists (u_ n) => //; exists n.
-by case=> y [] n _ <- <-; exists n.
-Qed.
+Proof. by move/is_cvgN/cvg_has_sup; rewrite -has_inf_supN image_comp. Qed.
 
 End sequences_R_lemmas_realFieldType.
 
@@ -1486,29 +1481,29 @@ move: a b => [a| |] [b| |] // _.
 - exact: ereal_cvgD_ninfty_ninfty.
 Qed.
 
-Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I) (f : I -> (\bar R)^nat)
-    (l : I -> \bar R) (P : pred I) :
-  (forall n x, P x -> 0 <= f x n)%E ->
-  (forall k, f k --> l k) ->
-  (fun n => \sum_(k <- r | P k) f k n)%E --> (\sum_(k <- r | P k) l k)%E.
-Proof.
-elim: r => [_ fl|a b ih f0 fl].
-  rewrite !big_nil [X in X --> _](_ : _ = fun=> 0%E); first exact: cvg_cst.
-  by under eq_fun do rewrite big_nil.
-rewrite big_cons; under eq_fun do rewrite big_cons.
-case: ifPn => Pa; last exact: ih.
-apply: ereal_cvgD => //; last exact: ih.
-have P0l : forall i, P i -> (0 <= l i)%E.
-  move=> i Pi; rewrite -(cvg_lim _ (fl i)) // ereal_lim_ge //.
-  - by apply/cvg_ex; exists (l i); exact: (fl i).
-  - by apply: nearW => // n; exact: f0.
-by apply ge0_adde_def; rewrite !inE ?P0l// sume_ge0.
-Grab Existential Variables. all: end_near. Qed.
-
 Lemma ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
   cvg f -> cvg g -> lim f +? lim g ->
   lim (f \+ g) = lim f + lim g.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
+
+Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I)
+    (f : I -> (\bar R)^nat) (l : I -> \bar R) (P : pred I) :
+  (forall k n, P k -> 0 <= f k n)%E ->
+  (forall k, P k -> f k --> l k) ->
+  (fun n => \sum_(k <- r | P k) f k n)%E --> (\sum_(k <- r | P k) l k)%E.
+Proof.
+elim: r => [_ fl|a b ih f0 fl].
+  rewrite !big_nil [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
+  by under eq_fun do rewrite big_nil.
+rewrite big_cons; under eq_fun do rewrite big_cons.
+case: ifPn => Pa; last exact: ih.
+apply: ereal_cvgD; [|exact: fl|exact:ih].
+suff P0l i : P i -> (0 <= l i)%E.
+  by apply ge0_adde_def; rewrite !inE ?P0l// sume_ge0.
+move=> Pi; rewrite -(cvg_lim _ (fl _ Pi)) // ereal_lim_ge //.
+- by apply/cvg_ex; exists (l i); exact: fl.
+- by apply: nearW => // n; exact: f0.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_pseriesD (R : realType) (f g : nat -> \bar R) (P : pred nat) :
   (forall i, P i -> 0 <= f i) -> (forall i, P i -> 0 <= g i) ->

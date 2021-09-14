@@ -111,11 +111,11 @@ rewrite (le_trans (uM _ _)) ?real_ler_norm ?num_real //.
 by exists r.
 Qed.
 
-Lemma has_inf_supN E : has_inf E <-> has_sup (-%R @` E).
+Lemma has_inf_supN E : has_sup (-%R @` E) <-> has_inf E.
 Proof.
-split=> [ [En0 [x /lb_ubN xlbe]] | [NEn0 [x /ub_lbN xubE]] ].
-by split; [apply/nonemptyN|exists (- x)].
+split=> [ [NEn0 [x /ub_lbN xubE]]  | [En0 [x /lb_ubN xlbe]] ].
 by split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
+by split; [apply/nonemptyN|exists (- x)].
 Qed.
 
 End has_bound_lemmas.
