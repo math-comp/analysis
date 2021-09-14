@@ -479,6 +479,9 @@ Proof. by case=> [x||] //=; rewrite opprK. Qed.
 Lemma oppeD x r : - (x + r%:E) = - x - r%:E.
 Proof. by move: x => [x| |] //=; rewrite opprD. Qed.
 
+Lemma sube0 x : x - 0 = x.
+Proof. by move: x => [x| |] //; rewrite -subEFin subr0. Qed.
+
 Lemma muleC x y : x * y = y * x.
 Proof. by move: x y => [r||] [s||]//=; rewrite -mulEFin mulrC. Qed.
 

@@ -27,6 +27,7 @@
   + lemmas `mule_ninfty_pinfty`, `mule_pinfty_ninfty`, `mule_pinfty_pinfty`
   + lemmas `mule_le0_ge0`, `mule_ge0_le0`, `pmule_rle0`, `pmule_lle0`,
     `nmule_lle0`, `nmule_rle0`
+  + lemma `sube0`
 - in `normedtype.v`:
   + lemma `mule_continuous`
 
