@@ -2316,9 +2316,16 @@ End NVS_continuity_normedModType.
 Section mule_continuous.
 Variable (R : realFieldType).
 
-Local Lemma mule_continuous' (r : R) : 0 < r -> continuous (mule r%:E).
+Lemma mule_continuous (r : R) : continuous (mule r%:E).
 Proof.
-move=> r0; move=> [x| |] /=.
+wlog r0 : r / r > 0 => [hwlog|].
+  have [r0| |<-] := ltrgtP 0 r; first exact: hwlog.
+    rewrite -oppr_gt0 => /hwlog cNr.
+    have -> : (mule r%:E) = ([eta -%E] \o [eta *%E (- r)%:E]).
+      by rewrite funeqE => x /=; rewrite NEFin mulNe oppeK.
+    by move=> x; apply: (continuous_comp (cNr x)) => y; exact: oppe_continuous.
+  by move=> x; rewrite mul0e; apply: cvg_near_cst; near=> y; rewrite mul0e.
+move=> [x| |] /=.
 - apply: (@cvg_trans _ [filter of (r%:E * z%:E)%E @[z --> x]]).
     by apply: near_eq_cvg; near=> y.
   suff : ((r * z)%:E @[z --> x]) --> (r * x)%:E.
@@ -2331,16 +2338,6 @@ move=> r0; move=> [x| |] /=.
 - rewrite muleC /mule/= eqe gt_eqF// lte_fin r0 => A [u [realu uA]].
   exists (r^-1 * u); split; first by rewrite realM// realV// realE (ltW r0).
   by move=> x xru; apply uA; move: xru; rewrite mulEFin lte_pdivl_mull.
-Grab Existential Variables. all: end_near. Qed.
-
-Lemma mule_continuous (r : R) : continuous (mule r%:E).
-Proof.
-have [r0| |<-] := ltrgtP 0 r; first exact: mule_continuous'.
-- rewrite -oppr_gt0 => /mule_continuous' cNr.
-  have -> : (mule r%:E) = ([eta -%E] \o [eta *%E (- r)%:E]).
-    by rewrite funeqE => x /=; rewrite NEFin mulNe oppeK.
-  by move=> x; apply: (continuous_comp (cNr x)) => y; exact: oppe_continuous.
-- by move=> x; rewrite mul0e; apply: cvg_near_cst; near=> y; rewrite mul0e.
 Grab Existential Variables. all: end_near. Qed.
 
 End mule_continuous.
