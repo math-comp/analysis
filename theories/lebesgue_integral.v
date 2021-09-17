@@ -1407,12 +1407,12 @@ have [/eqP ->|/set0P[t [fit Dt]]] := boolP (SFun.pi f i `&` D == set0).
 by rewrite (pi_nth fit) f0 // mul0e.
 Qed.
 
-Definition integrable (D : set T) (f : T -> \bar R) :=
-  (nnintegral D (fun x => norme (f x)) < +oo)%E.
-
 (* expect the function f to be mu integrable *)
 Definition integral (D : set T) (f : T -> \bar R) :=
   (nnintegral D (f ^\+) - nnintegral D (f ^\-))%E.
+
+Definition integrable (D : set T) (f : T -> \bar R) :=
+  (integral D (fun x => norme (f x)) < +oo)%E.
 
 Lemma ge0_integralE (D : set T) (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x)%E ->
@@ -1476,7 +1476,7 @@ rewrite le_eqVlt => /orP[/eqP <-{k} _ t Dt|k0 cf t Dt].
 have := cf t Dt; case: pselect => /= [cft|cft ftoo].
   case: pselect => [/= cgt /(@ereal_cvgZ _ _ _ k)|cgt]; first exact: cvg_trans.
   by exfalso; apply: cgt; apply: is_cvgZr.
-case: pselect => h /=; last by rewrite ftoo mulr_pinfty gtr0_sg // mul1e.
+case: pselect => h /=; last by rewrite ftoo mulrinfty gtr0_sg // mul1e.
 by exfalso; apply: cft; move: h; rewrite is_cvgZrE // gt_eqF.
 Qed.
 End pointwise_convergence.
@@ -2558,11 +2558,9 @@ Definition lim_ereal_inf (R : realType) (u_ : (\bar R) ^nat) :=
 Definition lim_ereal_sup (R : realType) (u_ : (\bar R) ^nat) :=
   lim (fun n => ereal_sup [set u_ k | k in [set p | p >= n]%N]).
 
-Lemma measurable_fun_ereal_inf (R : realType) (T : measurableType) (point : T)
-  (mu : {measure set T -> \bar R}) (f : (T -> \bar R) ^nat)
-  (mf : forall n, measurable_fun setT (f n)) (f0 : forall n x, setT n -> (0 <= f n x)%E)
-  (n : nat) :
-  measurable_fun setT (fun x => ereal_inf [set f k x | k in [set k | n <= k]%N]).
+Lemma measurable_fun_ereal_inf (R : realType) (T : measurableType) (D : set T := setT)
+  (f : (T -> \bar R) ^nat) n (mf : forall k, measurable_fun D (f k)) :
+  measurable_fun D (fun x => ereal_inf [set f k x | k in [set k | n <= k]%N]).
 Admitted.
 (* /NB: see PR 371 *)
 
@@ -2579,7 +2577,7 @@ Lemma fatou : (integral mu D (fun x => lim_ereal_inf (f^~ x)) <=
   lim_ereal_inf (fun n => integral mu D (f n)))%E.
 Proof.
 pose g n := fun x => ereal_inf [set f k x | k in [set k | k >= n]%N].
-have mg n :=  measurable_fun_ereal_inf point mu mf f0 n.
+have mg n :=  measurable_fun_ereal_inf n mf.
 have g0 n : forall x, D x -> (0 <= g n x)%E.
   by move=> x Dx; apply lb_ereal_inf => _ [m /= nm <-]; exact: f0.
 rewrite (monotone_convergence point) //; last first.
