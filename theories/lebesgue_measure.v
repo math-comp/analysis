@@ -2890,12 +2890,12 @@ Definition hlength {R : realType} (A : set R) : \bar R :=
   let i := Rhull A in (i.2 - i.1)%E.
 
 Lemma hlength0 : hlength (set0 : set R) = 0%:E.
-Proof. by rewrite /hlength Rhull0 /= subrr. Qed.
+Proof. by rewrite /hlength Rhull0 /= subee. Qed.
 
 Lemma hlength_singleton (r : R) : hlength (set_of_itv `[r, r]) = 0%:E.
 Proof.
 rewrite /hlength /= asboolT // sup_itvcc // {1}set_of_itvE lexx.
-by rewrite asboolT // asboolT // inf_itvcc // set_of_itvE lexx /= subrr.
+by rewrite asboolT // asboolT // inf_itvcc // set_of_itvE lexx /= subee.
 Qed.
 
 Lemma hlength_itv (i : interval R) :
@@ -2947,9 +2947,11 @@ Qed.
 Lemma hlength_ge0 (i : interval R) : (0%:E <= hlength (set_of_itv i))%E.
 Proof.
 rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r||].
-by rewrite suber_ge0 => /ltW.
-by rewrite ltNge lee_pinfty.
-by case: (i.2 : \bar _) => //=; rewrite lee_pinfty.
+- by rewrite suber_ge0 => /ltW.
+- by rewrite ltNge lee_pinfty.
+- case: (i.2 : \bar _) => //=.
+  + by move=> r _; rewrite lee_pinfty.
+  + by rewrite lee_pinfty.
 Qed.
 Local Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 
@@ -3590,8 +3592,8 @@ Definition ccitv n : interval R := `[ (-(n%:R))%R, n%:R].
 Lemma slength_ccitv n : slength (set_of_itv (ccitv n)) = n.*2%:R%:E.
 Proof.
 rewrite slength_itv hlength_itv /= lte_fin -{1}(add0r (-n%:R)) ltr_subl_addl.
-rewrite -natrD ltr0n addnn double_gt0 lt0n; case: ifPn => [|/negPn/eqP->//].
-by rewrite -addnn natrD 2!addEFin opprK.
+rewrite -natrD ltr0n addnn double_gt0 lt0n; case: ifPn => [n0|/negPn/eqP->//].
+by rewrite -addnn natrD 2!NEFin oppeK.
 Qed.
 
 Lemma slength_ccitv_sym b r n :
@@ -3608,12 +3610,11 @@ rewrite -2!set_of_itv_meet 2!slength_itv 2!hlength_itv /= 2!lte_fin; case: ifPn.
     * by rewrite {2}rn opprK ltxx rn opprK.
    + rewrite ltxI negb_and -2!leNgt ler_oppl opprK (leNgt _ r) rn /=.
      rewrite -subr_le0 opprK -natrD lern0 addnn double_eq0 => /eqP n0.
-     by rewrite n0 sub0r join_r // ?opprK // ltW //; move: rn; rewrite n0 oppr0.
+     by move: rn; rewrite {}n0 => r0; rewrite add0e mulr0n join_r ?opprK// oppr0 ltW.
 - case: ifPn => //.
   rewrite ltxI => /andP[]; rewrite -ltr_oppl opprK => rn _.
-  rewrite -leNgt lexU leNgt rn /= -subr_le0 opprK -natrD lern0 addnn double_eq0.
-  move=> /eqP n0; rewrite n0 addr0 meet_r // ler_oppr oppr0 ltW //; move: rn.
-  by rewrite n0.
+  rewrite -leNgt lexU leNgt rn /= -subr_le0 opprK -natrD lern0 addnn double_eq0 => /eqP n0.
+  by move: rn; rewrite {}n0 => r0; rewrite adde0 meet_r // ler_oppr mulr0n oppr0 ltW.
 Qed.
 
 Lemma slength_sigma_finite :
@@ -4801,9 +4802,19 @@ Definition ereal_lebesgue_measure_isMeasure : is_measure ereal_lebesgue_measure'
 Definition ereal_lebesgue_measure : {measure set \bar R -> \bar R} :=
   Measure.Pack _ ereal_lebesgue_measure_isMeasure.
 
+End salgebra_R_ssets.
+
+Lemma preimage_o_inftyE (T : measurableType) (R : realType) (f : T -> R) a :
+  f @^-1` set_of_itv `]a, +oo[ = [set x | a < f x].
+Proof.
+rewrite predeqE => t; split => /= [/set_of_itv_mem|qf]; rewrite /preimage /=.
+  by rewrite in_itv /= andbT.
+by apply/set_of_itv_mem; rewrite in_itv/= qf.
+Qed.
+
 (* NB: comes from lebesgue_integral.v *)
-Lemma emeasurable_fun_c_infty (T : measurableType) (D : set T) (f : T -> \bar R)
-    (y : \bar R) :
+Lemma emeasurable_fun_c_infty (T : measurableType) (R : realType) (D : set T)
+    (f : T -> \bar R) (y : \bar R) :
   measurable D ->
   measurable_fun D f -> measurable ([set x | (y <= f x)%E] `&` D).
 Proof.
@@ -4812,16 +4823,15 @@ rewrite (_ : [set x | (y <= f x)%E] = f @^-1` [set x | (y <= x)%E]) //.
 exact/mf/measurable_Rbar_c_infty.
 Qed.
 
-Lemma emeasurable_fun_infty_o (T : measurableType) (f : T -> \bar R)
+Lemma emeasurable_fun_infty_o (T : measurableType) (R : realType) (f : T -> \bar R)
     (y : \bar R) :
   measurable_fun setT f -> measurable [set x | (f x < y)%E].
 Proof.
 move=> mf.
+
 rewrite (_ : [set x | (f x < y)%E] = f @^-1` [set x | (x < y)%E]) //.
 by rewrite -[X in measurable X]setIT; exact/mf/measurable_Rbar_infty_o.
 Qed.
-
-End salgebra_R_ssets.
 
 (* NB : move? *)
 Lemma open_lt_lt (R : realType) (a b : R) : open (fun x : [topologicalType of R^o] => a < x < b).
@@ -4862,7 +4872,7 @@ Proof.
 by rewrite itv_boundedErays; apply/measurableD; exact: measurable_itv_bnd_infty.
 Qed.
 
-Lemma measurableR_oray :
+Lemma measurableEoray :
   @measurable (g_measurableType (@Sset.is_sset R)) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A; last first.
@@ -4909,7 +4919,7 @@ Proof.
 by rewrite itv_boundedErays; apply: measurableD; apply: measurable_itv_bnd_infty.
 Qed.
 
-Lemma measurableR_cray :
+Lemma measurableEcray :
   @measurable (g_measurableType (@Sset.is_sset R)) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A; last first.
@@ -4968,7 +4978,7 @@ move: a b => [] []; rewrite -[X in measurable X]setCK set_of_itvC_itv;
     exact: measurable_itv_infty_bnd|exact: measurable_itv_bnd_infty].
 Qed.
 
-Lemma measurableR_cray :
+Lemma measurableEopen :
   @measurable (g_measurableType (@Sset.is_sset R)) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A; last first.
@@ -5096,13 +5106,13 @@ rewrite eset1_pinfty; apply: measurable_bigcap => i.
 by apply: g_salgebra_self; exists i%:R%:E.
 Qed.
 
-Lemma measurableRbar_oray : measurableRbar (@Sset.is_sset R) = @measurable T.
+Lemma measurableEoray : measurableRbar (@Sset.is_sset R) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A; last first.
   elim => [_ [x ->] | | |].
   - rewrite /measurableRbar /=; move: x => [r| |].
     + exists (set_of_itv `]r, +oo[).
-        rewrite RGenOpenRays.measurableR_oray.
+        rewrite RGenOpenRays.measurableEoray.
         exact: RGenOpenRays.measurable_itv_bnd_infty.
       by exists [set +oo]; [constructor | rewrite -punct_eitv_o_infty].
     + exists set0; first exact: measurable0.
@@ -5121,7 +5131,7 @@ move=> [B mB [C mC]] <-; apply: measurableU; last first.
   - exact: measurable_set1_ninfty.
   - exact: measurable_set1_pinfty.
   - by apply: measurableU; [exact: measurable_set1_ninfty|exact: measurable_set1_pinfty].
-rewrite RGenOpenRays.measurableR_oray in mB.
+rewrite RGenOpenRays.measurableEoray in mB.
 (* NB: lemma? *)
 elim: mB => [_ /= [r ->]| |D sD mD|F sF mF].
 - rewrite eitv_o_infty; apply: measurableD; last exact: measurable_set1_pinfty.
@@ -5160,13 +5170,13 @@ apply: g_salgebra_self; exists +oo; rewrite predeqE => x; split => [->//|].
 by rewrite lee_pinfty_eq => /eqP ->.
 Qed.
 
-Lemma measurableRbar_cray : measurableRbar (@Sset.is_sset R) = @measurable T.
+Lemma measurableRbarEcray : measurableRbar (@Sset.is_sset R) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A; last first.
   elim => [_ [x ->]| | |].
   - rewrite /measurableRbar /=; move: x => [r| |].
     + exists (set_of_itv `[r, +oo[).
-        rewrite RGenOpenRays.measurableR_oray.
+        rewrite RGenOpenRays.measurableEoray.
         exact: RGenOpenRays.measurable_itv_bnd_infty.
       by exists [set +oo]; [constructor | rewrite -punct_eitv_c_infty].
     + exists set0; first exact: measurable0.
@@ -5186,7 +5196,7 @@ move=> [A' mA' [C mC]] <-; apply: measurableU; last first.
   - exact: measurable_set1_ninfty.
   - exact: measurable_set1_pinfty.
   - by apply: measurableU; [exact: measurable_set1_ninfty|exact: measurable_set1_pinfty].
-rewrite RGenClosedRays.measurableR_cray in mA'.
+rewrite RGenClosedRays.measurableEcray in mA'.
 (* NB: lemma? *)
 elim: mA' => [_ /= [r ->]| |B sB mB|F sF mF].
 - rewrite [X in measurable X](_ : _ = (fun x => r%:E <= x) `\` [set +oo]); last first.
@@ -5205,9 +5215,156 @@ Qed.
 End rbargenclosedrays.
 End RbarGenClosedRays.
 
-(* theorem 3.5, lemmas 3.6, 3.7, 3.8 *)
+From mathcomp Require Import rat.
+
+Lemma archimedean (R : realType) (x y : R) : 0 < x -> exists n, y < n%:R * x.
+Proof.
+move=> x0; pose A := [set n.+1%:R * x | n in setT].
+have A0 : A !=set0 by exists x; rewrite /A /=; exists 0%N => //; rewrite mul1r.
+apply/not_existsP => yx; have Ay : ubound A y.
+  by rewrite /ubound /A /= => _ [n _ <-]; rewrite leNgt; apply/negP/yx.
+pose a := sup A; have Aax : ~ ubound A (a - x).
+  by move=> /(sup_le_ub A0); apply/negP; rewrite -ltNge ltr_subl_addl ltr_addr.
+have [m axmx] : exists m, a - x < m.+1%:R * x.
+  apply/not_existsP; apply: contra_not Aax => axx.
+  by rewrite /ubound => _ [m _] <-; rewrite leNgt; apply/negP/axx.
+have am2x : a < m.+2%:R * x.
+  by rewrite -addn1 natrD mulrDl mul1r -ltr_subl_addr.
+have Am2x : A (m.+2%:R * x) by exists m.+1.
+have /sup_upper_bound/(_ _ Am2x) : has_sup A by split => //; exists y.
+by apply/negP; rewrite -ltNge.
+Qed.
+
+Lemma int_lbound_has_inf (B : set int) i : B !=set0 -> lbound B i ->
+  exists j, B j /\ forall k, B k -> j <= k.
+Proof.
+move=> [i0 Bi0] lbBi; have [n i0in] : exists n, i0 - i = n%:Z.
+  by exists `|i0 - i|%N; rewrite gez0_abs // subr_ge0; exact: lbBi.
+elim: n i lbBi i0in => [i lbBi /eqP|n ih i lbBi i0in1].
+  by rewrite subr_eq0 => /eqP i0i; exists i0; split =>// k Bk; rewrite i0i lbBi.
+have i0i1n : i0 - (i + 1) = n by rewrite opprD addrA i0in1 -addn1 PoszD addrK.
+have [?|/not_forallP] := pselect (lbound B (i + 1)); first exact: (ih (i + 1)).
+move=> /contrapT[x /not_implyP[Bx i1x]]; exists x; split => // k Bk.
+rewrite (le_trans _ (lbBi _ Bk)) //.
+by move/negP : i1x; rewrite -ltNge ltz_addr1.
+Qed.
+
+(* TODO: go to reals.v? *)
+Lemma dense_rat (R : realType) (x y : R) : x < y -> exists q, x < ratr q < y.
+Proof.
+move=> xy; move: (xy); rewrite -subr_gt0 => /(archimedean 1)[n nyx].
+have [m1 m1nx] : exists m1, m1.+1%:~R > n%:R * x.
+  have [p] := archimedean (n%:R * x) ltr01; rewrite mulr1 => nxp.
+  have [x0|x0] := ltP 0 x.
+    exists p.-1; rewrite prednK // lt0n; apply: contraPN nxp => /eqP ->.
+    by apply/negP; rewrite -leNgt mulr_ge0 // ltW.
+  by exists O; rewrite (le_lt_trans _ ltr01) // mulr_ge0_le0.
+have [m2 m2nx] : exists m2, m2.+1%:~R > - n%:R * x.
+  have [p] := archimedean (- n%:R * x) ltr01; rewrite mulr1 => nxp.
+  have [x0|x0] := ltP 0 x.
+    by exists O; rewrite (le_lt_trans _ ltr01)// mulr_le0_ge0// ?oppr_le0// ltW.
+  exists p.-1; rewrite prednK // -(ltr_nat R) (le_lt_trans _ nxp) //.
+  by rewrite mulr_le0 // oppr_le0.
+rewrite -(mulN1r n%:R) -mulrA mulN1r in m2nx.
+have : exists m, -(m2.+1 : int) <= m <= m1.+1 /\ m%:~R - 1 <= n%:~R * x < m%:~R.
+  have m2m1 : - (m2.+1 : int) < m1.+1.
+    by rewrite -(ltr_int R) (lt_trans _ m1nx) // -ltr_oppl.
+  pose B := [set m : int | m%:~R > n%:R * x].
+  have m1B : B m1.+1 by [].
+  have m2B : lbound B (- m2.+1%:~R).
+    move=> i; rewrite /B /=.
+    rewrite -(opprK (n%:R * x)) -ltr_oppl => nxi.
+    rewrite -(mulN1r m2.+1%:~R) mulN1r -ler_oppl.
+    by have := lt_trans nxi m2nx; rewrite intz -mulrNz ltr_int => /ltW.
+  have [m [Bm infB]] : exists j, B j /\ forall k, B k -> j <= k.
+    by apply: int_lbound_has_inf _ m2B; exists m1.+1.
+  have mN1B : ~ B (m - 1).
+    by move=> /infB; apply/negP; rewrite -ltNge ltr_subl_addr ltz_addr1.
+  exists m; split; [apply/andP; split|apply/andP; split] => //.
+  - rewrite -(ler_int R).
+    move: m2B; rewrite /lbound /= => /(_ _ Bm).
+    by rewrite intz -(ler_int R).
+  - exact: infB.
+  - by rewrite leNgt; apply/negP; rewrite /B /= intrD in mN1B.
+move=> [m [/andP[H1 H2] /andP[H3 H4]]].
+have [/andP[a b] c] : n%:R * x < m%:~R <= 1 + n%:R * x /\ 1 + n%:R * x < n%:R * y.
+  split; [apply/andP; split|] => //.
+  by rewrite -ler_subl_addl.
+  by move: nyx; rewrite mulrDr mulrN-ltr_subr_addr.
+have n0 : (0 < n)%N.
+  rewrite lt0n; apply/negP => /eqP n0.
+  by move: nyx; rewrite n0 mul0r; apply/negP; rewrite ltr10.
+exists (m%:Q / n%:Q); apply/andP; split.
+  rewrite rmorphM /= (@rmorphV _ _ _ n%:~R); last first.
+    by rewrite unitfE // intr_eq0 // -lt0n.
+  rewrite ltr_pdivl_mulr /=; last by rewrite ltr0q ltr0z.
+  by rewrite mulrC // !ratr_int.
+rewrite rmorphM /= (@rmorphV _ _ _ n%:~R); last first.
+  by rewrite unitfE // intr_eq0 // -lt0n.
+rewrite ltr_pdivr_mulr /=; last by rewrite ltr0q ltr0z.
+by rewrite 2!ratr_int mulrC (le_lt_trans _ c).
+Qed.
+
+(* TODO: go to cardinality.v? *)
+Definition pair_of_rat (q : rat) : nat * nat :=
+  let x := numq q in let y := denq q in
+  (if x >= 0 then `|x|.*2 else `|x|.*2.+1, `|y|.-1).
+
+Lemma pair_of_rat_inj : {in setT &, injective pair_of_rat}.
+Proof.
+move=> x y _ _; rewrite /pair_of_rat.
+have [x_ge0|x_gt0] := leP 0 (numq x); have [y_ge0|y_gt0] := leP 0 (numq y).
+- case=> /eqP; rewrite -!muln2 eqn_mul2r => /eqP/(congr1 Posz).
+  rewrite !gez0_abs// => numqxy /(congr1 S); rewrite ?(prednK,absz_gt0)//.
+  move=> /(congr1 Posz); rewrite 2!absz_denq => dxy; apply/eqP.
+  by rewrite rat_eqE numqxy dxy 2!eqxx.
+- by case=> /(congr1 odd); rewrite /= 2!odd_double.
+- by case=> /(congr1 odd); rewrite /= 2!odd_double.
+- case=> /eqP; rewrite -!muln2 eqn_mul2r => /eqP/(congr1 Posz).
+  rewrite !ltz0_abs// => /eqP; rewrite eqr_opp => /eqP numqxy /(congr1 S).
+  rewrite ?(prednK,absz_gt0)// => /(congr1 Posz); rewrite 2!absz_denq => dxy.
+  by apply/eqP; rewrite rat_eqE numqxy dxy 2!eqxx.
+Qed.
+
+Lemma countable_rat : countable (@setT rat).
+Proof.
+apply/countable_injective; have [f [inj_f _]] := countable_prod_nat.
+exists (f \o pair_of_rat); apply: (@in_inj_comp _ _ _ _ _ xpredT) => //.
+by move=> x y _ _ /inj_f; apply; rewrite inE.
+exact: pair_of_rat_inj.
+Qed.
+
+Definition nat_of_rat := nat_of_pair \o pair_of_rat.
+
+Lemma nat_of_rat_inj : {in setT &, injective nat_of_rat}.
+Proof.
+apply: (in_inj_comp nat_of_pair_inj pair_of_rat_inj).
+by move=> q _; rewrite in_setE.
+Qed.
+
+Definition rat_of_nat : nat -> rat := inverse 0%Q setT nat_of_rat.
+
+Lemma nat_of_ratK : {in setT, cancel nat_of_rat rat_of_nat}.
+Proof.
+by apply: injective_left_inverse; exact: nat_of_rat_inj.
+Qed.
+
+(* TODO: move to measure.v *)
+Lemma measurable_bigcup_rat (T : measurableType) (F : rat -> set T) :
+  (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
+Proof.
+move=> mF.
+rewrite [X in measurable X](_ : _ = \bigcup_i F (rat_of_nat i)); last first.
+  rewrite predeqE => r; split => [[q _ Fqr]|[n _ Fnr]].
+    exists (nat_of_rat q) => //; rewrite nat_of_ratK => //.
+    by rewrite in_setE.
+  by exists (rat_of_nat n).
+by apply: measurable_bigcup => i; exact/mF.
+Qed.
+
 Arguments preimage : simpl never.
 
+(* theorem 3.5, lemmas 3.6, 3.7, 3.8 *)
 Section measurability.
 
 Definition preimage_class (aT rT : Type) (f : aT -> rT) (G : set (set rT)) : set (set aT) :=
@@ -5257,15 +5414,15 @@ have sGIf : s<< G >> `<=` If by exact: g_salgebra_smallest.
 by move=> _ [B mB <-]; exact: sGIf.
 Qed.
 
-Lemma measurability (aT rT : measurableType) (f : aT -> rT) (G : set (set rT))
-  (D : set aT) (mD : measurable D) :
+(* TODO: generalize *)
+Lemma measurability (aT rT : measurableType) (f : aT -> rT) (G : set (set rT)) :
   s<< G >> = @measurable rT ->
   preimage_class f G `<=` @measurable aT ->
-  measurable_fun D f.
+  measurable_fun setT f.
 Proof.
 move=> sG_rT fG_aT.
 suff h : preimage_class f (@measurable rT) `<=` @measurable aT.
-  move=> A mA; apply: measurableI => //.
+  move=> A mA; apply: measurableI => //; last exact: measurableT.
   by apply: h; exists A.
 have -> : preimage_class f (@measurable rT) = @measurable (g_measurableType (preimage_class f G)).
   by rewrite -[in LHS]sG_rT [in RHS]transfer.
@@ -5275,6 +5432,7 @@ Qed.
 
 End measurability.
 
+(* not used *)
 Reserved Notation "`C_ E A"
   (format "`C_ E  A", at level 41, A at level 41, E at level 0).
 
@@ -5343,6 +5501,28 @@ Lemma submeasurableP_preimage_class (aT : Type) (rT : Type) (G : set (set rT)) (
 Proof. exact: submeasurableP_trace. Qed.
 
 End submeasurability.
+(* /not used *)
+
+Section image2.
+Context {aT rT : Type}.
+
+Lemma image2_set0 : [set (x, y) | x in set0 & y in set0] = set0 :> set (aT * aT).
+Proof.
+by rewrite predeqE => -[a b]; split => //= -[].
+Qed.
+
+End image2.
+
+Section salgebra_prod.
+Variables (T1 T2 : measurableType).
+
+Definition measurable_prod : set (set (T1 * T2)) :=
+  s<< [set X | (@measurable T1) X.`1 /\ (@measurable T2) X.`2] >>.
+End salgebra_prod.
+
+Lemma comp_preimage T1 T2 T3 (A : set T3) (g : T1 -> T2) (f : T2 -> T3) :
+  (f \o g) @^-1` A = g @^-1` (f @^-1` A).
+Proof. by []. Qed.
 
 Definition lim_ereal_inf (R : realType) (u_ : (\bar R) ^nat) : \bar R :=
   lim (fun n => ereal_inf [set u_ k | k in [set p | p >= n]%N]).
@@ -5397,9 +5577,7 @@ rewrite predeqE => t; split => /=.
 move=> h.
 rewrite /preimage /=.
 rewrite leNgt; apply/negP => /ereal_inf_lt[y /= [[k nk <-{y}]]].
-apply/negP.
-rewrite -leNgt.
-by apply: h.
+by apply/negP; rewrite -leNgt; apply: h.
 Qed.
 
 Lemma measurable_bigcap_bounded n : forall {s : measurableType} (U : (set s) ^nat),
@@ -5416,62 +5594,55 @@ apply: measurable_bigcap => i; apply mF.
 by rewrite leq_addl.
 Qed.
 
-Section measurable_fun_lemma.
-Variable R : realType.
-HB.instance (\bar (Real.sort R)) (Rbar_isMeasurable (@measurable (@sset_algebraOfSetsType R))).
-
-Lemma measurable_fun_ereal_inf (T : measurableType) (point : T)
-  (mu : {measure set T -> \bar R}) (D : set T := setT) (mD : measurable D)
-  (f : (T -> \bar R) ^nat) (mf : forall n, measurable_fun D (f n))
-  (f0 : forall n x, D x -> (0 <= f n x)%E)
-  (g : nat -> T -> \bar R := fun n x => ereal_inf [set f k x | k in [set k | n <= k]%N])
-  (n : nat) :
-  measurable_fun D (g n).
+Lemma measurable_bigcup_bounded n : forall {s : measurableType} (U : (set s) ^nat),
+  (forall i : nat, (n <= i)%N -> measurable (U i)) ->
+  measurable (\bigcup_(i in [set k | (n <= k)%N]) U i).
 Proof.
-apply: (@measurability _ _ _ (@RbarGenClosedRays.G R)) => //.
-- exact/esym/RbarGenClosedRays.measurableRbar_cray.
-- move=> A [B [x Ha] gnBA].
-  rewrite -gnBA.
-  rewrite Ha.
-  rewrite /g.
-  rewrite ereal_inf_preimage.
-  apply: (@measurable_bigcap_bounded n _ (fun k => f k @^-1` (fun b => (x <= b)%E))) => i ni.
-  rewrite -[X in measurable X](setIT _).
-  apply: mf.
-  exact: measurable_Rbar_c_infty.
+move=> T F mF.
+rewrite [X in measurable X](_ : _ = (\bigcup_i F (i + n)%N)); last first.
+  rewrite eqEsubset; split => [t [m /= nm Fmt]|t [m /= _ Fmnt]].
+    by exists (m - n)%N => //; rewrite subnK.
+  by exists (m + n)%N => //=; rewrite leq_addl.
+apply: measurable_bigcup => i; apply mF.
+by rewrite leq_addl.
 Qed.
 
-End measurable_fun_lemma.
-
-Definition image_salgebra (aT : measurableType) (rT : Type) (f : aT -> rT) : set (set rT) :=
-  [set E' : set rT | f @^-1` E' \in @measurable aT].
-
-Lemma image_salgebra_is_salgebra (aT : measurableType) (rT : Type) (f : aT -> rT) :
-  measurableP (image_salgebra f).
+Lemma measurable_fun_ereal_inf (R : realType) (T : measurableType) (D : set T := setT)
+  (f : (T -> \bar R) ^nat) n (mf : forall k, measurable_fun D (f k)) :
+  measurable_fun D (fun x => ereal_inf [set f k x | k in [set k | n <= k]%N]).
 Proof.
-split=> [|A|].
-- by rewrite /image_salgebra /= inE /= preimage_set0; exact: measurable0.
-- rewrite /image_salgebra /= !inE /= => mfA; exact: measurableC.
-- move=> F; rewrite /image_salgebra /= => mF.
-  rewrite inE.
-  apply: measurable_bigcup => n.
-  rewrite -inE.
-  exact: mF.
+apply: (@measurability _ _ _ (@RbarGenClosedRays.G R)).
+  exact/esym/RbarGenClosedRays.measurableRbarEcray.
+move=> A [B [x ->] <-].
+rewrite ereal_inf_preimage.
+apply: (@measurable_bigcap_bounded n _ (fun k => f k @^-1` (fun b => (x <= b)%E))) => i ni.
+rewrite -[X in measurable X](setIT _).
+apply: mf => //.
+exact: measurable_Rbar_c_infty.
 Qed.
 
-Lemma measurable_generator (aT : measurableType) (U : Type) (M : set (set U))
-  (f : aT -> g_measurableType M) :
-  measurable_fun setT f <->
-  (forall G', M G' -> (@measurable aT) (f @^-1` G')).
+(*Definition image_class (aT rT : Type) (f : aT -> rT) (G : set (set aT)) : set (set rT) :=
+  [set B | f @^-1` B \in G].
+
+Lemma measurableP_image_class (aT rT : Type) (G : set (set aT)) (f : aT -> rT) :
+  measurableP G ->  measurableP (image_class f G).
 Proof.
-split => [mf G' MG'|MG'f].
-  by have := mf G'; rewrite setIT; apply; apply g_salgebra_self.
-pose E' := image_salgebra f => G' mG'.
-have ME' : M `<=` E'.
-  by move=> A MA; rewrite /E' /image_salgebra /= inE; apply MG'f.
-have sME' : s<< M >> `<=` E'.
-  by apply: g_salgebra_smallest => //; exact: image_salgebra_is_salgebra.
-by rewrite setIT -inE; exact: sME'.
+move=> [h0 hC hU]; split=> [|A|].
+- by rewrite /image_class /= inE /= preimage_set0; exact: h0.
+- by rewrite /image_class /= !inE /= => mfA; exact: hC.
+- move=> F; rewrite /image_class /= => mF.
+  by rewrite inE; apply: hU => n; rewrite -inE; exact: mF.
+Qed.
+
+Lemma measurable_generator (aT rT : measurableType) (f : aT -> rT) :
+  measurable_fun setT f <-> (forall B, measurable B -> measurable (f @^-1` B)).
+Proof.
+split => [mf B mB'|mf].
+  by have := mf B; rewrite setIT; apply.
+pose G := image_class f measurable => B mB.
+have rTG : @measurable rT `<=` G.
+  by move=> A mA; rewrite /G /image_class /= inE; apply: mf.
+by rewrite setIT -inE; exact: rTG.
 Qed.
 
 Lemma measurable_funP' (T : measurableType) (R : realType)
@@ -5480,128 +5651,149 @@ Lemma measurable_funP' (T : measurableType) (R : realType)
   measurable_fun setT f.
 Proof.
 move=> h.
-apply/measurable_generator => G' [a _ <-].
-exact: h.
-Qed.
+apply/measurable_generator => G'.
+(*exact: h.
+Qed.*) Abort.*)
 
+Section measurable_fun.
 
-
-From mathcomp Require Import rat.
-
-Lemma archimedean (R : realType) (x y : R) : 0 < x -> exists n, y < n%:R * x.
+Lemma measurable_fun_comp (T1 T2 T3 : measurableType) (f : T2 -> T3) E (g : T1 -> T2) :
+  measurable_fun setT f -> measurable_fun E g -> measurable_fun E (f \o g).
 Proof.
-move=> x0; pose A := [set n.+1%:R * x | n in setT].
-have A0 : A !=set0 by exists x; rewrite /A /=; exists 0%N => //; rewrite mul1r.
-apply/not_existsP => yx; have Ay : ubound A y.
-  by rewrite /ubound /A /= => _ [n _ <-]; rewrite leNgt; apply/negP/yx.
-pose a := sup A; have Aax : ~ ubound A (a - x).
-  by move=> /(sup_le_ub A0); apply/negP; rewrite -ltNge ltr_subl_addl ltr_addr.
-have [m axmx] : exists m, a - x < m.+1%:R * x.
-  apply/not_existsP; apply: contra_not Aax => axx.
-  by rewrite /ubound => _ [m _] <-; rewrite leNgt; apply/negP/axx.
-have am2x : a < m.+2%:R * x.
-  by rewrite -addn1 natrD mulrDl mul1r -ltr_subl_addr.
-have Am2x : A (m.+2%:R * x) by exists m.+1.
-have /sup_upper_bound/(_ _ Am2x) : has_sup A by split => //; exists y.
-by apply/negP; rewrite -ltNge.
+move=> mf mg /= A mA; rewrite comp_preimage; apply/mg.
+by rewrite -[X in measurable X]setIT; apply/mf.
 Qed.
 
-Lemma int_lbound_has_inf (B : set int) i : B !=set0 -> lbound B i ->
-  exists j, B j /\ forall k, B k -> j <= k.
+Lemma measurable_fun_EFin (R : realType) : measurable_fun setT (@EFin R).
 Proof.
-move=> [i0 Bi0] lbBi; have [n i0in] : exists n, i0 - i = n%:Z.
-  by exists `|i0 - i|%N; rewrite gez0_abs // subr_ge0; exact: lbBi.
-elim: n i lbBi i0in => [i lbBi /eqP|n ih i lbBi i0in1].
-  by rewrite subr_eq0 => /eqP i0i; exists i0; split =>// k Bk; rewrite i0i lbBi.
-have i0i1n : i0 - (i + 1) = n by rewrite opprD addrA i0in1 -addn1 PoszD addrK.
-have [?|/not_forallP] := pselect (lbound B (i + 1)); first exact: (ih (i + 1)).
-move=> /contrapT[x /not_implyP[Bx i1x]]; exists x; split => // k Bk.
-rewrite (le_trans _ (lbBi _ Bk)) //.
-by move/negP : i1x; rewrite -ltNge ltz_addr1.
+apply: (@measurability _ _ _ (@RbarGenOpenRays.G R));
+  [ exact/esym/RbarGenOpenRays.measurableEoray | ].
+move=> /= A [_ [x ->]] <-; move: x => [x| |].
+- rewrite [X in measurable X](_ : _ = set_of_itv `]x, +oo[); first exact: measurable_itv.
+  rewrite predeqE => r; split => [|/set_of_itv_mem]; rewrite /preimage /= ?lte_fin.
+    by move=> xr; apply/set_of_itv_mem; rewrite in_itv/= xr.
+  by rewrite in_itv /= andbT.
+- by rewrite [X in measurable X](_ : _ = set0) ?predeqE//; exact: measurable0.
+- rewrite [X in measurable X](_ : _ = setT); first exact: measurableT.
+  by rewrite predeqE => r; split => // _; rewrite /preimage /= lte_ninfty.
 Qed.
 
-Lemma dense_rat (R : realType) (x y : R) : x < y -> exists q, x < ratr q < y.
+Lemma measurable_fun_normr (R : realType) : measurable_fun setT (@normr _ R).
 Proof.
-move=> xy; move: (xy); rewrite -subr_gt0 => /(archimedean 1)[n nyx].
-have [m1 m1nx] : exists m1, m1.+1%:~R > n%:R * x.
-  have [p] := archimedean (n%:R * x) ltr01; rewrite mulr1 => nxp.
-  have [x0|x0] := ltP 0 x.
-    exists p.-1; rewrite prednK // lt0n; apply: contraPN nxp => /eqP ->.
-    by apply/negP; rewrite -leNgt mulr_ge0 // ltW.
-  by exists O; rewrite (le_lt_trans _ ltr01) // mulr_ge0_le0.
-have [m2 m2nx] : exists m2, m2.+1%:~R > - n%:R * x.
-  have [p] := archimedean (- n%:R * x) ltr01; rewrite mulr1 => nxp.
-  have [x0|x0] := ltP 0 x.
-    by exists O; rewrite (le_lt_trans _ ltr01)// mulr_le0_ge0// ?oppr_le0// ltW.
-  exists p.-1; rewrite prednK // -(ltr_nat R) (le_lt_trans _ nxp) //.
-  by rewrite mulr_le0 // oppr_le0.
-rewrite -(mulN1r n%:R) -mulrA mulN1r in m2nx.
-have : exists m, -(m2.+1 : int) <= m <= m1.+1 /\ m%:~R - 1 <= n%:~R * x < m%:~R.
-  have m2m1 : - (m2.+1 : int) < m1.+1.
-    by rewrite -(ltr_int R) (lt_trans _ m1nx) // -ltr_oppl.
-  pose B := [set m : int | m%:~R > n%:R * x].
-  have m1B : B m1.+1 by [].
-  have m2B : lbound B (- m2.+1%:~R).
-    move=> i; rewrite /B /=.
-    rewrite -(opprK (n%:R * x)) -ltr_oppl => nxi.
-    rewrite -(mulN1r m2.+1%:~R) mulN1r -ler_oppl.
-    by have := lt_trans nxi m2nx; rewrite intz -mulrNz ltr_int => /ltW.
-  have [m [Bm infB]] : exists j, B j /\ forall k, B k -> j <= k.
-    by apply: int_lbound_has_inf _ m2B; exists m1.+1.
-  have mN1B : ~ B (m - 1).
-    by move=> /infB; apply/negP; rewrite -ltNge ltr_subl_addr ltz_addr1.
-  exists m; split; [apply/andP; split|apply/andP; split] => //.
-  - rewrite -(ler_int R).
-    move: m2B; rewrite /lbound /= => /(_ _ Bm).
-    by rewrite intz -(ler_int R).
-  - exact: infB.
-  - by rewrite leNgt; apply/negP; rewrite /B /= intrD in mN1B.
-move=> [m [/andP[H1 H2] /andP[H3 H4]]].
-have [/andP[a b] c] : n%:R * x < m%:~R <= 1 + n%:R * x /\ 1 + n%:R * x < n%:R * y.
-  split; [apply/andP; split|] => //.
-  by rewrite -ler_subl_addl.
-  by move: nyx; rewrite mulrDr mulrN-ltr_subr_addr.
-have n0 : (0 < n)%N.
-  rewrite lt0n; apply/negP => /eqP n0.
-  by move: nyx; rewrite n0 mul0r; apply/negP; rewrite ltr10.
-exists (m%:Q / n%:Q); apply/andP; split.
-  rewrite rmorphM /= (@rmorphV _ _ _ n%:~R); last first.
-    by rewrite unitfE // intr_eq0 // -lt0n.
-  rewrite ltr_pdivl_mulr /=; last by rewrite ltr0q ltr0z.
-  by rewrite mulrC // !ratr_int.
-rewrite rmorphM /= (@rmorphV _ _ _ n%:~R); last first.
-  by rewrite unitfE // intr_eq0 // -lt0n.
-rewrite ltr_pdivr_mulr /=; last by rewrite ltr0q ltr0z.
-by rewrite 2!ratr_int mulrC (le_lt_trans _ c).
+apply: (@measurability _ _ _ (@RGenOpenRays.G R));
+  [ exact/esym/RGenOpenRays.measurableEoray | ].
+move=> /= _ [_ [x ->] <-].
+have [x0|x0] := leP 0 x.
+  rewrite [X in measurable X](_ : _ = set_of_itv (`]-oo, (- x)[) `|` set_of_itv (`]x, +oo[)).
+  by apply: measurableU; exact/measurable_itv.
+  rewrite predeqE => r; split => [|[|]/set_of_itv_mem]; rewrite /preimage /= ?in_itv/= ?andbT.
+  - move=> /set_of_itv_mem; rewrite in_itv /= andbT.
+    have [r0|r0] := leP 0 r; [rewrite ger0_norm|rewrite ltr0_norm] => // xr.
+    + by right; apply/set_of_itv_mem; rewrite in_itv/= xr.
+    + by left; apply/set_of_itv_mem; rewrite in_itv/= ltr_oppr.
+  - move=> rx; apply/set_of_itv_mem.
+    by rewrite in_itv/= andbT ler0_norm 1?ltr_oppr// (le_trans (ltW rx))// ler_oppl oppr0.
+  - by move=> xr; apply/set_of_itv_mem; rewrite in_itv /= andbT (lt_le_trans _ (ler_norm _)).
+rewrite [X in measurable X](_ : _ = setT); first exact: measurableT.
+rewrite predeqE => r; split => // _; rewrite /preimage /=; apply/set_of_itv_mem.
+by rewrite in_itv /= andbT (lt_le_trans x0).
 Qed.
 
-Definition pair_of_rat (q : rat) : nat * nat :=
-  let x := numq q in let y := denq q in
-  (if x >= 0 then `|x|.*2 else `|x|.*2.+1, `|y|.-1).
-
-Lemma pair_of_rat_inj : {in setT &, injective pair_of_rat}.
+Lemma measurable_funD (T : measurableType) (R : realType) (f g : T -> R) :
+  measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (f \+ g).
 Proof.
-move=> x y _ _; rewrite /pair_of_rat.
-have [x_ge0|x_gt0] := leP 0 (numq x); have [y_ge0|y_gt0] := leP 0 (numq y).
-- case=> /eqP; rewrite -!muln2 eqn_mul2r => /eqP/(congr1 Posz).
-  rewrite !gez0_abs// => numqxy /(congr1 S); rewrite ?(prednK,absz_gt0)//.
-  move=> /(congr1 Posz); rewrite 2!absz_denq => dxy; apply/eqP.
-  by rewrite rat_eqE numqxy dxy 2!eqxx.
-- by case=> /(congr1 odd); rewrite /= 2!odd_double.
-- by case=> /(congr1 odd); rewrite /= 2!odd_double.
-- case=> /eqP; rewrite -!muln2 eqn_mul2r => /eqP/(congr1 Posz).
-  rewrite !ltz0_abs// => /eqP; rewrite eqr_opp => /eqP numqxy /(congr1 S).
-  rewrite ?(prednK,absz_gt0)// => /(congr1 Posz); rewrite 2!absz_denq => dxy.
-  by apply/eqP; rewrite rat_eqE numqxy dxy 2!eqxx.
+move=> mf mg; apply: (@measurability _ _ _ (@RGenOpenRays.G R));
+  [ exact/esym/RGenOpenRays.measurableEoray | move=> /= A [B [a ->] <-] ].
+rewrite preimage_o_inftyE [X in measurable X](_ : _ = \bigcup_(r : rat)
+  ([set x | ratr r < f x] `&` [set x | a - ratr r < g x])).
+  apply: measurable_bigcup_rat => q; apply: measurableI.
+  - by rewrite -preimage_o_inftyE -[X in measurable X]setIT; exact/mf/measurable_itv.
+  - by rewrite -preimage_o_inftyE -[X in measurable X]setIT; exact/mg/measurable_itv.
+rewrite predeqE => x; split => [|[r _] []/= rf] /=.
+  rewrite -ltr_subl_addr => /dense_rat[r /andP[ar rfg]].
+  by exists r => //; split => //=; rewrite ltr_subl_addr addrC -ltr_subl_addr.
+by rewrite ltr_subl_addr => afg; rewrite (lt_le_trans afg)// addrC ler_add2r ltW.
 Qed.
 
-Lemma countable_rat : countable (@setT rat).
+Lemma measurable_fun_cst (T : measurableType) (R : realType) (r : R) :
+  measurable_fun setT (cst r : T -> R).
 Proof.
-apply/countable_injective; have [f [inj_f _]] := countable_prod_nat.
-exists (f \o pair_of_rat); apply: (@in_inj_comp _ _ _ _ _ xpredT) => //.
-by move=> x y _ _ /inj_f; apply; rewrite inE.
-exact: pair_of_rat_inj.
+move=> A mA; rewrite setIT; have [rA|rA] := boolP (r \in A).
+- rewrite [X in measurable X](_ : _ = setT); first exact: measurableT.
+  by rewrite predeqE /preimage => t; split => //= _; rewrite -in_setE.
+- rewrite [X in measurable X](_ : _ = set0); first exact: measurable0.
+  by rewrite predeqE /preimage => t; split => //=; rewrite -in_setE (negbTE rA).
 Qed.
+
+Lemma measurable_funK (T : measurableType) (R : realType) (f : T -> R) (k : R):
+  measurable_fun setT f -> measurable_fun setT (fun x => k * f x).
+Proof.
+have [/eqP -> _|] := boolP (k == 0).
+  rewrite (_ : (fun _ => _) = cst 0); first exact: measurable_fun_cst.
+  by rewrite funeqE// => t; rewrite mul0r.
+rewrite neq_lt => /orP[k0|k0] mf; (apply: (@measurability _ _ _ (@RGenOpenRays.G R));
+  [ exact/esym/RGenOpenRays.measurableEoray | move=> /= A [B [a ->] <-] ]).
+- rewrite preimage_o_inftyE [X in measurable X](_ : _ = f @^-1` [set x | x < a / k]); last first.
+    rewrite predeqE => t; rewrite /preimage /=; split => [|] akft.
+      by rewrite ltr_ndivl_mulr// mulrC.
+    by rewrite mulrC -ltr_ndivl_mulr.
+  rewrite -[X in measurable X]setIT; apply: mf.
+  by rewrite -(set_of_itv_infty_o (a / k)); exact/measurable_itv.
+- rewrite preimage_o_inftyE [X in measurable X](_ : _ = f @^-1` [set x | a / k < x]); last first.
+    rewrite predeqE => t; rewrite /preimage /=; split => [|] akft.
+      by rewrite ltr_pdivr_mulr// mulrC.
+    by rewrite mulrC -ltr_pdivr_mulr.
+  rewrite -[X in measurable X]setIT; apply: mf.
+  by rewrite -(set_of_itv_o_infty (a / k)); exact/measurable_itv.
+Qed.
+
+Lemma measurable_funN (T : measurableType) (R : realType) (f : T -> R) :
+  measurable_fun setT f -> measurable_fun setT (fun x => - f x).
+Proof.
+by move=> mf; under eq_fun do rewrite -mulN1r; exact: measurable_funK.
+Qed.
+
+(* TODO: move *)
+Lemma sup_gt (R : realType) (S : set R) (x : R) : S !=set0 ->
+  x < sup S -> exists y : R, S y /\ x < y.
+Proof.
+move=> S0; rewrite not_existsP => + g; apply/negP; rewrite -leNgt.
+apply sup_le_ub => // y Sy; move: (g y).
+by rewrite not_andP => -[// | /negP]; rewrite leNgt.
+Qed.
+
+Lemma sup_preimage (T : Type) (R : realType) (a : R) (f : (T -> R)^nat) n :
+  (forall t, has_ubound [set f k t | k in [set k | n <= k]%N]) ->
+  (fun x => sup [set f k x | k in [set k | n <= k]%N]) @^-1` [set x | a < x] =
+  \bigcup_(k in [set k | n <= k]%N) (f k @^-1` [set x | a < x]).
+Proof.
+move=> f_ub; rewrite predeqE => t; split => /=.
+  rewrite {1}/preimage /=.
+  have [/eqP|/set0P h] := boolP ([set f k t | k in [set k | (n <= k)%N]] == set0); last first.
+    by move/(sup_gt h) => [y [[m /= nm <-{y}]]] afmt; exists m.
+  move/absurd; apply; apply/eqP/set0P.
+  by exists (f n t), n => //=.
+move=> -[k /= nk] /lt_le_trans; apply.
+by apply: sup_ub => //; last by exists k.
+Qed.
+
+Lemma measurable_fun_sup (T : measurableType) (R : realType) (f : (T -> R)^nat) (D : set T := setT) n :
+  (forall t, has_ubound [set f k t | k in [set k | n <= k]%N]) ->
+  (forall m, measurable_fun D (f m)) ->
+  measurable_fun D (fun x => sup [set f m x | m in [set m | n <= m]%N]).
+Proof.
+move=> f_ub mf; apply: (@measurability T _ _ (@RGenOpenRays.G R)).
+  exact/esym/RGenOpenRays.measurableEoray.
+move=> A [B [x ->] <-].
+rewrite set_of_itv_o_infty sup_preimage //.
+apply: (@measurable_bigcup_bounded n _ (fun k => f k @^-1` (fun b => x < b))) => i ni.
+rewrite -[X in measurable X](setIT _).
+apply: mf => //.
+by rewrite -set_of_itv_o_infty; exact: measurable_itv.
+Qed.
+
+End measurable_fun.
 
 Canonical interval_pointedType (R : numDomainType) :=
   PointedType (interval R) `]0, 0[.
