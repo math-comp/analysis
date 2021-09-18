@@ -1208,7 +1208,7 @@ move: Se'y; rewrite -{}umx {y} /= => le'um.
 have leum : (contract l - e%:num < contract (u_ m))%R.
   rewrite -lt_expandLR ?inE ?ltW//.
   move: le'um; rewrite /e' NEFin -/l [in X in (X - _ < _) -> _]lr /= opprB.
-  by rewrite addrCA subrr addr0 real_of_extended_expand.
+  by rewrite -addEFin addrCA subrr addr0 real_of_extended_expand.
 rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
 by rewrite le_contract nd_u_//; near: n; exists m.
 Grab Existential Variables. all: end_near. Qed.
@@ -1262,7 +1262,7 @@ Grab Existential Variables. all: end_near. Qed.
 Lemma adde_def_nneg_series (R : realType) (f g : (\bar R)^nat)
     (P Q : pred nat) :
   (forall n, P n -> 0 <= f n) -> (forall n, Q n -> 0 <= g n) ->
-  adde_def (\sum_(i <oo | P i) f i) (\sum_(i <oo | Q i) g i).
+  (\sum_(i <oo | P i) f i) +? (\sum_(i <oo | Q i) g i).
 Proof.
 move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split.
 - apply/orP; right; apply/eqP => Qg.
@@ -1433,7 +1433,7 @@ by rewrite (splitr A) addEFin lee_add // ?foo // goo.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD (R : realType) (f g : (\bar R)^nat) a b :
-  adde_def a b -> f --> a -> g --> b -> f \+ g --> a + b.
+  a +? b -> f --> a -> g --> b -> f \+ g --> a + b.
 Proof.
 move: a b => [a| |] [b| |] // _.
 - case/ereal_cvg_real => [[na _ foo] fa].
@@ -1465,7 +1465,7 @@ move: a b => [a| |] [b| |] // _.
 Qed.
 
 Lemma ereal_limD (R : realType) (f g : (\bar R)^nat) :
-  cvg f -> cvg g -> adde_def (lim f) (lim g) ->
+  cvg f -> cvg g -> lim f +? lim g ->
   lim (f \+ g) = lim f + lim g.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
