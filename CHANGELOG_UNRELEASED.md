@@ -31,6 +31,8 @@
   + lemma `sube0`
 - in `normedtype.v`:
   + lemma `mule_continuous`
+- in `cardinality.v`:
+  + definition `nat_of_pair`, lemma `nat_of_pair_inj`
 
 ### Changed
 
