@@ -71,7 +71,10 @@ rewrite /maxe; have [ab|ba] := leP a b; first by rewrite join_r.
 by rewrite join_l // lee_fin ltW.
 Qed.
 
-Definition norme (R : realDomainType) (x : \bar R) := (if 0 <= x then x else - x)%E.
+Definition norme (R : realDomainType) (x : \bar R) := if x is EFin r then `|r|%:E else +oo%E.
+
+Lemma norme_ge0 (R : realDomainType) (x : \bar R) : (0 <= norme x)%E.
+Proof. by move: x => [x| |] /=; rewrite ?lee_pinfty ?lee_fin. Qed.
 
 Section funpos.
 Local Open Scope ereal_scope.
@@ -942,9 +945,7 @@ Lemma lefP (aT : Type) d (T : porderType d) (f g : aT -> T) :
   reflect (forall x, (f x <= g x)%O) (f <= g)%O.
 Proof. by apply: (iffP idP) => [fg|fg]; [exact/asboolP | apply/asboolP]. Qed.
 
-
-
-(* TODO: PR *)
+(* NB: PR in progress *)
 Lemma ereal_cvgZ (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) c :
   f --> a -> (fun n => c%:E * f n)%E --> (c%:E * a)%E.
 Proof.
@@ -981,31 +982,32 @@ Proof.
 by move=> u_ndecr; apply/cvg_ex; eexists; exact: nondecreasing_seq_ereal_cvg.
 Qed.
 
+Lemma ereal_nondecreasing_opp (T : realDomainType) (u_ : (\bar T)^nat) :
+  nondecreasing_seq (fun n => - u_ n)%E = nonincreasing_seq u_.
+Proof.
+rewrite propeqE; split => ni_u m n mn; last by rewrite lee_oppr oppeK ni_u.
+by rewrite -(oppeK (u_ m)) -lee_oppr ni_u.
+Qed.
+
 Lemma nonincreasing_seq_ereal_cvg (R : realType) (u_ : (\bar R)^nat) :
   nonincreasing_seq u_ -> u_ --> ereal_inf (u_ @` setT).
 Proof.
-move=> u_nincr.
-rewrite /ereal_inf.
-rewrite [X in X --> _](_ : _ = (fun n => - (- u_ n)))%E; last first.
+move=> ni_u; rewrite [X in X --> _](_ : _ = (fun n => - - u_ n))%E; last first.
   by rewrite funeqE => n; rewrite oppeK.
 apply: ereal_cvgN.
-rewrite [X in _ --> X](_ : _ = ereal_sup [set of (fun n => - u_ n)%E]); last first.
+rewrite [X in _ --> X](_ : _ = ereal_sup [set of -%E \o u_]); last first.
   congr ereal_sup.
   rewrite predeqE => x; split=> [[_ [n _ <-]] <-|[n _] <-]; first by exists n.
   by exists (u_ n) => //; exists n.
-(* NB: duplicate nondecreasing_opp for \bar R? *)
-apply: nondecreasing_seq_ereal_cvg => /=.
-by move=> m n mn; rewrite lee_oppr oppeK u_nincr.
+by apply: nondecreasing_seq_ereal_cvg; rewrite ereal_nondecreasing_opp.
 Qed.
 
 Lemma ereal_nonincreasing_is_cvg (R : realType) (u_ : (\bar R) ^nat) :
   nonincreasing_seq u_ -> cvg u_.
 Proof.
-by move=> u_nincr; apply/cvg_ex; eexists; apply: nonincreasing_seq_ereal_cvg.
+by move=> ni_u; apply/cvg_ex; eexists; apply: nonincreasing_seq_ereal_cvg.
 Qed.
-
-
-
+(* /NB: PR in progress *)
 
 Section le_sintegral.
 Variables (T : measurableType) (point : T) (R : realType).
@@ -1410,9 +1412,6 @@ Qed.
 (* expect the function f to be mu integrable *)
 Definition integral (D : set T) (f : T -> \bar R) :=
   (nnintegral D (f ^\+) - nnintegral D (f ^\-))%E.
-
-Definition integrable (D : set T) (f : T -> \bar R) :=
-  (integral D (fun x => norme (f x)) < +oo)%E.
 
 Lemma ge0_integralE (D : set T) (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x)%E ->
@@ -2552,17 +2551,273 @@ Grab Existential Variables. all: end_near. Qed.
 End monotone_convergence_theorem.
 
 (* NB: see PR 371 *)
-Definition lim_ereal_inf (R : realType) (u_ : (\bar R) ^nat) :=
-  lim (fun n => ereal_inf [set u_ k | k in [set p | p >= n]%N]).
+Definition sdrop (T : Type) (u : T^nat) n := [set u k | k in [set k | k >= n]]%N.
 
-Definition lim_ereal_sup (R : realType) (u_ : (\bar R) ^nat) :=
-  lim (fun n => ereal_sup [set u_ k | k in [set p | p >= n]%N]).
+Definition lim_ereal_inf (R : realType) (u : (\bar R)^nat) := lim (fun n => ereal_inf (sdrop u n)).
 
-Lemma measurable_fun_ereal_inf (R : realType) (T : measurableType) (D : set T := setT)
-  (f : (T -> \bar R) ^nat) n (mf : forall k, measurable_fun D (f k)) :
-  measurable_fun D (fun x => ereal_inf [set f k x | k in [set k | n <= k]%N]).
+Definition lim_ereal_sup (R : realType) (u : (\bar R)^nat) := lim (fun n => ereal_sup (sdrop u n)).
+
+Lemma measurable_fun_ereal_inf (T : measurableType) (R : realType)
+    (f : (T -> \bar R) ^nat) (D := setT) : (forall n, measurable_fun D (f n)) ->
+  forall n, measurable_fun D (fun x => ereal_inf (sdrop (f^~x) n)).
+Admitted.
+
+Lemma measurable_fun_ereal_sup (T : measurableType) (R : realType)
+    (f : (T -> \bar R) ^nat) (D := setT) : (forall n, measurable_fun D (f n)) ->
+  forall n, measurable_fun D (fun x => ereal_sup (sdrop (f^~x) n)).
+Admitted.
+
+Lemma measurable_fun_comp (T1 T2 T3 : measurableType) (f : T2 -> T3) E (g : T1 -> T2) :
+  measurable_fun setT f -> measurable_fun E g -> measurable_fun E (f \o g).
+Admitted.
+
+Lemma measurable_fun_EFin (R : realType) : measurable_fun setT (@EFin R).
+Admitted.
+
+Lemma measurable_fun_normr (R : realType) : measurable_fun setT (@normr _ R).
+Admitted.
+
+Lemma measurable_funD (T : measurableType) (R : realType) (f g : T -> R) :
+  measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (f \+ g).
+Admitted.
+
+Lemma measurable_fun_cst (T : measurableType) (R : realType) (r : R) :
+  measurable_fun setT (cst r : T -> R).
+Admitted.
+
+Lemma measurable_funK (T : measurableType) (R : realType) (f : T -> R) (k : R):
+  measurable_fun setT f -> measurable_fun setT (fun x => k * f x).
+Admitted.
+
+Lemma measurable_funN (T : measurableType) (R : realType) (f : T -> R) :
+  measurable_fun setT f -> measurable_fun setT (fun x => - f x).
+Admitted.
+
+Definition lim_inf (R : realType) (u : R^nat) := lim (fun n => inf (sdrop u n) : R^o).
+
+Definition lim_sup (R : realType) (u : R^nat) := lim (fun n => sup (sdrop u n) : R^o).
+
+Lemma measurable_fun_lim_sup (T : measurableType) (R : realType)
+    (f : (T -> R)^nat) (D : set T := setT) :
+  (forall n t, has_ubound (sdrop (f^~t) n)) -> (forall n t, has_lbound (sdrop (f^~t) n)) ->
+  (forall n, measurable_fun D (f n)) ->
+  measurable_fun D (fun x => lim_sup (f^~x)).
+Proof.
+Admitted.
+
+Lemma measurable_fun_norme (R : realType) : measurable_fun setT (@norme R).
+Admitted.
+
+Lemma EFin_measurable_fun (T : measurableType) (R : realType) (g : T -> R) (D : set T) :
+  measurable_fun D (fun x : T => (g x)%:E) -> measurable_fun D g.
 Admitted.
 (* /NB: see PR 371 *)
+
+Section more_about_lim_inf_lim_sup.
+
+(* NB: not used *)
+Lemma increasing_seq_le (f : nat -> nat) : increasing_seq f -> forall m, (m <= f m)%N.
+Proof.
+move=> fi; elim => // n; rewrite leq_eqVlt => /orP[/eqP {1}->|].
+  by move/increasing_seqP : fi => /(_ n); rewrite ltEnat.
+by move/leq_trans; apply; rewrite -leEnat fi.
+Qed.
+
+Lemma cvg_subseq (R : realType) (u_ : R^nat) (l : R) : (u_ : _ -> R^o) --> (l : R^o) ->
+  forall f : nat -> nat, increasing_seq f -> (u_ \o f : _ -> R^o) --> (l : R^o).
+Proof.
+move=> u_l f f_inc; apply/cvg_distP => _/posnumP[e]; rewrite near_map.
+move/cvg_distP : u_l => /(_ e%:num (posnum_gt0 e)); rewrite near_map.
+move=> [m _ mlue]; near=> n; apply: mlue => /=.
+near: n.
+by exists m => // k /= /leq_trans; apply; apply/increasing_seq_le.
+Grab Existential Variables. all: end_near. Qed.
+(* /NB: not used *)
+
+Lemma nonincreasing_ereal_sup (R : realType) (u : (\bar R)^nat) :
+  nonincreasing_seq (fun n => ereal_sup (sdrop u n)).
+Proof.
+by move=> m n mn; apply: le_ereal_sup => _ /= [k nk <-]; exists k => //=; rewrite (leq_trans mn).
+Qed.
+
+Lemma nondecreasing_ereal_inf (R : realType) (u : (\bar R)^nat) :
+  nondecreasing_seq (fun n => ereal_inf (sdrop u n)).
+Proof.
+by move=> m n mn; apply: le_ereal_inf => _ /= [k nk <-]; exists k => //=; rewrite (leq_trans mn).
+Qed.
+
+Lemma ereal_inf_sup_sdrop (R : realType) (u : (\bar R)^nat) n :
+  (ereal_inf (sdrop u n) <= ereal_sup (sdrop u n))%E.
+Proof.
+set A := sdrop _ _; have [a Aa] : A !=set0 by exists (u n); rewrite /A /=; exists n => //=.
+by rewrite (@le_trans _ _ a) //; [exact/ereal_inf_lb|exact/ereal_sup_ub].
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma lim_ereal_inf_sup (R : realType) (u : (\bar R)^nat) :
+  (lim_ereal_inf u <= lim_ereal_sup u)%E.
+Proof.
+apply lee_lim.
+- exact/ereal_nondecreasing_is_cvg/nondecreasing_ereal_inf.
+- exact/ereal_nonincreasing_is_cvg/nonincreasing_ereal_sup.
+- by apply: nearW; exact: ereal_inf_sup_sdrop.
+Qed.
+
+Lemma cvg_has_ubound_sdrop (R : realType) (u : R^o^nat) :
+  cvg u ->  forall m, has_ubound (sdrop u m).
+Proof.
+move/cvg_seq_bounded => [M [Mr Mf_]] m.
+exists (M + 1) => y; rewrite /sdrop /= => -[N mN <-{y}].
+by rewrite (le_trans (ler_norm _))// Mf_// ltr_addl.
+Qed.
+
+Lemma cvg_has_lbound_sdrop (R : realType) (u : R^o^nat) :
+  cvg u ->  forall m, has_lbound (sdrop u m).
+Proof.
+move/cvg_seq_bounded => [M [Mr Mf_]] m.
+exists (- (M + 1)) => y; rewrite /sdrop /= => -[N mN <-{y}]; apply: lerNnormlW.
+by rewrite (le_trans (ler_norm _))// normr_id Mf_// ltr_addl.
+Qed.
+
+Lemma inf_sup_sdrop (R : realType) (u : R^o^nat) n :
+  cvg u -> inf (sdrop u n) <= sup (sdrop u n).
+Proof.
+move=> cu; set A := sdrop _ _; have [a Aa] : A !=set0 by exists (u n); rewrite /A /=; exists n => //=.
+rewrite (@le_trans _ _ a) //; [apply/inf_lb|apply/sup_ub] => //.
+- by apply cvg_has_lbound_sdrop.
+- by apply cvg_has_ubound_sdrop.
+Qed.
+
+Lemma nonincreasing_sup (R : realType) (u : R^nat) : (forall m, has_ubound (sdrop u m)) ->
+  nonincreasing_seq (fun n => sup (sdrop u n)).
+Proof.
+move=> f_ub m n mn; apply: le_sup.
+- by move=> k /= [p np] <-{k}; apply/downP; exists (u p) => //=; exists p => //; exact: leq_trans np.
+- by exists (u n) => /=; exists n => /=.
+- by split => //; exists (u m); exists m => //=.
+Qed.
+
+Lemma nondecreasing_inf (R : realType) (u : R^nat) : (forall m, has_lbound (sdrop u m)) ->
+  nondecreasing_seq (fun n => inf (sdrop u n)).
+Proof.
+move=> f_ub m n mn; rewrite /inf; rewrite ler_oppl opprK.
+rewrite 2!image_comp; apply: nonincreasing_sup => // k.
+by have /has_lb_ubN := f_ub k; rewrite image_comp.
+Qed.
+
+Lemma is_cvg_sup_sdrop (R : realType) (u : R^o^nat) :
+  cvg u -> cvg (fun n => sup (sdrop u n) : R^o).
+Proof.
+move=> cf; have [M [Mreal Mu]] := cvg_seq_bounded cf.
+apply: (@nonincreasing_is_cvg _ _ (- (M + 1))).
+ exact/nonincreasing_sup/cvg_has_ubound_sdrop.
+move=> n; rewrite (@le_trans _ _ (u n))//.
+  by apply/lerNnormlW/Mu => //; rewrite ltr_addl.
+by apply: sup_ub; [exact: cvg_has_ubound_sdrop |exists n => //=].
+Qed.
+
+Lemma is_cvg_inf_sdrop (R : realType) (u : R^o^nat) :
+  cvg u -> cvg (fun n => inf (sdrop u n) : R^o).
+Proof.
+move=> cf_; rewrite (_ : (fun n => _) = (fun n => - sup (sdrop (-%R \o u) n))).
+  by apply: is_cvgN; apply: is_cvg_sup_sdrop; apply: is_cvgN.
+rewrite funeqE => x /=; rewrite /inf; congr (- sup _).
+rewrite predeqE => /= r; split => [[s [n /= xn <- <-]]|]; first by exists n.
+by move=> [n /= xn <-]; exists (u n) => //; exists n => //=.
+Qed.
+
+Lemma lim_infN (R : realType) (u : R^o^nat) : cvg u ->
+  (lim_inf (fun n => - u n) = - lim_sup u).
+Proof.
+move=> cu_; rewrite /lim_inf.
+rewrite (_ : (fun n => _) = (fun n => - sup (sdrop u n))); last first.
+  rewrite funeqE => n; rewrite /inf; congr (- sup _).
+  rewrite predeqE => x; split=> [[_ [m /= nm] <-]|[m /= nm] <-].
+    by rewrite opprK => <-; exists m.
+  by exists (- u m); [exists m|rewrite opprK].
+by rewrite (@limN _ _ _ _ _ (fun n => sup (sdrop u n) : R^o)) //; exact: is_cvg_sup_sdrop.
+Qed.
+
+Lemma lim_inf_sup (R : realType) (u : R^o^nat) : cvg u ->  lim_inf u <= lim_sup u.
+Proof.
+move=> cf_; apply ler_lim; [exact: is_cvg_inf_sdrop|exact: is_cvg_sup_sdrop|].
+by apply: nearW => n; apply: inf_sup_sdrop.
+Qed.
+
+Lemma cvg_inf_sup (R : realType) (u : R^o^nat) (l : R^o) :
+  u --> l -> lim_inf u = l /\ lim_sup u = l.
+Proof.
+move=> ul.
+have /cvg_seq_bounded [M [Mr Mu]] : cvg u by apply/cvg_ex; eexists; exact: ul.
+have u_ub m : has_ubound (sdrop u m).
+  by apply: cvg_has_ubound_sdrop; apply/cvg_ex; eexists; exact: ul.
+have u_lb m : has_lbound (sdrop u m).
+  by apply: cvg_has_lbound_sdrop; apply/cvg_ex; eexists; exact: ul.
+suff : lim_sup u <= l <= lim_inf u.
+  move=> /andP[sul liu].
+  have /lim_inf_sup iusu : cvg u by apply/cvg_ex; eexists; exact: ul.
+  split; first by apply/eqP; rewrite eq_le liu andbT (le_trans iusu).
+  by apply/eqP; rewrite eq_le sul /= (le_trans _ iusu).
+apply/andP; split.
+- apply/ler_addgt0Pr => e e0.
+  move/cvg_distP : ul => /(_ _ e0); rewrite near_map => ul.
+  apply lim_le.
+    apply: (@nonincreasing_is_cvg _ _ (- (M + 1))); first exact: nonincreasing_sup.
+    move=> n.
+    rewrite (@le_trans _ _ (u n)) //; first by apply/lerNnormlW/Mu => //; rewrite ltr_addl.
+    by apply: sup_ub => /=; [exact: u_ub|exists n => //=].
+  have [k _ klu] := ul.
+  near=> n.
+  have kn : (k <= n)%N by near: n; exists k.
+  apply: sup_le_ub; first by exists (u n) => /=; exists n => //=.
+  move=> _ /= [m nm] <-.
+  apply/ltW/ltr_distl_addr; rewrite distrC.
+  by apply: (klu m) => /=; rewrite (leq_trans kn).
+- apply/ler_addgt0Pr => e e0; rewrite -ler_subl_addr.
+  move/cvg_distP : ul => /(_ _ e0); rewrite near_map => ul.
+  apply lim_ge.
+    apply: (@nondecreasing_is_cvg _ _ ((M + 1))); first exact/nondecreasing_inf.
+    move=> n.
+    rewrite (@le_trans _ _ (u n)) //; last first.
+      by rewrite (le_trans (ler_norm _))//; apply Mu => //; rewrite ltr_addl.
+    by apply: inf_lb => /=; [exact: u_lb|exists n => //=].
+  have [k _ klu] := ul; near=> n.
+  have kn: (k <= n)%N by near: n; exists k.
+  apply: lb_le_inf; first by exists (u n) => /=; exists n => //=.
+  move=> _ /= [m nm] <-.
+  apply/ltW/ltr_distl_subl.
+  by apply: (klu m) => /=; rewrite (leq_trans kn).
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma cvg_sup_sdrop (R : realType) (u : R^o^nat) (l : R^o) :
+  u --> l -> (fun n => sup (sdrop u n) : R^o) --> (l : R^o).
+Proof.
+move=> ul; have [iul <-] := cvg_inf_sup ul.
+have cu : cvg u by apply/cvg_ex; eexists; apply: ul.
+have /cvg_ex[l' sul'] := is_cvg_sup_sdrop cu.
+by move/cvg_lim : (sul') ; rewrite /lim_sup => ->.
+Qed.
+
+Section more_about_measurable_fun.
+
+Lemma measurable_fun_cvg (T : measurableType) (R : realType)
+    (f_ : (T -> R)^nat) (D : set T := setT) (f : T -> R^o) :
+  (forall m, measurable_fun D (f_ m)) ->
+  (forall x, (f_^~ x : _ -> (R^o)) --> (f x : R^o)) ->
+  measurable_fun D f.
+Proof.
+move=> mf_ f_f.
+have fE x : f x = lim_sup (f_^~ x).
+  by have /cvg_lim  <-// := (@cvg_sup_sdrop _ (f_^~x) (f x) (f_f x)).
+rewrite (_ : f = (fun x => lim_sup (f_^~x))) ?funeqE//.
+apply: (@measurable_fun_lim_sup _ _ f_) => // n t.
+- apply: cvg_has_ubound_sdrop.
+  by apply/cvg_ex; eexists; exact: (f_f t).
+- apply: cvg_has_lbound_sdrop.
+  by apply/cvg_ex; eexists; exact: (f_f t).
+Qed.
+
+End more_about_measurable_fun.
 
 Section fatou.
 Variables (T : measurableType) (point : T) (R : realType).
@@ -2577,12 +2832,12 @@ Lemma fatou : (integral mu D (fun x => lim_ereal_inf (f^~ x)) <=
   lim_ereal_inf (fun n => integral mu D (f n)))%E.
 Proof.
 pose g n := fun x => ereal_inf [set f k x | k in [set k | k >= n]%N].
-have mg n :=  measurable_fun_ereal_inf n mf.
+have mg :=  measurable_fun_ereal_inf mf.
 have g0 n : forall x, D x -> (0 <= g n x)%E.
   by move=> x Dx; apply lb_ereal_inf => _ [m /= nm <-]; exact: f0.
 rewrite (monotone_convergence point) //; last first.
-  move=> x Dx m n mn /=; apply: le_ereal_inf => _ /= [p np <-].
-  by exists p => //; rewrite (leq_trans mn).
+  move=> x Dx m n mn /=; apply: le_ereal_inf => _ /= [p /= np <-].
+  by exists p => //=; rewrite (leq_trans mn).
 apply lee_lim.
 - apply/cvg_ex; eexists; apply/nondecreasing_seq_ereal_cvg => a b ab.
   apply: (ge0_le_integral point) => //.
@@ -2590,10 +2845,10 @@ apply lee_lim.
   - exact: g0.
   - move=> x Dx.
     apply: le_ereal_inf => _ [n /= bn <-].
-    by exists n => //; rewrite (leq_trans ab).
+    by exists n => //=; rewrite (leq_trans ab).
 - apply/cvg_ex; eexists; apply/nondecreasing_seq_ereal_cvg => a b ab.
   apply: le_ereal_inf => // _ [n /= bn <-].
-  by exists n => //; rewrite (leq_trans ab).
+  by exists n => //=; rewrite (leq_trans ab).
 - apply: nearW => m.
   have : forall n p, (p >= n)%N -> (integral mu D (g n) <=
     ereal_inf [set integral mu D (f k) | k in [set p | n <= p]%N])%E.
@@ -2604,3 +2859,58 @@ apply lee_lim.
 Qed.
 
 End fatou.
+
+Section integrable.
+Variables (T : measurableType) (point : T) (R : realType).
+Variable (mu : {measure set T -> \bar R}).
+
+Definition integrable (D : set T) (f : T -> \bar R) :=
+  measurable_fun D f /\
+  (integral mu D (fun x => norme (f x)) < +oo)%E.
+
+Definition Rintegral (D : set T) (f : T -> \bar R) :=
+  real_of_extended (integral mu D f).
+
+End integrable.
+
+Section dominated_convergence_theorem.
+Variables (T : measurableType) (point : T) (R : realType).
+Variables mu : {measure set T -> \bar R}.
+Let D : set T := setT.
+Variable f_ : (T -> R)^nat.
+Hypothesis mf_ : forall n, measurable_fun D (f_ n).
+Variable f : T -> R.
+Hypothesis f_f : (*{ae mu,*) forall x, (f_^~ x : R^o^nat) --> (f x : R^o)(*}*).
+Variable g : T -> R.
+Hypothesis ig : integrable mu D (fun x => (g x)%:E).
+Hypothesis normfg : forall n, (*{ae mu,*) forall x, D x -> `|f_ n x| <= g x(*}*).
+
+Let g0 : forall x, D x -> 0 <= g x.
+Proof. by move=> x Dx; rewrite (le_trans _ (@normfg O _ Dx)). Qed.
+
+Lemma dominated_integrable : integrable mu D (@EFin _ \o f).
+Proof.
+split.
+  apply: measurable_fun_comp; first exact: measurable_fun_EFin.
+  exact: (measurable_fun_cvg mf_).
+have fg x : D x -> `| f x | <= g x.
+  move=> Dx.
+  have : (`|f_ n x|) @[n --> \oo] --> (`|f x| : R^o).
+    by apply: (@cvg_norm _ [normedModType R of R^o]); exact: f_f.
+  move=> /(@cvg_lim [topologicalType of R^o]) <- //.
+  apply: lim_le => //.
+    apply: (@is_cvg_norm _ [normedModType R of R^o]).
+    by apply/cvg_ex; eexists; exact: f_f.
+  by apply: nearW => n; apply: normfg.
+move: ig => [mg].
+apply: le_lt_trans; apply ge0_le_integral => //.
+- exact: measurableT.
+- by move=> x Dx; apply: norme_ge0.
+- apply: measurable_fun_comp; first exact: measurable_fun_norme.
+  apply: measurable_fun_comp; first exact: measurable_fun_EFin.
+  exact: (measurable_fun_cvg mf_).
+- by move=> x Dx; apply norme_ge0.
+- by move=> x Dx /=; rewrite lee_fin (ger0_norm (g0 Dx)); exact: fg.
+Qed.
+
+End dominated_convergence_theorem.
