@@ -5170,7 +5170,7 @@ apply: g_salgebra_self; exists +oo; rewrite predeqE => x; split => [->//|].
 by rewrite lee_pinfty_eq => /eqP ->.
 Qed.
 
-Lemma measurableRbarEcray : measurableRbar (@Sset.is_sset R) = @measurable T.
+Lemma measurableEcray : measurableRbar (@Sset.is_sset R) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A; last first.
   elim => [_ [x ->]| | |].
@@ -5501,7 +5501,6 @@ Lemma submeasurableP_preimage_class (aT : Type) (rT : Type) (G : set (set rT)) (
 Proof. exact: submeasurableP_trace. Qed.
 
 End submeasurability.
-(* /not used *)
 
 Section image2.
 Context {aT rT : Type}.
@@ -5519,107 +5518,6 @@ Variables (T1 T2 : measurableType).
 Definition measurable_prod : set (set (T1 * T2)) :=
   s<< [set X | (@measurable T1) X.`1 /\ (@measurable T2) X.`2] >>.
 End salgebra_prod.
-
-Lemma comp_preimage T1 T2 T3 (A : set T3) (g : T1 -> T2) (f : T2 -> T3) :
-  (f \o g) @^-1` A = g @^-1` (f @^-1` A).
-Proof. by []. Qed.
-
-Definition lim_ereal_inf (R : realType) (u_ : (\bar R) ^nat) : \bar R :=
-  lim (fun n => ereal_inf [set u_ k | k in [set p | p >= n]%N]).
-
-Definition lim_ereal_sup (R : realType) (u_ : (\bar R) ^nat) :=
-  lim (fun n => ereal_sup [set u_ k | k in [set p | p >= n]%N]).
-
-(* TODO: see PR 404 *)
-Lemma ereal_limN (R : realFieldType) (f : (\bar R)^nat) : cvg f ->
-  lim (fun n => - f n)%E = (- lim f)%E.
-Admitted.
-
-Lemma ereal_nonincreasing_is_cvg (R : realType) (u_ : (\bar R) ^nat) :
-  nonincreasing_seq u_ -> cvg u_.
-Admitted.
-(* /TODO: see PR 404 *)
-
-Lemma lim_ereal_infN (R : realType) (u_ : (\bar R) ^nat) :
-  (lim_ereal_inf (fun n => - u_ n) = - lim_ereal_sup u_)%E.
-Proof.
-rewrite /lim_ereal_inf.
-rewrite (_ : (fun n => _) = (fun n => - ereal_sup [set u_ k | k in [set p | p >= n]%N])%E); last first.
-  rewrite funeqE => n; rewrite /ereal_inf; congr (- ereal_sup _)%E.
-  rewrite predeqE => x; split=> [[_ [m /= nm] <-]|[m /= nm] <-].
-    by rewrite oppeK => <-; exists m.
-  by exists (- u_ m)%E; [exists m|rewrite oppeK].
-rewrite ereal_limN //.
-apply: ereal_nonincreasing_is_cvg => n m nm; apply le_ereal_sup => _ [p /= np <-].
-by exists p => //; rewrite (leq_trans _ np).
-Qed.
-
-Lemma ereal_sup_preimage (T : Type) (R : realType) (a : \bar R) (f : (T -> \bar R)^nat) n :
-  (fun x => ereal_sup [set f k x | k in [set k | (n <= k)%N]]) @^-1` [set x | (a < x)%E] =
-  \bigcup_(k in [set k | (n <= k)%N]) (f k @^-1` [set x | (a < x)%E]).
-Proof.
-rewrite predeqE => t; split => /=.
-  move=> /ereal_sup_gt(* TODO: use ex2 for this lemma*)[? [/= [k nk <-]]] afnt.
-  by exists k => //=.
-move=> -[k /= nk] /lt_le_trans; apply.
-by apply: ereal_sup_ub; exists k.
-Qed.
-
-Lemma ereal_inf_preimage (T : Type) (R : realType) (a : \bar R) (f : (T -> \bar R)^nat) n :
-  ((fun x => ereal_inf [set f k x | k in [set k | (n <= k)%N]]) @^-1` [set x | (a <= x)%E]) =
-  \bigcap_(k in [set k | (n <= k)%N]) (f k @^-1` [set x | (a <= x)%E]).
-Proof.
-rewrite predeqE => t; split => /=.
-  rewrite {1}/preimage /= => h k /= nk.
-  rewrite /preimage /=.
-  rewrite (le_trans h) //.
-  by apply ereal_inf_lb; by exists k.
-move=> h.
-rewrite /preimage /=.
-rewrite leNgt; apply/negP => /ereal_inf_lt[y /= [[k nk <-{y}]]].
-by apply/negP; rewrite -leNgt; apply: h.
-Qed.
-
-Lemma measurable_bigcap_bounded n : forall {s : measurableType} (U : (set s) ^nat),
-  (forall i : nat, (n <= i)%N -> measurable (U i)) ->
-  measurable (\bigcap_(i in [set k | (n <= k)%N]) U i).
-Proof.
-move=> T F mF.
-rewrite [X in measurable X](_ : _ = (\bigcap_i F (i + n)%N)); last first.
-  rewrite eqEsubset; split => [t h i _|].
-    by apply h => /=; rewrite leq_addl.
-  move=> t h k /= nk.
-  by rewrite -(subnK nk); apply h.
-apply: measurable_bigcap => i; apply mF.
-by rewrite leq_addl.
-Qed.
-
-Lemma measurable_bigcup_bounded n : forall {s : measurableType} (U : (set s) ^nat),
-  (forall i : nat, (n <= i)%N -> measurable (U i)) ->
-  measurable (\bigcup_(i in [set k | (n <= k)%N]) U i).
-Proof.
-move=> T F mF.
-rewrite [X in measurable X](_ : _ = (\bigcup_i F (i + n)%N)); last first.
-  rewrite eqEsubset; split => [t [m /= nm Fmt]|t [m /= _ Fmnt]].
-    by exists (m - n)%N => //; rewrite subnK.
-  by exists (m + n)%N => //=; rewrite leq_addl.
-apply: measurable_bigcup => i; apply mF.
-by rewrite leq_addl.
-Qed.
-
-Lemma measurable_fun_ereal_inf (R : realType) (T : measurableType) (D : set T := setT)
-  (f : (T -> \bar R) ^nat) n (mf : forall k, measurable_fun D (f k)) :
-  measurable_fun D (fun x => ereal_inf [set f k x | k in [set k | n <= k]%N]).
-Proof.
-apply: (@measurability _ _ _ (@RbarGenClosedRays.G R)).
-  exact/esym/RbarGenClosedRays.measurableRbarEcray.
-move=> A [B [x ->] <-].
-rewrite ereal_inf_preimage.
-apply: (@measurable_bigcap_bounded n _ (fun k => f k @^-1` (fun b => (x <= b)%E))) => i ni.
-rewrite -[X in measurable X](setIT _).
-apply: mf => //.
-exact: measurable_Rbar_c_infty.
-Qed.
 
 (*Definition image_class (aT rT : Type) (f : aT -> rT) (G : set (set aT)) : set (set rT) :=
   [set B | f @^-1` B \in G].
@@ -5655,7 +5553,193 @@ apply/measurable_generator => G'.
 (*exact: h.
 Qed.*) Abort.*)
 
+(* /not used *)
+
+Lemma comp_preimage T1 T2 T3 (A : set T3) (g : T1 -> T2) (f : T2 -> T3) :
+  (f \o g) @^-1` A = g @^-1` (f @^-1` A).
+Proof. by []. Qed.
+
+(* TODO: PR in progress *)
+Lemma ereal_limN (R : realFieldType) (f : (\bar R)^nat) : cvg f ->
+  lim (fun n => - f n)%E = (- lim f)%E.
+Admitted.
+
+Lemma ereal_nonincreasing_is_cvg (R : realType) (u_ : (\bar R) ^nat) :
+  nonincreasing_seq u_ -> cvg u_.
+Admitted.
+(* /TODO: PR in progress *)
+
+Section lim_inf_lim_sup.
+
+Definition sdrop (T : Type) (u : T^nat) n := [set u k | k in [set k | k >= n]]%N.
+
+Definition lim_ereal_inf (R : realType) (u : (\bar R)^nat) := lim (fun n => ereal_inf (sdrop u n)).
+
+Definition lim_ereal_sup (R : realType) (u : (\bar R)^nat) := lim (fun n => ereal_sup (sdrop u n)).
+
+Lemma is_cvg_ereal_sup_sdrop (R : realType) (u : (\bar R)^nat) :
+  cvg (fun n => ereal_sup (sdrop u n)).
+Proof.
+apply: ereal_nonincreasing_is_cvg => n m nm; apply le_ereal_sup => _ [p /= np <-].
+by exists p => //=; rewrite (leq_trans _ np).
+Qed.
+
+Lemma lim_ereal_infN (R : realType) (u : (\bar R) ^nat) :
+  (lim_ereal_inf (-%E \o u) = - lim_ereal_sup u)%E.
+Proof.
+rewrite /lim_ereal_inf (_ : (fun n => _) = (fun n => - ereal_sup (sdrop u n)))%E.
+  by rewrite ereal_limN //; exact: is_cvg_ereal_sup_sdrop.
+rewrite funeqE => n; rewrite /ereal_inf; congr (- ereal_sup _)%E.
+rewrite predeqE => x; split=> [[_ [m /= nm] <-]|[m /= nm] <-].
+  by rewrite oppeK => <-; exists m.
+by exists (- u m)%E; [exists m|rewrite oppeK].
+Qed.
+
+Lemma ereal_sup_preimage (T : Type) (R : realType) (a : \bar R) (f : (T -> \bar R)^nat) n :
+  (fun x => ereal_sup (sdrop (f^~x) n)) @^-1` [set x | (a < x)%E] =
+  \bigcup_(k in [set k | (n <= k)%N]) (f k @^-1` [set x | (a < x)%E]).
+Proof.
+rewrite predeqE => t; split => /=.
+  move=> /ereal_sup_gt(* TODO: use ex2 for this lemma*)[? [/= [k nk <-]]] afnt.
+  by exists k => //=.
+move=> -[k /= nk] /lt_le_trans; apply.
+by apply: ereal_sup_ub; exists k.
+Qed.
+
+Lemma ereal_inf_preimage (T : Type) (R : realType) (a : \bar R) (f : (T -> \bar R)^nat) n :
+  ((fun x => ereal_inf (sdrop (f^~x) n)) @^-1` [set x | (a <= x)%E]) =
+  \bigcap_(k in [set k | (n <= k)%N]) (f k @^-1` [set x | (a <= x)%E]).
+Proof.
+rewrite predeqE => t; split => /= [|h].
+  rewrite {1}/preimage /= => h k /= nk.
+  rewrite /preimage /= (le_trans h) //.
+  by apply ereal_inf_lb; by exists k.
+rewrite /preimage /= leNgt; apply/negP => /ereal_inf_lt[y /= [[k nk <-{y}]]].
+by apply/negP; rewrite -leNgt; apply: h.
+Qed.
+
+Definition lim_inf (R : realType) (u : R^nat) := lim (fun n => inf (sdrop u n) : R^o).
+
+Definition lim_sup (R : realType) (u : R^nat) := lim (fun n => sup (sdrop u n) : R^o).
+
+(* TODO: move to real.v *)
+Lemma sup_gt (R : realType) (S : set R) (x : R) : S !=set0 ->
+  x < sup S -> exists y : R, S y /\ x < y.
+Proof.
+move=> S0; rewrite not_existsP => + g; apply/negP; rewrite -leNgt.
+apply sup_le_ub => // y Sy; move: (g y).
+by rewrite not_andP => -[// | /negP]; rewrite leNgt.
+Qed.
+
+Lemma inf_lt (R : realType) (S : set R) (x : R) : S !=set0 ->
+  inf S < x -> exists y : R, S y /\ y < x.
+Proof.
+move=> S0; rewrite not_existsP => + g; apply/negP; rewrite -leNgt.
+apply lb_le_inf => // y Sy; move: (g y).
+by rewrite not_andP => -[// | /negP]; rewrite leNgt.
+Qed.
+
+Lemma sup_preimage (T : Type) (R : realType) (a : R) (f : (T -> R)^nat) n :
+  (forall t, has_ubound (sdrop (f^~t) n)) ->
+  (fun x => sup (sdrop (f^~x) n)) @^-1` [set x | a < x] =
+  \bigcup_(k in [set k | n <= k]%N) (f k @^-1` [set x | a < x]).
+Proof.
+move=> f_ub; rewrite predeqE => t; split => /=.
+  rewrite {1}/preimage /=.
+  have [/eqP|/set0P h] := boolP (sdrop (f^~t) n == set0); last first.
+    by move/(sup_gt h) => [y [[m /= nm <-{y}]]] afmt; exists m.
+  move/absurd; apply; apply/eqP/set0P.
+  by exists (f n t), n => //=.
+move=> -[k /= nk] /lt_le_trans; apply.
+by apply: sup_ub => //; last by exists k.
+Qed.
+
+Lemma inf_preimage (T : Type) (R : realType) (a : R) (f : (T -> R)^nat) n :
+  (forall t, has_lbound (sdrop (f^~t) n)) ->
+  ((fun x => inf (sdrop (f^~x) n)) @^-1` set_of_itv `]-oo, a[) =
+  \bigcup_(k in [set k | (n <= k)%N]) (f k @^-1` set_of_itv `]-oo, a[).
+Proof.
+move=> lb_f; rewrite predeqE => t; split => /=.
+  rewrite {1}/preimage /=.
+  have [/eqP|/set0P h] := boolP (sdrop (f^~t) n == set0); last first.
+    move/set_of_itv_mem; rewrite in_itv /=.
+    by move/(inf_lt h) => [y [[m /= nm <-{y}]]] afmt; exists m.
+  move/absurd; apply; apply/eqP/set0P.
+  by exists (f n t), n => //=.
+move=> -[k /= nk]; rewrite /preimage /= => /set_of_itv_mem; rewrite in_itv /= => fkta.
+apply/set_of_itv_mem; rewrite in_itv /=; apply: le_lt_trans fkta.
+by apply/inf_lb => //; last by exists k.
+Qed.
+
+(* see PR 404 *)
+Lemma nonincreasing_sup (R : realType) (f_ : (R)^nat) :
+  (forall m, has_ubound (sdrop f_ m)) ->
+  nonincreasing_seq (fun n => sup (sdrop f_ n)).
+Admitted.
+
+Lemma lim_supE (T : Type) (R : realType) (f : (T -> R)^nat) :
+  (forall n t, has_ubound (sdrop (f^~t) n)) -> (forall n t, has_lbound (sdrop (f^~t) n)) ->
+  (fun x => lim_sup (f^~ x)) = (fun x => inf [set sup (sdrop (f^~ x) n) | n in setT]).
+Proof.
+move=> f_ub f_lb; rewrite funeqE => t.
+apply/(@cvg_lim [topologicalType of R^o]) => //.
+have [M Mf] := f_lb O t.
+apply: (@nonincreasing_cvg _ _ M); first exact: nonincreasing_sup.
+move=> n; rewrite (@le_trans _ _ (f n t)) //; first by apply Mf; exists n.
+by apply: sup_ub; [exact: f_ub|by exists n => //=].
+Qed.
+
+End lim_inf_lim_sup.
+
 Section measurable_fun.
+
+(* TODO: move *)
+Lemma measurable_bigcap_bounded (T : measurableType) (F : (set T)^nat) n :
+  (forall i, (n <= i)%N -> measurable (F i)) ->
+  measurable (\bigcap_(i in [set k | (n <= k)%N]) F i).
+Proof.
+move=> mF.
+rewrite [X in measurable X](_ : _ = (\bigcap_i F (i + n)%N)).
+  by apply: measurable_bigcap => i; apply mF; rewrite leq_addl.
+rewrite eqEsubset; split => [t h i _|t h k /= nk].
+  by apply h => /=; rewrite leq_addl.
+by rewrite -(subnK nk); apply h.
+Qed.
+
+Lemma measurable_bigcup_bounded (T : measurableType) (F : (set T)^nat) n:
+  (forall i, (n <= i)%N -> measurable (F i)) ->
+  measurable (\bigcup_(i in [set k | (n <= k)%N]) F i).
+Proof.
+move=> mF.
+rewrite -[X in measurable X]setCK; apply: measurableC; rewrite setC_bigcup.
+by apply: measurable_bigcap_bounded => i ni; apply: measurableC; apply: mF.
+Qed.
+
+Lemma measurable_fun_ereal_inf (T : measurableType) (R : realType)
+    (f : (T -> \bar R) ^nat) (D := setT) : (forall n, measurable_fun D (f n)) ->
+  forall n, measurable_fun D (fun x => ereal_inf (sdrop (f^~x) n)).
+Proof.
+move=> mf n.
+apply: (@measurability _ _ _ (@RbarGenClosedRays.G R)).
+  exact/esym/RbarGenClosedRays.measurableEcray.
+move=> A [B [x ->] <-].
+rewrite ereal_inf_preimage; apply: measurable_bigcap_bounded => i ni.
+rewrite -[X in measurable X](setIT _); apply: mf => //.
+exact: measurable_Rbar_c_infty.
+Qed.
+
+Lemma measurable_fun_ereal_sup (T : measurableType) (R : realType)
+    (f : (T -> \bar R) ^nat) (D := setT) : (forall n, measurable_fun D (f n)) ->
+  forall n, measurable_fun D (fun x => ereal_sup (sdrop (f^~x) n)).
+Proof.
+move=> mf n.
+apply: (@measurability _ _ _ (@RbarGenOpenRays.G R)).
+  exact/esym/RbarGenOpenRays.measurableEoray.
+move=> A [B [x ->] <-].
+rewrite ereal_sup_preimage; apply: measurable_bigcup_bounded => i ni.
+rewrite -[X in measurable X](setIT _); apply: mf => //.
+exact: measurable_Rbar_o_infty.
+Qed.
 
 Lemma measurable_fun_comp (T1 T2 T3 : measurableType) (f : T2 -> T3) E (g : T1 -> T2) :
   measurable_fun setT f -> measurable_fun E g -> measurable_fun E (f \o g).
@@ -5754,43 +5838,50 @@ Proof.
 by move=> mf; under eq_fun do rewrite -mulN1r; exact: measurable_funK.
 Qed.
 
-(* TODO: move *)
-Lemma sup_gt (R : realType) (S : set R) (x : R) : S !=set0 ->
-  x < sup S -> exists y : R, S y /\ x < y.
-Proof.
-move=> S0; rewrite not_existsP => + g; apply/negP; rewrite -leNgt.
-apply sup_le_ub => // y Sy; move: (g y).
-by rewrite not_andP => -[// | /negP]; rewrite leNgt.
-Qed.
-
-Lemma sup_preimage (T : Type) (R : realType) (a : R) (f : (T -> R)^nat) n :
-  (forall t, has_ubound [set f k t | k in [set k | n <= k]%N]) ->
-  (fun x => sup [set f k x | k in [set k | n <= k]%N]) @^-1` [set x | a < x] =
-  \bigcup_(k in [set k | n <= k]%N) (f k @^-1` [set x | a < x]).
-Proof.
-move=> f_ub; rewrite predeqE => t; split => /=.
-  rewrite {1}/preimage /=.
-  have [/eqP|/set0P h] := boolP ([set f k t | k in [set k | (n <= k)%N]] == set0); last first.
-    by move/(sup_gt h) => [y [[m /= nm <-{y}]]] afmt; exists m.
-  move/absurd; apply; apply/eqP/set0P.
-  by exists (f n t), n => //=.
-move=> -[k /= nk] /lt_le_trans; apply.
-by apply: sup_ub => //; last by exists k.
-Qed.
-
 Lemma measurable_fun_sup (T : measurableType) (R : realType) (f : (T -> R)^nat) (D : set T := setT) n :
-  (forall t, has_ubound [set f k t | k in [set k | n <= k]%N]) ->
+  (forall t, has_ubound (sdrop (f^~t) n)) ->
   (forall m, measurable_fun D (f m)) ->
-  measurable_fun D (fun x => sup [set f m x | m in [set m | n <= m]%N]).
+  measurable_fun D (fun x => sup (sdrop (f^~x) n)).
 Proof.
 move=> f_ub mf; apply: (@measurability T _ _ (@RGenOpenRays.G R)).
   exact/esym/RGenOpenRays.measurableEoray.
 move=> A [B [x ->] <-].
-rewrite set_of_itv_o_infty sup_preimage //.
-apply: (@measurable_bigcup_bounded n _ (fun k => f k @^-1` (fun b => x < b))) => i ni.
-rewrite -[X in measurable X](setIT _).
-apply: mf => //.
+rewrite set_of_itv_o_infty sup_preimage //; apply: measurable_bigcup_bounded => i ni.
+rewrite -[X in measurable X](setIT _); apply: mf => //.
 by rewrite -set_of_itv_o_infty; exact: measurable_itv.
+Qed.
+
+Lemma measurable_fun_inf (T : measurableType) (R : realType) (D : set T := setT)
+  (f : (T -> R)^nat) (mf : forall n, measurable_fun D (f n)) :
+  (forall n t, has_lbound (sdrop (f^~t) n)) ->
+  forall n, measurable_fun D (fun x => inf (sdrop (f^~x) n)).
+Proof.
+move=> lb_f n.
+apply: (@measurability _ _ _ (@RGenClosedRays.G R)).
+  exact/esym/RGenClosedRays.measurableEcray.
+move=> A [B [x ->] <-]; rewrite -[X in measurable X]setCK; apply: measurableC.
+rewrite preimage_setC set_of_itvC inf_preimage //.
+apply: measurable_bigcup_bounded => i ni.
+rewrite -[X in measurable X](setIT _); apply: mf.
+exact: measurable_itv.
+Qed.
+
+Lemma measurable_fun_lim_sup (T : measurableType) (R : realType)
+    (f : (T -> R)^nat) (D : set T := setT) :
+  (forall n t, has_ubound (sdrop (f^~t) n)) -> (forall n t, has_lbound (sdrop (f^~t) n)) ->
+  (forall n, measurable_fun D (f n)) ->
+  measurable_fun D (fun x => lim_sup (f^~x)).
+Proof.
+move=> f_ub f_lb mf; rewrite lim_supE //.
+rewrite (_ :  (fun _ => _) = (fun x => inf [set sup (sdrop (f^~ x) n0) | n0 in [set n0 | (n0 >= O)%N]])); last first.
+  rewrite funeqE => n; congr (inf [set _ | _ in _]).
+  by rewrite predeqE.
+apply: measurable_fun_inf.
+  by move=> k; exact: measurable_fun_sup.
+move=> n t; have [M hM] := f_lb n t; exists M => _ [m /= nm <-].
+rewrite (@le_trans _ _ (f m t)) //; first by apply hM => /=; exists m.
+apply: sup_ub; first by apply f_ub.
+by exists m => //=.
 Qed.
 
 End measurable_fun.
