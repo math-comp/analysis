@@ -1195,7 +1195,9 @@ exists (fun x => f (x, 0)); split => [| |a na].
   by exists x.
 Qed.
 
-Let primes23 n m : primes (2 ^ n.+1 * 3 ^ m.+1) = [:: 2; 3].
+Definition nat_of_pair := fun '(n, m) => 2 ^ n * 3 ^ m.
+
+Let primes23 n m : primes (nat_of_pair (n.+1, m.+1)) = [:: 2; 3].
 Proof.
 set a := (X in primes X); apply: (@sorted_eq _ leq leq_trans le_anti) => //.
   by move: (sorted_primes a); rewrite ltn_sorted_uniq_leq => /andP[].
@@ -1211,7 +1213,7 @@ move=> i; rewrite !inE; apply/idP/orP.
 Qed.
 
 Let prime_decomp23 n m :
-  prime_decomp (2 ^ n.+1 * 3 ^ m.+1) = [:: (2, n.+1); (3, m.+1)].
+  prime_decomp (nat_of_pair (n.+1, m.+1)) = [:: (2, n.+1); (3, m.+1)].
 Proof.
 rewrite prime_decompE primes23 /=; congr [:: (_, _); (_, _)].
 - rewrite lognM ?expn_gt0 // lognX logn_prime // muln1.
@@ -1220,10 +1222,9 @@ rewrite prime_decompE primes23 /=; congr [:: (_, _); (_, _)].
   by rewrite lognX logn_prime // muln1.
 Qed.
 
-Lemma countable_prod_nat : countable (@setT (nat * nat)).
+Lemma nat_of_pair_inj : {in setT &, injective nat_of_pair}.
 Proof.
-apply/countable_injective; exists (fun '(n, m) => 2 ^ n * 3 ^ m).
-move=> /= [n1 m1] [n2 m2] _ _.
+move=> /= [n1 m1] [n2 m2] _ _; rewrite /nat_of_pair.
 have [/and4P[]|] := boolP [&& n1 != 0, m1 != 0, n2 != 0 & m2 != 0].
   move: n1 m1 n2 m2 => [|n1] [|m1] [|n2] [|m2] // _ _ _ _.
   by move/(congr1 prime_decomp); rewrite 2!prime_decomp23 => -[-> ->].
@@ -1240,6 +1241,11 @@ rewrite !negb_and !negbK => /or4P[]/eqP ->; rewrite ?(expn0,mul1n,muln1).
 - move: m1 => [/eqP|m1]; rewrite ?(expn0,muln1).
     by rewrite eqn_exp2l // => /eqP ->.
   by move/(congr1 (dvdn 3)); rewrite ?(Euclid_dvdX,Euclid_dvdM).
+Qed.
+
+Lemma countable_prod_nat : countable (@setT (nat * nat)).
+Proof.
+by apply/countable_injective; exists nat_of_pair; exact: nat_of_pair_inj.
 Qed.
 
 Let decomp_two (n : nat) : n <> O -> {pq | (n == 2 ^ pq.1 * pq.2) && odd pq.2}.
