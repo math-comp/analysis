@@ -1031,14 +1031,40 @@ Notation "\sum_ ( i <oo | P ) F" :=
 Notation "\sum_ ( i <oo ) F" :=
   (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
 
+Section sequences_ereal_realDomainType.
+Local Open Scope ereal_scope.
+Variable T : realDomainType.
+Implicit Types u : (\bar T)^nat.
+
+Lemma ereal_nondecreasing_opp u_ :
+  nondecreasing_seq (-%E \o u_) = nonincreasing_seq u_.
+Proof.
+rewrite propeqE; split => ni_u m n mn; last by rewrite lee_oppr oppeK ni_u.
+by rewrite -(oppeK (u_ m)) -lee_oppr ni_u.
+Qed.
+
+End sequences_ereal_realDomainType.
+
 Section sequences_ereal.
 Local Open Scope ereal_scope.
 
-Lemma ereal_cvgN (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
-  f --> a -> (fun n => - f n) --> (- a).
+Lemma ereal_cvgN (R : realFieldType) {T : topologicalType} (F : set (set T))
+    {FF : Filter F} (f : T -> \bar R) a :
+  f @ F --> a -> (-%E \o f @ F) --> - a.
+Proof. by move=> ?; apply: continuous_cvg => //; exact: oppe_continuous. Qed.
+
+Lemma ereal_cvgZ (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) c :
+  f --> a -> (fun n => c%:E * f n) --> c%:E * a.
 Proof.
-rewrite (_ : (fun n => - f n) = -%E \o f) // => /cvg_comp; apply.
-exact: oppe_continuous.
+rewrite (_ : (fun n => _) = mule c%:E \o f) // => /cvg_comp; apply.
+exact: mule_continuous.
+Qed.
+
+Lemma is_cvg_ereal_cvgZ (R : realFieldType) (f : (\bar R)^nat) c :
+  cvg f -> cvg (fun n => c%:E * f n).
+Proof.
+move=> /cvg_ex[l fl]; apply/cvg_ex; eexists.
+by apply: ereal_cvgZ => //; exact: fl.
 Qed.
 
 Lemma ereal_cvg_ge0 (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
@@ -1046,6 +1072,17 @@ Lemma ereal_cvg_ge0 (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
 Proof.
 move=> f0; apply: (closed_cvg (fun x => 0 <= x)) => //;
   [exact: closed_ereal_le_ereal | exact: nearW].
+Qed.
+
+Lemma ereal_limZ (R : realFieldType) (f : (\bar R)^nat) c : cvg f ->
+  lim (fun n => c%:E * f n) = c%:E * lim f.
+Proof. by move=> cf; apply/cvg_lim => //; apply: ereal_cvgZ. Qed.
+
+Lemma ereal_limN (R : realFieldType) (f : (\bar R)^nat) : cvg f ->
+  lim (fun n => - f n) = - lim f.
+Proof.
+move=> cf; rewrite -mulN1e -ereal_limZ //.
+by under eq_fun => n; [rewrite mulN1e|by []].
 Qed.
 
 Lemma ereal_lim_ge (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
@@ -1213,6 +1250,30 @@ have leum : (contract l - e%:num < contract (u_ m))%R.
 rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
 by rewrite le_contract nd_u_//; near: n; exists m.
 Grab Existential Variables. all: end_near. Qed.
+
+Lemma ereal_nondecreasing_is_cvg (R : realType) (u_ : (\bar R) ^nat) :
+  {homo u_ : n m / (n <= m)%N >-> (n <= m)%O} -> cvg u_.
+Proof.
+by move=> u_ndecr; apply/cvg_ex; eexists; exact: nondecreasing_seq_ereal_cvg.
+Qed.
+
+Lemma nonincreasing_seq_ereal_cvg (R : realType) (u_ : (\bar R)^nat) :
+  nonincreasing_seq u_ -> u_ --> ereal_inf (u_ @` setT).
+Proof.
+move=> ni_u; rewrite [X in X --> _](_ : _ = -%E \o -%E \o u_); last first.
+  by rewrite funeqE => n; rewrite /= oppeK.
+apply: ereal_cvgN.
+rewrite [X in _ --> X](_ : _ = ereal_sup [set of -%E \o u_]); last first.
+  congr ereal_sup; rewrite predeqE => x; split=> [[_ [n _ <-]] <-|[n _] <-];
+    by [exists n | exists (u_ n) => //; exists n].
+by apply: nondecreasing_seq_ereal_cvg; rewrite ereal_nondecreasing_opp.
+Qed.
+
+Lemma ereal_nonincreasing_is_cvg (R : realType) (u_ : (\bar R) ^nat) :
+  nonincreasing_seq u_ -> cvg u_.
+Proof.
+by move=> ni_u; apply/cvg_ex; eexists; apply: nonincreasing_seq_ereal_cvg.
+Qed.
 
 (* NB: see also nondecreasing_series *)
 Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : (\bar R)^nat)
