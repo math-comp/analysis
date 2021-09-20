@@ -712,7 +712,7 @@ rewrite -[X in X - _](@divrr _ (n.+2)%:R) ?unitfE ?pnatr_eq0 //.
 rewrite [in X in _ - X]mulrC -mulrBl; congr (_ / _).
 rewrite -natrB; last by rewrite (@leq_trans n.+1) // leq_subr.
 rewrite subnBA; by [rewrite addSnnS addnC addnK | rewrite ltnW].
-Grab Existential Variables. all: end_near. Abort.
+Grab Existential Variables. all: end_near. Qed.
 
 End cesaro_converse.
 
