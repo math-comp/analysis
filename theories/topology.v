@@ -2403,20 +2403,16 @@ have NDfx : ~ D (f x).
 by apply: f_continuous fxD; rewrite inE.
 Qed.
 
-Lemma closed_cvg_loc {T} {U : topologicalType} {F} {FF : ProperFilter F}
-  (f : T -> U) (D : U -> Prop) :
-  forall y, f @ F --> y -> F (f @^-1` D) -> closed D -> D y.
+Lemma closed_cvg {T} {V : topologicalType} {F} {FF : ProperFilter F}
+    (u_ : T -> V) (A : V -> Prop) :
+    (* BUG: elim does not see this as an elimination principle if A : set V *)
+    closed A -> (\forall n \near F, A (u_ n)) ->
+  forall l, u_ @ F --> l -> A l.
 Proof.
-move=> y Ffy Df; apply => A /Ffy /=; rewrite nbhs_filterE.
-by move=> /(filterI Df); apply: filter_ex.
+move=> + FAu_ l u_Fl; apply => B /u_Fl /=; rewrite nbhs_filterE.
+by move=> /(filterI FAu_) => /filter_ex[t [Au_t u_Bt]]; exists (u_ t).
 Qed.
-
-Lemma closed_cvg {T} {U : topologicalType} {F} {FF : ProperFilter F}
-  (f : T -> U) (D : U -> Prop) :
-  forall y, f @ F --> y -> (forall x, D (f x)) -> closed D -> D y.
-Proof.
-by move=> y fy FDf; apply: (closed_cvg_loc fy); apply: filterE.
-Qed.
+Arguments closed_cvg {T V F FF u_} _ _ _ _ _.
 
 Section closure_lemmas.
 Variable T : topologicalType.
