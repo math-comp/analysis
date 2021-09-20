@@ -103,6 +103,21 @@ exists (- y); last by rewrite ltr_oppr.
 by exists y => //; rewrite opprK.
 Qed.
 
+Lemma has_ub_image_norm E : has_ubound (normr @` E) -> has_ubound E.
+Proof.
+case => M /ubP uM; exists `|M|; apply/ubP => r rS.
+rewrite (le_trans (real_ler_norm _)) ?num_real //.
+rewrite (le_trans (uM _ _)) ?real_ler_norm ?num_real //.
+by exists r.
+Qed.
+
+Lemma has_inf_supN E : has_sup (-%R @` E) <-> has_inf E.
+Proof.
+split=> [ [NEn0 [x /ub_lbN xubE]]  | [En0 [x /lb_ubN xlbe]] ].
+by split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
+by split; [apply/nonemptyN|exists (- x)].
+Qed.
+
 End has_bound_lemmas.
 
 (* -------------------------------------------------------------------- *)
@@ -442,14 +457,6 @@ move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
   by exists l => x [Ax|Bx]; [rewrite (le_trans (AB _ _ Ax Bb)) // Bl|exact: Bl].
 Qed.
 
-Lemma has_ub_image_norm (S : set R) : has_ubound (normr @` S) -> has_ubound S.
-Proof.
-case => M /ubP uM; exists `|M|; apply/ubP => r rS.
-rewrite (le_trans (real_ler_norm _)) ?num_real //.
-rewrite (le_trans (uM _ _)) ?real_ler_norm ?num_real //.
-by exists r.
-Qed.
-
 End RealLemmas.
 
 (* -------------------------------------------------------------------- *)
@@ -459,13 +466,6 @@ Variables (R : realType).
 
 Implicit Types E : set R.
 Implicit Types x : R.
-
-Lemma has_inf_supN E : has_inf E <-> has_sup (-%R @` E).
-Proof.
-split=> [ [En0 [x /lb_ubN xlbe]] | [NEn0 [x /ub_lbN xubE]] ].
-by split; [apply/nonemptyN|exists (- x)].
-by split; [apply/nonemptyN|rewrite -[E]setNK; exists (- x)].
-Qed.
 
 Lemma has_inf1 x : has_inf [set x].
 Proof. by apply/has_inf_supN; rewrite image_set1; apply/has_sup1. Qed.

@@ -1298,7 +1298,7 @@ rewrite (_ : csum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
   rewrite (_ : setT = id @` xpredT); last first.
     by rewrite image_id funeqE => x; rewrite trueE.
   rewrite csum_image //; last by move=> n _; apply: csum_ge0.
-  apply eq_ereal_pseries => /= j.
+  apply: eq_ereal_pseries => /= j.
   pose x_j : nat -> nat * nat := fun y => (j, y).
   have [enux injx] : enumeration (J j) x_j /\ injective x_j.
     by split => [|x y [] //]; rewrite /enumeration predeqE=> -[? ?]; split.
