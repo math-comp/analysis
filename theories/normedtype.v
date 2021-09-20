@@ -1746,7 +1746,6 @@ Qed.
 Module Bigminr.
 Section bigminr.
 Variable (R : realDomainType).
-Import Bigmax.
 
 Lemma bigminr_maxr I r (P : pred I) (F : I -> R) x :
   \big[minr/x]_(i <- r | P i) F i = - \big[maxr/- x]_(i <- r | P i) - F i.
@@ -1893,16 +1892,15 @@ Proof. by []. Qed.
 
 Lemma ler_mx_norm_add x y : mx_norm (x + y) <= mx_norm x + mx_norm y.
 Proof.
-rewrite nng_le; apply/Bigmax.bigmax_lerP; split.
-  exact: addr_ge0.
+rewrite nng_le; apply/bigmax_lerP; split; first exact: addr_ge0.
 move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
 rewrite ler_add // -nng_abs_le //= -nng_le /= normr_id nng_le;
-  exact/Bigmax.ler_bigmax.
+  exact/ler_bigmax.
 Qed.
 
 Lemma mx_norm_eq0 x : mx_norm x = 0 -> x = 0.
 Proof.
-move/eqP; rewrite eq_le => /andP[/(@Bigmax.bigmax_lerP _ (Nonneg.nngnum_orderType K)(*TODO: not inferred*)) [_ x0] _].
+move/eqP; rewrite eq_le => /andP[/(bigmax_lerP _ _ (fun _ => _%:nng)) [_ x0] _].
 apply/matrixP => i j; rewrite mxE; apply/eqP.
 by rewrite -nng_abs_eq0 eq_le (x0 (i,j)) // andTb -nng_le /= normr_ge0.
 Qed.
@@ -1933,10 +1931,10 @@ rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
 have [/eqP/mx_norm_eq0->|x0] := boolP (mx_norm x == 0).
   by rewrite -/(mx_norm 0) -/(mx_norm 0) !(mul0rn,addr0,mx_norm0).
 rewrite -/(mx_norm x) -nng_abs_le; last by rewrite addr_ge0 // mulrn_wge0.
-apply/Bigmax.bigmax_gerP; right => /=.
+apply/bigmax_gerP; right => /=.
 have [i Hi] := mx_norm_neq0 x0.
 exists i => //; rewrite Hi -!mulrS -normrMn mulmxnE.
-rewrite le_eqVlt; apply/orP; left; apply/eqP/val_inj => /=; by rewrite normr_id.
+by rewrite le_eqVlt; apply/orP; left; apply/eqP/val_inj => /=; rewrite normr_id.
 Qed.
 
 Lemma mx_normN x : mx_norm (- x) = mx_norm x.
@@ -1974,11 +1972,11 @@ Proof.
 rewrite /normr /ball_ predeq3E => x e y /=; rewrite mx_normE; split => xey.
 - have lee0 : 0 < e := ball_gt0 xey.
   have -> : e = (Nonneg.NngNum _ (ltW lee0))%:nngnum by [].
-  rewrite nng_lt; apply/Bigmax.bigmax_ltrP => /=.
+  rewrite nng_lt; apply/bigmax_ltrP => /=.
   by rewrite -nng_lt /=; split => // -[? ?] _; rewrite !mxE; exact: xey.
 - have lee0 : 0 < e by rewrite (le_lt_trans _ xey).
   move: xey; have -> : e = (Nonneg.NngNum _ (ltW lee0))%:nngnum by [].
-  move=> /(@Bigmax.bigmax_ltrP _ (Nonneg.nngnum_orderType K)(*TODO: not inferred*)) /= [e0 xey] i j.
+  move=> /(bigmax_ltrP _ _ (fun _ => _%:nng)) /= [e0 xey] i j.
   by move: (xey (i, j)); rewrite !mxE; exact.
 Qed.
 
@@ -1993,7 +1991,7 @@ rewrite {1 3}/normr /= !mx_normE
  (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)); last first.
   by move=> i _; rewrite mxE //=; apply/eqP; rewrite -nng_eq /= normrM.
 elim/big_ind2 : _ => // [|a b c d bE dE]; first by rewrite mulr0.
-rewrite nonneg_maxr; congr (maxr _ _)%:nngnum; exact/val_inj.
+by rewrite nonneg_maxr; congr (maxr _ _)%:nngnum; exact/val_inj.
 Qed.
 
 Definition matrix_NormedModMixin := NormedModMixin mx_normZ.
@@ -3414,8 +3412,8 @@ exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
 rewrite bigmax_real ?real0//; last by move=> ? _; rewrite realz.
 split => // x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
 apply; apply: le_lt_trans ltmaxx.
-have {} : n \in enum_fset D by [].
-rewrite enum_fsetE => /mapP[/= i iD ->]; exact/Bigmax.ler_bigmax.
+have : n \in enum_fset D by [].
+by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/ler_bigmax.
 Qed.
 
 Lemma rV_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
@@ -3489,7 +3487,7 @@ apply: le_trans (normvleM _ _); last by rewrite ltr_addl.
 have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
 rewrite [in X in _ <= X]/normr /= mx_normrE.
-by apply/Bigmax.bigmax_gerP; right => /=; exists j.
+by apply/bigmax_gerP; right => /=; exists j.
 Qed.
 
 Lemma ereal_nbhs'_le (R : numFieldType) (x : \bar R) :

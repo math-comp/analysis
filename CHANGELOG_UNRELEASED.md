@@ -34,7 +34,7 @@
 - in `cardinality.v`:
   + definition `nat_of_pair`, lemma `nat_of_pair_inj`
 - in `topology.v`
-  + lemma `le_bigmax` in the (new) module `Bigmax`
+  + lemma `le_bigmax`
 
 ### Changed
 
@@ -53,7 +53,7 @@
 - in `normedtype.v`:
   the following lemmas have been generalized to `orderType`,
   renamed as follows, moved out of the module `BigmaxBigminr`
-  to a new module `Bigmax` in `topology.v`:
+  to `topology.v`:
   + `bigmaxr_mkcond` -> `bigmax_mkcond`
   + `bigmaxr_split` -> `bigmax_split`
   + `bigmaxr_idl` -> `bigmax_idl`

@@ -362,7 +362,6 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Module Bigmax.
 Section bigmax.
 Variables (d : unit) (T : orderType d).
 
@@ -516,7 +515,6 @@ by rewrite (le_trans ba) // (le_trans _ fe) // ltW.
 Qed.
 
 End bigmax.
-Module Exports.
 Arguments bigmax_mkcond {d T I r}.
 Arguments bigmaxID {d T I r}.
 Arguments bigmax_pred1 {d T I} i {P F}.
@@ -524,9 +522,6 @@ Arguments bigmaxD1 {d T I} j {P F}.
 Arguments ler_bigmax_cond {d T I P F}.
 Arguments bigmax_eq_arg {d T I} i0 {P F}.
 Arguments eq_bigmax {d T I} i0 {P F}.
-End Exports.
-End Bigmax.
-Export Bigmax.Exports.
 
 Section function_space.
 
