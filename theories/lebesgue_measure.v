@@ -5843,6 +5843,43 @@ apply: sup_ub; first by apply f_ub.
 by exists m => //=.
 Qed.
 
+(* NB: From PR 404 *)
+Definition norme (R : realDomainType) (x : \bar R) := if x is EFin r then `|r|%:E else +oo%E.
+
+Lemma measurable_fun_norme (R : realType) : measurable_fun setT (@norme R).
+Proof.
+apply: (@measurability _ _ _ (@RbarGenOpenRays.G R));
+  [ exact/esym/RbarGenOpenRays.measurableEoray | ].
+move=> /= _ [_ [x ->] <-]; move: x => [x| |].
+- rewrite [X in _ @^-1` X](punct_eitv_o_infty x) preimage_setU; apply: measurableU; last first.
+    rewrite [X in measurable X](_ : _ = [set -oo; +oo]%E).
+      by apply: measurableU; exact: measurable_Rbar_set1.
+    rewrite predeqE => y; split; rewrite /preimage /=; move: y => [y//| |]//=;
+    [by right | by left | by case].
+    exists (normr @^-1` (set_of_itv `]x, +oo[ )).
+    by rewrite -[X in measurable X]setIT; apply: measurable_fun_normr; exact: measurable_itv.
+  exists set0; first by constructor.
+  rewrite setU0 predeqE => -[y| |]; split => /=; rewrite /preimage /= => -[r /set_of_itv_mem]; rewrite ?in_itv/= andbT => xr//.
+  + by move=> [ry]; exists `|y| => //; apply/set_of_itv_mem; rewrite in_itv/= andbT -ry.
+  + by move=> [ry]; exists y => //; apply/set_of_itv_mem; rewrite in_itv/= andbT -ry.
+- rewrite [X in _ @^-1` X](_ : _ = set0) ?preimage_set0; first exact: measurable0.
+  by rewrite predeqE => x; split => //; rewrite ltNge lee_pinfty.
+- rewrite [X in measurable X](_ : _ = setT); first exact: measurableT.
+  rewrite predeqE => -[x| |]; split => /=; rewrite /preimage //=.
+  by move=> _; rewrite lte_ninfty.
+Qed.
+
+Lemma EFin_measurable_fun (T : measurableType) (R : realType) (g : T -> R) (D : set T) :
+  measurable_fun D (fun x : T => (g x)%:E) -> measurable_fun D g.
+Proof.
+move=> mf A mA.
+rewrite [X in measurable X](_ : _ = (fun x : T => (g x)%:E) @^-1` [set x%:E | x in A] `&` D).
+  by apply: mf; exists A => //; exists set0; [by constructor|rewrite setU0].
+rewrite predeqE => x; split; rewrite /preimage /=.
+  by move=> [/= Agx Dx]; split => //=; exists (g x).
+by move=> [/= [r Ar [rgx]]] Dx; split => //=; rewrite -rgx.
+Qed.
+
 End measurable_fun.
 
 Canonical interval_pointedType (R : numDomainType) :=
