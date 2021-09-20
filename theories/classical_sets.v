@@ -1122,17 +1122,21 @@ rewrite propeqE; split=> [DF i j D'i D'j FiFj0|D'F i j Di Dj FiFj0].
 by apply D'F => //; apply DD'.
 Qed.
 
-Lemma perm_eq_trivIset {T : eqType} (s1 s2 : seq (set T)) : perm_eq s1 s2 ->
-  trivIset setT (fun i => nth set0 s1 i) ->
-  trivIset setT (fun i => nth set0 s2 i).
+Lemma perm_eq_trivIset {T : eqType} (s1 s2 : seq (set T)) (D : set nat) :
+  [set k | (k < size s1)%N] `<=` D -> perm_eq s1 s2 ->
+  trivIset D (fun i => nth set0 s1 i) -> trivIset D (fun i => nth set0 s2 i).
 Proof.
-rewrite perm_sym => /(perm_iotaP set0)[s ss1 s12] /trivIsetP /(_ _ _ I I) ts1.
-apply/trivIsetP => i j _ _ ij.
+move=> s1D; rewrite perm_sym => /(perm_iotaP set0)[s ss1 s12] /trivIsetP ts1.
+apply/trivIsetP => i j Di Dj ij.
 rewrite {}s12 {s2}; have [si|si] := ltnP i (size s); last first.
   by rewrite (nth_default set0) ?size_map// set0I.
 rewrite (nth_map O) //; have [sj|sj] := ltnP j (size s); last first.
   by rewrite (nth_default set0) ?size_map// setI0.
-by rewrite  (nth_map O) // ts1 // nth_uniq // (perm_uniq ss1) iota_uniq.
+have nth_mem k : k < size s -> nth O s k \in iota 0 (size s1).
+  by move=> ?; rewrite -(perm_mem ss1) mem_nth.
+rewrite (nth_map O)// ts1 ?(nth_uniq,(perm_uniq ss1),iota_uniq)//; apply/s1D.
+- by have := nth_mem _ si; rewrite mem_iota leq0n add0n.
+- by have := nth_mem _ sj; rewrite mem_iota leq0n add0n.
 Qed.
 
 End partitions.

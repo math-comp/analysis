@@ -64,6 +64,8 @@
   + replace `closed_cvg_loc` and `closed_cvg` by a more general lemma `closed_cvg`
 
 ### Renamed
+- in `classical_sets.v`:
+  + generalize lemma `perm_eq_trivIset`
 
 - in `ereal.v`:
   + `adde` -> `adde_subdef`
