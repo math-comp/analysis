@@ -173,7 +173,7 @@ Proof.
 by move=> /= CS; rewrite !inE => CAB DAB; move: CS; rewrite CAB DAB eqxx.
 Qed.
 
-Definition T_isSemiRingOfSets : isSemiRingOfSets T :=
+HB.instance Definition T_isSemiRingOfSets : isSemiRingOfSets T :=
   @isSemiRingOfSets.Build T measurable diff_fsets
     measurable0
     semiRingOfSets_measurableI
@@ -181,20 +181,14 @@ Definition T_isSemiRingOfSets : isSemiRingOfSets T :=
     semiRingOfSets_diff_fsetsE
     semiRingOfSets_diff_fsets_disjoint.
 
-HB.instance T T_isSemiRingOfSets.
-
-Definition T_isRingOfSets : RingOfSets_from_semiRingOfSets T :=
+HB.instance Definition T_isRingOfSets : RingOfSets_from_semiRingOfSets T :=
   RingOfSets_from_semiRingOfSets.Build T measurableU.
-
-HB.instance T T_isRingOfSets.
 
 Lemma measurableT : measurable (@setT T).
 Proof. by rewrite -setC0; apply measurableC; exact: measurable0. Qed.
 
-Definition T_isAlgebraOfSets : AlgebraOfSets_from_RingOfSets T :=
+HB.instance Definition T_isAlgebraOfSets : AlgebraOfSets_from_RingOfSets T :=
   AlgebraOfSets_from_RingOfSets.Build T measurableT.
-
-HB.instance T T_isAlgebraOfSets.
 
 HB.end.
 
@@ -210,20 +204,24 @@ HB.builders Context T of isMeasurable T.
 
 Obligation Tactic := idtac.
 
-Program Definition T_isAlgebraOfSets : isAlgebraOfSets T :=
-  @isAlgebraOfSets.Build T measurable measurable0 _ _.
-Next Obligation.
-move=> A B mA mB; rewrite -bigcup2E.
+Lemma algebraOfSets_measurableU (A B : set T) :
+  measurable A -> measurable B -> measurable (A `|` B).
+Proof.
+move=> mA mB; rewrite -bigcup2E.
 by apply measurable_bigcup => -[//|[//|i]]; exact: measurable0.
 Qed.
-Next Obligation. by move=> A mA; apply: measurableC. Qed.
 
-HB.instance T T_isAlgebraOfSets.
+Lemma algebraOfSets_measurableC (A : set T) : measurable A -> measurable (~` A).
+Proof. by move=> mA; apply: measurableC. Qed.
 
-Definition T_isMeasurable : Measurable_from_algebraOfSets T :=
+HB.instance Definition T_isAlgebraOfSets : isAlgebraOfSets T :=
+  @isAlgebraOfSets.Build T measurable
+    measurable0
+    algebraOfSets_measurableU
+    algebraOfSets_measurableC.
+
+HB.instance Definition T_isMeasurable : Measurable_from_algebraOfSets T :=
   @Measurable_from_algebraOfSets.Build _ measurable_bigcup.
-
-HB.instance T T_isMeasurable.
 
 HB.end.
 
