@@ -35,6 +35,8 @@
   + lemma `mule_continuous`
 - in `cardinality.v`:
   + definition `nat_of_pair`, lemma `nat_of_pair_inj`
+- in `topology.v`
+  + lemma `le_bigmax`
 
 ### Changed
 
@@ -64,12 +66,44 @@
 - in `ereal.v`:
   + `adde` -> `adde_subdef`
   + `mule` -> `mule_subdef`
+- in `normedtype.v`:
+  the following lemmas have been generalized to `orderType`,
+  renamed as follows, moved out of the module `BigmaxBigminr`
+  to `topology.v`:
+  + `bigmaxr_mkcond` -> `bigmax_mkcond`
+  + `bigmaxr_split` -> `bigmax_split`
+  + `bigmaxr_idl` -> `bigmax_idl`
+  + `bigmaxrID` -> `bigmaxID`
+  + `bigmaxr_seq1` -> `bigmax_seq1`
+  + `bigmaxr_pred1_eq` -> `bigmax_pred1_eq`
+  + `bigmaxr_pred1` -> `bigmax_pred1`
+  + `bigmaxrD1` -> `bigmaxD1`
+  + `ler_bigmaxr_cond`  -> `ler_bigmax_cond `
+  + `ler_bigmaxr` -> `ler_bigmax`
+  + `bigmaxr_lerP` -> `bigmax_lerP`
+  + `bigmaxr_sup` -> `bigmax_sup`
+  + `bigmaxr_ltrP` -> `bigmax_ltrP`
+  + `bigmaxr_gerP` -> `bigmax_gerP`
+  + `bigmaxr_eq_arg` -> `bigmax_eq_arg`
+  + `bigmaxr_gtrP` -> `bigmax_gtrP`
+  + `eq_bigmaxr` -> `eq_bigmax`
+  
+### Renamed
+
+- in `normedtype.v`:
+  * module `BigmaxBigminr` -> `Bigminr`
 
 ### Removed
 
 - in `boolp.v`:
   + definition `PredType`
   + local notation `predOfType`
+- in `nngnum.v`:
+  + module `BigmaxrNonneg` containing the following lemmas:
+    * `bigmaxr_mkcond`, `bigmaxr_split`, `bigmaxr_idl`, `bigmaxrID`,
+      `bigmaxr_seq1`, `bigmaxr_pred1_eq`, `bigmaxr_pred1`, `bigmaxrD1`,
+      `ler_bigmaxr_cond`, `ler_bigmaxr`, `bigmaxr_lerP`, `bigmaxr_sup`,
+      `bigmaxr_ltrP`, `bigmaxr_gerP`, `bigmaxr_gtrP`
 
 ### Infrastructure
 
