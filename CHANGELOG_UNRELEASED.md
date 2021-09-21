@@ -39,6 +39,12 @@
   + lemma `le_bigmax`
 - in `real.v`:
   + lemmas `floor1`, `floor_neq0`
+- in `sequences.v`:
+  + lemmas `ereal_nondecreasing_opp`, `ereal_nondecreasing_is_cvg`, `ereal_nonincreasing_cvg`,
+    `ereal_nonincreasing_is_cvg`
+- in `normedtype.v`:
+  + lemmas `ereal_is_cvgN`, `ereal_cvgZr`, `ereal_is_cvgZr`, `ereal_cvgZl`, `ereal_is_cvgZl`,
+    `ereal_limZr`, `ereal_limZl`, `ereal_limN`
 
 ### Changed
 
@@ -64,6 +70,8 @@
     `ereal_cvgD`, `ereal_limD`, `ereal_pseries0`, `eq_ereal_pseries` from `realType` to `realFieldType`
 - in `topology.v`:
   + replace `closed_cvg_loc` and `closed_cvg` by a more general lemma `closed_cvg`
+- move from `sequences.v` to `normedtype.v` and generalize from `nat` to `T : topologicalType`
+  + lemmas `ereal_cvgN`
 
 ### Renamed
 - in `classical_sets.v`:
@@ -93,11 +101,10 @@
   + `bigmaxr_eq_arg` -> `bigmax_eq_arg`
   + `bigmaxr_gtrP` -> `bigmax_gtrP`
   + `eq_bigmaxr` -> `eq_bigmax`
-  
-### Renamed
-
 - in `normedtype.v`:
   * module `BigmaxBigminr` -> `Bigminr`
+- in `sequences.v`:
+  + `nondecreasing_seq_ereal_cvg` -> `nondecreasing_ereal_cvg`
 
 ### Removed
 

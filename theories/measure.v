@@ -748,7 +748,7 @@ move/(@cvg_mu_inc _ _ mu _ mB) : ndB => /(_ _)/cvg_lim <- //; last first.
   by rewrite -AB.
 have -> : lim (mu \o B) = ereal_sup ((mu \o B) @` setT).
   suff : nondecreasing_seq (mu \o B).
-    by move/nondecreasing_seq_ereal_cvg; exact/cvg_lim.
+    by move/nondecreasing_ereal_cvg; exact/cvg_lim.
   move=> n m nm; apply: le_measure => //; try by rewrite inE; apply mB.
   by move: nm; rewrite -ltnS; exact/subset_bigsetU.
 have BA : forall m, mu (B m) <= \sum_(i <oo) mu (A i).
@@ -1034,7 +1034,7 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
   move=> XA; rewrite (_ : lim _ = ereal_sup
       ((fun n => \sum_(k < n) mu (X `&` A k)) @` setT)); last first.
     under eq_fun do rewrite big_mkord.
-    apply/cvg_lim => //; apply/nondecreasing_seq_ereal_cvg.
+    apply/cvg_lim => //; apply/nondecreasing_ereal_cvg.
     apply: (lee_sum_nneg_ord (fun n => mu (X `&` A n)) xpredT) => n _.
     exact: outer_measure_ge0.
   move XAx : (mu (X `&` ~` A')) => [x| |].
