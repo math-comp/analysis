@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg matrix finmap order.
 From mathcomp Require Import ssrnum ssrint interval.
-Require Import boolp.
+Require Import mathcomp_extra boolp.
 
 (******************************************************************************)
 (* This file develops a basic theory of sets and types equipped with a        *)
@@ -136,6 +136,7 @@ Reserved Notation "[ 'set' E | x 'in' A & y 'in' B ]"
 Reserved Notation "[ 'set' 'of' F ]" (at level 0, format "[ 'set'  'of'  F ]").
 Reserved Notation "[ 'set' a ]"
   (at level 0, a at level 99, format "[ 'set'  a ]").
+Reserved Notation "[ 'set' : T ]" (at level 0, format "[ 'set' :  T ]").
 Reserved Notation "[ 'set' a : T ]"
   (at level 0, a at level 99, format "[ 'set'  a   :  T ]").
 Reserved Notation "A `|` B" (at level 52, left associativity).
@@ -181,29 +182,9 @@ Reserved Notation "A !=set0" (at level 80).
 Reserved Notation "[ 'set`' p ]" (at level 0, format "[ 'set`'  p ]").
 Reserved Notation "[ 'disjoint' A & B ]" (at level 0,
   format "'[hv' [ 'disjoint' '/  '  A '/'  &  B ] ']'").
-Reserved Notation "f \|_ D" (at level 10).
 Reserved Notation "F `#` G"
  (at level 48, left associativity, format "F  `#`  G").
-
-Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
-Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
-Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
-Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
-
-Canonical arrow_eqType (T : Type) (T' : eqType) :=
-  EqType (T -> T') gen_eqMixin.
-Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
-  ChoiceType (T -> T') gen_choiceMixin.
-
-Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
-  EqType (forall x : T, T' x) gen_eqMixin.
-Definition dep_arrow_choiceClass (T : Type) (T' : T -> choiceType) :=
-  Choice.Class (Equality.class (dep_arrow_eqType T')) gen_choiceMixin.
-Definition dep_arrow_choiceType (T : Type) (T' : T -> choiceType) :=
-  Choice.Pack (dep_arrow_choiceClass T').
-
-Canonical Prop_eqType := EqType Prop gen_eqMixin.
-Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
+Reserved Notation "'`I_' n" (at level 8, n at level 2, format "'`I_' n").
 
 Definition set T := T -> Prop.
 (* we use fun x => instead of pred to prevent inE from working *)
@@ -267,6 +248,8 @@ Definition bigcup T I (P : set I) (F : I -> set T) :=
 Definition subset A B := forall t, A t -> B t.
 Local Notation "A `<=` B" := (subset A B).
 
+Definition disj_set A B := setI A B == set0.
+
 Definition proper A B := A `<=` B /\ ~ (B `<=` A).
 
 End basic_definitions.
@@ -285,6 +268,7 @@ Arguments snd_set _ _ _ _ /.
 Notation "[ 'set' 'of' F ]" := [set F i | i in setT] : classical_set_scope.
 Notation "[ 'set' a ]" := (set1 a) : classical_set_scope.
 Notation "[ 'set' a : T ]" := [set (a : T)] : classical_set_scope.
+Notation "[ 'set' : T ]" := (@setT T) : classical_set_scope.
 Notation "A `|` B" := (setU A B) : classical_set_scope.
 Notation "a |` A" := ([set a] `|` A) : classical_set_scope.
 Notation "[ 'set' a1 ; a2 ; .. ; an ]" :=
@@ -297,7 +281,7 @@ Notation "~` A" := (setC A) : classical_set_scope.
 Notation "[ 'set' ~ a ]" := (~` [set a]) : classical_set_scope.
 Notation "A `\` B" := (setD A B) : classical_set_scope.
 Notation "A `\ a" := (A `\` [set a]) : classical_set_scope.
-Notation "[ 'disjoint' A & B ]" := (A `&` B == set0) : classical_set_scope.
+Notation "[ 'disjoint' A & B ]" := (disj_set A B) : classical_set_scope.
 
 Notation "\bigcup_ ( i 'in' P ) F" :=
   (bigcup P (fun i => F)) : classical_set_scope.
@@ -340,13 +324,31 @@ Notation "`] a , '+oo' [" :=
 Notation "`] -oo , '+oo' [" :=
   [set` Interval -oo%O +oo%O] : classical_set_scope.
 
+Notation "'`I_' n" := [set k | is_true (k < n)%N].
+
 Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
   [set x | P x] = [set x | Q x].
 Proof. by move=> /funext->. Qed.
 
+Coercion set_type T (A : set T) := {x : T | x \in A}.
+
+Definition SigSub {T} {pT : predType T} {P : pT} x : x \in P -> {x | x \in P} :=
+  exist (fun x => x \in P) x.
+
+Lemma set0fun {P T : Type} : @set0 T -> P. Proof. by case=> x; rewrite inE. Qed.
+
 Section basic_lemmas.
 Context {T : Type}.
 Implicit Types A B C D : set T.
+
+Lemma mem_set {A} {u : T} : A u -> u \in A. Proof. by rewrite inE. Qed.
+Lemma set_mem {A} {u : T} : u \in A -> A u. Proof. by rewrite inE. Qed.
+Lemma mem_setT (u : T)    : u \in [set: T]. Proof. by rewrite inE. Qed.
+Lemma mem_setK {A} {u : T} : cancel (@mem_set A u) set_mem. Proof. by []. Qed.
+Lemma set_memK {A} {u : T} : cancel (@set_mem A u) mem_set. Proof. by []. Qed.
+
+Lemma set_valP {A} (x : A) : A (val x).
+Proof. by apply: set_mem; apply: valP. Qed.
 
 Lemma eqEsubset A B : (A = B) = (A `<=>` B).
 Proof.
@@ -355,6 +357,11 @@ by rewrite predeqE => t; split=> [/AB|/BA].
 Qed.
 
 Lemma seteqP A B : (A = B) <-> (A `<=>` B). Proof. by rewrite eqEsubset. Qed.
+
+Lemma set_mem_set A : [set` A] = A.
+Proof. by apply/seteqP; split=> x/=; rewrite inE. Qed.
+Lemma mem_setE (P : pred T) : mem [set` P] = mem P.
+Proof. by congr Mem; apply/funext=> x; apply/asboolP/idP. Qed.
 
 Lemma subset_trans B A C : A `<=` B -> B `<=` C -> A `<=` C.
 Proof. by move=> sAB sBC ? ?; apply/sBC/sAB. Qed.
@@ -366,6 +373,8 @@ Proof. by rewrite predeqE; split => ?. Qed.
 
 Lemma setCK : involutive (@setC T).
 Proof. by move=> A; rewrite funeqE => t; rewrite /setC; exact: notLR. Qed.
+
+Lemma setCT : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
 
 Definition setC_inj := can_inj setCK.
 
@@ -480,17 +489,46 @@ move=> Aa; rewrite predeqE => y; split=> [[->|[]]//|Ay].
 by have [->|] := pselect (y = a); [left|right].
 Qed.
 
-Lemma subsets_disjoint A B : (A `<=` B) <-> (A `&` ~` B = set0).
+Lemma subset0 A : (A `<=` set0) = (A = set0).
+Proof. by rewrite eqEsubset propeqE; split=> [A0|[]//]; split. Qed.
+
+Lemma subTset A : (setT `<=` A) = (A = setT).
+Proof. by rewrite eqEsubset propeqE; split=> [|[]]. Qed.
+
+Lemma subsetT A : A `<=` setT. Proof. by []. Qed.
+
+Lemma disj_set2E A B : [disjoint A & B] = (A `&` B == set0).
+Proof. by []. Qed.
+
+Lemma disj_set2P {A B} : reflect (A `&` B = set0) [disjoint A & B]%classic.
+Proof. exact/eqP. Qed.
+
+Lemma disj_setPS {A B} : reflect (A `&` B `<=` set0) [disjoint A & B]%classic.
+Proof. by rewrite subset0; apply: disj_set2P. Qed.
+
+Lemma disj_set_sym A B : [disjoint B & A] = [disjoint A & B].
+Proof. by rewrite !disj_set2E setIC. Qed.
+
+Lemma disj_setPCl {A B} : reflect (A `<=` B) [disjoint A & ~` B]%classic.
 Proof.
-split=> [AB|]; first by rewrite predeqE => t; split => // -[/AB].
-rewrite predeqE => AB t At; move: (AB t) => [{}AB _].
-by apply: contrapT => Bt; exact: AB.
+apply: (iffP disj_setPS) => [P t ?|P t [/P//]].
+by apply: contrapT => ?; apply: (P t).
 Qed.
+
+Lemma disj_setPCr {A B} : reflect (A `<=` B) [disjoint ~` B & A]%classic.
+Proof. by rewrite disj_set_sym; apply: disj_setPCl. Qed.
+
+Lemma disj_setPLR {A B} : reflect (A `<=` ~` B) [disjoint A & B]%classic.
+Proof. by apply: (equivP idP); rewrite (rwP disj_setPCl) setCK. Qed.
+
+Lemma disj_setPRL {A B} : reflect (B `<=` ~` A) [disjoint A & B]%classic.
+Proof. by apply: (equivP idP); rewrite (rwP disj_setPCr) setCK. Qed.
+
+Lemma subsets_disjoint A B : A `<=` B <-> A `&` ~` B = set0.
+Proof. by rewrite (rwP disj_setPCl) (rwP eqP). Qed.
 
 Lemma disjoints_subset A B : A `&` B = set0 <-> A `<=` ~` B.
 Proof. by rewrite subsets_disjoint setCK. Qed.
-
-Lemma setCT : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
 
 Lemma subsetC1 x A : (A `<=` [set~ x]) = (x \in ~` A).
 Proof.
@@ -509,12 +547,6 @@ Proof. by rewrite predeqE => t; split => // -[]. Qed.
 Lemma setDv A : A `\` A = set0.
 Proof. by rewrite predeqE => t; split => // -[]. Qed.
 
-Lemma subset0 A : (A `<=` set0) = (A = set0).
-Proof. by rewrite eqEsubset propeqE; split=> [A0|[]//]; split. Qed.
-
-Lemma subTset A : (setT `<=` A) = (A = setT).
-Proof. by rewrite eqEsubset propeqE; split=> [|[]]. Qed.
-
 Lemma set0P A : (A != set0) <-> (A !=set0).
 Proof.
 split=> [/negP A_neq0|[t tA]]; last by apply/negP => /eqP A0; rewrite A0 in tA.
@@ -522,14 +554,18 @@ apply: contrapT => /asboolPn/forallp_asboolPn A0; apply/A_neq0/eqP.
 by rewrite eqEsubset; split.
 Qed.
 
+Lemma setF_eq0 : (T -> False) -> all_equal_to (set0 : set T).
+Proof. by move=> TF A; rewrite -subset0 => x; have := TF x. Qed.
+
 Lemma subset_nonempty A B : A `<=` B -> A !=set0 -> B !=set0.
 Proof. by move=> sAB [x Ax]; exists x; apply: sAB. Qed.
 
 Lemma subsetC A B : A `<=` B -> ~` B `<=` ~` A.
 Proof. by move=> sAB ? nBa ?; apply/nBa/sAB. Qed.
 
-Lemma subsetU A B C : A `<=` C -> B `<=` C -> A `|` B `<=` C.
-Proof. by move=> sAC sBC t; apply: or_ind; [apply: sAC|apply: sBC]. Qed.
+Lemma subsetUl A B : A `<=` A `|` B. Proof. by move=> x; left. Qed.
+
+Lemma subsetUr A B : B `<=` A `|` B. Proof. by move=> x; right. Qed.
 
 Lemma subUset A B C : (B `|` C `<=` A) = ((B `<=` A) /\ (C `<=` A)).
 Proof.
@@ -574,7 +610,11 @@ by split=> [[]//|At]; move: (AB t At).
 Qed.
 
 Lemma subIset A B C : A `<=` C \/ B `<=` C -> A `&` B `<=` C.
-Proof. case => H a; by [move=> [/H] | move=> [_ /H]]. Qed.
+Proof. case=> sub a; by [move=> [/sub] | move=> [_ /sub]]. Qed.
+
+Lemma subIsetl A B : A `&` B `<=` A. Proof. by move=> x []. Qed.
+
+Lemma subIsetr A B : A `&` B `<=` B. Proof. by move=> x []. Qed.
 
 Lemma subsetI_neq0 A B C D :
   A `<=` B -> C `<=` D -> A `&` C !=set0 -> B `&` D !=set0.
@@ -728,14 +768,67 @@ Qed.
 Lemma notin_set (A : set T) x : (x \notin A : Prop) = ~ (A x).
 Proof. by apply/propext; split=> /asboolPn. Qed.
 
-End basic_lemmas.
+Lemma pred_omapE (D : {pred T}) : pred_omap D = mem (some @` D).
+Proof.
+apply/funext=> -[x|]/=; apply/idP/idP; rewrite /pred_omap/= inE //=.
+- by move=> xD; exists x.
+- by move=> [// + + [<-]].
+- by case.
+Qed.
 
-Lemma mkset_nil (T : choiceType) : [set x | x \in [::]] = @set0 T.
+Lemma pred_omap_set (D : set T) : pred_omap (mem D) = mem (some @` D).
+Proof.
+by rewrite pred_omapE; apply/funext => x/=; apply/idP/idP; rewrite ?inE;
+   move=> [y/= ]; rewrite ?in_setE; exists y; rewrite ?in_setE.
+Qed.
+
+End basic_lemmas.
+Hint Resolve subsetUl subsetUr subIsetl subIsetr : core.
+
+Lemma set_nil (T : choiceType) : [set` [::]] = @set0 T.
 Proof. by rewrite predeqP. Qed.
+
+Lemma set_seq_eq0 (T : eqType) (S : seq T) : ([set` S] == set0) = (S == [::]).
+Proof.
+apply/eqP/eqP=> [|->]; rewrite predeqE //; case: S => // h t /(_ h).
+by rewrite /= mem_head => -[/(_ erefl)].
+Qed.
+
+Lemma set_fset_eq0 (T : choiceType) (S : {fset T}) :
+  ([set` S] == set0) = (S == fset0).
+Proof. by rewrite set_seq_eq0. Qed.
+
+Section InitialSegment.
+
+Lemma II0 : `I_0 = set0. Proof. by rewrite predeqE. Qed.
+
+Lemma II1 : `I_1 = [set 0%N].
+Proof. by rewrite predeqE; case. Qed.
+
+Lemma IIn_eq0 n : `I_n = set0 -> n = 0%N.
+Proof. by case: n => // n; rewrite predeqE; case/(_ 0%N); case. Qed.
+
+Lemma IIS n : `I_n.+1 = `I_n `|` [set n].
+Proof.
+rewrite /mkset predeqE => i; split => [|[|->//]].
+by rewrite ltnS leq_eqVlt => /orP[/eqP ->|]; by [left|right].
+by move/ltn_trans; apply.
+Qed.
+
+Definition ordII {n} (k : 'I_n) : `I_n := SigSub (@mem_set _ `I_n _ (ltn_ord k)).
+Definition IIord {n} (k : `I_n) := Ordinal (set_valP k).
+
+Definition ordIIK {n} : cancel (@ordII n) IIord.
+Proof. by move=> k; apply/val_inj. Qed.
+
+Lemma IIordK {n} : cancel (@IIord n) ordII.
+Proof. by move=> k; apply/val_inj. Qed.
+
+End InitialSegment.
 
 (* TODO: other lemmas that relate fset and classical sets *)
 Lemma fdisjoint_cset (T : choiceType) (A B : {fset T}) :
-  [disjoint A & B]%fset = [disjoint [set x | x \in A] & [set x | x \in B]].
+  [disjoint A & B]%fset = [disjoint [set` A] & [set` B]].
 Proof.
 rewrite -fsetI_eq0; apply/idP/idP; apply: contraLR.
 by move=> /set0P[t [tA tB]]; apply/fset0Pn; exists t; rewrite inE; apply/andP.
@@ -809,6 +902,17 @@ Qed.
 
 Lemma image_id A : id @` A = A.
 Proof. by rewrite eqEsubset; split => a; [case=> /= x Ax <-|exists a]. Qed.
+
+Lemma homo_setP {A Y f} :
+  {homo f : x / x \in A >-> x \in Y} <-> {homo f : x / A x >-> Y x}.
+Proof. by split=> fAY x; have := fAY x; rewrite !inE. Qed.
+
+Lemma image_subP {A Y f} : f @` A `<=` Y <-> {homo f : x / A x >-> Y x}.
+Proof. by split=> fAY x => [Ax|[y + <-]]; apply: fAY=> //; exists x. Qed.
+
+Lemma image_sub  {f : aT -> rT} {A : set aT} {B : set rT} :
+  (f @` A `<=` B) = (A `<=` f @^-1` B).
+Proof. by apply/propext; rewrite image_subP; split=> AB a /AB. Qed.
 
 Lemma image_setU f A B : f @` (A `|` B) = f @` A `|` f @` B.
 Proof.
@@ -903,6 +1007,67 @@ by rewrite eqEsubset; split => [x [b [a Aa] <- <-]|x [a Aa] <-];
   [apply/imageP |apply/imageP/imageP].
 Qed.
 
+Lemma some_set0 {T} : some @` set0 = set0 :> set (option T).
+Proof. by rewrite -subset0 => x []. Qed.
+
+Lemma some_set1 {T} (x : T) : some @` [set x] = [set some x].
+Proof. by apply/seteqP; split=> [_ [_ -> <-]|_ ->]//=; exists x. Qed.
+
+Lemma some_setC {T} (A : set T) : some @` (~` A) = [set~ None] `\` (some @` A).
+Proof.
+apply/seteqP; split; first by move=> _ [x nAx <-]; split=> // -[y /[swap]-[->]].
+by move=> [x [_ exAx]|[/(_ erefl)//]]; exists x => // Ax; apply: exAx; exists x.
+Qed.
+
+Lemma some_setT {T} : some @` [set: T] = [set~ None].
+Proof. by rewrite -[setT]setCK some_setC setCT some_set0 setD0. Qed.
+
+Lemma some_setI {T} (A B : set T) : some @` (A `&` B) = some @` A `&` some @` B.
+Proof.
+apply/seteqP; split; first by move=> _ [x [Ax Bx] <-]; split; exists x.
+by move=> _ [[x + <-] [y By []]] => /[swap]<- Ay; exists y.
+Qed.
+
+Lemma some_setU {T} (A B : set T) : some @` (A `|` B) = some @` A `|` some @` B.
+Proof.
+by rewrite -[_ `|` _]setCK setCU some_setC some_setI setDIr -!some_setC !setCK.
+Qed.
+
+Lemma some_setD {T} (A B : set T) : some @` (A `\` B) = (some @` A) `\` (some @` B).
+Proof. by rewrite some_setI some_setC setIDA setIidl// => _ [? _ <-]. Qed.
+
+Lemma sub_image_some {T} (A B : set T) : some @` A `<=` some @` B -> A `<=` B.
+Proof. by move=> + x Ax => /(_ (Some x))[|y By [<-]]; first by exists x. Qed.
+
+Lemma sub_image_someP {T} (A B : set T) : some @` A `<=` some @` B <-> A `<=` B.
+Proof. by split=> [/sub_image_some//|/image_subset]. Qed.
+
+Lemma image_some_inj {T} (A B : set T) : some @` A = some @` B -> A = B.
+Proof. by move=> e; apply/seteqP; split; apply: sub_image_some; rewrite e. Qed.
+
+Lemma some_set_eq0 {T} (A : set T) : some @` A = set0 <-> A = set0.
+Proof.
+split=> [|->]; last by rewrite some_set0.
+by rewrite -!subset0 => A0 x Ax; apply: (A0 (some x)); exists x.
+Qed.
+
+Lemma some_preimage {aT rT} (f : aT -> rT) (A : set rT) :
+  some @` (f @^-1` A) = omap f @^-1` (some @` A).
+Proof.
+apply/seteqP; split; first by move=> _ [a Afa <-]; exists (f a).
+by move=> [x|] [a Aa //= [afx]]; exists x; rewrite // -afx.
+Qed.
+
+Lemma some_image {aT rT} (f : aT -> rT) (A : set aT) :
+  some @` (f @` A) = omap f @` (some @` A).
+Proof. by rewrite !image_comp. Qed.
+
+Lemma disj_set_some {T} {A B : set T} :
+  [disjoint some @` A & some @` B] = [disjoint A & B].
+Proof.
+by apply/disj_setPS/disj_setPS; rewrite -some_setI -some_set0 sub_image_someP.
+Qed.
+
 Section bigop_lemmas.
 Context {T I : Type}.
 Implicit Types (A : set T) (i : I) (P : set I) (F G : I -> set T).
@@ -950,6 +1115,27 @@ Lemma setC_bigcap P F : ~` (\bigcap_(i in P) (F i)) = \bigcup_(i in P) ~` F i.
 Proof.
 apply: setC_inj; rewrite setC_bigcup setCK.
 by apply: eq_bigcapr => ?; rewrite setCK.
+Qed.
+
+Lemma some_bigcup P F :
+  some @` (\bigcup_(i in P) (F i)) = \bigcup_(i in P) some @` F i.
+Proof.
+apply/seteqP; split; last by move=> _ [i ? [x ? <-]]; exists x => //; exists i.
+by move=> _ [x [i ? ?] <-]; exists i => //; exists x.
+Qed.
+
+Lemma some_bigcap P F : some @` (\bigcap_(i in P) (F i)) =
+  [set~ None] `&` \bigcap_(i in P) some @` F i.
+Proof.
+apply/seteqP; split.
+  by move=> _ [x Fx <-]; split=> // i; exists x => //; apply: Fx.
+by move=> [x|[//=]] [_ Fx]; exists x => //= i /Fx [y ? [<-]].
+Qed.
+
+Lemma bigcup_set_type P F : \bigcup_(i in P) F i = \bigcup_(j : P) F (val j).
+Proof.
+rewrite predeqE => x; split; last by move=> [[i/= /set_mem Pi] _ Fix]; exists i.
+by move=> [i Pi Fix]; exists (SigSub (mem_set Pi)).
 Qed.
 
 Lemma eq_bigcupl P Q F : P `<=>` Q ->
@@ -1141,6 +1327,10 @@ rewrite eqEsubset; split=> x; first by case=> j [] i pi <- Xfix; exists i.
 by case=> i Pi Ffix; exists (f i); [exists i|].
 Qed.
 
+Lemma bigcap_set_type {I T} (P : set I) (F : I -> set T) :
+   \bigcap_(i in P) F i = \bigcap_(j : P) F (val j).
+Proof. by apply: setC_inj; rewrite !setC_bigcap bigcup_set_type. Qed.
+
 Lemma bigcap_image {aT rT I} (P : set aT) (f : aT -> I) (F : I -> set rT) :
   \bigcap_(x in f @` P) F x = \bigcap_(x in P) F (f x).
 Proof. by apply: setC_inj; rewrite !setC_bigcap bigcup_image. Qed.
@@ -1191,7 +1381,7 @@ Lemma bigcup_set_cond (s : seq T) (f : T -> set U) (P : pred T) :
   \bigcup_(t in [set x | (x \in s) && P x]) (f t) =
   \big[setU/set0]_(t <- s | P t) (f t).
 Proof.
-elim: s => [/=|h s ih]; first by rewrite mkset_nil bigcup_set0 big_nil.
+elim: s => [/=|h s ih]; first by rewrite set_nil bigcup_set0 big_nil.
 rewrite big_cons -ih predeqE => u; split=> [[t /andP[]]|].
 - rewrite inE => /orP[/eqP ->{t} -> fhu|ts Pt ftu]; first by left.
   case: ifPn => Ph; first by right; exists t => //; apply/andP; split.
@@ -1336,9 +1526,6 @@ Lemma fun_of_rel_uniq {aT} {rT : choiceType}
   is_subset1 (f a) -> forall b, f a b ->  fun_of_rel f0 f a = b.
 Proof. by move=> fa1 b /xget_subset1 xgeteq; rewrite /fun_of_rel xgeteq. Qed.
 
-Definition mem_set T (A : set T) (u : T) (a : A u) : u \in A :=
-   eq_ind_r id a (in_setE A u).
-
 Lemma forall_sig T (A : set T) (P : {x | x \in A} -> Prop) :
   (forall u : {x | x \in A}, P u) =
   (forall u : T, forall (a : A u), P (exist _ u (mem_set a))).
@@ -1347,6 +1534,32 @@ rewrite propeqE; split=> [+ u a|PA [u a]]; first exact.
 have Au : A u by rewrite inE in a.
 by rewrite (Prop_irrelevance a (mem_set Au)); apply: PA.
 Qed.
+
+Lemma in_setP {U} (A : set U) (P : U -> Prop) :
+  {in A, forall x, P x} <-> forall x, A x -> P x.
+Proof. by split=> AP x; have := AP x; rewrite inE. Qed.
+
+Lemma in_set2P {U V} (A : set U) (B : set V) (P : U -> V -> Prop) :
+  {in A & B, forall x y, P x y} <-> (forall x y, A x -> B y -> P x y).
+Proof. by split=> AP x y; have := AP x y; rewrite !inE. Qed.
+
+Lemma in1TT [T1] [P1 : T1 -> Prop] :
+  {in [set: T1], forall x : T1, P1 x : Prop} -> forall x : T1, P1 x : Prop.
+Proof. by move=> + *; apply; rewrite !inE. Qed.
+
+Lemma in2TT [T1 T2] [P2 : T1 -> T2 -> Prop] :
+  {in [set: T1] & [set: T2], forall (x : T1) (y : T2), P2 x y : Prop} ->
+  forall (x : T1) (y : T2), P2 x y : Prop.
+Proof. by move=> + *; apply; rewrite !inE. Qed.
+
+Lemma in3TT [T1 T2 T3] [P3 : T1 -> T2 -> T3 -> Prop] :
+  {in [set: T1] & [set: T2] & [set: T3], forall (x : T1) (y : T2) (z : T3), P3 x y z : Prop} ->
+  forall (x : T1) (y : T2) (z : T3), P3 x y z : Prop.
+Proof. by move=> + *; apply; rewrite !inE. Qed.
+
+Lemma inTT_bij [T1 T2 : Type] [f : T1 -> T2] :
+  {in [set: T1], bijective f} -> bijective f.
+Proof. by case=> [g /in1TT + /in1TT +]; exists g. Qed.
 
 Module Pointed.
 
@@ -1415,8 +1628,15 @@ Canonical prod_pointedType (T T' : pointedType) :=
   PointedType (T * T') (point, point).
 Canonical matrix_pointedType m n (T : pointedType) :=
   PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
+Canonical option_pointedType (T : choiceType) := PointedType (option T) None.
 
 Notation get := (xget point).
+Notation "[ 'get' x | E ]" := (get [set x | E])
+  (at level 0, x ident, format "[ 'get'  x  |  E ]", only printing) : form_scope.
+Notation "[ 'get' x : T | E ]" := (get (fun x : T  => E))
+  (at level 0, x ident, format "[ 'get'  x  :  T  |  E ]", only parsing) : form_scope.
+Notation "[ 'get' x | E ]" := (get (fun x => E))
+  (at level 0, x ident, format "[ 'get'  x  |  E ]") : form_scope.
 
 Section PointedTheory.
 
@@ -1440,78 +1660,158 @@ Proof. exact: (xgetPN point). Qed.
 
 End PointedTheory.
 
-Definition patch {U: Type} {V} (dflt : U -> V) (A : set U) (f : U -> V) u :=
-  if u \in A then f u else dflt u.
+Variant squashed T : Prop := squash (x : T).
+Arguments squash {T} x.
+Notation "$| T |" := (squashed T) : form_scope.
+Tactic Notation "squash" uconstr(x) := (exists; refine x) ||
+   match goal with |- $| ?T | => exists; refine [the T of x] end.
 
-Notation restrict := (patch (fun=> point)).
-Notation "f \|_ D" := (restrict D) : fun_scope.
+Definition unsquash {T} (s : $|T|) : T :=
+  projT1 (cid (let: squash x := s in @ex_intro T _ x isT)).
+Lemma unsquashK {T} : cancel (@unsquash T) squash. Proof. by move=> []. Qed.
 
-Definition restrict_dep {U V} (A : set U) (f : U -> V)
-  (u : { x : U | x \in A }) : V := f (projT1 u).
-Arguments restrict_dep {U V} A.
+(* Empty types *)
 
-Definition extend_dep {U} {V : pointedType} {A : set U}
-    (f : {x | x \in A } -> V) (u : U) :=
-  if pselect (u \in A) is left w then f (exist _ u w) else point.
+Module Empty.
 
-Lemma restrict_depE T T' (B : set T) x (f : T -> T') (xB : B x) :
-  restrict_dep B f (exist _ x (mem_set xB)) = f x.
-Proof. done. Qed.
-Arguments restrict_depE {T T'} B x.
+Definition mixin_of T := T -> False.
 
-Lemma in_setP {U} (A : set U) (P : U -> Prop) :
-  {in A, forall x, P x} <-> forall x, A x -> P x.
-Proof. by split=> AP x; have := AP x; rewrite inE. Qed.
+Section EqMixin.
+Variables (T : Type) (m : mixin_of T).
+Definition eq_op (x y : T) := true.
+Lemma eq_opP : Equality.axiom eq_op. Proof. by []. Qed.
+Definition eqMixin := EqMixin eq_opP.
+End EqMixin.
 
-Lemma in_set2P {U V} (A : set U) (B : set V) (P : U -> V -> Prop) :
-  {in A & B, forall x y, P x y} <-> (forall x y, A x -> B y -> P x y).
-Proof. by split=> AP x y; have := AP x y; rewrite !inE. Qed.
+Section ChoiceMixin.
+Variables (T : Type) (m : mixin_of T).
+Definition find of pred T & nat : option T := None.
+Lemma findP (P : pred T) (n : nat) (x : T) :  find P n = Some x -> P x.
+Proof. by []. Qed.
+Lemma ex_find (P : pred T) : (exists x : T, P x) -> exists n : nat, find P n.
+Proof. by case. Qed.
+Lemma eq_find (P Q : pred T) : P =1 Q -> find P =1 find Q.
+Proof. by []. Qed.
+Definition choiceMixin := Choice.Mixin findP ex_find eq_find.
+End ChoiceMixin.
 
-Lemma fun_eq_inP {U V} (f g : U -> V) (A : set U) :
-  {in A, f =1 g} <-> restrict_dep A f = restrict_dep A g.
+Section CountMixin.
+Variables (T : Type) (m : mixin_of T).
+Definition pickle : T -> nat := fun=> 0%N.
+Definition unpickle : nat -> option T := fun=> None.
+Lemma pickleK : pcancel pickle unpickle. Proof. by []. Qed.
+Definition countMixin := CountMixin pickleK.
+End CountMixin.
+
+Section FinMixin.
+Variables (T : countType) (m : mixin_of T).
+Lemma fin_axiom : Finite.axiom ([::] : seq T). Proof. by []. Qed.
+Definition finMixin := FinMixin fin_axiom.
+End FinMixin.
+
+Section ClassDef.
+
+Set Primitive Projections.
+Record class_of T := Class {
+  base : Finite.class_of T;
+  mixin : mixin_of T
+}.
+Unset Primitive Projections.
+Local Coercion base : class_of >-> Finite.class_of.
+
+Structure type : Type := Pack {sort; _ : class_of sort}.
+Local Coercion sort : type >-> Sortclass.
+Variables (T : Type) (cT : type).
+Definition class := let: Pack _ c as cT' := cT return class_of cT' in c.
+Definition clone c of phant_id class c := @Pack T c.
+
+Definition pack (m0 : mixin_of T) :=
+  fun bT b & phant_id (Finite.class bT) b =>
+  fun m & phant_id m0 m => Pack (@Class T b m).
+
+Definition eqType := @Equality.Pack cT class.
+Definition choiceType := @Choice.Pack cT class.
+Definition countType := @Countable.Pack cT class.
+Definition finType := @Finite.Pack cT class.
+
+End ClassDef.
+
+Module Import Exports.
+Coercion base : class_of >-> Finite.class_of.
+Coercion mixin : class_of >-> mixin_of.
+Coercion sort : type >-> Sortclass.
+Coercion eqType : type >-> Equality.type.
+Canonical eqType.
+Coercion choiceType : type >-> Choice.type.
+Canonical choiceType.
+Coercion countType : type >-> Countable.type.
+Canonical countType.
+Coercion finType : type >-> Finite.type.
+Canonical finType.
+Notation emptyType := type.
+Notation EmptyType T m := (@pack T m _ _ id _ id).
+Notation "[ 'emptyType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
+  (at level 0, format "[ 'emptyType'  'of'  T  'for'  cT ]") : form_scope.
+Notation "[ 'emptyType' 'of' T ]" := (@clone T _ _ id)
+  (at level 0, format "[ 'emptyType'  'of'  T ]") : form_scope.
+Coercion eqMixin : mixin_of >-> Equality.mixin_of.
+Coercion choiceMixin : mixin_of >-> Choice.mixin_of.
+Coercion countMixin : mixin_of >-> Countable.mixin_of.
+End Exports.
+
+End Empty.
+Export Empty.Exports.
+
+Definition False_emptyMixin : Empty.mixin_of False := id.
+Canonical False_eqType := EqType False False_emptyMixin.
+Canonical False_choiceType := ChoiceType False False_emptyMixin.
+Canonical False_countType := CountType False False_emptyMixin.
+Canonical False_finType := FinType False (Empty.finMixin False_emptyMixin).
+Canonical False_emptyType := EmptyType False False_emptyMixin.
+
+Definition void_emptyMixin : Empty.mixin_of void := @of_void _.
+Canonical void_emptyType := EmptyType void void_emptyMixin.
+
+Definition no {T : emptyType} : T -> False :=
+  let: Empty.Pack _ (Empty.Class _ f) := T in f.
+Definition any {T : emptyType} {U}  : T -> U := @False_rect _ \o no.
+
+Lemma empty_eq0 {T : emptyType} : all_equal_to (set0 : set T).
+Proof. by move=> X; apply/setF_eq0/no. Qed.
+
+Definition quasi_canonical_of T C (sort : C -> T) (alt  : emptyType -> T):=
+    forall (G : T -> Type), (forall s : emptyType, G (alt s)) -> (forall x, G (sort x)) ->
+  forall x, G x.
+Notation quasi_canonical_ sort alt := (@quasi_canonical_of _ _ sort alt).
+Notation quasi_canonical T C := (@quasi_canonical_of T C id id).
+
+Lemma qcanon T C (sort : C -> T) (alt : emptyType -> T) :
+    (forall x, (exists y : emptyType, alt y = x) + (exists y, sort y = x)) ->
+  quasi_canonical_ sort alt.
+Proof. by move=> + G Cx Gs x => /(_ x)[/cid[y <-]|/cid[y <-]]. Qed.
+Arguments qcanon {T C sort alt} x.
+
+Lemma choicePpointed : quasi_canonical choiceType pointedType.
 Proof.
-split=> [eq_f_g | Rfg u uA]; first by apply/funext => -[x]; apply: eq_f_g.
-by have := congr1 (@^~ (exist _ u uA)) Rfg.
+apply: qcanon => T; case: (pselect $|T|).
+  by move=> /unsquash x; right; exists (PointedType T x); case: T x.
+move=> /(_ (squash _)) TF; left.
+pose cT := CountType _ (TF : Empty.mixin_of T).
+pose fM := Empty.finMixin (TF : Empty.mixin_of cT).
+exists (EmptyType (FinType _ fM) TF) => //=.
+by case: T TF @cT @fM.
 Qed.
 
-Section Restrictions.
-Context {U : Type} {V : pointedType} (A : set U).
-
-Local Notation extend_dep := (@extend_dep U V A).
-Local Notation restrict_dep := (@restrict_dep U V A).
-Local Notation restrict := (restrict A).
-
-Open Scope fun_scope.
-
-Lemma extend_restrict_dep : extend_dep \o restrict_dep = restrict.
+Lemma eqPpointed : quasi_canonical eqType pointedType.
 Proof.
-rewrite funeq2E => f u /=; rewrite /restrict_dep /restrict /extend_dep /patch.
-by case: pselect => [/= ->//|/negP/negbTE ->].
+by apply: qcanon; elim/eqPchoice; elim/choicePpointed => [[T F]|T];
+   [left; exists (Empty.Pack F) | right; exists T].
 Qed.
-
-Lemma extend_depK : cancel extend_dep restrict_dep.
+Lemma Ppointed : quasi_canonical Type pointedType.
 Proof.
-move=> f; rewrite funeqE => -[x /= xA].
-rewrite /restrict /patch /extend_dep /restrict_dep /=.
-by case: pselect => // xA'; congr (f (exist _ _ _)); apply: Prop_irrelevance.
+by apply: qcanon; elim/Peq; elim/eqPpointed => [[T F]|T];
+   [left; exists (Empty.Pack F) | right; exists T].
 Qed.
-
-Lemma restrict_extend_dep : restrict_dep \o extend_dep = id.
-Proof. exact/funext/extend_depK. Qed.
-
-Lemma restrict_dep_restrict : restrict_dep \o restrict = restrict_dep.
-Proof.
-rewrite funeq2E => f -[u Au] /=.
-by rewrite /restrict_dep /restrict /extend_dep /patch /= Au.
-Qed.
-
-Lemma restrict_dep_setT : [set of restrict_dep] = setT.
-Proof.
-rewrite eqEsubset; split=> //= f _; exists (extend_dep f)=>//.
-exact: extend_depK.
-Qed.
-
-End Restrictions.
 
 Section partitions.
 
@@ -1570,7 +1870,7 @@ Definition partition T I D (F : I -> set T) (A : set T) :=
   [/\ cover D F = A, trivIset D F & forall i, D i -> F i !=set0].
 
 Definition pblock_index T (I : pointedType) D (F : I -> set T) (x : T) :=
-  get (fun i => D i /\ F i x).
+  [get i | D i /\ F i x].
 
 Definition pblock T (I : pointedType) D (F : I -> set T) (x : T) :=
   F (pblock_index D F x).
@@ -1633,10 +1933,10 @@ Let Teq := @gen_eqMixin T.
 Let Tch := @gen_choiceMixin T.
 Let Tp := Pointed.Pack (Pointed.Class (Choice.Class Teq Tch) t0).
 Let lub := fun A : {A : set T | total_on A R} =>
-  get (fun t : Tp => (forall s, sval A s -> R s t) /\
-    forall r, (forall s, sval A s -> R s r) -> R t r).
-Let succ := fun s => get (fun t : Tp => R s t /\ s <> t /\
-  forall r, R s r -> R r t -> r = s \/ r = t).
+  [get t : Tp | (forall s, sval A s -> R s t) /\
+    forall r, (forall s, sval A s -> R s r) -> R t r].
+Let succ := fun s => [get t : Tp | R s t /\ s <> t /\
+  forall r, R s r -> R r t -> r = s \/ r = t].
 
 Inductive tower : set T :=
   | Lub : forall A, sval A `<=` tower -> tower (lub A)

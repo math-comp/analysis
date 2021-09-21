@@ -7,7 +7,10 @@
 -arg -w -arg -deprecated-grab-existentials
 -arg -w -arg -deprecated-ident-entry
 -arg -w -arg -ambiguous-paths
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -projection-no-head-constant
 
+theories/mathcomp_extra.v
 theories/boolp.v
 theories/ereal.v
 theories/reals.v
@@ -30,6 +33,7 @@ theories/forms.v
 theories/derive.v
 theories/measure.v
 theories/summability.v
+theories/functions.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v

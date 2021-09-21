@@ -2,8 +2,8 @@
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
 From mathcomp Require Import ssralg ssrnum finmap.
-Require Import boolp classical_sets reals ereal posnum nngnum topology.
-Require Import normedtype sequences cardinality csum.
+Require Import boolp classical_sets mathcomp_extra reals ereal posnum nngnum.
+Require Import functions topology normedtype sequences cardinality csum.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -596,7 +596,6 @@ move=> mA mB mAoo.
 rewrite (measureDI mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
 - rewrite (le_lt_trans _ mAoo)// le_measure // ?inE//.
   + exact: measurableI.
-  + by apply: subIset; left.
 - rewrite (lt_le_trans _ (measure_ge0 _ _))// ?lte_ninfty//.
   exact: measurableI.
 Qed.
@@ -1106,8 +1105,7 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
   - rewrite -lee_subr_addr //; apply ub_ereal_sup => /= _ [n _] <-.
     by rewrite EFinN lee_subr_addr // -XAx XA.
   - suff : mu X = +oo by move=> ->; rewrite lee_pinfty.
-    apply/eqP; rewrite -lee_pinfty_eq -XAx le_outer_measure //.
-    by apply subIset; left.
+    by apply/eqP; rewrite -lee_pinfty_eq -XAx le_outer_measure.
   - by rewrite addeC /= lee_ninfty.
 move=> n.
 apply (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
@@ -1332,22 +1330,16 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
 have muG_ge0 : forall x, 0 <= (mu \o uncurry G) x.
   by move=> x; apply/measure_ge0/measurable_uncurry/(PG x.1).1.1.
 apply (@le_trans _ _ (\csum_(i in setT) (mu \o uncurry G) i)).
-  rewrite /mu_ext; apply ereal_inf_lb.
-  have [f [Tf fi]] : exists e, enumeration (@setT (nat * nat)) e /\ injective e.
-    have /countable_enumeration [|[f ef]] := countable_prod_nat.
-      by rewrite predeqE => /(_ (0%N, 0%N)) [] /(_ Logic.I).
-    by exists (enum_wo_rep infinite_prod_nat ef); split;
-     [exact: enumeration_enum_wo_rep | exact: injective_enum_wo_rep].
+  rewrite /mu_ext; apply: ereal_inf_lb => /=.
+  have /card_esym/ppcard_eqP[f] := card_nat2.
   exists (uncurry G \o f).
     split => [i|]; first exact/measurable_uncurry/(PG (f i).1).1.1.
     apply: (@subset_trans _  (\bigcup_n \bigcup_k G n k)) => [t [i _]|].
       by move=> /(cover_subset (PG i).1) -[j _ ?]; exists i => //; exists j.
-    move=> t [i _ [j _ Bijt]].
-    have [k fkij] : exists k, f k = (i, j).
-      by have : setT (i, j) by []; rewrite Tf => -[k _ fkij]; exists k.
-    by exists k => //=; rewrite fkij.
+    move=> t [i _ [j _ Bijt]]; exists (f^-1%FUN (i, j)) => //=.
+    by rewrite invK ?inE.
   rewrite -(@csum_image _ _ (mu \o uncurry G) _ xpredT) //; congr csum.
-  by rewrite Tf predeqE=> -[a b]; split=> -[n _ <-]; exists n.
+  by rewrite -[RHS](image_eq f)predeqE=> -[a b]/=; split=> -[n _ <-]; exists n.
 rewrite (_ : csum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
   pose J : nat -> set (nat * nat) := fun i => [set (i, j) | j in setT].
   rewrite (_ : setT = \bigcup_k J k); last first.
@@ -1361,11 +1353,9 @@ rewrite (_ : csum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
     by rewrite image_id funeqE => x; rewrite trueE.
   rewrite csum_image //; last by move=> n _; apply: csum_ge0.
   apply: eq_ereal_pseries => /= j.
-  pose x_j : nat -> nat * nat := fun y => (j, y).
-  have [enux injx] : enumeration (J j) x_j /\ injective x_j.
-    by split => [|x y [] //]; rewrite /enumeration predeqE=> -[? ?]; split.
-  rewrite -(@csum_image R _ (mu \o uncurry G) x_j predT) //=; last first.
-    by move=> x _; move: (muG_ge0 (j, x)).
+  rewrite -(@csum_image R _ (mu \o uncurry G) (pair j) predT) //=; last first.
+  - by apply: (@can_inj _ _ _ snd).
+  - by move=> n _; rewrite (muG_ge0 (_ , _)).
   by congr csum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
 apply lee_lim.
 - apply: is_cvg_ereal_nneg_series => n _.

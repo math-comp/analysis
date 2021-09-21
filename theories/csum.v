@@ -3,8 +3,8 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice seq fintype order bigop.
 From mathcomp Require Import ssralg ssrnum.
 From mathcomp Require Import finmap.
-Require Import boolp reals ereal classical_sets posnum topology.
-Require Import sequences cardinality.
+Require Import boolp reals mathcomp_extra ereal classical_sets posnum topology.
+Require Import sequences functions cardinality.
 
 (******************************************************************************)
 (*                     Summations over classical sets                         *)
@@ -39,20 +39,20 @@ Section set_of_fset_in_a_set.
 Variable (T : choiceType).
 Implicit Type S : set T.
 
-Definition fsets S : set {fset T} := [set F | [set x | x \in F] `<=` S].
+Definition fsets S : set {fset T} := [set F | [set` F] `<=` S].
 
 Lemma fsets_set0 S : fsets S fset0. Proof. by []. Qed.
 
 Lemma fsets_self (F : {fset T}) : fsets [set x | x \in F] F.
 Proof. by []. Qed.
 
-Lemma fsetsP S (F : {fset T}) : [set x | x \in F] `<=` S <-> fsets S F.
+Lemma fsetsP S (F : {fset T}) : [set` F] `<=` S <-> fsets S F.
 Proof. by []. Qed.
 
 Lemma fsets0 : fsets set0 = [set fset0].
 Proof.
 rewrite predeqE => A; split => [|->]; last exact: fsets_set0.
-by rewrite /fsets /= subset0 => /eqP; rewrite eq_set0_fset0 => /eqP.
+by rewrite /fsets /= subset0 => /eqP; rewrite set_fset_eq0 => /eqP.
 Qed.
 
 End set_of_fset_in_a_set.
@@ -71,19 +71,19 @@ Proof. by move=> /= i /imfsetP[/= a] /imfsetP[/= b Pb] ->{a} ->{i}. Qed.
 
 Lemma fsets_ord_subset (T : pointedType) (F : {fset T})
     (e : nat -> T) (P : pred nat) : injective e ->
-  [set x | x \in F] `<=` e @` P ->
+  [set` F] `<=` e @` [set` P] ->
   exists n, (F `<=` e @` (@nat_of_ord _ @` fsets_ord P n))%fset.
 Proof.
-move=> ie FeP.
+move=> /in2W/Pinj-/(_ setT)[{}e ->]/= FeP.
 have [/eqP F0|F0] := boolP (F == fset0); first by exists O; rewrite F0.
 have [n Fn] : exists n, forall x, x \in F -> forall i, e i = x -> (i <= n)%N.
-  have [eF eFE] : set_finite (e @^-1` [set x | x \in F]).
-    by apply: set_finite_preimage; [move=> ? ? ? ?; exact/ie|exists F].
+  have /finite_fsetP [eF eFE] : finite_set (e @^-1` [set` F]).
+    by apply: finite_preimage=> //; apply: in2W => ? ? /'inj_e->; rewrite ?inE.
   have : eF != fset0.
-    rewrite -eq_set0_fset0 -eFE; apply/set0P.
-    move: F0; rewrite -eq_set0_fset0 => /set0P[t tF].
+    rewrite -set_fset_eq0  -eFE; apply/set0P.
+    move: F0; rewrite -set_fset_eq0 => /set0P[t tF].
     by have [i Pi eit] := FeP _ tF; exists i; rewrite /preimage /mkset eit.
-  move/fset_nat_maximum => [i [ieF eFi]]; exists i => t tF j eji; apply eFi.
+  move=> /fset_nat_maximum-/(_ id) [i [ieF eFi]]; exists i => t tF j eji; apply eFi.
   by move/predeqP : eFE => /(_ j) /iffLR; apply; rewrite /preimage /mkset eji.
 exists n.+1; apply/fsubsetP => x Fx; apply/imfsetP => /=.
 have [j Pj ejx] := FeP _ Fx; exists j => //; apply/imfsetP => /=.
@@ -191,14 +191,14 @@ have dFJ : forall i j, i != j -> [disjoint FJ i & FJ j]%fset.
   by apply: subsetI_eq0 (tJ' ij) => t /imfsetP[t0 /=];
     rewrite !inE => /andP[_]; rewrite inE => ? ->.
 pose KFJ := [set k | K k /\ FJ k != fset0].
-have [L LKFJ] : set_finite KFJ.
-  suff : set_finite [set k | FJ k != fset0] by apply: subset_set_finite => t [].
-  suff : surjective [set x | x \in F] [set k | FJ k != fset0]
-                    (fun t => xget 0%N [set n | t \in J n]).
-    by move/surjective_set_finite; apply; exists F.
+have /finite_fsetP [L LKFJ] : finite_set KFJ.
+  suff : finite_set [set k | FJ k != fset0] by apply: sub_finite_set => t [].
+  suff: ([set k | FJ k != fset0] #<= [set` F])%card.
+    by move/card_le_finite; apply.
+  apply/pcard_geP/surjPex; exists (fun t => [get n | t \in J n]).
   move=> i /fset0Pn[t]; rewrite /FJ !inE => /andP[/= tF tJi].
-  exists t; split => //; case: xgetP; last by move/(_ i).
-  move=> j _ tJj; apply/eqP/negPn/negP => /(@tJ' i j).
+  exists t => //; case: xgetP; last by move/(_ i).
+  move=> j _ tJj; apply/esym/eqP/negPn/negP => /(@tJ' i j).
   by rewrite predeqE => /(_ t)[+ _]; apply; rewrite /= !inE in tJi tJj.
 have LK : [set i | i \in L] `<=` K.
   by move=> /= i iL; move/predeqP : LKFJ => /(_ i) /iffRL /(_ iL) [].
@@ -260,7 +260,7 @@ rewrite (_ : \sum_(_ <- _) _ =
   have tFj : (forall i j : 'I_#|`L|, i != j -> [disjoint Fj i & Fj j])%fset.
     move=> i j ij; rewrite -fsetI_eq0.
     suff : (Fj i `&` Fj j)%fset == fset0 by [].
-    rewrite -eq_set0_fset0.
+    rewrite -set_fset_eq0.
     have Jij : J (L \_ i) `&` J (L \_ j) = set0.
       apply: tJ' => //; apply: contra ij => /eqP /(congr1 (index^~ L)).
       by rewrite index_uniq // index_uniq // => /ord_inj ->.

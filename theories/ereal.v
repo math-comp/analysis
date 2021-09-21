@@ -7,7 +7,7 @@
 
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import finmap.
-Require Import boolp classical_sets reals posnum topology.
+Require Import boolp mathcomp_extra classical_sets reals posnum topology.
 
 (******************************************************************************)
 (*                        Extended real numbers                               *)
@@ -73,31 +73,6 @@ Unset Printing Implicit Defensive.
 Reserved Notation "x %:E" (at level 2, format "x %:E").
 Reserved Notation "x +? y" (at level 50, format "x  +?  y").
 Reserved Notation "x *? y" (at level 50, format "x  *?  y").
-
-(* NB: in bigop.v since mathcomp 1.13.0 *)
-Lemma big_nat_widenl (R : Type) (idx : R) (op : Monoid.law idx) (m1 m2 n : nat)
-    (P : pred nat) (F : nat -> R) :
-  m2 <= m1 ->
-  \big[op/idx]_(m1 <= i < n | P i) F i =
-  \big[op/idx]_(m2 <= i < n | P i && (m1 <= i)) F i.
-Proof.
-move=> le_m21; have [le_nm1|lt_m1n] := leqP n m1.
-  rewrite big_geq// big_nat_cond big1//.
-  by move=> i /and3P[/andP[_ /leq_trans/(_ le_nm1)/ltn_geF->]].
-rewrite big_mkcond big_mkcondl (big_cat_nat _ _ _ le_m21) 1?ltnW//.
-rewrite [X in op X]big_nat_cond [X in op X]big_pred0; last first.
-  by move=> k; case: ltnP; rewrite andbF.
-by rewrite Monoid.mul1m; apply: congr_big_nat => // k /andP[].
-Qed.
-Arguments big_nat_widenl [R idx op].
-
-(* NB: in bigop.v since mathcomp 1.13.0 *)
-Lemma big_geq_mkord (R : Type) (idx : R) (op : Monoid.law idx) (m n : nat)
-    (P : pred nat) (F : nat -> R) :
-  \big[op/idx]_(m <= i < n | P i) F i =
-  \big[op/idx]_(i < n | P i && (m <= i)) F i.
-Proof. by rewrite (big_nat_widenl _ 0)// big_mkord. Qed.
-
 Reserved Notation "'\bar' x" (at level 2, format "'\bar'  x").
 
 Declare Scope ereal_dual_scope.

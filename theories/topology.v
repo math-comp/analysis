@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
 From mathcomp Require Import seq fintype bigop order interval ssralg ssrnum rat.
 From mathcomp Require Import matrix finmap.
-Require Import boolp reals classical_sets posnum.
+Require Import boolp reals classical_sets posnum functions.
 
 (******************************************************************************)
 (*                  Filters and basic topological notions                     *)
@@ -1241,9 +1241,9 @@ Lemma filter_from_filter {I T : Type} (D : set I) (B : I -> set T) :
   Filter (filter_from D B).
 Proof.
 move=> [i0 Di0] Binter; constructor; first by exists i0.
-- move=> P Q [i Di BiP] [j Dj BjQ]; have [k Dk BkPQ]:= Binter _ _ Di Dj.
+  move=> P Q [i Di BiP] [j Dj BjQ]; have [k Dk BkPQ]:= Binter _ _ Di Dj.
   by exists k => // x /BkPQ [/BiP ? /BjQ].
-- by move=> P Q subPQ [i Di BiP]; exists i; apply: subset_trans subPQ.
+by move=> P Q subPQ [i Di BiP]; exists i => //; apply: subset_trans subPQ.
 Qed.
 
 Lemma filter_fromT_filter {I T : Type} (B : I -> set T) :
@@ -4995,7 +4995,7 @@ Definition fct_RestrictedUniformTopology :=
   @weak_topologicalType
     ([pointedType of @fct_RestrictedUniform])
     (fct_uniformType [choiceType of { x : U | x \in A }] V)
-    (@restrict_dep U V A).
+    (@sigL U V A).
 
 Canonical fct_RestrictUniformFilteredType:=
   [filteredType fct_RestrictedUniform of
@@ -5014,12 +5014,12 @@ split=> [[Q [[/= W oW <- /=] [Wf subP]]]|[E [entE subP]]].
   case: (oW _ Wf) => ? [ /= E entE] Esub subW.
   exists E; split=> // h Eh; apply/subP/subW/Esub => /= [[u Au]].
   by apply: Eh => /=; rewrite -inE.
-near=> g; apply: subP => y Ay; rewrite -!(restrict_depE A).
-move: (exist _ _ _); near: g.
-have := (@cvg_image _ _ (restrict_dep A) _ f (nbhs_filter f)
-  (restrict_dep_setT _ )).1 cvg_id [set h | forall y, E (restrict_dep A f y, h y)].
+near=> g; apply: subP => y /mem_set Ay; rewrite -!(sigLE A).
+move: (SigSub _); near: g.
+have := (@cvg_image _ _ (sigL A) _ f (nbhs_filter f)
+  (sigL_setT point)).1 cvg_id [set h | forall y, E (sigL A f y, h y)].
 case; first by exists [set fg | forall y, E (fg.1 y, fg.2 y)]; [exists E|].
-move=> B nbhsB rBrE; apply: (filterS _ nbhsB) => g Bg /= [y yA /=].
+move=> B nbhsB rBrE; apply: (filterS _ nbhsB) => g Bg [y yA].
 by move: rBrE; rewrite eqEsubset; case => [+ _]; apply; exists g.
 Unshelve. all: by end_near. Qed.
 
@@ -5143,10 +5143,10 @@ apply: (weakL _ _ (subset_trans sub2 BsubC)).
 - by move => v [/= g] + <-; apply.
 Qed.
 
-Lemma cvg_restrict_dep (A : set U) (f : U -> V) (F : set (set (U -> V))) :
+Lemma cvg_sigL (A : set U) (f : U -> V) (F : set (set (U -> V))) :
     Filter F ->
   {uniform A, F --> f} <->
-  {uniform, restrict_dep A @ F --> restrict_dep A f}.
+  {uniform, sigL A @ F --> sigL A f}.
 Proof.
 move=> FF; split.
 - move=> cvgF P' /= /uniform_nbhs [ E [/= entE EsubP]].
@@ -5156,11 +5156,11 @@ move=> FF; split.
     + by (apply/uniform_nbhs; eexists; split; eauto).
 - move=> cvgF P' /= /uniform_nbhs [ E [/= entE EsubP]].
   apply: (filterS EsubP).
-  move: (cvgF  [set h | (forall y , E (restrict_dep A f y, h y))]) => /=.
+  move: (cvgF  [set h | (forall y , E (sigL A f y, h y))]) => /=.
   set Q := (x in (_ -> x) -> _); move=> W.
   have: Q by apply W, uniform_nbhs; exists E; split => // h + ?; apply.
   rewrite {}/W {}/Q; near_simpl => /= R; apply: (filterS _ R) => h /=.
-  by rewrite forall_sig /restrict_dep /=.
+  by rewrite forall_sig /sigL /=.
 Qed.
 
 Lemma eq_in_close (A : set U) (f g : {uniform` A -> V}) :
@@ -5201,23 +5201,21 @@ Lemma uniform_restrict_cvg
     (F : set (set (U -> V))) (f : U -> V) A : Filter F ->
   {uniform A, F --> f} <-> {uniform, restrict A @ F --> restrict A f}.
 Proof.
-move=> FF; rewrite cvg_restrict_dep; split.
-- rewrite -extend_restrict_dep /uniform_fun.
-  move /(cvg_app (extend_dep (A:=A))) => D.
+move=> FF; rewrite cvg_sigL; split.
+- rewrite -extend_sigL /uniform_fun.
+  move /(cvg_app valL) => D.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
   apply/uniform_nbhs; exists E; split=> //= h /=.
-  rewrite /restrict_dep => R u _.
-  rewrite /extend_dep/patch; case pselect => //= Au.
-    by set u' := exist _ _ _; rewrite ( _: u = projT1 u')//; apply: R.
-  exact: entourage_refl.
-- move /(@cvg_app _ _ _ _ (restrict_dep A)).
-  rewrite -fmap_comp restrict_dep_restrict => D.
+  rewrite /sigL => R u _; rewrite oinv_set_val.
+  by case: insubP=> /= *; [apply: R|apply: entourage_refl].
+- move /(@cvg_app _ _ _ _ (sigL A)).
+  rewrite -fmap_comp sigL_restrict => D.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
   apply/uniform_nbhs; exists E; split=> //= h /=.
-  rewrite /restrict_dep /uniform_fun => R [u Au] _ /=.
-  by move: (R u (ltac:(by []))); rewrite /patch Au.
+  rewrite /sigL /uniform_fun => R [u Au] _ /=.
+  by have := R u I; rewrite /patch Au.
 Qed.
 
 Lemma cvg_uniformU (f : U -> V) (F : set (set (U -> V))) A B : Filter F ->

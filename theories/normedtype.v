@@ -3,8 +3,9 @@ From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum.
 From mathcomp Require Import finmap matrix interval zmodp vector fieldext.
 From mathcomp Require Import falgebra.
-Require Import boolp ereal reals cardinality.
+Require Import boolp mathcomp_extra ereal reals cardinality.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
+Require Import functions.
 
 (******************************************************************************)
 (* This file extends the topological hierarchy with norm-related notions.     *)
@@ -2553,7 +2554,7 @@ Lemma continuousM s t x :
 Proof. by move=> f_cont g_cont; apply: cvgM. Qed.
 
 Lemma continuousV s x : s x != 0 ->
-  {for x, continuous s} -> {for x, continuous (fun x => (s x)^-1)}.
+  {for x, continuous s} -> {for x, continuous (fun x => (s x)^-1%R)}.
 Proof. by move=> ?; apply: cvgV. Qed.
 
 End local_continuity.
@@ -4076,7 +4077,7 @@ by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
 Qed.
 
 Lemma mono_surj_image_segment a b f : a <= b ->
-    monotonous `[a, b] f -> surjective `[a, b] (f @`[a, b]) f ->
+    monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
   f @` `[a, b] = f @`[a, b]%classic.
 Proof.
 move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-];
@@ -4091,7 +4092,7 @@ Proof. by case: ltrP. Qed.
 
 Lemma inc_surj_image_segment a b f : a <= b ->
     {in `[a, b] &, {mono f : x y / x <= y}} ->
-    surjective `[a, b] `[f a, f b] f ->
+    set_surj `[a, b] `[f a, f b] f ->
   f @` `[a, b] = `[f a, f b]%classic.
 Proof.
 move=> leab fle f_surj; have fafb : f a <= f b by rewrite fle ?bound_itvE.
@@ -4100,7 +4101,7 @@ Qed.
 
 Lemma dec_surj_image_segment a b f : a <= b ->
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-    surjective `[a, b] `[f b, f a] f ->
+    set_surj `[a, b] `[f b, f a] f ->
   f @` `[a, b] = `[f b, f a]%classic.
 Proof.
 move=> leab fge f_surj; have fafb : f b <= f a by rewrite fge ?bound_itvE.
@@ -4109,7 +4110,7 @@ Qed.
 
 Lemma inc_surj_image_segmentP a b f : a <= b ->
     {in `[a, b] &, {mono f : x y / x <= y}} ->
-    surjective `[a, b] `[f a, f b] f ->
+    set_surj `[a, b] `[f a, f b] f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f a, f b]).
 Proof.
 move=> /inc_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
@@ -4118,7 +4119,7 @@ Qed.
 
 Lemma dec_surj_image_segmentP a b f : a <= b ->
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-    surjective `[a, b] `[f b, f a] f ->
+    set_surj `[a, b] `[f b, f a] f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f b, f a]).
 Proof.
 move=> /dec_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
@@ -4126,7 +4127,7 @@ by apply/(equivP idP); symmetry.
 Qed.
 
 Lemma mono_surj_image_segmentP a b f : a <= b ->
-    monotonous `[a, b] f -> surjective `[a, b] (f @`[a, b]) f ->
+    monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
 Proof.
 move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
