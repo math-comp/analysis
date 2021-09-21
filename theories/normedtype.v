@@ -366,7 +366,7 @@ by rewrite in_itv /= ; apply/andP; split; apply/ler_addgt0Pr => ? /xyz_e;
 Qed.
 
 Lemma in_segment_addgt0Pl (R : numFieldType) (x y z : R) :
-  reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]) (y \in `[x, z]).
+  reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]%R) (y \in `[x, z]%R).
 Proof.
 apply/(equivP (in_segment_addgt0Pr x y z)).
 by split=> zxy e /zxy; rewrite [z + _]addrC [_ + x]addrC.
@@ -3138,7 +3138,7 @@ Definition Rhull (X : set R) : interval R := Interval
   (if `[< has_ubound X >] then BSide (~~ `[< X (sup X) >]) (sup X)
                           else BInfty _ false).
 
-Lemma Rhull0 : Rhull set0 = `]0, 0[ :> interval R.
+Lemma Rhull0 : Rhull set0 = `]0, 0[%R :> interval R.
 Proof.
 rewrite /Rhull  (asboolT (has_lbound0 R)) (asboolT (has_ubound0 R)) asboolF //.
 by rewrite sup0 inf0.
@@ -3298,7 +3298,7 @@ apply: segment_connected.
     by have := xe_y; rewrite /ball_ => /ltr_distlC_subl.
   by rewrite subr_ge0; apply/ltW.
 exists A; last by rewrite predeqE => x; split=> [[] | []].
-move=> x clAx; have abx : x \in `[a, b].
+move=> x clAx; have abx : x \in `[a, b]%R.
   by apply: interval_closed; have /closureI [] := clAx.
 split=> //; have /sabUf [i Di fx] := abx.
 have /fop := Di; rewrite openE => /(_ _ fx) [_ /posnumP[e] xe_fi].
@@ -3330,12 +3330,12 @@ rewrite {1}(splitr x) ger_addl pmulr_lle0 // => /(lt_le_trans x0);
 Qed.
 
 Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
-  a <= b -> {in `[a, b], continuous f} ->
+  a <= b -> {in `[a, b]%R, continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
-  exists2 c, c \in `[a, b] & f c = v.
+  exists2 c, c \in `[a, b]%R & f c = v.
 Proof.
 move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
-    exists2 c, c \in `[a, b] & f c = v; last first.
+    exists2 c, c \in `[a, b]%R & f c = v; last first.
   case: (leP (f a) (f b)) => [] _ fabv; first exact: ivt.
   have [||c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
     by move=> x /fcont; apply: continuousN.
@@ -3347,7 +3347,7 @@ rewrite le_eqVlt => /orP [/eqP->|ltvfb].
 set A := [set c | (c <= b) && (f c <= v)].
 have An0 : nonempty A by exists a; apply/andP; split=> //; apply: ltW.
 have supA : has_sup A by split=> //; exists b; apply/ubP => ? /andP [].
-have supAab : sup A \in `[a, b].
+have supAab : sup A \in `[a, b]%R.
   rewrite inE; apply/andP; split; last first.
     by apply: sup_le_ub => //; apply/ubP => ? /andP [].
   by move/ubP : (sup_upper_bound supA); apply; rewrite /A/= leab andTb ltW.
@@ -3371,7 +3371,7 @@ have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
 have /supdfe /= : ball (sup A) d%:num x.
   by near: x; rewrite /= nbhs_simpl; exists d%:num => //.
 rewrite /= => /ltr_distlC_subl; apply: le_lt_trans.
-rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
+rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b]%R -> v < f t.
   apply; rewrite inE; apply/andP; split; first by near: x; exists 1.
   near: x; exists (b - sup A) => /=.
     rewrite subr_gt0 lt_def (itvP supAab) andbT; apply/negP => /eqP besup.
