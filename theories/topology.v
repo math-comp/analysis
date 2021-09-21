@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
 From mathcomp Require Import seq fintype bigop order interval ssralg ssrnum rat.
 From mathcomp Require Import matrix finmap.
-Require Import boolp reals classical_sets posnum.
+Require Import mathcomp_extra boolp reals classical_sets posnum functions.
 
 (******************************************************************************)
 (*                  Filters and basic topological notions                     *)
@@ -343,8 +343,6 @@ Require Import boolp reals classical_sets posnum.
 (*     "Import numFieldTopology.Exports.")                                    *)
 (******************************************************************************)
 
-Reserved Notation "f \* g" (at level 40, left associativity).
-Notation "f \* g" := (fun x => f x * g x)%R : ring_scope.
 Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
 Reserved Notation "'\forall' x '\near' x_0 , P"
   (at level 200, x ident, P at level 200,
@@ -665,12 +663,9 @@ Qed.
 Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
   LmodType _ (U -> V) (fct_lmodMixin U V).
 
-Lemma fct_sumE (T : Type) (M : zmodType) n (f : 'I_n -> T -> M) (x : T) :
-  (\sum_(i < n) f i) x = \sum_(i < n) f i x.
-Proof.
-elim: n f => [|n H] f;
-  by rewrite !(big_ord0,big_ord_recr) //= -[LHS]/(_ x + _ x) H.
-Qed.
+Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M) (x : T) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
 End function_space.
 
@@ -1244,9 +1239,9 @@ Lemma filter_from_filter {I T : Type} (D : set I) (B : I -> set T) :
   Filter (filter_from D B).
 Proof.
 move=> [i0 Di0] Binter; constructor; first by exists i0.
-- move=> P Q [i Di BiP] [j Dj BjQ]; have [k Dk BkPQ]:= Binter _ _ Di Dj.
+  move=> P Q [i Di BiP] [j Dj BjQ]; have [k Dk BkPQ]:= Binter _ _ Di Dj.
   by exists k => // x /BkPQ [/BiP ? /BjQ].
-- by move=> P Q subPQ [i Di BiP]; exists i; apply: subset_trans subPQ.
+by move=> P Q subPQ [i Di BiP]; exists i => //; apply: subset_trans subPQ.
 Qed.
 
 Lemma filter_fromT_filter {I T : Type} (B : I -> set T) :
@@ -3275,6 +3270,13 @@ case/not_andP => /eqP/set0P[x []].
   by move: AB; rewrite /separated => -[] _; apply/eqP/set0P; exists x.
 Qed.
 
+Lemma connected1 x : connected [set x].
+Proof.
+move=> X [y +] [O Oopen XO] [C Cclosed XC]; rewrite XO.
+by move=> [{y}-> Ox]; apply/seteqP; split=> y => [[->//]|->].
+Qed.
+Hint Resolve connected1 : core.
+
 Lemma bigcup_connected I (A : I -> set T) (P : I -> Prop) :
   \bigcap_(i in P) (A i) !=set0 -> (forall i, P i -> connected (A i)) ->
   connected (\bigcup_(i in P) (A i)).
@@ -3302,13 +3304,70 @@ rewrite EU subUset => -[_] /(_ _ E1d) E0d; exfalso.
 by move/separated_disjoint : sE; apply/eqP/set0P; exists d.
 Qed.
 
-Definition connected_component (x : T) :=
-  \bigcup_(X in [set C | connected C /\ C x]) X.
+Lemma connectedU A B : A `&` B !=set0 -> connected A -> connected B ->
+   connected (A `|` B).
+Proof.
+move=> [x [Ax Bx]] Ac Bc; rewrite -bigcup2inE; apply: bigcup_connected.
+  by exists x => //= -[|[|[]]].
+by move=> [|[|[]]].
+Qed.
 
-Lemma component_connected (x : T) : connected (connected_component x).
+Definition connected_component (A : set T) (x : T) :=
+  \bigcup_(A in [set C : set T | [/\ C x, C `<=` A & connected C]]) A.
+
+Lemma component_connected A x : connected (connected_component A x).
 Proof. by apply: bigcup_connected; [exists x => C []|move=> C []]. Qed.
 
+Lemma connected_component_sub A x : connected_component A x `<=` A.
+Proof. by move=> y [B [_ + _]] => /[apply]. Qed.
+
+Lemma connected_component_id A x :
+  A x -> connected A -> connected_component A x = A.
+Proof.
+move=> Ax Ac; apply/seteqP; split; first exact: connected_component_sub.
+by move=> y Ay; exists A => //; split.
+Qed.
+
+Lemma connected_component_out A x :
+  ~ A x -> connected_component A x = set0.
+Proof. by move=> NAx; rewrite -subset0 => y [B [/[swap]/[apply]]]. Qed.
+
+Lemma connected_component_max A B x : B x -> B `<=` A ->
+  connected B -> B `<=` connected_component A x.
+Proof. by move=> Bx BA Bc y By; exists B. Qed.
+
+Lemma connected_component_refl A x : A x -> connected_component A x x.
+Proof. by move=> Ax; exists [set x] => //; split => // _ ->. Qed.
+
+Lemma connected_component_cover A :
+  \bigcup_(A in connected_component A @` A) A = A.
+Proof.
+apply/predeqP => x; split=> [[B [y By <- /connected_component_sub//]]|Ax].
+by exists (connected_component A x) => //; apply: connected_component_refl.
+Qed.
+
+Lemma connected_component_sym A x y :
+  connected_component A x y -> connected_component A y x.
+Proof. by move=> [B [*]]; exists B. Qed.
+
+Lemma connected_component_trans A y x z :
+    connected_component A x y -> connected_component A y z ->
+  connected_component A x z.
+Proof.
+move=> [B [Bx BA Ac Ay]] [C [Cy CA Cc Cz]]; exists (B `|` C); last by right.
+by split; [left | rewrite subUset | apply: connectedU=> //; exists y].
+Qed.
+
+Lemma same_connected_component A x y : connected_component A x y ->
+  connected_component A x = connected_component A y.
+Proof.
+move=> Axy; apply/seteqP; split => z; apply: connected_component_trans => //.
+by apply: connected_component_sym.
+Qed.
+
 End connected_sets.
+Arguments connected {T}.
+Arguments connected_component {T}.
 
 Lemma connected_continuous_connected (T U : topologicalType) (f : T -> U) A :
   connected A -> continuous f -> connected (f @` A).
@@ -5038,7 +5097,7 @@ Definition fct_RestrictedUniformTopology :=
   @weak_topologicalType
     ([pointedType of @fct_RestrictedUniform])
     (fct_uniformType [choiceType of { x : U | x \in A }] V)
-    (@restrict_dep U V A).
+    (@sigL U V A).
 
 Canonical fct_RestrictUniformFilteredType:=
   [filteredType fct_RestrictedUniform of
@@ -5057,12 +5116,12 @@ split=> [[Q [[/= W oW <- /=] [Wf subP]]]|[E [entE subP]]].
   case: (oW _ Wf) => ? [ /= E entE] Esub subW.
   exists E; split=> // h Eh; apply/subP/subW/Esub => /= [[u Au]].
   by apply: Eh => /=; rewrite -inE.
-near=> g; apply: subP => y Ay; rewrite -!(restrict_depE A).
-move: (exist _ _ _); near: g.
-have := (@cvg_image _ _ (restrict_dep A) _ f (nbhs_filter f)
-  (restrict_dep_setT _ )).1 cvg_id [set h | forall y, E (restrict_dep A f y, h y)].
+near=> g; apply: subP => y /mem_set Ay; rewrite -!(sigLE A).
+move: (SigSub _); near: g.
+have := (@cvg_image _ _ (sigL A) _ f (nbhs_filter f)
+  (image_sigL point)).1 cvg_id [set h | forall y, E (sigL A f y, h y)].
 case; first by exists [set fg | forall y, E (fg.1 y, fg.2 y)]; [exists E|].
-move=> B nbhsB rBrE; apply: (filterS _ nbhsB) => g Bg /= [y yA /=].
+move=> B nbhsB rBrE; apply: (filterS _ nbhsB) => g Bg [y yA].
 by move: rBrE; rewrite eqEsubset; case => [+ _]; apply; exists g.
 Unshelve. all: by end_near. Qed.
 
@@ -5186,10 +5245,10 @@ apply: (weakL _ _ (subset_trans sub2 BsubC)).
 - by move => v [/= g] + <-; apply.
 Qed.
 
-Lemma cvg_restrict_dep (A : set U) (f : U -> V) (F : set (set (U -> V))) :
+Lemma cvg_sigL (A : set U) (f : U -> V) (F : set (set (U -> V))) :
     Filter F ->
   {uniform A, F --> f} <->
-  {uniform, restrict_dep A @ F --> restrict_dep A f}.
+  {uniform, sigL A @ F --> sigL A f}.
 Proof.
 move=> FF; split.
 - move=> cvgF P' /= /uniform_nbhs [ E [/= entE EsubP]].
@@ -5199,11 +5258,11 @@ move=> FF; split.
     + by (apply/uniform_nbhs; eexists; split; eauto).
 - move=> cvgF P' /= /uniform_nbhs [ E [/= entE EsubP]].
   apply: (filterS EsubP).
-  move: (cvgF  [set h | (forall y , E (restrict_dep A f y, h y))]) => /=.
+  move: (cvgF  [set h | (forall y , E (sigL A f y, h y))]) => /=.
   set Q := (x in (_ -> x) -> _); move=> W.
   have: Q by apply W, uniform_nbhs; exists E; split => // h + ?; apply.
   rewrite {}/W {}/Q; near_simpl => /= R; apply: (filterS _ R) => h /=.
-  by rewrite forall_sig /restrict_dep /=.
+  by rewrite forall_sig /sigL /=.
 Qed.
 
 Lemma eq_in_close (A : set U) (f g : {uniform` A -> V}) :
@@ -5244,23 +5303,21 @@ Lemma uniform_restrict_cvg
     (F : set (set (U -> V))) (f : U -> V) A : Filter F ->
   {uniform A, F --> f} <-> {uniform, restrict A @ F --> restrict A f}.
 Proof.
-move=> FF; rewrite cvg_restrict_dep; split.
-- rewrite -extend_restrict_dep /uniform_fun.
-  move /(cvg_app (extend_dep (A:=A))) => D.
+move=> FF; rewrite cvg_sigL; split.
+- rewrite -sigLK /uniform_fun.
+  move /(cvg_app valL) => D.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
   apply/uniform_nbhs; exists E; split=> //= h /=.
-  rewrite /restrict_dep => R u _.
-  rewrite /extend_dep/patch; case pselect => //= Au.
-    by set u' := exist _ _ _; rewrite ( _: u = projT1 u')//; apply: R.
-  exact: entourage_refl.
-- move /(@cvg_app _ _ _ _ (restrict_dep A)).
-  rewrite -fmap_comp restrict_dep_restrict => D.
+  rewrite /sigL => R u _; rewrite oinv_set_val.
+  by case: insubP=> /= *; [apply: R|apply: entourage_refl].
+- move /(@cvg_app _ _ _ _ (sigL A)).
+  rewrite -fmap_comp sigL_restrict => D.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
   apply/uniform_nbhs; exists E; split=> //= h /=.
-  rewrite /restrict_dep /uniform_fun => R [u Au] _ /=.
-  by move: (R u (ltac:(by []))); rewrite /patch Au.
+  rewrite /sigL /uniform_fun => R [u Au] _ /=.
+  by have := R u I; rewrite /patch Au.
 Qed.
 
 Lemma cvg_uniformU (f : U -> V) (F : set (set (U -> V))) A B : Filter F ->

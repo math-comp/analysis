@@ -3,8 +3,9 @@ From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum.
 From mathcomp Require Import finmap matrix interval zmodp vector fieldext.
 From mathcomp Require Import falgebra.
-Require Import boolp ereal reals cardinality.
+Require Import boolp mathcomp_extra ereal reals cardinality.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
+Require Import functions.
 
 (******************************************************************************)
 (* This file extends the topological hierarchy with norm-related notions.     *)
@@ -68,7 +69,7 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*        [locally k.-lipschitz_A f] == f is locally k.-lipschitz on A        *)
 (*                                                                            *)
 (*                     is_interval E == the set E is an interval              *)
-(*                           Rhull E == the real interval hull of a set       *)
+(*                           Rhull A == the real interval hull of a set A     *)
 (*                         shift x y == y + x                                 *)
 (*                          center c := shift (- c)                           *)
 (*                                                                            *)
@@ -2142,7 +2143,7 @@ Lemma nearN {R : numFieldType} (a : R) (P : R -> Prop) :
   (\forall x \near (- a), P x) <-> (\forall x \near a, P (- x)).
 Proof.
 split; first exact: opp_continuous.
-case=> [e epos Pe]; exists e;[exact epos | ].
+case=> [e epos Pe]; exists e; first by exact: epos.
 move=> z zclose; rewrite -(opprK z); apply: Pe.
 by move: zclose; rewrite /ball_ /= -opprD normrN opprK.
 Qed.
@@ -2155,14 +2156,14 @@ Proof.
 wlog r0 : r / r > 0 => [hwlog|].
   have [r0| |<-] := ltrgtP 0 r; first exact: hwlog.
     rewrite -oppr_gt0 => /hwlog cNr.
-    have -> : (mule r%:E) = ([eta -%E] \o [eta *%E (- r)%:E]).
+    have -> : mule r%:E = -%E \o ( *%E (- r)%:E).
       by rewrite funeqE => x /=; rewrite EFinN mulNe oppeK.
     by move=> x; apply: (continuous_comp (cNr x)) => y; exact: oppe_continuous.
   by move=> x; rewrite mul0e; apply: cvg_near_cst; near=> y; rewrite mul0e.
 move=> [x| |] /=.
 - apply: (@cvg_trans _ [filter of (r%:E * z%:E)%E @[z --> x]]).
     by apply: near_eq_cvg; near=> y.
-  suff : ((r * z)%:E @[z --> x]) --> (r * x)%:E.
+  suff : (r * z)%:E @[z --> x] --> (r * x)%:E.
     rewrite EFinM; apply: cvg_trans; apply: near_eq_cvg; near=> y.
     by rewrite EFinM.
   exact: (cvg_comp (@scaler_continuous _ _ _ _)).
@@ -2175,6 +2176,25 @@ move=> [x| |] /=.
 Unshelve. all: by end_near. Qed.
 
 End mule_continuous.
+
+Lemma abse_continuous (R : realFieldType) : continuous (@abse R).
+Proof.
+case=> [r|A /= [r [rreal rA]]|A /= [r [rreal rA]]]/=.
+- exact/(cvg_comp (@norm_continuous _ [normedModType R of R^o] r)).
+- by exists r; split => // y ry; apply: rA; rewrite (lt_le_trans ry)// lee_abs.
+- exists (- r)%R; rewrite realN; split => // y; rewrite EFinN -lte_oppr => yr.
+  by apply: rA; rewrite (lt_le_trans yr)// -abseN lee_abs.
+Qed.
+
+Lemma cvg_abse (T : topologicalType) (R : realFieldType) (F : set (set T)) f
+    (a : \bar R) : Filter F ->
+  f @ F --> a -> `|f x|%E @[x --> F] --> `|a|%E.
+Proof. by move=> FF; apply: continuous_cvg => //; apply: abse_continuous. Qed.
+
+Lemma is_cvg_abse (T : topologicalType) (R : realFieldType) (F : set (set T))
+    (f : T -> \bar R) : Filter F ->
+  cvg (f @ F) -> cvg ((abse \o f : T -> \bar R) @ F).
+Proof. move=> FF; have := cvgP _ (cvg_abse FF _); apply. Qed.
 
 Lemma cvg_dist0 {U} {K : numFieldType} {V : normedModType K}
   {F : set (set U)} {FF : Filter F} (f : U -> V) :
@@ -2461,7 +2481,7 @@ Lemma continuousM s t x :
 Proof. by move=> f_cont g_cont; apply: cvgM. Qed.
 
 Lemma continuousV s x : s x != 0 ->
-  {for x, continuous s} -> {for x, continuous (fun x => (s x)^-1)}.
+  {for x, continuous s} -> {for x, continuous (fun x => (s x)^-1%R)}.
 Proof. by move=> ?; apply: cvgV. Qed.
 
 End local_continuity.
@@ -3924,7 +3944,7 @@ by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
 Qed.
 
 Lemma mono_surj_image_segment a b f : a <= b ->
-    monotonous `[a, b] f -> surjective `[a, b] (f @`[a, b]) f ->
+    monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
   f @` `[a, b] = f @`[a, b]%classic.
 Proof.
 move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-];
@@ -3939,7 +3959,7 @@ Proof. by case: ltrP. Qed.
 
 Lemma inc_surj_image_segment a b f : a <= b ->
     {in `[a, b] &, {mono f : x y / x <= y}} ->
-    surjective `[a, b] `[f a, f b] f ->
+    set_surj `[a, b] `[f a, f b] f ->
   f @` `[a, b] = `[f a, f b]%classic.
 Proof.
 move=> leab fle f_surj; have fafb : f a <= f b by rewrite fle ?bound_itvE.
@@ -3948,7 +3968,7 @@ Qed.
 
 Lemma dec_surj_image_segment a b f : a <= b ->
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-    surjective `[a, b] `[f b, f a] f ->
+    set_surj `[a, b] `[f b, f a] f ->
   f @` `[a, b] = `[f b, f a]%classic.
 Proof.
 move=> leab fge f_surj; have fafb : f b <= f a by rewrite fge ?bound_itvE.
@@ -3957,7 +3977,7 @@ Qed.
 
 Lemma inc_surj_image_segmentP a b f : a <= b ->
     {in `[a, b] &, {mono f : x y / x <= y}} ->
-    surjective `[a, b] `[f a, f b] f ->
+    set_surj `[a, b] `[f a, f b] f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f a, f b]).
 Proof.
 move=> /inc_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
@@ -3966,7 +3986,7 @@ Qed.
 
 Lemma dec_surj_image_segmentP a b f : a <= b ->
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-    surjective `[a, b] `[f b, f a] f ->
+    set_surj `[a, b] `[f b, f a] f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f b, f a]).
 Proof.
 move=> /dec_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
@@ -3974,7 +3994,7 @@ by apply/(equivP idP); symmetry.
 Qed.
 
 Lemma mono_surj_image_segmentP a b f : a <= b ->
-    monotonous `[a, b] f -> surjective `[a, b] (f @`[a, b]) f ->
+    monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
 Proof.
 move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.

@@ -16,6 +16,8 @@ Require Import classical_sets posnum topology normedtype landau.
 (* Definitions:                                                               *)
 (*           R ^nat == notation for sequences,                                *)
 (*                     i.e., functions of type nat -> R                       *)
+(*            seqDU F == the sequence F_0, F_1 \ F_0, F_2 \ (F_0 U F_1),...   *)
+(*             seqD F == the sequence F_0, F_1 \ F_0, F_2 \ F_1,...           *)
 (*         harmonic == harmonic sequence                                      *)
 (*       arithmetic == arithmetic sequence                                    *)
 (*        geometric == geometric sequence                                     *)
@@ -101,6 +103,7 @@ Reserved Notation "\sum_ ( i '<oo' ) F"
 Definition sequence R := nat -> R.
 Definition mk_sequence R f : sequence R := f.
 Arguments mk_sequence R f /.
+Notation "[ 'sequence' E ]_ n" := (mk_sequence (fun n => E%E)) : ereal_scope.
 Notation "[ 'sequence' E ]_ n" := (mk_sequence (fun n => E)) : ring_scope.
 Notation "R ^nat" := (sequence R) : type_scope.
 
@@ -164,6 +167,127 @@ Qed.
 
 Local Notation eqolimn := (@eqolim _ _ _ eventually_filter).
 Local Notation eqolimPn := (@eqolimP _ _ _ eventually_filter).
+
+(*********************)
+(* Sequences of sets *)
+(*********************)
+
+Section seqDU.
+Variables (T : Type).
+Implicit Types F : (set T)^nat.
+
+Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
+
+Lemma trivIset_seqDU F : trivIset setT (seqDU F).
+Proof.
+move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
+  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB ->.
+move=> /set0P; apply: contraNeq => _; apply/eqP.
+rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
+by rewrite setCU setIAC !setIA setICl !set0I.
+Qed.
+
+Lemma bigsetU_seqDU F n :
+  \big[setU/set0]_(k < n) F k = \big[setU/set0]_(k < n) seqDU F k.
+Proof.
+elim: n => [|n ih]; first by rewrite 2!big_ord0.
+rewrite !big_ord_recr /= predeqE => t; split=> [[Ft|Fnt]|[Ft|[Fnt Ft]]].
+- by left; rewrite -ih.
+- have [?|?] := pselect ((\big[setU/set0]_(i < n) seqDU F i) t); first by left.
+  by right; split => //; rewrite ih.
+- by left; rewrite ih.
+- by right.
+Qed.
+
+Lemma seqDU_bigcup_eq F : \bigcup_k F k = \bigcup_k seqDU F k.
+Proof.
+rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
+  by rewrite setDE => -[? _]; exists n.
+have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
+suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
+  by exists m => //; split => //; rewrite -bigcup_mkord => -[k kj]; exact: FNmt.
+move: UFnt; rewrite -bigcup_mkord => -[/= k _ Fkt] {Fnt n}.
+have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
+case: k => [|k] in Fkt kn *; first by exists O.
+have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
+move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply (ih t i) => //.
+by rewrite (leq_ltn_trans ik).
+Qed.
+
+End seqDU.
+Hint Resolve trivIset_seqDU : core.
+
+Section seqD.
+Variable T : Type.
+Implicit Types F : (set T) ^nat.
+
+Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
+
+Lemma seqDUE F : nondecreasing_seq F -> seqDU F = seqD F.
+Proof.
+move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
+rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
+by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
+Qed.
+
+Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
+Proof. by move=> ndF; rewrite -seqDUE //; exact: trivIset_seqDU. Qed.
+
+Lemma bigsetU_seqD F n :
+  \big[setU/set0]_(i < n) F i = \big[setU/set0]_(i < n) seqD F i.
+Proof.
+case: n => [|n]; first by rewrite 2!big_ord0.
+elim: n => [|n ih]; first by rewrite !big_ord_recl !big_ord0.
+rewrite big_ord_recr [in RHS]big_ord_recr /= -{}ih predeqE => x; split.
+  move=> [?|?]; first by left.
+  have [?|?] := pselect (F n x); last by right.
+  by left; rewrite big_ord_recr /=; right.
+by move=> [?|[? ?]]; [left | right].
+Qed.
+
+Lemma setU_seqD F : nondecreasing_seq F ->
+  forall n, F n.+1 = F n `|` seqD F n.+1.
+Proof.
+move=> ndF n; rewrite /seqD funeqE => x; rewrite propeqE; split.
+by move=> ?; have [?|?] := pselect (F n x); [left | right].
+by move=> -[|[]//]; move: x; exact/subsetPset/ndF.
+Qed.
+
+Lemma eq_bigsetU_seqD F n : nondecreasing_seq F ->
+  F n = \big[setU/set0]_(i < n.+1) seqD F i.
+Proof.
+move=> ndF; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
+- by move=> ?; rewrite big_ord_recl big_ord0; left.
+- by rewrite big_ord_recl big_ord0 setU0.
+- rewrite (setU_seqD ndF) => -[|/=].
+  by rewrite big_ord_recr /= -ih => Fnx; left.
+  by move=> -[Fn1x Fnx]; rewrite big_ord_recr /=; right.
+- by rewrite big_ord_recr /= -ih => -[|[]//]; move: x; exact/subsetPset/ndF.
+Qed.
+
+Lemma eq_bigcup_seqD F : \bigcup_n F n = \bigcup_n seqD F n.
+Proof.
+rewrite funeqE => x; rewrite propeqE; split.
+  case; elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
+  have [|Fnx] := pselect (F n x); last by exists n.+1.
+  by move=> /(ih I)[m _ Fmx]; exists m.
+case; elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; by [exists O | exists n.+1].
+Qed.
+
+Lemma eq_bigcup_seqD_bigsetU F :
+  \bigcup_n (seqD (fun n => \big[setU/set0]_(i < n.+1) F i) n) = \bigcup_n F n.
+Proof.
+rewrite -(@eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) F i)).
+rewrite eqEsubset; split => [t [i _]|t [i _ Fit]].
+  by rewrite -bigcup_set_cond => -[/= j _ Fjt]; exists j.
+by exists i => //; rewrite big_ord_recr /=; right.
+Qed.
+
+End seqD.
+
+(************************************)
+(* Convergence of patched sequences *)
+(************************************)
 
 Section sequences_patched.
 (* TODO: generalizations to numDomainType *)
@@ -1063,13 +1187,71 @@ Notation "\big [ op / idx ]_ ( i <oo ) F" :=
   (lim (fun n => (\big[ op / idx ]_(i < n) F))) : big_scope.
 
 Notation "\sum_ ( m <= i <oo | P ) F" :=
-  (\big[+%E/0%:E]_(m <= i <oo | P%B) F%E) : ring_scope.
+  (\big[+%E/0%E]_(m <= i <oo | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( m <= i <oo ) F" :=
-  (\big[+%E/0%:E]_(m <= i <oo) F%E) : ring_scope.
+  (\big[+%E/0%E]_(m <= i <oo) F%E) : ereal_scope.
 Notation "\sum_ ( i <oo | P ) F" :=
-  (\big[+%E/0%:E]_(0 <= i <oo | P%B) F%E) : ring_scope.
+  (\big[+%E/0%E]_(0 <= i <oo | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( i <oo ) F" :=
-  (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
+  (\big[+%E/0%E]_(0 <= i <oo) F%E) : ereal_scope.
+
+Section partial_esum.
+Local Open Scope ereal_scope.
+
+Variables (R : numDomainType) (u_ : (\bar R)^nat).
+
+Definition eseries : (\bar R)^nat := [sequence \sum_(0 <= k < n) u_ k]_n.
+Definition etelescope : (\bar R)^nat := [sequence u_ n.+1 - u_ n]_n.
+
+Lemma eseriesEnat : eseries = [sequence \sum_(0 <= k < n) u_ k]_n.
+Proof. by []. Qed.
+
+Lemma eseriesEord : eseries = [sequence \sum_(k < n) u_ k]_n.
+Proof. by rewrite funeqE => n; rewrite /eseries/= big_mkord. Qed.
+
+Lemma eseriesSr n : eseries n.+1 = eseries n + u_ n.
+Proof. by rewrite !eseriesEord/= big_ord_recr. Qed.
+
+Lemma eseriesS n : eseries n.+1 = u_ n + eseries n.
+Proof. by rewrite addeC eseriesSr. Qed.
+
+Lemma eseriesSB (n : nat) :
+  eseries n \is a fin_num -> eseries n.+1 - eseries n = u_ n.
+Proof. by move=> enfin; rewrite eseriesS addeK//=. Qed.
+
+Lemma eseries_addn m n : eseries (n + m)%N = eseries m + \sum_(m <= k < n + m) u_ k.
+Proof. by rewrite eseriesEnat/= -big_cat_nat// leq_addl. Qed.
+
+Lemma sub_eseries_geq m n : (m <= n)%N -> eseries m \is a fin_num ->
+  eseries n - eseries m = \sum_(m <= k < n) u_ k.
+Proof. by move=> /subnK<- emfin; rewrite eseries_addn addeAC subee// add0e. Qed.
+
+Lemma sub_eseries m n : eseries m \is a fin_num -> eseries n \is a fin_num ->
+  eseries n - eseries m = if (m <= n)%N then \sum_(m <= k < n) u_ k
+                        else - \sum_(n <= k < m) u_ k.
+Proof.
+move=> ? ?; have [mn|/ltnW mn] := leqP m n; rewrite -sub_eseries_geq//.
+by rewrite oppeD ?fin_numN// oppeK addeC.
+Qed.
+
+Lemma sub_double_eseries n : eseries n \is a fin_num ->
+  eseries n.*2 - eseries n = \sum_(n <= k < n.*2) u_ k.
+Proof. by move=> enfin; rewrite sub_eseries_geq// -addnn leq_addl. Qed.
+
+End partial_esum.
+
+Arguments eseries {R} u_ n : simpl never.
+Arguments etelescope {R} u_ n : simpl never.
+Notation "[ 'series' E ]_ n" := (eseries [sequence E%E]_n) : ereal_scope.
+
+Section eseries_ops.
+Variable (R : numDomainType).
+Local Open Scope ereal_scope.
+
+Lemma eseriesD (f g : (\bar R)^nat) : eseries (f \+ g) = eseries f \+ eseries g.
+Proof. by rewrite /eseries /= funeqE => n; rewrite big_split. Qed.
+
+End eseries_ops.
 
 Section sequences_ereal_realDomainType.
 Local Open Scope ereal_scope.
@@ -1132,7 +1314,7 @@ by exists n => // m nm; rewrite (@lt_le_trans _ _ (A + 1)%R) // ?ltr_addl// nA.
 Qed.
 
 Lemma dvg_ereal_cvg (R : realFieldType) (u_ : R ^nat) :
-  u_ --> +oo%R -> (fun n => (u_ n)%:E) --> +oo.
+  u_ --> +oo%R -> [sequence (u_ n)%:E]_n --> +oo.
 Proof.
 move/cvgPpinfty_lt => uoo; apply/cvg_ballP => _/posnumP[e]; rewrite near_map.
 have [e1|e1] := lerP 1 e%:num.
@@ -1531,6 +1713,10 @@ move: a b => [a| |] [b| |] // _.
 - exact: ereal_cvgD_ninfty_ninfty.
 Unshelve. all: by end_near. Qed.
 
+Lemma ereal_cvgB (R : realFieldType) (f g : (\bar R)^nat) a b :
+  a +? - b -> f --> a -> g --> b -> f \- g --> a - b.
+Proof. by move=> ab fa gb; apply: ereal_cvgD => //; exact: ereal_cvgN. Qed.
+
 Lemma ereal_is_cvgD (R : realFieldType) (u v : (\bar R)^nat) :
   lim u +? lim v -> cvg u -> cvg v -> cvg (u \+ v).
 Proof.
@@ -1539,10 +1725,13 @@ by apply: ereal_cvgD => //; rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk).
 Qed.
 
 Lemma ereal_cvg_sub0 (R : realFieldType) (f : (\bar R)^nat) (k : \bar R) :
-  k \is a fin_num -> (fun x => f x - k) --> 0 -> f --> k.
+  k \is a fin_num -> (fun x => f x - k) --> 0 <-> f --> k.
 Proof.
-move=> kfin /ereal_cvgD-/(_ (cst k) _ isT (cvg_cst _)).
-by rewrite add0e; under eq_fun => x do rewrite subeK//.
+move=> kfin; split.
+  move=> /ereal_cvgD-/(_ (cst k) _ isT (cvg_cst _)).
+  by rewrite add0e; under eq_fun => x do rewrite subeK//.
+move: k kfin => [k _ fk| |]//; rewrite -(@subee _ k%:E)//.
+by apply: ereal_cvgB => //; exact: cvg_cst.
 Qed.
 
 Lemma ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
@@ -1724,5 +1913,16 @@ have {}Mu : forall x, M%:E > u x by move=> x; rewrite ltNge; apply/negP.
 have : lim u <= M%:E by apply ereal_lim_le => //; near=> m; apply/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
+
+Lemma lim_mkord (R : realFieldType) (P : {pred nat}) (f : (\bar R)^nat) :
+  lim (fun n => \sum_(k < n | P k) f k)%E = \sum_(k <oo | P k) f k.
+Proof.
+rewrite (_ : (fun n => _) = (fun n => \sum_(0 <= k < n | P k) f k)%E) //.
+by rewrite funeqE => k; rewrite big_mkord.
+Qed.
+
+Lemma ereal_pseries_mkcond [R : realFieldType] [P : pred nat] (f : nat -> \bar R) :
+  \sum_(i <oo | P i) f i = \sum_(i <oo) if P i then f i else 0.
+Proof. by congr (lim _); apply: eq_fun => n /=; apply: big_mkcond. Qed.
 
 End sequences_ereal.
