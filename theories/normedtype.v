@@ -2306,6 +2306,42 @@ Proof. by have := cvgP _ (cvg_norm _); apply. Qed.
 
 End cvg_composition.
 
+Section cvg_composition_ereal.
+Context (R : realFieldType) {T : topologicalType}.
+Context (F : set (set T)) {FF : Filter F}.
+Local Open Scope ereal_scope.
+Implicit Types (f : T -> \bar R) (g : T -> R) (x y : \bar R) (r : R).
+
+Lemma ereal_cvgN f x : f @ F --> x -> (-%E \o f @ F) --> - x.
+Proof. by move=> ?; apply: continuous_cvg => //; exact: oppe_continuous. Qed.
+
+Lemma ereal_is_cvgN f : cvg (f @ F) -> cvg ((-%E \o f) @ F).
+Proof. by move=> /cvg_ex[l fl]; apply: (cvgP (- l)); exact: ereal_cvgN. Qed.
+
+Lemma ereal_cvgrM f x y : y \is a fin_num ->
+  f @ F --> x -> (fun n => y * f n) @ F --> y * x.
+Proof. by move: y => [r| |]// _ /cvg_comp; apply; exact: mule_continuous. Qed.
+
+Lemma ereal_is_cvgrM f y : y \is a fin_num ->
+  cvg (f @ F) -> cvg ((fun n => y * f n) @ F).
+Proof.
+by move=> yfn /cvg_ex[l fl]; apply: (cvgP (y * l)); exact: ereal_cvgrM.
+Qed.
+
+Lemma ereal_cvgMr f x y : y \is a fin_num ->
+  f @ F --> x -> (fun n => f n * y) @ F --> x * y.
+Proof.
+by move=> ? ?; rewrite muleC; under eq_fun do rewrite muleC; exact: ereal_cvgrM.
+Qed.
+
+Lemma ereal_is_cvgMr f y : y \is a fin_num ->
+  cvg (f @ F) -> cvg ((fun n => f n * y) @ F).
+Proof.
+by move=> yfn /cvg_ex[l fl]; apply: (cvgP (l * y)); exact: ereal_cvgMr.
+Qed.
+
+End cvg_composition_ereal.
+
 Section cvg_composition_field.
 
 Context {K : numFieldType}  {T : topologicalType}.
@@ -3668,6 +3704,29 @@ Qed.
 End ereal_is_hausdorff.
 
 Hint Extern 0 (hausdorff _) => solve[apply: ereal_hausdorff] : core.
+
+Section limit_composition_ereal.
+
+Context {R : realFieldType} {T : topologicalType}.
+Context (F : set (set T)) {FF : ProperFilter F}.
+Local Open Scope ereal_scope.
+Implicit Types (f : T -> \bar R) (g : T -> R) (x : \bar R) (r : R).
+
+Lemma ereal_limrM f y : y \is a fin_num -> cvg (f @ F) ->
+  lim ((fun n => y * f n) @ F) = y * lim (f @ F).
+Proof. by move=> yfn cf; apply/cvg_lim => //; exact: ereal_cvgrM. Qed.
+
+Lemma ereal_limMr f y : y \is a fin_num -> cvg (f @ F) ->
+  lim ((fun n => f n * y) @ F) = lim (f @ F) * y.
+Proof. by move=> yfn cf; apply/cvg_lim => //; apply: ereal_cvgMr. Qed.
+
+Lemma ereal_limN f : cvg (f @ F) -> lim ((-%E \o f) @ F) = - lim (f @ F).
+Proof.
+move=> cf; rewrite -mulN1e -ereal_limrM //.
+by rewrite [in RHS](_ : (fun _ => _) = (-%E \o f))// funeqE=> t; rewrite mulN1e.
+Qed.
+
+End limit_composition_ereal.
 
 (** * Some limits on real functions *)
 
