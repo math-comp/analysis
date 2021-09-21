@@ -557,7 +557,6 @@ End measure_is_additive_measure.
 
 Coercion measure_additive_measure : Measure.map >-> AdditiveMeasure.map.
 
-(* measure is monotone *)
 Lemma le_measure (R : realFieldType) (T : ringOfSetsType)
   (mu : {additive_measure set T -> \bar R}) :
   {in [set x | measurable x] &, {homo mu : A B / A `<=` B >-> A <= B}}.
