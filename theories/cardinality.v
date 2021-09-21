@@ -2,6 +2,7 @@
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice order.
 From mathcomp Require Import ssrnat seq fintype bigop div prime path finmap.
+From mathcomp Require Import ssralg ssrnum ssrint rat.
 Require Import boolp classical_sets.
 
 (******************************************************************************)
@@ -9,7 +10,8 @@ Require Import boolp classical_sets.
 (*                                                                            *)
 (* This file provides an account of cardinality properties of classical sets. *)
 (* This includes standard results of naive set theory such as the Pigeon Hole *)
-(* principle or the Cantor-Bernstein Theorem.                                 *)
+(* principle, the Cantor-Bernstein Theorem, or lemmas about the cardinal of   *)
+(* nat, nat * nat, and rat.                                                   *)
 (*                                                                            *)
 (* The contents of this file should not be considered as definitive because   *)
 (* it establishes too little connections with MathComp: finite sets are       *)
@@ -43,10 +45,9 @@ Require Import boolp classical_sets.
 (*                        set S, i.e., S = e @` setT                          *)
 (*  enum_wo_rep nfA Ae == with Ae : enumeration A e, nfA : ~ set_finite A     *)
 (*                        enumeration without repetition of A                 *)
-(*        infinite_nat == nat is not finite                                   *)
-(*   infinite_prod_nat == nat * nat is not finite                             *)
-(*  countable_prod_nat == nat * nat is countable                              *)
-(* countably_infinite_prod_nat == nat * nat and nat have the same cardinal    *)
+(*         pair_of_rat == injection from rat to nat * nat                     *)
+(*          nat_of_rat == injection from rat to nat                           *)
+(*          rat_of_nat == cancel function for nat_of_rat                      *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -57,7 +58,7 @@ Unset Printing Implicit Defensive.
 Reserved Notation "'`I_' n" (at level 8, n at level 2, format "'`I_' n").
 Reserved Notation "A '#<=' B" (at level 79, format "A  '#<='  B").
 
-Import Order.TTheory.
+Import Order.TTheory GRing.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -100,13 +101,13 @@ Proof. by rewrite eq_set0_nil. Qed.
 (* /TODO: move *)
 
 Lemma image_nat_maximum n (f : nat -> nat) :
-  exists i, i <= n /\ forall j, j <= n -> f j <= f i.
+  (exists i, i <= n /\ forall j, j <= n -> f j <= f i)%N.
 Proof.
-elim: n => [|n [j [jn1 nfj]]]; first by exists 0; split => //; case.
+elim: n => [|n [j [jn1 nfj]]]; first by exists 0%N; split => //; case.
 have [fn1fj|fjfn1] := leP (f n.+1) (f j).
   exists j; split=> [|i]; first by rewrite (leq_trans jn1).
   by rewrite leq_eqVlt => /orP[/eqP -> //|]; rewrite ltnS; apply nfj.
-have fmax : forall i, i <= n -> f n.+1 > f j /\ f j >= f i.
+have fmax : (forall i, i <= n -> f n.+1 > f j /\ f j >= f i)%N.
   by move=> i ni; split => //; exact: nfj ni.
 exists n.+1; split => // k; rewrite leq_eqVlt ltnS => /orP[/eqP-> //|].
 by move/fmax => [_ /leq_trans]; apply; exact/ltnW.
@@ -120,7 +121,7 @@ set f := nth a (enum_fset A).
 have [i [iA H]] := image_nat_maximum (#|` A|.-1)%fset f.
 exists (f i); split => [|j Aj].
   by rewrite /f mem_nth // -(@prednK #|` A|) ?ltnS // cardfs_gt0.
-have [k [kA <-]] : exists k, k < #|` A| /\ f k = j.
+have [k [kA <-]] : (exists k, k < #|` A| /\ f k = j)%N.
   by exists (index j A); rewrite index_mem /f nth_index.
 by rewrite H //; move: kA; rewrite -(@prednK #|` A|) // cardfs_gt0.
 Qed.
@@ -221,7 +222,7 @@ Qed.
 
 End set_bijective_lemmas.
 
-Lemma set_bijective_comp T1 T2 T3 (A : set T1) (B : set T2) (C : set T3) f g:
+Lemma set_bijective_comp T1 T2 T3 (A : set T1) (B : set T2) (C : set T3) f g :
   set_bijective A B f -> set_bijective B C g -> set_bijective A C (g \o f).
 Proof.
 move=> [fi fAB fs] [gi gBC gs]; split.
@@ -263,15 +264,15 @@ Qed.
 
 End inverse_lemmas.
 
-Notation "'`I_' n" := [set k | k < n].
+Notation "'`I_' n" := [set k | (k < n)%N].
 
-Lemma II0 : `I_O = set0. Proof. by rewrite predeqE. Qed.
+Lemma II0 : `I_0 = set0. Proof. by rewrite predeqE. Qed.
 
-Lemma II1 : `I_1 = [set 0].
+Lemma II1 : `I_1 = [set 0%N].
 Proof. by rewrite predeqE; case. Qed.
 
-Lemma IIn_eq0 n : `I_n = set0 -> n = 0.
-Proof. by case: n => // n; rewrite predeqE; case/(_ O); case. Qed.
+Lemma IIn_eq0 n : `I_n = set0 -> n = 0%N.
+Proof. by case: n => // n; rewrite predeqE; case/(_ 0%N); case. Qed.
 
 Lemma II_recr n : `I_n.+1 = `I_n `|` [set n].
 Proof.
@@ -301,18 +302,18 @@ move=> bij_f; split.
 Qed.
 
 Lemma pigeonhole m n (f : nat -> nat) : {in `I_m &, injective f} ->
-  f @` `I_m `<=` `I_n -> m <= n.
+  f @` `I_m `<=` `I_n -> (m <= n)%N.
 Proof.
 elim: n m f => [n f fi|n ih m f fi fmn1].
   by rewrite II0 subset0 => /image_set0_set0 /IIn_eq0 => ->.
-have : (forall i, i < m -> f i < n) \/ (exists i, i < m /\ n = f i).
-  have [|/existsNP] := pselect (forall i, i < m -> f i < n); first by left.
+have : (forall i, i < m -> f i < n)%N \/ (exists i, i < m /\ n = f i)%N.
+  have [|/existsNP] := pselect (forall i, i < m -> f i < n)%N; first by left.
   move=> [x] /not_implyP[xm /negP fxn]; right; exists x; split => //.
   by apply/eqP; rewrite eqn_leq leqNgt fxn /= -ltnS fmn1 //; exists x.
 move=> [mn|[i0 [i0m fi0]]].
   have fmn : f @` `I_ m `<=` `I_n by move=> i [j] jm <-{i}; exact: mn.
   by move/ih : fi => /(_ fmn); move/leq_trans; apply.
-pose g i := if i < i0 then i else i.+1.
+pose g i := if (i < i0)%N then i else i.+1.
 have inj_g : {in `I_m.-1 &, injective g}.
   move=> i j; rewrite !in_setE /g => mi mj; have [ii0|ii0] := ltnP i i0.
     by have [//|/(leq_trans ii0) /ltnW + ij] := ltnP j i0; rewrite ij ltnn.
@@ -322,13 +323,13 @@ have gm1m : g @` `I_m.-1 `<=` `I_m.
   by have [/ltn_trans|_] := ltnP j i0; [exact|rewrite /mkset -ltn_predRL].
 have f1m1n : (f \o g) @` `I_m.-1 `<=` `I_n.
   move=> _ [y] ym <-; rewrite /= /g; have [yi0|i0y]:= ltnP y i0.
-  - have : f y < n.+1.
+  - have : (f y < n.+1)%N.
       move: fmn1; rewrite /mkset; apply.
       by exists y; rewrite // (leq_trans _ (leq_pred _)).
     rewrite ltnS leq_eqVlt => /orP[|//]; rewrite fi0 => /eqP /fi.
     rewrite /mkset => yi0E.
     by move: yi0; rewrite yi0E ?ltnn// in_setE // (leq_trans ym) // leq_pred.
-  - have : f y.+1 < n.+1.
+  - have : (f y.+1 < n.+1)%N.
       by move: fmn1; rewrite /mkset; apply; exists y.+1; rewrite // -ltn_predRL.
     rewrite ltnS leq_eqVlt => /orP[|//]; rewrite fi0 => /eqP /fi.
     rewrite /mkset => yi0; move: i0y.
@@ -354,9 +355,9 @@ pose X := \bigcup_i (A_ i).
 pose Y := A `\` X.
 have Ygb : Y `<=` g @` B.
   have -> : Y = (g @` B) `&` (A `\` \bigcup_i (A_ i.+1)).
-    rewrite /Y [X in _ `\` X](_ : _ = A_ O `|` \bigcup_i (A_ i.+1)); last first.
+    rewrite /Y [X in _ `\` X](_ : _ = A_ 0%N `|` \bigcup_i (A_ i.+1)); last first.
       by rewrite /X (bigcup_splitn 1) big_ord_recl big_ord0 setU0.
-    by rewrite setDUr [A_ O]/= setDD; move/setIidPl : gBA; rewrite setIC => ->.
+    by rewrite setDUr [A_ 0%N]/= setDD; move/setIidPl : gBA; rewrite setIC => ->.
   by apply subIset; left.
 exists (fun t => if pselect (X t) is left _ then f t else (inverse point B g) t).
 split => [a b | u [t At <-{u}] | b Bb].
@@ -375,12 +376,12 @@ split => [a b | u [t At <-{u}] | b Bb].
 - case: pselect => [[i _ Ait]|Xt]; first by apply fAB; exists t.
   have [u Bu <-] : (g @` B) t.
     have {}Xt : forall i, (~` A_ i) t by move=> i ?; apply Xt; exists i.
-    by have := Xt O; rewrite /A_ setDE setCI setCK => -[|].
+    by have /= := Xt 0%N; rewrite /A_ setDE setCI setCK => -[|].
   by rewrite injective_left_inverse // in_setE.
 - have [Xgb|Xgb] := pselect (X (g b)); last first.
     exists (g b); split; first by apply gBA; exists b.
     by case: pselect => // _; rewrite injective_left_inverse // in_setE.
-  have A0gb : ~ (A_ O) (g b) by move=> [Agb]; apply; exists b.
+  have A0gb : ~ (A_ 0%N) (g b) by move=> [Agb]; apply; exists b.
   have [i Aigb] : exists i, (A_ i) (g b) by case: Xgb => i _ ?; exists i.
   case: i Aigb A0gb => [//|i] Aigb A0gb.
   have [c [Aic gbgfc]] : exists c, (A_ i) c /\ g b = g (f c).
@@ -438,7 +439,7 @@ case=> f [fi]; rewrite subset0 => fA0; rewrite predeqE => t; split => // At.
 by move: fA0; rewrite predeqE => /(_ (f t)) => -[fA0 _]; apply: fA0; exists t.
 Qed.
 
-Lemma card_le_II n m : n <= m <-> `I_n #<= `I_m.
+Lemma card_le_II n m : (n <= m)%N <-> `I_n #<= `I_m.
 Proof.
 split=> [nm|[f [gi]]]; last exact: pigeonhole.
 by exists id; split => //; rewrite image_id => t; move/leq_trans; apply.
@@ -470,7 +471,7 @@ Proof.
 split=> [[[f [finj fAB] [g [ginj fBA]]]]|[f [fi fAB fs]]].
   exact: (Cantor_Bernstein finj fAB ginj).
 split; first by exists f.
-have [/eqP ->|/set0P B0] := boolP (B == set0); first by exact: card_le0x.
+have [->|/set0P B0] := eqVneq B set0; first by exact: card_le0x.
 exact: (@surj_card_le _ _ _ _ f).
 Qed.
 
@@ -510,7 +511,7 @@ Proof. by move=> ABf; apply/card_eqP/card_eq_sym/card_eqP; exists f. Qed.
 Definition countable T (A : set T) := A #<= @setT nat.
 
 Lemma countable0 T : countable (@set0 T).
-Proof. by exists (fun=> O); split => // x y; rewrite in_setE. Qed.
+Proof. by exists (fun=> 0%N); split => // x y; rewrite in_setE. Qed.
 
 Lemma countable_injective T (A : set T) :
   countable A <-> exists f : T -> nat, {in A &, injective f}.
@@ -568,7 +569,7 @@ Section set_finite_bijection.
 Local Lemma set_bijective_U1 (T : pointedType) n (f g : nat -> T) (A : set T) :
   set_bijective `I_n.+1 A f ->
   set_bijective `I_n (A `\ f n) g ->
-  set_bijective `I_n.+1 A (fun m => if m < n then g m
+  set_bijective `I_n.+1 A (fun m => if (m < n)%N then g m
                                  else if m == n then f n
                                  else point).
 Proof.
@@ -606,8 +607,8 @@ Local Lemma set_bijective_cyclic_shift (T : pointedType) n (f g : nat -> T)
     (A : set T) :
   set_bijective `I_n.+1 A f ->
   set_bijective `I_n (A `\ f n) g ->
-  set_bijective `I_n.+1 A (fun m => if m == 0 then f n
-                                 else if m < n.+1 then g m.-1
+  set_bijective `I_n.+1 A (fun m => if m == 0%N then f n
+                                 else if (m < n.+1)%N then g m.-1
                                  else point).
 Proof.
 move=> bij_f bij_g; split=> [i j|t [i in2]|t At].
@@ -631,7 +632,7 @@ move=> bij_f bij_g; split=> [i j|t [i in2]|t At].
   rewrite in2 => <-{t}.
   by apply (sub_of_bij bij_g); exists i.-1 => //; rewrite /mkset prednK ?lt0n.
 - have [i []] := (sur_of_bij bij_f) _ At.
-  rewrite /mkset leq_eqVlt => /orP[/eqP [->{i} tgn1]|]; first by exists 0.
+  rewrite /mkset leq_eqVlt => /orP[/eqP [->{i} tgn1]|]; first by exists 0%N.
   rewrite ltnS => ni tfi.
   have : (A `\ f n) (f i).
     split.
@@ -658,7 +659,7 @@ Qed.
 Lemma set_finite_bijective (T : pointedType) (A : set T) n S : A !=set0 ->
   A #= `I_n -> S `<=` A ->
   exists f, set_bijective `I_n A f /\
-    exists k, k <= n /\ (f @^-1` S) `&` `I_n = `I_k.
+    exists k, (k <= n)%N /\ (f @^-1` S) `&` `I_n = `I_k.
 Proof.
 case: n S => [S /set0P A0 Ac0 _|n S].
   suff : A #= @set0 T by move/card_eq0/eqP; rewrite (negbTE A0).
@@ -680,14 +681,14 @@ move: n A S; elim=> [A S [t At] A1 SA|n ih A S A0 /card_eq_sym].
   exists (fun=> t); split; first split.
     - by move=> x y; rewrite !in_setE; move: x y => [|//] [|//].
     - by move=> x [i _] <-.
-    - by move=> u ->; exists 0.
+    - by move=> u ->; exists 0%N.
   have [S0|S1] := subset_set1 SA.
-  - by exists 0; split => //; rewrite predeqE => i; rewrite S0 set0I.
-  - by exists 1; split => //; rewrite predeqE S1 => i; split => //= -[].
+  - by exists 0%N; split => //; rewrite predeqE => i; rewrite S0 /= set0I.
+  - by exists 1%N; split => //; rewrite predeqE S1 => i; split => //= -[].
 move => /card_eqP [g bij_g] SA.
 have [S0|] := pselect (S !=set0); last first.
   move/set0P/negP; rewrite negbK => /eqP ->.
-  exists g; split => //; exists O; split => //.
+  exists g; split => //; exists 0%N; split => //.
   by rewrite preimage_set0 set0I II0.
 have bij_h : set_bijective `I_n.+1 (A `\ g n.+1) _ := set_bijective_D1 bij_g.
 pose A' := A `\ g n.+1.
@@ -720,7 +721,7 @@ have [S'0|] := pselect (S' !=set0); last first.
     move: S'0; rewrite setD_eq0.
     by move/(@subset_set1 _ S) => [/eqP/negPn/negP/set0P //|].
   eexists; split; first exact: (set_bijective_cyclic_shift_simple bij_g).
-  exists 1; split => //.
+  exists 1%N; split => //.
   rewrite predeqE => -[//|i /=]; split=> // -[] /=; rewrite /set1 => gign1.
   rewrite ltnS => in1.
   move/(inj_of_bij bij_g) : gign1; rewrite !in_setE.
@@ -731,10 +732,10 @@ have [h' [bij_h' [k [kn h'S]]]] := ih _ _ A'0 A'n S'A'.
 have bij_f : set_bijective `I_n.+2 A _ := set_bijective_cyclic_shift bij_g bij_h'.
 set f := (X in set_bijective _ _ X) in bij_f.
 have fh' : (f @^-1` S) `&` `I_n.+2 =
-    ([set 0] `|` [set m | (h' @^-1` S') m.-1]) `&` `I_n.+2.
+    ([set 0%N] `|` [set m | (h' @^-1` S') m.-1]) `&` `I_n.+2.
   rewrite predeqE => i; split.
     move=> [fSi in1]; split => //.
-    have [/eqP i0|i0] := boolP (i == 0); [by rewrite i0; left | right].
+    have [->|i0] := eqVneq i 0%N; [by left | right].
     move: fSi; rewrite /preimage /mkset /f (negbTE i0) in1 // => Sh'i1.
     split => //; rewrite /set1 => h'i1gn1.
     suff  : A' (g n.+1) by case; rewrite /set1 /mkset.
@@ -743,27 +744,27 @@ have fh' : (f @^-1` S) `&` `I_n.+2 =
   move=> [[|]]; first by rewrite /set1 => ->{i} _.
   rewrite /preimage => -[Sh'i1]; rewrite /set1 => h'i1gn1 in1.
   by split => //; rewrite /f /mkset; case: ifPn => i0 //; rewrite in1.
-have h'k : ([set 0] `|` [set m | (h' @^-1` S') m.-1]) `&` `I_n.+2 = `I_k.+1.
+have h'k : ([set 0%N] `|` [set m | (h' @^-1` S') m.-1]) `&` `I_n.+2 = `I_k.+1.
   rewrite predeqE => i; split => [[]|].
     case; first by rewrite /set1 => ->.
-    have [/eqP ->|i0] := boolP (i == 0); first by [].
+    have [->//|i0] := eqVneq i 0%N.
     rewrite /preimage => S'h'i1 in2.
     move: h'S; rewrite predeqE.
     move/(_ i.-1) => [H _].
-    have /H : (h' @^-1` S' `&` (fun k => k < n.+1)) i.-1.
+    have /H : (h' @^-1` S' `&` (fun k => (k < n.+1)%N)) i.-1.
       by split => //; rewrite -ltnS (leq_trans _ in2) // ltnS prednK // lt0n.
     by rewrite /mkset ltnS; apply leq_trans; rewrite prednK // lt0n.
-  have [/eqP k0|k0] := boolP (k == 0).
+  have [k0|k0] := eqVneq k 0%N.
     by rewrite /mkset k0 ltnS leqn0 => /eqP ->; split => //; left.
   rewrite /mkset ltnS leq_eqVlt => /orP[/eqP ->{i}|ik].
     split => //; right; move: h'S; rewrite predeqE => /(_ k.-1) [_].
     by rewrite /mkset ltn_predL lt0n => /(_ k0) [].
-  have [/eqP ->|i0] := boolP (i == 0); first by split => //; left.
+  have [->|i0] := eqVneq i 0%N; first by split => //; left.
   split; last by rewrite (ltn_trans ik).
   right; rewrite /preimage; move: h'S.
   rewrite predeqE.
   move/(_ i.-1) => [_] H.
-  suff : i.-1 < k by move/H; case.
+  suff : (i.-1 < k)%N by move/H; case.
   by rewrite (leq_trans _ ik) // ltnS leq_pred.
 by exists f; split => //; exists k.+1; split => //; rewrite -h'k fh'.
 Qed.
@@ -774,7 +775,7 @@ Local Corollary subset_set_finite_card_le (T : pointedType) (A B : set T) :
   A `<=` B -> set_finite B -> set_finite A /\ A #<= B.
 Proof.
 move=> AB /set_finiteP[n Bn].
-have [/eqP B0|/set0P B0] := boolP (B == set0).
+have [B0|/set0P B0] := eqVneq B set0.
   move: AB; rewrite B0 subset0 => ->.
   by split; [exact: set_finite0|exact: card_le0x].
 have [f [bij_f [k [kn fAk]]]] := set_finite_bijective B0 Bn AB.
@@ -894,25 +895,25 @@ Lemma set_finite_inter_set0_union (T : pointedType) (A B : set T) :
 Proof.
 move=> /set_finiteP[n /card_eq_sym/card_eqP[f bij_f]].
 move=> /set_finiteP[m /card_eq_sym/card_eqP[g bij_g]] AB.
-apply/set_finiteP; exists (n + m); apply/card_eq_sym/card_eqP.
-pose h := fun k => if k < n then f k
+apply/set_finiteP; exists (n + m)%N; apply/card_eq_sym/card_eqP.
+pose h := (fun k => if k < n then f k
           else if k < n + m then g (k - n)
-          else point.
+          else point)%N.
 exists h; split.
 - move=> j k; rewrite 2!in_setE => jnm knm hjhk.
   have /orP[/andP[jn kn]|/andP[/andP[nj jnm'] /andP[nk knm']]] :
-      (((j < n) && (k < n)) || ((n <= j < n + m) && (n <= k < n + m))).
+      (((j < n) && (k < n)) || ((n <= j < n + m) && (n <= k < n + m)))%N.
   - move: hjhk; rewrite /h jnm knm; have [jn|jn] /= := ltnP j n.
       have Afj : A (f j) by apply (sub_of_bij bij_f); exists j.
       have [//|kn /= fjgkn] := ltnP k n.
       have Bfj : B (f j).
-        apply (sub_of_bij bij_g); exists (k - n) => //.
+        apply (sub_of_bij bij_g); exists (k - n)%N => //.
         by rewrite /mkset ltn_subLR // leqNgt.
       by move: AB; rewrite predeqE => /(_ (f j)) [] /(_ (conj Afj Bfj)).
     have [kn gjnfk /=|kn //] := ltnP k n.
     have Afk : A (f k) by apply (sub_of_bij bij_f); exists k.
     have Bfk : B (f k).
-      apply (sub_of_bij bij_g); rewrite -gjnfk; exists (j - n) => //.
+      apply (sub_of_bij bij_g); rewrite -gjnfk; exists (j - n)%N => //.
       by rewrite /mkset ltn_subLR.
     by move: AB; rewrite predeqE => /(_ (f k)) [] /(_ (conj Afk Bfk)).
   move: hjhk; rewrite /h jn kn.
@@ -923,13 +924,14 @@ exists h; split.
 - move=> t [/= i inm]; rewrite /h inm.
   have [ni <-{t}|ni <-{t}] := ltnP i n.
     by left; apply (sub_of_bij bij_f); exists i.
-  right; apply (sub_of_bij bij_g); exists (i - n) => //.
+  right; apply (sub_of_bij bij_g); exists (i - n)%N => //.
   by rewrite /mkset ltn_subLR // leqNgt.
 - move=> t [At|Bt].
     have [i [ni tfi]] := (sur_of_bij bij_f) _ At.
     by exists i; rewrite /mkset (leq_trans ni) ?leq_addr// /h ni.
   have [i [mi tgi]] := (sur_of_bij bij_g) _ Bt.
-  by exists (n + i); rewrite /mkset /h ltn_add2l mi ltnNge leq_addr addnC addnK.
+  exists (n + i)%N; rewrite /mkset /h ltn_add2l mi ltnNge leq_addr addnC.
+  by rewrite addnK.
 Qed.
 
 Lemma set_finite_inter (T : pointedType) (A B : set T) :
@@ -967,13 +969,13 @@ Definition min_of_D_seq := fix f n :=
   if n is n.+1 then rcons (f n) (min_of_D (f n))
   else [:: min_of_D [::]].
 
-Definition infsub_enum n := last O (min_of_D_seq n).
+Definition infsub_enum n := last 0%N (min_of_D_seq n).
 
 Lemma min_of_D_seqE n :
   min_of_D_seq n = [seq infsub_enum (nat_of_ord i) | i in 'I_n.+1].
 Proof.
 elim : n => [|n ih].
-  by rewrite /= [RHS](_ : _ = [:: infsub_enum O]) // /image_mem enum_ordS enum0.
+  by rewrite /= [RHS](_ : _ = [:: infsub_enum 0%N]) // /image_mem enum_ordS enum0.
 rewrite /= [RHS](_ : _ =
     rcons [seq infsub_enum i | i : 'I_n.+1] (infsub_enum n.+1)); last first.
   rewrite {1}/image_mem [in LHS]enum_recr map_rcons /=; congr (rcons _ _).
@@ -981,7 +983,7 @@ rewrite /= [RHS](_ : _ =
 by rewrite -ih /infsub_enum /= last_rcons.
 Qed.
 
-Lemma increasing_infsub_enum n : infsub_enum n < infsub_enum n.+1.
+Lemma increasing_infsub_enum n : (infsub_enum n < infsub_enum n.+1)%N.
 Proof.
 case : n => [|n]; rewrite /infsub_enum /= 2?last_rcons {2}/min_of_D;
   case: ex_minnP => m; rewrite in_setE => -[Am].
@@ -1008,7 +1010,7 @@ Qed.
 Lemma injective_infsub_enum : injective infsub_enum.
 Proof.
 move=> x y; apply: contraPP.
-suff incr_infsub_enum : {homo infsub_enum : a b / a < b}.
+suff incr_infsub_enum : {homo infsub_enum : a b / (a < b)%N}.
   move/eqP; rewrite neq_ltn => /orP[xy|yx]; apply/eqP.
     by rewrite ltn_eqF // incr_infsub_enum.
   by rewrite eq_sym ltn_eqF // incr_infsub_enum.
@@ -1030,17 +1032,17 @@ move=> A0.
 pose e := infsub_enum; apply/card_eq_sym/card_eqP => /=.
 exists e; split; [by move=> x y _ _ /injective_infsub_enum |
   exact: subset_infsub_enum | move=> a Aa].
-have : a <= e a.
-  suff : forall n, n <= e n by [].
+have : (a <= e a)%N.
+  suff : forall n, (n <= e n)%N by [].
   by elim=> // n ih; rewrite (leq_ltn_trans ih) // increasing_infsub_enum.
 rewrite leq_eqVlt => /orP[/eqP|] aea; first by exists a.
-have amine : a < min_of_D [seq e (nat_of_ord i) | i in 'I_a.+1].
+have amine : (a < min_of_D [seq e (nat_of_ord i) | i in 'I_a.+1])%N.
   have <- : e a.+1 = min_of_D [seq e (nat_of_ord i) | i in 'I_a.+1].
     by rewrite /e /infsub_enum /= last_rcons min_of_D_seqE.
   by rewrite (ltn_trans aea) // increasing_infsub_enum.
 have [|/negP aseqf] := boolP (a \in [seq e (nat_of_ord i) | i in 'I_a.+1]).
   by case/mapP => i _ afi; exists i.
-suff : min_of_D [seq e (nat_of_ord i) | i in 'I_a.+1] <= a.
+suff : (min_of_D [seq e (nat_of_ord i) | i in 'I_a.+1] <= a)%N.
   by rewrite leqNgt amine.
 by rewrite /min_of_D; case: ex_minnP => m; rewrite inE => _; apply; rewrite inE.
 Qed.
@@ -1053,7 +1055,9 @@ Lemma enumeration_id : enumeration setT id.
 Proof. by rewrite /enumeration image_id. Qed.
 
 Lemma enumeration_set0 T (e : nat -> T) : ~ enumeration set0 e.
-Proof. by rewrite /enumeration predeqE => /(_ (e O)) => -[_]; apply; exists O. Qed.
+Proof.
+by rewrite /enumeration predeqE => /(_ (e 0%N)) => -[_]; apply; exists 0%N.
+Qed.
 
 Section enumeration_wo_repetitions.
 Variable (T : pointedType) (A : set T).
@@ -1085,7 +1089,7 @@ Lemma min_of_e_seqE n :
   min_of_e_seq n = [seq enum_wo_rep (nat_of_ord i) | i in 'I_n.+1].
 Proof.
 elim : n => [|n ih].
-  by rewrite /= [RHS](_ : _ = [:: enum_wo_rep O]) // /image_mem enum_ordS enum0.
+  by rewrite [RHS](_ : _ = [:: enum_wo_rep 0%N]) // /image_mem enum_ordS enum0.
 rewrite /= [RHS](_ : _ =
     rcons [seq enum_wo_rep i | i : 'I_n.+1] (enum_wo_rep n.+1)); last first.
   rewrite {1}/image_mem [in LHS]enum_recr map_rcons /=; congr (rcons _ _).
@@ -1100,7 +1104,7 @@ Proof. by rewrite /smallest_of_e min_of_e_seqE; case: ex_minnP. Qed.
 Lemma injective_enum_wo_rep : injective enum_wo_rep.
 Proof.
 move=> /= i j; apply: contraPP => /eqP.
-wlog : i j / i < j.
+wlog : i j / (i < j)%N.
   move=> fi.
   rewrite neq_ltn => /orP[ij|ji]; first by apply fi => //; rewrite ltn_eqF.
   by apply/eqP; rewrite eq_sym; apply/eqP/fi => //; rewrite ltn_eqF.
@@ -1116,7 +1120,7 @@ suff : forall n, (enum_wo_rep @` `I_n.+1) (e n).
    move=> fe t; rewrite Ae => -[i _ tei].
    have [j _ fjei] := fe i.
    by exists j; split => //; rewrite fjei.
-apply: ltn_ind => -[_|n ih]; first by exists 0.
+apply: ltn_ind => -[_|n ih]; first by exists 0%N.
 have [en1f|en1f] :=
     boolP (e n.+1 \in [seq enum_wo_rep (nat_of_ord i) | i in 'I_n.+1]).
   move/mapP : en1f => [/= i _ en1fi].
@@ -1138,7 +1142,7 @@ Lemma set_bijective_enum_wo_rep : set_bijective setT A enum_wo_rep.
 Proof.
 split; first by move=> i j _ _; apply: injective_enum_wo_rep.
 - move=> u [/= i _ <-{u}].
-  case: i => [|i]; first by rewrite /enum_wo_rep /= Ae; exists 0.
+  case: i => [|i]; first by rewrite /enum_wo_rep /= Ae; exists 0%N.
   by rewrite enum_wo_repE /= [X in X (e _)]Ae; exists (smallest_of_e i).
 - exact: surjective_enum_wo_rep.
 Qed.
@@ -1181,7 +1185,7 @@ Lemma infinite_nat : ~ set_finite (@setT nat).
 Proof.
 move=> /set_finiteP[n /card_eq_sym/card_eqP [/= g]].
 case: n => [[_ _]|n [_ _ sur_g]].
-  by rewrite II0 => /surjective_set0; rewrite predeqE => /(_ O)[] /(_ I).
+  by rewrite II0 => /surjective_set0; rewrite predeqE => /(_ 0%N)[] /(_ I).
 have [j [jn gj]] := image_nat_maximum n g.
 pose m := (g j).+1.
 have ginm : ~ ((g @` `I_n.+1) m).
@@ -1198,21 +1202,21 @@ Section countably_infinite_prod_nat.
 Lemma infinite_prod_nat : ~ set_finite (@setT (nat * nat)).
 Proof.
 move=> finprod.
-have {finprod} : set_finite [set (x, O) | x in @setT nat].
-  have : [set (x, O) | x in @setT nat] `<=` setT by [].
+have {finprod} : set_finite [set (x, 0%N) | x in @setT nat].
+  have : [set (x, 0%N) | x in @setT nat] `<=` setT by [].
   by move/subset_set_finite => /(_ finprod).
 move=> /set_finiteP[n /card_eqP /= [f bij_f]].
 apply/infinite_nat/set_finiteP; exists n; apply/card_eqP => /=.
-exists (fun x => f (x, 0)); split => [| |a na].
-- move=> a b _ _ /(inj_of_bij bij_f) fab; suff : (a, 0) = (b, 0) by case.
+exists (fun x => f (x, 0%N)); split => [| |a na].
+- move=> a b _ _ /(inj_of_bij bij_f) fab; suff : (a, 0%N) = (b, 0%N) by case.
   by apply: fab; rewrite !in_setE; [exists a |exists b].
 - move=> a [i _ <-{a}]; apply (sub_of_bij bij_f).
-  by exists (i, 0) => //; exists i.
+  by exists (i, 0%N) => //; exists i.
 - have [[x y [[i _ [_{i} <-{y} af]]]]] := (sur_of_bij bij_f) _ na.
   by exists x.
 Qed.
 
-Definition nat_of_pair := fun '(n, m) => 2 ^ n * 3 ^ m.
+Definition nat_of_pair := fun '(n, m) => (2 ^ n * 3 ^ m)%N.
 
 Let primes23 n m : primes (nat_of_pair (n.+1, m.+1)) = [:: 2; 3].
 Proof.
@@ -1242,7 +1246,7 @@ Qed.
 Lemma nat_of_pair_inj : {in setT &, injective nat_of_pair}.
 Proof.
 move=> /= [n1 m1] [n2 m2] _ _; rewrite /nat_of_pair.
-have [/and4P[]|] := boolP [&& n1 != 0, m1 != 0, n2 != 0 & m2 != 0].
+have [/and4P[]|] := boolP [&& n1 != 0, m1 != 0, n2 != 0 & m2 != 0]%N.
   move: n1 m1 n2 m2 => [|n1] [|m1] [|n2] [|m2] // _ _ _ _.
   by move/(congr1 prime_decomp); rewrite 2!prime_decomp23 => -[-> ->].
 rewrite !negb_and !negbK => /or4P[]/eqP ->; rewrite ?(expn0,mul1n,muln1).
@@ -1265,15 +1269,15 @@ Proof.
 by apply/countable_injective; exists nat_of_pair; exact: nat_of_pair_inj.
 Qed.
 
-Let decomp_two (n : nat) : n <> O -> {pq | (n == 2 ^ pq.1 * pq.2) && odd pq.2}.
+Let decomp_two n : n <> 0%N -> {pq | (n == 2 ^ pq.1 * pq.2) && odd pq.2}%N.
 Proof.
 move: n; apply: ltn_ind => k ih /eqP k0.
 have [ok|ek] := boolP (odd k).
-  by exists (O, k) => /=; rewrite expn0 mul1n eqxx.
+  by exists (0%N, k) => /=; rewrite expn0 mul1n eqxx.
 rewrite -dvdn2 in ek; apply/sigW => /=.
 move/dvdnP : ek => [l k2l].
-have l0 : l != 0 by apply: contra k0; rewrite k2l => /eqP ->; rewrite mul0n.
-have lk : l < k by rewrite k2l ltn_Pmulr // lt0n.
+have l0 : l != 0%N by apply: contra k0; rewrite k2l => /eqP ->; rewrite mul0n.
+have lk : (l < k)%N by rewrite k2l ltn_Pmulr // lt0n.
 move/eqP in l0; have [[p q] /= /andP[lpq oq]] := ih _ lk l0.
 by exists (p.+1, q) => /=; rewrite expnS -mulnA -(eqP lpq) k2l mulnC eqxx.
 Qed.
@@ -1282,7 +1286,7 @@ Lemma countably_infinite_prod_nat : @setT (nat * nat) #= @setT nat.
 Proof.
 split; first exact: countable_prod_nat.
 pose f := fun n => proj1_sig (decomp_two n).
-exists (fun n => if decP (n =P 0) is right H then f _ H else (O, O)).
+exists (fun n => if decP (n =P 0%N) is right h then f _ h else (0, 0)%N).
 split => // p q _ _; rewrite /f; case: decP => //= [->{p}|p0].
   case: decP => //= q0.
   by case: decomp_two => -[p1 q1] /= /andP[/eqP -> _] [_ <-]; rewrite muln0.
@@ -1290,6 +1294,50 @@ case: decP => //= [->{q}|q0].
   by case: decomp_two => -[p2 q2] /= /andP[/eqP -> _] [_ ->]; rewrite muln0.
 case: decomp_two => -[p1 q1] /= /andP[/eqP -> _].
 by case: decomp_two => -[p2 q2] /= /andP[/eqP -> _] [-> ->].
+Qed.
+
+Definition pair_of_rat (q : rat) : nat * nat :=
+  let x := numq q in let y := denq q in
+  (if x >= (0 : int) then `|x|.*2 else `|x|.*2.+1, `|y|.-1).
+
+Lemma pair_of_rat_inj : {in setT &, injective pair_of_rat}.
+Proof.
+move=> x y _ _; rewrite /pair_of_rat.
+have [x_ge0|x_gt0] := leP (0 : int) (numq x);
+  have [y_ge0|y_gt0] := leP (0 : int) (numq y).
+- case=> /eqP; rewrite -!muln2 eqn_mul2r => /eqP/(congr1 Posz).
+  rewrite !gez0_abs// => numqxy /(congr1 S); rewrite ?(prednK,absz_gt0)//.
+  move=> /(congr1 Posz); rewrite 2!absz_denq => dxy; apply/eqP.
+  by rewrite rat_eqE numqxy dxy 2!eqxx.
+- by case=> /(congr1 odd); rewrite /= 2!odd_double.
+- by case=> /(congr1 odd); rewrite /= 2!odd_double.
+- case=> /eqP; rewrite -!muln2 eqn_mul2r => /eqP/(congr1 Posz).
+  rewrite !ltz0_abs// => /eqP; rewrite eqr_opp => /eqP numqxy /(congr1 S).
+  rewrite ?(prednK,absz_gt0)// => /(congr1 Posz); rewrite 2!absz_denq => dxy.
+  by apply/eqP; rewrite rat_eqE numqxy dxy 2!eqxx.
+Qed.
+
+Lemma countable_rat : countable (@setT rat).
+Proof.
+apply/countable_injective; have [f [inj_f _]] := countable_prod_nat.
+exists (f \o pair_of_rat); apply: (@in_inj_comp _ _ _ _ _ xpredT) => //.
+by move=> x y _ _ /inj_f; apply; rewrite inE.
+exact: pair_of_rat_inj.
+Qed.
+
+Definition nat_of_rat := nat_of_pair \o pair_of_rat.
+
+Lemma nat_of_rat_inj : {in setT &, injective nat_of_rat}.
+Proof.
+apply: (in_inj_comp nat_of_pair_inj pair_of_rat_inj).
+by move=> q _; rewrite in_setE.
+Qed.
+
+Definition rat_of_nat : nat -> rat := inverse 0%Q setT nat_of_rat.
+
+Lemma nat_of_ratK : {in setT, cancel nat_of_rat rat_of_nat}.
+Proof.
+by apply: injective_left_inverse; exact: nat_of_rat_inj.
 Qed.
 
 End countably_infinite_prod_nat.
