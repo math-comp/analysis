@@ -634,6 +634,9 @@ Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
 Lemma Rfloor_lt0 x : x < 0 -> Rfloor x < 0.
 Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
 
+Lemma floor1 : floor (1 : R) = 1.
+Proof. by rewrite /floor Rfloor1 (_ : 1 = 1%:R) // Rtointn. Qed.
+
 Lemma floor_ge0 x : (0 <= floor x) = (0 <= x).
 Proof. by rewrite -(@ler_int R) -RfloorE -Rfloor_ge_int. Qed.
 
@@ -645,6 +648,15 @@ Proof. by move=> ?; rewrite -(@ltrz0 R) RtointK ?isint_Rfloor// Rfloor_lt0. Qed.
 
 Lemma le_floor : {homo @floor R : x y / x <= y}.
 Proof. by move=>*; rewrite -(@ler_int R) !RtointK ?isint_Rfloor ?le_Rfloor. Qed.
+
+Lemma floor_neq0 x : (floor x != 0) = (x < 0) || (x >= 1).
+Proof.
+apply/idP/orP => [|[x0|/le_floor r1]]; first rewrite neq_lt => /orP[x0|x0].
+- by left; apply: contra_lt x0; rewrite floor_ge0.
+- by right; rewrite (le_trans _ (floor_le _))// ler1z -gtz0_ge1.
+- by rewrite lt_eqF//; apply: contra_lt x0; rewrite floor_ge0.
+- by rewrite gt_eqF// (lt_le_trans _ r1)// floor1.
+Qed.
 
 End FloorTheory.
 
