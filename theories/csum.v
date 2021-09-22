@@ -66,6 +66,12 @@ Proof. by []. Qed.
 Lemma fsetsP S (F : {fset T}) : [set x | x \in F] `<=` S <-> fsets S F.
 Proof. by []. Qed.
 
+Lemma fsets0 : fsets set0 = [set fset0].
+Proof.
+rewrite predeqE => A; split => [|->]; last exact: fsets_set0.
+by rewrite /fsets /= subset0 => /eqP; rewrite eq_set0_fset0 => /eqP.
+Qed.
+
 End set_of_fset_in_a_set.
 
 Lemma fsets_img (aT rT : choiceType) (S : set aT) (F : {fset aT}) (e : aT -> rT) :
@@ -106,17 +112,17 @@ Section csum.
 Variables (R : realFieldType) (T : choiceType).
 Implicit Types (S : set T) (a : T -> \bar R).
 
-Definition csum S a := if S == set0 then 0 else
+Definition csum S a :=
   ereal_sup [set \sum_(i <- F) a i | F in fsets S].
 
 Local Notation "\csum_ ( i 'in' P ) F" := (csum P (fun i => F)).
 
 Lemma csum0 a : \csum_(i in set0) a i = 0.
-Proof. by rewrite /csum eqxx. Qed.
-
-Lemma csumE S a : S !=set0 ->
-  \csum_(t in S) a t = ereal_sup [set \sum_(i <- F) a i | F in fsets S].
-Proof. by move=> /set0P/negbTE S_neq0; rewrite /csum S_neq0. Qed.
+Proof.
+rewrite /csum fsets0 [X in ereal_sup X](_ : _ = [set 0%E]) ?ereal_sup1//.
+rewrite predeqE => x; split; first by move=> [_ /= ->]; rewrite big_seq_fset0.
+by move=> -> /=; exists fset0 => //; rewrite big_seq_fset0.
+Qed.
 
 End csum.
 
@@ -128,16 +134,14 @@ Implicit Types (a : T -> \bar R).
 
 Lemma csum_ge0 (S : set T) a : (forall x, 0 <= a x) -> 0 <= \csum_(i in S) a i.
 Proof.
-move=> a0; rewrite /csum; case: ifPn => // _.
+move=> a0.
 by apply: ereal_sup_ub; exists fset0; [exact: fsets_set0|rewrite big_nil].
 Qed.
 
 Lemma csum_fset (F : {fset T}) a : (forall i, i \in F -> 0 <= a i) ->
   \csum_(i in [set x | x \in F]) a i = \sum_(i <- F) a i.
 Proof.
-move=> f0; rewrite /csum; case: ifPn => [|F0].
-  by rewrite eq_set0_fset0 => /eqP ->; rewrite big_seq_fset0.
-apply/eqP; rewrite eq_le; apply/andP; split; last first.
+move=> f0; apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply ereal_sup_ub; exists F => //; exact: fsets_self.
 apply ub_ereal_sup => /= ? -[F' F'F <-]; apply/lee_sum_nneg_subfset.
   exact/fsetsP.
@@ -151,11 +155,7 @@ Lemma csum_image (R : realType) (T : pointedType) (a : T -> \bar R)
     injective e ->
   \csum_(i in e @` P) a i = \sum_(i <oo | P i) a (e i).
 Proof.
-move=> a0 ie; have [/eqP eP0|/set0P eP0] := boolP (e @` P == set0).
-  rewrite eP0 csum0 (ereal_pseries_pred0 (a \o e)) // => n.
-  move/image_set0_set0: eP0; rewrite predeqE => /(_ n); rewrite -propeqE.
-  by rewrite /set0 -falseE => /is_true_inj.
-rewrite (csumE _ eP0); apply/eqP; rewrite eq_le; apply/andP; split; last first.
+move=> a0 ie; apply/eqP; rewrite eq_le; apply/andP; split; last first.
   apply: (ereal_lim_le (is_cvg_ereal_nneg_series_cond a0)).
   near=> n; apply: ereal_sup_ub.
   exists (e @` (@nat_of_ord _ @` fsets_ord P n))%fset.
@@ -190,7 +190,7 @@ Qed.
 
 Section csum_bigcup.
 Variables (R : realType) (T : pointedType) (K : set nat) (J : nat -> set T).
-Hypotheses (J0 : forall k, J k !=set0) (tJ : trivIset setT J).
+Hypotheses (tJ : trivIset setT J).
 Let KJ := \bigcup_(k in K) (J k).
 Variable a : T -> \bar R.
 Hypothesis a0 : forall x, 0 <= a x.
@@ -198,10 +198,10 @@ Hypothesis a0 : forall x, 0 <= a x.
 Let tJ' : forall i j : nat, i != j -> J i `&` J j = set0.
 Proof. by move=> i j ij; move: tJ => /trivIsetP; apply. Qed.
 
-Local Lemma csum_bigcup_le : K !=set0 -> KJ !=set0 ->
+Local Lemma csum_bigcup_le :
   \csum_(t in KJ) a t <= \csum_(k in K) \csum_(t in J k) a t.
 Proof.
-move=> K0 KJ0; rewrite csumE //; apply ub_ereal_sup => /= _ [F KJF <-].
+apply ub_ereal_sup => /= _ [F KJF <-].
 pose FJ := fun k => [fset x in F | x \in J k]%fset.
 have dFJ : forall i j, i != j -> [disjoint FJ i & FJ j]%fset.
   move=> i j ij; rewrite fdisjoint_cset; apply/eqP.
@@ -230,19 +230,18 @@ have -> : \sum_(i <- F) a i = \sum_(k <- L) \sum_(i <- FJ k) a i.
   apply/negP => /eqP/fsetP/(_ t).
   by rewrite !inE => /negbT/negP; apply; rewrite tF in_setE.
 apply: (@le_trans _ _ (\sum_(k <- L) \csum_(j in J k) a j)).
-  apply: lee_sum => i _; rewrite csumE //.
+  apply: lee_sum => i _.
   apply: ereal_sup_ub; exists (FJ i) => //; apply/fsetsP => t.
   by rewrite /FJ /mkset !inE /= => /andP[_]; rewrite in_setE.
-by rewrite csumE //; apply ereal_sup_ub; exists L => //; exact/subfsetsP.
+by apply ereal_sup_ub; exists L => //; exact/subfsetsP.
 Qed.
 
 Local Notation "L \_ i" := (nth O%N L i) (at level 3).
 
-Local Lemma le_csum_bigcup : K !=set0 -> KJ !=set0 ->
+Local Lemma le_csum_bigcup :
   \csum_(i in K) \csum_(j in J i) a j <= \csum_(i in KJ) a i.
 Proof.
-move=> K0 UJ_neq0.
-rewrite csumE //; apply ub_ereal_sup => /= _ [L LK <-].
+apply ub_ereal_sup => /= _ [L LK <-].
 have [/eqP ->|L0] := boolP (L == fset0); first by rewrite big_nil csum_ge0.
 have /gee0P[->|[r r0 csumIar]] := csum_ge0 KJ a0; first by rewrite lee_pinfty.
 apply lee_adde => e; rewrite -lee_subl_addr.
@@ -255,11 +254,11 @@ set P := fun (Fj : {fset T}%fset) (j : 'I_#|`L|) =>
 have [Fj csumFj] : exists F, forall j, P (F j) j.
   suff : forall j, exists Fj, P Fj j.
     by case/(@choice _ _ (fun i F => P F i)) => Fj ?; exists Fj.
-  move=> j; rewrite /P csumE //; set es := ereal_sup _.
+  move=> j; rewrite /P /csum; set es := ereal_sup _.
   have [esoo|[c c0 esc]] : es = +oo \/ exists2 r : R, (r >= 0)%R & es = r%:E.
     suff : 0 <= es by move/gee0P.
     by apply ereal_sup_ub; exists fset0; [exact: fsets_set0|rewrite big_nil].
-  - move: csumIar; rewrite csumE //; set es' := ereal_sup _ => es'r.
+  - move: csumIar; rewrite /csum; set es' := ereal_sup _ => es'r.
     suff : es <= es' by rewrite esoo es'r.
     apply: le_ereal_sup => x [F FJ Fax]; exists F => //.
     move/subset_trans : FJ; apply => t Jt; exists (L \_ j) => //.
@@ -270,7 +269,7 @@ have [Fj csumFj] : exists F, forall j, P (F j) j.
     exact: ub_ereal_sup_adherent_img.
 pose F := \big[fsetU/fset0]_(i < #|`L|) Fj i.
 apply: (@le_trans _ _ (\sum_(i <- F) a i)); last first.
-  rewrite csumE //; apply ereal_sup_ub; exists F => //.
+  apply ereal_sup_ub; exists F => //.
   apply/fsetsP => t /bigfcupP[/= i _] /(proj1 (csumFj i)) Jt.
   by exists (L \_ i) => //; apply: LK; rewrite /mkset mem_nth.
 rewrite (_ : \sum_(_ <- _) _ =
@@ -300,10 +299,6 @@ Qed.
 Lemma csum_bigcup : \csum_(i in \bigcup_(k in K) (J k)) a i =
                     \csum_(i in K) \csum_(j in J i) a j.
 Proof.
-have [/eqP ->|/set0P K0] := boolP (K == set0).
-  by rewrite bigcup_set0 2!csum0.
-have /set0P KJ0 : KJ != set0.
-  by move: K0 => [k Kk]; have [t Jkt] := J0 k; apply/set0P; exists t, k.
 apply/eqP; rewrite eq_le; apply/andP; split;
   [exact: csum_bigcup_le | exact: le_csum_bigcup].
 Qed.

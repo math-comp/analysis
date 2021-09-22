@@ -1287,8 +1287,7 @@ rewrite (_ : csum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
   pose J : nat -> set (nat * nat) := fun i => [set (i, j) | j in setT].
   rewrite (_ : setT = \bigcup_k J k); last first.
     by rewrite predeqE => -[a b]; split => // _; exists a => //; exists b.
-  rewrite csum_bigcup /=; last 3 first.
-    - by move=> k; exists (k, O), O.
+  rewrite csum_bigcup /=; last 2 first.
     - apply/trivIsetP => i j _ _ ij.
       rewrite predeqE => -[n m] /=; split => //= -[] [_] _ [<-{n} _].
       by move=> [m' _] [] /esym/eqP; rewrite (negbTE ij).
