@@ -41,9 +41,6 @@ Require Import nngnum lebesgue_measure.
 (*                         over the domain D                                  *)
 (*         integral D f == integral of a measurable function over the         *)
 (*                         domain D                                           *)
-(*      point_cvg D g f == the pointwise convergence of the sequence of       *)
-(*                         real-valued functions g towards the extended       *)
-(*                         real-valued function f                             *)
 (*       dyadic_itv n k == the interval                                       *)
 (*                         `[(k%:R * 2 ^- n), (k.+1%:R * 2 ^- n)[             *)
 (*       integrable D f == the integral of f w.r.t. D is < +oo                *)
@@ -873,13 +870,13 @@ rewrite /sintegral; apply: sume_ge0 => t _; apply: mule_ge0 => //.
 by apply/measure_ge0/measurableI => //; exact/SFun.mpi.
 Qed.
 
-Section sintegralK.
+Section sintegralM.
 Variables (T : measurableType) (point : T).
 Variables (R : realType) (m : {measure set T -> \bar R}).
 Variables (r : R) (D : set T) (mD : measurable D) (f : nnsfun T R).
 Local Open Scope ereal_scope.
 
-Lemma sintegralK :
+Lemma sintegralM :
   sintegral m D (sfun_scale point r f) = r%:E * sintegral m D f.
 Proof.
 have [->|r0] := eqVneq r 0%R.
@@ -911,7 +908,7 @@ rewrite (reindex castK); last first.
 by apply eq_bigr => i _; rewrite /cast /castK cast_ordKV mulEFin muleA.
 Qed.
 
-End sintegralK.
+End sintegralM.
 
 Section sintegralD.
 Variables (T : measurableType) (R : realType) (D : set T).
@@ -1249,7 +1246,7 @@ have cg1leg n x : D x -> (c * g1 n x <= g n x)%R.
 have cg1_ge0 n x : (0 <= (sfun_scale point c (g1 n)) x)%R.
   by rewrite mulr_ge0 // ltW.
 have {cg1leg}cg1g n : c%:E * sintegral mu D (g1 n) <= sintegral mu D (g n).
-  rewrite -(sintegralK point mu c mD (g1 n)).
+  rewrite -(sintegralM point mu c mD (g1 n)).
   apply: (@le_sintegral _ _ _ _ _ _ (NNSFun.mk (cg1_ge0 n))) => //=.
   by move=> x Dx; rewrite /fleg /= cg1leg.
 suff {cg1g}<- : lim (fun n => sintegral mu D (g1 n)) = sintegral mu D f.
@@ -1415,70 +1412,6 @@ Qed.
 
 End integral.
 
-Section pointwise_convergence.
-Variables (T : Type) (R : realFieldType).
-Implicit Types (g : (T -> R^o)^nat) (f : T -> \bar R).
-
-Definition point_cvg (D : set T) g f := forall x, D x ->
-  if pselect (cvg (g^~ x)) then @EFin _ \o g^~ x --> f x
-  else f x = +oo%E.
-
-Lemma is_point_cvgZr D g f k : 0 <= k ->
-  point_cvg D g f -> point_cvg D (k \*: g) (fun x => k%:E * f x)%E.
-Proof.
-rewrite le_eqVlt => /orP[/eqP <-{k} _ t Dt|k0 cf t Dt].
-  rewrite (_ : (fun _ => _) = cst 0); last first.
-    by rewrite funeqE => x /=; rewrite scale0r.
-  case: pselect => [/= _|/= h]; last by exfalso; apply h; apply: is_cvg_cst.
-  by rewrite mul0e [X in X --> _](_ : _ = cst 0%E) //; exact: cvg_cst.
-have := cf t Dt; case: pselect => /= [cft|cft ftoo].
-  case: pselect => [/= cgt|cgt].
-     by move=> /(@ereal_cvgrM _ _ _ _ _ k%:E erefl);  exact: cvg_trans.
-  by exfalso; apply: cgt; apply: is_cvgZr.
-case: pselect => h /=; last by rewrite ftoo mulrinfty gtr0_sg // mul1e.
-by exfalso; apply: cft; move: h; rewrite is_cvgZrE // gt_eqF.
-Qed.
-End pointwise_convergence.
-
-Section pointwise_convergence_realType.
-Variables (T : Type) (R : realType).
-Implicit Types (g : (T -> R^o)^nat) (f : T -> \bar R).
-
-Lemma point_cvgD (D : set T) g1 g2 f1 f2 :
-  (forall x, D x -> 0 <= f1 x)%E -> (forall x, D x -> 0 <= f2 x)%E ->
-  (forall x, D x -> nondecreasing_seq (g1^~x)) ->
-  (forall x, D x -> nondecreasing_seq (g2^~x)) ->
-  point_cvg D g1 f1 -> point_cvg D g2 f2 -> point_cvg D (g1 \+ g2) (f1 \+ f2)%E.
-Proof.
-move=> f10 f20 f_nd g_nd cf cg t Dt; have := cf t Dt.
-case: pselect => [cg1 /= gf1|cg1 /= ftoo].
-  have := cg t; case: pselect => [cg2 /= gf2|g_dvg /= gtoo].
-    have : cvg (g1^~ t \+ g2^~ t) by exact: is_cvgD.
-    case: pselect => //= _ _.
-    rewrite [X in X --> _](_ : _ =
-      (@EFin _ \o g1^~ t) \+ (@EFin _ \o g2^~ t))%E//.
-    apply: ereal_cvgD => //=; last exact: gf2.
-    by apply: ge0_adde_def => /=; rewrite inE ?f10// f20.
-  case: pselect => [cg12|_]/=.
-    by exfalso; apply: g_dvg; move: cg12; rewrite is_cvgDrE.
-  rewrite gtoo// addeC addooe// gt_eqF// (lt_le_trans _ (f10 _ Dt))//.
-  by rewrite lte_ninfty.
-case: pselect => [cg12 /=|/= _]; last first.
-  by rewrite ftoo// addooe // gt_eqF// (lt_le_trans _ (f20 _ Dt))// lte_ninfty.
-have [cg2|cg2] := pselect (cvg (g2^~ t)).
-  by exfalso; apply: cg1; move: cg12; rewrite is_cvgDlE.
-exfalso;  move/cvg_ex : (cg12) => [l g12l].
-have /cvgPpinfty/(_ (l + 1))[n _ nl] := nondecreasing_dvg_lt (f_nd _ Dt) cg1.
-have /cvgPpinfty/(_ 0)[m _ ml] := nondecreasing_dvg_lt (g_nd _ Dt) cg2.
-have := nondecreasing_cvg_le (nondecreasing_seqD f_nd g_nd Dt) cg12 (maxn n m).
-rewrite (cvg_lim _ g12l) //; apply/negP.
-rewrite -ltNge (@lt_le_trans _ _ (l + 1 + 0))//; first by rewrite addr0 ltr_addl.
-by rewrite ler_add //; [apply: nl => /=; rewrite leq_maxl|
-                        apply: ml => /=; rewrite leq_maxr].
-Qed.
-
-End pointwise_convergence_realType.
-
 Section nondecreasing_integral_limit.
 Variables (T : measurableType) (point : T) (R : realType).
 Variables (mu : {measure set T -> \bar R}).
@@ -1488,7 +1421,7 @@ Hypothesis f0 : forall x, D x -> (0 <= f x)%E.
 Hypothesis mf : measurable_fun D f.
 Variable (g : (nnsfun T R)^nat).
 Hypothesis nd_g : forall x, D x -> nondecreasing_seq (g^~x).
-Hypothesis gf : point_cvg D g f.
+Hypothesis gf : forall x, D x -> @EFin _ \o g^~x --> f x.
 
 Lemma nd_ge0_integral_lim : integral mu D f = lim (sintegral mu D \o g).
 Proof.
@@ -1496,9 +1429,8 @@ rewrite ge0_integralE//.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   apply: ereal_lim_le; first exact: is_cvg_sintegral.
   near=> n; apply: ereal_sup_ub; exists (g n) => //= => x Dx.
-  have := gf Dx; case: pselect => [cg gfx|cg ->] /=; last first.
-    by case: (x \in D); rewrite ?(mulr0,mule0,mulr1,mule1)// lee_pinfty.
-  have <- : lim (@EFin _ \o (g^~ x)) = f x by exact/cvg_lim.
+  have <- : lim (@EFin _ \o g^~ x) = f x.
+    by apply/cvg_lim => //; apply: gf.
   have : (@EFin _ \o g^~ x) --> ereal_sup [set of @EFin _ \o g^~ x].
     apply: nondecreasing_ereal_cvg => p q pq /=; rewrite lee_fin.
     exact/nd_g.
@@ -1515,7 +1447,7 @@ rewrite le_eqVlt => /orP[/eqP mufoo|]; last first.
   rewrite lte_subl_addr => fGe.
   have : forall x, D x -> cvg (g^~ x : _ -> R^o) -> (G x) <= lim (g^~ x : _ -> R^o).
     move=> x Dx cg; rewrite -lee_fin -EFin_lim //=.
-    have := gf Dx; case: pselect => // {}cg /= /cvg_lim gxfx.
+    have := gf Dx => /cvg_lim gxfx.
     by rewrite (le_trans (Gf _ Dx)) // gxfx.
   move/(@nd_sintegral_lim_lemma _ point _ mu _ mD _ nd_g).
   by move/(lee_add2r e%:num%:E)/(le_trans (ltW fGe)).
@@ -1534,7 +1466,7 @@ have [G [Gf AG]] : exists h : nnsfun T R, (forall x, D x -> (h x)%:E <= f x)%E /
   by exists G; split => //; rewrite (le_trans (ltW Ax)) // Gx.
 have : forall x, D x -> cvg (g^~ x : _ -> R^o) -> G x <= lim (g^~ x : _ -> R^o).
   move=> x Dx cg; rewrite -lee_fin -EFin_lim //.
-  have := gf Dx; case: pselect => // {}cg /= /cvg_lim gxfx.
+  have := gf Dx => /cvg_lim gxfx.
   by rewrite (le_trans (Gf _ Dx)) // gxfx.
 move/(@nd_sintegral_lim_lemma _ point _ mu _ mD _ nd_g) => Gg.
 by rewrite (le_trans AG).
@@ -1940,20 +1872,20 @@ have [l0|l0] := leP 0%R l.
   by rewrite -(@lez0_abs (floor _)) // floor_le0 // ltW.
 Qed.
 
-Lemma point_cvg_approx_fun (f0 : forall x, D x -> (0 <= f x)%E) :
-  point_cvg D approx_fun f.
+Lemma ecvg_approx_fun (f0 : forall x, D x -> (0 <= f x)%E) x :
+  D x -> @EFin _ \o approx_fun^~x --> f x.
 Proof.
-move=> x Dx; have := lee_pinfty (f x); rewrite le_eqVlt => /orP[/eqP|] fxoo.
-  by case: pselect => //= H; have := dvg_approx_fun Dx fxoo; tauto.
-have h := cvg_approx_fun f0 Dx fxoo.
-have /EFin_real_of_extended fxE : f x \is a fin_num.
+move=> Dx; have := lee_pinfty (f x); rewrite le_eqVlt => /orP[/eqP|] fxoo.
+have dvg_approx_fun := dvg_approx_fun Dx fxoo.
+  have : {homo (approx_fun^~x) : n m / (n <= m)%N >-> n <= m}.
+    by move=> m n mn; have := nd_approx_fun mn => /lefP; exact.
+  move/nondecreasing_dvg_lt => /(_ dvg_approx_fun).
+  by rewrite fxoo; exact/dvg_ereal_cvg.
+have /EFin_real_of_extended -> : f x \is a fin_num.
   rewrite fin_numE; apply/andP; split; last by rewrite lt_eqF.
   by rewrite gt_eqF // (lt_le_trans _ (f0 _ Dx)) // lte_ninfty.
-have approx_fun_f : (fun n => (approx_fun n x)%:E) --> f x.
-  by rewrite fxE; move/(@cvg_comp _ _ _ _ (@EFin _)) : h; exact.
-case: pselect => // abs; exfalso.
-by apply/abs/cvg_ex; exists (real_of_extended (f x)).
-Grab Existential Variables. all: end_near. Qed.
+exact: (cvg_comp (cvg_approx_fun f0 Dx fxoo)).
+Qed.
 
 Local Lemma k2n_ge0 n (k : 'I_(n * 2 ^ n)) : 0 <= k%:R * 2 ^- n :> R.
 Proof. by rewrite mulr_ge0 // invr_ge0 // -natrX ler0n. Qed.
@@ -1974,21 +1906,20 @@ apply: eq_bigr => i _; case: Bool.bool_dec => //.
 by move/negP; rewrite ltn_ord.
 Qed.
 
+Lemma cvg_nnsfun_approx (f0 : forall x, D x -> (0 <= f x)%E) x :
+  D x -> @EFin _ \o nnsfun_approx^~x --> f x.
+Proof.
+by move=> Dx; under eq_fun do rewrite nnsfun_approxE; exact: ecvg_approx_fun.
+Qed.
+
 Lemma nd_nnsfun_approx : nondecreasing_seq (nnsfun_approx : (T -> R)^nat).
 Proof. by move=> m n mn; rewrite !nnsfun_approxE; exact: nd_approx_fun. Qed.
 
-Lemma point_cvg_nnsfun_approx (f0 : forall t, D t -> (0 <= f t)%E) :
-  point_cvg D nnsfun_approx f.
-Proof.
-by under eq_fun do rewrite nnsfun_approxE; exact: point_cvg_approx_fun.
-Qed.
-
 Lemma approximation : (forall t, D t -> (0 <= f t)%E) ->
   exists g : (nnsfun T R)^nat, nondecreasing_seq (g : (T -> R)^nat) /\
-                        point_cvg D g f.
+                        (forall x, D x -> @EFin _ \o g^~x --> f x).
 Proof.
-by exists nnsfun_approx; split; [exact: nd_nnsfun_approx |
-                            exact: point_cvg_nnsfun_approx].
+exists nnsfun_approx; split; [exact: nd_nnsfun_approx|exact: cvg_nnsfun_approx].
 Qed.
 
 End approximation.
@@ -2027,7 +1958,7 @@ Hypothesis mf1 : measurable_fun D f1.
 Hypothesis f20 : forall x, (D x -> 0 <= f2 x)%E.
 Hypothesis mf2 : measurable_fun D f2.
 
-Lemma ge0_integralK k : 0 <= k ->
+Lemma ge0_integralM k : 0 <= k ->
   integral mu D (fun x => k%:E * f1 x)%E = (k%:E * integral mu D f1)%E.
 Proof.
 move=> k0.
@@ -2040,11 +1971,15 @@ rewrite (@nd_ge0_integral_lim _ point _ mu _ mD (fun x => k%:E * f1 x)%E _ kg).
       by apply: is_cvg_sintegral => // x Dx m n mn; apply/(lef_at x nd_g).
     rewrite -(nd_ge0_integral_lim point mu mD f10) // => x Dx.
     exact/(lef_at x nd_g).
-  by under eq_fun do rewrite (sintegralK point mu k mD).
+  by under eq_fun do rewrite (sintegralM point mu k mD).
 - by move=> t Dt; rewrite mule_ge0// f10.
 - move=> x Dx m n mn.
   by rewrite ler_pmul //; exact/lefP/nd_g.
-- exact: is_point_cvgZr.
+- move=> x Dx.
+  rewrite [X in X --> _](_ : _ = (fun n => k%:E * (g n x)%:E))%E.
+    apply: ereal_cvgrM => //.
+    exact: gf1.
+  by rewrite funeqE.
 Qed.
 
 Lemma ge0_integralD :
@@ -2055,12 +1990,13 @@ have [g2 [nd_g2 gf2]] := approximation point mD mf2 f20.
 pose g12 := fun n => nnsfun_add (g1 n) (g2 n).
 rewrite (@nd_ge0_integral_lim _ point _ _ _ _ _ _ g12) //; last 3 first.
   - by move=> x Dx; rewrite adde_ge0 => //; [exact: f10|exact: f20].
-  - apply: nondecreasing_seqD => // x Dx.
-    exact/(lef_at x nd_g1).
-    exact/(lef_at x nd_g2).
-  - apply: point_cvgD => // x Dx.
-    exact/(lef_at x nd_g1).
-    exact/(lef_at x nd_g2).
+  - by apply: nondecreasing_seqD => // x Dx;
+      [exact/(lef_at x nd_g1)|exact/(lef_at x nd_g2)].
+  - move=> x Dx.
+    rewrite [X in X --> _](_ : _ = (fun n => (g1 n x)%:E + (g2 n x)%:E))%E.
+      apply: ereal_cvgD => //; [|exact: gf1|exact: gf2].
+      by apply: ge0_adde_def => //; rewrite !inE; [exact: f10|exact: f20].
+    by rewrite funeqE.
 rewrite (_ : _ \o _ =
     fun n => sintegral mu D (g1 n) + sintegral mu D (g2 n))%E; last first.
   by rewrite funeqE => n /=; rewrite sintegralD.
@@ -2088,17 +2024,16 @@ near=> n; rewrite ge0_integralE//.
 apply ereal_sup_ub => /=; exists (g1 n) => // t Dt.
 rewrite (le_trans _ (f12 _ Dt)) //.
 have := gf1 _ Dt.
-case: pselect => [/= cg1 gf1t|/= _ ->]; last by rewrite lee_pinfty.
 have := lee_pinfty (f1 t); rewrite le_eqVlt => /orP[/eqP ->|ftoo].
   by rewrite lee_pinfty.
 have /EFin_real_of_extended ftE : f1 t \is a fin_num.
   by rewrite fin_numE gt_eqF/= ?lt_eqF// (lt_le_trans _ (f10 Dt))// lte_ninfty.
-move: gf1t; rewrite ftE => /ereal_cvg_real[ft_near].
-set u_ := (X in X --> _) => u_f1.
+have := gf1 _ Dt; rewrite ftE => /ereal_cvg_real[ft_near].
+set u_ := (X in X --> _) => u_f1 g1f1.
 have <- : lim (u_ : _ -> R^o) = real_of_extended (f1 t) by apply/cvg_lim.
-rewrite lee_fin.
-apply: nondecreasing_cvg_le => // a b ab.
-by rewrite /u_ /=; exact/lefP/nd_g1.
+rewrite lee_fin; apply: nondecreasing_cvg_le.
+  by move=> // a b ab; rewrite /u_ /=; exact/lefP/nd_g1.
+by apply/cvg_ex; eexists; exact: u_f1.
 Grab Existential Variables. all: end_near. Qed.
 
 End semi_linearity.
@@ -2165,7 +2100,7 @@ rewrite nnsfun_approxE /= (le_trans (le_approx_fun _ _ _)) //.
 by apply: nd_g => //; exact/ltnW.
 Qed.
 
-Lemma point_cvg_max_g2_f : point_cvg D max_g2 f.
+Lemma cvg_max_g2_f : forall t, D t -> @EFin _ \o (max_g2^~t) --> f t.
 Proof.
 have max_g2_g t : D t -> (lim (fun n => (max_g2 n t)%:E) <= lim (g^~ t))%E.
   move=> Dt; apply: lee_lim => //.
@@ -2180,24 +2115,6 @@ have g2_max_g2 t n :
   have nk : (n < k)%N by near: k; exists n.+1.
   exact: (@bigmax_sup _ _ _ (Ordinal nk)).
 move=> t Dt.
-case: pselect => [_|abs] /=; last first.
-  apply/eqP/negPn/negP => ftoo.
-  have [r ftr{ftoo}] : exists r, f t = r%:E.
-    move ftr : (f t) => r.
-    move: r => [r| |] in ftoo ftr *.
-    - by exists r.
-    - by rewrite ftr in ftoo.
-    - suff : (0 <= f t)%E by rewrite ftr.
-      apply: ereal_lim_ge => //; first exact/is_cvg_g.
-      by apply: nearW => n; apply g0.
-  have /cvgPpinfty/(_ (r + 1))[n _ nrg_] :=
-   nondecreasing_dvg_lt (lef_at t nd_max_g2) abs.
-  have := max_g2_g t; rewrite -/(f t) ftr => lim_max_g2_r.
-  have : ((r + 1)%:E <= lim (fun n => (max_g2 n t)%:E))%E.
-    apply: ereal_lim_ge => //; near=> m; rewrite lee_fin.
-    by apply: nrg_; near: m; exists n.
-  apply/negP; rewrite -ltNge.
-  by rewrite (le_lt_trans (lim_max_g2_r Dt)) // lte_fin ltr_addl.
 have /cvg_ex[l g_l] := @is_cvg_max_g2 t.
 suff : l == f t by move=> /eqP <-.
 rewrite eq_le; apply/andP; split.
@@ -2258,7 +2175,7 @@ rewrite (@nd_ge0_integral_lim _ point _ mu _ _ _ _ max_g2) //; last 3 first.
   - move=> t Dt; apply: ereal_lim_ge => //; first exact/is_cvg_g.
     by apply: nearW => n; apply: g0.
   - by move=> t Dt m n mn; apply/lefP/nd_max_g2.
-  - exact: point_cvg_max_g2_f.
+  - by move=> x Dx; exact: cvg_max_g2_f.
 apply: lee_lim.
 - apply: is_cvg_sintegral => //.
     by move=> t Dt m n mn; exact/lefP/nd_max_g2.
