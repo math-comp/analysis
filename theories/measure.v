@@ -1340,12 +1340,12 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
 have muG_ge0 : forall x, 0 <= (mu \o uncurry G) x.
   by move=> x; apply/measure_ge0/measurable_uncurry/(PG x.1).1.1.
 apply (@le_trans _ _ (\csum_(i in setT) (mu \o uncurry G) i)).
-  rewrite /mu_ext; apply ereal_inf_lb.
+  rewrite /mu_ext; apply: ereal_inf_lb => /=.
   have [f [Tf fi]] : exists e, enumeration (@setT (nat * nat)) e /\ injective e.
-    have /countable_enumeration [|[f ef]] := countable_prod_nat.
-      by rewrite predeqE => /(_ (0%N, 0%N)) [] /(_ Logic.I).
-    by exists (enum_wo_rep infinite_prod_nat ef); split;
-     [exact: enumeration_enum_wo_rep | exact: injective_enum_wo_rep].
+    have /card_eq_sym/card_eqP[f [fI fT fS]] := countably_infinite_prod_nat.
+    exists f; split; last by move=> ? ? /fI; apply; rewrite !inE.
+    rewrite /enumeration eqEsubset; split=> // x _ /=.
+    by have [n [_ ->]] := fS x I; exists n.
   exists (uncurry G \o f).
     split => [i|]; first exact/measurable_uncurry/(PG (f i).1).1.1.
     apply: (@subset_trans _  (\bigcup_n \bigcup_k G n k)) => [t [i _]|].

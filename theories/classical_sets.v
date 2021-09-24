@@ -136,6 +136,8 @@ Reserved Notation "[ 'set' E | x 'in' A & y 'in' B ]"
 Reserved Notation "[ 'set' 'of' F ]" (at level 0, format "[ 'set'  'of'  F ]").
 Reserved Notation "[ 'set' a ]"
   (at level 0, a at level 99, format "[ 'set'  a ]").
+Reserved Notation "[ 'set:' T ]"
+  (at level 0, T at level 99, format "[ 'set:'  T ]").
 Reserved Notation "[ 'set' a : T ]"
   (at level 0, a at level 99, format "[ 'set'  a   :  T ]").
 Reserved Notation "A `|` B" (at level 52, left associativity).
@@ -285,6 +287,7 @@ Arguments snd_set _ _ _ _ /.
 Notation "[ 'set' 'of' F ]" := [set F i | i in setT] : classical_set_scope.
 Notation "[ 'set' a ]" := (set1 a) : classical_set_scope.
 Notation "[ 'set' a : T ]" := [set (a : T)] : classical_set_scope.
+Notation "[ 'set:' T ]" := (@setT T) : classical_set_scope.
 Notation "A `|` B" := (setU A B) : classical_set_scope.
 Notation "a |` A" := ([set a] `|` A) : classical_set_scope.
 Notation "[ 'set' a1 ; a2 ; .. ; an ]" :=
