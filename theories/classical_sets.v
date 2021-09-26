@@ -492,6 +492,8 @@ Proof. by rewrite subsets_disjoint setCK. Qed.
 
 Lemma setCT : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
 
+Lemma set1CE (x : T) : [set y | y <> x] = [set~ x]. Proof. by []. Qed.
+
 Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
 
 Lemma setSD C A B : A `<=` B -> A `\` C `<=` B `\` C.
@@ -594,6 +596,14 @@ Qed.
 
 Lemma nonsubset A B : ~ (A `<=` B) -> A `&` ~` B !=set0.
 Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
+
+Lemma setC_subset_set1C (x : T) (A : set T) : x \in ~` A -> A `<=` [set ~ x].
+Proof.
+  rewrite in_setE /set1 => ? y yInH //= ; rewrite /setC => //= xEqy.
+  have: (A `&` ~` A) y.
+     rewrite /setI => //= ; split; by [rewrite xEqy|].
+  by rewrite setICr.
+Qed.
 
 Lemma setU_eq0 A B : (A `|` B = set0) = ((A = set0) /\ (B = set0)).
 Proof. by rewrite -!subset0 subUset. Qed.

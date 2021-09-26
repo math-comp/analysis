@@ -3010,6 +3010,29 @@ Variable (T : topologicalType).
 
 Local Open Scope classical_set_scope.
 
+Definition T_0 : Prop := forall (x y : T), x != y -> exists p, (p \in (nbhs x) /\ y \in (~` p)) \/ (p \in (nbhs y) /\ x \in (~` p)).
+
+Definition T_1 : Prop := forall (x y : T), x != y -> exists p, (open p /\ x \in p /\ y \in (~` p)).
+
+Lemma T_1_singleton_closed : T_1 -> forall x:T, closed [set x].
+Proof.
+  move => T1 x; rewrite -[set1 _]setCK; apply: closedC.
+  rewrite openE -set1CE /interior => y //= /eqP xNeqY.
+  rewrite nbhsE => //=.
+  have := T1 _ _ xNeqY => -[] U [] ? [] ? ?.
+  exists U ; split.
+    by rewrite /open_nbhs ; split; by [|rewrite -in_setE].
+  by apply: setC_subset_set1C.
+Qed.
+
+Definition T_1entailsT_0 : T_1 -> T_0.
+Proof.
+  rewrite /T_0 => T_1 x ? xneqy.
+  have:= (T_1 _ _ xneqy) => -[] p [] ? [] /asboolP ? ?.
+  have: open_nbhs x p by split; by [].
+  rewrite open_nbhsE => -[] ? H; exists p; left; split ; by [apply/asboolP|].
+Qed.
+
 Definition close (x y : T) : Prop := forall M, open_nbhs y M -> closure M x.
 
 Lemma closeEnbhs x : close x = cluster (nbhs x).
