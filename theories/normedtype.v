@@ -2934,9 +2934,9 @@ Lemma is_intervalPlt (E : set R) :
   is_interval E <-> forall x y, E x -> E y -> forall z, x < z < y -> E z.
 Proof.
 split=> iE x y Ex Ey z /andP[].
-  by move=> xz zy; apply (iE _ _ Ex Ey); rewrite (ltW xz) (ltW zy).
-rewrite le_eqVlt => /orP[/eqP <-//|xz]; rewrite le_eqVlt => /orP[/eqP ->//|?].
-by apply (iE _ _ Ex Ey); rewrite xz.
+  by move=> xz zy; apply: (iE x y); rewrite ?ltW.
+rewrite !le_eqVlt => /predU1P[<-//|xz] /predU1P[->//|zy].
+by apply: (iE x y); rewrite ?xz.
 Qed.
 
 Lemma interval_is_interval (i : interval R) : is_interval [set x | x \in i].
@@ -2987,7 +2987,7 @@ Proof.
 move=> iX lX uX; rewrite predeqE => x; split => // _.
 move/has_lbPn : lX => /(_ x) [y Xy xy].
 move/has_ubPn : uX => /(_ x) [z Xz xz].
-by apply: (iX _ _ Xy Xz); rewrite (ltW xy) (ltW xz).
+by apply: (iX y z); rewrite ?ltW.
 Qed.
 
 Lemma interval_left_unbounded_interior (X : set R) : is_interval X ->
@@ -2998,8 +2998,7 @@ rewrite -(open_subsetE _ (@open_lt _ _)) => r rsupX.
 move/has_lbPn : lX => /(_ r)[y Xy yr].
 have hsX : has_sup X by split => //; exists y.
 have /(sup_adherent hsX)[e Xe] : 0 < sup X - r by rewrite subr_gt0.
-rewrite opprB addrCA subrr addr0 => re; apply (iX _ _ Xy Xe).
-by rewrite (ltW yr) (ltW re).
+by rewrite opprB addrCA subrr addr0 => re; apply: (iX y e); rewrite ?ltW.
 Qed.
 
 Lemma interval_right_unbounded_interior (X : set R) : is_interval X ->
@@ -3010,8 +3009,7 @@ rewrite -(open_subsetE _ (@open_gt _ _)) => r infXr.
 move/has_ubPn : uX => /(_ r)[y Xy yr].
 have hiX : has_inf X by split => //; exists y.
 have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
-rewrite addrCA subrr addr0 => er; apply: (iX _ _ Xe Xy).
-by rewrite (ltW yr) (ltW er).
+by rewrite addrCA subrr addr0 => er; apply: (iX e y); rewrite ?ltW.
 Qed.
 
 Lemma interval_bounded_interior (X : set R) : is_interval X ->
@@ -3029,8 +3027,7 @@ have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
 rewrite addrCA subrr addr0 => er.
 have hsX : has_sup X by split.
 have /(sup_adherent hsX)[f Xf] : 0 < sup X - r by rewrite subr_gt0.
-rewrite opprB addrCA subrr addr0 => rf; apply: (iX _ _ Xe Xf).
-by rewrite (ltW er) (ltW rf).
+by rewrite opprB addrCA subrr addr0 => rf; apply: (iX e f); rewrite ?ltW.
 Qed.
 
 Definition Rhull (X : set R) : interval R := Interval
@@ -3098,7 +3095,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
   pose Az := E `&` [set x | x < z]; pose Bz := E `&` [set x | z < x].
   apply/connectedPn : cE; exists (fun b => if b then Az else Bz); split.
   + move: xz zy Ez.
-    rewrite !le_eqVlt => /orP [/eqP <- // | xz] /orP[/eqP -> // | zy] Ez.
+    rewrite !le_eqVlt => /predU1P[<-//|xz] /predU1P[->//|zy] Ez.
     by case; [exists x | exists y].
   + rewrite /Az /Bz -setIUr; apply/esym/setIidPl => u Eu.
     by apply/orP; rewrite -neq_lt; apply/negP; apply: contraPnot Eu => /eqP <-.
@@ -3155,7 +3152,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
   have nA0z1 : ~ (A false) z1.
     move=> A0z1; have : z < z1 by rewrite /z1 ltr_addl.
     apply/negP; rewrite -leNgt.
-     apply sup_ub; first by exists y => u [_] /andP[].
+     apply: sup_ub; first by exists y => u [_] /andP[].
     by split => //; rewrite /mkset /z1 (le_trans xz) /= ?ler_addl // (ltW z1y).
   by rewrite EU => -[//|]; apply: contra_not ncA1z1; exact: subset_closure.
 Qed.
