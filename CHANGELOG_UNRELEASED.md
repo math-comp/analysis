@@ -11,6 +11,8 @@
   + lemmas `trivIset_seqDU`, `bigsetU_seqDU`, `seqDU_bigcup_eq`, `seqDUE`
 - in `ereal.v`:
   + notation `x +? y` for `adde_def x y`
+- in `normedtypes.v`:
+  + lemma `is_intervalPlt`
 - in `sequences.v`:
   + lemmas `lt_lim`, `nondecreasing_dvg_lt`, `ereal_lim_sum`
 - in `ereal.v`:
@@ -72,6 +74,8 @@
   + replace `closed_cvg_loc` and `closed_cvg` by a more general lemma `closed_cvg`
 - move from `sequences.v` to `normedtype.v` and generalize from `nat` to `T : topologicalType`
   + lemmas `ereal_cvgN`
+- in `normedtype.v`:
+  + definition `is_interval`
 
 ### Renamed
 - in `classical_sets.v`:
@@ -119,6 +123,8 @@
       `bigmaxr_ltrP`, `bigmaxr_gerP`, `bigmaxr_gtrP`
 - in `sequences.v`:
   + lemma `closed_seq`
+- in `normedtype.v`:
+  + lemma `is_intervalPle`
 
 ### Infrastructure
 

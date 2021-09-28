@@ -2928,22 +2928,22 @@ Section interval.
 Variable R : numDomainType.
 
 Definition is_interval (E : set R) :=
-  forall x y, E x -> E y -> forall z, x < z < y -> E z.
+  forall x y, E x -> E y -> forall z, x <= z <= y -> E z.
 
-Lemma is_intervalPle (E : set R) :
-  is_interval E <-> forall x y, E x -> E y -> forall z, x <= z <= y -> E z.
+Lemma is_intervalPlt (E : set R) :
+  is_interval E <-> forall x y, E x -> E y -> forall z, x < z < y -> E z.
 Proof.
 split=> iE x y Ex Ey z /andP[].
-  rewrite le_eqVlt => /orP[/eqP <-//|xz]; rewrite le_eqVlt => /orP[/eqP ->//|?].
-  by apply (iE _ _ Ex Ey); rewrite xz.
-by move=> xz zy; apply (iE _ _ Ex Ey); rewrite (ltW xz) (ltW zy).
+  by move=> xz zy; apply: (iE x y); rewrite ?ltW.
+rewrite !le_eqVlt => /predU1P[<-//|xz] /predU1P[->//|zy].
+by apply: (iE x y); rewrite ?xz.
 Qed.
 
 Lemma interval_is_interval (i : interval R) : is_interval [set x | x \in i].
 Proof.
 by case: i => -[[]a|[]] [[]b|[]] // x y /=; do ?[by rewrite ?itv_ge//];
-   move=> xi yi z; rewrite -[x < z < y]/(z \in `]x, y[); apply/subitvP;
-   rewrite subitvE /Order.le/= ?(itvP xi, itvP yi).
+  move=> xi yi z; rewrite -[x <= z <= y]/(z \in `[x, y]); apply/subitvP;
+  rewrite subitvE /Order.le/= ?(itvP xi, itvP yi).
 Qed.
 
 End interval.
@@ -2987,7 +2987,7 @@ Proof.
 move=> iX lX uX; rewrite predeqE => x; split => // _.
 move/has_lbPn : lX => /(_ x) [y Xy xy].
 move/has_ubPn : uX => /(_ x) [z Xz xz].
-by apply: (iX _ _ Xy Xz); rewrite xy xz.
+by apply: (iX y z); rewrite ?ltW.
 Qed.
 
 Lemma interval_left_unbounded_interior (X : set R) : is_interval X ->
@@ -2998,7 +2998,7 @@ rewrite -(open_subsetE _ (@open_lt _ _)) => r rsupX.
 move/has_lbPn : lX => /(_ r)[y Xy yr].
 have hsX : has_sup X by split => //; exists y.
 have /(sup_adherent hsX)[e Xe] : 0 < sup X - r by rewrite subr_gt0.
-by rewrite opprB addrCA subrr addr0 => re; apply (iX _ _ Xy Xe); rewrite yr re.
+by rewrite opprB addrCA subrr addr0 => re; apply: (iX y e); rewrite ?ltW.
 Qed.
 
 Lemma interval_right_unbounded_interior (X : set R) : is_interval X ->
@@ -3009,7 +3009,7 @@ rewrite -(open_subsetE _ (@open_gt _ _)) => r infXr.
 move/has_ubPn : uX => /(_ r)[y Xy yr].
 have hiX : has_inf X by split => //; exists y.
 have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
-by rewrite addrCA subrr addr0 => er; apply: (iX _ _ Xe Xy); rewrite yr er.
+by rewrite addrCA subrr addr0 => er; apply: (iX e y); rewrite ?ltW.
 Qed.
 
 Lemma interval_bounded_interior (X : set R) : is_interval X ->
@@ -3027,7 +3027,7 @@ have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
 rewrite addrCA subrr addr0 => er.
 have hsX : has_sup X by split.
 have /(sup_adherent hsX)[f Xf] : 0 < sup X - r by rewrite subr_gt0.
-by rewrite opprB addrCA subrr addr0 => rf; apply: (iX _ _ Xe Xf); rewrite er rf.
+by rewrite opprB addrCA subrr addr0 => rf; apply: (iX e f); rewrite ?ltW.
 Qed.
 
 Definition Rhull (X : set R) : interval R := Interval
@@ -3094,7 +3094,9 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
 - apply: contrapT => Ez.
   pose Az := E `&` [set x | x < z]; pose Bz := E `&` [set x | z < x].
   apply/connectedPn : cE; exists (fun b => if b then Az else Bz); split.
-  + by case; [exists x | exists y].
+  + move: xz zy Ez.
+    rewrite !le_eqVlt => /predU1P[<-//|xz] /predU1P[->//|zy] Ez.
+    by case; [exists x | exists y].
   + rewrite /Az /Bz -setIUr; apply/esym/setIidPl => u Eu.
     by apply/orP; rewrite -neq_lt; apply/negP; apply: contraPnot Eu => /eqP <-.
   + split; [|rewrite setIC].
@@ -3125,32 +3127,32 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
       * by exists x; split => //; rewrite /mkset /= lexx /= (ltW xy).
     + by split=> //; rewrite /mkset lexx (ltW xy).
   have [A0z|A0z] := pselect ((A false) z); last first.
-    have {}xzy : x < z < y.
-      by rewrite zy lt_neqAle xz !andbT; apply/eqP; apply: contra_not A0z => <-.
+  have {}xzy : x <= z <= y by rewrite xz ltW.
     have : ~ E z by rewrite EU => -[].
     by apply; apply (intE x y) => //; rewrite EU; [left|right].
-  suff [z1 [/andP[zz1 z1y] Ez1]] : exists z1 : R, z < z1 < y /\ ~ E z1.
+  suff [z1 [/andP[zz1 z1y] Ez1]] : exists z1 : R, z <= z1 <= y /\ ~ E z1.
     apply Ez1; apply (intE x y) => //; rewrite ?EU; [by left|by right|].
-    by rewrite z1y (le_lt_trans _ zz1).
+    by rewrite z1y (le_trans _ zz1).
   have [r zcA1] : {r:{posnum R}| ball z r%:num `<=` ~` closure (A true)}.
     have ? : ~ closure (A true) z.
       by move: sepA; rewrite /separated => -[] _ /disjoints_subset; apply.
     have ? : open (~` closure (A true)) by exact/openC/closed_closure.
     exact/nbhsC_ball/open_nbhs_nbhs.
   pose z1 : R := z + r%:num / 2; exists z1.
-  have z1y : z1 < y.
-    rewrite ltNge; apply/negP => yz1.
+  have z1y : z1 <= y.
+    rewrite leNgt; apply/negP => yz1.
     suff : (~` closure (A true)) y by apply; exact: subset_closure.
     apply zcA1; rewrite /ball /= ltr_distl (lt_le_trans zy) // ?ler_addl //.
-    rewrite andbT ltr_subl_addl addrC (le_lt_trans yz1) // ltr_add2l.
+    rewrite andbT ltr_subl_addl addrC (lt_trans yz1) // ltr_add2l.
     by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
-  rewrite z1y andbT ltr_addl; split => //.
+  rewrite z1y andbT ler_addl; split => //.
   have ncA1z1 : (~` closure (A true)) z1.
     apply zcA1; rewrite /ball /= /z1 opprD addrA subrr add0r normrN.
     by rewrite ger0_norm // ltr_pdivr_mulr // ltr_pmulr // ltr1n.
   have nA0z1 : ~ (A false) z1.
     move=> A0z1; have : z < z1 by rewrite /z1 ltr_addl.
-    apply/negP; rewrite -leNgt; apply sup_ub; first by exists y => u [_] /andP[].
+    apply/negP; rewrite -leNgt.
+     apply: sup_ub; first by exists y => u [_] /andP[].
     by split => //; rewrite /mkset /z1 (le_trans xz) /= ?ler_addl // (ltW z1y).
   by rewrite EU => -[//|]; apply: contra_not ncA1z1; exact: subset_closure.
 Qed.
