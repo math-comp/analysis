@@ -1,12 +1,15 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
-From mathcomp Require Import seq fintype bigop order ssralg ssrnum finmap matrix.
+From mathcomp Require Import seq fintype bigop order ssralg ssrnum finmap.
+From mathcomp Require Import matrix interval.
 Require Import boolp reals classical_sets posnum.
 
 (******************************************************************************)
 (* This file develops tools for the manipulation of filters and basic         *)
 (* topological notions.                                                       *)
 (*                                                                            *)
+(*                 monotonous A f := {in A &, {mono f : x y / x <= y}} \/     *)
+(*                                   {in A &, {mono f : x y /~ x <= y}}.      *)
 (* * Filters :                                                                *)
 (*                   filteredType U == interface type for types whose         *)
 (*                                     elements represent sets of sets on U.  *)
@@ -523,6 +526,33 @@ Arguments bigmaxD1 {d T I} j {P F}.
 Arguments ler_bigmax_cond {d T I P F}.
 Arguments bigmax_eq_arg {d T I} i0 {P F}.
 Arguments eq_bigmax {d T I} i0 {P F}.
+
+Definition monotonous d (T : porderType d) (A : {pred T}) (f : T -> T) :=
+  {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
+
+Lemma and_prop_in (T : Type) (p : mem_pred T) (P Q : T -> Prop) :
+  {in p, forall x, P x /\ Q x} <->
+  {in p, forall x, P x} /\ {in p, forall x, Q x}.
+Proof.
+split=> [cnd|[cnd1 cnd2] x xin]; first by split=> x xin; case: (cnd x xin).
+by split; [apply: cnd1 | apply: cnd2].
+Qed.
+
+Lemma mem_inc_segment d (T : porderType d) (a b : T) (f : T -> T) :
+    {in `[a, b] &, {mono f : x y / (x <= y)%O}} ->
+  {homo f : x / x \in `[a, b] >-> x \in `[f a, f b]}.
+Proof.
+move=> fle x xab; have leab : (a <= b)%O by rewrite (itvP xab).
+by rewrite in_itv/= !fle ?(itvP xab).
+Qed.
+
+Lemma mem_dec_segment d (T : porderType d) (a b : T) (f : T -> T) :
+    {in `[a, b] &, {mono f : x y /~ (x <= y)%O}} ->
+  {homo f : x / x \in `[a, b] >-> x \in `[f b, f a]}.
+Proof.
+move=> fge x xab; have leab : (a <= b)%O by rewrite (itvP xab).
+by rewrite in_itv/= !fge ?(itvP xab).
+Qed.
 
 Section function_space.
 
@@ -4356,6 +4386,31 @@ Definition ball_
   (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V) (e : R) :=
   [set y | norm (x - y) < e].
 Arguments ball_ {R} {V} norm x e%R y /.
+
+(* TODO: backport to mathcomp in progress *)
+Lemma ltr_distlC (R : realDomainType) (x y e : R) :
+  (`|x - y| < e) = (x - e < y < x + e).
+Proof. by rewrite distrC ltr_distl. Qed.
+
+(* TODO: backport to mathcomp in progress *)
+Lemma ler_distlC (R : realDomainType) (x y e : R) :
+  (`|x - y| <= e) = (x - e <= y <= x + e).
+Proof. by rewrite distrC ler_distl. Qed.
+
+Lemma subset_ball_prop_in_itv (R : realDomainType) (x : R) e P :
+  (ball_ [eta Num.Def.normr] x e `<=` P)%classic <->
+  {in `](x - e), (x + e)[, forall y, P y}.
+Proof.
+by split=> exP y /=; rewrite ?in_itv (ltr_distlC, =^~ltr_distlC); apply: exP.
+Qed.
+
+Lemma subset_ball_prop_in_itvcc (R : realDomainType) (x : R) e P : 0 < e ->
+  (ball_ [eta Num.Def.normr] x (2 * e) `<=` P)%classic ->
+  {in `[(x - e), (x + e)], forall y, P y}.
+Proof.
+move=> e_gt0 PP y; rewrite in_itv/= -ler_distlC => ye; apply: PP => /=.
+by rewrite (le_lt_trans ye)// ltr_pmull// ltr1n.
+Qed.
 
 Global Instance ball_filter (R : realFieldType) (t : R) : Filter
   [set P | exists2 i : R, 0 < i & ball_ Num.norm t i `<=` P].
