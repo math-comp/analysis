@@ -1395,7 +1395,7 @@ Lemma pinfty_ex_gt {R : numFieldType} (m : R) (A : set R) : m \is Num.real ->
 Proof.
 by move=> m_real Agt; near (pinfty_nbhs R) => M;
    exists M; near: M => //; exists m.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma pinfty_ex_gt0 {R : numFieldType} (A : set R) :
   (\forall k \near +oo, A k) -> exists2 M, M > 0 & A M.
@@ -1506,7 +1506,7 @@ Lemma ex_strict_bound {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodT
 Proof.
 rewrite boundedE ex_strict_dom_bound ?strictly_dominated_by1//.
 by near=> x; rewrite oner_eq0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma ex_strict_bound_gt0 {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
   (f : T -> V) (F : set (set T)) {PF : Filter F}:
@@ -1659,7 +1659,7 @@ Lemma cvg_distW {F : set (set V)} {FF : Filter F} (y : V) :
 Proof.
 move=> cv; apply/cvg_distP => _/posnumP[e]; near=> x.
 by apply: normm_leW => //; near: x; apply: cv.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 End PseudoNormedZMod_numFieldType.
 
@@ -2099,7 +2099,7 @@ Proof.
 move=> [/=x y]; apply/cvg_distP=> _/posnumP[e].
 rewrite !near_simpl /=; near=> a b => /=; rewrite opprD addrACA.
 by rewrite normm_lt_split //; [near: a|near: b]; apply: cvg_dist.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 (* kludge *)
 Global Instance filter_nbhs (K' : numFieldType) (k : K') :
@@ -2118,7 +2118,7 @@ case: n => [|n] x; first exact: cvg_cst.
 apply/cvg_distP=> _/posnumP[e]; rewrite !near_simpl /=; near=> a.
 rewrite -mulrnBl normrMn -mulr_natr -ltr_pdivl_mulr//.
 by near: a; apply: cvg_dist.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
@@ -2134,7 +2134,7 @@ rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
 have zM : `|z| <= M by near: z; near: M; apply:cvg_bounded; apply: cvg_refl.
 rewrite (le_lt_trans (ler_pmul _ _ (lexx _) zM)) // ?ltW // -ltr_pdivl_mulr//.
 by near: l; apply: cvg_dist; rewrite // mulr_gt0// invr_gt0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Arguments scale_continuous _ _ : clear implicits.
 
@@ -2191,7 +2191,7 @@ move=> [x| |] /=.
 - rewrite muleC /mule/= eqe gt_eqF// lte_fin r0 => A [u [realu uA]].
   exists (r^-1 * u); split; first by rewrite realM// realV// realE (ltW r0).
   by move=> x xru; apply uA; move: xru; rewrite mulEFin lte_pdivl_mull.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 End mule_continuous.
 
@@ -2226,7 +2226,7 @@ rewrite ltr_pdivr_mulr ?normr_gt0 ?mulf_neq0//.
 apply: (@lt_le_trans _ _ (e%:num * (`|x| * (`|x| / 2)))).
   by rewrite distrC; near: y; apply: cvg_dist; rewrite ?mulr_gt0// ?normr_gt0.
 by rewrite normrM !ler_wpmul2l// ltW.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 End NVS_continuity_mul.
 
@@ -2693,7 +2693,7 @@ by near: y.
 rewrite ler_subl_addl -ler_subl_addr ltW //.
 suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
 by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Canonical R_regular_completeType (R : realType) :=
   CompleteType R^o (@R_complete R). (*todo : delete*)
@@ -2749,7 +2749,7 @@ have [nN|nN]/= := leqP N n.
   by apply: (le_trans (a_leM _ _)) => //; near: M; apply: nbhs_pinfty_ge_real.
 move: n nN; suff /(_ (Ordinal _)) : forall n : 'I_N, `|a n| <= M by [].
 by near: M; apply: filter_forall => i; apply: nbhs_pinfty_ge_real.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 End cvg_seq_bounded.
 
@@ -2778,7 +2778,7 @@ near=> n; rewrite -(@ltr_pmul2r _ n.+1%:R) // mulVr ?unitfE //.
 rewrite -(@ltr_pmul2l _ e%:num^-1) // mulr1 mulrA mulVr ?unitfE // mul1r.
 rewrite (lt_trans (archi_boundP _)) // ltr_nat.
 by near: n; exists (Num.bound e%:num^-1).
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma limit_pointP (T : archiFieldType) (A : set T) (x : T) :
   limit_point A x <-> exists a_ : nat -> T,
@@ -2801,7 +2801,7 @@ have @a_ : nat -> T.
     by apply/(nbhs_ballP (x:T) (U n)); rewrite nbhs_ballE; exists n.+1%:R^-1.
   by move/Ax/cid => [/= an [anx Aan Uan]]; exact: an.
 by exists a_ => n; rewrite /a_ /= /ssr_have; case: cid => ? [].
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Section open_closed_sets.
 Variable R : realFieldType (* TODO: can we generalize to numFieldType? *).
@@ -2906,7 +2906,7 @@ apply/subset_limit_point/limit_pointP; exists (fun n => z + n.+1%:R^-1); split.
 - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
   rewrite opprD addrA subrr add0r normrN ger0_norm //.
   by near: n; exact: near_infty_natSinv_lt.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma closure_lt z : closure ([set x : R | x < z]) = [set x | x <= z].
 Proof.
@@ -2920,7 +2920,7 @@ apply/subset_limit_point/limit_pointP; exists (fun n => v - n.+1%:R^-1); split.
 - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
   rewrite opprD addrA subrr add0r opprK ger0_norm //.
   by near: n; exact: near_infty_natSinv_lt.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 End closure_left_right_open.
 
@@ -3281,7 +3281,7 @@ rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
 move=> t; rewrite in_itv /=; case/andP => ltsupt letb.
 apply/contra_lt: ltsupt => leftv.
 by move/ubP : (sup_upper_bound supA); apply; rewrite /A/= leftv letb.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 (** Local properties in [R] *)
 
@@ -3742,7 +3742,7 @@ split=> - cfx P /= fxP.
 rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Section Closed_Ball.
 
@@ -3752,7 +3752,7 @@ Proof.
 rewrite openE -ball_normE /interior => r0 y /= Bxy; near=> z.
 rewrite /= (le_lt_trans (ler_dist_add y _ _)) // addrC -ltr_subr_addr.
 by near: z; apply: cvg_dist; rewrite // subr_gt0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
   (x : V) (e : R) := [set y | norm (x - y) <= e].
@@ -3844,13 +3844,13 @@ Lemma nbhs0_le (K : numFieldType) (V : normedModType K) e :
   0 < e -> \forall x \near nbhs (0 : V), `|x| <= e.
 Proof.
 by move => e_gt0; near=> x; apply: ltW; near: x; apply: nbhs0_lt.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma nbhs'0_le (K : numFieldType) (V : normedModType K) e :
   0 < e -> \forall x \near nbhs' (0 : V), `|x| <= e.
 Proof.
 by move => e_gt0; near=> x; apply: ltW; near: x; apply: nbhs'0_lt.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 
 Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
@@ -3868,7 +3868,7 @@ pose z := t + `|e| *: (t - x); have /tsxr /= : `|t - z| < s.
 rewrite /z opprD addrA -scalerN -{1}(scale1r (x - t)) opprB -scalerDl normmZ.
 apply lt_le_trans; rewrite ltr_pmull; last by rewrite normr_gt0 subr_eq0 eq_sym.
 by rewrite ger0_norm // ltr_addl normr_gt0 //; near: e; exists 1.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma open_nbhs_closed_ball (R : realType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> open_nbhs x (closed_ball x r)^°.
@@ -3902,7 +3902,7 @@ rewrite (le_trans (efM _ _)) //; last first.
 rewrite -ball_normE/= sub0r normrN normmZ normrM normfV //.
 rewrite normr_id -mulrA mulVf ?normr_eq0 // mulr1; near: y.
 by apply/nbhs_ballP; exists e%:num=> // z; rewrite -ball_normE /= sub0r normrN.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma linear_continuous0 (f : {linear V -> W}) :
   {for 0, continuous f} -> bounded_near f (nbhs (0 : V)).
@@ -3922,7 +3922,7 @@ rewrite normrM normr_id (gtr0_norm d0) invfM ?(normr_eq0,gt_eqF)//.
 rewrite mulrAC -mulrA mulfV ?normr_eq0 // mulr1 -div1r ltr_pdivr_mulr //.
 near: d; exists e%:num^-1; rewrite realE invr_ge0 posnum_ge0; split => // r.
 by rewrite -ltr_pdivr_mull ?mulr1.
-Grab Existential Variables. by end_near. Qed.
+Unshelve. by end_near. Qed.
 
 Lemma linear_bounded0 (f : {linear V -> W}) :
   bounded_near f (nbhs (0 : V)) -> {for 0, continuous f}.
@@ -3938,7 +3938,7 @@ rewrite (@le_lt_trans _ _ (e%:num / 2)) //; last first.
 move: xer; rewrite ltr_pdivl_mulr // => /ltW; apply le_trans.
 rewrite mulrC; apply fr; near: r; exists (y + 1) => //.
 by rewrite realD ?real1 //; split => // z; apply le_lt_trans; rewrite ler_addl.
-Grab Existential Variables. by end_near. Qed.
+Unshelve. by end_near. Qed.
 
 Lemma continuousfor0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
@@ -3954,7 +3954,7 @@ move: xy; rewrite ltr_pdivl_mulr //; apply le_lt_trans.
 rewrite mulrC; apply fr.
 near: r; exists (y + 1); rewrite realD // ?real1 //; split => // x.
 by apply le_lt_trans; rewrite ler_addl.
-Grab Existential Variables. by end_near. Qed.
+Unshelve. by end_near. Qed.
 
 Lemma linear_bounded_continuous (f : {linear V -> W}) :
   bounded_near f (nbhs (0 : V)) <-> continuous f.
@@ -3974,6 +3974,6 @@ near (@pinfty_nbhs R) => r; exists (y * r) => x xe.
 rewrite mulrC (@le_trans _ _ (r * `|x|)) //; first by move: {xe} x; near: r.
 rewrite ler_pmul //; near: r; exists 1.
 by rewrite real1; split => // x /ltW; apply le_trans.
-Grab Existential Variables. by end_near. Qed.
+Unshelve. by end_near. Qed.
 
 End LinearContinuousBounded.

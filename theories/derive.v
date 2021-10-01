@@ -93,7 +93,7 @@ rewrite /the_littleo /insubd /=; have [g /= _ <-{f}|/asboolP Nfe] /= := insubP.
   by rewrite /= subrK; near: y; have /eqoP := littleo_eqo g; apply.
 rewrite insubF //; apply/asboolP => fe; apply: Nfe => _/posnumP[eps].
 by rewrite [\forall x \near _, _ <= _](near_shift 0) subr0; apply: fe.
-Grab Existential Variables. end_near. Qed.
+Unshelve. end_near. Qed.
 
 End Differential.
 
@@ -177,7 +177,7 @@ rewrite (littleo_bigO_eqo (cst (1 : R))); last first.
   by move=> ? /=; rewrite -ball_normE /= sub0r normrN.
 rewrite addfo; first by move=> /eqolim; rewrite cvg_shift add0r.
 by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Section littleo_lemmas.
 
@@ -249,7 +249,7 @@ rewrite addrA -[X in X + _]scale1r -(@mulVf _ h) //.
 rewrite mulrC -scalerA -scalerBr normmZ.
 rewrite -ler_pdivl_mull; last by rewrite normr_gt0.
 by rewrite mulrCA mulVf ?mulr1; last by rewrite normr_eq0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma derivable_nbhsP (f : V -> W) a v :
   derivable f a v <->
@@ -266,7 +266,7 @@ rewrite /cst /= [`|1|]normr1 mulr1 addrA => dfv hN0.
 rewrite -[X in _ - X]scale1r -(@mulVf _ h) //.
 rewrite -scalerA -scalerBr normmZ normfV ler_pdivr_mull ?normr_gt0 //.
 by rewrite mulrC.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma derivable_nbhsx (f : V -> W) a v :
   derivable f a v -> forall h, f (a + h *: v) = f a + h *: 'D_v f a
@@ -459,7 +459,7 @@ rewrite -ball_normE /= distrC subr0 (le_lt_trans leOxkx) //.
 rewrite -ltr_pdivl_mull //; near: x; rewrite /= !nbhs_simpl.
 apply/nbhs_ballP; exists (k%:num ^-1 * d%:num)=> // x.
 by rewrite -ball_normE /= distrC subr0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma compoO_eqox (U V' W' : normedModType R) (f : U -> V')
   (g : V' -> W') :
@@ -482,7 +482,7 @@ rewrite -ball_normE /= distrC subr0; apply: le_lt_trans leoxekx _.
 rewrite -ltr_pdivl_mull //; near: x; rewrite /= nbhs_simpl.
 apply/nbhs_ballP; exists ((e%:num / k%:num) ^-1 * d%:num)=> // x.
 by rewrite -ball_normE /= distrC subr0.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 End DifferentialR3.
 
@@ -787,7 +787,7 @@ rewrite -ler_pdivl_mull //.
 suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite nng_le_maxr /= lexx.
 near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
 by exists (k%:num ^-1 * e%:num) => // ? /=; rewrite -ball_normE /= distrC subr0 => /ltW.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
   continuous (fun p => f p.1 p.2) ->
@@ -850,7 +850,7 @@ Lemma eqo_pair (U V' W' : normedModType R) (F : filter_on U)
 Proof.
 apply/eqoP => _/posnumP[e]; near=> x; rewrite nng_le_maxl /=.
 by apply/andP; split; near: x; apply: littleoP.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Fact dpair (U V' W' : normedModType R) (f : U -> V') (g : U -> W') x :
   differentiable f x -> differentiable g x ->
@@ -965,7 +965,7 @@ rewrite normrN [X in _ <= X]ger0_norm; last first.
   by rewrite ler_pdivr_mulr // -{1}(mulr1 `|x|) ler_pmul // ler1n.
 rewrite ler_subr_addr -ler_subr_addl (splitr `|x|).
 by rewrite normrM normfV (@ger0_norm _ 2) // -addrA subrr addr0; apply: ltW.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma diff_Rinv (x : R) : x != 0 ->
   'd GRing.inv x = (fun h : R => - x ^- 2 *: h) :> (R -> R).
@@ -1294,7 +1294,7 @@ rewrite scalerA mulrC -scalerA; congr (_ *: _).
 apply/eqP; rewrite scaleNr eqr_oppLR opprB scalerBr.
 rewrite -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
 by rewrite mulrC -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma deriveV (f : V -> R) x v : f x != 0 -> derivable f x v ->
   'D_v[fun y => (f y)^-1] x = - (f x) ^- 2 *: 'D_v f x.
@@ -1391,7 +1391,7 @@ rewrite /= !near_simpl; apply: filterS => x.
 rewrite /= distrC => /(le_lt_trans (ler_norm _)).
 rewrite ltr_subl_addr => /lt_le_trans; apply.
 by rewrite ltr0_norm // addrC subrr.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma ler0_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R) :
@@ -1451,7 +1451,7 @@ exists (c - a); first by rewrite /= subr_gt0 (itvP cab).
 move=> h; rewrite /= distrC subr0.
 move=> /ltr_normlP []; rewrite ltr_subr_addl ltr_subl_addl in_itv /= => -> _.
 by move=> /ltr_snsaddl -> //; rewrite (itvP cab).
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma derive1_at_min (R : realFieldType) (f : R -> R) (a b c : R) :
   a <= b -> (forall t, t \in `]a, b[ -> derivable f t 1) -> c \in `]a, b[ ->
