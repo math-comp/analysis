@@ -19,6 +19,7 @@ theories/Rstruct.v
 theories/topology.v
 theories/prodnormedzmodule.v
 theories/normedtype.v
+theories/realfun.v
 theories/sequences.v
 theories/cardinality.v
 theories/csum.v

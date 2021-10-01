@@ -148,7 +148,24 @@ move=> ? BfA u Bu; have [[t]|fAu] := pselect ((f @` A) u); first by exists t.
 by move: BfA; rewrite predeqE => /(_ u)[] /(_ (conj Bu fAu)).
 Qed.
 
+Lemma surjectiveE f A B :
+  surjective A B f = (B `<=` f @` A).
+Proof. by rewrite propeqE; split=> fP y /fP[x] => [[]|]; exists x. Qed.
+
+Lemma surj_image_eq B A f :
+ f @` A `<=` B -> surjective A B f -> f @` A = B.
+Proof. by move=> fAB; rewrite surjectiveE eqEsubset => BfA. Qed.
+
+Lemma can_surjective g f (A : {pred aT}) (B : {pred rT}) :
+    {in B, {on A, cancel g & f}} -> {homo g : x / x \in B >-> x \in A} ->
+  surjective A B f.
+Proof.
+move=> gK gBA y By; suff : A (g y) by exists (g y); rewrite gK ?inE.
+by have := gBA y; apply.
+Qed.
+
 End surjective_lemmas.
+Arguments can_surjective {aT rT} g [f A B].
 
 Lemma surjective_comp T1 T2 T3 (A : set T1) (B : set T2) (C : set T3) f g:
   surjective A B f -> surjective B C g -> surjective A C (g \o f).

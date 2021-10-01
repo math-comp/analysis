@@ -6,6 +6,56 @@
 
 - in `boolp.v`:
   + lemmas `orA`, `andA`
+  + definitions `equality_mixin_of_Type`, `choice_of_Type`
+- in `measure.v`:
+  + HB.mixin `AlgebraOfSets_from_RingOfSets`
+  + HB.structure `AlgebraOfSets` and notation `algebraOfSetsType`
+  + HB.instance `T_isAlgebraOfSets` in HB.builders `isAlgebraOfSets`
+  + lemma `bigcup_set_cond`
+- in `classical_sets.v`:
+  + lemmas `bigcupD1`, `bigcapD1`
+- in `measure.v`:
+  + definition `measurable_fun`
+  + lemma `adde_undef_nneg_series`
+  + lemma `adde_def_nneg_series`
+- in `measure.v`:
+  + lemmas `cvg_geometric_series_half`, `epsilon_trick`
+  + definition `measurable_cover`
+  + lemmas `cover_measurable`, `cover_subset`
+  + definition `mu_ext`
+  + lemmas `le_mu_ext`, `mu_ext_ge0`, `mu_ext0`, `measurable_uncurry`,
+    `mu_ext_sigma_subadditive`
+  + canonical `outer_measure_of_measure`
+- in `normedtype.v`:
+  + lemmas `ltr_distlC`, `ler_distlC`
+  + lemma `bound_itvE`
+  + lemmas `nearN`, `near_in_itv`, `at_right_in_segment`
+  + lemmas `itvxx`, `itvxxP`, `subset_itv_oo_cc`
+  + definition `monotonous`
+  + notations ``f @`[a, b]``, ``g @`]a , b[``
+  + lemma `can_stable_on`, `mem_inc_segment`, `mem_dec_segment`
+  + lemmas `subset_ball_prop_in_itv`, `subset_ball_prop_in_itvcc`
+  + lemma `and_prop_in`
+  + lemmas `mono_mem_image_segment`, `mono_mem_image_itvoo`, `mono_surj_image_segment`,
+    `inc_segment_image`, `dec_segment_image`, `inc_surj_image_segment`, `dec_surj_image_segment`,
+    `inc_surj_image_segmentP`, `dec_surj_image_segmentP`, ``mono_surj_image_segmentP``
+  + lemmas `itv_continuous_inj_mono`, `itv_continuous_inj_le`, `itv_continuous_inj_ge`
+  + lemmas `segment_continuous_inj_le`, `segment_continuous_inj_ge`,
+    `segment_can_le`, `segment_can_ge`, `segment_can_mono`
+  + lemmas `segment_continuous_surjective`, `segment_continuous_le_surjective`,
+    `segment_continuous_ge_surjective`
+  + lemmas `continuous_inj_image_segment`, `continuous_inj_image_segmentP`,
+    `segment_continuous_can_sym`, `segment_continuous_le_can_sym`, `segment_continuous_ge_can_sym`,
+    `segment_inc_surj_continuous`, `segment_dec_surj_continuous`, `segment_mono_surj_continuous`
+  + lemmas `segment_can_le_continuous`, `segment_can_ge_continuous`, `segment_can_continuous`
+  + lemmas `near_can_continuousAcan_sym`, `near_can_continuous`, `near_continuous_can_sym`
+- in `cardinality.v`:
+  + lemmas `surjectiveE`, `surj_image_eq`, `can_surjective`
+- file `realfun.v`:
+  + lemmas `exp_continuous`, `sqr_continuous`, `sqrt_continuous`.
+
+### Changed
+
 - in `measure.v`:
   + definition `seqDU`
   + lemmas `trivIset_seqDU`, `bigsetU_seqDU`, `seqDU_bigcup_eq`, `seqDUE`
@@ -47,6 +97,10 @@
 - in `normedtype.v`:
   + lemmas `ereal_is_cvgN`, `ereal_cvgZr`, `ereal_is_cvgZr`, `ereal_cvgZl`, `ereal_is_cvgZl`,
     `ereal_limZr`, `ereal_limZl`, `ereal_limN`
+  + lemma `cvg_bounded_real`
+  + lemma `pseudoMetricNormedZModType_hausdorff`
+- in `landau.v`:
+  + lemma `cvg_shift` renamed to `cvg_comp_shift` and moved to `normedtype.v`
 
 ### Changed
 

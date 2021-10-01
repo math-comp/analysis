@@ -38,6 +38,10 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*                      ball_norm == balls defined by the norm.               *)
 (*                      nbhs_norm == neighborhoods defined by the norm.       *)
 (*                    closed_ball == closure of a ball.                       *)
+(*                 monotonous A f := {in A &, {mono f : x y / x <= y}} \/     *)
+(*                                   {in A &, {mono f : x y /~ x <= y}}.      *)
+(*                  f @`[ a , b ] := `[minr (f a) (f b), maxr (f a) (f b)]    *)
+(*                  f @`] a , b [ := `]minr (f a) (f b), maxr (f a) (f b)[    *)
 (*                                                                            *)
 (* * Domination notations:                                                    *)
 (*              dominated_by h k f F == `|f| <= k * `|h|, near F              *)
@@ -58,6 +62,8 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*                                                                            *)
 (*                     is_interval E == the set E is an interval              *)
 (*                           Rhull E == the real interval hull of a set       *)
+(*                         shift x y == y + x                                 *)
+(*                          center c := shift (- c)                           *)
 (*                                                                            *)
 (* * Complete normed modules :                                                *)
 (*        completeNormedModType K == interface type for a complete normed     *)
@@ -75,6 +81,11 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*     the closed and bounded sets.                                           *)
 (*                                                                            *)
 (******************************************************************************)
+
+Reserved Notation "f @`[ a , b ]" (at level 20, b at level 9,
+  format "f  @`[ a ,  b ]").
+Reserved Notation "f @`] a , b [" (at level 20, b at level 9,
+  format "f  @`] a ,  b [").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -2802,12 +2813,12 @@ have @a_ : nat -> T.
 by exists a_ => n; rewrite /a_ /= /ssr_have; case: cid => ? [].
 Grab Existential Variables. all: end_near. Qed.
 
-(* TODO: backport to mathcomp *)
+(* TODO: backport to mathcomp in progress *)
 Lemma ltr_distlC (R : realDomainType) (x y e : R) :
   (`|x - y| < e) = (x - e < y < x + e).
 Proof. by rewrite distrC ltr_distl. Qed.
 
-(* TODO: backport to mathcomp *)
+(* TODO: backport to mathcomp in progress *)
 Lemma ler_distlC (R : realDomainType) (x y e : R) :
   (`|x - y| <= e) = (x - e <= y <= x + e).
 Proof. by rewrite distrC ler_distl. Qed.
@@ -2847,13 +2858,11 @@ rewrite (_ : mkset _ = ~` [set x | x > y]); first exact: closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
-
 Lemma closed_ge (y : R) : closed [set x : R | y <= x].
 Proof.
 rewrite (_ : mkset _ = ~` [set x | x < y]); first exact: closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
-
 
 Lemma closed_eq (y : R) : closed [set x : R | x = y].
 Proof.
@@ -3763,7 +3772,7 @@ have /= := ye (t - (x - y)); rewrite addrNK; apply.
 by rewrite -ball_normE /= opprB addrCA opprD addrA subrr add0r opprB.
 Qed.
 
-Lemma cvg_shift {T : Type} {K : numDomainType} {R : normedModType K}
+Lemma cvg_comp_shift {T : Type} {K : numDomainType} {R : normedModType K}
   (x y : R) (f : R -> T) :
   (f \o shift x) @ y = f @ (y + x).
 Proof.
@@ -3912,7 +3921,7 @@ Variables (R : numDomainType).
 (* multi-rule bound_in_itv already exists in interval.v, but we
   advocate that it should actually have the following statement.
   This does not expose the order between interval bounds. *)
-Lemma bound_itvE1 (a b : R): ((a \in `[a, b]) = (a <= b)) *
+Lemma bound_itvE (a b : R): ((a \in `[a, b]) = (a <= b)) *
                      ((b \in `[a, b]) = (a <= b)) *
                      ((a \in `[a, b[) = (a < b)) *
                      ((b \in `]a, b]) = (a < b)) *
@@ -3920,14 +3929,12 @@ Lemma bound_itvE1 (a b : R): ((a \in `[a, b]) = (a <= b)) *
                      (a \in `]-oo, a]).
 Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
 
-Definition bound_itvE := (bound_itvE1, boundr_in_itv, boundl_in_itv).
-
 End numDomainType.
 
 Lemma nearN {R : numFieldType} (a : R) (P : R -> Prop) :
-  (\forall x \near a,  P (- x)) <-> (\forall x \near (- a), P x).
+  (\forall x \near (- a), P x) <-> (\forall x \near a, P (- x)).
 Proof.
-split; last by apply: opp_continuous.
+split; first exact: opp_continuous.
 case=> [e epos Pe]; exists e;[exact epos | ].
 move=> z zclose; rewrite -(opprK z); apply: Pe.
 by move: zclose; rewrite /ball_ /= -opprD normrN opprK.
@@ -3950,11 +3957,169 @@ near: z; apply: nbhs0_lt; rewrite (lt_le_trans mingt0) //.
 by rewrite le_minl lexx orbT.
 Grab Existential Variables. all: end_near. Qed.
 
+(* TODO: backport to mathcomp in progress *)
+Lemma itvxx d (T : porderType d) (x : T) : `[x, x] =i pred1 x.
+Proof. by move=> y; rewrite in_itv/= -eq_le eq_sym. Qed.
+
+Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]).
+Proof. by rewrite itvxx; apply/eqP. Qed.
+
+Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}.
+Proof. by apply: subitvP; rewrite subitvE !bound_lexx. Qed.
+(* /TODO: backport to mathcomp in progress *)
+
+Definition monotonous d (T : porderType d) (A : {pred T}) (f : T -> T) :=
+    {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
+
+Lemma can_stable_on T0 T1 (f : T0 -> T1) (g : T1 -> T0) (A : {pred T0}) :
+  {in A, cancel f g} -> {homo f : x / x \in A >-> x \in [set f x | x in A]}.
+Proof. by move=> fg x xA; rewrite inE; exists x. Qed.
+
+Lemma mem_inc_segment d (T : porderType d) (a b : T) (f : T -> T) :
+    {in `[a, b] &, {mono f : x y / (x <= y)%O}} ->
+  {homo f : x / x \in `[a, b] >-> x \in `[f a, f b]}.
+Proof.
+move=> fle x xab; have leab : (a <= b)%O by rewrite (itvP xab).
+by rewrite in_itv/= !fle ?(itvP xab).
+Qed.
+
+Lemma mem_dec_segment d (T : porderType d) (a b : T) (f : T -> T) :
+    {in `[a, b] &, {mono f : x y /~ (x <= y)%O}} ->
+  {homo f : x / x \in `[a, b] >-> x \in `[f b, f a]}.
+Proof.
+move=> fge x xab; have leab : (a <= b)%O by rewrite (itvP xab).
+by rewrite in_itv/= !fge ?(itvP xab).
+Qed.
+
+Lemma subset_ball_prop_in_itv (R : realDomainType) (x : R) e P :
+  (ball_ [eta Num.Def.normr] x e `<=` P)%classic <->
+  {in `](x - e), (x + e)[, forall y, P y}.
+Proof.
+by split=> exP y /=; rewrite ?in_itv (ltr_distlC, =^~ltr_distlC); apply: exP.
+Qed.
+
+Lemma subset_ball_prop_in_itvcc (R : realDomainType) (x : R) e P : 0 < e ->
+  (ball_ [eta Num.Def.normr] x (2 * e) `<=` P)%classic ->
+  {in `[(x - e), (x + e)], forall y, P y}.
+Proof.
+move=> e_gt0 PP y; rewrite in_itv/= -ler_distlC => ye; apply: PP => /=.
+by rewrite (le_lt_trans ye)// ltr_pmull// ltr1n.
+Qed.
+
+Lemma and_prop_in (T : Type) (p : mem_pred T) (P Q : T -> Prop) :
+  {in p, forall x, P x /\ Q x} <->
+  {in p, forall x, P x} /\ {in p, forall x, Q x}.
+Proof.
+split=> [cnd|[cnd1 cnd2] x xin]; first by split=> x xin; case: (cnd x xin).
+by split; [apply: cnd1 | apply: cnd2].
+Qed.
+
+Lemma at_right_in_segment (R : realFieldType) (x : R) (P : set R) :
+  (\forall e \near at_right (0 : R), {in `[(x - e), (x + e)], forall x, P x})
+  <-> (\near x, P x).
+Proof.
+split=> -[_/posnumP[e] /(_ _)/= Px]; [exists (e%:num / 2)|exists e%:num] => //.
+  move=> y; rewrite /= ltr_distlC => /subset_itv_oo_cc; apply: Px => //.
+  by rewrite distrC subr0 ger0_norm// ltr_pdivr_mulr// ltr_pmulr// ltr1n.
+move=> e'; rewrite /= distrC subr0 => + e'_gt0; rewrite gtr0_norm// => lt_e'e.
+move=> y; rewrite in_itv/= -ler_distlC => distxye.
+by apply: Px; rewrite (le_lt_trans distxye).
+Qed.
+
+Notation "f @`[ a , b ]" := (`[minr (f a) (f b), maxr (f a) (f b)]).
+Notation "f @`] a , b [" := (`](minr (f a) (f b)), (maxr (f a) (f b))[).
+
+Section image_interval.
+Variable R : realDomainType.
+Implicit Types (a b : R) (f : R -> R).
+
+Lemma mono_mem_image_segment a b f : monotonous (mem `[a, b]) f ->
+  {homo f : x / x \in `[a, b] >-> x \in f @`[a, b]}.
+Proof.
+move=> [fle|fge] x xab; have leab : a <= b by rewrite (itvP xab).
+  have: f a <= f b by rewrite fle ?bound_itvE.
+  by case: leP => // fafb _; rewrite in_itv/= !fle ?(itvP xab).
+have: f a >= f b by rewrite fge ?bound_itvE.
+by case: leP => // fafb _; rewrite in_itv/= !fge ?(itvP xab).
+Qed.
+
+Lemma mono_mem_image_itvoo a b f : monotonous (mem `[a, b]) f ->
+  {homo f : x / x \in `]a, b[ >-> x \in f @`]a, b[}.
+Proof.
+move=> []/[dup] => [/leW_mono_in|/leW_nmono_in] flt fle x xab;
+    have ltab : a < b by rewrite (itvP xab).
+  have: f a <= f b by rewrite ?fle ?bound_itvE ?ltW.
+  by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
+have: f a >= f b by rewrite fle ?bound_itvE ?ltW.
+by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
+Qed.
+
+Lemma mono_surj_image_segment a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
+  a <= b -> monotonous (mem `[a, b]) f -> surjective I J f -> f @` I = J.
+Proof.
+move=> leab fmono; apply: surj_image_eq => _ /= [x Ix <-];
+exact: mono_mem_image_segment.
+Qed.
+
+Lemma inc_segment_image a b f : f a <= f b -> f @`[a, b] = `[f a, f b].
+Proof. by case: ltrP. Qed.
+
+Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a].
+Proof. by case: ltrP. Qed.
+
+Lemma inc_surj_image_segment a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f a, f b]]) :
+  a <= b -> {in `[a, b] &, {mono f : x y / x <= y}} -> surjective I J f ->
+  f @` I = J.
+Proof.
+move=> leab fle f_surj; have fafb : f a <= f b by rewrite fle ?bound_itvE.
+by rewrite mono_surj_image_segment ?inc_segment_image//; left.
+Qed.
+
+Lemma dec_surj_image_segment a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f b, f a]]) :
+  a <= b -> {in `[a, b] &, {mono f : x y /~ x <= y}} -> surjective I J f ->
+  f @` I = J.
+Proof.
+move=> leab fge f_surj; have fafb : f b <= f a by rewrite fge ?bound_itvE.
+by rewrite mono_surj_image_segment ?dec_segment_image//; right.
+Qed.
+
+Lemma inc_surj_image_segmentP a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f a, f b]]) :
+  a <= b -> {in `[a, b] &, {mono f : x y / x <= y}} -> surjective I J f ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f a, f b]).
+Proof.
+move=> /inc_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+by apply/(equivP idP); symmetry.
+Qed.
+
+Lemma dec_surj_image_segmentP a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f b, f a]]) :
+  a <= b -> {in `[a, b] &, {mono f : x y /~ x <= y}} -> surjective I J f ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f b, f a]).
+Proof.
+move=> /dec_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+by apply/(equivP idP); symmetry.
+Qed.
+
+Lemma mono_surj_image_segmentP a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
+  a <= b -> monotonous (mem `[a, b]) f -> surjective I J f ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
+Proof.
+move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+by apply/(equivP idP); symmetry.
+Qed.
+
+End image_interval.
+
 Section real_inverse_functions.
-
 Variable R : realType.
+Implicit Types (a b : R) (f g : R -> R).
 
-Lemma itv_continuous_inj_le (f : R -> R) (I : interval R) :
+Lemma itv_continuous_inj_le f (I : interval R) :
   (exists x y, [/\ x \in I, y \in I, x < y & f x <= f y]) ->
   {in I, continuous f} -> {in I &, injective f} ->
   {in I &, {mono f : x y / x <= y}}.
@@ -4035,7 +4200,7 @@ have [yLv | vLy | -> //] := ltrgtP y v; first by case: (whole u y v).
 by case: (low u v y).
 Qed.
 
-Lemma itv_continuous_inj_ge (f : R -> R) (I : interval R) :
+Lemma itv_continuous_inj_ge f (I : interval R) :
   (exists x y, [/\ x \in I, y \in I, x < y & f y <= f x]) ->
   {in I, continuous f} -> {in I &, injective f} ->
   {in I &, {mono f : x y /~ x <= y}}.
@@ -4048,12 +4213,9 @@ apply: itv_continuous_inj_le xI => // [|x1 x1I | x1 x2 x1I x2I].
 by move/oppr_inj; apply/fI.
 Qed.
 
-Definition monotonous (A : {pred R}) (f : R -> R) :=
-    {in A &, {mono f : x y / x <= y}} \/ {in A &, {mono f : x y /~ x <= y}}.
-
-Lemma itv_continuous_inj_mono (f : R -> R) (I : interval R) :
+Lemma itv_continuous_inj_mono f (I : interval R) :
     {in I, continuous f} -> {in I &, injective f} ->
-    monotonous (mem I) f.
+  monotonous (mem I) f.
 Proof.
 move=> fC fI.
 case: (pselect (exists a b, [/\ a \in I , b \in I & a < b])); last first.
@@ -4065,13 +4227,7 @@ have /orP[faLfb|fbLfa] := le_total (f a) (f b).
 by right; apply: itv_continuous_inj_ge => //; exists a, b; rewrite ?fbLfa.
 Qed.
 
-Lemma itvxx d (T : porderType d) (x : T) : `[x, x] =i pred1 x.
-Proof. by move=> y; rewrite in_itv/= -eq_le eq_sym. Qed.
-
-Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]).
-Proof. by rewrite itvxx; apply/eqP. Qed.
-
-Lemma segment_continuous_inj_le (f : R -> R) (a b : R) :
+Lemma segment_continuous_inj_le f a b :
     f a <= f b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
   {in `[a, b] &, {mono f : x y / x <= y}}.
 Proof.
@@ -4083,7 +4239,7 @@ move=> /(_ a b); rewrite !bound_itvE fafb.
 by move=> /(_ (ltW aLb) (ltW aLb)); rewrite lt_geF.
 Qed.
 
-Lemma segment_continuous_inj_ge (f : R -> R) (a b : R) :
+Lemma segment_continuous_inj_ge f a b :
     f a >= f b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
   {in `[a, b] &, {mono f : x y /~ x <= y}}.
 Proof.
@@ -4101,7 +4257,7 @@ Let Mf (f : R -> R) a b := {in `[a, b] &, {mono f : x y / x <= y}}.
 
 (* The condition "f a <= f b" is unnecessary because the last                *)
 (* interval condition is vacuously true otherwise.                           *)
-Lemma segment_can_le (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_can_le a b f g : a <= b ->
     {in `[a, b], continuous f} ->
     {in `[a, b], cancel f g} ->
   {in `[(f a), (f b)] &, {mono g : x y / x <= y}}.
@@ -4120,7 +4276,7 @@ by have [[u uin <-] [v vin <-]] := (ivt _ xin, ivt _ yin); rewrite !fK// !fle.
 Qed.
 
 (* The condition "f b <= f a" is unnecessary---see seg...increasing above    *)
-Lemma segment_can_ge (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_can_ge a b f g : a <= b ->
     {in `[a, b], continuous f} ->
     {in `[a, b], cancel f g} ->
   {in `[(f b), (f a)] &, {mono g : x y /~ x <= y}}.
@@ -4133,13 +4289,7 @@ apply: (@segment_can_le (- b) (- a) (f \o -%R) (- g));
 by move=> z zab; rewrite -[- g]/(@GRing.opp _ \o g)/= fK ?opprK// oppr_itvcc.
 Qed.
 
-Notation "f @`[ a , b ]" := (`[minr (f a) (f b), maxr (f a) (f b)])
-  (at level 20, b at level 9, format "f  @`[ a ,  b ]").
-
-Notation "f @`] a , b [" := (`](minr (f a) (f b)), (maxr (f a) (f b))[)
-  (at level 20, b at level 9, format "f  @`] a ,  b [").
-
-Lemma segment_can_mono (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_can_mono a b f g : a <= b ->
     {in `[a, b], continuous f} -> {in `[a, b], cancel f g} ->
   monotonous (mem (f @`[a, b])) g.
 Proof.
@@ -4148,127 +4298,13 @@ move=> le_ab fct fK; rewrite /monotonous/=; case: ltrgtP => fab; [left|right..];
 by move=> x y /itvxxP<- /itvxxP<-; rewrite !lexx.
 Qed.
 
-(* backport to mathcomp *)
-Lemma subset_itv_oo_cc (a b : R) : {subset `]a, b[ <= `[a, b]}.
-Proof. by apply: subitvP; rewrite subitvE !bound_lexx. Qed.
-
-Lemma surjectiveE X Y (f : X -> Y) I J :
-  surjective I J f = (J `<=` f @` I).
-Proof. by rewrite propeqE; split=> fP y /fP[x] => [[]|]; exists x. Qed.
-
-Lemma surj_image_eq X Y J I (f : X -> Y):
- f @` I `<=` J -> surjective I J f -> f @` I = J.
-Proof. by move=> fIJ; rewrite surjectiveE eqEsubset => JfI. Qed.
-
-Lemma can_stable_on X Y (f : X -> Y) (g : Y -> X) (A : {pred X}) :
-  {in A, cancel f g} -> {homo f : x / x \in A >-> x \in [set f x | x in A]}.
-Proof. by move=> fg x xA; rewrite inE; exists x. Qed.
-
-Lemma mono_mem_image_segment (a b : R) (f : R -> R) : monotonous (mem `[a, b]) f ->
-  {homo f : x / x \in `[a, b] >-> x \in f @`[a, b]}.
-Proof.
-move=> [fle|fge] x xab; have leab : a <= b by rewrite (itvP xab).
-  have: f a <= f b by rewrite fle ?bound_itvE.
-  by case: leP => // fafb _; rewrite in_itv/= !fle ?(itvP xab).
-have: f a >= f b by rewrite fge ?bound_itvE.
-by case: leP => // fafb _; rewrite in_itv/= !fge ?(itvP xab).
-Qed.
-
-Lemma mono_mem_image_itvoo (a b : R) (f : R -> R) : monotonous (mem `[a, b]) f ->
-  {homo f : x / x \in `]a, b[ >-> x \in f @`]a, b[}.
-Proof.
-move=> []/[dup] => [/leW_mono_in|/leW_nmono_in] flt fle x xab;
-    have ltab : a < b by rewrite (itvP xab).
-  have: f a <= f b by rewrite ?fle ?bound_itvE ?ltW.
-  by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
-have: f a >= f b by rewrite fle ?bound_itvE ?ltW.
-by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
-Qed.
-
-Lemma mem_inc_segment (a b : R) (f : R -> R) :
-    {in `[a, b] &, {mono f : x y / x <= y}} ->
-  {homo f : x / x \in `[a, b] >-> x \in `[f a, f b]}.
-Proof.
-move=> fle x xab; have leab : a <= b by rewrite (itvP xab).
-by rewrite in_itv/= !fle ?(itvP xab).
-Qed.
-
-Lemma mem_dec_segment (a b : R) (f : R -> R) :
-    {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-  {homo f : x / x \in `[a, b] >-> x \in `[f b, f a]}.
-Proof.
-move=> fge x xab; have leab : a <= b by rewrite (itvP xab).
-by rewrite in_itv/= !fge ?(itvP xab).
-Qed.
-
-Lemma mono_surj_image_segment a b (f : R -> R)
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
-  a <= b -> monotonous (mem `[a, b]) f -> surjective I J f -> f @` I = J.
-Proof.
-move=> leab fmono; apply: surj_image_eq => _ /= [x Ix <-];
-exact: mono_mem_image_segment.
-Qed.
-
-Lemma inc_segment_image a b (f : R -> R) : f a <= f b ->
-  f @`[a, b] = `[f a, f b].
-Proof. by case: ltrP. Qed.
-
-Lemma dec_segment_image a b (f : R -> R) : f b <= f a ->
-  f @`[a, b] = `[f b, f a].
-Proof. by case: ltrP. Qed.
-
-Lemma inc_surj_image_segment a b (f : R -> R)
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f a, f b]]) :
-  a <= b -> {in `[a, b] &, {mono f : x y / x <= y}} -> surjective I J f ->
-  f @` I = J.
-Proof.
-move=> leab fle f_surj; have fafb : f a <= f b by rewrite fle ?bound_itvE.
-by rewrite mono_surj_image_segment ?inc_segment_image//; left.
-Qed.
-
-Lemma dec_surj_image_segment a b (f : R -> R)
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f b, f a]]) :
-  a <= b -> {in `[a, b] &, {mono f : x y /~ x <= y}} -> surjective I J f ->
-  f @` I = J.
-Proof.
-move=> leab fge f_surj; have fafb : f b <= f a by rewrite fge ?bound_itvE.
-by rewrite mono_surj_image_segment ?dec_segment_image//; right.
-Qed.
-
-Lemma inc_surj_image_segmentP a b (f : R -> R)
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f a, f b]]) :
-  a <= b -> {in `[a, b] &, {mono f : x y / x <= y}} -> surjective I J f ->
-  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f a, f b]).
-Proof.
-move=> /inc_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
-by apply/(equivP idP); symmetry.
-Qed.
-
-Lemma dec_surj_image_segmentP a b (f : R -> R)
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f b, f a]]) :
-  a <= b -> {in `[a, b] &, {mono f : x y /~ x <= y}} -> surjective I J f ->
-  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f b, f a]).
-Proof.
-move=> /dec_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
-by apply/(equivP idP); symmetry.
-Qed.
-
-Lemma mono_surj_image_segmentP a b (f : R -> R)
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
-  a <= b -> monotonous (mem `[a, b]) f -> surjective I J f ->
-  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
-Proof.
-move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
-by apply/(equivP idP); symmetry.
-Qed.
-
-Lemma segment_continuous_surjective a b (f : R -> R)
+Lemma segment_continuous_surjective a b f
     (I := [set z | z \in `[a, b]])
     (J := [set z | z \in f @`[a, b]]) :
   a <= b -> {in `[a, b], continuous f} -> surjective I J f.
 Proof. by rewrite /I /J => le_ab fct y/= /IVT[]// x; exists x. Qed.
 
-Lemma segment_continuous_le_surjective a b (f : R -> R)
+Lemma segment_continuous_le_surjective a b f
     (I := [set z | z \in `[a, b]])
     (J := [set z | z \in `[f a, f b]]) :
   a <= b -> f a <= f b -> {in `[a, b], continuous f} -> surjective I J f.
@@ -4277,7 +4313,7 @@ move=> le_ab f_ab /(segment_continuous_surjective le_ab).
 by rewrite (min_idPl _)// (max_idPr _).
 Qed.
 
-Lemma segment_continuous_ge_surjective a b (f : R -> R)
+Lemma segment_continuous_ge_surjective a b f
     (I := [set z | z \in `[a, b]])
     (J := [set z | z \in `[f b, f a]]) :
   a <= b -> f b <= f a -> {in `[a, b], continuous f} -> surjective I J f.
@@ -4286,7 +4322,7 @@ move=> le_ab f_ab /(segment_continuous_surjective le_ab).
 by rewrite (min_idPr _)// (max_idPl _).
 Qed.
 
-Lemma continuous_inj_image_segment a b (f : R -> R)
+Lemma continuous_inj_image_segment a b f
     (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
     a <= b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
   f @` I = J.
@@ -4296,7 +4332,7 @@ move=> leab fct finj; apply: mono_surj_image_segment => //.
 exact: segment_continuous_surjective.
 Qed.
 
-Lemma continuous_inj_image_segmentP a b (f : R -> R)
+Lemma continuous_inj_image_segmentP a b f
     (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
     a <= b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
@@ -4305,7 +4341,7 @@ move=> /continuous_inj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeJ.
 by apply/(equivP idP); symmetry.
 Qed.
 
-Lemma segment_continuous_can_sym (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_continuous_can_sym a b f g : a <= b ->
     {in `[a, b], continuous f} ->
     {in `[a, b], cancel f g} ->
   {in f @`[a, b], cancel g f}.
@@ -4321,7 +4357,7 @@ have: {in f @`[a, b] &, {on `[a, b]  &, injective g}}.
 by apply/ssrbool.inj_can_sym_in_on => x xab; rewrite ?fK ?mono_mem_image_segment.
 Qed.
 
-Lemma segment_continuous_le_can_sym (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_continuous_le_can_sym a b f g : a <= b ->
     {in `[a, b], continuous f} ->
     {in `[a, b], cancel f g} ->
   {in `[f a, f b], cancel g f}.
@@ -4331,7 +4367,7 @@ have : f a <= f b by rewrite (itvP xfafb).
 by case: ltrgtP xfafb => // ->.
 Qed.
 
-Lemma segment_continuous_ge_can_sym (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_continuous_ge_can_sym a b f g : a <= b ->
     {in `[a, b], continuous f} ->
     {in `[a, b], cancel f g} ->
   {in `[f b, f a], cancel g f}.
@@ -4341,7 +4377,7 @@ have : f a >= f b by rewrite (itvP xfafb).
 by case: ltrgtP xfafb => // ->.
 Qed.
 
-Lemma segment_inc_surj_continuous a b (f : R -> R)
+Lemma segment_inc_surj_continuous a b f
     (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f a, f b]]) :
     {in `[a, b] &, {mono f : x y / x <= y}} -> surjective I J f ->
   {in `]a, b[, continuous f}.
@@ -4384,7 +4420,7 @@ apply: subset_itv_oo_cc; near: y; apply: near_in_itv; rewrite in_itv/= -[x]fK//.
 by rewrite !glt//= lt_minr lt_maxl !(itvP fxab) ?andbT ltr_subl_addr ltr_spaddr.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma segment_dec_surj_continuous a b (f : R -> R)
+Lemma segment_dec_surj_continuous a b f
     (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f b, f a]]) :
     {in `[a, b] &, {mono f : x y /~ x <= y}} -> surjective I J f ->
   {in `]a, b[, continuous f}.
@@ -4397,7 +4433,7 @@ apply: segment_inc_surj_continuous.
 by move=> y/=; rewrite -oppr_itvcc => /f_surj[x [? /(canRL opprK)->]]; exists x.
 Qed.
 
-Lemma segment_mono_surj_continuous a b (f : R -> R)
+Lemma segment_mono_surj_continuous a b f
     (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
     monotonous (mem `[a, b]) f -> surjective I J f ->
   {in `]a, b[, continuous f}.
@@ -4409,16 +4445,7 @@ have fafb: f b <= f a by rewrite fge // ?bound_itvE.
 by apply: segment_dec_surj_continuous x xab => //; case: ltrP f_surj fafb.
 Qed.
 
-Lemma can_surjective X Y g (f : X -> Y) (A : {pred X}) (B : {pred Y}) :
-    {in B, {on A, cancel g & f}} -> {homo g : x / x \in B >-> x \in A} ->
-  surjective A B f.
-Proof.
-move=> gK gBA y By; suff : A (g y) by exists (g y); rewrite gK ?inE.
-by have := gBA y; apply.
-Qed.
-Arguments can_surjective {X Y} g [f A B].
-
-Lemma segment_can_le_continuous (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_can_le_continuous a b f g : a <= b ->
   {in `[a, b], continuous f} ->
   {in `[a, b], cancel f g} ->
   {in `](f a), (f b)[, continuous g}.
@@ -4429,7 +4456,7 @@ rewrite !fK ?bound_itvE//=; apply: can_surjective _ (on1lW_in _ fK) _.
 exact/mem_inc_segment/segment_continuous_inj_le/(can_in_inj fK).
 Qed.
 
-Lemma segment_can_ge_continuous (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_can_ge_continuous a b f g : a <= b ->
   {in `[a, b], continuous f} ->
   {in `[a, b], cancel f g} ->
   {in `](f b), (f a)[, continuous g}.
@@ -4440,7 +4467,7 @@ rewrite !fK ?bound_itvE//=; apply: can_surjective _ (on1lW_in _ fK) _.
 exact/mem_dec_segment/segment_continuous_inj_ge/(can_in_inj fK).
 Qed.
 
-Lemma segment_can_continuous (a b : R) (f g : R -> R) : a <= b ->
+Lemma segment_can_continuous a b f g : a <= b ->
   {in `[a, b], continuous f} ->
   {in `[a, b], cancel f g} ->
   {in f @`]a, b[, continuous g}.
@@ -4449,54 +4476,13 @@ move=> aLb crf fK x; case: lerP => // _;
   by [apply: segment_can_ge_continuous|apply: segment_can_le_continuous].
 Qed.
 
-Lemma subset_ball_prop_in_itv (x : R) e P :
-  (ball_ [eta Num.Def.normr] x e `<=` P)%classic <->
-  {in `](x - e), (x + e)[, forall y, P y}.
-Proof.
-by split=> exP y /=; rewrite ?in_itv (ltr_distlC, =^~ltr_distlC); apply: exP.
-Qed.
-
-Lemma subset_ball_prop_in_itvcc (x : R) e P : 0 < e ->
-  (ball_ [eta Num.Def.normr] x (2 * e) `<=` P)%classic ->
-  {in `[(x - e), (x + e)], forall y, P y}.
-Proof.
-move=> e_gt0 PP y; rewrite in_itv/= -ler_distlC => ye; apply: PP => /=.
-by rewrite (le_lt_trans ye)// ltr_pmull// ltr1n.
-Qed.
-
-Lemma and_prop_in (p : mem_pred R) (P Q : R -> Prop) :
-  {in p, forall x, P x /\ Q x} <->
-  {in p, forall x, P x} /\ {in p, forall x, Q x}.
-Proof.
-split=> [cnd|[cnd1 cnd2] x xin]; first by split=> x xin; case: (cnd x xin).
-by split; [apply: cnd1 | apply: cnd2].
-Qed.
-
-Lemma leNr (F : numDomainType) (x : F) : 0 <= x -> - x <= x.
-Proof. by move=> x_ge0; rewrite (le_trans _ x_ge0)// oppr_le0. Qed.
-
-Lemma lerN (F : numDomainType) (x : F) : x <= 0 -> x <= - x.
-Proof. by move=> x_le0; rewrite -[X in X <= _]opprK leNr// oppr_ge0. Qed.
-
-Lemma at_right_in_segment (x : R) (P : set R) :
-  (\forall e \near at_right (0 : R), {in `[(x - e), (x + e)], forall x, P x})
-  <-> (\near x, P x).
-Proof.
-split=> -[_/posnumP[e] /(_ _)/= Px]; [exists (e%:num / 2)|exists e%:num] => //.
-  move=> y; rewrite /= ltr_distlC => /subset_itv_oo_cc; apply: Px => //.
-  by rewrite distrC subr0 ger0_norm// ltr_pdivr_mulr// ltr_pmulr// ltr1n.
-move=> e'; rewrite /= distrC subr0 => + e'_gt0; rewrite gtr0_norm// => lt_e'e.
-move=> y; rewrite in_itv/= -ler_distlC => distxye.
-by apply: Px; rewrite (le_lt_trans distxye).
-Qed.
-
-Lemma near_can_continuousAcan_sym (f g : R -> R) (x : R) :
+Lemma near_can_continuousAcan_sym f g (x : R) :
     {near x, cancel f g} -> {near x, continuous f} ->
   {near (f x), continuous g} /\ {near (f x), cancel g f}.
 Proof.
 move=> fK fct; near (at_right (0 : R)) => e.
 have e_gt0 : 0 < e by near: e; exists 1.
-have xBeLxDe : x - e <= x + e by rewrite ler_add2l leNr// ?ltW.
+have xBeLxDe : x - e <= x + e by rewrite ler_add2l gt0_cp.
 have fcte : {in `[(x - e), (x + e)], continuous f}.
   by near: e; apply/at_right_in_segment.
 have fKe : {in `[(x - e), (x + e)], cancel f g}
@@ -4512,54 +4498,15 @@ rewrite (@segment_continuous_can_sym (x - e) (x + e))//.
 by apply: subset_itv_oo_cc; near: y.
 Grab Existential Variables. all:end_near. Qed.
 
-Lemma near_can_continuous (f g : R -> R) (x : R) :
+Lemma near_can_continuous f g (x : R) :
   {near x, cancel f g} -> {near x, continuous f} -> {near (f x), continuous g}.
 Proof. by move=> fK fct; have [] := near_can_continuousAcan_sym fK fct. Qed.
 
-Lemma near_continuous_can_sym (f g : R -> R) (x : R) :
+Lemma near_continuous_can_sym f g (x : R) :
   {near x, continuous f} -> {near x, cancel f g} -> {near (f x), cancel g f}.
 Proof. by move=> fct fK; have [] := near_can_continuousAcan_sym fK fct. Qed.
 
 End real_inverse_functions.
-
-Section real_inverse_function_instances.
-
-Variable R : realType.
-
-Lemma exp_continuous n: continuous (@GRing.exp R ^~ n).
-Proof.
-move=> x; elim: n=> [ | n Ih]; first by apply: cst_continuous.
-have cid : {for x, continuous id} by [].
-have cexp : {for x, continuous (@GRing.exp R ^~ n)} by rewrite forE; apply: Ih.
-have := continuousM cid cexp; rewrite forE /=.
-rewrite exprS (_ : @GRing.exp R ^~ n.+1 = (@idfun R) * (@GRing.exp R ^~ n))//.
-by apply: funext => y; rewrite exprS.
-Qed.
-
-Lemma sqr_continuous : continuous (exprz (R := R) ^~ 2).
-Proof. exact: (@exp_continuous 2%N). Qed.
-
-Lemma sqrt_continuous : continuous (@Num.sqrt R).
-Proof.
-move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
-- apply: (near_cst_continuous 0); rewrite (near_shift 0 x).
-  near=> z; rewrite subr0 /=; apply: ltr0_sqrtr.
-  rewrite -(opprK x) subr_lt0; apply: ltr_normlW.
-  by near: z; apply: nbhs0_lt; rewrite ltr_oppr oppr0.
-- suff main b : 0 <= b -> {in `]0 ^+ 2, (b ^+ 2)[, continuous (@Num.sqrt R)}.
-    apply: (@main (x + 1)); rewrite ?ler_paddl// ?in_itv/= ?ltW// expr0n xgt0/=.
-    by rewrite sqrrD1 ltr_paddr// ltr_paddl ?sqr_ge0// (ltr_pmuln2l _ 1%N 2%N).
-  move=> b0; apply: (@segment_can_le_continuous _ _ _ (@GRing.exp _^~ _)) => //.
-    by apply: in1W; apply: exp_continuous.
-  by move=> y y0b; rewrite sqrtr_sqr ger0_norm// (itvP y0b).
-- apply/cvg_distP=> _ /posnumP[e]; rewrite !near_simpl /=; near=> y.
-  rewrite sqrtr0 sub0r normrN ger0_norm ?sqrtr_ge0 //.
-  have [ylt0|yge0] := ltrP y 0; first by rewrite ltr0_sqrtr//.
-  have: `|y| < e%:num ^+ 2 by near: y; apply: nbhs0_lt.
-  by rewrite -ltr_sqrt// ger0_norm// sqrtr_sqr ger0_norm.
-Grab Existential Variables. all: end_near. Qed.
-
-End real_inverse_function_instances.
 
 Section LinearContinuousBounded.
 
