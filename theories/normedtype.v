@@ -5,7 +5,6 @@ From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 Require Import boolp ereal reals.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 
-
 (******************************************************************************)
 (* This file extends the topological hierarchy with norm-related notions.     *)
 (*                                                                            *)
@@ -362,8 +361,8 @@ move=> /= M s /= /(nbhs_ballP (M i j)) [e e0 es].
 apply/nbhs_ballP; exists e => //= N MN; exact/es/MN.
 Qed.
 
-Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R) :
-  ProperFilter (nbhs' x).
+Global Instance Proper_dnbhs_numFieldType (R : numFieldType) (x : R) :
+  ProperFilter x^'.
 Proof.
 apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2); apply: Ae; last first.
@@ -372,9 +371,9 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
-Global Instance Proper_nbhs'_realType (R : realType) (x : R) :
-  ProperFilter (nbhs' x).
-Proof. exact: Proper_nbhs'_numFieldType. Qed.
+Global Instance Proper_dnbhs_realType (R : realType) (x : R) :
+  ProperFilter x^'.
+Proof. exact: Proper_dnbhs_numFieldType. Qed.
 
 (** * Some Topology on [Rbar] *)
 
@@ -1928,7 +1927,7 @@ Proof.
 rewrite [in RHS]/mx_norm; elim: k => [|k ih]; first by rewrite !mulr0n mx_norm0.
 rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite -ih; exact/ler_mx_norm_add.
-have [/eqP/mx_norm_eq0->|x0] := boolP (mx_norm x == 0).
+have [/mx_norm_eq0->|x0] := eqVneq (mx_norm x) 0.
   by rewrite -/(mx_norm 0) -/(mx_norm 0) !(mul0rn,addr0,mx_norm0).
 rewrite -/(mx_norm x) -nng_abs_le; last by rewrite addr_ge0 // mulrn_wge0.
 apply/bigmax_gerP; right => /=.
@@ -3020,7 +3019,7 @@ move=> iX bX aX; rewrite eqEsubset; split=> [r Xr|].
     [exact: left_bounded_interior|exact: right_bounded_interior].
 rewrite -open_subsetE; last exact: (@interval_open _ (BRight _) (BLeft _)).
 move=> r /andP[iXr rsX].
-have [/set0P X0|/negPn/eqP X0] := boolP (X != set0); last first.
+have [X0|/set0P X0] := eqVneq X set0.
   by move: (lt_trans iXr rsX); rewrite X0 inf_out ?sup_out ?ltxx // => - [[]].
 have hiX : has_inf X by split.
 have /(inf_adherent hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
@@ -3528,19 +3527,6 @@ rewrite [in X in _ <= X]/normr /= mx_normrE.
 by apply/bigmax_gerP; right => /=; exists j.
 Qed.
 
-Lemma ereal_nbhs'_le (R : numFieldType) (x : \bar R) :
-  ereal_nbhs' x --> ereal_nbhs x.
-Proof.
-move: x => [x P [_/posnumP[e] HP] |x P|x P] //=.
-by exists e%:num => // ???; apply: HP.
-Qed.
-
-Lemma ereal_nbhs'_le_finite (R : numFieldType) (x : R) :
-  ereal_nbhs' x%:E --> nbhs x%:E.
-Proof.
-by move=> P [_/posnumP[e] HP] //=; exists e%:num => // ???; apply: HP.
-Qed.
-
 Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 Local Open Scope ereal_scope.
@@ -3732,18 +3718,6 @@ End limit_composition_ereal.
 
 (** * Some limits on real functions *)
 
-Lemma continuous_withinNx (R : numFieldType) {U V : pseudoMetricType R}
-  (f : U -> V) x :
-  {for x, continuous f} <-> f @ nbhs' x --> f x.
-Proof.
-split=> - cfx P /= fxP.
-  rewrite /nbhs' !near_simpl near_withinE.
-  by apply: cvg_within; apply: cfx.
-rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
-rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
-by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
-Grab Existential Variables. all: end_near. Qed.
-
 Section Closed_Ball.
 
 Lemma ball_open (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
@@ -3779,7 +3753,7 @@ Proof.
 move=> /posnumP[e]; rewrite eqEsubset; split => y.
   rewrite /closed_ball closureE; apply; split; first exact: closed_closed_ball_.
   by move=> z; rewrite -ball_normE; exact: ltW.
-have [/eqP -> _|xy] := boolP (x == y); first exact: closed_ballxx.
+have [-> _|xy] := eqVneq x y; first exact: closed_ballxx.
 rewrite /closed_ball closureE -ball_normE.
 rewrite /closed_ball_ /= le_eqVlt.
 move => /orP [/eqP xye B [Bc Be]|xye _ [_ /(_ _ xye)]//].
@@ -3833,8 +3807,8 @@ move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 by rewrite -ball_normE /= sub0r normrN.
 Qed.
 
-Lemma nbhs'0_lt (K : numFieldType) (V : normedModType K) e :
-  0 < e -> \forall x \near nbhs' (0 : V), `|x| < e.
+Lemma dnbhs0_lt (K : numFieldType) (V : normedModType K) e :
+  0 < e -> \forall x \near dnbhs (0 : V), `|x| < e.
 Proof.
 move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 by rewrite -ball_normE /= sub0r normrN.
@@ -3846,12 +3820,11 @@ Proof.
 by move => e_gt0; near=> x; apply: ltW; near: x; apply: nbhs0_lt.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma nbhs'0_le (K : numFieldType) (V : normedModType K) e :
-  0 < e -> \forall x \near nbhs' (0 : V), `|x| <= e.
+Lemma dnbhs0_le (K : numFieldType) (V : normedModType K) e :
+  0 < e -> \forall x \near dnbhs (0 : V), `|x| <= e.
 Proof.
-by move => e_gt0; near=> x; apply: ltW; near: x; apply: nbhs'0_lt.
+by move => e_gt0; near=> x; apply: ltW; near: x; apply: dnbhs0_lt.
 Grab Existential Variables. all: end_near. Qed.
-
 
 Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> (closed_ball x r)^° = ball x r.
@@ -3859,12 +3832,12 @@ Proof.
 move=> r0; rewrite eqEsubset; split; last first.
   by rewrite -open_subsetE; [exact: subset_closure | exact: ball_open].
 move=> /= t; rewrite closed_ballE // /interior /= -nbhs_ballE => [[]] s s0.
-have [/eqP -> _|nxt] := boolP (t == x); first exact: ballxx.
-near (nbhs' (0 : R^o)) => e; rewrite -ball_normE /closed_ball_ => tsxr.
+have [-> _|nxt] := eqVneq t x; first exact: ballxx.
+near ((0 : R^o)^') => e; rewrite -ball_normE /closed_ball_ => tsxr.
 pose z := t + `|e| *: (t - x); have /tsxr /= : `|t - z| < s.
   rewrite distrC addrAC subrr add0r normmZ normr_id.
   rewrite -ltr_pdivl_mulr ?(normr_gt0,subr_eq0) //.
-  by near: e; apply/nbhs'0_lt; rewrite divr_gt0 // normr_gt0 subr_eq0.
+  by near: e; apply/dnbhs0_lt; rewrite divr_gt0 // normr_gt0 subr_eq0.
 rewrite /z opprD addrA -scalerN -{1}(scale1r (x - t)) opprB -scalerDl normmZ.
 apply lt_le_trans; rewrite ltr_pmull; last by rewrite normr_gt0 subr_eq0 eq_sym.
 by rewrite ger0_norm // ltr_addl normr_gt0 //; near: e; exists 1.
@@ -3891,7 +3864,7 @@ split=> [|/pinfty_ex_gt0 [r r0 Bf]]; last first.
   rewrite -ball_normE //= sub0r normrN -(gtr_pmulr _ r0) => /ltW.
   exact/le_trans/Bf.
 rewrite /bounded_near => /pinfty_ex_gt0 [M M0 /nbhs_ballP [_/posnumP[e] efM]].
-near (nbhs' 0 : set (set R^o)) => y; near=> r => x.
+near (0^' : set (set R^o)) => y; near=> r => x.
 have [->|x0] := eqVneq x 0; first by rewrite linear0 !normr0 mulr0.
 rewrite -ler_pdivr_mulr ?normr_gt0// -[ `|x|]normr_id mulrC.
 have y_gt0 : 0 < `|y| by rewrite normr_gt0; near: y; exists 1.

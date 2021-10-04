@@ -728,12 +728,12 @@ Proof. exact: continuity_pt_cvg. Qed.
 Local Open Scope classical_set_scope.
 
 Lemma continuity_pt_cvg' f x :
-  continuity_pt f x <-> f @ nbhs' x --> f x.
+  continuity_pt f x <-> f @ x^' --> f x.
 Proof. by rewrite continuity_ptE continuous_withinNx. Qed.
 
-Lemma continuity_pt_nbhs' f x :
+Lemma continuity_pt_dnbhs f x :
   continuity_pt f x <->
-  forall eps, 0 < eps -> nbhs' x (fun u => `|f x - f u| < eps).
+  forall eps, 0 < eps -> x^' (fun u => `|f x - f u| < eps).
 Proof.
 rewrite continuity_pt_cvg' (@cvg_distP _ [normedModType _ of R^o]).
 exact.

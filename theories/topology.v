@@ -183,8 +183,8 @@ Require Import boolp reals classical_sets posnum.
 (*                             open == set of open sets.                      *)
 (*                      open_nbhs p == set of open neighbourhoods of p.       *)
 (*                    continuous f <-> f is continuous w.r.t the topology.    *)
-(*                          nbhs' x == set of neighbourhoods of x where x is  *)
-(*                                     excluded.                              *)
+(*                              x^' == set of neighbourhoods of x where x is  *)
+(*                                     excluded (a "deleted neighborhood").   *)
 (*                        closure A == closure of the set A.                  *)
 (*                    limit_point E == the set of limit points of E           *)
 (*                           closed == set of closed sets.                    *)
@@ -322,6 +322,7 @@ Reserved Notation "E `@[ x --> F ]"
   (at level 60, x ident, format "E  `@[ x  -->  F ]").
 Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 Reserved Notation "A ^°" (at level 1, format "A ^°").
+Reserved Notation "x ^'" (at level 2, format "x ^'").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -2218,29 +2219,28 @@ Definition product_topologicalType :=
 
 End Product_Topology.
 
-(** nbhs' *)
+(** dnbhs *)
 
-(* Should have a generic ^' operator *)
-Definition nbhs' {T : topologicalType} (x : T) :=
+Definition dnbhs {T : topologicalType} (x : T) :=
   within (fun y => y != x) (nbhs x).
+Notation "x ^'" := (dnbhs x) : classical_set_scope.
 
-Lemma nbhsE' (T : topologicalType) (x : T) : nbhs x = nbhs' x `&` at_point x.
+Lemma dnbhsE (T : topologicalType) (x : T) : nbhs x = x^' `&` at_point x.
 Proof.
 rewrite predeqE => A; split=> [x_A|[x_A Ax]].
   split; last exact: nbhs_singleton.
-  move: x_A; rewrite nbhsE => -[B [x_B sBA]]; rewrite /nbhs' nbhsE.
+  move: x_A; rewrite nbhsE => -[B [x_B sBA]]; rewrite /dnbhs nbhsE.
   by exists B; split=> // ? /sBA.
-move: x_A; rewrite /nbhs' !nbhsE => -[B [x_B sBA]]; exists B.
+move: x_A; rewrite /dnbhs !nbhsE => -[B [x_B sBA]]; exists B.
 by split=> // y /sBA Ay; case: (eqVneq y x) => [->|].
 Qed.
 
-Global Instance nbhs'_filter {T : topologicalType} (x : T) :
-  Filter (nbhs' x).
+Global Instance dnbhs_filter {T : topologicalType} (x : T) : Filter x^'.
 Proof. exact: within_filter. Qed.
-Typeclasses Opaque nbhs'.
+Typeclasses Opaque dnbhs.
 
-Canonical nbhs'_filter_on (T : topologicalType)  (x : T) :=
-  FilterType (nbhs' x) (nbhs'_filter _).
+Canonical dnbhs_filter_on (T : topologicalType)  (x : T) :=
+  FilterType x^' (dnbhs_filter _).
 
 Lemma cvg_fmap2 (T U : Type) (f : T -> U):
   forall (F G : set (set T)), G `=>` F -> f @ G `=>` f @ F.
@@ -2254,7 +2254,7 @@ Lemma cvg_app_within {T} {U : topologicalType} (f : T -> U) (F : set (set T))
   (D : set T): Filter F -> cvg (f @ F) -> cvg (f @ within D F).
 Proof. by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_filter. Qed.
 
-Lemma nbhs_nbhs' {T : topologicalType} (x : T) : nbhs' x `=>` nbhs x.
+Lemma nbhs_dnbhs {T : topologicalType} (x : T) : x^' `=>` nbhs x.
 Proof. exact: cvg_within. Qed.
 
 (** meets *)
@@ -3309,11 +3309,11 @@ Arguments entourage_split {M} z {x y A}.
 Hint Extern 0 (nbhs _ (to_set _ _)) => exact: nbhs_entourage : core.
 
 Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
-  {for x, continuous f} <-> f @ nbhs' x --> f x.
+  {for x, continuous f} <-> f @ x^' --> f x.
 Proof.
 split=> - cfx P /= fxP.
-  rewrite /nbhs' !near_simpl near_withinE.
-  by rewrite /nbhs'; apply: cvg_within; apply: cfx.
+  rewrite /dnbhs !near_simpl near_withinE.
+  by rewrite /dnbhs; apply: cvg_within; apply: cfx.
 rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
@@ -4759,8 +4759,8 @@ End Exports.
 End numFieldTopology.
 Import numFieldTopology.Exports.
 
-Global Instance Proper_nbhs'_regular_numFieldType (R : numFieldType) (x : R^o) :
-  ProperFilter (nbhs' x).
+Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
+  ProperFilter x^'.
 Proof.
 apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2)%R; apply: Ae; last first.
@@ -4769,8 +4769,8 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
-Global Instance Proper_nbhs'_numFieldType (R : numFieldType) (x : R) :
-  ProperFilter (nbhs' x).
+Global Instance Proper_dnbhs_numFieldType (R : numFieldType) (x : R) :
+  ProperFilter x^'.
 Proof.
 apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2)%R; apply: Ae; last first.
