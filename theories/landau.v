@@ -971,7 +971,8 @@ Arguments littleo_bigO_eqo {K T V W X F}.
 Arguments bigO_littleo_eqo {K T V W X F}.
 
 Section Limit_realFieldType.
-Context {K : realFieldType} (*TODO: generalize to numFieldType?*) {T : Type} {V W X : normedModType K}.
+Context {K : realFieldType} (*TODO: generalize to numFieldType?*)
+  {T : Type} {V W X : normedModType K}.
 
 Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> ([O_F f of h] : _ -> _) =O_F g.
@@ -979,7 +980,7 @@ Proof.
 move->; apply/eqOP; have [k c1 kOg] := bigO _ g. have [k' c2 k'Ok] := bigO _ k.
 near=> c; move: k'Ok kOg; apply: filter_app2; near=> x => lek'c2k.
 rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans; apply.
-by rewrite ler_pmul //; near: c; apply: nbhs_pinfty_ge.
+by rewrite ler_pmul //; near: c; apply: nbhs_pinfty_ge_pos.
 Grab Existential Variables. all: end_near. Qed.
 Arguments bigO_bigO_eqO {F}.
 
@@ -1055,7 +1056,7 @@ rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
-by near: k; apply: nbhs_pinfty_ge.
+by near: k; apply: nbhs_pinfty_ge_pos.
 Grab Existential Variables. all: end_near. Qed.
 
 End rule_of_products_rcfType.
@@ -1086,14 +1087,14 @@ rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
-by near: k; apply: nbhs_pinfty_ge.
+by near: k; apply: nbhs_pinfty_ge_pos.
 Grab Existential Variables. all: end_near. Qed.
 
 End rule_of_products_numClosedFieldType.
 
 Section Linear3.
-Context (R : realFieldType) (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
-        (s_law : GRing.Scale.law s).
+Context (R : realFieldType) (U : normedModType R) (V : normedModType R)
+        (s : R -> V -> V) (s_law : GRing.Scale.law s).
 Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 
 (* Split in multiple bits *)
@@ -1113,7 +1114,8 @@ rewrite (near_shift 0) /= subr0; near=> y => /=.
 rewrite -linearB opprD addrC addrNK linearN normrN; near: y.
 suff flip : \forall k \near +oo, forall x, `|f x| <= k * `|x|.
   near +oo => k; near=> y.
-  rewrite (le_lt_trans (near flip k _ _)) // -ltr_pdivl_mull; last by near: k; exists 0; rewrite real0.
+  rewrite (le_lt_trans (near flip k _ _)) // -ltr_pdivl_mull; last first.
+    by near: k; exists 0; rewrite real0.
   near: y; apply/nbhs_normP.
   eexists; last by move=> ?; rewrite -ball_normE /= sub0r normrN; apply.
   by rewrite /= mulr_gt0 // invr_gt0; near: k; exists 0; rewrite real0.
@@ -1122,22 +1124,25 @@ rewrite /cst [X in _ * X]normr1 mulr1 => fk; near=> k => y.
 case: (ler0P `|y|) => [|y0].
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
 have ky0 : 0 <= k0%:num / (k * `|y|).
-  by rewrite pmulr_rge0 // invr_ge0 mulr_ge0 // ltW //; near: k; exists 0; rewrite real0.
-rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //; last by near: k; exists 0; rewrite real0.
+  rewrite pmulr_rge0 // invr_ge0 mulr_ge0 // ltW //.
+  by near: k; exists 0; rewrite real0.
+rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //; last first.
+  by near: k; exists 0; rewrite real0.
 rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
 have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
 rewrite -linearZ fk //= -ball_normE /= distrC subr0 normmZ ger0_norm //.
-rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //; last by near: k; exists 0; rewrite real0.
-rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: nbhs_pinfty_gt.
+rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //; last first.
+  by near: k; exists 0; rewrite real0.
+by rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: nbhs_pinfty_gt_pos.
 Grab Existential Variables. all: end_near. Qed.
 
 End Linear3.
 
 Arguments linear_for_continuous {R U V s s_law normm_s} f _.
 
-Lemma linear_continuous (R : realFieldType) (U : normedModType R) (V : normedModType R)
-  (f : {linear U -> V}) :
+Lemma linear_continuous (R : realFieldType) (U : normedModType R)
+  (V : normedModType R) (f : {linear U -> V}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ??; rewrite normmZ. Qed.
 
@@ -1336,8 +1341,8 @@ rewrite (@le_trans _ _ ((k2%:num * k1%:num)^-1 * `|(W1 * W2) x|)) //.
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
   rewrite ler_pdivl_mull // (mulrA k1%:num) mulrCA (@normrM _ (W1 x)).
   by rewrite ler_pmul ?mulr_ge0 //; near: x.
-rewrite ler_wpmul2r // ltW //; near: k; exists (k2%:num * k1%:num)^-1; split => //.
-by rewrite realV realM // num_real.
+rewrite ler_wpmul2r // ltW //; near: k; exists (k2%:num * k1%:num)^-1.
+by split => //; rewrite realV realM // num_real.
 Grab Existential Variables. all: end_near. Qed.
 
 End big_omega_in_R.

@@ -407,6 +407,7 @@ Notation "-oo" := (ninfty_nbhs _) : ring_scope.
 Section infty_nbhs_instances.
 Context {R : numFieldType}.
 Let R_topologicalType := [topologicalType of R].
+Implicit Types r : R.
 
 Global Instance proper_pinfty_nbhs : ProperFilter (pinfty_nbhs R).
 Proof.
@@ -508,35 +509,29 @@ move=> [M [Mreal AM]]; exists (M * 2); split.
 by move=> x; rewrite -ltr_pdivl_mulr //; apply: AM.
 Qed.
 
-Lemma nbhs_pinfty_gt (c : {posnum R}) : \forall x \near +oo, c%:num < x.
-Proof. by exists c%:num; split => // ; rewrite realE posnum_ge0. Qed.
+Lemma nbhs_pinfty_gt r : r \is Num.real -> \forall x \near +oo, r < x.
+Proof. by exists r. Qed.
 
-Lemma nbhs_pinfty_ge (c : {posnum R}) : \forall x \near +oo, c%:num <= x.
-Proof. by exists c%:num; rewrite realE posnum_ge0; split => //; apply: ltW. Qed.
+Lemma nbhs_pinfty_ge r : r \is Num.real -> \forall x \near +oo, r <= x.
+Proof. by exists r; split => //; apply: ltW. Qed.
 
-Lemma nbhs_pinfty_gt_real (c : R) : c \is Num.real ->
-  \forall x \near +oo, c < x.
-Proof. by exists c. Qed.
+Lemma nbhs_pinfty_gt_pos r : 0 < r -> \forall x \near +oo, r < x.
+Proof. by move=> /ltW r0; apply: nbhs_pinfty_gt; rewrite realE r0. Qed.
 
-Lemma nbhs_pinfty_ge_real (c : R) : c \is Num.real ->
-  \forall x \near +oo, c <= x.
-Proof. by exists c; split => //; apply: ltW. Qed.
+Lemma nbhs_pinfty_ge_pos r : 0 < r -> \forall x \near +oo, r <= x.
+Proof. by move=> /ltW r0; apply: nbhs_pinfty_ge; rewrite realE r0. Qed.
 
-Lemma nbhs_minfty_lt (c : {posnum R}) : \forall x \near -oo, c%:num > x.
-Proof. by exists c%:num; split => // ; rewrite realE posnum_ge0. Qed.
+Lemma nbhs_ninfty_lt r : r \is Num.real -> \forall x \near -oo, r > x.
+Proof. by exists r. Qed.
 
-Lemma nbhs_minfty_le (c : {posnum R}) : \forall x \near -oo, c%:num >= x.
-Proof.
-by exists c%:num; rewrite realE posnum_ge0 /=; split => // x; apply: ltW.
-Qed.
+Lemma nbhs_ninfty_le r : r \is Num.real -> \forall x \near -oo, r >= x.
+Proof. by exists r; split => // ?; apply: ltW. Qed.
 
-Lemma nbhs_minfty_lt_real (c : R) : c \is Num.real ->
-  \forall x \near -oo, c > x.
-Proof. by exists c. Qed.
+Lemma nbhs_ninfty_lt_pos r : 0 < r -> \forall x \near -oo, r > x.
+Proof. by move=> /ltW r0; apply: nbhs_ninfty_lt; rewrite realE r0. Qed.
 
-Lemma nbhs_minfty_le_real (c : R) : c \is Num.real ->
-  \forall x \near -oo, c >= x.
-Proof. by exists c; split => // ?; apply: ltW. Qed.
+Lemma nbhs_ninfty_le_pos r : 0 < r -> \forall x \near -oo, r >= x.
+Proof. by move=> /ltW r0; apply: nbhs_ninfty_le; rewrite realE r0. Qed.
 
 End infty_nbhs_instances.
 
@@ -2140,7 +2135,7 @@ Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
 Proof.
 move=> [k x]; apply/cvg_distP=> _/posnumP[e].
 rewrite !near_simpl /=; near +oo => M.
-have M_gt0 : M > 0 by near: M; apply: nbhs_pinfty_gt_real; rewrite real0.
+have M_gt0 : M > 0 by near: M; apply: nbhs_pinfty_gt; rewrite real0.
 near=> l z => /=.
 rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normmZ.
   suff: (`|k| + 1) * `|x - z| < e%:num / 2.
@@ -2794,9 +2789,9 @@ have Moo_real : Moo \is Num.real
   by rewrite ger0_real ?(le_trans _ (a_leM N _))/=.
 rewrite /bounded_near /=; near=> M => n _.
 have [nN|nN]/= := leqP N n.
-  by apply: (le_trans (a_leM _ _)) => //; near: M; apply: nbhs_pinfty_ge_real.
+  by apply: (le_trans (a_leM _ _)) => //; near: M; apply: nbhs_pinfty_ge.
 move: n nN; suff /(_ (Ordinal _)) : forall n : 'I_N, `|a n| <= M by [].
-by near: M; apply: filter_forall => i; apply: nbhs_pinfty_ge_real.
+by near: M; apply: filter_forall => i; apply: nbhs_pinfty_ge.
 Grab Existential Variables. all: end_near. Qed.
 
 End cvg_seq_bounded.
@@ -4082,7 +4077,7 @@ rewrite -ler_pdivr_mulr ?normr_gt0// -[ `|x|]normr_id mulrC.
 have y_gt0 : 0 < `|y| by rewrite normr_gt0; near: y; exists 1.
 rewrite -(ler_pmul2l y_gt0) -normfV -!normmZ scalerA -linearZ.
 rewrite (le_trans (efM _ _)) //; last first.
-  rewrite -ler_pdivr_mull //; near: r; apply: nbhs_pinfty_ge_real.
+  rewrite -ler_pdivr_mull //; near: r; apply: nbhs_pinfty_ge.
   by rewrite rpredM// ?ger0_real ?invr_ge0// ltW.
 rewrite -ball_normE/= sub0r normrN normmZ normrM normfV //.
 rewrite normr_id -mulrA mulVf ?normr_eq0 // mulr1; near: y.
