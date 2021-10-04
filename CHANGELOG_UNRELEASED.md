@@ -109,6 +109,8 @@
   * module `BigmaxBigminr` -> `Bigminr`
 - in `sequences.v`:
   + `nondecreasing_seq_ereal_cvg` -> `nondecreasing_ereal_cvg`
+- in `normedtype.v`:
+  + `cvg_seq_bounded` -> `is_cvg_bounded_fun`
 
 ### Removed
 

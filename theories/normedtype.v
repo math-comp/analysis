@@ -2733,11 +2733,11 @@ End at_left_right.
 
 Typeclasses Opaque at_left at_right.
 
-Section cvg_seq_bounded.
+Section is_cvg_bounded_fun.
 Context {K : numFieldType}.
 Local Notation "'+oo'" := (@pinfty_nbhs K).
 
-Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
+Lemma is_cvg_bounded_fun {V : normedModType K} (a : nat -> V) :
   cvg a -> bounded_fun a.
 Proof.
 move=> /cvg_bounded/ex_bound => -[/= Moo]; rewrite !near_simpl/=.
@@ -2751,7 +2751,7 @@ move: n nN; suff /(_ (Ordinal _)) : forall n : 'I_N, `|a n| <= M by [].
 by near: M; apply: filter_forall => i; apply: nbhs_pinfty_ge_real.
 Grab Existential Variables. all: end_near. Qed.
 
-End cvg_seq_bounded.
+End is_cvg_bounded_fun.
 
 Lemma closure_sup (R : realType) (A : set R) :
   A !=set0 -> has_ubound A -> closure A (sup A).

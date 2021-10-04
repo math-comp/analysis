@@ -329,7 +329,7 @@ Qed.
 
 Lemma cvg_has_ub u_ : cvg u_ -> has_ubound [set `|u_ n| | n in setT].
 Proof.
-move=> /cvg_seq_bounded/pinfty_ex_gt0[M M_gt0 /= uM].
+move=> /is_cvg_bounded_fun/pinfty_ex_gt0[M M_gt0 /= uM].
 by exists M; apply/ubP => x -[n _ <-{x}]; exact: uM.
 Qed.
 
@@ -848,7 +848,7 @@ Lemma series_le_cvg (R : realType) (u_ v_ : R ^nat) :
 Proof.
 move=> u_ge0 v_ge0 le_uv; have le_UV n : series u_ n <= series v_ n.
   by apply ler_sum => *; exact: le_uv.
-move=> /cvg_seq_bounded/pinfty_ex_gt0[/= M _ svM].
+move=> /is_cvg_bounded_fun/pinfty_ex_gt0[/= M _ svM].
 apply: (@nondecreasing_is_cvg _ _ M); first by apply: nondecreasing_series.
 by move=> n; apply: le_trans (svM n _); rewrite // ger0_norm ?sumr_ge0.
 Qed.
