@@ -125,6 +125,8 @@
   + lemma `closed_seq`
 - in `normedtype.v`:
   + lemma `is_intervalPle`
+- in `topology.v`:
+  + lemma `continuous_cst`
 
 ### Infrastructure
 

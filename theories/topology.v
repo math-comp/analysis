@@ -1692,13 +1692,6 @@ Notation "A ^°" := (interior A) : classical_set_scope.
 
 Notation continuous f := (forall x, f%function @ x --> f%function x).
 
-Lemma continuous_cst (S T : topologicalType) (a : T) :
-  continuous (fun _ : S => a).
-Proof.
-move=> x A; rewrite !nbhs_simpl /= !nbhsE => - [B [[_ Ba] sBA]].
-by exists setT; split; [apply: open_nbhsT|move=> ??; apply: sBA].
-Qed.
-
 Lemma continuousP (S T : topologicalType) (f : S -> T) :
   continuous f <-> forall A, open A -> open (f @^-1` A).
 Proof.

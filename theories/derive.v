@@ -383,7 +383,7 @@ Variable R : numFieldType.
 Fact dcst (V W : normedModType R) (a : W) (x : V) : continuous (0 : V -> W) /\
   cst a \o shift x = cst (cst a x) + \0 +o_ (0 : V) id.
 Proof.
-split; first exact: continuous_cst.
+split; first exact: cst_continuous.
 apply/eqaddoE; rewrite addr0 funeqE => ? /=; rewrite -[LHS]addr0; congr (_ + _).
 by rewrite littleoE; last exact: littleo0_subproof.
 Qed.
@@ -1334,7 +1334,7 @@ have {}imf_ltsup : forall t, t \in `[a, b] -> f t < sup imf.
 have invf_continuous : {in `[a, b], continuous (fun t => (sup imf - f t)^-1 : R)}.
   move=> t tab; apply: cvgV => //.
     by rewrite subr_eq0 gt_eqF // imf_ltsup.
-  by apply: cvgD; [apply: continuous_cst|apply: cvgN; apply:fcont].
+  by apply: cvgD; [apply: cst_continuous|apply: cvgN; apply: fcont].
 have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] :
    bounded_set ((fun t => (sup imf - f t)^-1) @` [set x | x \in `[a, b]]).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
