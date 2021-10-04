@@ -742,9 +742,10 @@ Qed.
 Lemma lee_addr x y : 0 <= y -> x <= y + x.
 Proof. by rewrite addeC; exact: lee_addl. Qed.
 
-Lemma lte_addl r x : 0 < x -> r%:E < r%:E + x.
+Lemma lte_addl y x : y \is a fin_num -> 0 < x -> y < y + x.
 Proof.
-by move: x => [x| |] //; rewrite ?lte_pinfty ?lte_ninfty // !lte_fin ltr_addl.
+by move: x y => [x| |] [y| |] _ //;
+  rewrite ?lte_pinfty ?lte_ninfty // !lte_fin ltr_addl.
 Qed.
 
 Lemma lte_add2lE r a b : (r%:E + a < r%:E + b) = (a < b).
@@ -849,33 +850,33 @@ rewrite big_fset /= big_seq_cond sume_ge0 // => t /andP[tB tA].
 by case: ifPn => // Pt; rewrite f0 // !inE tA.
 Qed.
 
-Lemma lte_subl_addr x r z : (x - r%:E < z) = (x < z + r%:E).
+Lemma lte_subl_addr x y z : y \is a fin_num -> (x - y < z) = (x < z + y).
 Proof.
-move: x r z => [x| |] r [z| |] //=; rewrite ?lte_pinfty ?lte_ninfty //.
+move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lte_pinfty ?lte_ninfty //.
 by rewrite !lte_fin ltr_subl_addr.
 Qed.
 
-Lemma lte_subl_addl r y z : (r%:E - y < z) = (r%:E < y + z).
+Lemma lte_subl_addl x y z : x \is a fin_num -> (x - y < z) = (x < y + z).
 Proof.
-move: y z => [y| |] [z| |] //=; rewrite ?lte_ninfty ?lte_pinfty //.
+move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lte_ninfty ?lte_pinfty //.
 by rewrite !lte_fin ltr_subl_addl.
 Qed.
 
-Lemma lte_subr_addr r y z : (r%:E < y - z) = (r%:E + z < y).
+Lemma lte_subr_addr x y z : x \is a fin_num -> (x < y - z) = (x + z < y).
 Proof.
-move: y z => [y| |] [z| |] //=; rewrite ?lte_ninfty ?lte_pinfty //.
+move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lte_ninfty ?lte_pinfty //.
 by rewrite !lte_fin ltr_subr_addr.
 Qed.
 
-Lemma lee_subr_addr x y r : (x <= y - r%:E) = (x + r%:E <= y).
+Lemma lee_subr_addr x y z : z \is a fin_num -> (x <= y - z) = (x + z <= y).
 Proof.
-move: y x => [y| |] [x| |] //=; rewrite ?lee_ninfty ?lee_pinfty //.
+move: y x z => [y| |] [x| |] [z| |] _ //=; rewrite ?lee_ninfty ?lee_pinfty //.
 by rewrite !lee_fin ler_subr_addr.
 Qed.
 
-Lemma lee_subl_addr x r z : (x - r%:E <= z) = (x <= z + r%:E).
+Lemma lee_subl_addr x y z : y \is a fin_num -> (x - y <= z) = (x <= z + y).
 Proof.
-move: x r z => [x| |] r [z| |] //=; rewrite ?lee_pinfty ?lee_ninfty //.
+move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_subl_addr.
 Qed.
 
@@ -888,11 +889,11 @@ Qed.
 
 Lemma mule_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x * y.
 Proof.
-move: x y => [x||] [y||] //=; rewrite /mule/= ?(lee_fin,eqe,lte_fin,lte_pinfty)//.
+move: x y=> [x||] [y||]//=; rewrite /mule/= ?(lee_fin,eqe,lte_fin,lte_pinfty)//.
 - exact: mulr_ge0.
-- rewrite le_eqVlt => /orP[/eqP <- _|x0 _]; first by rewrite eqxx.
+- rewrite le_eqVlt => /predU1P[<- _|x0 _]; first by rewrite eqxx.
   by rewrite gt_eqF // x0 lee_pinfty.
-- move=> _; rewrite le_eqVlt => /orP[/eqP <-|y0]; first by rewrite eqxx.
+- move=> _; rewrite le_eqVlt => /predU1P[<-|y0]; first by rewrite eqxx.
   by rewrite gt_eqF // y0 lee_pinfty.
 Qed.
 
@@ -905,9 +906,9 @@ Qed.
 Lemma mule_le0_ge0 x y : x <= 0 -> 0 <= y -> x * y <= 0.
 Proof.
 move: x y => [x| |] [y| |] //; rewrite ?lee_fin; first exact: mulr_le0_ge0.
-- rewrite le_eqVlt => /orP[/eqP->|x0 _]; first by rewrite mul0e.
+- rewrite le_eqVlt => /predU1P[->|x0 _]; first by rewrite mul0e.
   by rewrite mulrinfty ltr0_sg // mulN1e lee_ninfty.
-- move=> _; rewrite le_eqVlt => /orP[/eqP <-|y0]; first by rewrite mule0.
+- move=> _; rewrite le_eqVlt => /predU1P[<-|y0]; first by rewrite mule0.
   by rewrite mulrinfty gtr0_sg // mul1e lee_ninfty.
 - by move=> _ _; rewrite mule_ninfty_pinfty lee_ninfty.
 Qed.
@@ -1099,11 +1100,11 @@ Lemma lee_mul01Pr x y : 0 <= x ->
   reflect (forall r, (0 < r < 1)%R -> r%:E * x <= y) (x <= y).
 Proof.
 move=> x0; apply/(iffP idP) => [xy r /andP[r0 r1]|h].
-  move: x0 xy; rewrite le_eqVlt => /orP[/eqP <-|x0 xy]; first by rewrite mule0.
+  move: x0 xy; rewrite le_eqVlt => /predU1P[<-|x0 xy]; first by rewrite mule0.
   by rewrite (le_trans _ xy) // gee_pmull // ltW.
 have h01 : (0 < (2^-1 : R) < 1)%R by rewrite invr_gt0 ?invf_lt1 ?ltr0n ?ltr1n.
 move: x y => [x||] [y||] // in x0 h *.
-- move: (x0); rewrite lee_fin le_eqVlt => /orP[/eqP <-|{}x0].
+- move: (x0); rewrite lee_fin le_eqVlt => /predU1P[<-|{}x0].
     by rewrite (le_trans _ (h _ h01))// mule_ge0// lee_fin.
   have y0 : (0 < y)%R.
     by rewrite -lte_fin (lt_le_trans _ (h _ h01))// mule_gt0// lte_fin.
@@ -1174,9 +1175,9 @@ Proof. by move=> r0; rewrite muleC lte_ndivr_mull// muleC. Qed.
 Lemma lee_pdivr_mull r x y : (0 < r)%R -> (r^-1%:E * y <= x) = (y <= r%:E * x).
 Proof.
 move=> r0; apply/idP/idP.
-- rewrite le_eqVlt => /orP[/eqP <-|]; last by rewrite lte_pdivr_mull// => /ltW.
+- rewrite le_eqVlt => /predU1P[<-|]; last by rewrite lte_pdivr_mull// => /ltW.
   by rewrite muleA -mulEFin divrr ?mul1e// unitfE gt_eqF.
-- rewrite le_eqVlt => /orP[/eqP ->|]; last by rewrite -lte_pdivr_mull// => /ltW.
+- rewrite le_eqVlt => /predU1P[->|]; last by rewrite -lte_pdivr_mull// => /ltW.
   by rewrite muleA -mulEFin mulVr ?mul1e// unitfE gt_eqF.
 Qed.
 
@@ -1186,9 +1187,9 @@ Proof. by move=> r0; rewrite muleC lee_pdivr_mull// muleC. Qed.
 Lemma lee_pdivl_mull r y x : (0 < r)%R -> (x <= r^-1%:E * y) = (r%:E * x <= y).
 Proof.
 move=> r0; apply/idP/idP.
-- rewrite le_eqVlt => /orP[/eqP ->|]; last by rewrite lte_pdivl_mull// => /ltW.
+- rewrite le_eqVlt => /predU1P[->|]; last by rewrite lte_pdivl_mull// => /ltW.
   by rewrite muleA -mulEFin divrr ?mul1e// unitfE gt_eqF.
-- rewrite le_eqVlt => /orP[/eqP <-|]; last by rewrite -lte_pdivl_mull// => /ltW.
+- rewrite le_eqVlt => /predU1P[<-|]; last by rewrite -lte_pdivl_mull// => /ltW.
   by rewrite muleA -mulEFin mulVr ?mul1e// unitfE gt_eqF.
 Qed.
 
@@ -1226,7 +1227,7 @@ Proof. by apply/ubP=> x _; rewrite lee_pinfty. Qed.
 
 Lemma ereal_ub_ninfty S : ubound S -oo -> S = set0 \/ S = [set -oo].
 Proof.
-have [/eqP ->|/set0P[x Sx] Snoo] := boolP (S == set0); first by left.
+have [->|/set0P[x Sx] Snoo] := eqVneq S set0; first by left.
 right; rewrite predeqE => y; split => [/Snoo|->{y}].
   by rewrite lee_ninfty_eq => /eqP ->.
 by have := Snoo _ Sx; rewrite lee_ninfty_eq => /eqP <-.
@@ -1279,24 +1280,24 @@ move=> SM; rewrite /ereal_inf lee_oppr; apply ub_ereal_sup => x [y Sy <-{x}].
 by rewrite lee_oppl oppeK; apply SM.
 Qed.
 
-Lemma ub_ereal_sup_adherent S (e : {posnum R}) (r : R) :
-  ereal_sup S = r%:E -> exists x, S x /\ (ereal_sup S - e%:num%:E < x).
+Lemma ub_ereal_sup_adherent S (e : {posnum R}) :
+  ereal_sup S \is a fin_num -> exists x, S x /\ (ereal_sup S - e%:num%:E < x).
 Proof.
 move=> Sr.
 have : ~ ubound S (ereal_sup S - e%:num%:E).
   move/ub_ereal_sup; apply/negP.
-  by rewrite -ltNge Sr lte_subl_addr lte_fin ltr_addl.
+  by rewrite -ltNge lte_subl_addr // lte_addl // lte_fin.
 move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
 rewrite not_implyE => -[? ?]; exists x; split => //.
 by rewrite ltNge; apply/negP.
 Qed.
 
-Lemma lb_ereal_inf_adherent S (e : {posnum R}) (r : R) :
-  ereal_inf S = r%:E -> exists x, S x /\ (x < ereal_inf S + e%:num%:E).
+Lemma lb_ereal_inf_adherent S (e : {posnum R}) :
+  ereal_inf S \is a fin_num-> exists x, S x /\ (x < ereal_inf S + e%:num%:E).
 Proof.
-rewrite -(oppeK r%:E) => /eqP; rewrite eqe_opp => /eqP/ub_ereal_sup_adherent.
-move=> /(_ e) [x [[y Sy yx ex]]]; exists (- x); rewrite -yx oppeK; split => //.
-by rewrite -(oppeK y) yx lte_oppl oppeD /ereal_inf oppeK.
+rewrite [in X in X -> _]/ereal_inf fin_numN => /(ub_ereal_sup_adherent e)[x []].
+move=> [y Sy <-]; rewrite -lte_oppr => /lt_le_trans ex; exists y; split => //.
+by apply: ex; rewrite oppeD NEFin oppeK.
 Qed.
 
 Lemma ereal_sup_gt S x : x < ereal_sup S -> exists y, S y /\ x < y.
@@ -1325,9 +1326,9 @@ Let real_of_extended_def r0 x : R := if x is r%:E then r else r0.
 
 Lemma ereal_supremums_neq0 S : supremums S !=set0.
 Proof.
-have [/eqP ->|Snoo] := boolP (S == [set -oo]).
+have [->|Snoo] := eqVneq S [set -oo].
   by exists -oo; split; [rewrite ub_set1 |exact: lb_ub_refl].
-have [/eqP ->|S0] := boolP (S == set0).
+have [->|S0] := eqVneq S set0.
   by exists -oo; exact: ereal_supremums_set0_ninfty.
 have [Spoo|Spoo] := pselect (S +oo).
   by exists +oo; split; [apply/ereal_ub_pinfty | apply/lbP => /= y /ubP; apply].
@@ -1336,7 +1337,7 @@ have [r Sr] : exists r, S r%:E.
   apply/not_existsP => nS; move/negP : Snoo; apply.
   by apply/eqP; rewrite predeqE => -[] // r; split => // /nS.
 set U := [set x | (real_of_extended_def r @` S) x ].
-have [/eqP|] := boolP (ubound U == set0).
+have [|] := eqVneq (ubound U) set0.
   rewrite -subset0 => U0; exists +oo.
   split; [exact/ereal_ub_pinfty | apply/lbP => /= -[r0 /ubP Sr0|//|]].
   - suff : ubound U r0 by move/U0.
@@ -1435,16 +1436,16 @@ case=> [x||].
     by rewrite lte_fin ltr_addl.
   split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
   + by exists 0%R; rewrite real0.
-  + have [/eqP MP0|MP0] := boolP (MP == 0%R).
-      have [/eqP MQ0|MQ0] := boolP (MQ == 0%R).
+  + have [MP0|MP0] := eqVneq MP 0%R.
+      have [MQ0|MQ0] := eqVneq MQ 0%R.
         by exists 0%R; rewrite real0; split => // x x0; split;
         [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
-      exists `|MQ|%R; rewrite realE normr_ge0; split => // x Hx; split.
-        by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0 lee_fin.
-      by apply gtMQ; rewrite (le_lt_trans _ Hx) // lee_fin real_ler_normr // lexx.
-    have [/eqP MQ0|MQ0] := boolP (MQ == 0%R).
+      exists `|MQ|%R; rewrite realE normr_ge0; split => // x MQx; split.
+        by apply: gtMP; rewrite (le_lt_trans _ MQx) // MP0 lee_fin.
+      by apply gtMQ; rewrite (le_lt_trans _ MQx)// lee_fin real_ler_normr ?lexx.
+    have [MQ0|MQ0] := eqVneq MQ 0%R.
       exists `|MP|%R; rewrite realE normr_ge0; split => // x MPx; split.
-      by apply gtMP; rewrite (le_lt_trans _ MPx) // lee_fin real_ler_normr // lexx.
+      by apply gtMP; rewrite (le_lt_trans _ MPx)// lee_fin real_ler_normr ?lexx.
       by apply gtMQ; rewrite (le_lt_trans _ MPx) // lee_fin MQ0.
     have {}MP0 : (0 < `|MP|)%R by rewrite normr_gt0.
     have {}MQ0 : (0 < `|MQ|)%R by rewrite normr_gt0.
@@ -1452,8 +1453,8 @@ case=> [x||].
     rewrite realE /= posnum_ge0 /=; split => //.
     case=> [r| |//].
     * rewrite lte_fin/= posnum_max pos_lt_maxl /= => /andP[MPx MQx]; split.
-      by apply/gtMP; rewrite lte_fin (le_lt_trans _ MPx) // real_ler_normr // lexx.
-      by apply/gtMQ; rewrite lte_fin (le_lt_trans _ MQx) // real_ler_normr // lexx.
+      by apply/gtMP; rewrite lte_fin (le_lt_trans _ MPx)// real_ler_normr ?lexx.
+      by apply/gtMQ; rewrite lte_fin (le_lt_trans _ MQx)// real_ler_normr ?lexx.
     * by move=> _; split; [apply/gtMP | apply/gtMQ].
   + by exists M; split => // ? /gtM /sPQ.
 - apply Build_ProperFilter.
@@ -1461,16 +1462,18 @@ case=> [x||].
     by apply: ltMP; rewrite lte_fin gtr_addl oppr_lt0.
   + split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
     * by exists 0%R; rewrite real0.
-    * have [/eqP MP0|MP0] := boolP (MP == 0%R).
-        have [/eqP MQ0|MQ0] := boolP (MQ == 0%R).
+    * have [MP0|MP0] := eqVneq MP 0%R.
+        have [MQ0|MQ0] := eqVneq MQ 0%R.
           by exists 0%R; rewrite real0; split => // x x0; split;
           [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
-        exists (- `|MQ|)%R; rewrite realN realE normr_ge0; split => // x xMQ; split.
-          by apply ltMP; rewrite (lt_le_trans xMQ) // lee_fin MP0 ler_oppl oppr0.
+        exists (- `|MQ|)%R; rewrite realN realE normr_ge0; split => // x xMQ.
+        split.
+          by apply ltMP; rewrite (lt_le_trans xMQ)// lee_fin MP0 ler_oppl oppr0.
        apply ltMQ; rewrite (lt_le_trans xMQ) // lee_fin ler_oppl -normrN.
        by rewrite real_ler_normr ?realN // lexx.
-    * have [/eqP MQ0|MQ0] := boolP (MQ == 0%R).
-        exists (- `|MP|)%R; rewrite realN realE normr_ge0; split => // x MPx; split.
+    * have [MQ0|MQ0] := eqVneq MQ 0%R.
+        exists (- `|MP|)%R; rewrite realN realE normr_ge0; split => // x MPx.
+        split.
           apply ltMP; rewrite (lt_le_trans MPx) // lee_fin ler_oppl -normrN.
           by rewrite real_ler_normr ?realN // lexx.
         by apply ltMQ; rewrite (lt_le_trans MPx) // lee_fin MQ0 ler_oppl oppr0.
@@ -1902,7 +1905,7 @@ Qed.
 Lemma contract_ereal_ball_fin_le (r r' : R) (e : {posnum R}) : (r <= r')%R ->
   (1 <= contract r%:E + e%:num)%R -> ereal_ball r%:E e%:num r'%:E.
 Proof.
-rewrite le_eqVlt => /orP[/eqP <-{r'} _|rr' re1]; first exact: ereal_ball_center.
+rewrite le_eqVlt => /predU1P[<-{r'} _|rr' re1]; first exact: ereal_ball_center.
 rewrite /ereal_ball ltr0_norm; last by rewrite subr_lt0 lt_contract lte_fin.
 rewrite opprB ltr_subl_addl (lt_le_trans _ re1) //.
 by case/ltr_normlP : (contract_lt1 r').
@@ -1948,8 +1951,7 @@ Lemma ball_ereal_ball_fin_le (r r' : R) (e : {posnum R} ) :
   (ereal_ball r%:E e%:num r'%:E).
 Proof.
 move=> e' r'e'r rr' re1; rewrite /ereal_ball.
-move: rr'; rewrite le_eqVlt => /orP[/eqP->|rr'].
-  by rewrite subrr normr0.
+move: rr'; rewrite le_eqVlt => /predU1P[->|rr']; first by rewrite subrr normr0.
 rewrite /ball /= ltr0_norm ?subr_lt0// opprB in r'e'r.
 rewrite ltr0_norm ?subr_lt0 ?lt_contract ?lte_fin//.
 rewrite opprB; move: r'e'r.
@@ -2104,7 +2106,7 @@ have [|reN1] := boolP (contract r%:E - e%:num == -1)%R.
   move=> /nbhs_ballP[_/posnumP[e']] /=; rewrite /ball /= => h.
   by apply/nbhs_ballP; exists e'%:num => // y /h; apply: Aoo.
 move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
-  have [/eqP re1|re1] := boolP (contract r%:E + e%:num == 1)%R.
+  have [re1|re1] := eqVneq (contract r%:E + e%:num)%R 1%R.
     by apply (@nbhs_fin_out_above _ e) => //; rewrite re1.
   move: re1; rewrite neq_lt => /orP[re1|re1].
     have ? : (`|contract r%:E - e%:num| < 1)%R.
@@ -2181,27 +2183,25 @@ rewrite predeq2E => x A; split.
     case=> [r' /= re'r'| |]/=.
     * rewrite /ereal_ball in re'r'.
       have [r'r|rr'] := lerP (contract r'%:E) (contract r%:E).
-        apply reA.
-        rewrite /ball /= real_ltr_norml // ?num_real //.
+        apply: reA; rewrite /ball /= real_ltr_norml // ?num_real //.
         rewrite ger0_norm ?subr_ge0// in re'r'.
-        have H1 : (contract (r%:E - e%:num%:E) < contract r'%:E)%R.
-          move: re'r'; rewrite /e' lt_minr => /andP[Hr'1 Hr'2].
-          rewrite /e' ltr_subr_addl addrC -ltr_subr_addl in Hr'1.
-          by rewrite (lt_le_trans Hr'1) // opprB addrCA subrr addr0.
-        have := H1; rewrite -lt_expandRL ?inE ?contract_le1 //.
-        rewrite !contractK lte_fin ltr_subl_addr addrC -ltr_subl_addr => ->.
-        rewrite andbT (@lt_le_trans _ _ 0%R)// 1?ltr_oppl 1?oppr0//.
-        by rewrite subr_ge0 -lee_fin -le_contract.
-      apply reA.
-      rewrite /ball /= real_ltr_norml // ?num_real //.
+        have : (contract (r%:E - e%:num%:E) < contract r'%:E)%R.
+          move: re'r'; rewrite /e' lt_minr => /andP[+ _].
+          rewrite /e' ltr_subr_addl addrC -ltr_subr_addl => /lt_le_trans.
+          by apply; rewrite opprB addrCA subrr addr0.
+        rewrite -lt_expandRL ?inE ?contract_le1 // !contractK lte_fin.
+        rewrite ltr_subl_addr addrC -ltr_subl_addr => ->; rewrite andbT.
+        rewrite (@lt_le_trans _ _ 0%R)// 1?ltr_oppl 1?oppr0// subr_ge0.
+        by rewrite -lee_fin -le_contract.
+      apply: reA; rewrite /ball /= real_ltr_norml // ?num_real //.
       rewrite ltr0_norm ?subr_lt0// opprB in re'r'.
       apply/andP; split; last first.
         by rewrite (@lt_trans _ _ 0%R) // subr_lt0 -lte_fin -lt_contract.
       rewrite ltr_oppl opprB.
       rewrite /e' in re'r'.
-      have H2 : (contract r'%:E < contract (r%:E + e%:num%:E))%R.
-        move: re'r'; rewrite lt_minr => /andP[Hr'1 Hr'2].
-        by rewrite ltr_subl_addr subrK in Hr'2.
+      have r're : (contract r'%:E < contract (r%:E + e%:num%:E))%R.
+        move: re'r'; rewrite lt_minr => /andP[_].
+        by rewrite ltr_subl_addr subrK.
       rewrite ltr_subl_addr -lte_fin -(contractK (_ + r)%:E)%R.
       by rewrite addrC -(contractK r'%:E) // lt_expand ?inE ?contract_le1.
     * rewrite /ereal_ball [contract +oo]/=.

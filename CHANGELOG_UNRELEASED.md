@@ -76,6 +76,11 @@
   + lemmas `ereal_cvgN`
 - in `normedtype.v`:
   + definition `is_interval`
+- in `ereal.v`:
+  + lemmas `lte_addl`, `lte_subl_addr`, `lte_subl_addl`, `lte_subr_addr`,
+    `lte_subr_addr`, `lte_subr_addr`, `lb_ereal_inf_adherent`
+- in `sequences.v`:
+  + lemma `ereal_pseries_pred0` moved from `csum.v`, minor generalization
 
 ### Renamed
 - in `classical_sets.v`:
@@ -127,6 +132,8 @@
   + lemma `is_intervalPle`
 - in `topology.v`:
   + lemma `continuous_cst`
+- in `csum.v`:
+  + lemma `ub_ereal_sup_adherent_img`
 
 ### Infrastructure
 
