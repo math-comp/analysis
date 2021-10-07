@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
@@ -43,11 +44,12 @@ Require Import boolp classical_sets reals posnum topology.
 (*                                   `|contract x - contract y|               *)
 (*                                                                            *)
 (* Filters:                                                                   *)
-(*                  ereal_nbhs' x == filter on extended real numbers that     *)
-(*                                   corresponds to nbhs' x if x is a real    *)
-(*                                   number and to predicates that are        *)
-(*                                   eventually true if x is +oo/-oo.         *)
-(*                   ereal_nbhs x == same as ereal_nbhs' where nbhs' is       *)
+(*                  ereal_dnbhs x == filter on extended real numbers that     *)
+(*                                   corresponds to the deleted neighborhood  *)
+(*                                   x^' if x is a real number and to         *)
+(*                                   predicates that are eventually true if x *)
+(*                                   is +oo/-oo.                              *)
+(*                   ereal_nbhs x == same as ereal_dnbhs where dnbhs is       *)
 (*                                   replaced with nbhs.                      *)
 (*                ereal_loc_seq x == sequence that converges to x in the set  *)
 (*                                   of extended real numbers.                *)
@@ -1396,9 +1398,11 @@ Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) +oo.
 Section ereal_nbhs.
 Context {R : numFieldType}.
 Local Open Scope ereal_scope.
-Definition ereal_nbhs' (a : \bar R) (P : \bar R -> Prop) : Prop :=
+Local Open Scope classical_set_scope.
+
+Definition ereal_dnbhs (a : \bar R) (P : \bar R -> Prop) : Prop :=
   match a with
-    | a%:E => nbhs' a (fun x => P x%:E)
+    | a%:E => a^' (fun x => P x%:E)
     | +oo => exists M, M \is Num.real /\ forall x, M%:E < x -> P x
     | -oo => exists M, M \is Num.real /\ forall x, x < M%:E -> P x
   end.
@@ -1423,11 +1427,11 @@ Proof. by exists c; rewrite realE (ltW H) orbT; split => // x /ltW. Qed.
 Section ereal_nbhs_instances.
 Context {R : numFieldType}.
 
-Global Instance ereal_nbhs'_filter :
-  forall x : \bar R, ProperFilter (ereal_nbhs' x).
+Global Instance ereal_dnbhs_filter :
+  forall x : \bar R, ProperFilter (ereal_dnbhs x).
 Proof.
 case=> [x||].
-- case: (Proper_nbhs'_numFieldType x) => x0 [//= xT xI xS].
+- case: (Proper_dnbhs_numFieldType x) => x0 [//= xT xI xS].
   apply Build_ProperFilter' => //=; apply Build_Filter => //=.
   move=> P Q lP lQ; exact: xI.
   by move=> P Q PQ /xS; apply => y /PQ.
@@ -1491,25 +1495,16 @@ case=> [x||].
       - by move=> _; split; [apply/ltMP | apply/ltMQ].
     * by exists M; split => // x /ltM /sPQ.
 Qed.
-Typeclasses Opaque ereal_nbhs'.
+Typeclasses Opaque ereal_dnbhs.
 
 Global Instance ereal_nbhs_filter : forall x, ProperFilter (@ereal_nbhs R x).
 Proof.
 case=> [x| |].
-- case: (ereal_nbhs'_filter x%:E) => x0 [//=nxT xI xS].
-  apply Build_ProperFilter => //=.
-  move=> P /nbhs_ballP[r r0 xr]; exists x%:E; apply xr => //=.
-  by rewrite /ball /= subrr normr0.
-  apply Build_Filter => //=.
-  by rewrite nbhsE'.
-  move=> P Q.
-  rewrite !nbhsE' => -[xP axP] [xQ axQ]; split => //=.
-  exact: xI.
-  move=> P Q PQ; rewrite !nbhsE' => -[xP axP]; split => //=.
-  apply (xS P) => //=.
-  exact: PQ.
-exact: (ereal_nbhs'_filter +oo).
-exact: (ereal_nbhs'_filter -oo).
+- case: (ereal_dnbhs_filter x%:E) => x0 [//= nxT xI xS].
+  apply: Build_ProperFilter => P /nbhs_ballP[r r0 xr].
+  by exists x%:E; exact/xr/ballxx.
+- exact: (ereal_dnbhs_filter +oo).
+- exact: (ereal_dnbhs_filter -oo).
 Qed.
 Typeclasses Opaque ereal_nbhs.
 
@@ -2327,17 +2322,17 @@ exists d%:num => //= y; rewrite /= distrC.
 by move=> /Hd /andP[??]; apply: Hp.
 Qed.
 
-Lemma ereal_nbhs'_le (R : numFieldType) (x : \bar R) :
-  ereal_nbhs' x --> ereal_nbhs x.
+Lemma ereal_dnbhs_le (R : numFieldType) (x : \bar R) :
+  ereal_dnbhs x --> ereal_nbhs x.
 Proof.
 move: x => [x P [_/posnumP[e] HP] |x P|x P] //=.
 by exists e%:num => // ???; apply: HP.
 Qed.
 
-Lemma ereal_nbhs'_le_finite (R : numFieldType) (x : R) :
-  ereal_nbhs' x%:E --> nbhs x%:E.
+Lemma ereal_dnbhs_le_finite (R : numFieldType) (x : R) :
+  ereal_dnbhs x%:E --> nbhs x%:E.
 Proof.
-by move=> P [_/posnumP[e] HP] //=; exists e%:num => // ???; apply: HP.
+by move=> P [_/posnumP[e] xeP] //=; exists e%:num => // ? ? ?; apply: xeP.
 Qed.
 
 Definition ereal_loc_seq (R : numDomainType) (x : \bar R) (n : nat) :=
@@ -2348,7 +2343,7 @@ Definition ereal_loc_seq (R : numDomainType) (x : \bar R) (n : nat) :=
   end.
 
 Lemma cvg_ereal_loc_seq (R : realType) (x : \bar R) :
-  ereal_loc_seq x --> ereal_nbhs' x.
+  ereal_loc_seq x --> ereal_dnbhs x.
 Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] Hp] |[d [dreal Hp]] |[d [dreal Hp]]]; last 2 first.

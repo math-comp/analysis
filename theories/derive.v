@@ -218,13 +218,13 @@ Qed.
 End diff_locally_converse_tentative.
 
 Definition derive (f : V -> W) a v :=
-  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ nbhs' 0).
+  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^').
 
 Local Notation "''D_' v f" := (derive f ^~ v).
 Local Notation "''D_' v f c" := (derive f c v). (* printing *)
 
 Definition derivable (f : V -> W) a v :=
-  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ nbhs' 0).
+  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^').
 
 Class is_derive (a v : V) (f : V -> W) (df : W) := DeriveDef {
   ex_derive : derivable f a v;
@@ -237,7 +237,7 @@ Lemma derivable_nbhs (f : V -> W) a v :
     (fun h => h *: ('D_v f a)) +o_ (nbhs (0 :R)) id.
 Proof.
 move=> df; apply/eqaddoP => _/posnumP[e].
-rewrite -nbhs_nearE nbhs_simpl /= nbhsE'; split; last first.
+rewrite -nbhs_nearE nbhs_simpl /= dnbhsE; split; last first.
   rewrite /at_point opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
   by rewrite addrA subrr add0r normrN scale0r !normr0 mulr0.
 have /eqolimP := df; rewrite -[lim _]/(derive _ _ _).
@@ -258,7 +258,7 @@ Lemma derivable_nbhsP (f : V -> W) a v :
 Proof.
 split; first exact: derivable_nbhs.
 move=> df; apply/cvg_ex; exists ('D_v f a).
-apply/(@eqolimP _ _ _ (nbhs'_filter_on _))/eqaddoP => _/posnumP[e].
+apply/(@eqolimP _ _ _ (dnbhs_filter_on _))/eqaddoP => _/posnumP[e].
 have /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]) := df.
 rewrite /= !(near_simpl, near_withinE); apply: filter_app; near=> h.
 rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
@@ -341,7 +341,7 @@ Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
 Definition derive1 V (f : R -> V) (a : R) :=
-   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ nbhs' 0).
+   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ 0^').
 
 Local Notation "f ^` ()" := (derive1 f).
 
@@ -1088,7 +1088,7 @@ Qed.
 
 Fact der_add (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f + g) \o shift x) (h *: v) - (f + g) x)) @
-  nbhs' 0  --> 'D_v f x + 'D_v g x.
+  0^'  --> 'D_v f x + 'D_v g x.
 Proof.
 move=> df dg.
 evar (fg : R -> W); rewrite [X in X @ _](_ : _ = fg) /=; last first.
@@ -1142,7 +1142,7 @@ Qed.
 
 Fact der_opp (f : V -> W) (x v : V) : derivable f x v ->
   (fun h => h^-1 *: (((- f) \o shift x) (h *: v) - (- f) x)) @
-  nbhs' 0 --> - 'D_v f x.
+  0^' --> - 'D_v f x.
 Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   by rewrite funeqE => h; rewrite !scalerDr !scalerN -opprD -scalerBr /g.
@@ -1182,7 +1182,7 @@ Proof. by move=> /derivableP df /derivableP dg. Qed.
 
 Fact der_scal (f : V -> W) (k : R) (x v : V) : derivable f x v ->
   (fun h => h^-1 *: ((k \*: f \o shift x) (h *: v) - (k \*: f) x)) @
-  nbhs' (0 : R) --> k *: 'D_v f x.
+  (0 : R)^' --> k *: 'D_v f x.
 Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE => h.
@@ -1210,7 +1210,7 @@ Qed.
 Fact der_mult (f g : V -> R) (x v : V) :
   derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f * g) \o shift x) (h *: v) - (f * g) x)) @
-  nbhs' (0 : R) --> f x *: 'D_v g x + g x *: 'D_v f x.
+  (0 : R)^' --> f x *: 'D_v g x + g x *: 'D_v f x.
 Proof.
 move=> df dg.
 evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
@@ -1269,17 +1269,17 @@ Proof. by move=> /derivableP df; rewrite derive_val. Qed.
 Fact der_inv (f : V -> R) (x v : V) :
   f x != 0 -> derivable f x v ->
   (fun h => h^-1 *: (((fun y => (f y)^-1) \o shift x) (h *: v) - (f x)^-1)) @
-  nbhs' (0 : R) --> - (f x) ^-2 *: 'D_v f x.
+  (0 : R)^' --> - (f x) ^-2 *: 'D_v f x.
 Proof.
 move=> fxn0 df.
 have /derivable1P/derivable1_diffP/differentiable_continuous := df.
 move=> /continuous_withinNx; rewrite scale0r add0r => fc.
-have fn0 : nbhs' (0 : R) [set h | f (h *: v + x) != 0].
+have fn0 : (0 : R)^' [set h | f (h *: v + x) != 0].
   apply: (fc [set x | x != 0]); exists `|f x|; first by rewrite /= normr_gt0.
   move=> y; rewrite /= => yltfx.
   by apply/eqP => y0; move: yltfx; rewrite y0 subr0 ltxx.
 have : (fun h => - ((f x)^-1 * (f (h *: v + x))^-1) *:
-  (h^-1 *: (f (h *: v + x) - f x))) @ nbhs' (0 : R) -->
+  (h^-1 *: (f (h *: v + x) - f x))) @ (0 : R)^' -->
   - (f x) ^- 2 *: 'D_v f x.
   by apply: cvgM => //; apply: cvgN; rewrite expr2 invfM; apply: cvgM;
      [exact: cvg_cst|  exact: cvgV].
@@ -1359,7 +1359,7 @@ by exists c => // ? /fcmax; rewrite ler_opp2.
 Qed.
 
 Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
-  cvg (f @ nbhs' x) -> lim (f @ nbhs' x) = lim (f @ at_right x).
+  cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_right x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
@@ -1369,7 +1369,7 @@ by exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
 
 Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
-  cvg (f @ nbhs' x) -> lim (f @ nbhs' x) = lim (f @ at_left x).
+  cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_left x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)

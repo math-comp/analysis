@@ -114,6 +114,23 @@
   * module `BigmaxBigminr` -> `Bigminr`
 - in `sequences.v`:
   + `nondecreasing_seq_ereal_cvg` -> `nondecreasing_ereal_cvg`
+- in `topology.v`:
+  + `nbhs'` -> `dnbhs`
+  + `nbhsE'` -> `dnbhs`
+  + `nbhs'_filter` -> `dnbhs_filter`
+  + `nbhs'_filter_on` -> `dnbhs_filter_on`
+  + `nbhs_nbhs'` -> `nbhs_dnbhs`
+  + `Proper_nbhs'_regular_numFieldType` -> `Proper_dnbhs_regular_numFieldType`
+  + `Proper_nbhs'_numFieldType` -> `Proper_dnbhs_numFieldType`
+  + `ereal_nbhs'` -> `ereal_dnbhs`
+  + `ereal_nbhs'_filter` -> `ereal_dnbhs_filter`
+  + `ereal_nbhs'_le` -> `ereal_dnbhs_le`
+  + `ereal_nbhs'_le_finite` -> `ereal_dnbhs_le_finite`
+  + `Proper_nbhs'_numFieldType` -> `Proper_dnbhs_numFieldType`
+  + `Proper_nbhs'_realType` -> `Proper_dnbhs_realType`
+  + `nbhs'0_lt` -> `dnbhs0_lt`
+  + `nbhs'0_le` -> `dnbhs0_le`
+  + `continuity_pt_nbhs'` -> `continuity_pt_dnbhs`
 
 ### Removed
 
