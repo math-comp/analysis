@@ -35,23 +35,6 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
-(* TODO: move to sequences.v *)
-Lemma ereal_pseries_pred0 (R : realType) (P : pred nat) (f : nat -> \bar R) :
-  P =1 xpred0 -> \sum_(i <oo | P i) f i = 0.
-Proof.
-move=> P0; rewrite (_ : (fun _ => _) = fun=> 0) ?lim_cst// funeqE => n.
-by rewrite big1 // => i; rewrite P0.
-Qed.
-
-(* NB: worth putting near ub_ereal_sup_adherent? *)
-Lemma ub_ereal_sup_adherent_img (R : realFieldType) (T : choiceType)
-    (P : T -> Prop) (f : T -> \bar R) (e : {posnum R}) c :
-  ereal_sup (f @` P) = c%:E -> exists t, P t /\ c%:E - e%:num%:E < f t.
-Proof.
-move=> fPc; have [x [[t Pt ftx] fPex]] := ub_ereal_sup_adherent e fPc.
-by exists t; split => //; rewrite ftx -fPc.
-Qed.
-
 Section set_of_fset_in_a_set.
 Variable (T : choiceType).
 Implicit Type S : set T.
@@ -244,7 +227,7 @@ Proof.
 apply ub_ereal_sup => /= _ [L LK <-].
 have [/eqP ->|L0] := boolP (L == fset0); first by rewrite big_nil csum_ge0.
 have /gee0P[->|[r r0 csumIar]] := csum_ge0 KJ a0; first by rewrite lee_pinfty.
-apply lee_adde => e; rewrite -lee_subl_addr.
+apply: lee_adde => e; rewrite -lee_subl_addr //.
 suff : \sum_(i < #|` L |) \csum_(j in J (L \_ i)) a j - e%:num%:E <=
        \csum_(j in KJ) a j.
   by apply: le_trans; apply: lee_add2r; rewrite (big_nth O) big_mkord lee_sum.
@@ -255,9 +238,9 @@ have [Fj csumFj] : exists F, forall j, P (F j) j.
   suff : forall j, exists Fj, P Fj j.
     by case/(@choice _ _ (fun i F => P F i)) => Fj ?; exists Fj.
   move=> j; rewrite /P /csum; set es := ereal_sup _.
-  have [esoo|[c c0 esc]] : es = +oo \/ exists2 r : R, (r >= 0)%R & es = r%:E.
-    suff : 0 <= es by move/gee0P.
-    by apply ereal_sup_ub; exists fset0; [exact: fsets_set0|rewrite big_nil].
+  have [esoo|esfin] : es = +oo \/ es \is a fin_num.
+    suff : 0 <= es by case: es => // [s s0|]; [right|left].
+    by apply: ereal_sup_ub; exists fset0; [exact: fsets_set0|rewrite big_nil].
   - move: csumIar; rewrite /csum; set es' := ereal_sup _ => es'r.
     suff : es <= es' by rewrite esoo es'r.
     apply: le_ereal_sup => x [F FJ Fax]; exists F => //.
@@ -265,8 +248,8 @@ have [Fj csumFj] : exists F, forall j, P (F j) j.
     by apply: LK; rewrite /mkset mem_nth.
   - have eL0 : (0 < e%:num / #|` L |%:R)%R.
       by rewrite divr_gt0 // ltr0n cardfs_gt0.
-    rewrite (_ : _ / _ = (PosNum eL0)%:num) // esc.
-    exact: ub_ereal_sup_adherent_img.
+    have [x [[F JLjF Faix] ese]] := ub_ereal_sup_adherent (PosNum eL0) esfin.
+    by exists F; split => //; rewrite Faix.
 pose F := \big[fsetU/fset0]_(i < #|`L|) Fj i.
 apply: (@le_trans _ _ (\sum_(i <- F) a i)); last first.
   apply ereal_sup_ub; exists F => //.

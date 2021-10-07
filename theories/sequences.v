@@ -996,7 +996,7 @@ Qed.
 
 Lemma is_cvg_series_exp_coeff x : cvg (series (exp x)).
 Proof.
-have [/eqP ->|x0] := boolP (x == 0).
+have [->|x0] := eqVneq x 0.
   apply/cvg_ex; exists 1; apply/cvg_distP => // => _/posnumP[e].
   rewrite near_map; near=> n; have [m ->] : exists m, n = m.+1.
     by exists n.-1; rewrite prednK //; near: n; exists 1%N.
@@ -1144,16 +1144,14 @@ have [Snoo|Snoo] := pselect (u_ = fun=> -oo).
     rewrite predeqE => x; split => [-[n _ <-]|->]; first by rewrite Snoo.
     by exists O => //; rewrite Snoo.
   by rewrite ereal_sup1 Snoo; exact: cvg_cst.
-have [/eqP|lnoo] := boolP (l == -oo).
-  move/ereal_sup_ninfty => loo.
+have [/ereal_sup_ninfty loo|lnoo] := eqVneq l -oo.
   suff : u_ = (fun=> -oo) by [].
   by rewrite funeqE => m; apply (loo (u_ m)); exists m.
 apply/cvg_ballP => _/posnumP[e].
-have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo).
+have [{lnoo}loo|lpoo] := eqVneq l +oo.
   rewrite near_map; near=> n; rewrite /ball /= /ereal_ball.
   have unoo : u_ n != -oo.
-    near: n.
-    have [m /eqP umoo] : exists m, u_ m <> -oo.
+    near: n; have [m /eqP umoo] : exists m, u_ m <> -oo.
       apply/existsNP => uoo.
       by apply/Snoo; rewrite funeqE => ?; rewrite uoo.
     exists m => // k mk; apply: contra umoo => /eqP ukoo.
@@ -1178,8 +1176,8 @@ have [/eqP {lnoo}loo|lpoo] := boolP (l == +oo).
     have [e1|e1] := ltrP 1 e%:num.
       by rewrite ler_subl_addr (le_trans (ltW e2)).
     by rewrite ler_subl_addr ler_addl.
-have [r lr] : exists r, l = r%:E by move: l lnoo lpoo => [] // r' _ _; exists r'.
-have [re1|re1] := (ltrP (`|contract l - e%:num|) 1)%R; last first.
+have l_fin_num : l \is a fin_num by rewrite fin_numE lpoo lnoo.
+have [le1|le1] := (ltrP (`|contract l - e%:num|) 1)%R; last first.
   rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
   have unoo : u_ n != -oo.
     near: n.
@@ -1190,33 +1188,35 @@ have [re1|re1] := (ltrP (`|contract l - e%:num|) 1)%R; last first.
     by move/nd_u_ : mk; rewrite ukoo lee_ninfty_eq.
   rewrite ger0_norm ?subr_ge0 ?le_contract ?ereal_sup_ub//; last by exists n.
   have [l0|l0] := ger0P (contract l).
-    have ? : (e%:num > contract r%:E)%R.
+    have el : (e%:num > contract l)%R.
       rewrite ltNge; apply/negP => er.
-      rewrite lr ger0_norm ?subr_ge0// -ler_subl_addr opprK in re1.
-      case/ler_normlP : (contract_le1 r%:E) => _ /(le_trans re1); apply/negP.
+      rewrite ger0_norm ?subr_ge0// -ler_subl_addr opprK in le1.
+      case/ler_normlP : (contract_le1 l) => _ /(le_trans le1); apply/negP.
       by rewrite -ltNge ltr_addl.
-    rewrite lr ltr0_norm ?subr_lt0// opprB in re1.
-    rewrite ltr_subl_addr addrC -ltr_subl_addr -opprB ltr_oppl lr.
-    rewrite (lt_le_trans _ re1) // lt_neqAle eqr_oppLR contract_eqN1 unoo /=.
+    rewrite ltr0_norm ?subr_lt0// opprB in le1.
+    rewrite ltr_subl_addr addrC -ltr_subl_addr -opprB ltr_oppl.
+    rewrite (lt_le_trans _ le1) // lt_neqAle eqr_oppLR contract_eqN1 unoo /=.
     by case/ler_normlP : (contract_le1 (u_ n)).
-  rewrite ler0_norm in re1; last first.
-    by rewrite subr_le0 (le_trans (ltW l0)).
-  rewrite opprB ler_subr_addr addrC -ler_subr_addr in re1.
-  rewrite ltr_subl_addr (le_lt_trans re1) // -ltr_subl_addl addrAC subrr add0r.
+  rewrite ler0_norm in le1; last by rewrite subr_le0 (le_trans (ltW l0)).
+  rewrite opprB ler_subr_addr addrC -ler_subr_addr in le1.
+  rewrite ltr_subl_addr (le_lt_trans le1) // -ltr_subl_addl addrAC subrr add0r.
   rewrite lt_neqAle eq_sym contract_eqN1 unoo /=.
   by case/ler_normlP : (contract_le1 (u_ n)); rewrite ler_oppl.
-pose e' := (r - real_of_extended (expand (contract l - e%:num)))%R.
+pose e' :=
+  (real_of_extended l - real_of_extended (expand (contract l - e%:num)))%R.
 have e'0 : (0 < e')%R.
   rewrite /e' subr_gt0 -lte_fin real_of_extended_expand //.
-  by rewrite lt_expandLR ?inE ?ltW// lr ltr_subl_addr // ltr_addl.
-have [y [[m _] umx] Se'y] := @ub_ereal_sup_adherent _ S (PosNum e'0) _ lr.
+  rewrite lt_expandLR ?inE ?ltW// ltr_subl_addr -EFin_real_of_extended //.
+  by rewrite ltr_addl.
+have [y [[m _] umx] Se'y] := ub_ereal_sup_adherent (PosNum e'0) l_fin_num.
 rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
 rewrite ger0_norm ?subr_ge0 ?le_contract ?ereal_sup_ub//; last by exists n.
 move: Se'y; rewrite -{}umx {y} /= => le'um.
 have leum : (contract l - e%:num < contract (u_ m))%R.
   rewrite -lt_expandLR ?inE ?ltW//.
-  move: le'um; rewrite /e' NEFin -/l [in X in (X - _ < _) -> _]lr /= opprB.
-  by rewrite -addEFin addrCA subrr addr0 real_of_extended_expand.
+  move: le'um; rewrite /e' NEFin /= opprB subEFin.
+  rewrite -(EFin_real_of_extended l_fin_num) real_of_extended_expand //.
+  by rewrite addeCA subee // adde0.
 rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
 by rewrite le_contract nd_u_//; near: n; exists m.
 Grab Existential Variables. all: end_near. Qed.
@@ -1412,7 +1412,7 @@ case: realg => k _ realg.
 near=> n.
 have : (n >= maxn m k)%N by near: n; exists (maxn m k).
 rewrite geq_max => /andP[mn] /realg /EFin_real_of_extended ->.
-rewrite -lee_subl_addr -subEFin (le_trans _ (foo _ mn)) // lee_fin.
+rewrite -lee_subl_addr // (le_trans _ (foo _ mn)) // lee_fin.
 by rewrite le_maxr; apply/orP; right; apply ler_sub => //; apply gtM; exists n.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1429,7 +1429,7 @@ near=> n.
 have : (n >= maxn m k)%N by near: n; exists (maxn m k).
 rewrite geq_max => /andP[mn].
 move/realg => /EFin_real_of_extended ->.
-rewrite -lee_subr_addr -subEFin (le_trans (foo _ mn)) // lee_fin.
+rewrite -lee_subr_addr // (le_trans (foo _ mn)) // lee_fin.
 by rewrite  le_minl; apply/orP; right; apply ler_sub => //; apply gtM; exists n.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1532,6 +1532,13 @@ Qed.
 Lemma ereal_pseries0 (R : realFieldType) (f : (\bar R)^nat) :
   (forall i, f i = 0) -> \sum_(i <oo) f i = 0.
 Proof. by move=> f0; under eq_fun do rewrite big1//; rewrite lim_cst. Qed.
+
+Lemma ereal_pseries_pred0 (R : realFieldType) (P : pred nat) (f : nat -> \bar R) :
+  P =1 xpred0 -> \sum_(i <oo | P i) f i = 0.
+Proof.
+move=> P0; rewrite (_ : (fun _ => _) = fun=> 0) ?lim_cst// funeqE => n.
+by rewrite big1 // => i; rewrite P0.
+Qed.
 
 Lemma eq_ereal_pseries (R : realFieldType) (f g : (\bar R)^nat) :
   (forall i, f i = g i) -> \sum_(i <oo) f i = \sum_(i <oo) g i.

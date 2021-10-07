@@ -1038,8 +1038,8 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
     apply: (lee_sum_nneg_ord (fun n => mu (X `&` A n)) xpredT) => n _.
     exact: outer_measure_ge0.
   move XAx : (mu (X `&` ~` A')) => [x| |].
-  - rewrite -lee_subr_addr; apply ub_ereal_sup => /= _ [n _] <-.
-    by rewrite lee_subr_addr -XAx XA.
+  - rewrite -lee_subr_addr //; apply ub_ereal_sup => /= _ [n _] <-.
+    by rewrite NEFin lee_subr_addr // -XAx XA.
   - suff : mu X = +oo by move=> ->; rewrite lee_pinfty.
     apply/eqP; rewrite -lee_pinfty_eq -XAx le_outer_measure //.
     by apply subIset; left.
@@ -1257,7 +1257,9 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
   case: iS infS => [r Sr|Soo|Soo].
   - have en1 : (0 < e%:num / (2 ^ n.+1)%:R)%R.
       by rewrite divr_gt0 // ltr0n expn_gt0.
-    have [x [[B [mB AnB muBx]] xS]] := lb_ereal_inf_adherent (PosNum en1) Sr.
+    have /(lb_ereal_inf_adherent (PosNum en1)) : ereal_inf S \is a fin_num.
+      by rewrite Sr.
+    move=> [x [[B [mB AnB muBx]] xS]].
     exists B; split => //; rewrite muBx -Sr; apply/ltW.
     by rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul.
   - by have := Aoo n; rewrite /mu_ext Soo.
