@@ -1091,50 +1091,6 @@ Grab Existential Variables. all: end_near. Qed.
 
 End rule_of_products_numClosedFieldType.
 
-Section Shift.
-
-Context {R : zmodType} {T : Type}.
-
-Definition shift (x y : R) := y + x.
-Notation center c := (shift (- c)).
-Arguments shift x / y.
-
-Lemma comp_shiftK (x : R) (f : R -> T) : (f \o shift x) \o center x = f.
-Proof. by rewrite funeqE => y /=; rewrite addrNK. Qed.
-
-Lemma comp_centerK (x : R) (f : R -> T) : (f \o center x) \o shift x = f.
-Proof. by rewrite funeqE => y /=; rewrite addrK. Qed.
-
-Lemma shift0 : shift 0 = id.
-Proof. by rewrite funeqE => x /=; rewrite addr0. Qed.
-
-Lemma center0 : center 0 = id.
-Proof. by rewrite oppr0 shift0. Qed.
-
-End Shift.
-Arguments shift {R} x / y.
-Notation center c := (shift (- c)).
-
-Lemma near_shift {K : numDomainType} {R : normedModType K}
-   (y x : R) (P : set R) :
-   (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
-Proof.
-rewrite propeqE; split=> /= /nbhs_normP [_/posnumP[e] ye];
-apply/nbhs_normP; exists e%:num => // t; rewrite -ball_normE /= => et.
-  apply: ye; rewrite -ball_normE /= !opprD addrA addrACA subrr add0r.
-  by rewrite opprK addrC.
-have /= := ye (t - (x - y)); rewrite addrNK; apply.
-by rewrite -ball_normE /= opprB addrCA opprD addrA subrr add0r opprB.
-Qed.
-
-Lemma cvg_shift {T : Type} {K : numDomainType} {R : normedModType K}
-  (x y : R) (f : R -> T) :
-  (f \o shift x) @ y = f @ (y + x).
-Proof.
-rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
-by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
-Qed.
-
 Section Linear3.
 Context (R : realFieldType) (U : normedModType R) (V : normedModType R) (s : R -> V -> V)
         (s_law : GRing.Scale.law s).

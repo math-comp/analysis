@@ -175,7 +175,7 @@ rewrite (littleo_bigO_eqo (cst (1 : R))); last first.
   near=> y; rewrite ltW //; near: y; apply/nbhs_normP.
   exists k; first by near: k; exists 0; rewrite real0.
   by move=> ? /=; rewrite -ball_normE /= sub0r normrN.
-rewrite addfo; first by move=> /eqolim; rewrite cvg_shift add0r.
+rewrite addfo; first by move=> /eqolim; rewrite cvg_comp_shift add0r.
 by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
 Grab Existential Variables. all: end_near. Qed.
 

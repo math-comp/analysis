@@ -47,6 +47,35 @@
 - in `normedtype.v`:
   + lemmas `ereal_is_cvgN`, `ereal_cvgZr`, `ereal_is_cvgZr`, `ereal_cvgZl`, `ereal_is_cvgZl`,
     `ereal_limZr`, `ereal_limZl`, `ereal_limN`
+- in `topology.v`:
+  + definition `monotonous`
+  + lemma `and_prop_in`
+  + lemmas `mem_inc_segment`, `mem_dec_segment`
+  + lemmas `ltr_distlC`, `ler_distlC`
+  + lemmas `subset_ball_prop_in_itv`, `subset_ball_prop_in_itvcc`
+- in `normedtype.v`:
+  + lemma `bound_itvE`
+  + lemmas `nearN`, `near_in_itv`
+  + lemmas `itvxx`, `itvxxP`, `subset_itv_oo_cc`
+  + lemma `at_right_in_segment`
+  + notations ``f @`[a, b]``, ``g @`]a , b[``
+  + lemmas `mono_mem_image_segment`, `mono_mem_image_itvoo`, `mono_surj_image_segment`,
+    `inc_segment_image`, `dec_segment_image`, `inc_surj_image_segment`, `dec_surj_image_segment`,
+    `inc_surj_image_segmentP`, `dec_surj_image_segmentP`, ``mono_surj_image_segmentP``
+- in `cardinality.v`:
+  + lemmas `surjectiveE`, `surj_image_eq`, `can_surjective`
+- file `realfun.v`:
+  + lemmas `itv_continuous_inj_le`, `itv_continuous_inj_ge`, `itv_continuous_inj_mono`
+  + lemmas `segment_continuous_inj_le`, `segment_continuous_inj_ge`,
+    `segment_can_le`, `segment_can_ge`, `segment_can_mono`
+  + lemmas `segment_continuous_surjective`, `segment_continuous_le_surjective`,
+    `segment_continuous_ge_surjective`
+  + lemmas `continuous_inj_image_segment`, `continuous_inj_image_segmentP`,
+    `segment_continuous_can_sym`, `segment_continuous_le_can_sym`, `segment_continuous_ge_can_sym`,
+    `segment_inc_surj_continuous`, `segment_dec_surj_continuous`, `segment_mono_surj_continuous`
+  + lemmas `segment_can_le_continuous`, `segment_can_ge_continuous`, `segment_can_continuous`
+  + lemmas `near_can_continuousAcan_sym`, `near_can_continuous`, `near_continuous_can_sym`
+  + lemmas `exp_continuous`, `sqr_continuous`, `sqrt_continuous`.
 
 ### Changed
 
@@ -81,11 +110,16 @@
     `lte_subr_addr`, `lte_subr_addr`, `lb_ereal_inf_adherent`
 - in `sequences.v`:
   + lemma `ereal_pseries_pred0` moved from `csum.v`, minor generalization
+- in `landau.v`:
+  + lemma `cvg_shift` renamed to `cvg_comp_shift` and moved to `normedtype.v`
+- moved from `landau.v` to `normedtype.v`:
+  + lemmas `comp_shiftK`, `comp_centerK`, `shift0`, `center0`, `near_shift`,
+    `cvg_shift`
 
 ### Renamed
+
 - in `classical_sets.v`:
   + generalize lemma `perm_eq_trivIset`
-
 - in `ereal.v`:
   + `adde` -> `adde_subdef`
   + `mule` -> `mule_subdef`

@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
-Require Import boolp ereal reals.
+Require Import boolp ereal reals cardinality.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 
 (******************************************************************************)
@@ -38,6 +38,11 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*                      ball_norm == balls defined by the norm.               *)
 (*                      nbhs_norm == neighborhoods defined by the norm.       *)
 (*                    closed_ball == closure of a ball.                       *)
+(*   f @`[ a , b ], f @`] a , b [ == notations for images of intervals,       *)
+(*                                   intended for continuous, monotonous      *)
+(*                                   functions.                               *)
+(*                  f @`[ a , b ] := `[minr (f a) (f b), maxr (f a) (f b)]    *)
+(*                  f @`] a , b [ := `]minr (f a) (f b), maxr (f a) (f b)[    *)
 (*                                                                            *)
 (* * Domination notations:                                                    *)
 (*              dominated_by h k f F == `|f| <= k * `|h|, near F              *)
@@ -58,6 +63,8 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*                                                                            *)
 (*                     is_interval E == the set E is an interval              *)
 (*                           Rhull E == the real interval hull of a set       *)
+(*                         shift x y == y + x                                 *)
+(*                          center c := shift (- c)                           *)
 (*                                                                            *)
 (* * Complete normed modules :                                                *)
 (*        completeNormedModType K == interface type for a complete normed     *)
@@ -75,6 +82,11 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*     the closed and bounded sets.                                           *)
 (*                                                                            *)
 (******************************************************************************)
+
+Reserved Notation "f @`[ a , b ]" (at level 20, b at level 9,
+  format "f  @`[ a ,  b ]").
+Reserved Notation "f @`] a , b [" (at level 20, b at level 9,
+  format "f  @`] a ,  b [").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -2165,6 +2177,15 @@ Qed.
 
 End NVS_continuity_normedModType.
 
+Lemma nearN {R : numFieldType} (a : R) (P : R -> Prop) :
+  (\forall x \near (- a), P x) <-> (\forall x \near a, P (- x)).
+Proof.
+split; first exact: opp_continuous.
+case=> [e epos Pe]; exists e;[exact epos | ].
+move=> z zclose; rewrite -(opprK z); apply: Pe.
+by move: zclose; rewrite /ball_ /= -opprD normrN opprK.
+Qed.
+
 Section mule_continuous.
 Variable (R : realFieldType).
 
@@ -2732,6 +2753,29 @@ End at_left_right.
 
 Typeclasses Opaque at_left at_right.
 
+(* TODO: backport to mathcomp in progress *)
+Lemma itvxx d (T : porderType d) (x : T) : `[x, x] =i pred1 x.
+Proof. by move=> y; rewrite in_itv/= -eq_le eq_sym. Qed.
+
+Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]).
+Proof. by rewrite itvxx; apply/eqP. Qed.
+
+Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}.
+Proof. by apply: subitvP; rewrite subitvE !bound_lexx. Qed.
+(* /TODO: backport to mathcomp in progress *)
+
+Lemma at_right_in_segment (R : realFieldType) (x : R) (P : set R) :
+  (\forall e \near at_right (0 : R), {in `[(x - e), (x + e)], forall x, P x})
+  <-> (\near x, P x).
+Proof.
+split=> -[_/posnumP[e] /(_ _)/= Px]; [exists (e%:num / 2)|exists e%:num] => //.
+  move=> y; rewrite /= ltr_distlC => /subset_itv_oo_cc; apply: Px => //.
+  by rewrite distrC subr0 ger0_norm// ltr_pdivr_mulr// ltr_pmulr// ltr1n.
+move=> e'; rewrite /= distrC subr0 => + e'_gt0; rewrite gtr0_norm// => lt_e'e.
+move=> y; rewrite in_itv/= -ler_distlC => distxye.
+by apply: Px; rewrite (le_lt_trans distxye).
+Qed.
+
 Section cvg_seq_bounded.
 Context {K : numFieldType}.
 Local Notation "'+oo'" := (@pinfty_nbhs K).
@@ -2811,15 +2855,14 @@ Variable R : realFieldType (* TODO: can we generalize to numFieldType? *).
 Lemma open_lt (y : R) : open [set x : R| x < y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0; exists (y - x) => // z.
-by rewrite /= distrC ltr_distl addrCA subrr addr0 => /andP[].
+by rewrite /= ltr_distlC addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_lt : core.
-
 
 Lemma open_gt (y : R) : open [set x : R | x > y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
-by rewrite /= distrC ltr_distl opprB addrCA subrr addr0 => /andP[].
+by rewrite /= ltr_distlC opprB addrCA subrr addr0 => /andP[].
 Qed.
 Hint Resolve open_gt : core.
 
@@ -2838,13 +2881,11 @@ rewrite (_ : mkset _ = ~` [set x | x > y]); first exact: closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
-
 Lemma closed_ge (y : R) : closed [set x : R | y <= x].
 Proof.
 rewrite (_ : mkset _ = ~` [set x | x < y]); first exact: closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
-
 
 Lemma closed_eq (y : R) : closed [set x : R | x = y].
 Proof.
@@ -3718,6 +3759,50 @@ End limit_composition_ereal.
 
 (** * Some limits on real functions *)
 
+Section Shift.
+
+Context {R : zmodType} {T : Type}.
+
+Definition shift (x y : R) := y + x.
+Notation center c := (shift (- c)).
+Arguments shift x / y.
+
+Lemma comp_shiftK (x : R) (f : R -> T) : (f \o shift x) \o center x = f.
+Proof. by rewrite funeqE => y /=; rewrite addrNK. Qed.
+
+Lemma comp_centerK (x : R) (f : R -> T) : (f \o center x) \o shift x = f.
+Proof. by rewrite funeqE => y /=; rewrite addrK. Qed.
+
+Lemma shift0 : shift 0 = id.
+Proof. by rewrite funeqE => x /=; rewrite addr0. Qed.
+
+Lemma center0 : center 0 = id.
+Proof. by rewrite oppr0 shift0. Qed.
+
+End Shift.
+Arguments shift {R} x / y.
+Notation center c := (shift (- c)).
+
+Lemma near_shift {K : numDomainType} {R : normedModType K}
+   (y x : R) (P : set R) :
+   (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
+Proof.
+rewrite propeqE; split=> /= /nbhs_normP [_/posnumP[e] ye];
+apply/nbhs_normP; exists e%:num => // t; rewrite -ball_normE /= => et.
+  apply: ye; rewrite -ball_normE /= !opprD addrA addrACA subrr add0r.
+  by rewrite opprK addrC.
+have /= := ye (t - (x - y)); rewrite addrNK; apply.
+by rewrite -ball_normE /= opprB addrCA opprD addrA subrr add0r opprB.
+Qed.
+
+Lemma cvg_comp_shift {T : Type} {K : numDomainType} {R : normedModType K}
+  (x y : R) (f : R -> T) :
+  (f \o shift x) @ y = f @ (y + x).
+Proof.
+rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
+by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
+Qed.
+
 Section Closed_Ball.
 
 Lemma ball_open (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
@@ -3851,6 +3936,124 @@ by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
 End Closed_Ball.
+
+(* multi-rule bound_in_itv already exists in interval.v, but we
+  advocate that it should actually have the following statement.
+  This does not expose the order between interval bounds. *)
+Lemma bound_itvE (R : numDomainType) (a b : R) :
+  ((a \in `[a, b]) = (a <= b)) *
+  ((b \in `[a, b]) = (a <= b)) *
+  ((a \in `[a, b[) = (a < b)) *
+  ((b \in `]a, b]) = (a < b)) *
+  (a \in `[a, +oo[ ) *
+  (a \in `]-oo, a]).
+Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
+
+Lemma near_in_itv {R : realFieldType} (a b : R) :
+  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
+Proof.
+move=> y ayb; rewrite (near_shift 0 y).
+have mingt0 : 0 < Num.min (y - a) (b - y).
+  have : 0 < y - a by rewrite subr_gt0 (itvP ayb).
+  have : 0 < b - y by rewrite subr_gt0 (itvP ayb).
+  by case: (ltrP (y - a) (b - y)).
+near=> z; rewrite /= subr0.
+rewrite in_itv /= -ltr_subl_addl -ltr_subr_addl ltr_normlW /=; last first.
+  rewrite normrN.
+  by near: z; apply: nbhs0_lt; rewrite (lt_le_trans mingt0) // le_minl lexx.
+rewrite -ltr_subr_addr ltr_normlW //.
+near: z; apply: nbhs0_lt; rewrite (lt_le_trans mingt0) //.
+by rewrite le_minl lexx orbT.
+Grab Existential Variables. all: end_near. Qed.
+
+Notation "f @`[ a , b ]" := (`[minr (f a) (f b), maxr (f a) (f b)]).
+Notation "f @`] a , b [" := (`](minr (f a) (f b)), (maxr (f a) (f b))[).
+
+Section image_interval.
+Variable R : realDomainType.
+Implicit Types (a b : R) (f : R -> R).
+
+Lemma mono_mem_image_segment a b f : monotonous (mem `[a, b]) f ->
+  {homo f : x / x \in `[a, b] >-> x \in f @`[a, b]}.
+Proof.
+move=> [fle|fge] x xab; have leab : a <= b by rewrite (itvP xab).
+  have: f a <= f b by rewrite fle ?bound_itvE.
+  by case: leP => // fafb _; rewrite in_itv/= !fle ?(itvP xab).
+have: f a >= f b by rewrite fge ?bound_itvE.
+by case: leP => // fafb _; rewrite in_itv/= !fge ?(itvP xab).
+Qed.
+
+Lemma mono_mem_image_itvoo a b f : monotonous (mem `[a, b]) f ->
+  {homo f : x / x \in `]a, b[ >-> x \in f @`]a, b[}.
+Proof.
+move=> []/[dup] => [/leW_mono_in|/leW_nmono_in] flt fle x xab;
+    have ltab : a < b by rewrite (itvP xab).
+  have: f a <= f b by rewrite ?fle ?bound_itvE ?ltW.
+  by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
+have: f a >= f b by rewrite fle ?bound_itvE ?ltW.
+by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
+Qed.
+
+Lemma mono_surj_image_segment a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
+  a <= b -> monotonous (mem `[a, b]) f -> surjective I J f -> f @` I = J.
+Proof.
+move=> leab fmono; apply: surj_image_eq => _ /= [x Ix <-];
+exact: mono_mem_image_segment.
+Qed.
+
+Lemma inc_segment_image a b f : f a <= f b -> f @`[a, b] = `[f a, f b].
+Proof. by case: ltrP. Qed.
+
+Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a].
+Proof. by case: ltrP. Qed.
+
+Lemma inc_surj_image_segment a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f a, f b]]) :
+  a <= b -> {in `[a, b] &, {mono f : x y / x <= y}} -> surjective I J f ->
+  f @` I = J.
+Proof.
+move=> leab fle f_surj; have fafb : f a <= f b by rewrite fle ?bound_itvE.
+by rewrite mono_surj_image_segment ?inc_segment_image//; left.
+Qed.
+
+Lemma dec_surj_image_segment a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f b, f a]]) :
+  a <= b -> {in `[a, b] &, {mono f : x y /~ x <= y}} -> surjective I J f ->
+  f @` I = J.
+Proof.
+move=> leab fge f_surj; have fafb : f b <= f a by rewrite fge ?bound_itvE.
+by rewrite mono_surj_image_segment ?dec_segment_image//; right.
+Qed.
+
+Lemma inc_surj_image_segmentP a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f a, f b]]) :
+  a <= b -> {in `[a, b] &, {mono f : x y / x <= y}} -> surjective I J f ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f a, f b]).
+Proof.
+move=> /inc_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+by apply/(equivP idP); symmetry.
+Qed.
+
+Lemma dec_surj_image_segmentP a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f b, f a]]) :
+  a <= b -> {in `[a, b] &, {mono f : x y /~ x <= y}} -> surjective I J f ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f b, f a]).
+Proof.
+move=> /dec_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+by apply/(equivP idP); symmetry.
+Qed.
+
+Lemma mono_surj_image_segmentP a b f
+    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
+  a <= b -> monotonous (mem `[a, b]) f -> surjective I J f ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
+Proof.
+move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+by apply/(equivP idP); symmetry.
+Qed.
+
+End image_interval.
 
 Section LinearContinuousBounded.
 
