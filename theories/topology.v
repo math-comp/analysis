@@ -2805,10 +2805,6 @@ exists p; split=> [|B C FB p_C]; first by have /AclFIp [] := FA.
 by have /AclFIp [_] := FB; move=> /(_ _ p_C).
 Qed.
 
-Lemma exists2P A (P Q : A -> Prop) :
-  (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
-Proof. by split=> [[x ??] | [x []]]; exists x. Qed.
-
 Lemma compact_cover : compact = cover_compact.
 Proof.
 rewrite compact_In0 cover_compactE predeqE => A.

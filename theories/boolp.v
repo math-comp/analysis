@@ -2,8 +2,8 @@
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
-
 (* -------------------------------------------------------------------- *)
+
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice.
 
 (* -------------------------------------------------------------------- *)
@@ -673,6 +673,10 @@ Proof.
 split=> [PQ [t Pt Qt]|PQ t]; first by have [] := PQ t.
 by rewrite -not_andP => -[Pt Qt]; apply PQ; exists t.
 Qed.
+
+Lemma exists2P T (P Q : T -> Prop) :
+  (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
+Proof. by split=> [[x ? ?] | [x []]]; exists x. Qed.
 
 (* -------------------------------------------------------------------- *)
 Definition xchooseb {T : choiceType} (P : pred T) (h : `[exists x, P x]) :=

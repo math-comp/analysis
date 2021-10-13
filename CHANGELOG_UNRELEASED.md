@@ -115,6 +115,7 @@
 - moved from `landau.v` to `normedtype.v`:
   + lemmas `comp_shiftK`, `comp_centerK`, `shift0`, `center0`, `near_shift`,
     `cvg_shift`
+- lemma `exists2P` moved from `topology.v` to `boolp.v`
 
 ### Renamed
 
