@@ -305,45 +305,6 @@ move=> bij_f; split.
   by rewrite ltnS.
 Qed.
 
-Lemma pigeonhole m n (f : nat -> nat) : {in `I_m &, injective f} ->
-  f @` `I_m `<=` `I_n -> (m <= n)%N.
-Proof.
-elim: n m f => [n f fi|n ih m f fi fmn1].
-  by rewrite II0 subset0 => /image_set0_set0 /IIn_eq0 => ->.
-have : (forall i, i < m -> f i < n)%N \/ (exists i, i < m /\ n = f i)%N.
-  have [|/existsNP] := pselect (forall i, i < m -> f i < n)%N; first by left.
-  move=> [x] /not_implyP[xm /negP fxn]; right; exists x; split => //.
-  by apply/eqP; rewrite eqn_leq leqNgt fxn /= -ltnS fmn1 //; exists x.
-move=> [mn|[i0 [i0m fi0]]].
-  have fmn : f @` `I_ m `<=` `I_n by move=> i [j] jm <-{i}; exact: mn.
-  by move/ih : fi => /(_ fmn); move/leq_trans; apply.
-pose g i := if (i < i0)%N then i else i.+1.
-have inj_g : {in `I_m.-1 &, injective g}.
-  move=> i j; rewrite !in_setE /g => mi mj; have [ii0|ii0] := ltnP i i0.
-    by have [//|/(leq_trans ii0) /ltnW + ij] := ltnP j i0; rewrite ij ltnn.
-  by have [/leq_trans/(_ ii0)/ltnW + ij|_ []//] := ltnP j i0; rewrite -ij ltnn.
-have gm1m : g @` `I_m.-1 `<=` `I_m.
-  move=> i [j] jm1 <-{i}; rewrite /g.
-  by have [/ltn_trans|_] := ltnP j i0; [exact|rewrite /mkset -ltn_predRL].
-have f1m1n : (f \o g) @` `I_m.-1 `<=` `I_n.
-  move=> _ [y] ym <-; rewrite /= /g; have [yi0|i0y]:= ltnP y i0.
-  - have : (f y < n.+1)%N.
-      move: fmn1; rewrite /mkset; apply.
-      by exists y; rewrite // (leq_trans _ (leq_pred _)).
-    rewrite ltnS leq_eqVlt => /orP[|//]; rewrite fi0 => /eqP /fi.
-    rewrite /mkset => yi0E.
-    by move: yi0; rewrite yi0E ?ltnn// in_setE // (leq_trans ym) // leq_pred.
-  - have : (f y.+1 < n.+1)%N.
-      by move: fmn1; rewrite /mkset; apply; exists y.+1; rewrite // -ltn_predRL.
-    rewrite ltnS leq_eqVlt => /orP[|//]; rewrite fi0 => /eqP /fi.
-    rewrite /mkset => yi0; move: i0y.
-    by rewrite -yi0 ?ltnn// in_setE// -ltn_predRL.
-have /ih : {in `I_m.-1 &, injective (f \o g)}.
-  apply: (in_inj_comp fi inj_g) => x; rewrite !in_setE /g => xm1.
-  by have [/ltn_trans|] := ltnP x i0; [exact|rewrite /mkset -ltn_predRL].
-by move/(_ f1m1n); rewrite -subn1 leq_subLR add1n.
-Qed.
-
 Theorem Cantor_Bernstein T U (A : set T) (B : set U)
   (f : T -> U) (g : U -> T) :
   {in A &, injective f} -> f @` A `<=` B ->
@@ -473,6 +434,9 @@ move=> v [t At] <-{v}.
 by apply gBC; exists (f t) => //; apply fAB; exists t.
 Qed.
 
+Lemma subset_card_le T (A B : set T) : A `<=` B -> A #<= B.
+Proof. by move=> AB; exists id; split => // _ [x /AB Bx <-]. Qed.
+
 Lemma card_le0P T (U : pointedType) (A : set T) : A #<= @set0 U <-> A = set0.
 Proof.
 split; last by move=> ->; apply: card_le0x.
@@ -480,10 +444,12 @@ case=> f [fi]; rewrite subset0 => fA0; rewrite predeqE => t; split => // At.
 by move: fA0; rewrite predeqE => /(_ (f t)) => -[fA0 _]; apply: fA0; exists t.
 Qed.
 
-Lemma card_le_II n m : (n <= m)%N <-> `I_n #<= `I_m.
+Lemma card_le_II n m : `I_n #<= `I_m <-> (n <= m)%N.
 Proof.
-split=> [nm|[f [gi]]]; last exact: pigeonhole.
-by exists id; split => //; rewrite image_id => t; move/leq_trans; apply.
+split=> [[f [gi fn]]|nm]; last by apply/subset_card_le => k /leq_trans; apply.
+have fP (k : 'I_n) : (f k < m)%N by apply: fn; exists k => /=.
+suff /leq_card : injective (fun k => Ordinal (fP k)) by rewrite !card_ord.
+by move=> i j /(congr1 val)/=/gi/val_inj; rewrite !inE/= !ltn_ord; apply.
 Qed.
 
 Definition card_eq T U (A : set T) (B : set U) := A #<= B /\ B #<= A.
@@ -519,27 +485,36 @@ Qed.
 Lemma card_eqTT (T : pointedType) : @setT T #= @setT T.
 Proof. by apply/card_eqP; exists id; split => // x _; exists x. Qed.
 
-Lemma card_eq_II n m : n = m <-> `I_n #= `I_m.
+Lemma card_eq_II n m : `I_n #= `I_m <-> n = m.
 Proof.
-split => [/eqP|[nm mn]].
-  rewrite eqn_leq => /andP[nm mn].
-  by split; [apply/card_le_II|apply/card_le_II].
-by apply/eqP; rewrite eqn_leq; apply/andP; split; apply/card_le_II.
+split=> [[/card_le_II nm /card_le_II mn]|/eqP].
+  by apply/eqP; rewrite eqn_leq nm mn.
+by rewrite eqn_leq => /andP[nm mn]; split; apply/card_le_II.
 Qed.
 
+Lemma card_le_eql T T' T'' (A : set T) (B : set T') [C : set T''] :
+   A #= B -> (A #<= C) = (B #<= C).
+Proof. by move=> [AB BA]; apply/propext; split; apply: card_le_trans. Qed.
+
+Lemma card_le_eqr T T' T'' (A : set T) (B : set T') [C : set T''] :
+   A #= B -> (C #<= A) = (C #<= B).
+Proof. by move=> [AB BA]; apply/propext; split => /card_le_trans; apply. Qed.
+
+(* remove *)
 Lemma card_eq_le T U V (A : set T) (B : set U) (C : set V) :
   A #= B -> C #<= A -> C #<= B.
-Proof. by case => AB _; move/card_le_trans; apply. Qed.
+Proof. by move=> /card_le_eqr->. Qed.
 
+(* remove *)
 Lemma card_eq_ge T U V (A : set T) (B : set U) (C : set V) :
   A #= C -> A #<= B -> C #<= B.
-Proof. by case => _ CA; apply/card_le_trans. Qed.
+Proof. by move=> /card_le_eql->. Qed.
 
 Lemma card_leP (T U : pointedType) (A : set T) (B : set U) :
   A #<= B <-> exists C, C `<=` B /\ A #= C.
 Proof.
-split=> [[f [fi fAB]]|[C [CB /card_eq_sym AC]]]; last first.
- by apply: (card_eq_ge AC); exists id; split => //; rewrite image_id.
+split=> [[f [fi fAB]]|[C [CB AC]]]; last first.
+   by rewrite (card_le_eql AC); apply/subset_card_le.
 have AfAf := set_bijective_image fi.
 by exists (f @` A); split => //; apply/card_eqP; exists f.
 Qed.
@@ -549,14 +524,26 @@ Lemma set_bijective_inverse
   set_bijective A B f -> exists g, set_bijective B A g.
 Proof. by move=> ABf; apply/card_eqP/card_eq_sym/card_eqP; exists f. Qed.
 
+Lemma card_eq_inj_image (T T' : pointedType) A (f : T -> T') :
+  {in A &, injective f} -> f @` A #= A.
+Proof.
+move=> f_inj; apply/card_eq_sym/card_eqP; exists f.
+by split=> //; apply: surjective_image.
+Qed.
+
+(* remove *)
+Lemma pigeonhole m n (f : nat -> nat) : {in `I_m &, injective f} ->
+  f @` `I_m `<=` `I_n -> (m <= n)%N.
+Proof.
+move=> f_inj /subset_card_le.
+by rewrite (card_le_eql (card_eq_inj_image f_inj)) => /card_le_II.
+Qed.
+
 Definition countable T (A : set T) := A #<= @setT nat.
 
 Lemma eq_countable T U (A : set T) (B : set U) :
   A #= B -> countable A = countable B.
-Proof.
-move=> eqAB; rewrite /countable propeqE.
-by split; apply: card_eq_ge => //; apply: card_eq_sym.
-Qed.
+Proof. by move=> /card_le_eql leA; rewrite /countable propeqE leA. Qed.
 
 Lemma countable_setT_countMixin (T : pointedType) :
   countable (@setT T) -> Countable.mixin_of T.
@@ -731,14 +718,13 @@ move: n A S; elim=> [A S [t At] A1 SA|n ih A S A0 /card_eq_sym].
   have {}At : A = [set t].
     rewrite predeqE => t'; split=> [At'|->//].
     apply/eqP/negPn/negP => t't.
-    have A2 : `I_2 #<= A.
-      exists (fun n => if n is 0 then t else t'); split.
-      - move=> x y; rewrite 2!in_setE.
-        move: x y => [|[|//]] [|[|//]] // _ _ /eqP.
-        by rewrite eq_sym (negbTE t't).
-        by rewrite (negbTE t't).
-      - by move=> ? [] [|[|//]] _ <-.
-    by move/card_le_II : (card_eq_le A1 A2); rewrite ltnn.
+    suff: `I_2 #<= A by rewrite (card_le_eqr A1) => /card_le_II.
+    exists (fun n => if n is 0 then t else t'); split; last first.
+      by move=> ? [] [|[|//]] _ <-.
+    move=> x y; rewrite 2!in_setE.
+    move: x y => [|[|//]] [|[|//]] // _ _ /eqP.
+    by rewrite eq_sym (negbTE t't).
+    by rewrite (negbTE t't).
   move: A1 SA; rewrite {}At {A}.
   exists (fun=> t); split; first split.
     - by move=> x y; rewrite !in_setE; move: x y => [|//] [|//].
@@ -832,9 +818,6 @@ by exists f; split => //; exists k.+1; split => //; rewrite -h'k fh'.
 Qed.
 
 End set_finite_bijection.
-
-Lemma subset_card_le T (A B : set T) : A `<=` B -> A #<= B.
-Proof. by move=> leAB; exists id; split=> // _ [x + <-] => /leAB. Qed.
 
 Lemma infiniteP (T : choiceType) (A : set T) :
   (~ set_finite A) <-> ([set: nat] #<= A).
