@@ -213,6 +213,8 @@ Require Import boolp reals classical_sets posnum.
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
 (*                                     is both open and closed in A is A.     *)
+(*                    kolmogorov T <-> T is a Kolmogorov space (T_0).         *)
+(*                    accessible T <-> T is an accessible space (T_1).        *)
 (*                    separated A B == the two sets A and B are separated     *)
 (*                      component x == the connected component of point x     *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
@@ -3007,33 +3009,31 @@ End Covers.
 
 Section separated_topologicalType.
 Variable (T : topologicalType).
+Implicit Types x y : T.
 
 Local Open Scope classical_set_scope.
 
-Definition T_0 : Prop := forall (x y : T), x != y -> exists p, (p \in (nbhs x) /\ y \in (~` p)) \/ (p \in (nbhs y) /\ x \in (~` p)).
+Definition kolmogorov := forall x y, x != y ->
+  exists A : set T, (A \in nbhs x /\ y \in ~` A) \/ (A \in nbhs y /\ x \in ~` A).
 
-Definition T_1 : Prop := forall (x y : T), x != y -> exists p, (open p /\ x \in p /\ y \in (~` p)).
+Definition accessible := forall x y, x != y ->
+  exists A : set T, open A /\ x \in A /\ y \in ~` A.
 
-Lemma T_1_singleton_closed : T_1 -> forall x:T, closed [set x].
+Lemma accessible_closed_set1 : accessible -> forall x, closed [set x].
 Proof.
-  move => T1 x; rewrite -[set1 _]setCK; apply: closedC.
-  rewrite openE -set1CE /interior => y //= /eqP xNeqY.
-  rewrite nbhsE => //=.
-  have := T1 _ _ xNeqY => -[] U [] ? [] ? ?.
-  exists U ; split.
-    by rewrite /open_nbhs ; split; by [|rewrite -in_setE].
-  by apply: setC_subset_set1C.
+move=> T1 x; rewrite -[X in closed X]setCK; apply: closedC.
+rewrite openE setC1E => y /eqP /T1 [U [oU [yU xU]]].
+rewrite /interior nbhsE /=; exists U; split; last exact: mem_setC_subset.
+by split => //; rewrite -in_setE.
 Qed.
 
-Definition T_1entailsT_0 : T_1 -> T_0.
+Definition accessible_kolmogorov : accessible -> kolmogorov.
 Proof.
-  rewrite /T_0 => T_1 x ? xneqy.
-  have:= (T_1 _ _ xneqy) => -[] p [] ? [] /asboolP ? ?.
-  have: open_nbhs x p by split; by [].
-  rewrite open_nbhsE => -[] ? H; exists p; left; split ; by [apply/asboolP|].
+move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split => //.
+by rewrite nbhsE inE /=; exists A; split => //; split => //; rewrite -in_setE.
 Qed.
 
-Definition close (x y : T) : Prop := forall M, open_nbhs y M -> closure M x.
+Definition close x y : Prop := forall M, open_nbhs y M -> closure M x.
 
 Lemma closeEnbhs x : close x = cluster (nbhs x).
 Proof.
@@ -3049,16 +3049,15 @@ Proof.
 by rewrite closeEnbhs; under eq_fun do rewrite -meets_openl -meets_openr.
 Qed.
 
-Lemma close_sym (x y : T) : close x y -> close y x.
+Lemma close_sym x y : close x y -> close y x.
 Proof. by rewrite !closeEnbhs /cluster/= meetsC. Qed.
 
-Lemma cvg_close {F} {FF : ProperFilter F} (x y : T) :
-  F --> x -> F --> y -> close x y.
+Lemma cvg_close {F} {FF : ProperFilter F} x y : F --> x -> F --> y -> close x y.
 Proof.
 by move=> /sub_meets sx /sx; rewrite closeEnbhs; apply; apply/proper_meetsxx.
 Qed.
 
-Lemma close_refl (x : T) : close x x.
+Lemma close_refl x : close x x.
 Proof. exact: (@cvg_close (nbhs x)). Qed.
 Hint Resolve close_refl : core.
 
@@ -3072,7 +3071,7 @@ have [/(cvg_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
 rewrite dvgP // dvgP //; exact/close_refl.
 Qed.
 
-Lemma cvgx_close (x y : T) : x --> y -> close x y.
+Lemma cvgx_close x y : x --> y -> close x y.
 Proof. exact: cvg_close. Qed.
 
 Lemma cvgi_close T' {F} {FF : ProperFilter F} (f : T' -> set T) (l l' : T) :
@@ -3087,13 +3086,13 @@ Grab Existential Variables. all: end_near. Qed.
 Definition cvg_toi_locally_close := @cvgi_close.
 
 Lemma open_hausdorff : hausdorff T =
-  (forall x y : T, x != y ->
+  forall x y, x != y ->
     exists2 AB, (x \in AB.1 /\ y \in AB.2) &
-                [/\ open AB.1, open AB.2 & AB.1 `&` AB.2 == set0]).
+                [/\ open AB.1, open AB.2 & AB.1 `&` AB.2 == set0].
 Proof.
 rewrite propeqE; split => [T_filterT2|T_openT2] x y.
-  have := contra_not _ _ (T_filterT2 x y); rewrite (rwP eqP) (rwP negP) => cl /cl.
-  rewrite [cluster _ _](rwP forallp_asboolP) => /negP.
+  have := contra_not _ _ (T_filterT2 x y); rewrite (rwP eqP) (rwP negP).
+  move=> /[apply]; rewrite [cluster _ _](rwP forallp_asboolP) => /negP.
   rewrite forallbE => /existsp_asboolPn/=[A]/negP/existsp_asboolPn/=[B].
   rewrite [nbhs _ _ -> _](rwP imply_asboolP) => /negP.
   rewrite asbool_imply !negb_imply => /andP[/asboolP xA] /andP[/asboolP yB].
@@ -3109,22 +3108,22 @@ Qed.
 
 Hypothesis sep : hausdorff T.
 
-Lemma closeE (x y : T) : close x y = (x = y).
+Lemma closeE x y : close x y = (x = y).
 Proof.
 rewrite propeqE; split; last by move=> ->; exact: close_refl.
 by rewrite closeEnbhs; exact: sep.
 Qed.
 
-Lemma close_eq (y x : T) : close x y -> x = y.
+Lemma close_eq x y : close x y -> x = y.
 Proof. by rewrite closeE. Qed.
 
 Lemma cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : T | F --> x].
 Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close F). Qed.
 
-Lemma cvg_eq (x y : T) : x --> y -> x = y.
+Lemma cvg_eq x y : x --> y -> x = y.
 Proof. by rewrite -closeE //; apply: cvg_close. Qed.
 
-Lemma lim_id (x : T) : lim x = x.
+Lemma lim_id x : lim x = x.
 Proof. by apply/esym/cvg_eq/cvg_ex; exists x. Qed.
 
 Lemma cvg_lim {F} {FF : ProperFilter F} (l : T) : F --> l -> lim F = l.

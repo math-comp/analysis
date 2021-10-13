@@ -492,7 +492,10 @@ Proof. by rewrite subsets_disjoint setCK. Qed.
 
 Lemma setCT : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
 
-Lemma set1CE (x : T) : [set y | y <> x] = [set~ x]. Proof. by []. Qed.
+Lemma setC1E (x : T) : [set ~ x] = [set y | y <> x]. Proof. by []. Qed.
+
+Lemma mem_setC_subset (x : T) A : x \in ~` A -> A `<=` [set ~ x].
+Proof. by rewrite in_setE => + y Ay; apply: contra_not => <-. Qed.
 
 Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
 
