@@ -16,6 +16,13 @@
     `pmule_rgt0`, `pmule_lgt0`, `nmule_lgt0`, `nmule_rgt0`,
 - in `measure.v`:
   + hints for `measurable0` and `measurableT`
+  + notation `x +? y` for `adde_def x y`
+- in `normedtypes.v`:
+  + lemma `is_intervalPlt`
+  + lemma `cvg_sub0`
+  + lemma `cvg_zero`
+- in `sequences.v`:
+  + lemmas `lt_lim`, `nondecreasing_dvg_lt`, `ereal_lim_sum`
 - in `ereal.v`:
   + lemmas `muleBr`, `muleBl`
   + lemma `eqe_absl`
@@ -88,9 +95,9 @@
   + lemmas `seriesN`, `seriesZr`, `seriesD`, `is_cvg_seriesN`, `lim_seriesN`, `is_cvg_seriesZr`,
     `lim_seriesZr`, `is_cvg_seriesD`, `lim_seriesD`, `is_cvg_seriesB`, `lim_seriesB`,
     `lim_series_norm`, `lim_series_le`, `cvg_to_0_linear`, `lim_cvg_to_0_linear`,
-    `continuous_shift`, `continuous_withinNshiftx`, `chain_rule`, `is_derive1_id`,
+    `continuous_shift`, `continuous_withinNshiftx`, `derive1_comp`, `is_derive1_id`,
     `is_derive_0_cst`
-  + instance `is_derive1_chain`, `is_deriveV`
+  + instance `is_derive1_comp`, `is_deriveV`
   + lemma `trigger_derive`
   + ltac `rcfE`
   + lemma `is_derive1_caratheodory`, `is_derive_inverse`, `continuous_ln`
@@ -180,6 +187,16 @@
   + `cvgNminfty` -> `cvgNninfty`
   + `cvgPminfty` -> `cvgPninfty`
   + `ler_cvg_minfty` -> `ler_cvg_ninfty`
+  + generalize `nondecreasing_seqP`, `nonincreasing_seqP`, `increasing_seqP`,
+    `decreasing_seqP` to equivalences
+  + generalize `lee_lim`, `ereal_cvgD_pinfty_fin`, `ereal_cvgD_ninfty_fin`,
+    `ereal_cvgD`, `ereal_limD`, `ereal_pseries0`, `eq_ereal_pseries` from `realType` to `realFieldType`
+- in `sequences.v`:
+  + lemmas `cvg_series_bounded`, `cvg_to_0_linear`, `lim_cvg_to_0_linear`.
+- in `topology.v`:
+  + replace `closed_cvg_loc` and `closed_cvg` by a more general lemma `closed_cvg`
+- move from `sequences.v` to `normedtype.v` and generalize from `nat` to `T : topologicalType`
+  + lemmas `ereal_cvgN`
 - in `normedtype.v`:
   + `nbhs_pinfty_gt` -> `nbhs_pinfty_gt_pos`
   + `nbhs_pinfty_ge` -> `nbhs_pinfty_ge_pos`

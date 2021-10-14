@@ -328,7 +328,7 @@ apply: (@termdiffs _ _ (`|x| + 1)).
   rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   apply/funext => i.
-  by rewrite diffs_sin diffs_cos sin_coeffE; rcfE; rewrite !mulNr.
+  by rewrite diffs_sin diffs_cos sin_coeffE !rcfE !mulNr.
 by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
@@ -347,19 +347,19 @@ pose s : R^nat := fun n => (~~ odd n)%:R * (-1) ^+ n./2 / n`!%:R.
 pose s1 n := diffs s n * x ^+ n.
 rewrite sinE /=.
 rewrite (_ : (fun n => _) = - s1); last first.
-  by apply/funext => i; rewrite /s1 diffs_cos; rcfE; rewrite mulNr opprK.
+  by apply/funext => i; rewrite /s1 diffs_cos !rcfE mulNr opprK.
 rewrite lim_seriesN ?opprK; last first.
   rewrite (_ : s1 = - sin_coeff x).
     rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   apply/funext => i.
-  by rewrite /s1 diffs_cos sin_coeffE; rcfE; rewrite mulNr.
+  by rewrite /s1 diffs_cos sin_coeffE !rcfE mulNr.
 apply: (@termdiffs _ _ (`|x| + 1)).
 - by rewrite -cos_coeffE; apply: is_cvg_series_cos_coeff.
 - rewrite (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
     rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
-  by apply/funext => i; rewrite diffs_cos sin_coeffE; rcfE; rewrite mulNr.
+  by apply/funext => i; rewrite diffs_cos sin_coeffE !rcfE mulNr.
 - rewrite (_ : (fun n : nat => _) = - cos_coeff (`|x| + 1)).
   rewrite is_cvg_seriesN.
     by apply: is_cvg_series_cos_coeff.
@@ -368,7 +368,7 @@ apply: (@termdiffs _ _ (`|x| + 1)).
   pose f n : R := ((odd n)%:R * (-1) ^+ (n.-1)./2 / n`!%:R) .
   rewrite (_ : (fun n => _) = - f); last first.
     by apply/funext=> j /=; rewrite [in RHS]/-%R.
-  by rewrite diffsN diffs_sin cos_coeffE; rcfE; rewrite mulNr.
+  by rewrite diffsN diffs_sin cos_coeffE !rcfE mulNr.
 by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
@@ -384,7 +384,7 @@ Lemma cos2Dsin2 a : (cos a) ^+ 2 + (sin a) ^+ 2 = 1.
 Proof.
 pose f := cos ^+2 + sin^+2; rewrite -[LHS]/(f a).
 apply: etrans (_ : f 0 = 1); last first.
-  by rewrite /f; rcfE; rewrite sin0 cos0 mul1r mul0r addr0.
+  by rewrite /f !rcfE sin0 cos0 expr1n expr0n addr0.
 apply: is_derive_0_cst => {}x.
 apply: trigger_derive; rewrite /GRing.scale /=.
 by rewrite ?expr1 mulrN mulrAC addrC subrr.
@@ -421,11 +421,11 @@ Proof.
 pose f := (sin \o +%R^~ y - (sin * cst (cos y) + cos * cst (sin y)))^+2 +
           (cos \o +%R^~ y - (cos * cst (cos y) - sin * cst (sin y)))^+2.
 rewrite -[LHS]/(f x); apply: etrans (_ : f 0 = 0); last first.
-  rewrite /f; rcfE.
-  by rewrite cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
+  by rewrite /f !rcfE cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
 apply: is_derive_0_cst => {}x.
 apply: trigger_derive.
-by rcfE; rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n; nsatz.
+rewrite !rcfE !(scaler0, add0r, addr0, mulr1, expr1) mulr2n /GRing.scale /=.
+by nsatz.
 Qed.
 
 Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
@@ -460,13 +460,13 @@ Proof.
 pose f := (sin \o -%R + sin)^+2 + (cos \o -%R - cos )^+2.
 apply: etrans (_ : f x = 0); first by [].
 apply: etrans (_ : f 0 = 0); last first.
-  by rewrite /f ; rcfE;
-     rewrite oppr0 cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr).
+  by rewrite /f !rcfE oppr0 cos0 sin0 !(addr0, subrr, expr0n). 
 apply: is_derive_0_cst => {}x.
 apply: trigger_derive.
   by apply: is_deriveD; apply: is_deriveX;
-     apply: is_deriveD; apply: is_derive1_chain; apply: is_deriveN.
-rcfE; rewrite !(scaler0, add0r, addr0, mulr1, expr1) mulr2n; nsatz.
+     apply: is_deriveD; apply: is_derive1_comp; apply: is_deriveN.
+rewrite !rcfE /GRing.scale /= !(scaler0, add0r, addr0, mulr1, expr1) mulr2n.
+nsatz.
 Qed.
 
 Lemma sinN a : sin (- a) = - sin a.
@@ -827,31 +827,6 @@ rewrite mul1r mulr1 -!mulrA -invfM -expr2; congr (_ / _).
 rewrite mulrCA mulrA mulfK  ?sqrf_eq0 // [X in _ = _ - X]sin2cos2.
 by rewrite opprB addrA.
 Qed.
-
-(*
-Lemma tanI x y :
-  - (pi / 2) < x < pi / 2 -> - (pi / 2) < y < pi / 2 -> tan x = tan y -> x = y.
-Proof.
-move=> xB yB tanE.
-have sE : sin (x - y) = 0.
-  apply/eqP; rewrite sinB subr_eq0 [_ * sin y]mulrC -divr_eq //.
-  - by rewrite [X in X == _]tanE.
-  - by rewrite lt0r_neq0 // cos_gt0_pihalf.
-  by rewrite lt0r_neq0 // cos_gt0_pihalf.
-
-apply/eqP; rewrite -subr_eq0; apply/eqP/sinI.
-  admit.
-  admit.
-by rewrite sin0.
-  rewrite sin_
-rewrite /tan.
-Search (_ / _ == _ / _).
-wlog xLy : x y / x <= y => [H xB yB cE|].
-  by case: (lerP x y) => [/H //| /ltW /H H1]; [exact|exact/esym/H1].
-move=> /andP[x_ge0 x_lepi] /andP[y_ge0 y_lepi] cxE.
-case: (x =P y) => // /eqP xDy.
-have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
-*)
 
 Lemma cos2_tan2 x : cos x != 0 -> (cos x) ^- 2 = 1 + (tan x) ^+ 2.
 Proof.

@@ -32,83 +32,10 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+(* TODO : backport to mathcomp *)
 Lemma normr_nneg (R : numDomainType) (x : R) : `|x| \is Num.nneg.
 Proof. by rewrite qualifE. Qed.
 Hint Resolve normr_nneg : core.
-
-Section AboutCvg.
-
-Section cvg_extra.
-
-Context {K : numFieldType} {V : normedModType K} {T : topologicalType}.
-Context (F : set (set T)) {FF : Filter F}.
-Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
-Lemma cvg_sub0 f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
-Proof.
-by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; apply.
-Qed.
-
-Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
-Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
-
-End cvg_extra.
-
-Lemma cvg_series_bounded (R : realFieldType) (f : R ^nat) :
-  cvg (series f) -> exists2 K, 0 < K & (forall i, `|f i| < K).
-Proof.
-move=> /cvg_series_cvg_0/cvgP/cvg_seq_bounded[r [_ /(_ (r + 1)) fr]].
-exists (maxr 1 (r + 2)); [by rewrite lt_maxr ltr01 | move=> n].
-by rewrite (le_lt_trans (fr _ _ _)) ?ltr_spaddr// lt_maxr ltr_add2l ltr1n orbT.
-Qed.
-
-(* NB: useful? *)
-(*Lemma eq_cvg_lim : forall (R : realType) (f g : R ^nat),
-  f = g -> (f --> lim f) = (g --> lim g).
-Proof. by move=> R1 f1 g1 ->. Qed.*)
-
-(* NB: useful? *)
-(*Lemma eq_cvgl (f g : R ^nat) (x : R) : f = g -> (f --> x) = (g --> x).
-Proof. by move->. Qed.*)
-
-Lemma cvg_to_0_linear (R : realFieldType) (f : R -> R) K k :
-  0 < k -> (forall r, 0 < `| r | < k -> `|f r| <= K * `| r |) ->
-    f x @[x --> 0^'] --> 0.
-Proof.
-move=> k0 kfK; have [K0|K0] := lerP K 0.
-- apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> x.
-  rewrite distrC subr0 (le_lt_trans (kfK _ _)) //; last first.
-    by rewrite (@le_lt_trans _ _ 0)// mulr_le0_ge0.
-  near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
-  move=> t /=; rewrite distrC subr0 => tk2 t0.
-  by rewrite normr_gt0 t0 (lt_trans tk2) // -[in X in X < _](add0r k) midf_lt.
-- apply/eqolim0/eqoP => _/posnumP[e]; near=> x.
-  rewrite (le_trans (kfK _ _)) //=.
-  + near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
-    move=> t /=; rewrite distrC subr0 => tk2 t0.
-    by rewrite normr_gt0 t0 (lt_trans tk2) // -[in X in X < _](add0r k) midf_lt.
-  + rewrite normr1 mulr1 mulrC -ler_pdivl_mulr //.
-    near: x; exists (e%:num / K); first by rewrite /mkset divr_gt0.
-    by move=> t /=; rewrite distrC subr0 => /ltW.
-Grab Existential Variables. all: end_near. Qed.
-
-Lemma lim_cvg_to_0_linear (R : realType) (f : nat -> R) (g : R -> nat -> R) k :
-  0 < k -> cvg (series f) ->
-  (forall r, 0 < `|r| < k -> forall n, `|g r n| <= f n * `| r |) ->
-  lim (series (g x)) @[x --> 0^'] --> 0.
-Proof.
-move=> k_gt0 Cf Hg.
-apply: (@cvg_to_0_linear _ _ (lim (series f)) k) => // h hLk; rewrite mulrC.
-have Ckf := @is_cvg_seriesZ _ _ `|h| Cf.
-have Cng : cvg [normed series (g h)].
-  apply: series_le_cvg (Hg _ hLk) _ => [//|?|].
-    exact: le_trans (Hg _ hLk _).
-  by under eq_fun do rewrite mulrC.
-apply: (le_trans (lim_series_norm Cng)).
-rewrite -[_ * _](lim_seriesZ _ Cf) (lim_series_le Cng Ckf) // => n.
-by rewrite [X in _ <= X]mulrC; apply: Hg.
-Qed.
-
-End AboutCvg.
 
 Section continuous.
 Variables (K : numFieldType) (U V : normedModType K).
@@ -127,7 +54,7 @@ Qed.
 
 End continuous.
 
-Lemma chain_rule (R : realFieldType) (f g : R -> R) x :
+Lemma derive1_comp (R : realFieldType) (f g : R -> R) x :
   derivable f x 1 -> derivable g (f x) 1 ->
   (g \o f)^`() x = g^`() (f x) * f^`() x.
 Proof.
@@ -138,35 +65,35 @@ by rewrite [LHS]linearZ mulrC.
 Qed.
 
 (******************************************************************************)
-(* Unfold function application (f + f) 0 gives f 0 + f 0                      *)
+(* Multi-rule for fct                                                         *)
 (******************************************************************************)
-Ltac rcfE :=
-repeat (
-(let u := fresh "u" in
-set u := (@GRing.exp (fct_ringType _ _) _ _ _);
-move: @u; rewrite {1}/GRing.exp /=) ||
-(let u := fresh "u" in
-set u := (@GRing.scale (fct_ringType _ _) _ _ _);
-move: @u; rewrite {1}/GRing.scale /=) ||
 
-(let u := fresh "u" in
-set u := (@GRing.scale (fct_ringType _ _) _ _ _);
-move: @u; rewrite {1}/GRing.scale /=) ||
-(let u := fresh "u" in
-set u := (@GRing.add (fct_zmodType _ _) _ _ _);
-move: @u; rewrite {1}/+%R /=) ||
-(let u := fresh "u" in
-set u := (@GRing.mul (fct_ringType _ _) _ _ _);
-move: @u; rewrite {1}/*%R /=) ||
-(let u := fresh "u" in
-set u := (@GRing.opp (fct_ringType _ _) _ _);
-move: @u; rewrite {1}/-%R /=) ||
-(let u := fresh "u" in
-set u := (cst _ _);
-move: @u; rewrite {1}/cst/=) ||
-(let u := fresh "u" in
-set u := (@comp _ _ _ _ _);
-move: @u; rewrite {1}/comp /=) ).
+Lemma addrfunE [T : pointedType] [K : ringType] (f g : T -> K) :
+  f + g = (fun x : T => f x + g x).
+Proof. by []. Qed.
+
+Lemma opprfunE [T : pointedType] [K : ringType] (f : T -> K) :
+  - f = (fun x : T => - f x).
+Proof. by []. Qed.
+
+Lemma mulrfunE [T : pointedType] [K : ringType] (f g : T -> K) :
+  f * g = (fun x : T => f x * g x).
+Proof. by []. Qed.
+
+Lemma scalrfunE [T : pointedType] [K : ringType] [L : lmodType K]
+               k (f : T -> L) :
+  k *: f = (fun x : T => k *: f x).
+Proof. by []. Qed.
+
+Lemma cstE [T T': Type] (x : T) : cst x = fun _: T' => x.
+Proof. by []. Qed.
+
+Lemma compE [T1 T2 T3 : Type] (f : T1 -> T2) (g : T2 -> T3) : 
+  g \o f = fun x => g (f x).
+Proof. by []. Qed.
+
+Definition rcfE := 
+ (cstE, compE, opprfunE, addrfunE, mulrfunE, scalrfunE, exprfunE).
 
 Section is_derive_instances.
 Variables (R : numFieldType) (V : normedModType R).
@@ -207,7 +134,7 @@ split => [Hd|[g [fxE Cg gxE]]].
   - apply/continuous_withinNshiftx; rewrite eqxx /=.
     pose g1 h := (h^-1 *: ((f \o shift x) h%:A - f x)).
     have F1 : g1 @ 0^' --> a by case: Hd => H1 <-.
-    apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1; rcfE.
+    apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1 !rcfE.
     near=> i.
     rewrite ifN; first by rewrite addrK mulrC /= [_%:A]mulr1.
     rewrite -subr_eq0 addrK.
@@ -238,14 +165,14 @@ case: (MVT xLy) => [x1 _|_ _].
 by rewrite mul0r => ->; rewrite subr0.
 Qed.
 
-Global Instance is_derive1_chain (f g : R -> R) (x a b : R) :
+Global Instance is_derive1_comp (f g : R -> R) (x a b : R) :
   is_derive (g x) 1 f a -> is_derive x 1 g b ->
   is_derive x 1 (f \o g) (a * b).
 Proof.
 move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
   apply/derivable1_diffP/differentiable_comp; first exact/derivable1_diffP.
   by move/derivable1_diffP in fgxv.
-by rewrite -derive1E (chain_rule gv fgxv) 2!derive1E.
+by rewrite -derive1E (derive1_comp gv fgxv) 2!derive1E.
 Qed.
 
 Global Instance is_deriveV (f : R -> R) (x t v : R) :
@@ -279,7 +206,7 @@ have F1 : (h (g x))^-1 @[x --> f x] --> g1 (f x).
   by apply: nbhs_singleton (near_can_continuous _ _).
 apply: cvg_sub0 F1.
 apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
-near=> y; rewrite sub0r normrN; rcfE.
+near=> y; rewrite sub0r normrN !rcfE.
 have fgyE : f (g y) = y by near: y; apply: near_continuous_can_sym.
 rewrite /g1; case: eqP => [_|/eqP x1Dfx]; first by rewrite subrr normr0.
 have -> : y - f x  = h (g y) * (g y - x) by rewrite -fE fgyE.
@@ -510,7 +437,7 @@ suff Cc :
     by apply: cvgB.
   set w := fun n : nat => _.
   have -> : w = h^-1 *: (shx h - sx)  - s1.
-    apply: funext => i /=; rcfE.
+    apply: funext => i; rewrite !rcfE.
     rewrite /w /shx /sx /s1 /= mulrBr; congr (_ - _); last first.
       by rewrite mulrCA !mulrA.
     by rewrite -mulrBr [RHS]mulrCA [_^-1 * _]mulrC.
@@ -641,7 +568,7 @@ have -> : 0 = expR (x1 + y) * (expR (- x1) * (- 1)) +
               expR (- x1) * (expR (x1 + y) * (1 + 0)).
   by rewrite mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
 apply: is_deriveM.
-apply: is_derive1_chain.
+apply: is_derive1_comp.
 apply: is_deriveN.
 Qed.
 

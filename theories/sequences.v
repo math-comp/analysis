@@ -449,6 +449,7 @@ Lemma eq_sum_telescope (V : zmodType) (u_ : V ^nat) n :
   u_ n = u_ 0%N + series (telescope u_) n.
 Proof. by rewrite telescopeK/= addrC addrNK. Qed.
 
+
 Section series_patched.
 
 Variables (N : nat) (K : numFieldType) (V : normedModType K).
@@ -747,6 +748,7 @@ Qed.
 
 End series_convergence.
 
+
 Definition arithmetic (R : zmodType) a z : R ^nat := [sequence a + z *+ n]_n.
 Arguments arithmetic {R} a z n /.
 
@@ -861,6 +863,56 @@ move=> cnf; have cf := normed_cvg cnf.
 rewrite -lim_norm // (ler_lim (is_cvg_norm cf) cnf) //.
 by near=> x; rewrite ler_norm_sum.
 Grab Existential Variables. all: end_near. Qed.
+
+Section series_linear.
+
+Lemma cvg_series_bounded (R : realFieldType) (f : R ^nat) :
+  cvg (series f) -> exists2 K, 0 < K & (forall i, `|f i| < K).
+Proof.
+move=> /cvg_series_cvg_0/cvgP/cvg_seq_bounded[r [_ /(_ (r + 1)) fr]].
+exists (maxr 1 (r + 2)); [by rewrite lt_maxr ltr01 | move=> n].
+by rewrite (le_lt_trans (fr _ _ _)) ?ltr_spaddr// lt_maxr ltr_add2l ltr1n orbT.
+Qed.
+
+Lemma cvg_to_0_linear (R : realFieldType) (f : R -> R) K k :
+  0 < k -> (forall r, 0 < `| r | < k -> `|f r| <= K * `| r |) ->
+    f x @[x --> 0^'] --> 0.
+Proof.
+move=> k0 kfK; have [K0|K0] := lerP K 0.
+- apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> x.
+  rewrite distrC subr0 (le_lt_trans (kfK _ _)) //; last first.
+    by rewrite (@le_lt_trans _ _ 0)// mulr_le0_ge0.
+  near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
+  move=> t /=; rewrite distrC subr0 => tk2 t0.
+  by rewrite normr_gt0 t0 (lt_trans tk2) // -[in X in X < _](add0r k) midf_lt.
+- apply/eqolim0/eqoP => _/posnumP[e]; near=> x.
+  rewrite (le_trans (kfK _ _)) //=.
+  + near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
+    move=> t /=; rewrite distrC subr0 => tk2 t0.
+    by rewrite normr_gt0 t0 (lt_trans tk2) // -[in X in X < _](add0r k) midf_lt.
+  + rewrite normr1 mulr1 mulrC -ler_pdivl_mulr //.
+    near: x; exists (e%:num / K); first by rewrite /mkset divr_gt0.
+    by move=> t /=; rewrite distrC subr0 => /ltW.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma lim_cvg_to_0_linear (R : realType) (f : nat -> R) (g : R -> nat -> R) k :
+  0 < k -> cvg (series f) ->
+  (forall r, 0 < `|r| < k -> forall n, `|g r n| <= f n * `| r |) ->
+  lim (series (g x)) @[x --> 0^'] --> 0.
+Proof.
+move=> k_gt0 Cf Hg.
+apply: (@cvg_to_0_linear _ _ (lim (series f)) k) => // h hLk; rewrite mulrC.
+have Ckf := @is_cvg_seriesZ _ _ `|h| Cf.
+have Cng : cvg [normed series (g h)].
+  apply: series_le_cvg (Hg _ hLk) _ => [//|?|].
+    exact: le_trans (Hg _ hLk _).
+  by under eq_fun do rewrite mulrC.
+apply: (le_trans (lim_series_norm Cng)).
+rewrite -[_ * _](lim_seriesZ _ Cf) (lim_series_le Cng Ckf) // => n.
+by rewrite [X in _ <= X]mulrC; apply: Hg.
+Qed.
+
+End series_linear.
 
 (* TODO: backport to MathComp? *)
 Section fact_facts.

@@ -2324,6 +2324,14 @@ Qed.
 Lemma is_cvgDrE f g : cvg (f @ F) -> cvg ((f + g) @ F) = cvg (g @ F).
 Proof. by rewrite addrC; apply: is_cvgDlE. Qed.
 
+Lemma cvg_sub0 f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
+Proof.
+by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; apply.
+Qed.
+
+Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
+Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
+
 Lemma cvgZ s f k a : s @ F --> k -> f @ F --> a ->
                      s x *: f x @[x --> F] --> k *: a.
 Proof. move=> ? ?; apply: continuous2_cvg => //; exact: scale_continuous. Qed.
@@ -3787,6 +3795,7 @@ by rewrite [in RHS](_ : (fun _ => _) = (-%E \o f))// funeqE=> t; rewrite mulN1e.
 Qed.
 
 End limit_composition_ereal.
+
 
 (** * Some limits on real functions *)
 
