@@ -72,6 +72,17 @@ Proof.
 by split=> [[x /lb_ubN] | [x /ub_lbN]]; [|rewrite setNK]; exists (- x).
 Qed.
 
+Lemma has_ub_lbN E : has_ubound E <-> has_lbound (-%R @` E).
+Proof.
+split=> [uE|/has_lb_ubN].
+- apply/has_lb_ubN; rewrite image_comp /comp /=.
+  under eq_fun do rewrite opprK.
+  by rewrite image_id.
+- rewrite image_comp /comp /=.
+  under eq_fun do rewrite opprK.
+  by rewrite image_id.
+Qed.
+
 Lemma has_lbound0 : has_lbound (@set0 R). Proof. by exists 0. Qed.
 
 Lemma has_ubound0 : has_ubound (@set0 R). Proof. by exists 0. Qed.
