@@ -121,7 +121,7 @@
   + definition `riemannR`, lemmas `riemannR_gt0`, `dvg_riemannR`
 - new file `trigo.v`
   + lemmas `sqrtvR`, `eqr_div`, `big_nat_mul`, `cvg_series_cvg_series_group`,
-    `cvg_series_cvg_series_group2`, `lt_sum_lim_series`
+    `lt_sum_lim_series`
   + definitions `periodic`, `alternating`
   + lemmas `periodicn`, `alternatingn`
   + definition `sin_coeff`

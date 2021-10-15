@@ -81,16 +81,6 @@ have /nl : (n <= m * k)%N.
 by rewrite /ball /= distrC.
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma cvg_series_cvg_series_group2 (R : realFieldType) (f : R ^nat) :
-  cvg (series f) ->
-  series (fun n => \sum_(n.*2 <= i < n.*2 + 2) f i) --> lim (series f).
-Proof.
-move=> cf; rewrite [X in series X --> _](_ : _ =
-    (fun n => \sum_(n * 2 <= k < n.+1 * 2) f k)); last first.
-  by rewrite funeqE => n; rewrite /= addnC -(muln2 n) -mulSn.
-exact: cvg_series_cvg_series_group.
-Qed.
-
 Lemma lt_sum_lim_series (R : realFieldType) (f : R ^nat) n : cvg (series f) ->
   (forall d, 0 < f (n + d.*2)%N + f (n + d.*2.+1)%N) ->
   \sum_(0 <= i < n) f i < lim (series f).
@@ -187,13 +177,13 @@ Qed.
 
 Lemma cvg_sin_coeff' x : series (sin_coeff' x) --> sin x.
 Proof.
-have /cvg_series_cvg_series_group2 := (@is_cvg_series_sin_coeff x).
-apply: cvg_trans.
-rewrite [X in _ --> series X](_ : _ = (fun n => sin_coeff x n.*2.+1)); last first.
-  rewrite funeqE=> n; rewrite addn2 big_nat_recl //= sin_coeff_even add0r.
-  by rewrite  big_nat_recl // big_geq // addr0.
-rewrite [X in series X --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
-by rewrite funeqE => n; exact: sin_coeff'E.
+have /(@cvg_series_cvg_series_group _ _ 2) := (@is_cvg_series_sin_coeff x).
+move=> /(_ isT); apply: cvg_trans.
+rewrite [X in _ --> series X](_ : _ = (fun n => sin_coeff x n.*2.+1)).
+  rewrite [X in series X --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
+  by rewrite funeqE => n; exact: sin_coeff'E.
+rewrite funeqE=> n; rewrite 2!muln2 big_nat_recl //= sin_coeff_even add0r.
+by rewrite  big_nat_recl // big_geq // addr0.
 Qed.
 
 Lemma diffs_sin :
@@ -277,10 +267,10 @@ Qed.
 
 Lemma cvg_cos_coeff' x : series (cos_coeff' x) --> cos x.
 Proof.
-have /cvg_series_cvg_series_group2 := (@is_cvg_series_cos_coeff x).
-apply: cvg_trans.
+have /(@cvg_series_cvg_series_group _ _ 2) := (@is_cvg_series_cos_coeff x).
+move=> /(_ isT); apply: cvg_trans.
 rewrite [X in _ --> series X](_ : _ = (fun n => cos_coeff x n.*2)); last first.
-  rewrite funeqE=> n; rewrite addn2 big_nat_recr //= cos_coeff_odd addr0.
+  rewrite funeqE=> n; rewrite 2!muln2 big_nat_recr //= cos_coeff_odd addr0.
   by rewrite  big_nat_recl//= /index_iota subnn big_nil addr0.
 rewrite [X in series X --> _](_ : _ = (fun n => cos_coeff x n.*2)) //.
 by rewrite funeqE => n; exact: cos_coeff'E.
