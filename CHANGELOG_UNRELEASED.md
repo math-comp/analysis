@@ -221,6 +221,17 @@
   + lemma `has_ub_lbN`
 - in `sequences.v`:
   + lemma `ereal_is_cvgD`
+  + lemma `ereal_pseries_pred0` moved from `csum.v`, minor generalization
+- in `landau.v`:
+  + lemma `cvg_shift` renamed to `cvg_comp_shift` and moved to `normedtype.v`
+- moved from `landau.v` to `normedtype.v`:
+  + lemmas `comp_shiftK`, `comp_centerK`, `shift0`, `center0`, `near_shift`,
+    `cvg_shift`
+- move from `derive.v` to `topology.v`: `exprfunE`
+  + replace `closed_cvg_loc` and `closed_cvg` by a more general lemma `closed_cvg`
+- in `topology.v` : 
+  + lemmas `cstE`, `compE`, `opprfunE`, `addrfunE`, `mulrfunE`, `scalrfunE`
+  + multi-rule `rcfE`
 
 ### Changed
 
