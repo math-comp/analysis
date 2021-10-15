@@ -895,16 +895,15 @@ move=> dfx dgx; apply: DiffDef; first exact: differentiable_pair.
 by rewrite diff_pair // !diff_val.
 Qed.
 
-Global Instance is_diffM (f g df dg : V -> R) x : 
+Global Instance is_diffM (f g df dg : V -> R) x :
   is_diff x f df -> is_diff x g dg -> is_diff x (f * g) (f x *: dg + g x *: df).
 Proof.
 move=> dfx dgx.
 have -> : f * g = (fun p => p.1 * p.2) \o (fun y => (f y, g y)) by [].
-(* TODO: type class inference should succeed or fail, not leave an evar *) 
-apply: is_diff_eq; do ?exact: is_diff_comp. 
-by rewrite funeqE => ?; rewrite /= [_ * g _]mulrC. 
+(* TODO: type class inference should succeed or fail, not leave an evar *)
+apply: is_diff_eq; do ?exact: is_diff_comp.
+by rewrite funeqE => ?; rewrite /= [_ * g _]mulrC.
 Qed.
-
 
 Lemma diffM (f g : V -> R) x :
   differentiable f x -> differentiable g x ->
@@ -992,12 +991,6 @@ Lemma differentiableV (f : V -> R) x :
   differentiable f x -> f x != 0 -> differentiable (fun y => (f y)^-1) x.
 Proof.
 by move=> df fxn0; apply: differentiable_comp _ (differentiable_Rinv fxn0).
-Qed.
-
-Lemma exprfunE (T : pointedType) (K : ringType) (f : T -> K) n :
-  f ^+ n = (fun x => f x ^+ n).
-Proof.
-by elim: n => [|n ihn]; rewrite funeqE=> ?; [rewrite !expr0|rewrite !exprS ihn].
 Qed.
 
 Global Instance is_diffX (f df : V -> R) n x :

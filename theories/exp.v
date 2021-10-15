@@ -32,27 +32,11 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* TODO : backport to mathcomp *)
+(* PR to mathcomp in progress *)
 Lemma normr_nneg (R : numDomainType) (x : R) : `|x| \is Num.nneg.
 Proof. by rewrite qualifE. Qed.
 Hint Resolve normr_nneg : core.
-
-Section continuous.
-Variables (K : numFieldType) (U V : normedModType K).
-
-Lemma continuous_shift (f : U -> V) u :
-  {for u, continuous f} = {for 0, continuous (f \o shift u)}.
-Proof. by rewrite [in RHS]forE /= add0r cvg_comp_shift add0r. Qed.
-
-Lemma continuous_withinNshiftx (f : U -> V) u :
-  f \o shift u @ 0^' --> f u <-> {for u, continuous f}.
-Proof.
-rewrite continuous_shift; split=> [cfu|].
-  by apply/(continuous_withinNx _ _).2/(cvg_trans cfu); rewrite /= add0r.
-by move/(continuous_withinNx _ _).1/cvg_trans; apply; rewrite /= add0r.
-Qed.
-
-End continuous.
+(* /PR to mathcomp in progress *)
 
 Lemma derive1_comp (R : realFieldType) (f g : R -> R) x :
   derivable f x 1 -> derivable g (f x) 1 ->
@@ -64,37 +48,6 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
-(******************************************************************************)
-(* Multi-rule for fct                                                         *)
-(******************************************************************************)
-
-Lemma addrfunE [T : pointedType] [K : ringType] (f g : T -> K) :
-  f + g = (fun x : T => f x + g x).
-Proof. by []. Qed.
-
-Lemma opprfunE [T : pointedType] [K : ringType] (f : T -> K) :
-  - f = (fun x : T => - f x).
-Proof. by []. Qed.
-
-Lemma mulrfunE [T : pointedType] [K : ringType] (f g : T -> K) :
-  f * g = (fun x : T => f x * g x).
-Proof. by []. Qed.
-
-Lemma scalrfunE [T : pointedType] [K : ringType] [L : lmodType K]
-               k (f : T -> L) :
-  k *: f = (fun x : T => k *: f x).
-Proof. by []. Qed.
-
-Lemma cstE [T T': Type] (x : T) : cst x = fun _: T' => x.
-Proof. by []. Qed.
-
-Lemma compE [T1 T2 T3 : Type] (f : T1 -> T2) (g : T2 -> T3) : 
-  g \o f = fun x => g (f x).
-Proof. by []. Qed.
-
-Definition rcfE := 
- (cstE, compE, opprfunE, addrfunE, mulrfunE, scalrfunE, exprfunE).
-
 Section is_derive_instances.
 Variables (R : numFieldType) (V : normedModType R).
 
@@ -103,9 +56,8 @@ Proof. exact/derivable1_diffP/differentiable_cst. Qed.
 
 Lemma derivable_id (x v : V) : derivable id x v.
 Proof.
-apply/derivable1P/derivableD.
-  exact/derivable1_diffP/differentiableZl.
-exact/derivable_cst.
+apply/derivable1P/derivableD; last exact/derivable_cst.
+exact/derivable1_diffP/differentiableZl.
 Qed.
 
 Global Instance is_derive_id (x v : V) : is_derive x v id v.
@@ -230,21 +182,19 @@ Fact is_cvg_series_Xn_inside_norm f (x z : R) :
   cvg (series (fun i =>    f i * x ^+ i)) -> `|z| < `|x| ->
   cvg (series (fun i => `|f i| * z ^+ i)).
 Proof.
-move=> Cx zLx.
-have [K K_gt0 KP] := cvg_series_bounded Cx.
-have F1 := cvg_series_cvg_0 Cx.
-have F2 n : 0 <= K * `|z ^+ n| / `|x ^+ n|.
+move=> Cx zLx; have [K [Kreal Kf]] := cvg_series_bounded Cx.
+have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n|.
   by rewrite !mulr_ge0 ?invr_ge0 // ltW.
 apply: normed_cvg.
-apply: series_le_cvg F2 _ _ => [//=| /= n|].
+apply: series_le_cvg Kzxn _ _ => [//=| /= n|].
   rewrite (_ : `|_ * _| = `|f n * x ^+ n| * `|z ^+ n| / `|x ^+ n|); last first.
     rewrite !normrM normr_id mulrAC mulfK // normr_eq0 expf_eq0 andbC.
     by case: ltrgt0P zLx; rewrite //= normr_lt0.
   do! (apply: ler_pmul || apply: mulr_ge0 || rewrite invr_ge0) => //.
-  by apply: ltW.
+  by apply Kf => //; rewrite (lt_le_trans _ (ler_norm _))// ltr_addl.
 have F : `|z / x| < 1.
   by rewrite normrM normfV ltr_pdivr_mulr ?mul1r // (le_lt_trans _ zLx).
-rewrite (_ : (fun _ => _) = geometric K `|z / x|).
+rewrite (_ : (fun _ => _) = geometric `|K + 1| `|z / x|).
 apply: is_cvg_geometric_series; first by rewrite normr_id.
 apply/funext => i /=.
 by rewrite normrM exprMn mulrA normfV !normrX exprVn.

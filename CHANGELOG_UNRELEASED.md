@@ -89,14 +89,14 @@
   + lemmas `near_can_continuousAcan_sym`, `near_can_continuous`, `near_continuous_can_sym`
   + lemmas `exp_continuous`, `sqr_continuous`, `sqrt_continuous`.
 - new file `nsatz_realType`
+- in `normedtype.v`
+  + lemmas `continuous_shift`, `continuous_withinNshiftx`
 - new file `exp.v`
   + lemma `normr_nneg` (hint)
-  + lemmas `cvg_series_bounded`, `eq_cvgl`
   + lemmas `seriesN`, `seriesZr`, `seriesD`, `is_cvg_seriesN`, `lim_seriesN`, `is_cvg_seriesZr`,
     `lim_seriesZr`, `is_cvg_seriesD`, `lim_seriesD`, `is_cvg_seriesB`, `lim_seriesB`,
     `lim_series_norm`, `lim_series_le`, `cvg_to_0_linear`, `lim_cvg_to_0_linear`,
-    `continuous_shift`, `continuous_withinNshiftx`, `derive1_comp`, `is_derive1_id`,
-    `is_derive_0_cst`
+    `derive1_comp`, `is_derive1_id`, `is_derive_0_cst`
   + instance `is_derive1_comp`, `is_deriveV`
   + lemma `trigger_derive`
   + ltac `rcfE`

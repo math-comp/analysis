@@ -867,11 +867,9 @@ Grab Existential Variables. all: end_near. Qed.
 Section series_linear.
 
 Lemma cvg_series_bounded (R : realFieldType) (f : R ^nat) :
-  cvg (series f) -> exists2 K, 0 < K & (forall i, `|f i| < K).
+  cvg (series f) -> bounded_fun f.
 Proof.
-move=> /cvg_series_cvg_0/cvgP/cvg_seq_bounded[r [_ /(_ (r + 1)) fr]].
-exists (maxr 1 (r + 2)); [by rewrite lt_maxr ltr01 | move=> n].
-by rewrite (le_lt_trans (fr _ _ _)) ?ltr_spaddr// lt_maxr ltr_add2l ltr1n orbT.
+by move/cvg_series_cvg_0 => f0; apply/cvg_seq_bounded/cvg_ex; exists 0.
 Qed.
 
 Lemma cvg_to_0_linear (R : realFieldType) (f : R -> R) K k :

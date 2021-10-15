@@ -3843,6 +3843,23 @@ rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
 by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
 
+Section continuous.
+Variables (K : numFieldType) (U V : normedModType K).
+
+Lemma continuous_shift (f : U -> V) u :
+  {for u, continuous f} = {for 0, continuous (f \o shift u)}.
+Proof. by rewrite [in RHS]forE /= add0r cvg_comp_shift add0r. Qed.
+
+Lemma continuous_withinNshiftx (f : U -> V) u :
+  f \o shift u @ 0^' --> f u <-> {for u, continuous f}.
+Proof.
+rewrite continuous_shift; split=> [cfu|].
+  by apply/(continuous_withinNx _ _).2/(cvg_trans cfu); rewrite /= add0r.
+by move/(continuous_withinNx _ _).1/cvg_trans; apply; rewrite /= add0r.
+Qed.
+
+End continuous.
+
 Section Closed_Ball.
 
 Lemma ball_open (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
