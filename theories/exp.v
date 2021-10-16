@@ -66,6 +66,9 @@ apply: (DeriveDef (@derivable_id _ _)).
 by rewrite deriveE// (@diff_lin _ _ _ [linear of idfun]).
 Qed.
 
+Global Instance is_deriveNid (x v : V) : is_derive x v -%R (- v).
+Proof. by apply: is_deriveN. Qed.
+
 End is_derive_instances.
 
 Section is_derive.
@@ -86,7 +89,7 @@ split => [Hd|[g [fxE Cg gxE]]].
   - apply/continuous_withinNshiftx; rewrite eqxx /=.
     pose g1 h := (h^-1 *: ((f \o shift x) h%:A - f x)).
     have F1 : g1 @ 0^' --> a by case: Hd => H1 <-.
-    apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1 !rcfE.
+    apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1 !fctE.
     near=> i.
     rewrite ifN; first by rewrite addrK mulrC /= [_%:A]mulr1.
     rewrite -subr_eq0 addrK.
@@ -158,7 +161,7 @@ have F1 : (h (g x))^-1 @[x --> f x] --> g1 (f x).
   by apply: nbhs_singleton (near_can_continuous _ _).
 apply: cvg_sub0 F1.
 apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
-near=> y; rewrite sub0r normrN !rcfE.
+near=> y; rewrite sub0r normrN !fctE.
 have fgyE : f (g y) = y by near: y; apply: near_continuous_can_sym.
 rewrite /g1; case: eqP => [_|/eqP x1Dfx]; first by rewrite subrr normr0.
 have -> : y - f x  = h (g y) * (g y - x) by rewrite -fE fgyE.
@@ -387,7 +390,7 @@ suff Cc :
     by apply: cvgB.
   set w := fun n : nat => _.
   have -> : w = h^-1 *: (shx h - sx)  - s1.
-    apply: funext => i; rewrite !rcfE.
+    apply: funext => i; rewrite !fctE.
     rewrite /w /shx /sx /s1 /= mulrBr; congr (_ - _); last first.
       by rewrite mulrCA !mulrA.
     by rewrite -mulrBr [RHS]mulrCA [_^-1 * _]mulrC.
@@ -511,15 +514,11 @@ Qed.
 
 Lemma expRxDyMexpx x y : expR (x + y) * expR (- x) = expR y.
 Proof.
-apply: etrans (_ : expR (0 + y) * expR (- 0) = _); last first.
-  by rewrite add0r oppr0 expR0 mulr1.
-apply: (@is_derive_0_cst _ (fun x => expR (x + y) * expR (- x))) => x1.
-have -> : 0 = expR (x1 + y) * (expR (- x1) * (- 1)) +
-              expR (- x1) * (expR (x1 + y) * (1 + 0)).
-  by rewrite mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
-apply: is_deriveM.
-apply: is_derive1_comp.
-apply: is_deriveN.
+set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
+apply: etrans (_ : f x = f 0) _; last by rewrite /f add0r oppr0 expR0 mulr1.
+apply: is_derive_0_cst => x1.
+apply: trigger_derive.
+by rewrite /GRing.scale /= mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
 Qed.
 
 Lemma expRxMexpNx_1 x : expR x * expR (- x) = 1.

@@ -99,7 +99,6 @@
     `derive1_comp`, `is_derive1_id`, `is_derive_0_cst`
   + instance `is_derive1_comp`, `is_deriveV`
   + lemma `trigger_derive`
-  + ltac `rcfE`
   + lemma `is_derive1_caratheodory`, `is_derive_inverse`, `continuous_ln`
   + instance `is_derive1_ln`
   + facts `is_cvg_series_Xn_inside_norm`, `is_cvg_series_Xn_inside`
@@ -231,7 +230,7 @@
   + replace `closed_cvg_loc` and `closed_cvg` by a more general lemma `closed_cvg`
 - in `topology.v` : 
   + lemmas `cstE`, `compE`, `opprfunE`, `addrfunE`, `mulrfunE`, `scalrfunE`
-  + multi-rule `rcfE`
+  + multi-rule `fctE`
 
 ### Changed
 

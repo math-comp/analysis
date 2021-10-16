@@ -318,7 +318,7 @@ apply: (@termdiffs _ _ (`|x| + 1)).
   rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   apply/funext => i.
-  by rewrite diffs_sin diffs_cos sin_coeffE !rcfE !mulNr.
+  by rewrite diffs_sin diffs_cos sin_coeffE !fctE !mulNr.
 by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
@@ -337,19 +337,19 @@ pose s : R^nat := fun n => (~~ odd n)%:R * (-1) ^+ n./2 / n`!%:R.
 pose s1 n := diffs s n * x ^+ n.
 rewrite sinE /=.
 rewrite (_ : (fun n => _) = - s1); last first.
-  by apply/funext => i; rewrite /s1 diffs_cos !rcfE mulNr opprK.
+  by apply/funext => i; rewrite /s1 diffs_cos !fctE mulNr opprK.
 rewrite lim_seriesN ?opprK; last first.
   rewrite (_ : s1 = - sin_coeff x).
     rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   apply/funext => i.
-  by rewrite /s1 diffs_cos sin_coeffE !rcfE mulNr.
+  by rewrite /s1 diffs_cos sin_coeffE !fctE mulNr.
 apply: (@termdiffs _ _ (`|x| + 1)).
 - by rewrite -cos_coeffE; apply: is_cvg_series_cos_coeff.
 - rewrite (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
     rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
-  by apply/funext => i; rewrite diffs_cos sin_coeffE !rcfE mulNr.
+  by apply/funext => i; rewrite diffs_cos sin_coeffE !fctE mulNr.
 - rewrite (_ : (fun n : nat => _) = - cos_coeff (`|x| + 1)).
   rewrite is_cvg_seriesN.
     by apply: is_cvg_series_cos_coeff.
@@ -358,7 +358,7 @@ apply: (@termdiffs _ _ (`|x| + 1)).
   pose f n : R := ((odd n)%:R * (-1) ^+ (n.-1)./2 / n`!%:R) .
   rewrite (_ : (fun n => _) = - f); last first.
     by apply/funext=> j /=; rewrite [in RHS]/-%R.
-  by rewrite diffsN diffs_sin cos_coeffE !rcfE mulNr.
+  by rewrite diffsN diffs_sin cos_coeffE !fctE mulNr.
 by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
@@ -372,12 +372,12 @@ Qed.
 
 Lemma cos2Dsin2 a : (cos a) ^+ 2 + (sin a) ^+ 2 = 1.
 Proof.
-pose f := cos ^+2 + sin^+2; rewrite -[LHS]/(f a).
-apply: etrans (_ : f 0 = 1); last first.
-  by rewrite /f !rcfE sin0 cos0 expr1n expr0n addr0.
+set v := LHS; pattern a in v; move: @v; set f := (X in let _ := X a in _) => /=.
+apply: etrans (_ : f a = f 0) _; last first.
+  by rewrite /f sin0 cos0 expr1n expr0n addr0.
 apply: is_derive_0_cst => {}x.
 apply: trigger_derive; rewrite /GRing.scale /=.
-by rewrite ?expr1 mulrN mulrAC addrC subrr.
+by rewrite mulrN ![sin x * _]mulrC -opprD addrC subrr.
 Qed.
 
 Lemma cos_max a : `| cos a | <= 1.
@@ -408,14 +408,11 @@ Fact sinD_aux x y :
   (sin (x + y) - (sin x * cos y + cos x * sin y)) ^+ 2 +
   (cos (x + y) - (cos x * cos y - sin x * sin y)) ^+ 2 = 0.
 Proof.
-pose f := (sin \o +%R^~ y - (sin * cst (cos y) + cos * cst (sin y)))^+2 +
-          (cos \o +%R^~ y - (cos * cst (cos y) - sin * cst (sin y)))^+2.
-rewrite -[LHS]/(f x); apply: etrans (_ : f 0 = 0); last first.
-  by rewrite /f !rcfE cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
+set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
+apply: etrans (_ : f x = f 0) _; last first.
+  by rewrite /f cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
 apply: is_derive_0_cst => {}x.
-apply: trigger_derive.
-rewrite !rcfE !(scaler0, add0r, addr0, mulr1, expr1) mulr2n /GRing.scale /=.
-by nsatz.
+by apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
 Qed.
 
 Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
@@ -447,16 +444,11 @@ Proof. by rewrite mulr2n cosD -!expr2 sin2cos2 opprB addrA mulr2n. Qed.
 Lemma sinN_aux x :
   (sin (- x ) + sin x) ^+ 2 + (cos (- x) - cos x) ^+ 2 = 0.
 Proof.
-pose f := (sin \o -%R + sin)^+2 + (cos \o -%R - cos )^+2.
-apply: etrans (_ : f x = 0); first by [].
-apply: etrans (_ : f 0 = 0); last first.
-  by rewrite /f !rcfE oppr0 cos0 sin0 !(addr0, subrr, expr0n). 
+set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
+apply: etrans (_ : f x = f 0) _; last first.
+  by rewrite /f oppr0 cos0 sin0 !(addr0, subrr, expr0n). 
 apply: is_derive_0_cst => {}x.
-apply: trigger_derive.
-  by apply: is_deriveD; apply: is_deriveX;
-     apply: is_deriveD; apply: is_derive1_comp; apply: is_deriveN.
-rewrite !rcfE /GRing.scale /= !(scaler0, add0r, addr0, mulr1, expr1) mulr2n.
-nsatz.
+apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
 Qed.
 
 Lemma sinN a : sin (- a) = - sin a.
@@ -849,8 +841,8 @@ Qed.
 Global Instance is_derive_tan x :
   cos x != 0 -> is_derive x 1 tan ((cos x)^-2).
 Proof.
-move=> cxNZ.
-apply: trigger_derive; first by apply: is_deriveM; apply: is_deriveV.
+move=> cxNZ; have dI := is_deriveV cxNZ.
+apply: trigger_derive.
 rewrite /= ![_ *: - _]mulrN mulNr mulrN opprK [_^-1 *: _]mulVf //.
 rewrite mulrCA -expr2 [X in _ * X + _ = _]sin2cos2.
 by rewrite mulrBr mulr1 mulVf ?sqrf_eq0 // subrK.

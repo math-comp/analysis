@@ -683,24 +683,24 @@ End Linear2.
 (******************************************************************************)
 (* Multi-rule for fct                                                         *)
 (******************************************************************************)
-Lemma addrfunE [T : pointedType] [K : ringType] (f g : T -> K) :
+Lemma addrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
   f + g = (fun x : T => f x + g x).
 Proof. by []. Qed.
 
-Lemma opprfunE [T : pointedType] [K : ringType] (f : T -> K) :
+Lemma opprfunE (T : pointedType) (K : ringType) (f : T -> K) :
   - f = (fun x : T => - f x).
 Proof. by []. Qed.
 
-Lemma mulrfunE [T : pointedType] [K : ringType] (f g : T -> K) :
+Lemma mulrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
   f * g = (fun x : T => f x * g x).
 Proof. by []. Qed.
 
-Lemma scalrfunE [T : pointedType] [K : ringType] [L : lmodType K]
+Lemma scalrfunE (T : pointedType) (K : ringType) (L : lmodType K)
                k (f : T -> L) :
   k *: f = (fun x : T => k *: f x).
 Proof. by []. Qed.
 
-Lemma cstE [T T': Type] (x : T) : cst x = fun _: T' => x.
+Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
 Proof. by []. Qed.
 
 Lemma exprfunE (T : pointedType) (K : ringType) (f : T -> K) n :
@@ -709,11 +709,11 @@ Proof.
 by elim: n => [|n ihn]; rewrite funeqE=> ?; [rewrite !expr0|rewrite !exprS ihn].
 Qed.
 
-Lemma compE [T1 T2 T3 : Type] (f : T1 -> T2) (g : T2 -> T3) :
+Lemma compE (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3) :
   g \o f = fun x => g (f x).
 Proof. by []. Qed.
 
-Definition rcfE :=
+Definition fctE :=
   (cstE, compE, opprfunE, addrfunE, mulrfunE, scalrfunE, exprfunE).
 
 Module Filtered.
