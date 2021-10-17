@@ -2815,13 +2815,13 @@ End at_left_right.
 Typeclasses Opaque at_left at_right.
 
 (* TODO: backport to mathcomp in progress *)
-Lemma itvxx d (T : porderType d) (x : T) : `[x, x] =i pred1 x.
+Lemma itvxx d (T : porderType d) (x : T) : `[x, x]%O =i pred1 x.
 Proof. by move=> y; rewrite in_itv/= -eq_le eq_sym. Qed.
 
-Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]).
+Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]%O).
 Proof. by rewrite itvxx; apply/eqP. Qed.
 
-Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}.
+Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}%O.
 Proof. by apply: subitvP; rewrite subitvE !bound_lexx. Qed.
 (* /TODO: backport to mathcomp in progress *)
 
@@ -3044,7 +3044,7 @@ Qed.
 Lemma interval_is_interval (i : interval R) : is_interval [set` i].
 Proof.
 by case: i => -[[]a|[]] [[]b|[]] // x y /=; do ?[by rewrite ?itv_ge//];
-  move=> xi yi z; rewrite -[x <= z <= y]/(z \in `[x, y]); apply/subitvP;
+  move=> xi yi z; rewrite -[x <= z <= y]/(z \in `[x, y]%O); apply/subitvP;
   rewrite subitvE /Order.le/= ?(itvP xi, itvP yi).
 Qed.
 
@@ -4027,7 +4027,7 @@ Lemma bound_itvE (R : numDomainType) (a b : R) :
 Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
 
 Lemma near_in_itv {R : realFieldType} (a b : R) :
-  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
+  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}%O.
 Proof.
 move=> y ayb; rewrite (near_shift 0 y).
 have mingt0 : 0 < Num.min (y - a) (b - y).
@@ -4085,10 +4085,10 @@ move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-];
 exact: mono_mem_image_segment.
 Qed.
 
-Lemma inc_segment_image a b f : f a <= f b -> f @`[a, b] = `[f a, f b].
+Lemma inc_segment_image a b f : f a <= f b -> f @`[a, b] = `[f a, f b]%O.
 Proof. by case: ltrP. Qed.
 
-Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a].
+Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a]%O.
 Proof. by case: ltrP. Qed.
 
 Lemma inc_surj_image_segment a b f : a <= b ->

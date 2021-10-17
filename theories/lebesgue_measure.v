@@ -3575,12 +3575,15 @@ have : b'%:E - a'%:E <= \sum_(k <oo | P k) slength [set` j k] + (e%:num / 2)%:E.
     by apply: ereal_nneg_series_lim_ge0 => k _; exact/slength_ge0.
   rewrite (@le_trans _ _ (slength `[a', b']%classic)) //.
     by rewrite slength_itv hlength_itv /= lte_fin a'b'.
-  have F'_ringOfSets x : x \in [seq `](a'_ k), (b'_ k)[%classic | k <- F'] -> Sset.is_sset x.
-    by move=> /mapP[/= p pF' ->{x}]; exists [:: `](a'_ p), (b'_ p)[ ]; rewrite sset_cons1.
+  have F'_ringOfSets x : x \in [seq `](a'_ k), (b'_ k)[%classic | k <- F'] ->
+      Sset.is_sset x.
+    move=> /mapP[/= p pF' ->{x}]; exists [:: `](a'_ p), (b'_ p)[ ].
+    by rewrite sset_cons1.
   rewrite (@le_trans _ _ (slength (\big[setU/set0]_(k <- F') `] (a'_ k), (b'_ k) [%classic))) //.
     apply/le_measure => //.
       by rewrite inE /=; exact/Sset.is_sset_itv.
-      by rewrite inE /=; apply: bigsetU_measurable => n _; exact/Sset.is_sset_itv.
+      rewrite inE /=; apply: bigsetU_measurable => n _.
+      exact/Sset.is_sset_itv.
     by move/subset_trans : HF'; apply; rewrite bigcup_set.
   rewrite (@le_trans _ _ (\sum_(k <- F') (b'_ k - a'_ k)%:E)) //.
     move: (@le_slengthU_sumslength _ [seq `](a'_ k), (b'_ k)[%classic | k <- F'] F'_ringOfSets).
@@ -5340,6 +5343,18 @@ apply/andP; split.
   by apply: (klu m) => /=; rewrite (leq_trans kn).
 Grab Existential Variables. all: end_near. Qed.
 
+Lemma cvg_lim_infE u : cvg u -> lim_inf u = lim u.
+Proof.
+move=> /cvg_ex[l ul]; have [-> _] := cvg_lim_inf_sup ul.
+by move/cvg_lim : ul => ->.
+Qed.
+
+Lemma cvg_lim_supE u : cvg u -> lim_sup u = lim u.
+Proof.
+move=> /cvg_ex[l ul]; have [_ ->] := cvg_lim_inf_sup ul.
+by move/cvg_lim : ul => ->.
+Qed.
+
 Lemma cvg_sups u l : u --> l -> (sups u) --> (l : R^o).
 Proof.
 move=> ul; have [iul <-] := cvg_lim_inf_sup ul.
@@ -5408,17 +5423,15 @@ have := @le_lim_supD _ _ (bounded_funD ba bb) (bounded_funN bb).
 rewrite -ler_subl_addr; apply: le_trans.
 rewrite -[_ \+ _]/(u + v - v) addrK -lim_infN; last exact: is_cvgN.
 rewrite /comp /=; under eq_fun do rewrite opprK.
-by rewrite ler_add//; move: cv => /cvg_ex[l bl]; rewrite 2!(cvg_lim_inf_sup bl).
+by rewrite ler_add// cvg_lim_infE// cvg_lim_supE.
 Qed.
 
 Lemma lim_infD u v : cvg u -> cvg v -> lim_inf (u \+ v) = lim_inf u + lim_inf v.
 Proof.
-move=> /cvg_ex[l al] /cvg_ex[k bk].
-rewrite (cvg_lim_inf_sup al).1 -(cvg_lim_inf_sup al).2.
-rewrite (cvg_lim_inf_sup bk).1 -(cvg_lim_inf_sup bk).2.
-rewrite -lim_supD; [|by apply/cvg_ex; eexists; exact: al|
-                     by apply/cvg_ex; eexists; exact: bk].
-by have /cvg_lim_inf_sup[-> ->] :=@cvgD _ _ _ _ eventually_filter _ _ _ _ al bk.
+move=> cu cv; rewrite (cvg_lim_infE cu) -(cvg_lim_supE cu).
+rewrite (cvg_lim_infE cv) -(cvg_lim_supE cv) -lim_supD//.
+rewrite cvg_lim_supE; last exact: (@is_cvgD _ _ _ _ _ _ _ cu cv).
+by rewrite cvg_lim_infE //; exact: (@is_cvgD _ _ _ _ _ _ _ cu cv).
 Qed.
 
 End lim_sup_lim_inf.
@@ -5457,7 +5470,7 @@ move=> m n mn; apply: le_ereal_inf => _ /= [k nk <-]; exists k => //=.
 by rewrite (leq_trans mn).
 Qed.
 
-Lemma ereal_inf_sup_sdrop u n : einfs u n <= esups u n.
+Lemma einfs_le_esups u n : einfs u n <= esups u n.
 Proof.
 rewrite /einfs /=; set A := sdrop _ _; have [a Aa] : A !=set0.
   by exists (u n); rewrite /A /=; exists n => //=.
@@ -5502,9 +5515,25 @@ Qed.
 
 End esups_einfs.
 
+(* TODO: move *)
+Lemma ereal_is_cvgD (R : realType) (u v : (\bar R)^nat) :
+  (lim u +? lim v)%E -> cvg u -> cvg v -> cvg (u \+ v)%E.
+Proof.
+move=> uv /cvg_ex[l ul] /cvg_ex[k vk]; apply/cvg_ex; exists (l + k)%E.
+by apply: ereal_cvgD => //; rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk).
+Qed.
+
+(* TODO: replace lee_subl_addr *)
+Lemma lee_subl_addr_new (R' : realDomainType) (x r z : \bar R') : r \is a fin_num ->
+  (x - r <= z)%E = (x <= z + r)%E.
+Proof.
+move: x r z => [x| |] [r| |] [z| |] //= _; rewrite ?lee_pinfty ?lee_ninfty //.
+by rewrite !lee_fin ler_subl_addr.
+Qed.
+
 Section lim_ereal_sup_lim_ereal_inf.
 Variable R : realType.
-Implicit Types (u : (\bar R)^nat) (l : \bar R).
+Implicit Types (u v : (\bar R)^nat) (l : \bar R).
 Local Open Scope ereal_scope.
 
 Definition lim_ereal_sup u := lim (esups u).
@@ -5528,7 +5557,7 @@ Proof.
 apply: lee_lim.
 - exact/ereal_nondecreasing_is_cvg/nondecreasing_einfs.
 - exact/ereal_nonincreasing_is_cvg/nonincreasing_esups.
-- by apply: nearW; exact: ereal_inf_sup_sdrop.
+- by apply: nearW; exact: einfs_le_esups.
 Qed.
 
 Lemma cvg_ereal_sup_ninfty u : u --> -oo ->
@@ -5607,8 +5636,17 @@ Proof.
 by move=> ul; split; apply/cvg_lim => //; [apply/cvg_einfs|apply/cvg_esups].
 Qed.
 
-Lemma is_cvg_lim_ereal_infE u : cvg u -> lim_ereal_inf u = lim_ereal_sup u.
-Proof. by move=> /cvg_ex[l] /cvg_lim_ereal_inf_lim_ereal_sup[-> ->]. Qed.
+Lemma is_cvg_lim_ereal_infE u : cvg u -> lim_ereal_inf u = lim u.
+Proof.
+move=> /cvg_ex[l ul]; have [-> _] := cvg_lim_ereal_inf_lim_ereal_sup ul.
+by move/cvg_lim : ul => ->.
+Qed.
+
+Lemma is_cvg_lim_ereal_supE u : cvg u -> lim_ereal_sup u = lim u.
+Proof.
+move=> /cvg_ex[l ul]; have [_ ->] := cvg_lim_ereal_inf_lim_ereal_sup ul.
+by move/cvg_lim : ul => ->.
+Qed.
 
 End lim_ereal_sup_lim_ereal_inf.
 
