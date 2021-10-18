@@ -70,7 +70,7 @@ Qed.
 
 Lemma cvg_series_cvg_series_group (R : realFieldType) (f : R ^nat) k :
   cvg (series f) -> (0 < k)%N ->
-  series (fun n => \sum_(n * k <= i < n.+1 * k) f i) --> lim (series f).
+  [series \sum_(n * k <= i < n.+1 * k) f i]_n --> lim (series f).
 Proof.
 move=> /cvg_ballP cf k0; apply/cvg_ballP => _/posnumP[e].
 have := cf _ (posnum_gt0 e); rewrite near_map => -[n _ nl].
@@ -162,10 +162,8 @@ Qed.
 Definition sin x : R := lim (series (sin_coeff x)).
 
 Lemma sinE : sin = fun x =>
-  lim (series (fun n =>
-                (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) n
-                * x ^+ n)).
-Proof. by apply/funext => x; rewrite -sin_coeffE. Qed.
+  lim (pseries (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) x).
+Proof. by apply/funext => x; rewrite /pseries -sin_coeffE. Qed.
 
 Definition sin_coeff' x (n : nat) := (-1)^n * x ^+ n.*2.+1 / n.*2.+1`!%:R.
 
@@ -182,16 +180,17 @@ move=> /(_ isT); apply: cvg_trans.
 rewrite [X in _ --> series X](_ : _ = (fun n => sin_coeff x n.*2.+1)).
   rewrite [X in series X --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
   by rewrite funeqE => n; exact: sin_coeff'E.
-rewrite funeqE=> n; rewrite 2!muln2 big_nat_recl //= sin_coeff_even add0r.
+rewrite funeqE=> n.
+rewrite /= 2!muln2 big_nat_recl //= sin_coeff_even add0r.
 by rewrite  big_nat_recl // big_geq // addr0.
 Qed.
 
 Lemma diffs_sin :
-  diffs (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) =
+  pseries_diffs (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) =
    (fun n => (~~(odd n))%:R * (-1) ^+ n./2 * (n`!%:R)^-1 : R).
 Proof.
 apply/funext => i.
-rewrite /diffs /= factS natrM invfM.
+rewrite /pseries_diffs /= factS natrM invfM.
 by rewrite [_.+1%:R * _]mulrC -!mulrA [_.+1%:R^-1 * _]mulrC mulfK.
 Qed.
 
@@ -270,19 +269,19 @@ Proof.
 have /(@cvg_series_cvg_series_group _ _ 2) := (@is_cvg_series_cos_coeff x).
 move=> /(_ isT); apply: cvg_trans.
 rewrite [X in _ --> series X](_ : _ = (fun n => cos_coeff x n.*2)); last first.
-  rewrite funeqE=> n; rewrite 2!muln2 big_nat_recr //= cos_coeff_odd addr0.
+  rewrite funeqE=> n; rewrite /= 2!muln2 big_nat_recr //= cos_coeff_odd addr0.
   by rewrite  big_nat_recl//= /index_iota subnn big_nil addr0.
 rewrite [X in series X --> _](_ : _ = (fun n => cos_coeff x n.*2)) //.
 by rewrite funeqE => n; exact: cos_coeff'E.
 Qed.
 
 Lemma diffs_cos :
-  diffs (fun n => (~~(odd n))%:R * (-1) ^+ n./2 * (n`!%:R)^-1) =
+  pseries_diffs (fun n => (~~(odd n))%:R * (-1) ^+ n./2 * (n`!%:R)^-1) =
   (fun n => - ((odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1): R).
 Proof.
 apply/funext => [] [|i] /=.
-  by rewrite /diffs /= !mul0r mulr0 oppr0.
-rewrite /diffs /= negbK exprS mulN1r !(mulNr, mulrN).
+  by rewrite /pseries_diffs /= !mul0r mulr0 oppr0.
+rewrite /pseries_diffs /= negbK exprS mulN1r !(mulNr, mulrN).
 rewrite  factS natrM invfM.
 by rewrite [_.+1%:R * _]mulrC -!mulrA [_.+1%:R^-1 * _]mulrC mulfK.
 Qed.
@@ -305,21 +304,21 @@ Global Instance is_derive_sin x : is_derive x 1 sin (cos x).
 Proof.
 rewrite sinE /=.
 pose s : R^nat := fun n => (odd n)%:R * (-1) ^+ (n.-1)./2 / n`!%:R.
-pose s1 n := diffs s n * x ^+ n.
-rewrite cosE /=.
+pose s1 n := pseries_diffs s n * x ^+ n.
+rewrite cosE /= /pseries.
 rewrite (_ : (fun n => _) = s1); last first.
   by apply/funext => i; rewrite /s1 diffs_sin.
-apply: (@termdiffs _ _ (`|x| + 1)).
+apply: (@pseries_snd_diffs _ _ (`|x| + 1)); rewrite /pseries.
 - rewrite -sin_coeffE; apply: is_cvg_series_sin_coeff.
 - rewrite (_ : (fun n : nat => _) = cos_coeff (`|x| + 1)).
     by apply: is_cvg_series_cos_coeff.
   by apply/funext => i; rewrite diffs_sin cos_coeffE.
-- rewrite (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
+- rewrite /pseries (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
   rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   apply/funext => i.
   by rewrite diffs_sin diffs_cos sin_coeffE !fctE !mulNr.
-by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+by rewrite [X in _ < X]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
 Lemma derivable_sin x : derivable sin x 1.
@@ -334,8 +333,8 @@ Global Instance is_derive_cos x : is_derive x 1 cos (- (sin x)).
 Proof.
 rewrite cosE /=.
 pose s : R^nat := fun n => (~~ odd n)%:R * (-1) ^+ n./2 / n`!%:R.
-pose s1 n := diffs s n * x ^+ n.
-rewrite sinE /=.
+pose s1 n := pseries_diffs s n * x ^+ n.
+rewrite sinE /= /pseries.
 rewrite (_ : (fun n => _) = - s1); last first.
   by apply/funext => i; rewrite /s1 diffs_cos !fctE mulNr opprK.
 rewrite lim_seriesN ?opprK; last first.
@@ -344,13 +343,13 @@ rewrite lim_seriesN ?opprK; last first.
     by apply: is_cvg_series_sin_coeff.
   apply/funext => i.
   by rewrite /s1 diffs_cos sin_coeffE !fctE mulNr.
-apply: (@termdiffs _ _ (`|x| + 1)).
-- by rewrite -cos_coeffE; apply: is_cvg_series_cos_coeff.
-- rewrite (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
+apply: (@pseries_snd_diffs _ _ (`|x| + 1)).
+- by rewrite /pseries -cos_coeffE; apply: is_cvg_series_cos_coeff.
+- rewrite /pseries (_ : (fun n : nat => _) = - sin_coeff (`|x| + 1)).
     rewrite is_cvg_seriesN.
     by apply: is_cvg_series_sin_coeff.
   by apply/funext => i; rewrite diffs_cos sin_coeffE !fctE mulNr.
-- rewrite (_ : (fun n : nat => _) = - cos_coeff (`|x| + 1)).
+- rewrite /pseries (_ : (fun n : nat => _) = - cos_coeff (`|x| + 1)).
   rewrite is_cvg_seriesN.
     by apply: is_cvg_series_cos_coeff.
   apply/funext => i.
@@ -358,8 +357,8 @@ apply: (@termdiffs _ _ (`|x| + 1)).
   pose f n : R := ((odd n)%:R * (-1) ^+ (n.-1)./2 / n`!%:R) .
   rewrite (_ : (fun n => _) = - f); last first.
     by apply/funext=> j /=; rewrite [in RHS]/-%R.
-  by rewrite diffsN diffs_sin cos_coeffE !fctE mulNr.
-by rewrite ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+  by rewrite pseries_diffsN diffs_sin cos_coeffE !fctE mulNr.
+by rewrite [X in _ < X]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
 Lemma derivable_cos x : derivable cos x 1.
@@ -375,7 +374,7 @@ Proof.
 set v := LHS; pattern a in v; move: @v; set f := (X in let _ := X a in _) => /=.
 apply: etrans (_ : f a = f 0) _; last first.
   by rewrite /f sin0 cos0 expr1n expr0n addr0.
-apply: is_derive_0_cst => {}x.
+apply: is_derive_0_is_cst => {}x.
 apply: trigger_derive; rewrite /GRing.scale /=.
 by rewrite mulrN ![sin x * _]mulrC -opprD addrC subrr.
 Qed.
@@ -411,7 +410,7 @@ Proof.
 set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: etrans (_ : f x = f 0) _; last first.
   by rewrite /f cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
-apply: is_derive_0_cst => {}x.
+apply: is_derive_0_is_cst => {}x.
 by apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
 Qed.
 
@@ -447,7 +446,7 @@ Proof.
 set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: etrans (_ : f x = f 0) _; last first.
   by rewrite /f oppr0 cos0 sin0 !(addr0, subrr, expr0n). 
-apply: is_derive_0_cst => {}x.
+apply: is_derive_0_is_cst => {}x.
 apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
 Qed.
 

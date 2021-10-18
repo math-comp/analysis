@@ -1547,3 +1547,42 @@ apply: (@ler0_derive1_nincr _ (- f)) => t tab; first exact/derivableN/fdrvbl.
 rewrite derive1E deriveN; last exact: fdrvbl.
 by rewrite oppr_le0 -derive1E; apply: dfge0.
 Qed.
+
+Lemma derive1_comp (R : realFieldType) (f g : R -> R) x :
+  derivable f x 1 -> derivable g (f x) 1 ->
+  (g \o f)^`() x = g^`() (f x) * f^`() x.
+Proof.
+move=> /derivable1_diffP df /derivable1_diffP dg.
+rewrite derive1E'; last exact/differentiable_comp.
+rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
+by rewrite [LHS]linearZ mulrC.
+Qed.
+
+Section is_derive_instances.
+Variables (R : numFieldType) (V : normedModType R).
+
+Lemma derivable_cst (x : V) : derivable (fun=> x) 0 1.
+Proof. exact/derivable1_diffP/differentiable_cst. Qed.
+
+Lemma derivable_id (x v : V) : derivable id x v.
+Proof.
+apply/derivable1P/derivableD; last exact/derivable_cst.
+exact/derivable1_diffP/differentiableZl.
+Qed.
+
+Global Instance is_derive_id (x v : V) : is_derive x v id v.
+Proof.
+apply: (DeriveDef (@derivable_id _ _)).
+by rewrite deriveE// (@diff_lin _ _ _ [linear of idfun]).
+Qed.
+
+Global Instance is_deriveNid (x v : V) : is_derive x v -%R (- v).
+Proof. by apply: is_deriveN. Qed.
+
+End is_derive_instances.
+
+
+(* Trick to trigger type class resolution *)
+Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
+  is_derive x 1 f x1 -> x1 = y1 -> is_derive x 1 f y1.
+Proof. by move=> Hi <-. Qed.

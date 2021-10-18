@@ -4,7 +4,7 @@ From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 Require Import boolp ereal reals.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
-Require Import cardinality normedtype.
+Require Import cardinality normedtype derive.
 
 (******************************************************************************)
 (* This file provides properties of standard real-valued functions over real  *)
@@ -438,3 +438,103 @@ move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
 Grab Existential Variables. all: end_near. Qed.
 
 End real_inverse_function_instances.
+
+Section is_derive_inverse.
+
+Variable R : realType.
+
+(* Attempt to prove the diff of inverse *)
+
+Lemma is_derive1_caratheodory (f : R -> R) (x a : R) :
+  is_derive x 1 f a <->
+  exists g, [/\ forall z, f z - f x = g z * (z - x),
+        {for x, continuous g} & g x = a].
+Proof.
+split => [Hd|[g [fxE Cg gxE]]].
+  exists (fun z => if z == x then a else (f(z) - f(x)) / (z - x)); split.
+  - move=> z; case: eqP => [->|/eqP]; first by rewrite !subrr mulr0.
+    by rewrite -subr_eq0 => /divfK->.
+  - apply/continuous_withinNshiftx; rewrite eqxx /=.
+    pose g1 h := (h^-1 *: ((f \o shift x) h%:A - f x)).
+    have F1 : g1 @ 0^' --> a by case: Hd => H1 <-.
+    apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1 !fctE.
+    near=> i.
+    rewrite ifN; first by rewrite addrK mulrC /= [_%:A]mulr1.
+    rewrite -subr_eq0 addrK.
+    by near: i; rewrite near_withinE /= near_simpl; near=> x1.
+  by rewrite eqxx.
+suff Hf : h^-1 *: ((f \o shift x) h%:A - f x) @[h --> 0^'] --> a.
+  have F1 : 'D_1 f x = a by apply: cvg_lim.
+  rewrite -F1 in Hf.
+    by constructor.
+  have F1 :  (g \o shift x) y @[y --> 0^'] --> a.
+  by rewrite -gxE; apply/continuous_withinNshiftx.
+apply: cvg_trans F1; apply: near_eq_cvg.
+near=> y.
+rewrite /= fxE /= addrK [_%:A]mulr1.
+suff yNZ : y != 0 by rewrite [RHS]mulrC mulfK.
+by near: y; rewrite near_withinE /= near_simpl; near=> x1.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma is_derive_0_is_cst (f : R -> R) x y :
+  (forall x, is_derive x 1 f 0) -> f x = f y.
+Proof.
+move=> Hd.
+wlog xLy : x y / x <= y.
+  by move=> H; case: (leP x y) => [/H |/ltW /H].
+rewrite -(subKr (f y) (f x)).
+case: (MVT xLy) => [x1 _ | _ _].
+  by apply/differentiable_continuous/derivable1_diffP.
+by rewrite mul0r => ->; rewrite subr0.
+Qed.
+
+Global Instance is_derive1_comp (f g : R -> R) (x a b : R) :
+  is_derive (g x) 1 f a -> is_derive x 1 g b ->
+  is_derive x 1 (f \o g) (a * b).
+Proof.
+move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
+  apply/derivable1_diffP/differentiable_comp; first exact/derivable1_diffP.
+  by move/derivable1_diffP in fgxv.
+by rewrite -derive1E (derive1_comp gv fgxv) 2!derive1E.
+Qed.
+
+Global Instance is_deriveV (f : R -> R) (x t v : R) :
+  f x != 0 -> is_derive x v f t ->
+  is_derive x v [fun y => (f y)^-1]  (- (f x) ^- 2 *: t).
+Proof.
+move=> fxNZ Df.
+constructor; first by apply: derivableV => //; case: Df.
+by rewrite deriveV //; case: Df => _ ->.
+Qed.
+
+Lemma is_derive_inverse (f g : R -> R) l x :
+  {near x, cancel f g}  ->
+  {near x, continuous f}  ->
+  is_derive x 1 f l -> l != 0 -> is_derive (f x) 1 g l^-1.
+Proof.
+move=> fgK fC fD lNZ.
+have /is_derive1_caratheodory [h [fE hC hxE]] := fD.
+(* There should be something simpler *)
+have gfxE :  g (f x) = x by have [d Hd]:= nbhs_ex fgK; apply: Hd.
+pose g1 y := if y == f x then (h (g y))^-1
+             else (g y - g (f x)) / (y - f x).
+apply/is_derive1_caratheodory.
+exists g1; split; first 2 last.
+- by rewrite /g1 eqxx gfxE hxE.
+- move=> z; rewrite /g1; case: eqP => [->|/eqP]; first by rewrite !subrr mulr0.
+  by rewrite -subr_eq0 => /divfK.
+have F1 : (h (g x))^-1 @[x --> f x] --> g1 (f x).
+  rewrite /g1 eqxx; apply: continuousV; first by rewrite /= gfxE hxE.
+  apply: continuous_comp; last by rewrite gfxE.
+  by apply: nbhs_singleton (near_can_continuous _ _).
+apply: cvg_sub0 F1.
+apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
+near=> y; rewrite sub0r normrN !fctE.
+have fgyE : f (g y) = y by near: y; apply: near_continuous_can_sym.
+rewrite /g1; case: eqP => [_|/eqP x1Dfx]; first by rewrite subrr normr0.
+have -> : y - f x  = h (g y) * (g y - x) by rewrite -fE fgyE.
+rewrite gfxE invfM mulrC divfK ?subrr ?normr0 // subr_eq0.
+by apply: contra x1Dfx => /eqP<-; apply/eqP.
+Grab Existential Variables. all: end_near. Qed.
+
+End is_derive_inverse.

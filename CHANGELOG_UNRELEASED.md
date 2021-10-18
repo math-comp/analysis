@@ -88,22 +88,27 @@
   + lemmas `segment_can_le_continuous`, `segment_can_ge_continuous`, `segment_can_continuous`
   + lemmas `near_can_continuousAcan_sym`, `near_can_continuous`, `near_continuous_can_sym`
   + lemmas `exp_continuous`, `sqr_continuous`, `sqrt_continuous`.
+  + lemma `is_derive1_caratheodory`, `is_derive_inverse`
+  + instance `is_derive1_comp`, `is_deriveV`
+
 - new file `nsatz_realType`
 - in `normedtype.v`
   + lemmas `continuous_shift`, `continuous_withinNshiftx`
+-in `derive.v`
+  + lemmas `derive1_comp`, `derivable_cst`, `derivable_id`, trigger_derive`
+  + instance `is_derive_id`, `is_derive_Nid`
 - new file `exp.v`
   + lemma `normr_nneg` (hint)
   + lemmas `seriesN`, `seriesZr`, `seriesD`, `is_cvg_seriesN`, `lim_seriesN`, `is_cvg_seriesZr`,
     `lim_seriesZr`, `is_cvg_seriesD`, `lim_seriesD`, `is_cvg_seriesB`, `lim_seriesB`,
-    `lim_series_norm`, `lim_series_le`, `cvg_to_0_linear`, `lim_cvg_to_0_linear`,
-    `derive1_comp`, `is_derive1_id`, `is_derive_0_cst`
-  + instance `is_derive1_comp`, `is_deriveV`
-  + lemma `trigger_derive`
-  + lemma `is_derive1_caratheodory`, `is_derive_inverse`, `continuous_ln`
+    `lim_series_norm`, `lim_series_le`, `cvg_to_0_linear`, `lim_cvg_to_0_linear`
+  + lemma `continuous_ln`
   + instance `is_derive1_ln`
-  + facts `is_cvg_series_Xn_inside_norm`, `is_cvg_series_Xn_inside`
-  + definition `diffs`
-  + lemmas `diffsN`, `diffs_inv_fact`, `diffs_sumE`, `diffs_equiv`, `is_cvg_diffs_equiv`, `termdiffs`
+  + definition `pseries`, `pseries_diffs`
+  + facts `is_cvg_pseries_inside_norm`, `is_cvg_pseries_inside`
+  + lemmas `pseries_diffsN`, `pseries_diffs_inv_fact`, `pseries_diffs_sumE`,
+           `pseries_diffs_equiv`, `is_cvg_pseries_diffs_equiv`, 
+           `pseries_snd_diffs`
   + lemmas `expR0`, `expR_ge1Dx`, `exp_coeffE`, `expRE`
   + instance `is_derive_expR`
   + lemmas `derivable_expR`, `continuous_expR`, `expRxDyMexpx`, `expRxMexpNx_1`
