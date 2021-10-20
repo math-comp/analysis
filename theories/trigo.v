@@ -837,11 +837,10 @@ apply: continuousM; first exact: continuous_sin.
 exact/(continuousV cxNZ)/continuous_cos.
 Qed.
 
-Global Instance is_derive_tan x :
+Lemma is_derive_tan x :
   cos x != 0 -> is_derive x 1 tan ((cos x)^-2).
 Proof.
-move=> cxNZ; have dI := is_deriveV cxNZ.
-apply: trigger_derive.
+move=> cxNZ; apply: trigger_derive.
 rewrite /= ![_ *: - _]mulrN mulNr mulrN opprK [_^-1 *: _]mulVf //.
 rewrite mulrCA -expr2 [X in _ * X + _ = _]sin2cos2.
 by rewrite mulrBr mulr1 mulVf ?sqrf_eq0 // subrK.
@@ -880,6 +879,9 @@ Qed.
 
 End Tan.
 Arguments tan {R}.
+
+Hint Extern 0 (is_derive _ _ tan _) => 
+   (eapply is_derive_tan; first by []) : typeclass_instances.
 
 Section Acos.
 
@@ -967,7 +969,7 @@ suff /itvP zI : z \in `]0, pi[.
 by near: z.
 Grab Existential Variables. all: end_near. Qed.
 
-Global Instance is_derive1_acos (x : R) :
+Lemma is_derive1_acos (x : R) :
   -1 < x < 1 -> is_derive x 1 acos (- (Num.sqrt (1 - x ^+ 2))^-1).
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -sin_acos ?ltW // -invrN.
@@ -986,6 +988,9 @@ by rewrite exprn_cp1 // ltr_norml x_gtN1.
 Grab Existential Variables. all: end_near. Qed.
 
 End Acos.
+
+Hint Extern 0 (is_derive _ 1 (@acos _) _) => 
+   (eapply is_derive1_acos; first by []) : typeclass_instances.
 
 Section Asin.
 
@@ -1067,7 +1072,7 @@ suff /itvP zI : z \in `](-(pi/2)), (pi/2)[.
 by near: z.
 Grab Existential Variables. all: end_near. Qed.
 
-Global Instance is_derive1_asin (x : R) :
+Lemma is_derive1_asin (x : R) :
   -1 < x < 1 -> is_derive x 1 asin ((Num.sqrt (1 - x ^+ 2))^-1).
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -cos_asin ?ltW //.
@@ -1088,10 +1093,8 @@ Grab Existential Variables. all: end_near. Qed.
 
 End Asin.
 
-(*
-let atn = new_definition
-  `atn(y) = @x. --(pi / &2) < x /\ x < pi / &2 /\ (tan x = y)`;;
-*)
+Hint Extern 0 (is_derive _ 1 (@asin _) _) => 
+   (eapply is_derive1_asin; first by []) : typeclass_instances.
 
 Section Atan.
 

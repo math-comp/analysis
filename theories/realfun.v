@@ -498,14 +498,17 @@ move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
 by rewrite -derive1E (derive1_comp gv fgxv) 2!derive1E.
 Qed.
 
-Global Instance is_deriveV (f : R -> R) (x t v : R) :
+Lemma is_deriveV (f : R -> R) (x t v : R) :
   f x != 0 -> is_derive x v f t ->
-  is_derive x v [fun y => (f y)^-1]  (- (f x) ^- 2 *: t).
+  is_derive x v (fun y => (f y)^-1)  (- (f x) ^- 2 *: t).
 Proof.
 move=> fxNZ Df.
 constructor; first by apply: derivableV => //; case: Df.
 by rewrite deriveV //; case: Df => _ ->.
 Qed.
+
+Hint Extern 0 (is_derive _ _ _ _) => 
+   (eapply (is_deriveV); first by []) : typeclass_instances.
 
 Lemma is_derive_inverse (f g : R -> R) l x :
   {near x, cancel f g}  ->
@@ -538,3 +541,6 @@ by apply: contra x1Dfx => /eqP<-; apply/eqP.
 Grab Existential Variables. all: end_near. Qed.
 
 End is_derive_inverse.
+
+Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) => 
+   (eapply is_deriveV; first by []) : typeclass_instances.
