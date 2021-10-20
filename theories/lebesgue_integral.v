@@ -273,26 +273,37 @@ Variables (T : Type) (R : realDomainType) (D : set T).
 Implicit Types (f : T -> \bar R).
 Local Open Scope ereal_scope.
 
+Lemma funennp_ge0 f x : 0 <= f^\+ x.
+Proof. by rewrite /funenng /= /maxe; have [//|/ltW] := leP (f x) 0. Qed.
+
+Lemma funenng_ge0 f x : 0 <= f^\- x.
+Proof.
+by rewrite /funennp /= /maxe; have [fx0|fx0] := ltP (f x) 0;
+  [rewrite join_l lee_oppr oppe0 ltW|rewrite join_r // lee_oppl oppe0].
+Qed.
+
 Lemma ge0_funenngE f :
-  (forall x, D x -> 0 <= f x) -> forall x, D x -> f^\+ x = f x.
-Proof. by move=> f0 x Dx; rewrite /funenng /maxe join_l ?f0. Qed.
+  (forall x, D x -> 0 <= f x) -> {in D, f^\+ =1 f}.
+Proof. by move=> f0 x Dx; rewrite /funenng /maxe join_l ?f0// -in_setE. Qed.
 
-Lemma ge0_funennpE f :
-  (forall x, D x -> 0 <= f x) -> forall x, D x -> f^\- x = 0.
-Proof. by move=> f0 x ?; rewrite /funennp /maxe join_r// lee_oppl oppe0 f0. Qed.
+Lemma ge0_funennpE f : (forall x, D x -> 0 <= f x) -> {in D, f^\- =1 cst 0}.
+Proof.
+by move=> f0 x ?; rewrite /funennp /maxe join_r// lee_oppl oppe0 f0// -in_setE.
+Qed.
 
-Lemma le0_funenngE f :
-  (forall x, D x -> f x <= 0) -> forall x, D x -> f^\+ x = 0.
-Proof. by move=> f0 x Dx; rewrite /funenng /maxe join_r ?f0. Qed.
+Lemma le0_funenngE f : (forall x, D x -> f x <= 0) -> {in D, f^\+ =1 cst 0}.
+Proof. by move=> f0 x Dx; rewrite /funenng /maxe join_r ?f0// -in_setE. Qed.
 
 Lemma le0_funennpE f :
-  (forall x, D x -> f x <= 0) -> forall x, D x -> f^\- x = - f x.
-Proof. by move=> f0 x ?; rewrite /funennp /maxe join_l // lee_oppr oppe0 f0. Qed.
+  (forall x, D x -> f x <= 0) -> {in D, f^\- =1 (fun x => - f x)}.
+Proof.
+by move=> f0 x ?; rewrite /funennp /maxe join_l// lee_oppr oppe0 ?f0// -in_setE.
+Qed.
 
-Lemma funennpN f : (fun x : T => - f x)^\- = f^\+.
+Lemma funennpN f : (fun x => - f x)^\- = f^\+.
 Proof. by rewrite funeqE => x /=; rewrite /funenng /funennp oppeK. Qed.
 
-Lemma funenngN f : (fun x : T => - f x)^\+ = f^\-.
+Lemma funenngN f : (fun x => - f x)^\+ = f^\-.
 Proof. by rewrite funeqE => x /=; rewrite /funenng /funennp. Qed.
 
 End funpos_lemmas.
@@ -1379,8 +1390,99 @@ Qed.
 
 End sintegral_nondecreasing_limit.
 
+(* TODO: move to ereal.v *)
 Lemma sub0e (R : numDomainType) (x : \bar R) : (0 - x = - x)%E.
 Proof. by move: x => [x| |] //; rewrite -subEFin sub0r. Qed.
+
+Lemma oppeD_new (R : numDomainType) (x y : \bar R) : y \is a fin_num ->
+  (- (x + y) = - x - y)%E.
+Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
+
+Lemma lee_wpmul2r (R : realDomainType) (x : \bar R) : (0 <= x)%E ->
+  {homo *%E^~ x : y z / (y <= z)%E}.
+Proof.
+move: x => [x|_|//].
+  rewrite lee_fin le_eqVlt => /predU1P[<- y z|x0]; first by rewrite 2!mule0.
+  move=> [y| |] [z| |]//; first by rewrite !lee_fin// ler_pmul2r.
+  - by move=> _; rewrite mulrinfty gtr0_sg// mul1e lee_pinfty.
+  - by move=> _; rewrite mulrinfty gtr0_sg// mul1e lee_ninfty.
+  - by move=> _; rewrite 2!mulrinfty gtr0_sg// 2!mul1e.
+move=> [y| |] [z| |]//.
+- rewrite lee_fin => yz.
+  have [z0|z0|] := ltgtP 0 z.
+  + by rewrite [in X in (_ <= X)%E]mulrinfty gtr0_sg// mul1e lee_pinfty.
+  + rewrite mulrinfty ltr0_sg// ?(le_lt_trans yz)//=.
+    by rewrite [in X in (_ <= X)%E]mulrinfty ltr0_sg.
+  + move=> z0; move: yz; rewrite -z0 mul0e le_eqVlt => /predU1P[->|y0].
+      by rewrite mul0e.
+    by rewrite mulrinfty ltr0_sg// mulN1e lee_ninfty.
+  + by move=> _; rewrite mule_pinfty_pinfty lee_pinfty.
+  + by move=> _; rewrite mule_ninfty_pinfty lee_ninfty.
+  + by move=> _; rewrite mule_ninfty_pinfty lee_ninfty.
+Qed.
+Lemma adde_defEninfty (R : numDomainType) (x : \bar R) :
+  ((x +? -oo) = (x != +oo))%E.
+Proof. by case: x. Qed.
+
+Lemma adde_defEpinfty (R : numDomainType) (x : \bar R) :
+  ((x +? +oo) = (x != -oo))%E.
+Proof. by case: x. Qed.
+
+Lemma lte_pinfty_eq (R : realDomainType) (x : \bar R) :
+  ((x < +oo) = ((x \is a fin_num) || (x == -oo)))%E.
+Proof. by case: x => // x //=; exact: lte_pinfty. Qed.
+
+Lemma gte_ninfty_eq (R : realDomainType) (x : \bar R) :
+  ((-oo < x) = ((x \is a fin_num) || (x == +oo)))%E.
+Proof. by case: x => // x //=; exact: lte_pinfty. Qed.
+
+Lemma lee_norm_add (R : realDomainType) (x y : \bar R) :
+  (norme (x + y) <= norme x + norme y)%E.
+Proof.
+move: x y => [x| |] [y| |] //.
+by rewrite /norme /= -addEFin lee_fin ler_norm_add.
+Qed.
+
+Lemma lee_norm_sub (R : realDomainType) (x y : \bar R) :
+  (norme (x - y) <= norme x + norme y)%E.
+Proof.
+move: x y => [x| |] [y| |] //.
+by rewrite /norme /= -addEFin lee_fin ler_norm_sub.
+Qed.
+
+Lemma gee0_norm (R : realDomainType) (x : \bar R) : (0 <= x)%E -> norme x = x.
+Proof.
+move: x => [x| |] //; rewrite lee_fin => x0; apply/eqP.
+by rewrite eqe ger0_norm.
+Qed.
+
+Lemma lte0_norm (R : realDomainType) (x : \bar R) : (x < 0)%E -> norme x = (- x)%E.
+Proof.
+move: x => [x| |] //; rewrite lte_fin => x0; apply/eqP.
+by rewrite eqe ltr0_norm.
+Qed.
+
+Lemma ge0_fin_numE (R : realDomainType) (x : \bar R) :
+  (0 <= x)%E -> (x \is a fin_num) = (x < +oo)%E.
+Proof.
+by move: x => [x| |] => // x0; rewrite fin_numE -lee_pinfty_eq -ltNge andbb.
+Qed.
+
+Lemma lte_mul_pinfty (R' : realDomainType) x (y : \bar R') :
+  (0 <= x)%R -> (y < +oo)%E -> (x%:E * y < +oo)%E.
+Proof.
+move: y => [y| |] // x0 _; first by rewrite -mulEFin lte_pinfty.
+rewrite mulrinfty; move: x0; rewrite le_eqVlt => /predU1P[<-|x0].
+- by rewrite sgr0 mul0e lte_pinfty.
+- by rewrite gtr0_sg // mul1e.
+Qed.
+
+Lemma sube_eq (R : numDomainType) (x y z : \bar R) : x \is a fin_num ->
+  (y +? z)%E -> (x - z == y)%E = (x == y + z)%E.
+Proof.
+by move: x y z => [x| |] [y| |] [z| |] // _ _; rewrite !eqe subr_eq.
+Qed.
+(* /TODO: move to ereal.v *)
 
 Section integral.
 Variables (T : measurableType) (point : T) (R : realType).
@@ -1403,15 +1505,15 @@ by rewrite (_ : _%:E = 0%E) ?mul0e//; move: k => [[|]].
 Qed.
 
 Lemma eq_nnintegral D (g f : T -> \bar R) :
-  (forall x, D x -> f x = g x) -> nnintegral D f = nnintegral D g.
+  {in D, f =1 g} -> nnintegral D f = nnintegral D g.
 Proof.
 move=> fg; rewrite /nnintegral; congr ereal_sup; rewrite eqEsubset; split.
-  by move=> _ /= [h hf <-]; exists h => // x Dx; rewrite -fg// hf.
-by move=> _ /= [h hf <-]; exists h => // x Dx; rewrite fg// hf.
+  by move=> _ /= [h hf <-]; exists h => // x Dx; rewrite -fg// ?hf// in_setE.
+by move=> _ /= [h hf <-]; exists h => // x Dx; rewrite fg// ?hf// in_setE.
 Qed.
 Arguments eq_nnintegral {D} _ {f} _.
 
-Lemma nnintegral0 D : nnintegral D (fun=> 0) = 0.
+Lemma nnintegral0 D : nnintegral D (cst 0) = 0.
 Proof.
 pose cst0 : nnsfun T R := nnsfun_cst point (Nonneg.NngNum _ (ler0n _ 0)).
 rewrite /nnintegral /=; apply/eqP; rewrite eq_le; apply/andP; split; last first.
@@ -1429,24 +1531,56 @@ Qed.
 Definition integral D (f : T -> \bar R) :=
   nnintegral D (f ^\+) - nnintegral D (f ^\-).
 
+Lemma eq_integral D (f g : T -> \bar R) : {in D, f =1 g} ->
+  integral D f = integral D g.
+Proof.
+move=> fg; rewrite /integral (eq_nnintegral g^\+); last first.
+  by move=> x Dx; rewrite /funenng (fg _ Dx).
+rewrite [X in _ - X = _](eq_nnintegral g^\-)// => x Dx.
+by rewrite /funennp (fg _ Dx).
+Qed.
+
 Lemma ge0_integralE D (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x) -> integral D f = nnintegral D f.
 Proof.
-move=> f0; rewrite /integral; rewrite (eq_nnintegral f (ge0_funenngE f0)).
-by rewrite (eq_nnintegral (cst 0) (ge0_funennpE f0)) nnintegral0 sube0.
+move=> f0; rewrite /integral (eq_nnintegral _ (ge0_funenngE f0)).
+by rewrite (eq_nnintegral _ (ge0_funennpE f0)) nnintegral0 sube0.
 Qed.
 
-Lemma ge0_integralN D (f : T -> \bar R) :
-  (forall x, D x -> 0 <= f x)%E -> integral D (fun x => - f x) = - integral D f.
+Lemma integral0 D : integral D (cst 0) = 0.
 Proof.
-move=> f0.
-rewrite /integral (eq_nnintegral (cst 0) (ge0_funennpE f0)).
-by rewrite nnintegral0 sube0 sub0e funennpN.
+rewrite /integral (eq_nnintegral (cst 0) (ge0_funenngE _))//.
+rewrite [in X in _ - X = _](eq_nnintegral (cst 0) (ge0_funennpE _))//.
+by rewrite !nnintegral0 sube0.
 Qed.
 
 Lemma ge0_integral D (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x) -> 0 <= integral D f.
 Proof. by move=> f0; rewrite ge0_integralE// nnintegral_ge0. Qed.
+
+Lemma integralN D (f : T -> \bar R) : integral D f^\+ +? (- integral D f^\-) ->
+  integral D (-%E \o f) = - integral D f.
+Proof.
+have [f_fin _|] := boolP (nnintegral D f^\- \is a fin_num).
+  by rewrite /integral oppeD_new// ?fin_numN// oppeK addeC funennpN.
+rewrite fin_numE negb_and 2!negbK => /orP[nfoo|/eqP nfoo].
+  exfalso; move/negP : nfoo; apply; rewrite -lee_ninfty_eq; apply/negP.
+  rewrite -ltNge (lt_le_trans _ (nnintegral_ge0 _))// ?lte_ninfty// => *.
+  exact: funennp_ge0.
+rewrite (@ge0_integralE _ f^\-)//; last by move=> *; exact: funenng_ge0.
+rewrite nfoo adde_defEninfty.
+rewrite (@ge0_integralE _ f^\+)//; last by move=> *; exact: funennp_ge0.
+rewrite -lee_pinfty_eq -ltNge lte_pinfty_eq => /orP[f_fin|/eqP pfoo].
+  by rewrite /integral nfoo [in RHS]addeC oppeD_new// funennpN.
+by rewrite /integral funenngN funennpN nfoo pfoo.
+Qed.
+
+Lemma ge0_integralN D (f : T -> \bar R) :
+  (forall x, D x -> 0 <= f x)%E -> integral D (-%E \o f) = - integral D f.
+Proof.
+move=> f0; rewrite integralN // (eq_integral (ge0_funennpE _))// integral0.
+by rewrite oppe0 fin_num_adde_def.
+Qed.
 
 End integral.
 
@@ -1474,15 +1608,12 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
     exact/nd_g.
   by move/cvg_lim => -> //; apply: ereal_sup_ub => /=; exists n.
 have := lee_pinfty (nnintegral mu D f).
-rewrite le_eqVlt => /predU1P[mufoo|]; last first.
-  move mufr : (nnintegral mu D f) => r.
-  move: r mufr => [r mufr _|//|mufr]; last first.
-    by move: (nnintegral_ge0 point mu f0); rewrite mufr.
-  rewrite -mufr.
-  move/ub_ereal_sup_adherent : mufr; rewrite -/(integral _ _) => h.
-  apply: lee_adde => e.
+rewrite le_eqVlt => /predU1P[mufoo|mufoo]; last first.
+  have /ub_ereal_sup_adherent : nnintegral mu D f \is a fin_num.
+    by rewrite ge0_fin_numE // (nnintegral_ge0 point mu f0).
+  rewrite -/(integral _ _) => h; apply: lee_adde => e.
   have {h}[/= _ [[G Gf <-]]] := h e.
-  rewrite lte_subl_addr => fGe.
+  rewrite NEFin lte_subl_addr// => fGe.
   have : forall x, D x -> cvg (g^~ x) -> G x <= lim (g^~ x).
     move=> x Dx cg; rewrite -lee_fin -EFin_lim //=.
     have := gf Dx => /cvg_lim gxfx.
@@ -2270,42 +2401,6 @@ Qed.
 
 End fatou.
 
-(* TODO: move to ereal.v *)
-Lemma lee_norm_add (R : realDomainType) (x y : \bar R) :
-  (norme (x + y) <= norme x + norme y)%E.
-Proof.
-move: x y => [x| |] [y| |] //.
-by rewrite /norme /= -addEFin lee_fin ler_norm_add.
-Qed.
-
-Lemma gee0_norm (R : realDomainType) (x : \bar R) : (0 <= x)%E -> norme x = x.
-Proof.
-move: x => [x| |] //; rewrite lee_fin => x0; apply/eqP.
-by rewrite eqe ger0_norm.
-Qed.
-
-Lemma ge0_fin_numE (R : realDomainType) (x : \bar R) :
-  (0 <= x)%E -> (x \is a fin_num) = (x < +oo)%E.
-Proof.
-by move: x => [x| |] => // x0; rewrite fin_numE -lee_pinfty_eq -ltNge andbb.
-Qed.
-
-Lemma lte_mul_pinfty (R' : realDomainType) x (y : \bar R') :
-  (0 <= x)%R -> (y < +oo)%E -> (x%:E * y < +oo)%E.
-Proof.
-move: y => [y| |] // x0 _; first by rewrite -mulEFin lte_pinfty.
-rewrite mulrinfty; move: x0; rewrite le_eqVlt => /predU1P[<-|x0].
-- by rewrite sgr0 mul0e lte_pinfty.
-- by rewrite gtr0_sg // mul1e.
-Qed.
-
-Lemma sube_eq (R : numDomainType) (x y z : \bar R) : x \is a fin_num ->
-  (y +? z)%E -> (x - z == y)%E = (x == y + z)%E.
-Proof.
-by move: x y z => [x| |] [y| |] [z| |] // _ _; rewrite !eqe subr_eq.
-Qed.
-(* /TODO: move to ereal.v *)
-
 Section integrable.
 Variables (T : measurableType) (point : T) (R : realType).
 Variable (mu : {measure set T -> \bar R}).
@@ -2445,14 +2540,95 @@ have : esups u --> 0%E.
     apply: nearW => m.
     have /le_trans : (0 <= einfs u m)%E.
       by apply: lb_ereal_inf => _ [p /= pm] <-; exact: u0.
-    apply; apply: ereal_inf_sup_sdrop.
+    apply; apply: einfs_le_esups.
   move: (esupl) => /cvg_lim => /(_ (@ereal_hausdorff R)).
   by rewrite /lim_ereal_sup => ->.
 by apply: esqueeze0; rewrite near_simpl; exact: nearW.
 Qed.
 (* /TODO: move *)
 
-(* NB* this is work in progress *)
+(* TODO: move *)
+Lemma emeasurable_fun_max (T : measurableType) (R : realType)
+  (f g : T -> \bar R) : measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (fun x => maxe (f x) (g x)).
+Proof.
+move=> mf mg.
+apply: (@measurability _ _ _ (@RbarGenClosedRays.G R)).
+  exact/esym/RbarGenClosedRays.measurableEcray.
+move=> A [B [x ->] <-].
+rewrite [X in measurable X](_ : _ =
+    f @^-1` `[x, +oo[ `|` g @^-1` `[x, +oo[); last first.
+  rewrite predeqE => t /=; split.
+    by rewrite /preimage /= !in_itv /= !andbT /maxe lexU => /orP[|]; tauto.
+  move=> [|]; rewrite /preimage /= !in_itv/= !andbT /maxe lexU => ->//.
+  by rewrite orbT.
+apply: measurableU.
+- by rewrite -[X in measurable X]setIT; apply/mf/measurable_Rbar_bnd_pinfty.
+- by rewrite -[X in measurable X]setIT; apply/mg/measurable_Rbar_bnd_pinfty.
+Qed.
+
+Lemma emeasurable_fun_funenng (T : measurableType) (R : realType)
+  (f : T -> \bar R) : measurable_fun setT f -> measurable_fun setT f^\+.
+Proof.
+move=> mf; apply: emeasurable_fun_max => //.
+by apply: measurable_fun_cst; exact: measurableT.
+Qed.
+
+Lemma emeasurable_funN (R : realType) : measurable_fun setT
+  (-%E : \bar R -> \bar R).
+Proof.
+apply: (@measurability _ _ _ (@RbarGenClosedRays.G R)).
+  exact/esym/RbarGenClosedRays.measurableEcray.
+move=> A [B [x ->] <-].
+rewrite (_ : _ @^-1` _ = `]-oo, (- x)%E]%classic).
+  exact: measurable_Rbar_ninfty_bnd.
+by rewrite predeqE /preimage => /= y; rewrite !in_itv/= andbT lee_oppr.
+Qed.
+
+Lemma emeasurable_fun_funennp (T : measurableType) (R : realType)
+  (f : T -> \bar R) : measurable_fun setT f -> measurable_fun setT f^\-.
+Proof.
+move=> mf; apply: emeasurable_fun_max.
+  by apply: measurable_fun_comp => //; exact: emeasurable_funN.
+by apply: measurable_fun_cst; exact: measurableT.
+Qed.
+
+Lemma le_norme_integral (T : measurableType) (point : T) (R : realType)
+  (mu : {measure set T -> \bar R}) (f : T -> \bar R) :
+  measurable_fun setT f ->
+  (norme (integral mu setT f) <= integral mu setT (@norme _ \o f))%E.
+Proof.
+move=> mf.
+rewrite {1}/integral (le_trans (lee_norm_sub _ _))// gee0_norm; last first.
+  by apply: nnintegral_ge0 => // t Dt; rewrite /funenng leUr.
+rewrite gee0_norm; last first.
+  by apply: nnintegral_ge0 => // t Dt; rewrite /funennp leUr.
+rewrite -ge0_integralE //; last by move=> t Dt; rewrite /funenng leUr.
+rewrite -ge0_integralE //; last by move=> t Dt; rewrite /funenng leUr.
+rewrite -ge0_integralD //; last 5 first.
+  exact: measurableT.
+  by move=> t Dt; rewrite /funenng leUr.
+  exact: emeasurable_fun_funenng.
+  by move=> t Dt; rewrite /funenng leUr.
+  exact: emeasurable_fun_funennp.
+have ->// : (f^\+ \+ f^\- = norme (R:=R) \o f)%E.
+(* TODO: lemma? *)
+rewrite funeqE => t /=.
+rewrite /funennp /funenng.
+have [ft0|ft0] := leP 0%E (f t).
+  rewrite /maxe join_l// join_r; last by rewrite lee_oppl oppe0.
+  by rewrite adde0 gee0_norm.
+rewrite /maxe join_r ?add0e; last by rewrite ltW.
+by rewrite join_l // ?lte0_norm// -lee_oppr oppe0 ltW.
+Qed.
+
+Lemma mulpinfty (R : realDomainType) (x : \bar R) : (0 < x -> +oo * x = +oo)%E.
+Proof.
+move: x => [x|_|//]; last by rewrite mule_pinfty_pinfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty gtr0_sg// mul1e.
+Qed.
+
+(* NB: this is work in progress *)
 Section dominated_convergence_theorem.
 Variables (T : measurableType) (point : T) (R : realType).
 Variables mu : {measure set T -> \bar R}.
@@ -2516,7 +2692,7 @@ apply: lim_le.
 by apply: nearW => k; apply: normfg.
 Qed.
 
-Let mgg n : measurable_fun setT (fun x : T => (2 * g x - g_ n x)%:E).
+Let mgg n : measurable_fun setT (fun x => (2 * g x - g_ n x)%:E).
 Proof.
 apply: measurable_fun_comp; first exact: measurable_fun_EFin.
 apply: measurable_funD.
@@ -2531,7 +2707,7 @@ Local Open Scope ereal_scope.
 Let gg_ge0 n x : D x -> 0 <= (2 * g x - g_ n x)%:E.
 Proof. by move=> Dx; rewrite lee_fin gg_. Qed.
 
-Lemma dominated : lim (fun n => integral mu D (@EFin _ \o g_ n)) = 0.
+Lemma dominated_lim0 : lim (fun n => integral mu D (@EFin _ \o g_ n)) = 0.
 Proof.
 have := fatou point mu mgg gg_ge0.
 rewrite [X in X <= _ -> _](_ : _ =
@@ -2558,7 +2734,7 @@ rewrite [X in _ <= X -> _](_ : _ = integral mu setT (fun x => (2 * g x)%:E) + -
     rewrite funeqE => n; under eq_fun do rewrite subEFin.
     rewrite ge0_integralB //.
     - rewrite [X in _ = _ + X](_ : _ = (- integral mu D (@EFin _ \o g_ n))) //.
-      by rewrite -ge0_integralN// => t Dt; rewrite lee_fin.
+      by rewrite -ge0_integralN // => t Dt; rewrite lee_fin.
     - exact: measurableT.
     - by apply: measurable_funK; case: ig => + _; exact: EFin_measurable_fun.
     - apply: measurable_fun_comp; first exact: measurable_fun_normr.
@@ -2597,8 +2773,7 @@ rewrite [X in _ <= X -> _](_ : _ = integral mu setT (fun x => (2 * g x)%:E) + -
     rewrite ge0_fin_numE//.
     by rewrite ge0_integral // => x Dx; rewrite lee_fin mulr_ge0// g0.
   rewrite -lim_ereal_infN; congr (_ + lim_ereal_inf _)%E.
-  rewrite funeqE => n /=.
-  by rewrite -ge0_integralN // => x Dx; rewrite lee_fin /g_.
+  by rewrite funeqE => n /=; rewrite -ge0_integralN// => x Dx; rewrite lee_fin.
 rewrite addeC -lee_subl_addr_new; last first.
   rewrite ge0_fin_numE//.
   by rewrite ge0_integral // => x Dx; rewrite lee_fin mulr_ge0// g0.
