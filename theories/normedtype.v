@@ -299,7 +299,7 @@ Proof. by case: V => ? [? ? ? ? ? ? []]. Qed.
 
 End pseudoMetricnormedzmodule_lemmas.
 
-(** locally *)
+(** neighborhoods *)
 
 Section Nbhs'.
 Context {R : numDomainType} {T : pseudoMetricType R}.
@@ -392,7 +392,7 @@ Global Instance Proper_dnbhs_realType (R : realType) (x : R) :
   ProperFilter x^'.
 Proof. exact: Proper_dnbhs_numFieldType. Qed.
 
-(** * Some Topology on [Rbar] *)
+(** * Some Topology on extended real numbers *)
 
 Definition pinfty_nbhs (R : numFieldType) : set (set R) :=
   fun P => exists M, M \is Num.real /\ forall x, M < x -> P x.
@@ -3329,7 +3329,7 @@ Grab Existential Variables. all: end_near. Qed.
 
 (** Local properties in [R] *)
 
-(** * Topology on [R]² *)
+(* Topology on [R]² *)
 
 (* Lemma locally_2d_align : *)
 (*   forall (P Q : R -> R -> Prop) x y, *)
