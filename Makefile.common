@@ -124,3 +124,16 @@ doc: __always__ Makefile.coq
 
 doc-clean:
 	rm -rf _build_doc/
+
+alectryon:
+	mkdir -p _build_alectryon/
+	cp -r $(COQFILES) -t _build_alectryon/ --parents
+	cp _CoqProject Makefile* _build_alectryon
+	mkdir -p _build_alectryon/htmldoc
+	+cd _build_alectryon && $(COQMAKE)
+	cd _build_alectryon && alectryon -R classical mathcomp.classical -R theories mathcomp.analysis --frontend coqdoc --backend webpage --output-directory htmldoc \
+		-R theories mathcomp.analysis \
+		$(COQFILES)
+
+alectryon-clean:
+	rm -rf _build_alectryon

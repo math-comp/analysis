@@ -4599,7 +4599,7 @@ apply/connected_intervalP/connected_continuous_connected => //.
 exact: segment_connected.
 Qed.
 
-(** Local properties in [R] *)
+(* Local properties in [R] *)
 
 (* Topology on [R]² *)
 
