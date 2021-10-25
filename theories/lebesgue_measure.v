@@ -224,11 +224,85 @@ Lemma comp_preimage T1 T2 T3 (A : set T3) (g : T1 -> T2) (f : T2 -> T3) :
   (f \o g) @^-1` A = g @^-1` (f @^-1` A).
 Proof. by []. Qed.
 
-Definition norme (R : realDomainType) (x : \bar R) :=
-  if x is EFin r then `|r|%:E else +oo%E.
-
-Lemma norme_ge0 (R : realDomainType) (x : \bar R) : (0 <= norme x)%E.
+(* NB: PR in progress *)
+Lemma abse_ge0 (R : realDomainType) (x : \bar R) : (0 <= `|x|)%E.
 Proof. by move: x => [x| |] /=; rewrite ?lee_pinfty ?lee_fin. Qed.
+
+Lemma lee_abs_add (R : realDomainType) (x y : \bar R) :
+  (`|x + y| <= `|x|  + `|y|)%E.
+Proof.
+move: x y => [x| |] [y| |] //.
+by rewrite /abse /= -addEFin lee_fin ler_norm_add.
+Qed.
+
+Lemma lee_abs_sub (R : realDomainType) (x y : \bar R) :
+  (`|x - y| <= `|x| + `|y|)%E.
+Proof.
+move: x y => [x| |] [y| |] //.
+by rewrite /abse /= -addEFin lee_fin ler_norm_sub.
+Qed.
+
+Lemma gee0_abs (R : realDomainType) (x : \bar R) : (0 <= x)%E -> `|x| = x.
+Proof.
+move: x => [x| |] //; rewrite lee_fin => x0; apply/eqP.
+by rewrite eqe ger0_norm.
+Qed.
+
+Lemma lte0_abs (R : realDomainType) (x : \bar R) : (x < 0)%E -> `|x| = (- x)%E.
+Proof.
+move: x => [x| |] //; rewrite lte_fin => x0; apply/eqP.
+by rewrite eqe ltr0_norm.
+Qed.
+
+Lemma lee0_abs (R : realDomainType) (x : \bar R) : x <= 0 -> `|x| = - x.
+Proof.
+by move: x => [x| |]//; rewrite lee_fin => x0; apply/eqP; rewrite eqe ler0_norm.
+Qed.
+
+Lemma gte0_abs (R : realDomainType) (x : \bar R) : 0 < x -> `|x| = x.
+Proof. by move=> /ltW/gee0_abs. Qed.
+
+Notation maxe := (@Order.max ereal_display _).
+Notation "@ 'maxe' R" := (@Order.max ereal_display R)
+    (at level 10, R at level 8, only parsing) : fun_scope.
+
+Section tmp.
+Variable R : realDomainType.
+
+Lemma maxEFin r1 r2 : maxe r1%:E r2%:E = (Num.max r1 r2)%:E :> \bar R.
+Proof.
+by have [ab|ba] := leP r1 r2;
+  [apply/max_idPr; rewrite lee_fin|apply/max_idPl; rewrite lee_fin ltW].
+Qed.
+
+Lemma adde_maxl : left_distributive (@adde R) maxe.
+Proof.
+move=> x y z; have [xy|yx] := leP x y.
+by apply/esym/max_idPr; rewrite lee_add2r.
+by apply/esym/max_idPl; rewrite lee_add2r// ltW.
+Qed.
+
+Lemma adde_maxr : right_distributive (@adde R) maxe.
+Proof.
+move=> x y z; have [yz|zy] := leP y z.
+by apply/esym/max_idPr; rewrite lee_add2l.
+by apply/esym/max_idPl; rewrite lee_add2l// ltW.
+Qed.
+
+Lemma maxe_pinftyl : left_zero (+oo : \bar R) maxe.
+Proof. by move=> x; have [|//] := leP +oo x; rewrite lee_pinfty_eq => /eqP. Qed.
+
+Lemma maxe_pinftyr : right_zero (+oo : \bar R) maxe.
+Proof. by move=> x; rewrite maxC maxe_pinftyl. Qed.
+
+Lemma maxe_ninftyl : left_id (-oo : \bar R) maxe.
+Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge lee_ninfty. Qed.
+
+Lemma maxe_ninftyr : right_id (-oo : \bar R) maxe.
+Proof. by move=> x; rewrite maxC maxe_ninftyl. Qed.
+
+End tmp.
+(* /NB: PR in progress *)
 
 Lemma ltz_opp (R : numDomainType) (n : nat) :
   (0 < n)%N -> (- n%:R < n%:R :> R)%R.
@@ -4118,13 +4192,13 @@ End salgebra_Rbar.
 
 Section puncture_ereal_itv.
 Variable R : realDomainType.
-Implicit Types y : R.
+Implicit Types (y : R) (b : bool).
 Local Open Scope ereal_scope.
 
 Lemma punct_eitv_bnd_pinfty b y : [set` Interval (BSide b y%:E) +oo%O] =
-  [set x%:E | x in [set` Interval (BSide b y) +oo%O]] `|` [set +oo].
+  @EFin _ @` [set` Interval (BSide b y) +oo%O] `|` [set +oo].
 Proof.
-rewrite predeqE => /= x; split; rewrite in_itv /= andbT.
+rewrite predeqE => x; split; rewrite /= in_itv andbT.
 - move: x => [x| |] yxb; [|by right|by case: b yxb].
   by left; exists x => //; rewrite in_itv /= andbT; case: b yxb.
 - move=> [[r]|->].
@@ -4132,13 +4206,24 @@ rewrite predeqE => /= x; split; rewrite in_itv /= andbT.
   + by case: b => /=; rewrite ?(lte_pinfty, lee_pinfty).
 Qed.
 
-Lemma punct_eitv_setTR : [set of @EFin R] `|` [set +oo%E] = [set~ -oo].
+Lemma punct_eitv_ninfty_bnd b y : [set` Interval -oo%O (BSide b y%:E)] =
+  [set -oo%E] `|` @EFin _ @` [set x | x \in Interval -oo%O (BSide b y)].
+Proof.
+rewrite predeqE => x; split; rewrite /= in_itv.
+- move: x => [x| |] yxb; [|by case: b yxb|by left].
+  by right; exists x => //; rewrite in_itv /= andbT; case: b yxb.
+- move=> [->|[r]].
+  + by case: b => /=; rewrite ?(lte_ninfty, lee_ninfty).
+  + by rewrite in_itv /= => yxb <-; case: b yxb.
+Qed.
+
+Lemma punct_eitv_setTR : [set of @EFin R] `|` [set +oo] = [set~ -oo].
 Proof.
 rewrite eqEsubset; split => [a [[a' _ <-]|->]|]; rewrite ?lte_ninfty//.
 by move=> [x| |] //= _; [left; exists x|right].
 Qed.
 
-Lemma punct_eitv_setTL : [set of @EFin R] `|` [set -oo%E] = [set~ +oo].
+Lemma punct_eitv_setTL : [set of @EFin R] `|` [set -oo] = [set~ +oo].
 Proof.
 rewrite eqEsubset; split => [a [[a' _ <-]|->]|]; rewrite ?lte_ninfty//.
 by move=> [x| |] //= _; [left; exists x|right].
@@ -4404,20 +4489,22 @@ move=> mD mf; rewrite -preimage_itv_o_infty.
 exact/mf/measurable_Rbar_bnd_pinfty.
 Qed.
 
-Lemma emeasurable_fun_infty_o (T : measurableType) (R : realType)
+Lemma emeasurable_fun_infty_o (T : measurableType) (R : realType) (D : set T)
     (f : T -> \bar R) (y : \bar R) :
-  measurable_fun setT f -> measurable [set x | (f x < y)%E].
+  measurable D ->
+  measurable_fun D f -> measurable ([set x | (f x < y)%E] `&` D).
 Proof.
-move=> mf; rewrite -preimage_itv_infty_o.
-by rewrite -[X in measurable X]setIT; exact/mf/measurable_Rbar_ninfty_bnd.
+move=> mD mf; rewrite -preimage_itv_infty_o.
+exact/mf/measurable_Rbar_ninfty_bnd.
 Qed.
 
-Lemma emeasurable_fun_infty_c (T : measurableType) (R : realType)
+Lemma emeasurable_fun_infty_c (T : measurableType) (R : realType) (D : set T)
     (f : T -> \bar R) (y : \bar R) :
-  measurable_fun setT f -> measurable [set x | (f x <= y)%E].
+  measurable D ->
+  measurable_fun D f -> measurable ([set x | (f x <= y)%E] `&` D).
 Proof.
-move=> mf; rewrite -preimage_itv_infty_c.
-by rewrite -[X in measurable X]setIT; exact/mf/measurable_Rbar_ninfty_bnd.
+move=> mD mf; rewrite -preimage_itv_infty_c.
+exact/mf/measurable_Rbar_ninfty_bnd.
 Qed.
 
 Module RGenOpenRays.
@@ -4691,9 +4778,7 @@ rewrite eqEsubset; split => A; last first.
     + exists setT; first exact: measurableT.
       exists [set +oo]; first by constructor.
       by rewrite itv_oninfty_pinfty punct_eitv_setTR.
-  - move=> *.
-    rewrite setTD.
-    exact: measurableRbarC.
+  - by move=> *; rewrite setTD; exact: measurableRbarC.
   - by move=> *; exact: measurableRbar_bigcup.
 move=> [B mB [C mC]] <-; apply: measurableU; last first.
   case: mC; [exact: measurable0|exact: measurable_set1_ninfty
@@ -4751,9 +4836,7 @@ rewrite eqEsubset; split => A; last first.
     + exists setT; first exact: measurableT.
       exists [set -oo; +oo]; first by constructor.
       by rewrite itv_cninfty_pinfty setUA punct_eitv_setTL setUCl.
-    + move=> *.
-      rewrite setTD.
-      exact: measurableRbarC.
+    + by move=> *; rewrite setTD; exact: measurableRbarC.
     + by move=> *; exact: measurableRbar_bigcup.
 move=> [A' mA' [C mC]] <-; apply: measurableU; last first.
   case: mC; [exact: measurable0|exact: measurable_set1_ninfty|
@@ -5739,39 +5822,20 @@ move=> mf mg /= A mA; rewrite comp_preimage; apply/mg.
 by rewrite -[X in measurable X]setIT; apply/mf.
 Qed.
 
-Lemma measurable_fun_ereal_inf T (R : realType) (D : set T)
-    (f : (T -> \bar R) ^nat) :
-  measurable D -> (forall n, measurable_fun D (f n)) ->
-  forall n, measurable_fun D (fun x => ereal_inf (sdrop (f^~x) n)).
+Lemma measurable_fun_cst (T1 T2 : measurableType) (D : set T1) (r : T2) :
+  measurable D -> measurable_fun D (cst r : T1 -> T2).
 Proof.
-move=> mD mf n; apply: (@measurability _ _ _ _ (@RbarGenClosedRays.G R)) => //.
-  exact/esym/RbarGenClosedRays.measurableEcray.
-move=> A [B [x ->] <-].
-rewrite einfs_preimage -bigcapIl; last by exists n => /=.
-by apply: measurable_bigcap_bounded => i ?; apply/mf/measurable_Rbar_bnd_pinfty.
+move=> mD A mA; have [rA|rA] := boolP (r \in A).
+- rewrite [X in measurable X](_ : _ = D) // predeqE => t; split=> [[]//|Dt].
+  by split => //; rewrite /preimage /= -in_setE.
+- rewrite [X in measurable X](_ : _ = set0) ?predeqE; first exact: measurable0.
+  by rewrite /preimage => t; split => //= -[]; rewrite -in_setE (negbTE rA).
 Qed.
 
-Lemma measurable_fun_ereal_sup T (R : realType) (D : set T)
-    (f : (T -> \bar R)^nat) :
-  measurable D -> (forall n, measurable_fun D (f n)) ->
-  forall n, measurable_fun D (fun x => ereal_sup (sdrop (f^~x) n)).
-Proof.
-move=> mD mf n; apply: (@measurability _ _ _ _ (@RbarGenOpenRays.G R)) => //.
-  exact/esym/RbarGenOpenRays.measurableEoray.
-move=> A [B [x ->] <-];rewrite esups_preimage setI_bigcupl.
-by apply: measurable_bigcup_bounded => i ?; apply/mf/measurable_Rbar_bnd_pinfty.
-Qed.
+End measurable_fun.
 
-Lemma measurable_fun_EFin (R : realType) (D : set R) :
-  measurable D -> measurable_fun D (@EFin R).
-Proof.
-move=> mD; apply: (@measurability _ _ _ _ (@RbarGenOpenRays.G R)) => //.
-  exact/esym/RbarGenOpenRays.measurableEoray.
-move=> /= A [_ [x ->]] <-; move: x => [x| |]; apply: measurableI => //.
-- by rewrite preimage_itv_o_infty EFin_itv; exact: measurable_itv.
-- by rewrite [X in measurable X](_ : _ = set0) ?predeqE//; exact: measurable0.
-- by rewrite preimage_EFin_setT; exact: measurableT.
-Qed.
+Section measurable_fun_realType.
+Implicit Types T : measurableType.
 
 Lemma measurable_fun_normr (R : realType) (D : set R) :
   measurable D -> measurable_fun D (@normr _ R).
@@ -5811,16 +5875,6 @@ rewrite predeqE => x; split => [|[r _] []/= [rfx Dx]] /= [].
   rewrite -ltr_subl_addr => /dense_rat[r /andP[ar rfg]] Dx.
   by exists r => //; split => //=; rewrite ltr_subl_addr addrC -ltr_subl_addr.
 by rewrite ltr_subl_addr=> afg; rewrite (lt_le_trans afg)// addrC ler_add2r ltW.
-Qed.
-
-Lemma measurable_fun_cst (T1 T2 : measurableType) (D : set T1) (r : T2) :
-  measurable D -> measurable_fun D (cst r : T1 -> T2).
-Proof.
-move=> mD A mA; have [rA|rA] := boolP (r \in A).
-- rewrite [X in measurable X](_ : _ = D) // predeqE => t; split=> [[]//|Dt].
-  by split => //; rewrite /preimage /= -in_setE.
-- rewrite [X in measurable X](_ : _ = set0) ?predeqE; first exact: measurable0.
-  by rewrite /preimage => t; split => //= -[]; rewrite -in_setE (negbTE rA).
 Qed.
 
 Lemma measurable_funK T (R : realType) (D : set T) (f : T -> R) (k : R) :
@@ -5906,8 +5960,39 @@ rewrite [X in _ --> X](_ : _ = inf [set of sups (f^~t)]).
 by congr (inf [set _ | _ in _]); rewrite predeqE.
 Qed.
 
-Lemma measurable_fun_norme (R : realType) (D : set (\bar R)) :
-  measurable D -> measurable_fun D (@norme R).
+Lemma measurable_fun_cvg T (R : realType) (D : set T) (f_ : (T -> R)^nat)
+  (f : T -> R) :
+  measurable D -> (forall m, measurable_fun D (f_ m)) ->
+  (forall x, f_^~x --> f x) ->
+  measurable_fun D f.
+Proof.
+move=> mD mf_ f_f; have fE x : f x = lim_sup (f_^~ x).
+  have /cvg_lim  <-// := (@cvg_sups _ (f_^~x) (f x) (f_f x)).
+  exact: Rhausdorff.
+rewrite (_ : f = (fun x => lim_sup (f_^~x))) ?funeqE//.
+apply: (@measurable_fun_lim_sup _ _ _ f_) => // t.
+- by apply/bounded_fun_has_ubound/cvg_seq_bounded/cvg_ex; eexists; exact: (f_f t).
+- by apply/bounded_fun_has_lbound/cvg_seq_bounded/cvg_ex; eexists; exact: (f_f t).
+Qed.
+
+End measurable_fun_realType.
+
+Section standard_emeasurable_fun.
+Variable R : realType.
+
+Lemma measurable_fun_EFin (D : set R) :
+  measurable D -> measurable_fun D (@EFin R).
+Proof.
+move=> mD; apply: (@measurability _ _ _ _ (@RbarGenOpenRays.G R)) => //.
+  exact/esym/RbarGenOpenRays.measurableEoray.
+move=> /= A [_ [x ->]] <-; move: x => [x| |]; apply: measurableI => //.
+- by rewrite preimage_itv_o_infty EFin_itv; exact: measurable_itv.
+- by rewrite [X in measurable X](_ : _ = set0) ?predeqE//; exact: measurable0.
+- by rewrite preimage_EFin_setT; exact: measurableT.
+Qed.
+
+Lemma measurable_fun_abse (D : set (\bar R)) :
+  measurable D -> measurable_fun D (@abse R).
 Proof.
 move=> mD; apply: (@measurability _ _ _ _ (@RbarGenOpenRays.G R)) => //.
   exact/esym/RbarGenOpenRays.measurableEoray.
@@ -5937,10 +6022,134 @@ move=> /= _ [_ [x ->] <-]; move: x => [x| |].
 - rewrite itv_oninfty_pinfty -preimage_setC; apply: measurableC.
   rewrite [X in measurable X](_ : _ = set0); first exact: measurable0.
   rewrite predeqE => t; split => //=; rewrite /preimage /=; apply/eqP.
-  by rewrite gt_eqF// (lt_le_trans _ (norme_ge0 t))// lte_ninfty.
+  by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t))// lte_ninfty.
 Qed.
 
-Lemma EFin_measurable_fun T (R : realType) (g : T -> R) (D : set T) :
+Lemma emeasurable_fun_minus (D : set (\bar R)) : measurable D ->
+  measurable_fun D (-%E : \bar R -> \bar R).
+Proof.
+move=> mD; apply: (@measurability _ _ _ _ (@RbarGenClosedRays.G R)) => //.
+  exact/esym/RbarGenClosedRays.measurableEcray.
+move=> _ [B [x ->] <-].
+rewrite (_ : _ @^-1` _ = `]-oo, (- x)%E]%classic).
+  by apply: measurableI => //; exact: measurable_Rbar_ninfty_bnd.
+by rewrite predeqE /preimage => /= y; rewrite !in_itv/= andbT lee_oppr.
+Qed.
+
+End standard_emeasurable_fun.
+
+Section emeasurable_fun.
+Variables (T : measurableType) (R : realType).
+Implicit Types (D : set T).
+
+Lemma measurable_fun_ereal_inf D (f : (T -> \bar R) ^nat) :
+  measurable D -> (forall n, measurable_fun D (f n)) ->
+  forall n, measurable_fun D (fun x => ereal_inf (sdrop (f^~x) n)).
+Proof.
+move=> mD mf n; apply: (@measurability _ _ _ _ (@RbarGenClosedRays.G R)) => //.
+  exact/esym/RbarGenClosedRays.measurableEcray.
+move=> A [B [x ->] <-].
+rewrite einfs_preimage -bigcapIl; last by exists n => /=.
+by apply: measurable_bigcap_bounded => i ?; apply/mf/measurable_Rbar_bnd_pinfty.
+Qed.
+
+Lemma measurable_fun_ereal_sup D (f : (T -> \bar R)^nat) :
+  measurable D -> (forall n, measurable_fun D (f n)) ->
+  forall n, measurable_fun D (fun x => ereal_sup (sdrop (f^~x) n)).
+Proof.
+move=> mD mf n; apply: (@measurability _ _ _ _ (@RbarGenOpenRays.G R)) => //.
+  exact/esym/RbarGenOpenRays.measurableEoray.
+move=> A [B [x ->] <-];rewrite esups_preimage setI_bigcupl.
+by apply: measurable_bigcup_bounded => i ?; apply/mf/measurable_Rbar_bnd_pinfty.
+Qed.
+
+Lemma emeasurable_fun_max D (f g : T -> \bar R) :
+  measurable D -> measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => maxe (f x) (g x)).
+Proof.
+move=> mD mf mg.
+apply: (@measurability _ _ _ _ (@RbarGenClosedRays.G R)) => //.
+  exact/esym/RbarGenClosedRays.measurableEcray.
+move=> _ [B [x ->] <-].
+rewrite [X in measurable X](_ : _ =
+    (f @^-1` `[x, +oo[ `&` D) `|` (g @^-1` `[x, +oo[ `&` D)); last first.
+  rewrite predeqE => t /=; split.
+    by rewrite /preimage /= !in_itv /= !andbT le_maxr => -[+ Dx] => /orP[|];
+      tauto.
+  by move=> [|]; rewrite /preimage /= !in_itv/= !andbT le_maxr;
+    move=> [+ Dx] => ->//; rewrite orbT.
+by apply: measurableU; [exact/mf/measurable_Rbar_bnd_pinfty|
+                        exact/mg/measurable_Rbar_bnd_pinfty].
+Qed.
+
+Lemma emeasurable_funK D (f : T -> \bar R) (k : R) :
+  measurable D -> measurable_fun D f ->
+  measurable_fun D (fun x => k%:E * f x)%E.
+Proof.
+move=> mD; have [-> _|] := eqVneq k 0.
+  rewrite (_ : (fun _ => _) = cst 0%E); first exact: measurable_fun_cst.
+  by rewrite funeqE// => t; rewrite mul0e.
+rewrite neq_lt => /orP[k0|k0] mf;
+  (apply: (@measurability _ _ _ _ (@RbarGenOpenRays.G R)) => //;
+  [ exact/esym/RbarGenOpenRays.measurableEoray | move=> /= _ [B [a ->] <-] ]).
+- move: a => [a| |].
+  + rewrite preimage_itv_o_infty.
+    rewrite [X in measurable X](_ : _ =
+        f @^-1` [set x | x < a%:E * k^-1%:E]%E `&` D); last first.
+      rewrite predeqE => t; rewrite /preimage /=; split => [|] [akft Dt].
+      by split=> //; rewrite lte_ndivl_mulr// muleC.
+    by split=> //; rewrite muleC -lte_ndivl_mulr.
+    apply: mf.
+    rewrite [X in measurable X](_ : _ =
+        [set x | x \in Interval -oo%O (BSide true (a%:E * k^-1%:E)%E)]).
+      rewrite punct_eitv_ninfty_bnd.
+      apply: measurableU; first exact: measurable_Rbar_set1.
+      by apply: measurable_EFin; exact: measurable_itv.
+    by rewrite predeqE => x; split; rewrite /= in_itv.
+  + by rewrite itv_opinfty_pinfty preimage_set0 set0I; exact: measurable0.
+  + rewrite itv_oninfty_pinfty.
+    rewrite [X in measurable X](_ : _ = f @^-1` [set~ +oo%E]%E `&` D); last first.
+      rewrite /preimage /=.
+      rewrite predeqE => t; split; move=> [kftoo Dt]; split => //.
+        apply: contra_not kftoo; case: (f t) => // _.
+        by rewrite mulrinfty ltr0_sg// mulN1e.
+      apply: contra_not kftoo; case: (f t) => //.
+      by rewrite mulrinfty ltr0_sg // mulN1e.
+    by apply: mf; apply: measurableC; exact: measurable_Rbar_set1.
+- move: a => [a| |].
+  + rewrite preimage_itv_o_infty.
+    rewrite [X in measurable X](_ : _ =
+        f @^-1` [set x | a%:E * k^-1%:E < x]%E `&` D); last first.
+      rewrite predeqE => t; rewrite /preimage /=; split => [|] [akft Dt].
+      by split=> //; rewrite lte_pdivr_mulr// muleC.
+    by split=> //; rewrite muleC -lte_pdivr_mulr.
+    apply: mf.
+    rewrite [X in measurable X](_ : _ =
+        [set x | x \in Interval (BSide false (a%:E * k^-1%:E)%E) +oo%O]).
+      rewrite punct_eitv_bnd_pinfty.
+      apply: measurableU; last exact: measurable_Rbar_set1.
+      by apply: measurable_EFin; exact: measurable_itv.
+    by rewrite predeqE => x; split; rewrite /= in_itv/= andbT.
+  + by rewrite itv_opinfty_pinfty preimage_set0 set0I; exact: measurable0.
+  + rewrite itv_oninfty_pinfty.
+    rewrite [X in measurable X](_ : _ = f @^-1` [set~ -oo%E]%E `&` D); last first.
+      rewrite /preimage /=.
+      rewrite predeqE => t; split; move=> [kftoo Dt]; split => //.
+        apply: contra_not kftoo; case: (f t) => // _.
+        by rewrite mulrinfty gtr0_sg// mul1e.
+      apply: contra_not kftoo; case: (f t) => //.
+      by rewrite mulrinfty gtr0_sg // mul1e.
+    by apply: mf; apply: measurableC; exact: measurable_Rbar_set1.
+Qed.
+
+Lemma emeasurable_funN D (f : T -> \bar R) :
+  measurable D -> measurable_fun D f -> measurable_fun D (fun x => - f x)%E.
+Proof.
+by move=> mD mf; under eq_fun do rewrite -mulN1e; exact: emeasurable_funK.
+Qed.
+
+(* NB: real-valued function *)
+Lemma EFin_measurable_fun D (g : T -> R) :
   measurable_fun D (@EFin _ \o g) -> measurable_fun D g.
 Proof.
 move=> mf A mA; rewrite [X in measurable X](_ : _ =
@@ -5951,19 +6160,4 @@ rewrite predeqE => x; split; rewrite /preimage /=.
 by move=> [/= [r Ar [rgx]]] Dx; split => //=; rewrite -rgx.
 Qed.
 
-Lemma measurable_fun_cvg T (R : realType) (D : set T) (f_ : (T -> R)^nat)
-  (f : T -> R) :
-  measurable D -> (forall m, measurable_fun D (f_ m)) ->
-  (forall x, f_^~x --> f x) ->
-  measurable_fun D f.
-Proof.
-move=> mD mf_ f_f; have fE x : f x = lim_sup (f_^~ x).
-  have /cvg_lim  <-// := (@cvg_sups _ (f_^~x) (f x) (f_f x)).
-  exact: Rhausdorff.
-rewrite (_ : f = (fun x => lim_sup (f_^~x))) ?funeqE//.
-apply: (@measurable_fun_lim_sup _ _ _ f_) => // t.
-- by apply/bounded_fun_has_ubound/cvg_seq_bounded/cvg_ex; eexists; exact: (f_f t).
-- by apply/bounded_fun_has_lbound/cvg_seq_bounded/cvg_ex; eexists; exact: (f_f t).
-Qed.
-
-End measurable_fun.
+End emeasurable_fun.
