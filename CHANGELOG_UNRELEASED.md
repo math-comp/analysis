@@ -82,9 +82,11 @@
 - in `topology.v`:
   + lemma `dense_rat`
 - in `ereal.v`:
-  + lemmas `abse_ge0`, `lee_abs_add`, `lee_abs_sub`, `gee0_abs`, `lte0_abs`
-  + definition `maxe`
-  + lemams `lee_maxr`, `lee_maxl`, `maxe_idPr`, `maxe_idPl`, `lee_max`, `maxeEFin`
+  + lemmas `abse0`, `abse_ge0`, `lee_abs_add`, `lee_abs_sum`, `lee_abs_sub`,
+    `gee0_abs`, `gte0_abs`, `lee_abs`, `lte0_abs`
+  + notation `maxe`
+  + lemmas `maxEFin`, `adde_maxl`, `adde_maxr`,
+    `maxe_pinftyl`, `maxe_pinftyr`, `maxe_ninftyl`, `maxe_ninftyr`
   + lemmas `sub0e`, `lee_wpmul2r`
 
 ### Changed

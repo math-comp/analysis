@@ -507,6 +507,8 @@ Proof. by move: x => [r| |] //=; rewrite /mule/= ?mulr0// eqxx. Qed.
 Lemma mul0e x : 0 * x = 0.
 Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
+Lemma abse0 : `|0| = 0 :> \bar R. Proof. by rewrite /abse normr0. Qed.
+
 Lemma abseN x : `|- x| = `|x|.
 Proof. by case: x => [r||]; rewrite //= normrN. Qed.
 
@@ -628,7 +630,9 @@ Proof. by move=> f0 l; elim/big_rec : _ => // t x Pt; apply/adde_ge0/f0. Qed.
 End ERealArithTh_numDomainType.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
 
-Definition maxe {R : realDomainType} (x y : \bar R) : \bar R := Order.join x y.
+Notation maxe := (@Order.max ereal_display _).
+Notation "@ 'maxe' R" := (@Order.max ereal_display R)
+    (at level 10, R at level 8, only parsing) : fun_scope.
 
 Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
@@ -1093,6 +1097,13 @@ Proof.
 by move: x y => [x| |] [y| |] //; rewrite /abse -addEFin lee_fin ler_norm_add.
 Qed.
 
+Lemma lee_abs_sum (I : Type) (s : seq I) (F : I -> \bar R) (P : pred I) :
+  `|\sum_(i <- s | P i) F i| <= \sum_(i <- s | P i) `|F i|.
+Proof.
+elim/big_ind2 : _ => //; first by rewrite abse0.
+by move=> *; exact/(le_trans (lee_abs_add _ _) (lee_add _ _)).
+Qed.
+
 Lemma lee_abs_sub x y : `|x - y| <= `|x| + `|y|.
 Proof.
 by move: x y => [x| |] [y| |] //; rewrite /abse -addEFin lee_fin ler_norm_sub.
@@ -1103,31 +1114,47 @@ Proof.
 by move: x => [x| |]//; rewrite lee_fin => x0; apply/eqP; rewrite eqe ger0_norm.
 Qed.
 
-Lemma lte0_abs x : x < 0 -> `|x| = - x.
+Lemma gte0_abs x : 0 < x -> `|x| = x. Proof. by move=> /ltW/gee0_abs. Qed.
+
+Lemma lee0_abs x : x <= 0 -> `|x| = - x.
 Proof.
-by move: x => [x| |]//; rewrite lte_fin => x0; apply/eqP; rewrite eqe ltr0_norm.
+by move: x => [x| |]//; rewrite lee_fin => x0; apply/eqP; rewrite eqe ler0_norm.
 Qed.
 
-Lemma lee_maxr x y : x <= maxe y x.
-Proof. by rewrite /maxe; have [|] := leP x y. Qed.
+Lemma lte0_abs x : x < 0 -> `|x| = - x.
+Proof. by move=> /ltW/lee0_abs. Qed.
 
-Lemma lee_maxl x y : x <= maxe x y.
-Proof. by rewrite /maxe; have [|] := leP x y. Qed.
-
-Lemma maxe_idPr x y : reflect (maxe y x = x) (y <= x).
-Proof. by rewrite /maxe; apply: join_idPr. Qed.
-
-Lemma maxe_idPl x y : reflect (maxe y x = y) (x <= y).
-Proof. by rewrite /maxe; apply: join_idPl. Qed.
-
-Lemma lee_max x y z : (x <= maxe y z) = (x <= y) || (x <= z).
-Proof. by rewrite /maxe lexU. Qed.
-
-Lemma maxeEFin r1 r2 : maxe r1%:E r2%:E = (Num.Def.maxr r1 r2)%:E.
+Lemma maxEFin r1 r2 : maxe r1%:E r2%:E = (Num.max r1 r2)%:E.
 Proof.
 by have [ab|ba] := leP r1 r2;
-  [apply/maxe_idPr; rewrite lee_fin|apply/maxe_idPl; rewrite lee_fin ltW].
+  [apply/max_idPr; rewrite lee_fin|apply/max_idPl; rewrite lee_fin ltW].
 Qed.
+
+Lemma adde_maxl : left_distributive (@adde R) maxe.
+Proof.
+move=> x y z; have [xy|yx] := leP x y.
+by apply/esym/max_idPr; rewrite lee_add2r.
+by apply/esym/max_idPl; rewrite lee_add2r// ltW.
+Qed.
+
+Lemma adde_maxr : right_distributive (@adde R) maxe.
+Proof.
+move=> x y z; have [yz|zy] := leP y z.
+by apply/esym/max_idPr; rewrite lee_add2l.
+by apply/esym/max_idPl; rewrite lee_add2l// ltW.
+Qed.
+
+Lemma maxe_pinftyl : left_zero (+oo : \bar R) maxe.
+Proof. by move=> x; have [|//] := leP +oo x; rewrite lee_pinfty_eq => /eqP. Qed.
+
+Lemma maxe_pinftyr : right_zero (+oo : \bar R) maxe.
+Proof. by move=> x; rewrite maxC maxe_pinftyl. Qed.
+
+Lemma maxe_ninftyl : left_id (-oo : \bar R) maxe.
+Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge lee_ninfty. Qed.
+
+Lemma maxe_ninftyr : right_id (-oo : \bar R) maxe.
+Proof. by move=> x; rewrite maxC maxe_ninftyl. Qed.
 
 End ERealArithTh_realDomainType.
 Arguments lee_sum_nneg_ord {R}.
