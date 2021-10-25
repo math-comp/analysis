@@ -375,7 +375,7 @@ split => [a b | u [t At <-{u}] | b Bb].
 - case: pselect => [[i _ Ait]|Xt]; first by apply fAB; exists t.
   have [u Bu <-] : (g @` B) t.
     have {}Xt : forall i, (~` A_ i) t by move=> i ?; apply Xt; exists i.
-    by have /= := Xt O; rewrite setDE setCI setCK => -[|].
+    by have := Xt O; rewrite /A_ setDE setCI setCK => -[|].
   by rewrite injective_left_inverse // in_setE.
 - have [Xgb|Xgb] := pselect (X (g b)); last first.
     exists (g b); split; first by apply gBA; exists b.
@@ -682,7 +682,7 @@ move: n A S; elim=> [A S [t At] A1 SA|n ih A S A0 /card_eq_sym].
     - by move=> x [i _] <-.
     - by move=> u ->; exists 0.
   have [S0|S1] := subset_set1 SA.
-  - by exists 0; split => //; rewrite predeqE => i; rewrite S0 /= set0I.
+  - by exists 0; split => //; rewrite predeqE => i; rewrite S0 set0I.
   - by exists 1; split => //; rewrite predeqE S1 => i; split => //= -[].
 move => /card_eqP [g bij_g] SA.
 have [S0|] := pselect (S !=set0); last first.

@@ -1763,8 +1763,8 @@ Proof. by rewrite nbhsE => p_A; exists A; split. Qed.
 Lemma interiorI (A B:set T): (A `&` B)^° = A^° `&` B^°.
 Proof.
 rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 [?]] | []].
-- by rewrite subsetI => // -[? ?]; split; rewrite nbhsE; exists B0.
-- rewrite nbhsE => -[B0 [? ?]] [B1 [? ?]]; exists (B0 `&` B1); split;
+- by rewrite subsetI => // -[? ?]; split; exists B0.
+- move=> -[B0 [? ?]] [B1 [? ?]]; exists (B0 `&` B1); split;
   [exact: open_nbhsI | by rewrite subsetI; split; apply: subIset; [left|right]].
 Qed.
 

@@ -19,7 +19,6 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldTopology.Exports.
 
 Local Open Scope ring_scope.
-Local Open Scope classical_set_scope.
 
 Import numFieldNormedType.Exports.
 
@@ -207,14 +206,13 @@ by move=> x y /itvxxP<- /itvxxP<-; rewrite !lexx.
 Qed.
 
 Lemma segment_continuous_surjective a b f
-    (I := [set z | z \in `[a, b]])
-    (J := [set z | z \in f @`[a, b]]) :
+    (I :=`[a, b]%classic)
+    (J := [set z | z \in f @`[a, b]]%classic) :
   a <= b -> {in `[a, b], continuous f} -> surjective I J f.
 Proof. by rewrite /I /J => le_ab fct y/= /IVT[]// x; exists x. Qed.
 
 Lemma segment_continuous_le_surjective a b f
-    (I := [set z | z \in `[a, b]])
-    (J := [set z | z \in `[f a, f b]]) :
+    (I := `[a, b]%classic) (J := `[f a, f b]%classic) :
   a <= b -> f a <= f b -> {in `[a, b], continuous f} -> surjective I J f.
 Proof.
 move=> le_ab f_ab /(segment_continuous_surjective le_ab).
@@ -222,8 +220,7 @@ by rewrite (min_idPl _)// (max_idPr _).
 Qed.
 
 Lemma segment_continuous_ge_surjective a b f
-    (I := [set z | z \in `[a, b]])
-    (J := [set z | z \in `[f b, f a]]) :
+    (I := `[a, b]%classic) (J := `[f b, f a]%classic) :
   a <= b -> f b <= f a -> {in `[a, b], continuous f} -> surjective I J f.
 Proof.
 move=> le_ab f_ab /(segment_continuous_surjective le_ab).
@@ -231,9 +228,9 @@ by rewrite (min_idPr _)// (max_idPl _).
 Qed.
 
 Lemma continuous_inj_image_segment a b f
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
+    (I := `[a, b]%classic) (J := [set z | z \in f @`[a, b]]%classic) :
     a <= b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
-  f @` I = J.
+  (f @` I)%classic = J.
 Proof.
 move=> leab fct finj; apply: mono_surj_image_segment => //.
   exact: itv_continuous_inj_mono.
@@ -241,7 +238,7 @@ exact: segment_continuous_surjective.
 Qed.
 
 Lemma continuous_inj_image_segmentP a b f
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
+    (I := `[a, b]%classic) (J := [set z | z \in f @`[a, b]]%classic) :
     a <= b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
 Proof.
@@ -286,7 +283,7 @@ by case: ltrgtP xfafb => // ->.
 Qed.
 
 Lemma segment_inc_surj_continuous a b f
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f a, f b]]) :
+    (I := `[a, b]%classic) (J := `[f a, f b]%classic) :
     {in `[a, b] &, {mono f : x y / x <= y}} -> surjective I J f ->
   {in `]a, b[, continuous f}.
 Proof.
@@ -294,7 +291,7 @@ move=> fle f_surj; have [f_inj flt] := (inc_inj_in fle, leW_mono_in fle).
 have [aLb|bLa] := ltP a b; last by move=> z; rewrite itv_ge//= -leNgt.
 have le_ab : a <= b by rewrite ltW.
 have [aab bab] : a \in `[a, b] /\ b \in `[a, b] by rewrite !bound_itvE ltW.
-have fIeqJ : (f @` I) = J  by apply: inc_surj_image_segment.
+have fIeqJ : (f @` I)%classic = J by apply: inc_surj_image_segment.
 pose g := inverse point [set x | x \in `[a, b]] f.
 have fK : {in `[a, b], cancel f g}.
   move=> z zab; apply: injective_left_inverse; rewrite ?inE//.
@@ -329,7 +326,7 @@ by rewrite !glt//= lt_minr lt_maxl !(itvP fxab) ?andbT ltr_subl_addr ltr_spaddr.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma segment_dec_surj_continuous a b f
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in `[f b, f a]]) :
+    (I := `[a, b]%classic) (J := `[f b, f a]%classic) :
     {in `[a, b] &, {mono f : x y /~ x <= y}} -> surjective I J f ->
   {in `]a, b[, continuous f}.
 Proof.
@@ -342,7 +339,7 @@ by move=> y/=; rewrite -oppr_itvcc => /f_surj[x [? /(canRL opprK)->]]; exists x.
 Qed.
 
 Lemma segment_mono_surj_continuous a b f
-    (I := [set z | z \in `[a, b]]) (J := [set z | z \in f @`[a, b]]) :
+    (I := `[a, b]%classic) (J := [set z | z \in f @`[a, b]]%classic) :
     monotonous (mem `[a, b]) f -> surjective I J f ->
   {in `]a, b[, continuous f}.
 Proof.
