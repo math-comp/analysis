@@ -478,11 +478,14 @@ Proof. by rewrite /= oppr0. Qed.
 Lemma oppeK : involutive (A := \bar R) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
 
-Lemma oppeD x r : - (x + r%:E) = - x - r%:E.
-Proof. by move: x => [x| |] //=; rewrite opprD. Qed.
+Lemma oppeD x y : y \is a fin_num -> - (x + y) = - x - y.
+Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
 
 Lemma sube0 x : x - 0 = x.
 Proof. by move: x => [x| |] //; rewrite -subEFin subr0. Qed.
+
+Lemma sub0e x : 0 - x = - x.
+Proof. by move: x => [x| |] //; rewrite -subEFin sub0r. Qed.
 
 Lemma muleC x y : x * y = y * x.
 Proof. by move: x y => [r||] [s||]//=; rewrite -mulEFin mulrC. Qed.
@@ -625,9 +628,11 @@ Proof. by move=> f0 l; elim/big_rec : _ => // t x Pt; apply/adde_ge0/f0. Qed.
 End ERealArithTh_numDomainType.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
 
+Definition maxe {R : realDomainType} (x y : \bar R) : \bar R := Order.join x y.
+
 Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
-Implicit Types (x y z a b : \bar R) (r : R).
+Implicit Types (x y z u a b : \bar R) (r : R).
 
 Lemma mule_ninfty_pinfty : -oo * +oo = -oo :> \bar R.
 Proof. by rewrite /mule /= lte_pinfty. Qed.
@@ -785,9 +790,9 @@ move: x y => [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
 by rewrite !lte_fin; exact: ltr_le_add.
 Qed.
 
-Lemma lee_sub x y z t : x <= y -> t <= z -> x - z <= y - t.
+Lemma lee_sub x y z u : x <= y -> u <= z -> x - z <= y - u.
 Proof.
-move: x y z t => -[x| |] -[y| |] -[z| |] -[t| |] //=;
+move: x y z u => -[x| |] -[y| |] -[z| |] -[u| |] //=;
   rewrite ?(lee_pinfty,lee_ninfty)//.
 by rewrite !lee_fin; exact: ler_sub.
 Qed.
@@ -1042,6 +1047,28 @@ move: x => [x| |] //=.
 - by move=> _; rewrite /mule/= eqe => r1; rewrite lee_pinfty.
 Qed.
 
+Lemma lee_wpmul2r x : 0 <= x -> {homo *%E^~ x : y z / y <= z}.
+Proof.
+move: x => [x|_|//].
+  rewrite lee_fin le_eqVlt => /predU1P[<- y z|x0]; first by rewrite 2!mule0.
+  move=> [y| |] [z| |]//; first by rewrite !lee_fin// ler_pmul2r.
+  - by move=> _; rewrite mulrinfty gtr0_sg// mul1e lee_pinfty.
+  - by move=> _; rewrite mulrinfty gtr0_sg// mul1e lee_ninfty.
+  - by move=> _; rewrite 2!mulrinfty gtr0_sg// 2!mul1e.
+move=> [y| |] [z| |]//.
+- rewrite lee_fin => yz.
+  have [z0|z0|] := ltgtP 0%R z.
+  + by rewrite [in X in _ <= X]mulrinfty gtr0_sg// mul1e lee_pinfty.
+  + rewrite mulrinfty ltr0_sg// ?(le_lt_trans yz)//=.
+    by rewrite [in X in _ <= X]mulrinfty ltr0_sg.
+  + move=> z0; move: yz; rewrite -z0 mul0e le_eqVlt => /predU1P[->|y0].
+      by rewrite mul0e.
+    by rewrite mulrinfty ltr0_sg// mulN1e lee_ninfty.
+  + by move=> _; rewrite mule_pinfty_pinfty lee_pinfty.
+  + by move=> _; rewrite mule_ninfty_pinfty lee_ninfty.
+  + by move=> _; rewrite mule_ninfty_pinfty lee_ninfty.
+Qed.
+
 Lemma ge0_sume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
   (forall i, P i -> 0 <= F i) ->
   (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
@@ -1056,6 +1083,50 @@ Lemma ge0_sume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
   x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
 Proof.
 by move=> F0; rewrite muleC ge0_sume_distrl//; under eq_bigr do rewrite muleC.
+Qed.
+
+Lemma abse_ge0 x : 0 <= `|x|.
+Proof. by move: x => [x| |] /=; rewrite ?lee_pinfty ?lee_fin. Qed.
+
+Lemma lee_abs_add x y : `|x + y| <= `|x|  + `|y|.
+Proof.
+by move: x y => [x| |] [y| |] //; rewrite /abse -addEFin lee_fin ler_norm_add.
+Qed.
+
+Lemma lee_abs_sub x y : `|x - y| <= `|x| + `|y|.
+Proof.
+by move: x y => [x| |] [y| |] //; rewrite /abse -addEFin lee_fin ler_norm_sub.
+Qed.
+
+Lemma gee0_abs x : 0 <= x -> `|x| = x.
+Proof.
+by move: x => [x| |]//; rewrite lee_fin => x0; apply/eqP; rewrite eqe ger0_norm.
+Qed.
+
+Lemma lte0_abs x : x < 0 -> `|x| = - x.
+Proof.
+by move: x => [x| |]//; rewrite lte_fin => x0; apply/eqP; rewrite eqe ltr0_norm.
+Qed.
+
+Lemma lee_maxr x y : x <= maxe y x.
+Proof. by rewrite /maxe; have [|] := leP x y. Qed.
+
+Lemma lee_maxl x y : x <= maxe x y.
+Proof. by rewrite /maxe; have [|] := leP x y. Qed.
+
+Lemma maxe_idPr x y : reflect (maxe y x = x) (y <= x).
+Proof. by rewrite /maxe; apply: join_idPr. Qed.
+
+Lemma maxe_idPl x y : reflect (maxe y x = y) (x <= y).
+Proof. by rewrite /maxe; apply: join_idPl. Qed.
+
+Lemma lee_max x y z : (x <= maxe y z) = (x <= y) || (x <= z).
+Proof. by rewrite /maxe lexU. Qed.
+
+Lemma maxeEFin r1 r2 : maxe r1%:E r2%:E = (Num.Def.maxr r1 r2)%:E.
+Proof.
+by have [ab|ba] := leP r1 r2;
+  [apply/maxe_idPr; rewrite lee_fin|apply/maxe_idPl; rewrite lee_fin ltW].
 Qed.
 
 End ERealArithTh_realDomainType.
@@ -1295,11 +1366,11 @@ by rewrite ltNge; apply/negP.
 Qed.
 
 Lemma lb_ereal_inf_adherent S (e : {posnum R}) :
-  ereal_inf S \is a fin_num-> exists x, S x /\ (x < ereal_inf S + e%:num%:E).
+  ereal_inf S \is a fin_num -> exists x, S x /\ (x < ereal_inf S + e%:num%:E).
 Proof.
 rewrite [in X in X -> _]/ereal_inf fin_numN => /(ub_ereal_sup_adherent e)[x []].
 move=> [y Sy <-]; rewrite -lte_oppr => /lt_le_trans ex; exists y; split => //.
-by apply: ex; rewrite oppeD NEFin oppeK.
+by apply: ex; rewrite oppeD// oppeK.
 Qed.
 
 Lemma ereal_sup_gt S x : x < ereal_sup S -> exists y, S y /\ x < y.

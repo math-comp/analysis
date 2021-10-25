@@ -81,6 +81,11 @@
   + lemma `rat_in_itvoo`
 - in `topology.v`:
   + lemma `dense_rat`
+- in `ereal.v`:
+  + lemmas `abse_ge0`, `lee_abs_add`, `lee_abs_sub`, `gee0_abs`, `lte0_abs`
+  + definition `maxe`
+  + lemams `lee_maxr`, `lee_maxl`, `maxe_idPr`, `maxe_idPl`, `lee_max`, `maxeEFin`
+  + lemmas `sub0e`, `lee_wpmul2r`
 
 ### Changed
 
@@ -121,6 +126,8 @@
   + lemmas `comp_shiftK`, `comp_centerK`, `shift0`, `center0`, `near_shift`,
     `cvg_shift`
 - lemma `exists2P` moved from `topology.v` to `boolp.v`
+- in `ereal.v`:
+  + `oppeD` to use `fin_num`
 
 ### Renamed
 
