@@ -1181,9 +1181,9 @@ suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ i.+1)%:R)%:E) -->
   - exact: is_cvg_ereal_nneg_series.
   - by apply: is_cvg_ereal_nneg_series => ?; rewrite lee_fin divr_ge0.
   - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_def.
-rewrite (_ : (fun n => _) = @EFin _ \o
+rewrite (_ : (fun n => _) = EFin \o
     (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ (i + 1))%:R))%R); last first.
-  rewrite funeqE => n /=; rewrite (@big_morph _ _ (@EFin _) 0 adde)//.
+  rewrite funeqE => n /=; rewrite (@big_morph _ _ EFin 0 adde)//.
   by under [in RHS]eq_bigr do rewrite addn1.
 apply: cvg_comp; last apply cvg_refl.
 have := cvg_geometric_series_half e%:nngnum O.

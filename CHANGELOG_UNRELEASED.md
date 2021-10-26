@@ -82,12 +82,16 @@
 - in `topology.v`:
   + lemma `dense_rat`
 - in `ereal.v`:
-  + lemmas `abse0`, `abse_ge0`, `lee_abs_add`, `lee_abs_sum`, `lee_abs_sub`,
-    `gee0_abs`, `gte0_abs`, `lee_abs`, `lte0_abs`
-  + notation `maxe`
+  + lemmas `abse0`, `abse_ge0`, `lee_abs`, `abse_id`, `lee_abs_add`, `lee_abs_sum`,
+    `lee_abs_sub`, `gee0_abs`, `gte0_abs`, `lee_abs`, `lte0_abs`, `abseM`, `lte_absl`,
+    `eqe_absl`
+  + notations `maxe`, `mine`
   + lemmas `maxEFin`, `adde_maxl`, `adde_maxr`,
     `maxe_pinftyl`, `maxe_pinftyr`, `maxe_ninftyl`, `maxe_ninftyr`
-  + lemmas `sub0e`, `lee_wpmul2r`
+  + lemmas `sub0e`, `lee_wpmul2r`, `mule_ninfty_ninfty`
+  + lemmas `sube_eq` `lte_pmul2r`, `lte_pmul2l`, `lte_nmul2l`, `lte_nmul2r`, `mule_le0`,
+    `pmule_llt0`, `pmule_rlt0`, `nmule_llt0`, `nmule_rlt0`, `mule_lt0`
+  + lemmas `maxeMl`, `maxeMr`
 
 ### Changed
 
