@@ -38,9 +38,6 @@ Reserved Notation "f ^\-" (at level 1, format "f ^\-").
 Reserved Notation "f \|_ D" (at level 10).
 
 Section funpos.
-
-Local Notation "0" := 0%:E : ereal_scope.
-Local Notation "1" := 1%:E : ereal_scope.
 Local Open Scope ereal_scope.
 
 Definition funepos T (R : realDomainType) (f : T -> \bar R) :=
@@ -77,7 +74,7 @@ Lemma funEeposneg T (R : realDomainType) (f : T -> \bar R) :
 Proof.
 apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
 case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
-by case: ltgtP; rewrite /= ?sub0r ?subr0 ?oppr0 ?opprK// => ->.
+by case: ltgtP; rewrite /= ?add0e ?opprK// ?oppr0 ?adde0// => ->.
 Qed.
 
 Lemma normfunEeposneg T (R : realDomainType) (f : T -> \bar R) :
@@ -85,7 +82,7 @@ Lemma normfunEeposneg T (R : realDomainType) (f : T -> \bar R) :
 Proof.
 apply/funext => x; rewrite /funepos /funeneg !maxEle !leEereal/=.
 case: f => [r||]/=; rewrite ?oppr_le0 ?real0//=.
-by case: sgrP => //=; rewrite ?addr0 ?sub0r.
+by case: sgrP => //=; rewrite ?adde0 ?add0e.
 Qed.
 
 Lemma funepos_ge0 T (R : realDomainType) (f : T -> \bar R) :
@@ -131,30 +128,6 @@ Notation "f \|_ D" := (fer f D) : ereal_scope.
 
 Notation "0" := 0%:E : ereal_scope.
 Notation "1" := 1%:E : ereal_scope.
-
-(* NB: PR in progress *)
-Lemma muleC (R : numDomainType) (x y : \bar R) : (x * y = y * x)%E.
-Proof. by case: x y => [r||] [s||]//=; rewrite mulrC. Qed.
-
-Lemma mule1 (R : numDomainType) (x : \bar R) : (x * 1)%E = x.
-Proof. by case: x => [r||]/=; rewrite ?mulr1 ?lee_tofin ?lte_tofin. Qed.
-
-Lemma mul1e (R : numDomainType) (x : \bar R) : (1 * x)%E = x.
-Proof. by rewrite muleC mule1. Qed.
-
-Lemma addeACA (R : numDomainType) : @interchange \bar R +%E +%E.
-Proof. by case=> [r||] [s||] [t||] [u||]//=; rewrite addrACA. Qed.
-
-Lemma abseN (R : numDomainType) (x : \bar R) : (`|- x| = `|x|)%E.
-Proof. by case: x => [r||]; rewrite //= normrN. Qed.
-(* END NB: PR in progress *)
-
-Definition complete_measure (R : realType) (T : measurableType)
-   (mu : set T -> \bar R) :=
-  forall X, mu.-negligible X -> measurable X.
-
-Definition measurable_fun (T U : measurableType) (D : set T) (f : T -> U) : Prop :=
-  forall Y, measurable Y -> measurable ((f @^-1` Y) `&` D).
 
 Module Type INTEGRAL.
 
@@ -497,7 +470,7 @@ Axiom fubini_tonelli : sigma_finite DX mx -> sigma_finite DY my ->
   measurable_fun DX F /\
   integral m D f = integral mx DX F.
 
-Axiom fubini_lebesgue : complete_measure mx -> complete_measure my ->
+Axiom fubini_lebesgue : measure_is_complete mx -> measure_is_complete my ->
   integrable m D f ->
   let F : X -> \bar R := fun x => integral my DY (fun y => f (x, y)) in
   integrable mx DX F /\ Rintegral m D f = Rintegral mx DX F.
