@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
-From mathcomp Require Import seq fintype bigop order ssralg ssrnum finmap.
-From mathcomp Require Import matrix interval.
+From mathcomp Require Import seq fintype bigop order interval ssralg ssrnum rat.
+From mathcomp Require Import matrix finmap.
 Require Import boolp reals classical_sets posnum.
 
 (******************************************************************************)
@@ -4849,3 +4849,12 @@ by exists X; split; [exists x | rewrite -subset0; apply/A].
 Qed.
 
 End density.
+
+Lemma dense_rat (R : realType) : dense (@ratr R @` setT).
+Proof.
+move=> A [r Ar]; rewrite openE => /(_ _ Ar)/nbhs_ballP[_/posnumP[e] reA].
+have /rat_in_itvoo[q /itvP qre] : r < r + e%:num by rewrite ltr_addl.
+exists (ratr q) => //; split; last by exists q.
+apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
+by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
+Qed.

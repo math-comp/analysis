@@ -76,6 +76,11 @@
   + lemmas `segment_can_le_continuous`, `segment_can_ge_continuous`, `segment_can_continuous`
   + lemmas `near_can_continuousAcan_sym`, `near_can_continuous`, `near_continuous_can_sym`
   + lemmas `exp_continuous`, `sqr_continuous`, `sqrt_continuous`.
+- in `reals.v`:
+  + lemma `int_lbound_has_minimum`
+  + lemma `rat_in_itvoo`
+- in `topology.v`:
+  + lemma `dense_rat`
 
 ### Changed
 

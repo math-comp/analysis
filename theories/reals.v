@@ -782,3 +782,79 @@ by move=> ltFxl; exists x=> //; move/lbP : (inf_lower_bound hs) => -> //; exists
 Qed.
 
 End Sup.
+
+Lemma int_lbound_has_minimum (B : set int) i : B !=set0 -> lbound B i ->
+  exists j, B j /\ forall k, B k -> j <= k.
+Proof.
+move=> [i0 Bi0] lbBi; have [n i0in] : exists n, i0 - i = n%:Z.
+  by exists `|i0 - i|%N; rewrite gez0_abs // subr_ge0; exact: lbBi.
+elim: n i lbBi i0in => [i lbBi /eqP|n ih i lbBi i0in1].
+  by rewrite subr_eq0 => /eqP i0i; exists i0; split =>// k Bk; rewrite i0i lbBi.
+have i0i1n : i0 - (i + 1) = n by rewrite opprD addrA i0in1 -addn1 PoszD addrK.
+have [?|/not_forallP] := pselect (lbound B (i + 1)); first exact: (ih (i + 1)).
+move=> /contrapT[x /not_implyP[Bx i1x]]; exists x; split => // k Bk.
+rewrite (le_trans _ (lbBi _ Bk)) //.
+by move/negP : i1x; rewrite -ltNge ltz_addr1.
+Qed.
+
+Section rat_in_itvoo.
+
+Let bound_div (R : archiFieldType) (x y : R) : nat :=
+  if y < 0 then 0%N else Num.bound (y / x).
+
+Let archi_bound_divP (R : archiFieldType) (x y : R) :
+  0 < x -> y < x *+ bound_div x y.
+Proof.
+move=> x0; have [y0|y0] := leP 0 y; last by rewrite /bound_div y0 mulr0n.
+rewrite /bound_div (ltNge y 0) y0/= -mulr_natl -ltr_pdivr_mulr//.
+by rewrite archi_boundP// (divr_ge0 _(ltW _)).
+Qed.
+
+Lemma rat_in_itvoo (R : realType) (x y : R) :
+  x < y -> exists q, ratr q \in `]x, y[.
+Proof.
+move=> xy; move: (xy); rewrite -subr_gt0.
+move=> /(archi_bound_divP 1); set n := bound_div _ _ => nyx.
+have [m1 m1nx] : exists m1, m1.+1%:~R > x *+ n.
+  have := archi_bound_divP (x *+ n) ltr01; set p := bound_div _ _ => nxp.
+  have [x0|x0] := ltP 0 x.
+    exists p.-1; rewrite prednK // lt0n; apply: contraPN nxp => /eqP ->.
+    by apply/negP; rewrite -leNgt mulrn_wge0 // ltW.
+  by exists 0%N; rewrite (le_lt_trans _ ltr01) // mulrn_wle0.
+have [m2 m2nx] : exists m2, m2.+1%:~R > - x *+ n.
+  have := archi_bound_divP (- x *+ n) ltr01; set p := bound_div _ _ => nxp.
+  have [x0|x0] := ltP 0 x.
+    by exists O; rewrite (le_lt_trans _ ltr01) // nmulrn_rle0// oppr_lt0.
+  exists p.-1; rewrite prednK // -(ltr_nat R) (le_lt_trans _ nxp) //.
+  by rewrite mulrn_wge0 // oppr_ge0.
+have : exists m, -(m2.+1 : int) <= m <= m1.+1 /\ m%:~R - 1 <= x *+ n < m%:~R.
+  have m2m1 : - (m2.+1 : int) < m1.+1.
+    by rewrite -(ltr_int R) (lt_trans _ m1nx)// rmorphN /= ltr_oppl // -mulNrn.
+  pose B := [set m : int | m%:~R > x *+ n].
+  have m1B : B m1.+1 by [].
+  have m2B : lbound B (- m2.+1%:~R).
+    move=> i; rewrite /B /= -(opprK (x *+ n)) -ltr_oppl -mulNrn => nxi.
+    rewrite -(mulN1r m2.+1%:~R) mulN1r -ler_oppl.
+    by have := lt_trans nxi m2nx; rewrite intz -mulrNz ltr_int => /ltW.
+  have [m [Bm infB]] := int_lbound_has_minimum (ex_intro _ _ m1B) m2B.
+  have mN1B : ~ B (m - 1).
+    by move=> /infB; apply/negP; rewrite -ltNge ltr_subl_addr ltz_addr1.
+  exists m; split; [apply/andP; split|apply/andP; split] => //.
+  - by move: m2B; rewrite /lbound /= => /(_ _ Bm); rewrite intz.
+  - exact: infB.
+  - by rewrite leNgt; apply/negP; rewrite /B /= intrD in mN1B.
+move=> [m [/andP[m2m mm1] /andP[mnx nxm]]].
+have [/andP[a b] c] : x *+ n < m%:~R <= 1 + x *+ n /\ 1 + x *+ n < y *+ n.
+  split; [apply/andP; split|] => //; first by rewrite -ler_subl_addl.
+  by move: nyx; rewrite mulrnDl -ltr_subr_addr mulNrn.
+have n_gt0 : n != 0%N by apply: contraTN nyx => /eqP ->; rewrite mulr0n ltr10.
+exists (m%:Q / n%:Q); rewrite in_itv /=; apply/andP; split.
+  rewrite rmorphM (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
+  rewrite ltr_pdivl_mulr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
+  by rewrite mulrC // !ratr_int mulr_natl.
+rewrite rmorphM /= (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
+rewrite ltr_pdivr_mulr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
+by rewrite 2!ratr_int mulr_natr (le_lt_trans _ c).
+Qed.
+
+End rat_in_itvoo.
