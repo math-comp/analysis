@@ -5389,8 +5389,8 @@ Qed.
 Lemma dense_rat (R : realType) : dense (@ratr R @` setT).
 Proof.
 move=> A [r Ar]; rewrite openE => /(_ _ Ar)/nbhs_ballP[_/posnumP[e] reA].
-have /rat_in_itvoo[q /itvP qre] : r < r + e%:num by rewrite ltr_addl.
-exists (ratr q) => //; split; last by exists q.
+have /rat_in_itvoo[q] : r < r + e%:num by rewrite ltr_addl.
+rewrite inE /= => /itvP qre; exists (ratr q) => //; split; last by exists q.
 apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
 by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
 Qed.
