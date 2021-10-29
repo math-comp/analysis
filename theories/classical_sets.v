@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg matrix finmap order.
 From mathcomp Require Import ssrnum ssrint interval.
 Require Import boolp.
@@ -59,11 +60,17 @@ Require Import boolp.
 (*                   f @^-1` A == preimage of A by f.                         *)
 (*                      f @` A == image of A by f. Notation for `image A f`.  *)
 (*                    A !=set0 := exists x, A x.                              *)
-(*                    [set` i] == a classical set corresponding to the        *)
-(*                                interval i; in the scope                    *)
-(*                                classical_set_scope, `[a, b], `]a, b], etc. *)
-(*                                correspond to [set` `[a, b]],               *)
-(*                                [set` `]a, b]], etc. respectively.          *)
+(*                    [set` p] == a classical set corresponding to the        *)
+(*                                predType p                                  *)
+(*                     `[a, b] := [set` `[a, b]], i.e., a classical set       *)
+(*                                corresponding to the interval `[a, b].      *)
+(*                     `]a, b] := [set` `]a, b]]                              *)
+(*                     `[a, b[ := [set` `[a, b[]                              *)
+(*                     `]a, b[ := [set` `]a, b[]                              *)
+(*                   `]-oo, b] := [set` `]-oo, b]]                            *)
+(*                   `]-oo, b[ := [set` `]-oo, b[]                            *)
+(*                   `[a, +oo[ := [set` `[a, +oo[]                            *)
+(*                   `]a, +oo[ := [set` `]a, +oo[]                            *)
 (*               is_subset1 A <-> A contains only 1 element.                  *)
 (*                   is_fun f <-> for each a, f a contains only 1 element.    *)
 (*                 is_total f <-> for each a, f a is non empty.               *)
@@ -171,6 +178,7 @@ Reserved Notation "A `<=>` B" (at level 70, no associativity).
 Reserved Notation "f @^-1` A" (at level 24).
 Reserved Notation "f @` A" (at level 24).
 Reserved Notation "A !=set0" (at level 80).
+Reserved Notation "[ 'set`' p ]" (at level 0, format "[ 'set`'  p ]").
 Reserved Notation "[ 'disjoint' A & B ]" (at level 0,
   format "'[hv' [ 'disjoint' '/  '  A '/'  &  B ] ']'").
 Reserved Notation "f \|_ D" (at level 10).
@@ -310,28 +318,27 @@ Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
 Notation "f @` A" := (image A f) (only parsing) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) : classical_set_scope.
 
-Notation "[set` p ]":= [set x | x \in p]
-  (format "[set`  p ]") : classical_set_scope.
+Notation "[ 'set`' p ]":= [set x | x \in p] : classical_set_scope.
 Notation set_itv := (fun i => [set` i]).
 
-Notation "`[ a , b ]" := [set` Interval (BLeft a) (BRight b)]
-  (at level 0, a, b at level 9 , format "`[ a ,  b ]") : classical_set_scope.
-Notation "`] a , b ]" := [set` Interval (BRight a) (BRight b)]
-  (at level 0, a, b at level 9 , format "`] a ,  b ]") : classical_set_scope.
-Notation "`[ a , b [" := [set` Interval (BLeft a) (BLeft b)]
-  (at level 0, a, b at level 9 , format "`[ a ,  b [") : classical_set_scope.
-Notation "`] a , b [" := [set` Interval (BRight a) (BLeft b)]
-  (at level 0, a, b at level 9 , format "`] a ,  b [") : classical_set_scope.
-Notation "`] '-oo' , b ]" := [set` Interval -oo%O (BRight b)]
-  (at level 0, b at level 9 , format "`] '-oo' ,  b ]") : classical_set_scope.
-Notation "`] '-oo' , b [" := [set` Interval -oo%O (BLeft b)]
-  (at level 0, b at level 9 , format "`] '-oo' ,  b [") : classical_set_scope.
-Notation "`[ a , '+oo' [" := [set` Interval (BLeft a) +oo%O]
-  (at level 0, a at level 9 , format "`[ a ,  '+oo' [") : classical_set_scope.
-Notation "`] a , '+oo' [" := [set` Interval (BRight a) +oo%O]
-  (at level 0, a at level 9 , format "`] a ,  '+oo' [") : classical_set_scope.
-Notation "`] -oo , '+oo' [" := [set` Interval -oo%O +oo%O]
-  (at level 0, format "`] -oo ,  '+oo' [") : classical_set_scope.
+Notation "`[ a , b ]" :=
+  [set` Interval (BLeft a) (BRight b)] : classical_set_scope.
+Notation "`] a , b ]" :=
+  [set` Interval (BRight a) (BRight b)] : classical_set_scope.
+Notation "`[ a , b [" :=
+  [set` Interval (BLeft a) (BLeft b)] : classical_set_scope.
+Notation "`] a , b [" :=
+  [set` Interval (BRight a) (BLeft b)] : classical_set_scope.
+Notation "`] '-oo' , b ]" :=
+  [set` Interval -oo%O (BRight b)] : classical_set_scope.
+Notation "`] '-oo' , b [" :=
+  [set` Interval -oo%O (BLeft b)] : classical_set_scope.
+Notation "`[ a , '+oo' [" :=
+  [set` Interval (BLeft a) +oo%O] : classical_set_scope.
+Notation "`] a , '+oo' [" :=
+  [set` Interval (BRight a) +oo%O] : classical_set_scope.
+Notation "`] -oo , '+oo' [" :=
+  [set` Interval -oo%O +oo%O] : classical_set_scope.
 
 Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
   [set x | P x] = [set x | Q x].

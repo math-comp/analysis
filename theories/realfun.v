@@ -206,8 +206,7 @@ by move=> x y /itvxxP<- /itvxxP<-; rewrite !lexx.
 Qed.
 
 Lemma segment_continuous_surjective a b f
-    (I :=`[a, b]%classic)
-    (J := [set z | z \in f @`[a, b]]%classic) :
+    (I :=`[a, b]%classic) (J := [set` f @`[a, b]]%classic) :
   a <= b -> {in `[a, b], continuous f} -> surjective I J f.
 Proof. by rewrite /I /J => le_ab fct y/= /IVT[]// x; exists x. Qed.
 
@@ -228,7 +227,7 @@ by rewrite (min_idPr _)// (max_idPl _).
 Qed.
 
 Lemma continuous_inj_image_segment a b f
-    (I := `[a, b]%classic) (J := [set z | z \in f @`[a, b]]%classic) :
+    (I := `[a, b]%classic) (J := [set` f @`[a, b]]%classic) :
     a <= b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
   (f @` I)%classic = J.
 Proof.
@@ -238,7 +237,7 @@ exact: segment_continuous_surjective.
 Qed.
 
 Lemma continuous_inj_image_segmentP a b f
-    (I := `[a, b]%classic) (J := [set z | z \in f @`[a, b]]%classic) :
+    (I := `[a, b]%classic) (J := [set` f @`[a, b]]%classic) :
     a <= b -> {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
 Proof.
@@ -339,7 +338,7 @@ by move=> y/=; rewrite -oppr_itvcc => /f_surj[x [? /(canRL opprK)->]]; exists x.
 Qed.
 
 Lemma segment_mono_surj_continuous a b f
-    (I := `[a, b]%classic) (J := [set z | z \in f @`[a, b]]%classic) :
+    (I := `[a, b]%classic) (J := [set` f @`[a, b]]%classic) :
     monotonous (mem `[a, b]) f -> surjective I J f ->
   {in `]a, b[, continuous f}.
 Proof.
