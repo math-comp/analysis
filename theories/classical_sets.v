@@ -847,32 +847,41 @@ Lemma eq_bigcap P Q F G : P `<=>` Q -> (forall i, P i -> F i = G i) ->
   \bigcap_(i in P) F i = \bigcap_(i in Q) G i.
 Proof. by move=> /eq_bigcapl<- /eq_bigcapr->. Qed.
 
+Lemma bigcupU P F G : \bigcup_(i in P) (F i `|` G i) =
+  (\bigcup_(i in P) F i) `|` (\bigcup_(i in P) G i).
+Proof.
+apply/predeqP => x; split=> [[i Pi [Fix|Gix]]|[[i Pi Fix]|[i Pi Gix]]];
+  by [left; exists i|right; exists i|exists i =>//; left|exists i =>//; right].
+Qed.
+
+Lemma bigcapI P F G : \bigcap_(i in P) (F i `&` G i) =
+  (\bigcap_(i in P) F i) `&` (\bigcap_(i in P) G i).
+Proof.
+apply: setC_inj; rewrite !(setCI, setC_bigcap) -bigcupU.
+by apply: eq_bigcupr => *; rewrite setCI.
+Qed.
+
+Lemma bigcup_const P A : P !=set0 -> \bigcup_(_ in P) A = A.
+Proof. by case=> j ?; rewrite predeqE => x; split=> [[i //]|Ax]; exists j. Qed.
+
+Lemma bigcap_const P A : P !=set0 -> \bigcap_(_ in P) A = A.
+Proof. by move=> PN0; apply: setC_inj; rewrite setC_bigcap bigcup_const. Qed.
+
 Lemma bigcapIl P F A : P !=set0 ->
   \bigcap_(i in P) (F i `&` A) = \bigcap_(i in P) F i `&` A.
-Proof.
-move=> [i Di]; rewrite predeqE => a; split=> [IfIAa|[Ifa Aa] j Dj]; last first.
-  by split=> //; apply: Ifa.
-by split=> [j /IfIAa [] | ] //; have /IfIAa [] := Di.
-Qed.
+Proof. by move=> PN0; rewrite bigcapI bigcap_const. Qed.
 
 Lemma bigcapIr P F A : P !=set0 ->
   \bigcap_(i in P) (A `&` F i) = A `&` \bigcap_(i in P) F i.
-Proof.
-by move=> PN0; rewrite setIC -bigcapIl//; under eq_bigcapr do rewrite setIC.
-Qed.
+Proof. by move=> PN0; rewrite bigcapI bigcap_const. Qed.
 
 Lemma bigcupUl P F A : P !=set0 ->
   \bigcup_(i in P) (F i `|` A) = \bigcup_(i in P) F i `|` A.
-Proof.
-move=> PN0; apply: setC_inj; rewrite setCU !setC_bigcup -bigcapIl//.
-by under eq_bigcapr do rewrite setCU.
-Qed.
+Proof. by move=> PN0; rewrite bigcupU bigcup_const. Qed.
 
 Lemma bigcupUr P F A : P !=set0 ->
   \bigcup_(i in P) (A `|` F i) = A `|` \bigcup_(i in P) F i.
-Proof.
-by move=> PN0; rewrite setUC -bigcupUl//; under eq_bigcupr do rewrite setUC.
-Qed.
+Proof. by move=> PN0; rewrite bigcupU bigcup_const. Qed.
 
 Lemma bigcup_set0 F : \bigcup_(i in set0) F i = set0.
 Proof. by rewrite eqEsubset; split => a // []. Qed.
@@ -922,22 +931,6 @@ split=> [|/bigcapT//]; rewrite -subTset => FT i Pi; rewrite -subTset.
 by move=> t _; apply: FT.
 Qed.
 
-Lemma bigcupD1 j P F : P j ->
-  \bigcup_(i in P) F i = F j `|` \bigcup_(i in P `&` ~` [set j]) F i.
-Proof.
-move=> Pj; rewrite predeqE => t; split=> [[i Pi Fit]|[Fjt|]].
-- by have [<-|ij] := pselect (i = j); [left | right; exists i].
-- by exists j.
-- by move=> [i [Pi ij] Fit]; exists i.
-Qed.
-
-Lemma bigcapD1 j P F : P j ->
-  \bigcap_(i in P) F i = F j `&` \bigcap_(i in P `&` ~` [set j]) F i.
-Proof.
-move=> Pj; rewrite -[RHS]setCK setCI setC_bigcap -bigcupD1 //.
-by rewrite -setC_bigcap setCK.
-Qed.
-
 Lemma setI_bigcupr F P A :
   A `&` \bigcup_(i in P) F i = \bigcup_(i in P) (A `&` F i).
 Proof.
@@ -980,20 +973,25 @@ Proof.
 by rewrite eqEsubset; split=>[a [i ?]->| a [i ?]<-]; [apply: imageP | exists i].
 Qed.
 
+Lemma bigcup_setU F (X Y : set I) :
+  \bigcup_(i in X `|` Y) F i = \bigcup_(i in X) F i `|` \bigcup_(i in Y) F i.
+Proof.
+rewrite predeqE => t; split=> [[z]|].
+  by move=> [Xz|Yz]; [left|right]; exists z.
+by move=> [[z Xz Fzy]|[z Yz Fxz]]; exists z => //; [left|right].
+Qed.
+
+Lemma bigcap_setU F (X Y : set I) :
+  \bigcap_(i in X `|` Y) F i = \bigcap_(i in X) F i `&` \bigcap_(i in Y) F i.
+Proof. by apply: setC_inj; rewrite !(setCI, setC_bigcap) bigcup_setU. Qed.
+
 Lemma bigcup_setU1 F (x : I) (X : set I) :
   \bigcup_(i in x |` X) F i = F x `|` \bigcup_(i in X) F i.
-Proof.
-rewrite predeqE => y; split=> [[z]|].
-  by move=> [<-|Xz]; [left|right; exists z].
-by move=> [Fxy|[z Xz Fzy]]; [exists x => //; left|exists z => //; right].
-Qed.
+Proof. by rewrite bigcup_setU bigcup_set1. Qed.
 
 Lemma bigcap_setU1 F (x : I) (X : set I) :
   \bigcap_(i in x |` X) F i = F x `&` \bigcap_(i in X) F i.
-Proof.
-rewrite predeqE => y; split=> [Fy|[Fxy Fy] z [->|/Fy]]//.
-by split=> [|z Xz]; apply: Fy; [left|right].
-Qed.
+Proof. by rewrite bigcap_setU bigcap_set1. Qed.
 
 Lemma bigcup_setD1 (x : I) F (X : set I) : X x ->
   \bigcup_(i in X) F i = F x `|` \bigcup_(i in X `\ x) F i.
@@ -1002,6 +1000,14 @@ Proof. by move=> Xx; rewrite -bigcup_setU1 setD1K. Qed.
 Lemma bigcap_setD1 (x : I) F (X : set I) : X x ->
   \bigcap_(i in X) F i = F x `&` \bigcap_(i in X `\ x) F i.
 Proof. by move=> Xx; rewrite -bigcap_setU1 setD1K. Qed.
+
+Lemma setC_bigsetU U (s : seq T) (f : T -> set U) (P : pred T) :
+   (~` \big[setU/set0]_(t <- s | P t) f t) = \big[setI/setT]_(t <- s | P t) ~` f t.
+Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setC0 ?setCU. Qed.
+
+Lemma setC_bigsetI U (s : seq T) (f : T -> set U) (P : pred T) :
+   (~` \big[setI/setT]_(t <- s | P t) f t) = \big[setU/set0]_(t <- s | P t) ~` f t.
+Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setCT ?setCI. Qed.
 
 End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.
@@ -1031,12 +1037,7 @@ Qed.
 Lemma bigcap_fset {I : choiceType} {U : Type}
     (F : I -> set U) (X : {fset I}) :
   \bigcap_(i in [set i | i \in X]) F i = \big[setI/setT]_(i <- X) F i :> set U.
-Proof.
-elim/finSet_rect: X => X IHX; have [->|[x xX]] := fset_0Vmem X.
-  by rewrite big_seq_fset0 -subTset.
-rewrite -(fsetD1K xX) set_fsetU set_fset1 big_fsetU1 ?inE ?eqxx//=.
-by rewrite bigcap_setU1 IHX// fproperD1.
-Qed.
+Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_fset. Qed.
 
 Lemma bigcup_fsetU1 {T U : choiceType} (F : T -> set U) (x : T) (X : {fset T}) :
   \bigcup_(i in [set j | j \in x |` X]%fset) F i =
@@ -1087,14 +1088,6 @@ rewrite -(bigcup_set_cond s f xpredT); congr (\bigcup_(t in mkset _) _).
 by rewrite funeqE => t; rewrite andbT.
 Qed.
 
-Lemma setC_bigsetU (s : seq T) (f : T -> set U) (P : pred T) :
-   (~` \big[setU/set0]_(t <- s | P t) f t) = \big[setI/setT]_(t <- s | P t) ~` f t.
-Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setC0 ?setCU. Qed.
-
-Lemma setC_bigsetI (s : seq T) (f : T -> set U) (P : pred T) :
-   (~` \big[setI/setT]_(t <- s | P t) f t) = \big[setU/set0]_(t <- s | P t) ~` f t.
-Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setCT ?setCI. Qed.
-
 Lemma bigcap_set_cond (s : seq T) (f : T -> set U) (P : pred T) :
   \bigcap_(t in [set x | (x \in s) && P x]) (f t) =
   \big[setI/setT]_(t <- s | P t) (f t).
@@ -1110,24 +1103,6 @@ Section bigop_nat_lemmas.
 Context {T : Type}.
 Implicit Types (A : set T) (F : nat -> set T).
 
-Lemma bigcup_splitn n F :
-  \bigcup_i F i = \big[setU/set0]_(i < n) F i `|` \bigcup_i F (n + i)%N.
-Proof.
-elim: n => [|n ih]; first by rewrite big_ord0 set0U.
-rewrite ih big_ord_recr /= -setUA; congr (_ `|` _).
-rewrite predeqE => t; split => [[[|m] _ At]|[At|[i _ At]]].
-- by left; rewrite addn0 in At.
-  by right; exists m => //; rewrite addSnnS.
-- by exists 0%N => //; rewrite addn0.
-  by exists i.+1 => //; rewrite -addSnnS.
-Qed.
-
-Lemma bigcap_splitn n F :
-  \bigcap_i F i = \big[setI/setT]_(i < n) F i `&` \bigcap_i F (n + i)%N.
-Proof.
-by apply: setC_inj; rewrite setCI !setC_bigcap (bigcup_splitn n) setC_bigsetI.
-Qed.
-
 Lemma bigcup_mkord n F :
   \bigcup_(i in [set k | (k < n)%N]) F i = \big[setU/set0]_(i < n) F i.
 Proof.
@@ -1138,6 +1113,21 @@ Qed.
 Lemma bigcap_mkord n F :
   \bigcap_(i in [set k | (k < n)%N]) F i = \big[setI/setT]_(i < n) F i.
 Proof. by apply: setC_inj; rewrite setC_bigsetI setC_bigcap bigcup_mkord. Qed.
+
+Lemma bigcup_splitn n F :
+  \bigcup_i F i = \big[setU/set0]_(i < n) F i `|` \bigcup_i F (n + i)%N.
+Proof.
+rewrite -bigcup_mkord -(bigcup_image _ (addn n)) -bigcup_setU.
+apply: eq_bigcupl; split=> // k _.
+have [ltkn|lenk] := ltnP k n; [left => //|right].
+by exists (k - n); rewrite // subnKC.
+Qed.
+
+Lemma bigcap_splitn n F :
+  \bigcap_i F i = \big[setI/setT]_(i < n) F i `&` \bigcap_i F (n + i)%N.
+Proof.
+by apply: setC_inj; rewrite setCI !setC_bigcap (bigcup_splitn n) setC_bigsetI.
+Qed.
 
 Lemma subset_bigsetU F :
   {homo (fun n => \big[setU/set0]_(i < n) F i) : n m / (n <= m)%N >-> n `<=` m}.

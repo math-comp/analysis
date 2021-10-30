@@ -12,14 +12,15 @@
   + lemma `setIidPr`, `setIidl` and `setIidr`,
   + lemma `set_fset0`, `set_fset1`, `set_fsetI`, `set_fsetU`,
   + lemma `bigcap_inf`, `subset_bigcup_r`, `subset_bigcap_r`,
-  `eq_bigcupl`, `eq_bigcapl`, `eq_bigcup`, `eq_bigcap`, `bigcapIr`,
-  `bigcupUr`, `bigcap_set0`, `bigcap_set1`, `bigcap0`, `bigcapT`,
-  `bigcupT`, `bigcapTP`, `setI_bigcupl`, `setU_bigcapl`,
-  `bigcup_mkcond`, `bigcap_mkcond`, `setC_bigsetU`, `setC_bigsetI`,
-  `bigcap_set_cond`, `bigcap_set`, `bigcap_split`, `bigcap_mkord`,
-  `subset_bigsetI`, `subset_bigsetI_cond`, `bigcap_image`
-  + lemmas `bigcup_setU1`, `bigcap_setU1`, `bigcup_setD1`,
-    `bigcap_setD1`, `bigcup_fset`, `bigcap_fset`, `bigcup_fsetU1`,
+    `eq_bigcupl`, `eq_bigcapl`, `eq_bigcup`, `eq_bigcap`, `bigcupU`,
+    `bigcapI`, `bigcup_const`, `bigcap_const`, `bigcapIr`, `bigcupUr`,
+    `bigcap_set0`, `bigcap_set1`, `bigcap0`, `bigcapT`, `bigcupT`,
+    `bigcapTP`, `setI_bigcupl`, `setU_bigcapl`, `bigcup_mkcond`,
+    `bigcap_mkcond`, `setC_bigsetU`, `setC_bigsetI`,
+    `bigcap_set_cond`, `bigcap_set`, `bigcap_split`, `bigcap_mkord`,
+    `subset_bigsetI`, `subset_bigsetI_cond`, `bigcap_image`
+  + lemmas `bigcup_setU1`, `bigcap_setU1`, `bigcup_setU`,
+    `bigcap_setU`, `bigcup_fset`, `bigcap_fset`, `bigcup_fsetU1`,
     `bigcap_fsetU1`, `bigcup_fsetD1`, `bigcap_fsetD1`,
   + defintion `mem_set : A u -> u \in A`
   + lemma `forall_sig`
@@ -113,6 +114,8 @@
   + removed spurious disjunction in `bigcup0P`
   + `bigcup_ord` -> `bigcup_mkord` and reversed
   + `bigcup_of_set1` -> `bigcup_imset1`
+  + `bigcupD1` -> `bigcup_setD1` and `bigcapD1` -> `bigcap_setD1` and
+    rephrased using ``P `\ x`` instead of ``P `&` ~` [set x]``
 - `exist_congr` -> `eq_exist` and moved from `classsical_sets.v` to
   `boolp.v`
 
