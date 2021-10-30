@@ -167,6 +167,9 @@ Reserved Notation "f @` A" (at level 24).
 Reserved Notation "A !=set0" (at level 80).
 Reserved Notation "[ 'disjoint' A & B ]" (at level 0,
   format "'[hv' [ 'disjoint' '/  '  A '/'  &  B ] ']'").
+Reserved Notation "f \|_ D" (at level 10).
+Reserved Notation "F `#` G"
+ (at level 48, left associativity, format "F  `#`  G").
 
 Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
 Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
@@ -1319,6 +1322,79 @@ Proof. exact: (xgetPN point). Qed.
 
 End PointedTheory.
 
+Definition patch {U: Type} {V} (dflt : U -> V) (A : set U) (f : U -> V) u :=
+  if u \in A then f u else dflt u.
+
+Notation restrict := (patch (fun=> point)).
+Notation "f \|_ D" := (restrict D) : fun_scope.
+
+Definition restrict_dep {U V} (A : set U) (f : U -> V)
+  (u : { x : U | x \in A }) : V := f (projT1 u).
+Arguments restrict_dep {U V} A.
+
+Definition extend_dep {U} {V : pointedType} {A : set U}
+    (f : {x | x \in A } -> V) (u : U) :=
+  if pselect (u \in A) is left w then f (exist _ u w) else point.
+
+Lemma restrict_depE T T' (B : set T) x (f : T -> T') (xB : B x) :
+  restrict_dep B f (exist _ x (mem_set xB)) = f x.
+Proof. done. Qed.
+Arguments restrict_depE {T T'} B x.
+
+Lemma in_setP {U} (A : set U) (P : U -> Prop) :
+  {in A, forall x, P x} <-> forall x, A x -> P x.
+Proof. by split=> AP x; have := AP x; rewrite inE. Qed.
+
+Lemma in_set2P {U V} (A : set U) (B : set V) (P : U -> V -> Prop) :
+  {in A & B, forall x y, P x y} <-> (forall x y, A x -> B y -> P x y).
+Proof. by split=> AP x y; have := AP x y; rewrite !inE. Qed.
+
+Lemma fun_eq_inP {U V} (f g : U -> V) (A : set U) :
+  {in A, f =1 g} <-> restrict_dep A f = restrict_dep A g.
+Proof.
+split=> [eq_f_g | Rfg u uA]; first by apply/funext => -[x]; apply: eq_f_g.
+by have := congr1 (@^~ (exist _ u uA)) Rfg.
+Qed.
+
+Section Restrictions.
+Context {U : Type} {V : pointedType} (A : set U).
+
+Local Notation extend_dep := (@extend_dep U V A).
+Local Notation restrict_dep := (@restrict_dep U V A).
+Local Notation restrict := (restrict A).
+
+Open Scope fun_scope.
+
+Lemma extend_restrict_dep : extend_dep \o restrict_dep = restrict.
+Proof.
+rewrite funeq2E => f u /=; rewrite /restrict_dep /restrict /extend_dep /patch.
+by case: pselect => [/= ->//|/negP/negbTE ->].
+Qed.
+
+Lemma extend_depK : cancel extend_dep restrict_dep.
+Proof.
+move=> f; rewrite funeqE => -[x /= xA].
+rewrite /restrict /patch /extend_dep /restrict_dep /=.
+by case: pselect => // xA'; congr (f (exist _ _ _)); apply: Prop_irrelevance.
+Qed.
+
+Lemma restrict_extend_dep : restrict_dep \o extend_dep = id.
+Proof. exact/funext/extend_depK. Qed.
+
+Lemma restrict_dep_restrict : restrict_dep \o restrict = restrict_dep.
+Proof.
+rewrite funeq2E => f -[u Au] /=.
+by rewrite /restrict_dep /restrict /extend_dep /patch /= Au.
+Qed.
+
+Lemma restrict_dep_setT : [set of restrict_dep] = setT.
+Proof.
+rewrite eqEsubset; split=> //= f _; exists (extend_dep f)=>//.
+exact: extend_depK.
+Qed.
+
+End Restrictions.
+
 Section partitions.
 
 Definition trivIset T I (D : set I) (F : I -> set T) :=
@@ -1709,9 +1785,6 @@ Qed.
 
 Definition meets T (F G : set (set T)) :=
   forall A B, F A -> G B -> A `&` B !=set0.
-
-Reserved Notation "F `#` G"
- (at level 48, left associativity, format "F  `#`  G").
 
 Notation "F `#` G" := (meets F G) : classical_set_scope.
 

@@ -22,8 +22,48 @@
   + lemmas `bigcup_setU1`, `bigcap_setU1`, `bigcup_setU`,
     `bigcap_setU`, `bigcup_fset`, `bigcap_fset`, `bigcup_fsetU1`,
     `bigcap_fsetU1`, `bigcup_fsetD1`, `bigcap_fsetD1`,
-  + defintion `mem_set : A u -> u \in A`
+  + definition `mem_set : A u -> u \in A`
+  + lemmas `in_setP` and `in_set2P`
   + lemma `forall_sig`
+
+  + definition `patch`, notation `restrict` and `f \_ D`, definitions
+    `restrict_dep` and `extend_dep`, with lemmas `restrict_depE`,
+    `fun_eq_inP`, `extend_restrict_dep`, `extend_depK`,
+    `restrict_extend_dep`, `restrict_dep_restrict`,
+    `restrict_dep_setT`
+
+- in `topology.v`:
+  + lemma `fmap_comp`
+  + definition `finSubCover`
+  + notations ``{uniform` A -> V }`` and `{uniform U -> V}` and their
+    canonical structures of uniform type.
+  + definition `uniform_fun` to cast into
+  + notations `{uniform A, F --> f }` and `{uniform, F --> f}`
+  + lemma `uniform_cvgE`
+  + lemma `uniform_nbhs`
+  + notation `{ptws U -> V}` and its canonical structure of
+    topological type,
+  + definition `ptws_fun`
+  + notation `{ptws F --> f }`
+  + lemma `ptws_cvgE`
+  + lemma `ptws_uniform_cvg`
+  + lemma `cvg_restrict_dep`
+  + lemma `eq_in_close`
+  + lemma `hausdorrf_close_eq_in`
+  + lemma `uniform_subset_nbhs`
+  + lemma `uniform_subset_cvg`
+  + lemma `uniform_restrict_cvg`
+  + lemma `cvg_uniformU`
+  + lemma `cvg_uniform_set0`
+  + notation `{family fam, U -> V}` and its canonical structure of
+    topological type
+  + notation `{family fam, F --> f}`
+  + lemma `fam_cvgP`
+  + lemma `fam_cvgE`
+  + definition `compactly_in`
+  + lemma `family_cvg_subset`
+  + lemma `family_cvg_finite_covers`
+  + lemma `compact_cvg_within_compact`
 
 - in `classical_sets.v`:
   + lemmas `bigcup_image`, `bigcup_of_set1`, `set_fset0`, `set_fset1`, `set_fsetI`,
