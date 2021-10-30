@@ -574,7 +574,7 @@ Arguments ler_bigmax_cond {d T I P F}.
 Arguments bigmax_eq_arg {d T I} i0 {P F}.
 Arguments eq_bigmax {d T I} i0 {P F}.
 
-Definition monotonous d (T : porderType d) (A : {pred T}) (f : T -> T) :=
+Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
   {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
 
 Lemma and_prop_in (T : Type) (p : mem_pred T) (P Q : T -> Prop) :
@@ -1763,8 +1763,8 @@ Proof. by rewrite nbhsE => p_A; exists A; split. Qed.
 Lemma interiorI (A B:set T): (A `&` B)^° = A^° `&` B^°.
 Proof.
 rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 [?]] | []].
-- by rewrite subsetI => // -[? ?]; split; rewrite nbhsE; exists B0.
-- rewrite nbhsE => -[B0 [? ?]] [B1 [? ?]]; exists (B0 `&` B1); split;
+- by rewrite subsetI => // -[? ?]; split; exists B0.
+- move=> -[B0 [? ?]] [B1 [? ?]]; exists (B0 `&` B1); split;
   [exact: open_nbhsI | by rewrite subsetI; split; apply: subIset; [left|right]].
 Qed.
 

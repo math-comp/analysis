@@ -1,4 +1,6 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg matrix finmap order.
+From mathcomp Require Import ssrnum ssrint interval.
 Require Import boolp.
 
 (******************************************************************************)
@@ -58,6 +60,17 @@ Require Import boolp.
 (*                   f @^-1` A == preimage of A by f.                         *)
 (*                      f @` A == image of A by f. Notation for `image A f`.  *)
 (*                    A !=set0 := exists x, A x.                              *)
+(*                    [set` p] == a classical set corresponding to the        *)
+(*                                predType p                                  *)
+(*                     `[a, b] := [set` `[a, b]], i.e., a classical set       *)
+(*                                corresponding to the interval `[a, b].      *)
+(*                     `]a, b] := [set` `]a, b]]                              *)
+(*                     `[a, b[ := [set` `[a, b[]                              *)
+(*                     `]a, b[ := [set` `]a, b[]                              *)
+(*                   `]-oo, b] := [set` `]-oo, b]]                            *)
+(*                   `]-oo, b[ := [set` `]-oo, b[]                            *)
+(*                   `[a, +oo[ := [set` `[a, +oo[]                            *)
+(*                   `]a, +oo[ := [set` `]a, +oo[]                            *)
 (*               is_subset1 A <-> A contains only 1 element.                  *)
 (*                   is_fun f <-> for each a, f a contains only 1 element.    *)
 (*                 is_total f <-> for each a, f a is non empty.               *)
@@ -165,6 +178,7 @@ Reserved Notation "A `<=>` B" (at level 70, no associativity).
 Reserved Notation "f @^-1` A" (at level 24).
 Reserved Notation "f @` A" (at level 24).
 Reserved Notation "A !=set0" (at level 80).
+Reserved Notation "[ 'set`' p ]" (at level 0, format "[ 'set`'  p ]").
 Reserved Notation "[ 'disjoint' A & B ]" (at level 0,
   format "'[hv' [ 'disjoint' '/  '  A '/'  &  B ] ']'").
 Reserved Notation "f \|_ D" (at level 10).
@@ -257,6 +271,16 @@ Definition proper A B := A `<=` B /\ ~ (B `<=` A).
 
 End basic_definitions.
 Arguments preimage T rT f Y / t.
+Arguments set0 _ _ /.
+Arguments setT _ _ /.
+Arguments set1 _ _ _ /.
+Arguments setI _ _ _ _ /.
+Arguments setU _ _ _ _ /.
+Arguments setC _ _ _ /.
+Arguments setD _ _ _ _ /.
+Arguments setM _ _ _ _ _ /.
+Arguments fst_set _ _ _ _ /.
+Arguments snd_set _ _ _ _ /.
 
 Notation "[ 'set' 'of' F ]" := [set F i | i in setT] : classical_set_scope.
 Notation "[ 'set' a ]" := (set1 a) : classical_set_scope.
@@ -293,6 +317,28 @@ Notation "A `<=>` B" := ((A `<=` B) /\ (B `<=` A)) : classical_set_scope.
 Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
 Notation "f @` A" := (image A f) (only parsing) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) : classical_set_scope.
+
+Notation "[ 'set`' p ]":= [set x | is_true (x \in p)] : classical_set_scope.
+Notation pred_set := (fun i => [set` i]).
+
+Notation "`[ a , b ]" :=
+  [set` Interval (BLeft a) (BRight b)] : classical_set_scope.
+Notation "`] a , b ]" :=
+  [set` Interval (BRight a) (BRight b)] : classical_set_scope.
+Notation "`[ a , b [" :=
+  [set` Interval (BLeft a) (BLeft b)] : classical_set_scope.
+Notation "`] a , b [" :=
+  [set` Interval (BRight a) (BLeft b)] : classical_set_scope.
+Notation "`] '-oo' , b ]" :=
+  [set` Interval -oo%O (BRight b)] : classical_set_scope.
+Notation "`] '-oo' , b [" :=
+  [set` Interval -oo%O (BLeft b)] : classical_set_scope.
+Notation "`[ a , '+oo' [" :=
+  [set` Interval (BLeft a) +oo%O] : classical_set_scope.
+Notation "`] a , '+oo' [" :=
+  [set` Interval (BRight a) +oo%O] : classical_set_scope.
+Notation "`] -oo , '+oo' [" :=
+  [set` Interval -oo%O +oo%O] : classical_set_scope.
 
 Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
   [set x | P x] = [set x | Q x].

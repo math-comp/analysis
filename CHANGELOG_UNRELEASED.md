@@ -156,6 +156,11 @@
   + lemmas `sube_eq` `lte_pmul2r`, `lte_pmul2l`, `lte_nmul2l`, `lte_nmul2r`, `mule_le0`,
     `pmule_llt0`, `pmule_rlt0`, `nmule_llt0`, `nmule_rlt0`, `mule_lt0`
   + lemmas `maxeMl`, `maxeMr`
+- in `classical_sets.v`:
+  + notation `` [set` i] ``
+  + notations `set_itv`, `` `[a, b] ``, `` `]a, b] ``, `` `[a, b[ ``,
+    `` `]a, b[ ``, `` `]-oo, b] ``, `` `]-oo, b[ ``, `` `[a, +oo] ``,
+    `` `]a, +oo] ``, `` `]-oo, +oo[ ``
 
 ### Changed
 
