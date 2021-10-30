@@ -591,8 +591,8 @@ rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
   by rewrite setDE => -[? _]; exists n.
 have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
 suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
-  by exists m => //; split => //; rewrite bigcup_ord => -[k /= kj]; exact: FNmt.
-move: UFnt; rewrite bigcup_ord => -[/= k _ Fkt] {Fnt n}.
+  by exists m => //; split => //; rewrite -bigcup_mkord => -[k kj]; exact: FNmt.
+move: UFnt; rewrite -bigcup_mkord => -[/= k _ Fkt] {Fnt n}.
 have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
 case: k => [|k] in Fkt kn *; first by exists O.
 have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
@@ -613,7 +613,7 @@ Lemma seqDUE F : nondecreasing_seq F -> seqDU F = seqD F.
 Proof.
 move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
 rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
-by rewrite bigcup_ord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
+by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
 Qed.
 
 Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
@@ -739,7 +739,7 @@ have AB : \bigcup_k A k = \bigcup_n B n.
   rewrite predeqE => x; split => [[k _ ?]|[m _]].
     by exists k => //; rewrite /B big_ord_recr /=; right.
   rewrite /B big_ord_recr /= => -[|Amx]; last by exists m.
-  by rewrite bigcup_ord => -[k ? ?]; exists k.
+  by rewrite -bigcup_mkord => -[k ? ?]; exists k.
 have ndB : nondecreasing_seq B.
   by move=> n m nm; exact/subsetPset/subset_bigsetU.
 have mB : forall i, measurable (B i) by move=> i; exact: bigsetU_measurable.
@@ -882,8 +882,7 @@ suff : \bigcup_n B n = X.
   move=> -> /le_trans; apply; under eq_fun do rewrite big_mkord.
   by rewrite (cvg_lim _ cvg_mu).
 transitivity (\big[setU/set0]_(i < 2) B i).
-  rewrite (bigcup_recl 2) // bigcup_ord [X in _ `|` X](_ : _ = set0) ?setU0 //.
-  by rewrite predeqE => t; split => // -[].
+  by rewrite (bigcup_splitn 2) // -bigcup_mkord setUidl// => t -[].
 by rewrite 2!big_ord_recl big_ord0 setU0 /= -setIUr setUCr setIT.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -911,7 +910,7 @@ Lemma outer_measure_bigcup_lim (A : (set T) ^nat) X :
   mu (X `&` \bigcup_k A k) <= \sum_(k <oo) mu (X `&` A k).
 Proof.
 apply: (le_trans _ (outer_measure_sigma_subadditive mu (fun n => X `&` A n))).
-by apply/le_outer_measure; rewrite bigcup_distrr.
+by apply/le_outer_measure; rewrite setI_bigcupr.
 Qed.
 
 Let M := mu.-measurable.
@@ -1047,7 +1046,7 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
 move=> n.
 apply (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
   apply/lee_add2l/le_outer_measure; apply: setIS; apply: subsetC => t.
-  by rewrite /B bigcup_ord => -[i ? ?]; exists i.
+  by rewrite /B -bigcup_mkord => -[i ? ?]; exists i.
 rewrite [in X in _ <= X](caratheodory_measurable_bigsetU MA n) lee_add2r //.
 by rewrite caratheodory_additive.
 Qed.
