@@ -681,7 +681,7 @@ Implicit Types (A B : set aT) (f : aT -> rT) (Y : set rT).
 
 Lemma imageP f A a : A a -> (f @` A) (f a). Proof. by exists a. Qed.
 
-Lemma image_inj [f A a] : injective f -> (f @` A) (f a) = A a.
+Lemma image_inj {f A a} : injective f -> (f @` A) (f a) = A a.
 Proof.
 by move=> f_inj; rewrite propeqE; split => [[b Ab /f_inj <-]|/(imageP f)//].
 Qed.
