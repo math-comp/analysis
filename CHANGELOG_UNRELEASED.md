@@ -158,13 +158,13 @@
 
 ### Renamed
 
-  - in `classical_sets.v`
-    + `eqbigcup_r` -> `eq_bigcupr`
-    + `eqbigcap_r` -> `eq_bigcapr`
-    + `bigcup_distrr` -> `setI_bigcupr`
-    + `bigcup_distrl` -> `setI_bigcupl`
-    + `bigcup_refl` -> `bigcup_splitn`
-    + `setMT` -> `setMTT`
+- in `classical_sets.v`
+  + `eqbigcup_r` -> `eq_bigcupr`
+  + `eqbigcap_r` -> `eq_bigcapr`
+  + `bigcup_distrr` -> `setI_bigcupr`
+  + `bigcup_distrl` -> `setI_bigcupl`
+  + `bigcup_refl` -> `bigcup_splitn`
+  + `setMT` -> `setMTT`
 
 - in `classical_sets.v`:
   + generalize lemma `perm_eq_trivIset`

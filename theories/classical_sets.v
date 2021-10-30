@@ -394,10 +394,10 @@ Proof. by rewrite predeqE => t; split; [case|left]. Qed.
 Lemma setTU A : setT `|` A = setT.
 Proof. by rewrite predeqE => t; split; [case|left]. Qed.
 
-Lemma setUT A  : A `|` setT = setT.
+Lemma setUT A : A `|` setT = setT.
 Proof. by rewrite predeqE => t; split; [case|right]. Qed.
 
-Lemma setD1K a A : A a -> (a |` A `\ a) = A.
+Lemma setD1K a A : A a -> a |` A `\ a = A.
 Proof.
 move=> Aa; rewrite predeqE => y; split=> [[->|[]]//|Ay].
 by have [->|] := pselect (y = a); [left|right].
@@ -622,21 +622,22 @@ by move=> /fset0Pn[t]; rewrite inE => /andP[tA tB]; apply/set0P; exists t.
 Qed.
 
 Section SetFset.
+Context {T : choiceType}.
+Implicit Types (x y : T) (A B : {fset T}).
 
-Lemma set_fset0 {T : choiceType} : [set y : T | y \in fset0] = set0.
+Lemma set_fset0 : [set y : T | y \in fset0] = set0.
 Proof. by rewrite -subset0 => x. Qed.
 
-Lemma set_fset1 {T : choiceType} (x : T) :
-  [set y | y \in [fset x]%fset] = [set x].
+Lemma set_fset1 x : [set y | y \in [fset x]%fset] = [set x].
 Proof. by rewrite predeqE => y; split; rewrite /= inE => /eqP. Qed.
 
-Lemma set_fsetI {T : choiceType} (A B : {fset T}) :
+Lemma set_fsetI A B :
   [set x | x \in (A `&` B)%fset] = [set x | x \in A] `&` [set x | x \in B].
 Proof.
 by rewrite predeqE => x; split; rewrite /= !inE; [case/andP|case=> -> ->].
 Qed.
 
-Lemma set_fsetU {T : choiceType} (A B : {fset T}) :
+Lemma set_fsetU A B :
   [set x | x \in (A `|` B)%fset] = [set x | x \in A] `|` [set x | x \in B].
 Proof.
 rewrite predeqE => x; split; rewrite /= !inE.
@@ -644,20 +645,17 @@ rewrite predeqE => x; split; rewrite /= !inE.
 by move=> []->; rewrite ?orbT.
 Qed.
 
-Lemma set_fsetU1 {T : choiceType} x (A : {fset T}) :
-  [set y | y \in (x |` A)%fset] = x |` [set x | x \in A].
+Lemma set_fsetU1 x A : [set y | y \in (x |` A)%fset] = x |` [set x | x \in A].
 Proof. by rewrite set_fsetU set_fset1. Qed.
 
-Lemma set_fsetD {T : choiceType} (A B : {fset T}) :
+Lemma set_fsetD A B :
   [set x | x \in (A `\` B)%fset] = [set x | x \in A] `\` [set x | x \in B].
 Proof.
-rewrite predeqE => x; split; rewrite /= !inE.
-  by case/andP => /negP xNB xA.
-by move=> [-> /negP ->].
+rewrite predeqE => x; split; rewrite /= !inE; last by move=> [-> /negP ->].
+by case/andP => /negP xNB xA.
 Qed.
 
-Lemma set_fsetD1 {T : choiceType} (A : {fset T}) x :
-  [set y | y \in (A `\ x)%fset] = [set x | x \in A] `\ x.
+Lemma set_fsetD1 A x : [set y | y \in (A `\ x)%fset] = [set x | x \in A] `\ x.
 Proof. by rewrite set_fsetD set_fset1. Qed.
 
 End SetFset.
@@ -683,7 +681,7 @@ Implicit Types (A B : set aT) (f : aT -> rT) (Y : set rT).
 
 Lemma imageP f A a : A a -> (f @` A) (f a). Proof. by exists a. Qed.
 
-Lemma image_inj f A a : injective f -> (f @` A) (f a) = A a.
+Lemma image_inj [f A a] : injective f -> (f @` A) (f a) = A a.
 Proof.
 by move=> f_inj; rewrite propeqE; split => [[b Ab /f_inj <-]|/(imageP f)//].
 Qed.
@@ -718,7 +716,6 @@ Qed.
 
 Lemma sub_image_setI f A B : f @` (A `&` B) `<=` f @` A `&` f @` B.
 Proof. by move=> b [x [Aa Ba <-]]; split; apply: imageP. Qed.
-Arguments sub_image_setI {f A B} t _.
 
 Lemma nonempty_image f A : f @` A !=set0 -> A !=set0.
 Proof. by case=> b [a]; exists a. Qed.
@@ -767,8 +764,15 @@ Lemma nonempty_preimage_setI f Y1 Y2 :
   (f @^-1` (Y1 `&` Y2)) !=set0 <-> (f @^-1` Y1 `&` f @^-1` Y2) !=set0.
 Proof. by split; case=> t ?; exists t. Qed.
 
+Lemma preimage_bigcup {I} (P : set I) f (F : I -> set rT) :
+  f @^-1` (\bigcup_ (i in P) F i) = \bigcup_(i in P) (f @^-1` F i).
+Proof. exact/predeqP. Qed.
+
+Lemma preimage_bigcap {I} (P : set I) f (F : I -> set rT) :
+  f @^-1` (\bigcap_ (i in P) F i) = \bigcap_(i in P) (f @^-1` F i).
+Proof. exact/predeqP. Qed.
+
 End image_lemmas.
-Arguments image_inj {aT rT} [f A a].
 Arguments sub_image_setI {aT rT f A B} t _.
 
 Lemma image_comp T1 T2 T3 (f : T1 -> T2) (g : T2 -> T3) A :
@@ -827,10 +831,12 @@ apply: setC_inj; rewrite setC_bigcup setCK.
 by apply: eq_bigcapr => ?; rewrite setCK.
 Qed.
 
-Lemma eq_bigcupl P Q F : P `<=>` Q -> \bigcup_(i in P) F i = \bigcup_(i in Q) F i.
+Lemma eq_bigcupl P Q F : P `<=>` Q ->
+  \bigcup_(i in P) F i = \bigcup_(i in Q) F i.
 Proof. by move=> /seteqP->. Qed.
 
-Lemma eq_bigcapl P Q F : P `<=>` Q -> \bigcap_(i in P) F i = \bigcap_(i in Q) F i.
+Lemma eq_bigcapl P Q F : P `<=>` Q ->
+  \bigcap_(i in P) F i = \bigcap_(i in Q) F i.
 Proof. by move=> /seteqP->. Qed.
 
 Lemma eq_bigcup P Q F G : P `<=>` Q -> (forall i, P i -> F i = G i) ->
@@ -969,7 +975,92 @@ apply: setC_inj; rewrite !setC_bigcap bigcup_mkcond; apply: eq_bigcupr => i _.
 by case: asboolP => //; rewrite setCT.
 Qed.
 
+Lemma bigcup_imset1 P (f : I -> T) : \bigcup_(x in P) [set f x] = f @` P.
+Proof.
+by rewrite eqEsubset; split=>[a [i ?]->| a [i ?]<-]; [apply: imageP | exists i].
+Qed.
+
+Lemma bigcup_setU1 F (x : I) (X : set I) :
+  \bigcup_(i in x |` X) F i = F x `|` \bigcup_(i in X) F i.
+Proof.
+rewrite predeqE => y; split=> [[z]|].
+  by move=> [<-|Xz]; [left|right; exists z].
+by move=> [Fxy|[z Xz Fzy]]; [exists x => //; left|exists z => //; right].
+Qed.
+
+Lemma bigcap_setU1 F (x : I) (X : set I) :
+  \bigcap_(i in x |` X) F i = F x `&` \bigcap_(i in X) F i.
+Proof.
+rewrite predeqE => y; split=> [Fy|[Fxy Fy] z [->|/Fy]]//.
+by split=> [|z Xz]; apply: Fy; [left|right].
+Qed.
+
+Lemma bigcup_setD1 (x : I) F (X : set I) : X x ->
+  \bigcup_(i in X) F i = F x `|` \bigcup_(i in X `\ x) F i.
+Proof. by move=> Xx; rewrite -bigcup_setU1 setD1K. Qed.
+
+Lemma bigcap_setD1 (x : I) F (X : set I) : X x ->
+  \bigcap_(i in X) F i = F x `&` \bigcap_(i in X `\ x) F i.
+Proof. by move=> Xx; rewrite -bigcap_setU1 setD1K. Qed.
+
 End bigop_lemmas.
+Arguments bigcup_setD1 {T I} x.
+Arguments bigcap_setD1 {T I} x.
+
+Lemma bigcup_image {aT rT I} (P : set aT) (f : aT -> I) (F : I -> set rT) :
+  \bigcup_(x in f @` P) F x = \bigcup_(x in P) F (f x).
+Proof.
+rewrite eqEsubset; split=> x; first by case=> j [] i pi <- Xfix; exists i.
+by case=> i Pi Ffix; exists (f i); [exists i|].
+Qed.
+
+Lemma bigcap_image {aT rT I} (P : set aT) (f : aT -> I) (F : I -> set rT) :
+  \bigcap_(x in f @` P) F x = \bigcap_(x in P) F (f x).
+Proof. by apply: setC_inj; rewrite !setC_bigcap bigcup_image. Qed.
+
+Lemma bigcup_fset {I : choiceType} {U : Type}
+    (F : I -> set U) (X : {fset I}) :
+  \bigcup_(i in [set i | i \in X]) F i = \big[setU/set0]_(i <- X) F i :> set U.
+Proof.
+elim/finSet_rect: X => X IHX; have [->|[x xX]] := fset_0Vmem X.
+  by rewrite big_seq_fset0 -subset0 => x [].
+rewrite -(fsetD1K xX) set_fsetU set_fset1 big_fsetU1 ?inE ?eqxx//=.
+by rewrite bigcup_setU1 IHX// fproperD1.
+Qed.
+
+Lemma bigcap_fset {I : choiceType} {U : Type}
+    (F : I -> set U) (X : {fset I}) :
+  \bigcap_(i in [set i | i \in X]) F i = \big[setI/setT]_(i <- X) F i :> set U.
+Proof.
+elim/finSet_rect: X => X IHX; have [->|[x xX]] := fset_0Vmem X.
+  by rewrite big_seq_fset0 -subTset.
+rewrite -(fsetD1K xX) set_fsetU set_fset1 big_fsetU1 ?inE ?eqxx//=.
+by rewrite bigcap_setU1 IHX// fproperD1.
+Qed.
+
+Lemma bigcup_fsetU1 {T U : choiceType} (F : T -> set U) (x : T) (X : {fset T}) :
+  \bigcup_(i in [set j | j \in x |` X]%fset) F i =
+  F x `|` \bigcup_(i in [set j | j \in X]) F i.
+Proof. by rewrite set_fsetU1 bigcup_setU1. Qed.
+
+Lemma bigcap_fsetU1 {T U : choiceType} (F : T -> set U) (x : T) (X : {fset T}) :
+  \bigcap_(i in [set j | j \in x |` X]%fset) F i =
+  F x `&` \bigcap_(i in [set j | j \in X]) F i.
+Proof. by rewrite set_fsetU1 bigcap_setU1. Qed.
+
+Lemma bigcup_fsetD1 {T U : choiceType} (x : T) (F : T -> set U) (X : {fset T}) :
+    x \in X ->
+  \bigcup_(i in [set i | i \in X]%fset) F i =
+  F x `|` \bigcup_(i in [set i | i \in X `\ x]%fset) F i.
+Proof. by move=> Xx; rewrite (bigcup_setD1 x)// set_fsetD1. Qed.
+Arguments bigcup_fsetD1 {T U} x.
+
+Lemma bigcap_fsetD1 {T U : choiceType} (x : T) (F : T -> set U) (X : {fset T}) :
+    x \in X ->
+  \bigcap_(i in [set i | i \in X]%fset) F i =
+  F x `&` \bigcap_(i in [set i | i \in X `\ x]%fset) F i.
+Proof. by move=> Xx; rewrite (bigcap_setD1 x)// set_fsetD1. Qed.
+Arguments bigcup_fsetD1 {T U} x.
 
 Section bigcup_set.
 Variables (T : choiceType) (U : Type).
@@ -1079,100 +1170,6 @@ exact: (@subset_bigsetI (fun i => if P i then F i else _)).
 Qed.
 
 End bigop_nat_lemmas.
-
-Lemma preimage_bigcup {aT rT I} (P : set I) (f : aT -> rT) (F : I -> set rT) :
-  f @^-1` (\bigcup_ (i in P) F i) = \bigcup_(i in P) (f @^-1` F i).
-Proof. exact/predeqP. Qed.
-
-Lemma preimage_bigcap {aT rT I} (P : set I) (f : aT -> rT) (F : I -> set rT) :
-  f @^-1` (\bigcap_ (i in P) F i) = \bigcap_(i in P) (f @^-1` F i).
-Proof. exact/predeqP. Qed.
-
-Lemma bigcup_image {aT rT I} (P : set aT) (f : aT -> I) (F : I -> set rT) :
-  \bigcup_(x in f @` P) F x = \bigcup_(x in P) F (f x).
-Proof.
-rewrite eqEsubset; split=> x; first by case=> j [] i pi <- Xfix; exists i.
-by case=> i Pi Ffix; exists (f i); [exists i|].
-Qed.
-
-Lemma bigcap_image {aT rT I} (P : set aT) (f : aT -> I) (F : I -> set rT) :
-  \bigcap_(x in f @` P) F x = \bigcap_(x in P) F (f x).
-Proof. by apply: setC_inj; rewrite !setC_bigcap bigcup_image. Qed.
-
-Lemma bigcup_imset1 {rT I} (P : set I) (f : I -> rT) :
-  \bigcup_(x in P) [set f x] = f @` P.
-Proof.
-by rewrite eqEsubset; split=>[a [i ?]->| a [i ?]<-]; [apply: imageP | exists i].
-Qed.
-
-Lemma bigcup_setU1 {T U} (F : T -> set U) (x : T) (X : set T) :
-  \bigcup_(i in x |` X) F i = F x `|` \bigcup_(i in X) F i.
-Proof.
-rewrite predeqE => y; split=> [[z]|].
-  by move=> [<-|Xz]; [left|right; exists z].
-by move=> [Fxy|[z Xz Fzy]]; [exists x => //; left|exists z => //; right].
-Qed.
-
-Lemma bigcap_setU1 {T U} (F : T -> set U) (x : T) (X : set T) :
-  \bigcap_(i in x |` X) F i = F x `&` \bigcap_(i in X) F i.
-Proof.
-rewrite predeqE => y; split=> [Fy|[Fxy Fy] z [->|/Fy]]//.
-by split=> [|z Xz]; apply: Fy; [left|right].
-Qed.
-
-Lemma bigcup_setD1 {T U} (x : T) (F : T -> set U) (X : set T) : X x ->
-  \bigcup_(i in X) F i = F x `|` \bigcup_(i in X `\ x) F i.
-Proof. by move=> Xx; rewrite -bigcup_setU1 setD1K. Qed.
-Arguments bigcup_setD1 {T U} x.
-
-Lemma bigcap_setD1 {T U} (x : T) (F : T -> set U) (X : set T) : X x ->
-  \bigcap_(i in X) F i = F x `&` \bigcap_(i in X `\ x) F i.
-Proof. by move=> Xx; rewrite -bigcap_setU1 setD1K. Qed.
-Arguments bigcap_setD1 {T U} x.
-
-Lemma bigcup_fset {I : choiceType} {U : Type}
-    (F : I -> set U) (X : {fset I}) :
-  \bigcup_(i in [set i | i \in X]) F i = \big[setU/set0]_(i <- X) F i :> set U.
-Proof.
-elim/finSet_rect: X => X IHX; have [->|[x xX]] := fset_0Vmem X.
-  by rewrite big_seq_fset0 -subset0 => x [].
-rewrite -(fsetD1K xX) set_fsetU set_fset1 big_fsetU1 ?inE ?eqxx//=.
-by rewrite bigcup_setU1 IHX// fproperD1.
-Qed.
-
-Lemma bigcap_fset {I : choiceType} {U : Type}
-    (F : I -> set U) (X : {fset I}) :
-  \bigcap_(i in [set i | i \in X]) F i = \big[setI/setT]_(i <- X) F i :> set U.
-Proof.
-elim/finSet_rect: X => X IHX; have [->|[x xX]] := fset_0Vmem X.
-  by rewrite big_seq_fset0 -subTset.
-rewrite -(fsetD1K xX) set_fsetU set_fset1 big_fsetU1 ?inE ?eqxx//=.
-by rewrite bigcap_setU1 IHX// fproperD1.
-Qed.
-
-Lemma bigcup_fsetU1 {T U : choiceType} (F : T -> set U) (x : T) (X : {fset T}) :
-  \bigcup_(i in [set j | j \in x |` X]%fset) F i =
-  F x `|` \bigcup_(i in [set j | j \in X]) F i.
-Proof. by rewrite set_fsetU1 bigcup_setU1. Qed.
-
-Lemma bigcap_fsetU1 {T U : choiceType} (F : T -> set U) (x : T) (X : {fset T}) :
-  \bigcap_(i in [set j | j \in x |` X]%fset) F i =
-  F x `&` \bigcap_(i in [set j | j \in X]) F i.
-Proof. by rewrite set_fsetU1 bigcap_setU1. Qed.
-
-Lemma bigcup_fsetD1 {T U : choiceType} (x : T) (F : T -> set U) (X : {fset T}) :
-    x \in X ->
-  \bigcup_(i in [set i | i \in X]%fset) F i =
-  F x `|` \bigcup_(i in [set i | i \in X `\ x]%fset) F i.
-Proof. by move=> Xx; rewrite (bigcup_setD1 x)// set_fsetD1. Qed.
-Arguments bigcup_fsetD1 {T U} x.
-
-Lemma bigcap_fsetD1 {T U : choiceType} (x : T) (F : T -> set U) (X : {fset T}) :
-    x \in X ->
-  \bigcap_(i in [set i | i \in X]%fset) F i =
-  F x `&` \bigcap_(i in [set i | i \in X `\ x]%fset) F i.
-Proof. by move=> Xx; rewrite (bigcap_setD1 x)// set_fsetD1. Qed.
-Arguments bigcup_fsetD1 {T U} x.
 
 Definition is_subset1 {T} (A : set T) := forall x y, A x -> A y -> x = y.
 Definition is_fun {T1 T2} (f : T1 -> T2 -> Prop) := Logic.all (is_subset1 \o f).
