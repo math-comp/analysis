@@ -40,9 +40,14 @@ Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 (*                    closed_ball == closure of a ball.                       *)
 (*   f @`[ a , b ], f @`] a , b [ == notations for images of intervals,       *)
 (*                                   intended for continuous, monotonous      *)
-(*                                   functions.                               *)
+(*                                   functions, defined in ring_scope and     *)
+(*                                   classical_set_scope respectively as:     *)
 (*                  f @`[ a , b ] := `[minr (f a) (f b), maxr (f a) (f b)]%O  *)
 (*                  f @`] a , b [ := `]minr (f a) (f b), maxr (f a) (f b)[%O  *)
+(*                  f @`[ a , b ] := `[minr (f a) (f b),                      *)
+(*                                     maxr (f a) (f b)]%classic              *)
+(*                  f @`] a , b [ := `]minr (f a) (f b),                      *)
+(*                                     maxr (f a) (f b)[%classic              *)
 (*                                                                            *)
 (* * Domination notations:                                                    *)
 (*              dominated_by h k f F == `|f| <= k * `|h|, near F              *)
@@ -95,8 +100,8 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldTopology.Exports.
 
-Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
 
 Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
 
@@ -351,7 +356,7 @@ by apply/(equivP (ler_addgt0Pr x y)); split=> lexy e /lexy; rewrite addrC.
 Qed.
 
 Lemma in_segment_addgt0Pr (R : numFieldType) (x y z : R) :
-  reflect (forall e, e > 0 -> y \in `[(x - e), (z + e)]%O) (y \in `[x, z]%O).
+  reflect (forall e, e > 0 -> y \in `[x - e, z + e]) (y \in `[x, z]).
 Proof.
 apply/(iffP idP)=> [xyz _/posnumP[e] | xyz_e].
   by rewrite in_itv /= ler_subl_addr !ler_paddr // (itvP xyz).
@@ -360,7 +365,7 @@ by rewrite in_itv /= ; apply/andP; split; apply/ler_addgt0Pr => ? /xyz_e;
 Qed.
 
 Lemma in_segment_addgt0Pl (R : numFieldType) (x y z : R) :
-  reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]%O) (y \in `[x, z]%O).
+  reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]) (y \in `[x, z]).
 Proof.
 apply/(equivP (in_segment_addgt0Pr x y z)).
 by split=> zxy e /zxy; rewrite [z + _]addrC [_ + x]addrC.
@@ -2702,7 +2707,7 @@ exists (sup D).
 apply: (cvg_distW) => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl; move/ubP: (sup_upper_bound D_has_sup) => -> //=.
   apply: sup_le_ub => //; first by case: D_has_sup.
-  have Fxeps : F (ball_ [eta normr] x (eps)%:num).
+  have Fxeps : F (ball_ [eta normr] x eps%:num).
     by near: x; apply: nearP_dep; apply: F_cauchy.
   apply/ubP => y /(_ _ Fxeps) /downP[z].
   rewrite /ball_/= ltr_distl ltr_subl_addr.
@@ -2754,18 +2759,18 @@ End at_left_right.
 Typeclasses Opaque at_left at_right.
 
 (* TODO: backport to mathcomp in progress *)
-Lemma itvxx d (T : porderType d) (x : T) : `[x, x]%O =i pred1 x.
+Lemma itvxx d (T : porderType d) (x : T) : `[x, x] =i pred1 x.
 Proof. by move=> y; rewrite in_itv/= -eq_le eq_sym. Qed.
 
-Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]%O).
+Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]).
 Proof. by rewrite itvxx; apply/eqP. Qed.
 
-Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}%O.
+Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}.
 Proof. by apply: subitvP; rewrite subitvE !bound_lexx. Qed.
 (* /TODO: backport to mathcomp in progress *)
 
 Lemma at_right_in_segment (R : realFieldType) (x : R) (P : set R) :
-  (\forall e \near at_right (0 : R), {in `[(x - e), (x + e)]%O, forall x, P x})
+  (\forall e \near at_right (0 : R), {in `[x - e, x + e], forall x, P x})
   <-> (\near x, P x).
 Proof.
 split=> -[_/posnumP[e] /(_ _)/= Px]; [exists (e%:num / 2)|exists e%:num] => //.
@@ -2915,7 +2920,7 @@ Lemma interval_closed a b : ~~ bound_side false a -> ~~ bound_side true b ->
 Proof.
 move: a b => [[]a|[]] [[]b|[]]// _ _;
   do ?by under eq_set do rewrite itv_ge// inE falseE; apply: closed0.
-- have -> : `[a, b] = [set x | x >= a] `&` [set x | x <= b].
+- have -> : `[a, b]%classic = [set x | x >= a] `&` [set x | x <= b].
     by rewrite predeqE => ?; rewrite /= in_itv/=; split=> [/andP[]|[->]].
   by apply closedI; [exact: closed_ge | exact: closed_le].
 - by under eq_set do rewrite in_itv andbT/=; exact: closed_ge.
@@ -2983,7 +2988,7 @@ Qed.
 Lemma interval_is_interval (i : interval R) : is_interval [set` i].
 Proof.
 by case: i => -[[]a|[]] [[]b|[]] // x y /=; do ?[by rewrite ?itv_ge//];
-  move=> xi yi z; rewrite -[x <= z <= y]/(z \in `[x, y]%O); apply/subitvP;
+  move=> xi yi z; rewrite -[x <= z <= y]/(z \in `[x, y]); apply/subitvP;
   rewrite subitvE /Order.le/= ?(itvP xi, itvP yi).
 Qed.
 
@@ -3077,7 +3082,7 @@ Definition Rhull (X : set R) : interval R := Interval
   (if `[< has_ubound X >] then BSide (~~ `[< X (sup X) >]) (sup X)
                           else BInfty _ false).
 
-Lemma Rhull0 : Rhull set0 = `]0, 0[%R :> interval R.
+Lemma Rhull0 : Rhull set0 = `]0, 0[ :> interval R.
 Proof.
 rewrite /Rhull  (asboolT (has_lbound0 R)) (asboolT (has_ubound0 R)) asboolF //.
 by rewrite sup0 inf0.
@@ -3215,11 +3220,11 @@ rewrite compact_cover => I D f fop sabUf.
 set B := [set x | exists2 E : {fset I}, {subset E <= D} &
   `[a, x] `<=` \bigcup_(i in [set` E]) f i /\ (\bigcup_(i in [set` E]) f i) x].
 set A := `[a, b] `&` B.
-suff Aeab : A = `[a, b].
+suff Aeab : A = `[a, b]%classic.
   suff [_ [E ? []]] : A b by exists E.
   by rewrite Aeab/= inE/=; apply/andP.
 apply: segment_connected.
-- have aba : a \in `[a, b]%O by rewrite in_itv /= lexx.
+- have aba : a \in `[a, b] by rewrite in_itv /= lexx.
   exists a; split=> //; have /sabUf [i /= Di fia] := aba.
   exists [fset i]%fset; first by move=> ?; rewrite inE inE => /eqP->.
   split; last by exists i => //=; rewrite inE.
@@ -3237,7 +3242,7 @@ apply: segment_connected.
     by have := xe_y; rewrite /ball_ => /ltr_distlC_subl.
   by rewrite subr_ge0; apply/ltW.
 exists A; last by rewrite predeqE => x; split=> [[] | []].
-move=> x clAx; have abx : x \in `[a, b]%O.
+move=> x clAx; have abx : x \in `[a, b].
   by apply: interval_closed; have /closureI [] := clAx.
 split=> //; have /sabUf [i Di fx] := abx.
 have /fop := Di; rewrite openE => /(_ _ fx) [_ /posnumP[e] xe_fi].
@@ -3247,7 +3252,7 @@ split=> [z axz|]; last first.
   exists i; first by rewrite /= !inE eq_refl.
   by apply/xe_fi; rewrite /ball_/= subrr normr0.
 have [lezy|ltyz] := lerP z y.
-  have /sayUf [j Dj fjz] : z \in `[a, y]%O by rewrite in_itv /= (itvP axz) lezy.
+  have /sayUf [j Dj fjz] : z \in `[a, y] by rewrite in_itv /= (itvP axz) lezy.
   by exists j => //=; rewrite inE orbC Dj.
 exists i; first by rewrite /= !inE eq_refl.
 apply/xe_fi; rewrite /ball_/= ger0_norm; last by rewrite subr_ge0 (itvP axz).
@@ -3269,12 +3274,12 @@ rewrite {1}(splitr x) ger_addl pmulr_lle0 // => /(lt_le_trans x0);
 Qed.
 
 Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
-  a <= b -> {in `[a, b]%O, continuous f} ->
+  a <= b -> {in `[a, b], continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
-  exists2 c, c \in `[a, b]%O & f c = v.
+  exists2 c, c \in `[a, b] & f c = v.
 Proof.
 move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
-    exists2 c, c \in `[a, b]%O & f c = v; last first.
+    exists2 c, c \in `[a, b] & f c = v; last first.
   case: (leP (f a) (f b)) => [] _ fabv; first exact: ivt.
   have [||c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
     by move=> x /fcont; apply: continuousN.
@@ -3286,7 +3291,7 @@ rewrite le_eqVlt => /orP [/eqP->|ltvfb].
 set A := [set c | (c <= b) && (f c <= v)].
 have An0 : nonempty A by exists a; apply/andP; split=> //; apply: ltW.
 have supA : has_sup A by split=> //; exists b; apply/ubP => ? /andP [].
-have supAab : sup A \in `[a, b]%O.
+have supAab : sup A \in `[a, b].
   rewrite inE; apply/andP; split; last first.
     by apply: sup_le_ub => //; apply/ubP => ? /andP [].
   by move/ubP : (sup_upper_bound supA); apply; rewrite /A/= leab andTb ltW.
@@ -3310,7 +3315,7 @@ have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
 have /supdfe /= : ball (sup A) d%:num x.
   by near: x; rewrite /= nbhs_simpl; exists d%:num => //.
 rewrite /= => /ltr_distlC_subl; apply: le_lt_trans.
-rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b]%O -> v < f t.
+rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
   apply; rewrite inE; apply/andP; split; first by near: x; exists 1.
   near: x; exists (b - sup A) => /=.
     rewrite subr_gt0 lt_def (itvP supAab) andbT; apply/negP => /eqP besup.
@@ -3555,13 +3560,13 @@ Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n.+1) :
 Proof.
 move=> [M [Mreal normAltM]] Acl.
 have Mnco : compact
-  [set v : 'rV[R]_n.+1 | (forall i, (v ord0 i) \in `[(- (M + 1)), (M + 1)]%O)].
-  apply: (@rV_compact _  _ (fun _ => `[(- (M + 1)), (M + 1)])).
+  [set v : 'rV[R]_n.+1 | forall i, v ord0 i \in `[(- (M + 1)), (M + 1)]].
+  apply: (@rV_compact _  _ (fun _ => `[(- (M + 1)), (M + 1)]%classic)).
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
 suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
 apply: le_trans (normvleM _ _); last by rewrite ltr_addl.
-have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v ij.1 ij.2| | ij : 'I_1 * 'I_n.+1].
+have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v x.1 x.2| | x : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
 rewrite [in X in _ <= X]/normr /= mx_normrE.
 by apply/bigmax_gerP; right => /=; exists j.
@@ -3688,13 +3693,13 @@ move=> xfx; rewrite nbhsE /=; eexists; split; last by move=> y; exact.
 by split; [apply open_ereal_gt_ereal | rewrite /= lte_fin].
 Qed.
 
-Lemma nbhs_open_ereal_pinfty r : nbhs +oo%E [set y | r%:E < y]%E.
+Lemma nbhs_open_ereal_pinfty r : (nbhs +oo [set y | r%:E < y])%E.
 Proof.
 rewrite nbhsE /=; eexists; split; last by move=> y; exact.
 by split; [apply open_ereal_gt_ereal | rewrite /= lte_pinfty].
 Qed.
 
-Lemma nbhs_open_ereal_ninfty r : nbhs -oo%E [set y | y < r%:E]%E.
+Lemma nbhs_open_ereal_ninfty r : (nbhs -oo [set y | y < r%:E])%E.
 Proof.
 rewrite nbhsE /=; eexists; split; last by move=> y; exact.
 by split; [apply open_ereal_lt_ereal | rewrite /= lte_ninfty].
@@ -3940,16 +3945,16 @@ End Closed_Ball.
   advocate that it should actually have the following statement.
   This does not expose the order between interval bounds. *)
 Lemma bound_itvE (R : numDomainType) (a b : R) :
-  ((a \in `[a, b])%O = (a <= b)) *
-  ((b \in `[a, b])%O = (a <= b)) *
-  ((a \in `[a, b[)%O = (a < b)) *
-  ((b \in `]a, b])%O = (a < b)) *
-  (a \in `[a, +oo[)%O *
-  (a \in `]-oo, a])%O.
+  ((a \in `[a, b]) = (a <= b)) *
+  ((b \in `[a, b]) = (a <= b)) *
+  ((a \in `[a, b[) = (a < b)) *
+  ((b \in `]a, b]) = (a < b)) *
+  (a \in `[a, +oo[) *
+  (a \in `]-oo, a]).
 Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
 
 Lemma near_in_itv {R : realFieldType} (a b : R) :
-  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}%O.
+  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
 Proof.
 move=> y ayb; rewrite (near_shift 0 y).
 have mingt0 : 0 < Num.min (y - a) (b - y).
@@ -3965,15 +3970,21 @@ near: z; apply: nbhs0_lt; rewrite (lt_le_trans mingt0) //.
 by rewrite le_minl lexx orbT.
 Grab Existential Variables. all: end_near. Qed.
 
-Notation "f @`[ a , b ]" := (`[minr (f a) (f b), maxr (f a) (f b)]%O).
-Notation "f @`] a , b [" := (`](minr (f a) (f b)), (maxr (f a) (f b))[%O).
+Notation "f @`[ a , b ]" :=
+  (`[minr (f a) (f b), maxr (f a) (f b)]) : ring_scope.
+Notation "f @`[ a , b ]" :=
+  (`[minr (f a) (f b), maxr (f a) (f b)]%classic) : classical_set_scope.
+Notation "f @`] a , b [" :=
+  (`](minr (f a) (f b)), (maxr (f a) (f b))[) : ring_scope.
+Notation "f @`] a , b [" :=
+  (`](minr (f a) (f b)), (maxr (f a) (f b))[%classic) : classical_set_scope.
 
 Section image_interval.
 Variable R : realDomainType.
 Implicit Types (a b : R) (f : R -> R).
 
-Lemma mono_mem_image_segment a b f : monotonous (mem `[a, b]%O) f ->
-  {homo f : x / x \in `[a, b]%O >-> x \in f @`[a, b]}.
+Lemma mono_mem_image_segment a b f : monotonous (mem `[a, b]) f ->
+  {homo f : x / x \in `[a, b] >-> x \in f @`[a, b]}.
 Proof.
 move=> [fle|fge] x xab; have leab : a <= b by rewrite (itvP xab).
   have: f a <= f b by rewrite fle ?bound_itvE.
@@ -3982,8 +3993,8 @@ have: f a >= f b by rewrite fge ?bound_itvE.
 by case: leP => // fafb _; rewrite in_itv/= !fge ?(itvP xab).
 Qed.
 
-Lemma mono_mem_image_itvoo a b f : monotonous (mem `[a, b]%O) f ->
-  {homo f : x / x \in `]a, b[%O >-> x \in f @`]a, b[}.
+Lemma mono_mem_image_itvoo a b f : monotonous (mem `[a, b]) f ->
+  {homo f : x / x \in `]a, b[ >-> x \in f @`]a, b[}.
 Proof.
 move=> []/[dup] => [/leW_mono_in|/leW_nmono_in] flt fle x xab;
     have ltab : a < b by rewrite (itvP xab).
@@ -3993,62 +4004,61 @@ have: f a >= f b by rewrite fle ?bound_itvE ?ltW.
 by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
 Qed.
 
-Lemma mono_surj_image_segment a b f
-    (I := `[a, b]%classic) (J := [set` f @`[a, b]]) :
-  a <= b -> monotonous (mem `[a, b]%O) f -> surjective I J f -> f @` I = J.
+Lemma mono_surj_image_segment a b f : a <= b ->
+    monotonous (mem `[a, b]) f -> (surjective `[a, b] (f @`[a, b]) f)%classic ->
+  (f @` `[a, b] = f @`[a, b])%classic.
 Proof.
-move=> leab fmono; apply: surj_image_eq => _ /= [x Ix <-];
+move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-];
 exact: mono_mem_image_segment.
 Qed.
 
-Lemma inc_segment_image a b f : f a <= f b -> f @`[a, b] = `[f a, f b]%O.
+Lemma inc_segment_image a b f : f a <= f b -> f @`[a, b] = `[f a, f b].
 Proof. by case: ltrP. Qed.
 
-Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a]%O.
+Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a].
 Proof. by case: ltrP. Qed.
 
-Lemma inc_surj_image_segment a b f
-    (I := `[a, b]%classic) (J := `[f a, f b]%classic) :
-  a <= b -> {in `[a, b]%O &, {mono f : x y / x <= y}} -> surjective I J f ->
-  f @` I = J.
+Lemma inc_surj_image_segment a b f : a <= b ->
+    {in `[a, b] &, {mono f : x y / x <= y}} ->
+    (surjective `[a, b] `[f a, f b] f)%classic ->
+  (f @` `[a, b] = `[f a, f b])%classic.
 Proof.
 move=> leab fle f_surj; have fafb : f a <= f b by rewrite fle ?bound_itvE.
 by rewrite mono_surj_image_segment ?inc_segment_image//; left.
 Qed.
 
-Lemma dec_surj_image_segment a b f
-    (I := `[a, b]%classic) (J := `[f b, f a]%classic) :
-  a <= b -> {in `[a, b]%O &, {mono f : x y /~ x <= y}} -> surjective I J f ->
-  f @` I = J.
+Lemma dec_surj_image_segment a b f : a <= b ->
+    {in `[a, b] &, {mono f : x y /~ x <= y}} ->
+    (surjective `[a, b] `[f b, f a] f)%classic ->
+  (f @` `[a, b] = `[f b, f a])%classic.
 Proof.
 move=> leab fge f_surj; have fafb : f b <= f a by rewrite fge ?bound_itvE.
 by rewrite mono_surj_image_segment ?dec_segment_image//; right.
 Qed.
 
-Lemma inc_surj_image_segmentP a b f
-    (I := `[a, b]%classic) (J := `[f a, f b]%classic) :
-  a <= b -> {in `[a, b]%O &, {mono f : x y / x <= y}} -> surjective I J f ->
-  forall y, reflect (exists2 x, x \in `[a, b]%O & f x = y) (y \in `[f a, f b]%O).
+Lemma inc_surj_image_segmentP a b f : a <= b ->
+    {in `[a, b] &, {mono f : x y / x <= y}} ->
+    (surjective `[a, b] `[f a, f b] f)%classic ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f a, f b]).
 Proof.
-move=> /inc_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+move=> /inc_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
 by apply/(equivP idP); symmetry.
 Qed.
 
-Lemma dec_surj_image_segmentP a b f
-    (I := `[a, b]%classic) (J := `[f b, f a]%classic) :
-  a <= b -> {in `[a, b]%O &, {mono f : x y /~ x <= y}} -> surjective I J f ->
-  forall y, reflect (exists2 x, x \in `[a, b]%O & f x = y) (y \in `[f b, f a]%O).
+Lemma dec_surj_image_segmentP a b f : a <= b ->
+    {in `[a, b] &, {mono f : x y /~ x <= y}} ->
+    (surjective `[a, b] `[f b, f a] f)%classic ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f b, f a]).
 Proof.
-move=> /dec_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+move=> /dec_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
 by apply/(equivP idP); symmetry.
 Qed.
 
-Lemma mono_surj_image_segmentP a b f
-    (I := `[a, b]%classic) (J := [set` f @`[a, b]]) :
-  a <= b -> monotonous (mem `[a, b]%O) f -> surjective I J f ->
-  forall y, reflect (exists2 x, x \in `[a, b]%O & f x = y) (y \in f @`[a, b]).
+Lemma mono_surj_image_segmentP a b f : a <= b ->
+    monotonous (mem `[a, b]) f -> (surjective `[a, b] (f @`[a, b]) f)%classic ->
+  forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
 Proof.
-move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fIeqJ.
+move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
 by apply/(equivP idP); symmetry.
 Qed.
 
