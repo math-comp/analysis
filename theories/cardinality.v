@@ -355,7 +355,7 @@ pose Y := A `\` X.
 have Ygb : Y `<=` g @` B.
   have -> : Y = (g @` B) `&` (A `\` \bigcup_i (A_ i.+1)).
     rewrite /Y [X in _ `\` X](_ : _ = A_ O `|` \bigcup_i (A_ i.+1)); last first.
-      by rewrite /X (bigcup_recl 1) big_ord_recl big_ord0 setU0.
+      by rewrite /X (bigcup_splitn 1) big_ord_recl big_ord0 setU0.
     by rewrite setDUr [A_ O]/= setDD; move/setIidPl : gBA; rewrite setIC => ->.
   by apply subIset; left.
 exists (fun t => if pselect (X t) is left _ then f t else (inverse point B g) t).

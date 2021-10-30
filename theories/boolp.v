@@ -70,6 +70,9 @@ Proof.
 by rewrite propeqE; split=> [->//|?]; rewrite funeqE=> x; rewrite propeqE.
 Qed.
 
+Lemma predeqP {T} (A B : T -> Prop) : (A = B) <-> (forall x, A x <-> B x).
+Proof. by rewrite predeqE. Qed.
+
 Lemma predeq2E {T U} (P Q : T -> U -> Prop) :
    (P = Q) = (forall x y, P x y <-> Q x y).
 Proof.
@@ -191,6 +194,10 @@ Lemma eq_exists3 T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
   (forall x y z, U x y z = V x y z) ->
   (exists x y z, U x y z) = (exists x y z, V x y z).
 Proof. by move=> UV; apply/eq_exists2 => x y; apply/eq_exists. Qed.
+
+Lemma eq_exist T (P : T -> Prop) (s t : T) (p : P s) (q : P t) :
+  s = t -> exist P s p = exist P t q.
+Proof. by move=> st; case: _ / st in q *; apply/congr1/Prop_irrelevance. Qed.
 
 Lemma forall_swap T S (U : forall (x : T) (y : S), Prop) :
    (forall x y, U x y) = (forall y x, U x y).

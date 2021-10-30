@@ -3425,7 +3425,7 @@ Proof.
 have prodF := filter_prod_filter (@entourage_filter U) (@entourage_filter V).
 split; rewrite /prod_ent; last 1 first.
 - by move=> A B sAB /=; apply: filterS => ? [xy /sAB ??]; exists xy.
-- rewrite -setMT; apply: prod_entP filterT filterT.
+- rewrite -setMTT; apply: prod_entP filterT filterT.
 move=> A B /= entA entB; apply: filterS (filterI entA entB) => xy [].
 move=> [zt Azt ztexy] [zt' Bzt' zt'exy]; exists zt => //; split=> //.
 move/eqP: ztexy; rewrite -zt'exy !xpair_eqE.

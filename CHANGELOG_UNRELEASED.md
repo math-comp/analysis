@@ -4,6 +4,30 @@
 
 ### Added
 
+- in `classical_sets.v`
+  + lemma `setC_inj`,
+  + lemma `setD1K`,
+  + lemma `subTset`,
+  + lemma `setUidPr`, `setUidl` and `setUidr`,
+  + lemma `setIidPr`, `setIidl` and `setIidr`,
+  + lemma `set_fset0`, `set_fset1`, `set_fsetI`, `set_fsetU`,
+  + lemma `bigcap_inf`, `subset_bigcup_r`, `subset_bigcap_r`,
+    `eq_bigcupl`, `eq_bigcapl`, `eq_bigcup`, `eq_bigcap`, `bigcupU`,
+    `bigcapI`, `bigcup_const`, `bigcap_const`, `bigcapIr`, `bigcupUr`,
+    `bigcap_set0`, `bigcap_set1`, `bigcap0`, `bigcapT`, `bigcupT`,
+    `bigcapTP`, `setI_bigcupl`, `setU_bigcapl`, `bigcup_mkcond`,
+    `bigcap_mkcond`, `setC_bigsetU`, `setC_bigsetI`,
+    `bigcap_set_cond`, `bigcap_set`, `bigcap_split`, `bigcap_mkord`,
+    `subset_bigsetI`, `subset_bigsetI_cond`, `bigcap_image`
+  + lemmas `bigcup_setU1`, `bigcap_setU1`, `bigcup_setU`,
+    `bigcap_setU`, `bigcup_fset`, `bigcap_fset`, `bigcup_fsetU1`,
+    `bigcap_fsetU1`, `bigcup_fsetD1`, `bigcap_fsetD1`,
+  + defintion `mem_set : A u -> u \in A`
+  + lemma `forall_sig`
+
+- in `classical_sets.v`:
+  + lemmas `bigcup_image`, `bigcup_of_set1`, `set_fset0`, `set_fset1`, `set_fsetI`,
+    `set_fsetU`, `set_fsetU1`, `set_fsetD`, `set_fsetD1`,
 - in `boolp.v`:
   + lemmas `orA`, `andA`
 - in `measure.v`:
@@ -95,6 +119,19 @@
 
 ### Changed
 
+- in `classical_sets.v`
+  + `setU_bigcup` -> `bigcupUl` and reversed
+  + `setI_bigcap` -> `bigcapIl` and reversed
+  + removed spurious disjunction in `bigcup0P`
+  + `bigcup_ord` -> `bigcup_mkord` and reversed
+  + `bigcup_of_set1` -> `bigcup_imset1`
+  + `bigcupD1` -> `bigcup_setD1` and `bigcapD1` -> `bigcap_setD1` and
+    rephrased using ``P `\ x`` instead of ``P `&` ~` [set x]``
+- `exist_congr` -> `eq_exist` and moved from `classsical_sets.v` to
+  `boolp.v`
+
+- `predeqP` moved from `classsical_sets.v` to `boolp.v`
+
 - in `normedtype.v`:
   + remove useless parameter from lemma `near_infty_natSinv_lt`
 - in `ereal.v`:
@@ -136,6 +173,14 @@
   + `oppeD` to use `fin_num`
 
 ### Renamed
+
+- in `classical_sets.v`
+  + `eqbigcup_r` -> `eq_bigcupr`
+  + `eqbigcap_r` -> `eq_bigcapr`
+  + `bigcup_distrr` -> `setI_bigcupr`
+  + `bigcup_distrl` -> `setI_bigcupl`
+  + `bigcup_refl` -> `bigcup_splitn`
+  + `setMT` -> `setMTT`
 
 - in `classical_sets.v`:
   + generalize lemma `perm_eq_trivIset`
