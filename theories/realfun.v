@@ -122,8 +122,7 @@ by move/oppr_inj; apply/fI.
 Qed.
 
 Lemma itv_continuous_inj_mono f (I : interval R) :
-    {in I, continuous f} -> {in I &, injective f} ->
-  monotonous (mem I) f.
+    {in I, continuous f} -> {in I &, injective f} -> monotonous I f.
 Proof.
 move=> fC fI.
 case: (pselect (exists a b, [/\ a \in I , b \in I & a < b])); last first.
@@ -158,10 +157,6 @@ have [aLb|bLa|<-] := ltrgtP a b; first 1 last.
 move=> /(_ b a); rewrite !bound_itvE fafb.
 by move=> /(_ (ltW aLb) (ltW aLb)); rewrite lt_geF.
 Qed.
-
-Let Cf (f : R -> R) a b := {in `[a, b], continuous f}.
-Let If (f : R -> R) a b := {in `[a, b] &, injective f}.
-Let Mf (f : R -> R) a b := {in `[a, b] &, {mono f : x y / x <= y}}.
 
 (* The condition "f a <= f b" is unnecessary because the last                *)
 (* interval condition is vacuously true otherwise.                           *)
@@ -199,7 +194,7 @@ Qed.
 
 Lemma segment_can_mono a b f g : a <= b ->
     {in `[a, b], continuous f} -> {in `[a, b], cancel f g} ->
-  monotonous (mem (f @`[a, b])) g.
+  monotonous (f @`[a, b]) g.
 Proof.
 move=> le_ab fct fK; rewrite /monotonous/=; case: ltrgtP => fab; [left|right..];
   do ?by [apply: segment_can_le|apply: segment_can_ge].
@@ -207,18 +202,18 @@ by move=> x y /itvxxP<- /itvxxP<-; rewrite !lexx.
 Qed.
 
 Lemma segment_continuous_surjective a b f : a <= b ->
-  {in `[a, b], continuous f} -> (surjective `[a, b] (f @`[a, b]) f)%classic.
+  {in `[a, b], continuous f} -> surjective `[a, b] (f @`[a, b]) f.
 Proof. by move=> le_ab fct y/= /IVT[]// x; exists x. Qed.
 
 Lemma segment_continuous_le_surjective a b f : a <= b -> f a <= f b ->
-  {in `[a, b], continuous f} -> (surjective `[a, b] `[f a, f b] f)%classic.
+  {in `[a, b], continuous f} -> surjective `[a, b] `[f a, f b] f.
 Proof.
 move=> le_ab f_ab /(segment_continuous_surjective le_ab).
 by rewrite (min_idPl _)// (max_idPr _).
 Qed.
 
 Lemma segment_continuous_ge_surjective a b f : a <= b -> f b <= f a ->
-  {in `[a, b], continuous f} -> (surjective `[a, b] `[f b, f a] f)%classic.
+  {in `[a, b], continuous f} -> surjective `[a, b] `[f b, f a] f.
 Proof.
 move=> le_ab f_ab /(segment_continuous_surjective le_ab).
 by rewrite (min_idPr _)// (max_idPl _).
@@ -226,7 +221,7 @@ Qed.
 
 Lemma continuous_inj_image_segment a b f : a <= b ->
     {in `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
-  (f @` `[a, b] = f @`[a, b])%classic.
+  f @` `[a, b] = f @`[a, b]%classic.
 Proof.
 move=> leab fct finj; apply: mono_surj_image_segment => //.
   exact: itv_continuous_inj_mono.
@@ -276,14 +271,14 @@ Qed.
 
 Lemma segment_inc_surj_continuous a b f :
     {in `[a, b] &, {mono f : x y / x <= y}} ->
-    (surjective `[a, b] `[f a, f b] f)%classic ->
+    surjective `[a, b] `[f a, f b] f ->
   {in `]a, b[, continuous f}.
 Proof.
 move=> fle f_surj; have [f_inj flt] := (inc_inj_in fle, leW_mono_in fle).
 have [aLb|bLa] := ltP a b; last by move=> z; rewrite itv_ge//= -leNgt.
 have le_ab : a <= b by rewrite ltW.
 have [aab bab] : a \in `[a, b] /\ b \in `[a, b] by rewrite !bound_itvE ltW.
-have fab : (f @` `[a, b] = `[f a, f b])%classic by exact:inc_surj_image_segment.
+have fab : f @` `[a, b] = `[f a, f b]%classic by exact:inc_surj_image_segment.
 pose g := inverse point [set x | x \in `[a, b]] f.
 have fK : {in `[a, b], cancel f g}.
   move=> z zab; apply: injective_left_inverse; rewrite ?inE//.
@@ -320,7 +315,7 @@ Grab Existential Variables. all: end_near. Qed.
 
 Lemma segment_dec_surj_continuous a b f :
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-    (surjective `[a, b] `[f b, f a] f)%classic ->
+    surjective `[a, b] `[f b, f a] f ->
   {in `]a, b[, continuous f}.
 Proof.
 move=> fge f_surj; suff: {in `]a, b[, continuous (- f)}.
@@ -332,7 +327,7 @@ by move=> y/=; rewrite -oppr_itvcc => /f_surj[x [? /(canRL opprK)->]]; exists x.
 Qed.
 
 Lemma segment_mono_surj_continuous a b f :
-    monotonous (mem `[a, b]) f -> (surjective `[a, b] (f @`[a, b]) f)%classic ->
+    monotonous `[a, b] f -> surjective `[a, b] (f @`[a, b]) f ->
   {in `]a, b[, continuous f}.
 Proof.
 move=> -[fle|fge] f_surj x xab; have leab : a <= b by rewrite (itvP xab).

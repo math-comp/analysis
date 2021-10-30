@@ -26,8 +26,8 @@ Import Order.TTheory Order.Syntax GRing.Theory Num.Def Num.Theory.
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
 
-Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
 
 Section subr_image.
 Variable R : numDomainType.

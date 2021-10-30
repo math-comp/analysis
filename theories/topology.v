@@ -574,7 +574,7 @@ Arguments ler_bigmax_cond {d T I P F}.
 Arguments bigmax_eq_arg {d T I} i0 {P F}.
 Arguments eq_bigmax {d T I} i0 {P F}.
 
-Definition monotonous d (T : porderType d) (A : {pred T}) (f : T -> T) :=
+Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
   {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
 
 Lemma and_prop_in (T : Type) (p : mem_pred T) (P Q : T -> Prop) :

@@ -318,8 +318,8 @@ Notation "f @^-1` A" := (preimage f A) : classical_set_scope.
 Notation "f @` A" := (image A f) (only parsing) : classical_set_scope.
 Notation "A !=set0" := (nonempty A) : classical_set_scope.
 
-Notation "[ 'set`' p ]":= [set x | x \in p] : classical_set_scope.
-Notation set_itv := (fun i => [set` i]).
+Notation "[ 'set`' p ]":= [set x | is_true (x \in p)] : classical_set_scope.
+Notation pred_set := (fun i => [set` i]).
 
 Notation "`[ a , b ]" :=
   [set` Interval (BLeft a) (BRight b)] : classical_set_scope.

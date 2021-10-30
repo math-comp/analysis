@@ -3983,7 +3983,7 @@ Section image_interval.
 Variable R : realDomainType.
 Implicit Types (a b : R) (f : R -> R).
 
-Lemma mono_mem_image_segment a b f : monotonous (mem `[a, b]) f ->
+Lemma mono_mem_image_segment a b f : monotonous `[a, b] f ->
   {homo f : x / x \in `[a, b] >-> x \in f @`[a, b]}.
 Proof.
 move=> [fle|fge] x xab; have leab : a <= b by rewrite (itvP xab).
@@ -3993,7 +3993,7 @@ have: f a >= f b by rewrite fge ?bound_itvE.
 by case: leP => // fafb _; rewrite in_itv/= !fge ?(itvP xab).
 Qed.
 
-Lemma mono_mem_image_itvoo a b f : monotonous (mem `[a, b]) f ->
+Lemma mono_mem_image_itvoo a b f : monotonous `[a, b] f ->
   {homo f : x / x \in `]a, b[ >-> x \in f @`]a, b[}.
 Proof.
 move=> []/[dup] => [/leW_mono_in|/leW_nmono_in] flt fle x xab;
@@ -4005,8 +4005,8 @@ by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
 Qed.
 
 Lemma mono_surj_image_segment a b f : a <= b ->
-    monotonous (mem `[a, b]) f -> (surjective `[a, b] (f @`[a, b]) f)%classic ->
-  (f @` `[a, b] = f @`[a, b])%classic.
+    monotonous `[a, b] f -> surjective `[a, b] (f @`[a, b]) f ->
+  f @` `[a, b] = f @`[a, b]%classic.
 Proof.
 move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-];
 exact: mono_mem_image_segment.
@@ -4020,8 +4020,8 @@ Proof. by case: ltrP. Qed.
 
 Lemma inc_surj_image_segment a b f : a <= b ->
     {in `[a, b] &, {mono f : x y / x <= y}} ->
-    (surjective `[a, b] `[f a, f b] f)%classic ->
-  (f @` `[a, b] = `[f a, f b])%classic.
+    surjective `[a, b] `[f a, f b] f ->
+  f @` `[a, b] = `[f a, f b]%classic.
 Proof.
 move=> leab fle f_surj; have fafb : f a <= f b by rewrite fle ?bound_itvE.
 by rewrite mono_surj_image_segment ?inc_segment_image//; left.
@@ -4029,8 +4029,8 @@ Qed.
 
 Lemma dec_surj_image_segment a b f : a <= b ->
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-    (surjective `[a, b] `[f b, f a] f)%classic ->
-  (f @` `[a, b] = `[f b, f a])%classic.
+    surjective `[a, b] `[f b, f a] f ->
+  f @` `[a, b] = `[f b, f a]%classic.
 Proof.
 move=> leab fge f_surj; have fafb : f b <= f a by rewrite fge ?bound_itvE.
 by rewrite mono_surj_image_segment ?dec_segment_image//; right.
@@ -4038,7 +4038,7 @@ Qed.
 
 Lemma inc_surj_image_segmentP a b f : a <= b ->
     {in `[a, b] &, {mono f : x y / x <= y}} ->
-    (surjective `[a, b] `[f a, f b] f)%classic ->
+    surjective `[a, b] `[f a, f b] f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f a, f b]).
 Proof.
 move=> /inc_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
@@ -4047,7 +4047,7 @@ Qed.
 
 Lemma dec_surj_image_segmentP a b f : a <= b ->
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-    (surjective `[a, b] `[f b, f a] f)%classic ->
+    surjective `[a, b] `[f b, f a] f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f b, f a]).
 Proof.
 move=> /dec_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
@@ -4055,7 +4055,7 @@ by apply/(equivP idP); symmetry.
 Qed.
 
 Lemma mono_surj_image_segmentP a b f : a <= b ->
-    monotonous (mem `[a, b]) f -> (surjective `[a, b] (f @`[a, b]) f)%classic ->
+    monotonous `[a, b] f -> surjective `[a, b] (f @`[a, b]) f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
 Proof.
 move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
