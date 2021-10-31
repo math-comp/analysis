@@ -40,11 +40,12 @@
   bundles."8.11".coqPackages.coq.override.version = "8.11";
   bundles."8.12".coqPackages.coq.override.version = "8.12";
   bundles."8.13".coqPackages.coq.override.version = "8.13";
+  bundles."8.14".coqPackages.coq.override.version = "8.14";
 
   ## Cachix caches to use in CI
   ## Below we list some standard ones
   cachix.coq = {};
-  cachix.math-comp = {};
+  cachix.math-comp.authToken = "CACHIX_AUTH_TOKEN";
   cachix.coq-community = {};
   
   ## If you have write access to one of these caches you can

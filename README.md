@@ -28,16 +28,17 @@ the Coq proof-assistant and using the Mathematical Components library.
   - Damien Rouhling (initial)
   - Pierre Roux
   - Kazuhiko Sakaguchi
+  - Zachary Stone
   - Pierre-Yves Strub (initial)
   - Laurent Théry
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: Coq 8.11 to 8.13 (or dev)
+- Compatible Coq versions: Coq 8.11 to 8.14 (or dev)
 - Additional dependencies:
-  - [MathComp ssreflect 1.12](https://math-comp.github.io)
-  - [MathComp fingroup 1.12](https://math-comp.github.io)
-  - [MathComp algebra 1.12](https://math-comp.github.io)
-  - [MathComp solvable 1.12](https://math-comp.github.io)
-  - [MathComp field 1.12](https://math-comp.github.io)
+  - [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
+  - [MathComp fingroup 1.12 or later](https://math-comp.github.io)
+  - [MathComp algebra 1.12 or later](https://math-comp.github.io)
+  - [MathComp solvable 1.12 or later](https://math-comp.github.io)
+  - [MathComp field 1.12 or later](https://math-comp.github.io)
   - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
   - [Hierarchy Builder >= 0.10](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`

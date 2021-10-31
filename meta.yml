@@ -29,6 +29,8 @@ authors:
   initial: false
 - name: Kazuhiko Sakaguchi
   initial: false
+- name: Zachary Stone
+  initial: false
 - name: Pierre-Yves Strub
   initial: true
 - name: Laurent Théry
@@ -44,12 +46,10 @@ license:
   file: LICENSE
 
 supported_coq_versions:
-  text: Coq 8.11 to 8.13 (or dev)
-  opam: '{ (>= "8.11" & < "8.14~") | (= "dev") }'
+  text: Coq 8.11 to 8.14 (or dev)
+  opam: '{ (>= "8.11" & < "8.15~") | (= "dev") }'
 
 tested_coq_opam_versions:
-- version: '1.12.0-coq-8.11'
-  repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.12'
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.13'
@@ -60,33 +60,35 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-8.13'
   repo: 'mathcomp/mathcomp-dev'
+- version: 'coq-8.14'
+  repo: 'mathcomp/mathcomp-dev'
 
 dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
-    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
+    version: '{ (>= "1.12.0" & < "1.14~") | (= "dev") }'
   description: |-
-    [MathComp ssreflect 1.12](https://math-comp.github.io)
+    [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-fingroup
-    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
+    version: '{ (>= "1.12.0" & < "1.14~") | (= "dev") }'
   description: |-
-    [MathComp fingroup 1.12](https://math-comp.github.io)
+    [MathComp fingroup 1.12 or later](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-algebra
-    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
+    version: '{ (>= "1.12.0" & < "1.14~") | (= "dev") }'
   description: |-
-    [MathComp algebra 1.12](https://math-comp.github.io)
+    [MathComp algebra 1.12 or later](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-solvable
-    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
+    version: '{ (>= "1.12.0" & < "1.14~") | (= "dev") }'
   description: |-
-    [MathComp solvable 1.12](https://math-comp.github.io)
+    [MathComp solvable 1.12 or later](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-field
-    version: '{ (>= "1.12.0" & < "1.13~") | (= "dev") }'
+    version: '{ (>= "1.12.0" & < "1.14~") | (= "dev") }'
   description: |-
-    [MathComp field 1.12](https://math-comp.github.io)
+    [MathComp field 1.12 or later](https://math-comp.github.io)
 - opam:
     name: coq-mathcomp-finmap
     version: '{ (>= "1.5.1" & < "1.6~") | (= "dev") }'
