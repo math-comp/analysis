@@ -361,12 +361,6 @@ Proof. by move=> sAB sBC ? ?; apply/sBC/sAB. Qed.
 
 Lemma sub0set A : set0 `<=` A. Proof. by []. Qed.
 
-Lemma setUCr : right_inverse setT setC (@setU T).
-Proof.
-move=> A.
-by rewrite predeqE => t; split => // _; case: (pselect (A t)); [left|right].
-Qed.
-
 Lemma setC0 : ~` set0 = setT :> set T.
 Proof. by rewrite predeqE; split => ?. Qed.
 
@@ -426,14 +420,23 @@ Proof. by rewrite setIA !(setIAC _ C) -(setIA _ C) setIid. Qed.
 Lemma setIIr A B C : A `&` (B `&` C) = (A `&` B) `&` (A `&` C).
 Proof. by rewrite !(setIC A) setIIl. Qed.
 
-Lemma setUA : associative (@setU T).
-Proof. move=> p q r; rewrite /setU/mkset predeqE => a; tauto. Qed.
-
-Lemma setUid : idempotent (@setU T).
-Proof. move=> p; rewrite /setU/mkset predeqE => a; tauto. Qed.
-
 Lemma setUC : commutative (@setU T).
 Proof. move=> p q; rewrite /setU/mkset predeqE => a; tauto. Qed.
+
+Lemma setUS A B C : A `<=` B -> C `|` A `<=` C `|` B.
+Proof. by move=> sAB t [Ct|At]; [left|right; exact: sAB]. Qed.
+
+Lemma setSU A B C : A `<=` B -> A `|` C `<=` B `|` C.
+Proof. by move=> sAB; rewrite -!(setUC C); apply setUS. Qed.
+
+Lemma setUSS A B C D : A `<=` C -> B `<=` D -> A `|` B `<=` C `|` D.
+Proof. by move=> /(@setSU _ _ B) /subset_trans sAC /(@setUS _ _ C) /sAC. Qed.
+
+Lemma setTU : left_zero setT (@setU T).
+Proof. by move=> A; rewrite predeqE => t; split; [case|left]. Qed.
+
+Lemma setUT : right_zero setT (@setU T).
+Proof. by move=> A; rewrite predeqE => t; split; [case|right]. Qed.
 
 Lemma set0U : left_id set0 (@setU T).
 Proof. by move=> A; rewrite predeqE => t; split; [case|right]. Qed.
@@ -441,11 +444,35 @@ Proof. by move=> A; rewrite predeqE => t; split; [case|right]. Qed.
 Lemma setU0 : right_id set0 (@setU T).
 Proof. by move=> A; rewrite predeqE => t; split; [case|left]. Qed.
 
-Lemma setTU : left_zero setT (@setU T).
-Proof. by move=> A; rewrite predeqE => t; split; [case|left]. Qed.
+Lemma setUCl : left_inverse setT setC (@setU T).
+Proof.
+move=> A.
+by rewrite predeqE => t; split => // _; case: (pselect (A t)); [right|left].
+Qed.
 
-Lemma setUT : right_zero setT (@setU T).
-Proof. by move=> A; rewrite predeqE => t; split; [case|right]. Qed.
+Lemma setUCr : right_inverse setT setC (@setU T).
+Proof. by move=> A; rewrite setUC setUCl. Qed.
+
+Lemma setUA : associative (@setU T).
+Proof. move=> p q r; rewrite /setU/mkset predeqE => a; tauto. Qed.
+
+Lemma setUCA : left_commutative (@setU T).
+Proof. by move=> A B C; rewrite setUA [A `|` _]setUC -setUA. Qed.
+
+Lemma setUAC : right_commutative (@setU T).
+Proof. by move=> A B C; rewrite setUC setUCA setUA. Qed.
+
+Lemma setUACA : @interchange (set T) setU setU.
+Proof. by move=> A B C D; rewrite -setUA [B `|` _]setUCA setUA. Qed.
+
+Lemma setUid : idempotent (@setU T).
+Proof. move=> p; rewrite /setU/mkset predeqE => a; tauto. Qed.
+
+Lemma setUUl A B C : A `|` B `|` C = (A `|` C) `|` (B `|` C).
+Proof. by rewrite setUA !(setUAC _ C) -(setUA _ C) setUid. Qed.
+
+Lemma setUUr A B C : A `|` (B `|` C) = (A `|` B) `|` (A `|` C).
+Proof. by rewrite !(setUC A) setUUl. Qed.
 
 Lemma setD1K a A : A a -> a |` A `\ a = A.
 Proof.
@@ -570,8 +597,6 @@ Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
 
 Lemma setU_eq0 A B : (A `|` B = set0) = ((A = set0) /\ (B = set0)).
 Proof. by rewrite -!subset0 subUset. Qed.
-
-Lemma setUCl A : ~` A `|` A = setT. Proof. by rewrite setUC setUCr. Qed.
 
 Lemma setCS A B : (~` A `<=` ~` B) = (B `<=` A).
 Proof.

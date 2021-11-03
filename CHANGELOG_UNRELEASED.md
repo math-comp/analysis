@@ -32,6 +32,9 @@
     `restrict_extend_dep`, `restrict_dep_restrict`,
     `restrict_dep_setT`
 
+  + lemmas `setUS`, `setSU`, `setUSS`, `setUCA`, `setUAC`, `setUACA`,
+    `setUUl`, `setUUr`
+
 - in `topology.v`:
   + lemma `fmap_comp`
   + definition `finSubCover`
