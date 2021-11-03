@@ -175,6 +175,8 @@
   + `bigcup_of_set1` -> `bigcup_imset1`
   + `bigcupD1` -> `bigcup_setD1` and `bigcapD1` -> `bigcap_setD1` and
     rephrased using ``P `\ x`` instead of ``P `&` ~` [set x]``
+  + order of arguments for `setIS`, `setSI`, `setUS`, `setSU`, `setSD`, `setDS`
+
 - `exist_congr` -> `eq_exist` and moved from `classsical_sets.v` to
   `boolp.v`
 

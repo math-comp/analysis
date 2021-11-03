@@ -372,14 +372,14 @@ Definition setC_inj := can_inj setCK.
 Lemma setIC : commutative (@setI T).
 Proof. by move=> A B; rewrite predeqE => ?; split=> [[]|[]]. Qed.
 
-Lemma setIS A B C : A `<=` B -> C `&` A `<=` C `&` B.
+Lemma setIS C A B : A `<=` B -> C `&` A `<=` C `&` B.
 Proof. by move=> sAB t [Ct At]; split => //; exact: sAB. Qed.
 
-Lemma setSI A B C : A `<=` B -> A `&` C `<=` B `&` C.
+Lemma setSI C A B : A `<=` B -> A `&` C `<=` B `&` C.
 Proof. by move=> sAB; rewrite -!(setIC C); apply setIS. Qed.
 
 Lemma setISS A B C D : A `<=` C -> B `<=` D -> A `&` B `<=` C `&` D.
-Proof. by move=> /(@setSI _ _ B) /subset_trans sAC /(@setIS _ _ C) /sAC. Qed.
+Proof. by move=> /(@setSI B) /subset_trans sAC /(@setIS C) /sAC. Qed.
 
 Lemma setIT : right_id setT (@setI T).
 Proof. by move=> A; rewrite predeqE => ?; split=> [[]|]. Qed.
@@ -423,14 +423,14 @@ Proof. by rewrite !(setIC A) setIIl. Qed.
 Lemma setUC : commutative (@setU T).
 Proof. move=> p q; rewrite /setU/mkset predeqE => a; tauto. Qed.
 
-Lemma setUS A B C : A `<=` B -> C `|` A `<=` C `|` B.
+Lemma setUS C A B : A `<=` B -> C `|` A `<=` C `|` B.
 Proof. by move=> sAB t [Ct|At]; [left|right; exact: sAB]. Qed.
 
-Lemma setSU A B C : A `<=` B -> A `|` C `<=` B `|` C.
+Lemma setSU C A B : A `<=` B -> A `|` C `<=` B `|` C.
 Proof. by move=> sAB; rewrite -!(setUC C); apply setUS. Qed.
 
 Lemma setUSS A B C D : A `<=` C -> B `<=` D -> A `|` B `<=` C `|` D.
-Proof. by move=> /(@setSU _ _ B) /subset_trans sAC /(@setUS _ _ C) /sAC. Qed.
+Proof. by move=> /(@setSU B) /subset_trans sAC /(@setUS C) /sAC. Qed.
 
 Lemma setTU : left_zero setT (@setU T).
 Proof. by move=> A; rewrite predeqE => t; split; [case|left]. Qed.
@@ -494,7 +494,7 @@ Lemma setCT : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
 
 Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
 
-Lemma setSD A B C : A `<=` B -> A `\` C `<=` B `\` C.
+Lemma setSD C A B : A `<=` B -> A `\` C `<=` B `\` C.
 Proof. by rewrite !setDE; apply: setSI. Qed.
 
 Lemma setTD A : setT `\` A = ~` A.
@@ -614,11 +614,11 @@ Proof. by rewrite setDE set0I. Qed.
 Lemma setD0 A : A `\` set0 = A.
 Proof. by rewrite setDE setC0 setIT. Qed.
 
-Lemma setDS A B C : A `<=` B -> C `\` B `<=` C `\` A.
+Lemma setDS C A B : A `<=` B -> C `\` B `<=` C `\` A.
 Proof. by rewrite !setDE -setCS; apply: setIS. Qed.
 
 Lemma setDSS A B C D : A `<=` C -> D `<=` B -> A `\` B `<=` C `\` D.
-Proof. by move=> /(@setSD _ _ B) /subset_trans sAC /(@setDS _ _ C) /sAC. Qed.
+Proof. by move=> /(@setSD B) /subset_trans sAC /(@setDS C) /sAC. Qed.
 
 Lemma setCU A B : ~`(A `|` B) = ~` A `&` ~` B.
 Proof.
