@@ -156,6 +156,8 @@
   + lemmas `sube_eq` `lte_pmul2r`, `lte_pmul2l`, `lte_nmul2l`, `lte_nmul2r`, `mule_le0`,
     `pmule_llt0`, `pmule_rlt0`, `nmule_llt0`, `nmule_rlt0`, `mule_lt0`
   + lemmas `maxeMl`, `maxeMr`
+  + lemmas `lte_0_pinfty`, `lte_ninfty_0`, `lee_0_pinfty`, `lee_ninfty_0`,
+    `oppe_gt0`, `oppe_lt0`
 - in `classical_sets.v`:
   + notation `` [set` i] ``
   + notations `set_itv`, `` `[a, b] ``, `` `]a, b] ``, `` `[a, b[ ``,
@@ -216,6 +218,10 @@
 - lemma `exists2P` moved from `topology.v` to `boolp.v`
 - in `ereal.v`:
   + `oppeD` to use `fin_num`
+  + weaken `realDomainType` to `numDomainType` in `mule_ninfty_pinfty`,
+    `mule_pinfty_ninfty`, `mule_pinfty_pinfty`, `mule_ninfty_ninfty`,
+    `mule_neq0`, `mule_ge0`, `mule_le0`, `mule_gt0`, `mule_le0_ge0`,
+    `mule_ge0_le0`
 
 ### Renamed
 
