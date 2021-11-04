@@ -131,14 +131,7 @@ Definition er_map T T' (f : T -> T') (x : \bar T) : \bar T' :=
   | -oo => -oo
   end.
 
-Section ExtendedReals.
-Variable (R : numDomainType).
-
-Coercion real_of_extended x : R :=
-  if x is EFin v then v else 0.
-
-End ExtendedReals.
-Arguments real_of_extended {R}.
+Definition fine {R : zmodType} x : R := if x is EFin v then v else 0.
 
 Section EqEReal.
 Variable (R : eqType).
@@ -470,8 +463,7 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
-Lemma le0R (x : \bar R) :
-  0 <= x -> (0 <= real_of_extended(*TODO: coercion broken*) x)%R.
+Lemma le0R (x : \bar R) : 0 <= x -> (0 <= fine x)%R.
 Proof. by case: x. Qed.
 
 Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
@@ -503,7 +495,7 @@ Implicit Types (x y z : \bar R) (r : R).
 
 Lemma NEFin r : (- r)%:E = (- r%:E). Proof. by []. Qed.
 
-Lemma real_of_extendedN x : real_of_extended (- x) = (- real_of_extended x)%R.
+Lemma fineN x : fine (- x) = (- fine x)%R.
 Proof. by case: x => //=; rewrite oppr0. Qed.
 
 Lemma addEFin r r' : (r + r')%:E = r%:E + r'%:E.
@@ -630,28 +622,23 @@ Lemma fin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma real_of_extendedD :
-  {in (@fin_num R) &, {morph real_of_extended : x y / x + y >-> (x + y)%R}}.
+Lemma fineD :
+  {in (@fin_num R) &, {morph fine : x y / x + y >-> (x + y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
 
 Lemma fin_num_adde_def x y : y \is a fin_num -> x +? y.
 Proof. by move: x y => [x| |] [y | |]. Qed.
 
-Lemma EFin_real_of_extended x : x \is a fin_num -> x = (real_of_extended x)%:E.
+Lemma fineK x : x \is a fin_num -> (fine x)%:E = x.
 Proof. by case: x. Qed.
 
 Lemma telescope_sume n m (f : nat -> \bar R) :
   (forall i, (n <= i <= m)%N -> f i \is a fin_num) -> (n <= m)%N ->
   \sum_(n <= k < m) (f k.+1 - f k) = f m - f n.
 Proof.
-move=> nmf nm; rewrite big_nat.
-(under eq_bigr) => [i /andP[ni im]|].
-  rewrite (@EFin_real_of_extended (f i.+1 - f i)).
-    rewrite real_of_extendedD ?fin_numN ?nmf ?(leq_trans ni) ?(ltnW im)//.
-    by rewrite real_of_extendedN; over.
-  by rewrite fin_numD ?fin_numN ?nmf ?(leq_trans ni) ?(ltnW im).
-rewrite sumEFin -big_nat telescope_sumr// subEFin.
-by rewrite -!EFin_real_of_extended// nmf ?nm ?leqnn.
+move=> nmf nm; under eq_big_nat => i /andP[ni im] do
+  rewrite -[f i.+1]fineK -1?[f i]fineK ?(nmf, ni, im) 1?ltnW//= -addEFin.
+by rewrite sumEFin telescope_sumr// subEFin !fineK ?nmf ?nm ?leqnn.
 Qed.
 
 Lemma addeK x y : x \is a fin_num -> y + x - x = y.
@@ -894,8 +881,8 @@ Lemma dfin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma dreal_of_extendedD :
-  {in (@fin_num R) &, {morph real_of_extended : x y / x + y >-> (x + y)%R}}.
+Lemma dfineD :
+  {in (@fin_num R) &, {morph fine : x y / x + y >-> (x + y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
 
 Lemma daddeK x y : x \is a fin_num -> y + x - x = y.
@@ -2356,8 +2343,8 @@ Local Open Scope classical_set_scope.
 Implicit Types S : set (\bar R).
 Implicit Types x : \bar R.
 
-Let real_of_extended_def r0 x : R := if x is r%:E then r else r0.
-(* NB: see also real_of_extended above *)
+Let fine_def r0 x : R := if x is r%:E then r else r0.
+(* NB: see also fine above *)
 
 Lemma ereal_supremums_neq0 S : supremums S !=set0.
 Proof.
@@ -2371,7 +2358,7 @@ have [r Sr] : exists r, S r%:E.
   move: S0 => /set0P[] [r Sr| // |Snoo1]; first by exists r.
   apply/not_existsP => nS; move/negP : Snoo; apply.
   by apply/eqP; rewrite predeqE => -[] // r; split => // /nS.
-set U := [set x | (real_of_extended_def r @` S) x ].
+set U := fine_def r @` S.
 have [|] := eqVneq (ubound U) set0.
   rewrite -subset0 => U0; exists +oo.
   split; [exact/ereal_ub_pinfty | apply/lbP => /= -[r0 /ubP Sr0|//|]].
@@ -2772,8 +2759,8 @@ Proof. exact: can_mono_in (onW_can_in predT expandK) _ (in2W le_contract). Qed.
 Definition lt_expand := leW_mono_in le_expand_in.
 Definition expand_inj := mono_inj_in lexx le_anti le_expand_in.
 
-Lemma real_of_extended_expand r : (`|r| < 1)%R ->
-  (real_of_extended (expand r))%:E = expand r.
+Lemma fine_expand r : (`|r| < 1)%R ->
+  (fine (expand r))%:E = expand r.
 Proof.
 by move=> r1; rewrite /expand 2!leNgt ltr_oppl; case/ltr_normlP : r1 => -> ->.
 Qed.
@@ -2960,7 +2947,7 @@ by rewrite ltr_subl_addl addrC -ltr_subl_addl -lt_expandLR ?inE ?ltW.
 Qed.
 
 Lemma ball_ereal_ball_fin_lt r r' (e : {posnum R}) :
-  let e' := (r - real_of_extended (expand (contract r%:E - e%:num)))%R in
+  let e' := (r - fine (expand (contract r%:E - e%:num)))%R in
   ball r e' r' -> (r' < r)%R ->
   (`|contract r%:E - (e)%:num| < 1)%R ->
   ereal_ball r%:E (e)%:num r'%:E.
@@ -2970,12 +2957,12 @@ rewrite gtr0_norm ?subr_gt0// ?lt_contract ?lte_fin//.
 move: re'r'.
 rewrite /ball /= gtr0_norm // ?subr_gt0// /e'.
 rewrite -ltr_subl_addl addrAC subrr add0r ltr_oppl opprK -lte_fin.
-rewrite real_of_extended_expand // lt_expandLR ?inE ?ltW//.
+rewrite fine_expand // lt_expandLR ?inE ?ltW//.
 by rewrite ltr_subl_addl addrC -ltr_subl_addl.
 Qed.
 
 Lemma ball_ereal_ball_fin_le r r' (e : {posnum R}) :
-  let e' : R := (real_of_extended (expand (contract r%:E + e%:num)) - r)%R in
+  let e' : R := (fine (expand (contract r%:E + e%:num)) - r)%R in
   ball r e' r' -> (r <= r')%R ->
   (`| contract r%:E + e%:num | < 1)%R ->
   (ereal_ball r%:E e%:num r'%:E).
@@ -2985,7 +2972,7 @@ move: rr'; rewrite le_eqVlt => /predU1P[->|rr']; first by rewrite subrr normr0.
 rewrite /ball /= ltr0_norm ?subr_lt0// opprB in r'e'r.
 rewrite ltr0_norm ?subr_lt0 ?lt_contract ?lte_fin//.
 rewrite opprB; move: r'e'r.
-rewrite /e' -ltr_subl_addr opprK subrK -lte_fin real_of_extended_expand //.
+rewrite /e' -ltr_subl_addr opprK subrK -lte_fin fine_expand //.
 by rewrite lt_expandRL ?inE ?ltW// ltr_subl_addl.
 Qed.
 
@@ -2993,9 +2980,9 @@ Lemma nbhs_oo_up_e1 (A : set (\bar R)) (e : {posnum R}) : (e%:num <= 1)%R ->
   ereal_ball +oo e%:num `<=` A -> nbhs +oo A.
 Proof.
 move=> e1 ooeA.
-exists (real_of_extended (expand (1 - e%:num)%R)); rewrite num_real; split => //.
+exists (fine (expand (1 - e%:num)%R)); rewrite num_real; split => //.
 case => [r | | //].
-- rewrite real_of_extended_expand; last first.
+- rewrite fine_expand; last first.
     by rewrite ger0_norm ?ltr_subl_addl ?ltr_addr // subr_ge0.
   by move=> ?; exact/ooeA/expand_ereal_ball_pinfty.
 - by move=> _; exact/ooeA/ereal_ball_center.
@@ -3056,10 +3043,10 @@ move=> reA reN1 re1.
 have er1 : (`|contract r%:E - e%:num| < 1)%R.
   rewrite ltr_norml reN1 andTb ltr_subl_addl ltr_spaddl //.
   by move: (contract_le1 r%:E); rewrite ler_norml => /andP[].
-pose e' := (r - real_of_extended (expand (contract r%:E - e%:num)))%R.
+pose e' := (r - fine (expand (contract r%:E - e%:num)))%R.
 have e'0 : (0 < e')%R.
   rewrite subr_gt0 -lte_fin -[in X in _ < X](contractK r%:E).
-  rewrite real_of_extended_expand // lt_expand ?inE ?contract_le1// ?ltW//.
+  rewrite fine_expand // lt_expand ?inE ?contract_le1// ?ltW//.
   by rewrite ltr_subl_addl ltr_addr.
 apply/nbhs_ballP; exists e' => // r' re'r'; apply reA.
 by have [?|?] := lerP r r';
@@ -3076,10 +3063,10 @@ move=> reA reN1 re1.
 have ? : (`|contract r%:E + e%:num| < 1)%R.
   rewrite ltr_norml re1 andbT (@lt_le_trans _ _ (contract r%:E)) // ?ler_addl //.
   by move: (contract_lt1 r); rewrite ltr_norml => /andP[].
-pose e' : R := (real_of_extended (expand (contract r%:E + e%:num)) - r)%R.
+pose e' : R := (fine (expand (contract r%:E + e%:num)) - r)%R.
 have e'0 : (0 < e')%R.
   rewrite /e' subr_gt0 -lte_fin -[in X in X < _](contractK r%:E).
-  rewrite real_of_extended_expand //.
+  rewrite fine_expand //.
   by rewrite lt_expand ?inE ?contract_le1 ?ltr_addl ?ltW.
 apply/nbhs_ballP; exists e' => // r' r'e'r; apply reA.
 by have [?|?] := lerP r r';
@@ -3147,15 +3134,15 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
       rewrite ltr_norml re1 andbT -(addr0 (-1)) ler_lt_add //.
       by move: (contract_le1 r%:E); rewrite ler_norml => /andP[].
     pose e' : R := Num.min
-      (r - real_of_extended (expand (contract r%:E - e%:num)))%R
-      (real_of_extended (expand (contract r%:E + e%:num)) - r)%R.
+      (r - fine (expand (contract r%:E - e%:num)))%R
+      (fine (expand (contract r%:E + e%:num)) - r)%R.
     have e'0 : (0 < e')%R.
       rewrite /e' lt_minr; apply/andP; split.
         rewrite subr_gt0 -lte_fin -[in X in _ < X](contractK r%:E).
-        rewrite real_of_extended_expand // lt_expand// ?inE ?contract_le1 ?ltW//.
+        rewrite fine_expand // lt_expand// ?inE ?contract_le1 ?ltW//.
         by rewrite ltr_subl_addl ltr_addr.
       rewrite subr_gt0 -lte_fin -[in X in X < _](contractK r%:E).
-      rewrite real_of_extended_expand//.
+      rewrite fine_expand//.
       by rewrite lt_expand ?inE ?contract_le1 ?ltr_addl ?ltW.
     apply/nbhs_ballP; exists e' => // r' re'r'; apply reA.
     have [|r'r] := lerP r r'.
@@ -3163,7 +3150,7 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
       by apply: le_ball re'r'; rewrite le_minl lexx orbT.
     move: re'r'; rewrite /ball /= lt_minr => /andP[].
     rewrite gtr0_norm ?subr_gt0 // -ltr_subl_addl addrAC subrr add0r ltr_oppl.
-    rewrite opprK -lte_fin real_of_extended_expand // => r'e'r _.
+    rewrite opprK -lte_fin fine_expand // => r'e'r _.
     exact: expand_ereal_ball_fin_lt.
   by apply (@nbhs_fin_out_above _ e) => //; rewrite ltW.
 have [re1|re1] := ltrP 1 (contract r%:E + e%:num).

@@ -113,7 +113,7 @@
   + lemmas `dual_addeE`, `dual_sumeE`, `dual_addeE_def`, `daddEFin`,
     `dsumEFin`, `dsubEFin`, `dadde0`, `dadd0e`, `daddeC`, `daddeA`,
     `daddeAC`, `daddeCA`, `daddeACA`, `doppeD`, `dsube0`, `dsub0e`, `daddeK`,
-    `dfin_numD`, `dreal_of_extendedD`, `dsubeK`, `dsube_eq`,
+    `dfin_numD`, `dfineD`, `dsubeK`, `dsube_eq`,
     `dsubee`, `dadde_eq_pinfty`, `daddooe`, `dadde_Neq_pinfty`,
     `dadde_Neq_ninfty`, `desum_fset_pinfty`, `desum_pinfty`,
     `desum_fset_ninfty`, `desum_ninfty`, `dadde_ge0`, `dadde_le0`,
@@ -262,7 +262,7 @@
     `mule_pinfty_ninfty`, `mule_pinfty_pinfty`, `mule_ninfty_ninfty`,
     `mule_neq0`, `mule_ge0`, `mule_le0`, `mule_gt0`, `mule_le0_ge0`,
     `mule_ge0_le0`
-
+  + renamed `real_of_extended` to `fine` (definition and lemmas)
 ### Renamed
 
 - in `classical_sets.v`
