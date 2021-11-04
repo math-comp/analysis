@@ -2195,22 +2195,22 @@ wlog r0 : r / r > 0 => [hwlog|].
   have [r0| |<-] := ltrgtP 0 r; first exact: hwlog.
     rewrite -oppr_gt0 => /hwlog cNr.
     have -> : (mule r%:E) = ([eta -%E] \o [eta *%E (- r)%:E]).
-      by rewrite funeqE => x /=; rewrite NEFin mulNe oppeK.
+      by rewrite funeqE => x /=; rewrite EFinN mulNe oppeK.
     by move=> x; apply: (continuous_comp (cNr x)) => y; exact: oppe_continuous.
   by move=> x; rewrite mul0e; apply: cvg_near_cst; near=> y; rewrite mul0e.
 move=> [x| |] /=.
 - apply: (@cvg_trans _ [filter of (r%:E * z%:E)%E @[z --> x]]).
     by apply: near_eq_cvg; near=> y.
   suff : ((r * z)%:E @[z --> x]) --> (r * x)%:E.
-    rewrite mulEFin; apply: cvg_trans; apply: near_eq_cvg; near=> y.
-    by rewrite mulEFin.
+    rewrite EFinM; apply: cvg_trans; apply: near_eq_cvg; near=> y.
+    by rewrite EFinM.
   exact: (cvg_comp (@scaler_continuous _ _ _ _)).
 - rewrite muleC /mule/= eqe gt_eqF// lte_fin r0 => A [u [realu uA]].
   exists (r^-1 * u); split; first by rewrite realM// realV// realE (ltW r0).
-  by move=> x rux; apply uA; move: rux; rewrite mulEFin lte_pdivr_mull.
+  by move=> x rux; apply uA; move: rux; rewrite EFinM lte_pdivr_mull.
 - rewrite muleC /mule/= eqe gt_eqF// lte_fin r0 => A [u [realu uA]].
   exists (r^-1 * u); split; first by rewrite realM// realV// realE (ltW r0).
-  by move=> x xru; apply uA; move: xru; rewrite mulEFin lte_pdivl_mull.
+  by move=> x xru; apply uA; move: xru; rewrite EFinM lte_pdivl_mull.
 Grab Existential Variables. all: end_near. Qed.
 
 End mule_continuous.

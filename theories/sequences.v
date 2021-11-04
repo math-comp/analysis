@@ -1214,7 +1214,7 @@ rewrite ger0_norm ?subr_ge0 ?le_contract ?ereal_sup_ub//; last by exists n.
 move: Se'y; rewrite -{}umx {y} /= => le'um.
 have leum : (contract l - e%:num < contract (u_ m))%R.
   rewrite -lt_expandLR ?inE ?ltW//.
-  move: le'um; rewrite /e' NEFin /= opprB subEFin.
+  move: le'um; rewrite /e' EFinN /= opprB subEFin.
   rewrite (fineK l_fin_num) fine_expand //.
   by rewrite addeCA subee // adde0.
 rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
@@ -1318,7 +1318,7 @@ split => [u_cvg _/posnumP[A]|u_ge X [A [Ar AX]]].
 rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
 apply: AX.
 rewrite (@lt_le_trans _ _ (maxr 0 A + 1)%:E) //.
-  by rewrite addEFin lte_spaddr // ?lte_fin// lee_fin le_maxr lexx orbT.
+  by rewrite EFinD lte_spaddr // ?lte_fin// lee_fin le_maxr lexx orbT.
 by near: x; apply: u_ge; rewrite ltr_spaddr // le_maxr lexx.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1442,7 +1442,7 @@ case: (foo _ A20) => m _ {}foo.
 case: (goo _ A20) => k _ {}goo.
 near=> n; have : (n >= maxn m k)%N by near: n; exists (maxn m k).
 rewrite geq_max => /andP[mn kn].
-by rewrite (splitr A) addEFin lee_add // ?foo // goo.
+by rewrite (splitr A) EFinD lee_add // ?foo // goo.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD_ninfty_ninfty (R : realFieldType) (f g : (\bar R)^nat) :
@@ -1455,7 +1455,7 @@ case: (foo _ A20) => m _ {}foo.
 case: (goo _ A20) => k _ {}goo.
 near=> n; have : (n >= maxn m k)%N by near: n; exists (maxn m k).
 rewrite geq_max => /andP[mn kn].
-by rewrite (splitr A) addEFin lee_add // ?foo // goo.
+by rewrite (splitr A) EFinD lee_add // ?foo // goo.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD (R : realFieldType) (f g : (\bar R)^nat) a b :
