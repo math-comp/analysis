@@ -640,6 +640,20 @@ Proof. by move: x y => [x| |] [y | |]. Qed.
 Lemma EFin_real_of_extended x : x \is a fin_num -> x = (real_of_extended x)%:E.
 Proof. by case: x. Qed.
 
+Lemma telescope_sume n m (f : nat -> \bar R) :
+  (forall i, (n <= i <= m)%N -> f i \is a fin_num) -> (n <= m)%N ->
+  \sum_(n <= k < m) (f k.+1 - f k) = f m - f n.
+Proof.
+move=> nmf nm; rewrite big_nat.
+(under eq_bigr) => [i /andP[ni im]|].
+  rewrite (@EFin_real_of_extended (f i.+1 - f i)).
+    rewrite real_of_extendedD ?fin_numN ?nmf ?(leq_trans ni) ?(ltnW im)//.
+    by rewrite real_of_extendedN; over.
+  by rewrite fin_numD ?fin_numN ?nmf ?(leq_trans ni) ?(ltnW im).
+rewrite sumEFin -big_nat telescope_sumr// subEFin.
+by rewrite -!EFin_real_of_extended// nmf ?nm ?leqnn.
+Qed.
+
 Lemma addeK x y : x \is a fin_num -> y + x - x = y.
 Proof. by move: x y => [x| |] [y| |] //; rewrite -addEFin -subEFin addrK. Qed.
 

@@ -199,6 +199,8 @@
   + notations `set_itv`, `` `[a, b] ``, `` `]a, b] ``, `` `[a, b[ ``,
     `` `]a, b[ ``, `` `]-oo, b] ``, `` `]-oo, b[ ``, `` `[a, +oo] ``,
     `` `]a, +oo] ``, `` `]-oo, +oo[ ``
+- in `ereal.v`:
+  + lemma `telescope_sume`
 
 ### Changed
 
