@@ -253,18 +253,37 @@ Proof.
 by move=> mA; rewrite -setTD; apply: measurableD => //; exact: measurableT.
 Qed.
 
+Lemma bigsetI_measurable I r (P : pred I) (F : I -> set T) :
+  (forall i, P i -> measurable (F i)) ->
+  measurable (\big[setI/setT]_(i <- r | P i) F i).
+Proof.
+move=> mF; rewrite -[X in measurable X]setCK setC_bigsetI; apply: measurableC.
+by apply: bigsetU_measurable => i Pi; apply/measurableC/mF.
+Qed.
+
 End algebraofsets_lemmas.
 
 Section measurable_lemmas.
 Variables T : measurableType.
 Implicit Types A B : set T.
 
+Lemma bigcup_measurable (F : (set T)^nat) (P : set nat) :
+  (forall k, P k -> measurable (F k)) -> measurable (\bigcup_(i in P) F i).
+Proof.
+move=> PF; rewrite bigcup_mkcond; apply: measurable_bigcup => k.
+by case: asboolP => Pk; [exact: PF|exact: measurable0].
+Qed.
+
+Lemma bigcap_measurable (F : (set T)^nat) (P : set nat) :
+  (forall k, P k -> measurable (F k)) -> measurable (\bigcap_(i in P) F i).
+Proof.
+move=> PF; rewrite -[X in measurable X]setCK setC_bigcap; apply: measurableC.
+by apply: bigcup_measurable => k Pk; exact/measurableC/PF.
+Qed.
+
 Lemma measurable_bigcap (F : (set T)^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcap_i (F i)).
-Proof.
-move=> ?; rewrite -(setCK (\bigcap__ _)); apply/measurableC.
-by rewrite setC_bigcap; apply/measurable_bigcup => i; exact/measurableC.
-Qed.
+Proof. by move=> ?; apply: bigcap_measurable. Qed.
 
 End measurable_lemmas.
 

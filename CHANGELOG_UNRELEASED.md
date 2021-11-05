@@ -202,6 +202,8 @@
 - in `ereal.v`:
   + lemma `telescope_sume`
   + lemmas `lte_add_pinfty`, `lte_sum_pinfty`
+- in `measure.v`:
+  + lemmas `bigcup_measurable`, `bigcap_measurable`, `bigsetI_measurable`
 
 ### Changed
 
