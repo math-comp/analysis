@@ -201,6 +201,7 @@
     `` `]a, +oo] ``, `` `]-oo, +oo[ ``
 - in `ereal.v`:
   + lemma `telescope_sume`
+  + lemmas `lte_add_pinfty`, `lte_sum_pinfty`
 
 ### Changed
 
@@ -262,7 +263,7 @@
     `mule_pinfty_ninfty`, `mule_pinfty_pinfty`, `mule_ninfty_ninfty`,
     `mule_neq0`, `mule_ge0`, `mule_le0`, `mule_gt0`, `mule_le0_ge0`,
     `mule_ge0_le0`
-  + renamed `real_of_extended` to `fine` (definition and lemmas)
+
 ### Renamed
 
 - in `classical_sets.v`
@@ -320,6 +321,12 @@
   + `nbhs'0_lt` -> `dnbhs0_lt`
   + `nbhs'0_le` -> `dnbhs0_le`
   + `continuity_pt_nbhs'` -> `continuity_pt_dnbhs`
+- in `ereal.v`:
+  + `real_of_extended` -> `fine`
+  + `real_of_extendedN` -> `fineN`
+  + `real_of_extendedD` -> `fineD`
+  + `EFin_real_of_extended` -> `fineK`
+  + `real_of_extended_expand` -> `fine_expand`
 
 ### Removed
 

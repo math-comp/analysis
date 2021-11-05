@@ -976,6 +976,16 @@ Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types (x y z u a b : \bar R) (r : R).
 
+Lemma lte_add_pinfty x y : x < +oo -> y < +oo -> x + y < +oo.
+Proof. by move: x y => -[r [r'| |]| |] // ? ?; rewrite -addEFin lte_pinfty. Qed.
+
+Lemma lte_sum_pinfty I (s : seq I) (P : pred I) (f : I -> \bar R) :
+  (forall i, P i -> f i < +oo) -> \sum_(i <- s | P i) f i < +oo.
+Proof.
+elim/big_ind : _ => [_|x y xoo yoo foo|i ?]; [exact: lte_pinfty| |exact].
+by apply: lte_add_pinfty; [exact: xoo| exact: yoo].
+Qed.
+
 Lemma sube_gt0 x y : (0 < y - x) = (x < y).
 Proof.
 move: x y => [r | |] [r'| |] //=; rewrite ?(lte_pinfty,lte_ninfty) //.
