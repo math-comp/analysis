@@ -523,7 +523,7 @@ Qed.
 Lemma nlim_sumR {I : eqType} (u : I -> nat -> R) (r : seq I) :
     (forall i, i \in r -> iscvg (u i)) ->
   nlim (fun n => \sum_(i <- r) (u i) n) = (\sum_(i <- r)
-    (real_of_extended(*TODO: coercion broken*) (nlim (u i)) : R))%:E.
+    (fine (nlim (u i)) : R))%:E.
 Proof.
 move=> h; rewrite nlim_sum //; elim: r h => [|i r ih] h.
   by rewrite !big_nil.

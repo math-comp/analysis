@@ -113,7 +113,7 @@
   + lemmas `dual_addeE`, `dual_sumeE`, `dual_addeE_def`, `daddEFin`,
     `dsumEFin`, `dsubEFin`, `dadde0`, `dadd0e`, `daddeC`, `daddeA`,
     `daddeAC`, `daddeCA`, `daddeACA`, `doppeD`, `dsube0`, `dsub0e`, `daddeK`,
-    `dfin_numD`, `dreal_of_extendedD`, `dsubeK`, `dsube_eq`,
+    `dfin_numD`, `dfineD`, `dsubeK`, `dsube_eq`,
     `dsubee`, `dadde_eq_pinfty`, `daddooe`, `dadde_Neq_pinfty`,
     `dadde_Neq_ninfty`, `desum_fset_pinfty`, `desum_pinfty`,
     `desum_fset_ninfty`, `desum_ninfty`, `dadde_ge0`, `dadde_le0`,
@@ -199,6 +199,9 @@
   + notations `set_itv`, `` `[a, b] ``, `` `]a, b] ``, `` `[a, b[ ``,
     `` `]a, b[ ``, `` `]-oo, b] ``, `` `]-oo, b[ ``, `` `[a, +oo] ``,
     `` `]a, +oo] ``, `` `]-oo, +oo[ ``
+- in `ereal.v`:
+  + lemma `telescope_sume`
+  + lemmas `lte_add_pinfty`, `lte_sum_pinfty`
 
 ### Changed
 
@@ -318,6 +321,12 @@
   + `nbhs'0_lt` -> `dnbhs0_lt`
   + `nbhs'0_le` -> `dnbhs0_le`
   + `continuity_pt_nbhs'` -> `continuity_pt_dnbhs`
+- in `ereal.v`:
+  + `real_of_extended` -> `fine`
+  + `real_of_extendedN` -> `fineN`
+  + `real_of_extendedD` -> `fineD`
+  + `EFin_real_of_extended` -> `fineK`
+  + `real_of_extended_expand` -> `fine_expand`
 
 ### Removed
 
