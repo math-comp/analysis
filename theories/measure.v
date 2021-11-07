@@ -579,31 +579,29 @@ Qed.
 
 Section measureD.
 Variables (R : realFieldType) (T : ringOfSetsType).
-Variables mu : {measure set T -> \bar R}.
+Variable mu : {measure set T -> \bar R}.
 
 Lemma measureDI A B : measurable A -> measurable B ->
   mu A = mu (A `\` B) + mu (A `&` B).
 Proof.
-move=> mA mB.
-rewrite -[in LHS](SetOrder.Internal.joinIB A B) measure_semi_additive2.
-- by rewrite addeC.
-- exact: measurableI.
+move=> mA mB; rewrite -measure_semi_additive2.
+- by rewrite -setDDr setDv setD0.
 - exact: measurableD.
-- by apply: measurableU; [exact: measurableI |exact: measurableD].
-- by rewrite setDE setICA -setIA setICr 2!setI0.
+- exact: measurableI.
+- by apply: measurableU; [exact: measurableD |exact: measurableI].
+- by rewrite setDE setIACA setICl setI0.
 Qed.
 
 Lemma measureD A B : measurable A -> measurable B ->
   mu A < +oo -> mu (A `\` B) = mu A - mu (A `&` B).
 Proof.
 move=> mA mB mAoo.
-rewrite (measureDI mA mB) addeK // fin_numE; apply/andP; split.
-  rewrite gt_eqF// (lt_le_trans _ (measure_ge0 _ _))// ?lte_ninfty//.
+rewrite (measureDI mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
+- rewrite (le_lt_trans _ mAoo)// le_measure // ?inE//.
+  + exact: measurableI.
+  + by apply: subIset; left.
+- rewrite (lt_le_trans _ (measure_ge0 _ _))// ?lte_ninfty//.
   exact: measurableI.
-rewrite lt_eqF// (le_lt_trans _ mAoo)// le_measure //.
-- by rewrite inE; exact: measurableI.
-- by rewrite inE.
-- by apply: subIset; left.
 Qed.
 
 End measureD.

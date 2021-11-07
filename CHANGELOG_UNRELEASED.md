@@ -204,6 +204,8 @@
   + lemmas `lte_add_pinfty`, `lte_sum_pinfty`
 - in `measure.v`:
   + lemmas `bigcup_measurable`, `bigcap_measurable`, `bigsetI_measurable`
+- in `classical_sets.v`:
+  + lemmas `setDDl`, `setDDr`
 
 ### Changed
 
