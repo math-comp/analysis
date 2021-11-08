@@ -253,18 +253,37 @@ Proof.
 by move=> mA; rewrite -setTD; apply: measurableD => //; exact: measurableT.
 Qed.
 
+Lemma bigsetI_measurable I r (P : pred I) (F : I -> set T) :
+  (forall i, P i -> measurable (F i)) ->
+  measurable (\big[setI/setT]_(i <- r | P i) F i).
+Proof.
+move=> mF; rewrite -[X in measurable X]setCK setC_bigsetI; apply: measurableC.
+by apply: bigsetU_measurable => i Pi; apply/measurableC/mF.
+Qed.
+
 End algebraofsets_lemmas.
 
 Section measurable_lemmas.
 Variables T : measurableType.
 Implicit Types A B : set T.
 
+Lemma bigcup_measurable (F : (set T)^nat) (P : set nat) :
+  (forall k, P k -> measurable (F k)) -> measurable (\bigcup_(i in P) F i).
+Proof.
+move=> PF; rewrite bigcup_mkcond; apply: measurable_bigcup => k.
+by case: asboolP => Pk; [exact: PF|exact: measurable0].
+Qed.
+
+Lemma bigcap_measurable (F : (set T)^nat) (P : set nat) :
+  (forall k, P k -> measurable (F k)) -> measurable (\bigcap_(i in P) F i).
+Proof.
+move=> PF; rewrite -[X in measurable X]setCK setC_bigcap; apply: measurableC.
+by apply: bigcup_measurable => k Pk; exact/measurableC/PF.
+Qed.
+
 Lemma measurable_bigcap (F : (set T)^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcap_i (F i)).
-Proof.
-move=> ?; rewrite -(setCK (\bigcap__ _)); apply/measurableC.
-by rewrite setC_bigcap; apply/measurable_bigcup => i; exact/measurableC.
-Qed.
+Proof. by move=> ?; apply: bigcap_measurable. Qed.
 
 End measurable_lemmas.
 
@@ -453,15 +472,15 @@ Section additive_measure_on_ring_of_sets.
 Variables (R : realFieldType) (T : ringOfSetsType)
   (mu : {additive_measure set T -> \bar R}).
 
-Lemma measure_additive2 : additive2 mu.
+Lemma measureU : additive2 mu.
 Proof. by rewrite -semi_additive2E. Qed.
 
-Lemma measure_additive : additive mu.
+Lemma measure_bigcup : additive mu.
 Proof. by rewrite -semi_additiveE. Qed.
 
 End additive_measure_on_ring_of_sets.
 
-Hint Resolve measure_additive2 measure_additive : core.
+Hint Resolve measureU measure_bigcup : core.
 
 Module Measure.
 
@@ -557,6 +576,35 @@ rewrite measure_semi_additive2 // ?lee_addl // ?measure_ge0 //.
   exact: measurableU.
 by rewrite setDE setICA (_ : _ `&` ~` _ = set0) ?setI0 // setICr.
 Qed.
+
+Section measureD.
+Variables (R : realFieldType) (T : ringOfSetsType).
+Variable mu : {measure set T -> \bar R}.
+
+Lemma measureDI A B : measurable A -> measurable B ->
+  mu A = mu (A `\` B) + mu (A `&` B).
+Proof.
+move=> mA mB; rewrite -measure_semi_additive2.
+- by rewrite -setDDr setDv setD0.
+- exact: measurableD.
+- exact: measurableI.
+- by apply: measurableU; [exact: measurableD |exact: measurableI].
+- by rewrite setDE setIACA setICl setI0.
+Qed.
+
+Lemma measureD A B : measurable A -> measurable B ->
+  mu A < +oo -> mu (A `\` B) = mu A - mu (A `&` B).
+Proof.
+move=> mA mB mAoo.
+rewrite (measureDI mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
+- rewrite (le_lt_trans _ mAoo)// le_measure // ?inE//.
+  + exact: measurableI.
+  + by apply: subIset; left.
+- rewrite (lt_le_trans _ (measure_ge0 _ _))// ?lte_ninfty//.
+  exact: measurableI.
+Qed.
+
+End measureD.
 
 Section seqDU.
 Variables (T : Type).
@@ -711,19 +759,43 @@ have -> : C = B `|` (A n `\` B).
   - by rewrite /C big_ord_recr; left.
   - by rewrite /C big_ord_recr; right.
 have ? : measurable B by apply bigsetU_measurable.
-rewrite measure_additive2 //; last 2 first.
+rewrite measureU //; last 2 first.
   exact: measurableD.
   by rewrite setIC -setIA (_ : ~` _ `&` _ = set0) ?setI0 // setICl.
 rewrite (@le_trans _ _ (mu B + mu (A n))) // ?lee_add2l //; last first.
   by rewrite big_ord_recr /= lee_add2r.
 rewrite le_measure //.
-- by rewrite inE; apply: measurableD.
-- by rewrite inE; apply: mA.
+- by rewrite inE; exact: measurableD.
+- by rewrite inE; exact: mA.
 - by apply subIset; left.
 Qed.
 
 End boole_inequality.
 Notation le_mu_bigsetU := Boole_inequality.
+
+Section sigma_finite_lemma.
+Variables (R : realFieldType) (T : ringOfSetsType) (A : set T)
+  (mu : {additive_measure set T -> \bar R}).
+
+Lemma sigma_finiteP : sigma_finite A mu ->
+  exists2 F, A = \bigcup_i F i &
+    nondecreasing_seq F /\ forall i, measurable (F i) /\ mu (F i) < +oo.
+Proof.
+move=> [S AS moo]; exists (fun n => \big[setU/set0]_(i < n.+1) S i).
+  rewrite AS predeqE => t; split => [[i _ Sit]|[i _]].
+    by exists i => //; rewrite big_ord_recr /=; right.
+  by rewrite -bigcup_mkord => -[j /= ji Sjt]; exists j.
+split=> [|i].
+- apply/nondecreasing_seqP => i.
+  rewrite [in X in (_ <= X)%O]big_ord_recr /=.
+  by apply/subsetPset; left.
+- split; first by apply: bigsetU_measurable => j _; exact: (moo j).1.
+  rewrite (@le_lt_trans _ _ (\sum_(j < i.+1) mu (S j)))//.
+    by apply: Boole_inequality => j; exact: (moo j).1.
+  by apply/lte_sum_pinfty => j _; exact: (moo j).2.
+Qed.
+
+End sigma_finite_lemma.
 
 Section generalized_boole_inequality.
 Variables (R : realType) (T : ringOfSetsType).

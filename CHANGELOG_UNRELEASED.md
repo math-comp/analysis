@@ -202,6 +202,10 @@
 - in `ereal.v`:
   + lemma `telescope_sume`
   + lemmas `lte_add_pinfty`, `lte_sum_pinfty`
+- in `measure.v`:
+  + lemmas `bigcup_measurable`, `bigcap_measurable`, `bigsetI_measurable`
+- in `classical_sets.v`:
+  + lemmas `setDDl`, `setDDr`
 
 ### Changed
 
@@ -263,6 +267,8 @@
     `mule_pinfty_ninfty`, `mule_pinfty_pinfty`, `mule_ninfty_ninfty`,
     `mule_neq0`, `mule_ge0`, `mule_le0`, `mule_gt0`, `mule_le0_ge0`,
     `mule_ge0_le0`
+- in `measure.v`:
+  + lemmas `measureDI`, `measureD`, `sigma_finiteP`
 
 ### Renamed
 
@@ -327,6 +333,9 @@
   + `real_of_extendedD` -> `fineD`
   + `EFin_real_of_extended` -> `fineK`
   + `real_of_extended_expand` -> `fine_expand`
+- in `measure.v`:
+  + `measure_additive2` -> `measureU`
+  + `measure_additive` -> `measure_bigcup`
 
 ### Removed
 

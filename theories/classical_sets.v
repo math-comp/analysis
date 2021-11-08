@@ -673,6 +673,12 @@ Proof. by rewrite !setDE setIA. Qed.
 Lemma setDD A B : A `\` (A `\` B) = A `&` B.
 Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
 
+Lemma setDDl A B C : (A `\` B) `\` C = A `\` (B `|` C).
+Proof. by rewrite !setDE setCU setIA. Qed.
+
+Lemma setDDr A B C : A `\` (B `\` C) = (A `\` B) `|` (A `&` C).
+Proof. by rewrite !setDE setCI setIUr setCK. Qed.
+
 Lemma setM0 T' (A : set T) : A `*` set0 = set0 :> set (T * T').
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 
@@ -1901,28 +1907,28 @@ apply/idP/idP => [/asboolP|/andP[BA /asboolP AB]]; rewrite properEneq eq_sym;
   by [move=> [] -> /asboolP|apply/asboolP].
 Qed.
 
-Fact SetOrder_joinKI B A : A `&` (A `|` B) = A.
+Lemma joinKI B A : A `&` (A `|` B) = A.
 Proof. by rewrite setUC setKU. Qed.
 
-Fact SetOrder_meetKU B A : A `|` (A `&` B) = A.
+Lemma meetKU B A : A `|` (A `&` B) = A.
 Proof. by rewrite setIC setKI. Qed.
 
 Definition orderMixin := @MeetJoinMixin _ _ (fun A B => `[<proper A B>]) setI
-  setU le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _) SetOrder_joinKI
-  SetOrder_meetKU (@setIUl _) setIid.
+  setU le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _) joinKI meetKU
+  (@setIUl _) setIid.
 
 Local Canonical porderType := POrderType set_display (set T) orderMixin.
 Local Canonical latticeType := LatticeType (set T) orderMixin.
 Local Canonical distrLatticeType := DistrLatticeType (set T) orderMixin.
 
-Fact SetOrder_sub0set A : (set0 <= A)%O.
+Lemma SetOrder_sub0set A : (set0 <= A)%O.
 Proof. by apply/asboolP; apply: sub0set. Qed.
 
-Fact SetOrder_setTsub A : (A <= setT)%O.
+Lemma SetOrder_setTsub A : (A <= setT)%O.
 Proof. exact/asboolP. Qed.
 
 Local Canonical bLatticeType :=
-  BLatticeType (set T) (Order.BLattice.Mixin  SetOrder_sub0set).
+  BLatticeType (set T) (Order.BLattice.Mixin SetOrder_sub0set).
 Local Canonical tbLatticeType :=
   TBLatticeType (set T) (Order.TBLattice.Mixin SetOrder_setTsub).
 Local Canonical bDistrLatticeType := [bDistrLatticeType of set T].
@@ -1932,7 +1938,7 @@ Lemma subKI A B : B `&` (A `\` B) = set0.
 Proof. by rewrite setDE setICA setICr setI0. Qed.
 
 Lemma joinIB A B : (A `&` B) `|` A `\` B = A.
-Proof. by rewrite setDE -setIUr setUCr setIT. Qed.
+Proof. by rewrite setUC -setDDr setDv setD0. Qed.
 
 Local Canonical cbDistrLatticeType := CBDistrLatticeType (set T)
   (@CBDistrLatticeMixin _ _ (fun A B => A `\` B) subKI joinIB).
