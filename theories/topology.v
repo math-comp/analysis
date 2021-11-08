@@ -3910,8 +3910,6 @@ Lemma cvg_ballP {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by rewrite -filter_fromP !nbhs_simpl /=. Qed.
 
-Definition cvg_to_locally := @cvg_ballP.
-
 Lemma cvg_ballPpos {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
 Proof.

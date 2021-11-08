@@ -356,6 +356,8 @@
   + lemma `continuous_cst`
 - in `csum.v`:
   + lemma `ub_ereal_sup_adherent_img`
+- in `topology.v`:
+  + definition `cvg_to_locally`
 
 ### Infrastructure
 
