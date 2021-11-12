@@ -208,7 +208,14 @@ Require Import boolp reals classical_sets posnum.
 (*                        cluster F == set of cluster points of F.            *)
 (*                          compact == set of compact sets w.r.t. the filter- *)
 (*                                     based definition of compactness.       *)
+<<<<<<< HEAD
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
+=======
+(*                     hausdorff T <-> T is a Hausdorff space (T_2).          *)
+(*                evaluator_dep x f == application of f to x, f being a       *)
+(*                                     product topology of a family K         *)
+(*                                     (K : X -> topologicalType)             *)
+>>>>>>> 83b8836... doc, lint, compress
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
@@ -2872,6 +2879,43 @@ by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
 End Tychonoff.
+
+Section DependentEvaluators.
+Context {X : choiceType} {K : X -> topologicalType}.
+
+Definition evaluator_dep x (f : product_topologicalType K) := f x.
+
+Lemma evaluator_depE x f : evaluator_dep x f = f x.
+Proof. by []. Qed.
+
+Lemma evaluator_dep_continuous x : continuous (evaluator_dep x).
+Proof.
+move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id.
+move=> h; apply: (cvg_trans _ (h _)) => {h}; last first.
+  pose xval x (y : K x) i : K i :=
+    match eqVneq x i return K i with
+    | EqNotNeq r => @eq_rect X x K y i r
+    | NeqNotEq _ => point
+    end.
+  rewrite eqEsubset; split => y //= _; exists (xval x y) => //; rewrite /xval.
+  by case (eqVneq x x) => [e|/eqP//]; rewrite eq_axiomK.
+by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
+Qed.
+
+Lemma hausdorff_product :
+  (forall x, hausdorff (K x)) -> hausdorff (@product_topologicalType X K).
+Proof.
+move=> hsdfK p q /= clstr; apply: functional_extensionality_dep => x.
+apply: hsdfK; move: clstr; rewrite ?cluster_cvgE /= => -[G PG [GtoQ psubG]].
+exists (evaluator_dep x @ G); [exact: fmap_proper_filter|split].
+  rewrite -(evaluator_depE x).
+  apply: cvg_trans; last exact: (@evaluator_dep_continuous x q).
+  by apply: cvg_app; exact: GtoQ.
+move/(cvg_app (evaluator_dep x)): psubG => /cvg_trans; apply.
+exact: evaluator_dep_continuous.
+Qed.
+
+End DependentEvaluators.
 
 Definition finI (I : choiceType) T (D : set I) (f : I -> set T) :=
   forall D' : {fset I}, {subset D' <= D} ->
