@@ -1539,6 +1539,27 @@ Qed.
 
 Definition cover T I D (F : I -> set T) := \bigcup_(i in D) F i.
 
+Lemma cover_restr T I D' D (F : I -> set T) :
+  D `<=` D' -> (forall i, D' i -> ~ D i -> F i = set0) ->
+  cover D F = cover D' F.
+Proof.
+move=> DD' D'DF; rewrite /cover eqEsubset; split=> [r [i Di Fit]|r [i D'i Fit]].
+- by have [D'i|] := pselect (D' i); [exists i | have := DD' _ Di].
+- by have [Di|Di] := pselect (D i); [exists i | move: Fit; rewrite (D'DF i)].
+Qed.
+
+Lemma eqcover_r T I D (F G : I -> set T) :
+  [set F i | i in D] = [set G i | i in D] ->
+  cover D F = cover D G.
+Proof.
+move=> FG.
+rewrite eqEsubset; split => [t [i Di Fit]|t [i Di Git]].
+  have [j Dj GF] : [set G i | i in D] (F i) by rewrite -FG /mkset; exists i.
+  by exists j => //; rewrite GF.
+have [j Dj GF] : [set F i | i in D] (G i) by rewrite FG /mkset; exists i.
+by exists j => //; rewrite GF.
+Qed.
+
 Definition partition T I D (F : I -> set T) (A : set T) :=
   [/\ cover D F = A, trivIset D F & forall i, D i -> F i !=set0].
 
