@@ -73,7 +73,27 @@ Reserved Notation "f \|_ D" (at level 10).
 (*                         lemmas waiting to be PRed                          *)
 (******************************************************************************)
 
-(* TODO: PR *)
+Lemma continuous_is_cvg {T : Type} {V U : topologicalType} [F : set (set T)]
+  (FF : Filter F) (f : T -> V) (h : V -> U) :
+  (forall l, f x @[x --> F] --> l -> {for l, continuous h}) ->
+  cvg (f x @[x --> F]) -> cvg ((h \o f) x @[x --> F]).
+Proof.
+move=> ach /cvg_ex[l fxl]; apply/cvg_ex; exists (h l).
+by apply: continuous_cvg => //; exact: ach.
+Qed.
+
+Lemma mulrEBr (R : realDomainType) (r : R) (y z : \bar R) :
+  (y +? (- z))%E -> (r%:E * (y - z))%E = (r%:E * y - r%:E * z)%E.
+Proof. by move=> yz; rewrite mulrEDr ?muleN. Qed.
+
+Lemma eqe_absl (R : realDomainType) (x y : \bar R) :
+  ((`|x| == y) = ((x == y) || (x == - y)) && (0 <= y))%E.
+Proof.
+move: x y => [x| |] [y| |] //=; rewrite? lee_pinfty//.
+by rewrite !eqe eqr_norml lee_fin.
+Qed.
+
+(* PR in progress *)
 Lemma fin_numElt (R : realDomainType) (x : \bar R) :
   (x \is a fin_num) = (-oo < x < +oo)%E.
 Proof. by rewrite fin_numE -lee_pinfty_eq -lee_ninfty_eq -2!ltNge. Qed.
@@ -142,6 +162,24 @@ rewrite /ball /= /ereal_ball !contract0 !sub0r !normrN; apply: le_lt_trans.
 have [fm0|fm0] := leP 0%E (f m); first by rewrite gee0_abs.
 by rewrite (lte0_abs fm0) contractN normrN.
 Grab Existential Variables. all: end_near. Qed.
+(* /PR in progress *)
+
+Lemma setM_bigcupr T1 T2 I (F : I -> set T2) (P : set I) (A : set T1) :
+  A `*` \bigcup_(i in P) F i = \bigcup_(i in P) (A `*` F i).
+Proof.
+rewrite predeqE => -[x y]; split; first by move=> [/= Ax [n Pn Fny]]; exists n.
+by move=> [n Pn [/= Ax Fny]]; split => //; exists n.
+Qed.
+
+Lemma setM_bigcupl T1 T2 I (F : I -> set T2) (P : set I) (A : set T1) :
+  \bigcup_(i in P) F i `*` A = \bigcup_(i in P) (F i `*` A).
+Proof.
+rewrite predeqE => -[x y]; split; first by move=> [[n Pn Fnx] Ax]; exists n.
+by move=> [n Pn [/= Ax Fny]]; split => //; exists n.
+Qed.
+
+Lemma setMS T1 T2 (C : set T1) (A B : set T2) : A `<=` B -> C `*` A `<=` C `*` B.
+Proof. by move=> AB [x y] [/= Cx Ay]; split => //; exact: AB. Qed.
 
 Section additive_lemmas.
 Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
@@ -323,17 +361,6 @@ near: n; eexists; last by move=> m; exact.
 by [].
 Grab Existential Variables. all: end_near. Qed.
 
-Lemma mulrEBr (R : realDomainType) (r : R) (y z : \bar R) :
-  (y +? (- z))%E -> (r%:E * (y - z))%E = (r%:E * y - r%:E * z)%E.
-Proof. by move=> yz; rewrite mulrEDr ?muleN. Qed.
-
-Lemma eqe_absl (R : realDomainType) (x y : \bar R) :
-  ((`|x| == y) = ((x == y) || (x == - y)) && (0 <= y))%E.
-Proof.
-move: x y => [x| |] [y| |] //=; rewrite? lee_pinfty//.
-by rewrite !eqe eqr_norml lee_fin.
-Qed.
-
 (* TODO: move near ge0_adde_def *)
 Lemma ltpinfty_adde_def (R : numDomainType) :
   {in [pred x | (x < +oo)%E] &, forall x y : \bar R, (x +? y)%E}.
@@ -351,7 +378,6 @@ Lemma adde_defEpinfty (R : numDomainType) (x : \bar R) :
   ((x +? +oo) = (x != -oo))%E.
 Proof. by case: x. Qed.
 
-
 Lemma lte_pinfty_eq (R : realDomainType) (x : \bar R) :
   ((x < +oo) = ((x \is a fin_num) || (x == -oo)))%E.
 Proof. by case: x => // x //=; exact: lte_pinfty. Qed.
@@ -359,7 +385,6 @@ Proof. by case: x => // x //=; exact: lte_pinfty. Qed.
 Lemma gte_ninfty_eq (R : realDomainType) (x : \bar R) :
   ((-oo < x) = ((x \is a fin_num) || (x == +oo)))%E.
 Proof. by case: x => // x //=; exact: lte_pinfty. Qed.
-
 
 Lemma ge0_fin_numE (R : realDomainType) (x : \bar R) :
   (0 <= x)%E -> (x \is a fin_num) = (x < +oo)%E.
@@ -375,6 +400,12 @@ move: y => [y| |] // x0 _; first by rewrite -mulEFin lte_pinfty.
 rewrite mulrinfty; move: x0; rewrite le_eqVlt => /predU1P[<-|x0].
 - by rewrite sgr0 mul0e lte_pinfty.
 - by rewrite gtr0_sg // mul1e.
+Qed.
+
+Lemma lt0R (R : numDomainType) (x : \bar R) :
+  (0 < x < +oo)%E -> (0 < fine x)%R.
+Proof.
+by move: x => [x| |] //=; rewrite ?ltxx ?andbF// lte_fin => /andP[].
 Qed.
 
 (******************************************************************************)
@@ -2378,6 +2409,74 @@ Grab Existential Variables. all: end_near. Qed.
 
 End semi_linearity.
 
+Section emeasurable_fun.
+Variables (T : measurableType) (point : T) (R : realType).
+Implicit Types (D : set T) (f g : T -> \bar R).
+
+Lemma emeasurable_funD D f g : measurable D ->
+  (forall x, D x -> (f x +? g x)%E) ->
+  measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x + g x)%E.
+Proof.
+move=> mD fg mf mg.
+have [f_ f_cvg] := approximation_sfun point mD mf.
+have [g_ g_cvg] := approximation_sfun point mD mg.
+apply: (@emeasurable_fun_cvg _ _ _ (fun n x => (f_ n x + g_ n x)%:E)) => //.
+  move=> n; apply: measurable_fun_comp_EFin.
+  by apply: measurable_funD => //; exact: measurable_sfun.
+move=> x Dx.
+under eq_fun do rewrite addEFin.
+by apply: ereal_cvgD; [exact: fg|exact: f_cvg|exact: g_cvg].
+Qed.
+
+Lemma emeasurable_funB D f g : measurable D ->
+  (forall x, D x -> (f x +? - g x)%E) ->
+  measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x - g x)%E.
+Proof.
+by move=> mD fg mf mg; apply: emeasurable_funD => //; exact: emeasurable_funN.
+Qed.
+
+End emeasurable_fun.
+
+Section measurable_fun_sum.
+Variables (T : measurableType) (point : T) (R : realType) (D : set T).
+Variables (f : (T -> \bar R)^nat).
+Hypotheses (mD : measurable D) (mf : forall n, measurable_fun D (f n)).
+Hypotheses (f0 : (forall n x, D x -> 0 <= f n x)%E).
+
+Lemma measurable_fun_sum n : measurable_fun D (fun x => \sum_(0 <= i < n) f i x)%E.
+Proof.
+elim: n => [|n ih].
+  by under eq_fun do rewrite big_mkord //= big_ord0; exact: measurable_fun_cst.
+under eq_fun do rewrite big_nat_recr //=; apply: emeasurable_funD => // => x Dx.
+apply: ge0_adde_def => //; rewrite inE; last exact: f0.
+by apply: sume_ge0 => // => m _; exact: f0.
+Qed.
+
+End measurable_fun_sum.
+
+Section ge0_integral_sum.
+Variables (T : measurableType) (point : T) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variable f : (T -> \bar R)^nat.
+Hypotheses (mf : forall n, measurable_fun D (f n)) (f0 : (forall n x, D x -> 0 <= f n x)%E).
+
+Lemma ge0_integral_sum n :
+  (integral mu D (fun x => \sum_(0 <= k < n) f k x) = \sum_(k < n) integral mu D (f k))%E.
+Proof.
+elim: n => [|n ih].
+  rewrite big_ord0; under eq_fun do rewrite big_mkord big_ord0.
+  by rewrite integral0.
+rewrite big_ord_recr /= -ih -ge0_integralD//.
+- by apply: eq_integral => x Dx; rewrite big_nat_recr.
+- by move=> x Dx; apply: sume_ge0 => // k _; exact: f0.
+- exact: measurable_fun_sum.
+- by move=> x Dx; exact: f0.
+Qed.
+
+End ge0_integral_sum.
+
 Section monotone_convergence_theorem.
 Variables (T : measurableType) (point : T) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -2388,9 +2487,7 @@ Hypothesis nd_g : forall x, D x -> nondecreasing_seq (g^~x).
 Let f := fun x => lim (g^~ x).
 
 Let is_cvg_g t : D t -> cvg (g^~ t).
-Proof.
-by move=> Dt; apply: ereal_nondecreasing_is_cvg => m n mn; apply/nd_g.
-Qed.
+Proof. by move=> ?; apply: ereal_nondecreasing_is_cvg => m n ?; apply/nd_g. Qed.
 
 Local Definition g2' n : (T -> R)^nat := approx_fun D (g n).
 Local Definition g2 n : (nnsfun T R)^nat := nnsfun_approx point mD (mg n).
@@ -2402,94 +2499,86 @@ Local Definition max_g2 : (nnsfun T R)^nat :=
 
 Local Lemma max_g2E : max_g2 = max_g2' :> (T -> R)^nat.
 Proof.
-rewrite funeq2E => n t; rewrite nnsfun_bigmaxE; apply: eq_bigr => i _.
-by rewrite nnsfun_approxE.
+rewrite funeq2E => n t; rewrite nnsfun_bigmaxE.
+by under eq_bigr do rewrite nnsfun_approxE.
+Qed.
+
+Let is_cvg_g2 n t : cvg (EFin \o (fun x : nat => g2 n x t)).
+Proof.
+apply: ereal_nondecreasing_is_cvg => a b ab.
+by rewrite lee_fin 2!nnsfun_approxE; exact/lefP/nd_approx_fun.
 Qed.
 
 Local Lemma nd_max_g2 : nondecreasing_seq (max_g2 : (T -> R)^nat).
 Proof.
 apply/nondecreasing_seqP => n; apply/lefP => t; rewrite 2!nnsfun_bigmaxE.
 rewrite (@le_trans _ _ (\big[maxr/0]_(i < n) g2 i n.+1 t)) //.
-  apply: le_bigmax => i _.
-  have [_] := (@nondecreasing_seqP _ _ ((g2 i)^~ t)).
-  apply => // a b ab; rewrite !nnsfun_approxE.
-  exact/lefP/(nd_approx_fun D (g i) ab).
-rewrite (bigmaxD1 ord_max) // le_maxr; apply/orP; right.
+  apply: le_bigmax => i _; apply: (nondecreasing_seqP (g2 i ^~ t)).2 => a b ab.
+  by rewrite !nnsfun_approxE; exact/lefP/(nd_approx_fun D (g i) ab).
+rewrite (bigmaxD1 ord_max)// le_maxr; apply/orP; right.
 rewrite [X in _ <= X](eq_bigl (fun i => nat_of_ord i < n)%N); last first.
-  move=> i /=; rewrite neq_lt /= (ltNge n i); apply/orP/idP => [[//|]|].
-    by rewrite -ltNge => /(leq_trans (ltn_ord i)); rewrite ltnn.
-  by left.
+  move=> i /=; rewrite neq_lt; apply/orP/idP => [[//|]|]; last by left.
+  by move=> /(leq_trans (ltn_ord i)); rewrite ltnn.
 by rewrite (big_ord_narrow (leqnSn n)).
 Qed.
 
-Let is_cvg_max_g2 t : cvg (fun k => (max_g2 k t)%:E).
+Let is_cvg_max_g2 t : cvg (EFin \o max_g2 ^~ t).
 Proof.
 apply: ereal_nondecreasing_is_cvg => m n mn; rewrite lee_fin.
 exact/lefP/nd_max_g2.
 Qed.
 
-Lemma max_g2_g k x : D x -> ((max_g2 k x)%:E <= g k x)%O.
+Local Lemma max_g2_g k x : D x -> ((max_g2 k x)%:E <= g k x)%O.
 Proof.
 move=> Dx; rewrite nnsfun_bigmaxE.
 apply: (@le_trans _ _ (\big[maxe/0%:E]_(i < k) g k x))%E; last first.
   by apply/bigmax_lerP; split => //; apply: g0.
-rewrite (@big_morph _ _ EFin 0%:E maxe) //; last first.
-  by move=> a b; rewrite maxEFin.
-apply: le_bigmax => i _.
-rewrite nnsfun_approxE /= (le_trans (le_approx_fun _ _ _)) //.
-by apply: nd_g => //; exact/ltnW.
+rewrite (@big_morph _ _ EFin 0%:E maxe) //; last by move=> *; rewrite maxEFin.
+apply: le_bigmax => i _; rewrite nnsfun_approxE /=.
+by rewrite (le_trans (le_approx_fun _ _ _))// nd_g// ltnW.
 Qed.
 
-Lemma cvg_max_g2_f : forall t, D t -> EFin \o (max_g2^~t) --> f t.
+Local Lemma lim_max_g2_f t : D t -> (lim (EFin \o max_g2 ^~ t) <= f t)%E.
 Proof.
-have max_g2_g t : D t -> (lim (fun n => (max_g2 n t)%:E) <= lim (g^~ t))%E.
-  move=> Dt; apply: lee_lim => //.
-    exact: is_cvg_g.
-  by near=> n; move: t Dt; exact/max_g2_g.
-have g2_max_g2 t n :
-    (lim (fun k => (g2 n k t)%:E) <= lim (fun k => (max_g2 k t)%:E))%E.
-  apply: lee_lim => //.
-    apply: ereal_nondecreasing_is_cvg => a b ab.
-    by rewrite lee_fin 2!nnsfun_approxE; exact/lefP/nd_approx_fun.
-  near=> k; rewrite nnsfun_bigmaxE lee_fin.
-  have nk : (n < k)%N by near: k; exists n.+1.
-  exact: (@bigmax_sup _ _ _ (Ordinal nk)).
-move=> t Dt.
-have /cvg_ex[l g_l] := @is_cvg_max_g2 t.
+move=> Dt; apply: lee_lim => //; first exact: is_cvg_g.
+by near=> n; exact/max_g2_g.
+Grab Existential Variables. all: end_near. Qed.
+
+Local Lemma lim_g2_max_g2 t n : (lim (EFin\o g2 n ^~ t) <= lim (EFin \o max_g2 ^~ t))%E.
+Proof.
+apply: lee_lim => //.
+near=> k; rewrite /= nnsfun_bigmaxE lee_fin.
+have nk : (n < k)%N by near: k; exists n.+1.
+exact: (@bigmax_sup _ _ _ (Ordinal nk)).
+Grab Existential Variables. all: end_near. Qed.
+
+Local Lemma cvg_max_g2_f t : D t -> EFin \o max_g2 ^~ t --> f t.
+Proof.
+move=> Dt; have /cvg_ex[l g_l] := @is_cvg_max_g2 t.
 suff : l == f t by move=> /eqP <-.
 rewrite eq_le; apply/andP; split.
-  by rewrite /f (le_trans _ (max_g2_g _ Dt)) // (cvg_lim _ g_l).
-rewrite /f.
+  by rewrite /f (le_trans _ (lim_max_g2_f Dt)) // (cvg_lim _ g_l).
 have := lee_pinfty l; rewrite le_eqVlt => /predU1P[->|loo].
   by rewrite lee_pinfty.
-rewrite -(cvg_lim _ g_l) //= ereal_lim_le => //.
-  exact/is_cvg_g.
+rewrite -(cvg_lim _ g_l) //= ereal_lim_le => //; first exact/is_cvg_g.
 near=> n.
 have := lee_pinfty (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
 - have h := dvg_approx_fun Dt fntoo.
-  have g2oo : lim (fun k => (g2 n k t)%:E) = +oo%E.
+  have g2oo : lim (EFin \o g2 n ^~ t) = +oo%E.
     apply/cvg_lim => //; apply/dvg_ereal_cvg.
-    rewrite [X in X --> _](_ : _ = (approx_fun D (g n))^~ t); last first.
-      by under eq_fun do rewrite nnsfun_approxE.
-    apply: nondecreasing_dvg_lt; last exact: h.
-    by apply/lef_at; apply/nd_approx_fun.
-  suff -> : lim (fun k => (max_g2 k t)%:E) = +oo%E by rewrite lee_pinfty.
-  by have := g2_max_g2 t n; rewrite g2oo lee_pinfty_eq => /eqP.
-- have := cvg_approx_fun (g0 n) Dt fntoo.
-  move=> approx_fun_g_g.
-  have := g2_max_g2 t n.
-  suff : lim (fun k => (g2 n k t)%:E) = g n t by move=> ->.
-  have /cvg_lim <- // : EFin \o (approx_fun D (g n))^~ t --> g n t.
-    move/(@cvg_comp _ _ _ _ EFin) : approx_fun_g_g; apply.
-    suff [r ftr] : exists r, g n t = r%:E by rewrite ftr.
-    (* copipe *)
-    move ftr : (g n t) => r.
-    move: r => [r| |] in fntoo ftr *.
-    - by exists r.
-    - by rewrite ftr in fntoo.
-    - by have : (0 <= g n t)%E := g0 n Dt; rewrite ftr.
-   have ->// : (fun k => (g2 n k t)%:E) = EFin \o (approx_fun D (g n))^~ t.
-  by under eq_fun do rewrite nnsfun_approxE.
+    under [X in X --> _]eq_fun do rewrite nnsfun_approxE.
+    exact/(nondecreasing_dvg_lt _ h)/lef_at/nd_approx_fun.
+  have -> : lim (EFin \o max_g2 ^~ t) = +oo%E.
+    by have := lim_g2_max_g2 t n; rewrite g2oo lee_pinfty_eq => /eqP.
+  by rewrite lee_pinfty.
+- have approx_fun_g_g := cvg_approx_fun (g0 n) Dt fntoo.
+  have <- : lim (EFin \o g2 n ^~ t) = g n t.
+    have /cvg_lim <- // : EFin \o (approx_fun D (g n))^~ t --> g n t.
+      move/(@cvg_comp _ _ _ _ EFin) : approx_fun_g_g; apply.
+      by rewrite -(@fineK _ (g n t))// ge0_fin_numE// g0.
+    rewrite (_ : _ \o _ = EFin \o (approx_fun D (g n))^~ t)// funeqE => m.
+    by rewrite [in RHS]/= -(nnsfun_approxE point).
+  exact: (le_trans _ (lim_g2_max_g2 t n)).
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma monotone_convergence :
@@ -2498,9 +2587,9 @@ Proof.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   have nd_int_g : nondecreasing_seq (fun n => integral mu D (g n)).
     move=> m n mn; apply: ge0_le_integral => //.
-     by move=> x Dx; exact: g0.
-     by move=> x Dx; exact: g0.
-     by move=> x Dx; exact: nd_g.
+      by move=> x Dx; exact: g0.
+      by move=> x Dx; exact: g0.
+      by move=> x Dx; exact: nd_g.
   have ub n : (integral mu D (g n) <= integral mu D f)%E.
     apply: ge0_le_integral => //.
     - by move=> x Dx; exact: g0.
@@ -2510,7 +2599,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
       near=> m.
       have nm : (n <= m)%N by near: m; exists n.
       exact/nd_g.
-  by apply: ereal_lim_le => //;[exact: ereal_nondecreasing_is_cvg|exact: nearW].
+  by apply: ereal_lim_le => //; [exact: ereal_nondecreasing_is_cvg|exact: nearW].
 rewrite (@nd_ge0_integral_lim _ point _ mu _ _ _ _ max_g2) //; last 3 first.
   - move=> t Dt; apply: ereal_lim_ge => //; first exact/is_cvg_g.
     by apply: nearW => n; apply: g0.
@@ -2518,7 +2607,7 @@ rewrite (@nd_ge0_integral_lim _ point _ mu _ _ _ _ max_g2) //; last 3 first.
   - by move=> x Dx; exact: cvg_max_g2_f.
 apply: lee_lim.
 - apply: is_cvg_sintegral => //.
-    by move=> t Dt m n mn; exact/lefP/nd_max_g2.
+  by move=> t Dt m n mn; exact/lefP/nd_max_g2.
 - apply: ereal_nondecreasing_is_cvg => // n m nm; apply: ge0_le_integral => //.
   + by move=> *; apply: g0.
   + by move=> *; apply: g0.
@@ -2529,6 +2618,25 @@ apply: lee_lim.
 Grab Existential Variables. all: end_near. Qed.
 
 End monotone_convergence_theorem.
+
+Section integral_series.
+Variables (T : measurableType) (point : T) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variable f : (T -> \bar R)^nat.
+Hypotheses (mf : forall n, measurable_fun D (f n)) (f0 : forall n x, D x -> (0 <= f n x)%E).
+
+Lemma integral_sum :
+  integral mu D (fun x => \sum_(n <oo) f n x) = \sum_(n <oo) (integral mu D (f n)).
+Proof.
+rewrite monotone_convergence //.
+- rewrite -lim_mkord (_ : (fun n => _) = (fun n => (\sum_(k < n) integral mu D (f k))%E))//.
+  by rewrite funeqE => n; exact: ge0_integral_sum.
+- by move=> n; exact: measurable_fun_sum.
+- by move=> n x Dx; apply: sume_ge0 => m _; exact: f0.
+- by move=> x Dx m n mn; apply: lee_sum_nneg_natr => // k _ _; exact: f0.
+Qed.
+
+End integral_series.
 
 (* NB: not used *)
 Lemma EFin_itv2 (R : realType) (r : R) :
@@ -2548,15 +2656,7 @@ rewrite predeqE => t; split => /=.
 by move=> fty; apply/eqP.
 Qed.
 
-Lemma continuous_is_cvg {T : Type} {V U : topologicalType} [F : set (set T)]
-  (FF : Filter F) (f : T -> V) (h : V -> U) :
-  (forall l, f x @[x --> F] --> l -> {for l, continuous h}) ->
-  cvg (f x @[x --> F]) -> cvg ((h \o f) x @[x --> F]).
-Proof.
-move=> ach /cvg_ex[l fxl]; apply/cvg_ex; exists (h l).
-by apply: continuous_cvg => //; exact: ach.
-Qed.
-
+(* TODO: move *)
 Lemma lim_ereal_inf_EFin (T : Type) (R : realType) (f : (T -> R)^nat) :
   (forall t, cvg (f^~t : _ -> R^o)) ->
   (fun t => lim_ereal_inf (EFin \o f^~t)) = (fun t => (lim (f^~t))%:E).
@@ -2749,13 +2849,6 @@ Qed.
 
 End integralN.
 
-(* TODO: move *)
-Lemma lt0R (R : numDomainType) (x : \bar R) :
-  (0 < x < +oo)%E -> (0 < fine x)%R.
-Proof.
-by move: x => [x| |] //=; rewrite ?ltxx ?andbF// lte_fin => /andP[].
-Qed.
-
 Section integral_cst.
 Variables (T : measurableType) (point : T) (R : realType) (f : T -> \bar R).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -2899,19 +2992,13 @@ Lemma integrableD (D : set T) (f1 f2 : T -> R) : measurable D ->
   integrable D (fun x => (f1 x)%:E + (f2 x)%:E)%E.
 Proof.
 move=> mD [mf1 f1oo] [mf2 f2oo].
-split.
-  apply: measurable_fun_comp.
-    by apply: measurable_fun_EFin; exact: measurableT.
-  by rewrite -/(f1 \+ f2); apply: measurable_funD => //;
-    exact: EFin_measurable_fun.
+split; first exact: emeasurable_funD.
 apply: (@le_lt_trans _ _ (integral mu D
     (fun x => `|(f1 x)%:E| + `|(f2 x)%:E|)%E)).
   apply ge0_le_integral => //; first by move=> t _; apply: abse_ge0.
   - apply: measurable_fun_comp.
       by apply: measurable_fun_abse; exact: measurableT.
-    apply: measurable_fun_comp.
-      by apply: measurable_fun_EFin; exact: measurableT.
-    by apply: measurable_funD => //; exact: EFin_measurable_fun.
+    exact: emeasurable_funD.
   - by move=> x _; apply: adde_ge0; rewrite lee_fin.
   - by move=> x _; exact: lee_abs_add.
 rewrite ge0_integralD //.
@@ -2989,8 +3076,7 @@ have [M [M0 muM]] : exists2 M, 0 <= M &
     by apply: ge0_integral => // t Dt; rewrite abse_ge0.
   apply: ge0_le_integral => //.
   - by move=> t Dt; rewrite lee_fin.
-  - apply: measurable_fun_comp; last exact: measurable_sfun.
-    by apply: measurable_fun_EFin; exact: measurableT.
+  - by apply: measurable_fun_comp_EFin;exact: measurable_sfun.
   - by move=> t Dt; apply: abse_ge0.
   - move=> x Dx; rewrite /N /=; have [xE|xE] := boolP (x \in E).
       by move: xE; rewrite /E inE /= => -[->]; rewrite lee_pinfty.
@@ -3156,24 +3242,22 @@ rewrite (ge0_integralD point mu mD); last 4 first.
   - by move=> x _; rewrite adde_ge0 //; [exact: funenng_ge0|exact: funennp_ge0].
   - rewrite /funennp /funenng /g1 /g2 /=.
     under eq_fun do rewrite 2!maxEFin; rewrite -/(measurable_fun _ _).
-    apply: measurable_fun_comp.
-      by apply: measurable_fun_EFin; exact: measurableT.
-    apply: measurable_funD => //.
+    apply: emeasurable_funD => //.
+    apply: measurable_fun_comp_EFin.
       apply: EFin_measurable_fun.
       rewrite /comp.
       under eq_fun do rewrite -maxEFin; rewrite -/(measurable_fun _ _).
       apply: emeasurable_fun_funenng => //.
-      apply: measurable_fun_comp.
-        by apply: measurable_fun_EFin; exact: measurableT.
+      apply: measurable_fun_comp_EFin.
       apply: measurable_funD => //.
         by apply: EFin_measurable_fun; case: if1.
       by apply: EFin_measurable_fun; case: if2.
+    apply: measurable_fun_comp_EFin.
     apply: EFin_measurable_fun.
     rewrite /comp.
     under eq_fun do rewrite -maxEFin; rewrite -/(measurable_fun _ _).
     apply: emeasurable_fun_funenng => //.
-    apply: measurable_fun_comp.
-      by apply: measurable_fun_EFin; exact: measurableT.
+    apply: measurable_fun_comp_EFin.
     apply: measurable_funN => //.
     by apply: EFin_measurable_fun; case: if1.
   - by move=> x _; exact: funennp_ge0.
@@ -3182,8 +3266,7 @@ rewrite (ge0_integralD point mu mD); last 4 first.
   - by move=> x _; exact: funenng_ge0.
   - apply: emeasurable_fun_funenng => //.
     rewrite /g1 /g2 /comp.
-    apply: measurable_fun_comp.
-      by apply: measurable_fun_EFin; exact: measurableT.
+    apply: measurable_fun_comp_EFin.
     apply: measurable_funD => //.
       by apply: EFin_measurable_fun; case: if1.
     by apply: EFin_measurable_fun; case: if2.
@@ -3191,9 +3274,7 @@ rewrite (ge0_integralD point mu mD); last 4 first.
   - apply: emeasurable_fun_funenng => //.
     rewrite /g1 /comp.
     under eq_fun do rewrite -NEFin; rewrite -/(measurable_fun _ _).
-    apply: measurable_fun_comp.
-      by apply: measurable_fun_EFin; exact: measurableT.
-    apply: measurable_funN => //.
+    apply: measurable_fun_comp_EFin; apply: measurable_funN => //.
     by apply: EFin_measurable_fun; case: if1.
 move=> ->.
 rewrite (ge0_integralD point mu mD); last 4 first.
@@ -3201,16 +3282,12 @@ rewrite (ge0_integralD point mu mD); last 4 first.
   - rewrite /g1 /g2 /= /comp /= /funennp /funenng.
     under eq_fun do rewrite -NEFin.
     under eq_fun do rewrite 2!maxEFin; rewrite -/(measurable_fun _ _).
-    apply: measurable_fun_comp.
-      by apply: measurable_fun_EFin; exact: measurableT.
-    apply: measurable_funD => //.
+    apply: measurable_fun_comp_EFin; apply: measurable_funD => //.
       apply: EFin_measurable_fun.
       rewrite /comp.
       under eq_fun do rewrite -maxEFin; rewrite -/(measurable_fun _ _).
       apply: emeasurable_fun_funenng => //.
-      apply: measurable_fun_comp.
-        by apply: measurable_fun_EFin; exact: measurableT.
-      apply: measurable_funN => //.
+      apply: measurable_fun_comp_EFin; apply: measurable_funN => //.
       apply: measurable_funD => //.
         by apply: EFin_measurable_fun; case: if1.
       by apply: EFin_measurable_fun; case: if2.
@@ -3225,9 +3302,7 @@ rewrite (ge0_integralD point mu mD) //.
 - by move=> x _; exact: funennp_ge0.
 - apply: emeasurable_fun_funennp => //.
   rewrite /g1 /g2 /comp /=.
-  apply: measurable_fun_comp.
-    by apply: measurable_fun_EFin; exact: measurableT.
-  apply: measurable_funD => //.
+  apply: measurable_fun_comp_EFin; apply: measurable_funD => //.
     by apply: EFin_measurable_fun; case: if1.
   by apply: EFin_measurable_fun; case: if2.
 - by move=> x _; exact: funenng_ge0.
@@ -3297,9 +3372,7 @@ apply: le_lt_trans; apply: ge0_le_integral => //.
 - by move=> x Dx; apply: abse_ge0.
 - apply: measurable_fun_comp.
     by apply: measurable_fun_abse; exact: measurableT.
-  apply: measurable_fun_comp.
-    by apply: measurable_fun_EFin; exact: measurableT.
-  exact: (measurable_fun_cvg mD mf_).
+  by apply: measurable_fun_comp_EFin; exact: (measurable_fun_cvg mD mf_).
 - by move=> x Dx; exact: abse_ge0.
 - by move=> x Dx /=; rewrite lee_fin (ger0_norm (g0 Dx)); exact: fg.
 Qed.
@@ -3329,8 +3402,7 @@ Qed.
 
 Let mgg n : measurable_fun D (fun x => (2 * g x - g_ n x)%:E).
 Proof.
-apply: measurable_fun_comp.
-  by apply: measurable_fun_EFin; exact: measurableT.
+apply: measurable_fun_comp_EFin.
 apply: measurable_funD => //.
   apply: measurable_funrM; case: ig => + _ //.
   exact: EFin_measurable_fun.
@@ -3377,26 +3449,20 @@ rewrite [X in _ <= X -> _](_ : _ = integral mu D (fun x => (2 * g x)%:E) + -
       exact: integrableK.
     - have integrable_normfn : integrable mu D (fun x => `|f_ n x|%:E).
         apply: le_integrable ig => //.
-        - apply: measurable_fun_comp.
-            by apply: measurable_fun_EFin; exact: measurableT.
-          apply: measurable_fun_comp => //.
+        - apply: measurable_fun_comp_EFin; apply: measurable_fun_comp => //.
           by apply: measurable_fun_normr; exact: measurableT.
         - move=> x Dx; rewrite lee_fin normr_id.
           by rewrite (le_trans (normfg _ Dx))// ler_norm.
       suff : integrable mu D (fun x : T => `|f_ n x|%:E + `|f x|%:E)%E.
         apply: le_integrable => //.
-        - apply: measurable_fun_comp.
-            by apply: measurable_fun_EFin; exact: measurableT.
-          apply: measurable_fun_comp => //.
+        - apply: measurable_fun_comp_EFin; apply: measurable_fun_comp => //.
           by apply: measurable_fun_normr; exact: measurableT.
           by apply: measurable_funB => //; exact: (measurable_fun_cvg mD mf_).
         - move=> x Dx; rewrite lee_fin normr_id.
           by rewrite (le_trans (ler_norm_sub _ _))// ler_norm.
       apply: integrableD; [by []| by []|by []|].
       apply: le_integrable dominated_integrable => //.
-      - apply: measurable_fun_comp.
-          by apply: measurable_fun_EFin; exact: measurableT.
-        apply: measurable_fun_comp => //.
+      - apply: measurable_fun_comp_EFin; apply: measurable_fun_comp => //.
         by apply: measurable_fun_normr; exact: measurableT.
         exact: (measurable_fun_cvg mD mf_).
       - by move=> x Dx; rewrite /= lee_fin normr_id.
@@ -3423,11 +3489,9 @@ have h n : `|integral mu D (EFin \o f_ n) - integral mu D (EFin \o f)|
     <= integral mu D (EFin \o g_ n).
   rewrite -(integralB_EFin point mD _ dominated_integrable); last first.
     apply: le_integrable ig => //.
-      apply: measurable_fun_comp => //.
-      by apply: measurable_fun_EFin; exact: measurableT.
+      exact: measurable_fun_comp_EFin.
     by move=> x Dx /=; rewrite (ger0_norm (g0 Dx)) lee_fin normfg.
-  apply: le_abse_integral => //; apply: measurable_fun_comp.
-    by apply: measurable_fun_EFin; exact: measurableT.
+  apply: le_abse_integral => //; apply: measurable_fun_comp_EFin.
   by apply: measurable_funB => //; exact: measurable_fun_cvg.
 suff: (fun n => `|integral mu D (EFin \o f_ n) -
              integral mu D (EFin \o f)|) --> 0.
@@ -3443,46 +3507,55 @@ Qed.
 
 End dominated_convergence_theorem.
 
-Section emeasurable_fun.
-Variables (T : measurableType) (point : T) (R : realType).
-Implicit Types (D : set T) (f g : T -> \bar R).
+Section section.
+Variables (T1 T2 : Type).
 
-Lemma emeasurable_funD D f g : measurable D ->
-  (forall x, D x -> (f x +? g x)%E) ->
-  measurable_fun D f -> measurable_fun D g ->
-  measurable_fun D (fun x => f x + g x)%E.
-Proof.
-move=> mD fg mf mg.
-have [f_ f_cvg] := approximation_sfun point mD mf.
-have [g_ g_cvg] := approximation_sfun point mD mg.
-apply: (@emeasurable_fun_cvg _ _ _ (fun n x => (f_ n x + g_ n x)%:E)) => //.
-  move=> n; apply: measurable_fun_comp.
-    by apply: measurable_fun_EFin; exact: measurableT.
-  by apply: measurable_funD => //; exact: measurable_sfun.
-move=> x Dx.
-under eq_fun do rewrite addEFin.
-by apply: ereal_cvgD; [exact: fg|exact: f_cvg|exact: g_cvg].
-Qed.
+Definition section (A : set (T1 * T2)) (x : T1) := [set y | (x, y) \in A].
 
-Lemma emeasurable_funB D f g : measurable D ->
-  (forall x, D x -> (f x +? - g x)%E) ->
-  measurable_fun D f -> measurable_fun D g ->
-  measurable_fun D (fun x => f x - g x)%E.
-Proof.
-by move=> mD fg mf mg; apply: emeasurable_funD => //; exact: emeasurable_funN.
-Qed.
+Lemma section0 x : section set0 x = set0.
+Proof. by rewrite predeqE /section=> y; split => //=; rewrite in_setE. Qed.
 
-End emeasurable_fun.
-
-Definition section T1 T2 (A : set (T1 * T2)) (x : T1) := [set y | (x, y) \in A].
-
-Lemma le_section T1 T2 (x : T1) :
-  {homo (fun A => @section T1 T2 A x) : X Y / X `<=` Y >-> X `<=` Y}.
+Lemma le_section (x : T1) : {homo section ^~ x : X Y / X `<=` Y >-> X `<=` Y}.
 Proof. by move=> X Y XY y; rewrite /section /= 2!in_setE => /XY. Qed.
+
+Lemma section_bigcup (F : nat -> set (T1 * T2)) x :
+  section (\bigcup_n F n) x = \bigcup_n section (F n) x.
+Proof.
+rewrite predeqE /section => y; split => [|[n _]] /=; rewrite in_setE.
+  by move=> -[n _ Fnxy]; exists n => //=; rewrite in_setE.
+by move=> Fnxy; rewrite in_setE; exists n.
+Qed.
+
+Lemma in_sectionM X1 X2 x : x \in X1 -> section (X1 `*` X2) x = X2.
+Proof.
+move=> xX1; rewrite /section predeqE => y /=; split; rewrite inE; first by move=> [].
+by move=> X2y; split => //=; rewrite -in_setE.
+Qed.
+
+Lemma notin_sectionM X1 X2 x : x \notin X1 -> section (X1 `*` X2) x = set0.
+Proof.
+move=> xX1; rewrite /section /= predeqE => y; split => //.
+by rewrite /section/= inE => -[]; rewrite -in_setE (negbTE xX1).
+Qed.
+
+Lemma sectionD X Y x : section (X `\` Y) x = section X x `\` section Y x.
+Proof.
+rewrite predeqE /section /= => y; split; last by rewrite 3!in_setE.
+by rewrite inE => -[Xxy Yxy]; rewrite 2!in_setE.
+Qed.
+
+Lemma trivIset_section (F : nat -> set (T1 * T2)) x : trivIset setT F ->
+  trivIset setT (fun n => section (F n) x).
+Proof.
+move=> /trivIsetP h; apply/trivIsetP => i j _ _ ij.
+rewrite /section /= predeqE => y; split => //= -[]; rewrite !in_setE => Fixy Fjxy.
+by have := h i j Logic.I Logic.I ij; rewrite predeqE => /(_ (x, y))[+ _]; apply.
+Qed.
+
+End section.
 
 Section measurable_section.
 Variables (T1 T2 : measurableType) (point1 : T1) (point2 : T2) (R : realType).
-Variables (m2 : {measure set T2 -> \bar R}).
 
 Lemma measurable_section (A : set (T1 * T2)) (x : T1) : measurable A ->
   measurable (section A x).
@@ -3490,32 +3563,118 @@ Proof.
 move=> mA.
 pose f : _ -> \bar R := EFin \o sfun_ind (point1, point2) 1 mA.
 have mf : measurable_fun setT f.
-  apply: measurable_fun_comp.
-    by apply: measurable_fun_EFin; exact: measurableT.
-  by apply: measurable_sfun; exact: measurableT.
-have _ : (fun y => if y \in section A x then 1%E else 0%E) =
-                    f \o (fun y => (x, y)).
+  by apply: measurable_fun_comp_EFin; apply: measurable_sfun; exact: measurableT.
+have _ : (fun y => if y \in section A x then 1%E else 0%E) = f \o (fun y => (x, y)).
   rewrite funeqE => y /=; rewrite /section /f /= /cst /= mul1r.
   case: ifPn; first by rewrite inE /= => ->.
   by rewrite notin_setE /= => /negP/negbTE ->.
 have -> : section A x = (fun y => f (x, y)) @^-1` [set 1%E].
-  rewrite predeqE => y; split; rewrite /section /preimage /f /= /cst /= mul1r.
-    by move=> ->.
+  rewrite predeqE => y; split; rewrite /section /preimage /f /= mul1r; first by move=> ->.
   by case: (_ \in _) => //= -[] /eqP; rewrite eq_sym oner_eq0.
 rewrite -(setIT (_ @^-1` _)).
 by apply: partial_measurable_fun => //; exact: emeasurable_set1.
 Qed.
+End measurable_section.
+
+Section ndseq_closed_B.
+Variables (T1 T2 : measurableType) (point2 : T2) (R : realType).
+Variables (m2 : {measure set T2 -> \bar R}).
 
 Let phi (A : set (T1 * T2)) := fun x => m2 (section A x).
+Let B := [set A : set (T1 * T2) | measurable A /\ measurable_fun setT (phi A)].
 
-Lemma measurable_fun_section (m2_bounded : exists M, forall X, (m2 X < M%:E)%E)
-  (A : set (T1 * T2)) :
-  A \in measurable -> measurable_fun setT (phi A).
+Lemma section_ndseq_closed_B : ndseq_closed B.
 Proof.
-move=> T1T2_A.
-set B := [set A : set (T1 * T2) | measurable A /\ measurable_fun setT (phi A)].
-suff : @measurable (prod_measurableType T1 T2) `<=` B.
-  by move/(_ A); rewrite -in_setE => /(_ T1T2_A)[].
+move=> F ndF; rewrite /B /= => BF; split.
+  by apply: measurable_bigcup => n; have [] := BF n.
+have phiF x : (fun i => phi (F i) x) --> phi (\bigcup_i F i) x.
+  rewrite /phi section_bigcup; apply: cvg_mu_inc => //.
+  - by move=> n; apply: measurable_section; case: (BF n).
+  - by apply: measurable_bigcup => i; apply: measurable_section; case: (BF i).
+  - move=> m n mn; apply/subsetPset => y; rewrite /section/= !in_setE.
+    by have /subsetPset FmFn := ndF _ _ mn; exact: FmFn.
+apply: (@emeasurable_fun_cvg _ _ _ (phi \o F)) => //; first exact: measurableT.
+- by move=> i; have [] := BF i.
+- by move=> x _; exact: phiF.
+Qed.
+
+End ndseq_closed_B.
+
+(* TODO: move to measure.v *)
+Section measure_restr.
+Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (D : set T) (mD : measurable D).
+
+Definition measure_restr' (X : set _) : \bar R := mu (X `&` D).
+
+Local Lemma measure_restr'0 : measure_restr' set0 = 0%E.
+Proof. by rewrite /measure_restr' set0I measure0. Qed.
+
+Local Lemma measure_restr'_ge0 (A : set _) : measurable A -> (0 <= measure_restr' A)%E.
+Proof.
+by move=> mA; rewrite /measure_restr'; apply: measure_ge0; exact: measurableI.
+Qed.
+
+Local Lemma measure_restr'_sigma_additive : semi_sigma_additive measure_restr'.
+Proof.
+move=> F mF tF mU; pose F' i := F i `&` D.
+have mF' i : measurable (F' i) by exact: measurableI.
+have tF' : trivIset setT F'.
+  apply/trivIsetP => i j _ _ ij; move/trivIsetP : tF => /(_ i j Logic.I Logic.I ij).
+  by rewrite /F' setIACA => ->; rewrite set0I.
+have h := @measure_sigma_additive _ _ mu _ mF' tF'.
+by rewrite /measure_restr' setI_bigcupl.
+Qed.
+
+Definition measure_restr : {measure set _ -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms
+    measure_restr'0 measure_restr'_ge0 measure_restr'_sigma_additive).
+
+End measure_restr.
+(*Section measure_restr.
+Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variable (G : set (set T)).
+Hypothesis GT : G `<=` @measurable T.
+
+Definition measure_restr' : set (g_measurableType G) -> \bar R := mu.
+
+Local Lemma measure_restr'0 : measure_restr' set0 = 0%E.
+Proof. by rewrite /measure_restr' measure0. Qed.
+
+Local Lemma measure_restr'_ge0 (A : set (g_measurableType G)) :
+  measurable A -> (0 <= measure_restr' A)%E.
+Proof.
+move=> mA; rewrite /measure_restr'; apply: measure_ge0.
+apply: (@g_salgebra_smallest _ setT _ _ GT) => //.
+exact: are_measurable_sets_measurable.
+Qed.
+
+Local Lemma measure_restr'_sigma_additive : semi_sigma_additive measure_restr'.
+Proof.
+move=> F mF tF mU; apply: (@measure_sigma_additive _ _ mu F) => // i.
+have := mF i; apply: (@g_salgebra_smallest _ setT _ _ GT) => //.
+exact: are_measurable_sets_measurable.
+Qed.
+
+Definition measure_restr : {measure set (g_measurableType G) -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms
+    measure_restr'0 measure_restr'_ge0 measure_restr'_sigma_additive).
+
+End measure_restr.*)
+
+Section measurable_prod_subset.
+Variables (T1 T2 : measurableType) (point1 : T1) (point2 : T2) (R : realType).
+Variables (D : set T2) (mD : measurable D).
+Variables (m2' : {measure set T2 -> \bar R}).
+Let m2 := measure_restr m2' mD.
+
+Let phi (A : set (T1 * T2)) := fun x => m2 (section A x).
+Let B := [set A : set (T1 * T2) | measurable A /\ measurable_fun setT (phi A)].
+
+Lemma measurable_prod_subset (m2_bounded : exists M, forall X, measurable X -> (m2 X < M%:E)%E) :
+  @measurable (prod_measurableType T1 T2) `<=` B.
+Proof.
+rewrite measurable_prod_measurableType.
 set C := [set A1 `*` A2 | A1 in @measurable T1 & A2 in @measurable T2].
 have CI : setI_closed C.
   move=> X Y [X1 mX1 [X2 mX2 <-{X}]] [Y1 mY1 [Y2 mY2 <-{Y}]].
@@ -3528,56 +3687,196 @@ have CB : C `<=` B.
   move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableM.
   have -> : phi (X1 `*` X2) = (fun x => m2 X2 * (sfun_ind point1 1 mX1 x)%:E)%E.
     rewrite funeqE => x; rewrite /phi /= /cst /= mul1r.
-    have [xX1|xX1] := boolP (x \in X1).
-      rewrite mule1; congr (m2 _).
-      rewrite /section predeqE => y /=; split; rewrite inE.
-        by move=> [].
-      by move=> X2y; split => //=; rewrite -in_setE.
-    rewrite /= mule0 (_ : section _  _= set0) ?measure0// predeqE => y.
-    by split => //; rewrite /section/= inE => -[]; rewrite -in_setE (negbTE xX1).
+    have [xX1|xX1] := boolP (x \in X1); first by rewrite mule1 in_sectionM.
+    by rewrite /= mule0 notin_sectionM// /measure_restr' set0I measure0.
   apply: emeasurable_funeM; first exact: measurableT.
-  apply: measurable_fun_comp; first by apply: measurable_fun_EFin; exact: measurableT.
+  apply: measurable_fun_comp_EFin.
   by apply: measurable_sfun; exact: measurableT.
 have monoB : is_monotone_class B.
   split; first exact: CB.
   - move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
     have -> : phi (X `\` Y) = (fun x => phi X x - phi Y x)%E.
-      rewrite funeqE => x; rewrite /phi.
-      rewrite (_ : section (X `\` Y) x = section X x `\` section Y x); last first.
-        rewrite predeqE /section /= => y; split.
-          by rewrite inE => -[Xxy Yxy]; rewrite 2!in_setE.
-        by rewrite 3!in_setE.
-      rewrite measureD; last 3 first.
+      rewrite funeqE => x; rewrite /phi sectionD measureD; last 3 first.
         - exact: measurable_section.
         - exact: measurable_section.
         - move: m2_bounded => [M m2M].
-          by rewrite (lt_le_trans (m2M (section X x))) // lee_pinfty.
+          rewrite (lt_le_trans (m2M (section X x) _))// ?lee_pinfty//.
+          exact: measurable_section.
       by rewrite setIidr//; exact: le_section.
     apply: emeasurable_funB => //; first exact: measurableT.
     move=> x _; rewrite /phi adde_defC fin_num_adde_def//.
     rewrite ge0_fin_numE ?measure_ge0//; last exact: measurable_section.
     case: m2_bounded => M m2M.
-    by rewrite (lt_le_trans (m2M _))// lee_pinfty.
-  - move=> F ndF; rewrite /B /= => BF; split.
-      by apply: measurable_bigcup => n; have [] := BF n.
-    have phiF x : (fun i => phi (F i) x) --> phi (\bigcup_i F i) x.
-      rewrite /phi.
-      have -> : section (\bigcup_i F i) x = \bigcup_i (section (F i) x).
-        rewrite predeqE => y; split=> [|[n _]].
-          rewrite /section /= in_setE => -[n _ Fnxy].
-          by exists n => //=; rewrite in_setE.
-        by rewrite /section /=; rewrite 2!in_setE => Fnxy; exists n.
-      apply: cvg_mu_inc => //.
-      + by move=> n; apply: measurable_section; case: (BF n).
-      + apply: measurable_bigcup => i.
-        by apply: measurable_section; case: (BF i).
-      + move=> m n mn; apply/subsetPset => y; rewrite /section/= !in_setE.
-        by have /subsetPset FmFn := ndF _ _ mn; exact: FmFn.
-    apply: (@emeasurable_fun_cvg _ _ _ (phi \o F)) => //.
-    + exact: measurableT.
-    + by move=> i; have [] := BF i.
-    + by move=> x _; exact: phiF.
-by rewrite measurable_prod_measurableType -/C; exact: monotone_class_subset.
+    rewrite (lt_le_trans (m2M (section X x) _))// ?lee_pinfty//.
+    exact: measurable_section.
+  - exact: section_ndseq_closed_B.
+exact: monotone_class_subset.
 Qed.
 
-End measurable_section.
+End measurable_prod_subset.
+
+Section measurable_fun_section.
+Variables (T1 T2 : measurableType) (point1 : T1) (point2 : T2) (R : realType).
+Variables (m2' : {measure set T2 -> \bar R}).
+
+Let phi (A : set (T1 * T2)) := fun x => m2' (section A x).
+Let B := [set A : set (T1 * T2) | measurable A /\ measurable_fun setT (phi A)].
+
+Lemma measurable_fun_section_sigma_finite (m2_sigma_finite : sigma_finite setT m2')
+  (A : set (T1 * T2)) :
+  A \in measurable -> measurable_fun setT (phi A).
+Proof.
+move: A.
+suff : @measurable (prod_measurableType T1 T2) `<=` B.
+  move=> + A mA.
+  by move/(_ A); rewrite -in_setE => /(_ mA)[].
+move/sigma_finiteP : m2_sigma_finite => [S2_ S2_T [S2_nd S2_oo]].
+move=> X mX.
+have -> : X = \bigcup_n (X `&` (setT `*` S2_ n)).
+  by rewrite -setI_bigcupr -setM_bigcupr -S2_T setMTT setIT.
+apply: (section_ndseq_closed_B point2).
+  move=> m n mn; apply/subsetPset; apply: setIS; apply: setMS.
+  by apply/subsetPset; apply: S2_nd.
+move=> n.
+rewrite -/B.
+pose I2_n : set (set T2) := strace (@measurable T2) (S2_ n).
+have I2_nT : I2_n `<=` @measurable T2.
+  (*NB:lemma?*)
+  by move=> _ [A' mA' <-]; apply: measurableI => //; have [] := S2_oo n.
+pose m2 : {measure set _ -> \bar R} := measure_restr m2' (S2_oo n).1.
+have m2_bounded : (exists M, forall X, measurable X -> (m2 X < M%:E)%E).
+  exists (fine (m2 (S2_ n)) + 1) => Y mY.
+  rewrite [in X in (_ < X)%E]addEFin (le_lt_trans _ (lte_addl _ _))//; last by rewrite lte_fin.
+  rewrite fineK; last first.
+    rewrite ge0_fin_numE.
+      by rewrite /m2 /measure_restr /measure_restr' /= setIid//; have [] := S2_oo n.
+    by rewrite measure_ge0//; have [] := S2_oo n.
+  rewrite /m2 /measure_restr /= /measure_restr' /= setIid; apply: le_measure => //.
+  - by rewrite in_setE /=; apply: measurableI => //; have [] := S2_oo n.
+  - by rewrite in_setE /=; have [] := S2_oo n.
+  - by apply: subIset; right.
+pose phi' (A : set (T1 * T2(*mI2_n*))) := fun x => m2 (section A x).
+pose B' := [set A : set (T1 * T2) | measurable A /\ measurable_fun setT (phi' A)].
+have subset_B' : @measurable (@prod_measurableType T1 T2(*mI2_n*)) `<=` B'.
+  exact: measurable_prod_subset.
+split=> [|Y mY].
+  apply: measurableI => //; apply: measurableM => //; first exact: measurableT.
+  by have [] := S2_oo n.
+have := subset_B' X mX.
+rewrite /B' /= => -[_] /(_ Y mY).
+rewrite /phi'.
+have ->// : (fun x => m2 (section X x)) = (fun x => m2' [set y | (x, y) \in X `&` setT `*` S2_ n]).
+rewrite funeqE => x /=; congr (m2' _).
+rewrite predeqE => y; split => [[]|].
+  by rewrite /section /= in_setE => Xxy S2ny; rewrite in_setE.
+by rewrite /section /= !in_setE => -[] Xxy /= [_].
+Qed.
+
+(*pose Itilda := [set A : set (T1 * T2) | A \in measurable /\
+                @measurable _(*I1oI2_n*) (A `&` setT `*` S2_ n)].
+have H1 : are_measurable_sets (setT `*` S2_ n) Itilda.
+  split.
+  - by rewrite /Itilda /= in_setE set0I; split; exact: measurable0.
+  - move=> A []; rewrite in_setE => mA H; split.
+      rewrite in_setE; apply: measurableD => //.
+      apply: measurableM; first exact: measurableT.
+      by have [] := S2_oo n.
+    rewrite setIidl; last by apply: subIset; left.
+    have rew_lem (A0 : set (T1 * T2)) :
+      setT `*` S2_ n `\` A0 = (~` (A0 `&` (setT `*` S2_ n))) `&` (setT `*` S2_ n).
+      rewrite predeqE => -[x y]; split.
+        by move=> -[[_ /= S2ny] Axy]; split => // -[] /Axy.
+      by move=> [/= AxyS2n [_ S2ny]]; split => //; apply: contra_not AxyS2n.
+    rewrite rew_lem.
+    apply: measurableI; first exact: measurableC.
+    apply: measurableM; first exact: measurableT.
+(*     apply/g_salgebra_self/stracexx.*)
+     by have [] := S2_oo n.
+  - move=> F mF; rewrite /Itilda /= in_setE; split.
+      apply: measurable_bigcup => i.
+      by have [] := mF i; rewrite in_setE.
+    rewrite setI_bigcupl; apply: measurable_bigcup => i.
+    by have [] := mF i.
+have {H1}H2 : s<| (setT `*` S2_ n), [set A `*` B | A in @measurable T1 &
+                                               B in @measurable T2]|> `<=` Itilda.
+  apply: g_salgebra_smallest => // _ /= [X1 mX1] [X2 mX2] <-.
+  rewrite /Itilda /=; split.
+    by rewrite in_setE; apply: measurableM.
+  rewrite -setIM setIT measurable_prod_measurableType.
+  apply: g_salgebra_self => /=.
+  exists X1 => //; exists (X2 `&` S2_ n) => //.
+  apply: measurableI => //.
+  by have [] := S2_oo n.*)
+
+End measurable_fun_section.
+
+(* NB: this is work in progress *)
+Section product_measure.
+Variables (T1 T2 : measurableType) (point1 : T1) (point2 : T2) (R : realType).
+Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
+Hypotheses (sm2 : sigma_finite setT m2).
+
+Let phi (A : set (T1 * T2)) := fun x => m2 (section A x).
+
+Let m : set (T1 * T2)%type -> \bar R := fun A => integral m1 setT (phi A).
+
+Local Lemma m0 : m set0 = 0%E.
+Proof.
+rewrite /m (_ : phi _ = cst 0)%E ?integral0// funeqE => n.
+by rewrite /phi section0 measure0.
+Qed.
+
+Local Lemma m_ge0 (A : set (T1 * T2)) : measurable A -> (0 <= m A)%E.
+Proof.
+move=> mA;apply: ge0_integral => // x _.
+by apply: measure_ge0 => //; exact: measurable_section.
+Qed.
+
+Local Lemma m_sigma_additive : semi_sigma_additive m.
+Proof.
+move=> F mF tF mUF.
+have -> : m (\bigcup_n F n) = \sum_(n <oo) (m (F n)).
+  transitivity (integral m1 setT (fun x => \sum_(n <oo) m2 (section (F n) x))).
+    rewrite /m; congr (integral _ _ _); rewrite funeqE => x; rewrite /phi.
+    suff : (fun n => (\sum_(i < n) m2 (section (F i) x))%E) --> m2 (section (\bigcup_n F n) x).
+      by move=> ?; rewrite -lim_mkord; exact/esym/cvg_lim.
+    rewrite section_bigcup; apply: (@measure_sigma_additive _ _ _ (fun n => section (F n) x)).
+    by move=> i; apply: measurable_section.
+    exact: trivIset_section.
+  rewrite integral_sum//; first exact: measurableT.
+  - by move=> n; apply: measurable_fun_section_sigma_finite => //; rewrite in_setE.
+  - by move=> n x _; apply: measure_ge0; apply: measurable_section.
+have /cvg_ex[l cl] : cvg (fun n => (\sum_(i < n) m (F i))%E).
+  rewrite (_ : (fun n => _) = (fun n => (\sum_(0 <= i < n) m (F i))%E)).
+    apply: is_cvg_ereal_nneg_natsum (*TODO: fix*) => //.
+      exact: predT.
+    move=> n _; apply: ge0_integral => // x _; apply: measure_ge0.
+    exact: measurable_section.
+  by rewrite funeqE => n; rewrite big_mkord.
+by move: (cl) => /cvg_lim; rewrite -lim_mkord => ->//.
+Qed.
+
+Definition product_measure : {measure set (T1 * T2) -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms m0 m_ge0 m_sigma_additive).
+
+Lemma product_measureE (A1 : set T1) (A2 : set T2) :
+  measurable A1 -> measurable A2 ->
+  product_measure (A1 `*` A2) = (m1 A1 * m2 A2)%E.
+Proof.
+move=> mA1 mA2; rewrite /product_measure /= /m.
+rewrite (_ : phi _ = (fun x => m2 A2 * (nnsfun_ind point1 1%:nng mA1 x)%:E)%E); last first.
+  rewrite funeqE => x; rewrite /phi /=.
+  have [xA1|xA1] := boolP (x \in A1).
+    by rewrite in_sectionM//= mulr1 mule1.
+  by rewrite mulr0 mule0 notin_sectionM.
+rewrite ge0_integralM //; last 4 first.
+  - exact: measurableT.
+  - by apply: measurable_fun_comp_EFin; apply: measurable_sfun; exact: measurableT.
+  - by move=> x _; rewrite lee_fin; exact: nnsfun_point_ge0.
+  - exact: measure_ge0.
+rewrite muleC; congr (_ * _)%E.
+rewrite integral_nnsfun//; last exact: measurableT.
+by rewrite sintegral_ind /= mul1e setTI.
+Qed.
+
+End product_measure.
