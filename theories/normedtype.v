@@ -366,7 +366,7 @@ by rewrite in_itv /= ; apply/andP; split; apply/ler_addgt0Pr => ? /xyz_e;
 Qed.
 
 Lemma in_segment_addgt0Pl (R : numFieldType) (x y z : R) :
-  reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]%R) (y \in `[x, z]%R).
+  reflect (forall e, e > 0 -> y \in `[(- e + x), (e + z)]) (y \in `[x, z]).
 Proof.
 apply/(equivP (in_segment_addgt0Pr x y z)).
 by split=> zxy e /zxy; rewrite [z + _]addrC [_ + x]addrC.
@@ -2815,13 +2815,13 @@ End at_left_right.
 Typeclasses Opaque at_left at_right.
 
 (* TODO: backport to mathcomp in progress *)
-Lemma itvxx d (T : porderType d) (x : T) : `[x, x]%O =i pred1 x.
+Lemma itvxx d (T : porderType d) (x : T) : `[x, x] =i pred1 x.
 Proof. by move=> y; rewrite in_itv/= -eq_le eq_sym. Qed.
 
-Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]%O).
+Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]).
 Proof. by rewrite itvxx; apply/eqP. Qed.
 
-Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}%O.
+Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}.
 Proof. by apply: subitvP; rewrite subitvE !bound_lexx. Qed.
 (* /TODO: backport to mathcomp in progress *)
 
@@ -3044,7 +3044,7 @@ Qed.
 Lemma interval_is_interval (i : interval R) : is_interval [set` i].
 Proof.
 by case: i => -[[]a|[]] [[]b|[]] // x y /=; do ?[by rewrite ?itv_ge//];
-  move=> xi yi z; rewrite -[x <= z <= y]/(z \in `[x, y]%O); apply/subitvP;
+  move=> xi yi z; rewrite -[x <= z <= y]/(z \in `[x, y]); apply/subitvP;
   rewrite subitvE /Order.le/= ?(itvP xi, itvP yi).
 Qed.
 
@@ -3138,7 +3138,7 @@ Definition Rhull (X : set R) : interval R := Interval
   (if `[< has_ubound X >] then BSide (~~ `[< X (sup X) >]) (sup X)
                           else BInfty _ false).
 
-Lemma Rhull0 : Rhull set0 = `]0, 0[%R :> interval R.
+Lemma Rhull0 : Rhull set0 = `]0, 0[ :> interval R.
 Proof.
 rewrite /Rhull  (asboolT (has_lbound0 R)) (asboolT (has_ubound0 R)) asboolF //.
 by rewrite sup0 inf0.
@@ -3298,7 +3298,7 @@ apply: segment_connected.
     by have := xe_y; rewrite /ball_ => /ltr_distlC_subl.
   by rewrite subr_ge0; apply/ltW.
 exists A; last by rewrite predeqE => x; split=> [[] | []].
-move=> x clAx; have abx : x \in `[a, b]%R.
+move=> x clAx; have abx : x \in `[a, b].
   by apply: interval_closed; have /closureI [] := clAx.
 split=> //; have /sabUf [i Di fx] := abx.
 have /fop := Di; rewrite openE => /(_ _ fx) [_ /posnumP[e] xe_fi].
@@ -3330,12 +3330,12 @@ rewrite {1}(splitr x) ger_addl pmulr_lle0 // => /(lt_le_trans x0);
 Qed.
 
 Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
-  a <= b -> {in `[a, b]%R, continuous f} ->
+  a <= b -> {in `[a, b], continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
-  exists2 c, c \in `[a, b]%R & f c = v.
+  exists2 c, c \in `[a, b] & f c = v.
 Proof.
 move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
-    exists2 c, c \in `[a, b]%R & f c = v; last first.
+    exists2 c, c \in `[a, b] & f c = v; last first.
   case: (leP (f a) (f b)) => [] _ fabv; first exact: ivt.
   have [||c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
     by move=> x /fcont; apply: continuousN.
@@ -3347,7 +3347,7 @@ rewrite le_eqVlt => /orP [/eqP->|ltvfb].
 set A := [set c | (c <= b) && (f c <= v)].
 have An0 : nonempty A by exists a; apply/andP; split=> //; apply: ltW.
 have supA : has_sup A by split=> //; exists b; apply/ubP => ? /andP [].
-have supAab : sup A \in `[a, b]%R.
+have supAab : sup A \in `[a, b].
   rewrite inE; apply/andP; split; last first.
     by apply: sup_le_ub => //; apply/ubP => ? /andP [].
   by move/ubP : (sup_upper_bound supA); apply; rewrite /A/= leab andTb ltW.
@@ -3371,7 +3371,7 @@ have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
 have /supdfe /= : ball (sup A) d%:num x.
   by near: x; rewrite /= nbhs_simpl; exists d%:num => //.
 rewrite /= => /ltr_distlC_subl; apply: le_lt_trans.
-rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b]%R -> v < f t.
+rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
   apply; rewrite inE; apply/andP; split; first by near: x; exists 1.
   near: x; exists (b - sup A) => /=.
     rewrite subr_gt0 lt_def (itvP supAab) andbT; apply/negP => /eqP besup.
@@ -4027,7 +4027,7 @@ Lemma bound_itvE (R : numDomainType) (a b : R) :
 Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
 
 Lemma near_in_itv {R : realFieldType} (a b : R) :
-  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}%O.
+  {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
 Proof.
 move=> y ayb; rewrite (near_shift 0 y).
 have mingt0 : 0 < Num.min (y - a) (b - y).
@@ -4085,10 +4085,10 @@ move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-];
 exact: mono_mem_image_segment.
 Qed.
 
-Lemma inc_segment_image a b f : f a <= f b -> f @`[a, b] = `[f a, f b]%O.
+Lemma inc_segment_image a b f : f a <= f b -> f @`[a, b] = `[f a, f b].
 Proof. by case: ltrP. Qed.
 
-Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a]%O.
+Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a].
 Proof. by case: ltrP. Qed.
 
 Lemma inc_surj_image_segment a b f : a <= b ->

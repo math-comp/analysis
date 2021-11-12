@@ -118,12 +118,10 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
-(* NB: PR to MathComp in progress *)
+(* NB: in MathComp 1.13.0 *)
 Lemma natr_absz (R : numDomainType) i : `|i|%:R = `|i|%:~R :> R.
 Proof. by rewrite -abszE. Qed.
-(* /NB: PR to MathComp in progress *)
 
-(* PR just merged to mathcomp's master *)
 Lemma ge_pinfty (R : numDomainType) (x : itv_bound R) :
   (+oo <= x)%O = (x == +oo)%O.
 Proof. by move: x => [[]|[]]. Qed.
@@ -137,7 +135,7 @@ Proof. by case: x. Qed.
 
 Lemma lt_ninfty (R : numDomainType) (x : itv_bound R) : (x < -oo%O)%O = false.
 Proof. by case: x => // -[]. Qed.
-(* /PR just merged to mathcomp's master *)
+(* /NB: in MathComp 1.13.0 *)
 
 (******************************************************************************)
 (*                         lemmas waiting to be PRed                          *)
@@ -263,6 +261,7 @@ have <- : z = b by apply: contrapT => zb; move/Aab : Az => [|].
 by move=> _ [|] ->.
 Qed.
 
+(* PR in progress *)
 Lemma cover_restr T I D' D (F : I -> set T) :
   D `<=` D' -> (forall i, D' i -> ~ D i -> F i = set0) ->
   cover D F = cover D' F.
@@ -283,6 +282,7 @@ rewrite eqEsubset; split => [t [i Di Fit]|t [i Di Git]].
 have [j Dj GF] : [set F i | i in D] (G i) by rewrite FG /mkset; exists i.
 by exists j => //; rewrite GF.
 Qed.
+(* /PR in progress *)
 
 (* PR in progress *)
 Lemma has_ub_lbN (R : numDomainType) (E : set R) :
@@ -309,9 +309,7 @@ rewrite (le_trans (ler_norm_add _ _))// (splitr r) ler_add //.
 - rewrite Nb // ltr_pdivl_mulr // (le_lt_trans _ MNr)//.
   by rewrite (le_trans (ler_norm _)) // normrM (@ger0_norm _ 2) // ler_addr.
 Qed.
-(* /PR in progress *)
 
-(* PR in progress *)
 Lemma bounded_fun_has_ubound (R : realFieldType) (a : R^o^nat) : bounded_fun a ->
   has_ubound [set of a].
 Proof.
@@ -336,6 +334,7 @@ move=> /bounded_funN/bounded_fun_has_ubound ba; apply/has_lb_ubN.
 by apply: subset_has_ubound ba => _ [_ [n _] <- <-]; exists n.
 Qed.
 
+(* NB: PR in progress *)
 Section sequences_R_lemmas_new.
 Variable R : realType.
 
@@ -381,7 +380,7 @@ Lemma nonincreasing_is_cvg_new (u_ : R ^nat) :
 Proof. by move=> u_decr u_bnd; apply: cvgP; apply: nonincreasing_cvg_new. Qed.
 
 End sequences_R_lemmas_new.
-(* \PR in progress *)
+(* /PR in progress *)
 
 (* TODO: PR in progress *)
 Lemma ereal_is_cvgD (R : realType) (u v : (\bar R)^nat) :
@@ -390,6 +389,25 @@ Proof.
 move=> uv /cvg_ex[l ul] /cvg_ex[k vk]; apply/cvg_ex; exists (l + k)%E.
 by apply: ereal_cvgD => //; rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk).
 Qed.
+(* /TODO: PR in progress *)
+
+Lemma ltr_add_invr (R : realType) (y x : R) : (y < x -> exists k, y + k.+1%:R^-1 < x)%R.
+Proof.
+move=> yx.
+exists (`|floor (x - y)^-1|%N); rewrite -ltr_subr_addl -{2}(invrK (x - y)%R) ltr_pinv ?inE.
+- rewrite -addn1 natrD natr_absz ger0_norm; last by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.
+  by rewrite -RfloorE lt_succ_Rfloor.
+- by rewrite ltr0n andbT unitfE pnatr_eq0.
+- by rewrite invr_gt0 subr_gt0 yx andbT unitfE invr_eq0 gt_eqF// subr_gt0.
+Qed.
+
+(* NB: PR in progress *)
+Lemma setIM T1 T2 (X1 : set T1) (X2 : set T2) (Y1 : set T1) (Y2 : set T2) :
+  (X1 `&` Y1) `*` (X2 `&` Y2) = X1 `*` X2 `&` Y1 `*` Y2.
+Proof.
+by rewrite predeqE => -[x y]; split=> [[/= [? ?] [? ?]//]|[] [? ?] [? ?]].
+Qed.
+(* NB: /PR in progress *)
 
 (******************************************************************************)
 (*                        /lemmas waiting to be PRed                          *)
@@ -1448,17 +1466,6 @@ rewrite eqEsubset; split => x; move: i j => [i1 i2] [j1 j2] /=.
 Qed.
 
 End set_itv_porderType.
-
-(* TODO: move *)
-Lemma ltr_add_invr (R : realType) (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
-Proof.
-move=> yx.
-exists (`|floor (x - y)^-1|%N); rewrite -ltr_subr_addl -{2}(invrK (x - y)) ltr_pinv ?inE.
-- rewrite -addn1 natrD natr_absz ger0_norm; last by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.
-  by rewrite -RfloorE lt_succ_Rfloor.
-- by rewrite ltr0n andbT unitfE pnatr_eq0.
-- by rewrite invr_gt0 subr_gt0 yx andbT unitfE invr_eq0 gt_eqF// subr_gt0.
-Qed.
 
 Arguments absurd {_} {_}.
 
@@ -3296,7 +3303,7 @@ have : \big[setU/set0]_(i < n) F i `<=` \bigcup_i F i.
 move: (@bigsetU_measurable _ _ (enum 'I_n) xpredT _ (fun k _ => mS k)).
 rewrite [in X in X -> _]big_enum => mU /(le_measure l) /=.
 rewrite !inE /=.
-by move=> /(_ mU US); apply: le_trans; rewrite measure_bigcup.
+by move=> /(_ mU US); apply: le_trans; rewrite measure_bigsetU.
 Qed.
 
 Section slength_definition.
@@ -3892,7 +3899,7 @@ rewrite [X in X <= _](_ : _ = slength (\big[setU/set0]_(k < n) [set` j k])) //.
   - by rewrite inE /=; exact/Sset.is_sset_itv.
   - by rewrite ij -bigcup_set /= => r [k /= _ jkr]; exists k.
 rewrite big_mkord; apply/esym.
-apply/(@measure_bigcup _ _ (@slength_additive_measure R) (pred_set \o j)) => //.
+apply/(@measure_bigsetU _ _ (@slength_additive_measure R) (pred_set \o j)) => //.
 by move=> // k; exists [:: j k]; rewrite sset_cons1.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -4088,7 +4095,7 @@ rewrite (_ : (fun _ => _) = (fun n => \sum_(0 <= k < n)
     rewrite {1}ssetE -[decompose _]/(df n) -(Fs n) => <-.
     by rewrite big_distrr /=; under eq_bigr do rewrite -set_itv_meet.
   rewrite (big_nth 0%O) big_mkord.
-  rewrite (@measure_bigcup _ _ (@slength_additive_measure R)
+  rewrite (@measure_bigsetU _ _ (@slength_additive_measure R)
       (fun n => [set` nth 0%O (idf k) n])) //; last 2 first.
     by move=> m; apply: Sset.is_sset_itv.
     exact/trivIset_itv_meet/trivIset_decompose.
@@ -4118,7 +4125,7 @@ have [j [Fj tj]] : exists j : seq (interval R), \bigcup_k (F k) = [sset of j] /\
   exists (decompose j); split; last exact: trivIset_decompose.
   by rewrite Fj; have [_ _ ->] := is_decomposition_decompose j.
 rewrite Fj ssetE (big_nth 0%O) big_mkord.
-rewrite (@measure_bigcup _ _ (@slength_additive_measure R)
+rewrite (@measure_bigsetU _ _ (@slength_additive_measure R)
     (fun n => [set` nth 0%O j n])) //; last first.
   by move=> i; exact/measurable_sset_itv.
 rewrite (@le_trans _ _ (\sum_(0 <= n < size j)
@@ -4997,7 +5004,7 @@ by apply: injective_left_inverse; exact: nat_of_rat_inj.
 Qed.
 (* /NB: PR 435 in progress *)
 
-(* TODO: move to measure.v *)
+(* TODO: move to measure.v once PR 435 is merged *)
 Lemma measurable_bigcup_rat (T : measurableType) (F : rat -> set T) :
   (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
 Proof.
@@ -5017,6 +5024,9 @@ Implicit Types (G : set (set T)) (A D : set T).
 
 (* intended as a trace sigma-algebra *)
 Definition strace G D := [set x `&` D | x in G].
+
+Lemma stracexx G D : G D -> strace G D D.
+Proof. by rewrite /strace /=; exists D => //; rewrite setIid. Qed.
 
 Lemma are_measurable_sets_strace G D :
   are_measurable_sets setT G -> are_measurable_sets D (strace G D).
@@ -5919,6 +5929,13 @@ Qed.
 
 End standard_emeasurable_fun.
 
+Lemma measurable_fun_comp_EFin (T : measurableType) (R : realType) (E : set T) (g : T -> R) :
+  measurable_fun E g -> measurable_fun E (EFin \o g).
+Proof.
+move=> mg; apply: measurable_fun_comp => //.
+by apply: measurable_fun_EFin; exact: measurableT.
+Qed.
+
 Section emeasurable_fun.
 Variables (T : measurableType) (R : realType).
 Implicit Types (D : set T).
@@ -6165,19 +6182,6 @@ Definition prod_measurableType := [the measurableType of prod_measurable T1 T2].
 End product_salgebra_instance.
 
 (* TODO: move *)
-Lemma setIM T1 T2 (X1 : set T1) (X2 : set T2) (Y1 : set T1) (Y2 : set T2) :
-  (X1 `&` Y1) `*` (X2 `&` Y2) = X1 `*` X2 `&` Y1 `*` Y2.
-Proof.
-by rewrite predeqE => -[x y]; split=> [[/= [? ?] [? ?]//]|[] [? ?] [? ?]].
-Qed.
-
-Lemma setMT T1 T2 (A : set T1) : A `*` @setT T2 = fst @^-1` A.
-Proof. by rewrite predeqE => -[x y]; split => //= -[]. Qed.
-
-Lemma setTM T1 T2 (B : set T2) : @setT T1 `*` B = snd @^-1` B.
-Proof. by rewrite predeqE => -[x y]; split => //= -[]. Qed.
-
-(* TODO: move *)
 Lemma measurableM (T1 T2 : measurableType) (A : set T1) (B : set T2) :
   measurable A -> measurable B -> measurable (A `*` B).
 Proof.
@@ -6214,6 +6218,23 @@ Qed.
 
 End product_salgebra_measurableType.
 
+Section product_salgebra_g_measurableTypeR.
+Variables (T1 : measurableType) (T2 : Type) (C2 : set (set T2)).
+Hypothesis (setTC2 : setT `<=` C2).
+
+(* NB: useful? *)
+Lemma measurable_prod_g_measurableTypeR :
+  @measurable (prod_measurableType T1 (g_measurableType C2))
+  = s<< [set A `*` B | A in measurable & B in C2] >>.
+Proof.
+rewrite measurable_prod_measurableType //; congr (s<< _ >>).
+rewrite predeqE => X; split=> [[A mA] [B mB] <-{X}|[A C1A] [B C2B] <-{X}].
+  by exists A => //; exists B => //; exact: setTC2.
+by exists A => //; exists B => //; exact: g_salgebra_self.
+Qed.
+
+End product_salgebra_g_measurableTypeR.
+
 Section product_salgebra_g_measurableType.
 Variables (T1 T2 : Type) (C1 : set (set T1)) (C2 : set (set T2)).
 Hypotheses (setTC1 : setT `<=` C1) (setTC2 : setT `<=` C2).
@@ -6231,15 +6252,13 @@ Qed.
 End product_salgebra_g_measurableType.
 
 Section prod_measurable_fun.
-Variables (T T1 T2 : measurableType).
+Variables (T T1 T2 : measurableType) (f : T -> prod_measurableType T1 T2).
 
-Lemma prod_measurable_funP (f : T -> prod_measurableType T1 T2) :
-  measurable_fun setT f <->
+Lemma prod_measurable_funP : measurable_fun setT f <->
   measurable_fun setT (fst \o f) /\ measurable_fun setT (snd \o f).
 Proof.
-apply: (@iff_trans _ (preimage_classes (fst \o f) (snd \o f) `<=` @measurable T)).
-- rewrite preimage_classes_comp.
-  split=> [mf A [C HC <-]|f12]; first exact: mf.
+apply: (@iff_trans _ (preimage_classes (fst \o f) (snd \o f) `<=` measurable)).
+- rewrite preimage_classes_comp; split=> [mf A [C HC <-]|f12]; first exact: mf.
   by move=> A mA; apply: f12; exists A.
 - split => [h|[mf1 mf2]].
     by split => A mA; apply/h/g_salgebra_self; [left; exists A|right; exists A].
@@ -6250,17 +6269,29 @@ Qed.
 End prod_measurable_fun.
 
 Section partial_measurable_fun.
-Variables (T T1 T2 : measurableType).
+Variables (T T1 T2 : measurableType) (f : prod_measurableType T1 T2 -> T).
 
-Lemma partial_measurable_fun (f : prod_measurableType T1 T2 -> T) (x : T1) :
+Lemma measurable_fun_prod1 x :
   measurable_fun setT f -> measurable_fun setT (fun y => f (x, y)).
 Proof.
-move=> mf; pose Ix := fun y : T2 => (x, y).
-have m_fstIx : measurable_fun setT (fst \o Ix).
+move=> mf; pose pairx := fun y : T2 => (x, y).
+have m1pairx : measurable_fun setT (fst \o pairx).
   exact/measurable_fun_cst/measurableT.
-have m_sndIx : measurable_fun setT (snd \o Ix).
+have m2pairx : measurable_fun setT (snd \o pairx).
   exact/measurable_fun_id/measurableT.
-have mIx : measurable_fun setT Ix by exact/(proj2 (prod_measurable_funP Ix)).
+have : measurable_fun setT pairx by exact/(proj2 (prod_measurable_funP _)).
+exact: measurable_fun_comp.
+Qed.
+
+Lemma measurable_fun_prod2 y :
+  measurable_fun setT f -> measurable_fun setT (fun x => f (x, y)).
+Proof.
+move=> mf; pose pairy := fun x : T1 => (x, y).
+have m1pairy : measurable_fun setT (fst \o pairy).
+  exact/measurable_fun_id/measurableT.
+have m2pairy : measurable_fun setT (snd \o pairy).
+  exact/measurable_fun_cst/measurableT.
+have : measurable_fun setT pairy by exact/(proj2 (prod_measurable_funP _)).
 exact: measurable_fun_comp.
 Qed.
 
