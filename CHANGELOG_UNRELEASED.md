@@ -109,6 +109,9 @@
   + lemmas `atan_def`, `atan_gtNpi2`, `atan_ltpi2`, `atanK`, `tanK`
   + lemmas `continuous_atan`, `cos_atan`
   + instance `is_derive1_atan`
+  + lemmas `fin_numElt`, `fin_numPlt`
+- in `sequences.v`:
+  + `ereal_cvg_abs0`, `ereal_cvg_sub0`, `ereal_squeeze`
 
 ### Changed
 
