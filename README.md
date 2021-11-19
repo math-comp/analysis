@@ -41,6 +41,7 @@ the Coq proof-assistant and using the Mathematical Components library.
   - [MathComp solvable 1.12 or later](https://math-comp.github.io)
   - [MathComp field 1.12 or later](https://math-comp.github.io)
   - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
+  - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
   - [Hierarchy Builder >= 0.10.0](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
 - Related publication(s):

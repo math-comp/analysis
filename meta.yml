@@ -105,6 +105,11 @@ dependencies:
   description: |-
     [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
 - opam:
+    name: coq-mathcomp-bigenough
+    version: '{ (>= "1.0.0") | (= "dev") }'
+  description: |-
+    [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
+- opam:
     name: coq-hierarchy-builder
     version: '{ (>= "0.10.0")}'
   description: |-
