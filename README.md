@@ -22,6 +22,7 @@ the Coq proof-assistant and using the Mathematical Components library.
 
 - Author(s):
   - Reynald Affeldt (initial)
+  - Yves Bertot
   - Cyril Cohen (initial)
   - Marie Kerjean
   - Assia Mahboubi (initial)
@@ -40,7 +41,7 @@ the Coq proof-assistant and using the Mathematical Components library.
   - [MathComp solvable 1.12 or later](https://math-comp.github.io)
   - [MathComp field 1.12 or later](https://math-comp.github.io)
   - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
-  - [Hierarchy Builder >= 0.10](https://github.com/math-comp/hierarchy-builder)
+  - [Hierarchy Builder >= 0.10.0](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
 - Related publication(s):
   - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)

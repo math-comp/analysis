@@ -17,6 +17,8 @@ chat:
 authors:
 - name: Reynald Affeldt
   initial: true
+- name: Yves Bertot
+  initial: false
 - name: Cyril Cohen
   initial: true
 - name: Marie Kerjean
@@ -53,6 +55,14 @@ tested_coq_opam_versions:
 - version: '1.12.0-coq-8.12'
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.13'
+  repo: 'mathcomp/mathcomp'
+- version: '1.12.0-coq-8.14'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-8.12'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-8.13'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-8.14'
   repo: 'mathcomp/mathcomp'
 - version: 'coq-8.11'
   repo: 'mathcomp/mathcomp-dev'
@@ -96,9 +106,9 @@ dependencies:
     [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
 - opam:
     name: coq-hierarchy-builder
-    version: '{ >= "0.10.0" | (= "dev") }'
+    version: '{ (>= "0.10.0")}'
   description: |-
-    [Hierarchy Builder >= 0.10](https://github.com/math-comp/hierarchy-builder)
+    [Hierarchy Builder >= 0.10.0](https://github.com/math-comp/hierarchy-builder)
 namespace: mathcomp.analysis
 
 keywords:

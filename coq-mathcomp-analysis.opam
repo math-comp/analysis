@@ -25,7 +25,7 @@ depends: [
   "coq-mathcomp-solvable" { (>= "1.12.0" & < "1.14~") | (= "dev") }
   "coq-mathcomp-field" { (>= "1.12.0" & < "1.14~") | (= "dev") }
   "coq-mathcomp-finmap" { (>= "1.5.1" & < "1.6~") | (= "dev") }
-  "coq-hierarchy-builder" { >= "0.10.0" | (= "dev") }
+  "coq-hierarchy-builder" { (>= "0.10.0")}
 ]
 
 tags: [
@@ -37,6 +37,7 @@ tags: [
 ]
 authors: [
   "Reynald Affeldt"
+  "Yves Bertot"
   "Cyril Cohen"
   "Marie Kerjean"
   "Assia Mahboubi"
