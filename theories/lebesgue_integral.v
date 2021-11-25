@@ -1146,7 +1146,7 @@ rewrite le_eqVlt => /predU1P[|] mufoo; last first.
   have : \int[mu]_x (f x) \is a fin_num.
     by rewrite ge0_fin_numE//; exact: integral_ge0.
   rewrite ge0_integralTE// => /ub_ereal_sup_adherent h.
-  apply: lee_adde => e; have {h}[/= _ [[G Gf <-]]] := h e.
+  apply: lee_adde => e; have {h} [/= _ [G Gf <-]] := h _ [gt0 of e%:num].
   rewrite EFinN lte_subl_addr// => fGe.
   have : forall x, cvg (g^~ x) -> (G x <= lim (g ^~ x))%R.
     move=> x cg; rewrite -lee_fin -(EFin_lim cg).

@@ -375,50 +375,58 @@ Local Open Scope ring_scope.
 Require Import reals boolp classical_sets.
 
 Section ssreal_struct_contd.
+Implicit Type E : set R.
 
-Lemma is_upper_boundE (E : set R) x : is_upper_bound E x = ((ubound E) x).
+Lemma is_upper_boundE E x : is_upper_bound E x = (ubound E) x.
 Proof.
 rewrite propeqE; split; [move=> h|move=> /ubP h y Ey; exact/RleP/h].
 by apply/ubP => y Ey; apply/RleP/h.
 Qed.
 
-Lemma boundE (E : set R) : bound E = has_ubound E.
+Lemma boundE E : bound E = has_ubound E.
 Proof. by apply/eq_exists=> x; rewrite is_upper_boundE. Qed.
 
-Lemma completeness' (E : set R) : has_sup E -> {m : R | is_lub E m}.
-Proof. by move=> [eE bE]; rewrite -boundE in bE; apply: completeness. Qed.
-
-Definition real_sup (E : set R) : R :=
-  if pselect (has_sup E) isn't left hsE then 0 else projT1 (completeness' hsE).
-
-Lemma real_sup_is_lub (E : set R) : has_sup E -> is_lub E (real_sup E).
+Lemma Rcondcomplete E : has_sup E -> {m | isLub E m}.
 Proof.
-by move=> hsE; rewrite /real_sup; case: pselect=> // ?; case: completeness'.
+move=> [E0 uE]; have := completeness E; rewrite boundE => /(_ uE E0)[x [E1 E2]].
+exists x; split; first by rewrite -is_upper_boundE; apply: E1.
+by move=> y; rewrite -is_upper_boundE => /E2/RleP.
 Qed.
 
-Lemma real_sup_ub (E : set R) : has_sup E -> (ubound E) (real_sup E).
-Proof. by move=> /real_sup_is_lub []; rewrite is_upper_boundE. Qed.
+Lemma Rsupremums_neq0 E : has_sup E -> (supremums E !=set0)%classic.
+Proof. by move=> /Rcondcomplete[x [? ?]]; exists x. Qed.
 
-Lemma real_sup_out (E : set R) : ~ has_sup E -> real_sup E = 0.
-Proof. by move=> nosup; rewrite /real_sup; case: pselect. Qed.
+Lemma Rsup_isLub x0 E : has_sup E -> isLub E (supremum x0 E).
+Proof.
+have [-> [/set0P]|E0 hsE] := eqVneq E set0; first by rewrite eqxx.
+have [s [Es sE]] := Rcondcomplete hsE.
+split => x Ex; first by apply/ge_supremum_Nmem=> //; exact: Rsupremums_neq0.
+rewrite /supremum (negbTE E0); case: xgetP => /=.
+  by move=> _ -> [_ EsE]; apply/EsE.
+by have [y Ey /(_ y)] := Rsupremums_neq0 hsE.
+Qed.
 
 (* :TODO: rewrite like this using (a fork of?) Coquelicot *)
 (* Lemma real_sup_adherent (E : pred R) : real_sup E \in closure E. *)
-Lemma real_sup_adherent (E : set R) (eps : R) :
-  has_sup E -> 0 < eps -> exists2 e : R, E e & (real_sup E - eps) < e.
+Lemma real_sup_adherent x0 E (eps : R) : (0 < eps) ->
+  has_sup E -> exists2 e, E e & (supremum x0 E - eps) < e.
 Proof.
-move=> supE eps_gt0; set m := _ - eps; apply: contrapT=> mNsmall.
-have: (ubound E) m.
+move=> eps_gt0 supE; set m := _ - eps; apply: contrapT=> mNsmall.
+have : (ubound E) m.
   apply/ubP => y Ey.
-  have /negP := mNsmall (ex_intro2 _ _ y Ey _).
-  by rewrite -leNgt.
-have [_ /(_ m)] := real_sup_is_lub supE.
-rewrite is_upper_boundE => m_big /m_big /RleP.
+  by have /negP := mNsmall (ex_intro2 _ _ y Ey _); rewrite -leNgt.
+have [_ /(_ m)] := Rsup_isLub x0 supE.
+move => m_big /m_big.
 by rewrite -subr_ge0 addrC addKr oppr_ge0 leNgt eps_gt0.
 Qed.
 
+Lemma Rsup_ub x0 E : has_sup E -> (ubound E) (supremum x0 E).
+Proof.
+by move=> supE x Ex; apply/ge_supremum_Nmem => //; exact: Rsupremums_neq0.
+Qed.
+
 Definition real_realMixin : Real.mixin_of _ :=
-  RealMixin real_sup_ub real_sup_adherent real_sup_out.
+  RealMixin (@Rsup_ub (0 : R)) (real_sup_adherent 0).
 Canonical real_realType := RealType R real_realMixin.
 
 Implicit Types (x y : R) (m n : nat).

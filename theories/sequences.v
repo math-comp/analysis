@@ -628,7 +628,7 @@ move=> u_nd u_ub; set M := sup (range u_).
 have su_ : has_sup (range u_) by split => //; exists (u_ 0%N), 0%N.
 apply: cvg_distW => _/posnumP[e]; rewrite near_map.
 have [p /andP[Mu_p u_pM]] : exists p, M - e%:num <= u_ p <= M.
-  have [_ -[p _] <- /ltW Mu_p] := sup_adherent su_ (gt0 e).
+  have [_ -[p _] <- /ltW Mu_p] := sup_adherent (gt0 e) su_.
   by exists p; rewrite Mu_p; have /ubP := sup_upper_bound su_; apply; exists p.
 near=> n; have pn : (p <= n)%N by near: n; apply: nbhs_infty_ge.
 rewrite distrC ler_norml ler_sub_addl (le_trans Mu_p (u_nd _ _ pn)) /=.
@@ -1453,7 +1453,7 @@ have e'0 : (0 < e')%R.
   rewrite /e' subr_gt0 -lte_fin fine_expand //.
   rewrite lt_expandLR ?inE ?ltW// ltr_subl_addr fineK //.
   by rewrite ltr_addl.
-have [y [[m _] umx] Se'y] := ub_ereal_sup_adherent (PosNum e'0) l_fin_num.
+have [y [m _ umx] Se'y] := ub_ereal_sup_adherent e'0 l_fin_num.
 rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
 rewrite ger0_norm ?subr_ge0 ?le_contract ?ereal_sup_ub//; last by exists n.
 move: Se'y; rewrite -{}umx {y} /= => le'um.

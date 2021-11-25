@@ -2828,8 +2828,7 @@ End DualAddTheory.
 Section ereal_supremum.
 Variable R : realFieldType.
 Local Open Scope classical_set_scope.
-Implicit Types S : set (\bar R).
-Implicit Types x y : \bar R.
+Implicit Types (S : set (\bar R)) (x y : \bar R).
 
 Lemma ereal_ub_pinfty S : ubound S +oo.
 Proof. by apply/ubP=> x _; rewrite leey. Qed.
@@ -2860,15 +2859,9 @@ Definition ereal_sup S := supremum -oo S.
 
 Definition ereal_inf S := - ereal_sup (-%E @` S).
 
-Lemma ereal_sup0 : ereal_sup set0 = -oo.
-Proof. by rewrite /ereal_sup /supremum eqxx. Qed.
+Lemma ereal_sup0 : ereal_sup set0 = -oo. Proof. exact: supremum0. Qed.
 
-Lemma ereal_sup1 x : ereal_sup [set x] = x.
-Proof.
-rewrite /ereal_sup /supremum ifF; last first.
-  by apply/eqP; rewrite predeqE => /(_ x)[+ _]; apply.
-by rewrite supremums_set1; case: xgetP => // /(_ x) /(_ erefl).
-Qed.
+Lemma ereal_sup1 x : ereal_sup [set x] = x. Proof. exact: supremum1. Qed.
 
 Lemma ereal_inf0 : ereal_inf set0 = +oo.
 Proof. by rewrite /ereal_inf image_set0 ereal_sup0. Qed.
@@ -2888,23 +2881,21 @@ move=> SM; rewrite /ereal_inf lee_oppr; apply ub_ereal_sup => x [y Sy <-{x}].
 by rewrite lee_oppl oppeK; apply SM.
 Qed.
 
-Lemma ub_ereal_sup_adherent S (e : {posnum R}) :
-  ereal_sup S \is a fin_num -> exists x, S x /\ (ereal_sup S - e%:num%:E < x).
+Lemma ub_ereal_sup_adherent S (e : R) : (0 < e)%R ->
+  ereal_sup S \is a fin_num -> exists2 x, S x & (ereal_sup S - e%:E < x).
 Proof.
-move=> Sr.
-have : ~ ubound S (ereal_sup S - e%:num%:E).
+move=> e0 Sr; have : ~ ubound S (ereal_sup S - e%:E).
   move/ub_ereal_sup; apply/negP.
   by rewrite -ltNge lte_subl_addr // lte_addl // lte_fin.
 move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
-rewrite not_implyE => -[? ?]; exists x; split => //.
-by rewrite ltNge; apply/negP.
+by rewrite not_implyE => -[? ?]; exists x => //; rewrite ltNge; apply/negP.
 Qed.
 
-Lemma lb_ereal_inf_adherent S (e : {posnum R}) :
-  ereal_inf S \is a fin_num -> exists x, S x /\ (x < ereal_inf S + e%:num%:E).
+Lemma lb_ereal_inf_adherent S (e : R) : (0 < e)%R ->
+  ereal_inf S \is a fin_num -> exists2 x, S x & (x < ereal_inf S + e%:E).
 Proof.
-rewrite [in X in X -> _]/ereal_inf fin_numN => /(ub_ereal_sup_adherent e)[x []].
-move=> [y Sy <-]; rewrite -lte_oppr => /lt_le_trans ex; exists y; split => //.
+move=> e0; rewrite fin_numN => /(ub_ereal_sup_adherent e0)[x []].
+move=> y Sy <-; rewrite -lte_oppr => /lt_le_trans ex; exists y => //.
 by apply: ex; rewrite oppeD// oppeK.
 Qed.
 

@@ -119,8 +119,22 @@ Require Import mathcomp_extra boolp.
 (*                pblock D F x := F (pblock_index D F x)                      *)
 (*                                                                            *)
 (* * Upper and lower bounds:                                                  *)
-(*              ubound, lbound == upper bound and lower bound sets            *)
-(*               supremum x0 E == supremum of E or x0 if E is empty           *)
+(*              ubound A == the set of upper bounds of the set A              *)
+(*              lbound A == the set of lower bounds of the set A              *)
+(*   Predicates to express existence conditions of supremum and infimum of    *)
+(*   sets of real numbers:                                                    *)
+(*          has_ubound A := ubound A != set0                                  *)
+(*             has_sup A := A != set0 /\ has_ubound A                         *)
+(*          has_lbound A := lbound A != set0                                  *)
+(*             has_inf A := A != set0 /\ has_lbound A                         *)
+(*                                                                            *)
+(*             isLub A m := m is a least upper bound of the set A             *)
+(*           supremums A := set of supremums of the set A                     *)
+(*         supremum x0 A == supremum of A or x0 if A is empty                 *)
+(*            infimums A := set of infimums of the set A                      *)
+(*          infimum x0 A == infimum of A or x0 if A is empty                  *)
+(*                                                                            *)
+(*               F `#` G := the classes of sets F and G intersect             *)
 (*                                                                            *)
 (* * sections:                                                                *)
 (*           xsection A x == with A : set (T1 * T2) and x : T1 is the         *)
@@ -2575,10 +2589,10 @@ Qed.
 Section UpperLowerTheory.
 Import Order.TTheory.
 Variables (d : unit) (T : porderType d).
-Implicit Types A : set T.
+Implicit Types (A : set T) (x y z : T).
 
-Definition ubound A : set T := [set z | forall y, A y -> (y <= z)%O].
-Definition lbound A : set T := [set z | forall y, A y -> (z <= y)%O].
+Definition ubound A : set T := [set y | forall x, A x -> (x <= y)%O].
+Definition lbound A : set T := [set y | forall x, A x -> (y <= x)%O].
 
 Lemma ubP A x : (forall y, A y -> (y <= x)%O) <-> ubound A x.
 Proof. by []. Qed.
@@ -2614,11 +2628,13 @@ Proof. by move=> Ey; apply. Qed.
 (* i.e. down A := { x | exists y, y \in A /\ x <= y} *)
 Definition down A : set T := [set x | exists y, A y /\ (x <= y)%O].
 
-(* Real set supremum and infimum existence condition. *)
 Definition has_ubound A := ubound A !=set0.
 Definition has_sup A := A !=set0 /\ has_ubound A.
 Definition has_lbound A := lbound A !=set0.
 Definition has_inf A := A !=set0 /\ has_lbound A.
+
+Lemma has_ub_set1 x : has_ubound [set x].
+Proof. by exists x; rewrite ub_set1. Qed.
 
 Lemma has_inf0 : ~ has_inf (@set0 T).
 Proof. by rewrite /has_inf not_andP; left; apply/set0P/negP/negPn. Qed.
@@ -2626,21 +2642,26 @@ Proof. by rewrite /has_inf not_andP; left; apply/set0P/negP/negPn. Qed.
 Lemma has_sup0 : ~ has_sup (@set0 T).
 Proof. by rewrite /has_sup not_andP; left; apply/set0P/negP/negPn. Qed.
 
+Lemma has_sup1 x : has_sup [set x].
+Proof. by split; [exists x | exists x => y ->]. Qed.
+
+Lemma has_inf1 x : has_inf [set x].
+Proof. by split; [exists x | exists x => y ->]. Qed.
+
 Lemma subset_has_lbound A B : A `<=` B -> has_lbound B -> has_lbound A.
 Proof. by move=> AB [l Bl]; exists l => a Aa; apply/Bl/AB. Qed.
 
 Lemma subset_has_ubound A B : A `<=` B -> has_ubound B -> has_ubound A.
 Proof. by move=> AB [l Bl]; exists l => a Aa; apply/Bl/AB. Qed.
 
-Lemma has_ub_set1 x : has_ubound [set x].
-Proof. by exists x; rewrite ub_set1. Qed.
-
 Lemma downP A x : (exists2 y, A y & (x <= y)%O) <-> down A x.
 Proof. by split => [[y Ay xy]|[y [Ay xy]]]; [exists y| exists y]. Qed.
 
+Definition isLub A m := ubound A m /\ forall b, ubound A b -> (m <= b)%O.
+
 Definition supremums A := ubound A `&` lbound (ubound A).
 
-Lemma supremums_set1 x : supremums [set x] = [set x].
+Lemma supremums1 x : supremums [set x] = [set x].
 Proof.
 rewrite /supremums predeqE => y; split => [[]|->{y}]; last first.
   by split; [rewrite ub_set1|exact: lb_ub_refl].
@@ -2649,19 +2670,32 @@ Qed.
 
 Lemma is_subset1_supremums A : is_subset1 (supremums A).
 Proof.
-move=> x y [Ex xE] [Ey yE]; apply/eqP.
-by rewrite eq_le (ub_lb_ub Ex yE) (ub_lb_ub Ey xE).
+move=> x y [Ax xA] [Ay yA]; apply/eqP.
+by rewrite eq_le (ub_lb_ub Ax yA) (ub_lb_ub Ay xA).
 Qed.
 
-Definition supremum (x0 : T) A :=
-  if A == set0 then x0 else xget x0 (supremums A).
+Definition supremum x0 A := if A == set0 then x0 else xget x0 (supremums A).
+
+Lemma supremum_out x0 A : ~ has_sup A -> supremum x0 A = x0.
+Proof.
+move=> hsA; rewrite /supremum; case: ifPn => // /set0P[/= x Ax].
+case: xgetP => //= _ -> [uA _]; exfalso.
+by apply: hsA; split; [exists x|exists (xget x0 (supremums A))].
+Qed.
+
+Lemma supremum0 x0 : supremum x0 set0 = x0.
+Proof. by rewrite /supremum eqxx. Qed.
+
+Lemma supremum1 x0 x : supremum x0 [set x] = x.
+Proof.
+rewrite /supremum ifF; last first.
+  by apply/eqP; rewrite predeqE => /(_ x)[+ _]; apply.
+by rewrite supremums1; case: xgetP => // /(_ x) /(_ erefl).
+Qed.
 
 Definition infimums A := lbound A `&` ubound (lbound A).
 
-Definition infimum (x0 : T) A :=
-  if A == set0 then x0 else xget x0 (infimums A).
-
-Lemma infimums_set1 x : infimums [set x] = [set x].
+Lemma infimums1 x : infimums [set x] = [set x].
 Proof.
 rewrite /infimums predeqE => y; split => [[]|->{y}]; last first.
   by split; [rewrite lb_set1|apply ub_lb_refl].
@@ -2674,12 +2708,14 @@ move=> x y [Ax xA] [Ay yA]; apply/eqP.
 by rewrite eq_le (lb_ub_lb Ax yA) (lb_ub_lb Ay xA).
 Qed.
 
+Definition infimum x0 A := if A == set0 then x0 else xget x0 (infimums A).
+
 End UpperLowerTheory.
 
 Section UpperLowerOrderTheory.
 Import Order.TTheory.
 Variables (d : unit) (T : orderType d).
-Implicit Types A : set T.
+Implicit Types (A : set T) (x y z : T).
 
 Lemma ge_supremum_Nmem x0 A t :
   supremums A !=set0 -> A t -> (supremum x0 A >= t)%O.
@@ -2705,8 +2741,6 @@ exists n.+1; split => // m Am; case/existsNP : An => k /not_implyP[Ak /negP].
 rewrite -Order.TotalTheory.ltNge => kn.
 by rewrite (Order.POrderTheory.le_trans _ (Am _ Ak)).
 Qed.
-
-(** ** Intersection of classes of set *)
 
 Definition meets T (F G : set (set T)) :=
   forall A B, F A -> G B -> A `&` B !=set0.

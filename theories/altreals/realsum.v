@@ -180,7 +180,7 @@ case: (pselect (has_sup E)); last first.
   by apply/(lt_le_trans lt_MuK)/mono_u.
 move=> supE; exists (sup E)%:E => //; first exact: ltNye.
 elim/nbh_finW=>e /= gt0_e.
-case: (sup_adherent supE gt0_e)=> x [K ->] lt_uK.
+case: (sup_adherent gt0_e supE)=> x [K ->] lt_uK.
 exists K=> n le_Kn; rewrite inE distrC ger0_norm ?subr_ge0.
   by move/ubP: (sup_upper_bound supE); apply; exists n.
 rewrite ltr_subl_addr addrC -ltr_subl_addr.
@@ -467,7 +467,7 @@ apply/eqP; case: (x =P _) => // /eqP /lt_total /orP[]; last first.
   by apply/ler_sum=> /= i _; apply/ler_norm.
 move=> lt_xS; pose e := psum S - x.
   have ge0_e: 0 < e by rewrite subr_gt0.
-case: (sup_adherent (summable_sup smS) ge0_e) => y.
+case: (sup_adherent ge0_e (summable_sup smS)) => y.
 case=> /= J ->; rewrite /e /psum (asboolT smS).
 rewrite opprB addrCA subrr addr0 => lt_xSJ.
 pose k := \max_(j : J) (val j); have lt_x_uSk: x < u k.+1.
