@@ -1267,9 +1267,8 @@ Lemma is_cvg_ereal_nneg_series_cond (R : realType) (u_ : (\bar R)^nat)
   cvg (fun n => \sum_(0 <= i < n | P i) u_ i).
 Proof. by move=> u_ge0; apply: is_cvg_ereal_nneg_natsum_cond => n _ /u_ge0. Qed.
 
-Lemma is_cvg_ereal_nneg_natsum (R : realType) m (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, (m <= n)%N -> 0 <= u_ n) ->
-  cvg (fun n => \sum_(m <= i < n) u_ i).
+Lemma is_cvg_ereal_nneg_natsum (R : realType) m (u_ : (\bar R)^nat) :
+  (forall n, (m <= n)%N -> 0 <= u_ n) -> cvg (fun n => \sum_(m <= i < n) u_ i).
 Proof. by move=> u_ge0; apply: is_cvg_ereal_nneg_natsum_cond => n /u_ge0. Qed.
 
 Lemma is_cvg_ereal_nneg_series (R : realType) (u_ : (\bar R)^nat)
