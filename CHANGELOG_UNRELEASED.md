@@ -29,6 +29,8 @@
   + `nbhs_pinfty_ge` -> `nbhs_pinfty_ge_pos`
   + `nbhs_pinfty_gt_real` -> `nbhs_pinfty_gt`
   + `nbhs_pinfty_ge_real` -> `nbhs_pinfty_ge`
+- in `measure.v`:
+  + `measure_bigcup` -> `measure_bigsetU`
 
 ### Removed
 
