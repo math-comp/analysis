@@ -679,6 +679,9 @@ Proof. by rewrite !setDE setCU setIA. Qed.
 Lemma setDDr A B C : A `\` (B `\` C) = (A `\` B) `|` (A `&` C).
 Proof. by rewrite !setDE setCI setIUr setCK. Qed.
 
+Lemma setDIr A B C : A `\` B `&` C = (A `\` B) `|` (A `\` C).
+Proof. by rewrite !setDE setCI setIUr. Qed.
+
 Lemma setM0 T' (A : set T) : A `*` set0 = set0 :> set (T * T').
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 

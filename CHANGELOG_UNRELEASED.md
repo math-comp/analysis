@@ -4,6 +4,9 @@
 
 ### Added
 
+- in `classical_sets.v`:
+  + lemma `setDIr`
+
 ### Changed
 
 - in `sequences.v`:
