@@ -14,6 +14,8 @@
 - in `normedtype.v`:
   + `nbhs_minfty_lt` renamed to `nbhs_ninfty_lt_pos` and changed to not use `{posnum R}`
   + `nbhs_minfty_le` renamed to `nbhs_ninfty_le_pos` and changed to not use `{posnum R}`
+- in `sequences.v`:
+  + lemma `is_cvg_ereal_nneg_natsum`: remove superfluous `P` parameter
 
 ### Renamed
 
