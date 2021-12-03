@@ -1543,10 +1543,8 @@ Qed.
 Lemma bounded_funN (T : Type) (R : realFieldType) (a : T -> R) :
   bounded_fun a -> bounded_fun (- a).
 Proof.
-move=> [M [Mreal aM]]; rewrite /bounded_fun /bounded_near; near=> n.
-under eq_fun do rewrite normrN; apply aM.
-near: n; exists (`|M| + 1); rewrite realD ?(normr_real, real1)//; split => // r.
-by apply: le_lt_trans; rewrite (le_trans (ler_norm _)) ?ler_addl.
+move=> [M [Mreal aM]]; rewrite /bounded_fun /bounded_near; near=> x => y /= _.
+by rewrite normrN; apply: aM => //; near: x; apply: nbhs_pinfty_gt_real.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma bounded_fun_has_lbound (T : Type) (R : realFieldType) (a : T -> R) :
@@ -1559,14 +1557,12 @@ Qed.
 Lemma bounded_funD (T : Type) (R : realFieldType) (a b : T -> R) :
   bounded_fun a -> bounded_fun b -> bounded_fun (a \+ b).
 Proof.
-move=> [M [Mreal Ma]] [N [Nreal Nb]]; exists (`|M| * 2 + `|N| * 2).
-rewrite realD// ?realM// ?ger0_real//; split => // r MNr n _ /=.
-rewrite (le_trans (ler_norm_add _ _))// (splitr r) ler_add //.
-- rewrite Ma // ltr_pdivl_mulr // (le_lt_trans _ MNr)//.
-  by rewrite (le_trans (ler_norm _)) // normrM (@ger0_norm _ 2) // ler_addl.
-- rewrite Nb // ltr_pdivl_mulr // (le_lt_trans _ MNr)//.
-  by rewrite (le_trans (ler_norm _)) // normrM (@ger0_norm _ 2) // ler_addr.
-Qed.
+move=> [M [Mreal Ma]] [N [Nreal Nb]].
+rewrite /bounded_fun/bounded_near; near=> x => y /= _.
+rewrite (le_trans (ler_norm_add _ _))// [x]splitr.
+by rewrite ler_add// (Ma, Nb)// ltr_pdivl_mulr//;
+  near: x; apply: nbhs_pinfty_gt_real; rewrite ?rpredM ?rpred_nat.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma bounded_locally (T : topologicalType)
     (R : numFieldType) (V : normedModType R) (A : set T) (f : T -> V) :

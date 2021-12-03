@@ -839,12 +839,10 @@ Lemma series_le_cvg (R : realType) (u_ v_ : R ^nat) :
   (forall n, u_ n <= v_ n) ->
   cvg (series v_) -> cvg (series u_).
 Proof.
-move=> u_ge0 v_ge0 le_uv.
-have {}le_uv n : series u_ n <= series v_ n by apply ler_sum => *; exact: le_uv.
-move=> /cvg_seq_bounded/bounded_fun_has_ubound[M v_M].
+move=> u_ge0 v_ge0 le_uv /cvg_seq_bounded/bounded_fun_has_ubound[M v_M].
 apply: nondecreasing_is_cvg; first exact: nondecreasing_series.
-exists M => _ [n _ <-]; rewrite (le_trans _ (v_M (series v_ n) _))//.
-by exists n.
+exists M => _ [n _ <-].
+by apply: le_trans (v_M (series v_ n) _); [apply: ler_sum | exists n].
 Qed.
 
 Lemma normed_cvg {R : realType} (V : completeNormedModType R) (u_ : V ^nat) :
