@@ -31,6 +31,14 @@
   + lemmas `cvgr_expR`, `cvgn_expR`
 
 ### Changed
+  
+
+- in `ereal.v`:
+  + definitions `ereal_dnbhs` and `ereal_nbhs` changed to use large inequality instead
+    of strict inequality
+- in `normedtype.v`:
+  + definitions `pinfty_dnbhs` and `ninfty_nbhs` changed to use large inequality instead
+    of strict inequality
 
 - The file `topology.v` has been split into several files in the directory 
   `topology_theory`. Unless stated otherwise, definitions, lemmas, etc. 

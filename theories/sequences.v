@@ -2281,7 +2281,7 @@ move=> cf; have [M [Mreal Mu]] := cvg_seq_bounded cf.
 apply: nonincreasing_is_cvgn.
   exact/nonincreasing_sups/bounded_fun_has_ubound/cvg_seq_bounded.
 exists (- (M + 1)) => _ [n _ <-]; rewrite (@le_trans _ _ (u n)) //.
-  by apply/lerNnormlW/Mu => //; rewrite ltrDl.
+  by apply/lerNnormlW/Mu => //; rewrite lerDl.
 apply: sup_ubound; last by exists n => /=.
 exact/has_ubound_sdrop/bounded_fun_has_ubound/cvg_seq_bounded.
 Qed.
@@ -3028,7 +3028,7 @@ rewrite eqOP; split => [|Bf].
   rewrite !nearE /=; exists M; rewrite num_real; split => // x Mx.
   apply/nbhs_normP; exists 1 => //= y /=.
   rewrite sub0r normrN/= normr1 mulr1 => y1.
-  by apply/ltW; rewrite (le_lt_trans _ Mx)// bm// ltW.
+  by rewrite (le_trans _ Mx)// bm// ltW.
 - apply/bounded_funP; rewrite /bounded_near.
   near=> M.
   rewrite (_ : mkset _ = (fun x => `|f x| <= M * `|cst 1 x|)); last first.

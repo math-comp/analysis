@@ -357,13 +357,12 @@ Qed.
 #[global] Hint Extern 0 (ProperFilter _^') =>
   (apply: Proper_dnbhs_numFieldType) : typeclass_instances.
 
-(** Some Topology on extended real numbers *)
-
 Definition pinfty_nbhs (R : numFieldType) : set_system R :=
-  fun P => exists M, M \is Num.real /\ forall x, M < x -> P x.
+  fun P => exists M, M \is Num.real /\ forall x, M <= x -> P x.
 Arguments pinfty_nbhs R : clear implicits.
+
 Definition ninfty_nbhs (R : numFieldType) : set_system R :=
-  fun P => exists M, M \is Num.real /\ forall x, x < M -> P x.
+  fun P => exists M, M \is Num.real /\ forall x, x <= M -> P x.
 Arguments ninfty_nbhs R : clear implicits.
 
 Notation "+oo_ R" := (pinfty_nbhs R)
@@ -378,8 +377,8 @@ Lemma ninftyN {R : numFieldType} : (- x : R)%R @[x --> -oo] = +oo.
 Proof.
 apply/seteqP; split => [A [M [Mreal MA]]|A [M [Mreal MA]]].
   exists (- M); rewrite realN; split => // x.
-  by rewrite ltrNl => /MA/=; rewrite opprK.
-by exists (- M); rewrite ?realN; split=> // x; rewrite ltrNr => /MA.
+  by rewrite lerNl => /MA/=; rewrite opprK.
+by exists (- M); rewrite ?realN; split=> // x; rewrite lerNr => /MA.
 Qed.
 
 Section infty_nbhs_instances.
@@ -389,11 +388,11 @@ Implicit Types r : R.
 Global Instance proper_pinfty_nbhs : ProperFilter (pinfty_nbhs R).
 Proof.
 apply Build_ProperFilter_ex.
-  by move=> P [M [Mreal MP]]; exists (M + 1); apply MP; rewrite ltrDl.
+  by move=> P [M [Mreal MP]]; exists (M + 1); apply MP; rewrite lerDl.
 split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
 - by exists 0.
 - exists (maxr MP MQ); split=> [|x]; first exact: max_real.
-  by rewrite comparable_gt_max ?real_comparable // => /andP[/gtMP ? /gtMQ].
+  by rewrite comparable_ge_max ?real_comparable // => /andP[/gtMP ? /gtMQ].
 - by exists M; split => // ? /gtM /sPQ.
 Qed.
 
@@ -401,25 +400,31 @@ Global Instance proper_ninfty_nbhs : ProperFilter (ninfty_nbhs R).
 Proof.
 apply Build_ProperFilter_ex.
   move=> P [M [Mr ltMP]]; exists (M - 1).
-  by apply: ltMP; rewrite gtrDl oppr_lt0.
+  by apply: ltMP; rewrite lerBlDl lerDr.
 split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
 - by exists 0.
 - exists (Num.min MP MQ); split=> [|x]; first exact: min_real.
-  by rewrite comparable_lt_min ?real_comparable // => /andP[/ltMP ? /ltMQ].
+  by rewrite comparable_le_min ?real_comparable // => /andP[/ltMP ? /ltMQ].
 - by exists M; split => // x /ltM /sPQ.
 Qed.
 
 Lemma nbhs_pinfty_gt r : r \is Num.real -> \forall x \near +oo, r < x.
-Proof. by exists r. Qed.
+Proof.
+move=> realr; exists (r + 1); split; first by rewrite realD.
+by move=> x; apply: lt_le_trans; rewrite ltrDl.
+Qed.
 
 Lemma nbhs_pinfty_ge r : r \is Num.real -> \forall x \near +oo, r <= x.
-Proof. by exists r; split => //; apply: ltW. Qed.
-
-Lemma nbhs_ninfty_lt r : r \is Num.real -> \forall x \near -oo, r > x.
 Proof. by exists r. Qed.
 
+Lemma nbhs_ninfty_lt r : r \is Num.real -> \forall x \near -oo, r > x.
+Proof.
+move=> r0; exists (r - 1); split; first by rewrite realB//.
+by move=> x /le_lt_trans; apply; rewrite ltrBlDl ltrDr.
+Qed.
+
 Lemma nbhs_ninfty_le r : r \is Num.real -> \forall x \near -oo, r >= x.
-Proof. by exists r; split => // ?; apply: ltW. Qed.
+Proof. by exists r. Qed.
 
 Lemma nbhs_pinfty_real : \forall x \near +oo, x \is @Num.real R.
 Proof. by apply: filterS (nbhs_pinfty_gt (@real0 _)); apply: gtr0_real. Qed.
@@ -448,13 +453,14 @@ Proof. exact: pinfty_ex_gt. Qed.
 Lemma near_pinfty_div2 (A : set R) :
   (\forall k \near +oo, A k) -> (\forall k \near +oo, A (k / 2)).
 Proof.
-move=> [M [Mreal AM]]; exists (M * 2); split; first by rewrite realM.
-by move=> x; rewrite -ltr_pdivlMr //; exact: AM.
+move=> [M [Mreal AM]]; exists (M * 2); split.
+  by rewrite realM // realE; apply/orP; left.
+by move=> x; rewrite -ler_pdivlMr //; apply: AM.
 Qed.
 
 Lemma not_near_inftyP (P : pred R) :
   ~ (\forall x \near +oo, P x) <->
-    forall M : R, M \is Num.real -> exists2 x, M < x & ~ P x.
+    forall M : R, M \is Num.real -> exists2 x, M <= x & ~ P x.
 Proof.
 rewrite nearE -forallNP -propeqE; apply: eq_forall => M.
 by rewrite propeqE -implypN existsPNP.
@@ -462,10 +468,10 @@ Qed.
 
 Lemma not_near_ninftyP (P : pred R):
   ~ (\forall x \near -oo, P x) <->
-    forall M : R, M \is Num.real -> exists2 x, x < M & ~ P x.
+    forall M : R, M \is Num.real -> exists2 x, x <= M & ~ P x.
 Proof.
 rewrite -filterN ninftyN not_near_inftyP/=; split => PN M; rewrite -realN;
-by move=> /PN[x Mx PNx]; exists (- x) => //; rewrite 1?(ltrNl,ltrNr,opprK).
+by move=> /PN[x Mx PNx]; exists (- x) => //; rewrite 1?(lerNl,lerNr,opprK).
 Qed.
 
 End infty_nbhs_instances.
@@ -512,7 +518,7 @@ tfae; first by move=> Foo A Areal; apply: Foo; apply: nbhs_pinfty_ge.
 - by move=> Foo; near do apply: Foo => //.
 - by apply: filterS => ?; apply: filterS => ?; apply: ltW.
 case=> [A [AR AF]] P [x [xR Px]]; near +oo_R => B.
-by near do [apply: Px; apply: (@lt_le_trans _ _ B) => //]; apply: AF.
+by near do [apply: Px; apply: (@le_trans _ _ B) => //]; apply: AF.
 Unshelve. all: by end_near. Qed.
 
 Let cvgrNyPnum {F : set_system R} {FF : Filter F} : [<->
@@ -528,7 +534,7 @@ tfae; first by move=> Foo A Areal; apply: Foo; apply: nbhs_ninfty_le.
 - by move=> Foo; near do apply: Foo => //.
 - by apply: filterS => ?; apply: filterS => ?; apply: ltW.
 case=> [A [AR AF]] P [x [xR Px]]; near -oo_R => B.
-by near do [apply: Px; apply: (@le_lt_trans _ _ B) => //]; apply: AF.
+by near do [apply: Px; apply: (@le_trans _ _ B) => //]; apply: AF.
 Unshelve. all: end_near. Qed.
 
 Context {T} {F : set_system T} {FF : Filter F}.
@@ -659,7 +665,7 @@ tfae; first by move=> Foo A Areal; apply: Foo; apply: ereal_nbhs_pinfty_ge.
 - by move=> Foo; near do apply: Foo => //.
 - by apply: filterS => ?; apply: filterS => ?; apply: ltW.
 case=> [A [AR AF]] P [x [xR Px]]; near +oo_R => B.
-by near do [apply: Px; rewrite (@lt_le_trans _ _ B%:E) ?lte_fin//]; apply: AF.
+by near do [apply: Px; rewrite (@le_trans _ _ B%:E) ?lee_fin//]; apply: AF.
 Unshelve. all: end_near. Qed.
 
 Let cvgeNyPnum {F : set_system \bar R} {FF : Filter F} : [<->
@@ -675,7 +681,7 @@ tfae; first by move=> Foo A Areal; apply: Foo; apply: ereal_nbhs_ninfty_le.
 - by move=> Foo; near do apply: Foo => //.
 - by apply: filterS => ?; apply: filterS => ?; apply: ltW.
 case=> [A [AR AF]] P [x [xR Px]]; near -oo_R => B.
-by near do [apply: Px; rewrite (@le_lt_trans _ _ B%:E) ?lte_fin//]; apply: AF.
+by near do [apply: Px; rewrite (@le_trans _ _ B%:E) ?lee_fin//]; apply: AF.
 Unshelve. all: end_near. Qed.
 
 Context {T} {F : set_system T} {FF : Filter F}.
@@ -1811,7 +1817,7 @@ Lemma bounded_fun_has_ubound (T : Type) (R : realFieldType) (a : T -> R) :
   bounded_fun a -> has_ubound (range a).
 Proof.
 move=> [M [Mreal]]/(_ (`|M| + 1)).
-rewrite (le_lt_trans (ler_norm _)) ?ltrDl// => /(_ erefl) aM.
+rewrite (le_trans (ler_norm _)) ?lerDl// => /(_ erefl) aM.
 by exists (`|M| + 1) => _ [n _ <-]; rewrite (le_trans (ler_norm _))// aM.
 Qed.
 
@@ -1835,8 +1841,8 @@ Proof.
 move=> [M [Mreal Ma]] [N [Nreal Nb]].
 rewrite /bounded_fun/bounded_near; near=> x => y /= _.
 rewrite (le_trans (ler_normD _ _))// [x]splitr.
-by rewrite lerD// (Ma, Nb)// ltr_pdivlMr//;
-   near: x; apply: nbhs_pinfty_gt; rewrite ?rpredM ?rpred_nat.
+by rewrite lerD// (Ma, Nb)// ler_pdivlMr//;
+  near: x; apply: nbhs_pinfty_ge; rewrite ?rpredM ?rpred_nat.
 Unshelve. all: by end_near. Qed.
 
 Lemma bounded_locally (T : topologicalType)
@@ -2887,9 +2893,9 @@ Lemma abse_continuous : continuous (@abse R).
 Proof.
 case=> [r|A /= [r [rreal rA]]|A /= [r [rreal rA]]]/=.
 - exact/(cvg_comp (@norm_continuous _ [the normedModType R of R^o] r)).
-- by exists r; split => // y ry; apply: rA; rewrite (lt_le_trans ry)// lee_abs.
-- exists (- r)%R; rewrite realN; split => // y; rewrite EFinN -lteNr => yr.
-  by apply: rA; rewrite (lt_le_trans yr)// -abseN lee_abs.
+- by exists r; split => // y ry; apply: rA; rewrite (le_trans ry)// lee_abs.
+- exists (- r)%R; rewrite realN; split => // y; rewrite EFinN -leeNr => yr.
+  by apply: rA; rewrite (le_trans yr)// -abseN lee_abs.
 Qed.
 
 Lemma cvg_abse f (a : \bar R) : f @ F --> a -> `|f x|%E @[x --> F] --> `|a|%E.
@@ -2923,10 +2929,10 @@ move=> [s||]/=.
   by apply: near_fun => //=; apply: continuousM => //=; apply: cvg_cst.
 - rewrite gt0_muley ?lte_fin// => A [u [realu uA]].
   exists (r^-1 * u)%R; split; first by rewrite realM// realV realE ltW.
-  by move=> x rux; apply: uA; move: rux; rewrite EFinM lte_pdivrMl.
+  by move=> x rux; apply: uA; move: rux; rewrite EFinM lee_pdivrMl.
 - rewrite gt0_muleNy ?lte_fin// => A [u [realu uA]].
   exists (r^-1 * u)%R; split; first by rewrite realM// realV realE ltW.
-  by move=> x xru; apply: uA; move: xru; rewrite EFinM lte_pdivlMl.
+  by move=> x xru; apply: uA; move: xru; rewrite EFinM lee_pdivlMl.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvgeMl f x y : y \is a fin_num ->
@@ -3815,47 +3821,71 @@ case: x => [x|//|] xy; first exact: open_ereal_lt.
 - case: y => [y||//] /= in xy *; last by exists 0%R.
   by exists y; rewrite num_real; split => //= x ?.
 - case: y => [y||//] /= in xy *.
-  + by exists y; rewrite num_real; split => //= x ?.
-  + by exists 0%R; split => // x /lt_le_trans; apply; rewrite leey.
+  + exists (y - 1)%R; rewrite num_real; split => //= x /le_lt_trans; apply.
+    by rewrite lte_fin ltrBlDr ltrDl.
+  + by exists 0%R; split => // x /le_lt_trans; apply; rewrite ltry.
 Qed.
 
 Lemma open_ereal_gt' x y : y < x -> ereal_nbhs x (fun u => y < u).
 Proof.
 case: x => [x||] //=; do ?[exact: open_ereal_gt];
   case: y => [y||] //=; do ?by exists 0.
-- by exists y; rewrite num_real.
-- by move=> _; exists 0%R; split => // x; apply/le_lt_trans; rewrite leNye.
+- exists (y + 1)%R; rewrite num_real; split => // x /lt_le_trans; apply.
+  by rewrite lte_fin ltrDl.
+- by move=> _; exists 0%R; split => // x; apply/lt_le_trans; rewrite ltNyr.
+Qed.
+
+Let open_ereal_lt_real r : open (fun x => x < r%:E).
+Proof.
+rewrite /open /=. (* TODO: dirty *)
+case => [? | // | ?]; [rewrite lte_fin => xy | exists (r - 1)%R].
+  by move: (@open_ereal_lt r%:E); rewrite openE; apply; rewrite /= lte_fin.
+rewrite num_real; split => // x /le_lt_trans; apply.
+by rewrite lte_fin ltrBlDr ltrDl.
 Qed.
 
 Lemma open_ereal_lt_ereal x : open [set y | y < x].
 Proof.
-have openr r : open [set x : \bar R | x < r%:E].
-  (* BUG: why doesn't case work? *)
-  move=> [? | // | ?]; [rewrite /= lte_fin => xy | by exists r].
-  by move: (@open_ereal_lt r%:E); rewrite openE; apply; rewrite /= lte_fin.
-move: x => [ // | | ]; last by move=> []. (* same BUG *)
+suff: open [set y : \bar R | y < +oo].
+  move=> ?; rewrite /open/=.
+  by case: x => [x | | [] // ] /=; first exact: open_ereal_lt_real.
 suff -> : [set y | y < +oo] = \bigcup_r [set y : \bar R | y < r%:E].
-  exact: bigcup_open.
+  by apply: bigcup_open => ? _; exact: open_ereal_lt_real.
 rewrite predeqE => -[r | | ]/=.
-- rewrite ltry; split => // _.
+- rewrite ltey; split => // _.
   by exists (r + 1)%R => //=; rewrite lte_fin ltrDl.
-- by rewrite ltxx; split => // -[] x /=; rewrite ltNge leey.
-- by split => // _; exists 0%R => //=; rewrite ltNye.
+- by rewrite ltxx; split => // -[] ? /=; rewrite ltNge leey.
+- by split => // _; exists 0%R => //=; rewrite ltNyr.
+Qed.
+
+Let open_ereal_gt_real r : open (fun x => r%:E < x).
+Proof.
+rewrite /open /=. (* TODO: dirty *)
+case => [? | ? | //]; [rewrite lte_fin => xy | exists (r + 1)%R].
+  by move: (@open_ereal_gt r%:E); rewrite openE; apply; rewrite /= lte_fin.
+by rewrite num_real; split=> // x /lt_le_trans; apply; rewrite lte_fin ltrDl.
 Qed.
 
 Lemma open_ereal_gt_ereal x : open [set y | x < y].
 Proof.
-have openr r : open [set x | r%:E < x].
-  move=> [? | ? | //]; [rewrite /= lte_fin => xy | by exists r].
-  by move: (@open_ereal_gt r%:E); rewrite openE; apply; rewrite /= lte_fin.
-case: x => [ // | | ]; first by move=> [].
+suff: open [set y : \bar R | -oo < y].
+  move=> ?; rewrite /open/=. (* TODO: dirty *)
+  case: x => [ | | [] // ] /=; first exact: open_ereal_gt_real.
+  - rewrite (_ : [set y | +oo < y] = set0)//.
+    by rewrite predeqE => -[].
+  - move=> r _.
+    rewrite /nbhs/= /nbhs/= /nbhs_ball_/=.
+    by exists 1%R => //= ? _; rewrite ltNyr.
+  - move=> _.
+    rewrite /nbhs/= /nbhs/= /nbhs_ball_/=.
+    by exists 1%R => //=; split => // ?; apply: lt_le_trans; rewrite ltNyr.
 suff -> : [set y | -oo < y] = \bigcup_r [set y : \bar R | r%:E < y].
-  exact: bigcup_open.
+  by apply bigcup_open => ? _; exact: open_ereal_gt_real.
 rewrite predeqE => -[r | | ]/=.
-- rewrite ltNyr; split => // _.
+- rewrite ltNye; split => // _.
   by exists (r - 1)%R => //=; rewrite lte_fin ltrBlDr ltrDl.
-- by split => // _; exists 0%R => //=; rewrite ltey.
-- by rewrite ltxx; split => // -[] x _ /=; rewrite ltNge leNye.
+- by split => // _; exists 0%R => //=; rewrite ltry.
+- by rewrite ltxx; split => // -[] ? _ /=; rewrite ltNge leNye.
 Qed.
 
 Lemma closed_ereal_le_ereal y : closed [set x | y <= x].
@@ -4868,8 +4898,8 @@ have /Aco [] := covA.
 move=> D _ DcovA.
 exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
 rewrite bigmax_real//; last by move=> ? _; rewrite realz.
-split => // x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
-apply; apply: le_lt_trans ltmaxx.
+split => // x ltmaxx p /DcovA [n Dn /lt_le_trans /(_ _)/ltW].
+apply; apply: le_trans ltmaxx.
 have : n \in enum_fset D by [].
 by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/le_bigmax.
 Qed.
@@ -4941,7 +4971,7 @@ have Mnco : compact
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
 suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
-apply: le_trans (normvleM _ _); last by rewrite ltrDl.
+apply: le_trans (normvleM _ _); last by rewrite lerDl.
 have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v x.1 x.2| | x : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
 by rewrite [leRHS]/normr /= mx_normrE; apply/bigmax_geP; right => /=; exists j.
