@@ -92,7 +92,7 @@ Lemma cvg_addrl (M : R) : M + r @[r --> +oo] --> +oo.
 Proof.
 move=> P [r [rreal rP]]; exists (r - M); split.
   by rewrite realB// num_real.
-by move=> m; rewrite ltrBlDl => /rP.
+by move=> m; rewrite lerBlDl => /rP.
 Qed.
 
 (* NB: see cvg_addnr in topology.v *)
@@ -271,15 +271,15 @@ split; first by move=> ? ? /cvg_comp; exact.
 apply: contraPP => noncvg_f; apply/existsNP.
 under eq_exists do rewrite not_implyE; apply/exists2P.
 suff [e e_sep] : exists e : {posnum R},
-    forall A, exists2 un, A < un & e%:num <= `|f un - l|.
+    forall A, exists2 un, A <= un & e%:num <= `|f un - l|.
   exists (fun n => sval (cid2 (e_sep n%:R))).
-    apply/cvgryPgt => A; near=> n; case: cid2 => //= r nr _.
-    by rewrite (le_lt_trans _ nr)//; near: n; exact: nbhs_infty_ger.
+    apply/cvgryPge => A; near=> n; case: cid2 => //= r nr _.
+    by rewrite (le_trans _ nr)//; near: n; exact: nbhs_infty_ger.
   apply/cvgrPdistC_lt => /= /(_ e%:num ltac:(by []))[N _ /(_ _ (leqnn N))].
   by case: cid2 => uN/= _ /le_lt_trans /[apply]; rewrite ltxx.
 move: noncvg_f => /cvgrPdistC_lt /=; rewrite -existsPNP => -[eps eps_gt0].
 move=> /not_near_inftyP eps_sep; exists (PosNum eps_gt0) => A /=.
-have [x x_ltA /negP fxleps] := eps_sep _ (num_real A).
+have [x x_leA /negP fxleps] := eps_sep _ (num_real A).
 by exists x => //; rewrite leNgt.
 Unshelve. all: by end_near. Qed.
 
@@ -493,7 +493,7 @@ have [Spoo|Spoo] := pselect (S +oo).
   have -> : l = +oo by rewrite /l /ereal_sup; exact: supremum_pinfty.
   rewrite -(cvg_shiftr `|N|); apply: cvg_near_cst.
   exists N; split; first by rewrite num_real.
-  by move=> x /ltW Nx; rewrite Nf// ler_wpDr.
+  by move=> x Nx; rewrite Nf// ler_wpDr.
 have [lpoo|lpoo] := eqVneq l +oo.
   rewrite lpoo; apply/cvgeyPge => M.
   have /ereal_sup_gt[_ [n _] <- Mun] : M%:E < l by rewrite lpoo// ltry.
@@ -520,7 +520,7 @@ have xB r : (x <= r)%R -> B r.
   by move: xr; rewrite urnoo leeNy_eq; exact/negP.
 rewrite -(@fineK _ l)//; apply/fine_cvgP; split.
   exists x; split; first by rewrite num_real.
-  by move=> r A1r; rewrite f_fin_num //; exact/xB/ltW.
+  by move=> r A1r; rewrite f_fin_num //; exact/xB.
 set g := fun n => if (n < x)%R then fine (f x) else fine (f n).
 have <- : sup (range g) = fine l.
   apply: EFin_inj; rewrite -ereal_sup_EFin//; last 2 first.
