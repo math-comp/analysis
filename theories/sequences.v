@@ -235,7 +235,7 @@ Lemma cvgPpinfty (u_ : R ^nat) :
 Proof.
 split => [u_cvg A|u_ge X [A [Ar AX]]].
   rewrite -(near_map u_ \oo (<=%R A)).
-  by apply: u_cvg; apply: nbhs_pinfty_ge_real; rewrite num_real.
+  by apply: u_cvg; apply: nbhs_pinfty_ge; rewrite num_real.
 rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
 apply: AX; rewrite (@lt_le_trans _ _ ((maxr 0 A) +1)) //.
   by rewrite ltr_spaddr // le_maxr lexx orbT.
@@ -252,10 +252,10 @@ have [|/=n _]:= u_cvg (fun x => P (- x)); do ?by [exists n
 by under [X in _ `<=` X]funext do rewrite /= opprK; exists n.
 Qed.
 
-Lemma cvgNminfty u_ : (- u_ --> -oo) = (u_ --> +oo).
+Lemma cvgNninfty u_ : (- u_ --> -oo) = (u_ --> +oo).
 Proof. by rewrite -cvgNpinfty opprK. Qed.
 
-Lemma cvgPminfty (u_ : R ^nat) :
+Lemma cvgPninfty (u_ : R ^nat) :
   u_ --> -oo <-> forall A, \forall n \near \oo, A >= u_ n.
 Proof.
 rewrite -cvgNpinfty cvgPpinfty; split => uA A; near=> n.
@@ -270,10 +270,10 @@ move=> uv /cvgPpinfty ucvg; apply/cvgPpinfty => A.
 by apply: filterS2 (ucvg A) uv => x; apply: le_trans.
 Qed.
 
-Lemma ler_cvg_minfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
+Lemma ler_cvg_ninfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
   v_ --> -oo -> u_ --> -oo.
 Proof.
-move=> uv /cvgPminfty ucvg; apply/cvgPminfty => A.
+move=> uv /cvgPninfty ucvg; apply/cvgPninfty => A.
 by apply: filterS2 uv (ucvg A) => x; apply: le_trans.
 Qed.
 
