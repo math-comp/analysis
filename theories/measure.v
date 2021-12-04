@@ -475,12 +475,12 @@ Variables (R : realFieldType) (T : ringOfSetsType)
 Lemma measureU : additive2 mu.
 Proof. by rewrite -semi_additive2E. Qed.
 
-Lemma measure_bigcup : additive mu.
+Lemma measure_bigsetU : additive mu.
 Proof. by rewrite -semi_additiveE. Qed.
 
 End additive_measure_on_ring_of_sets.
 
-Hint Resolve measureU measure_bigcup : core.
+Hint Resolve measureU measure_bigsetU : core.
 
 Module Measure.
 
@@ -651,11 +651,10 @@ Qed.
 End seqDU.
 
 Section seqD.
-Variables (T : Type).
+Variable T : Type.
 Implicit Types F : (set T) ^nat.
 
-Definition seqD F :=
-  fun n => if n isn't n'.+1 then F O else F n `\` F n'.
+Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
 
 Lemma seqDUE F : nondecreasing_seq F -> seqDU F = seqD F.
 Proof.
@@ -721,23 +720,22 @@ End seqD.
 
 (* 401,p.43 measure is continuous from below *)
 Lemma cvg_mu_inc (R : realFieldType) (T : ringOfSetsType)
-  (mu : {measure set T -> \bar R}) (A : (set T) ^nat) :
-  (forall i, measurable (A i)) -> measurable (\bigcup_n A n) ->
-  nondecreasing_seq A ->
-  mu \o A --> mu (\bigcup_n A n).
+  (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
+  (forall i, measurable (F i)) -> measurable (\bigcup_n F n) ->
+  nondecreasing_seq F ->
+  mu \o F --> mu (\bigcup_n F n).
 Proof.
-move=> mA mbigcupA ndA.
-have Binter : trivIset setT (seqD A) := trivIset_seqD ndA.
-have ABE : forall n, A n.+1 = A n `|` seqD A n.+1 := setU_seqD ndA.
-have AE n : A n = \big[setU/set0]_(i < n.+1) (seqD A) i := eq_bigsetU_seqD n ndA.
+move=> mF mbigcupF ndF.
+have Binter : trivIset setT (seqD F) := trivIset_seqD ndF.
+have FBE : forall n, F n.+1 = F n `|` seqD F n.+1 := setU_seqD ndF.
+have FE n : F n = \big[setU/set0]_(i < n.+1) (seqD F) i := eq_bigsetU_seqD n ndF.
 rewrite eq_bigcup_seqD.
-have mB : forall i, measurable (seqD A i).
-  by elim=> [|i ih] //=; apply: measurableD.
+have mB : forall i, measurable (seqD F i) by elim=> * //=; apply: measurableD.
 apply: cvg_trans (measure_semi_sigma_additive mB Binter _); last first.
   by rewrite -eq_bigcup_seqD.
-apply: (@cvg_trans _ [filter of (fun n => \sum_(i < n.+1) mu (seqD A i))]).
-  rewrite [X in _ --> X](_ : _ = mu \o A) // funeqE => n.
-  rewrite -measure_semi_additive // -?AE// => -[|k]; last by rewrite -AE.
+apply: (@cvg_trans _ [filter of (fun n => \sum_(i < n.+1) mu (seqD F i))]).
+  rewrite [X in _ --> X](_ : _ = mu \o F) // funeqE => n.
+  rewrite -measure_semi_additive // -?FE// => -[|k]; last by rewrite -FE.
   by rewrite big_ord0; exact: measurable0.
 by move=> S [n _] nS; exists n => // m nm; apply/(nS m.+1)/(leq_trans nm).
 Qed.
