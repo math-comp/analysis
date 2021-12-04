@@ -691,6 +691,34 @@ Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 Lemma setMTT T' : setT `*` setT = setT :> set (T * T').
 Proof. exact/predeqP. Qed.
 
+Lemma setMT T1 T2 (A : set T1) : A `*` @setT T2 = fst @^-1` A.
+Proof. by rewrite predeqE => -[x y]; split => //= -[]. Qed.
+
+Lemma setTM T1 T2 (B : set T2) : @setT T1 `*` B = snd @^-1` B.
+Proof. by rewrite predeqE => -[x y]; split => //= -[]. Qed.
+
+Lemma setMI T1 T2 (X1 : set T1) (X2 : set T2) (Y1 : set T1) (Y2 : set T2) :
+  (X1 `&` Y1) `*` (X2 `&` Y2) = X1 `*` X2 `&` Y1 `*` Y2.
+Proof. by rewrite predeqE => -[x y]; split=> [[[? ?] [*]//]|[] [? ?] [*]]. Qed.
+
+Lemma setSM T1 T2 (C D : set T1) (A B : set T2) :
+  A `<=` B -> C `<=` D -> C `*` A `<=` D `*` B.
+Proof. by move=> AB CD x [] /CD Dx1 /AB Bx2. Qed.
+
+Lemma setM_bigcupr T1 T2 I (F : I -> set T2) (P : set I) (A : set T1) :
+  A `*` \bigcup_(i in P) F i = \bigcup_(i in P) (A `*` F i).
+Proof.
+rewrite predeqE => -[x y]; split; first by move=> [/= Ax [n Pn Fny]]; exists n.
+by move=> [n Pn [/= Ax Fny]]; split => //; exists n.
+Qed.
+
+Lemma setM_bigcupl T1 T2 I (F : I -> set T2) (P : set I) (A : set T1) :
+  \bigcup_(i in P) F i `*` A = \bigcup_(i in P) (F i `*` A).
+Proof.
+rewrite predeqE => -[x y]; split; first by move=> [[n Pn Fnx] Ax]; exists n.
+by move=> [n Pn [/= Ax Fny]]; split => //; exists n.
+Qed.
+
 End basic_lemmas.
 
 Lemma mkset_nil (T : choiceType) : [set x | x \in [::]] = @set0 T.
