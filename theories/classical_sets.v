@@ -1327,16 +1327,16 @@ Lemma fun_of_rel_uniq {aT} {rT : choiceType}
   is_subset1 (f a) -> forall b, f a b ->  fun_of_rel f0 f a = b.
 Proof. by move=> fa1 b /xget_subset1 xgeteq; rewrite /fun_of_rel xgeteq. Qed.
 
-Definition mem_set T (A : set T) (u : T) (a : A u) : u \in A :=
-   eq_ind_r id a (in_setE A u).
+Lemma mem_set T (A : set T) (u : T) : reflect (A u) (u \in A).
+Proof. by apply: (iffP idP); rewrite inE. Qed.
 
 Lemma forall_sig T (A : set T) (P : {x | x \in A} -> Prop) :
   (forall u : {x | x \in A}, P u) =
-  (forall u : T, forall (a : A u), P (exist _ u (mem_set a))).
+  (forall u : T, forall (a : A u), P (exist _ u (introT (mem_set _ _) a))).
 Proof.
 rewrite propeqE; split=> [+ u a|PA [u a]]; first exact.
 have Au : A u by rewrite inE in a.
-by rewrite (Prop_irrelevance a (mem_set Au)); apply: PA.
+by rewrite (Prop_irrelevance a (introT (mem_set _ _) Au)); apply: PA.
 Qed.
 
 Module Pointed.
@@ -1446,8 +1446,8 @@ Definition extend_dep {U} {V : pointedType} {A : set U}
   if pselect (u \in A) is left w then f (exist _ u w) else point.
 
 Lemma restrict_depE T T' (B : set T) x (f : T -> T') (xB : B x) :
-  restrict_dep B f (exist _ x (mem_set xB)) = f x.
-Proof. done. Qed.
+  restrict_dep B f (exist _ x (introT (mem_set _ _) xB)) = f x.
+Proof. by []. Qed.
 Arguments restrict_depE {T T'} B x.
 
 Lemma in_setP {U} (A : set U) (P : U -> Prop) :

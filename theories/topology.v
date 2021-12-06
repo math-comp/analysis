@@ -4892,7 +4892,8 @@ split=> [[Q [[/= W oW <- /=] [Wf subP]]]|[E [entE subP]]].
   case: (oW _ Wf) => ? [ /= E entE] Esub subW.
   exists E; split=> // h Eh; apply/subP/subW/Esub => /= [[u Au]].
   by apply: Eh => /=; rewrite -inE.
-near=> g; apply: subP => y Ay; rewrite -!(restrict_depE A).
+near=> g; apply: subP => y Ay.
+rewrite -(restrict_depE A _ f) -(restrict_depE A _ g).
 move: (exist _ _ _); near: g.
 have := (@cvg_image _ _ (restrict_dep A) _ f (nbhs_filter f)
   (restrict_dep_setT _ )).1 cvg_id [set h | forall y, E (restrict_dep A f y, h y)].
