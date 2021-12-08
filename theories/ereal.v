@@ -18,6 +18,8 @@ Require Import boolp classical_sets reals posnum topology.
 (* and operations for addition/opposite. When R is a realDomainType, \bar R   *)
 (* is equipped with a Canonical orderType.                                    *)
 (*                                                                            *)
+(*                  \bar R == coproduct of R and {+oo, -oo};                  *)
+(*                            notation for extended (R:Type)                  *)
 (*                    r%:E == injects real numbers into \bar R                *)
 (*           +%E, -%E, *%E == addition/opposite/multiplication for extended   *)
 (*                            reals                                           *)
