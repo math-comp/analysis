@@ -44,7 +44,7 @@ Require Import boolp.
 (*                        A.`2 == set of points a such that there exists b so *)
 (*                                that A (b, a).                              *)
 (*                        ~` A == complement of A.                            *)
-(*                   [set ~ a] == complement of [set a].                      *)
+(*                    [set~ a] == complement of [set a].                      *)
 (*                     A `\` B == complement of B in A.                       *)
 (*                      A `\ a == A deprived of a.                            *)
 (*          \bigcup_(i in P) F == union of the elements of the family F whose *)
@@ -492,10 +492,11 @@ Proof. by rewrite subsets_disjoint setCK. Qed.
 
 Lemma setCT : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
 
-Lemma setC1E (x : T) : [set ~ x] = [set y | y <> x]. Proof. by []. Qed.
-
-Lemma mem_setC_subset (x : T) A : x \in ~` A -> A `<=` [set ~ x].
-Proof. by rewrite in_setE => + y Ay; apply: contra_not => <-. Qed.
+Lemma subsetC1 x A : (A `<=` [set~ x]) = (x \in ~` A).
+Proof.
+rewrite !inE; apply/propext; split; first by move/[apply]; apply.
+by move=> NAx y; apply: contraPnot => ->.
+Qed.
 
 Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
 
@@ -599,14 +600,6 @@ Qed.
 
 Lemma nonsubset A B : ~ (A `<=` B) -> A `&` ~` B !=set0.
 Proof. by rewrite -setD_eq0 setDE -set0P => /eqP. Qed.
-
-Lemma setC_subset_set1C (x : T) (A : set T) : x \in ~` A -> A `<=` [set ~ x].
-Proof.
-  rewrite in_setE /set1 => ? y yInH //= ; rewrite /setC => //= xEqy.
-  have: (A `&` ~` A) y.
-     rewrite /setI => //= ; split; by [rewrite xEqy|].
-  by rewrite setICr.
-Qed.
 
 Lemma setU_eq0 A B : (A `|` B = set0) = ((A = set0) /\ (B = set0)).
 Proof. by rewrite -!subset0 subUset. Qed.

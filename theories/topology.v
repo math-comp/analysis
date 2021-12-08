@@ -3022,15 +3022,15 @@ Definition accessible := forall x y, x != y ->
 Lemma accessible_closed_set1 : accessible -> forall x, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: closedC.
-rewrite openE setC1E => y /eqP /T1 [U [oU [yU xU]]].
-rewrite /interior nbhsE /=; exists U; split; last exact: mem_setC_subset.
-by split => //; rewrite -in_setE.
+rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
+rewrite /interior nbhsE /=; exists U; split; last by rewrite subsetC1.
+by split=> //; rewrite inE in yU.
 Qed.
 
 Definition accessible_kolmogorov : accessible -> kolmogorov.
 Proof.
-move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split => //.
-by rewrite nbhsE inE /=; exists A; split => //; split => //; rewrite -in_setE.
+move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split=> //.
+by rewrite nbhsE inE; exists A; do !split=> //; rewrite inE in xA.
 Qed.
 
 Definition close x y : Prop := forall M, open_nbhs y M -> closure M x.
