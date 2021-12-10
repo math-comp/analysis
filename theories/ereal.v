@@ -1477,7 +1477,7 @@ Qed.
 
 Local Open Scope ereal_scope.
 
-Lemma mulrEDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
+Lemma muleDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
 Proof.
 rewrite /mule/=; move: x y z => [x| |] [y| |] [z| |] //= _; try
   (by case: ltgtP => // -[] <-; rewrite ?(mul0r,add0r,adde0))
@@ -1485,8 +1485,8 @@ rewrite /mule/=; move: x y z => [x| |] [y| |] [z| |] //= _; try
 by rewrite mulrDr.
 Qed.
 
-Lemma mulrEDl x y z : x \is a fin_num -> y +? z -> (y + z) * x = y * x + z * x.
-Proof. by move=> ? ?; rewrite -!(muleC x) mulrEDr. Qed.
+Lemma muleDl x y z : x \is a fin_num -> y +? z -> (y + z) * x = y * x + z * x.
+Proof. by move=> ? ?; rewrite -!(muleC x) muleDr. Qed.
 
 Lemma ge0_muleDl x y z : 0 <= y -> 0 <= z -> (y + z) * x = y * x + z * x.
 Proof.
@@ -1985,11 +1985,11 @@ Proof.
 by move=> ?; rewrite !dual_addeE lee_oppl lee_oppr lee_subr_addr ?fin_numN.
 Qed.
 
-Lemma dmulrEDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
-Proof. by move=> *; rewrite !dual_addeE muleN mulrEDr ?adde_defNN// !muleN. Qed.
+Lemma dmuleDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
+Proof. by move=> *; rewrite !dual_addeE muleN muleDr ?adde_defNN// !muleN. Qed.
 
-Lemma dmulrEDl x y z : x \is a fin_num -> y +? z -> (y + z) * x = y * x + z * x.
-Proof. by move=> *; rewrite -!(muleC x) dmulrEDr. Qed.
+Lemma dmuleDl x y z : x \is a fin_num -> y +? z -> (y + z) * x = y * x + z * x.
+Proof. by move=> *; rewrite -!(muleC x) dmuleDr. Qed.
 
 Lemma dge0_muleDl x y z : 0 <= y -> 0 <= z -> (y + z) * x = y * x + z * x.
 Proof. by move=> *; rewrite !dual_addeE mulNe le0_muleDl ?oppe_le0 ?mulNe. Qed.
