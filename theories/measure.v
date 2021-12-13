@@ -225,6 +225,9 @@ HB.instance Definition T_isMeasurable : Measurable_from_algebraOfSets T :=
 
 HB.end.
 
+Hint Extern 0 (measurable set0) => solve [apply: measurable0] : core.
+Hint Extern 0 (measurable setT) => solve [apply: measurableT] : core.
+
 Section ringofsets_lemmas.
 Variables T : ringOfSetsType.
 Implicit Types A B : set T.
@@ -232,9 +235,7 @@ Implicit Types A B : set T.
 Lemma bigsetU_measurable I r (P : pred I) (F : I -> set T) :
   (forall i, P i -> measurable (F i)) ->
   measurable (\big[setU/set0]_(i <- r | P i) F i).
-Proof.
-move=> mF; elim/big_ind : _ => //; [exact: measurable0|exact: measurableU].
-Qed.
+Proof. by move=> mF; elim/big_ind : _ => //; exact: measurableU. Qed.
 
 Lemma measurableD A B : measurable A -> measurable B -> measurable (A `\` B).
 Proof.
@@ -249,9 +250,7 @@ Variables T : algebraOfSetsType.
 Implicit Types A B : set T.
 
 Lemma measurableC A : measurable A -> measurable (~` A).
-Proof.
-by move=> mA; rewrite -setTD; apply: measurableD => //; exact: measurableT.
-Qed.
+Proof. by move=> mA; rewrite -setTD; exact: measurableD. Qed.
 
 Lemma bigsetI_measurable I r (P : pred I) (F : I -> set T) :
   (forall i, P i -> measurable (F i)) ->
@@ -271,7 +270,7 @@ Lemma bigcup_measurable (F : (set T)^nat) (P : set nat) :
   (forall k, P k -> measurable (F k)) -> measurable (\bigcup_(i in P) F i).
 Proof.
 move=> PF; rewrite bigcup_mkcond; apply: measurable_bigcup => k.
-by case: asboolP => Pk; [exact: PF|exact: measurable0].
+by case: asboolP => // Pk; exact: PF.
 Qed.
 
 Lemma bigcap_measurable (F : (set T)^nat) (P : set nat) :
@@ -329,13 +328,12 @@ move=> mu0; split => [amx A B mA mB mAB AB|a2mx A mA /trivIsetP ATI mbigA n].
   set C := bigcup2 A B.
   have tC : trivIset setT C.
     by apply/trivIsetP => -[|[|i]] [|[|j]]; rewrite ?set0I ?setI0// setIC.
-  have mC : forall i, measurable (C i).
-    by move=> [|[]] //= i; exact: measurable0.
+  have mC n : measurable (C n) by move: n => [|[]] //= n; exact: measurable0.
   have := amx _ mC tC _ 2%N; rewrite !big_ord_recl !big_ord0 adde0/= setU0.
   rewrite /C /bigcup2 /=; apply.
   (* TODO: clean *)
   case=> [|[|n]].
-  by rewrite big_ord0; exact: measurable0.
+  by rewrite big_ord0.
   by rewrite big_ord_recr /= big_ord0 set0U.
   by rewrite !big_ord_recl /= big1 // setU0.
 elim: n => [|n IHn] in A mA ATI mbigA *.
@@ -382,8 +380,7 @@ have -> : A `|` B = \bigcup_i C i.
   rewrite predeqE => x; split.
     by case=> [Ax|Bx]; by [exists 0%N|exists 1%N].
   by case=> [[|[|n]]]//; by [left|right].
-have mC : forall i, measurable (C i).
-  by move=> [|[]] //= i; rewrite /C /=; exact: measurable0.
+have mC n : measurable (C n) by move: n => [|[]] //= n; exact: measurable0.
 have mbigcupC : measurable (\bigcup_n C n) by rewrite bigcup2E.
 have /cvg_unique := samu C mC tC mbigcupC; apply => //.
 apply: cvg_near_cst.
@@ -736,7 +733,7 @@ apply: cvg_trans (measure_semi_sigma_additive mB Binter _); last first.
 apply: (@cvg_trans _ [filter of (fun n => \sum_(i < n.+1) mu (seqD F i))]).
   rewrite [X in _ --> X](_ : _ = mu \o F) // funeqE => n.
   rewrite -measure_semi_additive // -?FE// => -[|k]; last by rewrite -FE.
-  by rewrite big_ord0; exact: measurable0.
+  by rewrite big_ord0.
 by move=> S [n _] nS; exists n => // m nm; apply/(nS m.+1)/(leq_trans nm).
 Qed.
 
@@ -850,7 +847,7 @@ by apply: (le_measure (measure_additive_measure mu)) => //; rewrite in_setE.
 Qed.
 
 Lemma negligible_set0 (mu : {measure _ -> _}) : mu.-negligible set0.
-Proof. by apply/negligibleP => //; exact: measurable0. Qed.
+Proof. exact/negligibleP. Qed.
 
 Definition almost_everywhere (mu : set T -> \bar R) (P : T -> Prop)
      & (phantom Prop (forall x, P x)) :=
@@ -862,8 +859,7 @@ Lemma aeW (mu : {measure _ -> _}) (P : T -> Prop) :
   (forall x, P x) -> {ae mu, forall x, P x}.
 Proof.
 move=> aP; have -> : P = setT by rewrite predeqE => t; split.
-apply/negligibleP; first by rewrite setCT; exact: measurable0.
-by rewrite setCT measure0.
+by apply/negligibleP; [rewrite setCT|rewrite setCT measure0].
 Qed.
 
 End negligible.
@@ -1295,10 +1291,8 @@ Grab Existential Variables. all: end_near. Qed.
 
 Lemma mu_ext0 : mu_ext set0 = 0.
 Proof.
-apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  by apply: mu_ext_ge0; exact: measurable0.
-rewrite /mu_ext; apply ereal_inf_lb; exists (fun _ => set0).
-  by split => // _; exact: measurable0.
+apply/eqP; rewrite eq_le; apply/andP; split; last exact/mu_ext_ge0.
+rewrite /mu_ext; apply ereal_inf_lb; exists (fun _ => set0); first by split.
 by apply: (@lim_near_cst _ _ _ _ _ 0) => //; near=> n => /=; rewrite big1.
 Grab Existential Variables. all: end_near. Qed.
 
