@@ -33,6 +33,11 @@
   + `nbhs_pinfty_ge_real` -> `nbhs_pinfty_ge`
 - in `measure.v`:
   + `measure_bigcup` -> `measure_bigsetU`
+- in `ereal.v`:
+  + `mulrEDr` -> `muleDr`
+  + `mulrEDl` -> `muleDl`
+  + `dmulrEDr` -> `dmuleDr`
+  + `dmulrEDl` -> `dmuleDl`
 
 ### Removed
 
