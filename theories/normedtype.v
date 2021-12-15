@@ -1544,7 +1544,7 @@ Lemma bounded_funN (T : Type) (R : realFieldType) (a : T -> R) :
   bounded_fun a -> bounded_fun (- a).
 Proof.
 move=> [M [Mreal aM]]; rewrite /bounded_fun /bounded_near; near=> x => y /= _.
-by rewrite normrN; apply: aM => //; near: x; apply: nbhs_pinfty_gt_real.
+by rewrite normrN; apply: aM => //; near: x; apply: nbhs_pinfty_gt.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma bounded_fun_has_lbound (T : Type) (R : realFieldType) (a : T -> R) :
@@ -1561,7 +1561,7 @@ move=> [M [Mreal Ma]] [N [Nreal Nb]].
 rewrite /bounded_fun/bounded_near; near=> x => y /= _.
 rewrite (le_trans (ler_norm_add _ _))// [x]splitr.
 by rewrite ler_add// (Ma, Nb)// ltr_pdivl_mulr//;
-  near: x; apply: nbhs_pinfty_gt_real; rewrite ?rpredM ?rpred_nat.
+  near: x; apply: nbhs_pinfty_gt; rewrite ?rpredM ?rpred_nat.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma bounded_locally (T : topologicalType)
