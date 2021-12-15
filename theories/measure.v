@@ -1108,7 +1108,7 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
     exact: outer_measure_ge0.
   move XAx : (mu (X `&` ~` A')) => [x| |].
   - rewrite -lee_subr_addr //; apply ub_ereal_sup => /= _ [n _] <-.
-    by rewrite NEFin lee_subr_addr // -XAx XA.
+    by rewrite EFinN lee_subr_addr // -XAx XA.
   - suff : mu X = +oo by move=> ->; rewrite lee_pinfty.
     apply/eqP; rewrite -lee_pinfty_eq -XAx le_outer_measure //.
     by apply subIset; left.

@@ -8,6 +8,12 @@
   + lemma `setDIr`
   + lemmas `setMT`, `setTM`, `setMI`
   + lemmas `setSM`, `setM_bigcupr`, `setM_bigcupl`
+- in `ereal.v`:
+  + lemma `onee_eq0`
+  + lemma `EFinB`
+  + lemmas `mule_eq0`, `mule_lt0_lt0`, `mule_gt0_lt0`, `mule_lt0_gt0`,
+    `pmule_rge0`, `pmule_lge0`, `nmule_lge0`, `nmule_rge0`,
+    `pmule_rgt0`, `pmule_lgt0`, `nmule_lgt0`, `nmule_rgt0`,
 
 ### Changed
 
@@ -38,6 +44,11 @@
   + `mulrEDl` -> `muleDl`
   + `dmulrEDr` -> `dmuleDr`
   + `dmulrEDl` -> `dmuleDl`
+  + `NEFin` -> `EFinN`
+  + `addEFin` -> `EFinD`
+  + `mulEFun` -> `EFinM`
+  + `daddEFin` -> `dEFinD`
+  + `dsubEFin` -> `dEFinB`
 
 ### Removed
 
