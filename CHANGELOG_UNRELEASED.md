@@ -14,6 +14,8 @@
   + lemmas `mule_eq0`, `mule_lt0_lt0`, `mule_gt0_lt0`, `mule_lt0_gt0`,
     `pmule_rge0`, `pmule_lge0`, `nmule_lge0`, `nmule_rge0`,
     `pmule_rgt0`, `pmule_lgt0`, `nmule_lgt0`, `nmule_rgt0`,
+- in `measure.v`:
+  + hints for `measurable0` and `measurableT`
 
 ### Changed
 
