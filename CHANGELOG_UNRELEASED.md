@@ -51,6 +51,27 @@
   + `mulEFun` -> `EFinM`
   + `daddEFin` -> `dEFinD`
   + `dsubEFin` -> `dEFinB`
+- in `normedtype.v`:
+  + lemmas `bounded_fun_has_ubound`, `bounded_funN`, `bounded_fun_has_lbound`,
+    `bounded_funD`
+- in `reals.v`:
+  + lemma `has_ub_lbN`
+- in `sequences.v`:
+  + lemma `ereal_is_cvgD`
+
+### Changed
+
+- in `sequences.v`:
+  + statements of lemmas `nondecreasing_cvg`, `nondecreasing_is_cvg`,
+    `nonincreasing_cvg`, `nonincreasing_is_cvg` use `has_{l,u}bound`
+    predicates instead of requiring an additional variable
+  + statement of lemma `S1_sup` use `ubound` instead of requiring an
+    additional variable
+
+### Renamed
+
+- in `sequences.v`:
+  + `nondecreasing_seq_ereal_cvg` -> `ereal_nondecreasing_cvg`
 
 ### Removed
 
