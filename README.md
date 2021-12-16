@@ -83,6 +83,14 @@ Each file is documented in its header.
 Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
 [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
 
+Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
+
+See also "Related publication(s)" [above](https://github.com/math-comp/analysis#meta).
+
+Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
+
+## Mathematical structures
+
 MathComp-Analysis adds mathematical structures on top of MathComp's ones.
 The following inheritance diagram displays the resulting hiearchy
 (excluding `countalg` and `finalg` structures). MathComp-Analysis
@@ -91,9 +99,13 @@ included.
 
 ![Inheritance diagram](./hierarchy.png "Inheritance diagram")
 
-Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
+## Development information
 
-Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
+[Detailed requirements and installation procedure](INSTALL.md)
+
+[Developping with nix](NIX.md)
+
+[Contributing](CONTRIBUTING.md)
 
 ## Previous work reused at the time of the first releases
 
@@ -114,14 +126,6 @@ of `topology.v`.
 
 [ORIGINAL_FILES.md](ORIGINAL_FILES.md) gives more details about the
 files in the first releases.
-
-## Development information
-
-[Detailed requirements and installation procedure](INSTALL.md)
-
-[Developping with nix](NIX.md)
-
-[Contributing](CONTRIBUTING.md)
 
 ## Acknowledgments
 
