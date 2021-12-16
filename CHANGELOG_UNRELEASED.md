@@ -16,6 +16,10 @@
     `pmule_rgt0`, `pmule_lgt0`, `nmule_lgt0`, `nmule_rgt0`,
 - in `measure.v`:
   + hints for `measurable0` and `measurableT`
+- in `ereal.v`:
+  + lemmas `muleBr`, `muleBl`
+  + lemma `eqe_absl`
+  + lemma `lee_pmul`
 
 ### Changed
 

@@ -1482,6 +1482,12 @@ Qed.
 Lemma muleDl x y z : x \is a fin_num -> y +? z -> (y + z) * x = y * x + z * x.
 Proof. by move=> ? ?; rewrite -!(muleC x) muleDr. Qed.
 
+Lemma muleBr x y z : x \is a fin_num -> y +? - z -> x * (y - z) = x * y - x * z.
+Proof. by move=> ? yz; rewrite muleDr ?muleN. Qed.
+
+Lemma muleBl x y z : x \is a fin_num -> y +? - z -> (y - z) * x = y * x - z * x.
+Proof. by move=> ? yz; rewrite muleDl// mulNe. Qed.
+
 Lemma ge0_muleDl x y z : 0 <= y -> 0 <= z -> (y + z) * x = y * x + z * x.
 Proof.
 rewrite /mule/=; move: x y z => [r| |] [s| |] [t| |] //= s0 t0.
@@ -1614,6 +1620,12 @@ Lemma lte_absl (x y : \bar R) : (`|x| < y)%E = (- y < x < y)%E.
 Proof.
 move: x y => [x| |] [y| |] //=; rewrite ?lte_fin ?lte_pinfty ?lte_ninfty//.
 by rewrite ltr_norml.
+Qed.
+
+Lemma eqe_absl x y : (`|x| == y) = ((x == y) || (x == - y)) && (0 <= y).
+Proof.
+move: x y => [x| |] [y| |] //=; rewrite? lee_pinfty//.
+by rewrite !eqe eqr_norml lee_fin.
 Qed.
 
 Lemma lee_abs_add x y : `|x + y| <= `|x| + `|y|.
@@ -2173,6 +2185,34 @@ Qed.
 
 Lemma lte_ndivr_mulr r x y : (r < 0)%R -> (y * r^-1%:E < x) = (x * r%:E < y).
 Proof. by move=> r0; rewrite muleC lte_ndivr_mull// muleC. Qed.
+
+Lemma lee_pmul x1 y1 x2 y2 : 0 <= x1 -> 0 <= x2 -> x1 <= y1 -> x2 <= y2 ->
+  x1 * x2 <= y1 * y2.
+Proof.
+move: x1 y1 x2 y2 => [x1| |] [y1| |] [x2| |] [y2| |] //; rewrite !lee_fin.
+- exact: ler_pmul.
+- rewrite le_eqVlt => /predU1P[<- x20 y10 _|x10 x20 xy1 _].
+    by rewrite mul0e mule_ge0// lee_pinfty.
+  by rewrite mulrinfty gtr0_sg// ?mul1e ?lee_pinfty// (lt_le_trans x10).
+- rewrite le_eqVlt => /predU1P[<- _ y10 _|x10 _ xy1 _].
+    by rewrite mul0e mule_ge0// lee_pinfty.
+  rewrite mulrinfty gtr0_sg// mul1e mulrinfty gtr0_sg// ?mul1e//.
+  exact: (lt_le_trans x10).
+- move=> x10; rewrite le_eqVlt => /predU1P[<- _ y20|x20 _ xy2].
+    by rewrite mule0 mulrinfty mule_ge0// ?lee_pinfty// lee_fin sgr_ge0.
+  by rewrite mulrinfty gtr0_sg ?mul1e ?lee_pinfty// (lt_le_trans x20).
+- by move=> x10 x20 _ _; rewrite mule_pinfty_pinfty lee_pinfty.
+- rewrite le_eqVlt => /predU1P[<- _ _ _|x10 _ _ _].
+    by rewrite mule_pinfty_pinfty mul0e lee_pinfty.
+  by rewrite mule_pinfty_pinfty mulrinfty gtr0_sg// mul1e.
+- move=> _; rewrite le_eqVlt => /predU1P[<- _ y20|x20 _ xy2].
+    by rewrite mule0 mulrinfty mule_ge0// ?lee_pinfty// lee_fin sgr_ge0//.
+  rewrite mulrinfty gtr0_sg// mul1e mulrinfty gtr0_sg ?mul1e//.
+  exact: (lt_le_trans x20).
+- move=> _; rewrite le_eqVlt => /predU1P[<- _ _|x20 _ _].
+    by rewrite mule0 mule_pinfty_pinfty lee_pinfty.
+  by rewrite mulrinfty gtr0_sg// mul1e// mule_pinfty_pinfty.
+Qed.
 
 Lemma lee_pdivr_mull r x y : (0 < r)%R -> (r^-1%:E * y <= x) = (y <= r%:E * x).
 Proof.
