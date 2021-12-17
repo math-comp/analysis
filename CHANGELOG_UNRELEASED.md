@@ -22,7 +22,7 @@
   + `nbhs_minfty_le` renamed to `nbhs_ninfty_le_pos` and changed to not use `{posnum R}`
 - in `sequences.v`:
   + lemma `is_cvg_ereal_nneg_natsum`: remove superfluous `P` parameter
-  + lemmas `notin_set`
+  + lemma `notin_set`
 - in `boolp.v`:
   + lemmas `not_True`, `not_False`
 - in `topology.v`
