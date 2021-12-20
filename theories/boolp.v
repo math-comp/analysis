@@ -246,23 +246,21 @@ Definition choice_of_Type (T : Type) : choiceType :=
 Lemma is_true_inj : injective is_true.
 Proof. by move=> [] []; rewrite ?(trueE, falseE) ?propeqE; tauto. Qed.
 
+Lemma not_True : (~ True) = False. Proof. exact/propext. Qed.
+Lemma not_False : (~ False) = True. Proof. by apply/propext; split=> _. Qed.
+
 (* -------------------------------------------------------------------- *)
 Lemma asbool_equiv_eq {P Q : Prop} : (P <-> Q) -> `[<P>] = `[<Q>].
 Proof. by rewrite -propeqE => ->. Qed.
 
-Lemma asbool_equiv_eqP {P Q : Prop} QQ : reflect Q QQ -> (P <-> Q) -> `[<P>] = QQ.
-Proof.
-move=> Q_QQ [hPQ hQP]; apply/idP/Q_QQ=> [/asboolP//|].
-by move=> hQ; apply/asboolP/hQP.
-Qed.
+Lemma asbool_equiv_eqP {P Q : Prop} b : reflect Q b -> (P <-> Q) -> `[<P>] = b.
+Proof. by move=> Q_b [PQ QP]; apply/asboolP/Q_b. Qed.
 
 Lemma asbool_equiv {P Q : Prop} : (P <-> Q) -> (`[<P>] <-> `[<Q>]).
 Proof. by move/asbool_equiv_eq->. Qed.
 
 Lemma asbool_eq_equiv {P Q : Prop} : `[<P>] = `[<Q>] -> (P <-> Q).
-Proof.
-by move=> eq; split=> /asboolP; rewrite (eq, =^~ eq) => /asboolP.
-Qed.
+Proof. by move=> eq; split=> /asboolP; rewrite (eq, =^~ eq) => /asboolP. Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma and_asboolP (P Q : Prop) : reflect (P /\ Q) (`[< P >] && `[< Q >]).
@@ -288,7 +286,7 @@ Lemma or3_asboolP (P Q R : Prop) :
   reflect [\/ P, Q | R] [|| `[< P >], `[< Q >] | `[< R >]].
 Proof.
 apply: (iffP idP); last by case=> [| |] /asboolP -> //=; rewrite !orbT.
-case/orP=> [/asboolP p|/orP[]/asboolP];[exact:Or31|exact:Or32|exact:Or33].
+by case/orP=> [/asboolP p|/orP[]/asboolP]; [exact:Or31|exact:Or32|exact:Or33].
 Qed.
 
 Lemma asbool_neg {P : Prop} : `[<~ P>] = ~~ `[<P>].
