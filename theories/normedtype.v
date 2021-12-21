@@ -3796,7 +3796,6 @@ Qed.
 
 End limit_composition_ereal.
 
-
 (** * Some limits on real functions *)
 
 Section Shift.

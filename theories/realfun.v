@@ -440,7 +440,6 @@ Grab Existential Variables. all: end_near. Qed.
 End real_inverse_function_instances.
 
 Section is_derive_inverse.
-
 Variable R : realType.
 
 (* Attempt to prove the diff of inverse *)
@@ -500,15 +499,12 @@ Qed.
 
 Lemma is_deriveV (f : R -> R) (x t v : R) :
   f x != 0 -> is_derive x v f t ->
-  is_derive x v (fun y => (f y)^-1)  (- (f x) ^- 2 *: t).
+  is_derive x v (fun y => (f y)^-1) (- (f x) ^- 2 *: t).
 Proof.
 move=> fxNZ Df.
 constructor; first by apply: derivableV => //; case: Df.
 by rewrite deriveV //; case: Df => _ ->.
 Qed.
-
-Hint Extern 0 (is_derive _ _ _ _) => 
-   (eapply (is_deriveV); first by []) : typeclass_instances.
 
 Lemma is_derive_inverse (f g : R -> R) l x :
   {near x, cancel f g}  ->
@@ -518,7 +514,7 @@ Proof.
 move=> fgK fC fD lNZ.
 have /is_derive1_caratheodory [h [fE hC hxE]] := fD.
 (* There should be something simpler *)
-have gfxE :  g (f x) = x by have [d Hd]:= nbhs_ex fgK; apply: Hd.
+have gfxE : g (f x) = x by have [d Hd]:= nbhs_ex fgK; apply: Hd.
 pose g1 y := if y == f x then (h (g y))^-1
              else (g y - g (f x)) / (y - f x).
 apply/is_derive1_caratheodory.
@@ -542,5 +538,5 @@ Grab Existential Variables. all: end_near. Qed.
 
 End is_derive_inverse.
 
-Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) => 
-   (eapply is_deriveV; first by []) : typeclass_instances.
+Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
+  (eapply is_deriveV; first by []) : typeclass_instances.

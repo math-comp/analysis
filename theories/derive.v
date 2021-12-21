@@ -1581,7 +1581,6 @@ Proof. by apply: is_deriveN. Qed.
 
 End is_derive_instances.
 
-
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
   is_derive x 1 f x1 -> x1 = y1 -> is_derive x 1 f y1.

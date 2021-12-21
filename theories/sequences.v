@@ -449,9 +449,7 @@ Lemma eq_sum_telescope (V : zmodType) (u_ : V ^nat) n :
   u_ n = u_ 0%N + series (telescope u_) n.
 Proof. by rewrite telescopeK/= addrC addrNK. Qed.
 
-
 Section series_patched.
-
 Variables (N : nat) (K : numFieldType) (V : normedModType K).
 Implicit Types (f : nat -> V) (u : V ^nat)  (l : V).
 
