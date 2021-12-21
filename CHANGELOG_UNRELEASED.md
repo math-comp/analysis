@@ -20,6 +20,7 @@
   + lemmas `muleBr`, `muleBl`
   + lemma `eqe_absl`
   + lemma `lee_pmul`
+  + lemmas `cover_restr`, `eqcover_r`
 
 ### Changed
 
