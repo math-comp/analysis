@@ -5,7 +5,7 @@ From mathcomp Require Import matrix finmap.
 Require Import boolp reals classical_sets posnum.
 
 (******************************************************************************)
-(*                 Filters and basic topological notions                      *)
+(*                  Filters and basic topological notions                     *)
 (*                                                                            *)
 (* This file develops tools for the manipulation of filters and basic         *)
 (* topological notions. The development of topological notions builds on      *)
@@ -17,6 +17,11 @@ Require Import boolp reals classical_sets posnum.
 (*                                                                            *)
 (*                 monotonous A f := {in A &, {mono f : x y / x <= y}} \/     *)
 (*                                   {in A &, {mono f : x y /~ x <= y}}.      *)
+(*         Section function_space == canonical ringType and lmodType          *)
+(*                                   structures for functions whose range is  *)
+(*                                   a ringType, comRingType,or lmodType.     *)
+(*                           fctE == multi-rule for fct                       *)
+(*                                                                            *)
 (* * Filters :                                                                *)
 (*                   filteredType U == interface type for types whose         *)
 (*                                     elements represent sets of sets on U.  *)
@@ -393,10 +398,7 @@ Unset Printing Implicit Defensive.
 (* Making sure that [Program] does not automatically introduce *)
 Obligation Tactic := idtac.
 
-(********************************)
-(* Missing lemmas for mathcommp *)
-(********************************)
-
+(* NB: these lemmas are in the recent versions of MathComp *)
 Section inj_can_sym_in_on.
 Variables (aT rT : predArgType) (aD : {pred aT}) (rD : {pred rT}).
 Variables (f : aT -> rT) (g : rT -> aT).
@@ -419,10 +421,7 @@ End inj_can_sym_in_on.
 Arguments inj_can_sym_in_on {aT rT aD rD f g}.
 Arguments inj_can_sym_on {aT rT aD f g}.
 Arguments inj_can_sym_in {aT rT rD f g}.
-
-(*************************)
-(* Mathcomp analysis now *)
-(*************************)
+(* /NB: these lemmas are in the recent versions of MathComp *)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
@@ -679,6 +678,40 @@ Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V)
 Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_law}
                                             (@GRing.null_fun_linear R U V s s_law).
 End Linear2.
+
+(******************************************************************************)
+Lemma addrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
+  f + g = (fun x : T => f x + g x).
+Proof. by []. Qed.
+
+Lemma opprfunE (T : pointedType) (K : ringType) (f : T -> K) :
+  - f = (fun x : T => - f x).
+Proof. by []. Qed.
+
+Lemma mulrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
+  f * g = (fun x : T => f x * g x).
+Proof. by []. Qed.
+
+Lemma scalrfunE (T : pointedType) (K : ringType) (L : lmodType K)
+    k (f : T -> L) :
+  k *: f = (fun x : T => k *: f x).
+Proof. by []. Qed.
+
+Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
+Proof. by []. Qed.
+
+Lemma exprfunE (T : pointedType) (K : ringType) (f : T -> K) n :
+  f ^+ n = (fun x => f x ^+ n).
+Proof.
+by elim: n => [|n ihn]; rewrite funeqE=> ?; [rewrite !expr0|rewrite !exprS ihn].
+Qed.
+
+Lemma compE (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3) :
+  g \o f = fun x => g (f x).
+Proof. by []. Qed.
+
+Definition fctE :=
+  (cstE, compE, opprfunE, addrfunE, mulrfunE, scalrfunE, exprfunE).
 
 Module Filtered.
 
