@@ -101,7 +101,7 @@
   + lemmas `is_derive_tan`, `derivable_tan`, `ltr_tan`, `tan_inj`
   + definition `acos`
   + lemmas `acos_def`, `acos_ge0`, `acos_lepi`, `acosK`, `acos_gt0`, `acos_ltpi`
-  + lemmas `cosK`, `sin_acos`, `near_lift`, `continuous_acos`, `is_derive1_acos`
+  + lemmas `cosK`, `sin_acos`, `continuous_acos`, `is_derive1_acos`
   + definition `asin`
   + lemmas `asin_def`, `asin_geNpi2`, `asin_lepi2`, `asinK`, `asin_ltpi2`, `asin_gtNpi2`
   + lemmas `sinK`, `cos_asin`, `continuous_asin`, `is_derive1_asin`
