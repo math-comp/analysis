@@ -930,16 +930,6 @@ rewrite -[LHS]ger0_norm; last by rewrite sin_ge0_pi // acos_ge0 ?acos_lepi.
 by rewrite -sqrtr_sqr sin2cos2 acosK.
 Qed.
 
-(* NB: not used? *)
-Lemma near_lift (P : R -> Prop) (x : R) :
- (\forall y \near x, P y) -> \forall y \near x, \forall z \near y, P z.
-Proof.
-move=> /nbhs_ballP[d /= d_gt0 dB].
-apply/nbhs_ballP; exists (d/2) => [|t1 Bt1] //=; first by rewrite divr_gt0.
-apply/nbhs_ballP; exists (d/2) => [|t2 Bt2] //=; first by rewrite divr_gt0.
-by apply/dB/(ball_split Bt1).
-Qed.
-
 Lemma continuous_acos x : -1 < x < 1 -> {for x, continuous acos}.
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -[x]acosK; first last.
@@ -1171,22 +1161,3 @@ Grab Existential Variables. all: end_near. Qed.
 
 End Atan.
 
-(*
-
-From mathcomp Require Import complex.
-
-Section expC.
-Variable R : realType.
-Local Open Scope complex_scope.
-Implicit Types n : nat.
-
-Lemma demoivre n (a : R) :
- (cos a +i* sin a) ^+ n = cos (a *+ n) +i* sin (a *+ n).
-Proof.
-elim: n => [|n ih]; first by rewrite expr0 mulr0n cos0 sin0.
-by rewrite exprS ih mulrS cosD sinD; simpc; rewrite [in X in _ +i* X = _]addrC.
-Qed.
-
-End expC.
-
-*)
