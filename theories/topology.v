@@ -379,6 +379,7 @@ Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").
 
+<<<<<<< HEAD
 Reserved Notation "{ 'uniform`' A -> V }"
   (at level 0, A at level 69, format "{ 'uniform`'  A  ->  V }").
 Reserved Notation "{ 'uniform' U -> V }"
@@ -397,6 +398,29 @@ Reserved Notation "{ 'family' fam , U -> V }"
   (at level 0, U at level 69, format "{ 'family'  fam ,  U  ->  V }").
 Reserved Notation "{ 'family' fam , F --> f }"
   (at level 0, F at level 69, format "{ 'family'  fam ,  F  -->  f }").
+=======
+Reserved Notation "'{within' A , 'continuous' f }"
+  (at level 70, A at level 69, format "'{within'  A ,  'continuous'  f }").
+
+Reserved Notation "'{uniform`' A -> V }"
+  (at level 70, A at level 69, format "'{uniform`'  A  ->  V }").
+Reserved Notation "'{uniform' U -> V }"
+  (at level 70, U at level 69, format "'{uniform'  U  ->  V }").
+Reserved Notation "'{uniform' A , F --> f }"
+  (at level 70, A at level 69, F at level 69,
+   format "'{uniform'  A ,  F  -->  f }").
+Reserved Notation "'{uniform' , F --> f }"
+  (at level 70, F at level 69,
+   format "'{uniform' ,  F  -->  f }").
+Reserved Notation "'{ptws' U -> V }"
+  (at level 70, U at level 69, format "'{ptws'  U  ->  V }").
+Reserved Notation "'{ptws' , F --> f }"
+  (at level 70, F at level 69, format "'{ptws' ,  F  -->  f }").
+Reserved Notation "'{family' fam , U -> V }"
+  (at level 70, U at level 69, format "'{family'  fam ,  U  ->  V }").
+Reserved Notation "'{family' fam , F --> f }"
+  (at level 70, F at level 69, format "'{family'  fam ,  F  -->  f }").
+>>>>>>> 33a0ee0... fixed connected continuous
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -2526,7 +2550,7 @@ Qed.
 
 Definition closed (D : set T) := closure D `<=` D.
 
-Lemma closedC (D : set T) : open D -> closed (~` D).
+Lemma open_closedC (D : set T) : open D -> closed (~` D).
 Proof. by rewrite openE => Dop p clNDp /Dop /clNDp [? []]. Qed.
 
 Lemma closed_bigI {I} (D : set I) (f : I -> set T) :
@@ -2560,11 +2584,19 @@ move/asboolP; rewrite asbool_neg => /imply_asboolPn [/sCB Bq /contrapT Aq].
 by exists q.
 Qed.
 
-Lemma openC (D : set T) : closed D -> open (~` D).
+Lemma closed_openC (D : set T) : closed D -> open (~` D).
 Proof.
 rewrite closedE openE => Dcl t nDt; apply: contrapT.
 by rewrite /interior nbhs_nearE => /Dcl.
 Qed.
+
+Lemma closedC (D : set T) : closed (~` D) = open D.
+Proof. 
+by rewrite propeqE; split; last exact: open_closedC; move=> /closed_openC; rewrite setCK.
+Qed.
+
+Lemma openC (D : set T) : open (~`D) = closed (D).
+Proof. by rewrite -closedC setCK. Qed.
 
 Lemma closed_closure (A : set T) : closed (closure A).
 Proof. by move=> p clclAp B /nbhs_interior /clclAp [q [clAq /clAq]]. Qed.
@@ -2609,8 +2641,8 @@ Lemma closureC E :
   ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
 Proof.
 rewrite closureE setC_bigcap eqEsubset; split => t [U [? EU Ut]].
-  by exists (~` U) => //; split; [exact: openC|exact: subsetC].
-by rewrite -(setCK E); exists (~` U)=> //; split; [exact:closedC|exact:subsetC].
+  by exists (~` U) => //; split; [exact: closed_openC|exact: subsetC].
+by rewrite -(setCK E); exists (~` U)=> //; split; [exact:open_closedC|exact:subsetC].
 Qed.
 
 Lemma closure_id E : closed E <-> E = closure E.
@@ -2701,22 +2733,6 @@ Qed.
 
 End Compact.
 Arguments hausdorff_space : clear implicits.
-
-Lemma continuous_compact (T U : topologicalType) (f : T -> U) A :
-  {in A, continuous f} -> compact A -> compact (f @` A).
-Proof.
-move=> fcont Aco F FF FfA; set G := filter_from F (fun C => A `&` f @^-1` C).
-have GF : ProperFilter G.
-  apply: (filter_from_proper (filter_from_filter _ _)); first by exists (f @` A).
-    move=> C1 C2 F1 F2; exists (C1 `&` C2); first exact: filterI.
-    by move=> ?[?[]]; split; split.
-  by move=> C /(filterI FfA) /filter_ex [_ [[p ? <-]]]; eexists p.
-case: (Aco G); first by exists (f @` A) => // ? [].
-move=> p [Ap clsGp]; exists (f p); split; first exact/imageP.
-move=> B C FB /fcont; rewrite inE /= nbhs_filterE => /(_ Ap) p_Cf.
-have : G (A `&` f @^-1` B) by exists B.
-by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
-Qed.
 
 Section Tychonoff.
 
@@ -3015,7 +3031,7 @@ split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
   suff [p IAnfp] : \bigcap_(i in D) (A `\` f i) !=set0.
     by have /IAnfp [Ap _] := Dj; have /fcov [k /IAnfp [_]] := Ap.
   apply: Aco.
-    exists (fun i => ~` g i) => i Di; first exact/closedC/gop.
+    exists (fun i => ~` g i) => i Di; first exact/open_closedC/gop.
     rewrite predeqE => p; split=> [[Ap nfip] | [Ap ngip]]; split=> //.
       by move=> gip; apply: nfip; rewrite feAg.
     by rewrite feAg // => - [].
@@ -3034,7 +3050,7 @@ have Anfcov : A `<=` \bigcup_(i in D) (A `\` f i).
   move=> [i /asboolP]; rewrite asbool_neg => /imply_asboolPn [Di nfip].
   by exists i.
 have Anfop : open_fam_of A D (fun i => A `\` f i).
-  exists (fun i => ~` g i) => i Di; first exact/openC/gcl.
+  exists (fun i => ~` g i) => i Di; first exact/closed_openC/gcl.
   rewrite predeqE => p; split=> [[Ap nfip] | [Ap ngip]]; split=> //.
     by move=> gip; apply: nfip; rewrite feAg.
   by rewrite feAg // => - [].
@@ -3065,7 +3081,7 @@ Definition accessible_space := forall x y, x != y ->
 
 Lemma accessible_closed_set1 : accessible_space -> forall x, closed [set x].
 Proof.
-move=> T1 x; rewrite -[X in closed X]setCK; apply: closedC.
+move=> T1 x; rewrite -[X in closed X]setCK; apply: open_closedC.
 rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
 rewrite /interior nbhsE /=; exists U; split; last by rewrite subsetC1.
 by split=> //; rewrite inE in yU.
@@ -3232,7 +3248,7 @@ split=> [conE [E [E0 EU [E1 E2]]]|conE B B0 [C oC BAC] [D cD BAD]].
     have := @subset_closure _ (E true); rewrite -setD_eq0 => ->; rewrite setU0.
     by move/setDidPl : E2 => ->; exact/eqP/set0P.
   apply: (conE _ (E0 true)).
-  - exists (~` (closure (E false))); first exact/openC/closed_closure.
+  - exists (~` (closure (E false))); first exact/closed_openC/closed_closure.
     rewrite EU setIUl.
     have /subsets_disjoint -> := @subset_closure _ (E false); rewrite set0U.
     by apply/esym/setIidPl/disjoints_subset; rewrite setIC.
@@ -3310,44 +3326,6 @@ Proof. by apply: bigcup_connected; [exists x => C []|move=> C []]. Qed.
 
 End connected_sets.
 
-Lemma connected_continuous_connected (T U : topologicalType) (f : T -> U) A :
-  connected A -> continuous f -> connected (f @` A).
-Proof.
-move=> cA cf; apply contrapT => /connectedPn[E [E0 fAE sE]].
-set AfE := fun b => A `&` f @^-1` E b.
-suff sAfE : separated (AfE false) (AfE true).
-  move: cA; apply/connectedPn; exists AfE; split => //.
-  - move=> b; case: (E0 b) => /= u Ebu.
-    have [t Et ftu] : (f @` A) u by rewrite fAE; case: b Ebu; [right|left].
-    by exists t; split => //=; rewrite /preimage ftu.
-  - by rewrite -setIUr -preimage_setU -fAE; exact/esym/setIidPl/preimage_image.
-suff cI0 : forall b, closure (AfE b) `&` AfE (~~ b) = set0.
-  by rewrite /separated cI0 setIC cI0.
-move=> b.
-have [fAfE cEIE] :
-    f @` AfE (~~ b) = E (~~ b) /\ closure (E b) `&` E (~~ b) = set0.
-  split; last by case: sE => ? ?; case: b => //; rewrite setIC.
-  rewrite eqEsubset; split.
-    apply: (subset_trans sub_image_setI).
-    by apply subIset; right; exact: image_preimage_subset.
-  move=> u Ebu.
-  have [t [At ftu]] : exists t, A t /\ f t = u.
-    suff [t At ftu] : (f @` A) u by exists t.
-    by rewrite fAE; case: b Ebu; [left|right].
-  by exists t => //; split => //=; rewrite /preimage ftu.
-have ? : f @` closure (AfE b) `<=` closure (E b).
-  have /(@image_subset _ _ f) : closure (AfE b) `<=` f @^-1` closure (E b).
-    have /closure_id -> : closed (f @^-1` closure (E b)).
-      by apply closed_comp => //; exact: closed_closure.
-    apply: closure_subset.
-    have /(@preimage_subset _ _ f) A0cA0 := @subset_closure _ (E b).
-    by apply: subset_trans A0cA0; apply: subIset; right.
-  by move/subset_trans; apply; exact: image_preimage_subset.
-apply/eqP/negPn/negP/set0P => -[t [? ?]].
-have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
-  by rewrite fAfE; exact: subsetI_eq0 cEIE.
-by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply fcAfEb; split; exists t.
-Qed.
 
 (** * Uniform spaces *)
 
@@ -5398,6 +5376,8 @@ by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
 Qed.
 
 Definition subspace {T : Type} (A : set T) := T.
+Arguments subspace {T} _ : simpl never.
+
 Definition incl_subspace {T A} (x : subspace A) : T := x.
 
 Section Subspace.
@@ -5475,7 +5455,16 @@ rewrite ?subspace_continuousP=> feq L x Ax; rewrite -(feq x) ?inE //.
 by apply: cvg_trans _ (L x Ax); apply: fmap_within_eq=> ? ?; rewrite feq.
 Qed.
 
-Lemma nbhs_subspace_interior (x : T) : A^° x -> nbhs x = (nbhs (x : subspace A)).
+Lemma continuous_subspace_in {U : topologicalType} (f : subspace A -> U) :
+  continuous f = {in A, continuous f}.
+Proof.
+rewrite propeqE in_setP subspace_continuousP/filter_of/nbhs //=; split.
+  by move=> Q x Ax; case: (nbhs_subspaceP x) => //=; apply: Q. 
+move=> + x Ax => /(_ x Ax); case: (nbhs_subspaceP x) => //=; apply: Q. 
+Qed.
+
+Lemma nbhs_subspace_interior (x : T) : 
+  A^° x -> nbhs x = (nbhs (x : subspace A)).
 Proof.
 move=> /[dup] /[dup] /interior_subset ? /within_interior <- ?.
 by case: RHS / nbhs_subspaceP.
@@ -5525,7 +5514,7 @@ Proof. by rewrite setIC open_subspaceIT. Qed.
 Lemma closed_subspaceT : closed (A : set (subspace A)).
 Proof.
 rewrite -(setCK A);
-by apply: closedC; rewrite -open_subspaceIT setICl; exact: open0.
+by apply: open_closedC; rewrite -open_subspaceIT setICl; exact: open0.
 Qed.
 
 Lemma open_subspaceP (U : set T) :
@@ -5559,9 +5548,41 @@ exists t => //; case: pselect => //= [[? ?]].
 by case: (cid _) => //= W [] [] _.
 Qed.
 
+Lemma closed_subspaceP (U : set T) :
+  closed (U : set (subspace A)) <->
+  exists V, (closed (V : set T)) /\ V `&` A = U `&` A.
+Proof.
+rewrite -openC open_subspaceP.
+under [x in (_ <-> x)] eq_exists => V do rewrite -openC.
+split; move=> [V[?  VU]]; exists (~`V); split; rewrite ?setCK //.
+  by move/(f_equal setC): VU; rewrite ?eqEsubset ?setCI ?setCK; firstorder.
+by move/(f_equal setC): VU; rewrite ?eqEsubset ?setCI ?setCK; firstorder.
+Qed.
+
 Lemma open_subspaceW (U : set T) :
   open (U : set T) -> open (U : set (subspace A)).
 Proof. by move=> oU; apply/open_subspaceP; exists U. Qed.
+
+Lemma closed_subspaceW (U : set T) :
+  closed (U : set T) -> closed (U : set (subspace A)).
+Proof.  by move=> /closed_openC/open_subspaceW/open_closedC; rewrite setCK. Qed.
+
+Lemma closure_subspaceW (U : set T) :
+  U `<=` A -> closure (U : set (subspace A)) = closure (U : set T) `&` A.
+Proof.
+have /closed_subspaceP := (@closed_closure _ (U : set (subspace A))).
+move=> [V] [clV VAclUA] /[dup] /(@closure_subset subspace_topologicalType).
+have/closure_id <- := (closed_subspaceT) => /setIidr <-; rewrite setIC.
+move=> UsubA; rewrite eqEsubset; split.
+  apply: setSI; rewrite closureE => x/(_ (@closure T U)); apply. 
+  split; last exact: (@subset_closure _ (U : set T)).
+  by apply: closed_subspaceW; exact: closed_closure.
+rewrite -VAclUA; apply setSI; rewrite closureE //= => x /(_ V). 
+apply; split; first by [].
+apply: subset_trans (_ :  V `&` A `<=`_); last by move=>?[].
+rewrite VAclUA -{1}(setIid U); apply: setISS => //. 
+exact: (@subset_closure _ (U : set (subspace A))).
+Qed.
 
 Lemma subspace_hausdorff :
   hausdorff_space T -> hausdorff_space [topologicalType of subspace A].
@@ -5694,3 +5715,135 @@ Canonical subspace_pseudoMetricType :=
   PseudoMetricType (subspace A)  subspace_pseudoMetricType_mixin.
 
 End SubspacePseudoMetric.
+ 
+Global Instance subspace_filter {T : topologicalType} 
+     (A : set T) (x : subspace A) :
+   Filter (nbhs_subspace x) := nbhs_subspace_filter x.
+
+Global Instance subspace_proper_filter {T : topologicalType} 
+     (A : set T) (x : subspace A) :
+   ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
+   
+Notation "'{within'  A , 'continuous'  f }" := 
+  (continuous (f : (subspace A) -> _)).
+
+Section SubspaceRelative.
+Context {T: topologicalType}.
+Implicit Types (U : topologicalType) (A B : set T).
+Lemma nbhs_subspace_subset A B (x : T) :
+   A `<=` B -> nbhs (x : subspace B) `<=` nbhs (x : subspace A).
+Proof. 
+rewrite /nbhs //= => AB; case: (nbhs_subspaceP A); case: (nbhs_subspaceP B).
+  - by move=> ? ?; apply: within_subset => //=; apply (nbhs_filter x).
+  - by move=> ? /AB //=.
+  - by move=> Bx ? W /nbhs_singleton /(_ Bx) ? ? ->.
+  - by move=> ? ?.
+Qed.
+  
+Lemma continuous_subspaceW {U} A B (f : T -> U) :
+  (A `<=` B) -> 
+  {within B, continuous f} -> 
+  {within A, continuous f}.
+Proof.  
+  move=> ? ctsF ???; apply: (@nbhs_subspace_subset A B) => //.
+  by exact: ctsF. 
+Qed.
+  
+Lemma nbhs_subspaceT (x:T): 
+  nbhs (x : subspace setT) = nbhs (x) .
+Proof.
+rewrite {1}/nbhs //=; case: (nbhs_subspaceP (@setT T)); last by simpl.
+move=> _; rewrite eqEsubset withinE; split => W //=.
+  by case=> V nbhsV; rewrite ?setIT => ->.
+by move=> ?; exists W => //.
+Qed.
+
+Lemma continuous_subspaceT_for {U} A (f : T -> U) (x : T) :
+  A x -> {for x, continuous f} -> {for x, continuous (f : subspace A -> U)}.
+Proof.
+rewrite /filter_of/nbhs/=/prop_for => inA ctsf.
+(case: (nbhs_subspaceP A x); last by []) => _.
+apply: (cvg_trans _ ctsf);  apply: cvg_fmap2; apply: cvg_within. 
+by rewrite /subspace; exact: nbhs_filter.
+Qed.
+
+Lemma continuous_subspaceT {U} A (f : T -> U):
+  {in A, continuous f} -> {within A, continuous f}.
+Proof.
+rewrite continuous_subspace_in ?in_setP => ctsf t At.
+by apply continuous_subspaceT_for => //=; apply: ctsf.
+Qed.
+
+Lemma continuous_open_subspace {U} A (f : T -> U) :
+  @open T A -> {within A, continuous f} = {in A, continuous f}.
+Proof.
+rewrite openE continuous_subspace_in /= => oA; rewrite propeqE ?in_setP. 
+split => + x /[dup] Ax /oA Aox; rewrite /filter_of /= => /(_ _ Ax).
+  by rewrite -(nbhs_subspace_interior Aox).
+by rewrite -(nbhs_subspace_interior Aox).
+Qed.
+End SubspaceRelative.
+
+Lemma continuous_compact {T U : topologicalType} (f : T -> U) A :
+  {within A, continuous f} -> compact A -> compact (f @` A).
+Proof.
+move=> fcont Aco F FF FfA; set G := filter_from F (fun C => A `&` f @^-1` C).
+have GF : ProperFilter G.
+  apply: (filter_from_proper (filter_from_filter _ _)).
+  - by exists (f @` A).
+  - move=> C1 C2 F1 F2; exists (C1 `&` C2); first exact: filterI.
+    by move=> ?[?[]]; split; split.
+  - by move=> C /(filterI FfA) /filter_ex [_ [[p ? <-]]]; eexists p.
+move: Aco; rewrite -[A]setIid => /compact_subspaceIP; rewrite setIid.
+case /(_ G); first by exists (f @` A) => // ? [].
+move=> p [Ap clsGp]; exists (f p); split; first exact/imageP.
+move=> B C FB /fcont p_Cf.
+have : G (A `&` f @^-1` B) by exists B.
+by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
+Qed.
+
+Lemma connected_continuous_connected (T U : topologicalType)
+  (A : set T) (f : T -> U) :
+  connected A -> {within A, continuous f} -> connected (f @` A).
+Proof.
+move=> cA cf; apply contrapT => /connectedPn[E [E0 fAE sE]].
+set AfE := fun b =>(A `&` f @^-1` E b) : set (subspace A).
+suff sAfE : separated (AfE false) (AfE true).
+  move: cA; apply/connectedPn; exists AfE; split; last split.
+  - move=> b; case: (E0 b) => /= u Ebu.
+    have [t Et ftu] : (f @` A) u by rewrite fAE; case: b Ebu; [right|left].
+    by exists t; split => //=; rewrite /preimage ftu.
+  - by rewrite -setIUr -preimage_setU -fAE; exact/esym/setIidPl/preimage_image.
+  - rewrite /AfE. rewrite -{2}(setIid A) ?setIA -(@closure_subspaceW _ A).
+      by rewrite -/(AfE false) -setIA -/(AfE true); case: sAfE.
+    by move=>?[].
+  - rewrite /AfE -{1}(setIid A) setIC ?setIA -(@closure_subspaceW _ A) setIC.
+      by rewrite  -setIC -/(AfE true) -setIA -/(AfE false) setIC; case: sAfE.
+    by move=>?[].
+suff cI0 : forall b, closure (AfE b) `&` AfE (~~ b) = set0.
+  by rewrite /separated cI0 setIC cI0.
+move=> b.
+have [fAfE cEIE] :
+    f @` AfE (~~ b) = E (~~ b) /\ closure (E b) `&` E (~~ b) = set0.
+  split; last by case: sE => ? ?; case: b => //; rewrite setIC.
+  rewrite eqEsubset; split.
+    apply: (subset_trans sub_image_setI).
+    by apply subIset; right; exact: image_preimage_subset.
+  move=> u Ebu.
+  have [t [At ftu]] : exists t, A t /\ f t = u.
+    suff [t At ftu] : (f @` A) u by exists t.
+    by rewrite fAE; case: b Ebu; [left|right].
+  by exists t => //; split => //=; rewrite /preimage ftu.
+have ? : f @` closure (AfE b) `<=` closure (E b).
+  have /(@image_subset _ _ f) : closure (AfE b) `<=` f @^-1` closure (E b).
+    have /closure_id -> : closed (f @^-1` closure (E b) : set (subspace A)).
+      by apply: closed_comp => //; exact: closed_closure.
+    apply: closure_subset.
+    have /(@preimage_subset _ _ f) A0cA0 := @subset_closure _ (E b).
+    by apply: subset_trans A0cA0; apply: subIset; right.
+  by move/subset_trans; apply; exact: image_preimage_subset.
+apply/eqP/negPn/negP/set0P => -[t [? ?]].
+have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
+  by rewrite fAfE; exact: subsetI_eq0 cEIE.
+by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply fcAfEb; split; exists t.
+Qed.

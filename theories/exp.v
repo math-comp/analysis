@@ -443,8 +443,9 @@ Lemma expR_total_gt1 x :
 Proof.
 move=> x_ge1; have x_ge0 : 0 <= x by apply: le_trans x_ge1.
 case: (@IVT _ (fun y => expR y - x) 0 x 0) => //.
-- by move=> x1 x1Ix; apply: continuousB => // y1;
-    [exact: continuous_expR|exact: cst_continuous].
+- move=> x1 x1Ix; apply: continuousB => // y1.
+  + by apply/continuous_subspaceT=> ? _; exact: continuous_expR.
+  + exact: cst_continuous.
 - rewrite expR0; case: (ltrgtP (1- x) (expR x - x)) => [_| |].
   + rewrite subr_le0 x_ge1 subr_ge0.
     by apply: le_trans (expR_ge1Dx _); rewrite ?ler_addr.
