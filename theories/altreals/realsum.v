@@ -6,7 +6,7 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import xfinmap boolp ereal reals discrete realseq.
-Require Import classical_sets.
+Require Import classical_sets topology.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -59,10 +59,10 @@ Proof. by rewrite /fpos maxxx normr0. Qed.
 Lemma fneg0 x : fneg (fun _ : T => 0) x = 0 :> R.
 Proof. by rewrite /fneg minxx normr0. Qed.
 
-Lemma fnegN f : fneg (\- f) =1 fpos f.
+Lemma fnegN f : fneg (- f) =1 fpos f.
 Proof. by move=> x; rewrite /fpos /fneg -{1}oppr0 -oppr_max normrN. Qed.
 
-Lemma fposN f : fpos (\- f) =1 fneg f.
+Lemma fposN f : fpos (- f) =1 fneg f.
 Proof. by move=> x; rewrite /fpos /fneg -{1}oppr0 -oppr_min normrN. Qed.
 
 Lemma fposZ f c : 0 <= c -> fpos (c \*o f) =1 c \*o fpos f.
@@ -73,7 +73,7 @@ Qed.
 
 Lemma fnegZ f c : 0 <= c -> fneg (c \*o f) =1 c \*o fneg f.
 Proof.
-move=> ge0_c x; rewrite /= -!fposN; have /=<- := (fposZ (\- f) ge0_c x).
+move=> ge0_c x; rewrite /= -!fposN; have /=<- := (fposZ (- f) ge0_c x).
 by apply/eq_fpos=> y /=; rewrite mulrN.
 Qed.
 
@@ -567,7 +567,7 @@ by rewrite /M big_split ler_add ?(h1, h2).
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma summableN (S : T -> R) : summable S -> summable (\- S).
+Lemma summableN (S : T -> R) : summable S -> summable (- S).
 Proof.
 case=> [M h]; exists M => J; rewrite (le_trans _ (h J)) //.
 rewrite le_eqVlt; apply/orP; left; apply/eqP/eq_bigr.
@@ -576,7 +576,7 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma summablebN (S : T -> R) :
-  `[< summable (\- S)>] = `[< summable S >].
+  `[< summable (- S)>] = `[< summable S >].
 Proof.
 apply/asboolP/asboolP => /summableN //.
 by apply/eq_summable => x /=; rewrite opprK.
@@ -782,7 +782,7 @@ by move=> x /=; rewrite mulrC.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma psumN (S : T -> R) : psum (\- S) = psum S.
+Lemma psumN (S : T -> R) : psum (- S) = psum S.
 Proof.
 case/boolP: `[< summable S >] => h; last first.
   by rewrite !psum_out ?oppr0 //; apply/asboolPn; rewrite ?summablebN.
@@ -896,7 +896,7 @@ move=> eq_r ler; set s := RHS; have h J: uniq J -> \sum_(x <- J) `|S x| <= s.
   move=> uqJ; rewrite (bigID (ssrbool.mem r)) /= addrC big1.
     move=> x xNr; apply/eqP; apply/contraR: xNr.
     by rewrite normr_eq0 => /ler.
-  rewrite add0r {}/s -big_filter; set s := filter _ _.
+  rewrite add0r {}/s -big_filter; set s := seq.filter _ _.
   rewrite [X in _<=X](bigID (ssrbool.mem J)) /=.
   rewrite (perm_big [seq x <- r | x \in J]) /=.
     apply/uniq_perm; rewrite ?filter_uniq // => x.
@@ -1124,7 +1124,7 @@ Implicit Types (S : T -> R).
 Lemma psum_sum S : (forall x, 0 <= S x) -> psum S = sum S.
 Proof.
 move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
-  by move=> x; rewrite fneg_ge0 //. 
+  by move=> x; rewrite fneg_ge0.
 by apply/eq_psum=> x; rewrite fpos_ge0.
 Qed.
 
@@ -1143,7 +1143,7 @@ Qed.
 Lemma sum0 : sum (fun _ : T => 0) = 0 :> R.
 Proof. by rewrite /sum !(eq_psum fpos0, eq_psum fneg0) !psum0 subr0. Qed.
 
-Lemma sumN S : sum (\- S) = - sum S.
+Lemma sumN S : sum (- S) = - sum S.
 Proof. by rewrite /sum (eq_psum (fnegN _)) (eq_psum (fposN _)) opprB. Qed.
 
 Lemma sumZ S c : sum (c \*o S) = c * sum S.
