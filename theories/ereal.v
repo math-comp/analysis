@@ -1765,6 +1765,32 @@ Lemma mineMl z x y : z \is a fin_num -> 0 < z ->
   mine x y * z = mine (x * z) (y * z).
 Proof. by move=> zfin z0; rewrite muleC mineMr// !(muleC z). Qed.
 
+Lemma lee_pemull x y : 0 <= y -> 1 <= x -> y <= x * y.
+Proof.
+move: x y => [x| |] [y| |] //; last by rewrite mule_pinfty_pinfty.
+- by rewrite -EFinM 3!lee_fin; exact: ler_pemull.
+- move=> _; rewrite lee_fin => x1.
+  by rewrite mulrinfty gtr0_sg ?mul1e// (lt_le_trans _ x1).
+- rewrite lee_fin le_eqVlt => /predU1P[<- _|y0 _]; first by rewrite mule0.
+  by rewrite mulrinfty gtr0_sg// mul1e lee_pinfty.
+Qed.
+
+Lemma lee_nemull x y : y <= 0 -> 1 <= x -> x * y <= y.
+Proof.
+move: x y => [x| |] [y| |] //; last by rewrite mule_pinfty_ninfty.
+- by rewrite -EFinM 3!lee_fin; exact: ler_nemull.
+- move=> _; rewrite lee_fin => x1.
+  by rewrite mulrinfty gtr0_sg ?mul1e// (lt_le_trans _ x1).
+- rewrite lee_fin le_eqVlt => /predU1P[-> _|y0 _]; first by rewrite mule0.
+  by rewrite mulrinfty ltr0_sg// mulN1e lee_ninfty.
+Qed.
+
+Lemma lee_pemulr x y : 0 <= y -> 1 <= x -> y <= y * x.
+Proof. by move=> y0 x1; rewrite muleC lee_pemull. Qed.
+
+Lemma lee_nemulr x y : y <= 0 -> 1 <= x -> y * x <= y.
+Proof. by move=> y0 x1; rewrite muleC lee_nemull. Qed.
+
 End ERealArithTh_realDomainType.
 Arguments lee_sum_nneg_ord {R}.
 Arguments lee_sum_npos_ord {R}.
