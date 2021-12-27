@@ -7,6 +7,8 @@
 - in `topology.v`:
   + definitions `kolmogorov_space`, `accessible_space`
   + lemmas `accessible_closed_set1`, `accessible_kolmogorov`
+- in `ereal.v`:
+  + lemmas `lee_pemull`, `lee_nemul`, `lee_pemulr`, `lee_nemulr`
 
 ### Changed
 
