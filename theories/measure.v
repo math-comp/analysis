@@ -770,18 +770,6 @@ Section sigma_finite_lemma.
 Variables (R : realFieldType) (T : ringOfSetsType) (A : set T)
   (mu : {additive_measure set T -> \bar R}).
 
-(* NB: PR in progress *)
-Lemma lte_add_pinfty (x y : \bar R): x < +oo -> y < +oo -> x + y < +oo.
-Proof. by move: x y => -[r [r'| |]| |] // ? ?; rewrite -addEFin lte_pinfty. Qed.
-
-Lemma lte_sum_pinfty I (s : seq I) (P : pred I) (f : I -> \bar R) :
-  (forall i, P i -> f i < +oo) -> \sum_(i <- s | P i) f i < +oo.
-Proof.
-elim/big_ind : _ => [_|x y xoo yoo foo|i ?]; [exact: lte_pinfty| |exact].
-by apply: lte_add_pinfty; [exact: xoo| exact: yoo].
-Qed.
-(* /NB: PR in progress *)
-
 Lemma sigma_finiteP : sigma_finite A mu ->
   exists2 F, A = \bigcup_i F i &
     nondecreasing_seq F /\ forall i, measurable (F i) /\ mu (F i) < +oo.
