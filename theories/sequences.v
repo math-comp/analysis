@@ -1417,57 +1417,41 @@ case: l k => [l| |] [k| |] // in lu kv *.
   rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk)//; apply: ler_lim.
   + by apply/cvg_ex; eexists; exact: ul.
   + by apply/cvg_ex; eexists; exact: vk.
-  + move: uv realu realv => [n1 _ uv] [n2 _ realu] [n3 _ realv].
-    near=> n; have : (n >= maxn n1 (maxn n2 n3))%N.
-      by near: n; exists (maxn n1 (maxn n2 n3)).
-    rewrite !geq_max => /and3P[n1n n2n n3n]; rewrite -lee_fin.
-    rewrite (fineK (realu _ n2n)).
-    by rewrite (fineK (realv _ n3n)) uv.
+  + near=> n => /=; rewrite -lee_fin fineK; last by near: n; apply realu.
+    by rewrite fineK; [near: n; exact: uv|near: n; apply realv].
 - by rewrite lee_pinfty.
 - exfalso.
   have /ereal_cvg_real [realu ul] : u_ --> l%:E by rewrite -lu.
   have /ereal_cvgPninfty voo : v_ --> -oo by rewrite -kv.
-  have /cvg_has_inf[uT0 [M uTM]] : cvg (fine \o u_ ).
-    by apply/cvg_ex; exists l.
-  have {}/voo [n1 _ vM] : (minr (M - 1) (-1) < 0)%R.
-    by rewrite lt_minl ltrN10 orbT.
-  move: uv realu => [n2 _ uv] [n3 _ realu].
+  have /cvg_has_inf[uT0 [M uTM]] : cvg (fine \o u_ ) by apply/cvg_ex; exists l.
+  have {}/voo vM : (minr (M - 1) (-1) < 0)%R by rewrite lt_minl ltrN10 orbT.
   near \oo => n.
-  have : (n >= maxn n1 (maxn n2 n3))%N by near: n; exists (maxn n1 (maxn n2 n3)).
-  rewrite 2!geq_max => /and3P[n1n n2n n3n].
-  move/vM : (n1n) => {}vM.
-  suff : v_ n < u_ n by apply/negP; rewrite -leNgt uv.
-  rewrite (le_lt_trans vM) // (@lt_le_trans _ _ M%:E) //.
-    by rewrite lte_fin lt_minl ltr_subl_addl ltr_addr ltr01.
-  by rewrite -(fineK (realu _ n3n)) lee_fin; apply uTM; exists n.
+  suff : v_ n < u_ n by apply/negP; rewrite -leNgt; near: n; exact: uv.
+  rewrite (@le_lt_trans _ _ (minr (M - 1) (-1))%:E)//.
+    by near: n; exact: vM.
+  rewrite -(@fineK _ (u_ n)); last by near: n; exact: realu.
+  by rewrite lte_fin lt_minl ltr_subl_addl ltr_spaddl// uTM//; exists n.
 - exfalso.
   have /ereal_cvg_real [realv vk] : v_ --> k%:E by rewrite -kv.
   have /ereal_cvgPpinfty uoo : u_ --> +oo by rewrite -lu.
-  have /cvg_has_sup[vT0 [M vTM]] : cvg (fine \o v_ ).
-    by apply/cvg_ex; exists k.
-  have {}/uoo [n1 _ uM] : (0 < maxr (M + 1) 1)%R by rewrite lt_maxr ltr01 orbT.
-  move: uv realv => [n2 _ uv] [n3 _ realv]; near \oo => n.
-  have : (n >= maxn n1 (maxn n2 n3))%N by near: n; exists (maxn n1 (maxn n2 n3)).
-  rewrite 2!geq_max => /and3P[n1n n2n n3n].
-  move/uM : (n1n) => {}uM.
-  suff : v_ n < u_ n by apply/negP; rewrite -leNgt uv.
-  rewrite (@le_lt_trans _ _ M%:E) //.
-    rewrite -(fineK (realv _ n3n)) lee_fin.
-    by apply vTM; exists n.
-  by rewrite (lt_le_trans _ uM) // lte_fin lt_maxr ltr_addl ltr01.
+  have /cvg_has_sup[vT0 [M vTM]] : cvg (fine \o v_ ) by apply/cvg_ex; exists k.
+  have {}/uoo uM : (0 < maxr (M + 1) 1)%R by rewrite lt_maxr ltr01 orbT.
+  near \oo => n.
+  suff : v_ n < u_ n by apply/negP; rewrite -leNgt; near: n; exact: uv.
+  rewrite (@lt_le_trans _ _ (maxr (M + 1) 1)%:E)//.
+    rewrite -(@fineK _ (v_ n)); last by near: n; exact: realv.
+    by rewrite lte_fin lt_maxr ltr_spaddr// vTM//; exists n.
+  by near: n; exact: uM.
 - exfalso.
   have /ereal_cvgPpinfty uoo : u_ --> +oo by rewrite -lu.
   have /ereal_cvgPninfty voo : v_ --> -oo by rewrite -kv.
-  move: uv => [n1 _ uv].
-  have [n2 _ {}uoo] := uoo _ ltr01.
-  have [n3 _ {}voo] := voo _ (@ltrN10 R).
   near \oo => n.
-  have : (n >= maxn n1 (maxn n2 n3))%N by near: n; exists (maxn n1 (maxn n2 n3)).
-  rewrite 2!geq_max => /and3P[n1n n2n n3n].
-  suff : v_ n < u_ n by apply/negP; rewrite -leNgt; apply uv.
+  suff : v_ n < u_ n by apply/negP; rewrite -leNgt; near: n; exact: uv.
   rewrite (@lt_trans _ _ 0) //.
-    by rewrite (le_lt_trans (voo _ n3n)) // lte_fin ltrN10.
-  by rewrite (lt_le_trans _ (uoo _ n2n)) // lte_fin ltr01.
+    rewrite (@le_lt_trans _ _ (- 1)%:E)// ?lte_fin ?ltrN10//.
+    by near: n; apply: voo; exact: ltrN10.
+  rewrite (@lt_le_trans _ _ 1)// ?lte_fin ?ltr10//.
+  by near: n; apply: uoo; exact: ltr01.
 - by rewrite lee_ninfty.
 Grab Existential Variables. all: end_near. Qed.
 
@@ -1501,55 +1485,40 @@ have : (n >= maxn m k)%N by near: n; exists (maxn m k).
 rewrite geq_max => /andP[mn].
 move/realg => /fineK <-.
 rewrite -lee_subr_addr // (le_trans (foo _ mn)) // lee_fin.
-by rewrite  le_minl; apply/orP; right; apply ler_sub => //; apply gtM; exists n.
+by rewrite le_minl; apply/orP; right; apply ler_sub => //; apply gtM; exists n.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD_pinfty_pinfty (R : realFieldType) (f g : (\bar R)^nat) :
   f --> +oo -> g --> +oo -> f \+ g --> +oo.
 Proof.
 move=> /ereal_cvgPpinfty foo /ereal_cvgPpinfty goo.
-apply/ereal_cvgPpinfty => A A0.
-have A20 : (0 < A / 2)%R by rewrite divr_gt0.
-case: (foo _ A20) => m _ {}foo.
-case: (goo _ A20) => k _ {}goo.
-near=> n; have : (n >= maxn m k)%N by near: n; exists (maxn m k).
-rewrite geq_max => /andP[mn kn].
-by rewrite (splitr A) EFinD lee_add // ?foo // goo.
+apply/ereal_cvgPpinfty => A A0; near=> n; rewrite (splitr A) EFinD lee_add//.
+- by near: n; apply: foo; rewrite divr_gt0.
+- by near: n; apply: goo; rewrite divr_gt0.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD_ninfty_ninfty (R : realFieldType) (f g : (\bar R)^nat) :
   f --> -oo -> g --> -oo -> f \+ g --> -oo.
 Proof.
 move=> /ereal_cvgPninfty foo /ereal_cvgPninfty goo.
-apply/ereal_cvgPninfty => A A0.
-have A20 : (A / 2 < 0)%R by rewrite ltr_pdivr_mulr // mul0r.
-case: (foo _ A20) => m _ {}foo.
-case: (goo _ A20) => k _ {}goo.
-near=> n; have : (n >= maxn m k)%N by near: n; exists (maxn m k).
-rewrite geq_max => /andP[mn kn].
-by rewrite (splitr A) EFinD lee_add // ?foo // goo.
+apply/ereal_cvgPninfty => A A0; near=> n; rewrite (splitr A) EFinD lee_add//.
+- by near: n; apply: foo; rewrite ltr_pdivr_mulr // mul0r.
+- by near: n; apply: goo; rewrite ltr_pdivr_mulr // mul0r.
 Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_cvgD (R : realFieldType) (f g : (\bar R)^nat) a b :
   a +? b -> f --> a -> g --> b -> f \+ g --> a + b.
 Proof.
 move: a b => [a| |] [b| |] // _.
-- case/ereal_cvg_real => [[na _ foo] fa].
-  case/ereal_cvg_real => [[nb _ goo] gb].
+- move=> /ereal_cvg_real[finf fa] /ereal_cvg_real[fing gb].
   apply/ereal_cvg_real; split.
-    exists (maxn na nb) => // n; rewrite /= geq_max => /andP[nan nbn].
-    by rewrite /= fin_numD; apply/andP; split; [exact: foo | exact: goo].
-  rewrite -(@cvg_shiftn (maxn na nb)).
-  rewrite (_ : (fun n => _) = (fun n => fine (f (n + maxn na nb)%N)
-      + fine (g (n + maxn na nb)%N)))%R; last first.
-    rewrite funeqE => n /=.
-    have /fineK<- : f (n + maxn na nb)%N \is a fin_num.
-      by apply/foo; apply (leq_trans (leq_maxl _ _) (leq_addl _ _)).
-    suff /fineK<- : g (n + maxn na nb)%N \is a fin_num by [].
-    by apply/goo; apply (leq_trans (leq_maxr _ _) (leq_addl _ _)).
-  apply: cvgD.
-    by rewrite (@cvg_shiftn _ _ (fine \o f)).
-  by rewrite (@cvg_shiftn _ _ (fine \o g)).
+    by near=> n; rewrite fin_numD; apply/andP; split;
+      [near: n; apply finf|near: n; apply fing].
+  apply: (@cvg_trans _ [filter of fun n => fine (f n) + fine (g n)]%R).
+    apply: near_eq_cvg; near=> n => //=.
+    rewrite -[in RHS](@fineK _ (f n)); last by near: n; exact: finf.
+    by rewrite -[in RHS](@fineK _ (g n)) //; near: n; exact: fing.
+  exact: cvgD.
 - move=> fa goo.
   rewrite (_ : _ \+ _ = g \+ f); last by rewrite funeqE => i; rewrite addeC.
   exact: (ereal_cvgD_pinfty_fin _ fa).
@@ -1560,7 +1529,7 @@ move: a b => [a| |] [b| |] // _.
 - exact: ereal_cvgD_pinfty_pinfty.
 - exact: ereal_cvgD_ninfty_fin.
 - exact: ereal_cvgD_ninfty_ninfty.
-Qed.
+Grab Existential Variables. all: end_near. Qed.
 
 Lemma ereal_is_cvgD (R : realFieldType) (u v : (\bar R)^nat) :
   lim u +? lim v -> cvg u -> cvg v -> cvg (u \+ v).
