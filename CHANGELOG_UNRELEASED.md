@@ -185,6 +185,9 @@
 
 ### Removed
 
+- in `ereal.v`:
+  + lemma `subEFin`  
+
 ### Infrastructure
 
 ### Misc

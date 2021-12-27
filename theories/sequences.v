@@ -1265,7 +1265,7 @@ rewrite ger0_norm ?subr_ge0 ?le_contract ?ereal_sup_ub//; last by exists n.
 move: Se'y; rewrite -{}umx {y} /= => le'um.
 have leum : (contract l - e%:num < contract (u_ m))%R.
   rewrite -lt_expandLR ?inE ?ltW//.
-  move: le'um; rewrite /e' EFinN /= opprB subEFin.
+  move: le'um; rewrite /e' EFinN /= opprB EFinB.
   rewrite (fineK l_fin_num) fine_expand //.
   by rewrite addeCA subee // adde0.
 rewrite ltr_subl_addr addrC -ltr_subl_addr (lt_le_trans leum) //.
