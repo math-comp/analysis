@@ -510,9 +510,6 @@ Lemma sumEFin I s P (F : I -> R) :
   \sum_(i <- s | P i) (F i)%:E = (\sum_(i <- s | P i) F i)%:E.
 Proof. by rewrite (big_morph _ EFinD erefl). Qed.
 
-Lemma subEFin r r' : (r - r')%:E = r%:E - r'%:E.
-Proof. by []. Qed.
-
 Definition adde_def x y :=
   ~~ ((x == +oo) && (y == -oo)) && ~~ ((x == -oo) && (y == +oo)).
 
@@ -561,10 +558,10 @@ Lemma oppeD x y : y \is a fin_num -> - (x + y) = - x - y.
 Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
 
 Lemma sube0 x : x - 0 = x.
-Proof. by move: x => [x| |] //; rewrite -subEFin subr0. Qed.
+Proof. by move: x => [x| |] //; rewrite -EFinB subr0. Qed.
 
 Lemma sub0e x : 0 - x = - x.
-Proof. by move: x => [x| |] //; rewrite -subEFin sub0r. Qed.
+Proof. by move: x => [x| |] //; rewrite -EFinB sub0r. Qed.
 
 Lemma muleC x y : x * y = y * x.
 Proof. by move: x y => [r||] [s||]//=; rewrite -EFinM mulrC. Qed.
@@ -640,17 +637,17 @@ Lemma telescope_sume n m (f : nat -> \bar R) :
 Proof.
 move=> nmf nm; under eq_big_nat => i /andP[ni im] do
   rewrite -[f i.+1]fineK -1?[f i]fineK ?(nmf, ni, im) 1?ltnW//= -EFinD.
-by rewrite sumEFin telescope_sumr// subEFin !fineK ?nmf ?nm ?leqnn.
+by rewrite sumEFin telescope_sumr// EFinB !fineK ?nmf ?nm ?leqnn.
 Qed.
 
 Lemma addeK x y : x \is a fin_num -> y + x - x = y.
-Proof. by move: x y => [x| |] [y| |] //; rewrite -EFinD -subEFin addrK. Qed.
+Proof. by move: x y => [x| |] [y| |] //; rewrite -EFinD -EFinB addrK. Qed.
 
 Lemma subeK x y : y \is a fin_num -> x - y + y = x.
 Proof. by move: x y => [x| |] [y| |] //; rewrite -EFinD subrK. Qed.
 
 Lemma subee x : x \is a fin_num -> x - x = 0.
-Proof. by move: x => [r _| |] //; rewrite -subEFin subrr. Qed.
+Proof. by move: x => [r _| |] //; rewrite -EFinB subrr. Qed.
 
 Lemma sube_eq x y z : x \is a fin_num -> (y +? z) ->
   (x - z == y) = (x == y + z).
