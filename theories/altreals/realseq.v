@@ -7,7 +7,7 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import mathcomp.bigenough.bigenough.
 Require Import xfinmap boolp ereal reals discrete.
-Require Import classical_sets.
+Require Import classical_sets topology.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -19,12 +19,6 @@ Import Order.TTheory GRing.Theory Num.Theory BigEnough.
 Local Open Scope ring_scope.
 
 (* -------------------------------------------------------------------- *)
-Notation "\- f" := (fun x => -(f x))
-  (at level 20) : ring_scope.
-
-Notation "f \* g" := (fun x => f x * g x)
-  (at level 40, left associativity) : ring_scope.
-
 Notation "f '<=1' g" := (forall x, f x <= g x)
   (at level 70, no associativity).
 
@@ -256,7 +250,7 @@ move=> cu' cv'; suff ->: e = z + z by rewrite ltr_add.
 by rewrite -mulrDl -mulr2n -mulr_natr mulfK ?pnatr_eq0.
 Qed.
 
-Lemma ncvgN u lu : ncvg u lu -> ncvg (\- u) (- lu).
+Lemma ncvgN u lu : ncvg u lu -> ncvg (- u) (- lu).
 Proof.
 case: lu => [lu||] cu /=; first last.
 + elim/nbh_pinfW=> M; case: (cu (NNInf (-M))) => K {}cu.
@@ -267,7 +261,7 @@ elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
 by move=> K {}cu; exists K=> n /cu; rewrite !inE -opprD normrN eclamp_id.
 Qed.
 
-Lemma ncvgN_fin u lu : ncvg u lu%:E -> ncvg (\- u) (- lu)%:E.
+Lemma ncvgN_fin u lu : ncvg u lu%:E -> ncvg (- u) (- lu)%:E.
 Proof. by apply/ncvgN. Qed.
 
 Lemma ncvgB u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
@@ -400,7 +394,7 @@ Lemma ncvg_lt (u : nat -> R) (l1 l2 : \bar R) :
   (l1 < l2)%E -> ncvg u l1 ->
     exists K, forall n, (K <= n)%N -> ((u n)%:E < l2)%E.
 Proof.
-move=> lt_12 cv_u_l1; case: (@ncvg_gt (\- u) (-l2) (-l1)).
+move=> lt_12 cv_u_l1; case: (@ncvg_gt (- u) (-l2) (-l1)).
   by rewrite lte_opp2. by apply/ncvgN.
 by move=> K cv; exists K => n /cv; rewrite (@lte_opp2 _ _ (u n)%:E).
 Qed.

@@ -6,7 +6,7 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import xfinmap boolp classical_sets ereal reals discrete.
-Require Import realseq realsum.
+Require Import topology realseq realsum.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

@@ -1550,6 +1550,106 @@ Lemma ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
   lim (f \+ g) = lim f + lim g.
 Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
+Lemma ereal_cvgM_gt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
+  (0 < b)%R -> f --> +oo -> g --> b%:E -> f \* g --> +oo.
+Proof.
+move=> b0 /ereal_cvgPpinfty foo /ereal_cvg_real -[gfin gb].
+apply/ereal_cvgPpinfty => A A0; near=> n.
+rewrite (@le_trans _ _ (f n * (b / 2)%:E))//.
+  rewrite -lee_pdivr_mulr ?divr_gt0//.
+  by near: n; apply: foo; rewrite !divr_gt0.
+rewrite lee_pmul//.
+- by rewrite (@le_trans _ _ 1) ?lee_fin//; near: n; apply: foo.
+- by rewrite lee_fin divr_ge0// ltW.
+- rewrite -(@fineK _ (g n)) ?lee_fin; last by near: n; exact: gfin.
+  near: n; apply: (cvg_gt_ge gb) => //.
+  by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma ereal_cvgM_lt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
+  (b < 0)%R -> f --> +oo -> g --> b%:E -> f \* g --> -oo.
+Proof.
+move=> b0 /ereal_cvgPpinfty foo /ereal_cvg_real -[gfin gb].
+apply/ereal_cvgPninfty => A A0; near=> n.
+rewrite -lee_opp -muleN (@le_trans _ _ (f n * (- b / 2)%:E))//.
+  rewrite -lee_pdivr_mulr ?mulr_gt0 ?oppr_gt0//.
+  by near: n; apply: foo; rewrite divr_gt0// ?mulNr ?oppr_gt0// pmulr_llt0.
+rewrite lee_pmul//.
+- by rewrite (@le_trans _ _ 1) ?lee_fin//; near: n; apply: foo.
+- by rewrite mulNr EFinN lee_oppr oppe0 lee_fin mulr_le0_ge0// ltW.
+- rewrite EFinM EFinN mulNe lee_opp.
+  rewrite -(@fineK _ (g n)) ?lee_fin; last by near: n; exact: gfin.
+  by near: n; apply: (cvg_lt_le gb) => //; rewrite ltr_nmulr// invf_lt1// ltr1n.
+Grab Existential Variables. all: end_near. Qed.
+
+Lemma ereal_cvgM_gt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
+  (0 < b)%R -> f --> -oo -> g --> b%:E -> f \* g --> -oo.
+Proof.
+move=> b0 foo gb; under eq_fun do rewrite -muleNN.
+apply: (@ereal_cvgM_lt0_pinfty _ _ _ (- b)%R); first by rewrite oppr_lt0.
+- by rewrite -(oppeK +oo); apply: ereal_cvgN.
+- by rewrite EFinN; apply: ereal_cvgN.
+Qed.
+
+Lemma ereal_cvgM_lt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
+  (b < 0)%R -> f --> -oo -> g --> b%:E -> f \* g --> +oo.
+Proof.
+move=> b0 foo gb; under eq_fun do rewrite -muleNN.
+apply: (@ereal_cvgM_gt0_pinfty _ _ _ (- b)%R); first by rewrite oppr_gt0.
+- by rewrite -(oppeK +oo); apply: ereal_cvgN.
+- by rewrite EFinN; apply: ereal_cvgN.
+Qed.
+
+Lemma ereal_cvgM (R : realType) (f g : (\bar R) ^nat) (a b : \bar R) :
+ a *? b -> f --> a -> g --> b -> f \* g --> a * b.
+Proof.
+move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
+- move=> _ /ereal_cvg_real[finf fa] /ereal_cvg_real[fing gb].
+  apply/ereal_cvg_real; split.
+    by near=> n; apply: fin_numM; [near: n; apply finf|near: n; apply fing].
+  apply: (@cvg_trans _ [filter of (fun n => fine (f n) * fine (g n))%R]).
+    apply: near_eq_cvg; near=> n => //=.
+    rewrite -[in RHS](@fineK _ (f n)); last by near: n; exact: finf.
+    by rewrite -[in RHS](@fineK _ (g n)) //; near: n; exact: fing.
+  exact: cvgM.
+- move: f g a; abstract: apoo.
+  move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
+  + rewrite mulrinfty ltr0_sg// ?mulN1e.
+    by under eq_fun do rewrite muleC; exact: (ereal_cvgM_lt0_pinfty a0).
+  + rewrite mulrinfty gtr0_sg// ?mul1e.
+    by under eq_fun do rewrite muleC; exact: (ereal_cvgM_gt0_pinfty a0).
+  + by rewrite /mule_def eqxx.
+- move: f g a; abstract: bnoo.
+  move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
+  + rewrite mulrinfty ltr0_sg// ?mulN1e.
+    by under eq_fun do rewrite muleC; exact: (ereal_cvgM_lt0_ninfty a0).
+  + rewrite mulrinfty gtr0_sg// ?mul1e.
+    by under eq_fun do rewrite muleC; exact: (ereal_cvgM_gt0_ninfty a0).
+  + by rewrite /mule_def eqxx.
+- rewrite mule_defC => ? foo gb; rewrite muleC.
+  by under eq_fun do rewrite muleC; exact: apoo.
+- move=> _; move: f g; abstract: poopoo.
+  move=> {}f {}g /ereal_cvgPpinfty foo /ereal_cvgPpinfty goo.
+  rewrite mule_pinfty_pinfty; apply/ereal_cvgPpinfty => A A0; near=> n.
+  rewrite -(sqr_sqrtr (ltW A0)) expr2 EFinM lee_pmul// ?lee_fin ?sqrtr_ge0//.
+    by near: n; apply: foo; rewrite sqrtr_gt0.
+  by near: n; apply: goo; rewrite sqrtr_gt0.
+- move=> _; move: f g; abstract: poonoo.
+  move=> {}f {}g /ereal_cvgPpinfty foo /ereal_cvgPninfty goo.
+  rewrite mule_pinfty_ninfty; apply/ereal_cvgPninfty => A A0; near=> n.
+  rewrite (@le_trans _ _ (g n))//; last by near: n; exact: goo.
+  apply: lee_nemull; last by near: n; apply: foo.
+  rewrite (@le_trans _ _ (- 1)%:E)//; last by rewrite lee_fin lerN10.
+  by near: n; apply: goo; rewrite ltrN10.
+- rewrite mule_defC => ? foo gb; rewrite muleC.
+  by under eq_fun do rewrite muleC; exact: bnoo.
+- move=> _ foo goo.
+  by under eq_fun do rewrite muleC; exact: poonoo.
+- move=> _ foo goo; rewrite mule_ninfty_ninfty -mule_pinfty_pinfty.
+  by under eq_fun do rewrite -muleNN; apply: poopoo;
+    rewrite -/(- -oo); apply: ereal_cvgN.
+Grab Existential Variables. all: end_near. Qed.
+
 Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I)
     (f : I -> (\bar R)^nat) (l : I -> \bar R) (P : pred I) :
   (forall k n, P k -> 0 <= f k n) ->

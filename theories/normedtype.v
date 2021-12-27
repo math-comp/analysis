@@ -1402,6 +1402,26 @@ End PseudoNormedZmod_numDomainType.
 Hint Resolve normr_ge0 : core.
 Arguments cvg_dist {_ _ F FF}.
 
+Lemma cvg_gt_ge T (F : set (set T)) (R : realFieldType) {PF : ProperFilter F}
+    (u : T -> R) a b :
+  u @ F --> b -> (a < b)%R -> \forall n \near F, (a <= u n)%R.
+Proof.
+move=> + ab; have ba : (0 < b - a)%R by rewrite subr_gt0.
+move=> /cvg_distP /(_ _ ba); rewrite near_map; apply: filterS => n.
+have [+ _|unb] := lerP b (u n); first exact/le_trans/ltW.
+by rewrite ltr_subl_addl addrC -ltr_subl_addl opprB addrCA subrr addr0 => /ltW.
+Qed.
+
+Lemma cvg_lt_le T (F : set (set T)) (R : realFieldType) {PF : ProperFilter F}
+    (u : T -> R) c b :
+  u @ F --> b -> (b < c)%R -> \forall n \near F, (u n <= c)%R.
+Proof.
+move=> + bc; have cb : (0 < c - b)%R by rewrite subr_gt0.
+move=> /cvg_distP /(_ _ cb); rewrite near_map; apply: filterS => n.
+have [_|+ _] := lerP b (u n); last by move=> /lt_trans/(_ bc)/ltW.
+by rewrite ltr_subl_addl addrCA subrr addr0 => /ltW.
+Qed.
+
 Lemma pinfty_ex_gt {R : numFieldType} (m : R) (A : set R) : m \is Num.real ->
   (\forall k \near +oo, A k) -> exists2 M, m < M & A M.
 Proof.
