@@ -997,6 +997,12 @@ Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types (x y z u a b : \bar R) (r : R).
 
+Lemma fin_numElt x : (x \is a fin_num) = (-oo < x < +oo).
+Proof. by rewrite fin_numE -lee_pinfty_eq -lee_ninfty_eq -2!ltNge. Qed.
+
+Lemma fin_numPlt x : reflect (-oo < x < +oo) (x \is a fin_num).
+Proof. by rewrite fin_numElt; exact: idP. Qed.
+
 Lemma lte_add_pinfty x y : x < +oo -> y < +oo -> x + y < +oo.
 Proof. by move: x y => -[r [r'| |]| |] // ? ?; rewrite -EFinD lte_pinfty. Qed.
 

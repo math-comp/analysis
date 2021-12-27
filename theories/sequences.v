@@ -1088,6 +1088,17 @@ End sequences_ereal_realDomainType.
 Section sequences_ereal.
 Local Open Scope ereal_scope.
 
+Lemma ereal_cvg_abs0 (R : realFieldType) (f : (\bar R)^nat) :
+  abse \o f --> 0 -> f --> 0.
+Proof.
+move=> /cvg_ballP f0; apply/cvg_ballP => _/posnumP[e].
+have := f0 _ (posnum_gt0 e); rewrite !near_map => -[n _ {}f0].
+near=> m; have /f0 : (n <= m)%N by near: m; exists n.
+rewrite /ball /= /ereal_ball !contract0 !sub0r !normrN; apply: le_lt_trans.
+have [fm0|fm0] := leP 0 (f m); first by rewrite gee0_abs.
+by rewrite (lte0_abs fm0) contractN normrN.
+Grab Existential Variables. all: end_near. Qed.
+
 Lemma ereal_cvg_ge0 (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
   (forall n, 0 <= f n) -> f --> a -> 0 <= a.
 Proof.
@@ -1375,6 +1386,27 @@ rewrite (@le_lt_trans _ _ (minr 0 A - 1)%:E) //.
 by rewrite lte_fin ltr_subl_addl lt_minl ltr_addr ltr01 orbT.
 Grab Existential Variables. all: end_near. Qed.
 
+Lemma ereal_squeeze (R : realType) (f g h : (\bar R)^nat) :
+  (\forall x \near \oo, f x <= g x <= h x) -> forall (l : \bar R),
+  f --> l -> h --> l -> g --> l.
+Proof.
+move=> pfgh [l| |] fl hl.
+- move: fl hl => /ereal_cvg_real[ffin fl] /ereal_cvg_real[hfin hl].
+  suff g_fin: \forall x \near \oo, g x \is a fin_num.
+    apply/ereal_cvg_real; split=> //; apply: squeeze fl hl; near=> n.
+    by rewrite -?lee_fin ?fineK ?pfgh//; near: n => //; apply: nbhs_infty_ge.
+  near=> n; have /(_ _)/andP[//|fg gh] := near pfgh n.
+  have /fin_numPlt/andP[fn _] : f n \is a fin_num by near: n.
+  have /fin_numPlt/andP[_ hn] : h n \is a fin_num by near: n.
+  by rewrite fin_numElt (lt_le_trans _ fg) ?(le_lt_trans gh)//=.
+- apply/ereal_cvgPpinfty => M M0; near=> n.
+  have /(_ _)/andP[//|fg gh] := near pfgh n.
+  by rewrite (le_trans _ fg)//; near: n; move: M M0; apply/ereal_cvgPpinfty.
+- apply/ereal_cvgPninfty => M M0; near=> n.
+  have /(_ _)/andP[//|fg gh] := near pfgh n.
+  by rewrite (le_trans gh)//; near: n; move: M M0; apply/ereal_cvgPninfty.
+Grab Existential Variables. all: end_near. Qed.
+
 Lemma lee_lim (R : realFieldType) (u_ v_ : (\bar R)^nat) : cvg u_ -> cvg v_ ->
   (\forall n \near \oo, u_ n <= v_ n) -> lim u_ <= lim v_.
 Proof.
@@ -1537,6 +1569,13 @@ move=> uv /cvg_ex[l ul] /cvg_ex[k vk]; apply/cvg_ex; exists (l + k)%E.
 by apply: ereal_cvgD => //; rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk).
 Qed.
 
+Lemma ereal_cvg_sub0 (R : realFieldType) (f : (\bar R)^nat) (k : \bar R) :
+  k \is a fin_num -> (fun x => f x - k) --> 0 -> f --> k.
+Proof.
+move=> kfin /ereal_cvgD-/(_ (cst k) _ isT (cvg_cst _)).
+by rewrite add0e; under eq_fun => x do rewrite subeK//.
+Qed.
+
 Lemma ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
   cvg f -> cvg g -> lim f +? lim g ->
   lim (f \+ g) = lim f + lim g.
@@ -1544,9 +1583,9 @@ Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
 
 Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I)
     (f : I -> (\bar R)^nat) (l : I -> \bar R) (P : pred I) :
-  (forall k n, P k -> 0 <= f k n)%E ->
+  (forall k n, P k -> 0 <= f k n) ->
   (forall k, P k -> f k --> l k) ->
-  (fun n => \sum_(k <- r | P k) f k n)%E --> (\sum_(k <- r | P k) l k)%E.
+  (fun n => \sum_(k <- r | P k) f k n) --> \sum_(k <- r | P k) l k.
 Proof.
 elim: r => [_ fl|a b ih f0 fl].
   rewrite !big_nil [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
@@ -1554,7 +1593,7 @@ elim: r => [_ fl|a b ih f0 fl].
 rewrite big_cons; under eq_fun do rewrite big_cons.
 case: ifPn => Pa; last exact: ih.
 apply: ereal_cvgD; [|exact: fl|exact:ih].
-suff P0l i : P i -> (0 <= l i)%E.
+suff P0l i : P i -> 0 <= l i.
   by apply ge0_adde_def; rewrite !inE ?P0l// sume_ge0.
 move=> Pi; rewrite -(cvg_lim _ (fl _ Pi)) // ereal_lim_ge //.
 - by apply/cvg_ex; exists (l i); exact: fl.
