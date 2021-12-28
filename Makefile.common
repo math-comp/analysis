@@ -97,3 +97,27 @@ endif
 # Make of individual .vo ---------------------------------------------
 %.vo: __always__ Makefile.coq
 	+$(COQMAKE) $@
+
+# the doc targets are essentially copied from the Mathematical Components repository
+# the location of the math-comp git repository is hard-wired to avoid copying scripts
+MATHCOMP = ../math-comp/
+
+doc: __always__ Makefile.coq
+	mkdir -p _build_doc/
+	cp -r $(COQFILES) -t _build_doc/ --parents
+	cp _CoqProject Makefile* _build_doc
+	mkdir -p _build_doc/htmldoc
+	. $(MATHCOMP)etc/utils/builddoc_lib.sh; \
+		cd _build_doc && mangle_sources $(COQFILES)
+	+cd _build_doc && $(COQMAKE)
+# let's forget about the dependency graph for the time being...
+#	cd _build_doc && grep -v vio: .Makefile.coq.d > depend
+#	cd _build_doc && cat depend | $(MATHCOMP)etc/buildlibgraph $(COQFILES) > htmldoc/depend.js
+	cd _build_doc && $(COQBIN)coqdoc -t "MathComp Analysis" \
+		-g --utf8 -R theories mathcomp.analysis \
+		--parse-comments \
+		--multi-index $(COQFILES) -d htmldoc
+	cp $(MATHCOMP)etc/artwork/coqdoc.css _build_doc/htmldoc
+
+doc-clean:
+	rm -rf _build_doc/

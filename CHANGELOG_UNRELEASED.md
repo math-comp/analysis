@@ -190,4 +190,7 @@
 
 ### Infrastructure
 
+- in `Makefile.common`
+  + add `doc` and `doc-clean` targets
+
 ### Misc
