@@ -692,81 +692,82 @@ Lemma xchoosebP {T : choiceType} (P : pred T) (h : `[exists x, P x]) :
 Proof. exact/xchooseP. Qed.
 
 (* -------------------------------------------------------------------- *)
-(* Notation "'exists_ view" := (existsPP (fun _ => view)) *)
-(*   (at level 4, right associativity, format "''exists_' view"). *)
-(* Notation "'forall_ view" := (forallPP (fun _ => view)) *)
-(*   (at level 4, right associativity, format "''forall_' view"). *)
+
+(* Notation "'exists_ view" := (existsPP (fun _ => view))
+  (at level 4, right associativity, format "''exists_' view").
+Notation "'forall_ view" := (forallPP (fun _ => view))
+  (at level 4, right associativity, format "''forall_' view").
 
 
-(* Section Quantifiers. *)
+Section Quantifiers.
 
-(* Variables (T : Type) (rT : T -> eqType). *)
-(* Implicit Type (D P : rset T) (f : forall x, rT x). *)
+Variables (T : Type) (rT : T -> eqType).
+Implicit Type (D P : rset T) (f : forall x, rT x).
 
-(* Lemma forallP P : reflect (forall x, P x) [forall x, P x]. *)
-(* Proof. *)
-(* About forallPP. *)
-(* have:= (forallPP (fun x => (asboolP (P x)))). *)
-(* exact: 'forall_asboolP. Qed. *)
+Lemma forallP P : reflect (forall x, P x) [forall x, P x].
+Proof.
+About forallPP.
+have:= (forallPP (fun x => (asboolP (P x)))).
+exact: 'forall_asboolP. Qed.
 
-(* Lemma eqfunP f1 f2 : reflect (forall x, f1 x = f2 x) [forall x, f1 x == f2 x]. *)
-(* Proof. exact: 'forall_eqP. Qed. *)
+Lemma eqfunP f1 f2 : reflect (forall x, f1 x = f2 x) [forall x, f1 x == f2 x].
+Proof. exact: 'forall_eqP. Qed.
 
-(* Lemma forall_inP D P : reflect (forall x, D x -> P x) [forall (x | D x), P x]. *)
-(* Proof. exact: 'forall_implyP. Qed. *)
+Lemma forall_inP D P : reflect (forall x, D x -> P x) [forall (x | D x), P x].
+Proof. exact: 'forall_implyP. Qed.
 
-(* Lemma eqfun_inP D f1 f2 : *)
-(*   reflect {in D, forall x, f1 x = f2 x} [forall (x | x \in D), f1 x == f2 x]. *)
-(* Proof. by apply: (iffP 'forall_implyP) => eq_f12 x Dx; apply/eqP/eq_f12. Qed. *)
+Lemma eqfun_inP D f1 f2 :
+  reflect {in D, forall x, f1 x = f2 x} [forall (x | x \in D), f1 x == f2 x].
+Proof. by apply: (iffP 'forall_implyP) => eq_f12 x Dx; apply/eqP/eq_f12. Qed.
 
-(* Lemma existsP P : reflect (exists x, P x) [exists x, P x]. *)
-(* Proof. exact: 'exists_idP. Qed. *)
+Lemma existsP P : reflect (exists x, P x) [exists x, P x].
+Proof. exact: 'exists_idP. Qed.
 
-(* Lemma exists_eqP f1 f2 : *)
-(*   reflect (exists x, f1 x = f2 x) [exists x, f1 x == f2 x]. *)
+Lemma exists_eqP f1 f2 :
+  reflect (exists x, f1 x = f2 x) [exists x, f1 x == f2 x].
 
-(* Proof. exact: 'exists_eqP. Qed. *)
+Proof. exact: 'exists_eqP. Qed.
 
-(* Lemma exists_inP D P : reflect (exists2 x, D x & P x) [exists (x | D x), P x]. *)
-(* Proof. by apply: (iffP 'exists_andP) => [[x []] | [x]]; exists x. Qed. *)
+Lemma exists_inP D P : reflect (exists2 x, D x & P x) [exists (x | D x), P x].
+Proof. by apply: (iffP 'exists_andP) => [[x []] | [x]]; exists x. Qed.
 
-(* Lemma exists_eq_inP D f1 f2 : *)
-(*   reflect (exists2 x, D x & f1 x = f2 x) [exists (x | D x), f1 x == f2 x]. *)
-(* Proof. by apply: (iffP (exists_inP _ _)) => [] [x Dx /eqP]; exists x. Qed. *)
+Lemma exists_eq_inP D f1 f2 :
+  reflect (exists2 x, D x & f1 x = f2 x) [exists (x | D x), f1 x == f2 x].
+Proof. by apply: (iffP (exists_inP _ _)) => [] [x Dx /eqP]; exists x. Qed.
 
-(* Lemma eq_existsb P1 P2 : P1 =1 P2 -> [exists x, P1 x] = [exists x, P2 x]. *)
-(* Proof. by move=> eqP12; congr (_ != 0); apply: eq_card. Qed. *)
+Lemma eq_existsb P1 P2 : P1 =1 P2 -> [exists x, P1 x] = [exists x, P2 x].
+Proof. by move=> eqP12; congr (_ != 0); apply: eq_card. Qed.
 
-(* Lemma eq_existsb_in D P1 P2 : *)
-(*     (forall x, D x -> P1 x = P2 x) -> *)
-(*   [exists (x | D x), P1 x] = [exists (x | D x), P2 x]. *)
-(* Proof. by move=> eqP12; apply: eq_existsb => x; apply: andb_id2l => /eqP12. Qed. *)
+Lemma eq_existsb_in D P1 P2 :
+    (forall x, D x -> P1 x = P2 x) ->
+  [exists (x | D x), P1 x] = [exists (x | D x), P2 x].
+Proof. by move=> eqP12; apply: eq_existsb => x; apply: andb_id2l => /eqP12. Qed.
 
-(* Lemma eq_forallb P1 P2 : P1 =1 P2 -> [forall x, P1 x] = [forall x, P2 x]. *)
-(* Proof. by move=> eqP12; apply/negb_inj/eq_existsb=> /= x; rewrite eqP12. Qed. *)
+Lemma eq_forallb P1 P2 : P1 =1 P2 -> [forall x, P1 x] = [forall x, P2 x].
+Proof. by move=> eqP12; apply/negb_inj/eq_existsb=> /= x; rewrite eqP12. Qed.
 
-(* Lemma eq_forallb_in D P1 P2 : *)
-(*     (forall x, D x -> P1 x = P2 x) -> *)
-(*   [forall (x | D x), P1 x] = [forall (x | D x), P2 x]. *)
-(* Proof. *)
-(* by move=> eqP12; apply: eq_forallb => i; case Di: (D i); rewrite // eqP12. *)
-(* Qed. *)
+Lemma eq_forallb_in D P1 P2 :
+    (forall x, D x -> P1 x = P2 x) ->
+  [forall (x | D x), P1 x] = [forall (x | D x), P2 x].
+Proof.
+by move=> eqP12; apply: eq_forallb => i; case Di: (D i); rewrite // eqP12.
+Qed.
 
-(* Lemma negb_forall P : ~~ [forall x, P x] = [exists x, ~~ P x]. *)
-(* Proof. by []. Qed. *)
+Lemma negb_forall P : ~~ [forall x, P x] = [exists x, ~~ P x].
+Proof. by []. Qed.
 
-(* Lemma negb_forall_in D P : *)
-(*   ~~ [forall (x | D x), P x] = [exists (x | D x), ~~ P x]. *)
-(* Proof. by apply: eq_existsb => x; rewrite negb_imply. Qed. *)
+Lemma negb_forall_in D P :
+  ~~ [forall (x | D x), P x] = [exists (x | D x), ~~ P x].
+Proof. by apply: eq_existsb => x; rewrite negb_imply. Qed.
 
-(* Lemma negb_exists P : ~~ [exists x, P x] = [forall x, ~~ P x]. *)
-(* Proof. by apply/negbLR/esym/eq_existsb=> x; apply: negbK. Qed. *)
+Lemma negb_exists P : ~~ [exists x, P x] = [forall x, ~~ P x].
+Proof. by apply/negbLR/esym/eq_existsb=> x; apply: negbK. Qed.
 
-(* Lemma negb_exists_in D P : *)
-(*   ~~ [exists (x | D x), P x] = [forall (x | D x), ~~ P x]. *)
-(* Proof. by rewrite negb_exists; apply/eq_forallb => x; rewrite [~~ _]fun_if. Qed. *)
+Lemma negb_exists_in D P :
+  ~~ [exists (x | D x), P x] = [forall (x | D x), ~~ P x].
+Proof. by rewrite negb_exists; apply/eq_forallb => x; rewrite [~~ _]fun_if. Qed.
 
-(* End Quantifiers. *)
+End Quantifiers. *)
 
 (* -------------------------------------------------------------------- *)
 (* FIXME: to be moved                                                   *)

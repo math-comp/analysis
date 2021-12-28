@@ -8,7 +8,7 @@ Require Import normedtype landau forms.
 (******************************************************************************)
 (* This file provides a theory of differentiation. It includes the standard   *)
 (* rules of differentiation (differential of a sum, of a product, of          *)
-(* exponentiation, of the inverse, etc.) as well standard theorems (the       *)
+(* exponentiation, of the inverse, etc.) as well as standard theorems (the    *)
 (* Extreme Value Theorem, Rolle's theorem, the Mean Value Theorem).           *)
 (*                                                                            *)
 (* Parsable notations (in all of the following, f is not supposed to be       *)

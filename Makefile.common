@@ -98,8 +98,11 @@ endif
 %.vo: __always__ Makefile.coq
 	+$(COQMAKE) $@
 
-# the doc targets are essentially copied from the Mathematical Components repository
-# the location of the math-comp git repository is hard-wired to avoid copying scripts
+# the doc targets doc and doc-clean are essentially copied from the Mathematical
+# Components repository
+# we reuse the scripts from the math-comp git repo (which is hard wired)
+# modulo one fix: we change builddoc_lib.sh:l.18 to s/\(\*{5,}+\)//g;
+
 MATHCOMP = ../math-comp/
 
 doc: __always__ Makefile.coq
