@@ -208,13 +208,13 @@ Require Import boolp reals classical_sets posnum.
 (*                        cluster F == set of cluster points of F.            *)
 (*                          compact == set of compact sets w.r.t. the filter- *)
 (*                                     based definition of compactness.       *)
-(*                     hausdorff T <-> T is a Hausdorff space (T_2).          *)
+(*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
 (*                                     is both open and closed in A is A.     *)
-(*                    kolmogorov T <-> T is a Kolmogorov space (T_0).         *)
-(*                    accessible T <-> T is an accessible space (T_1).        *)
+(*              kolmogorov_space T <-> T is a Kolmogorov space (T_0).         *)
+(*              accessible_space T <-> T is an accessible space (T_1).        *)
 (*                    separated A B == the two sets A and B are separated     *)
 (*                      component x == the connected component of point x     *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
@@ -2678,7 +2678,7 @@ have [|p [Bp Fp]] := Bco F; first exact: filterS FA.
 by exists p; split=> //; apply: Acl=> C Cp; apply: Fp.
 Qed.
 
-Definition hausdorff := forall p q : T, cluster (nbhs p) q -> p = q.
+Definition hausdorff_space := forall p q : T, cluster (nbhs p) q -> p = q.
 
 Typeclasses Opaque within.
 Global Instance within_nbhs_proper (A : set T) p :
@@ -2688,7 +2688,7 @@ move=> clAp; apply: Build_ProperFilter => B.
 by move=> /clAp [q [Aq AqsoBq]]; exists q; apply: AqsoBq.
 Qed.
 
-Lemma compact_closed (A : set T) : hausdorff -> compact A -> closed A.
+Lemma compact_closed (A : set T) : hausdorff_space -> compact A -> closed A.
 Proof.
 move=> hT Aco p clAp; have pA := !! @withinT _ (nbhs p) A _.
 have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
@@ -2696,7 +2696,7 @@ by apply: cvg_cluster clsAp_q; apply: cvg_within.
 Qed.
 
 End Compact.
-Arguments hausdorff : clear implicits.
+Arguments hausdorff_space : clear implicits.
 
 Lemma continuous_compact (T U : topologicalType) (f : T -> U) A :
   {in A, continuous f} -> compact A -> compact (f @` A).
@@ -3013,13 +3013,13 @@ Implicit Types x y : T.
 
 Local Open Scope classical_set_scope.
 
-Definition kolmogorov := forall x y, x != y ->
+Definition kolmogorov_space := forall x y, x != y ->
   exists A : set T, (A \in nbhs x /\ y \in ~` A) \/ (A \in nbhs y /\ x \in ~` A).
 
-Definition accessible := forall x y, x != y ->
+Definition accessible_space := forall x y, x != y ->
   exists A : set T, open A /\ x \in A /\ y \in ~` A.
 
-Lemma accessible_closed_set1 : accessible -> forall x, closed [set x].
+Lemma accessible_closed_set1 : accessible_space -> forall x, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: closedC.
 rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
@@ -3027,7 +3027,7 @@ rewrite /interior nbhsE /=; exists U; split; last by rewrite subsetC1.
 by split=> //; rewrite inE in yU.
 Qed.
 
-Definition accessible_kolmogorov : accessible -> kolmogorov.
+Definition accessible_kolmogorov : accessible_space -> kolmogorov_space.
 Proof.
 move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split=> //.
 by rewrite nbhsE inE; exists A; do !split=> //; rewrite inE in xA.
@@ -3085,7 +3085,7 @@ by rewrite fmapiE; apply: filterS => x [y []]; exists y.
 Grab Existential Variables. all: end_near. Qed.
 Definition cvg_toi_locally_close := @cvgi_close.
 
-Lemma open_hausdorff : hausdorff T =
+Lemma open_hausdorff : hausdorff_space T =
   forall x y, x != y ->
     exists2 AB, (x \in AB.1 /\ y \in AB.2) &
                 [/\ open AB.1, open AB.2 & AB.1 `&` AB.2 == set0].
@@ -3106,7 +3106,7 @@ move=> /(_ A B (open_nbhs_nbhs _) (open_nbhs_nbhs _)).
 by rewrite -set0P => /(_ _ _)/negP; apply.
 Qed.
 
-Hypothesis sep : hausdorff T.
+Hypothesis sep : hausdorff_space T.
 
 Lemma closeE x y : close x y = (x = y).
 Proof.
@@ -4099,9 +4099,10 @@ End pseudoMetricType_numFieldType.
 Section ball_hausdorff.
 Variables (R : numDomainType) (T : pseudoMetricType R).
 
-Lemma ball_hausdorff : hausdorff T =
+Lemma ball_hausdorff : hausdorff_space T =
   forall (a b : T), a != b ->
-  exists r : {posnum R} * {posnum R}, ball a r.1%:num `&` ball b r.2%:num == set0.
+  exists r : {posnum R} * {posnum R},
+    ball a r.1%:num `&` ball b r.2%:num == set0.
 Proof.
 rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
   move=> A B; rewrite 2!inE => [[aA bB] [oA oB /eqP ABeq0]].
@@ -5169,7 +5170,7 @@ by rewrite eqfg ?inE //; exact: entourage_refl.
 Qed.
 
 Lemma hausdorrf_close_eq_in (A : set U) (f g : {uniform` A -> V}) :
-  hausdorff V -> close f g = {in A, f =1 g}.
+  hausdorff_space V -> close f g = {in A, f =1 g}.
 Proof.
 move=> hV.
 rewrite propeqE; split; last exact: eq_in_close.
@@ -5519,7 +5520,7 @@ Lemma open_subspaceW (U : set T) :
 Proof. by move=> oU; apply/open_subspaceP; exists U. Qed.
 
 Lemma subspace_hausdorff :
-  hausdorff T -> hausdorff [topologicalType of subspace A].
+  hausdorff_space T -> hausdorff_space [topologicalType of subspace A].
 Proof.
 rewrite ?open_hausdorff => + x y xNy => /(_ x y xNy).
 move=> [[P Q]] /= [Px Qx] /= [/open_subspaceW oP /open_subspaceW oQ].
