@@ -477,6 +477,9 @@ Section ERealArithTh_numDomainType.
 Context {R : numDomainType}.
 Implicit Types (x y z : \bar R) (r : R).
 
+Lemma fine_eq0 x : x \is a fin_num -> (fine x == 0%R) = (x == 0).
+Proof. by move: x => [//| |] /=; rewrite fin_numE. Qed.
+
 Lemma EFinN r : (- r)%:E = (- r%:E). Proof. by []. Qed.
 
 Lemma fineN x : fine (- x) = (- fine x)%R.
@@ -593,6 +596,9 @@ move: x y => [x| |] [y| |] //; first by rewrite mule_def_fin.
 - by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
 - by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
 Qed.
+
+Lemma abse_eq0 x : (`|x| == 0) = (x == 0).
+Proof. by move: x => [| |] //= r; rewrite !eqe normr_eq0. Qed.
 
 Lemma abse0 : `|0| = 0 :> \bar R. Proof. by rewrite /abse normr0. Qed.
 
@@ -1116,6 +1122,33 @@ Lemma mulninftyr r : -oo%E * r%:E = (Num.sg r)%:E * -oo%E.
 Proof. by rewrite muleC mulrninfty. Qed.
 
 Definition mulrinfty := (mulrpinfty, mulpinftyr, mulrninfty, mulninftyr).
+
+Lemma mule_eq_pinfty x y : (x * y == +oo) =
+  [|| (x > 0) && (y == +oo), (x < 0) && (y == -oo),
+     (x == +oo) && (y > 0) | (x == -oo) && (y < 0)].
+Proof.
+move: x y => [x| |] [y| |]; rewrite ?(lte_fin,andbF,andbT,orbF,eqxx,andbT)//=.
+- by rewrite mulrpinfty; have [/ltr0_sg|/gtr0_sg|] := ltgtP x 0%R;
+    move=> ->; rewrite ?(mulN1e,mul1e,sgr0,mul0e).
+- by rewrite mulrninfty; have [/ltr0_sg|/gtr0_sg|] := ltgtP x 0%R;
+    move=> ->; rewrite ?(mulN1e,mul1e,sgr0,mul0e).
+- by rewrite mulpinftyr; have [/ltr0_sg|/gtr0_sg|] := ltgtP y 0%R;
+    move=> ->; rewrite ?(mulN1e,mul1e,sgr0,mul0e).
+- by rewrite mule_pinfty_pinfty lte_pinfty.
+- by rewrite mule_pinfty_ninfty.
+- by rewrite mulninftyr; have [/ltr0_sg|/gtr0_sg|] := ltgtP y 0%R;
+    move=> ->; rewrite ?(mulN1e,mul1e,sgr0,mul0e).
+- by rewrite mule_ninfty_pinfty.
+- by rewrite lte_ninfty.
+Qed.
+
+Lemma mule_eq_ninfty x y : (x * y == -oo) =
+  [|| (x > 0) && (y == -oo), (x < 0) && (y == +oo),
+     (x == -oo) && (y > 0) | (x == +oo) && (y < 0)].
+Proof.
+have := mule_eq_pinfty x (- y); rewrite muleN eqe_oppLR => ->.
+by rewrite !eqe_oppLR lte_oppr lte_oppl oppe0 (orbC _ ((x == -oo) && _)).
+Qed.
 
 Lemma lte_opp x y : (- x < - y) = (y < x).
 Proof. by rewrite lte_oppl oppeK. Qed.
