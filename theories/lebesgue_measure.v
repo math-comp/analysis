@@ -112,7 +112,7 @@ Require Import sequences measure csum cardinality.
 (*         lim_{inf,sup} == limit inferior/superior for realType              *)
 (*               esups u := [sequence ereal_sup (sdrop u n)]_n                *)
 (*               einfs u := [sequence ereal_inf (sdrop u n)]_n                *)
-(*   lim_ereal_{inf,sup} == limit inferior/superior for \bar R                *)
+(*        elim_{inf,sup} == limit inferior/superior for \bar R                *)
 (*                                                                            *)
 (* Several properties of measurable functions (used in lebesgue_integral.v).  *)
 (*                                                                            *)
@@ -3928,7 +3928,7 @@ have : b'%:E - a'%:E <= \sum_(k <oo | P k) slength [set` j k] + (e%:num / 2)%:E.
     by rewrite -mulrDl -mulr2n -mulr_natl expnS natrM -mulf_div divff // mul1r.
   under eq_bigr do rewrite EFinD.
   rewrite big_split /=.
-  (* TODO: lemma *)
+  (* TODO: lemma? *)
   have cvggeo :
       (fun n => \sum_(i < n) (e%:num / (2 ^ i.+2)%:R)%:E) --> (e%:num / 2)%:E.
     rewrite (_ : (fun n => _) =
@@ -5619,39 +5619,38 @@ Qed.
 
 End esups_einfs.
 
-Section lim_ereal_sup_lim_ereal_inf.
+Section elim_sup_inf.
+Local Open Scope ereal_scope.
 Variable R : realType.
 Implicit Types (u v : (\bar R)^nat) (l : \bar R).
-Local Open Scope ereal_scope.
 
-Definition lim_ereal_sup u := lim (esups u).
+Definition elim_sup u := lim (esups u).
 
-Definition lim_ereal_inf u := lim (einfs u).
+Definition elim_inf u := lim (einfs u).
 
-Lemma lim_ereal_infN u : lim_ereal_inf (-%E \o u) = - lim_ereal_sup u.
+Lemma elim_infN u : elim_inf (-%E \o u) = - elim_sup u.
 Proof.
-rewrite /lim_ereal_inf einfsN /lim_ereal_sup ereal_limN //.
-exact/is_cvg_esups.
+by rewrite /elim_inf einfsN /elim_sup ereal_limN //; exact/is_cvg_esups.
 Qed.
 
-Lemma lim_ereal_supN u : lim_ereal_sup (-%E \o u) = - lim_ereal_inf u.
+Lemma elim_supN u : elim_sup (-%E \o u) = - elim_inf u.
 Proof.
-apply/eqP; rewrite -eqe_oppLR -lim_ereal_infN /=.
+apply/eqP; rewrite -eqe_oppLR -elim_infN /=.
 by rewrite (_ : _ \o _ = u) // funeqE => n /=; rewrite oppeK.
 Qed.
 
-Lemma lim_ereal_inf_sup u : lim_ereal_inf u <= lim_ereal_sup u.
+Lemma elim_inf_sup u : elim_inf u <= elim_sup u.
 Proof.
 apply: lee_lim; [exact/is_cvg_einfs|exact/is_cvg_esups|].
 by apply: nearW; exact: einfs_le_esups.
 Qed.
 
-Lemma cvg_ereal_sup_ninfty u : u --> -oo ->
-  (lim_ereal_inf u = -oo) * (lim_ereal_sup u = -oo).
+Lemma cvg_ninfty_elim_inf_sup u : u --> -oo ->
+  (elim_inf u = -oo) * (elim_sup u = -oo).
 Proof.
-move=> unoo; suff: lim_ereal_sup u = -oo.
+move=> unoo; suff: elim_sup u = -oo.
   move=> {}unoo; split => //; apply/eqP.
-  by rewrite -lee_ninfty_eq -unoo lim_ereal_inf_sup.
+  by rewrite -lee_ninfty_eq -unoo elim_inf_sup.
 apply/cvg_lim => //=; apply/ereal_cvgPninfty => M M0.
 move: unoo => /ereal_cvgPninfty /(_ _ M0)[m _ h].
 near=> n; apply ub_ereal_sup => _ [k /= nk] <-.
@@ -5660,13 +5659,13 @@ Grab Existential Variables. all: end_near. Qed.
 
 Lemma cvg_ninfty_einfs u : u --> -oo -> einfs u --> -oo.
 Proof.
-move=> /cvg_ereal_sup_ninfty[uoo _]; have /cvg_ex[l ul] := @is_cvg_einfs _ u.
+move=> /cvg_ninfty_elim_inf_sup[uoo _]; have /cvg_ex[l ul] := @is_cvg_einfs _ u.
 by have <- : l = -oo by rewrite -uoo; apply/esym/cvg_lim.
 Qed.
 
 Lemma cvg_ninfty_esups u : u --> -oo -> esups u --> -oo.
 Proof.
-move=> /cvg_ereal_sup_ninfty[_ uoo]; have /cvg_ex[l ul] := @is_cvg_esups _ u.
+move=> /cvg_ninfty_elim_inf_sup[_ uoo]; have /cvg_ex[l ul] := @is_cvg_esups _ u.
 by have <- : l = -oo by rewrite -uoo; apply/esym/cvg_lim.
 Qed.
 
@@ -5715,25 +5714,24 @@ move=> /ereal_cvgN/cvg_esups/ereal_cvgN; rewrite oppeK esupsN.
 by rewrite (_ : _ \o (_ \o _) = einfs u) // funeqE => n /=; rewrite oppeK.
 Qed.
 
-Lemma cvg_lim_ereal_inf_lim_ereal_sup u l :
-  u --> l -> (lim_ereal_inf u = l) * (lim_ereal_sup u = l).
+Lemma cvg_elim_inf_sup u l : u --> l -> (elim_inf u = l) * (elim_sup u = l).
 Proof.
 by move=> ul; split; apply/cvg_lim => //; [apply/cvg_einfs|apply/cvg_esups].
 Qed.
 
-Lemma is_cvg_lim_ereal_infE u : cvg u -> lim_ereal_inf u = lim u.
+Lemma is_cvg_elim_infE u : cvg u -> elim_inf u = lim u.
 Proof.
-move=> /cvg_ex[l ul]; have [-> _] := cvg_lim_ereal_inf_lim_ereal_sup ul.
+move=> /cvg_ex[l ul]; have [-> _] := cvg_elim_inf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
-Lemma is_cvg_lim_ereal_supE u : cvg u -> lim_ereal_sup u = lim u.
+Lemma is_cvg_elim_supE u : cvg u -> elim_sup u = lim u.
 Proof.
-move=> /cvg_ex[l ul]; have [_ ->] := cvg_lim_ereal_inf_lim_ereal_sup ul.
+move=> /cvg_ex[l ul]; have [_ ->] := cvg_elim_inf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
-End lim_ereal_sup_lim_ereal_inf.
+End elim_sup_inf.
 
 (* TODO: PR the properties of measurable functions to measure.v *)
 Section measurable_fun.
@@ -6216,9 +6214,9 @@ Proof.
 by move=> mD mf; under eq_fun do rewrite -mulN1e; exact: emeasurable_funeM.
 Qed.
 
-Lemma measurable_fun_lim_ereal_sup D (f : (T -> \bar R)^nat) :
+Lemma measurable_fun_elim_sup D (f : (T -> \bar R)^nat) :
   measurable D -> (forall n, measurable_fun D (f n)) ->
-  measurable_fun D (fun x => lim_ereal_sup (f^~x)).
+  measurable_fun D (fun x => elim_sup (f^~x)).
 Proof.
 move=> mD mf; rewrite (_ :  (fun _ => _) =
     (fun x => ereal_inf [set esups (f^~ x) n | n in [set n | n >= 0]%N])).
@@ -6235,11 +6233,11 @@ Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall x, D x -> f_^~x --> f x) ->
   measurable_fun D f.
 Proof.
-move=> mD mf_ f_f; have fE x : D x -> f x = lim_ereal_sup (f_^~ x).
+move=> mD mf_ f_f; have fE x : D x -> f x = elim_sup (f_^~ x).
   by move=> Dx; have /cvg_lim  <-// := (@cvg_esups _ (f_^~x) (f x) (f_f x Dx)).
-apply: (@emeasurable_fun_ext _ (fun x => lim_ereal_sup (f_^~x))) => //.
+apply: (@emeasurable_fun_ext _ (fun x => elim_sup (f_^~x))) => //.
   by move=> x; rewrite in_setE => Dx; rewrite fE.
-exact: measurable_fun_lim_ereal_sup.
+exact: measurable_fun_elim_sup.
 Qed.
 
 End emeasurable_fun.
@@ -6295,7 +6293,6 @@ Definition prod_measurableType := [the measurableType of prod_measurable T1 T2].
 
 End product_salgebra_instance.
 
-(* TODO: move *)
 Lemma measurableM (T1 T2 : measurableType) (A : set T1) (B : set T2) :
   measurable A -> measurable B -> measurable (A `*` B).
 Proof.
