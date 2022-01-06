@@ -1,7 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
-From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
+From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum.
+From mathcomp Require Import finmap matrix interval zmodp vector fieldext.
+From mathcomp Require Import falgebra.
 Require Import boolp ereal reals cardinality.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 
@@ -1626,7 +1627,7 @@ Local Notation ball_norm := (ball_ (@normr R V)).
 
 Local Notation nbhs_norm := (@nbhs_ball _ V).
 
-Lemma norm_hausdorff : hausdorff V.
+Lemma norm_hausdorff : hausdorff_space V.
 Proof.
 rewrite ball_hausdorff => a b ab.
 have ab2 : 0 < `|a - b| / 2 by apply divr_gt0 => //; rewrite normr_gt0 subr_eq0.
@@ -1637,7 +1638,7 @@ move: (ltr_add acr bcr); rewrite -r22 (distrC b c).
 move/(le_lt_trans (ler_dist_add c a b)).
 by rewrite -mulrA mulVr ?mulr1 ?ltxx // unitfE.
 Qed.
-Hint Extern 0 (hausdorff _) => solve[apply: norm_hausdorff] : core.
+Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
 
 (* TODO: check if the following lemma are indeed useless *)
 (*       i.e. where the generic lemma is applied, *)
@@ -1734,7 +1735,7 @@ Proof. by move=> ?; rewrite normmZ normfV normr_id mulVf ?normr_eq0. Qed.
 
 End NormedModule_numFieldType.
 Arguments cvg_bounded {_ _ F FF}.
-Hint Extern 0 (hausdorff _) => solve[apply: norm_hausdorff] : core.
+Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
 
 Module Export NbhsNorm.
 Definition nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).
@@ -1743,7 +1744,7 @@ End NbhsNorm.
 (* TODO: generalize to R : numFieldType *)
 Section hausdorff.
 
-Lemma Rhausdorff (R : realFieldType) : hausdorff R.
+Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
 Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/in_segment_addgt0Pr => _ /posnumP[e].
@@ -1755,7 +1756,7 @@ Qed.
 
 Lemma pseudoMetricNormedZModType_hausdorff (R : realFieldType)
     (V : pseudoMetricNormedZmodType R) :
-  hausdorff V.
+  hausdorff_space V.
 Proof.
 move=> p q clp_q; apply/subr0_eq/normr0_eq0/Rhausdorff => A B pq_A.
 rewrite -(@normr0 _ V) -(subrr p) => pp_B.
@@ -3740,7 +3741,7 @@ rewrite nbhsE /=; eexists; split; last by move=> y; exact.
 by split; [apply open_ereal_lt_ereal | rewrite /= lte_ninfty].
 Qed.
 
-Lemma ereal_hausdorff : hausdorff (ereal_topologicalType R).
+Lemma ereal_hausdorff : hausdorff_space (ereal_topologicalType R).
 Proof.
 move=> -[r| |] // [r' | |] //=.
 - move=> rr'; congr (_%:E); apply Rhausdorff => /= A B rA r'B.
@@ -3771,7 +3772,7 @@ Qed.
 
 End ereal_is_hausdorff.
 
-Hint Extern 0 (hausdorff _) => solve[apply: ereal_hausdorff] : core.
+Hint Extern 0 (hausdorff_space _) => solve[apply: ereal_hausdorff] : core.
 
 Section limit_composition_ereal.
 

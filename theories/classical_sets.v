@@ -44,7 +44,7 @@ Require Import boolp.
 (*                        A.`2 == set of points a such that there exists b so *)
 (*                                that A (b, a).                              *)
 (*                        ~` A == complement of A.                            *)
-(*                   [set ~ a] == complement of [set a].                      *)
+(*                    [set~ a] == complement of [set a].                      *)
 (*                     A `\` B == complement of B in A.                       *)
 (*                      A `\ a == A deprived of a.                            *)
 (*          \bigcup_(i in P) F == union of the elements of the family F whose *)
@@ -491,6 +491,12 @@ Lemma disjoints_subset A B : A `&` B = set0 <-> A `<=` ~` B.
 Proof. by rewrite subsets_disjoint setCK. Qed.
 
 Lemma setCT : ~` setT = set0 :> set T. Proof. by rewrite -setC0 setCK. Qed.
+
+Lemma subsetC1 x A : (A `<=` [set~ x]) = (x \in ~` A).
+Proof.
+rewrite !inE; apply/propext; split; first by move/[apply]; apply.
+by move=> NAx y; apply: contraPnot => ->.
+Qed.
 
 Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
 
