@@ -1564,7 +1564,7 @@ rewrite lee_pmul//.
 - rewrite -(@fineK _ (g n)) ?lee_fin; last by near: n; exact: gfin.
   near: n; apply: (cvg_gt_ge gb) => //.
   by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma ereal_cvgM_lt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
   (b < 0)%R -> f --> +oo -> g --> b%:E -> f \* g --> -oo.
@@ -1580,7 +1580,7 @@ rewrite lee_pmul//.
 - rewrite EFinM EFinN mulNe lee_opp.
   rewrite -(@fineK _ (g n)) ?lee_fin; last by near: n; exact: gfin.
   by near: n; apply: (cvg_lt_le gb) => //; rewrite ltr_nmulr// invf_lt1// ltr1n.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma ereal_cvgM_gt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
   (0 < b)%R -> f --> -oo -> g --> b%:E -> f \* g --> -oo.
@@ -1648,7 +1648,7 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
 - move=> _ foo goo; rewrite mule_ninfty_ninfty -mule_pinfty_pinfty.
   by under eq_fun do rewrite -muleNN; apply: poopoo;
     rewrite -/(- -oo); apply: ereal_cvgN.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I)
     (f : I -> (\bar R)^nat) (l : I -> \bar R) (P : pred I) :

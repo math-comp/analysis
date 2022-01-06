@@ -2893,18 +2893,16 @@ split=> [Ax|[a_ [aTA a_x] ax]]; last first.
   by apply aTA; exists n.
   by apply a_U; near: n; exists m.
 pose U := fun n : nat => [set z : T | `|x - z| < n.+1%:R^-1].
-suff [a_ anx] : exists a_, forall n, a_ n != x /\ (U n `&` A) (a_ n).
+suff /(_ _)/cid-/all_sig[a_ anx] : forall n, exists a, a != x /\ (U n `&` A) a.
   exists a_; split.
   - by move=> a [n _ <-]; have [? []] := anx n.
   - by move=> n; have [] := anx n.
   - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
     have [? [] Uan Aan] := anx n.
     by rewrite (lt_le_trans Uan)// ltW//; near: n; exact: near_infty_natSinv_lt.
-have @a_ : nat -> T.
-  move=> n; have : nbhs (x : T) (U n).
-    by apply/(nbhs_ballP (x:T) (U n)); rewrite nbhs_ballE; exists n.+1%:R^-1.
-  by move/Ax/cid => [/= an [anx Aan Uan]]; exact: an.
-by exists a_ => n; rewrite /a_ /= /ssr_have; case: cid => ? [].
+move=> n; have : nbhs (x : T) (U n).
+  by apply/(nbhs_ballP (x:T) (U n)); rewrite nbhs_ballE; exists n.+1%:R^-1.
+by move/Ax/cid => [/= an [anx Aan Uan]]; exists an.
 Unshelve. all: by end_near. Qed.
 
 Section open_closed_sets.
