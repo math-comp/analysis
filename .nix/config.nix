@@ -40,6 +40,11 @@
   bundles."8.13".coqPackages.coq.override.version = "8.13";
   bundles."8.14".coqPackages.coq.override.version = "8.14";
 
+  bundles."master".coqPackages = {
+    coq.override.version = "master";
+    coq-elpi.override.version = "master";
+  };
+
   ## Cachix caches to use in CI
   ## Below we list some standard ones
   cachix.coq = {};
