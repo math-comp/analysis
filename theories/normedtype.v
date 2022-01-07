@@ -2884,7 +2884,7 @@ have @a_ : nat -> T.
   move=> n; have : nbhs (x : T) (U n).
     by apply/(nbhs_ballP (x:T) (U n)); rewrite nbhs_ballE; exists n.+1%:R^-1.
   by move/Ax/cid => [/= an [anx Aan Uan]]; exact: an.
-by exists a_ => n; rewrite /a_ /= /ssr_have; case: cid => ? [].
+by exists a_ => n; rewrite /a_ /= ?/ssr_have; case: cid => ? [].
 Unshelve. all: by end_near. Qed.
 
 Section open_closed_sets.
