@@ -42,7 +42,7 @@
 
   bundles."master".coqPackages = {
     coq.override.version = "master";
-    coq-elpi.override.version = "master";
+    coq-elpi.override.version = "coq-master";
   };
 
   ## Cachix caches to use in CI
