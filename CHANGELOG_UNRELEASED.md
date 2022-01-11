@@ -13,6 +13,8 @@
 - in `topology.v`:
   + renamed and generalized `setC_subset_set1C` implication to
     equivalence `subsetC1`
+- in `ereal.v`:
+  + lemmas `ereal_sup_gt`, `ereal_inf_lt` now use `exists2`
 
 ### Renamed
 

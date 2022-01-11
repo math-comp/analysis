@@ -2371,16 +2371,15 @@ move=> [y Sy <-]; rewrite -lte_oppr => /lt_le_trans ex; exists y; split => //.
 by apply: ex; rewrite oppeD// oppeK.
 Qed.
 
-Lemma ereal_sup_gt S x : x < ereal_sup S -> exists y, S y /\ x < y.
+Lemma ereal_sup_gt S x : x < ereal_sup S -> exists2 y, S y & x < y.
 Proof.
-rewrite not_existsP => + g; apply/negP; rewrite -leNgt.
-apply: ub_ereal_sup => y Sy; move: (g y).
-by rewrite not_andP => -[// | /negP]; rewrite leNgt.
+rewrite not_exists2P => + g; apply/negP; rewrite -leNgt.
+by apply: ub_ereal_sup => y Sy; move: (g y) => [//|/negP]; rewrite leNgt.
 Qed.
 
-Lemma ereal_inf_lt S x : ereal_inf S < x -> exists y, S y /\ y < x.
+Lemma ereal_inf_lt S x : ereal_inf S < x -> exists2 y, S y & y < x.
 Proof.
-rewrite lte_oppl => /ereal_sup_gt [_ [[y Sy] <-]].
+rewrite lte_oppl => /ereal_sup_gt[_ [y Sy <-]].
 by rewrite lte_oppl oppeK => xlty; exists y.
 Qed.
 
