@@ -575,8 +575,8 @@ have [|fx0] := leP 0 (f x); last rewrite add0e.
 Qed.
 
 End funpos_lemmas.
-(*Hint Extern 0 (0 <= _ ^\+ _)%E => solve [apply: funennp_ge0] : core.
-Hint Extern 0 (0 <= _ ^\+ _)%E => solve [apply: funenng_ge0] : core.*)
+(* Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funennp_ge0] : core. *)
+(* Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funenng_ge0] : core. *)
 
 Section funpos_measurable.
 Variables (T : measurableType) (R : realType).
@@ -2621,20 +2621,65 @@ Local Open Scope ereal_scope.
 Variables (T : measurableType) (pt : T) (R : realType).
 Implicit Types (D : set T) (f g : T -> \bar R).
 
+Lemma measurable_funS [T1 T2 : measurableType] [E D : set T1] (f : T1 -> T2) :
+     measurable E -> measurable D -> D `<=` E -> measurable_fun E f ->
+  measurable_fun D f.
+Proof.
+move=> mE mD DE mf; have mC : measurable (E `\` D) by exact: measurableD.
+have := measurable_funU f mD mC; suff -> : (D `|` (E `\` D)) = E by move=> [[]].
+apply/seteqP; split=> x /= => [ [/DE|[]]//|].
+by have [] := pselect (D x); [left|right].
+Qed.
+
 Lemma emeasurable_funD D f g : measurable D ->
-  (forall x, D x -> f x +? g x) ->
-  measurable_fun D f -> measurable_fun D g ->
+    measurable_fun D f -> measurable_fun D g ->
   measurable_fun D (f \+ g).
 Proof.
-move=> mD fg mf mg.
-have [f_ f_cvg] := approximation_sfun pt mD mf.
-have [g_ g_cvg] := approximation_sfun pt mD mg.
-apply: (@emeasurable_fun_cvg _ _ _ (fun n x => (f_ n x + g_ n x)%:E)) => //.
-  move=> n; apply/EFin_measurable_fun.
-  by apply: measurable_funD => //; exact: measurable_sfun.
-move=> x Dx.
-under eq_fun do rewrite EFinD.
-by apply: ereal_cvgD; [exact: fg|exact: f_cvg|exact: g_cvg].
+move=> mD mf mg.
+have noom : measurable ([set -oo] : set (\bar R)) by exact: emeasurable_set1.
+have poom : measurable ([set +oo] : set (\bar R)) by exact: emeasurable_set1.
+have Cnoom : measurable (~` [set -oo] : set (\bar R)) by apply: measurableC.
+have Cpoom : measurable (~` [set +oo] : set (\bar R)) by apply: measurableC.
+have mfg :  measurable ([set x | f x +? g x] `&` D).
+  suff -> : [set x | f x +? g x] =
+              (f @^-1` (~` [set +oo]) `|` g @^-1` (~` [set -oo])) `&`
+              (f @^-1` (~` [set -oo]) `|` g @^-1` (~` [set +oo])).
+     by rewrite setIIl; apply: measurableI;
+        rewrite setIUl; apply: measurableU; do ?[apply: mf|apply: mg].
+   apply/predeqP=> x; rewrite /preimage/= /adde_def !(negb_and, negb_or).
+   by rewrite !(rwP2 eqP idP) !(rwP2 negP idP) !(rwP2 orP idP) !(rwP2 andP idP).
+wlog fg : D mD mf mg mfg / forall x, D x -> f x +? g x => [hwlogD|]; last first.
+  have [f_ f_cvg] := approximation_sfun pt mD mf.
+  have [g_ g_cvg] := approximation_sfun pt mD mg.
+  apply: (@emeasurable_fun_cvg _ _ _ (fun n x => (f_ n x + g_ n x)%:E)) => //.
+    move=> n; apply/EFin_measurable_fun.
+    by apply: measurable_funD => //; exact: measurable_sfun.
+  move=> x Dx; under eq_fun do rewrite EFinD.
+  by apply: ereal_cvgD; [exact: fg|exact: f_cvg|exact: g_cvg].
+move=> A mA; wlog NAnoo: A mD mf mg mA / ~ (A -oo) => [hwlogA|].
+  have [] := pselect (A -oo); last exact: hwlogA.
+  move=> /(@setD1K _ -oo)<-; rewrite preimage_setU setIUl.
+  apply: measurableU; last first.
+    apply: hwlogA=> //; last by case => /=.
+    exact: measurableD.
+  have -> : (f \+ g) @^-1` [set -oo] = f @^-1` [set -oo] `|` g @^-1` [set -oo].
+     apply/seteqP; split=> x /= => [/eqP|[]]; rewrite /preimage/=.
+     - by rewrite adde_eq_ninfty => /orP[] /eqP->; [left|right].
+     - by move->.
+     - by move->; rewrite addeC.
+   by rewrite setIUl; apply: measurableU; [apply: mf|apply: mg].
+have-> : (f \+ g) @^-1` A `&` D =
+       (f \+ g) @^-1` A `&` ([set x | f x +? g x] `&` D).
+  rewrite setIA; congr (_ `&` _).
+  apply/seteqP; split=> x; rewrite /preimage/=; last by case.
+  move=> Afgx; split=> //.
+  by case: (f x) (g x) Afgx => [rf||] [rg||].
+have Dfg : [set x | f x +? g x] `&` D `<=` D by apply: subIset; right.
+apply: hwlogD => //.
+- apply: (measurable_funS mD) => //; do ?exact: measurableI.
+- apply: (measurable_funS mD) => //; do ?exact: measurableI.
+- by rewrite setIA setIid.
+- by move=> ? [].
 Qed.
 
 Lemma emeasurable_funB D f g : measurable D ->
