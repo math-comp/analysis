@@ -340,6 +340,8 @@ Require Import boolp reals classical_sets posnum.
 (*     "Import numFieldTopology.Exports.")                                    *)
 (******************************************************************************)
 
+Reserved Notation "f \* g" (at level 40, left associativity).
+Notation "f \* g" := (fun x => f x * g x)%R : ring_scope.
 Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
 Reserved Notation "'\forall' x '\near' x_0 , P"
   (at level 200, x ident, P at level 200,
@@ -630,7 +632,7 @@ Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
 Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
 
 Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
-  @RingMixin [zmodType of T -> M] (cst 1) (fun f g x => f x * g x)
+  @RingMixin [zmodType of T -> M] (cst 1) (fun f g => f \* g)
              _ _ _ _ _ _.
 Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mul1r. Qed.

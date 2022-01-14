@@ -29,6 +29,8 @@ Require Import boolp classical_sets reals posnum topology.
 (*                  x +? y == the addition of the extended real numbers x and *)
 (*                            and y is defined, i.e., it is neither +oo - oo  *)
 (*                            nor -oo + oo                                    *)
+(*                  x *? y == the multiplication of the extended real numbers *)
+(*                            x and y is not of the form 0 * +oo or 0 * -oo   *)
 (*  (_ <= _)%E, (_ < _)%E, == comparison relations for extended reals         *)
 (*  (_ >= _)%E, (_ > _)%E                                                     *)
 (*   (\sum_(i in A) f i)%E == bigop-like notation in scope %E                 *)
@@ -70,8 +72,9 @@ Unset Printing Implicit Defensive.
 
 Reserved Notation "x %:E" (at level 2, format "x %:E").
 Reserved Notation "x +? y" (at level 50, format "x  +?  y").
+Reserved Notation "x *? y" (at level 50, format "x  *?  y").
 
-(* TODO: add to bigop.v *)
+(* NB: in bigop.v since mathcomp 1.13.0 *)
 Lemma big_nat_widenl (R : Type) (idx : R) (op : Monoid.law idx) (m1 m2 n : nat)
     (P : pred nat) (F : nat -> R) :
   m2 <= m1 ->
@@ -88,7 +91,7 @@ by rewrite Monoid.mul1m; apply: congr_big_nat => // k /andP[].
 Qed.
 Arguments big_nat_widenl [R idx op].
 
-(* TODO: add to bigop.v *)
+(* NB: in bigop.v since mathcomp 1.13.0 *)
 Lemma big_geq_mkord (R : Type) (idx : R) (op : Monoid.law idx) (m n : nat)
     (P : pred nat) (F : nat -> R) :
   \big[op/idx]_(m <= i < n | P i) F i =
@@ -402,6 +405,8 @@ Arguments abse {R}.
 
 Notation "f \+ g" := (fun x => f x + g x)%dE : ereal_dual_scope.
 Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
+Notation "f \* g" := (fun x => f x * g x)%dE : ereal_dual_scope.
+Notation "f \* g" := (fun x => f x * g x)%E : ereal_scope.
 
 Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%dE/0%:E]_(i <- r | P%B) F%dE) : ereal_dual_scope.
@@ -524,6 +529,14 @@ Proof. by move: x y => [x| |] [y| |]. Qed.
 Lemma ge0_adde_def : {in [pred x | x >= 0] &, forall x y, x +? y}.
 Proof. by move=> [x| |] [y| |]. Qed.
 
+Definition mule_def x y :=
+  ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
+
+Local Notation "x *? y" := (mule_def x y).
+
+Lemma mule_defC x y : x *? y = y *? x.
+Proof. by rewrite [in LHS]/mule_def orbC. Qed.
+
 Lemma addeC : commutative (S := \bar R) +%E.
 Proof. by case=> [x||] [y||] //; rewrite /adde /= addrC. Qed.
 
@@ -619,6 +632,10 @@ Proof. by rewrite !fin_numE 2!eqe_oppLR andbC. Qed.
 
 Lemma fin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
+Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma fin_numM x y : x \is a fin_num -> y \is a fin_num ->
+  x * y \is a fin_num.
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
 Lemma fineD :
@@ -818,6 +835,7 @@ Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 End ERealArithTh_numDomainType.
 Notation "x +? y" := (adde_def x%dE y%dE) : ereal_dual_scope.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
+Notation "x *? y" := (mule_def x y) : ereal_scope.
 
 Notation maxe := (@Order.max ereal_display _).
 Notation "@ 'maxe' R" := (@Order.max ereal_display R)
@@ -1764,6 +1782,32 @@ Qed.
 Lemma mineMl z x y : z \is a fin_num -> 0 < z ->
   mine x y * z = mine (x * z) (y * z).
 Proof. by move=> zfin z0; rewrite muleC mineMr// !(muleC z). Qed.
+
+Lemma lee_pemull x y : 0 <= y -> 1 <= x -> y <= x * y.
+Proof.
+move: x y => [x| |] [y| |] //; last by rewrite mule_pinfty_pinfty.
+- by rewrite -EFinM 3!lee_fin; exact: ler_pemull.
+- move=> _; rewrite lee_fin => x1.
+  by rewrite mulrinfty gtr0_sg ?mul1e// (lt_le_trans _ x1).
+- rewrite lee_fin le_eqVlt => /predU1P[<- _|y0 _]; first by rewrite mule0.
+  by rewrite mulrinfty gtr0_sg// mul1e lee_pinfty.
+Qed.
+
+Lemma lee_nemull x y : y <= 0 -> 1 <= x -> x * y <= y.
+Proof.
+move: x y => [x| |] [y| |] //; last by rewrite mule_pinfty_ninfty.
+- by rewrite -EFinM 3!lee_fin; exact: ler_nemull.
+- move=> _; rewrite lee_fin => x1.
+  by rewrite mulrinfty gtr0_sg ?mul1e// (lt_le_trans _ x1).
+- rewrite lee_fin le_eqVlt => /predU1P[-> _|y0 _]; first by rewrite mule0.
+  by rewrite mulrinfty ltr0_sg// mulN1e lee_ninfty.
+Qed.
+
+Lemma lee_pemulr x y : 0 <= y -> 1 <= x -> y <= y * x.
+Proof. by move=> y0 x1; rewrite muleC lee_pemull. Qed.
+
+Lemma lee_nemulr x y : y <= 0 -> 1 <= x -> y * x <= y.
+Proof. by move=> y0 x1; rewrite muleC lee_nemull. Qed.
 
 End ERealArithTh_realDomainType.
 Arguments lee_sum_nneg_ord {R}.
