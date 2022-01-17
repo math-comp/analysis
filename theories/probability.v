@@ -28,10 +28,10 @@ Local Open Scope ring_scope.
 (* distribution                                                               *)
 (******************************************************************************)
 
-(* TODO: move *)
+(* TODO: PR in progress *)
 Lemma preimage_setT {aT rT : Type} (f : aT -> rT) : f @^-1` setT = setT.
 Proof. by []. Qed.
-(* /TODO: move *)
+(* /TODO: PR in progress *)
 
 Section measure_dirac.
 Local Open Scope ereal_scope.
