@@ -407,6 +407,8 @@ Notation "f \+ g" := (fun x => f x + g x)%dE : ereal_dual_scope.
 Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
 Notation "f \* g" := (fun x => f x * g x)%dE : ereal_dual_scope.
 Notation "f \* g" := (fun x => f x * g x)%E : ereal_scope.
+Notation "f \- g" := (fun x => f x - g x)%dE : ereal_dual_scope.
+Notation "f \- g" := (fun x => f x - g x)%E : ereal_scope.
 
 Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%dE/0%:E]_(i <- r | P%B) F%dE) : ereal_dual_scope.
@@ -529,14 +531,6 @@ Proof. by move: x y => [x| |] [y| |]. Qed.
 Lemma ge0_adde_def : {in [pred x | x >= 0] &, forall x y, x +? y}.
 Proof. by move=> [x| |] [y| |]. Qed.
 
-Definition mule_def x y :=
-  ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
-
-Local Notation "x *? y" := (mule_def x y).
-
-Lemma mule_defC x y : x *? y = y *? x.
-Proof. by rewrite [in LHS]/mule_def orbC. Qed.
-
 Lemma addeC : commutative (S := \bar R) +%E.
 Proof. by case=> [x||] [y||] //; rewrite /adde /= addrC. Qed.
 
@@ -596,6 +590,35 @@ Proof. by move: x => [r| |] //=; rewrite /mule/= ?mulr0// eqxx. Qed.
 Lemma mul0e x : 0 * x = 0.
 Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
+Definition mule_def x y :=
+  ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
+
+Local Notation "x *? y" := (mule_def x y).
+
+Lemma mule_defC x y : x *? y = y *? x.
+Proof. by rewrite [in LHS]/mule_def orbC. Qed.
+
+Lemma mule_def_fin x y : x \is a fin_num -> y \is a fin_num -> x *? y.
+Proof.
+move: x y => [x| |] [y| |] finx finy//.
+by rewrite /mule_def negb_or 2!negb_and/= 2!orbT.
+Qed.
+
+Lemma mule_def_neq0_infty x y : x != 0 -> y \isn't a fin_num -> x *? y.
+Proof. by move: x y => [x| |] [y| |]// x0 _; rewrite /mule_def (negbTE x0). Qed.
+
+Lemma mule_def_infty_neq0 x y : x \isn't a fin_num -> y!= 0 -> x *? y.
+Proof. by move: x y => [x| |] [y| |]// _ y0; rewrite /mule_def (negbTE y0). Qed.
+
+Lemma neq0_mule_def x y :  x * y != 0 -> x *? y.
+Proof.
+move: x y => [x| |] [y| |] //; first by rewrite mule_def_fin.
+- by have [->|?] := eqVneq x 0%R; rewrite ?mul0e ?eqxx// mule_def_neq0_infty.
+- by have [->|?] := eqVneq x 0%R; rewrite ?mul0e ?eqxx// mule_def_neq0_infty.
+- by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
+- by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
+Qed.
+
 Lemma abse0 : `|0| = 0 :> \bar R. Proof. by rewrite /abse normr0. Qed.
 
 Lemma abseN x : `|- x| = `|x|.
@@ -632,6 +655,10 @@ Proof. by rewrite !fin_numE 2!eqe_oppLR andbC. Qed.
 
 Lemma fin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
+Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma fin_numB x y :
+  (x - y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
 Lemma fin_numM x y : x \is a fin_num -> y \is a fin_num ->
