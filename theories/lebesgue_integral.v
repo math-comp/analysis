@@ -5755,20 +5755,21 @@ Let G := fubini_G m1 f.
 
 Let Fplus x := \int_ setT (f^\+ (x, y)) 'd m2[y].
 Let Fminus x := \int_ setT (f^\- (x, y)) 'd m2[y].
+Let FE : F = Fplus \- Fminus. Proof. apply/funext=> x; exact: integralE. Qed.
 
-Lemma measurable_Fplus : measurable_fun setT Fplus.
+Let measurable_Fplus : measurable_fun setT Fplus.
 Proof.
 by apply: measurable_fun_fubini_tonelli_F => //; exact: emeasurable_fun_funenng.
 Qed.
 
-Lemma measurable_Fminus : measurable_fun setT Fminus.
+Let measurable_Fminus : measurable_fun setT Fminus.
 Proof.
 by apply: measurable_fun_fubini_tonelli_F => //; exact: emeasurable_fun_funennp.
 Qed.
 
-Lemma Fplus_ge0 x : 0 <= Fplus x. Proof. exact: ge0_integral. Qed.
+Let Fplus_ge0 x : 0 <= Fplus x. Proof. exact: ge0_integral. Qed.
 
-Lemma Fminus_ge0 x : 0 <= Fminus x. Proof. exact: ge0_integral. Qed.
+Let Fminus_ge0 x : 0 <= Fminus x. Proof. exact: ge0_integral. Qed.
 
 Lemma ae_Fplus_oo : {ae m1, forall x, Fplus x < +oo}.
 Proof.
@@ -5810,37 +5811,6 @@ apply: le_lt_trans fxoo; apply: ge0_le_integral => //.
 - by move=> y _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse lee_addr.
 Qed.
 
-Let F' x := if pselect (integrable m2 setT (fun y => f (x, y))) then F x else 0.
-Let G' y := if pselect (integrable m1 setT (fun x => f (x, y))) then G y else 0.
-
-Lemma ae_F'F : ae_eq m1 setT F' F.
-Proof.
-have [N [mN N0 subN]] := fubini2a1; exists N; split => // x /= /not_implyP [_].
-by rewrite /F /F'; case: pselect => //= /subN.
-Qed.
-
-Lemma ae_G'G : ae_eq m2 setT G' G.
-Proof.
-have [N [mN N0 subN]] := fubini2a2; exists N; split => // y /= /not_implyP [_].
-by rewrite /G /G'; case: pselect => //= /subN.
-Qed.
-
-Let ae_Fplusminus : ae_eq m1 setT F (fun x => Fplus x - Fminus x).
-Proof.
-suff : ae_eq m1 setT F' (fun x => Fplus x - Fminus x).
-  apply: ae_eq_trans; have [N [mN N0 F'FN]] := ae_F'F.
-  by exists N; split => //; apply: subset_trans F'FN; apply: subsetC => x /= ->.
-have [N [mN N0 subN]] := fubini2a1.
-exists N; split => //; apply: subset_trans subN; apply: subsetC => x /= im2f _.
-rewrite /F'; case: pselect => /= [_|//].
-by rewrite /F /fubini_F /Fplus /Fminus {1}integralE.
-Qed.
-
-Let Fplus' : T1 -> \bar R := fun x =>
-  if pselect (integrable m2 setT (fun y => f^\+ (x, y))) then Fplus x else 0.
-Let Fminus' : T1 -> \bar R := fun x =>
-  if pselect (integrable m2 setT (fun y => f^\- (x, y))) then Fminus x else 0.
-
 Lemma fubini2a1plus : {ae m1, forall x, integrable m2 setT (fun y => f^\+ (x, y))}.
 Proof.
 have [N1 [mN1 N10 subN1]] := ae_Fplus_oo; exists N1; split => //.
@@ -5854,44 +5824,11 @@ apply: le_lt_trans fpoo; apply: ge0_le_integral => //.
 by move=> y _; rewrite gee0_abs.
 Qed.
 
-Lemma ae_eq_Fplus_Fplus' : ae_eq m1 setT Fplus Fplus'.
+Let integrable_Fplus : integrable m1 setT Fplus.
 Proof.
-have [N [mN N0 subN]] := fubini2a1; exists N; split => //.
-apply: subset_trans subN; apply: subsetC => x /= im2f _.
-by rewrite /Fplus'; case: pselect => //=; move/integrable_funenng : im2f.
-Qed.
-
-Lemma ae_eq_Fminus_Fminus' : ae_eq m1 setT Fminus Fminus'.
-Proof.
-have [N [mN N0 subN]] := fubini2a1; exists N; split => //.
-apply: subset_trans subN; apply: subsetC => x /= im2f _.
-by rewrite /Fminus'; case: pselect => //=; move/integrable_funennp : im2f.
-Qed.
-
-Hypothesis m1_complete : measure_is_complete m1.
-
-Lemma measurable_fun_Fplus' : measurable_fun setT Fplus'.
-Proof.
-move: ae_eq_Fplus_Fplus'.
-move/ae_measurable_fun; apply => //.
-exact: measurable_Fplus.
-Qed.
-
-Lemma integrable_Fplus' : integrable m1 setT Fplus'.
-Proof.
-split; first exact: measurable_fun_Fplus'.
-rewrite [X in X < _](_ : _ = \int_ setT `|Fplus x| 'd m1[x]); last first.
-  apply: ae_eq_integral => //.
-  - apply: measurable_fun_comp; first exact: measurable_fun_abse.
-    exact: measurable_fun_Fplus'.
-  - apply: measurable_fun_comp; first exact: measurable_fun_abse.
-    exact: measurable_Fplus.
-  - apply: ae_eq_abse => //.
-    exact/ae_eq_sym/ae_eq_Fplus_Fplus'.
-have := fubini1a.1 imf.
+split=> //; have := fubini1a.1 imf.
 apply: le_lt_trans; apply: ge0_le_integral => //.
-- apply: measurable_fun_comp; first exact: measurable_fun_abse.
-  exact: measurable_Fplus.
+- by apply: measurable_fun_comp; first exact: measurable_fun_abse.
 - by move=> x _; exact: ge0_integral.
 - move=> x _.
   apply: le_trans.
@@ -5904,24 +5841,9 @@ apply: le_lt_trans; apply: ge0_le_integral => //.
   - by move=> y _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse lee_addl.
 Qed.
 
-Lemma measurable_fun_Fminus' : measurable_fun setT Fminus'.
+Let integrable_Fminus : integrable m1 setT Fminus.
 Proof.
-move: ae_eq_Fminus_Fminus'.
-move/ae_measurable_fun; apply => //.
-exact: measurable_Fminus.
-Qed.
-
-Lemma integrable_Fminus' : integrable m1 setT Fminus'.
-Proof.
-split; first exact: measurable_fun_Fminus'.
-rewrite [X in X < _](_ : _ = \int_ setT `|Fminus x| 'd m1[x]); last first.
-  apply: ae_eq_integral => //.
-  - apply: measurable_fun_comp; first exact: measurable_fun_abse.
-    exact: measurable_fun_Fminus'.
-  - apply: measurable_fun_comp; first exact: measurable_fun_abse.
-    exact: measurable_Fminus.
-  - by apply: ae_eq_abse => //; exact/ae_eq_sym/ae_eq_Fminus_Fminus'.
-have := fubini1a.1 imf.
+split=> //; have := fubini1a.1 imf.
 apply: le_lt_trans; apply: ge0_le_integral => //.
 - apply: measurable_fun_comp; first exact: measurable_fun_abse.
   exact: measurable_Fminus.
@@ -5939,36 +5861,7 @@ Qed.
 
 Lemma fubini3 : \int_ setT (F x) 'd m1[x] = \int_ setT (f z) 'd m[z].
 Proof.
-transitivity (\int_ setT (Fplus x) 'd m1[x] - \int_ setT (Fminus x) 'd m1[x]).
-    transitivity (\int_ setT (Fplus x - Fminus x) 'd m1[x]).
-      apply: ae_eq_integral => //.
-        move/ae_eq_sym : ae_Fplusminus.
-        move/ae_measurable_fun; apply => //.
-        by apply: emeasurable_funB => //; [exact: measurable_Fplus|
-                                          exact: measurable_Fminus].
-      by apply: emeasurable_funB => //; [exact: measurable_Fplus|
-                                        exact: measurable_Fminus].
-    rewrite integralB//.
-    split; first exact: measurable_Fplus.
-    rewrite [X in X < _](_ : _ = \int_ setT `|Fplus' x| 'd m1[x]).
-      by case: integrable_Fplus'.
-    apply ae_eq_integral => //.
-    - apply: measurable_fun_comp; first exact: measurable_fun_abse.
-      exact: measurable_Fplus.
-    - apply: measurable_fun_comp; first exact: measurable_fun_abse.
-      exact: measurable_fun_Fplus'.
-    - apply: ae_eq_comp => //.
-      exact: ae_eq_Fplus_Fplus'.
-  split; first exact: measurable_Fminus.
-  rewrite [X in X < _](_ : _ = \int_ setT `|Fminus' x| 'd m1[x]).
-    by case: integrable_Fminus'.
-  apply ae_eq_integral => //.
-  - apply: measurable_fun_comp; first exact: measurable_fun_abse.
-  - exact: measurable_Fminus.
-  - apply: measurable_fun_comp; first exact: measurable_fun_abse.
-    exact: measurable_fun_Fminus'.
-  - by apply: ae_eq_comp => //; exact: ae_eq_Fminus_Fminus'.
-rewrite [in RHS]integralE//.
+rewrite FE integralB// [in RHS]integralE//.
 rewrite fubini_tonelli1//; last by exact: emeasurable_fun_funenng.
 by rewrite fubini_tonelli1//; exact: emeasurable_fun_funennp.
 Qed.
