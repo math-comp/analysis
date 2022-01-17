@@ -527,9 +527,9 @@ rewrite /funennp /funenng; case: (f x) => [r| |].
 - by rewrite /maxe /= lte_ninfty.
 Qed.
 
-Lemma funeD_Dnng f g : (f \+ g) =1 (fun x => (f \+ g)^\+ x - (f \+ g)^\- x).
+Lemma funeD_Dnng f g : (f \+ g) = fun x => (f \+ g)^\+ x - (f \+ g)^\- x.
 Proof.
-move=> x; rewrite /funenng /funennp.
+apply/funext=> x; rewrite /funenng /funennp.
 have [|/ltW] := leP 0 (f x + g x).
 - by rewrite -{1}oppe0 -lee_oppl => /max_idPr ->; rewrite sube0.
 - by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite oppeK add0e.
@@ -575,27 +575,24 @@ Qed.
 
 End funpos_measurable.
 
-Module PreSFun.
+HB.mixin Record IsPreSFun (T : measurableType) (R : realType) (f : T -> R) := {
+  srng : seq R ;
+  uniq_srng : uniq srng ;
+  full_srng : f @` setT = [set x | x \in srng]
+}.
+HB.structure Definition PreSFun (T : measurableType) (R : realType) :=
+  {f of IsPreSFun T R f}.
+Notation presfun := PreSFun.type.
+Arguments srng {T R}.
+Arguments uniq_srng {T R}.
+Arguments full_srng {T R}.
+
 Section presfun.
-Variables (T : measurableType) (R : realType).
-Record t := mk {
-  f :> T -> R ;
-  rng : seq R ;
-  uniq_rng : uniq rng ;
-  full_rng : f @` setT = [set x | x \in rng] }.
-Definition ssize f := size (rng f).
-Definition spimg f := fun k : 'I_(ssize f) => f @^-1` [set (rng f)`_k].
+Context {T : measurableType} {R : realType}.
+Definition ssize (f : presfun T R) := size (srng f).
+Definition spimg f := fun k : 'I_(ssize f) => f @^-1` [set (srng f)`_k].
 End presfun.
-Module Exports.
-Notation presfun := PreSFun.t.
-Notation ssize := ssize.
-Notation srng := rng.
-Notation spimg := spimg.
-End Exports.
-End PreSFun.
-Export PreSFun.Exports.
-Arguments PreSFun.spimg {T} {R} _.
-Coercion PreSFun.f : presfun >-> Funclass.
+Arguments spimg {T R}.
 
 Section sfun_partition.
 Variables (T : measurableType) (R : realType) (f : presfun T R).
@@ -604,7 +601,7 @@ Implicit Types (x : T) (i : 'I_n).
 
 Lemma mem_srng t : f t \in srng f.
 Proof.
-have := PreSFun.full_rng f; rewrite predeqE => /(_ (f t))[+ _].
+have := full_srng f; rewrite predeqE => /(_ (f t))[+ _].
 by apply; exists t.
 Qed.
 
@@ -614,7 +611,7 @@ apply/trivIsetP => /= i j _ _ ij.
 suff ij0 : [set (srng f)`_i] `&` [set (srng f)`_j] = set0.
   by rewrite -preimage_setI ij0 preimage_set0.
 apply/eqP/negPn/negP => /set0P[r []] => ->{r} /eqP.
-by rewrite nth_uniq => //; [exact/negP|exact: PreSFun.uniq_rng].
+by rewrite nth_uniq => //; [exact/negP|exact: uniq_srng].
 Qed.
 
 Lemma bigsetU_spimg : \big[setU/set0]_(i < n) spimg f i = setT.
@@ -644,7 +641,7 @@ Proof. by rewrite /spimg nth_img_idx /preimage mksetE. Qed.
 Lemma memNspimg i x : i != img_idx x -> ~ spimg f i x.
 Proof.
 apply: contraNnot => /nth_srng ifx; apply/eqP/val_inj => /=.
-by rewrite -ifx index_uniq//; exact: PreSFun.uniq_rng.
+by rewrite -ifx index_uniq//; exact: uniq_srng.
 Qed.
 
 End sfun_partition.
@@ -655,9 +652,9 @@ Implicit Types (x : T) (i : 'I_(ssize f)).
 
 Lemma presfun_ge0 : (forall x, 0 <= f x) -> forall i : 'I_(ssize f), 0 <= (srng f)`_i.
 Proof.
-case: f => f' /= s us fs f0 i.
+move=> f0 i; pose s := srng f.
 have : [set` s] s`_i by apply/(nthP 0); exists i.
-by rewrite -fs => -[x _ <-]; exact: f0.
+by rewrite -full_srng => -[x _ <-]; exact: f0.
 Qed.
 
 Lemma presfun_measurable_preimage_set1 (r : R) :
@@ -693,14 +690,14 @@ Implicit Types f g : presfun T R.
 
 Let presfun_eq_subset f g : f =1 g -> {subset srng f <= srng g}.
 Proof.
-move=> fg r rf; have := PreSFun.full_rng g; rewrite predeqE => /(_ r)[+ _].
-apply; have := PreSFun.full_rng f; rewrite predeqE => /(_ r)[_].
+move=> fg r rf; have := full_srng g; rewrite predeqE => /(_ r)[+ _].
+apply; have := full_srng f; rewrite predeqE => /(_ r)[_].
 by move/(_ rf) => [t _ <-]; exists t.
 Qed.
 
 Lemma presfun_eq_perm f g : f =1 g -> perm_eq (srng f) (srng g).
 Proof.
-move=> fg; apply: uniq_perm; [exact:PreSFun.uniq_rng|exact:PreSFun.uniq_rng|].
+move=> fg; apply: uniq_perm; [exact:uniq_srng|exact:uniq_srng|].
 by move=> r; apply/idP/idP; exact: presfun_eq_subset.
 Qed.
 
@@ -712,9 +709,8 @@ End presfun_lemmas2.
 Section presfun_cst.
 Variables (T : measurableType) (pt : T) (R : realType) (r : R).
 Definition sfun_cst_rng := [:: r].
-Definition sfun_cst_f : T -> _ := cst r.
+Local Notation f := (@cst T R r).
 Local Notation rng := sfun_cst_rng.
-Local Notation f := sfun_cst_f.
 
 Let presfun_cst_uniq : uniq rng. Proof. by []. Qed.
 
@@ -724,8 +720,9 @@ rewrite /rng predeqE => r'; split; first by move=> [t _ <- /=]; rewrite inE.
 by rewrite /= inE => /eqP ->{r'}; exists pt.
 Qed.
 
-Definition presfun_cst :=
-  locked (PreSFun.mk presfun_cst_uniq presfun_cst_full_rng).
+HB.instance Definition _ :=
+  IsPreSFun.Build T R f presfun_cst_uniq presfun_cst_full_rng.
+Definition presfun_cst := locked [the presfun _ _ of f].
 
 Lemma presfun_cstE x : presfun_cst x = r.
 Proof. by rewrite /presfun_cst; unlock. Qed.
@@ -738,14 +735,16 @@ Proof. by rewrite /presfun_cst; unlock. Qed.
 
 End presfun_cst.
 
+(* classical_sets *)
+Definition indicator {R : ringType} {T} (A : set T) (x : T) : R := (x \in A)%:R.
+
 Section presfun_ind1.
 Variables (T : measurableType) (R : realType) (pt : T).
 Variable A : set T.
 Definition sfun_ind1_rng : seq R :=
   if A == set0 then [:: 0] else if A == setT then [:: 1] else [:: 0; 1].
-Definition sfun_ind1_f x : R := (x \in A)%:R.
 Local Notation rng := sfun_ind1_rng.
-Local Notation f := sfun_ind1_f.
+Local Notation f := (@indicator R T A).
 
 Let presfun_ind1_uniq : uniq rng.
 Proof.
@@ -772,8 +771,9 @@ rewrite predeqE /f /rng => x; split => [[t ?] <-{x}|] /=.
   by rewrite -(negbK (x1 \in A)) memNset.
 Qed.
 
-Definition presfun_ind1 := locked
-  (PreSFun.mk presfun_ind1_uniq presfun_ind1_full_rng).
+HB.instance Definition _ := IsPreSFun.Build _ _ f
+  presfun_ind1_uniq presfun_ind1_full_rng.
+Definition presfun_ind1 := locked [the presfun _ _ of f].
 
 Lemma srng_presfun_ind1 : srng presfun_ind1 = rng.
 Proof. by rewrite /presfun_ind1; unlock. Qed.
@@ -813,127 +813,6 @@ Qed.
 End presfun_ind1.
 Arguments presfun_ind1 {T R}.
 
-Section presfun_scale.
-Variables (T : measurableType) (pt : T) (R : realType) (r : R).
-Variable f : presfun T R.
-Definition sfun_scale_rng :=
-  if r == 0 then [:: 0] else [seq r * x | x <- srng f].
-Definition sfun_scale_f := fun x => r * f x.
-Local Notation rng := sfun_scale_rng.
-Local Notation g := sfun_scale_f.
-
-Let presfun_scale_uniq : uniq rng.
-Proof.
-have [r0|r0] := eqVneq r 0; first by rewrite /rng r0 eqxx.
-rewrite /rng (negbTE r0) map_inj_uniq; first exact: PreSFun.uniq_rng.
-by apply: mulrI; rewrite unitfE.
-Qed.
-
-Let presfun_scale_full_rng : g @` setT = [set x | x \in rng].
-Proof.
-rewrite predeqE => r'; split.
-  case=> t _ <-{r'}; rewrite mksetE /rng.
-  have [r0|r0] := eqVneq r 0; first by rewrite /g r0 mul0r inE.
-  by apply/mapP; exists (f t) => //; exact: mem_srng.
-rewrite /= /rng; have [r0|r0 /mapP[r2]] := eqVneq r 0.
-  by rewrite inE => /eqP ->{r'}; exists pt => //; rewrite /g r0 mul0r.
-have := PreSFun.full_rng f.
-by rewrite predeqE => /(_ r2) /= [_ /[apply]] [t] _ <-{r2} ->{r'}; exists t.
-Qed.
-
-Definition presfun_scale :=
-  locked (PreSFun.mk presfun_scale_uniq presfun_scale_full_rng).
-
-Lemma presfun_scaleE x : presfun_scale x = r * f x.
-Proof. by rewrite /presfun_scale; unlock. Qed.
-
-Lemma srng_presfun_scale : srng presfun_scale = sfun_scale_rng.
-Proof. by rewrite /presfun_scale; unlock. Qed.
-
-Lemma ssize_presfun_scale : ssize presfun_scale = size sfun_scale_rng.
-Proof. by rewrite /presfun_scale; unlock. Qed.
-
-End presfun_scale.
-
-Section presfun_proj.
-Variables (T : measurableType) (R : realType) (f : presfun T R).
-Variable A : set T.
-Let s := [seq y <- srng f | f @^-1` [set y] `&` A != set0].
-Definition sfun_proj_rng := if (0 \in s) || (A == setT) then s else 0 :: s.
-Definition sfun_proj_f x := f x * (x \in A)%:R.
-Local Notation rng := sfun_proj_rng.
-Local Notation g := sfun_proj_f.
-
-Let presfun_proj_uniq : uniq rng.
-Proof.
-rewrite /rng; case: ifPn => [_|]; first exact/filter_uniq/PreSFun.uniq_rng.
-rewrite negb_or => /andP[/= -> _ /=].
-by rewrite (filter_uniq _ (PreSFun.uniq_rng f)).
-Qed.
-
-Let presfun_proj_full_rng : g @` setT = [set x | x \in rng].
-Proof.
-rewrite predeqE => x; split => [[t _] <-{x}|] /=.
-- rewrite /g; have [|tA] := boolP (t \in A).
-  + rewrite mulr1 inE => tA; rewrite /rng; case: ifPn => [_|].
-      by rewrite mem_filter mem_srng andbT; apply/set0P; exists t.
-    rewrite negb_or => /andP[s0 /setTP[t1 At1]]; rewrite inE mem_filter.
-    by rewrite mem_srng andbT; apply/orP; right; apply/set0P; exists t.
-  + rewrite mulr0; rewrite /rng; case: ifPn => [/orP[//|/eqP AT]|].
-       by move: tA; rewrite AT notin_set => /(_ Logic.I).
-    by rewrite negb_or => /andP[s0 AT]; rewrite mem_head.
-- rewrite /rng; case: ifPn => [_|].
-    rewrite mem_filter => /andP[/set0P[t [/= ftx At]]] fx.
-    by exists t => //; rewrite /g mem_set// mulr1.
-  rewrite negb_or => /andP[s0 AT]; rewrite inE => /orP[/eqP ->|].
-    rewrite /g; move/setTP : AT => [t At]; exists t => //.
-    by move: At; rewrite -notin_set => /negbTE ->; rewrite mulr0.
-  rewrite mem_filter => /andP[/set0P[t [fxt At]]] fx.
-  by rewrite /g; exists t => //; rewrite mem_set// mulr1.
-Qed.
-
-Definition presfun_proj := locked
-  (PreSFun.mk presfun_proj_uniq presfun_proj_full_rng).
-
-Lemma srng_presfun_proj : srng presfun_proj = rng.
-Proof. by rewrite /presfun_proj; unlock. Qed.
-
-Lemma presfun_projE x : presfun_proj x = f x * (x \in A)%:R.
-Proof. by rewrite /presfun_proj; unlock. Qed.
-
-Lemma ssize_presfun_proj : ssize presfun_proj = size rng.
-Proof. by rewrite /presfun_proj; unlock. Qed.
-
-End presfun_proj.
-
-Section presfun_ind.
-Variables (T : measurableType) (R : realType) (pt : T) (r : R) (A : set T).
-
-Definition presfun_ind := locked (presfun_scale pt r (presfun_ind1 pt A)).
-
-Lemma presfun_indE x : presfun_ind x = r * (x \in A)%:R.
-Proof.
-by rewrite /presfun_ind; unlock; rewrite presfun_scaleE presfun_ind1E.
-Qed.
-
-Lemma srng_presfun_ind :
-  srng presfun_ind = (*sfun_proj_rng (presfun_cst pt r) A*)
-  if r == 0 then [:: 0] else
-  if A == set0 then [:: 0] else
-  if A == setT then [:: r] else
-  [:: 0; r].
-Proof.
-rewrite /presfun_ind; unlock.
-rewrite srng_presfun_scale /sfun_scale_rng.
-case: ifPn => // r0.
-case: ifPn => [/eqP A0|A0].
-  by rewrite A0 srng_presfun_ind1 /sfun_ind1_rng eqxx /= mulr0.
-rewrite srng_presfun_ind1 /sfun_ind1_rng (negbTE A0).
-by case: ifPn => //= AT; rewrite mulr1// mulr0.
-Qed.
-
-End presfun_ind.
-
 Section presfun_bin.
 Variables (T : measurableType) (R : realType) (f g : presfun T R).
 Implicit Types op : R -> R -> R.
@@ -942,8 +821,9 @@ Let p := ssize g.
 Let u := [seq z <- [seq (x, y) | x <- srng f, y <- srng g] |
           (f @^-1` [set z.1]) `&` (g @^-1` [set z.2]) != set0 ].
 Let s op := undup [seq op z.1 z.2 | z <- u].
+Definition sfun_map op x := op (f x) (g x).
 
-Let presfun_bin_full_rng op : (fun x => op (f x) (g x)) @` setT = [set` s op].
+Let presfun_bin_full_rng op : sfun_map op @` setT = [set` s op].
 Proof.
 rewrite predeqE => r; split => /=.
 - move=> -[t _] <-; rewrite /s mem_undup.
@@ -954,7 +834,7 @@ rewrite predeqE => r; split => /=.
   rewrite mem_filter /= => /andP[/set0P[t []]].
   rewrite /mkset /set1 /mkset => fti gtj.
   move=> /allpairsP[[i' j']] /= [fi' gj'] [? ?]; subst i' j' => ->.
-  by exists t => //; rewrite fti gtj.
+  by exists t => //; rewrite /sfun_map fti gtj.
 Qed.
 
 Definition presfun_bin_idx op (k : 'I_(size (s op))) :=
@@ -983,11 +863,11 @@ by apply/set0P; exists t; split; exact: mem_spimg.
 Qed.
 
 Lemma preimage_presfun_bin op (k : 'I_(size (s op))) :
-  (fun x => op (f x) (g x)) @^-1` [set (s op)`_k] =
+  sfun_map op @^-1` [set (s op)`_k] =
   \big[setU/set0]_(x : 'I_n * 'I_p | x \in presfun_bin_idx k)
       (spimg f x.1 `&` spimg g x.2).
 Proof.
-transitivity (\big[setU/set0]_(x : 'I_n * 'I_p |
+rewrite /sfun_map; transitivity (\big[setU/set0]_(x : 'I_n * 'I_p |
      op (srng f)`_x.1 (srng g)`_x.2 == (s op)`_k)
     (spimg f x.1 `&` spimg g x.2)); last first.
   rewrite /presfun_bin_idx big_mkcond [in RHS]big_mkcond.
@@ -1000,14 +880,12 @@ rewrite -bigcup_set_cond predeqE => t; split=> [fgt|].
 by move=> [[i j]] /=; rewrite mem_index_enum /= /preimage /= => /eqP <- [-> ->].
 Qed.
 
-Definition presfun_add := PreSFun.mk (undup_uniq _)
-  (presfun_bin_full_rng (fun x y => x + y)).
+HB.instance Definition _ op := IsPreSFun.Build _ _ (sfun_map op)
+  (undup_uniq _) (presfun_bin_full_rng op).
 
-Definition presfun_max := PreSFun.mk (undup_uniq _)
-  (presfun_bin_full_rng maxr).
-
-Definition presfun_mul := PreSFun.mk (undup_uniq _)
-  (presfun_bin_full_rng (fun x y => x * y)).
+Definition presfun_add := [the presfun _ _ of sfun_map +%R].
+Definition presfun_max := [the presfun _ _ of sfun_map maxr].
+Definition presfun_mul := [the presfun _ _ of sfun_map *%R].
 
 Lemma presfun_bin_idx_cover op : \bigcup_(c < size (s op)) presfun_bin_idx c =
   [set x : {: 'I_n * 'I_p} | spimg f x.1 `&` spimg g x.2 != set0]%SET.
@@ -1055,6 +933,129 @@ Qed.
 
 End presfun_add_lemmas.
 
+Section presfun_scale.
+Variables (T : measurableType) (pt : T) (R : realType) (r : R).
+Variable f : presfun T R.
+Definition sfun_scale_rng :=
+  if r == 0 then [:: 0] else [seq r * x | x <- srng f].
+Definition sfun_scale_f := fun x => r * f x.
+Local Notation rng := sfun_scale_rng.
+Local Notation g := sfun_scale_f.
+
+Let presfun_scale_uniq : uniq rng.
+Proof.
+have [r0|r0] := eqVneq r 0; first by rewrite /rng r0 eqxx.
+rewrite /rng (negbTE r0) map_inj_uniq; first exact: uniq_srng.
+by apply: mulrI; rewrite unitfE.
+Qed.
+
+Let presfun_scale_full_rng : g @` setT = [set x | x \in rng].
+Proof.
+rewrite predeqE => r'; split.
+  case=> t _ <-{r'}; rewrite mksetE /rng.
+  have [r0|r0] := eqVneq r 0; first by rewrite /g r0 mul0r inE.
+  by apply/mapP; exists (f t) => //; exact: mem_srng.
+rewrite /= /rng; have [r0|r0 /mapP[r2]] := eqVneq r 0.
+  by rewrite inE => /eqP ->{r'}; exists pt => //; rewrite /g r0 mul0r.
+have := full_srng f.
+by rewrite predeqE => /(_ r2) /= [_ /[apply]] [t] _ <-{r2} ->{r'}; exists t.
+Qed.
+
+HB.instance Definition _ := IsPreSFun.Build _ _ g
+  presfun_scale_uniq presfun_scale_full_rng.
+Definition presfun_scale := locked [the presfun _ _ of g].
+
+Lemma presfun_scaleE x : presfun_scale x = r * f x.
+Proof. by rewrite /presfun_scale; unlock. Qed.
+
+Lemma srng_presfun_scale : srng presfun_scale = sfun_scale_rng.
+Proof. by rewrite /presfun_scale; unlock. Qed.
+
+Lemma ssize_presfun_scale : ssize presfun_scale = size sfun_scale_rng.
+Proof. by rewrite /presfun_scale; unlock. Qed.
+
+End presfun_scale.
+
+Section presfun_proj.
+Variables (T : measurableType) (R : realType) (f : presfun T R).
+Variable A : set T.
+Let s := [seq y <- srng f | f @^-1` [set y] `&` A != set0].
+Definition sfun_proj_rng := if (0 \in s) || (A == setT) then s else 0 :: s.
+Definition sfun_proj_f x := f x * (x \in A)%:R.
+Local Notation rng := sfun_proj_rng.
+Local Notation g := sfun_proj_f.
+
+Let presfun_proj_uniq : uniq rng.
+Proof.
+rewrite /rng; case: ifPn => [_|]; first exact/filter_uniq/uniq_srng.
+rewrite negb_or => /andP[/= -> _ /=].
+by rewrite (filter_uniq _ (uniq_srng f)).
+Qed.
+
+Let presfun_proj_full_rng : g @` setT = [set x | x \in rng].
+Proof.
+rewrite predeqE => x; split => [[t _] <-{x}|] /=.
+- rewrite /g; have [|tA] := boolP (t \in A).
+  + rewrite mulr1 inE => tA; rewrite /rng; case: ifPn => [_|].
+      by rewrite mem_filter mem_srng andbT; apply/set0P; exists t.
+    rewrite negb_or => /andP[s0 /setTP[t1 At1]]; rewrite inE mem_filter.
+    by rewrite mem_srng andbT; apply/orP; right; apply/set0P; exists t.
+  + rewrite mulr0; rewrite /rng; case: ifPn => [/orP[//|/eqP AT]|].
+       by move: tA; rewrite AT notin_set => /(_ Logic.I).
+    by rewrite negb_or => /andP[s0 AT]; rewrite mem_head.
+- rewrite /rng; case: ifPn => [_|].
+    rewrite mem_filter => /andP[/set0P[t [/= ftx At]]] fx.
+    by exists t => //; rewrite /g mem_set// mulr1.
+  rewrite negb_or => /andP[s0 AT]; rewrite inE => /orP[/eqP ->|].
+    rewrite /g; move/setTP : AT => [t At]; exists t => //.
+    by move: At; rewrite -notin_set => /negbTE ->; rewrite mulr0.
+  rewrite mem_filter => /andP[/set0P[t [fxt At]]] fx.
+  by rewrite /g; exists t => //; rewrite mem_set// mulr1.
+Qed.
+
+HB.instance Definition _ := IsPreSFun.Build _ _ g
+  presfun_proj_uniq presfun_proj_full_rng.
+Definition presfun_proj := locked [the presfun _ _ of g].
+
+Lemma srng_presfun_proj : srng presfun_proj = rng.
+Proof. by rewrite /presfun_proj; unlock. Qed.
+
+Lemma presfun_projE x : presfun_proj x = f x * (x \in A)%:R.
+Proof. by rewrite /presfun_proj; unlock. Qed.
+
+Lemma ssize_presfun_proj : ssize presfun_proj = size rng.
+Proof. by rewrite /presfun_proj; unlock. Qed.
+
+End presfun_proj.
+
+Section presfun_ind.
+Variables (T : measurableType) (R : realType) (pt : T) (r : R) (A : set T).
+
+Definition presfun_ind := locked (presfun_scale pt r (presfun_ind1 pt A)).
+
+Lemma presfun_indE x : presfun_ind x = r * (x \in A)%:R.
+Proof.
+by rewrite /presfun_ind; unlock; rewrite presfun_scaleE presfun_ind1E.
+Qed.
+
+Lemma srng_presfun_ind :
+  srng presfun_ind = (*sfun_proj_rng (presfun_cst pt r) A*)
+  if r == 0 then [:: 0] else
+  if A == set0 then [:: 0] else
+  if A == setT then [:: r] else
+  [:: 0; r].
+Proof.
+rewrite /presfun_ind; unlock.
+rewrite srng_presfun_scale /sfun_scale_rng.
+case: ifPn => // r0.
+case: ifPn => [/eqP A0|A0].
+  by rewrite A0 srng_presfun_ind1 /sfun_ind1_rng eqxx /= mulr0.
+rewrite srng_presfun_ind1 /sfun_ind1_rng (negbTE A0).
+by case: ifPn => //= AT; rewrite mulr1// mulr0.
+Qed.
+
+End presfun_ind.
+
 Section presfun_integral.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
@@ -1097,17 +1098,17 @@ rewrite -big_filter -[in RHS]big_filter.
 set lhs := seq.filter _ _; set rhs := seq.filter _ _.
 rewrite (perm_big rhs); last first.
   rewrite /lhs /rhs.
-  apply: uniq_perm; do 1? [by rewrite filter_uniq // PreSFun.uniq_rng].
+  apply: uniq_perm; do 1? [by rewrite filter_uniq // uniq_srng].
   move=> r; rewrite !mem_filter; apply/andP/andP=> -[/set0P[t /= [gt Dt rg]]].
     split.
     - by apply/set0P; exists t => //; split => //; rewrite /preimage /= fg// inE.
-    - have := PreSFun.full_rng f; rewrite predeqE => /(_ r)[].
+    - have := full_srng f; rewrite predeqE => /(_ r)[].
       rewrite /preimage /= -fg in gt; last by rewrite inE.
       have H : [set of f] r by exists t.
       by move/(_ H).
   split.
     - by apply/set0P; exists t => //; split => //; rewrite /preimage /= -fg // inE.
-    - have := PreSFun.full_rng g; rewrite predeqE => /(_ r)[].
+    - have := full_srng g; rewrite predeqE => /(_ r)[].
       rewrite /preimage /= fg in gt; last by rewrite inE.
       have H : [set of g] r by exists t.
       by move/(_ H).
@@ -1119,26 +1120,22 @@ Qed.
 
 End sintegral_lemmas.
 
-Module NNPreSFun.
-Record t (T : measurableType) (R : realType) :=
-  mk {f : presfun T R ; ge0 : forall t, 0 <= f t }.
-Module Exports.
-Notation nnpresfun := t.
-End Exports.
-End NNPreSFun.
-Export NNPreSFun.Exports.
-Coercion NNPreSFun.f : nnpresfun >-> presfun.
-Arguments NNPreSFun.mk {T R} _ _.
-
-Hint Resolve NNPreSFun.ge0 : core.
+(* To backport to nonneg after the refactoring of PR # 511*)
+HB.mixin Record Fun_NonNeg (T : Type) (R : numDomainType) (f : T -> R) := {
+  nnegfun_ge0 : forall t, 0 <= f t
+}.
+HB.structure Definition NNPreSFun (T : measurableType) (R : realType) :=
+  {f of @PreSFun T R f & Fun_NonNeg T R f}.
+Notation nnpresfun := NNPreSFun.type.
+Hint Resolve nnegfun_ge0 : core.
 
 Lemma NNPreSFun_ge0 (T : measurableType) (R : realType) (f : nnpresfun T R)
   (t : 'I_(ssize f)) : 0 <= (srng f)`_t.
-Proof. by case: f t => // f f0 /= t; apply: presfun_ge0. Qed.
+Proof. exact/presfun_ge0/nnegfun_ge0. Qed.
 
 Lemma NNPreSFuncdom_ge0 (T : measurableType) (R : realType) (f : nnpresfun T R)
   (r : R) : r \in srng f -> (0 <= r%:E)%E.
-Proof. by  move=> /(nthP 0)[i fi <-]; rewrite lee_fin (NNPreSFun_ge0 (Ordinal fi)). Qed.
+Proof. by move=> /(nthP 0)[i fi <-]; rewrite lee_fin (NNPreSFun_ge0 (Ordinal fi)). Qed.
 
 Section nnpresfun_functions.
 Variables (T : measurableType) (R : realType).
