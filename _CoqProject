@@ -35,7 +35,9 @@ theories/lebesgue_measure.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
+theories/lebesgue_measure.v
 theories/lebesgue_integral.v
+theories/probability.v
 theories/summability.v
 theories/functions.v
 theories/altreals/xfinmap.v
