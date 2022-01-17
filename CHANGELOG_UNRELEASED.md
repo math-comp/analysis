@@ -17,6 +17,10 @@
   + definition `mule_def`, notation `x *? y`
   + lemma `mule_defC`
   + notations `\*` in `ereal_scope`, and `ereal_dual_scope`
+- in `ereal.v`:
+  + lemmas `mule_def_fin`, `mule_def_neq0_infty`, `mule_def_infty_neq0`, `neq0_mule_def`
+  + notation `\-` in `ereal_scope` and `ereal_dual_scope`
+  + lemma `fin_numB`
 
 ### Changed
 
