@@ -43,4 +43,6 @@
 
 ### Infrastructure
 
+- add `.dir-locals.el` for company-coq symbols
+
 ### Misc
