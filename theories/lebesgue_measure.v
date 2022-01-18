@@ -3,7 +3,7 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap.
 Require Import boolp reals ereal classical_sets posnum nngnum topology.
-Require Import normedtype.
+Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
 Require Import sequences measure csum cardinality.
 
@@ -425,7 +425,7 @@ Proof.
 move=> f0; have [->|F0] := eqVneq F fset0.
   by rewrite big_mkcond big_seq_fset0 ereal_nneg_series_lim_ge0.
 have [n FnS] : exists n, (F `<=` @nat_of_ord _ @` fsets_ord xpredT n)%fset.
-  move/fset_nat_maximum : F0 => [i [iF Fi]]; exists i.+1.
+  move/(fset_nat_maximum id) : F0 => [i [iF Fi]]; exists i.+1.
   apply/fsubsetP => j jF; apply/imfsetP => /=.
   by move/Fi : jF; rewrite -ltnS => jF; exists (Ordinal jF) => //; rewrite inE.
 apply/(le_trans _ (ereal_nneg_series_lim_ge n f0)).
@@ -465,8 +465,8 @@ apply: (@le_trans _ _ (\sum_(i <oo) mu (X `&` A i))).
 apply lee_lim.
 - by apply: is_cvg_ereal_nneg_series => n _; exact/measure_ge0/measurableI.
 - by apply: is_cvg_ereal_nneg_series => n _; exact/measure_ge0.
-- by near=> n; apply: lee_sum => i  _; apply: le_measure => //; rewrite ?inE//=;
-    [exact: measurableI | apply: subIset; right].
+- near=> n; apply: lee_sum => i  _; apply: le_measure => //; rewrite ?inE//=.
+  exact: measurableI.
 Unshelve. all: by end_near. Qed.
 
 Lemma caratheodory_measurable_mu_ext (R : realType) (T : measurableType)
@@ -2102,7 +2102,7 @@ Definition disjoint_itv : rel (interval R) :=
   fun a b => [disjoint [set` a] & [set` b]].
 
 Lemma disjoint_itvxx (i : interval R) : neitv i -> ~~ disjoint_itv i i.
-Proof. by move=> i0; rewrite /disjoint_itv /= setIid. Qed.
+Proof. by move=> i0; rewrite /disjoint_itv/= /disj_set /= setIid. Qed.
 
 Lemma lt_disjoint (i j : interval R) :
   (forall x y, x \in i -> y \in j -> x < y) -> disjoint_itv i j.
@@ -2116,7 +2116,7 @@ End disjoint_itv.
 Lemma disjoint_neitv {R : realFieldType} (i j : interval R) :
   disjoint_itv i j <-> ~~ neitv (itv_meet i j).
 Proof.
-case: i j => [a b] [c d]; rewrite /disjoint_itv /= -set_itv_meet.
+case: i j => [a b] [c d]; rewrite /disjoint_itv/disj_set /= -set_itv_meet.
 by split => [/negPn//|?]; apply/negPn.
 Qed.
 
