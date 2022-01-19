@@ -2227,7 +2227,7 @@ move: i j => [a b] [c d]; rewrite /lt_itv; case: (ltgtP a c) => // [ac _|<-{c}].
   move: ij0; rewrite predeqE => /(_ y)[+ _]; apply.
   apply/itv_meet_mem; rewrite 2!itv_boundlr.
   by rewrite (le_trans (ltW ac)) //= (le_trans _ xb) // yd andbT cy.
-- move=> /= ?; rewrite /disjoint_itv -set_itv_meet => abd.
+- move=> /= ?; rewrite /disjoint_itv/disj_set -set_itv_meet => abd.
   move=> x y; rewrite 2!itv_boundlr => /andP[ax xb] /andP[ay yd].
   rewrite ltNge; apply/negP => yx.
   move/negPn : abd => /negP; apply; apply/neitvP => /=.
@@ -2426,7 +2426,7 @@ move=> ji ki => /predU1P[ij|ij]; first by rewrite ij lexx in ji.
 move=> /predU1P[ya|ya /predU1P[kj|kj]].
 - move: ki; rewrite {}ya {k} => ii.
   have [a0 _|a0 _] := eqVneq [set` i] set0; first exact: le_itv_itv_diff0.
-  by move: ii; rewrite /disjoint_itv setIid (negbTE a0).
+  by move: ii; rewrite /disjoint_itv/disj_set setIid (negbTE a0).
 - by move: ya; rewrite kj => /(lt_itv_trans _ _ _ ij); rewrite lt_itvxx.
 - by apply/orP; right; exact: lt_itv_itv_diff.
 Qed.
@@ -2598,10 +2598,9 @@ case: ifPn => ji.
 rewrite (sset_cons _ (sorted_decompose (j :: t))) ih //.
 rewrite [in RHS]sset_cons sset_cons !setUA; congr (_ `|` _).
 rewrite set_itv_diff // ?ji// eqEsubset; split.
-- apply: subsetU; last by move=> x; right.
-  by move=> x ix; left; case: ix.
-- move=> x [ix|jx]; last by right.
-  by have [jx|jx] := pselect ([set` j] x); [right|left].
+- by move=> k [[]|]; [left|right].
+- move=> x [ix|jx] /=; last by right.
+  by case: (x \in j) => //=; [right|left].
 Qed.
 
 Let neitv_diff i j :
@@ -3242,7 +3241,7 @@ Proof.
 move=> i0 j0 le_ij dis_ij; rewrite leNgt; apply/negP => j1i2.
 move: (dis_ij); apply/negP.
 move: (le_ij) => /predU1P[<-|lt_ij]; first by rewrite disjoint_itvxx.
-rewrite /disjoint_itv -set_itv_meet (IntervalE i) (IntervalE j).
+rewrite /disjoint_itv/disj_set -set_itv_meet (IntervalE i) (IntervalE j).
 have : (i.1 <= j.1)%O by exact: le_itv_bnd1.
 rewrite /lt_itv le_eqVlt => /predU1P[i1j1|i1j1] /=.
   move: lt_ij; rewrite /lt_itv {}i1j1 ltxx eqxx/= => {}i2j2.
@@ -4251,7 +4250,6 @@ have [m _ Hm] :
   rewrite /jIccitv; apply: le_measure => //.
   - by rewrite inE /=; apply: measurableI => //; exact/Sset.is_sset_itv.
   - by rewrite inE /=; exact/Sset.is_sset_itv.
-  - by apply: subIset; left.
 near=> n; rewrite big_mkord.
 by have /Hm mn : (m <= n)%N by near: n; exists m.
 Unshelve. all: by end_near. Qed.
@@ -4454,7 +4452,7 @@ Inductive ps_infty : set \bar R -> Prop :=
 
 Lemma ps_inftyP (A : set \bar R) : ps_infty A <-> A `<=` [set -oo; +oo]%E.
 Proof.
-split => [[]//|Aoo]; [by left|by right| ].
+split => [[]//|Aoo].
 by have [|[|[|]]] := subset_set2 Aoo; move=> ->; constructor.
 Qed.
 
@@ -5284,39 +5282,14 @@ have [x_ge0|x_gt0] := leP 0 (numq x); have [y_ge0|y_gt0] := leP 0 (numq y).
   by apply/eqP; rewrite rat_eqE numqxy dxy 2!eqxx.
 Qed.
 
-Lemma countable_rat : countable (@setT rat).
-Proof.
-apply/countable_injective; have [f [inj_f _]] := countable_prod_nat.
-exists (f \o pair_of_rat); apply: (@in_inj_comp _ _ _ _ _ xpredT) => //.
-by move=> x y _ _ /inj_f; apply; rewrite inE.
-exact: pair_of_rat_inj.
-Qed.
-
-Definition nat_of_rat := nat_of_pair \o pair_of_rat.
-
-Lemma nat_of_rat_inj : {in setT &, injective nat_of_rat}.
-Proof.
-apply: (in_inj_comp nat_of_pair_inj pair_of_rat_inj).
-by move=> q _; rewrite inE.
-Qed.
-
-Definition rat_of_nat : nat -> rat := inverse 0%Q setT nat_of_rat.
-
-Lemma nat_of_ratK : {in setT, cancel nat_of_rat rat_of_nat}.
-Proof.
-by apply: injective_left_inverse; exact: nat_of_rat_inj.
-Qed.
-(* /NB: PR 435 in progress *)
-
 (* TODO: move to measure.v once PR 435 is merged *)
 Lemma measurable_bigcup_rat (T : measurableType) (F : rat -> set T) :
   (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
 Proof.
-move=> mF.
-rewrite [X in measurable X](_ : _ = \bigcup_i F (rat_of_nat i)); last first.
-  rewrite predeqE => r; split => [[q _ Fqr]|[n _ Fnr]].
-    by exists (nat_of_rat q) => //; rewrite nat_of_ratK => //; rewrite inE.
-  by exists (rat_of_nat n).
+move=> mF; have /card_esym/ppcard_eqP[f] := card_rat.
+rewrite [X in measurable X](_ : _ = \bigcup_i F (f i)); last first.
+  rewrite predeqE => r; split => [[q _ Fqr]|[n _ Fnr]];
+  by [exists (f^-1%FUN q); rewrite //= invK ?inE | exists (f n)].
 by apply: measurable_bigcup => i; exact/mF.
 Qed.
 
@@ -6384,7 +6357,7 @@ apply: (@iff_trans _ (preimage_classes (fst \o f) (snd \o f) `<=` measurable)).
 - split => [h|[mf1 mf2]].
     by split => A mA; apply/h/g_salgebra_self; [left; exists A|right; exists A].
   apply: g_salgebra_smallest; last exact: are_measurable_sets_measurable.
-  by apply: subsetU => [|] A [C mC <-]; [exact: mf1|exact: mf2].
+  by rewrite subUset; split=> [|] A [C mC <-]; [exact: mf1|exact: mf2].
 Qed.
 
 End prod_measurable_fun.
