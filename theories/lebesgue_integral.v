@@ -1617,7 +1617,7 @@ transitivity (\sum_(i < n) \sum_(l < p)
       exact: measurableI.
     by apply: eq_bigr => x; rewrite !inE => /andP[] /eqP ->.
   rewrite [in RHS]pair_big /=.
-  rewrite [in RHS](eq_bigl [pred x | x \in setX [set: _]%SET [set: _]%SET); last first.
+  rewrite [in RHS](eq_bigl [pred x | x \in setX [set: _] [set: _]]); last first.
     by move=> [k l]; rewrite !inE.
   transitivity (\sum_(x in [set x|spimg f x.1 `&` spimg g x.2 != set0]%SET)
       ((srng f)`_x.1 + (srng g)`_x.2)%:E *
