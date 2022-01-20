@@ -1157,7 +1157,7 @@ Definition measure_is_complete (R : realType) (T : measurableType)
   forall X, mu.-negligible X -> measurable X.
 
 Definition measurable_fun (T U : measurableType) (D : set T) (f : T -> U) :=
-  forall Y, measurable Y -> measurable ((f @^-1` Y) `&` D).
+  forall Y, measurable Y -> measurable (D `&` f @^-1` Y).
 
 Section caratheodory_measure.
 Variables (R : realType) (T : Type) (x0 : T) (mu : {outer_measure set T -> \bar R}).
