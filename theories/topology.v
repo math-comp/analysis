@@ -209,6 +209,9 @@ Require Import boolp reals classical_sets posnum.
 (*                          compact == set of compact sets w.r.t. the filter- *)
 (*                                     based definition of compactness.       *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
+(*              prod_topo_apply x f == application of f to x, f being in a    *)
+(*                                     product topology of a family K         *)
+(*                                     (K : X -> topologicalType)             *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
@@ -2879,7 +2882,7 @@ Context {X : choiceType} {K : X -> topologicalType}.
 (* This a helper function to prove products preserve hausdorff. In particular *)
 (* we use its continuity turn clustering in `product_topologicalType K` to    *)
 (* clustering in K x for each X.                                              *)
-Let prod_topo_apply x (f : product_topologicalType K) := f x.
+Definition prod_topo_apply x (f : product_topologicalType K) := f x.
 
 Lemma prod_topo_applyE x f : prod_topo_apply x f = f x.
 Proof. by []. Qed.
