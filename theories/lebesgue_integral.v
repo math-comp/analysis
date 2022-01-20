@@ -921,62 +921,49 @@ Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section simple_fun_raw_integral.
 Local Open Scope ereal_scope.
-Variables (T : Type) (R : numDomainType) (mu : set T -> \bar R).
-Variables (D : set T) (f : T -> R).
+Variables (T : Type) (R : numDomainType).
+
+Section def.
+Variable (mu : set T -> \bar R) (D : set T) (f : T -> R).
 Let s := fset_set (f @` D).
 
-Definition sintegral : \bar R :=
-   \sum_(k < #|`s|) (s`_k)%:E * mu (D `&` f @^-1` [set s`_k]).
+Definition sintegral := \sum_(x <- s) x%:E * mu (D `&` f @^-1` [set x]).
 
-Lemma sintegralE : sintegral =
-  \sum_(x <- s) x%:E * mu (D `&` f @^-1` [set x]).
-Proof. by rewrite (big_nth 0%R) big_mkord. Qed.
+Lemma sintegralE : sintegral = \sum_(x <- s) x%:E * mu (D `&` f @^-1` [set x]).
+Proof. by []. Qed.
+
+(* discard ? *)
+Lemma sintegralEord : sintegral =
+   \sum_(k < #|` fset_set (f @` D)|) (s`_k)%:E * mu (D `&` f @^-1` [set s`_k]).
+Proof. by rewrite /sintegral (big_nth 0%R) big_mkord. Qed.
+
+End def.
+
+Lemma sintegral0 mu D pt : sintegral mu D (cst_fimfun pt D 0%R) = 0%E.
+Proof.
+rewrite sintegralE/=; have [->|/set0P[x Dx]] := eqVneq D set0.
+  by rewrite image_set0 fset_set0 big_seq_fset0.
+rewrite (_ : [set _ | _ in _] = [set 0%R]) ?fset_set1 ?big_seq_fset1 ?mul0e//.
+by apply/predeqP=> y; split=> [[]|->]//; exists x.
+Qed.
+
 End simple_fun_raw_integral.
 
-Section sintegral_lemmas.
-Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
-Implicit Types D : set T.
-
-Lemma sintegral0 pt D : sintegral m D (cst_fimfun mpoint pt 0%:R) = 0%E.
+Lemma eq_sintegral (T : measurableType) (R : realFieldType) D
+    (mu : {measure set T -> \bar R}) f g :
+  {in D, f =1 g} -> sintegral mu D f = sintegral mu D g.
 Proof.
-rewrite sintegralE/=.
-rewrite fset_set1.
-by rewrite sintegralE srng_presfun_cst/= big_cons mul0e big_nil adde0.
+move=> fg; rewrite 2!sintegralE; have -> : f @` D = g @` D.
+  by apply/eq_imagel => x Dx; rewrite fg ?inE.
+apply: eq_bigr => y _; congr (_ * mu _)%E.
+by apply/predeqP => x; split=> -[Dx <-]; split=> //; rewrite (fg, =^~fg) ?inE.
 Qed.
 
-Lemma eq_sintegral D (f g : presfun T R) : {in D, f =1 g} ->
-  sintegral m D f = sintegral m D g.
-Proof.
-move=> fg.
-rewrite 2!sintegralE (bigID (fun x => f @^-1` [set x] `&` D == set0)) /=.
-rewrite big1 ?add0e; last by move=> r /eqP ->; rewrite measure0 mule0.
-apply/esym; rewrite (bigID (fun x => g @^-1` [set x] `&` D == set0)) /=.
-rewrite big1 ?add0e; last by move=> r /eqP ->; rewrite measure0 mule0.
-rewrite -big_filter -[in RHS]big_filter.
-set lhs := seq.filter _ _; set rhs := seq.filter _ _.
-rewrite (perm_big rhs); last first.
-  rewrite /lhs /rhs.
-  apply: uniq_perm; do 1? [by rewrite filter_uniq // PreSFun.uniq_rng].
-  move=> r; rewrite !mem_filter; apply/andP/andP=> -[/set0P[t /= [gt Dt rg]]].
-    split.
-    - by apply/set0P; exists t => //; split => //; rewrite /preimage /= fg// inE.
-    - have := PreSFun.full_rng f; rewrite predeqE => /(_ r)[].
-      rewrite /preimage /= -fg in gt; last by rewrite inE.
-      have H : [set of f] r by exists t.
-      by move/(_ H).
-  split.
-    - by apply/set0P; exists t => //; split => //; rewrite /preimage /= -fg // inE.
-    - have := PreSFun.full_rng g; rewrite predeqE => /(_ r)[].
-      rewrite /preimage /= fg in gt; last by rewrite inE.
-      have H : [set of g] r by exists t.
-      by move/(_ H).
-rewrite [in LHS]big_filter [in RHS]big_filter; apply: eq_bigr => // r rfD0.
-congr (_ * m _)%E; rewrite predeqE => t; split => [|] [<- Dt].
-- by split => //; rewrite /preimage /= fg// inE.
-- by split => //; rewrite /preimage /= -fg// inE.
-Qed.
+(*  I stopped here *)
 
-End sintegral_lemmas.
+
+
+
 
 Module NNPreSFun.
 Record t (T : measurableType) (R : realType) :=
