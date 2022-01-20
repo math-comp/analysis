@@ -606,20 +606,6 @@ Proof. by move=> /card_ge_preimage fB; apply: card_le_finite. Qed.
 Lemma card_le_setD T (A B : set T) : A `\` B #<= A.
 Proof. by apply: subset_card_le; rewrite setDE; apply: subIset; left. Qed.
 
-Definition set_fset (T : choiceType) (A : set T) :=
-  if pselect (finite_set A) is left Afin
-  then projT1 (cid (finite_fsetP.1 Afin)) else fset0.
-
-Lemma set_fsetK (T : choiceType) (A : set T) : finite_set A ->
-  [set` set_fset A] = A.
-Proof. by rewrite /set_fset; case: pselect => // Afin _; case: cid. Qed.
-
-Lemma in_set_fset (T : choiceType) (A : set T) : finite_set A ->
-  set_fset A =i A.
-Proof.
-by move=> fA x; rewrite -[A in RHS]set_fsetK//; apply/idP/idP; rewrite ?inE.
-Qed.
-
 Lemma finite_image T T' A (f : T -> T') : finite_set A -> finite_set (f @` A).
 Proof. exact/card_le_finite/card_image_le. Qed.
 
@@ -628,6 +614,7 @@ Proof.
 elim/Pchoice: T => T in x *.
 by apply/finite_fsetP; exists (fset1 x); rewrite set_fset1.
 Qed.
+Hint Resolve finite_set1 : core.
 
 Lemma finite_setD T (A B : set T) : finite_set A -> finite_set (A `\` B).
 Proof. exact/card_le_finite/card_le_setD. Qed.
@@ -674,6 +661,66 @@ Proof.
 move=> /(finite_image2 g) /[apply]; apply: sub_finite_set; rewrite image2E.
 by move=> r/= [x Xx <-]; exists (fa x, fb x) => //; split; exists x.
 Qed.
+
+Definition fset_set (T : choiceType) (A : set T) :=
+  if pselect (finite_set A) is left Afin
+  then projT1 (cid (finite_fsetP.1 Afin)) else fset0.
+
+Lemma fset_setK (T : choiceType) (A : set T) : finite_set A ->
+  [set` fset_set A] = A.
+Proof. by rewrite /fset_set; case: pselect => // Afin _; case: cid. Qed.
+
+Lemma in_fset_set (T : choiceType) (A : set T) : finite_set A ->
+  fset_set A =i A.
+Proof.
+by move=> fA x; rewrite -[A in RHS]fset_setK//; apply/idP/idP; rewrite ?inE.
+Qed.
+
+Lemma fset_set0 {T : choiceType} : fset_set (set0 : set T) = fset0.
+Proof.
+by apply/fsetP=> x; rewrite in_fset_set ?inE//; apply/negP; rewrite inE.
+Qed.
+
+Lemma fset_set1 {T : choiceType} (x : T) : fset_set [set x] = [fset x]%fset.
+Proof. 
+apply/fsetP=> y; rewrite in_fset_set ?inE//.
+by apply/idP/idP; rewrite inE => /eqP.
+Qed.
+
+Lemma fset_setU {T : choiceType} (A B : set T) :
+  finite_set A -> finite_set B ->
+  fset_set (A `|` B) = (fset_set A `|` fset_set B)%fset.
+Proof.
+move=> fA fB; apply/fsetP=> x.
+rewrite ?(inE, in_fset_set)//; last by rewrite finite_setU.
+by apply/idP/orP; rewrite ?inE.
+Qed.
+
+Lemma fset_setI {T : choiceType} (A B : set T) :
+  finite_set A -> finite_set B ->
+  fset_set (A `&` B) = (fset_set A `&` fset_set B)%fset.
+Proof.
+move=> fA fB; apply/fsetP=> x.
+rewrite ?(inE, in_fset_set)//; last by apply: finite_setI; left.
+by apply/idP/andP; rewrite ?inE.
+Qed.
+
+Lemma fset_setU1 {T : choiceType} (x : T) (A : set T) :
+  finite_set A -> fset_set (x |` A) = (x |` fset_set A)%fset.
+Proof. by move=> fA; rewrite fset_setU// fset_set1. Qed.
+
+Lemma fset_setD {T : choiceType} (A B : set T) :
+  finite_set A -> finite_set B ->
+  fset_set (A `\` B) = (fset_set A `\` fset_set B)%fset.
+Proof.
+move=> fA fB; apply/fsetP=> x.
+rewrite ?(inE, in_fset_set)//; last exact: finite_setD.
+by apply/idP/andP; rewrite ?inE => -[]; rewrite ?notin_set.
+Qed.
+
+Lemma fset_setD1 {T : choiceType} (x : T) (A : set T) :
+  finite_set A -> fset_set (A `\ x) = (fset_set A `\ x)%fset.
+Proof. by move=> fA; rewrite fset_setD// fset_set1. Qed.
 
 Lemma super_bij T U (X A : set T) (Y B : set U) (f : {bij X >-> Y}) :
   X `<=` A -> Y `<=` B -> A `\` X #= B `\` Y ->
