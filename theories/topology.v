@@ -208,14 +208,7 @@ Require Import boolp reals classical_sets posnum.
 (*                        cluster F == set of cluster points of F.            *)
 (*                          compact == set of compact sets w.r.t. the filter- *)
 (*                                     based definition of compactness.       *)
-<<<<<<< HEAD
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
-=======
-(*                     hausdorff T <-> T is a Hausdorff space (T_2).          *)
-(*                evaluator_dep x f == application of f to x, f being a       *)
-(*                                     product topology of a family K         *)
-(*                                     (K : X -> topologicalType)             *)
->>>>>>> 83b8836... doc, lint, compress
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
@@ -2880,15 +2873,18 @@ Qed.
 
 End Tychonoff.
 
-Section DependentEvaluators.
+Section Product_Hausdorff.
 Context {X : choiceType} {K : X -> topologicalType}.
 
-Definition evaluator_dep x (f : product_topologicalType K) := f x.
+(* This a helper function to prove products preserve hausdorff. In particular *)
+(* we use its continuity turn clustering in `product_topologicalType K` to    *)
+(* clustering in K x for each X.                                              *)
+Let prod_topo_apply x (f : product_topologicalType K) := f x.
 
-Lemma evaluator_depE x f : evaluator_dep x f = f x.
+Lemma prod_topo_applyE x f : prod_topo_apply x f = f x.
 Proof. by []. Qed.
 
-Lemma evaluator_dep_continuous x : continuous (evaluator_dep x).
+Lemma prod_topo_apply_continuous x : continuous (prod_topo_apply x).
 Proof.
 move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id.
 move=> h; apply: (cvg_trans _ (h _)) => {h}; last first.
@@ -2903,19 +2899,19 @@ by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
 Qed.
 
 Lemma hausdorff_product :
-  (forall x, hausdorff (K x)) -> hausdorff (@product_topologicalType X K).
+  (forall x, hausdorff_space (K x)) -> hausdorff_space (@product_topologicalType X K).
 Proof.
 move=> hsdfK p q /= clstr; apply: functional_extensionality_dep => x.
 apply: hsdfK; move: clstr; rewrite ?cluster_cvgE /= => -[G PG [GtoQ psubG]].
-exists (evaluator_dep x @ G); [exact: fmap_proper_filter|split].
-  rewrite -(evaluator_depE x).
-  apply: cvg_trans; last exact: (@evaluator_dep_continuous x q).
+exists (prod_topo_apply x @ G); [exact: fmap_proper_filter|split].
+  rewrite -(prod_topo_applyE x).
+  apply: cvg_trans; last exact: (@prod_topo_apply_continuous x q).
   by apply: cvg_app; exact: GtoQ.
-move/(cvg_app (evaluator_dep x)): psubG => /cvg_trans; apply.
-exact: evaluator_dep_continuous.
+move/(cvg_app (prod_topo_apply x)): psubG => /cvg_trans; apply.
+exact: prod_topo_apply_continuous.
 Qed.
 
-End DependentEvaluators.
+End Product_Hausdorff.
 
 Definition finI (I : choiceType) T (D : set I) (f : I -> set T) :=
   forall D' : {fset I}, {subset D' <= D} ->
