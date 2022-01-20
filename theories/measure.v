@@ -91,6 +91,7 @@ by case=> -[_ At|[_ Bt|//]]; [left|right].
 Qed.
 
 HB.mixin Record isSemiRingOfSets T := {
+  mpoint : T;
   measurable : set (set T) ;
   diff_fsets : set T -> set T -> {fset (set T)} ;
   measurable0 : measurable set0 ;
@@ -137,6 +138,7 @@ HB.structure Definition Measurable := {T of Measurable_from_algebraOfSets T &}.
 Notation measurableType := Measurable.type.
 
 HB.factory Record isAlgebraOfSets T := {
+  mpoint : T;
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : forall A B, measurable A -> measurable B -> measurable (A `|` B) ;
@@ -174,7 +176,7 @@ by move=> /= CS; rewrite !inE => CAB DAB; move: CS; rewrite CAB DAB eqxx.
 Qed.
 
 HB.instance Definition T_isSemiRingOfSets : isSemiRingOfSets T :=
-  @isSemiRingOfSets.Build T measurable diff_fsets
+  @isSemiRingOfSets.Build T mpoint measurable diff_fsets
     measurable0
     semiRingOfSets_measurableI
     semiRingOfSets_measurableD
@@ -193,6 +195,7 @@ HB.instance Definition T_isAlgebraOfSets : AlgebraOfSets_from_RingOfSets T :=
 HB.end.
 
 HB.factory Record isMeasurable T := {
+  mpoint : T;
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableC : forall A, measurable A -> measurable (~` A) ;
@@ -215,7 +218,7 @@ Lemma algebraOfSets_measurableC (A : set T) : measurable A -> measurable (~` A).
 Proof. by move=> mA; apply: measurableC. Qed.
 
 HB.instance Definition T_isAlgebraOfSets : isAlgebraOfSets T :=
-  @isAlgebraOfSets.Build T measurable
+  @isAlgebraOfSets.Build T mpoint measurable
     measurable0
     algebraOfSets_measurableU
     algebraOfSets_measurableC.
@@ -1135,14 +1138,14 @@ Qed.
 
 End caratheodory_theorem_sigma_algebra.
 
-Definition caratheodory_type (R : realType) (T : Type)
+Definition caratheodory_type (R : realType) (T : Type) (x0 : T)
   (mu : {outer_measure set T -> \bar R}) := T.
 
 Section caratheodory_sigma_algebra.
-Variables (R : realType) (T : Type) (mu : {outer_measure set T -> \bar R}).
+Variables (R : realType) (T : Type) (x0 : T) (mu : {outer_measure set T -> \bar R}).
 
 HB.instance Definition caratheodory_mixin := @isMeasurable.Build
-  (caratheodory_type mu) mu.-measurable
+  (caratheodory_type x0 mu) x0 mu.-measurable
     (caratheodory_measurable_set0 mu)
     (@caratheodory_measurable_setC _ _ mu)
     (@caratheodory_measurable_bigcup _ _ mu).
@@ -1157,8 +1160,8 @@ Definition measurable_fun (T U : measurableType) (D : set T) (f : T -> U) :=
   forall Y, measurable Y -> measurable ((f @^-1` Y) `&` D).
 
 Section caratheodory_measure.
-Variables (R : realType) (T : Type) (mu : {outer_measure set T -> \bar R}).
-Local Notation U := (caratheodory_type mu).
+Variables (R : realType) (T : Type) (x0 : T) (mu : {outer_measure set T -> \bar R}).
+Local Notation U := (caratheodory_type x0 mu).
 
 Lemma caratheodory_measure0 : mu (set0 : set U) = 0.
 Proof. exact: outer_measure0. Qed.

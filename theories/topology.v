@@ -344,7 +344,8 @@ Require Import boolp reals classical_sets posnum functions.
 (******************************************************************************)
 
 Reserved Notation "f \* g" (at level 40, left associativity).
-Notation "f \* g" := (fun x => f x * g x)%R : ring_scope.
+Reserved Notation "f \- g" (at level 50, left associativity).
+Reserved Notation "\- f"  (at level 35, f at level 35).
 Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
 Reserved Notation "'\forall' x '\near' x_0 , P"
   (at level 200, x ident, P at level 200,
@@ -433,6 +434,13 @@ Arguments inj_can_sym_in {aT rT rD f g}.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
+Notation "\- f" := (opp_fun f) : ring_scope.
+
+Definition mul_fun T (R : ringType) (f g : T -> R) x := (f x * g x)%R.
+Notation "f \* g" := (mul_fun f g) : ring_scope.
+Arguments mul_fun {T R} _ _ _ /.
 
 Section bigmax.
 Variables (d : unit) (T : orderType d).
@@ -665,12 +673,9 @@ Qed.
 Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
   LmodType _ (U -> V) (fct_lmodMixin U V).
 
-Lemma fct_sumE (T : Type) (M : zmodType) n (f : 'I_n -> T -> M) (x : T) :
-  (\sum_(i < n) f i) x = \sum_(i < n) f i x.
-Proof.
-elim: n f => [|n H] f;
-  by rewrite !(big_ord0,big_ord_recr) //= -[LHS]/(_ x + _ x) H.
-Qed.
+Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M) (x : T) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
 End function_space.
 

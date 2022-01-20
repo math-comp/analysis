@@ -787,6 +787,13 @@ Qed.
 End basic_lemmas.
 Hint Resolve subsetUl subsetUr subIsetl subIsetr : core.
 
+Lemma image2E {TA TB rT : Type} (A : set TA) (B : set TB) (f : TA -> TB -> rT) :
+  [set f x y | x in A & y in B] = uncurry f @` (A `*` B).
+Proof.
+apply/predeqP => x; split=> [[a ? [b ? <-]]|[[a b] [? ? <-]]]/=;
+by [exists (a, b) | exists a => //; exists b].
+Qed.
+
 Lemma set_nil (T : choiceType) : [set` [::]] = @set0 T.
 Proof. by rewrite predeqP. Qed.
 
