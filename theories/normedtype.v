@@ -2142,18 +2142,6 @@ Proof. by rewrite cvg_distP. Qed.
 End prod_NormedModule_lemmas.
 Arguments cvg_dist2 {_ _ _ F G FF FG}.
 
-(** Rings with absolute values are normed modules *)
-
-(*Definition AbsRing_NormedModMixin (K : absRingType) :=
-  @NormedModule.Mixin K _ _ _ (abs : K^o -> R) ler_abs_add absrM (ball_absE K)
-  absr0_eq0.
-Canonical AbsRing_NormedModType (K : absRingType) :=
-  NormedModType K K^o (AbsRing_NormedModMixin _).*)
-
-
-
-
-
 (** Normed vector spaces have some continuous functions *)
 (** that are in fact continuous on pseudoMetricNormedZmodType *)
 
