@@ -3744,7 +3744,6 @@ move=> mE; rewrite /integral; congr (_ - _)%E.
     apply/le_ereal_sup => _ /= [g gf <-].
     exists (nnsfun_proj g (measurableI _ _ mE mD)); last first.
       rewrite /= sintegral_presfun_proj//; first exact: measurableI.
-      by apply: subIset; left.
     move=> x Ex; have [xD|xD] := boolP (x \in D).
       rewrite /funenng presfun_ind1E xD mule1 presfun_projE in_setI xD andbT.
       by rewrite mem_set// mulr1 gf//; rewrite inE in xD.
@@ -3753,9 +3752,7 @@ move=> mE; rewrite /integral; congr (_ - _)%E.
   apply/le_ereal_sup => _ /= [g gf <-]; exists g.
     move=> x [Ex Dx]; rewrite (le_trans (gf x _))//.
     by rewrite /funenng presfun_ind1E mem_set// mule1.
-  rewrite -[LHS](@sintegral_presfun_proj _ _ _ E)//; last 2 first.
-    - exact: measurableI.
-    - by apply: subIset; left.
+  rewrite -[LHS](@sintegral_presfun_proj _ _ _ E)//; last exact: measurableI.
   apply: eq_sintegral => x xE.
   rewrite presfun_projE//.
   have [xD|xD] := boolP (x \in D); first by rewrite in_setI xE xD mulr1.
@@ -3768,7 +3765,6 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   apply/le_ereal_sup => _ /= [g gf <-].
     exists (nnsfun_proj g (measurableI _ _ mE mD)); last first.
       rewrite /= sintegral_presfun_proj//; first exact: measurableI.
-      by apply: subIset; left.
     move=> x xE; have [xD|xD] := boolP (x \in D).
       rewrite /funennp presfun_ind1E xD mule1 presfun_projE in_setI xD andbT.
       by rewrite mem_set// mulr1 gf//; rewrite inE in xD.
@@ -3776,9 +3772,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
     by rewrite presfun_projE in_setI (negbTE xD) andbF mulr0 oppr0 /maxe ltxx.
   apply/le_ereal_sup => _ /= [g gf <-]; exists g.
     by move=> x [Ex Dx]; rewrite (le_trans (gf x _))// /funennp presfun_ind1E mem_set// mule1.
-  rewrite -[LHS](@sintegral_presfun_proj _ _ _ E)//; last 2 first.
-    - exact: measurableI.
-    - by apply: subIset; left.
+  rewrite -[LHS](@sintegral_presfun_proj _ _ _ E)//; last exact: measurableI.
   apply: eq_sintegral => x xE.
   rewrite presfun_projE//.
   have [xD|xD] := boolP (x \in D); first by rewrite in_setI xE xD mulr1.
@@ -4072,10 +4066,8 @@ have intone : mu.-integrable D (fun x => f x * (oneN x)%:E).
   rewrite (_ : (fun _ => _) = (fun x => `|f x| * (presfun_ind1 pt N x)%:E)).
     rewrite -integral_presfun_ind1_setI// (@integral_abs_eq0 D)// ?lte_pinfty//.
     - exact: measurableI.
-    - by apply: subIset; left.
     - apply: (subset_measure0 _ _ _ muN0) => //.
-      + exact: measurableI.
-      + by apply: subIset; right.
+      exact: measurableI.
   rewrite funeqE => x; rewrite abseM presfun_ind1E.
   by congr (_ * _); rewrite gee0_abs// lee_fin ler0n.
 have h1 : mu.-integrable D f <-> mu.-integrable D (fun x => f x * (oneCN x)%:E).
@@ -4089,8 +4081,7 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (fun x => f x * (oneCN x)%:E).
     rewrite -integral_presfun_ind1_setI//.
     case: intf => _; apply: le_lt_trans.
     apply: subset_integral => //.
-    - exact: measurableI.
-    - by apply: subIset; left.
+    exact: measurableI.
   split => //; rewrite (presfun_cplt mN f) -/oneCN -/oneN.
   apply: (@le_lt_trans _ _ (\int_ D (`|f x * (oneCN x)%:E| + `|f x * (oneN x)%:E|) 'd mu[x])).
     apply: ge0_le_integral => //.
@@ -4144,9 +4135,7 @@ rewrite (@eq_integral _ _ mu _ _ (abse \o f)); last first.
   move=> x; rewrite in_setI => /andP[xD xN].
   by rewrite /= gee0_abs// f0//; rewrite inE in xD.
 rewrite (@integral_abs_eq0 D)//; first exact: measurableI.
-- by apply: subIset; left.
-- apply: (subset_measure0 _ _ _ muN0) => //; first exact: measurableI.
-  by apply: subIset; right.
+- by apply: (subset_measure0 _ _ _ muN0) => //; exact: measurableI.
 Qed.
 
 Lemma ge0_ae_eq_integral (D : set T) (f g : T -> \bar R) :
@@ -5034,9 +5023,8 @@ have m2'_bounded : exists M, forall X, measurable X -> (m2' X < M%:E)%E.
       by rewrite /m2' measure_restrE setIid//; have [] := F_oo n.
     by rewrite measure_ge0//; have [] := F_oo n.
   rewrite /m2' !measure_restrE setIid; apply: le_measure => //.
-  - by rewrite inE /=; apply: measurableI => //; have [] := F_oo n.
-  - by rewrite inE /=; have [] := F_oo n.
-  - by apply: subIset; right.
+    by rewrite inE /=; apply: measurableI => //; have [] := F_oo n.
+  by rewrite inE /=; have [] := F_oo n.
 pose phi' A := m2' \o xsection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (phi' A)].
 have subset_B' : @measurable (prod_measurableType T1 T2) `<=` B'.
@@ -5088,9 +5076,8 @@ have m1'_bounded : exists M, forall X, measurable X -> (m1' X < M%:E)%E.
       by rewrite /m1' measure_restrE setIid//; have [] := F_oo n.
     by rewrite measure_ge0//; have [] := F_oo n.
   rewrite /m1' !measure_restrE setIid; apply: le_measure => //.
-  - by rewrite inE /=; apply: measurableI => //; have [] := F_oo n.
-  - by rewrite inE /=; have [] := F_oo n.
-  - by apply: subIset; right.
+    by rewrite inE /=; apply: measurableI => //; have [] := F_oo n.
+  by rewrite inE /=; have [] := F_oo n.
 pose psi' A := m1' \o ysection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (psi' A)].
 have subset_B' : @measurable (prod_measurableType T1 T2) `<=` B'.
