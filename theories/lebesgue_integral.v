@@ -906,7 +906,7 @@ Reserved Notation "{ 'nnfun' A >-> T }"
   (at level 0, format "{ 'nnfun'   A  >->  T }").
 Reserved Notation "[ 'nnfun' 'of' f ]"
   (at level 0, format "[ 'nnfun'  'of'  f ]").
-Notation "{ 'nnfun'  A >-> T }" := (@SimpleFun.type _ T A) : form_scope.
+Notation "{ 'nnfun'  A >-> T }" := (@NonNegFun.type _ T A) : form_scope.
 Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
 
 HB.structure Definition NonNegSimpleFun (aT : measurableType) (rT : realType) A :=
@@ -1325,10 +1325,10 @@ Lemma cst_nnfun_subproof (D : set T) (x : {nonneg R}) :
 Proof. by split=> t ?. Qed.
 HB.instance Definition _ D x := @cst_nnfun_subproof D x.
 
-Lemma cst_measurablefun_subproof (x : {nonneg R}) :
+Lemma cst_mfun_subproof (x : {nonneg R}) :
   @IsMeasurableFun T _ setT (cst x%:nngnum).
 Proof. by split; exact: measurable_fun_cst. Qed.
-HB.instance Definition _ x := @cst_measurablefun_subproof x.
+HB.instance Definition _ x := @cst_mfun_subproof x.
 
 Definition nnsfun_cst (r : {nonneg R}) :=
   [the {nnsfun setT >-> R} of cst r%:nngnum].
@@ -1337,6 +1337,33 @@ Definition nnsfun_cst (r : {nonneg R}) :=
 Next Obligation. by move=> pt r t; rewrite presfun_cstE. Qed.*)
 
 Definition nnsfun0 (pt : T) : {nnsfun setT >-> R} := nnsfun_cst 0%R%:nng.
+
+Lemma indic1_nnfun_subproof (D : set T) : @IsNonNegFun T R D (\1_D).
+Proof. by split=> t ?. Qed.
+HB.instance Definition _ D := @indic1_nnfun_subproof D.
+
+Lemma indic1_mfun_subproof (D : set T) :
+  measurable D -> measurable_fun setT (\1_D : _ -> R)
+(*  @IsMeasurableFun T _ setT (\1_D : _ -> R)*).
+Proof.
+move=> mD B mB; rewrite setTI (_ : _ @^-1` _ = if 1 \in B then
+    if 0 \in B then setT else D
+  else if 0 \in B then ~` D else set0); last first.
+  rewrite /preimage/= /indic; apply/seteqP; split => x;
+    case: ifPn => B1; case: ifPn => B0 //=.
+  - have [|] := boolP (x \in D); first by rewrite inE.
+    by rewrite notin_set in B0.
+  - have [|] := boolP (x \in D); last by rewrite notin_set.
+    by rewrite notin_set in B1.
+  - by have [xD|xD] := boolP (x \in D);
+      [rewrite notin_set in B1|rewrite notin_set in B0].
+  - by have [xD|xD] := boolP (x \in D); [rewrite inE in B1|rewrite inE in B0].
+  - have [xD|] := boolP (x \in D); last by rewrite notin_set.
+    by rewrite inE in B1.
+  - have [|xD] := boolP (x \in D); first by rewrite inE.
+    by rewrite inE in B0.
+by case: ifPn => B1; case: ifPn => B0 //; exact: measurableC.
+Qed.
 
 (*Program Definition nnsfun_ind1 (pt : T) (A : set T)
   (mA : measurable A) := NNSFun.mk (sfun_ind1 (R := R) pt mA) _.
@@ -1364,17 +1391,76 @@ Proof. by rewrite /nnsfun_ind; unlock; rewrite sfun_indE. Qed.*)
 End nnsfun_functions.
 Arguments nnsfun0 {T R} _.
 
+(* TODO: move to topology.v? *)
+Reserved Notation "f \max g" (at level 50, left associativity).
+Definition max_fun T (R : numDomainType) (f g : T -> R) x := maxr (f x) (g x).
+Notation "f \max g" := (max_fun f g) : ring_scope.
+Arguments max_fun {T R} _ _ _ /.
+
+(* TODO: move to lebesgue_measure.v? *)
+(* NB: this is similar to emeasurable_fun_max *)
+Lemma measurable_fun_max (T : measurableType) (R : realType) D (f g : T -> R) :
+  measurable D -> measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (f \max g).
+Proof.
+move=> mD mf mg; apply: (measurability mD (RGenCInfty.measurableE R)) => //.
+move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
+    (D `&` f @^-1` `[x, +oo[) `|` (D `&` g @^-1` `[x, +oo[)); last first.
+  rewrite predeqE => t /=; split.
+    by rewrite !preimage_itv /= !in_itv /= !andbT le_maxr => -[Dx /orP[|]];
+      tauto.
+  by move=> [|]; rewrite !preimage_itv /= !in_itv/= !andbT le_maxr;
+    move=> [Dx ->]//; rewrite orbT.
+by apply: measurableU; [exact/mf/measurable_itv|exact/mg/measurable_itv].
+Qed.
+
+Section nnfun_bin.
+Variables (T : Type) (R : numDomainType) (D : set T).
+Variables (f g : {nnfun D >-> R}).
+
+Lemma add_nnfun_subproof : @IsNonNegFun T R D (f \+ g).
+Proof. by split => x Dx; rewrite addr_ge0//; apply/fun_ge0. Qed.
+HB.instance Definition _ := add_nnfun_subproof.
+
+Lemma mul_nnfun_subproof : @IsNonNegFun T R D (f \* g).
+Proof. by split => x Dx; rewrite mulr_ge0//; apply/fun_ge0. Qed.
+HB.instance Definition _ := mul_nnfun_subproof.
+
+Lemma max_nnfun_subproof : @IsNonNegFun T R D (f \max g).
+Proof. by split => x Dx /=; rewrite /maxr; case: ifPn => _; apply: fun_ge0. Qed.
+HB.instance Definition _ := max_nnfun_subproof.
+
+End nnfun_bin.
+
+Section fimfun_bin.
+Variables (T : measurableType) (R : realType) (D : set T).
+Variables (f g : {fimfun mpoint, D >-> R}).
+
+Lemma max_fimfun_subproof : @FiniteImage T R mpoint D (f \max g).
+Proof. by split; apply: finite_image11. Qed.
+HB.instance Definition _ := max_fimfun_subproof.
+Definition max_fimfun := [the {fimfun mpoint, D >-> R} of f \max g].
+
+End fimfun_bin.
+
 Section nnsfun_bin.
-Variables (T : measurableType) (R : realType) (f g : nnsfun T R).
+Variables (T : measurableType) (R : realType).
+Variables (f g : {nnsfun @setT T >-> R}).
 
-Program Definition nnsfun_add := NNSFun.mk (sfun_add f g) _.
-Next Obligation. by move=> t; rewrite addr_ge0. Qed.
+Lemma add_mfun_subproof : @IsMeasurableFun T _ setT (f \+ g).
+Proof. by split; apply: measurable_funD. Qed.
+HB.instance Definition _ := add_mfun_subproof.
+Definition nnsfun_add := [the {nnsfun setT >-> R} of f \+ g].
 
-Program Definition nnsfun_mul := NNSFun.mk (sfun_mul f g) _.
-Next Obligation. by move=> t; rewrite mulr_ge0. Qed.
+Lemma mul_mfun_subproof : @IsMeasurableFun T _ setT (f \* g).
+Proof. by split; apply: measurable_funM. Qed.
+HB.instance Definition _ := mul_mfun_subproof.
+Definition nnsfun_mul := [the {nnsfun setT >-> R} of f \* g].
 
-Program Definition nnsfun_max := NNSFun.mk (sfun_max f g) _.
-Next Obligation. by move=> t; rewrite /= /maxr; case: ifPn. Qed.
+Lemma max_mfun_subproof : @IsMeasurableFun T _ setT (f \max g).
+Proof. by split; apply: measurable_fun_max. Qed.
+HB.instance Definition _ := max_mfun_subproof.
+Definition nnsfun_max := [the {nnsfun setT >-> R} of f \max g].
 
 End nnsfun_bin.
 Arguments nnsfun_add {T R} _ _.
@@ -1382,23 +1468,17 @@ Arguments nnsfun_max {T R} _ _.
 
 Section nnsfun_iter.
 Variables (T : measurableType) (pt : T) (R : realType).
-Variable f : (nnsfun T R)^nat.
+Variable f : {nnsfun @setT T >-> R}^nat.
 
 Definition nnsfun_sum n := \big[nnsfun_add/(nnsfun0 pt)]_(i < n) f i.
 
 Lemma nnsfun_sumE n t : nnsfun_sum n t = \sum_(i < n) (f i t).
-Proof.
-rewrite /nnsfun_sum; elim/big_ind2 : _ => [|x g y h <- <-//|//].
-by rewrite /= presfun_cstE.
-Qed.
+Proof. by rewrite /nnsfun_sum; elim/big_ind2 : _ => [|x g y h <- <-|]. Qed.
 
 Definition nnsfun_bigmax n := \big[nnsfun_max/(nnsfun0 pt)]_(i < n) f i.
 
 Lemma nnsfun_bigmaxE n t : nnsfun_bigmax n t = \big[maxr/0]_(i < n) (f i t).
-Proof.
-rewrite /nnsfun_bigmax; elim/big_ind2 : _ => [|x g y h <- <-//|//].
-by rewrite /= presfun_cstE.
-Qed.
+Proof. by rewrite /nnsfun_bigmax; elim/big_ind2 : _ => [|x g y h <- <-|]. Qed.
 
 End nnsfun_iter.
 
@@ -1406,19 +1486,16 @@ Section sintegralrM.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (pt : T) (R : realType).
 Variable (m : {measure set T -> \bar R}).
-Variables (r : R) (D : set T) (mD : measurable D) (f : nnsfun T R).
+Variables (r : R) (D : set T) (mD : measurable D) (f : {nnsfun @setT T >-> R}).
 
 Lemma sintegralrM :
-  sintegral m D (sfun_scale pt r f) = r%:E * sintegral m D f.
+  sintegral m D (cst r \* f)%R = r%:E * sintegral m D f.
 Proof.
 have [->|r0] := eqVneq r 0%R.
-  rewrite mul0e /sintegral big1 // => i _ /=.
-  rewrite srng_sfun_scale /sfun_scale_rng eqxx /=.
-  case: (m (_ `&` _)) => [x| |]; move: i; rewrite ssize_sfun_scale0 => i.
-  - by rewrite (ord1 i) mul0e.
-  - by rewrite (ord1 i) /= mul0e.
-  - by rewrite (ord1 i) /= mul0e.
+  rewrite mul0e (_ : (_ \* _)%R = cst 0%R) ?sintegral0// funeqE => x /=.
+  by rewrite mul0r.
 rewrite /sintegral.
+(*
 pose cast := cast_ord (ssize_sfun_scale_neq0 pt f r0).
 rewrite [LHS](eq_bigr (fun k : 'I_(ssize (sfun_scale pt r f)) =>
     (r * (srng f)`_(cast k))%:E * m (spimg f (cast k) `&` D))); last first.
@@ -1441,20 +1518,23 @@ pose castK := cast_ord (esym (ssize_sfun_scale_neq0 pt f r0)).
 rewrite (reindex castK); last first.
   by exists cast => i; by rewrite /cast /castK /= ?(cast_ordKV,cast_ordK).
 by apply: eq_bigr => i _; rewrite /cast /castK cast_ordKV EFinM muleA.
-Qed.
+Qed.*) Admitted.
 
 End sintegralrM.
+
+Definition ssize (T : Type) (R : ringType) x0 (D : set T)
+  (f : {fimfun x0, D >-> R}) := #|` fset_set (f @` D)|.
 
 Section sintegralD.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (D : set T).
-Variables (mD : measurable D) (f g : nnsfun T R).
+Variables (mD : measurable D) (f g : {nnsfun @setT T >-> R}).
 Variable m : {measure set T -> \bar R}.
 Let n := ssize f.
 Let p := ssize g.
 
 Lemma sintegralD :
-  sintegral m D (sfun_add f g) = sintegral m D f + sintegral m D g.
+  sintegral m D (f \+ g)%R = sintegral m D f + sintegral m D g.
 Proof.
 transitivity (\sum_(i < n) \sum_(l < p)
     ((srng f)`_i + (srng g)`_l)%:E * m (spimg f i `&` spimg g l `&` D)).
