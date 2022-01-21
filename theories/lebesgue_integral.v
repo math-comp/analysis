@@ -915,7 +915,7 @@ Reserved Notation "{ 'nnsfun' A >-> T }"
   (at level 0, format "{ 'nnsfun'   A  >->  T }").
 Reserved Notation "[ 'nnsfun' 'of' f ]"
   (at level 0, format "[ 'nnsfun'  'of'  f ]").
-Notation "{ 'nnsfun'  A >-> T }" := (@SimpleFun.type _ T A) : form_scope.
+Notation "{ 'nnsfun'  A >-> T }" := (@NonNegSimpleFun.type _ T A) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 
@@ -964,7 +964,7 @@ Qed.
 
 
 
-
+(*
 Module NNPreSFun.
 Record t (T : measurableType) (R : realType) :=
   mk {f : presfun T R ; ge0 : forall t, 0 <= f t }.
@@ -1291,33 +1291,58 @@ Hint Resolve NNSFun.ge0 : core.
 Lemma NNSFun_ge0 (T : measurableType) (R : realType) (f : nnsfun T R)
   (t : 'I_(ssize f)) : 0 <= (srng f)`_t.
 Proof. by case: f t => // f h /= t; apply: presfun_ge0. Qed.
+*)
 
-Lemma NNSFuncdom_ge0 (T : measurableType) (R : realType) (f : nnsfun T R)
+Lemma NNSFuncdom_ge0 (T : measurableType) (R : realType) (D : set T)
+  (mD : measurable D) (f : {nnsfun D >-> R}) (r : R) :
+  r \in fset_set [set f x | x in D] -> 0 <= r.
+Proof.
+rewrite in_fset_set; last exact/fimfunP.
+by rewrite inE /= => -[x Dx <-]; exact/fun_ge0.
+Qed.
+(*Lemma NNSFuncdom_ge0 (T : measurableType) (R : realType) (f : nnsfun T R)
   (r : R) : r \in srng f -> (0 <= r%:E)%E.
 Proof.
 by move=> /(nthP 0)[i fi <-]; rewrite lee_fin (NNSFun_ge0 (Ordinal fi)).
 Qed.
+*)
 
 Lemma sintegral_ge0 (T : measurableType) (R : realType) (D : set T)
-  (f : nnsfun T R) (m : {measure set T -> \bar R}) :
+  (f : {nnsfun D >-> _}) (m : {measure set T -> \bar R}) :
   measurable D ->
   (0 <= sintegral m D f)%E.
 Proof.
-move=> mD; rewrite /sintegral; apply: sume_ge0 => t _; apply: mule_ge0 => //.
-  exact: NNSFun_ge0.
-exact/measure_ge0/measurableI.
+move=> mD; rewrite sintegralE; rewrite big_seq; apply: sume_ge0 => t tfD.
+rewrite mule_ge0//; last exact/measure_ge0/measurable_sfunP.
+by rewrite lee_fin; exact: (@NNSFuncdom_ge0 _ _ _ mD f).
 Qed.
 
 Section nnsfun_functions.
 Variables (T : measurableType) (R : realType).
 
-Program Definition nnsfun_cst (pt : T) (r : {nonneg R}) :=
+Lemma cst_nnfun_subproof (D : set T) (x : {nonneg R}) :
+  @IsNonNegFun T R D (cst x%:nngnum).
+Proof. by split=> t ?. Qed.
+HB.instance Definition _ D x := @cst_nnfun_subproof D x.
+
+Lemma cst_measurablefun_subproof (x : {nonneg R}) :
+  @IsMeasurableFun T _ setT (cst x%:nngnum).
+Proof. by split; exact: measurable_fun_cst. Qed.
+HB.instance Definition _ x := @cst_measurablefun_subproof x.
+
+Definition nnsfun_cst (r : {nonneg R}) :=
+  [the {nnsfun setT >-> R} of cst r%:nngnum].
+(*Program Definition nnsfun_cst (pt : T) (r : {nonneg R}) :=
   NNSFun.mk (sfun_cst pt r%:nngnum) _.
-Next Obligation. by move=> pt r t; rewrite presfun_cstE. Qed.
+Next Obligation. by move=> pt r t; rewrite presfun_cstE. Qed.*)
 
-Definition nnsfun0 (pt : T) : nnsfun T R := nnsfun_cst pt 0%R%:nng.
+Definition nnsfun0 (pt : T) : {nnsfun setT >-> R} := nnsfun_cst 0%R%:nng.
 
-Program Definition nnsfun_scale (pt : T) (f : nnsfun T R) (k : R) (k0 : 0 <= k)
+(*Program Definition nnsfun_ind1 (pt : T) (A : set T)
+  (mA : measurable A) := NNSFun.mk (sfun_ind1 (R := R) pt mA) _.
+Next Obligation. by move=> pt A mA t; rewrite sfun_ind1E. Qed.*)
+
+(*Program Definition nnsfun_scale (pt : T) (f : nnsfun T R) (k : R) (k0 : 0 <= k)
   := NNSFun.mk (sfun_scale pt k f) _.
 Next Obligation. by move=> pt f k k0 t; rewrite sfun_scaleE mulr_ge0. Qed.
 
@@ -1334,7 +1359,7 @@ Qed.
 (* TODO: subsumed by presfun_indE? *)
 Lemma nnsfun_indE (pt : T) (r : {nonneg R}) (A : set T) (mA : measurable A) x :
   nnsfun_ind pt r mA x = r%:nngnum * (x \in A)%:R.
-Proof. by rewrite /nnsfun_ind; unlock; rewrite sfun_indE. Qed.
+Proof. by rewrite /nnsfun_ind; unlock; rewrite sfun_indE. Qed.*)
 
 End nnsfun_functions.
 Arguments nnsfun0 {T R} _.
