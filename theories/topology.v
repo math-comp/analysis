@@ -209,6 +209,9 @@ Require Import boolp reals classical_sets posnum functions.
 (*                          compact == set of compact sets w.r.t. the filter- *)
 (*                                     based definition of compactness.       *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
+(*              prod_topo_apply x f == application of f to x, f being in a    *)
+(*                                     product topology of a family K         *)
+(*                                     (K : X -> topologicalType)             *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                     connected A <-> the only non empty subset of A which   *)
@@ -2872,6 +2875,46 @@ by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
 End Tychonoff.
+
+Section Product_Hausdorff.
+Context {X : choiceType} {K : X -> topologicalType}.
+
+(* This a helper function to prove products preserve hausdorff. In particular *)
+(* we use its continuity turn clustering in `product_topologicalType K` to    *)
+(* clustering in K x for each X.                                              *)
+Definition prod_topo_apply x (f : product_topologicalType K) := f x.
+
+Lemma prod_topo_applyE x f : prod_topo_apply x f = f x.
+Proof. by []. Qed.
+
+Lemma prod_topo_apply_continuous x : continuous (prod_topo_apply x).
+Proof.
+move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id.
+move=> h; apply: (cvg_trans _ (h _)) => {h}; last first.
+  pose xval x (y : K x) i : K i :=
+    match eqVneq x i return K i with
+    | EqNotNeq r => @eq_rect X x K y i r
+    | NeqNotEq _ => point
+    end.
+  rewrite eqEsubset; split => y //= _; exists (xval x y) => //; rewrite /xval.
+  by case (eqVneq x x) => [e|/eqP//]; rewrite eq_axiomK.
+by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
+Qed.
+
+Lemma hausdorff_product :
+  (forall x, hausdorff_space (K x)) -> hausdorff_space (@product_topologicalType X K).
+Proof.
+move=> hsdfK p q /= clstr; apply: functional_extensionality_dep => x.
+apply: hsdfK; move: clstr; rewrite ?cluster_cvgE /= => -[G PG [GtoQ psubG]].
+exists (prod_topo_apply x @ G); [exact: fmap_proper_filter|split].
+  rewrite -(prod_topo_applyE x).
+  apply: cvg_trans; last exact: (@prod_topo_apply_continuous x q).
+  by apply: cvg_app; exact: GtoQ.
+move/(cvg_app (prod_topo_apply x)): psubG => /cvg_trans; apply.
+exact: prod_topo_apply_continuous.
+Qed.
+
+End Product_Hausdorff.
 
 Definition finI (I : choiceType) T (D : set I) (f : I -> set T) :=
   forall D' : {fset I}, {subset D' <= D} ->
