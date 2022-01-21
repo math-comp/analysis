@@ -1527,16 +1527,16 @@ Lemma near_mapi {T U} (f : T -> set U) (F : set (set T)) (P : set U) :
   (\forall y \near f `@ F, P y) = (\forall x \near F, exists y, f x y /\ P y).
 Proof. by []. Qed.
 
-(* Lemma filterSpair (T T' : Type) (F : set (set T)) (F' : set (set T')) : *)
-(*    Filter F -> Filter F' -> *)
-(*    forall (P : set T) (P' : set T') (Q : set (T * T')), *)
-(*    (forall x x', P x -> P' x' -> Q (x, x')) -> F P /\ F' P' -> *)
-(*    filter_prod F F' Q. *)
-(* Proof. *)
-(* move=> FF FF' P P' Q PQ [FP FP']; near=> x. *)
-(* have := PQ x.1 x.2; rewrite -surjective_pairing; apply; near: x; *)
-(* by [apply: cvg_fst|apply: cvg_snd]. *)
-(* Grab Existential Variables. all: end_near. Qed. *)
+Lemma filter_pair_set (T T' : Type) (F : set (set T)) (F' : set (set T')) :
+   Filter F -> Filter F' ->
+   forall (P : set T) (P' : set T') (Q : set (T * T')),
+   (forall x x', P x -> P' x' -> Q (x, x')) -> F P /\ F' P' ->
+   filter_prod F F' Q.
+Proof.
+move=> FF FF' P P' Q PQ [FP FP']; near=> x.
+have := PQ x.1 x.2; rewrite -surjective_pairing; apply; near: x;
+by [apply: cvg_fst|apply: cvg_snd].
+Unshelve. all: by end_near. Qed.
 
 Lemma filter_pair_near_of (T T' : Type) (F : set (set T)) (F' : set (set T')) :
    Filter F -> Filter F' ->

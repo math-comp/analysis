@@ -434,75 +434,6 @@ split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
 - by exists M; split => // x /ltM /sPQ.
 Qed.
 
-(*Global Instance ereal_locally'_filter :
-  forall x : {ereal R}, ProperFilter (ereal_locally' x).
-Proof.
-case=> [x||]; first exact: Proper_locally'_numFieldType.
-- apply Build_ProperFilter.
-    by move=> P [M [Mreal MP]]; exists (M + 1); apply MP; rewrite ltr_addl.
-  split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
-  + by exists 0; rewrite real0.
-  + have [/eqP MP0|MP0] := boolP (MP == 0).
-      have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-        by exists 0; rewrite real0; split => // x x0; split;
-        [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
-      exists `|MQ|; rewrite realE normr_ge0; split => // x Hx; split.
-        by apply gtMP; rewrite (le_lt_trans _ Hx) // MP0.
-      by apply gtMQ; rewrite (le_lt_trans _ Hx) // real_ler_normr // lexx.
-    have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-      exists `|MP|; rewrite realE normr_ge0; split => // x MPx; split.
-      by apply gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
-      by apply gtMQ; rewrite (le_lt_trans _ MPx) // MQ0.
-    have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
-    have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
-    exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
-    rewrite realE /= posnum_ge0 /=; split => // x.
-    rewrite pos_lt_maxl /= => /andP[MPx MQx]; split.
-    by apply/gtMP; rewrite (le_lt_trans _ MPx) // real_ler_normr // lexx.
-    by apply/gtMQ; rewrite (le_lt_trans _ MQx) // real_ler_normr // lexx.
-  + by exists M; split => // ? /gtM /sPQ.
-- apply Build_ProperFilter.
-  + move=> P [M [Mr ltMP]]; exists (M - 1).
-    by apply: ltMP; rewrite gtr_addl oppr_lt0.
-  + split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
-    * by exists 0; rewrite real0.
-    * have [/eqP MP0|MP0] := boolP (MP == 0).
-        have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-          by exists 0; rewrite real0; split => // x x0; split;
-          [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
-        exists (- `|MQ|); rewrite realN realE normr_ge0; split => // x xMQ; split.
-          by apply ltMP; rewrite (lt_le_trans xMQ) // MP0 ler_oppl oppr0.
-        apply ltMQ; rewrite (lt_le_trans xMQ) // ler_oppl -normrN.
-       by rewrite real_ler_normr ?realN // lexx.
-    * have [/eqP MQ0|MQ0] := boolP (MQ == 0).
-        exists (- `|MP|); rewrite realN realE normr_ge0; split => // x MPx; split.
-          apply ltMP; rewrite (lt_le_trans MPx) // ler_oppl -normrN.
-          by rewrite real_ler_normr ?realN // lexx.
-        by apply ltMQ; rewrite (lt_le_trans MPx) // MQ0 ler_oppl oppr0.
-      have {}MP0 : 0 < `|MP| by rewrite normr_gt0.
-      have {}MQ0 : 0 < `|MQ| by rewrite normr_gt0.
-      exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num).
-      rewrite realN realE /= posnum_ge0 /=; split => // x.
-      rewrite ltr_oppr pos_lt_maxl => /andP[].
-      rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
-        apply/ltMP; rewrite (lt_le_trans MPx) //= ler_oppl -normrN.
-        by rewrite real_ler_normr ?realN // lexx.
-      apply/ltMQ; rewrite (lt_le_trans MQx) //= ler_oppl -normrN.
-      by rewrite real_ler_normr ?realN // lexx.
-    * by exists M; split => // x /ltM /sPQ.
-Qed.
-Typeclasses Opaque ereal_locally'.*)
-
-(*Global Instance ereal_locally_filter :
-  forall x, ProperFilter (@ereal_locally R x).
-Proof.
-case=> [x||].
-exact: ereal_locally_filter.
-exact: (ereal_locally'_filter +oo).
-exact: (ereal_locally'_filter -oo).
-Qed.
-Typeclasses Opaque ereal_locally.*)
-
 Lemma near_pinfty_div2 (A : set R) :
   (\forall k \near +oo, A k) -> (\forall k \near +oo, A (k / 2)).
 Proof.
@@ -2122,17 +2053,6 @@ Lemma cvg_dist2P {F : set (set U)} {G : set (set V)}
    \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
 Proof. exact: cvg_distP. Qed.
 
-(* Lemma cvg_dist_supP {F : set (set U)} {G : set (set V)} *)
-(*   {FF : Filter F} {FG : Filter G} (y : U) (z : V): *)
-(*   (F, G) --> (y, z) <-> *)
-(*   forall eps : {posnum R}, {near F & G, forall y' z', *)
-(*           (`|[y - y']| < eps) /\ (`|[z - z']| < eps) }. *)
-(* Proof. *)
-(* rewrite cvg_ballP; split => [] P eps. *)
-(* - have [[A B] /=[FA GB] ABP] := P eps; exists (A, B) => -//[a b] [/= Aa Bb]. *)
-(*   apply/andP; rewrite -ltr_maxl. *)
-(*   have /= := (@sub_ball_norm_rev _ _ (_, _)). *)
-
 Lemma cvg_dist2 {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) ->
@@ -2672,66 +2592,6 @@ Export CompleteNormedModule.Exports.
 (** * Extended Types *)
 
 (** * The topology on real numbers *)
-
-(* TODO: Remove R_complete_lim and use lim instead *)
-(* Definition R_lim (F : (R -> Prop) -> Prop) : R := *)
-(*   sup (fun x : R => `[<F (ball (x + 1) 1)>]). *)
-
-(* move: (Lub_Rbar_correct (fun x : R => F (ball (x + 1) 1))). *)
-(* move Hl : (Lub_Rbar _) => l{Hl}; move: l => [x| |] [Hx1 Hx2]. *)
-(* - case: (HF (Num.min 2 eps%:num / 2)%:pos) => z Hz. *)
-(*   have H1 : z - Num.min 2 eps%:num / 2 + 1 <= x + 1. *)
-(*     rewrite ler_add //; apply/RleP/Hx1. *)
-(*     apply: filterS Hz. *)
-(*     rewrite /ball /= => u; rewrite /AbsRing_ball absrB ltr_distl. *)
-(*     rewrite absrB ltr_distl. *)
-(*     case/andP => {Hx1 Hx2 FF HF x F} Bu1 Bu2. *)
-(*     have H : Num.min 2 eps%:num <= 2 by rewrite ler_minl lerr. *)
-(*     rewrite addrK -addrA Bu1 /= (ltr_le_trans Bu2) //. *)
-(*     rewrite -addrA ler_add // -addrA addrC ler_subr_addl. *)
-(*     by rewrite ler_add // ler_pdivr_mulr // ?mul1r. *)
-(*   have H2 : x + 1 <= z + Num.min 2 eps%:num / 2 + 1. *)
-(*     rewrite ler_add //; apply/RleP/(Hx2 (Finite _)) => v Hv. *)
-(*     apply: Rbar_not_lt_le => /RltP Hlt. *)
-(*     apply: filter_not_empty. *)
-(*     apply: filterS (filterI Hz Hv). *)
-(*     rewrite /ball /= => w []; rewrite /AbsRing_ball //. *)
-(*     rewrite absrB ltr_distl => /andP[_ Hw1]. *)
-(*     rewrite absrB ltr_distl addrK => /andP[Hw2 _]. *)
-(*     by move: (ltr_trans (ltr_trans Hw1 Hlt) Hw2); rewrite ltrr. *)
-(*   apply: filterS Hz. *)
-(*   rewrite /ball /= => u; rewrite /AbsRing_ball absrB absRE 2!ltr_distl. *)
-(*   case/andP => {Hx1 Hx2 F FF HF} H H0. *)
-(*   have H3 : Num.min 2 eps%:num <= eps by rewrite ler_minl lerr orbT. *)
-(*   apply/andP; split. *)
-(*   - move: H1; rewrite -ler_subr_addr addrK ler_subl_addr => H1. *)
-(*     rewrite ltr_subl_addr // (ltr_le_trans H0) //. *)
-(*     rewrite -ler_subr_addr (ler_trans H1) //. *)
-(*     rewrite -ler_subr_addl -!addrA (addrC x) !addrA subrK. *)
-(*     rewrite ler_subr_addr -mulrDl ler_pdivr_mulr //. *)
-(*     by rewrite -mulr2n -mulr_natl mulrC ler_pmul. *)
-(*   - move: H2; rewrite -ler_subr_addr addrK. *)
-(*     move/ler_lt_trans; apply. *)
-(*     move: H; rewrite // ltr_subl_addr => H. *)
-(*     rewrite -ltr_subr_addr (ltr_le_trans H) //. *)
-(*     rewrite addrC -ler_subr_addr -!addrA (addrC u) !addrA subrK. *)
-(*     rewrite -ler_subl_addr opprK -mulrDl ler_pdivr_mulr // -mulr2n -mulr_natl. *)
-(*     by rewrite mulrC ler_pmul. *)
-(* - case (HF 1%:pos) => y Fy. *)
-(*   case: (Hx2 (y + 1)) => x Fx. *)
-(*   apply: Rbar_not_lt_le => Hlt. *)
-(*   apply: filter_not_empty. *)
-(*   apply: filterS (filterI Fy Fx) => z [Hz1 Hz2]. *)
-(*   apply: Rbar_le_not_lt Hlt;  apply/RleP. *)
-(*   rewrite -(ler_add2r (-(y - 1))) opprB !addrA -![in X in _ <= X]addrA. *)
-(*   rewrite (addrC y) ![in X in _ <= X]addrA subrK. *)
-(*   suff : `|x + 1 - y|%R <= 1 + 1 by rewrite ler_norml => /andP[]. *)
-(*   rewrite ltrW // (@subr_trans _ z). *)
-(*   by rewrite (ler_lt_trans (ler_norm_add _ _)) // ltr_add // distrC. *)
-(* - case: (HF 1%:pos) => y Fy. *)
-(*   case: (Hx1 (y - 1)); by rewrite addrAC addrK. *)
-(* Qed. *)
-(* Admitted. *)
 
 Arguments cvg_distW {_ _ F FF}.
 

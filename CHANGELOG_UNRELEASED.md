@@ -23,6 +23,8 @@
   + lemma `fin_numB`
   + lemmas `mule_eq_pinfty`, `mule_eq_ninfty`
   + lemmas `fine_eq0`, `abse_eq0`
+- in `topology.v`:
+  + lemma `filter_pair_set`
 
 ### Changed
 
