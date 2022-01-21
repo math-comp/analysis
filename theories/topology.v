@@ -208,6 +208,12 @@ Require Import boolp reals classical_sets posnum.
 (*                        cluster F == set of cluster points of F.            *)
 (*                          compact == set of compact sets w.r.t. the filter- *)
 (*                                     based definition of compactness.       *)
+(*                   compact_near F == the filter F contains a closed comapct *)
+(*                                     set                                    *)
+(*                     precompact A == The set A is contained in a closed and *)
+(*                                     compact set                            *)
+(*                locally_compact A == every point in A has a compact         *)
+(*                                     (and closed) neighborhood              *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
 (*              prod_topo_apply x f == application of f to x, f being in a    *)
 (*                                     product topology of a family K         *)
@@ -331,6 +337,12 @@ Require Import boolp reals classical_sets posnum.
 (*                               a topology that ignores points outside A     *)
 (*            incl_subspace x == with x of type subspace A with (A : set T),  *)
 (*                               inclusion of subspace A into T               *)
+(*                                                                            *)
+(* * Arzela Ascoli' theorem :                                                 *)
+(*            singletons T := [set [set x] | x in [set: T]].                  *)
+(*      equicontinuous W x == the set (W : X -> Y) is equicontinuous at x     *)
+(*  pointwise_precompact W == For each (x : X), set of images [f x | f in W]  *)
+(*                            is precompact                                   *)
 (*                                                                            *)
 (* We endow several standard types with the types of topological notions:     *)
 (* - products: prod_topologicalType, prod_uniformType, prod_pseudoMetricType  *)
@@ -2708,6 +2720,14 @@ have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
 by apply: cvg_cluster clsAp_q; apply: cvg_within.
 Qed.
 
+Lemma compact_set1 (x : T) : compact [set x].
+Proof.
+move=> F PF Fx; exists x; split; first by [].
+move=> P B nbhsB; exists x; split; last exact: nbhs_singleton.
+suff [y [Py <-//]] : P `&` [set x] !=set0.
+by apply: filter_ex; [exact: PF| exact: filterI].
+Qed.
+
 End Compact.
 Arguments hausdorff_space : clear implicits.
 
@@ -2868,6 +2888,49 @@ by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
 End Tychonoff.
+
+Section Precompact.
+
+Context {X : topologicalType}.
+
+(* The closed condition here is neccessary to make this definition work in a  *)
+(* non-hausdorff setting.                                                     *)
+Definition compact_near (F : set (set X)) :=
+  exists2 U, F U & compact U /\ closed U.
+
+Definition precompact (C : set X) := compact_near (globally C).
+
+Lemma precompactE (C : set X) : precompact C = compact (closure C).
+Proof.
+rewrite propeqE; split=> [[B CsubB [cptB cB]]|]; last first.
+  move=> clC; exists (closure C) => //; first exact: subset_closure.
+  by split => //; exact: closed_closure.
+apply: (subclosed_compact _ cptB); first exact: closed_closure.
+by move/closure_id: cB => ->; exact: closure_subset.
+Qed.
+
+Lemma precompact_subset (A B : set X) : A `<=` B -> precompact B -> precompact A.
+Proof.
+by move=> AsubB [B' B'subB cptB']; exists B' => // ? ?; exact/B'subB/AsubB.
+Qed.
+
+Lemma compact_precompact (A B : set X) :
+  hausdorff_space X -> compact A -> precompact A.
+Proof.
+move=> h c; rewrite precompactE ( _ : closure A = A)//.
+apply/esym/closure_id; exact: compact_closed.
+Qed.
+
+Lemma precompact_closed (A : set X) : closed A -> precompact A = compact A.
+Proof.
+move=> clA; rewrite propeqE; split=> [[B AsubB [ + _ ]]|].
+  by move=> /subclosed_compact; exact.
+by rewrite {1}(_ : A = closure A) ?precompactE// -closure_id.
+Qed.
+
+Definition locally_compact (A : set X) := [locally precompact A].
+
+End Precompact.
 
 Section Product_Hausdorff.
 Context {X : choiceType} {K : X -> topologicalType}.
@@ -5120,25 +5183,41 @@ Proof. by []. Qed.
 Section UniformCvgLemmas.
 Context {U : choiceType} {V : uniformType}.
 
+Lemma uniform_set1 F (f : U -> V) (x : U) :
+  Filter F -> {uniform [set x], F --> f} = ((g x) @[g --> F] --> f x).
+Proof.
+move=> FF; rewrite propeqE; split.
+  move=> + W => /(_ [set t | W (t x)]) +; rewrite /filter_of -nbhs_entourageE.
+  rewrite /uniform_fun uniform_nbhs => + [Q entQ subW].
+  by apply; exists Q; split => // h Qf; exact/subW/Qf.
+move=> Ff W; rewrite /filter_of uniform_nbhs /uniform_fun => [[E] [entE subW]].
+apply: (filterS subW); move/(nbhs_entourage (f x))/Ff: entE => //=; near_simpl.
+by apply: filter_app; apply: nearW=> ? ? ? ->.
+Qed.
+
+Lemma uniform_subset_nbhs (f : U -> V) (A B : set U) :
+  B `<=` A -> nbhs (f : {uniform` A -> V}) `=>` nbhs (f : {uniform` B -> V}).
+Proof.
+move => BsubA P /uniform_nbhs [E [entE EsubP]].
+apply: (filterS EsubP); apply/uniform_nbhs; exists E; split => //.
+by move=> h Eh y /BsubA Ay; exact: Eh.
+Qed.
+
+Lemma uniform_subset_cvg (f : U -> V) (A B : set U) F :
+  Filter F -> B `<=` A -> {uniform A, F --> f} -> {uniform B, F --> f}.
+Proof.
+move => FF /uniform_subset_nbhs => /(_ f); rewrite /uniform_fun.
+by move=> nbhsF Acvg; apply: cvg_trans; [exact: Acvg|exact: nbhsF].
+Qed.
+
 Lemma ptws_uniform_cvg  (f : U -> V) (F : set (set (U -> V))) :
   Filter F -> {uniform, F --> f} -> {ptws, F --> f}.
 Proof.
-move=> FF; rewrite cvg_sup => W i.
+move=> FF; rewrite cvg_sup => + i; have isubT : [set i] `<=` setT by move=> ?.
+move=> /(uniform_subset_cvg _ isubT); rewrite /ptws_fun uniform_set1.
 rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
-move=> C /=; rewrite -nbhs_entourageE nbhs_filterE => -[B eB BsubC].
-suff sub2 : @^~ i @` [set g | forall u, B (f u, g u)] `<=` to_set B (f i).
-set l := (x in x _); suff weakL : forall X Y, X `<=` Y -> l X -> l Y.
-apply: (weakL _ _ (subset_trans sub2 BsubC)).
-- exists [set g : U -> V | forall u, B (f u, g u)] => //.
-  apply W => /=; apply/uniform_nbhs; eexists; split; first by exact: eB.
-  by move=> ? Q ? //=; apply Q.
-- move=> X Y /setUidPl XsubY [P FP EX].
-  exists ( P `|` [set g : U -> V | exists v, Y v /\ g = cst v]).
-    by apply: (@filterS _ _ _ P) => //= t ?; left.
-  rewrite image_setU EX setUC [x in x `|` _](_ : _ = Y) // eqEsubset; split.
-    by move => t /= [/= h [/= v [? ->] <-]].
-  by move => t ?; exists (cst t) => //; exists t.
-- by move => v [/= g] + <-; apply.
+apply: cvg_trans => W /=; rewrite nbhs_simpl; exists (@^~ i @^-1` W) => //.
+by rewrite image_preimage // eqEsubset; split=> // j _; exists (fun _ => j).
 Qed.
 
 Lemma cvg_restrict_dep (A : set U) (f : U -> V) (F : set (set (U -> V))) :
@@ -5177,22 +5256,6 @@ rewrite entourage_close => C u; rewrite inE => uA; apply: hV.
 rewrite /cluster -nbhs_entourageE /= => X Y [X' eX X'X] [Y' eY Y'Y].
 exists (g u); split; [apply: X'X| apply: Y'Y]; last exact: entourage_refl.
 by apply: (C [set fg | forall y, A y -> X' (fg.1 y, fg.2 y)]) => //; exists X'.
-Qed.
-
-Lemma uniform_subset_nbhs (f : U -> V) (A B : set U) :
-  B `<=` A -> nbhs (f : {uniform` A -> V}) `=>` nbhs (f : {uniform` B -> V}).
-Proof.
-move => BsubA P /uniform_nbhs [E [entE EsubP]].
-apply: (filterS EsubP); apply/uniform_nbhs; exists E; split => //.
-by move=> h Eh y /BsubA Ay; exact: Eh.
-Qed.
-
-Lemma uniform_subset_cvg (f : U -> V) (A B : set U) F :
-  Filter F -> B `<=` A -> {uniform A, F --> f} -> {uniform B, F --> f}.
-Proof.
-move => FF /uniform_subset_nbhs => /(_ f); rewrite /uniform_fun.
-move=> nbhsF Acvg; apply: cvg_trans; first exact: Acvg.
-exact: nbhsF.
 Qed.
 
 Lemma uniform_restrict_cvg
@@ -5815,3 +5878,106 @@ have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
   by rewrite fAfE; exact: subsetI_eq0 cEIE.
 by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply fcAfEb; split; exists t.
 Qed.
+Section UniformPointwise.
+
+Section UniformPointwise.
+Context {U : topologicalType} {V : uniformType}.
+
+Definition singletons {T : Type} := [set [set x] | x in @setT T].
+
+Lemma ptws_cvg_family_singleton F (f: U -> V):
+  Filter F -> {ptws, F --> f} = {family @singletons U, F --> f}.
+Proof.
+move=> FF; rewrite propeqE fam_cvgP cvg_sup /ptws_fun; split.
+  move=> + A [x _ <-] => /(_ x); rewrite uniform_set1.
+  rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
+  apply: cvg_trans => W /=; rewrite ?nbhs_simpl /fmap /= => [[W' + <-]].
+  by apply: filterS => g W'g /=; exists g.
+move=> + i; have /[swap] /[apply] : singletons [set i] by exists i.
+rewrite uniform_set1.
+rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
+move=> + W //=; rewrite ?nbhs_simpl => Q => /Q Q'; exists (@^~ i @^-1` W) => //.
+by rewrite eqEsubset; split => [j [? + <-//]|j Wj]; exists (fun _ => j).
+Qed.
+
+Lemma ptws_cvg_compact_family F (f : U -> V) :
+  ProperFilter F -> {family compact, F --> f} -> {ptws, F --> f}.
+Proof.
+move=> PF; rewrite ptws_cvg_family_singleton; apply: family_cvg_subset.
+by move=> A [x _ <-]; exact: compact_set1.
+Qed.
+End UniformPointwise.
+
+Section ArzelaAscoli.
+Context {X : topologicalType}.
+Context {Y : uniformType}.
+Context {hsdf : hausdorff_space Y}.
+
+(* The key condition in Arzela-Ascoli that, like uniform continuity,
+   moves a quantifier around so all functions have the same 'deltas'. *)
+
+Definition equicontinuous (W : set (X -> Y)) :=
+  forall x (E : set (Y * Y)), entourage E ->
+    \forall y \near x, forall f, W f -> E(f x, f y).
+
+Lemma equicontinuous_subset (W V : set (X -> Y)) :
+  W `<=` V -> equicontinuous V -> equicontinuous W.
+Proof.
+move=> WsubV + x E entE => /(_ x E entE); apply: filter_app; apply: nearW.
+by move=> ? Vf ? /WsubV; exact: Vf.
+Qed.
+
+Lemma equicontinuous_cts (W : set (X -> Y)) f :
+  equicontinuous W -> W f -> continuous f.
+Proof.
+move=> ectsW Wf x; apply/cvg_entourageP => E entE; near_simpl;
+by move: (ectsW x _ entE); apply: filter_app; apply: nearW => ?; exact.
+Qed.
+
+(* A convenient notion that is in between compactness in
+   {family compact, X -> y} and compactness in {ptws X -> y}. *)
+Definition pointwise_precompact (W : set (X -> Y)):=
+  forall x, precompact [set (f x) | f in W].
+
+Lemma pointwise_precomact_subset (W V : set (X -> Y)) :
+  W `<=` V -> pointwise_precompact V -> pointwise_precompact W.
+Proof.
+move=> WsubV + x => /(_ x) pcptV.
+by apply: precompact_subset pcptV; exact: image_subset.
+Qed.
+
+Lemma pointwise_precompact_precompact (W : set {ptws X -> Y}):
+  pointwise_precompact W -> precompact W.
+Proof.
+rewrite precompactE => ptwsPreW; pose K := fun x => closure [set f x | f in W].
+set R := [set f : {ptws X -> Y} | forall x : X, K x (f x)].
+have C : compact R.
+  by apply: tychonoff => x; rewrite -precompactE; exact: ptwsPreW.
+apply: (subclosed_compact _ C); first exact: closed_closure.
+have WsubR : W `<=` R.
+  by move=> f Wf x; rewrite /R /K closure_limit_point; left; exists f.
+rewrite closureE => q; apply; split => //; apply: compact_closed=> //.
+exact: hausdorff_product.
+Qed.
+
+Lemma uniform_pointwise_compact (W : set (X -> Y)) :
+  compact (W : set (@fct_UniformFamily X Y compact)) ->
+  compact (W : set {ptws X -> Y}).
+Proof.
+rewrite [x in x _ -> _]compact_ultra [x in _ -> x _]compact_ultra.
+move=> + F UF FW => /(_ F UF FW) [h [Wh Fh]]; exists h; split => //.
+by move=> /= Q Fq; apply: (ptws_cvg_compact_family _ Fh).
+Qed.
+
+Lemma compact_pointwise_precompact (W : set (X -> Y)) :
+  compact (W : set {family compact, X -> Y}) -> pointwise_precompact W.
+Proof.
+move=> cptFamW x; pose V : set Y := prod_topo_apply x @` W.
+rewrite precompactE (_ : [set f x | f in W] = V ) //.
+suff: (compact V) by move=> /[dup]/(compact_closed hsdf)/closure_id <-.
+apply: (@continuous_compact _ _  (prod_topo_apply x)).
+  by apply: continuous_subspaceT => f ?; exact: prod_topo_apply_continuous.
+exact: uniform_pointwise_compact.
+Qed.
+
+End ArzelaAscoli.

@@ -46,6 +46,16 @@
   + generalize `IVT` with subspace topology
 - in `realfun.v`:
   + lemma `continuous_subspace_itv`
+- in `topology.v`:
+  + definitions `compact_near`, `precompact`, `locally_compact`
+  + lemmas `precompactE`, `precompact_subset`, `compact_precompact`, 
+    `precompact_closed`
+  + definitions `singletons`, `equicontinuous`, `pointwise_precompact`
+  + lemmas `equicontinuous_subset`, `equicontinuous_cts`
+  + lemmas `pointwise_precomact_subset`, `pointwise_precompact_precompact`
+    `uniform_pointwise_compact`, `compact_pointwise_precompact`
+  + lemmas `compact_set1`, `uniform_set1`, `ptws_cvg_family_singleton`,
+    `ptws_cvg_compact_family`
 
 ### Changed
 
