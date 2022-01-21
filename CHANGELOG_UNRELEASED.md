@@ -25,6 +25,9 @@
   + lemmas `fine_eq0`, `abse_eq0`
 - in `topology.v`:
   + lemma `filter_pair_set`
+- in `topology.v`:
+  + definition `prod_topo_apply`
+  + lemmas `prod_topo_applyE`, `prod_topo_apply_continuous`, `hausdorff_product`
 
 ### Changed
 
