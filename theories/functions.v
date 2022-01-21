@@ -9,11 +9,34 @@ Add Search Blacklist "__functions_".
 Add Search Blacklist "_factory_".
 Add Search Blacklist "_mixin_".
 
+(******************************************************************************)
+(*                            Theory of functions                             *)
+(*                                                                            *)
+(* This file provides a theory of functions whose domain and codomain are     *)
+(* represented by sets.                                                       *)
+(*                                                                            *)
+(*     set_fun A B f == f : aT -> rT is a function with domain A : set aT and *)
+(*                      codomain B : set rT                                   *)
+(*    set_surj A B f == f is surjective                                       *)
+(*     set inj A B f == f is injective                                        *)
+(*     set_bij A B f == f is bijective                                        *)
+(*    {fun A >-> B } == type of functions f : aT -> rT from A : set aT to     *)
+(*                      B : set rT                                            *)
+(*  {oinv aT >-> rT} == type of functions with a partial inverse              *)
+(* {oinvfun A >-> B} := {fun A >-> B } + {oinv aT >-> rT}                     *)
+(*   {inv aT >-> rT} == type of functions with an inverse                     *)
+(*             f ^-1 == inverse of f : {inv aT >-> rT}                        *)
+(*  {invfun A >-> B} := {fun A >-> B } + {inv aT >-> rT}                      *)
+(* {surjfun A >-> B} == type of surjective functions                          *)
+(*  {injfun A >-> B} == type of injective functions                           *)
+(*     {bij A >-> B} := {injfun A >-> B} + {surjfun A >-> B}                  *)
+(*                                                                            *)
+(******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Reserved Notation "'`I_' n" (at level 8, n at level 2, format "'`I_' n").
 Reserved Notation "f \|_ D" (at level 10).
 Reserved Notation "'{' 'fun' A '>->' B '}'"
   (format "'{' 'fun'  A  '>->'  B '}'").
@@ -27,8 +50,8 @@ Reserved Notation "'{' 'invfun' T '>->' U '}'"
   (format "'{' 'invfun'  T  '>->'  U '}'").
 Reserved Notation "'{' 'inj' A '>->' T '}'"
   (format "'{' 'inj'  A  '>->'  T '}'").
-Reserved Notation "'{' 'spliinj' A '>->' T '}'"
-  (format "'{' 'spliinj'  A  '>->'  T '}'").
+Reserved Notation "'{' 'splitinj' A '>->' T '}'"
+  (format "'{' 'splitinj'  A  '>->'  T '}'").
 Reserved Notation "'{' 'surj' A '>->' B '}'"
   (format "'{' 'surj'  A  '>->'  B '}'").
 Reserved Notation "'{' 'splitsurj' A '>->' B '}'"
@@ -52,7 +75,7 @@ Reserved Notation "[ 'inv' 'of' f ]" (format "[ 'inv'  'of'  f ]").
 Reserved Notation "[ 'oinv' 'of' f ]" (format "[ 'oinv'  'of'  f ]").
 Reserved Notation "[ 'inv' 'of' f ]" (format "[ 'inv'  'of'  f ]").
 Reserved Notation "[ 'inj' 'of' f ]" (format "[ 'inj'  'of'  f ]").
-Reserved Notation "[ 'spliinj' 'of' f ]" (format "[ 'spliinj'  'of'  f ]").
+Reserved Notation "[ 'splitinj' 'of' f ]" (format "[ 'splitinj'  'of'  f ]").
 Reserved Notation "[ 'surj' 'of' f ]" (format "[ 'surj'  'of'  f ]").
 Reserved Notation "[ 'splitsurj' 'of' f ]" (format "[ 'splitsurj'  'of'  f ]").
 Reserved Notation "[ 'injfun' 'of' f ]" (format "[ 'injfun'  'of'  f ]").

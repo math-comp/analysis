@@ -71,6 +71,8 @@ Require Import mathcomp_extra boolp.
 (*                   `]-oo, b[ := [set` `]-oo, b[]                            *)
 (*                   `[a, +oo[ := [set` `[a, +oo[]                            *)
 (*                   `]a, +oo[ := [set` `]a, +oo[]                            *)
+(*                 `]-oo, +oo[ := [set` `]-oo, +oo[]                          *)
+(*                        `I_n := [set k | k < n]                             *)
 (*               is_subset1 A <-> A contains only 1 element.                  *)
 (*                   is_fun f <-> for each a, f a contains only 1 element.    *)
 (*                 is_total f <-> for each a, f a is non empty.               *)
