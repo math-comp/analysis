@@ -1482,11 +1482,25 @@ Proof. by rewrite /nnsfun_bigmax; elim/big_ind2 : _ => [|x g y h <- <-|]. Qed.
 
 End nnsfun_iter.
 
+Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) x0 (D : set T1)
+    (f : {fimfun x0, D >-> T2}) (g : T2 -> T3) :
+  fset_set [set (g \o f) x | x in D] =
+  [fset g x | x in fset_set [set f x | x in D]]%fset.
+Proof.
+apply/fsetP => z; rewrite in_fset_set; last first.
+  by rewrite -(image_comp f g); exact: finite_image.
+apply/idP/idP => [|/imfsetP[r /=]].
+  rewrite inE /= => -[x Dx <-{z}]; apply/imfsetP => /=; exists (f x) => //.
+  by rewrite in_fset_set ?inE/=; [exists x|exact/fimfunP].
+rewrite in_fset_set; last exact/fimfunP.
+by rewrite inE => /= -[x Dx <-{r} ->{z}]; rewrite inE; exists x.
+Qed.
+
 Section sintegralrM.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (pt : T) (R : realType).
 Variable (m : {measure set T -> \bar R}).
-Variables (r : R) (D : set T) (mD : measurable D) (f : {nnsfun @setT T >-> R}).
+Variables (r : R) (D : set T) (mD : measurable D) (f : {nnsfun D >-> R}).
 
 Lemma sintegralrM :
   sintegral m D (cst r \* f)%R = r%:E * sintegral m D f.
@@ -1494,7 +1508,16 @@ Proof.
 have [->|r0] := eqVneq r 0%R.
   rewrite mul0e (_ : (_ \* _)%R = cst 0%R) ?sintegral0// funeqE => x /=.
   by rewrite mul0r.
-rewrite /sintegral.
+rewrite sintegralE (fset_set_comp _ (fun x => r * x)%R).
+rewrite big_imfset/=; last by move=> x y /= _ _ /mulfI; exact.
+rewrite [in RHS]sintegralE [in RHS]big_seq ge0_sume_distrr; last first.
+  move=> i ifD; rewrite mule_ge0// ?measure_ge0//; last exact/measurable_sfunP.
+  by rewrite lee_fin; exact: (@NNSFuncdom_ge0 _ _ _ mD f).
+rewrite -big_seq; apply eq_bigr => i _; rewrite muleA -EFinM.
+congr (_ * m (_ `&` _)); apply/seteqP; rewrite /preimage /cst.
+by split => x /=; [move/mulfI; exact|move=> <-].
+Qed.
+
 (*
 pose cast := cast_ord (ssize_sfun_scale_neq0 pt f r0).
 rewrite [LHS](eq_bigr (fun k : 'I_(ssize (sfun_scale pt r f)) =>
@@ -1518,7 +1541,7 @@ pose castK := cast_ord (esym (ssize_sfun_scale_neq0 pt f r0)).
 rewrite (reindex castK); last first.
   by exists cast => i; by rewrite /cast /castK /= ?(cast_ordKV,cast_ordK).
 by apply: eq_bigr => i _; rewrite /cast /castK cast_ordKV EFinM muleA.
-Qed.*) Admitted.
+Qed.*)
 
 End sintegralrM.
 
