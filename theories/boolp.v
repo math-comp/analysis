@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
@@ -5,6 +6,19 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice.
+
+(******************************************************************************)
+(*                                                                            *)
+(*  {classicType T} == Endow T : Type with a canonical eqType/choiceType.     *)
+(*                     This is intended for local use.                        *)
+(*                     E.g., with T : Type and A : set T                      *)
+(*                     elim/Pchoice: T => T in A *.                           *)
+(*                     substitutes T with T : choiceType.                     *)
+(*                     See also the lemmas Peq and eqPchoice.                 *)
+(* {eclassicType T} == Endow T : eqType with a canonical choiceType.          *)
+(*                     On the model of {classicType _}.                       *)
+(*                                                                            *)
+(******************************************************************************)
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.

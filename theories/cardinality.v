@@ -9,24 +9,26 @@ Require Import boolp mathcomp_extra classical_sets functions.
 (*                              Cardinality                                   *)
 (*                                                                            *)
 (* This file provides an account of cardinality properties of classical sets. *)
-(* This includes standard results of  set theory such as the Pigeon Hole      *)
+(* This includes standard results of set theory such as the Pigeon Hole       *)
 (* principle, the Cantor-Bernstein Theorem, or lemmas about the cardinal of   *)
 (* nat, nat * nat, and rat.                                                   *)
 (*                                                                            *)
 (* Since universe polymorphism is not yet available in our framework, we      *)
 (* develop a relational theory of cardinals: there is no type for cardinals   *)
 (* only relations A #<= B and A #= B to compare the cardinals of two sets     *)
-(* (on two possibly different types)                                          *)
+(* (on two possibly different types).                                         *)
 (*                                                                            *)
-(*        A #<= B  ==  the cardinal of A is smaller or equal to the one of B  *)
-(*         A #= B  ==  the cardinal of A is equal to the cardinal of B        *)
-(*   finite_set A  ==  the set A is finite                                    *)
-(*                 :=  exists n, A #= `I_n                                    *)
+(*         A #<= B  ==  the cardinal of A is smaller or equal to the one of B *)
+(*         A #>= B  := B #<= A                                                *)
+(*          A #= B  ==  the cardinal of A is equal to the cardinal of B       *)
+(*         A #!= B  := ~~ (A #= B)                                            *)
+(*    finite_set A  ==  the set A is finite                                   *)
+(*                  :=  exists n, A #= `I_n                                   *)
 (*                 <-> exists X : {fset T}, A = [set` X]                      *)
 (*                 <-> ~ ([set: nat] #<= A)                                   *)
-(*  infinite_set A :=  ~ finite_set A                                         *)
+(*  infinite_set A  := ~ finite_set A                                         *)
 (*     countable A <-> A is countable                                         *)
-(*                 :=  A #<= [set: nat]                                       *)
+(*                  :=  A #<= [set: nat]                                      *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -335,10 +337,12 @@ Proof. by rewrite card_eq_somel card_eq_somer. Qed.
 Lemma card_eq0 {T U} {A : set T} : (A #= @set0 U) = (A == set0).
 Proof. by rewrite card_eq_le card_le0 card_ge0 andbT. Qed.
 
-Lemma card_eq_emptyr (T : emptyType) U (A : set T) (B : set U) : (B #= A) = (B == set0).
+Lemma card_eq_emptyr (T : emptyType) U (A : set T) (B : set U) :
+  (B #= A) = (B == set0).
 Proof. by rewrite empty_eq0; exact: card_eq0. Qed.
 
-Lemma card_eq_emptyl (T : emptyType) U (A : set T) (B : set U) : (A #= B) = (B == set0).
+Lemma card_eq_emptyl (T : emptyType) U (A : set T) (B : set U) :
+  (A #= B) = (B == set0).
 Proof. by rewrite card_eq_sym card_eq_emptyr. Qed.
 
 Definition emptyE := (emptyE_subdef, card_eq_emptyr, card_eq_emptyl).
