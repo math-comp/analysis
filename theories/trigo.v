@@ -217,7 +217,7 @@ Proof.
 by rewrite /cos_coeff /= mul1r expr1z mulN1r expr2 mulNr -mulrA divff// mulr1.
 Qed.
 
-Lemma cos_coeff_2_4 : cos_coeff 2 4 = 2%:R / 3%:R :> R.
+Lemma cos_coeff_2_4 : cos_coeff 2 4%N = 2%:R / 3%:R :> R.
 Proof.
 rewrite /cos_coeff /= mul1r -exprnP sqrrN expr1n mul1r 2!factS mulnCA mulnC.
 by rewrite 3!exprS expr1 2!mulrA natrM -mulf_div -2!natrM divff// mul1r.
