@@ -672,54 +672,59 @@ Notation "{ 'fimfun' x0 ,  A >-> T }" := (@FImFun.type _ T x0 A) : form_scope.
 Notation "[ 'fimfun' 'of' f ]" := [the {fimfun _, _ >-> _} of f] : form_scope.
 Hint Resolve fimfunP : core.
 
+Section fimfun_pred.
+Context {aT rT : Type} (x0 : aT) (A : set aT).
+Definition fimfun_key : pred_key (mem [set f : aT -> rT | finite_set (f @` A)]).
+Proof. exact. Qed.
+Definition fimfun := KeyedPred fimfun_key.
+End fimfun_pred.
+
+Section fimfun.
+Context {aT rT : Type} (x0 : aT) (A : set aT).
+Notation T := {fimfun x0, A >-> rT}.
+Notation fimfun := (@fimfun aT rT A).
+Section Sub.
+Context (f : aT -> rT) (fP : f \in fimfun).
+Definition fimfun_Sub_subproof := @FiniteImage.Build aT rT x0 A f (set_mem fP).
+#[local] HB.instance Definition _ := fimfun_Sub_subproof.
+Definition fimfun_Sub := [fimfun of f].
+End Sub.
+
+Lemma fimfun_rect (K : T -> Type) :
+  (forall f (Pf : f \in fimfun), K (fimfun_Sub Pf)) -> forall u : T, K u.
+Proof.
+move=> Ksub [f [[Pf]]]/=.
+by suff -> : Pf = (set_mem (@mem_set _ [set f | _] f Pf)) by apply: Ksub.
+Qed.
+
+Lemma fimfun_valP f (Pf : f \in fimfun) : fimfun_Sub Pf = f :> (_ -> _).
+Proof. by []. Qed.
+
+Canonical fimfun_subType := SubType T _ _ fimfun_rect fimfun_valP.
+End fimfun.
+
 Lemma fimfuneqP aT rT x0 (A : set aT) (f g : {fimfun x0, A >-> rT}) :
   f = g <-> f =1 g.
+Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
+
+Definition fimfuneqMixin aT (rT : eqType) x0 (A : set aT) :=
+  [eqMixin of {fimfun x0, A >-> rT} by <:].
+Canonical fimfuneqType aT (rT : eqType) x0 (A : set aT) :=
+  EqType {fimfun x0, A >-> rT} (fimfuneqMixin rT x0 A).
+Definition fimfunchoiceMixin aT (rT : choiceType) x0 (A : set aT) :=
+  [choiceMixin of {fimfun x0, A >-> rT} by <:].
+Canonical fimfunchoiceType aT (rT : choiceType) x0 (A : set aT) :=
+  ChoiceType {fimfun x0, A >-> rT} (fimfunchoiceMixin rT x0 A).
+
+Lemma finite_image_cst {aT rT} (x : rT) (A : set aT) : finite_set (cst x @` A).
 Proof.
-split=> [->//|]; case: f g => [f [[/= ff]]] [g [[/= fg]]] /funext eqfg.
-rewrite eqfg in ff *; congr {| FImFun.sort := _; FImFun.class := _|}.
-congr {|FImFun.lebesgue_integral_FiniteImage_mixin := _|}.
-by congr {|FiniteImage.fimfunP := _|}.
-Qed.
-Canonical fimfuneqType T T' x0 (A : set T) := EqType {fimfun x0, A >-> T'} gen_eqMixin.
-Canonical fimfunchoiceType T T' x0 (A : set T) :=
-  ChoiceType {fimfun x0, A >-> T'} gen_choiceMixin.
-
-(* Definition inv_fimfun aT (rT : choiceType) (A : set aT) (f : aT -> rT) : *)
-(*     {fsfun rT -> set aT with set0}%fsfun := *)
-(*   [fsfun y in fset_set (f @` A) => A `&` f @^-1` [set y]]%fsfun. *)
-
-(* Lemma fimfunE T x0 (R : ringType) (A : set T) (f : {fimfun x0, A >-> R}) *)
-(*    (A_ := inv_fimfun A f) : *)
-(*   forall x, x \in A -> f x = \sum_(y <-  A_) (y * \1_(A_ y) x). *)
-(* Proof. *)
-(* move=> x /set_mem xA; have fxfA: f x \in fset_set (f @` A). *)
-(*   by rewrite in_fset_set// inE//=; exists x => //; apply: set_mem. *)
-(* have [|fxA] := finsuppP A_ (f x). *)
-(*   rewrite memNfinsupp => /eqP. *)
-(*   by rewrite fsfunE/= fxfA -subset0 => /(_ x)[]/=; split. *)
-(* rewrite (big_fsetD1 (f x)) //= /indic fsfunE/= fxfA. *)
-(* rewrite (@id (_ \in _)) ?mulr1 ?inE// big_seq_cond/= big1 ?addr0//= => y. *)
-(* rewrite ?andbT !inE eq_sym => /andP[fxNy yA]. *)
-(* move=> /fsubsetP-/(_ _ (finsupp_sub _ _ _)) in yA. *)
-(* rewrite fsfunE/= ifT// [_ \in _]negbTE ?mulr0//. *)
-(* by rewrite notin_set => -[_ fxy]; rewrite -fxy eqxx in fxNy. *)
-(* Qed. *)
-
-Lemma fimfunE T x0 (R : ringType) (A : set T) (f : {fimfun x0, A >-> R}) x :
-  x \in A -> f x = \sum_(y <- fset_set (f @` A)) (y * \1_(A `&` f @^-1` [set y]) x).
-Proof.
-move=> /set_mem xA; have fxfA: f x \in fset_set (f @` A).
-  by rewrite in_fset_set// inE//=; exists x => //; apply: set_mem.
-rewrite (big_fsetD1 (f x))//= /indic (@id (_ \in _)) ?mulr1 ?inE//=.
-rewrite big_seq_cond ?big1 ?addr0// => y; rewrite ?andbT !inE eq_sym.
-move=> /andP[fxNy yA]; rewrite [_ \in _]negbTE ?mulr0// notin_set.
-by move=> [_ fxy]; rewrite -fxy eqxx in fxNy.
+have [->|/set0P[t At]] := eqVneq A set0; first by rewrite image_set0.
+suff -> : cst x @` A = [set x] by apply: finite_set1.
+by apply/predeqP => y; split=> [[t' _ <-]//|->//] /=; exists t.
 Qed.
 
-Lemma fimfunEord T x0 (R : ringType) (A : set T) (f : {fimfun x0, A >-> R})
-  (s := fset_set (f @` A)) :
-  forall x, x \in A -> f x = \sum_(i < #|`s|) (s`_i * \1_(A `&` f @^-1` [set s`_i]) x).
-Proof. by move=> x xA; rewrite fimfunE /s // (big_nth 0) big_mkord. Qed.
+Definition fun_cmul {U : Type} {R : ringType} (k : R) (f : U -> R) x := k * f x.
+Notation "k *\ f" := (fun_cmul k f) (at level 40, format "k  *\  f") : ring_scope.
 
 Lemma cst_fimfun_subproof aT rT x0 (A : set aT) x : @FiniteImage aT rT x0 A (cst x).
 Proof.
@@ -737,117 +742,94 @@ Lemma comp_fimfun_subproof aT rT sT x0 (A : set aT)
 Proof. by split; rewrite -image_comp; apply: finite_image. Qed.
 HB.instance Definition _ aT rT sT x0 A f g := @comp_fimfun_subproof aT rT sT x0 A f g.
 
-Section fimfun_zmod.
-Context {T : Type} {R : zmodType} {x0 : T} {A : set T}.
-Implicit Types (f g : {fimfun x0, A >-> R}).
+Section zmod.
+Context (aT : Type) (rT : zmodType) (x0 : aT) (A : set aT).
+Lemma fimfun_zmod_closed : zmod_closed (@fimfun aT rT A).
+Proof.
+split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
+by move=> fA gA; apply: (finite_image11 (fun x y => x - y)).
+Qed.
+Canonical fimfun_add := AddrPred fimfun_zmod_closed.
+Canonical fimfun_zmod := ZmodPred fimfun_zmod_closed.
+Definition fimfun_zmodMixin := [zmodMixin of {fimfun x0, A >-> rT} by <:].
+Canonical fimfun_zmodType := ZmodType {fimfun x0, A >-> rT} fimfun_zmodMixin.
 
-Lemma add_fimfun_subproof f g : @FiniteImage T R x0 A (f \+ g).
-Proof. by split; apply: (finite_image11 +%R). Qed.
-HB.instance Definition _ f g := add_fimfun_subproof f g.
-Definition add_fimfun f g := [the {fimfun x0, A >-> R} of f \+ g].
-
-Lemma opp_fimfun_subproof  f : @FiniteImage T R x0 A (\- f).
-Proof. by split; rewrite -image_comp; apply: (finite_image -%R). Qed.
-HB.instance Definition _ f := opp_fimfun_subproof f.
-Definition opp_fimfun f := [the {fimfun x0, A >-> R} of \- f].
-
-Lemma addA_fimfun_subproof : associative add_fimfun.
-Proof. by move=> g f h /=; apply/fimfuneqP => x /=; rewrite addrA. Qed.
-
-Lemma addC_fimfun_subproof : commutative add_fimfun.
-Proof. by move=> f g /=; apply/fimfuneqP => x /=; rewrite addrC. Qed.
-
-Lemma add0r_fimfun_subproof : left_id (cst_fimfun x0 A 0) add_fimfun.
-Proof. by move=> f /=; apply/fimfuneqP => x /=; rewrite add0r. Qed.
-
-Lemma addNr_fimfun_subproof :
-  left_inverse (cst_fimfun x0 A 0) opp_fimfun add_fimfun.
-Proof. by move=> f /=; apply/fimfuneqP => x /=; rewrite /= addNr. Qed.
-
-Definition fimfun_zmodMixin := ZmodMixin
-  addA_fimfun_subproof addC_fimfun_subproof
-  add0r_fimfun_subproof addNr_fimfun_subproof.
-Canonical fimfun_zmodType := ZmodType {fimfun x0, A >-> R} (@fimfun_zmodMixin).
+Implicit Types (f g : {fimfun x0, A >-> rT}).
 
 Lemma fimfunD f g : f + g =1 f \+ g. Proof. by []. Qed.
 Lemma fimfunN f : - f =1 \- f. Proof. by []. Qed.
 Lemma fimfunB f g : f - g =1 f \- g. Proof. by []. Qed.
-Lemma finfun0 : (0 : {fimfun x0, A >-> R}) =1 cst 0. Proof. by []. Qed.
-Lemma fimfun_sum I r (P : {pred I}) (f : I -> {fimfun x0, A >-> R}) (x : T) :
+Lemma finfun0 : (0 : {fimfun x0, A >-> rT}) =1 cst 0. Proof. by []. Qed.
+Lemma fimfun_sum I r (P : {pred I}) (f : I -> {fimfun x0, A >-> rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+End zmod.
 
-End fimfun_zmod.
+Section ring.
+Context (aT : Type) (rT : ringType) (x0 : aT) (A : set aT).
+#[local] Canonical aT_eqType := EqType aT gen_eqMixin.
+#[local] Canonical aT_choiceType := ChoiceType aT gen_choiceMixin.
+#[local] Canonical aT_pointedType := PointedType aT x0.
 
-Definition fun_cmul {U : Type} {R : ringType} (k : R) (f : U -> R) x := k * f x.
-Notation "k *\ f" := (fun_cmul k f) (at level 40, format "k  *\  f") : ring_scope.
-
-Section fimfun_ring.
-Context {T : Type} {R : ringType} {x0 : T} {A : set T}.
-Implicit Types (f g : {fimfun x0, A >-> R}).
-
-Lemma indic_fimfun_subproof X : @FiniteImage T R x0 A \1_X.
+Lemma fimfun_mulr_closed : mulr_closed (@fimfun aT rT A).
 Proof.
-split; apply: (finite_subfset [fset 0; 1]%fset) => x [t At /=].
-by rewrite !inE /indic; case: (_ \in _) => <-; rewrite ?eqxx ?orbT.
+split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
+by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
 Qed.
-HB.instance Definition _ X := indic_fimfun_subproof X.
-Definition indic_fimfun (X : set T) := [the {fimfun x0, A >-> R} of \1_X].
+Canonical fimfun_ring := SubringPred fimfun_mulr_closed.
+Definition fimfun_ringMixin := [ringMixin of {fimfun x0, A >-> rT} by <:].
+Canonical fimfun_ringType := RingType {fimfun x0, A >-> rT} fimfun_ringMixin.
 
-Lemma indicT : \1_[set: T] = cst (1 : R).
-Proof. by apply/funext=> x; rewrite /indic in_setT. Qed.
-
-Lemma mul_fimfun_subproof f g : @FiniteImage T R x0 A (f \* g).
-Proof. by split; apply: (finite_image11 *%R). Qed.
-HB.instance Definition _ f g := @mul_fimfun_subproof f g.
-Definition mul_fimfun  f g := [the {fimfun x0, A >-> R} of f \* g].
-
-HB.instance Definition _ k f := FImFun.copy (k *\ f) (cst k \* f).
-Definition scale_fimfun k f := [the {fimfun x0, A >-> R} of k *\ f].
-
-Lemma mulA_fimfun_subproof : associative mul_fimfun.
-Proof. by move=> g f h /=; apply/fimfuneqP => x /=; rewrite mulrA. Qed.
-
-Lemma mul1r_fimfun_subproof : left_id (cst_fimfun x0 A 1) mul_fimfun.
-Proof. by move=> f /=; apply/fimfuneqP => x /=; rewrite mul1r. Qed.
-
-Lemma mulr1_fimfun_subproof : right_id (cst_fimfun x0 A 1) mul_fimfun.
-Proof. by move=> f /=; apply/fimfuneqP => x /=; rewrite mulr1. Qed.
-
-Lemma mulrDl_fimfun_subproof : left_distributive mul_fimfun +%R.
-Proof. by move=> f g h /=; apply/fimfuneqP => x /=; rewrite /= mulrDl. Qed.
-
-Lemma mulrDr_fimfun_subproof : right_distributive mul_fimfun +%R.
-Proof. by move=> f g h /=; apply/fimfuneqP => x /=; rewrite /= mulrDr. Qed.
-
-Lemma oner_neq0_fimfun_subproof : cst_fimfun x0 A (1 : R) != 0%R.
-Proof. by apply/negP=> /eqP/fimfuneqP/(_ x0)/= /eqP; rewrite oner_eq0. Qed.
-
-Definition fimfun_ringMixin := RingMixin mulA_fimfun_subproof
- mul1r_fimfun_subproof mulr1_fimfun_subproof
- mulrDl_fimfun_subproof mulrDr_fimfun_subproof oner_neq0_fimfun_subproof.
-Canonical fimfun_ringType := RingType {fimfun x0, A >-> R} fimfun_ringMixin.
+Implicit Types (f g : {fimfun x0, A >-> rT}).
 
 Lemma fimfunM f g : f * g =1 f \* g. Proof. by []. Qed.
-Lemma fimfun1 : (1 : {fimfun x0, A >-> R}) =1 cst 1. Proof. by []. Qed.
-Lemma fimfun_prod I r (P : {pred I}) (f : I -> {fimfun x0, A >-> R}) (x : T) :
+Lemma fimfun1 : (1 : {fimfun x0, A >-> rT}) =1 cst 1. Proof. by []. Qed.
+Lemma fimfun_prod I r (P : {pred I}) (f : I -> {fimfun x0, A >-> rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 Lemma fimfunX f n : f ^+ n =1 (fun x => f x ^+ n).
 Proof. by move=> x; elim: n => [|n IHn]//; rewrite !exprS fimfunM/= IHn. Qed.
 
-End fimfun_ring.
+Lemma indic_fimfun_subproof X : @FiniteImage aT rT x0 A \1_X.
+Proof.
+split; apply: (finite_subfset [fset 0; 1]%fset) => x [t At /=].
+by rewrite !inE /indic; case: (_ \in _) => <-; rewrite ?eqxx ?orbT.
+Qed.
+HB.instance Definition _ X := indic_fimfun_subproof X.
+Definition indic_fimfun (X : set aT) := [the {fimfun x0, A >-> rT} of \1_X].
 
-Section fimfun_ring.
-Context {T : Type} {x0 : T} {R : comRingType} {A : set T}.
+Lemma indicT : \1_[set: aT] = cst (1 : rT).
+Proof. by apply/funext=> x; rewrite /indic in_setT. Qed.
 
-Lemma mulC_fimfun_subproof : commutative (@mul_fimfun T R x0 A).
-Proof. by move=> f g /=; apply/fimfuneqP => x /=; rewrite mulrC. Qed.
+HB.instance Definition _ k f := FImFun.copy (k *\ f) (cst_fimfun x0 A k * f).
+Definition scale_fimfun k f := [the {fimfun x0, A >-> rT} of k *\ f].
 
-Canonical fimfun_comRingType := 
-  ComRingType {fimfun x0, A >-> R} mulC_fimfun_subproof.
+End ring.
 
-End fimfun_ring.
+Section comring.
+Context (aT : Type) (rT : comRingType) (x0 : aT) (A : set aT).
+#[local] Canonical aT_eqType' := EqType aT gen_eqMixin.
+#[local] Canonical aT_choiceType' := ChoiceType aT gen_choiceMixin.
+#[local] Canonical aT_pointedType' := PointedType aT x0.
+Definition fimfun_comRingMixin := [comRingMixin of {fimfun x0, A >-> rT} by <:].
+Canonical fimfun_comRingType := ComRingType {fimfun x0, A >-> rT} fimfun_comRingMixin.
+End comring.
+
+Lemma fimfunE T x0 (R : ringType) (A : set T) (f : {fimfun x0, A >-> R}) x :
+  x \in A -> f x = \sum_(y <- fset_set (f @` A)) (y * \1_(A `&` f @^-1` [set y]) x).
+Proof.
+move=> /set_mem xA; have fxfA: f x \in fset_set (f @` A).
+  by rewrite in_fset_set// inE//=; exists x => //; apply: set_mem.
+rewrite (big_fsetD1 (f x))//= /indic (@id (_ \in _)) ?mulr1 ?inE//=.
+rewrite big_seq_cond ?big1 ?addr0// => y; rewrite ?andbT !inE eq_sym.
+move=> /andP[fxNy yA]; rewrite [_ \in _]negbTE ?mulr0// notin_set.
+by move=> [_ fxy]; rewrite -fxy eqxx in fxNy.
+Qed.
+
+Lemma fimfunEord T x0 (R : ringType) (A : set T) (f : {fimfun x0, A >-> R})
+  (s := fset_set (f @` A)) :
+  forall x, x \in A -> f x = \sum_(i < #|`s|) (s`_i * \1_(A `&` f @^-1` [set s`_i]) x).
+Proof. by move=> x xA; rewrite fimfunE /s // (big_nth 0) big_mkord. Qed.
 
 Lemma trivIset_preimage1 {aT rT} (f : aT -> rT) (A : set rT) :
   trivIset setT (fun x => f @^-1` [set x]).
