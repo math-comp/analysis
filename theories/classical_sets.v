@@ -485,11 +485,28 @@ Proof. by rewrite setUA !(setUAC _ C) -(setUA _ C) setUid. Qed.
 Lemma setUUr A B C : A `|` (B `|` C) = (A `|` B) `|` (A `|` C).
 Proof. by rewrite !(setUC A) setUUl. Qed.
 
-Lemma setD1K a A : A a -> a |` A `\ a = A.
+Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
+
+Lemma setDUK A B : A `<=` B -> A `|` (B `\` A) = B.
 Proof.
-move=> Aa; rewrite predeqE => y; split=> [[->|[]]//|Ay].
-by have [->|] := pselect (y = a); [left|right].
+move=> AB; apply/seteqP; split=> [x [/AB//|[//]]|x Bx].
+by have [Ax|nAx] := pselect (A x); [left|right].
 Qed.
+
+Lemma setDKU A B : A `<=` B -> (B `\` A) `|` A = B.
+Proof. by move=> /setDUK; rewrite setUC. Qed.
+
+Lemma setDv A : A `\` A = set0.
+Proof. by rewrite predeqE => t; split => // -[]. Qed.
+
+Lemma setDIK A B : A `&` (B `\` A) = set0.
+Proof. by rewrite setDE setICA -setDE setDv setI0. Qed.
+
+Lemma setDKI A B : (B `\` A) `&` A = set0.
+Proof. by rewrite setIC setDIK. Qed.
+
+Lemma setD1K a A : A a -> a |` A `\ a = A.
+Proof.  by move=> Aa; rewrite setDUK//= => x ->. Qed.
 
 Lemma subset0 A : (A `<=` set0) = (A = set0).
 Proof. by rewrite eqEsubset propeqE; split=> [A0|[]//]; split. Qed.
@@ -538,15 +555,10 @@ rewrite !inE; apply/propext; split; first by move/[apply]; apply.
 by move=> NAx y; apply: contraPnot => ->.
 Qed.
 
-Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
-
 Lemma setSD C A B : A `<=` B -> A `\` C `<=` B `\` C.
 Proof. by rewrite !setDE; apply: setSI. Qed.
 
 Lemma setTD A : setT `\` A = ~` A.
-Proof. by rewrite predeqE => t; split => // -[]. Qed.
-
-Lemma setDv A : A `\` A = set0.
 Proof. by rewrite predeqE => t; split => // -[]. Qed.
 
 Lemma set0P A : (A != set0) <-> (A !=set0).
@@ -1418,7 +1430,7 @@ Lemma bigcap_set (s : seq T) (f : T -> set U) :
 Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_set. Qed.
 
 End bigcup_set.
-
+ 
 Section bigop_nat_lemmas.
 Context {T : Type}.
 Implicit Types (A : set T) (F : nat -> set T).

@@ -469,6 +469,9 @@ Proof. exact: card_le_trans. Qed.
 Lemma finite_setP T (A : set T) : finite_set A <-> exists n, A #= `I_n.
 Proof. by []. Qed.
 
+Lemma finite_II n : finite_set `I_n. Proof. by apply/finite_setP; exists n. Qed.
+Hint Resolve finite_II : core.
+
 Lemma card_II {n} : `I_n #= [set: 'I_n].
 Proof.
 apply/card_esym/pcard_eqP/bijPex; exists val; split=> //.
@@ -721,6 +724,15 @@ Qed.
 Lemma fset_setD1 {T : choiceType} (x : T) (A : set T) :
   finite_set A -> fset_set (A `\ x) = (fset_set A `\ x)%fset.
 Proof. by move=> fA; rewrite fset_setD// fset_set1. Qed.
+
+Lemma bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
+  finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
+Proof.
+move=> finA; rewrite -bigcup_fset /fset_set; case: pselect => [{}finA|//].
+apply/seteqP; split=> [x [i Ai Fix]|x [i /=]].
+  by exists i => //; case: cid => // B AB /=; move: Ai; rewrite AB.
+by case: cid => /= B -> iB Fix; exists i.
+Qed.
 
 Lemma super_bij T U (X A : set T) (Y B : set U) (f : {bij X >-> Y}) :
   X `<=` A -> Y `<=` B -> A `\` X #= B `\` Y ->

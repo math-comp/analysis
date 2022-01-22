@@ -120,78 +120,6 @@ Lemma bigsetU_bigcup2 (T : Type) (A B : set T) :
   \big[setU/set0]_(i < 2) bigcup2 A B i = A `|` B.
 Proof. by rewrite !big_ord_recl big_ord0 setU0. Qed.
 
-Lemma setDK {T : Type} (A B : set T) : A `<=` B -> A `|` (B `\` A) = B.
-Proof.
-move=> AB; apply/seteqP; split=> [x [/AB//|[//]]|x Bx].
-by have [Ax|nAx] := pselect (A x); [left|right].
-Qed.
-
-Lemma measureUfinr (T : ringOfSetsType) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> (mu B < +oo)%E ->
-  mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
-Proof.
-move=> Am Bm mBfin; rewrite -[B in LHS](setDK (@subIsetl _ _ A)) setUA.
-rewrite [A `|` _]setUidl; last exact: subIsetr.
-rewrite measureU//=; do ?by apply:measurableD; do ?apply: measurableI.
-  rewrite measureD//; do ?exact: measurableI.
-  by rewrite addeA setIA setIid setIC.
-by rewrite setDE setCI setIUr -setDE setDv set0U setIA setIAC -setDE setDv set0I.
-Qed.
-
-Lemma measureUfinl (T : ringOfSetsType) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> (mu A < +oo)%E ->
-  mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
-Proof. by move=> *; rewrite setUC measureUfinr// setIC [(mu B + _)%E]addeC. Qed.
-
-Lemma oppe_eq0 (R : numDomainType) (x : \bar R) : (- x == 0)%E = (x == 0)%E.
-Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
-
-Lemma measure_le0  (T : ringOfSetsType) (R : realFieldType)
-    (mu : {additive_measure set T -> \bar R}) (A : set T) :
-    measurable A -> (mu A <= 0)%E = (mu A == 0)%E.
-Proof. by move=> /(measure_ge0 mu); case: ltgtP. Qed.
-
-Lemma le_measure (R : realFieldType) (T : ringOfSetsType)
-    (mu : {additive_measure set T -> \bar R}) :
-  {in measurable &, {homo mu : A B / A `<=` B >-> (A <= B)%E}}.
-Proof.
-move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
-  by rewrite lee_pinfty_eq => /eqP ->; rewrite lee_pinfty.
-have mBA : measurable (B `\` A) by apply: measurableD.
-rewrite -[B](setDK AB) measureU//= ?lee_addl// ?measure_ge0//.
-by rewrite setDE setIA setIAC -setDE setDv set0I.
-Qed.
-
-Lemma measureIl (R : realFieldType) (T : ringOfSetsType)
-    (mu : {additive_measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> (mu (A `&` B) <= mu A)%E.
-Proof. by move=> mA mB; rewrite le_measure ?inE//; apply: measurableI. Qed.
-
-Lemma measureIr (R : realFieldType) (T : ringOfSetsType)
-    (mu : {additive_measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> (mu (A `&` B) <= mu B)%E.
-Proof. by move=> mA mB; rewrite le_measure ?inE//; apply: measurableI. Qed.
-
-Lemma null_set_setU (R : realFieldType) (T : ringOfSetsType)
-  (mu : {measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> mu A = 0%E -> mu B = 0%E -> mu (A `|` B) = 0%E.
-Proof.
-move=> mA mB A0 B0; rewrite measureUfinl ?A0 ?lte_pinfty//= ?B0 ?add0e.
-apply/eqP; rewrite oppe_eq0 -measure_le0/=; do ?exact: measurableI.
-by rewrite -A0 measureIl.
-Qed.
-
-Lemma subset_measure0 (T : measurableType) (R : realType)
-  (mu : {measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> A `<=` B ->
-  mu B = 0%E -> mu A = 0%E.
-Proof.
-move=> mA mB AB B0.
-apply/eqP; rewrite eq_le measure_ge0// ?andbT -?B0.
-by apply: le_measure; rewrite ?inE.
-Qed.
 
 (* PR in progress *)
 Local Open Scope ereal_scope.
@@ -244,15 +172,6 @@ Proof. by move: x => [| |] //= r; rewrite !eqe normr_eq0. Qed.
 Lemma adde_gt0 (R : numDomainType) (x y : \bar R) : (0 < x -> 0 < y -> 0 < x + y)%E.
 Proof.
 by move: x y => [x| |] [y| |] //; rewrite !lte_fin; exact: addr_gt0.
-Qed.
-
-Lemma bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
-  finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
-Proof.
-move=> finA; rewrite -bigcup_fset /fset_set; case: pselect => [{}finA|//].
-apply/seteqP; split=> [x [i Ai Fix]|x [i /=]].
-  by exists i => //; case: cid => // B AB /=; move: Ai; rewrite AB.
-by case: cid => /= B -> iB Fix; exists i.
 Qed.
 
 Section additive_lemmas.
