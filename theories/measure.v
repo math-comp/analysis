@@ -76,10 +76,38 @@ Reserved Notation "mu .-measurable" (at level 2, format "mu .-measurable").
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Coercion Choice.mixin : Choice.class_of >-> Choice.mixin_of.
+
 (* TODO: remove when available in all the Coq versions supported by the CI
    (as of today, only in Coq 8.13) *)
 Definition uncurry {A B C : Type} (f : A -> B -> C)
   (p : A * B) : C := match p with (x, y) => f x y end.
+
+Definition setI_closed T (G : set (set T)) :=
+  forall A B, G A -> G B -> G (A `&` B).
+
+Definition setU_closed T (G : set (set T)) :=
+  forall A B, G A -> G B -> G (A `|` B).
+
+Definition setC_closed T (G : set (set T)) := forall A, G A -> G (~` A).
+
+Definition setD_closed T (G : set (set T)) :=
+  forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
+
+Definition setDI_closed T (G : set (set T)) :=
+  forall A B, G A -> G B -> G (A `\` B).
+
+Definition ndseq_closed T (G : set (set T)) :=
+  forall F, nondecreasing_seq F -> (forall i, G (F i)) -> G (\bigcup_i (F i)).
+
+Definition trivIset_closed T (G : set (set T)) :=
+  forall F : (set T)^nat, trivIset setT F -> (forall n, G (F n)) ->
+                    G (\bigcup_k F k).
+
+Definition are_measurable_sets T D (G : set (set T)) :=
+  [/\ G set0, (forall A, G A -> G (D `\` A)) &
+     (forall A : (set T)^nat, (forall n, G (A n)) -> G (\bigcup_k A k))].
+
 
 Definition bigcup2 T (A B : set T) : nat -> set T :=
   fun i => if i == 0%N then A else if i == 1%N then B else set0.
@@ -91,12 +119,11 @@ by case=> -[_ At|[_ Bt|//]]; [left|right].
 Qed.
 
 HB.mixin Record isSemiRingOfSets T := {
-  mpoint : T;
+  ptclass : Pointed.class_of T;
   measurable : set (set T) ;
   diff_fsets : set T -> set T -> {fset (set T)} ;
   measurable0 : measurable set0 ;
-  measurableI : forall A B, measurable A -> measurable B ->
-    measurable (A `&` B) ;
+  measurableI : setI_closed measurable;
   measurable_diff_fsets : forall A B C, measurable A -> measurable B ->
     is_true (C \in diff_fsets A B) -> measurable C ;
   (* we skip the hypos measurable A measurable B because we can define a *)
@@ -109,24 +136,37 @@ HB.mixin Record isSemiRingOfSets T := {
     is_true (D \in diff_fsets A B) -> C `&` D = set0 }.
 
 HB.structure Definition SemiRingOfSets := {T of isSemiRingOfSets T}.
-
 Notation semiRingOfSetsType := SemiRingOfSets.type.
+
+Canonical semiRingOfSets_eqType (T : semiRingOfSetsType) := EqType T ptclass.
+Canonical semiRingOfSets_choiceType (T : semiRingOfSetsType) :=
+  ChoiceType T ptclass.
+Canonical semiRingOfSets_ptType (T : semiRingOfSetsType) :=
+  PointedType T ptclass.
 
 HB.mixin Record RingOfSets_from_semiRingOfSets T of isSemiRingOfSets T := {
   measurableU : forall A B : set T,
     measurable A -> measurable B -> measurable (A `|` B) }.
 
 HB.structure Definition RingOfSets := {T of RingOfSets_from_semiRingOfSets T &}.
-
 Notation ringOfSetsType := RingOfSets.type.
+
+Canonical ringOfSets_eqType (T : ringOfSetsType) := EqType T ptclass.
+Canonical ringOfSets_choiceType (T : ringOfSetsType) := ChoiceType T ptclass.
+Canonical ringOfSets_ptType (T : ringOfSetsType) := PointedType T ptclass.
 
 HB.mixin Record AlgebraOfSets_from_RingOfSets T of RingOfSets T := {
   measurableT : measurable (@setT T)
 }.
 
 HB.structure Definition AlgebraOfSets := {T of AlgebraOfSets_from_RingOfSets T &}.
-
 Notation algebraOfSetsType := AlgebraOfSets.type.
+
+Canonical algebraOfSets_eqType (T : algebraOfSetsType) := EqType T ptclass.
+Canonical algebraOfSets_choiceType (T : algebraOfSetsType) :=
+  ChoiceType T ptclass.
+Canonical algebraOfSets_ptType (T : algebraOfSetsType) :=
+  PointedType T ptclass.
 
 HB.mixin Record Measurable_from_algebraOfSets T of AlgebraOfSets T := {
   measurable_bigcup : forall U : (set T)^nat, (forall i, measurable (U i)) ->
@@ -134,60 +174,68 @@ HB.mixin Record Measurable_from_algebraOfSets T of AlgebraOfSets T := {
 }.
 
 HB.structure Definition Measurable := {T of Measurable_from_algebraOfSets T &}.
-
 Notation measurableType := Measurable.type.
 
-HB.factory Record isAlgebraOfSets T := {
-  mpoint : T;
+Canonical measurable_eqType (T : measurableType) := EqType T ptclass.
+Canonical measurable_choiceType (T : measurableType) := ChoiceType T ptclass.
+Canonical measurable_ptType (T : measurableType) := PointedType T ptclass.
+
+HB.factory Record isRingOfSets T := {
+  ptclass : Pointed.class_of T;
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
-  measurableU : forall A B, measurable A -> measurable B -> measurable (A `|` B) ;
-  measurableC : forall A, measurable A -> measurable (~` A)
+  measurableU : setU_closed measurable;
+  measurableD : setDI_closed measurable;
 }.
 
-HB.builders Context T of isAlgebraOfSets T.
+HB.builders Context T of isRingOfSets T.
+Implicit Types (A B C D : set T).
 
-Lemma semiRingOfSets_measurableI (A B : set T) :
-  measurable A -> measurable B -> measurable (A `&` B).
-Proof.
-move=> mA mB.
-have -> : A `&` B = ~` (~` A `|` ~` B).
-  by rewrite -setCI setCK.
-by apply: measurableC; apply: measurableU; apply: measurableC.
-Qed.
+Lemma mI A B : measurable A -> measurable B -> measurable (A `&` B).
+Proof. by move=> mA mB; rewrite -setDD; do ?apply: measurableD. Qed.
 
-Definition diff_fsets := (fun A B : set T => ([fset (A `&` ~` B)%classic])%fset).
+Definition d A B := [fset (A `\` B)%classic]%fset.
 
-Lemma semiRingOfSets_measurableD (A B C : set T) :
-  measurable A -> measurable B -> C \in diff_fsets A B -> measurable C.
-Proof.
-move=> mA mB; rewrite inE => /eqP ->.
-by apply: semiRingOfSets_measurableI => //; apply: measurableC.
-Qed.
+Lemma mD A B C : measurable A -> measurable B -> C \in d A B -> measurable C.
+Proof. by move=> mA mB; rewrite inE => /eqP ->; apply: measurableD. Qed.
 
-Lemma semiRingOfSets_diff_fsetsE A B :
-  A `\` B = \big[setU/set0]_(X <- enum_fset (diff_fsets A B)) X.
+Lemma dE A B : A `\` B = \big[setU/set0]_(X <- d A B) X.
 Proof. by rewrite big_seq_fset1. Qed.
 
-Lemma semiRingOfSets_diff_fsets_disjoint A B C D : C != D ->
-  C \in diff_fsets A B -> D \in diff_fsets A B -> C `&` D = set0.
+Lemma d_disj A B C D : C != D -> C \in d A B -> D \in d A B -> C `&` D = set0.
 Proof.
 by move=> /= CS; rewrite !inE => CAB DAB; move: CS; rewrite CAB DAB eqxx.
 Qed.
 
-HB.instance Definition T_isSemiRingOfSets : isSemiRingOfSets T :=
-  @isSemiRingOfSets.Build T mpoint measurable diff_fsets
-    measurable0
-    semiRingOfSets_measurableI
-    semiRingOfSets_measurableD
-    semiRingOfSets_diff_fsetsE
-    semiRingOfSets_diff_fsets_disjoint.
+HB.instance Definition T_isSemiRingOfSets :=
+  @isSemiRingOfSets.Build T ptclass measurable d measurable0 mI mD dE d_disj.
 
-HB.instance Definition T_isRingOfSets : RingOfSets_from_semiRingOfSets T :=
+HB.instance Definition T_isRingOfSets :=
   RingOfSets_from_semiRingOfSets.Build T measurableU.
 
+HB.end.
+
+HB.factory Record isAlgebraOfSets T := {
+  ptclass : Pointed.class_of T;
+  measurable : set (set T) ;
+  measurable0 : measurable set0 ;
+  measurableU : setU_closed measurable;
+  measurableC : setC_closed measurable
+}.
+
+HB.builders Context T of isAlgebraOfSets T.
+
+Lemma mD : setDI_closed measurable.
+Proof.
+move=> A B mA mB; rewrite setDE -[A]setCK -setCU.
+by do ?[apply: measurableU | apply: measurableC].
+Qed.
+
+HB.instance Definition T_isRingOfSets := @isRingOfSets.Build T ptclass
+  measurable measurable0 measurableU mD.
+
 Lemma measurableT : measurable (@setT T).
-Proof. by rewrite -setC0; apply measurableC; exact: measurable0. Qed.
+Proof. by rewrite -setC0; apply: measurableC; exact: measurable0. Qed.
 
 HB.instance Definition T_isAlgebraOfSets : AlgebraOfSets_from_RingOfSets T :=
   AlgebraOfSets_from_RingOfSets.Build T measurableT.
@@ -195,7 +243,7 @@ HB.instance Definition T_isAlgebraOfSets : AlgebraOfSets_from_RingOfSets T :=
 HB.end.
 
 HB.factory Record isMeasurable T := {
-  mpoint : T;
+  ptclass : Pointed.class_of T;
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableC : forall A, measurable A -> measurable (~` A) ;
@@ -207,24 +255,19 @@ HB.builders Context T of isMeasurable T.
 
 Obligation Tactic := idtac.
 
-Lemma algebraOfSets_measurableU (A B : set T) :
-  measurable A -> measurable B -> measurable (A `|` B).
+Lemma mU : setU_closed measurable.
 Proof.
-move=> mA mB; rewrite -bigcup2E.
+move=> A B mA mB; rewrite -bigcup2E.
 by apply measurable_bigcup => -[//|[//|i]]; exact: measurable0.
 Qed.
 
-Lemma algebraOfSets_measurableC (A : set T) : measurable A -> measurable (~` A).
-Proof. by move=> mA; apply: measurableC. Qed.
+Lemma mC : setC_closed measurable. Proof. by move=> *; apply: measurableC. Qed.
 
-HB.instance Definition T_isAlgebraOfSets : isAlgebraOfSets T :=
-  @isAlgebraOfSets.Build T mpoint measurable
-    measurable0
-    algebraOfSets_measurableU
-    algebraOfSets_measurableC.
+HB.instance Definition T_isAlgebraOfSets :=
+  @isAlgebraOfSets.Build T ptclass measurable measurable0 mU mC.
 
-HB.instance Definition T_isMeasurable : Measurable_from_algebraOfSets T :=
-  @Measurable_from_algebraOfSets.Build _ measurable_bigcup.
+HB.instance Definition T_isMeasurable :=
+  @Measurable_from_algebraOfSets.Build T measurable_bigcup.
 
 HB.end.
 
@@ -240,10 +283,10 @@ Lemma bigsetU_measurable I r (P : pred I) (F : I -> set T) :
   measurable (\big[setU/set0]_(i <- r | P i) F i).
 Proof. by move=> mF; elim/big_ind : _ => //; exact: measurableU. Qed.
 
-Lemma measurableD A B : measurable A -> measurable B -> measurable (A `\` B).
+Lemma measurableD : setDI_closed (@measurable T).
 Proof.
-move=> mA mB; rewrite diff_fsetsE big_seq_cond; apply: bigsetU_measurable => /=.
-by move=> i; rewrite andbT; exact: measurable_diff_fsets.
+move=> A B mA mB; rewrite diff_fsetsE big_seq.
+by apply: bigsetU_measurable => /= i; exact: measurable_diff_fsets.
 Qed.
 
 End ringofsets_lemmas.
@@ -1138,17 +1181,20 @@ Qed.
 
 End caratheodory_theorem_sigma_algebra.
 
-Definition caratheodory_type (R : realType) (T : Type) (x0 : T)
+Definition caratheodory_type (R : realType) (T : Type)
   (mu : {outer_measure set T -> \bar R}) := T.
 
 Section caratheodory_sigma_algebra.
-Variables (R : realType) (T : Type) (x0 : T) (mu : {outer_measure set T -> \bar R}).
+Variables (R : realType) (T : pointedType) (mu : {outer_measure set T -> \bar R}).
+Local Notation cT := (caratheodory_type mu).
 
-HB.instance Definition caratheodory_mixin := @isMeasurable.Build
-  (caratheodory_type x0 mu) x0 mu.-measurable
-    (caratheodory_measurable_set0 mu)
-    (@caratheodory_measurable_setC _ _ mu)
-    (@caratheodory_measurable_bigcup _ _ mu).
+Canonical caratheodory_eqType := EqType cT (Equality.class T).
+Canonical caratheodory_choiceType := ChoiceType cT (Choice.class T).
+Canonical caratheodory_pointedType := PointedType cT (Pointed.class T).
+HB.instance Definition _ := @isMeasurable.Build cT (Pointed.class T)
+  mu.-measurable (caratheodory_measurable_set0 mu)
+  (@caratheodory_measurable_setC _ _ mu)
+  (@caratheodory_measurable_bigcup _ _ mu).
 
 End caratheodory_sigma_algebra.
 
@@ -1160,8 +1206,8 @@ Definition measurable_fun (T U : measurableType) (D : set T) (f : T -> U) :=
   forall Y, measurable Y -> measurable (D `&` f @^-1` Y).
 
 Section caratheodory_measure.
-Variables (R : realType) (T : Type) (x0 : T) (mu : {outer_measure set T -> \bar R}).
-Local Notation U := (caratheodory_type x0 mu).
+Variables (R : realType) (T : pointedType) (mu : {outer_measure set T -> \bar R}).
+Local Notation U := (caratheodory_type mu).
 
 Lemma caratheodory_measure0 : mu (set0 : set U) = 0.
 Proof. exact: outer_measure0. Qed.
