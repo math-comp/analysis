@@ -1,6 +1,54 @@
 # Changelog
 
-Last releases: [[0.3.11] - 2021-11-14](#0311---2021-11-14) and [[0.3.12] - 2021-12-29](#0312---2021-12-29)
+Last releases: [[0.3.12] - 2021-12-29](#0312---2021-12-29) and [[0.3.13] - 2022-01-24](#0313---2022-01-24)
+
+## [0.3.13] - 2022-01-24
+
+### Added
+
+- in `topology.v`:
+  + definitions `kolmogorov_space`, `accessible_space`
+  + lemmas `accessible_closed_set1`, `accessible_kolmogorov`
+  + lemma `filter_pair_set`
+  + definition `prod_topo_apply`
+  + lemmas `prod_topo_applyE`, `prod_topo_apply_continuous`, `hausdorff_product`
+- in `ereal.v`:
+  + lemmas `lee_pemull`, `lee_nemul`, `lee_pemulr`, `lee_nemulr`
+  + lemma `fin_numM`
+  + definition `mule_def`, notation `x *? y`
+  + lemma `mule_defC`
+  + notations `\*` in `ereal_scope`, and `ereal_dual_scope`
+  + lemmas `mule_def_fin`, `mule_def_neq0_infty`, `mule_def_infty_neq0`, `neq0_mule_def`
+  + notation `\-` in `ereal_scope` and `ereal_dual_scope`
+  + lemma `fin_numB`
+  + lemmas `mule_eq_pinfty`, `mule_eq_ninfty`
+  + lemmas `fine_eq0`, `abse_eq0`
+- in `sequences.v`:
+  + lemmas `ereal_cvgM_gt0_pinfty`, `ereal_cvgM_lt0_pinfty`, `ereal_cvgM_gt0_ninfty`,
+    `ereal_cvgM_lt0_ninfty`, `ereal_cvgM`
+
+### Changed
+
+- in `topology.v`:
+  + renamed and generalized `setC_subset_set1C` implication to
+    equivalence `subsetC1`
+- in `ereal.v`:
+  + lemmas `ereal_sup_gt`, `ereal_inf_lt` now use `exists2`
+- notation `\*` moved from `realseq.v` to `topology.v`
+
+### Renamed
+
+- in `topology.v:
+  + `hausdorff` -> `hausdorff_space`
+
+### Removed
+
+- in `realseq.v`:
+  + notation `\-`
+
+### Infrastructure
+
+- add `.dir-locals.el` for company-coq symbols
 
 ## [0.3.12] - 2021-12-29
 
