@@ -246,6 +246,15 @@ Proof.
 by move: x y => [x| |] [y| |] //; rewrite !lte_fin; exact: addr_gt0.
 Qed.
 
+Lemma bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
+  finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
+Proof.
+move=> finA; rewrite -bigcup_fset /fset_set; case: pselect => [{}finA|//].
+apply/seteqP; split=> [x [i Ai Fix]|x [i /=]].
+  by exists i => //; case: cid => // B AB /=; move: Ai; rewrite AB.
+by case: cid => /= B -> iB Fix; exists i.
+Qed.
+
 Section additive_lemmas.
 Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
 
@@ -284,6 +293,18 @@ move=> mF tF; rewrite big_mkcond additive_ord.
 - apply/trivIsetP => i j _ _ ij; case: ifPn => // Pi; last by rewrite set0I.
   case: ifPn => Pj; last by rewrite setI0.
   by move/trivIsetP : tF; apply.
+Qed.
+
+Lemma additive_fset (I : choiceType) (A : {fset I}) (F : I -> set T) :
+  (forall i, measurable (F i)) -> trivIset setT F ->
+  m (\big[setU/set0]_(i <- A) F i) = (\sum_(i <- A) m (F i))%E.
+Proof.
+move=> mF tF; have [->|/fset0Pn[y yA]] := eqVneq A fset0.
+  by rewrite !big_nil measure0.
+rewrite (big_nth y) big_mkord additive_ord//.
+  by rewrite [RHS](big_nth y) big_mkord.
+move=> i j _ _ ij; apply/val_inj/eqP.
+by rewrite -(nth_uniq y (ltn_ord i) (ltn_ord j) (fset_uniq A)); exact/eqP/tF.
 Qed.
 
 Lemma additive_set (I : finType) (F : I -> set T) (P : {set I}) :
@@ -854,7 +875,7 @@ HB.builders Context T R x0 A f of @FiniteDecomp T R x0 A f.
   HB.instance Definition _ := finite_subproof.
 HB.end.
 
-HB.mixin Record IsMeasurableFun (aT rT : measurableType) (A : set aT) (f : aT -> rT) := {
+HB.mixin Record IsMeasurableFun (aT (*rT*) : measurableType) (rT : realType) (A : set aT) (f : aT -> rT) := {
   measurable_funP : measurable_fun A f
 }.
 HB.structure Definition MeasurableFun aT rT A := {f of @IsMeasurableFun aT rT A f}.
@@ -866,7 +887,7 @@ Notation "{ 'mfun'  A >-> T }" := (@MeasurableFun.type _ T A) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 Hint Resolve measurable_funP : core.
 
-HB.structure Definition SimpleFun (aT rT : measurableType) (A : set aT) :=
+HB.structure Definition SimpleFun (aT (*rT*) : measurableType) (rT : realType) (A : set aT) :=
   {f of @IsMeasurableFun aT rT A f & @FiniteImage aT rT mpoint A f}.
 Reserved Notation "{ 'sfun' A >-> T }"
   (at level 0, format "{ 'sfun'   A  >->  T }").
@@ -943,8 +964,6 @@ by apply/predeqP => x; split=> -[Dx <-]; split=> //; rewrite (fg, =^~fg) ?inE.
 Qed.
 
 (*  I stopped here *)
-
-
 
 
 (*
@@ -1213,34 +1232,50 @@ Definition sfun_ind := sfun_scale pt r (sfun_ind1 pt mA).
 Lemma sfun_indE x : sfun_ind x = r * (x \in A)%:R.
 Proof. by rewrite /sfun_ind sfun_scaleE sfun_ind1E. Qed.
 
-End sfun_ind.
+End sfun_ind.*)
+
+Definition srng (T : Type) (R : ringType) x0 (D : set T)
+  (f : {fimfun x0, D >-> R}) := fset_set (f @` D).
+Definition ssize (T : Type) (R : ringType) x0 (D : set T)
+  (f : {fimfun x0, D >-> R}) := #|` srng f|.
+Definition spimg (T : Type) (R : ringType) x0 (D : set T)
+  (f : {fimfun x0, D >-> R}) k := f @^-1` [set (srng f)`_k].
+
+Lemma seq_of_finite_set (T : eqType) (A : set T) : finite_set A ->
+  exists s : seq T , A =i [set x | x \in s] /\ uniq s.
+Proof.
+move=> /finite_seqP[s As]; exists (undup s); split; last exact: undup_uniq.
+by move=> x;apply/idP/idP; rewrite 2!inE /= As mem_undup.
+Qed.
+
+Lemma mem_srng (T : measurableType) (R : realType) (f : {sfun [set: T] >-> R}) t
+  : f t \in srng f.
+Proof. by rewrite in_fset_set// inE; by exists t. Qed.
 
 Section sfun_bin.
-Variables (T : measurableType) (R : realType) (f g : sfun T R).
+Variables (T : measurableType) (R : realType) (f g : {sfun [set: T] >-> R}).
+Implicit Types op : R -> R -> R.
 Let n := ssize f.
 Let p := ssize g.
 Let u := [seq z <- [seq (x, y) | x <- srng f, y <- srng g] |
-  (f @^-1` [set z.1]) `&` (g @^-1` [set z.2]) != set0 ].
-Let s (op : R -> R -> R) : seq R := undup [seq op z.1 z.2 | z <- u].
+          (f @^-1` [set z.1]) `&` (g @^-1` [set z.2]) != set0 ].
+Let s op := undup [seq op z.1 z.2 | z <- u].
 
-Local Lemma sfun_bin_mpi (op : R -> R -> R) (k : 'I_(size (s op))) :
-  measurable ((fun x => op (f x) (g x)) @^-1` [set (s op)`_k]).
+Let presfun_bin_full_rng op : (fun x => op (f x) (g x)) @` setT = [set` s op].
 Proof.
-rewrite preimage_presfun_bin bigsetU_presfun_bin.
-by apply: bigsetU_measurable => -[i j] aij; exact: measurableI.
+rewrite predeqE => r; split => /=.
+- move=> -[t _] <-; rewrite /s mem_undup.
+  apply/mapP; exists (f t, g t) => //; rewrite mem_filter /=; apply/andP; split.
+    by rewrite /mkset /set1 /mkset; apply/set0P; exists t.
+  by apply/allpairsP; exists (f t, g t); split => //=; exact: mem_srng.
+- rewrite /s mem_undup => /mapP[[i j]].
+  rewrite mem_filter /= => /andP[/set0P[t []]].
+  rewrite /mkset /set1 /mkset => fti gtj.
+  move=> /allpairsP[[i' j']] /= [fi' gj'] [? ?]; subst i' j' => ->.
+  by exists t => //; rewrite fti gtj.
 Qed.
 
-Definition sfun_add := SFun.mk (presfun_add f g)
-  (@sfun_bin_mpi (fun x y => x + y)).
-
-Definition sfun_max := SFun.mk (presfun_max f g)
-  (@sfun_bin_mpi maxr).
-
-Definition sfun_mul := SFun.mk (presfun_mul f g)
-  (@sfun_bin_mpi (fun x y => x * y)).
-
 End sfun_bin.
-*)
 
 (*Module NNSFun.
 Record t (T : measurableType) (R : realType) :=
@@ -1255,13 +1290,6 @@ Arguments NNSFun.mk {T R} _ _.
 
 Hint Resolve NNSFun.ge0 : core.
 *)
-
-Definition ssize (T : Type) (R : ringType) x0 (D : set T)
-  (f : {fimfun x0, D >-> R}) := #|` fset_set (f @` D)|.
-Definition srng (T : Type) (R : ringType) x0 (D : set T)
-  (f : {fimfun x0, D >-> R}) := fset_set (f @` D).
-Definition spimg (T : Type) (R : ringType) x0 (D : set T)
-  (f : {fimfun x0, D >-> R}) k := f @^-1` [set (srng f)`_k].
 
 (* TODO: at least, rename *)
 Lemma NNSFuncdom_ge0 (T : measurableType) (R : realType) (D : set T)
@@ -1388,8 +1416,7 @@ by apply: measurableU; [exact/mf/measurable_itv|exact/mg/measurable_itv].
 Qed.
 
 Section nnfun_bin.
-Variables (T : Type) (R : numDomainType) (D : set T).
-Variables (f g : {nnfun D >-> R}).
+Variables (T : Type) (R : numDomainType) (D : set T) (f g : {nnfun D >-> R}).
 
 Lemma add_nnfun_subproof : @IsNonNegFun T R D (f \+ g).
 Proof. by split => x Dx; rewrite addr_ge0//; apply/fun_ge0. Qed.
@@ -1420,36 +1447,28 @@ HB.instance Definition _ := mul_fimfun_subproof.
 Lemma max_fimfun_subproof : @FiniteImage T R mpoint D (f \max g).
 Proof. by split; apply: finite_image11. Qed.
 HB.instance Definition _ := max_fimfun_subproof.
-Definition max_fimfun := [the {fimfun mpoint, D >-> R} of f \max g].
 
 End fimfun_bin.
 
-Section sfun_bin.
-Variables (T : measurableType) (R : realType).
-Variables (f g : {nnsfun @setT T >-> R}).
+Section nnsfun_bin.
+Variables (T : measurableType) (R : realType) (f g : {nnsfun [set: T] >-> R}).
 
 Lemma add_mfun_subproof : @IsMeasurableFun T _ setT (f \+ g).
 Proof. by split; apply: measurable_funD. Qed.
 HB.instance Definition _ := add_mfun_subproof.
-
-Definition sfun_add := [the {sfun setT >-> _} of f \+ g].
-Definition nnsfun_add := [the {nnsfun setT >-> _} of f \+ g].
+Definition nnsfun_add := [the {nnsfun setT >-> R} of f \+ g].
 
 Lemma mul_mfun_subproof : @IsMeasurableFun T _ setT (f \* g).
 Proof. by split; apply: measurable_funM. Qed.
 HB.instance Definition _ := mul_mfun_subproof.
-
-Definition sfun_mul := [the {sfun setT >-> _} of f \* g].
 Definition nnsfun_mul := [the {nnsfun setT >-> _} of f \* g].
 
 Lemma max_mfun_subproof : @IsMeasurableFun T _ setT (f \max g).
 Proof. by split; apply: measurable_fun_max. Qed.
 HB.instance Definition _ := max_mfun_subproof.
-
-Definition sfun_max := [the {sfun setT >-> _} of f \max g].
 Definition nnsfun_max := [the {nnsfun setT >-> _} of f \max g].
 
-End sfun_bin.
+End nnsfun_bin.
 Arguments nnsfun_add {T R} _ _.
 Arguments nnsfun_max {T R} _ _.
 
@@ -1518,9 +1537,48 @@ Let p := ssize g.
 Lemma sintegralD :
   sintegral m D (f \+ g)%R = sintegral m D f + sintegral m D g.
 Proof.
+rewrite [in LHS]/sintegral.
+transitivity (\sum_(x <- fset_set [set of (f \+ g)%R]) x%:E * m (D `&` (f \+ g)%R @^-1` [set x])).
+  admit.
+transitivity (\sum_(x <- fset_set [set of f]) x%:E * m (D `&` f @^-1` [set x]) +
+  \sum_(x <- fset_set [set of g]) x%:E * m (D `&` g @^-1` [set x])); last first.
+  admit.
+have fgE z : (f \+ g)%R @^-1` [set z] = [set x | f x + g x = z]%R by [].
+have {fgE}fgE z : (f \+ g)%R @^-1` [set z] =
+    \bigcup_(a in f @` setT) (f @^-1` [set a] `&` g @^-1` [set (z - a)%R]).
+  rewrite fgE; apply/seteqP; split=> [x /= fgz|x [_ /= [x' _ <-]] []].
+    have : (z - f x)%R \in [set of g].
+      by rewrite inE /=; exists x=> //; rewrite -fgz (addrC (f x)) addrK.
+    rewrite inE /= => -[x' _ gzf]; exists (z - g x')%R => /=.
+      by exists x => //; rewrite gzf opprB addrC subrK.
+    rewrite /preimage /=; split; first by rewrite gzf opprB addrC subrK.
+    by rewrite gzf opprB addrC subrK -fgz (addrC (f x)) addrK.
+  by rewrite /preimage /= => fxfx' gzf; rewrite gzf -fxfx' addrC subrK.
+under eq_bigr do rewrite fgE.
+rewrite {fgE}.
+transitivity (\sum_(z <- fset_set [set of (f \+ g)%R]) z%:E *
+    \sum_(a <- fset_set [set of f]) m
+      (D `&` (f @^-1` [set a] `&` g @^-1` [set (z - a)%R]))).
+  apply: eq_bigr => r _; congr (_ * _).
+  rewrite setI_bigcupr -additive_fset//; last 2 first.
+     - move=> r'; rewrite -(setIid D) -setIACA; apply: measurableI;
+         apply: measurableI => //; rewrite -(setTI (_ @^-1` _));
+         exact/measurable_sfunP.
+     - apply/trivIset_setI/trivIsetP => i j _ _ ij; rewrite setIACA.
+       by have /trivIsetP/(_ _ _ Logic.I Logic.I ij) -> :=
+         @trivIset_preimage1 _ _ f setT; rewrite set0I.
+  by rewrite bigcup_fset_set//; exact/fimfunP.
+under eq_bigr.
+  move=> i _.
+  rewrite ge0_sume_distrr; last first.
+    by move=> j _; apply: measure_ge0; apply: measurableI => //;
+      apply: measurableI; rewrite -(setTI (_ @^-1` _)); exact/measurable_sfunP.
+  over.
+xxx
 transitivity (\sum_(i < n) \sum_(l < p)
     ((srng f)`_i + (srng g)`_l)%:E * m (spimg f i `&` spimg g l `&` D)).
-  rewrite /sintegral; under eq_bigr do rewrite measure_spimg_add//.
+  rewrite /sintegral.
+  under eq_bigr do rewrite measure_spimg_add//.
   transitivity (
     \sum_(i : 'I_(ssize (sfun_add f g))) \sum_(x in presfun_bin_idx i)
       ((srng f)`_x.1 + (srng g)`_x.2)%:E * m (spimg f x.1 `&` spimg g x.2 `&` D)).
@@ -5827,3 +5885,5 @@ by rewrite fubini_tonelli2//; exact: emeasurable_fun_funennp.
 Qed.
 
 End fubini.
+
+
