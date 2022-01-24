@@ -1488,19 +1488,21 @@ Proof. by rewrite /nnsfun_bigmax; elim/big_ind2 : _ => [|x g y h <- <-|]. Qed.
 
 End nnsfun_iter.
 
+Lemma fset_set_image (T1 T2 : choiceType) (D : set T1) (f : T1 -> T2) :
+  finite_set D -> fset_set (f @` D) = (f @` (fset_set D))%fset.
+Proof.
+move=> Dfin; apply/fsetP => z; rewrite in_fset_set; last exact: finite_image.
+apply/idP/idP => [|/imfsetP[r /=]].
+  rewrite inE /= => -[x Dx <-{z}]; apply/imfsetP => /=; exists x => //.
+  by rewrite in_fset_set ?inE/=.
+by rewrite in_fset_set// inE => Dr ->; rewrite inE; exists r.
+Qed.
+
 Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) x0 (D : set T1)
     (f : {fimfun x0, D >-> T2}) (g : T2 -> T3) :
   fset_set [set (g \o f) x | x in D] =
   [fset g x | x in fset_set [set f x | x in D]]%fset.
-Proof.
-apply/fsetP => z; rewrite in_fset_set; last first.
-  by rewrite -(image_comp f g); exact: finite_image.
-apply/idP/idP => [|/imfsetP[r /=]].
-  rewrite inE /= => -[x Dx <-{z}]; apply/imfsetP => /=; exists (f x) => //.
-  by rewrite in_fset_set ?inE/=; [exists x|exact/fimfunP].
-rewrite in_fset_set; last exact/fimfunP.
-by rewrite inE => /= -[x Dx <-{r} ->{z}]; rewrite inE; exists x.
-Qed.
+Proof. by rewrite -(image_comp f g) fset_set_image. Qed.
 
 Section sintegralrM.
 Local Open Scope ereal_scope.
@@ -1526,54 +1528,87 @@ Qed.
 
 End sintegralrM.
 
+Hint Extern 0 (measurable [set _]) => 
+  solve [apply: measurable_set1] : core.
+
 Section sintegralD.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (D : set T).
-Variables (mD : measurable D) (f g : {nnsfun @setT T >-> R}).
+Variables (mD : measurable D) (f g : {nnsfun D >-> R}).
 Variable m : {measure set T -> \bar R}.
 Let n := ssize f.
 Let p := ssize g.
 
+(* \big[op/idx]_(i \in P) F i := *)
+(*   \big_[op/idx]_(i <- fset_set (P `&` F @` [set~ id])) F i. *)
+
+(* Lemma reindex_inside I F P ...  : finite_set (P `&` F @` [set~ id]) -> ... *)
+
+(* \sum_(a <- r) F a = \sum_(a \in [fset` r]) F a *)
+(* \sum_(i < n) F a = \sum_(i \in `I_n) F i *)
+
+
+(* \sum_(a \in [set: R]) ... *)
+
+
 Lemma sintegralD :
   sintegral m D (f \+ g)%R = sintegral m D f + sintegral m D g.
 Proof.
-rewrite [in LHS]/sintegral.
-transitivity (\sum_(x <- fset_set [set of (f \+ g)%R]) x%:E * m (D `&` (f \+ g)%R @^-1` [set x])).
-  admit.
-transitivity (\sum_(x <- fset_set [set of f]) x%:E * m (D `&` f @^-1` [set x]) +
-  \sum_(x <- fset_set [set of g]) x%:E * m (D `&` g @^-1` [set x])); last first.
-  admit.
-have fgE z : (f \+ g)%R @^-1` [set z] = [set x | f x + g x = z]%R by [].
-have {fgE}fgE z : (f \+ g)%R @^-1` [set z] =
-    \bigcup_(a in f @` setT) (f @^-1` [set a] `&` g @^-1` [set (z - a)%R]).
-  rewrite fgE; apply/seteqP; split=> [x /= fgz|x [_ /= [x' _ <-]] []].
-    have : (z - f x)%R \in [set of g].
-      by rewrite inE /=; exists x=> //; rewrite -fgz (addrC (f x)) addrK.
+(* rewrite !sintegralEord. *)
+
+rewrite !sintegralE.
+set F := f @` _; set G := g @` _; set H := _ @` _.
+(* transitivity (\sum_(x <- fset_set [set of (f \+ g)%R]) x%:E * m (D `&` (f \+ g)%R @^-1` [set x])). *)
+(*   admit. *)
+(* transitivity (\sum_(x <- fset_set [set of f]) x%:E * m (D `&` f @^-1` [set x]) + *)
+(*   \sum_(x <- fset_set [set of g]) x%:E * m (D `&` g @^-1` [set x])); last first. *)
+(*   admit. *)
+(* have fgE z : D `&` (f \+ g)%R @^-1` [set z] = [set x | f x + g x = z]%R by []. *)
+have fgE z : D `&` (f \+ g)%R @^-1` [set z] =
+    \bigcup_(a in f @` D) ((D `&` f @^-1` [set a]) `&` (D `&` g @^-1` [set (z - a)%R])).
+  apply/seteqP; split=> [x /= [Dx fgz]|x [_ /= [x' _ <-]] []].
+    have : (z - f x)%R \in g @` D.
+      by rewrite inE /=; exists x=> //; rewrite -fgz addrC addKr.
     rewrite inE /= => -[x' _ gzf]; exists (z - g x')%R => /=.
       by exists x => //; rewrite gzf opprB addrC subrK.
     rewrite /preimage /=; split; first by rewrite gzf opprB addrC subrK.
-    by rewrite gzf opprB addrC subrK -fgz (addrC (f x)) addrK.
-  by rewrite /preimage /= => fxfx' gzf; rewrite gzf -fxfx' addrC subrK.
+    by split=> //; rewrite gzf opprB addrC subrK -fgz addrC addKr.
+  rewrite /preimage /= => [[Dx fxfx'] [_ gzf]].
+  by split=>//; rewrite gzf -fxfx' addrC subrK.
 under eq_bigr do rewrite fgE.
 rewrite {fgE}.
-transitivity (\sum_(z <- fset_set [set of (f \+ g)%R]) z%:E *
-    \sum_(a <- fset_set [set of f]) m
-      (D `&` (f @^-1` [set a] `&` g @^-1` [set (z - a)%R]))).
+transitivity (\sum_(z <- fset_set H) z%:E * \sum_(a <- fset_set F) m
+      ((D `&` f @^-1` [set a]) `&` (D `&` g @^-1` [set (z - a)%R]))).
   apply: eq_bigr => r _; congr (_ * _).
-  rewrite setI_bigcupr -additive_fset//; last 2 first.
-     - move=> r'; rewrite -(setIid D) -setIACA; apply: measurableI;
-         apply: measurableI => //; rewrite -(setTI (_ @^-1` _));
-         exact/measurable_sfunP.
-     - apply/trivIset_setI/trivIsetP => i j _ _ ij; rewrite setIACA.
-       by have /trivIsetP/(_ _ _ Logic.I Logic.I ij) -> :=
-         @trivIset_preimage1 _ _ f setT; rewrite set0I.
+  rewrite  -additive_fset//; last 2 first.
+  - by move=> x; apply: measurableI; apply: measurable_funP.
+  - apply/trivIsetP => i j _ _ ij; rewrite setIACA.
+    rewrite !(setIACA D _ D) setIid setIACA setIid.
+    by have /trivIsetP/(_ _ _ Logic.I Logic.I ij)-> :=
+         @trivIset_preimage1 _ _ f setT; rewrite ?(set0I, setI0).
   by rewrite bigcup_fset_set//; exact/fimfunP.
-under eq_bigr.
-  move=> i _.
+under eq_bigr=> z _.
   rewrite ge0_sume_distrr; last first.
-    by move=> j _; apply: measure_ge0; apply: measurableI => //;
-      apply: measurableI; rewrite -(setTI (_ @^-1` _)); exact/measurable_sfunP.
+    by move=> *; apply: measure_ge0; apply: measurableI; apply: measurable_funP.
   over.
+rewrite exchange_big/= big_seq/=.
+under eq_bigr=> x.
+  rewrite in_fset_set ?inE => [Fx|]; last exact: fimfunP.
+  pose h y := (x + y)%R.
+  have hP (y : fset_set G) : h (val y) \in fset_set H.
+    rewrite in_fset_set /h /H ?inE/=; last exact: fimfunP.
+    have := valP y; rewrite in_fset_set /G ?inE /=; last exact: fimfunP.
+    move=> [t Dt <-].
+    admit.
+  rewrite big_seq_fsetE/= (reindex (fun z => [` hP z]%fset))/=.
+  
+
+    rewrite in_fset_set /G //; last exact: fimfunP.
+    rewrite /h !inE/=. => -[y Dy <-]. exists y => //=; rewrite/=.
+
+rewrite (reindex (fun z => x - z)). 
+
+apply: eq_bigr.
 xxx
 transitivity (\sum_(i < n) \sum_(l < p)
     ((srng f)`_i + (srng g)`_l)%:E * m (spimg f i `&` spimg g l `&` D)).
