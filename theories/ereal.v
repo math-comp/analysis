@@ -123,7 +123,9 @@ Notation "-oo" := (@ENInf _ : dual_extended _) : ereal_dual_scope.
 Notation "-oo" := (@ENInf _) : ereal_scope.
 Notation "r %:E" := (@EFin _ r%R).
 Notation "'\bar' R" := (extended R) : type_scope.
+Notation "0" := (0%R%:E : dual_extended _) : ereal_dual_scope.
 Notation "0" := (0%R%:E) : ereal_scope.
+Notation "1" := (1%R%:E : dual_extended _) : ereal_dual_scope.
 Notation "1" := (1%R%:E) : ereal_scope.
 
 Bind    Scope ereal_dual_scope with dual_extended.
@@ -872,6 +874,7 @@ Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 End ERealArithTh_numDomainType.
 Notation "x +? y" := (adde_def x%dE y%dE) : ereal_dual_scope.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
+Notation "x *? y" := (mule_def x%dE y%dE) : ereal_dual_scope.
 Notation "x *? y" := (mule_def x y) : ereal_scope.
 
 Notation maxe := (@Order.max ereal_display _).
