@@ -113,6 +113,10 @@ Arguments EFin {R}.
 
 Definition dual_extended := extended.
 
+(* Notations in ereal_dual_scope should be kept *before* the
+   corresponding notation in ereal_scope, otherwise when none of the
+   scope is open (lte x y) would be displayed as (x < y)%dE, instead
+   of (x < y)%E, for instance. *)
 Notation "+oo" := (@EPInf _ : dual_extended _) : ereal_dual_scope.
 Notation "+oo" := (@EPInf _) : ereal_scope.
 Notation "-oo" := (@ENInf _ : dual_extended _) : ereal_dual_scope.
