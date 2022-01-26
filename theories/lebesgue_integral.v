@@ -273,7 +273,7 @@ by move: x => [x| |] //=; rewrite ?ltxx ?andbF// lte_fin => /andP[].
 Qed.
 
 (* TODO: move? *)
-Lemma strace_measurable (T : measurableType) (A : set T) : measurable A ->
+Lemma strace_measurable d (T : measurableType d) (A : set T) : measurable A ->
   strace measurable A `<=` measurable.
 Proof. by move=> mA=> _ [C mC <-]; apply: measurableI. Qed.
 
@@ -436,7 +436,7 @@ Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funenng_ge0] : core.
 Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funennp_ge0] : core.
 
 Section funpos_measurable.
-Variables (T : measurableType) (R : realType).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
 
 Lemma emeasurable_fun_funenng (D : set T) (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\+%E.
@@ -453,8 +453,9 @@ Qed.
 
 End funpos_measurable.
 
-Lemma measurable_restrict {aT rT : measurableType} D E (f : aT -> rT) :
-  measurable D -> measurable E -> D `<=` E ->
+Lemma measurable_restrict ad rd {aT : measurableType ad} {rT : measurableType rd}
+    D E (f : aT -> rT) :
+    measurable D -> measurable E -> D `<=` E ->
   measurable_fun D f <-> measurable_fun E (f \_ D).
 Proof.
 move=> mD mE DE; split => mf _ /= X mX.
@@ -566,30 +567,30 @@ Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
   finite_set (f @` D).
 Proof. by apply: (@sub_finite_set _ _ [set of f]) => // y [x]; exists x. Qed.
 
-HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
+HB.mixin Record IsMeasurableFun d (aT : measurableType d) (rT : realType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
 }.
 Hint Resolve fimfun_inP : core.
 
-HB.structure Definition MeasurableFun aT rT := {f of @IsMeasurableFun aT rT f}.
+HB.structure Definition MeasurableFun d aT rT := {f of @IsMeasurableFun d aT rT f}.
 Reserved Notation "{ 'mfun' aT >-> T }"
   (at level 0, format "{ 'mfun'  aT  >->  T }").
 Reserved Notation "[ 'mfun' 'of' f ]"
   (at level 0, format "[ 'mfun'  'of'  f ]").
-Notation "{ 'mfun'  aT >-> T }" := (@MeasurableFun.type aT T) : form_scope.
+Notation "{ 'mfun'  aT >-> T }" := (@MeasurableFun.type _ aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 Hint Resolve measurable_funP : core.
 
-HB.structure Definition SimpleFun (aT (*rT*) : measurableType) (rT : realType) :=
-  {f of @IsMeasurableFun aT rT f & @FiniteImage aT rT f}.
+HB.structure Definition SimpleFun d (aT (*rT*) : measurableType d) (rT : realType) :=
+  {f of @IsMeasurableFun d aT rT f & @FiniteImage aT rT f}.
 Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
 Reserved Notation "[ 'sfun' 'of' f ]"
   (at level 0, format "[ 'sfun'  'of'  f ]").
-Notation "{ 'sfun'  aT >-> T }" := (@SimpleFun.type aT T) : form_scope.
+Notation "{ 'sfun'  aT >-> T }" := (@SimpleFun.type _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
-Lemma measurable_sfunP {aT : measurableType} {rT : realType} (f : {mfun aT >-> rT}) (y : rT) :
+Lemma measurable_sfunP {d} {aT : measurableType d} {rT : realType} (f : {mfun aT >-> rT}) (y : rT) :
   measurable (f @^-1` [set y]).
 Proof. by rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
 
@@ -605,13 +606,13 @@ Notation "{ 'nnfun'  aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
 Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
 Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
 
-HB.structure Definition NonNegSimpleFun (aT : measurableType) (rT : realType) :=
-  {f of @SimpleFun _ _ f & @NonNegFun aT rT f}.
+HB.structure Definition NonNegSimpleFun d (aT : measurableType d) (rT : realType) :=
+  {f of @SimpleFun d _ _ f & @NonNegFun aT rT f}.
 Reserved Notation "{ 'nnsfun' aT >-> T }"
   (at level 0, format "{ 'nnsfun'  aT  >->  T }").
 Reserved Notation "[ 'nnsfun' 'of' f ]"
   (at level 0, format "[ 'nnsfun'  'of'  f ]").
-Notation "{ 'nnsfun'  aT >-> T }" := (@NonNegSimpleFun.type aT T) : form_scope.
+Notation "{ 'nnsfun'  aT >-> T }" := (@NonNegSimpleFun.type _ aT T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section fimfun_pred.
@@ -781,7 +782,8 @@ Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT)
 Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
 
 Section fimfun_bin.
-Variables (T : measurableType) (R : numDomainType) (f g : {fimfun T >-> R}).
+Variables (d : measure_display) (T : measurableType d).
+Variables (R : numDomainType) (f g : {fimfun T >-> R}).
 
 Lemma max_fimfun_subproof : @FiniteImage T R (f \max g).
 Proof. by split; apply: (finite_image11 maxr). Qed.
@@ -803,19 +805,19 @@ HB.builders Context T R A f of @FiniteDecomp T R f.
 HB.end.
 
 Section mfun_pred.
-Context {aT : measurableType} {rT : realType}.
+Context {d} {aT : measurableType d} {rT : realType}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
 Definition mfun_key : pred_key mfun. Proof. exact. Qed.
 Canonical mfun_keyed := KeyedPred mfun_key.
 End mfun_pred.
 
 Section mfun.
-Context {aT : measurableType} {rT : realType}.
+Context {d} {aT : measurableType d} {rT : realType}.
 Notation T := {mfun aT >-> rT}.
-Notation mfun := (@mfun aT rT).
+Notation mfun := (@mfun _ aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in mfun).
-Definition mfun_Sub_subproof := @IsMeasurableFun.Build aT rT f (set_mem fP).
+Definition mfun_Sub_subproof := @IsMeasurableFun.Build d aT rT f (set_mem fP).
 #[local] HB.instance Definition _ := mfun_Sub_subproof.
 Definition mfun_Sub := [mfun of f].
 End Sub.
@@ -840,7 +842,7 @@ Canonical mfuneqType := EqType {mfun aT >-> rT} mfuneqMixin.
 Definition mfunchoiceMixin := [choiceMixin of {mfun aT >-> rT} by <:].
 Canonical mfunchoiceType := ChoiceType {mfun aT >-> rT} mfunchoiceMixin.
 
-Lemma cst_mfun_subproof x : @IsMeasurableFun aT rT (cst x).
+Lemma cst_mfun_subproof x : @IsMeasurableFun d aT rT (cst x).
 Proof. by split; apply: measurable_fun_cst. Qed.
 HB.instance Definition _ x := @cst_mfun_subproof x.
 Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
@@ -850,9 +852,9 @@ Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 End mfun.
 
 Section ring.
-Context (aT : measurableType) (rT : realType).
+Context (d : measure_display) (aT : measurableType d) (rT : realType).
 
-Lemma mfun_subring_closed : subring_closed (@mfun aT rT).
+Lemma mfun_subring_closed : subring_closed (@mfun _ aT rT).
 Proof.
 split=> [|f g|f g]; rewrite !inE/=.
 - exact: measurable_fun_cst.
@@ -899,7 +901,7 @@ Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
 HB.instance Definition _ (D : set aT) (mD : measurable D) :
    @FImFun aT rT (mindic mD) := FImFun.on (mindic mD).
 Lemma indic_mfun_subproof (D : set aT) (mD : measurable D) :
-  @IsMeasurableFun aT rT (mindic mD).
+  @IsMeasurableFun d aT rT (mindic mD).
 Proof.
 split=> mA /= B mB; rewrite preimage_indic.
 case: ifPn => B1; case: ifPn => B0 //.
@@ -916,17 +918,17 @@ Definition indic_mfun (D : set aT) (mD : measurable D) :=
 HB.instance Definition _ k f := MeasurableFun.copy (k *\ f) (cst_mfun k * f).
 Definition scale_mfun k f := [the {mfun aT >-> rT} of k *\ f].
 
-Lemma max_mfun_subproof f g : @IsMeasurableFun aT rT (f \max g).
+Lemma max_mfun_subproof f g : @IsMeasurableFun d aT rT (f \max g).
 Proof. by split; apply: measurable_fun_max. Qed.
 HB.instance Definition _ f g := max_mfun_subproof f g.
 Definition max_mfun f g := [the {mfun aT >-> _} of f \max g].
 
 End ring.
-Arguments indic_mfun {aT rT} _.
+Arguments indic_mfun {d aT rT} _.
 
 Section sfun_pred.
-Context {aT : measurableType} {rT : realType}.
-Definition sfun : {pred _ -> _} := [predI @mfun aT rT & fimfun].
+Context {d} {aT : measurableType d} {rT : realType}.
+Definition sfun : {pred _ -> _} := [predI @mfun _ aT rT & fimfun].
 Definition sfun_key : pred_key sfun. Proof. exact. Qed.
 Canonical sfun_keyed := KeyedPred sfun_key.
 Lemma sub_sfun_mfun : {subset sfun <= mfun}. Proof. by move=> x /andP[]. Qed.
@@ -934,13 +936,13 @@ Lemma sub_sfun_fimfun : {subset sfun <= fimfun}. Proof. by move=> x /andP[]. Qed
 End sfun_pred.
 
 Section sfun.
-Context {aT : measurableType} {rT : realType}.
+Context {d} {aT : measurableType d} {rT : realType}.
 Notation T := {sfun aT >-> rT}.
-Notation sfun := (@sfun aT rT).
+Notation sfun := (@sfun _ aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in sfun).
 Definition sfun_Sub1_subproof :=
-  @IsMeasurableFun.Build aT rT f (set_mem (sub_sfun_mfun fP)).
+  @IsMeasurableFun.Build d aT rT f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
 Definition sfun_Sub2_subproof :=
   @FiniteImage.Build aT rT f (set_mem (sub_sfun_fimfun fP)).
@@ -993,9 +995,9 @@ Arguments cst _ _ _ _ /.
 Definition fctWE := (fctD, fctN, fctM, fctZ).
 
 Section ring.
-Context (aT : measurableType) (rT : realType).
+Context (d : measure_display) (aT : measurableType d) (rT : realType).
 
-Lemma sfun_subring_closed : subring_closed (@sfun aT rT).
+Lemma sfun_subring_closed : subring_closed (@sfun d aT rT).
 Proof.
 by split=> [|f g|f g]; rewrite ?inE/= ?rpred1//;
    move=> /andP[/= mf ff] /andP[/= mg fg]; rewrite !(rpredB, rpredM).
@@ -1044,7 +1046,7 @@ HB.instance Definition _ f g := max_mfun_subproof f g.
 Definition max_sfun f g := [the {sfun aT >-> _} of f \max g].
 
 End ring.
-Arguments indic_sfun {aT rT} _.
+Arguments indic_sfun {d aT rT} _.
 
 Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) (D : set T1)
     (f : {fimfun T1 >-> T2}) (g : T2 -> T3) :
@@ -1104,7 +1106,7 @@ by rewrite gzf -fxfy addrC subrK.
 Qed.
 
 Section nnsfun_functions.
-Variables (T : measurableType) (R : realType).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
 
 Lemma cst_nnfun_subproof (x : {nonneg R}) : @IsNonNegFun T R (cst x%:nngnum).
 Proof. by split=> //= _; apply: Nonneg.nngnum_ge0. Qed.
@@ -1122,7 +1124,7 @@ HB.instance Definition _ D (mD : measurable D) :
    @NonNegFun T R (mindic R mD) := NonNegFun.on (mindic R mD).
 
 End nnsfun_functions.
-Arguments nnsfun0 {T R}.
+Arguments nnsfun0 {d T R}.
 
 Section nnfun_bin.
 Variables (T : Type) (R : numDomainType) (f g : {nnfun T >-> R}).
@@ -1142,7 +1144,8 @@ HB.instance Definition _ := max_nnfun_subproof.
 End nnfun_bin.
 
 Section nnsfun_bin.
-Variables (T : measurableType) (R : realType) (f g : {nnsfun T >-> R}).
+Variables (d : measure_display) (T : measurableType d).
+Variables (R : realType) (f g : {nnsfun T >-> R}).
 
 HB.instance Definition _ := MeasurableFun.on (f \+ g).
 Definition add_nnsfun := [the {nnsfun T >-> R} of f \+ g].
@@ -1156,12 +1159,12 @@ Definition max_nnsfun := [the {nnsfun T >-> R} of f \max g].
 Definition indic_nnsfun A (mA : measurable A) := [the {nnsfun T >-> R} of mindic R mA].
 
 End nnsfun_bin.
-Arguments add_nnsfun {T R} _ _.
-Arguments mul_nnsfun {T R} _ _.
-Arguments max_nnsfun {T R} _ _.
+Arguments add_nnsfun {d T R} _ _.
+Arguments mul_nnsfun {d T R} _ _.
+Arguments max_nnsfun {d T R} _ _.
 
 Section nnsfun_iter.
-Variables (T : measurableType) (R : realType) (D : set T).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (D : set T).
 Variable f : {nnsfun T >-> R}^nat.
 
 Definition sum_nnsfun n := \big[add_nnsfun/nnsfun0]_(i < n) f i.
@@ -1178,7 +1181,8 @@ End nnsfun_iter.
 
 Section nnsfun_cover.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (f : {nnsfun T >-> R}).
+Variables (d : measure_display) (T : measurableType d).
+Variables (R : realType) (f : {nnsfun T >-> R}).
 
 Lemma nnsfun_cover :
   \big[setU/set0]_(i \in [set of f]) (f @^-1` [set i]) = setT.
@@ -1195,7 +1199,7 @@ End nnsfun_cover.
 Hint Extern 0 (measurable (_ @^-1` [set _])) =>
   solve [apply: measurable_sfunP] : core.
 
-Lemma measurable_sfun_inP  {aT : measurableType} {rT : realType}
+Lemma measurable_sfun_inP {d} {aT : measurableType d} {rT : realType}
    (f : {mfun aT >-> rT}) D (y : rT) :
   measurable D -> measurable (D `&` f @^-1` [set y]).
 Proof. by move=> Dm; apply: measurableI. Qed.
@@ -1207,7 +1211,8 @@ Hint Extern 0 (finite_set _) => solve [apply: fimfunP] : core.
 
 Section measure_fsbig.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d).
+Variables (R : realType) (m : {measure set T -> \bar R}).
 
 Lemma measure_fsbig (I : choiceType) (A : set I) (F : I -> set T) :
   finite_set A ->
@@ -1245,7 +1250,7 @@ by rewrite mule_ge0.
 Qed.
 Arguments mule_ge0_dep {R x} f.
 
-Lemma muleindic_ge0 (T : measurableType) (R : realDomainType)
+Lemma muleindic_ge0 d (T : measurableType d) (R : realDomainType)
   (f : {nnfun T >-> R}) r z : 0 <= r%:E * (\1_(f @^-1` [set r]) z)%:E.
 Proof.
 apply: (mule_ge0_dep (fun r => (\1_(f @^-1` [set r]) z)%:E)).
@@ -1253,15 +1258,15 @@ apply: (mule_ge0_dep (fun r => (\1_(f @^-1` [set r]) z)%:E)).
 by move=> r0; rewrite preimage_nnfun0// indic0.
 Qed.
 
-Lemma mulem_ge0 (T : measurableType) (R : realType)
+Lemma mulem_ge0 d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) x (A : R -> set T) :
   ((x < 0)%R -> A x = set0) -> 0 <= x%:E * mu (A x).
 Proof.
 by move=> xA; rewrite (mule_ge0_dep (mu \o _))//= => /xA ->; rewrite measure0.
 Qed.
-Arguments mulem_ge0 {T R mu x} A.
+Arguments mulem_ge0 {d T R mu x} A.
 
-Lemma mulem_ge0' (T : measurableType) (R : realType)
+Lemma mulem_ge0' d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R})(f : {nnsfun T >-> R}) x :
   0 <= x%:E * mu (f @^-1` [set x]).
 Proof.
@@ -1290,7 +1295,8 @@ Hint Extern 0 (is_true (0 <= (_ : {measure set _ -> \bar _}) _)%E) =>
   solve [apply: measure_ge0] : core.
 
 Section sintegral_lemmas.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d).
+Variables (R : realType) (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 
 Lemma sintegralE f :
@@ -1332,14 +1338,16 @@ Qed.
 
 End sintegral_lemmas.
 
-Lemma eq_sintegral (T : measurableType) (R : numDomainType) (mu : set T -> \bar R) g f :
+Lemma eq_sintegral d (T : measurableType d) (R : numDomainType)
+   (mu : set T -> \bar R) g f :
    f =1 g -> sintegral mu f = sintegral mu g.
 Proof. by move=> /funext->. Qed.
-Arguments eq_sintegral {T R mu} g.
+Arguments eq_sintegral {d T R mu} g.
 
 Section sintegralrM.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d).
+Variables (R : realType) (m : {measure set T -> \bar R}).
 Variables (r : R) (f : {nnsfun T >-> R}).
 
 Lemma sintegralrM : sintegral m (cst r \* f)%R = r%:E * sintegral m f.
@@ -1360,7 +1368,8 @@ End sintegralrM.
 
 Section sintegralD.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (m : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f g : {nnsfun T >-> R}).
 
 Lemma sintegralD : sintegral m (f \+ g)%R = sintegral m f + sintegral m g.
@@ -1393,7 +1402,8 @@ Qed.
 End sintegralD.
 
 Section le_sintegral.
-Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d).
+Variables (R : realType) (m : {measure set T -> \bar R}).
 Variables f g : {nnsfun T >-> R}.
 Hypothesis fg : forall x, f x <= g x.
 
@@ -1409,7 +1419,7 @@ Qed.
 
 End le_sintegral.
 
-Lemma is_cvg_sintegral (T : measurableType) (R : realType)
+Lemma is_cvg_sintegral d (T : measurableType d) (R : realType)
   (m : {measure set T -> \bar R}) (f : {nnsfun T >-> R}^nat) :
   (forall x, nondecreasing_seq (f ^~ x)) -> cvg (fun n => sintegral m (f n)).
 Proof.
@@ -1417,23 +1427,24 @@ move=> nd_f; apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvg => a b ab.
 by apply: le_sintegral => // => x; exact/nd_f.
 Qed.
 
-Definition proj_nnsfun (T : measurableType) (R : realType)
+Definition proj_nnsfun d (T : measurableType d) (R : realType)
     (f : {nnsfun T >-> R}) (A : set T) (mA : measurable A) :=
   mul_nnsfun f (indic_nnsfun R mA).
 
-Definition mrestrict (T : measurableType) (R : realType) (f : {nnsfun T >-> R})
+Definition mrestrict d (T : measurableType d) (R : realType) (f : {nnsfun T >-> R})
   A (mA : measurable A) : f \_ A = proj_nnsfun f mA.
 Proof.
 apply/funext => x /=; rewrite /patch mindicE.
 by case: ifP; rewrite (mulr0, mulr1).
 Qed.
 
-Definition scale_nnsfun (T : measurableType) (R : realType)
+Definition scale_nnsfun d (T : measurableType d) (R : realType)
     (f : {nnsfun T >-> R}) (k : R) (k0 : 0 <= k) :=
   mul_nnsfun (cst_nnsfun T (Nonneg.NngNum _ k0)) f.
 
 Section sintegral_nondecreasing_limit_lemma.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}).
 Variables (g : {nnsfun T >-> R}^nat) (f : {nnsfun T >-> R}).
 Hypothesis nd_g : forall x, nondecreasing_seq (g^~ x).
 Hypothesis gf : forall x, cvg (g^~ x) -> f x <= lim (g^~ x).
@@ -1546,7 +1557,8 @@ Unshelve. all: by end_near. Qed.
 End sintegral_nondecreasing_limit_lemma.
 
 Section sintegral_nondecreasing_limit.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}).
 Variables (g : {nnsfun T >-> R}^nat) (f : {nnsfun T >-> R}).
 Hypothesis nd_g : forall x, nondecreasing_seq (g^~ x).
 Hypothesis gf : forall x, g ^~ x --> f x.
@@ -1570,7 +1582,7 @@ End sintegral_nondecreasing_limit.
 
 Section integral.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Implicit Types (f g : T -> \bar R) (D : set T).
 
 Let nnintegral f := ereal_sup [set sintegral mu h |
@@ -1591,7 +1603,7 @@ rewrite /nnintegral /=; apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by [].
 apply/ub_ereal_sup => /= x [f /= f0 <-]; have {}f0 : forall x, f x = 0%R.
   by move=> y; apply/eqP; rewrite eq_le -2!lee_fin f0 //= lee_fin//.
-by rewrite (eq_sintegral (@nnsfun0 T R)) ?sintegral0.
+by rewrite (eq_sintegral (@nnsfun0 _ T R)) ?sintegral0.
 Qed.
 
 Let nnintegral_nnsfun (h : {nnsfun T >-> R}) :
@@ -1651,11 +1663,11 @@ Qed.
 End integral.
 Notation "\int_ D f 'd mu [ x ]" := (integral mu D (fun x => f)) : ereal_scope.
 Notation "\int f 'd mu [ x ]" := (\int_ setT f 'd mu[x])%E : ereal_scope.
-Arguments eq_integral {T R mu D} g.
+Arguments eq_integral {d T R mu D} g.
 
 Section domain_change.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 
 Lemma integral_mkcond D f : \int_D f x 'd mu[x] = \int (f \_ D) x 'd mu [x].
 Proof. by rewrite /integral patch_setT. Qed.
@@ -1673,11 +1685,11 @@ Lemma integral_mkcondl D P f :
 Proof. by rewrite setIC integral_mkcondr. Qed.
 
 End domain_change.
-Arguments integral_mkcond {T R mu} D f.
+Arguments integral_mkcond {d T R mu} D f.
 
 Section nondecreasing_integral_limit.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (f : T -> \bar R) (g : {nnsfun T >-> R}^nat).
 Hypothesis f0 : forall x, 0 <= f x.
 Hypothesis mf : measurable_fun setT f.
@@ -1800,7 +1812,8 @@ Qed.
 End dyadic_interval.
 
 Section approximation.
-Variables (T : measurableType) (R : realType) (D : set T) (mD : measurable D).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (D : set T) (mD : measurable D).
 Variables (f : T -> \bar R) (mf : measurable_fun D f).
 
 Local Notation I := (@dyadic_itv R).
@@ -2177,7 +2190,7 @@ End approximation.
 
 Section semi_linearity0.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
 Hypothesis f10 : forall x, D x -> 0 <= f1 x.
 Hypothesis mf1 : measurable_fun D f1.
@@ -2191,7 +2204,7 @@ have h10 x : 0 <= h1 x by apply: erestrict_ge0.
 have mh1 : measurable_fun setT h1 by apply/(measurable_restrict _ mD).
 have [g [nd_g gh1]] := approximation measurableT mh1 (fun x _ => h10 x).
 pose kg := fun n => scale_nnsfun (g n) k0.
-rewrite (@nd_ge0_integral_lim _ _ mu (fun x => k%:E * h1 x) kg).
+rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
 - rewrite (_ : _ \o _ = fun n => sintegral mu (scale_nnsfun (g n) k0))//.
   rewrite (_ : (fun _ => _) = (fun n => k%:E * sintegral mu (g n))).
     rewrite ereal_limrM //; last first.
@@ -2210,7 +2223,7 @@ End semi_linearity0.
 
 Section semi_linearity.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
 Hypothesis f10 : forall x, D x -> 0 <= f1 x.
 Hypothesis mf1 : measurable_fun D f1.
@@ -2229,7 +2242,7 @@ have mh2 : measurable_fun setT h2 by apply/(measurable_restrict _ mD).
 have [g1 [nd_g1 gh1]] := approximation measurableT mh1 (fun x _ => h10 x).
 have [g2 [nd_g2 gh2]] := approximation measurableT mh2 (fun x _ => h20 x).
 pose g12 := fun n => add_nnsfun (g1 n) (g2 n).
-rewrite (@nd_ge0_integral_lim _ _ mu _ g12) //; last 3 first.
+rewrite (@nd_ge0_integral_lim _ _ _ mu _ g12) //; last 3 first.
   - by move=> x; rewrite adde_ge0.
   - by apply: nondecreasing_seqD_setT => // x;
       [exact/(lef_at x nd_g1)|exact/(lef_at x nd_g2)].
@@ -2287,14 +2300,14 @@ Unshelve. all: by end_near. Qed.
 
 End semi_linearity.
 
-Lemma emeasurable_funN (T : measurableType) (R : realType) D (f : T -> \bar R) :
+Lemma emeasurable_funN d (T : measurableType d) (R : realType) D (f : T -> \bar R) :
   measurable D -> measurable_fun D f -> measurable_fun D (fun x => - f x)%E.
 Proof.
 by move=> mD mf; apply: measurable_fun_comp => //; exact: emeasurable_fun_minus.
 Qed.
 
 Section approximation_sfun.
-Variables (T : measurableType) (R : realType) (f : T -> \bar R).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (f : T -> \bar R).
 Variables (D : set T) (mD : measurable D) (mf : measurable_fun D f).
 
 Lemma approximation_sfun :
@@ -2321,7 +2334,7 @@ End approximation_sfun.
 
 Section emeasurable_fun.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> \bar R).
 
 Lemma emeasurable_funD D f g :
@@ -2345,7 +2358,7 @@ wlog fg : D mD mf mg mfg / forall x, D x -> f x +? g x => [hwlogD|]; last first.
    have [g_ g_cvg] := approximation_sfun mD mg.
    apply: (emeasurable_fun_cvg (fun n x => (f_ n x + g_ n x)%:E)) => //.
     move=> n; apply/EFin_measurable_fun.
-    by apply: (@measurable_funS _ _ setT) => //; exact: measurable_funD.
+    by apply: (@measurable_funS _ _ _ _ setT) => //; exact: measurable_funD.
   move=> x Dx; under eq_fun do rewrite EFinD.
   by apply: ereal_cvgD; [exact: fg|exact: f_cvg|exact: g_cvg].
 move=> A mA; wlog NAnoo: A mD mf mg mA / ~ (A -oo) => [hwlogA|].
@@ -2402,7 +2415,7 @@ wlog fg : D mD mf mg mfg / forall x, D x -> f x *? g x => [hwlogM|]; last first.
   have [g_ g_cvg] := approximation_sfun mD mg.
   apply: (emeasurable_fun_cvg (fun n x => (f_ n x * g_ n x)%:E)) => //.
     move=> n; apply/EFin_measurable_fun.
-    by apply: measurable_funM => //; exact: (@measurable_funS _ _ setT).
+    by apply: measurable_funM => //; exact: (@measurable_funS _ _ _ _ setT).
   move=> x Dx; under eq_fun do rewrite EFinM.
   by apply: ereal_cvgM; [exact: fg|exact: f_cvg|exact: g_cvg].
 move=> A mA; wlog NA0: A mD mf mg mA / ~ (A 0) => [hwlogA|].
@@ -2441,7 +2454,7 @@ End emeasurable_fun.
 
 Section measurable_fun_sum.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (D : set T) (I : Type).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (D : set T) (I : Type).
 Variables (f : I -> (T -> \bar R)) (mf : forall n, measurable_fun D (f n)).
 
 Lemma measurable_fun_sum s : measurable_fun D (fun x => \sum_(i <- s) f i x).
@@ -2455,7 +2468,7 @@ End measurable_fun_sum.
 
 Section ge0_integral_sum.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (I : Type) (f : I -> (T -> \bar R)).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
@@ -2477,7 +2490,7 @@ End ge0_integral_sum.
 
 Section monotone_convergence_theorem.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (g' : (T -> \bar R)^nat).
 Hypothesis mg' : forall n, measurable_fun D (g' n).
 Hypothesis g'0 : forall n x, D x -> 0 <= g' n x.
@@ -2573,7 +2586,7 @@ have := lee_pinfty l; rewrite le_eqVlt => /predU1P[->|loo].
 rewrite -(cvg_lim _ g_l) //= ereal_lim_le => //.
 near=> n.
 have := lee_pinfty (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
-- have h := @dvg_approx _ _ setT _ t Logic.I fntoo.
+- have h := @dvg_approx _ _ _ setT _ t Logic.I fntoo.
   have g2oo : lim (EFin \o g2 n ^~ t) = +oo.
     apply/cvg_lim => //; apply/dvg_ereal_cvg.
     under [X in X --> _]eq_fun do rewrite nnsfun_approxE.
@@ -2583,7 +2596,7 @@ have := lee_pinfty (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
   have -> : lim (EFin \o max_g2 ^~ t) = +oo.
     by have := lim_g2_max_g2 t n; rewrite g2oo lee_pinfty_eq => /eqP.
   by rewrite lee_pinfty.
-- have approx_g_g := @cvg_approx _ _ setT _ t (fun t _ => g0 n t) Logic.I fntoo.
+- have approx_g_g := @cvg_approx _ _ _ setT _ t (fun t _ => g0 n t) Logic.I fntoo.
   have <- : lim (EFin \o g2 n ^~ t) = g n t.
     have /cvg_lim <- // : EFin \o (approx setT (g n)) ^~ t --> g n t.
       move/cvg_comp : approx_g_g; apply.
@@ -2614,7 +2627,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
       near=> m; have nm : (n <= m)%N by near: m; exists n.
       exact/nd_g.
   by apply: ereal_lim_le => //; [exact:ereal_nondecreasing_is_cvg|exact:nearW].
-rewrite (@nd_ge0_integral_lim _ _ mu _ max_g2) //; last 2 first.
+rewrite (@nd_ge0_integral_lim _ _ _ mu _ max_g2) //; last 2 first.
   - by move=> t; apply: ereal_lim_ge => //; apply: nearW => n; exact: g0.
   - by move=> t m n mn; exact/lefP/nd_max_g2.
 apply: lee_lim.
@@ -2636,7 +2649,7 @@ End monotone_convergence_theorem.
 
 Section integral_series.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 Variable f : (T -> \bar R)^nat.
 Hypothesis mf : forall n, measurable_fun D (f n).
@@ -2660,7 +2673,7 @@ End integral_series.
    using the monotone convergence theorem *)
 Section ge0_integralM.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f : T -> \bar R).
 Hypothesis mf : measurable_fun D f.
 
@@ -2728,7 +2741,7 @@ End ge0_integralM.
 
 Section fatou.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f : (T -> \bar R)^nat).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
@@ -2764,7 +2777,7 @@ End fatou.
 
 Section integralN.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 
 Lemma integralN D (f : T -> \bar R) :
   \int_ D (f^\+ x) 'd mu[x] +? (- \int_ D (f^\- x) 'd mu[x]) ->
@@ -2795,7 +2808,7 @@ End integralN.
 
 Section integral_cst.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (f : T -> \bar R) (D : set T) (mD : measurable D).
 
 Lemma sintegral_cst (x : {nonneg R}) :
@@ -2848,7 +2861,7 @@ End integral_cst.
 
 Section integral_ind.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D).
 
 Lemma integral_indic (E : set T) : measurable E ->
@@ -2862,7 +2875,7 @@ End integral_ind.
 
 Section subset_integral.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 
 Lemma integral_setU (A B : set T) (mA : measurable A) (mB : measurable B)
     (f : T -> \bar R) : measurable_fun (A `|` B) f ->
@@ -2924,7 +2937,7 @@ End subset_integral.
 
 Section Rintegral.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 
 Definition Rintegral (D : set T) (f : T -> \bar R) :=
   fine (\int_ D (f x) 'd mu[x]).
@@ -2933,7 +2946,7 @@ End Rintegral.
 
 Section integrable.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D).
 Implicit Types (f : T -> \bar R).
 
@@ -3030,7 +3043,7 @@ End integrable.
 Notation "mu .-integrable" := (integrable mu) : type_scope.
 
 Section integrable_lemmas.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 
 Lemma integrableS (E D : set T) (f : T -> \bar R) :
   measurable E -> measurable D -> D `<=` E ->
@@ -3054,11 +3067,11 @@ split => [|] [mf foo].
 Qed.
 
 End integrable_lemmas.
-Arguments integrable_mkcond {T R mu D} f.
+Arguments integrable_mkcond {d T R mu D} f.
 
 Section integrable_ae.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f : T -> \bar R).
 Hypotheses fint : mu.-integrable D f.
 
@@ -3090,7 +3103,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
   exists (fine (\int_ D `|f x| 'd mu[x])); first exact/le0R/integral_ge0.
   move=> n.
   rewrite -integral_indic// -ge0_integralM//; last 3 first.
-    - apply: measurable_fun_comp=> //; apply: (@measurable_funS _ _ setT)=>//.
+    - apply: measurable_fun_comp=> //; apply: (@measurable_funS _ _ _ _ setT)=>//.
       by rewrite (_ : \1_ _ = indic_nnsfun R mE)//.
     - by move=> *; rewrite lee_fin.
     - by rewrite lee_fin.
@@ -3100,7 +3113,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
   - by move=> *; rewrite lee_fin.
   - apply/EFin_measurable_fun; apply: measurable_funM=>//.
       + exact: measurable_fun_cst.
-      + apply: (@measurable_funS _ _ setT)=>//.
+      + apply: (@measurable_funS _ _ _ _ setT)=>//.
         by rewrite (_ : \1_ _ = indic_nnsfun R mE)//.
   - by apply: measurable_fun_comp => //; case: fint.
   - move=> x Dx; rewrite /= indicE.
@@ -3130,7 +3143,7 @@ End integrable_ae.
 
 Section linearityM.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f : T -> \bar R).
 Hypothesis intf : mu.-integrable D f.
 
@@ -3161,7 +3174,7 @@ End linearityM.
 
 Section linearity.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f1 f2 : T -> R).
 Let g1 := EFin \o f1.
 Let g2 := EFin \o f2.
@@ -3268,7 +3281,7 @@ Qed.
 
 End linearity.
 
-Lemma integralB_EFin (R : realType) (T : measurableType)
+Lemma integralB_EFin d (T : measurableType d) (R : realType)
   (mu : {measure set T -> \bar R}) (D : set T) (f1 f2 : T -> R)
   (mD : measurable D) :
   mu.-integrable D (EFin \o f1) -> mu.-integrable D (EFin \o f2) ->
@@ -3280,7 +3293,7 @@ move=> if1 if2; rewrite (integralD_EFin mD if1); last first.
 by rewrite -integralN//; exact: integrable_add_def.
 Qed.
 
-Lemma le_abse_integral (T : measurableType) (R : realType)
+Lemma le_abse_integral d (R : realType) (T : measurableType d)
   (mu : {measure set T -> \bar R}) (D : set T) (f : T -> \bar R)
   (mD : measurable D) : measurable_fun D f ->
   (`| \int_ D (f x) 'd mu[x]| <= \int_ D `|f x| 'd mu[x])%E.
@@ -3294,7 +3307,7 @@ by rewrite -ge0_integralD // -?fune_abse//;
 Qed.
 
 Section integral_indic.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 
 Lemma integral_setI_indic (E D : set T) (mD : measurable D) (f : T -> \bar R) :
   measurable E ->
@@ -3312,7 +3325,7 @@ End integral_indic.
 
 Section ae_eq.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variable D : set T.
 Implicit Types f g h i : T -> \bar R.
 
@@ -3401,7 +3414,7 @@ End ae_eq.
 
 Section ae_eq_integral.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 
 Local Notation ae_eq := (ae_eq mu).
 
@@ -3420,7 +3433,8 @@ have le_f_M t : D t -> `|f t| <= M%:E * (f' t)%:E.
 have : 0 <= \int_ D `|f x| 'd mu[x] <= `|M|%:E * mu Df_neq0.
   rewrite integral_ge0//= /Df_neq0 -{2}(setIid D) setIAC -integral_indic//.
   rewrite -/Df_neq0 -ge0_integralM//; last 3 first.
-    - apply: measurable_fun_comp=> //; apply: (@measurable_funS _ _ setT) => //.
+    - apply: measurable_fun_comp=> //.
+      apply: (@measurable_funS _ _ _ _ setT) => //.
       by rewrite (_ : \1_ _ = mindic R mDf_neq0).
     - by move=> x Dx; rewrite lee_fin.
     - by rewrite lee_fin.
@@ -3428,7 +3442,8 @@ have : 0 <= \int_ D `|f x| 'd mu[x] <= `|M|%:E * mu Df_neq0.
   - exact: measurable_fun_comp.
   - by move=> x Dx; rewrite mule_ge0// ?lee_fin.
   - apply: emeasurable_funM; first exact: measurable_fun_cst.
-    apply: measurable_fun_comp => //; apply: (@measurable_funS _ _ setT)=> //.
+    apply: measurable_fun_comp => //.
+    apply: (@measurable_funS _ _ _ _ setT)=> //.
     by rewrite (_ : \1_ _ = mindic R mDf_neq0)//.
   - move=> x Dx.
     rewrite (le_trans (le_f_M _ Dx))// lee_fin /f' indicE.
@@ -3448,7 +3463,7 @@ move=> mf; split=> [iDf0|Df0].
     by move=> t /= /not_implyP [Dt /eqP ft0].
   have muDf a : (0 < a)%R -> mu (D `&` [set x | a%:E <= `|f x |]) = 0.
     move=> a0; apply/eqP; rewrite eq_le measure_ge0 ?andbT; last first.
-    move: (@le_integral_abse _ _ mu _ mD _ _ mf a0).
+    move: (@le_integral_abse _ _ _ mu _ mD _ _ mf a0).
     by rewrite -lee_pdivl_mull// iDf0 mule0 setIC.
   rewrite [X in mu X](_ : _ =
      \bigcup_n (D `&` [set x | `|f x| >= n.+1%:R^-1%:E])); last first.
@@ -3545,8 +3560,8 @@ move=> mN mD ND mf muN0; rewrite integralEindic//.
 rewrite (eq_integral (fun x => `|f x * (\1_N x)%:E|)); last first.
   by move=> t _; rewrite abseM (@gee0_abs _ (\1_N t)%:E)// lee_fin.
 apply/ae_eq_integral_abs => //.
-  apply: emeasurable_funM => //; first exact: (@measurable_funS _ _ D).
-  apply/EFin_measurable_fun/(@measurable_funS _ _ setT) => //.
+  apply: emeasurable_funM => //; first exact: (@measurable_funS _ _ _ _ D).
+  apply/EFin_measurable_fun/(@measurable_funS _ _ _ _ setT) => //.
   by rewrite (_ : \1_N = mindic R mN).
 exists N; split => // t /= /not_implyP[_]; rewrite indicE.
 by have [|] := boolP (t \in N); rewrite ?inE ?mule0.
@@ -3575,7 +3590,7 @@ pose oneN : {nnsfun T >-> R} := [the {nnsfun T >-> R} of mindic R mN].
 have intone : mu.-integrable D (fun x => f x * (oneN x)%:E).
   split.
     apply: emeasurable_funM=> //; apply/EFin_measurable_fun.
-    exact: (@measurable_funS _ _ setT).
+    exact: (@measurable_funS _ _ _ _ setT).
   rewrite (eq_integral (fun x => `|f x| * (\1_N x)%:E)); last first.
     by move=> t _; rewrite abseM (@gee0_abs _ (\1_N t)%:E) // lee_fin.
   rewrite -integral_setI_indic// (@integral_abs_eq0 D)// ?lte_pinfty//.
@@ -3585,7 +3600,7 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (fun x => f x * (oneCN x)%:E).
   split=> [intf|intCf].
     split.
       apply: emeasurable_funM=> //; apply/EFin_measurable_fun => //.
-      exact: (@measurable_funS _ _ setT).
+      exact: (@measurable_funS _ _ _ _ setT).
     rewrite (eq_integral (fun x => `|f x| * (\1_(~` N) x)%:E)); last first.
       by move=> t _; rewrite abseM (@gee0_abs _ (\1_(~` N) t)%:E) // lee_fin.
     rewrite -integral_setI_indic//; case: intf => _; apply: le_lt_trans.
@@ -3593,10 +3608,10 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (fun x => f x * (oneCN x)%:E).
   split => //; rewrite (funID mN f) -/oneCN -/oneN.
   have ? : measurable_fun D (fun x : T => f x * (oneCN x)%:E).
     apply: emeasurable_funM=> //.
-    by apply/EFin_measurable_fun; exact: (@measurable_funS _ _ setT).
+    by apply/EFin_measurable_fun; exact: (@measurable_funS _ _ _ _ setT).
   have ? : measurable_fun D (fun x : T => f x * (oneN x)%:E).
     apply: emeasurable_funM => //.
-    by apply/EFin_measurable_fun; apply: (@measurable_funS _ _ setT).
+    by apply/EFin_measurable_fun; apply: (@measurable_funS _ _ _ _ setT).
   apply: (@le_lt_trans _ _ (\int_ D (`|f x * (oneCN x)%:E| + `|f x * (oneN x)%:E|) 'd mu[x])).
     apply: ge0_le_integral => //.
     - by apply: measurable_fun_comp => //; exact: emeasurable_funD.
@@ -3610,7 +3625,7 @@ have h2 : mu.-integrable (D `\` N) f <-> mu.-integrable D (fun x => f x * (oneCN
   split=> [intCf|intCf].
     split.
       apply: emeasurable_funM=> //; apply/EFin_measurable_fun => //.
-      exact: (@measurable_funS _ _ setT).
+      exact: (@measurable_funS _ _ _ _ setT).
     rewrite (eq_integral (fun x => `|f x| * (\1_(~` N) x)%:E)); last first.
       by move=> t _; rewrite abseM (@gee0_abs _ (\1_(~` N) t)%:E)// lee_fin.
     rewrite -integral_setI_indic //; case: intCf => _; apply: le_lt_trans.
@@ -3634,10 +3649,10 @@ move=> mN mD mf f0 muN0.
 rewrite {1}(funID mN f) ge0_integralD//; last 4 first.
   - by move=> x Dx; apply: mule_ge0 => //; [exact: f0|rewrite lee_fin].
   - apply: emeasurable_funM=> //; apply/EFin_measurable_fun=> //.
-    exact: (@measurable_funS _ _ setT).
+    exact: (@measurable_funS _ _ _ _ setT).
   - by move=> x Dx; apply: mule_ge0 => //; [exact: f0|rewrite lee_fin].
   - apply: emeasurable_funM=> //; apply/EFin_measurable_fun=> //.
-    exact: (@measurable_funS _ _ setT).
+    exact: (@measurable_funS _ _ _ _ setT).
 rewrite -integral_setI_indic//; last exact: measurableC.
 rewrite -integral_setI_indic// [X in _ + X = _](_ : _ = 0) ?adde0//.
 rewrite (eq_integral (abse \o f)); last first.
@@ -3656,11 +3671,11 @@ move=> mD mf mg f0 g0 [N [mN N0 subN]].
 rewrite integralEindic// [RHS]integralEindic//.
 rewrite (negligible_integral mN)//; last 2 first.
   - apply: emeasurable_funM => //; apply/EFin_measurable_fun.
-    by apply: (@measurable_funS _ _ setT) => //; rewrite (_ : \1_D = mindic R mD).
+    by apply: (@measurable_funS _ _ _ _ setT) => //; rewrite (_ : \1_D = mindic R mD).
   - by move=> x Dx; apply: mule_ge0 => //; [exact: f0|rewrite lee_fin].
 rewrite [RHS](negligible_integral mN)//; last 2 first.
   - apply: emeasurable_funM => //; apply/EFin_measurable_fun.
-    by apply: (@measurable_funS _ _ setT) => //; rewrite (_ : \1_D = mindic R mD).
+    by apply: (@measurable_funS _ _ _ _ setT) => //; rewrite (_ : \1_D = mindic R mD).
   - by move=> x Dx; apply: mule_ge0 => //; [exact: g0|rewrite lee_fin].
 - apply: eq_integral => x;rewrite in_setD => /andP[_ xN].
   apply: contrapT; rewrite indicE; have [|?] := boolP (x \in D).
@@ -3685,7 +3700,7 @@ Qed.
 End ae_eq_integral.
 
 Section ae_measurable_fun.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Hypothesis cmu : measure_is_complete mu.
 Variables (D : set T) (f g : T -> \bar R).
 
@@ -3716,7 +3731,7 @@ End ae_measurable_fun.
 
 Section integralD.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
 Hypotheses (if1 : mu.-integrable D f1) (if2 : mu.-integrable D f2).
 
@@ -3792,7 +3807,7 @@ End integralD.
 
 Section integralB.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType).
+Variables (d : measure_display) (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
 Variables (mD : measurable D) (f1 f2 : T -> \bar R).
 Hypotheses (if1 : mu.-integrable D f1) (if2 : mu.-integrable D f2).
@@ -3800,7 +3815,7 @@ Hypotheses (if1 : mu.-integrable D f1) (if2 : mu.-integrable D f2).
 Lemma integralB : \int_ D ((f1 \- f2) x) 'd mu[x] =
                   \int_ D (f1 x) 'd mu[x] - \int_ D (f2 x) 'd mu[x].
 Proof.
-rewrite -[in RHS](@integralN _ _ _ _ f2); last exact: integrable_add_def.
+rewrite -[in RHS](@integralN _ _ _ _ _ f2); last exact: integrable_add_def.
 by rewrite -[in RHS]integralD//; exact: integrableN.
 Qed.
 
@@ -3808,7 +3823,7 @@ End integralB.
 
 Section dominated_convergence_lemma.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f_ : (T -> \bar R)^nat).
 Variables (f : T -> \bar R) (g : T -> \bar R).
 Hypothesis mf_ : forall n, measurable_fun D (f_ n).
@@ -3936,7 +3951,7 @@ suff: (fun n => `| \int_ D (f_ n x) 'd mu[x] - \int_ D (f x) 'd mu[x]|) --> 0.
    move/ereal_cvg_abs0/ereal_cvg_sub0; apply.
    rewrite fin_numElt (_ : -oo = - +oo)// -lte_absl.
    case: dominated_integrable => ?; apply: le_lt_trans.
-   by apply: (le_trans _ (@le_abse_integral _ _ mu D f mD _)).
+   by apply: (le_trans _ (@le_abse_integral _ _ _ mu D f mD _)).
 apply: (@ereal_squeeze _ (cst 0) _ (fun n => \int_ D (g_ n x) 'd mu[x])).
 - by apply: nearW => n; rewrite abse_ge0//=; exact: h.
 - exact: cvg_cst.
@@ -3944,11 +3959,11 @@ apply: (@ereal_squeeze _ (cst 0) _ (fun n => \int_ D (g_ n x) 'd mu[x])).
 Qed.
 
 End dominated_convergence_lemma.
-Arguments dominated_integrable {T R mu D} _ f_ f g.
+Arguments dominated_integrable {d T R mu D} _ f_ f g.
 
 Section dominated_convergence_theorem.
 Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D).
 Variables (f_ : (T -> \bar R)^nat) (f : T -> \bar R) (g : T -> \bar R).
 Hypothesis mf_ : forall n, measurable_fun D (f_ n).
@@ -3983,7 +3998,7 @@ have f_g' n x : D x -> `|f_' n x| <= g' x.
   apply: contrapT => fg; move: xN; apply/negP; rewrite negbK inE; left; right.
   by apply: subN2 => /= /(_ n Dx).
 have ? : measurable_fun D (\1_(D `\` N) : T -> R).
-  apply: (@measurable_funS _ _ setT) => //.
+  apply: (@measurable_funS _ _ _ _ setT) => //.
   by rewrite (_ : \1_ _ = mindic R (measurableD mD mN)).
 have mu_ n : measurable_fun D (f_' n).
   apply/(measurable_restrict (f_ n) (measurableD mD mN) _ _).1 => //.
@@ -4005,16 +4020,16 @@ split.
     [exact: measurable_fun_comp|exact: measurable_fun_comp|].
   exists N; split => //; rewrite -(setCK N); apply: subsetC => x Nx Dx.
   by rewrite /f' /restrict mem_set.
-- have := @dominated_cvg0 _ _ _ _ mD _ _ _ mu_ f_f' finv ig' f_g'.
+- have := @dominated_cvg0 _ _ _ _ _ mD _ _ _ mu_ f_f' finv ig' f_g'.
   set X := (X in _ -> X --> _); rewrite [X in X --> _ -> _](_ : _ = X) //.
   apply/funext => n; apply ae_eq_integral => //.
   + apply: measurable_fun_comp => //; apply: emeasurable_funB => //.
     apply/(measurable_restrict _ (measurableD _ _) _ _).1 => //.
-    by apply: (@measurable_funS _ _ D) => // x [].
+    by apply: (@measurable_funS _ _ _ _ D) => // x [].
   + by rewrite /g_; apply: measurable_fun_comp => //; exact: emeasurable_funB.
   + exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
     by rewrite /f_' /f' /restrict mem_set.
-- have := @dominated_cvg _ _ _ _ mD _ _ _ mu_ f_f' finv ig' f_g'.
+- have := @dominated_cvg _ _ _ _ _ mD _ _ _ mu_ f_f' finv ig' f_g'.
   set X := (X in _ -> X --> _); rewrite [X in X --> _ -> _](_ : _ = X) //; last first.
     apply/funext => n; apply ae_eq_integral => //.
     exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
@@ -4022,7 +4037,7 @@ split.
   set Y := (X in _ -> _ --> X); rewrite [X in _ --> X -> _](_ : _ = Y) //.
   apply ae_eq_integral => //.
     apply/(measurable_restrict _ (measurableD _ _) _ _).1 => //.
-    by apply: (@measurable_funS _ _ D) => // x [].
+    by apply: (@measurable_funS _ _ _ _ D) => // x [].
   exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
   by rewrite /f' /restrict mem_set.
 Qed.
@@ -4031,7 +4046,7 @@ End dominated_convergence_theorem.
 
 (* TODO: move to measure.v *)
 Section measure_restr.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D).
 
 Definition measure_restr' (X : set _) : \bar R := mu (X `&` D).
@@ -4051,7 +4066,7 @@ have mF' i : measurable (F' i) by apply: measurableI.
 have tF' : trivIset setT F'.
   apply/trivIsetP => i j _ _ ij; move/trivIsetP : tF => /(_ i j Logic.I Logic.I ij).
   by rewrite /F' setIACA => ->; rewrite set0I.
-have h := @measure_sigma_additive _ _ mu _ mF' tF'.
+have h := @measure_sigma_additive _ _ _ mu _ mF' tF'.
 by rewrite /measure_restr' setI_bigcupl.
 Qed.
 
@@ -4161,7 +4176,8 @@ Qed.
 End section.
 
 Section measurable_section.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types (A : set (T1 * T2)).
 
 Lemma mem_set_pair1 x y A :
@@ -4209,7 +4225,8 @@ Qed.
 End measurable_section.
 
 Section ndseq_closed_B.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
 
 Section xsection.
@@ -4257,7 +4274,8 @@ End ysection.
 End ndseq_closed_B.
 
 Section measurable_prod_subset.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
 
 Section xsection.
@@ -4269,7 +4287,7 @@ Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
 
 Lemma measurable_prod_subset_xsection
     (m2_bounded : exists M, forall X, measurable X -> (m2 X < M%:E)%E) :
-  @measurable (prod_measurableType T1 T2) `<=` B.
+  measurable `<=` B.
 Proof.
 rewrite measurable_prod_measurableType.
 set C := [set A1 `*` A2 | A1 in measurable & A2 in measurable].
@@ -4313,7 +4331,7 @@ Let B := [set A | measurable A /\ measurable_fun setT (psi A)].
 
 Lemma measurable_prod_subset_ysection
     (m1_bounded : exists M, forall X, measurable X -> (m1 X < M%:E)%E) :
-  @measurable (prod_measurableType T1 T2) `<=` B.
+  measurable `<=` B.
 Proof.
 rewrite measurable_prod_measurableType.
 set C := [set A1 `*` A2 | A1 in measurable & A2 in measurable].
@@ -4351,7 +4369,8 @@ End ysection.
 End measurable_prod_subset.
 
 Section measurable_fun_xsection.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m2 : {measure set T2 -> \bar R}).
 Hypothesis sf_m2 : sigma_finite setT m2.
 Implicit Types A : set (T1 * T2).
@@ -4391,7 +4410,8 @@ Qed.
 End measurable_fun_xsection.
 
 Section measurable_fun_ysection.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}).
 Hypothesis sf_m1 : sigma_finite setT m1.
 Implicit Types A : set (T1 * T2).
@@ -4419,7 +4439,7 @@ have m1'_bounded : exists M, forall X, measurable X -> (m1' X < M%:E)%E.
   exact: measurableI.
 pose psi' A := m1' \o ysection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (psi' A)].
-have subset_B' : @measurable (prod_measurableType T1 T2) `<=` B'.
+have subset_B' : measurable `<=` B'.
   exact: measurable_prod_subset_ysection.
 split=> [|Y mY]; first by apply: measurableI => //; exact: measurableM.
 have [_ /(_ Y mY)] := subset_B' X mX.
@@ -4433,7 +4453,8 @@ End measurable_fun_ysection.
 
 Section product_measure1.
 Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis (sm2 : sigma_finite setT m2).
 Implicit Types A : set (T1 * T2).
@@ -4473,7 +4494,8 @@ End product_measure1.
 
 Section product_measure1E.
 Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis (sm2 : sigma_finite setT m2).
 Implicit Types A : set (T1 * T2).
@@ -4497,7 +4519,8 @@ End product_measure1E.
 
 Section product_measure_unique.
 Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypotheses (sf_m1 : sigma_finite setT m1) (sf_m2 : sigma_finite setT m2).
 
@@ -4542,7 +4565,8 @@ End product_measure_unique.
 
 Section product_measure2.
 Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis (sm1 : sigma_finite setT m1).
 Implicit Types A : set (T1 * T2).
@@ -4583,7 +4607,8 @@ End product_measure2.
 
 Section product_measure2E.
 Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis sm1 : sigma_finite setT m1.
 
@@ -4607,7 +4632,8 @@ End product_measure2E.
 
 Section fubini_functions.
 Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Variable f : T1 * T2 -> \bar R.
 
@@ -4618,7 +4644,8 @@ End fubini_functions.
 
 Section fubini_tonelli.
 Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypotheses (sf_m1 : sigma_finite setT m1) (sf_m2 : sigma_finite setT m2).
 
@@ -4628,7 +4655,7 @@ Let m' : {measure set (T1 * T2) -> \bar R} := product_measure2 m2 sf_m1.
 Section indic_fubini_tonelli.
 Variables (A : set (T1 * T2)) (mA : measurable A).
 Implicit Types A : set (T1 * T2).
-Let f : (prod_measurableType T1 T2) -> R := \1_A.
+Let f : (T1 * T2) -> R := \1_A.
 
 Let F := fubini_F m2 (EFin \o f).
 Let G := fubini_G m1 (EFin \o f).
@@ -4697,7 +4724,7 @@ Qed.
 End indic_fubini_tonelli.
 
 Section sfun_fubini_tonelli.
-Variable f : {nnsfun [the measurableType of T1 * T2 : Type] >-> R}.
+Variable f : {nnsfun [the measurableType _ of T1 * T2 : Type] >-> R}.
 
 Let F := fubini_F m2 (EFin \o f).
 Let G := fubini_G m1 (EFin \o f).
@@ -4855,7 +4882,7 @@ Section fubini_tonelli.
 Variable f : T1 * T2 -> \bar R.
 Hypothesis mf : measurable_fun setT f.
 Hypothesis f0 : forall x, 0 <= f x.
-Let T := [the measurableType of T1 * T2 : Type].
+Let T := [the measurableType _ of T1 * T2 : Type].
 
 Let F := fubini_F m2 f.
 Let G := fubini_G m1 f.
@@ -4963,14 +4990,15 @@ Qed.
 End fubini_tonelli.
 
 End fubini_tonelli.
-Arguments fubini_tonelli1 {T1 T2 R m1 m2} sf_m2 f.
-Arguments fubini_tonelli2 {T1 T2 R m1 m2} sf_m1 sf_m2 f.
-Arguments measurable_fun_fubini_tonelli_F {T1 T2 R m2} sf_m2 f.
-Arguments measurable_fun_fubini_tonelli_G {T1 T2 R m1} sf_m1 f.
+Arguments fubini_tonelli1 {d1 d2 T1 T2 R m1 m2} sf_m2 f.
+Arguments fubini_tonelli2 {d1 d2 T1 T2 R m1 m2} sf_m1 sf_m2 f.
+Arguments measurable_fun_fubini_tonelli_F {d1 d2 T1 T2 R m2} sf_m2 f.
+Arguments measurable_fun_fubini_tonelli_G {d1 d2 T1 T2 R m1} sf_m1 f.
 
 Section fubini.
 Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (R : realType).
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypotheses (sf_m1 : sigma_finite setT m1) (sf_m2 : sigma_finite setT m2).
 Variable f : T1 * T2 -> \bar R.
