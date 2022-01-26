@@ -1666,7 +1666,7 @@ End inj.
 
 End patch.
 Notation restrict := (patch (fun=> point)).
-Notation "f \|_ D" := (restrict D) : fun_scope.
+Notation "f \|_ D" := (restrict D f) : fun_scope.
 
 (**************************************)
 (* Restriction of domain and codomain *)
