@@ -4220,7 +4220,7 @@ Lemma ball_close (x y : M) :
   close x y = forall eps : {posnum R}, ball x eps%:num y.
 Proof.
 rewrite propeqE; split => [cxy eps|cxy].
-  have := cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos).
+  have := !! cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos).
   rewrite closureEonbhs/= meetsC meets_globallyr.
   move/(_ _ (open_nbhs_ball _ (eps%:num/2)%:pos)) => [z [zx zy]].
   by apply: (@ball_splitl z); apply: interior_subset.

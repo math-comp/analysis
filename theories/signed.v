@@ -274,6 +274,31 @@ Proof. by case: x => [x /= /andP[]]; move: cond nz => [[[]|]|] []. Qed.
 Lemma eq0F x : unify_nz !=0 nz -> x%:num == x0 :> T = false.
 Proof. by move=> /neq0-/(_ x)/negPf->. Qed.
 
+Lemma widen_signed_subproof x nz' cond' :
+  unify_nz nz' nz -> unify_r cond' cond ->
+  Signed.spec x0 nz' cond' x%:num.
+Proof.
+case: x => [x /= /andP[]].
+by case: cond nz cond' nz' => [[[]|]|] [] [[[]|]|] [] //= nz'' cond'';
+   rewrite ?nz'' ?cond'' // orbT.
+Qed.
+
+Definition widen_signed x nz' cond'
+    (unz : unify_nz nz' nz) (ucond : unify_r cond' cond) :=
+  Signed.mk (widen_signed_subproof x unz ucond).
+
+Lemma widen_signedE x (unz : unify_nz nz nz) (ucond : unify_r cond cond) :
+  @widen_signed x nz cond unz ucond = x.
+Proof. exact/val_inj. Qed.
+
+Lemma posE (x : sT) (unz : unify_nz !=0 nz) (ucond : unify_r >=0 cond) :
+  (widen_signed x%:num%:sgn unz ucond)%:num = x%:num.
+Proof. by []. Qed.
+
+Lemma nngE (x : sT) (unz : unify_nz ?=0 nz) (ucond : unify_r >=0 cond) :
+  (widen_signed x%:num%:sgn unz ucond)%:num = x%:num.
+Proof. by []. Qed.
+
 End Theory.
 
 Arguments gt0 {d T x0 nz cond} _ {_ _}.
@@ -287,6 +312,10 @@ Arguments gt0F {d T x0 nz cond} _ {_}.
 Arguments cmp0 {d T x0 nz cond} _ {_}.
 Arguments neq0 {d T x0 nz cond} _ {_}.
 Arguments eq0F {d T x0 nz cond} _ {_}.
+Arguments widen_signed {d T x0 nz cond} _ {_ _ _ _}.
+Arguments widen_signedE {d T x0 nz cond} _ {_ _}.
+Arguments posE {d T x0 nz cond} _ {_ _}.
+Arguments nngE {d T x0 nz cond} _ {_ _}.
 
 Notation "[ 'gt0' 'of' x ]" := (ltac:(refine (gt0 x%:sgn))).
 Notation "[ 'lt0' 'of' x ]" := (ltac:(refine (lt0 x%:sgn))).
@@ -302,6 +331,17 @@ Hint Extern 0 (is_true (_ <= 0%R)%O) => solve [apply: le0] : core.
 Hint Extern 0 (is_true (_ \is Num.real)) => solve [apply: cmp0] : core.
 Hint Extern 0 (is_true (0%R >=< _)%O) => solve [apply: cmp0] : core.
 Hint Extern 0 (is_true (_ != 0%R)%O) => solve [apply: neq0] : core.
+
+Notation "x %:pos" := (widen_signed x%:sgn : {posnum _}) (only parsing)
+  : ring_scope.
+Notation "x %:nng" := (widen_signed x%:sgn : {nonneg _}) (only parsing)
+  : ring_scope.
+Notation "x %:pos" := (@widen_signed _ _ _ _ _
+    (@Signed.from _ _ _ _ _ _ (Phantom _ x)) !=0 (Real (Sign >=0)) _ _)
+  (only printing) : ring_scope.
+Notation "x %:nng" := (@widen_signed _ _ _ _ _
+    (@Signed.from _ _ _ _ _ _ (Phantom _ x)) ?=0 (Real (Sign >=0)) _ _)
+  (only printing) : ring_scope.
 
 Local Open Scope ring_scope.
 
@@ -321,10 +361,10 @@ End Order.
 Section NumDomainStability.
 Context {R : numDomainType}.
 
-Lemma zero_snum_subproof cond : Signed.spec 0 MaybeZero cond (0 : R).
-Proof. by case: cond => // -[[]|]//=; rewrite lexx. Qed.
+Lemma zero_snum_subproof : Signed.spec 0 MaybeZero NonNeg (0 : R).
+Proof. exact: lexx. Qed.
 
-Canonical zero_snum cond := Signed.mk (zero_snum_subproof cond).
+Canonical zero_snum := Signed.mk (zero_snum_subproof).
 
 Lemma one_snum_subproof : Signed.spec 0 NonZero NonNeg (1 : R).
 Proof. by rewrite /= oner_eq0 ler01. Qed.
@@ -692,8 +732,8 @@ Local Notation nR := {num R & ?=0 & cond}.
 Implicit Types x y : nR.
 Local Notation num := (@num _ _ (0 : R) ?=0 cond).
 
-Lemma num_eq0 x : (x%:num == 0) = (x == (0%:sgn : nR)).
-Proof. by []. Qed.
+(* Lemma num_eq0 x : (x%:num == 0) = (x == (0%:sgn : nR)). *)
+(* Proof. by []. Qed. *)  (* TODO: fix when adding 0 *)
 
 End Morph0.
 
@@ -711,7 +751,7 @@ Proof. by move=> x y; rewrite !minEle num_le -fun_if. Qed.
 Lemma num_max : {morph num : x y / Order.max x y}.
 Proof. by move=> x y; rewrite !maxEle num_le -fun_if. Qed.
 
-Lemma num_abs_eq0 a : (`|a|%:sgn == 0%:sgn) = (a == 0).
+Lemma num_abs_eq0 a : (`|a|%:nng == 0%:nng) = (a == 0).
 Proof. by rewrite -normr_eq0. Qed.
 
 End Morph.
@@ -762,15 +802,12 @@ Local Notation nR := {num R & ?=0 & >=0}.
 Implicit Type x y : nR.
 Local Notation num := (@num _ _ (0 : R) ?=0 >=0).
 
-Lemma num_abs_le a x : 0 <= a -> (`|a|%:sgn <= x) = (a <= x%:num).
+Lemma num_abs_le a x : 0 <= a -> (`|a|%:nng <= x) = (a <= x%:num).
 Proof. by move=> a0; rewrite -num_le//= ger0_norm. Qed.
 
-Lemma num_abs_lt a x : 0 <= a -> (`|a|%:sgn < x) = (a < x%:num).
+Lemma num_abs_lt a x : 0 <= a -> (`|a|%:nng < x) = (a < x%:num).
 Proof. by move=> a0; rewrite -num_lt/= ger0_norm. Qed.
 End MorphGe0.
-
-Notation "x %:pos" := (x%:sgn : {posnum _}) : ring_scope.
-Notation "x %:nng" := (x%:sgn : {nonneg _}) : ring_scope.
 
 Section Posnum.
 Context (R : numDomainType) (x : R) (x_gt0 : 0 < x).
