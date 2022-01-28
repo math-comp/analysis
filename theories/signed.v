@@ -73,12 +73,6 @@ Hint Mode infer ! : typeclass_instances.
 Hint Extern 0 (infer _) => (exact) : typeclass_instances.
 Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
-Class unify {T} (x y : T) := Unify : x = y.
-Hint Mode unify - + - : typeclass_instances.
-Class unify' {T} (x y : T) := Unify' : x = y.
-Instance unify'P {T} (x y : T) : unify' x y -> unify x y := id.
-Hint Extern 0 (unify' _ _) => vm_compute; reflexivity : typeclass_instances.
-
 Module Import KnownSign.
 Variant nullity := NonZero | MaybeZero.
 Coercion nullity_bool nz := if nz is NonZero then true else false.
@@ -87,6 +81,30 @@ Definition nz_of_bool b := if b then NonZero else MaybeZero.
 Variant sign := NonNeg | NonPos.
 Variant real := Sign of sign | AnySign.
 Variant reality := Real of real | Arbitrary.
+
+Definition wider_nullity xnz ynz :=
+  match xnz, ynz with
+  | MaybeZero, _
+  | NonZero, NonZero => true
+  | NonZero, MaybeZero => false
+  end.
+Definition wider_sign xs ys :=
+  match xs, ys with
+  | NonNeg, NonNeg | NonPos, NonPos => true
+  | NonNeg, NonPos | NonPos, NonNeg => false
+  end.
+Definition wider_real xr yr :=
+  match xr, yr with
+  | AnySign, _ => true
+  | Sign sx, Sign sy => wider_sign sx sy
+  | Sign _, AnySign => false
+  end.
+Definition wider_reality xr yr :=
+  match xr, yr with
+  | Arbitrary, _ => true
+  | Real xr, Real yr => wider_real xr yr
+  | Real _, Arbitrary => false
+  end.
 End KnownSign.
 
 Module Signed.
@@ -192,6 +210,20 @@ End POrder.
 
 (* End Order. *)
 
+Class unify {T} f (x y : T) := Unify : f x y = true.
+Hint Mode unify - - - + : typeclass_instances.
+Class unify' {T} f (x y : T) := Unify' : f x y = true.
+Instance unify'P {T} f (x y : T) : unify' f x y -> unify f x y := id.
+Hint Extern 0 (unify' _ _ _) => vm_compute; reflexivity : typeclass_instances.
+
+Notation unify_nz nzx nzy :=
+  (unify wider_nullity nzx%snum_nullity nzy%snum_nullity).
+Notation unify_r rx ry :=
+  (unify wider_reality rx%snum_sign ry%snum_sign).
+
+Instance anysign_wider_real sign : unify_r (Real AnySign) (Real sign).
+Proof. by []. Qed.
+
 Section Theory.
 Context {d : unit} {T : porderType d} {x0 : T}
   {nz : nullity} {cond : reality}.
@@ -200,51 +232,46 @@ Implicit Type x : sT.
 
 Lemma signed_intro {x} : x%:num = x%:num :> T. Proof. by []. Qed.
 
-Lemma gt0 x : unify nz NonZero -> unify cond NonNeg ->
-  x0 < x%:num :> T.
+Lemma gt0 x : unify_nz !=0 nz -> unify_r >=0 cond -> x0 < x%:num :> T.
 Proof.
-move=> nz_eq cond_eq; case: x.
-by rewrite nz_eq cond_eq => //= r; rewrite lt_def.
+move: x => [x /= /andP[]].
+by move: cond nz => [[[]|]|] [] //=; rewrite lt_def => ->.
 Qed.
 
-Lemma le0F x : unify nz NonZero -> unify cond NonNeg ->
-   x%:num <= x0 :> T = false.
+Lemma le0F x : unify_nz !=0 nz -> unify_r >=0 cond -> x%:num <= x0 :> T = false.
 Proof. by move=> ? ?; rewrite lt_geF//; apply: gt0. Qed.
 
-Lemma lt0 x : unify nz NonZero -> unify cond NonPos ->
-  x%:num < x0 :> T.
+Lemma lt0 x : unify_nz !=0 nz -> unify_r <=0 cond -> x%:num < x0 :> T.
 Proof.
-move=> nz_eq cond_eq; case: x.
-by rewrite nz_eq cond_eq => //= r; rewrite lt_def [x0 == _]eq_sym.
+move: x => [x /= /andP[]].
+by move: cond nz => [[[]|]|] [] //=; rewrite lt_def [x0 == _]eq_sym => ->.
 Qed.
 
-Lemma ge0F x : unify nz NonZero -> unify cond NonPos ->
-  x0 <= x%:num :> T = false.
+Lemma ge0F x : unify_nz !=0 nz -> unify_r <=0 cond -> x0 <= x%:num :> T = false.
 Proof. by move=> ? ?; rewrite lt_geF//; apply: lt0. Qed.
 
-Lemma ge0 x : unify cond NonNeg -> x0 <= x%:num :> T.
-Proof. by move=> cond_eq; case: x; rewrite cond_eq/= => ? /andP[]. Qed.
+Lemma ge0 x : unify_r >=0 cond -> x0 <= x%:num :> T.
+Proof. by case: x => [x /= /andP[]]; move: cond nz => [[[]|]|] []. Qed.
 
-Lemma lt0F x : unify cond NonNeg -> x%:num < x0 :> T = false.
+Lemma lt0F x : unify_r >=0 cond -> x%:num < x0 :> T = false.
 Proof. by move=> ?; rewrite le_gtF//; apply: ge0. Qed.
 
-Lemma le0 x : unify cond NonPos -> x0 >= x%:num :> T.
-Proof. by move=> cond_eq; case: x; rewrite cond_eq/= => ? /andP[]. Qed.
+Lemma le0 x : unify_r <=0 cond -> x0 >= x%:num :> T.
+Proof. by case: x => [x /= /andP[]]; move: cond nz => [[[]|]|] []. Qed.
 
-Lemma gt0F x : unify cond NonPos -> x0 < x%:num :> T = false.
+Lemma gt0F x : unify_r <=0 cond -> x0 < x%:num :> T = false.
 Proof. by move=> ?; rewrite le_gtF//; apply: le0. Qed.
 
-Lemma cmp0 {r : real} x :
-  unify cond (Real r) -> (x0 >=< x%:num).
+Lemma cmp0 x : unify_r (Real AnySign) cond -> (x0 >=< x%:num).
 Proof.
-move=> cond_eq;  rewrite /(_ >=< _); move: x; rewrite {}cond_eq.
-by case: r => [[|]|] [/= x /andP[_ ->]]//; rewrite orbT.
+case: x => [x /= /andP[]].
+by move: cond nz => [[[]|]|] [] //= _ sx; rewrite /Order.comparable sx// orbT.
 Qed.
 
-Lemma neq0 x : unify nz NonZero -> x%:num != x0 :> T.
-Proof. by move=> nz_eq; case: x; rewrite nz_eq/= => ? /andP[]. Qed.
+Lemma neq0 x : unify_nz !=0 nz -> x%:num != x0 :> T.
+Proof. by case: x => [x /= /andP[]]; move: cond nz => [[[]|]|] []. Qed.
 
-Lemma eq0F x : unify nz NonZero -> x%:num == x0 :> T = false.
+Lemma eq0F x : unify_nz !=0 nz -> x%:num == x0 :> T = false.
 Proof. by move=> /neq0-/(_ x)/negPf->. Qed.
 
 End Theory.
@@ -257,7 +284,7 @@ Arguments ge0 {d T x0 nz cond} _ {_}.
 Arguments lt0F {d T x0 nz cond} _ {_}.
 Arguments le0 {d T x0 nz cond} _ {_}.
 Arguments gt0F {d T x0 nz cond} _ {_}.
-Arguments cmp0 {d T x0 nz cond r} _ {_}.
+Arguments cmp0 {d T x0 nz cond} _ {_}.
 Arguments neq0 {d T x0 nz cond} _ {_}.
 Arguments eq0F {d T x0 nz cond} _ {_}.
 
