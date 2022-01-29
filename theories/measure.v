@@ -538,19 +538,11 @@ Definition are_measurable_sets T D (G : set (set T)) :=
   [/\ G set0, (forall A, G A -> G (D `\` A)) &
      (forall A : (set T)^nat, (forall n, G (A n)) -> G (\bigcup_k A k))].
 
+(* TODO: duplicate of finite_II? *)
 Lemma finite_set_II n : finite_set `I_n. Proof. by exists n. Qed.
 Hint Resolve finite_set_II : core.
 
 Section are_measurable_sets_lemmas.
-
-Lemma bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
-  finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
-Proof.
-move=> finA; rewrite -bigcup_fset /fset_set; case: pselect => [{}finA|//].
-apply/seteqP; split=> [x [i Ai Fix]|x [i /=]].
-  by exists i => //; case: cid => // B AB /=; move: Ai; rewrite AB.
-by case: cid => /= B -> iB Fix; exists i.
-Qed.
 
 Lemma bigcap_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
   finite_set A -> \bigcap_(i in A) F i = \big[setI/setT]_(i <- fset_set A) F i.

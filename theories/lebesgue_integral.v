@@ -93,15 +93,16 @@ Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
 (*                         lemmas waiting to be PRed                          *)
 (******************************************************************************)
 
-(* PR in progress *)
-Notation "f \- g" := (fun x => f x - g x)%E : ereal_scope.
-(* /PR in progress *)
+Lemma bigsetU_bigcup2 (T : Type) (A B : set T) :
+  \big[setU/set0]_(i < 2) bigcup2 A B i = A `|` B.
+Proof. by rewrite !big_ord_recl big_ord0 setU0. Qed.
 
-(* PR: in progress *)
-Lemma fin_numB (R : numDomainType) (x y : \bar R) :
-  (x - y \is a fin_num)%E = (x \is a fin_num) && (y \is a fin_num).
-Proof. by move: x y => [x| |] [y| |]. Qed.
-(* /PR: in progress *)
+Lemma setTPn (T : Type) (A : set T) : A != setT <-> exists t, ~ A t.
+Proof.
+split => [/negP|[t]]; last by apply: contra_notP => /negP/negPn/eqP ->.
+apply: contra_notP => /forallNP h.
+by apply/eqP; rewrite predeqE => t; split => // _; apply: contrapT.
+Qed.
 
 Lemma continuous_is_cvg {T : Type} {V U : topologicalType} [F : set (set T)]
   (FF : Filter F) (f : T -> V) (h : V -> U) :
@@ -112,147 +113,95 @@ move=> ach /cvg_ex[l fxl]; apply/cvg_ex; exists (h l).
 by apply: continuous_cvg => //; exact: ach.
 Qed.
 
-Lemma trivIset_setIr T I D (F : I -> set T) X :
-  trivIset D F -> trivIset D (fun i => F i `&` X).
-Proof. by under eq_fun do rewrite setIC; exact: trivIset_setI. Qed.
+Reserved Notation "f \max g" (at level 50, left associativity).
+Definition max_fun T (R : numDomainType) (f g : T -> R) x := maxr (f x) (g x).
+Notation "f \max g" := (max_fun f g) : ring_scope.
+Arguments max_fun {T R} _ _ _ /.
 
-Lemma bigsetU_bigcup2 (T : Type) (A B : set T) :
-  \big[setU/set0]_(i < 2) bigcup2 A B i = A `|` B.
-Proof. by rewrite !big_ord_recl big_ord0 setU0. Qed.
-
-Lemma setDK {T : Type} (A B : set T) : A `<=` B -> A `|` (B `\` A) = B.
+Lemma mulr_ge0_gt0 (R : numDomainType) (x y : R) : 0 <= x -> 0 <= y ->
+  (0 < x * y) = (0 < x) && (0 < y).
 Proof.
-move=> AB; apply/seteqP; split=> [x [/AB//|[//]]|x Bx].
-by have [Ax|nAx] := pselect (A x); [left|right].
+rewrite le_eqVlt => /predU1P[<-|x0]; first by rewrite mul0r ltxx.
+rewrite le_eqVlt => /predU1P[<-|y0]; first by rewrite mulr0 ltxx andbC.
+by apply/idP/andP=> [|_]; rewrite pmulr_rgt0.
 Qed.
 
-Lemma measureUfinr (T : ringOfSetsType) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> (mu B < +oo)%E ->
-  mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
-Proof.
-move=> Am Bm mBfin; rewrite -[B in LHS](setDK (@subIsetl _ _ A)) setUA.
-rewrite [A `|` _]setUidl; last exact: subIsetr.
-rewrite measureU//=; do ?by apply:measurableD; do ?apply: measurableI.
-  rewrite measureD//; do ?exact: measurableI.
-  by rewrite addeA setIA setIid setIC.
-by rewrite setDE setCI setIUr -setDE setDv set0U setIA setIAC -setDE setDv set0I.
-Qed.
-
-Lemma measureUfinl (T : ringOfSetsType) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> (mu A < +oo)%E ->
-  mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
-Proof. by move=> *; rewrite setUC measureUfinr// setIC [(mu B + _)%E]addeC. Qed.
-
-Lemma oppe_eq0 (R : numDomainType) (x : \bar R) : (- x == 0)%E = (x == 0)%E.
-Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
-
-Lemma measure_le0  (T : ringOfSetsType) (R : realFieldType)
-    (mu : {additive_measure set T -> \bar R}) (A : set T) :
-    measurable A -> (mu A <= 0)%E = (mu A == 0)%E.
-Proof. by move=> /(measure_ge0 mu); case: ltgtP. Qed.
-
-Lemma le_measure (R : realFieldType) (T : ringOfSetsType)
-    (mu : {additive_measure set T -> \bar R}) :
-  {in measurable &, {homo mu : A B / A `<=` B >-> (A <= B)%E}}.
-Proof.
-move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
-  by rewrite lee_pinfty_eq => /eqP ->; rewrite lee_pinfty.
-have mBA : measurable (B `\` A) by apply: measurableD.
-rewrite -[B](setDK AB) measureU//= ?lee_addl// ?measure_ge0//.
-by rewrite setDE setIA setIAC -setDE setDv set0I.
-Qed.
-
-Lemma measureIl (R : realFieldType) (T : ringOfSetsType)
-    (mu : {additive_measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> (mu (A `&` B) <= mu A)%E.
-Proof. by move=> mA mB; rewrite le_measure ?inE//; apply: measurableI. Qed.
-
-Lemma measureIr (R : realFieldType) (T : ringOfSetsType)
-    (mu : {additive_measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> (mu (A `&` B) <= mu B)%E.
-Proof. by move=> mA mB; rewrite le_measure ?inE//; apply: measurableI. Qed.
-
-Lemma null_set_setU (R : realFieldType) (T : ringOfSetsType)
-  (mu : {measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> mu A = 0%E -> mu B = 0%E -> mu (A `|` B) = 0%E.
-Proof.
-move=> mA mB A0 B0; rewrite measureUfinl ?A0 ?lte_pinfty//= ?B0 ?add0e.
-apply/eqP; rewrite oppe_eq0 -measure_le0/=; do ?exact: measurableI.
-by rewrite -A0 measureIl.
-Qed.
-
-Lemma subset_measure0 (T : measurableType) (R : realType)
-  (mu : {measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> A `<=` B ->
-  mu B = 0%E -> mu A = 0%E.
-Proof.
-move=> mA mB AB B0.
-apply/eqP; rewrite eq_le measure_ge0// ?andbT -?B0.
-by apply: le_measure; rewrite ?inE.
-Qed.
-
-(* PR in progress *)
 Local Open Scope ereal_scope.
-Lemma mule_eqpinfty (R : realDomainType) (x y : \bar R) :
-  (x * y == +oo) = [|| ((x > 0) && (y == +oo)), ((x < 0) && (y == -oo)),
-                      ((x == +oo) && (y > 0)) | ((x == -oo) && (y < 0))].
-Proof.
-move: x y => [x| |] [y| |]; rewrite ?(lte_fin,andbF,andbT,orbF,eqxx,andbT)//=.
-- by rewrite mulrpinfty; have [/ltr0_sg ->|/gtr0_sg ->|->] := ltgtP x 0%R;
-    rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mulrninfty; have [/ltr0_sg ->|/gtr0_sg ->|->] := ltgtP x 0%R;
-    rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mulpinftyr; have [/ltr0_sg ->|/gtr0_sg ->|->] := ltgtP y 0%R;
-    rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mule_pinfty_pinfty lte_pinfty.
-- by rewrite mule_pinfty_ninfty.
-- by rewrite mulninftyr; have [/ltr0_sg ->|/gtr0_sg ->|->] := ltgtP y 0%R;
-    rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mule_ninfty_pinfty.
-- by rewrite lte_ninfty.
-Qed.
 
-Lemma mule_eqninfty (R : realDomainType) (x y : \bar R) :
-  (x * y == -oo) = [|| ((x > 0) && (y == -oo)), ((x < 0) && (y == +oo)),
-                      ((x == -oo) && (y > 0)) | ((x == +oo) && (y < 0))].
-Proof.
-move: x y => [x| |] [y| |]; rewrite ?(lte_fin,andbF,andbT,orbF,eqxx,andbT)//=.
-- by rewrite mulrpinfty; have [/ltr0_sg ->|/gtr0_sg ->|->] := ltgtP x 0%R;
-    rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mulrninfty; have [/ltr0_sg ->|/gtr0_sg ->|->] := ltgtP x 0%R;
-    rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mulpinftyr; have [/ltr0_sg ->|/gtr0_sg ->|->] := ltgtP y 0%R;
-    rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mule_pinfty_pinfty.
-- by rewrite mule_pinfty_ninfty lte_pinfty lte_ninfty.
-- by rewrite mulninftyr; have [/ltr0_sg ->|/gtr0_sg ->|->] := ltgtP y 0%R;
-    rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mule_ninfty_pinfty lte_pinfty lte_ninfty.
-Qed.
-Local Close Scope ereal_scope.
-
-Lemma fine_eq0 (R : numDomainType) (x : \bar R) : x \is a fin_num ->
-  (fine x == 0) = (x == 0%E).
-Proof. by move: x => [//| |] /=; rewrite fin_numE. Qed.
-
-Lemma abse_eq0 (R : numDomainType) (x : \bar R) : (`|x|%E == 0%E) = (x == 0%E).
-Proof. by move: x => [| |] //= r; rewrite !eqe normr_eq0. Qed.
-(* /PR in progress *)
-
-Lemma adde_gt0 (R : numDomainType) (x y : \bar R) : (0 < x -> 0 < y -> 0 < x + y)%E.
+Lemma adde_gt0 (R : numDomainType) (x y : \bar R) : 0 < x -> 0 < y -> 0 < x + y.
 Proof.
 by move: x y => [x| |] [y| |] //; rewrite !lte_fin; exact: addr_gt0.
 Qed.
 
-Lemma bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
-  finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
+Lemma padde_eq0 (R : numDomainType) (x y : \bar R) :
+  0 <= x -> 0 <= y -> (x + y == 0) = (x == 0) && (y == 0).
 Proof.
-move=> finA; rewrite -bigcup_fset /fset_set; case: pselect => [{}finA|//].
-apply/seteqP; split=> [x [i Ai Fix]|x [i /=]].
-  by exists i => //; case: cid => // B AB /=; move: Ai; rewrite AB.
-by case: cid => /= B -> iB Fix; exists i.
+move: x y => [x| |] [y| |]//; rewrite !lee_fin; first exact: paddr_eq0.
+by move=> x0 _ /=; rewrite andbF.
+Qed.
+
+Lemma nadde_eq0 (R : numDomainType) (x y : \bar R) :
+  x <= 0 -> y <= 0 -> (x + y == 0) = (x == 0) && (y == 0).
+Proof.
+move: x y => [x| |] [y| |]//; rewrite !lee_fin; first exact: naddr_eq0.
+by move=> x0 _ /=; rewrite andbF.
+Qed.
+
+Lemma mule_ge0_gt0 (R : realDomainType) (x y : \bar R) : 0 <= x -> 0 <= y ->
+  (0 < x * y) = (0 < x) && (0 < y).
+Proof.
+move: x y => [x| |] [y| |] //; rewrite ?lee_fin.
+- by move=> x0 y0; rewrite !lte_fin; exact: mulr_ge0_gt0.
+- rewrite le_eqVlt => /predU1P[<-|x0] _; first by rewrite mul0e ltxx.
+  by rewrite lte_pinfty andbT mulrpinfty gtr0_sg// mul1e lte_fin x0 lte_pinfty.
+- move=> _; rewrite le_eqVlt => /predU1P[<-|x0]; first by rewrite mule0 ltxx andbC.
+  by rewrite lte_pinfty/= mulpinftyr gtr0_sg// mul1e lte_fin x0 lte_pinfty.
+- by move=> _ _; rewrite mule_pinfty_pinfty lte_pinfty.
+Qed.
+Local Close Scope ereal_scope.
+
+Local Open Scope ereal_scope.
+Lemma esum_seq_ninfty (R : numDomainType)
+    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+  \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
+Proof.
+Admitted. (*PR in progress*)
+
+Lemma esum_seq_pinfty (R : numDomainType)
+    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+  (forall i, P i -> f i != -oo) ->
+  \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
+Proof.
+Admitted. (*PR in progress *)
+Local Close Scope ereal_scope.
+
+Lemma seq_psume_eq0 (R : realDomainType) (I : choiceType) (r : seq I)
+    (P : pred I) (F : I -> \bar R) : (forall i, P i -> 0 <= F i)%E ->
+  (\sum_(i <- r | P i) F i == 0)%E = all (fun i => P i ==> (F i == 0%E)) r.
+Proof.
+move=> F0; apply/eqP/allP => PF0; last first.
+  rewrite big_seq_cond big1// => i /andP[ir Pi].
+  by have := PF0 _ ir; rewrite Pi implyTb => /eqP.
+move=> i ir; apply/implyP => Pi; apply/eqP.
+have H1 : {in r, forall i, P i ==> (F i \is a fin_num)}.
+  move=> j jr; apply/implyP => Pj; rewrite fin_numElt; apply/andP; split.
+    by rewrite (lt_le_trans _ (F0 _ Pj))// lte_ninfty.
+  rewrite ltNge; apply/eqP; rewrite lee_pinfty_eq; apply/eqP/negP => /eqP Fjoo.
+  have H1 : forall i, P i -> F i != -oo%E.
+    by move=> k Pk; rewrite gt_eqF// (lt_le_trans _ (F0 _ Pk))// lte_ninfty.
+  have /esum_seq_pinfty : exists i, [/\ i \in r, P i & F i = +oo%E] by exists j.
+  by move=> /(_ H1); rewrite PF0.
+have ? : \sum_(i <- r | P i) (fine \o F) i == 0.
+  apply/eqP/EFin_inj; rewrite big_seq_cond -sumEFin.
+  rewrite (eq_bigr (fun i0 => F i0)); last first.
+    move=> j /andP[jr Pj] /=; rewrite fineK//.
+    by have := H1 _ jr; rewrite Pj implyTb.
+  by rewrite -big_seq_cond PF0.
+have H3 : all (fun i => P i ==> ((fine \o F) i == 0)) r.
+  by rewrite -psumr_eq0// => j Pj/=; apply/le0R/F0.
+move/allP : H3 => /(_ _ ir); rewrite Pi implyTb => /= => /eqP Fi0.
+rewrite -(@fineK _ (F i))//; last by have := H1 _ ir; rewrite Pi implyTb.
+by rewrite Fi0.
 Qed.
 
 Section additive_lemmas.
@@ -307,7 +256,7 @@ move=> i j _ _ ij; apply/val_inj/eqP.
 by rewrite -(nth_uniq y (ltn_ord i) (ltn_ord j) (fset_uniq A)); exact/eqP/tF.
 Qed.
 
-Lemma additive_set (I : finType) (F : I -> set T) (P : {set I}) :
+Lemma additive_finset (I : finType) (F : I -> set T) (P : {set I}) :
   (forall i : I, measurable (F i)) -> trivIset setT F ->
   m (\big[setU/set0]_(i in P) F i) = (\sum_(i in P) m (F i))%E.
 Proof.
@@ -321,14 +270,6 @@ by rewrite 2!(tnth_nth k) nth_uniq // index_enum_uniq.
 Qed.
 
 End additive_lemmas.
-
-(* TODO: move *)
-Lemma setTPn (T : Type) (A : set T) : A != setT <-> exists t, ~ A t.
-Proof.
-split => [/negP|[t]]; last by apply: contra_notP => /negP/negPn/eqP ->.
-apply: contra_notP => /forallNP h.
-by apply/eqP; rewrite predeqE => t; split => // _; apply: contrapT.
-Qed.
 
 Module FunOrder.
 Section FunOrder.
@@ -916,34 +857,18 @@ Reserved Notation "[ 'nnsfun' 'of' f ]"
 Notation "{ 'nnsfun'  A >-> T }" := (@NonNegSimpleFun.type _ T A) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
-Lemma fset_set_image (T1 T2 : choiceType) (D : set T1) (f : T1 -> T2) :
-  finite_set D -> fset_set (f @` D) = (f @` (fset_set D))%fset.
-Proof.
-move=> Dfin; apply/fsetP => z; rewrite in_fset_set; last exact: finite_image.
-apply/idP/idP => [|/imfsetP[r /=]].
-  rewrite inE /= => -[x Dx <-{z}]; apply/imfsetP => /=; exists x => //.
-  by rewrite in_fset_set ?inE/=.
-by rewrite in_fset_set// inE => Dr ->; rewrite inE; exists r.
-Qed.
-
 Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) (D : set T1)
     (f : {fimfun D >-> T2}) (g : T2 -> T3) :
   fset_set [set (g \o f) x | x in D] =
   [fset g x | x in fset_set [set f x | x in D]]%fset.
 Proof. by rewrite -(image_comp f g) fset_set_image. Qed.
 
-(* TODO: move to topology.v? *)
-Reserved Notation "f \max g" (at level 50, left associativity).
-Definition max_fun T (R : numDomainType) (f g : T -> R) x := maxr (f x) (g x).
-Notation "f \max g" := (max_fun f g) : ring_scope.
-Arguments max_fun {T R} _ _ _ /.
-
 (* TODO: this is similar to emeasurable_fun_max, move to lebesgue_measure.v *)
 Lemma measurable_fun_max (T : measurableType) (R : realType) D (f g : T -> R) :
   measurable D -> measurable_fun D f -> measurable_fun D g ->
   measurable_fun D (f \max g).
 Proof.
-move=> mD mf mg; apply: (measurability mD (RGenCInfty.measurableE R)) => //.
+(*move=> mD mf mg; apply (measurability mD (RGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
     (D `&` f @^-1` `[x, +oo[) `|` (D `&` g @^-1` `[x, +oo[)); last first.
   rewrite predeqE => t /=; split.
@@ -952,7 +877,7 @@ move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
   by move=> [|]; rewrite !preimage_itv /= !in_itv/= !andbT le_maxr;
     move=> [Dx ->]//; rewrite orbT.
 by apply: measurableU; [exact/mf/measurable_itv|exact/mg/measurable_itv].
-Qed.
+Qed.*) Admitted.
 
 (* about preimages *)
 Lemma notin_setI_preimage T R D (f : T -> R) i :
@@ -961,7 +886,7 @@ Proof.
 by rewrite notin_set/=; apply: contra_notP => /eqP/set0P[t [Dt fit]]; exists t.
 Qed.
 
-Lemma eq_setI_preimage T (R : eqType) D (f g : T -> R) A :
+Lemma eq_setI_preimage T (R : Type) D (f g : T -> R) A :
   {in D, f =1 g} -> D `&` f @^-1` A = D `&` g @^-1` A.
 Proof.
 by move=> fg; apply/seteqP; rewrite /preimage; split => x [Dx/= Ax]; split=> //;
@@ -1074,9 +999,6 @@ HB.instance Definition _ x := @cst_mfun_subproof x.
 
 Definition nnsfun_cst (r : {nonneg R}) :=
   [the {nnsfun setT >-> R} of cst r%:nngnum].
-(*Program Definition nnsfun_cst (pt : T) (r : {nonneg R}) :=
-  NNSFun.mk (sfun_cst pt r%:nngnum) _.
-Next Obligation. by move=> pt r t; rewrite presfun_cstE. Qed.*)
 
 Definition nnsfun0 : {nnsfun setT >-> R} := nnsfun_cst 0%R%:nng.
 
@@ -1167,7 +1089,33 @@ Proof. by rewrite /nnsfun_bigmax; elim/big_ind2 : _ => [|x g y h <- <-|]. Qed.
 
 End nnsfun_iter.
 
-(* about fsum *)
+Lemma Iiota (n : nat) : [set` iota 0 n] = `I_n.
+Proof. by apply/seteqP; split => [|] ?; rewrite /= mem_iota add0n. Qed.
+
+Definition fst_fset (T1 T2 : choiceType) (A : {fset (T1 * T2)}) : {fset T1} :=
+  [fset x.1 | x in A]%fset.
+Definition snd_fset (T1 T2 : choiceType) (A : {fset (T1 * T2)}) : {fset T2} :=
+  [fset x.2 | x in A]%fset.
+Notation "A .`1" := (fst_fset A) : fset_scope.
+Notation "A .`2" := (snd_fset A) : fset_scope.
+
+Lemma finite_set_snd (T1 T2 : choiceType) (A : set (T1 * T2)) :
+  finite_set A -> finite_set A.`2.
+Proof.
+move=> /finite_fsetP[B A_B]; apply/finite_fsetP; exists (B.`2)%fset.
+apply/seteqP; split=> [y/= [x]|_/= /imfsetP[[x1 x2]/= +] ->]; rewrite A_B;
+  by [move=> xyB; apply/imfsetP; exists (x, y)|move=> ?; exists x1].
+Qed.
+
+Lemma finite_set_fst (T1 T2 : choiceType) (A : set (T1 * T2)) :
+  finite_set A -> finite_set A.`1.
+Proof.
+move=> /finite_fsetP[B A_B]; apply/finite_fsetP; exists (B.`1)%fset.
+by apply/seteqP; split=> [x/= [y]|_/= /imfsetP[[x1 x2]/= +] ->]; rewrite A_B;
+  [move=> xyB; apply/imfsetP; exists (x, y)|move=> ?; exists x2].
+Qed.
+
+(* about sum over finite support *)
 Reserved Notation "\big [ op / idx ]_ ( i '\in' A ) F"
   (at level 36, F at level 36, op, idx at level 10, i, A at level 50,
            format "'[' \big [ op / idx ]_ ( i  '\in'  A ) '/  '  F ']'").
@@ -1180,6 +1128,13 @@ Definition finite_support {I : choiceType} {T : Type} (idx : T) (D : set I) (F :
 Notation "\big [ op / idx ]_ ( i '\in' D ) F" :=
   (\big[op/idx]_(i <- finite_support idx D (fun i => F)) F) (only parsing) : big_scope.
 
+Lemma in_finite_support (T : eqType) (J : choiceType) (i : T) (P : set J) (F : J -> T) :
+  finite_set (P `&` F @^-1` [set~ i]) ->
+  finite_support i P F =i P `&` F @^-1` [set~ i].
+Proof.
+by move=> ? j; rewrite /finite_support unlock in_fset_set.
+Qed.
+
 Reserved Notation "\sum_ ( i '\in' A ) F"
   (at level 41, F at level 41, i, A at level 50,
            format "'[' \sum_ ( i  '\in'  A ) '/  '  F ']'").
@@ -1188,82 +1143,32 @@ Notation "\sum_ ( i '\in' A ) F" :=
 Notation "\sum_ ( i '\in' A ) F" :=
   (\big[+%E/0%E]_(i \in A) F) : ereal_scope.
 
-Lemma eq_fsumr (T : choiceType) (R : realType) (f g : T -> \bar R) (P : set T) :
-  f =1 g -> (\sum_(x \in P) f x = \sum_(x \in P) g x)%E.
-Proof.
-move=> fg; apply eq_fbig => //.
-by rewrite /finite_support (@eq_setI_preimage _ _ _ _ g).
-Qed.
+Section fsum0.
+Variables (R : Type) (idx : R) (op : R -> R -> R).
 
-Lemma eq_fsuml (T : choiceType) (R : numDomainType) (f : T -> \bar R) (P Q : set T) :
-  P = Q -> (\sum_(x \in P) f x = \sum_(x \in Q) f x)%E.
+Lemma eq_fsuml (T : choiceType) (f : T -> R) (P Q : set T) :
+  P = Q -> \big[op/idx]_(x \in P) f x = \big[op/idx]_(x \in Q) f x.
 Proof. by move=> ->. Qed.
+End fsum0.
 
-(* \sum_(a <- r) F a = \sum_(a \in [fset` r]) F a *)
-Lemma fsum_seq (I : choiceType) (R : numDomainType) (r : seq I) (F : I -> \bar R) :
-  uniq r -> (\sum_(a <- r) F a = \sum_(a \in [set` r]) F a)%E.
+Section fsum1.
+Variables (R : Type) (idx : R) (op : Monoid.com_law idx).
+
+Lemma eq_fsumr (T : choiceType) (f g : T -> R) (P : set T) :
+  f =1 g -> (\big[op/idx]_(x \in P) f x = \big[op/idx]_(x \in P) g x).
 Proof.
-move=> ur.
-rewrite (bigID [pred x | F x == 0%E])/= big1 ?add0r; last by move=> ? /eqP.
-transitivity (\sum_(i <- [fset x in r| F x != 0%E]%fset) F i)%E.
-  by rewrite big_fset/= undup_id ?add0e.
-have ? : finite_set ([set` r] `&` F @^-1` [set~ 0%E]).
-  exact/finite_setIl/finite_seq.
-apply eq_fbigl => x; apply/idP/idP.
-  by rewrite 2!inE/= => /andP[xr /eqP Fx0]; rewrite unlock in_fset_set// inE.
-by rewrite unlock in_fset_set// inE => -[rx /eqP Fx0]; rewrite 2!inE/= rx.
+by move=> fg; apply eq_fbig => //; rewrite (@eq_setI_preimage _ _ _ _ g).
 Qed.
 
-Lemma Iiota (n : nat) : [set` iota 0 n] = `I_n.
-Proof. by apply/seteqP; split => [|] ?; rewrite /= mem_iota add0n. Qed.
-
-(* \sum_(i < n) F a = \sum_(i \in `I_n) F i *)
-Lemma fsum_ord (R : numDomainType) n (F : nat -> \bar R) :
-  (\sum_(a < n) F a = \sum_(a \in `I_n) F a)%E.
-Proof.
-rewrite -(big_mkord xpredT) [LHS]fsum_seq ?iota_uniq//.
-by apply: eq_fsuml; rewrite -Iiota /index_iota subn0.
-Qed.
-
-Lemma ge0_fsum_distrr (T : choiceType) (R : realDomainType) (x : \bar R)
-    (F : T -> \bar R) (P : set T) : (forall i : T, 0 <= F i)%E ->
-  (x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i)%E.
-Proof.
-move=> F0; have [->{x}|x0] := eqVneq x 0%E.
-  by rewrite mul0e big1// => ? _; rewrite mul0e.
-rewrite ge0_sume_distrr//; apply: eq_fbigl => y.
-rewrite !unlock; congr (_ \in fset_set _).
-apply/seteqP; rewrite /preimage; split=> [|] z/= [Pz Fz0];
-  split=> //; apply: contra_not Fz0.
-by move=> /eqP; rewrite mule_eq0 (negbTE x0)/= => /eqP.
-by move=> ->; rewrite mule0.
-Qed.
-
-Lemma fsumE (T : choiceType) (R : numDomainType) (A : {fset T}) (f : T -> \bar R) :
-  (forall i, i \notin A -> f i = 0%E) ->
-  finite_set (f @^-1` [set~ 0%E]) ->
-  (\sum_(i \in [set: T]) f i = \sum_(i <- A) f i)%E.
-Proof.
-move=> Af finA; rewrite [in RHS](big_fsetID _ [pred x | f x == 0%E])/=.
-rewrite [X in (_ = X + _)%E]big_fset [X in (_ = X + _)%E]big1 ?add0e; last first.
-  by move=> i /= /eqP.
-rewrite /finite_support setTI.
-apply eq_fbigl => r.
-rewrite unlock in_fset_set// /preimage /=; apply/idP/idP => /=.
-  rewrite !inE/=; apply: contra_notP => /negP.
-  by rewrite negb_and negbK => /orP[|/eqP//]; exact: Af.
-by rewrite !inE/= => /andP[_ /eqP].
-Qed.
-
-Lemma fsum_ID (I : choiceType) (R : realType) (B : pred I) (A : set I) (F : I -> \bar R) :
-  finite_set (F @^-1` [set~ 0%E]) ->
-  (\sum_(i \in A) F i = (\sum_(i \in A `&` B) F i) +
-                        (\sum_(i \in A `&` ~` B) F i))%E.
+Lemma fsum_ID (I : choiceType) (B : pred I) (A : set I) (F : I -> R) :
+  finite_set (F @^-1` [set~ idx]) ->
+  \big[op/idx]_(i \in A) F i = op (\big[op/idx]_(i \in A `&` B) F i)
+                                  (\big[op/idx]_(i \in A `&` ~` B) F i).
 Proof.
 (* TODO: shorten *)
-move=> finF; rewrite (big_fsetID _ B)/=; congr (_ + _)%E.
-  apply: eq_fbigl => i/=; apply/idP/idP.
-    rewrite inE/= inE/= => /andP[+ Bi].
+move=> finF; rewrite (big_fsetID _ B)/=; congr (op _ _).
+  apply: eq_fbigl => i /=; apply/idP/idP.
+    rewrite !inE/= => /andP[+ Bi].
     rewrite unlock/= in_fset_set; last exact/finite_setIr.
     rewrite inE => -[Ai Fi].
     by rewrite unlock in_fset_set ?inE//; exact/finite_setIr.
@@ -1282,85 +1187,253 @@ rewrite !inE/= (negbTE Bi) andbT unlock in_fset_set ?inE//.
 exact/finite_setIr.
 Qed.
 
-(* Lemma reindex_inside I F P ...  : finite_set (P `&` F @` [set~ id]) -> ... *)
-Lemma reindex_inside {I J : choiceType} {R : realType} (h : I -> J)
-    (F : J -> \bar R) : bijective h -> finite_set (F @^-1` [set~ 0%E]) ->
-  (\sum_(j \in [set: J]) F j = \sum_(i \in [set: I]) F (h i))%E.
+End fsum1.
+
+Section fsum2.
+Variables (R : eqType) (idx : R) (op : Monoid.com_law idx).
+
+Let add0m : left_id idx op. Proof. by case: op => -[]. Qed.
+
+(* \sum_(a <- r) F a = \sum_(a \in [fset` r]) F a *)
+Lemma fsum_seq (I : choiceType) (r : seq I) (F : I -> R) :
+  uniq r ->
+  \big[op/idx]_(a <- r) F a = \big[op/idx]_(a \in [set` r]) F a.
 Proof.
-move=> hinj F0; rewrite /finite_support 2![locked_with _ _]unlock !setTI.
-have ? : finite_set ((F \o h) @^-1` [set~ 0%E]).
-  rewrite comp_preimage; apply: finite_preimage => // x y _ _.
-  by move/bij_inj : hinj; exact.
-set Fh : pred _ := in_set ((F \o h) @^-1` [set~ 0%E]).
+move=> ur.
+rewrite (bigID [pred x | F x == idx])/= big1 ?add0m; last by move=> ? /eqP.
+transitivity (\big[op/idx]_(i <- [fset x in r| F x != idx]%fset) F i).
+  by rewrite big_fset/= undup_id.
+have ? : finite_set ([set` r] `&` F @^-1` [set~ idx]).
+  exact/finite_setIl/finite_seq.
+apply eq_fbigl => x; apply/idP/idP.
+  rewrite 2!inE/= => /andP[xr /eqP Fx0].
+  by rewrite in_finite_support// inE.
+by rewrite in_finite_support// inE => -[rx /eqP Fx0]; rewrite 2!inE/= rx.
+Qed.
+
+(* \sum_(i < n) F a = \sum_(i \in `I_n) F i *)
+Lemma fsum_ord n (F : nat -> R) :
+  \big[op/idx]_(a < n) F a = \big[op/idx]_(a \in `I_n) F a.
+Proof.
+rewrite -(big_mkord xpredT) [LHS]fsum_seq ?iota_uniq//.
+by apply: eq_fsuml; rewrite -Iiota /index_iota subn0.
+Qed.
+
+Lemma fsumE (T : choiceType) (A : {fset T}) (f : T -> R) :
+  (forall i, i \notin A -> f i = idx) -> finite_set (f @^-1` [set~ idx]) ->
+  \big[op/idx]_(i \in [set: T]) f i = \big[op/idx]_(i <- A) f i.
+Proof.
+move=> Af finA; rewrite [in RHS](big_fsetID _ [pred x | f x == idx])/=.
+rewrite [X in _ = op X _]big_fset [X in _ = op X _]big1 ?add0m//; last first.
+  by move=> i /= /eqP.
+apply eq_fbigl => r.
+rewrite in_finite_support// ?setTI// /preimage/=; apply/idP/idP => /=.
+  rewrite !inE/=; apply: contra_notP => /negP.
+  by rewrite negb_and negbK => /orP[|/eqP//]; exact: Af.
+by rewrite !inE/= => /andP[_ /eqP].
+Qed.
+
+(* Lemma reindex_inside I F P ...  : finite_set (P `&` F @` [set~ id]) -> ... *)
+Lemma reindex_inside {I J : choiceType} P Q (h : I -> J)
+    (F : J -> R) : bijective h ->
+  P `<=` h @` Q ->
+  Q `<=` h @^-1` P ->
+  finite_set (F @^-1` [set~ idx]) ->
+  \big[op/idx]_(j \in P) F j = \big[op/idx]_(i \in Q) F (h i).
+Proof.
+move=> hbij PQ QP F0.
+have ? : finite_set (Q `&` (F \o h) @^-1` [set~ idx]).
+  rewrite comp_preimage; apply/finite_setIr/finite_preimage => // x y _ _.
+  by move/bij_inj : hbij; exact.
+set Fh : pred _ := in_set (Q `&` (F \o h) @^-1` [set~ idx]).
 have is_finite_Fh : is_finite Fh.
   apply: (@IsFinite _ _ (fset_set Fh)); first exact: fset_uniq.
   move=> i; rewrite in_fset_set//; last first.
-    rewrite /Fh [X in finite_set X](_ : _ = (F \o h) @^-1` [set~ 0%E])//.
+    rewrite /Fh [X in finite_set X](_ : _ = Q `&` (F \o h) @^-1` [set~ idx])//.
     by apply/seteqP; rewrite /preimage/=; split=> x/=; rewrite in_setE.
   by apply/idP/idP; rewrite inE.
 pose finmempred_Fh : finmempred I := (@FinMemPred _ (mem Fh) is_finite_Fh).
-have -> : fset_set (F @^-1` [set~ 0%E]) = imfset finite_index_key h finmempred_Fh.
+have -> : finite_support idx P F = imfset finite_index_key h finmempred_Fh.
   apply/eqP/fset_eqP => j; apply/idP/idP.
-  - rewrite in_fset_set // inE /preimage /= => Fj0.
+  - rewrite in_finite_support; last exact/finite_setIr.
+    rewrite inE /preimage /= => -[Pj Fj0].
     apply/imfsetP; rewrite /finmempred_Fh /= /Fh.
-    case: hinj => h1 hh1 h1h.
+    case: hbij => h1 hh1 h1h.
     exists (h1 j); last by rewrite h1h.
-    by rewrite in_setE /preimage/= h1h.
+    rewrite in_setE /preimage/= h1h; split => //.
+    by have [i Qi <-] := PQ _ Pj; rewrite hh1.
   move=> /imfsetP[i /=].
-  rewrite inE /preimage/= => Fhi0 ->{j}.
-  by rewrite in_fset_set // inE.
-rewrite big_imfset//; last by move=> x y _ _; move/bij_inj : hinj; exact.
-set x := enum_finmem _; set t := fset_set _.
-transitivity (\big[adde_comoid/0%E]_(i <- seq_fset tt x) F (h i)).
+  rewrite inE /preimage/= => -[Qi Fhi0] ->{j}.
+  rewrite in_finite_support; last exact/finite_setIr.
+  by rewrite inE; split => //; exact: QP.
+rewrite big_imfset//; last by move=> x y _ _; move/bij_inj : hbij; exact.
+set x := enum_finmem _; set t := finite_support _ _ _.
+transitivity (\big[op/idx]_(i <- seq_fset tt x) F (h i)).
   apply perm_big; rewrite (@perm_trans _ (undup x))//; last first.
     by rewrite perm_sym seq_fset_perm.
   by rewrite undup_id// enum_finmem_uniq.
 apply: eq_fbigl => i; apply/idP/idP.
-- rewrite seq_fsetE /x /= in_fset_set//.
+- rewrite in_finite_support// seq_fsetE /x /=.
   by rewrite inE /preimage /= is_finiteE inE /preimage /=.
-- rewrite seq_fsetE in_fset_set//.
+- rewrite in_finite_support// seq_fsetE.
   by rewrite inE /preimage/= is_finiteE inE.
 Qed.
-Arguments reindex_inside {I J R} _ _.
+
+Lemma reindex_inside_setT {I J : choiceType} (h : I -> J)
+    (F : J -> R) : bijective h ->
+  finite_set (F @^-1` [set~ idx]) ->
+  \big[op/idx]_(j \in [set: J]) F j = \big[op/idx]_(i \in [set: I]) F (h i).
+Proof.
+move=> hbij F0; apply: reindex_inside => // x _ /=.
+by case: hbij => h1 hh1 h1h; exists (h1 x).
+Qed.
+
+End fsum2.
+Arguments reindex_inside {R idx op I J} _ _.
+Arguments reindex_inside_setT {R idx op I J} _ _.
+
+Lemma ge0_fsum_distrr (T : choiceType) (R : realDomainType) (x : \bar R)
+    (F : T -> \bar R) (P : set T) : (forall i : T, 0 <= F i)%E ->
+  (x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i)%E.
+Proof.
+move=> F0; have [->{x}|x0] := eqVneq x 0%E.
+  by rewrite mul0e big1// => ? _; rewrite mul0e.
+rewrite ge0_sume_distrr//; apply: eq_fbigl => y.
+rewrite !unlock; congr (_ \in fset_set _).
+apply/seteqP; rewrite /preimage; split=> [|] z/= [Pz Fz0];
+  split=> //; apply: contra_not Fz0.
+by move=> /eqP; rewrite mule_eq0 (negbTE x0)/= => /eqP.
+by move=> ->; rewrite mule0.
+Qed.
+
+Lemma pair_fsum (T1 T2 : choiceType) (R : realDomainType)
+    (f : T1 -> T2 -> \bar R) (P : set T1) (Q : set T2) :
+    finite_set ((fun z => f z.1 z.2) @^-1` [set~ 0%E]) ->
+    (forall x y, 0 <= f x y)%E ->
+  (\sum_(x \in P) \sum_(y \in Q) f x y = \sum_(x \in P `*` Q) f x.1 x.2)%E.
+Proof.
+move=> finf f0.
+have H1 x : finite_set (f x @^-1` [set~ 0%E]).
+  by apply: sub_finite_set (finite_set_snd finf) => y fxy; exists x.
+rewrite pair_big_dep_cond/=; apply: eq_fbigl => /= -[x y].
+apply/idP/idP.
+  move=> /imfset2P[/= t1].
+  rewrite !inE/= in_finite_support; last first.
+    apply/finite_setIr; apply: sub_finite_set (finite_set_fst finf) => x'.
+    rewrite /preimage/= => h.
+    apply/existsNP; apply: contra_not h => H.
+    by rewrite big1.
+  rewrite andbT; rewrite inE => -[Pt1 Ht1] [t2].
+  rewrite !inE/= in_finite_support/=; last exact/finite_setIr.
+  rewrite ![locked_with _ _]unlock/= andbT in_fset_set; last exact/finite_setIr.
+  rewrite inE => -[Qt2 Ht2] [->{x} ->{y}].
+  by rewrite inE.
+rewrite in_finite_support; last exact/finite_setIr.
+rewrite !inE => -[] [/= Px Qy]; rewrite {1}/preimage/= => fxy0.
+apply/imfset2P; exists x => /=.
+  rewrite !inE/= andbT in_finite_support; last first.
+    apply/finite_setIr.
+    apply: sub_finite_set (finite_set_fst finf) => x'.
+    rewrite /preimage/= => h.
+    apply/existsNP; apply: contra_not h => H.
+    by rewrite big1.
+  rewrite inE//; split => //.
+  rewrite /preimage/=.
+  apply: contra_not fxy0 => /eqP.
+  rewrite seq_psume_eq0// => /allP.
+  move=> /(_ y).
+  rewrite in_finite_support//; last exact/finite_setIr.
+  rewrite !inE.
+  have [a|] := pselect (y \in [eta f x] @^-1` [set~ 0%E]).
+    move=> /(_ _)/eqP; apply; split => //.
+    by rewrite inE in a.
+  by rewrite inE /preimage /= => /contrapT.
+exists y => //; rewrite !inE/= andbT unlock/= in_fset_set; last first.
+  exact/finite_setIr.
+by rewrite inE.
+Qed.
+
+Lemma exchange_fsum (T : choiceType) (R : realDomainType) (P Q : set T)
+     (f : T -> T -> \bar R) :
+  (forall x y, 0 <= f x y)%E ->
+  finite_set ((fun z => f z.1 z.2) @^-1` [set~ 0%E]) ->
+  (\sum_(i \in P) \sum_(j \in Q) f i j = \sum_(j \in Q) \sum_(i \in P) f i j)%E.
+Proof.
+move=> f0 finf; rewrite pair_fsum// (@eq_fsumr _ _ _ _ _ (fun x => f x.1 x.2))//.
+set swap := fun x : T * T => (x.2, x.1).
+rewrite (@reindex_inside _ _ _ _ _ _ (Q `*` P) swap) //; last 3 first.
+  by exists swap; case.
+  by move=> [x1 x2] [/= Px1 Qx2]; exists (x2, x1).
+  by move=> [x1 x2] [].
+rewrite pair_fsum//.
+move: finf => [n fn]; exists n; apply: card_eq_trans fn.
+set X := (X in (_ #= X)%card).
+rewrite [X in (X #= _)%card](_ : _ = swap @` X)//.
+  by apply: inj_card_eq => -[x1 x2] [y1 y2] _ _ [-> ->].
+apply/seteqP; rewrite /preimage; split => [|] [x1 x2] /=.
+  by move=> fx; exists (x2, x1).
+by move=> [[y1 y2]] ? [<- <-].
+Qed.
 
 Lemma fsum_split (T : choiceType) (R : numDomainType) (P : set T) (f g : T -> \bar R) :
-  (\sum_(x \in P) (f x + g x) = \sum_(x \in P) f x + \sum_(x \in P) g x)%E.
+  (forall x, 0 <= f x)%E ->
+  (forall x, 0 <= g x)%E ->
+  finite_set (P `&` f @^-1` [set~ 0%E]) ->
+  finite_set (P `&` g @^-1` [set~ 0%E]) ->
+  (\sum_(x \in P) (f x + g x) = \sum_(x \in P) f x +
+                                \sum_(x \in P) g x)%E.
 Proof.
-rewrite {1}/finite_support.
-rewrite /locked_with.
-case: finite_index_key.
-rewrite big_split//=; congr (_ + _)%E.
+move=> f0 g0 ffin gfin; rewrite big_split/=.
+rewrite [X in (X + _)%E](big_fsetID _ [pred x | f x == 0%E])/=.
+rewrite [X in (X + _ + _)%E](_ : _ = 0%E)/= ?add0e; last first.
+  by rewrite -big_fset_condE big1// => t /eqP.
+rewrite [X in (_ + X)%E](big_fsetID _ [pred x | g x == 0%E])/=.
+rewrite [X in (_ + (X + _))%E](_ : _ = 0%E)/= ?add0e; last first.
+  by rewrite -big_fset_condE big1// => t /eqP.
+have ? : finite_set (P `&` (f \+ g)%E @^-1` [set~ 0%E]).
+  have : finite_set (P `&` (f @^-1` [set~ 0%E] `|` g @^-1` [set~ 0%E])).
+    by rewrite setIUr finite_setU.
+  apply: sub_finite_set => t [Pt]; rewrite /preimage/= => fgt0.
+  split => //.
+  apply/not_andP.
+  apply: contra_not fgt0 => -[-> ->].
+  by rewrite add0e.
+congr (_ + _)%E.
   apply: eq_fbigl => t.
-  apply/idP/idP.
-    rewrite in_fset_set; last admit.
-    rewrite inE => -[Pt fgt].
-    rewrite unlock in_fset_set; last admit.
-    rewrite inE; split => //.
-    move: fgt.
-    rewrite /preimage/=.
-(* NB: on the model of big_split *)
-Abort.
+  rewrite !inE/= [locked_with _ _]unlock; apply/idP/idP.
+    move=> /andP[+ ft0] /=; rewrite in_fset_set//.
+    rewrite inE=> -[Pt fgt].
+    rewrite [locked_with _ _]unlock in_fset_set//.
+    by rewrite inE; split => //; exact/eqP.
+  rewrite [locked_with _ _]unlock in_fset_set// inE => -[Pt ft0].
+  rewrite in_fset_set//.
+  apply/andP; split; last exact/eqP.
+  rewrite inE; split => //; apply: contra_not ft0 => /= /eqP.
+  by rewrite padde_eq0// => /andP[/eqP].
+apply: eq_fbigl => t.
+rewrite !inE/= [locked_with _ _]unlock; apply/idP/idP.
+  move=> /andP[+ ft0] /=; rewrite in_fset_set//.
+  rewrite inE=> -[Pt fgt].
+  rewrite [locked_with _ _]unlock in_fset_set//.
+  by rewrite inE; split => //; exact/eqP.
+rewrite [locked_with _ _]unlock in_fset_set// inE => -[Pt ft0].
+rewrite in_fset_set//.
+apply/andP; split; last exact/eqP.
+rewrite inE; split => //; apply: contra_not ft0 => /= /eqP.
+by rewrite padde_eq0// => /andP[_ /eqP].
+Qed.
 
-Lemma exchange_fsum (T : choiceType) (R : numDomainType) (P Q : set T) (f : T -> T -> \bar R) :
-  (\sum_(i \in P) \sum_(j \in Q) f i j =
-   \sum_(j \in Q) \sum_(i \in P) f i j)%E.
+Lemma fsume_ge0 (R : numDomainType) (I : choiceType) (P : set I) (F : I -> \bar R) :
+  finite_set (P `&` F @^-1` [set~ 0%E]) ->
+  (forall i, P i -> (0 <= F i)%E) -> (0 <= \sum_(i \in P) F i)%E.
 Proof.
-rewrite /finite_support.
-rewrite /locked_with; case: finite_index_key.
-(* NB: using exchange_big_dep? *)
-Abort.
+move=> finF PF.
+rewrite big_seq_cond.
+apply: sume_ge0 => i.
+by rewrite in_finite_support// andbT inE => -[] /PF.
+Qed.
 
 (* \sum_(a \in [set: R]) ... *)
-
-Lemma pair_fsum (T : choiceType) (R : realType) (f : T -> T -> \bar R) :
-  (\sum_(x \in [set: T]) \sum_(y \in [set: T]) f x y =
-  \sum_(x \in [set: T * T]) f x.1 x.2)%E.
-Proof.
-rewrite /finite_support.
-rewrite /locked_with.
-case: finite_index_key.
-(* NB: use pair_big_dep_cond? *)
-Abort.
 (* /about fsum *)
 
 Section simple_fun_raw_integral.
@@ -1386,36 +1459,22 @@ End def.
 
 End simple_fun_raw_integral.
 
-Lemma mulr_ge0_gt0 (R : numDomainType) (x y : R) : 0 <= x -> 0 <= y ->
-  (0 < x * y) = (0 < x) && (0 < y).
-Proof.
-rewrite le_eqVlt => /predU1P[<-|x0]; first by rewrite mul0r ltxx.
-rewrite le_eqVlt => /predU1P[<-|y0]; first by rewrite mulr0 ltxx andbC.
-by apply/idP/andP=> [|_]; rewrite pmulr_rgt0.
-Qed.
-
-Local Open Scope ereal_scope.
-Lemma mule_ge0_gt0 (R : realDomainType) (x y : \bar R) : 0 <= x -> 0 <= y ->
-  (0 < x * y) = (0 < x) && (0 < y).
-Proof.
-move: x y => [x| |] [y| |] //; rewrite ?lee_fin.
-- by move=> x0 y0; rewrite !lte_fin; exact: mulr_ge0_gt0.
-- rewrite le_eqVlt => /predU1P[<-|x0] _; first by rewrite mul0e ltxx.
-  by rewrite lte_pinfty andbT mulrpinfty gtr0_sg// mul1e lte_fin x0 lte_pinfty.
-- move=> _; rewrite le_eqVlt => /predU1P[<-|x0]; first by rewrite mule0 ltxx andbC.
-  by rewrite lte_pinfty/= mulpinftyr gtr0_sg// mul1e lte_fin x0 lte_pinfty.
-- by move=> _ _; rewrite mule_pinfty_pinfty lte_pinfty.
-Qed.
-Local Close Scope ereal_scope.
-
 Section sintegral_nnsfun.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 
-Lemma mulem_ge0 (D : set T) (f : {nnsfun D >-> R}) x :
+Lemma mulem_ge0 x (A : R -> set T) :
+  (x < 0 -> A x = set0) -> (0 <= x%:E * mu (A x))%E.
+Proof.
+move=> xA; have [x0|x0] := ltP x 0%R; first by rewrite (xA x0) measure0 mule0.
+by rewrite mule_ge0// measure_ge0.
+Qed.
+Arguments mulem_ge0 {x} _.
+
+Lemma mulem_ge0' (D : set T) (f : {nnsfun D >-> R}) x :
   (0 <= x%:E * mu (D `&` f @^-1` [set x]))%E.
 Proof.
-have [x0|x0] := ltP x 0%R; first by rewrite preimage_nnfun0// measure0 mule0.
-by rewrite mule_ge0// measure_ge0//; exact/measurable_sfunP.
+apply: (mulem_ge0 (fun x => D `&` f @^-1` [set x])).
+exact: preimage_nnfun0.
 Qed.
 
 Lemma sintegralEnnsfun (D : set T) (f : {nnsfun D >-> R}) :
@@ -1424,16 +1483,16 @@ Lemma sintegralEnnsfun (D : set T) (f : {nnsfun D >-> R}) :
 Proof.
 have ? : finite_set ((fun i => (i%:E * mu (D `&` f @^-1` [set i]))%E) @^-1` [set~ 0%E]).
   exact/finite_set_mulr_preimage/finite_set_measure_preimage1.
-rewrite sintegralE (fsum_ID [pred r | (r > 0)%R])// !setTI.
+rewrite sintegralE (fsum_ID _ [pred r | (r > 0)%R])// !setTI.
 rewrite [X in (_ + X = _)%E]big1_fset ?adde0// => r.
 rewrite unlock in_fset_set; last exact/finite_setIr.
 rewrite inE => -[/= /negP]; rewrite -leNgt /preimage /= => r0 /eqP h _.
-have := mulem_ge0 f r.
-rewrite le_eqVlt eq_sym (negbTE h)/= ltNge mule_le0_ge0// measure_ge0//.
-exact: measurable_sfunP.
+have := mulem_ge0' f r.
+by rewrite le_eqVlt eq_sym (negbTE h)/= ltNge mule_le0_ge0// measure_ge0//.
 Qed.
 
 End sintegral_nnsfun.
+Arguments mulem_ge0 {T R mu x} _.
 
 (*Lemma sintegral0 (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}) D pt :
   sintegral mu D (cst_fimfun pt D 0%R) = 0%E.*)
@@ -1471,7 +1530,6 @@ rewrite mule_ge0//; last exact/measure_ge0/measurable_sfunP.
 by rewrite lee_fin; exact: (@NNSFuncdom_ge0 _ _ _ mD f).*)
 Qed.
 
-
 Section sintegralrM.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (pt : T) (R : realType).
@@ -1488,19 +1546,41 @@ rewrite sintegralE.
 transitivity (\sum_(x \in [set: R]) x%:E * m (D `&` f @^-1` [set x / r])).
   by apply: eq_fsumr => x; rewrite preimage_cstM.
 transitivity (\sum_(x \in [set: R]) r%:E * (x%:E * m (D `&` f @^-1` [set x]))).
-  rewrite (reindex_inside (fun x => r * x)%R); last 2 first.
+  rewrite (reindex_inside_setT (fun x => r * x)%R); last 2 first.
     by exists ( *%R r ^-1)%R; [exact: mulKf|exact: mulVKf].
     apply/finite_set_mulr_preimage.
     apply: (@finite_set_measure_preimage _ _ _ _ (fun x => x / r)%R).
     by exists ( *%R ^~ r); [exact: divfK|exact: mulfK].
   by apply: eq_fsumr => x; rewrite mulrAC divrr ?unitfE// mul1r muleA EFinM.
-by rewrite ge0_fsum_distrr// => x; exact: mulem_ge0.
+by rewrite ge0_fsum_distrr// => x; exact: mulem_ge0'.
 Qed.
 
 End sintegralrM.
 
 Hint Extern 0 (measurable [set _]) =>
   solve [apply: measurable_set1] : core.
+
+Section nnsfun_partition.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType) (D : set T).
+Variables (mD : measurable D) (f : {nnsfun D >-> R}).
+
+Lemma nnsfun_partition :
+  \big[setU/set0]_(i \in [set: R]) (D `&` f @^-1` [set i]) = D.
+Proof.
+apply/seteqP; split=> [x|x Dx].
+  by rewrite -bigcup_fset => -[r /= _ []].
+rewrite -bigcup_fset; exists (f x) => //=.
+rewrite in_finite_support; last first.
+  rewrite setTI.
+  apply: sub_finite_set (@fimfunP _ _ _ f) => y.
+  rewrite /preimage/= => /eqP/set0P[t [Dt/= <-]].
+  by exists t.
+rewrite setTI/= inE /preimage/=.
+by apply/eqP/set0P; exists x.
+Qed.
+
+End nnsfun_partition.
 
 Section sintegralD.
 Local Open Scope ereal_scope.
@@ -1512,6 +1592,27 @@ Lemma sintegralD :
   sintegral m D (f \+ g)%R = sintegral m D f + sintegral m D g.
 Proof.
 rewrite !sintegralE.
+have H1 z : finite_set
+    ((fun i => m (D `&` f @^-1` [set i] `&` (D `&` g @^-1` [set (z - i)%R]))) @^-1` [set~ 0]).
+  apply: sub_finite_set (finite_set_measure_preimage1 f m) => x/=.
+  by apply: contra_not; apply: subset_measure0 => //;
+    [apply: measurableI; exact: measurable_sfunP|exact: measurable_sfunP].
+have H2 z : finite_set
+    ((fun i => m (D `&` f @^-1` [set z] `&` (D `&` g @^-1` [set (i - z)%R]))) @^-1` [set~ 0]).
+  apply: sub_finite_set (@finite_set_measure_preimage _ _ _ g (fun x => x - z)%R m _).
+    move=> x/=.
+    by apply: contra_not; apply: subset_measure0 => //;
+      [apply: measurableI; exact: measurable_sfunP|exact: measurable_sfunP].
+  by exists (fun y => y + z)%R; [exact: subrK|exact:addrK].
+have H3 : finite_set
+    ((fun z => z.1%:E * m (D `&` f @^-1` [set z.2] `&`
+                             (D `&` g @^-1` [set (z.1 - z.2)%R]))) @^-1`
+     [set~ 0]).
+   admit.
+have H5 z : trivIset [set: R] (fun i => D `&` f @^-1` [set i] `&` (D `&` g @^-1` [set (z - i)%R])).
+  apply/trivIsetP => i j _ _ ij; rewrite (setIACA (D `&` _)) (setIACA D).
+    by have /trivIsetP/(_ _ _ Logic.I Logic.I ij)-> :=
+      @trivIset_preimage1 _ _ f setT; rewrite ?(set0I, setI0).
 transitivity (\sum_(z \in [set: R]) z%:E * \sum_(a \in [set: R])
     m ((D `&` f @^-1` [set a]) `&` (D `&` g @^-1` [set (z - a)%R]))).
   apply: eq_fsumr => z; congr (_ * _).
@@ -1519,136 +1620,97 @@ transitivity (\sum_(z \in [set: R]) z%:E * \sum_(a \in [set: R])
   rewrite bigcup_fset_set; last exact/fimfunP.
   rewrite additive_fset; last 2 first.
     - by move=> x; apply: measurableI; exact: measurable_funP.
-    - apply/trivIsetP => i j _ _ ij; rewrite (setIACA (D `&` _)) (setIACA D).
-      by have /trivIsetP/(_ _ _ Logic.I Logic.I ij)-> :=
-           @trivIset_preimage1 _ _ f setT; rewrite ?(set0I, setI0).
-  rewrite -fsumE//.
-    move=> i; rewrite in_fset_set; last exact/fimfunP.
+    - exact: H5.
+  rewrite -fsumE; first by [].
+  - move=> i; rewrite in_fset_set; last exact/fimfunP.
     by move=> ifD; rewrite notin_setI_preimage// set0I measure0.
-  apply: sub_finite_set (finite_set_measure_preimage1 f m) => x/=.
-  by apply: contra_not; apply: subset_measure0 => //;
-    [apply: measurableI; exact: measurable_sfunP|exact: measurable_sfunP].
+  - exact: H1.
 under eq_fsumr.
   move=> z.
   rewrite ge0_fsum_distrr; last first.
     by move=> *; apply: measure_ge0; apply: measurableI; exact: measurable_funP.
   over.
 rewrite /=.
-rewrite exchange_fsum.
+rewrite exchange_fsum; last 2 first.
+  - move=> x y.
+    apply: (mulem_ge0 (fun x => D `&` f @^-1` [set y] `&` (D `&` g @^-1` [set (x - y)%R]))).
+    move=> x0.
+    have [y0|y0] := leP 0%R y.
+      by rewrite (preimage_nnfun0 g) ?setI0// subr_lt0 (lt_le_trans x0).
+    by rewrite preimage_nnfun0// set0I.
+  - exact: H3.
 transitivity (\sum_(j \in [set: R]) \sum_(i \in [set: R]) (i + j)%:E *
     m (D `&` f @^-1` [set j] `&` (D `&` g @^-1` [set i]))).
   apply eq_fsumr => x.
-  rewrite (reindex_inside (fun z => z + x)%R); last 2 first.
-    by move=> a b aR bR /eqP; rewrite -subr_eq addrK => /eqP.
-    admit.
+  rewrite (reindex_inside_setT (fun z => z + x)%R); last 2 first.
+    - by exists (fun y => y - x)%R; [exact: addrK|exact: subrK].
+    - apply/finite_set_mulr_preimage.
+      exact: H2.
   by under eq_fsumr do rewrite addrK.
 transitivity (
-  \sum_(j \in [set: R]) \sum_(i \in [set: R]) i%:E * m (D `&` f @^-1` [set j] `&` (D `&` g @^-1` [set i])) +
-  \sum_(j \in [set: R]) \sum_(i \in [set: R]) j%:E * m (D `&` f @^-1` [set j] `&` (D `&` g @^-1` [set i]))
-).
-  (* use ge0_muleDl *)
-  admit.
+  \sum_(j \in [set: R]) \sum_(i \in [set: R]) i%:E *
+                        m (D `&` f @^-1` [set j] `&` (D `&` g @^-1` [set i])) +
+  \sum_(j \in [set: R]) \sum_(i \in [set: R]) j%:E *
+                        m (D `&` f @^-1` [set j] `&` (D `&` g @^-1` [set i]))).
+  rewrite -fsum_split; last 4 first.
+    - move=> x; apply: fsume_ge0.
+      + rewrite setTI//.
+        admit.
+      + move=> i _.
+        admit.
+    - move=> x.
+      admit.
+    - rewrite setTI.
+      admit.
+    - admit.
+  apply: eq_fsumr => r.
+  rewrite -fsum_split; last 4 first.
+    - move=> x.
+      admit.
+    - move=> x.
+      admit.
+    - rewrite setTI.
+      apply/finite_set_mulr_preimage.
+      admit.
+    - rewrite setTI.
+      admit.
+  apply eq_fsumr => r'.
+  rewrite EFinD ge0_muleDl; last 2 first.
+    - admit.
+    - admit.
+  done.
+rewrite addeC.
 congr (_ + _)%E.
+- apply eq_fsumr => x.
+  rewrite -ge0_fsum_distrr; last first.
+    by move=> i; rewrite measure_ge0.
+  congr (_ * _)%E.
+  rewrite -[X in m (X `&` _)](setIid D) setIAC.
+  rewrite -[X in m (_ `&` X)](nnsfun_partition g).
+  rewrite big_distrr/=.
+  rewrite -additive_fset//; last 2 first.
+    admit.
+    admit.
+  congr (m _).
+  admit.
+- rewrite exchange_fsum; last 2 first.
+    - move=> x y.
+      apply: (mulem_ge0 (fun y => D `&` f @^-1` [set x] `&` (D `&` g @^-1` [set y]))) => y0.
+      by rewrite (preimage_nnfun0 g)// setI0.
+    - admit.
   apply eq_fsumr => x.
-
-xxx
-
-rewrite !sintegralE.
-set F := f @` _; set G := g @` _; set H := _ @` _.
-(* transitivity (\sum_(x <- fset_set [set of (f \+ g)%R]) x%:E * m (D `&` (f \+ g)%R @^-1` [set x])). *)
-(*   admit. *)
-(* transitivity (\sum_(x <- fset_set [set of f]) x%:E * m (D `&` f @^-1` [set x]) + *)
-(*   \sum_(x <- fset_set [set of g]) x%:E * m (D `&` g @^-1` [set x])); last first. *)
-(*   admit. *)
-(* have fgE z : D `&` (f \+ g)%R @^-1` [set z] = [set x | f x + g x = z]%R by []. *)
-have fgE z : D `&` (f \+ g)%R @^-1` [set z] =
-    \bigcup_(a in f @` D) ((D `&` f @^-1` [set a]) `&` (D `&` g @^-1` [set (z - a)%R])).
-  apply/seteqP; split=> [x /= [Dx fgz]|x [_ /= [x' _ <-]] []].
-    have : (z - f x)%R \in g @` D.
-      by rewrite inE /=; exists x=> //; rewrite -fgz addrC addKr.
-    rewrite inE /= => -[x' _ gzf]; exists (z - g x')%R => /=.
-      by exists x => //; rewrite gzf opprB addrC subrK.
-    rewrite /preimage /=; split; first by rewrite gzf opprB addrC subrK.
-    by split=> //; rewrite gzf opprB addrC subrK -fgz addrC addKr.
-  rewrite /preimage /= => [[Dx fxfx'] [_ gzf]].
-  by split=>//; rewrite gzf -fxfx' addrC subrK.
-under eq_bigr do rewrite fgE.
-rewrite {fgE}.
-transitivity (\sum_(z <- fset_set H) z%:E * \sum_(a <- fset_set F) m
-      ((D `&` f @^-1` [set a]) `&` (D `&` g @^-1` [set (z - a)%R]))).
-  apply: eq_bigr => r _; congr (_ * _).
-  rewrite  -additive_fset//; last 2 first.
-  - by move=> x; apply: measurableI; apply: measurable_funP.
-  - apply/trivIsetP => i j _ _ ij; rewrite setIACA.
-    rewrite !(setIACA D _ D) setIid setIACA setIid.
-    by have /trivIsetP/(_ _ _ Logic.I Logic.I ij)-> :=
-         @trivIset_preimage1 _ _ f setT; rewrite ?(set0I, setI0).
-  by rewrite bigcup_fset_set//; exact/fimfunP.
-under eq_bigr=> z _.
-  rewrite ge0_sume_distrr; last first.
-    by move=> *; apply: measure_ge0; apply: measurableI; apply: measurable_funP.
-  over.
-rewrite /=.
-rewrite exchange_big/= big_seq/=.
-under eq_bigr=> x.
-  rewrite in_fset_set ?inE => [Fx|]; last exact: fimfunP.
-  pose h y := (x + y)%R.
-  have hP (y : fset_set G) : h (val y) \in fset_set H.
-    rewrite in_fset_set /h /H ?inE/=; last exact: fimfunP.
-    have := valP y; rewrite in_fset_set /G ?inE /=; last exact: fimfunP.
-    move=> [t Dt <-].
-xxx
-transitivity (\sum_(i < n) \sum_(l < p)
-    ((srng f)`_i + (srng g)`_l)%:E * m (spimg f i `&` spimg g l `&` D)).
-  rewrite /sintegral.
-  under eq_bigr do rewrite measure_spimg_add//.
-  transitivity (
-    \sum_(i : 'I_(ssize (sfun_add f g))) \sum_(x in presfun_bin_idx i)
-      ((srng f)`_x.1 + (srng g)`_x.2)%:E * m (spimg f x.1 `&` spimg g x.2 `&` D)).
-    apply: eq_bigr => i _; rewrite ge0_sume_distrr //; last first.
-      move=> kl _; rewrite measure_ge0 //; apply: measurableI => //.
-      exact: measurableI.
-    by apply: eq_bigr => x; rewrite !inE => /andP[] /eqP ->.
-  rewrite [in RHS]pair_big /=.
-  rewrite [in RHS](eq_bigl [pred x | x \in setX [set: _] [set: _]]); last first.
-    by move=> [k l]; rewrite !inE.
-  transitivity (\sum_(x in [set x|spimg f x.1 `&` spimg g x.2 != set0]%SET)
-      ((srng f)`_x.1 + (srng g)`_x.2)%:E *
-      m (spimg f x.1 `&` spimg g x.2 `&` D)); last first.
-    rewrite big_mkcond; apply: eq_big => //; first by move=> x; rewrite !inE.
-    move=> [x y] _; case: ifPn => //; rewrite inE negbK => /eqP -> /=.
-    by rewrite set0I measure0 mule0.
-  rewrite -(presfun_bin_idx_cover _ _ (fun x y => x + y)%R).
-  rewrite partition_disjoint_bigcup //= => i j ij.
-  (* NB: lemma? *)
-  rewrite -setI_eq0; apply/negPn/negP => /set0Pn[[k l]].
-  rewrite inE /= => /andP[]; rewrite 2!inE => /andP[/eqP -> _] /andP[+ _].
-  by rewrite (nth_uniq _ _ _ (undup_uniq _)) //; exact/negP.
-transitivity (\sum_(i < n) \sum_(l < p)
-             ((srng f)`_i)%:E * m (spimg f i `&` spimg g l `&` D) +
-             \sum_(i < p) \sum_(j < n)
-             ((srng g)`_i)%:E * m (spimg g i `&` spimg f j `&` D)).
-  rewrite [X in _ = _ + X]exchange_big /=.
-  rewrite -big_split; apply: eq_bigr => i _ /=.
-  rewrite -big_split; apply: eq_bigr => j _ /=.
-  rewrite -[in RHS](setIC (spimg f i))/=.
-  by rewrite EFinD ge0_muleDl //; [exact: NNSFun_ge0|exact: NNSFun_ge0].
-congr (_ + _).
-- apply eq_bigr => k _; rewrite -ge0_sume_distrr//; last first.
-    move=> i; rewrite measure_ge0 //.
-    by apply: measurableI => //; exact: measurableI.
-  congr (_ * _); rewrite -additive_ord//.
-  + by rewrite -big_distrl/= -big_distrr/= bigsetU_spimg setIT.
-  + by move=> i; apply: measurableI => //; exact: measurableI.
-  + exact/trivIset_setIr/trivIset_setI/trivIset_spimg.
-- apply eq_bigr => k _; rewrite -ge0_sume_distrr//; last first.
-    move=> i; rewrite measure_ge0 //.
-    by apply: measurableI => //; exact: measurableI.
-  rewrite -additive_ord//.
-  + by rewrite -big_distrl/= -big_distrr/= bigsetU_spimg setIT.
-  + by move=> i; apply: measurableI => //; exact: measurableI.
-  + exact/trivIset_setIr/trivIset_setI/trivIset_spimg.
-Qed.
+  rewrite -ge0_fsum_distrr; last by move=> i; rewrite measure_ge0.
+  congr (_ * _)%E.
+  rewrite -[X in m (X `&` _)](setIid D).
+  rewrite -[X in m (X `&` _ `&` _)](nnsfun_partition f).
+  rewrite -setIA.
+  rewrite big_distrl.
+  rewrite -additive_fset//; last 2 first.
+    admit.
+    admit.
+  congr (m _) => /=.
+  admit.
+Abort.
 
 End sintegralD.
 

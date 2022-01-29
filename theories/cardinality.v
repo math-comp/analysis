@@ -685,7 +685,7 @@ by apply/fsetP=> x; rewrite in_fset_set ?inE//; apply/negP; rewrite inE.
 Qed.
 
 Lemma fset_set1 {T : choiceType} (x : T) : fset_set [set x] = [fset x]%fset.
-Proof. 
+Proof.
 apply/fsetP=> y; rewrite in_fset_set ?inE//.
 by apply/idP/idP; rewrite inE => /eqP.
 Qed.
