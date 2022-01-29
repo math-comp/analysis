@@ -717,6 +717,9 @@ Proof. by move: x y => [?| |] [?| |]. Qed.
 Lemma addooe x : x != -oo -> +oo + x = +oo.
 Proof. by case: x. Qed.
 
+Lemma addeoo x : x != -oo -> x + +oo = +oo.
+Proof. by case: x. Qed.
+
 Lemma adde_Neq_pinfty x y : x != -oo -> y != -oo ->
   (x + y != +oo) = (x != +oo) && (y != +oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
@@ -725,46 +728,53 @@ Lemma adde_Neq_ninfty x y : x != +oo -> y != +oo ->
   (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma esum_fset_ninfty
-    (T : choiceType) (s : {fset T}) (P : pred T) (f : T -> \bar R) :
+Lemma esum_ninfty (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
-split=> [|[i [si Pi fi]]]; last by rewrite big_mkcond (bigD1_seq i) //= Pi fi.
-rewrite big_seq_cond; elim/big_ind: _ => // [[?| |] [?| |]//|].
-by move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
+split=> [|[i [si Pi fi]]].
+  rewrite big_seq_cond; elim/big_ind: _ => // [[?| |] [?| |]//|].
+  by move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
+rewrite big_mkcond (bigID (xpred1 i))/= (eq_bigr (fun _ => -oo)); last first.
+  by move=> j /eqP ->; rewrite Pi.
+rewrite big_const_seq/= [X in X + _](_ : _ = -oo)//.
+elim: s i Pi fi si => // h t ih i Pi fi.
+rewrite inE => /predU1P[<-/=|it]; first by rewrite eqxx.
+by rewrite /= iterD ih//=; case: (_ == _).
 Qed.
 
-Lemma esum_ninfty n (f : 'I_n -> \bar R) :
+Lemma esum_ord_ninfty n (f : 'I_n -> \bar R) :
   (\sum_(i < n) f i == -oo) = [exists i, f i == -oo].
 Proof.
 rewrite -big_enum -(big_fset _ (mem_fin (fin_finpred (pred_of_simpl 'I_n)))).
-apply/idP/idP => [/eqP/esum_fset_ninfty|/existsP[i /eqP fioo]].
+apply/idP/idP => [/eqP/esum_ninfty|/existsP[i /eqP fioo]].
   by move=> -[i [_ _ fioo]]; apply/existsP; exists i; exact/eqP.
-by apply/eqP/esum_fset_ninfty; exists i; split => //; rewrite inE.
+by apply/eqP/esum_ninfty; exists i; split => //; rewrite inE.
 Qed.
 
-Lemma esum_fset_pinfty
-    (T : choiceType) (s : {fset T}) (P : pred T) (f : T -> \bar R) :
+Lemma esum_pinfty
+    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   (forall i, P i -> f i != -oo) ->
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
-move=> finoo; split=> [|[i [si Pi fi]]]; last first.
-  rewrite big_mkcond (bigD1_seq i) //= Pi fi addooe //.
-  apply/eqP => /esum_fset_ninfty; apply/forallNP => t [ts ti].
-  by case: ifPn => // Pt /eqP; apply/negP; rewrite finoo.
-rewrite big_seq_cond; elim/big_ind: _ => // [[x| |] [y| |] //|].
-by  move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
+move=> finoo; split=> [|[i [si Pi fi]]].
+  rewrite big_seq_cond; elim/big_ind: _ => // [[?| |] [?| |]//|].
+  by move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
+elim: s i Pi fi si => // h t ih i Pi fi.
+rewrite inE => /predU1P[<-/=|it].
+  rewrite big_cons Pi fi addooe//.
+  by apply/eqP => /esum_ninfty[j [jt /finoo/negbTE/eqP]].
+by rewrite big_cons; case: ifPn => Ph; rewrite (ih i)// addeoo// finoo.
 Qed.
 
-Lemma esum_pinfty n (f : 'I_n -> \bar R) : (forall i, f i != -oo) ->
+Lemma esum_ord_pinfty n (f : 'I_n -> \bar R) : (forall i, f i != -oo) ->
   (\sum_(i < n) f i == +oo) = [exists i, f i == +oo].
 Proof.
 move=> finoo.
 rewrite -big_enum -(big_fset _ (mem_fin (fin_finpred (pred_of_simpl 'I_n)))).
 apply/idP/existsP => [/eqP /=|[/= i /eqP fioo]].
   have {}finoo : (forall i, xpredT i -> f i != -oo) by move=> i _; exact: finoo.
-  by move/(esum_fset_pinfty _ finoo) => [i [_ _ fioo]]; exists i; rewrite fioo.
-by apply/eqP/esum_fset_pinfty => //; exists i; split => //; rewrite inE.
+  by move/(esum_pinfty _ finoo) => [i [_ _ fioo]]; exists i; rewrite fioo.
+by apply/eqP/esum_pinfty => //; exists i; split => //; rewrite inE.
 Qed.
 
 Lemma adde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
@@ -979,7 +989,10 @@ Qed.
 Lemma dadde_eq_pinfty x y : (x + y == +oo) = ((x == +oo) || (y == +oo)).
 Proof. by move: x y => [?| |] [?| |]. Qed.
 
-Lemma daddooe x : x != +oo -> -oo + x = -oo.
+Lemma daddooe x : x != -oo -> +oo + x = +oo.
+Proof. by case: x. Qed.
+
+Lemma daddeoo x : x != -oo -> x + +oo = +oo.
 Proof. by case: x. Qed.
 
 Lemma dadde_Neq_pinfty x y : x != -oo -> y != -oo ->
@@ -990,37 +1003,37 @@ Lemma dadde_Neq_ninfty x y : x != +oo -> y != +oo ->
   (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma desum_fset_pinfty
-    (T : choiceType) (s : {fset T}) (P : pred T) (f : T -> \bar R) :
+Lemma desum_pinfty
+    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
-rewrite dual_sumeE eqe_oppLRP /= esum_fset_ninfty.
+rewrite dual_sumeE eqe_oppLRP /= esum_ninfty.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
 
-Lemma desum_pinfty n (f : 'I_n -> \bar R) :
+Lemma desum_ord_pinfty n (f : 'I_n -> \bar R) :
   (\sum_(i < n) f i == +oo) = [exists i, f i == +oo].
 Proof.
-rewrite dual_sumeE eqe_oppLR esum_ninfty.
+rewrite dual_sumeE eqe_oppLR esum_ord_ninfty.
 by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
-Lemma desum_fset_ninfty
-    (T : choiceType) (s : {fset T}) (P : pred T) (f : T -> \bar R) :
+Lemma desum_ninfty
+    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   (forall i, P i -> f i != +oo) ->
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
 move=> fioo.
-rewrite dual_sumeE eqe_oppLRP /= esum_fset_pinfty => [|i Pi]; last first.
+rewrite dual_sumeE eqe_oppLRP /= esum_pinfty => [|i Pi]; last first.
   by rewrite eqe_oppLR fioo.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
 
-Lemma desum_ninfty n (f : 'I_n -> \bar R) : (forall i, f i != +oo) ->
+Lemma desum_ord_ninfty n (f : 'I_n -> \bar R) : (forall i, f i != +oo) ->
   (\sum_(i < n) f i == -oo) = [exists i, f i == -oo].
 Proof.
 move=> finoo.
-rewrite dual_sumeE eqe_oppLR /= esum_pinfty => [|i]; rewrite ?eqe_oppLR //.
+rewrite dual_sumeE eqe_oppLR /= esum_ord_pinfty => [|i]; rewrite ?eqe_oppLR //.
 by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 

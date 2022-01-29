@@ -1356,7 +1356,7 @@ move=> u0 Pk ukoo; apply/eqP; rewrite eq_le lee_pinfty /=.
 apply: le_trans (ereal_nneg_series_lim_ge k.+1 u0) => //.
 rewrite big_mkcond big_nat_recr// -big_mkcond /= ukoo /= Pk.
 suff : \sum_(0 <= i < k | P i) u_ i != -oo by case: (\sum_(0 <= i < k | P i) _).
-rewrite big_mkcond big_mkord esum_ninfty; apply/existsPn => i; apply/negP.
+rewrite big_mkcond big_mkord esum_ord_ninfty; apply/existsPn => i; apply/negP.
 by move=> /eqP; case: ifPn => // /u0 + uioo; rewrite uioo.
 Qed.
 
