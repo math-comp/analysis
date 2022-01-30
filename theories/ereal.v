@@ -777,6 +777,10 @@ Lemma adde_Neq_ninfty x y : x != +oo -> y != +oo ->
   (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
+Lemma adde_ss_eq0 x y : (0 <= x) && (0 <= y) || (x <= 0) && (y <= 0) ->
+  x + y == 0 = (x == 0) && (y == 0).
+Proof. by move=> /orP[|] /andP[]; [exact: padde_eq0|exact: nadde_eq0]. Qed.
+
 Lemma esum_ninftyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
@@ -799,8 +803,7 @@ apply/idP/idP => [/eqP/esum_ninftyP|/existsP[i /andP[Pi /eqP fi]]].
 by apply/eqP/esum_ninftyP; exists i.
 Qed.
 
-Lemma esum_pinftyP
-    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma esum_pinftyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   (forall i, P i -> f i != -oo) ->
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
@@ -1053,8 +1056,25 @@ Lemma dadde_Neq_ninfty x y : x != +oo -> y != +oo ->
   (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma desum_pinftyP
-    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma ndadde_eq0 x y : x <= 0 -> y <= 0 -> x + y == 0 = (x == 0) && (y == 0).
+Proof.
+move: x y => [x||] [y||] //.
+- by rewrite !lee_fin -dEFinD !eqe; exact: naddr_eq0.
+- by rewrite /adde/= (_ : -oo == 0 = false)// andbF.
+Qed.
+
+Lemma pdadde_eq0 x y : 0 <= x -> 0 <= y -> x + y == 0 = (x == 0) && (y == 0).
+Proof.
+move: x y => [x||] [y||] //.
+- by rewrite !lee_fin -dEFinD !eqe; exact: paddr_eq0.
+- by rewrite /adde/= (_ : +oo == 0 = false)// andbF.
+Qed.
+
+Lemma dadde_ss_eq0 x y : (0 <= x) && (0 <= y) || (x <= 0) && (y <= 0) ->
+  x + y == 0 = (x == 0) && (y == 0).
+Proof. move=> /orP[|] /andP[]; [exact: pdadde_eq0|exact: ndadde_eq0]. Qed.
+
+Lemma desum_pinftyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
 rewrite dual_sumeE eqe_oppLRP /= esum_ninftyP.
