@@ -40,6 +40,14 @@ Require Import topology.
 (*             ereal_inf E == infimum of E                                    *)
 (*  ereal_supremums_neq0 S == S has a supremum                                *)
 (*                                                                            *)
+(* Signed extended real numbers:                                              *)
+(*    {posnum \bar R} == interface type for elements in \bar R that are       *)
+(*                       positive, c.f., signed.v, notation in scope %E       *)
+(*    {nonneg \bar R} == interface types for elements in \bar R that are      *)
+(*                       non-negative, c.f. signed.v, notation in scope %E    *)
+(*             x%:pos == explicitly casts x to {posnum \bar R}, in scope %E   *)
+(*             x%:nng == explicitly casts x to {nonneg \bar R}, in scope %E   *)
+(*                                                                            *)
 (* Topology of extended real numbers:                                         *)
 (*        ereal_topologicalType R == topology for extended real numbers over  *)
 (*                                   R, a realFieldType                       *)
@@ -74,6 +82,10 @@ Reserved Notation "x %:E" (at level 2, format "x %:E").
 Reserved Notation "x +? y" (at level 50, format "x  +?  y").
 Reserved Notation "x *? y" (at level 50, format "x  *?  y").
 Reserved Notation "'\bar' x" (at level 2, format "'\bar'  x").
+Reserved Notation "{ 'posnum' '\bar' R }" (at level 0,
+  format "{ 'posnum'  '\bar'  R }").
+Reserved Notation "{ 'nonneg' '\bar' R }" (at level 0,
+  format "{ 'nonneg'  '\bar'  R }").
 
 Declare Scope ereal_dual_scope.
 Declare Scope ereal_scope.
@@ -315,6 +327,15 @@ Lemma lte_ninfty_0 : -oo < (0 : \bar R). Proof. exact: real0. Qed.
 Lemma lee_0_pinfty : (0 : \bar R) <= +oo. Proof. exact: real0. Qed.
 
 Lemma lee_ninfty_0 : -oo <= (0 : \bar R). Proof. exact: real0. Qed.
+
+Lemma ereal_comparable (x y : \bar R) : (0%E >=< x)%O -> (0%E >=< y)%O ->
+  (x >=< y)%O.
+Proof.
+move: x y => [x||] [y||] //; rewrite /Order.comparable !lee_fin -!realE.
+- exact: real_comparable.
+- by rewrite /lee/= => ->.
+- by rewrite /lee/= => _ ->.
+Qed.
 
 End ERealOrder_numDomainType.
 
@@ -2944,6 +2965,332 @@ Proof.
 by apply/funext=> t; rewrite /restrict/=; case: ifPn => // _; rewrite abse0.
 Qed.
 
+Definition posnume (R : numDomainType) of phant R := {> 0 : \bar R}.
+Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R))  : type_scope.
+Definition nonnege (R : numDomainType) of phant R := {>= 0 : \bar R}.
+Notation "{ 'nonneg' '\bar' R }" := (@nonnege _ (Phant R))  : type_scope.
+
+Notation "x %:pos" := (widen_signed x%:sgn : {posnum \bar _}) (only parsing)
+  : ereal_dual_scope.
+Notation "x %:pos" := (widen_signed x%:sgn : {posnum \bar _}) (only parsing)
+  : ereal_scope.
+Notation "x %:nng" := (widen_signed x%:sgn : {nonneg \bar _}) (only parsing)
+  : ereal_dual_scope.
+Notation "x %:nng" := (widen_signed x%:sgn : {nonneg \bar _}) (only parsing)
+  : ereal_scope.
+Notation "x %:pos" := (@widen_signed ereal_display _ _ _ _
+    (@Signed.from _ _ _ _ _ _ (Phantom _ x))
+    !=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
+  (only printing) : ereal_dual_scope.
+Notation "x %:pos" := (@widen_signed ereal_display _ _ _ _
+    (@Signed.from _ _ _ _ _ _ (Phantom _ x))
+    !=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
+  (only printing) : ereal_scope.
+Notation "x %:nng" := (@widen_signed ereal_display _ _ _ _
+    (@Signed.from _ _ _ _ _ _ (Phantom _ x))
+    ?=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
+  (only printing) : ereal_dual_scope.
+Notation "x %:nng" := (@widen_signed ereal_display _ _ _ _
+    (@Signed.from _ _ _ _ _ _ (Phantom _ x))
+    ?=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
+  (only printing) : ereal_scope.
+
+Hint Extern 0 (is_true (0%E < _)%O) => solve [apply: gt0] : core.
+Hint Extern 0 (is_true (_ < 0%E)%O) => solve [apply: lt0] : core.
+Hint Extern 0 (is_true (0%E <= _)%O) => solve [apply: ge0] : core.
+Hint Extern 0 (is_true (_ <= 0%E)%O) => solve [apply: le0] : core.
+Hint Extern 0 (is_true (0%E >=< _)%O) => solve [apply: cmp0] : core.
+Hint Extern 0 (is_true (_ != 0%E)%O) => solve [apply: neq0] : core.
+
+Section SignedNumDomainStability.
+Context {R : numDomainType}.
+
+Lemma pinfty_snum_subproof : Signed.spec 0 !=0 >=0 (+oo : \bar R).
+Proof. by rewrite /= lee_0_pinfty. Qed.
+
+Canonical pinfty_snum := Signed.mk (pinfty_snum_subproof).
+
+Lemma ninfty_snum_subproof : Signed.spec 0 !=0 <=0 (-oo : \bar R).
+Proof. by rewrite /= lee_ninfty_0. Qed.
+
+Canonical ninfty_snum := Signed.mk (ninfty_snum_subproof).
+
+Lemma EFin_snum_subproof nz cond (x : {num R & nz & cond}) :
+  Signed.spec 0 nz cond x%:num%:E.
+Proof.
+apply/andP; split.
+  case: cond nz x => [[[]|]|] [] x //=;
+    do ?[by case: (bottom x)|by rewrite eqe eq0F].
+case: cond nz x => [[[]|]|] [] x //=;
+  do ?[by case: (bottom x)|by rewrite ?lee_fin ?(eq0, ge0, le0) ?[_ || _]cmp0].
+Qed.
+
+Canonical EFin_snum nz cond (x : {num R & nz & cond}) :=
+  Signed.mk (EFin_snum_subproof x).
+
+Lemma fine_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr}) :
+  Signed.spec 0%R ?=0 xr (fine x%:num).
+Proof.
+case: xr x => [[[]|]|]//= [x /andP[_]]/=.
+- by move=> /eqP ->.
+- by case: x.
+- by case: x.
+- by move=> /orP[]; case: x => [x||]//=; rewrite lee_fin => ->; rewrite ?orbT.
+Qed.
+
+Canonical fine_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr}) :=
+  Signed.mk (fine_snum_subproof x).
+
+Lemma oppe_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr}) (r := opp_reality_subdef xnz xr) :
+  Signed.spec 0 xnz r (- x%:num).
+Proof.
+rewrite {}/r; case: xr xnz x => [[[]|]|] [] x //=;
+  do ?[by case: (bottom x)
+      |by rewrite ?eqe_oppLR ?oppe0 1?eq0//;
+          rewrite ?oppe_le0 ?oppe_ge0 ?(eq0, eq0F, ge0, le0)//;
+          rewrite orbC [_ || _]cmp0].
+Qed.
+
+Canonical oppe_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr}) :=
+  Signed.mk (oppe_snum_subproof x).
+
+Lemma adde_snum_subproof (xnz ynz : KnownSign.nullity)
+    (xr yr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr})
+    (y : {compare (0 : \bar R) & ynz & yr})
+    (rnz := add_nonzero_subdef xnz ynz xr yr)
+    (rrl := add_reality_subdef xnz ynz xr yr) :
+  Signed.spec 0 rnz rrl (x%:num + y%:num).
+Proof.
+rewrite {}/rnz {}/rrl; apply/andP; split.
+  move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
+  by rewrite 1?adde_ss_eq0 ?(eq0F, ge0, le0, andbF, orbT).
+move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
+  do ?[by case: (bottom x)|by case: (bottom y)
+      |by rewrite adde_ge0|by rewrite adde_le0
+      |exact: realDe|by rewrite 2!eq0 add0e].
+Qed.
+
+Canonical adde_snum (xnz ynz : KnownSign.nullity)
+    (xr yr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr})
+    (y : {compare (0 : \bar R) & ynz & yr}) :=
+  Signed.mk (adde_snum_subproof x y).
+
+Import DualAddTheory.
+
+Lemma dadde_snum_subproof (xnz ynz : KnownSign.nullity)
+    (xr yr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr})
+    (y : {compare (0 : \bar R) & ynz & yr})
+    (rnz := add_nonzero_subdef xnz ynz xr yr)
+    (rrl := add_reality_subdef xnz ynz xr yr) :
+  Signed.spec 0 rnz rrl (x%:num + y%:num)%dE.
+Proof.
+rewrite {}/rnz {}/rrl; apply/andP; split.
+  move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
+  by rewrite 1?dadde_ss_eq0 ?(eq0F, ge0, le0, andbF, orbT).
+move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
+  do ?[by case: (bottom x)|by case: (bottom y)
+      |by rewrite dadde_ge0|by rewrite dadde_le0
+      |exact: realDed|by rewrite 2!eq0 dadd0e].
+Qed.
+
+Canonical dadde_snum (xnz ynz : KnownSign.nullity)
+    (xr yr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr})
+    (y : {compare (0 : \bar R) & ynz & yr}) :=
+  Signed.mk (dadde_snum_subproof x y).
+
+Lemma mule_snum_subproof (xnz ynz : KnownSign.nullity)
+    (xr yr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr})
+    (y : {compare (0 : \bar R) & ynz & yr})
+    (rnz := mul_nonzero_subdef xnz ynz xr yr)
+    (rrl := mul_reality_subdef xnz ynz xr yr) :
+  Signed.spec 0 rnz rrl (x%:num * y%:num).
+Proof.
+rewrite {}/rnz {}/rrl; apply/andP; split.
+  by move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []// x y;
+     rewrite mule_neq0.
+by move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []/= x y //;
+  do ?[by case: (bottom x)|by case: (bottom y)
+      |by rewrite mule_ge0|by rewrite mule_le0_ge0
+      |by rewrite mule_ge0_le0|by rewrite mule_le0|exact: realMe
+      |by rewrite eq0 ?mule0// mul0e].
+Qed.
+
+Canonical mule_snum (xnz ynz : KnownSign.nullity) (xr yr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr})
+    (y : {compare (0 : \bar R) & ynz & yr}) :=
+  Signed.mk (mule_snum_subproof x y).
+
+Definition abse_reality_subdef (xnz : KnownSign.nullity)
+    (xr : KnownSign.reality) := (if xr is =0 then =0 else >=0)%snum_sign.
+Arguments abse_reality_subdef /.
+
+Lemma abse_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr}) (r := abse_reality_subdef xnz xr) :
+  Signed.spec 0 xnz r `|x%:num|.
+Proof.
+rewrite {}/r; case: xr xnz x => [[[]|]|] [] x //=;
+  do ?[by case: (bottom x)|by rewrite eq0 abse0
+      |by rewrite abse_ge0// andbT gee0_abs
+      |by rewrite abse_ge0// andbT lee0_abs
+      |by rewrite abse_ge0// andbT abse_eq0].
+Qed.
+
+Canonical abse_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (x : {compare (0 : \bar R) & xnz & xr}) :=
+  Signed.mk (abse_snum_subproof x).
+
+End SignedNumDomainStability.
+
+Section SignedRealFieldStability.
+Context {R : realFieldType}.
+
+Definition ereal_sup_reality_subdef (xnz : KnownSign.nullity)
+    (xr : KnownSign.reality) :=
+  (if KnownSign.wider_reality <=0 xr then KnownSign.Real <=0
+   else >=<0)%snum_sign.
+Arguments ereal_sup_reality_subdef /.
+
+Lemma ereal_sup_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (S : {compare (0 : \bar R) & xnz & xr} -> Prop)
+    (r := ereal_sup_reality_subdef xnz xr) :
+  Signed.spec 0 ?=0 r (ereal_sup [set x%:num | x in S]%classic).
+Proof.
+rewrite {}/r; move: xr S => [[[]|]|] S /=;
+  do ?[by apply: ub_ereal_sup => _ [? _ <-]
+      |by case: ereal_sup => [s||];
+          rewrite ?lee_pinfty ?lee_ninfty// !lee_fin -realE num_real].
+Qed.
+
+Canonical ereal_sup_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (S : {compare (0 : \bar R) & xnz & xr} -> Prop) :=
+  Signed.mk (ereal_sup_snum_subproof S).
+
+Definition ereal_inf_reality_subdef (xnz : KnownSign.nullity)
+    (xr : KnownSign.reality) :=
+  (if KnownSign.wider_reality >=0 xr then KnownSign.Real >=0
+   else >=<0)%snum_sign.
+Arguments ereal_inf_reality_subdef /.
+
+Lemma ereal_inf_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (S : {compare (0 : \bar R) & xnz & xr} -> Prop)
+    (r := ereal_inf_reality_subdef xnz xr) :
+  Signed.spec 0 ?=0 r (ereal_inf [set x%:num | x in S]%classic).
+Proof.
+rewrite {}/r; move: xr S => [[[]|]|] S /=;
+  do ?[by apply: lb_ereal_inf => _ [? _ <-]
+      |by case: ereal_inf => [s||];
+          rewrite ?lee_pinfty ?lee_ninfty// !lee_fin -realE num_real].
+Qed.
+
+Canonical ereal_inf_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (S : {compare (0 : \bar R) & xnz & xr} -> Prop) :=
+  Signed.mk (ereal_inf_snum_subproof S).
+
+End SignedRealFieldStability.
+
+Section MorphNum.
+Context {R : numDomainType} {nz : KnownSign.nullity} {cond : KnownSign.reality}.
+Local Notation nR := {compare (0 : \bar R) & nz & cond}.
+Implicit Types (a : \bar R).
+
+Lemma num_abse_eq0 a : (`|a|%:nng == 0%:nng) = (a == 0).
+Proof. by rewrite -abse_eq0. Qed.
+
+End MorphNum.
+
+Section MorphReal.
+Context {R : numDomainType} {nz : KnownSign.nullity} {r : KnownSign.real}.
+Local Notation nR := {compare (0 : \bar R) & nz & r}.
+Implicit Type x y : nR.
+Local Notation num := (@num _ _ (0 : R) nz r).
+
+Lemma num_lee_maxr a x y :
+  a <= maxe x%:num y%:num = (a <= x%:num) || (a <= y%:num).
+Proof. by rewrite -comparable_le_maxr// ereal_comparable. Qed.
+
+Lemma num_lee_maxl a x y :
+  maxe x%:num  y%:num <= a = (x%:num <= a) && (y%:num <= a).
+Proof. by rewrite -comparable_le_maxl// ereal_comparable. Qed.
+
+Lemma num_lee_minr a x y :
+  a <= mine x%:num y%:num = (a <= x%:num) && (a <= y%:num).
+Proof. by rewrite -comparable_le_minr// ereal_comparable. Qed.
+
+Lemma num_lee_minl a x y :
+  mine x%:num y%:num <= a = (x%:num <= a) || (y%:num <= a).
+Proof. by rewrite -comparable_le_minl// ereal_comparable. Qed.
+
+Lemma num_lte_maxr a x y :
+  a < maxe x%:num y%:num = (a < x%:num) || (a < y%:num).
+Proof. by rewrite -comparable_lt_maxr// ereal_comparable. Qed.
+
+Lemma num_lte_maxl a x y :
+  maxe x%:num  y%:num < a = (x%:num < a) && (y%:num < a).
+Proof. by rewrite -comparable_lt_maxl// ereal_comparable. Qed.
+
+Lemma num_lte_minr a x y :
+  a < mine x%:num y%:num = (a < x%:num) && (a < y%:num).
+Proof. by rewrite -comparable_lt_minr// ereal_comparable. Qed.
+
+Lemma num_lte_minl a x y :
+  mine x%:num y%:num < a = (x%:num < a) || (y%:num < a).
+Proof. by rewrite -comparable_lt_minl// ereal_comparable. Qed.
+
+End MorphReal.
+
+Section MorphGe0.
+Context {R : numDomainType} {nz : KnownSign.nullity}.
+Local Notation nR := {compare (0 : \bar R) & ?=0 & >=0}.
+Implicit Type x y : nR.
+Local Notation num := (@num _ _ (0 : \bar R) ?=0 >=0).
+
+Lemma num_abs_le a x : 0 <= a -> (`|a|%:nng <= x)%O = (a <= x%:num).
+Proof. by move=> a0; rewrite -num_le//= gee0_abs. Qed.
+
+Lemma num_abs_lt a x : 0 <= a -> (`|a|%:nng < x)%O = (a < x%:num).
+Proof. by move=> a0; rewrite -num_lt/= gee0_abs. Qed.
+End MorphGe0.
+
+Variant posnume_spec (R : numDomainType) (x : \bar R) :
+  \bar R -> bool -> bool -> bool -> Type :=
+| IsPinftyPosnume :
+  posnume_spec x +oo false true true
+| IsRealPosnume (p : {posnum R}) :
+  posnume_spec x (p%:num%:E) false true true.
+
+Lemma posnumeP (R : numDomainType) (x : \bar R) : 0 < x ->
+  posnume_spec x x (x == 0) (0 <= x) (0 < x).
+Proof.
+case: x => [x|_|//].
+- rewrite lte_fin lee_fin eqe => x_gt0.
+  rewrite x_gt0 (ltW x_gt0) (negbTE (lt0r_neq0 x_gt0)).
+  exact: (IsRealPosnume x%:E (PosNum x_gt0)).
+- rewrite lee_0_pinfty lte_0_pinfty; exact: IsPinftyPosnume.
+Qed.
+
+Variant nonnege_spec (R : numDomainType) (x : \bar R) :
+  \bar R -> bool -> Type :=
+| IsPinftyNonnege : nonnege_spec x +oo true
+| IsRealNonnege (p : {nonneg R}) : nonnege_spec x (p%:num%:E) true.
+
+Lemma nonnegeP (R : numDomainType) (x : \bar R) : 0 <= x ->
+  nonnege_spec x x (0 <= x).
+Proof.
+case: x => [x|_|//].
+- rewrite lee_fin => /[dup] x_ge0 ->.
+  exact: (IsRealNonnege x%:E (NngNum x_ge0)).
+- rewrite lee_0_pinfty; exact: IsPinftyNonnege.
+Qed.
+
 Section ereal_nbhs.
 Context {R : numFieldType}.
 Local Open Scope ereal_scope.
@@ -3855,7 +4202,7 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
   by exists d => y /dP /andP[->] /= /lt_le_trans; apply; rewrite lee_pinfty.
 - have [//||d dP] := wlog (r - 1)%R b; rewrite ?lte_fin ?gtr_addl ?ltrN10 //.
   by exists d => y /dP /andP[_ ->] /=; rewrite lte_ninfty.
-- by exists 1%R%:pos => ? ?; rewrite lte_ninfty lte_pinfty.
+- by exists 1%:pos%R => ? ?; rewrite lte_ninfty lte_pinfty.
 Qed.
 
 (* TODO: generalize to numFieldType? *)

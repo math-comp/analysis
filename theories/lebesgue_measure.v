@@ -125,7 +125,7 @@ Proof.
 rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
 - by rewrite suber_ge0//; exact: ltW.
 - by rewrite ltNge lee_pinfty.
-- by case: (i.2 : \bar _) => //= [r _|]; rewrite lee_pinfty.
+- by case: (i.2 : \bar _) => //= [r _]; rewrite lee_pinfty.
 Qed.
 Local Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 
