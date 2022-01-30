@@ -1836,8 +1836,7 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
   rewrite mule_pinfty_ninfty; apply/ereal_cvgPninfty => A A0; near=> n.
   rewrite (@le_trans _ _ (g n))//; last by near: n; exact: goo.
   apply: lee_nemull; last by near: n; apply: foo.
-  rewrite (@le_trans _ _ (- 1)%:E)//; last by rewrite lee_fin lerN10.
-  by near: n; apply: goo; rewrite ltrN10.
+  by rewrite (@le_trans _ _ (- 1)%:E)//; near: n; apply: goo; rewrite ltrN10.
 - rewrite mule_defC => ? foo gb; rewrite muleC.
   by under eq_fun do rewrite muleC; exact: bnoo.
 - move=> _ foo goo.

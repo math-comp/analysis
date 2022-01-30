@@ -2362,7 +2362,6 @@ move=> [mf1 f1oo] [mf2 f2oo]; split; first exact: emeasurable_funD.
 apply: (@le_lt_trans _ _ (\int_ D (`|f1 x| + `|f2 x|) 'd mu[x])).
   apply ge0_le_integral => //.
   - by apply: measurable_fun_comp => //; exact: emeasurable_funD.
-  - by move=> *; exact: adde_ge0.
   - by apply: emeasurable_funD; apply: measurable_fun_comp.
   - by move=> *; exact: lee_abs_add.
 by rewrite ge0_integralD //; [exact: lte_add_pinfty|
@@ -2492,11 +2491,10 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
                     (forall n, n%:R%:E * mu (E `&` D) <= M%:E).
   exists (fine (\int_ D `|f x| 'd mu[x])); first exact/le0R/integral_ge0.
   move=> n.
-  rewrite -integral_indic// -ge0_integralM//; last 3 first.
+  rewrite -integral_indic// -ge0_integralM//; last 2 first.
     - apply: measurable_fun_comp=> //; apply: (@measurable_funS _ _ setT)=>//.
       by rewrite (_ : \1_ _ = indic_nnsfun R mE)//.
     - by move=> *; rewrite lee_fin.
-    - by rewrite lee_fin.
   rewrite fineK//; last first.
     by case: fint => _ foo; rewrite ge0_fin_numE//; exact: integral_ge0.
   apply: ge0_le_integral => //.
@@ -2822,11 +2820,10 @@ have le_f_M t : D t -> `|f t| <= M%:E * (f' t)%:E.
   by rewrite notin_set=> /not_andP[//|/negP/negPn/eqP ->]; rewrite abse0 mule0.
 have : 0 <= \int_ D `|f x| 'd mu[x] <= `|M|%:E * mu Df_neq0.
   rewrite integral_ge0//= /Df_neq0 -{2}(setIid D) setIAC -integral_indic//.
-  rewrite -/Df_neq0 -ge0_integralM//; last 3 first.
+  rewrite -/Df_neq0 -ge0_integralM//; last 2 first.
     - apply: measurable_fun_comp=> //; apply: (@measurable_funS _ _ setT) => //.
       by rewrite (_ : \1_ _ = mindic R mDf_neq0).
     - by move=> x Dx; rewrite lee_fin.
-    - by rewrite lee_fin.
   apply: ge0_le_integral => //.
   - exact: measurable_fun_comp.
   - by move=> x Dx; rewrite mule_ge0// ?lee_fin.
@@ -3002,7 +2999,6 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (fun x => f x * (oneCN x)%:E).
   apply: (@le_lt_trans _ _ (\int_ D (`|f x * (oneCN x)%:E| + `|f x * (oneN x)%:E|) 'd mu[x])).
     apply: ge0_le_integral => //.
     - by apply: measurable_fun_comp => //; exact: emeasurable_funD.
-    - by move=> *; rewrite adde_ge0.
     - by apply: emeasurable_funD; exact: measurable_fun_comp.
     - by move=> *; rewrite lee_abs_add.
   rewrite ge0_integralD//;

@@ -2520,7 +2520,7 @@ Proof.
 move=> A0 /nonnegP[{}e].
 rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
     \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E))) //.
-  rewrite ereal_pseriesD //; last by move=> n /= _ /=; apply: divr_ge0.
+  rewrite ereal_pseriesD //.
   rewrite ereal_limD //.
   - rewrite lee_add2l //; apply: lee_lim => //.
     + by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
@@ -2651,8 +2651,8 @@ rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
 apply lee_lim.
 - apply: is_cvg_ereal_nneg_series => n _.
   by apply: ereal_nneg_series_lim_ge0 => m _; exact: (muG_ge0 (n, m)).
-- by apply: is_cvg_ereal_nneg_series => n _; apply: adde_ge0 => //;
-    [exact: mu_ext_ge0 | rewrite lee_fin // divr_ge0].
+- apply: is_cvg_ereal_nneg_series => n _; apply: adde_ge0 => //.
+  exact: mu_ext_ge0.
 - by near=> n; apply: lee_sum => i _; exact: (PG i).2.
 Unshelve. all: by end_near. Qed.
 
