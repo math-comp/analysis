@@ -867,6 +867,49 @@ Proof. by rewrite /mule /= lte_0_pinfty. Qed.
 Lemma mule_ninfty_ninfty : -oo * -oo = +oo :> \bar R.
 Proof. by []. Qed.
 
+Lemma mulrpinfty_real r : r \is Num.real ->
+  r%:E * +oo%E = (Num.sg r)%:E * +oo%E.
+Proof.
+move=> rreal.
+rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|/negbT rn0].
+move: rreal => /orP[|]; rewrite le_eqVlt !lte_fin /Num.sg.
+  rewrite eq_sym (negbTE rn0)/= => rgt0.
+  by rewrite [(r < 0)%R]lt_def lt_geF// eq_sym rn0/= ltr01 rgt0.
+rewrite (negbTE rn0)/= => rlt0.
+by rewrite lt_def lt_geF// rn0 rlt0/= ltr0N1.
+Qed.
+
+Lemma mulpinftyr_real r : r \is Num.real ->
+  +oo * r%:E = (Num.sg r)%:E * +oo.
+Proof. by move=> rreal; rewrite muleC mulrpinfty_real. Qed.
+
+Lemma mulrninfty_real r : r \is Num.real ->
+  r%:E * -oo = (Num.sg r)%:E * -oo.
+Proof.
+move=> rreal.
+rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|/negbT rn0].
+move: rreal => /orP[|]; rewrite le_eqVlt !lte_fin /Num.sg.
+  rewrite eq_sym (negbTE rn0)/= => rgt0.
+  by rewrite [(r < 0)%R]lt_def lt_geF// andbF ltr01 rgt0.
+rewrite (negbTE rn0)/= => rlt0.
+by rewrite lt_def lt_geF// andbF rlt0 ltr0N1.
+Qed.
+
+Lemma mulninftyr_real r : r \is Num.real ->
+  -oo * r%:E = (Num.sg r)%:E * -oo.
+Proof. by move=> rreal; rewrite muleC mulrninfty_real. Qed.
+
+Definition mulrinfty_real :=
+  (mulrpinfty_real, mulpinftyr_real, mulrninfty_real, mulninftyr_real).
+
+Lemma mulN1e x : - 1%E * x = - x.
+Proof.
+rewrite -EFinN /mule/=; case: x => [x||];
+  do ?[by rewrite mulN1r|by rewrite eqe oppr_eq0 oner_eq0 lte_fin ltr0N1].
+Qed.
+
+Lemma muleN1 x : x * - 1%E = - x. Proof. by rewrite muleC mulN1e. Qed.
+
 Lemma mule_neq0 x y : x != 0 -> y != 0 -> x * y != 0.
 Proof.
 move: x y => [x||] [y||] x0 y0 //; rewrite /mule/= ?(lte_0_pinfty,mulf_neq0)//;
@@ -1279,27 +1322,14 @@ Lemma mulNe x y : - x * y = - (x * y). Proof. by rewrite muleC muleN muleC. Qed.
 
 Lemma muleNN x y : - x * - y = x * y. Proof. by rewrite mulNe muleN oppeK. Qed.
 
-Lemma mulN1e x : - 1%E * x = - x. Proof. by rewrite mulNe mul1e. Qed.
-
-Lemma muleN1 x : x * - 1%E = - x. Proof. by rewrite muleC mulN1e. Qed.
-
 Lemma mulrpinfty r : r%:E * +oo%E = (Num.sg r)%:E * +oo%E.
-Proof.
-rewrite /mule /= !eqe; have [r0|r0|<-/=] := ltgtP 0%R r.
-- by rewrite lte_fin r0 gtr0_sg// oner_eq0 lte_fin ltr01.
-- rewrite lte_fin ltNge (ltW r0) ltr0_sg// eqr_oppLR oppr0.
-  by rewrite oner_eq0 lte_fin ltr_oppr oppr0 ltNge ler01.
-- by rewrite sgr0 eqxx.
-Qed.
+Proof. by rewrite [LHS]mulrpinfty_real// num_real. Qed.
 
 Lemma mulpinftyr r : +oo%E * r%:E = (Num.sg r)%:E * +oo%E.
 Proof. by rewrite muleC mulrpinfty. Qed.
 
 Lemma mulrninfty r : r%:E * -oo%E = (Num.sg r)%:E * -oo%E.
-Proof.
-rewrite {1}(_ : -oo%E = - +oo%E)// muleN -mulNe.
-by rewrite mulrpinfty sgrN EFinN mulNe -muleN.
-Qed.
+Proof. by rewrite [LHS]mulrninfty_real// num_real. Qed.
 
 Lemma mulninftyr r : -oo%E * r%:E = (Num.sg r)%:E * -oo%E.
 Proof. by rewrite muleC mulrninfty. Qed.
