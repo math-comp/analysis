@@ -540,6 +540,123 @@ Canonical signed_orderType := OrderType nR signed_le_total.
 
 End Order.
 
+Section POrderStability.
+Context {disp : unit} {T : porderType disp} {x0 : T}.
+
+Definition min_nonzero_subdef (xnz ynz : nullity) (xr yr : reality) :=
+  nz_of_bool
+    (xnz && ynz
+     || xnz && yr && match xr with Real (Sign <=0) => true | _ => false end
+     || ynz && match yr with Real (Sign <=0) => true | _ => false end).
+Arguments min_nonzero_subdef /.
+
+Definition min_reality_subdef (xnz ynz : nullity) (xr yr : reality) : reality :=
+  match xr, yr with
+  | Real (Sign =0), Real (Sign =0)
+  | Real (Sign =0), Real (Sign >=0)
+  | Real (Sign >=0), Real (Sign =0) => =0
+  | Real (Sign >=0), Real (Sign >=0) => >=0
+  | Real (Sign <=0), Real _
+  | Real _, Real (Sign <=0) => <=0
+  | Real _, Real _ => >=<0
+  | _, _ => >?<0
+  end.
+Arguments min_reality_subdef /.
+
+Lemma min_snum_subproof (xnz ynz : nullity) (xr yr : reality)
+    (x : {compare x0 & xnz & xr}) (y : {compare x0 & ynz & yr})
+    (rnz := min_nonzero_subdef xnz ynz xr yr)
+    (rrl := min_reality_subdef xnz ynz xr yr) :
+  Signed.spec x0 rnz rrl (Order.min x%:num y%:num).
+Proof.
+rewrite {}/rnz {}/rrl; apply/andP; split.
+  move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y; rewrite /Order.min;
+    do ?[by case: (bottom x)|by case: (bottom y)
+        |by case: ifP; rewrite ?eq0F// => xlty;
+            have := !! lt_trans xlty (lt0 y); rewrite lt_neqAle => /andP[]
+        |by rewrite ifT ?eq0F//; apply: lt_le_trans (ge0 y); exact: lt0
+        |by have := !! le0 y;
+            rewrite le_eqVlt => /predU1P[->|]; rewrite ?lt0 ?eq0F//;
+            case: ifP => _; rewrite ?eq0F// lt_neqAle => /andP[]].
+  have /orP[x0ley|] := !! cmp0 y.
+    by rewrite ifT ?eq0F//; apply: lt_le_trans x0ley; exact: lt0.
+    rewrite le_eqVlt => /predU1P[->|]; rewrite ?lt0 ?eq0F//.
+  by case: ifP => _; rewrite ?eq0F// lt_neqAle => /andP[].
+move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
+  do ?[by case: (bottom x)|by case: (bottom y)
+      |by apply: comparable_minr; exact: cmp0
+      |by rewrite minEle; case: ifP; rewrite ge0
+      |by rewrite ?eq0 minEle ?ge0
+      |by rewrite ?eq0 minElt; case: ifP; rewrite ?eq0// lt0F
+      |by rewrite minEle; case: ifP => [xlty|]; rewrite ?le0//;
+          apply: (le_trans xlty); rewrite le0
+      |by have /orP[x0ley|] := !! cmp0 y;
+          [rewrite minEle ifT ?le0//; apply: le_trans x0ley; exact: le0
+          |rewrite minEle; case: ifP => //; exact: le_trans]].
+Qed.
+
+Canonical min_snum (xnz ynz : nullity) (xr yr : reality)
+    (x : {compare x0 & xnz & xr}) (y : {compare x0 & ynz & yr}) :=
+  Signed.mk (min_snum_subproof x y).
+
+Definition max_nonzero_subdef (xnz ynz : nullity) (xr yr : reality) :=
+  nz_of_bool
+    (xnz && ynz
+     || xnz && match xr with Real (Sign >=0) => true | _ => false end
+     || ynz && xr && match yr with Real (Sign >=0) => true | _ => false end).
+Arguments max_nonzero_subdef /.
+
+Definition max_reality_subdef (xnz ynz : nullity) (xr yr : reality) : reality :=
+  match xr, yr with
+  | Real (Sign =0), Real (Sign =0)
+  | Real (Sign =0), Real (Sign <=0)
+  | Real (Sign <=0), Real (Sign =0) => =0
+  | Real (Sign <=0), Real (Sign <=0) => <=0
+  | Real (Sign >=0), Real _
+  | Real _, Real (Sign >=0) => >=0
+  | Real _, Real _ => >=<0
+  | _, _ => >?<0
+  end.
+Arguments max_reality_subdef /.
+
+Lemma max_snum_subproof (xnz ynz : nullity) (xr yr : reality)
+    (x : {compare x0 & xnz & xr}) (y : {compare x0 & ynz & yr})
+    (rnz := max_nonzero_subdef xnz ynz xr yr)
+    (rrl := max_reality_subdef xnz ynz xr yr) :
+  Signed.spec x0 rnz rrl (Order.max x%:num y%:num).
+Proof.
+rewrite {}/rnz {}/rrl; apply/andP; split.
+  move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y; rewrite maxElt;
+    do ?[by case: (bottom x)|by case: (bottom y)
+        |by case: ifP => [xlty|]; rewrite ?eq0F//;
+            do [suff : (x0 < y%:num)%O by rewrite lt_def => /andP[]];
+            apply: le_lt_trans xlty; exact: ge0
+        |by rewrite ifT ?eq0F//; apply: le_lt_trans (gt0 y); exact: le0
+        |by have := !! ge0 x;
+            rewrite le_eqVlt => /predU1P[<-|]; rewrite ?gt0 ?eq0F//;
+            case: ifP => _; rewrite ?eq0F// lt_def => /andP[]].
+  have /orP[|xlex0] := !! cmp0 x.
+    rewrite le_eqVlt => /predU1P[<-|]; rewrite ?gt0 ?eq0F//.
+    by case: ifP => _; rewrite ?eq0F// lt_def => /andP[].
+  by rewrite ifT ?eq0F//; apply: (le_lt_trans xlex0); exact: gt0.
+move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
+  do ?[by case: (bottom x)|by case: (bottom y)
+      |by apply: comparable_maxr; exact: cmp0
+      |by rewrite ?eq0 maxEle ?le0
+      |by rewrite ?eq0 maxElt ifF// le_gtF// le0
+      |by rewrite maxEle; case: ifP; rewrite ?ge0//; exact/le_trans/ge0
+      |by rewrite maxElt; case: ifP => [xlty|]; rewrite ?le0//
+      |by have /orP[|xlex0] := !! cmp0 x;
+          [rewrite maxEle; case: ifP => // /[swap]; exact: le_trans
+          |rewrite maxEle ifT ?ge0//; apply: (le_trans xlex0); exact: ge0]].
+Qed.
+
+Canonical max_snum (xnz ynz : nullity) (xr yr : reality)
+    (x : {compare x0 & xnz & xr}) (y : {compare x0 & ynz & yr}) :=
+  Signed.mk (max_snum_subproof x y).
+
+End POrderStability.
+
 Section NumDomainStability.
 Context {R : numDomainType}.
 
@@ -742,98 +859,6 @@ Qed.
 Canonical exprn_snum (xnz nnz : nullity) (xr nr : reality)
     (x : {num R & xnz & xr}) (n : {compare 0%N & nnz & nr}) :=
   Signed.mk (exprn_snum_subproof x n).
-
-Definition min_nonzero_subdef (xnz ynz : nullity) (xr yr : reality) :=
-  nz_of_bool
-    (xnz && ynz
-     || xnz && yr && match xr with Real (Sign <=0) => true | _ => false end
-     || ynz && match yr with Real (Sign <=0) => true | _ => false end).
-Arguments min_nonzero_subdef /.
-
-Definition min_reality_subdef (xnz ynz : nullity) (xr yr : reality) : reality :=
-  match xr, yr with
-  | Real (Sign =0), Real (Sign =0)
-  | Real (Sign =0), Real (Sign >=0)
-  | Real (Sign >=0), Real (Sign =0) => =0
-  | Real (Sign >=0), Real (Sign >=0) => >=0
-  | Real (Sign <=0), Real _
-  | Real _, Real (Sign <=0) => <=0
-  | Real _, Real _ => >=<0
-  | _, _ => >?<0
-  end.
-Arguments min_reality_subdef /.
-
-Lemma min_snum_subproof (xnz ynz : nullity) (xr yr : reality)
-    (x : {num R & xnz & xr}) (y : {num R & ynz & yr})
-    (rnz := min_nonzero_subdef xnz ynz xr yr)
-    (rrl := min_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (Num.min x%:num y%:num).
-Proof.
-rewrite {}/rnz {}/rrl; apply/andP; split.
-  move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
-    do ?[by rewrite /Num.min; case: ifP => _ //
-        |by rewrite minElt; case: ifP; rewrite ?eq0// => xlty;
-            exact/ltr0_neq0/(lt_trans xlty)
-        |by rewrite minEle; case: ifP; rewrite ?eq0//;
-            have -> // : x%:num <= y%:num; exact: (le_trans (le0 x))
-        |by rewrite minElt; case: ifP; rewrite ?eq0//;
-            move=> /negbT; rewrite -real_leNgt// => ylex;
-            exact/ltr0_neq0/(le_lt_trans ylex)].
-move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
-  do ?[by case: (bottom x)|by case: (bottom y)
-      |by rewrite minElt; case: ifP|exact: min_real
-      |by rewrite minEle; case: ifP => // xley;
-          exact: (le_trans xley)
-      |by rewrite minElt; case: ifP; rewrite ?le0//; move=> /negbT;
-          rewrite -real_leNgt// => ylex; exact: (le_trans ylex)
-      |by rewrite ?eq0 minEle ?ge0
-      |by rewrite ?eq0 minElt; case: ifP; rewrite ?eq0// lt0F].
-Qed.
-
-Canonical min_snum (xnz ynz : nullity) (xr yr : reality)
-    (x : {num R & xnz & xr}) (y : {num R & ynz & yr}) :=
-  Signed.mk (min_snum_subproof x y).
-
-Definition max_nonzero_subdef (xnz ynz : nullity) (xr yr : reality) :=
-  nz_of_bool
-    (xnz && ynz
-     || xnz && match xr with Real (Sign >=0) => true | _ => false end
-     || ynz && xr && match yr with Real (Sign >=0) => true | _ => false end).
-Arguments max_nonzero_subdef /.
-
-Definition max_reality_subdef (xnz ynz : nullity) (xr yr : reality) :=
-  let xr := opp_reality_subdef xnz xr in
-  let yr := opp_reality_subdef ynz yr in
-  opp_reality_subdef ?=0 (min_reality_subdef xnz ynz xr yr).
-Arguments max_reality_subdef /.
-
-Lemma max_snum_subproof (xnz ynz : nullity) (xr yr : reality)
-    (x : {num R & xnz & xr}) (y : {num R & ynz & yr})
-    (rnz := max_nonzero_subdef xnz ynz xr yr)
-    (rrl := max_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (Num.max x%:num y%:num).
-Proof.
-rewrite {}/rnz {}/rrl; apply/andP; split.
-  move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
-    do ?[by rewrite /Num.max; case: ifP => _ //
-        |by rewrite maxEle; case: ifP; rewrite ?eq0// => /negbT;
-            rewrite -real_ltNge// => yltx; apply/lt0r_neq0; exact: lt_trans yltx
-        |by rewrite maxElt; case: ifP; rewrite ?eq0F// => xlty;
-            apply/lt0r_neq0; exact: lt_trans xlty].
-move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
-  do ?[by case: (bottom x)|by case: (bottom y)|exact: max_real
-      |by rewrite maxEle; case: ifP; rewrite ?eq0// => xlty;
-          exact: le_trans xlty
-      |by rewrite maxElt; case: ifP; rewrite ?eq0//;
-          move=> /negbT; rewrite -real_leNgt//; exact: le_trans
-      |by rewrite ?eq0 maxEle; case: ifP; rewrite ?eq0// => yge0;
-          apply/eqP/le_anti; rewrite yge0 ?andbT
-      |by rewrite ?eq0 maxEle ?le0].
-Qed.
-
-Canonical max_snum (xnz ynz : nullity) (xr yr : reality)
-    (x : {num R & xnz & xr}) (y : {num R & ynz & yr}) :=
-  Signed.mk (max_snum_subproof x y).
 
 Lemma norm_snum_subproof {V : normedZmodType R} (x : V) :
   Signed.spec 0 ?=0 >=0 `|x|.
