@@ -557,6 +557,17 @@
   + lemma `splitr`
 - moved from `measure.v` to `sequences.v`
   + lemma `cvg_geometric_series_half`
+  + lemmas `realDe`, `realDed`, `realMe`, `nadde_eq0`, `padde_eq0`,
+    `adde_ss_eq0`, `ndadde_eq0`, `pdadde_eq0`, `dadde_ss_eq0`,
+    `mulrpinfty_real`, `mulpinftyr_real`, `mulrninfty_real`,
+    `mulninftyr_real`, `mulrinfty_real`
+
+### Changed
+
+- in `ereal.v`:
+  + lemmas `abse_ge0`, `gee0_abs`, `gte0_abs`, `lee0_abs`, `lte0_abs`,
+    `mulN1e`, `muleN1` are generalized from `realDomainType` to
+    `numDomainType`
 
 ### Renamed
 
