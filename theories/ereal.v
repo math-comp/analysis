@@ -981,6 +981,18 @@ Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 Lemma gte_opp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
 Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
 
+Lemma realMe (x y : \bar R) : (0%E >=< x)%O -> (0%E >=< y)%O ->
+  (0%E >=< x * y)%O.
+Proof.
+case: x y => [x||] [y||]// rx ry;
+  do ?[exact: realM
+      |by rewrite /mule/= lte_0_pinfty
+      |by rewrite mulrinfty_real ?realE -?lee_fin// /Num.sg;
+          case: ifP; [|case: ifP]; rewrite ?mul0e /Order.comparable ?lexx;
+          rewrite ?mulN1e ?lee_ninfty_0 ?mul1e ?lee_0_pinfty
+      |by rewrite mule_ninfty_ninfty /Order.comparable lee_0_pinfty].
+Qed.
+
 Lemma abse_ge0 x : 0 <= `|x|.
 Proof. by move: x => [x| |] /=; rewrite ?lee_0_pinfty ?lee_fin. Qed.
 
