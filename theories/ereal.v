@@ -605,6 +605,10 @@ move: x y => [x| |] [y| |]//; rewrite !lee_fin; first exact: naddr_eq0.
 by move=> x0 _ /=; rewrite andbF.
 Qed.
 
+Lemma realDe (x y : \bar R) : (0%E >=< x)%O -> (0%E >=< y)%O ->
+  (0%E >=< x + y)%O.
+Proof. case: x y => [x||] [y||] //; exact: realD. Qed.
+
 Lemma oppe0 : - 0 = 0 :> \bar R.
 Proof. by rewrite /= oppr0. Qed.
 
@@ -1067,6 +1071,10 @@ Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeCA. Qed.
 
 Lemma daddeACA : @interchange (\bar R) +%dE +%dE.
 Proof. by move=> x y z u; rewrite !dual_addeE !oppeK addeACA. Qed.
+
+Lemma realDed (x y : \bar R) : (0%E >=< x)%O -> (0%E >=< y)%O ->
+  (0%E >=< (x + y)%dE)%O.
+Proof. case: x y => [x||] [y||] //; exact: realD. Qed.
 
 Lemma doppeD x y : y \is a fin_num -> - (x + y) = - x - y.
 Proof. by move: y => [y| |] _ //; rewrite !dual_addeE !oppeK oppeD. Qed.
