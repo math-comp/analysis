@@ -934,6 +934,24 @@ Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 Lemma gte_opp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
 Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
 
+Lemma abse_ge0 x : 0 <= `|x|.
+Proof. by move: x => [x| |] /=; rewrite ?lee_0_pinfty ?lee_fin. Qed.
+
+Lemma gee0_abs x : 0 <= x -> `|x| = x.
+Proof.
+by move: x => [x| |]//; rewrite lee_fin => x0; apply/eqP; rewrite eqe ger0_norm.
+Qed.
+
+Lemma gte0_abs x : 0 < x -> `|x| = x. Proof. by move=> /ltW/gee0_abs. Qed.
+
+Lemma lee0_abs x : x <= 0 -> `|x| = - x.
+Proof.
+by move: x => [x| |]//; rewrite lee_fin => x0; apply/eqP; rewrite eqe ler0_norm.
+Qed.
+
+Lemma lte0_abs x : x < 0 -> `|x| = - x.
+Proof. by move=> /ltW/lee0_abs. Qed.
+
 End ERealArithTh_numDomainType.
 Notation "x +? y" := (adde_def x%dE y%dE) : ereal_dual_scope.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
@@ -1887,9 +1905,6 @@ Proof. by rewrite lee_oppl oppeK. Qed.
 Lemma lee_abs x : x <= `|x|.
 Proof. by move: x => [x| |]//=; rewrite lee_fin ler_norm. Qed.
 
-Lemma abse_ge0 x : 0 <= `|x|.
-Proof. by move: x => [x| |] /=; rewrite ?lee_pinfty ?lee_fin. Qed.
-
 Lemma abse_id x : `| `|x| | = `|x|.
 Proof. by move: x => [x| |] //=; rewrite normr_id. Qed.
 
@@ -1927,21 +1942,6 @@ Lemma lee_abs_sub x y : `|x - y| <= `|x| + `|y|.
 Proof.
 by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_norm_sub.
 Qed.
-
-Lemma gee0_abs x : 0 <= x -> `|x| = x.
-Proof.
-by move: x => [x| |]//; rewrite lee_fin => x0; apply/eqP; rewrite eqe ger0_norm.
-Qed.
-
-Lemma gte0_abs x : 0 < x -> `|x| = x. Proof. by move=> /ltW/gee0_abs. Qed.
-
-Lemma lee0_abs x : x <= 0 -> `|x| = - x.
-Proof.
-by move: x => [x| |]//; rewrite lee_fin => x0; apply/eqP; rewrite eqe ler0_norm.
-Qed.
-
-Lemma lte0_abs x : x < 0 -> `|x| = - x.
-Proof. by move=> /ltW/lee0_abs. Qed.
 
 Lemma abseM : {morph @abse R : x y / x * y}.
 Proof.
