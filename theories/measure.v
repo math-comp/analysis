@@ -1697,7 +1697,7 @@ Implicit Type (C : forall I, set (set I)).
 Implicit Type (P : forall I, set I -> set (I -> set T)).
 
 Definition covered_by C P :=
-  [set X : set T | exists I D A, [/\ C I D, P I D A & X = cover D A]].
+  [set X : set T | exists I D A, [/\ C I D, P I D A & X = \bigcup_(i in D) A i]].
 
 Lemma covered_bySr C P P' : (forall I D A, P I D A -> P' I D A) ->
   covered_by C P `<=` covered_by C P'.
@@ -1705,7 +1705,8 @@ Proof.
 by move=> PP' X [I [D [A [CX PX ->]]]]; exists I, D, A; split=> //; apply: PP'.
 Qed.
 
-Lemma covered_byP C P I D A : C I D -> P I D A -> covered_by C P (cover D A).
+Lemma covered_byP C P I D A : C I D -> P I D A ->
+  covered_by C P (\bigcup_(i  in D) A i).
 Proof. by move=> CID PIDA; exists I, D, A. Qed.
 
 Lemma covered_by_finite P :
@@ -1713,7 +1714,7 @@ Lemma covered_by_finite P :
     (forall (I : pointedType) D A, finite_set D -> P I D A ->
        P nat `I_#|` fset_set D| (A \o nth point (fset_set D))) ->
   covered_by (@finite_set) P =
-    [set X : set T | exists n A, [/\ P nat `I_n A & X = cover `I_n A]].
+    [set X : set T | exists n A, [/\ P nat `I_n A & X = \bigcup_(i in `I_n) A i]].
 Proof.
 move=> P0 Pc; apply/predeqP=> X; rewrite /covered_by /cover/=; split; last first.
   by move=> [n [A [Am ->]]]; exists nat, `I_n, A; split.
@@ -1731,7 +1732,7 @@ Lemma covered_by_countable P :
        set_surj [set: nat] D f ->
        P I D A -> P nat [set: nat] (A \o f)) ->
   covered_by (@countable) P =
-    [set X : set T | exists A, [/\ P nat [set: nat] A & X = cover [set: nat] A]].
+    [set X : set T | exists A, [/\ P nat [set: nat] A & X = \bigcup_i A i]].
 Proof.
 move=> P0 Pc; apply/predeqP=> X; rewrite /covered_by /cover/=; split; last first.
   by move=> [A [Am ->]]; exists nat, [set: nat], A; split.
@@ -1776,6 +1777,174 @@ move=> /mem_set; rewrite (@big_morph _ _ (fun X => u \in X) false orb).
 - by rewrite in_set0.
 Qed.
 
+Lemma ereal_pseries_sum I (r : seq I) (P : {pred I})
+    [R : realType] [f : I -> nat -> \bar R] :
+    (forall i j, P i -> 0 <= f i j) ->
+  \sum_(j <oo) \sum_(i <- r | P i) f i j = \sum_(i <- r | P i) \sum_(j <oo) f i j.
+Proof.
+move=> f_ge0; case Dr : r => [|i r']; rewrite -?{}[_ :: _]Dr.
+  by rewrite big_nil ereal_pseries0// => i; rewrite big_nil.
+rewrite {r'}(big_nth i) big_mkcond.
+rewrite (eq_ereal_pseries (fun=> big_nth i _ _)).
+rewrite (eq_ereal_pseries (fun=> big_mkcond _ _))/=.
+rewrite ereal_pseries_sum_nat; last by move=> ? ?; case: ifP => // /f_ge0.
+by apply: eq_bigr => j _; case: ifP => //; rewrite ereal_pseries0.
+Qed.
+
+Lemma csum_ge [R : realType] [T : choiceType] (I : set T) (a : T -> \bar R) x :
+  (exists2 X : {fset T}, fsets I X & x <= \sum_(i <- X) a i) ->
+  x <= \csum_(i in I) a i.
+Proof. by move=> [X IX /le_trans->//]; apply: ereal_sup_ub => /=; exists X. Qed.
+
+Definition csum_set0 := csum0.
+
+Lemma csum0 [R : realFieldType] [I : choiceType] (D : set I) (a : I -> \bar R) :
+  (forall i, D i -> a i = 0) -> \csum_(i in D) a i = 0.
+Proof.
+move=> a0; rewrite /csum (_ : [set _ | _ in _] = [set 0]) ?ereal_sup1//.
+apply/seteqP; split=> x //= => [[X XI] <-|->].
+  by rewrite big_seq_cond big1// => i /andP[Xi _]; rewrite a0//; apply: XI.
+by exists fset0; rewrite ?big_seq_fset0.
+Qed.
+
+Lemma csum_add [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
+  (forall i, I i -> 0 <= a i) -> (forall i, I i -> 0 <= b i) ->
+  \csum_(i in I) (a i + b i) =  \csum_(i in I) a i + \csum_(i in I) b i.
+Proof.
+move=> a_ge0 b_ge0.
+Admitted.
+
+Lemma eq_csum [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
+  (forall i, I i -> a i = b i) ->
+  \csum_(i in I) a i =  \csum_(i in I) b i.
+Proof.
+move=> eqab.
+Admitted.
+
+Lemma csum_mkcond [R : realType] [T : choiceType] (I : set T) (a : T -> \bar R) :
+  \csum_(i in I) a i = \csum_(i in [set: T]) if i \in I then a i else 0.
+Proof. Admitted.
+
+Lemma csum_sum [R : realType] [T1 T2 : choiceType]
+    (I : set T1) (r : seq T2) (P : pred T2) (a : T1 -> T2 -> \bar R) :
+  (forall i j, I i -> P j -> 0 <= a i j) ->
+  \csum_(i in I) \sum_(j <- r | P j) a i j =
+  \sum_(j <- r | P j) \csum_(i in I) a i j.
+Proof.
+move=> a_ge0; elim: r => [|j r IHr]; rewrite ?(big_nil, big_cons)// -?IHr.
+  by rewrite csum0// => i; rewrite big_nil.
+case: (boolP (P j)) => Pj; last first.
+  by apply: eq_csum => i Ii; rewrite big_cons (negPf Pj).
+have aj_ge0 i : I i -> a i j >= 0 by move=> ?; apply: a_ge0.
+rewrite -csum_add//; last by move=> i Ii; apply: sume_ge0 => *; apply: a_ge0.
+by apply: eq_csum => i Ii; rewrite big_cons Pj.
+Qed.
+
+Lemma csum_csum [R : realType] [T1 T2 : choiceType]
+    (I : set T1) (J : T1 -> set T2) (a : T1 -> T2 -> \bar R) :
+  (forall i j, 0 <= a i j) ->
+  \csum_(i in I) \csum_(j in J i) a i j =
+    \csum_(k in [set k | I k.1 /\ J k.1 k.2]) a k.1 k.2.
+Proof.
+move=> a_ge0; apply/eqP; rewrite eq_le; apply/andP; split.
+  apply: ub_ereal_sup => /= _ [X IX] <-.
+  under eq_bigr do rewrite csum_mkcond.
+  rewrite -csum_sum; last by move=> i j _ _; case: ifP.
+  under eq_csum do rewrite -big_mkcond/=.
+  apply: ub_ereal_sup => /= _ [Y _ <-]; apply: ereal_sup_ub => /=.
+  exists [fset z | z in X `*` Y & z.2 \in J z.1]%fset => //=.
+    move=> z/=; rewrite !inE/= -andbA => /and3P[Xz1 Yz2 zJ].
+    by split; [exact: IX | rewrite inE in zJ].
+  rewrite (exchange_big_dep xpredT)//= pair_big_dep_cond/=. 
+  apply: eq_fbigl => -[/= k1 k2]; rewrite !inE -andbA.
+  apply/idP/imfset2P => /= [/and3P[kX kY kJ]|].
+    exists k1; rewrite ?(andbT, inE)//=.
+    by exists k2; rewrite ?(andbT, inE)//= kY kJ.
+  by move=> [{}k1 + [{}k2 + [-> ->]]]; rewrite !inE andbT => -> /andP[-> ->].
+apply: ub_ereal_sup => _ /= [X/= XIJ] <-; apply: csum_ge.
+pose X1 := [fset x.1 | x in X]%fset.
+pose X2 := [fset x.2 | x in X]%fset.
+exists X1; first by move=> x/= /imfsetP[z /= zX ->]; have [] := XIJ z.
+apply: (@le_trans _ _ (\sum_(i <- X1) \sum_(j <- X2 | j \in J i) a i j)).
+  rewrite pair_big_dep_cond//=; set Y := Imfset.imfset2 _ _ _ _.
+  rewrite [X in _ <= X](big_fsetID _ (mem X))/=.
+  rewrite (_ : [fset x | x in Y & x \in X] = Y `&` X)%fset; last first.
+     by apply/fsetP => x; rewrite 2!inE.
+  rewrite (fsetIidPr _); last first.
+    apply/fsubsetP => i Xi; apply/imfset2P.
+      exists i.1 => //=; rewrite ?inE ?andbT//=. rewrite in_fset.
+  admit.
+rewrite big_mkcond [X in _ <= X]big_mkcond.
+apply: lee_sum => i Xi; rewrite ereal_sup_ub => //=.
+exists [fset j in X2 | j \in J i]%fset; last by rewrite -big_fset_condE.
+by move=> j/=; rewrite !inE => /andP[_]; rewrite inE.
+Qed.
+  
+Lemma csum_set_image  [R : realType] [T : pointedType] [a : T -> \bar R] 
+  [e : nat -> T] [P : set nat] :
+(forall n : nat, P n -> 0 <= a (e n)) ->
+injective e ->
+\csum_(i in [set e x | x in P]) a i = \sum_(i <oo | i \in P) a (e i).
+Proof.
+move=> a_ge0 e_injg; rewrite -csum_image//.
+  by congr csum; congr image; apply/predeqP; split; rewrite ?inE.
+by move=> n; rewrite inE; apply: a_ge0.
+Qed.
+
+Lemma choicePcountable {T : choiceType} : countable [set: T] ->
+  {T' : countType | T = T' :> Type}.
+Proof.
+move=> /pcard_leP/unsquash f.
+by exists (CountType T (CountMixin (in1TT 'funoK_f))).
+Qed.
+
+Lemma eqPcountable {T : eqType} : countable [set: T] ->
+  {T' : countType | T = T' :> Type}.
+Proof. by elim/eqPchoice: T => T /choicePcountable. Qed.
+
+Lemma Pcountable {T : Type} : countable [set: T] ->
+  {T' : countType | T = T' :> Type}.
+Proof. by elim/Pchoice: T => T /choicePcountable. Qed.
+
+Lemma bigcup_countable {I T} (D : set I) (F : I -> set T) :
+    countable D -> (forall i, D i -> countable (F i)) ->
+  countable (\bigcup_(i in D) F i).
+Proof.
+elim/Ppointed: T => T in F *; first by rewrite emptyE.
+rewrite -(eq_countable (card_setT _)) => cD cF; rewrite bigcup_set_type.
+set G := (fun i : D => F (val i)).
+have {cF}cG i : countable (G i) by apply: cF; apply: set_valP.
+move: (D : Type) cD G cG => {F I}_ /Pcountable[{}D ->] G cG.
+suff: (\bigcup_i G i #<= [set: {i & G i}])%card.
+  have cGT i : countable [set: G i] by rewrite (eq_countable (card_setT _)).
+  have /all_sig[H GE] := fun i => Pcountable (cGT i).
+  by move=> /sub_countable->//; rewrite (eq_fun GE).
+apply/pcard_geP/surjPex; exists (fun (k : {i & G i}) => val (projT2 k)).
+by move=> x [i _] Gix/=; exists (Tagged G (SigSub (mem_set Gix))).
+Qed.
+
+Lemma countableX T1 T2 (D1 : set T1) (D2 : set T2) :
+  countable (D1 `*` D2) = (countable D1 && countable D2).
+Proof.
+Admitted.
+
+Lemma countable1 T (x : T) : countable [set x].
+Proof. exact: finite_set_countable. Qed.
+Hint Resolve countable1 : core.
+
+Lemma countable_fset (T : choiceType) (X : {fset T}) : countable [set` X].
+Proof. exact: finite_set_countable. Qed.
+Hint Resolve countable_fset : core.
+
+Lemma countable_finpred (T : finType) (pT : predType T) (P : pT) : countable [set` P].
+Proof. exact: finite_set_countable. Qed.
+Hint Extern 0 (is_true (countable [set` _])) => solve [apply: countable_finpred] : core.
+
+Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
+
+Lemma ereal_pseries_mkcond [R : realFieldType] [P : pred nat] (f : nat -> \bar R) :
+  \sum_(i <oo | P i) f i = \sum_(i <oo) if P i then f i else 0.
+Proof. by congr (lim _); apply: eq_fun => n /=; apply: big_mkcond. Qed.
 
 Module SetRing.
 Definition type (T : Type) := T.
@@ -1923,7 +2092,7 @@ Qed.
 Lemma fsets (A : set rT) : measurable A -> exists (B : {fset set T}),
   [/\ trivIset [set` B] id,
       (forall X : set T, X \in B -> measurable X) &
-      A = cover [set` B] id ].
+      A = \bigcup_(X in [set` B]) X].
 Proof.
 move=> /measurable_disj; rewrite /cover mdisjE => -[k [B [[Btr Bm] ->]]].
 exists [fset (B (val i)) | i in 'I_k]%fset; split.
@@ -1933,27 +2102,57 @@ exists [fset (B (val i)) | i in 'I_k]%fset; split.
 Qed.
 
 Definition decomp (A : set rT) : {fset set T} :=
-  if pselect (measurable A) is left mA then projT1 (cid (fsets mA)) else fset0.
+  if A == set0 then [fset set0]%fset else
+  if pselect (measurable A) is left mA then projT1 (cid (fsets mA)) else [fset A]%fset.
 
 Lemma decomp_triv (A : set rT) : trivIset [set` decomp A] id.
-Proof. by rewrite /decomp; case: pselect => // Am; case: cid => //= ? []. Qed.
+Proof.
+rewrite /decomp; case: ifP => _.
+  by move=> i j; rewrite /= !inE => -> ->.
+case: pselect => // Am; first by case: cid => //= ? [].
+by move=> i j /=; rewrite !inE => -> ->.
+Qed.
 Hint Resolve decomp_triv : core.
 
-Lemma decomp_measurable (A : set rT) X : X \in decomp A -> measurable X.
+Lemma decomp_measurable (A : set rT) (X : set T) :
+  measurable A -> X \in decomp A -> measurable X.
 Proof.
-by rewrite /decomp; case: pselect => // Am; case: cid => //= ? [_ + _]; apply.
+rewrite /decomp; case: ifP => _; first by rewrite inE => _ /eqP->.
+by case: pselect => // Am _; case: cid => //= ? [_ + _]; apply.
 Qed.
 
-Lemma cover_decomp (A : set rT) : measurable A -> cover [set` decomp A] id = A.
-Proof. by rewrite /decomp; case: pselect => // Am; case: cid => //= ? []. Qed.
+Lemma cover_decomp (A : set rT) : \bigcup_(X in [set` decomp A]) X = A.
+Proof. 
+rewrite /decomp; case: ifP => [/eqP->|_].
+  by rewrite set_fset1 bigcup_set1.
+case: pselect => // Am; first by case: cid => //= ? [].
+by rewrite set_fset1 bigcup_set1.
+Qed.
 
-Context {R : realFieldType}.
+Lemma decomp_sub (A : set rT) (X : set T) : X \in decomp A -> X `<=` A.
+Proof.
+rewrite /decomp; case: ifP => _; first by rewrite !inE => ->.
+case: pselect => //= Am; last by rewrite inE => /eqP->.
+by case: cid => //= D [_ _ ->] XD; exact: bigcup_sup.
+Qed.
 
-Definition measure (mu : set T -> \bar R) (A : set rT) : \bar R :=
-  \sum_(X <- decomp A) mu X.
+Lemma decomp_set0 : decomp set0 = [fset set0]%fset.
+Proof. by rewrite /decomp eqxx. Qed.
+
+Lemma decompN0 (A : set rT) : decomp A != fset0.
+Proof.
+rewrite /decomp; case: ifPn => [_|AN0].
+  by apply/fset0Pn; exists set0; rewrite inE.
+case: pselect=> //= Am; last by apply/fset0Pn; exists A; rewrite inE.
+case: cid=> //= D [_ _ Aeq]; apply: contra_neq AN0; rewrite Aeq => ->.
+by rewrite set_fset0 bigcup_set0.
+Qed.
+
+Definition measure (R : numDomainType) (mu : set T -> \bar R)
+  (A : set rT) : \bar R := \sum_(X <- decomp A) mu X.
 
 Section additive_measure.
-Context (mu : {additive_measure set T -> \bar R}).
+Context {R : realFieldType} (mu : {additive_measure set T -> \bar R}).
 Local Notation Rmu := (measure mu).
 Arguments big_trivIset {I D T R idx op} A F.
 
@@ -1962,28 +2161,25 @@ Lemma Rmu_fin_bigcup (I : choiceType) (D : set I) (F : I -> set T) :
   Rmu (\bigcup_(i in D) F i) = \sum_(i <- fset_set D) mu (F i).
 Proof.
 move=> Dfin Ftriv Fm; rewrite /measure.
-have: measurable (\bigcup_(i in D) F i : set rT).
+have mUD : measurable (\bigcup_(i in D) F i : set rT).
   rewrite bigcup_fset_set// big_seq.
   apply: bigsetU_measurable => i; rewrite in_fset_set// inE => Di.
   exact/measurableW/Fm.
-rewrite /decomp; case: pselect => // UFm _; case: cid => /= E [Etriv Em].
-rewrite /cover/= bigcup_fset.
 have [->|/set0P[i0 Di0]] := eqVneq D set0.
-  rewrite bigcup_set0 fset_set0 big_seq_fset0 -bigcup_fset.
-  by move=> /esym/bigcup0P/= E0; rewrite big_seq big1 => //= X /E0->.
-move=> FE.
+  by rewrite bigcup_set0 decomp_set0 big_seq_fset1 fset_set0 big_seq_fset0.
+set E := (decomp _); have Em X := decomp_measurable mUD X.
 transitivity (\sum_(X <- E) \sum_(i <- fset_set D) mu (X `&` F i)).
   apply: eq_big_seq => /= X XE.
   have Xeq : X = \bigcup_(i in D) (X `&` F i).
-    by rewrite -setI_bigcupr setIidl// FE -bigcup_set; apply: bigcup_sup.
+    by rewrite -setI_bigcupr setIidl//; apply: decomp_sub.
   rewrite -content_fin_bigcup// -?Xeq//; last exact: Em.
     exact: trivIset_setI.
-  by move=> i Di; apply: measurableI; [apply: Em | apply: Fm].
+  by move=> i Di; apply: measurableI; [apply: Em| apply: Fm].
 rewrite exchange_big; apply: eq_big_seq => i; rewrite in_fset_set ?inE//= => Di.
 have Feq : F i = \bigcup_(X in [set` E]) (X `&` F i).
-  by rewrite -setI_bigcupl setIidr// bigcup_fset -FE; apply: bigcup_sup.
+  by rewrite -setI_bigcupl setIidr// cover_decomp; apply: bigcup_sup.
 rewrite -[E]set_fsetK -content_fin_bigcup -?Feq//; last exact: Fm.
-  exact: trivIset_setIr.
+  exact/trivIset_setIr/decomp_triv.
 by move=> X /= XE; apply: measurableI; [apply: Em | apply: Fm].
 Qed.
 
@@ -2033,19 +2229,6 @@ Canonical measure_additive_measure :=
 
 End additive_measure.
 
-Section sigma_sub_additive_measure.
-Context (mu : set T -> \bar R).
-Local Notation Rmu := (measure mu).
-
-Lemma sigma_sub_additive_measure :
-  sigma_sub_additive mu -> sigma_sub_additive Rmu.
-Proof.
-move=> /(_ _) /= muS /= D A Am Dm Dsub; rewrite /Rmu.
-
-Admitted.
-
-End sigma_sub_additive_measure.
-
 End SetRing.
 Module Exports.
 Canonical g_measurable_eqType.
@@ -2068,6 +2251,67 @@ rewrite -[X in _ <= X]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
 - exact: SetRing.measurableW.
 - by apply: measurableD; exact: SetRing.measurableW.
 Qed.
+
+Section sigma_sub_additive_measure.
+Context (R : realType) (T : semiRingOfSetsType) 
+        (mu : {additive_measure set T -> \bar R}).
+Local Notation Rmu := (SetRing.measure mu).
+Import SetRing.
+
+Lemma sigma_sub_additive_measure :
+  sigma_sub_additive mu -> sigma_sub_additive Rmu.
+Proof.
+move=> /(_ _) /= muS /= D A Am Dm Dsub; rewrite /Rmu.
+rewrite -(eq_ereal_pseries (fun=> csum_fset _))//.
+rewrite ereal_pseries_csum ?csum_csum//=; last by move=> *; rewrite csum_ge0.
+set K : set (_ * _) := [set _ | _].
+have /ppcard_eqP[f] : (K #= [set: nat])%card.
+  rewrite card_eq_le; apply/andP; split.
+    have -> : K = \bigcup_i ([set i] `*` [set` decomp (A i)]).
+      apply/predeqP => -[i X /=]; split.
+        by move=> [/= _ XAi]; exists i => //; exists X.
+      by move=> [_ _ [/= <-] XD]; split.
+    by apply: bigcup_countable => // i _; rewrite countableX ?countable1/=.
+  apply/pcard_leP/injfunPex.
+  have /(_ _)/fset0Pn/cid d := fun i => decompN0 (A i).
+  pose f i := (i, projT1 (d i)).
+  have ffun : set_fun setT K f.
+    by move=> i _; split=> //; rewrite /f/=; case: (d i).
+  by exists [fun of mkfun ffun] => i j _ _ /= [].
+have {Dsub} : D `<=` \bigcup_(k in K) k.2.
+  apply: (subset_trans Dsub); apply: sub_bigcup => i _.
+  rewrite -[A i]cover_decomp; apply: sub_bigcup => X/= XAi.
+  by move=> x Xx; exists (i, X).
+rewrite -(image_eq [bij of f^-1%FUN])/=.
+rewrite (@csum_image _ _ _ f^-1)//= bigcup_image => Dsub.
+have DXsub X : X \in decomp D -> X `<=` \bigcup_i ((f^-1%FUN i).2 `&` X).
+  move=> XD; rewrite -setI_bigcupl -[Y in Y `<=` _](setIidr (decomp_sub XD)).
+  by apply: setSI.
+have mf i : measurable (((f^-1)%function i).2).
+  by have [_ /decomp_measurable] := 'invS_f (I : setT i); apply; apply: Am.
+have mfD i X : X \in decomp D -> measurable (((f^-1)%FUN i).2 `&` X : set T).
+  by move=> XD; apply: measurableI; [apply: mf|apply: (decomp_measurable _ XD)].
+apply: (@le_trans _ _ 
+    (\sum_(i <oo) \sum_(X <- decomp D) mu ((f^-1%FUN i).2 `&` X))).
+  rewrite ereal_pseries_sum//.
+  rewrite [X in X <= _]big_seq_cond [X in _ <= X]big_seq_cond lee_sum//=.
+  move=> X; rewrite andbT => XD.
+  have Xm : measurable X by apply: (decomp_measurable _ XD).
+  by apply: muS => // [i|]; [apply: mfD | apply: DXsub].
+apply: lee_lim => /=; do ?apply: is_cvg_ereal_nneg_series=> //.
+  by move=> n _; apply: sume_ge0.
+near=> n; rewrite [n in _ <= n]big_mkcond; apply: lee_sum => i _.
+rewrite ifT ?inE//.
+under eq_big_seq do [rewrite -RmuE//; last exact: mfD].
+rewrite  -[decomp _]set_fsetK -measure_fin_bigcup//=; last 2 first.
+- by apply: trivIset_setI; apply: decomp_triv.
+- by move=> X /= XD; apply: measurableW; apply: mfD.
+rewrite -setI_bigcupr (cover_decomp D) -[X in _ <= X]RmuE// ?le_measure ?inE//.
+  by apply: measurableI => //; apply/measurableW/mf.
+exact/measurableW/mf.
+Unshelve. all: by end_near. Qed.
+
+End sigma_sub_additive_measure.
 
 Lemma measureIl (R : realFieldType) (T : semiRingOfSetsType)
     (mu : {additive_measure set T -> \bar R}) (A B : set T) :
