@@ -886,12 +886,13 @@ Proof.
 by rewrite notin_set/=; apply: contra_notP => /eqP/set0P[t [Dt fit]]; exists t.
 Qed.
 
-Lemma eq_setI_preimage T (R : Type) D (f g : T -> R) A :
+Lemma eq_setI_preimage T (R : Type) D (g f : T -> R) A :
   {in D, f =1 g} -> D `&` f @^-1` A = D `&` g @^-1` A.
 Proof.
 by move=> fg; apply/seteqP; rewrite /preimage; split => x [Dx/= Ax]; split=> //;
   rewrite (fg, =^~fg)// inE.
 Qed.
+Arguments eq_setI_preimage {T R D} g.
 
 Lemma preimage_nnfun0 T (R : realDomainType) (D : set T) (f : {nnfun D >-> R })
   t : t < 0 -> D `&` f @^-1` [set t] = set0.
@@ -1143,28 +1144,27 @@ Reserved Notation "\big [ op / idx ]_ ( i '\in' A ) F"
   (at level 36, F at level 36, op, idx at level 10, i, A at level 50,
            format "'[' \big [ op / idx ]_ ( i  '\in'  A ) '/  '  F ']'").
 Notation "\big [ op / idx ]_ ( i '\in' A ) F" :=
-  (\big[op/idx]_(i <- fset_set (A `&` ((fun i => F) @^-1` [set~ idx]))) F) (only parsing) : big_scope.
+  (\big[op/idx]_(i <- fset_set (A `&` ((fun i => F) @^-1` [set~ idx]))) F)
+    (only parsing) : big_scope.
 
 Lemma finite_index_key : unit. Proof. exact: tt. Qed.
-Definition finite_support {I : choiceType} {T : Type} (idx : T) (D : set I) (F : I -> T) : seq I :=
+Definition finite_support {I : choiceType} {T : Type} (idx : T) (D : set I)
+    (F : I -> T) : seq I :=
   locked_with finite_index_key (fset_set (D `&` F @^-1` [set~ idx] : set I)).
 Notation "\big [ op / idx ]_ ( i '\in' D ) F" :=
-  (\big[op/idx]_(i <- finite_support idx D (fun i => F)) F) (only parsing) : big_scope.
+    (\big[op/idx]_(i <- finite_support idx D (fun i => F)) F)
+  : big_scope.
 
-Lemma in_finite_support (T : eqType) (J : choiceType) (i : T) (P : set J) (F : J -> T) :
-  finite_set (P `&` F @^-1` [set~ i]) ->
+Lemma in_finite_support (T : eqType) (J : choiceType) (i : T) (P : set J)
+    (F : J -> T) : finite_set (P `&` F @^-1` [set~ i]) ->
   finite_support i P F =i P `&` F @^-1` [set~ i].
-Proof.
-by move=> ? j; rewrite /finite_support unlock in_fset_set.
-Qed.
+Proof. by move=> finF j; rewrite /finite_support unlock in_fset_set. Qed.
 
 Reserved Notation "\sum_ ( i '\in' A ) F"
   (at level 41, F at level 41, i, A at level 50,
-           format "'[' \sum_ ( i  '\in'  A ) '/  '  F ']'").
-Notation "\sum_ ( i '\in' A ) F" :=
-  (\big[+%R/0%R]_(i \in A) F) : ring_scope.
-Notation "\sum_ ( i '\in' A ) F" :=
-  (\big[+%E/0%E]_(i \in A) F) : ereal_scope.
+    format "'[' \sum_ ( i  '\in'  A ) '/  '  F ']'").
+Notation "\sum_ ( i '\in' A ) F" := (\big[+%R/0%R]_(i \in A) F) : ring_scope.
+Notation "\sum_ ( i '\in' A ) F" := (\big[+%E/0%E]_(i \in A) F) : ereal_scope.
 
 Section fsum0.
 Variables (R : Type) (idx : R) (op : R -> R -> R).
@@ -1177,40 +1177,82 @@ End fsum0.
 Section fsum1.
 Variables (R : Type) (idx : R) (op : Monoid.com_law idx).
 
+(* TODO: generalize to P `&` (f @^-1` [set~ idx] `|` g @^-1` [set~ idx]) *)
 Lemma eq_fsumr (T : choiceType) (f g : T -> R) (P : set T) :
   f =1 g -> (\big[op/idx]_(x \in P) f x = \big[op/idx]_(x \in P) g x).
 Proof.
-by move=> fg; apply eq_fbig => //; rewrite (@eq_setI_preimage _ _ _ _ g).
+by move=> fg; apply eq_fbig => //; rewrite (eq_setI_preimage g).
 Qed.
 
-Lemma fsum_ID (I : choiceType) (B : pred(*set?*) I) (A : set I) (F : I -> R) :
-  finite_set (F @^-1` [set~ idx]) ->
+Lemma fsum_ID (I : choiceType) (B : set I) (A : set I) (F : I -> R) :
+  finite_set (A `&` F @^-1` [set~ idx]) ->
   \big[op/idx]_(i \in A) F i = op (\big[op/idx]_(i \in A `&` B) F i)
                                   (\big[op/idx]_(i \in A `&` ~` B) F i).
 Proof.
 (* TODO: shorten *)
-move=> finF; rewrite (big_fsetID _ B)/=; congr (op _ _).
+move=> finF; rewrite (big_fsetID _ [pred i | i \in B])/=; congr (op _ _).
   apply: eq_fbigl => i /=; apply/idP/idP.
     rewrite !inE/= => /andP[+ Bi].
-    rewrite unlock/= in_fset_set; last exact/finite_setIr.
-    rewrite inE => -[Ai Fi].
-    by rewrite unlock in_fset_set ?inE//; exact/finite_setIr.
-  rewrite unlock in_fset_set; last exact/finite_setIr.
-  rewrite inE => -[[Ai Bi] Fi0].
-  by rewrite !inE/= Bi andbT unlock in_fset_set ?inE//; exact/finite_setIr.
+    rewrite unlock/= in_fset_set// inE => -[Ai Fi].
+    rewrite unlock in_fset_set ?inE// setIAC; first by rewrite inE in Bi.
+    exact/finite_setIl.
+  rewrite unlock in_fset_set; last by rewrite setIAC; exact/finite_setIl.
+  rewrite inE => -[[Ai Bi] Fi0]; rewrite !inE/=; apply/andP; split; last first.
+    by rewrite inE.
+  by rewrite unlock in_fset_set ?inE.
 apply: eq_fbigl => i/=; apply/idP/idP.
   rewrite inE/= inE/= => /andP[+ Bi].
-  rewrite unlock/= in_fset_set; last exact/finite_setIr.
+  rewrite unlock/= in_fset_set//.
   rewrite inE => -[Ai Fi].
-  rewrite unlock in_fset_set ?inE//; last exact/finite_setIr.
-  by split=> //; split=> //; exact/negP.
-rewrite unlock in_fset_set; last exact/finite_setIr.
-rewrite inE => -[[Ai /negP Bi] Fi0].
-rewrite !inE/= (negbTE Bi) andbT unlock in_fset_set ?inE//.
-exact/finite_setIr.
+  rewrite unlock in_fset_set ?inE//; last first.
+    by rewrite setIAC; apply/finite_setIl.
+  by split=> //; split=> //; rewrite notin_set in Bi.
+rewrite unlock in_fset_set; last first.
+  by rewrite setIAC; apply/finite_setIl.
+rewrite inE => -[[Ai Bi] Fi0].
+rewrite !inE/=; apply/andP; split; last by rewrite notin_set.
+by rewrite unlock in_fset_set ?inE.
 Qed.
 
 End fsum1.
+Arguments fsum_ID {R idx op I} B.
+
+Lemma fbig_widen (T : choiceType) [R : Type] [idx : R]
+    (op : Monoid.com_law(*NB: was Monoid.law*) idx) (D P : set T) (f : T -> R) :
+    D `\` P `<=` f @^-1` [set idx] ->
+  \big[op/idx]_(i \in P) f i = \big[op/idx]_(i \in D) f i.
+Proof.
+move=> DPf0.
+Admitted.
+Arguments fbig_widen {T R idx op} D P f.
+
+Lemma fbig_fwiden (T : choiceType) [R : Type] [idx : R] (op : Monoid.law idx)
+    (r : seq T) (P : set T) (f : T -> R) :
+    uniq r ->
+    [set i | i \in r] `\` P `<=` f @^-1` [set idx] ->
+  \big[op/idx]_(i \in P) f i = \big[op/idx]_(i <- r) f i.
+Proof.
+Admitted.
+Arguments fbig_fwiden {T R idx op} r P f.
+
+Lemma fbig_distrr [R : Type] [zero : R] [times : Monoid.mul_law zero]
+    [plus : Monoid.add_law zero times] [I : choiceType] (a : R) (P : set I)
+    (F : I -> R) :
+    finite_set (P `&` F @^-1` [set~ zero]) (*NB: not needed in the integral case*)->
+  times a (\big[plus/zero]_(i \in P) F i) =
+  \big[plus/zero]_(i \in P) times a (F i).
+Proof.
+move=> finF; elim/Peq : R => R in zero times plus a F finF *.
+have [->|a0] := eqVneq a zero.
+  rewrite Monoid.mul0m.
+  under eq_fbigr do rewrite Monoid.mul0m/=.
+  by rewrite big1.
+rewrite big_distrr.
+apply/esym/fbig_fwiden.
+  by rewrite /finite_support unlock; exact: fset_uniq.
+move=> i []; rewrite /preimage/= in_finite_support //.
+by rewrite !inE => -[].
+Qed.
 
 Section fsum2.
 Variables (R : eqType) (idx : R) (op : Monoid.com_law idx).
@@ -1536,7 +1578,9 @@ Lemma sintegralEnnsfun (D : set T) (f : {nnsfun D >-> R}) :
 Proof.
 have ? : finite_set ((fun i => (i%:E * mu (D `&` f @^-1` [set i]))%E) @^-1` [set~ 0%E]).
   exact/finite_set_mulr_preimage/finite_set_measure_preimage1.
-rewrite sintegralE (fsum_ID _ [pred r | (r > 0)%R])// !setTI.
+rewrite sintegralE (fsum_ID [set r | (r > 0)%R])//; last first.
+  by rewrite setTI.
+rewrite /= !setTI.
 rewrite [X in (_ + X = _)%E]big1_fset ?adde0// => r.
 rewrite in_finite_support; last exact/finite_setIr.
 rewrite inE => -[/= /negP]; rewrite -leNgt /preimage /= => r0 /eqP h _.
@@ -1562,13 +1606,9 @@ Lemma eq_sintegral (T : measurableType) (R : numDomainType) D
   {in D, f =1 g} -> sintegral mu D f = sintegral mu D g.
 Proof.
 move=> fg; rewrite !sintegralE; apply: congr_big=> //; last first.
-  by move=> r _; rewrite (eq_setI_preimage _ fg).
-by under eq_fun do rewrite (eq_setI_preimage _ fg).
+  by move=> r _; rewrite (eq_setI_preimage _ _ _ fg).
+by under eq_fun do rewrite (eq_setI_preimage _ _ _ fg).
 Qed.
-(*move=> fg; rewrite 2!sintegralE; have -> : f @` D = g @` D.
-  by apply/eq_imagel => x Dx; rewrite fg ?inE.
-apply: eq_bigr => y _; congr (_ * mu _)%E.
-by apply/predeqP => x; split=> -[Dx <-]; split=> //; rewrite (fg, =^~fg) ?inE.*)
 
 Lemma sintegral_ge0 (T : measurableType) (R : realType) (D : set T)
   (f : {nnsfun D >-> _}) (m : {measure set T -> \bar R}) :
@@ -1578,9 +1618,6 @@ move=> mD; rewrite sintegralE; apply: sume_ge0 => t _.
 have [t0|t0] := leP 0 t.
   by rewrite mule_ge0// measure_ge0//; exact/measurable_sfunP.
 by rewrite preimage_nnfun0// measure0 ?mule0.
-(*move=> mD; rewrite sintegralE; rewrite big_seq; apply: sume_ge0 => t tfD.
-rewrite mule_ge0//; last exact/measure_ge0/measurable_sfunP.
-by rewrite lee_fin; exact: (@NNSFuncdom_ge0 _ _ _ mD f).*)
 Qed.
 
 Section sintegralrM.
@@ -1613,12 +1650,12 @@ End sintegralrM.
 Hint Extern 0 (measurable [set _]) =>
   solve [apply: measurable_set1] : core.
 
-Section nnsfun_partition.
+Section nnsfun_cover.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (D : set T).
 Variables (mD : measurable D) (f : {nnsfun D >-> R}).
 
-Lemma nnsfun_partition :
+Lemma nnsfun_cover :
   \big[setU/set0]_(i \in [set: R]) (D `&` f @^-1` [set i]) = D.
 Proof.
 apply/seteqP; split=> [x|x Dx].
@@ -1633,7 +1670,7 @@ rewrite setTI/= inE /preimage/=.
 by apply/eqP/set0P; exists x.
 Qed.
 
-End nnsfun_partition.
+End nnsfun_cover.
 
 Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
   solve [apply: measurable_sfunP] : core.
@@ -1702,40 +1739,6 @@ by move=> /imfset2P[x1/= x1A' [x2 x2B'] ->{x}]; split=> /=; [rewrite AA'|rewrite
 Qed.
 (* voir csum_csum dans measure.v *)
 
-Lemma fbig_widen (T : choiceType) [R : Type] [idx : R] (op : Monoid.law idx) (D P : set T) (f : T -> R) :
-  D `\` P `<=` f @^-1` [set idx] ->
-  \big[op/idx]_(i \in P) f i = \big[op/idx]_(i \in D) f i.
-Proof.
-Admitted.
-Arguments fbig_widen {T R idx op} D P f.
-
-Lemma fbig_fwiden (T : choiceType) [R : Type] [idx : R] (op : Monoid.law idx) (r : seq T) (P : set T) (f : T -> R) :
-  uniq r ->
-  [set i | i \in r] `\` P `<=` f @^-1` [set idx] ->
-  \big[op/idx]_(i \in P) f i = \big[op/idx]_(i <- r) f i.
-Proof.
-Admitted.
-Arguments fbig_fwiden {T R idx op} r P f.
-
-Lemma fbig_distrr [R : Type] [zero : R] [times : Monoid.mul_law zero] [plus : Monoid.add_law zero times] [I : choiceType] (a : R) (P : set I) (F : I -> R) :
-  finite_set (P `&` F @^-1` [set~ zero]) (*NB: not needed in the integral case*)->
-  times a (\big[plus/zero]_(i \in P) F i) =
-  \big[plus/zero]_(i \in P) times a (F i).
-Proof.
-move=> finF.
-elim/Peq : R => R in zero times plus a F finF *.
-have [|a0] := eqVneq a zero.
-  admit.
-rewrite big_distrr.
-apply/esym.
-apply: fbig_fwiden.
-  rewrite /finite_support.
-  admit.
-move=> i []; rewrite /preimage/=.
-rewrite in_finite_support //.
-by rewrite !inE /preimage/= => -[].
-Admitted.
-
 Section additive_fsum.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
@@ -1748,7 +1751,7 @@ move=> mF tF.
 (* TODO: use fbig_fwiden *)
 Admitted.
 
-Lemma renameme (D : set T) (g f : {nnsfun D >-> R}) x :
+Lemma additive_nnsfun (D : set T) (g f : {nnsfun D >-> R}) x :
   \sum_(i \in [set: R]) m (D `&` f @^-1` [set x] `&` (D `&` g @^-1` [set i])) =
   m (D `&` f @^-1` [set x] `&` \big[setU/set0]_(i \in [set: R]) (D `&` g @^-1` [set i])).
 Proof.
@@ -1756,8 +1759,7 @@ rewrite -additive_fsum; last 2 first.
   - by move=> i; exact/measurableI.
   - exact/trivIset_setIl0/trivIset_preimage1_in.
 congr (m _).
-rewrite -/(finite_support _ _ _).
-rewrite -[in LHS]fbig_distrr/=//.
+rewrite -[in LHS]fbig_distrr//=.
 rewrite setTI.
 (* TODO: lemma + Hint*)
 admit.
@@ -1964,8 +1966,8 @@ congr (_ + _)%E.
   rewrite -ge0_fsum_distrr; last first.
     by move=> i; rewrite measure_ge0.
   congr (_ * _)%E.
-  rewrite renameme.
-  by rewrite nnsfun_partition setIAC setIid.
+  rewrite additive_nnsfun.
+  by rewrite nnsfun_cover setIAC setIid.
 - rewrite exchange_fsum; last 2 first.
     - move=> x y.
       apply: (mulem_ge0 (fun y => D `&` f @^-1` [set x] `&` (D `&` g @^-1` [set y]))) => y0.
@@ -1990,8 +1992,8 @@ congr (_ + _)%E.
   congr (_ * _)%E.
   under eq_fsumr do rewrite setIC.
                     rewrite /=.
-  rewrite renameme.
-  by rewrite nnsfun_partition setIAC setIid.
+  rewrite additive_nnsfun.
+  by rewrite nnsfun_cover setIAC setIid.
 Abort.
 
 End sintegralD.
