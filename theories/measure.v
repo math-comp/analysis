@@ -2462,6 +2462,19 @@ Lemma measureUfinl (T : ringOfSetsType) (R : realFieldType) (A B : set T)
   mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
 Proof. by move=> *; rewrite setUC measureUfinr// setIC [(mu B + _)%E]addeC. Qed.
 
+Lemma eq_measureU (T : ringOfSetsType) (R : realFieldType) (A B : set T)
+   (mu mu' : {measure set T -> \bar R}):
+    measurable A -> measurable B ->
+  mu A = mu' A -> mu B = mu' B -> mu (A `&` B) = mu' (A `&` B) ->
+  mu (A `|` B) = mu' (A `|` B).
+Proof.
+move=> mA mB muA muB muAB; have [mu'ANoo|] := ltP (mu' A) +oo.
+  by rewrite !measureUfinl ?muA ?muB ?muAB.
+rewrite lee_pinfty_eq => /eqP mu'A; transitivity (+oo : \bar R); apply/eqP.
+  by rewrite -lee_pinfty_eq -mu'A -muA le_measure ?inE//=; apply: measurableU.
+by rewrite eq_sym -lee_pinfty_eq -mu'A le_measure ?inE//=; apply: measurableU.
+Qed.
+
 Lemma oppe_eq0 (R : numDomainType) (x : \bar R) : (- x == 0)%E = (x == 0)%E.
 Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
 
@@ -3202,7 +3215,7 @@ Section g_salgebra_measure_unique.
 Variables (R : realType) (T : measurableType) (G : set (set T)).
 Hypothesis (Gm : G `<=` measurable).
 Variable g : (set T)^nat.
-Hypotheses (Gg : forall i, G (g i)) (nd_g : nondecreasing_seq g).
+Hypotheses (Gg : forall i, G (g i)).
 Hypothesis g_cover : \bigcup_k (g k) = setT.
 Variables m1 m2 : {measure set T -> \bar R}.
 
@@ -3210,21 +3223,39 @@ Lemma g_salgebra_measure_unique_cover :
   (forall n A, s<< G >> A -> m1 (g n `&` A) = m2 (g n `&` A)) ->
   (forall A, s<< G >> A -> m1 A = m2 A).
 Proof.
-move=> sGm1m2 A sGA.
-have -> : A = \bigcup_n (g n `&` A) by rewrite -setI_bigcupl g_cover setTI.
-have sGm : s<< G >> `<=` measurable.
-  by apply: g_salgebra_smallest => //; exact: are_measurable_sets_measurable.
-transitivity (lim (fun n => m1 (g n `&` A))).
+move=> sGm1m2; pose g' k := \bigcup_(i in `I_k) g i.
+have sGm := g_salgebra_smallest Gm (@are_measurable_sets_measurable T).
+have Gg' i : s<< G >> (g' i).
+  apply: (@fin_bigcup_measurable [the ringOfSetsType of g_measurable G]) => //.
+  by move=> n _; apply/g_salgebra_self.
+have sG'm1m2 n A : s<< G >> A -> m1 (g' n `&` A) = m2 (g' n `&` A).
+  move=> sGA; rewrite setI_bigcupl bigcup_mkord.
+  elim: n => [|n IHn] in A sGA *; rewrite (big_ord0, big_ord_recr) ?measure0//=.
+  have sGgA i : s<< G >> (g i `&` A).
+    apply: (@measurableI [the semiRingOfSetsType of g_measurable G]) => //.
+    exact/g_salgebra_self.
+  apply: eq_measureU; rewrite ?sGm1m2 ?IHn//; last first.
+  - by rewrite -big_distrl -setIA big_distrl/= IHn// setICA setIid//.
+  - exact/sGm.
+  - by apply: bigsetU_measurable => i _; apply/sGm.
+have g'_cover : \bigcup_k (g' k) = setT.
+  by rewrite -subTset -g_cover => x [k _ gx]; exists k.+1 => //; exists k => /=.
+have nd_g' : nondecreasing_seq g'.
+  move=> m n lemn; rewrite subsetEset => x [k km gx]; exists k => //=.
+  by rewrite (leq_trans _ lemn).
+move=> A gA.
+have -> : A = \bigcup_n (g' n `&` A) by rewrite -setI_bigcupl g'_cover setTI.
+transitivity (lim (fun n => m1 (g' n `&` A))).
   apply/esym/cvg_lim => //; apply: cvg_mu_inc => //.
-  - by move=> n; apply: measurableI; [exact/Gm|exact/sGm].
-  - by apply: measurable_bigcup => k; apply: measurableI; [exact/Gm|exact/sGm].
-  - by move=> ? ? ?; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g.
-transitivity (lim (fun n => m2 (g n `&` A))).
-  by congr (lim _); rewrite funeqE => x; apply: sGm1m2 => //; exact/sGm.
+  - by move=> n; apply: measurableI; apply/sGm.
+  - by apply: measurable_bigcup => k; apply: measurableI; apply/sGm.
+  - by move=> ? ? ?; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
+transitivity (lim (fun n => m2 (g' n `&` A))).
+  by congr (lim _); rewrite funeqE => x; apply: sG'm1m2 => //; exact/sGm.
 apply/cvg_lim => //; apply: cvg_mu_inc => //.
-- by move=> k; apply: measurableI => //; [exact/Gm|exact/sGm].
-- by apply: measurable_bigcup => k; apply: measurableI; [exact/Gm|exact/sGm].
-- by move=> a b ab; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g.
+- by move=> k; apply: measurableI => //; exact/sGm.
+- by apply: measurable_bigcup => k; apply: measurableI; exact/sGm.
+- by move=> a b ab; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
 Qed.
 
 Hypothesis setIG : setI_closed G.
