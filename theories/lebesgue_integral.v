@@ -1183,7 +1183,7 @@ Proof.
 by move=> fg; apply eq_fbig => //; rewrite (@eq_setI_preimage _ _ _ _ g).
 Qed.
 
-Lemma fsum_ID (I : choiceType) (B : pred I) (A : set I) (F : I -> R) :
+Lemma fsum_ID (I : choiceType) (B : pred(*set?*) I) (A : set I) (F : I -> R) :
   finite_set (F @^-1` [set~ idx]) ->
   \big[op/idx]_(i \in A) F i = op (\big[op/idx]_(i \in A `&` B) F i)
                                   (\big[op/idx]_(i \in A `&` ~` B) F i).
@@ -1600,10 +1600,10 @@ transitivity (\sum_(x \in [set: R]) x%:E * m (D `&` f @^-1` [set x / r])).
   by apply: eq_fsumr => x; rewrite preimage_cstM.
 transitivity (\sum_(x \in [set: R]) r%:E * (x%:E * m (D `&` f @^-1` [set x]))).
   rewrite (reindex_inside_setT (fun x => r * x)%R); last 2 first.
-    by exists ( *%R r ^-1)%R; [exact: mulKf|exact: mulVKf].
-    apply/finite_set_mulr_preimage.
-    apply: (finite_set_measure_preimage _ (fun x => x / r)%R).
-    by exists ( *%R ^~ r); [exact: divfK|exact: mulfK].
+    - by exists ( *%R r ^-1)%R; [exact: mulKf|exact: mulVKf].
+      apply/finite_set_mulr_preimage.
+      apply: (finite_set_measure_preimage _ (fun x => x / r)%R).
+    - by exists ( *%R ^~ r); [exact: divfK|exact: mulfK].
   by apply: eq_fsumr => x; rewrite mulrAC divrr ?unitfE// mul1r muleA EFinM.
 by rewrite ge0_fsum_distrr// => x; exact: mulem_ge0'.
 Qed.
@@ -1700,6 +1700,23 @@ apply/predeqP => x; split.
   by case: x Ax1x2 Bx2.
 by move=> /imfset2P[x1/= x1A' [x2 x2B'] ->{x}]; split=> /=; [rewrite AA'|rewrite BB'].
 Qed.
+
+Section additive_fsum.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
+
+Lemma additive_fsum (D : set T) (g f : {nnsfun D >-> R}) x :
+  \sum_(i \in [set: R]) m (D `&` f @^-1` [set x] `&` (D `&` g @^-1` [set i])) =
+  m (D `&` f @^-1` [set x] `&` \big[setU/set0]_(i \in [set: R]) (D `&` g @^-1` [set i])).
+Proof.
+rewrite -additive_fset; last 2 first.
+  - by move=> i; exact/measurableI.
+  - exact/trivIset_setIl0/trivIset_preimage1_in.
+congr (m _).
+rewrite -big_distrr/=.
+Admitted.
+
+End additive_fsum.
 
 Section sintegralD.
 Local Open Scope ereal_scope.
@@ -1900,14 +1917,8 @@ congr (_ + _)%E.
   rewrite -ge0_fsum_distrr; last first.
     by move=> i; rewrite measure_ge0.
   congr (_ * _)%E.
-  rewrite -[X in m (X `&` _)](setIid D) setIAC.
-  rewrite -[X in m (_ `&` X)](nnsfun_partition g).
-  rewrite big_distrr/=.
-  rewrite -additive_fset//; last 2 first.
-    by move=> i; exact/measurableI.
-    exact/trivIset_setIl0/trivIset_preimage1_in.
-  congr (m _).
-  admit.
+  rewrite additive_fsum.
+  by rewrite nnsfun_partition setIAC setIid.
 - rewrite exchange_fsum; last 2 first.
     - move=> x y.
       apply: (mulem_ge0 (fun y => D `&` f @^-1` [set x] `&` (D `&` g @^-1` [set y]))) => y0.
@@ -1930,18 +1941,15 @@ congr (_ + _)%E.
   apply eq_fsumr => x.
   rewrite -ge0_fsum_distrr; last by move=> i; rewrite measure_ge0.
   congr (_ * _)%E.
-  rewrite -[X in m (X `&` _)](setIid D).
-  rewrite -[X in m (X `&` _ `&` _)](nnsfun_partition f).
-  rewrite -setIA.
-  rewrite big_distrl.
-  rewrite -additive_fset//; last 2 first.
-    by move=> i; exact/measurableI.
-    exact/trivIset_setIr0/trivIset_preimage1_in.
-  congr (m _) => /=.
-  admit.
+  under eq_fsumr do rewrite setIC.
+                    rewrite /=.
+  rewrite additive_fsum.
+  by rewrite nnsfun_partition setIAC setIid.
 Abort.
 
 End sintegralD.
+
+kkk
 
 Section le_sintegral.
 Variables (T : measurableType) (R : realType) (pt : T).
