@@ -1700,20 +1700,67 @@ apply/predeqP => x; split.
   by case: x Ax1x2 Bx2.
 by move=> /imfset2P[x1/= x1A' [x2 x2B'] ->{x}]; split=> /=; [rewrite AA'|rewrite BB'].
 Qed.
+(* voir csum_csum dans measure.v *)
+
+Lemma fbig_widen (T : choiceType) [R : Type] [idx : R] (op : Monoid.law idx) (D P : set T) (f : T -> R) :
+  D `\` P `<=` f @^-1` [set idx] ->
+  \big[op/idx]_(i \in P) f i = \big[op/idx]_(i \in D) f i.
+Proof.
+Admitted.
+Arguments fbig_widen {T R idx op} D P f.
+
+Lemma fbig_fwiden (T : choiceType) [R : Type] [idx : R] (op : Monoid.law idx) (r : seq T) (P : set T) (f : T -> R) :
+  uniq r ->
+  [set i | i \in r] `\` P `<=` f @^-1` [set idx] ->
+  \big[op/idx]_(i \in P) f i = \big[op/idx]_(i <- r) f i.
+Proof.
+Admitted.
+Arguments fbig_fwiden {T R idx op} r P f.
+
+Lemma fbig_distrr [R : Type] [zero : R] [times : Monoid.mul_law zero] [plus : Monoid.add_law zero times] [I : choiceType] (a : R) (P : set I) (F : I -> R) :
+  finite_set (P `&` F @^-1` [set~ zero]) (*NB: not needed in the integral case*)->
+  times a (\big[plus/zero]_(i \in P) F i) =
+  \big[plus/zero]_(i \in P) times a (F i).
+Proof.
+move=> finF.
+elim/Peq : R => R in zero times plus a F finF *.
+have [|a0] := eqVneq a zero.
+  admit.
+rewrite big_distrr.
+apply/esym.
+apply: fbig_fwiden.
+  rewrite /finite_support.
+  admit.
+move=> i []; rewrite /preimage/=.
+rewrite in_finite_support //.
+by rewrite !inE /preimage/= => -[].
+Admitted.
 
 Section additive_fsum.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
 
-Lemma additive_fsum (D : set T) (g f : {nnsfun D >-> R}) x :
+Lemma additive_fsum [I : choiceType] (A : set I) [F : I -> set T] :
+  (forall i : I, measurable (F i)) -> trivIset [set: I] F ->
+  m (\big[setU/set0]_(i \in A) F i) = \sum_(i \in A) m (F i).
+Proof.
+move=> mF tF.
+(* TODO: use fbig_fwiden *)
+Admitted.
+
+Lemma renameme (D : set T) (g f : {nnsfun D >-> R}) x :
   \sum_(i \in [set: R]) m (D `&` f @^-1` [set x] `&` (D `&` g @^-1` [set i])) =
   m (D `&` f @^-1` [set x] `&` \big[setU/set0]_(i \in [set: R]) (D `&` g @^-1` [set i])).
 Proof.
-rewrite -additive_fset; last 2 first.
+rewrite -additive_fsum; last 2 first.
   - by move=> i; exact/measurableI.
   - exact/trivIset_setIl0/trivIset_preimage1_in.
 congr (m _).
-rewrite -big_distrr/=.
+rewrite -/(finite_support _ _ _).
+rewrite -[in LHS]fbig_distrr/=//.
+rewrite setTI.
+(* TODO: lemma + Hint*)
+admit.
 Admitted.
 
 End additive_fsum.
@@ -1917,7 +1964,7 @@ congr (_ + _)%E.
   rewrite -ge0_fsum_distrr; last first.
     by move=> i; rewrite measure_ge0.
   congr (_ * _)%E.
-  rewrite additive_fsum.
+  rewrite renameme.
   by rewrite nnsfun_partition setIAC setIid.
 - rewrite exchange_fsum; last 2 first.
     - move=> x y.
@@ -1943,13 +1990,11 @@ congr (_ + _)%E.
   congr (_ * _)%E.
   under eq_fsumr do rewrite setIC.
                     rewrite /=.
-  rewrite additive_fsum.
+  rewrite renameme.
   by rewrite nnsfun_partition setIAC setIid.
 Abort.
 
 End sintegralD.
-
-kkk
 
 Section le_sintegral.
 Variables (T : measurableType) (R : realType) (pt : T).
