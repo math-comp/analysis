@@ -410,7 +410,7 @@ Lemma set_false : [set` pred0] = set0 :> set T.
 Proof. by apply/seteqP; split. Qed.
 
 Lemma set_andb (P Q : {pred T}) : [set` predI P Q] = [set` P] `&` [set` Q].
-Proof. by apply/predeqP => x; split; rewrite /= inE => /andP[]. Qed.
+Proof. by apply/predeqP => x; split; rewrite /= inE => /andP. Qed.
 
 Lemma set_orb (P Q : {pred T}) : [set` predU P Q] = [set` P] `|` [set` Q].
 Proof. by apply/predeqP => x; split; rewrite /= inE => /orP. Qed.
