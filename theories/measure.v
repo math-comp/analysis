@@ -1374,6 +1374,32 @@ move=> Dfin Ftriv Fm; rewrite content_fin_bigcup//.
 exact: fin_bigcup_measurable.
 Qed.
 
+Lemma measure_bigsetU_ord_cond n (P : {pred 'I_n}) (F : 'I_n -> set T) :
+  (forall i : 'I_n, P i -> measurable (F i)) -> trivIset P F ->
+  mu (\big[setU/set0]_(i < n | P i) F i) = (\sum_(i < n | P i) mu (F i))%E.
+Proof.
+move=> mF tF; rewrite -bigcup_set_cond measure_fin_bigcup//=; last first.
+- by move=> i /andP[_ /mF].
+- by apply: sub_trivIset tF => i /andP[].
+rewrite -[RHS]big_filter; apply: perm_big.
+rewrite uniq_perm ?fset_uniq ?filter_uniq ?index_enum_uniq//=.
+move=> i; rewrite in_fset_set// ?mem_filter.
+  by apply/idP/idP; rewrite ?inE/= andbC.
+by rewrite set_andb/=; apply: finite_setIr.
+Qed.
+
+Lemma measure_bigsetU_ord n (P : {pred 'I_n}) (F : 'I_n -> set T) :
+  (forall i : 'I_n, measurable (F i)) -> trivIset setT F ->
+  mu (\big[setU/set0]_(i < n | P i) F i) = (\sum_(i < n | P i) mu (F i))%E.
+Proof.
+by move=> mF tF; rewrite measure_bigsetU_ord_cond//; apply: sub_trivIset tF.
+Qed.
+
+Lemma measure_fbigsetU (I : choiceType) (A : {fset I}) (F : I -> set T) :
+  (forall i, i \in A -> measurable (F i)) -> trivIset [set` A] F ->
+  mu (\big[setU/set0]_(i <- A) F i) = (\sum_(i <- A) mu (F i))%E.
+Proof. by move=> mF tF; rewrite -bigcup_fset measure_fin_bigcup// set_fsetK. Qed.
+
 End additive_measure_on_ring_of_sets.
 
 Hint Resolve measureU measure_bigsetU : core.
