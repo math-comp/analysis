@@ -57,7 +57,6 @@ Qed.
 
 End set_of_fset_in_a_set.
 
-
 Definition fsets_ord (P : pred nat) n := [fset i in 'I_n | P i]%fset.
 
 Lemma fsets_ord_nat (P : pred nat) n :
@@ -329,7 +328,7 @@ by apply: eq_big_seq => i /XQ Qi; rewrite invK ?inE.
 Qed.
 Arguments reindex_csum {R T T'} P Q e a.
 
-Lemma csum_pred_image (R : realType) (T : pointedType) (a : T -> \bar R)
+Lemma csum_pred_image (R : realType) (T : choiceType) (a : T -> \bar R)
     (e : nat -> T) (P : pred nat) :
     (forall n, P n -> 0 <= a (e n)) ->
     set_inj P e ->
@@ -340,7 +339,7 @@ exact: inj_bij.
 Qed.
 Arguments csum_pred_image {R T} a e P.
 
-Lemma csum_set_image  [R : realType] [T : pointedType] [a : T -> \bar R]
+Lemma csum_set_image  [R : realType] [T : choiceType] [a : T -> \bar R]
     [e : nat -> T] [P : set nat] :
     (forall n : nat, P n -> 0 <= a (e n)) ->
   set_inj P e ->
@@ -354,7 +353,7 @@ Qed.
 Arguments csum_set_image {R T} a e P.
 
 Section csum_bigcup.
-Variables (R : realType) (T : pointedType) (K : set nat).
+Variables (R : realType) (T : choiceType) (K : set nat).
 Implicit Types (J : nat -> set T) (a : T -> \bar R).
 
 Lemma csum_bigcupT J a : trivIset setT J -> (forall x, 0 <= a x) ->
