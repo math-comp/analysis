@@ -93,17 +93,6 @@ Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
 (*                         lemmas waiting to be PRed                          *)
 (******************************************************************************)
 
-Lemma bigsetU_bigcup2 (T : Type) (A B : set T) :
-  \big[setU/set0]_(i < 2) bigcup2 A B i = A `|` B.
-Proof. by rewrite !big_ord_recl big_ord0 setU0. Qed.
-
-Lemma setTPn (T : Type) (A : set T) : A != setT <-> exists t, ~ A t.
-Proof.
-split => [/negP|[t]]; last by apply: contra_notP => /negP/negPn/eqP ->.
-apply: contra_notP => /forallNP h.
-by apply/eqP; rewrite predeqE => t; split => // _; apply: contrapT.
-Qed.
-
 Lemma continuous_is_cvg {T : Type} {V U : topologicalType} [F : set (set T)]
   (FF : Filter F) (f : T -> V) (h : V -> U) :
   (forall l, f x @[x --> F] --> l -> {for l, continuous h}) ->
@@ -112,11 +101,6 @@ Proof.
 move=> ach /cvg_ex[l fxl]; apply/cvg_ex; exists (h l).
 by apply: continuous_cvg => //; exact: ach.
 Qed.
-
-Reserved Notation "f \max g" (at level 50, left associativity).
-Definition max_fun T (R : numDomainType) (f g : T -> R) x := maxr (f x) (g x).
-Notation "f \max g" := (max_fun f g) : ring_scope.
-Arguments max_fun {T R} _ _ _ /.
 
 Lemma mulr_ge0_gt0 (R : numDomainType) (x y : R) : 0 <= x -> 0 <= y ->
   (0 < x * y) = (0 < x) && (0 < y).

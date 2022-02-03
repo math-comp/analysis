@@ -135,32 +135,12 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
-Section eseries.
-Variables (R : numDomainType) (u_ : (\bar R)^nat).
-
-Definition eseries : (\bar R)^nat := [sequence \sum_(0 <= k < n) u_ k]_n.
-
-Lemma eseriesEnat : eseries = [sequence \sum_(0 <= k < n) u_ k]_n.
-Proof. by []. Qed.
-
-Lemma eseriesEord : eseries = [sequence \sum_(k < n) u_ k]_n.
-Proof. by rewrite /eseries /=; under eq_fun do rewrite big_mkord. Qed.
-End eseries.
 
 (* NB: how useful? *)
-Lemma lim_mkord (R : realFieldType) (f : (\bar R)^nat) :
-  lim (fun n => \sum_(k < n) f k)%E = \sum_(k <oo) f k.
-Proof.
-rewrite (_ : (fun n => _) = (fun n => \sum_(0 <= k < n) f k)%E) // funeqE => k.
-by rewrite big_mkord.
-Qed.
 
 (******************************************************************************)
 (*                        /lemmas waiting to be PRed                          *)
 (******************************************************************************)
-Reserved Notation "[ 'sset' 'of' s ]"
-  (at level 0, format "[ 'sset'  'of'  s ]").
-
 (* mu_ext mu and mu coincide on measurable sets *)
 Lemma measurable_mu_extE (R : realType) (T : semiRingOfSetsType)
     (mu : {additive_measure set T -> \bar R}) X :

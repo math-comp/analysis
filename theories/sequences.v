@@ -101,6 +101,7 @@ Reserved Notation "\sum_ ( i '<oo' ) F"
 Definition sequence R := nat -> R.
 Definition mk_sequence R f : sequence R := f.
 Arguments mk_sequence R f /.
+Notation "[ 'sequence' E ]_ n" := (mk_sequence (fun n => E%E)) : ereal_scope.
 Notation "[ 'sequence' E ]_ n" := (mk_sequence (fun n => E)) : ring_scope.
 Notation "R ^nat" := (sequence R) : type_scope.
 
@@ -1063,13 +1064,71 @@ Notation "\big [ op / idx ]_ ( i <oo ) F" :=
   (lim (fun n => (\big[ op / idx ]_(i < n) F))) : big_scope.
 
 Notation "\sum_ ( m <= i <oo | P ) F" :=
-  (\big[+%E/0%:E]_(m <= i <oo | P%B) F%E) : ring_scope.
+  (\big[+%E/0%E]_(m <= i <oo | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( m <= i <oo ) F" :=
-  (\big[+%E/0%:E]_(m <= i <oo) F%E) : ring_scope.
+  (\big[+%E/0%E]_(m <= i <oo) F%E) : ereal_scope.
 Notation "\sum_ ( i <oo | P ) F" :=
-  (\big[+%E/0%:E]_(0 <= i <oo | P%B) F%E) : ring_scope.
+  (\big[+%E/0%E]_(0 <= i <oo | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( i <oo ) F" :=
-  (\big[+%E/0%:E]_(0 <= i <oo) F%E) : ring_scope.
+  (\big[+%E/0%E]_(0 <= i <oo) F%E) : ereal_scope.
+
+Section partial_esum.
+Local Open Scope ereal_scope.
+
+Variables (R : numDomainType) (u_ : (\bar R)^nat).
+
+Definition eseries : (\bar R)^nat := [sequence \sum_(0 <= k < n) u_ k]_n.
+Definition etelescope : (\bar R)^nat := [sequence u_ n.+1 - u_ n]_n.
+
+Lemma eseriesEnat : eseries = [sequence \sum_(0 <= k < n) u_ k]_n.
+Proof. by []. Qed.
+
+Lemma eseriesEord : eseries = [sequence \sum_(k < n) u_ k]_n.
+Proof. by rewrite funeqE => n; rewrite /eseries/= big_mkord. Qed.
+
+Lemma eseriesSr n : eseries n.+1 = eseries n + u_ n.
+Proof. by rewrite !eseriesEord/= big_ord_recr. Qed.
+
+Lemma eseriesS n : eseries n.+1 = u_ n + eseries n.
+Proof. by rewrite addeC eseriesSr. Qed.
+
+Lemma eseriesSB (n : nat) :
+  eseries n \is a fin_num -> eseries n.+1 - eseries n = u_ n.
+Proof. by move=> enfin; rewrite eseriesS addeK//=. Qed.
+
+Lemma eseries_addn m n : eseries (n + m)%N = eseries m + \sum_(m <= k < n + m) u_ k.
+Proof. by rewrite eseriesEnat/= -big_cat_nat// leq_addl. Qed.
+
+Lemma sub_eseries_geq m n : (m <= n)%N -> eseries m \is a fin_num ->
+  eseries n - eseries m = \sum_(m <= k < n) u_ k.
+Proof. by move=> /subnK<- emfin; rewrite eseries_addn addeAC subee// add0e. Qed.
+
+Lemma sub_eseries m n : eseries m \is a fin_num -> eseries n \is a fin_num ->
+  eseries n - eseries m = if (m <= n)%N then \sum_(m <= k < n) u_ k
+                        else - \sum_(n <= k < m) u_ k.
+Proof.
+move=> ? ?; have [mn|/ltnW mn] := leqP m n; rewrite -sub_eseries_geq//.
+by rewrite oppeD ?fin_numN// oppeK addeC.
+Qed.
+
+Lemma sub_double_eseries n : eseries n \is a fin_num ->
+  eseries n.*2 - eseries n = \sum_(n <= k < n.*2) u_ k.
+Proof. by move=> enfin; rewrite sub_eseries_geq// -addnn leq_addl. Qed.
+
+End partial_esum.
+
+Arguments eseries {R} u_ n : simpl never.
+Arguments etelescope {R} u_ n : simpl never.
+Notation "[ 'series' E ]_ n" := (eseries [sequence E%E]_n) : ereal_scope.
+
+Section eseries_ops.
+Variable (R : numDomainType).
+Local Open Scope ereal_scope.
+
+Lemma eseriesD (f g : (\bar R)^nat) : eseries (f \+ g) = eseries f \+ eseries g.
+Proof. by rewrite /eseries /= funeqE => n; rewrite big_split. Qed.
+
+End eseries_ops.
 
 Section sequences_ereal_realDomainType.
 Local Open Scope ereal_scope.
@@ -1132,7 +1191,7 @@ by exists n => // m nm; rewrite (@lt_le_trans _ _ (A + 1)%R) // ?ltr_addl// nA.
 Qed.
 
 Lemma dvg_ereal_cvg (R : realFieldType) (u_ : R ^nat) :
-  u_ --> +oo%R -> (fun n => (u_ n)%:E) --> +oo.
+  u_ --> +oo%R -> [sequence (u_ n)%:E]_n --> +oo.
 Proof.
 move/cvgPpinfty_lt => uoo; apply/cvg_ballP => _/posnumP[e]; rewrite near_map.
 have [e1|e1] := lerP 1 e%:num.
@@ -1724,5 +1783,16 @@ have {}Mu : forall x, M%:E > u x by move=> x; rewrite ltNge; apply/negP.
 have : lim u <= M%:E by apply ereal_lim_le => //; near=> m; apply/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
+
+Lemma lim_mkord (R : realFieldType) (P : {pred nat}) (f : (\bar R)^nat) :
+  lim (fun n => \sum_(k < n | P k) f k)%E = \sum_(k <oo | P k) f k.
+Proof.
+rewrite (_ : (fun n => _) = (fun n => \sum_(0 <= k < n | P k) f k)%E) //.
+by rewrite funeqE => k; rewrite big_mkord.
+Qed.
+
+Lemma ereal_pseries_mkcond [R : realFieldType] [P : pred nat] (f : nat -> \bar R) :
+  \sum_(i <oo | P i) f i = \sum_(i <oo) if P i then f i else 0.
+Proof. by congr (lim _); apply: eq_fun => n /=; apply: big_mkcond. Qed.
 
 End sequences_ereal.

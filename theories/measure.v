@@ -75,7 +75,6 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 (* NB: in MathComp 1.13.0 *)
-
 Lemma natr_absz (R : numDomainType) i : `|i|%:R = `|i|%:~R :> R.
 Proof. by rewrite -abszE. Qed.
 
@@ -97,47 +96,6 @@ Proof. by case: x => // -[]. Qed.
 (******************************************************************************)
 (*                         lemmas waiting to be PRed                          *)
 (******************************************************************************)
-
-Section Elim3.
-
-Variables (R1 R2 R3 R4 : Type) (K : R1 -> R2 -> R3 -> R4 -> Type).
-Variables (id1 : R1) (op1 : R1 -> R1 -> R1).
-Variables (id2 : R2) (op2 : R2 -> R2 -> R2).
-Variables (id3 : R3) (op3 : R3 -> R3 -> R3).
-Variables (id4 : R4) (op4 : R4 -> R4 -> R4).
-
-Hypothesis Kid : K id1 id2 id3 id4.
-
-Lemma big_rec4 I r (P : pred I) F1 F2 F3 F4
-    (K_F : forall i y1 y2 y3 y4, P i -> K y1 y2 y3 y4 ->
-       K (op1 (F1 i) y1) (op2 (F2 i) y2) (op3 (F3 i) y3) (op4 (F4 i) y4)) :
-  K (\big[op1/id1]_(i <- r | P i) F1 i)
-    (\big[op2/id2]_(i <- r | P i) F2 i)
-    (\big[op3/id3]_(i <- r | P i) F3 i)
-    (\big[op4/id4]_(i <- r | P i) F4 i).
-Proof. by rewrite unlock; elim: r => //= i r; case: ifP => //; apply: K_F. Qed.
-
-Hypothesis Kop : forall x1 x2 x3 x4 y1 y2 y3 y4,
-  K x1 x2 x3 x4 -> K y1 y2 y3 y4 ->
-  K (op1 x1 y1) (op2 x2 y2) (op3 x3 y3) (op4 x4 y4).
-Lemma big_ind4 I r (P : pred I) F1 F2 F3 F4
-   (K_F : forall i, P i -> K (F1 i) (F2 i) (F3 i) (F4 i)) :
-  K (\big[op1/id1]_(i <- r | P i) F1 i)
-    (\big[op2/id2]_(i <- r | P i) F2 i)
-    (\big[op3/id3]_(i <- r | P i) F3 i)
-    (\big[op4/id4]_(i <- r | P i) F4 i).
-Proof. by apply: big_rec4 => i x1 x2 x3 x4 /K_F; apply: Kop. Qed.
-
-End Elim3.
-
-Arguments big_rec4 [R1 R2 R3 R4] K
-  [id1 op1 id2 op2 id3 op3 id4 op4] _ [I r P F1 F2 F3 F4].
-Arguments big_ind4 [R1 R2 R3 R4] K
-  [id1 op1 id2 op2 id3 op3 id4 op4] _ _ [I r P F1 F2 F3 F4].
-
-Coercion Choice.mixin : Choice.class_of >-> Choice.mixin_of.
-
-(* TODO: move to classical_sets *)
 
 Arguments preimage : simpl never.
 
@@ -197,11 +155,6 @@ have <- : z = b by apply: contrapT => zb; move/Aab : Az => [|].
 by move=> _ [|] ->.
 Qed.
 
-(* TODO: remove when available in all the Coq versions supported by the CI
-   (as of today, only in Coq 8.13) *)
-Definition uncurry {A B C : Type} (f : A -> B -> C)
-  (p : A * B) : C := match p with (x, y) => f x y end.
-
 (* TODO: move to reals.v *)
 Lemma sup_gt (R : realType) (S : set R) (x : R) : S !=set0 ->
   (x < sup S -> exists2 y, S y & x < y)%R.
@@ -216,9 +169,6 @@ Proof.
 move=> /nonemptyN S0; rewrite /inf ltr_oppl => /sup_gt => /(_ S0)[r [r' Sr']].
 by move=> <-; rewrite ltr_oppr opprK => r'x; exists r'.
 Qed.
-
-Lemma ltr_opp (R : numDomainType) (r : R) : (0 < r)%R -> (- r < r)%R.
-Proof. by move=> n0; rewrite -subr_lt0 -opprD oppr_lt0 addr_gt0. Qed.
 
 Lemma ltr_add_invr (R : realType) (y x : R) :
   (y < x -> exists k, y + k.+1%:R^-1 < x)%R.
@@ -267,10 +217,6 @@ move=> has_lbA A0; rewrite /ereal_inf /inf EFinN; congr (- _)%E.
 rewrite -ereal_sup_EFin; [|exact/has_lb_ubN|exact/nonemptyN].
 by rewrite !image_comp.
 Qed.
-
-Lemma ereal_pseries_mkcond [R : realFieldType] [P : pred nat] (f : nat -> \bar R) :
-  \sum_(i <oo | P i) f i = \sum_(i <oo) if P i then f i else 0.
-Proof. by congr (lim _); apply: eq_fun => n /=; apply: big_mkcond. Qed.
 
 (* NB: not used? *)
 Lemma EFin_inj (R : numDomainType) : injective (@EFin R).
@@ -2079,9 +2025,6 @@ by apply/eqP; rewrite eq_le mu_sub// ?content_ring_sup_sigma_additive.
 Qed.
 
 End content_ring_lemmas.
-
-Lemma set_true {T} : [set` predT] = setT :> set T.
-Proof. by apply/seteqP; split. Qed.
 
 Section ring_sigma_sub_additive_content.
 Context (R : realType) (T : semiRingOfSetsType)

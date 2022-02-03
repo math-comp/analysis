@@ -57,17 +57,11 @@ Qed.
 
 End set_of_fset_in_a_set.
 
-Definition fsets_ord (P : pred nat) n := [fset i in 'I_n | P i]%fset.
-
-Lemma fsets_ord_nat (P : pred nat) n :
-  fsets P (@nat_of_ord _ @` fsets_ord P n)%fset.
-Proof. by move=> /= i /imfsetP[/= a] /imfsetP[/= b Pb] ->{a} ->{i}. Qed.
 Section csum.
 Variables (R : realFieldType) (T : choiceType).
 Implicit Types (S : set T) (a : T -> \bar R).
 
-Definition csum S a :=
-  ereal_sup [set \sum_(i <- F) a i | F in fsets S].
+Definition csum S a := ereal_sup [set \sum_(i <- F) a i | F in fsets S].
 
 Local Notation "\csum_ ( i 'in' P ) F" := (csum P (fun i => F)).
 
@@ -86,20 +80,28 @@ Section csum_realType.
 Variables (R : realType) (T : choiceType).
 Implicit Types (a : T -> \bar R).
 
-Lemma csum_ge0 (S : set T) a : (forall x, 0 <= a x) -> 0 <= \csum_(i in S) a i.
+Lemma csum_ge0 (S : set T) a : (forall x, S x -> 0 <= a x) -> 0 <= \csum_(i in S) a i.
 Proof.
 move=> a0.
 by apply: ereal_sup_ub; exists fset0; [exact: fsets_set0|rewrite big_nil].
 Qed.
 
 Lemma csum_fset (F : {fset T}) a : (forall i, i \in F -> 0 <= a i) ->
-  \csum_(i in [set x | x \in F]) a i = \sum_(i <- F) a i.
+  \csum_(i in [set` F]) a i = \sum_(i <- F) a i.
 Proof.
 move=> f0; apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply ereal_sup_ub; exists F => //; exact: fsets_self.
 apply ub_ereal_sup => /= ? -[F' F'F <-]; apply/lee_sum_nneg_subfset.
   exact/fsetsP.
 by move=> t; rewrite inE => /andP[_ /f0].
+Qed.
+
+Lemma sum_fset_set (A : set T) a : finite_set A ->
+  (forall i, A i -> 0 <= a i) ->
+  \sum_(i <- fset_set A) a i = \csum_(i in A) a i.
+Proof.
+move=> Afin a0; rewrite -csum_fset => [|i]; rewrite ?fset_setK//.
+by rewrite in_fset_set ?inE//; apply: a0.
 Qed.
 
 End csum_realType.
@@ -132,7 +134,7 @@ Lemma eq_csum [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
   \csum_(i in I) a i = \csum_(i in I) b i.
 Proof. by move=> e; apply/eqP; rewrite eq_le !le_csum// => i Ii; rewrite e. Qed.
 
-Lemma csum_add [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
+Lemma csumD [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
   (forall i, I i -> 0 <= a i) -> (forall i, I i -> 0 <= b i) ->
   \csum_(i in I) (a i + b i) = \csum_(i in I) a i + \csum_(i in I) b i.
 Proof.
@@ -190,7 +192,7 @@ move=> a_ge0; elim: r => [|j r IHr]; rewrite ?(big_nil, big_cons)// -?IHr.
 case: (boolP (P j)) => Pj; last first.
   by apply: eq_csum => i Ii; rewrite big_cons (negPf Pj).
 have aj_ge0 i : I i -> a i j >= 0 by move=> ?; apply: a_ge0.
-rewrite -csum_add//; last by move=> i Ii; apply: sume_ge0 => *; apply: a_ge0.
+rewrite -csumD//; last by move=> i Ii; apply: sume_ge0 => *; apply: a_ge0.
 by apply: eq_csum => i Ii; rewrite big_cons Pj.
 Qed.
 
@@ -235,72 +237,49 @@ exists [fset j in X2 | j \in J i]%fset; last by rewrite -big_fset_condE.
 by move=> j/=; rewrite !inE => /andP[_]; rewrite inE.
 Qed.
 
+Lemma lee_sum_fset_nat (R : realDomainType)
+    (f : (\bar R)^nat) (F : {fset nat}) n (P : pred nat) :
+    (forall i, P i -> 0%E <= f i) ->
+    [set` F] `<=` `I_n ->
+  \sum_(i <- F | P i) f i <= \sum_(0 <= i < n | P i) f i.
+Proof.
+move=> f0 Fn; rewrite [X in _ <= X](bigID (mem F))/=.
+suff -> : \sum_(0 <= i < n | P i && (i \in F)) f i = \sum_(i <- F | P i) f i.
+  by rewrite lee_addl ?sume_ge0// => i /andP[/f0].
+rewrite -big_filter -[RHS]big_filter; apply: perm_big.
+rewrite uniq_perm ?filter_uniq ?index_iota ?iota_uniq ?fset_uniq//.
+move=> i; rewrite ?mem_filter.
+case: (boolP (P i)) => //= Pi; case: (boolP (i \in F)) => //= Fi.
+by rewrite mem_iota leq0n add0n subn0/=; apply: Fn.
+Qed.
+Arguments lee_sum_fset_nat {R f} F n P.
+
+Lemma lee_sum_fset_lim (R : realType) (f : (\bar R)^nat) (F : {fset nat})
+    (P : pred nat) :
+  (forall i, P i -> 0%E <= f i) ->
+  \sum_(i <- F | P i) f i <= \sum_(i <oo | P i) f i.
+Proof.
+move=> f0; pose n := (\max_(k <- F) k).+1.
+rewrite (le_trans (lee_sum_fset_nat F n _ _ _))//; last first.
+  exact: ereal_nneg_series_lim_ge.
+move=> k /= kF; rewrite /n big_seq_fsetE/=.
+by rewrite -[k]/(val [`kF]%fset) ltnS leq_bigmax.
+Qed.
+Arguments lee_sum_fset_lim {R f} F P.
+
 Lemma ereal_pseries_csum (R : realType) (a : nat -> \bar R) (P : pred nat) :
   (forall n, P n -> 0 <= a n) ->
   \sum_(i <oo | P i) a i = \csum_(i in [set x | P x]) a i.
 Proof.
 move=> a0; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: (ereal_lim_le (is_cvg_ereal_nneg_series_cond a0)).
-  near=> n; apply: ereal_sup_ub => /=.
-  exists [fset val i | i in 'I_n & P i]%fset.
+  apply: (ereal_lim_le (is_cvg_ereal_nneg_series_cond a0)); apply: nearW => n.
+  apply: ereal_sup_ub => /=; exists [fset val i | i in 'I_n & P i]%fset.
     by move=> /= k /imfsetP[/= i]; rewrite inE => + ->.
-  rewrite -[in RHS]big_filter; apply: perm_big.
-  rewrite uniq_perm// ?filter_uniq /index_iota/= ?iota_uniq ?fset_uniq// subn0.
-  set s := [seq x <- iota 0 n | P x].
-  move=> i; apply/imfsetP/(nthP 0%N) => /= [[{}i + ->]|[k ks <-]].
-    rewrite inE => Pi; have si : val i \in s.
-      by rewrite mem_filter ?Pi ?mem_iota ?add0n ?leq0n//=.
-    by exists (index (val i) s); rewrite ?index_mem ?nth_index.
-  have skn : (nth 0 s k < n)%N.
-    rewrite (@all_nthP _ (fun i => i < n)%N _ _ _)//=.
-    by apply/allP => j; rewrite mem_filter mem_iota add0n => /and3P[].
-  by exists (Ordinal skn); rewrite //= inE/= (all_nthP _ _)// ?filter_all.
-apply: ub_ereal_sup => _ [/= F /fsetsP PF <-]; pose n := (\max_(k <- F) k).+1.
-rewrite (le_trans _ (ereal_nneg_series_lim_ge n _))//.
-rewrite [X in _ <= X](bigID (mem F))/=.
-suff -> : \sum_(0 <= i < n | P i && (i \in F)) a i = \sum_(i <- F) a i.
-  by rewrite lee_addl ?sume_ge0// => i /andP[/a0].
-rewrite -big_filter; apply: perm_big.
-rewrite uniq_perm ?fset_uniq ?filter_uniq ?index_iota ?iota_uniq//.
-move=> i; rewrite mem_filter -andbA andbCA; case: (boolP (i \in F)) => //= Fi.
-apply/andP; split; first exact: PF.
-rewrite mem_iota leq0n add0n subn0 /n/=.
-by rewrite big_seq_fsetE/= -[i]/(val [` Fi ]%fset) ltnS leq_bigmax.
-Unshelve. all: by end_near. Qed.
-
-Lemma sum_fset_nat_ub (R : realDomainType) (f : (\bar R)^nat) (F : {fset nat})
-    (P : pred nat) n :
-  (forall i, P i -> 0%E <= f i) ->
-  (F `<=` @nat_of_ord _ @` fsets_ord xpredT n)%fset ->
-  \sum_(i <- F | P i) f i <= \sum_(i < n | P i) f i.
-Proof.
-move=> f0 /fsubsetP F_fsets_ord; apply (@le_trans _ _
-    (\sum_(i <- @nat_of_ord _ @` [fset j : 'I_n | P j]) f i)%fset); last first.
-  rewrite big_imfset /=; last by move=> i j _ _; apply: ord_inj.
-  by rewrite big_fset /= big_enum_cond.
-apply (@le_trans _ _
-    (\sum_(i <- [fset nat_of_ord j | j in 'I_n]%fset | P i) f i)); last first.
-  rewrite big_imfset /=; last by move=> i j _ _; apply/ord_inj.
-  rewrite big_fset big_enum_cond /= big_mkcond /=.
-  rewrite big_imfset /=; last by move=> i j _ _; apply/ord_inj.
-  by rewrite -big_mkcond /= big_enum_cond.
-apply/(lee_sum_nneg_subfset _ (fun m _ => f0 m)) => t /F_fsets_ord.
-by move=> /imfsetP[/= j _ ->{t}]; apply/imfsetP; exists j.
-Qed.
-
-Lemma lee_sum_lim (R : realType) (f : (\bar R)^nat) (F : {fset nat})
-    (P : pred nat) :
-  (forall i, P i -> 0%E <= f i) ->
-  \sum_(i <- F | P i) f i <= \sum_(i <oo | P i) f i.
-Proof.
-move=> f0; have [->|F0] := eqVneq F fset0.
-  by rewrite big_mkcond big_seq_fset0 ereal_nneg_series_lim_ge0.
-have [n FnS] : exists n, (F `<=` @nat_of_ord _ @` fsets_ord xpredT n)%fset.
-  move/(fset_nat_maximum id) : F0 => [i [iF Fi]]; exists i.+1.
-  apply/fsubsetP => j jF; apply/imfsetP => /=.
-  by move/Fi : jF; rewrite -ltnS => jF; exists (Ordinal jF) => //; rewrite inE.
-apply/(le_trans _ (ereal_nneg_series_lim_ge n f0)).
-by rewrite big_mkord sum_fset_nat_ub.
+  rewrite big_imfset/=; last by move=> ? ? ? ? /val_inj.
+  by rewrite big_filter big_enum_cond/= big_mkord.
+apply: ub_ereal_sup => _ [/= F /fsetsP PF <-].
+rewrite -(big_rmcond_in P)/=; last by move=> i /PF ->.
+by apply: lee_sum_fset_lim.
 Qed.
 
 Lemma reindex_csum (R : realType) (T T' : choiceType)

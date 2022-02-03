@@ -378,6 +378,8 @@ Notation "`| x |" := (abse (x%dE : dual_extended _)) : ereal_dual_scope.
 Notation "`| x |" := (abse x) : ereal_scope.
 Arguments abse {R}.
 
+Notation "\- f" := (fun x => - f x)%dE : ereal_dual_scope.
+Notation "\- f" := (fun x => - f x)%E : ereal_scope.
 Notation "f \+ g" := (fun x => f x + g x)%dE : ereal_dual_scope.
 Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
 Notation "f \* g" := (fun x => f x * g x)%dE : ereal_dual_scope.
@@ -851,6 +853,9 @@ Qed.
 Lemma mule_lt0_gt0 x y : x < 0 -> 0 < y -> x * y < 0.
 Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 
+Lemma gte_opp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
+Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
+
 End ERealArithTh_numDomainType.
 Notation "x +? y" := (adde_def x%dE y%dE) : ereal_dual_scope.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
@@ -1022,6 +1027,9 @@ Proof.
 move=> u0 l; rewrite dual_sumeE oppe_le0 sume_ge0 // => t Pt.
 rewrite oppe_ge0; exact: u0.
 Qed.
+
+Lemma gte_dopp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
+Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
 
 End DualERealArithTh_numDomainType.
 

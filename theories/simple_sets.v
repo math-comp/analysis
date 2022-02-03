@@ -1812,7 +1812,7 @@ have : b'%:E - a'%:E <= \sum_(k <oo | P k) slength [set` j k] + (e%:num / 2)%:E.
     set f := fun n => \sum_(k < n | P k) (e%:num / (2 ^ n.+2)%:R)%:E.
     rewrite (@le_trans _ _ (\sum_(k <oo | P k) (e%:num / (2 ^ k.+2)%:R)%:E)) //.
     rewrite sum_F'_P.
-    by apply: lee_sum_lim => n _; apply divr_ge0 => //; rewrite ler0n.
+    by apply: lee_sum_fset_lim => n _; apply divr_ge0 => //; rewrite ler0n.
   rewrite [X in X <= _](_ : _ = \sum_(k <- F') slength [set` j k]); last first.
     apply eq_fbigr => k /imfsetP[/= p]; rewrite !inE => /andP[pF a'b'p0 ->{k} ?].
     rewrite /b_ /a_ slength_itv hlength_itv.
@@ -1823,7 +1823,7 @@ have : b'%:E - a'%:E <= \sum_(k <oo | P k) slength [set` j k] + (e%:num / 2)%:E.
     rewrite EFinB fineK// fineK//.
     have /jne/neitvP/ltW/le_bnd_ereal : P p := HF_ _ pF.
     by rewrite le_eqVlt => /predU1P[->|->//]; rewrite ltxx subee.
-  by rewrite sum_F'_P; apply: lee_sum_lim => k _; exact/slength_ge0.
+  by rewrite sum_F'_P; apply: lee_sum_fset_lim => k _; exact/slength_ge0.
 have -> : b'%:E - a'%:E = b%:E - a%:E - (e%:num / 2)%:E.
   rewrite /a' /b' (EFinD a) oppeD// (EFinB b) -addeA.
   rewrite (addeCA (- (e%:num / 4%:R)%:E)) addeA; congr (_ + _).
@@ -1909,7 +1909,7 @@ have len_iIccitv_dvg M : (M > 0)%R ->
   move=> ->{i}.
   have [r0|r0] := ler0P r.
     exists (`|ceil (`| r | + M) |%N.+1); split => //.
-    rewrite -set_itv_meet slength_itv hlength_itv /= lte_fin ltxI ltr_opp //.
+    rewrite -set_itv_meet slength_itv hlength_itv /= lte_fin ltxI gtr_opp //.
     rewrite andbT ltr_oppl opprK meet_l ?(le_trans r0)//.
     rewrite -addn1 natrD natr_absz ger0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))//.
     case: ifPn => [_|].
@@ -1920,7 +1920,7 @@ have len_iIccitv_dvg M : (M > 0)%R ->
   move=> [:crM]; exists (`|ceil (`| r | + M)|%N); split.
     abstract: crM.
     by rewrite absz_gt0 gt_eqF // ceil_gt0 // -(addr0 0%R) ler_lt_add.
-  rewrite -set_itv_meet slength_itv hlength_itv /= lte_fin ltxI ltr_opp ?ltr0n//.
+  rewrite -set_itv_meet slength_itv hlength_itv /= lte_fin ltxI gtr_opp ?ltr0n//.
   rewrite ltr_oppl opprK andbT.
   rewrite natr_absz ger0_norm ?ceil_ge0// ?(addr_ge0 _ (ltW _))// gtr0_norm//.
   rewrite meet_l; last first.

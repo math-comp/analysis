@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
 From mathcomp Require Import seq fintype bigop order interval ssralg ssrnum rat.
 From mathcomp Require Import matrix finmap.
-Require Import boolp reals classical_sets posnum functions.
+Require Import mathcomp_extra boolp reals classical_sets posnum functions.
 
 (******************************************************************************)
 (*                  Filters and basic topological notions                     *)
@@ -343,9 +343,6 @@ Require Import boolp reals classical_sets posnum functions.
 (*     "Import numFieldTopology.Exports.")                                    *)
 (******************************************************************************)
 
-Reserved Notation "f \* g" (at level 40, left associativity).
-Reserved Notation "f \- g" (at level 50, left associativity).
-Reserved Notation "\- f"  (at level 35, f at level 35).
 Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
 Reserved Notation "'\forall' x '\near' x_0 , P"
   (at level 200, x ident, P at level 200,
@@ -434,13 +431,6 @@ Arguments inj_can_sym_in {aT rT rD f g}.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-
-Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
-Notation "\- f" := (opp_fun f) : ring_scope.
-
-Definition mul_fun T (R : ringType) (f g : T -> R) x := (f x * g x)%R.
-Notation "f \* g" := (mul_fun f g) : ring_scope.
-Arguments mul_fun {T R} _ _ _ /.
 
 Section bigmax.
 Variables (d : unit) (T : orderType d).

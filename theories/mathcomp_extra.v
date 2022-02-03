@@ -7,6 +7,14 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Reserved Notation "f \* g" (at level 40, left associativity).
+Reserved Notation "f \- g" (at level 50, left associativity).
+Reserved Notation "\- f"  (at level 35, f at level 35).
+Reserved Notation "f \max g" (at level 50, left associativity).
+
+(* Missing coercion *)
+Coercion Choice.mixin : Choice.class_of >-> Choice.mixin_of.
+
 Lemma enum_ord0 : enum 'I_0 = [::].
 Proof. by apply/eqP; rewrite -size_eq0 size_enum_ord. Qed.
 
@@ -154,3 +162,27 @@ have [i _ /(_ _ isT) mf] := @arg_maxnP _ (@ord0 n) xpredT f isT.
 by exists i; split; rewrite ?leq_ord// => j jn; have := mf (@Ordinal n.+1 j jn).
 Qed.
 
+Arguments big_rmcond {R idx op I r} P.
+Arguments big_rmcond_in {R idx op I r} P.
+
+Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
+Notation "\- f" := (opp_fun f) : ring_scope.
+Arguments opp_fun {T R} _ _ /.
+
+Definition mul_fun T (R : ringType) (f g : T -> R) x := (f x * g x)%R.
+Notation "f \* g" := (mul_fun f g) : ring_scope.
+Arguments mul_fun {T R} _ _ _ /.
+
+Import Order.TTheory GRing.Theory Num.Theory.
+
+Definition max_fun T (R : numDomainType) (f g : T -> R) x := Num.max (f x) (g x).
+Notation "f \max g" := (max_fun f g) : ring_scope.
+Arguments max_fun {T R} _ _ _ /.
+
+Lemma gtr_opp (R : numDomainType) (r : R) : (0 < r)%R -> (- r < r)%R.
+Proof. by move=> n0; rewrite -subr_lt0 -opprD oppr_lt0 addr_gt0. Qed.
+
+(* TODO: remove when available in all the Coq versions supported by the CI
+   (as of today, only in Coq 8.13) *)
+Definition uncurry {A B C : Type} (f : A -> B -> C)
+  (p : A * B) : C := match p with (x, y) => f x y end.

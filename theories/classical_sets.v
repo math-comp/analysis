@@ -365,12 +365,14 @@ Proof. by apply: contra_notF; rewrite inE. Qed.
 Lemma notin_set (A : set T) x : (x \notin A : Prop) = ~ (A x).
 Proof. by apply/propext; split=> /asboolPn. Qed.
 
-Lemma setTP (A : set T) : A != setT <-> exists t, ~ A t.
+Lemma setTPn (A : set T) : A != setT <-> exists t, ~ A t.
 Proof.
 split => [/negP|[t]]; last by apply: contra_notP => /negP/negPn/eqP ->.
 apply: contra_notP => /forallNP h.
 by apply/eqP; rewrite predeqE => t; split => // _; apply: contrapT.
 Qed.
+#[deprecated(note="Use setTPn instead")]
+Notation setTP := setTPn.
 
 Lemma in_set0 (x : T) : (x \in set0) = false. Proof. by rewrite memNset. Qed.
 Lemma in_setT (x : T) : x \in setT. Proof. by rewrite mem_set. Qed.
@@ -401,8 +403,27 @@ Qed.
 
 Lemma seteqP A B : (A = B) <-> (A `<=>` B). Proof. by rewrite eqEsubset. Qed.
 
+Lemma set_true : [set` predT] = setT :> set T.
+Proof. by apply/seteqP; split. Qed.
+
+Lemma set_false : [set` pred0] = set0 :> set T.
+Proof. by apply/seteqP; split. Qed.
+
+Lemma set_andb (P Q : {pred T}) : [set` predI P Q] = [set` P] `&` [set` Q].
+Proof. by apply/predeqP => x; split; rewrite /= inE => /andP[]. Qed.
+
+Lemma set_orb (P Q : {pred T}) : [set` predU P Q] = [set` P] `|` [set` Q].
+Proof. by apply/predeqP => x; split; rewrite /= inE => /orP. Qed.
+
+Lemma fun_true : (fun=> true) = setT :> set T.
+Proof. by rewrite [LHS]set_true. Qed.
+
+Lemma fun_false : (fun=> false) = set0 :> set T.
+Proof. by rewrite [LHS]set_false. Qed.
+
 Lemma set_mem_set A : [set` A] = A.
 Proof. by apply/seteqP; split=> x/=; rewrite inE. Qed.
+
 Lemma mem_setE (P : pred T) : mem [set` P] = mem P.
 Proof. by congr Mem; apply/funext=> x; apply/asboolP/idP. Qed.
 
@@ -1552,15 +1573,23 @@ Context {T : Type}.
 Implicit Types (A : set T) (F : nat -> set T).
 
 Lemma bigcup_mkord n F :
-  \bigcup_(i in [set k | (k < n)%N]) F i = \big[setU/set0]_(i < n) F i.
+  \bigcup_(i in `I_n) F i = \big[setU/set0]_(i < n) F i.
 Proof.
 rewrite -(big_mkord xpredT F) -bigcup_set.
 by apply: eq_bigcupl; split=> i; rewrite /= mem_index_iota leq0n.
 Qed.
 
 Lemma bigcap_mkord n F :
-  \bigcap_(i in [set k | (k < n)%N]) F i = \big[setI/setT]_(i < n) F i.
+  \bigcap_(i in `I_n) F i = \big[setI/setT]_(i < n) F i.
 Proof. by apply: setC_inj; rewrite setC_bigsetI setC_bigcap bigcup_mkord. Qed.
+
+Lemma bigsetU_bigcup2 (A B : set T) :
+   \big[setU/set0]_(i < 2) bigcup2 A B i = A `|` B.
+Proof. by rewrite -bigcup_mkord bigcup2inE. Qed.
+
+Lemma bigsetI_bigcap2 (A B : set T) :
+   \big[setI/setT]_(i < 2) bigcap2 A B i = A `&` B.
+Proof. by rewrite -bigcap_mkord bigcap2inE. Qed.
 
 Lemma bigcup_splitn n F :
   \bigcup_i F i = \big[setU/set0]_(i < n) F i `|` \bigcup_i F (n + i)%N.
