@@ -460,16 +460,23 @@ End ERealOrderTheory.
 
 Section finNumPred.
 Context {R : numDomainType}.
+Implicit Type (x : \bar R).
 
 Definition fin_num := [qualify a x : \bar R | (x != -oo) && (x != +oo)].
 Fact fin_num_key : pred_key fin_num. by []. Qed.
 Canonical fin_num_keyd := KeyedQualifier fin_num_key.
 
-Lemma fin_numE x : (x \is a fin_num) = ((x != -oo) && (x != +oo)).
+Lemma fin_numE x : (x \is a fin_num) = (x != -oo) && (x != +oo).
 Proof. by []. Qed.
 
 Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \in fin_num).
 Proof. by apply/(iffP idP) => [/andP//|/andP]. Qed.
+
+Lemma fin_numEn x : (x \isn't a fin_num) = (x == -oo) || (x == +oo).
+Proof. by rewrite fin_numE negb_and ?negbK. Qed.
+
+Lemma fin_numPn x : reflect (x = -oo \/ x = +oo) (x \isn't a fin_num).
+Proof. by rewrite fin_numEn; apply: (iffP orP) => -[]/eqP; by [left|right]. Qed.
 
 End finNumPred.
 
@@ -538,6 +545,9 @@ Proof. by rewrite /= oppr0. Qed.
 
 Lemma oppeK : involutive (A := \bar R) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
+
+Lemma oppe_eq0 x : (- x == 0)%E = (x == 0)%E.
+Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
 
 Lemma oppeD x y : y \is a fin_num -> - (x + y) = - x - y.
 Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
@@ -685,6 +695,7 @@ Proof. by move: x y => [?| |] [?| |]. Qed.
 
 Lemma addooe x : x != -oo -> +oo + x = +oo.
 Proof. by case: x. Qed.
+
 
 Lemma adde_Neq_pinfty x y : x != -oo -> y != -oo ->
   (x + y != +oo) = (x != +oo) && (y != +oo).
@@ -1122,6 +1133,30 @@ Lemma mulninftyr r : -oo%E * r%:E = (Num.sg r)%:E * -oo%E.
 Proof. by rewrite muleC mulrninfty. Qed.
 
 Definition mulrinfty := (mulrpinfty, mulpinftyr, mulrninfty, mulninftyr).
+
+Lemma gt0_mulpinfty x : (0 < x -> +oo * x = +oo)%E.
+Proof.
+move: x => [x|_|//]; last by rewrite mule_pinfty_pinfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty gtr0_sg// mul1e.
+Qed.
+
+Lemma lt0_mulpinfty x : (x < 0 -> +oo * x = -oo)%E.
+Proof.
+move: x => [x|//|_]; last by rewrite mule_pinfty_ninfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty ltr0_sg// mulN1e.
+Qed.
+
+Lemma gt0_mulninfty x : (0 < x -> -oo * x = -oo)%E.
+Proof.
+move: x => [x|_|//]; last by rewrite mule_ninfty_pinfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty gtr0_sg// mul1e.
+Qed.
+
+Lemma lt0_mulninfty x : (x < 0 -> -oo * x = +oo)%E.
+Proof.
+move: x => [x|//|_]; last by rewrite mule_ninfty_ninfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty ltr0_sg// mulN1e.
+Qed.
 
 Lemma mule_eq_pinfty x y : (x * y == +oo) =
   [|| (x > 0) && (y == +oo), (x < 0) && (y == -oo),
@@ -1658,6 +1693,18 @@ Lemma le0_sume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
   x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
 Proof.
 by move=> F0; rewrite muleC le0_sume_distrl//; under eq_bigr do rewrite muleC.
+Qed.
+
+Lemma eq_infty x : (forall r, r%:E <= x) -> x = +oo.
+Proof.
+case: x => [x /(_ (x + 1)%R)|//|/(_ 0%R)//].
+by rewrite EFinD addeC -lee_subr_addr// subee// lee_fin ler10.
+Qed.
+
+Lemma eq_ninfty x : (forall r, x <= r%:E) -> x = -oo.
+Proof.
+move=> *; apply: (can_inj oppeK); apply: eq_infty => r.
+by rewrite lee_oppr -EFinN.
 Qed.
 
 Lemma lee_opp x y : (- x <= - y) = (y <= x).

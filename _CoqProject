@@ -36,6 +36,7 @@ theories/measure.v
 theories/lebesgue_integral.v
 theories/summability.v
 theories/functions.v
+theories/simple_sets.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v

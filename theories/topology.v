@@ -3280,6 +3280,13 @@ case/not_andP => /eqP/set0P[x []].
   by move: AB; rewrite /separated => -[] _; apply/eqP/set0P; exists x.
 Qed.
 
+Lemma connected1 x : connected [set x].
+Proof.
+move=> X [y +] [O Oopen XO] [C Cclosed XC]; rewrite XO.
+by move=> [{y}-> Ox]; apply/seteqP; split=> y => [[->//]|->].
+Qed.
+Hint Resolve connected1 : core.
+
 Lemma bigcup_connected I (A : I -> set T) (P : I -> Prop) :
   \bigcap_(i in P) (A i) !=set0 -> (forall i, P i -> connected (A i)) ->
   connected (\bigcup_(i in P) (A i)).
@@ -3307,13 +3314,71 @@ rewrite EU subUset => -[_] /(_ _ E1d) E0d; exfalso.
 by move/separated_disjoint : sE; apply/eqP/set0P; exists d.
 Qed.
 
-Definition connected_component (x : T) :=
-  \bigcup_(X in [set C | connected C /\ C x]) X.
+Lemma connectedU A B : A `&` B !=set0 -> connected A -> connected B ->
+   connected (A `|` B).
+Proof.
+move=> [x [Ax Bx]] Ac Bc; rewrite -bigcup2inE; apply: bigcup_connected.
+  by exists x => //= -[|[|[]]].
+by move=> [|[|[]]].
+Qed.
 
-Lemma component_connected (x : T) : connected (connected_component x).
+Definition connected_component (A : set T) (x : T) :=
+  \bigcup_(A in [set C : set T | [/\ C x, C `<=` A & connected C]]) A.
+
+Lemma component_connected A x : connected (connected_component A x).
 Proof. by apply: bigcup_connected; [exists x => C []|move=> C []]. Qed.
 
+Lemma connected_component_sub A x : connected_component A x `<=` A.
+Proof. by move=> y [B [_ + _]] => /[apply]. Qed.
+
+Lemma connected_component_id A x :
+  A x -> connected A -> connected_component A x = A.
+Proof.
+move=> Ax Ac; apply/seteqP; split; first exact: connected_component_sub.
+by move=> y Ay; exists A => //; split.
+Qed.
+
+Lemma connected_component_out A x :
+  ~ A x -> connected_component A x = set0.
+Proof. by move=> NAx; rewrite -subset0 => y [B [/[swap]/[apply]]]. Qed.
+
+Lemma connected_component_max A B x : B x -> B `<=` A ->
+  connected B -> B `<=` connected_component A x.
+Proof. by move=> Bx BA Bc y By; exists B. Qed.
+
+Lemma connected_component_refl A x : A x -> connected_component A x x.
+Proof. by move=> Ax; exists [set x] => //; split => // _ ->. Qed.
+
+Lemma connected_component_cover A :
+  \bigcup_(A in connected_component A @` A) A = A.
+Proof.
+apply/predeqP => x; split=> [[B [y By <- /connected_component_sub//]]|Ax].
+exists (connected_component A x) => //; last exact: connected_component_refl.
+by exists x.
+Qed.
+
+Lemma connected_component_sym A x y :
+  connected_component A x y -> connected_component A y x.
+Proof. by move=> [B [*]]; exists B. Qed.
+
+Lemma connected_component_trans A y x z :
+    connected_component A x y -> connected_component A y z ->
+  connected_component A x z.
+Proof.
+move=> [B [Bx BA Ac Ay]] [C [Cy CA Cc Cz]]; exists (B `|` C); last by right.
+by split; [left | rewrite subUset | apply: connectedU=> //; exists y].
+Qed.
+
+Lemma same_connected_component A x y : connected_component A x y ->
+  connected_component A x = connected_component A y.
+Proof.
+move=> Axy; apply/seteqP; split => z; apply: connected_component_trans => //.
+by apply: connected_component_sym.
+Qed.
+
 End connected_sets.
+Arguments connected {T}.
+Arguments connected_component {T}.
 
 Lemma connected_continuous_connected (T U : topologicalType) (f : T -> U) A :
   connected A -> continuous f -> connected (f @` A).

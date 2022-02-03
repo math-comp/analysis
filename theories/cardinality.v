@@ -525,7 +525,7 @@ Proof.
 rewrite finite_seqP; exists (enum P).
 by apply/seteqP; split=> x/=; rewrite mem_enum.
 Qed.
-Hint Resolve finite_finpred : core.
+Hint Extern 0 (finite_set [set` _]) => solve [apply: finite_finpred] : core.
 
 Lemma finite_finset {T : finType} {X : set T} : finite_set X.
 Proof.
@@ -725,6 +725,24 @@ Lemma fset_setD1 {T : choiceType} (x : T) (A : set T) :
   finite_set A -> fset_set (A `\ x) = (fset_set A `\ x)%fset.
 Proof. by move=> fA; rewrite fset_setD// fset_set1. Qed.
 
+Lemma fset_set_II n : fset_set `I_n = [fset val i | i in 'I_n]%fset.
+Proof.
+apply/fsetP => i; rewrite /= ?inE in_fset_set//.
+apply/idP/imfsetP; rewrite ?inE/=.
+  by move=> lt_in; exists (Ordinal lt_in).
+by move=> [j _ ->].
+Qed.
+
+Lemma set_fsetK (T : choiceType) (A : {fset T}) : fset_set [set` A] = A.
+Proof.
+apply/fsetP => x; rewrite in_fset_set//=.
+by apply/idP/idP; rewrite ?inE.
+Qed.
+
+Lemma fset_set_inj {T : choiceType} (A B : set T) :
+  finite_set A -> finite_set B -> fset_set A = fset_set B -> A = B.
+Proof. by move=> Afin Bfin /(congr1 pred_set); rewrite !fset_setK. Qed.
+
 Lemma bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
   finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
 Proof.
@@ -832,3 +850,80 @@ Qed.
 
 Lemma card_rat : [set: rat] #= [set: nat].
 Proof. exact/eq_card_nat/infinite_rat/countableP. Qed.
+
+Lemma choicePcountable {T : choiceType} : countable [set: T] ->
+  {T' : countType | T = T' :> Type}.
+Proof.
+move=> /pcard_leP/unsquash f.
+by exists (CountType T (CountMixin (in1TT 'funoK_f))).
+Qed.
+
+Lemma eqPcountable {T : eqType} : countable [set: T] ->
+  {T' : countType | T = T' :> Type}.
+Proof. by elim/eqPchoice: T => T /choicePcountable. Qed.
+
+Lemma Pcountable {T : Type} : countable [set: T] ->
+  {T' : countType | T = T' :> Type}.
+Proof. by elim/Pchoice: T => T /choicePcountable. Qed.
+
+Lemma bigcup_countable {I T} (D : set I) (F : I -> set T) :
+    countable D -> (forall i, D i -> countable (F i)) ->
+  countable (\bigcup_(i in D) F i).
+Proof.
+elim/Ppointed: T => T in F *; first by rewrite emptyE.
+rewrite -(eq_countable (card_setT _)) => cD cF; rewrite bigcup_set_type.
+set G := (fun i : D => F (val i)).
+have {cF}cG i : countable (G i) by apply: cF; apply: set_valP.
+move: (D : Type) cD G cG => {F I}_ /Pcountable[{}D ->] G cG.
+suff: (\bigcup_i G i #<= [set: {i & G i}])%card.
+  have cGT i : countable [set: G i] by rewrite (eq_countable (card_setT _)).
+  have /all_sig[H GE] := fun i => Pcountable (cGT i).
+  by move=> /sub_countable->//; rewrite (eq_fun GE).
+apply/pcard_geP/surjPex; exists (fun (k : {i & G i}) => val (projT2 k)).
+by move=> x [i _] Gix/=; exists (Tagged G (SigSub (mem_set Gix))).
+Qed.
+
+
+Lemma countableMR T T' (A : set T) (B : T -> set T') :
+  countable A -> (forall i, countable (B i)) -> countable (A `*`` B).
+Proof.
+elim/Ppointed: T => T in A B *; first by rewrite emptyE -bigcupM1l bigcup_set0.
+elim/Ppointed: T' => T' in B *.
+  by rewrite -bigcupM1l bigcup0// => i; rewrite emptyE setM0.
+move=> Ac Bc; rewrite -bigcupM1l bigcup_countable// => i Ai.
+have /ppcard_leP[f] := Bc i; apply/pcard_geP/surjPex.
+exists (fun k => (i, f^-1%FUN k)) => -[_ j]/= [-> dj].
+by exists (f j) => //=; rewrite funK ?inE.
+Qed.
+
+Lemma countableM T1 T2 (D1 : set T1) (D2 : set T2) :
+  countable D1 -> countable D2 -> countable (D1 `*` D2).
+Proof. by move=> D1c D2c; apply: countableMR (fun=> D2c). Qed.
+
+Lemma infiniteMRl T T' (A : set T) (B : T -> set T') :
+  infinite_set A -> (forall i, B i !=set0) -> infinite_set (A `*`` B).
+Proof.
+move=> /infiniteP/pcard_geP[f] /(_ _)/cid-/all_sig[b Bb].
+apply/infiniteP/pcard_geP/surjPex; exists (fun x => f x.1).
+by move=> i iT; have [a Aa fa] := 'oinvP_f iT; exists (a, b a) => /=.
+Qed.
+
+Lemma cardMR_eq_nat T T' (A : set T) (B : T -> set T') :
+    (A #= [set: nat] -> (forall i, countable (B i) /\ B i !=set0) ->
+   A `*`` B #= [set: nat])%card.
+Proof.
+rewrite !card_eq_le => /andP[Acnt /infiniteP Ainfty] /all_and2[Bcnt Bn0].
+by rewrite [(_ #<= _)%card]countableMR//=; apply/infiniteP/infiniteMRl.
+Qed.
+
+Lemma countable1 T (x : T) : countable [set x].
+Proof. exact: finite_set_countable. Qed.
+Hint Resolve countable1 : core.
+
+Lemma countable_fset (T : choiceType) (X : {fset T}) : countable [set` X].
+Proof. exact: finite_set_countable. Qed.
+Hint Resolve countable_fset : core.
+
+Lemma countable_finpred (T : finType) (pT : predType T) (P : pT) : countable [set` P].
+Proof. exact: finite_set_countable. Qed.
+Hint Extern 0 (is_true (countable [set` _])) => solve [apply: countable_finpred] : core.

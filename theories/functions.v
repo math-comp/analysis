@@ -1572,6 +1572,17 @@ Qed.
 Arguments inv_sub_image {aT rT A B} f {C} _.
 
 (**************)
+(* Injections *)
+(**************)
+
+Lemma trivIset_inj T I (D : set I) (F : I -> set T) :
+  (forall i, D i -> F i !=set0) -> trivIset D F -> set_inj D F.
+Proof.
+move=> FN0 Ftriv i j; rewrite !inE => Di Dj Fij.
+by apply: Ftriv Di (Dj) _; rewrite Fij setIid; apply: FN0.
+Qed.
+
+(**************)
 (* Bijections *)
 (**************)
 
