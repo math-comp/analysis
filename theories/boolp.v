@@ -431,6 +431,25 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 
+Lemma notT (P : Prop) : P = False -> ~ P. Proof. by move->. Qed.
+
+Lemma contrapT P : ~ ~ P -> P.
+Proof.
+by move/asboolPn=> nnb; apply/asboolP; apply: contraR nnb => /asboolPn /asboolP.
+Qed.
+
+Lemma notTE (P : Prop) : (~ P) -> P = False.
+Proof. by case: (pdegen P)=> ->. Qed.
+
+Lemma notFE (P : Prop) : (~ P) = False -> P.
+Proof. move/notT; exact: contrapT. Qed.
+
+Lemma notK : involutive not.
+Proof.
+move=> P; case: (pdegen P)=> ->; last by apply: notTE; intuition.
+by rewrite [~ True]notTE //; case: (pdegen (~ False)) => // /notFE.
+Qed.
+
 Lemma contra_notP (Q P : Prop) : (~ Q -> P) -> ~ P -> Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolP.
@@ -443,25 +462,23 @@ move=> cb /asboolP hb; apply/asboolP.
 by apply: contraLR hb => /asboolP /cb /asboolPn.
 Qed.
 
-Lemma contrapT P : ~ ~ P -> P.
-Proof.
-by move/asboolPn=> nnb; apply/asboolP; apply: contraR nnb => /asboolPn /asboolP.
-Qed.
+Lemma contra_notT b (P : Prop) : (~~ b -> P) -> ~ P -> b.
+Proof. by move=> bP; apply: contra_notP => /negP. Qed.
+
+Lemma contraPT (P : Prop) b : (~~ b -> ~ P) -> P -> b.
+Proof. by move=> /contra_notT; rewrite notK. Qed.
+
+Lemma contraTP b (Q : Prop) : (~ Q -> ~~ b) -> b -> Q.
+Proof. by move=> QB; apply: contraPP => /QB/negP. Qed.
+
+Lemma contraNP (P : Prop) (b : bool) : (~ P -> b) -> ~~ b -> P.
+Proof. by move=> /contra_notP + /negP => /[apply]. Qed.
+
+Lemma contra_neqP (T : eqType) (x y : T) P : (~ P -> x = y) -> x != y -> P.
+Proof. by move=> Pxy; apply: contraNP => /Pxy/eqP. Qed.
 
 Lemma wlog_neg P : (~ P -> P) -> P.
 Proof. by move=> ?; case: (pselect P). Qed.
-
-Lemma notT (P : Prop) : P = False -> ~ P. Proof. by move->. Qed.
-
-Lemma notTE (P : Prop) : (~ P) -> P = False. Proof. by case: (pdegen P)=> ->. Qed.
-Lemma notFE (P : Prop) : (~ P) = False -> P.
-Proof. move/notT; exact: contrapT. Qed.
-
-Lemma notK : involutive not.
-Proof.
-move=> P; case: (pdegen P)=> ->; last by apply: notTE; intuition.
-by rewrite [~ True]notTE //; case: (pdegen (~ False)) => // /notFE.
-Qed.
 
 Lemma not_inj : injective not. Proof. exact: can_inj notK. Qed.
 Lemma notLR P Q : (P = ~ Q) -> (~ P) = Q. Proof. exact: canLR notK. Qed.

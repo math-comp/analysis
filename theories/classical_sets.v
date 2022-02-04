@@ -589,6 +589,15 @@ Proof. by rewrite setIC setDIK. Qed.
 Lemma setD1K a A : A a -> a |` A `\ a = A.
 Proof.  by move=> Aa; rewrite setDUK//= => x ->. Qed.
 
+Lemma setI1 A a : A `&` [set a] = if a \in A then [set a] else set0.
+Proof.
+by apply/predeqP => b; case: ifPn; rewrite (inE, notin_set) => Aa;
+   split=> [[]|]//; [move=> -> //|move=> /[swap] -> /Aa].
+Qed.
+
+Lemma set1I A a : [set a] `&` A = if a \in A then [set a] else set0.
+Proof. by rewrite setIC setI1. Qed.
+
 Lemma subset0 A : (A `<=` set0) = (A = set0).
 Proof. by rewrite eqEsubset propeqE; split=> [A0|[]//]; split. Qed.
 
