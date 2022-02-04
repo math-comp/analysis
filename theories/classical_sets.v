@@ -561,6 +561,25 @@ Proof. by move=> /setDUK; rewrite setUC. Qed.
 Lemma setDv A : A `\` A = set0.
 Proof. by rewrite predeqE => t; split => // -[]. Qed.
 
+Lemma setUv A : A `|` ~` A = setT.
+Proof. by apply/predeqP => x; split=> //= _; apply: lem. Qed.
+
+Lemma setIv A : A `&` ~` A = set0. Proof. by rewrite -setDE setDv. Qed.
+Lemma setvU A : ~` A `|` A = setT. Proof. by rewrite setUC setUv. Qed.
+Lemma setvI A : ~` A `&` A = set0. Proof. by rewrite setIC setIv. Qed.
+
+Lemma setUCK A B : (A `|` B) `|` ~` B = setT.
+Proof. by rewrite -setUA setUv setUT. Qed.
+
+Lemma setUKC A B : ~` A `|` (A `|` B) = setT.
+Proof. by rewrite setUA setvU setTU. Qed.
+
+Lemma setICK A B : (A `&` B) `&` ~` B = set0.
+Proof. by rewrite -setIA setIv setI0. Qed.
+
+Lemma setIKC A B : ~` A `&` (A `&` B) = set0.
+Proof. by rewrite setIA setvI set0I. Qed.
+
 Lemma setDIK A B : A `&` (B `\` A) = set0.
 Proof. by rewrite setDE setICA -setDE setDv setI0. Qed.
 
@@ -1347,19 +1366,47 @@ Lemma setU_bigcapl F P A :
   \bigcap_(i in P) F i `|` A = \bigcap_(i in P) (F i `|` A).
 Proof. by rewrite setUC setU_bigcapr//; under eq_bigcapr do rewrite setUC. Qed.
 
-Lemma bigcup_mkcond F P :
-  \bigcup_(i in P) F i = \bigcup_i if `[< P i >] then F i else set0.
+Lemma bigcup_mkcond P F :
+  \bigcup_(i in P) F i = \bigcup_i if i \in P then F i else set0.
 Proof.
 rewrite predeqE => x; split=> [[i Pi Fix]|[i _]].
-  by exists i => //; case: asboolP.
-by case: asboolP => // Pi Fix; exists i.
+  by exists i => //; case: ifPn; rewrite (inE, notin_set).
+by case: ifPn; rewrite (inE, notin_set) => Pi Fix; exists i.
+Qed.
+
+Lemma bigcup_mkcondr P Q F :
+  \bigcup_(i in P `&` Q) F i = \bigcup_(i in P) if i \in Q then F i else set0.
+Proof.
+rewrite bigcup_mkcond [RHS]bigcup_mkcond; apply: eq_bigcupr => i _.
+by rewrite in_setI; case: (i \in P) (i \in Q) => [] [].
+Qed.
+
+Lemma bigcup_mkcondl P Q F :
+  \bigcup_(i in P `&` Q) F i = \bigcup_(i in Q) if i \in P then F i else set0.
+Proof.
+rewrite bigcup_mkcond [RHS]bigcup_mkcond; apply: eq_bigcupr => i _.
+by rewrite in_setI; case: (i \in P) (i \in Q) => [] [].
 Qed.
 
 Lemma bigcap_mkcond F P :
-  \bigcap_(i in P) F i = \bigcap_i if `[< P i >] then F i else setT.
+  \bigcap_(i in P) F i = \bigcap_i if i \in P then F i else setT.
 Proof.
 apply: setC_inj; rewrite !setC_bigcap bigcup_mkcond; apply: eq_bigcupr => i _.
-by case: asboolP => //; rewrite setCT.
+by case: ifP; rewrite ?setCT.
+Qed.
+
+Lemma bigcap_mkcondr P Q F :
+  \bigcap_(i in P `&` Q) F i = \bigcap_(i in P) if i \in Q then F i else setT.
+Proof.
+rewrite bigcap_mkcond [RHS]bigcap_mkcond; apply: eq_bigcapr => i _.
+by rewrite in_setI; case: (i \in P) (i \in Q) => [] [].
+Qed.
+
+Lemma bigcap_mkcondl P Q F :
+  \bigcap_(i in P `&` Q) F i = \bigcap_(i in Q) if i \in P then F i else setT.
+Proof.
+rewrite bigcap_mkcond [RHS]bigcap_mkcond; apply: eq_bigcapr => i _.
+by rewrite in_setI; case: (i \in P) (i \in Q) => [] [].
 Qed.
 
 Lemma bigcup_imset1 P (f : I -> T) : \bigcup_(x in P) [set f x] = f @` P.
@@ -1423,6 +1470,16 @@ Lemma bigcup_bigcup {J : Type} (F : I -> J -> set T) (P : set I) (Q : set J) :
   \bigcup_(i in P) \bigcup_(j in Q) F i j =
   \bigcup_(k in P `*` Q) F k.1 k.2.
 Proof. exact: bigcup_bigcup_dep. Qed.
+
+Lemma bigcupID (Q : set I) (F : I -> set T) (P : set I) :
+  \bigcup_(i in P) F i =
+    (\bigcup_(i in P `&` Q) F i) `|` (\bigcup_(i in P `&` ~` Q) F i).
+Proof. by rewrite -bigcup_setU -setIUr setUv setIT. Qed.
+
+Lemma bigcapID (Q : set I) (F : I -> set T) (P : set I) :
+  \bigcap_(i in P) F i =
+    (\bigcap_(i in P `&` Q) F i) `&` (\bigcap_(i in P `&` ~` Q) F i).
+Proof. by rewrite -bigcap_setU -setIUr setUv setIT. Qed.
 
 End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.

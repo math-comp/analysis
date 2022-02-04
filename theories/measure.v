@@ -986,7 +986,7 @@ Lemma bigcup_measurable (F : (set T)^nat) (P : set nat) :
   (forall k, P k -> measurable (F k)) -> measurable (\bigcup_(i in P) F i).
 Proof.
 move=> PF; rewrite bigcup_mkcond; apply: measurable_bigcup => k.
-by case: asboolP => // Pk; exact: PF.
+by case: ifP => //; rewrite inE; exact: PF.
 Qed.
 
 Lemma bigcap_measurable (F : (set T)^nat) (P : set nat) :
