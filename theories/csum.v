@@ -181,6 +181,31 @@ rewrite big_seq_cond [RHS]big_seq_cond; apply: eq_bigl => i.
 by case: (boolP (i \in X)) => //= /XI Ii; apply/mem_set.
 Qed.
 
+Lemma csum_mkcondl [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R) :
+  \csum_(i in I `&` J) a i = \csum_(i in I) if i \in J then a i else 0.
+Proof.
+rewrite csum_mkcond [RHS]csum_mkcond; apply: eq_csum=> i _.
+by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
+Qed.
+
+Lemma csum_mkcondr [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R) :
+  \csum_(i in I `&` J) a i = \csum_(i in J) if i \in I then a i else 0.
+Proof.
+rewrite csum_mkcond [RHS]csum_mkcond; apply: eq_csum=> i _.
+by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
+Qed.
+
+Lemma csumID (R : realType) (I : choiceType) (B : set I) (A : set I)
+  (F : I -> \bar R) :
+  (forall i, A i -> F i >= 0) ->
+  \csum_(i in A) F i = (\csum_(i in A `&` B) F i) +
+                        (\csum_(i in A `&` ~` B) F i).
+Proof.
+move=> F0; rewrite !csum_mkcondl -csumD; do ?by move=> i /F0; case: ifP.
+by apply: eq_csum=> i; rewrite in_setC; case: ifP; rewrite /= (adde0, add0e).
+Qed.
+Arguments csumID {R I}.
+
 Lemma csum_sum [R : realType] [T1 T2 : choiceType]
     (I : set T1) (r : seq T2) (P : pred T2) (a : T1 -> T2 -> \bar R) :
   (forall i j, I i -> P j -> 0 <= a i j) ->
@@ -307,15 +332,19 @@ by apply: eq_big_seq => i /XQ Qi; rewrite invK ?inE.
 Qed.
 Arguments reindex_csum {R T T'} P Q e a.
 
+Lemma csum_image (R : realType) (T T' : choiceType)
+    (P : set T) (e : T -> T') (a : T' -> \bar R) :
+    set_inj P e -> (forall i, P i -> 0 <= a (e i)) ->
+  \csum_(j in e @` P) a j = \csum_(i in P) a (e i).
+Proof. by move=> /inj_bij; apply: reindex_csum. Qed.
+Arguments csum_image {R T T'} P e a.
+
 Lemma csum_pred_image (R : realType) (T : choiceType) (a : T -> \bar R)
     (e : nat -> T) (P : pred nat) :
     (forall n, P n -> 0 <= a (e n)) ->
     set_inj P e ->
   \csum_(i in e @` P) a i = \sum_(i <oo | P i) a (e i).
-Proof.
-move=> ae_ge0 einj; rewrite ereal_pseries_csum//; apply: reindex_csum => //=.
-exact: inj_bij.
-Qed.
+Proof. by move=> a0 einj; rewrite csum_image// ereal_pseries_csum. Qed.
 Arguments csum_pred_image {R T} a e P.
 
 Lemma csum_set_image  [R : realType] [T : choiceType] [a : T -> \bar R]
@@ -324,10 +353,8 @@ Lemma csum_set_image  [R : realType] [T : choiceType] [a : T -> \bar R]
   set_inj P e ->
   \csum_(i in [set e x | x in P]) a i = \sum_(i <oo | i \in P) a (e i).
 Proof.
-move=> a_ge0 e_injg; rewrite -csum_pred_image//.
-- by congr csum; congr image; apply/predeqP; split; rewrite ?inE.
-- by move=> n; rewrite inE; apply: a_ge0.
-- by move=> i j; rewrite inE => Pi; rewrite inE; apply: e_injg.
+move=> a0 einj; rewrite csum_image// ereal_pseries_csum ?set_mem_set//.
+by move=> n; rewrite inE => /a0.
 Qed.
 Arguments csum_set_image {R T} a e P.
 
