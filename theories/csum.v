@@ -181,14 +181,14 @@ rewrite big_seq_cond [RHS]big_seq_cond; apply: eq_bigl => i.
 by case: (boolP (i \in X)) => //= /XI Ii; apply/mem_set.
 Qed.
 
-Lemma csum_mkcondl [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R) :
+Lemma csum_mkcondr [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R) :
   \csum_(i in I `&` J) a i = \csum_(i in I) if i \in J then a i else 0.
 Proof.
 rewrite csum_mkcond [RHS]csum_mkcond; apply: eq_csum=> i _.
 by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
 Qed.
 
-Lemma csum_mkcondr [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R) :
+Lemma csum_mkcondl [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R) :
   \csum_(i in I `&` J) a i = \csum_(i in J) if i \in I then a i else 0.
 Proof.
 rewrite csum_mkcond [RHS]csum_mkcond; apply: eq_csum=> i _.
@@ -201,7 +201,7 @@ Lemma csumID (R : realType) (I : choiceType) (B : set I) (A : set I)
   \csum_(i in A) F i = (\csum_(i in A `&` B) F i) +
                         (\csum_(i in A `&` ~` B) F i).
 Proof.
-move=> F0; rewrite !csum_mkcondl -csumD; do ?by move=> i /F0; case: ifP.
+move=> F0; rewrite !csum_mkcondr -csumD; do ?by move=> i /F0; case: ifP.
 by apply: eq_csum=> i; rewrite in_setC; case: ifP; rewrite /= (adde0, add0e).
 Qed.
 Arguments csumID {R I}.
