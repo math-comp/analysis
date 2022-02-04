@@ -1029,7 +1029,7 @@ by move=> A MA; apply g_salgebra_self.
 Qed.
 
 Definition measurable_fun (T U : measurableType) (D : set T) (f : T -> U) :=
-  forall Y, measurable Y -> measurable (D `&` f @^-1` Y).
+  measurable D -> forall Y, measurable Y -> measurable (D `&` f @^-1` Y).
 
 (* TODO: move to measure.v *)
 Section measurability.
@@ -1043,7 +1043,7 @@ Lemma preimage_class_measurable_fun (aT : pointedType) (rT : measurableType)
   (D : set aT) (f : aT -> rT) :
   @measurable_fun (g_measurableType (preimage_class D f measurable))
     rT D f.
-Proof. by move=> A mA; apply: g_salgebra_self; exists A. Qed.
+Proof. by move=> mD A mA; apply: g_salgebra_self; exists A. Qed.
 
 Lemma are_measurable_sets_preimage_class (aT rT : Type) (G : set (set rT))
     (D : set aT) (f : aT -> rT) :
@@ -1106,11 +1106,11 @@ by move=> _ [B mB <-]; exact: sG'sfun.
 Qed.
 
 Lemma measurability (aT rT : measurableType) (D : set aT) (f : aT -> rT)
-    (G' : set (set rT)) : measurable D ->
+    (G' : set (set rT)) :
   @measurable rT = s<< G' >> -> preimage_class D f G' `<=` @measurable aT ->
   measurable_fun D f.
 Proof.
-move=> mD sG_rT fG_aT.
+move=> sG_rT fG_aT mD.
 suff h : preimage_class D f (@measurable rT) `<=` @measurable aT.
   by move=> A mA; apply: h; exists A.
 have -> : preimage_class D f (@measurable rT) =
