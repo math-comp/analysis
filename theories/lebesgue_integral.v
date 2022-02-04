@@ -1236,18 +1236,16 @@ Lemma eq_fsbigl (T : choiceType) (f : T -> R) (P Q : set T) :
 Proof. by move=> ->. Qed.
 End fsbig0.
 
-Section fsbig1.
-Variables (R : Type) (idx : R) (op : Monoid.com_law idx).
-
-(* TODO: generalize to P `&` (f @^-1` [set~ idx] `|` g @^-1` [set~ idx]) *)
-Lemma eq_fsbigr (T : choiceType) (f g : T -> R) (P : set T) :
+Lemma eq_fsbigr (R : Type) (idx : R) (op : Monoid.com_law idx)
+    (T : choiceType) (f g : T -> R) (P : set T) :
   {in P, f =1 g} -> (\big[op/idx]_(x \in P) f x = \big[op/idx]_(x \in P) g x).
 Proof.
 move=> fg; rewrite (eq_finite_support _ fg); apply: eq_big_seq => x.
 by case: finite_supportP => //= X XP _ gidx xX; rewrite fg // ?inE; apply/XP.
 Qed.
 
-Lemma fsbig_ID (I : choiceType) (B : set I) (A : set I) (F : I -> R) :
+Lemma fsbig_ID (R : Type) (idx : R) (op : Monoid.com_law idx)
+    (I : choiceType) (B : set I) (A : set I) (F : I -> R) :
   finite_set (A `&` F @^-1` [set~ idx]) ->
   \big[op/idx]_(i \in A) F i = op (\big[op/idx]_(i \in A `&` B) F i)
                                   (\big[op/idx]_(i \in A `&` ~` B) F i).
@@ -1276,8 +1274,6 @@ rewrite inE => -[[Ai Bi] Fi0].
 rewrite !inE/=; apply/andP; split; last by rewrite notin_set.
 by rewrite in_fset_set ?inE.
 Qed.
-
-End fsbig1.
 Arguments fsbig_ID {R idx op I} B.
 
 Lemma fsbigTE (R : Type) (idx : R) (op : Monoid.com_law idx) (T : choiceType)
@@ -1317,6 +1313,22 @@ case: finite_supportP => //.
 move=> X XA fidx XE; case: finite_supportP; rewrite gAf -?XE//=.
 move=> Y _ gidx /predeqP/=/(_ _)/propext YX.
 by apply/idP/andP => [|[]]; rewrite YX// inE => Xi; split=> //; apply: XA.
+Qed.
+
+Lemma fsbig_mkcondr (R : Type) (idx : R) (op : Monoid.com_law idx)
+    (T : choiceType) (I J : set T) (a : T -> R) :
+  \big[op/idx]_(i \in I `&` J) a i = \big[op/idx]_(i \in I) if i \in J then a i else idx.
+Proof.
+rewrite fsbig_mkcond [RHS]fsbig_mkcond; apply: eq_fsbigr => i _.
+by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
+Qed.
+
+Lemma fsbig_mkcondl (R : Type) (idx : R) (op : Monoid.com_law idx)
+     (T : choiceType) (I J : set T) (a : T -> R) :
+  \big[op/idx]_(i \in I `&` J) a i = \big[op/idx]_(i \in J) if i \in I then a i else idx.
+Proof.
+rewrite fsbig_mkcond [RHS]fsbig_mkcond; apply: eq_fsbigr => i _.
+by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
 Qed.
 
 Lemma bigfs (R : Type) (idx : R) (op : Monoid.com_law idx) (T : choiceType)
@@ -1410,6 +1422,14 @@ rewrite -(big_mkord xpredT) [LHS]fsbig_seq ?iota_uniq//.
 by apply: eq_fsbigl; rewrite -Iiota /index_iota subn0.
 Qed.
 
+Lemma fsbig_finite (R : Type) (idx : R) (op : Monoid.com_law idx) (T : choiceType)
+    (D : set T) (F : T -> R) : finite_set D ->
+  \big[op/idx]_(x \in D) F x = \big[op/idx]_(x <- fset_set D) F x.
+Proof.
+elim/Peq: R => R in idx op F * => Dfin.
+by apply: fsbig_fwiden; rewrite ?fset_setK// setDv.
+Qed.
+
 Lemma fsbig_set0 (R : Type) (idx : R) (op : Monoid.com_law idx) (T : choiceType)
   (F : T -> R) : \big[op/idx]_(x \in set0) F x = idx.
 Proof. by rewrite (fsbigE [::])// big_nil. Qed.
@@ -1457,20 +1477,22 @@ rewrite gh; apply/fsetP=> j; apply/idP/imfsetP => [Yj | [i iX ->]]; last first.
 by exists (g^-1%FUN j); rewrite ?invK ?inE ?BY// -AX; apply: funS; rewrite BY.
 Qed.
 
+Lemma fsbig_image {I J : choiceType} P (h : I -> J) (F : J -> R) : set_inj P h ->
+  \big[op/idx]_(j \in h @` P) F j = \big[op/idx]_(i \in P) F (h i).
+Proof. by move=> /inj_bij; apply: reindex_fsbig. Qed.
+
 (* Lemma reindex_inside I F P ...  : finite_set (P `&` F @` [set~ id]) -> ... *)
 #[deprecated(note="use reindex_fsbig")]
-Lemma reindex_inside {I J : choiceType} P Q (h : I -> J)
-    (F : J -> R) : bijective h ->
-  P `<=` h @` Q ->
-  Q `<=` h @^-1` P ->
+Lemma reindex_inside {I J : choiceType} P Q (h : I -> J) (F : J -> R) :
+  bijective h -> P `<=` h @` Q -> Q `<=` h @^-1` P ->
   \big[op/idx]_(j \in P) F j = \big[op/idx]_(i \in Q) F (h i).
 Proof.
 move=> hbij PQ QP; apply: reindex_fsbig; split=> //.
 by move=> x y _ _ /(bij_inj hbij).
 Qed.
 
-Lemma reindex_inside_setT {I J : choiceType} (h : I -> J)
-    (F : J -> R) : bijective h ->
+Lemma reindex_inside_setT {I J : choiceType} (h : I -> J) (F : J -> R) :
+  bijective h ->
   \big[op/idx]_(j \in [set: J]) F j = \big[op/idx]_(i \in [set: I]) F (h i).
 Proof.
 move=> hbij; apply: reindex_inside => // x _ /=.
