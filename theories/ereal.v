@@ -2595,7 +2595,7 @@ Proof. by move=> A B AB; apply lb_ereal_inf => x Bx; exact/ereal_inf_lb/AB. Qed.
 
 End ereal_supremum_realType.
 
-Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) +oo.
+Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) 0%E.
 
 Section ereal_nbhs.
 Context {R : numFieldType}.
