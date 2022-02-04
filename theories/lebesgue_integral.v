@@ -521,15 +521,13 @@ Section funpos_measurable.
 Variables (T : measurableType) (R : realType).
 
 Lemma emeasurable_fun_funenng (D : set T) (f : T -> \bar R) :
-  measurable D -> measurable_fun D f -> measurable_fun D f^\+.
-Proof.
-by move=> mD mf; apply: emeasurable_fun_max => //; apply: measurable_fun_cst.
-Qed.
+  measurable_fun D f -> measurable_fun D f^\+.
+Proof. by move=> mf; apply: emeasurable_fun_max => //; apply: measurable_fun_cst. Qed.
 
 Lemma emeasurable_fun_funennp (D : set T) (f : T -> \bar R) :
-  measurable D -> measurable_fun D f -> measurable_fun D f^\-.
+   measurable_fun D f -> measurable_fun D f^\-.
 Proof.
-move=> mD mf; apply: emeasurable_fun_max => //; last exact: measurable_fun_cst.
+move=> mf; apply: emeasurable_fun_max => //; last exact: measurable_fun_cst.
 by apply: measurable_fun_comp => //; apply: emeasurable_fun_minus.
 Qed.
 
@@ -643,6 +641,10 @@ Lemma finfun0 : (0 : {fimfun A >-> rT}) =1 cst 0. Proof. by []. Qed.
 Lemma fimfun_sum I r (P : {pred I}) (f : I -> {fimfun A >-> rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+
+HB.instance Definition _ f g := FImFun.copy (f \+ g) (f + g).
+HB.instance Definition _ f g := FImFun.copy (\- f) (- f).
+HB.instance Definition _ f g := FImFun.copy (f \- g) (f - g).
 End zmod.
 
 Section ring.
@@ -688,6 +690,9 @@ Section comring.
 Context (aT : pointedType) (rT : comRingType) (A : set aT).
 Definition fimfun_comRingMixin := [comRingMixin of {fimfun A >-> rT} by <:].
 Canonical fimfun_comRingType := ComRingType {fimfun A >-> rT} fimfun_comRingMixin.
+
+Implicit Types (f g : {fimfun A >-> rT}).
+HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
 End comring.
 
 Lemma fimfunE T (R : ringType) (A : set T) (f : {fimfun A >-> R}) x :
@@ -713,6 +718,16 @@ Proof. by move=> y z _ _ [x [<- <-]]. Qed.
 Lemma trivIset_preimage1_in {aT} {rT : choiceType} (f : aT -> rT) (A : set aT) :
   trivIset setT (fun x => A `&` f @^-1` [set x]).
 Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
+
+Section fimfun_bin.
+Variables (T : measurableType) (R : numDomainType) (D : set T).
+Variables (f g : {fimfun D >-> R}).
+
+Lemma max_fimfun_subproof : @FiniteImage T R D (f \max g).
+Proof. by split; apply: finite_image11. Qed.
+HB.instance Definition _ := max_fimfun_subproof.
+
+End fimfun_bin.
 
 HB.factory Record FiniteDecomp (T : pointedType) (R : ringType) (A : set T) (f : T -> R) := {
   fimfunE : exists (r : seq R) (A_ : R -> set T),
@@ -965,7 +980,7 @@ case: ifPn => B1; case: ifPn => B0 //.
 Qed.
 HB.instance Definition _ D A mA := @indic1_mfun_subproof D A mA.
 Definition nnsfun_indic1 (D A : set T) (mA : measurable A) :=
-  [the {nnfun D >-> R} of mindic mA].
+  [the {nnsfun D >-> R} of mindic mA].
 
 End nnsfun_functions.
 Arguments nnsfun0 {T R D}.
@@ -987,36 +1002,6 @@ HB.instance Definition _ := max_nnfun_subproof.
 
 End nnfun_bin.
 
-Lemma finite_setN T (R : numDomainType) (D : set T) (g : T -> R) :
-  finite_set (g @` D) -> finite_set [set (- g x)%R | x in D].
-Proof.
-move=> [n gn]; exists n; apply: card_eq_trans gn.
-have := @inj_card_eq _ _ (g @` D) -%R.
-by rewrite image_comp; apply => x y _ _ /eqP; rewrite eqr_opp => /eqP.
-Qed.
-
-Section fimfun_bin.
-Variables (T : measurableType) (R : realType) (D : set T).
-Variables (f g : {fimfun D >-> R}).
-
-Lemma add_fimfun_subproof : @FiniteImage T R D (f \+ g).
-Proof. by split; apply: finite_image11. Qed.
-HB.instance Definition _ := add_fimfun_subproof.
-
-Lemma sub_fimfun_subproof : @FiniteImage T R D (f \- g).
-Proof. by split; apply: finite_image11 => //; exact: finite_setN. Qed.
-HB.instance Definition _ := sub_fimfun_subproof.
-
-Lemma mul_fimfun_subproof : @FiniteImage T R D (f \* g).
-Proof. by split; apply: finite_image11. Qed.
-HB.instance Definition _ := mul_fimfun_subproof.
-
-Lemma max_fimfun_subproof : @FiniteImage T R D (f \max g).
-Proof. by split; apply: finite_image11. Qed.
-HB.instance Definition _ := max_fimfun_subproof.
-
-End fimfun_bin.
-
 Section nnsfun_bin.
 Variables (T : measurableType) (R : realType).
 Variables (D : set T) (f g : {nnsfun D >-> R}).
@@ -1025,6 +1010,10 @@ Lemma add_mfun_subproof : @IsMeasurableFun T _ D (f \+ g).
 Proof. by split; apply: measurable_funD. Qed.
 HB.instance Definition _ := add_mfun_subproof.
 Definition nnsfun_add := [the {nnsfun D >-> R} of f \+ g].
+
+Lemma opp_mfun_subproof : @IsMeasurableFun T _ D (\- f).
+Proof. by split; apply: measurable_funN. Qed.
+HB.instance Definition _ := opp_mfun_subproof.
 
 Lemma sub_mfun_subproof : @IsMeasurableFun T _ D (f \- g).
 Proof. by split; apply: measurable_funB. Qed.
@@ -2280,18 +2269,14 @@ Variables (T : measurableType) (R : realType).
 Variable m : {measure set T -> \bar R}.
 Variables (D : set T) (mD : measurable D) (f g : {nnsfun D >-> R}).
 Hypothesis fg : forall x, D x -> f x <= g x.
-Let gf_ge0 : forall x, D x -> 0 <= (g \- f) x.
-Proof.
-move=> x Dx.
-by rewrite subr_ge0 fg.
-Qed.
-Definition fgIsNonNegFun := @IsNonNegFun.Build T R D (g \- f) gf_ge0.
-#[local] HB.instance Definition _ := fgIsNonNegFun.
+
+Let fgnn : @IsNonNegFun T R D (g \- f).
+Proof. by split=> x Dx; rewrite subr_ge0 fg. Qed.
+#[local] HB.instance Definition _ := fgnn.
 
 Lemma le_sintegral : (sintegral m D f <= sintegral m D g)%E.
 Proof.
-have gfgf : {in D, g =1 f \+ (g \- f)}.
-  by move=> x /= xD; rewrite /= addrC subrK.
+have gfgf : {in D, g =1 f \+ (g \- f)} by move=> x xD /=; rewrite addrC subrK.
 by rewrite (eq_sintegral m gfgf) sintegralD// lee_addl // sintegral_ge0.
 Qed.
 
