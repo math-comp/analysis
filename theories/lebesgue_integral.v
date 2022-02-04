@@ -2314,6 +2314,14 @@ move=> nd_f; apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvg => a b ab.
 by apply: le_sintegral => // => x Dx; apply/nd_f.
 Qed.
 
+Definition nnsfun_proj (T : measurableType) (R : realType) (D : set T)
+    (f : {nnsfun D >-> R}) (A : set T) (mA : measurable A) :=
+  nnsfun_mul f (nnsfun_indic1 R D mA).
+
+Definition nnsfun_scale (T : measurableType) (R : realType) (D : set T)
+    (f : {nnsfun D >-> R}) (k : R) (k0 : 0 <= k) :=
+  nnsfun_mul (nnsfun_cst D (Nonneg.NngNum _ k0)) f.
+
 Section sintegral_nondecreasing_limit_lemma.
 Variables (T : measurableType) (R : realType).
 Variable mu : {measure set T -> \bar R}.
@@ -2352,18 +2360,19 @@ rewrite predeqE => t; split => [/= cfgn|].
   admit.
 Admitted.
 
-Let g1 c n : {nnsfun (fleg c n) >-> R} := nnsfun_indic1 R (fleg c n).
-(*Let g1 c n := nnsfun_proj f (mfleg c n).*)
+Let g1 c n : {nnsfun D >-> R} := nnsfun_proj f (mfleg c n).
 
 Let le_ffleg c : {homo (fun p x => g1 c p x): m n / (m <= n)%N >-> (m <= n)%O}.
 Proof.
 move=> m n mn; apply/asboolP => t.
-rewrite /g1 /=.
-rewrite /indic.
-have [/=|] := boolP (t \in fleg c m); last by rewrite ler_nat.
+rewrite /g1 /= ler_pmul//.
+  apply: fun_ge0.
+  admit.
+rewrite /mindic /= /indic ler_nat.
+have [/=|tcm] := boolP (t \in fleg c m); last by [].
 rewrite inE => cnt.
 by have := nd_fleg c mn => /subsetPset/(_ _ cnt) cmt; rewrite mem_set.
-Qed.
+Admitted.
 
 Let bigcup_fleg c : c < 1 -> \bigcup_n fleg c n = D.
 Proof.
@@ -2429,17 +2438,20 @@ suff ? : forall c, (0 < c < 1)%R ->
   by apply/lee_mul01Pr => //; apply: sintegral_ge0.
 move=> c /andP[c0 c1].
 have cg1g n : c%:E * sintegral mu D (g1 c n) <= sintegral mu D (g n).
-(*  rewrite -(sintegralrM mu c (g1 c n)).
-  apply: (@le_sintegral _ _ _ _ _ _ (nnsfun_scale pt (g1 c n) (ltW c0))) => //=.
+  rewrite -(sintegralrM mu c (g1 c n)).
+  rewrite (_ : (_ \* _)%R = (nnsfun_scale (g1 c n) (ltW c0)))//.
+  apply: le_sintegral => //.
   have : forall m x, D x -> (c * g1 c m x <= g m x)%R.
-    move=> m x Dx; rewrite /g1 presfun_projE /fleg /=; have [|] := boolP (x \in _).
+    move=> m x Dx; rewrite /g1.
+    rewrite /nnsfun_proj/= /mindic /indic.
+    have [|] := boolP (x \in _).
       by rewrite inE => -[/=]; rewrite mulr1.
-    by rewrite 2!mulr0 NNSFun.ge0.
-  by move=> h t Dt; have := h n t Dt; rewrite sfun_scaleE.*) admit.
+    by rewrite 2!mulr0 fun_ge0.
+  by move=> h t Dt; have := h n t Dt.
 suff {cg1g}<- : lim (fun n => sintegral mu D (g1 c n)) = sintegral mu D f.
   have is_cvg_g1 : cvg (fun n => sintegral mu D (g1 c n)).
-    (* apply: is_cvg_sintegral => //= x Dx m n mn.
-    by have /lefP/(_ x) := le_ffleg c mn; rewrite !presfun_projE.*) admit.
+    apply: is_cvg_sintegral => //= x Dx m n mn.
+    by have /lefP/(_ x) := le_ffleg c mn.
   rewrite -ereal_limrM // lee_lim//.
   - exact: ereal_is_cvgrM.
   - by apply: is_cvg_sintegral => // m n mn; apply/lefP => t; apply: nd_g.
@@ -2737,7 +2749,7 @@ Local Notation I := (@dyadic_itv R).
 Let A n k := (if (k < n * 2 ^ n)%N then
   D `&` [set x | f x \in EFin @` [set` I n k]] else set0).
 
-Let B n := [set x | n%:R%:E <= f x ]%E `&` D.
+Let B n := D `&` [set x | n%:R%:E <= f x ]%E.
 
 Definition approx : (T -> R)^nat := fun n x =>
   \sum_(k < n * 2 ^ n) k%:R * 2 ^- n * (x \in A n k)%:R +
@@ -2755,8 +2767,8 @@ Qed.
 Local Lemma trivIsetA n : trivIset setT (A n).
 Proof.
 rewrite /A.
-under [in X in trivIset _ X]eq_fun do rewrite setIC.
-(*apply/trivIset_setI/trivIsetP => i j _ _.
+(*under [in X in trivIset _ X]eq_fun do rewrite setIC.*)
+apply/ (*trivIset_setI/*) trivIsetP => i j _ _.
 wlog : i j / (i < j)%N.
   move=> h; rewrite neq_lt => /orP[ij|ji].
     by apply: h => //; rewrite lt_eqF.
@@ -2764,36 +2776,36 @@ wlog : i j / (i < j)%N.
 move=> ij _.
 rewrite /A; case: ifPn => /= ni; last by rewrite set0I.
 case: ifPn => /= nj; last by rewrite setI0.
-rewrite predeqE => t; split => // -[/=].
-rewrite inE => -[r /=]; rewrite in_itv /= => /andP[r1 r2] rft.
+rewrite predeqE => t; split => // -[/=] [Dt].
+rewrite inE => -[r /=]; rewrite in_itv /= => /andP[r1 r2] rft [_].
 rewrite inE => -[s /=]; rewrite in_itv /= => /andP[s1 s2].
 rewrite -rft => -[sr]; rewrite {}sr {s} in s1 s2.
 have := le_lt_trans s1 r2.
 by rewrite ltr_pmul2r ?invr_gt0 ?exprn_gt0// ltr_nat ltnS leqNgt ij.
-Qed.*) Admitted.
+Qed.
 
 Local Lemma f0_A0 n (i : 'I_(n * 2 ^ n)) x : f x = 0%:E -> i != O :> nat ->
   x \in A n i = false.
 Proof.
 move=> fx0 i0; apply/negbTE; rewrite notin_set /A ltn_ord /=.
-move=> -[/[swap] Dx] /=.
-(*rewrite inE /= => -[r /=]; rewrite in_itv /= => /andP[r1 r2].
+move=> -[Dx] /=.
+rewrite inE /= => -[r /=]; rewrite in_itv /= => /andP[r1 r2].
 rewrite fx0 => -[r0]; move: r1 r2; rewrite {}r0 {r} => + r2.
 rewrite ler_pdivr_mulr; last by rewrite -natrX ltr0n expn_gt0.
 by rewrite mul0r lern0; exact/negP.
-Qed.*) Admitted.
+Qed.
 
 Local Lemma fgen_A0 n x (i : 'I_(n * 2 ^ n)) : (n%:R%:E <= f x)%E ->
   x \in A n i = false.
 Proof.
 move=> fxn; apply/negbTE; rewrite /A ltn_ord.
-(*rewrite notin_set => -[/[swap] Dx] /=; apply/negP.
+rewrite notin_set => -[Dx] /=; apply/negP.
 rewrite notin_set /= => -[r /=].
 rewrite in_itv /= => /andP[r1 r2] rfx.
 move: fxn; rewrite -rfx lee_fin; apply/negP.
 rewrite -ltNge (lt_le_trans r2)// -natrX ler_pdivr_mulr ?ltr0n ?expn_gt0//.
 by rewrite -natrM ler_nat (leq_trans (ltn_ord i)).
-Qed.*) Admitted.
+Qed.
 
 Local Lemma disj_A0 x n (i k : 'I_(n * 2 ^ n)) : i != k ->
   x \in A n k -> (x \in A n i) = false.
@@ -2806,10 +2818,13 @@ Qed.
 Arguments disj_A0 {x n i} k.
 
 Local Lemma notinD_A0 x n k : ~ D x -> (x \in A n k) = false.
-Proof. (*by move=> Dx; apply/negP; rewrite inE => -[]. Qed.*) Admitted.
+Proof.
+move=> Dx; apply/negP; rewrite /A inE.
+(*Proof. by move=> Dx; apply/negP; rewrite inE => -[]. Qed.*)
+Admitted.
 
 Local Lemma mB n : measurable (B n).
-Proof. (*exact: emeasurable_fun_c_infty. Qed.*) Admitted.
+Proof. exact: emeasurable_fun_c_infty. Qed.
 
 Local Lemma foo_B1 x n : D x -> f x = +oo%E -> x \in B n.
 Proof.
@@ -2818,13 +2833,13 @@ Qed.
 
 Local Lemma f0_B0 x n : f x = 0%:E -> n != 0%N -> (x \in B n) = false.
 Proof.
-move=> fx0 n0; apply/negP; rewrite inE /B /= => -[/[swap] Dx] /=; apply/negP.
+move=> fx0 n0; apply/negP; rewrite inE /B /= => -[Dx] /=; apply/negP.
 by rewrite -ltNge fx0 lte_fin ltr0n lt0n.
 Qed.
 
 Local Lemma fgtn_B0 x n : (f x < n%:R%:E)%E -> (x \in B n) = false.
 Proof.
-move=> fxn; apply/negbTE/negP; rewrite inE /= => -[/[swap] Dx] /=.
+move=> fxn; apply/negbTE/negP; rewrite inE /= => -[Dx] /=.
 by apply/negP; rewrite -ltNge.
 Qed.
 
@@ -2869,8 +2884,8 @@ have K : (`|floor (fine (f x) * 2 ^+ n)| < n * 2 ^ n)%N.
   rewrite -(@ltr_int R); rewrite (le_lt_trans (floor_le _)) // PoszM intrM.
   by rewrite -natrX ltr_pmul2r ?ltr0n ?expn_gt0// -lte_fin (fineK fxfin).
 have xAnK : x \in A n (Ordinal K).
-(*  rewrite inE /A; split => //.
-  rewrite ifT //= inE /=; exists (fine (f x)); last by rewrite fineK.
+  rewrite inE /A /= K; split => //=.
+  rewrite inE /=; exists (fine (f x)); last by rewrite fineK.
   rewrite in_itv /=; apply/andP; split.
     rewrite ler_pdivr_mulr; last by rewrite -natrX ltr0n expn_gt0.
     rewrite (le_trans _ (floor_le _)) // -(@gez0_abs (floor _)) // floor_ge0.
@@ -2878,7 +2893,7 @@ have xAnK : x \in A n (Ordinal K).
   rewrite ltr_pdivl_mulr // -?natrX ?ltr0n ?expn_gt0//.
   rewrite (lt_le_trans (lt_succ_Rfloor _))// RfloorE -[in X in _ <= X]addn1.
   rewrite natrD ler_add2r // -{1}(@gez0_abs (floor _)) // floor_ge0.
-  by rewrite mulr_ge0// -?natrX ?ler0n// ltW.*) admit.
+  by rewrite mulr_ge0// -?natrX ?ler0n// ltW.
 have := An0 (Ordinal K).
 rewrite mem_index_enum => /(_ isT).
 apply/negP.
@@ -2888,7 +2903,7 @@ rewrite pnatr_eq0 //= -lt0n absz_gt0 floor_neq0//.
 rewrite -ler_pdivr_mulr -?natrX ?ltr0n ?expn_gt0//.
 apply/orP; right; rewrite natrX; apply/ltW; near: n.
 exact: near_infty_natSinv_expn_lt (PosNum fx_gt0).
-Unshelve. all: by end_near. (*Qed.*) Admitted.
+Unshelve. all: by end_near. Qed.
 
 Local Lemma f_ub_approx n x : (f x < n%:R%:E)%E ->
   approx n x == 0 \/ exists k,
@@ -2924,14 +2939,14 @@ have [fxn|fxn] := ltP (f x) n%:R%:E.
     by rewrite (lt_trans fxn) // lte_fin ltr_nat.
   have [/eqP ->|[k [/andP[k0 kn] xAnk -> _]]] := f_ub_approx fxn.
     by apply: sumr_ge0 => i _; rewrite mulr_ge0// ?divr_ge0// ?ler0n// exprn_ge0.
-(*  move: (xAnk); rewrite inE {1}/A => -[/[swap] _] /=.
-  rewrite kn /= inE => -[r] /dyadic_itv_subU[|] rnk rfx.
+  move: (xAnk); rewrite inE {1}/A kn => -[_] /=.
+  rewrite inE => -[r] /dyadic_itv_subU[|] rnk rfx.
   - have k2n : (k.*2 < n.+1 * 2 ^ n.+1)%N.
       rewrite expnS mulnCA mul2n ltn_double (ltn_trans kn) //.
       by rewrite ltn_mul2r expn_gt0 /= ltnS.
     rewrite (bigD1 (Ordinal k2n)) //=.
     have xAn1k : x \in A n.+1 k.*2.
-      by rewrite inE; split => //; rewrite k2n /= inE; exists r.
+      by rewrite inE /A k2n; split => //=; rewrite inE; exists r.
     rewrite xAn1k mulr1 big1 ?addr0; last first.
       by move=> i ik2n; rewrite (disj_A0 (Ordinal k2n)) ?mulr0//.
     rewrite exprS invrM ?unitfE// ?expf_neq0// -muln2 natrM -mulrA (mulrCA 2).
@@ -2941,12 +2956,12 @@ have [fxn|fxn] := ltP (f x) n%:R%:E.
       by rewrite -muln2 -mulnA -expnSr ltn_mul2r expn_gt0 /= ltnS.
     rewrite (bigD1 (Ordinal k2n)) //=.
     have xAn1k : x \in A n.+1 k.*2.+1.
-      by rewrite inE /A; split => //; rewrite k2n /= inE /=; exists r.
+      by rewrite /A /= k2n inE; split => //=; rewrite inE/=; exists r.
     rewrite xAn1k mulr1 big1 ?addr0; last first.
       by move=> i ik2n; rewrite (disj_A0 (Ordinal k2n)) // mulr0.
     rewrite -[X in X <= _]mulr1 -[X in _ * X <= _](@divrr _ 2%:R) ?unitfE//.
     rewrite mulf_div -natrM muln2 -natrX -natrM -expnSr natrX.
-    by rewrite ler_pmul2r ?invr_gt0 ?exprn_gt0// ler_nat.*) admit.
+    by rewrite ler_pmul2r ?invr_gt0 ?exprn_gt0// ler_nat.
 have /orP[{}fxn|{}fxn] :
     ((n%:R%:E <= f x < n.+1%:R%:E) || (n.+1%:R%:E <= f x))%E.
   - by move: fxn; case: leP => /= [_ _|_ ->//]; rewrite orbT.
@@ -2973,7 +2988,7 @@ have /orP[{}fxn|{}fxn] :
   rewrite xBn1 mulr1 big1 ?add0r.
     by rewrite big1 ?add0r ?ler_nat // => /= i _; rewrite fgen_A0 // mulr0.
   by move=> /= i _; rewrite fgen_A0 ?mulr0// (le_trans _ fxn)// lee_fin ler_nat.
-(*Qed.*) Admitted.
+Qed.
 
 Lemma cvg_approx x (f0 : forall x, D x -> (0 <= f x)%E) : D x ->
   (f x < +oo)%E -> (approx^~ x) --> fine (f x).
@@ -3074,23 +3089,24 @@ Qed.
 Local Lemma k2n_ge0 n (k : 'I_(n * 2 ^ n)) : 0 <= k%:R * 2 ^- n :> R.
 Proof. by rewrite mulr_ge0 // invr_ge0 // -natrX ler0n. Qed.
 
-(*Definition nnsfun_approx : {nnsfun setT >-> R}^nat := fun n => locked (nnsfun_add
-  (nnsfun_sum pt
+Definition nnsfun_approx : {nnsfun D >-> R}^nat := fun n => locked (nnsfun_add
+  (nnsfun_sum
     (fun k => match Bool.bool_dec (k < (n * 2 ^ n))%N true with
-      | left h => nnsfun_ind pt (Nonneg.NngNum _ (k2n_ge0 (Ordinal h))) (mA n k)
-      | right _ => nnsfun0 pt
+      | left h => (*nnsfun_ind pt (Nonneg.NngNum _ (k2n_ge0 (Ordinal h))) (mA n k)*)
+          nnsfun_scale (nnsfun_indic1 _ _ (mA n k)) (k2n_ge0 (Ordinal h))
+      | right _ => nnsfun0
      end) (n * 2 ^ n)%N)
-  (nnsfun_ind pt (Nonneg.NngNum _ (ler0n _ n)) (mB n))).
+  (*(nnsfun_ind pt (Nonneg.NngNum _ (ler0n _ n)) (mB n))*)
+  (nnsfun_scale (nnsfun_indic1 _ _ (mB n)) (ler0n _ n))).
 
 Lemma nnsfun_approxE n : nnsfun_approx n = approx n :> (T -> R).
 Proof.
 rewrite funeqE => t /=.
 rewrite /nnsfun_approx; unlock.
 rewrite /=.
-rewrite nnsfun_sumE.
-rewrite nnsfun_indE; congr (_ + _).
+rewrite nnsfun_sumE; congr (_ + _).
 by apply: eq_bigr => i _; case: Bool.bool_dec => [h|/negP];
-  [rewrite nnsfun_indE|rewrite ltn_ord].
+  [|rewrite ltn_ord].
 Qed.
 
 Lemma cvg_nnsfun_approx (f0 : forall x, D x -> (0 <= f x)%E) x :
@@ -3102,14 +3118,14 @@ Qed.
 Lemma nd_nnsfun_approx : nondecreasing_seq (nnsfun_approx : (T -> R)^nat).
 Proof.
 by move=> m n mn; rewrite (nnsfun_approxE n) (nnsfun_approxE m); exact: nd_approx.
-Qed.*)
+Qed.
 
 Lemma approximation : (forall t, D t -> (0 <= f t)%E) ->
   exists g : {nnsfun D >-> R}^nat, nondecreasing_seq (g : (T -> R)^nat) /\
                         (forall x, D x -> EFin \o g^~x --> f x).
 Proof.
-(*exists nnsfun_approx; split; [exact: nd_nnsfun_approx|exact: cvg_nnsfun_approx].
-Qed.*) Admitted.
+exists nnsfun_approx; split; [exact: nd_nnsfun_approx|exact: cvg_nnsfun_approx].
+Qed.
 
 End approximation.
 
@@ -3125,8 +3141,8 @@ Lemma ge0_integralM_EFin k : (0 <= k)%R ->
   \int_ D (k%:E * f1 x) 'd mu[x] = k%:E * \int_ D (f1 x) 'd mu[x].
 Proof.
 move=> k0; have [g [nd_g gf1]] := approximation mD mf1 f10.
-(*pose kg := fun n => nnsfun_scale (g n) k0.
-rewrite (@nd_ge0_integral_lim _ _ pt mu _ mD (fun x => k%:E * f1 x) _ kg).
+pose kg := fun n => nnsfun_scale (g n) k0.
+(*rewrite (@nd_ge0_integral_lim _ _ pt mu _ mD (fun x => k%:E * f1 x) _ kg).
 - rewrite (_ : _ \o _ = fun n => sintegral mu D (sfun_scale pt k (g n)))//.
   rewrite (_ : (fun _ => _) = (fun n => k%:E * sintegral mu D (g n))).
     rewrite ereal_limrM //; last first.
@@ -3160,7 +3176,7 @@ Proof.
 have [g1 [nd_g1 gf1]] := approximation mD mf1 f10.
 have [g2 [nd_g2 gf2]] := approximation mD mf2 f20.
 pose g12 := fun n => nnsfun_add (g1 n) (g2 n).
-rewrite (@nd_ge0_integral_lim _ _ _ _ _ _ _ g12) //; last 3 first.
+rewrite (@nd_ge0_integral_lim _ _ mu _ _ _ _ g12) //; last 3 first.
   - by move=> x Dx; rewrite adde_ge0 => //; [exact: f10|exact: f20].
   - by apply: nondecreasing_seqD => // x Dx;
       [exact/(lef_at x nd_g1)|exact/(lef_at x nd_g2)].
@@ -3764,23 +3780,21 @@ Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (f : T -> \bar R).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 
-(*Lemma sintegral_cst (x : {nonneg R}) :
-  sintegral mu D (nnpresfun_cst pt x) = x%:nngnum%:E * mu D.
+Lemma sintegral_cst (x : {nonneg R}) :
+  sintegral mu D (cst x%:nngnum) = x%:nngnum%:E * mu D.
 Proof.
-rewrite sintegralE/= srng_presfun_cst big_cons big_nil adde0; congr (_ * _)%E.
+(*rewrite sintegralE/= srng_presfun_cst big_cons big_nil adde0; congr (_ * _)%E.
 rewrite [X in mu (X `&` _)](_ : _ = setT) ?setTI// predeqE => t.
 by rewrite /preimage /= presfun_cstE.
-Qed.*)
+Qed.*) Admitted.
 
 Lemma integral_cst (r : R) : (0 <= r)%R ->
   \int_ D ((EFin \o cst r) x) 'd mu[x] = r%:E * mu D.
 Proof.
 move=> r0; rewrite ge0_integralE//.
-(*rewrite (_ : cst r = nnsfun_cst pt (Nonneg.NngNum _ r0)) //.
-(*TODO: implicts of NNgnum?*)
-  by rewrite nnintegral_nnsfun// sintegral_cst.
-by rewrite /nnsfun_cst /= funeqE => t; rewrite presfun_cstE.
-Qed.*) Admitted.
+rewrite (_ : cst r = nnsfun_cst D (Nonneg.NngNum _ r0)) //.
+by rewrite nnintegral_nnsfun// sintegral_cst.
+Qed.
 
 Lemma integral_cst_pinfty : mu D != 0 -> \int_ D ((cst +oo) x) 'd mu[x] = +oo.
 Proof.
