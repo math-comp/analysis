@@ -947,19 +947,25 @@ Lemma indic1_nnfun_subproof (E D : set T) : @IsNonNegFun T R E (\1_D).
 Proof. by split=> t ?. Qed.
 HB.instance Definition _ E D := @indic1_nnfun_subproof E D.
 
-Lemma indic1_mfun_subproof (D : set T)  :
-  @IsMeasurableFun T _ D (\1_D : _ -> R).
+Definition mindic (A : set T) of measurable A : T -> R := \1_A.
+
+HB.instance Definition _ (D A : set T) (mA : measurable A) :
+  @NonNegFun T R D (mindic mA) := NonNegFun.on (mindic mA).
+HB.instance Definition _ (D A : set T) (mA : measurable A) :
+  @FImFun T R D (mindic mA) := @FImFun.on (mindic mA).
+Lemma indic1_mfun_subproof (D A : set T) (mA : measurable A) :
+  @IsMeasurableFun T R D (mindic mA).
 Proof.
 split=> mD /= B mB; rewrite preimage_indic.
 case: ifPn => B1; case: ifPn => B0 //.
-by rewrite setIT.
-by rewrite setIid.
-by rewrite setICr.
-by rewrite setI0.
+- by rewrite setIT.
+- exact: measurableI.
+- by apply: measurableI => //; apply: measurableC.
+- by rewrite setI0.
 Qed.
-HB.instance Definition _ (D : set T) := @indic1_mfun_subproof D.
-(* TODO: the D in nnsfun and the D in \1_D need not match *)
-Definition nnsfun_indic1 D := [the {nnsfun D >-> R} of \1_D].
+HB.instance Definition _ D A mA := @indic1_mfun_subproof D A mA.
+Definition nnsfun_indic1 (D A : set T) (mA : measurable A) :=
+  [the {nnfun D >-> R} of mindic mA].
 
 End nnsfun_functions.
 Arguments nnsfun0 {T R D}.
