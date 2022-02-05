@@ -1056,6 +1056,7 @@ Canonical sfunchoiceType := ChoiceType {sfun aT >-> rT} sfunchoiceMixin.
 (* TODO: BUG: HB *)
 (* HB.instance Definition _ (x : rT) := @cst_mfun_subproof aT rT x. *)
 Definition cst_sfun x := [the {sfun aT >-> rT} of cst x].
+(* TODO: should this be sfun_cst and the lemma below sfun_cstE? *)
 
 Lemma sfun_cst x : @cst_sfun x =1 cst x. Proof. by []. Qed.
 
@@ -4189,20 +4190,27 @@ Lemma sintegral_cst (x : {nonneg R}) :
   sintegral mu (cst x%:nngnum \|_ D) = x%:nngnum%:E * mu D.
 Proof.
 rewrite /sintegral (fsbigID [set x%:nngnum])/=; last first.
-  admit.
+  rewrite setTI; have := @fimfunP _ _ (proj_nnsfun (nnsfun_cst T x) mD).
+  apply: sub_finite_set => y.
+  have [->|y0] := eqVneq y 0%R; first by rewrite /preimage/= mul0e.
+  rewrite /preimage/=.
+  have [|/set0P[z Dz]] := eqVneq D set0.
+    move=> {1}->; rewrite restrict_set0/=.
+    rewrite (_ : [set _ | _] = set0) ?measure0 ?mule0//.
+    by apply/seteqP; split => // z/= /esym; exact/eqP.
+  have [yx _|yx] := eqVneq y x%:nngnum; last first.
+    rewrite (_ : [set _ | _] = set0) ?measure0 ?mule0//.
+    apply/seteqP; split=> // u/=.
+    by rewrite /restrict; case: ifPn => [|] _ /esym; exact/eqP.
+  by exists z=> //; rewrite /mindic indicE mem_set// mulr1.
 rewrite !setTI fsbig_set1 fsbig1 ?adde0; last first.
-  admit.
-congr (_ * mu _).
-rewrite /preimage/=.
-rewrite /restrict/=.
-apply/seteqP; split.
-  move=> t/=.
-  case: ifPn; first by rewrite inE.
-(*
-rewrite sintegralE/= srng_presfun_cst big_cons big_nil adde0; congr (_ * _)%E.
-rewrite [X in mu (X `&` _)](_ : _ = setT) ?setTI// predeqE => t.
-by rewrite /preimage /= presfun_cstE.
-Qed.*) Admitted.
+  move=> r/= /eqP rx; rewrite preimage_restrict/=.
+  case: ifPn; first by rewrite inE/= => <-; rewrite !mul0e.
+  by rewrite set0U preimage_cst eq_sym (negbTE rx) setI0 measure0 mule0.
+rewrite preimage_restrict /=.
+case: ifPn; first by rewrite inE/= => <-; rewrite !mul0e.
+by rewrite notin_set/= => x0; rewrite set0U preimage_cst eqxx/= setIT.
+Qed.
 
 Lemma integral_cst (r : R) : (0 <= r)%R ->
   \int_ D ((EFin \o cst r) x) 'd mu[x] = r%:E * mu D.
