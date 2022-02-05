@@ -757,9 +757,10 @@ Qed.
 
 End Pi.
 
+Arguments pi {R}.
+
 Section Tan.
 Variable R : realType.
-Notation pi := (@pi R).
 
 Definition tan (x : R) := sin x / cos x.
 
@@ -872,9 +873,8 @@ Hint Extern 0 (is_derive _ _ tan _) =>
 
 Section Acos.
 Variable R : realType.
-Local Notation pi := (@pi R).
 
-Definition acos (x : R) := get [set y | 0 <= y <= pi /\ cos y = x].
+Definition acos (x : R) : R := get [set y | 0 <= y <= pi /\ cos y = x].
 
 Lemma acos_def x :
   -1 <= x <= 1 -> 0 <= acos x <= pi /\ cos (acos x) = x.
@@ -969,9 +969,8 @@ Hint Extern 0 (is_derive _ 1 (@acos _) _) =>
 
 Section Asin.
 Variable R : realType.
-Notation pi := (@pi R).
 
-Definition asin (x : R) := get [set y | -(pi / 2) <= y <= pi / 2 /\ sin y = x].
+Definition asin (x : R) : R := get [set y | -(pi / 2) <= y <= pi / 2 /\ sin y = x].
 
 Lemma asin_def x :
   -1 <= x <= 1 -> -(pi / 2) <= asin x <= pi / 2 /\ sin (asin x) = x.
@@ -1069,9 +1068,8 @@ Hint Extern 0 (is_derive _ 1 (@asin _) _) =>
 
 Section Atan.
 Variable R : realType.
-Notation pi := (@pi R).
 
-Definition atan (x : R) :=
+Definition atan (x : R) : R :=
   get [set y | -(pi / 2) < y < pi / 2 /\ tan y = x].
 
 (* Did not see how to use ITV like in the other *)
@@ -1097,7 +1095,7 @@ case: (He (Num.sg x * acos x1)); split; last first.
   rewrite sqrtrV // invrK // mulrA divfK //; last by rewrite sqrtr_eq0 -ltNge.
   by rewrite sqrtr_sqr mulr_sg_norm.
 rewrite -ltr_norml normrM.
-have pi2 : 0 < pi / 2 by rewrite divr_gt0 // pi_gt0.
+have pi2 : 0 < pi / 2 :> R by rewrite divr_gt0 // pi_gt0.
 case: (x =P 0) => [->|/eqP xD0]; first by rewrite sgr0 normr0 mul0r.
 rewrite normr_sg xD0 mul1r ltr_norml.
 rewrite (@lt_le_trans _ _ 0) ?acos_ge0 ?oppr_cp0 //=.
