@@ -4495,17 +4495,20 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
                     (forall n, n%:R%:E * mu (E `&` D) <= M%:E).
   exists (fine (\int_ D `|f x| 'd mu[x])); first exact/le0R/integral_ge0.
   move=> n.
-(*  pose N : sfun T R := sfun_ind pt n%:R mE.
+  pose N : {nnsfun T >-> R} := [the {nnsfun T >-> R} of
+    (cst_nnsfun T n%:R%:nng \* mindic R mE)%R].
   have <- : \int_ D ((EFin \o N) x) 'd mu[x] = n%:R%:E * mu (E `&` D).
-    by rewrite integral_EFin_sfun_ind //= 1?setIC.
+    (*by rewrite integral_EFin_sfun_ind //= 1?setIC.*) admit.
   rewrite fineK//; last first.
     by case: fint => _ foo; rewrite ge0_fin_numE//; exact: integral_ge0.
   apply: ge0_le_integral => //.
-  - by move=> *; rewrite lee_fin /N sfun_indE.
-  - by apply/EFin_measurable_fun; exact: measurable_sfun.
-  - move=> x Dx; rewrite /N /= sfun_indE.
+  - by move=> *; rewrite lee_fin.
+  - apply/EFin_measurable_fun.
+    by apply: (@measurable_funS _ _ setT).
+  - by apply: measurable_fun_comp => //; case: fint.
+  - move=> x Dx; rewrite /N /= mindicE.
     have [|xE] := boolP (x \in E); last by rewrite mulr0.
-    by rewrite /E inE /= => -[->]; rewrite lee_pinfty.*) admit.
+    by rewrite /E inE /= => -[->]; rewrite lee_pinfty.
 apply/eqP/negPn/negP => /eqP muED0.
 move/not_forallP : muM; apply.
 have [muEDoo|] := ltP (mu (E `&` D)) +oo; last first.
