@@ -2471,8 +2471,7 @@ Proof.
 rewrite !sintegralE; set F := f @` _; set G := g @` _; set FG := _ @` _.
 pose pf x := f @^-1` [set x]; pose pg y := g @^-1` [set y]. 
 transitivity (\sum_(z \in FG) z%:E * \sum_(a \in F) m (pf a `&` pg (z - a)%R)).
-  apply: eq_fsbigr => z _; congr (_ * _).
-  rewrite preimage_add -fsbig_setU// measure_fsbig//.
+  apply: eq_fsbigr => z _; rewrite preimage_add -fsbig_setU// measure_fsbig//.
     by move=> x Fx; apply: measurableI.
   by move=> _ _ [i _ <-] [j _ <-] [k /= [[<- _] [<- _]]].
 under eq_fsbigr do rewrite ge0_mule_fsumr//; rewrite exchange_fsum//.
