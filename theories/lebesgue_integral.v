@@ -4504,13 +4504,12 @@ apply: (@le_lt_trans _ _ (\int_ D (`|f1 x| + `|f2 x|) 'd mu[x])).
   apply ge0_le_integral => //.
   - by apply: measurable_fun_comp => //; exact: emeasurable_funD.
   - by move=> *; exact: adde_ge0.
-  - admit.
+  - by apply: emeasurable_funD; apply: measurable_fun_comp.
   - by move=> *; exact: lee_abs_add.
-(* rewrite integral_ge0D //; first exact: lte_add_pinfty. *)
-(* - exact: measurable_fun_comp. *)
-(* - exact: measurable_fun_comp. *)
-(* Qed. *)
-Admitted.
+rewrite ge0_integralD //; first exact: lte_add_pinfty.
+- exact: measurable_fun_comp.
+- exact: measurable_fun_comp.
+Qed.
 
 Lemma integrableB (f1 f2 : T -> \bar R) :
   integrable f1 -> integrable f2 -> integrable (f1 \- f2).
@@ -4522,7 +4521,7 @@ Lemma integrable_add_def f : integrable f ->
   \int_ D (f^\+ x) 'd mu[x] +? - \int_ D (f^\- x) 'd mu[x].
 Proof.
 move=>  [mf]; rewrite -[(fun x => _)]/(abse \o f) fune_abse => foo.
-rewrite integral_ge0D // in foo; last 2 first.
+rewrite ge0_integralD // in foo; last 2 first.
   - exact: emeasurable_fun_funenng.
   - exact: emeasurable_fun_funennp.
 apply: ltpinfty_adde_def.
@@ -4536,6 +4535,7 @@ Lemma integral_funennp_lt_pinfty f : integrable f ->
 Proof.
 move=> [mf]; apply: le_lt_trans; apply ge0_le_integral => //.
 - by apply: emeasurable_fun_funennp => //; exact: emeasurable_funN.
+- exact: measurable_fun_comp.
 - move=> x Dx; have [fx0|/ltW fx0] := leP (f x) 0.
     rewrite lee0_abs// /funennp.
     by move: fx0; rewrite -{1}oppe0 -lee_oppr => /max_idPl ->.
@@ -4548,6 +4548,7 @@ Lemma integral_funenng_lt_pinfty f : integrable f ->
 Proof.
 move=> [mf]; apply: le_lt_trans; apply ge0_le_integral => //.
 - by apply: emeasurable_fun_funenng => //; exact: emeasurable_funN.
+- exact: measurable_fun_comp.
 - move=> x Dx; have [fx0|/ltW fx0] := leP (f x) 0.
     rewrite lee0_abs// /funenng.
     by move: (fx0) => /max_idPr ->; rewrite -lee_oppr oppe0.
@@ -4636,17 +4637,17 @@ Proof.
 have [r0|r0|->] := ltgtP r 0%R; last first.
   by under eq_fun do rewrite mul0e; rewrite mul0e integral0.
 - rewrite [in LHS]integralE// gt0_funenngM// gt0_funennpM//.
-  rewrite (integral_ge0M_EFin _ _ _ _ (ltW r0)) //; last first.
+  rewrite (ge0_integralM_EFin _ _ _ _ (ltW r0)) //; last first.
     by apply: emeasurable_fun_funenng => //; case: intf.
-  rewrite (integral_ge0M_EFin _ _ _ _ (ltW r0)) //; last first.
+  rewrite (ge0_integralM_EFin _ _ _ _ (ltW r0)) //; last first.
     by apply: emeasurable_fun_funennp => //; case: intf.
   rewrite -muleBr 1?[in RHS]integralE//.
   by apply: integrable_add_def; case: intf.
 - rewrite [in LHS]integralE// lt0_funenngM// lt0_funennpM//.
-  rewrite integral_ge0M_EFin //; last 2 first.
+  rewrite ge0_integralM_EFin //; last 2 first.
     + by apply: emeasurable_fun_funennp => //; case: intf.
     + by rewrite -ler_oppr oppr0 ltW.
-  rewrite integral_ge0M_EFin //; last 2 first.
+  rewrite ge0_integralM_EFin //; last 2 first.
     + by apply: emeasurable_fun_funenng => //; case: intf.
     + by rewrite -ler_oppr oppr0 ltW.
   rewrite -mulNe -EFinN opprK addeC EFinN mulNe -muleBr //; last first.
@@ -4713,7 +4714,7 @@ have : (g1 \+ g2)^\+ \+ g1^\- \+ g2^\- = (g1 \+ g2)^\- \+ g1^\+ \+ g2^\+.
   rewrite -[LHS]/((g1^\+ \+ g2^\+ \- (g1^\- \+ g2^\-)) x) -funeD_nngD.
   by rewrite -[RHS]/((_ \- _) x) -funeD_Dnng.
 move/(congr1 (fun y => \int_ D (y x) 'd mu[x])).
-rewrite (integral_ge0D mu mD); last 4 first.
+rewrite (ge0_integralD mu mD); last 4 first.
   - by move=> x _; rewrite adde_ge0.
   - rewrite /funennp /funenng /g1 /g2 /=.
     under eq_fun do rewrite 2!maxEFin; rewrite -/(measurable_fun _ _).
@@ -4729,7 +4730,7 @@ rewrite (integral_ge0D mu mD); last 4 first.
     by case: if1 => /EFin_measurable_fun.
   - by [].
   - by apply: emeasurable_fun_funennp => //; case: if2.
-rewrite (integral_ge0D mu mD); last 4 first.
+rewrite (ge0_integralD mu mD); last 4 first.
   - by [].
   - apply: emeasurable_fun_funenng => //=.
     apply/EFin_measurable_fun/measurable_funD => //.
@@ -4742,7 +4743,7 @@ rewrite (integral_ge0D mu mD); last 4 first.
     apply/EFin_measurable_fun; apply: measurable_funN => //.
     by case: if1 => /EFin_measurable_fun.
 move=> ->.
-rewrite (integral_ge0D mu mD); last 4 first.
+rewrite (ge0_integralD mu mD); last 4 first.
   - by move=> x _; exact: adde_ge0.
   - rewrite /g1 /g2 /= /comp /= /funennp /funenng.
     under eq_fun do rewrite -EFinN.
@@ -4758,7 +4759,7 @@ rewrite (integral_ge0D mu mD); last 4 first.
      by apply: emeasurable_fun_funenng => //; case: if1.
   - by [].
   - by apply: emeasurable_fun_funenng => //; case: if2.
-rewrite (integral_ge0D mu mD) //.
+rewrite (ge0_integralD mu mD) //.
 - apply: emeasurable_fun_funennp => //.
   by apply: emeasurable_funD => //; [case: if1|case: if2].
 - by apply: emeasurable_fun_funenng => //; case: if1.
@@ -4787,7 +4788,7 @@ move=> mf.
 rewrite integralE (le_trans (lee_abs_sub _ _))// gee0_abs; last first.
   exact: integral_ge0.
 rewrite gee0_abs; last exact: integral_ge0.
-by rewrite -integral_ge0D // -?fune_abse//;
+by rewrite -ge0_integralD // -?fune_abse//;
   [exact: emeasurable_fun_funenng | exact: emeasurable_fun_funennp].
 Qed.
 
@@ -5148,7 +5149,7 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (fun x => f x * (oneCN x)%:E).
       + exact: emeasurable_funM_presfun_ind1.
     - by move=> *; exact: adde_ge0.
     - by move=> *; exact: lee_abs_add.
-  rewrite integral_ge0D//; last 2 first.
+  rewrite ge0_integralD//; last 2 first.
     - by apply: measurable_fun_comp => //; exact: emeasurable_funM_presfun_ind1.
     - by apply: measurable_fun_comp => //; exact: emeasurable_funM_presfun_ind1.
   by apply: lte_add_pinfty; [case: intCf|case: intone].*) admit.
@@ -5183,7 +5184,7 @@ Lemma negligible_integral (D N : set T) (f : T -> \bar R)
   \int_ D (f x) 'd mu[x] = \int_ (D `\` N) (f x) 'd mu[x].
 Proof.
 move=> f0 muN0 mf.
-(*rewrite {1}(presfun_cplt mN f) integral_ge0D//; last 4 first.
+(*rewrite {1}(presfun_cplt mN f) ge0_integralD//; last 4 first.
   - by move=> x Dx; apply: mule_ge0 => //; [exact: f0|rewrite lee_fin presfun_ind1E].
   - by apply: emeasurable_funM_presfun_ind1 => //; exact: measurableC.
   - by move=> x Dx; apply: mule_ge0 => //; [exact: f0|rewrite lee_fin presfun_ind1E].
@@ -6222,7 +6223,7 @@ rewrite (_ : (fun _ => _) = (fun x => m2 A2 * (\1_A1 x)%:E)%E); last first.
   rewrite funeqE => x; rewrite /indic.
   by have [xA1|xA1] /= := boolP (x \in A1);
     [rewrite in_xsectionM// mule1|rewrite mule0 notin_xsectionM].
-rewrite integral_ge0M //.
+rewrite ge0_integralM //.
 - rewrite muleC; congr (_ * _)%E.
   (*by rewrite integral_EFin_sfun_ind// setIT mul1e.*) admit.
 - (*exact/EFin_measurable_fun/measurable_sfun.*) admit.
@@ -6376,7 +6377,7 @@ Proof.
 have mA1A2 : measurable (A1 `*` A2) by exact: measurableM.
 transitivity (\int ((m1 \o ysection (A1 `*` A2)) y) 'd m2[y]) => //.
 rewrite (_ : _ \o _ = (fun y => m1 A1 * (\1_A2 y)%:E))%E.
-  rewrite integral_ge0M//; last 3 first.
+  rewrite ge0_integralM//; last 3 first.
     - (*exact/EFin_measurable_fun/measurable_fun_presfun_ind1.*) admit.
     - (*by move=> y _; rewrite lee_fin presfun_ind1E.*) admit.
 (*    - exact: measure_ge0.
@@ -6504,7 +6505,7 @@ rewrite integral_ge0_sum //; last 2 first.
     by rewrite presfun_ind1E.
 apply eq_bigr => i _.
 under eq_fun do rewrite EFinM.
-rewrite integral_ge0M//; last 3 first.
+rewrite ge0_integralM//; last 3 first.
   - exact/EFin_measurable_fun/measurable_fun_prod1/measurable_fun_presfun_ind1.
   - by move=> y _; rewrite lee_fin presfun_ind1E.
   - by rewrite lee_fin; exact: NNSFun_ge0.
@@ -6531,7 +6532,7 @@ rewrite integral_ge0_sum //; last 2 first.
   - move=> i x _; rewrite lee_fin; apply: mulr_ge0 => //; first exact: NNSFun_ge0.
     by rewrite presfun_ind1E.
 apply eq_bigr => i _; under eq_fun do rewrite EFinM.
-rewrite integral_ge0M//; last 3 first.
+rewrite ge0_integralM//; last 3 first.
   - exact/EFin_measurable_fun/measurable_fun_prod2/measurable_fun_presfun_ind1.
   - by move=> x _; rewrite lee_fin presfun_ind1E.
   - by rewrite lee_fin; exact: NNSFun_ge0.
@@ -6560,7 +6561,7 @@ rewrite EFinf integral_ge0_sum //; last 2 first.
     exact: NNSFun_ge0.
 under eq_bigr.
   move=> i _.
-  rewrite integral_ge0M//; last 3 first.
+  rewrite ge0_integralM//; last 3 first.
     - apply/EFin_measurable_fun/measurable_fun_presfun_ind1 => //.
       exact/measurable_spimg.
     - by move=> /= x _; rewrite presfun_ind1E lee_fin.
@@ -6572,7 +6573,7 @@ under eq_bigr.
   over.
 under eq_bigr.
   move=> i _.
-  rewrite -integral_ge0M//; last 3 first.
+  rewrite -ge0_integralM//; last 3 first.
     - by apply: sfun1_measurable_fun_fubini_tonelli_F; exact/measurable_spimg.
     - by move=> /= x _; exact: sfun1_fubini_tonelli_F_ge0.
     - exact: NNSFun_ge0.
@@ -6599,7 +6600,7 @@ rewrite EFinf integral_ge0_sum //; last 2 first.
     exact: NNSFun_ge0.
 under eq_bigr.
   move=> i _.
-  rewrite integral_ge0M//; last 3 first.
+  rewrite ge0_integralM//; last 3 first.
     - apply/EFin_measurable_fun => //; apply/measurable_fun_presfun_ind1 => //.
       exact/measurable_spimg.
     - by move=> /= x _; rewrite lee_fin// presfun_ind1E.
@@ -6611,7 +6612,7 @@ under eq_bigr.
   over.
 under eq_bigr.
   move=> i _.
-  rewrite -integral_ge0M//; last 3 first.
+  rewrite -ge0_integralM//; last 3 first.
     - by apply: sfun1_measurable_fun_fubini_tonelli_G; exact: measurable_spimg.
     - by move=> /= x _; exact: sfun1_fubini_tonelli_G_ge0.
     - exact: NNSFun_ge0.
@@ -6639,7 +6640,7 @@ rewrite integral_ge0_sum //; last 2 first.
     exact: NNSFun_ge0.
 under eq_bigr.
   move=> i _.
-  rewrite integral_ge0M//; last 3 first.
+  rewrite ge0_integralM//; last 3 first.
     - apply/EFin_measurable_fun/measurable_fun_presfun_ind1 => //.
       exact/measurable_spimg.
     - by move=> /= x _; rewrite lee_fin presfun_ind1E.
@@ -6661,7 +6662,7 @@ rewrite integral_ge0_sum //; last 2 first.
       rewrite lee_fin; exact: NNSFun_ge0.
     by rewrite presfun_ind1E lee_fin.
 apply: eq_bigr => i _.
-rewrite integral_ge0M//.
+rewrite ge0_integralM//.
 - by apply/EFin_measurable_fun/measurable_fun_presfun_ind1 => //; exact: measurable_spimg.
 - by move=> /= x _; rewrite presfun_ind1E lee_fin.
 - exact: NNSFun_ge0.
