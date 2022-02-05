@@ -379,24 +379,24 @@ Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").
 
-Reserved Notation "'{uniform`' A -> V }"
-  (at level 70, A at level 69, format "'{uniform`'  A  ->  V }").
-Reserved Notation "'{uniform' U -> V }"
-  (at level 70, U at level 69, format "'{uniform'  U  ->  V }").
-Reserved Notation "'{uniform' A , F --> f }"
-  (at level 70, A at level 69, F at level 69,
-   format "'{uniform'  A ,  F  -->  f }").
-Reserved Notation "'{uniform' , F --> f }"
-  (at level 70, F at level 69,
-   format "'{uniform' ,  F  -->  f }").
-Reserved Notation "'{ptws' U -> V }"
-  (at level 70, U at level 69, format "'{ptws'  U  ->  V }").
-Reserved Notation "'{ptws' , F --> f }"
-  (at level 70, F at level 69, format "'{ptws' ,  F  -->  f }").
-Reserved Notation "'{family' fam , U -> V }"
-  (at level 70, U at level 69, format "'{family'  fam ,  U  ->  V }").
-Reserved Notation "'{family' fam , F --> f }"
-  (at level 70, F at level 69, format "'{family'  fam ,  F  -->  f }").
+Reserved Notation "{ 'uniform`' A -> V }"
+  (at level 0, A at level 69, format "{ 'uniform`'  A  ->  V }").
+Reserved Notation "{ 'uniform' U -> V }"
+  (at level 0, U at level 69, format "{ 'uniform'  U  ->  V }").
+Reserved Notation "{ 'uniform' A , F --> f }"
+  (at level 0, A at level 69, F at level 69,
+   format "{ 'uniform'  A ,  F  -->  f }").
+Reserved Notation "{ 'uniform' , F --> f }"
+  (at level 0, F at level 69,
+   format "{ 'uniform' ,  F  -->  f }").
+Reserved Notation "{ 'ptws' U -> V }"
+  (at level 0, U at level 69, format "{ 'ptws'  U  ->  V }").
+Reserved Notation "{ 'ptws' , F --> f }"
+  (at level 0, F at level 69, format "{ 'ptws' ,  F  -->  f }").
+Reserved Notation "{ 'family' fam , U -> V }"
+  (at level 0, U at level 69, format "{ 'family'  fam ,  U  ->  V }").
+Reserved Notation "{ 'family' fam , F --> f }"
+  (at level 0, F at level 69, format "{ 'family'  fam ,  F  -->  f }").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -5105,24 +5105,24 @@ Canonical fct_restrictedUniformType :=
   UniformType (fct_RestrictedUniform) restrict_uniform_mixin.
 End RestrictedUniformTopology.
 
-Notation "'{uniform`' A -> V }" := (@fct_RestrictedUniform _ A V) :
+Notation "{ 'uniform`' A -> V }" := (@fct_RestrictedUniform _ A V) :
   classical_set_scope.
-Notation "'{uniform' U -> V }" := ({uniform` (@setT U) -> V}) :
+Notation "{ 'uniform' U -> V }" := ({uniform` (@setT U) -> V}) :
   classical_set_scope.
 
 Definition uniform_fun {U : choiceType} A (V : uniformType)
   (f : U -> V) : {uniform` A -> V} := f.
 Arguments uniform_fun : simpl never.
 
-Notation "'{uniform' A , F --> f }" :=
+Notation "{ 'uniform' A , F --> f }" :=
   (F --> f : @fct_RestrictedUniform _ A _)
   (only printing) : classical_set_scope.
-Notation "'{uniform' , F --> f }" :=
+Notation "{ 'uniform' , F --> f }" :=
   (F --> f : @fct_RestrictedUniform _ setT _)
   (only printing) : classical_set_scope.
-Notation "'{uniform' A , F --> f }" :=
+Notation "{ 'uniform' A , F --> f }" :=
   (F --> uniform_fun A f) : classical_set_scope.
-Notation "'{uniform' , F --> f }" :=
+Notation "{ 'uniform' , F --> f }" :=
   (F --> uniform_fun setT f) : classical_set_scope.
 
 (* We use this function to help coq identify the correct notation to use
@@ -5147,14 +5147,14 @@ Canonical fct_PointwiseTopologicalType (U : Type) (V : topologicalType) :=
      @fct_Pointwise U V for
      @fct_PointwiseTopology U V].
 
-Notation "'{ptws' U -> V }" := (@fct_Pointwise U V).
+Notation "{ 'ptws' U -> V }" := (@fct_Pointwise U V).
 Definition ptws_fun {U : Type} {V : topologicalType}
   (f : U -> V) : {ptws U -> V} := f.
 
-Notation "'{ptws' ,  F --> f }" :=
+Notation "{ 'ptws' ,  F --> f }" :=
   (F --> (f : @fct_Pointwise _ _))
   (only printing) : classical_set_scope.
-Notation "'{ptws' , F --> f }" :=
+Notation "{ 'ptws' , F --> f }" :=
   (F --> @ptws_fun _ _ f) : classical_set_scope.
 
 Lemma ptws_cvgE {U : Type} {V : topologicalType}
@@ -5307,7 +5307,7 @@ Canonical fct_UniformFamilyTopologicalType fam :=
      fct_UniformFamily fam for
      family_cvg_topologicalType fam].
 
-Local Notation "'{family' fam , F --> f }" :=
+Local Notation "{ 'family' fam , F --> f }" :=
   (F --> restrict_fam fam f) : classical_set_scope.
 
 Lemma fam_cvgP (fam : set U -> Prop) (F : set (set (U -> V))) (f : U -> V) :
@@ -5344,8 +5344,8 @@ exact/IHX/fproperD1.
 Qed.
 End UniformCvgLemmas.
 
-Notation "'{family' fam , U -> V }" :=  (@fct_UniformFamily U V fam).
-Notation "'{family' fam , F --> f }" :=
+Notation "{ 'family' fam , U -> V }" :=  (@fct_UniformFamily U V fam).
+Notation "{ 'family' fam , F --> f }" :=
   (F --> restrict_fam fam f) : classical_set_scope.
 
 Lemma fam_cvgE {U : topologicalType} {V : uniformType} (F : set (set (U -> V)))
