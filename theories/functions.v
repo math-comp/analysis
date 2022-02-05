@@ -1690,6 +1690,26 @@ move=> [|[Dx Bfx]]; last by rewrite ifT ?inE.
 by case: ifP; rewrite // inE => Bp NDx; case: ifPn; rewrite // inE.
 Qed.
 
+Lemma comp_patch {aT rT sT : Type} (g : aT -> rT) D (f : aT -> rT) (h : rT -> sT) :
+  h \o patch g D f = patch (h \o g) D (h \o f).
+Proof. by apply/funext => x; rewrite /patch/=; case: ifP. Qed.
+
+Lemma patch_setI {aT rT : Type} (g : aT -> rT) D D' (f : aT -> rT) :
+   patch g (D `&` D') f = patch g D (patch g D' f).
+Proof.
+apply/funext => x; rewrite /patch/= in_setI.
+by case: (x \in D) (x \in D') => [] [].
+Qed.
+
+Lemma patch_setT {aT rT : Type} (g : aT -> rT) (f : aT -> rT) :
+  patch g setT f = f.
+Proof. by apply/funext => x; rewrite /patch in_setT. Qed.
+
+Lemma restrict_comp {aT} {rT sT : pointedType} (h : rT -> sT) (f : aT -> rT) D :
+  h point = point -> (h \o f) \|_ D = h \o (f \|_ D).
+Proof. by move=> hp; apply/funext => x; rewrite /patch/=; case: ifP. Qed.
+Arguments restrict_comp {aT rT sT} h f D.
+
 (**************************************)
 (* Restriction of domain and codomain *)
 (**************************************)

@@ -560,6 +560,30 @@ Qed.
 
 End funpos_measurable.
 
+Lemma measurable_restrict {aT rT : measurableType} D (f : aT -> rT) :
+   measurable D -> measurable_fun D f ->
+   measurable_fun setT (f \|_ D).
+Proof.
+move=> mD mf _ /= X mX; rewrite setTI preimage_restrict.
+by apply/measurableU/mf => //; case: ifP => // _; apply: measurableC.
+Qed.
+
+Lemma restrict_ge0 {aT} {rT : numFieldType} (D : set aT) (f : aT -> rT) :
+  (forall x, D x -> 0 <= f x) -> forall x, 0 <= (f \|_ D) x.
+Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
+
+Lemma erestrict_ge0 {aT} {rT : numFieldType} (D : set aT) (f : aT -> \bar rT) :
+  (forall x, D x -> (0 <= f x)%E) -> forall x, (0 <= (f \|_ D) x)%E.
+Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
+
+Lemma ler_restrict {aT} {rT : numFieldType} (D : set aT) (f g : aT -> rT) :
+  (forall x, D x -> f x <= g x) -> forall x, (f \|_ D) x <= (g \|_ D) x.
+Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
+
+Lemma lee_restrict {aT} {rT : numFieldType} (D : set aT) (f g : aT -> \bar rT) :
+  (forall x, D x -> f x <= g x)%E -> forall x, ((f \|_ D) x <= (g \|_ D) x)%E.
+Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
+
 Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
 Notation "'\1_' A" := (indic A) : ring_scope.
@@ -2831,21 +2855,6 @@ apply/funext => x /=; rewrite /patch /mindic/= /indic.
 by case: ifP; rewrite (mulr0, mulr1).
 Qed.
 
-Lemma comp_patch {aT rT sT : Type} (g : aT -> rT) D (f : aT -> rT) (h : rT -> sT) :
-  h \o patch g D f = patch (h \o g) D (h \o f).
-Proof. by apply/funext => x; rewrite /patch/=; case: ifP. Qed.
-
-Lemma patch_setI {aT rT : Type} (g : aT -> rT) D D' (f : aT -> rT) :
-   patch g (D `&` D') f = patch g D (patch g D' f).
-Proof.
-apply/funext => x; rewrite /patch/= in_setI.
-by case: (x \in D) (x \in D') => [] [].
-Qed.
-
-Lemma patch_setT {aT rT : Type} (g : aT -> rT) (f : aT -> rT) :
-  patch g setT f = f.
-Proof. by apply/funext => x; rewrite /patch in_setT. Qed.
-
 Section integral.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType).
@@ -3462,22 +3471,6 @@ Qed.
 
 End approximation.
 
-Lemma measurable_restrict {aT rT : measurableType} D (f : aT -> rT) :
-   measurable D -> measurable_fun D f ->
-   measurable_fun setT (f \|_ D).
-Proof.
-move=> mD mf _ /= X mX; rewrite setTI preimage_restrict.
-by apply/measurableU/mf => //; case: ifP => // _; apply: measurableC.
-Qed.
-
-Lemma restrict_ge0 {aT} {rT : numFieldType} (D : set aT) (f : aT -> rT) :
-  (forall x, D x -> 0 <= f x) -> forall x, 0 <= (f \|_ D) x.
-Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
-
-Lemma erestrict_ge0 {aT} {rT : numFieldType} (D : set aT) (f : aT -> \bar rT) :
-  (forall x, D x -> (0 <= f x)%E) -> forall x, (0 <= (f \|_ D) x)%E.
-Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
-
 Section semi_linearity0.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType).
@@ -3491,7 +3484,7 @@ Lemma ge0_integralM_EFin k : (0 <= k)%R ->
 Proof.
 rewrite integral_mkcond erestrict_scale [in RHS]integral_mkcond.
 move=> k0; set h1 := f1 \|_ D.
-have h10 x : 0 <= h1 x by exact: erestrict_ge0.
+have h10 x : 0 <= h1 x by apply: erestrict_ge0.
 have mh1 : measurable_fun setT h1 by apply: measurable_restrict.
 have [g [nd_g gh1]] := approximation mh1 h10.
 pose kg := fun n => scale_nnsfun (g n) k0.
@@ -3535,8 +3528,8 @@ Lemma ge0_integralD : \int_ D ((f1 \+ f2) x) 'd mu[x] =
 Proof.
 rewrite !(integral_mkcond _ D) erestrictD.
 set h1 := f1 \|_ D; set h2 := f2 \|_ D.
-have h10 x : 0 <= h1 x by exact: erestrict_ge0.
-have h20 x : 0 <= h2 x by exact: erestrict_ge0.
+have h10 x : 0 <= h1 x by apply: erestrict_ge0.
+have h20 x : 0 <= h2 x by apply: erestrict_ge0.
 have mh1 : measurable_fun setT h1 by apply: measurable_restrict.
 have mh2 : measurable_fun setT h2 by apply: measurable_restrict.
 have [g1 [nd_g1 gh1]] := approximation mh1 h10.
@@ -3568,14 +3561,13 @@ Qed.
 Lemma ge0_le_integral : (forall x, D x -> f1 x <= f2 x) ->
   \int_ D (f1 x) 'd mu[x] <= \int_ D (f2 x) 'd mu[x].
 Proof.
-rewrite !(integral_mkcond _ D); set h1 := f1 \|_ D; set h2 := f2 \|_ D.
-move=> f12.
-have h10 x : 0 <= h1 x by exact: erestrict_ge0.
-have h20 x : 0 <= h2 x by exact: erestrict_ge0.
+move=> f12; rewrite !(integral_mkcond _ D).
+set h1 := f1 \|_ D; set h2 := f2 \|_ D.
+have h10 x : 0 <= h1 x by apply: erestrict_ge0.
+have h20 x : 0 <= h2 x by apply: erestrict_ge0.
 have mh1 : measurable_fun setT h1 by apply: measurable_restrict.
 have mh2 : measurable_fun setT h2 by apply: measurable_restrict.
-have h12 x : h1 x <= h2 x.
-  by rewrite /h1 /h2 /patch; case: ifP => // /set_mem /f12 ->.
+have h12 x : h1 x <= h2 x by apply: lee_restrict.
 have [g1 [nd_g1 gh1]] := approximation mh1 h10.
 rewrite (nd_ge0_integral_lim _ h10 (fun x => lef_at x nd_g1) gh1)//.
 apply: ereal_lim_le.
@@ -3674,8 +3666,8 @@ Lemma emeasurable_funD D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \+ g).
 Proof.
 move=> mf mg mD.
-have noom : measurable ([set -oo] : set (\bar R)) by exact: emeasurable_set1.
-have poom : measurable ([set +oo] : set (\bar R)) by exact: emeasurable_set1.
+have noom : measurable ([set -oo] : set (\bar R)) by apply: emeasurable_set1.
+have poom : measurable ([set +oo] : set (\bar R)) by apply: emeasurable_set1.
 have Cnoom : measurable (~` [set -oo] : set (\bar R)) by apply: measurableC.
 have Cpoom : measurable (~` [set +oo] : set (\bar R)) by apply: measurableC.
 have mfg :  measurable (D `&` [set x | f x +? g x]).
@@ -3730,7 +3722,7 @@ Lemma emeasurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
 move=> mf mg mD.
-have m0 : measurable ([set 0] : set (\bar R)) by exact: emeasurable_set1.
+have m0 : measurable ([set 0] : set (\bar R)) by apply: emeasurable_set1.
 have mC0 : measurable ([set~ 0] : set (\bar R)) by apply: measurableC.
 have mCoo : measurable (~` [set -oo; +oo] : set (\bar R)).
   by apply/measurableC/measurableU; exact/emeasurable_set1.
@@ -4034,7 +4026,7 @@ Lemma ge0_integralM (k : \bar R) : (forall x, D x -> 0 <= f x) ->
 Proof.
 move=> f0; move: k => [k|_|//]; first exact: ge0_integralM_EFin.
 pose g : (T -> \bar R)^nat := fun n x => n%:R%:E * f x.
-have mg n : measurable_fun D (g n) by exact: emeasurable_funeM.
+have mg n : measurable_fun D (g n) by apply: emeasurable_funeM.
 have g0 n x : D x -> 0 <= g n x.
   by move=> Dx; apply: mule_ge0; [rewrite lee_fin|exact:f0].
 have nd_g x : D x -> nondecreasing_seq (g^~x).
@@ -4068,7 +4060,7 @@ transitivity (\int_ D (lim (g^~ x)) 'd mu[x]).
 rewrite (monotone_convergence mu mD mg g0 nd_g).
 rewrite (_ : (fun _ => _) = (fun n => n%:R%:E * \int_ D (f x) 'd mu[x])); last first.
   by rewrite funeqE => n; exact: ge0_integralM_EFin.
-have : 0 <= \int_ D (f x) 'd mu[x] by exact: integral_ge0.
+have : 0 <= \int_ D (f x) 'd mu[x] by apply: integral_ge0.
 rewrite le_eqVlt => /predU1P[<-|if_gt0].
   rewrite mule0 (_ : (fun _ => _) = cst 0) ?lim_cst//.
   by under eq_fun do rewrite mule0.
@@ -4160,11 +4152,6 @@ by rewrite oppe0 fin_num_adde_def.
 Qed.
 
 End integralN.
-
-Lemma restrict_comp {aT} {rT sT : pointedType} (h : rT -> sT) (f : aT -> rT) D :
-  h point = point -> (h \o f) \|_ D = h \o (f \|_ D).
-Proof. by move=> hp; apply/funext => x; rewrite /patch/=; case: ifP. Qed.
-Arguments restrict_comp {aT rT sT} h f D.
 
 Section integral_cst.
 Local Open Scope ereal_scope.
@@ -4687,7 +4674,7 @@ suff: \int_ D ((g1 \+ g2)^\+ x) 'd mu[x] + \int_ D (g1^\- x) 'd mu[x] + \int_ D 
     - rewrite ge0_fin_numE.
         apply: lte_add_pinfty; last exact: integral_funennp_lt_pinfty.
         apply: lte_add_pinfty; last exact: integral_funennp_lt_pinfty.
-        have : mu.-integrable D (g1 \+ g2) by exact: integrableD.
+        have : mu.-integrable D (g1 \+ g2) by apply: integrableD.
         exact: integral_funenng_lt_pinfty.
       apply: adde_ge0; last exact: integral_ge0.
       by apply: adde_ge0; exact: integral_ge0.
@@ -4959,7 +4946,7 @@ Let ae_eq_integral_abs_bounded (D : set T) (mD : measurable D) (f : T -> \bar R)
 Proof.
 move=> mf fM [N [mA mN0 Df0N]].
 pose f_neq0 := D `&` [set x | f x != 0].
-have mf_neq0 : measurable f_neq0 by exact: emeasurable_neq.
+have mf_neq0 : measurable f_neq0 by apply: emeasurable_neq.
 pose sfun_f : {nnfun _ >-> R} := indic_nnsfun R mf_neq0.
 have le_f_M : forall x, D x -> `|f x| <= M%:E * (sfun_f x)%:E.
   move=> t Dt; rewrite /sfun_f/= /mindic/= /indic/=.
@@ -5723,7 +5710,7 @@ Qed.
 Local Lemma measure_restr'_sigma_additive : semi_sigma_additive measure_restr'.
 Proof.
 move=> F mF tF mU; pose F' i := F i `&` D.
-have mF' i : measurable (F' i) by exact: measurableI.
+have mF' i : measurable (F' i) by apply: measurableI.
 have tF' : trivIset setT F'.
   apply/trivIsetP => i j _ _ ij; move/trivIsetP : tF => /(_ i j Logic.I Logic.I ij).
   by rewrite /F' setIACA => ->; rewrite set0I.
@@ -5877,7 +5864,7 @@ Lemma measurable_xsection A x : measurable A -> measurable (xsection A x).
 Proof.
 move=> mA.
 pose f : T1 * T2 -> \bar R := EFin \o indic_nnsfun R mA.
-have mf : measurable_fun setT f by exact/EFin_measurable_fun/measurable_funP.
+have mf : measurable_fun setT f by apply/EFin_measurable_fun/measurable_funP.
 have _ : (fun y => (y \in xsection A x)%:R%:E) = f \o (fun y => (x, y)).
   rewrite funeqE => y /=; rewrite /xsection /f.
   (*by rewrite [sfun_ind]lock /= -lock sfun_indE mul1r mem_set_pair1.*) admit.
@@ -6379,7 +6366,7 @@ Lemma product_measure2E (A1 : set T1) (A2 : set T2)
     (mA1 : measurable A1) (mA2 : measurable A2) :
   product_measure2 m2 sm1 (A1 `*` A2) = (m1 A1 * m2 A2)%E.
 Proof.
-have mA1A2 : measurable (A1 `*` A2) by exact: measurableM.
+have mA1A2 : measurable (A1 `*` A2) by apply: measurableM.
 transitivity (\int ((m1 \o ysection (A1 `*` A2)) y) 'd m2[y])%E => //.
 rewrite (_ : _ \o _ = (fun y => m1 A1 * (\1_A2 y)%:E))%E.
   rewrite ge0_integralM//; last 3 first.
