@@ -2213,7 +2213,7 @@ move=> CA DB /(bij_sub CA DB) /[swap] fDC; apply=> x Dx.
 by rewrite -some_inv/=; exists (f^-1 x) => //; apply: fDC.
 Qed.
 
-Lemma can2_bij A B (f : {bij A >-> B}) (g : {bij B >-> A}) :
+Lemma can2_bij A B (f : {fun A >-> B}) (g : {fun B >-> A}) :
   {in A, cancel f g} -> {in B, cancel g f} -> set_bij A B f.
 Proof. by move=> /can_in_inj finj /can_surj gK; split => //; apply: gK. Qed.
 

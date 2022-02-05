@@ -477,6 +477,9 @@ Proof. by move=> /contra_notP + /negP => /[apply]. Qed.
 Lemma contra_neqP (T : eqType) (x y : T) P : (~ P -> x = y) -> x != y -> P.
 Proof. by move=> Pxy; apply: contraNP => /Pxy/eqP. Qed.
 
+Lemma contra_eqP (T : eqType) (x y : T) (Q : Prop) : (~ Q -> x != y) -> x = y -> Q.
+Proof. by move=> Qxy /eqP; apply: contraTP. Qed.
+
 Lemma wlog_neg P : (~ P -> P) -> P.
 Proof. by move=> ?; case: (pselect P). Qed.
 
@@ -780,11 +783,15 @@ Proof. by rewrite forallNE. Qed.
 Lemma not_forallP T (P : T -> Prop) : (forall x, P x) <-> ~ exists x, ~ P x.
 Proof. by rewrite existsNE notK. Qed.
 
+Lemma exists2P T (P Q : T -> Prop) :
+  (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
+Proof. by split=> [[x ? ?] | [x []]]; exists x. Qed.
+
 Lemma not_exists2P T (P Q : T -> Prop) :
   (exists2 x, P x & Q x) <-> ~ forall x, ~ P x \/ ~ Q x.
 Proof.
-split=> [[x Px Qx] /(_ x) [|]//|]; apply: contra_notP => PQ t.
-by rewrite -not_andP; apply: contra_not PQ => -[Pt Qt]; exists t.
+rewrite exists2P not_existsP.
+by split; apply: contra_not => PQx x;  apply/not_andP; apply: PQx.
 Qed.
 
 Lemma forall2NP T (P Q : T -> Prop) :
@@ -794,9 +801,19 @@ split=> [PQ [t Pt Qt]|PQ t]; first by have [] := PQ t.
 by rewrite -not_andP => -[Pt Qt]; apply PQ; exists t.
 Qed.
 
-Lemma exists2P T (P Q : T -> Prop) :
-  (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
-Proof. by split=> [[x ? ?] | [x []]]; exists x. Qed.
+Lemma forallPNP T (P Q : T -> Prop) :
+  (forall x, P x -> ~ Q x) <-> ~ (exists2 x, P x & Q x).
+Proof.
+split=> [PQ [t Pt Qt]|PQ t]; first by have [] := PQ t.
+by move=> Pt Qt; apply: PQ; exists t.
+Qed.
+
+Lemma existsPNP T (P Q : T -> Prop) :
+  (exists2 x, P x & ~ Q x) <-> ~ (forall x, P x -> Q x).
+Proof.
+split=> [[x Px NQx] /(_ x Px)//|]; apply: contra_notP => + x Px.
+by apply: contra_notP => NQx; exists x.
+Qed.
 
 (* -------------------------------------------------------------------- *)
 Definition xchooseb {T : choiceType} (P : pred T) (h : `[exists x, P x]) :=
