@@ -1902,22 +1902,22 @@ Proof. by rewrite inE. Qed.
 Lemma preimage_itv_o_infty T (d : unit) (rT : porderType d) (f : T -> rT) y :
   f @^-1` `]y, +oo[%classic = [set x | (y < f x)%O].
 Proof.
-by rewrite predeqE => t; split => /= [|?]; rewrite preimage_itv in_itv/= andbT.
+by rewrite predeqE => t; split => [|?]; rewrite /= in_itv/= andbT.
 Qed.
 
 Lemma preimage_itv_c_infty T (d : unit) (rT : porderType d) (f : T -> rT) y :
   f @^-1` `[y, +oo[%classic = [set x | (y <= f x)%O].
 Proof.
-by rewrite predeqE => t; split => [|?]; rewrite preimage_itv in_itv/= andbT.
+by rewrite predeqE => t; split => [|?]; rewrite /= in_itv/= andbT.
 Qed.
 
 Lemma preimage_itv_infty_o T (d : unit) (rT : orderType d) (f : T -> rT) y :
   f @^-1` `]-oo, y[%classic = [set x | (f x < y)%O].
-Proof. by rewrite predeqE => t; split => [|?]; rewrite preimage_itv in_itv. Qed.
+Proof. by rewrite predeqE => t; split => [|?]; rewrite /= in_itv. Qed.
 
 Lemma preimage_itv_infty_c T (d : unit) (rT : orderType d) (f : T -> rT) y :
   f @^-1` `]-oo, y]%classic = [set x | (f x <= y)%O].
-Proof. by rewrite predeqE => t; split => [|?]; rewrite preimage_itv in_itv. Qed.
+Proof. by rewrite predeqE => t; split => [|?]; rewrite /= in_itv. Qed.
 
 Section measurable_fun_measurable.
 Local Open Scope ereal_scope.
@@ -2548,11 +2548,11 @@ Proof.
 move=> f_ub; rewrite predeqE => t; split.
 - have [|/set0P h] := eqVneq (sdrop (f ^~ t) n) set0.
     by rewrite predeqE => /(_ (f n t))[+ _] => /forall2NP/(_ n)/= [].
-  rewrite /= preimage_itv in_itv /= andbT => -[Dt].
+  rewrite /= in_itv /= andbT => -[Dt].
   move=> /(sup_gt h)[_ [m /= nm <-]] rfmt. split => //; exists m => //.
-  by rewrite preimage_itv in_itv /= rfmt.
-- move=> [Dt [k /= nk]]; rewrite preimage_itv in_itv /= andbT => rfkt.
-  split=> //; rewrite preimage_itv in_itv /= andbT; apply: (lt_le_trans rfkt).
+  by rewrite /= in_itv /= rfmt.
+- move=> [Dt [k /= nk]]; rewrite in_itv /= andbT => rfkt.
+  split=> //; rewrite /= in_itv /= andbT; apply: (lt_le_trans rfkt).
   by apply: sup_ub; [exact/has_ubound_sdrop/f_ub|by exists k].
 Qed.
 
@@ -2564,10 +2564,10 @@ Proof.
 move=> lb_f; rewrite predeqE => t; split.
 - have [|/set0P h] := eqVneq (sdrop (f ^~ t) n) set0.
     by rewrite predeqE => /(_ (f n t))[+ _] => /forall2NP/(_ n)/= [].
-  rewrite /= preimage_itv in_itv /= => -[Dt].
+  rewrite /= in_itv /= => -[Dt].
   by move=>  /(inf_lt h)[_ [m /= nm <-]] fmtr; split => //; exists m.
-- move=> [Dt [k /= nk]]; rewrite preimage_itv in_itv /= => fktr.
-  rewrite preimage_itv in_itv /=; split => //; apply: le_lt_trans fktr.
+- move=> [Dt [k /= nk]]; rewrite /= in_itv /= => fktr.
+  rewrite in_itv /=; split => //; apply: le_lt_trans fktr.
   by apply/inf_lb => //; [exact/has_lbound_sdrop/lb_f|by exists k].
 Qed.
 
@@ -2805,10 +2805,10 @@ Lemma esups_preimage T (a : \bar R) (f : (T -> \bar R)^nat) n :
   \bigcup_(k in [set k | n <= k]%N) f k @^-1` `]a, +oo[.
 Proof.
 rewrite predeqE => t; split => /=.
-  rewrite preimage_itv in_itv /= andbT=> /ereal_sup_gt[_ [/= k nk <-]] afnt.
-  by exists k => //=; rewrite preimage_itv in_itv /= afnt.
-move=> -[k /= nk] /=; rewrite preimage_itv in_itv /= andbT => /lt_le_trans afkt.
-by rewrite preimage_itv in_itv andbT/=; apply/afkt/ereal_sup_ub; exists k.
+  rewrite /= in_itv /= andbT=> /ereal_sup_gt[_ [/= k nk <-]] afnt.
+  by exists k => //=; rewrite in_itv /= afnt.
+move=> -[k /= nk] /=; rewrite in_itv /= andbT => /lt_le_trans afkt.
+by rewrite in_itv andbT/=; apply/afkt/ereal_sup_ub; exists k.
 Qed.
 
 Lemma einfs_preimage T (a : \bar R) (f : (T -> \bar R)^nat) n :
@@ -2816,11 +2816,11 @@ Lemma einfs_preimage T (a : \bar R) (f : (T -> \bar R)^nat) n :
   \bigcap_(k in [set k | n <= k]%N) f k @^-1` `[a, +oo[%classic.
 Proof.
 rewrite predeqE => t; split => /= [|h].
-  rewrite preimage_itv in_itv andbT /= => h k nk /=.
-  by rewrite preimage_itv in_itv/= (le_trans h)//; apply ereal_inf_lb; exists k.
-rewrite preimage_itv in_itv /= andbT leNgt; apply/negP.
+  rewrite in_itv andbT /= => h k nk /=.
+  by rewrite /= in_itv/= (le_trans h)//; apply ereal_inf_lb; exists k.
+rewrite /= in_itv /= andbT leNgt; apply/negP.
 move=> /ereal_inf_lt[_ /= [k nk <-]]; apply/negP.
-by have := h _ nk; rewrite preimage_itv in_itv /= andbT -leNgt.
+by have := h _ nk; rewrite /= in_itv /= andbT -leNgt.
 Qed.
 
 End esups_einfs.
@@ -3008,7 +3008,7 @@ move=> /= _ [_ [x ->] <-]; apply: measurableI => //.
 have [x0|x0] := leP 0 x.
   rewrite [X in measurable X](_ : _ = `]-oo, (- x)[ `|` `]x, +oo[)%classic.
     by apply: measurableU; exact/measurable_itv.
-  rewrite predeqE => r; split => [|[|]]; rewrite preimage_itv in_itv andbT/=.
+  rewrite predeqE => r; split => [|[|]]; rewrite preimage_itv ?in_itv ?andbT/=.
   - have [r0|r0] := leP 0 r; [rewrite ger0_norm|rewrite ltr0_norm] => // xr;
       rewrite 2!in_itv/=.
     + by right; rewrite xr.
@@ -3017,7 +3017,7 @@ have [x0|x0] := leP 0 x.
     by rewrite ler0_norm 1?ltr_oppr// (le_trans (ltW rx))// ler_oppl oppr0.
   - by rewrite in_itv /= andbT => xr; rewrite (lt_le_trans _ (ler_norm _)).
 rewrite [X in measurable X](_ : _ = setT)// predeqE => r.
-by split => // _; rewrite preimage_itv in_itv /= andbT (lt_le_trans x0).
+by split => // _; rewrite /= in_itv /= andbT (lt_le_trans x0).
 Qed.
 
 End standard_measurable_fun.
@@ -3051,12 +3051,12 @@ move=> mf /= A mA mD.
 apply: (measurability (RGenOInfty.measurableE R)) => //= _ [_ [a ->] <-].
 have [a0|a0] := leP 0 a; last first.
   rewrite (_ : _ `&` _ = D) // predeqE => x; split => [[]//|Dx]; split => //.
-  by rewrite preimage_itv in_itv /= andbT (lt_le_trans a0)// sqr_ge0.
+  by rewrite /= in_itv /= andbT (lt_le_trans a0)// sqr_ge0.
 rewrite (_ : D `&` _ = (D `&` f @^-1` `]Num.sqrt a, +oo[) `|`
                        (D `&` f @^-1` `]-oo, -Num.sqrt a[) ).
   by apply: measurableU; exact/mf/measurable_itv.
 rewrite predeqE => t; split=> [[]|].
-  rewrite preimage_itv in_itv /= andbT => Dt aft2.
+  rewrite /= in_itv /= andbT => Dt aft2.
   have := le_lt_trans a0 aft2.
   rewrite exprn_even_gt0 //= neq_lt => /orP[|] ft0.
     move: aft2; rewrite -ltr_sqrt; last first.
@@ -3064,8 +3064,8 @@ rewrite predeqE => t; split=> [[]|].
     by rewrite sqrtr_sqr ltr0_norm// ltr_oppr; tauto.
   move: aft2; rewrite -ltr_sqrt; last first.
     by rewrite exprn_even_gt0//= gt_eqF.
-  by rewrite sqrtr_sqr gtr0_norm// !preimage_itv !in_itv/= andbT; tauto.
-move=> [] /=; rewrite !preimage_itv !in_itv /= ?andbT => -[Dt fta]; split => //.
+  by rewrite sqrtr_sqr gtr0_norm// !/= !in_itv/= andbT; tauto.
+move=> [] /=; rewrite !/= !in_itv /= ?andbT => -[Dt fta]; split => //.
   rewrite -ltr_sqrt; last first.
     by rewrite exprn_even_gt0//= gt_eqF// (le_lt_trans _ fta)// sqrtr_ge0.
   by rewrite sqrtr_sqr gtr0_norm// (le_lt_trans _ fta)// sqrtr_ge0.
@@ -3087,14 +3087,14 @@ rewrite neq_lt => /orP[k0|k0] mf mD;
 - rewrite preimage_itv_o_infty [X in measurable X](_ : _ =
       D `&` f @^-1` `]-oo, a / k[); last first.
     rewrite predeqE => t; split => [[/= akft Dtr]|[]].
-      by rewrite preimage_itv in_itv/= ltr_ndivl_mulr// mulrC.
-    by rewrite preimage_itv in_itv /= => Dt ftak; rewrite mulrC -ltr_ndivl_mulr.
+      by rewrite /= in_itv/= ltr_ndivl_mulr// mulrC.
+    by rewrite /= in_itv /= => Dt ftak; rewrite mulrC -ltr_ndivl_mulr.
   by apply: mf =>//; rewrite -(set_itv_infty_o (a / k)); exact/measurable_itv.
 - rewrite preimage_itv_o_infty [X in measurable X](_ : _ =
       D `&` f @^-1` `]a / k, +oo[); first exact/mf/measurable_itv.
   rewrite predeqE => t; split => [[/= Dt akft]|[Dr]].
-    by rewrite preimage_itv in_itv/= andbT ltr_pdivr_mulr// mulrC.
-  by rewrite preimage_itv in_itv/= andbT => akft; rewrite mulrC -ltr_pdivr_mulr.
+    by rewrite /= in_itv/= andbT ltr_pdivr_mulr// mulrC.
+  by rewrite /= in_itv/= andbT => akft; rewrite mulrC -ltr_pdivr_mulr.
 Qed.
 
 Lemma measurable_funN D f : measurable_fun D f -> measurable_fun D (-%R \o f).
@@ -3211,9 +3211,9 @@ move=> /= _ [_ [x ->] <-]; move: x => [x| |].
     by apply: measurable_fun_normr => //; exact: measurable_itv.
   exists set0; first by constructor.
   rewrite setU0 predeqE => -[y| |]; split => /= => -[r];
-    rewrite ?preimage_itv /= ?in_itv /= ?andbT => xr//.
+    rewrite ?/= /= ?in_itv /= ?andbT => xr//.
     + by move=> [ry]; exists `|y| => //=; rewrite in_itv/= andbT -ry.
-    + by move=> [ry]; exists y => //=; rewrite preimage_itv in_itv/= andbT -ry.
+    + by move=> [ry]; exists y => //=; rewrite /= in_itv/= andbT -ry.
 - by apply: measurableI => //; rewrite itv_opinfty_pinfty preimage_set0.
 - apply: measurableI => //; rewrite itv_oninfty_pinfty -preimage_setC.
   by apply: measurableC; rewrite preimage_abse_ninfty.
@@ -3225,7 +3225,7 @@ Proof.
 move=> mD; apply: (measurability (ErealGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite (_ : _ @^-1` _ = `]-oo, (- x)%E]%classic).
   by apply: measurableI => //; exact: emeasurable_itv_ninfty_bnd.
-by rewrite predeqE => y; rewrite !preimage_itv !in_itv/= andbT in_itv lee_oppr.
+by rewrite predeqE => y; rewrite preimage_itv !in_itv/= andbT in_itv lee_oppr.
 Qed.
 
 End standard_emeasurable_fun.
@@ -3288,9 +3288,9 @@ move=> mf mg mD; apply: (measurability (ErealGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
     (D `&` f @^-1` `[x, +oo[) `|` (D `&` g @^-1` `[x, +oo[)); last first.
   rewrite predeqE => t /=; split.
-    by rewrite !preimage_itv /= !in_itv /= !andbT le_maxr => -[Dx /orP[|]];
+    by rewrite !/= /= !in_itv /= !andbT le_maxr => -[Dx /orP[|]];
       tauto.
-  by move=> [|]; rewrite !preimage_itv /= !in_itv/= !andbT le_maxr;
+  by move=> [|]; rewrite !/= /= !in_itv/= !andbT le_maxr;
     move=> [Dx ->]//; rewrite orbT.
 by apply: measurableU; [exact/mf/emeasurable_itv_bnd_pinfty|
                         exact/mg/emeasurable_itv_bnd_pinfty].
@@ -3304,9 +3304,9 @@ move=> mf mg mD; apply: (measurability (ErealGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
     (D `&` f @^-1` `[x, +oo[) `&` (D `&` g @^-1` `[x, +oo[)); last first.
   rewrite predeqE => t /=; split.
-    rewrite !preimage_itv !in_itv /= !andbT le_minr => -[Dt /andP[xft xgt]].
+    rewrite !/= !in_itv /= !andbT le_minr => -[Dt /andP[xft xgt]].
     tauto.
-  move=> []; rewrite !preimage_itv !in_itv/= !andbT le_minr=> -[Dt xft [_ xgt]].
+  move=> []; rewrite !/= !in_itv/= !andbT le_minr=> -[Dt xft [_ xgt]].
   by split => //; rewrite xft xgt.
 by apply: measurableI; [exact/mf/emeasurable_itv_bnd_pinfty|
                         exact/mg/emeasurable_itv_bnd_pinfty].

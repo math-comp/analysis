@@ -97,7 +97,7 @@ Proof. by case: x => // -[]. Qed.
 (*                         lemmas waiting to be PRed                          *)
 (******************************************************************************)
 
-Arguments preimage : simpl never.
+Arguments preimage _ _ _ _ _ /.
 
 Lemma comp_preimage T1 T2 T3 (A : set T3) (g : T1 -> T2) (f : T2 -> T3) :
   (f \o g) @^-1` A = g @^-1` (f @^-1` A).
@@ -110,7 +110,7 @@ Lemma preimage_comp T1 T2 rT (g : T1 -> rT) (f : T2 -> rT) (C : set T1) :
 Proof.
 rewrite predeqE => t; split => /=.
   by move=> -[r Cr <-]; rewrite inE;  exists r.
-by rewrite /preimage /= inE => -[r Cr <-]; exists r.
+by rewrite inE => -[r Cr <-]; exists r.
 Qed.
 
 Lemma empty_preimage_setI {aT rT : Type} (f : aT -> rT) (Y1 Y2 : set rT) :

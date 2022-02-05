@@ -5120,7 +5120,7 @@ split=> [[Q [[/= W oW <- /=] [Wf subP]]]|[E [entE subP]]].
 near=> g; apply: subP => y /mem_set Ay; rewrite -!(sigLE A).
 move: (SigSub _); near: g.
 have := (@cvg_image _ _ (sigL A) _ f (nbhs_filter f)
-  (sigL_setT point)).1 cvg_id [set h | forall y, E (sigL A f y, h y)].
+  (image_sigL point)).1 cvg_id [set h | forall y, E (sigL A f y, h y)].
 case; first by exists [set fg | forall y, E (fg.1 y, fg.2 y)]; [exists E|].
 move=> B nbhsB rBrE; apply: (filterS _ nbhsB) => g Bg [y yA].
 by move: rBrE; rewrite eqEsubset; case => [+ _]; apply; exists g.
@@ -5305,7 +5305,7 @@ Lemma uniform_restrict_cvg
   {uniform A, F --> f} <-> {uniform, restrict A @ F --> restrict A f}.
 Proof.
 move=> FF; rewrite cvg_sigL; split.
-- rewrite -extend_sigL /uniform_fun.
+- rewrite -sigLK /uniform_fun.
   move /(cvg_app valL) => D.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).

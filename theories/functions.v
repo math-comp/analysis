@@ -1679,6 +1679,17 @@ End patch.
 Notation restrict := (patch (fun=> point)).
 Notation "f \|_ D" := (restrict D f) : fun_scope.
 
+Lemma preimage_restrict (aT : Type) (rT : pointedType)
+     (f : aT -> rT) (D : set aT) (B : set rT) :
+  (f \|_ D) @^-1` B = (if point \in B then ~` D else set0) `|` D `&` f @^-1` B.
+Proof.
+rewrite /preimage/= /patch; apply/predeqP => x /=; split.
+  case: ifPn; rewrite ?(inE, notin_set); first by right.
+  by move=> NDx Bp; rewrite ifT ?inE//=; left.
+move=> [|[Dx Bfx]]; last by rewrite ifT ?inE.
+by case: ifP; rewrite // inE => Bp NDx; case: ifPn; rewrite // inE.
+Qed.
+
 (**************************************)
 (* Restriction of domain and codomain *)
 (**************************************)
@@ -1707,18 +1718,18 @@ Lemma sigLE (f : U -> V) x (xA : x \in A) :
   sigL f (SigSub xA) = f x.
 Proof. done. Qed.
 
-Lemma fun_eq_inP (f g : U -> V):
+Lemma eq_sigLP (f g : U -> V):
   {in A, f =1 g} <-> sigL f = sigL g.
 Proof.
 split=> [eq_f_g | Rfg u uA]; first by apply/funext => -[x]; apply: eq_f_g.
 by have := congr1 (@^~ (exist _ u uA)) Rfg.
 Qed.
 
-Lemma funeq_inP (f g : {fun A >-> B}) :
+Lemma eq_sigLfunP (f g : {fun A >-> B}) :
   {in A, f =1 g} <-> sigLfun f = sigLfun g.
-Proof. by rewrite fun_eq_inP funP funeqP. Qed.
+Proof. by rewrite eq_sigLP funP funeqP. Qed.
 
-Lemma extend_sigL : valL_ \o sigL = restrict.
+Lemma sigLK : valL_ \o sigL = restrict.
 Proof.
 rewrite funeq2E => f u; rewrite /valL_ /sigL /restrict.
 by rewrite oinv_set_val/=; case: ifPn => uA; [rewrite insubT|rewrite insubN].
@@ -1734,10 +1745,10 @@ Qed.
 Lemma valLfunK : cancel valLfun_ sigLfun.
 Proof. by move=> f; apply/funP/funeqP; exact: valLK. Qed.
 
-Lemma restrict_valL : sigL \o valL_ = id.
+Lemma sigL_valL : sigL \o valL_ = id.
 Proof. exact/funext/valLK. Qed.
 
-Lemma restrict_valLfun : sigLfun \o valLfun_ = id.
+Lemma sigL_valLfun : sigLfun \o valLfun_ = id.
 Proof. exact/funext/valLfunK. Qed.
 
 Lemma sigL_restrict : sigL \o restrict = sigL.
@@ -1746,11 +1757,14 @@ rewrite funeq2E => f -[u Au] /=.
 by rewrite /sigL /restrict /valL_ /patch /= Au.
 Qed.
 
-Lemma sigL_setT  : [set of sigL] = setT.
+Lemma image_sigL  : [set of sigL] = setT.
 Proof.
 rewrite eqEsubset; split=> //= f _; exists (valL_ f)=>//.
 exact: valLK.
 Qed.
+
+Lemma eq_restrictP (f g : U -> V): {in A, f =1 g} <-> restrict f = restrict g.
+Proof. by rewrite eq_sigLP -sigLK/=; split => [->//|/(can_inj valLK)]. Qed.
 
 End RestrictionLeft.
 Arguments sigL {U V} A f u /.
@@ -2009,7 +2023,7 @@ Lemma valLRE (f : A -> B) : valLR f = valL (valLr f). Proof. by []. Qed.
 Lemma valLRfunE (f : A -> B) : valLRfun f = [fun of valLR f]. Proof. by []. Qed.
 
 Lemma sigL2K (f : {fun A >-> B}) : {in A, valLR (sigLR f) =1 f}.
-Proof. by apply/fun_eq_inP; rewrite valLK sigR_funK. Qed.
+Proof. by apply/eq_sigLP; rewrite valLK sigR_funK. Qed.
 
 Lemma valLRK : cancel valLRfun sigLR.
 Proof. by move=> f; rewrite /sigLR /valLR /= valLfunK valLrK. Qed.
@@ -2084,10 +2098,10 @@ Context {aT rT : Type}.
 Implicit Types (A : set aT) (B : set rT) (f : aT -> rT).
 
 Lemma eq_set_bijRL A B f g : {in A, f =1 g} -> set_bij A B f -> set_bij A B g.
-Proof. by move=> /fun_eq_inP + /sigL_bijP => -> /sigL_bijP. Qed.
+Proof. by move=> /eq_sigLP + /sigL_bijP => -> /sigL_bijP. Qed.
 
 Lemma eq_set_bijLR A B f g : {in A, f =1 g} -> set_bij A B g -> set_bij A B f.
-Proof. by move=> /fun_eq_inP + /sigL_bijP => <- /sigL_bijP. Qed.
+Proof. by move=> /eq_sigLP + /sigL_bijP => <- /sigL_bijP. Qed.
 
 Lemma eq_set_bij A B f g : {in A, f =1 g} -> set_bij A B f = set_bij A B g.
 Proof.
