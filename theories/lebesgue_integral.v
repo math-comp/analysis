@@ -2438,7 +2438,7 @@ Qed.
 (* - exact/trivIset_setIl0/trivIset_preimage1_in. *)
 (* Qed. *)
 
-Lemma additive_nnsfun (g f : {nnsfun T >-> R}) x :
+Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
   \sum_(i \in [set of g]) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
   m (f @^-1` [set x] `&` \big[setU/set0]_(i \in [set of g]) (g @^-1` [set i])).
 Proof.
@@ -2448,14 +2448,19 @@ rewrite -?measure_fsbig//.
 - exact/trivIset_setI/trivIset_preimage1.
 Qed.
 
-Lemma additive_nnsfunT (g f : {nnsfun T >-> R}) x :
-  \sum_(i \in [set: R]) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
-  m (f @^-1` [set x] `&` \big[setU/set0]_(i \in [set: R]) (g @^-1` [set i])).
-Proof.
-rewrite -!(fsbig_widen [set of g] setT) ?additive_nnsfun//=.
-- by move=> y [_ /preimage10]/=.
-- by move=> y [_ /= /preimage10->]; rewrite setI0.
-Qed.
+Lemma additive_nnsfunl (g f : {nnsfun T >-> R}) x :
+  \sum_(i \in [set of g]) m (g @^-1` [set i] `&` (f @^-1` [set x])) =
+  m (\big[setU/set0]_(i \in [set of g]) (g @^-1` [set i]) `&` f @^-1` [set x]).
+Proof. by under eq_fsbigr do rewrite setIC; rewrite setIC additive_nnsfunr. Qed.
+
+(* Lemma additive_nnsfunT (g f : {nnsfun T >-> R}) x : *)
+(*   \sum_(i \in [set: R]) m (f @^-1` [set x] `&` (g @^-1` [set i])) = *)
+(*   m (f @^-1` [set x] `&` \big[setU/set0]_(i \in [set: R]) (g @^-1` [set i])). *)
+(* Proof. *)
+(* rewrite -!(fsbig_widen [set of g] setT) ?additive_nnsfun//=. *)
+(* - by move=> y [_ /preimage10]/=. *)
+(* - by move=> y [_ /= /preimage10->]; rewrite setI0. *)
+(* Qed. *)
 
 End measure_fsbig.
 
@@ -2465,36 +2470,31 @@ Variables (T : measurableType) (R : realType) (D : set T).
 Variables (mD : measurable D) (f g : {nnsfun T >-> R}).
 Variable m : {measure set T -> \bar R}.
 
-Lemma sintegralD :
-  sintegral m (f \+ g)%R = sintegral m f + sintegral m g.
+Lemma sintegralD : sintegral m (f \+ g)%R = sintegral m f + sintegral m g.
 Proof.
 rewrite !sintegralE; set F := f @` _; set G := g @` _; set FG := _ @` _.
 pose pf x := f @^-1` [set x]; pose pg y := g @^-1` [set y]. 
 transitivity (\sum_(z \in FG) z%:E * \sum_(a \in F) m (pf a `&` pg (z - a)%R)).
   apply: eq_fsbigr => z _; rewrite preimage_add -fsbig_setU// measure_fsbig//.
     by move=> x Fx; apply: measurableI.
-  by move=> _ _ [i _ <-] [j _ <-] [k /= [[<- _] [<- _]]].
+  exact/trivIset_setIr0/trivIset_preimage1.
 under eq_fsbigr do rewrite ge0_mule_fsumr//; rewrite exchange_fsum//.
 transitivity (\sum_(x \in F) \sum_(y \in G) (x + y)%:E * m (pf x `&` pg y)).
-  apply eq_fsbigr => _ /set_mem [i _ <-]; pose x := f i.
-  rewrite /pf /pg (fsbig_widen G setT)//=; last first.
+  apply eq_fsbigr => x _; rewrite /pf /pg (fsbig_widen G setT)//=; last first.
     by move=> y [_ /= /preimage10->]; rewrite setI0 measure0 mule0.
   rewrite (fsbig_widen FG setT)//=; last first.
-    move=> z [_ /= FGz].
-    rewrite measure_negligible ?mule0//; first exact: measurableI.
-    exists set0; split=> //= {x}i /= [<-] /(canLR (@addrNK _ _)).
+    move=> z [_ /= FGz]; rewrite [X in m X](_ : _ = set0) ?measure0 ?mule0//.
+    rewrite -subset0 => //= {x}i /= [<-] /(canLR (@addrNK _ _)).
     by apply: contra_not FGz => <-; exists i; rewrite //= addrC.
   under [RHS]eq_fsbigr => y do rewrite -[y as y in [set y]](addrK x) (addrC y).
   by apply: reindex_fsbigT; exists (+%R (- x)); [apply: addKr| apply: addNKr].
 transitivity (\sum_(x \in F) \sum_(y \in G) x%:E * m (pf x `&` pg y) +
               \sum_(x \in F) \sum_(y \in G) y%:E * m (pf x `&` pg y)).
-  rewrite -fsum_split//; apply: eq_fsbigr => _ /set_mem [i _ <-].
-  rewrite -fsum_split//; apply: eq_fsbigr => _ /set_mem [j _ <-].
+  do 2![rewrite -fsum_split//; apply: eq_fsbigr => _ /set_mem [? _ <-]].
   by rewrite EFinD ge0_muleDl// ?lee_fin.
-congr (_ + _)%E; [|rewrite exchange_fsum//]; apply: eq_fsbigr => x _.
-  by rewrite -ge0_mule_fsumr// additive_nnsfun nnsfun_cover setIT.
-rewrite -ge0_mule_fsumr//; under eq_fsbigr do rewrite setIC.
-by rewrite additive_nnsfun nnsfun_cover setIT.
+congr (_ + _)%E; last rewrite exchange_fsum//; apply: eq_fsbigr => x _.
+  by rewrite -ge0_mule_fsumr// additive_nnsfunr nnsfun_cover setIT.
+by rewrite -ge0_mule_fsumr// additive_nnsfunl nnsfun_cover setTI.
 Qed.
 
 End sintegralD.
