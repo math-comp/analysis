@@ -1030,23 +1030,31 @@ Proof. by []. Qed.
 End Morph0.
 
 Section Morph.
-Context {R : numDomainType} {nz : nullity} {cond : reality}.
-Local Notation nR := {num R & nz & cond}.
-Implicit Types (a : R) (x y : nR).
-Local Notation num := (@num _ _ (0 : R) nz cond).
+Context {d : unit} {T : porderType d} {x0 : T} {nz : nullity} {cond : reality}.
+Local Notation sT := {compare x0 & nz & cond}.
+Implicit Types x y : sT.
+Local Notation num := (@num _ _ x0 nz cond).
 
 Lemma num_eq : {mono num : x y / x == y}. Proof. by []. Qed.
-Lemma num_le : {mono num : x y / x <= y}. Proof. by []. Qed.
-Lemma num_lt : {mono num : x y / x < y}. Proof. by []. Qed.
+Lemma num_le : {mono num : x y / (x <= y)%O}. Proof. by []. Qed.
+Lemma num_lt : {mono num : x y / (x < y)%O}. Proof. by []. Qed.
 Lemma num_min : {morph num : x y / Order.min x y}.
 Proof. by move=> x y; rewrite !minEle num_le -fun_if. Qed.
 Lemma num_max : {morph num : x y / Order.max x y}.
 Proof. by move=> x y; rewrite !maxEle num_le -fun_if. Qed.
 
+End Morph.
+
+Section MorphNum.
+Context {R : numDomainType} {nz : nullity} {cond : reality}.
+Local Notation nR := {num R & nz & cond}.
+Implicit Types (a : R) (x y : nR).
+Local Notation num := (@num _ _ (0 : R) nz cond).
+
 Lemma num_abs_eq0 a : (`|a|%:nng == 0%:nng) = (a == 0).
 Proof. by rewrite -normr_eq0. Qed.
 
-End Morph.
+End MorphNum.
 
 Section MorphReal.
 Context {R : numDomainType} {nz : nullity} {r : real}.
