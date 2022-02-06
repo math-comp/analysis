@@ -5114,7 +5114,7 @@ have -> : m (\bigcup_n F n) = \sum_(n <oo) (m (F n)).
   transitivity (\int (\sum_(n <oo) m1 (ysection (F n) y)) 'd m2[y]).
     rewrite /m; congr (integral _ _ _); rewrite funeqE => y.
     rewrite -lim_mkord; apply/esym/cvg_lim => //=; rewrite /= ysection_bigcup.
-(*    apply: (measure_sigma_additive _ (trivIset_ysection tF)).
+(*    apply: (measure_sigma_additive (trivIset_ysection tF)).
     by move=> i; apply: measurable_ysection.*) admit.
   by rewrite integral_sum // => n; apply: measurable_fun_ysection => //; rewrite inE.
 suff /cvg_ex[l cl] : cvg (fun n => (\sum_(i < n) m (F i))%E).
@@ -5297,7 +5297,7 @@ rewrite ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun => //; apply: measurable_funrM => //.
     apply/measurable_fun_prod2 => //.
     by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
-  - move=> r x _; rewrite lee_fin indicE/=.
+  - (*TODO: lemma?*) move=> r x _; rewrite lee_fin indicE/=.
     have [r0|r0] := leP 0 r; first by rewrite mulr_ge0.
     by rewrite preimage_nnfun0// in_set0 mulr0.
 apply eq_fbigr => i.
@@ -5321,125 +5321,112 @@ Qed.
 
 Lemma sfun_fubini_tonelli1 : (\int ((EFin \o f) z) 'd m[z] = \int (F x) 'd m1[x])%E.
 Proof.
-(*have EFinf : EFin \o f = (fun x => (\sum_(k < ssize f) ((srng f)`_k)%:E *
-    (presfun_ind1 (pt1, pt2) (A k) x)%:E)%E).
-  by rewrite funeqE => t; rewrite sumEFin /= (sfunE (pt1, pt2) f).
-rewrite EFinf integral_ge0_sum //; last 2 first.
-  - move=> /= i.
-    apply/EFin_measurable_fun/measurable_funrM => //.
-    by apply/measurable_fun_presfun_ind1 => //; exact: measurable_spimg.
-  - move=> i xy _; apply: mule_ge0; rewrite lee_fin// ?presfun_ind1E//.
-    exact: NNSFun_ge0.
-under eq_bigr.
-  move=> i _.
+have EFinf : EFin \o f = (fun x => (\sum_(k <- fset_set [set of f]) k%:E *
+    (\1_(f @^-1` [set k]) x)%:E)%E).
+  by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
+rewrite EFinf ge0_integral_sum //; last 2 first.
+  - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
+    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i))//.
+  - (*TODO: lemma*) move=> r /= z _; rewrite lee_fin indicE/=.
+    have [r0|r0] := leP 0 r; first by rewrite mulr_ge0.
+    by rewrite preimage_nnfun0// in_set0 mulr0.
+transitivity (\sum_(k <- fset_set [set of f])
+  (\int k%:E * (fubini_F (EFin \o \1_(f @^-1` [set k])) x) 'd m1[x]))%E.
+  apply: eq_fbigr => i; rewrite in_fset_set// inE => -[z _ <-{i} _].
   rewrite ge0_integralM//; last 3 first.
-    - apply/EFin_measurable_fun/measurable_fun_presfun_ind1 => //.
-      exact/measurable_spimg.
-    - by move=> /= x _; rewrite presfun_ind1E lee_fin.
-    - exact: NNSFun_ge0.
-  over.
-rewrite /=.
-under eq_bigr.
-  move=> i _; rewrite sfun1_fubini_tonelli1; last exact/measurable_spimg.
-  over.
-under eq_bigr.
-  move=> i _.
-  rewrite -ge0_integralM//; last 3 first.
-    - by apply: sfun1_measurable_fun_fubini_tonelli_F; exact/measurable_spimg.
-    - by move=> /= x _; exact: sfun1_fubini_tonelli_F_ge0.
-    - exact: NNSFun_ge0.
-  over.
-rewrite -integral_ge0_sum //; last 2 first.
+    - apply/EFin_measurable_fun.
+      by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f (f z)))//.
+    - by move=> /= x _; rewrite lee_fin.
+    - by rewrite lee_fin.
+  rewrite sfun1_fubini_tonelli1//.
+  rewrite -ge0_integralM//.
+  - by apply: sfun1_measurable_fun_fubini_tonelli_F.
+  - by move=> /= x _; exact: sfun1_fubini_tonelli_F_ge0.
+  - by rewrite lee_fin.
+rewrite -ge0_integral_sum //; last 2 first.
   - move=> /= i; apply: emeasurable_funeM => //.
-    by apply: sfun1_measurable_fun_fubini_tonelli_F; exact: measurable_spimg.
-  - move=> i xy _.
-    by apply: mule_ge0 => //; [exact: NNSFun_ge0|exact: sfun1_fubini_tonelli_F_ge0].
+    by apply: sfun1_measurable_fun_fubini_tonelli_F.
+  - move=> r x _; rewrite /fubini_F.
+    have [r0|r0] := leP 0 r.
+      by rewrite mule_ge0//; exact: sfun1_fubini_tonelli_F_ge0.
+    rewrite (@eq_integral _ _ _ _ _ (cst 0%E)) ?integral0 ?mule0// => y _.
+    by rewrite preimage_nnfun0//= indicE in_set0.
 apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE; apply eq_bigr => i _; congr (_ * _)%E.
-rewrite -[RHS]/((m2 \o xsection (A i)) x) -sfun1_fubini_tonelli_FE //.
-exact: measurable_spimg.
-Qed.*) Admitted.
+by rewrite -[RHS]/((m2 \o xsection _) x) -sfun1_fubini_tonelli_FE //.
+Qed.
 
 Lemma sfun_fubini_tonelli2 : (\int ((EFin \o f) z) 'd m'[z] = \int (G y) 'd m2[y])%E.
 Proof.
-(*have EFinf : EFin \o f = (fun x => (\sum_(k < ssize f) ((srng f)`_k)%:E *
-    (presfun_ind1 (pt1, pt2) (A k) x)%:E)%E).
-  by rewrite funeqE => t; rewrite sumEFin /= (sfunE (pt1, pt2) f).
-rewrite EFinf integral_ge0_sum //; last 2 first.
-  - move=> /= i; apply/EFin_measurable_fun/measurable_funrM => //.
-    by apply/measurable_fun_presfun_ind1 => //; exact/measurable_spimg.
-  - move=> i xy _; apply: mule_ge0; rewrite lee_fin// ?presfun_ind1E//.
-    exact: NNSFun_ge0.
-under eq_bigr.
-  move=> i _.
+have EFinf : EFin \o f = (fun x => (\sum_(k <- fset_set [set of f]) k%:E *
+    (\1_(f @^-1` [set k]) x)%:E)%E).
+  by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
+rewrite EFinf ge0_integral_sum //; last 2 first.
+  - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
+    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
+  - (*TODO: lemma*) move=> r /= z _; rewrite lee_fin indicE/=.
+    have [r0|r0] := leP 0 r; first by rewrite mulr_ge0.
+    by rewrite preimage_nnfun0// in_set0 mulr0.
+transitivity (\sum_(k <- fset_set [set of f])
+  (\int k%:E * (fubini_G (EFin \o \1_(f @^-1` [set k])) x) 'd m2[x]))%E.
+  apply: eq_fbigr => i; rewrite in_fset_set// inE => -[z _ <-{i} _].
   rewrite ge0_integralM//; last 3 first.
-    - apply/EFin_measurable_fun => //; apply/measurable_fun_presfun_ind1 => //.
-      exact/measurable_spimg.
-    - by move=> /= x _; rewrite lee_fin// presfun_ind1E.
-    - exact: NNSFun_ge0.
-  over.
-rewrite /=.
-under eq_bigr.
-  move=> i _;rewrite sfun1_fubini_tonelli2; last exact: measurable_spimg.
-  over.
-under eq_bigr.
-  move=> i _.
-  rewrite -ge0_integralM//; last 3 first.
-    - by apply: sfun1_measurable_fun_fubini_tonelli_G; exact: measurable_spimg.
-    - by move=> /= x _; exact: sfun1_fubini_tonelli_G_ge0.
-    - exact: NNSFun_ge0.
-  over.
-rewrite -integral_ge0_sum //; last 2 first.
+    - apply/EFin_measurable_fun.
+      by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f (f z)))//.
+    - by move=> /= x _; rewrite lee_fin.
+    - by rewrite lee_fin.
+  rewrite sfun1_fubini_tonelli2//.
+  rewrite -ge0_integralM//.
+  - by apply: sfun1_measurable_fun_fubini_tonelli_G.
+  - by move=> /= x _; exact: sfun1_fubini_tonelli_G_ge0.
+  - by rewrite lee_fin.
+rewrite -ge0_integral_sum //; last 2 first.
   - move=> /= i; apply: emeasurable_funeM => //.
-    by apply: sfun1_measurable_fun_fubini_tonelli_G; exact: measurable_spimg.
-  - move=> i xy _.
-    by apply: mule_ge0 => //; [exact: NNSFun_ge0|exact: sfun1_fubini_tonelli_G_ge0].
+    by apply: sfun1_measurable_fun_fubini_tonelli_G.
+  - move=> r x _; rewrite /fubini_G.
+    have [r0|r0] := leP 0 r.
+      by rewrite mule_ge0//; exact: sfun1_fubini_tonelli_G_ge0.
+    rewrite (@eq_integral _ _ _ _ _ (cst 0%E)) ?integral0 ?mule0// => y _.
+    by rewrite preimage_nnfun0//= indicE in_set0.
 apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE; apply eq_bigr => i _; congr (_ * _)%E.
-rewrite -[RHS]/((m1 \o ysection (A i)) x) -sfun1_fubini_tonelli_GE //.
-exact/measurable_spimg.
-Qed.*) Admitted.
+by rewrite -[RHS]/((m1 \o ysection _) x) -sfun1_fubini_tonelli_GE //.
+Qed.
 
 Lemma sfun_fubini_tonelli :
   (\int ((EFin \o f) z) 'd m[z] = \int ((EFin \o f) z) 'd m'[z])%E.
 Proof.
-(*rewrite (_ : _ \o _ = (fun x : T1 * T2 => (\sum_(k < ssize f) ((srng f)`_k)%:E *
-    (presfun_ind1 (pt1, pt2) (A k) x)%:E)%E)); last first.
-  by rewrite funeqE => t; rewrite sumEFin /= (sfunE (pt1, pt2) f).
-rewrite integral_ge0_sum //; last 2 first.
-  - move=> /= i; apply/EFin_measurable_fun/measurable_funrM => //.
-    by apply/measurable_fun_presfun_ind1 => //; exact: measurable_spimg.
-  - move=> i xy _; apply: mule_ge0; rewrite lee_fin// ?presfun_ind1E//.
-    exact: NNSFun_ge0.
-under eq_bigr.
-  move=> i _.
+rewrite (_ : _ \o _ = (fun x : T1 * T2 => (\sum_(k <- fset_set [set of f]) k%:E *
+    (\1_(f @^-1` [set k]) x)%:E)%E)); last first.
+  by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
+rewrite ge0_integral_sum //; last 2 first.
+  - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
+    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
+  - (*TODO: lemma*) move=> r /= z _; rewrite lee_fin indicE/=.
+    have [r0|r0] := leP 0 r; first by rewrite mulr_ge0.
+    by rewrite preimage_nnfun0// in_set0 mulr0.
+transitivity (\sum_(k <- fset_set [set of f]) k%:E * \int ((EFin \o \1_(f @^-1` [set k])) z) 'd m'[z])%E.
+  apply: eq_fbigr => i; rewrite in_fset_set// inE => -[t _ <- _].
   rewrite ge0_integralM//; last 3 first.
-    - apply/EFin_measurable_fun/measurable_fun_presfun_ind1 => //.
-      exact/measurable_spimg.
-    - by move=> /= x _; rewrite lee_fin presfun_ind1E.
-    - exact: NNSFun_ge0.
-  over.
-rewrite /=.
-under eq_bigr.
-  move=> i _.
-  rewrite sfun1_fubini_tonelli1; last exact/measurable_spimg.
-  rewrite sfun1_fubini_tonelli; last exact/measurable_spimg.
-  rewrite -sfun1_fubini_tonelli2; last exact/measurable_spimg.
-  over.
+    - apply/EFin_measurable_fun.
+      by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f (f t))).
+    - by move=> /= x _; rewrite lee_fin.
+    - by rewrite lee_fin.
+  rewrite sfun1_fubini_tonelli1//.
+  rewrite sfun1_fubini_tonelli//.
+  by rewrite -sfun1_fubini_tonelli2.
 apply/esym.
-rewrite integral_ge0_sum //; last 2 first.
-  - move=> /= i.
-    apply/EFin_measurable_fun/measurable_funrM => //.
-    by apply/measurable_fun_presfun_ind1 => //; exact: measurable_spimg.
-  - move=> i xy _; apply: mule_ge0.
-      rewrite lee_fin; exact: NNSFun_ge0.
-    by rewrite presfun_ind1E lee_fin.
-apply: eq_bigr => i _.
+rewrite ge0_integral_sum //; last 2 first.
+  - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
+    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
+  - (*TODO: lemma*) move=> r /= z _; rewrite lee_fin indicE/=.
+    have [r0|r0] := leP 0 r; first by rewrite mulr_ge0.
+    by rewrite preimage_nnfun0// in_set0 mulr0.
+apply: eq_fbigr => i; rewrite in_fset_set// inE => -[x _ <- _].
 rewrite ge0_integralM//.
-- by apply/EFin_measurable_fun/measurable_fun_presfun_ind1 => //; exact: measurable_spimg.
-- by move=> /= x _; rewrite presfun_ind1E lee_fin.
-- exact: NNSFun_ge0.
+- apply/EFin_measurable_fun.
+  by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f (f x))).
+- by move=> /= y _; rewrite lee_fin.
+- by rewrite lee_fin.
 Qed.
-*)
-Admitted.
 
 End sfun_fubini_tonelli.
 
@@ -5575,7 +5562,7 @@ Lemma fubini1a : m.-integrable setT f <->
   \int (\int `|f (x, y)| 'd m2[y]) 'd m1[x] < +oo.
 Proof.
 split=> [[_ ioo]|ioo].
-- rewrite -(@fubini_tonelli1 _ _ _ _ _ sf_m1(*NB: this argument should disappear with the lemma is deadmitted*) sf_m2 (abse \o f))//.
+- rewrite -(@fubini_tonelli1 _ _ _ _ _ sf_m2 (abse \o f))//.
   + exact: measurable_fun_comp.
   + by move=> /=.
 - by split=> //; rewrite fubini_tonelli1//; exact: measurable_fun_comp.
