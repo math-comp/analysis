@@ -1392,27 +1392,16 @@ Proof. by case: i. Qed.
 Lemma ereal_mem_Interval (R : realDomainType) (r : R) (a b : itv_bound R) :
   (a < r%:E < b)%E -> r \in Interval a b.
 Proof.
-move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lte_fin ?in_itv //= => /andP[] //.
-- by move=> /ltW ->.
-- by move=> /ltW -> /ltW ->.
-- by move=> /ltW ->.
-- by move=> -> /ltW.
-- by move=> ->.
-- by move=> _ /ltW.
+move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lte_fin ?in_itv //= => /andP[] //;
+by do ?[move->|move/ltW|move=>_].
 Qed.
 
 Lemma Interval_ereal_mem (R : realDomainType) (r : R) (a b : itv_bound R) :
   r \in Interval a b -> (a <= r%:E <= b)%E.
 Proof.
-move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lee_fin ?in_itv ?(andbT,andbF) //=.
-- by move=> /andP[-> /ltW ->].
-- by move=> ->; rewrite lee_pinfty.
-- by move=> /andP[/ltW -> /ltW ->].
-- by move=> /andP[/ltW ->].
-- by move=> /ltW ->; rewrite lee_pinfty.
-- by move=> /ltW ->; rewrite lee_ninfty.
-- by move=> ->; rewrite lee_ninfty.
-- by move=> _; rewrite lee_pinfty lee_ninfty.
+case: a b => [[] a|[]] [[] b|[]] => /[dup] rab /itvP rw//=;
+rewrite ?lee_fin ?rw//= ?lee_pinfty ?lee_ninfty//.
+by move: rab; rewrite in_itv//= andbF.
 Qed.
 
 Section itv_semiAlgebraOfSets.
@@ -1428,15 +1417,57 @@ Definition itv_diffs I J (K := I `\` J) :=
 Lemma finite_cc_itv_diff I J (K := I `\` J) : connected I -> connected J ->
   finite_set (connected_component K @` K).
 Proof.
-move=> Iconnected Jconnected; set CC := (X in finite_set X).
-pose L b := [set x : R | I x /\ forall y, J y ->
-                          if b then (y < x)%R else (x < y)%R].
-have Lconnected b : connected (L b) by admit.
-have IDJ : I `\` J = L true `|` L false by admit.
-have CC0 : CC `|` set0  = [set L true; L false; set0] by admit.
-suff: finite_set (CC `|` set0) by apply: sub_finite_set; apply: subsetUl.
+have [->|/set0P[k Kk]] := eqVneq K set0; first by rewrite image_set0.
+rewrite /K; have [->|/set0P[j Jj]] := eqVneq J set0.
+  move=> Ic _; rewrite setD0; apply: (@sub_finite_set _ _ [set I]) => //.
+  by move=> _ [i Ii] <- /=; rewrite connected_component_id.
+move=> Ic Jc; set CC := (X in finite_set X).
+have KI : K `<=` I by rewrite /K setDE.
+have NKj : ~ K j by case.
+pose L b := I `&` [set x | forall y, J y -> if b then (y < x)%R else (x < y)%R].
+have Lc b : connected (L b).
+  apply/connected_intervalP => x y [Ix Jx] [Iy Jy] z /andP[xz zy].
+  split; first by have /connected_intervalP/(_ x y) := Ic; apply; rewrite ?xz.
+  by move=> t Jt; case: b Jx Jy => [+ _|_] => /(_ _ Jt)
+         => [/lt_le_trans->//|/le_lt_trans->//].
+have /disj_setPS Ldisj : [disjoint L false & L true].
+  by apply/disj_setPS=> x [[_ /(_ j Jj) +] [_ /(_ j Jj)]]; case: ltgtP.
+have KE : K = L false `|` L true.
+  apply/predeqP => i; split=> [[Ii]|]/=; last first.
+    by move=> [] [Ii /(_ i)]; rewrite ltxx falseE.
+  apply: contra_notP => /not_orP[].
+  move=> /not_andP[//|/existsPNP[m Jm /negP +]]
+         /not_andP[//|/existsPNP[n Jn /negP +]].
+  rewrite -!leNgt => mi ni;  have /connected_intervalP/(_ m n) := Jc.
+  by apply=> //; rewrite mi ni.
+have KE' b : K = L b `|` L (~~ b) by rewrite KE; case: b => //; rewrite setUC.
+have Lcc x b : L b x -> connected_component K x = L b.
+  move=> Lbx; apply/seteqP; split; last first.
+    by apply: connected_component_max => //; rewrite KE; case: b {Lbx}.
+  move=> y [X [Xx XK Xc Xy]]; apply: contrapT => NLby.
+  have := XK _ Xy; rewrite (KE' b) => -[] // {NLby}LNby.
+  suff : K j by []; apply/XK.
+  have [[Ix /(_ _ Jj) +] [Iy /(_ _ Jj)] +] := (Lbx, LNby).
+  case: b {Lbx LNby} => /= [/[swap]|] jgt ilt.
+    by have /connected_intervalP/(_ y x) := Xc; apply; rewrite ?ltW.
+  by have /connected_intervalP/(_ x y) := Xc; apply; rewrite ?ltW.
+have cL x : [set L false; L true; set0] (connected_component K x).
+  have [] := pselect (K x); last first.
+    by right=> /=; rewrite connected_component_out.
+  by rewrite [K as K in K x]KE => -[]; [left; left|left; right];
+     rewrite /= -(Lcc x).
+have LCC b : (CC `|` [set set0]) (L b).
+  have [->|/set0P[x Lbx]] := eqVneq (L b) set0; [by right|left].
+  have Kx : K x by rewrite [K]KE; case: b Lbx; [right|left].
+  exists x => //; case: (cL x) => //=; first by case=> Lx; apply: Lcc.
+  by rewrite -subset0 => /(_ x)[]; apply: connected_component_refl.
+have CC0 : CC `|` [set set0]  = [set L false; L true; set0].
+  apply/predeqP => X; split; move=> []; do ?by right.
+    by case=> y Ky <- /=; have := cL y.
+  by case=> ->; apply: LCC.
+suff: finite_set (CC `|` [set set0]) by apply: sub_finite_set; apply: subsetUl.
 by rewrite CC0 !finite_setU; do! split; apply: finite_set1.
-Admitted.
+Qed.
 
 Lemma finite_itv_diffs I J : finite_set (itv_diffs I J).
 Proof.
