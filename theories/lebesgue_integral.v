@@ -489,7 +489,7 @@ Lemma indicT {T} {R : ringType} : \1_[set: T] = cst (1 : R).
 Proof. by apply/funext=> x; rewrite indicE in_setT. Qed.
 
 Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
-  indic A = 1 \|_ A :> (T -> R).
+  \1_A = 1 \|_ A :> (T -> R).
 Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
 
 Lemma restrict_indic T (R : numFieldType) (E A : set T) :

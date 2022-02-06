@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 Require Import boolp classical_sets mathcomp_extra reals ereal posnum nngnum.
-Require Import functions topology normedtype sequences cardinality csum.
+Require Import functions topology normedtype sequences cardinality csum fsbigop.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -1980,6 +1980,23 @@ rewrite [X in _ <= X](big_ord_widen n (mu \o A))//= [X in _ <= X]big_mkcond/=.
 rewrite lee_sum => // i _; case: ltnP => ltin; last by rewrite DU0 ?measure0.
 rewrite -[X in _ <= X]SetRing.RmuE; last exact: Am.
 by rewrite le_measure ?inE//=; last exact/SetRing.measurableW/Am.
+Qed.
+
+Lemma content_sub_fsum (I : choiceType) D (A : set T) (A_ : I -> set T) :
+  finite_set D ->
+  (forall i, D i -> measurable (A_ i)) ->
+  measurable A ->
+  A `<=` \bigcup_(i in D) A_ i -> mu A <= \sum_(i \in D) mu (A_ i).
+Proof.
+elim/choicePpointed: I => I in A_ D *.
+  rewrite !emptyE bigcup_set0// subset0 => _ _ _ ->.
+  by rewrite measure0 fsbig_set0.
+move=> Dfin A_m Am Asub; have [n /ppcard_eqP[f]] := Dfin.
+rewrite (reindex_fsbig f^-1%FUN `I_n)//= -fsbig_ord.
+rewrite (@content_sub_additive A (A_ \o f^-1%FUN))//=.
+  by move=> i ltin; apply: A_m; apply: funS.
+rewrite (fsbig_ord _ _ (A_ \o f^-1%FUN))/= -(reindex_fsbig _ _ D)//=.
+by rewrite fsbig_setU.
 Qed.
 
 (* (* alternative proof *) *)

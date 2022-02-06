@@ -11,6 +11,8 @@ Require Import sequences measure csum cardinality lebesgue_measure.
 (*                                                                            *)
 (* Elements from the original formalization of the Lebesgue measure           *)
 (*                                                                            *)
+(*            itv_diff i j == i \ j where i and j are intervals assuming      *)
+(*                            ~ j <= i                                        *)
 (*              lt_itv i j == total ordering of intervals: the left bound of  *)
 (*                            i is smaller than the one of j, and if it is    *)
 (*                            equal then the right bound of i is smaller than *)
@@ -60,6 +62,61 @@ Local Open Scope ring_scope.
 
 Reserved Notation "[ 'sset' 'of' s ]"
   (at level 0, format "[ 'sset'  'of'  s ]").
+
+Section itv_diff.
+Variable R : realType.
+Implicit Types i j : interval R.
+
+(* assumes ~ j <= i *)
+Definition itv_diff i j := if ~~ neitv (itv_meet i j) then i
+  else
+    let: Interval i1 i2 := i in let: Interval j1 j2 := j in
+    if (j1 <= i1)%O then
+      (if (j2 <= i2)%O then Interval j2 i2 else 0%O)
+    else
+      (if (j2 <= i2)%O then 0%O else Interval i1 j1).
+
+Lemma set_itv_diff i j :
+  (~~ (j <= i)%O) || ((j <= i)%O && (j.1 == i.1)) ->
+  [set` itv_diff i j] = [set` i] `\` [set` j].
+Proof.
+move=> ji.
+rewrite /itv_diff; case: ifPn => [ij0|/negPn ij0].
+  by apply/esym/setDidPl; rewrite -set_itv_meet; apply/eqP; move/negPn : ij0.
+move: i j => [i1 i2] [j1 j2] /= in ji ij0 *.
+have [ji1|ji1] := leP j1 i1.
+- have [ji2|ji2] := leP j2 i2.
+  + rewrite eqEsubset; split=> x /=.
+    * rewrite itv_boundlr => /andP[j2x xi2]; split=> /=.
+        rewrite itv_boundlr xi2 andbT (@le_trans _ _ j2) // leNgt.
+        apply/negP => j2j1; apply/negP : ij0; rewrite joinEtotal meetEtotal.
+        by rewrite maxElt ltNge ji1 /= minElt ltNge ji2 /= neitvE /= -leNgt ltW.
+      rewrite itv_boundlr => /andP[j1x xj2].
+      by have := le_trans xj2 j2x; rewrite lte_bnd ltxx.
+    * case; rewrite !itv_boundlr => /andP[i1x xi2] /negP; rewrite xi2 andbT.
+      by apply: contraNle; rewrite (le_trans ji1).
+  + rewrite set_itvE; apply/esym; rewrite setD_eq0 => x /=; rewrite !itv_boundlr.
+    by move=> /andP[i1x xi2]; rewrite (le_trans ji1)// (le_trans xi2)// ltW.
+- have [ji2|ji2] := leP j2 i2.
+    case/orP: ji => [|/andP[ji]]; last by rewrite gt_eqF.
+    by rewrite itv_leEmeet [in X in X -> _]/= (join_l (ltW _))// meet_l// eqxx.
+  rewrite eqEsubset; split=> x /=.
+  * rewrite itv_boundlr => /andP[i1x xj1]; split.
+      rewrite itv_boundlr i1x /= leNgt; apply/negP => i2j1; apply/negP : ij0.
+      rewrite meetEtotal minElt ji2 joinEtotal maxElt ji1 neitvE /=.
+      by rewrite -leNgt (le_trans _ xj1) // (le_trans (ltW i2j1)).
+    rewrite itv_boundlr => /andP[j1x xj2].
+    by have := le_trans xj1 j1x; rewrite lte_bnd ltxx.
+  * move=> -[]; rewrite itv_boundlr => /andP[i1x xi2].
+    rewrite itv_boundlr => /negP; rewrite negb_and -2!ltNge => /orP[xj1|j2x].
+      by rewrite itv_boundlr i1x.
+    by have := lt_trans (le_lt_trans xi2 ji2) j2x; rewrite ltxx.
+Qed.
+
+Lemma set_itv_diffxx i : [set` itv_diff i i] = set0.
+Proof. by rewrite set_itv_diff ?setDv// lexx eqxx. Qed.
+
+End itv_diff.
 
 Section simple_sets.
 Variable R : numDomainType.
