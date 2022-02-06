@@ -3343,8 +3343,7 @@ Lemma connected_component_cover A :
   \bigcup_(A in connected_component A @` A) A = A.
 Proof.
 apply/predeqP => x; split=> [[B [y By <- /connected_component_sub//]]|Ax].
-exists (connected_component A x) => //; last exact: connected_component_refl.
-by exists x.
+by exists (connected_component A x) => //; apply: connected_component_refl.
 Qed.
 
 Lemma connected_component_sym A x y :

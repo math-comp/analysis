@@ -70,7 +70,20 @@ Local Open Scope ereal_scope.
 (******************************************************************************)
 (*                        /lemmas waiting to be PRed                          *)
 (******************************************************************************)
-(* mu_ext mu and mu coincide on measurable sets *)
+
+Lemma preimage_abse_pinfty (R : numDomainType) :
+  @abse R @^-1` [set +oo%E] = [set -oo%E; +oo%E].
+Proof.
+by rewrite predeqE => y; split ; move: y => [y//| |]//=; [right | left | case].
+Qed.
+
+Lemma preimage_abse_ninfty (R : realDomainType) :
+  @abse R @^-1` [set -oo%E] = set0.
+Proof.
+rewrite predeqE => t; split => //=; apply/eqP.
+by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t))// lte_ninfty.
+Qed.
+
 
 Local Close Scope ereal_scope.
 

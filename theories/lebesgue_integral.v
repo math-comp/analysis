@@ -281,29 +281,6 @@ Proof.
 by move: x => [x| |] //=; rewrite ?ltxx ?andbF// lte_fin => /andP[].
 Qed.
 
-
-Lemma imageT {aT rT : Type} (f : aT -> rT) (a : aT) : [set of f] (f a).
-Proof. by apply: imageP. Qed.
-
-Hint Extern 0 ((?f @` _) (?f _)) =>
-   solve [apply: imageP; assumption] : core.
-Hint Extern 0 ((?f @` setT) _) => solve [apply: imageT] : core.
-
-Lemma preimage0 {T R} {f : T -> R} {A : set R} :
-  A `&` [set of f] `<=` set0 -> f @^-1` A = set0.
-Proof. by rewrite -subset0 => + x Afx => /(_ (f x))[]; split. Qed.
-
-Lemma preimage10 {T R} {f : T -> R} {x} : ~ [set of f] x -> f @^-1` [set x] = set0.
-Proof. by move=> fx; rewrite preimage0// => y [->]. Qed.
-
-Hint Extern 0 (is_true (0 <= (_ : {measure set _ -> \bar _}) _)%E) =>
-  solve [apply: measure_ge0] : core.
-
-Lemma measure_negligible [R : realFieldType] [T : ringOfSetsType]
-    (mu : {measure set T -> \bar R}) [A : set T] :
-  measurable A -> mu.-negligible A -> mu A = 0%E.
-Proof. by move=> mA /negligibleP ->. Qed.
-
 (******************************************************************************)
 (*                        /lemmas waiting to be PRed                          *)
 (******************************************************************************)
@@ -1406,8 +1383,8 @@ transitivity (\sum_(x \in F) \sum_(y \in G) (x + y)%:E * m (pf x `&` pg y)).
     move=> z [_ /= FGz]; rewrite [X in m X](_ : _ = set0) ?measure0 ?mule0//.
     rewrite -subset0 => //= {x}i /= [<-] /(canLR (@addrNK _ _)).
     by apply: contra_not FGz => <-; exists i; rewrite //= addrC.
-  under [RHS]eq_fsbigr => y do rewrite -[y as y in [set y]](addrK x) (addrC y).
-  by apply: reindex_fsbigT; exists (+%R (- x)); [apply: addKr| apply: addNKr].
+  rewrite (reindex_fsbigT (+%R x))//.
+  by apply: eq_fsbigr => y; rewrite addrC addrK.
 transitivity (\sum_(x \in F) \sum_(y \in G) x%:E * m (pf x `&` pg y) +
               \sum_(x \in F) \sum_(y \in G) y%:E * m (pf x `&` pg y)).
   do 2![rewrite -fsum_split//; apply: eq_fsbigr => _ /set_mem [? _ <-]].

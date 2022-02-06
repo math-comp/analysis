@@ -261,7 +261,7 @@ Definition disj_set A B := setI A B == set0.
 Definition proper A B := A `<=` B /\ ~ (B `<=` A).
 
 End basic_definitions.
-Arguments preimage T rT f Y / t.
+Arguments preimage T rT f Y t /.
 Arguments set0 _ _ /.
 Arguments setT _ _ /.
 Arguments set1 _ _ _ /.
@@ -1016,11 +1016,22 @@ Canonical setI_add_monoid := AddLaw (@setIUl T) (@setIUr T).
 
 End SetMonoids.
 
-Section image_lemmas.
+Section base_image_lemmas.
 Context {aT rT : Type}.
 Implicit Types (A B : set aT) (f : aT -> rT) (Y : set rT).
 
 Lemma imageP f A a : A a -> (f @` A) (f a). Proof. by exists a. Qed.
+
+Lemma imageT (f : aT -> rT) (a : aT) : [set of f] (f a).
+Proof. by apply: imageP. Qed.
+
+End base_image_lemmas.
+Hint Extern 0 ((?f @` _) (?f _)) =>  solve [apply: imageP; assumption] : core.
+Hint Extern 0 ((?f @` setT) _) => solve [apply: imageT] : core.
+
+Section image_lemmas.
+Context {aT rT : Type}.
+Implicit Types (A B : set aT) (f : aT -> rT) (Y : set rT).
 
 Lemma image_inj {f A a} : injective f -> (f @` A) (f a) = A a.
 Proof.
@@ -1130,6 +1141,36 @@ Proof.
 move=> eqFG; apply/predeqP => i.
 by split=> [] [Di FAi]; split; rewrite /preimage//= (eqFG,=^~eqFG) ?inE.
 Qed.
+
+Lemma comp_preimage T1 T2 T3 (A : set T3) (g : T1 -> T2) (f : T2 -> T3) :
+  (f \o g) @^-1` A = g @^-1` (f @^-1` A).
+Proof. by []. Qed.
+
+Lemma preimage_id T (A : set T) : id @^-1` A = A. Proof. by []. Qed.
+
+Lemma preimage_comp T1 T2 (g : T1 -> rT) (f : T2 -> rT) (C : set T1) :
+  f @^-1` [set g x | x in C] = [set x | f x \in g @` C].
+Proof.
+rewrite predeqE => t; split => /=.
+  by move=> -[r Cr <-]; rewrite inE;  exists r.
+by rewrite inE => -[r Cr <-]; exists r.
+Qed.
+
+Lemma preimage_setI_eq0 (f : aT -> rT) (Y1 Y2 : set rT) :
+  f @^-1` (Y1 `&` Y2) = set0 <-> f @^-1` Y1 `&` f @^-1` Y2 = set0.
+Proof.
+by split; apply: contraPP => /eqP/set0P/(nonempty_preimage_setI f _ _).2/set0P/eqP.
+Qed.
+
+Lemma preimage0eq (f : aT -> rT) (Y : set rT) : Y = set0 -> f @^-1` Y = set0.
+Proof. by move=> ->; rewrite preimage_set0. Qed.
+
+Lemma preimage0 {T R} {f : T -> R} {A : set R} :
+  A `&` [set of f] `<=` set0 -> f @^-1` A = set0.
+Proof. by rewrite -subset0 => + x /= Afx => /(_ (f x))[]; split. Qed.
+
+Lemma preimage10 {T R} {f : T -> R} {x} : ~ [set of f] x -> f @^-1` [set x] = set0.
+Proof. by move=> fx; rewrite preimage0// => y [->]. Qed.
 
 End image_lemmas.
 Arguments sub_image_setI {aT rT f A B} t _.

@@ -134,44 +134,6 @@ Proof. by case: x => // -[]. Qed.
 (*                         lemmas waiting to be PRed                          *)
 (******************************************************************************)
 
-Arguments preimage _ _ _ _ _ /.
-
-Lemma comp_preimage T1 T2 T3 (A : set T3) (g : T1 -> T2) (f : T2 -> T3) :
-  (f \o g) @^-1` A = g @^-1` (f @^-1` A).
-Proof. by []. Qed.
-
-Lemma preimage_id T (A : set T) : id @^-1` A = A. Proof. by []. Qed.
-
-Lemma preimage_comp T1 T2 rT (g : T1 -> rT) (f : T2 -> rT) (C : set T1) :
-  f @^-1` [set g x | x in C] = [set x | f x \in g @` C].
-Proof.
-rewrite predeqE => t; split => /=.
-  by move=> -[r Cr <-]; rewrite inE;  exists r.
-by rewrite inE => -[r Cr <-]; exists r.
-Qed.
-
-Lemma empty_preimage_setI {aT rT : Type} (f : aT -> rT) (Y1 Y2 : set rT) :
-  f @^-1` (Y1 `&` Y2) = set0 <-> f @^-1` Y1 `&` f @^-1` Y2 = set0.
-Proof.
-by split; apply: contraPP => /eqP/set0P/(nonempty_preimage_setI f _ _).2/set0P/eqP.
-Qed.
-
-Lemma empty_preimage {aT rT : Type} (f : aT -> rT) (Y : set rT) :
-  Y = set0 -> f @^-1` Y = set0.
-Proof. by move=> ->; rewrite preimage_set0. Qed.
-
-Lemma preimage_abse_pinfty (R : numDomainType) :
-  @abse R @^-1` [set +oo%E] = [set -oo%E; +oo%E].
-Proof.
-by rewrite predeqE => y; split ; move: y => [y//| |]//=; [right | left | case].
-Qed.
-
-Lemma preimage_abse_ninfty (R : realDomainType) :
-  @abse R @^-1` [set -oo%E] = set0.
-Proof.
-rewrite predeqE => t; split => //=; apply/eqP.
-by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t))// lte_ninfty.
-Qed.
 
 (* TODO: PR along subset_set1? *)
 Lemma subset_set2 T (A : set T) a b : A `<=` [set a; b] ->
@@ -1370,8 +1332,10 @@ Hint Resolve measure_semi_additive2 : core.
 
 End additive_measure_on_semiring_of_sets.
 
-Hint Resolve measure0 measure_ge0 measure_semi_additive2
-  measure_semi_additive : core.
+Hint Extern 0 (is_true (0 <= (_ : {additive_measure set _ -> \bar _}) _)%E) =>
+  solve [apply: measure_ge0] : core.
+
+Hint Resolve measure0 measure_semi_additive2 measure_semi_additive : core.
 
 Section additive_measure_on_ring_of_sets.
 Variables (R : realFieldType) (T : ringOfSetsType)
@@ -2406,16 +2370,20 @@ Definition negligible (mu : set T -> \bar R) (N : set T) :=
 
 Local Notation "mu .-negligible" := (negligible mu).
 
-Lemma negligibleP (mu : {measure _ -> _}) A :
+Lemma negligibleP (mu : {additive_measure _ -> _}) A :
   measurable A -> mu.-negligible A <-> mu A = 0.
 Proof.
 move=> mA; split => [[B [mB mB0 AB]]|mA0]; last by exists A; split.
 apply/eqP; rewrite eq_le measure_ge0 // andbT -mB0.
-by apply: (le_measure (measure_additive_measure mu)) => //; rewrite in_setE.
+by apply: (le_measure mu) => //; rewrite in_setE.
 Qed.
 
-Lemma negligible_set0 (mu : {measure _ -> _}) : mu.-negligible set0.
+Lemma negligible_set0 (mu : {additive_measure _ -> _}) : mu.-negligible set0.
 Proof. exact/negligibleP. Qed.
+
+Lemma measure_negligible (mu : {additive_measure set T -> \bar R}) (A : set T) :
+  measurable A -> mu.-negligible A -> mu A = 0%E.
+Proof. by move=> mA /negligibleP ->. Qed.
 
 Definition almost_everywhere (mu : set T -> \bar R) (P : T -> Prop)
      & (phantom Prop (forall x, P x)) :=
