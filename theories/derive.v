@@ -498,7 +498,7 @@ rewrite -normr_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
 apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
 have /oid /nbhs_ballP [_ /posnumP[d] dfe] := !! gt0 e.
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
-rewrite -{1}(@scalerKV _ _ k _ x) // linearZZ normmZ.
+rewrite -{1}(@scalerKV _ _ k _ x) /k // linearZZ normmZ.
 rewrite -ler_pdivl_mull; last by rewrite gtr0_norm.
 rewrite mulrCA (@le_trans _ _ (e%:num * `|k^-1 *: x|)) //; last first.
   by rewrite ler_pmul // normmZ normfV.
@@ -683,14 +683,14 @@ move=> /nbhs_ballP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
 have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
 set k := 2 / e%:num * (PosNum xn0)%:num.
-have kn0 : k != 0 by [].
+have kn0 : k != 0 by rewrite /k.
 have abskgt0 : `|k| > 0 by rewrite normr_gt0.
 rewrite -[x in X in X <= _](scalerKV kn0) linearZZ normmZ -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (k^-1 *: x).
   rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
-  by rewrite ger0_norm // mulVf.
+  by rewrite ger0_norm /k // mulVf.
 rewrite -ball_normE /= distrC subr0 normmZ.
-rewrite normfV ger0_norm // invrM ?unitfE // mulrAC mulVf //.
+rewrite normfV ger0_norm /k // invrM ?unitfE // mulrAC mulVf //.
 by rewrite invf_div mul1r [X in _ < X]splitr; apply: ltr_spaddr.
 Qed.
 
@@ -756,13 +756,13 @@ have [|vn0] := real_le0P (normr_real v).
 rewrite -[`|u|]/((PosNum un0)%:num) -[`|v|]/((PosNum vn0)%:num).
 set ku := 2 / e%:num * (PosNum un0)%:num.
 set kv := 2 / e%:num * (PosNum vn0)%:num.
-rewrite -[X in f X](@scalerKV _ _ ku) // linearZl_LR normmZ.
+rewrite -[X in f X](@scalerKV _ _ ku) /ku // linearZl_LR normmZ.
 rewrite gtr0_norm // -ler_pdivl_mull //.
-rewrite -[X in f _ X](@scalerKV _ _ kv) // linearZr_LR normmZ.
+rewrite -[X in f _ X](@scalerKV _ _ kv) /kv // linearZr_LR normmZ.
 rewrite gtr0_norm // -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (ku^-1 *: u, kv^-1 *: v).
   rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
-  rewrite ler_pdivl_mull // mulr1 ler_pdivl_mull //.
+  rewrite ler_pdivl_mull 1?pmulr_lgt0// mulr1 ler_pdivl_mull 1?pmulr_lgt0//.
   by rewrite mulrA [ku * _]mulrAC expr2.
 rewrite -ball_normE /= distrC subr0.
 have -> : (ku^-1 *: u, kv^-1 *: v) =

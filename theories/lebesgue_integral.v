@@ -1027,7 +1027,7 @@ Lemma muleindic_ge0 T (R : realDomainType) (f : {nnfun T >-> R}) r z :
   0 <= r%:E * (\1_(f @^-1` [set r]) z)%:E.
 Proof.
 apply: (@mulef_ge0 _ _ (fun r => (\1_(f @^-1` [set r]) z)%:E)).
-  by move=> x; rewrite lee_fin.
+  by move=> x; rewrite lee_fin /indic.
 by move=> r0; rewrite preimage_nnfun0// indic0.
 Qed.
 
@@ -2868,7 +2868,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
   rewrite fineK//; last first.
     by case: fint => _ foo; rewrite ge0_fin_numE//; exact: integral_ge0.
   apply: ge0_le_integral => //.
-  - by move=> *; rewrite lee_fin.
+  - by move=> *; rewrite lee_fin /indic.
   - apply/EFin_measurable_fun; apply: measurable_funM=>//.
       + exact: measurable_fun_cst.
       + apply: (@measurable_funS _ _ setT)=>//.

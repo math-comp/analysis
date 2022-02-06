@@ -139,6 +139,14 @@ Notation spec x0 nz cond x :=
   ((nullity_bool nz%snum_nullity ==> (x != x0))
    && (reality_cond x0 cond%snum_sign x)).
 
+Record typ d nz cond := Typ {
+  sort : porderType d;
+  #[canonical=no]
+  sort_x0 : sort;
+  #[canonical=no]
+  allP : forall x : sort, spec sort_x0 nz cond x
+}.
+
 Definition mk {d T} x0 nz cond r P : @def d T x0 nz cond :=
   @Def d T x0 nz cond r P.
 
@@ -207,6 +215,45 @@ Canonical signed_choiceType := ChoiceType sT signed_choiceMixin.
 Definition signed_porderMixin := [porderMixin of sT by <:].
 Canonical signed_porderType := POrderType d sT signed_porderMixin.
 End POrder.
+
+Lemma top_typ_subproof d (T : porderType d) (x0 x : T) :
+  Signed.spec x0 ?=0 >?<0 x.
+Proof. by []. Qed.
+
+Canonical top_typ d (T : porderType d) (x0 : T) :=
+  Signed.Typ (top_typ_subproof x0).
+
+Lemma real_domain_typ_subproof (R : realDomainType) (x : R) :
+  Signed.spec 0%R ?=0 >=<0 x.
+Proof. by rewrite /= -realE num_real. Qed.
+
+Canonical real_domain_typ (R : realDomainType) :=
+  Signed.Typ (@real_domain_typ_subproof R).
+
+Lemma real_field_typ_subproof (R : realFieldType) (x : R) :
+  Signed.spec 0%R ?=0 >=<0 x.
+Proof. exact: real_domain_typ_subproof. Qed.
+
+Canonical real_field_typ (R : realFieldType) :=
+  Signed.Typ (@real_field_typ_subproof R).
+
+Lemma nat_typ_subproof (x : nat) : Signed.spec 0%N ?=0 >=0 x.
+Proof. by []. Qed.
+
+Canonical nat_typ := Signed.Typ nat_typ_subproof.
+
+Lemma typ_snum_subproof d nz cond (xt : Signed.typ d nz cond)
+    (x : Signed.sort xt) :
+  Signed.spec (Signed.sort_x0 xt) nz cond x.
+Proof. by move: xt x => []. Qed.
+
+(* This adds _ <- Signed.r ( typ_snum )
+   to canonical projections (c.f., Print Canonical Projections
+   Signed.r) meaning that if no other canonical instance (with a
+   registered head symbol) is found, a canonical instance of
+   Signed.typ, like the ones above, will be looked for. *)
+Canonical typ_snum d nz cond (xt : Signed.typ d nz cond) (x : Signed.sort xt) :=
+  Signed.mk (typ_snum_subproof x).
 
 (* Section Order. *)
 (* Variables (d : unit) (T : orderType d) (x0 : T) (nz : nullity) (cond : reality). *)
@@ -383,7 +430,7 @@ Variables (R : numDomainType) (nz : nullity) (r : real).
 Local Notation nR := {num R & nz & r}.
 
 Lemma signed_le_total : totalPOrderMixin [porderType of nR].
-Proof. by move=> x y; apply: real_comparable. Qed.
+Proof. by move=> x y; apply: real_comparable => /=. Qed.
 
 Canonical signed_latticeType := LatticeType nR signed_le_total.
 Canonical signed_distrLatticeType := DistrLatticeType nR signed_le_total.

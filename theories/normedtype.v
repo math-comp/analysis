@@ -1854,14 +1854,15 @@ Proof. by []. Qed.
 
 Lemma ler_mx_norm_add x y : mx_norm (x + y) <= mx_norm x + mx_norm y.
 Proof.
-rewrite [_ <= _%:num]num_le; apply/bigmax_lerP; split; first exact: addr_ge0.
+rewrite !mx_normE [_ <= _%:num]num_le; apply/bigmax_lerP.
+split; first exact: addr_ge0.
 move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
 rewrite ler_add// -[X in X <= _]nngE num_le; exact: ler_bigmax.
 Qed.
 
 Lemma mx_norm_eq0 x : mx_norm x = 0 -> x = 0.
 Proof.
-move/eqP; rewrite eq_le -[0]nngE num_le => /andP[/bigmax_lerP[_ x0] _].
+move/eqP; rewrite eq_le -[0]nngE mx_normE num_le => /andP[/bigmax_lerP[_ x0] _].
 apply/matrixP => i j; rewrite mxE; apply/eqP.
 by rewrite -num_abs_eq0 eq_le (x0 (i, j))//= -num_le/=.
 Qed.
@@ -1891,7 +1892,7 @@ rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite -ih; exact/ler_mx_norm_add.
 have [/mx_norm_eq0->|x0] := eqVneq (mx_norm x) 0.
   by rewrite -/(mx_norm 0) -/(mx_norm 0) !(mul0rn,addr0,mx_norm0).
-rewrite -/(mx_norm x) -num_abs_le; last by rewrite addr_ge0 // mulrn_wge0.
+rewrite -/(mx_norm x) -num_abs_le; last by rewrite mx_normE.
 apply/bigmax_gerP; right => /=.
 have [i Hi] := mx_norm_neq0 x0.
 exists i => //; rewrite Hi -!mulrS -normrMn mulmxnE.
