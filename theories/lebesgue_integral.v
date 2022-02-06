@@ -1308,12 +1308,10 @@ Proof.
 rewrite sintegralE (fsbig_widen _ [set 0; 1]) => //; last 2 first.
 - exact: image_indic_sub.
 - by move=> t [[] -> /= /preimage10->]; rewrite measure0 mule0.
-rewrite (fsbigD1 0) ?mul0e//= ?add0e; last by left.
-rewrite [_ `\ 0%R](_ : _ = [set 1]); last first.
-  apply/seteqP; split=> [t [[]->//=]|t ->].
-  by split; [right|apply/eqP/oner_neq0].
-rewrite fsbig_set1 mul1e preimage_indic ifT ?inE// ifN ?notin_set//=.
-by move=> /esym/eqP; rewrite oner_eq0.
+have N01 : 0 <> 1 :> R by move=> /esym/eqP; rewrite oner_eq0.
+rewrite fsbigU//=; last by move=> t [->]//.
+rewrite !fsbig_set1 mul0e add0e mul1e.
+by rewrite preimage_indic ifT ?inE// ifN ?notin_set.
 Qed.
 
 Section sintegralrM.
