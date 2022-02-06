@@ -2973,28 +2973,14 @@ Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 Lemma sintegral_cst (x : {nonneg R}) :
   sintegral mu (cst x%:nngnum \|_ D) = x%:nngnum%:E * mu D.
 Proof.
-(* rewrite /sintegral (fsbigID [set x%:nngnum])/=; last first. *)
-(*   rewrite setTI; have := @fimfunP _ _ (proj_nnsfun (cst_nnsfun T x) mD). *)
-(*   apply: sub_finite_set => y. *)
-(*   have [->|y0] := eqVneq y 0%R; first by rewrite /preimage/= mul0e. *)
-(*   rewrite /preimage/=. *)
-(*   have [|/set0P[z Dz]] := eqVneq D set0. *)
-(*     move=> {1}->; rewrite restrict_set0/=. *)
-(*     rewrite (_ : [set _ | _] = set0) ?measure0 ?mule0//. *)
-(*     by apply/seteqP; split => // z/= /esym; exact/eqP. *)
-(*   have [yx _|yx] := eqVneq y x%:nngnum; last first. *)
-(*     rewrite (_ : [set _ | _] = set0) ?measure0 ?mule0//. *)
-(*     apply/seteqP; split=> // u/=. *)
-(*     by rewrite /restrict; case: ifPn => [|] _ /esym; exact/eqP. *)
-(*   by exists z=> //; rewrite mindicE mem_set// mulr1. *)
-(* rewrite !setTI fsbig_set1 fsbig1 ?adde0; last first. *)
-(*   move=> r/= /eqP rx; rewrite preimage_restrict/=. *)
-(*   case: ifPn; first by rewrite inE/= => <-; rewrite !mul0e. *)
-(*   by rewrite set0U preimage_cst eq_sym (negbTE rx) setI0 measure0 mule0. *)
-(* rewrite preimage_restrict /=. *)
-(* case: ifPn; first by rewrite inE/= => <-; rewrite !mul0e. *)
-(* by rewrite notin_set/= => x0; rewrite set0U preimage_cst eqxx/= setIT. *)
-Admitted.
+rewrite sintegralE (fsbig_widen _ [set 0%R; x%:nngnum])/=; last 2 first.
+- by move=> y [t _ <-] /=; rewrite /patch; case: ifPn; [right|left].
+- by move=> y [_ /=/preimage10->]; rewrite measure0 mule0.
+have [->|x0] := eqVneq x%:nngnum 0%R; first by rewrite setUid fsbig_set1 !mul0e.
+rewrite fsbigU//=; last by move=> y [->]/esym; apply/eqP.
+rewrite !fsbig_set1 mul0e add0e preimage_restrict//.
+by rewrite ifN ?set0U ?setIidl//= notin_set; apply/eqP; rewrite eq_sym.
+Qed.
 
 Lemma integral_cst (r : R) : (0 <= r)%R ->
   \int_ D ((EFin \o cst r) x) 'd mu[x] = r%:E * mu D.
