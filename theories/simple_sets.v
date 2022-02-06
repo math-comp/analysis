@@ -7,6 +7,48 @@ Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
 Require Import sequences measure csum cardinality lebesgue_measure.
 
+(******************************************************************************)
+(*                                                                            *)
+(* Elements from the original formalization of the Lebesgue measure           *)
+(*                                                                            *)
+(*              lt_itv i j == total ordering of intervals: the left bound of  *)
+(*                            i is smaller than the one of j, and if it is    *)
+(*                            equal then the right bound of i is smaller than *)
+(*                            the one of j                                    *)
+(*              le_itv i j := (i = j) \/ lt_itv i j                           *)
+(*              itv_cplt s == complement of the list of intervals s           *)
+(*                 ccitv n == the centered closed interval [-n, n]            *)
+(*      sorted_decompose s == turns a *sorted* list of intervals s into a     *)
+(*                            list of non-overlapping intervals with the same *)
+(*                            cover                                           *)
+(*             decompose s == turn a list of intervals into a sequence of     *)
+(*                            non-overlapping intervals with the same cover   *)
+(*             Module Sset == simple sets form an algebra of sets             *)
+(*             [sset of s] == the finite union of the list of intervals s     *)
+(*                            (a "simple set")                                *)
+(*             hlengthUitv == (lemma) hlength is additive on intervals        *)
+(*               slength A == measure of the set A when it is a simple set,   *)
+(*                            and 0 o.w.                                      *)
+(*        nth_interval f k == kth interval in the sequence f of lists of      *)
+(*                            intervals                                       *)
+(*    slength_sigma_finite == (lemma) slength is sigma-finite                 *)
+(*                                                                            *)
+(* The main proof is the proof that slength is sigma-additive. We list up the *)
+(* several lemmas that make up this:                                          *)
+(*   slength_additive == slength is additive                                  *)
+(*   slength_sigma_subadditive_finite_itv == slength is sigma-subadditive     *)
+(*     on finite intervals                                                    *)
+(*   slength_sigma_additive_finite_itv == slength is additive on finite       *)
+(*     intervals                                                              *)
+(*   slength_sigma_subadditive_infinite_itv == slength is sigma-subadditive   *)
+(*     on infinite intervals                                                  *)
+(*   slength_sigma_subadditive_itv == slength is sigma-subadditive on         *)
+(*     intervals                                                              *)
+(*   slength_sigma_additive_itv == slength is sigma-additive on intervals     *)
+(*   slength_semi_sigma_additive == slength is sigma-additive on simple sets  *)
+(*                                                                            *)
+(******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -1505,7 +1547,7 @@ exists ((fun i => [set` i]) \o ccitv).
     by rewrite natr_absz ltr0_norm ?floor_lt0// mulrNz opprK floor_le.
 move=> n; split.
   rewrite /measurable/= /measurable/= /measurable/=.
-  (* by exists [fset (ccitv n)]%fset; rewrite ssetE big_seq_fset1. *)
+(*  by exists [fset (ccitv n)]%fset; rewrite ssetE big_seq_fset1.*)
   admit.
 by rewrite slength_itv hlength_itv /= -(fun_if EFin) lte_pinfty.
 Admitted.

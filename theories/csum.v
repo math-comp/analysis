@@ -61,7 +61,7 @@ Section csum.
 Variables (R : realFieldType) (T : choiceType).
 Implicit Types (S : set T) (a : T -> \bar R).
 
-Definition csum S a := ereal_sup [set \sum_(i <- F) a i | F in fsets S].
+Definition csum S a := ereal_sup [set \sum_(x <- F) a x | F in fsets S].
 
 Local Notation "\csum_ ( i 'in' P ) F" := (csum P (fun i => F)).
 
@@ -376,7 +376,7 @@ Qed.
 
 Lemma csum_bigcup J a : trivIset [set i | a @` J i != [set 0]] J ->
     (forall x : T, (\bigcup_(k in K) J k) x -> 0 <= a x) ->
-  \csum_(i in \bigcup_(k in K) J k) a i = \csum_(i in K) \csum_(j in J i) a j.
+  \csum_(i in \bigcup_(k in K) J k) a i = \csum_(k in K) \csum_(j in J k) a j.
 Proof.
 move=> Jtriv a_ge0.
 pose J' i := if a @` J i == [set 0] then set0 else J i.

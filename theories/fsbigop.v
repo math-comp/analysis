@@ -1,7 +1,19 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
 Require Import mathcomp_extra boolp classical_sets posnum functions cardinality.
 Require Import reals ereal topology normedtype nngnum.
+
+(******************************************************************************)
+(*                     Finitely-supported big operators                       *)
+(*                                                                            *)
+(*     finite_support idx D F := D `&` F @^-1` [set~ idx]                     *)
+(* \big[op/idx]_(i \in A) F i == iterated application of the operator op      *)
+(*                               with neutral idx over finite_support idx A F *)
+(*         \sum_(i \in A) F i == iterated addition, exists in ring_scope and  *)
+(*                               ereal_scope                                  *)
+(*                                                                            *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -113,10 +125,6 @@ move/allP : H3 => /(_ _ ir); rewrite Pi implyTb => /= => /eqP Fi0.
 rewrite -(@fineK _ (F i))//; last by have := H1 _ ir; rewrite Pi implyTb.
 by rewrite Fi0.
 Qed.
-
-(******************************)
-(* Finite supported operators *)
-(******************************)
 
 Reserved Notation "\big [ op / idx ]_ ( i '\in' A ) F"
   (at level 36, F at level 36, op, idx at level 10, i, A at level 50,

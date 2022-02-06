@@ -21,10 +21,8 @@ Require Import nngnum lebesgue_measure csum fsbigop.
 (* properties of the integral, the dominated convergence theorem and Fubini's *)
 (* theorem.                                                                   *)
 (*                                                                            *)
-(* Reference:                                                                 *)
+(* Main reference:                                                            *)
 (* - Daniel Li, Intégration et applications, 2016                             *)
-(*                                                                            *)
-(* Acknowledgment: This work is partly based on MathComp-Analysis meetings    *)
 (*                                                                            *)
 (*                  f ^\+ == the function formed by the non-negative outputs  *)
 (*                           of f (from a type to the type of extended real   *)
@@ -33,25 +31,16 @@ Require Import nngnum lebesgue_measure csum fsbigop.
 (*                  f ^\- == the function formed by the non-positive outputs  *)
 (*                           of f and 0 o.w.                                  *)
 (*                           rendered as f ⁻ with company-coq (U+207B)        *)
-(*            presfun T R == type of simple functions w.o. measurability      *)
-(*                           hypothesis                                       *)
-(*                           we define constant, indicator, scaled,           *)
-(*                           projections presfun functions, as well as        *)
-(*                           sum, product, max of presfun functions           *)
-(*                ssize f == size of the range of the simple function f       *)
-(*              spimg f i == preimage of the ith image of the simple          *)
-(*                           function f                                       *)
-(*            img_idx f x == the index of (f x) in the range of the simple    *)
-(*                           function f, this index has type 'I_(ssize f)     *)
-(*       sintegral mu D f == integral of the simple function f over the       *)
-(*                           domain D with measure mu                         *)
-(*               sfun T R == type of simple functions                         *)
-(*                           we define constant, indicator, scaled,           *)
-(*                           projection, sum, max of simple functions         *)
-(*             nnsfun T R == type of non-negative simple functions            *)
-(*         nnintegral D f == integral of a nonnegative measurable function f  *)
-(*                         over the domain D                                  *)
-(* \int_ D (f x) 'd mu[x] == integral of a measurable function over the       *)
+(*        {nnfun T >-> R} == type of non-negative functions                   *)
+(*       {fimfun T >-> R} == type of functions with a finite image            *)
+(*         {sfun T >-> R} == type of simple functions                         *)
+(*       {nnsfun T >-> R} == type of non-negative simple functions            *)
+(*           cst_nnsfun r == constant simple function                         *)
+(*                nnsfun0 := cst_nnsfun 0                                     *)
+(*         sintegral mu f == integral of the function f with the measure mu   *)
+(*        nnintegral mu f == integral of a nonnegative measurable function f  *)
+(*                           with the measure mu                              *)
+(* \int_ D (f x) 'd mu[x] == integral of the measurable function f over the   *)
 (*                           domain D with measure mu; this notation is       *)
 (*                           rendered as ∫ D (f x) 𝑑 mu[x] with company-coq   *)
 (*                           (U+222B and U+1D451)                             *)
@@ -60,7 +49,7 @@ Require Import nngnum lebesgue_measure csum fsbigop.
 (*         dyadic_itv n k == the interval                                     *)
 (*                           `[(k%:R * 2 ^- n), (k.+1%:R * 2 ^- n)[           *)
 (*             approx A f == nondecreasing sequence of functions that         *)
-(*                           approximates f  using dyadic intervals           *)
+(*                           approximates f using dyadic intervals            *)
 (*       Rintegral mu D f := fine (\int_ D f 'd mu).                          *)
 (*     mu.-integrable D f == f is measurable over D and the integral of f     *)
 (*                           w.r.t. D is < +oo                                *)
@@ -1213,19 +1202,13 @@ End nnsfun_iter.
 
 Section simple_fun_raw_integral.
 Local Open Scope ereal_scope.
-Variables (T : Type) (R : numDomainType).
-
-Section def.
-Variable (mu : set T -> \bar R) (f : T -> R).
-Let s := fset_set (f @` setT).
+Variables (T : Type) (R : numDomainType) (mu : set T -> \bar R) (f : T -> R).
 
 Definition sintegral := \sum_(x \in [set: R]) x%:E * mu (f @^-1` [set x]).
 
 Lemma sintegralET :
   sintegral = \sum_(x \in [set: R]) x%:E * mu (f @^-1` [set x]).
 Proof. by []. Qed.
-
-End def.
 
 End simple_fun_raw_integral.
 
@@ -4876,7 +4859,7 @@ End ysection.
 
 End measurable_prod_subset.
 
-(* TODO: move *)
+(* TODO: move? *)
 Lemma strace_measurable (T : measurableType) (A : set T) : measurable A ->
   strace measurable A `<=` measurable.
 Proof. by move=> mA=> _ [C mC <-]; apply: measurableI. Qed.
