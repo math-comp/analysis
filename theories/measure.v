@@ -420,21 +420,6 @@ Hint Resolve finite_set_II : core.
 
 Section are_measurable_sets_lemmas.
 
-Lemma bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
-  finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
-Proof.
-move=> finA; rewrite -bigcup_fset /fset_set; case: pselect => [{}finA|//].
-apply/seteqP; split=> [x [i Ai Fix]|x [i /=]].
-  by exists i => //; case: cid => // B AB /=; move: Ai; rewrite AB.
-by case: cid => /= B -> iB Fix; exists i.
-Qed.
-
-Lemma bigcap_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
-  finite_set A -> \bigcap_(i in A) F i = \big[setI/setT]_(i <- fset_set A) F i.
-Proof.
-by move=> *; apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_fset_set.
-Qed.
-
 Lemma fin_bigcup_closedP T (G : set (set T)) :
   (G set0 /\ setU_closed G) <-> fin_bigcup_closed G.
 Proof.

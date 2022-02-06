@@ -843,6 +843,26 @@ apply/seteqP; split=> [x [i Ai Fix]|x [i /=]].
 by case: cid => /= B -> iB Fix; exists i.
 Qed.
 
+Lemma bigcup_fset_set_cond T (I : choiceType) (A : set I) (F : I -> set T)
+    (P : pred I) :
+  finite_set A -> \bigcup_(i in A `&` P) F i =
+    \big[setU/set0]_(i <- fset_set A | P i) F i.
+Proof.
+move=> finA; have ? : finite_set (A `&` P) by exact/finite_setIl.
+rewrite bigcup_fset_set// [in RHS]big_fset_condE; apply eq_fbigl.
+move=> i; apply/idP/idP.
+  rewrite in_fset_set// in_setI => /andP[Ai Pi].
+  by rewrite in_fsetE/= inE/= in_fset_set// Ai; rewrite inE in Pi.
+rewrite /= in_fset_set// in_fsetE/= !inE/= => /andP[].
+by rewrite in_fset_set// inE.
+Qed.
+
+Lemma bigcap_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
+  finite_set A -> \bigcap_(i in A) F i = \big[setI/setT]_(i <- fset_set A) F i.
+Proof.
+by move=> *; apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_fset_set.
+Qed.
+
 Lemma super_bij T U (X A : set T) (Y B : set U) (f : {bij X >-> Y}) :
   X `<=` A -> Y `<=` B -> A `\` X #= B `\` Y ->
   exists g : {bij A >-> B}, {in X, g =1 f}.

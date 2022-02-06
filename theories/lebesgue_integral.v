@@ -1474,21 +1474,19 @@ Qed.
 Let mfleg c n : measurable (fleg c n).
 Proof.
 rewrite /fleg.
-rewrite [X in _ X](_ : _ = \big[setU/set0]_(y \in [set: R])
-    \big[setU/set0]_(x \in [set x | c * y <= x])
+rewrite [X in _ X](_ : _ = \big[setU/set0]_(y <- fset_set [set of f])
+    \big[setU/set0]_(x <- fset_set [set of g n] | c * y <= x)
       (f @^-1` [set y] `&` (g n @^-1` [set x]))).
   apply: bigsetU_measurable => r _; apply: bigsetU_measurable => r' crr'.
   by apply: measurableI; apply/measurable_sfunP.
 rewrite predeqE => t; split => [/= cfgn|].
-- rewrite -bigcup_set; exists (f t).
-    rewrite //=.
-    (*first exact: mem_srng.*) admit.
+- rewrite -bigcup_set; exists (f t); first by rewrite /= in_fset_set//= mem_set.
   rewrite -bigcup_set_cond; exists (g n t) => //.
-    apply/andP; split => //.
-    (*; exact: mem_srng.*) admit.
-  rewrite /preimage/=.
-  admit.
-Admitted.
+  by apply/andP; split => //; rewrite in_fset_set// mem_set.
+- rewrite -bigcup_fset_set// => -[r [x _ fxr]].
+  rewrite -bigcup_fset_set_cond// => -[r' [[x' _ gnx'r'] crr']].
+  by rewrite /preimage/= => -[-> ->].
+Qed.
 
 Let g1 c n : {nnsfun T >-> R} := proj_nnsfun f (mfleg c n).
 
