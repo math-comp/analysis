@@ -2521,16 +2521,6 @@ move=> mf; rewrite (_ : (fun x => k * f x) = (cst k) \* f)//.
 exact/(emeasurable_funM _ mf)/measurable_fun_cst.
 Qed.
 
-(*NB: little need to recover this one, this is a combination
-of emeasurable_funM and more basic lemmas*)
-(*Lemma emeasurable_funM_presfun_ind1 D N f :
-  measurable N -> measurable D -> measurable_fun D f ->
-  measurable_fun D (f \* (EFin \o presfun_ind1 pt N)).
-Proof.
-move=> mN mD mf; apply: emeasurable_funM => //.
-by apply: measurable_fun_comp => //; exact: measurable_fun_presfun_ind1.
-Qed.*)
-
 End emeasurable_fun.
 
 Section measurable_fun_sum.
@@ -2972,134 +2962,6 @@ rewrite integral_nnsfun//= restrict_indic sintegral_indic//.
 exact: measurableI.
 Qed.
 
-(* TODO: use \int_ *)
-(*Lemma sintegral_nnpresfun_ind (x : {nonneg R}) (E : set T) :
-  measurable E ->
-  sintegral mu D (nnpresfun_ind pt x E) = x%:nngnum%:E * mu (E `&` D).
-Proof.
-move=> mE; rewrite sintegralE /= srng_presfun_ind.
-case: ifPn => [/eqP x0|x0].
-  by rewrite x0 big_cons big_nil 2!mul0e add0e.
-case: ifPn => [/eqP E0|E0].
-  by rewrite big_cons mul0e big_nil E0 set0I measure0 mule0 adde0.
-case: ifPn => [/eqP ET|ET].
-  rewrite big_cons big_nil adde0 ET setTI.
-  rewrite (_ : presfun_ind pt x%:nngnum setT @^-1` _ = setT) ?setTI//.
-  by rewrite predeqE => t; rewrite /preimage /= presfun_indE in_setT mulr1.
-rewrite 2!big_cons mul0e add0e big_nil adde0; congr (_ * mu (_ `&` _)).
-rewrite predeqE => t; split => [|Et].
-  rewrite /preimage /= presfun_indE.
-  have [tE|tE] := boolP (t \in E); first by rewrite inE in tE.
-  by rewrite mulr0 => /esym/eqP; rewrite (negbTE x0n).
-by rewrite /preimage /= presfun_indE mem_set// mulr1.
-Qed.*)
-
-(*Lemma sintegral_scale_nnsfun (k : R) (E : set T) (f : nnsfun T R)
-  (k0 : (0 <= k)%R) : measurable E ->
-  sintegral mu D (scale_nnsfun pt f k0) = k%:E * sintegral mu D f.
-Proof.
-move=> mE; rewrite sintegralE srng_sfun_scale /sfun_scale_rng.
-case: ifPn => [/eqP k_eq0|k_neq0].
-  by rewrite big_cons big_nil adde0 mul0e k_eq0 mul0e.
-rewrite big_map sintegralE [in RHS]big_seq ge0_sume_distrr; last first.
-  move=> r rf; rewrite mule_ge0 //; first exact: (NNSFuncdom_ge0 rf).
-  by apply: measure_ge0; apply: measurableI => //; exact: sfun_measurable_preimage_set1.
-rewrite -big_seq; apply: eq_bigr => r _.
-rewrite EFinM muleA; congr (_ * mu (_ `&` D)).
-rewrite predeqE => x; split.
-  by rewrite /preimage /= sfun_scaleE => /mulrI; apply; rewrite unitfE.
-by rewrite /preimage /= => <-; rewrite sfun_scaleE.
-Qed.*)
-
-(* TODO: too long *)
-(*Lemma sintegral_presfun_proj (A : set T) (E : set T) (mE : measurable E)
-    (g : {nnsfun T >-> R}) : E `<=` A ->
-  sintegral mu (proj_nnsfun g mE) = sintegral mu g.
-Proof.
- srng_presfun_proj /sfun_proj_rng.
-case: ifPn=> [/orP[|/eqP ET]|].
-- rewrite mem_filter => /andP[g0E0 g0].
-  rewrite big_filter big_mkcond /=; apply: eq_bigr => r _.
-  case: ifPn => [grR0|].
-    have [->|r0] := eqVneq r 0%R; first by rewrite !mul0e.
-    congr (_ * mu _)%E.
-    rewrite predeqE => t; split=> [|[]].
-      rewrite /preimage /= presfun_projE.
-      have [|tE] := boolP (t \in E).
-        by rewrite inE => tE; rewrite mulr1 => -[] ->.
-      by rewrite mulr0 => -[] /esym/eqP; rewrite (negbTE r0).
-    rewrite /preimage /= => gtr Et.
-    by split; [rewrite presfun_projE mem_set// mulr1|exact: EA].
-  by rewrite negbK => /eqP ->; rewrite measure0 mule0.
-- rewrite big_filter big_mkcond /=; apply: eq_bigr => r _.
-  rewrite ET setIT; case: ifPn => [gr0|].
-    congr (_ * mu _); rewrite predeqE => y; split.
-      by rewrite /preimage /= presfun_projE in_setT mulr1 => -[].
-    have [|] := boolP (y \in A).
-      by rewrite inE /preimage /= presfun_projE in_setT mulr1.
-    rewrite notin_set.
-    by move: EA; rewrite ET subTset => -> /(_ Logic.I).
-  by rewrite negbK => /eqP ->; rewrite measure0 mule0.
-- rewrite negb_or => /andP[].
-  rewrite mem_filter negb_and negbK => /orP[/eqP g0E ET|g0 ET].
-    rewrite big_cons mul0e add0e big_filter big_mkcond /=.
-    apply: eq_bigr => r _; case: ifPn => [grE0|].
-      have [->|r0] := eqVneq r 0%R; first by rewrite 2!mul0e.
-      congr (_ * mu _); rewrite predeqE => y; split.
-        rewrite /preimage /= presfun_projE.
-        have [|yE] := boolP (y \in E).
-          by rewrite mulr1 inE; tauto.
-        by rewrite mulr0 => -[] /esym/eqP; rewrite (negbTE r0).
-      rewrite /preimage /= => -[gyr Ey].
-      by rewrite presfun_projE mem_set// mulr1; split => //; exact: EA.
-    by rewrite negbK => /eqP ->; rewrite measure0 mule0.
-  rewrite big_cons mul0e add0e big_filter big_mkcond; apply: eq_bigr => r _.
-  case: ifPn => [grE0|].
-    have [->|r0] := eqVneq r 0%R; first by rewrite 2!mul0e.
-    congr (_ * mu _); rewrite predeqE => y; split.
-      rewrite /preimage /= presfun_projE.
-      have [|yE] := boolP (y \in E).
-        by rewrite inE => yE; rewrite mulr1; tauto.
-    by rewrite mulr0 => -[] /esym/eqP; rewrite (negbTE r0).
-  rewrite /preimage /= presfun_projE => -[->] Ey.
-  by rewrite mem_set// mulr1; split => //; exact: EA.
-by rewrite negbK => /eqP ->; rewrite measure0 mule0.
-Qed.
-
-Lemma sintegral_proj_nnsfun (A : set T) (E : set T) (mE : measurable E)
-    (g : nnsfun T R) : E `<=` A ->
-  sintegral mu A (proj_nnsfun g mE) = sintegral mu E g.
-Proof. by move=> EA; rewrite sintegral_presfun_proj. Qed.
-
-Lemma integral_EFin_nnpresfun_ind (r : {nonneg R}) (E : set T) :
-  measurable E ->
-  \int_ D ((EFin \o nnpresfun_ind pt r E) x) 'd mu[x] =
-  r%:nngnum%:E * mu (E `&` D).
-Proof.
-move=> mE.
-rewrite integral_ge0E//; last by move=> t Dt; rewrite lee_fin.
-transitivity (nnintegral mu D (EFin \o nnsfun_ind pt r mE)).
-  apply eq_nnintegral => x xD.
-  by rewrite /= presfun_indE sfun_indE.
-rewrite nnintegral_nnsfun// -sintegral_nnpresfun_ind//; apply eq_sintegral.
-by move=> x xD; rewrite nnsfun_indE presfun_indE.
-Qed.
-
-Lemma integral_EFin_sfun_ind (r : R) (E : set T) (mE : measurable E) :
-  \int_ D ((EFin \o sfun_ind pt r mE) x) 'd mu[x] = r%:E * mu (E `&` D).
-Proof.
-have [r0|r0] := leP 0%R r.
-  transitivity (\int_ D ((EFin \o nnpresfun_ind pt (Nonneg.NngNum _ r0) E) x) 'd mu[x]).
-    by apply: eq_integral => x Dx /=; rewrite sfun_indE presfun_indE.
-  by rewrite integral_EFin_nnpresfun_ind.
-rewrite -oppr0 -ltr_oppr in r0.
-transitivity (\int_ D ((-%E \o (EFin \o nnpresfun_ind pt (Nonneg.NngNum _ (ltW r0)) E)) x) 'd mu[x]).
-  by apply: eq_integral => t tD /=; rewrite sfun_indE EFinN /= presfun_indE /= mulNr opprK.
-rewrite integral_ge0N//; last by move=> t Dt; rewrite lee_fin.
-by rewrite integral_EFin_nnpresfun_ind//= EFinN mulNe oppeK.
-Qed.
-*)
-
 End integral_ind.
 
 Section subset_integral.
@@ -3167,44 +3029,6 @@ by apply: subset_integral => //; exact: measurable_fun_comp.
 Qed.
 
 End subset_integral.
-
-(*Section simple_function_integral2.
-Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (pt : T).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (f : sfun T R).
-Let n := ssize f.
-Let A := spimg f.
-Let a := srng f.
-
-Lemma sfunE x :
-  (f x = \sum_(k < n) (a`_k) * presfun_ind1 pt (A k) x)%R.
-Proof.
-rewrite (bigD1 (img_idx f x))// big1/= ?addr0 /=.
-  rewrite presfun_ind1E mem_set// ?mulr1 ?nth_index ?mem_srng//.
-  exact/mem_spimg.
-by move=> i ifx; rewrite presfun_ind1E memNset ?mulr0//; exact/memNspimg.
-Qed.
-
-End simple_function_integral2.*)
-
-(*Section simple_function_integral3.
-Local Open Scope ereal_scope.
-Variables (T : measurableType) (R : realType) (pt : T).
-Variables (mu : {measure set T -> \bar R}) (D : set T).
-Variables (mD : measurable D) (f : nnsfun T R).
-Let n := ssize f.
-Let A := spimg f.
-Let a := srng f.
-
-(* TODO: not used?! *)
-Lemma integral_nnsfun_presfun_ind1 : \int_ D (f x)%:E 'd mu[x] =
-  \sum_(k < n) (a`_k)%:E * \int_ D (presfun_ind1 pt (A k) x)%:E 'd mu[x].
-Proof.
-rewrite integral_nnsfun//; apply eq_bigr => i _; congr (_ * _)%E; rewrite -/(A i).
-by rewrite integral_indic//; exact: measurable_spimg.
-Qed.
-
-End simple_function_integral3.*)
 
 Section Rintegral.
 Local Open Scope ereal_scope.
