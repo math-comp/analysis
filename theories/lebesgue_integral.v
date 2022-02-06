@@ -4621,7 +4621,7 @@ End section.
 
 Section measurable_section.
 Variables (T1 T2 : measurableType) (R : realType).
-Implicit Types (A : set (T1 * T2)) (x : T1).
+Implicit Types (A : set (T1 * T2)).
 
 Lemma mem_set_pair1 x y A :
   (y \in [set y' | (x, y') \in A]) = ((x, y) \in A).
@@ -4954,18 +4954,15 @@ move=> F mF tF mUF.
 have -> : m (\bigcup_n F n) = \sum_(n <oo) (m (F n)).
   transitivity (\int (\sum_(n <oo) m2 (xsection (F n) x)) 'd m1[x]).
     rewrite /m; congr (integral _ _ _); rewrite funeqE => x.
-    rewrite -lim_mkord; apply/esym/cvg_lim => //=; rewrite /= xsection_bigcup.
-    (*apply: (@measure_sigma_additive _ _ _ _ _ (trivIset_xsection tF)).
-    by move=> i; apply: measurable_xsection.*) admit.
+    apply/esym/cvg_lim => //=; rewrite /= xsection_bigcup.
+    apply: (@measure_sigma_additive _ _ _ _ _ (trivIset_xsection tF)).
+    by move=> i; apply: measurable_xsection.
   rewrite integral_sum //.
-  - by move=> n; apply: measurable_fun_xsection => //; rewrite inE.
-(*  - by move=> n x _; exact/measure_ge0/measurable_xsection.*)
-suff /cvg_ex[l cl] : cvg (fun n => (\sum_(i < n) m (F i))%E).
-  (*by move: (cl) => /cvg_lim; rewrite -lim_mkord => ->.*) admit.
-under eq_fun do rewrite -(big_mkord xpredT (m \o F)).
+  by move=> n; apply: measurable_fun_xsection => //; rewrite inE.
+suff /cvg_ex[l cl] : cvg (fun n => (\sum_(0 <= i < n) m (F i))%E).
+  by move: (cl) => /cvg_lim; rewrite -lim_mkord => ->.
 by apply: is_cvg_ereal_nneg_natsum => n _; apply: integral_ge0 => // x _.
-(*exact/measure_ge0/measurable_xsection.*)
-Admitted.
+Qed.
 
 Definition product_measure1 : {measure set (T1 * T2) -> \bar R} :=
   Measure.Pack _ (Measure.Axioms m0 m_ge0 m_sigma_additive).
@@ -5113,15 +5110,14 @@ move=> F mF tF mUF.
 have -> : m (\bigcup_n F n) = \sum_(n <oo) (m (F n)).
   transitivity (\int (\sum_(n <oo) m1 (ysection (F n) y)) 'd m2[y]).
     rewrite /m; congr (integral _ _ _); rewrite funeqE => y.
-    rewrite -lim_mkord; apply/esym/cvg_lim => //=; rewrite /= ysection_bigcup.
-(*    apply: (measure_sigma_additive (trivIset_ysection tF)).
-    by move=> i; apply: measurable_ysection.*) admit.
+    apply/esym/cvg_lim => //=; rewrite /= ysection_bigcup.
+    apply: (@measure_sigma_additive _ _ _ _ _ (trivIset_ysection tF)).
+    by move=> i; apply: measurable_ysection.
   by rewrite integral_sum // => n; apply: measurable_fun_ysection => //; rewrite inE.
-suff /cvg_ex[l cl] : cvg (fun n => (\sum_(i < n) m (F i))%E).
-  (*by move: (cl) => /cvg_lim; rewrite -lim_mkord => ->.*) admit.
-under eq_fun do rewrite -(big_mkord xpredT (m \o F)).
-by apply: is_cvg_ereal_nneg_natsum => n _; apply: integral_ge0 => // x _.
-Admitted.
+suff /cvg_ex[l cl] : cvg (fun n => (\sum_(0 <= i < n) m (F i))%E).
+  by move: (cl) => /cvg_lim; rewrite -lim_mkord => ->.
+by apply: is_cvg_ereal_nneg_natsum => n _; apply: integral_ge0.
+Qed.
 
 Definition product_measure2 : {measure set (T1 * T2) -> \bar R} :=
   Measure.Pack _ (Measure.Axioms m0 m_ge0 m2_sigma_additive).
