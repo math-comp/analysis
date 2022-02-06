@@ -1,7 +1,7 @@
 (* -*- company-coq-local-symbols: (("`&`" . ?∩) ("`|`" . ?∪) ("set0" . ?∅)); -*- *)
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import finmap.
+From mathcomp Require Import finmap fingroup perm.
 Require Import boolp reals ereal classical_sets posnum nngnum topology.
 Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
@@ -1526,15 +1526,109 @@ Definition itvs_semiRingOfSets := [the semiRingOfSetsType of itvs].
 Lemma hlength_ge0' (I : set itvs) : (0 <= hlength I)%E.
 Proof. by rewrite -hlength0 le_hlength. Qed.
 
+Lemma hlength_semi_additive2 : semi_additive2 (hlength : set itvs -> _).
+Proof.
+move=> I J mI mJ mIJ J0.
+Admitted.
+
 Lemma hlength_semi_additive : semi_additive (hlength : set itvs -> _).
 Proof.
-move=> /= I n Im Itriv UII.
+move=> /= I n Im Itriv.
+rewrite -(big_mkord predT I) -(big_map I xpredT id) /=.
+rewrite -(big_mkord predT (hlength \o I)) -(big_map I xpredT hlength) /=.
+rewrite /index_iota subn0.
+set s := [seq I _ | _ <- iota 0 n] => UUI.
+have ms : all (mem measurable) s.
+  by apply/allP => /= X /mapP[i _]->; rewrite !inE; apply: Im.
+
+suff [s' pss' sm] : exists2 s', perm_eq s s' &
+    forall k, measurable (\big[setU/set0]_(i <- drop k s') i).
+  rewrite !(perm_big _ pss')/= (perm_all _ pss') {s pss' UUI} in ms *.
+  elim: s' ms => [_|x s IHs /= /andP[/set_mem mx ms]] in sm *.
+    by rewrite !big_nil hlength0.
+  rewrite !big_cons -IHs//; last by move=> i; have := sm i.+1.
+  rewrite hlength_semi_additive2//.
+  - by have := sm 1%N; rewrite drop1.
+  - by have := sm 0%N; rewrite big_cons.
+  admit.
+pose t := [seq X <- s | X != set0].
+suff [t' ptt' tm] : exists2 t', perm_eq t t' &
+    forall k, measurable (\big[setU/set0]_(i <- drop k t') i).
+  exists ([seq X <- s | X == set0] ++ t').
+    by rewrite -(perm_filterC [pred X | X == set0]) perm_cat2l.
+  move=> k.
+  admit.
+pose lt I J := `[< forall i j, I i -> J i -> i < j >].
+exists (sort lt t); first by rewrite perm_sym perm_sort.
+pose contig I J := (I `|` J) \in (connected : set _).
+have path_contigU X Y r : Y != set0 -> contig X Y -> path contig Y r ->
+    path contig (X `|` Y) r.
+  case: r => //= Z r /set0P [y Yy] /asboolP cXY /andP[/asboolP cYZ ->].
+  rewrite andbT.
+  apply/asboolP; rewrite -[Y]setUid setUA -setUA; apply: connectedU => //.
+  by rewrite setUC -setUIr; exists y; left.
+have scontig r :
+     all [pred X | X != set0] r ->
+     all (mem (connected : set _)) r ->
+     sorted contig r -> connected (\big[setU/set0]_(X <- r) X).
+  case: r => [|X r]/=; rewrite (big_nil, big_cons).
+    by move=> *; apply: connected0.
+  move=> /andP[XN0 +] /andP[/set_mem Xc].
+  elim: r => [|Y r IHr]//= in X XN0 Xc *; rewrite (big_nil, big_cons) ?setU0//.
+  move=> /andP[YN0 rN0] /andP[/set_mem Yc rc] /andP[/asboolP cXY cYr].
+  rewrite setUA; apply: IHr => //.
+    by apply/eqP; rewrite setU_eq0 not_andP; left; apply/eqP.
+  by apply: path_contigU => //=; apply/asboolP.
+suff: sorted contig (sort lt t).
+  move=> /drop_sorted + k => /(_ k)/scontig; apply=> //=.
+    by apply/allP => x /mem_drop; rewrite mem_sort; apply/allP/filter_all.
+  apply/allP => x /mem_drop; rewrite mem_sort mem_filter.
+  by move=> /andP[_]; apply/allP.
+have: sorted lt (sort lt t).
+  apply: sort_sorted_in (allss t).
+  admit.
+have: connected (\big[setU/set0]_(X <- sort lt t) X).
+  have /(_ _ _ _)/permPl/(@perm_big _ _)-> := perm_sort.
+  by rewrite big_filter big_rmcond// => X /negPn/eqP->.
+have: all (mem (connected : set _)) (sort lt t).
+  admit.
+case: (sort lt t) => [|X r]//=; rewrite big_cons/=.
+elim: r X => //= Y r IHr X /and3P[/set_mem Xc /set_mem Yc rc].
+rewrite big_cons setUA => XYrc /andP[ltXY] ltYr.
+have XYc : contig X Y.
+
+  admit.
+rewrite XYc IHr//= ?rc ?andbT ?inE//=.
+admit.
 Admitted.
+
+Canonical hlength_measure : {additive_measure set itvs -> \bar R}
+  := AdditiveMeasure (AdditiveMeasure.Axioms (@hlength0 _)
+     (@hlength_ge0') hlength_semi_additive).
 
 Lemma hlength_sigma_sub_additive : sigma_sub_additive (hlength : set itvs -> _).
 Proof.
-move=> /= I J Jm Im.
-move=> Isub.
+move=> /= I J Jm Im Isub.
+pose K k : set (SetRing.type itvs) := \big[setU/set0]_(i < k) (I `&` J i).
+have Km k : measurable (K k).
+  apply: bigsetU_measurable => i _; apply: SetRing.measurableW.
+  by apply: measurableI.
+pose Rhlength := SetRing.measure (hlength : set itvs -> \bar R).
+(* have Kle k : (Rhlength (K k) <= \sum_(0 <= i < k) hlength (J i))%E. *)
+(*   rewrite /Rhlength. *)
+(*   rewrite (le_trans (@content_sub_additive _ _ _ _ K k _ _ _))//. *)
+(*     admit. *)
+(*   rewrite /= big_mkord lee_sum => //= i _. *)
+(*   rewrite -[X in (_ <= X)%E]SetRing.RmuE//=. *)
+(*   rewrite le_measure ?inE//= /K//=. *)
+(*     exact: SetRing.measurableW. *)
+
+(*   rewrite -big_distrr //= setIidl//=. *)
+
+
+
+(* rewrite ereal_pseries_csum//. *)
+(* rewrite csum_ge//=. *)
 Admitted.
 
 Lemma hlength_sigma_finite : sigma_finite [set: itvs] hlength.
@@ -1548,9 +1642,6 @@ move=> k; split => //; first exact/connected_intervalP/interval_is_interval.
 by rewrite hlength_itv/= -EFinB; case: ifP; rewrite lte_pinfty.
 Qed.
 
-Canonical hlength_measure : {additive_measure set itvs -> \bar R}
-  := AdditiveMeasure (AdditiveMeasure.Axioms (@hlength0 _)
-     (@hlength_ge0') hlength_semi_additive).
 
 Let gitvs := g_measurableType (@connected R).
 

@@ -630,6 +630,30 @@ pose fP := @finite_fsetP [choiceType of {classic T}]; rewrite propeqE; split.
 by case=> /fP[X->]/fP[Y->]; apply/fP; exists (X `|` Y)%fset; rewrite set_fsetU.
 Qed.
 
+Lemma finite_set2 T (x y : T) : finite_set [set x; y].
+Proof. by rewrite !finite_setU; split; apply: finite_set1. Qed.
+Hint Resolve finite_set2 : core.
+
+Lemma finite_set3 T (x y z : T) : finite_set [set x; y; z].
+Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
+Hint Resolve finite_set3 : core.
+
+Lemma finite_set4 T (x y z t : T) : finite_set [set x; y; z; t].
+Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
+Hint Resolve finite_set4 : core.
+
+Lemma finite_set5 T (x y z t u : T) : finite_set [set x; y; z; t; u].
+Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
+Hint Resolve finite_set5 : core.
+
+Lemma finite_set6 T (x y z t u v : T) : finite_set [set x; y; z; t; u; v].
+Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
+Hint Resolve finite_set6 : core.
+
+Lemma finite_set7 T (x y z t u v w : T) : finite_set [set x; y; z; t; u; v; w].
+Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
+Hint Resolve finite_set7 : core.
+
 Lemma finite_setI T (A B : set T) :
   (finite_set A \/ finite_set B) -> finite_set (A `&` B).
 Proof.
@@ -643,7 +667,7 @@ Proof. by move=> ?; apply: finite_setI; left. Qed.
 Lemma finite_setIr T (A B : set T) : finite_set B -> finite_set (A `&` B).
 Proof. by move=> ?; apply: finite_setI; right. Qed.
 
-Lemma finite_setX T T' (A : set T) (B : set T') :
+Lemma finite_setM T T' (A : set T) (B : set T') :
   finite_set A -> finite_set B -> finite_set (A `*` B).
 Proof.
 elim/Pchoice: T => T in A *; elim/Pchoice: T' => T' in B *.
@@ -654,7 +678,7 @@ Qed.
 
 Lemma finite_image2 [aT bT rT : Type] [A : set aT] [B : set bT] (f : aT -> bT -> rT) :
   finite_set A -> finite_set B -> finite_set [set f x y | x in A & y in B]%classic.
-Proof. by move=> fA fB; rewrite image2E; apply/finite_image/finite_setX. Qed.
+Proof. by move=> fA fB; rewrite image2E; apply/finite_image/finite_setM. Qed.
 
 Lemma finite_image11 [xT aT bT rT : Type] [X : set xT]
     (g : aT -> bT -> rT) (fa : xT -> aT) (fb : xT -> bT) :
@@ -724,6 +748,73 @@ Qed.
 Lemma fset_setD1 {T : choiceType} (x : T) (A : set T) :
   finite_set A -> fset_set (A `\ x) = (fset_set A `\ x)%fset.
 Proof. by move=> fA; rewrite fset_setD// fset_set1. Qed.
+
+Lemma fset_setM {T1 T2 : choiceType} (A : set T1) (B : set T2) :
+    finite_set A -> finite_set B ->
+  fset_set (A `*` B) = (fset_set A `*` fset_set B)%fset.
+Proof.
+move=> Afin Bfin; have ABfin : finite_set (A `*` B) by apply: finite_setM.
+apply/fsetP => i; apply/idP/idP; rewrite !(inE, in_fset_set)//=.
+  by move=> [/mem_set-> /mem_set->].
+by move=> /andP[]; rewrite !inE.
+Qed.
+
+Definition fst_fset (T1 T2 : choiceType) (A : {fset (T1 * T2)}) : {fset T1} :=
+  [fset x.1 | x in A]%fset.
+Definition snd_fset (T1 T2 : choiceType) (A : {fset (T1 * T2)}) : {fset T2} :=
+  [fset x.2 | x in A]%fset.
+Notation "A .`1" := (fst_fset A) : fset_scope.
+Notation "A .`2" := (snd_fset A) : fset_scope.
+
+Lemma finite_set_fst (T1 T2 : choiceType) (A : set (T1 * T2)) :
+  finite_set A -> finite_set A.`1.
+Proof.
+move=> /finite_fsetP[B A_B]; apply/finite_fsetP; exists (B.`1)%fset.
+by apply/seteqP; split=> [x/= [y]|_/= /imfsetP[[x1 x2]/= +] ->]; rewrite A_B;
+  [move=> xyB; apply/imfsetP; exists (x, y)|move=> ?; exists x2].
+Qed.
+
+Lemma finite_set_snd (T1 T2 : choiceType) (A : set (T1 * T2)) :
+  finite_set A -> finite_set A.`2.
+Proof.
+move=> /finite_fsetP[B A_B]; apply/finite_fsetP; exists (B.`2)%fset.
+apply/seteqP; split=> [y/= [x]|_/= /imfsetP[[x1 x2]/= +] ->]; rewrite A_B;
+  by [move=> xyB; apply/imfsetP; exists (x, y)|move=> ?; exists x1].
+Qed.
+
+Lemma finite_setMR (T T' : choiceType) (A : set T) (B : T -> set T') :
+  finite_set A -> (forall x, finite_set (B x)) -> finite_set (A `*`` B).
+Proof.
+move=> /finite_fsetP[A' AA'] finB.
+have [B' BB'] : exists B' : T -> {fset T'}, forall t, B t = [set` B' t].
+  have {}finB x : exists B' : {fset T'}, B x = [set` B'].
+    by have /finite_fsetP := finB x.
+  by move/choice : finB => [B' ?]; exists B'.
+apply/finite_fsetP; exists [fset ((x, y) : T * T')%type | x in A', y in B' x]%fset.
+apply/predeqP => x; split.
+  move=> [Ax1 Bx2] /=; apply/imfset2P.
+  exists x.1 => /=; first by move: Ax1; rewrite AA'.
+  exists x.2; first by move: Bx2; rewrite BB'.
+  by case: x Ax1 Bx2.
+by move=> /imfset2P[x1/= x1A' [x2 x2B'] ->{x}]; split=> /=; [rewrite AA'|rewrite BB'].
+Qed.
+
+Lemma finite_setML (T T' : choiceType) (A : T' -> set T) (B : set T') :
+  (forall x, finite_set (A x)) -> finite_set B -> finite_set (A ``*` B).
+Proof.
+move=> finA /finite_fsetP[B' BB'].
+have [A' AA'] : exists A' : T' -> {fset T}, forall t, A t = [set` A' t].
+  have {}finA x : exists A' : {fset T}, A x = [set` A'].
+    by have /finite_fsetP := finA x.
+  by move/choice : finA => [A' ?]; exists A'.
+apply/finite_fsetP; exists [fset ((x, y) : T * T')%type | y in B', x in A' y]%fset.
+apply/predeqP => x; split.
+  move=> [Ax1x2 Bx2] /=; apply/imfset2P.
+  exists x.2 => /=; first by move: Bx2; rewrite BB'.
+  exists x.1; first by move: Ax1x2; rewrite AA'.
+  by case: x Ax1x2 Bx2.
+by move=> /imfset2P[x1/= x1A' [x2 x2B'] ->{x}]; split=> /=; [rewrite AA'|rewrite BB'].
+Qed.
 
 Lemma fset_set_II n : fset_set `I_n = [fset val i | i in 'I_n]%fset.
 Proof.

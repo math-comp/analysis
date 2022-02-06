@@ -219,9 +219,6 @@ by rewrite !image_comp.
 Qed.
 
 (* NB: not used? *)
-Lemma EFin_inj (R : numDomainType) : injective (@EFin R).
-Proof. by move=> a b; case. Qed.
-
 Lemma mask_second (T : Type) (b : T) a t :
   a :: t = mask (true :: false :: nseq (size t) true) [:: a, b & t].
 Proof. by rewrite /= mask_true. Qed.
@@ -1714,7 +1711,7 @@ Local Lemma mdisjI : setI_closed mdisj.
 Proof.
 move=> A B [aT [aX [A_ [aXF [Atr A_m] ->]]]] [bT [bX [B_ [bXF [Btr B_m] ->]]]].
 rewrite setI_bigcupl; under eq_bigcupr do rewrite setI_bigcupr.
-rewrite bigcup_bigcup; apply: covered_byP; first by apply: finite_setX.
+rewrite bigcup_bigcup; apply: covered_byP; first by apply: finite_setM.
 split.
   move=> [a b] [a' b']/= [Xa Xb] [Xa' Xb']; rewrite setIACA.
   by move=> [x [Ax Bx]]; rewrite (Atr a a') 1?(Btr b b')//; exists x.

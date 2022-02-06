@@ -243,7 +243,7 @@ Definition snd_set T1 T2 (A : set (T1 * T2)) := [set y | exists x, A (x, y)].
 Definition setMR T1 T2 (A1 : set T1) (A2 : T1 -> set T2) :=
   [set z | A1 z.1 /\ A2 z.1 z.2].
 Definition setML T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :=
-  [set z | A1 z.1 z.2 /\ A2 z.1].
+  [set z | A1 z.2 z.1 /\ A2 z.2].
 
 Lemma mksetE (P : T -> Prop) x : [set x | P x] x = P x.
 Proof. by []. Qed.
@@ -713,6 +713,9 @@ by rewrite -AB => -[].
 by split=> [[]//|At]; move: (AB t At).
 Qed.
 
+Lemma setDidl A B : A `&` B = set0 -> A `\` B = A.
+Proof. by move=> /setDidPl. Qed.
+
 Lemma subIset A B C : A `<=` C \/ B `<=` C -> A `&` B `<=` C.
 Proof. case=> sub a; by [move=> [/sub] | move=> [_ /sub]]. Qed.
 
@@ -816,6 +819,12 @@ Proof. by rewrite eqEsubset; split => [t [//|[]//]|t At]; left. Qed.
 
 Lemma setDUl : left_distributive setD (@setU T).
 Proof. by move=> A B C; rewrite !setDE setIUl. Qed.
+
+Lemma setUKD A B : A `&` B `<=` set0 -> (A `|` B) `\` A = B.
+Proof. by move=> AB0; rewrite setDUl setDv set0U setDidl// -subset0 setIC. Qed.
+
+Lemma setUDK A B : A `&` B `<=` set0 -> (B `|` A) `\` A = B.
+Proof. by move=> *; rewrite setUC setUKD. Qed.
 
 Lemma setIDA A B C : A `&` (B `\` C) = (A `&` B) `\` C.
 Proof. by rewrite !setDE setIA. Qed.
@@ -926,6 +935,9 @@ rewrite /mkset predeqE => i; split => [|[|->//]].
 by rewrite ltnS leq_eqVlt => /orP[/eqP ->|]; by [left|right].
 by move/ltn_trans; apply.
 Qed.
+
+Lemma Iiota (n : nat) : [set` iota 0 n] = `I_n.
+Proof. by apply/seteqP; split => [|] ?; rewrite /= mem_iota add0n. Qed.
 
 Definition ordII {n} (k : 'I_n) : `I_n := SigSub (@mem_set _ `I_n _ (ltn_ord k)).
 Definition IIord {n} (k : `I_n) := Ordinal (set_valP k).
@@ -1111,6 +1123,13 @@ Proof. exact/predeqP. Qed.
 Lemma preimage_bigcap {I} (P : set I) f (F : I -> set rT) :
   f @^-1` (\bigcap_ (i in P) F i) = \bigcap_(i in P) (f @^-1` F i).
 Proof. exact/predeqP. Qed.
+
+Lemma eq_preimage {I T : Type} (D : set I) (A : set T) (F G : I -> T) :
+  {in D, F =1 G} -> D `&` F @^-1` A = D `&` G @^-1` A.
+Proof.
+move=> eqFG; apply/predeqP => i.
+by split=> [] [Di FAi]; split; rewrite /preimage//= (eqFG,=^~eqFG) ?inE.
+Qed.
 
 End image_lemmas.
 Arguments sub_image_setI {aT rT f A B} t _.
@@ -2068,16 +2087,22 @@ rewrite setIUl IHn 1?ltnW// set0U.
 by case: ifPn => [Dn|NDn]; rewrite ?set0I// tA// ltn_eqF.
 Qed.
 
-Lemma trivIset_setI T I D (F : I -> set T) X :
-  trivIset D F -> trivIset D (fun i => X `&` F i).
+Lemma trivIset_setIl (T I : Type) (D : set I) (F : I -> set T) (G : I -> set T) :
+  trivIset D F -> trivIset D (fun i => G i `&` F i).
 Proof.
-move=> tDF i j Di Dj; rewrite setIACA setIid => -[x [_ Fijx]].
-by apply: tDF => //; exists x.
+by move=> tF i j Di Dj [x [[Gix Fix] [Gjx Fjx]]]; apply tF => //; exists x.
 Qed.
 
-Lemma trivIset_setIr T I D (F : I -> set T) X :
-  trivIset D F -> trivIset D (fun i : I => F i `&` X).
-Proof. by move=> Ftriv; under eq_fun do rewrite setIC; apply: trivIset_setI. Qed.
+Lemma trivIset_setIr (T I : Type) (D : set I) (F : I -> set T) (G : I -> set T) :
+  trivIset D F -> trivIset D (fun i => F i `&` G i).
+Proof.
+by move=> tF i j Di Dj [x [[Fix Gix] [Fjx Gjx]]]; apply tF => //; exists x.
+Qed.
+
+#[deprecated(note="Use trivIset_setIl instead")]
+Lemma trivIset_setI T I D (F : I -> set T) X :
+  trivIset D F -> trivIset D (fun i => X `&` F i).
+Proof. exact: trivIset_setIl. Qed.
 
 Lemma sub_trivIset I T (D D' : set I) (F : I -> set T) :
   D `<=` D' -> trivIset D' F -> trivIset D F.
