@@ -83,10 +83,8 @@ by exists f; apply/seteqP; split=> //; apply: surj.
 Qed.
 
 Lemma injfunPex {T U} {A : set T} {B : set U}:
-   $|{injfun A >-> B}| <-> exists f : {fun A >-> B}, set_inj A f.
-Proof.
-by split=> [[f]|[f /funPinj[i]]]; by [exists f; apply: inj | squash i].
-Qed.
+   $|{injfun A >-> B}| <-> exists2 f : T -> U, set_fun A B f & set_inj A f.
+Proof. by split=> [[f]|[_ /Pfun[? ->] /funPinj[f]]]; [exists f | squash f]. Qed.
 
 Lemma card_leP {T U} {A : set T} {B : set U} :
   reflect $|{injfun [set: A] >-> [set: B]}| (A #<= B).
@@ -473,10 +471,7 @@ Lemma finite_II n : finite_set `I_n. Proof. by apply/finite_setP; exists n. Qed.
 Hint Resolve finite_II : core.
 
 Lemma card_II {n} : `I_n #= [set: 'I_n].
-Proof.
-apply/card_esym/pcard_eqP/bijPex; exists val; split=> //.
-by move=> i /= ltin; exists (Ordinal ltin).
-Qed.
+Proof. by apply/card_esym/pcard_eqP/bijPex; exists val; split. Qed.
 
 Lemma finite_fsetP {T : choiceType} {A : set T} :
   finite_set A <-> exists X : {fset T}, A = [set` X].

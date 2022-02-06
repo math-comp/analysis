@@ -1,7 +1,7 @@
 (* -*- company-coq-local-symbols: (("`&`" . ?∩) ("`|`" . ?∪) ("set0" . ?∅)); -*- *)
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import finmap fingroup perm.
+From mathcomp Require Import finmap fingroup perm rat.
 Require Import boolp reals ereal classical_sets posnum nngnum topology.
 Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
@@ -16,9 +16,7 @@ Require Import sequences measure csum cardinality.
 (*                                                                            *)
 (* Main reference:                                                            *)
 (* - Daniel Li, Intégration et applications, 2016                             *)
-(*                                                                            *)
-(*             Hahn_ext mu == extension of the measure mu over a ring of sets *)
-(*                            to a measure of the generated sigma algebra     *)
+(* - Achim Klenke, Probability Theory 2nd edition, 2014                       *)
 (*                                                                            *)
 (*                miditv i == middle point of interval i                      *)
 (*                 neitv i == the interval i is non-empty                     *)
@@ -73,217 +71,6 @@ Local Open Scope ereal_scope.
 (*                        /lemmas waiting to be PRed                          *)
 (******************************************************************************)
 (* mu_ext mu and mu coincide on measurable sets *)
-Lemma measurable_mu_extE (R : realType) (T : semiRingOfSetsType)
-    (mu : {additive_measure set T -> \bar R}) X :
-  sigma_sub_additive mu ->
-  measurable X -> [outer_measure of mu_ext mu] X = mu X.
-Proof.
-move=> muS mX; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply ereal_inf_lb; exists (fun n => if n is 0%N then X else set0).
-    by split=> [[]// _|t Xt]; exists 0%N.
-  apply/cvg_lim => //; rewrite -cvg_shiftS.
-  rewrite (_ : [sequence _]_n = cst (mu X)); first exact: cvg_cst.
-  by rewrite funeqE => n /=; rewrite big_nat_recl//= big1 ?adde0.
-apply/lb_ereal_inf => x [A [mA XA] <-{x}].
-have XUA : X = \bigcup_n (X `&` A n).
-  rewrite predeqE => t; split => [Xt|[i _ []//]].
-  by have [i _ Ait] := XA _ Xt; exists i; split.
-apply: (@le_trans _ _ (\sum_(i <oo) mu (X `&` A i))).
-  by rewrite muS//= -?XUA => // i; apply: measurableI.
-apply lee_lim.
-- by apply: is_cvg_ereal_nneg_series => n _; exact/measure_ge0.
-- by apply: is_cvg_ereal_nneg_series => n _; exact/measure_ge0.
-- near=> n; apply: lee_sum => i  _. apply: le_measure => //; rewrite ?inE//=.
-  exact: measurableI.
-Unshelve. all: by end_near. Qed.
-
-Section Rmu_ext.
-Import SetRing.
-
-Lemma Rmu_ext (R : realType) (T : semiRingOfSetsType) (rT := @SetRing.ring T)
-    (mu : {additive_measure set T -> \bar R}) :
-  mu_ext [additive_measure of measure mu] = mu_ext mu.
-Proof.
-apply/funeqP => /= X; rewrite /mu_ext/=; apply/eqP; rewrite eq_le.
-rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lb//; last first.
-  exists F; first by split=> // i; exact: measurableW.
-  by rewrite (eq_ereal_pseries (fun=> RmuE _ _)).
-pose K := [set: nat] `*`` fun i => [set` decomp (F i)].
-have /ppcard_eqP[f] : (K #= [set: nat])%card.
-  apply: cardMR_eq_nat => // i.
-  by split=> //; apply/set0P; rewrite set_fset_eq0 decompN0.
-pose g i := (f^-1%FUN i).2.
-exists g; first split.
-- move=> k; have [/= _] : K (f^-1%FUN k) by apply: funS.
-  by apply: decomp_measurable.
-- move=> i /XS [k _]; rewrite -[F k]cover_decomp => -[D /= DFk Di].
-  by exists (f (k, D)) => //; rewrite /g invK// inE.
-rewrite !ereal_pseries_csum//= /measure ?set_true.
-rewrite -[RHS](eq_csum (fun _ _ => csum_fset _))// csum_csum//=.
-rewrite (reindex_csum K setT f) => //=; apply: eq_csum => i Ki.
-by rewrite /g funK ?inE.
-Qed.
-
-End Rmu_ext.
-
-Lemma measurable_Rmu_extE (R : realType) (T : semiRingOfSetsType) (rT := @SetRing.ring T)
-    (mu : {additive_measure set T -> \bar R}) X :
-  sigma_sub_additive mu ->
-  measurable (X : set rT)  -> [outer_measure of mu_ext mu] X = SetRing.measure mu X.
-Proof.
-move=> mu_sub Xm/=; rewrite -Rmu_ext/= measurable_mu_extE//.
-exact: ring_sigma_sub_additive.
-Qed.
-
-(* Coercion measure_additive_measure : Measure.map >-> AdditiveMeasure.map. *)
-
-Section measure_unique.
-Variables (R : realType) (T : measurableType) (G : set (set T)).
-Variable g : (set T)^nat.
-Hypotheses (mG : measurable = s<< G >>) (setIG : setI_closed G).
-Hypotheses (Gg : forall i, G (g i)).
-Hypothesis g_cover : \bigcup_k (g k) = setT.
-Variables m1 m2 : {measure set T -> \bar R}.
-Hypothesis m1m2 : forall A, G A -> m1 A = m2 A.
-Hypothesis m1goo : forall k, (m1 (g k) < +oo)%E.
-
-Lemma measure_unique : forall E, measurable E -> m1 E = m2 E.
-Proof.
-move=> E mA; apply: (@g_salgebra_measure_unique _ _ G); rewrite -?mG//.
-by rewrite mG; exact: g_salgebra_self.
-Qed.
-
-End measure_unique.
-Arguments measure_unique {R T} G g.
-
-Section Hahn_extension.
-Variables (R : realType) (T : semiRingOfSetsType) (mu : {additive_measure set T -> \bar R}).
-Variable mu_sub : sigma_sub_additive mu.
-Local Notation rT := (@SetRing.ring T).
-Let Rmu := SetRing.measure mu.
-Let mstar : {outer_measure set T -> \bar R} := [outer_measure of mu_ext mu].
-Let Rmstar : {outer_measure set rT -> \bar R} :=
-   [outer_measure of mu_ext [additive_measure of Rmu]].
-Let M : measurableType := [the measurableType of caratheodory_type mstar].
-Let muR_sub := ring_sigma_sub_additive mu_sub.
-
-Lemma subset_g_salgebra_caratheodory : s<< @measurable T >> `<=` @measurable M.
-Proof.
-suff: s<< @measurable rT >> `<=` @measurable M.
-   by apply: subset_trans; apply: subset_g_salgebra => x /SetRing.measurableW.
-apply: g_salgebra_smallest; last first.
-  split => //; [by move=> X mX; rewrite setTD; exact: measurableC |
-    by move=> u_ mu_; exact: measurable_bigcup].
-move=> A mA; apply le_caratheodory_measurable => // X.
-apply lb_ereal_inf => _ [B [mB XB] <-].
-rewrite -(eq_ereal_pseries (fun=> SetRing.RmuE _ _))=> //.
-have RmB i : measurable (B i : set rT) by exact: SetRing.measurableW.
-set BA := eseries (fun n => Rmu (B n `&` A)).
-set BNA := eseries (fun n => Rmu (B n `&` ~` A)).
-apply (@le_trans _ _ (lim BA + lim BNA)); [apply: lee_add|].
-  - rewrite (_ : BA = eseries (fun n => mstar (B n `&` A))); last first.
-      rewrite funeqE => n; apply: eq_bigr => i _.
-      by rewrite /Rmstar /= measurable_Rmu_extE //; exact: measurableI.
-    apply (@le_trans _ _ (mstar (\bigcup_k (B k `&` A)))).
-      by apply le_mu_ext; rewrite -setI_bigcupl; apply setISS.
-    exact: outer_measure_sigma_subadditive.
-  - rewrite (_ : BNA = eseries (fun n => mstar (B n `\` A))); last first.
-      rewrite funeqE => n; apply eq_bigr => i _.
-      rewrite /Rmstar /= measurable_Rmu_extE //; exact: measurableD.
-    apply (@le_trans _ _ (mstar (\bigcup_k (B k `\` A)))).
-      by apply le_mu_ext; rewrite -setI_bigcupl; apply setISS.
-    exact: outer_measure_sigma_subadditive.
-have ? : cvg BNA.
-  apply/is_cvg_ereal_nneg_series => n _.
-  by rewrite -setDE; apply: measure_ge0 => //; apply: measurableD.
-have ? : cvg BA.
-  apply/is_cvg_ereal_nneg_series => n _.
-  by apply: measure_ge0 => //; apply: measurableI.
-have ? : cvg (eseries (Rmu \o B)).
-  by apply/is_cvg_ereal_nneg_series => n _; exact: measure_ge0.
-have [def|] := boolP (adde_def (lim BA) (lim BNA)); last first.
-  rewrite /adde_def negb_and !negbK=> /orP[/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
-  - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite lee_pinfty.
-    apply/eqP; rewrite -lee_pinfty_eq -(eqP BAoo); apply/lee_lim => //.
-    near=> n; apply: lee_sum => m _; apply: le_measure; rewrite /mkset; by
-      [rewrite inE; exact: measurableI | rewrite inE | apply: subIset; left].
-  - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite lee_pinfty.
-    apply/eqP; rewrite -lee_pinfty_eq -(eqP BNAoo); apply/lee_lim => //.
-    near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure;
-      rewrite /mkset; by [rewrite inE; exact: measurableD |
-                          rewrite inE | apply: subIset; left].
-rewrite -ereal_limD // (_ : (fun _ => _) =
-    eseries (fun i => Rmu (B i `&` A) + Rmu (B i `&` ~` A))); last first.
-  by rewrite funeqE => n; rewrite -big_split /=; apply eq_bigr.
-apply/lee_lim => //.
-  apply/is_cvg_ereal_nneg_series => // n _; apply/adde_ge0.
-  by apply: measure_ge0 => //; apply: measurableI.
-  by rewrite -setDE; apply: measure_ge0; apply: measurableD.
-near=> n; apply: lee_sum => i _; rewrite -measure_semi_additive2.
-- apply: le_measure; rewrite /mkset; [|
-    by rewrite inE | by rewrite -setIUr setUCr setIT].
-  rewrite inE.
-  by apply: measurableU; [exact: measurableI |
-                          rewrite -setDE; exact: measurableD].
-- exact: measurableI.
-- by rewrite -setDE; exact: measurableD.
-- apply: measurableU; [exact: measurableI | rewrite -setDE; exact: measurableD].
-- by rewrite setIACA setICr setI0.
-Unshelve. all: by end_near. Qed.
-
-Let I : measurableType := g_measurableType (@measurable T).
-
-Definition Hahn_ext : set I -> \bar R := mu_ext mu.
-
-Local Lemma Hahn_ext0 : Hahn_ext set0 = 0.
-Proof. exact: mu_ext0. Qed.
-
-Local Lemma Hahn_ext_ge0 (A : set I) : 0 <= Hahn_ext A.
-Proof. exact: mu_ext_ge0. Qed.
-
-Local Lemma Hahn_ext_sigma_additive : semi_sigma_additive Hahn_ext.
-Proof.
-move=> F mF tF mUF; rewrite /Hahn_ext.
-apply: (@caratheodory_measure_sigma_additive _ _ mstar) => //; last first.
-  exact: subset_g_salgebra_caratheodory.
-by move=> i; exact: (subset_g_salgebra_caratheodory (mF i)).
-Qed.
-
-Canonical Hahn_ext_measure : {measure set I -> \bar R} :=
-  @Measure.Pack _ _ _ Hahn_ext (Measure.Axioms
-    Hahn_ext0 Hahn_ext_ge0 Hahn_ext_sigma_additive).
-
-Lemma Hahn_ext_sigma_finite : @sigma_finite _ T setT mu ->
-  @sigma_finite _ I setT Hahn_ext.
-Proof.
-move=> -[S setTS mS]; exists S => //; move=> i; split.
-  by have := (mS i).1; exact: g_salgebra_self.
-by rewrite /Hahn_ext /= measurable_mu_extE //;
-  [exact: (mS i).2 | exact: (mS i).1].
-Qed.
-
-Lemma Hahn_ext_unique : @sigma_finite _ T setT mu ->
-  (forall mu' : {measure set I -> \bar R},
-    (forall X, @measurable T X -> mu X = mu' X) ->
-    (forall X, @measurable I X -> Hahn_ext X = mu' X)).
-Proof.
-move=> [F TF /all_and2[Fm muF]] mu' mu'mu X mX.
-apply: (@measure_unique _ I (@measurable T) F) => //=.
-- by move=> A B Am Bm; apply: measurableI.
-- by move=> A Am; rewrite /Hahn_ext/= measurable_mu_extE// mu'mu.
-- by move=> k; rewrite /Hahn_ext/= measurable_mu_extE.
-Qed.
-End Hahn_extension.
-
-Lemma caratheodory_measurable_mu_ext (R : realType) (T : measurableType)
-    (mu : {measure set T -> \bar R}) A :
-  let mu' := [additive_measure of mu] in
-  measurable A -> [outer_measure of mu_ext mu'].-measurable A.
-Proof.
-move=> mu' Am; apply: subset_g_salgebra_caratheodory => //.
-  exact: measure_sigma_sub_additive.
-exact: g_salgebra_self.
-Qed.
 
 Local Close Scope ereal_scope.
 
@@ -2423,38 +2210,12 @@ Qed.
 End erealgencinfty.
 End ErealGenCInfty.
 
-(* NB: PR 435 in progress *)
-From mathcomp Require Import rat.
-
-Definition pair_of_rat (q : rat) : nat * nat :=
-  let x := numq q in let y := denq q in
-  (if x >= 0 then `|x|.*2 else `|x|.*2.+1, `|y|.-1).
-
-Lemma pair_of_rat_inj : {in setT &, injective pair_of_rat}.
-Proof.
-move=> x y _ _; rewrite /pair_of_rat.
-have [x_ge0|x_gt0] := leP 0 (numq x); have [y_ge0|y_gt0] := leP 0 (numq y).
-- case=> /eqP; rewrite -!muln2 eqn_mul2r => /eqP/(congr1 Posz).
-  rewrite !gez0_abs// => numqxy /(congr1 S); rewrite ?(prednK,absz_gt0)//.
-  move=> /(congr1 Posz); rewrite 2!absz_denq => dxy; apply/eqP.
-  by rewrite rat_eqE numqxy dxy 2!eqxx.
-- by case=> /(congr1 odd); rewrite /= 2!odd_double.
-- by case=> /(congr1 odd); rewrite /= 2!odd_double.
-- case=> /eqP; rewrite -!muln2 eqn_mul2r => /eqP/(congr1 Posz).
-  rewrite !ltz0_abs// => /eqP; rewrite eqr_opp => /eqP numqxy /(congr1 S).
-  rewrite ?(prednK,absz_gt0)// => /(congr1 Posz); rewrite 2!absz_denq => dxy.
-  by apply/eqP; rewrite rat_eqE numqxy dxy 2!eqxx.
-Qed.
-
 (* TODO: move to measure.v once PR 435 is merged *)
 Lemma measurable_bigcup_rat (T : measurableType) (F : rat -> set T) :
   (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
 Proof.
-move=> mF; have /card_esym/ppcard_eqP[f] := card_rat.
-rewrite [X in measurable X](_ : _ = \bigcup_i F (f i)); last first.
-  rewrite predeqE => r; split => [[q _ Fqr]|[n _ Fnr]];
-  by [exists (f^-1%FUN q); rewrite //= invK ?inE | exists (f n)].
-by apply: measurable_bigcup => i; exact/mF.
+move=> Fm; have /ppcard_eqP[f] := card_rat.
+by rewrite (reindex_bigcup f^-1%FUN setT)//=; apply: bigcup_measurable.
 Qed.
 
 Section trace.

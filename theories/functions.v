@@ -819,8 +819,7 @@ Proof. by move=> b /'oinvP_f[x Ax _]; exists x. Qed.
 Definition phant_surj aT rT (A : set aT) (B : set rT) (f : {surj A >-> B})
   of phantom (_ -> _) f := @surj _ _ _ _ f.
 Notation "'surj_  f" := (phant_surj (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve surj : core.
-
+Hint Extern 0 (set_surj _ _ _) => solve [apply: surj] : core.
 
 Section funin_surj.
 Context {aT rT : Type}.
@@ -1570,6 +1569,22 @@ Proof.
 by apply: image_some_inj; rewrite image_comp [Some \o _]oliftV oinv_sub_image.
 Qed.
 Arguments inv_sub_image {aT rT A B} f {C} _.
+
+Lemma reindex_bigcup {aT rT I} (f : aT -> I) (P : set aT) (Q : set I)
+    (F : I -> set rT) : set_fun P Q f -> set_surj P Q f ->
+  \bigcup_(x in Q) F x = \bigcup_(x in P) F (f x).
+Proof.
+by move=> /image_subP fPQ /(surj_image_eq fPQ)<-; rewrite bigcup_image.
+Qed.
+Arguments reindex_bigcup {aT rT I} f P Q.
+
+Lemma reindex_bigcap {aT rT I} (f : aT -> I) (P : set aT) (Q : set I)
+    (F : I -> set rT) : set_fun P Q f -> set_surj P Q f ->
+  \bigcap_(x in Q) F x = \bigcap_(x in P) F (f x).
+Proof.
+by move=> /image_subP fPQ /(surj_image_eq fPQ)<-; rewrite bigcap_image.
+Qed.
+Arguments reindex_bigcap {aT rT I} f P Q.
 
 (**************)
 (* Injections *)
