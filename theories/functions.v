@@ -1447,6 +1447,23 @@ HB.instance Definition _ (f : {splitbij X >-> A}) (g : {splitbij Y >-> B}) :=
 
 End Glue.
 
+(************************************)
+(* Z-module addition is a bijection *)
+(************************************)
+
+Section addition.
+Context {V : zmodType} (x : V).
+
+HB.instance Definition _ := Inv.Build V V (+%R x) (+%R (- x)).
+
+Lemma inv_addr : (+%R x)^-1 = (+%R (- x)). Proof. by []. Qed.
+
+Lemma addr_can2_subproof : Inv_Can2 V V setT setT (+%R x).
+Proof. by split => // y _; rewrite inv_addr ?GRing.addKr ?GRing.addNKr. Qed.
+HB.instance Definition _ := addr_can2_subproof.
+
+End addition.
+
 (*************)
 (* emtpyType *)
 (*************)
@@ -1638,7 +1655,7 @@ Proof. split=> //. Qed.
 Definition phant_bij aT rT (A : set aT) (B : set rT) (f : {bij A >-> B}) of
   phantom (_ -> _) f := @bij _ _ _ _ f.
 Notation "''bij_' f" := (phant_bij (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve bij : core.
+Hint Extern 0 (set_bij _ _ _) => solve [apply: bij] : core.
 
 Section PbijTT.
 Context {aT rT} {f : aT -> rT} (fbijTT : bijective f).
@@ -1662,8 +1679,7 @@ Proof. by rewrite -setTT_bijective. Qed.
 Definition phant_bijTT aT rT (f : {bij [set: aT] >-> [set: rT]})
    of phantom (_ -> _) f := @bijTT _ _ f.
 Notation "''bijTT_'  f" := (phant_bijTT (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve bijTT : core.
-
+Hint Extern 0 (bijective _) => solve [apply: bijTT] : core.
 (*****************************)
 (* Patching and restrictions *)
 (*****************************)
