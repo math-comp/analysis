@@ -1517,45 +1517,6 @@ Qed.
 
 Local Open Scope ereal_scope.
 
-(*Lemma sum_srng_g1_f c n :
-  \sum_(x <- srng (g1 c n)) x%:E * mu (g1 c n @^-1` [set x] `&` D) =
-  \sum_(x <- srng f) x%:E * mu (g1 c n @^-1` [set x] `&` D).
-Proof.
-rewrite srng_presfun_proj.
-rewrite /sfun_proj_rng /=.
-case: ifPn=> [/orP[|/eqP cnT]|_]. (* xxx *)
-- rewrite mem_filter /= => /andP[].
-  rewrite /preimage /= => /set0P[t [ft0 cnt]] f0.
-  rewrite big_filter big_mkcond; apply: eq_bigr => r _.
-  case: ifPn => // /negPn/eqP I0.
-  rewrite [X in mu X](_ : _ = set0) ?measure0 ?mule0// predeqE => x.
-  split => //=; move=> [/[swap] Dx].
-  rewrite presfun_projE /=; have [xcn|xcn] := boolP (x \in _).
-    rewrite mulr1 => gxr; move: I0; rewrite predeqE => /(_ x)[+ _]; apply.
-    by split => //; rewrite inE in xcn.
-  rewrite mulr0 => r0.
-  by move: I0; rewrite predeqE => /(_ t)[+ _]; apply; rewrite -r0.
-- rewrite big_filter big_mkcond; apply: eq_bigr => r _.
-  case: ifPn => // /negPn/eqP I0.
-  rewrite [X in mu X](_ : _ = set0) ?measure0 ?mule0 // predeqE => x.
-  split => //=; move=> [/[swap] Dx].
-  rewrite /preimage /= presfun_projE /= cnT; have [xT|] := boolP (x \in _).
-    rewrite mulr1 => gxr; move: I0; rewrite predeqE => /(_ x)[+ _]; apply.
-    by split => //; rewrite cnT.
-  by rewrite notin_set => /(_ Logic.I).
-- rewrite /= big_cons mul0e add0e.
-  rewrite big_filter big_mkcond; apply: eq_bigr => r _.
-  case: ifPn => // /negPn/eqP I0.
-  have [->|r0] := eqVneq r 0%R; first by rewrite mul0e.
-  rewrite [X in mu X](_ : _ = set0) ?measure0 ?mule0 // predeqE => x.
-  split => //=; move=> [/[swap] Dx].
-  rewrite /preimage /= presfun_projE; have [xT|_ ] := boolP (x \in _).
-    rewrite mulr1 => gxr; move: I0; rewrite predeqE => /(_ x)[+ _]; apply.
-    by split => //; rewrite inE in xT.
-  by rewrite mulr0 => /esym/eqP; rewrite (negbTE r0).
-Qed.*)
-
-(* lemma 1.6 *)
 Lemma nd_sintegral_lim_lemma : sintegral mu f <= lim (sintegral mu \o g).
 Proof.
 suff ? : forall c, (0 < c < 1)%R ->
@@ -1563,61 +1524,56 @@ suff ? : forall c, (0 < c < 1)%R ->
   by apply/lee_mul01Pr => //; apply: sintegral_ge0.
 move=> c /andP[c0 c1].
 have cg1g n : c%:E * sintegral mu (g1 c n) <= sintegral mu (g n).
-  rewrite -(sintegralrM mu c (g1 c n)).
-  rewrite (_ : (_ \* _)%R = scale_nnsfun (g1 c n) (ltW c0)) //.
-  apply: le_sintegral => //.
-  have : forall m x, (c * g1 c m x <= g m x)%R.
-    move=> m x; rewrite /g1.
-    rewrite /proj_nnsfun/= mindicE.
-    have [|] := boolP (x \in _).
-      by rewrite inE => -[/=]; rewrite mulr1.
-    by rewrite 2!mulr0 fun_ge0.
-  by move=> h t; have := h n t.
+  rewrite -sintegralrM (_ : (_ \* _)%R = scale_nnsfun (g1 c n) (ltW c0)) //.
+  apply: le_sintegral => // t.
+  suff : forall m x, (c * g1 c m x <= g m x)%R by move=> /(_ n t).
+  move=> m x; rewrite /g1 /proj_nnsfun/= mindicE.
+  by have [|] := boolP (x \in _); [rewrite inE mulr1|rewrite 2!mulr0 fun_ge0].
 suff {cg1g}<- : lim (fun n => sintegral mu (g1 c n)) = sintegral mu f.
   have is_cvg_g1 : cvg (fun n => sintegral mu (g1 c n)).
-    apply: is_cvg_sintegral => //= x m n mn.
-    by have /lefP/(_ x) := le_ffleg c mn.
-  rewrite -ereal_limrM // lee_lim//.
-  - exact: ereal_is_cvgrM.
+    by apply: is_cvg_sintegral => //= x m n /(le_ffleg c)/lefP/(_ x).
+  rewrite -ereal_limrM // lee_lim//; first exact: ereal_is_cvgrM.
   - by apply: is_cvg_sintegral => // m n mn; apply/lefP => t; apply: nd_g.
   - by apply: nearW; exact: cg1g.
 suff : (fun n => sintegral mu (g1 c n)) --> sintegral mu f by apply/cvg_lim.
-(*rewrite [X in X --> _](_ : _ = fun n => \sum_(k < ssize f) ((srng f)`_k)%:E *
-    mu (f @^-1` [set (srng f)`_k] `&` fleg c n `&`)); last first.
-  rewrite funeqE => n; rewrite sintegralE sum_srng_g1_f.
-  rewrite big_tnth; apply: eq_bigr => i _.
-  rewrite /tnth [in LHS](set_nth_default 0%R) //=.
-  have [fi0|fi0] := eqVneq ((srng f)`_i) 0%R; first by rewrite fi0 // 2!mul0e.
-  congr (_ * mu _); rewrite predeqE => x; split => [|[]] /=.
-  - rewrite /preimage /= presfun_projE => -[/[swap]x].
-    have [xcn|_] := boolP (_ \in fleg _ _).
-      by rewrite mulr1 => <-; split => //; split=> //; rewrite inE in xcn.
-    by rewrite mulr0 => /esym/eqP; rewrite (negbTE fi0).
-  - rewrite /sfun_proj_f /preimage /= => -[fxi] cnxx.
-    by rewrite presfun_projE; split => //; rewrite fxi mem_set// mulr1.
-rewrite [X in X --> _](_ : _ = fun n => \sum_(x <- srng f) x%:E *
-    mu (f @^-1` [set x] `&` fleg c n `&`)); last first.
-  rewrite funeqE => n; rewrite [in RHS]big_tnth /=; apply/eq_bigr => i _.
-  rewrite [in LHS](set_nth_default 0%R) //=; congr (_%:E * mu (_ `&` _ `&` _)).
-    exact: set_nth_default.
-  rewrite predeqE => t /=; rewrite /preimage /= -propeqE.
-  by congr (_ = _); exact: set_nth_default.
-rewrite sintegralE big_seq.
-under [in X in X --> _]eq_fun do rewrite big_seq.
-have measurable_ffleg k i : measurable (f @^-1` [set k] `&` fleg c i `&`).
-  by apply: measurableI => //; apply: measurableI;
-    [exact: sfun_measurable_preimage_set1|exact: mfleg].
-apply: ereal_lim_sum => [r n /NNSFuncdom_ge0 r0|r rf].
-  by rewrite mule_ge0// measure_ge0.
+rewrite [X in X --> _](_ : _ = fun n => \sum_(x <- fset_set [set of f]) x%:E *
+    mu (f @^-1` [set x] `&` fleg c n)); last first.
+  rewrite funeqE => n; rewrite sintegralE.
+  transitivity (\sum_(x \in [set of f]) x%:E * mu (g1 c n @^-1` [set x])).
+    apply eq_fbigl => r.
+    do 2 (rewrite in_finite_support; last exact/finite_setIl).
+    apply/idP/idP.
+      rewrite in_setI => /andP[]; rewrite inE/= => -[x _]; rewrite mindicE.
+      have [_|xcn] := boolP (_ \in _).
+        by rewrite mulr1 => <-; rewrite !inE/= => ?; split => //; exists x.
+      by rewrite mulr0 => /esym ->; rewrite !inE/= mul0e.
+    rewrite in_setI => /andP[]; rewrite inE => -[x _ <-].
+    rewrite !inE/= => h; split=> //; move: h; rewrite mindicE => /eqP.
+    rewrite mule_eq0 negb_or => /andP[_]; set S := (X in mu X) => mS0.
+    suff : S !=set0 by move=> [y yx]; exists y.
+    by apply/set0P; apply: contra mS0 => /eqP ->; rewrite measure0.
+  rewrite fsbig_finite//=; apply: eq_fbigr => r.
+  rewrite in_fset_set// inE => -[t _ ftr _].
+  have [->|r0] := eqVneq r 0%R; first by rewrite 2!mul0e.
+  congr (_ * mu _); apply/seteqP; split => x.
+    rewrite /preimage/= mindicE.
+    have [|_] := boolP (_ \in _); first by rewrite mulr1 inE.
+    by rewrite mulr0 => /esym/eqP; rewrite (negbTE r0).
+  by rewrite /preimage/= => -[fxr cnx]; rewrite mindicE mem_set// mulr1.
+rewrite sintegralE fsbig_finite//=.
+apply: ereal_lim_sum => [r n _|r _].
+  apply: (mulem_ge0 (fun x => f @^-1` [set x] `&` fleg c n)) => r0.
+  by rewrite preimage_nnfun0// set0I.
 apply: ereal_cvgrM => //.
 rewrite [X in _ --> X](_ : _ =
-    mu (\bigcup_n (f @^-1` [set r] `&` fleg c n `&`))); last first.
-  by rewrite -setI_bigcupl -setI_bigcupr bigcup_fleg// -setIA setIid.
+    mu (\bigcup_n (f @^-1` [set r] `&` fleg c n))); last first.
+  by rewrite -setI_bigcupr bigcup_fleg// setIT.
+have ? k i : measurable (f @^-1` [set k] `&` fleg c i).
+  exact: measurableI.
 apply: cvg_mu_inc => //; first exact: measurable_bigcup.
-move=> n m nm; apply/subsetPset; apply: setSI; apply: setIS.
+move=> n m nm; apply/subsetPset; apply: setIS.
 by move/(nd_fleg c) : nm => /subsetPset.
-Unshelve. all: by end_near. Qed.*)
-Admitted.
+Unshelve. all: by end_near. Qed.
 
 End sintegral_nondecreasing_limit_lemma.
 
