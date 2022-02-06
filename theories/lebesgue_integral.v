@@ -5257,61 +5257,67 @@ Let G := fubini_G (EFin \o f).
 
 (*TODO: fix implicits of eq_integral*)
 
-(*
 Lemma sfun_fubini_tonelli_FE :
-  F = (fun x => (\sum_(k < n) (a`_k)%:E * m2 (xsection (A k) x))%E).
+  F = (fun x => (\sum_(k <- fset_set [set of f]) k%:E * m2 (xsection (f @^-1` [set k]) x))%E).
 Proof.
 rewrite funeqE => x; rewrite /F /fubini_F [in LHS]/=.
-under eq_fun do rewrite (sfunE (pt1, pt2) f) -sumEFin.
-rewrite integral_ge0_sum //; last 2 first.
+under eq_fun do rewrite fimfunE -sumEFin.
+rewrite ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun => //; apply: measurable_funrM => //.
-    exact/measurable_fun_prod1/measurable_fun_presfun_ind1.
-  - move=> i y _; rewrite lee_fin; apply: mulr_ge0 => //; first exact: NNSFun_ge0.
-    by rewrite presfun_ind1E.
-apply eq_bigr => i _.
+    apply/measurable_fun_prod1 => //.
+    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
+  - move=> r y _; rewrite lee_fin indicE/=.
+    have [r0|r0] := leP 0 r; first by rewrite mulr_ge0.
+    by rewrite preimage_nnfun0// in_set0 mulr0.
+apply eq_fbigr => i.
+rewrite in_fset_set// inE => -[/= t _ <-{i} _].
 under eq_fun do rewrite EFinM.
 rewrite ge0_integralM//; last 3 first.
-  - exact/EFin_measurable_fun/measurable_fun_prod1/measurable_fun_presfun_ind1.
-  - by move=> y _; rewrite lee_fin presfun_ind1E.
-  - by rewrite lee_fin; exact: NNSFun_ge0.
+  - apply/EFin_measurable_fun/measurable_fun_prod1.
+    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f (f t))).
+  - by move=> y _; rewrite lee_fin.
+  - by rewrite lee_fin.
 congr (_ * _)%E.
-rewrite -/((m2 \o xsection (A i)) x) -sfun1_fubini_tonelli_FE //.
-exact: measurable_spimg.
-Qed.*)
+by rewrite -/((m2 \o xsection _) x) -sfun1_fubini_tonelli_FE.
+Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_F : measurable_fun setT F.
 Proof.
-(*rewrite sfun_fubini_tonelli_FE//; apply: measurable_fun_sum => //.
+rewrite sfun_fubini_tonelli_FE//; apply: measurable_fun_sum => //.
 - move=> i; apply: emeasurable_funeM => //.
-  by apply: measurable_fun_xsection => //; rewrite inE /A.
-Qed.*) Admitted.
+  by apply: measurable_fun_xsection => //; rewrite inE.
+Qed.
 
-(*Lemma sfun_fubini_tonelli_GE :
-  G = (fun y => (\sum_(k < n) (a`_k)%:E * m1 (ysection (A k) y))%E).
+Lemma sfun_fubini_tonelli_GE :
+  G = (fun y => (\sum_(k <- fset_set [set of f]) k%:E * m1 (ysection (f @^-1` [set k]) y))%E).
 Proof.
 rewrite funeqE => y; rewrite /G /fubini_G [in LHS]/=.
-under eq_fun do rewrite (sfunE (pt1, pt2) f) -sumEFin.
-rewrite integral_ge0_sum //; last 2 first.
+under eq_fun do rewrite fimfunE -sumEFin.
+rewrite ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun => //; apply: measurable_funrM => //.
-    exact/measurable_fun_prod2/measurable_fun_presfun_ind1.
-  - move=> i x _; rewrite lee_fin; apply: mulr_ge0 => //; first exact: NNSFun_ge0.
-    by rewrite presfun_ind1E.
-apply eq_bigr => i _; under eq_fun do rewrite EFinM.
+    apply/measurable_fun_prod2 => //.
+    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
+  - move=> r x _; rewrite lee_fin indicE/=.
+    have [r0|r0] := leP 0 r; first by rewrite mulr_ge0.
+    by rewrite preimage_nnfun0// in_set0 mulr0.
+apply eq_fbigr => i.
+rewrite in_fset_set// inE => -[/= t _ <-{i} _].
+under eq_fun do rewrite EFinM.
 rewrite ge0_integralM//; last 3 first.
-  - exact/EFin_measurable_fun/measurable_fun_prod2/measurable_fun_presfun_ind1.
-  - by move=> x _; rewrite lee_fin presfun_ind1E.
-  - by rewrite lee_fin; exact: NNSFun_ge0.
+  - apply/EFin_measurable_fun/measurable_fun_prod2.
+    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f (f t))).
+  - by move=> x _; rewrite lee_fin.
+  - by rewrite lee_fin.
 congr (_ * _)%E.
-rewrite -/((m1 \o ysection (A i)) y) -sfun1_fubini_tonelli_GE//.
-exact: measurable_spimg.
-Qed.*)
+by rewrite -/((m1 \o ysection _) y) -sfun1_fubini_tonelli_GE.
+Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_G : measurable_fun setT G.
 Proof.
-(*rewrite sfun_fubini_tonelli_GE//; apply: measurable_fun_sum => //.
+rewrite sfun_fubini_tonelli_GE//; apply: measurable_fun_sum => //.
 - move=> i; apply: emeasurable_funeM => //.
-  by apply: measurable_fun_ysection => //; rewrite inE /A.
-Qed.*) Admitted.
+  by apply: measurable_fun_ysection => //; rewrite inE.
+Qed.
 
 Lemma sfun_fubini_tonelli1 : (\int ((EFin \o f) z) 'd m[z] = \int (F x) 'd m1[x])%E.
 Proof.
@@ -5586,14 +5592,13 @@ Qed.
 
 Let measurable_fun1 : measurable_fun setT (fun x => \int `|f (x, y)| 'd m2[y]).
 Proof.
-apply: (@measurable_fun_fubini_tonelli_F _ _ _ _ _ _ sf_m2 (abse \o f)) => //=.
-exact: sf_m1.
+apply: (@measurable_fun_fubini_tonelli_F _ _ _ _ sf_m2 (abse \o f)) => //=.
 exact: measurable_fun_comp.
 Qed.
 
 Let measurable_fun2 : measurable_fun setT (fun y => \int `|f (x, y)| 'd m1[x]).
 Proof.
-apply: (@measurable_fun_fubini_tonelli_G _ _ _ _ _ _ sf_m2 (abse \o f)) => //=.
+apply: (@measurable_fun_fubini_tonelli_G _ _ _ _ sf_m1 (abse \o f)) => //=.
 exact: measurable_fun_comp.
 Qed.
 
@@ -5639,23 +5644,19 @@ Let FE : F = Fplus \- Fminus. Proof. apply/funext=> x; exact: integralE. Qed.
 Let measurable_Fplus : measurable_fun setT Fplus.
 Proof.
 apply: measurable_fun_fubini_tonelli_F => //.
-exact: sf_m1.
 exact: emeasurable_fun_funenng.
 Qed.
 
 Let measurable_Fminus : measurable_fun setT Fminus.
 Proof.
 apply: measurable_fun_fubini_tonelli_F => //.
-exact: sf_m1.
 exact: emeasurable_fun_funennp.
 Qed.
 
 Lemma measurable_fubini_F : measurable_fun setT F.
 Proof.
 rewrite FE.
-apply: emeasurable_funB.
-exact: measurable_Fplus.
-exact: measurable_Fminus.
+by apply: emeasurable_funB; [exact: measurable_Fplus|exact: measurable_Fminus].
 Qed.
 
 Let integrable_Fplus : m1.-integrable setT Fplus.
@@ -5693,11 +5694,7 @@ apply: le_lt_trans; apply: ge0_le_integral => //.
 Qed.
 
 Lemma integrable_fubini_F : m1.-integrable setT F.
-Proof.
-by rewrite FE; apply: integrableB => //.
-(*exact: integrable_Fplus.
-exact: integrable_Fminus.*)
-Qed.
+Proof. by rewrite FE; apply: integrableB. Qed.
 
 Let G := fubini_G m1 f.
 
@@ -5708,24 +5705,16 @@ Let GE : G = Gplus \- Gminus. Proof. apply/funext=> x; exact: integralE. Qed.
 
 Let measurable_Gplus : measurable_fun setT Gplus.
 Proof.
-apply: measurable_fun_fubini_tonelli_G => //.
-exact: sf_m2.
-exact: emeasurable_fun_funenng.
+by apply: measurable_fun_fubini_tonelli_G => //; exact: emeasurable_fun_funenng.
 Qed.
 
 Let measurable_Gminus : measurable_fun setT Gminus.
 Proof.
-apply: measurable_fun_fubini_tonelli_G => //.
-exact: sf_m2.
-exact: emeasurable_fun_funennp.
+by apply: measurable_fun_fubini_tonelli_G => //; exact: emeasurable_fun_funennp.
 Qed.
 
 Lemma measurable_fubini_G : measurable_fun setT G.
-Proof.
-rewrite GE; apply: emeasurable_funB => //.
-(*exact: measurable_Gplus.
-exact: measurable_Gminus.*)
-Qed.
+Proof. by rewrite GE; apply: emeasurable_funB. Qed.
 
 Let integrable_Gplus : m2.-integrable setT Gplus.
 Proof.
@@ -5763,22 +5752,16 @@ Qed.
 
 Lemma fubini1 : \int (F x) 'd m1[x] = \int (f z) 'd m[z].
 Proof.
-rewrite FE integralB//.
-  rewrite [in RHS]integralE//.
-  rewrite fubini_tonelli1//; last exact: emeasurable_fun_funenng.
-  by rewrite fubini_tonelli1//; exact: emeasurable_fun_funennp.
-(*exact: integrable_Fplus.
-exact: integrable_Fminus.*)
+rewrite FE integralB// [in RHS]integralE//.
+rewrite fubini_tonelli1//; last exact: emeasurable_fun_funenng.
+by rewrite fubini_tonelli1//; exact: emeasurable_fun_funennp.
 Qed.
 
 Lemma fubini2 : \int (G x) 'd m2[x] = \int (f z) 'd m[z].
 Proof.
-rewrite GE integralB//.
-  rewrite [in RHS]integralE//.
-  rewrite fubini_tonelli2//; last exact: emeasurable_fun_funenng.
-  by rewrite fubini_tonelli2//; exact: emeasurable_fun_funennp.
-(*exact: integrable_Gplus.
-exact: integrable_Gminus.*)
+rewrite GE integralB// [in RHS]integralE//.
+rewrite fubini_tonelli2//; last exact: emeasurable_fun_funenng.
+by rewrite fubini_tonelli2//; exact: emeasurable_fun_funennp.
 Qed.
 
 End fubini.
