@@ -86,6 +86,10 @@ Require Import reals ereal signed topology normedtype landau.
 (*                           of extended reals                                *)
 (* ```                                                                        *)
 (*                                                                            *)
+(* Theorems:                                                                  *)
+(*             Baire == A completeNormedModType is a Baire Space              *)
+(*  Banach_Steinhaus == a poinwise bounded family of bounded linear maps      *)
+(*                      over a completenormedmodtype is uniformly bounded     *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -3029,7 +3033,7 @@ rewrite cvg_ex //= => -[l Hl]; exists l; split.
     by move: Ball_a0; rewrite subsetI => -[_ p] la0; move: (p _ la0).
   have [+ _] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply : (Pf (n , ar n)).
   by rewrite subsetI => -[_ p] lan1; move: (p l lan1).
-Qed.
+Unshelve. all: by end_near. Qed.
 
 End Baire.
 
