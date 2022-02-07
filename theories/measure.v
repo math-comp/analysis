@@ -369,6 +369,9 @@ Definition fin_bigcup_closed :=
     forall I (D : set I) A_, finite_set D -> (forall i, D i -> G (A_ i)) ->
   G (\bigcup_(i in D) (A_ i)).
 
+Definition semi_setD_closed := forall A B, G A -> G B -> exists D,
+  [/\ finite_set D, D `<=` G, A `\` B = \bigcup_(X in D) X & trivIset D id].
+
 Definition setC_closed := forall A, G A -> G (~` A).
 
 Definition setD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
@@ -755,18 +758,9 @@ End dynkin_lemmas.
 HB.mixin Record isSemiRingOfSets T := {
   ptclass : Pointed.class_of T;
   measurable : set (set T) ;
-  diff_fsets : set T -> set T -> {fset (set T)} ;
   measurable0 : measurable set0 ;
   measurableI : setI_closed measurable;
-  measurable_diff_fsets : forall A B C, measurable A -> measurable B ->
-    C \in diff_fsets A B -> measurable C ;
-  (* we skip the hypos measurable A measurable B because we can define a *)
-  (* default behavior (diff A B = [set A `\` B]) when A or B are not in  *)
-  (* measurable *)
-  diff_fsetsE : forall A B, (*measurable A -> measurable B -> *)
-    A `\` B = \big[setU/set0]_(X <- enum_fset (diff_fsets A B)) X ;
-  diff_fsets_disjoint : forall A B C D, (*measurable A -> measurable B ->*)
-    C != D -> C \in diff_fsets A B -> D \in diff_fsets A B -> C `&` D = set0
+  semi_measurableD : semi_setD_closed measurable;
 }.
 
 HB.structure Definition SemiRingOfSets := {T of isSemiRingOfSets T}.
@@ -825,24 +819,18 @@ HB.factory Record isRingOfSets T := {
 HB.builders Context T of isRingOfSets T.
 Implicit Types (A B C D : set T).
 
-Lemma mI A B : measurable A -> measurable B -> measurable (A `&` B).
-Proof. by move=> mA mB; rewrite -setDD; do ?apply: measurableD. Qed.
+Lemma mI : setI_closed measurable.
+Proof. by move=> A B mA mB; rewrite -setDD; do ?apply: measurableD. Qed.
 
-Definition d A B := [fset (A `\` B)%classic]%fset.
-
-Lemma mD A B C : measurable A -> measurable B -> C \in d A B -> measurable C.
-Proof. by move=> mA mB; rewrite inE => /eqP ->; apply: measurableD. Qed.
-
-Lemma dE A B : A `\` B = \big[setU/set0]_(X <- d A B) X.
-Proof. by rewrite big_seq_fset1. Qed.
-
-Lemma d_disj A B C D : C != D -> C \in d A B -> D \in d A B -> C `&` D = set0.
+Lemma mD : semi_setD_closed measurable.
 Proof.
-by move=> /= CS; rewrite !inE => CAB DAB; move: CS; rewrite CAB DAB eqxx.
+move=> A B Am Bm; exists [set A `\` B]; split; rewrite ?bigcup_set1//.
+  by move=> C ->; apply: measurableD.
+by move=> X Y -> ->.
 Qed.
 
 HB.instance Definition T_isSemiRingOfSets :=
-  @isSemiRingOfSets.Build T ptclass measurable d measurable0 mI mD dE d_disj.
+  @isSemiRingOfSets.Build T ptclass measurable measurable0 mI mD.
 
 HB.instance Definition T_isRingOfSets :=
   RingOfSets_from_semiRingOfSets.Build T measurableU.
@@ -929,8 +917,8 @@ Qed.
 
 Lemma measurableD : setDI_closed (@measurable T).
 Proof.
-move=> A B mA mB; rewrite diff_fsetsE big_seq.
-by apply: bigsetU_measurable => /= i; exact: measurable_diff_fsets.
+move=> A B mA mB; case: (semi_measurableD A B) => // [D [Dfin Dl -> _]].
+by apply: fin_bigcup_measurable.
 Qed.
 
 End ringofsets_lemmas.
@@ -1677,14 +1665,13 @@ Local Lemma mDbigcup I (D : set I) (A : set T) (B : I -> set T) : finite_set D -
   measurable A -> (forall i, D i -> measurable (B i)) ->
   mdisj (A `\` \bigcup_(i in D) B i).
 Proof.
-have [->|/set0P] := eqVneq D set0; first by rewrite bigcup0// setD0 => *; apply: mdisjW.
-elim/Ppointed: I => I in D B * => Ffin DN0 Am Bm.
-  by move: Ffin; rewrite emptyE=> -[].
+have [->|/set0P] := eqVneq D set0.
+  by rewrite bigcup0// setD0 => *; apply: mdisjW.
+elim/Ppointed: I => I in D B * => Dfin DN0 Am Bm.
+  by move: Dfin; rewrite emptyE=> -[].
 rewrite -bigcupDr//; apply: mdisj_bigcap=> // i Di.
-rewrite diff_fsetsE -bigcup_fset; apply: covered_byP => //.
-split=> [X Y XD YD /set0P|X XD].
-  by apply: contra_neq_eq => nXY; apply: (diff_fsets_disjoint A (B i)).
-by apply: (measurable_diff_fsets A (B i)) => //; apply: Bm.
+have [F [Ffin Fm -> Ftriv]] := semi_measurableD A (B i) Am (Bm _ Di).
+exact: covered_byP.
 Qed.
 
 Local Lemma mDI : setDI_closed m.

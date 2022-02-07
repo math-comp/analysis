@@ -1106,14 +1106,11 @@ case: (boolP (x.1 < x.2)) => x12; first by right; exists x.
 by left; rewrite set_itv_ge.
 Qed.
 
-Lemma ocitv_diff_subproof I J : ocitv I -> ocitv J ->
-  exists CC : set (set R), [/\
-     finite_set CC, CC `<=` ocitv, trivIset CC id &
-     I `\` J = \bigcup_(K in CC) K].
+Lemma ocitvD : semi_setD_closed ocitv.
 Proof.
-move=> {I J}[a _ <-] /ocitvP[|[b ltb]] ->.
+move=> _ _ [a _ <-] /ocitvP[|[b ltb]] ->.
   rewrite setD0; exists [set `]a.1, a.2]%classic].
-  by split=> [//|? ->//|? ? -> ->//|]; rewrite bigcup_set1.
+  by split=> [//|? ->//||? ? -> ->//]; rewrite bigcup_set1.
 rewrite setDE set_itvC_itv/= setIUr -!set_itv_meet/=.
 rewrite /Order.join /Order.meet/= ?(andbF, orbF)/= ?(meetEtotal, joinEtotal).
 rewrite -negb_or le_total/=; set c := minr _ _; set d := maxr _ _.
@@ -1128,41 +1125,11 @@ exists ((if a.1 < c then [set `]a.1, c]%classic] else set0) `|`
         (if d < a.2 then [set `]d, a.2]%classic] else set0)); split.
 - by rewrite finite_setU; do! case: ifP.
 - by move=> ? []; case: ifP => ? // ->//=.
+- by rewrite bigcup_setU; congr (_ `|` _);
+     case: ifPn => ?; rewrite ?bigcup_set1 ?bigcup_set0// set_itv_ge.
 - move=> I J/=; case: ifP => //= ac; case: ifP => //= da [] // -> []// ->.
     by rewrite inside// => -[].
   by rewrite setIC inside// => -[].
-- by rewrite bigcup_setU; congr (_ `|` _);
-     case: ifPn => ?; rewrite ?bigcup_set1 ?bigcup_set0// set_itv_ge.
-Qed.
-
-Definition ocitv_diffs I J :=
-  if pselect (ocitv I /\ ocitv J) is left ocIJ
-  then projT1 (cid (ocitv_diff_subproof ocIJ.1 ocIJ.2))
-  else [set I `\` J].
-
-Lemma ocitv_diffs_finite I J : finite_set (ocitv_diffs I J).
-Proof.
-by rewrite /ocitv_diffs; case: pselect => // ?; case: cid => ? [].
-Qed.
-Hint Resolve ocitv_diffs_finite : core.
-
-Lemma ocitv_diffs_ocitv I J : ocitv I -> ocitv J -> ocitv_diffs I J `<=` ocitv.
-Proof.
-move=> Ioc Joc; have := conj Ioc Joc.
-by rewrite /ocitv_diffs; case: pselect => // ?; case: cid => ? [].
-Qed.
-
-Lemma ocitv_diffs_triv I J : trivIset (ocitv_diffs I J) id.
-Proof.
-rewrite /ocitv_diffs; case: pselect => [?|? ? ? -> ->//].
-by case: cid => ? [].
-Qed.
-
-Lemma ocitv_diffs_cover I J : I `\`J = \bigcup_(X in ocitv_diffs I J) X.
-Proof.
-rewrite /ocitv_diffs; case: pselect => ?.
-  by case: cid => ? [].
-by rewrite bigcup_set1.
 Qed.
 
 Lemma ocitvI : setI_closed ocitv.
@@ -1172,27 +1139,8 @@ rewrite /Order.join /Order.meet/= ?(andbF, orbF)/= ?(meetEtotal, joinEtotal).
 by rewrite -negb_or le_total/=.
 Qed.
 
-Definition ocitv_diff I J := fset_set (ocitv_diffs I J).
-
-Lemma ocitv_diffE I J :
-    I `\` J = \big[setU/set0]_(X <- enum_fset (ocitv_diff I J)) X.
-Proof. by rewrite -bigcup_fset_set//= /ocitv_diff ocitv_diffs_cover. Qed.
-
-Lemma ocitv_diff_disjoint I J K K' :
-   K != K' -> K \in ocitv_diff I J -> K' \in ocitv_diff I J ->
-   K `&` K' = set0.
-Proof.
-rewrite !in_fset_set ?inE// => /[swap]+/[swap]; move: K K'.
-by apply/(@trivIsetP _ _ _ id)/ocitv_diffs_triv.
-Qed.
-
-Lemma ocitv_diff_ocitv I J K : ocitv I -> ocitv J ->
-  K \in ocitv_diff I J -> ocitv K.
-Proof. by rewrite in_fset_set// inE => ? ?; apply: ocitv_diffs_ocitv. Qed.
-
 HB.instance Definition _  : isSemiRingOfSets itvs :=
-  @isSemiRingOfSets.Build itvs (Pointed.class R) ocitv ocitv_diff
-    ocitv0 ocitvI ocitv_diff_ocitv ocitv_diffE ocitv_diff_disjoint.
+  @isSemiRingOfSets.Build itvs (Pointed.class R) ocitv ocitv0 ocitvI ocitvD.
 
 Definition itvs_semiRingOfSets := [the semiRingOfSetsType of itvs].
 
