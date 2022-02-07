@@ -479,11 +479,6 @@ Proof. by case: smallest_sigma_algebra A. Qed.
 End generated_sigma_algebra.
 Hint Resolve smallest_sigma_algebra : core.
 
-Notation "'<<s' D , G '>>'" := (smallest (sigma_algebra D) G)
-  (at level 2, format "'<<s'  D ,  G  '>>'") : classical_set_scope.
-Notation "'<<s' G '>>'" := (<<s setT, G>>)
-  (at level 2, format "'<<s'  G  '>>'") : classical_set_scope.
-
 Lemma fin_bigcup_closedP T (G : set (set T)) :
   (G set0 /\ setU_closed G) <-> fin_bigcup_closed G.
 Proof.
