@@ -1226,7 +1226,7 @@ move=> mu0; rewrite -semi_sigma_additiveE -semi_additiveE.
 exact: semi_sigma_additive_is_additive.
 Qed.
 
-Notation "f \|_ D" := (restrict D f) : fun_scope.
+Notation "f \_ D" := (restrict D f) : fun_scope.
 
 Lemma fset_set_image (T1 T2 : choiceType) (D : set T1) (f : T1 -> T2) :
   finite_set D -> fset_set (f @` D) = (f @` (fset_set D))%fset.
@@ -1298,7 +1298,7 @@ Lemma content_fin_bigcup (I : choiceType) (D : set I) (F : I -> set T) :
     measurable (\bigcup_(i in D) F i) ->
   mu (\bigcup_(i in D) F i) = \sum_(i <- fset_set D) mu (F i).
 Proof.
-move=> Dfin Ftriv Fm UFm; pose G (i : option I) : set T := oapp (F \|_ D) set0 i.
+move=> Dfin Ftriv Fm UFm; pose G (i : option I) : set T := oapp (F \_ D) set0 i.
 have UFG : \bigcup_(i in D) F i = \bigcup_(i in [set Some x | x in D]) G i.
   apply/predeqP => x; split=> [[i Di Fix]|[[]// _ [i Di [<- /=]]]].
     by exists (Some i) => //=; rewrite ?patchT ?inE//; exists i.
@@ -1959,7 +1959,7 @@ Variable mu : {additive_measure set T -> \bar R}.
 
 Lemma content_sub_additive : sub_additive mu.
 Proof.
-move=> X A n Am Xm XA; pose B i := A\|_`I_n i `&` X.
+move=> X A n Am Xm XA; pose B i := A\_`I_n i `&` X.
 have XE : X = \big[setU/set0]_(i < n) B i.
   rewrite -big_distrl/= setIidr// => x /XA/=.
   by rewrite -!bigcup_mkord => -[k nk Ax]; exists k; rewrite // patchT ?inE.

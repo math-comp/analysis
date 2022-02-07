@@ -37,7 +37,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Reserved Notation "f \|_ D" (at level 10).
+Reserved Notation "f \_ D" (at level 10).
 Reserved Notation "'{' 'fun' A '>->' B '}'"
   (format "'{' 'fun'  A  '>->'  B '}'").
 Reserved Notation "'{' 'oinv' T '>->' U '}'"
@@ -1708,11 +1708,11 @@ End inj.
 
 End patch.
 Notation restrict := (patch (fun=> point)).
-Notation "f \|_ D" := (restrict D f) : fun_scope.
+Notation "f \_ D" := (restrict D f) : fun_scope.
 
 Lemma preimage_restrict (aT : Type) (rT : pointedType)
      (f : aT -> rT) (D : set aT) (B : set rT) :
-  (f \|_ D) @^-1` B = (if point \in B then ~` D else set0) `|` D `&` f @^-1` B.
+  (f \_ D) @^-1` B = (if point \in B then ~` D else set0) `|` D `&` f @^-1` B.
 Proof.
 rewrite /preimage/= /patch; apply/predeqP => x /=; split.
   case: ifPn; rewrite ?(inE, notin_set); first by right.
@@ -1737,7 +1737,7 @@ Lemma patch_setT {aT rT : Type} (g : aT -> rT) (f : aT -> rT) :
 Proof. by apply/funext => x; rewrite /patch in_setT. Qed.
 
 Lemma restrict_comp {aT} {rT sT : pointedType} (h : rT -> sT) (f : aT -> rT) D :
-  h point = point -> (h \o f) \|_ D = h \o (f \|_ D).
+  h point = point -> (h \o f) \_ D = h \o (f \_ D).
 Proof. by move=> hp; apply/funext => x; rewrite /patch/=; case: ifP. Qed.
 Arguments restrict_comp {aT rT sT} h f D.
 
