@@ -2143,7 +2143,7 @@ Lemma nearN {R : numFieldType} (a : R) (P : R -> Prop) :
   (\forall x \near (- a), P x) <-> (\forall x \near a, P (- x)).
 Proof.
 split; first exact: opp_continuous.
-case=> [e epos Pe]; exists e;[exact epos | ].
+case=> [e epos Pe]; exists e; first by exact: epos.
 move=> z zclose; rewrite -(opprK z); apply: Pe.
 by move: zclose; rewrite /ball_ /= -opprD normrN opprK.
 Qed.
@@ -2156,14 +2156,14 @@ Proof.
 wlog r0 : r / r > 0 => [hwlog|].
   have [r0| |<-] := ltrgtP 0 r; first exact: hwlog.
     rewrite -oppr_gt0 => /hwlog cNr.
-    have -> : (mule r%:E) = ([eta -%E] \o [eta *%E (- r)%:E]).
+    have -> : mule r%:E = -%E \o ( *%E (- r)%:E).
       by rewrite funeqE => x /=; rewrite EFinN mulNe oppeK.
     by move=> x; apply: (continuous_comp (cNr x)) => y; exact: oppe_continuous.
   by move=> x; rewrite mul0e; apply: cvg_near_cst; near=> y; rewrite mul0e.
 move=> [x| |] /=.
 - apply: (@cvg_trans _ [filter of (r%:E * z%:E)%E @[z --> x]]).
     by apply: near_eq_cvg; near=> y.
-  suff : ((r * z)%:E @[z --> x]) --> (r * x)%:E.
+  suff : (r * z)%:E @[z --> x] --> (r * x)%:E.
     rewrite EFinM; apply: cvg_trans; apply: near_eq_cvg; near=> y.
     by rewrite EFinM.
   exact: (cvg_comp (@scaler_continuous _ _ _ _)).
@@ -2176,6 +2176,15 @@ move=> [x| |] /=.
 Unshelve. all: by end_near. Qed.
 
 End mule_continuous.
+
+Lemma abse_continuous (R : realFieldType) : continuous (@abse R).
+Proof.
+case=> [r|A /= [r [rreal rA]]|A /= [r [rreal rA]]]/=.
+- exact/(cvg_comp (@norm_continuous _ [normedModType R of R^o] r)).
+- by exists r; split => // y ry; apply: rA; rewrite (lt_le_trans ry)// lee_abs.
+- exists (- r)%R; rewrite realN; split => // y; rewrite EFinN -lte_oppr => yr.
+  by apply: rA; rewrite (lt_le_trans yr)// -abseN lee_abs.
+Qed.
 
 Lemma cvg_dist0 {U} {K : numFieldType} {V : normedModType K}
   {F : set (set U)} {FF : Filter F} (f : U -> V) :
