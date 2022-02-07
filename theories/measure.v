@@ -437,24 +437,11 @@ Section generated_sigma_algebra.
 Context {T : Type} (D : set T) (G : set (set T)).
 Implicit Types (M : set (set T)).
 
-(* this inductive is locally used to prove `smallest_sigma_algebra`
-   and is not destined to be used outside of this section.          *)
-#[local] Inductive g_salgebra : set (set T) :=
-| g_salgebraG : G `<=` g_salgebra
-| g_salgebra0 : g_salgebra set0
-| g_salgebraC A : g_salgebra A -> g_salgebra (D `\` A)
-| g_salgebraU (A : (set T)^nat) :
-   (forall i, g_salgebra (A i)) -> g_salgebra (\bigcup_i (A i)).
-
 Lemma smallest_sigma_algebra : sigma_algebra D <<s D, G >>.
 Proof.
-have sgG : sigma_algebra D g_salgebra /\ G `<=` g_salgebra.
-  by do! split; [apply: g_salgebra0|apply: g_salgebraC|
-                 apply: g_salgebraU|apply: g_salgebraG].
-split=> [|A GA|A GA] P [[P0 PD PU]] GP //; have {}/GA GA := sgG.
-  by apply: (PD); apply: g_salgebra_ind GA => // *; [apply: PD|apply: PU].
-by apply: (PU) => n; apply: g_salgebra_ind (GA n) => // *;
-   [apply: PD|apply: PU].
+split=> [|A GA|A GA] P [[P0 PD PU]] GP //.
+  by apply: (PD); apply: GA.
+by apply: (PU) => n; apply: GA.
 Qed.
 Hint Resolve smallest_sigma_algebra : core.
 
