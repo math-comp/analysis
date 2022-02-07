@@ -448,23 +448,14 @@ Implicit Types (M : set (set T)).
 
 Lemma smallest_sigma_algebra : sigma_algebra D <<s D, G >>.
 Proof.
-assert (sgG : sigma_algebra D g_salgebra /\ G `<=` g_salgebra).
-  now do! split; [apply g_salgebra0|apply g_salgebraC|
-                  apply g_salgebraU|apply g_salgebraG].
-split=> [|A GA|A GA] P [[P0 PD PU]] GP //.
-  now apply PD; apply: g_salgebra_ind (GA _ sgG) => // *;
-      [apply: PD|apply: PU].
-now apply PU => n; apply: g_salgebra_ind (GA n _ sgG) => // *;
-    [apply: PD|apply: PU].
+have sgG : sigma_algebra D g_salgebra /\ G `<=` g_salgebra.
+  by do! split; [apply: g_salgebra0|apply: g_salgebraC|
+                 apply: g_salgebraU|apply: g_salgebraG].
+split=> [|A GA|A GA] P [[P0 PD PU]] GP //; have {}/GA GA := sgG.
+  by apply: (PD); apply: g_salgebra_ind GA => // *; [apply: PD|apply: PU].
+by apply: (PU) => n; apply: g_salgebra_ind (GA n) => // *;
+   [apply: PD|apply: PU].
 Qed.
-(** This proof risks blowing up universe constraints *)
-(* have sgG : sigma_algebra D g_salgebra /\ G `<=` g_salgebra. *)
-(*   by do! split; [apply: g_salgebra0|apply: g_salgebraC| *)
-(*                  apply: g_salgebraU|apply: g_salgebraG]. *)
-(* split=> [|A GA|A GA] P [[P0 PD PU]] GP //; have {}/GA GA := sgG. *)
-(*   by apply: (PD); apply: g_salgebra_ind GA => // *; [apply: PD|apply: PU]. *)
-(* by apply: (PU) => n; apply: g_salgebra_ind (GA n) => // *; *)
-(*    [apply: PD|apply: PU]. *)
 Hint Resolve smallest_sigma_algebra : core.
 
 Lemma sub_sigma_algebra2 M : M `<=` G -> <<s D, M >> `<=` <<s D, G >>.
