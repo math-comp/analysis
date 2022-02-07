@@ -2186,6 +2186,16 @@ case=> [r|A /= [r [rreal rA]]|A /= [r [rreal rA]]]/=.
   by apply: rA; rewrite (lt_le_trans yr)// -abseN lee_abs.
 Qed.
 
+Lemma cvg_abse (T : topologicalType) (R : realFieldType) (F : set (set T)) f
+    (a : \bar R) : Filter F ->
+  f @ F --> a -> `|f x|%E @[x --> F] --> `|a|%E.
+Proof. by move=> FF; apply: continuous_cvg => //; apply: abse_continuous. Qed.
+
+Lemma is_cvg_abse (T : topologicalType) (R : realFieldType) (F : set (set T))
+    (f : T -> \bar R) : Filter F ->
+  cvg (f @ F) -> cvg ((abse \o f : T -> \bar R) @ F).
+Proof. move=> FF; have := cvgP _ (cvg_abse FF _); apply. Qed.
+
 Lemma cvg_dist0 {U} {K : numFieldType} {V : normedModType K}
   {F : set (set U)} {FF : Filter F} (f : U -> V) :
   (fun x => `|f x|) @ F --> (0 : K)

@@ -1077,7 +1077,7 @@ Lemma preimage_add T (R : numDomainType) (f g : T -> R) z :
   (f \+ g) @^-1` [set z] = \bigcup_(a in f @` setT)
     ((f @^-1` [set a]) `&` (g @^-1` [set z - a])).
 Proof.
-apply/seteqP; split=> [x /= [fgz]|x [_ /= [y _ <-]] []].
+apply/seteqP; split=> [x /= fgz|x [_ /= [y _ <-]] []].
   have : z - f x \in g @` setT.
     by rewrite inE /=; exists x=> //; rewrite -fgz addrC addKr.
   rewrite inE /= => -[x' _ gzf]; exists (z - g x')%R => /=.
@@ -1476,7 +1476,7 @@ Qed.
 
 Let bigcup_fleg c : c < 1 -> \bigcup_n fleg c n = setT.
 Proof.
-move=> c1; rewrite predeqE => x; split=> [[n _] []//|].
+move=> c1; rewrite predeqE => x; split=> // _.
 have := @fun_ge0 _ _ f x; rewrite le_eqVlt => /predU1P[|] gx0.
   exists O => //; rewrite /fleg /=.
   by rewrite -gx0 mulr0 fun_ge0.
@@ -3949,38 +3949,13 @@ Qed.
 
 End ae_measurable_fun.
 
-(* TODO: move *)
-Lemma cvg_abse (T : topologicalType) (R : realFieldType) (F : set (set T)) f
-    (a : \bar R) : Filter F ->
-  f @ F --> a -> `|f x|%E @[x --> F] --> `|a|%E.
-Proof. by move=> FF; apply: continuous_cvg => //; apply: abse_continuous. Qed.
-
-Lemma is_cvg_abse (T : topologicalType) (R : realFieldType) (F : set (set T))
-    (f : T -> \bar R) : Filter F ->
-  cvg (f @ F) -> cvg ((abse \o f : T -> \bar R) @ F).
-Proof. move=> FF; have := cvgP _ (cvg_abse FF _); apply. Qed.
-
-Lemma ereal_cvgB (R : realFieldType) (f g : (\bar R)^nat) a b :
-  (a +? - b -> f --> a -> g --> b -> f \- g --> a - b)%E.
-Proof. by move=> ab fa gb; apply: ereal_cvgD => //; exact: ereal_cvgN. Qed.
-
-Lemma ereal_cvg_sub0' (R : realFieldType) (f : (\bar R)^nat) (k : \bar R) :
-  k \is a fin_num -> f --> k -> (fun x => f x - k)%E --> 0%E.
-Proof.
-move: k => [k _ fk| |]//.
-rewrite -(@subee _ k%:E)//.
-apply: ereal_cvgB => //.
-exact: cvg_cst.
-Qed.
-
 Section dominated_convergence_lemma.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f_ : (T -> \bar R)^nat).
+Variables (f : T -> \bar R) (g : T -> \bar R).
 Hypothesis mf_ : forall n, measurable_fun D (f_ n).
-Variable f : T -> \bar R.
 Hypothesis f_f : forall x, D x -> f_ ^~ x --> f x.
-Variable g : T -> \bar R.
 Hypothesis fing : forall x, D x -> g x \is a fin_num.
 Hypothesis ig : mu.-integrable D g.
 Hypothesis absfg : forall n x, D x -> `|f_ n x| <= g x.
@@ -4011,7 +3986,7 @@ Let cvg_g_ x : D x -> g_ ^~ x --> 0.
 Proof.
 move=> Dx; rewrite -abse0; apply: cvg_abse.
 move: (f_f Dx); case: (f x) => [r|/=|/=].
-- by apply: ereal_cvg_sub0' => //; rewrite -hfx; exact: f_f.
+- by move=> f_r; apply/ereal_cvg_sub0.
 - have gx1 : (0 < fine (g x) + 1)%R .
     by rewrite (@le_lt_trans _ _ (fine (g x))) ?ltr_addl//; exact/le0R/g0.
   move/ereal_cvgPpinfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
@@ -4112,6 +4087,7 @@ apply: (@ereal_squeeze _ (cst 0) _ (fun n => \int_ D (g_ n x) 'd mu[x])).
 Qed.
 
 End dominated_convergence_lemma.
+Arguments dominated_integrable {T R mu D} _ f_ f g.
 
 Section dominated_convergence_theorem.
 Local Open Scope ereal_scope.
@@ -4165,46 +4141,40 @@ have ? : measurable_fun D (\1_(D `\` N) : T -> R).
   apply: (@measurable_funS _ _ setT) => //.
   by rewrite (_ : \1_ _ = mindic R (measurableD mD mN)).
 have mu_ n : measurable_fun D (u_ n).
-  by apply: emeasurable_funM => //; apply: measurable_fun_comp => //.
+  by apply: emeasurable_funM => //; exact: measurable_fun_comp.
 have iv : mu.-integrable D v.
   split.
-    apply: emeasurable_funM => //; first by case: ig.
-    by apply: measurable_fun_comp => //.
+    by apply: emeasurable_funM => //; [case: ig|exact: measurable_fun_comp].
   case: ig => _; apply: le_lt_trans; apply: ge0_le_integral => //.
-    apply: measurable_fun_comp => //; apply: emeasurable_funM => //.
+  - apply: measurable_fun_comp => //; apply: emeasurable_funM => //.
       by case: ig.
-    by apply: measurable_fun_comp => //.
-    apply: measurable_fun_comp => //.
-    by case: ig.
-  move=> x Dx; rewrite /v /ind1 indicE in_setD mem_set//=.
-  by case: (x \in N); rewrite ?mule1// mule0 abse0.
+    exact: measurable_fun_comp.
+  - by apply: measurable_fun_comp => //; case: ig.
+  - move=> x Dx; rewrite /v /ind1 indicE in_setD mem_set//=.
+    by case: (x \in N); rewrite ?mule1// mule0 abse0.
 have finv x : D x -> v x \is a fin_num.
-  move=> Dx.
-  rewrite /v /ind1 indicE in_setD mem_set//=.
+  move=> Dx; rewrite /v /ind1 indicE in_setD mem_set//=.
   have [xN|xN] := boolP (x \in N); first by rewrite mule0.
-  rewrite mule1.
-  apply: contrapT => fing.
+  rewrite mule1; apply: contrapT => fing.
   move: xN; apply/negP; rewrite negbK inE; right.
   by apply: subN3 => /= /(_ Dx).
 split.
 - split => //.
-  have : mu.-integrable D u.
-    exact: (@dominated_integrable _ _ _ _ _ u_ _ u _ v).
+  have : mu.-integrable D u by exact: (dominated_integrable _ u_ _ v).
   move=> [?]; apply: le_lt_trans.
-  rewrite le_eqVlt; apply/orP; left; apply/eqP/ae_eq_integral => //.
-    exact: measurable_fun_comp.
-    exact: measurable_fun_comp.
+  rewrite le_eqVlt; apply/orP; left; apply/eqP/ae_eq_integral => //;
+    [exact: measurable_fun_comp|exact: measurable_fun_comp|].
   exists N; split => //; rewrite -(setCK N); apply: subsetC => x Nx Dx.
   by rewrite /= /u /= /ind1 indicE in_setD mem_set//= memNset// mule1.
-- have := @dominated_cvg0 _ _ _ _ mD _ mu_ _ u_u _ finv iv u_v.
+- have := @dominated_cvg0 _ _ _ _ mD _ _ _ mu_ u_u finv iv u_v.
   set X := (X in _ -> X --> _); rewrite [X in X --> _ -> _](_ : _ = X) //.
   apply/funext => n; apply ae_eq_integral => //.
   + apply: measurable_fun_comp => //; apply: emeasurable_funB => //.
-    by apply: emeasurable_funM => //; apply: measurable_fun_comp => //.
+    by apply: emeasurable_funM => //; exact: measurable_fun_comp.
   + by rewrite /g_; apply: measurable_fun_comp => //; exact: emeasurable_funB.
   + exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
     by rewrite /u_ /u /ind1 indicE in_setD mem_set//= memNset// !mule1.
-- have := @dominated_cvg _ _ _ _ mD _ mu_ _ u_u _ finv iv u_v.
+- have := @dominated_cvg _ _ _ _ mD _ _ _ mu_ u_u finv iv u_v.
   set X := (X in _ -> X --> _); rewrite [X in X --> _ -> _](_ : _ = X) //; last first.
     apply/funext => n; apply ae_eq_integral => //.
     exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.

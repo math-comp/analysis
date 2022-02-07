@@ -1590,6 +1590,10 @@ move: a b => [a| |] [b| |] // _.
 - exact: ereal_cvgD_ninfty_ninfty.
 Unshelve. all: by end_near. Qed.
 
+Lemma ereal_cvgB (R : realFieldType) (f g : (\bar R)^nat) a b :
+  a +? - b -> f --> a -> g --> b -> f \- g --> a - b.
+Proof. by move=> ab fa gb; apply: ereal_cvgD => //; exact: ereal_cvgN. Qed.
+
 Lemma ereal_is_cvgD (R : realFieldType) (u v : (\bar R)^nat) :
   lim u +? lim v -> cvg u -> cvg v -> cvg (u \+ v).
 Proof.
@@ -1598,10 +1602,13 @@ by apply: ereal_cvgD => //; rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk).
 Qed.
 
 Lemma ereal_cvg_sub0 (R : realFieldType) (f : (\bar R)^nat) (k : \bar R) :
-  k \is a fin_num -> (fun x => f x - k) --> 0 -> f --> k.
+  k \is a fin_num -> (fun x => f x - k) --> 0 <-> f --> k.
 Proof.
-move=> kfin /ereal_cvgD-/(_ (cst k) _ isT (cvg_cst _)).
-by rewrite add0e; under eq_fun => x do rewrite subeK//.
+move=> kfin; split.
+  move=> /ereal_cvgD-/(_ (cst k) _ isT (cvg_cst _)).
+  by rewrite add0e; under eq_fun => x do rewrite subeK//.
+move: k kfin => [k _ fk| |]//; rewrite -(@subee _ k%:E)//.
+by apply: ereal_cvgB => //; exact: cvg_cst.
 Qed.
 
 Lemma ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
