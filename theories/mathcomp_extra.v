@@ -186,3 +186,15 @@ Proof. by move=> n0; rewrite -subr_lt0 -opprD oppr_lt0 addr_gt0. Qed.
    (as of today, only in Coq 8.13) *)
 Definition uncurry {A B C : Type} (f : A -> B -> C)
   (p : A * B) : C := match p with (x, y) => f x y end.
+
+Lemma le_le_trans {disp : unit} {T : porderType disp} (x y z t : T) :
+  (z <= x)%O -> (y <= t)%O -> (x <= y)%O -> (z <= t)%O.
+Proof. by move=> + /(le_trans _)/[apply]; apply: le_trans. Qed.
+
+Notation eqLHS := (X in (X == _))%pattern.
+Notation eqRHS := (X in (_ == X))%pattern.
+Notation leLHS := (X in (X <= _)%O)%pattern.
+Notation leRHS := (X in (_ <= X)%O)%pattern.
+Notation ltLHS := (X in (X <= _)%O)%pattern.
+Notation ltRHS := (X in (_ < X)%O)%pattern.
+Inductive boxed T := Box of T.

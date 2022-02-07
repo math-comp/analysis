@@ -1198,57 +1198,101 @@ Definition itvs_semiRingOfSets := [the semiRingOfSetsType of itvs].
 Lemma hlength_ge0' (I : set itvs) : (0 <= hlength I)%E.
 Proof. by rewrite -hlength0 le_hlength. Qed.
 
-Lemma le_le_trans {disp : unit} {T : porderType disp} (x y z t : T) :
-  (z <= x)%O -> (y <= t)%O -> (x <= y)%O -> (z <= t)%O.
-Proof. by move=> + /(le_trans _)/[apply]; apply: le_trans. Qed.
-
-
-Notation leLHS := (X in (X <= _)%O)%pattern.
-Notation leRHS := (X in (_ <= X)%O)%pattern.
-Notation ltLHS := (X in (X <= _)%O)%pattern.
-Notation ltRHS := (X in (_ < X)%O)%pattern.
-Inductive boxed T := Box of T.
-
-Lemma hlength_semi_additive2 : semi_additive2 hlength.
-Proof.
-move=> I J /ocitvP[|[a a12]] ->; first by rewrite set0U hlength0 add0e.
-move=> /ocitvP[|[b b12]] ->; first by rewrite setU0 hlength0 adde0.
-rewrite -subset0 => + ab0 => /ocitvP[|[x x12] abx].
-  by rewrite setU_eq0 => -[-> ->]; rewrite setU0 hlength0 adde0.
-rewrite abx !hlength_itv//= ?lte_fin a12 b12 x12/= -!EFinB -EFinD.
-wlog ab1 : a a12 b b12 ab0 abx / a.1 <= b.1 => [hwlog|].
-  have /orP[ab1|ba1] := le_total a.1 b.1; first by apply: hwlog.
-  by rewrite [in RHS]addrC; apply: hwlog => //; rewrite (setIC, setUC).
-have := ab0; rewrite subset0 -set_itv_meet/=.
-rewrite /Order.join /Order.meet/= ?(andbF, orbF)/= ?(meetEtotal, joinEtotal).
-rewrite -negb_or le_total/=; set c := minr _ _; set d := maxr _ _.
-move=> /eqP/neitvP/=; rewrite lte_bnd/= /d/c (max_idPr _)// => /negP.
-rewrite -leNgt le_minl orbC lt_geF//= => {c} {d} a2b1.
-have ab i j : i \in `]a.1, a.2] -> j \in `]b.1, b.2] -> i <= j.
-  by move=> ia jb; rewrite (le_le_trans _ _ a2b1) ?(itvP ia) ?(itvP jb).
-have /(congr1 sup) := abx; rewrite sup_setU// ?sup_itv_bounded// => bx.
-have /(congr1 inf) := abx; rewrite inf_setU// ?inf_itv_bounded// => ax.
-rewrite -{}ax -{x}bx in abx x12 *.
-case: ltgtP a2b1 => // a2b1 _; last first.
-  by rewrite a2b1 [in RHS]addrC subrKA.
-exfalso; pose c := (a.2 + b.1) / 2%:R.
-have /predeqP/(_ c)[_ /(_ _)/Box[]] := abx.
-  apply: subset_itv_oo_oc; have := mid_in_itvoo a2b1.
-  by apply/subitvP; rewrite subitvE ?lte_bnd/= ?ltW.
-apply/not_orP; rewrite /= !in_itv/=.
-by rewrite lt_geF ?midf_lt//= andbF le_gtF ?midf_le//= ltW.
-Qed.
+(* Unused *)
+(* Lemma hlength_semi_additive2 : semi_additive2 hlength. *)
+(* Proof. *)
+(* move=> I J /ocitvP[|[a a12]] ->; first by rewrite set0U hlength0 add0e. *)
+(* move=> /ocitvP[|[b b12]] ->; first by rewrite setU0 hlength0 adde0. *)
+(* rewrite -subset0 => + ab0 => /ocitvP[|[x x12] abx]. *)
+(*   by rewrite setU_eq0 => -[-> ->]; rewrite setU0 hlength0 adde0. *)
+(* rewrite abx !hlength_itv//= ?lte_fin a12 b12 x12/= -!EFinB -EFinD. *)
+(* wlog ab1 : a a12 b b12 ab0 abx / a.1 <= b.1 => [hwlog|]. *)
+(*   have /orP[ab1|ba1] := le_total a.1 b.1; first by apply: hwlog. *)
+(*   by rewrite [in RHS]addrC; apply: hwlog => //; rewrite (setIC, setUC). *)
+(* have := ab0; rewrite subset0 -set_itv_meet/=. *)
+(* rewrite /Order.join /Order.meet/= ?(andbF, orbF)/= ?(meetEtotal, joinEtotal). *)
+(* rewrite -negb_or le_total/=; set c := minr _ _; set d := maxr _ _. *)
+(* move=> /eqP/neitvP/=; rewrite lte_bnd/= /d/c (max_idPr _)// => /negP. *)
+(* rewrite -leNgt le_minl orbC lt_geF//= => {c} {d} a2b1. *)
+(* have ab i j : i \in `]a.1, a.2] -> j \in `]b.1, b.2] -> i <= j. *)
+(*   by move=> ia jb; rewrite (le_le_trans _ _ a2b1) ?(itvP ia) ?(itvP jb). *)
+(* have /(congr1 sup) := abx; rewrite sup_setU// ?sup_itv_bounded// => bx. *)
+(* have /(congr1 inf) := abx; rewrite inf_setU// ?inf_itv_bounded// => ax. *)
+(* rewrite -{}ax -{x}bx in abx x12 *. *)
+(* case: ltgtP a2b1 => // a2b1 _; last first. *)
+(*   by rewrite a2b1 [in RHS]addrC subrKA. *)
+(* exfalso; pose c := (a.2 + b.1) / 2%:R. *)
+(* have /predeqP/(_ c)[_ /(_ _)/Box[]] := abx. *)
+(*   apply: subset_itv_oo_oc; have := mid_in_itvoo a2b1. *)
+(*   by apply/subitvP; rewrite subitvE ?lte_bnd/= ?ltW. *)
+(* apply/not_orP; rewrite /= !in_itv/=. *)
+(* by rewrite lt_geF ?midf_lt//= andbF le_gtF ?midf_le//= ltW. *)
+(* Qed. *)
 
 Lemma hlength_semi_additive : semi_additive hlength.
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
-move=> Itriv [[/= a1 a2] _] /esym aE; rewrite aE hlength_itv ?lte_fin/= -EFinB.
-pose I i :=  `](b i).1, (b i).2]%classic.
+move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.
+rewrite hlength_itv ?lte_fin/= -EFinB.
 case: ifPn => a12; last first.
-  move: aE; rewrite set_itv_ge//= -(bigcup_mkord _ I) /I => /bigcup0P I0.
+  pose I i :=  `](b i).1, (b i).2]%classic.
+  rewrite set_itv_ge//= -(bigcup_mkord _ I) /I => /bigcup0P I0.
   by under eq_bigr => i _ do rewrite I0//= hlength0; rewrite big1.
-move: aE.
-Admitted.
+set A := `]a1, a2]%classic.
+rewrite -bigcup_pred; set P := xpredT; rewrite (eq_bigl P)//.
+move: P => P; have [p] := ubnP #|P|; elim: p => // p IHp in P a2 a12 A *.
+rewrite ltnS => cP /esym AE.
+have : A a2 by rewrite /A /= in_itv/= lexx andbT.
+rewrite AE/= => -[i /= Pi] a2bi.
+case: (boolP ((b i).1 < (b i).2)) => bi; last by rewrite itv_ge in a2bi.
+have {}a2bi : a2 = (b i).2.
+  apply/eqP; rewrite eq_le (itvP a2bi)/=.
+  suff: A (b i).2 by move=> /itvP->.
+  by rewrite AE; exists i=> //=; rewrite in_itv/= lexx andbT.
+rewrite {a2}a2bi in a12 A AE *.
+rewrite (bigD1 i)//= hlength_itv ?lte_fin/= bi !EFinD -addeA.
+congr (_ + _)%E; apply/eqP; rewrite addeC -sube_eq// 1?adde_defC//.
+rewrite ?EFinN oppeK addeC; apply/eqP.
+case: (eqVneq a1 (b i).1) => a1bi.
+  rewrite {a1}a1bi in a12 A AE {IHp} *; rewrite subee ?big1// => j.
+  move=> /andP[Pj Nji]; rewrite hlength_itv ?lte_fin/=; case: ifPn => bj//.
+  exfalso; have /trivIsetP/(_ j i I I Nji) := Itriv.
+  pose m := ((b j).1 + (b j).2) / 2%:R.
+  have mbj : `](b j).1, (b j).2]%classic m.
+     by rewrite /= !in_itv/= ?(midf_lt, midf_le)//= ltW.
+  rewrite -subset0 => /(_ m); apply; split=> //.
+  by suff: A m by []; rewrite AE; exists j => //.
+have a1b2 j : P j -> (b j).1 < (b j).2 -> a1 <= (b j).2.
+  move=> Pj bj; suff /itvP-> : A (b j).2 by [].
+  by rewrite AE; exists j => //=; rewrite ?in_itv/= bj//=.
+have a1b j : P j -> (b j).1 < (b j).2 -> a1 <= (b j).1.
+  move=> Pj bj; case: ltP=> // bj1a.
+  suff : A a1 by rewrite /A/= in_itv/= ltxx.
+  by rewrite AE; exists j; rewrite //= in_itv/= bj1a//= a1b2.
+have bbi2 j : P j -> (b j).1 < (b j).2 -> (b j).2 <= (b i).2.
+  move=> Pj bj; suff /itvP-> : A (b j).2 by [].
+  by rewrite AE; exists j => //=; rewrite ?in_itv/= bj//=.
+apply/IHp.
+- by rewrite lt_neqAle a1bi/= a1b.
+- rewrite (leq_trans _ cP)// -(cardID (pred1 i) P).
+  rewrite [X in (_ < X + _)%N](@eq_card _ _ (pred1 i)); last first.
+    by move=> j; rewrite !inE andbC; case: eqVneq => // ->.
+  rewrite ?card1 ?ltnS// subset_leq_card//.
+  by apply/fintype.subsetP => j; rewrite -topredE/= !inE andbC.
+apply/seteqP; split=> /= [x [j/= /andP[Pj Nji]]|x/= xabi].
+  case: (boolP ((b j).1 < (b j).2)) => bj; last by rewrite itv_ge.
+  apply: subitvP; rewrite subitvE ?lte_bnd a1b//= leNgt.
+  have /trivIsetP/(_ j i I I Nji) := Itriv.
+  rewrite -subset0 => /(_ (b j).2); apply: contra_notN => /= bi1j2.
+  by rewrite !in_itv/= bj !lexx bi1j2 bbi2.
+have: A x.
+  rewrite /A/= in_itv/= (itvP xabi)/= ltW//.
+  by rewrite (le_lt_trans _ bi) ?(itvP xabi).
+rewrite AE => -[j /= Pj xbj].
+exists j => //=.
+apply/andP; split=> //; apply: contraTneq xbj => ->.
+by rewrite in_itv/= le_gtF// (itvP xabi).
+Qed.
 
 Canonical hlength_measure : {additive_measure set itvs -> \bar R}
   := AdditiveMeasure (AdditiveMeasure.Axioms (@hlength0 _)
@@ -1493,6 +1537,19 @@ Qed.
 
 End puncture_ereal_itv.
 
+Lemma set1_bigcap_oc (R : realType) (r : R) :
+   [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
+Proof.
+apply/seteqP; split=> [x ->|].
+  by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
+move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
+apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
+have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
+rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE invr_gt0.
+rewrite -addn1 natrD natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW//.
+by rewrite -RfloorE lt_succ_Rfloor.
+Qed.
+
 Section salgebra_R_ssets.
 Variable R : realType.
 
@@ -1512,10 +1569,44 @@ Check forall (T : measurableType) (f : T -> R), measurable_fun setT f.
 
 Lemma measurable_set1 (r : R) : measurable [set r].
 Proof.
-Admitted.
+rewrite set1_bigcap_oc; apply: bigcap_measurable => k // _.
+exact/g_salgebra_self/is_ocitv.
+Qed.
+#[local] Hint Resolve measurable_set1 : core.
 
 Lemma measurable_itv (i : interval R) : measurable ([set` i]).
-Proof. Admitted.
+Proof.
+have moc (a b : R) : measurable `]a, b]%classic.
+  exact/g_salgebra_self/is_ocitv.
+have pooE (x : R) : `]x, +oo[%classic = \bigcup_i `]x, x + i%:R]%classic.
+  apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
+    by move=> [k _ /=] /itvP->.
+  move=> xy; exists `|ceil (y - x)|%N => //=.
+  rewrite in_itv/= xy/= -ler_subl_addl !natr_absz/=.
+  rewrite ger0_norm ?ceil_ge0 ?subr_ge0//; last exact: ltW.
+  by rewrite -RceilE Rceil_ge.
+have mopoo (x : R) : measurable `]x, +oo[%classic.
+  by rewrite pooE; apply: bigcup_measurable => k _.
+have mnooc (x : R) : measurable `]-oo, x]%classic.
+  by rewrite -set_itvC_bnd_infty; apply/measurableC.
+have ooE (a b : R) : `]a, b[%classic = `]a, b]%classic `\ b.
+  case: (boolP (a < b)) => ab; last by rewrite !set_itv_ge ?set0D.
+  by rewrite punct_itvoc// setUDK// => x [->]; rewrite /= in_itv/= ltxx andbF.
+have moo (a b : R) : measurable `]a, b[%classic.
+  by rewrite ooE; apply: measurableD.
+have mcc (a b : R) : measurable `[a, b]%classic.
+  case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
+  by rewrite punct_itvccL//; apply/measurableU.
+have mco (a b : R) : measurable `[a, b[%classic.
+  case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
+  by rewrite punct_itvco//; apply/measurableU.
+have oooE (b : R) : `]-oo, b[%classic = `]-oo, b]%classic `\ b.
+  by rewrite punct_itv_infty_c setUDK// => x [->]; rewrite /= in_itv/= ltxx.
+case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
+- by rewrite punct_itv_c_infty; apply/measurableU.
+- by rewrite oooE; apply/measurableD.
+- by rewrite set_itv_infty_infty.
+Qed.
 
 (*HB.instance Definition _ :=
   Rbar_isMeasurable (@measurable (@sset_algebraOfSetsType R)).*)
@@ -1808,14 +1899,9 @@ Proof.
 rewrite eqEsubset; split => A.
   apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
   by move=> I [x _ <-]; apply: measurable_itv_bounded.
-apply: subset_g_salgebra => A' /= [x ->].
-(* move=> _ [s ->] {A}; elim: s => [|h t ih]; first by rewrite /sset big_nil. *)
-(* rewrite /sset big_cons; apply: measurableU => //. *)
-(* by move: h => [[a x|a] [b y|b]]; move: a b => [] []; solve *)
-(*   [exact: measurable_itv_bounded | exact: measurable_itv_bnd_infty | *)
-(*    by rewrite set_itvE]. *)
-(* Qed. *)
-Admitted.
+apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+by move=> A' /= [x ->]; apply: measurable_itv.
+Qed.
 
 End rgenoinfty.
 End RGenOInfty.
@@ -1852,16 +1938,12 @@ Qed.
 Lemma measurableE :
   @measurable (g_measurableType (measurable : set (set (itvs R)))) = @measurable T.
 Proof.
-rewrite eqEsubset; split => A; last first.
-(*   apply: subset_g_salgebra => A' /= [x ->]; exists [:: `]-oo, x[ ]. *)
-(*   by rewrite /sset big_cons big_nil setU0. *)
-(* apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra. *)
-(* move=> _ [s ->] {A}; elim: s => [|h t ih]; first by rewrite /sset big_nil. *)
-(* rewrite /sset big_cons; apply: measurableU => //. *)
-(* by move: h => [[a x|a] [b y|b]]; move: a b => [] []; solve *)
-(*   [exact: measurable_itv_bounded | exact: measurable_itv_bnd_infty | *)
-(*    by rewrite set_itvE]. *)
-Admitted.
+rewrite eqEsubset; split => A.
+  apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+  by move=> I [x _ <-]; apply: measurable_itv_bounded.
+apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+by move=> A' /= [x ->]; apply: measurable_itv.
+Qed.
 
 End rgeninftyo.
 End RGenInftyO.
@@ -1894,17 +1976,12 @@ Qed.
 Lemma measurableE :
   @measurable (g_measurableType (measurable : set (set (itvs R)))) = @measurable T.
 Proof.
-rewrite eqEsubset; split => A; last first.
-(*   apply: subset_g_salgebra => B /= [x ->]; exists [:: `[x, +oo[ ]. *)
-(*   by rewrite /sset big_cons big_nil setU0 set_itv_c_infty. *)
-(* apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra. *)
-(* move=> _ [s ->] {A}; elim: s => [|h t ih]; first by rewrite /sset big_nil. *)
-(* rewrite /sset big_cons; apply: measurableU => //. *)
-(* by move: h => [[a x|a] [b y|b]]; move: a b => [] []; solve *)
-(*   [exact: measurable_itv_bounded | exact: measurable_itv_bnd_infty | *)
-(*    by rewrite set_itvE]. *)
-(* Qed. *)
-Admitted.
+rewrite eqEsubset; split => A.
+  apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+  by move=> I [x _ <-]; apply: measurable_itv_bounded.
+apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+by move=> A' /= [x ->]; apply: measurable_itv.
+Qed.
 
 End rgencinfty.
 End RGenCInfty.
@@ -1954,16 +2031,12 @@ Qed.
 Lemma measurableE :
   @measurable (g_measurableType (measurable : set (set (itvs R)))) = @measurable T.
 Proof.
-rewrite eqEsubset; split => A; last first.
-(*   apply: subset_g_salgebra => B /= [x [y ->]]; exists [:: `]x, y[ ]. *)
-(*   by rewrite /sset big_cons big_nil setU0. *)
-(* apply: g_salgebra_smallest; last by apply: are_measurable_sets_g_salgebra. *)
-(* move=> _ [s ->] {A}; elim: s => [|h t ih]; first by rewrite /sset big_nil. *)
-(* rewrite /sset big_cons; apply: measurableU => //. *)
-(* by move: h => [[a x|a] [b y|b]]; move: a b => [] []; solve[ *)
-(*   exact: measurable_itv_bounded | exact: measurable_itv_infty_bnd | *)
-(*   exact: measurable_itv_bnd_infty | by rewrite set_itvE]. *)
-Admitted.
+rewrite eqEsubset; split => A.
+  apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+  by move=> I [x _ <-]; apply: measurable_itv_bounded.
+apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+by move=> A' /= [x [y ->]]; apply: measurable_itv.
+Qed.
 
 End rgenopens.
 End RGenOpens.
