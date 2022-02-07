@@ -1906,6 +1906,7 @@ Arguments lee_sum_nneg_natr {R}.
 Arguments lee_sum_npos_natr {R}.
 Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
+Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
 Module DualAddTheoryRealDomain.
 

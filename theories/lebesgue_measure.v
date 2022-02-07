@@ -1555,8 +1555,6 @@ Qed.
 Section salgebra_R_ssets.
 Variable R : realType.
 
-Fail Check forall (T : measurableType) (f : T -> R), measurable_fun setT f.
-
 Definition measurableTypeR :=
   g_measurableType (@measurable (@itvs_semiRingOfSets R)).
 
@@ -1567,19 +1565,17 @@ HB.instance Definition R_isMeasurable : isMeasurable R :=
     measurable0 (@measurableC _) (@measurable_bigcup _).
 (*HB.instance (Real.sort R) R_isMeasurable.*)
 
-Check forall (T : measurableType) (f : T -> R), measurable_fun setT f.
-
 Lemma measurable_set1 (r : R) : measurable [set r].
 Proof.
 rewrite set1_bigcap_oc; apply: bigcap_measurable => k // _.
-exact/g_salgebra_self/is_ocitv.
+by apply: sub_sigma_algebra; apply/is_ocitv.
 Qed.
 #[local] Hint Resolve measurable_set1 : core.
 
 Lemma measurable_itv (i : interval R) : measurable ([set` i]).
 Proof.
 have moc (a b : R) : measurable `]a, b]%classic.
-  exact/g_salgebra_self/is_ocitv.
+  by apply: sub_sigma_algebra; apply: is_ocitv.
 have pooE (x : R) : `]x, +oo[%classic = \bigcup_i `]x, x + i%:R]%classic.
   apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
     by move=> [k _ /=] /itvP->.
@@ -1624,8 +1620,6 @@ HB.instance (\bar (Real.sort R))
   # Please report at http://coq.inria.fr/bugs/.
 *)
 
-Check forall (T : measurableType) (f : T -> \bar R), measurable_fun setT f.
-
 Lemma measurable_EFin (A : set R) : measurableR A -> measurable (EFin @` A).
 Proof.
 by move=> mA; exists A => //; exists set0; [constructor|rewrite setU0].
@@ -1634,7 +1628,7 @@ Qed.
 Lemma emeasurable_set1 (x : \bar R) : measurable [set x].
 Proof.
 case: x => [r| |].
-- by rewrite -image_set1; exact/measurable_EFin/measurable_set1.
+- by rewrite -image_set1; apply: measurable_EFin; apply: measurable_set1.
 - exists set0 => //; [exists [set +oo%E]; [by constructor|]].
   by rewrite image_set0 set0U.
 - exists set0 => //; [exists [set -oo%E]; [by constructor|]].
@@ -1881,27 +1875,29 @@ Let T := g_measurableType G.
 Lemma measurable_itv_bnd_infty b x :
   @measurable T [set` Interval (BSide b x) +oo%O].
 Proof.
-case: b; last by apply g_salgebra_self; eexists; reflexivity.
+case: b; last first.
+   by apply: sub_sigma_algebra; eexists; reflexivity.
 rewrite itv_c_inftyEbigcap; apply: measurable_bigcap => i.
-by apply g_salgebra_self; eexists; reflexivity.
+by apply: sub_sigma_algebra; eexists; reflexivity.
 Qed.
 
 Lemma measurable_itv_bounded a b x : a != +oo%O ->
   @measurable T [set` Interval a (BSide b x)].
 Proof.
 case: a => [a r _|[_|//]].
-  rewrite itv_boundedErays; apply/measurableD => //;
+  rewrite itv_boundedErays; apply: measurableD => //;
     exact: measurable_itv_bnd_infty.
-by rewrite -set_itvC_bnd_infty; exact/measurableC/measurable_itv_bnd_infty.
+rewrite -set_itvC_bnd_infty.
+by apply: measurableC; apply: measurable_itv_bnd_infty.
 Qed.
 
 Lemma measurableE :
   @measurable (g_measurableType (measurable : set (set (itvs R)))) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A.
-  apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
   by move=> I [x _ <-]; apply: measurable_itv_bounded.
-apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+apply: smallest_sub; first exact: smallest_sigma_algebra.
 by move=> A' /= [x ->]; apply: measurable_itv.
 Qed.
 
@@ -1923,8 +1919,8 @@ case: b; last first.
   rewrite -[X in measurable X]setCK set_itvC itv_o_inftyEbigcup.
   apply/measurableC/measurable_bigcup => n; rewrite -[X in measurable X]setCK.
   apply: measurableC; rewrite set_itvC.
-  by apply: g_salgebra_self; eexists; reflexivity.
-by apply g_salgebra_self; eexists; reflexivity.
+  by apply: sub_sigma_algebra; eexists; reflexivity.
+by apply sub_sigma_algebra; eexists; reflexivity.
 Qed.
 
 Lemma measurable_itv_bounded a b x : a != -oo%O ->
@@ -1934,16 +1930,17 @@ case: a => [a r _|[//|_]].
   rewrite itv_boundedErays; apply/measurableD => //;
     rewrite -[X in measurable X]setCK; apply: measurableC; rewrite set_itvC;
     exact: measurable_itv_bnd_infty.
-by rewrite -set_itvC_infty_bnd; exact/measurableC/measurable_itv_bnd_infty.
+rewrite -set_itvC_infty_bnd.
+by apply: measurableC; apply: measurable_itv_bnd_infty.
 Qed.
 
 Lemma measurableE :
   @measurable (g_measurableType (measurable : set (set (itvs R)))) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A.
-  apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
   by move=> I [x _ <-]; apply: measurable_itv_bounded.
-apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+apply: smallest_sub; first exact: smallest_sigma_algebra.
 by move=> A' /= [x ->]; apply: measurable_itv.
 Qed.
 
@@ -1961,9 +1958,9 @@ Let T := g_measurableType G.
 Lemma measurable_itv_bnd_infty b x :
   @measurable T [set` Interval (BSide b x) +oo%O].
 Proof.
-case: b; first by apply: g_salgebra_self; exists x; rewrite set_itv_c_infty.
+case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itv_c_infty.
 rewrite itv_o_inftyEbigcup; apply: measurable_bigcup => i.
-by apply: g_salgebra_self; eexists; reflexivity.
+by apply: sub_sigma_algebra; eexists; reflexivity.
 Qed.
 
 Lemma measurable_itv_bounded a b y : a != +oo%O ->
@@ -1972,16 +1969,17 @@ Proof.
 case: a => [a r _|[_|//]].
   rewrite itv_boundedErays.
   by apply: measurableD; apply: measurable_itv_bnd_infty.
-by rewrite -set_itvC_bnd_infty; exact/measurableC/measurable_itv_bnd_infty.
+rewrite -set_itvC_bnd_infty.
+by apply: measurableC; apply: measurable_itv_bnd_infty.
 Qed.
 
 Lemma measurableE :
   @measurable (g_measurableType (measurable : set (set (itvs R)))) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A.
-  apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
   by move=> I [x _ <-]; apply: measurable_itv_bounded.
-apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+apply: smallest_sub; first exact: smallest_sigma_algebra.
 by move=> A' /= [x ->]; apply: measurable_itv.
 Qed.
 
@@ -1998,7 +1996,7 @@ Definition G := [set A | exists x y, A = `]x, y[%classic].
 Let T := g_measurableType G.
 
 Local Lemma measurable_itvoo x y : @measurable T `]x, y[%classic.
-Proof. by apply g_salgebra_self; eexists; eexists; reflexivity. Qed.
+Proof. by apply sub_sigma_algebra; eexists; eexists; reflexivity. Qed.
 
 Local Lemma measurable_itv_o_infty x : @measurable T `]x, +oo[%classic.
 Proof.
@@ -2011,15 +2009,17 @@ Lemma measurable_itv_bnd_infty b x :
 Proof.
 case: b; last exact: measurable_itv_o_infty.
 rewrite itv_c_inftyEbigcap; apply: measurable_bigcap => i.
-exact/measurable_itv_o_infty.
+exact: measurable_itv_o_infty.
 Qed.
 
 Lemma measurable_itv_infty_bnd b x :
   @measurable T [set` Interval -oo%O (BSide b x)].
 Proof.
 case: b.
-- by rewrite -set_itvC_bnd_infty; exact/measurableC/measurable_itv_bnd_infty.
-- by rewrite -set_itvC_bnd_infty; exact/measurableC/measurable_itv_o_infty.
+- rewrite -set_itvC_bnd_infty.
+  by apply: measurableC; apply: measurable_itv_bnd_infty.
+- rewrite -set_itvC_bnd_infty.
+  by apply: measurableC; apply: measurable_itv_o_infty.
 Qed.
 
 Lemma measurable_itv_bounded a x b y :
@@ -2034,9 +2034,9 @@ Lemma measurableE :
   @measurable (g_measurableType (measurable : set (set (itvs R)))) = @measurable T.
 Proof.
 rewrite eqEsubset; split => A.
-  apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
   by move=> I [x _ <-]; apply: measurable_itv_bounded.
-apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
+apply: smallest_sub; first exact: smallest_sigma_algebra.
 by move=> A' /= [x [y ->]]; apply: measurable_itv.
 Qed.
 
@@ -2140,41 +2140,45 @@ Lemma measurable_set1_ninfty : @measurable T [set -oo].
 Proof.
 rewrite eset1_ninfty; apply: (@measurable_bigcap T) => i.
 rewrite -set_itvC_bnd_infty; apply: measurableC; rewrite eitv_c_infty.
-apply: measurable_bigcap => j; apply: g_salgebra_self.
+apply: measurable_bigcap => j; apply: sub_sigma_algebra.
 by exists (- (i%:R + j.+1%:R^-1))%:E; rewrite opprD.
 Qed.
 
 Lemma measurable_set1_pinfty : @measurable T [set +oo].
 Proof.
 rewrite eset1_pinfty; apply: measurable_bigcap => i.
-by apply: g_salgebra_self; exists i%:R%:E.
+by apply: sub_sigma_algebra; exists i%:R%:E.
 Qed.
 
 Lemma measurableE : emeasurable (measurable : set (set (itvs R))) = @measurable T.
 Proof.
-rewrite eqEsubset; split => A; last first.
-  elim => [_ [x ->] | | |]; [|exact: emeasurable0| |].
-  - rewrite /emeasurable /=; move: x => [r| |].
-    + exists `]r, +oo[%classic.
-        rewrite RGenOInfty.measurableE.
-        exact: RGenOInfty.measurable_itv_bnd_infty.
-      by exists [set +oo]; [constructor|rewrite -punct_eitv_bnd_pinfty].
-    + exists set0 => //.
-      by exists set0; [constructor|rewrite setU0 itv_opinfty_pinfty image_set0].
-    + exists setT => //; exists [set +oo]; first by constructor.
-      by rewrite itv_oninfty_pinfty punct_eitv_setTR.
-  - by move=> *; rewrite setTD; exact: emeasurableC.
-  - by move=> *; exact: emeasurable_bigcup.
-move=> [B mB [C mC]] <-; apply: measurableU; last first.
+apply/seteqP; split; last first.
+  apply: smallest_sub.
+    split; first exact: emeasurable0.
+      by move=> *; rewrite setTD; exact: emeasurableC.
+    by move=> *; exact: emeasurable_bigcup.
+  move=> _ [x ->]; rewrite /emeasurable /=; move: x => [r| |].
+  + exists `]r, +oo[%classic.
+      rewrite RGenOInfty.measurableE.
+      exact: RGenOInfty.measurable_itv_bnd_infty.
+    by exists [set +oo]; [constructor|rewrite -punct_eitv_bnd_pinfty].
+  + exists set0 => //.
+    by exists set0; [constructor|rewrite setU0 itv_opinfty_pinfty image_set0].
+  + exists setT => //; exists [set +oo]; first by constructor.
+    by rewrite itv_oninfty_pinfty punct_eitv_setTR.
+move=> A [B mB [C mC]] <-; apply: measurableU; last first.
   case: mC; [by []|exact: measurable_set1_ninfty
                   |exact: measurable_set1_pinfty|].
   - by apply: measurableU; [exact: measurable_set1_ninfty|
                             exact: measurable_set1_pinfty].
 rewrite RGenOInfty.measurableE in mB.
-elim: mB => [_ /= [r ->]| |D sD mD|F sF mF].
-- rewrite EFin_itv_bnd_infty; apply: measurableD.
-    by apply g_salgebra_self => /=; exists r%:E.
+have smB := smallest_sub _ _ mB.
+(* BUG: elim/smB : _. fails !! *)
+apply: (smB (@measurable T \o (image^~ EFin))); last first.
+  move=> _ [r ->]/=; rewrite EFin_itv_bnd_infty; apply: measurableD.
+    by apply sub_sigma_algebra => /=; exists r%:E.
   exact: measurable_set1_pinfty.
+split=> /= [|D mD|F mF].
 - by rewrite image_set0.
 - rewrite setTD setC_EFin; apply: measurableD; first exact: measurableC.
   by apply: measurableU; [exact: measurable_set1_ninfty|
@@ -2197,40 +2201,44 @@ Let T := g_measurableType G.
 Lemma measurable_set1_ninfty : @measurable T [set -oo].
 Proof.
 rewrite eset1_ninfty; apply: measurable_bigcap=> i; rewrite -set_itvC_bnd_infty.
-by apply: measurableC; apply: g_salgebra_self; exists (- i%:R)%:E.
+by apply: measurableC; apply: sub_sigma_algebra; exists (- i%:R)%:E.
 Qed.
 
 Lemma measurable_set1_pinfty : @measurable T [set +oo].
 Proof.
-apply: g_salgebra_self; exists +oo; rewrite predeqE => x; split => [->//|/=].
+apply: sub_sigma_algebra; exists +oo; rewrite predeqE => x; split => [->//|/=].
 by rewrite in_itv /= andbT lee_pinfty_eq => /eqP ->.
 Qed.
 
 Lemma measurableE : emeasurable (measurable : set (set (itvs R))) = @measurable T.
 Proof.
-rewrite eqEsubset; split => A; last first.
-  elim => [_ [x ->]| | |]; [|exact: emeasurable0| |].
-  - rewrite /emeasurable /=; move: x => [r| |].
-    + exists `[r, +oo[%classic.
-        rewrite RGenOInfty.measurableE.
-        exact: RGenOInfty.measurable_itv_bnd_infty.
-      by exists [set +oo]; [constructor | rewrite -punct_eitv_bnd_pinfty].
-    + exists set0 => //; exists [set +oo]; first by constructor.
-      by rewrite image_set0 set0U itv_cpinfty_pinfty.
-    + exists setT => //; exists [set -oo; +oo]; first by constructor.
-      by rewrite itv_cninfty_pinfty setUA punct_eitv_setTL setUCl.
-    + by move=> *; rewrite setTD; exact: emeasurableC.
-    + by move=> *; exact: emeasurable_bigcup.
-move=> [A' mA' [C mC]] <-; apply: measurableU; last first.
+apply/seteqP; split; last first.
+  apply: smallest_sub.
+    split; first exact: emeasurable0.
+      by move=> *; rewrite setTD; exact: emeasurableC.
+    by move=> *; exact: emeasurable_bigcup.
+  move=> _ [[r||] ->]/=.
+  - exists `[r, +oo[%classic.
+      rewrite RGenOInfty.measurableE.
+      exact: RGenOInfty.measurable_itv_bnd_infty.
+    by exists [set +oo]; [constructor | rewrite -punct_eitv_bnd_pinfty].
+   - exists set0 => //; exists [set +oo]; first by constructor.
+     by rewrite image_set0 set0U itv_cpinfty_pinfty.
+   - exists setT => //; exists [set -oo; +oo]; first by constructor.
+     by rewrite itv_cninfty_pinfty setUA punct_eitv_setTL setUCl.
+move=> _ [A' mA' [C mC]] <-; apply: measurableU; last first.
   case: mC; [by []|exact: measurable_set1_ninfty|
                    exact: measurable_set1_pinfty|].
   by apply: measurableU; [exact: measurable_set1_ninfty|
                           exact: measurable_set1_pinfty].
 rewrite RGenCInfty.measurableE in mA'.
-elim: mA' => [_ /= [r ->]| |B sB mB|F sF mF].
-- rewrite EFin_itv_bnd_infty; apply: measurableD.
-    by apply g_salgebra_self => /=; exists r%:E.
+have smA' := smallest_sub _ _ mA'.
+(* BUG: elim/smA' : _. fails !! *)
+apply: (smA' (@measurable T \o (image^~ EFin))); last first.
+  move=> _ [r ->]/=; rewrite EFin_itv_bnd_infty; apply: measurableD.
+    by apply sub_sigma_algebra => /=; exists r%:E.
   exact: measurable_set1_pinfty.
+split=> /= [|D mD|F mF].
 - by rewrite image_set0.
 - rewrite setTD setC_EFin; apply: measurableD; first exact: measurableC.
   by apply: measurableU; [exact: measurable_set1_ninfty|
@@ -2259,8 +2267,8 @@ Definition strace G D := [set x `&` D | x in G].
 Lemma stracexx G D : G D -> strace G D D.
 Proof. by rewrite /strace /=; exists D => //; rewrite setIid. Qed.
 
-Lemma are_measurable_sets_strace G D :
-  are_measurable_sets setT G -> are_measurable_sets D (strace G D).
+Lemma sigma_algebra_strace G D :
+  sigma_algebra setT G -> sigma_algebra D (strace G D).
 Proof.
 move=> [G0 GC GU]; split; first by exists set0 => //; rewrite set0I.
 - move=> S [A mA ADS]; have mCA := GC _ mA.
@@ -2852,7 +2860,7 @@ move=> mD; apply: (measurability (RGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [x ->] <-]; apply: measurableI => //.
 have [x0|x0] := leP 0 x.
   rewrite [X in measurable X](_ : _ = `]-oo, (- x)[ `|` `]x, +oo[)%classic.
-    by apply: measurableU; exact/measurable_itv.
+    by apply: measurableU; apply: measurable_itv.
   rewrite predeqE => r; split => [|[|]]; rewrite preimage_itv ?in_itv ?andbT/=.
   - have [r0|r0] := leP 0 r; [rewrite ger0_norm|rewrite ltr0_norm] => // xr;
       rewrite 2!in_itv/=.
@@ -2879,8 +2887,8 @@ move=> /= _ [_ [a ->] <-]; rewrite preimage_itv_o_infty.
 rewrite [X in measurable X](_ : _ = \bigcup_(r : rat)
   ((D `&` [set x | ratr r < f x]) `&` (D `&` [set x | a - ratr r < g x]))).
   apply: measurable_bigcup_rat => q; apply: measurableI.
-  - by rewrite -preimage_itv_o_infty; exact/mf/measurable_itv.
-  - by rewrite -preimage_itv_o_infty; exact/mg/measurable_itv.
+  - by rewrite -preimage_itv_o_infty; apply: mf => //; apply: measurable_itv.
+  - by rewrite -preimage_itv_o_infty; apply: mg => //; apply: measurable_itv.
 rewrite predeqE => x; split => [|[r _] []/= [Dx rfx]] /= => [[Dx]|[_]].
   rewrite -ltr_subl_addr => /rat_in_itvoo[r]; rewrite inE /= => /itvP h.
   exists r => //; rewrite setIACA setIid; split => //; split => /=.
@@ -2899,7 +2907,7 @@ have [a0|a0] := leP 0 a; last first.
   by rewrite /= in_itv /= andbT (lt_le_trans a0)// sqr_ge0.
 rewrite (_ : D `&` _ = (D `&` f @^-1` `]Num.sqrt a, +oo[) `|`
                        (D `&` f @^-1` `]-oo, -Num.sqrt a[) ).
-  by apply: measurableU; exact/mf/measurable_itv.
+  by apply: measurableU; apply: mf => //; apply: measurable_itv.
 rewrite predeqE => t; split=> [[]|].
   rewrite /= in_itv /= andbT => Dt aft2.
   have := le_lt_trans a0 aft2.
@@ -2934,9 +2942,10 @@ rewrite neq_lt => /orP[k0|k0] mf mD;
     rewrite predeqE => t; split => [[/= akft Dtr]|[]].
       by rewrite /= in_itv/= ltr_ndivl_mulr// mulrC.
     by rewrite /= in_itv /= => Dt ftak; rewrite mulrC -ltr_ndivl_mulr.
-  by apply: mf =>//; rewrite -(set_itv_infty_o (a / k)); exact/measurable_itv.
+  by apply: mf =>//; rewrite -(set_itv_infty_o (a / k)); apply: measurable_itv.
 - rewrite preimage_itv_o_infty [X in measurable X](_ : _ =
-      D `&` f @^-1` `]a / k, +oo[); first exact/mf/measurable_itv.
+       D `&` f @^-1` `]a / k, +oo[).
+     by apply: mf => //; apply: measurable_itv.
   rewrite predeqE => t; split => [[/= Dt akft]|[Dr]].
     by rewrite /= in_itv/= andbT ltr_pdivr_mulr// mulrC.
   by rewrite /= in_itv/= andbT => akft; rewrite mulrC -ltr_pdivr_mulr.
@@ -2980,7 +2989,7 @@ move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
   rewrite predeqE => t /=; split.
     by rewrite /= !in_itv /= !andbT le_maxr => -[Dx /orP[|]]; tauto.
   by move=> [|]; rewrite !in_itv/= !andbT le_maxr => -[Dx ->]//; rewrite orbT.
-by apply: measurableU; [exact/mf/measurable_itv|exact/mg/measurable_itv].
+by apply: measurableU; [apply: mf|apply: mg] =>//; apply: measurable_itv.
 Qed.
 
 Lemma measurable_fun_sup D (h : (T -> R)^nat) n :
@@ -2990,7 +2999,7 @@ Lemma measurable_fun_sup D (h : (T -> R)^nat) n :
 Proof.
 move=> f_ub mf mD; apply: (measurability (RGenOInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite sups_preimage // setI_bigcupr.
-by apply: bigcup_measurable => k /= nk; exact/mf/measurable_itv.
+by apply: bigcup_measurable => k /= nk; apply: mf => //; apply: measurable_itv.
 Qed.
 
 Lemma measurable_fun_inf D (h : (T -> R)^nat) n :
@@ -3000,7 +3009,7 @@ Lemma measurable_fun_inf D (h : (T -> R)^nat) n :
 Proof.
 move=> lb_f mf mD; apply: (measurability (RGenInftyO.measurableE R)) =>//.
 move=> _ [_ [x ->] <-]; rewrite infs_preimage // setI_bigcupr.
-by apply: bigcup_measurable => k /= nk; exact/mf/measurable_itv.
+by apply: bigcup_measurable => k /= nk; apply: mf => //; apply: measurable_itv.
 Qed.
 
 Lemma measurable_fun_lim_sup D (h : (T -> R)^nat) :
@@ -3195,7 +3204,7 @@ End emeasurable_fun.
 
 Definition preimage_classes (T1 T2 : measurableType) (T : Type)
     (f1 : T -> T1) (f2 : T -> T2)  :=
-  s<< preimage_class setT f1 measurable `|`
+  <<s preimage_class setT f1 measurable `|`
       preimage_class setT f2 measurable >>.
 
 Section product_lemma.
@@ -3205,7 +3214,7 @@ Variables (T3 : Type) (g : T3 -> T).
 Lemma preimage_classes_comp : preimage_classes (f1 \o g) (f2 \o g) =
                               preimage_class setT g (preimage_classes f1 f2).
 Proof.
-rewrite {1}/preimage_classes -transfer; congr (s<< _ >>).
+rewrite {1}/preimage_classes -transfer; congr (<<s _ >>).
 rewrite predeqE => C; split.
 - move=> [[A mA <-{C}]|[A mA <-{C}]].
   + by exists (f1 @^-1` A) => //; left; exists A => //; rewrite setTI.
@@ -3225,7 +3234,7 @@ Let f1 := @fst T1 T2.
 Let f2 := @snd T1 T2.
 
 Lemma prod_salgebra_set0 : preimage_classes f1 f2 (set0 : set (T1 * T2)).
-Proof. exact: g_salgebra_set0. Qed.
+Proof. exact: sigma_algebra0. Qed.
 
 Lemma prod_salgebra_setC A : preimage_classes f1 f2 A ->
   preimage_classes f1 f2 (~` A).
@@ -3233,7 +3242,7 @@ Proof. exact: g_salgebra_on_setC_setT. Qed.
 
 Lemma prod_salgebra_bigcup (F : _^nat) : (forall i, preimage_classes f1 f2 (F i)) ->
   preimage_classes f1 f2 (\bigcup_i (F i)).
-Proof. exact: g_salgebra_bigcup. Qed.
+Proof. exact: sigma_algebra_bigcup. Qed.
 
 HB.instance Definition prod_salgebra_mixin :=
   @isMeasurable.Build (T1 * T2)%type (Pointed.class _) (preimage_classes f1 f2)
@@ -3250,8 +3259,8 @@ move=> mA mB.
 have -> : A `*` B = (A `*` setT) `&` (setT `*` B) :> set (T1 * T2).
   by rewrite -{1}(setIT A) -{1}(setTI B) setMI.
 rewrite setMT setTM; apply: measurableI.
-- by apply: g_salgebra_self; left; exists A => //; rewrite setTI.
-- by apply: g_salgebra_self; right; exists B => //; rewrite setTI.
+- by apply: sub_sigma_algebra; left; exists A => //; rewrite setTI.
+- by apply: sub_sigma_algebra; right; exists B => //; rewrite setTI.
 Qed.
 
 Section product_salgebra_measurableType.
@@ -3261,19 +3270,19 @@ Let M2 := @measurable T2.
 Let M1xM2 := [set A `*` B | A in M1 & B in M2].
 
 Lemma measurable_prod_measurableType :
-  @measurable (prod_measurableType T1 T2) = s<< M1xM2 >>.
+  @measurable (prod_measurableType T1 T2) = <<s M1xM2 >>.
 Proof.
 rewrite eqEsubset; split.
-  apply: g_salgebra_smallest; last apply: are_measurable_sets_g_salgebra.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
   rewrite subUset; split.
   - have /subset_trans : preimage_class setT fst M1 `<=` M1xM2.
       by move=> _ [X MX <-]; exists X=> //; exists setT; rewrite /M2 // setIC//.
-    by apply; exact: g_salgebra_self.
+    by apply; exact: sub_sigma_algebra.
   - have /subset_trans : preimage_class setT snd M2 `<=` M1xM2.
       by move=> _ [Y MY <-]; exists setT; rewrite /M1 //; exists Y.
-    by apply; exact: g_salgebra_self.
-apply: g_salgebra_smallest; last exact: are_measurable_sets_g_salgebra.
-by move=> _ [A MA] [B MB] <-; apply: measurableM => //; exact: g_salgebra_self.
+    by apply; exact: sub_sigma_algebra.
+apply: smallest_sub; first exact: smallest_sigma_algebra.
+by move=> _ [A MA] [B MB] <-; apply: measurableM => //; exact: sub_sigma_algebra.
 Qed.
 
 End product_salgebra_measurableType.
@@ -3285,12 +3294,12 @@ Hypothesis (setTC2 : setT `<=` C2).
 (* NB: useful? *)
 Lemma measurable_prod_g_measurableTypeR :
   @measurable (prod_measurableType T1 (g_measurableType C2))
-  = s<< [set A `*` B | A in measurable & B in C2] >>.
+  = <<s [set A `*` B | A in measurable & B in C2] >>.
 Proof.
-rewrite measurable_prod_measurableType //; congr (s<< _ >>).
+rewrite measurable_prod_measurableType //; congr (<<s _ >>).
 rewrite predeqE => X; split=> [[A mA] [B mB] <-{X}|[A C1A] [B C2B] <-{X}].
   by exists A => //; exists B => //; exact: setTC2.
-by exists A => //; exists B => //; exact: g_salgebra_self.
+by exists A => //; exists B => //; exact: sub_sigma_algebra.
 Qed.
 
 End product_salgebra_g_measurableTypeR.
@@ -3301,12 +3310,12 @@ Hypotheses (setTC1 : setT `<=` C1) (setTC2 : setT `<=` C2).
 
 Lemma measurable_prod_g_measurableType :
   @measurable (prod_measurableType (g_measurableType C1) (g_measurableType C2))
-  = s<< [set A `*` B | A in C1 & B in C2] >>.
+  = <<s [set A `*` B | A in C1 & B in C2] >>.
 Proof.
-rewrite measurable_prod_measurableType //; congr (s<< _ >>).
+rewrite measurable_prod_measurableType //; congr (<<s _ >>).
 rewrite predeqE => X; split=> [[A mA] [B mB] <-{X}|[A C1A] [B C2B] <-{X}].
   by exists A; [exact: setTC1|exists B => //; exact: setTC2].
-by exists A; [exact: g_salgebra_self|exists B => //; exact: g_salgebra_self].
+by exists A; [exact: sub_sigma_algebra|exists B => //; exact: sub_sigma_algebra].
 Qed.
 
 End product_salgebra_g_measurableType.
@@ -3321,8 +3330,9 @@ apply: (@iff_trans _ (preimage_classes (fst \o f) (snd \o f) `<=` measurable)).
 - rewrite preimage_classes_comp; split=> [mf A [C HC <-]|f12]; first exact: mf.
   by move=> _ A mA; apply: f12; exists A.
 - split => [h|[mf1 mf2]].
-    by split => _ A mA; apply/h/g_salgebra_self; [left; exists A|right; exists A].
-  apply: g_salgebra_smallest; last exact: are_measurable_sets_measurable.
+    split => _ A mA; apply: h; apply: sub_sigma_algebra;
+    by [left; exists A|right; exists A].
+  apply: smallest_sub; first exact: sigma_algebra_measurable.
   by rewrite subUset; split=> [|] A [C mC <-]; [exact: mf1|exact: mf2].
 Qed.
 

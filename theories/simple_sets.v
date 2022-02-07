@@ -1876,7 +1876,7 @@ have : b'%:E - a'%:E <= \sum_(k <oo | P k) slength [set` j k] + (e%:num / 2)%:E.
   apply (@le_trans _ _ (\sum_(k <oo | P k) slength [set` j k] +
       \sum_(k <oo | P k) (e%:num / (2 ^ k.+2)%:R)%:E)); last first.
     rewrite -ereal_limD //; last 3 first.
-      by apply: is_cvg_sum_slength => k Pk; exact/measurable_sset_itv.
+      by apply: is_cvg_sum_slength => k Pk; exact: measurable_sset_itv.
       by under eq_fun do rewrite big_mkord.
       have /andP[l0 le2] :
           0 <= \sum_(k <oo | P k) (e%:num / (2 ^ k.+2)%:R)%:E <= (e%:num / 2)%:E.

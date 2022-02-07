@@ -198,3 +198,31 @@ Notation leRHS := (X in (_ <= X)%O)%pattern.
 Notation ltLHS := (X in (X <= _)%O)%pattern.
 Notation ltRHS := (X in (_ < X)%O)%pattern.
 Inductive boxed T := Box of T.
+
+Lemma eq_big_supp [R : eqType] [idx : R] [op : Monoid.law idx] [I : Type]
+  [r : seq I] [P1 : pred I] (P2 : pred I) (F : I -> R) :
+  {in [pred x | F x != idx], P1 =1 P2} ->
+  \big[op/idx]_(i <- r | P1 i) F i = \big[op/idx]_(i <- r | P2 i) F i.
+Proof.
+move=> P12; rewrite big_mkcond [RHS]big_mkcond; apply: eq_bigr => i _.
+by case: (eqVneq (F i) idx) => [->|/P12->]; rewrite ?if_same.
+Qed.
+
+Lemma perm_big_supp_cond [R : eqType] [idx : R] [op : Monoid.com_law idx] [I : eqType]
+  [r s : seq I] [P : pred I] (F : I -> R) :
+  perm_eq [seq i <- r | P i && (F i != idx)] [seq i <- s | P i && (F i != idx)] ->
+  \big[op/idx]_(i <- r | P i) F i = \big[op/idx]_(i <- s| P i) F i.
+Proof.
+move=> prs; rewrite !(bigID [pred i | F i == idx] P F)/=.
+rewrite big1 ?Monoid.mul1m; last by move=> i /andP[_ /eqP->].
+rewrite [in RHS]big1 ?Monoid.mul1m; last by move=> i /andP[_ /eqP->].
+by rewrite -[in LHS]big_filter -[in RHS]big_filter; apply perm_big.
+Qed.
+
+Lemma perm_big_supp [R : eqType] [idx : R] [op : Monoid.com_law idx] [I : eqType]
+  [r s : seq I] [P : pred I] (F : I -> R) :
+  perm_eq [seq i <- r | (F i != idx)] [seq i <- s | (F i != idx)] ->
+  \big[op/idx]_(i <- r | P i) F i = \big[op/idx]_(i <- s| P i) F i.
+Proof.
+by move=> ?; apply: perm_big_supp_cond; rewrite !filter_predI perm_filter.
+Qed.

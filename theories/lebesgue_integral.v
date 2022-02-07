@@ -1847,7 +1847,7 @@ Definition approx : (T -> R)^nat := fun n x =>
 Local Lemma mA n k : measurable (A n k).
 Proof.
 rewrite /A; case: ifPn => [kn|_]//; rewrite -preimage_comp.
-by apply/mf => //; exact/measurable_EFin/measurable_itv.
+by apply: mf => //; apply/measurable_EFin; apply: measurable_itv.
 Qed.
 
 Local Lemma trivIsetA n : trivIset setT (A n).
@@ -4433,7 +4433,7 @@ have CB : C `<=` B.
     by rewrite mule0 notin_xsectionM// set0I measure0.
   apply: emeasurable_funeM => //; apply/EFin_measurable_fun.
   by rewrite (_ : \1_ _ = mindic R mX1).
-have monoB : is_monotone_class setT B.
+have monoB : monotone_class setT B.
   split => //.
   - exact: CB.
   - move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
@@ -4481,7 +4481,7 @@ have CB : C `<=` B.
     by rewrite mule0 notin_ysectionM// set0I measure0.
   apply: emeasurable_funeM => //; apply/EFin_measurable_fun.
   by rewrite (_ : \1_ _ = mindic R mX2).
-have monoB : is_monotone_class setT B.
+have monoB : monotone_class setT B.
   split=> //.
   - exact: CB.
   - move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
@@ -4719,7 +4719,7 @@ have CI : setI_closed C.
 move=> X mX.
 apply: (@measure_unique R (prod_measurableType T1 T2) C (fun n => F1 n `*` F2 n)) => //.
 - rewrite measurable_prod_measurableType //.
-  congr (s<< _ >>).
+  congr (<<s _ >>).
   rewrite predeqE; split => [[A1 mA1 [A2 mA2 <-]]|[A1 [mA1 [A2 [mA2 ->]]]]].
     by exists A1; split => //; exists A2; split.
   by exists A1 => //; exists A2.

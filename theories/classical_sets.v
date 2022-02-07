@@ -979,25 +979,32 @@ Lemma set_fsetIr (P : {pred T}) (A : {fset T}) :
 Proof. by apply/predeqP => x /=; split; rewrite 2!inE/= => /andP. Qed.
 
 Lemma set_fsetU A B :
-  [set x | x \in (A `|` B)%fset] = [set x | x \in A] `|` [set x | x \in B].
+  [set` (A `|` B)%fset] = [set` A] `|` [set` B].
 Proof.
 rewrite predeqE => x; split; rewrite /= !inE.
   by case/orP; [left|right].
 by move=> []->; rewrite ?orbT.
 Qed.
 
-Lemma set_fsetU1 x A : [set y | y \in (x |` A)%fset] = x |` [set x | x \in A].
+Lemma set_fsetU1 x A : [set y | y \in (x |` A)%fset] = x |` [set` A].
 Proof. by rewrite set_fsetU set_fset1. Qed.
 
 Lemma set_fsetD A B :
-  [set x | x \in (A `\` B)%fset] = [set x | x \in A] `\` [set x | x \in B].
+  [set` (A `\` B)%fset] = [set` A] `\` [set` B].
 Proof.
 rewrite predeqE => x; split; rewrite /= !inE; last by move=> [-> /negP ->].
 by case/andP => /negP xNB xA.
 Qed.
 
-Lemma set_fsetD1 A x : [set y | y \in (A `\ x)%fset] = [set x | x \in A] `\ x.
+Lemma set_fsetD1 A x : [set y | y \in (A `\ x)%fset] = [set` A] `\ x.
 Proof. by rewrite set_fsetD set_fset1. Qed.
+
+Lemma set_imfset (key : unit) [K : choiceType] (f : T -> K) (p : finmempred T) :
+  [set` imfset key f p] = f @` [set` p].
+Proof.
+apply/predeqP => x; split=> [/imfsetP[i ip -> /=]|]; first by exists i.
+by move=> [i ip <-]; apply: in_imfset.
+Qed.
 
 End SetFset.
 
@@ -1667,7 +1674,7 @@ rewrite big_cons -ih predeqE => u; split=> [[t /andP[]]|].
 Qed.
 
 Lemma bigcup_set (s : seq T) (f : T -> set U) :
-  \bigcup_(t in [set x | x \in s]) (f t) = \big[setU/set0]_(t <- s) (f t).
+  \bigcup_(t in [set` s]) (f t) = \big[setU/set0]_(t <- s) (f t).
 Proof.
 rewrite -(bigcup_set_cond s f xpredT); congr (\bigcup_(t in mkset _) _).
 by rewrite funeqE => t; rewrite andbT.
@@ -1679,7 +1686,7 @@ Lemma bigcap_set_cond (s : seq T) (f : T -> set U) (P : pred T) :
 Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_set_cond. Qed.
 
 Lemma bigcap_set (s : seq T) (f : T -> set U) :
-  \bigcap_(t in [set x | x \in s]) (f t) = \big[setI/setT]_(t <- s) (f t).
+  \bigcap_(t in [set` s]) (f t) = \big[setI/setT]_(t <- s) (f t).
 Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_set. Qed.
 
 End bigcup_set.
