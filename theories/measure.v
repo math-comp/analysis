@@ -1968,7 +1968,7 @@ have Bm i : measurable (B i).
   by rewrite /B ?patchT ?inE//; apply: measurableI => //; apply: Am.
 have subBA i : B i `<=` A i.
   by rewrite /B/patch; case: ifP; rewrite // set0I//= => _ ?.
-have subDUB i : seqDU B i `<=` A i by  move=> x [/subBA].  
+have subDUB i : seqDU B i `<=` A i by  move=> x [/subBA].
 have DUBm i : measurable (seqDU B i : set (SetRing.type T)).
   apply: measurableD; first exact: SetRing.measurableW.
   by apply: bigsetU_measurable => ? _; apply: SetRing.measurableW.
@@ -2120,7 +2120,7 @@ move=> X A Am Xm XA; pose B i := A i `&` X.
 have XE : X = \bigcup_i B i by rewrite -setI_bigcupl setIidr.
 have Bm i : measurable (B i) by rewrite /B; apply: measurableI.
 have subBA i : B i `<=` A i by rewrite /B.
-have subDUB i : seqDU B i `<=` A i by  move=> x [/subBA].  
+have subDUB i : seqDU B i `<=` A i by  move=> x [/subBA].
 have DUBm i : measurable (seqDU B i : set (SetRing.type T)).
   by apply: measurableD => //;
      do 1?apply: bigsetU_measurable => *; apply: SetRing.measurableW.
@@ -2151,7 +2151,7 @@ have g_inj : set_inj [set i | g i != set0] g.
 move=> XEbig; rewrite measure_semi_bigcup//= -?XEbig//; last first.
   move=> i; have [/= _ f'iB] : K (f' i) by apply: funS.
   by apply: decomp_measurable f'iB.
-rewrite [X in X <= _](_ : _ 
+rewrite [X in X <= _](_ : _
     = \sum_(i <oo | g i != set0) mu (g i)); last first.
   rewrite !ereal_pseries_csum// csum_mkcond [RHS]csum_mkcond; apply: eq_csum.
   move=> i _; rewrite ifT ?inE//=; case: ifPn => //.
@@ -2304,7 +2304,6 @@ apply/eqP; rewrite oppe_eq0 -measure_le0/=; do ?exact: measurableI.
 by rewrite -A0 measureIl.
 Qed.
 
-(* 401,p.43 measure is continuous from below *)
 Lemma cvg_mu_inc (R : realFieldType) (T : ringOfSetsType)
   (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcup_n F n) ->
@@ -2370,7 +2369,6 @@ Section generalized_boole_inequality.
 Variables (R : realType) (T : ringOfSetsType).
 Variable (mu : {measure set T -> \bar R}).
 
-(* 404,p.44 measure satisfies generalized Boole's inequality *)
 Theorem generalized_Boole_inequality (A : (set T) ^nat) :
   (forall i, measurable (A i)) -> measurable (\bigcup_n A n) ->
   mu (\bigcup_n A n) <= \sum_(i <oo) mu (A i).
