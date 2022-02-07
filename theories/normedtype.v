@@ -69,7 +69,7 @@ Require Import functions.
 (*        [locally k.-lipschitz_A f] == f is locally k.-lipschitz on A        *)
 (*                                                                            *)
 (*                     is_interval E == the set E is an interval              *)
-(*                           Rhull E == the real interval hull of a set       *)
+(*                           Rhull A == the real interval hull of a set A     *)
 (*                         shift x y == y + x                                 *)
 (*                          center c := shift (- c)                           *)
 (*                                                                            *)

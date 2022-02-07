@@ -603,21 +603,6 @@ Reserved Notation "[ 'nnsfun' 'of' f ]"
 Notation "{ 'nnsfun'  aT >-> T }" := (@NonNegSimpleFun.type aT T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
-(* TODO: this is similar to emeasurable_fun_max, move to lebesgue_measure.v *)
-Lemma measurable_fun_max (T : measurableType) (R : realType) D (f g : T -> R) :
-  measurable_fun D f -> measurable_fun D g ->
-  measurable_fun D (f \max g).
-Proof.
-move=> mf mg mD; apply (measurability (RGenCInfty.measurableE R)) => //.
-move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
-    (D `&` f @^-1` `[x, +oo[) `|` (D `&` g @^-1` `[x, +oo[)); last first.
-  rewrite predeqE => t /=; split.
-    by rewrite /= !in_itv /= !andbT le_maxr => -[Dx /orP[|]];    tauto.
-  by move=> [|]; rewrite /= !in_itv/= !andbT le_maxr;
-    move=> [Dx ->]//; rewrite orbT.
-by apply: measurableU; [exact/mf/measurable_itv|exact/mg/measurable_itv].
-Qed.
-
 Section fimfun_pred.
 Context {aT rT : Type}.
 Definition fimfun_key : pred_key (mem [set f : aT -> rT | finite_set [set of f]]).
@@ -1370,7 +1355,7 @@ Variable m : {measure set T -> \bar R}.
 Lemma sintegralD : sintegral m (f \+ g)%R = sintegral m f + sintegral m g.
 Proof.
 rewrite !sintegralE; set F := f @` _; set G := g @` _; set FG := _ @` _.
-pose pf x := f @^-1` [set x]; pose pg y := g @^-1` [set y]. 
+pose pf x := f @^-1` [set x]; pose pg y := g @^-1` [set y].
 transitivity (\sum_(z \in FG) z%:E * \sum_(a \in F) m (pf a `&` pg (z - a)%R)).
   apply: eq_fsbigr => z _; rewrite preimage_add -fsbig_setU// measure_fsbig//.
     by move=> x Fx; apply: measurableI.

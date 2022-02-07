@@ -25,6 +25,12 @@ Require Import sequences measure csum fsbigop cardinality.
 (*        disjoint_itv i j == intervals i and j are disjoint                  *)
 (*      contiguous_itv i j == intervals i and j are contiguous                *)
 (*               hlength A == length of the hull of the set of real numbers A *)
+(*                   ocitv == set of open-closed intervals ]x, y] where       *)
+(*                            x and y are real numbers                        *)
+(*         ocitv_diffs I J == a (finite) set A of pairwise-disjoint           *)
+(*                            open-closed intervals such that                 *)
+(*                            I `\` J = \bigcup_(x in A) x                    *)
+(*          ocitv_diff I J := fset_set (ocitv_diffs I J)                      *)
 (*      lebesgue_measure == the Lebesgue measure                              *)
 (*                                                                            *)
 (*              ps_infty == inductive definition of the powerset              *)
@@ -65,10 +71,6 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
-(******************************************************************************)
-(*                        /lemmas waiting to be PRed                          *)
-(******************************************************************************)
-
 Lemma preimage_abse_pinfty (R : numDomainType) :
   @abse R @^-1` [set +oo%E] = [set -oo%E; +oo%E].
 Proof.
@@ -81,7 +83,6 @@ Proof.
 rewrite predeqE => t; split => //=; apply/eqP.
 by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t))// lte_ninfty.
 Qed.
-
 
 Local Close Scope ereal_scope.
 
@@ -1082,6 +1083,7 @@ Lemma set_itv_ge [disp : unit] [T : porderType disp] [b1 b2 : itv_bound T] :
   ~~ (b1 < b2)%O -> [set` Interval b1 b2] = set0.
 Proof. by move=> Nb12; rewrite -subset0 => x /=; rewrite itv_ge. Qed.
 
+(* TODO: rename to itv_semiRingOfSets? *)
 Section itv_semiAlgebraOfSets.
 Variable R : realType.
 Implicit Types (I J K : set R).
@@ -1111,7 +1113,7 @@ Lemma ocitv_diff_subproof I J : ocitv I -> ocitv J ->
 Proof.
 move=> {I J}[a _ <-] /ocitvP[|[b ltb]] ->.
   rewrite setD0; exists [set `]a.1, a.2]%classic].
-  by split=> [//|? [->]//|? ? [] -> [] ->//|]; rewrite bigcup_set1.
+  by split=> [//|? ->//|? ? -> ->//|]; rewrite bigcup_set1.
 rewrite setDE set_itvC_itv/= setIUr -!set_itv_meet/=.
 rewrite /Order.join /Order.meet/= ?(andbF, orbF)/= ?(meetEtotal, joinEtotal).
 rewrite -negb_or le_total/=; set c := minr _ _; set d := maxr _ _.
@@ -1126,7 +1128,7 @@ exists ((if a.1 < c then [set `]a.1, c]%classic] else set0) `|`
         (if d < a.2 then [set `]d, a.2]%classic] else set0)); split.
 - by rewrite finite_setU; do! case: ifP.
 - by move=> ? []; case: ifP => ? // ->//=.
-- move=> I J/=; case: ifP => //= ac; case: ifP => //= da [] []// -> []// ->.
+- move=> I J/=; case: ifP => //= ac; case: ifP => //= da [] // -> []// ->.
     by rewrite inside// => -[].
   by rewrite setIC inside// => -[].
 - by rewrite bigcup_setU; congr (_ `|` _);
@@ -1152,14 +1154,13 @@ Qed.
 
 Lemma ocitv_diffs_triv I J : trivIset (ocitv_diffs I J) id.
 Proof.
-rewrite /ocitv_diffs; case: pselect => // ?.
-  by case: cid => ? [].
-by move=> ? ? [] -> [] ->.
+rewrite /ocitv_diffs; case: pselect => [?|? ? ? -> ->//].
+by case: cid => ? [].
 Qed.
 
 Lemma ocitv_diffs_cover I J : I `\`J = \bigcup_(X in ocitv_diffs I J) X.
 Proof.
-rewrite /ocitv_diffs; case: pselect => // ?.
+rewrite /ocitv_diffs; case: pselect => ?.
   by case: cid => ? [].
 by rewrite bigcup_set1.
 Qed.
@@ -1298,6 +1299,7 @@ Canonical hlength_measure : {additive_measure set itvs -> \bar R}
   := AdditiveMeasure (AdditiveMeasure.Axioms (@hlength0 _)
      (@hlength_ge0') hlength_semi_additive).
 
+(* TODO: move *)
 Lemma sub_bigcup2 {T I : Type} [P : set I] [F G : I -> set T] :
   (forall i : I, P i -> F i `<=` G i) ->
   \bigcup_(i in P) F i `<=` \bigcup_(i in P) G i.
@@ -2954,11 +2956,9 @@ by move=> ? ? ?; apply: measurable_funD => //; exact: measurable_funN.
 Qed.
 
 Lemma measurable_funM D f g :
-  measurable_fun D f -> measurable_fun D g ->
-  measurable_fun D (fun x => f x * g x).
+  measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
-move=> mf mg mD.
-rewrite (_ : (fun _ => _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
+move=> mf mg mD; rewrite (_ : (_ \* _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
   \- (fun x => 2%:R^-1 * (f x ^+ 2)) \- (fun x => 2%:R^-1 * ( g x ^+ 2))).
   apply: measurable_funB => //; last first.
     by apply: measurable_funrM => //; exact: measurable_fun_sqr.
@@ -2969,6 +2969,18 @@ rewrite (_ : (fun _ => _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
 rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
 rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
+Qed.
+
+Lemma measurable_fun_max  D f g :
+  measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \max g).
+Proof.
+move=> mf mg mD; apply (measurability (RGenCInfty.measurableE R)) => //.
+move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
+    (D `&` f @^-1` `[x, +oo[) `|` (D `&` g @^-1` `[x, +oo[)); last first.
+  rewrite predeqE => t /=; split.
+    by rewrite /= !in_itv /= !andbT le_maxr => -[Dx /orP[|]]; tauto.
+  by move=> [|]; rewrite !in_itv/= !andbT le_maxr => -[Dx ->]//; rewrite orbT.
+by apply: measurableU; [exact/mf/measurable_itv|exact/mg/measurable_itv].
 Qed.
 
 Lemma measurable_fun_sup D (h : (T -> R)^nat) n :

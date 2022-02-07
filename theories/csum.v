@@ -7,19 +7,17 @@ Require Import boolp reals mathcomp_extra ereal classical_sets posnum topology.
 Require Import sequences functions cardinality.
 
 (******************************************************************************)
-(*                     Summations over classical sets                         *)
+(*                      Summation over classical sets                         *)
 (*                                                                            *)
 (* This file provides a definition of sum over classical sets and a few       *)
 (* lemmas in particular for the case of sums of non-negative terms.           *)
 (*                                                                            *)
-(* The contents of this file should not be considered as definitive because   *)
-(* it supports on-going developments (such as the Lebesgue measure) and we    *)
-(* anticipate revisions.                                                      *)
-(*                                                                            *)
+(*            fsets S == the set of finite sets (fset) included in S          *)
 (* \csum_(i in I) f i == summation of non-negative extended real numbers over *)
-(*            classical sets; I is a classical set and f is a function whose  *)
-(*            codomain is included in the extended reals; it is 0 if I = set0 *)
-(*            and sup(\sum_F a) where F is a finite set included in I o.w.    *)
+(*                       classical sets; I is a classical set and f is a      *)
+(*                       function whose codomain is included in the extended  *)
+(*                       reals; it is 0 if I = set0 and sup(\sum_A a) where A *)
+(*                       is a finite set included in I o.w.                   *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -61,9 +59,9 @@ Section csum.
 Variables (R : realFieldType) (T : choiceType).
 Implicit Types (S : set T) (a : T -> \bar R).
 
-Definition csum S a := ereal_sup [set \sum_(x <- F) a x | F in fsets S].
+Definition csum S a := ereal_sup [set \sum_(x <- A) a x | A in fsets S].
 
-Local Notation "\csum_ ( i 'in' P ) F" := (csum P (fun i => F)).
+Local Notation "\csum_ ( i 'in' P ) A" := (csum P (fun i => A)).
 
 Lemma csum_set0 a : \csum_(i in set0) a i = 0.
 Proof.
