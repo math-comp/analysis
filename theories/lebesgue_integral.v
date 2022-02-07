@@ -608,9 +608,10 @@ Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section fimfun_pred.
 Context {aT rT : Type}.
-Definition fimfun_key : pred_key (mem [set f : aT -> rT | finite_set [set of f]]).
+Definition fimfun : {pred aT -> rT} := mem [set f | finite_set [set of f]].
+Definition fimfun_key : pred_key fimfun.
 Proof. exact. Qed.
-Definition fimfun := KeyedPred fimfun_key.
+Canonical fimfun_keyed := KeyedPred fimfun_key.
 End fimfun_pred.
 
 Section fimfun.
@@ -707,6 +708,7 @@ Proof.
 split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
 by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
 Qed.
+Canonical fimfun_mul := MulrPred fimfun_mulr_closed.
 Canonical fimfun_ring := SubringPred fimfun_mulr_closed.
 Definition fimfun_ringMixin := [ringMixin of {fimfun aT >-> rT} by <:].
 Canonical fimfun_ringType := RingType {fimfun aT >-> rT} fimfun_ringMixin.
@@ -792,9 +794,9 @@ HB.end.
 
 Section mfun_pred.
 Context {aT : measurableType} {rT : realType}.
-Definition mfun_key : pred_key (mem [set f : aT -> rT | measurable_fun setT f]).
-Proof. exact. Qed.
-Definition mfun := KeyedPred mfun_key.
+Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
+Definition mfun_key : pred_key mfun. Proof. exact. Qed.
+Canonical mfun_keyed := KeyedPred mfun_key.
 End mfun_pred.
 
 Section mfun.
@@ -849,6 +851,7 @@ split=> [|f g|f g]; rewrite !inE/=.
 Qed.
 Canonical mfun_add := AddrPred mfun_subring_closed.
 Canonical mfun_zmod := ZmodPred mfun_subring_closed.
+Canonical mfun_mul := MulrPred mfun_subring_closed.
 Canonical mfun_subring := SubringPred mfun_subring_closed.
 Definition mfun_zmodMixin := [zmodMixin of {mfun aT >-> rT} by <:].
 Canonical mfun_zmodType := ZmodType {mfun aT >-> rT} mfun_zmodMixin.
@@ -913,10 +916,11 @@ Arguments indic_mfun {aT rT} _.
 
 Section sfun_pred.
 Context {aT : measurableType} {rT : realType}.
-Definition sfun_key : pred_key (mem
-  [set f : aT -> rT | measurable_fun setT f /\ finite_set (f @` setT)]).
-Proof. exact. Qed.
-Definition sfun := KeyedPred sfun_key.
+Definition sfun : {pred _ -> _} := [predI @mfun aT rT & fimfun].
+Definition sfun_key : pred_key sfun. Proof. exact. Qed.
+Canonical sfun_keyed := KeyedPred sfun_key.
+Lemma sub_sfun_mfun : {subset sfun <= mfun}. Proof. by move=> x /andP[]. Qed.
+Lemma sub_sfun_fimfun : {subset sfun <= fimfun}. Proof. by move=> x /andP[]. Qed.
 End sfun_pred.
 
 Section sfun.
@@ -925,9 +929,11 @@ Notation T := {sfun aT >-> rT}.
 Notation sfun := (@sfun aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in sfun).
-Definition sfun_Sub1_subproof := @IsMeasurableFun.Build aT rT f (set_mem fP).1.
+Definition sfun_Sub1_subproof :=
+  @IsMeasurableFun.Build aT rT f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
-Definition sfun_Sub2_subproof := @FiniteImage.Build aT rT f (set_mem fP).2.
+Definition sfun_Sub2_subproof :=
+  @FiniteImage.Build aT rT f (set_mem (sub_sfun_fimfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub2_subproof.
 Definition sfun_Sub := [sfun of f].
 End Sub.
@@ -935,12 +941,11 @@ End Sub.
 Lemma sfun_rect (K : T -> Type) :
   (forall f (Pf : f \in sfun), K (sfun_Sub Pf)) -> forall u : T, K u.
 Proof.
-move=> Ksub [f [[Pf1] [Pf2]]]/=; pose Pf := conj Pf1 Pf2.
-(* have -> : Pf1 = (set_mem (@mem_set _ [set f | _] f Pf).1) by []. *)
-(* have -> : Pf = (set_mem (@mem_set _ [set f | _] f Pf)) by []. *)
-(* apply: Ksub. *)
-(* Qed. *)
-Admitted.
+move=> Ksub [f [[Pf1] [Pf2]]]; have Pf : f \in sfun by apply/andP; rewrite ?inE.
+have -> : Pf1 = (set_mem (sub_sfun_mfun Pf)) by [].
+have -> : Pf2 = (set_mem (sub_sfun_fimfun Pf)) by [].
+exact: Ksub.
+Qed.
 
 Lemma sfun_valP f (Pf : f \in sfun) : sfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
@@ -982,12 +987,13 @@ Context (aT : measurableType) (rT : realType).
 
 Lemma sfun_subring_closed : subring_closed (@sfun aT rT).
 Proof.
-split=> [|f g|f g]; rewrite !inE/=; split;
-  do 1? by[apply: measurable_funP | apply: fimfunP].
-Admitted.
+by split=> [|f g|f g]; rewrite ?inE/= ?rpred1//;
+   move=> /andP[/= mf ff] /andP[/= mg fg]; rewrite !(rpredB, rpredM).
+Qed.
 
 Canonical sfun_add := AddrPred sfun_subring_closed.
 Canonical sfun_zmod := ZmodPred sfun_subring_closed.
+Canonical sfun_mul := MulrPred sfun_subring_closed.
 Canonical sfun_subring := SubringPred sfun_subring_closed.
 Definition sfun_zmodMixin := [zmodMixin of {sfun aT >-> rT} by <:].
 Canonical sfun_zmodType := ZmodType {sfun aT >-> rT} sfun_zmodMixin.
