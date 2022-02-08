@@ -610,6 +610,9 @@ move: x y => [x| |] [y| |] //; first by rewrite mule_def_fin.
 - by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
 Qed.
 
+Lemma ltpinfty_adde_def : {in [pred x | x < +oo] &, forall x y, x +? y}.
+Proof. by move=> [x| |] [y| |]. Qed.
+
 Lemma abse_eq0 x : (`|x| == 0) = (x == 0).
 Proof. by move: x => [| |] //= r; rewrite !eqe normr_eq0. Qed.
 

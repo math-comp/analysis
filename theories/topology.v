@@ -5079,9 +5079,6 @@ End Exports.
 End numFieldTopology.
 Import numFieldTopology.Exports.
 
-Lemma restrict_set0 T (R : numFieldType) (f : T -> R) : f \_ set0 = cst 0.
-Proof. by apply/funext => x; rewrite /restrict in_set0. Qed.
-
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.
 Proof.
