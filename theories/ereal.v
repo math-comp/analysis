@@ -7,7 +7,8 @@
 
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import finmap.
-Require Import boolp mathcomp_extra classical_sets reals posnum topology.
+Require Import boolp mathcomp_extra classical_sets functions reals posnum.
+Require Import topology.
 
 (******************************************************************************)
 (*                        Extended real numbers                               *)
@@ -2597,6 +2598,12 @@ Proof. by move=> A B AB; apply lb_ereal_inf => x Bx; exact/ereal_inf_lb/AB. Qed.
 End ereal_supremum_realType.
 
 Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) 0%E.
+
+Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
+  (abse \o f) \_ D = abse \o (f \_ D).
+Proof.
+by apply/funext=> t; rewrite /restrict/=; case: ifPn => // _; rewrite abse0.
+Qed.
 
 Section ereal_nbhs.
 Context {R : numFieldType}.

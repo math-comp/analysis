@@ -1680,6 +1680,7 @@ Definition phant_bijTT aT rT (f : {bij [set: aT] >-> [set: rT]})
    of phantom (_ -> _) f := @bijTT _ _ f.
 Notation "''bijTT_'  f" := (phant_bijTT (Phantom (_ -> _) f)) : form_scope.
 Hint Extern 0 (bijective _) => solve [apply: bijTT] : core.
+
 (*****************************)
 (* Patching and restrictions *)
 (*****************************)
