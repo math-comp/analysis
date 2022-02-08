@@ -31,6 +31,7 @@ Require Import sequences measure csum fsbigop cardinality.
 (*                            open-closed intervals such that                 *)
 (*                            I `\` J = \bigcup_(x in A) x                    *)
 (*          ocitv_diff I J := fset_set (ocitv_diffs I J)                      *)
+(* TODO: ocitv_diff has disappeared from the interface *)
 (*      lebesgue_measure == the Lebesgue measure                              *)
 (*                                                                            *)
 (*              ps_infty == inductive definition of the powerset              *)
