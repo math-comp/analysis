@@ -151,6 +151,8 @@ Definition fin_trivIset_closed :=
   forall I (D : set I) (F : I -> set T), finite_set D -> trivIset D F ->
    (forall i, D i -> G (F i)) -> G (\bigcup_(k in D) F k).
 
+Definition setring := [/\ G set0, setU_closed & setDI_closed].
+
 Definition sigma_algebra :=
   [/\ G set0, (forall A, G A -> G (D `\` A)) &
      (forall A : (set T)^nat, (forall n, G (A n)) -> G (\bigcup_k A k))].
@@ -191,45 +193,16 @@ Notation "'<<m' D , G '>>'" := (smallest (monotone_class D) G)
   (at level 2, format "'<<m'  D ,  G  '>>'") : classical_set_scope.
 Notation "'<<m' G '>>'" := (<<m setT, G>>)
   (at level 2, format "'<<m'  G  '>>'") : classical_set_scope.
-Notation "'<<d' G '>>'" := (smallest dynkin G)
-  (at level 2, format "'<<d'  G '>>'") : classical_set_scope.
 Notation "'<<s' D , G '>>'" := (smallest (sigma_algebra D) G)
   (at level 2, format "'<<s'  D ,  G  '>>'") : classical_set_scope.
 Notation "'<<s' G '>>'" := (<<s setT, G>>)
   (at level 2, format "'<<s'  G  '>>'") : classical_set_scope.
-
-Section generated_sigma_algebra.
-Context {T : Type} (D : set T) (G : set (set T)).
-Implicit Types (M : set (set T)).
-
-Lemma smallest_sigma_algebra : sigma_algebra D <<s D, G >>.
-Proof.
-split=> [|A GA|A GA] P [[P0 PD PU]] GP //.
-  by apply: (PD); apply: GA.
-by apply: (PU) => n; apply: GA.
-Qed.
-Hint Resolve smallest_sigma_algebra : core.
-
-Lemma sub_sigma_algebra2 M : M `<=` G -> <<s D, M >> `<=` <<s D, G >>.
-Proof. exact: sub_smallest2r. Qed.
-
-Lemma sigma_algebra_id : sigma_algebra D G -> <<s D, G >> = G.
-Proof. by move=> /smallest_id->. Qed.
-
-Lemma sub_sigma_algebra : G `<=` <<s D, G >>. Proof. exact: sub_smallest. Qed.
-
-Lemma sigma_algebra0 : <<s D, G >> set0.
-Proof. by case: smallest_sigma_algebra. Qed.
-
-Lemma sigma_algebraD : forall A, <<s D, G >> A -> <<s D, G >> (D `\` A).
-Proof. by case: smallest_sigma_algebra. Qed.
-
-Lemma sigma_algebra_bigcup (A : (set T)^nat) :
-  (forall i, <<s D, G >> (A i)) ->  <<s D, G >> (\bigcup_i (A i)).
-Proof. by case: smallest_sigma_algebra A. Qed.
-
-End generated_sigma_algebra.
-Hint Resolve smallest_sigma_algebra : core.
+Notation "'<<d' G '>>'" := (smallest dynkin G)
+  (at level 2, format "'<<d'  G '>>'") : classical_set_scope.
+Notation "'<<r' G '>>'" := (smallest setring G)
+  (at level 2, format "'<<r'  G '>>'") : classical_set_scope.
+Notation "'<<fu' G '>>'" := (smallest fin_trivIset_closed G)
+  (at level 2, format "'<<fu'  G '>>'") : classical_set_scope.
 
 Lemma fin_bigcup_closedP T (G : set (set T)) :
   (G set0 /\ setU_closed G) <-> fin_bigcup_closed G.
@@ -307,6 +280,75 @@ move=> C_subU; split => [[C0 CD CU]|[DT DC DU DI]]; split.
   by rewrite -bigcup_mkord => -[m /=]; rewrite ltnS => _ Fmx; exists m.
 Qed.
 
+Section generated_sigma_algebra.
+Context {T : Type} (D : set T) (G : set (set T)).
+Implicit Types (M : set (set T)).
+
+Lemma smallest_sigma_algebra : sigma_algebra D <<s D, G >>.
+Proof.
+split=> [|A GA|A GA] P [[P0 PD PU]] GP //.
+  by apply: (PD); apply: GA.
+by apply: (PU) => n; apply: GA.
+Qed.
+Hint Resolve smallest_sigma_algebra : core.
+
+Lemma sub_sigma_algebra2 M : M `<=` G -> <<s D, M >> `<=` <<s D, G >>.
+Proof. exact: sub_smallest2r. Qed.
+
+Lemma sigma_algebra_id : sigma_algebra D G -> <<s D, G >> = G.
+Proof. by move=> /smallest_id->. Qed.
+
+Lemma sub_sigma_algebra : G `<=` <<s D, G >>. Proof. exact: sub_smallest. Qed.
+
+Lemma sigma_algebra0 : <<s D, G >> set0.
+Proof. by case: smallest_sigma_algebra. Qed.
+
+Lemma sigma_algebraD : forall A, <<s D, G >> A -> <<s D, G >> (D `\` A).
+Proof. by case: smallest_sigma_algebra. Qed.
+
+Lemma sigma_algebra_bigcup (A : (set T)^nat) :
+  (forall i, <<s D, G >> (A i)) ->  <<s D, G >> (\bigcup_i (A i)).
+Proof. by case: smallest_sigma_algebra A. Qed.
+
+End generated_sigma_algebra.
+Hint Resolve smallest_sigma_algebra : core.
+
+Section generated_setring.
+Context {T : Type} (G : set (set T)).
+Implicit Types (M : set (set T)).
+
+Lemma smallest_setring : setring <<r G >>.
+Proof.
+split=> [|A B GA GB|A B GA GB] P [[P0 PU PDI]] GP //.
+  by apply: (PU); [apply: GA|apply: GB].
+by apply: (PDI); [apply: GA|apply: GB].
+Qed.
+Hint Resolve smallest_setring : core.
+
+Lemma sub_setring2 M : M `<=` G -> <<r M >> `<=` <<r G >>.
+Proof. exact: sub_smallest2r. Qed.
+
+Lemma setring_id : setring G -> <<r G >> = G.
+Proof. by move=> /smallest_id->. Qed.
+
+Lemma sub_setring : G `<=` <<r G >>. Proof. exact: sub_smallest. Qed.
+
+Lemma setring0 : <<r G >> set0.
+Proof. by case: smallest_setring. Qed.
+
+Lemma setringDI : setDI_closed <<r G>>.
+Proof. by case: smallest_setring. Qed.
+
+Lemma setringU : setU_closed <<r G>>.
+Proof. by case: smallest_setring. Qed.
+
+Lemma setring_fin_bigcup : fin_bigcup_closed <<r G>>.
+Proof.
+by apply/fin_bigcup_closedP; split; [apply: setring0|apply: setringU].
+Qed.
+
+End generated_setring.
+Hint Resolve smallest_setring setring0 : core.
 
 Lemma monotone_class_g_salgebra T (G : set (set T)) (D : set T) :
   (forall X, <<s D, G >> X -> X `<=` D) -> G D ->
@@ -1341,169 +1383,120 @@ Qed.
 
 Arguments measure_bigcup {R T} mu A.
 
+Lemma all_sig2_cond {I : Type} {T : Type} (D : pred I)
+   (P Q : I -> T -> Prop) : T ->
+    (forall x : I, D x -> {y : T | P x y & Q x y}) ->
+  {f : forall x : I, T | forall x : I, D x -> P x (f x) & forall x : I, D x -> Q x (f x)}.
+Proof.
+by move=> /all_sig_cond/[apply]-[f Pf]; exists f => i Di; have [] := Pf i Di.
+Qed.
+
+Lemma bigcap_bigcup T I J (D : set I) (E : set J) (F : I -> J -> set T) :
+  J ->
+  \bigcap_(i in D) \bigcup_(j in E) F i j =
+  \bigcup_(f in set_fun D E) \bigcap_(i in D) F i (f i).
+Proof.
+move=> j; apply/seteqP; split=> x.
+  move=> /(_ _ _)/cid2 ff.
+  have /(all_sig2_cond j) : forall i : I, i \in D -> {x0 : J | E x0 & F i x0 x}.
+    by move=> i /set_mem; apply: ff.
+  by move=> [f /(_ _ (mem_set _))Ef /(_ _ (mem_set _))Ff]; exists f.
+by move=> [f fDE fF i Fi]; exists (f i); [apply: fDE|apply: fF].
+Qed.
+
 Module SetRing.
 Definition type (T : Type) := T.
 
 Section SetRing.
 Context {T : semiRingOfSetsType}.
 
-Let m : set (set T) := covered_by (@finite_set)
-   (fun I D A => forall i : I, D i -> measurable (A i)).
-Local Definition mdisj : set (set T) := covered_by (@finite_set)
-   (fun I D A => trivIset D A /\ forall i : I, D i -> measurable (A i)).
-
-Local Lemma mE : m = [set X : set T | exists n A,
-  [/\ forall i, `I_n i -> measurable (A i) & X = cover `I_n A]].
-Proof.
-rewrite /m covered_by_finite// => I D A; first by move=> AP i /AP->.
-move=> Dfin AP i Di; apply: AP; apply: (@set_mem _ D).
-by rewrite -in_fset_set// mem_nth.
-Qed.
-
-Local Lemma mdisjE : mdisj = [set X : set T | exists n A,
-  [/\ trivIset `I_n A /\ forall i, `I_n i -> measurable (A i) & X = cover `I_n A]].
-Proof.
-rewrite /mdisj covered_by_finite// => I D A => [A0|Dfin [Atriv Am]].
-  split; last by move=> i /A0->.
-  by move=> i j /A0-> /A0->; rewrite setI0; case.
-have nthD x0 i : (i < #|` fset_set D|)%N -> D (nth x0 (fset_set D) i).
-  by move=> ?; apply: (@set_mem _ D); rewrite -in_fset_set// mem_nth//.
-split; last by move=> i /= ilt; apply: Am; apply: nthD.
-by move=> i j ? ? /Atriv/uniqP; apply; rewrite ?fset_uniq//; apply: nthD.
-Qed.
-
-Local Lemma m0 : m set0.
-Proof. by exists void, point, point; split=> //; rewrite /cover bigcup0. Qed.
-
-Local Lemma mdisj0 : mdisj set0.
-Proof. by exists void, point, point; do ?split; rewrite // /cover bigcup0. Qed.
-
-Hint Resolve m0 mdisj0 : core.
-
-Local Lemma mU : setU_closed m.
-Proof.
-move=> A B [aT [aX [A_ [aXfin A_m ->]]]] [bT [bX [B_ [bXfin B_m ->]]]].
-exists (aT + bT)%type, ([set inl a | a in aX] `|` [set inr _ b | b in bX]).
-exists (fun x => match x with inl a => A_ a | inr b => B_ b end).
-split; first by rewrite finite_setU; split; apply: finite_image.
-  by case=> [] c [] [c']// ? []<-//; [apply: A_m | apply: B_m].
-apply/predeqP => x; split; last first.
-  by move=> [[a|b] [] [c Xc// [<-]]]; [left|right]; exists c.
-move=> [[a Xa Ax]|[b Xb Bx]]; first by exists (inl a) => //; left; exists a.
-by exists (inr b) => //; right; exists b.
-Qed.
-
-Local Lemma mdisjm : mdisj `<=` m.
-Proof. by apply: covered_bySr => I D X []. Qed.
-
-Local Lemma mdisjW A : measurable A -> mdisj A.
-Proof.
-move=> mA; exists unit, [set tt], (fun=> A); do ?split => //.
-  by move=> i j -> ->.
-by rewrite /cover bigcup_set1.
-Qed.
-
-Local Lemma mW A : measurable A -> m A. Proof. by move=> /mdisjW/mdisjm. Qed.
-
-Local Lemma m_bigcup : fin_bigcup_closed m.
-Proof. by apply/fin_bigcup_closedP; split=> //; apply: mU. Qed.
-
-Local Lemma mdisjI : setI_closed mdisj.
-Proof.
-move=> A B [aT [aX [A_ [aXF [Atr A_m] ->]]]] [bT [bX [B_ [bXF [Btr B_m] ->]]]].
-rewrite setI_bigcupl; under eq_bigcupr do rewrite setI_bigcupr.
-rewrite bigcup_bigcup; apply: covered_byP; first by apply: finite_setM.
-split.
-  move=> [a b] [a' b']/= [Xa Xb] [Xa' Xb']; rewrite setIACA.
-  by move=> [x [Ax Bx]]; rewrite (Atr a a') 1?(Btr b b')//; exists x.
-by move=> [i j] [Xi Xj]; apply: measurableI; [apply: A_m | apply: B_m].
-Qed.
-
-Local Lemma mdisj_bigcap : finN0_bigcap_closed mdisj.
-Proof. exact/finN0_bigcap_closedP/mdisjI. Qed.
-
-Local Lemma mDbigcup I (D : set I) (A : set T) (B : I -> set T) : finite_set D ->
-  measurable A -> (forall i, D i -> measurable (B i)) ->
-  mdisj (A `\` \bigcup_(i in D) B i).
-Proof.
-have [->|/set0P] := eqVneq D set0.
-  by rewrite bigcup0// setD0 => *; apply: mdisjW.
-elim/Ppointed: I => I in D B * => Dfin DN0 Am Bm.
-  by move: Dfin; rewrite emptyE=> -[].
-rewrite -bigcupDr//; apply: mdisj_bigcap=> // i Di.
-have [F [Ffin Fm -> Ftriv]] := semi_measurableD A (B i) Am (Bm _ Di).
-exact: covered_byP.
-Qed.
-
-Local Lemma mDI : setDI_closed m.
-Proof.
-move=> A B [aT [aX [A_ [aXfin A_m ->]]]] [bT [bX [B_ [bXfin B_m ->]]]].
-rewrite setD_bigcupl; apply: m_bigcup => // a aXa.
-by apply: mdisjm; apply: mDbigcup => //; apply: A_m.
-Qed.
-
 Notation rT := (type T).
-Canonical g_measurable_eqType := EqType rT ptclass.
-Canonical g_measurable_choiceType := ChoiceType rT ptclass.
-Canonical g_measurable_ptType := PointedType rT ptclass.
+Canonical ring_eqType := EqType rT ptclass.
+Canonical ring_choiceType := ChoiceType rT ptclass.
+Canonical ring_ptType := PointedType rT ptclass.
 #[export]
-HB.instance Definition _ := isRingOfSets.Build rT ptclass m0 mU mDI.
+HB.instance Definition _ := isRingOfSets.Build rT ptclass
+  (@setring0 T measurable) (@setringU T measurable) (@setringDI T measurable).
 Definition ring := [the ringOfSetsType of rT].
 
-Lemma measurableW (A : set T) : measurable A -> measurable (A : set rT).
-Proof. exact: mW. Qed.
+Local Definition measurable_fin_trivIset : set (set T) :=
+  [set A | exists B : set (set T),
+      [/\  A = \bigcup_(X in B) X, forall X : set T, B X -> measurable X,
+           finite_set B & trivIset B id]].
 
-Definition measurableE : measurable = m :> set (set rT).
-Proof. by []. Qed.
-
-Lemma measurable_disj (A : set rT) : measurable A -> mdisj (A : set T).
+Lemma ring_measurableE : @measurable ring = measurable_fin_trivIset.
 Proof.
-rewrite measurableE mE /cover => -[n [{}A [/= Am ->]]].
-elim: n => [|n IHn] in Am *; first by rewrite II0 bigcup_set0.
-rewrite IIS setUC bigcup_setU1.
-pose B := \bigcup_(i in `I_n) A i; pose C := A n `\` B.
-suff: mdisj (C `|` B) by rewrite /C setUC setDE setUIr setUCr setIT setUC.
-have: C `&` B = set0 by rewrite setDKI.
-have: mdisj B by apply: IHn => i /ltnW/Am.
-have: mdisj C by apply: mDbigcup=> //= *; apply: Am=> //=; apply/ltnW.
-move=> [cT [cX [C_ [cXF [Ctr Cm] ->]]]] [bT [bX [B_ [bXfin [Btr Bm] ->]]]].
-rewrite -subset0 => CB0.
-exists (cT + bT)%type, ([set inl c | c in cX] `|` [set inr _ b | b in bX]).
-exists (fun x => match x with inl c => C_ c | inr b => B_ b end).
-split; first by rewrite finite_setU; split; apply: finite_image.
-  split; last by case=> [] x [] [x']// ? []<-//; [apply: Cm | apply: Bm].
-  move=> [] _ [] _ [] [//= u Xu [<-]] [] [//= v Xv [<-]].
-  - by move=> /Ctr->//.
-  - by move=> [x [Cx Bx]]; have []/= := CB0 x; split; [exists u|exists v].
-  - by move=> [x [Bx Cx]]; have []/= := CB0 x; split; [exists v|exists u].
-  - by move=> /Btr-> //.
-apply/predeqP => i; split; last first.
-  by move=> [[c|b] [] [x Xx// [<-]]]; [left|right]; exists x.
-move=> [[c Xc Cx]|[b Xb Bx]]; first by exists (inl c) => //; left; exists c.
-by exists (inr b) => //; right; exists b.
+apply/seteqP; split; last first.
+  move=> _ [B [-> Bm Bfin Btriv]]; apply: fin_bigcup_measurable => //.
+  by move=> i Di; apply: sub_gen_smallest; apply: Bm.
+have mdW A : measurable A -> measurable_fin_trivIset A.
+  move=> Am; exists [set A]; split; do ?by [rewrite bigcup_set1|move=> ? ->|].
+  by move=> ? ? -> ->.
+have mdI : setI_closed measurable_fin_trivIset.
+  move=> _ _ [A [-> Am Afin Atriv]] [B [-> Bm Bfin Btriv]].
+  rewrite setI_bigcupl; under eq_bigcupr do rewrite setI_bigcupr.
+  rewrite bigcup_bigcup -(bigcup_image _ _ id).
+  eexists; split; [reflexivity | | exact/finite_image/finite_setM |].
+    by move=> _ [X [? ?] <-]; apply: measurableI; [apply: Am|apply: Bm].
+  apply: trivIset_sets => -[a b] [a' b']/= [Xa Xb] [Xa' Xb']; rewrite setIACA.
+  by move=> [x [Ax Bx]]; rewrite (Atriv a a') 1?(Btriv b b')//; exists x.
+have mdisj_bigcap : finN0_bigcap_closed measurable_fin_trivIset.
+   exact/finN0_bigcap_closedP/mdI.
+have mDbigcup I (D : set I) (A : set T) (B : I -> set T) : finite_set D ->
+    measurable A -> (forall i, D i -> measurable (B i)) ->
+    measurable_fin_trivIset (A `\` \bigcup_(i in D) B i).
+  have [->|/set0P D0] := eqVneq D set0.
+    by rewrite bigcup0// setD0 => *; apply: mdW.
+  move=> Dfin Am Bm; rewrite -bigcupDr//; apply: mdisj_bigcap=> // i Di.
+  by have [F [Ffin Fm -> ?]] := semi_measurableD A (B i) Am (Bm _ Di); exists F.
+have mdU : fin_trivIset_closed measurable_fin_trivIset.
+  elim/Pchoice=> I D F Dfin Ftriv Fm.
+  have /(_ _ (set_mem _))/cid-/(all_sig_cond_dep (fun=> set0))
+       [G /(_ _ (mem_set _))GP] := Fm _ _.
+  under eq_bigcupr => i Di do case: (GP i Di) => ->.
+  rewrite bigcup_bigcup_dep -(bigcup_image _ _ id); eexists; split=> //.
+  - by move=> _ [i [Di Gi] <-]; have [_ + _ _] := GP i.1 Di; apply.
+  - by apply: finite_image; apply: finite_setMR=> // i Di; have [] := GP i Di.
+  apply: trivIset_sets => -[i X] [j Y] /= [Di Gi] [Dj Gj] XYN0.
+  suff eqij : i = j.
+    by rewrite {i}eqij in Di Gi *; have [_ _ _ /(_ _ _ _ _ XYN0)->] := GP j Dj.
+  apply: Ftriv => //; have [-> _ _ _] := GP j Dj; have [-> _ _ _] := GP i Di.
+  by case: XYN0 => [x [Xx Yx]]; exists x; split; [exists X|exists Y].
+have mdDI : setDI_closed measurable_fin_trivIset.
+  move=> A B mA mB; have [F [-> Fm Ffin Ftriv]] := mA.
+  have [F' [-> F'm F'fin F'triv]] := mB.
+  have [->|/set0P F'N0] := eqVneq F' set0.
+    by rewrite bigcup_set0 setD0; exists F.
+  rewrite setD_bigcupl; apply: mdU => //; first by apply: trivIset_setIr.
+  move=> X DX; rewrite -bigcupDr//; apply: mdisj_bigcap => //.
+  move=> Y DY; case: (semi_measurableD X Y); [exact: Fm|exact: F'm|].
+  by move=> G [Gfin Gm -> Gtriv]; exists G.
+apply: smallest_sub => //; split=> //; first by apply: mdW.
+move=> A B mA mB; rewrite -(setUIDK B A) setUA [X in X `|` _]setUidl//.
+rewrite -bigcup2inE; apply: mdU => //; last by move=> [|[]]// _; apply: mdDI.
+by move=> [|[]]// [|[]]//= _ _ []; rewrite setDE ?setIA => X [] []//.
 Qed.
 
-Lemma fsets (A : set rT) : measurable A -> exists (B : {fset set T}),
+Lemma ring_fsets (A : set rT) : measurable A -> exists (B : {fset set T}),
   [/\ all [pred X | X != set0] B,
       trivIset [set` B] id,
       (forall X : set T, X \in B -> measurable X) &
       A = \bigcup_(X in [set` B]) X].
 Proof.
-move=> /measurable_disj; rewrite /cover mdisjE => -[k [B [[Btr Bm] ->]]].
-pose C : {fset set T} := [fset (B (val i)) | i in 'I_k]%fset.
-exists [fset X in C | X != set0]%fset; split.
-- by apply/allP => X; rewrite !inE/= => /andP[].
-- move=> i' j' /=; rewrite !inE => /andP[+ _] /andP[+ _].
-  by move=> /imfsetP[i _ ->] /imfsetP[j _ ->] /Btr -> /=.
-- by move=> i'; rewrite !inE => /andP[/imfsetP[i _ ->] _]; apply: Bm => /=.
-transitivity (\bigcup_(X in [set` C]) X).
-  by rewrite set_imfset/= bigcup_image//= /cover bigcup_mkord bigcup_pred.
-by rewrite !bigcup_fset -big_fset_condE/= [RHS]big_rmcond// => ? /negPn/eqP.
+rewrite ring_measurableE => -[B [-> Bm Bfin Btriv]].
+exists [fset X in fset_set B | X != set0]%fset; split => //.
+- by apply/allP => _ /imfsetP[/= X /andP[_ +] ->].
+- move=> _ _ /imfsetP[X /andP[+ _] ->] /imfsetP[Y/= /andP[+ _] ->].
+  by rewrite !in_fset_set ?inE//; apply: Btriv.
+- by move=> _ /imfsetP[X /andP[+ _] ->]; rewrite in_fset_set// inE; apply: Bm.
+rewrite bigcup_fset big_imfset//= big_filter big_rmcond; last first.
+  by move=> X; rewrite negbK => /eqP.
+by rewrite -bigcup_fset_set.
 Qed.
 
 Definition decomp (A : set rT) : {fset set T} :=
   if A == set0 then [fset set0]%fset else
-  if pselect (measurable A) is left mA then projT1 (cid (fsets mA)) else [fset A]%fset.
+  if pselect (measurable A) is left mA then projT1 (cid (ring_fsets mA)) else [fset A]%fset.
 
 Lemma decomp_triv (A : set rT) : trivIset [set` decomp A] id.
 Proof.
@@ -1572,9 +1565,8 @@ Lemma Rmu_fin_bigcup (I : choiceType) (D : set I) (F : I -> set T) :
 Proof.
 move=> Dfin Ftriv Fm; rewrite /measure.
 have mUD : measurable (\bigcup_(i in D) F i : set rT).
-  rewrite bigcup_fset_set// big_seq.
-  apply: bigsetU_measurable => i; rewrite in_fset_set// inE => Di.
-  exact/measurableW/Fm.
+  apply: fin_bigcup_measurable => // i Di.
+  by apply: sub_gen_smallest; apply: Fm.
 have [->|/set0P[i0 Di0]] := eqVneq D set0.
   by rewrite bigcup_set0 decomp_set0 big_seq_fset1 fset_set0 big_seq_fset0.
 set E := (decomp _); have Em X := decomp_measurable mUD X.
@@ -1611,24 +1603,17 @@ Proof. by rewrite sume_ge0//= => *; rewrite ?measure_ge0. Qed.
 Lemma Rmu_additive : semi_additive Rmu.
 Proof.
 apply/(additive2P Rmu0) => // A B.
-move=> /fsets[/= {}A [_ Atriv Am ->]] /fsets[/= {}B [_ Btriv Bm ->]].
+move=> /ring_fsets[/= {}A [_ Atriv Am ->]] /ring_fsets[/= {}B [_ Btriv Bm ->]].
 rewrite -subset0 => coverAB0.
-rewrite -bigcup_setU !Rmu_fin_bigcup//=.
-- rewrite fset_setU// !set_fsetK -big_cat/=.
-  have muNN0 (X : set T) : ~~ (X != set0) -> mu X = 0 by move=> /negPn/eqP->.
-  rewrite -!(big_rmcond _ _ muNN0) -big_filter -[RHS]big_filter.
-  apply: perm_big; rewrite uniq_perm//.
-  + by rewrite ?filter_uniq ?fset_uniq.
-  + rewrite filter_cat cat_uniq ?filter_uniq ?fset_uniq ?andbT//=.
-    apply/hasPn => X; rewrite mem_filter => /andP[/set0P[x Xx] XB].
-    apply: contraTN isT; rewrite inE mem_filter => /andP[_ XA].
-    by have [] := coverAB0 x; split; exists X.
-  + by move=> X; rewrite !mem_filter inE mem_cat.
-- by rewrite finite_setU.
-- move=> X Y [] ABX [] ABY; do ?by [apply: Atriv|apply: Btriv].
-    by move=> [u [Xu Yu]]; have []/= := coverAB0 u; split; [exists X|exists Y].
-  by move=> [u [Xu Yu]]; have []/= := coverAB0 u; split; [exists Y|exists X].
-- by move=> X [/Am|/Bm].
+have AUBfin : finite_set ([set` A] `|` [set` B]) by rewrite finite_setU.
+have AUBtriv : trivIset ([set` A] `|` [set` B]) id.
+  move=> X Y [] ABX [] ABY; do ?by [apply: Atriv|apply: Btriv].
+    by move=> [u [Xu Yu]]; case: (coverAB0 u); split; [exists X|exists Y].
+  by move=> [u [Xu Yu]]; case: (coverAB0 u); split; [exists Y|exists X].
+rewrite -bigcup_setU !Rmu_fin_bigcup//=; last by move=> X [/Am|/Bm].
+rewrite -!fsbig_finite//= fsbigU//= => [X /= [XA XB]].
+have [->//|/set0P[x Xx]] := eqVneq X set0.
+by case: (coverAB0 x); split; [exists X|exists X].
 Qed.
 
 Lemma Rmu_additive_measure : additive_measure Rmu.
@@ -1641,9 +1626,9 @@ End additive_measure.
 
 End SetRing.
 Module Exports.
-Canonical g_measurable_eqType.
-Canonical g_measurable_choiceType.
-Canonical g_measurable_ptType.
+Canonical ring_eqType.
+Canonical ring_choiceType.
+Canonical ring_ptType.
 Canonical measure_additive_measure.
 HB.reexport.
 End Exports.
@@ -1658,8 +1643,8 @@ move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
   by rewrite lee_pinfty_eq => /eqP ->; rewrite lee_pinfty.
 rewrite -[X in _ <= X]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
 - rewrite SetRing.RmuE ?lee_addl// ?measure_ge0//.
-- exact: SetRing.measurableW.
-- by apply: measurableD; exact: SetRing.measurableW.
+- exact: sub_gen_smallest.
+- by apply: measurableD; exact: sub_gen_smallest.
 Qed.
 
 Lemma measure_le0  (T : semiRingOfSetsType) (R : realFieldType)
@@ -1684,8 +1669,8 @@ have subBA i : B i `<=` A i.
   by rewrite /B/patch; case: ifP; rewrite // set0I//= => _ ?.
 have subDUB i : seqDU B i `<=` A i by  move=> x [/subBA].
 have DUBm i : measurable (seqDU B i : set (SetRing.type T)).
-  apply: measurableD; first exact: SetRing.measurableW.
-  by apply: bigsetU_measurable => ? _; apply: SetRing.measurableW.
+  apply: measurableD; first exact: sub_gen_smallest.
+  by apply: bigsetU_measurable => ? _; apply: sub_gen_smallest.
 have DU0 i : (i >= n)%N -> seqDU B i = set0.
   move=> leni; rewrite -subset0 => x []; rewrite /B patchC ?inE/= ?leq_gtF//.
   by case.
@@ -1693,7 +1678,7 @@ rewrite -SetRing.RmuE// XE bigsetU_seqDU measure_bigsetU//.
 rewrite [X in _ <= X](big_ord_widen n (mu \o A))//= [X in _ <= X]big_mkcond/=.
 rewrite lee_sum => // i _; case: ltnP => ltin; last by rewrite DU0 ?measure0.
 rewrite -[X in _ <= X]SetRing.RmuE; last exact: Am.
-by rewrite le_measure ?inE//=; last exact/SetRing.measurableW/Am.
+by rewrite le_measure ?inE//=; last by apply: sub_gen_smallest; apply: Am.
 Qed.
 
 Lemma content_sub_fsum (I : choiceType) D (A : set T) (A_ : I -> set T) :
@@ -1809,10 +1794,10 @@ rewrite ifT ?inE//.
 under eq_big_seq do [rewrite -RmuE//; last exact: mfD].
 rewrite  -[decomp _]set_fsetK -measure_fin_bigcup//=; last 2 first.
 - by apply: trivIset_setI; apply: decomp_triv.
-- by move=> X /= XD; apply: measurableW; apply: mfD.
+- by move=> X /= XD; apply: sub_gen_smallest; apply: mfD.
 rewrite -setI_bigcupr (cover_decomp D) -[X in _ <= X]RmuE// ?le_measure ?inE//.
-  by apply: measurableI => //; apply/measurableW/mf.
-exact/measurableW/mf.
+  by apply: measurableI => //; apply: sub_gen_smallest; apply: mf.
+by apply: sub_gen_smallest; apply: mf.
 Unshelve. all: by end_near. Qed.
 
 Lemma ring_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive Rmu.
@@ -1837,7 +1822,7 @@ have subBA i : B i `<=` A i by rewrite /B.
 have subDUB i : seqDU B i `<=` A i by  move=> x [/subBA].
 have DUBm i : measurable (seqDU B i : set (SetRing.type T)).
   by apply: measurableD => //;
-     do 1?apply: bigsetU_measurable => *; apply: SetRing.measurableW.
+     do 1?apply: bigsetU_measurable => *; apply: sub_gen_smallest.
 rewrite XE; move: (XE); rewrite seqDU_bigcup_eq.
 under eq_bigcupr do rewrite -[seqDU B _]cover_decomp//.
 rewrite bigcup_bigcup_dep; set K := _ `*`` _.
@@ -1907,8 +1892,8 @@ rewrite -SetRing.Rmu_fin_bigcup//=; last 2 first.
   by move=> ?; apply: decomp_measurable.
 rewrite -[X in _ <= X]SetRing.RmuE// le_measure ?inE//=.
 - apply: fin_bigcup_measurable=> // j /=.
-  by move=> /decomp_measurable/SetRing.measurableW; apply.
-- exact: SetRing.measurableW.
+  by move=> /decomp_measurable/sub_gen_smallest; apply.
+- exact: sub_gen_smallest.
 - by rewrite cover_decomp//.
 Qed.
 
@@ -2820,7 +2805,7 @@ Lemma Rmu_ext (R : realType) (T : semiRingOfSetsType) (rT := @SetRing.ring T)
 Proof.
 apply/funeqP => /= X; rewrite /mu_ext/=; apply/eqP; rewrite eq_le.
 rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lb//; last first.
-  exists F; first by split=> // i; apply: SetRing.measurableW.
+  exists F; first by split=> // i; apply: sub_gen_smallest.
   by rewrite (eq_ereal_pseries (fun=> RmuE _ _)).
 pose K := [set: nat] `*`` fun i => [set` decomp (F i)].
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
@@ -2863,14 +2848,14 @@ Lemma sub_caratheodory : <<s @measurable T >> `<=` @measurable M.
 Proof.
 suff: <<s @measurable rT >> `<=` @measurable M.
    apply: subset_trans;  apply: sub_smallest2r => //=.
-   by move=> X /SetRing.measurableW.
+   by apply: sub_smallest.
 apply: smallest_sub.
   split => //; [by move=> X mX; rewrite setTD; exact: measurableC |
                 by move=> u_ mu_; exact: measurable_bigcup].
 move=> A mA; apply le_caratheodory_measurable => // X.
 apply lb_ereal_inf => _ [B [mB XB] <-].
 rewrite -(eq_ereal_pseries (fun=> SetRing.RmuE _ _))=> //.
-have RmB i : measurable (B i : set rT) by exact: SetRing.measurableW.
+have RmB i : measurable (B i : set rT) by exact: sub_gen_smallest.
 set BA := eseries (fun n => Rmu (B n `&` A)).
 set BNA := eseries (fun n => Rmu (B n `&` ~` A)).
 apply (@le_trans _ _ (lim BA + lim BNA)); [apply: lee_add|].
@@ -2903,7 +2888,7 @@ have [def|] := boolP (adde_def (lim BA) (lim BNA)); last first.
   - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite lee_pinfty.
     apply/eqP; rewrite -lee_pinfty_eq -(eqP BNAoo); apply/lee_lim => //.
     by near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure;
-      rewrite /mkset ?inE//; [exact: measurableD | apply: subIset; left].
+       rewrite /mkset ?inE//; apply: measurableD.
 rewrite -ereal_limD // (_ : (fun _ => _) =
     eseries (fun k => Rmu (B k `&` A) + Rmu (B k `&` ~` A))); last first.
   by rewrite funeqE => n; rewrite -big_split /=; apply eq_bigr.

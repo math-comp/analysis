@@ -213,13 +213,10 @@ Reserved Notation "\sum_ ( i '\in' A ) F"
 Notation "\sum_ ( i '\in' A ) F" := (\big[+%R/0%R]_(i \in A) F) : ring_scope.
 Notation "\sum_ ( i '\in' A ) F" := (\big[+%E/0%E]_(i \in A) F) : ereal_scope.
 
-Section fsbig0.
-Variables (R : Type) (idx : R) (op : R -> R -> R).
-
-Lemma eq_fsbigl (T : choiceType) (f : T -> R) (P Q : set T) :
+Lemma eq_fsbigl (R : Type) (idx : R) (op : R -> R -> R)
+    (T : choiceType) (f : T -> R) (P Q : set T) :
   P = Q -> \big[op/idx]_(x \in P) f x = \big[op/idx]_(x \in Q) f x.
 Proof. by move=> ->. Qed.
-End fsbig0.
 
 Lemma eq_fsbigr (R : Type) (idx : R) (op : Monoid.com_law idx)
     (T : choiceType) (f g : T -> R) (P : set T) :
@@ -331,7 +328,7 @@ Lemma fsbig_dflt (R : Type) (idx : R) (op : Monoid.law idx) (I : choiceType)
 Proof. by case: finite_supportP; rewrite ?big_nil// => X _ _ <-. Qed.
 
 Lemma fsbig_widen (T : choiceType) [R : Type] [idx : R]
-    (op : Monoid.com_law(*NB: was Monoid.law*) idx) (P D : set T) (f : T -> R) :
+    (op : Monoid.com_law idx) (P D : set T) (f : T -> R) :
     P `<=` D ->
     D `\` P `<=` f @^-1` [set idx] ->
   \big[op/idx]_(i \in P) f i = \big[op/idx]_(i \in D) f i.
@@ -343,8 +340,13 @@ by case: ifP => //; rewrite inE => Dx; rewrite DPf.
 Qed.
 Arguments fsbig_widen {T R idx op} P D f.
 
+Lemma fsbig_supp (T : choiceType) [R : Type] [idx : R]
+    (op : Monoid.com_law idx) (P D : set T) (f : T -> R) :
+  \big[op/idx]_(i \in P) f i = \big[op/idx]_(i \in P `&` f @^-1` [set~ idx]) f i.
+Proof. by apply/esym/fsbig_widen => // x [Px /not_andP[]//=]; rewrite notK. Qed.
+
 Lemma fsbig_fwiden (T : choiceType) [R : eqType] [idx : R]
-    (op : Monoid.com_law(*NB: was Monoid.law*) idx)
+    (op : Monoid.com_law idx)
     (r : seq T) (P : set T) (f : T -> R) :
   P `<=` [set` r] ->
   uniq r ->
@@ -408,14 +410,22 @@ Arguments fsbigID {R idx op I} B.
 
 Lemma fsbigU (R : Type) (idx : R) (op : Monoid.com_law idx)
     (I : choiceType) (A B : set I) (F : I -> R) :
-    finite_set A -> finite_set B -> A `&` B `<=` set0 ->
+    finite_set A -> finite_set B -> A `&` B `<=` F @^-1` [set idx] ->
   \big[op/idx]_(i \in A `|` B) F i =
      op (\big[op/idx]_(i \in A) F i) (\big[op/idx]_(i \in B) F i).
 Proof.
 move=> Afin Bfin AB0; rewrite (fsbigID A) ?finite_setU; last by split.
-by rewrite setUK -setDE setUKD.
+rewrite setUK -setDE; congr (op _ _); rewrite setDE setIUl setIv set0U.
+by apply: fsbig_widen => //; rewrite -setDE setDD setIC.
 Qed.
 Arguments fsbigU {R idx op I} [A B F].
+
+Lemma fsbigU0 (R : Type) (idx : R) (op : Monoid.com_law idx)
+    (I : choiceType) (A B : set I) (F : I -> R) :
+    finite_set A -> finite_set B -> A `&` B `<=` set0 ->
+  \big[op/idx]_(i \in A `|` B) F i =
+     op (\big[op/idx]_(i \in A) F i) (\big[op/idx]_(i \in B) F i).
+Proof. by move=> Af Bf AB0; rewrite fsbigU// => x /AB0. Qed.
 
 Lemma fsbigD1 (R : Type) (idx : R) (op : Monoid.com_law idx)
     (I : choiceType) (i : I) (A : set I) (F : I -> R) :

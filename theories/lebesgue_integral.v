@@ -2805,7 +2805,7 @@ rewrite sintegralE (fsbig_widen _ [set 0%R; x%:nngnum])/=; last 2 first.
 - by move=> y [t _ <-] /=; rewrite /patch; case: ifPn; [right|left].
 - by move=> y [_ /=/preimage10->]; rewrite measure0 mule0.
 have [->|x0] := eqVneq x%:nngnum 0%R; first by rewrite setUid fsbig_set1 !mul0e.
-rewrite fsbigU//=; last by move=> y [->]/esym; apply/eqP.
+rewrite fsbigU0//=; last by move=> y [->]/esym; apply/eqP.
 rewrite !fsbig_set1 mul0e add0e preimage_restrict//.
 by rewrite ifN ?set0U ?setIidl//= notin_set; apply/eqP; rewrite eq_sym.
 Qed.
@@ -3986,12 +3986,12 @@ have ? : measurable_fun D (\1_(D `\` N) : T -> R).
   apply: (@measurable_funS _ _ setT) => //.
   by rewrite (_ : \1_ _ = mindic R (measurableD mD mN)).
 have mu_ n : measurable_fun D (f_' n).
-  apply/(measurable_restrict (f_ n) (measurableD mD mN) _ _).1 => // [x []//|].
+  apply/(measurable_restrict (f_ n) (measurableD mD mN) _ _).1 => //.
   by apply: measurable_funS (mf_ _) => // x [].
 have ig' : mu.-integrable D g'.
   apply: (integrableS measurableT) => //.
   apply/(integrable_mkcond g (measurableD mD mN)).1.
-  by apply: integrableS ig => // [|x []//]; exact: measurableD.
+  by apply: integrableS ig => //; exact: measurableD.
 have finv x : D x -> g' x \is a fin_num.
   move=> Dx; rewrite /g' /restrict in_setD// mem_set//=.
   have [//|xN /=] := boolP (x \in N).
@@ -4009,7 +4009,7 @@ split.
   set X := (X in _ -> X --> _); rewrite [X in X --> _ -> _](_ : _ = X) //.
   apply/funext => n; apply ae_eq_integral => //.
   + apply: measurable_fun_comp => //; apply: emeasurable_funB => //.
-    apply/(measurable_restrict _ (measurableD _ _) _ _).1 => // [x []//|].
+    apply/(measurable_restrict _ (measurableD _ _) _ _).1 => //.
     by apply: (@measurable_funS _ _ D) => // x [].
   + by rewrite /g_; apply: measurable_fun_comp => //; exact: emeasurable_funB.
   + exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
@@ -4021,7 +4021,7 @@ split.
     by rewrite /f_' /restrict mem_set.
   set Y := (X in _ -> _ --> X); rewrite [X in _ --> X -> _](_ : _ = Y) //.
   apply ae_eq_integral => //.
-    apply/(measurable_restrict _ (measurableD _ _) _ _).1 => // [x []//|].
+    apply/(measurable_restrict _ (measurableD _ _) _ _).1 => //.
     by apply: (@measurable_funS _ _ D) => // x [].
   exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
   by rewrite /f' /restrict mem_set.

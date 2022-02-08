@@ -741,6 +741,12 @@ Lemma subIsetl A B : A `&` B `<=` A. Proof. by move=> x []. Qed.
 
 Lemma subIsetr A B : A `&` B `<=` B. Proof. by move=> x []. Qed.
 
+Lemma subDsetl A B : A `\` B `<=` A.
+Proof. by rewrite setDE; apply: subIsetl. Qed.
+
+Lemma subDsetr A B : A `\` B `<=` ~` B.
+Proof. by rewrite setDE; apply: subIsetr. Qed.
+
 Lemma subsetI_neq0 A B C D :
   A `<=` B -> C `<=` D -> A `&` C !=set0 -> B `&` D !=set0.
 Proof. by move=> AB CD [x [/AB Bx /CD Dx]]; exists x. Qed.
@@ -903,6 +909,10 @@ Lemma bigcupM1l T1 T2 (A1 : set T1) (A2 : T1 -> set T2) :
   \bigcup_(i in A1) ([set i] `*` (A2 i)) = A1 `*`` A2.
 Proof. by apply/predeqP => -[i j]; split=> [[? ? [/= -> //]]|[]]; exists i. Qed.
 
+Lemma bigcupM1r T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :
+  \bigcup_(i in A2) (A1 i `*` [set i]) = A1 ``*` A2.
+Proof. by apply/predeqP => -[i j]; split=> [[? ? [? /= -> //]]|[]]; exists j. Qed.
+
 Lemma pred_omapE (D : {pred T}) : pred_omap D = mem (some @` D).
 Proof.
 apply/funext=> -[x|]/=; apply/idP/idP; rewrite /pred_omap/= inE //=.
@@ -918,7 +928,7 @@ by rewrite pred_omapE; apply/funext => x/=; apply/idP/idP; rewrite ?inE;
 Qed.
 
 End basic_lemmas.
-Hint Resolve subsetUl subsetUr subIsetl subIsetr : core.
+Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
 
 Lemma image2E {TA TB rT : Type} (A : set TA) (B : set TB) (f : TA -> TB -> rT) :
   [set f x y | x in A & y in B] = uncurry f @` (A `*` B).
