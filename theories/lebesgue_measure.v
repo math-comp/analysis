@@ -3150,6 +3150,7 @@ exact: measurable_fun_elim_sup.
 Qed.
 
 End emeasurable_fun.
+Arguments emeasurable_fun_cvg {T R D} f_.
 
 Definition preimage_classes (T1 T2 : measurableType) (T : Type)
     (f1 : T -> T1) (f2 : T -> T2)  :=
