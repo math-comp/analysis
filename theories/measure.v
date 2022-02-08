@@ -2457,7 +2457,7 @@ by rewrite 2!big_ord_recl big_ord0 setU0 /= -setIUr setUCr setIT.
 Unshelve. all: by end_near. Qed.
 
 Definition caratheodory_measurable (R : realType) (T : Type)
-  (mu : {outer_measure set T -> \bar R}) (A : set T) := forall X,
+  (mu : set T -> \bar R) (A : set T) := forall X,
   mu X = mu (X `&` A) + mu (X `&` ~` A).
 
 Notation "mu .-measurable" := (caratheodory_measurable mu)
@@ -2642,7 +2642,7 @@ Qed.
 End caratheodory_theorem_sigma_algebra.
 
 Definition caratheodory_type (R : realType) (T : Type)
-  (mu : {outer_measure set T -> \bar R}) := T.
+  (mu : set T -> \bar R) := T.
 
 Section caratheodory_sigma_algebra.
 Variables (R : realType) (T : pointedType) (mu : {outer_measure set T -> \bar R}).
@@ -2772,7 +2772,10 @@ End measurable_cover.
 
 Section measure_extension.
 Variables (R : realType) (T : semiRingOfSetsType).
-Variable mu : {additive_measure set T -> \bar R}.
+Variable mu : set T -> \bar R.
+Hypothesis measure0 : mu set0 = 0.
+Hypothesis measure_ge0 : forall X, mu X >= 0.
+Hint Resolve measure_ge0 measure0 : core.
 
 Definition mu_ext (X : set T) : \bar R :=
   ereal_inf [set \sum_(i <oo) mu (A i) | A in measurable_cover X].
@@ -2870,10 +2873,19 @@ Unshelve. all: by end_near. Qed.
 
 End measure_extension.
 
+Section measure_extension.
+Variables (R : realType) (T : semiRingOfSetsType).
+Variable mu : {additive_measure set T -> \bar R}.
+
 Canonical outer_measure_of_measure (R : realType) (T : semiRingOfSetsType)
   (mu : {additive_measure set T -> \bar R}) : {outer_measure set T -> \bar R} :=
-    OuterMeasure (OuterMeasure.Axioms (mu_ext0 mu) (mu_ext_ge0 mu)
-      (le_mu_ext mu) (mu_ext_sigma_subadditive mu)).
+    OuterMeasure (OuterMeasure.Axioms
+      (mu_ext0 (measure0 mu) (measure_ge0 mu))
+      (mu_ext_ge0 (measure_ge0 mu))
+      (le_mu_ext mu)
+      (mu_ext_sigma_subadditive (measure_ge0 mu))).
+
+End measure_extension.
 
 Section g_salgebra_measure_unique_trace.
 Variables (R : realType) (T : measurableType) (G : set (set T)).
@@ -3017,7 +3029,7 @@ Arguments measure_unique {R T} G g.
 Lemma measurable_mu_extE (R : realType) (T : semiRingOfSetsType)
     (mu : {additive_measure set T -> \bar R}) X :
   sigma_sub_additive mu ->
-  measurable X -> [outer_measure of mu_ext mu] X = mu X.
+  measurable X -> mu_ext mu X = mu X.
 Proof.
 move=> muS mX; apply/eqP; rewrite eq_le; apply/andP; split.
   apply ereal_inf_lb; exists (fun n => if n is 0%N then X else set0).
@@ -3043,11 +3055,11 @@ Import SetRing.
 
 Lemma Rmu_ext (R : realType) (T : semiRingOfSetsType) (rT := @SetRing.ring T)
     (mu : {additive_measure set T -> \bar R}) :
-  mu_ext [additive_measure of measure mu] = mu_ext mu.
+  mu_ext (measure mu) = mu_ext mu.
 Proof.
 apply/funeqP => /= X; rewrite /mu_ext/=; apply/eqP; rewrite eq_le.
 rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lb//; last first.
-  exists F; first by split=> // i; exact: measurableW.
+  exists F; first by split=> // i; apply: SetRing.measurableW.
   by rewrite (eq_ereal_pseries (fun=> RmuE _ _)).
 pose K := [set: nat] `*`` fun i => [set` decomp (F i)].
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
@@ -3070,7 +3082,7 @@ End Rmu_ext.
 Lemma measurable_Rmu_extE (R : realType) (T : semiRingOfSetsType) (rT := @SetRing.ring T)
     (mu : {additive_measure set T -> \bar R}) X :
   sigma_sub_additive mu ->
-  measurable (X : set rT)  -> [outer_measure of mu_ext mu] X = SetRing.measure mu X.
+  measurable (X : set rT)  -> mu_ext mu X = SetRing.measure mu X.
 Proof.
 move=> mu_sub Xm/=; rewrite -Rmu_ext/= measurable_mu_extE//.
 exact: ring_sigma_sub_additive.
@@ -3082,13 +3094,10 @@ Variable mu : {additive_measure set T -> \bar R}.
 Hypothesis mu_sub : sigma_sub_additive mu.
 Local Notation rT := (@SetRing.ring T).
 Let Rmu := SetRing.measure mu.
-Let mstar : {outer_measure set T -> \bar R} := [outer_measure of mu_ext mu].
-Let Rmstar : {outer_measure set rT -> \bar R} :=
-   [outer_measure of mu_ext [additive_measure of Rmu]].
-Let M : measurableType := [the measurableType of caratheodory_type mstar].
+Let M : measurableType := [the measurableType of caratheodory_type (mu_ext mu)].
 (*Let muR_sub := ring_sigma_sub_additive mu_sub.*)
 
-Lemma subset_g_salgebra_caratheodory : <<s @measurable T >> `<=` @measurable M.
+Lemma sub_caratheodory : <<s @measurable T >> `<=` @measurable M.
 Proof.
 suff: <<s @measurable rT >> `<=` @measurable M.
    apply: subset_trans;  apply: sub_smallest2r => //=.
@@ -3103,16 +3112,16 @@ have RmB i : measurable (B i : set rT) by exact: SetRing.measurableW.
 set BA := eseries (fun n => Rmu (B n `&` A)).
 set BNA := eseries (fun n => Rmu (B n `&` ~` A)).
 apply (@le_trans _ _ (lim BA + lim BNA)); [apply: lee_add|].
-  - rewrite (_ : BA = eseries (fun n => mstar (B n `&` A))); last first.
+  - rewrite (_ : BA = eseries (fun n => mu_ext mu (B n `&` A))); last first.
       rewrite funeqE => n; apply: eq_bigr => k _.
-      by rewrite /Rmstar /= measurable_Rmu_extE //; exact: measurableI.
-    apply (@le_trans _ _ (mstar (\bigcup_k (B k `&` A)))).
+      by rewrite /= measurable_Rmu_extE //; exact: measurableI.
+    apply (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `&` A)))).
       by apply le_mu_ext; rewrite -setI_bigcupl; apply setISS.
     exact: outer_measure_sigma_subadditive.
-  - rewrite (_ : BNA = eseries (fun n => mstar (B n `\` A))); last first.
+  - rewrite (_ : BNA = eseries (fun n => mu_ext mu (B n `\` A))); last first.
       rewrite funeqE => n; apply eq_bigr => k _.
-      rewrite /Rmstar /= measurable_Rmu_extE //; exact: measurableD.
-    apply (@le_trans _ _ (mstar (\bigcup_k (B k `\` A)))).
+      rewrite /= measurable_Rmu_extE //; exact: measurableD.
+    apply (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `\` A)))).
       by apply le_mu_ext; rewrite -setI_bigcupl; apply setISS.
     exact: outer_measure_sigma_subadditive.
 have ? : cvg BNA.
@@ -3162,9 +3171,9 @@ Proof. exact: mu_ext_ge0. Qed.
 Local Lemma Hahn_ext_sigma_additive : semi_sigma_additive Hahn_ext.
 Proof.
 move=> F mF tF mUF; rewrite /Hahn_ext.
-apply: (@caratheodory_measure_sigma_additive _ _ mstar) => //; last first.
-  exact: subset_g_salgebra_caratheodory.
-by move=> i; exact: (subset_g_salgebra_caratheodory (mF i)).
+apply: caratheodory_measure_sigma_additive => //; last first.
+  exact: sub_caratheodory.
+by move=> i; exact: (sub_caratheodory (mF i)).
 Qed.
 
 Canonical Hahn_ext_measure : {measure set I -> \bar R} :=
@@ -3195,10 +3204,9 @@ End Hahn_extension.
 
 Lemma caratheodory_measurable_mu_ext (R : realType) (T : measurableType)
     (mu : {measure set T -> \bar R}) A :
-  let mu' := [additive_measure of mu] in
-  measurable A -> [outer_measure of mu_ext mu'].-measurable A.
+  measurable A -> (mu_ext mu).-measurable A.
 Proof.
-move=> mu' Am; apply: subset_g_salgebra_caratheodory => //.
+move=> mu' Am; apply: sub_caratheodory => //.
   exact: measure_sigma_sub_additive.
 exact: sub_sigma_algebra.
 Qed.
