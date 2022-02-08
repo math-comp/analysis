@@ -3998,7 +3998,7 @@ Hypothesis mf_ : forall n, measurable_fun D (f_ n).
 Hypothesis mf : measurable_fun D f.
 Hypothesis f_f : {ae mu, forall x, D x -> f_ ^~ x --> f x}.
 Hypothesis ig : mu.-integrable D g.
-Hypothesis absfg : {ae mu, forall x n, D x -> `|f_ n x| <= g x}.
+Hypothesis f_g : {ae mu, forall x n, D x -> `|f_ n x| <= g x}.
 
 Let g_ n x := `|f_ n x - f x|.
 
@@ -4007,7 +4007,7 @@ Theorem dominated_convergence : [/\ mu.-integrable D f,
   (fun n => \int_ D (f_ n x) 'd mu[x]) --> \int_ D (f x) 'd mu[x]].
 Proof.
 have [N1 [mN1 N10 subN1]] := f_f.
-have [N2 [mN2 N20 subN2]] := absfg.
+have [N2 [mN2 N20 subN2]] := f_g.
 have [N3 [mN3 N30 subN3]] := integrable_ae mD ig.
 pose N := N1 `|` N2 `|` N3.
 have mN : measurable N by apply: measurableU => //; exact: measurableU.
@@ -5330,5 +5330,8 @@ rewrite GE integralB// [in RHS]integralE//.
 rewrite fubini_tonelli2//; last exact: emeasurable_fun_funenng.
 by rewrite fubini_tonelli2//; exact: emeasurable_fun_funennp.
 Qed.
+
+Theorem Fubini : \int (\int (f (x, y)) 'd m2[y]) 'd m1[x] = \int (\int (f (x, y)) 'd m1[x]) 'd m2[y].
+Proof. by rewrite fubini1 -fubini2. Qed.
 
 End fubini.

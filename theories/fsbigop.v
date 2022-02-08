@@ -82,20 +82,42 @@ move: x y => [x| |] [y| |] //; rewrite ?lee_fin.
 Qed.
 Local Close Scope ereal_scope.
 
+(* PR 532 in progress *)
 Local Open Scope ereal_scope.
+Lemma addeoo (R : numDomainType) (x : \bar R) : x != -oo -> x + +oo = +oo.
+Proof. by case: x. Qed.
+
 Lemma esum_seq_ninfty (R : numDomainType)
     (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
-Admitted. (*PR in progress*)
+split=> [|[i [si Pi fi]]].
+  rewrite big_seq_cond; elim/big_ind: _ => // [[?| |] [?| |]//|].
+  by move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
+rewrite big_mkcond (bigID (xpred1 i))/= (eq_bigr (fun _ => -oo)); last first.
+  by move=> j /eqP ->; rewrite Pi.
+rewrite big_const_seq/= [X in X + _](_ : _ = -oo)//.
+elim: s i Pi fi si => // h t ih i Pi fi.
+rewrite inE => /predU1P[<-/=|it]; first by rewrite eqxx.
+by rewrite /= iterD ih//=; case: (_ == _).
+Qed. (*PR in progress*)
 
 Lemma esum_seq_pinfty (R : numDomainType)
     (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   (forall i, P i -> f i != -oo) ->
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
-Admitted. (*PR in progress *)
+move=> finoo; split=> [|[i [si Pi fi]]].
+  rewrite big_seq_cond; elim/big_ind: _ => // [[?| |] [?| |]//|].
+  by move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
+elim: s i Pi fi si => // h t ih i Pi fi.
+rewrite inE => /predU1P[<-/=|it].
+  rewrite big_cons Pi fi addooe//.
+  by apply/eqP => /esum_seq_ninfty[j [jt /finoo/negbTE/eqP]].
+by rewrite big_cons; case: ifPn => Ph; rewrite (ih i)// addeoo// finoo.
+Qed.
 Local Close Scope ereal_scope.
+(* /PR 532 in progress *)
 
 Lemma seq_psume_eq0 (R : realDomainType) (I : choiceType) (r : seq I)
     (P : pred I) (F : I -> \bar R) : (forall i, P i -> 0 <= F i)%E ->
