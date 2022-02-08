@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice order.
 From mathcomp Require Import ssrnat seq fintype bigop div prime path finmap.
-From mathcomp Require Import ssralg ssrnum ssrint rat finset.
+From mathcomp Require Import ssralg ssrnum ssrint rat finset interval.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -226,3 +226,26 @@ Lemma perm_big_supp [R : eqType] [idx : R] [op : Monoid.com_law idx] [I : eqType
 Proof.
 by move=> ?; apply: perm_big_supp_cond; rewrite !filter_predI perm_filter.
 Qed.
+
+Local Open Scope order_scope.
+Local Open Scope ring_scope.
+Import GRing.Theory Order.TTheory.
+
+(* NB: in MathComp 1.13.0 *)
+Lemma natr_absz (R : numDomainType) i : `|i|%:R = `|i|%:~R :> R.
+Proof. by rewrite -abszE. Qed.
+
+Lemma ge_pinfty (R : numDomainType) (x : itv_bound R) :
+  (+oo <= x)%O = (x == +oo)%O.
+Proof. by move: x => [[]|[]]. Qed.
+
+Lemma le_ninfty (R : numDomainType) (x : itv_bound R) :
+  (x <= -oo)%O = (x == -oo%O).
+Proof. by case: x => // -[]. Qed.
+
+Lemma gt_pinfty (R : numDomainType) (x : itv_bound R) : (+oo%O < x)%O = false.
+Proof. by case: x. Qed.
+
+Lemma lt_ninfty (R : numDomainType) (x : itv_bound R) : (x < -oo%O)%O = false.
+Proof. by case: x => // -[]. Qed.
+(* /NB: in MathComp 1.13.0 *)

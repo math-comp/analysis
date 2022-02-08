@@ -1356,7 +1356,7 @@ Inductive ps_infty : set \bar R -> Prop :=
 Lemma ps_inftyP (A : set \bar R) : ps_infty A <-> A `<=` [set -oo; +oo]%E.
 Proof.
 split => [[]//|Aoo].
-by have [|[|[|]]] := subset_set2 Aoo; move=> ->; constructor.
+by have [] := subset_set2 Aoo; move=> ->; constructor.
 Qed.
 
 Definition emeasurable : set (set \bar R) :=
@@ -3187,7 +3187,7 @@ Proof. exact: sigma_algebra0. Qed.
 
 Lemma prod_salgebra_setC A : preimage_classes f1 f2 A ->
   preimage_classes f1 f2 (~` A).
-Proof. exact: g_salgebra_on_setC_setT. Qed.
+Proof. exact: sigma_algebraC. Qed.
 
 Lemma prod_salgebra_bigcup (F : _^nat) : (forall i, preimage_classes f1 f2 (F i)) ->
   preimage_classes f1 f2 (\bigcup_i (F i)).

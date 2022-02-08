@@ -16,6 +16,8 @@ Require Import classical_sets posnum topology normedtype landau.
 (* Definitions:                                                               *)
 (*           R ^nat == notation for sequences,                                *)
 (*                     i.e., functions of type nat -> R                       *)
+(*            seqDU F == the sequence F_0, F_1 \ F_0, F_2 \ (F_0 U F_1),...   *)
+(*             seqD F == the sequence F_0, F_1 \ F_0, F_2 \ F_1,...           *)
 (*         harmonic == harmonic sequence                                      *)
 (*       arithmetic == arithmetic sequence                                    *)
 (*        geometric == geometric sequence                                     *)
@@ -165,6 +167,127 @@ Qed.
 
 Local Notation eqolimn := (@eqolim _ _ _ eventually_filter).
 Local Notation eqolimPn := (@eqolimP _ _ _ eventually_filter).
+
+(*********************)
+(* Sequences of sets *)
+(*********************)
+
+Section seqDU.
+Variables (T : Type).
+Implicit Types F : (set T)^nat.
+
+Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
+
+Lemma trivIset_seqDU F : trivIset setT (seqDU F).
+Proof.
+move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
+  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB ->.
+move=> /set0P; apply: contraNeq => _; apply/eqP.
+rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
+by rewrite setCU setIAC !setIA setICl !set0I.
+Qed.
+
+Lemma bigsetU_seqDU F n :
+  \big[setU/set0]_(k < n) F k = \big[setU/set0]_(k < n) seqDU F k.
+Proof.
+elim: n => [|n ih]; first by rewrite 2!big_ord0.
+rewrite !big_ord_recr /= predeqE => t; split=> [[Ft|Fnt]|[Ft|[Fnt Ft]]].
+- by left; rewrite -ih.
+- have [?|?] := pselect ((\big[setU/set0]_(i < n) seqDU F i) t); first by left.
+  by right; split => //; rewrite ih.
+- by left; rewrite ih.
+- by right.
+Qed.
+
+Lemma seqDU_bigcup_eq F : \bigcup_k F k = \bigcup_k seqDU F k.
+Proof.
+rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
+  by rewrite setDE => -[? _]; exists n.
+have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
+suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
+  by exists m => //; split => //; rewrite -bigcup_mkord => -[k kj]; exact: FNmt.
+move: UFnt; rewrite -bigcup_mkord => -[/= k _ Fkt] {Fnt n}.
+have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
+case: k => [|k] in Fkt kn *; first by exists O.
+have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
+move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply (ih t i) => //.
+by rewrite (leq_ltn_trans ik).
+Qed.
+
+End seqDU.
+Hint Resolve trivIset_seqDU : core.
+
+Section seqD.
+Variable T : Type.
+Implicit Types F : (set T) ^nat.
+
+Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
+
+Lemma seqDUE F : nondecreasing_seq F -> seqDU F = seqD F.
+Proof.
+move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
+rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
+by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
+Qed.
+
+Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
+Proof. by move=> ndF; rewrite -seqDUE //; exact: trivIset_seqDU. Qed.
+
+Lemma bigsetU_seqD F n :
+  \big[setU/set0]_(i < n) F i = \big[setU/set0]_(i < n) seqD F i.
+Proof.
+case: n => [|n]; first by rewrite 2!big_ord0.
+elim: n => [|n ih]; first by rewrite !big_ord_recl !big_ord0.
+rewrite big_ord_recr [in RHS]big_ord_recr /= -{}ih predeqE => x; split.
+  move=> [?|?]; first by left.
+  have [?|?] := pselect (F n x); last by right.
+  by left; rewrite big_ord_recr /=; right.
+by move=> [?|[? ?]]; [left | right].
+Qed.
+
+Lemma setU_seqD F : nondecreasing_seq F ->
+  forall n, F n.+1 = F n `|` seqD F n.+1.
+Proof.
+move=> ndF n; rewrite /seqD funeqE => x; rewrite propeqE; split.
+by move=> ?; have [?|?] := pselect (F n x); [left | right].
+by move=> -[|[]//]; move: x; exact/subsetPset/ndF.
+Qed.
+
+Lemma eq_bigsetU_seqD F n : nondecreasing_seq F ->
+  F n = \big[setU/set0]_(i < n.+1) seqD F i.
+Proof.
+move=> ndF; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
+- by move=> ?; rewrite big_ord_recl big_ord0; left.
+- by rewrite big_ord_recl big_ord0 setU0.
+- rewrite (setU_seqD ndF) => -[|/=].
+  by rewrite big_ord_recr /= -ih => Fnx; left.
+  by move=> -[Fn1x Fnx]; rewrite big_ord_recr /=; right.
+- by rewrite big_ord_recr /= -ih => -[|[]//]; move: x; exact/subsetPset/ndF.
+Qed.
+
+Lemma eq_bigcup_seqD F : \bigcup_n F n = \bigcup_n seqD F n.
+Proof.
+rewrite funeqE => x; rewrite propeqE; split.
+  case; elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
+  have [|Fnx] := pselect (F n x); last by exists n.+1.
+  by move=> /(ih I)[m _ Fmx]; exists m.
+case; elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; by [exists O | exists n.+1].
+Qed.
+
+Lemma eq_bigcup_seqD_bigsetU F :
+  \bigcup_n (seqD (fun n => \big[setU/set0]_(i < n.+1) F i) n) = \bigcup_n F n.
+Proof.
+rewrite -(@eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) F i)).
+rewrite eqEsubset; split => [t [i _]|t [i _ Fit]].
+  by rewrite -bigcup_set_cond => -[/= j _ Fjt]; exists j.
+by exists i => //; rewrite big_ord_recr /=; right.
+Qed.
+
+End seqD.
+
+(************************************)
+(* Convergence of patched sequences *)
+(************************************)
 
 Section sequences_patched.
 (* TODO: generalizations to numDomainType *)

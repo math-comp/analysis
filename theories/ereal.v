@@ -2598,6 +2598,41 @@ Proof. by move=> A B AB; apply ub_ereal_sup => x Ax; apply/ereal_sup_ub/AB. Qed.
 Lemma le_ereal_inf : {homo @ereal_inf R : A B / A `<=` B >-> B <= A}.
 Proof. by move=> A B AB; apply lb_ereal_inf => x Bx; exact/ereal_inf_lb/AB. Qed.
 
+Lemma hasNub_ereal_sup (A : set (\bar R)) : ~ has_ubound A ->
+  A !=set0 -> ereal_sup A = +oo%E.
+Proof.
+move=> hasNubA A0.
+apply/eqP; rewrite eq_le lee_pinfty /= leNgt.
+apply: contra_notN hasNubA => Aoo.
+by exists (ereal_sup A); exact: ereal_sup_ub.
+Qed.
+
+Lemma ereal_sup_EFin  (A : set R) :
+  has_ubound A -> A !=set0 -> ereal_sup (EFin @` A) = (sup A)%:E.
+Proof.
+move=> has_ubA A0; apply/eqP; rewrite eq_le; apply/andP; split.
+  by apply: ub_ereal_sup => /= y [r Ar <-{y}]; rewrite lee_fin sup_ub.
+set esup := ereal_sup _; have := lee_pinfty esup.
+rewrite le_eqVlt => /predU1P[->|esupoo]; first by rewrite lee_pinfty.
+have := lee_ninfty esup; rewrite le_eqVlt => /predU1P[/esym|ooesup].
+  case: A0 => i Ai.
+  by move=> /ereal_sup_ninfty /(_ i%:E) /(_ (ex_intro2 A _ i Ai erefl)).
+have esup_fin_num : esup \is a fin_num.
+  rewrite fin_numE -lee_ninfty_eq -ltNge ooesup /= -lee_pinfty_eq -ltNge.
+  by rewrite esupoo.
+rewrite -(@fineK _ esup) // lee_fin leNgt.
+apply/negP => /(sup_gt A0)[r Ar]; apply/negP; rewrite -leNgt.
+by rewrite -lee_fin fineK//; apply: ereal_sup_ub; exists r.
+Qed.
+
+Lemma ereal_inf_EFin (A : set R) : has_lbound A -> A !=set0 ->
+   ereal_inf (EFin @` A) = (inf A)%:E.
+Proof.
+move=> has_lbA A0; rewrite /ereal_inf /inf EFinN; congr (- _)%E.
+rewrite -ereal_sup_EFin; [|exact/has_lb_ubN|exact/nonemptyN].
+by rewrite !image_comp.
+Qed.
+
 End ereal_supremum_realType.
 
 Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) 0%E.

@@ -16,8 +16,6 @@ From HB Require Import structures.
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (* - Achim Klenke, Probability Theory 2nd edition, 2014                       *)
 (*                                                                            *)
-(*            seqDU F == the sequence F_0, F_1 \ F_0, F_2 \ (F_0 U F_1),...   *)
-(*             seqD F == the sequence F_0, F_1 \ F_0, F_2 \ F_1,...           *)
 (*      setI_closed G == the set of sets G is closed under finite             *)
 (*                       intersection                                         *)
 (*      setU_closed G == the set of sets G is closed under finite union       *)
@@ -117,241 +115,14 @@ Reserved Notation "mu .-measurable" (at level 2, format "mu .-measurable").
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* NB: in MathComp 1.13.0 *)
-Lemma natr_absz (R : numDomainType) i : `|i|%:R = `|i|%:~R :> R.
-Proof. by rewrite -abszE. Qed.
-
-Lemma ge_pinfty (R : numDomainType) (x : itv_bound R) :
-  (+oo <= x)%O = (x == +oo)%O.
-Proof. by move: x => [[]|[]]. Qed.
-
-Lemma le_ninfty (R : numDomainType) (x : itv_bound R) :
-  (x <= -oo)%O = (x == -oo%O).
-Proof. by case: x => // -[]. Qed.
-
-Lemma gt_pinfty (R : numDomainType) (x : itv_bound R) : (+oo%O < x)%O = false.
-Proof. by case: x. Qed.
-
-Lemma lt_ninfty (R : numDomainType) (x : itv_bound R) : (x < -oo%O)%O = false.
-Proof. by case: x => // -[]. Qed.
-(* /NB: in MathComp 1.13.0 *)
-
-(******************************************************************************)
-(*                         lemmas waiting to be PRed                          *)
-(******************************************************************************)
-
-(* TODO: PR along subset_set1? *)
-Lemma subset_set2 T (A : set T) a b : A `<=` [set a; b] ->
-  A = set0 \/ A = [set a] \/ A = [set b] \/ A = [set a; b].
-Proof.
-have [<-|ab Aab] := pselect (a = b).
-  by rewrite setUid => Aa; have [|] := subset_set1 Aa; tauto.
-have [Aa|Aa] := pselect (A `<=` [set a]).
-  by rewrite orA; left; exact/subset_set1.
-have [Ab|Ab] := pselect (A `<=` [set b]).
-  have [A0|{}Ab] := subset_set1 Ab; first by left.
-  by rewrite orA; right; left.
-rewrite 2!orA; right; rewrite eqEsubset; split => //.
-move/nonsubset : Ab => -[y [Ay yb]].
-have <- : y = a by apply: contrapT => ya; move/Aab : Ay => [|].
-move/nonsubset : Aa => -[z [Az za]].
-have <- : z = b by apply: contrapT => zb; move/Aab : Az => [|].
-by move=> _ [|] ->.
-Qed.
-
-(* TODO: move to reals.v *)
-Lemma sup_gt (R : realType) (S : set R) (x : R) : S !=set0 ->
-  (x < sup S -> exists2 y, S y & x < y)%R.
-Proof.
-move=> S0; rewrite not_exists2P => + g; apply/negP; rewrite -leNgt.
-by apply sup_le_ub => // y Sy; move: (g y) => -[// | /negP]; rewrite leNgt.
-Qed.
-
-Lemma inf_lt (R : realType) (S : set R) (x : R) : S !=set0 ->
-  (inf S < x -> exists2 y, S y & y < x)%R.
-Proof.
-move=> /nonemptyN S0; rewrite /inf ltr_oppl => /sup_gt => /(_ S0)[r [r' Sr']].
-by move=> <-; rewrite ltr_oppr opprK => r'x; exists r'.
-Qed.
-
-Lemma ltr_add_invr (R : realType) (y x : R) :
-  (y < x -> exists k, y + k.+1%:R^-1 < x)%R.
-Proof.
-move=> yx; exists `|floor (x - y)^-1|%N.
-rewrite -ltr_subr_addl -{2}(invrK (x - y)%R) ltr_pinv ?inE.
-- rewrite -addn1 natrD natr_absz ger0_norm; last first.
-    by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.
-  by rewrite -RfloorE lt_succ_Rfloor.
-- by rewrite ltr0n andbT unitfE pnatr_eq0.
-- by rewrite invr_gt0 subr_gt0 yx andbT unitfE invr_eq0 gt_eqF// subr_gt0.
-Qed.
-
-(* TODO: move to ereal.v *)
-Lemma hasNub_ereal_sup (R : realType) (A : set (\bar R)) : ~ has_ubound A ->
-  A !=set0 -> ereal_sup A = +oo%E.
-Proof.
-move=> hasNubA A0.
-apply/eqP; rewrite eq_le lee_pinfty /= leNgt.
-apply: contra_notN hasNubA => Aoo.
-by exists (ereal_sup A); exact: ereal_sup_ub.
-Qed.
-
-Lemma ereal_sup_EFin (R : realType) (A : set R) :
-  has_ubound A -> A !=set0 -> ereal_sup (EFin @` A) = (sup A)%:E.
-Proof.
-move=> has_ubA A0; apply/eqP; rewrite eq_le; apply/andP; split.
-  by apply: ub_ereal_sup => /= y [r Ar <-{y}]; rewrite lee_fin sup_ub.
-set esup := ereal_sup _; have := lee_pinfty esup.
-rewrite le_eqVlt => /predU1P[->|esupoo]; first by rewrite lee_pinfty.
-have := lee_ninfty esup; rewrite le_eqVlt => /predU1P[/esym|ooesup].
-  case: A0 => i Ai.
-  by move=> /ereal_sup_ninfty /(_ i%:E) /(_ (ex_intro2 A _ i Ai erefl)).
-have esup_fin_num : esup \is a fin_num.
-  rewrite fin_numE -lee_ninfty_eq -ltNge ooesup /= -lee_pinfty_eq -ltNge.
-  by rewrite esupoo.
-rewrite -(@fineK _ esup) // lee_fin leNgt.
-apply/negP => /(sup_gt A0)[r Ar]; apply/negP; rewrite -leNgt.
-by rewrite -lee_fin fineK//; apply: ereal_sup_ub; exists r.
-Qed.
-
-Lemma ereal_inf_EFin (R : realType) (A : set R) :
-  has_lbound A -> A !=set0 -> ereal_inf (EFin @` A) = (inf A)%:E.
-Proof.
-move=> has_lbA A0; rewrite /ereal_inf /inf EFinN; congr (- _)%E.
-rewrite -ereal_sup_EFin; [|exact/has_lb_ubN|exact/nonemptyN].
-by rewrite !image_comp.
-Qed.
-
-(* NB: not used? *)
-Lemma mask_second (T : Type) (b : T) a t :
-  a :: t = mask (true :: false :: nseq (size t) true) [:: a, b & t].
-Proof. by rewrite /= mask_true. Qed.
-
-Lemma cons_head_beheadE {T : eqType} (s : seq T) def :
-  s != [::] -> head def s :: behead s = s.
-Proof. by case: s. Qed.
-
-(******************************************************************************)
-(*                        /lemmas waiting to be PRed                          *)
-(******************************************************************************)
-
-Section seqDU.
-Variables (T : Type).
-Implicit Types F : (set T)^nat.
-
-Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
-
-Lemma trivIset_seqDU F : trivIset setT (seqDU F).
-Proof.
-move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
-  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB ->.
-move=> /set0P; apply: contraNeq => _; apply/eqP.
-rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
-by rewrite setCU setIAC !setIA setICl !set0I.
-Qed.
-
-Lemma bigsetU_seqDU F n :
-  \big[setU/set0]_(k < n) F k = \big[setU/set0]_(k < n) seqDU F k.
-Proof.
-elim: n => [|n ih]; first by rewrite 2!big_ord0.
-rewrite !big_ord_recr /= predeqE => t; split=> [[Ft|Fnt]|[Ft|[Fnt Ft]]].
-- by left; rewrite -ih.
-- have [?|?] := pselect ((\big[setU/set0]_(i < n) seqDU F i) t); first by left.
-  by right; split => //; rewrite ih.
-- by left; rewrite ih.
-- by right.
-Qed.
-
-Lemma seqDU_bigcup_eq F : \bigcup_k F k = \bigcup_k seqDU F k.
-Proof.
-rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
-  by rewrite setDE => -[? _]; exists n.
-have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
-suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
-  by exists m => //; split => //; rewrite -bigcup_mkord => -[k kj]; exact: FNmt.
-move: UFnt; rewrite -bigcup_mkord => -[/= k _ Fkt] {Fnt n}.
-have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
-case: k => [|k] in Fkt kn *; first by exists O.
-have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
-move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply (ih t i) => //.
-by rewrite (leq_ltn_trans ik).
-Qed.
-
-End seqDU.
-Hint Resolve trivIset_seqDU : core.
-
-Section seqD.
-Variable T : Type.
-Implicit Types F : (set T) ^nat.
-
-Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
-
-Lemma seqDUE F : nondecreasing_seq F -> seqDU F = seqD F.
-Proof.
-move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
-rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
-by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
-Qed.
-
-Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
-Proof. by move=> ndF; rewrite -seqDUE //; exact: trivIset_seqDU. Qed.
-
-Lemma bigsetU_seqD F n :
-  \big[setU/set0]_(i < n) F i = \big[setU/set0]_(i < n) seqD F i.
-Proof.
-case: n => [|n]; first by rewrite 2!big_ord0.
-elim: n => [|n ih]; first by rewrite !big_ord_recl !big_ord0.
-rewrite big_ord_recr [in RHS]big_ord_recr /= -{}ih predeqE => x; split.
-  move=> [?|?]; first by left.
-  have [?|?] := pselect (F n x); last by right.
-  by left; rewrite big_ord_recr /=; right.
-by move=> [?|[? ?]]; [left | right].
-Qed.
-
-Lemma setU_seqD F : nondecreasing_seq F ->
-  forall n, F n.+1 = F n `|` seqD F n.+1.
-Proof.
-move=> ndF n; rewrite /seqD funeqE => x; rewrite propeqE; split.
-by move=> ?; have [?|?] := pselect (F n x); [left | right].
-by move=> -[|[]//]; move: x; exact/subsetPset/ndF.
-Qed.
-
-Lemma eq_bigsetU_seqD F n : nondecreasing_seq F ->
-  F n = \big[setU/set0]_(i < n.+1) seqD F i.
-Proof.
-move=> ndF; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
-- by move=> ?; rewrite big_ord_recl big_ord0; left.
-- by rewrite big_ord_recl big_ord0 setU0.
-- rewrite (setU_seqD ndF) => -[|/=].
-  by rewrite big_ord_recr /= -ih => Fnx; left.
-  by move=> -[Fn1x Fnx]; rewrite big_ord_recr /=; right.
-- by rewrite big_ord_recr /= -ih => -[|[]//]; move: x; exact/subsetPset/ndF.
-Qed.
-
-Lemma eq_bigcup_seqD F : \bigcup_n F n = \bigcup_n seqD F n.
-Proof.
-rewrite funeqE => x; rewrite propeqE; split.
-  case; elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
-  have [|Fnx] := pselect (F n x); last by exists n.+1.
-  by move=> /(ih I)[m _ Fmx]; exists m.
-case; elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; by [exists O | exists n.+1].
-Qed.
-
-Lemma eq_bigcup_seqD_bigsetU F :
-  \bigcup_n (seqD (fun n => \big[setU/set0]_(i < n.+1) F i) n) = \bigcup_n F n.
-Proof.
-rewrite -(@eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) F i)).
-rewrite eqEsubset; split => [t [i _]|t [i _ Fit]].
-  by rewrite -bigcup_set_cond => -[/= j _ Fjt]; exists j.
-by exists i => //; rewrite big_ord_recr /=; right.
-Qed.
-
-End seqD.
-
 Section classes.
 Context {T} (C : set (set T) -> Prop) (D : set T) (G : set (set T)).
 
+Definition setC_closed := forall A, G A -> G (~` A).
 Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
+Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
+Definition setD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
+Definition setDI_closed := forall A B, G A -> G B -> G (A `\` B).
 
 Definition fin_bigcap_closed :=
     forall I (D : set I) A_, finite_set D -> (forall i, D i -> G (A_ i)) ->
@@ -362,21 +133,12 @@ Definition finN0_bigcap_closed :=
     (forall i, D i -> G (A_ i)) ->
   G (\bigcap_(i in D) (A_ i)).
 
-Definition setU_closed :=
-  forall A B, G A -> G B -> G (A `|` B).
-
 Definition fin_bigcup_closed :=
     forall I (D : set I) A_, finite_set D -> (forall i, D i -> G (A_ i)) ->
   G (\bigcup_(i in D) (A_ i)).
 
 Definition semi_setD_closed := forall A B, G A -> G B -> exists D,
   [/\ finite_set D, D `<=` G, A `\` B = \bigcup_(X in D) X & trivIset D id].
-
-Definition setC_closed := forall A, G A -> G (~` A).
-
-Definition setD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
-
-Definition setDI_closed := forall A B, G A -> G B -> G (A `\` B).
 
 Definition ndseq_closed :=
  forall F, nondecreasing_seq F -> (forall i, G (F i)) -> G (\bigcup_i (F i)).
@@ -624,7 +386,6 @@ End monotone_class_subset.
 Section dynkin.
 Variable T : Type.
 Implicit Types G D : set (set T).
-
 
 Lemma dynkinT G : dynkin G -> G setT. Proof. by case. Qed.
 
@@ -982,14 +743,14 @@ Definition g_measurable {T} (G : set (set T)) := T.
 Section g_salgebra_instance.
 Variables (T : pointedType) (G : set (set T)).
 
-Lemma g_salgebra_on_setC_setT (A : set T) : <<s G >> A -> <<s G >> (~` A).
+Lemma sigma_algebraC (A : set T) : <<s G >> A -> <<s G >> (~` A).
 Proof. by move=> sGA; rewrite -setTD; exact: sigma_algebraD. Qed.
 
 Canonical g_measurable_eqType := EqType (g_measurable G) (Equality.class T).
 Canonical g_measurable_choiceType := ChoiceType (g_measurable G) (Choice.class T).
 Canonical g_measurable_ptType := PointedType (g_measurable G) (Pointed.class T).
 HB.instance Definition _ := @isMeasurable.Build (g_measurable G) (Pointed.class T)
-  <<s G >> (@sigma_algebra0 _ setT G) (@g_salgebra_on_setC_setT)
+  <<s G >> (@sigma_algebra0 _ setT G) (@sigma_algebraC)
   (@sigma_algebra_bigcup _ setT G).
 
 Definition g_measurableType := [the measurableType of g_measurable G].

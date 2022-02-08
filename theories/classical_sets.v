@@ -667,6 +667,24 @@ Proof. by move=> sAB [x Ax]; exists x; apply: sAB. Qed.
 Lemma subsetC A B : A `<=` B -> ~` B `<=` ~` A.
 Proof. by move=> sAB ? nBa ?; apply/nBa/sAB. Qed.
 
+Lemma subsetCl A B : ~` A `<=` B -> ~` B `<=` A.
+Proof. by move=> /subsetC; rewrite setCK. Qed.
+
+Lemma subsetCr A B : A `<=` ~` B -> B `<=` ~` A.
+Proof. by move=> /subsetC; rewrite setCK. Qed.
+
+Lemma subsetC2 A B : ~` A `<=` ~` B -> B `<=` A.
+Proof. by move=> /subsetC; rewrite !setCK. Qed.
+
+Lemma subsetCP A B : ~` A `<=` ~` B <-> B `<=` A.
+Proof. by split=> /subsetC; rewrite ?setCK. Qed.
+
+Lemma subsetCPl A B : ~` A `<=` B <-> ~` B `<=` A.
+Proof. by split=> /subsetC; rewrite ?setCK. Qed.
+
+Lemma subsetCPr A B : A `<=` ~` B <-> B `<=` ~` A.
+Proof. by split=> /subsetC; rewrite ?setCK. Qed.
+
 Lemma subsetUl A B : A `<=` A `|` B. Proof. by move=> x; left. Qed.
 
 Lemma subsetUr A B : B `<=` A `|` B. Proof. by move=> x; right. Qed.
@@ -840,6 +858,9 @@ Proof. by rewrite !setDE setCI setIUr setCK. Qed.
 
 Lemma setDIr A B C : A `\` B `&` C = (A `\` B) `|` (A `\` C).
 Proof. by rewrite !setDE setCI setIUr. Qed.
+
+Lemma setUIDK A B : (A `&` B) `|` A `\` B = A.
+Proof. by rewrite setUC -setDDr setDv setD0. Qed.
 
 Lemma setM0 T' (A : set T) : A `*` set0 = set0 :> set (T * T').
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
@@ -1082,6 +1103,18 @@ Lemma subset_set1 A a : A `<=` [set a] -> A = set0 \/ A = [set a].
 Proof.
 move=> Aa; have [/eqP|/set0P[t At]] := boolP (A == set0); first by left.
 by right; rewrite eqEsubset; split => // ? ->; rewrite -(Aa _ At).
+Qed.
+
+Lemma subset_set2 A a b : A `<=` [set a; b] ->
+  [\/ A = set0, A = [set a], A = [set b] | A = [set a; b]].
+Proof.
+have [<-|ab Aab] := pselect (a = b).
+  by rewrite setUid => /subset_set1[]->; [apply: Or41|apply: Or42].
+have [|/nonsubset[x [/[dup] /Aab []// -> Ab _]]] := pselect (A `<=` [set a]).
+  by move=> /subset_set1[]->; [apply: Or41|apply: Or42].
+have [|/nonsubset[y [/[dup] /Aab []// -> Aa _]]] := pselect (A `<=` [set b]).
+  by move=> /subset_set1[]->; [apply: Or41|apply: Or43].
+by apply: Or44; apply/seteqP; split=> // z /= [] ->.
 Qed.
 
 Lemma sub_image_setI f A B : f @` (A `&` B) `<=` f @` A `&` f @` B.

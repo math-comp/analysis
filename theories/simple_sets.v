@@ -63,6 +63,14 @@ Local Open Scope ring_scope.
 Reserved Notation "[ 'sset' 'of' s ]"
   (at level 0, format "[ 'sset'  'of'  s ]").
 
+Lemma mask_second (T : Type) (b : T) a t :
+  a :: t = mask (true :: false :: nseq (size t) true) [:: a, b & t].
+Proof. by rewrite /= mask_true. Qed.
+
+Lemma cons_head_beheadE {T : eqType} (s : seq T) def :
+  s != [::] -> head def s :: behead s = s.
+Proof. by case: s. Qed.
+
 Section itv_diff.
 Variable R : realType.
 Implicit Types i j : interval R.
