@@ -1521,7 +1521,7 @@ by apply: sub_sigma_algebra; apply/is_ocitv.
 Qed.
 #[local] Hint Resolve measurable_set1 : core.
 
-Lemma measurable_itv (i : interval R) : measurable ([set` i]).
+Lemma measurable_itv (i : interval R) : measurable [set` i].
 Proof.
 have moc (a b : R) : measurable `]a, b]%classic.
   by apply: sub_sigma_algebra; apply: is_ocitv.
@@ -1583,6 +1583,7 @@ case: x => [r| |].
 - exists set0 => //; [exists [set -oo%E]; [by constructor|]].
   by rewrite image_set0 set0U.
 Qed.
+#[local] Hint Resolve emeasurable_set1 : core.
 
 Lemma itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
 Proof.
@@ -1615,9 +1616,9 @@ move: y => [y| |].
 - exists [set` Interval (BSide b y) +oo%O]; first exact: measurable_itv.
   by exists [set +oo%E]; [constructor|rewrite -punct_eitv_bnd_pinfty].
 - case: b; last by rewrite itv_opinfty_pinfty.
-  by rewrite itv_cpinfty_pinfty; exact: emeasurable_set1.
+  by rewrite itv_cpinfty_pinfty.
 - case: b; first by rewrite itv_cninfty_pinfty.
-  by rewrite itv_oninfty_pinfty; exact/measurableC/emeasurable_set1.
+  by rewrite itv_oninfty_pinfty; exact/measurableC.
 Qed.
 
 Lemma emeasurable_itv_ninfty_bnd b (y : \bar R) :
@@ -1672,9 +1673,7 @@ apply: (@measure_semi_sigma_additive _ _ (@lebesgue_measure R)
   apply: measurable_fine.
   rewrite -XX'Fn.
   apply: measurableU; first exact: measurable_EFin.
-  case: mX'; [by [] |exact: emeasurable_set1
-                    |exact: emeasurable_set1|].
-  by apply: measurableU; exact: emeasurable_set1.
+  by case: mX' => //; exact: measurableU.
 - move=> i j _ _ [x [[a [Fia aoo ax] [b [Fjb boo] bx]]]].
   move: tF => /(_ i j Logic.I Logic.I); apply.
   suff ab : a = b by exists a; split => //; rewrite ab.

@@ -281,6 +281,8 @@ Proof. by move=> mA=> _ [C mC <-]; apply: measurableI. Qed.
 (*                        /lemmas waiting to be PRed                          *)
 (******************************************************************************)
 
+Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
+
 Section funpos.
 Local Open Scope ereal_scope.
 
@@ -438,7 +440,9 @@ Variables (T : measurableType) (R : realType).
 
 Lemma emeasurable_fun_funenng (D : set T) (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\+%E.
-Proof. by move=> mf; apply: emeasurable_fun_max => //; apply: measurable_fun_cst. Qed.
+Proof.
+by move=> mf; apply: emeasurable_fun_max => //; apply: measurable_fun_cst.
+Qed.
 
 Lemma emeasurable_fun_funennp (D : set T) (f : T -> \bar R) :
    measurable_fun D f -> measurable_fun D f^\-%E.
@@ -584,9 +588,6 @@ Reserved Notation "[ 'sfun' 'of' f ]"
   (at level 0, format "[ 'sfun'  'of'  f ]").
 Notation "{ 'sfun'  aT >-> T }" := (@SimpleFun.type aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
-
-Hint Extern 0 (measurable [set _]) =>
-  solve [apply: measurable_set1] : core.
 
 Lemma measurable_sfunP {aT : measurableType} {rT : realType} (f : {mfun aT >-> rT}) (y : rT) :
   measurable (f @^-1` [set y]).
@@ -3971,9 +3972,9 @@ pose f' := f \_ (D `\` N); pose g' := g \_ (D `\` N).
 pose f_' := fun n => f_ n \_ (D `\` N).
 have f_f' x : D x -> f_' ^~ x --> f' x.
   move=> Dx; rewrite /f_' /f' /restrict in_setD mem_set//=.
-  have [/= xN|/=xN] := boolP (x \in N); first exact: cvg_cst.
+  have [/= xN|/= xN] := boolP (x \in N); first exact: cvg_cst.
   apply: contraPP (xN) => h; apply/negP; rewrite negbK inE; left; left.
-  by apply: subN1 => /= /(_ Dx); apply: contra_not h.
+  by apply: subN1 => /= /(_ Dx); exact: contra_not h.
 have f_g' n x : D x -> `|f_' n x| <= g' x.
   move=> Dx; rewrite /f_' /g' /restrict in_setD mem_set//=.
   have [/=|/= xN] := boolP (x \in N); first by rewrite normr0.
