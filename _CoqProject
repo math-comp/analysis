@@ -30,6 +30,7 @@ theories/nsatz_realtype.v
 theories/cardinality.v
 theories/csum.v
 theories/fsbigop.v
+theories/set_interval.v
 theories/lebesgue_measure.v
 theories/forms.v
 theories/derive.v
@@ -37,7 +38,6 @@ theories/measure.v
 theories/lebesgue_integral.v
 theories/summability.v
 theories/functions.v
-theories/simple_sets.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v

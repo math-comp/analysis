@@ -9,7 +9,7 @@ Require Import reals ereal topology normedtype sequences measure.
 Require Import nngnum lebesgue_measure csum fsbigop.
 
 (******************************************************************************)
-(*                         Lebesgue Integral (WIP)                            *)
+(*                            Lebesgue Integral                               *)
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue integral. It starts     *)
 (* with simple functions and their integral, provides basic operations        *)
@@ -729,7 +729,9 @@ Lemma fimfun_prod I r (P : {pred I}) (f : I -> {fimfun aT >-> rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 Lemma fimfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
-Proof. by apply/funext => x; elim: n => [|n IHn]//; rewrite !exprS fimfunM/= IHn. Qed.
+Proof.
+by apply/funext => x; elim: n => [|n IHn]//; rewrite !exprS fimfunM/= IHn.
+Qed.
 
 Lemma indic_fimfun_subproof X : @FiniteImage aT rT \1_X.
 Proof.
@@ -748,7 +750,8 @@ Arguments indic_fimfun {aT rT} _.
 Section comring.
 Context (aT : pointedType) (rT : comRingType).
 Definition fimfun_comRingMixin := [comRingMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfun_comRingType := ComRingType {fimfun aT >-> rT} fimfun_comRingMixin.
+Canonical fimfun_comRingType :=
+  ComRingType {fimfun aT >-> rT} fimfun_comRingMixin.
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
@@ -773,8 +776,8 @@ Lemma trivIset_preimage1 {aT rT} D (f : aT -> rT) :
   trivIset D (fun x => f @^-1` [set x]).
 Proof. by move=> y z _ _ [x [<- <-]]. Qed.
 
-Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT) (f : aT -> rT) :
-  trivIset D (fun x => A `&` f @^-1` [set x]).
+Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT)
+  (f : aT -> rT) : trivIset D (fun x => A `&` f @^-1` [set x]).
 Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
 
 Section fimfun_bin.
@@ -786,10 +789,9 @@ HB.instance Definition _ := max_fimfun_subproof.
 
 End fimfun_bin.
 
-HB.factory Record FiniteDecomp (T : pointedType) (R : ringType) (f : T -> R) := {
-  fimfunE : exists (r : seq R) (A_ : R -> set T),
-    forall x, f x = \sum_(y <- r) (y * \1_(A_ y) x)
-}.
+HB.factory Record FiniteDecomp (T : pointedType) (R : ringType) (f : T -> R) :=
+  { fimfunE : exists (r : seq R) (A_ : R -> set T),
+      forall x, f x = \sum_(y <- r) (y * \1_(A_ y) x) }.
 HB.builders Context T R A f of @FiniteDecomp T R f.
   Lemma finite_subproof: @FiniteImage T R f.
   Proof.

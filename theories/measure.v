@@ -558,8 +558,8 @@ Canonical algebraOfSets_ptType (T : algebraOfSetsType) :=
   PointedType T ptclass.
 
 HB.mixin Record Measurable_from_algebraOfSets T of AlgebraOfSets T := {
-  measurable_bigcup : forall U : (set T)^nat, (forall i, measurable (U i)) ->
-    measurable (\bigcup_i (U i))
+  measurable_bigcup : forall F : (set T)^nat, (forall i, measurable (F i)) ->
+    measurable (\bigcup_i (F i))
 }.
 
 HB.structure Definition Measurable := {T of Measurable_from_algebraOfSets T &}.
@@ -630,8 +630,8 @@ HB.factory Record isMeasurable T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableC : forall A, measurable A -> measurable (~` A) ;
-  measurable_bigcup : forall U : (set T)^nat, (forall i, measurable (U i)) ->
-    measurable (\bigcup_i (U i))
+  measurable_bigcup : forall F : (set T)^nat, (forall i, measurable (F i)) ->
+    measurable (\bigcup_i (F i))
 }.
 
 HB.builders Context T of isMeasurable T.
@@ -865,26 +865,26 @@ Definition semi_additive2 := forall A B, measurable A -> measurable B ->
   measurable (A `|` B) ->
   A `&` B = set0 -> mu (A `|` B) = mu A + mu B.
 
-Definition semi_additive := forall A n,
- (forall i : nat, measurable (A i)) -> trivIset setT A ->
-  measurable (\big[setU/set0]_(i < n) A i) ->
-  mu (\big[setU/set0]_(i < n) A i) = \sum_(i < n) mu (A i).
+Definition semi_additive := forall F n,
+ (forall k : nat, measurable (F k)) -> trivIset setT F ->
+  measurable (\big[setU/set0]_(k < n) F k) ->
+  mu (\big[setU/set0]_(i < n) F i) = \sum_(i < n) mu (F i).
 
 Definition semi_sigma_additive :=
-  forall A, (forall i : nat, measurable (A i)) -> trivIset setT A ->
-  measurable (\bigcup_n A n) ->
-  (fun n => \sum_(0 <= i < n) mu (A i)) --> mu (\bigcup_n A n).
+  forall F, (forall i : nat, measurable (F i)) -> trivIset setT F ->
+  measurable (\bigcup_n F n) ->
+  (fun n => \sum_(0 <= i < n) mu (F i)) --> mu (\bigcup_n F n).
 
 Definition additive2 := forall A B, measurable A -> measurable B ->
   A `&` B = set0 -> mu (A `|` B) = mu A + mu B.
 
 Definition additive :=
-  forall A, (forall i : nat, measurable (A i)) -> trivIset setT A ->
-  forall n, mu (\big[setU/set0]_(i < n) A i) = \sum_(i < n) mu (A i).
+  forall F, (forall i : nat, measurable (F i)) -> trivIset setT F ->
+  forall n, mu (\big[setU/set0]_(i < n) F i) = \sum_(i < n) mu (F i).
 
 Definition sigma_additive :=
-  forall A, (forall i : nat, measurable (A i)) -> trivIset setT A ->
-  (fun n => \sum_(0 <= i < n) mu (A i)) --> mu (\bigcup_n A n).
+  forall F, (forall i : nat, measurable (F i)) -> trivIset setT F ->
+  (fun n => \sum_(0 <= i < n) mu (F i)) --> mu (\bigcup_n F n).
 
 Definition sub_additive := forall (A : set T) (F : nat -> set T) n,
  (forall k, `I_n k -> measurable (F k)) -> measurable A ->
