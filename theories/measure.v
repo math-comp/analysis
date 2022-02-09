@@ -2852,10 +2852,11 @@ Qed.
 Section Hahn_extension.
 Variables (R : realType) (T : semiRingOfSetsType).
 Variable mu : {additive_measure set T -> \bar R}.
+Let M : measurableType := [the measurableType of caratheodory_type (mu_ext mu)].
+
 Hypothesis mu_sub : sigma_sub_additive mu.
 Local Notation rT := (@SetRing.ring T).
 Let Rmu := SetRing.measure mu.
-Let M : measurableType := [the measurableType of caratheodory_type (mu_ext mu)].
 (*Let muR_sub := ring_sigma_sub_additive mu_sub.*)
 
 Lemma sub_caratheodory : <<s @measurable T >> `<=` @measurable M.
@@ -2967,7 +2968,6 @@ Lemma caratheodory_measurable_mu_ext (R : realType) (T : measurableType)
     (mu : {measure set T -> \bar R}) A :
   measurable A -> (mu_ext mu).-measurable A.
 Proof.
-move=> mu' Am; apply: sub_caratheodory => //.
-  exact: measure_sigma_sub_additive.
-exact: sub_sigma_algebra.
+by move=> mu' Am; apply: sub_caratheodory => //;
+  [exact: measure_sigma_sub_additive|exact: sub_sigma_algebra].
 Qed.
