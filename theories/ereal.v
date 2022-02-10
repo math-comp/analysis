@@ -728,7 +728,7 @@ Lemma adde_Neq_ninfty x y : x != +oo -> y != +oo ->
   (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma esum_ninfty (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma esum_ninftyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
 split=> [|[i [si Pi fi]]].
@@ -742,16 +742,15 @@ rewrite inE => /predU1P[<-/=|it]; first by rewrite eqxx.
 by rewrite /= iterD ih//=; case: (_ == _).
 Qed.
 
-Lemma esum_ord_ninfty n (f : 'I_n -> \bar R) :
-  (\sum_(i < n) f i == -oo) = [exists i, f i == -oo].
+Lemma esum_ninfty (I : finType) (f : I -> \bar R) (P : {pred I}) :
+  (\sum_(i | P i) f i == -oo) = [exists i in P, f i == -oo].
 Proof.
-rewrite -big_enum -(big_fset _ (mem_fin (fin_finpred (pred_of_simpl 'I_n)))).
-apply/idP/idP => [/eqP/esum_ninfty|/existsP[i /eqP fioo]].
-  by move=> -[i [_ _ fioo]]; apply/existsP; exists i; exact/eqP.
-by apply/eqP/esum_ninfty; exists i; split => //; rewrite inE.
+apply/idP/idP => [/eqP/esum_ninftyP|/existsP[i /andP[Pi /eqP fi]]].
+  by move=> -[i [_ Pi fi]]; apply/existsP; exists i; rewrite fi eqxx andbT.
+by apply/eqP/esum_ninftyP; exists i.
 Qed.
 
-Lemma esum_pinfty
+Lemma esum_pinftyP
     (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   (forall i, P i -> f i != -oo) ->
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
@@ -762,19 +761,18 @@ move=> finoo; split=> [|[i [si Pi fi]]].
 elim: s i Pi fi si => // h t ih i Pi fi.
 rewrite inE => /predU1P[<-/=|it].
   rewrite big_cons Pi fi addooe//.
-  by apply/eqP => /esum_ninfty[j [jt /finoo/negbTE/eqP]].
+  by apply/eqP => /esum_ninftyP[j [jt /finoo/negbTE/eqP]].
 by rewrite big_cons; case: ifPn => Ph; rewrite (ih i)// addeoo// finoo.
 Qed.
 
-Lemma esum_ord_pinfty n (f : 'I_n -> \bar R) : (forall i, f i != -oo) ->
-  (\sum_(i < n) f i == +oo) = [exists i, f i == +oo].
+Lemma esum_pinfty (I : finType) (P : {pred I}) (f : I -> \bar R) :
+  (forall i, P i -> f i != -oo) ->
+  (\sum_(i | P i) f i == +oo) = [exists i in P, f i == +oo].
 Proof.
-move=> finoo.
-rewrite -big_enum -(big_fset _ (mem_fin (fin_finpred (pred_of_simpl 'I_n)))).
-apply/idP/existsP => [/eqP /=|[/= i /eqP fioo]].
-  have {}finoo : (forall i, xpredT i -> f i != -oo) by move=> i _; exact: finoo.
-  by move/(esum_pinfty _ finoo) => [i [_ _ fioo]]; exists i; rewrite fioo.
-by apply/eqP/esum_pinfty => //; exists i; split => //; rewrite inE.
+move=> fio; apply/idP/existsP => [/eqP /=|[/= i /andP[Pi /eqP fi]]].
+  have {}fio : (forall i, P i -> f i != -oo) by move=> i Pi; exact: fio.
+  by move=> /(esum_pinftyP _ fio)[i [_ Pi fi]]; exists i; rewrite fi eqxx andbT.
+by apply/eqP/esum_pinftyP => //; exists i.
 Qed.
 
 Lemma adde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
@@ -1003,37 +1001,38 @@ Lemma dadde_Neq_ninfty x y : x != +oo -> y != +oo ->
   (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma desum_pinfty
+Lemma desum_pinftyP
     (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
-rewrite dual_sumeE eqe_oppLRP /= esum_ninfty.
+rewrite dual_sumeE eqe_oppLRP /= esum_ninftyP.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
 
-Lemma desum_ord_pinfty n (f : 'I_n -> \bar R) :
-  (\sum_(i < n) f i == +oo) = [exists i, f i == +oo].
+Lemma desum_pinfty (I : finType) (f : I -> \bar R) (P : {pred I}) :
+  (\sum_(i | P i) f i == +oo) = [exists i in P, f i == +oo].
 Proof.
-rewrite dual_sumeE eqe_oppLR esum_ord_ninfty.
+rewrite dual_sumeE eqe_oppLR esum_ninfty.
 by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
-Lemma desum_ninfty
+Lemma desum_ninftyP
     (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   (forall i, P i -> f i != +oo) ->
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
 move=> fioo.
-rewrite dual_sumeE eqe_oppLRP /= esum_pinfty => [|i Pi]; last first.
+rewrite dual_sumeE eqe_oppLRP /= esum_pinftyP => [|i Pi]; last first.
   by rewrite eqe_oppLR fioo.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
 
-Lemma desum_ord_ninfty n (f : 'I_n -> \bar R) : (forall i, f i != +oo) ->
-  (\sum_(i < n) f i == -oo) = [exists i, f i == -oo].
+Lemma desum_ninfty (I : finType) (f : I -> \bar R) (P : {pred I}) :
+  (forall i, f i != +oo) ->
+  (\sum_(i | P i) f i == -oo) = [exists i in P, f i == -oo].
 Proof.
 move=> finoo.
-rewrite dual_sumeE eqe_oppLR /= esum_ord_pinfty => [|i]; rewrite ?eqe_oppLR //.
+rewrite dual_sumeE eqe_oppLR /= esum_pinfty => [|i]; rewrite ?eqe_oppLR //.
 by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
