@@ -1352,12 +1352,11 @@ Lemma ereal_nneg_series_pinfty (R : realType) (u_ : (\bar R)^nat)
   (P : pred nat) k : (forall n, P n -> 0 <= u_ n) -> P k ->
   u_ k = +oo -> \sum_(i <oo | P i) u_ i = +oo.
 Proof.
-move=> u0 Pk ukoo; apply/eqP; rewrite eq_le lee_pinfty /=.
+move=> u0 Pk ukoo; apply/eqP; rewrite -lee_pinfty_eq.
 apply: le_trans (ereal_nneg_series_lim_ge k.+1 u0) => //.
-rewrite big_mkcond big_nat_recr// -big_mkcond /= ukoo /= Pk.
-suff : \sum_(0 <= i < k | P i) u_ i != -oo by case: (\sum_(0 <= i < k | P i) _).
-rewrite big_mkcond big_mkord esum_ord_ninfty; apply/existsPn => i; apply/negP.
-by move=> /eqP; case: ifPn => // /u0 + uioo; rewrite uioo.
+rewrite lee_pinfty_eq; apply/eqP/esum_pinftyP=> [i /u0|].
+ by rewrite leNgt; apply: contra => /eqP ->; rewrite lte_ninfty_0.
+by exists k; split => //; rewrite mem_iota subn0 add0n ltnS leqnn.
 Qed.
 
 Lemma ereal_cvgPpinfty (R : realFieldType) (u_ : (\bar R)^nat) :

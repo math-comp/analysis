@@ -5,9 +5,9 @@
 ### Added
 
 - in `ereal.v`:
-  + lemmas `esum_ninfty`, `esum_pinfty`
+  + lemmas `esum_ninftyP`, `esum_pinftyP`
   + lemmas `addeoo`, `daddeoo`
-  + lemmas `desum_pinfty`, `desum_ninfty`
+  + lemmas `desum_pinftyP`, `desum_ninftyP`
 
 ### Changed
 
@@ -16,12 +16,6 @@
   + the printed type of `acos`, `asin`, `atan` is `R -> R`
 
 ### Renamed
-
-- in `ereal.v`:
-  + `esum_pinfty` -> `esum_ord_pinfty`
-  + `esum_ninfty` -> `esum_ord_ninfty`
-  + `desum_pinfty` -> `desum_ord_pinfty`
-  + `desum_ninfty` -> `desum_ord_ninfty`
 
 ### Removed
 
