@@ -151,104 +151,161 @@ End Tvs.
 
 Export Tvs.Exports.
 
+
+(* TBD after merge of lebesgue_measure *)
+
+Section mem_set.
+ Hint Resolve Prop_irrelevance : core.
+Notation "[ 'set' : T ]" := (@setT T) : classical_set_scope.
+  
+Coercion set_type T (A : set T) := {x : T | x \in A}.
+
+Definition SigSub {T} {pT : predType T} {P : pT} x : x \in P -> {x | x \in P} :=
+  exist (fun x => x \in P) x.
+
+Lemma set0fun {P T : Type} : @set0 T -> P. Proof. by case=> x; rewrite inE. Qed.
+
+Context {T : Type}. Implicit Type (A : set T).
+
+Lemma mem_set {A} {u : T} : A u -> u \in A. Proof. by rewrite inE. Qed.
+Lemma set_mem {A} {u : T} : u \in A -> A u. Proof. by rewrite inE. Qed.
+Lemma mem_setT (u : T)    : u \in [set: T]. Proof. by rewrite inE. Qed.
+Lemma mem_setK {A} {u : T} : cancel (@mem_set A u) set_mem.
+Proof. by []. Qed.
+Lemma set_memK {A} {u : T} : cancel (@set_mem A u) mem_set. Proof. by []. Qed. 
+End mem_set.
+(* End TBD *)
+
 Section Linear3.
-Context {R : comRingType} {U V : lmodType R}.
-
-(* Section linear_pred. *)
-(* Definition linear_pred : {pred U -> V} := mem [set f | linear f]. *)
-(* Definition linear_key : pred_key linear_pred. *)
-(* Proof. exact. Qed. *)
-
-(* Canonical linear_keyed := KeyedPred linear_key. *)
-(* End linear_pred. *)
+Context {R : comRingType} {U V : lmodType R} (s : R -> V -> V)
+        (s_law : GRing.Scale.law s).
 
 
-(* Section Sub. *)
-(* Context (f : U -> V) (fP : f \in linear_pred). *)
+Section linear_pred.
+  
+Definition linear_pred : {pred U -> V} := mem [set f | lmorphism_for (GRing.Scale.op s_law) f].
+(* Definition linear_pred : {pred U -> V} := mem [set f | linear f].   *)
+(* Fails [set f | linear f] f does not reduce to lmorphism_for s f *)
+Definition linear_key : pred_key linear_pred.
+Proof. exact. Qed.
 
-(* Definition linear_sub_subproof := Linear fP. *)
-(* Canonical linear_sub_subproof. *)
+Canonical linear_keyed := KeyedPred linear_key.
+End linear_pred.
 
-(* Definition linear_Sub := [linear of f]. *)
-(* End Sub. *)
 
-(* Lemma linear_rect (K : {linear U -> V} -> Type) : *)
-(*   (forall f (Pf : f \in linear_red), K (linear_Sub Pf)) -> forall f : { linear U -> V} , K f. *)
+Section Sub.
+Context (f : U -> V) (fP : f \in linear_pred).
+Definition linear_sub_subproof := @Linear (set_mem fP).
+Canonical linear_sub_subproof.
+Definition linear_Sub := [linear of f].
+End Sub.
+
+Lemma linear_rect (K : {linear U -> V |(GRing.Scale.op s_law) } -> Type) :
+  (forall f (Pf : f \in linear_pred), K (linear_Sub Pf))
+  -> forall f : {linear U -> V | (GRing.Scale.op s_law)} , K f.
+Proof.
+move=> Ksub [f c]. 
+suff -> : c = (set_mem (@mem_set _ [set f | _] f c)) by apply: Ksub.
+by rewrite mem_setK. 
+Qed.
+
+Lemma linear_valP f (Pf : f \in linear_pred) : linear_Sub Pf = f :> (_ -> _).
+Proof. by []. Qed.
+
+Canonical linear_subType :=
+  SubType {linear U -> V | (GRing.Scale.op s_law)} _ _  linear_rect linear_valP.
+
+
+Lemma lineareqP (f g : {linear U -> V | (GRing.Scale.op s_law)}) :
+  f = g <-> f =1 g.
+Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
+
+
+(* NB : delete the redundant definitions at the end of topology *)
+Definition lineareqMixin :=
+  [eqMixin of {linear U -> V | (GRing.Scale.op s_law)} by <:].
+Canonical lineareqType :=
+  EqType {linear U -> V | (GRing.Scale.op s_law)} lineareqMixin.
+Definition linearchoiceMixin :=
+  [choiceMixin of {linear U -> V | (GRing.Scale.op s_law)} by <:].
+Canonical linearchoiceType :=
+  ChoiceType {linear U -> V | (GRing.Scale.op s_law)} linearchoiceMixin.
+(* End NB *)
+
+
+Section lmod.
+
+(* TBD when mathcomp_extra is merged *)
+Reserved Notation "f \* g" (at level 40, left associativity).
+Reserved Notation "f \- g" (at level 50, left associativity).
+Reserved Notation "\- f"  (at level 35, f at level 35).
+Reserved Notation "f \max g" (at level 50, left associativity).
+
+Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
+Notation "\- f" := (opp_fun f) : ring_scope . 
+Arguments opp_fun {T R} _ _ /.
+
+Definition mul_fun T (R : ringType) (f g : T -> R) x := (f x * g x)%R.
+Notation "f \* g" := (mul_fun f g) : ring_scope.
+Arguments mul_fun {T R} _ _ _ /.
+(* End TBD *)
+
+
+(* Lemma linear_zmod_closed : zmod_closed linear_pred. *)
 (* Proof. *)
-(* move=> Ksub f.   [f [[Pf]]]/=. *)
-(* by suff -> : Pf = (set_mem (@mem_set _ [set f | _] f Pf)) by apply: Ksub. *)
-(* Qed. *)
+(*   split=> [|f g]; rewrite !inE/=; split. *)
+(*   - apply: GRing.null_fun_is_additive. *)
+(*   - apply: GRing.null_fun_is_scalable. *)
+(*   - move => a b /=.   admit.  *)
+(*   - move=> k a /=.  admit.  *)
+(* Admitted. *)
 
-(* Lemma fimfun_valP f (Pf : f \in fimfun) : fimfun_Sub Pf = f :> (_ -> _). *)
-(* Proof. by []. Qed. *)
+Lemma linear_lmod_closed : submod_closed linear_pred.
+Proof.
+  split=> [|t g]; rewrite !inE/=. split.
+  - apply: GRing.null_fun_is_additive.
+  - apply: GRing.null_fun_is_scalable.
+  - move=> h [Ag Sg] /set_mem [Ah Sh]; apply/mem_set => /=; split.
+    * move => a b. rewrite [_ + _]/(_ \+ _) [_ *: _]/(_ \*: _) /=.
+      by rewrite Ag Ah scalerBr addrACA opprD. 
+    * rewrite [_ + _]/(_ \+ _) [_ *: _]/(_ \*: _) => r u. 
+      rewrite Sg Sh /= /GRing.Scale.op. (*argh*)
+Admitted.
 
-(* Canonical fimfun_subType := SubType T _ _ fimfun_rect fimfun_valP. *)
-(* End fimfun. *)
 
-(* Lemma fimfuneqP aT rT (f g : {fimfun aT >-> rT}) : *)
-(*   f = g <-> f =1 g. *)
-(* Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed. *)
+Canonical linear_add := AddrPred linear_lmod_closed.
+Canonical linear_zmod := ZmodPred linear_lmod_closed.
+Definition linear_zmodMixin :=
+  [zmodMixin of {linear U -> V | (GRing.Scale.op s_law)} by <:].
+Canonical linear_zmodType :=
+  ZmodType {linear U -> V | (GRing.Scale.op s_law)} linear_zmodMixin.
 
-(* Definition fimfuneqMixin aT (rT : eqType) := *)
-(*   [eqMixin of {fimfun aT >-> rT} by <:]. *)
-(* Canonical fimfuneqType aT (rT : eqType) := *)
-(*   EqType {fimfun aT >-> rT} (fimfuneqMixin aT rT). *)
-(* Definition fimfunchoiceMixin aT (rT : choiceType) := *)
-(*   [choiceMixin of {fimfun aT >-> rT} by <:]. *)
-(* Canonical fimfunchoiceType aT (rT : choiceType) := *)
-(*   ChoiceType {fimfun aT >-> rT} (fimfunchoiceMixin aT rT). *)
+Canonical linear_lmod := SubmodPred linear_lmod_closed.
+Definition linear_lmodMixin :=
+  [lmodMixin of {linear U -> V | (GRing.Scale.op s_law)} by <:].
+Canonical linear_lmodType :=
+  LmodType R {linear U -> V | (GRing.Scale.op s_law)} linear_lmodMixin.
 
-(* Lemma finite_image_cst {aT rT : Type} (x : rT) : finite_set [set of cst x : aT -> rT]. *)
-(* Proof. *)
-(* elim/Ppointed: aT => aT; rewrite ?emptyE ?image_set0//. *)
-(* suff -> : cst x @` [set: aT] = [set x] by apply: finite_set1. *)
-(* by apply/predeqP => y; split=> [[t' _ <-]//|->//] /=; exists point. *)
-(* Qed. *)
+Implicit Types (f g : {linear U -> V |GRing.Scale.op s_law }).
 
-(* Definition fun_cmul {U : Type} {R : ringType} (k : R) (f : U -> R) x := k * f x. *)
-(* Notation "k *\ f" := (fun_cmul k f) (at level 40, format "k  *\  f") : ring_scope. *)
+Lemma linfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
+Lemma linfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
+Lemma linfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
+Lemma linfun0 : (0 : {linear U -> V | GRing.Scale.op s_law}) = cst 0 :> (_ -> _).
+Proof. by []. Qed.
 
-(* Lemma cst_fimfun_subproof aT rT x : @FiniteImage aT rT (cst x). *)
-(* Proof. by split; exact: finite_image_cst. Qed. *)
-(* HB.instance Definition _ aT rT x := @cst_fimfun_subproof aT rT x. *)
-(* Definition cst_fimfun {aT rT} x := [the {fimfun aT >-> rT} of cst x]. *)
+Lemma linfun_sum I r (P : {pred I}) (f : I -> {linear U -> V | GRing.Scale.op s_law}) (x : U) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
-(* Lemma fimfun_cst aT rT x : @cst_fimfun aT rT x =1 cst x. Proof. by []. Qed. *)
+(* Definition linfunD_copy f g := copy (f \+ g) (f + g). *)
+(* Canonical linfunD_copy. *)
+(* Definition linfunN_copy f g := copy (\- f) (- f). *)
+(* Definition linfunB_copy f g := copy (f \- g) (f - g). *)
+End lmod.
+End Linear3.
 
-(* Lemma comp_fimfun_subproof aT rT sT *)
-(*    (f : {fimfun aT >-> rT}) (g : rT -> sT) : @FiniteImage aT sT (g \o f). *)
-(* Proof. by split; rewrite -(image_comp f g); apply: finite_image. Qed. *)
-(* HB.instance Definition _ aT rT sT f g := @comp_fimfun_subproof aT rT sT f g. *)
-
-(* Section zmod. *)
-(* Context (aT : Type) (rT : zmodType). *)
-(* Lemma fimfun_zmod_closed : zmod_closed (@fimfun aT rT). *)
-(* Proof. *)
-(* split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst. *)
-(* by move=> fA gA; apply: (finite_image11 (fun x y => x - y)). *)
-(* Qed. *)
-(* Canonical fimfun_add := AddrPred fimfun_zmod_closed. *)
-(* Canonical fimfun_zmod := ZmodPred fimfun_zmod_closed. *)
-(* Definition fimfun_zmodMixin := [zmodMixin of {fimfun aT >-> rT} by <:]. *)
-(* Canonical fimfun_zmodType := ZmodType {fimfun aT >-> rT} fimfun_zmodMixin. *)
-
-(* Implicit Types (f g : {fimfun aT >-> rT}). *)
-
-(* Lemma fimfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed. *)
-(* Lemma fimfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed. *)
-(* Lemma fimfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed. *)
-(* Lemma fimfun0 : (0 : {fimfun aT >-> rT}) = cst 0 :> (_ -> _). Proof. by []. Qed. *)
-(* Lemma fimfun_sum I r (P : {pred I}) (f : I -> {fimfun aT >-> rT}) (x : aT) : *)
-(*   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x. *)
-(* Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed. *)
-
-(* HB.instance Definition _ f g := FImFun.copy (f \+ g) (f + g). *)
-(* HB.instance Definition _ f g := FImFun.copy (\- f) (- f). *)
-(* HB.instance Definition _ f g := FImFun.copy (f \- g) (f - g). *)
-(* End zmod. *)
-
-(* Context (R : comRingType) (U : lmodType R) (V : lmodType R). *)
-
+Module zmodbyhand.
 Lemma opp_fun_additive (l : {linear U -> V}) : additive  (fun x => (- (l x))).
 by move => x y //=; rewrite linearB opprD.   
 Qed.
@@ -258,17 +315,14 @@ Proof.
 by move => t u v; rewrite linearP opprD scalerN.
 Qed. 
 
-
 Lemma add_fun_linear (l l' : {linear U -> V}):  linear (l \+ l').
 Proof.
 by  move => t u v; rewrite linearP. 
 Qed.
 
-
-Lemma linfun_eqP  (f g : {linear U ->  V}) :
+Lemma linfun_eqP: forall  (f g : {linear U ->  V}),
   f = g <-> f =1 g.
-Proof. split=> [->//|fg].  Admitted.  
-
+Proof. move=> [f Lf] [g Lg]; split=> [->//|fg].  Admitted.  
 
 
 Program Definition linear_zmodMixin := 
@@ -279,6 +333,7 @@ Next Obligation. by move=> f g; apply/linfun_eqP => x /=; rewrite addrC. Qed.
 Next Obligation. by move => f; apply/linfun_eqP => x /=; rewrite add0r. Qed. 
 Next Obligation. by move => f; apply/linfun_eqP => x /=; rewrite addNr. Qed. 
 Canonical linear_zmodType := ZmodType {linear U -> V} (linear_zmodMixin).
+
 
 Lemma scale_fun_linear (r : R) (l : {linear U -> V}) : linear ( fun x => r *: l x).
 Proof.
@@ -306,14 +361,22 @@ Qed.
 
 (*TODO : do the same for scalar *)
 (* TODO : do it by subtyping *)
-End Linear3.
+End zmodbyhand.
+(* Section scalar. *)
+(* Context {K : numFieldType} {U : lmodType K}. *)
+  
+(* Definition scalar_zmodMixin := @linear_zmodMixin K U K^o.  *)
+(* Canonical scalar_zmodType := ZmodType {scalar U} (scalar_zmodMixin).  *)
+(* End scalar. *)
 
 Section Duals.
 
 Variable (K : numFieldType).
 
-Notation " E '`'" := {linear E -> K^o} (at level 10) .   
+Notation " E '`'" := {linear E -> K^o} (at level 10) .
+(* Notation " E '`'" := {scalar E} (at level 10) .    *)
 
 Variable (E : tvsType K) (l l' : E`). 
 Check (l + l'). 
+
 End Duals.
