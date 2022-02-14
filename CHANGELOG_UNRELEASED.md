@@ -331,7 +331,39 @@
   + notations `eqLHS`, `eqRHS`, `leLHS`, `leRHS`, `ltLHS`, `lrRHS`
   + inductive `boxed`
   + lemmas `eq_big_supp`, `perm_big_supp_cond`, `perm_big_supp`
-- new file `set_interval.v`
+- in `set_interval.v`:
+  + multirule `lte_bnd`
+  + lemmas `BSide_BRight_leE`, `BSide_BLeft_leE`, `BSide_leE`, `BSide_ltE`, `ltBRight_leBLeft`,
+    `itv_meet_mem`
+  + coercion `pair_of_interval`
+  + definition `miditv`
+  + lemmas `mem_miditv`, `miditv_bnd2`, `miditv_bnd1`
+  + definition `neitv`
+  + lemmas `neitv_lt_bnd`, `set_itvP`, `subset_itvP`, `set_itvoo`, `set_itvoo0`, `set_itvcc`,
+    `set_itvoc`, `set_itvoc0`, `set_itvco`, `set_itvco0`, `set_itv_infty_infty`, `set_itv_o_infty`,
+    `set_itv_c_infty`, `set_itv_infty_o`, `set_itv_infty_c`, `set_itv_pinfty_bnd`,
+    `set_itv_bnd_ninfty`
+  + multirules `set_itv_infty_set0`, `set_itvE`
+  + lemmas `punct_itvoc`, `punct_itvco`, `punct_itvccL`, `punct_itvccR`, `punct_itv_c_infty`,
+    `punct_itv_infty_c`
+  + lemmas `neitvE`, `neitvP`, `setitv0`
+  + lemmas and hints `has_lbound_itv`, `has_ubound_itv`, `hasNlbound_itv`, `hasNubound_itv`,
+    `has_sup_half`, `has_inf_half`
+  + lemmas `minus_itv_bnd_infty`, `minus_itvoo`, `sup_itv_infty_bnd`, `inf_itv_bnd_infty`,
+    `sup_itv_bounded`, `sup_itvcc`, `inf_itv_bounded`, `inf_itvcc`, `set_itvC_infty_bnd`,
+    `set_itvC_bnd_infty`, `set_itvC_itv`
+  + multirule `set_itvC`
+  + lemmas `itv_boundedErays`, `set_itv_meet`, `set_itvK`, `RhullT`, `RhullK`,
+    `itv_c_inftyEbigcap`, `itv_bnd_inftyEbigcup`, `itv_o_inftyEbigcup`, `set_itv_setT`,
+    `set_itv_ge`
+  + definitions `contiguous_itv`, `conv`, `factor`
+  + lemmas `N01`, `conv0`, `conv1`, `convN`, `le_conv`, `factor01`, `conv_factor`,
+    `conv_subset_Rhull`, `Rhull_subset_conv`, `le_Rhull`, `neitv_Rhull`, `Rhull_involutive`
+  + coercion `ereal_of_itv_bound`
+  + lemmas `le_bnd_ereal`, `lt_ereal_bnd`, `neitv_bnd1`, `neitv_bnd2`, `Interval_ereal_mem`,
+    `ereal_mem_Interval`, `trivIset_set_itv_nth`
+  + definition `disjoint_itv`
+  + lemmas `disjoint_itvxx`, `lt_disjoint`, `disjoint_neitv`, `disj_itv_Rhull`
 - new file `lebesgue_measure.v`
 - new file `lebesgue_integral.v`
 
