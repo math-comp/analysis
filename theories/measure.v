@@ -1018,8 +1018,6 @@ move=> mu0; rewrite -semi_sigma_additiveE -semi_additiveE.
 exact: semi_sigma_additive_is_additive.
 Qed.
 
-Notation "f \_ D" := (restrict D f) : fun_scope.
-
 Lemma fset_set_image (T1 T2 : choiceType) (D : set T1) (f : T1 -> T2) :
   finite_set D -> fset_set (f @` D) = (f @` (fset_set D))%fset.
 Proof.

@@ -52,7 +52,7 @@
     `csum_csum`, `lee_sum_fset_nat`, `lee_sum_fset_lim`, `reindex_csum`,
     `csum_pred_image`, `csum_set_image`, `csum_bigcupT`
 - in `classical_sets.v`:
-  + notations `[set: ...]`, `` `*`` ``, `` ``*` ``
+  + notations `[set: ...]`, ``` *` ```, ``` `* ```
   + definitions `setMR` and `setML`, `disj_set`
   + coercion `set_type`, definition `SigSub`
   + lemmas `set0fun`, `set_mem`, `mem_setT`, `mem_setK`, `set_memK`,
@@ -125,7 +125,8 @@
   + lemmas `card_le_finite`, `finite_set_leP`, `card_ge_preimage`, `eq_finite_set`,
     `finite_image`
   + lemma and hint `finite_set1`
-  + lemmas `finite_setU`, `finite_set{2,3,4,5,6,7}`, `finite_setI`, `finite_setIl`, `finite_setIr`,
+  + lemmas `finite_setU`, `finite_set2`, `finite_set3`, `finite_set4`, `finite_set5`,
+    `finite_set6`, `finite_set7`, `finite_setI`, `finite_setIl`, `finite_setIr`,
     `finite_setM`, `finite_image2`, `finite_image11`
   + definition `fset_set`
   + lemmas `fset_setK`, `in_fset_set`, `fset_set0`, `fset_set1`, `fset_setU`,
@@ -142,9 +143,10 @@
   + lemmas `infinite_rat`, `card_rat`, `choicePcountable`, `eqPcountable`, `Pcountable`,
     `bigcup_countable`, `countableMR`, `countableM`, `countableML`, `infiniteMRl`, `cardMR_eq_nat`
 - in `measure.v`:
-  + definitions `set{C,I,U,D,DI}_closed`, `fin_bigcap_closed`, `finN0_bigcap_closed`,
-    `fin_bigcup_closed`, `semi_setD_closed`, `ndseq_closed`, `trivIset_closed`, `fin_trivIset_closed`,
-    `set_ring`, `sigma_algebra`, `dynkin`, `monotone_classes`, `smallest`
+  + definitions `setC_closed`, `setI_closed`, `setU_closed`, `setD_closed`, `setDI_closed`,
+    `fin_bigcap_closed`, `finN0_bigcap_closed`, `fin_bigcup_closed`, `semi_setD_closed`,
+    `ndseq_closed`, `trivIset_closed`, `fin_trivIset_closed`, `set_ring`, `sigma_algebra`,
+    `dynkin`, `monotone_classes`, `smallest`
   + notations `<<m D, G >>`, `<<m G >>`, `<<s D, G>>`, `<<s G>>`, `<<d G>>`, `<<r G>>`, `<<fu G>>`
   + lemmas `sub_smallest`, `smallest_sub`, `smallest_id`
   + lemma and hint `sub_gen_smallest`
@@ -156,9 +158,9 @@
   + lemma and hint `smallest_setring`, lemma and hint `setring0`
   + lemmas `sub_setring2`, `setring_id`, `sub_setring`, `setringDI`, `setringU`,
     `setring_fin_bigcup`, `monotone_class_g_salgebra`
-  + lemmas `smallest_monotone_classE`, `monotone_class_subset`, `dynkin{T,C,U}`, `dynkin_monotone`,
-    `dynkin_g_dynkin`, `sigma_algebra_dynkin`, `dynkin_setI_bigsetI`, `dynkin_setI_sigma_algebra`,
-    `setI_closed_gdynkin_salgebra`
+  + lemmas `smallest_monotone_classE`, `monotone_class_subset`, `dynkinT`, `dynkinC`, `dynkinU`,
+    `dynkin_monotone`, `dynkin_g_dynkin`, `sigma_algebra_dynkin`, `dynkin_setI_bigsetI`,
+    `dynkin_setI_sigma_algebra`, `setI_closed_gdynkin_salgebra`
   + factories `isRingOfSets`, `isAlgebraOfSets`
   + lemmas `fin_bigcup_measurable`, `fin_bigcap_measurable`, `sigma_algebra_measurable`,
     `sigma_algebraC`
@@ -194,12 +196,144 @@
     `sub_caratheodory`
   + definition `Hahn_ext`, canonical `Hahn_ext_measure`, lemma `Hahn_ext_sigma_finite`, `Hahn_ext_unique`,
     `caratheodory_measurable_mu_ext`
-- new file `mathcomp_extra.v`
-- new file `fsbigop.v`
+- in `functions.v`:
+  + definitions `set_fun`, `set_inj`
+  + mixin `isFun`, structure `Fun`, notations `{fun ... >-> ...}`, `[fun of ...]`
+    * field `funS` declared as a hint
+  + mixin `OInv`, structure `OInversible`, notations `{oinv ... >-> ...}`, `[oinv of ...]`, `'oinv_ ...`
+  + structure `OInvFun`, notations `{oinvfun ... >-> ...}`, `[oinvfun of ...]`
+  + mixin `OInv_Inv`, factory `Inv`, structure `Inversible`, notations `{inv ... >-> ...}`, `[inv of ...]`, notation `^-1`
+  + structure `InvFun`, notations `{invfun ... >-> ...}`, `[invfun of ...]`
+  + mixin `OInv_CanV` with field `oinvK` declared as a hint, factory `OCanV`
+  + structure `Surject`, notations `{surj ... >-> ...}`, `[surj of ...]`
+  + structure `SurjFun`, notations `{surjfun ... >-> ...}`, `[surjfun of ...]`
+  + structure `SplitSurj`, notations `{splitsurj ... >-> ...}`, `[splitsurj of ...]`
+  + structure `SplitSurjFun`, notations `{splitsurjfun ... >-> ...}`, `[splitsurjfun of ...]`
+  + mixin `OInv_Can` with field `funoK` declared as a hint, structure `Inject`, notations `{inj ... >-> ...}`, `[inj of ...]`
+  + structure `InjFun`, notations `{injfun ... >-> ...}`, `[injfun of ...]`
+  + structure `SplitInj`, notations `{splitinj ... >-> ...}`, `[splitinj of ...]`
+  + structure `SplitInjFun`, notations `{splitinjfun ... >-> ...}`, `[splitinjfun of ...]`
+  + structure `Bij`, notations `{bij ... >-> ...}`, `[bij of ...]`
+  + structure `SplitBij`, notations `{splitbij ... >-> ...}`, `[splitbij of ...]`
+  + module `ShortFunSyntax` for shorter notations
+  + notation `'funS_ ...`
+  + definition and hint `fun_image_sub`
+  + definition and hint `mem_fun`
+  + notation `'mem_fun_ ...`
+  + lemma `some_inv`
+  + notation `'oinvS_ ...`
+  + variant `oinv_spec`, lemma and hint `oinvP`
+  + notation `'oinvP_ ...`
+  + lemma and hint `oinvT`, notation `'oinvT_ ...`
+  + lemma and hint `invK`, notation `'invK_ ...`
+  + lemma and hint `invS`, notation `'invS_ ...`
+  + notation `'funoK_ ...`
+  + definition `inj` and notation `'inj_ ...`
+  + definition and hint `inj_hint`
+  + lemma and hint `funK`, notation `'funK_ ...`
+  + lemma `funP`
+  + factories `Inv_Can`, `Inv_CanV`
+  + lemmas `oinvV`, `surjoinv_inj_subproof`, `injoinv_surj_subproof`, `invV`, `oinv_some`,
+    `some_canV_subproof`, `some_fun_subproof`, `inv_oapp`, `oinv_oapp`, `inv_oappV`,
+    `oapp_can_subproof`, `oapp_surj_subproof`, `oapp_fun_subproof`, `inv_obind`, `oinv_obind`,
+    `inv_obindV`, `oinv_comp`, `some_comp_inv`, `inv_comp`, `comp_can_subproof`, `comp_surj_subproof`,
+  + notation `'totalfun_ ...`
+  + lemmas `oinv_olift`, `inv_omap`, `oinv_omap`, `omapV`
+  + factories `canV`, `OInv_Can2`, `OCan2`, `Can`, `Inv_Can2`, `Can2`, `SplitInjFun_CanV`, `BijTT`
+  + lemmas `surjective_oinvK`, `surjective_oinvS`, coercion `surjective_ocanV`
+  + definition and coercion `surjection_of_surj`, lemma `Psurj`, coercion `surjection_of_surj`
+  + lemma `oinv_surj`, lemma and hint `surj`, notation `'surj_`
+  + definition `funin`, lemma `set_fun_image`, notation `[fun ... in ...]`
+  + definition `split_`, lemmas `splitV`, `splitis_inj_subproof`, `splitid`, `splitsurj_subproof`,
+    notation `'split_`, `split`
+  + factories `Inj`, `SurjFun_Inj`, `SplitSurjFun_Inj`
+  + lemmas `Pinj`, `Pfun`, `injPfun`, `funPinj`, `funPsurj`, `surjPfun`, `Psplitinj`, `funPsplitinj`,
+    `PsplitinjT`, `funPsplitsurj`, `PsplitsurjT`
+  + definition `unbind`
+  + lemmas `unbind_fun_subproof`, `oinv_unbind`, `inv_unbind_subproof`, `inv_unbind`, `unbind_inj_subproof`,
+    `unbind_surj_subproof`, `odflt_unbind`, `oinv_val`, `val_bij_subproof`, `inv_insubd`
+  + definition `to_setT`, lemma `inv_to_setT`
+  + definition `subfun`, lemma `subfun_inj`
+  + lemma `subsetW`, definition `subsetCW`
+  + lemmas `subfun_imageT`, `subfun_inv_subproof`
+  + definition `seteqfun`, lemma `seteqfun_can2_subproof`
+  + definitions `incl`, `eqincl`, lemma `eqincl_surj`, notation `inclT`
+  + definitions `mkfun`, `mkfun_fun`
+  + definition `set_val`, lemmas `oinv_set_val`, `set_valE`
+  + definition `ssquash`
+  + lemma `set0fun_inj`
+  + definitions `finset_val`, `val_finset`
+  + lemmas `finset_valK`, `val_finsetK`
+  + definition `glue`, `glue1`, `glue2`, lemmas `glue_fun_subproof`, `oinv_glue`, `some_inv_glue_subproof`,
+    `inv_glue`, `glueo_can_subproof`, `glue_canv_subproof`
+  + lemmas `inv_addr`, `addr_can2_subproof`
+  + lemmas `empty_can_subproof`, `empty_fun_subproof`, `empty_canv_subproof`
+  + lemmas `subl_surj`, `subr_surj`, `surj_epi`, `epiP`, `image_eq`, `oinv_image_sub`,
+    `oinv_Iimage_sub`, `oinv_sub_image`, `inv_image_sub`, `inv_Iimage_sub`, `inv_sub_image`,
+    `reindex_bigcup`, `reindex_bigcap`, `trivIset_inj`, `set_bij_homo`
+  + definition and hint `fun_set_bij`
+  + coercion `set_bij_bijfun`
+  + definition and coercion `bij_of_set_bijection`
+  + lemma and hint `bij`, notation `'bij_`
+  + definition `bijection_of_bijective`, lemmas `PbijTT`, `setTT_bijective`,
+    lemma and hint `bijTT`, notation `'bijTT_`
+  + definition `patch`, lemmas `patchT`, `patchN`, `patchC`, `patch_inj_subproof`,
+    notations `restrict`, `... \_ ...`, lemmas `preimage_restrict`, `comp_patch`,
+    `patch_setI`, `patch_setT`, `restrict_comp`
+  + definitions `sigL`, `sigLfun`, `valL_`, `valLfun_`
+  + lemmas `sigL_isfun`, `valL_isfun`, `sigLE`, `eq_sigLP`, `eq_sigLfunP`, `sigLK`, `valLK`,
+    `valLfunK`, `sigL_valL`, `sigL_valLfun\`, `sigL_restrict`, `image_sigL`, `eq_restrictP`
+  + notations `'valL_ ...`, `'valLfun_ ...`, `valL`
+  + definitions `sigR`, `valLr`, `valLr_fun`
+  + lemmas `sigRK`, `sigR_funK`, `valLrP`, `valLrK`
+  + lemmas `oinv_sigL`, `sigL_inj_subproof`, `sigL_surj_subproof`, `oinv_sigR`, `sigR_inj_subproof`,
+    `sigR_surj_subproof`, `sigR_some_inv`, `inv_sigR`, `sigL_some_inv`, `inv_sigL`,
+    `oinv_valL`, `oapp_comp_x`, `valL_inj_subproof`, `valL_surj_subproof`, `valL_some_inv`,
+    `inv_valL`, `sigL_injP`, `sigL_surjP`, `sigL_funP`, `sigL_bijP`, `valL_injP`, `valL_surjP`,
+    `valLfunP`, `valL_bijP`
+  + lemmas `oinv_valLr`, `valLr_inj_subproof`, `valLr_surj_subproof`
+  + definitions `sigLR`, `valLR`, `valLRfun`, lemmas `valLRE`, `valLRfunE`, `sigL2K`,
+    `valLRK`, `valLRfun_inj`, `sigLR_injP`, `valLR_injP`, `sigLR_surjP`, `valLR_surjP`,
+    `sigLR_bijP`, `sigLRfun_bijP`, `valLR_bijP`, `subsetP`
+  + new lemmas `eq_set_bijLR`, `eq_set_bij`, `bij_omap`, `bij_olift`, `bij_sub_sym`,
+   `splitbij_sub_sym`, `set_bij00`, `bij_subl`, `bij_sub`, `splitbij_sub`, `can2_bij`,
+   `bij_sub_setUrl`, `bij_sub_setUrr`, `bij_sub_setUrr`, `bij_sub_setUlr`
+  + definition `pinv_`, lemmas `injpinv_surj`, `injpinv_image`,
+    `injpinv_bij`, `surjpK`, `surjpinv_image_sub`, `surjpinv_inj`, `surjpinv_bij`,
+    `bijpinv_bij`, `pPbij_`, `pPinj_`, `injpPfun_`, `funpPinj_`
+- in `fsbigop.v`:
+  + lemmas `EFin_inj`, `continuous_is_cvg`, `mulr_ge0_gt0`, `adde_gt0`, `padde_eq0`,
+    `nadde_eq0`, `mule_ge0_gt0`, `seq_psume_eq0`
+  + notations `\big[op/idx]_(i \in A) f i`, `\sum_(i \in A) f i`
+  + lemma `finite_index_key`
+  + definition `finite_support`
+  + lemmas `in_finite_support`, `no_finite_support`, `eq_finite_support`
+  + variant `finite_support_spec`
+  + lemmas  `finite_supportP`, `eq_fsbigl`, `eq_fsbigr`,
+    `fsbigTE`, `fsbig_mkcond`, `fsbig_mkcondr`, `fsbig_mkcondl`, `bigfs`,
+    `fsbigE`, `fsbig_seq`, `fsbig1`, `fsbig_dflt`, `fsbig_widen`, `fsbig_supp`,
+    `fsbig_fwiden`, `fsbig_set0`, `fsbig_set1`, `full_fsbigID`, `fsbigID`, `fsbigU`,
+    `fsbigU0`, `fsbigD1`, `full_fsbig_distrr`, `fsbig_distrr`, `mulr_fsumr`, `mulr_fsuml`,
+    `fsbig_ord`, `fsbig_finite`, `reindex_fsbig`, `fsbig_image`, `reindex_inside`,
+    `reindex_fsbigT`, notation `reindex_inside_setT`
+  + lemmas `ge0_mule_fsumr`, `ge0_mule_fsuml`, `fsbigN1`, `fsume_ge0`, `fsume_le0`,
+    `fsume_gt0`, `fsume_lt0`, `pfsume_eq0`, `fsbig_setU`, `pair_fsum`, `exchange_fsum`,
+    `fsum_split`
+- in `mathcomp_extra.v`:
+  + definition `olift`
+  + lemmas `obindEapp`, `omapEbind`, `omapEapp`, `oappEmap`, `omap_comp`, `oapp_comp`,
+    `oapp_comp_f`, `olift_comp`, `compA`, `can_in_pcan`, `pcan_in_inj`, `can_in_comp`,
+    `pcan_in_comp`, `ocan_comp`, `pred_omap`, `ocan_in_comp`, `eqbLR`, `eqbRL`
+  + definition `opp_fun`, notation `\-`
+  + definition `mul_fun`, notation `\*`
+  + definition `max_fun`, notation `\max`
+  + lemmas `gtr_opp`, `le_le_trans`
+  + notations `eqLHS`, `eqRHS`, `leLHS`, `leRHS`, `ltLHS`, `lrRHS`
+  + inductive `boxed`
+  + lemmas `eq_big_supp`, `perm_big_supp_cond`, `perm_big_supp`
 - new file `set_interval.v`
 - new file `lebesgue_measure.v`
 - new file `lebesgue_integral.v`
-- new file `functions`
 
 ### Changed
 
@@ -237,7 +371,7 @@
   + lemma `countable_injective` renamed to `countable_injP` and use `reflect`
   + lemmas `II0`, `II1`, `IIn_eq0` moved to `classical_sets.v`
   + lemma `II_recr` renamed to `IIS` and moved to `classical_sets.v`
-  + definition `surjective` moved to `functions.v` and renamed `set_sur`
+  + definition `surjective` moved to `functions.v` and renamed `set_surj`
   + definition `set_bijective` moved to `functions.v` and changed to `set_bij`
   + lemma `surjective_id` moved to `functions.v` and renamed `surj_id`
   + lemma `surjective_set0` moved to `functions.v` and renamed `surj_set0`
@@ -249,7 +383,16 @@
   + lemma `set_bijective_image` moved to `functions.v` and renamed `inj_bij`
   + lemma `set_bijective_subset` moved to `functions.v` and changed to `bij_subr`
   + lemma `set_bijective_comp` moved to `functions.v` and renamed `set_bij_comp`
-  + definition `inverse` changed to the type `{inv ... >-> ...}`, see `functions.v`
+  + definition `inverse` changed to `pinv_`, see `functions.v`
+  + lemma `inj_of_bij` moved to `functions.v` and renamed to `set_bij_inj`
+  + lemma `sur_of_bij` moved to `functions.v` and renamed to `set_bij_surj`
+  + lemma `sub_of_bij` moved to `functions.v` and renamed to `set_bij_sub`
+  + lemma `set_bijective_D1` moved to `functions.v` and renamed to `bij_II_D1`
+  + lemma `injective_left_inverse` moved to `functions.v` and changed to `pinvKV`
+  + lemma `injective_right_inverse` moved to `functions.v` and changed to `pinvK`
+  + lemmas `image_nat_maximum`, `fset_nat_maximum` moved to `mathcomp_extra.v`
+  + lemmas `enum0`, `enum_recr` moved to `mathcomp_extra.v` and renamed to `enum_ord0`, `enum_ordS`
+  + lemma `in_inj_comp` moved to `mathcomp_extra.v`
 - from `cardinality.v` to `classical_sets.v`:
   + `eq_set0_nil` -> `set_seq_eq0`
   + `eq_set0_fset0` -> `set_fset_eq0`
@@ -271,6 +414,8 @@
   + definition `caratheodory_measurable` and `caratheodory_type` weakened from outer measures to functions
   + lemma `caratheodory_measure_ge0` does take a condition anymore
   + definitions `measurable_cover` and `mu_ext`, canonical `outer_measure_of_measure` weakened to `semiRingOfSetsType`
+- in `ereal.v`:
+  + lemmas `big_nat_widenl`, `big_geq_mkord` moved to `mathcomp_extra.v`
 
 ### Renamed
 
@@ -294,8 +439,6 @@
 
 ### Removed
 
-- in `ereal.v`:
-  + lemmas `big_nat_widenl`, `big_geq_mkord`
 - in `csum.v`:
   + lemmas `fsets_img`, `fsets_ord`, `fsets_ord_nat`, `fsets_ord_subset`, `csum_bigcup_le`,
     `le_csum_bigcup`
@@ -304,13 +447,8 @@
   + definition `patch`, notations `restrict` and `... \|_ ...`
   + definition `restrict_dep`, `extend_up`, lemma `restrict_depE`
 - in `cardinality.v`:
-  + lemma `in_inj_comp`
-  + lemmas `enum0`, `enum_recr`
-  + lemma `image_nat_maximum`, `fset_nat_maximum`
   + lemma `surjective_image`, `surjective_image_eq0`
-  + lemmas `inj_of_bij`, `sub_of_bij`, `sur_of_bij`
-  + lemmas `injective_left_inverse`, `injective_right_inverse`, `surjective_right_inverse`,
-    `set_bijective_D1`
+  + lemma `surjective_right_inverse`,
   + lemmas `card_le_surj`, `card_eq00`
   + lemmas `card_eqTT`, `card_eq_II`, `card_eq_le`, `card_leP`
   + lemmas `set_bijective_inverse`, `countable_trans`, `set_bijective_U1`,
