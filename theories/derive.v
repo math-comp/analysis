@@ -1297,6 +1297,10 @@ Qed.
 
 End Derive.
 
+Lemma derive1_cst (R : numFieldType) (V : normedModType R) (k : V) t :
+  (cst k)^`() t = 0.
+Proof. by rewrite derive1E derive_val. Qed.
+
 Lemma EVT_max (R : realType) (f : R -> R) (a b : R) : (* TODO : Filter not infered *)
   a <= b -> {within `[a, b], continuous f} -> exists2 c, c \in `[a, b]%R &
   forall t, t \in `[a, b]%R -> f t <= f c.
