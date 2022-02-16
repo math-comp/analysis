@@ -31,7 +31,6 @@ theories/cardinality.v
 theories/csum.v
 theories/fsbigop.v
 theories/set_interval.v
-theories/lebesgue_measure.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
