@@ -566,7 +566,7 @@ Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
   finite_set (f @` D).
 Proof. by apply: (@sub_finite_set _ _ [set of f]) => // y [x]; exists x. Qed.
 
-HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
+HB.mixin Record IsMeasurableFun (aT rT : measurableType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
 }.
 Hint Resolve fimfun_inP : core.
@@ -580,7 +580,7 @@ Notation "{ 'mfun'  aT >-> T }" := (@MeasurableFun.type aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 Hint Resolve measurable_funP : core.
 
-HB.structure Definition SimpleFun (aT (*rT*) : measurableType) (rT : realType) :=
+HB.structure Definition SimpleFun (aT rT : measurableType) :=
   {f of @IsMeasurableFun aT rT f & @FiniteImage aT rT f}.
 Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
@@ -589,7 +589,7 @@ Reserved Notation "[ 'sfun' 'of' f ]"
 Notation "{ 'sfun'  aT >-> T }" := (@SimpleFun.type aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
-Lemma measurable_sfunP {aT : measurableType} {rT : realType} (f : {mfun aT >-> rT}) (y : rT) :
+Lemma measurable_sfunP {aT : measurableType} {rT : realType} (f : {mfun aT >-> _}) (y : rT) :
   measurable (f @^-1` [set y]).
 Proof. by rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
 
@@ -803,19 +803,19 @@ HB.builders Context T R A f of @FiniteDecomp T R f.
 HB.end.
 
 Section mfun_pred.
-Context {aT : measurableType} {rT : realType}.
+Context {aT rT : measurableType}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
 Definition mfun_key : pred_key mfun. Proof. exact. Qed.
 Canonical mfun_keyed := KeyedPred mfun_key.
 End mfun_pred.
 
 Section mfun.
-Context {aT : measurableType} {rT : realType}.
+Context {aT rT : measurableType}.
 Notation T := {mfun aT >-> rT}.
 Notation mfun := (@mfun aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in mfun).
-Definition mfun_Sub_subproof := @IsMeasurableFun.Build aT rT f (set_mem fP).
+Definition mfun_Sub_subproof := @IsMeasurableFun.Build aT _ f (set_mem fP).
 #[local] HB.instance Definition _ := mfun_Sub_subproof.
 Definition mfun_Sub := [mfun of f].
 End Sub.
@@ -850,7 +850,7 @@ Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 End mfun.
 
 Section ring.
-Context (aT : measurableType) (rT : realType).
+Context (aT rT : measurableType).
 
 Lemma mfun_subring_closed : subring_closed (@mfun aT rT).
 Proof.
@@ -5159,3 +5159,4 @@ Theorem Fubini :
 Proof. by rewrite fubini1 -fubini2. Qed.
 
 End fubini.
+
