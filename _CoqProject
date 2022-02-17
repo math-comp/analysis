@@ -30,6 +30,7 @@ theories/forms.v
 theories/derive.v
 theories/measure.v
 theories/summability.v
+theories/eudoxus.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v
