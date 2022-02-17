@@ -3806,6 +3806,10 @@ Lemma subset_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> ball x r `<=` closed_ball x r.
 Proof. move=> r0; rewrite /closed_ball; apply: subset_closure. Qed.
 
+Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricNormedZmodType R)
+  (x : M) (e1 e2 : R) : (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
+Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
+
 (*TBA topology.v once ball_normE is there*)
 
 Lemma nbhs0_lt (K : numFieldType) (V : normedModType K) e :
