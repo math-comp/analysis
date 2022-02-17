@@ -378,8 +378,8 @@ Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").
-
-<<<<<<< HEAD
+Reserved Notation "'{within' A , 'continuous' f }"
+  (at level 70, A at level 69, format "'{within'  A ,  'continuous'  f }").
 Reserved Notation "{ 'uniform`' A -> V }"
   (at level 0, A at level 69, format "{ 'uniform`'  A  ->  V }").
 Reserved Notation "{ 'uniform' U -> V }"
@@ -398,29 +398,6 @@ Reserved Notation "{ 'family' fam , U -> V }"
   (at level 0, U at level 69, format "{ 'family'  fam ,  U  ->  V }").
 Reserved Notation "{ 'family' fam , F --> f }"
   (at level 0, F at level 69, format "{ 'family'  fam ,  F  -->  f }").
-=======
-Reserved Notation "'{within' A , 'continuous' f }"
-  (at level 70, A at level 69, format "'{within'  A ,  'continuous'  f }").
-
-Reserved Notation "'{uniform`' A -> V }"
-  (at level 70, A at level 69, format "'{uniform`'  A  ->  V }").
-Reserved Notation "'{uniform' U -> V }"
-  (at level 70, U at level 69, format "'{uniform'  U  ->  V }").
-Reserved Notation "'{uniform' A , F --> f }"
-  (at level 70, A at level 69, F at level 69,
-   format "'{uniform'  A ,  F  -->  f }").
-Reserved Notation "'{uniform' , F --> f }"
-  (at level 70, F at level 69,
-   format "'{uniform' ,  F  -->  f }").
-Reserved Notation "'{ptws' U -> V }"
-  (at level 70, U at level 69, format "'{ptws'  U  ->  V }").
-Reserved Notation "'{ptws' , F --> f }"
-  (at level 70, F at level 69, format "'{ptws' ,  F  -->  f }").
-Reserved Notation "'{family' fam , U -> V }"
-  (at level 70, U at level 69, format "'{family'  fam ,  U  ->  V }").
-Reserved Notation "'{family' fam , F --> f }"
-  (at level 70, F at level 69, format "'{family'  fam ,  F  -->  f }").
->>>>>>> 33a0ee0... fixed connected continuous
 
 Set Implicit Arguments.
 Unset Strict Implicit.
