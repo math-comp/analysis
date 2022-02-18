@@ -442,19 +442,17 @@ Lemma expR_total_gt1 x :
   1 <= x -> exists y, [/\ 0 <= y, 1 + y <= x & expR y = x].
 Proof.
 move=> x_ge1; have x_ge0 : 0 <= x by apply: le_trans x_ge1.
-case: (@IVT _ (fun y => expR y - x) 0 x 0) => //.
-- move=> x1 x1Ix; apply: continuousB => // y1.
-  + by apply/continuous_subspaceT=> ? _; exact: continuous_expR.
-  + exact: cst_continuous.
-- rewrite expR0; case: (ltrgtP (1- x) (expR x - x)) => [_| |].
-  + rewrite subr_le0 x_ge1 subr_ge0.
-    by apply: le_trans (expR_ge1Dx _); rewrite ?ler_addr.
+have [x1 x1Ix| |x1 _ /eqP] := @IVT _ (fun y => expR y - x) _ _ 0 x_ge0.
+- apply: continuousB => // y1; last exact: cst_continuous.
+  by apply/continuous_subspaceT=> ? _; exact: continuous_expR.
+- rewrite expR0; have [_| |] := ltrgtP (1- x) (expR x - x).
+  + by rewrite subr_le0 x_ge1 subr_ge0 (le_trans _ (expR_ge1Dx _)) ?ler_addr.
   + by rewrite ltr_add2r expR_lt1 ltNge x_ge0.
   + rewrite subr_le0 x_ge1 => -> /=; rewrite subr_ge0.
-    by apply: le_trans (expR_ge1Dx x_ge0); rewrite ler_addr.
-- move=> x1 _ /eqP; rewrite subr_eq0 => /eqP x1_x.
-  exists x1; split => //; first by rewrite -ler_expR expR0 x1_x.
-  by rewrite -x1_x expR_ge1Dx // -ler_expR x1_x expR0.
+    by rewrite (le_trans _ (expR_ge1Dx x_ge0)) ?ler_addr.
+- rewrite subr_eq0 => /eqP x1_x; exists x1; split => //.
+  + by rewrite -ler_expR expR0 x1_x.
+  + by rewrite -x1_x expR_ge1Dx // -ler_expR x1_x expR0.
 Qed.
 
 Lemma expR_total x : 0 < x -> exists y, expR y = x.

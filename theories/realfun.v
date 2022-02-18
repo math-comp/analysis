@@ -27,15 +27,14 @@ Section real_inverse_functions.
 Variable R : realType.
 Implicit Types (a b : R) (f g : R -> R).
 
-(* TODO: this is a workaround to weaken {in I, continuous f} to use IVT. 
+(* TODO: this is a workaround to weaken {in I, continuous f} to use IVT.
    Updating this whole file to use {within [set` I], continuous f} is the
-   better, but more labor intensive approach 
-*)
-Lemma continuous_subspace_itv ( I : interval R) (f : R -> R) : 
-  {in I, continuous f} -> {within [set` I], continuous f}. 
+   better, but more labor intensive approach *)
+Lemma continuous_subspace_itv (I : interval R) (f : R -> R) :
+  {in I, continuous f} -> {within [set` I], continuous f}.
 Proof.
 move=> ctsf; apply: continuous_subspaceT => x Ix; apply: ctsf.
-by move: Ix; rewrite inE /=.
+by move: Ix; rewrite inE.
 Qed.
 
 Lemma itv_continuous_inj_le f (I : interval R) :
@@ -52,17 +51,12 @@ gen have main : f / forall c, {in I, continuous f} -> {in I &, injective f} ->
   move=> c fC fI a b aI bI faLfb aLc cLb.
   have intP := interval_is_interval aI bI.
   have cI : c \in I by rewrite intP// (ltW aLc) ltW.
-  (* TODO: this is a workaround to weaken {in I, continuous f} to use IVT. 
-     Updating this whole file to use {within [set` I], continuous f} is the
-     better, but more labor intensive approach *)
-  have ctsACf : {within `[a,c], continuous f}.
-    apply: continuous_subspaceT => x axc; apply: fC.
-    move:axc; rewrite /= inE /<=%O/= => /andP [? ?].
-    by apply/intP; rewrite (le_trans _ (ltW cLb)) // Bool.andb_true_r.
+  have ctsACf : {within `[a, c], continuous f}.
+    apply: continuous_subspaceT => x; rewrite inE => /itvP axc; apply: fC.
+    by rewrite intP// axc/= (le_trans _ (ltW cLb))// axc.
   have ctsCBf : {within `[c,b], continuous f}.
-    apply: continuous_subspaceT => x axc; apply: fC.
-    move:axc; rewrite /= inE /<=%O/= => /andP [? ?].
-    by apply/intP; rewrite (le_trans (ltW aLc)).
+    apply: continuous_subspaceT => x; rewrite inE => /itvP axc; apply: fC.
+    by rewrite intP// axc andbT (le_trans (ltW aLc)) ?axc.
   have [aLb alb'] : a < b /\ a <= b by rewrite ltW (lt_trans aLc).
   have [faLfc|fcLfa|/eqP faEfc] /= := ltrgtP (f a) (f c).
   - split; rewrite // lt_neqAle fxy // leNgt; apply/negP => fbLfc.
@@ -220,9 +214,7 @@ Qed.
 
 Lemma segment_continuous_surjective a b f : a <= b ->
   {in `[a, b], continuous f} -> surjective `[a, b] (f @`[a, b]) f.
-Proof. 
-by move=> le_ab /continuous_subspace_itv fct y/= /IVT[]// x; exists x.
-Qed.
+Proof. by move=> ? /continuous_subspace_itv fct y/= /IVT[]// x; exists x. Qed.
 
 Lemma segment_continuous_le_surjective a b f : a <= b -> f a <= f b ->
   {in `[a, b], continuous f} -> surjective `[a, b] `[f a, f b] f.
@@ -498,13 +490,11 @@ Lemma is_derive_0_is_cst (f : R -> R) x y :
   (forall x, is_derive x 1 f 0) -> f x = f y.
 Proof.
 move=> Hd.
-wlog xLy : x y / x <= y.
-  by move=> H; case: (leP x y) => [/H |/ltW /H].
+wlog xLy : x y / x <= y by move=> H; case: (leP x y) => [/H |/ltW /H].
 rewrite -(subKr (f y) (f x)).
-case: (MVT_segment xLy) => [| _ _].
-  apply/continuous_subspaceT=> ? _.
-  by apply/differentiable_continuous/derivable1_diffP.
-by rewrite mul0r => ->; rewrite subr0.
+have [| _ _] := MVT_segment xLy; last by rewrite mul0r => ->; rewrite subr0.
+apply/continuous_subspaceT => r _.
+exact/differentiable_continuous/derivable1_diffP.
 Qed.
 
 Global Instance is_derive1_comp (f g : R -> R) (x a b : R) :

@@ -3183,13 +3183,13 @@ Proof.
 move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
     exists2 c, c \in `[a, b] & f c = v; last first.
   case: (leP (f a) (f b)) => [] _ fabv; first exact: ivt.
-  have [||c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
-    by move=> x; apply: continuousN; apply: fcont.
-  by rewrite ler_oppr opprK ler_oppr opprK andbC.
-move=> favfb; suff: (is_interval (f @` `[a,b])).
-  apply; last by exact: favfb. 
-    by exists a => //=; rewrite inE /<=%O /=; apply/andP.
-  by exists b => //=; rewrite inE /<=%O /=; apply/andP.
+  have [| |c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
+  - by move=> x; apply: continuousN; apply: fcont.
+  - by rewrite ler_oppr opprK ler_oppr opprK andbC.
+move=> favfb; suff: is_interval (f @` `[a,b]).
+  apply; last exact: favfb.
+  - by exists a => //=; rewrite in_itv/= lexx.
+  - by exists b => //=; rewrite in_itv/= leab lexx.
 apply/connected_intervalP/connected_continuous_connected => //.
 exact: segment_connected.
 Qed.

@@ -31,19 +31,21 @@
 - in `topology.v`:
   + `closedC` renamed `open_closedC`
   + `openC` renamed `closed_openC`
+- in `topology.v`:
   + lemmas `closedC`, `openC` 
   + notation `'{within A, continuous f}`
-  + lemmas `continuous_subspace_in`, `nbhs_subspace_interior`
+  + lemmas `continuous_subspace_in`
   + lemmas`closed_subspaceP`, `closed_subspaceW`, `closure_subspaceW`
   + lemmas `nbhs_subspace_subset`, `continuous_subspaceW`, `nbhs_subspaceT`,
-      `continuous_subspaceT_for`, `continuous_subspaceT`, `continuous_open_subspace`
-  + generalized `connected_continuous_connected`, `continuous_compact`
+    `continuous_subspaceT_for`, `continuous_subspaceT`, `continuous_open_subspace`
+  + globals `subspace_filter`, `subspace_proper_filter`
+  + notation `{within ..., continuous ...}`
 - in `derive.v`
   + lemma `MVT_segment`
-  + generalized `EVT_max`, `EVT_min`, `Rolle`, `MVT`, `ler0_derive1_nincr`, 
-        `le0r_derive1_ndecr` with subspace topology
 - in `normedtype.v`
-  + generalized `IVT` with subspace topology
+  + generalize `IVT` with subspace topology
+- in `realfun.v`:
+  + lemma `continuous_subspace_itv`
 
 ### Changed
 
@@ -58,6 +60,22 @@
 - in `ereal.v`:
   + lemmas `esum_fset_ninfty`, `esum_fset_pinfty`
   + lemmas `desum_fset_pinfty`, `desum_fset_ninfty`
+
+- in `topology.v`:
+  + generalize `connected_continuous_connected`, `continuous_compact`
+  + arguments of `subspace`
+- in `derive.v`:
+  + generalize `EVT_max`, `EVT_min`, `Rolle`, `MVT`, `ler0_derive1_nincr`,
+    `le0r_derive1_ndecr` with subspace topology
+  + implicits of `cvg_at_rightE`, `cvg_at_leftE`
+
+### Renamed
+
+- in `topology.v`:
+  + `closedC` -> `open_closedC`
+  + `openC` -> `closed_openC`
+
+### Removed
 
 ### Infrastructure
 
