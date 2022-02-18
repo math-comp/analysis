@@ -27,6 +27,16 @@ Section real_inverse_functions.
 Variable R : realType.
 Implicit Types (a b : R) (f g : R -> R).
 
+(* TODO: this is a workaround to weaken {in I, continuous f} to use IVT.
+   Updating this whole file to use {within [set` I], continuous f} is the
+   better, but more labor intensive approach *)
+Lemma continuous_subspace_itv (I : interval R) (f : R -> R) :
+  {in I, continuous f} -> {within [set` I], continuous f}.
+Proof.
+move=> ctsf; apply: continuous_subspaceT => x Ix; apply: ctsf.
+by move: Ix; rewrite inE.
+Qed.
+
 Lemma itv_continuous_inj_le f (I : interval R) :
   (exists x y, [/\ x \in I, y \in I, x < y & f x <= f y]) ->
   {in I, continuous f} -> {in I &, injective f} ->
@@ -41,6 +51,12 @@ gen have main : f / forall c, {in I, continuous f} -> {in I &, injective f} ->
   move=> c fC fI a b aI bI faLfb aLc cLb.
   have intP := interval_is_interval aI bI.
   have cI : c \in I by rewrite intP// (ltW aLc) ltW.
+  have ctsACf : {within `[a, c], continuous f}.
+    apply: continuous_subspaceT => x; rewrite inE => /itvP axc; apply: fC.
+    by rewrite intP// axc/= (le_trans _ (ltW cLb))// axc.
+  have ctsCBf : {within `[c,b], continuous f}.
+    apply: continuous_subspaceT => x; rewrite inE => /itvP axc; apply: fC.
+    by rewrite intP// axc andbT (le_trans (ltW aLc)) ?axc.
   have [aLb alb'] : a < b /\ a <= b by rewrite ltW (lt_trans aLc).
   have [faLfc|fcLfa|/eqP faEfc] /= := ltrgtP (f a) (f c).
   - split; rewrite // lt_neqAle fxy // leNgt; apply/negP => fbLfc.
@@ -50,8 +66,6 @@ gen have main : f / forall c, {in I, continuous f} -> {in I &, injective f} ->
       have aLc' : a <= c by rewrite ltW.
       apply: IVT => //; last first.
         by case: ltrgtP faLfc; rewrite // (ltW faLfb) // ltW.
-      apply: sub_in1 fC => y; rewrite in_itv/= le_eqVlt andbC => /andP[yc].
-      by move=> /predU1P[<-//| /ltW L]; rewrite intP// L (le_trans _ (ltW cLb)).
     rewrite -(fI _ _ _ _ fdEfb) //.
     move: ad dc; rewrite le_eqVlt =>/predU1P[<-//| /ltW L] dc.
     by rewrite intP// L (le_trans _ (ltW cLb)).
@@ -60,9 +74,6 @@ gen have main : f / forall c, {in I, continuous f} -> {in I &, injective f} ->
     + have [d /andP[cLd dLb] /eqP] : exists2 d, c <= d <= b & f d = f a.
         have cLb' : c <= b by rewrite ltW.
         apply: IVT => //; last by case: ltrgtP fcLfb; rewrite // !ltW.
-        apply: sub_in1 fC => y; rewrite in_itv /= => /andP[yc].
-        rewrite le_eqVlt=> /predU1P[->//| /ltW L].
-        by rewrite intP// L (le_trans (ltW aLc)).
       have /(fxy f fI) : a < d by rewrite (lt_le_trans aLc).
       suff dI' : d \in I by rewrite eq_sym=> /(_ aI dI') => /negbTE ->.
       move: dLb; rewrite le_eqVlt => /predU1P[->//|/ltW db].
@@ -173,7 +184,7 @@ have lt_ab : a < b by case: (ltgtP a b) aLb faLfb => // ->; rewrite ltxx.
 have w : exists x y, [/\ x \in `[a, b], y \in `[a, b], x < y & f x <= f y].
   by exists a, b; rewrite !bound_itvE (ltW faLfb).
 have fle := itv_continuous_inj_le w ctf (can_in_inj fK).
-move=> x y xin yin; have := IVT aLb ctf.
+move=> x y xin yin; have := IVT aLb (continuous_subspace_itv ctf).
 case: (ltrgtP (f a) (f b)) faLfb => // _ _ ivt.
 by have [[u uin <-] [v vin <-]] := (ivt _ xin, ivt _ yin); rewrite !fK// !fle.
 Qed.
@@ -203,7 +214,7 @@ Qed.
 
 Lemma segment_continuous_surjective a b f : a <= b ->
   {in `[a, b], continuous f} -> surjective `[a, b] (f @`[a, b]) f.
-Proof. by move=> le_ab fct y/= /IVT[]// x; exists x. Qed.
+Proof. by move=> ? /continuous_subspace_itv fct y/= /IVT[]// x; exists x. Qed.
 
 Lemma segment_continuous_le_surjective a b f : a <= b -> f a <= f b ->
   {in `[a, b], continuous f} -> surjective `[a, b] `[f a, f b] f.
@@ -479,12 +490,11 @@ Lemma is_derive_0_is_cst (f : R -> R) x y :
   (forall x, is_derive x 1 f 0) -> f x = f y.
 Proof.
 move=> Hd.
-wlog xLy : x y / x <= y.
-  by move=> H; case: (leP x y) => [/H |/ltW /H].
+wlog xLy : x y / x <= y by move=> H; case: (leP x y) => [/H |/ltW /H].
 rewrite -(subKr (f y) (f x)).
-case: (MVT xLy) => [x1 _ | _ _].
-  by apply/differentiable_continuous/derivable1_diffP.
-by rewrite mul0r => ->; rewrite subr0.
+have [| _ _] := MVT_segment xLy; last by rewrite mul0r => ->; rewrite subr0.
+apply/continuous_subspaceT => r _.
+exact/differentiable_continuous/derivable1_diffP.
 Qed.
 
 Global Instance is_derive1_comp (f g : R -> R) (x a b : R) :

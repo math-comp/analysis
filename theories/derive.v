@@ -1301,51 +1301,46 @@ Qed.
 End Derive.
 
 Lemma EVT_max (R : realType) (f : R -> R) (a b : R) : (* TODO : Filter not infered *)
-  a <= b -> {in `[a, b]%R, continuous f} -> exists2 c, c \in `[a, b]%R &
+  a <= b -> {within `[a, b], continuous f} -> exists2 c, c \in `[a, b]%R &
   forall t, t \in `[a, b]%R -> f t <= f c.
 Proof.
-move=> leab fcont; set imf := [set t | (f @` `[a, b]) t].
+move=> leab fcont; set imf := f @` `[a, b].
 have imf_sup : has_sup imf.
-  split.
-    by exists (f a); apply/imageP; rewrite /= in_itv /= lexx.
+  split; first by exists (f a); apply/imageP; rewrite /= in_itv /= lexx.
   have [M [Mreal imfltM]] : bounded_set (f @` `[a, b]).
-    apply/compact_bounded/continuous_compact; last exact: segment_compact.
-    by move=> ?; rewrite inE => /fcont.
-  exists (M + 1); apply/ubP => y /imfltM yleM.
-  apply: le_trans (yleM _ _); last by rewrite ltr_addl.
-  by rewrite ler_norm.
-case: (pselect (exists2 c, c \in `[a, b]%R & f c = sup imf)) => [|imf_ltsup].
+    by apply/compact_bounded/continuous_compact => //; exact: segment_compact.
+  exists (M + 1) => y /imfltM yleM.
+  by rewrite (le_trans _ (yleM _ _)) ?ler_norm ?ltr_addl.
+have [|imf_ltsup] := pselect (exists2 c, c \in `[a, b]%R & f c = sup imf).
   move=> [c cab fceqsup]; exists c => // t tab; rewrite fceqsup.
-  by move/ubP : (sup_upper_bound imf_sup); apply; exact: imageP.
-have {}imf_ltsup : forall t, t \in `[a, b]%R -> f t < sup imf.
-  move=> t tab; case: (ltrP (f t) (sup imf))=> // supleft.
-  rewrite falseE; apply: imf_ltsup; exists t => //.
-  apply/eqP; rewrite eq_le supleft andbT.
-  by move/ubP : (sup_upper_bound imf_sup); apply; exact: imageP.
-have invf_continuous : {in `[a, b]%R, continuous (fun t => (sup imf - f t)^-1 : R)}.
-  move=> t tab; apply: cvgV => //.
-    by rewrite subr_eq0 gt_eqF // imf_ltsup.
-  by apply: cvgD; [apply: cst_continuous|apply: cvgN; apply: fcont].
-have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] :
-   bounded_set ((fun t => (sup imf - f t)^-1) @` `[a, b]).
+  by apply/sup_upper_bound => //; exact/imageP.
+have {}imf_ltsup t : t \in `[a, b]%R -> f t < sup imf.
+  move=> tab; case: (ltrP (f t) (sup imf)) => // supleft.
+  rewrite falseE; apply: imf_ltsup; exists t => //; apply/eqP.
+  by rewrite eq_le supleft andbT sup_upper_bound//; exact/imageP.
+pose g t : R := (sup imf - f t)^-1.
+have invf_continuous : {within `[a, b], continuous g}.
+  rewrite continuous_subspace_in => t tab; apply: cvgV => //=.
+    by rewrite subr_eq0 gt_eqF // imf_ltsup //; rewrite inE in tab.
+  by apply: cvgD; [exact: cst_continuous | apply: cvgN; exact: (fcont t)].
+have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] : bounded_set (g @` `[a, b]).
   apply/compact_bounded/continuous_compact; last exact: segment_compact.
-  by move=> ?; rewrite inE => /invf_continuous.
-have : exists2 y, imf y & sup imf - k^-1 < y.
+  exact: invf_continuous.
+have [_ [t tab <-]] : exists2 y, imf y & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
-move=> [y] -[t tab <-] {y}.
 rewrite ltr_subl_addr -ltr_subl_addl.
 suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
-rewrite -[X in _ < X]invrK ltf_pinv ?qualifE ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
-by rewrite (le_lt_trans (ler_norm _) _) ?imVfltk//; apply: imageP.
+rewrite -[X in _ < X]invrK ltf_pinv// ?qualifE ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
+by rewrite (le_lt_trans (ler_norm _) _) ?imVfltk//; exact: imageP.
 Qed.
 
 Lemma EVT_min (R : realType) (f : R -> R) (a b : R) :
-  a <= b -> {in `[a, b]%R, continuous f} -> exists2 c, c \in `[a, b]%R &
+  a <= b -> {within `[a, b], continuous f} -> exists2 c, c \in `[a, b]%R &
   forall t, t \in `[a, b]%R -> f c <= f t.
 Proof.
 move=> leab fcont.
-have /(EVT_max leab) [c clr fcmax] : {in `[a, b]%R, continuous (- f)}.
-  by move=> ? /fcont; apply: continuousN.
+have /(EVT_max leab) [c clr fcmax] : {within `[a, b], continuous (- f)}.
+  by move=> ?; apply: continuousN => ?; exact: fcont.
 by exists c => // ? /fcmax; rewrite ler_opp2.
 Qed.
 
@@ -1358,6 +1353,7 @@ have atrF := at_right_proper_filter x.
 apply: (@cvg_map_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 by exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
+Arguments cvg_at_rightE {R V} f x.
 
 Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_left x).
@@ -1369,6 +1365,7 @@ apply: (@cvg_map_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e]
 exists e%:num => // y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.
+Arguments cvg_at_leftE {R V} f x.
 
 Lemma le0r_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R) :
@@ -1396,8 +1393,8 @@ rewrite limopp; apply: le0r_cvg_map; last by rewrite -limopp; apply: cvgN.
 by move: fle0; apply: filterS => x; rewrite oppr_ge0.
 Qed.
 
-Lemma ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T)) (FF : ProperFilter F)
-  (f g : T -> R) :
+Lemma ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+    (FF : ProperFilter F) (f g : T -> R) :
   (\forall x \near F, f x <= g x) -> cvg (f @ F) -> cvg (g @ F) ->
   lim (f @ F) <= lim (g @ F).
 Proof.
@@ -1418,7 +1415,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite ['D_1 f c]cvg_at_rightE; last exact: fdrvbl.
   apply: ler0_cvg_map; last first.
     have /fdrvbl dfc := cab.
-    rewrite -(@cvg_at_rightE _ _ (fun h : R => h^-1 *: ((f \o shift c) _ - f c))) //.
+    rewrite -(cvg_at_rightE (fun h : R => h^-1 *: ((f \o shift c) _ - f c))) //.
     apply: cvg_trans dfc; apply: cvg_app.
     move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.
     exact/lt0r_neq0.
@@ -1431,7 +1428,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite (itvP cab).
 rewrite ['D_1 f c]cvg_at_leftE; last exact: fdrvbl.
 apply: le0r_cvg_map; last first.
-  have /fdrvbl dfc := cab; rewrite -(@cvg_at_leftE _ _ (fun h => h^-1 *: ((f \o shift c) _ - f c))) //.
+  have /fdrvbl dfc := cab; rewrite -(cvg_at_leftE (fun h => h^-1 *: ((f \o shift c) _ - f c))) //.
   apply: cvg_trans dfc; apply: cvg_app.
   move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.
   exact/ltr0_neq0.
@@ -1458,22 +1455,20 @@ Qed.
 
 Lemma Rolle (R : realType) (f : R -> R) (a b : R) :
   a < b -> (forall x, x \in `]a, b[%R -> derivable f x 1) ->
-  {in `[a, b]%R, continuous f} -> f a = f b ->
+  {within `[a, b], continuous f} -> f a = f b ->
   exists2 c, c \in `]a, b[%R & is_derive c 1 f 0.
 Proof.
 move=> ltab fdrvbl fcont faefb.
 have [cmax cmaxab fcmax] := EVT_max (ltW ltab) fcont.
-case: (pselect ([set a; b] cmax))=> [cmaxeaVb|]; last first.
-  move=> /asboolPn; rewrite asbool_or => /norP.
-  move=> [/asboolPn/eqP cnea /asboolPn/eqP cneb].
+have [cmaxeaVb|] := boolP (cmax \in [set a; b]); last first.
+  rewrite notin_set => /not_orP[/eqP cnea /eqP cneb].
   have {}cmaxab : cmax \in `]a, b[%R.
     by rewrite in_itv /= !lt_def !(itvP cmaxab) cnea eq_sym cneb.
   exists cmax => //; apply: derive1_at_max (ltW ltab) fdrvbl cmaxab _ => t tab.
   by apply: fcmax; rewrite in_itv /= !ltW // (itvP tab).
 have [cmin cminab fcmin] := EVT_min (ltW ltab) fcont.
-case: (pselect ([set a; b] cmin))=> [cmineaVb|]; last first.
-  move=> /asboolPn; rewrite asbool_or => /norP.
-  move=> [/asboolPn/eqP cnea /asboolPn/eqP cneb].
+have [cmineaVb|] := boolP (cmin \in [set a; b]); last first.
+  rewrite notin_set => /not_orP[/eqP cnea /eqP cneb].
   have {}cminab : cmin \in `]a, b[%R.
     by rewrite in_itv /= !lt_def !(itvP cminab) cnea eq_sym cneb.
   exists cmin => //; apply: derive1_at_min (ltW ltab) fdrvbl cminab _ => t tab.
@@ -1481,26 +1476,25 @@ case: (pselect ([set a; b] cmin))=> [cmineaVb|]; last first.
 have midab : (a + b) / 2 \in `]a, b[%R by apply: mid_in_itvoo.
 exists ((a + b) / 2) => //; apply: derive1_at_max (ltW ltab) fdrvbl (midab) _.
 move=> t tab.
-suff fcst : forall s, s \in `]a, b[%R -> f s = f cmax by rewrite !fcst.
-move=> s sab.
+suff fcst s : s \in `]a, b[%R -> f s = f cmax by rewrite !fcst.
+move=> sab.
 apply/eqP; rewrite eq_le fcmax; last by rewrite in_itv /= !ltW ?(itvP sab).
 suff -> : f cmax = f cmin by rewrite fcmin // in_itv /= !ltW ?(itvP sab).
-by case: cmaxeaVb => ->; case: cmineaVb => ->.
+by move: cmaxeaVb cmineaVb; rewrite 2!inE => -[|] -> [|] ->.
 Qed.
 
 Lemma MVT (R : realType) (f df : R -> R) (a b : R) :
-  a <= b -> (forall x, x \in `]a, b[%R -> is_derive x 1 f (df x)) ->
-  {in `[a, b]%R, continuous f} ->
-  exists2 c, c \in `[a, b]%R & f b - f a = df c * (b - a).
+  a < b -> (forall x, x \in `]a, b[%R -> is_derive x 1 f (df x)) ->
+  {within `[a, b], continuous f} ->
+  exists2 c, c \in `]a, b[%R & f b - f a = df c * (b - a).
 Proof.
-move=> leab fdrvbl fcont; move: leab; rewrite le_eqVlt => /orP [/eqP aeb|altb].
-  by exists a; [rewrite inE/= aeb lexx|rewrite aeb !subrr mulr0].
+move=> altb fdrvbl fcont.
 set g := f + (- ( *:%R^~ ((f b - f a) / (b - a)) : R -> R)).
-have gdrvbl : forall x, x \in `]a, b[%R -> derivable g x 1.
-  by move=> x /fdrvbl dfx; apply: derivableB => //; apply/derivable1_diffP.
-have gcont : {in `[a, b]%R, continuous g}.
-  move=> x /fcont fx; apply: continuousD fx _; apply: continuousN.
-  exact: scalel_continuous.
+have gdrvbl x : x \in `]a, b[%R -> derivable g x 1.
+  by move=> /fdrvbl dfx; apply: derivableB => //; exact/derivable1_diffP.
+have gcont : {within `[a, b], continuous g}.
+  move=> x; apply: continuousD _ ; first by move=>?; exact: fcont.
+  by apply/continuousN/continuous_subspaceT => ? ?; exact: scalel_continuous.
 have gaegb : g a = g b.
   rewrite /g -![(_ - _ : _ -> _) _]/(_ - _).
   apply/eqP; rewrite -subr_eq /= opprK addrAC -addrA -scalerBl.
@@ -1508,7 +1502,7 @@ have gaegb : g a = g b.
     by rewrite mul1r addrCA subrr addr0.
   by apply: lt0r_neq0; rewrite subr_gt0.
 have [c cab dgc0] := Rolle altb gdrvbl gcont gaegb.
-exists c; first by rewrite in_itv /= ltW (itvP cab).
+exists c; first exact: cab.
 have /fdrvbl dfc := cab; move/@derive_val: dgc0; rewrite deriveB //; last first.
   exact/derivable1_diffP.
 move/eqP; rewrite [X in _ - X]deriveE // derive_val diff_val scale1r subr_eq0.
@@ -1516,34 +1510,51 @@ move/eqP->; rewrite -mulrA mulVf ?mulr1 //; apply: lt0r_neq0.
 by rewrite subr_gt0.
 Qed.
 
+(* Weakens MVT to work when the interval is a single point. *)
+Lemma MVT_segment (R : realType) (f df : R -> R) (a b : R) :
+  a <= b -> (forall x, x \in `]a, b[%R -> is_derive x 1 f (df x)) ->
+  {within `[a, b], continuous f} ->
+  exists2 c, c \in `[a, b]%R & f b - f a = df c * (b - a).
+Proof.
+move=> leab fdrvbl fcont; case: ltgtP leab => // [altb|aeb]; last first.
+  by exists a; [rewrite inE/= aeb lexx|rewrite aeb !subrr mulr0].
+have [c cab D] := MVT altb fdrvbl fcont.
+by exists c => //; rewrite in_itv /= ltW (itvP cab).
+Qed.
+
 Lemma ler0_derive1_nincr (R : realType) (f : R -> R) (a b : R) :
-  (forall x, x \in `[a, b]%R -> derivable f x 1) ->
-  (forall x, x \in `[a, b]%R -> f^`() x <= 0) ->
+  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
+  (forall x, x \in `]a, b[%R -> f^`() x <= 0) ->
+  {within `[a,b], continuous f} ->
   forall x y, a <= x -> x <= y -> y <= b -> f y <= f x.
 Proof.
-move=> fdrvbl dfle0 x y leax lexy leyb; rewrite -subr_ge0.
+move=> fdrvbl dfle0 ctsf x y leax lexy leyb; rewrite -subr_ge0.
+case: ltgtP lexy => // [xlty|->]; last by rewrite subrr.
 have itvW : {subset `[x, y]%R <= `[a, b]%R}.
   by apply/subitvP; rewrite /<=%O /= /<=%O /= leyb leax.
+have itvWlt : {subset `]x, y[%R <= `]a, b[%R}.
+  by apply subitvP; rewrite /<=%O /= /<=%O /= leyb leax.
 have fdrv z : z \in `]x, y[%R -> is_derive z 1 f (f^`()z).
-  rewrite inE => /andP [/ltW lexz /ltW lezy].
-  apply: DeriveDef; last by rewrite derive1E.
-  apply: fdrvbl; rewrite inE; apply/andP.
-  by split; [exact: le_trans lexz | exact: le_trans leyb].
-have [] := @MVT _ f (f^`()) x y lexy fdrv.
-  by move=> ? /itvW /fdrvbl /derivable1_diffP /differentiable_continuous.
-move=> t /itvW /dfle0 dft dftxy; rewrite -oppr_le0 opprB dftxy.
-by apply: mulr_le0_ge0 => //; rewrite subr_ge0.
+  rewrite in_itv/= => /andP[xz zy]; apply: DeriveDef; last by rewrite derive1E.
+  by apply: fdrvbl; rewrite in_itv/= (le_lt_trans _ xz)// (lt_le_trans zy).
+have [] := @MVT _ f (f^`()) x y xlty fdrv.
+  apply: (@continuous_subspaceW _ _ _ `[a,b]); first exact: itvW.
+  by rewrite continuous_subspace_in.
+move=> t /itvWlt dft dftxy _; rewrite -oppr_le0 opprB dftxy.
+by apply: mulr_le0_ge0 => //; [exact: dfle0|by rewrite subr_ge0 ltW].
 Qed.
 
 Lemma le0r_derive1_ndecr (R : realType) (f : R -> R) (a b : R) :
-  (forall x, x \in `[a, b]%R -> derivable f x 1) ->
-  (forall x, x \in `[a, b]%R -> 0 <= f^`() x) ->
+  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
+  (forall x, x \in `]a, b[%R -> 0 <= f^`() x) ->
+  {within `[a,b], continuous f} ->
   forall x y, a <= x -> x <= y -> y <= b -> f x <= f y.
 Proof.
-move=> fdrvbl dfge0 x y; rewrite -[f _ <= _]ler_opp2.
-apply: (@ler0_derive1_nincr _ (- f)) => t tab; first exact/derivableN/fdrvbl.
-rewrite derive1E deriveN; last exact: fdrvbl.
-by rewrite oppr_le0 -derive1E; apply: dfge0.
+move=> fdrvbl dfge0 fcont x y; rewrite -[f _ <= _]ler_opp2.
+apply (@ler0_derive1_nincr _ (- f)) => t tab; first exact/derivableN/fdrvbl.
+  rewrite derive1E deriveN; last exact: fdrvbl.
+  by rewrite oppr_le0 -derive1E; apply: dfge0.
+by apply: continuousN; exact: fcont.
 Qed.
 
 Lemma derive1_comp (R : realFieldType) (f g : R -> R) x :

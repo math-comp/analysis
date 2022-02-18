@@ -2784,20 +2784,20 @@ Qed.
 
 Lemma closed_le (y : R) : closed [set x : R | x <= y].
 Proof.
-rewrite (_ : mkset _ = ~` [set x | x > y]); first exact: closedC.
+rewrite (_ : mkset _ = ~` [set x | x > y]); first exact: open_closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
 Lemma closed_ge (y : R) : closed [set x : R | y <= x].
 Proof.
-rewrite (_ : mkset _ = ~` [set x | x < y]); first exact: closedC.
+rewrite (_ : mkset _ = ~` [set x | x < y]); first exact: open_closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
 Lemma closed_eq (y : R) : closed [set x : R | x = y].
 Proof.
 rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
-  by apply: closedC; exact: open_neq.
+  by apply: open_closedC; exact: open_neq.
 by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
 Qed.
 
@@ -3084,7 +3084,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
   have [r zcA1] : {r:{posnum R}| ball z r%:num `<=` ~` closure (A true)}.
     have ? : ~ closure (A true) z.
       by move: sepA; rewrite /separated => -[] _ /disjoints_subset; apply.
-    have ? : open (~` closure (A true)) by exact/openC/closed_closure.
+    have ? : open (~` closure (A true)) by exact/closed_openC/closed_closure.
     exact/nbhsC_ball/open_nbhs_nbhs.
   pose z1 : R := z + r%:num / 2; exists z1.
   have z1y : z1 <= y.
@@ -3176,58 +3176,23 @@ rewrite {1}(splitr x) ger_addl pmulr_lle0 // => /(lt_le_trans x0);
 Qed.
 
 Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
-  a <= b -> {in `[a, b], continuous f} ->
+  a <= b -> {within `[a, b], continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
   exists2 c, c \in `[a, b] & f c = v.
 Proof.
 move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
     exists2 c, c \in `[a, b] & f c = v; last first.
   case: (leP (f a) (f b)) => [] _ fabv; first exact: ivt.
-  have [||c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
-    by move=> x /fcont; apply: continuousN.
-  by rewrite ler_oppr opprK ler_oppr opprK andbC.
-move=> /andP[]; rewrite le_eqVlt => /orP [/eqP<- _|ltfav].
-  by exists a => //; rewrite in_itv /= lexx leab.
-rewrite le_eqVlt => /orP [/eqP->|ltvfb].
-  by exists b => //; rewrite in_itv /= lexx leab.
-set A := [set c | (c <= b) && (f c <= v)].
-have An0 : nonempty A by exists a; apply/andP; split=> //; apply: ltW.
-have supA : has_sup A by split=> //; exists b; apply/ubP => ? /andP [].
-have supAab : sup A \in `[a, b].
-  rewrite inE; apply/andP; split; last first.
-    by apply: sup_le_ub => //; apply/ubP => ? /andP [].
-  by move/ubP : (sup_upper_bound supA); apply; rewrite /A/= leab andTb ltW.
-exists (sup A) => //; have lefsupv : f (sup A) <= v.
-  rewrite leNgt; apply/negP => ltvfsup.
-  have vltfsup : 0 < f (sup A) - v by rewrite subr_gt0.
-  have /fcont /(_ _ (nbhsx_ballx _ (PosNum vltfsup))) [_/posnumP[d] supdfe]
-    := supAab.
-  have [t At supd_t] := sup_adherent supA [gt0 of d%:num].
-  suff /supdfe : ball (sup A) d%:num t.
-    rewrite /= /ball /= ltr_norml => /andP [_].
-    by rewrite ltr_add2l ltr_oppr opprK ltNge; have /andP [_ ->] := At.
-  rewrite /= /ball /= ger0_norm.
-    by rewrite ltr_subl_addr -ltr_subl_addl.
-  by rewrite subr_ge0; move/ubP : (sup_upper_bound supA); exact.
-apply/eqP; rewrite eq_le; apply/andP; split=> //.
-rewrite -subr_le0; apply/ler0_addgt0P => _/posnumP[e].
-rewrite ler_subl_addr -ler_subl_addl ltW //.
-have /fcont /(_ _ (nbhsx_ballx _ e)) [_/posnumP[d] supdfe] := supAab.
-have atrF := at_right_proper_filter (sup A); near (at_right (sup A)) => x.
-have /supdfe /= : ball (sup A) d%:num x.
-  by near: x; rewrite /= nbhs_simpl; exists d%:num => //.
-rewrite /= => /ltr_distlC_subl; apply: le_lt_trans.
-rewrite ler_add2r ltW //; suff : forall t, t \in `](sup A), b] -> v < f t.
-  apply; rewrite inE; apply/andP; split; first by near: x; exists 1.
-  near: x; exists (b - sup A) => /=.
-    rewrite subr_gt0 lt_def (itvP supAab) andbT; apply/negP => /eqP besup.
-    by move: lefsupv; rewrite leNgt -besup ltvfb.
-  move=> t lttb ltsupt; move: lttb; rewrite /= distrC.
-  by rewrite gtr0_norm ?subr_gt0 // ltr_add2r; apply: ltW.
-move=> t; rewrite in_itv /=; case/andP => ltsupt letb.
-apply/contra_lt: ltsupt => leftv.
-by move/ubP : (sup_upper_bound supA); apply; rewrite /A/= leftv letb.
-Unshelve. all: by end_near. Qed.
+  have [| |c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
+  - by move=> x; apply: continuousN; apply: fcont.
+  - by rewrite ler_oppr opprK ler_oppr opprK andbC.
+move=> favfb; suff: is_interval (f @` `[a,b]).
+  apply; last exact: favfb.
+  - by exists a => //=; rewrite in_itv/= lexx.
+  - by exists b => //=; rewrite in_itv/= leab lexx.
+apply/connected_intervalP/connected_continuous_connected => //.
+exact: segment_connected.
+Qed.
 
 (** Local properties in [R] *)
 
@@ -3558,14 +3523,14 @@ Lemma closed_ereal_le_ereal y : closed [set x | y <= x].
 Proof.
 rewrite (_ : [set x | y <= x] = ~` [set x | y > x]); last first.
   by rewrite predeqE=> x; split=> [rx|/negP]; [apply/negP|]; rewrite -leNgt.
-exact/closedC/open_ereal_lt_ereal.
+exact/open_closedC/open_ereal_lt_ereal.
 Qed.
 
 Lemma closed_ereal_ge_ereal y : closed [set x | y >= x].
 Proof.
 rewrite (_ : [set x | y >= x] = ~` [set x | y < x]); last first.
   by rewrite predeqE=> x; split=> [rx|/negP]; [apply/negP|]; rewrite -leNgt.
-exact/closedC/open_ereal_gt_ereal.
+exact/open_closedC/open_ereal_gt_ereal.
 Qed.
 
 End open_closed_sets_ereal.
