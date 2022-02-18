@@ -2909,7 +2909,8 @@ apply: (subclosed_compact _ cptB); first exact: closed_closure.
 by move/closure_id: cB => ->; exact: closure_subset.
 Qed.
 
-Lemma precompact_subset (A B : set X) : A `<=` B -> precompact B -> precompact A.
+Lemma precompact_subset (A B : set X) : 
+  A `<=` B -> precompact B -> precompact A.
 Proof.
 by move=> AsubB [B' B'subB cptB']; exists B' => // ? ?; exact/B'subB/AsubB.
 Qed.
@@ -5878,7 +5879,6 @@ have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
   by rewrite fAfE; exact: subsetI_eq0 cEIE.
 by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply fcAfEb; split; exists t.
 Qed.
-Section UniformPointwise.
 
 Section UniformPointwise.
 Context {U : topologicalType} {V : uniformType}.
@@ -5966,7 +5966,7 @@ Lemma uniform_pointwise_compact (W : set (X -> Y)) :
 Proof.
 rewrite [x in x _ -> _]compact_ultra [x in _ -> x _]compact_ultra.
 move=> + F UF FW => /(_ F UF FW) [h [Wh Fh]]; exists h; split => //.
-by move=> /= Q Fq; apply: (ptws_cvg_compact_family _ Fh).
+by move=> Q Fq; apply: (ptws_cvg_compact_family _ Fh).
 Qed.
 
 Lemma compact_pointwise_precompact (W : set (X -> Y)) :
