@@ -1682,6 +1682,41 @@ move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lee_pinfty ?lee_ninfty //.
 by rewrite !lee_fin ler_subl_addr.
 Qed.
 
+Lemma lte_suble_addr x y z : x \is a fin_num -> z \is a fin_num ->
+  (x - y < z) = (x < z + y).
+Proof.
+move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lte_pinfty ?lte_ninfty //.
+by rewrite !lte_fin ltr_subl_addr.
+Qed.
+
+Lemma lte_suble_addl x y z : y \is a fin_num -> z \is a fin_num ->
+  (x - y < z) = (x < y + z).
+Proof.
+move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lte_ninfty ?lte_pinfty //.
+by rewrite !lte_fin ltr_subl_addl.
+Qed.
+
+Lemma lte_subre_addr x y z : y \is a fin_num -> z \is a fin_num ->
+  (x < y - z) = (x + z < y).
+Proof.
+move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lte_ninfty ?lte_pinfty //.
+by rewrite !lte_fin ltr_subr_addr.
+Qed.
+
+Lemma lee_subre_addr x y z : x \is a fin_num -> y \is a fin_num ->
+  (x <= y - z) = (x + z <= y).
+Proof.
+move: y x z => [y| |] [x| |] [z| |] _ //=; rewrite ?lee_ninfty ?lee_pinfty //.
+by rewrite !lee_fin ler_subr_addr.
+Qed.
+
+Lemma lee_suble_addr x y z : x \is a fin_num -> z \is a fin_num ->
+  (x - y <= z) = (x <= z + y).
+Proof.
+move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lee_pinfty ?lee_ninfty //.
+by rewrite !lee_fin ler_subl_addr.
+Qed.
+
 Lemma pmule_rge0 x y : 0 < x -> (x * y >= 0) = (y >= 0).
 Proof.
 move=> x_gt0; apply/idP/idP; last exact/mule_ge0/ltW.
@@ -2338,6 +2373,39 @@ Qed.
 Lemma lee_dsubl_addr x y z : y \is a fin_num -> (x - y <= z) = (x <= z + y).
 Proof.
 by move=> ?; rewrite !dual_addeE lee_oppl lee_oppr lee_subr_addr ?fin_numN.
+Qed.
+
+Lemma lte_dsuble_addr x y z : x \is a fin_num -> z \is a fin_num ->
+  (x - y < z) = (x < z + y).
+Proof.
+move=> xfin zfin.
+by rewrite !dual_addeE lte_oppl lte_oppr oppeK lte_suble_addr// fin_numN.
+Qed.
+
+Lemma lte_dsuble_addl x y z : x \is a fin_num -> y \is a fin_num ->
+  (x - y < z) = (x < y + z).
+Proof.
+move=> xfin yfin.
+by rewrite !dual_addeE lte_oppl lte_oppr lte_subre_addr ?fin_numN// addeC.
+Qed.
+
+Lemma lte_dsubre_addr x y z : x \is a fin_num -> z \is a fin_num ->
+  (x < y - z) = (x + z < y).
+Proof.
+move=> xfin zfin.
+by rewrite !dual_addeE lte_oppl lte_oppr lte_suble_addl ?fin_numN// addeC.
+Qed.
+
+Lemma lee_dsubre_addr x y z : x \is a fin_num -> y \is a fin_num ->
+  (x <= y - z) = (x + z <= y).
+Proof.
+by move=> ? ?; rewrite !dual_addeE lee_oppl lee_oppr lee_suble_addr ?fin_numN.
+Qed.
+
+Lemma lee_dsuble_addr x y z : x \is a fin_num -> z \is a fin_num ->
+  (x - y <= z) = (x <= z + y).
+Proof.
+by move=> ? ?; rewrite !dual_addeE lee_oppl lee_oppr lee_subre_addr ?fin_numN.
 Qed.
 
 Lemma dmuleDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.

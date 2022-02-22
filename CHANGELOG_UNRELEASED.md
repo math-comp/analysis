@@ -459,6 +459,11 @@
   + lemmas `disjoint_itvxx`, `lt_disjoint`, `disjoint_neitv`, `disj_itv_Rhull`
 - new file `lebesgue_measure.v`
 - new file `lebesgue_integral.v`
+- in `ereal.v`:
+  + lemmas `lte_suble_addr`, `lte_suble_addl`, `lte_subre_addr`,
+    `lee_subre_addr`, `lee_suble_addr`, `lte_dsuble_addr`,
+    `lte_dsuble_addl`, `lte_dsubre_addr`, `lee_dsubre_addr`,
+    `lee_dsuble_addr`
 
 ### Changed
 
