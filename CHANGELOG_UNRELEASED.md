@@ -460,16 +460,34 @@
 - new file `lebesgue_measure.v`
 - new file `lebesgue_integral.v`
 - in `ereal.v`:
-  + lemmas `lte_suble_addr`, `lte_suble_addl`, `lte_subre_addr`,
-    `lee_subre_addr`, `lee_suble_addr`, `lte_dsuble_addr`,
-    `lte_dsuble_addl`, `lte_dsubre_addr`, `lee_dsubre_addr`,
-    `lee_dsuble_addr`
+  + lemmas `lte_subl_addl`, `lte_subr_addl`, `lte_subel_addr`,
+    `lte_suber_addr`, `lte_suber_addl`, `lee_subl_addl`,
+    `lee_subr_addl`, `lee_subel_addr`, `lee_subel_addl`,
+    `lee_suber_addr`, `lee_suber_addl`
+  + lemmas `lte_dsubl_addl`, `lte_dsubr_addl`, `lte_dsubel_addr`,
+    `lte_dsuber_addr`, `lte_dsuber_addl`, `lee_dsubl_addl`,
+    `lee_dsubr_addl`, `lee_dsubel_addr`, `lee_dsubel_addl`,
+    `lee_dsuber_addr`, `lee_dsuber_addl`
 
 ### Changed
 
 - in `trigo.v`:
   + the `realType` argument of `pi` is implicit
   + the printed type of `acos`, `asin`, `atan` is `R -> R`
+### Renamed
+
+- in `ereal.v`:
+  + `lte_subl_addl` -> `lte_subel_addl`
+  + `lte_subr_addr` -> `lte_suber_addr`
+  + `lte_dsubl_addl` -> `lte_dsubel_addl`
+  + `lte_dsubr_addr` -> `lte_dsuber_addr`
+
+### Removed
+
+- in `ereal.v`:
+  + lemmas `esum_fset_ninfty`, `esum_fset_pinfty`
+  + lemmas `desum_fset_pinfty`, `desum_fset_ninfty`
+
 - in `topology.v`:
   + generalize `connected_continuous_connected`, `continuous_compact`
   + arguments of `subspace`
