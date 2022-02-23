@@ -388,8 +388,8 @@ Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").
-Reserved Notation "'{within' A , 'continuous' f }"
-  (at level 70, A at level 69, format "'{within'  A ,  'continuous'  f }").
+Reserved Notation "{ 'within' A , 'continuous' f }"
+  (at level 70, A at level 69, format "{ 'within'  A ,  'continuous'  f }").
 Reserved Notation "{ 'uniform`' A -> V }"
   (at level 0, A at level 69, format "{ 'uniform`'  A  ->  V }").
 Reserved Notation "{ 'uniform' U -> V }"
@@ -5830,7 +5830,7 @@ Global Instance subspace_proper_filter {T : topologicalType}
      (A : set T) (x : subspace A) :
    ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
-Notation "'{within'  A , 'continuous'  f }" :=
+Notation "{ 'within'  A , 'continuous'  f }" :=
   (continuous (f : (subspace A) -> _)).
 
 Section SubspaceRelative.
@@ -5945,6 +5945,34 @@ apply/eqP/negPn/negP/set0P => -[t [? ?]].
 have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
   by rewrite fAfE; exact: subsetI_eq0 cEIE.
 by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply fcAfEb; split; exists t.
+Qed.
+
+Lemma uniform_limit_continuous {U : topologicalType} {V : uniformType}
+    (F : set (set (U -> V))) (f : U -> V) :
+  ProperFilter F -> (\forall g \near F, continuous (g : U -> V)) ->
+  {uniform, F --> f} -> continuous f.
+Proof.
+move=> PF ctsF Ff x; apply/cvg_app_entourageP => A entA; near F => g; near=> y.
+apply: (entourage_split (g x)) => //.
+  by near: g; apply/Ff/uniform_nbhs; exists (split_ent A); split => // ?; exact.
+apply: (entourage_split (g y)) => //; near: y; near: g.
+  by apply: (filterS _ ctsF) => g /(_ x) /cvg_app_entourageP; exact.
+apply/Ff/uniform_nbhs; exists (split_ent (split_ent A))^-1%classic.
+by split; [exact: entourage_inv | move=> g fg; near_simpl; near=> z; exact: fg].
+Unshelve. all: end_near. Qed.
+
+Lemma uniform_limit_continuous_subspace {U : topologicalType} {V : uniformType}
+    (K : set U) (F : set (set (U -> V))) (f : subspace K -> V) :
+  ProperFilter F -> (\forall g \near F, continuous (g : subspace K -> V)) ->
+  {uniform K, F --> f} -> {within K, continuous f}.
+Proof.
+move=> PF ctsF Ff; apply: (@subspace_eq_continuous _ _ _ (restrict K f)).
+  by rewrite /restrict => ? ->.
+apply: (@uniform_limit_continuous
+  (subspace_topologicalType K) _ (restrict K @ F) _).
+  apply: (filterS _ ctsF) => g; apply: subspace_eq_continuous.
+  by rewrite /restrict => ? ->.
+by apply (@uniform_restrict_cvg _ _ F ) => //; exact: PF.
 Qed.
 
 Section UniformPointwise.
