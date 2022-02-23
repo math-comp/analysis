@@ -1685,15 +1685,13 @@ Qed.
 Lemma lte_suble_addr x y z : x \is a fin_num -> z \is a fin_num ->
   (x - y < z) = (x < z + y).
 Proof.
-move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lte_pinfty ?lte_ninfty //.
-by rewrite !lte_fin ltr_subl_addr.
+by move=> xfin _; rewrite lte_subl_addl// addeC.
 Qed.
 
 Lemma lte_suble_addl x y z : y \is a fin_num -> z \is a fin_num ->
   (x - y < z) = (x < y + z).
 Proof.
-move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?lte_ninfty ?lte_pinfty //.
-by rewrite !lte_fin ltr_subl_addl.
+by move=> xfin _; rewrite lte_subl_addr// addeC.
 Qed.
 
 Lemma lte_subre_addr x y z : y \is a fin_num -> z \is a fin_num ->
