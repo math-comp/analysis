@@ -1,10 +1,24 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice.
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice order.
+
+(******************************************************************************)
+(*                                                                            *)
+(*  {classicType T} == Endow T : Type with a canonical eqType/choiceType.     *)
+(*                     This is intended for local use.                        *)
+(*                     E.g., with T : Type and A : set T                      *)
+(*                     elim/Pchoice: T => T in A *.                           *)
+(*                     substitutes T with T : choiceType.                     *)
+(*                     See also the lemmas Peq and eqPchoice.                 *)
+(* {eclassicType T} == Endow T : eqType with a canonical choiceType.          *)
+(*                     On the model of {classicType _}.                       *)
+(*                                                                            *)
+(******************************************************************************)
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
@@ -26,6 +40,13 @@ Axiom constructive_indefinite_description :
   forall (A : Type) (P : A -> Prop),
   (exists x : A, P x) -> {x : A | P x}.
 Notation cid := constructive_indefinite_description.
+
+Lemma cid2 (A : Type) (P Q : A -> Prop) :
+  (exists2 x : A, P x & Q x) -> {x : A | P x & Q x}.
+Proof.
+move=> PQA; suff: {x | P x /\ Q x} by move=> [a [*]]; exists a.
+by apply: cid; case: PQA => x; exists x.
+Qed.
 
 (* -------------------------------------------------------------------- *)
 Record mextentionality := {
@@ -50,6 +71,8 @@ Proof. by case: extentionality=> _; apply. Qed.
 Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
 Proof. by apply: propext; split=> [->|/propext]. Qed.
 
+Lemma propeqP (P Q : Prop) : (P = Q) <-> (P <-> Q).
+Proof. by rewrite propeqE. Qed.
 
 Lemma funeqE {T U : Type} (f g : T -> U) : (f = g) = (f =1 g).
 Proof. by rewrite propeqE; split=> [->//|/funext]. Qed.
@@ -65,13 +88,20 @@ Proof.
 by rewrite propeqE; split=> [->//|?]; rewrite funeq2E=> x y; rewrite funeqE.
 Qed.
 
+Lemma funeqP {T U : Type} (f g : T -> U) : (f = g) <-> (f =1 g).
+Proof. by rewrite funeqE. Qed.
+
+Lemma funeq2P {T U V : Type} (f g : T -> U -> V) : (f = g) <-> (f =2 g).
+Proof. by rewrite funeq2E. Qed.
+
+Lemma funeq3P {T U V W : Type} (f g : T -> U -> V -> W) :
+  (f = g) <-> (forall x y z, f x y z = g x y z).
+Proof. by rewrite funeq3E. Qed.
+
 Lemma predeqE {T} (P Q : T -> Prop) : (P = Q) = (forall x, P x <-> Q x).
 Proof.
 by rewrite propeqE; split=> [->//|?]; rewrite funeqE=> x; rewrite propeqE.
 Qed.
-
-Lemma predeqP {T} (A B : T -> Prop) : (A = B) <-> (forall x, A x <-> B x).
-Proof. by rewrite predeqE. Qed.
 
 Lemma predeq2E {T U} (P Q : T -> U -> Prop) :
    (P = Q) = (forall x y, P x y <-> Q x y).
@@ -85,11 +115,23 @@ Proof.
 by rewrite propeqE; split=> [->//|?]; rewrite funeq3E=> ???; rewrite propeqE.
 Qed.
 
-Lemma propT (P : Prop) : P -> P = True.
-Proof. by move=> p; rewrite propeqE; tauto. Qed.
+Lemma predeqP {T} (A B : T -> Prop) : (A = B) <-> (forall x, A x <-> B x).
+Proof. by rewrite predeqE. Qed.
+
+Lemma predeq2P {T U} (P Q : T -> U -> Prop) :
+   (P = Q) <-> (forall x y, P x y <-> Q x y).
+Proof. by rewrite predeq2E. Qed.
+
+Lemma predeq3P {T U V} (P Q : T -> U -> V -> Prop) :
+   (P = Q) <-> (forall x y z, P x y z <-> Q x y z).
+Proof. by rewrite predeq3E. Qed.
+
+Lemma propT {P : Prop} : P -> P = True.
+Proof. by move=> p; rewrite propeqE. Qed.
 
 Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
 Proof. by move: x (x) y => /propT-> [] []. Qed.
+Hint Resolve Prop_irrelevance : core.
 
 (* -------------------------------------------------------------------- *)
 Record mclassic := {
@@ -114,7 +156,7 @@ have : f true != f false \/ P.
 move=> [/eqP fTFN|]; [right=> p|by left]; apply: fTFN.
 have UTF : U true = U false by rewrite predeqE /U => b; split=> _; right.
 rewrite /f; move: (Uex true) (Uex false); rewrite UTF => p1 p2.
-by congr (projT1 (cid _)); apply: Prop_irrelevance.
+by congr (projT1 (cid _)).
 Qed.
 
 Lemma pselect (P : Prop): {P} + {~P}.
@@ -122,6 +164,12 @@ Proof.
 have : exists b, if b then P else ~ P.
   by case: (EM P); [exists true|exists false].
 by move=> /cid [[]]; [left|right].
+Qed.
+
+Lemma pselectT T : (T -> False) + T.
+Proof.
+have [/cid[]//|NT] := pselect (exists t : T, True); first by right.
+by left=> t; case: NT; exists t.
 Qed.
 
 Lemma classic : mclassic.
@@ -197,7 +245,7 @@ Proof. by move=> UV; apply/eq_exists2 => x y; apply/eq_exists. Qed.
 
 Lemma eq_exist T (P : T -> Prop) (s t : T) (p : P s) (q : P t) :
   s = t -> exist P s p = exist P t q.
-Proof. by move=> st; case: _ / st in q *; apply/congr1/Prop_irrelevance. Qed.
+Proof. by move=> st; case: _ / st in q *; apply/congr1. Qed.
 
 Lemma forall_swap T S (U : forall (x : T) (y : S), Prop) :
    (forall x y, U x y) = (forall y x, U x y).
@@ -237,14 +285,65 @@ Proof. by case: asboolP. Qed.
 Lemma asboolF (P : Prop) : ~ P -> `[<P>] = false.
 Proof. by apply/introF/asboolP. Qed.
 
-Definition equality_mixin_of_Type (T : Type) : Equality.mixin_of T :=
-  EqMixin (fun x y : T => asboolP (x = y)).
-
-Definition choice_of_Type (T : Type) : choiceType :=
-  Choice.Pack (Choice.Class (equality_mixin_of_Type T) gen_choiceMixin).
+Lemma eq_opE (T : eqType) (x y : T) : (x == y : Prop) = (x = y).
+Proof. by apply/propext; split=> /eqP. Qed.
 
 Lemma is_true_inj : injective is_true.
 Proof. by move=> [] []; rewrite ?(trueE, falseE) ?propeqE; tauto. Qed.
+
+Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
+Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
+Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
+Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
+
+Canonical arrow_eqType (T : Type) (T' : eqType) :=
+  EqType (T -> T') gen_eqMixin.
+Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
+  ChoiceType (T -> T') gen_choiceMixin.
+
+Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
+  EqType (forall x : T, T' x) gen_eqMixin.
+Definition dep_arrow_choiceClass (T : Type) (T' : T -> choiceType) :=
+  Choice.Class (Equality.class (dep_arrow_eqType T')) gen_choiceMixin.
+Definition dep_arrow_choiceType (T : Type) (T' : T -> choiceType) :=
+  Choice.Pack (dep_arrow_choiceClass T').
+
+Canonical Prop_eqType := EqType Prop gen_eqMixin.
+Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
+
+Section classicType.
+Variable T : Type.
+Definition classicType := T.
+Canonical classicType_eqType := EqType classicType gen_eqMixin.
+Canonical classicType_choiceType := ChoiceType classicType gen_choiceMixin.
+End classicType.
+Notation "'{classic' T }" := (classicType T)
+ (format "'{classic'  T }") : type_scope.
+
+Section eclassicType.
+Variable T : eqType.
+Definition eclassicType : Type := T.
+Canonical eclassicType_eqType := EqType eclassicType (Equality.class T).
+Canonical eclassicType_choiceType := ChoiceType eclassicType gen_choiceMixin.
+End eclassicType.
+Notation "'{eclassic' T }" := (eclassicType T)
+ (format "'{eclassic'  T }") : type_scope.
+
+Definition canonical_of T U (sort : U -> T) := forall (G : T -> Type),
+  (forall x', G (sort x')) -> forall x, G x.
+Notation canonical_ sort := (@canonical_of _ _ sort).
+Notation canonical T E := (@canonical_of T E id).
+
+Lemma canon T U (sort : U -> T) : (forall x, exists y, sort y = x) -> canonical_ sort.
+Proof. by move=> + G Gs x => /(_ x)/cid[x' <-]. Qed.
+Arguments canon {T U sort} x.
+
+Lemma Peq : canonical Type eqType.
+Proof. by apply: canon => T; exists  [eqType of {classic T}]. Qed.
+Lemma Pchoice : canonical Type choiceType.
+Proof. by apply: canon => T; exists [choiceType of {classic T}]. Qed.
+Lemma eqPchoice : canonical eqType choiceType.
+Proof. by apply: canon=> T; exists [choiceType of {eclassic T}]; case: T. Qed.
 
 Lemma not_True : (~ True) = False. Proof. exact/propext. Qed.
 Lemma not_False : (~ False) = True. Proof. by apply/propext; split=> _. Qed.
@@ -332,6 +431,25 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 
+Lemma notT (P : Prop) : P = False -> ~ P. Proof. by move->. Qed.
+
+Lemma contrapT P : ~ ~ P -> P.
+Proof.
+by move/asboolPn=> nnb; apply/asboolP; apply: contraR nnb => /asboolPn /asboolP.
+Qed.
+
+Lemma notTE (P : Prop) : (~ P) -> P = False.
+Proof. by case: (pdegen P)=> ->. Qed.
+
+Lemma notFE (P : Prop) : (~ P) = False -> P.
+Proof. move/notT; exact: contrapT. Qed.
+
+Lemma notK : involutive not.
+Proof.
+move=> P; case: (pdegen P)=> ->; last by apply: notTE; intuition.
+by rewrite [~ True]notTE //; case: (pdegen (~ False)) => // /notFE.
+Qed.
+
 Lemma contra_notP (Q P : Prop) : (~ Q -> P) -> ~ P -> Q.
 Proof.
 move=> cb /asboolPn nb; apply/asboolP.
@@ -344,25 +462,26 @@ move=> cb /asboolP hb; apply/asboolP.
 by apply: contraLR hb => /asboolP /cb /asboolPn.
 Qed.
 
-Lemma contrapT P : ~ ~ P -> P.
-Proof.
-by move/asboolPn=> nnb; apply/asboolP; apply: contraR nnb => /asboolPn /asboolP.
-Qed.
+Lemma contra_notT b (P : Prop) : (~~ b -> P) -> ~ P -> b.
+Proof. by move=> bP; apply: contra_notP => /negP. Qed.
+
+Lemma contraPT (P : Prop) b : (~~ b -> ~ P) -> P -> b.
+Proof. by move=> /contra_notT; rewrite notK. Qed.
+
+Lemma contraTP b (Q : Prop) : (~ Q -> ~~ b) -> b -> Q.
+Proof. by move=> QB; apply: contraPP => /QB/negP. Qed.
+
+Lemma contraNP (P : Prop) (b : bool) : (~ P -> b) -> ~~ b -> P.
+Proof. by move=> /contra_notP + /negP => /[apply]. Qed.
+
+Lemma contra_neqP (T : eqType) (x y : T) P : (~ P -> x = y) -> x != y -> P.
+Proof. by move=> Pxy; apply: contraNP => /Pxy/eqP. Qed.
+
+Lemma contra_eqP (T : eqType) (x y : T) (Q : Prop) : (~ Q -> x != y) -> x = y -> Q.
+Proof. by move=> Qxy /eqP; apply: contraTP. Qed.
 
 Lemma wlog_neg P : (~ P -> P) -> P.
 Proof. by move=> ?; case: (pselect P). Qed.
-
-Lemma notT (P : Prop) : P = False -> ~ P. Proof. by move->. Qed.
-
-Lemma notTE (P : Prop) : (~ P) -> P = False. Proof. by case: (pdegen P)=> ->. Qed.
-Lemma notFE (P : Prop) : (~ P) = False -> P.
-Proof. move/notT; exact: contrapT. Qed.
-
-Lemma notK : involutive not.
-Proof.
-move=> P; case: (pdegen P)=> ->; last by apply: notTE; intuition.
-by rewrite [~ True]notTE //; case: (pdegen (~ False)) => // /notFE.
-Qed.
 
 Lemma not_inj : injective not. Proof. exact: can_inj notK. Qed.
 Lemma notLR P Q : (P = ~ Q) -> (~ P) = Q. Proof. exact: canLR notK. Qed.
@@ -664,11 +783,15 @@ Proof. by rewrite forallNE. Qed.
 Lemma not_forallP T (P : T -> Prop) : (forall x, P x) <-> ~ exists x, ~ P x.
 Proof. by rewrite existsNE notK. Qed.
 
+Lemma exists2P T (P Q : T -> Prop) :
+  (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
+Proof. by split=> [[x ? ?] | [x []]]; exists x. Qed.
+
 Lemma not_exists2P T (P Q : T -> Prop) :
   (exists2 x, P x & Q x) <-> ~ forall x, ~ P x \/ ~ Q x.
 Proof.
-split=> [[x Px Qx] /(_ x) [|]//|]; apply: contra_notP => PQ t.
-by rewrite -not_andP; apply: contra_not PQ => -[Pt Qt]; exists t.
+rewrite exists2P not_existsP.
+by split; apply: contra_not => PQx x;  apply/not_andP; apply: PQx.
 Qed.
 
 Lemma forall2NP T (P Q : T -> Prop) :
@@ -678,9 +801,19 @@ split=> [PQ [t Pt Qt]|PQ t]; first by have [] := PQ t.
 by rewrite -not_andP => -[Pt Qt]; apply PQ; exists t.
 Qed.
 
-Lemma exists2P T (P Q : T -> Prop) :
-  (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
-Proof. by split=> [[x ? ?] | [x []]]; exists x. Qed.
+Lemma forallPNP T (P Q : T -> Prop) :
+  (forall x, P x -> ~ Q x) <-> ~ (exists2 x, P x & Q x).
+Proof.
+split=> [PQ [t Pt Qt]|PQ t]; first by have [] := PQ t.
+by move=> Pt Qt; apply: PQ; exists t.
+Qed.
+
+Lemma existsPNP T (P Q : T -> Prop) :
+  (exists2 x, P x & ~ Q x) <-> ~ (forall x, P x -> Q x).
+Proof.
+split=> [[x Px NQx] /(_ x Px)//|]; apply: contra_notP => + x Px.
+by apply: contra_notP => NQx; exists x.
+Qed.
 
 (* -------------------------------------------------------------------- *)
 Definition xchooseb {T : choiceType} (P : pred T) (h : `[exists x, P x]) :=
@@ -695,3 +828,58 @@ Proof. exact/xchooseP. Qed.
 Lemma imsetbP (T : Type) (U : eqType) (f : T -> U) v :
   reflect (exists x, v = f x) (v \in [pred y | `[exists x, y == f x]]).
 Proof. by apply: (iffP (existsbP _))=> -[x] => [/eqP|] ->; exists x. Qed.
+
+Module FunOrder.
+Section FunOrder.
+Import Order.TTheory.
+Variables (aT : Type) (d : unit) (T : porderType d).
+Implicit Types f g h : aT -> T.
+
+Lemma fun_display : unit. Proof. exact: tt. Qed.
+
+Definition lef f g := `[< forall x, (f x <= g x)%O >].
+Local Notation "f <= g" := (lef f g).
+
+Definition ltf f g := `[< (forall x, (f x <= g x)%O) /\ exists x, f x != g x >].
+Local Notation "f < g" := (ltf f g).
+
+Lemma ltf_def f g : (f < g) = (g != f) && (f <= g).
+Proof.
+apply/idP/andP => [fg|[gf fg]]; [split|apply/asboolP; split; [exact/asboolP|]].
+- by apply/eqP => gf; move: fg => /asboolP[fg] [x /eqP]; apply; rewrite gf.
+- apply/asboolP => x; rewrite le_eqVlt; move/asboolP : fg => [fg [y gfy]].
+  by have [//|gfx /=] := boolP (f x == g x); rewrite lt_neqAle gfx /= fg.
+- apply/not_existsP => h.
+  have : f =1 g by move=> x; have /negP/negPn/eqP := h x.
+  by rewrite -funeqE; apply/nesym/eqP.
+Qed.
+
+Fact lef_refl : reflexive lef. Proof. by move=> f; apply/asboolP => x. Qed.
+
+Fact lef_anti : antisymmetric lef.
+Proof.
+move=> f g => /andP[/asboolP fg /asboolP gf]; rewrite funeqE => x.
+by apply/eqP; rewrite eq_le fg gf.
+Qed.
+
+Fact lef_trans : transitive lef.
+Proof.
+move=> g f h /asboolP fg /asboolP gh; apply/asboolP => x.
+by rewrite (le_trans (fg x)).
+Qed.
+
+Definition porderMixin :=
+  @LePOrderMixin _ lef ltf ltf_def lef_refl lef_anti lef_trans.
+
+Canonical porderType := POrderType fun_display (aT -> T) porderMixin.
+
+End FunOrder.
+Module Exports.
+Canonical porderType.
+End Exports.
+End FunOrder.
+Export FunOrder.Exports.
+
+Lemma lefP (aT : Type) d (T : porderType d) (f g : aT -> T) :
+  reflect (forall x, (f x <= g x)%O) (f <= g)%O.
+Proof. by apply: (iffP idP) => [fg|fg]; [exact/asboolP | apply/asboolP]. Qed.

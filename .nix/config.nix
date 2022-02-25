@@ -31,24 +31,25 @@
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.13";
+  default-bundle = "8.14";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
-  bundles."8.13".coqPackages.coq.override.version = "8.13";
+  # bundles."8.13".coqPackages.coq.override.version = "8.13";
   bundles."8.14".coqPackages.coq.override.version = "8.14";
 
-  bundles."master".coqPackages = {
-    coq.override.version = "master";
-    coq-elpi.override.version = "coq-master";
-    hierarchy-builder.override.version = "v1.2.1";
-    mathcomp-bigenough.override.version = "1.0.1";
-    mathcomp-finmap.override.version = "1.5.1";
-    mathcomp-real-closed.override.version = "1.1.2";
-    mathcomp.override.version = "1.13.0";
-  };
+  # master is temporarily broken
+  # bundles."master".coqPackages = {
+  #   coq.override.version = "master";
+  #   coq-elpi.override.version = "coq-master";
+  #   hierarchy-builder.override.version = "v1.2.1";
+  #   mathcomp-bigenough.override.version = "1.0.1";
+  #   mathcomp-finmap.override.version = "1.5.1";
+  #   mathcomp-real-closed.override.version = "1.1.2";
+  #   mathcomp.override.version = "1.13.0";
+  # };
 
   ## Cachix caches to use in CI
   ## Below we list some standard ones

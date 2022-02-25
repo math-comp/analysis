@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
-Require Import boolp ereal reals.
+Require Import boolp ereal reals mathcomp_extra functions.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 Require Import cardinality normedtype derive.
 
@@ -213,18 +213,18 @@ by move=> x y /itvxxP<- /itvxxP<-; rewrite !lexx.
 Qed.
 
 Lemma segment_continuous_surjective a b f : a <= b ->
-  {in `[a, b], continuous f} -> surjective `[a, b] (f @`[a, b]) f.
+  {in `[a, b], continuous f} -> set_surj `[a, b] (f @`[a, b]) f.
 Proof. by move=> ? /continuous_subspace_itv fct y/= /IVT[]// x; exists x. Qed.
 
 Lemma segment_continuous_le_surjective a b f : a <= b -> f a <= f b ->
-  {in `[a, b], continuous f} -> surjective `[a, b] `[f a, f b] f.
+  {in `[a, b], continuous f} -> set_surj `[a, b] `[f a, f b] f.
 Proof.
 move=> le_ab f_ab /(segment_continuous_surjective le_ab).
 by rewrite (min_idPl _)// (max_idPr _).
 Qed.
 
 Lemma segment_continuous_ge_surjective a b f : a <= b -> f b <= f a ->
-  {in `[a, b], continuous f} -> surjective `[a, b] `[f b, f a] f.
+  {in `[a, b], continuous f} -> set_surj `[a, b] `[f b, f a] f.
 Proof.
 move=> le_ab f_ab /(segment_continuous_surjective le_ab).
 by rewrite (min_idPr _)// (max_idPl _).
@@ -282,7 +282,7 @@ Qed.
 
 Lemma segment_inc_surj_continuous a b f :
     {in `[a, b] &, {mono f : x y / x <= y}} ->
-    surjective `[a, b] `[f a, f b] f ->
+    set_surj `[a, b] `[f a, f b] f ->
   {in `]a, b[, continuous f}.
 Proof.
 move=> fle f_surj; have [f_inj flt] := (inc_inj_in fle, leW_mono_in fle).
@@ -290,12 +290,10 @@ have [aLb|bLa] := ltP a b; last by move=> z; rewrite itv_ge//= -leNgt.
 have le_ab : a <= b by rewrite ltW.
 have [aab bab] : a \in `[a, b] /\ b \in `[a, b] by rewrite !bound_itvE ltW.
 have fab : f @` `[a, b] = `[f a, f b]%classic by exact:inc_surj_image_segment.
-pose g := inverse point [set x | x \in `[a, b]] f.
+pose g := pinv `[a, b] f.
 have fK : {in `[a, b], cancel f g}.
-  move=> z zab; apply: injective_left_inverse; rewrite ?inE//.
-  by move=> x y; rewrite !inE/= => xab yab /f_inj; apply.
-have gK : {in `[f a, f b], cancel g f}.
-  by move=> z ?; apply: surjective_right_inverse f_surj _ _; rewrite inE.
+  by rewrite -[mem _]mem_setE; apply: pinvKV; rewrite !mem_setE.
+have gK : {in `[f a, f b], cancel g f} by move=> z zab; rewrite pinvK// fab inE.
 have gle : {in `[f a, f b] &, {mono g : x y / x <= y}}.
   apply: can_mono_in (fle); first by move=> *; rewrite gK.
   move=> z zfab; have {zfab} : `[f a, f b]%classic z by [].
@@ -326,7 +324,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma segment_dec_surj_continuous a b f :
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->
-    surjective `[a, b] `[f b, f a] f ->
+    set_surj `[a, b] `[f b, f a] f ->
   {in `]a, b[, continuous f}.
 Proof.
 move=> fge f_surj; suff: {in `]a, b[, continuous (- f)}.
@@ -334,11 +332,11 @@ move=> fge f_surj; suff: {in `]a, b[, continuous (- f)}.
   exact/continuous_comp/opp_continuous/contNf.
 apply: segment_inc_surj_continuous.
   by move=> x y xab yab; rewrite ler_opp2 fge.
-by move=> y/=; rewrite -oppr_itvcc => /f_surj[x [? /(canRL opprK)->]]; exists x.
+by move=> y /=; rewrite -oppr_itvcc => /f_surj[x ? /(canLR opprK)<-]; exists x.
 Qed.
 
 Lemma segment_mono_surj_continuous a b f :
-    monotonous `[a, b] f -> surjective `[a, b] (f @`[a, b]) f ->
+    monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
   {in `]a, b[, continuous f}.
 Proof.
 move=> -[fle|fge] f_surj x xab; have leab : a <= b by rewrite (itvP xab).
@@ -348,6 +346,7 @@ have fafb : f b <= f a by rewrite fge // ?bound_itvE.
 by apply: segment_dec_surj_continuous x xab => //; case: ltrP f_surj fafb.
 Qed.
 
+
 Lemma segment_can_le_continuous a b f g : a <= b ->
   {in `[a, b], continuous f} ->
   {in `[a, b], cancel f g} ->
@@ -355,8 +354,8 @@ Lemma segment_can_le_continuous a b f g : a <= b ->
 Proof.
 move=> aLb ctf fK x xab; have faLfb : f a <= f b by rewrite (itvP xab).
 apply: segment_inc_surj_continuous x xab; first exact: segment_can_le.
-rewrite !fK ?bound_itvE//=; apply: can_surjective _ (on1lW_in _ fK) _.
-exact/mem_inc_segment/segment_continuous_inj_le/(can_in_inj fK).
+rewrite !fK ?bound_itvE//=; apply: (@can_surj _ _ f); first by rewrite mem_setE.
+exact/image_subP/mem_inc_segment/segment_continuous_inj_le/(can_in_inj fK).
 Qed.
 
 Lemma segment_can_ge_continuous a b f g : a <= b ->
@@ -366,8 +365,8 @@ Lemma segment_can_ge_continuous a b f g : a <= b ->
 Proof.
 move=> aLb ctf fK x xab; have fbLfa : f b <= f a by rewrite (itvP xab).
 apply: segment_dec_surj_continuous x xab; first exact: segment_can_ge.
-rewrite !fK ?bound_itvE//=; apply: can_surjective _ (on1lW_in _ fK) _.
-exact/mem_dec_segment/segment_continuous_inj_ge/(can_in_inj fK).
+rewrite !fK ?bound_itvE//=; apply: (@can_surj _ _ f); first by rewrite mem_setE.
+exact/image_subP/mem_dec_segment/segment_continuous_inj_ge/(can_in_inj fK).
 Qed.
 
 Lemma segment_can_continuous a b f g : a <= b ->

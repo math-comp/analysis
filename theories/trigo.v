@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
 From mathcomp Require Import matrix interval rat.
-Require Import boolp reals ereal.
+Require Import mathcomp_extra boolp reals ereal.
 Require Import nsatz_realtype.
 Require Import classical_sets posnum topology normedtype landau sequences.
 Require Import derive realfun exp.
@@ -93,7 +93,7 @@ rewrite ltNge; apply: contraPN cf => ffn /(_ _ fn0).
 rewrite near_map /ball /=.
 have nf_ub N : \sum_(0 <= i < n.+2) f i <= \sum_(0 <= i < N.+1.*2 + n) f i.
   elim: N => // N /le_trans ->//; rewrite -(addn1 (N.+1)) doubleD addnAC.
-  rewrite [in X in _ <= X]/index_iota subn0 iota_add big_cat.
+  rewrite [in X in _ <= X]/index_iota subn0 iotaD big_cat.
   rewrite -[in X in _ <= X + _](subn0 (N.+1.*2 + n)%N) ler_addl /= add0n.
   by rewrite 2!big_cons big_nil addr0 -(addnC n) ltW// -addnS fn.
 case=> N _ Nfn; have /Nfn/ltr_distlC_addr : (N.+1.*2 + n >= N)%N.

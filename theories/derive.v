@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
 From mathcomp Require Import ssralg ssrnum fintype bigop order matrix interval.
-Require Import boolp reals.
+Require Import boolp reals mathcomp_extra.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 Require Import normedtype landau forms.
 

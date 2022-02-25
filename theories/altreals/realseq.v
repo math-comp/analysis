@@ -7,7 +7,7 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 Require Import mathcomp.bigenough.bigenough.
 Require Import xfinmap boolp ereal reals discrete.
-Require Import classical_sets topology.
+Require Import mathcomp_extra classical_sets topology.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -294,7 +294,8 @@ Qed.
 Lemma ncvgMr u v : ncvg v 0%:E -> nbounded u -> ncvg (u \* v) 0%:E.
 Proof.
 move=> cv bu; apply/(@ncvg_eq (v \* u)).
-  by move=> x; rewrite mulrC. by apply/ncvgMl.
+  by move=> x; rewrite /= mulrC.
+by apply/ncvgMl.
 Qed.
 
 Lemma ncvgM u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
