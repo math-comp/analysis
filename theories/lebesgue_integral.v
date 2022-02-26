@@ -2507,15 +2507,15 @@ Lemma fatou : \int_ D (elim_inf (f^~ x)) 'd mu[x] <=
               elim_inf (fun n => \int_ D (f n x) 'd mu[x]).
 Proof.
 pose g n := fun x => ereal_inf [set f k x | k in [set k | k >= n]%N].
-have mg := measurable_fun_ereal_inf mf.
+have mg := measurable_fun_einfs mf.
 have g0 n x : D x -> 0 <= g n x.
   by move=> Dx; apply: lb_ereal_inf => _ [m /= nm <-]; exact: f0.
-rewrite (monotone_convergence) //; last first.
+rewrite monotone_convergence //; last first.
   move=> x Dx m n mn /=; apply: le_ereal_inf => _ /= [p /= np <-].
   by exists p => //=; rewrite (leq_trans mn).
 apply: lee_lim.
 - apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvg => a b ab.
-  apply: (ge0_le_integral) => //; [exact: g0|exact: g0|].
+  apply: ge0_le_integral => //; [exact: g0| exact: mg| exact: g0| exact: mg|].
   move=> x Dx; apply: le_ereal_inf => _ [n /= bn <-].
   by exists n => //=; rewrite (leq_trans ab).
 - apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvg => a b ab.

@@ -1382,20 +1382,20 @@ move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
 by apply: measurableU; [apply: mf|apply: mg] =>//; apply: measurable_itv.
 Qed.
 
-Lemma measurable_fun_sup D (h : (T -> R)^nat) n :
+Lemma measurable_fun_sups D (h : (T -> R)^nat) n :
   (forall t, D t -> has_ubound [set of h^~t]) ->
   (forall m, measurable_fun D (h m)) ->
-  measurable_fun D (fun x => sup (sdrop (h^~x) n)).
+  measurable_fun D (fun x => sups (h ^~ x) n).
 Proof.
 move=> f_ub mf mD; apply: (measurability (RGenOInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite sups_preimage // setI_bigcupr.
 by apply: bigcup_measurable => k /= nk; apply: mf => //; apply: measurable_itv.
 Qed.
 
-Lemma measurable_fun_inf D (h : (T -> R)^nat) n :
+Lemma measurable_fun_infs D (h : (T -> R)^nat) n :
   (forall t, D t -> has_lbound [set of h ^~ t]) ->
   (forall n, measurable_fun D (h n)) ->
-  measurable_fun D (fun x => inf (sdrop (h ^~ x) n)).
+  measurable_fun D (fun x => infs (h ^~ x) n).
 Proof.
 move=> lb_f mf mD; apply: (measurability (RGenInftyO.measurableE R)) =>//.
 move=> _ [_ [x ->] <-]; rewrite infs_preimage // setI_bigcupr.
@@ -1415,11 +1415,11 @@ have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
   rewrite [X in _ --> X](_ : _ = inf [set of sups (h^~t)]).
     by apply: cvg_sups_inf; [exact: f_ub|exact: f_lb].
   by congr (inf [set _ | _ in _]); rewrite predeqE.
-move/eq_measurable_fun; apply; apply: measurable_fun_inf => //.
+move/eq_measurable_fun; apply; apply: measurable_fun_infs => //.
   move=> t Dt; have [M hM] := f_lb _ Dt; exists M => _ [m /= nm <-].
   rewrite (@le_trans _ _ (h m t)) //; first by apply hM => /=; exists m.
   by apply: sup_ub; [exact/has_ubound_sdrop/f_ub|exists m => /=].
-by move=> k; exact: measurable_fun_sup.
+by move=> k; exact: measurable_fun_sups.
 Qed.
 
 Lemma measurable_fun_cvg D (h : (T -> R)^nat) f :
@@ -1504,9 +1504,9 @@ Section emeasurable_fun.
 Variables (T : measurableType) (R : realType).
 Implicit Types (D : set T).
 
-Lemma measurable_fun_ereal_inf D (f : (T -> \bar R)^nat) :
+Lemma measurable_fun_einfs D (f : (T -> \bar R)^nat) :
   (forall n, measurable_fun D (f n)) ->
-  forall n, measurable_fun D (fun x => ereal_inf (sdrop (f ^~ x) n)).
+  forall n, measurable_fun D (fun x => einfs (f ^~ x) n).
 Proof.
 move=> mf n mD.
 apply: (measurability (ErealGenCInfty.measurableE R)) => //.
@@ -1514,9 +1514,9 @@ move=> _ [_ [x ->] <-]; rewrite einfs_preimage -bigcapIr; last by exists n => /=
 by apply: bigcap_measurable => ? ?; exact/mf/emeasurable_itv_bnd_pinfty.
 Qed.
 
-Lemma measurable_fun_ereal_sup D (f : (T -> \bar R)^nat) :
+Lemma measurable_fun_esups D (f : (T -> \bar R)^nat) :
   (forall n, measurable_fun D (f n)) ->
-  forall n, measurable_fun D (fun x => ereal_sup (sdrop (f ^~ x) n)).
+  forall n, measurable_fun D (fun x => esups (f ^~ x) n).
 Proof.
 move=> mf n mD; apply: (measurability (ErealGenOInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-];rewrite esups_preimage setI_bigcupr.
@@ -1561,7 +1561,7 @@ Lemma measurable_fun_elim_sup D (f : (T -> \bar R)^nat) :
 Proof.
 move=> mf mD; rewrite (_ :  (fun _ => _) =
     (fun x => ereal_inf [set esups (f^~ x) n | n in [set n | n >= 0]%N])).
-  by apply: measurable_fun_ereal_inf => // k; exact: measurable_fun_ereal_sup.
+  by apply: measurable_fun_einfs => // k; exact: measurable_fun_esups.
 rewrite funeqE => t; apply/cvg_lim => //.
 rewrite [X in _ --> X](_ : _ = ereal_inf [set of esups (f^~t)]).
   exact: cvg_esups_inf.
