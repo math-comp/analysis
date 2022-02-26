@@ -70,12 +70,12 @@ Local Open Scope ring_scope.
 
 Reserved Notation "f ^\+" (at level 1, format "f ^\+").
 Reserved Notation "f ^\-" (at level 1, format "f ^\-").
-Reserved Notation "'\int_' D f ''d' mu [ x ]" (at level 10, D, f at next level,
+Reserved Notation "'\int_' D f ''d' mu [ x ]" (at level 36, D at level 0,
+    f at level 36, mu at level 0, x at level 35,
   format "'\int_'  D  f  ''d'  mu [ x ]").
-Reserved Notation "'\int' f ''d' mu [ x ]" (at level 10, f at next level,
-  format "'\int'  f  ''d'  mu [ x ]").
+Reserved Notation "'\int' f ''d' mu [ x ]" (at level 36, f at level 36,
+  mu at level 0, x at level 3, format "'\int'  f  ''d'  mu [ x ]").
 Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
-
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
 Section funpos.
@@ -1381,7 +1381,8 @@ Definition integral D f (g := f \_ D) :=
   nnintegral (g ^\+) - nnintegral (g ^\-).
 
 Local Notation "\int_ D f 'd x" := (integral D (fun x => f))
-  (at level 10, D, f at next level, format "'\int_'  D  f  ''d'  x").
+  (at level 36, D at level 0, f at level 36, x at level 35,
+    format "'\int_'  D  f  ''d'  x").
 
 Lemma eq_integral D g f : {in D, f =1 g} ->
   \int_ D (f x) 'd x = \int_ D (g x) 'd x.
