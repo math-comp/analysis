@@ -7,7 +7,8 @@
 
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import finmap.
-Require Import boolp classical_sets reals posnum topology.
+Require Import boolp mathcomp_extra classical_sets functions reals posnum.
+Require Import topology.
 
 (******************************************************************************)
 (*                        Extended real numbers                               *)
@@ -73,31 +74,6 @@ Unset Printing Implicit Defensive.
 Reserved Notation "x %:E" (at level 2, format "x %:E").
 Reserved Notation "x +? y" (at level 50, format "x  +?  y").
 Reserved Notation "x *? y" (at level 50, format "x  *?  y").
-
-(* NB: in bigop.v since mathcomp 1.13.0 *)
-Lemma big_nat_widenl (R : Type) (idx : R) (op : Monoid.law idx) (m1 m2 n : nat)
-    (P : pred nat) (F : nat -> R) :
-  m2 <= m1 ->
-  \big[op/idx]_(m1 <= i < n | P i) F i =
-  \big[op/idx]_(m2 <= i < n | P i && (m1 <= i)) F i.
-Proof.
-move=> le_m21; have [le_nm1|lt_m1n] := leqP n m1.
-  rewrite big_geq// big_nat_cond big1//.
-  by move=> i /and3P[/andP[_ /leq_trans/(_ le_nm1)/ltn_geF->]].
-rewrite big_mkcond big_mkcondl (big_cat_nat _ _ _ le_m21) 1?ltnW//.
-rewrite [X in op X]big_nat_cond [X in op X]big_pred0; last first.
-  by move=> k; case: ltnP; rewrite andbF.
-by rewrite Monoid.mul1m; apply: congr_big_nat => // k /andP[].
-Qed.
-Arguments big_nat_widenl [R idx op].
-
-(* NB: in bigop.v since mathcomp 1.13.0 *)
-Lemma big_geq_mkord (R : Type) (idx : R) (op : Monoid.law idx) (m n : nat)
-    (P : pred nat) (F : nat -> R) :
-  \big[op/idx]_(m <= i < n | P i) F i =
-  \big[op/idx]_(i < n | P i && (m <= i)) F i.
-Proof. by rewrite (big_nat_widenl _ 0)// big_mkord. Qed.
-
 Reserved Notation "'\bar' x" (at level 2, format "'\bar'  x").
 
 Declare Scope ereal_dual_scope.
@@ -110,6 +86,9 @@ Local Open Scope ring_scope.
 
 Variant extended (R : Type) := EFin of R | EPInf | ENInf.
 Arguments EFin {R}.
+
+Lemma EFin_inj T : injective (@EFin T).
+Proof. by move=> a b; case. Qed.
 
 Definition dual_extended := extended.
 
@@ -134,6 +113,28 @@ Delimit Scope ereal_dual_scope with dE.
 Delimit Scope ereal_scope with E.
 
 Local Open Scope ereal_scope.
+
+Local Open Scope classical_set_scope.
+
+Lemma EFin_bigcup T (F : nat -> set T) :
+  EFin @` (\bigcup_i F i) = \bigcup_i (EFin @` F i).
+Proof.
+rewrite eqEsubset; split => [_ [r [n _ Fnr <-]]|]; first by exists n => //; exists r.
+by move=> x [n _ [r Fnr <- /=]]; exists r => //; exists n.
+Qed.
+
+Lemma EFin_setC T (A : set T) :
+  EFin @` (~` A) = (~` (EFin @` A)) `\` [set -oo; +oo].
+Proof.
+rewrite eqEsubset; split => [_ [r Ar <-]|[r | |]].
+  by split => [|[]//]; apply: contra_not Ar => -[? ? [] <-].
+- move=> [Ar _]; apply/not_exists2P; apply: contra_not Ar => h.
+  by exists r => //; have [|//] := h r; apply: contrapT.
+- by move=> -[_] /not_orP[_ /=].
+- by move=> -[_] /not_orP[/=].
+Qed.
+
+Local Close Scope classical_set_scope.
 
 Definition er_map T T' (f : T -> T') (x : \bar T) : \bar T' :=
   match x with
@@ -391,6 +392,15 @@ Definition mule := nosimpl mule_subdef.
 
 Definition abse x := if x is r%:E then `|r|%:E else +oo.
 
+Local Open Scope classical_set_scope.
+
+Lemma preimage_abse_pinfty : abse @^-1` [set +oo] = [set -oo; +oo].
+Proof.
+by rewrite predeqE => y; split ; move: y => [y//| |]//=; [right | left | case].
+Qed.
+
+Local Close Scope classical_set_scope.
+
 End ERealArith.
 
 Notation "+%dE"   := dual_adde.
@@ -409,6 +419,8 @@ Notation "`| x |" := (abse (x%dE : dual_extended _)) : ereal_dual_scope.
 Notation "`| x |" := (abse x) : ereal_scope.
 Arguments abse {R}.
 
+Notation "\- f" := (fun x => - f x)%dE : ereal_dual_scope.
+Notation "\- f" := (fun x => - f x)%E : ereal_scope.
 Notation "f \+ g" := (fun x => f x + g x)%dE : ereal_dual_scope.
 Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
 Notation "f \* g" := (fun x => f x * g x)%dE : ereal_dual_scope.
@@ -478,8 +490,11 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
-Lemma le0R (x : \bar R) : 0 <= x -> (0 <= fine x)%R.
+Lemma le0R x : 0 <= x -> (0 <= fine x)%R.
 Proof. by case: x. Qed.
+
+Lemma lt0R x : 0 < x < +oo -> (0 < fine x)%R.
+Proof. by move: x => [x| |] //=; rewrite ?ltxx ?andbF// lte_fin => /andP[]. Qed.
 
 Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
 Proof. by []. Qed.
@@ -491,16 +506,23 @@ End ERealOrderTheory.
 
 Section finNumPred.
 Context {R : numDomainType}.
+Implicit Type (x : \bar R).
 
 Definition fin_num := [qualify a x : \bar R | (x != -oo) && (x != +oo)].
 Fact fin_num_key : pred_key fin_num. by []. Qed.
 Canonical fin_num_keyd := KeyedQualifier fin_num_key.
 
-Lemma fin_numE x : (x \is a fin_num) = ((x != -oo) && (x != +oo)).
+Lemma fin_numE x : (x \is a fin_num) = (x != -oo) && (x != +oo).
 Proof. by []. Qed.
 
 Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \in fin_num).
 Proof. by apply/(iffP idP) => [/andP//|/andP]. Qed.
+
+Lemma fin_numEn x : (x \isn't a fin_num) = (x == -oo) || (x == +oo).
+Proof. by rewrite fin_numE negb_and ?negbK. Qed.
+
+Lemma fin_numPn x : reflect (x = -oo \/ x = +oo) (x \isn't a fin_num).
+Proof. by rewrite fin_numEn; apply: (iffP orP) => -[]/eqP; by [left|right]. Qed.
 
 End finNumPred.
 
@@ -537,6 +559,9 @@ Proof. by rewrite /adde_def andbC (andbC (x == -oo)) (andbC (x == +oo)). Qed.
 Lemma adde_defNN x y : - x +? - y = x +? y.
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
+Lemma adde_defEninfty x : (x +? -oo) = (x != +oo).
+Proof. by case: x. Qed.
+
 Lemma ge0_adde_def : {in [pred x | x >= 0] &, forall x y, x +? y}.
 Proof. by move=> [x| |] [y| |]. Qed.
 
@@ -564,11 +589,31 @@ Proof. by move=> x y z; rewrite addeC -addeA (addeC x). Qed.
 Lemma addeACA : @interchange (\bar R) +%E +%E.
 Proof. by case=> [r||] [s||] [t||] [u||] //; rewrite /adde /= addrACA. Qed.
 
+Lemma adde_gt0 x y : 0 < x -> 0 < y -> 0 < x + y.
+Proof.
+by move: x y => [x| |] [y| |] //; rewrite !lte_fin; exact: addr_gt0.
+Qed.
+
+Lemma padde_eq0 x y : 0 <= x -> 0 <= y -> (x + y == 0) = (x == 0) && (y == 0).
+Proof.
+move: x y => [x| |] [y| |]//; rewrite !lee_fin; first exact: paddr_eq0.
+by move=> x0 _ /=; rewrite andbF.
+Qed.
+
+Lemma nadde_eq0 x y : x <= 0 -> y <= 0 -> (x + y == 0) = (x == 0) && (y == 0).
+Proof.
+move: x y => [x| |] [y| |]//; rewrite !lee_fin; first exact: naddr_eq0.
+by move=> x0 _ /=; rewrite andbF.
+Qed.
+
 Lemma oppe0 : - 0 = 0 :> \bar R.
 Proof. by rewrite /= oppr0. Qed.
 
 Lemma oppeK : involutive (A := \bar R) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
+
+Lemma oppe_eq0 x : (- x == 0)%E = (x == 0)%E.
+Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
 
 Lemma oppeD x y : y \is a fin_num -> - (x + y) = - x - y.
 Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
@@ -599,6 +644,8 @@ Proof. by move: x => [r| |] //=; rewrite /mule/= ?mulr0// eqxx. Qed.
 Lemma mul0e x : 0 * x = 0.
 Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
+Canonical mule_monoid := @Monoid.MulLaw _ _ mule mul0e mule0.
+
 Definition mule_def x y :=
   ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
 
@@ -627,6 +674,9 @@ move: x y => [x| |] [y| |] //; first by rewrite mule_def_fin.
 - by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
 - by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
 Qed.
+
+Lemma ltpinfty_adde_def : {in [pred x | x < +oo] &, forall x y, x +? y}.
+Proof. by move=> [x| |] [y| |]. Qed.
 
 Lemma abse_eq0 x : (`|x| == 0) = (x == 0).
 Proof. by move: x => [| |] //= r; rewrite !eqe normr_eq0. Qed.
@@ -879,6 +929,9 @@ Qed.
 Lemma mule_lt0_gt0 x y : x < 0 -> 0 < y -> x * y < 0.
 Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 
+Lemma gte_opp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
+Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
+
 End ERealArithTh_numDomainType.
 Notation "x +? y" := (adde_def x%dE y%dE) : ereal_dual_scope.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
@@ -1056,6 +1109,9 @@ move=> u0 l; rewrite dual_sumeE oppe_le0 sume_ge0 // => t Pt.
 rewrite oppe_ge0; exact: u0.
 Qed.
 
+Lemma gte_dopp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
+Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
+
 End DualERealArithTh_numDomainType.
 
 End DualAddTheoryNumDomain.
@@ -1069,6 +1125,52 @@ Proof. by rewrite fin_numE -lee_pinfty_eq -lee_ninfty_eq -2!ltNge. Qed.
 
 Lemma fin_numPlt x : reflect (-oo < x < +oo) (x \is a fin_num).
 Proof. by rewrite fin_numElt; exact: idP. Qed.
+
+Lemma lte_pinfty_eq x : (x < +oo) = (x \is a fin_num) || (x == -oo).
+Proof. by case: x => // x //=; exact: lte_pinfty. Qed.
+
+Lemma ge0_fin_numE x : 0 <= x -> (x \is a fin_num) = (x < +oo).
+Proof. by move: x => [x| |] => // x0; rewrite fin_numElt lte_ninfty. Qed.
+
+Lemma eq_pinftyP x : x = +oo <-> (forall A, (0 < A)%R -> A%:E <= x).
+Proof.
+split=> [-> // A A0|Ax]; first by rewrite lee_pinfty.
+apply/eqP; rewrite eq_le lee_pinfty /= leNgt; apply/negP.
+move: x Ax => [x Ax _|//|]; last by move/(_ _ ltr01).
+move/not_forallP : Ax; apply; exists (`|x| + 1)%R.
+apply/not_implyP; split; first by rewrite -(addr0 0%R) ler_lt_add.
+rewrite lee_fin => /le_trans/(_ (ler_norm x)).
+by apply/negP; rewrite -ltNge ltr_addl.
+Qed.
+
+Lemma seq_psume_eq0 (I : choiceType) (r : seq I)
+    (P : pred I) (F : I -> \bar R) : (forall i, P i -> 0 <= F i)%E ->
+  (\sum_(i <- r | P i) F i == 0)%E = all (fun i => P i ==> (F i == 0%E)) r.
+Proof.
+move=> F0; apply/eqP/allP => PF0; last first.
+  rewrite big_seq_cond big1// => i /andP[ir Pi].
+  by have := PF0 _ ir; rewrite Pi implyTb => /eqP.
+move=> i ir; apply/implyP => Pi; apply/eqP.
+have rPF : {in r, forall i, P i ==> (F i \is a fin_num)}.
+  move=> j jr; apply/implyP => Pj; rewrite fin_numElt; apply/andP; split.
+    by rewrite (lt_le_trans _ (F0 _ Pj))// lte_ninfty.
+  rewrite ltNge; apply/eqP; rewrite lee_pinfty_eq; apply/eqP/negP => /eqP Fjoo.
+  have PFninfty k : P k -> F k != -oo%E.
+    by move=> Pk; rewrite gt_eqF// (lt_le_trans _ (F0 _ Pk))// lte_ninfty.
+  have /esum_pinftyP : exists i, [/\ i \in r, P i & F i = +oo%E] by exists j.
+  by move=> /(_ PFninfty); rewrite PF0.
+have ? : (\sum_(i <- r | P i) (fine \o F) i == 0)%R.
+  apply/eqP/EFin_inj; rewrite big_seq_cond -sumEFin.
+  rewrite (eq_bigr (fun i0 => F i0)); last first.
+    move=> j /andP[jr Pj] /=; rewrite fineK//.
+    by have := rPF _ jr; rewrite Pj implyTb.
+  by rewrite -big_seq_cond PF0.
+have /allP/(_ _ ir) : all (fun i => P i ==> ((fine \o F) i == 0))%R r.
+  by rewrite -psumr_eq0// => j Pj/=; apply/le0R/F0.
+rewrite Pi implyTb => /= => /eqP Fi0.
+rewrite -(@fineK _ (F i))//; last by have := rPF _ ir; rewrite Pi implyTb.
+by rewrite Fi0.
+Qed.
 
 Lemma lte_add_pinfty x y : x < +oo -> y < +oo -> x + y < +oo.
 Proof. by move: x y => -[r [r'| |]| |] // ? ?; rewrite -EFinD lte_pinfty. Qed.
@@ -1166,6 +1268,50 @@ Lemma mulninftyr r : -oo%E * r%:E = (Num.sg r)%:E * -oo%E.
 Proof. by rewrite muleC mulrninfty. Qed.
 
 Definition mulrinfty := (mulrpinfty, mulpinftyr, mulrninfty, mulninftyr).
+
+Lemma lte_mul_pinfty x y : 0 <= x -> x \is a fin_num -> y < +oo -> x * y < +oo.
+Proof.
+move: x y => [x| |] [y| |] // x0 xfin _; first by rewrite -EFinM lte_pinfty.
+rewrite mulrinfty; move: x0; rewrite lee_fin le_eqVlt => /predU1P[<-|x0].
+- by rewrite sgr0 mul0e lte_pinfty.
+- by rewrite gtr0_sg // mul1e.
+Qed.
+
+Lemma mule_ge0_gt0 x y : 0 <= x -> 0 <= y -> (0 < x * y) = (0 < x) && (0 < y).
+Proof.
+move: x y => [x| |] [y| |] //; rewrite ?lee_fin.
+- by move=> x0 y0; rewrite !lte_fin; exact: mulr_ge0_gt0.
+- rewrite le_eqVlt => /predU1P[<-|x0] _; first by rewrite mul0e ltxx.
+  by rewrite lte_pinfty andbT mulrpinfty gtr0_sg// mul1e lte_fin x0 lte_pinfty.
+- move=> _; rewrite le_eqVlt => /predU1P[<-|x0].
+    by rewrite mule0 ltxx andbC.
+  by rewrite lte_pinfty/= mulpinftyr gtr0_sg// mul1e lte_fin x0 lte_pinfty.
+- by move=> _ _; rewrite mule_pinfty_pinfty lte_pinfty.
+Qed.
+
+Lemma gt0_mulpinfty x : (0 < x -> +oo * x = +oo)%E.
+Proof.
+move: x => [x|_|//]; last by rewrite mule_pinfty_pinfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty gtr0_sg// mul1e.
+Qed.
+
+Lemma lt0_mulpinfty x : (x < 0 -> +oo * x = -oo)%E.
+Proof.
+move: x => [x|//|_]; last by rewrite mule_pinfty_ninfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty ltr0_sg// mulN1e.
+Qed.
+
+Lemma gt0_mulninfty x : (0 < x -> -oo * x = -oo)%E.
+Proof.
+move: x => [x|_|//]; last by rewrite mule_ninfty_pinfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty gtr0_sg// mul1e.
+Qed.
+
+Lemma lt0_mulninfty x : (x < 0 -> -oo * x = +oo)%E.
+Proof.
+move: x => [x|//|_]; last by rewrite mule_ninfty_ninfty.
+by rewrite lte_fin => x0; rewrite muleC mulrinfty ltr0_sg// mulN1e.
+Qed.
 
 Lemma mule_eq_pinfty x y : (x * y == +oo) =
   [|| (x > 0) && (y == +oo), (x < 0) && (y == -oo),
@@ -1704,6 +1850,18 @@ Proof.
 by move=> F0; rewrite muleC le0_sume_distrl//; under eq_bigr do rewrite muleC.
 Qed.
 
+Lemma eq_infty x : (forall r, r%:E <= x) -> x = +oo.
+Proof.
+case: x => [x /(_ (x + 1)%R)|//|/(_ 0%R)//].
+by rewrite EFinD addeC -lee_subr_addr// subee// lee_fin ler10.
+Qed.
+
+Lemma eq_ninfty x : (forall r, x <= r%:E) -> x = -oo.
+Proof.
+move=> *; apply: (can_inj oppeK); apply: eq_infty => r.
+by rewrite lee_oppr -EFinN.
+Qed.
+
 Lemma lee_opp x y : (- x <= - y) = (y <= x).
 Proof. by rewrite lee_oppl oppeK. Qed.
 
@@ -1715,6 +1873,12 @@ Proof. by move: x => [x| |] /=; rewrite ?lee_pinfty ?lee_fin. Qed.
 
 Lemma abse_id x : `| `|x| | = `|x|.
 Proof. by move: x => [x| |] //=; rewrite normr_id. Qed.
+
+Lemma preimage_abse_ninfty : (@abse R @^-1` [set -oo])%classic = set0.
+Proof.
+rewrite predeqE => t; split => //=; apply/eqP.
+by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t))// lte_ninfty.
+Qed.
 
 Lemma lte_absl (x y : \bar R) : (`|x| < y)%E = (- y < x < y)%E.
 Proof.
@@ -1895,6 +2059,7 @@ Arguments lee_sum_nneg_natr {R}.
 Arguments lee_sum_npos_natr {R}.
 Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
+Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
 Module DualAddTheoryRealDomain.
 
@@ -2582,9 +2747,50 @@ Proof. by move=> A B AB; apply ub_ereal_sup => x Ax; apply/ereal_sup_ub/AB. Qed.
 Lemma le_ereal_inf : {homo @ereal_inf R : A B / A `<=` B >-> B <= A}.
 Proof. by move=> A B AB; apply lb_ereal_inf => x Bx; exact/ereal_inf_lb/AB. Qed.
 
+Lemma hasNub_ereal_sup (A : set (\bar R)) : ~ has_ubound A ->
+  A !=set0 -> ereal_sup A = +oo%E.
+Proof.
+move=> hasNubA A0.
+apply/eqP; rewrite eq_le lee_pinfty /= leNgt.
+apply: contra_notN hasNubA => Aoo.
+by exists (ereal_sup A); exact: ereal_sup_ub.
+Qed.
+
+Lemma ereal_sup_EFin  (A : set R) :
+  has_ubound A -> A !=set0 -> ereal_sup (EFin @` A) = (sup A)%:E.
+Proof.
+move=> has_ubA A0; apply/eqP; rewrite eq_le; apply/andP; split.
+  by apply: ub_ereal_sup => /= y [r Ar <-{y}]; rewrite lee_fin sup_ub.
+set esup := ereal_sup _; have := lee_pinfty esup.
+rewrite le_eqVlt => /predU1P[->|esupoo]; first by rewrite lee_pinfty.
+have := lee_ninfty esup; rewrite le_eqVlt => /predU1P[/esym|ooesup].
+  case: A0 => i Ai.
+  by move=> /ereal_sup_ninfty /(_ i%:E) /(_ (ex_intro2 A _ i Ai erefl)).
+have esup_fin_num : esup \is a fin_num.
+  rewrite fin_numE -lee_ninfty_eq -ltNge ooesup /= -lee_pinfty_eq -ltNge.
+  by rewrite esupoo.
+rewrite -(@fineK _ esup) // lee_fin leNgt.
+apply/negP => /(sup_gt A0)[r Ar]; apply/negP; rewrite -leNgt.
+by rewrite -lee_fin fineK//; apply: ereal_sup_ub; exists r.
+Qed.
+
+Lemma ereal_inf_EFin (A : set R) : has_lbound A -> A !=set0 ->
+   ereal_inf (EFin @` A) = (inf A)%:E.
+Proof.
+move=> has_lbA A0; rewrite /ereal_inf /inf EFinN; congr (- _)%E.
+rewrite -ereal_sup_EFin; [|exact/has_lb_ubN|exact/nonemptyN].
+by rewrite !image_comp.
+Qed.
+
 End ereal_supremum_realType.
 
-Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) +oo.
+Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) 0%E.
+
+Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
+  (abse \o f) \_ D = abse \o (f \_ D).
+Proof.
+by apply/funext=> t; rewrite /restrict/=; case: ifPn => // _; rewrite abse0.
+Qed.
 
 Section ereal_nbhs.
 Context {R : numFieldType}.

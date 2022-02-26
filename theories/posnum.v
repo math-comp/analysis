@@ -50,9 +50,6 @@ Hint Mode infer ! : typeclass_instances.
 Hint Extern 0 (infer _) => (exact) : typeclass_instances.
 Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
-Lemma splitr (R : numFieldType) (x : R) : x = x / 2%:R + x / 2%:R.
-Proof. by rewrite -mulr2n -mulr_natr mulfVK //= pnatr_eq0. Qed.
-
 Record posnum_of (R : numDomainType) (phR : phant R) := PosNumDef {
   num_of_pos : R;
   posnum_gt0 :> num_of_pos > 0

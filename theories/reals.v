@@ -463,6 +463,13 @@ move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
   by exists l => x [Ax|Bx]; [rewrite (le_trans (AB _ _ Ax Bb)) // Bl|exact: Bl].
 Qed.
 
+Lemma sup_gt (S : set R) (x : R) : S !=set0 ->
+  (x < sup S -> exists2 y, S y & x < y)%R.
+Proof.
+move=> S0; rewrite not_exists2P => + g; apply/negP; rewrite -leNgt.
+by apply sup_le_ub => // y Sy; move: (g y) => -[// | /negP]; rewrite leNgt.
+Qed.
+
 End RealLemmas.
 
 (* -------------------------------------------------------------------- *)
@@ -527,6 +534,13 @@ Proof.
 move=> hiA AB; congr (- _).
 rewrite image_setU setUC sup_setU //; first exact/has_inf_supN.
 by move=> _ _ [] b Bb <-{} [] a Aa <-{}; rewrite ler_oppl opprK; apply AB.
+Qed.
+
+Lemma inf_lt (S : set R) (x : R) : S !=set0 ->
+  (inf S < x -> exists2 y, S y & y < x)%R.
+Proof.
+move=> /nonemptyN S0; rewrite /inf ltr_oppl => /sup_gt => /(_ S0)[r [r' Sr']].
+by move=> <-; rewrite ltr_oppr opprK => r'x; exists r'.
 Qed.
 
 End InfTheory.
@@ -662,6 +676,16 @@ apply/idP/orP => [|[x0|/le_floor r1]]; first rewrite neq_lt => /orP[x0|x0].
 - by right; rewrite (le_trans _ (floor_le _))// ler1z -gtz0_ge1.
 - by rewrite lt_eqF//; apply: contra_lt x0; rewrite floor_ge0.
 - by rewrite gt_eqF// (lt_le_trans _ r1)// floor1.
+Qed.
+
+Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
+Proof.
+move=> yx; exists `|floor (x - y)^-1|%N.
+rewrite -ltr_subr_addl -{2}(invrK (x - y)%R) ltf_pinv ?qualifE ?ltr0n//.
+  by rewrite invr_gt0 subr_gt0.
+rewrite -addn1 natrD natr_absz ger0_norm.
+  by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.
+by rewrite -RfloorE lt_succ_Rfloor.
 Qed.
 
 End FloorTheory.
