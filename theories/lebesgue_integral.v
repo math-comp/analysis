@@ -2506,7 +2506,7 @@ Hypothesis f0 : forall n x, D x -> 0 <= f n x.
 Lemma fatou : \int_ D (elim_inf (f^~ x)) 'd mu[x] <=
               elim_inf (fun n => \int_ D (f n x) 'd mu[x]).
 Proof.
-pose g n := fun x => ereal_inf [set f k x | k in [set k | k >= n]%N].
+pose g n := fun x => einfs (f ^~ x) n.
 have mg := measurable_fun_einfs mf.
 have g0 n x : D x -> 0 <= g n x.
   by move=> Dx; apply: lb_ereal_inf => _ [m /= nm <-]; exact: f0.
@@ -2522,8 +2522,8 @@ apply: lee_lim.
   apply: le_ereal_inf => // _ [n /= bn <-].
   by exists n => //=; rewrite (leq_trans ab).
 - apply: nearW => m.
-  have : forall n p, (p >= n)%N -> \int_ D (g n x) 'd mu[x] <=
-    ereal_inf [set \int_ D (f k x) 'd mu[x] | k in [set p | n <= p]%N].
+  have : forall n p, (p >= n)%N ->
+      \int_ D (g n x) 'd mu[x] <= einfs (fun k => \int_ D (f k x) 'd mu[x]) n.
     move=> n p np; apply: lb_ereal_inf => /= _ [k /= nk <-].
     apply: ge0_le_integral => //; [exact: g0|exact: mg|exact: f0|].
     by move=> x Dx; apply: ereal_inf_lb; exists k.
