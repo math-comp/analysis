@@ -2840,12 +2840,12 @@ Implicit Types z : R.
 
 Lemma closure_gt z : closure ([set x | z < x] : set R) = [set x | z <= x].
 Proof.
-rewrite predeqE => v; split.
-  by rewrite closureE; apply; split => [|W /ltW //]; exact: closed_ge.
-rewrite /mkset le_eqVlt => /orP[/eqP <-{v}|]; last first.
-  by move=> ?; exact: subset_closure.
+rewrite eqEsubset; split.
+  by rewrite closureE; apply: smallest_sub => // ? /ltW.
+move=> v; rewrite /mkset le_eqVlt => /predU1P[<-{v}|]; last first.
+  exact: subset_closure.
 apply/subset_limit_point/limit_pointP; exists (fun n => z + n.+1%:R^-1); split.
-- by move=> u [] m _ <-; rewrite ltr_addl.
+- by move=> _ [] m _ <-; rewrite ltr_addl.
 - by move=> n; rewrite -subr_eq0 addrAC subrr add0r.
 - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
   rewrite opprD addrA subrr add0r normrN ger0_norm //.
@@ -2854,12 +2854,12 @@ Unshelve. all: by end_near. Qed.
 
 Lemma closure_lt z : closure ([set x : R | x < z]) = [set x | x <= z].
 Proof.
-rewrite predeqE => v; split.
-  by rewrite closureE; apply; split => [|w /ltW //]; exact: closed_le.
-rewrite /mkset le_eqVlt => /orP[/eqP <-{z}|]; last first.
-  by move=> ?; exact: subset_closure.
+rewrite eqEsubset; split.
+  by rewrite closureE; apply: smallest_sub => // ? /ltW.
+move=> v; rewrite /mkset le_eqVlt => /predU1P[<-{z}|]; last first.
+  exact: subset_closure.
 apply/subset_limit_point/limit_pointP; exists (fun n => v - n.+1%:R^-1); split.
-- by move=> u [] m _ <-; rewrite ltr_subl_addl ltr_addr.
+- by move=> _ [] m _ <-; rewrite ltr_subl_addl ltr_addr.
 - by move=> n; rewrite -subr_eq0 addrAC subrr add0r oppr_eq0.
 - apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> n.
   rewrite opprD addrA subrr add0r opprK ger0_norm //.
@@ -3732,7 +3732,7 @@ move=> /posnumP[e]; rewrite eqEsubset; split => y.
 have [-> _|xy] := eqVneq x y; first exact: closed_ballxx.
 rewrite /closed_ball closureE -ball_normE.
 rewrite /closed_ball_ /= le_eqVlt.
-move => /orP [/eqP xye B [Bc Be]|xye _ [_ /(_ _ xye)]//].
+move => /orP[/eqP xye B [Bc Be]|xye _ [_ /(_ _ xye)]//].
 apply: Bc => B0 /nbhs_ballP[s s0] B0y.
 have [es|se] := leP s e%:num; last first.
   exists x; split; first by apply: Be; rewrite ball_normE; apply: ballxx.
