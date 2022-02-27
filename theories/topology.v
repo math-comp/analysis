@@ -2624,10 +2624,10 @@ Implicit Types E A B U : set T.
 Lemma closure_subset A B : A `<=` B -> closure A `<=` closure B.
 Proof. by move=> ? ? CAx ?; move/CAx; exact/subsetI_neq0. Qed.
 
-Lemma closureE A : closure A = \bigcap_(B in [set B | closed B /\ A `<=` B]) B.
+Lemma closureE A : closure A = smallest closed A.
 Proof.
 rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closure_subset AB).
-by move=> x; apply; split; [exact: closed_closure|exact: subset_closure].
+exact: (smallest_sub (@closed_closure _ _) (@subset_closure _ _)).
 Qed.
 
 Lemma closureC E :
@@ -5680,12 +5680,10 @@ have /closed_subspaceP := (@closed_closure _ (U : set (subspace A))).
 move=> [V] [clV VAclUA] /[dup] /(@closure_subset subspace_topologicalType).
 have/closure_id <- := (closed_subspaceT) => /setIidr <-; rewrite setIC.
 move=> UsubA; rewrite eqEsubset; split.
-  apply: setSI; rewrite closureE => x/(_ (@closure T U)); apply.
-  split; last exact: (@subset_closure _ (U : set T)).
+  apply: setSI; rewrite closureE; apply: smallest_sub (@subset_closure _ U).
   by apply: closed_subspaceW; exact: closed_closure.
-rewrite -VAclUA; apply setSI; rewrite closureE //= => x /(_ V).
-apply; split => //; apply: (@subset_trans _ (V `&` A)); last by move=> ? [].
-rewrite VAclUA -{1}(setIid U); apply: setISS => //.
+rewrite -VAclUA; apply setSI; rewrite closureE //=; apply: smallest_sub => //.
+apply: subset_trans (@subIsetl _ V A); rewrite VAclUA subsetI; split => //.
 exact: (@subset_closure _ (U : set (subspace A))).
 Qed.
 
@@ -6022,7 +6020,7 @@ have C : compact R.
 apply: (subclosed_compact _ C); first exact: closed_closure.
 have WsubR : W `<=` R.
   by move=> f Wf x; rewrite /R /K closure_limit_point; left; exists f.
-rewrite closureE => q; apply; split => //; apply: compact_closed=> //.
+rewrite closureE; apply: smallest_sub (compact_closed _ C) WsubR.
 exact: hausdorff_product.
 Qed.
 
