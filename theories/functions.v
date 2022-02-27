@@ -29,6 +29,11 @@ Add Search Blacklist "_mixin_".
 (*  {injfun A >-> B} == type of injective functions                           *)
 (*     {bij A >-> B} == combination of {injfun A >-> B} and {surjfun A >-> B} *)
 (*                                                                            *)
+(*         Section function_space == canonical ringType and lmodType          *)
+(*                                   structures for functions whose range is  *)
+(*                                   a ringType, comRingType,or lmodType.     *)
+(*                           fctE == multi-rule for fct                       *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -1745,6 +1750,10 @@ apply/funext => x; rewrite /patch/= in_setI.
 by case: (x \in D) (x \in D') => [] [].
 Qed.
 
+Lemma patch_set0 {aT rT : Type} (g : aT -> rT) (f : aT -> rT) :
+  patch g set0 f = g.
+Proof. by apply/funext => x; rewrite /patch in_set0. Qed.
+
 Lemma patch_setT {aT rT : Type} (g : aT -> rT) (f : aT -> rT) :
   patch g setT f = f.
 Proof. by apply/funext => x; rewrite /patch in_setT. Qed.
@@ -2392,3 +2401,103 @@ Notation "''injpPfun_' dflt" := (injpPfun_ dflt) : form_scope.
 Notation injpPfun := 'injpPfun_point.
 Notation "''funpPinj_' dflt" := (funpPinj_ dflt) : form_scope.
 Notation funpPinj := 'funpPinj_point.
+
+Section function_space.
+Local Open Scope ring_scope.
+Import GRing.Theory.
+
+Definition cst {T T' : Type} (x : T') : T -> T' := fun=> x.
+
+Obligation Tactic := idtac.
+
+Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
+  @ZmodMixin (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g) _ _ _ _.
+Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
+Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
+Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
+
+Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
+  @RingMixin [zmodType of T -> M] (cst 1) (fun f g => f \* g)
+             _ _ _ _ _ _.
+Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
+Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDl. Qed.
+Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDr. Qed.
+Next Obligation.
+by move=> T M ; apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
+Qed.
+Canonical fct_ringType (T : pointedType) (M : ringType) :=
+  RingType (T -> M) (fct_ringMixin T M).
+
+Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
+  ComRingType (T -> M) _.
+Next Obligation. by move=> T M f g; rewrite funeqE => x/=; rewrite mulrC. Qed.
+
+Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
+  := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
+Next Obligation. by move=> U R V k f v; rewrite funeqE=> x; exact: scalerA. Qed.
+Next Obligation. by move=> U R V f; rewrite funeqE=> x /=; rewrite scale1r. Qed.
+Next Obligation.
+by move=> U R V f g h; rewrite funeqE => x /=; rewrite scalerDr.
+Qed.
+Next Obligation.
+by move=> U R V f g h; rewrite funeqE => x /=; rewrite scalerDl.
+Qed.
+Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
+  LmodType _ (U -> V) (fct_lmodMixin U V).
+
+Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M) (x : T) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+
+End function_space.
+
+Section function_space_lemmas.
+Local Open Scope ring_scope.
+Import GRing.Theory.
+
+Lemma addrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
+  f + g = (fun x : T => f x + g x).
+Proof. by []. Qed.
+
+Lemma opprfunE (T : pointedType) (K : ringType) (f : T -> K) :
+  - f = (fun x : T => - f x).
+Proof. by []. Qed.
+
+Lemma mulrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
+  f * g = (fun x : T => f x * g x).
+Proof. by []. Qed.
+
+Lemma scalrfunE (T : pointedType) (K : ringType) (L : lmodType K)
+    k (f : T -> L) :
+  k *: f = (fun x : T => k *: f x).
+Proof. by []. Qed.
+
+Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
+Proof. by []. Qed.
+
+Lemma exprfunE (T : pointedType) (K : ringType) (f : T -> K) n :
+  f ^+ n = (fun x => f x ^+ n).
+Proof.
+by elim: n => [|n ihn]; rewrite funeqE=> ?; [rewrite !expr0|rewrite !exprS ihn].
+Qed.
+
+Lemma compE (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3) :
+  g \o f = fun x => g (f x).
+Proof. by []. Qed.
+
+Definition fctE :=
+  (cstE, compE, opprfunE, addrfunE, mulrfunE, scalrfunE, exprfunE).
+
+End function_space_lemmas.
+
+Section fun_cmul.
+Local Open Scope ring_scope.
+
+Definition fun_cmul {U : Type} {R : ringType} (k : R) (f : U -> R) x := k * f x.
+
+End fun_cmul.
+Notation "k *\ f" := (fun_cmul k f) (at level 40, format "k  *\  f") : ring_scope.

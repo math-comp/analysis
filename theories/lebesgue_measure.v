@@ -2,7 +2,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat.
-Require Import boolp reals ereal classical_sets posnum nngnum topology.
+Require Import boolp reals ereal classical_sets posnum nngnum topology numfun.
 Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
 Require Import sequences esum measure fsbigop cardinality set_interval.
@@ -1499,6 +1499,7 @@ by move=> ? ?; exact: preimage_image.
 Qed.
 
 Section emeasurable_fun.
+Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType).
 Implicit Types (D : set T).
 
@@ -1535,6 +1536,19 @@ move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
     move=> [Dx ->]//; rewrite orbT.
 by apply: measurableU; [exact/mf/emeasurable_itv_bnd_pinfty|
                         exact/mg/emeasurable_itv_bnd_pinfty].
+Qed.
+
+Lemma emeasurable_fun_funenng D (f : T -> \bar R) :
+  measurable_fun D f -> measurable_fun D f^\+.
+Proof.
+by move=> mf; apply: emeasurable_fun_max => //; apply: measurable_fun_cst.
+Qed.
+
+Lemma emeasurable_fun_funennp D (f : T -> \bar R) :
+  measurable_fun D f -> measurable_fun D f^\-.
+Proof.
+move=> mf; apply: emeasurable_fun_max => //; last exact: measurable_fun_cst.
+by apply: measurable_fun_comp => //; apply: emeasurable_fun_minus.
 Qed.
 
 Lemma emeasurable_fun_min D (f g : T -> \bar R) :

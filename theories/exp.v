@@ -1,10 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
-Require Import boolp reals ereal.
-Require Import nsatz_realtype.
-Require Import classical_sets posnum topology normedtype landau sequences.
-Require Import derive realfun.
+Require Import boolp reals ereal nsatz_realtype classical_sets posnum functions.
+Require Import topology normedtype landau sequences derive realfun.
 
 (******************************************************************************)
 (*               Theory of exponential/logarithm functions                    *)

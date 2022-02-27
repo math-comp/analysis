@@ -17,17 +17,19 @@ Require Import boolp mathcomp_extra classical_sets functions.
 (* only relations A #<= B and A #= B to compare the cardinals of two sets     *)
 (* (on two possibly different types).                                         *)
 (*                                                                            *)
-(*         A #<= B  ==  the cardinal of A is smaller or equal to the one of B *)
-(*         A #>= B  := B #<= A                                                *)
-(*          A #= B  ==  the cardinal of A is equal to the cardinal of B       *)
-(*         A #!= B  := ~~ (A #= B)                                            *)
-(*    finite_set A  ==  the set A is finite                                   *)
-(*                  :=  exists n, A #= `I_n                                   *)
-(*                 <-> exists X : {fset T}, A = [set` X]                      *)
-(*                 <-> ~ ([set: nat] #<= A)                                   *)
-(*  infinite_set A  := ~ finite_set A                                         *)
-(*     countable A <-> A is countable                                         *)
-(*                  :=  A #<= [set: nat]                                      *)
+(*          A #<= B  ==  the cardinal of A is smaller or equal to the one of B*)
+(*          A #>= B  := B #<= A                                               *)
+(*           A #= B  ==  the cardinal of A is equal to the cardinal of B      *)
+(*          A #!= B  := ~~ (A #= B)                                           *)
+(*     finite_set A  ==  the set A is finite                                  *)
+(*                   :=  exists n, A #= `I_n                                  *)
+(*                   <-> exists X : {fset T}, A = [set` X]                    *)
+(*                   <-> ~ ([set: nat] #<= A)                                 *)
+(*   infinite_set A  := ~ finite_set A                                        *)
+(*       countable A <-> A is countable                                       *)
+(*                   := A #<= [set: nat]                                      *)
+(*                                                                            *)
+(* {fimfun aT >-> T} == type of functions with a finite image                 *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -1061,3 +1063,113 @@ Proof.
 rewrite !card_eq_le => /andP[Acnt /infiniteP Ainfty] /all_and2[Bcnt Bn0].
 by rewrite [(_ #<= _)%card]countableMR//=; apply/infiniteP/infiniteMRl.
 Qed.
+
+HB.mixin Record FiniteImage aT rT (f : aT -> rT) := {
+  fimfunP : finite_set [set of f]
+}.
+HB.structure Definition FImFun aT rT := {f of @FiniteImage aT rT f}.
+
+Reserved Notation "{ 'fimfun' aT >-> T }"
+  (at level 0, format "{ 'fimfun'  aT  >->  T }").
+Reserved Notation "[ 'fimfun' 'of' f ]"
+  (at level 0, format "[ 'fimfun'  'of'  f ]").
+Notation "{ 'fimfun' aT >-> T }" := (@FImFun.type aT T) : form_scope.
+Notation "[ 'fimfun' 'of' f ]" := [the {fimfun _ >-> _} of f] : form_scope.
+#[global] Hint Resolve fimfunP : core.
+
+Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
+  finite_set (f @` D).
+Proof. by apply: (@sub_finite_set _ _ [set of f]) => // y [x]; exists x. Qed.
+
+#[global] Hint Resolve fimfun_inP : core.
+
+Section fimfun_pred.
+Context {aT rT : Type}.
+Definition fimfun : {pred aT -> rT} := mem [set f | finite_set [set of f]].
+Definition fimfun_key : pred_key fimfun.
+Proof. exact. Qed.
+Canonical fimfun_keyed := KeyedPred fimfun_key.
+End fimfun_pred.
+
+Section fimfun.
+Context {aT rT : Type}.
+Notation T := {fimfun aT >-> rT}.
+Notation fimfun := (@fimfun aT rT).
+Section Sub.
+Context (f : aT -> rT) (fP : f \in fimfun).
+Definition fimfun_Sub_subproof := @FiniteImage.Build aT rT f (set_mem fP).
+#[local] HB.instance Definition _ := fimfun_Sub_subproof.
+Definition fimfun_Sub := [fimfun of f].
+End Sub.
+
+Lemma fimfun_rect (K : T -> Type) :
+  (forall f (Pf : f \in fimfun), K (fimfun_Sub Pf)) -> forall u : T, K u.
+Proof.
+move=> Ksub [f [[Pf]]]/=.
+by suff -> : Pf = (set_mem (@mem_set _ [set f | _] f Pf)) by apply: Ksub.
+Qed.
+
+Lemma fimfun_valP f (Pf : f \in fimfun) : fimfun_Sub Pf = f :> (_ -> _).
+Proof. by []. Qed.
+
+Canonical fimfun_subType := SubType T _ _ fimfun_rect fimfun_valP.
+End fimfun.
+
+Lemma fimfuneqP aT rT (f g : {fimfun aT >-> rT}) :
+  f = g <-> f =1 g.
+Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
+
+Definition fimfuneqMixin aT (rT : eqType) :=
+  [eqMixin of {fimfun aT >-> rT} by <:].
+Canonical fimfuneqType aT (rT : eqType) :=
+  EqType {fimfun aT >-> rT} (fimfuneqMixin aT rT).
+Definition fimfunchoiceMixin aT (rT : choiceType) :=
+  [choiceMixin of {fimfun aT >-> rT} by <:].
+Canonical fimfunchoiceType aT (rT : choiceType) :=
+  ChoiceType {fimfun aT >-> rT} (fimfunchoiceMixin aT rT).
+
+Lemma finite_image_cst {aT rT : Type} (x : rT) : finite_set [set of cst x : aT -> rT].
+Proof.
+elim/Ppointed: aT => aT; rewrite ?emptyE ?image_set0//.
+suff -> : cst x @` [set: aT] = [set x] by apply: finite_set1.
+by apply/predeqP => y; split=> [[t' _ <-]//|->//] /=; exists point.
+Qed.
+
+Lemma cst_fimfun_subproof aT rT x : @FiniteImage aT rT (cst x).
+Proof. by split; exact: finite_image_cst. Qed.
+HB.instance Definition _ aT rT x := @cst_fimfun_subproof aT rT x.
+Definition cst_fimfun {aT rT} x := [the {fimfun aT >-> rT} of cst x].
+
+Lemma fimfun_cst aT rT x : @cst_fimfun aT rT x =1 cst x. Proof. by []. Qed.
+
+Lemma comp_fimfun_subproof aT rT sT
+   (f : {fimfun aT >-> rT}) (g : rT -> sT) : @FiniteImage aT sT (g \o f).
+Proof. by split; rewrite -(image_comp f g); apply: finite_image. Qed.
+HB.instance Definition _ aT rT sT f g := @comp_fimfun_subproof aT rT sT f g.
+
+Section zmod.
+Context (aT : Type) (rT : zmodType).
+Lemma fimfun_zmod_closed : zmod_closed (@fimfun aT rT).
+Proof.
+split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
+by move=> fA gA; apply: (finite_image11 (fun x y => x - y)).
+Qed.
+Canonical fimfun_add := AddrPred fimfun_zmod_closed.
+Canonical fimfun_zmod := ZmodPred fimfun_zmod_closed.
+Definition fimfun_zmodMixin := [zmodMixin of {fimfun aT >-> rT} by <:].
+Canonical fimfun_zmodType := ZmodType {fimfun aT >-> rT} fimfun_zmodMixin.
+
+Implicit Types (f g : {fimfun aT >-> rT}).
+
+Lemma fimfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
+Lemma fimfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
+Lemma fimfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
+Lemma fimfun0 : (0 : {fimfun aT >-> rT}) = cst 0 :> (_ -> _). Proof. by []. Qed.
+Lemma fimfun_sum I r (P : {pred I}) (f : I -> {fimfun aT >-> rT}) (x : aT) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+
+HB.instance Definition _ f g := FImFun.copy (f \+ g) (f + g).
+HB.instance Definition _ f g := FImFun.copy (\- f) (- f).
+HB.instance Definition _ f g := FImFun.copy (f \- g) (f - g).
+End zmod.
