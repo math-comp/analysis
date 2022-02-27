@@ -1447,7 +1447,7 @@ by apply: filterS FM => x /le_lt_trans/= ->//; rewrite ltr_addl.
 Qed.
 
 Notation "[ 'bounded' E | x 'in' A ]" := (bounded_near (fun x => E) (globally A))
-  (at level 0, x ident, format "[ 'bounded'  E  |  x  'in'  A ]").
+  (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
 Notation bounded_set := [set A | [bounded x | x in A]].
 Notation bounded_fun := [set f | [bounded f x | x in setT]].
 
@@ -1517,7 +1517,7 @@ Notation "k .-lipschitz f" := (k.-lipschitz_setT f)
   (at level 2, format "k .-lipschitz  f") : type_scope.
 Notation "[ 'lipschitz' E | x 'in' A ]" :=
   (lipschitz_on (fun x => E) (globally (A `*` A)))
-  (at level 0, x ident, format "[ 'lipschitz'  E  |  x  'in'  A ]").
+  (at level 0, x name, format "[ 'lipschitz'  E  |  x  'in'  A ]").
 Notation lipschitz f := [lipschitz f x | x in setT].
 
 Lemma klipschitz_locally (R : numFieldType) (V W : normedModType R)
