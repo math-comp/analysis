@@ -81,9 +81,9 @@ Local Open Scope ring_scope.
 Reserved Notation "R ^nat" (at level 0).
 Reserved Notation "a `^ x" (at level 11).
 Reserved Notation "[ 'sequence' E ]_ n"
-  (at level 0, E at level 200, n ident, format "[ 'sequence'  E ]_ n").
+  (at level 0, E at level 200, n name, format "[ 'sequence'  E ]_ n").
 Reserved Notation "[ 'series' E ]_ n"
-  (at level 0, E at level 0, n ident, format "[ 'series'  E ]_ n").
+  (at level 0, E at level 0, n name, format "[ 'series'  E ]_ n").
 Reserved Notation "[ 'normed' E ]"  (at level 0, format "[ 'normed'  E ]").
 
 Reserved Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F"

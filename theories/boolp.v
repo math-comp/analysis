@@ -555,8 +555,8 @@ Definition ex_in C B x y :=  let: F^* := B in (C && F)^*.
 
 End Definitions.
 
-Notation "`[ x | B ]" := (quant0p (fun x => B x)) (at level 0, x ident).
-Notation "`[ x : T | B ]" := (quant0p (fun x : T => B x)) (at level 0, x ident).
+Notation "`[ x | B ]" := (quant0p (fun x => B x)) (at level 0, x name).
+Notation "`[ x : T | B ]" := (quant0p (fun x : T => B x)) (at level 0, x name).
 
 Module Exports.
 

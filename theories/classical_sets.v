@@ -2056,11 +2056,11 @@ Canonical option_pointedType (T : choiceType) := PointedType (option T) None.
 
 Notation get := (xget point).
 Notation "[ 'get' x | E ]" := (get [set x | E])
-  (at level 0, x ident, format "[ 'get'  x  |  E ]", only printing) : form_scope.
+  (at level 0, x name, format "[ 'get'  x  |  E ]", only printing) : form_scope.
 Notation "[ 'get' x : T | E ]" := (get (fun x : T  => E))
-  (at level 0, x ident, format "[ 'get'  x  :  T  |  E ]", only parsing) : form_scope.
+  (at level 0, x name, format "[ 'get'  x  :  T  |  E ]", only parsing) : form_scope.
 Notation "[ 'get' x | E ]" := (get (fun x => E))
-  (at level 0, x ident, format "[ 'get'  x  |  E ]") : form_scope.
+  (at level 0, x name, format "[ 'get'  x  |  E ]") : form_scope.
 
 Section PointedTheory.
 
