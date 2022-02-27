@@ -5,8 +5,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 
-From mathcomp Require Import all_ssreflect all_algebra.
-From mathcomp Require Import finmap.
+From mathcomp Require Import all_ssreflect all_algebra finmap.
 Require Import boolp mathcomp_extra classical_sets functions reals posnum.
 Require Import topology.
 

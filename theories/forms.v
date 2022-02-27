@@ -1,7 +1,5 @@
 From mathcomp
-Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq div choice fintype.
-From mathcomp
-Require Import bigop ssralg finset fingroup zmodp poly ssrnum.
+Require Import all_ssreflect ssralg fingroup zmodp poly ssrnum.
 From mathcomp
 Require Import matrix mxalgebra vector falgebra ssrnum algC algnum.
 From mathcomp

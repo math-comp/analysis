@@ -5,7 +5,7 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-From mathcomp Require Export finmap bigop.
+From mathcomp Require Export finmap.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

@@ -1,8 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice order.
-From mathcomp Require Import ssrnat seq fintype bigop div prime path finmap.
-From mathcomp Require Import ssralg ssrnum ssrint rat finset.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
+From mathcomp Require Import finset.
 Require Import boolp mathcomp_extra classical_sets functions.
 
 (******************************************************************************)

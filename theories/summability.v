@@ -1,8 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 Require Reals.
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop ssralg ssrint ssrnum finmap.
-From mathcomp Require Import matrix interval zmodp.
+From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
+From mathcomp Require Import interval zmodp.
 Require Import boolp ereal reals.
 Require Import Rstruct classical_sets posnum topology normedtype.
 

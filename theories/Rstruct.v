@@ -24,9 +24,7 @@ liability. See the COPYING file for more details.
 Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
-From mathcomp Require Import choice bigop order ssralg fintype poly.
-From mathcomp Require Import mxpoly ssrnum finfun.
+From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

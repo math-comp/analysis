@@ -1,7 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import ssreflect ssrfun ssrbool.
-From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg.
-From mathcomp Require Import ssrnum.
+From mathcomp Require Import all_ssreflect ssralg ssrnum.
 Require Import boolp ereal reals mathcomp_extra.
 Require Import classical_sets posnum nngnum topology normedtype.
 Require Import prodnormedzmodule.

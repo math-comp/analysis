@@ -1,6 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice.
-From mathcomp Require Import seq fintype bigop order ssralg ssrint ssrnum finmap.
+From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 Require Import boolp ereal reals mathcomp_extra functions.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.

@@ -1,6 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import ssreflect ssrfun ssrbool.
-From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum.
+From mathcomp Require Import all_ssreflect ssralg ssrnum.
 Require Import boolp nngnum.
 
 (******************************************************************************)
