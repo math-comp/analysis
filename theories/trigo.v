@@ -869,7 +869,7 @@ Qed.
 End Tan.
 Arguments tan {R}.
 
-Hint Extern 0 (is_derive _ _ tan _) =>
+#[global] Hint Extern 0 (is_derive _ _ tan _) =>
   (eapply is_derive_tan; first by []) : typeclass_instances.
 
 Section Acos.
@@ -886,7 +886,7 @@ have /(IVT (@pi_ge0 _))[] // : minr (f 0) (f pi) <= 0 <= maxr (f 0) (f pi).
   rewrite /f cos0 cospi /minr /maxr ltr_add2r -subr_lt0 opprK (_ : 1 + 1 = 2)//.
   by rewrite ltrn0 subr_le0 subr_ge0.
 - move=> y y0pi.
-  by apply: continuousB; apply/continuous_subspaceT=> ? ?; 
+  by apply: continuousB; apply/continuous_subspaceT=> ? ?;
     [exact: continuous_cos|exact: cst_continuous].
 - rewrite /f => x1 /itvP x1I /eqP; rewrite subr_eq0 => /eqP cosx1E.
   by case: (He x1); rewrite !x1I.
@@ -966,7 +966,7 @@ Unshelve. all: by end_near. Qed.
 
 End Acos.
 
-Hint Extern 0 (is_derive _ 1 (@acos _) _) =>
+#[global] Hint Extern 0 (is_derive _ 1 (@acos _) _) =>
   (eapply is_derive1_acos; first by []) : typeclass_instances.
 
 Section Asin.
@@ -984,7 +984,7 @@ have /IVT[] // :
   rewrite /f sinN sin_pihalf /minr /maxr ltr_add2r -subr_gt0 opprK.
   by rewrite (_ : 1 + 1 = 2)// ltr0n/= subr_le0 subr_ge0.
 - by rewrite -subr_ge0 opprK -splitr pi_ge0.
-- by move=> *; apply: continuousB; apply/continuous_subspaceT=> ? ?; 
+- by move=> *; apply: continuousB; apply/continuous_subspaceT=> ? ?;
    [exact: continuous_sin| exact: cst_continuous].
 - rewrite /f => x1 /itvP x1I /eqP; rewrite subr_eq0 => /eqP sinx1E.
   by case: (He x1); rewrite !x1I.
@@ -1065,7 +1065,7 @@ Unshelve. all: by end_near. Qed.
 
 End Asin.
 
-Hint Extern 0 (is_derive _ 1 (@asin _) _) =>
+#[global] Hint Extern 0 (is_derive _ 1 (@asin _) _) =>
   (eapply is_derive1_asin; first by []) : typeclass_instances.
 
 Section Atan.

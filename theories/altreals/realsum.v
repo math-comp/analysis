@@ -442,7 +442,7 @@ Hypothesis smS   : summable S.
 Lemma ptsum_homo x y : (x <= y)%N -> (\sum_(i < x) S i <= \sum_(i < y) S i).
 Proof.
 move=> le_xy; rewrite -!(big_mkord predT) -(subnKC le_xy) /=.
-by rewrite /index_iota !subn0 iota_add big_cat /= ler_addl sumr_ge0.
+by rewrite /index_iota !subn0 iotaD big_cat /= ler_addl sumr_ge0.
 Qed.
 
 Lemma psummable_ptbounded : nbounded (fun n => \sum_(i < n) S i).

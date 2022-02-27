@@ -115,7 +115,7 @@ Proof. by apply: (iffP pcard_leP) => -[f]; squash (split f). Qed.
 
 Lemma card_ge0 T U (S : set U) : @set0 T #<= S.
 Proof. by apply/card_leP; squash set0fun. Qed.
-Hint Resolve card_ge0 : core.
+#[global] Hint Resolve card_ge0 : core.
 
 Lemma card_le0P T U (A : set T) : reflect (A = set0) (A #<= @set0 U).
 Proof.
@@ -161,14 +161,14 @@ Proof. by apply: (iffP pcard_eqP) => -[f]; [squash (split f)|squash f]. Qed.
 
 Lemma card_eqxx T (A : set T) : A #= A.
 Proof. by apply/card_eqP; squash idfun. Qed.
-Hint Resolve card_eqxx : core.
+#[global] Hint Resolve card_eqxx : core.
 
 Lemma card_eq00 T U : @set0 T #= @set0 U.
 Proof.
 apply/card_eqP/squash; apply: @bijection_of_bijective set0fun _.
 by exists set0fun => -[x x0]; have := set_mem x0.
 Qed.
-Hint Resolve card_eq00 : core.
+#[global] Hint Resolve card_eq00 : core.
 
 Section empty1.
 Implicit Types (T : emptyType).
@@ -227,7 +227,7 @@ Proof. by rewrite card_eq_le (rwP andP). Qed.
 
 Lemma card_lexx T (A : set T) : A #<= A.
 Proof. by apply/card_leP; squash idfun. Qed.
-Hint Resolve card_lexx : core.
+#[global] Hint Resolve card_lexx : core.
 
 Lemma card_leT T (S : set T) : (S #<= [set: T]).
 Proof. by apply/card_leP; squash (to_setT \o inclT _ \o val). Qed.
@@ -346,11 +346,11 @@ Definition emptyE := (emptyE_subdef, card_eq_emptyr, card_eq_emptyl).
 
 Lemma card_setT T (A : set T) : [set: A] #= A.
 Proof. by apply/card_esym/card_eqP; squash to_setT. Qed.
-Hint Resolve card_setT : core.
+#[global] Hint Resolve card_setT : core.
 
 Lemma card_setT_sym T (A : set T) : A #= [set: A].
 Proof. exact/card_esym/card_setT. Qed.
-Hint Resolve card_setT : core.
+#[global] Hint Resolve card_setT : core.
 
 Lemma surj_card_ge {T U} {A : set T} {B : set U} : {surj B >-> A} -> A #<= B.
 Proof.
@@ -451,10 +451,10 @@ Qed.
 
 Lemma countableP (T : countType) (A : set T) : countable A.
 Proof. by apply/card_leP; squash (to_setT \o choice.pickle). Qed.
-Hint Resolve countableP : core.
+#[global] Hint Resolve countableP : core.
 
 Lemma countable0 T : countable (@set0 T). Proof. exact: card_ge0. Qed.
-Hint Resolve countable0 : core.
+#[global] Hint Resolve countable0 : core.
 
 Lemma countable_injP T (A : set T) :
   reflect (exists f : T -> nat, {in A &, injective f}) (countable A).
@@ -468,7 +468,7 @@ Lemma finite_setP T (A : set T) : finite_set A <-> exists n, A #= `I_n.
 Proof. by []. Qed.
 
 Lemma finite_II n : finite_set `I_n. Proof. by apply/finite_setP; exists n. Qed.
-Hint Resolve finite_II : core.
+#[global] Hint Resolve finite_II : core.
 
 Lemma card_II {n} : `I_n #= [set: 'I_n].
 Proof. by apply/card_esym/pcard_eqP/bijPex; exists val; split. Qed.
@@ -496,7 +496,7 @@ Arguments finite_subfset {T} X {A}.
 
 Lemma finite_set0 T : finite_set (set0 : set T).
 Proof. by apply/finite_setP; exists 0%N; rewrite II0. Qed.
-Hint Resolve finite_set0 : core.
+#[global] Hint Resolve finite_set0 : core.
 
 Lemma finite_seqP {T : eqType} A :
    finite_set A <-> exists s : seq T, A = [set` s].
@@ -508,11 +508,11 @@ Qed.
 
 Lemma finite_seq {T : eqType} (s : seq T) : finite_set [set` s].
 Proof. by apply/finite_seqP; exists s. Qed.
-Hint Resolve finite_seq : core.
+#[global] Hint Resolve finite_seq : core.
 
 Lemma finite_fset {T : choiceType} (X : {fset T}) : finite_set [set` X].
 Proof. by apply/finite_fsetP; exists X. Qed.
-Hint Resolve finite_fset : core.
+#[global] Hint Resolve finite_fset : core.
 
 Lemma finite_finpred {T : finType} {pT : predType T} (P : pT) :
   finite_set [set` P].
@@ -520,13 +520,14 @@ Proof.
 rewrite finite_seqP; exists (enum P).
 by apply/seteqP; split=> x/=; rewrite mem_enum.
 Qed.
+#[global]
 Hint Extern 0 (finite_set [set` _]) => solve [apply: finite_finpred] : core.
 
 Lemma finite_finset {T : finType} {X : set T} : finite_set X.
 Proof.
 by have -> : X = [set` mem X] by apply/seteqP; split=> x /=; rewrite ?inE.
 Qed.
-Hint Resolve finite_finset : core.
+#[global] Hint Resolve finite_finset : core.
 
 Lemma finite_set_countable T (A : set T) : finite_set A -> countable A.
 Proof. by move=> /finite_setP[n /eq_countable->]. Qed.
@@ -619,7 +620,7 @@ Proof.
 elim/Pchoice: T => T in x *.
 by apply/finite_fsetP; exists (fset1 x); rewrite set_fset1.
 Qed.
-Hint Resolve finite_set1 : core.
+#[global] Hint Resolve finite_set1 : core.
 
 Lemma finite_setD T (A B : set T) : finite_set A -> finite_set (A `\` B).
 Proof. exact/card_le_finite/card_le_setD. Qed.
@@ -634,27 +635,27 @@ Qed.
 
 Lemma finite_set2 T (x y : T) : finite_set [set x; y].
 Proof. by rewrite !finite_setU; split; apply: finite_set1. Qed.
-Hint Resolve finite_set2 : core.
+#[global] Hint Resolve finite_set2 : core.
 
 Lemma finite_set3 T (x y z : T) : finite_set [set x; y; z].
 Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
-Hint Resolve finite_set3 : core.
+#[global] Hint Resolve finite_set3 : core.
 
 Lemma finite_set4 T (x y z t : T) : finite_set [set x; y; z; t].
 Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
-Hint Resolve finite_set4 : core.
+#[global] Hint Resolve finite_set4 : core.
 
 Lemma finite_set5 T (x y z t u : T) : finite_set [set x; y; z; t; u].
 Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
-Hint Resolve finite_set5 : core.
+#[global] Hint Resolve finite_set5 : core.
 
 Lemma finite_set6 T (x y z t u v : T) : finite_set [set x; y; z; t; u; v].
 Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
-Hint Resolve finite_set6 : core.
+#[global] Hint Resolve finite_set6 : core.
 
 Lemma finite_set7 T (x y z t u v w : T) : finite_set [set x; y; z; t; u; v; w].
 Proof. by rewrite !finite_setU; do !split; apply: finite_set1. Qed.
-Hint Resolve finite_set7 : core.
+#[global] Hint Resolve finite_set7 : core.
 
 Lemma finite_setI T (A B : set T) :
   (finite_set A \/ finite_set B) -> finite_set (A `&` B).
@@ -954,15 +955,15 @@ Notation countable_set0 := countable0.
 
 Lemma countable1 T (x : T) : countable [set x].
 Proof. exact: finite_set_countable. Qed.
-Hint Resolve countable1 : core.
+#[global] Hint Resolve countable1 : core.
 
 Lemma countable_fset (T : choiceType) (X : {fset T}) : countable [set` X].
 Proof. exact: finite_set_countable. Qed.
-Hint Resolve countable_fset : core.
+#[global] Hint Resolve countable_fset : core.
 
 Lemma countable_finpred (T : finType) (pT : predType T) (P : pT) : countable [set` P].
 Proof. exact: finite_set_countable. Qed.
-Hint Extern 0 (is_true (countable [set` _])) => solve [apply: countable_finpred] : core.
+#[global] Hint Extern 0 (is_true (countable [set` _])) => solve [apply: countable_finpred] : core.
 
 Lemma eq_card_nat T (A : set T):
   countable A -> ~ finite_set A -> A #= [set: nat].

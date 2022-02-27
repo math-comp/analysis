@@ -546,5 +546,5 @@ Unshelve. all: by end_near. Qed.
 
 End is_derive_inverse.
 
-Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
+#[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
   (eapply is_deriveV; first by []) : typeclass_instances.

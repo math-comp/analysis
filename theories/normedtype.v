@@ -432,7 +432,7 @@ Proof. by move=> /ltW r0; apply: nbhs_ninfty_le; rewrite realE r0. Qed.
 
 End infty_nbhs_instances.
 
-Hint Extern 0 (is_true (0 < _)) => match goal with
+#[global] Hint Extern 0 (is_true (0 < _)) => match goal with
   H : ?x \is_near (nbhs +oo) |- _ =>
     solve[near: x; exists 0 => _/posnumP[x] //] end : core.
 
@@ -1295,7 +1295,7 @@ Lemma nbhs_norm_ball x (eps : {posnum R}) : nbhs_norm x (ball x eps%:num).
 Proof. rewrite nbhs_nbhs_norm; by apply: nbhsx_ballx. Qed.
 
 End PseudoNormedZmod_numDomainType.
-Hint Resolve normr_ge0 : core.
+#[global] Hint Resolve normr_ge0 : core.
 Arguments cvg_dist {_ _ F FF}.
 
 Lemma cvg_gt_ge T (F : set (set T)) (R : realFieldType) {PF : ProperFilter F}
@@ -1549,7 +1549,8 @@ rewrite ball_hausdorff => a b ab.
 have ab2 : 0 < `|a - b| / 2 by apply divr_gt0 => //; rewrite normr_gt0 subr_eq0.
 set r := PosNum ab2; exists (r, r) => /=.
 apply/negPn/negP => /set0P[c] []; rewrite -ball_normE /ball_ => acr bcr.
-have r22 : r%:num * 2 = r%:num + r%:num by rewrite (_ : 2 = 1 + 1) // mulrDr mulr1.
+have r22 : r%:num * 2 = r%:num + r%:num.
+  by rewrite (_ : 2 = 1 + 1) // mulrDr mulr1.
 move: (ltr_add acr bcr); rewrite -r22 (distrC b c).
 move/(le_lt_trans (ler_dist_add c a b)).
 by rewrite -mulrA mulVr ?mulr1 ?ltxx // unitfE.
@@ -1651,6 +1652,7 @@ Proof. by move=> ?; rewrite normmZ normfV normr_id mulVf ?normr_eq0. Qed.
 
 End NormedModule_numFieldType.
 Arguments cvg_bounded {_ _ F FF}.
+#[global]
 Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
 
 Module Export NbhsNorm.
@@ -2644,7 +2646,7 @@ by rewrite ltr_pdivr_mulr // ltr_pmulr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
 End at_left_right.
 
-Typeclasses Opaque at_left at_right.
+#[global] Typeclasses Opaque at_left at_right.
 
 (* TODO: backport to mathcomp in progress *)
 Lemma itvxx d (T : porderType d) (x : T) : `[x, x] =i pred1 x.
@@ -2827,12 +2829,12 @@ Qed.
 
 End open_closed_sets.
 
-Hint Extern 0 (open _) => now apply: open_gt : core.
-Hint Extern 0 (open _) => now apply: open_lt : core.
-Hint Extern 0 (open _) => now apply: open_neq : core.
-Hint Extern 0 (closed _) => now apply: closed_ge : core.
-Hint Extern 0 (closed _) => now apply: closed_le : core.
-Hint Extern 0 (closed _) => now apply: closed_eq : core.
+#[global] Hint Extern 0 (open _) => now apply: open_gt : core.
+#[global] Hint Extern 0 (open _) => now apply: open_lt : core.
+#[global] Hint Extern 0 (open _) => now apply: open_neq : core.
+#[global] Hint Extern 0 (closed _) => now apply: closed_ge : core.
+#[global] Hint Extern 0 (closed _) => now apply: closed_le : core.
+#[global] Hint Extern 0 (closed _) => now apply: closed_eq : core.
 
 Section closure_left_right_open.
 Variable R : archiFieldType.
@@ -3599,6 +3601,7 @@ Qed.
 
 End ereal_is_hausdorff.
 
+#[global]
 Hint Extern 0 (hausdorff_space _) => solve[apply: ereal_hausdorff] : core.
 
 Lemma EFin_lim (R : realType) (f : nat -> R) : cvg f ->

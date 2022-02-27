@@ -21,7 +21,7 @@ Local Open Scope fset_scope.
 Lemma uniq_fset_keys {K : choiceType} (J : {fset K}) : uniq (enum_fset J).
 Proof. by case: J => J /= /canonical_uniq. Qed.
 
-Hint Resolve uniq_fset_keys : core.
+#[global] Hint Resolve uniq_fset_keys : core.
 
 (* -------------------------------------------------------------------- *)
 Lemma enum_fset0 (T : choiceType) :

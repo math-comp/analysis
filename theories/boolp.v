@@ -130,7 +130,7 @@ Proof. by move=> p; rewrite propeqE. Qed.
 
 Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
 Proof. by move: x (x) y => /propT-> [] []. Qed.
-Hint Resolve Prop_irrelevance : core.
+#[global] Hint Resolve Prop_irrelevance : core.
 
 (* -------------------------------------------------------------------- *)
 Record mclassic := {

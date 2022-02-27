@@ -69,7 +69,7 @@ Lemma summable_mu : summable mu.
 Proof. by case: mu. Qed.
 End DistrCoreTh.
 
-Hint Resolve ge0_mu le1_mu summable_mu : core.
+#[global] Hint Resolve ge0_mu le1_mu summable_mu : core.
 
 (* -------------------------------------------------------------------- *)
 Section Clamp.

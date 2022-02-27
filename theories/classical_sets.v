@@ -959,6 +959,7 @@ by rewrite pred_omapE; apply/funext => x/=; apply/idP/idP; rewrite ?inE;
 Qed.
 
 End basic_lemmas.
+#[global]
 Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
 
 Lemma image2E {TA TB rT : Type} (A : set TA) (B : set TB) (f : TA -> TB -> rT) :
@@ -1095,8 +1096,9 @@ Lemma imageT (f : aT -> rT) (a : aT) : [set of f] (f a).
 Proof. by apply: imageP. Qed.
 
 End base_image_lemmas.
+#[global]
 Hint Extern 0 ((?f @` _) (?f _)) =>  solve [apply: imageP; assumption] : core.
-Hint Extern 0 ((?f @` setT) _) => solve [apply: imageT] : core.
+#[global] Hint Extern 0 ((?f @` setT) _) => solve [apply: imageT] : core.
 
 Section image_lemmas.
 Context {aT rT : Type}.
@@ -1815,7 +1817,7 @@ by move=> Cs; apply/seteqP; split; [apply: smallest_sub|apply: sub_smallest].
 Qed.
 
 End smallest.
-Hint Resolve sub_gen_smallest : core.
+#[global] Hint Resolve sub_gen_smallest : core.
 
 Lemma sub_smallest2r {T} (C : set T-> Prop) G1 G2 :
    C (smallest C G2) -> G1 `<=` G2 -> smallest C G1 `<=` smallest C G2.

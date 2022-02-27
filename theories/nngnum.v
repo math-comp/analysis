@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum.
 Require Import boolp.
 
@@ -81,7 +82,7 @@ Arguments NngNum {R}.
 Notation "'{nonneg' R }" := (nngnum_of (@Phant R)) : type_scope.
 Notation nngnum R := (@num_of_nng _ (@Phant R)).
 Notation "x %:nngnum" := (num_of_nng x) : ring_scope.
-Hint Extern 0 ((0 <= _)%R = true) => exact: nngnum_ge0 : core.
+#[export] Hint Extern 0 ((0 <= _)%R = true) => exact: nngnum_ge0 : core.
 Notation "x %:nng" := (nng_of_num (Phantom _ x)) : ring_scope.
 Canonical nngnum_subType.
 Canonical nngnum_eqType.
