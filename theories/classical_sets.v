@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg matrix finmap order.
-From mathcomp Require Import ssrnum ssrint interval.
+From mathcomp Require Import all_ssreflect ssralg matrix finmap order ssrnum.
+From mathcomp Require Import ssrint interval.
 Require Import mathcomp_extra boolp.
 
 (******************************************************************************)

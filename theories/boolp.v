@@ -5,7 +5,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype choice order.
+From mathcomp Require Import all_ssreflect.
 
 (******************************************************************************)
 (*                                                                            *)

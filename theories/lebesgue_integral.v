@@ -2,8 +2,7 @@
 (* intersection U+2229; union U+222A, set U+2205 *)
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect.
-From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 Require Import mathcomp_extra boolp classical_sets posnum functions cardinality.
 Require Import reals ereal topology normedtype sequences measure.
 Require Import nngnum lebesgue_measure fsbigop.

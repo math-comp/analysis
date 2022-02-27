@@ -1,6 +1,4 @@
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
-From mathcomp Require Import div fintype path bigop order finset fingroup.
-From mathcomp Require Import ssralg poly ssrnum.
+From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum.
 Require Import nngnum.
 
 (******************************************************************************)
