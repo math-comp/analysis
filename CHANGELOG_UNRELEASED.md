@@ -64,7 +64,7 @@
     `same_connected_component`
   + lemma `continuous_is_cvg`
 - in `ereal.v`:
-  + lemmas `EFin_inj`, `EFin_bigcup`, `EFin_setC`, `adde_gt0`, `padde_eq0`, `nadde_eq0`, `mule_ge0_gt0`,
+  + lemmas `EFin_inj`, `EFin_bigcup`, `EFin_setC`, `adde_gt0`, `mule_ge0_gt0`,
     `lte_mul_pinfty`, `lt0R`, `adde_defEninfty`, `lte_pinfty_eq`, `ge0_fin_numE`, `eq_pinftyP`,
   + canonical `mule_monoid`
   + lemmas `preimage_abse_pinfty`, `preimage_abse_ninfty`
@@ -557,6 +557,17 @@
   + lemma `splitr`
 - moved from `measure.v` to `sequences.v`
   + lemma `cvg_geometric_series_half`
+  + lemmas `realDe`, `realDed`, `realMe`, `nadde_eq0`, `padde_eq0`,
+    `adde_ss_eq0`, `ndadde_eq0`, `pdadde_eq0`, `dadde_ss_eq0`,
+    `mulrpinfty_real`, `mulpinftyr_real`, `mulrninfty_real`,
+    `mulninftyr_real`, `mulrinfty_real`
+
+### Changed
+
+- in `ereal.v`:
+  + lemmas `abse_ge0`, `gee0_abs`, `gte0_abs`, `lee0_abs`, `lte0_abs`,
+    `mulN1e`, `muleN1` are generalized from `realDomainType` to
+    `numDomainType`
 
 ### Renamed
 
