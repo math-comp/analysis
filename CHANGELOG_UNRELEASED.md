@@ -64,7 +64,7 @@
     `same_connected_component`
   + lemma `continuous_is_cvg`
 - in `ereal.v`:
-  + lemmas `EFin_inj`, `EFin_bigcup`, `EFin_setC`, `adde_gt0`, `padde_eq0`, `nadde_eq0`, `mule_ge0_gt0`,
+  + lemmas `EFin_inj`, `EFin_bigcup`, `EFin_setC`, `adde_gt0`, `mule_ge0_gt0`,
     `lte_mul_pinfty`, `lt0R`, `adde_defEninfty`, `lte_pinfty_eq`, `ge0_fin_numE`, `eq_pinftyP`,
   + canonical `mule_monoid`
   + lemmas `preimage_abse_pinfty`, `preimage_abse_ninfty`

@@ -605,8 +605,7 @@ move: x y => [x| |] [y| |]//; rewrite !lee_fin; first exact: naddr_eq0.
 by move=> x0 _ /=; rewrite andbF.
 Qed.
 
-Lemma realDe (x y : \bar R) : (0%E >=< x)%O -> (0%E >=< y)%O ->
-  (0%E >=< x + y)%O.
+Lemma realDe x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x + y)%O.
 Proof. case: x y => [x||] [y||] //; exact: realD. Qed.
 
 Lemma oppe0 : - 0 = 0 :> \bar R.
@@ -871,36 +870,28 @@ Proof. by rewrite /mule /= lte_0_pinfty. Qed.
 Lemma mule_ninfty_ninfty : -oo * -oo = +oo :> \bar R.
 Proof. by []. Qed.
 
-Lemma mulrpinfty_real r : r \is Num.real ->
-  r%:E * +oo%E = (Num.sg r)%:E * +oo%E.
+Lemma mulrpinfty_real r : r \is Num.real -> r%:E * +oo = (Num.sg r)%:E * +oo.
 Proof.
-move=> rreal.
-rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|/negbT rn0].
+move=> rreal; rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|/negbT rn0].
 move: rreal => /orP[|]; rewrite le_eqVlt !lte_fin /Num.sg.
   rewrite eq_sym (negbTE rn0)/= => rgt0.
   by rewrite [(r < 0)%R]lt_def lt_geF// eq_sym rn0/= ltr01 rgt0.
-rewrite (negbTE rn0)/= => rlt0.
-by rewrite lt_def lt_geF// rn0 rlt0/= ltr0N1.
+by rewrite (negbTE rn0)/= => rlt0; rewrite lt_def lt_geF// rn0 rlt0/= ltr0N1.
 Qed.
 
-Lemma mulpinftyr_real r : r \is Num.real ->
-  +oo * r%:E = (Num.sg r)%:E * +oo.
+Lemma mulpinftyr_real r : r \is Num.real -> +oo * r%:E = (Num.sg r)%:E * +oo.
 Proof. by move=> rreal; rewrite muleC mulrpinfty_real. Qed.
 
-Lemma mulrninfty_real r : r \is Num.real ->
-  r%:E * -oo = (Num.sg r)%:E * -oo.
+Lemma mulrninfty_real r : r \is Num.real -> r%:E * -oo = (Num.sg r)%:E * -oo.
 Proof.
-move=> rreal.
-rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|/negbT rn0].
+move=> rreal; rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|/negbT rn0].
 move: rreal => /orP[|]; rewrite le_eqVlt !lte_fin /Num.sg.
   rewrite eq_sym (negbTE rn0)/= => rgt0.
   by rewrite [(r < 0)%R]lt_def lt_geF// andbF ltr01 rgt0.
-rewrite (negbTE rn0)/= => rlt0.
-by rewrite lt_def lt_geF// andbF rlt0 ltr0N1.
+by rewrite (negbTE rn0)/= => rlt0; rewrite lt_def lt_geF// andbF rlt0 ltr0N1.
 Qed.
 
-Lemma mulninftyr_real r : r \is Num.real ->
-  -oo * r%:E = (Num.sg r)%:E * -oo.
+Lemma mulninftyr_real r : r \is Num.real -> -oo * r%:E = (Num.sg r)%:E * -oo.
 Proof. by move=> rreal; rewrite muleC mulrninfty_real. Qed.
 
 Definition mulrinfty_real :=
@@ -978,11 +969,10 @@ Qed.
 Lemma mule_lt0_gt0 x y : x < 0 -> 0 < y -> x * y < 0.
 Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 
-Lemma gte_opp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
-Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
+Lemma gte_opp x : 0 < x -> - x < x.
+Proof. by case: x => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
 
-Lemma realMe (x y : \bar R) : (0%E >=< x)%O -> (0%E >=< y)%O ->
-  (0%E >=< x * y)%O.
+Lemma realMe x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x * y)%O.
 Proof.
 case: x y => [x||] [y||]// rx ry;
   do ?[exact: realM
@@ -1084,8 +1074,7 @@ Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeCA. Qed.
 Lemma daddeACA : @interchange (\bar R) +%dE +%dE.
 Proof. by move=> x y z u; rewrite !dual_addeE !oppeK addeACA. Qed.
 
-Lemma realDed (x y : \bar R) : (0%E >=< x)%O -> (0%E >=< y)%O ->
-  (0%E >=< (x + y)%dE)%O.
+Lemma realDed x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x + y)%O.
 Proof. case: x y => [x||] [y||] //; exact: realD. Qed.
 
 Lemma doppeD x y : y \is a fin_num -> - (x + y) = - x - y.
