@@ -789,24 +789,24 @@ Notation "fx == gx '+O_(' x \near F ')' hx" :=
 Notation "fx '==O_(' x \near F ')' hx" :=
   (fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 
-Hint Extern 0 (_ = 'o__ _) => apply: eqoE; reflexivity : core.
-Hint Extern 0 (_ = 'O__ _) => apply: eqOE; reflexivity : core.
-Hint Extern 0 (_ = 'O__ _) => apply: eqoO; reflexivity : core.
-Hint Extern 0 (_ = _ + 'o__ _) => apply: eqaddoE; reflexivity : core.
-Hint Extern 0 (_ = _ + 'O__ _) => apply: eqaddOE; reflexivity : core.
-Hint Extern 0 (\forall k \near +oo, \forall x \near _,
+#[global] Hint Extern 0 (_ = 'o__ _) => apply: eqoE; reflexivity : core.
+#[global] Hint Extern 0 (_ = 'O__ _) => apply: eqOE; reflexivity : core.
+#[global] Hint Extern 0 (_ = 'O__ _) => apply: eqoO; reflexivity : core.
+#[global] Hint Extern 0 (_ = _ + 'o__ _) => apply: eqaddoE; reflexivity : core.
+#[global] Hint Extern 0 (_ = _ + 'O__ _) => apply: eqaddOE; reflexivity : core.
+#[global] Hint Extern 0 (\forall k \near +oo, \forall x \near _,
   is_true (`|_ x| <= k * `|_ x|)) => solve[apply: bigOP] : core.
-Hint Extern 0 (nbhs _ _) => solve[apply: bigOP] : core.
-Hint Extern 0 (prop_near1 _) => solve[apply: bigOP] : core.
-Hint Extern 0 (prop_near2 _) => solve[apply: bigOP] : core.
-Hint Extern 0 (forall e, is_true (0 < e) -> \forall x \near _,
+#[global] Hint Extern 0 (nbhs _ _) => solve[apply: bigOP] : core.
+#[global] Hint Extern 0 (prop_near1 _) => solve[apply: bigOP] : core.
+#[global] Hint Extern 0 (prop_near2 _) => solve[apply: bigOP] : core.
+#[global] Hint Extern 0 (forall e, is_true (0 < e) -> \forall x \near _,
   is_true (`|_ x| <= e * `|_ x|)) => solve[apply: littleoP] : core.
-Hint Extern 0 (nbhs _ _) => solve[apply: littleoP] : core.
-Hint Extern 0 (prop_near1 _) => solve[apply: littleoP] : core.
-Hint Extern 0 (prop_near2 _) => solve[apply: littleoP] : core.
-Hint Resolve littleo_class : core.
-Hint Resolve bigO_class : core.
-Hint Resolve littleo_eqO : core.
+#[global] Hint Extern 0 (nbhs _ _) => solve[apply: littleoP] : core.
+#[global] Hint Extern 0 (prop_near1 _) => solve[apply: littleoP] : core.
+#[global] Hint Extern 0 (prop_near2 _) => solve[apply: littleoP] : core.
+#[global] Hint Resolve littleo_class : core.
+#[global] Hint Resolve bigO_class : core.
+#[global] Hint Resolve littleo_eqO : core.
 
 Arguments bigO {_ _ _ _}.
 

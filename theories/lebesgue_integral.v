@@ -75,6 +75,7 @@ Reserved Notation "'\int_' D f ''d' mu [ x ]" (at level 36, D at level 0,
 Reserved Notation "'\int' f ''d' mu [ x ]" (at level 36, f at level 36,
   mu at level 0, x at level 3, format "'\int'  f  ''d'  mu [ x ]").
 Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
+#[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
 Section funpos.
@@ -256,7 +257,9 @@ have [|fx0] := leP 0 (f x); last rewrite add0e.
 Qed.
 
 End funpos_lemmas.
+#[global]
 Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funenng_ge0] : core.
+#[global]
 Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funennp_ge0] : core.
 
 Section funpos_measurable.
@@ -350,7 +353,7 @@ Reserved Notation "[ 'fimfun' 'of' f ]"
   (at level 0, format "[ 'fimfun'  'of'  f ]").
 Notation "{ 'fimfun' aT >-> T }" := (@FImFun.type aT T) : form_scope.
 Notation "[ 'fimfun' 'of' f ]" := [the {fimfun _ >-> _} of f] : form_scope.
-Hint Resolve fimfunP : core.
+#[global] Hint Resolve fimfunP : core.
 
 Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
   finite_set (f @` D).
@@ -359,7 +362,7 @@ Proof. by apply: (@sub_finite_set _ _ [set of f]) => // y [x]; exists x. Qed.
 HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
 }.
-Hint Resolve fimfun_inP : core.
+#[global] Hint Resolve fimfun_inP : core.
 
 HB.structure Definition MeasurableFun aT rT := {f of @IsMeasurableFun aT rT f}.
 Reserved Notation "{ 'mfun' aT >-> T }"
@@ -368,7 +371,7 @@ Reserved Notation "[ 'mfun' 'of' f ]"
   (at level 0, format "[ 'mfun'  'of'  f ]").
 Notation "{ 'mfun'  aT >-> T }" := (@MeasurableFun.type aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
-Hint Resolve measurable_funP : core.
+#[global] Hint Resolve measurable_funP : core.
 
 HB.structure Definition SimpleFun (aT (*rT*) : measurableType) (rT : realType) :=
   {f of @IsMeasurableFun aT rT f & @FiniteImage aT rT f}.
@@ -393,7 +396,7 @@ Reserved Notation "[ 'nnfun' 'of' f ]"
   (at level 0, format "[ 'nnfun'  'of'  f ]").
 Notation "{ 'nnfun'  aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
 Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
-Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
+#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
 
 HB.structure Definition NonNegSimpleFun (aT : measurableType) (rT : realType) :=
   {f of @SimpleFun _ _ f & @NonNegFun aT rT f}.
@@ -967,7 +970,7 @@ Qed.
 
 End nnsfun_cover.
 
-Hint Extern 0 (measurable (_ @^-1` [set _])) =>
+#[global] Hint Extern 0 (measurable (_ @^-1` [set _])) =>
   solve [apply: measurable_sfunP] : core.
 
 Lemma measurable_sfun_inP  {aT : measurableType} {rT : realType}
@@ -975,10 +978,10 @@ Lemma measurable_sfun_inP  {aT : measurableType} {rT : realType}
   measurable D -> measurable (D `&` f @^-1` [set y]).
 Proof. by move=> Dm; apply: measurableI. Qed.
 
-Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
+#[global] Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
   solve [apply: measurable_sfun_inP; assumption] : core.
 
-Hint Extern 0 (finite_set _) => solve [apply: fimfunP] : core.
+#[global] Hint Extern 0 (finite_set _) => solve [apply: fimfunP] : core.
 
 Section measure_fsbig.
 Local Open Scope ereal_scope.
@@ -1060,7 +1063,7 @@ Proof. by []. Qed.
 
 End simple_fun_raw_integral.
 
-Hint Extern 0 (is_true (0 <= (_ : {measure set _ -> \bar _}) _)%E) =>
+#[global] Hint Extern 0 (is_true (0 <= (_ : {measure set _ -> \bar _}) _)%E) =>
   solve [apply: measure_ge0] : core.
 
 Section sintegral_lemmas.

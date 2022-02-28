@@ -867,7 +867,7 @@ Definition cvg_to {T : Type} (F G : set (set T)) := G `<=` F.
 Notation "F `=>` G" := (cvg_to F G) : classical_set_scope.
 Lemma cvg_refl T (F : set (set T)) : F `=>` F.
 Proof. exact. Qed.
-Hint Resolve cvg_refl : core.
+#[global] Hint Resolve cvg_refl : core.
 
 Lemma cvg_trans T (G F H : set (set T)) :
   (F `=>` G) -> (G `=>` H) -> (F `=>` H).
@@ -985,7 +985,7 @@ Structure filter_on T := FilterType {
 Definition filter_class T (F : filter_on T) : Filter F :=
   let: FilterType _ class := F in class.
 Arguments FilterType {T} _ _.
-Existing Instance filter_class.
+Global Existing Instance filter_class.
 (* Typeclasses Opaque filter. *)
 Coercion filter_filter' : ProperFilter >-> Filter.
 
@@ -996,7 +996,7 @@ Structure pfilter_on T := PFilterPack {
 Definition pfilter_class T (F : pfilter_on T) : ProperFilter F :=
   let: PFilterPack _ class := F in class.
 Arguments PFilterPack {T} _ _.
-Existing Instance pfilter_class.
+Global Existing Instance pfilter_class.
 (* Typeclasses Opaque pfilter. *)
 Canonical pfilter_filter_on T (F : pfilter_on T) :=
   FilterType F (pfilter_class F).
@@ -1038,11 +1038,11 @@ Canonical trivial_filter_on.
 Lemma filter_nbhsT {T : Type} (F : set (set T)) :
    Filter F -> nbhs F setT.
 Proof. by move=> FF; apply: filterT. Qed.
-Hint Resolve filter_nbhsT : core.
+#[global] Hint Resolve filter_nbhsT : core.
 
 Lemma nearT {T : Type} (F : set (set T)) : Filter F -> \near F, True.
 Proof. by move=> FF; apply: filterT. Qed.
-Hint Resolve nearT : core.
+#[global] Hint Resolve nearT : core.
 
 Lemma filter_not_empty_ex {T : Type} (F : set (set T)) :
     (forall P, F P -> exists x, P x) -> ~ F set0.
@@ -1356,7 +1356,7 @@ move=> f_totalfun FF; rewrite /fmapi; apply: Build_Filter.
   by have [//|y [fxy /subPQ Qy]] := near FP x; exists y.
 Unshelve. all: by end_near. Qed.
 
-Typeclasses Opaque fmapi.
+#[global] Typeclasses Opaque fmapi.
 
 Global Instance fmapi_proper_filter
   T U (f : T -> U -> Prop) (F : set (set T)) :
@@ -1631,7 +1631,7 @@ move=> FF; rewrite /within; constructor.
 - by move=> P Q; apply: filterS2 => x DP DQ Dx; split; [apply: DP|apply: DQ].
 - by move=> P Q subPQ; apply: filterS => x DP /DP /subPQ.
 Qed.
-Typeclasses Opaque within.
+#[global] Typeclasses Opaque within.
 
 Canonical within_filter_on T D (F : filter_on T) :=
   FilterType (within D F) (within_filter _ _).
@@ -1648,7 +1648,7 @@ move=> FF; constructor; rewrite /subset_filter/=.
 - by move=> P Q; apply: filterS2=> x PD QD Dx; split.
 - by move=> P Q subPQ; apply: filterS => R PD Dx; apply: subPQ.
 Qed.
-Typeclasses Opaque subset_filter.
+#[global] Typeclasses Opaque subset_filter.
 
 Lemma subset_filter_proper {T F} {FF : Filter F} (D : set T) :
   (forall P, F P -> ~ ~ exists x, D x /\ P x) ->
@@ -1941,14 +1941,14 @@ Lemma cvg_cst (U : topologicalType) (x : U) (T : Type)
   (fun _ : T => x) @ F --> x.
 Proof. by apply: cvg_near_cst; near=> x0. Unshelve. all: by end_near. Qed.
 Arguments cvg_cst {U} x {T F FF}.
-Hint Resolve cvg_cst : core.
+#[global] Hint Resolve cvg_cst : core.
 
 Lemma is_cvg_cst (U : topologicalType) (x : U) (T : Type)
   (F : set (set T)) {FF : Filter F} :
   cvg ((fun _ : T => x) @ F).
 Proof. by apply: cvgP; apply: cvg_cst. Qed.
 Arguments is_cvg_cst {U} x {T F FF}.
-Hint Resolve is_cvg_cst : core.
+#[global] Hint Resolve is_cvg_cst : core.
 
 Lemma cst_continuous {T U : topologicalType} (x : U) :
   continuous (fun _ : T => x).
@@ -2205,7 +2205,7 @@ Canonical eventually_pfilterType := PFilterType eventually (filter_not_empty _).
 
 Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
 Proof. by exists N.+1. Qed.
-Hint Resolve nbhs_infty_gt : core.
+#[global] Hint Resolve nbhs_infty_gt : core.
 
 Lemma nbhs_infty_ge N : \forall n \near \oo, (N <= n)%N.
 Proof. by exists N. Qed.
@@ -2432,7 +2432,7 @@ Qed.
 
 Global Instance dnbhs_filter {T : topologicalType} (x : T) : Filter x^'.
 Proof. exact: within_filter. Qed.
-Typeclasses Opaque dnbhs.
+#[global] Typeclasses Opaque dnbhs.
 
 Canonical dnbhs_filter_on (T : topologicalType)  (x : T) :=
   FilterType x^' (dnbhs_filter _).
@@ -3628,9 +3628,12 @@ Proof. exact: cvg_entourageP. Qed.
 
 End uniformType1.
 
+#[global]
 Hint Extern 0 (entourage (split_ent _)) => exact: entourage_split_ent : core.
+#[global]
 Hint Extern 0 (entourage (get _)) => exact: entourage_split_ent : core.
 Arguments entourage_split {M} z {x y A}.
+#[global]
 Hint Extern 0 (nbhs _ (to_set _ _)) => exact: nbhs_entourage : core.
 
 Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
@@ -4086,7 +4089,7 @@ Proof. by rewrite -entourage_ballE. Qed.
 Lemma entourage_ball {R : numDomainType} (M : pseudoMetricType R)
   (e : {posnum R}) : entourage [set xy : M * M | ball xy.1 e%:num xy.2].
 Proof. by rewrite -entourage_ballE; exists e%:num. Qed.
-Hint Resolve entourage_ball : core.
+#[global] Hint Resolve entourage_ball : core.
 
 Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
   (x : T) := @filter_from R _ [set e | e > 0] (ball x).
@@ -4117,7 +4120,7 @@ Proof. by rewrite nbhs_simpl. Qed.
 Lemma ball_center {R : numDomainType} (M : pseudoMetricType R) (x : M)
   (e : {posnum R}) : ball x e%:num x.
 Proof. exact: PseudoMetric.ax1. Qed.
-Hint Resolve ball_center : core.
+#[global] Hint Resolve ball_center : core.
 
 Section pseudoMetricType_numDomainType.
 Context {R : numDomainType} {M : pseudoMetricType R}.
@@ -4193,8 +4196,8 @@ Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
 Proof. by move/cvgi_ballP. Qed.
 
 End pseudoMetricType_numDomainType.
-Hint Resolve nbhsx_ballx : core.
-Hint Resolve close_refl : core.
+#[global] Hint Resolve nbhsx_ballx : core.
+#[global] Hint Resolve close_refl : core.
 Arguments close_cvg {T} F1 F2 {FF2} _.
 
 Section pseudoMetricType_numFieldType.

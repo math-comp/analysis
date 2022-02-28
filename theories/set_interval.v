@@ -192,9 +192,11 @@ Qed.
 
 End interval_hasNbound.
 
-Hint Extern 0 (has_lbound _) => solve[apply: has_lbound_itv] : core.
-Hint Extern 0 (has_ubound _) => solve[apply: has_ubound_itv] : core.
+#[global] Hint Extern 0 (has_lbound _) => solve[apply: has_lbound_itv] : core.
+#[global] Hint Extern 0 (has_ubound _) => solve[apply: has_ubound_itv] : core.
+#[global]
 Hint Extern 0 (~ has_lbound _) => solve[by apply: hasNlbound_itv] : core.
+#[global]
 Hint Extern 0 (~ has_ubound _) => solve[by apply: hasNubound_itv] : core.
 
 Section interval_has.
@@ -223,7 +225,9 @@ Qed.
 
 End interval_has.
 
+#[global]
 Hint Extern 0 (has_sup _) => solve[apply: has_sup1 | exact: has_sup_half] : core.
+#[global]
 Hint Extern 0 (has_inf _) => solve[apply: has_inf1 | exact: has_inf_half]: core.
 
 Lemma opp_itv_bnd_infty (R : numDomainType) (x : R) b :

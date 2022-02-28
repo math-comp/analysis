@@ -161,7 +161,7 @@ Qed.
 
 End hlength.
 Arguments hlength {R}.
-Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
+#[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 
 Section itv_semiRingOfSets.
 Variable R : realType.
@@ -1483,9 +1483,9 @@ by rewrite predeqE => y; rewrite preimage_itv !in_itv/= andbT in_itv lee_oppr.
 Qed.
 
 End standard_emeasurable_fun.
-Hint Extern 0 (measurable_fun _ abse) =>
+#[global] Hint Extern 0 (measurable_fun _ abse) =>
   solve [exact: measurable_fun_abse] : core.
-Hint Extern 0 (measurable_fun _ EFin) =>
+#[global] Hint Extern 0 (measurable_fun _ EFin) =>
   solve [exact: measurable_fun_EFin] : core.
 
 (* NB: real-valued function *)

@@ -237,7 +237,7 @@ by rewrite (leq_ltn_trans ik).
 Qed.
 
 End seqDU.
-Hint Resolve trivIset_seqDU : core.
+#[global] Hint Resolve trivIset_seqDU : core.
 
 Section seqD.
 Variable T : Type.

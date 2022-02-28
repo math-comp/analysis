@@ -46,7 +46,7 @@ Proof. by move=> finF j; rewrite /finite_support unlock in_fset_set. Qed.
 Lemma finite_support_uniq (T : Type) (J : choiceType) (i : T) (P : set J)
     (F : J -> T) : uniq (finite_support i P F).
 Proof. by rewrite /finite_support unlock; exact: fset_uniq. Qed.
-Hint Resolve finite_support_uniq : core.
+#[global] Hint Resolve finite_support_uniq : core.
 
 Lemma no_finite_support (T : Type) (J : choiceType) (i : T) (P : set J)
     (F : J -> T) : infinite_set (P `&` F @^-1` [set~ i]) ->

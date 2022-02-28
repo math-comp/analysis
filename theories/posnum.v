@@ -45,16 +45,16 @@ Local Open Scope ring_scope.
 Notation "!! x" := (ltac:(refine x)) (at level 100, only parsing).
 (* infer class to help typeclass inference on the fly *)
 Class infer (P : Prop) := Infer : P.
-Hint Mode infer ! : typeclass_instances.
-Hint Extern 0 (infer _) => (exact) : typeclass_instances.
+#[global] Hint Mode infer ! : typeclass_instances.
+#[global] Hint Extern 0 (infer _) => (exact) : typeclass_instances.
 Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Record posnum_of (R : numDomainType) (phR : phant R) := PosNumDef {
   num_of_pos : R;
   posnum_gt0 :> num_of_pos > 0
 }.
-Hint Resolve posnum_gt0 : core.
-Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
+#[global] Hint Resolve posnum_gt0 : core.
+#[global] Hint Extern 0 ((0 < _)%R = true) => exact: posnum_gt0 : core.
 Notation "'{posnum' R }" := (posnum_of (@Phant R)).
 Definition PosNum (R : numDomainType) x x_gt0 : {posnum R} :=
   @PosNumDef _ (Phant R) x x_gt0.
@@ -145,8 +145,8 @@ Proof. by rewrite -posnum_max !posnum_gt0. Qed.
 Canonical maxr_posnum x y := PosNum (@max_pos_gt0 x y).
 
 End PosNum.
-Hint Extern 0 ((0 <= _)%R = true) => solve [apply: posnum_ge0] : core.
-Hint Extern 0 ((_ != 0)%R = true) => solve [apply: posnum_neq0] : core.
+#[global] Hint Extern 0 ((0 <= _)%R = true) => solve [apply: posnum_ge0] : core.
+#[global] Hint Extern 0 ((_ != 0)%R = true) => solve [apply: posnum_neq0] : core.
 
 Lemma sqrt_pos_gt0 (R : rcfType) (x : {posnum R}) : 0 < Num.sqrt (x%:num).
 Proof. by rewrite sqrtr_gt0. Qed.
@@ -163,7 +163,7 @@ move=> x_gt0; case: real_ltgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _.
 by rewrite -[x]/(PosNum x_gt0)%:num; constructor.
 Qed.
 
-Hint Resolve posnum_gt0 : core.
-Hint Resolve posnum_ge0 : core.
-Hint Resolve posnum_neq0 : core.
+#[global] Hint Resolve posnum_gt0 : core.
+#[global] Hint Resolve posnum_ge0 : core.
+#[global] Hint Resolve posnum_neq0 : core.
 Notation "[gt0 'of' x ]" := (posnum_gt0_def (Phantom _ x)).

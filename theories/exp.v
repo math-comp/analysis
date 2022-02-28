@@ -37,7 +37,7 @@ Local Open Scope ring_scope.
 (* PR to mathcomp in progress *)
 Lemma normr_nneg (R : numDomainType) (x : R) : `|x| \is Num.nneg.
 Proof. by rewrite qualifE. Qed.
-Hint Resolve normr_nneg : core.
+#[global] Hint Resolve normr_nneg : core.
 (* /PR to mathcomp in progress *)
 
 Section PseriesDiff.

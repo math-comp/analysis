@@ -141,8 +141,8 @@ Notation "''d' f F" := (@diff _ _ _ _ (Phantom _ [filter of F]) f).
 Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
 
 Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F])).
-Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
-Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
+#[global] Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
+#[global] Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
 
 Lemma differentiableP (R : numDomainType) (V W : normedModType R) (f : V -> W) x :
   differentiable f x -> is_diff x f ('d f x).
@@ -288,7 +288,7 @@ End DifferentialR.
 
 Notation "''D_' v f" := (derive f ^~ v).
 Notation "''D_' v f c" := (derive f c v). (* printing *)
-Hint Extern 0 (derivable _ _ _) => solve[apply: ex_derive] : core.
+#[global] Hint Extern 0 (derivable _ _ _) => solve[apply: ex_derive] : core.
 
 Section DifferentialR_numFieldType.
 Context {R : numFieldType} {V W : normedModType R}.

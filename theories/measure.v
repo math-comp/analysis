@@ -289,7 +289,7 @@ Lemma sigma_algebra_bigcup (A : (set T)^nat) :
 Proof. by case: smallest_sigma_algebra A. Qed.
 
 End generated_sigma_algebra.
-Hint Resolve smallest_sigma_algebra : core.
+#[global] Hint Resolve smallest_sigma_algebra : core.
 
 Section generated_setring.
 Context {T : Type} (G : set (set T)).
@@ -326,7 +326,7 @@ by apply/fin_bigcup_closedP; split; [apply: setring0|apply: setringU].
 Qed.
 
 End generated_setring.
-Hint Resolve smallest_setring setring0 : core.
+#[global] Hint Resolve smallest_setring setring0 : core.
 
 Lemma monotone_class_g_salgebra T (G : set (set T)) (D : set T) :
   (forall X, <<s D, G >> X -> X `<=` D) -> G D ->
@@ -674,8 +674,8 @@ HB.instance Definition T_isMeasurable :=
 
 HB.end.
 
-Hint Extern 0 (measurable set0) => solve [apply: measurable0] : core.
-Hint Extern 0 (measurable setT) => solve [apply: measurableT] : core.
+#[global] Hint Extern 0 (measurable set0) => solve [apply: measurable0] : core.
+#[global] Hint Extern 0 (measurable setT) => solve [apply: measurableT] : core.
 
 Section ringofsets_lemmas.
 Variables T : ringOfSetsType.
@@ -1188,9 +1188,11 @@ Hint Resolve measure_semi_additive2 : core.
 
 End additive_measure_on_semiring_of_sets.
 
-Hint Extern 0 (is_true (0 <= (_ : {additive_measure set _ -> \bar _}) _)%E) =>
+#[global] Hint Extern 0
+  (is_true (0 <= (_ : {additive_measure set _ -> \bar _}) _)%E) =>
   solve [apply: measure_ge0] : core.
 
+#[global]
 Hint Resolve measure0 measure_semi_additive2 measure_semi_additive : core.
 
 Section additive_measure_on_ring_of_sets.
@@ -1241,6 +1243,7 @@ Proof. by move=> mF tF; rewrite -bigcup_fset measure_fin_bigcup// set_fsetK. Qed
 
 End additive_measure_on_ring_of_sets.
 
+#[global]
 Hint Resolve measureU measure_bigsetU : core.
 
 Module Measure.
@@ -1322,10 +1325,10 @@ Qed.
 End measure_lemmas.
 Arguments measure_bigcup {R T} mu A.
 
-Hint Extern 0 (_ set0 = 0) => solve [apply: measure0] : core.
-Hint Extern 0 (sigma_additive _) =>
+#[global] Hint Extern 0 (_ set0 = 0) => solve [apply: measure0] : core.
+#[global] Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
-Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
+#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
 
 Section measure_is_additive_measure.
 Variables (R : realFieldType) (T : semiRingOfSetsType)
@@ -2236,8 +2239,8 @@ Proof. by case: mu => ? []. Qed.
 
 End outer_measure_lemmas.
 
-Hint Extern 0 (_ set0 = 0) => solve [apply: outer_measure0] : core.
-Hint Extern 0 (sigma_subadditive _) =>
+#[global] Hint Extern 0 (_ set0 = 0) => solve [apply: outer_measure0] : core.
+#[global] Hint Extern 0 (sigma_subadditive _) =>
   solve [apply: outer_measure_sigma_subadditive] : core.
 
 Lemma le_outer_measureIC (R : realFieldType) T

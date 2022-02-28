@@ -293,17 +293,17 @@ Definition phant_funS aT rT (A : set aT) (B : set rT)
   (f : {fun A >-> B}) of phantom (_ -> _) f := @funS _ _ _ _ f.
 Notation "'funS_  f" := (phant_funS (Phantom (_ -> _) f))
   (at level 8, f at level 2) : form_scope.
-Hint Extern 0 (set_fun _ _ _) => solve [apply: funS] : core.
-Hint Extern 0 (prop_in1 _ _) => solve [apply: funS] : core.
+#[global] Hint Extern 0 (set_fun _ _ _) => solve [apply: funS] : core.
+#[global] Hint Extern 0 (prop_in1 _ _) => solve [apply: funS] : core.
 
 Definition fun_image_sub aT rT (A : set aT) (B : set rT) (f : {fun A >-> B}) :=
   image_subP.2 (@funS _ _ _ _ f).
 Arguments fun_image_sub {aT rT A B}.
-Hint Extern 0 (_ @` _ `<=` _) => solve [apply: fun_image_sub] : core.
+#[global] Hint Extern 0 (_ @` _ `<=` _) => solve [apply: fun_image_sub] : core.
 
 Definition mem_fun aT rT (A : set aT) (B : set rT) (f : {fun A >-> B}) :=
   homo_setP.2 (@funS _ _ _ _ f).
-Hint Extern 0 (prop_in1 _ _) => solve [apply: mem_fun] : core.
+#[global] Hint Extern 0 (prop_in1 _ _) => solve [apply: mem_fun] : core.
 
 Definition phant_mem_fun aT rT (A : set aT) (B : set rT)
   (f : {fun A >-> B}) of phantom (_ -> _) f := homo_setP.2 (@funS _ _ _ _ f).
@@ -316,12 +316,12 @@ Proof. by rewrite -oliftV. Qed.
 Definition phant_oinvK aT rT (A : set aT) (B : set rT)
    (f : {surj A >-> B}) of phantom (_ -> _) f := @oinvK _ _ _ _ f.
 Notation "'oinvK_ f" := (phant_oinvK (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve oinvK : core.
+#[global] Hint Resolve oinvK : core.
 
 Definition phant_oinvS aT rT (A : set aT) (B : set rT)
    (f : {surj A >-> B}) of phantom (_ -> _) f := @oinvS _ _ _ _ f.
 Notation "'oinvS_ f" := (phant_oinvS (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve oinvS : core.
+#[global] Hint Resolve oinvS : core.
 
 Variant oinv_spec {aT} {rT} {A : set aT} {B : set rT} (f : {surj A >-> B}) y :
    rT -> option aT -> Type :=
@@ -337,7 +337,7 @@ Qed.
 Definition phant_oinvP aT rT (A : set aT) (B : set rT)
    (f : {surj A >-> B}) of phantom (_ -> _) f := @oinvP _ _ _ _ f.
 Notation "'oinvP_ f" := (phant_oinvP (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve oinvP : core.
+#[global] Hint Resolve oinvP : core.
 
 Lemma oinvT {aT rT} {A : set aT} {B : set rT} {f : {surj A >-> B}} x :
   B x -> 'oinv_f x.
@@ -345,7 +345,7 @@ Proof. by move=> /'oinvS_f [a Aa <-]. Qed.
 Definition phant_oinvT aT rT (A : set aT) (B : set rT)
    (f : {surj A >-> B}) of phantom (_ -> _) f := @oinvT _ _ _ _ f.
 Notation "'oinvT_ f" := (phant_oinvT (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve oinvT : core.
+#[global] Hint Resolve oinvT : core.
 
 Lemma invK {aT rT} {A : set aT} {B : set rT} {f : {splitsurj A >-> B}} :
    {in B, cancel f^-1 f}.
@@ -353,7 +353,7 @@ Proof. by move=> x Bx; rewrite -[x in RHS]'oinvK_f// -some_inv/=. Qed.
 Definition phant_invK aT rT (A : set aT) (B : set rT)
    (f : {splitsurj A >-> B}) of phantom (_ -> _) f := @invK _ _ _ _ f.
 Notation "'invK_ f" := (phant_invK (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve invK : core.
+#[global] Hint Resolve invK : core.
 
 Lemma invS {aT rT} {A : set aT} {B : set rT} {f : {splitsurj A >-> B}} :
   {homo f^-1 : x / B x >-> A x}.
@@ -361,12 +361,12 @@ Proof. by move=> x /'oinvS_f/= [a Aa]; rewrite -some_inv => -[<-]. Qed.
 Definition phant_invS aT rT (A : set aT) (B : set rT)
    {f : {splitsurjfun A >-> B}} of phantom (_ -> _) f := @invS _ _ _ _ f.
 Notation "'invS_ f" := (phant_invS (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve invS : core.
+#[global] Hint Resolve invS : core.
 
 Definition phant_funoK aT rT (A : set aT) (f : {inj A >-> rT})
   of phantom (_ -> _) f := @funoK _ _ _ f.
 Notation "'funoK_ f" := (phant_funoK (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve funoK : core.
+#[global] Hint Resolve funoK : core.
 
 Definition inj {aT rT : nonPropType} {A : set aT} {f : {inj A >-> rT}} :
    {in A &, injective f} := pcan_in_inj funoK.
@@ -376,12 +376,12 @@ Notation "'inj_ f" := (phant_inj (Phantom (_ -> _) f)) : form_scope.
 
 Definition inj_hint {aT rT} {A : set aT} {f : {inj A >-> rT}} :
    {in A &, injective f} := inj.
-Hint Extern 0 {in _ &, injective _} => solve [apply: inj_hint] : core.
-Hint Extern 0 (set_inj _ _) => solve [apply: inj_hint] : core.
+#[global] Hint Extern 0 {in _ &, injective _} => solve [apply: inj_hint] : core.
+#[global] Hint Extern 0 (set_inj _ _) => solve [apply: inj_hint] : core.
 
 Lemma injT {aT rT} {f : {inj [set: aT] >-> rT}} : injective f.
 Proof. by apply: in2TT; apply: inj. Qed.
-Hint Extern 0 (injective _) => solve [apply: injT] : core.
+#[global] Hint Extern 0 (injective _) => solve [apply: injT] : core.
 
 Lemma funK {aT rT : Type} {A : set aT} {s : {splitinj A >-> rT}} :
   {in A, cancel s s^-1}.
@@ -390,7 +390,7 @@ Proof. by move=> x Ax; apply: Some_inj; rewrite some_inv funoK. Qed.
 Definition phant_funK aT rT (A : set aT) (f : {splitinj A >-> rT})
   of phantom (_ -> _) f := @funK _ _ _ f.
 Notation "'funK_  f" := (phant_funK (Phantom (_ -> _) f)) : form_scope.
-Hint Resolve funK : core.
+#[global] Hint Resolve funK : core.
 
 (**********************)
 (* Structure Equality *)
@@ -817,7 +817,7 @@ Proof. by move=> b /'oinvP_f[x Ax _]; exists x. Qed.
 Definition phant_surj aT rT (A : set aT) (B : set rT) (f : {surj A >-> B})
   of phantom (_ -> _) f := @surj _ _ _ _ f.
 Notation "'surj_  f" := (phant_surj (Phantom (_ -> _) f)) : form_scope.
-Hint Extern 0 (set_surj _ _ _) => solve [apply: surj] : core.
+#[global] Hint Extern 0 (set_surj _ _ _) => solve [apply: surj] : core.
 
 Section funin_surj.
 Context {aT rT : Type}.
@@ -839,7 +839,7 @@ End funin_surj.
 Notation "[ 'fun' f 'in' A ]" := (funin A f)
   (at level 0, f at next level,
    format "[ 'fun'  f  'in'  A ]") : function_scope.
-Hint Resolve set_fun_image : core.
+#[global] Hint Resolve set_fun_image : core.
 
 (*********************)
 (* Partial injection *)
@@ -1265,6 +1265,7 @@ Lemma oinv_set_val : 'oinv_set_val = insub. Proof. by []. Qed.
 Lemma set_valE : set_val = val. Proof. by []. Qed.
 End set_val.
 
+#[global]
 Hint Extern 0 (is_true (set_val _ \in _)) => solve [apply: valP] : core.
 
 (**********)
@@ -1666,7 +1667,7 @@ Proof. split=> //. Qed.
 Definition phant_bij aT rT (A : set aT) (B : set rT) (f : {bij A >-> B}) of
   phantom (_ -> _) f := @bij _ _ _ _ f.
 Notation "''bij_' f" := (phant_bij (Phantom (_ -> _) f)) : form_scope.
-Hint Extern 0 (set_bij _ _ _) => solve [apply: bij] : core.
+#[global] Hint Extern 0 (set_bij _ _ _) => solve [apply: bij] : core.
 
 Section PbijTT.
 Context {aT rT} {f : aT -> rT} (fbijTT : bijective f).
@@ -1690,7 +1691,7 @@ Proof. by rewrite -setTT_bijective. Qed.
 Definition phant_bijTT aT rT (f : {bij [set: aT] >-> [set: rT]})
    of phantom (_ -> _) f := @bijTT _ _ f.
 Notation "''bijTT_'  f" := (phant_bijTT (Phantom (_ -> _) f)) : form_scope.
-Hint Extern 0 (bijective _) => solve [apply: bijTT] : core.
+#[global] Hint Extern 0 (bijective _) => solve [apply: bijTT] : core.
 
 (*****************************)
 (* Patching and restrictions *)
