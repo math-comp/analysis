@@ -646,6 +646,8 @@
   + lemmas `semiRingOfSets_measurableI`, `semiRingOfSets_measurableD`, `semiRingOfSets_diff_fsetsE`,
     `semiRingOfSets_diff_fsets_disjoint`
   + definition `uncurry`
+- in `sequences.v`:
+  + lemmas `leq_fact`, `prod_rev`, `fact_split` (now in MathComp)
 
 ### Infrastructure
 

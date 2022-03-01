@@ -985,7 +985,7 @@ Structure filter_on T := FilterType {
 Definition filter_class T (F : filter_on T) : Filter F :=
   let: FilterType _ class := F in class.
 Arguments FilterType {T} _ _.
-Global Existing Instance filter_class.
+#[global] Existing Instance filter_class.
 (* Typeclasses Opaque filter. *)
 Coercion filter_filter' : ProperFilter >-> Filter.
 
@@ -996,7 +996,7 @@ Structure pfilter_on T := PFilterPack {
 Definition pfilter_class T (F : pfilter_on T) : ProperFilter F :=
   let: PFilterPack _ class := F in class.
 Arguments PFilterPack {T} _ _.
-Global Existing Instance pfilter_class.
+#[global] Existing Instance pfilter_class.
 (* Typeclasses Opaque pfilter. *)
 Canonical pfilter_filter_on T (F : pfilter_on T) :=
   FilterType F (pfilter_class F).

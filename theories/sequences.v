@@ -1069,32 +1069,6 @@ Qed.
 
 End series_linear.
 
-(* TODO: backport to MathComp? *)
-Section fact_facts.
-
-Local Open Scope nat_scope.
-
-Lemma leq_fact n : n <= n`!.
-Proof.
-by case: n => // n;  rewrite dvdn_leq ?fact_gt0 // dvdn_fact ?andTb.
-Qed.
-
-Lemma prod_rev n m :
-  \prod_(0 <= k < n - m) (n - k) = \prod_(m.+1 <= k < n.+1) k.
-Proof.
-rewrite [in RHS]big_nat_rev /= -{1}(add0n m.+1) big_addn subSS.
-by apply eq_bigr => i _; rewrite addnS subSS addnC subnDr.
-Qed.
-
-Lemma fact_split n m : m <= n -> n`! = \prod_(0 <= k < n - m) (n - k) * m`!.
-Proof.
-move=> ?; rewrite [in RHS]fact_prod mulnC prod_rev -big_cat [in RHS]/index_iota.
-rewrite subn1 -iotaD subSS addnBCA // subnn addn0 [in LHS]fact_prod.
-by rewrite [in RHS](_ : n = n.+1 - 1) // subn1.
-Qed.
-
-End fact_facts.
-
 Section exponential_series.
 
 Variable R : realType.
@@ -1153,25 +1127,22 @@ Qed.
 Let S1_sup N : x < N%:R -> ubound [set of S1 N] (sup [set of S0 N]).
 Proof.
 move=> xN _ [n _ <-]; rewrite (le_trans _ (S0_sup n xN)) // /S0 big_distrr /=.
-have N_gt0 := lt_trans x0 xN.
-apply ler_sum => i _.
+have N_gt0 := lt_trans x0 xN; apply ler_sum => i _.
 have [Ni|iN] := ltnP N i; last first.
-  rewrite expr_div_n mulrCA ler_pmul2l ?exprn_gt0 // (@le_trans _ _ 1) //.
-    by rewrite invf_le1 ?ler1n ?ltr0n // fact_gt0.
-  rewrite natrX -expfB_cond ?(negPf (lt0r_neq0 N_gt0)) //.
+  rewrite expr_div_n mulrCA ler_pmul2l ?exprn_gt0// (@le_trans _ _ 1) //.
+    by rewrite invf_le1// ?ler1n ?ltr0n // fact_gt0.
+  rewrite natrX -expfB_cond ?(negPf (lt0r_neq0 N_gt0))//.
   by rewrite exprn_ege1 // ler1n; case: (N) xN x0; case: ltrgt0P.
-rewrite /exp expr_div_n /= (fact_split Ni) mulrCA.
-rewrite ler_pmul2l ?exprn_gt0 // natrX -invf_div -expfB //.
-rewrite lef_pinv ?qualifE; last 2 first.
-- rewrite ltr0n muln_gt0 fact_gt0 andbT.
-  rewrite big_mkord prodn_gt0  // => j.
-  by rewrite subn_gt0 (leq_trans (ltn_ord _) (leq_subr _ _)).
-- by rewrite exprn_gt0.
-rewrite prod_rev -natrX ler_nat -prod_nat_const_nat big_add1 /= big_ltn //.
-rewrite mulnC leq_mul //; last by apply: leq_trans (leq_fact _).
-rewrite -(subnK Ni); elim: (_ - _)%N => [|k IH]; first by rewrite !big_geq.
-rewrite !addSn !big_nat_recr //= ?leq_mul ?leq_addl //.
-by rewrite -addSn -addSnnS leq_addl.
+rewrite /exp expr_div_n /= (fact_split Ni) mulrCA ler_pmul2l ?exprn_gt0// natrX.
+rewrite -invf_div -expfB // lef_pinv ?qualifE ?exprn_gt0//; last first.
+  rewrite ltr0n muln_gt0 fact_gt0/= big_seq big_mkcond/= prodn_gt0// => j.
+  by case: ifPn=>//; rewrite mem_index_iota => /andP[+ _]; exact: leq_ltn_trans.
+rewrite big_nat_rev/= -natrX ler_nat -prod_nat_const_nat big_add1 /= big_ltn //.
+rewrite leq_mul//; first by rewrite (leq_trans (fact_geq _))// leq_pmull.
+under [in X in (_ <= X)%N]eq_bigr do rewrite 2!addSn 2!subSS.
+rewrite !big_seq/=; elim/big_ind2 : _ => //; first by move=> *; exact: leq_mul.
+move=> j; rewrite mem_index_iota => /andP[_ ji].
+by rewrite -addnBA// ?leq_addr// ltnW// ltnW.
 Qed.
 
 Lemma is_cvg_series_exp_coeff_pos : cvg (series (exp x)).
