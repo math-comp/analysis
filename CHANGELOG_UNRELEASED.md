@@ -659,6 +659,9 @@
   + definition `xchooseb`
   + lemmas `existsPP`, `forallPP`, `existsbP`, `forallbP`, `forallbE`,
     `existsp_asboolP`, `forallp_asboolP`, `xchoosebP`, `imsetbP`
+- in `normedtype.v`:
+  + lemmas `nbhs_pinfty_gt_pos`, `nbhs_pinfty_ge_pos`, `nbhs_ninfty_lt_pos`,
+    `nbhs_ninfty_le_pos`
 
 ### Infrastructure
 

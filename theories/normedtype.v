@@ -411,23 +411,11 @@ Proof. by exists r. Qed.
 Lemma nbhs_pinfty_ge r : r \is Num.real -> \forall x \near +oo, r <= x.
 Proof. by exists r; split => //; apply: ltW. Qed.
 
-Lemma nbhs_pinfty_gt_pos r : 0 < r -> \forall x \near +oo, r < x.
-Proof. by move=> /ltW r0; apply: nbhs_pinfty_gt; rewrite realE r0. Qed.
-
-Lemma nbhs_pinfty_ge_pos r : 0 < r -> \forall x \near +oo, r <= x.
-Proof. by move=> /ltW r0; apply: nbhs_pinfty_ge; rewrite realE r0. Qed.
-
 Lemma nbhs_ninfty_lt r : r \is Num.real -> \forall x \near -oo, r > x.
 Proof. by exists r. Qed.
 
 Lemma nbhs_ninfty_le r : r \is Num.real -> \forall x \near -oo, r >= x.
 Proof. by exists r; split => // ?; apply: ltW. Qed.
-
-Lemma nbhs_ninfty_lt_pos r : 0 < r -> \forall x \near -oo, r > x.
-Proof. by move=> /ltW r0; apply: nbhs_ninfty_lt; rewrite realE r0. Qed.
-
-Lemma nbhs_ninfty_le_pos r : 0 < r -> \forall x \near -oo, r >= x.
-Proof. by move=> /ltW r0; apply: nbhs_ninfty_le; rewrite realE r0. Qed.
 
 End infty_nbhs_instances.
 
