@@ -459,6 +459,15 @@
   + lemmas `disjoint_itvxx`, `lt_disjoint`, `disjoint_neitv`, `disj_itv_Rhull`
 - new file `lebesgue_measure.v`
 - new file `lebesgue_integral.v`
+- in `ereal.v`:
+  + lemmas `lte_subl_addl`, `lte_subr_addl`, `lte_subel_addr`,
+    `lte_suber_addr`, `lte_suber_addl`, `lee_subl_addl`,
+    `lee_subr_addl`, `lee_subel_addr`, `lee_subel_addl`,
+    `lee_suber_addr`, `lee_suber_addl`
+  + lemmas `lte_dsubl_addl`, `lte_dsubr_addl`, `lte_dsubel_addr`,
+    `lte_dsuber_addr`, `lte_dsuber_addl`, `lee_dsubl_addl`,
+    `lee_dsubr_addl`, `lee_dsubel_addr`, `lee_dsubel_addl`,
+    `lee_dsuber_addr`, `lee_dsuber_addl`
 
 ### Changed
 
@@ -561,9 +570,6 @@
     `adde_ss_eq0`, `ndadde_eq0`, `pdadde_eq0`, `dadde_ss_eq0`,
     `mulrpinfty_real`, `mulpinftyr_real`, `mulrninfty_real`,
     `mulninftyr_real`, `mulrinfty_real`
-
-### Changed
-
 - in `ereal.v`:
   + lemmas `abse_ge0`, `gee0_abs`, `gte0_abs`, `lee0_abs`, `lte0_abs`,
     `mulN1e`, `muleN1` are generalized from `realDomainType` to
@@ -596,6 +602,11 @@
   + `csum_fset` -> `esum_fset`
   + `csum_image` -> `esum_image`
   + `csum_bigcup` -> `esum_bigcup`
+- in `ereal.v`:
+  + `lte_subl_addl` -> `lte_subel_addl`
+  + `lte_subr_addr` -> `lte_suber_addr`
+  + `lte_dsubl_addl` -> `lte_dsubel_addl`
+  + `lte_dsubr_addr` -> `lte_dsuber_addr`
 
 ### Removed
 
