@@ -474,20 +474,6 @@
 - in `trigo.v`:
   + the `realType` argument of `pi` is implicit
   + the printed type of `acos`, `asin`, `atan` is `R -> R`
-### Renamed
-
-- in `ereal.v`:
-  + `lte_subl_addl` -> `lte_subel_addl`
-  + `lte_subr_addr` -> `lte_suber_addr`
-  + `lte_dsubl_addl` -> `lte_dsubel_addl`
-  + `lte_dsubr_addr` -> `lte_dsuber_addr`
-
-### Removed
-
-- in `ereal.v`:
-  + lemmas `esum_fset_ninfty`, `esum_fset_pinfty`
-  + lemmas `desum_fset_pinfty`, `desum_fset_ninfty`
-
 - in `topology.v`:
   + generalize `connected_continuous_connected`, `continuous_compact`
   + arguments of `subspace`
@@ -584,9 +570,6 @@
     `adde_ss_eq0`, `ndadde_eq0`, `pdadde_eq0`, `dadde_ss_eq0`,
     `mulrpinfty_real`, `mulpinftyr_real`, `mulrninfty_real`,
     `mulninftyr_real`, `mulrinfty_real`
-
-### Changed
-
 - in `ereal.v`:
   + lemmas `abse_ge0`, `gee0_abs`, `gte0_abs`, `lee0_abs`, `lte0_abs`,
     `mulN1e`, `muleN1` are generalized from `realDomainType` to
@@ -619,6 +602,11 @@
   + `csum_fset` -> `esum_fset`
   + `csum_image` -> `esum_image`
   + `csum_bigcup` -> `esum_bigcup`
+- in `ereal.v`:
+  + `lte_subl_addl` -> `lte_subel_addl`
+  + `lte_subr_addr` -> `lte_suber_addr`
+  + `lte_dsubl_addl` -> `lte_dsubel_addl`
+  + `lte_dsubr_addr` -> `lte_dsuber_addr`
 
 ### Removed
 
