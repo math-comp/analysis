@@ -1920,14 +1920,14 @@ rewrite [X in X <= _](_ : _
   move=> i _; rewrite ifT ?inE//=; case: ifPn => //.
   by rewrite notin_set /= -/(g _) => /negP/negPn/eqP ->.
 rewrite -(esum_pred_image mu g)//.
-rewrite [esum _ _](_ : _ = \esum_(X in [set of g]) mu X); last first.
+rewrite [esum _ _](_ : _ = \esum_(X in range g) mu X); last first.
   rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum.
   move=> Y _; case: ifPn; rewrite ?(inE, notin_set)/=.
     by move=> [i giN0 giY]; rewrite ifT// ?inE//=; exists i.
   move=> Ngx; case: ifPn; rewrite ?(inE, notin_set)//=.
   move=> [i _ giY]; apply: contra_not_eq Ngx; rewrite -giY => mugi.
   by exists i => //; apply: contra_neq mugi => ->; rewrite measure0.
-have -> : [set of g] = \bigcup_i [set` decomp (seqDU B i)].
+have -> : range g = \bigcup_i [set` decomp (seqDU B i)].
   apply/predeqP => /= Y; split => [[n _ gnY]|[n _ /= YBn]].
   have [/= _ f'nB] : K (f' n) by apply: funS.
     by exists (f' n).1 => //=; rewrite -gnY.

@@ -425,7 +425,7 @@ Lemma card_subP T U (A : set T) (B : set U) :
 Proof.
 apply: (iffP idP) => [/card_leP[f]|[C CA CB]]; last first.
   by rewrite -(card_le_eql CA); apply/card_leP; squash (inclT _ \o subfun CB).
-exists (set_val @` [set of f]); last exact: (subset_trans (sub_setP _)).
+exists (set_val @` range f); last exact: (subset_trans (sub_setP _)).
 by rewrite ?(card_eql (inj_card_eq _))//; apply: in2W; apply: in2TT; apply: inj.
 Qed.
 

@@ -517,13 +517,13 @@ rewrite predeqE => x; split; rewrite /= in_itv.
   + by rewrite in_itv /= => yxb <-; case: b yxb.
 Qed.
 
-Lemma punct_eitv_setTR : [set of @EFin R] `|` [set +oo] = [set~ -oo].
+Lemma punct_eitv_setTR : range (@EFin R) `|` [set +oo] = [set~ -oo].
 Proof.
 rewrite eqEsubset; split => [a [[a' _ <-]|->]|]; rewrite ?lte_ninfty//.
 by move=> [x| |] //= _; [left; exists x|right].
 Qed.
 
-Lemma punct_eitv_setTL : [set of @EFin R] `|` [set -oo] = [set~ +oo].
+Lemma punct_eitv_setTL : range (@EFin R) `|` [set -oo] = [set~ +oo].
 Proof.
 rewrite eqEsubset; split => [a [[a' _ <-]|->]|]; rewrite ?lte_ninfty//.
 by move=> [x| |] //= _; [left; exists x|right].
@@ -1383,7 +1383,7 @@ by apply: measurableU; [apply: mf|apply: mg] =>//; apply: measurable_itv.
 Qed.
 
 Lemma measurable_fun_sups D (h : (T -> R)^nat) n :
-  (forall t, D t -> has_ubound [set of h^~t]) ->
+  (forall t, D t -> has_ubound (range (h ^~ t))) ->
   (forall m, measurable_fun D (h m)) ->
   measurable_fun D (fun x => sups (h ^~ x) n).
 Proof.
@@ -1393,7 +1393,7 @@ by apply: bigcup_measurable => k /= nk; apply: mf => //; apply: measurable_itv.
 Qed.
 
 Lemma measurable_fun_infs D (h : (T -> R)^nat) n :
-  (forall t, D t -> has_lbound [set of h ^~ t]) ->
+  (forall t, D t -> has_lbound (range (h ^~ t))) ->
   (forall n, measurable_fun D (h n)) ->
   measurable_fun D (fun x => infs (h ^~ x) n).
 Proof.
@@ -1403,8 +1403,8 @@ by apply: bigcup_measurable => k /= nk; apply: mf => //; apply: measurable_itv.
 Qed.
 
 Lemma measurable_fun_lim_sup D (h : (T -> R)^nat) :
-  (forall t, D t -> has_ubound [set of h^~t]) ->
-  (forall t, D t -> has_lbound [set of h^~t]) ->
+  (forall t, D t -> has_ubound (range (h ^~ t))) ->
+  (forall t, D t -> has_lbound (range (h ^~ t))) ->
   (forall n, measurable_fun D (h n)) ->
   measurable_fun D (fun x => lim_sup (h ^~ x)).
 Proof.
@@ -1412,7 +1412,7 @@ move=> f_ub f_lb mf.
 have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
               =1 (fun x => lim_sup (h^~ x))}.
   move=> t; rewrite inE => Dt; apply/esym/cvg_lim; first exact: Rhausdorff.
-  rewrite [X in _ --> X](_ : _ = inf [set of sups (h^~t)]).
+  rewrite [X in _ --> X](_ : _ = inf (range (sups (h^~t)))).
     by apply: cvg_sups_inf; [exact: f_ub|exact: f_lb].
   by congr (inf [set _ | _ in _]); rewrite predeqE.
 move/eq_measurable_fun; apply; apply: measurable_fun_infs => //.
@@ -1563,7 +1563,7 @@ move=> mf mD; rewrite (_ :  (fun _ => _) =
     (fun x => ereal_inf [set esups (f^~ x) n | n in [set n | n >= 0]%N])).
   by apply: measurable_fun_einfs => // k; exact: measurable_fun_esups.
 rewrite funeqE => t; apply/cvg_lim => //.
-rewrite [X in _ --> X](_ : _ = ereal_inf [set of esups (f^~t)]).
+rewrite [X in _ --> X](_ : _ = ereal_inf (range (esups (f^~t)))).
   exact: cvg_esups_inf.
 by congr (ereal_inf [set _ | _ in _]); rewrite predeqE.
 Qed.
