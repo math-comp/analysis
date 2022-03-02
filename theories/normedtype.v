@@ -1450,7 +1450,7 @@ Notation bounded_set := [set A | [bounded x | x in A]].
 Notation bounded_fun := [set f | [bounded f x | x in setT]].
 
 Lemma bounded_fun_has_ubound (T : Type) (R : realFieldType) (a : T -> R) :
-  bounded_fun a -> has_ubound [set of a].
+  bounded_fun a -> has_ubound (range a).
 Proof.
 move=> [M [Mreal]]/(_ (`|M| + 1)).
 rewrite (le_lt_trans (ler_norm _)) ?ltr_addl// => /(_ erefl) aM.
@@ -1465,7 +1465,7 @@ by rewrite normrN; apply: aM => //; near: x; apply: nbhs_pinfty_gt.
 Unshelve. all: by end_near. Qed.
 
 Lemma bounded_fun_has_lbound (T : Type) (R : realFieldType) (a : T -> R) :
-  bounded_fun a -> has_lbound [set of a].
+  bounded_fun a -> has_lbound (range a).
 Proof.
 move=> /bounded_funN/bounded_fun_has_ubound ba; apply/has_lb_ubN.
 by apply: subset_has_ubound ba => _ [_ [n _] <- <-]; exists n.

@@ -343,7 +343,7 @@ by rewrite image_indic; do ![case: ifP=> //= _] => // t []//= ->; [left|right].
 Qed.
 
 HB.mixin Record FiniteImage aT rT (f : aT -> rT) := {
-  fimfunP : finite_set [set of f]
+  fimfunP : finite_set (range f)
 }.
 HB.structure Definition FImFun aT rT := {f of @FiniteImage aT rT f}.
 
@@ -357,7 +357,7 @@ Notation "[ 'fimfun' 'of' f ]" := [the {fimfun _ >-> _} of f] : form_scope.
 
 Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
   finite_set (f @` D).
-Proof. by apply: (@sub_finite_set _ _ [set of f]) => // y [x]; exists x. Qed.
+Proof. by apply: (@sub_finite_set _ _ (range f)) => // y [x]; exists x. Qed.
 
 HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
@@ -409,7 +409,7 @@ Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section fimfun_pred.
 Context {aT rT : Type}.
-Definition fimfun : {pred aT -> rT} := mem [set f | finite_set [set of f]].
+Definition fimfun : {pred aT -> rT} := mem [set f | finite_set (range f)].
 Definition fimfun_key : pred_key fimfun.
 Proof. exact. Qed.
 Canonical fimfun_keyed := KeyedPred fimfun_key.
@@ -452,7 +452,7 @@ Definition fimfunchoiceMixin aT (rT : choiceType) :=
 Canonical fimfunchoiceType aT (rT : choiceType) :=
   ChoiceType {fimfun aT >-> rT} (fimfunchoiceMixin aT rT).
 
-Lemma finite_image_cst {aT rT : Type} (x : rT) : finite_set [set of cst x : aT -> rT].
+Lemma finite_image_cst {aT rT : Type} (x : rT) : finite_set (range (cst x : aT -> rT)).
 Proof.
 elim/Ppointed: aT => aT; rewrite ?emptyE ?image_set0//.
 suff -> : cst x @` [set: aT] = [set x] by apply: finite_set1.
@@ -551,7 +551,7 @@ HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
 End comring.
 
 Lemma fimfunE T (R : ringType) (f : {fimfun T >-> R}) x :
-  f x = \sum_(y <- fset_set [set of f]) (y * \1_(f @^-1` [set y]) x).
+  f x = \sum_(y <- fset_set (range f)) (y * \1_(f @^-1` [set y]) x).
 Proof.
 have fxfA: f x \in fset_set (f @` setT) by rewrite in_fset_set// inE; exists x.
 rewrite (big_fsetD1 (f x))//= indicE (@id (_ \in _)) ?mulr1 ?inE//=.
@@ -959,13 +959,13 @@ Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (f : {nnsfun T >-> R}).
 
 Lemma nnsfun_cover :
-  \big[setU/set0]_(i \in [set of f]) (f @^-1` [set i]) = setT.
+  \big[setU/set0]_(i \in (range f)) (f @^-1` [set i]) = setT.
 Proof. by rewrite fsbig_setU//= -subTset => x _; exists (f x). Qed.
 
 Lemma nnsfun_coverT :
   \big[setU/set0]_(i \in [set: R]) (f @^-1` [set i]) = setT.
 Proof.
-by rewrite -(fsbig_widen [set of f]) ?nnsfun_cover//= => x [_ /= /preimage10->].
+by rewrite -(fsbig_widen (range f)) ?nnsfun_cover//= => x [_ /= /preimage10->].
 Qed.
 
 End nnsfun_cover.
@@ -997,8 +997,8 @@ by rewrite -!bigcup_fset_set// measure_fin_bigcup.
 Qed.
 
 Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
-  \sum_(i \in [set of g]) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
-  m (f @^-1` [set x] `&` \big[setU/set0]_(i \in [set of g]) (g @^-1` [set i])).
+  \sum_(i \in (range g)) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
+  m (f @^-1` [set x] `&` \big[setU/set0]_(i \in (range g)) (g @^-1` [set i])).
 Proof.
 rewrite -?measure_fsbig//.
 - by rewrite !fsbig_finite//= big_distrr//.
@@ -1007,8 +1007,8 @@ rewrite -?measure_fsbig//.
 Qed.
 
 Lemma additive_nnsfunl (g f : {nnsfun T >-> R}) x :
-  \sum_(i \in [set of g]) m (g @^-1` [set i] `&` (f @^-1` [set x])) =
-  m (\big[setU/set0]_(i \in [set of g]) (g @^-1` [set i]) `&` f @^-1` [set x]).
+  \sum_(i \in range g) m (g @^-1` [set i] `&` (f @^-1` [set x])) =
+  m (\big[setU/set0]_(i \in range g) (g @^-1` [set i]) `&` f @^-1` [set x]).
 Proof. by under eq_fsbigr do rewrite setIC; rewrite setIC additive_nnsfunr. Qed.
 
 End measure_fsbig.
@@ -1071,9 +1071,9 @@ Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 
 Lemma sintegralE f :
-  sintegral mu f = \sum_(x \in [set of f]) x%:E * mu (f @^-1` [set x]).
+  sintegral mu f = \sum_(x \in range f) x%:E * mu (f @^-1` [set x]).
 Proof.
-rewrite (fsbig_widen [set of f] setT)//= => x [_ Nfx] /=.
+rewrite (fsbig_widen (range f) setT)//= => x [_ Nfx] /=.
 by rewrite preimage10 ?measure0 ?mule0.
 Qed.
 
@@ -1156,7 +1156,7 @@ transitivity (\sum_(x \in F) \sum_(y \in G) (x + y)%:E * m (pf x `&` pg y)).
     move=> z [_ /= FGz]; rewrite [X in m X](_ : _ = set0) ?measure0 ?mule0//.
     rewrite -subset0 => //= {x}i /= [<-] /(canLR (@addrNK _ _)).
     by apply: contra_not FGz => <-; exists i; rewrite //= addrC.
-  rewrite (reindex_fsbigT (+%R x))//.
+  rewrite (reindex_fsbigT (+%R x))//=.
   by apply: eq_fsbigr => y; rewrite addrC addrK.
 transitivity (\sum_(x \in F) \sum_(y \in G) x%:E * m (pf x `&` pg y) +
               \sum_(x \in F) \sum_(y \in G) y%:E * m (pf x `&` pg y)).
@@ -1225,8 +1225,8 @@ Qed.
 
 Let mfleg c n : measurable (fleg c n).
 Proof.
-rewrite /fleg [X in _ X](_ : _ = \big[setU/set0]_(y <- fset_set [set of f])
-    \big[setU/set0]_(x <- fset_set [set of g n] | c * y <= x)
+rewrite /fleg [X in _ X](_ : _ = \big[setU/set0]_(y <- fset_set (range f))
+    \big[setU/set0]_(x <- fset_set (range (g n)) | c * y <= x)
       (f @^-1` [set y] `&` (g n @^-1` [set x]))).
   apply: bigsetU_measurable => r _; apply: bigsetU_measurable => r' crr'.
   by apply: measurableI; apply/measurable_sfunP.
@@ -1284,10 +1284,10 @@ suff {cg1g}<- : lim (fun n => sintegral mu (g1 c n)) = sintegral mu f.
   - by apply: is_cvg_sintegral => // m n mn; apply/lefP => t; apply: nd_g.
   - by apply: nearW; exact: cg1g.
 suff : (fun n => sintegral mu (g1 c n)) --> sintegral mu f by apply/cvg_lim.
-rewrite [X in X --> _](_ : _ = fun n => \sum_(x <- fset_set [set of f])
+rewrite [X in X --> _](_ : _ = fun n => \sum_(x <- fset_set (range f))
     x%:E * mu (f @^-1` [set x] `&` fleg c n)); last first.
   rewrite funeqE => n; rewrite sintegralE.
-  transitivity (\sum_(x \in [set of f]) x%:E * mu (g1 c n @^-1` [set x])).
+  transitivity (\sum_(x \in range f) x%:E * mu (g1 c n @^-1` [set x])).
     apply eq_fbigl => r.
     do 2 (rewrite in_finite_support; last exact/finite_setIl).
     apply/idP/idP.
@@ -1470,7 +1470,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
   apply: ereal_lim_le; first exact: is_cvg_sintegral.
   near=> n; apply: ereal_sup_ub; exists (g n) => //= => x.
   have <- : lim (EFin \o g ^~ x) = f x by apply/cvg_lim => //; exact: gf.
-  have : (EFin \o g ^~ x) --> ereal_sup [set of EFin \o g ^~ x].
+  have : (EFin \o g ^~ x) --> ereal_sup (range (EFin \o g ^~ x)).
     by apply: ereal_nondecreasing_cvg => p q pq /=; rewrite lee_fin; exact/nd_g.
   by move/cvg_lim => -> //; apply: ereal_sup_ub; exists n.
 have := lee_pinfty (\int (f x) 'd mu[x]).
@@ -4348,7 +4348,7 @@ Let F := fubini_F m2 (EFin \o f).
 Let G := fubini_G m1 (EFin \o f).
 
 Lemma sfun_fubini_tonelli_FE : F = fun x =>
-  (\sum_(k <- fset_set [set of f]) k%:E * m2 (xsection (f @^-1` [set k]) x)).
+  (\sum_(k <- fset_set (range f)) k%:E * m2 (xsection (f @^-1` [set k]) x)).
 Proof.
 rewrite funeqE => x; rewrite /F /fubini_F [in LHS]/=.
 under eq_fun do rewrite fimfunE -sumEFin.
@@ -4375,7 +4375,7 @@ rewrite sfun_fubini_tonelli_FE//; apply: measurable_fun_sum => //.
 Qed.
 
 Lemma sfun_fubini_tonelli_GE : G = fun y =>
-  (\sum_(k <- fset_set [set of f]) k%:E * m1 (ysection (f @^-1` [set k]) y)).
+  (\sum_(k <- fset_set (range f)) k%:E * m1 (ysection (f @^-1` [set k]) y)).
 Proof.
 rewrite funeqE => y; rewrite /G /fubini_G [in LHS]/=.
 under eq_fun do rewrite fimfunE -sumEFin.
@@ -4403,13 +4403,13 @@ Qed.
 Lemma sfun_fubini_tonelli1 : \int ((EFin \o f) z) 'd m[z] = \int (F x) 'd m1[x].
 Proof.
 have EFinf : EFin \o f = fun x =>
-    (\sum_(k <- fset_set [set of f]) k%:E * (\1_(f @^-1` [set k]) x)%:E).
+    (\sum_(k <- fset_set (range f)) k%:E * (\1_(f @^-1` [set k]) x)%:E).
   by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
 rewrite EFinf ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
     by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
   - by move=> r /= z _; exact: muleindic_ge0.
-transitivity (\sum_(k <- fset_set [set of f])
+transitivity (\sum_(k <- fset_set (range f))
   \int k%:E * (fubini_F m2 (EFin \o \1_(f @^-1` [set k])) x) 'd m1[x]).
   apply: eq_fbigr => i; rewrite in_fset_set// inE => -[z _ <-{i} _].
   rewrite ge0_integralM//; last 3 first.
@@ -4434,14 +4434,14 @@ Qed.
 
 Lemma sfun_fubini_tonelli2 : \int ((EFin \o f) z) 'd m'[z] = \int (G y) 'd m2[y].
 Proof.
-have EFinf : EFin \o f = (fun x => (\sum_(k <- fset_set [set of f]) k%:E *
+have EFinf : EFin \o f = (fun x => (\sum_(k <- fset_set (range f)) k%:E *
     (\1_(f @^-1` [set k]) x)%:E)%E).
   by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
 rewrite EFinf ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
     by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
   - by move=> r /= z _; exact: muleindic_ge0.
-transitivity (\sum_(k <- fset_set [set of f])
+transitivity (\sum_(k <- fset_set (range f))
   \int k%:E * (fubini_G m1 (EFin \o \1_(f @^-1` [set k])) x) 'd m2[x]).
   apply: eq_fbigr => i; rewrite in_fset_set// inE => -[z _ <-{i} _].
   rewrite ge0_integralM//; last 3 first.
@@ -4467,14 +4467,14 @@ Qed.
 Lemma sfun_fubini_tonelli :
   \int ((EFin \o f) z) 'd m[z] = \int ((EFin \o f) z) 'd m'[z].
 Proof.
-rewrite (_ : _ \o _ = fun x => \sum_(k <- fset_set [set of f]) k%:E *
+rewrite (_ : _ \o _ = fun x => \sum_(k <- fset_set (range f)) k%:E *
     (\1_(f @^-1` [set k]) x)%:E); last first.
   by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
 rewrite ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
     by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
   - by move=> r z _; exact: muleindic_ge0.
-transitivity (\sum_(k <- fset_set [set of f]) k%:E *
+transitivity (\sum_(k <- fset_set (range f)) k%:E *
     \int ((EFin \o \1_(f @^-1` [set k])) z) 'd m'[z]).
   apply: eq_fbigr => i; rewrite in_fset_set// inE => -[t _ <- _].
   rewrite ge0_integralM//; last 3 first.

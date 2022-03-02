@@ -498,6 +498,8 @@
   + canonicals `Prop_eqType`, `Prop_choiceType`
 - in `classical_sets.v`:
   + arguments of `preimage`
+  + `[set of f]` becomes `range f` (the old notation is still available
+     but is displayed as the new one, and will be removed in future versions)
 - in `cardinality.v`:
   + definition `card_eq` now uses `{bij ... >-> ...}`
   + definition `card_le` now uses `{injfun ... >-> ...}`

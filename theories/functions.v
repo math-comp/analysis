@@ -1821,7 +1821,7 @@ rewrite funeq2E => f -[u Au] /=.
 by rewrite /sigL /restrict /valL_ /patch /= Au.
 Qed.
 
-Lemma image_sigL  : [set of sigL] = setT.
+Lemma image_sigL  : range sigL = setT.
 Proof.
 rewrite eqEsubset; split=> //= f _; exists (valL_ f)=>//.
 exact: valLK.

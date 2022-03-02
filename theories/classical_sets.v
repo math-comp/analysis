@@ -28,8 +28,7 @@ Require Import mathcomp_extra boolp.
 (*                                variables x and y in sets A and B.          *)
 (*                        setT == full set.                                   *)
 (*                        set0 == empty set.                                  *)
-(*                  [set of F] == set defined by the expression F x for any   *)
-(*                                x.                                          *)
+(*                     range F == the range of f, i.e. [set f x | x : setT]   *)
 (*                     [set a] == set containing only a.                      *)
 (*                 [set a : T] == same as before with the type of a made      *)
 (*                                explicit.                                   *)
@@ -283,6 +282,7 @@ Arguments fst_set _ _ _ _ /.
 Arguments snd_set _ _ _ _ /.
 
 Notation "[ 'set' 'of' F ]" := [set F i | i in setT] : classical_set_scope.
+Notation range F := [set F i | i in setT].
 Notation "[ 'set' a ]" := (set1 a) : classical_set_scope.
 Notation "[ 'set' a : T ]" := [set (a : T)] : classical_set_scope.
 Notation "[ 'set' : T ]" := (@setT T) : classical_set_scope.
@@ -1092,7 +1092,7 @@ Implicit Types (A B : set aT) (f : aT -> rT) (Y : set rT).
 
 Lemma imageP f A a : A a -> (f @` A) (f a). Proof. by exists a. Qed.
 
-Lemma imageT (f : aT -> rT) (a : aT) : [set of f] (f a).
+Lemma imageT (f : aT -> rT) (a : aT) : range f (f a).
 Proof. by apply: imageP. Qed.
 
 End base_image_lemmas.
@@ -1255,10 +1255,10 @@ Lemma preimage0eq (f : aT -> rT) (Y : set rT) : Y = set0 -> f @^-1` Y = set0.
 Proof. by move=> ->; rewrite preimage_set0. Qed.
 
 Lemma preimage0 {T R} {f : T -> R} {A : set R} :
-  A `&` [set of f] `<=` set0 -> f @^-1` A = set0.
+  A `&` range f `<=` set0 -> f @^-1` A = set0.
 Proof. by rewrite -subset0 => + x /= Afx => /(_ (f x))[]; split. Qed.
 
-Lemma preimage10 {T R} {f : T -> R} {x} : ~ [set of f] x -> f @^-1` [set x] = set0.
+Lemma preimage10 {T R} {f : T -> R} {x} : ~ range f x -> f @^-1` [set x] = set0.
 Proof. by move=> fx; rewrite preimage0// => y [->]. Qed.
 
 End image_lemmas.
