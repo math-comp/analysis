@@ -998,7 +998,7 @@ Qed.
 
 Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
   \sum_(i \in range g) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
-  m (f @^-1` [set x] `&` \big[setU/set0]_(i \in (range g)) (g @^-1` [set i])).
+  m (f @^-1` [set x] `&` \big[setU/set0]_(i \in range g) (g @^-1` [set i])).
 Proof.
 rewrite -?measure_fsbig//.
 - by rewrite !fsbig_finite//= big_distrr//.
