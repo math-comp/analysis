@@ -959,7 +959,7 @@ Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (f : {nnsfun T >-> R}).
 
 Lemma nnsfun_cover :
-  \big[setU/set0]_(i \in (range f)) (f @^-1` [set i]) = setT.
+  \big[setU/set0]_(i \in range f) (f @^-1` [set i]) = setT.
 Proof. by rewrite fsbig_setU//= -subTset => x _; exists (f x). Qed.
 
 Lemma nnsfun_coverT :
@@ -997,7 +997,7 @@ by rewrite -!bigcup_fset_set// measure_fin_bigcup.
 Qed.
 
 Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
-  \sum_(i \in (range g)) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
+  \sum_(i \in range g) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
   m (f @^-1` [set x] `&` \big[setU/set0]_(i \in (range g)) (g @^-1` [set i])).
 Proof.
 rewrite -?measure_fsbig//.
