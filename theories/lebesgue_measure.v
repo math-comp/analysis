@@ -1392,6 +1392,21 @@ rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
 Qed.
 
+Lemma measurable_fun_mulrn n D (f : T -> R) :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
+Proof.
+elim: n.
+move => _.
+apply: (@eq_measurable_fun _ _ _ (cst (1 : R))) => //.
+exact: measurable_fun_cst.
+move => n ih mf.
+apply: (@eq_measurable_fun _ _ _ (fun x => f x * f x ^+ n)).
+move => x xD.
+by rewrite exprS.
+apply measurable_funM => //.
+by apply ih => //.
+Qed.
+
 Lemma measurable_fun_max  D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \max g).
 Proof.
