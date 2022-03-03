@@ -1138,7 +1138,7 @@ End sintegralrM.
 Section sintegralD.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
-Variables (D : set T) (mD : measurable D) (f g : {nnsfun T >-> R}).
+Variables (f g : {nnsfun T >-> R}).
 
 Lemma sintegralD : sintegral m (f \+ g)%R = sintegral m f + sintegral m g.
 Proof.
