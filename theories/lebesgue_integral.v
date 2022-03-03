@@ -5159,3 +5159,50 @@ Theorem Fubini :
 Proof. by rewrite fubini1 -fubini2. Qed.
 
 End fubini.
+
+Section nintegrable.
+Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+
+Definition nintegrable n (D : set T) (f : T -> R) :=
+  (\int_ D (`| f x | ^+ n)%:E 'd mu[x] < +oo)%E.
+
+Definition square_integrable := nintegrable 2%N.
+
+Lemma measurable_fun_mulrn n D (f : T -> R) :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
+Proof.
+elim: n.
+move => _.
+apply: (@eq_measurable_fun _ _ _ (cst (1 : R))) => //.
+exact: measurable_fun_cst.
+move => n ih mf.
+apply: (@eq_measurable_fun _ _ _ (fun x => f x * f x ^+ n)).
+move => x xD.
+by rewrite exprS.
+apply measurable_funM => //.
+by apply ih => //.
+Qed.
+
+Hint Extern 0 (measurable_fun _ normr) =>
+  solve [exact: measurable_fun_normr] : core.
+
+Lemma nintegrableP n (D : set T) (f : T -> R) :
+  measurable D -> measurable_fun D f ->
+  nintegrable n D f <-> mu.-integrable D (EFin \o (fun x => `|f x| ^+ n)).
+Proof.
+move=> mD mf; rewrite /nintegrable; split.
+  move=> foo; split.
+    exact/EFin_measurable_fun/measurable_fun_mulrn/measurable_fun_comp.
+  apply: le_lt_trans foo; apply ge0_le_integral => //.
+  - apply/EFin_measurable_fun => //; apply: measurable_fun_comp => //.
+    exact/measurable_fun_mulrn/measurable_fun_comp.
+  - move=> *; rewrite lee_fin; apply exprn_ge0 => //.
+  - apply/EFin_measurable_fun => //; apply: measurable_fun_mulrn => //.
+    exact: measurable_fun_comp.
+  - move=> x Dx /=; rewrite ger0_norm => //; apply exprn_ge0 => //.
+move=> [mf' foo].
+rewrite (eq_integral (fun x => `|(EFin \o (fun y => (`|f y| ^+ n)%R)) x|)%E)// => x xD.
+rewrite gee0_abs// lee_fin. apply exprn_ge0 => //.
+Qed.
+
+End nintegrable.
