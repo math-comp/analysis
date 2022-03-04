@@ -44,8 +44,9 @@ From mathcomp Require Import all_ssreflect.
 (*                     On the model of {classicType _}.                       *)
 (*                     See also the lemmas Peq and eqPchoice.                 *)
 (*                                                                            *)
-(* --> Functions into a porderType are equipped with a porderType, (f <= g)%O *)
-(* when f x <= g x for all x, see lemma lefP.                                 *)
+(* --> Functions into a porderType (resp. latticeType) are equipped with      *)
+(* a porderType (resp. latticeType), (f <= g)%O when f x <= g x for all x,    *)
+(* see lemma lefP.                                                            *)
 (******************************************************************************)
 
 Set   Implicit Arguments.
@@ -720,8 +721,49 @@ Definition porderMixin :=
 Canonical porderType := POrderType fun_display (aT -> T) porderMixin.
 
 End FunOrder.
+
+Section FunLattice.
+Import Order.TTheory.
+Variables (aT : Type) (d : unit) (T : latticeType d).
+Implicit Types f g h : aT -> T.
+
+Definition meetf f g := fun x => Order.meet (f x) (g x).
+Definition joinf f g := fun x => Order.join (f x) (g x).
+
+Lemma meetfC : commutative meetf.
+Proof. move=> f g; apply/funext => x; exact: meetC. Qed.
+
+Lemma joinfC : commutative joinf.
+Proof. move=> f g; apply/funext => x; exact: joinC. Qed.
+
+Lemma meetfA : associative meetf.
+Proof. move=> f g h; apply/funext => x; exact: meetA. Qed.
+
+Lemma joinfA : associative joinf.
+Proof. move=> f g h; apply/funext => x; exact: joinA. Qed.
+
+Lemma joinfKI g f : meetf f (joinf f g) = f.
+Proof. apply/funext => x; exact: joinKI. Qed.
+
+Lemma meetfKU g f : joinf f (meetf f g) = f.
+Proof. apply/funext => x; exact: meetKU. Qed.
+
+Lemma lef_meet f g : (f <= g)%O = (meetf f g == f).
+Proof.
+apply/idP/idP => [/asboolP f_le_g|/eqP <-].
+- apply/eqP/funext => x; exact/meet_l/f_le_g.
+- apply/asboolP => x; exact: leIr.
+Qed.
+
+Definition latticeMixin :=
+  LatticeMixin meetfC joinfC meetfA joinfA joinfKI meetfKU lef_meet.
+
+Canonical latticeType := LatticeType (aT -> T) latticeMixin.
+
+End FunLattice.
 Module Exports.
 Canonical porderType.
+Canonical latticeType.
 End Exports.
 End FunOrder.
 Export FunOrder.Exports.
@@ -729,3 +771,11 @@ Export FunOrder.Exports.
 Lemma lefP (aT : Type) d (T : porderType d) (f g : aT -> T) :
   reflect (forall x, (f x <= g x)%O) (f <= g)%O.
 Proof. by apply: (iffP idP) => [fg|fg]; [exact/asboolP | apply/asboolP]. Qed.
+
+Lemma meetfE (aT : Type) d (T : latticeType d) (f g : aT -> T) x :
+  ((f `&` g) x = f x `&` g x)%O.
+Proof. by []. Qed.
+
+Lemma joinfE (aT : Type) d (T : latticeType d) (f g : aT -> T) x :
+  ((f `|` g) x = f x `|` g x)%O.
+Proof. by []. Qed.

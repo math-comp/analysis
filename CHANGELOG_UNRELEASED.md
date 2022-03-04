@@ -90,6 +90,7 @@
     `contraNP`, `contra_neqP`, `contra_eqP`
   + lemmas `forallPNP`, `existsPNP`
   + module `FunOrder`, lemma `lefP`
+  + lemmas `meetfE` and `joinfE`
 - in `sequences.v`:
   + definition `eseries` with notation `[eseries E]_n`
     + lemmas `eseriesEnat`, `eseriesEord`, `eseriesSr`, `eseriesS`,
