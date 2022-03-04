@@ -292,15 +292,17 @@ Proof. by case: R E => ? [? ? []]. Qed.
 Section IsInt.
 Context {R : realFieldType}.
 
-Definition Rint := [qualify a x : R | `[exists z, x == z%:~R]].
+Definition Rint := [qualify a x : R | `[< exists z, x == z%:~R >]].
 Fact Rint_key : pred_key Rint. Proof. by []. Qed.
 Canonical Rint_keyed := KeyedQualifier Rint_key.
 
-Lemma Rint_def x : (x \is a Rint) = (`[exists z, x == z%:~R]).
+Lemma Rint_def x : (x \is a Rint) = (`[< exists z, x == z%:~R >]).
 Proof. by []. Qed.
 
 Lemma RintP x : reflect (exists z, x = z%:~R) (x \in Rint).
-Proof. exact/(iffP (existsPP (fun x => eqP (y := x%:~R)))). Qed.
+Proof.
+by apply/(iffP idP) => [/asboolP[z /eqP]|[z]] ->; [|apply/asboolP]; exists z.
+Qed.
 
 Lemma RintC z : z%:~R \is a Rint.
 Proof. by apply/RintP; exists z. Qed.
@@ -350,12 +352,12 @@ Implicit Types x y : R.
 
 Definition Rtoint (x : R) : int :=
   if insub x : {? x | x \is a Rint} is Some Px then
-    xchooseb (tagged Px)
+    xchoose (asboolP _ (tagged Px))
   else 0.
 
 Lemma RtointK (x : R): x \is a Rint -> (Rtoint x)%:~R = x.
 Proof.
-move=> Ix; rewrite /Rtoint insubT /= [RHS](eqP (xchoosebP Ix)).
+move=> Ix; rewrite /Rtoint insubT /= [RHS](eqP (xchooseP (asboolP _ Ix))).
 by congr _%:~R; apply/eq_xchoose.
 Qed.
 
