@@ -172,7 +172,7 @@ move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R))); last first.
   apply/eqOP; near=> k; rewrite /cst [`|1|]normr1 mulr1.
   near=> y; rewrite ltW //; near: y; apply/nbhs_normP.
-  exists k; first by near: k; exists 0; rewrite real0.
+  exists k; first by near: k; exists 0.
   by move=> ? /=; rewrite -ball_normE /= sub0r normrN.
 rewrite addfo; first by move=> /eqolim; rewrite cvg_comp_shift add0r.
 by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
@@ -187,8 +187,7 @@ Proof.
 rewrite /cst /=; have [e /(_ (`|e x|/2) _)/nbhs_singleton /=] := littleo.
 rewrite pmulr_lgt0 // [`|1|]normr1 mulr1 [X in X <= _]splitr.
 rewrite ger_addr pmulr_lle0 // => /implyP.
-case : real_ltgtP; rewrite ?realE ?normrE //=.
-by apply/orP; left.
+by case : real_ltgtP; rewrite ?realE ?normrE //= lexx.
 Qed.
 
 Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :

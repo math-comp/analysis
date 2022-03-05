@@ -2991,11 +2991,11 @@ case=> [x||].
     move=> P [x [xr xP]] //; exists (x + 1)%:E; apply xP => /=.
     by rewrite lte_fin ltr_addl.
   split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
-  + by exists 0%R; rewrite real0.
+  + by exists 0%R.
   + have [MP0|MP0] := eqVneq MP 0%R.
       have [MQ0|MQ0] := eqVneq MQ 0%R.
-        by exists 0%R; rewrite real0; split => // x x0; split;
-        [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
+        by exists 0%R; split => // x x0; split;
+          [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
       exists `|MQ|%R; rewrite realE normr_ge0; split => // x MQx; split.
         by apply: gtMP; rewrite (le_lt_trans _ MQx) // MP0 lee_fin.
       by apply gtMQ; rewrite (le_lt_trans _ MQx)// lee_fin real_ler_normr ?lexx.
@@ -3017,10 +3017,10 @@ case=> [x||].
   + move=> P [M [Mr ltMP]]; exists (M - 1)%:E.
     by apply: ltMP; rewrite lte_fin gtr_addl oppr_lt0.
   + split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
-    * by exists 0%R; rewrite real0.
+    * by exists 0%R.
     * have [MP0|MP0] := eqVneq MP 0%R.
         have [MQ0|MQ0] := eqVneq MQ 0%R.
-          by exists 0%R; rewrite real0; split => // x x0; split;
+          by exists 0%R; split => // x x0; split;
           [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
         exists (- `|MQ|)%R; rewrite realN realE normr_ge0; split => // x xMQ.
         split.
@@ -3080,34 +3080,32 @@ move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
   apply/nbhs_ballP; exists (e%:num / 2) => //= r per.
   apply/nbhs_ballP; exists (e%:num / 2) => //= x rex.
   apply/ballA/(@ball_splitl _ _ r) => //; exact/ball_sym.
-- exists (M + 1)%R; split; first by rewrite realD // real1.
-  move=> -[x| _ |] //=.
-    rewrite lte_fin => M'x /=.
-    apply/nbhs_ballP; exists 1%R => //= y x1y.
-    apply MA; rewrite lte_fin.
-    rewrite addrC -ltr_subr_addl in M'x.
-    rewrite (lt_le_trans M'x) // ler_subl_addl addrC -ler_subl_addl.
-    rewrite (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
-      rewrite ltr_subr_addr in M'x.
-      rewrite -comparabler0 (@comparabler_trans _ (M + 1)%R) //.
-        by rewrite /Order.comparable (ltW M'x) orbT.
-      by rewrite comparabler0 realD // real1.
+- exists (M + 1)%R; split; first by rewrite realD.
+  move=> -[x| _ |_] //=; last by exists M.
+  rewrite lte_fin => M'x /=.
+  apply/nbhs_ballP; exists 1%R => //= y x1y.
+  apply MA; rewrite lte_fin.
+  rewrite addrC -ltr_subr_addl in M'x.
+  rewrite (lt_le_trans M'x) // ler_subl_addl addrC -ler_subl_addl.
+  rewrite (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
+    rewrite ltr_subr_addr in M'x.
+    rewrite -comparabler0 (@comparabler_trans _ (M + 1)%R) //.
+      by rewrite /Order.comparable (ltW M'x) orbT.
+    by rewrite comparabler0 realD.
+  by rewrite num_real. (* where we really use realFieldType *)
+- exists (M - 1)%R; split; first by rewrite realB.
+  move=> -[x| _ |_] //=; last by exists M.
+  rewrite lte_fin => M'x /=.
+  apply/nbhs_ballP; exists 1%R => //= y x1y.
+  apply MA; rewrite lte_fin.
+  rewrite ltr_subr_addl in M'x.
+  rewrite (le_lt_trans _ M'x) // addrC -ler_subl_addl.
+  rewrite (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
     by rewrite num_real. (* where we really use realFieldType *)
-  by exists M.
-- exists (M - 1)%R; split; first by rewrite realB // real1.
-  move=> -[x| _ |] //=.
-    rewrite lte_fin => M'x /=.
-    apply/nbhs_ballP; exists 1%R => //= y x1y.
-    apply MA; rewrite lte_fin.
-    rewrite ltr_subr_addl in M'x.
-    rewrite (le_lt_trans _ M'x) // addrC -ler_subl_addl.
-    rewrite (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
-      by rewrite num_real. (* where we really use realFieldType *)
-    rewrite addrC -ltr_subr_addr in M'x.
-    rewrite -comparabler0 (@comparabler_trans _ (M - 1)%R) //.
-      by rewrite /Order.comparable (ltW M'x).
-    by rewrite comparabler0 realB // real1.
-  by exists M.
+  rewrite addrC -ltr_subr_addr in M'x.
+  rewrite -comparabler0 (@comparabler_trans _ (M - 1)%R) //.
+    by rewrite /Order.comparable (ltW M'x).
+  by rewrite comparabler0 realB.
 Qed.
 
 Definition ereal_topologicalMixin : Topological.mixin_of (@ereal_nbhs R) :=
@@ -3533,7 +3531,7 @@ Lemma nbhs_oo_up_1e (A : set (\bar R)) (e : {posnum R}) : (1 < e%:num)%R ->
   ereal_ball +oo e%:num `<=` A -> nbhs +oo A.
 Proof.
 move=> e1 reA; have [e2{e1}|e2] := ltrP 2 e%:num.
-  suff -> : A = setT by exists 0%R; rewrite real0.
+  suff -> : A = setT by exists 0%R.
   rewrite predeqE => x; split => // _; apply reA.
   exact/ereal_ballN/ereal_ball_ninfty_oversize.
 have /andP[e10 e11] : (0 < e%:num - 1 <= 1)%R.
@@ -3550,9 +3548,8 @@ Lemma nbhs_oo_down_1e (A : set (\bar R)) (e : {posnum R}) : (1 < e%:num)%R ->
   ereal_ball -oo e%:num `<=` A -> nbhs -oo A.
 Proof.
 move=> e1 reA; have [e2{e1}|e2] := ltrP 2 e%:num.
-  suff -> : A = setT by exists 0%R; rewrite real0.
-  rewrite predeqE => x; split => // _.
-  exact/reA/ereal_ball_ninfty_oversize.
+  suff -> : A = setT by exists 0%R.
+  by rewrite predeqE => x; split => // _; exact/reA/ereal_ball_ninfty_oversize.
 have /andP[e10 e11] : (0 < e%:num - 1 <= 1)%R.
   by rewrite subr_gt0 e1 /= ler_subl_addl.
 apply nbhsNKe.

@@ -174,8 +174,8 @@ Delimit Scope snum_nullity_scope with snum_nullity.
 Notation "!! x" := (ltac:(refine x)) (only parsing).
 (* infer class to help typeclass inference on the fly *)
 Class infer (P : Prop) := Infer : P.
-Hint Mode infer ! : typeclass_instances.
-Hint Extern 0 (infer _) => (exact) : typeclass_instances.
+#[global] Hint Mode infer ! : typeclass_instances.
+#[global] Hint Extern 0 (infer _) => (exact) : typeclass_instances.
 Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Module Import KnownSign.
@@ -371,9 +371,10 @@ Canonical typ_snum d nz cond (xt : Signed.typ d nz cond) (x : Signed.sort xt) :=
 (* End Order. *)
 
 Class unify {T} f (x y : T) := Unify : f x y = true.
-Hint Mode unify - - - + : typeclass_instances.
+#[global] Hint Mode unify - - - + : typeclass_instances.
 Class unify' {T} f (x y : T) := Unify' : f x y = true.
-Instance unify'P {T} f (x y : T) : unify' f x y -> unify f x y := id.
+#[global] Instance unify'P {T} f (x y : T) : unify' f x y -> unify f x y := id.
+#[global]
 Hint Extern 0 (unify' _ _ _) => vm_compute; reflexivity : typeclass_instances.
 
 Notation unify_nz nzx nzy :=
@@ -381,10 +382,10 @@ Notation unify_nz nzx nzy :=
 Notation unify_r rx ry :=
   (unify wider_reality rx%snum_sign ry%snum_sign).
 
-Instance anysign_wider_real sign : unify_r (Real AnySign) (Real sign).
+#[global] Instance anysign_wider_real sign : unify_r (Real AnySign) (Real sign).
 Proof. by []. Qed.
 
-Instance any_reality_wider_eq0 cond : unify_r cond =0.
+#[global] Instance any_reality_wider_eq0 cond : unify_r cond =0.
 Proof. by case: cond => [[[]|]|]. Qed.
 
 Section Theory.
@@ -506,13 +507,13 @@ Notation "[ 'le0' 'of' x ]" := (ltac:(refine (le0 x%:sgn))).
 Notation "[ 'cmp0' 'of' x ]" := (ltac:(refine (cmp0 x%:sgn))).
 Notation "[ 'neq0' 'of' x ]" := (ltac:(refine (neq0 x%:sgn))).
 
-Hint Extern 0 (is_true (0%R < _)%O) => solve [apply: gt0] : core.
-Hint Extern 0 (is_true (_ < 0%R)%O) => solve [apply: lt0] : core.
-Hint Extern 0 (is_true (0%R <= _)%O) => solve [apply: ge0] : core.
-Hint Extern 0 (is_true (_ <= 0%R)%O) => solve [apply: le0] : core.
-Hint Extern 0 (is_true (_ \is Num.real)) => solve [apply: cmp0] : core.
-Hint Extern 0 (is_true (0%R >=< _)%O) => solve [apply: cmp0] : core.
-Hint Extern 0 (is_true (_ != 0%R)%O) => solve [apply: neq0] : core.
+#[global] Hint Extern 0 (is_true (0%R < _)%O) => solve [apply: gt0] : core.
+#[global] Hint Extern 0 (is_true (_ < 0%R)%O) => solve [apply: lt0] : core.
+#[global] Hint Extern 0 (is_true (0%R <= _)%O) => solve [apply: ge0] : core.
+#[global] Hint Extern 0 (is_true (_ <= 0%R)%O) => solve [apply: le0] : core.
+#[global] Hint Extern 0 (is_true (_ \is Num.real)) => solve [apply: cmp0] : core.
+#[global] Hint Extern 0 (is_true (0%R >=< _)%O) => solve [apply: cmp0] : core.
+#[global] Hint Extern 0 (is_true (_ != 0%R)%O) => solve [apply: neq0] : core.
 
 Notation "x %:pos" := (widen_signed x%:sgn : {posnum _}) (only parsing)
   : ring_scope.
