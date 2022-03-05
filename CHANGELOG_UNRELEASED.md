@@ -469,6 +469,8 @@
     `lte_dsuber_addr`, `lte_dsuber_addl`, `lee_dsubl_addl`,
     `lee_dsubr_addl`, `lee_dsubel_addr`, `lee_dsubel_addl`,
     `lee_dsuber_addr`, `lee_dsuber_addl`
+- in `topology.v`:
+  + lemmas `uniform_limit_continuous`, `uniform_limit_continuous_subspace`
 
 ### Changed
 
