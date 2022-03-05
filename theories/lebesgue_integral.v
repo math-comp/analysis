@@ -885,7 +885,7 @@ Section nnsfun_functions.
 Variables (T : measurableType) (R : realType).
 
 Lemma cst_nnfun_subproof (x : {nonneg R}) : @IsNonNegFun T R (cst x%:nngnum).
-Proof. by split=> //= _; apply: Nonneg.nngnum_ge0. Qed.
+Proof. by split=> /=. Qed.
 HB.instance Definition _ x := @cst_nnfun_subproof x.
 
 Definition cst_nnsfun (r : {nonneg R}) := [the {nnsfun T >-> R} of cst r%:nngnum].
@@ -1027,7 +1027,7 @@ Lemma muleindic_ge0 T (R : realDomainType) (f : {nnfun T >-> R}) r z :
   0 <= r%:E * (\1_(f @^-1` [set r]) z)%:E.
 Proof.
 apply: (@mulef_ge0 _ _ (fun r => (\1_(f @^-1` [set r]) z)%:E)).
-  by move=> x; rewrite lee_fin.
+  by move=> x; rewrite lee_fin /indic.
 by move=> r0; rewrite preimage_nnfun0// indic0.
 Qed.
 
@@ -1207,7 +1207,7 @@ Qed.
 
 Definition scale_nnsfun (T : measurableType) (R : realType)
     (f : {nnsfun T >-> R}) (k : R) (k0 : 0 <= k) :=
-  mul_nnsfun (cst_nnsfun T (Nonneg.NngNum _ k0)) f.
+  mul_nnsfun (cst_nnsfun T (NngNum k0)) f.
 
 Section sintegral_nondecreasing_limit_lemma.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
@@ -1719,8 +1719,7 @@ have xAnK : x \in A n (Ordinal K).
 have := An0 (Ordinal K).
 rewrite mem_index_enum => /(_ isT).
 apply/negP.
-rewrite xAnK mulr1 /= mulf_neq0 //; last first.
-  by rewrite gt_eqF// invr_gt0 -natrX ltr0n expn_gt0.
+rewrite xAnK mulr1 /= mulf_neq0 //.
 rewrite pnatr_eq0 //= -lt0n absz_gt0 floor_neq0//.
 rewrite -ler_pdivr_mulr -?natrX ?ltr0n ?expn_gt0//.
 apply/orP; right; rewrite natrX; apply/ltW; near: n.
@@ -2585,7 +2584,7 @@ Qed.
 Lemma integral_cst (r : R) : (0 <= r)%R ->
   \int_ D ((EFin \o cst r) x) 'd mu[x] = r%:E * mu D.
 Proof.
-move=> r0; rewrite (eq_integral (EFin \o cst_nnsfun T (Nonneg.NngNum _ r0)))//.
+move=> r0; rewrite (eq_integral (EFin \o cst_nnsfun T (NngNum r0)))//.
 by rewrite integral_nnsfun// sintegral_cst.
 Qed.
 
@@ -2869,7 +2868,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
   rewrite fineK//; last first.
     by case: fint => _ foo; rewrite ge0_fin_numE//; exact: integral_ge0.
   apply: ge0_le_integral => //.
-  - by move=> *; rewrite lee_fin.
+  - by move=> *; rewrite lee_fin /indic.
   - apply/EFin_measurable_fun; apply: measurable_funM=>//.
       + exact: measurable_fun_cst.
       + apply: (@measurable_funS _ _ setT)=>//.
@@ -3257,8 +3256,7 @@ have -> : (fun x => `|f x|) = (fun x => lim (f_^~ x)).
   rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /= /f_.
   have [->|fxoo] := eqVneq `|f x|%E +oo.
     rewrite /= (@ger0_norm _ n%:R)// ger0_norm; last first.
-      rewrite subr_ge0 ler_pdivr_mulr ?mul1r ?ler_addr//.
-      by rewrite {1}(_ : 1 = 1%:R)%R // -natrD add1n.
+      by rewrite subr_ge0 ler_pdivr_mulr ?mul1r ?ler_addr.
     rewrite -{1}(@divrr _ (1 + n%:R)%R) ?unitfE; last first.
       by rewrite gt_eqF// {1}(_ : 1 = 1%:R)%R // -natrD add1n.
     rewrite -mulrBl addrK ltr_pdivr_mulr; last first.

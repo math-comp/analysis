@@ -694,7 +694,7 @@ split=> [fcont e|fcont _/RltP/posnumP[e]]; last first.
   by move=> y [_ /RltP yxd]; apply/RltP/xd_fxe; rewrite /= distrC.
 have /RltP egt0 := [gt0 of e%:num].
 have [_ [/RltP/posnumP[d] dx_fxe]] := fcont e%:num egt0.
-exists d%:num => // y xyd; case: (eqVneq x y) => [->|xney].
+exists d%:num => //= y xyd; case: (eqVneq x y) => [->|xney].
   by rewrite subrr normr0.
 apply/RltP/dx_fxe; split; first by split=> //; apply/eqP.
 by have /RltP := xyd; rewrite distrC.
@@ -712,10 +712,10 @@ case: (@cvg_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
 split => [{H2} - /H1 {}H1 eps|{H1} H].
 - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
-  exists x0%:num => // Hx0' /Hx0 /=.
+  exists x0%:num => //= Hx0' /Hx0 /=.
   by rewrite /= distrC; apply.
 - apply H2 => _ /posnumP[eps]; move: (H eps) => {H} [_ /posnumP[x0] Hx0].
-  exists x0%:num => // y /Hx0 /= {}Hx0.
+  exists x0%:num => //= y /Hx0 /= {}Hx0.
   by rewrite /ball /= distrC.
 Qed.
 

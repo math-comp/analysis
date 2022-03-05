@@ -1310,13 +1310,11 @@ rewrite predeqE => t; split=> [[]|].
   by rewrite sqrtr_sqr gtr0_norm// !/= !in_itv/= andbT; tauto.
 move=> [] /=; rewrite !/= !in_itv /= ?andbT => -[Dt fta]; split => //.
   rewrite -ltr_sqrt; last first.
-    by rewrite exprn_even_gt0//= gt_eqF// (le_lt_trans _ fta)// sqrtr_ge0.
-  by rewrite sqrtr_sqr gtr0_norm// (le_lt_trans _ fta)// sqrtr_ge0.
+    by rewrite exprn_even_gt0//= gt_eqF// (le_lt_trans _ fta).
+  by rewrite sqrtr_sqr gtr0_norm// (le_lt_trans _ fta).
 rewrite -ltr_sqrt; last first.
-  rewrite exprn_even_gt0//= lt_eqF// (lt_le_trans fta)// -ler_oppl oppr0.
-  by rewrite sqrtr_ge0.
-rewrite sqrtr_sqr ltr0_norm// 1?ltr_oppr//.
-by rewrite (lt_le_trans fta)// -ler_oppl oppr0 sqrtr_ge0.
+  by rewrite exprn_even_gt0//= lt_eqF// (lt_le_trans fta).
+by rewrite sqrtr_sqr ltr0_norm// 1?ltr_oppr// (lt_le_trans fta).
 Qed.
 
 Lemma measurable_funrM D f (k : R) : measurable_fun D f ->

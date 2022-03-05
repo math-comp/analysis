@@ -2968,7 +2968,7 @@ End ereal_nbhs.
 
 Lemma ereal_nbhs_pinfty_ge (R : numFieldType) (e : {posnum R}) :
   \forall x \near +oo, e%:num%:E <= x.
-Proof. by exists e%:num; rewrite realE posnum_ge0; split => //; apply: ltW. Qed.
+Proof. by exists e%:num; rewrite realE ge0; split => //; apply: ltW. Qed.
 
 Lemma ereal_nbhs_ninfty_le (R : numFieldType) (r : R) : (r < 0)%R ->
   \forall x \near -oo, x <= r%:E.
@@ -2991,11 +2991,11 @@ case=> [x||].
     move=> P [x [xr xP]] //; exists (x + 1)%:E; apply xP => /=.
     by rewrite lte_fin ltr_addl.
   split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
-  + by exists 0%R; rewrite real0.
+  + by exists 0%R.
   + have [MP0|MP0] := eqVneq MP 0%R.
       have [MQ0|MQ0] := eqVneq MQ 0%R.
-        by exists 0%R; rewrite real0; split => // x x0; split;
-        [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
+        by exists 0%R; split => // x x0; split;
+          [apply/gtMP; rewrite MP0 | apply/gtMQ; rewrite MQ0].
       exists `|MQ|%R; rewrite realE normr_ge0; split => // x MQx; split.
         by apply: gtMP; rewrite (le_lt_trans _ MQx) // MP0 lee_fin.
       by apply gtMQ; rewrite (le_lt_trans _ MQx)// lee_fin real_ler_normr ?lexx.
@@ -3006,9 +3006,9 @@ case=> [x||].
     have {}MP0 : (0 < `|MP|)%R by rewrite normr_gt0.
     have {}MQ0 : (0 < `|MQ|)%R by rewrite normr_gt0.
     exists (Num.max (PosNum MP0) (PosNum MQ0))%:num.
-    rewrite realE /= posnum_ge0 /=; split => //.
+    rewrite realE /= ge0 /=; split => //.
     case=> [r| |//].
-    * rewrite lte_fin/= posnum_max pos_lt_maxl /= => /andP[MPx MQx]; split.
+    * rewrite lte_fin/= num_max num_lt_maxl /= => /andP[MPx MQx]; split.
       by apply/gtMP; rewrite lte_fin (le_lt_trans _ MPx)// real_ler_normr ?lexx.
       by apply/gtMQ; rewrite lte_fin (le_lt_trans _ MQx)// real_ler_normr ?lexx.
     * by move=> _; split; [apply/gtMP | apply/gtMQ].
@@ -3017,10 +3017,10 @@ case=> [x||].
   + move=> P [M [Mr ltMP]]; exists (M - 1)%:E.
     by apply: ltMP; rewrite lte_fin gtr_addl oppr_lt0.
   + split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
-    * by exists 0%R; rewrite real0.
+    * by exists 0%R.
     * have [MP0|MP0] := eqVneq MP 0%R.
         have [MQ0|MQ0] := eqVneq MQ 0%R.
-          by exists 0%R; rewrite real0; split => // x x0; split;
+          by exists 0%R; split => // x x0; split;
           [apply/ltMP; rewrite MP0 | apply/ltMQ; rewrite MQ0].
         exists (- `|MQ|)%R; rewrite realN realE normr_ge0; split => // x xMQ.
         split.
@@ -3036,9 +3036,9 @@ case=> [x||].
       have {}MP0 : (0 < `|MP|)%R by rewrite normr_gt0.
       have {}MQ0 : (0 < `|MQ|)%R by rewrite normr_gt0.
       exists (- (Num.max (PosNum MP0) (PosNum MQ0))%:num)%R.
-      rewrite realN realE /= posnum_ge0 /=; split => //.
+      rewrite realN realE /= ge0 /=; split => //.
       case=> [r|//|].
-      - rewrite lte_fin ltr_oppr posnum_max pos_lt_maxl => /andP[].
+      - rewrite lte_fin ltr_oppr num_max num_lt_maxl => /andP[].
         rewrite ltr_oppr => MPx; rewrite ltr_oppr => MQx; split.
           apply/ltMP; rewrite lte_fin (lt_le_trans MPx) //= ler_oppl -normrN.
           by rewrite real_ler_normr ?realN // lexx.
@@ -3080,34 +3080,32 @@ move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
   apply/nbhs_ballP; exists (e%:num / 2) => //= r per.
   apply/nbhs_ballP; exists (e%:num / 2) => //= x rex.
   apply/ballA/(@ball_splitl _ _ r) => //; exact/ball_sym.
-- exists (M + 1)%R; split; first by rewrite realD // real1.
-  move=> -[x| _ |] //=.
-    rewrite lte_fin => M'x /=.
-    apply/nbhs_ballP; exists 1%R => //= y x1y.
-    apply MA; rewrite lte_fin.
-    rewrite addrC -ltr_subr_addl in M'x.
-    rewrite (lt_le_trans M'x) // ler_subl_addl addrC -ler_subl_addl.
-    rewrite (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
-      rewrite ltr_subr_addr in M'x.
-      rewrite -comparabler0 (@comparabler_trans _ (M + 1)%R) //.
-        by rewrite /Order.comparable (ltW M'x) orbT.
-      by rewrite comparabler0 realD // real1.
+- exists (M + 1)%R; split; first by rewrite realD.
+  move=> -[x| _ |_] //=; last by exists M.
+  rewrite lte_fin => M'x /=.
+  apply/nbhs_ballP; exists 1%R => //= y x1y.
+  apply MA; rewrite lte_fin.
+  rewrite addrC -ltr_subr_addl in M'x.
+  rewrite (lt_le_trans M'x) // ler_subl_addl addrC -ler_subl_addl.
+  rewrite (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
+    rewrite ltr_subr_addr in M'x.
+    rewrite -comparabler0 (@comparabler_trans _ (M + 1)%R) //.
+      by rewrite /Order.comparable (ltW M'x) orbT.
+    by rewrite comparabler0 realD.
+  by rewrite num_real. (* where we really use realFieldType *)
+- exists (M - 1)%R; split; first by rewrite realB.
+  move=> -[x| _ |_] //=; last by exists M.
+  rewrite lte_fin => M'x /=.
+  apply/nbhs_ballP; exists 1%R => //= y x1y.
+  apply MA; rewrite lte_fin.
+  rewrite ltr_subr_addl in M'x.
+  rewrite (le_lt_trans _ M'x) // addrC -ler_subl_addl.
+  rewrite (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
     by rewrite num_real. (* where we really use realFieldType *)
-  by exists M.
-- exists (M - 1)%R; split; first by rewrite realB // real1.
-  move=> -[x| _ |] //=.
-    rewrite lte_fin => M'x /=.
-    apply/nbhs_ballP; exists 1%R => //= y x1y.
-    apply MA; rewrite lte_fin.
-    rewrite ltr_subr_addl in M'x.
-    rewrite (le_lt_trans _ M'x) // addrC -ler_subl_addl.
-    rewrite (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
-      by rewrite num_real. (* where we really use realFieldType *)
-    rewrite addrC -ltr_subr_addr in M'x.
-    rewrite -comparabler0 (@comparabler_trans _ (M - 1)%R) //.
-      by rewrite /Order.comparable (ltW M'x).
-    by rewrite comparabler0 realB // real1.
-  by exists M.
+  rewrite addrC -ltr_subr_addr in M'x.
+  rewrite -comparabler0 (@comparabler_trans _ (M - 1)%R) //.
+    by rewrite /Order.comparable (ltW M'x).
+  by rewrite comparabler0 realB.
 Qed.
 
 Definition ereal_topologicalMixin : Topological.mixin_of (@ereal_nbhs R) :=
@@ -3125,12 +3123,12 @@ case: x => [r /=| |].
 - rewrite /nbhs /= /ereal_nbhs -nbhs_ballE.
   rewrite predeqE => S; split => [[_/posnumP[e] reS]|[S' [_ /posnumP[e] reS' <-]]].
     exists (-%E @` S).
-      exists e%:num => // r1 rer1; exists (- r1%:E); last by rewrite oppeK.
+      exists e%:num => //= r1 rer1; exists (- r1%:E); last by rewrite oppeK.
       by apply reS; rewrite /ball /= opprK -normrN opprD opprK.
     rewrite predeqE => s; split => [[y [z Sz] <- <-]|Ss].
       by rewrite oppeK.
     by exists (- s); [exists s | rewrite oppeK].
-  exists e%:num => // r1 rer1; exists (- r1%:E); last by rewrite oppeK.
+  exists e%:num => //= r1 rer1; exists (- r1%:E); last by rewrite oppeK.
   by apply reS'; rewrite /ball /= opprK -normrN opprD.
 - rewrite predeqE => S; split=> [[M [Mreal MS]]|[x [M [Mreal Mx]] <-]].
     exists (-%E @` S).
@@ -3185,8 +3183,8 @@ Definition contract x : R :=
 
 Lemma contract_lt1 r : (`|contract r%:E| < 1)%R.
 Proof.
-rewrite normrM normrV ?unitfE //; last by rewrite eq_sym lt_eqF // ltr_spaddl.
-rewrite ltr_pdivr_mulr // ?mul1r; last by rewrite gtr0_norm ltr_spaddl.
+rewrite normrM normrV ?unitfE //.
+rewrite ltr_pdivr_mulr // ?mul1r//; last by rewrite gtr0_norm.
 by rewrite [X in (_ < X)%R]gtr0_norm ?ltr_addr// ltr_spaddl.
 Qed.
 
@@ -3533,7 +3531,7 @@ Lemma nbhs_oo_up_1e (A : set (\bar R)) (e : {posnum R}) : (1 < e%:num)%R ->
   ereal_ball +oo e%:num `<=` A -> nbhs +oo A.
 Proof.
 move=> e1 reA; have [e2{e1}|e2] := ltrP 2 e%:num.
-  suff -> : A = setT by exists 0%R; rewrite real0.
+  suff -> : A = setT by exists 0%R.
   rewrite predeqE => x; split => // _; apply reA.
   exact/ereal_ballN/ereal_ball_ninfty_oversize.
 have /andP[e10 e11] : (0 < e%:num - 1 <= 1)%R.
@@ -3550,9 +3548,8 @@ Lemma nbhs_oo_down_1e (A : set (\bar R)) (e : {posnum R}) : (1 < e%:num)%R ->
   ereal_ball -oo e%:num `<=` A -> nbhs -oo A.
 Proof.
 move=> e1 reA; have [e2{e1}|e2] := ltrP 2 e%:num.
-  suff -> : A = setT by exists 0%R; rewrite real0.
-  rewrite predeqE => x; split => // _.
-  exact/reA/ereal_ball_ninfty_oversize.
+  suff -> : A = setT by exists 0%R.
+  by rewrite predeqE => x; split => // _; exact/reA/ereal_ball_ninfty_oversize.
 have /andP[e10 e11] : (0 < e%:num - 1 <= 1)%R.
   by rewrite subr_gt0 e1 /= ler_subl_addl.
 apply nbhsNKe.
@@ -3630,7 +3627,7 @@ have [|reN1] := boolP (contract r%:E - e%:num == -1)%R.
     move/eqP : reN1; rewrite -(eqP re1) opprD addrCA subrr addr0 -subr_eq0.
     rewrite opprK -mulr2n mulrn_eq0 orFb contract_eq0 => /eqP[r0].
     move: re1; rewrite r0 contract0 add0r => /eqP e1.
-    apply/nbhs_ballP; exists 1%R => // r'; rewrite /ball /= sub0r normrN => r'1.
+    apply/nbhs_ballP; exists 1%R => //= r'; rewrite /ball /= sub0r normrN => r'1.
     apply reA.
     by rewrite /ereal_ball r0 contract0 sub0r normrN e1 contract_lt1.
   rewrite neq_lt => /orP[re1|re1].
@@ -3649,9 +3646,9 @@ have [|reN1] := boolP (contract r%:E - e%:num == -1)%R.
       rewrite -lte_fin -(contractK r%:E) -(contractK r'%:E).
       by rewrite lt_expand // inE; exact: contract_le1.
     exact: contract_ereal_ball_pinfty.
-  have : nbhs r%:E (setT `\ -oo) by apply/nbhs_ballP; exists 1%R.
+  have : nbhs r%:E (setT `\ -oo) by apply/nbhs_ballP; exists 1%R => /=.
   move=> /nbhs_ballP[_/posnumP[e']] /=; rewrite /ball /= => h.
-  by apply/nbhs_ballP; exists e'%:num => // y /h; apply: Aoo.
+  by apply/nbhs_ballP; exists e'%:num => //= y /h; apply: Aoo.
 move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
   have [re1|re1] := eqVneq (contract r%:E + e%:num)%R 1%R.
     by apply (@nbhs_fin_out_above _ e) => //; rewrite re1.
@@ -3708,9 +3705,9 @@ move: re1; rewrite le_eqVlt => /orP[re1|re1].
       rewrite -ltr_subl_addl add0r ltr_oppl.
       by move: (contract_lt1 r); rewrite ltr_norml => /andP[].
     by rewrite re1 addrAC ltr_subl_addl ltr_add.
-   have : nbhs r%:E (setT `\ +oo) by exists 1%R.
+   have : nbhs r%:E (setT `\ +oo) by exists 1%R => /=.
    case => _/posnumP[x] /=; rewrite /ball_ => h.
-   by exists x%:num => // y /h; exact: Aoo.
+   by exists x%:num => //= y /h; exact: Aoo.
 by apply (@nbhs_fin_out_below _ e) => //; rewrite ltW.
 Qed.
 
@@ -3879,13 +3876,13 @@ Lemma ereal_dnbhs_le (R : numFieldType) (x : \bar R) :
   ereal_dnbhs x --> ereal_nbhs x.
 Proof.
 move: x => [r P [_/posnumP[e] reP] |r P|r P] //=.
-by exists e%:num => // ? ? ?; apply: reP.
+by exists e%:num => //= ? ? ?; apply: reP.
 Qed.
 
 Lemma ereal_dnbhs_le_finite (R : numFieldType) (r : R) :
   ereal_dnbhs r%:E --> nbhs r%:E.
 Proof.
-by move=> P [_/posnumP[e] reP] //=; exists e%:num => // ? ? ?; exact: reP.
+by move=> P [_/posnumP[e] reP] //=; exists e%:num => //= ? ? ?; exact: reP.
 Qed.
 
 Definition ereal_loc_seq (R : numDomainType) (x : \bar R) (n : nat) :=

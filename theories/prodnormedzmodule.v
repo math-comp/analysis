@@ -23,13 +23,13 @@ Definition norm (x : U * V) : R := Num.max `|x.1| `|x.2|.
 
 Lemma normD x y : norm (x + y) <= norm x + norm y.
 Proof.
-rewrite /norm nng_le_maxl !(le_trans (ler_norm_add _ _)) ?ler_add//;
+rewrite /norm num_le_maxl !(le_trans (ler_norm_add _ _)) ?ler_add//;
 by rewrite comparable_le_maxr ?lexx ?orbT// real_comparable.
 Qed.
 
 Lemma norm_eq0 x : norm x = 0 -> x = 0.
 Proof.
-case: x => x1 x2 /eqP; rewrite eq_le nng_le_maxl 2!normr_le0 -andbA/=.
+case: x => x1 x2 /eqP; rewrite eq_le num_le_maxl 2!normr_le0 -andbA/=.
 by case/and3P => /eqP -> /eqP ->.
 Qed.
 

@@ -382,7 +382,7 @@ Lemma near_can_continuousAcan_sym f g (x : R) :
   {near (f x), continuous g} /\ {near (f x), cancel g f}.
 Proof.
 move=> fK fct; near (at_right (0 : R)) => e.
-have e_gt0 : 0 < e by near: e; exists 1.
+have e_gt0 : 0 < e by near: e; exists 1 => /=.
 have xBeLxDe : x - e <= x + e by rewrite ler_add2l gt0_cp.
 have fcte : {in `[x - e, x + e], continuous f}.
   by near: e; apply/at_right_in_segment.

@@ -2515,14 +2515,15 @@ Qed.
 
 End caratheodory_measure.
 
-Lemma epsilon_trick (R : realType) (A : (\bar R)^nat) (e : {nonneg R})
-    (P : pred nat) : (forall n, 0 <= A n) ->
-  \sum_(i <oo | P i) (A i + (e%:nngnum / (2 ^ i.+1)%:R)%:E) <=
-  \sum_(i <oo | P i) A i + e%:nngnum%:E.
+Lemma epsilon_trick (R : realType) (A : (\bar R)^nat) e
+    (P : pred nat) : (forall n, 0 <= A n) -> (0 <= e)%R ->
+  \sum_(i <oo | P i) (A i + (e / (2 ^ i.+1)%:R)%:E) <=
+  \sum_(i <oo | P i) A i + e%:E.
 Proof.
-move=> A0; rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
+move=> A0 /nonnegP[{}e].
+rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
     \sum_(0 <= i < n) (e%:nngnum / (2 ^ i.+1)%:R)%:E))) //.
-  rewrite ereal_pseriesD //; last by move=> n _; apply: divr_ge0.
+  rewrite ereal_pseriesD //; last by move=> n /= _ /=; apply: divr_ge0.
   rewrite ereal_limD //.
   - rewrite lee_add2l //; apply: lee_lim => //.
     + by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
@@ -2601,12 +2602,8 @@ Proof.
 move=> A; have [[i ioo]|] := pselect (exists i, mu_ext (A i) = +oo).
   rewrite (ereal_nneg_series_pinfty _ _ ioo)// ?lee_pinfty// => n _.
   exact: mu_ext_ge0.
-rewrite -forallNE => Aoo.
-suff add2e : forall e : {posnum R},
-    mu_ext (\bigcup_n A n) <= \sum_(i <oo) mu_ext (A i) + e%:num%:E.
-  apply lee_adde => e.
-  by rewrite -(mul1r e%:num) -(@divff _ 2%:R)// -mulrAC -mulrA add2e.
-move=> e; rewrite (le_trans _ (epsilon_trick _ _ _))//; last first.
+rewrite -forallNE => Aoo; apply: lee_adde => e.
+rewrite (le_trans _ (epsilon_trick _ _ _))//; last first.
   by move=> n; apply: mu_ext_ge0.
 pose P n (B : (set T)^nat) := measurable_cover (A n) B /\
   \sum_(k <oo) mu (B k) <= mu_ext (A n) + (e%:num / (2 ^ n.+1)%:R)%:E.
