@@ -193,13 +193,13 @@ Variables (T : eqType) (E : nat -> pred T).
 
 Hypothesis cE : forall i, countable (E i).
 
-Lemma cunion_countable : countable [pred x | `[exists i, x \in E i]].
+Lemma cunion_countable : countable [pred x | `[< exists i, x \in E i >]].
 Proof.
 pose S := { i : nat & [countable of cE i] }; set F := [pred x | _].
 have H: forall (x : [psub F]), exists i : nat, val x \in E i.
-  by case=> x /= /existsbP[i] Eix; exists i.
+  by case=> x /= /asboolP[i] Eix; exists i.
 have G: forall (x : S), val (tagged x) \in F.
-  by case=> i [x /= Eix]; apply/existsbP; exists i.
+  by case=> i [x /= Eix]; apply/asboolP; exists i.
 pose f (x : [psub F]) : S := Tagged (fun i => [psub E i])
   (PSubSub (xchooseP (H x))).
 pose g (x : S) := PSubSub (G x).

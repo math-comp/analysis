@@ -138,8 +138,8 @@ Variable (T : choiceType) (R : realType) (f : T -> R).
 Lemma summable_countn0 : summable f -> countable [pred x | f x != 0].
 Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > 1 / p.+1%:~R].
-set F := [pred x | _]; have le: {subset F <= [pred x | `[exists p, x \in E p]]}.
-  move=> x; rewrite !inE => nz_fx; apply/existsbP.
+set F := [pred x | _]; have le: {subset F <= [pred x | `[< exists p, x \in E p >]]}.
+  move=> x; rewrite !inE => nz_fx.
   pose j := `|floor (1 / `|f x|)|%N; exists j; rewrite inE.
   rewrite ltr_pdivr_mulr ?ltr0z // -ltr_pdivr_mull ?normr_gt0 //.
   rewrite mulr1 /j div1r -addn1 /= PoszD intrD mulr1z.
@@ -149,7 +149,7 @@ apply/(countable_sub le)/cunion_countable=> i /=.
 case: (existsTP (fun s : seq T => {subset E i <= s}))=> /= [[s le_Eis]|].
   by apply/finite_countable/finiteP; exists s => x /le_Eis.
 move/finiteNP; pose j := `|floor (M / i.+1%:R)|.+1.
-pose K := (`|floor M|.+1 * i.+1)%N; move/(_ K)/existsp_asboolP/existsbP.
+pose K := (`|floor M|.+1 * i.+1)%N; move/(_ K)/asboolP/exists_asboolP.
 move=> h; have /asboolP[] := xchooseP h.
 set s := xchoose h=> eq_si uq_s le_sEi; pose J := [fset x in s].
 suff: \sum_(x : J) `|f (val x)| > M by rewrite ltNge bM.
@@ -973,7 +973,7 @@ End PSumReindex.
 Section PSumPartition.
 Context {R : realType} {T U : choiceType} (f : T -> U).
 
-Let C y := `[exists x : T, f x == y].
+Let C y := `[< exists x : T, f x == y >].
 
 Lemma partition_psum (S : T -> R) : summable S ->
   psum S = psum (fun y => psum (fun x => S x * (f x == y)%:R)).
@@ -1057,7 +1057,7 @@ Proof.
 move=> smS; apply/(eq_trans (partition_psum smS)).
 apply/eq_psum => y; case/boolP: (C y); rewrite !simpm //.
 move=> NCy; rewrite psum_eq0 // => x; case: (_ =P y).
-  by move/eqP=> fxE; move/existsbP: NCy; case; exists x.
+  by move/eqP=> fxE; move/asboolP: NCy; case; exists x.
 by rewrite mulr0.
 Qed.
 End PSumPartition.

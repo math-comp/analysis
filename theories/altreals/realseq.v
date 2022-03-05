@@ -425,21 +425,20 @@ Context {R : realType}.
 Implicit Types (u v : nat -> R).
 
 Definition nlim u : \bar R :=
-  if @idP `[exists l, `[< ncvg u l >]] is ReflectT Px then
-    xchooseb Px else -oo.
+  if @idP `[< exists l, `[< ncvg u l >] >] is ReflectT Px then
+    xchoose (asboolP _ Px) else -oo.
 
 Lemma nlim_ncvg u : (exists l, ncvg u l) -> ncvg u (nlim u).
 Proof.
 case=> l cv_u_l; rewrite /nlim; case: {-}_ / idP; last first.
-  by case; apply/existsbP; exists l; apply/asboolP.
-move=> p; rewrite -[xchooseb _](ncvg_uniq cv_u_l) //.
-by apply/asboolP/(xchoosebP p).
+  by case; apply/asboolP; exists l; apply/asboolP.
+by move=> p; apply/asboolP/(xchooseP (asboolP _ p)).
 Qed.
 
 Lemma nlim_out u : ~ (exists l, ncvg u l) -> nlim u = -oo%E.
 Proof.
 move=> h; rewrite /nlim; case: {-}_ / idP => // p.
-by case: h; case/existsbP: p => l /asboolP; exists l.
+by case: h; case/asboolP: p => l /asboolP; exists l.
 Qed.
 
 CoInductive nlim_spec (u : nat -> R) : \bar R -> Type :=
@@ -448,7 +447,7 @@ CoInductive nlim_spec (u : nat -> R) : \bar R -> Type :=
 
 Lemma nlimP u : nlim_spec u (nlim u).
 Proof.
-case/boolP: `[exists l, `[< ncvg u l >]] => /existsp_asboolP.
+case/boolP: `[< exists l, `[< ncvg u l >] >] => /asboolP/exists_asboolP/asboolP.
   by move/nlim_ncvg=> h; apply/NLimCvg.
 by move=> h; rewrite nlim_out //; apply/NLimOut.
 Qed.

@@ -3197,8 +3197,7 @@ Lemma open_hausdorff : hausdorff_space T =
 Proof.
 rewrite propeqE; split => [T_filterT2|T_openT2] x y.
   have := contra_not _ _ (T_filterT2 x y); rewrite (rwP eqP) (rwP negP).
-  move=> /[apply]; rewrite [cluster _ _](rwP forallp_asboolP) => /negP.
-  rewrite forallbE => /existsp_asboolPn/=[A]/negP/existsp_asboolPn/=[B].
+  move=> /[apply] /asboolPn/existsp_asboolPn[A]; rewrite -existsNE => -[B].
   rewrite [nbhs _ _ -> _](rwP imply_asboolP) => /negP.
   rewrite asbool_imply !negb_imply => /andP[/asboolP xA] /andP[/asboolP yB].
   move=> /asboolPn; rewrite -set0P => /negP; rewrite negbK => /eqP AIB_eq0.

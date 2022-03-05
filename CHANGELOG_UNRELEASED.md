@@ -650,6 +650,12 @@
   + definition `uncurry`
 - in `sequences.v`:
   + lemmas `leq_fact`, `prod_rev`, `fact_split` (now in MathComp)
+- in `boolp.v`
+  + module BoolQuant with notations `` `[forall x P] `` and `` `[exists x P] ``
+    (subsumed by `` `[< >] ``)
+  + definition `xchooseb`
+  + lemmas `existsPP`, `forallPP`, `existsbP`, `forallbP`, `forallbE`,
+    `existsp_asboolP`, `forallp_asboolP`, `xchoosebP`, `imsetbP`
 
 ### Infrastructure
 
