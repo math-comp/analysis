@@ -976,8 +976,8 @@ Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
 Proof.
 move->; apply/eqOP; have [k c1 kOg] := bigO _ g. have [k' c2 k'Ok] := bigO _ k.
 near=> c; move: k'Ok kOg; apply: filter_app2; near=> x => lek'c2k.
-rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans; apply.
-by rewrite ler_pmul //; near: c; apply: nbhs_pinfty_ge_pos.
+rewrite -(@ler_pmul2l _ c2%:num) // mulrA => /(le_trans lek'c2k) /le_trans.
+by apply; rewrite ler_pmul//; near: c; exact: nbhs_pinfty_ge.
 Unshelve. all: by end_near. Qed.
 Arguments bigO_bigO_eqO {F}.
 
@@ -1054,7 +1054,7 @@ rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
-by near: k; apply: nbhs_pinfty_ge_pos.
+by near: k; exact: nbhs_pinfty_ge.
 Unshelve. all: by end_near. Qed.
 
 End rule_of_products_rcfType.
@@ -1080,7 +1080,7 @@ rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
 rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
-by near: k; apply: nbhs_pinfty_ge_pos.
+by near: k; exact: nbhs_pinfty_ge.
 Unshelve. all: by end_near. Qed.
 
 End rule_of_products_numClosedFieldType.
@@ -1126,7 +1126,7 @@ have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
 rewrite -linearZ fk //= -ball_normE /= distrC subr0 normmZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //; last first.
   by near: k; exists 0.
-by rewrite mulrC -ltr_pdivr_mulr //; near: k; apply: nbhs_pinfty_gt_pos.
+by rewrite -ltr_pdivr_mull//; near: k; exact: nbhs_pinfty_gt.
 Unshelve. all: by end_near. Qed.
 
 End Linear3.
