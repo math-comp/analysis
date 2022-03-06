@@ -2581,10 +2581,14 @@ rewrite !fsbig_set1 mul0e add0e preimage_restrict//.
 by rewrite ifN ?set0U ?setIidl//= notin_set; apply/eqP; rewrite eq_sym.
 Qed.
 
-Lemma integral_cst (r : R) : (0 <= r)%R ->
-  \int_ D ((EFin \o cst r) x) 'd mu[x] = r%:E * mu D.
+Lemma integral_cst (r : R) : \int_ D ((EFin \o cst r) x) 'd mu[x] = r%:E * mu D.
 Proof.
-move=> r0; rewrite (eq_integral (EFin \o cst_nnsfun T (NngNum r0)))//.
+wlog r0 : r / (0 <= r)%R.
+  move=> h; have [|r0] := leP 0%R r; first exact: h.
+  rewrite -[in RHS](opprK r) EFinN mulNe -h ?oppr_ge0; last exact: ltW.
+  rewrite -integral_ge0N//; last by move=> t ?; rewrite /= lee_fin oppr_ge0 ltW.
+  by under [RHS]eq_integral do rewrite /= opprK.
+rewrite (eq_integral (EFin \o cst_nnsfun T (NngNum r0)))//.
 by rewrite integral_nnsfun// sintegral_cst.
 Qed.
 
@@ -2680,12 +2684,9 @@ move=> mg a0; have ? : measurable (D `&` [set x | (a%:E <= `|g x|)%E]).
   by apply: emeasurable_fun_c_infty => //; exact: measurable_fun_comp.
 apply: (@le_trans _ _
     (\int_ (D `&` [set x | `|g x| >= a%:E]) `|g x|%E 'd mu[x])%E).
-  apply: (@le_trans _ _
-      (\int_ (D `&` [set x | `|g x| >= a%:E]) (cst a%:E x) 'd mu[x])).
-    by rewrite integral_cst// ltW.
-  apply: ge0_le_integral => //.
+  rewrite -integral_cst//; apply: ge0_le_integral => //.
   - by move=> x _ /=; rewrite ltW.
-  - exact: measurable_fun_cst.
+  - exact/EFin_measurable_fun/measurable_fun_cst.
   - by apply: measurable_fun_comp => //; exact: measurable_funS mg.
   - by move=> x /= [].
 by apply: subset_integral => //; exact: measurable_fun_comp.
@@ -2706,12 +2707,12 @@ Section integrable.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D).
-Implicit Types (f : T -> \bar R).
+Implicit Type f : T -> \bar R.
 
 Definition integrable f :=
   measurable_fun D f /\ (\int_ D `|f x| 'd mu[x] < +oo).
 
-Lemma eq_integrable f1 f2 : {in D , f1 =1 f2} ->
+Lemma eq_integrable f1 f2 : {in D, f1 =1 f2} ->
   integrable f1 -> integrable f2.
 Proof.
 move=> f12 [mf1 if1]; split; first exact: eq_measurable_fun mf1.
@@ -2770,6 +2771,24 @@ apply: ltpinfty_adde_def.
 - by apply: le_lt_trans foo; rewrite lee_addl// integral_ge0.
 - rewrite inE (@le_lt_trans _ _ 0)// ?lte_pinfty// lee_oppl oppe0.
   by rewrite integral_ge0.
+Qed.
+
+Lemma integrable_funenng f : integrable f -> integrable f^\+.
+Proof.
+move=> [Df foo]; split; first exact: emeasurable_fun_funenng.
+apply: le_lt_trans foo; apply: ge0_le_integral => //.
+- by apply/measurable_fun_comp => //; exact: emeasurable_fun_funenng.
+- exact/measurable_fun_comp.
+- by move=> t Dt; rewrite -/((abse \o f) t) fune_abse gee0_abs// lee_addl.
+Qed.
+
+Lemma integrable_funennp f : integrable f -> integrable f^\-.
+Proof.
+move=> [Df foo]; split; first exact: emeasurable_fun_funennp.
+apply: le_lt_trans foo; apply: ge0_le_integral => //.
+- by apply/measurable_fun_comp => //; exact: emeasurable_fun_funennp.
+- exact/measurable_fun_comp.
+- by move=> t Dt; rewrite -/((abse \o f) t) fune_abse gee0_abs// lee_addr.
 Qed.
 
 Lemma integral_funennp_lt_pinfty f : integrable f ->
