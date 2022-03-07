@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import interval zmodp vector fieldext falgebra.
+From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
 Require Import boolp mathcomp_extra ereal reals cardinality.
 Require Import classical_sets posnum nngnum topology prodnormedzmodule.
 Require Import functions.
@@ -67,6 +67,9 @@ Require Import functions.
 (*        [locally k.-lipschitz_A f] == f is locally k.-lipschitz on A        *)
 (*                                                                            *)
 (*                     is_interval E == the set E is an interval              *)
+(*                bigcup_ointsub U q == union of open real interval included  *)
+(*                                      in U and that contain the rational    *)
+(*                                      number q                              *)
 (*                           Rhull A == the real interval hull of a set A     *)
 (*                         shift x y == y + x                                 *)
 (*                          center c := shift (- c)                           *)
@@ -2880,6 +2883,59 @@ by case: i => -[[]a|[]] [[]b|[]] // x y /=; do ?[by rewrite ?itv_ge//];
 Qed.
 
 End interval.
+
+Section open_union_rat.
+Variable R : realType.
+Implicit Types A U : set R.
+
+Let ointsub A U := [/\ open A, is_interval A & A `<=` U].
+
+Let ointsub_rat U q := [set A | ointsub A U /\ A (ratr q)].
+
+Let ointsub_rat0 q : ointsub_rat set0 q = set0.
+Proof. by apply/seteqP; split => // A [[_ _]]; rewrite subset0 => ->. Qed.
+
+Definition bigcup_ointsub U q := \bigcup_(A in ointsub_rat U q) A.
+
+Lemma bigcup_ointsub0 q : bigcup_ointsub set0 q = set0.
+Proof. by rewrite /bigcup_ointsub ointsub_rat0 bigcup_set0. Qed.
+
+Lemma open_bigcup_ointsub U q : open (bigcup_ointsub U q).
+Proof. by apply: open_bigU => i [[]]. Qed.
+
+Lemma is_interval_bigcup_ointsub U q : is_interval (bigcup_ointsub U q).
+Proof.
+move=> /= a b [A [[oA iA AU] Aq] Aa] [B [[oB iB BU] Bq] Bb] c /andP[ac cb].
+have [cq|cq|->] := ltgtP c (ratr q); last by exists A.
+- by exists A => //; apply: (iA a (ratr q)) => //; rewrite ac (ltW cq).
+- by exists B => //; apply: (iB (ratr q) b) => //; rewrite cb (ltW cq).
+Qed.
+
+Lemma bigcup_ointsub_sub U q : bigcup_ointsub U q `<=` U.
+Proof. by move=> y [A [[oA _ +] _ Ay]]; exact. Qed.
+
+Lemma open_bigcup_rat U : open U ->
+  U = \bigcup_(q in [set q | ratr q \in U]) bigcup_ointsub U q.
+Proof.
+move=> oU; have [->|U0] := eqVneq U set0.
+  by rewrite bigcup0// => q _; rewrite bigcup_ointsub0.
+apply/seteqP; split=> [x Ux|x [p _ Ipx]]; last exact: bigcup_ointsub_sub Ipx.
+suff [q Iqx] : exists q, bigcup_ointsub U q x.
+  by exists q => //=; rewrite in_setE; case: Iqx => A [[_ _ +] ? _]; exact.
+have : nbhs x U by rewrite nbhsE /=; exists U; split => //.
+rewrite -nbhs_ballE /nbhs_ball /nbhs_ball_ => -[_/posnumP[r] xrU].
+have /rat_in_itvoo[q qxxr] : (x - r%:num < x + r%:num)%R.
+  by rewrite ltr_subl_addr -addrA ltr_addl.
+exists q, `](x - r%:num)%R, (x + r%:num)%R[%classic; last first.
+  by rewrite /= in_itv/= ltr_subl_addl ltr_addr// ltr_addl//; apply/andP.
+split=> //; split; [exact: interval_open|exact: interval_is_interval|].
+move=> y /=; rewrite in_itv/= => /andP[xy yxr]; apply xrU => /=.
+rewrite /ball /= /ball_ /= in xrU *; have [yx|yx] := leP x y.
+  by rewrite ler0_norm ?subr_le0// opprB ltr_subl_addl.
+by rewrite gtr0_norm ?subr_gt0// ltr_subl_addr -ltr_subl_addl.
+Qed.
+
+End open_union_rat.
 
 Lemma right_bounded_interior (R : realType) (X : set R) :
   has_ubound X -> X^° `<=` [set r | r < sup X].

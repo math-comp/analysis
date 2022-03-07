@@ -1241,6 +1241,30 @@ Proof. by move=> mA=> _ [C mC <-]; apply: measurableI. Qed.
 
 (* more properties of measurable functions *)
 
+Lemma is_interval_measurable (R : realType) (I : set R) :
+  is_interval I -> measurable I.
+Proof. by move/is_intervalP => ->; exact: measurable_itv. Qed.
+
+Section coutinuous_measurable.
+Variable R : realType.
+
+Lemma open_measurable (U : set R) : open U -> measurable U.
+Proof.
+move=> /open_bigcup_rat ->; rewrite bigcup_mkcond; apply: measurable_bigcup_rat.
+move=> q; case: ifPn => // qfab; apply: is_interval_measurable => //.
+exact: is_interval_bigcup_ointsub.
+Qed.
+
+Lemma continuous_measurable_fun (f : R -> R) : continuous f ->
+  measurable_fun setT f.
+Proof.
+move=> /continuousP cf; apply: (measurability (RGenOpens.measurableE R)).
+move=> _ [_ [a [b ->] <-]]; rewrite setTI.
+by apply: open_measurable; exact/cf/interval_open.
+Qed.
+
+End coutinuous_measurable.
+
 Section standard_measurable_fun.
 
 Lemma measurable_fun_normr (R : realType) (D : set R) :
