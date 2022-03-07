@@ -854,7 +854,7 @@ Proof.
 move=> mE DE mf mD; have mC : measurable (E `\` D) by exact: measurableD.
 move: (mD).
 have := measurable_funU f mD mC.
-suff -> : (D `|` (E `\` D)) = E by move=> [[]] //.
+suff -> : D `|` (E `\` D) = E by move=> [[]] //.
 by rewrite setDUK.
 Qed.
 

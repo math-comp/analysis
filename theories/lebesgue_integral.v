@@ -2420,6 +2420,36 @@ move=> mf f0 AB; rewrite -(setDUK AB) integral_setU//; last 4 first.
 by apply: lee_addl; apply: integral_ge0 => x [Bx _]; apply: f0.
 Qed.
 
+Lemma integral_set0 (f : T -> \bar R) : \int_ set0 (f x) 'd mu[x] = 0.
+Proof.
+rewrite integral_mkcond (eq_integral (cst 0)) ?integral0// => x _.
+by rewrite /restrict; case: ifPn => //; rewrite in_set0.
+Qed.
+
+Lemma ge0_integral_bigsetU (F : (set T)^nat) (f : T -> \bar R) n :
+  (forall n, measurable (F n)) ->
+  let D := \big[setU/set0]_(i < n) F i in
+  measurable_fun D f ->
+  (forall x, D x -> 0 <= f x) ->
+  trivIset `I_n F ->
+  \int_ D (f x) 'd mu[x] = \sum_(i < n) \int_ (F i) (f x) 'd mu[x].
+Proof.
+move=> mF.
+elim: n => [|n ih] D mf f0 tF; first by rewrite /D 2!big_ord0 integral_set0.
+rewrite /D big_ord_recr/= integral_setU//; last 4 first.
+  - exact: bigsetU_measurable.
+  - by move: mf; rewrite /D big_ord_recr.
+  - by move: f0; rewrite /D big_ord_recr.
+  - apply/eqP; move: (trivIset_bigsetUI tF (ltnSn n) (leqnn n)).
+    rewrite [in X in X -> _](eq_bigl xpredT)// => i.
+    by rewrite (leq_trans (ltn_ord i)).
+rewrite ih ?big_ord_recr//.
+- apply: measurable_funS mf => //; first exact: bigsetU_measurable.
+  by rewrite /D big_ord_recr /=; apply: subsetUl.
+- by move=> t Dt; apply: f0; rewrite /D big_ord_recr/=; left.
+- by apply: sub_trivIset tF => x; exact: leq_trans.
+Qed.
+
 Lemma le_integral_abse (D : set T) (mD : measurable D) (g : T -> \bar R) a :
   measurable_fun D g -> (0 < a)%R ->
   a%:E * mu (D `&` [set x | (`|g x| >= a%:E)%E]) <= \int[mu]_(x in D) `|g x|.
@@ -2562,7 +2592,51 @@ End integrable.
 Notation "mu .-integrable" := (integrable mu) : type_scope.
 
 Section integrable_lemmas.
+Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+
+Lemma ge0_integral_bigcup (F : (set _)^nat) (f : T -> \bar R) :
+  let D := \bigcup_k F k in
+  (forall x, D x -> 0 <= f x) -> trivIset setT F ->
+  (forall k, measurable (F k)) -> mu.-integrable D f ->
+  \int_ D (f x) 'd mu[x] = \sum_(i <oo) \int_ (F i) (f x) 'd mu[x].
+Proof.
+move=> D f0 tF mF fi; pose f_ N := f \_ (\big[setU/set0]_(0 <= i < N) F i).
+have lim_f_ t : f_ ^~ t --> (f \_ D) t.
+  rewrite [X in _ --> X](_ : _ = ereal_sup (range (f_ ^~ t))); last first.
+    apply/eqP; rewrite eq_le; apply/andP; split.
+      rewrite /restrict; case: ifPn => [|_].
+        rewrite in_setE => -[n _ Fnt]; apply ereal_sup_ub; exists n.+1 => //.
+        by rewrite /f_ big_mkord patchT// in_setE big_ord_recr/=; right.
+      rewrite (@le_trans _ _ (f_ O t))// ?ereal_sup_ub//.
+      by rewrite /f_ patchN// big_mkord big_ord0 inE/= in_set0.
+    apply: ub_ereal_sup => x [n _ <-].
+    by rewrite /f_ restrict_lee// big_mkord; exact: bigsetU_bigcup.
+  apply: ereal_nondecreasing_cvg => a b ab.
+  rewrite /f_ !big_mkord restrict_lee //; last exact: subset_bigsetU.
+  by move=> x Dx; apply: f0 => //; exact: bigsetU_bigcup Dx.
+transitivity (\int (lim (f_ ^~ x)) 'd mu[x]).
+  rewrite integral_mkcond; apply eq_integral => x _.
+  by apply/esym/cvg_lim => //; exact: lim_f_.
+rewrite monotone_convergence//; last 3 first.
+  - move=> n; apply/(measurable_restrict f) => //.
+      by apply: bigsetU_measurable => k _; exact: mF.
+    case: fi => + _; apply/measurable_funS =>//; first exact: bigcup_measurable.
+    by rewrite big_mkord; exact: bigsetU_bigcup.
+  - move=> n x _; apply: erestrict_ge0 => y; rewrite big_mkord => Dy; apply: f0.
+    exact: bigsetU_bigcup Dy.
+  - move=> x _ a b ab; apply: restrict_lee.
+      by move=> y; rewrite big_mkord => Dy; apply: f0; exact: bigsetU_bigcup Dy.
+    by rewrite 2!big_mkord; apply: subset_bigsetU.
+transitivity (lim (fun N => \int_ (\big[setU/set0]_(i < N) F i) f x 'd mu[x])).
+  congr (lim _); rewrite funeqE => n.
+  by rewrite /f_ [in RHS]integral_mkcond big_mkord.
+congr (lim _); rewrite funeqE => /= n; rewrite ge0_integral_bigsetU// ?big_mkord//.
+- case: fi => + _; apply: measurable_funS => //; first exact: bigcupT_measurable.
+  exact: bigsetU_bigcup.
+- by move=> y Dy; apply: f0; exact: bigsetU_bigcup Dy.
+- exact: sub_trivIset tF.
+Qed.
 
 Lemma integrableS (E D : set T) (f : T -> \bar R) :
   measurable E -> measurable D -> D `<=` E ->

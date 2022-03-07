@@ -56,6 +56,15 @@ Lemma lee_restrict {aT} {rT : numFieldType} (D : set aT) (f g : aT -> \bar rT) :
   (forall x, D x -> f x <= g x)%E -> forall x, ((f \_ D) x <= (g \_ D) x)%E.
 Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
 
+Lemma restrict_lee {aT} {rT : numFieldType} (D E : set aT) (f : aT -> \bar rT) :
+  (forall x, E x -> 0 <= f x)%E ->
+  D `<=` E -> forall x, ((f \_ D) x <= (f \_ E) x)%E.
+Proof.
+move=> f0 ED x; rewrite /restrict; case: ifPn => [xD|xD].
+  by rewrite mem_set//; apply: ED; rewrite in_setE in xD.
+by case: ifPn => // xE; apply: f0; rewrite in_setE in xE.
+Qed.
+
 Section erestrict_lemmas.
 Local Open Scope ereal_scope.
 Variables (T : Type) (R : realDomainType) (D : set T).

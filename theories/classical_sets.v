@@ -1873,6 +1873,9 @@ Lemma bigcap_mkord n F :
   \bigcap_(i in `I_n) F i = \big[setI/setT]_(i < n) F i.
 Proof. by apply: setC_inj; rewrite setC_bigsetI setC_bigcap bigcup_mkord. Qed.
 
+Lemma bigsetU_bigcup F n : \big[setU/set0]_(i < n) F i `<=` \bigcup_k F k.
+Proof. by rewrite -bigcup_mkord => x [k _ Fkx]; exists k. Qed.
+
 Lemma bigsetU_bigcup2 (A B : set T) :
    \big[setU/set0]_(i < 2) bigcup2 A B i = A `|` B.
 Proof. by rewrite -bigcup_mkord bigcup2inE. Qed.
