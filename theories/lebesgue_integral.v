@@ -1160,7 +1160,7 @@ transitivity (\sum_(x \in F) \sum_(y \in G) (x + y)%:E * m (pf x `&` pg y)).
   by apply: eq_fsbigr => y; rewrite addrC addrK.
 transitivity (\sum_(x \in F) \sum_(y \in G) x%:E * m (pf x `&` pg y) +
               \sum_(x \in F) \sum_(y \in G) y%:E * m (pf x `&` pg y)).
-  do 2![rewrite -fsum_split//; apply: eq_fsbigr => _ /set_mem [? _ <-]].
+  do 2![rewrite -fsbig_split//; apply: eq_fsbigr => _ /set_mem [? _ <-]].
   by rewrite EFinD ge0_muleDl// ?lee_fin.
 congr (_ + _)%E; last rewrite exchange_fsum//; apply: eq_fsbigr => x _.
   by rewrite -ge0_mule_fsumr// additive_nnsfunr nnsfun_cover setIT.
