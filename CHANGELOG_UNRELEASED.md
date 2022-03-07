@@ -223,6 +223,19 @@
   + canonical `rat_pointedType`
   + lemmas `infinite_rat`, `card_rat`, `choicePcountable`, `eqPcountable`, `Pcountable`,
     `bigcup_countable`, `countableMR`, `countableM`, `countableML`, `infiniteMRl`, `cardMR_eq_nat`
+  + mixin `FiniteImage`, structure `FImFun`, notations `{fumfun ... >-> ...}`,
+    `[fimfun of ...]`, hint `fimfunP`
+  + lemma and hint `fimfun_inP`
+  + definitions `fimfun`, `fimfun_key`, canonical `fimfun_keyed`
+  + definitions `fimfun_Sub_subproof`, `fimfun_Sub`
+  + lemmas `fimfun_rect`, `fimfun_valP`, `fimfuneqP`
+  + definitions and canonicals `fimfuneqMixin`, `fimfunchoiceMixin`
+  + lemma `finite_image_cst`, `cst_fimfun_subproof`, `fimfun_cst`
+  + definition `cst_fimfun`
+  + lemma `comp_fimfun_subproof`
+  + lemmas `fimfun_zmod_closed`, `fimfunD`, `fimfunN`, `fimfunB`, `fimfun0`, `fimfun_sum`
+  + canonicals `fimfun_add`, `fimfun_zmod`, `fimfun_zmodType`
+  + definition `fimfun_zmodMixin`
 - in `measure.v`:
   + definitions `setC_closed`, `setI_closed`, `setU_closed`, `setD_closed`, `setDI_closed`,
     `fin_bigcap_closed`, `finN0_bigcap_closed`, `fin_bigcup_closed`, `semi_setD_closed`,
@@ -364,7 +377,7 @@
     lemma and hint `bijTT`, notation `'bijTT_`
   + definition `patch`, lemmas `patchT`, `patchN`, `patchC`, `patch_inj_subproof`,
     notations `restrict`, `... \_ ...`, lemmas `preimage_restrict`, `comp_patch`,
-    `patch_setI`, `patch_setT`, `restrict_comp`
+    `patch_setI`, `patch_set0`, `patch_setT`, `restrict_comp`
   + definitions `sigL`, `sigLfun`, `valL_`, `valLfun_`
   + lemmas `sigL_isfun`, `valL_isfun`, `sigLE`, `eq_sigLP`, `eq_sigLfunP`, `sigLK`, `valLK`,
     `valLfunK`, `sigL_valL`, `sigL_valLfun\`, `sigL_restrict`, `image_sigL`, `eq_restrictP`
@@ -471,6 +484,23 @@
     `lee_dsuber_addr`, `lee_dsuber_addl`
 - in `topology.v`:
   + lemmas `uniform_limit_continuous`, `uniform_limit_continuous_subspace`
+- new file `numfun.v`
+  + lemmas `restrict_set0`, `restrict_ge0`, `erestrict_set0`, `erestrict_ge0`, `ler_restrict`,
+    `lee_restrict`
+  + definition `funenng` and notation `^\+`, definition `funennp` and notation `^\-`
+  + lemmas and hints `funenng_ge0`, `funennp_ge0`
+  + lemmas `funenngN`, `funennpN`, `funenng_restrict`,
+    `funennp_restrict`, `ge0_funenngE`, `ge0_funennpE`, `le0_funenngE`, `le0_funennpE`,
+    `gt0_funenngM`, `gt0_funennpM`, `lt0_funenngM`, `lt0_funennpM`, `fune_abse`,
+    `funenngnnp`, `add_def_funennpg`, `funeD_Dnng`, `funeD_nngD`
+  + definition `indic` and notation `\1_`
+  + lemmas `indicE`, `indicT`, `indic0`, `indic_restrict`, `restrict_indic`, `preimage_indic`,
+    `image_indic`, `image_indic_sub`
+- in `ereal.v`:
+  + lemmas `realDe`, `realDed`, `realMe`, `nadde_eq0`, `padde_eq0`,
+    `adde_ss_eq0`, `ndadde_eq0`, `pdadde_eq0`, `dadde_ss_eq0`,
+    `mulrpinfty_real`, `mulpinftyr_real`, `mulrninfty_real`,
+    `mulninftyr_real`, `mulrinfty_real`
 
 ### Changed
 
@@ -575,10 +605,20 @@
     `adde_ss_eq0`, `ndadde_eq0`, `pdadde_eq0`, `dadde_ss_eq0`,
     `mulrpinfty_real`, `mulpinftyr_real`, `mulrninfty_real`,
     `mulninftyr_real`, `mulrinfty_real`
+
+### Changed
+
 - in `ereal.v`:
   + lemmas `abse_ge0`, `gee0_abs`, `gte0_abs`, `lee0_abs`, `lte0_abs`,
     `mulN1e`, `muleN1` are generalized from `realDomainType` to
     `numDomainType`
+- moved from `topology.v` to `functions.v`
+  + section `function_space` (defintion `cst`, definition `fct_zmodMixin`,
+    canonical `fct_zmodType`, definition `fct_ringMixin`, canonical `fct_ringType`,
+    canonical `fct_comRingType`, definition `fct_lmodMixin`, canonical `fct_lmodType`,
+    lemma `fct_lmodType`)
+  + lemmas `addrfunE`, `opprfunE`, `mulrfunE`, `scalrfunE`, `cstE`, `exprfunE`, `compE`
+  + definition `fctE`
 
 ### Renamed
 

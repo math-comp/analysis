@@ -1,11 +1,10 @@
-(* -*- company-coq-local-symbols: (("\\int" . ?∫) ("\\int_" . ?∫) ("'d" . ?𝑑) ("^\\+" . ?⁺) ("^\\-" . ?⁻)); -*- *)
-(* intersection U+2229; union U+222A, set U+2205 *)
+(* -*- company-coq-local-symbols: (("\\int" . ?∫) ("\\int_" . ?∫) ("'d" . ?𝑑)); -*- *)
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 Require Import mathcomp_extra boolp classical_sets posnum functions cardinality.
 Require Import reals ereal topology normedtype sequences measure.
-Require Import nngnum lebesgue_measure fsbigop.
+Require Import nngnum lebesgue_measure fsbigop numfun.
 
 (******************************************************************************)
 (*                            Lebesgue Integral                               *)
@@ -23,14 +22,6 @@ Require Import nngnum lebesgue_measure fsbigop.
 (* Main reference:                                                            *)
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (*                                                                            *)
-(*                  f ^\+ == the function formed by the non-negative outputs  *)
-(*                           of f (from a type to the type of extended real   *)
-(*                           numbers) and 0 otherwise                         *)
-(*                           rendered as f ⁺ with company-coq (U+207A)        *)
-(*                  f ^\- == the function formed by the non-positive outputs  *)
-(*                           of f and 0 o.w.                                  *)
-(*                           rendered as f ⁻ with company-coq (U+207B)        *)
-(*                  \1_ A == indicator function 1_A                           *)
 (*        {nnfun T >-> R} == type of non-negative functions                   *)
 (*       {fimfun T >-> R} == type of functions with a finite image            *)
 (*         {sfun T >-> R} == type of simple functions                         *)
@@ -67,8 +58,6 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Reserved Notation "f ^\+" (at level 1, format "f ^\+").
-Reserved Notation "f ^\-" (at level 1, format "f ^\-").
 Reserved Notation "'\int_' D f ''d' mu [ x ]" (at level 36, D at level 0,
     f at level 36, mu at level 0, x at level 35,
   format "'\int_'  D  f  ''d'  mu [ x ]").
@@ -77,287 +66,6 @@ Reserved Notation "'\int' f ''d' mu [ x ]" (at level 36, f at level 36,
 Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
-
-Section funpos.
-Local Open Scope ereal_scope.
-
-Definition funenng T (R : realDomainType) (f : T -> \bar R) :=
-  fun x => maxe (f x) 0.
-Definition funennp T (R : realDomainType) (f : T -> \bar R) :=
-  fun x => maxe (- f x) 0.
-End funpos.
-
-Notation "f ^\+" := (funenng f) : ereal_scope.
-Notation "f ^\-" := (funennp f) : ereal_scope.
-
-Section restrict_lemmas.
-
-Lemma restrict_set0 T (R : numFieldType) (f : T -> R) : f \_ set0 = cst 0.
-Proof. by apply/funext => x; rewrite /restrict in_set0. Qed.
-
-Lemma restrict_ge0 {aT} {rT : numFieldType} (D : set aT) (f : aT -> rT) :
-  (forall x, D x -> 0 <= f x) -> forall x, 0 <= (f \_ D) x.
-Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
-
-Lemma erestrict_ge0 {aT} {rT : numFieldType} (D : set aT) (f : aT -> \bar rT) :
-  (forall x, D x -> (0 <= f x)%E) -> forall x, (0 <= (f \_ D) x)%E.
-Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
-
-Lemma ler_restrict {aT} {rT : numFieldType} (D : set aT) (f g : aT -> rT) :
-  (forall x, D x -> f x <= g x) -> forall x, (f \_ D) x <= (g \_ D) x.
-Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
-
-Lemma lee_restrict {aT} {rT : numFieldType} (D : set aT) (f g : aT -> \bar rT) :
-  (forall x, D x -> f x <= g x)%E -> forall x, ((f \_ D) x <= (g \_ D) x)%E.
-Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
-
-End restrict_lemmas.
-
-Section erestrict_lemmas.
-Local Open Scope ereal_scope.
-Variables (T : Type) (R : realDomainType) (D : set T).
-Implicit Types (f g : T -> \bar R) (r : R).
-
-Lemma erestrict0 : (cst 0 : T -> \bar R) \_ D = cst 0.
-Proof. by apply/funext => x; rewrite /patch/=; case: ifP. Qed.
-
-Lemma erestrictD f g : (f \+ g) \_ D = f \_ D \+ g \_ D.
-Proof. by apply/funext=> x; rewrite /patch/=; case: ifP; rewrite ?adde0. Qed.
-
-Lemma erestrictN f : (\- f) \_ D = \- f \_ D.
-Proof. by apply/funext=> x; rewrite /patch/=; case: ifP; rewrite ?oppe0. Qed.
-
-Lemma erestrictB f g : (f \- g) \_ D = f \_ D \- g \_ D.
-Proof. by apply/funext=> x; rewrite /patch/=; case: ifP; rewrite ?sube0. Qed.
-
-Lemma erestrictM f g : (f \* g) \_ D = f \_ D \* g \_ D.
-Proof. by apply/funext=> x; rewrite /patch/=; case: ifP; rewrite ?mule0. Qed.
-
-Lemma erestrict_scale k f :
-  (fun x => k%:E * f x) \_ D = (fun x => k%:E * (f \_ D) x).
-Proof. by apply/funext=> x; rewrite /patch/=; case: ifP; rewrite ?mule0. Qed.
-
-End erestrict_lemmas.
-
-Section funpos_lemmas.
-Local Open Scope ereal_scope.
-Variables (T : Type) (R : realDomainType) (D : set T).
-Implicit Types (f g : T -> \bar R) (r : R).
-
-Lemma funenng_ge0 f x : 0 <= f^\+ x.
-Proof. by rewrite /funenng /= le_maxr lexx orbT. Qed.
-
-Lemma funennp_ge0 f x : 0 <= f^\- x.
-Proof. by rewrite /funennp le_maxr lexx orbT. Qed.
-
-Lemma funenngN f : (\- f)^\+ = f^\-.
-Proof. by rewrite funeqE => x /=; rewrite /funenng /funennp. Qed.
-
-Lemma funennpN f : (\- f)^\- = f^\+.
-Proof. by rewrite funeqE => x /=; rewrite /funenng /funennp oppeK. Qed.
-
-Lemma funenng_restrict f : (f \_ D)^\+ = (f^\+) \_ D.
-Proof.
-by apply/funext => x; rewrite /patch/_^\+; case: ifP; rewrite //= maxxx.
-Qed.
-
-Lemma funennp_restrict f : (f \_ D)^\- = (f^\-) \_ D.
-Proof.
-by apply/funext => x; rewrite /patch/_^\-; case: ifP; rewrite //= oppr0 maxxx.
-Qed.
-
-Lemma ge0_funenngE f : (forall x, D x -> 0 <= f x) -> {in D, f^\+ =1 f}.
-Proof. by move=> f0 x; rewrite inE => Dx; apply/max_idPl/f0. Qed.
-
-Lemma ge0_funennpE f : (forall x, D x -> 0 <= f x) -> {in D, f^\- =1 cst 0}.
-Proof.
-by move=> f0 x; rewrite inE => Dx; apply/max_idPr; rewrite lee_oppl oppe0 f0.
-Qed.
-
-Lemma le0_funenngE f : (forall x, D x -> f x <= 0) -> {in D, f^\+ =1 cst 0}.
-Proof. by move=> f0 x; rewrite inE => Dx; exact/max_idPr/f0. Qed.
-
-Lemma le0_funennpE f : (forall x, D x -> f x <= 0) -> {in D, f^\- =1 \- f}.
-Proof.
-by move=> f0 x; rewrite inE => Dx; apply/max_idPl; rewrite lee_oppr oppe0 f0.
-Qed.
-
-Lemma gt0_funenngM r f : (0 < r)%R ->
-  (fun x => r%:E * f x)^\+ = (fun x => r%:E * (f^\+ x)).
-Proof. by move=> ?; rewrite funeqE => x; rewrite /funenng maxeMr// mule0. Qed.
-
-Lemma gt0_funennpM r f : (0 < r)%R ->
-  (fun x => r%:E * f x)^\- = (fun x => r%:E * (f^\- x)).
-Proof.
-by move=> r0; rewrite funeqE => x; rewrite /funennp -muleN maxeMr// mule0.
-Qed.
-
-Lemma lt0_funenngM r f : (r < 0)%R ->
-  (fun x => r%:E * f x)^\+ = (fun x => - r%:E * (f^\- x)).
-Proof.
-move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funenngN gt0_funennpM -1?ltr_oppr ?oppr0.
-Qed.
-
-Lemma lt0_funennpM r f : (r < 0)%R ->
-  (fun x => r%:E * f x)^\- = (fun x => - r%:E * (f^\+ x)).
-Proof.
-move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funennpN gt0_funenngM -1?ltr_oppr ?oppr0.
-Qed.
-
-Lemma fune_abse f : abse \o f = f^\+ \+ f^\-.
-Proof.
-rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
-- rewrite lee0_abs// /funenng /funennp.
-  move/max_idPr : (fx0) => ->; rewrite add0e.
-  by move: fx0; rewrite -{1}oppr0 EFinN lee_oppr => /max_idPl ->.
-- rewrite gee0_abs// /funenng /funennp.
-  move/max_idPl : (fx0) => ->.
-  by move: fx0; rewrite -{1}oppr0 EFinN lee_oppl => /max_idPr ->; rewrite adde0.
-Qed.
-
-Lemma funenngnnp f : f = (fun x => f^\+ x - f^\- x)%E.
-Proof.
-rewrite funeqE => x; rewrite /funenng /funennp.
-have [|/ltW] := leP (f x) 0%E.
-  by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite oppeK add0e.
-by rewrite -{1}oppe0 -lee_oppl => /max_idPr ->; rewrite sube0.
-Qed.
-
-Lemma add_def_funennpg f x : (f^\+ x +? - f^\- x)%E.
-Proof.
-rewrite /funennp /funenng; case: (f x) => [r| |].
-- by rewrite !maxEFin.
-- by rewrite /maxe /= lte_ninfty.
-- by rewrite /maxe /= lte_ninfty.
-Qed.
-
-Lemma funeD_Dnng f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
-Proof.
-apply/funext => x; rewrite /funenng /funennp; have [|/ltW] := leP 0 (f x + g x).
-- by rewrite -{1}oppe0 -lee_oppl => /max_idPr ->; rewrite sube0.
-- by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite oppeK add0e.
-Qed.
-
-Lemma funeD_nngD f g : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
-Proof.
-apply/funext => x; rewrite /funenng /funennp.
-have [|fx0] := leP 0 (f x); last rewrite add0e.
-- rewrite -{1}oppe0 lee_oppl => /max_idPr ->; have [|/ltW] := leP 0 (g x).
-    by rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0 sube0.
-  by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite adde0 sub0e oppeK.
-- move/ltW : (fx0); rewrite -{1}oppe0 lee_oppr => /max_idPl ->.
-  have [|] := leP 0 (g x); last rewrite add0e.
-    by rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0 oppeK addeC.
-  move gg' : (g x) => g'; move: g' gg' => [g' gg' g'0|//|goo _].
-  + move/ltW : (g'0); rewrite -{1}oppe0 -lee_oppr => /max_idPl => ->.
-    by rewrite oppeD// 2!oppeK.
-  + by rewrite /maxe /=; case: (f x) fx0.
-Qed.
-
-End funpos_lemmas.
-#[global]
-Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funenng_ge0] : core.
-#[global]
-Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funennp_ge0] : core.
-
-Section funpos_measurable.
-Variables (T : measurableType) (R : realType).
-
-Lemma emeasurable_fun_funenng (D : set T) (f : T -> \bar R) :
-  measurable_fun D f -> measurable_fun D f^\+%E.
-Proof.
-by move=> mf; apply: emeasurable_fun_max => //; apply: measurable_fun_cst.
-Qed.
-
-Lemma emeasurable_fun_funennp (D : set T) (f : T -> \bar R) :
-   measurable_fun D f -> measurable_fun D f^\-%E.
-Proof.
-move=> mf; apply: emeasurable_fun_max => //; last exact: measurable_fun_cst.
-by apply: measurable_fun_comp => //; apply: emeasurable_fun_minus.
-Qed.
-
-End funpos_measurable.
-
-Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
-Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
-Notation "'\1_' A" := (indic A) : ring_scope.
-
-Lemma indicE {T} {R : ringType} (A : set T) (x : T) :
-  indic A x = (x \in A)%:R :> R.
-Proof. by []. Qed.
-
-Lemma indicT {T} {R : ringType} : \1_[set: T] = cst (1 : R).
-Proof. by apply/funext=> x; rewrite indicE in_setT. Qed.
-
-Lemma indic0 {T} {R : ringType} : \1_(@set0 T) = cst (0 : R).
-Proof. by apply/funext=> x; rewrite indicE in_set0. Qed.
-
-Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
-  \1_A = 1 \_ A :> (T -> R).
-Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
-
-Lemma restrict_indic T (R : numFieldType) (E A : set T) :
-  (\1_E \_ A) = \1_(E `&` A) :> (T -> R).
-Proof.
-apply/funext => x; rewrite /restrict 2!indicE.
-case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
-by rewrite in_setI (negbTE xA) andbF.
-Qed.
-
-Lemma preimage_indic (T : Type) (R : ringType) (D : set T) (B : set R) :
-  \1_D @^-1` B = if 1 \in B then (if 0 \in B then setT else D)
-                            else (if 0 \in B then ~` D else set0).
-Proof.
-rewrite /preimage/= /indic; apply/seteqP; split => x;
-  case: ifPn => B1; case: ifPn => B0 //=.
-- have [|] := boolP (x \in D); first by rewrite inE.
-  by rewrite notin_set in B0.
-- have [|] := boolP (x \in D); last by rewrite notin_set.
-  by rewrite notin_set in B1.
-- by have [xD|xD] := boolP (x \in D);
-    [rewrite notin_set in B1|rewrite notin_set in B0].
-- by have [xD|xD] := boolP (x \in D); [rewrite inE in B1|rewrite inE in B0].
-- have [xD|] := boolP (x \in D); last by rewrite notin_set.
-  by rewrite inE in B1.
-- have [|xD] := boolP (x \in D); first by rewrite inE.
-  by rewrite inE in B0.
-Qed.
-
-Lemma image_indic T (R : ringType) (D A : set T) :
-  \1_D @` A = (if A `\` D != set0 then [set 0] else set0) `|`
-              (if A `&` D != set0 then [set 1 : R] else set0).
-Proof.
-rewrite /indic; apply/predeqP => x; split => [[t At /= <-]|].
-  by rewrite /indic; case: (boolP (t \in D)); rewrite ?(inE, notin_set) => Dt;
-     [right|left]; rewrite ifT//=; apply/set0P; exists t.
-by move=> []; case: ifPn; rewrite ?negbK// => /set0P[t [At Dt]] ->;
-   exists t => //; case: (boolP (t \in D)); rewrite ?(inE, notin_set).
-Qed.
-
-Lemma image_indic_sub T (R : ringType) (D A : set T) :
-  \1_D @` A `<=` [set (0 : R); 1].
-Proof.
-by rewrite image_indic; do ![case: ifP=> //= _] => // t []//= ->; [left|right].
-Qed.
-
-HB.mixin Record FiniteImage aT rT (f : aT -> rT) := {
-  fimfunP : finite_set (range f)
-}.
-HB.structure Definition FImFun aT rT := {f of @FiniteImage aT rT f}.
-
-Reserved Notation "{ 'fimfun' aT >-> T }"
-  (at level 0, format "{ 'fimfun'  aT  >->  T }").
-Reserved Notation "[ 'fimfun' 'of' f ]"
-  (at level 0, format "[ 'fimfun'  'of'  f ]").
-Notation "{ 'fimfun' aT >-> T }" := (@FImFun.type aT T) : form_scope.
-Notation "[ 'fimfun' 'of' f ]" := [the {fimfun _ >-> _} of f] : form_scope.
-#[global] Hint Resolve fimfunP : core.
-
-Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
-  finite_set (f @` D).
-Proof. by apply: (@sub_finite_set _ _ (range f)) => // y [x]; exists x. Qed.
 
 HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
@@ -407,100 +115,6 @@ Reserved Notation "[ 'nnsfun' 'of' f ]"
 Notation "{ 'nnsfun'  aT >-> T }" := (@NonNegSimpleFun.type aT T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
-Section fimfun_pred.
-Context {aT rT : Type}.
-Definition fimfun : {pred aT -> rT} := mem [set f | finite_set (range f)].
-Definition fimfun_key : pred_key fimfun.
-Proof. exact. Qed.
-Canonical fimfun_keyed := KeyedPred fimfun_key.
-End fimfun_pred.
-
-Section fimfun.
-Context {aT rT : Type}.
-Notation T := {fimfun aT >-> rT}.
-Notation fimfun := (@fimfun aT rT).
-Section Sub.
-Context (f : aT -> rT) (fP : f \in fimfun).
-Definition fimfun_Sub_subproof := @FiniteImage.Build aT rT f (set_mem fP).
-#[local] HB.instance Definition _ := fimfun_Sub_subproof.
-Definition fimfun_Sub := [fimfun of f].
-End Sub.
-
-Lemma fimfun_rect (K : T -> Type) :
-  (forall f (Pf : f \in fimfun), K (fimfun_Sub Pf)) -> forall u : T, K u.
-Proof.
-move=> Ksub [f [[Pf]]]/=.
-by suff -> : Pf = (set_mem (@mem_set _ [set f | _] f Pf)) by apply: Ksub.
-Qed.
-
-Lemma fimfun_valP f (Pf : f \in fimfun) : fimfun_Sub Pf = f :> (_ -> _).
-Proof. by []. Qed.
-
-Canonical fimfun_subType := SubType T _ _ fimfun_rect fimfun_valP.
-End fimfun.
-
-Lemma fimfuneqP aT rT (f g : {fimfun aT >-> rT}) :
-  f = g <-> f =1 g.
-Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
-
-Definition fimfuneqMixin aT (rT : eqType) :=
-  [eqMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfuneqType aT (rT : eqType) :=
-  EqType {fimfun aT >-> rT} (fimfuneqMixin aT rT).
-Definition fimfunchoiceMixin aT (rT : choiceType) :=
-  [choiceMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfunchoiceType aT (rT : choiceType) :=
-  ChoiceType {fimfun aT >-> rT} (fimfunchoiceMixin aT rT).
-
-Lemma finite_image_cst {aT rT : Type} (x : rT) : finite_set (range (cst x : aT -> rT)).
-Proof.
-elim/Ppointed: aT => aT; rewrite ?emptyE ?image_set0//.
-suff -> : cst x @` [set: aT] = [set x] by apply: finite_set1.
-by apply/predeqP => y; split=> [[t' _ <-]//|->//] /=; exists point.
-Qed.
-
-Definition fun_cmul {U : Type} {R : ringType} (k : R) (f : U -> R) x := k * f x.
-Notation "k *\ f" := (fun_cmul k f) (at level 40, format "k  *\  f") : ring_scope.
-
-Lemma cst_fimfun_subproof aT rT x : @FiniteImage aT rT (cst x).
-Proof. by split; exact: finite_image_cst. Qed.
-HB.instance Definition _ aT rT x := @cst_fimfun_subproof aT rT x.
-Definition cst_fimfun {aT rT} x := [the {fimfun aT >-> rT} of cst x].
-
-Lemma fimfun_cst aT rT x : @cst_fimfun aT rT x =1 cst x. Proof. by []. Qed.
-
-Lemma comp_fimfun_subproof aT rT sT
-   (f : {fimfun aT >-> rT}) (g : rT -> sT) : @FiniteImage aT sT (g \o f).
-Proof. by split; rewrite -(image_comp f g); apply: finite_image. Qed.
-HB.instance Definition _ aT rT sT f g := @comp_fimfun_subproof aT rT sT f g.
-
-Section zmod.
-Context (aT : Type) (rT : zmodType).
-Lemma fimfun_zmod_closed : zmod_closed (@fimfun aT rT).
-Proof.
-split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
-by move=> fA gA; apply: (finite_image11 (fun x y => x - y)).
-Qed.
-Canonical fimfun_add := AddrPred fimfun_zmod_closed.
-Canonical fimfun_zmod := ZmodPred fimfun_zmod_closed.
-Definition fimfun_zmodMixin := [zmodMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfun_zmodType := ZmodType {fimfun aT >-> rT} fimfun_zmodMixin.
-
-Implicit Types (f g : {fimfun aT >-> rT}).
-
-Lemma fimfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
-Lemma fimfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
-Lemma fimfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
-Lemma fimfun0 : (0 : {fimfun aT >-> rT}) = cst 0 :> (_ -> _). Proof. by []. Qed.
-Lemma fimfun_sum I r (P : {pred I}) (f : I -> {fimfun aT >-> rT}) (x : aT) :
-  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
-Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
-
-HB.instance Definition _ f g := FImFun.copy (f \+ g) (f + g).
-HB.instance Definition _ f g := FImFun.copy (\- f) (- f).
-HB.instance Definition _ f g := FImFun.copy (f \- g) (f - g).
-End zmod.
-
 Section ring.
 Context (aT : pointedType) (rT : ringType).
 
@@ -534,8 +148,8 @@ Qed.
 HB.instance Definition _ X := indic_fimfun_subproof X.
 Definition indic_fimfun (X : set aT) := [the {fimfun aT >-> rT} of \1_X].
 
-HB.instance Definition _ k f := FImFun.copy (k *\ f) (cst_fimfun k * f).
-Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k *\ f].
+HB.instance Definition _ k f := FImFun.copy (k \o* f) (f * cst_fimfun k).
+Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k \o* f].
 
 End ring.
 Arguments indic_fimfun {aT rT} _.
@@ -706,8 +320,8 @@ HB.instance Definition _ D mD := @indic_mfun_subproof D mD.
 Definition indic_mfun (D : set aT) (mD : measurable D) :=
   [the {mfun aT >-> rT} of mindic mD].
 
-HB.instance Definition _ k f := MeasurableFun.copy (k *\ f) (cst_mfun k * f).
-Definition scale_mfun k f := [the {mfun aT >-> rT} of k *\ f].
+HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_mfun k).
+Definition scale_mfun k f := [the {mfun aT >-> rT} of k \o* f].
 
 Lemma max_mfun_subproof f g : @IsMeasurableFun aT rT (f \max g).
 Proof. by split; apply: measurable_fun_max. Qed.
@@ -829,8 +443,8 @@ HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
 Definition indic_sfun (D : set aT) (mD : measurable D) :=
   [the {sfun aT >-> rT} of mindic rT mD].
 
-HB.instance Definition _ k f := MeasurableFun.copy (k *\ f) (cst_sfun k * f).
-Definition scale_sfun k f := [the {sfun aT >-> rT} of k *\ f].
+HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_sfun k).
+Definition scale_sfun k f := [the {sfun aT >-> rT} of k \o* f].
 
 HB.instance Definition _ f g := max_mfun_subproof f g.
 Definition max_sfun f g := [the {sfun aT >-> _} of f \max g].

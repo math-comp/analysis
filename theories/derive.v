@@ -1,8 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
-Require Import boolp reals mathcomp_extra.
-Require Import classical_sets posnum nngnum topology prodnormedzmodule.
-Require Import normedtype landau forms.
+Require Import boolp reals mathcomp_extra classical_sets posnum nngnum functions.
+Require Import topology prodnormedzmodule normedtype landau forms.
 
 (******************************************************************************)
 (* This file provides a theory of differentiation. It includes the standard   *)
@@ -914,7 +913,7 @@ Proof. by move=> /differentiableP df /differentiableP dg. Qed.
 (* (1 / (h + x) - 1 / x) / h = - 1 / (h + x) x = -1/x^2 + o(1) *)
 Fact dinv (x : R) :
   x != 0 -> continuous (fun h : R => - x ^- 2 *: h) /\
-  (fun x => x^-1) \o shift x = cst (x^-1) +
+  (fun x => x^-1)%R \o shift x = cst (x^-1)%R +
   (fun h : R => - x ^- 2 *: h) +o_ (0 : R) id.
 Proof.
 move=> xn0; suff: continuous (fun h : R => - (1 / x) ^+ 2 *: h) /\
@@ -1286,7 +1285,7 @@ by rewrite mulrC -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
 Unshelve. all: by end_near. Qed.
 
 Lemma deriveV (f : V -> R) x v : f x != 0 -> derivable f x v ->
-  'D_v[fun y => (f y)^-1] x = - (f x) ^- 2 *: 'D_v f x.
+  'D_v (fun y => (f y)^-1) x = - (f x) ^- 2 *: 'D_v f x.
 Proof. by move=> fxn0 df; apply: cvg_map_lim (der_inv fxn0 df). Qed.
 
 Lemma derivableV (f : V -> R) (x v : V) :
