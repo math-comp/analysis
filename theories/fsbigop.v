@@ -251,29 +251,19 @@ Lemma full_fsbigID (R : Type) (idx : R) (op : Monoid.com_law idx)
   \big[op/idx]_(i \in A) F i = op (\big[op/idx]_(i \in A `&` B) F i)
                                   (\big[op/idx]_(i \in A `&` ~` B) F i).
 Proof.
-move=> finF; rewrite (big_fsetID _ [pred i | i \in B])/=; congr (op _ _).
-  rewrite [locked_with _ _]unlock.
+move=> finF.
+have fsbig_setI C : \big[op/idx]_(i <-
+      [fset x | x in fset_set (A `&` F @^-1` [set~ idx]) & x \in C]%fset) F i =
+    \big[op/idx]_(i \in A `&` C) F i.
   apply: eq_fbigl => i /=; apply/idP/idP.
-    rewrite !inE/= => /andP[+ Bi].
-    rewrite in_fset_set// inE => -[Ai Fi].
+    rewrite !inE/= => /andP[+ Bi]; rewrite in_fset_set// inE => -[Ai Fi].
     rewrite unlock in_fset_set ?inE// setIAC; first by rewrite inE in Bi.
     exact/finite_setIl.
   rewrite unlock in_fset_set; last by rewrite setIAC; exact/finite_setIl.
-  rewrite inE => -[[Ai Bi] Fi0]; rewrite !inE/=; apply/andP; split; last first.
-    by rewrite inE.
-  by rewrite in_fset_set// inE.
-rewrite [locked_with _ _]unlock.
-apply: eq_fbigl => i/=; apply/idP/idP.
-  rewrite inE/= inE/= => /andP[+ Bi].
-  rewrite in_fset_set// inE => -[Ai Fi].
-  rewrite unlock in_fset_set ?inE//; last first.
-    by rewrite setIAC; exact/finite_setIl.
-  by split=> //; split=> //; rewrite notin_set in Bi.
-rewrite unlock in_fset_set; last first.
-  by rewrite setIAC; apply/finite_setIl.
-rewrite inE => -[[Ai Bi] Fi0].
-rewrite !inE/=; apply/andP; split; last by rewrite notin_set.
-by rewrite in_fset_set ?inE.
+  by rewrite inE => -[[Ai Bi] Fi0]; rewrite !inE/= in_fset_set// !mem_set.
+rewrite (big_fsetID _ [pred i | i \in B])/= [locked_with _ _]unlock.
+rewrite fsbig_setI; congr (op _ _); rewrite -fsbig_setI.
+by apply eq_fbigl => i; rewrite !inE in_setC.
 Qed.
 Arguments full_fsbigID {R idx op I} B.
 
