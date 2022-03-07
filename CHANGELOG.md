@@ -297,7 +297,6 @@ Last releases: [[0.4.0] - 2022-03-08](#040---2022-03-08) and [[0.3.13] - 2022-01
     `sigma_algebra_preimage_classE`, `measurability`
   + definition `sub_additive`
   + lemma `semi_additiveW`
-  + notation `... \_ ...`
   + lemmas `content_fin_bigcup`, `measure_fin_bigcup`, `measure_bigsetU_ord_cond`, `measure_bigsetU_ord`,
   + coercion `measure_to_nadditive_measure`
   + lemmas `measure_semi_bigcup`, `measure_bigcup`
