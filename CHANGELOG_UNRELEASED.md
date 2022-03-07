@@ -399,7 +399,6 @@
   + definition `pinv_`, lemmas `injpinv_surj`, `injpinv_image`,
     `injpinv_bij`, `surjpK`, `surjpinv_image_sub`, `surjpinv_inj`, `surjpinv_bij`,
     `bijpinv_bij`, `pPbij_`, `pPinj_`, `injpPfun_`, `funpPinj_`
-  + definition `fun_cmul` and notation `*\`
 - in `fsbigop.v`:
   + notations `\big[op/idx]_(i \in A) f i`, `\sum_(i \in A) f i`
   + lemma `finite_index_key`

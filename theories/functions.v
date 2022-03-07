@@ -2493,11 +2493,3 @@ Definition fctE :=
   (cstE, compE, opprfunE, addrfunE, mulrfunE, scalrfunE, exprfunE).
 
 End function_space_lemmas.
-
-Section fun_cmul.
-Local Open Scope ring_scope.
-
-Definition fun_cmul {U : Type} {R : ringType} (k : R) (f : U -> R) x := k * f x.
-
-End fun_cmul.
-Notation "k *\ f" := (fun_cmul k f) (at level 40, format "k  *\  f") : ring_scope.

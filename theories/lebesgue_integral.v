@@ -148,8 +148,8 @@ Qed.
 HB.instance Definition _ X := indic_fimfun_subproof X.
 Definition indic_fimfun (X : set aT) := [the {fimfun aT >-> rT} of \1_X].
 
-HB.instance Definition _ k f := FImFun.copy (k *\ f) (cst_fimfun k * f).
-Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k *\ f].
+HB.instance Definition _ k f := FImFun.copy (k \o* f) (f * cst_fimfun k).
+Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k \o* f].
 
 End ring.
 Arguments indic_fimfun {aT rT} _.
@@ -320,8 +320,8 @@ HB.instance Definition _ D mD := @indic_mfun_subproof D mD.
 Definition indic_mfun (D : set aT) (mD : measurable D) :=
   [the {mfun aT >-> rT} of mindic mD].
 
-HB.instance Definition _ k f := MeasurableFun.copy (k *\ f) (cst_mfun k * f).
-Definition scale_mfun k f := [the {mfun aT >-> rT} of k *\ f].
+HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_mfun k).
+Definition scale_mfun k f := [the {mfun aT >-> rT} of k \o* f].
 
 Lemma max_mfun_subproof f g : @IsMeasurableFun aT rT (f \max g).
 Proof. by split; apply: measurable_fun_max. Qed.
@@ -443,8 +443,8 @@ HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
 Definition indic_sfun (D : set aT) (mD : measurable D) :=
   [the {sfun aT >-> rT} of mindic rT mD].
 
-HB.instance Definition _ k f := MeasurableFun.copy (k *\ f) (cst_sfun k * f).
-Definition scale_sfun k f := [the {sfun aT >-> rT} of k *\ f].
+HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_sfun k).
+Definition scale_sfun k f := [the {sfun aT >-> rT} of k \o* f].
 
 HB.instance Definition _ f g := max_mfun_subproof f g.
 Definition max_sfun f g := [the {sfun aT >-> _} of f \max g].
