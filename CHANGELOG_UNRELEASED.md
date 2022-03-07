@@ -414,7 +414,7 @@
     `reindex_fsbigT`, notation `reindex_inside_setT`
   + lemmas `ge0_mule_fsumr`, `ge0_mule_fsuml`, `fsbigN1`, `fsume_ge0`, `fsume_le0`,
     `fsume_gt0`, `fsume_lt0`, `pfsume_eq0`, `fsbig_setU`, `pair_fsum`, `exchange_fsum`,
-    `fsum_split`
+    `fsbig_split`
 - in `mathcomp_extra.v`:
   + lemma `all_sig2_cond`
   + definition `olift`
