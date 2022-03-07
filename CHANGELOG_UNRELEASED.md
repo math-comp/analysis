@@ -501,6 +501,10 @@
     `adde_ss_eq0`, `ndadde_eq0`, `pdadde_eq0`, `dadde_ss_eq0`,
     `mulrpinfty_real`, `mulpinftyr_real`, `mulrninfty_real`,
     `mulninftyr_real`, `mulrinfty_real`
+- in `derive.v`:
+  + lemma `derive1_cst`
+- in `trigo.v`:
+  + lemmas `acos1`, `acos0`, `acosN1`, `acosN`, `cosKN`, `atan0`, `atan1`
 
 ### Changed
 

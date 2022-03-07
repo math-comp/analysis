@@ -924,6 +924,34 @@ move: xB; rewrite !in_itv/= => /andP[? ?].
 by rewrite acos_ge0 ?acos_lepi ?cos_geN1 ?cos_le1.
 Qed.
 
+Lemma acos1 : acos (1 : R) = 0.
+Proof.
+by have := @cosK 0; rewrite cos0 => -> //; rewrite in_itv //= lexx pi_ge0.
+Qed.
+
+Lemma acos0 : acos (0 : R) = pi / 2%:R.
+Proof.
+have := @cosK (pi / 2%:R).
+rewrite cos_pihalf => -> //; rewrite in_itv//= divr_ge0 ?ler0n ?pi_ge0//=.
+by rewrite ler_pdivr_mulr ?ltr0n// ler_pemulr ?pi_ge0// ler1n.
+Qed.
+
+Lemma acosN a : -1 <= a <= 1 -> acos (- a) = pi - acos a.
+Proof.
+move=> a1; have ? : -1 <= - a <= 1 by rewrite ler_oppl opprK ler_oppl andbC.
+apply: cos_inj; first by rewrite in_itv/= acos_ge0//= acos_lepi.
+- by rewrite in_itv/= subr_ge0 acos_lepi//= ler_subl_addl ler_addr acos_ge0.
+- by rewrite addrC cosDpi cosN !acosK.
+Qed.
+
+Lemma acosN1 : acos (- 1) = (pi : R).
+Proof. by rewrite acosN ?acos1 ?subr0 ?lexx// -subr_ge0 opprK addr_ge0. Qed.
+
+Lemma cosKN a : - pi <= a <= 0 -> acos (cos a) = - a.
+Proof.
+by move=> pia0; rewrite -(cosN a) cosK// in_itv/= ler_oppr oppr0 ler_oppl andbC.
+Qed.
+
 Lemma sin_acos x : -1 <= x <= 1 -> sin (acos x) = Num.sqrt (1 - x^+2).
 Proof.
 move=> xB.
@@ -1113,6 +1141,32 @@ Proof. by case: (atan_def x) => [] /andP[]. Qed.
 
 Lemma atanK : cancel atan tan.
 Proof. by move=> x; case: (atan_def x). Qed.
+
+Lemma atan0 : atan 0 = 0 :> R.
+Proof.
+apply: tan_inj; last by rewrite atanK tan0.
+- by rewrite in_itv/= atan_gtNpi2 atan_ltpi2.
+- by rewrite in_itv/= oppr_cp0 divr_gt0 ?pi_gt0 // ltr0n.
+Qed.
+
+Lemma atan1 : atan 1 = pi / 4%:R :> R.
+Proof.
+apply: tan_inj; first 2 last.
+  by rewrite atanK tan_piquarter.
+  by rewrite in_itv/= atan_gtNpi2 atan_ltpi2.
+rewrite in_itv/= -mulNr (lt_trans _ (_ : 0 < _ )) /=; last 2 first.
+  by rewrite mulNr oppr_cp0 divr_gt0 // pi_gt0.
+  by rewrite divr_gt0 ?pi_gt0 // ltr0n.
+rewrite ltr_pdivr_mulr// -mulrA ltr_pmulr// ?pi_gt0//.
+by rewrite (natrM _ 2 2) mulrA mulVf// mul1r ltr1n.
+Qed.
+
+Lemma atanN x : atan (- x) = - atan x.
+Proof.
+apply: tan_inj; first by rewrite in_itv/= atan_ltpi2 atan_gtNpi2.
+- by rewrite in_itv/= ltr_oppl opprK ltr_oppl andbC atan_ltpi2 atan_gtNpi2.
+- by rewrite tanN !atanK.
+Qed.
 
 Lemma tanK : {in `](- (pi / 2)), (pi / 2)[ , cancel tan atan}.
 Proof.
