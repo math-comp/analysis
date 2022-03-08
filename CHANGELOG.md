@@ -567,8 +567,7 @@ Last releases: [[0.4.0] - 2022-03-08](#040---2022-03-08) and [[0.3.13] - 2022-01
   + `eq_set0_nil` -> `set_seq_eq0`
   + `eq_set0_fset0` -> `set_fset_eq0`
 - in `measure.v`:
-  + definition `uncurry` moved to `mathcomp_extra.v`
-  + definition `bigcup2`, lemma `bigcup2E`  moved to `mathcomp_extra.v`
+  + definition `bigcup2`, lemma `bigcup2E`  moved to `classical_sets.v`
   + mixin `isSemiRingOfSets` and `isRingOfSets` changed
   + types `semiRingOfSetsType`, `ringOfSetsType`, `algebraOfSetsType`, `measurableType` now pointed types
   + definition `measurable_fun` changed
@@ -585,7 +584,6 @@ Last releases: [[0.4.0] - 2022-03-08](#040---2022-03-08) and [[0.3.13] - 2022-01
   + lemma `caratheodory_measure_ge0` does take a condition anymore
   + definitions `measurable_cover` and `mu_ext`, canonical `outer_measure_of_measure` weakened to `semiRingOfSetsType`
 - in `ereal.v`:
-  + lemmas `big_nat_widenl`, `big_geq_mkord` moved to `mathcomp_extra.v`
   + lemmas `abse_ge0`, `gee0_abs`, `gte0_abs`, `lee0_abs`, `lte0_abs`,
     `mulN1e`, `muleN1` are generalized from `realDomainType` to
     `numDomainType`
@@ -647,6 +645,7 @@ Last releases: [[0.4.0] - 2022-03-08](#040---2022-03-08) and [[0.3.13] - 2022-01
 - in `ereal.v`:
   + lemmas `esum_fset_ninfty`, `esum_fset_pinfty`
   + lemmas `desum_fset_pinfty`, `desum_fset_ninfty`
+  + lemmas `big_nat_widenl`, `big_geq_mkord`
 - in `csum.v`:
   + lemmas `fsets_img`, `fsets_ord`, `fsets_ord_nat`, `fsets_ord_subset`, `csum_bigcup_le`,
     `le_csum_bigcup`
