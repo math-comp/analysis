@@ -29,10 +29,24 @@ Add Search Blacklist "_mixin_".
 (*  {injfun A >-> B} == type of injective functions                           *)
 (*     {bij A >-> B} == combination of {injfun A >-> B} and {surjfun A >-> B} *)
 (*                                                                            *)
-(*         Section function_space == canonical ringType and lmodType          *)
-(*                                   structures for functions whose range is  *)
-(*                                   a ringType, comRingType,or lmodType.     *)
-(*                           fctE == multi-rule for fct                       *)
+(*         mkfun fAB == builds a function {fun A >-> B} given a function      *)
+(*                      f : aT -> rT and a proof fAB that                     *)
+(*                      {homo f : x / A x >-> B x}                            *)
+(*    glue XY AB f g == function that behaves as f over X and as g over Y,    *)
+(*                      XY is a proof that two sets X and Y are disjoint,     *)
+(*                      AB is a proof that two sets A and B are disjoint,     *)
+(*                      A and B are intended to be the ranges of f and g      *)
+(*                                                                            *)
+(* * Function restriction:                                                    *)
+(*       patch d A f == "partial function" that behaves as the function f     *)
+(*                      over the set A and as the function d otherwise        *)
+(*      restrict D f := patch (fun=> point) D f                               *)
+(*            f \_ D := restrict D f                                          *)
+(*                                                                            *)
+(* Section function_space == canonical ringType and lmodType                  *)
+(*                           structures for functions whose range is          *)
+(*                           a ringType, comRingType, or lmodType.            *)
+(*                   fctE == multi-rule for fct                               *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -1396,14 +1410,13 @@ HB.instance Definition _  (f : {oinvfun X >-> A}) (g : {oinvfun Y >-> B}) :=
   OInversible.on (gl f g).
 
 Lemma oinv_glue (f : {oinv T >-> T'}) (g : {oinv T >-> T'}) :
-  'oinv_(gl f g) = (glue AB (eqbRL disj_set_some XY) 'oinv_f 'oinv_g).
+  'oinv_(gl f g) = glue AB (eqbRL disj_set_some XY) 'oinv_f 'oinv_g.
 Proof. by []. Qed.
 
 Lemma some_inv_glue_subproof (f g : {inv T >-> T'}) :
-    some \o (glue AB XY f^-1 g^-1) = 'oinv_(gl f g).
+  some \o (glue AB XY f^-1 g^-1) = 'oinv_(gl f g).
 Proof.
-apply/funext => y; rewrite oinv_glue /glue /=.
-by case: ifPn =>/=; rewrite some_inv.
+by apply/funext => y; rewrite oinv_glue /glue /= [LHS]fun_if !some_inv.
 Qed.
 
 HB.instance Definition _ (f g : {inv T >-> T'}) :=
@@ -2459,19 +2472,19 @@ Section function_space_lemmas.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
-Lemma addrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
-  f + g = (fun x : T => f x + g x).
+Lemma addrfctE (T : pointedType) (K : zmodType) (f g : T -> K) :
+  f + g = (fun x => f x + g x).
 Proof. by []. Qed.
 
-Lemma opprfunE (T : pointedType) (K : ringType) (f : T -> K) :
-  - f = (fun x : T => - f x).
+Lemma opprfctE (T : pointedType) (K : zmodType) (f : T -> K) :
+  - f = (fun x => - f x).
 Proof. by []. Qed.
 
-Lemma mulrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
-  f * g = (fun x : T => f x * g x).
+Lemma mulrfctE (T : pointedType) (K : ringType) (f g : T -> K) :
+  f * g = (fun x => f x * g x).
 Proof. by []. Qed.
 
-Lemma scalrfunE (T : pointedType) (K : ringType) (L : lmodType K)
+Lemma scalrfctE (T : pointedType) (K : ringType) (L : lmodType K)
     k (f : T -> L) :
   k *: f = (fun x : T => k *: f x).
 Proof. by []. Qed.
@@ -2479,17 +2492,15 @@ Proof. by []. Qed.
 Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
 Proof. by []. Qed.
 
-Lemma exprfunE (T : pointedType) (K : ringType) (f : T -> K) n :
+Lemma exprfctE (T : pointedType) (K : ringType) (f : T -> K) n :
   f ^+ n = (fun x => f x ^+ n).
-Proof.
-by elim: n => [|n ihn]; rewrite funeqE=> ?; [rewrite !expr0|rewrite !exprS ihn].
-Qed.
+Proof. by elim: n => [|n h]; rewrite funeqE=> ?; rewrite ?expr0 ?exprS ?h. Qed.
 
 Lemma compE (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3) :
   g \o f = fun x => g (f x).
 Proof. by []. Qed.
 
 Definition fctE :=
-  (cstE, compE, opprfunE, addrfunE, mulrfunE, scalrfunE, exprfunE).
+  (cstE, compE, opprfctE, addrfctE, mulrfctE, scalrfctE, exprfctE).
 
 End function_space_lemmas.

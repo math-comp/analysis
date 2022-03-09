@@ -231,7 +231,7 @@ Lemma card_lexx T (A : set T) : A #<= A.
 Proof. by apply/card_leP; squash idfun. Qed.
 #[global] Hint Resolve card_lexx : core.
 
-Lemma card_leT T (S : set T) : (S #<= [set: T]).
+Lemma card_leT T (S : set T) : S #<= [set: T].
 Proof. by apply/card_leP; squash (to_setT \o inclT _ \o val). Qed.
 
 Lemma subset_card_le T (A B : set T) : A `<=` B -> A #<= B.
