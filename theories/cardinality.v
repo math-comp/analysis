@@ -57,7 +57,8 @@ Definition card_le T U (A : set T) (B : set U) :=
 Notation "A '#<=' B" := (card_le A B) : card_scope.
 Notation "A '#>=' B" := (card_le B A) (only parsing) : card_scope.
 
-Definition card_eq T U (A : set T) (B : set U) := `[<$|{bij [set: A] >-> [set: B]}|>].
+Definition card_eq T U (A : set T) (B : set U) :=
+  `[< $|{bij [set: A] >-> [set: B]}| >].
 Notation "A '#=' B" := (card_eq A B) : card_scope.
 Notation "A '#!=' B" := (~~ (card_eq A B)) : card_scope.
 

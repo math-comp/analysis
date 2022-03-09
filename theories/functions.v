@@ -13,35 +13,50 @@ Add Search Blacklist "_mixin_".
 (* This file provides a theory of functions whose domain and codomain are     *)
 (* represented by sets.                                                       *)
 (*                                                                            *)
-(*     set_fun A B f == f : aT -> rT is a function with domain A : set aT and *)
-(*                      codomain B : set rT                                   *)
-(*    set_surj A B f == f is surjective                                       *)
-(*     set inj A B f == f is injective                                        *)
-(*     set_bij A B f == f is bijective                                        *)
-(*    {fun A >-> B } == type of functions f : aT -> rT from A : set aT to     *)
-(*                      B : set rT                                            *)
-(*  {oinv aT >-> rT} == type of functions with a partial inverse              *)
-(* {oinvfun A >-> B} == combination of {fun A >-> B} and {oinv aT >-> rT}     *)
-(*   {inv aT >-> rT} == type of functions with an inverse                     *)
-(*             f ^-1 == inverse of f : {inv aT >-> rT}                        *)
-(*  {invfun A >-> B} == combination of {fun A >-> B} and {inv aT >-> rT}      *)
-(* {surjfun A >-> B} == type of surjective functions                          *)
-(*  {injfun A >-> B} == type of injective functions                           *)
-(*     {bij A >-> B} == combination of {injfun A >-> B} and {surjfun A >-> B} *)
+(*          set_fun A B f == f : aT -> rT is a function with domain           *)
+(*                           A : set aT and codomain B : set rT               *)
+(*         set_surj A B f == f is surjective                                  *)
+(*          set inj A B f == f is injective                                   *)
+(*          set_bij A B f == f is bijective                                   *)
 (*                                                                            *)
-(*         mkfun fAB == builds a function {fun A >-> B} given a function      *)
-(*                      f : aT -> rT and a proof fAB that                     *)
-(*                      {homo f : x / A x >-> B x}                            *)
-(*    glue XY AB f g == function that behaves as f over X and as g over Y,    *)
-(*                      XY is a proof that two sets X and Y are disjoint,     *)
-(*                      AB is a proof that two sets A and B are disjoint,     *)
-(*                      A and B are intended to be the ranges of f and g      *)
+(*          {fun A >-> B} == type of functions f : aT -> rT from A : set aT   *)
+(*                           to B : set rT                                    *)
+(*       {oinv aT >-> rT} == type of functions with a partial inverse         *)
+(*      {oinvfun A >-> B} == combination of {fun A >-> B} and                 *)
+(*                           {oinv aT >-> rT}                                 *)
+(*        {inv aT >-> rT} == type of functions with an inverse                *)
+(*                  f ^-1 == inverse of f : {inv aT >-> rT}                   *)
+(*       {invfun A >-> B} == combination of {fun A >-> B} and {inv aT >-> rT} *)
+(*         {surj A >-> B} == type of surjective functions                     *)
+(*      {surjfun A >-> B} == combination of {fun A >-> B} and {surj A >-> B}  *)
+(*    {splitsurj A >-> B} == type of surjective functions with an inverse     *)
+(* {splitsurjfun A >-> B} == combination of {fun A >-> B} and                 *)
+(*                           {splitsurj A >-> B}                              *)
+(*         {inj A >-> rT} == type of injective functions                      *)
+(*       {injfun A >-> B} == combination of {fun A >-> B} and {inj A >-> rT}  *)
+(*     {splitinj A >-> B} == type of injective functions with an inverse      *)
+(*  {splitinjfun A >-> B} == combination of {fun A >-> B} and                 *)
+(*                           {splitinj A >-> B}                               *)
+(*          {bij A >-> B} == combination of {injfun A >-> B} and              *)
+(*                           {surjfun A >-> B}                                *)
+(*     {splitbij A >-> B} == combination of {splitinj A >-> B} and            *)
+(*                           {splitsurj A >-> B}                              *)
+(*                                                                            *)
+(*              mkfun fAB == builds a function {fun A >-> B} given a function *)
+(*                           f : aT -> rT and a proof fAB that                *)
+(*                           {homo f : x / A x >-> B x}                       *)
+(*             @ssquash T == function of type                                 *)
+(*                           {splitsurj [set: T] >-> [set: $| T |]}           *)
+(*         glue XY AB f g == function that behaves as f over X, as g over Y   *)
+(*                           XY is a proof that sets X and Y are disjoint,    *)
+(*                           AB is a proof that sets A and B are disjoint,    *)
+(*                           A and B are intended to be the ranges of f and g *)
 (*                                                                            *)
 (* * Function restriction:                                                    *)
-(*       patch d A f == "partial function" that behaves as the function f     *)
-(*                      over the set A and as the function d otherwise        *)
-(*      restrict D f := patch (fun=> point) D f                               *)
-(*            f \_ D := restrict D f                                          *)
+(*            patch d A f == "partial function" that behaves as the function  *)
+(*                           f over the set A and as the function d otherwise *)
+(*           restrict D f := patch (fun=> point) D f                          *)
+(*                 f \_ D := restrict D f                                     *)
 (*                                                                            *)
 (* Section function_space == canonical ringType and lmodType                  *)
 (*                           structures for functions whose range is          *)
@@ -1291,9 +1306,10 @@ Hint Extern 0 (is_true (set_val _ \in _)) => solve [apply: valP] : core.
 (* Squash *)
 (**********)
 
-HB.instance Definition _ T := CanV.Build T $|T| setT setT squash (fun _ _ => I) (in1W unsquashK).
+HB.instance Definition _ T := CanV.Build T $|T| setT setT squash (fun _ _ => I)
+                              (in1W unsquashK).
 HB.instance Definition _ T := SplitInj.copy (@unsquash T) squash^-1%FUN.
-Definition ssquash {T} := [splitsurj of (@squash T)].
+Definition ssquash {T} := [splitsurj of @squash T].
 
 (***********************)
 (* pickle and unpickle *)
@@ -1311,8 +1327,10 @@ HB.instance Definition _ (T : countType) :=
 Lemma set0fun_inj {P T} : injective (@set0fun P T).
 Proof. by case=> x x0; have := set_mem x0. Qed.
 
-HB.instance Definition _ P T := Inj.Build (@set0 T) P setT set0fun (in2W set0fun_inj).
-HB.instance Definition _ P T := IsFun.Build _ _ setT setT (@set0fun P T) (fun _ _ => I).
+HB.instance Definition _ P T :=
+  Inj.Build (@set0 T) P setT set0fun (in2W set0fun_inj).
+HB.instance Definition _ P T :=
+  IsFun.Build _ _ setT setT (@set0fun P T) (fun _ _ => I).
 
 (************)
 (* cast_ord *)
