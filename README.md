@@ -46,7 +46,7 @@ the Coq proof-assistant and using the Mathematical Components library.
   - [MathComp field 1.13 or later](https://math-comp.github.io)
   - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
-  - [Hierarchy Builder >= 1.0.0](https://github.com/math-comp/hierarchy-builder)
+  - [Hierarchy Builder >= 1.2.0](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
 - Related publication(s):
   - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)
