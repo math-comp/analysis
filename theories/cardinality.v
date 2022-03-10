@@ -98,8 +98,7 @@ Proof. by move=> f; apply/card_leP; squash (sigLR f). Qed.
 Lemma pcard_leP {T} {U : pointedType} {A : set T} {B : set U} :
    reflect $|{injfun A >-> B}| (A #<= B).
 Proof.
-by apply: (iffP card_leP) => -[f];
-  [squash (valLR point f) | squash (sigLR f)].
+by apply: (iffP card_leP) => -[f]; [squash (valLR point f) | squash (sigLR f)].
 Qed.
 
 Lemma pcard_leTP {T} {U : pointedType} {A : set T} :
