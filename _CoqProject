@@ -35,6 +35,7 @@ theories/forms.v
 theories/derive.v
 theories/measure.v
 theories/numfun.v
+theories/lebesgue_measure.v
 theories/lebesgue_integral.v
 theories/probability.v
 theories/summability.v
