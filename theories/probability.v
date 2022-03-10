@@ -1,12 +1,12 @@
-(* -*- company-coq-local-symbols: (("\\int_" . ?∫) ("'d" . ?𝑑) ("^\\+" . ?⁺) ("^\\-" . ?⁻) ("`&`" . ?∩) ("`|`" . ?∪) ("set0" . ?∅) ("\\d_" . ?δ)); -*- *)
+(* -*- company-coq-local-symbols: (("\\int_" . ?∫) ("'d" . ?𝑑) ("\\d_" . ?δ)); -*- *)
 (* intersection U+2229; union U+222A, set U+2205, delta U+03B4 *)
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg ssrnum ssrint interval.
 Require Import boolp reals ereal.
 From HB Require Import structures.
-Require Import classical_sets signed topology normedtype sequences measure.
-Require Import lebesgue_measure lebesgue_integral functions numfun.
+Require Import classical_sets signed topology normedtype cardinality sequences.
+Require Import esum measure lebesgue_measure lebesgue_integral functions numfun.
 
 (******************************************************************************)
 (*                             Probability (WIP)                              *)
@@ -51,56 +51,17 @@ Local Open Scope ring_scope.
 (******************************************************************************)
 
 (* TODO: PR in progress *)
-Lemma preimage_setT {aT rT : Type} (f : aT -> rT) : f @^-1` setT = setT.
-Proof. by []. Qed.
-(* /TODO: PR in progress *)
-
-(******************************************************************************)
-(* TODO: backport the following                                               *)
-(******************************************************************************)
-
-Section fine.
-Variable (R : numDomainType).
-Lemma fineM  : {in fin_num &, {morph (@fine R) : x y / (x * y)%E >-> (x * y)%R}}.
-Proof. by move=> [x| |] [y| |]. Qed.
-End fine.
-
 Hint Extern 0 (measurable_fun _ normr) =>
   solve [exact: measurable_fun_normr] : core.
 
-Definition expe (R : numDomainType) (x : \bar R) (n : nat) :=
-  @iterop (\bar R) n ( *%E) x 1%E.
-Notation "x ^+ n" := (expe x n) : ereal_scope.
-
-Definition enatmul (R : numDomainType) (x : \bar R) (n : nat) :=
-  @iterop (\bar R) n ( +%E) x 0%E.
-Notation "x *+ n" := (enatmul x n) : ereal_scope.
-
-Lemma enatmul_pinfty (R : numDomainType) n : (+oo *+ n.+1 = +oo :> \bar R)%E.
-Proof. by elim: n => //= n ->. Qed.
-
-Lemma enatmul_ninfty (R : numDomainType) n : (-oo *+ n.+1 = -oo :> \bar R)%E.
-Proof. by elim: n => //= n ->. Qed.
-
-Lemma EFin_enatmul (R : numDomainType) (x : R) n : (x *+ n.+1)%:E = (x%:E *+ n.+1)%E.
-Proof. by elim: n => //= n <-. Qed.
-
-Lemma mule_natl (R : realDomainType) (x : \bar R) (n : nat) : (n%:R%:E * x)%E = (x *+ n)%E.
-Proof.
-elim: n => [|n]; first by rewrite mul0e.
-move: x => [x| |] ih.
-- by rewrite -EFinM mulr_natl EFin_enatmul.
-- by rewrite mulrpinfty gtr0_sg// mul1e enatmul_pinfty.
-- by rewrite mulrninfty gtr0_sg// mul1e enatmul_ninfty.
-Qed.
-
-Lemma mule2n (R : numDomainType) (x : \bar R) : (x *+ 2 = x + x)%E.
-Proof. by []. Qed.
-
-Lemma expe2 (R : numDomainType) (x : \bar R) : (x ^+ 2)%E = (x * x)%E.
-Proof. by []. Qed.
-
 Definition sqe (R : numDomainType) (x : \bar R) := (x ^+ 2)%E.
+
+Lemma csum_set1 [R : realType] [T : choiceType] (t : T) (a : T -> \bar R) :
+  (forall t, 0 <= a t)%E ->
+  \esum_(i in [set t]) a i = a t.
+Proof.
+Admitted.
+(* /TODO: PR in progress *)
 
 Notation integralrM := integrableK.
 
@@ -130,6 +91,7 @@ Arguments eq_integrable {T R mu D} _ f2 f1.
 (* /TODO: backport                                                            *)
 (******************************************************************************)
 
+(* NB: PR in progress *)
 Section measure_dirac.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (a : T) (R : realType).
@@ -174,14 +136,12 @@ Proof. by rewrite /measure_dirac; unlock. Qed.
 End measure_dirac.
 Arguments measure_dirac {T} _ {R}.
 
-Require Import cardinality esum.
 Reserved Notation "'\d_' a" (at level 9, format "'\d_'  a").
 
 Notation "\d_ a" := (measure_dirac a).
 
 From mathcomp.finmap Require Import finmap.
 
-(* TODO: awkward? *)
 Lemma integralM_indic (T : measurableType) (R : realType)
     (m : {measure set T -> \bar R}) (D : set T) (f : R -> set T) k :
   (k < 0 -> f k = set0) ->
@@ -249,7 +209,6 @@ Qed.
 
 End integral_dirac.
 
-(* TODO: move to measure.v? *)
 Section measure_image.
 Local Open Scope ereal_scope.
 Variables (T1 T2 : measurableType) (f : T1 -> T2).
@@ -282,6 +241,7 @@ Lemma measure_imageE A : measure_image A = m (f @^-1` A).
 Proof. by rewrite /measure_image; unlock. Qed.
 
 End measure_image.
+(* /NB: PR in progress *)
 
 (* TODO: move to measure.v? *)
 Section transfer.
@@ -361,15 +321,19 @@ Variables (T : measurableType) (R : realType) (P : probability T R).
 Lemma probability_setT : P setT = 1%:E.
 Proof. by case: P. Qed.
 
-Lemma probability_set0 : P set0 = 0%:E.
+Lemma probability_set0 : P set0 = 0%E.
 Proof. exact: measure0. Qed.
 
 Lemma probability_not_empty : [set: T] !=set0.
 Proof.
-apply/set0P/negP => /eqP setT0.
-have := probability_set0.
-rewrite -setT0 probability_setT.
-by apply/eqP; rewrite oner_neq0.
+apply/set0P/negP => /eqP setT0; have := probability_set0.
+by rewrite -setT0 probability_setT; apply/eqP; rewrite oner_neq0.
+Qed.
+
+Lemma probability_le1 (A : set T) : measurable A -> (P A <= 1)%E.
+Proof.
+move=> mA; rewrite -probability_setT.
+by apply: le_measure => //; rewrite ?in_setE.
 Qed.
 
 Lemma probability_integrable_cst k : P.-integrable [set: T] (EFin \o cst_mfun k).
@@ -473,7 +437,7 @@ Definition add_RV (X Y : {RV P >-> R}) : {RV P >-> R} :=
   [the {mfun _ >-> _} of X + Y].
 
 Definition scale_RV k (X : {RV P >-> R}) : {RV P >-> R} :=
-  [the {mfun _ >-> _} of k *\ X].
+  [the {mfun _ >-> _} of k \o* X].
 
 End random_variables.
 Notation "f `o X" := (comp_RV f X).
@@ -523,7 +487,8 @@ Lemma expectationM (k : R) : 'E (k `cst* X) = k%:E * 'E X.
 Proof.
 rewrite /expectation.
 under eq_integral do rewrite EFinM.
-by rewrite integralM.
+rewrite -integralM//.
+by under eq_integral do rewrite muleC.
 Qed.
 
 Lemma expectation_ge0 : (forall x, 0 <= X x)%R -> 0 <= 'E X.
@@ -556,7 +521,6 @@ move=> mD mf; rewrite /square_integrable; split.
   apply: le_lt_trans foo; apply ge0_le_integral => //.
   - apply/EFin_measurable_fun => //; apply: measurable_fun_comp => //.
     exact/measurable_fun_sqr/measurable_fun_comp.
-  - by move=> *; rewrite lee_fin.
   - apply/EFin_measurable_fun => //; apply: measurable_fun_sqr => //.
     exact: measurable_fun_comp.
   - by move=> x Dx /=; rewrite ger0_norm.
@@ -583,8 +547,9 @@ move=> PX.
 rewrite /variance (_ : _ `^2 = X `^2 `- (2 * fine 'E X) `cst* X
     `+ fine ('E X ^+ 2) `cst* cst_mfun 1); last first.
   apply/mfuneqP => x /=; rewrite /sqr /subr/= sqrrB -[RHS]/(_ - _ + _)%R /=.
-  congr (_ - _ +  _)%R; first by rewrite mulr_natl mulrC -mulrnAl.
-  rewrite -[RHS]/(_ * _)%R mulr1.
+  congr (_ - _ +  _)%R.
+    by rewrite mulr_natl -mulrnAr mulrC.
+  rewrite -[RHS]/(_ * _)%R mul1r.
   have [Efin|] := boolP ('E X \is a fin_num); first by rewrite fineM.
   by rewrite fin_numElt -(lte_absl ('E X) +oo) (integrable_expectation iX).
 have ? : P.-integrable [set: T] (EFin \o X `^2).
@@ -597,11 +562,17 @@ rewrite expectationD; last 2 first.
     apply: integrableB => //.
     rewrite (eq_integrable _ (fun x => (2 * fine 'E X)%:E * (X x)%:E))//.
     exact: integrableK.
+    move=> t _ /=.
+    by rewrite muleC EFinM.
   - rewrite (eq_integrable _ (fun x => (fine ('E X ^+ 2))%:E * (cst_mfun 1 x)%:E))//.
-    by apply: integrableK => //; exact: probability_integrable_cst.
+      by apply: integrableK => //; exact: probability_integrable_cst.
+    move=> t _ /=.
+    by rewrite mul1r mule1.
 rewrite expectationB //; last first.
   rewrite (eq_integrable _ (fun x => (2 * fine 'E X)%:E * (X x)%:E))//.
-  exact: integrableK.
+    exact: integrableK.
+  move=> t _ /=.
+  by rewrite mulrC EFinM.
 rewrite expectationM// expectationM; last exact: probability_integrable_cst.
 rewrite expectation1 mule1.
 have ? : 'E X \is a fin_num.
@@ -644,52 +615,12 @@ Qed.
 
 End transfer_probability.
 
-(* TODO: move *)
-Lemma csum_set1 [R : realType] [T : choiceType] (t : T) (a : T -> \bar R) :
-  (forall t, 0 <= a t)%E ->
-  \csum_(i in [set t]) a i = a t.
-Proof.
-move=> a0.
-rewrite (_ : [set t] = [set` [fset t]%fset])//; last first.
-  apply/seteqP; split.
-    by move=> x <-; rewrite /= inE.
-  by move=> x; rewrite /= inE => /eqP.
-by rewrite csum_fset// big_seq_fset1.
-Qed.
-
 Require Import functions.
-
-Module DiscreteDistribution.
-Section discrete_distribution.
-Local Open Scope form_scope.
-Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
-Record t := mk {
-  c : R^nat ; c0 : forall n, (0 <= c n)%R ;
-  c1 : (\sum_(n <oo) (c n)%:E = 1)%E ;
-  a : {injfun [set: nat] >-> [set: T]} ;
-  E : mu =1 (fun A => \sum_(n <oo) (c n)%:E * (\d_ (a n) A))%E
-}.
-End discrete_distribution.
-Module Exports.
-Notation discrete_distribution := t.
-End Exports.
-End DiscreteDistribution.
-Export DiscreteDistribution.Exports.
 
 Section subadditive_countable.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 
 Local Open Scope ereal_scope.
-
-Lemma integrable_funenng D (f : T -> \bar R) : measurable D ->
-  mu.-integrable D f -> mu.-integrable D f^\+.
-Proof.
-Admitted. (* PR in progress *)
-
-Lemma integrable_funennp D (f : T -> \bar R) : measurable D ->
-  mu.-integrable D f -> mu.-integrable D f^\-.
-Proof.
-Admitted. (* PR in progress *)
 
 (* PR: in progress *)
 Lemma integral_set0 (f : T -> \bar R) : \int_ set0 (f x) 'd mu[x] = 0.
@@ -712,7 +643,7 @@ Lemma integral_bigsetU (F : (set T)^nat) (mF : forall n, measurable (F n))
 Proof.
 Admitted.
 
-Lemma ge0_subadditive_countable (F : (set _)^nat) (f : T -> \bar R) :
+Lemma ge0_integral_bigcup (F : (set _)^nat) (f : T -> \bar R) :
   (forall x, 0 <= f x)%E ->
   trivIset setT F ->
   (forall k, measurable (F k)) ->
@@ -722,52 +653,100 @@ Lemma ge0_subadditive_countable (F : (set _)^nat) (f : T -> \bar R) :
 Proof.
 Admitted.
 
-Lemma subadditive_countable (F : (set _)^nat) (f : T -> R) :
-  trivIset setT F ->
-  (forall k, measurable (F k)) ->
-  mu.-integrable (\bigcup_k F k) (EFin \o f) ->
-  (\int_ (\bigcup_i F i) ((EFin \o f) x) 'd mu[x] =
-   \sum_(i <oo) \int_ (F i) ((EFin \o f) x) 'd mu[x])%E.
-Proof.
-move=> tF mF fi.
-set g := EFin \o f.
-transitivity (\int_ (\bigcup_i F i) g^\+ x 'd mu[x] -
-              \int_ (\bigcup_i F i) g^\- x 'd mu[x])%E.
-  rewrite -integralB; last 3 first.
-    exact: measurable_bigcup.
-    by apply: integrable_funenng => //; exact: measurable_bigcup.
-    by apply: integrable_funennp => //; exact: measurable_bigcup.
-  by apply eq_integral => t Ft; rewrite [in LHS](funenngnnp g).
-transitivity (\sum_(i <oo) (\int_ (F i) (g^\+ x) 'd mu[x] - \int_ (F i) (g^\- x) 'd mu[x])); last first.
-  apply: eq_ereal_pseries => // i.
-  by rewrite [RHS]integralE.
-transitivity (
-    (\sum_(i <oo) \int_ (F i) (g^\+ x) 'd mu[x]) -
-    (\sum_(i <oo) \int_ (F i) (g^\- x) 'd mu[x]))%E.
-  rewrite ge0_subadditive_countable//; last first.
-    by apply: integrable_funenng => //; exact: measurable_bigcup.
-  by rewrite ge0_subadditive_countable//; apply: integrable_funennp => //; exact: measurable_bigcup.
-Abort.
+Definition summable (R' : realType) (T' : choiceType) (D : set T') (f : T' -> \bar R') :=
+  \esum_(x in D) `| f x | < +oo.
 
+Lemma esumB :
+forall [R' : realType] [T' : choiceType] [D : set T'] [f g : T' -> \bar R'],
+summable D f ->
+summable D g ->
+(forall i : T', D i -> (0 <= f i)%E) ->
+(forall i : T', D i -> (0 <= g i)%E) ->
+(\esum_(i in D) (f \- g)^\+ i - \esum_(i in D) (f \- g)^\- i)%E =
+(\esum_(i in D) f i - \esum_(i in D) g i)%E.
+Admitted.
+
+Lemma summable_ereal_pseries (f : nat -> \bar R) (P : pred nat) :
+  summable P f ->
+  \sum_(i <oo | P i) (f i) = \sum_(i <oo | P i) f^\+ i - \sum_(i <oo | P i) f^\- i.
+Admitted.
+
+Lemma integrable_abse [T' : measurableType] [R' : realType]
+    [m : {measure set T' -> \bar R'}] [D : set T'] :
+  measurable D -> forall f : T' -> \bar R', m.-integrable D f -> m.-integrable D (abse \o f).
+Proof.
+Admitted.
+
+Lemma integrable_summable (F : (set T)^nat) (g : T -> \bar R):
+  trivIset setT F -> (forall k, measurable (F k)) ->
+  mu.-integrable (\bigcup_k F k) g ->
+  summable [set: nat] (fun i => \int_ (F i) g x 'd mu[x]).
+Proof.
+Admitted.
+
+Lemma integral_bigcup (F : (set _)^nat) (g : T -> \bar R) :
+  trivIset setT F -> (forall k, measurable (F k)) ->
+  mu.-integrable (\bigcup_k F k) g ->
+  (\int_ (\bigcup_i F i) (g x) 'd mu[x] = \sum_(i <oo) \int_ (F i) (g x) 'd mu[x])%E.
+Proof.
+(* /PR in progress *)
+Admitted.
 End subadditive_countable.
+
+Module DiscreteDistribution.
+Section discrete_distribution.
+Local Open Scope form_scope.
+Variables (T : measurableType) (R : realType) (P : probability T R)
+          (X : {RV P >-> R}).
+Record t := mk {
+  c : R^nat ; c0 : forall n, (0 <= c n)%R ; c1 : (\sum_(n <oo) (c n)%:E = 1)%E ;
+  a : {injfun [set: nat] >-> [set: R]} ;
+  E : distribution X =1 (fun A => \sum_(n <oo) (c n)%:E * (\d_ (a n) A))%E
+}.
+(*Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
+Record t := mk {
+  c : R^nat ; c0 : forall n, (0 <= c n)%R ; c1 : (\sum_(n <oo) (c n)%:E = 1)%E ;
+  a : {injfun [set: nat] >-> [set: T]} ;
+  E : mu =1 (fun A => \sum_(n <oo) (c n)%:E * (\d_ (a n) A))%E
+}.*)
+End discrete_distribution.
+Module Exports.
+Notation discrete_distribution := t.
+End Exports.
+End DiscreteDistribution.
+Export DiscreteDistribution.Exports.
+
+Lemma nneseries0 (R : realFieldType) (f : (\bar R)^nat) :
+  (forall i, f i = 0%E) -> (\sum_(i <oo) f i = 0)%E.
+Admitted. (*NB: this is in master*)
+
+Lemma preimage10' {T R : Type} {f : T -> R} {x : R} :
+  f @^-1` [set x] = set0 -> ~ range f x.
+Proof.
+rewrite /image /=.
+apply: contraPnot => -[t _ <-].
+rewrite /preimage/=.
+by move/seteqP => -[+ _] => /(_ t) /=.
+Qed.
 
 Section discrete_distribution.
 Variables (T : measurableType) (R : realType) (P : probability T R)
-  (X : {RV P >-> R}) (d : discrete_distribution (distribution X)).
+  (X : {RV P >-> R}) (d : discrete_distribution X).
 
 Notation C := (DiscreteDistribution.c d).
 Notation A := (DiscreteDistribution.a d).
 
-Lemma test1 (n : nat) : P [set x | X x = A n] = (C n)%:E.
+Lemma test0 r : P [set x | X x = r] = distribution X [set r].
+Proof. by rewrite /distribution /= measure_imageE. Qed.
+
+Lemma test1 (n : nat) : distribution X [set A n] = (C n)%:E.
 Proof.
-transitivity (distribution X [set DiscreteDistribution.a d n]).
-  by rewrite /distribution /= measure_imageE.
 rewrite (DiscreteDistribution.E d).
-rewrite ereal_pseries_csum; last first.
+rewrite ereal_pseries_esum; last first.
   by move=> m _; rewrite mule_ge0// lee_fin DiscreteDistribution.c0.
-rewrite (csumID [set n]); last first.
+rewrite (esumID [set n]); last first.
   by move=> m _; rewrite mule_ge0// lee_fin DiscreteDistribution.c0.
-rewrite addeC csum0 ?add0e; last first.
+rewrite addeC esum0 ?add0e; last first.
   move=> m [_ /= mn].
   rewrite measure_diracE/=.
   rewrite memNset ?mule0//=.
@@ -780,25 +759,50 @@ move=> t.
 by rewrite mule_ge0// lee_fin DiscreteDistribution.c0.
 Qed.
 
-Lemma discrete_expectation : 'E X = (\sum_(n <oo) (C n)%:E * (A n)%:E)%E.
+Lemma abse1 : `|1|%E = 1%E :> \bar R.
+Proof. by rewrite /abse normr1. Qed.
+
+Lemma discrete_expectation :
+   (forall t, exists n, X t = A n) (*X takes only the values A n*) ->
+   P.-integrable setT (EFin \o X) ->
+  'E X = (\sum_(n <oo) (C n)%:E * (A n)%:E)%E.
 Proof.
+move=> XA ix.
 rewrite /expectation.
+have H1 : \bigcup_k X @^-1` [set A k] = setT.
+  apply/seteqP; split => // t _.
+  rewrite /bigcup /=.
+  by have [n XtAn] := XA t; exists n.
+rewrite -H1.
 have H2 : trivIset setT (fun k => [set A k]).
   move=> i j _ _ [/= r []]; case: d => c c0 c1 /= a dXE rai raj.
   by apply: (@injT _ _ a) => /=; rewrite -rai -raj.
-transitivity (\int_ (\bigcup_k X @^-1` [set A k]) (X w)%:E 'd P[w])%E.
-  admit.
-transitivity (\sum_(k <oo) \int_ (X @^-1` [set A k]) (A k)%:E 'd P[w])%E.
-  rewrite subadditive_countable; last 3 first.
-    admit.
-    admit.
-    admit.
-  admit. (* NB: X w = A k *)
-transitivity (\sum_(k <oo) (A k)%:E * P (X @^-1` [set A k]))%E.
-  apply eq_ereal_pseries => k.
-  by rewrite integral_cst //; last by admit.
-apply eq_ereal_pseries => k; rewrite muleC; congr (_ * _)%E.
-by rewrite test1.
-Abort.
+have H3 : trivIset [set: nat] (fun i : nat => X @^-1` [set A i]).
+  apply/trivIsetP => /= i j _ _ ij.
+  move/trivIsetP : H2 => /(_ i j Logic.I Logic.I ij) Aij.
+  by rewrite -preimage_setI Aij preimage_set0.
+rewrite integral_bigcup//; last first.
+  apply: (integrableS measurableT) => //.
+  exact: bigcup_measurable.
+transitivity ((\sum_(i <oo) \int_ (X @^-1` [set A i]) (A i)%:E 'd P[x])%E).
+  apply eq_ereal_pseries => i.
+  apply eq_integral => t.
+  by rewrite in_setE/= => ->.
+transitivity ((\sum_(i <oo) (A i)%:E * \int_ (X @^-1` [set A i]) 1 'd P[x])%E).
+  apply eq_ereal_pseries => i.
+  rewrite -integralM//; last first.
+    split => //.
+      exact: measurable_fun_cst.
+    rewrite (eq_integral (cst 1%E)); last by move=> x _; rewrite abse1.
+    rewrite integral_cst// mul1e (@le_lt_trans _ _ 1%E) ?lte_pinfty//.
+    exact: probability_le1.
+  congr integral.
+  apply funext => y.
+  by rewrite mule1.
+apply eq_ereal_pseries => k.
+rewrite muleC.
+congr (_ * _)%E.
+by rewrite integral_cst//= mul1e test0 test1.
+Qed.
 
 End discrete_distribution.
