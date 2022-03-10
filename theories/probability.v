@@ -524,3 +524,63 @@ Qed.
 Local Close Scope ereal_scope.
 
 End discrete_distribution.
+
+Section cvg_random_variable.
+Variables (d : _) (T : measurableType d) (R : realType) (P : probability T R).
+
+Definition probabilistic_cvg (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
+  := forall a : {posnum R}, [sequence (fine \o P) [set x | a%:num <= `| X n x - Y x | ] ]_n --> (0%R:R).
+
+Definition norm1 (X : {RV P >-> R})
+  := fine ('E ((@mabs R) `o X)).
+
+Lemma prop_23_1 (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
+  : (norm1 (X n `- Y) @[n --> \oo]--> (0:R)%R) -> probabilistic_cvg X Y.
+Proof.
+rewrite /norm1.
+move => h a /=.
+apply/(@cvg_distP _ [pseudoMetricNormedZmodType R of R^o]).
+move => eps heps.
+rewrite near_map /=.
+move /(@cvgr0Pnorm_lt _ [pseudoMetricNormedZmodType R of R^o]) : h.
+have a0: 0 < a%:num by [].
+move /(_ (a%:num) a0) => h1.
+case: h1 => m _ h1 .
+near=> n.
+rewrite sub0r.
+rewrite normrN.
+rewrite ger0_norm; last first.
+  apply: fine_ge0; apply: probability_ge0.
+change eps with (fine eps%:E).
+rewrite fine_lt => //; first apply probability_fin.
+  admit.
+(* have -> : P [set x | (a%:num <= `|X n x - Y x|)%R] = 0%E.
+  have mn : (m <= n)%N.
+  near: n.
+  exists m => //.
+  have := h1 _ mn.
+  unfold norm1.
+  rewrite /=.
+  have := (@markov _ T R P (X n - Y) [the {mfun R >-> R} of (@mid R)] (a%:num) a0).
+  move => /=. *)
+  (* apply: le_lt_trans. *)
+  (* move: x.
+  near: n.
+  by [].
+  have := h x.
+  move => [m] _.
+  have mn : (m <= n)%N.
+  move /(_ m) => /=.
+  move /(_ (leqnn m)).
+  rewrite normr_id.
+  rewrite ltNge. *)
+  (* admit.
+apply: le_lt_trans.
+  rewrite le_eqVlt.
+  apply /orP. left.
+  apply /eqP.
+  apply probability0.
+apply heps. *)
+Abort.
+
+End cvg_random_variable.
