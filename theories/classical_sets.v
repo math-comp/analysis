@@ -652,6 +652,10 @@ Proof. by rewrite eqEsubset propeqE; split=> [|[]]. Qed.
 
 Lemma subsetT A : A `<=` setT. Proof. by []. Qed.
 
+Lemma subsetW {A B} : A = B -> A `<=` B. Proof. by move->. Qed.
+
+Definition subsetCW {A B} : A = B -> B `<=` A := subsetW \o esym.
+
 Lemma disj_set2E A B : [disjoint A & B] = (A `&` B == set0).
 Proof. by []. Qed.
 

@@ -9,6 +9,8 @@
 - in `functions.v`:
   + `addrfunE` renamed to `addrfctE` and generalized to `Type`, `zmodType`
   + `opprfunE` renamed to `opprfctE` and generalized to `Type`, `zmodType`
+- moved from `functions.v` to `classical_sets.v`
+  + lemma `subsetW`, definition `subsetCW`
 
 ### Renamed
 

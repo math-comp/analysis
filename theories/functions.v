@@ -42,20 +42,36 @@ Add Search Blacklist "_mixin_".
 (*     {splitbij A >-> B} == combination of {splitinj A >-> B} and            *)
 (*                           {splitsurj A >-> B}                              *)
 (*                                                                            *)
+(*              funin A f == alias for f : aT -> rT, with A : set aT          *)
+(*             [fun f in A] == the function f from the set A to the set f @` A  *)
 (*             @to_setT T == function that associates to x : T a dependent    *)
 (*                           pair of x with a proof that x belongs to setT    *)
+(*                           (i.e., the type set_type [set: T])               *)
 (*                incl AB == identity function from T to T, where AB is a     *)
-(*                           proof of A `<=` B, A, B : set T                  *)
+(*                           proof of A `<=` B, with A, B : set T             *)
 (*                inclT A := incl (@subsetT _ _)                              *)
+(*              eqincl AB == identity function from T to T, where AB is a     *)
+(*                           proof of A = B, with A, B : set T                *)
 (*              mkfun fAB == builds a function {fun A >-> B} given a function *)
 (*                           f : aT -> rT and a proof fAB that                *)
 (*                           {homo f : x / A x >-> B x}                       *)
+(*           @set_val T A == injection from set_type A to T, where A has      *)
+(*                           type set T                                       *)
 (*             @ssquash T == function of type                                 *)
 (*                           {splitsurj [set: T] >-> [set: $| T |]}           *)
+(*        @finset_val T X == function that turns an element x : X             *)
+(*                           (with X : {fset T}) into a dependent pair of x   *)
+(*                           with a proof that x belongs to X                 *)
+(*                           (i.e., the type set_type [set` X])               *)
+(*        @val_finset T X == function of type [set` X] -> X with X : {fset T} *)
+(*                           that cancels finset_val                          *)
 (*         glue XY AB f g == function that behaves as f over X, as g over Y   *)
 (*                           XY is a proof that sets X and Y are disjoint,    *)
 (*                           AB is a proof that sets A and B are disjoint,    *)
 (*                           A and B are intended to be the ranges of f and g *)
+(*           'pinv_ d A f == inverse of the function [fun f in A] over        *)
+(*                           f @` A, function d outside of f @` A             *)
+(*                  pinv := notation for 'pinv_point                          *)
 (*                                                                            *)
 (* * Function restriction:                                                    *)
 (*            patch d A f == "partial function" that behaves as the function  *)
@@ -1209,10 +1225,6 @@ HB.instance Definition _  (AB : A `<=` B) :=
   SurjFun_Inj.Build A B setT (subfun AB @` setT) (subfun AB) (in2W subfun_inj).
 
 End subfun.
-
-(* backport to classical sets *)
-Lemma subsetW {T} {A B : set T} : A = B -> A `<=` B. Proof. by move->. Qed.
-Definition subsetCW {T} {A B : set T} : A = B -> B `<=` A := subsetW \o esym.
 
 Section subfun_eq.
 Context {T} {A B : set T}.
