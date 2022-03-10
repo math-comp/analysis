@@ -42,6 +42,11 @@ Add Search Blacklist "_mixin_".
 (*     {splitbij A >-> B} == combination of {splitinj A >-> B} and            *)
 (*                           {splitsurj A >-> B}                              *)
 (*                                                                            *)
+(*             @to_setT T == function that associates to x : T a dependent    *)
+(*                           pair of x with a proof that x belongs to setT    *)
+(*                incl AB == identity function from T to T, where AB is a     *)
+(*                           proof of A `<=` B, A, B : set T                  *)
+(*                inclT A := incl (@subsetT _ _)                              *)
 (*              mkfun fAB == builds a function {fun A >-> B} given a function *)
 (*                           f : aT -> rT and a proof fAB that                *)
 (*                           {homo f : x / A x >-> B x}                       *)
@@ -1176,8 +1181,8 @@ End SubType.
 
 Definition to_setT {T} (x : T) : [set: T] :=
   @SigSub _ _ _ x (mem_set I : x \in setT).
-HB.instance Definition _ T :=
-  Can.Build T [set: T] setT to_setT ((fun _ _ => erefl) : {in setT, cancel to_setT val}).
+HB.instance Definition _ T := Can.Build T [set: T] setT to_setT
+  ((fun _ _ => erefl) : {in setT, cancel to_setT val}).
 HB.instance Definition _ T := IsFun.Build T _ setT setT to_setT (fun _ _ => I).
 HB.instance Definition _ T :=
   SplitInjFun_CanV.Build T _ _ _ to_setT (fun x y => I) inj.
@@ -2480,7 +2485,8 @@ Qed.
 Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
   LmodType _ (U -> V) (fct_lmodMixin U V).
 
-Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M) (x : T) :
+Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M)
+    (x : T) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
@@ -2490,12 +2496,11 @@ Section function_space_lemmas.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
-Lemma addrfctE (T : pointedType) (K : zmodType) (f g : T -> K) :
+Lemma addrfctE (T : Type) (K : zmodType) (f g : T -> K) :
   f + g = (fun x => f x + g x).
 Proof. by []. Qed.
 
-Lemma opprfctE (T : pointedType) (K : zmodType) (f : T -> K) :
-  - f = (fun x => - f x).
+Lemma opprfctE (T : Type) (K : zmodType) (f : T -> K) : - f = (fun x => - f x).
 Proof. by []. Qed.
 
 Lemma mulrfctE (T : pointedType) (K : ringType) (f g : T -> K) :
