@@ -1702,7 +1702,7 @@ rewrite openE => Aop Bop p [Ap Bp].
 by apply: filterI; [apply: Aop|apply: Bop].
 Qed.
 
-Lemma open_bigU (I : Type) (D : set I) (f : I -> set T) :
+Lemma bigcup_open (I : Type) (D : set I) (f : I -> set T) :
   (forall i, D i -> open (f i)) -> open (\bigcup_(i in D) f i).
 Proof.
 rewrite openE => fop p [i Di].
@@ -2243,7 +2243,7 @@ Proof.
 move=> gop.
 set opi := fun i => [set Ui | open Ui /\ g i = f @^-1` Ui].
 exists (\bigcup_i get (opi i)).
-  apply: open_bigU => i.
+  apply: bigcup_open => i.
   by have /getPex [] : exists U, opi i U by have [U] := gop i; exists U.
 have g_preim i : g i = f @^-1` (get (opi i)).
   by have /getPex [] : exists U, opi i U by have [U] := gop i; exists U.
@@ -5513,9 +5513,8 @@ Qed.
 Lemma open_subspace_out (U : set (subspace A)) : U `<=` ~` A -> open U.
 Proof.
 move=> Usub; rewrite (_ : U = \bigcup_(i in U) [set i]).
-  by apply: open_bigU => ? ?; apply: open_subspace1out; exact: Usub.
-rewrite eqEsubset; split => x; first by move=> ?; exists x.
-by case=> i ? ->.
+  by apply: bigcup_open => ? ?; apply: open_subspace1out; exact: Usub.
+by rewrite eqEsubset; split => x; [move=> ?; exists x|case=> i ? ->].
 Qed.
 
 Lemma open_subspaceT : open (A : set (subspace A)).
@@ -5561,7 +5560,7 @@ have oxF : (forall (x : T), (U `&` A) x ->
 pose f (x : T) :=
   if pselect ((U `&` A) x) is left e then projT1 (cid (oxF x e)) else set0.
 set V := \bigcup_(x in (U `&` A)) (f x); exists V; split.
-  apply: open_bigU => i UAi; rewrite /f; case: pselect => // ?; case: (cid _).
+  apply: bigcup_open => i UAi; rewrite /f; case: pselect => // ?; case: (cid _).
   by move=> //= W; rewrite open_nbhsE=> -[[]].
 rewrite eqEsubset /V /f; split.
   move=> t [[u]] UAu /=; case: pselect => //= ?.

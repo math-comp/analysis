@@ -3476,7 +3476,7 @@ Lemma open_ereal_lt_ereal x : open [set y | y < x].
 Proof.
 case: x => [x | | [] // ] /=; first exact: open_ereal_lt_real.
 suff -> : [set y | y < +oo] = \bigcup_r [set y : \bar R | y < r%:E].
-  by apply open_bigU => x _; exact: open_ereal_lt_real.
+  by apply bigcup_open => x _; exact: open_ereal_lt_real.
 rewrite predeqE => -[r | | ]/=.
 - rewrite lte_pinfty; split => // _.
   by exists (r + 1)%R => //=; rewrite lte_fin ltr_addl.
@@ -3494,7 +3494,7 @@ Lemma open_ereal_gt_ereal x : open [set y | x < y].
 Proof.
 case: x => [x | [] // | ] /=; first exact: open_ereal_gt_real.
 suff -> : [set y | -oo < y] = \bigcup_r [set y : \bar R | r%:E < y].
-  by apply open_bigU => x _; exact: open_ereal_gt_real.
+  by apply bigcup_open => x _; exact: open_ereal_gt_real.
 rewrite predeqE => -[r | | ]/=.
 - rewrite lte_ninfty; split => // _.
   by exists (r - 1)%R => //=; rewrite lte_fin ltr_subl_addr ltr_addl.
