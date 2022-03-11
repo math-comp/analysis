@@ -1049,7 +1049,7 @@ Ltac done :=
    | match goal with |- ?x \is_near _ => near: x; apply: prop_ofP end ].
 
 Lemma have_near (U : Type) (fT : filteredType U) (x : fT) (P : Prop) :
-   ProperFilter (nbhs x) -> (\forall x \near x, P) -> P.
+  ProperFilter (nbhs x) -> (\forall x \near x, P) -> P.
 Proof. by move=> FF nP; have [] := @filter_ex _ _ FF (fun=> P). Qed.
 Arguments have_near {U fT} x.
 
@@ -1099,7 +1099,7 @@ Lemma filter_const {T : Type} {F} {FF: @ProperFilter T F} (P : Prop) :
 Proof. by move=> FP; case: (filter_ex FP). Qed.
 
 Lemma in_filter_from {I T : Type} (D : set I) (B : I -> set T) (i : I) :
-   D i -> filter_from D B (B i).
+  D i -> filter_from D B (B i).
 Proof. by exists i. Qed.
 
 Lemma near_andP {T : Type} F (b1 b2 : T -> Prop) : Filter F ->
@@ -1132,7 +1132,7 @@ Qed.
 
 Lemma filter_ex2 {T U : Type} (F : set (set T)) (G : set (set U))
   {FF : ProperFilter F} {FG : ProperFilter G} (P : set T) (Q : set U) :
-   F P -> G Q -> exists x : T, exists2 y : U, P x & Q y.
+    F P -> G Q -> exists x : T, exists2 y : U, P x & Q y.
 Proof. by move=> /filter_ex [x Px] /filter_ex [y Qy]; exists x, y. Qed.
 Arguments filter_ex2 {T U F G FF FG _ _}.
 
@@ -2083,7 +2083,7 @@ Proof. by move=> ?; exists D. Qed.
 Variable (I : pointedType) (T : Type) (D : set I) (b : I -> (set T)).
 Hypothesis (b_cover : \bigcup_(i in D) b i = setT).
 Hypothesis (b_join : forall i j t, D i -> D j -> b i t -> b j t ->
-  exists k, D k /\ b k t /\ b k `<=` b i `&` b j).
+  exists k, [/\ D k, b k t & b k `<=` b i `&` b j]).
 
 Program Definition topologyOfBaseMixin :=
   @topologyOfOpenMixin _ (open_from D b) (open_fromT b_cover) _ _.
@@ -2098,7 +2098,7 @@ have ABU : forall t, (A `&` B) t ->
   have [iB [DiB [biBt sbiB]]] : exists i, D i /\ b i t /\ b i `<=` B.
     move: Bt; rewrite -BeUbB => - [i DBi bit]; exists i.
     by split; [apply: sDBD|split=> // ?; exists i].
-  have [i [Di [bit sbiAB]]] := b_join DiA DiB biAt biBt.
+  have [i [Di bit sbiAB]] := b_join DiA DiB biAt biBt.
   by exists i; split=> //; split=> // s /sbiAB [/sbiA ? /sbiB].
 set Dt := fun t => [set it | D it /\ b it t /\ b it `<=` A `&` B].
 exists [set get (Dt t) | t in A `&` B].
@@ -2153,7 +2153,7 @@ Program Definition topologyOfSubbaseMixin :=
   @topologyOfBaseMixin _ _ (finI_from D b) id (finI_from_cover D b) _.
 Next Obligation.
 move=> A B t [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
-exists (A `&` B); split; last by split.
+exists (A `&` B); split => //.
 exists (DA `|` DB)%fset; first by move=> i /fsetUP [/sDAD|/sDBD].
 rewrite predeqE => s; split=> [Ifs|[As Bs] i /fsetUP].
   split; first by rewrite -AeIbA => i DAi; apply: Ifs; rewrite /= inE DAi.
@@ -2174,7 +2174,7 @@ Let bT : \bigcup_(i in D) b i = setT.
 Proof. by rewrite predeqE => i; split => // _; exists i. Qed.
 
 Let bD : forall i j t, D i -> D j -> b i t -> b j t ->
-  exists k, D k /\ b k t /\ b k `<=` b i `&` b j.
+  exists k, [/\ D k, b k t & b k `<=` b i `&` b j].
 Proof. by move=> i j t _ _ -> ->; exists j. Qed.
 
 Definition nat_topologicalTypeMixin := topologyOfBaseMixin bT bD.

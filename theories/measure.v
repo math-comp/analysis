@@ -82,6 +82,7 @@ From HB Require Import structures.
 (*                       T : ringOfSetsType.                                  *)
 (*   mrestr mu mD == restriction of the measure mu to a set D; mD is a proof  *)
 (*                   that D is measurable                                     *)
+(*   counting T R == counting measure                                         *)
 (*   mu.-negligible A == A is mu negligible                                   *)
 (*   {ae mu, forall x, P x} == P holds almost everywhere for the measure mu   *)
 (*                                                                            *)
@@ -1609,6 +1610,79 @@ HB.instance Definition _ := isMeasure.Build _ _ restr
   restr0 restr_ge0 restr_sigma_additive.
 
 End measure_restr.
+
+Section measure_count.
+Variables (T : measurableType) (R : realType).
+Variables (D : set T) (mD : measurable D).
+
+Definition counting (X : set T) : \bar R :=
+  if `[< finite_set X >] then (#|` fset_set X |)%:R%:E else +oo.
+
+Let counting0 : counting set0 = 0.
+Proof. by rewrite /counting asboolT// fset_set0. Qed.
+
+Let counting_ge0 (A : set _) : 0 <= counting A.
+Proof. by rewrite /counting; case: ifPn; rewrite ?lee_fin// lee_pinfty. Qed.
+
+Let counting_sigma_additive : semi_sigma_additive counting.
+Proof.
+move=> F mF tF mU.
+have [[i Fi]|infinF] := pselect (exists k, infinite_set (F k)).
+  have -> : counting (\bigcup_n F n) = +oo.
+    rewrite /counting asboolF//.
+    by apply: contra_not Fi; exact/sub_finite_set/bigcup_sup.
+  apply/ereal_cvgPpinfty => M M0; near=> n.
+  have ni : (i < n)%N by near: n; exists i.+1.
+  rewrite (bigID (xpred1 i))/= big_mkord (big_pred1 (Ordinal ni))//=.
+  rewrite [X in X + _]/counting asboolF// addye ?leey//.
+  by rewrite gt_eqF// (@lt_le_trans _ _ 0)//; exact: sume_ge0.
+have {infinF}finF : forall i, finite_set (F i) by exact/not_forallP.
+pose u : nat^nat := fun n => #|` fset_set (F n) |.
+have sumFE n : \sum_(i < n) counting (F i) =
+               #|` fset_set (\big[setU/set0]_(k < n) F k) |%:R%:E.
+  rewrite -trivIset_sum_card// natr_sum -sumEFin.
+  by apply eq_bigr => // i _; rewrite /counting asboolT.
+have [cvg_u|dvg_u] := pselect (cvg (nseries u)).
+  have [N _ Nu] : \forall n \near \oo, u n = 0%N by apply: cvg_nseries_near.
+  rewrite [X in _ --> X](_ : _ = \sum_(i < N) counting (F i)); last first.
+    have -> : \bigcup_i (F i) = \big[setU/set0]_(i < N) F i.
+      rewrite (bigcupID (`I_N)) setTI bigcup_mkord.
+      rewrite [X in _ `|` X](_ : _ = set0) ?setU0// bigcup0// => i [_ /negP].
+      by rewrite -leqNgt => /Nu/eqP/[!cardfs_eq0]/eqP/fset_set_set0 ->.
+    by rewrite /counting /= asboolT ?sumFE// -bigcup_mkord; exact: bigcup_finite.
+  rewrite -(cvg_shiftn N)/=.
+  rewrite (_ : (fun n => _) = (fun=> \sum_(i < N) counting (F i))).
+    exact: cvg_cst.
+  apply/funext => n; rewrite /index_iota subn0 (addnC n) iotaD big_cat/=.
+  rewrite [X in _ + X](_ : _ = 0) ?adde0.
+    by rewrite -{1}(subn0 N) big_mkord.
+  rewrite add0n big_seq big1// => i /[!mem_iota] => /andP[NI iNn].
+  by rewrite /counting asboolT//= -/(u _) Nu.
+have {dvg_u}cvg_F : (fun n => \sum_(i < n) counting (F i)) --> +oo.
+  rewrite (_ : (fun n => _) = [sequence (\sum_(0 <= i < n) (u i))%:R%:E]_n).
+    exact/dvg_ereal_cvg/nat_dvg_real/dvg_nseries.
+  apply/funext => n /=; under eq_bigr.
+    by rewrite /counting => i _; rewrite asboolT//; over.
+  by rewrite sumEFin natr_sum big_mkord.
+have [UFoo|/contrapT[k UFk]] := pselect (infinite_set (\bigcup_n F n)).
+  rewrite /counting asboolF//.
+  by under eq_fun do rewrite big_mkord.
+exfalso.
+move: cvg_F =>/ereal_cvgPpinfty/(_ k.+1%:R)/[!ltr0n]/(_ erefl)[K _].
+move=> /(_ K (leqnn _)); rewrite leNgt => /negP; apply.
+rewrite sumFE lte_fin ltr_nat ltnS.
+have -> : k = #|` fset_set (\bigcup_n F n) |.
+  by apply/esym/card_eq_fsetP; rewrite fset_setK//; exists k.
+apply/fsubset_leq_card/fset_set_sub => //.
+- by rewrite -bigcup_mkord; exact: bigcup_finite.
+- by exists k.
+- by move=> /= t; rewrite -bigcup_mkord => -[m _ Fmt]; exists m.
+Unshelve. all: by end_near. Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ counting
+  counting0 counting_ge0 counting_sigma_additive.
+
+End measure_count.
 
 Lemma big_trivIset (I : choiceType) D T (R : Type) (idx : R)
    (op : Monoid.com_law idx) (A : I -> set T) (F : set T -> R) :

@@ -50,6 +50,14 @@
   + definition `mscale`
 - in `lebesgue_measure.v`:
   + lemma `diracE`
+- in file `cardinality.v`:
+  + lemmas `trivIset_sum_card`, `fset_set_sub`, `fset_set_set0`
+- in file `sequences.v`:
+  + lemmas `nat_dvg_real`, `nat_cvgPpinfty`, `nat_nondecreasing_is_cvg`
+  + definition `nseries`, lemmas `le_nseries`, `cvg_nseries_near`, `dvg_nseries`
+- in file `measure.v`:
+  + definition `restr`
+  + definition `counting`, canonical `measure_counting`
 
 ### Changed
 
@@ -78,6 +86,8 @@
 - in `lebesgue_integral.v`:
   + definitions `integral` and `integrable` now take a function instead of a measure
   + remove one space in notation `\d_`
+- in `measure.v`:
+  + definition `measure_restr` made canonical
 
 ### Renamed
 
@@ -102,6 +112,7 @@
   + canonicals `measure_additive_measure`, `set_ring_measure`,
     `outer_measure_of_measure`, `Hahn_ext_measure`
   + lemma `Rmu0`
+  + lemma `measure_restrE`
 
 ### Infrastructure
 

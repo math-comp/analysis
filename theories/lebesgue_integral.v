@@ -2019,7 +2019,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
     apply: ge0_le_integral => //.
     - by move=> x _; apply: ereal_lim_ge => //; apply: nearW => k; exact/g0.
     - apply: emeasurable_fun_cvg mg _ => x _.
-      by apply: ereal_nondecreasing_is_cvg.
+      exact: ereal_nondecreasing_is_cvg.
     - move=> x Dx; apply: ereal_lim_ge => //.
       near=> m; have nm : (n <= m)%N by near: m; exists n.
       exact/nd_g.
@@ -3698,14 +3698,14 @@ Implicit Types A : set (T1 * T2).
 
 Section xsection.
 Local Open Scope ereal_scope.
-Variable (m2' : {measure set T2 -> \bar R}) (D : set T2) (mD : measurable D).
-Let m2 := mrestr m2' mD.
-HB.instance Definition _ := Measure.on m2.
-Let phi A := m2 \o xsection A.
+Variable (m2 : {measure set T2 -> \bar R}) (D : set T2) (mD : measurable D).
+Let m2D := mrestr m2 mD.
+HB.instance Definition _ := Measure.on m2D.
+Let phi A := m2D \o xsection A.
 Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
 
 Lemma measurable_prod_subset_xsection
-    (m2_bounded : exists M, forall X, measurable X -> m2 X < M%:E) :
+    (m2_bounded : exists M, forall X, measurable X -> m2D X < M%:E) :
   @measurable (prod_measurableType T1 T2) `<=` B.
 Proof.
 rewrite measurable_prod_measurableType.
@@ -3717,7 +3717,7 @@ have CI : setI_closed C.
 have CT : C setT by exists setT => //; exists setT => //; rewrite setMTT.
 have CB : C `<=` B.
   move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableM.
-  have -> : phi (X1 `*` X2) = (fun x => m2 X2 * (\1_X1 x)%:E).
+  have -> : phi (X1 `*` X2) = (fun x => m2D X2 * (\1_X1 x)%:E).
     rewrite funeqE => x; rewrite indicE /phi /m2/= /mrestr.
     have [xX1|xX1] := boolP (x \in X1); first by rewrite mule1 in_xsectionM.
     by rewrite mule0 notin_xsectionM// set0I measure0.
@@ -3739,14 +3739,14 @@ End xsection.
 
 Section ysection.
 Local Open Scope ereal_scope.
-Variable (m1' : {measure set T1 -> \bar R}) (D : set T1) (mD : measurable D).
-Let m1 := mrestr m1' mD.
-HB.instance Definition _ := Measure.on m1.
-Let psi A := m1 \o ysection A.
+Variable (m1 : {measure set T1 -> \bar R}) (D : set T1) (mD : measurable D).
+Let m1D := mrestr m1 mD.
+HB.instance Definition _ := Measure.on m1D.
+Let psi A := m1D \o ysection A.
 Let B := [set A | measurable A /\ measurable_fun setT (psi A)].
 
 Lemma measurable_prod_subset_ysection
-    (m1_bounded : exists M, forall X, measurable X -> m1 X < M%:E) :
+    (m1_bounded : exists M, forall X, measurable X -> m1D X < M%:E) :
   @measurable (prod_measurableType T1 T2) `<=` B.
 Proof.
 rewrite measurable_prod_measurableType.
@@ -3758,7 +3758,7 @@ have CI : setI_closed C.
 have CT : C setT by exists setT => //; exists setT => //; rewrite setMTT.
 have CB : C `<=` B.
   move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableM.
-  have -> : psi (X1 `*` X2) = fun x => m1 X1 * (\1_X2 x)%:E.
+  have -> : psi (X1 `*` X2) = fun x => m1D X1 * (\1_X2 x)%:E.
     rewrite funeqE => y; rewrite indicE /psi /m1/= /mrestr.
     have [yX2|yX2] := boolP (y \in X2); first by rewrite mule1 in_ysectionM.
     by rewrite mule0 notin_ysectionM// set0I measure0.
@@ -3768,7 +3768,7 @@ suff monoB : monotone_class setT B by exact: monotone_class_subset.
 split => //; [exact: CB| |exact: ysection_ndseq_closed].
 move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
 suff -> : psi (X `\` Y) = fun x => psi X x - psi Y x by exact: emeasurable_funB.
-rewrite funeqE => y; rewrite /psi [m1]lock /= -lock ysectionD measureD.
+rewrite funeqE => y; rewrite /psi [m1D]lock /= -lock ysectionD measureD.
 - by rewrite setIidr//; exact: le_ysection.
 - exact: measurable_ysection.
 - exact: measurable_ysection.
@@ -3800,15 +3800,15 @@ apply: xsection_ndseq_closed.
   move=> m n mn; apply/subsetPset; apply: setIS; apply: setSM => //.
   exact/subsetPset/F_nd.
 move=> n; rewrite -/B; have [? ?] := F_oo n.
-pose m2' := [the measure _ _ of mrestr m2 (F_oo n).1].
-have m2'_bounded : exists M, forall X, measurable X -> (m2' X < M%:E)%E.
-  exists (fine (m2' (F n)) + 1) => Y mY.
+pose m2Fn := [the measure _ _ of mrestr m2 (F_oo n).1].
+have m2Fn_bounded : exists M, forall X, measurable X -> (m2Fn X < M%:E)%E.
+  exists (fine (m2Fn (F n)) + 1) => Y mY.
   rewrite [in ltRHS]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
   rewrite fineK; last first.
     by rewrite ge0_fin_numE ?measure_ge0//= /mrestr/= setIid.
   rewrite /= /mrestr/= setIid; apply: le_measure => //; rewrite inE//.
   exact: measurableI.
-pose phi' A := m2' \o xsection A.
+pose phi' A := m2Fn \o xsection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (phi' A)].
 have subset_B' : measurable `<=` B' by exact: measurable_prod_subset_xsection.
 split=> [|Y mY]; first by apply: measurableI => //; exact: measurableM.
@@ -3840,15 +3840,15 @@ apply: ysection_ndseq_closed.
   move=> m n mn; apply/subsetPset; apply: setIS; apply: setSM => //.
   exact/subsetPset/F_nd.
 move=> n; have [? ?] := F_oo n; rewrite -/B.
-pose m1' := [the measure _ _ of mrestr m1 (F_oo n).1].
-have m1'_bounded : exists M, forall X, measurable X -> (m1' X < M%:E)%E.
-  exists (fine (m1' (F n)) + 1) => Y mY.
+pose m1Fn := [the measure _ _ of mrestr m1 (F_oo n).1].
+have m1Fn_bounded : exists M, forall X, measurable X -> (m1Fn X < M%:E)%E.
+  exists (fine (m1Fn (F n)) + 1) => Y mY.
   rewrite [in ltRHS]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
   rewrite fineK; last first.
-    by rewrite ge0_fin_numE ?measure_ge0// /m1'/= /mrestr setIid.
-  rewrite /m1'/= /mrestr setIid; apply: le_measure => //; rewrite inE//=.
+    by rewrite ge0_fin_numE ?measure_ge0// /m1Fn/= /mrestr setIid.
+  rewrite /m1Fn/= /mrestr setIid; apply: le_measure => //; rewrite inE//=.
   exact: measurableI.
-pose psi' A := m1' \o ysection A.
+pose psi' A := m1Fn \o ysection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (psi' A)].
 have subset_B' : @measurable (prod_measurableType T1 T2) `<=` B'.
   exact: measurable_prod_subset_ysection.
