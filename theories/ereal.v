@@ -2088,6 +2088,9 @@ Proof.
 by move: x y => [x| |] [y| |] //=; rewrite ?lte_fin ?ltey ?ltNye// ltr_norml.
 Qed.
 
+Lemma fin_num_abs x : (x \is a fin_num) = (`| x | < +oo)%E.
+Proof. by rewrite fin_numElt -(lte_absl _ +oo) lt_neqAle leey andbT. Qed.
+
 Lemma eqe_absl x y : (`|x| == y) = ((x == y) || (x == - y)) && (0 <= y).
 Proof.
 by move: x y => [x| |] [y| |] //=; rewrite? leey// !eqe eqr_norml lee_fin.
