@@ -883,11 +883,13 @@ rewrite (_ : u_ = fun n => series u_ n.+1 - series u_ n); last first.
 by rewrite -(subrr (lim (series u_))); apply: cvgB => //; rewrite ?cvg_shiftS.
 Qed.
 
-Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) :
-  (forall n, 0 <= u_ n) -> nondecreasing_seq (series u_).
+Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) (P : pred nat) :
+  (forall n, P n -> 0 <= u_ n)%R ->
+  nondecreasing_seq (fun n=> \sum_(0 <= k < n | P k) u_ k)%R.
 Proof.
 move=> u_ge0; apply/nondecreasing_seqP => n.
-by rewrite !seriesEord/= big_ord_recr ler_addl.
+rewrite [in leRHS]big_mkcond [in leRHS]big_nat_recr//=.
+by rewrite -[in leRHS]big_mkcond/= ler_addl; case: ifPn => //; exact: u_ge0.
 Qed.
 
 Lemma increasing_series (R : numFieldType) (u_ : R ^nat) :

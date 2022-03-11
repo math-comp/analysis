@@ -45,6 +45,7 @@ From HB Require Import structures.
 (*     algebraOfSetsType == the type of algebras of sets                      *)
 (*        measurableType == the type of sigma-algebras                        *)
 (*                                                                            *)
+(*   discrete_measurable == the measurableType corresponding to [set: set nat]  *)
 (*    g_measurableType G == the measurableType corresponding to s<< G >>      *)
 (*                                                                            *)
 (*    measurable_fun D f == the function f with domain D is measurable        *)
@@ -86,7 +87,7 @@ From HB Require Import structures.
 (*   mu.-negligible A == A is mu negligible                                   *)
 (*   {ae mu, forall x, P x} == P holds almost everywhere for the measure mu   *)
 (*                                                                            *)
-(*   {outer_measure set T -> \bar R} == type of an outer measure over sets    *)
+(*  {outer_measure set T -> \bar R} == type of an outer measure over sets     *)
 (*                   of elements of type T where R is expected to be a        *)
 (*                   numFieldType                                             *)
 (*     isOuterMeasure == corresponding mixin                                  *)
@@ -789,6 +790,28 @@ Proof.
 move=> Fm; have /ppcard_eqP[f] := card_rat.
 by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
 Qed.
+
+Section discrete_measurable.
+(*Variable T : pointedType.*)
+
+Definition discrete_measurable : set (set nat) := [set: set nat].
+
+Let discrete_measurable0 : discrete_measurable set0. Proof. by []. Qed.
+
+Let discrete_measurableC X :
+  discrete_measurable X -> discrete_measurable (~` X).
+Proof. by []. Qed.
+
+Let discrete_measurableU (F : (set nat)^nat) :
+  (forall i, discrete_measurable (F i)) ->
+  discrete_measurable (\bigcup_i F i).
+Proof. by []. Qed.
+
+HB.instance Definition _ := @isMeasurable.Build nat (Pointed.class _)
+  discrete_measurable discrete_measurable0 discrete_measurableC
+  discrete_measurableU.
+
+End discrete_measurable.
 
 Definition g_measurable {T} (G : set (set T)) := T.
 
@@ -1502,6 +1525,11 @@ HB.instance Definition _ := isMeasure.Build _ _ mzero
 End measure_zero.
 Arguments mzero {T R}.
 
+Lemma msum_mzero
+    (T : measurableType) (R : realType) (m_ : {measure set T -> \bar R}^nat) :
+  msum m_ 0 = mzero.
+Proof. by apply/funext => A/=; rewrite /msum big_ord0. Qed.
+
 Section measure_add.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType).
@@ -1683,6 +1711,13 @@ HB.instance Definition _ := isMeasure.Build _ _ counting
   counting0 counting_ge0 counting_sigma_additive.
 
 End measure_count.
+
+Lemma sigma_finite_counting (R : realType) :
+  sigma_finite [set: nat] (counting R).
+Proof.
+exists (fun n => `I_n.+1); first by apply/seteqP; split=> //x _; exists x => /=.
+by move=> k; split => //; rewrite /counting/= asboolT// ltey.
+Qed.
 
 Lemma big_trivIset (I : choiceType) D T (R : Type) (idx : R)
    (op : Monoid.com_law idx) (A : I -> set T) (F : set T -> R) :

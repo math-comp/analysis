@@ -58,6 +58,27 @@
 - in file `measure.v`:
   + definition `restr`
   + definition `counting`, canonical `measure_counting`
+- in file `measure.v`:
+  + definition `discrete_measurable`, instantiated as a `measurableType`
+  + lemma `sigma_finite_counting`
+  + lemma `msum_mzero`
+- in `lebesgue_integral.v`:
+  + lemmas `integral_measure_sum_nnsfun`, `integral_measure_add_nnsfun`
+- in file `lebesgue_integral.v`:
+  + lemmas `ge0_integral_measure_sum`, `integral_measure_add`, `integral_measure_series_nnsfun`,
+    `ge0_integral_measure_series`
+- in file `ereal.v`:
+  + lemma `fin_num_abs`
+- in file `esum.v`:
+  + definition `summable`
+  + lemmas `summable_pinfty`, `summableE`, `summableD`, `summableN`, `summableB`,
+    `summable_funepos`, `summable_funeneg`
+  + lemmas `summable_fine_sum`, `summable_cvg`, `summable_nneseries_lim`,
+    `summable_nnseries`, `summable_nneseries_esum`, `esumB`
+- in file `lebesgue_integral.v`:
+  + lemmas `integrable_neg_fin_num`, `integrable_pos_fin_num`
+  + lemma `integral_measure_series`
+  + lemmas `counting_dirac`, `summable_integral_dirac`, `integral_count`
 
 ### Changed
 
@@ -86,6 +107,16 @@
 - in `lebesgue_integral.v`:
   + definitions `integral` and `integrable` now take a function instead of a measure
   + remove one space in notation `\d_`
+  + generalize `nondecreasing_series`
+- in `measure.v`:
+  + definition `measure_restr` made canonical
+
+### Renamed
+
+- in `esumv`:
+  + remove one hypothesis in lemmas `reindex_esum`, `esum_image`
+- in `measure.v`:
+  + definition `measure_restr` made canonical
 
 ### Renamed
 

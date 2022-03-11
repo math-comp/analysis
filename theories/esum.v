@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum finmap.
 Require Import boolp reals mathcomp_extra ereal classical_sets signed topology.
-Require Import sequences functions cardinality.
+Require Import sequences functions cardinality normedtype numfun.
 
 (******************************************************************************)
 (*                      Summation over classical sets                         *)
@@ -15,6 +15,7 @@ Require Import sequences functions cardinality.
 (*                       function whose codomain is included in the extended  *)
 (*                       reals; it is 0 if I = set0 and sup(\sum_A a) where A *)
 (*                       is a finite set included in I o.w.                   *)
+(*       summable D f := \esum_(x in D) `| f x | < +oo                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -149,7 +150,7 @@ wlog : a b ag0 bg0 / \esum_(i in I) a i \isn't a fin_num => [saoo|]; last first.
   move=> /ereal_sup_gt[_ [X XI] <-] /ltW yle; exists X => //=.
   rewrite (le_trans yle)// big_split lee_addl// big_seq_cond sume_ge0 => // i.
   by rewrite andbT => /XI; apply: bg0.
-  case: (boolP (\esum_(i in I) a i \is a fin_num)) => sa; last exact: saoo.
+case: (boolP (\esum_(i in I) a i \is a fin_num)) => sa; last exact: saoo.
 case: (boolP (\esum_(i in I) b i \is a fin_num)) => sb; last first.
   by rewrite addeC (eq_esum (fun _ _ => addeC _ _)) saoo.
 rewrite -lee_subr_addr// ub_ereal_sup//= => _ [X XI] <-.
@@ -436,3 +437,204 @@ End esum_bigcup.
 
 Arguments esum_bigcupT {R T K} J a.
 Arguments esum_bigcup {R T K} J a.
+
+Definition summable (T : choiceType) (R : realType) (D : set T)
+  (f : T -> \bar R) := (\esum_(x in D) `| f x | < +oo)%E.
+
+Section summable_lemmas.
+Local Open Scope ereal_scope.
+Variables (T : choiceType) (R : realType).
+Implicit Types (D : set T) (f : T -> \bar R).
+
+Lemma summable_pinfty D f : summable D f -> forall x, D x -> `| f x | < +oo.
+Proof.
+move=> Dfoo x Dx; apply: le_lt_trans Dfoo.
+rewrite (esumID [set x])// setI1 mem_set// esum_set1// lee_addl//.
+exact: esum_ge0.
+Qed.
+
+Lemma summableE D f : summable D f = (\esum_(x in D) `| f x | \is a fin_num).
+Proof.
+rewrite /summable fin_numElt; apply/idP/idP => [->|/andP[]//].
+by rewrite andbT (lt_le_trans (ltNye 0))//; exact: esum_ge0.
+Qed.
+
+Lemma summableD D f g : summable D f -> summable D g -> summable D (f \+ g).
+Proof.
+move=> Df Dg; apply: le_lt_trans (lte_add_pinfty Df Dg).
+by rewrite -esumD//; apply le_esum => t Dt; exact: lee_abs_add.
+Qed.
+
+Lemma summableN D f : summable D f = summable D (\- f).
+Proof.
+by rewrite /summable; congr (_ < +oo); apply: eq_esum => t Dt; rewrite abseN.
+Qed.
+
+Lemma summableB D f g : summable D f -> summable D g -> summable D (f \- g).
+Proof. by move=> Df; rewrite summableN; exact: summableD. Qed.
+
+Lemma summable_funepos D f : summable D f -> summable D f^\+.
+Proof.
+apply: le_lt_trans; apply le_esum => t Dt.
+by rewrite -/((abse \o f) t) fune_abse gee0_abs// lee_addl.
+Qed.
+
+Lemma summable_funeneg D f : summable D f -> summable D f^\-.
+Proof.
+apply: le_lt_trans; apply le_esum => t Dt.
+by rewrite -/((abse \o f) t) fune_abse gee0_abs// lee_addr.
+Qed.
+
+End summable_lemmas.
+
+Import numFieldNormedType.Exports.
+
+Section summable_nat.
+Local Open Scope ereal_scope.
+Variable R : realType.
+
+Lemma summable_fine_sum r (P : pred nat) (f : nat -> \bar R) : summable P f ->
+  (\sum_(0 <= k < r | P k) fine (f k))%R = fine (\sum_(0 <= k < r | P k) f k).
+Proof.
+move=> Pf; elim: r => [|r ih]; first by rewrite !big_nil.
+rewrite big_mkcond/= big_nat_recr// [in RHS]big_mkcond/= big_nat_recr//=.
+rewrite -!big_mkcond/= ih; case: ifPn => Pr => //; last by rewrite adde0 addr0.
+rewrite fineD//; last first.
+  by rewrite fin_num_abs (summable_pinfty Pf).
+by apply/sum_fin_numP => i ir Pi; rewrite fin_num_abs (summable_pinfty Pf).
+Qed.
+
+Lemma summable_cvg (P : pred nat) (f : (\bar R)^nat) :
+  (forall i, P i -> 0 <= f i)%E -> summable P f ->
+  cvg (fun n => \sum_(0 <= k < n | P k) fine (f k))%R.
+Proof.
+move=> f0 Pf; apply: nondecreasing_is_cvg.
+  by apply: nondecreasing_series => n Pn; exact/le0R/f0.
+exists (fine (\sum_(i <oo | P i) `|f i|)) => x /= [n _ <-].
+rewrite summable_fine_sum// -lee_fin fineK//; last first.
+  by apply/sum_fin_numP => i ni Pi; rewrite fin_num_abs (summable_pinfty Pf).
+rewrite fineK//; last first.
+  rewrite nneseries_esum// fin_numElt; apply/andP; split.
+    by rewrite (@lt_le_trans _ _ 0)// ?lte_ninfty//; exact: esum_ge0.
+  by apply: le_lt_trans Pf; apply le_esum.
+apply: le_trans (nneseries_lim_ge n _) => //; apply: lee_sum => i _.
+by rewrite lee_abs.
+Qed.
+
+Lemma summable_nneseries_lim (P : pred nat) (f : (\bar R)^nat) :
+    (forall i, P i -> 0 <= f i)%E -> summable P f ->
+  \sum_(i <oo | P i) f i =
+  (lim (fun n => (\sum_(0 <= k < n | P k) fine (f k))%R))%:E.
+Proof.
+move=> f0 Pf; pose A_ n := (\sum_(0 <= k < n | P k) fine (f k))%R.
+transitivity (lim (EFin \o A_)).
+  congr (lim _); apply/funext => /= n; rewrite /A_ /= -sumEFin.
+  apply eq_bigr => i Pi/=; rewrite fineK//.
+  by rewrite fin_num_abs (@summable_pinfty _ _ P).
+by rewrite EFin_lim//; apply: summable_cvg.
+Qed.
+
+Lemma summable_nneseries (f : nat -> \bar R) (P : pred nat) : summable P f ->
+  \sum_(i <oo | P i) (f i) =
+  \sum_(i <oo | P i) f^\+ i - \sum_(i <oo | P i) f^\- i.
+Proof.
+move=> Pf.
+pose A_ n := (\sum_(0 <= k < n | P k) fine (f^\+ k))%R.
+pose B_ n := (\sum_(0 <= k < n | P k) fine (f^\- k))%R.
+pose C_ n := fine (\sum_(0 <= k < n | P k) f k).
+pose A := lim A_.
+pose B := lim B_.
+suff: ((fun n => C_ n - (A - B)) --> (0 : R^o))%R.
+  move=> CAB.
+  rewrite [X in  X - _]summable_nneseries_lim//; last exact/summable_funepos.
+  rewrite [X in _ - X]summable_nneseries_lim//; last exact/summable_funeneg.
+  rewrite -EFinB; apply/cvg_lim => //; apply/ereal_cvg_real; split.
+    apply: nearW => n.
+    rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
+    by rewrite -nneseries_esum// (le_trans (lee_abs_sum _ _ _))// nneseries_lim_ge.
+  by apply: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB) => //; exact: cvg_cst.
+have : ((fun x => A_ x - B_ x) --> A - B)%R.
+  apply: cvgD.
+  - by apply: summable_cvg => //; exact/summable_funepos.
+  - by apply: cvgN; apply: summable_cvg => //; exact/summable_funeneg.
+move=> /cvg_distP cvgAB; apply/cvg_distP => e e0.
+rewrite near_simpl.
+move: cvgAB => /(_ _ e0) [N _/= hN] /=.
+near=> n.
+rewrite distrC subr0.
+have -> : (C_ = A_ \- B_)%R.
+  apply/funext => k.
+  rewrite /= /A_ /C_ /B_ -sumrN -big_split/= -summable_fine_sum//.
+  apply eq_bigr => i Pi.
+  rewrite -fineB//.
+  - by rewrite [in LHS](funeposneg f).
+  - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funepos.
+  - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funeneg.
+by rewrite distrC; apply: hN; near: n; exists N.
+Unshelve. all: by end_near. Qed.
+
+Lemma summable_nneseries_esum  (f : nat -> \bar R) (P : pred nat) :
+  summable P f -> \sum_(i <oo | P i) f i = esum P f^\+ - esum P f^\-.
+Proof.
+move=> Pfoo.
+rewrite -nneseries_esum; last first.
+  by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite -leNgt.
+rewrite -nneseries_esum; last first.
+  by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite leNgt.
+by rewrite [LHS]summable_nneseries.
+Qed.
+
+End summable_nat.
+
+Section esumB.
+Local Open Scope ereal_scope.
+Variables (R : realType) (T : choiceType).
+Implicit Types (D : set T) (f g : T -> \bar R).
+
+Let esum_posneg D f := esum D f^\+ - esum D f^\-.
+
+Let ge0_esum_posneg D f : (forall x, D x -> 0 <= f x) ->
+  esum_posneg D f = \esum_(x in D) f x.
+Proof.
+move=> Sa; rewrite /esum_posneg [X in _ - X](_ : _ = 0) ?sube0; last first.
+  by rewrite esum0// => x Sx; rewrite -[LHS]/(f^\- x) (ge0_funenegE Sa)// inE.
+by apply: eq_esum => t St; apply/max_idPl; exact: Sa.
+Qed.
+
+Lemma esumB D f g : summable D f -> summable D g ->
+  (forall i, D i -> 0 <= f i) -> (forall i, D i -> 0 <= g i) ->
+  \esum_(i in D) (f \- g)^\+ i - \esum_(i in D) (f \- g)^\- i =
+  \esum_(i in D) f i - \esum_(i in D) g i.
+Proof.
+move=> Df Dg f0 g0.
+have /eqP : esum D (f \- g)^\+ + esum_posneg D g = esum D (f \- g)^\- + esum_posneg D f.
+  rewrite !ge0_esum_posneg// -!esumD//; last 2 first.
+    by move=> t Dt; rewrite le_maxr lexx orbT.
+    by move=> t Dt; rewrite le_maxr lexx orbT.
+  apply eq_esum => i Di; have [fg|fg] := leP 0 (f i - g i).
+    rewrite max_r 1?lee_oppl ?oppe0// add0e subeK//.
+    by rewrite fin_num_abs (summable_pinfty Dg).
+  rewrite add0e max_l; last by rewrite lee_oppr oppe0 ltW.
+  rewrite oppeB//; last by rewrite fin_num_abs (summable_pinfty Dg).
+  by rewrite -addeA addeCA addeA subeK// fin_num_abs (summable_pinfty Df).
+rewrite [X in _ == X -> _]addeC -sube_eq; last 2 first.
+  - rewrite fin_numD; apply/andP; split.
+      rewrite (@eq_esum _ _ _ _ (abse \o (f \- g)^\+))//.
+        by rewrite -summableE; exact/summable_funepos/summableB.
+      by move=> t Dt; rewrite /= gee0_abs.
+    move: Dg; rewrite summableE (@eq_esum _ _ _ _ g)//.
+      by rewrite ge0_esum_posneg// => t Tt; rewrite gee0_abs// g0.
+    by move=> t Tt; rewrite gee0_abs// g0.
+  - rewrite adde_defC fin_num_adde_def// ge0_esum_posneg//.
+    rewrite (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
+    by rewrite /= gee0_abs// f0.
+rewrite -addeA addeCA eq_sym [X in _ == X -> _]addeC -sube_eq; last 2 first.
+  - rewrite ge0_esum_posneg// (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
+    by rewrite /= gee0_abs// f0.
+  - rewrite fin_num_adde_def//.
+    rewrite ge0_esum_posneg// (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.
+    by rewrite /= gee0_abs// g0.
+by rewrite ge0_esum_posneg// ge0_esum_posneg// => /eqP ->.
+Qed.
+
+End esumB.
