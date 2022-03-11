@@ -52,6 +52,9 @@ Require Import topology normedtype landau.
 (*                adjacent == adjacent sequences lemma                        *)
 (*                  cesaro == Cesaro's lemma                                  *)
 (*                                                                            *)
+(* * About sequences of natural numbers:                                      *)
+(*   nseries                                                                  *)
+(*                                                                            *)
 (* * About sequences of extended real numbers:                                *)
 (*   eseries, etelescope, etc.                                                *)
 (*                                                                            *)
@@ -630,7 +633,7 @@ apply: cvg_distW => _/posnumP[e]; rewrite near_map.
 have [p /andP[Mu_p u_pM]] : exists p, M - e%:num <= u_ p <= M.
   have [_ -[p _] <- /ltW Mu_p] := sup_adherent (gt0 e) su_.
   by exists p; rewrite Mu_p; have /ubP := sup_upper_bound su_; apply; exists p.
-near=> n; have pn : (p <= n)%N by near: n; apply: nbhs_infty_ge.
+near=> n; have pn : (p <= n)%N by near: n; exact: nbhs_infty_ge.
 rewrite distrC ler_norml ler_sub_addl (le_trans Mu_p (u_nd _ _ pn)) /=.
 rewrite ler_subl_addr (@le_trans _ _ M) ?ler_addr //.
 by have /ubP := sup_upper_bound su_; apply; exists n.
@@ -875,10 +878,9 @@ Lemma cvg_series_cvg_0 (K : numFieldType) (V : normedModType K) (u_ : V ^nat) :
   cvg (series u_) -> u_ --> (0 : V).
 Proof.
 move=> cvg_series.
-rewrite (_ : u_ = fun n => series u_ (n + 1)%nat - series u_ n); last first.
-  by rewrite funeqE => i; rewrite addn1 seriesSB.
-rewrite -(subrr (lim (series u_))).
-by apply: cvgB => //; rewrite ?cvg_shiftn.
+rewrite (_ : u_ = fun n => series u_ n.+1 - series u_ n); last first.
+  by rewrite funeqE => i; rewrite seriesSB.
+by rewrite -(subrr (lim (series u_))); apply: cvgB => //; rewrite ?cvg_shiftS.
 Qed.
 
 Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) :
@@ -1188,6 +1190,89 @@ End exponential_series.
 
 (* TODO: generalize *)
 Definition expR {R : realType} (x : R) : R := lim (series (exp_coeff x)).
+
+(********************************)
+(* Sequences of natural numbers *)
+(********************************)
+
+Lemma nat_dvg_real (R : realType) (u_ : nat ^nat) : u_ --> \oo ->
+  ([sequence (u_ n)%:R : R^o]_n --> +oo)%R.
+Proof.
+move=> uoo; apply/cvgPpinfty => A /=.
+have /uoo[N _ NuA] : \oo [set m | `|ceil A|.+1 <= m]%N by exists `|ceil A|.+1.
+near=> n; have /NuA : (N <= n)%N by near: n; exact: nbhs_infty_ge.
+rewrite /= -(ler_nat R); apply: le_trans.
+have [A0|A0] := leP 0%R A; last by rewrite (le_trans (ltW A0)).
+by rewrite -addn1 natrD natr_absz ger0_norm// ?ceil_ge0// ler_paddr// ceil_ge.
+Unshelve. all: by end_near. Qed.
+
+Lemma nat_cvgPpinfty (u : nat^nat) :
+  u --> \oo <-> forall A, \forall n \near \oo, (A <= u n)%N.
+Proof.
+split => [uoo A|oou X [N _ NX]].
+  by rewrite -(near_map u \oo (leq A)); apply: uoo; exists A.
+rewrite !near_simpl [\near u, X _](near_map u \oo); near=> n.
+apply: NX => /=; rewrite (@leq_trans N.+1) //.
+by near: n; apply: oou; rewrite ltr_spaddr // le_maxr lexx.
+Unshelve. all: by end_near. Qed.
+
+Lemma nat_nondecreasing_is_cvg (u_ : nat^nat) :
+  nondecreasing_seq u_ -> has_ubound (range u_) -> cvg u_.
+Proof.
+move=> u_nd [l ul].
+suff [N Nu] : exists N, forall n, (n >= N)%N -> u_ n = u_ N.
+  apply/cvg_ex; exists (u_ N); rewrite -(cvg_shiftn N).
+  rewrite [X in X --> _](_ : _ = cst (u_ N))//; first exact: cvg_cst.
+  by apply/funext => n /=; rewrite Nu// leq_addl.
+apply/not_existsP => hu.
+have {hu}/choice[f Hf] : forall x, (exists n, x <= n /\ u_ n > u_ x)%N.
+  move=> x; have /existsNP[N /not_implyP[xN Nx]] := hu x.
+  exists N; split => //; move/eqP : Nx; rewrite neq_lt => /orP[|//].
+  by move/u_nd : xN; rewrite le_eqVlt => /predU1P[->|//].
+have uf : forall x, (x < u_ (iter x.+1 f O))%N.
+  elim=> /= [|i ih]; first by have := Hf O => -[_]; exact: leq_trans.
+  by have := Hf (f (iter i f O)) => -[_]; exact: leq_trans.
+have /ul : range u_ (u_ (iter l.+1 f O)) by exists (iter l.+1 f O).
+by rewrite leNgt => /negP; apply; rewrite ltEnat //=; exact: uf.
+Qed.
+
+Definition nseries (u : nat^nat) := (fun n => \sum_(0 <= k < n) u k)%N.
+
+Lemma le_nseries (u : nat^nat) : {homo nseries u : a b / (a <= b)%N}.
+Proof.
+move=> a b ab; rewrite /nseries [in X in (_ <= X)%N]/index_iota subn0.
+rewrite -[in X in (_ <= X)%N](subnKC ab) iotaD big_cat/= add0n.
+by rewrite /index_iota subn0 leq_addr.
+Qed.
+
+Lemma cvg_nseries_near (u : nat^nat) : cvg (nseries u) ->
+  \forall n \near \oo, u n = 0%N.
+Proof.
+move=> /cvg_ex[l ul]; have /ul[a _ aul] : nbhs l [set l].
+  exists [set l]; split; last by split.
+  by exists [set l] => //; rewrite bigcup_set1.
+have /ul[b _ bul] : nbhs l [set l.-1; l].
+  by exists [set l]; split => //; exists [set l] => //; rewrite bigcup_set1.
+exists (maxn a b) => // n /= abn.
+rewrite (_ : u = fun n => nseries u n.+1 - nseries u n)%N; last first.
+  by rewrite funeqE => i; rewrite /nseries big_nat_recr//= addnC addnK.
+have /aul -> : (a <= n)%N by rewrite (leq_trans _ abn) // leq_max leqnn.
+have /bul[->|->] : (b <= n.+1)%N by rewrite leqW// (leq_trans _ abn)// leq_maxr.
+- by apply/eqP; rewrite subn_eq0// leq_pred.
+- by rewrite subnn.
+Qed.
+
+Lemma dvg_nseries (u : nat^nat) : ~ cvg (nseries u) -> nseries u --> \oo.
+Proof.
+move=> du; apply: contrapT => /nat_cvgPpinfty/existsNP[l lu]; apply: du.
+apply: nat_nondecreasing_is_cvg => //; first exact: le_nseries.
+exists l => _ [n _ <-]; rewrite leNgt; apply/negP => lun; apply: lu; near=> m.
+by rewrite (leq_trans (ltW lun)) // le_nseries//; near: m; exists n.
+Unshelve. all: by end_near. Qed.
+
+(**************************************)
+(* Sequences of extended real numbers *)
+(**************************************)
 
 Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F" :=
   (lim (fun n => (\big[ op / idx ]_(m <= i < n | P) F))) : big_scope.

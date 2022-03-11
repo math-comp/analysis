@@ -711,6 +711,20 @@ Proof.
 by move=> fA x; rewrite -[A in RHS]fset_setK//; apply/idP/idP; rewrite ?inE.
 Qed.
 
+Lemma fset_set_sub (T : choiceType) (A B : set T) :
+  finite_set A -> finite_set B -> A `<=` B -> (fset_set A `<=` fset_set B)%fset.
+Proof.
+move=> finA finB AB; apply/fsubsetP => t.
+by rewrite in_fset_set// in_fset_set// 2!inE => /AB.
+Qed.
+
+Lemma fset_set_set0 (T : choiceType) (A : set T) : finite_set A ->
+  fset_set A = fset0 -> A = set0.
+Proof.
+move=> finA; rewrite /fset_set; case: pselect => // {}finA.
+by case: cid => _/= -> ->; rewrite set_fset0.
+Qed.
+
 Lemma fset_set0 {T : choiceType} : fset_set (set0 : set T) = fset0.
 Proof.
 by apply/fsetP=> x; rewrite in_fset_set ?inE//; apply/negP; rewrite inE.
@@ -806,6 +820,21 @@ have Dk : i \in fset_set D by rewrite in_fset_set// inE.
 pose k : fset_set D := [` Dk]%fset.
 have Gy : y \in G k by rewrite in_fset_set ?inE//; apply: Ffin.
 by exists (Tagged G [` Gy]%fset).
+Qed.
+
+Lemma trivIset_sum_card (T : choiceType) (F : nat -> set T) n :
+  (forall n, finite_set (F n)) -> trivIset [set: nat] F ->
+  (\sum_(i < n) #|` fset_set (F i)| =
+   #|` fset_set (\big[setU/set0]_(k < n) F k)|)%N.
+Proof.
+move=> finF tF; elim: n => [|n ih]; first by rewrite !big_ord0 fset_set0.
+rewrite big_ord_recr//= ih big_ord_recr/= fset_setU//; last first.
+  by rewrite -bigcup_mkord; exact: bigcup_finite.
+rewrite cardfsU [X in (_ - X)%N](_ : _  = O) ?subn0// ?EFinD ?natrD//.
+apply/eqP; rewrite cardfs_eq0 -fset_setI//; last first.
+  by rewrite -bigcup_mkord; exact: bigcup_finite.
+rewrite (@trivIset_bigsetUI _ xpredT)// ?fset_set0//.
+by rewrite [X in trivIset X F](_ : _ = [set: nat])//; exact/seteqP.
 Qed.
 
 Lemma finite_setMR (T T' : choiceType) (A : set T) (B : T -> set T') :
