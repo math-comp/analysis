@@ -1946,8 +1946,9 @@ rewrite esum_bigcup//; last first.
    move=> /(decomp_neq0 DUBiN0) [y Yy].
    apply: (@trivIset_seqDU _ B) => //; exists y.
    by split => //; [exact: YBi|exact: YBj].
-rewrite ereal_pseries_esum// set_true le_esum// => i _.
-rewrite esum_fset// -[decomp _]set_fsetK.
+rewrite ereal_pseries_esum// set_true [X in _ <= X]ge0_esumE//.
+rewrite ge0_esumE; last by move=> n _; apply: esum_ge0.
+rewrite le_nnesum// => i _; rewrite esum_fset// -[decomp _]set_fsetK.
 rewrite -SetRing.Rmu_fin_bigcup//=; last 2 first.
   exact: decomp_triv.
   by move=> ?; apply: decomp_measurable.
