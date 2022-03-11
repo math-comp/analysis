@@ -929,7 +929,7 @@ apply: ereal_cvgrM => //; rewrite [X in _ --> X](_ : _ =
     mu (\bigcup_n (f @^-1` [set r] `&` fleg c n))); last first.
   by rewrite -setI_bigcupr bigcup_fleg// setIT.
 have ? k i : measurable (f @^-1` [set k] `&` fleg c i) by exact: measurableI.
-apply: cvg_mu_inc => //; first exact: measurable_bigcup.
+apply: cvg_mu_inc => //; first exact: bigcupT_measurable.
 move=> n m nm; apply/subsetPset; apply: setIS.
 by move/(nd_fleg c) : nm => /subsetPset.
 Unshelve. all: by end_near. Qed.
@@ -2877,7 +2877,7 @@ move=> mf; split=> [iDf0|Df0].
     apply/esym/cvg_lim => //; apply: cvg_mu_inc.
     - move=> i; apply: emeasurable_fun_c_infty => //.
       exact: measurable_fun_comp.
-    - apply: measurable_bigcup => i.
+    - apply: bigcupT_measurable => i.
       by apply: emeasurable_fun_c_infty => //; exact: measurable_fun_comp.
     - move=> m n mn; apply/subsetPset; apply: setIS => t /=.
       by apply: le_trans; rewrite lee_fin lef_pinv // ?ler_nat // posrE.
@@ -3495,11 +3495,11 @@ Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
 Lemma xsection_ndseq_closed : ndseq_closed B.
 Proof.
 move=> F ndF; rewrite /B /= => BF; split.
-  by apply: measurable_bigcup => n; have [] := BF n.
+  by apply: bigcupT_measurable => n; have [] := BF n.
 have phiF x : (fun i => phi (F i) x) --> phi (\bigcup_i F i) x.
   rewrite /phi /= xsection_bigcup; apply: cvg_mu_inc => //.
   - by move=> n; apply: measurable_xsection; case: (BF n).
-  - by apply: measurable_bigcup => i; apply: measurable_xsection; case: (BF i).
+  - by apply: bigcupT_measurable => i; apply: measurable_xsection; case: (BF i).
   - move=> m n mn; apply/subsetPset => y; rewrite /xsection/= !inE.
     by have /subsetPset FmFn := ndF _ _ mn; exact: FmFn.
 apply: (emeasurable_fun_cvg (phi \o F)) => //.
@@ -3516,11 +3516,11 @@ Let B := [set A | measurable A /\ measurable_fun setT (psi A)].
 Lemma ysection_ndseq_closed : ndseq_closed B.
 Proof.
 move=> F ndF; rewrite /B /= => BF; split.
-  by apply: measurable_bigcup => n; have [] := BF n.
+  by apply: bigcupT_measurable => n; have [] := BF n.
 have psiF x : (fun i => psi (F i) x) --> psi (\bigcup_i F i) x.
   rewrite /psi /= ysection_bigcup; apply: cvg_mu_inc => //.
   - by move=> n; apply: measurable_ysection; case: (BF n).
-  - by apply: measurable_bigcup => i; apply: measurable_ysection; case: (BF i).
+  - by apply: bigcupT_measurable => i; apply: measurable_ysection; case: (BF i).
   - move=> m n mn; apply/subsetPset => y; rewrite /ysection/= !inE.
     by have /subsetPset FmFn := ndF _ _ mn; exact: FmFn.
 apply: (emeasurable_fun_cvg (psi \o F)) => //.

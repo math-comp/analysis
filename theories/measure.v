@@ -568,7 +568,8 @@ HB.mixin Record AlgebraOfSets_from_RingOfSets T of RingOfSets T := {
   measurableT : measurable (@setT T)
 }.
 
-HB.structure Definition AlgebraOfSets := {T of AlgebraOfSets_from_RingOfSets T &}.
+HB.structure Definition AlgebraOfSets :=
+  {T of AlgebraOfSets_from_RingOfSets T &}.
 Notation algebraOfSetsType := AlgebraOfSets.type.
 
 Canonical algebraOfSets_eqType (T : algebraOfSetsType) := EqType T ptclass.
@@ -578,7 +579,7 @@ Canonical algebraOfSets_ptType (T : algebraOfSetsType) :=
   PointedType T ptclass.
 
 HB.mixin Record Measurable_from_algebraOfSets T of AlgebraOfSets T := {
-  measurable_bigcup : forall F : (set T)^nat, (forall i, measurable (F i)) ->
+  bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
     measurable (\bigcup_i (F i))
 }.
 
@@ -733,36 +734,36 @@ End algebraofsets_lemmas.
 
 Section measurable_lemmas.
 Variables T : measurableType.
-Implicit Types A B : set T.
+Implicit Types (A B : set T) (F : (set T)^nat) (P : set nat).
 
 Lemma sigma_algebra_measurable : sigma_algebra setT (@measurable T).
-Proof. by split=> // [A|]; [exact: measurableD|exact: measurable_bigcup]. Qed.
+Proof. by split=> // [A|]; [exact: measurableD|exact: bigcupT_measurable]. Qed.
 
-Lemma bigcup_measurable (F : (set T)^nat) (P : set nat) :
+Lemma bigcup_measurable F P :
   (forall k, P k -> measurable (F k)) -> measurable (\bigcup_(i in P) F i).
 Proof.
-move=> PF; rewrite bigcup_mkcond; apply: measurable_bigcup => k.
+move=> PF; rewrite bigcup_mkcond; apply: bigcupT_measurable => k.
 by case: ifP => //; rewrite inE; exact: PF.
 Qed.
 
-Lemma bigcap_measurable (F : (set T)^nat) (P : set nat) :
+Lemma bigcap_measurable F P :
   (forall k, P k -> measurable (F k)) -> measurable (\bigcap_(i in P) F i).
 Proof.
 move=> PF; rewrite -[X in measurable X]setCK setC_bigcap; apply: measurableC.
 by apply: bigcup_measurable => k Pk; exact/measurableC/PF.
 Qed.
 
-Lemma measurable_bigcap (F : (set T)^nat) :
-  (forall i, measurable (F i)) -> measurable (\bigcap_i (F i)).
-Proof. by move=> ?; apply: bigcap_measurable. Qed.
+Lemma bigcapT_measurable F : (forall i, measurable (F i)) ->
+  measurable (\bigcap_i (F i)).
+Proof. by move=> ?; exact: bigcap_measurable. Qed.
 
 End measurable_lemmas.
 
-Lemma measurable_bigcup_rat (T : measurableType) (F : rat -> set T) :
+Lemma bigcupT_measurable_rat (T : measurableType) (F : rat -> set T) :
   (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
 Proof.
 move=> Fm; have /ppcard_eqP[f] := card_rat.
-by rewrite (reindex_bigcup f^-1%FUN setT)//=; apply: bigcup_measurable.
+by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
 Qed.
 
 Definition g_measurable {T} (G : set (set T)) := T.
@@ -774,10 +775,11 @@ Lemma sigma_algebraC (A : set T) : <<s G >> A -> <<s G >> (~` A).
 Proof. by move=> sGA; rewrite -setTD; exact: sigma_algebraD. Qed.
 
 Canonical g_measurable_eqType := EqType (g_measurable G) (Equality.class T).
-Canonical g_measurable_choiceType := ChoiceType (g_measurable G) (Choice.class T).
+Canonical g_measurable_choiceType :=
+  ChoiceType (g_measurable G) (Choice.class T).
 Canonical g_measurable_ptType := PointedType (g_measurable G) (Pointed.class T).
-HB.instance Definition _ := @isMeasurable.Build (g_measurable G) (Pointed.class T)
-  <<s G >> (@sigma_algebra0 _ setT G) (@sigma_algebraC)
+HB.instance Definition _ := @isMeasurable.Build (g_measurable G)
+  (Pointed.class T) <<s G >> (@sigma_algebra0 _ setT G) (@sigma_algebraC)
   (@sigma_algebra_bigcup _ setT G).
 
 Definition g_measurableType := [the measurableType of g_measurable G].
@@ -958,7 +960,7 @@ have -> : preimage_class D f (@measurable rT) =
   by rewrite [in LHS]sG_rT [in RHS]sigma_algebra_preimage_classE.
 apply: smallest_sub => //; split => //.
 - by move=> A mA; exact: measurableD.
-- by move=> F h; exact: measurable_bigcup.
+- by move=> F h; exact: bigcupT_measurable.
 Qed.
 
 End measurability.
@@ -1072,7 +1074,7 @@ Lemma semi_sigma_additiveE
   semi_sigma_additive mu = sigma_additive mu.
 Proof.
 rewrite propeqE; split=> [amu A mA tA|amu A mA tA mbigcupA]; last exact: amu.
-by apply: amu => //; exact: measurable_bigcup.
+by apply: amu => //; exact: bigcupT_measurable.
 Qed.
 
 Lemma sigma_additive_is_additive
@@ -1319,7 +1321,7 @@ Lemma measure_bigcup A : (forall i : nat, measurable (A i)) ->
   trivIset setT A ->
   mu (\bigcup_n A n) = \sum_(i <oo) mu (A i).
 Proof.
-by move=> Am Atriv; rewrite measure_semi_bigcup//; apply: bigcup_measurable.
+by move=> Am Atriv; rewrite measure_semi_bigcup//; apply: bigcupT_measurable.
 Qed.
 
 End measure_lemmas.
@@ -2697,12 +2699,12 @@ have setDE : setD_closed E.
   - by rewrite setDE; apply: subIset; left.
 have ndE : ndseq_closed E.
   move=> A ndA EA; split; have mA n : measurable (A n) by have [] := EA n.
-  - exact: measurable_bigcup.
+  - exact: bigcupT_measurable.
   - transitivity (lim (m1 \o A)).
-      by apply/esym/cvg_lim=> //; exact/(cvg_mu_inc mA _ ndA)/measurable_bigcup.
+      by apply/esym/cvg_lim=>//; exact/(cvg_mu_inc mA _ ndA)/bigcupT_measurable.
     transitivity (lim (m2 \o A)).
       by congr (lim _); rewrite funeqE => n; have [] := EA n.
-    by apply/cvg_lim => //; exact/(cvg_mu_inc mA _ ndA)/measurable_bigcup.
+    by apply/cvg_lim => //; exact/(cvg_mu_inc mA _ ndA)/bigcupT_measurable.
   - by apply: bigcup_sub => n; have [] := EA n.
 have sDHE : <<s D, H >> `<=` E.
   by apply: monotone_class_subset => //; split => //; [move=> A []|exact/HE].
@@ -2713,7 +2715,7 @@ End g_salgebra_measure_unique_trace.
 
 Section g_salgebra_measure_unique.
 Variables (R : realType) (T : measurableType) (G : set (set T)).
-Hypothesis (Gm : G `<=` measurable).
+Hypothesis Gm : G `<=` measurable.
 Variable g : (set T)^nat.
 Hypotheses (Gg : forall i, G (g i)).
 Hypothesis g_cover : \bigcup_k (g k) = setT.
@@ -2721,7 +2723,7 @@ Variables m1 m2 : {measure set T -> \bar R}.
 
 Lemma g_salgebra_measure_unique_cover :
   (forall n A, <<s G >> A -> m1 (g n `&` A) = m2 (g n `&` A)) ->
-  (forall A, <<s G >> A -> m1 A = m2 A).
+  forall A, <<s G >> A -> m1 A = m2 A.
 Proof.
 move=> sGm1m2; pose g' k := \bigcup_(i in `I_k) g i.
 have sGm := smallest_sub (@sigma_algebra_measurable T) Gm.
@@ -2748,13 +2750,13 @@ have -> : A = \bigcup_n (g' n `&` A) by rewrite -setI_bigcupl g'_cover setTI.
 transitivity (lim (fun n => m1 (g' n `&` A))).
   apply/esym/cvg_lim => //; apply: cvg_mu_inc => //.
   - by move=> n; apply: measurableI; apply/sGm.
-  - by apply: measurable_bigcup => k; apply: measurableI; apply/sGm.
+  - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
   - by move=> ? ? ?; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
 transitivity (lim (fun n => m2 (g' n `&` A))).
   by congr (lim _); rewrite funeqE => x; apply: sG'm1m2 => //; exact/sGm.
 apply/cvg_lim => //; apply: cvg_mu_inc => //.
 - by move=> k; apply: measurableI => //; exact/sGm.
-- by apply: measurable_bigcup => k; apply: measurableI; exact/sGm.
+- by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
 - by move=> a b ab; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
 Qed.
 
@@ -2796,7 +2798,7 @@ Section measure_unique.
 Variables (R : realType) (T : measurableType) (G : set (set T)).
 Variable g : (set T)^nat.
 Hypotheses (mG : measurable = <<s G >>) (setIG : setI_closed G).
-Hypotheses (Gg : forall i, G (g i)).
+Hypothesis Gg : forall i, G (g i).
 Hypothesis g_cover : \bigcup_k (g k) = setT.
 Variables m1 m2 : {measure set T -> \bar R}.
 Hypothesis m1m2 : forall A, G A -> m1 A = m2 A.
@@ -2831,7 +2833,7 @@ apply: (@le_trans _ _ (\sum_(i <oo) mu (X `&` A i))).
 apply lee_lim.
 - by apply: is_cvg_ereal_nneg_series => n _; exact/measure_ge0.
 - by apply: is_cvg_ereal_nneg_series => n _; exact/measure_ge0.
-- near=> n; apply: lee_sum => i  _. apply: le_measure => //; rewrite ?inE//=.
+- near=> n; apply: lee_sum => i  _. apply: le_measure => // /[!inE]//=.
   exact: measurableI.
 Unshelve. all: by end_near. Qed.
 
@@ -2889,7 +2891,7 @@ suff: <<s @measurable rT >> `<=` @measurable M.
    by apply: sub_smallest.
 apply: smallest_sub.
   split => //; [by move=> X mX; rewrite setTD; exact: measurableC |
-                by move=> u_ mu_; exact: measurable_bigcup].
+                by move=> u_ mu_; exact: bigcupT_measurable].
 move=> A mA; apply le_caratheodory_measurable => // X.
 apply lb_ereal_inf => _ [B [mB XB] <-].
 rewrite -(eq_ereal_pseries (fun=> SetRing.RmuE _ _))=> //.
@@ -2975,9 +2977,9 @@ by rewrite /Hahn_ext /= measurable_mu_extE //;
 Qed.
 
 Lemma Hahn_ext_unique : @sigma_finite _ T setT mu ->
-  (forall mu' : {measure set I -> \bar R},
+  forall mu' : {measure set I -> \bar R},
     (forall X, @measurable T X -> mu X = mu' X) ->
-    (forall X, @measurable I X -> Hahn_ext X = mu' X)).
+    forall X, @measurable I X -> Hahn_ext X = mu' X.
 Proof.
 move=> [F TF /all_and2[Fm muF]] mu' mu'mu X mX.
 apply: (@measure_unique _ I (@measurable T) F) => //=.
@@ -3001,8 +3003,8 @@ Definition preimage_classes (T1 T2 : measurableType) (T : Type)
       preimage_class setT f2 measurable >>.
 
 Section product_lemma.
-Variables (T1 T2 : measurableType) (T : pointedType) (f1 : T -> T1) (f2 : T -> T2).
-Variables (T3 : Type) (g : T3 -> T).
+Variables (T1 T2 : measurableType) (T : pointedType).
+Variables (f1 : T -> T1) (f2 : T -> T2) (T3 : Type) (g : T3 -> T).
 
 Lemma preimage_classes_comp : preimage_classes (f1 \o g) (f2 \o g) =
                               preimage_class setT g (preimage_classes f1 f2).
@@ -3033,8 +3035,8 @@ Let prod_salgebra_setC A : preimage_classes f1 f2 A ->
   preimage_classes f1 f2 (~` A).
 Proof. exact: sigma_algebraC. Qed.
 
-Let prod_salgebra_bigcup (F : _^nat) : (forall i, preimage_classes f1 f2 (F i)) ->
-  preimage_classes f1 f2 (\bigcup_i (F i)).
+Let prod_salgebra_bigcup (F : _^nat) : (forall i, preimage_classes f1 f2 (F i))
+  -> preimage_classes f1 f2 (\bigcup_i (F i)).
 Proof. exact: sigma_algebra_bigcup. Qed.
 
 HB.instance Definition prod_salgebra_mixin :=
@@ -3075,7 +3077,7 @@ rewrite eqEsubset; split.
       by move=> _ [Y MY <-]; exists setT; rewrite /M1 //; exists Y.
     by apply; exact: sub_sigma_algebra.
 apply: smallest_sub; first exact: smallest_sigma_algebra.
-by move=> _ [A MA] [B MB] <-; apply: measurableM => //; exact: sub_sigma_algebra.
+by move=> _ [A MA] [B MB] <-; apply: measurableM=> //; exact: sub_sigma_algebra.
 Qed.
 
 End product_salgebra_measurableType.

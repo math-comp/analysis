@@ -28,6 +28,12 @@
   + `oinv_valLr` -> `oinv_valR`
   + `valLr_inj_subproof` -> `valR_inj_subproof`
   + `valLr_surj_subproof` -> `valR_surj_subproof`
+- in `measure.v`:
+  + `measurable_bigcup` -> `bigcupT_measurable`
+  + `measurable_bigcap` -> `bigcapT_measurable`
+  + `measurable_bigcup_rat` -> `bigcupT_measurable_rat`
+- in `lebesgue_measure.v`:
+  + `emeasurable_bigcup` -> `bigcupT_emeasurable`
 
 ### Removed
 
