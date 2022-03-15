@@ -20,6 +20,12 @@
   + `mulrfunE` -> `mulrfctE`
   + `scalrfunE` -> `scalrfctE`
   + `exprfunE` -> `exprfctE`
+  + `valLr` -> `valR`
+  + `valLr_fun` -> `valR_fun`
+  + `valLrK` -> `valRK`
+  + `oinv_valLr` -> `oinv_valR`
+  + `valLr_inj_subproof` -> `valR_inj_subproof`
+  + `valLr_surj_subproof` -> `valR_surj_subproof`
 
 ### Removed
 

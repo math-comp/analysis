@@ -91,17 +91,17 @@ Add Search Blacklist "_mixin_".
 (*                           corresponding to f : {fun A >-> B}               *)
 (*                valL_ v == function cancelled by sigL A, with A : set U and *)
 (*                           v : V                                            *)
-(*                valLr f == the function of type U -> V corresponding to     *)
+(*                 valR f == the function of type U -> V corresponding to     *)
 (*                           f : U -> set_type B, with B : set V              *)
-(*              valLr_fun == the function of type {fun [set: U] >-> B}        *)
+(*               valR_fun == the function of type {fun [set: U] >-> B}        *)
 (*                           corresponding to f : U -> set_type B, with       *)
 (*                           B : set V                                        *)
 (*              valLR v f == the function of type U -> V corresponding to     *)
 (*                           f : set_type A -> set_type B (where v : V),      *)
-(*                           i.e., 'valL_ v \o valLr_fun                      *)
+(*                           i.e., 'valL_ v \o valR_fun                       *)
 (*       valLfun_ v A B f := [fun of valL_ f] with f : {fun [set: A] >-> B}   *)
 (*                   valL := 'valL_ point                                     *)
-(*             valLRfun v := 'valLfun_ v \o valLr_fun                         *)
+(*             valLRfun v := 'valLfun_ v \o valR_fun                          *)
 (*                                                                            *)
 (* Section function_space == canonical ringType and lmodType                  *)
 (*                           structures for functions whose range is          *)
@@ -1926,20 +1926,20 @@ Definition sigR (f : {fun [set: U] >-> A}) (u : U) : A :=
   SigSub (mem_set ('funS_f I) : f u \in A).
 HB.instance Definition _ f := Fun.copy (sigR f) (totalfun _).
 
-Definition valLr (f : U -> A) := set_val \o totalfun f.
-HB.instance Definition _ f := Fun.on (valLr f).
+Definition valR (f : U -> A) := set_val \o totalfun f.
+HB.instance Definition _ f := Fun.on (valR f).
 
-Definition valLr_fun (f : U -> A) : {fun [set: U] >-> A} := [fun of valLr f].
+Definition valR_fun (f : U -> A) : {fun [set: U] >-> A} := [fun of valR f].
 
-Lemma sigRK (f : {fun [set: U] >-> A}) : valLr (sigR f) = f.
+Lemma sigRK (f : {fun [set: U] >-> A}) : valR (sigR f) = f.
 Proof. by []. Qed.
 
-Lemma sigR_funK (f : {fun [set: U] >-> A}) : valLr_fun (sigR f) = f.
+Lemma sigR_funK (f : {fun [set: U] >-> A}) : valR_fun (sigR f) = f.
 Proof. by apply/funP/funeqP; apply: sigRK. Qed.
 
-Lemma valLrP (f : U -> A) x : A (valLr f x). Proof. exact: set_valP. Qed.
+Lemma valRP (f : U -> A) x : A (valR f x). Proof. exact: set_valP. Qed.
 
-Lemma valLrK : cancel valLr_fun sigR.
+Lemma valRK : cancel valR_fun sigR.
 Proof. by move=> f; apply/funext => x; apply/val_inj. Qed.
 
 End RestrictionRight.
@@ -1950,7 +1950,7 @@ Context {U V : Type} (v : V) {A : set U} {B : set V}.
 Local Notation rl := (sigL A).
 Local Notation rr := sigR.
 Local Notation el := 'valL_v.
-Local Notation er := valLr.
+Local Notation er := valR.
 
 HB.instance Definition _ (f : {oinv U >-> V}) :=
   @OInv.Build _ _ (rl f) (obind insub \o 'oinv_f).
@@ -2124,28 +2124,28 @@ End RestrictionLeftInv.
 Section ExtentionLeftInv.
 Context {U V : Type} {A : set U} {B : set V}.
 Local Notation el := 'valL_None.
-Local Notation er := valLr.
+Local Notation er := valR.
 
 HB.instance Definition _ (f : {oinv V >-> A}) :=
   @OInv.Build _ _ (er f) (el 'oinv_f).
 
-Lemma oinv_valLr (f : {oinv V >-> A}) : 'oinv_(er f) = (el 'oinv_f).
+Lemma oinv_valR (f : {oinv V >-> A}) : 'oinv_(er f) = (el 'oinv_f).
 Proof. by []. Qed.
 
-Lemma valLr_inj_subproof (f : {inj [set: V] >-> A}) :
+Lemma valR_inj_subproof (f : {inj [set: V] >-> A}) :
    @OInv_Can _ _ setT (er f).
-Proof. by split=> x _; rewrite /er oinv_valLr/= funoK/= ?funoK ?inE. Qed.
-HB.instance Definition _ f := valLr_inj_subproof f.
+Proof. by split=> x _; rewrite /er oinv_valR/= funoK/= ?funoK ?inE. Qed.
+HB.instance Definition _ f := valR_inj_subproof f.
 
-Lemma valLr_surj_subproof (f : {surj [set: V] >-> [set: A]}) :
+Lemma valR_surj_subproof (f : {surj [set: V] >-> [set: A]}) :
   @OInv_CanV _ _ setT A (er f).
 Proof.
-split=> [a|a /set_mem] Aa; rewrite ?oinv_valLr/= oinv_set_val.
+split=> [a|a /set_mem] Aa; rewrite ?oinv_valR/= oinv_set_val.
   by rewrite insubT ?inE// => memaA /=; case: oinvP => //= x; exists x.
 rewrite insubT ?inE// => memaA/=; case: oinvP => //= x _.
 by rewrite /er/= /totalfun => ->.
 Qed.
-HB.instance Definition _ f := valLr_surj_subproof f.
+HB.instance Definition _ f := valR_surj_subproof f.
 HB.instance Definition _ (f : {bij [set: V] >-> [set: A]}) := Fun.on (er f).
 
 End ExtentionLeftInv.
@@ -2161,17 +2161,17 @@ Definition sigLR := sigR \o (@sigLfun U V A B).
 HB.instance Definition _ (f : {fun A >-> B}) :=
   Fun.copy (sigLR f) (totalfun _).
 
-Definition valLR : (A -> B) -> U -> V := valL \o valLr_fun.
-Definition valLRfun : (A -> B) -> {fun A >-> B} := valLfun \o valLr_fun.
+Definition valLR : (A -> B) -> U -> V := valL \o valR_fun.
+Definition valLRfun : (A -> B) -> {fun A >-> B} := valLfun \o valR_fun.
 
-Lemma valLRE (f : A -> B) : valLR f = valL (valLr f). Proof. by []. Qed.
+Lemma valLRE (f : A -> B) : valLR f = valL (valR f). Proof. by []. Qed.
 Lemma valLRfunE (f : A -> B) : valLRfun f = [fun of valLR f]. Proof. by []. Qed.
 
 Lemma sigL2K (f : {fun A >-> B}) : {in A, valLR (sigLR f) =1 f}.
 Proof. by apply/eq_sigLP; rewrite valLK sigR_funK. Qed.
 
 Lemma valLRK : cancel valLRfun sigLR.
-Proof. by move=> f; rewrite /sigLR /valLR /= valLfunK valLrK. Qed.
+Proof. by move=> f; rewrite /sigLR /valLR /= valLfunK valRK. Qed.
 
 Lemma valLRfun_inj : injective valLRfun.
 Proof. by move=> f g eqefg; rewrite -[LHS]valLRK eqefg valLRK. Qed.
