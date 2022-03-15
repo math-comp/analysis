@@ -43,7 +43,10 @@ Add Search Blacklist "_mixin_".
 (*                           {splitsurj A >-> B}                              *)
 (*                                                                            *)
 (*              funin A f == alias for f : aT -> rT, with A : set aT          *)
-(*             [fun f in A] == the function f from the set A to the set f @` A  *)
+(*             [fun f in A] == the function f from the set A to the set f @` A*)
+(*            'split_ d f == partial injection from aT : Type to rt : Type;   *)
+(*                           f : aT -> rT, d : rT -> aT                       *)
+(*                  split := 'split_point                                     *)
 (*             @to_setT T == function that associates to x : T a dependent    *)
 (*                           pair of x with a proof that x belongs to setT    *)
 (*                           (i.e., the type set_type [set: T])               *)
@@ -923,7 +926,7 @@ Notation "[ 'fun' f 'in' A ]" := (funin A f)
 
 Section split.
 Context {aT rT} (A : set aT) (B : set rT).
-Definition split_  (dflt : rT -> aT) (f : aT -> rT) := f.
+Definition split_ (dflt : rT -> aT) (f : aT -> rT) := f.
 
 Context (dflt : rT -> aT).
 Local Notation split := (split_ dflt).
