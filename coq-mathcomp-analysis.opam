@@ -15,7 +15,7 @@ description: """
 This repository contains an experimental library for real analysis for
 the Coq proof-assistant and using the Mathematical Components library."""
 
-build: [make "-j%{jobs}%" ]
+build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
   "coq" { (>= "8.13" & < "8.16~") | (= "dev") }

@@ -4,7 +4,7 @@ organization: math-comp
 opam_name: coq-mathcomp-analysis
 community: false
 action: true
-nix: true
+nix: false
 coqdoc: false
 
 synopsis: >-
