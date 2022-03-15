@@ -874,8 +874,11 @@ Global Hint Mode Filter - ! : typeclass_instances.
 
 Class ProperFilter' {T : Type} (F : set (set T)) := {
   filter_not_empty : not (F (fun _ => False)) ;
-  filter_filter' :> Filter F
+  filter_filter' : Filter F
 }.
+(* TODO: Reuse :> above and remove the following line and the coercion below
+   after 8.17 is the minimum required version for Coq *)
+Global Existing Instance filter_filter'.
 Global Hint Mode ProperFilter' - ! : typeclass_instances.
 Arguments filter_not_empty {T} F {_}.
 
