@@ -5,14 +5,10 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 # Analysis library compatible with Mathematical Components
 
 [![Docker CI][docker-action-shield]][docker-action-link]
-[![Nix CI][nix-action-shield]][nix-action-link]
 [![Chat][chat-shield]][chat-link]
 
 [docker-action-shield]: https://github.com/math-comp/analysis/workflows/Docker%20CI/badge.svg?branch=master
 [docker-action-link]: https://github.com/math-comp/analysis/actions?query=workflow:"Docker%20CI"
-
-[nix-action-shield]: https://github.com/math-comp/analysis/workflows/Nix%20CI/badge.svg?branch=master
-[nix-action-link]: https://github.com/math-comp/analysis/actions?query=workflow:"Nix%20CI"
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
 [chat-link]: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
 
@@ -46,7 +42,7 @@ the Coq proof-assistant and using the Mathematical Components library.
   - [MathComp field 1.13 or later](https://math-comp.github.io)
   - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
-  - [Hierarchy Builder >= 1.0.0](https://github.com/math-comp/hierarchy-builder)
+  - [Hierarchy Builder >= 1.2.0](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
 - Related publication(s):
   - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)

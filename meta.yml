@@ -4,7 +4,7 @@ organization: math-comp
 opam_name: coq-mathcomp-analysis
 community: false
 action: true
-nix: true
+nix: false
 coqdoc: false
 
 synopsis: >-
@@ -114,9 +114,9 @@ dependencies:
     [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
 - opam:
     name: coq-hierarchy-builder
-    version: '{ (>= "1.0.0") }'
+    version: '{ (>= "1.2.0") }'
   description: |-
-    [Hierarchy Builder >= 1.0.0](https://github.com/math-comp/hierarchy-builder)
+    [Hierarchy Builder >= 1.2.0](https://github.com/math-comp/hierarchy-builder)
 namespace: mathcomp.analysis
 
 keywords:

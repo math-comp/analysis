@@ -26,7 +26,7 @@ depends: [
   "coq-mathcomp-field" { (>= "1.13.0" & < "1.15~") | (= "dev") }
   "coq-mathcomp-finmap" { (>= "1.5.1" & < "1.6~") | (= "dev") }
   "coq-mathcomp-bigenough" { (>= "1.0.0") }
-  "coq-hierarchy-builder" { (>= "1.0.0") }
+  "coq-hierarchy-builder" { (>= "1.2.0") }
 ]
 
 tags: [
