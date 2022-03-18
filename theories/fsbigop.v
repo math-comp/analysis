@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-Require Import mathcomp_extra boolp classical_sets posnum functions cardinality.
-Require Import reals ereal topology normedtype nngnum.
+Require Import mathcomp_extra boolp classical_sets signed functions cardinality.
+Require Import reals ereal topology normedtype.
 
 (******************************************************************************)
 (*                     Finitely-supported big operators                       *)

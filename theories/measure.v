@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-Require Import boolp classical_sets mathcomp_extra reals ereal posnum nngnum.
+Require Import boolp classical_sets mathcomp_extra reals ereal signed.
 Require Import functions topology normedtype sequences cardinality esum fsbigop.
 From HB Require Import structures.
 
@@ -2519,7 +2519,7 @@ Lemma epsilon_trick (R : realType) (A : (\bar R)^nat) e
 Proof.
 move=> A0 /nonnegP[{}e].
 rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
-    \sum_(0 <= i < n) (e%:nngnum / (2 ^ i.+1)%:R)%:E))) //.
+    \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E))) //.
   rewrite ereal_pseriesD //; last by move=> n /= _ /=; apply: divr_ge0.
   rewrite ereal_limD //.
   - rewrite lee_add2l //; apply: lee_lim => //.
@@ -2529,19 +2529,19 @@ rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
   - exact: is_cvg_ereal_nneg_series.
   - by apply: is_cvg_ereal_nneg_series => n _; apply: divr_ge0.
   - by apply: adde_def_nneg_series => // n _; apply: divr_ge0.
-suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ i.+1)%:R)%:E) -->
-    e%:nngnum%:E.
+suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) -->
+    e%:num%:E.
   rewrite ereal_limD //.
   - by rewrite lee_add2l // (cvg_lim _ cvggeo).
   - exact: is_cvg_ereal_nneg_series.
   - by apply: is_cvg_ereal_nneg_series => ?; rewrite lee_fin divr_ge0.
   - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_def.
 rewrite (_ : (fun n => _) = EFin \o
-    (fun n => \sum_(0 <= i < n) (e%:nngnum / (2 ^ (i + 1))%:R))%R); last first.
+    (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ (i + 1))%:R))%R); last first.
   rewrite funeqE => n /=; rewrite (@big_morph _ _ EFin 0 adde)//.
   by under [in RHS]eq_bigr do rewrite addn1.
 apply: cvg_comp; last apply cvg_refl.
-have := cvg_geometric_series_half e%:nngnum O.
+have := cvg_geometric_series_half e%:num O.
 by rewrite expr0 divr1; apply: cvg_trans.
 Unshelve. all: by end_near. Qed.
 

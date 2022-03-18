@@ -1,5 +1,5 @@
 From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum.
-Require Import nngnum.
+Require Import signed.
 
 (******************************************************************************)
 (* This file equips the product of two normedZmodTypes with a canonical       *)

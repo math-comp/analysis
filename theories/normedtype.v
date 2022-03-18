@@ -2,7 +2,7 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import interval zmodp vector fieldext falgebra.
 Require Import boolp mathcomp_extra ereal reals cardinality.
-Require Import classical_sets posnum nngnum topology prodnormedzmodule.
+Require Import classical_sets signed topology prodnormedzmodule.
 Require Import functions.
 
 (******************************************************************************)
@@ -1833,9 +1833,9 @@ Section mx_norm.
 Variables (K : numDomainType) (m n : nat).
 Implicit Types x y : 'M[K]_(m, n).
 
-Definition mx_norm x : K := (\big[maxr/0%:nng]_i `|x i.1 i.2|%:nng)%:nngnum.
+Definition mx_norm x : K := (\big[maxr/0%:nng]_i `|x i.1 i.2|%:nng)%:num.
 
-Lemma mx_normE x : mx_norm x = (\big[maxr/0%:nng]_i `|x i.1 i.2|%:nng)%:nngnum.
+Lemma mx_normE x : mx_norm x = (\big[maxr/0%:nng]_i `|x i.1 i.2|%:nng)%:num.
 Proof. by []. Qed.
 
 Lemma ler_mx_norm_add x y : mx_norm (x + y) <= mx_norm x + mx_norm y.

@@ -664,7 +664,7 @@ End bigmaxr.
 
 End ssreal_struct_contd.
 
-Require Import posnum topology normedtype.
+Require Import signed topology normedtype.
 
 Section analysis_struct.
 

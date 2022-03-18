@@ -2,7 +2,7 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 Require Import mathcomp_extra boolp reals ereal nsatz_realtype classical_sets.
-Require Import posnum functions topology normedtype landau sequences derive.
+Require Import signed functions topology normedtype landau sequences derive.
 Require Import realfun exp.
 
 (******************************************************************************)

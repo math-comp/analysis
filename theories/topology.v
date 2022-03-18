@@ -2,7 +2,7 @@
 From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
 From mathcomp Require Import seq fintype bigop order interval ssralg ssrnum rat.
 From mathcomp Require Import matrix finmap.
-Require Import mathcomp_extra boolp reals classical_sets posnum functions.
+Require Import mathcomp_extra boolp reals classical_sets signed functions.
 
 (******************************************************************************)
 (*                  Filters and basic topological notions                     *)
