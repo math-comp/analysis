@@ -338,8 +338,8 @@ apply: (@pseries_snd_diffs _ _ (`|x| + 1)).
   by apply/funext => i; rewrite diffs_cos sin_coeffE !fctE mulNr.
 - rewrite /pseries (_ : (fun _=> _) = - cos_coeff (`|x| + 1)).
     by rewrite is_cvg_seriesN; exact: is_cvg_series_cos_coeff.
-  apply/funext => i; rewrite diffs_cos -opprfunE.
-  by rewrite pseries_diffsN diffs_sin cos_coeffE !fctE mulNr.
+  apply/funext => i; rewrite diffs_cos pseries_diffsN.
+  by rewrite diffs_sin cos_coeffE mulNr.
 - by rewrite [X in _ < X]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 

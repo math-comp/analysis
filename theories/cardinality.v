@@ -17,18 +17,21 @@ Require Import boolp mathcomp_extra classical_sets functions.
 (* only relations A #<= B and A #= B to compare the cardinals of two sets     *)
 (* (on two possibly different types).                                         *)
 (*                                                                            *)
-(*          A #<= B  ==  the cardinal of A is smaller or equal to the one of B*)
-(*          A #>= B  := B #<= A                                               *)
-(*           A #= B  ==  the cardinal of A is equal to the cardinal of B      *)
-(*          A #!= B  := ~~ (A #= B)                                           *)
-(*     finite_set A  ==  the set A is finite                                  *)
-(*                   :=  exists n, A #= `I_n                                  *)
+(*           A #<= B == the cardinal of A is smaller or equal to the one of B *)
+(*           A #>= B := B #<= A                                               *)
+(*            A #= B == the cardinal of A is equal to the cardinal of B       *)
+(*           A #!= B := ~~ (A #= B)                                           *)
+(*      finite_set A == the set A is finite                                   *)
+(*                   := exists n, A #= `I_n                                   *)
 (*                   <-> exists X : {fset T}, A = [set` X]                    *)
 (*                   <-> ~ ([set: nat] #<= A)                                 *)
-(*   infinite_set A  := ~ finite_set A                                        *)
+(*    infinite_set A := ~ finite_set A                                        *)
 (*       countable A <-> A is countable                                       *)
 (*                   := A #<= [set: nat]                                      *)
-(*                                                                            *)
+(*        fset_set A == the finite set corresponding if A : set T is finite,  *)
+(*                      set0 otherwise (T : choiceType)                       *)
+(*              A.`1 := [fset x.1 | x in A]                                   *)
+(*              A.`2 := [fset x.2 | x in A]                                   *)
 (* {fimfun aT >-> T} == type of functions with a finite image                 *)
 (*                                                                            *)
 (******************************************************************************)
@@ -57,7 +60,8 @@ Definition card_le T U (A : set T) (B : set U) :=
 Notation "A '#<=' B" := (card_le A B) : card_scope.
 Notation "A '#>=' B" := (card_le B A) (only parsing) : card_scope.
 
-Definition card_eq T U (A : set T) (B : set U) := `[<$|{bij [set: A] >-> [set: B]}|>].
+Definition card_eq T U (A : set T) (B : set U) :=
+  `[< $|{bij [set: A] >-> [set: B]}| >].
 Notation "A '#=' B" := (card_eq A B) : card_scope.
 Notation "A '#!=' B" := (~~ (card_eq A B)) : card_scope.
 
@@ -97,8 +101,7 @@ Proof. by move=> f; apply/card_leP; squash (sigLR f). Qed.
 Lemma pcard_leP {T} {U : pointedType} {A : set T} {B : set U} :
    reflect $|{injfun A >-> B}| (A #<= B).
 Proof.
-by apply: (iffP card_leP) => -[f];
-  [squash (valLR point f) | squash (sigLR f)].
+by apply: (iffP card_leP) => -[f]; [squash (valLR point f) | squash (sigLR f)].
 Qed.
 
 Lemma pcard_leTP {T} {U : pointedType} {A : set T} :
@@ -231,7 +234,7 @@ Lemma card_lexx T (A : set T) : A #<= A.
 Proof. by apply/card_leP; squash idfun. Qed.
 #[global] Hint Resolve card_lexx : core.
 
-Lemma card_leT T (S : set T) : (S #<= [set: T]).
+Lemma card_leT T (S : set T) : S #<= [set: T].
 Proof. by apply/card_leP; squash (to_setT \o inclT _ \o val). Qed.
 
 Lemma subset_card_le T (A B : set T) : A `<=` B -> A #<= B.

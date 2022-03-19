@@ -13,26 +13,100 @@ Add Search Blacklist "_mixin_".
 (* This file provides a theory of functions whose domain and codomain are     *)
 (* represented by sets.                                                       *)
 (*                                                                            *)
-(*     set_fun A B f == f : aT -> rT is a function with domain A : set aT and *)
-(*                      codomain B : set rT                                   *)
-(*    set_surj A B f == f is surjective                                       *)
-(*     set inj A B f == f is injective                                        *)
-(*     set_bij A B f == f is bijective                                        *)
-(*    {fun A >-> B } == type of functions f : aT -> rT from A : set aT to     *)
-(*                      B : set rT                                            *)
-(*  {oinv aT >-> rT} == type of functions with a partial inverse              *)
-(* {oinvfun A >-> B} == combination of {fun A >-> B} and {oinv aT >-> rT}     *)
-(*   {inv aT >-> rT} == type of functions with an inverse                     *)
-(*             f ^-1 == inverse of f : {inv aT >-> rT}                        *)
-(*  {invfun A >-> B} == combination of {fun A >-> B} and {inv aT >-> rT}      *)
-(* {surjfun A >-> B} == type of surjective functions                          *)
-(*  {injfun A >-> B} == type of injective functions                           *)
-(*     {bij A >-> B} == combination of {injfun A >-> B} and {surjfun A >-> B} *)
+(*          set_fun A B f == f : aT -> rT is a function with domain           *)
+(*                           A : set aT and codomain B : set rT               *)
+(*         set_surj A B f == f is surjective                                  *)
+(*          set inj A B f == f is injective                                   *)
+(*          set_bij A B f == f is bijective                                   *)
 (*                                                                            *)
-(*         Section function_space == canonical ringType and lmodType          *)
-(*                                   structures for functions whose range is  *)
-(*                                   a ringType, comRingType,or lmodType.     *)
-(*                           fctE == multi-rule for fct                       *)
+(*          {fun A >-> B} == type of functions f : aT -> rT from A : set aT   *)
+(*                           to B : set rT                                    *)
+(*       {oinv aT >-> rT} == type of functions with a partial inverse         *)
+(*      {oinvfun A >-> B} == combination of {fun A >-> B} and                 *)
+(*                           {oinv aT >-> rT}                                 *)
+(*        {inv aT >-> rT} == type of functions with an inverse                *)
+(*                  f ^-1 == inverse of f : {inv aT >-> rT}                   *)
+(*       {invfun A >-> B} == combination of {fun A >-> B} and {inv aT >-> rT} *)
+(*         {surj A >-> B} == type of surjective functions                     *)
+(*      {surjfun A >-> B} == combination of {fun A >-> B} and {surj A >-> B}  *)
+(*    {splitsurj A >-> B} == type of surjective functions with an inverse     *)
+(* {splitsurjfun A >-> B} == combination of {fun A >-> B} and                 *)
+(*                           {splitsurj A >-> B}                              *)
+(*         {inj A >-> rT} == type of injective functions                      *)
+(*       {injfun A >-> B} == combination of {fun A >-> B} and {inj A >-> rT}  *)
+(*     {splitinj A >-> B} == type of injective functions with an inverse      *)
+(*  {splitinjfun A >-> B} == combination of {fun A >-> B} and                 *)
+(*                           {splitinj A >-> B}                               *)
+(*          {bij A >-> B} == combination of {injfun A >-> B} and              *)
+(*                           {surjfun A >-> B}                                *)
+(*     {splitbij A >-> B} == combination of {splitinj A >-> B} and            *)
+(*                           {splitsurj A >-> B}                              *)
+(*                                                                            *)
+(*              funin A f == alias for f : aT -> rT, with A : set aT          *)
+(*             [fun f in A] == the function f from the set A to the set f @` A*)
+(*            'split_ d f == partial injection from aT : Type to rt : Type;   *)
+(*                           f : aT -> rT, d : rT -> aT                       *)
+(*                  split := 'split_point                                     *)
+(*             @to_setT T == function that associates to x : T a dependent    *)
+(*                           pair of x with a proof that x belongs to setT    *)
+(*                           (i.e., the type set_type [set: T])               *)
+(*                incl AB == identity function from T to T, where AB is a     *)
+(*                           proof of A `<=` B, with A, B : set T             *)
+(*                inclT A := incl (@subsetT _ _)                              *)
+(*              eqincl AB == identity function from T to T, where AB is a     *)
+(*                           proof of A = B, with A, B : set T                *)
+(*              mkfun fAB == builds a function {fun A >-> B} given a function *)
+(*                           f : aT -> rT and a proof fAB that                *)
+(*                           {homo f : x / A x >-> B x}                       *)
+(*           @set_val T A == injection from set_type A to T, where A has      *)
+(*                           type set T                                       *)
+(*             @ssquash T == function of type                                 *)
+(*                           {splitsurj [set: T] >-> [set: $| T |]}           *)
+(*        @finset_val T X == function that turns an element x : X             *)
+(*                           (with X : {fset T}) into a dependent pair of x   *)
+(*                           with a proof that x belongs to X                 *)
+(*                           (i.e., the type set_type [set` X])               *)
+(*        @val_finset T X == function of type [set` X] -> X with X : {fset T} *)
+(*                           that cancels finset_val                          *)
+(*         glue XY AB f g == function that behaves as f over X, as g over Y   *)
+(*                           XY is a proof that sets X and Y are disjoint,    *)
+(*                           AB is a proof that sets A and B are disjoint,    *)
+(*                           A and B are intended to be the ranges of f and g *)
+(*           'pinv_ d A f == inverse of the function [fun f in A] over        *)
+(*                           f @` A, function d outside of f @` A             *)
+(*                  pinv := notation for 'pinv_point                          *)
+(*                                                                            *)
+(* * Function restriction:                                                    *)
+(*            patch d A f == "partial function" that behaves as the function  *)
+(*                           f over the set A and as the function d otherwise *)
+(*           restrict D f := patch (fun=> point) D f                          *)
+(*                 f \_ D := restrict D f                                     *)
+(*               sigL A f == "left restriction"; given a set A : set U and a  *)
+(*                           function f : U -> V, returns the corresponding   *)
+(*                           function of type set_type A -> V                 *)
+(*               sigR A f == "right restriction"; given a set B : set V and a *)
+(*                           function f : {fun [set: U] >-> B}, returns the   *)
+(*                           corresponding function of type U -> set_type B   *)
+(*            sigLR A B f == the function of type set_type A -> set_type B    *)
+(*                           corresponding to f : {fun A >-> B}               *)
+(*                valL_ v == function cancelled by sigL A, with A : set U and *)
+(*                           v : V                                            *)
+(*                 valR f == the function of type U -> V corresponding to     *)
+(*                           f : U -> set_type B, with B : set V              *)
+(*               valR_fun == the function of type {fun [set: U] >-> B}        *)
+(*                           corresponding to f : U -> set_type B, with       *)
+(*                           B : set V                                        *)
+(*              valLR v f == the function of type U -> V corresponding to     *)
+(*                           f : set_type A -> set_type B (where v : V),      *)
+(*                           i.e., 'valL_ v \o valR_fun                       *)
+(*       valLfun_ v A B f := [fun of valL_ f] with f : {fun [set: A] >-> B}   *)
+(*                   valL := 'valL_ point                                     *)
+(*             valLRfun v := 'valLfun_ v \o valR_fun                          *)
+(*                                                                            *)
+(* Section function_space == canonical ringType and lmodType                  *)
+(*                           structures for functions whose range is          *)
+(*                           a ringType, comRingType, or lmodType.            *)
+(*                   fctE == multi-rule for fct                               *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -852,7 +926,7 @@ Notation "[ 'fun' f 'in' A ]" := (funin A f)
 
 Section split.
 Context {aT rT} (A : set aT) (B : set rT).
-Definition split_  (dflt : rT -> aT) (f : aT -> rT) := f.
+Definition split_ (dflt : rT -> aT) (f : aT -> rT) := f.
 
 Context (dflt : rT -> aT).
 Local Notation split := (split_ dflt).
@@ -1147,8 +1221,8 @@ End SubType.
 
 Definition to_setT {T} (x : T) : [set: T] :=
   @SigSub _ _ _ x (mem_set I : x \in setT).
-HB.instance Definition _ T :=
-  Can.Build T [set: T] setT to_setT ((fun _ _ => erefl) : {in setT, cancel to_setT val}).
+HB.instance Definition _ T := Can.Build T [set: T] setT to_setT
+  ((fun _ _ => erefl) : {in setT, cancel to_setT val}).
 HB.instance Definition _ T := IsFun.Build T _ setT setT to_setT (fun _ _ => I).
 HB.instance Definition _ T :=
   SplitInjFun_CanV.Build T _ _ _ to_setT (fun x y => I) inj.
@@ -1175,10 +1249,6 @@ HB.instance Definition _  (AB : A `<=` B) :=
   SurjFun_Inj.Build A B setT (subfun AB @` setT) (subfun AB) (in2W subfun_inj).
 
 End subfun.
-
-(* backport to classical sets *)
-Lemma subsetW {T} {A B : set T} : A = B -> A `<=` B. Proof. by move->. Qed.
-Definition subsetCW {T} {A B : set T} : A = B -> B `<=` A := subsetW \o esym.
 
 Section subfun_eq.
 Context {T} {A B : set T}.
@@ -1277,9 +1347,10 @@ Hint Extern 0 (is_true (set_val _ \in _)) => solve [apply: valP] : core.
 (* Squash *)
 (**********)
 
-HB.instance Definition _ T := CanV.Build T $|T| setT setT squash (fun _ _ => I) (in1W unsquashK).
+HB.instance Definition _ T := CanV.Build T $|T| setT setT squash (fun _ _ => I)
+                              (in1W unsquashK).
 HB.instance Definition _ T := SplitInj.copy (@unsquash T) squash^-1%FUN.
-Definition ssquash {T} := [splitsurj of (@squash T)].
+Definition ssquash {T} := [splitsurj of @squash T].
 
 (***********************)
 (* pickle and unpickle *)
@@ -1297,8 +1368,10 @@ HB.instance Definition _ (T : countType) :=
 Lemma set0fun_inj {P T} : injective (@set0fun P T).
 Proof. by case=> x x0; have := set_mem x0. Qed.
 
-HB.instance Definition _ P T := Inj.Build (@set0 T) P setT set0fun (in2W set0fun_inj).
-HB.instance Definition _ P T := IsFun.Build _ _ setT setT (@set0fun P T) (fun _ _ => I).
+HB.instance Definition _ P T :=
+  Inj.Build (@set0 T) P setT set0fun (in2W set0fun_inj).
+HB.instance Definition _ P T :=
+  IsFun.Build _ _ setT setT (@set0fun P T) (fun _ _ => I).
 
 (************)
 (* cast_ord *)
@@ -1396,14 +1469,13 @@ HB.instance Definition _  (f : {oinvfun X >-> A}) (g : {oinvfun Y >-> B}) :=
   OInversible.on (gl f g).
 
 Lemma oinv_glue (f : {oinv T >-> T'}) (g : {oinv T >-> T'}) :
-  'oinv_(gl f g) = (glue AB (eqbRL disj_set_some XY) 'oinv_f 'oinv_g).
+  'oinv_(gl f g) = glue AB (eqbRL disj_set_some XY) 'oinv_f 'oinv_g.
 Proof. by []. Qed.
 
 Lemma some_inv_glue_subproof (f g : {inv T >-> T'}) :
-    some \o (glue AB XY f^-1 g^-1) = 'oinv_(gl f g).
+  some \o (glue AB XY f^-1 g^-1) = 'oinv_(gl f g).
 Proof.
-apply/funext => y; rewrite oinv_glue /glue /=.
-by case: ifPn =>/=; rewrite some_inv.
+by apply/funext => y; rewrite oinv_glue /glue /= [LHS]fun_if !some_inv.
 Qed.
 
 HB.instance Definition _ (f g : {inv T >-> T'}) :=
@@ -1854,20 +1926,20 @@ Definition sigR (f : {fun [set: U] >-> A}) (u : U) : A :=
   SigSub (mem_set ('funS_f I) : f u \in A).
 HB.instance Definition _ f := Fun.copy (sigR f) (totalfun _).
 
-Definition valLr (f : U -> A) := set_val \o totalfun f.
-HB.instance Definition _ f := Fun.on (valLr f).
+Definition valR (f : U -> A) := set_val \o totalfun f.
+HB.instance Definition _ f := Fun.on (valR f).
 
-Definition valLr_fun (f : U -> A) : {fun [set: U] >-> A} := [fun of valLr f].
+Definition valR_fun (f : U -> A) : {fun [set: U] >-> A} := [fun of valR f].
 
-Lemma sigRK (f : {fun [set: U] >-> A}) : valLr (sigR f) = f.
+Lemma sigRK (f : {fun [set: U] >-> A}) : valR (sigR f) = f.
 Proof. by []. Qed.
 
-Lemma sigR_funK (f : {fun [set: U] >-> A}) : valLr_fun (sigR f) = f.
+Lemma sigR_funK (f : {fun [set: U] >-> A}) : valR_fun (sigR f) = f.
 Proof. by apply/funP/funeqP; apply: sigRK. Qed.
 
-Lemma valLrP (f : U -> A) x : A (valLr f x). Proof. exact: set_valP. Qed.
+Lemma valRP (f : U -> A) x : A (valR f x). Proof. exact: set_valP. Qed.
 
-Lemma valLrK : cancel valLr_fun sigR.
+Lemma valRK : cancel valR_fun sigR.
 Proof. by move=> f; apply/funext => x; apply/val_inj. Qed.
 
 End RestrictionRight.
@@ -1878,7 +1950,7 @@ Context {U V : Type} (v : V) {A : set U} {B : set V}.
 Local Notation rl := (sigL A).
 Local Notation rr := sigR.
 Local Notation el := 'valL_v.
-Local Notation er := valLr.
+Local Notation er := valR.
 
 HB.instance Definition _ (f : {oinv U >-> V}) :=
   @OInv.Build _ _ (rl f) (obind insub \o 'oinv_f).
@@ -2052,28 +2124,28 @@ End RestrictionLeftInv.
 Section ExtentionLeftInv.
 Context {U V : Type} {A : set U} {B : set V}.
 Local Notation el := 'valL_None.
-Local Notation er := valLr.
+Local Notation er := valR.
 
 HB.instance Definition _ (f : {oinv V >-> A}) :=
   @OInv.Build _ _ (er f) (el 'oinv_f).
 
-Lemma oinv_valLr (f : {oinv V >-> A}) : 'oinv_(er f) = (el 'oinv_f).
+Lemma oinv_valR (f : {oinv V >-> A}) : 'oinv_(er f) = (el 'oinv_f).
 Proof. by []. Qed.
 
-Lemma valLr_inj_subproof (f : {inj [set: V] >-> A}) :
+Lemma valR_inj_subproof (f : {inj [set: V] >-> A}) :
    @OInv_Can _ _ setT (er f).
-Proof. by split=> x _; rewrite /er oinv_valLr/= funoK/= ?funoK ?inE. Qed.
-HB.instance Definition _ f := valLr_inj_subproof f.
+Proof. by split=> x _; rewrite /er oinv_valR/= funoK/= ?funoK ?inE. Qed.
+HB.instance Definition _ f := valR_inj_subproof f.
 
-Lemma valLr_surj_subproof (f : {surj [set: V] >-> [set: A]}) :
+Lemma valR_surj_subproof (f : {surj [set: V] >-> [set: A]}) :
   @OInv_CanV _ _ setT A (er f).
 Proof.
-split=> [a|a /set_mem] Aa; rewrite ?oinv_valLr/= oinv_set_val.
+split=> [a|a /set_mem] Aa; rewrite ?oinv_valR/= oinv_set_val.
   by rewrite insubT ?inE// => memaA /=; case: oinvP => //= x; exists x.
 rewrite insubT ?inE// => memaA/=; case: oinvP => //= x _.
 by rewrite /er/= /totalfun => ->.
 Qed.
-HB.instance Definition _ f := valLr_surj_subproof f.
+HB.instance Definition _ f := valR_surj_subproof f.
 HB.instance Definition _ (f : {bij [set: V] >-> [set: A]}) := Fun.on (er f).
 
 End ExtentionLeftInv.
@@ -2089,17 +2161,17 @@ Definition sigLR := sigR \o (@sigLfun U V A B).
 HB.instance Definition _ (f : {fun A >-> B}) :=
   Fun.copy (sigLR f) (totalfun _).
 
-Definition valLR : (A -> B) -> U -> V := valL \o valLr_fun.
-Definition valLRfun : (A -> B) -> {fun A >-> B} := valLfun \o valLr_fun.
+Definition valLR : (A -> B) -> U -> V := valL \o valR_fun.
+Definition valLRfun : (A -> B) -> {fun A >-> B} := valLfun \o valR_fun.
 
-Lemma valLRE (f : A -> B) : valLR f = valL (valLr f). Proof. by []. Qed.
+Lemma valLRE (f : A -> B) : valLR f = valL (valR f). Proof. by []. Qed.
 Lemma valLRfunE (f : A -> B) : valLRfun f = [fun of valLR f]. Proof. by []. Qed.
 
 Lemma sigL2K (f : {fun A >-> B}) : {in A, valLR (sigLR f) =1 f}.
 Proof. by apply/eq_sigLP; rewrite valLK sigR_funK. Qed.
 
 Lemma valLRK : cancel valLRfun sigLR.
-Proof. by move=> f; rewrite /sigLR /valLR /= valLfunK valLrK. Qed.
+Proof. by move=> f; rewrite /sigLR /valLR /= valLfunK valRK. Qed.
 
 Lemma valLRfun_inj : injective valLRfun.
 Proof. by move=> f g eqefg; rewrite -[LHS]valLRK eqefg valLRK. Qed.
@@ -2449,7 +2521,8 @@ Qed.
 Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
   LmodType _ (U -> V) (fct_lmodMixin U V).
 
-Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M) (x : T) :
+Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M)
+    (x : T) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
@@ -2459,19 +2532,18 @@ Section function_space_lemmas.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
-Lemma addrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
-  f + g = (fun x : T => f x + g x).
+Lemma addrfctE (T : Type) (K : zmodType) (f g : T -> K) :
+  f + g = (fun x => f x + g x).
 Proof. by []. Qed.
 
-Lemma opprfunE (T : pointedType) (K : ringType) (f : T -> K) :
-  - f = (fun x : T => - f x).
+Lemma opprfctE (T : Type) (K : zmodType) (f : T -> K) : - f = (fun x => - f x).
 Proof. by []. Qed.
 
-Lemma mulrfunE (T : pointedType) (K : ringType) (f g : T -> K) :
-  f * g = (fun x : T => f x * g x).
+Lemma mulrfctE (T : pointedType) (K : ringType) (f g : T -> K) :
+  f * g = (fun x => f x * g x).
 Proof. by []. Qed.
 
-Lemma scalrfunE (T : pointedType) (K : ringType) (L : lmodType K)
+Lemma scalrfctE (T : pointedType) (K : ringType) (L : lmodType K)
     k (f : T -> L) :
   k *: f = (fun x : T => k *: f x).
 Proof. by []. Qed.
@@ -2479,17 +2551,15 @@ Proof. by []. Qed.
 Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
 Proof. by []. Qed.
 
-Lemma exprfunE (T : pointedType) (K : ringType) (f : T -> K) n :
+Lemma exprfctE (T : pointedType) (K : ringType) (f : T -> K) n :
   f ^+ n = (fun x => f x ^+ n).
-Proof.
-by elim: n => [|n ihn]; rewrite funeqE=> ?; [rewrite !expr0|rewrite !exprS ihn].
-Qed.
+Proof. by elim: n => [|n h]; rewrite funeqE=> ?; rewrite ?expr0 ?exprS ?h. Qed.
 
 Lemma compE (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3) :
   g \o f = fun x => g (f x).
 Proof. by []. Qed.
 
 Definition fctE :=
-  (cstE, compE, opprfunE, addrfunE, mulrfunE, scalrfunE, exprfunE).
+  (cstE, compE, opprfctE, addrfctE, mulrfctE, scalrfctE, exprfctE).
 
 End function_space_lemmas.

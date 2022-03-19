@@ -991,11 +991,10 @@ Qed.
 Global Instance is_diffX (f df : V -> R) n x :
   is_diff x f df -> is_diff x (f ^+ n.+1) (n.+1%:R * f x ^+ n *: df).
 Proof.
-move=> dfx; elim: n => [|n ihn].
-  by rewrite expr1 expr0 mulr1 scale1r.
+move=> dfx; elim: n => [|n ihn]; first by rewrite expr1 expr0 mulr1 scale1r.
 rewrite exprS; apply: is_diff_eq.
-rewrite scalerA mulrCA -exprS -scalerDl exprfunE -{2}[_ ^+ _]mul1r.
-by rewrite -mulrDl -{2}[1]/(1%:R) -natrD addn1.
+rewrite scalerA mulrCA -exprS -scalerDl.
+by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
 Qed.
 
 Lemma differentiableX (f : V -> R) n x :
@@ -1241,8 +1240,7 @@ Proof.
 move=> dfx; elim: n => [|n ihn]; first by rewrite expr1 expr0 mulr1 scale1r.
 rewrite exprS; apply: is_derive_eq.
 rewrite scalerA -scalerDl mulrCA -[f x * _]exprS.
-rewrite -[X in _ + X]mul1r [X in 1 * (X _)]exprfunE -mulrDl.
-by rewrite -{2}[1]/1%:R -natrD addn1.
+by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
 Qed.
 
 Lemma derivableX (f : V -> R) n (x v : V) :

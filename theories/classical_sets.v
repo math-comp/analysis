@@ -103,6 +103,13 @@ Require Import mathcomp_extra boolp.
 (*     for preorders, where maximal is replaced with premaximal: t is         *)
 (*     premaximal if whenever t < s we also have s < t.                       *)
 (*                                                                            *)
+(*                      $| T | == T : Type is inhabited                       *)
+(*                    squash x == proof of $| T | (with x : T)                *)
+(*                  unsquash s == extract a witness from s : $| T |           *)
+(* --> Tactic:                                                                *)
+(*   - squash x:                                                              *)
+(*     solves a goal $| T | by instantiating with x or [the T of x]           *)
+(*                                                                            *)
 (*                trivIset D F == the sets F i, where i ranges over D : set I,*)
 (*                                are pairwise-disjoint                       *)
 (*                   cover D F := \bigcup_(i in D) F i                        *)
@@ -644,6 +651,10 @@ Lemma subTset A : (setT `<=` A) = (A = setT).
 Proof. by rewrite eqEsubset propeqE; split=> [|[]]. Qed.
 
 Lemma subsetT A : A `<=` setT. Proof. by []. Qed.
+
+Lemma subsetW {A B} : A = B -> A `<=` B. Proof. by move->. Qed.
+
+Definition subsetCW {A B} : A = B -> B `<=` A := subsetW \o esym.
 
 Lemma disj_set2E A B : [disjoint A & B] = (A `&` B == set0).
 Proof. by []. Qed.
@@ -2227,9 +2238,9 @@ Arguments qcanon {T C sort alt} x.
 
 Lemma choicePpointed : quasi_canonical choiceType pointedType.
 Proof.
-apply: qcanon => T; case: (pselect $|T|).
-  by move=> /unsquash x; right; exists (PointedType T x); case: T x.
-move=> /(_ (squash _)) TF; left.
+apply: qcanon => T; have [/unsquash x|/(_ (squash _)) TF] := pselect $|T|.
+  by right; exists (PointedType T x); case: T x.
+left.
 pose cT := CountType _ (TF : Empty.mixin_of T).
 pose fM := Empty.finMixin (TF : Empty.mixin_of cT).
 exists (EmptyType (FinType _ fM) TF) => //=.
