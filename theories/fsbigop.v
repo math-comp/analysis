@@ -129,7 +129,7 @@ elim/Peq: R => R in idx op f *.
 rewrite -big_mkcond/= -[in RHS]big_filter; apply: perm_big.
 rewrite uniq_perm ?filter_uniq//= => i; rewrite mem_filter.
 set g := fun i => if i \in A then f i else idx.
-have gAf : setT `&` g @^-1` [set~ idx] = (A `&` [eta f] @^-1` [set~ idx]).
+have gAf : setT `&` g @^-1` [set~ idx] = (A `&` f @^-1` [set~ idx]).
   rewrite setTI; apply/predeqP => x; split; rewrite /preimage/g/=.
     by case: ifPn; rewrite (inE, notin_set).
   by case: ifPn; rewrite (inE, notin_set) => ? [].
@@ -151,8 +151,9 @@ by under eq_fsbigr do rewrite patch_setI.
 Qed.
 
 Lemma fsbig_mkcondl (R : Type) (idx : R) (op : Monoid.com_law idx)
-     (T : choiceType) (I J : set T) (a : T -> R) :
-  \big[op/idx]_(i \in I `&` J) a i = \big[op/idx]_(i \in J) if i \in I then a i else idx.
+    (T : choiceType) (I J : set T) (a : T -> R) :
+  \big[op/idx]_(i \in I `&` J) a i =
+  \big[op/idx]_(i \in J) if i \in I then a i else idx.
 Proof.
 rewrite fsbig_mkcond [RHS]fsbig_mkcond setIC.
 by under eq_fsbigr do rewrite patch_setI.

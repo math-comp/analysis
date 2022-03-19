@@ -35,6 +35,8 @@
 ### Removed
 
 - files `posnum.v` and `nngnum.v` (both subsumed by `signed.v`)
+- in `topology.v`:
+  + `ltr_distlC`, `ler_distlC`
 
 ### Infrastructure
 
