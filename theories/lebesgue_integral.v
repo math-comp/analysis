@@ -1160,7 +1160,7 @@ rewrite predeqE => r; split => [|].
     rewrite (le_trans _ (floor_le _)) // -(@gez0_abs (floor _)) // floor_ge0.
     by rewrite mulr_ge0 // ?(le_trans _ nr)// -natrX ler0n.
   rewrite ltr_pdivl_mulr; last by rewrite -natrX ltr0n expn_gt0.
-  rewrite (lt_le_trans (lt_succ_Rfloor _))// RfloorE -[in X in _ <= X]addn1.
+  rewrite (lt_le_trans (lt_succ_Rfloor _))// RfloorE -[in leRHS]addn1.
   rewrite natrD ler_add2r // -(@gez0_abs (floor _)) // floor_ge0.
   by rewrite mulr_ge0// -?natrX ?ler0n// (le_trans _ nr).
 - rewrite -bigcup_set => -[/= k].
@@ -1327,7 +1327,7 @@ have xAnK : x \in A n (Ordinal K).
     rewrite (le_trans _ (floor_le _)) // -(@gez0_abs (floor _)) // floor_ge0.
     by rewrite mulr_ge0 // ?ltW// -natrX ltr0n expn_gt0.
   rewrite ltr_pdivl_mulr // -?natrX ?ltr0n ?expn_gt0//.
-  rewrite (lt_le_trans (lt_succ_Rfloor _))// RfloorE -[in X in _ <= X]addn1.
+  rewrite (lt_le_trans (lt_succ_Rfloor _))// RfloorE -[in leRHS]addn1.
   rewrite natrD ler_add2r // -{1}(@gez0_abs (floor _)) // floor_ge0.
   by rewrite mulr_ge0// -?natrX ?ler0n// ltW.
 have := An0 (Ordinal K).
@@ -1402,7 +1402,7 @@ have [fxn|fxn] := ltP (f x) n%:R%:E.
       by rewrite /A /= k2n inE; split => //=; rewrite inE/=; exists r.
     rewrite xAn1k mulr1 big1 ?addr0; last first.
       by move=> i ik2n; rewrite (disj_A0 (Ordinal k2n)) // mulr0.
-    rewrite -[X in X <= _]mulr1 -[X in _ * X <= _](@divrr _ 2%:R) ?unitfE//.
+    rewrite -[leLHS]mulr1 -[X in _ * X <= _](@divrr _ 2%:R) ?unitfE//.
     rewrite mulf_div -natrM muln2 -natrX -natrM -expnSr natrX.
     by rewrite ler_pmul2r ?invr_gt0 ?exprn_gt0// ler_nat.
 have /orP[{}fxn|{}fxn] :
@@ -1498,16 +1498,15 @@ case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
   move=> /(_ (`|ceil l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
   rewrite approx_x.
   apply/negP; rewrite -leNgt distrC (le_trans _ (ler_sub_norm_add _ _)) //.
-  rewrite normrN ler_subr_addl addSnnS [X in _ <= X]ger0_norm ?ler0n//.
+  rewrite normrN ler_subr_addl addSnnS [leRHS]ger0_norm ?ler0n//.
   rewrite natrD ler_add// ?ler1n// ger0_norm // (le_trans (ceil_ge _)) //.
   by rewrite -(@gez0_abs (ceil _)) // ceil_ge0.
 - move/cvg_distP => /(_ _ ltr01); rewrite near_map => -[n _].
   move=> /(_ (`|floor l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
   rewrite approx_x.
   apply/negP; rewrite -leNgt distrC (le_trans _ (ler_sub_norm_add _ _)) //.
-  rewrite normrN ler_subr_addl addSnnS [X in _ <= X]ger0_norm ?ler0n//.
-  rewrite natrD ler_add// ?ler1n//.
-  rewrite ler0_norm //; last by rewrite ltW.
+  rewrite normrN ler_subr_addl addSnnS [leRHS]ger0_norm ?ler0n//.
+  rewrite natrD ler_add// ?ler1n// ler0_norm //; last by rewrite ltW.
   rewrite (@le_trans _ _ (- floor l)%:~R) //.
     by rewrite mulrNz ler_oppl opprK floor_le.
   by rewrite -(@lez0_abs (floor _)) // floor_le0 // ltW.
@@ -1913,7 +1912,7 @@ rewrite (@le_trans _ _ (\big[maxr/0]_(i < n) g2 i n.+1 x)%R) //.
   apply: le_bigmax => i _; apply: (nondecreasing_seqP (g2 i ^~ x)).2 => a b ab.
    by rewrite !nnsfun_approxE; exact/lefP/nd_approx.
 rewrite (bigmaxD1 ord_max)// le_maxr; apply/orP; right.
-rewrite [X in (_ <= X)%R](eq_bigl (fun i => nat_of_ord i < n)%N); last first.
+rewrite [leRHS](eq_bigl (fun i => nat_of_ord i < n)%N); last first.
    move=> i /=; rewrite neq_lt; apply/orP/idP => [[//|]|]; last by left.
    by move=> /(leq_trans (ltn_ord i)); rewrite ltnn.
 by rewrite (big_ord_narrow (leqnSn n)).
@@ -2579,7 +2578,7 @@ Proof.
 suff: \int_ D ((g1 \+ g2)^\+ x) 'd mu[x] + \int_ D (g1^\- x) 'd mu[x] + \int_ D (g2^\- x) 'd mu[x] =
       \int_ D ((g1 \+ g2)^\- x) 'd mu[x] + \int_ D (g1^\+ x) 'd mu[x] + \int_ D (g2^\+ x) 'd mu[x].
   move=> h; rewrite [in LHS]integralE.
-  move/eqP : h; rewrite -[in X in _ == X]addeA [in X in _ == X]addeC.
+  move/eqP : h; rewrite -[in eqRHS]addeA [in eqRHS]addeC.
   have g12nng : \int_ D (g1^\+ x) 'd mu[x] + \int_ D (g2^\+ x) 'd mu[x] \is a fin_num.
     rewrite ge0_fin_numE//.
       by rewrite lte_add_pinfty//; exact: integral_funenng_lt_pinfty.
@@ -2609,7 +2608,7 @@ suff: \int_ D ((g1 \+ g2)^\+ x) 'd mu[x] + \int_ D (g1^\- x) 'd mu[x] + \int_ D 
   by rewrite addeA -(integralE _ _ g1) -(integralE _ _ g2).
 have : (g1 \+ g2)^\+ \+ g1^\- \+ g2^\- = (g1 \+ g2)^\- \+ g1^\+ \+ g2^\+.
   rewrite funeqE => x.
-  apply/eqP; rewrite -2!addeA [in X in _ == X]addeC -sube_eq; last 2 first.
+  apply/eqP; rewrite -2!addeA [in eqRHS]addeC -sube_eq; last 2 first.
     by rewrite /funenng /funennp /g1 /g2 /= !maxEFin.
     by rewrite /funenng /funennp /g1 /g2 /= !maxEFin.
   rewrite addeAC eq_sym -sube_eq; last 2 first.
@@ -3268,7 +3267,7 @@ Let gg_ n x : D x -> 0 <= 2%:E * g x - g_ n x.
 Proof.
 move=> Dx; rewrite subre_ge0; last by rewrite fin_numM// fing.
 rewrite -(fineK (fing Dx)) -EFinM mulr_natl mulr2n /g_.
-rewrite (le_trans (lee_abs_sub _ _))// [in X in _ <= X]EFinD lee_add//.
+rewrite (le_trans (lee_abs_sub _ _))// [in leRHS]EFinD lee_add//.
   by rewrite fineK// ?fing// absfg.
 have f_fx : `|(f_ n x)| @[n --> \oo] --> `|f x| by apply: cvg_abse; exact: f_f.
 move/cvg_lim : (f_fx) => <-//.
@@ -3648,7 +3647,7 @@ move=> n; rewrite -/B; have [? ?] := F_oo n.
 pose m2' := measure_restr m2 (F_oo n).1.
 have m2'_bounded : exists M, forall X, measurable X -> (m2' X < M%:E)%E.
   exists (fine (m2' (F n)) + 1) => Y mY.
-  rewrite [in X in (_ < X)%E]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
+  rewrite [in ltRHS]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
   rewrite fineK; last first.
     by rewrite ge0_fin_numE ?measure_ge0// /m2' measure_restrE setIid.
   rewrite /m2' !measure_restrE setIid; apply: le_measure => //; rewrite inE//.
@@ -3688,7 +3687,7 @@ move=> n; have [? ?] := F_oo n; rewrite -/B.
 pose m1'  := measure_restr m1 (F_oo n).1.
 have m1'_bounded : exists M, forall X, measurable X -> (m1' X < M%:E)%E.
   exists (fine (m1' (F n)) + 1) => Y mY.
-  rewrite [in X in (_ < X)%E]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
+  rewrite [in ltRHS]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
   rewrite fineK; last first.
     by rewrite ge0_fin_numE ?measure_ge0// /m1' measure_restrE setIid.
   rewrite /m1' !measure_restrE setIid; apply: le_measure => //; rewrite inE//=.

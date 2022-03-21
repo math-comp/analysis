@@ -242,7 +242,7 @@ pose X2 := [fset x.2 | x in X]%fset.
 exists X1; first by move=> x/= /imfsetP[z /= zX ->]; have [] := XIJ z.
 apply: (@le_trans _ _ (\sum_(i <- X1) \sum_(j <- X2 | j \in J i) a i j)).
   rewrite pair_big_dep_cond//=; set Y := Imfset.imfset2 _ _ _ _.
-  rewrite [X in _ <= X](big_fsetID _ (mem X))/=.
+  rewrite [leRHS](big_fsetID _ (mem X))/=.
   rewrite (_ : [fset x | x in Y & x \in X] = Y `&` X)%fset; last first.
      by apply/fsetP => x; rewrite 2!inE.
   rewrite (fsetIidPr _); first by rewrite lee_addl// sume_ge0.
@@ -251,7 +251,7 @@ apply: (@le_trans _ _ (\sum_(i <- X1) \sum_(j <- X2 | j \in J i) a i j)).
     by apply/imfsetP; exists (i, j).
   exists j => //; rewrite !inE/=; have /XIJ[/= _ Jij] := Xij.
   by apply/andP; split; rewrite ?inE//; apply/imfsetP; exists (i, j).
-rewrite big_mkcond [X in _ <= X]big_mkcond.
+rewrite big_mkcond [leRHS]big_mkcond.
 apply: lee_sum => i Xi; rewrite ereal_sup_ub => //=.
 exists [fset j in X2 | j \in J i]%fset; last by rewrite -big_fset_condE.
 by move=> j/=; rewrite !inE => /andP[_]; rewrite inE.
@@ -263,7 +263,7 @@ Lemma lee_sum_fset_nat (R : realDomainType)
     [set` F] `<=` `I_n ->
   \sum_(i <- F | P i) f i <= \sum_(0 <= i < n | P i) f i.
 Proof.
-move=> f0 Fn; rewrite [X in _ <= X](bigID (mem F))/=.
+move=> f0 Fn; rewrite [leRHS](bigID (mem F))/=.
 suff -> : \sum_(0 <= i < n | P i && (i \in F)) f i = \sum_(i <- F | P i) f i.
   by rewrite lee_addl ?sume_ge0// => i /andP[/f0].
 rewrite -big_filter -[RHS]big_filter; apply: perm_big.
@@ -316,7 +316,7 @@ move=> /(@pPbij _ _ _)[{}e ->] a_ge0.
 gen have le_esum : T T' a P Q e a_ge0 /
     \esum_(j in Q) a j <= \esum_(i in P) a (e i); last first.
   apply/eqP; rewrite eq_le le_esum//=.
-  rewrite [X in _ <= X](_ : _ = \esum_(j in Q) a (e (e^-1%FUN j))); last first.
+  rewrite [leRHS](_ : _ = \esum_(j in Q) a (e (e^-1%FUN j))); last first.
     by apply: eq_esum => i Qi; rewrite invK ?inE.
   by rewrite le_esum => //= i Qi; rewrite a_ge0//; apply: funS.
 rewrite ub_ereal_sup => //= _ [X XQ <-]; rewrite ereal_sup_ub => //=.

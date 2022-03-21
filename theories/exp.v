@@ -1,8 +1,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
-Require Import boolp reals ereal nsatz_realtype classical_sets posnum functions.
-Require Import topology normedtype landau sequences derive realfun.
+Require Import mathcomp_extra boolp reals ereal nsatz_realtype classical_sets.
+Require Import posnum functions topology normedtype landau sequences derive.
+Require Import realfun.
 
 (******************************************************************************)
 (*               Theory of exponential/logarithm functions                    *)
@@ -167,7 +168,7 @@ apply: le_trans (_ : d.+1%:R * K ^+ d <= _); last first.
   by rewrite ler_nat ltnS /d -subn1 -subnDA leq_subr.
 rewrite (le_trans (ler_norm_sum _ _ _))//.
 rewrite mulr_natl -[X in _ *+ X]subn0 -sumr_const_nat ler_sum_nat//= => j jd1.
-rewrite -[in X in _ <= X](subnK (_ : j <= d)%nat) -1?ltnS // addnC exprD normrM.
+rewrite -[in leRHS](subnK (_ : j <= d)%nat) -1?ltnS // addnC exprD normrM.
 by rewrite ler_pmul// ?normr_ge0// normrX ler_expn2r// qualifE (le_trans _ zLK).
 Qed.
 
@@ -342,7 +343,7 @@ apply: (@pseries_snd_diffs _ _ (`|x| + 1)); rewrite /pseries.
 - rewrite (_ : (fun _ => _) = exp_coeff (`|x| + 1)).
     exact: is_cvg_series_exp_coeff.
   by apply/funext => i; rewrite !pseries_diffs_inv_fact exp_coeffE.
-by rewrite [X in _ < X]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+by rewrite [ltRHS]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
 Lemma derivable_expR x : derivable expR x 1.
@@ -630,9 +631,8 @@ case/andP => a0; rewrite le_eqVlt => /orP[/eqP ->|a1].
   by rewrite funeqE => i /=; rewrite exp_funr1.
 have : forall n, harmonic n <= riemannR a n.
   case=> /= [|n]; first by rewrite exp_fun1 invr1.
-  rewrite -[X in _ <= X]div1r ler_pdivl_mulr ?exp_fun_gt0 // mulrC.
-  rewrite ler_pdivr_mulr // mul1r -[X in _ <= X]exp_funr1 //.
-  by rewrite (ler_exp_fun) // ?ltr1n // ltW.
+  rewrite -[leRHS]div1r ler_pdivl_mulr ?exp_fun_gt0 // mulrC ler_pdivr_mulr //.
+  by rewrite mul1r -[leRHS]exp_funr1 // (ler_exp_fun) // ?ltr1n // ltW.
 move/(series_le_cvg harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
 by move/contra_not; apply; exact: dvg_harmonic.
 Qed.

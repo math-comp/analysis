@@ -9,7 +9,7 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-(* ------- *) Require Import boolp classical_sets.
+(* ------- *) Require Import mathcomp_extra boolp classical_sets.
 
 Require Import Setoid.
 
@@ -440,10 +440,10 @@ have Dz: 2%:R * z = x + y.
   by rewrite mulrCA divff ?mulr1 // pnatr_eq0.
 have ubE : has_sup E by split => //; exists x.
 have [/downP [t Et lezt] | leyz] := sup_total z ubE.
-  rewrite -(ler_add2l x) -Dz -mulr2n -[X in _<=X]mulr_natl.
+  rewrite -(ler_add2l x) -Dz -mulr2n -[leRHS]mulr_natl.
   rewrite ler_pmul2l ?ltr0Sn //; apply/(le_trans lezt).
   by move/ubP : leEx; exact.
-rewrite -(ler_add2r y) -Dz -mulr2n -[X in X<=_]mulr_natl.
+rewrite -(ler_add2r y) -Dz -mulr2n -[leLHS]mulr_natl.
 by rewrite ler_pmul2l ?ltr0Sn.
 Qed.
 

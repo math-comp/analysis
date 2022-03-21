@@ -1053,7 +1053,7 @@ Proof.
 rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
-rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
+rewrite mulrACA [`|_| in leRHS]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; exact: nbhs_pinfty_ge.
 Unshelve. all: by end_near. Qed.
 
@@ -1079,7 +1079,7 @@ Proof.
 rewrite [RHS]bigOE//; have [ O1 k1 Oh1] := bigO; have [ O2 k2 Oh2] := bigO.
 near=> k; move: Oh1 Oh2; apply: filter_app2; near=> x => leOh1 leOh2.
 rewrite [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
-rewrite mulrACA [`|_| in X in _ <= X]normrM ler_wpmul2r // ?mulr_ge0 //.
+rewrite mulrACA [`|_| in leRHS]normrM ler_wpmul2r // ?mulr_ge0 //.
 by near: k; exact: nbhs_pinfty_ge.
 Unshelve. all: by end_near. Qed.
 
@@ -1118,7 +1118,7 @@ case: (ler0P `|y|) => [|y0].
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
 have ky0 : 0 <= k0%:num / (k * `|y|).
   by rewrite pmulr_rge0 // invr_ge0 mulr_ge0 // ltW //; near: k; exists 0.
-rewrite -[X in _ <= X]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //; last first.
+rewrite -[leRHS]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //; last first.
   by near: k; exists 0.
 rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
@@ -1163,9 +1163,9 @@ Proof.
 move=> ->; apply/eqoP; move=> _/posnumP[eps]; near=> x.
 rewrite -ler_pdivr_mull // -[X in g + X]opprK oppo.
 rewrite (le_trans _ (ler_dist_dist _ _)) //.
-rewrite [X in _ <= X]ger0_norm ?ler_subr_addr ?add0r; last first.
-  by rewrite -[X in _ <= X]mul1r; near: x; apply: littleoP.
-rewrite [X in _ <= X]splitr [_ / 2]mulrC.
+rewrite [leRHS]ger0_norm ?ler_subr_addr ?add0r; last first.
+  by rewrite -[leRHS]mul1r; near: x; apply: littleoP.
+rewrite [leRHS]splitr [_ / 2]mulrC.
 by rewrite ler_add ?ler_pdivr_mull ?mulrA //; near: x; apply: littleoP.
 Unshelve. all: by end_near. Qed.
 

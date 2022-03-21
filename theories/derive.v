@@ -184,9 +184,8 @@ Variables (X Y Z : normedModType R).
 Lemma normm_littleo x (f : X -> Y) : `| [o_(x \near x) (1 : R) of f x]| = 0.
 Proof.
 rewrite /cst /=; have [e /(_ (`|e x|/2) _)/nbhs_singleton /=] := littleo.
-rewrite pmulr_lgt0 // [`|1|]normr1 mulr1 [X in X <= _]splitr.
-rewrite ger_addr pmulr_lle0 // => /implyP.
-by case : real_ltgtP; rewrite ?realE ?normrE //= lexx.
+rewrite pmulr_lgt0 // [`|1|]normr1 mulr1 [leLHS]splitr ger_addr pmulr_lle0 //.
+by move=> /implyP; case : real_ltgtP; rewrite ?realE ?normrE //= lexx.
 Qed.
 
 Lemma littleo_lim0 (f : X -> Y) (h : _ -> Z) (x : X) :
@@ -461,7 +460,7 @@ Unshelve. all: by end_near. Qed.
 Lemma compoO_eqox (U V' W' : normedModType R) (f : U -> V')
   (g : V' -> W') :
   forall x : U, [o_ (0 : V') id of g] ([O_ (0 : U) id of f] x) =o_(x \near 0 : U) x.
-Proof. by move=> x; rewrite -[X in X = _]/((_ \o _) x) compoO_eqo. Qed.
+Proof. by move=> x; rewrite -[LHS]/((_ \o _) x) compoO_eqo. Qed.
 
 (* TODO: generalize *)
 Lemma compOo_eqo  (U V' W' : normedModType R) (f : U -> V')
@@ -503,7 +502,7 @@ rewrite mulrCA (@le_trans _ _ (e%:num * `|k^-1 *: x|)) //; last first.
 apply: dfe.
 rewrite -ball_normE /ball_/= sub0r normrN normmZ.
 rewrite invrK -ltr_pdivl_mulr // ger0_norm // ltr_pdivr_mulr //.
-by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [X in _ < X]splitr ltr_addl.
+by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [ltRHS]splitr ltr_addl.
 Qed.
 
 Lemma diff_unique (V W : normedModType R) (f : V -> W)
@@ -683,13 +682,13 @@ have [|xn0] := real_le0P (normr_real x).
 set k := 2 / e%:num * (PosNum xn0)%:num.
 have kn0 : k != 0 by rewrite /k.
 have abskgt0 : `|k| > 0 by rewrite normr_gt0.
-rewrite -[x in X in X <= _](scalerKV kn0) linearZZ normmZ -ler_pdivl_mull //.
+rewrite -[x in leLHS](scalerKV kn0) linearZZ normmZ -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (k^-1 *: x).
   rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
   by rewrite ger0_norm /k // mulVf.
 rewrite -ball_normE /= distrC subr0 normmZ.
 rewrite normfV ger0_norm /k // invrM ?unitfE // mulrAC mulVf //.
-by rewrite invf_div mul1r [X in _ < X]splitr; apply: ltr_spaddr.
+by rewrite invf_div mul1r [ltRHS]splitr; apply: ltr_spaddr.
 Qed.
 
 Lemma linear_eqO (V' W' : normedModType R) (f : {linear V' -> W'}) :
@@ -706,7 +705,7 @@ Proof. by move=> /diff_continuous /linear_eqO; apply. Qed.
 Lemma compOo_eqox (U V' W' : normedModType R) (f : U -> V')
   (g : V' -> W') : forall x,
   [O_ (0 : V') id of g] ([o_ (0 : U) id of f] x) =o_(x \near 0 : U) x.
-Proof. by move=> x; rewrite -[X in X = _]/((_ \o _) x) compOo_eqo. Qed.
+Proof. by move=> x; rewrite -[LHS]/((_ \o _) x) compOo_eqo. Qed.
 
 Fact dcomp (U V' W' : normedModType R) (f : U -> V') (g : V' -> W') x :
   differentiable f x -> differentiable g (f x) ->
@@ -950,11 +949,11 @@ have : `|h * h| <= `|x / 2| * (e%:num * `|x * x| * `|h|).
   rewrite !mulrA; near: h; exists (`|x / 2| * e%:num * `|x * x|).
     by rewrite /= !pmulr_rgt0 // normr_gt0 mulf_neq0.
   by move=> h /ltW; rewrite distrC subr0 [`|h * _|]normrM => /ler_pmul; apply.
-move=> /le_trans-> //; rewrite [X in X <= _]mulrC ler_pmul ?mulr_ge0 //.
+move=> /le_trans-> //; rewrite [leLHS]mulrC ler_pmul ?mulr_ge0 //.
 near: h; exists (`|x| / 2); first by rewrite /= divr_gt0 ?normr_gt0.
 move=> h; rewrite /= distrC subr0 => lthhx; rewrite addrC -[h]opprK.
 apply: le_trans (@ler_dist_dist  _ R  _ _).
-rewrite normrN [X in _ <= X]ger0_norm; last first.
+rewrite normrN [leRHS]ger0_norm; last first.
   rewrite subr_ge0; apply: ltW; apply: lt_le_trans lthhx _.
   by rewrite ler_pdivr_mulr // -{1}(mulr1 `|x|) ler_pmul // ler1n.
 rewrite ler_subr_addr -ler_subr_addl (splitr `|x|).
@@ -1329,7 +1328,7 @@ have [_ [t tab <-]] : exists2 y, imf y & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
 rewrite ltr_subl_addr -ltr_subl_addl.
 suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
-rewrite -[X in _ < X]invrK ltf_pinv// ?qualifE ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
+rewrite -[ltRHS]invrK ltf_pinv// ?qualifE ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
 by rewrite (le_lt_trans (ler_norm _) _) ?imVfltk//; exact: imageP.
 Qed.
 

@@ -1591,8 +1591,7 @@ Proof. by have := @ball_splitl _ _ z x y e; rewrite -ball_normE. Qed.
 
 Lemma normm_leW (x : V) (e : R) : e > 0 -> `|x| <= e / 2 -> `|x| < e.
 Proof.
-move=> /posnumP[{}e] /le_lt_trans ->//.
-by rewrite [X in _ < X]splitr ltr_spaddl.
+by move=> /posnumP[{}e] /le_lt_trans ->//; rewrite [ltRHS]splitr ltr_spaddl.
 Qed.
 
 Lemma normm_lt_split (x y : V) (e : R) :
@@ -1844,7 +1843,7 @@ Proof.
 rewrite !mx_normE [_ <= _%:num]num_le; apply/bigmax_lerP.
 split; first exact: addr_ge0.
 move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
-rewrite ler_add// -[X in X <= _]nngE num_le; exact: ler_bigmax.
+by rewrite ler_add// -[leLHS]nngE num_le; exact: ler_bigmax.
 Qed.
 
 Lemma mx_norm_eq0 x : mx_norm x = 0 -> x = 0.
@@ -3420,8 +3419,7 @@ suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
 apply: le_trans (normvleM _ _); last by rewrite ltr_addl.
 have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v x.1 x.2| | x : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
-rewrite [in X in _ <= X]/normr /= mx_normrE.
-by apply/bigmax_gerP; right => /=; exists j.
+by rewrite [leRHS]/normr /= mx_normrE; apply/bigmax_gerP; right => /=; exists j.
 Qed.
 
 Section open_closed_sets_ereal.

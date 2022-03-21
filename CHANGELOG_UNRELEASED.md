@@ -11,6 +11,8 @@
   + `opprfunE` renamed to `opprfctE` and generalized to `Type`, `zmodType`
 - moved from `functions.v` to `classical_sets.v`
   + lemma `subsetW`, definition `subsetCW`
+- in `mathcomp_extra.v`:
+  + fix notation `ltLHS`
 
 ### Renamed
 
