@@ -910,7 +910,7 @@ Lemma cvg_arithmetic (R : archiFieldType) a (z : R) :
   z > 0 -> arithmetic a z --> +oo.
 Proof.
 move=> z_gt0; apply/cvgPpinfty => A; near=> n => /=.
-rewrite -ler_subl_addl -mulr_natl -ler_pdivr_mulr//; set x := (X in X <= _).
+rewrite -ler_subl_addl -mulr_natl -ler_pdivr_mulr//; set x := leLHS.
 rewrite ler_normlW// ltW// (lt_le_trans (archi_boundP _))// ler_nat.
 by near: n; apply: nbhs_infty_ge.
 Unshelve. all: by end_near. Qed.
@@ -1042,12 +1042,12 @@ move=> k0 kfK; have [K0|K0] := lerP K 0.
     by rewrite (@le_lt_trans _ _ 0)// mulr_le0_ge0.
   near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
   move=> t /=; rewrite distrC subr0 => tk2 t0.
-  by rewrite normr_gt0 t0 (lt_trans tk2) // -[in X in X < _](add0r k) midf_lt.
+  by rewrite normr_gt0 t0 (lt_trans tk2) // -[in ltLHS](add0r k) midf_lt.
 - apply/eqolim0/eqoP => _/posnumP[e]; near=> x.
   rewrite (le_trans (kfK _ _)) //=.
   + near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
     move=> t /=; rewrite distrC subr0 => tk2 t0.
-    by rewrite normr_gt0 t0 (lt_trans tk2) // -[in X in X < _](add0r k) midf_lt.
+    by rewrite normr_gt0 t0 (lt_trans tk2) // -[in ltLHS](add0r k) midf_lt.
   + rewrite normr1 mulr1 mulrC -ler_pdivl_mulr //.
     near: x; exists (e%:num / K); first by rewrite /mkset divr_gt0.
     by move=> t /=; rewrite distrC subr0 => /ltW.
@@ -1067,7 +1067,7 @@ have Cng : cvg [normed series (g h)].
   by under eq_fun do rewrite mulrC.
 apply: (le_trans (lim_series_norm Cng)).
 rewrite -[_ * _](lim_seriesZ _ Cf) (lim_series_le Cng Ckf) // => n.
-by rewrite [X in _ <= X]mulrC; apply: Hg.
+by rewrite [leRHS]mulrC; apply: Hg.
 Qed.
 
 End series_linear.

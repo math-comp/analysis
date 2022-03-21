@@ -92,7 +92,7 @@ rewrite ltNge; apply: contraPN cf => ffn /(_ _ fn0).
 rewrite near_map /ball /=.
 have nf_ub N : \sum_(0 <= i < n.+2) f i <= \sum_(0 <= i < N.+1.*2 + n) f i.
   elim: N => // N /le_trans ->//; rewrite -(addn1 (N.+1)) doubleD addnAC.
-  rewrite [in X in _ <= X]/index_iota subn0 iotaD big_cat.
+  rewrite [in leRHS]/index_iota subn0 iotaD big_cat.
   rewrite -[in X in _ <= X + _](subn0 (N.+1.*2 + n)%N) ler_addl /= add0n.
   by rewrite 2!big_cons big_nil addr0 -(addnC n) ltW// -addnS fn.
 case=> N _ Nfn; have /Nfn/ltr_distlC_addr : (N.+1.*2 + n >= N)%N.
@@ -308,7 +308,7 @@ apply: (@pseries_snd_diffs _ _ (`|x| + 1)); rewrite /pseries.
 - rewrite /pseries (_ : (fun _ => _) = - sin_coeff (`|x| + 1)).
     by rewrite is_cvg_seriesN; exact: is_cvg_series_sin_coeff.
   by apply/funext => i; rewrite diffs_sin diffs_cos sin_coeffE !fctE !mulNr.
-- by rewrite [X in _ < X]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+- by rewrite [ltRHS]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
 Lemma derivable_sin x : derivable sin x 1.
@@ -340,7 +340,7 @@ apply: (@pseries_snd_diffs _ _ (`|x| + 1)).
     by rewrite is_cvg_seriesN; exact: is_cvg_series_cos_coeff.
   apply/funext => i; rewrite diffs_cos pseries_diffsN.
   by rewrite diffs_sin cos_coeffE mulNr.
-- by rewrite [X in _ < X]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+- by rewrite [ltRHS]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
 Qed.
 
 Lemma derivable_cos x : derivable cos x 1.
@@ -532,7 +532,7 @@ Proof.
 move=> /andP[x_gt0 x_lt2].
 have sinx := @cvg_sin_coeff' _ x.
 rewrite -(cvg_lim (@Rhausdorff R) sinx).
-rewrite [X in X < _](_ : 0 = \sum_(0 <= i < 0) sin_coeff' x i :> R); last first.
+rewrite [ltLHS](_ : 0 = \sum_(0 <= i < 0) sin_coeff' x i :> R); last first.
   by rewrite big_nil.
 rewrite lt_sum_lim_series //; first by move/cvgP in sinx.
 move=> d.
@@ -546,7 +546,7 @@ rewrite natrM invfM.
 rewrite -[X in _ < X - _]mul1r !mulrA -mulrBl divr_gt0 //; last first.
   by rewrite (ltr_nat _ 0) fact_gt0.
 rewrite subr_gt0.
-set v := _ ^_ _; rewrite -[X in _ < X](divff (_ : v%:R != 0)); last first.
+set v := _ ^_ _; rewrite -[ltRHS](divff (_ : v%:R != 0)); last first.
   by rewrite lt0r_neq0 // (ltr_nat _ 0) ffact_gt0 leq_addl.
 rewrite ltr_pmul2r; last by rewrite invr_gt0 (ltr_nat _ 0) ffact_gt0 leq_addl.
 rewrite {}/v !addnS addn0 !ffactnS ffactn0 muln1 /= natrM.
@@ -735,8 +735,8 @@ Lemma ltr_sin : {in `[ (- (pi/2)), pi/2] &, {mono sin : x y / x < y}}.
 Proof.
 move=> x y /itvP xpi /itvP ypi; rewrite -[sin x]opprK ltr_oppl.
 rewrite -!cosDpihalf -[x < y](ltr_add2r (pi /2)) ltr_cos// !in_itv/=.
-- by rewrite -ler_subl_addr sub0r xpi/= [X in _ <= X]splitr ler_add2r xpi.
-- by rewrite -ler_subl_addr sub0r ypi/= [X in _ <= X]splitr ler_add2r ypi.
+- by rewrite -ler_subl_addr sub0r xpi/= [leRHS]splitr ler_add2r xpi.
+- by rewrite -ler_subl_addr sub0r ypi/= [leRHS]splitr ler_add2r ypi.
 Qed.
 
 Lemma cos_inj : {in `[0,pi] &, injective (@cos R)}.
@@ -750,8 +750,8 @@ Lemma sin_inj : {in `[(- (pi/2)), (pi/2)] &, injective sin}.
 Proof.
 move=> x y /itvP xpi /itvP ypi sinE; have : - sin x = - sin y by rewrite sinE.
 rewrite -!cosDpihalf => /cos_inj h; apply/(addIr (pi/2))/h; rewrite !in_itv/=.
-- by rewrite -ler_subl_addr sub0r xpi/= [X in _ <= X]splitr ler_add2r xpi.
-- by rewrite -ler_subl_addr sub0r ypi/= [X in _ <= X]splitr ler_add2r ypi.
+- by rewrite -ler_subl_addr sub0r xpi/= [leRHS]splitr ler_add2r xpi.
+- by rewrite -ler_subl_addr sub0r ypi/= [leRHS]splitr ler_add2r ypi.
 Qed.
 
 End Pi.
@@ -1110,9 +1110,8 @@ have ox2_gt0 : 0 < 1 + x^2.
   by apply: lt_le_trans (_ : 1 <= _); rewrite ?ler_addl ?sqr_ge0.
 have ox2_ge0 : 0 <= 1 + x^2 by rewrite ltW.
 have x1B : -1 <= x1 <= 1.
-  rewrite -ler_norml /x1 ger0_norm ?sqrtr_ge0 //.
-  rewrite -[X in _ <= X]sqrtr1 ler_psqrt ?qualifE ?invr_gte0 //=.
-  by rewrite invf_cp1 // ler_addl sqr_ge0.
+  rewrite -ler_norml /x1 ger0_norm ?sqrtr_ge0 // -[leRHS]sqrtr1.
+  by rewrite ler_psqrt ?qualifE ?invr_gte0 //= invf_cp1 // ler_addl sqr_ge0.
 case: (He (Num.sg x * acos x1)); split; last first.
   case: (x =P 0) => [->|/eqP xD0]; first by rewrite /tan sgr0 mul0r sin0 mul0r.
   rewrite /tan sin_sg cos_sg // acosK ?sin_acos //.

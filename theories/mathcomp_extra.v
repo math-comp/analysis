@@ -187,7 +187,7 @@ Notation eqLHS := (X in (X == _))%pattern.
 Notation eqRHS := (X in (_ == X))%pattern.
 Notation leLHS := (X in (X <= _)%O)%pattern.
 Notation leRHS := (X in (_ <= X)%O)%pattern.
-Notation ltLHS := (X in (X <= _)%O)%pattern.
+Notation ltLHS := (X in (X < _)%O)%pattern.
 Notation ltRHS := (X in (_ < X)%O)%pattern.
 Inductive boxed T := Box of T.
 

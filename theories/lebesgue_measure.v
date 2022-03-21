@@ -376,7 +376,7 @@ exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
   exists `|(floor `|x|%R + 1)%R|%N; rewrite //= in_itv/=.
   rewrite !natr_absz intr_norm intrD -RfloorE.
   suff: `|x| < `|Rfloor `|x| + 1| by rewrite ltr_norml => /andP[-> /ltW->].
-  rewrite [X in (_ < X)%R]ger0_norm//.
+  rewrite [ltRHS]ger0_norm//.
     by rewrite (le_lt_trans _ (lt_succ_Rfloor _))// ?ler_norm.
   by rewrite addr_ge0// -Rfloor0 le_Rfloor.
 move=> k; split => //.
