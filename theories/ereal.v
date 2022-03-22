@@ -2995,12 +2995,12 @@ Notation "x %:nng" := (@widen_signed ereal_display _ _ _ _
     ?=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
   (only printing) : ereal_scope.
 
-Hint Extern 0 (is_true (0%E < _)%O) => solve [apply: gt0] : core.
-Hint Extern 0 (is_true (_ < 0%E)%O) => solve [apply: lt0] : core.
-Hint Extern 0 (is_true (0%E <= _)%O) => solve [apply: ge0] : core.
-Hint Extern 0 (is_true (_ <= 0%E)%O) => solve [apply: le0] : core.
-Hint Extern 0 (is_true (0%E >=< _)%O) => solve [apply: cmp0] : core.
-Hint Extern 0 (is_true (_ != 0%E)%O) => solve [apply: neq0] : core.
+#[global] Hint Extern 0 (is_true (0%E < _)%O) => solve [apply: gt0] : core.
+#[global] Hint Extern 0 (is_true (_ < 0%E)%O) => solve [apply: lt0] : core.
+#[global] Hint Extern 0 (is_true (0%E <= _)%O) => solve [apply: ge0] : core.
+#[global] Hint Extern 0 (is_true (_ <= 0%E)%O) => solve [apply: le0] : core.
+#[global] Hint Extern 0 (is_true (0%E >=< _)%O) => solve [apply: cmp0] : core.
+#[global] Hint Extern 0 (is_true (_ != 0%E)%O) => solve [apply: neq0] : core.
 
 Section SignedNumDomainStability.
 Context {R : numDomainType}.
