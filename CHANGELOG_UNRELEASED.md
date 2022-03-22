@@ -4,6 +4,9 @@
 
 ### Added
 
+- in `signed.v`:
+  + notations `%:nngnum` and `%:posnum`
+
 ### Changed
 
 - in `functions.v`:
@@ -30,6 +33,8 @@
   + `valLr_surj_subproof` -> `valR_surj_subproof`
 
 ### Removed
+
+- files `posnum.v` and `nngnum.v` (both subsumed by `signed.v`)
 
 ### Infrastructure
 

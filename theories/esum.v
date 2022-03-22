@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum finmap.
-Require Import boolp reals mathcomp_extra ereal classical_sets posnum topology.
+Require Import boolp reals mathcomp_extra ereal classical_sets signed topology.
 Require Import sequences functions cardinality.
 
 (******************************************************************************)

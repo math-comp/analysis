@@ -6,7 +6,7 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-Require Import boolp mathcomp_extra classical_sets functions reals posnum.
+Require Import boolp mathcomp_extra classical_sets functions reals signed.
 Require Import topology.
 
 (******************************************************************************)

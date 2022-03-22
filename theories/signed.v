@@ -60,6 +60,8 @@ Require Import boolp.
 (*                  instances.                                                *)
 (*        x%:num == explicit cast from {compare x0 & nz & cond} to R. In      *)
 (*                  particular this works from {posnum R} and {nonneg R} to R.*)
+(*     x%:posnum == explicit cast from {posnum R} to R.                       *)
+(*     x%:nngnum == explicit cast from {nonneg R} to R.                       *)
 (*                                                                            *)
 (* * nullity conditions nz                                                    *)
 (* All nz above can be the following (in scope snum_nullity_scope delimited   *)
@@ -140,6 +142,8 @@ Reserved Notation "?=0" (at level 0, format "?=0").
 
 Reserved Notation "x %:sgn" (at level 2, format "x %:sgn").
 Reserved Notation "x %:num" (at level 2, format "x %:num").
+Reserved Notation "x %:posnum" (at level 2, format "x %:posnum").
+Reserved Notation "x %:nngnum" (at level 2, format "x %:nngnum").
 Reserved Notation "[ 'sgn' 'of' x ]" (format "[ 'sgn' 'of'  x ]").
 Reserved Notation "[ 'gt0' 'of' x ]" (format "[ 'gt0' 'of'  x ]").
 Reserved Notation "[ 'lt0' 'of' x ]" (format "[ 'lt0' 'of'  x ]").
@@ -298,8 +302,10 @@ Notation num := r.
 Notation "x %:num" := (r x) : ring_scope.
 Definition posnum (R : numDomainType) of phant R := {> 0%R : R}.
 Notation "{ 'posnum' R }" := (@posnum _ (Phant R))  : ring_scope.
+Notation "x %:posnum" := (@num _ _ 0%R !=0 >=0 x) : ring_scope.
 Definition nonneg (R : numDomainType) of phant R := {>= 0%R : R}.
 Notation "{ 'nonneg' R }" := (@nonneg _ (Phant R))  : ring_scope.
+Notation "x %:nngnum" := (@num _ _ 0%R ?=0 >=0 x) : ring_scope.
 Notation "2" := 2%:R : ring_scope.
 Arguments r {disp T x0 nz cond}.
 End Exports.

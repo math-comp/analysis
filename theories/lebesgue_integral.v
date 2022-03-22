@@ -2,9 +2,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-Require Import mathcomp_extra boolp classical_sets posnum functions cardinality.
+Require Import mathcomp_extra boolp classical_sets signed functions cardinality.
 Require Import reals ereal topology normedtype sequences measure.
-Require Import nngnum lebesgue_measure fsbigop numfun.
+Require Import lebesgue_measure fsbigop numfun.
 
 (******************************************************************************)
 (*                            Lebesgue Integral                               *)
@@ -498,11 +498,11 @@ Qed.
 Section nnsfun_functions.
 Variables (T : measurableType) (R : realType).
 
-Lemma cst_nnfun_subproof (x : {nonneg R}) : @IsNonNegFun T R (cst x%:nngnum).
+Lemma cst_nnfun_subproof (x : {nonneg R}) : @IsNonNegFun T R (cst x%:num).
 Proof. by split=> /=. Qed.
 HB.instance Definition _ x := @cst_nnfun_subproof x.
 
-Definition cst_nnsfun (r : {nonneg R}) := [the {nnsfun T >-> R} of cst r%:nngnum].
+Definition cst_nnsfun (r : {nonneg R}) := [the {nnsfun T >-> R} of cst r%:num].
 
 Definition nnsfun0 : {nnsfun T >-> R} := cst_nnsfun 0%R%:nng.
 
@@ -2183,12 +2183,12 @@ Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (f : T -> \bar R) (D : set T) (mD : measurable D).
 
 Lemma sintegral_cst (x : {nonneg R}) :
-  sintegral mu (cst x%:nngnum \_ D) = x%:nngnum%:E * mu D.
+  sintegral mu (cst x%:num \_ D) = x%:num%:E * mu D.
 Proof.
-rewrite sintegralE (fsbig_widen _ [set 0%R; x%:nngnum])/=; last 2 first.
+rewrite sintegralE (fsbig_widen _ [set 0%R; x%:num])/=; last 2 first.
 - by move=> y [t _ <-] /=; rewrite /patch; case: ifPn; [right|left].
 - by move=> y [_ /=/preimage10->]; rewrite measure0 mule0.
-have [->|x0] := eqVneq x%:nngnum 0%R; first by rewrite setUid fsbig_set1 !mul0e.
+have [->|x0] := eqVneq x%:num 0%R; first by rewrite setUid fsbig_set1 !mul0e.
 rewrite fsbigU0//=; last by move=> y [->]/esym; apply/eqP.
 rewrite !fsbig_set1 mul0e add0e preimage_restrict//.
 by rewrite ifN ?set0U ?setIidl//= notin_set; apply/eqP; rewrite eq_sym.
