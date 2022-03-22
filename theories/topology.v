@@ -4606,25 +4606,15 @@ Definition ball_
   [set y | norm (x - y) < e].
 Arguments ball_ {R} {V} norm x e%R y /.
 
-(* TODO: backport to mathcomp in progress *)
-Lemma ltr_distlC (R : realDomainType) (x y e : R) :
-  (`|x - y| < e) = (x - e < y < x + e).
-Proof. by rewrite distrC ltr_distl. Qed.
-
-(* TODO: backport to mathcomp in progress *)
-Lemma ler_distlC (R : realDomainType) (x y e : R) :
-  (`|x - y| <= e) = (x - e <= y <= x + e).
-Proof. by rewrite distrC ler_distl. Qed.
-
 Lemma subset_ball_prop_in_itv (R : realDomainType) (x : R) e P :
-  (ball_ [eta Num.Def.normr] x e `<=` P)%classic <->
+  (ball_ Num.Def.normr x e `<=` P)%classic <->
   {in `](x - e), (x + e)[, forall y, P y}.
 Proof.
 by split=> exP y /=; rewrite ?in_itv (ltr_distlC, =^~ltr_distlC); apply: exP.
 Qed.
 
 Lemma subset_ball_prop_in_itvcc (R : realDomainType) (x : R) e P : 0 < e ->
-  (ball_ [eta Num.Def.normr] x (2 * e) `<=` P)%classic ->
+  (ball_ Num.Def.normr x (2 * e) `<=` P)%classic ->
   {in `[(x - e), (x + e)], forall y, P y}.
 Proof.
 move=> e_gt0 PP y; rewrite in_itv/= -ler_distlC => ye; apply: PP => /=.
