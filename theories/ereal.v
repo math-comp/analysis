@@ -3253,10 +3253,10 @@ Local Notation nR := {compare (0 : \bar R) & ?=0 & >=0}.
 Implicit Type x y : nR.
 Local Notation num := (@num _ _ (0 : \bar R) ?=0 >=0).
 
-Lemma num_abs_le a x : 0 <= a -> (`|a|%:nng <= x)%O = (a <= x%:num).
+Lemma num_abse_le a x : 0 <= a -> (`|a|%:nng <= x)%O = (a <= x%:num).
 Proof. by move=> a0; rewrite -num_le//= gee0_abs. Qed.
 
-Lemma num_abs_lt a x : 0 <= a -> (`|a|%:nng < x)%O = (a < x%:num).
+Lemma num_abse_lt a x : 0 <= a -> (`|a|%:nng < x)%O = (a < x%:num).
 Proof. by move=> a0; rewrite -num_lt/= gee0_abs. Qed.
 End MorphGe0.
 
