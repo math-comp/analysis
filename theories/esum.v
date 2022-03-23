@@ -91,6 +91,11 @@ apply ub_ereal_sup => /= ? -[F' F'F <-]; apply/lee_sum_nneg_subfset.
 by move=> t; rewrite inE => /andP[_ /f0].
 Qed.
 
+Lemma esum_set1 t a : 0 <= a t -> \esum_(i in [set t]) a i = a t.
+Proof.
+by move=> ?; rewrite -set_fset1 esum_fset ?big_seq_fset1// => t' /[!inE] /eqP->.
+Qed.
+
 Lemma sum_fset_set (A : set T) a : finite_set A ->
   (forall i, A i -> 0 <= a i) ->
   \sum_(i <- fset_set A) a i = \esum_(i in A) a i.

@@ -1190,6 +1190,8 @@ Proof. by move=> AB _ [a Aa <-]; exists a => //; apply/AB. Qed.
 
 Lemma preimage_set0 f : f @^-1` set0 = set0. Proof. exact/predeqP. Qed.
 
+Lemma preimage_setT f : f @^-1` setT = setT. Proof. by []. Qed.
+
 Lemma nonempty_preimage f Y : f @^-1` Y !=set0 -> Y !=set0.
 Proof. by case=> [t ?]; exists (f t). Qed.
 
@@ -1201,10 +1203,9 @@ Proof. by move=> _ [t /= Yft <-]. Qed.
 
 Lemma image_preimage f Y : f @` setT = setT -> f @` (f @^-1` Y) = Y.
 Proof.
-move=> fsurj; rewrite predeqE => x; split; first by move=> [?? <-].
-move=> Ax; have : setT x by [].
-rewrite -fsurj => - [y _ fy_eqx]; exists y => //.
-by rewrite /preimage/= fy_eqx.
+move=> fsurj; rewrite predeqE => x; split; first by move=> [? ? <-].
+move=> Yx; have : setT x by [].
+by rewrite -fsurj => - [y _ fy_eqx]; exists y => //=; rewrite fy_eqx.
 Qed.
 
 Lemma eq_imagel T1 T2 (A : set T1) (f f' : T1 -> T2) :
