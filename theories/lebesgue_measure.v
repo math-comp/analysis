@@ -1362,16 +1362,6 @@ rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
 Qed.
 
-Lemma continuous_exprn n : continuous (fun x:R => x ^+ n).
-Proof.
-elim: n.
-  move => x; exact: cvg_cst.
-move => n ce x.
-set g := fun x => x ^+ n.+1; rewrite (_ : g = fun x => x * x ^+ n).
-rewrite exprS; apply: cvgM => //; exact: ce.
-by apply /funext => y; rewrite /g exprS.
-Qed.
-
 Lemma measurable_fun_exprn D n f :
   measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
 Proof.
