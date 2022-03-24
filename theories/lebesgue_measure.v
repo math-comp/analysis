@@ -1392,20 +1392,24 @@ rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
 Qed.
 
+Lemma continuous_exprn n : continuous (fun x:R => x ^+ n).
+Proof.
+elim: n.
+  move => x; exact: cvg_cst.
+move => n ce x.
+set g := fun x => x ^+ n.+1; rewrite (_ : g = fun x => x * x ^+ n).
+rewrite exprS; apply: cvgM => //; exact: ce.
+by apply /funext => y; rewrite /g exprS.
+Qed.
+
 Lemma measurable_fun_exprn n (f : R -> R) :
-  continuous f ->
   measurable_fun setT f -> measurable_fun setT (fun x => f x ^+ n).
 Proof.
-move => cf mf.
-apply: continuous_measurable_fun.
-elim: n.
-  move => x; set g := fun x => f x ^+ 0; rewrite (_ : g = cst 1) /g.
-  exact: cvg_cst.
-  by apply /funext => y; rewrite expr0.
-move => n cm x; rewrite exprS.
-set g := fun x => f x ^+ n.+1; rewrite (_ : g = fun x => f x * f x ^+ n).
-apply: cvgM; [exact: cf | exact: cm].
-by apply /funext => y; rewrite /g exprS.
+move => mf.
+rewrite (_ : (fun x => f x ^+ n) = (fun x => x ^+ n) \o f).
+apply: measurable_fun_comp => //.
+apply: continuous_measurable_fun; apply: continuous_exprn.
+by apply /funext => y.
 Qed.
 
 Lemma measurable_fun_max  D f g :
