@@ -305,15 +305,14 @@ Qed.
 Lemma reindex_esum (R : realType) (T T' : choiceType)
     (P : set T) (Q : set T') (e : T -> T') (a : T' -> \bar R) :
     set_bij P Q e ->
-    (forall i, P i -> 0 <= a (e i)) ->
   \esum_(j in Q) a j = \esum_(i in P) a (e i).
 Proof.
 elim/choicePpointed: T => T in e P *.
-  rewrite !emptyE => /Pbij[{}e ->] _.
+  rewrite !emptyE => /Pbij[{}e ->].
   by rewrite -[in LHS](image_eq e) image_set0 !esum_set0.
 elim/choicePpointed: T' => T' in a e Q *; first by have := no (e point).
-move=> /(@pPbij _ _ _)[{}e ->] a_ge0.
-gen have le_esum : T T' a P Q e a_ge0 /
+move=> /(@pPbij _ _ _)[{}e ->].
+gen have le_esum : T T' a P Q e /
     \esum_(j in Q) a j <= \esum_(i in P) a (e i); last first.
   apply/eqP; rewrite eq_le le_esum//=.
   rewrite [leRHS](_ : _ = \esum_(j in Q) a (e (e^-1%FUN j))); last first.
@@ -329,7 +328,7 @@ Arguments reindex_esum {R T T'} P Q e a.
 
 Lemma esum_image (R : realType) (T T' : choiceType)
     (P : set T) (e : T -> T') (a : T' -> \bar R) :
-    set_inj P e -> (forall i, P i -> 0 <= a (e i)) ->
+    set_inj P e ->
   \esum_(j in e @` P) a j = \esum_(i in P) a (e i).
 Proof. by move=> /inj_bij; apply: reindex_esum. Qed.
 Arguments esum_image {R T T'} P e a.
