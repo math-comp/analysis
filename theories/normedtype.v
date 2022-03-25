@@ -2900,7 +2900,7 @@ Lemma bigcup_ointsub0 q : bigcup_ointsub set0 q = set0.
 Proof. by rewrite /bigcup_ointsub ointsub_rat0 bigcup_set0. Qed.
 
 Lemma open_bigcup_ointsub U q : open (bigcup_ointsub U q).
-Proof. by apply: open_bigU => i [[]]. Qed.
+Proof. by apply: bigcup_open => i [[]]. Qed.
 
 Lemma is_interval_bigcup_ointsub U q : is_interval (bigcup_ointsub U q).
 Proof.

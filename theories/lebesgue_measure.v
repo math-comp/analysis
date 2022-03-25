@@ -1250,7 +1250,7 @@ Variable R : realType.
 
 Lemma open_measurable (U : set R) : open U -> measurable U.
 Proof.
-move=> /open_bigcup_rat ->; rewrite bigcup_mkcond; apply: measurable_bigcup_rat.
+move=> /open_bigcup_rat ->; rewrite bigcup_mkcond; apply: bigcupT_measurable_rat.
 move=> q; case: ifPn => // qfab; apply: is_interval_measurable => //.
 exact: is_interval_bigcup_ointsub.
 Qed.
