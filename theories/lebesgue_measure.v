@@ -1402,8 +1402,8 @@ rewrite exprS; apply: cvgM => //; exact: ce.
 by apply /funext => y; rewrite /g exprS.
 Qed.
 
-Lemma measurable_fun_exprn n (f : R -> R) :
-  measurable_fun setT f -> measurable_fun setT (fun x => f x ^+ n).
+Lemma measurable_fun_exprn D n (f : T -> R) :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
 Proof.
 move => mf.
 rewrite (_ : (fun x => f x ^+ n) = (fun x => x ^+ n) \o f).
