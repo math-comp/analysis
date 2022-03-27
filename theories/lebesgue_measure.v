@@ -6,6 +6,7 @@ Require Import boolp reals ereal classical_sets signed topology numfun.
 Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
 Require Import sequences esum measure fsbigop cardinality set_interval.
+Require Import realfun.
 
 (******************************************************************************)
 (*                            Lebesgue Measure                                *)

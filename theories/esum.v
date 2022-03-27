@@ -34,7 +34,7 @@ Section set_of_fset_in_a_set.
 Variable (T : choiceType).
 Implicit Type S : set T.
 
-Definition fsets S : set {fset T} := [set F | [set` F] `<=` S].
+Definition fsets S : set {fset T} := [set F : {fset T} | [set` F] `<=` S].
 
 Lemma fsets_set0 S : fsets S fset0. Proof. by []. Qed.
 
