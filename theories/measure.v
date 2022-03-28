@@ -2,6 +2,7 @@
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 Require Import boolp classical_sets mathcomp_extra reals ereal signed.
 Require Import functions topology normedtype sequences cardinality esum fsbigop.
+Require Import numfun.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -61,6 +62,7 @@ From HB Require Import structures.
 (*                   that this function maps set0 to 0, is non-negative over  *)
 (*                   measurable sets and is semi-sigma-additive               *)
 (*   pushforward f m == pushforward/image measure of m by f                   *)
+(*              \d_a == Dirac measure                                         *)
 (*   sigma_finite A f == the measure f is sigma-finite on A : set T with      *)
 (*                   T : ringOfSetsType.                                      *)
 (*   mu.-negligible A == A is mu negligible                                   *)
@@ -1378,6 +1380,71 @@ Canonical pushforward_measure : {measure set T2 -> \bar R} :=
                                  pushforward_sigma_additive).
 
 End pushforward_measure.
+
+Section dirac_measure.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (a : T) (R : realFieldType).
+
+Definition dirac (A : set T) : \bar R := (\1_A a)%:E.
+
+Let dirac0 : dirac set0 = 0. Proof. by rewrite /dirac indic0. Qed.
+
+Let dirac_ge0 B : 0 <= dirac B. Proof. by rewrite /dirac indicE. Qed.
+
+Let dirac_sigma_additive : semi_sigma_additive dirac.
+Proof.
+move=> F mF tF mUF; rewrite /dirac indicE; have [|aFn] /= := boolP (a \in _).
+  rewrite inE => -[n _ Fna].
+  have naF m : m != n -> a \notin F m.
+    move=> mn; rewrite notin_set => Fma.
+    move/trivIsetP : tF => /(_ _ _ Logic.I Logic.I mn).
+    by rewrite predeqE => /(_ a)[+ _]; exact.
+  apply/cvg_ballP => _/posnumP[e]; rewrite near_map; near=> m.
+  have mn : (n < m)%N by near: m; exists n.+1.
+  rewrite big_mkord (bigID (xpred1 (Ordinal mn)))//= big_pred1_eq/= big1/=.
+    by rewrite adde0 indicE mem_set//; exact: ballxx.
+  by move=> j ij; rewrite indicE (negbTE (naF _ _)).
+rewrite [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
+apply/funext => n; rewrite big1// => i _; rewrite indicE; apply/eqP.
+by rewrite eqe pnatr_eq0 eqb0; apply: contra aFn => /[!inE] aFn; exists i.
+Unshelve. all: by end_near. Qed.
+
+Canonical dirac_measure : {measure set T -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms dirac0 dirac_ge0 dirac_sigma_additive).
+
+End dirac_measure.
+Arguments dirac {T} _ {R}.
+Arguments dirac_measure {T} _ {R}.
+
+Notation "\d_ a" := (dirac_measure a) : ring_scope.
+
+Section dirac_lemmas.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType).
+
+Lemma finite_card_dirac (A : set T) : finite_set A ->
+  \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
+Proof.
+move=> finA.
+rewrite -sum_fset_set// big_seq_cond (eq_bigr (fun=> 1)) -?big_seq_cond.
+  by rewrite card_fset_sum1// natr_sum -sumEFin.
+by move=> i; rewrite andbT in_fset_set//= /dirac indicE => ->.
+Qed.
+
+Lemma infinite_card_dirac (A : set T) : infinite_set A ->
+  \esum_(i in A) \d_ i A = +oo :> \bar R.
+Proof.
+move=> infA; apply/eq_pinftyP => r r0.
+have [B BA Br] := infinite_set_fset `|ceil r| infA.
+apply: esum_ge; exists B => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
+  by rewrite lee_fin natr_absz gtr0_norm ?ceil_gt0// ceil_ge.
+move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
+rewrite big_seq (eq_bigr (cst 1))/=; last first.
+  by move=> i Bi; rewrite /dirac indicE mem_set//; exact: BA.
+by rewrite -big_seq card_fset_sum1 sumEFin natr_sum.
+Qed.
+
+End dirac_lemmas.
 
 Section measure_restr.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).

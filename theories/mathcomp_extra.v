@@ -160,7 +160,7 @@ have [i _ /(_ _ isT) mf] := @arg_maxnP _ (@ord0 n) xpredT f isT.
 by exists i; split; rewrite ?leq_ord// => j jn; have := mf (@Ordinal n.+1 j jn).
 Qed.
 
-Lemma card_fset_sum1 (A : {fset nat}) : #|` A| = \sum_(i <- A) 1.
+Lemma card_fset_sum1 (T : choiceType) (A : {fset T}) : #|` A| = \sum_(i <- A) 1.
 Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
 
 Arguments big_rmcond {R idx op I r} P.

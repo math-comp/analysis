@@ -73,6 +73,10 @@
   + lemma `emeasurable_funN`
 - in file `measure.v`:
   + definition `pushforward` and canonical `pushforward_measure`
+  + definition `dirac` with notation `\d_` and canonical `dirac_measure`
+  + lemmas `finite_card_dirac`, `infinite_card_dirac`
+- in file `lebesgue_integral.v`:
+  + lemmas `integralM_indic`, `integralM_indic_nnsfun`, `integral_dirac`
 
 ### Changed
 
@@ -82,6 +86,8 @@
   + hint `measurable_set1`/`emeasurable_set1`
 - in `sequences.v`:
   + generalize `eq_nneseries`, `nneseries0`
+- in `mathcomp_extra.v`:
+  + generalize `card_fset_sum1`
 
 ### Renamed
 
