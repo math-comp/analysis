@@ -330,6 +330,35 @@ by apply: eq_big_seq => i /XQ Qi; rewrite invK ?inE.
 Qed.
 Arguments reindex_esum {R T T'} P Q e a.
 
+
+Section nneseries_interchange.
+Local Open Scope ereal_scope.
+
+Let nneseries_esum_prod (R : realType) (a : nat -> nat -> \bar R)
+  (P Q : pred nat) : (forall i j, 0 <= a i j) ->
+  \sum_(i <oo | P i) \sum_(j <oo | Q j) a i j =
+  \esum_(i in P `*` Q) a i.1 i.2.
+Proof.
+move=> a0; rewrite -(@esum_esum _ _ _ P (fun=> Q))//.
+rewrite nneseries_esum//; last by move=> n _; exact: nneseries_lim_ge0.
+rewrite (_ : [set x | P x] = P); last by apply/seteqP; split.
+by apply eq_esum => i Pi; rewrite nneseries_esum.
+Qed.
+
+Lemma nneseries_interchange (R : realType) (a : nat -> nat -> \bar R)
+  (P Q : pred nat) : (forall i j, 0 <= a i j) ->
+  \sum_(i <oo | P i) \sum_(j <oo | Q j) a i j =
+  \sum_(j <oo | Q j) \sum_(i <oo | P i) a i j.
+Proof.
+move=> a0; rewrite !nneseries_esum_prod//.
+rewrite (reindex_esum (Q `*` P) _ (fun x => (x.2, x.1)))//; split=> //=.
+by move=> [i j] [/=].
+by move=> [i1 i2] [j1 j2] /= _ _ [] -> ->.
+by move=> [i1 i2] [Pi1 Qi2] /=; exists (i2, i1).
+Qed.
+
+End nneseries_interchange.
+
 Lemma esum_image (R : realType) (T T' : choiceType)
     (P : set T) (e : T -> T') (a : T' -> \bar R) :
     set_inj P e ->
