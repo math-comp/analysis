@@ -840,10 +840,10 @@ Qed.
 Lemma adde_eq_ninfty x y : (x + y == -oo) = ((x == -oo) || (y == -oo)).
 Proof. by move: x y => [?| |] [?| |]. Qed.
 
-Lemma addooe x : x != -oo -> +oo + x = +oo.
+Lemma addpinftye x : x != -oo -> +oo + x = +oo.
 Proof. by case: x. Qed.
 
-Lemma addeoo x : x != -oo -> x + +oo = +oo.
+Lemma addepinfty x : x != -oo -> x + +oo = +oo.
 Proof. by case: x. Qed.
 
 Lemma adde_Neq_pinfty x y : x != -oo -> y != -oo ->
@@ -889,9 +889,9 @@ move=> finoo; split=> [|[i [si Pi fi]]].
   by move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
 elim: s i Pi fi si => // h t ih i Pi fi.
 rewrite inE => /predU1P[<-/=|it].
-  rewrite big_cons Pi fi addooe//.
+  rewrite big_cons Pi fi addpinftye//.
   by apply/eqP => /esum_ninftyP[j [jt /finoo/negbTE/eqP]].
-by rewrite big_cons; case: ifPn => Ph; rewrite (ih i)// addeoo// finoo.
+by rewrite big_cons; case: ifPn => Ph; rewrite (ih i)// addepinfty// finoo.
 Qed.
 
 Lemma esum_pinfty (I : finType) (P : {pred I}) (f : I -> \bar R) :
