@@ -1347,6 +1347,20 @@ Proof.
 by move=> ? ? ?; apply: measurable_funD => //; exact: measurable_funN.
 Qed.
 
+Lemma measurable_fun_exprn D n f :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
+Proof.
+move => mf.
+rewrite (_ : (fun x => f x ^+ n) = (fun x => x ^+ n) \o f).
+apply: measurable_fun_comp => //.
+apply: continuous_measurable_fun; apply: exp_continuous.
+by apply /funext => y.
+Qed.
+
+Lemma measurable_fun_sqr D f :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ 2).
+Proof. by apply: measurable_fun_exprn. Qed.
+
 Lemma measurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
@@ -1362,20 +1376,6 @@ rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
 rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
 Qed.
-
-Lemma measurable_fun_exprn D n f :
-  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
-Proof.
-move => mf.
-rewrite (_ : (fun x => f x ^+ n) = (fun x => x ^+ n) \o f).
-apply: measurable_fun_comp => //.
-apply: continuous_measurable_fun; apply: continuous_exprn.
-by apply /funext => y.
-Qed.
-
-Lemma measurable_fun_sqr D f :
-  measurable_fun D f -> measurable_fun D (fun x => f x ^+ 2).
-Proof. by apply: measurable_fun_exprn. Qed.
 
 Lemma measurable_fun_max  D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \max g).
