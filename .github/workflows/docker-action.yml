@@ -35,6 +35,13 @@ jobs:
         with:
           opam_file: 'coq-mathcomp-analysis.opam'
           custom_image: ${{ matrix.image }}
+          install: |
+            startGroup "Install dependencies"
+              opam pin add -n -y -k path $PACKAGE $WORKDIR
+              opam update -y
+              opam depext -y -u camlp5
+              opam install -y -j 2 $PACKAGE --deps-only
+            endGroup
 
 # See also:
 # https://github.com/coq-community/docker-coq-action#readme
