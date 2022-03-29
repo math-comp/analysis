@@ -6,6 +6,7 @@ Require Import boolp reals ereal classical_sets signed topology numfun.
 Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
 Require Import sequences esum measure fsbigop cardinality set_interval.
+Require Import realfun.
 
 (******************************************************************************)
 (*                            Lebesgue Measure                                *)
@@ -1311,36 +1312,6 @@ rewrite predeqE => x; split => [|[r _] []/= [Dx rfx]] /= => [[Dx]|[_]].
 by rewrite ltr_subl_addr=> afg; rewrite (lt_le_trans afg)// addrC ler_add2r ltW.
 Qed.
 
-Lemma measurable_fun_sqr D f :
-  measurable_fun D f -> measurable_fun D (fun x => f x ^+ 2).
-Proof.
-move=> mf /= A mA mD.
-apply: (measurability (RGenOInfty.measurableE R)) => //= _ [_ [a ->] <-].
-have [a0|a0] := leP 0 a; last first.
-  rewrite (_ : _ `&` _ = D) // predeqE => x; split => [[]//|Dx]; split => //.
-  by rewrite /= in_itv /= andbT (lt_le_trans a0)// sqr_ge0.
-rewrite (_ : D `&` _ = (D `&` f @^-1` `]Num.sqrt a, +oo[) `|`
-                       (D `&` f @^-1` `]-oo, (-Num.sqrt a)[) ).
-  by apply: measurableU; apply: mf => //; apply: measurable_itv.
-rewrite predeqE => t; split=> [[]|].
-  rewrite /= in_itv /= andbT => Dt aft2.
-  have := le_lt_trans a0 aft2.
-  rewrite exprn_even_gt0 //= neq_lt => /orP[|] ft0.
-    move: aft2; rewrite -ltr_sqrt; last first.
-      by rewrite exprn_even_gt0//= lt_eqF.
-    by rewrite sqrtr_sqr ltr0_norm// ltr_oppr; tauto.
-  move: aft2; rewrite -ltr_sqrt; last first.
-    by rewrite exprn_even_gt0//= gt_eqF.
-  by rewrite sqrtr_sqr gtr0_norm// !/= !in_itv/= andbT; tauto.
-move=> [] /=; rewrite !/= !in_itv /= ?andbT => -[Dt fta]; split => //.
-  rewrite -ltr_sqrt; last first.
-    by rewrite exprn_even_gt0//= gt_eqF// (le_lt_trans _ fta).
-  by rewrite sqrtr_sqr gtr0_norm// (le_lt_trans _ fta).
-rewrite -ltr_sqrt; last first.
-  by rewrite exprn_even_gt0//= lt_eqF// (lt_le_trans fta).
-by rewrite sqrtr_sqr ltr0_norm// 1?ltr_oppr// (lt_le_trans fta).
-Qed.
-
 Lemma measurable_funrM D f (k : R) : measurable_fun D f ->
   measurable_fun D (fun x => k * f x).
 Proof.
@@ -1375,6 +1346,17 @@ Lemma measurable_funB D f g : measurable_fun D f ->
 Proof.
 by move=> ? ? ?; apply: measurable_funD => //; exact: measurable_funN.
 Qed.
+
+Lemma measurable_fun_exprn D n f :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
+Proof.
+apply: measurable_fun_comp ((@GRing.exp R)^~ n) _ _ _.
+by apply: continuous_measurable_fun; apply: exp_continuous.
+Qed.
+
+Lemma measurable_fun_sqr D f :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ 2).
+Proof. exact: measurable_fun_exprn. Qed.
 
 Lemma measurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
