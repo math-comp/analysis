@@ -2168,6 +2168,12 @@ Context {K : numFieldType}.
 Lemma mul_continuous : continuous (fun z : K * K => z.1 * z.2).
 Proof. exact: scale_continuous. Qed.
 
+Lemma mulrl_continuous (x : K) : continuous ( *%R x).
+Proof. exact: scaler_continuous. Qed.
+
+Lemma mulrr_continuous (y : K) : continuous ( *%R^~ y).
+Proof. exact: scalel_continuous. Qed.
+
 Lemma inv_continuous (x : K) : x != 0 -> {for x, continuous GRing.inv}.
 Proof.
 move=> x_neq0 /=; apply/cvg_distP => _/posnumP[e]; rewrite !nearE/=; near=> y.
@@ -2175,8 +2181,7 @@ have y_gt : `|y| > `|x| / 2.
   have /(le_lt_trans (ler_sub_dist _ _)) : `|x - y| < `|x| / 2.
     by near: y; apply: cvg_dist; rewrite // divr_gt0// normr_gt0//.
   by rewrite ltr_subl_addr -ltr_subl_addl {1}[ `|x| ]splitr addrK.
-have y_neq0 : y != 0.
-  by rewrite -normr_eq0 gt_eqF// (le_lt_trans _ y_gt) ?divr_ge0.
+have y_neq0 : y != 0 by rewrite -normr_gt0 (le_lt_trans _ y_gt).
 rewrite /= -div1r -[y^-1]div1r -mulNr addf_div// mul1r mulN1r normrM normfV.
 rewrite ltr_pdivr_mulr ?normr_gt0 ?mulf_neq0//.
 apply: (@lt_le_trans _ _ (e%:num * (`|x| * (`|x| / 2)))).

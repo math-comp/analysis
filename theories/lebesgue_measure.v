@@ -1315,23 +1315,8 @@ Qed.
 Lemma measurable_funrM D f (k : R) : measurable_fun D f ->
   measurable_fun D (fun x => k * f x).
 Proof.
-have [-> _|] := eqVneq k 0.
-  rewrite (_ : (fun _ => _) = cst 0); first exact: measurable_fun_cst.
-  by rewrite funeqE// => t; rewrite mul0r.
-rewrite neq_lt => /orP[k0|k0] mf mD;
-  apply: (measurability (RGenOInfty.measurableE R)) => //= A [B [a ->] <-].
-- rewrite preimage_itv_o_infty [X in measurable X](_ : _ =
-      D `&` f @^-1` `]-oo, (a / k)[); last first.
-    rewrite predeqE => t; split => [[/= akft Dtr]|[]].
-      by rewrite /= in_itv/= ltr_ndivl_mulr// mulrC.
-    by rewrite /= in_itv /= => Dt ftak; rewrite mulrC -ltr_ndivl_mulr.
-  by apply: mf =>//; rewrite -(set_itv_infty_o (a / k)); apply: measurable_itv.
-- rewrite preimage_itv_o_infty [X in measurable X](_ : _ =
-       D `&` f @^-1` `]a / k, +oo[).
-     by apply: mf => //; apply: measurable_itv.
-  rewrite predeqE => t; split => [[/= Dt akft]|[Dr]].
-    by rewrite /= in_itv/= andbT ltr_pdivr_mulr// mulrC.
-  by rewrite /= in_itv/= andbT => akft; rewrite mulrC -ltr_pdivr_mulr.
+apply: (@measurable_fun_comp _ _ _ ( *%R k)).
+by apply: continuous_measurable_fun; apply: mulrl_continuous.
 Qed.
 
 Lemma measurable_funN D f : measurable_fun D f -> measurable_fun D (-%R \o f).
