@@ -1356,7 +1356,7 @@ Qed.
 
 Lemma measurable_fun_sqr D f :
   measurable_fun D f -> measurable_fun D (fun x => f x ^+ 2).
-Proof. by apply: measurable_fun_exprn. Qed.
+Proof. exact: measurable_fun_exprn. Qed.
 
 Lemma measurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
