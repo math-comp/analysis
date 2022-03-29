@@ -773,6 +773,9 @@ Definition elebesgue_measure : {measure set \bar R -> \bar R} :=
   Measure.Pack _ elebesgue_measure_isMeasure.
 
 End salgebra_R_ssets.
+#[global]
+Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1|
+                                            apply: emeasurable_set1] : core.
 
 Section measurable_fun_measurable.
 Local Open Scope ereal_scope.
@@ -822,11 +825,10 @@ Qed.
 
 Lemma emeasurable_neq y : measurable (D `&` [set x | f x != y]).
 Proof.
-rewrite (_ : [set x | f x != y] = f @^-1` (setT `\ y)); last first.
-  rewrite predeqE => t; split.
-    by rewrite /= => ft0; rewrite /preimage /=; split => //; exact/eqP.
-  by rewrite /preimage /= => -[_ /eqP].
-by apply/mf/measurableD => //; exact/emeasurable_set1.
+rewrite (_ : [set x | f x != y] = f @^-1` (setT `\ y)).
+  exact/mf/measurableD.
+rewrite predeqE => t; split; last by rewrite /preimage /= => -[_ /eqP].
+by rewrite /= => ft0; rewrite /preimage /=; split => //; exact/eqP.
 Qed.
 
 End measurable_fun_measurable.
@@ -1481,7 +1483,7 @@ move=> /= _ [_ [x ->] <-]; move: x => [x| |].
 - rewrite [X in _ @^-1` X](punct_eitv_bnd_pinfty _ x) preimage_setU setIUr.
   apply: measurableU; last first.
     rewrite preimage_abse_pinfty.
-    by apply: measurableI => //; apply: measurableU; exact: emeasurable_set1.
+    by apply: measurableI => //; exact: measurableU.
   apply: measurableI => //; exists (normr @^-1` `]x, +oo[%classic).
     rewrite -[X in measurable X]setTI.
     by apply: measurable_fun_normr => //; exact: measurable_itv.

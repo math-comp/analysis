@@ -64,8 +64,6 @@ Reserved Notation "'\int_' D f ''d' mu [ x ]" (at level 36, D at level 0,
 Reserved Notation "'\int' f ''d' mu [ x ]" (at level 36, f at level 36,
   mu at level 0, x at level 3, format "'\int'  f  ''d'  mu [ x ]").
 Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
-#[global]
-Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
 HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
@@ -1718,8 +1716,6 @@ Lemma emeasurable_funD D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \+ g).
 Proof.
 move=> mf mg mD.
-have noom : measurable ([set -oo] : set (\bar R)) by apply: emeasurable_set1.
-have poom : measurable ([set +oo] : set (\bar R)) by apply: emeasurable_set1.
 have Cnoom : measurable (~` [set -oo] : set (\bar R)) by apply: measurableC.
 have Cpoom : measurable (~` [set +oo] : set (\bar R)) by apply: measurableC.
 have mfg :  measurable (D `&` [set x | f x +? g x]).
@@ -1772,10 +1768,10 @@ Lemma emeasurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
 move=> mf mg mD.
-have m0 : measurable ([set 0] : set (\bar R)) by apply: emeasurable_set1.
+have m0 : measurable ([set 0] : set (\bar R)) by [].
 have mC0 : measurable ([set~ 0] : set (\bar R)) by apply: measurableC.
 have mCoo : measurable (~` [set -oo; +oo] : set (\bar R)).
-  by apply/measurableC/measurableU; exact/emeasurable_set1.
+  exact/measurableC/measurableU.
 have mfg : measurable (D `&` [set x | f x *? g x]).
   suff -> : [set x | f x *? g x] =
               (f @^-1` (~` [set 0]) `|` g @^-1` (~` [set -oo; +oo])) `&`
@@ -2471,7 +2467,7 @@ have [muD0|muD0] := eqVneq (mu D) 0.
 pose E := [set x | `|f x| = +oo /\ D x ].
 have mE : measurable E.
   rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set -oo; +oo]).
-    by apply: fint.1 => //; apply: measurableU; exact: emeasurable_set1.
+    by apply: fint.1 => //; exact: measurableU.
   rewrite predeqE => t; split=> [[/eqP ftoo Dt]|[Dt]].
     split => //.
     by move: ftoo; rewrite /preimage /= eqe_absl => /andP[/orP[|]/eqP]; tauto.
@@ -3456,8 +3452,7 @@ have -> : xsection A x = (fun y => f (x, y)) @^-1` [set 1%E].
     by rewrite /= /mindic indicE/= => ->.
   rewrite /= /mindic indicE.
   by case: (_ \in _) => //= -[] /eqP; rewrite eq_sym oner_eq0.
-rewrite -(setTI (_ @^-1` _)).
-by apply: measurable_fun_prod1 => //; exact: emeasurable_set1.
+by rewrite -(setTI (_ @^-1` _)); exact: measurable_fun_prod1.
 Qed.
 
 Lemma measurable_ysection A y : measurable A -> measurable (ysection A y).
@@ -3473,8 +3468,7 @@ have -> : ysection A y = (fun x => f (x, y)) @^-1` [set 1%E].
     by rewrite /= /mindic indicE => ->.
   rewrite /= /mindic indicE.
   by case: (_ \in _) => //= -[] /eqP; rewrite eq_sym oner_eq0.
-rewrite -(setTI (_ @^-1` _)).
-by apply: measurable_fun_prod2 => //; exact: emeasurable_set1.
+by rewrite -(setTI (_ @^-1` _)); exact: measurable_fun_prod2.
 Qed.
 
 End measurable_section.
