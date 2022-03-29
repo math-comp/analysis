@@ -1706,7 +1706,7 @@ Lemma le_measure (R : realFieldType) (T : semiRingOfSetsType)
   {in measurable &, {homo mu : A B / A `<=` B >-> (A <= B)%E}}.
 Proof.
 move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
-  by rewrite lee_pinfty_eq => /eqP ->; rewrite lee_pinfty.
+  by rewrite lee_pinfty_eq => /eqP ->; rewrite leey.
 rewrite -[leRHS]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
 - by rewrite SetRing.RmuE ?lee_addl// ?measure_ge0.
 - exact: sub_gen_smallest.
@@ -1714,8 +1714,8 @@ rewrite -[leRHS]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
 Qed.
 
 Lemma measure_le0  (T : semiRingOfSetsType) (R : realFieldType)
-    (mu : {additive_measure set T -> \bar R}) (A : set T) :
-    (mu A <= 0)%E = (mu A == 0)%E.
+  (mu : {additive_measure set T -> \bar R}) (A : set T) :
+  (mu A <= 0)%E = (mu A == 0)%E.
 Proof. by case: ltgtP (measure_ge0 mu A). Qed.
 
 Section more_content_semiring_lemmas.
@@ -2415,9 +2415,9 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
   move XAx : (mu (X `&` ~` A')) => [x| |].
   - rewrite -lee_subr_addr //; apply ub_ereal_sup => /= _ [n _] <-.
     by rewrite EFinN lee_subr_addr // -XAx XA.
-  - suff : mu X = +oo by move=> ->; rewrite lee_pinfty.
+  - suff : mu X = +oo by move=> ->; rewrite leey.
     by apply/eqP; rewrite -lee_pinfty_eq -XAx le_outer_measure.
-  - by rewrite addeC /= lee_ninfty.
+  - by rewrite addeC /= leNye.
 move=> n.
 apply (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
   apply/lee_add2l/le_outer_measure; apply: setIS; apply: subsetC => t.
@@ -2599,7 +2599,7 @@ Proof. by case: x. Qed.
 Lemma mu_ext_sigma_subadditive : sigma_subadditive mu_ext.
 Proof.
 move=> A; have [[i ioo]|] := pselect (exists i, mu_ext (A i) = +oo).
-  rewrite (ereal_nneg_series_pinfty _ _ ioo)// ?lee_pinfty// => n _.
+  rewrite (ereal_nneg_series_pinfty _ _ ioo)// ?leey// => n _.
   exact: mu_ext_ge0.
 rewrite -forallNE => Aoo; apply: lee_adde => e.
 rewrite (le_trans _ (epsilon_trick _ _ _))//; last first.
@@ -2921,11 +2921,11 @@ have ? : cvg (eseries (Rmu \o B)).
   by apply/is_cvg_ereal_nneg_series => n _; exact: measure_ge0.
 have [def|] := boolP (adde_def (lim BA) (lim BNA)); last first.
   rewrite /adde_def negb_and !negbK=> /orP[/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
-  - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite lee_pinfty.
+  - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite leey.
     apply/eqP; rewrite -lee_pinfty_eq -(eqP BAoo); apply/lee_lim => //.
     near=> n; apply: lee_sum => m _; apply: le_measure; rewrite /mkset; by
       [rewrite inE; exact: measurableI | rewrite inE | apply: subIset; left].
-  - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite lee_pinfty.
+  - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite leey.
     apply/eqP; rewrite -lee_pinfty_eq -(eqP BNAoo); apply/lee_lim => //.
     by near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure;
        rewrite /mkset ?inE//; apply: measurableD.

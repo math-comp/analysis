@@ -187,8 +187,8 @@ Lemma add_def_funennpg f x : (f^\+ x +? - f^\- x)%E.
 Proof.
 rewrite /funennp /funenng; case: (f x) => [r| |].
 - by rewrite !maxEFin.
-- by rewrite /maxe /= lte_ninfty.
-- by rewrite /maxe /= lte_ninfty.
+- by rewrite /maxe /= ltNye.
+- by rewrite /maxe /= ltNye.
 Qed.
 
 Lemma funeD_Dnng f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
@@ -215,8 +215,10 @@ have [|fx0] := leP 0 (f x); last rewrite add0e.
 Qed.
 
 End funpos_lemmas.
-#[global] Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funenng_ge0] : core.
-#[global] Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funennp_ge0] : core.
+#[global]
+Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funenng_ge0] : core.
+#[global]
+Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funennp_ge0] : core.
 
 Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
