@@ -836,6 +836,16 @@ apply/fsetP => x; rewrite in_fset_set//=.
 by apply/idP/idP; rewrite ?inE.
 Qed.
 
+Lemma fset_set_image {T U : choiceType} (f : T -> U) (A : set T) :
+  finite_set A -> fset_set (f @` A) = (f @` fset_set A)%fset.
+Proof.
+move=> Afset; apply/fsetP=> i.
+rewrite !in_fset_set; last exact: finite_image.
+apply/idP/imfsetP; rewrite !inE/=.
+  by move=> [x Ax <-]; exists x; rewrite ?in_fset_set ?inE.
+by move=> [x + ->]; rewrite in_fset_set// inE; exists x.
+Qed.
+
 Lemma fset_set_inj {T : choiceType} (A B : set T) :
   finite_set A -> finite_set B -> fset_set A = fset_set B -> A = B.
 Proof. by move=> Afin Bfin /(congr1 pred_set); rewrite !fset_setK. Qed.
@@ -904,32 +914,81 @@ Lemma card_eq_fsetP {T : choiceType} {A : {fset T}} {n} :
   reflect (#|` A| = n) ([set` A] #= `I_n).
 Proof.
 elim/choicePpointed: T => T in A *.
-  rewrite empty_eq0 card_eq_sym (card_eqr (card_eq00 _ nat)) -II0.
-  apply: (iffP card_eq_II) => [->|].
-    by apply/eqP; rewrite cardfs_eq0; apply/eqP/fsetP=> i; have := no i.
-  by have -> : A = fset0; [apply/fsetP=> i; have := no i | rewrite cardfs0].
+  rewrite -{1}[A]set_fsetK !emptyE fset_set0 cardfs0.
+  by apply: (iffP eqP) => [/IIn_eq0->//|<-]; rewrite II0.
 rewrite (card_eqr card_II) card_eq_sym.
 apply: (iffP pcard_eqP) => [[f]|]; last first.
   rewrite cardfE => eqAn.
   by squash (set_val \o finset_val \o enum_val \o cast_ord (esym eqAn)).
-suff -> : A = [fset f i | i in 'I_n]%fset.
-  by rewrite card_imfset ?size_enum_ord//=; apply: (in2TT inj).
+suff -> : A = [fset f i | i in 'I_n]%fset by rewrite card_imfset ?size_enum_ord.
 apply/fsetP => x; apply/idP/imfsetP => /= [xA|[i _ ->]].
   by have [i _ <-] := 'surj_f xA; exists i.
 by have /(_ i I) := 'funS_f.
 Qed.
 
+Lemma card_fset_set {T : choiceType} (A : set T) n :
+  A #= `I_n -> #|`fset_set A| = n.
+Proof.
+move=> An; apply/card_eq_fsetP; rewrite fset_setK//.
+by apply/finite_setP; exists n.
+Qed.
+
+Lemma geq_card_fset_set {T : choiceType} (A : set T) n :
+  A #<= `I_n -> (#|`fset_set A| <= n)%N.
+Proof.
+move=> An; have /finite_setP[m Am] : finite_set A
+  by apply/finite_set_leP; exists n.
+by rewrite (card_fset_set Am) -card_le_II -(card_le_eql Am).
+Qed.
+
+Lemma leq_card_fset_set {T : choiceType} (A : set T) n :
+  finite_set A -> A #>= `I_n -> (#|`fset_set A| >= n)%N.
+Proof.
+move=> /finite_setP[m Am]; rewrite (card_fset_set Am).
+by rewrite (card_le_eqr Am) card_le_II.
+Qed.
+
+Lemma infinite_set_fset {T : choiceType} (A : set T) (n : nat) :
+  infinite_set A ->
+    exists2 B : {fset T}, [set` B] `<=` A & (#|` B| >= n)%N.
+Proof.
+elim/choicePpointed: T => T in A *; first by rewrite emptyE.
+move=> /infiniteP/ppcard_leP[f]; exists (fset_set [set f i | i in `I_n]).
+  rewrite fset_setK//; last exact: finite_image.
+  by apply: subset_trans (fun_image_sub f); apply: image_subset.
+rewrite fset_set_image// card_imfset//= fset_set_II/=.
+by rewrite card_imfset//= ?size_enum_ord//; apply: val_inj.
+Qed.
+
+Lemma infinite_set_fsetP {T : choiceType} (A : set T) :
+  infinite_set A <->
+   forall n, exists2 B : {fset T}, [set` B] `<=` A & (#|` B| >= n)%N.
+Proof.
+split; first by move=> ? ?; apply: infinite_set_fset.
+elim/choicePpointed: T => T in A *.
+  move=> /(_ 1%N)[B _]; rewrite cardfs_gt0 => /fset0Pn[x xB].
+  by have: [set` B] x by []; rewrite emptyE.
+move=> Bge /finite_setP[n An]; have [B BA] := Bge n.+1.
+apply/negP; rewrite -leqNgt -(card_fset_set An) fsubset_leq_card//.
+apply/fsubsetP => x /BA; rewrite in_fset_set ?inE//.
+by apply/finite_setP; exists n.
+Qed.
+
+Lemma fcard_eq {T T' : choiceType} (A : set T) (B : set T') :
+    finite_set A -> finite_set B ->
+  reflect (#|`fset_set A| = #|`fset_set B|) (A #= B).
+Proof.
+move=> /finite_setP/cid[n An] /finite_setP/cid[m Bm].
+rewrite (card_fset_set An) (card_fset_set Bm).
+by rewrite (card_eql An) (card_eqr Bm); apply: card_eq_II.
+Qed.
+
 Lemma card_IID {n k} : `I_n `\` `I_k #= `I_(n - k)%N.
 Proof.
-have /orP[|kn] := leq_total k n; last first.
-  rewrite (eqP kn) II0 card_eq0 eq_opE -subset0 => i/= [ltin].
-  by apply; apply: leq_trans kn.
-move=> /subnKC{1}<-; move: (n - k)%N => m.
-apply/card_esym/pcard_eqP/bijPex; exists (addn k); split.
-- by move=> i leim /=; rewrite ltn_add2l leim ltnNge leq_addr.
-- by move=> i j _ _ /addnI.
-- move=> i [/= ikm /negP]; rewrite -leqNgt => leki.
-  by exists (i - k)%N; rewrite ?ltn_subLR // subnKC.
+apply/fcard_eq => //; first exact: finite_setD.
+rewrite fset_setD//= cardfsD/= -fset_setI// setI_II.
+rewrite !fset_set_II !card_imfset// /= !size_enum_ord.
+by case: leqP; rewrite // subnn => /eqP->.
 Qed.
 
 Lemma finite_set_bij T (A : set T) n S : A != set0 ->

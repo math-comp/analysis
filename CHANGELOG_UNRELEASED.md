@@ -26,6 +26,14 @@
   + lemma `esum_set1`
 - in `ereal.v`:
   + lemmas `oppeB`, `doppeB`, `fineB`, `dfineB`
+- in file `mathcomp_extra.v`:
+  + lemma `card_fset_sum1`
+- in file `classical_sets.v`:
+  + lemmas `setI_II` and `setU_II`
+- in file `cardinality.v`:
+  + lemma `fset_set_image`, `card_fset_set`, `geq_card_fset_set`,
+    `leq_card_fset_set`, `infinite_set_fset`, `infinite_set_fsetP` and
+    `fcard_eq`.
 
 ### Changed
 
