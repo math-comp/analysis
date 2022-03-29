@@ -77,6 +77,14 @@
   + lemmas `finite_card_dirac`, `infinite_card_dirac`
 - in file `lebesgue_integral.v`:
   + lemmas `integralM_indic`, `integralM_indic_nnsfun`, `integral_dirac`
+- in file `measure.v`:
+  + lemma `eq_measure`
+  + definition `msum` and canonical `measure_sum'`
+  + definition `mzero` and canonical `measure_zero'`
+  + definition `measure_add` and lemma `measure_addE`
+  + definition `mseries` and canonical `measure_series'`
+- in file `lebesgue_integral.v`:
+  + lemma `integral_measure_zero`
 
 ### Changed
 
