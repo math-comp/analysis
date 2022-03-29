@@ -1344,9 +1344,8 @@ Qed.
 Lemma measurable_funrM D f (k : R) : measurable_fun D f ->
   measurable_fun D (fun x => k * f x).
 Proof.
-move=> /(@measurable_fun_comp _ _ _ (GRing.mul k)); apply.
-apply: continuous_measurable_fun.
-exact/(@scaler_continuous _ [normedModType R^o of R^o]).
+apply: (@measurable_fun_comp _ _ _ ( *%R k)).
+by apply: continuous_measurable_fun; apply: mulrl_continuous.
 Qed.
 
 Lemma measurable_funN D f : measurable_fun D f -> measurable_fun D (-%R \o f).
