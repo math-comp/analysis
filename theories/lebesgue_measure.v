@@ -1350,11 +1350,8 @@ Qed.
 Lemma measurable_fun_exprn D n f :
   measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
 Proof.
-move => mf.
-rewrite (_ : (fun x => f x ^+ n) = (fun x => x ^+ n) \o f).
-apply: measurable_fun_comp => //.
-apply: continuous_measurable_fun; apply: exp_continuous.
-by apply /funext => y.
+apply: measurable_fun_comp ((@GRing.exp R)^~ n) _ _ _.
+by apply: continuous_measurable_fun; apply: exp_continuous.
 Qed.
 
 Lemma measurable_fun_sqr D f :
