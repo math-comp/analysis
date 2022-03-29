@@ -1045,6 +1045,28 @@ Notation "\int_ D f 'd mu [ x ]" := (integral mu D (fun x => f)) : ereal_scope.
 Notation "\int f 'd mu [ x ]" := (\int_ setT f 'd mu[x])%E : ereal_scope.
 Arguments eq_integral {T R mu D} g.
 
+Section integral_measure_zero.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType).
+
+Let sintegral_measure_zero (f : T -> R) : sintegral mzero f = 0.
+Proof. by rewrite sintegralE big1// => r _ /=; rewrite /mzero mule0. Qed.
+
+Lemma integral_measure_zero (D : set T) (f : T -> \bar R) :
+  \int_ D f x 'd (@measure_zero T R)[x] = 0.
+Proof.
+have h g : (forall x, 0 <= g x) -> [set sintegral mzero h |
+    h in [set h : {nnsfun T >-> R} | forall x, (h x)%:E <= g x]] = [set 0].
+  move=> g0; apply/seteqP; split => [_ [h/= Dt <-]|x -> /=].
+    by rewrite sintegral_measure_zero.
+  by exists (cst_nnsfun _ (@NngNum _ 0 (lexx _))).
+rewrite integralE !ge0_integralE//= h ?ereal_sup1; last first.
+  by move=> r; rewrite erestrict_ge0.
+by rewrite h ?ereal_sup1 ?subee// => r; rewrite erestrict_ge0.
+Qed.
+
+End integral_measure_zero.
+
 Section domain_change.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).

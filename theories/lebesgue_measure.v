@@ -354,7 +354,7 @@ have: `[a.1 + e%:num / 2, a.2] `<=` \bigcup_i Aoo i.
   move=> x /=; rewrite !in_itv /= => /andP[-> /le_lt_trans->]//=.
   by rewrite ltr_addl.
 have := @segment_compact _ (a.1 + e%:num / 2) a.2; rewrite compact_cover.
-move=> /[apply]-[i _|X _ Xc]; first by rewrite /Aoo//; apply: interval_open.
+move=> /[apply]-[i _|X _ Xc]; first exact: interval_open.
 have: `](a.1 + e%:num / 2), a.2] `<=` \bigcup_(i in [set` X]) Aoc i.
   move=> x /subset_itv_oc_cc /Xc [i /= Xi] Aooix.
   by exists i => //; apply: subset_itv_oo_oc Aooix.
