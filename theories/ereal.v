@@ -771,17 +771,22 @@ Lemma fin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma fin_num_sum (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma fin_num_sum (T : Type) (s : seq T) (P : pred T) (f : T -> \bar R) :
+  \sum_(i <- s | P i) f i \is a fin_num =
+  all [pred x | x \in fin_num] [seq f i | i <- s & P i].
+Proof.
+elim: s => [|h t ih]; rewrite ?big_nil// big_cons; case: ifPn => Ph.
+- by rewrite fin_numD/= Ph/= -ih.
+- by rewrite all_map/= (negbTE Ph) -all_map.
+Qed.
+
+Lemma fin_num_sumP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i \is a fin_num <->
   forall i, i \in s -> P i -> f i \is a fin_num.
 Proof.
-elim: s => [|h t ih]; rewrite ?big_nil// big_cons; case: ifPn => Ph.
-- split=> [|k]; rewrite fin_numD.
-    by move=> /andP[fh ft i] /[!inE] /predU1P[->//|it]; apply/ih.1.
-  by rewrite k ?mem_head//=; apply/ih.2 => i it Pi; rewrite k// inE it orbT.
-- split=> [k i|k].
-    by rewrite in_cons => /predU1P[->|]; [rewrite (negbTE Ph)|exact/ih.1].
-  by apply/ih.2 => i it Pi /[!k]//; rewrite inE it orbT.
+rewrite fin_num_sum; split=> [/allP + i si Pi|h].
+  by apply; apply/mapP; exists i => //; rewrite mem_filter Pi.
+by apply/allP => /= x /mapP[t]; rewrite mem_filter => /andP[Pt ts] -> /[!h].
 Qed.
 
 Lemma fin_numB x y :

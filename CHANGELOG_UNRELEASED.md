@@ -20,7 +20,7 @@
     `mule_natl`
   + lemmas `ednatmul_pinfty`, `ednatmul_ninfty`, `EFin_dnatmul`, `dmule2n`, `ednatmulE`,
     `dmule_natl`
-  + lemma `fin_num_sum`
+  + lemmas `fin_num_sum`, `fin_num_sumP`
 - in `esum.v`:
   + lemma `esum_set1`
 - in `ereal.v`:
