@@ -1811,16 +1811,16 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
   exact: cvgM.
 - move: f g a; abstract: apoo.
   move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
-  + rewrite mulrinfty ltr0_sg// ?mulN1e.
+  + rewrite mulry ltr0_sg// ?mulN1e.
     by under eq_fun do rewrite muleC; exact: (ereal_cvgM_lt0_pinfty a0).
-  + rewrite mulrinfty gtr0_sg// ?mul1e.
+  + rewrite mulry gtr0_sg// ?mul1e.
     by under eq_fun do rewrite muleC; exact: (ereal_cvgM_gt0_pinfty a0).
   + by rewrite /mule_def eqxx.
 - move: f g a; abstract: bnoo.
   move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
-  + rewrite mulrinfty ltr0_sg// ?mulN1e.
+  + rewrite mulrNy ltr0_sg// ?mulN1e.
     by under eq_fun do rewrite muleC; exact: (ereal_cvgM_lt0_ninfty a0).
-  + rewrite mulrinfty gtr0_sg// ?mul1e.
+  + rewrite mulrNy gtr0_sg// ?mul1e.
     by under eq_fun do rewrite muleC; exact: (ereal_cvgM_gt0_ninfty a0).
   + by rewrite /mule_def eqxx.
 - rewrite mule_defC => ? foo gb; rewrite muleC.

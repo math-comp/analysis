@@ -61,10 +61,10 @@
   + `lte_ninfty` -> `ltNye`
   + `lee_pinfty` -> `leey`
   + `lee_ninfty` -> `leNye`
-  + `mulrpinfty_real` -> `mulry_real`
-  + `mulpinftyr_real` -> `mulyr_real`
-  + `mulrninfty_real` -> `mulrNy_real`
-  + `mulninftyr_real` -> `mulNyr_real`
+  + `mulrpinfty_real` -> `real_mulry`
+  + `mulpinftyr_real` -> `real_mulyr`
+  + `mulrninfty_real` -> `real_mulrNy`
+  + `mulninftyr_real` -> `real_mulNyr`
   + `mulrpinfty` -> `mulry`
   + `mulpinftyr` -> `mulyr`
   + `mulrninfty` -> `mulrNy`
@@ -81,6 +81,8 @@
   + `mine_ninftyr` -> `mineNy`
   + `mine_pinftyl` -> `minye`
   + `mine_pinftyr` -> `miney`
+  + `mulrinfty_real` -> `real_mulr_infty`
+  + `mulrinfty` -> `mulr_infty`
 
 ### Removed
 

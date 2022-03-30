@@ -2060,7 +2060,7 @@ transitivity (\int_ D (lim (g^~ x)) 'd mu[x]).
   - rewrite gt0_mulye//; apply/ereal_cvgPpinfty => M M0.
     rewrite /g; case: (f x) fx0 => [r|_|//]; last first.
       exists 1%N => // m /= m0.
-      by rewrite mulrinfty gtr0_sg// ?mul1e ?leey// ltr0n.
+      by rewrite mulry gtr0_sg// ?mul1e ?leey// ltr0n.
     rewrite lte_fin => r0.
     near=> n; rewrite lee_fin -ler_pdivr_mulr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
@@ -2069,7 +2069,7 @@ transitivity (\int_ D (lim (g^~ x)) 'd mu[x]).
   - rewrite lt0_mulye//; apply/ereal_cvgPninfty => M M0.
     rewrite /g; case: (f x) fx0 => [r|//|_]; last first.
       exists 1%N => // m /= m0.
-      by rewrite mulrinfty gtr0_sg// ?ltr0n// mul1e ?leNye.
+      by rewrite mulrNy gtr0_sg// ?ltr0n// mul1e ?leNye.
     rewrite lte_fin => r0.
     near=> n; rewrite lee_fin -ler_ndivr_mulr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
@@ -2088,7 +2088,7 @@ rewrite le_eqVlt => /predU1P[<-|if_gt0].
   by under eq_fun do rewrite mule0.
 rewrite gt0_mulye//; apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
 near=> n; have [ifoo|] := ltP (\int_ D (f x) 'd mu[x]) +oo; last first.
-  rewrite lee_pinfty_eq => /eqP ->;  rewrite mulrinfty muleC.
+  rewrite lee_pinfty_eq => /eqP ->;  rewrite mulry muleC.
   rewrite gt0_mulye ?leey//.
   by near: n; exists 1%N => // n /= n0; rewrite gtr0_sg// ?lte_fin// ltr0n.
 rewrite -(@fineK _ (\int_ D (f x) 'd mu[x])); last first.
@@ -2214,7 +2214,7 @@ rewrite monotone_convergence //.
   apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
   have [muDoo|muDoo] := ltP (mu D) +oo; last first.
     exists 1%N => // m /= m0; move: muDoo; rewrite lee_pinfty_eq => /eqP ->.
-    by rewrite mulrinfty gtr0_sg ?mul1e ?leey// ltr0n.
+    by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
   exists `|ceil (M / fine (mu D))|%N => // m /=.
   rewrite -(ler_nat R) => MDm.
   rewrite -(@fineK _ (mu D)); last by rewrite ge0_fin_numE// measure_ge0.
