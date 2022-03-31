@@ -564,7 +564,7 @@ Canonical fin_num_keyd := KeyedQualifier fin_num_key.
 Lemma fin_numE x : (x \is a fin_num) = (x != -oo) && (x != +oo).
 Proof. by []. Qed.
 
-Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \in fin_num).
+Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \is a fin_num).
 Proof. by apply/(iffP idP) => [/andP//|/andP]. Qed.
 
 Lemma fin_numEn x : (x \isn't a fin_num) = (x == -oo) || (x == +oo).
@@ -776,7 +776,7 @@ Proof. by move: x y => [x| |] [y| |]. Qed.
 
 Lemma sum_fin_num (T : Type) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i \is a fin_num =
-  all [pred x | x \in fin_num] [seq f i | i <- s & P i].
+  all [pred x | x \is a fin_num] [seq f i | i <- s & P i].
 Proof.
 by rewrite -big_all big_map big_filter; exact: (big_morph _ fin_numD).
 Qed.
