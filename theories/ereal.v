@@ -10,7 +10,7 @@ Require Import boolp mathcomp_extra classical_sets functions reals signed.
 Require Import topology.
 
 (******************************************************************************)
-(*                        Extended real numbers                               *)
+(*                         Extended real numbers                              *)
 (*                                                                            *)
 (* Given a type R for numbers, \bar R is the type R extended with symbols -oo *)
 (* and +oo (notation scope: %E), suitable to represent extended real numbers. *)
@@ -18,13 +18,19 @@ Require Import topology.
 (* and operations for addition/opposite. When R is a realDomainType, \bar R   *)
 (* is equipped with a Canonical orderType.                                    *)
 (*                                                                            *)
+(* Naming convention: in definition/lemma identifiers, "e" stands for an      *)
+(* extended number and "y" and "Ny" for +oo ad -oo respectively.              *)
+(*                                                                            *)
 (*                  \bar R == coproduct of R and {+oo, -oo};                  *)
 (*                            notation for extended (R:Type)                  *)
 (*                    r%:E == injects real numbers into \bar R                *)
 (*           +%E, -%E, *%E == addition/opposite/multiplication for extended   *)
 (*                            reals                                           *)
-(*                    +%dE == dual addition for extended reals                *)
-(*                            (-oo + +oo = +oo instead of -oo)                *)
+(*                `| x |%E == the absolute value of x                         *)
+(*                  x ^+ n == iterated multiplication                         *)
+(*                  x *+ n == iterated addition                               *)
+(*       +%dE, (x *+ n)%dE == dual addition/dual iterated addition for        *)
+(*                            extended reals (-oo + +oo = +oo instead of -oo) *)
 (*                            Import DualAddTheory for related lemmas         *)
 (*                  x +? y == the addition of the extended real numbers x and *)
 (*                            and y is defined, i.e., it is neither +oo - oo  *)
@@ -412,6 +418,12 @@ Definition mule := nosimpl mule_subdef.
 
 Definition abse x := if x is r%:E then `|r|%:E else +oo.
 
+Definition expe x n := iterop n mule x 1.
+
+Definition enatmul x n := iterop n adde x 0.
+
+Definition ednatmul x n := iterop n dual_adde x 0.
+
 Local Open Scope classical_set_scope.
 
 Lemma preimage_abse_pinfty : abse @^-1` [set +oo] = [set -oo; +oo].
@@ -438,6 +450,10 @@ Notation "x * y" := (mule x y) : ereal_scope.
 Notation "`| x |" := (abse (x%dE : dual_extended _)) : ereal_dual_scope.
 Notation "`| x |" := (abse x) : ereal_scope.
 Arguments abse {R}.
+Notation "x ^+ n" := (expe x%dE n) : ereal_dual_scope.
+Notation "x ^+ n" := (expe x n) : ereal_scope.
+Notation "x *+ n" := (ednatmul x%dE n) : ereal_dual_scope.
+Notation "x *+ n" := (enatmul x n) : ereal_scope.
 
 Notation "\- f" := (fun x => - f x)%dE : ereal_dual_scope.
 Notation "\- f" := (fun x => - f x)%E : ereal_scope.
@@ -522,6 +538,19 @@ Proof. by []. Qed.
 Lemma lte_tofin (r0 r1 : R) : (r0 < r1)%R -> r0%:E < r1%:E.
 Proof. by []. Qed.
 
+Lemma enatmul_pinfty n : +oo *+ n.+1 = +oo :> \bar R.
+Proof. by elim: n => //= n ->. Qed.
+
+Lemma enatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar R.
+Proof. by elim: n => //= n ->. Qed.
+
+Lemma EFin_natmul (r : R) n : (r *+ n.+1)%:E = r%:E *+ n.+1.
+Proof. by elim: n => //= n <-. Qed.
+
+Lemma mule2n x : x *+ 2 = x + x. Proof. by []. Qed.
+
+Lemma expe2 x : x ^+ 2 = x * x. Proof. by []. Qed.
+
 End ERealOrderTheory.
 
 Section finNumPred.
@@ -535,7 +564,7 @@ Canonical fin_num_keyd := KeyedQualifier fin_num_key.
 Lemma fin_numE x : (x \is a fin_num) = (x != -oo) && (x != +oo).
 Proof. by []. Qed.
 
-Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \in fin_num).
+Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \is a fin_num).
 Proof. by apply/(iffP idP) => [/andP//|/andP]. Qed.
 
 Lemma fin_numEn x : (x \isn't a fin_num) = (x == -oo) || (x == +oo).
@@ -738,9 +767,28 @@ Qed.
 Lemma fin_numN x : (- x \is a fin_num) = (x \is a fin_num).
 Proof. by rewrite !fin_numE 2!eqe_oppLR andbC. Qed.
 
+Lemma oppeB x y : y \is a fin_num -> - (x - y) = - x + y.
+Proof. by move=> yfin; rewrite oppeD ?oppeK// fin_numN. Qed.
+
 Lemma fin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma sum_fin_num (T : Type) (s : seq T) (P : pred T) (f : T -> \bar R) :
+  \sum_(i <- s | P i) f i \is a fin_num =
+  all [pred x | x \is a fin_num] [seq f i | i <- s & P i].
+Proof.
+by rewrite -big_all big_map big_filter; exact: (big_morph _ fin_numD).
+Qed.
+
+Lemma sum_fin_numP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+  reflect (forall i, i \in s -> P i -> f i \is a fin_num)
+          (\sum_(i <- s | P i) f i \is a fin_num).
+Proof.
+rewrite sum_fin_num; apply: (iffP allP) => /=.
+  by move=> + x xs Px; apply; rewrite map_f// mem_filter Px.
+by move=> + _ /mapP[x /[!mem_filter]/andP[Px xs] ->]; apply.
+Qed.
 
 Lemma fin_numB x y :
   (x - y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
@@ -750,9 +798,14 @@ Lemma fin_numM x y : x \is a fin_num -> y \is a fin_num ->
   x * y \is a fin_num.
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma fineD :
-  {in (@fin_num R) &, {morph fine : x y / x + y >-> (x + y)%R}}.
+Lemma fineD : {in @fin_num R &, {morph fine : x y / x + y >-> (x + y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
+
+Lemma fineB : {in @fin_num R &, {morph fine : x y / x - y >-> (x - y)%R}}.
+Proof. by move=> [r| |] [s| |]. Qed.
+
+Lemma fineM : {in @fin_num R &, {morph fine : x y / x * y >-> (x * y)%R}}.
+Proof. by move=> [x| |] [y| |]. Qed.
 
 Lemma fin_num_adde_def x y : y \is a fin_num -> x +? y.
 Proof. by move: x y => [x| |] [y | |]. Qed.
@@ -1107,12 +1160,18 @@ Proof. by move: x => [x| |] //; rewrite -dEFinB subr0. Qed.
 Lemma dsub0e x : 0 - x = - x.
 Proof. by move: x => [x| |] //; rewrite -dEFinB sub0r. Qed.
 
+Lemma doppeB x y : y \is a fin_num -> - (x - y) = - x + y.
+Proof. by move=> yfin; rewrite doppeD ?oppeK// fin_numN. Qed.
+
 Lemma dfin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
 Lemma dfineD :
   {in (@fin_num R) &, {morph fine : x y / x + y >-> (x + y)%R}}.
+Proof. by move=> [r| |] [s| |]. Qed.
+
+Lemma dfineB : {in @fin_num R &, {morph fine : x y / x - y >-> (x - y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
 
 Lemma daddeK x y : x \is a fin_num -> y + x - x = y.
@@ -1221,6 +1280,25 @@ Qed.
 
 Lemma gte_dopp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
 Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
+
+Lemma ednatmul_pinfty n : +oo *+ n.+1 = +oo :> \bar R.
+Proof. by elim: n => //= n ->. Qed.
+
+Lemma ednatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar R.
+Proof. by elim: n => //= n ->. Qed.
+
+Lemma EFin_dnatmul (r : R) n : (r *+ n.+1)%:E = r%:E *+ n.+1.
+Proof. by elim: n => //= n <-. Qed.
+
+Lemma ednatmulE x n : x *+ n = (x *+ n)%E.
+Proof.
+case: x => [x| |]; case: n => [//|n].
+- by rewrite -EFin_natmul -EFin_dnatmul.
+- by rewrite enatmul_pinfty ednatmul_pinfty.
+- by rewrite enatmul_ninfty ednatmul_ninfty.
+Qed.
+
+Lemma dmule2n x : x *+ 2 = x + x. Proof. by []. Qed.
 
 End DualERealArithTh_numDomainType.
 
@@ -2172,6 +2250,15 @@ Proof. by move=> y0 x1; rewrite muleC lee_pemull. Qed.
 Lemma lee_nemulr x y : y <= 0 -> 1 <= x -> y * x <= y.
 Proof. by move=> y0 x1; rewrite muleC lee_nemull. Qed.
 
+Lemma mule_natl x n : n%:R%:E * x = x *+ n.
+Proof.
+elim: n => [|n]; first by rewrite mul0e.
+move: x => [x| |] ih.
+- by rewrite -EFinM mulr_natl EFin_natmul.
+- by rewrite mulrpinfty gtr0_sg// mul1e enatmul_pinfty.
+- by rewrite mulrninfty gtr0_sg// mul1e enatmul_ninfty.
+Qed.
+
 End ERealArithTh_realDomainType.
 Arguments lee_sum_nneg_ord {R}.
 Arguments lee_sum_npos_ord {R}.
@@ -2527,6 +2614,9 @@ Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxl oppe_max. Qed.
 
 Lemma dadde_minr : right_distributive (@dual_adde R) mine.
 Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxr oppe_max. Qed.
+
+Lemma dmule_natl x n : n%:R%:E * x = x *+ n.
+Proof. by rewrite mule_natl ednatmulE. Qed.
 
 End DualERealArithTh_realDomainType.
 Arguments lee_dsum_nneg_ord {R}.

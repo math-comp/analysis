@@ -11,6 +11,21 @@
   + lemmas `mulrl_continuous` and `mulrr_continuous`.
 - in file `lebesgue_measure.v`:
   + lemmas `is_interval_measurable`, `open_measurable`, `continuous_measurable_fun`
+- in `classical_sets.v`:
+  + lemma `preimage_setT`
+- in `ereal.v`:
+  + definition `expe` with notation `^+`
+  + definition `enatmul` with notation `*+` (scope `%E`)
+  + definition `ednatmul` with notation `*+` (scope `%dE`)
+  + lemmas `fineM`, `enatmul_pinfty`, `enatmul_ninfty`, `EFin_natmul`, `mule2n`, `expe2`,
+    `mule_natl`
+  + lemmas `ednatmul_pinfty`, `ednatmul_ninfty`, `EFin_dnatmul`, `dmule2n`, `ednatmulE`,
+    `dmule_natl`
+  + lemmas `sum_fin_num`, `sum_fin_numP`
+- in `esum.v`:
+  + lemma `esum_set1`
+- in `ereal.v`:
+  + lemmas `oppeB`, `doppeB`, `fineB`, `dfineB`
 
 ### Changed
 
