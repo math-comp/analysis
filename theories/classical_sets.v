@@ -1018,6 +1018,18 @@ by rewrite ltnS leq_eqVlt => /orP[/eqP ->|]; by [left|right].
 by move/ltn_trans; apply.
 Qed.
 
+Lemma setI_II m n : `I_m `&` `I_n = `I_(minn m n).
+Proof.
+by case: leqP => mn; [rewrite setIidl// | rewrite setIidr//]
+   => k /= /leq_trans; apply => //; apply: ltnW.
+Qed.
+
+Lemma setU_II m n : `I_m `|` `I_n = `I_(maxn m n).
+Proof.
+by case: leqP => mn; [rewrite setUidr// | rewrite setUidl//]
+   => k /= /leq_trans; apply => //; apply: ltnW.
+Qed.
+
 Lemma Iiota (n : nat) : [set` iota 0 n] = `I_n.
 Proof. by apply/seteqP; split => [|] ?; rewrite /= mem_iota add0n. Qed.
 
