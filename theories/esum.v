@@ -285,19 +285,18 @@ Lemma lee_sum_fset_lim (R : realType) (f : (\bar R)^nat) (F : {fset nat})
   \sum_(i <- F | P i) f i <= \sum_(i <oo | P i) f i.
 Proof.
 move=> f0; pose n := (\max_(k <- F) k).+1.
-rewrite (le_trans (lee_sum_fset_nat F n _ _ _))//; last first.
-  exact: ereal_nneg_series_lim_ge.
+rewrite (le_trans (lee_sum_fset_nat F n _ _ _))//; last exact: nneseries_lim_ge.
 move=> k /= kF; rewrite /n big_seq_fsetE/=.
 by rewrite -[k]/(val [`kF]%fset) ltnS leq_bigmax.
 Qed.
 Arguments lee_sum_fset_lim {R f} F P.
 
-Lemma ereal_pseries_esum (R : realType) (a : nat -> \bar R) (P : pred nat) :
+Lemma nneseries_esum (R : realType) (a : nat -> \bar R) (P : pred nat) :
   (forall n, P n -> 0 <= a n) ->
   \sum_(i <oo | P i) a i = \esum_(i in [set x | P x]) a i.
 Proof.
 move=> a0; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: (ereal_lim_le (is_cvg_ereal_nneg_series_cond a0)); apply: nearW => n.
+  apply: (ereal_lim_le (is_cvg_nneseries_cond a0)); apply: nearW => n.
   apply: ereal_sup_ub => /=; exists [fset val i | i in 'I_n & P i]%fset.
     by move=> /= k /imfsetP[/= i]; rewrite inE => + ->.
   rewrite big_imfset/=; last by move=> ? ? ? ? /val_inj.
@@ -343,7 +342,7 @@ Lemma esum_pred_image (R : realType) (T : choiceType) (a : T -> \bar R)
     (forall n, P n -> 0 <= a (e n)) ->
     set_inj P e ->
   \esum_(i in e @` P) a i = \sum_(i <oo | P i) a (e i).
-Proof. by move=> a0 einj; rewrite esum_image// ereal_pseries_esum. Qed.
+Proof. by move=> a0 einj; rewrite esum_image// nneseries_esum. Qed.
 Arguments esum_pred_image {R T} a e P.
 
 Lemma esum_set_image  [R : realType] [T : choiceType] [a : T -> \bar R]
@@ -352,7 +351,7 @@ Lemma esum_set_image  [R : realType] [T : choiceType] [a : T -> \bar R]
   set_inj P e ->
   \esum_(i in [set e x | x in P]) a i = \sum_(i <oo | i \in P) a (e i).
 Proof.
-move=> a0 einj; rewrite esum_image// ereal_pseries_esum ?set_mem_set//.
+move=> a0 einj; rewrite esum_image// nneseries_esum ?set_mem_set//.
 by move=> n; rewrite inE => /a0.
 Qed.
 Arguments esum_set_image {R T} a e P.

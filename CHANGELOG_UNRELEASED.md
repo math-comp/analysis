@@ -85,6 +85,21 @@
   + `mulrinfty` -> `mulr_infty`
 - in `realfun.v`:
   + `exp_continuous` -> `exprn_continuous`
+- in `sequences.v`:
+  + `ereal_pseriesD` -> `nneseriesD`
+  + `ereal_pseries0` -> `nneseries0`
+  + `ereal_pseries_pred0` -> `nneseries_pred0`
+  + `eq_ereal_pseries` -> `eq_nneseries`
+  + `ereal_pseries_sum_nat` -> `nneseries_sum_nat`
+  + `ereal_pseries_sum` -> `nneseries_sum`
+  + `ereal_pseries_mkcond` -> `nneseries_mkcond`
+  + `ereal_nneg_series_lim_ge` -> `nneseries_lim_ge`
+  + `is_cvg_ereal_nneg_series_cond` -> `is_cvg_nneseries_cond`
+  + `is_cvg_ereal_nneg_series` -> `is_cvg_nneseries`
+  + `ereal_nneg_series_lim_ge0` -> `nneseries_lim_ge0`
+  + `adde_def_nneg_series` -> `adde_def_nneseries`
+- in `esum.v`:
+  + `ereal_pseries_esum` -> `nneseries_esum`
 
 ### Removed
 
