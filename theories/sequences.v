@@ -1418,7 +1418,8 @@ have [{lnoo}loo|lpoo] := eqVneq l +oo.
     have [e1|e1] := ltrP 1 e%:num.
       by rewrite ler_subl_addr (le_trans (ltW e2)).
     by rewrite ler_subl_addr ler_addl.
-have l_fin_num : l \is a fin_num by rewrite fin_numE lpoo lnoo.
+have l_fin_num : l \is a fin_num.
+  by rewrite fin_numE eqe_absl (negbTE lnoo) (negbTE lpoo).
 have [le1|le1] := (ltrP (`|contract l - e%:num|) 1)%R; last first.
   rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
   have unoo : u_ n != -oo.

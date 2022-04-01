@@ -1435,8 +1435,7 @@ Lemma cvg_approx x (f0 : forall x, D x -> (0 <= f x)%E) : D x ->
   (f x < +oo)%E -> (approx^~ x) --> fine (f x).
 Proof.
 move=> Dx fxoo; have fxfin : f x \is a fin_num.
-  rewrite fin_numE; apply/andP; split; last by rewrite lt_eqF.
-  by rewrite gt_eqF // (lt_le_trans _ (f0 _ Dx)) // lte_ninfty.
+  by rewrite fin_numElt fxoo andbT (lt_le_trans _ (f0 _ Dx)).
 apply/(@cvg_distP _ [normedModType R of R^o]) => _/posnumP[e].
 rewrite near_map.
 have [fx0|fx0] := eqVneq (f x) 0%E.
@@ -1663,7 +1662,7 @@ have := gh1 t.
 have := lee_pinfty (h1 t); rewrite le_eqVlt => /predU1P[->|ftoo].
   by rewrite lee_pinfty.
 have h1tfin : h1 t \is a fin_num.
-  by rewrite fin_numE gt_eqF/= ?lt_eqF// (lt_le_trans _ (h10 t))// lte_ninfty.
+  by rewrite fin_numElt ftoo andbT (lt_le_trans _ (h10 t)).
 have := gh1 t.
 rewrite -(fineK h1tfin) => /ereal_cvg_real[ft_near].
 set u_ := (X in X --> _) => u_h1 g1h1.
@@ -2153,8 +2152,9 @@ Proof.
 have [f_fin _|] := boolP (\int_ D (f^\- x) 'd mu[x] \is a fin_num).
   rewrite integralE// [in RHS]integralE// oppeD ?fin_numN// oppeK addeC.
   by rewrite funennpN.
-rewrite fin_numE negb_and 2!negbK => /orP[nfoo|/eqP nfoo].
-  exfalso; move/negP : nfoo; apply; rewrite -lee_ninfty_eq; apply/negP.
+rewrite fin_numE negbK eqe_absl lee_pinfty andbT => /orP[|]/eqP nfoo; last first.
+  exfalso; move: nfoo; apply/eqP.
+  rewrite -lee_ninfty_eq.
   by rewrite -ltNge (lt_le_trans _ (integral_ge0 _ _))// ?lte_ninfty.
 rewrite nfoo adde_defEninfty.
 rewrite -lee_pinfty_eq -ltNge lte_pinfty_eq => /orP[f_fin|/eqP pfoo].
@@ -2480,8 +2480,7 @@ have [ET|ET] := eqVneq E setT.
   by rewrite funeqE => t; rewrite /= foo.
 suff: mu E = 0.
   move=> muE0; exists E; split => // t /= /not_implyP[Dt ftfin]; split => //.
-  apply/eqP; rewrite eqe_absl lee_pinfty andbT.
-  by move/negP : ftfin; rewrite fin_numE negb_and 2!negbK orbC.
+  by move: ftfin; rewrite fin_numE => /negP; rewrite negbK => /eqP.
 have [->|/set0P E0] := eqVneq E set0; first by rewrite measure0.
 have [M M0 muM] : exists2 M, (0 <= M)%R &
                     (forall n, n%:R%:E * mu (E `&` D) <= M%:E).
@@ -2852,8 +2851,7 @@ move=> mf; split=> [iDf0|Df0].
       have [ftoo|ftoo] := eqVneq `|f t| +oo%E.
         by exists 0%N => //; split => //=; rewrite ftoo /= lee_pinfty.
       pose m := `|ceil (fine `|f t|)^-1|%N.
-      have ftfin : `|f t|%E \is a fin_num.
-        by rewrite fin_numE gt_eqF //= (lt_le_trans _ (abse_ge0 _))// lte_ninfty.
+      have ftfin : `|f t|%E \is a fin_num by rewrite fin_numE abse_id.
       exists m => //; split => //=.
       rewrite -(@fineK _ `|f t|) // lee_fin -ler_pinv; last 2 first.
         - rewrite inE unitfE fine_eq0 // abse_eq0 ft0/=; apply/lt0R.
@@ -2893,9 +2891,7 @@ have -> : (fun x => `|f x|) = (fun x => lim (f_^~ x)).
     rewrite natr_absz ger0_norm ?ceil_ge ?ceil_ge0//.
     by rewrite (lt_le_trans _ (ceil_ge _))// ltr_addr.
   have fxn : `|f x| <= n%:R%:E.
-    rewrite -(@fineK _ `|f x|); last first.
-      rewrite fin_numE fxoo andbT gt_eqF//.
-      by rewrite (lt_le_trans _ (abse_ge0 _))// ?lte_ninfty.
+    rewrite -(@fineK _ `|f x|); last by rewrite fin_numE abse_id.
     rewrite lee_fin.
     near: n.
     exists `|ceil (fine (`|f x|))|%N => // n /=.

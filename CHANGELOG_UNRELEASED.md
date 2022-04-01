@@ -41,6 +41,9 @@
   + remove one hypothesis in lemmas `reindex_esum`, `esum_image`
 - moved from `lebesgue_integral.v` to `lebesgue_measure.v` and generalized
   + hint `measurable_set1`/`emeasurable_set1`
+- in `ereal.v`:
+  + definition `fin_num` and accordingly lemmas `fin_numE`, `fin_numP`, `fin_numEn`,
+    `fin_numPn`
 
 ### Renamed
 

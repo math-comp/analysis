@@ -142,7 +142,9 @@ move=> ag0 bg0; apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite ub_ereal_sup//= => x [X XI] <-; rewrite big_split/=.
   by rewrite lee_add// ereal_sup_ub//=; exists X.
 wlog : a b ag0 bg0 / \esum_(i in I) a i \isn't a fin_num => [saoo|]; last first.
-  move=> /fin_numPn[->|/[dup] aoo ->]; first by rewrite /adde/= lee_ninfty.
+  move=> /fin_numPn/eqP.
+  rewrite eqe_absl lee_pinfty andbT=> /orP[/eqP/[dup] aoo->|/eqP->]; last first.
+    by rewrite /adde/= lee_ninfty.
   rewrite (@le_trans _ _ +oo)//; first by rewrite /adde/=; case: esum.
   rewrite lee_pinfty_eq; apply/eqP/eq_infty => y; rewrite esum_ge//.
   have : y%:E < \esum_(i in I) a i by rewrite aoo// lte_pinfty.
@@ -154,11 +156,12 @@ case: (boolP (\esum_(i in I) b i \is a fin_num)) => sb; last first.
   by rewrite addeC (eq_esum (fun _ _ => addeC _ _)) saoo.
 rewrite -lee_subr_addr// ub_ereal_sup//= => _ [X XI] <-.
 have saX : \sum_(i <- X) a i \is a fin_num.
-  apply: contraTT sa => /fin_numPn[] sa.
+  apply: contraTT sa => /fin_numPn/eqP; rewrite eqe_absl lee_pinfty andbT.
+  move=> /orP[] /eqP sa; last first.
     suff : \sum_(i <- X) a i >= 0 by rewrite sa.
     by rewrite big_seq_cond sume_ge0 => // i; rewrite ?andbT => /XI/ag0.
-  apply/fin_numPn; right; apply/eqP; rewrite -lee_pinfty_eq esum_ge//.
-  by exists X; rewrite // sa.
+  apply/fin_numPn/eqP; rewrite eqe_absl lee_pinfty andbT; apply/orP; left.
+  by rewrite -lee_pinfty_eq esum_ge//; exists X; rewrite // sa.
 rewrite lee_subr_addr// addeC -lee_subr_addr// ub_ereal_sup//= => _ [Y YI] <-.
 rewrite lee_subr_addr// addeC esum_ge//; exists (X `|` Y)%fset.
   by move=> i/=; rewrite inE => /orP[/XI|/YI].

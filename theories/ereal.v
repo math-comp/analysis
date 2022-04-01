@@ -557,21 +557,21 @@ Section finNumPred.
 Context {R : numDomainType}.
 Implicit Type (x : \bar R).
 
-Definition fin_num := [qualify a x : \bar R | (x != -oo) && (x != +oo)].
+Definition fin_num := [qualify a x : \bar R | `| x | != +oo].
 Fact fin_num_key : pred_key fin_num. by []. Qed.
 Canonical fin_num_keyd := KeyedQualifier fin_num_key.
 
-Lemma fin_numE x : (x \is a fin_num) = (x != -oo) && (x != +oo).
+Lemma fin_numE x : (x \is a fin_num) = (`| x | != +oo).
 Proof. by []. Qed.
 
-Lemma fin_numP x : reflect ((x != -oo) /\ (x != +oo)) (x \is a fin_num).
-Proof. by apply/(iffP idP) => [/andP//|/andP]. Qed.
+Lemma fin_numP x : reflect (`| x | != +oo) (x \is a fin_num).
+Proof. exact/(iffP idP). Qed.
 
-Lemma fin_numEn x : (x \isn't a fin_num) = (x == -oo) || (x == +oo).
-Proof. by rewrite fin_numE negb_and ?negbK. Qed.
+Lemma fin_numEn x : (x \isn't a fin_num) = (`| x | == +oo).
+Proof. by rewrite fin_numE negbK. Qed.
 
-Lemma fin_numPn x : reflect (x = -oo \/ x = +oo) (x \isn't a fin_num).
-Proof. by rewrite fin_numEn; apply: (iffP orP) => -[]/eqP; by [left|right]. Qed.
+Lemma fin_numPn x : reflect (`| x | = +oo) (x \isn't a fin_num).
+Proof. by rewrite fin_numEn; apply/(iffP idP) => /eqP. Qed.
 
 End finNumPred.
 
@@ -765,7 +765,7 @@ by rewrite eqe_oppP => <-.
 Qed.
 
 Lemma fin_numN x : (- x \is a fin_num) = (x \is a fin_num).
-Proof. by rewrite !fin_numE 2!eqe_oppLR andbC. Qed.
+Proof. by rewrite !fin_numE abseN. Qed.
 
 Lemma oppeB x y : y \is a fin_num -> - (x - y) = - x + y.
 Proof. by move=> yfin; rewrite oppeD ?oppeK// fin_numN. Qed.
@@ -1308,8 +1308,40 @@ Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types (x y z u a b : \bar R) (r : R).
 
+Lemma lee_abs x : x <= `|x|.
+Proof. by move: x => [x| |]//=; rewrite lee_fin ler_norm. Qed.
+
+Lemma abse_id x : `| `|x| | = `|x|.
+Proof. by move: x => [x| |] //=; rewrite normr_id. Qed.
+
+Lemma preimage_abse_ninfty : (@abse R @^-1` [set -oo])%classic = set0.
+Proof.
+rewrite predeqE => t; split => //=; apply/eqP.
+by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t))// lte_ninfty.
+Qed.
+
+Lemma lte_absl (x y : \bar R) : (`|x| < y)%E = (- y < x < y)%E.
+Proof.
+move: x y => [x| |] [y| |] //=; rewrite ?lte_fin ?lte_pinfty ?lte_ninfty//.
+by rewrite ltr_norml.
+Qed.
+
+Lemma eqe_absl x y : (`|x| == y) = ((x == y) || (x == - y)) && (0 <= y).
+Proof.
+move: x y => [x| |] [y| |] //=; rewrite? lee_pinfty//.
+by rewrite !eqe eqr_norml lee_fin.
+Qed.
+
+Lemma lee_abs_add x y : `|x + y| <= `|x| + `|y|.
+Proof.
+by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_norm_add.
+Qed.
+
 Lemma fin_numElt x : (x \is a fin_num) = (-oo < x < +oo).
-Proof. by rewrite fin_numE -lee_pinfty_eq -lee_ninfty_eq -2!ltNge. Qed.
+Proof.
+rewrite fin_numE eqe_absl lee_pinfty andbT -lee_pinfty_eq -lee_ninfty_eq.
+by rewrite negb_or 2!ltNge andbC.
+Qed.
 
 Lemma fin_numPlt x : reflect (-oo < x < +oo) (x \is a fin_num).
 Proof. by rewrite fin_numElt; exact: idP. Qed.
@@ -1340,9 +1372,8 @@ move=> F0; apply/eqP/allP => PF0; last first.
   by have := PF0 _ ir; rewrite Pi implyTb => /eqP.
 move=> i ir; apply/implyP => Pi; apply/eqP.
 have rPF : {in r, forall i, P i ==> (F i \is a fin_num)}.
-  move=> j jr; apply/implyP => Pj; rewrite fin_numElt; apply/andP; split.
-    by rewrite (lt_le_trans _ (F0 _ Pj))// lte_ninfty.
-  rewrite ltNge; apply/eqP; rewrite lee_pinfty_eq; apply/eqP/negP => /eqP Fjoo.
+  move=> j jr; apply/implyP => Pj; rewrite fin_numE gee0_abs; last exact/F0.
+  apply/eqP => Fjoo.
   have PFninfty k : P k -> F k != -oo%E.
     by move=> Pk; rewrite gt_eqF// (lt_le_trans _ (F0 _ Pk))// lte_ninfty.
   have /esum_pinftyP : exists i, [/\ i \in r, P i & F i = +oo%E] by exists j.
@@ -1610,6 +1641,18 @@ Proof.
 move: z u => [z| |] [u| |] _ _ //.
 move: x y => [x| |] [y| |]; rewrite ?(lte_pinfty,lte_ninfty)//.
 by rewrite !lte_fin => xltr tley; apply: ltr_le_add; rewrite // ler_oppl opprK.
+Qed.
+
+Lemma lee_abs_sum (I : Type) (s : seq I) (F : I -> \bar R) (P : pred I) :
+  `|\sum_(i <- s | P i) F i| <= \sum_(i <- s | P i) `|F i|.
+Proof.
+elim/big_ind2 : _ => //; first by rewrite abse0.
+by move=> *; exact/(le_trans (lee_abs_add _ _) (lee_add _ _)).
+Qed.
+
+Lemma lee_abs_sub x y : `|x - y| <= `|x| + `|y|.
+Proof.
+by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_norm_sub.
 Qed.
 
 Lemma lte_pmul2r z : z \is a fin_num -> 0 < z -> {mono *%E^~ z : x y / x < y}.
@@ -2081,46 +2124,6 @@ Qed.
 Lemma lee_opp x y : (- x <= - y) = (y <= x).
 Proof. by rewrite lee_oppl oppeK. Qed.
 
-Lemma lee_abs x : x <= `|x|.
-Proof. by move: x => [x| |]//=; rewrite lee_fin ler_norm. Qed.
-
-Lemma abse_id x : `| `|x| | = `|x|.
-Proof. by move: x => [x| |] //=; rewrite normr_id. Qed.
-
-Lemma preimage_abse_ninfty : (@abse R @^-1` [set -oo])%classic = set0.
-Proof.
-rewrite predeqE => t; split => //=; apply/eqP.
-by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t))// lte_ninfty.
-Qed.
-
-Lemma lte_absl (x y : \bar R) : (`|x| < y)%E = (- y < x < y)%E.
-Proof.
-move: x y => [x| |] [y| |] //=; rewrite ?lte_fin ?lte_pinfty ?lte_ninfty//.
-by rewrite ltr_norml.
-Qed.
-
-Lemma eqe_absl x y : (`|x| == y) = ((x == y) || (x == - y)) && (0 <= y).
-Proof.
-move: x y => [x| |] [y| |] //=; rewrite? lee_pinfty//.
-by rewrite !eqe eqr_norml lee_fin.
-Qed.
-
-Lemma lee_abs_add x y : `|x + y| <= `|x| + `|y|.
-Proof.
-by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_norm_add.
-Qed.
-
-Lemma lee_abs_sum (I : Type) (s : seq I) (F : I -> \bar R) (P : pred I) :
-  `|\sum_(i <- s | P i) F i| <= \sum_(i <- s | P i) `|F i|.
-Proof.
-elim/big_ind2 : _ => //; first by rewrite abse0.
-by move=> *; exact/(le_trans (lee_abs_add _ _) (lee_add _ _)).
-Qed.
-
-Lemma lee_abs_sub x y : `|x - y| <= `|x| + `|y|.
-Proof.
-by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_norm_sub.
-Qed.
 
 Lemma abseM : {morph @abse R : x y / x * y}.
 Proof.
@@ -3029,9 +3032,7 @@ rewrite le_eqVlt => /predU1P[->|esupoo]; first by rewrite lee_pinfty.
 have := lee_ninfty esup; rewrite le_eqVlt => /predU1P[/esym|ooesup].
   case: A0 => i Ai.
   by move=> /ereal_sup_ninfty /(_ i%:E) /(_ (ex_intro2 A _ i Ai erefl)).
-have esup_fin_num : esup \is a fin_num.
-  rewrite fin_numE -lee_ninfty_eq -ltNge ooesup /= -lee_pinfty_eq -ltNge.
-  by rewrite esupoo.
+have esup_fin_num : esup \is a fin_num by rewrite fin_numElt ooesup.
 rewrite -(@fineK _ esup) // lee_fin leNgt.
 apply/negP => /(sup_gt A0)[r Ar]; apply/negP; rewrite -leNgt.
 by rewrite -lee_fin fineK//; apply: ereal_sup_ub; exists r.
