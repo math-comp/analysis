@@ -413,18 +413,14 @@ Section real_inverse_function_instances.
 
 Variable R : realType.
 
-Lemma exp_continuous n : continuous (@GRing.exp R ^~ n).
+Lemma exprn_continuous n : continuous (@GRing.exp R ^~ n).
 Proof.
-move=> x; elim: n=> [ | n Ih]; first by apply: cst_continuous.
-have cid : {for x, continuous id} by [].
-have cexp : {for x, continuous (@GRing.exp R ^~ n)} by rewrite forE; apply: Ih.
-have := continuousM cid cexp; rewrite forE /=.
-rewrite exprS (_ : @GRing.exp R ^~ n.+1 = (@idfun R) * (@GRing.exp R ^~ n))//.
-by apply: funext => y; rewrite exprS.
+move=> x; elim: n=> [|n /(continuousM cvg_id) ih]; first exact: cst_continuous.
+by rewrite exprS; under eq_fun do rewrite exprS; exact: ih.
 Qed.
 
 Lemma sqr_continuous : continuous (@exprz R ^~ 2).
-Proof. exact: (@exp_continuous 2%N). Qed.
+Proof. exact: (@exprn_continuous 2%N). Qed.
 
 Lemma sqrt_continuous : continuous (@Num.sqrt R).
 Proof.
@@ -437,7 +433,7 @@ move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
     apply: (@main (x + 1)); rewrite ?ler_paddl// ?in_itv/= ?ltW// expr0n xgt0/=.
     by rewrite sqrrD1 ltr_paddr// ltr_paddl ?sqr_ge0// (ltr_pmuln2l _ 1%N 2%N).
   move=> b0; apply: (@segment_can_le_continuous _ _ _ (@GRing.exp _^~ _)) => //.
-    by apply: in1W; apply: exp_continuous.
+    by apply: in1W; apply: exprn_continuous.
   by move=> y y0b; rewrite sqrtr_sqr ger0_norm// (itvP y0b).
 - apply/cvg_distP => _ /posnumP[e]; rewrite !near_simpl /=; near=> y.
   rewrite sqrtr0 sub0r normrN ger0_norm ?sqrtr_ge0 //.
