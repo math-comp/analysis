@@ -1333,7 +1333,7 @@ Lemma measurable_fun_exprn D n f :
   measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
 Proof.
 apply: measurable_fun_comp ((@GRing.exp R)^~ n) _ _ _.
-by apply: continuous_measurable_fun; apply: exp_continuous.
+by apply: continuous_measurable_fun; apply: exprn_continuous.
 Qed.
 
 Lemma measurable_fun_sqr D f :

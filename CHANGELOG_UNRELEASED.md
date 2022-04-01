@@ -83,6 +83,8 @@
   + `mine_pinftyr` -> `miney`
   + `mulrinfty_real` -> `real_mulr_infty`
   + `mulrinfty` -> `mulr_infty`
+- in `realfun.v`:
+  + `exp_continuous` -> `exprn_continuous`
 
 ### Removed
 
