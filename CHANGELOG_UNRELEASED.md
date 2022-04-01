@@ -69,6 +69,8 @@
   + lemma `nnseries_interchange`
 - in file `ereal.v`:
   + lemma `ltninfty_adde_def`
+- in file `lebesgue_measure.v`:
+  + lemma `emeasurable_funN`
 
 ### Changed
 
@@ -137,6 +139,35 @@
   + `adde_def_nneg_series` -> `adde_def_nneseries`
 - in `esum.v`:
   + `ereal_pseries_esum` -> `nneseries_esum`
+- in `numfun.v`:
+  + `funenng` -> `funepos`
+  + `funennp` -> `funeneg`
+  + `funenng_ge0` -> `funepos_ge0`
+  + `funennp_ge0` -> `funeneg_ge0`
+  + `funenngN` -> `funeposN`
+  + `funennpN` -> `funenegN`
+  + `funenng_restrict` -> `funepos_restrict`
+  + `funennp_restrict` -> `funeneg_restrict`
+  + `ge0_funenngE` -> `ge0_funeposE`
+  + `ge0_funennpE` -> `ge0_funenegE`
+  + `le0_funenngE` -> `le0_funeposE`
+  + `le0_funennpE` -> `le0_funenegE`
+  + `gt0_funenngM` -> `gt0_funeposM`
+  + `gt0_funennpM` -> `gt0_funenegM`
+  + `lt0_funenngM` -> `lt0_funeposM`
+  + `lt0_funennpM` -> `lt0_funenegM`
+  + `funenngnnp` -> `funeposneg`
+  + `add_def_funennpg` -> `add_def_funeposneg`
+  + `funeD_Dnng` -> `funeD_Dpos`
+  + `funeD_nngD` -> `funeD_posD`
+- in `lebesgue_measure.v`:
+  + `emeasurable_fun_funenng` -> `emeasurable_fun_funepos`
+  + `emeasurable_fun_funennp` -> `emeasurable_fun_funeneg`
+- in `lebesgue_integral.v`:
+  + `integrable_funenng` -> `integrable_funepos`
+  + `integral_funennp_lt_pinfty` -> `integral_funeneg_lt_pinfty`
+  + `integral_funenng_lt_pinfty` -> `integral_funepos_lt_pinfty`
+  + `ae_eq_funenng_funennp` -> `ae_eq_funeposneg`
 
 ### Removed
 
