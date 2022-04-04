@@ -35,6 +35,7 @@ theories/lebesgue_integral.v
 theories/summability.v
 theories/functions.v
 theories/signed.v
+theories/cantor.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v
