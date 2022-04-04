@@ -28,7 +28,7 @@ Require Import mathcomp_extra boolp.
 (*                                variables x and y in sets A and B.          *)
 (*                        setT == full set.                                   *)
 (*                        set0 == empty set.                                  *)
-(*                     range F == the range of f, i.e. [set f x | x : setT]   *)
+(*                     range f == the range of f, i.e. [set f x | x in setT]  *)
 (*                     [set a] == set containing only a.                      *)
 (*                 [set a : T] == same as before with the type of a made      *)
 (*                                explicit.                                   *)
