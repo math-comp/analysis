@@ -226,25 +226,6 @@ Local Open Scope order_scope.
 Local Open Scope ring_scope.
 Import GRing.Theory Order.TTheory.
 
-(* NB: in MathComp 1.13.0 *)
-Lemma natr_absz (R : numDomainType) i : `|i|%:R = `|i|%:~R :> R.
-Proof. by rewrite -abszE. Qed.
-
-Lemma ge_pinfty (R : numDomainType) (x : itv_bound R) :
-  (+oo <= x)%O = (x == +oo)%O.
-Proof. by move: x => [[]|[]]. Qed.
-
-Lemma le_ninfty (R : numDomainType) (x : itv_bound R) :
-  (x <= -oo)%O = (x == -oo%O).
-Proof. by case: x => // -[]. Qed.
-
-Lemma gt_pinfty (R : numDomainType) (x : itv_bound R) : (+oo%O < x)%O = false.
-Proof. by case: x. Qed.
-
-Lemma lt_ninfty (R : numDomainType) (x : itv_bound R) : (x < -oo%O)%O = false.
-Proof. by case: x => // -[]. Qed.
-(* /NB: in MathComp 1.13.0 *)
-
 Lemma mulr_ge0_gt0 (R : numDomainType) (x y : R) : 0 <= x -> 0 <= y ->
   (0 < x * y) = (0 < x) && (0 < y).
 Proof.

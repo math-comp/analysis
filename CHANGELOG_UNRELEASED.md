@@ -50,6 +50,10 @@
 
 ### Removed
 
+- in `mathcomp_extra.v`:
+  + lemmas `natr_absz`, `ge_pinfty`, `le_ninfty`, `gt_pinfty`,
+    `lt_ninfty`
+
 ### Infrastructure
 
 ### Misc
