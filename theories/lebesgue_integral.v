@@ -3678,7 +3678,7 @@ move=> sa.
 transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).
   congr (integral _ _ _); apply/funext => A.
   by rewrite /= counting_dirac.
-rewrite (@integral_measure_series _ R (fun n => [the measure _ _ of \d_ n]) _ measurableT)//=.
+rewrite (@integral_measure_series _ R (fun n => [the measure _ _ of \d_ n]) setT)//=.
 - apply: eq_nneseries => i _; rewrite integral_dirac//=.
   by rewrite indicE mem_set// mul1e.
 - move=> n; split; first by [].
@@ -3688,6 +3688,86 @@ rewrite (@integral_measure_series _ R (fun n => [the measure _ _ of \d_ n]) _ me
 Qed.
 
 End integral_counting.
+
+Section subadditive_countable.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType).
+Variable (mu : {measure set T -> \bar R}).
+
+Lemma integrable_abse (D : set T) : measurable D ->
+  forall f : T -> \bar R, mu.-integrable D f -> mu.-integrable D (abse \o f).
+Proof.
+move=> mD f [mf fi]; split; first exact: measurable_fun_comp.
+apply: le_lt_trans fi; apply: ge0_le_integral => //.
+- by apply: measurable_fun_comp => //; exact: measurable_fun_comp.
+- exact: measurable_fun_comp.
+- by move=> t Dt //=; rewrite abse_id.
+Qed.
+
+Lemma integrable_summable (F : (set T)^nat) (g : T -> \bar R):
+  trivIset setT F -> (forall k, measurable (F k)) ->
+  mu.-integrable (\bigcup_k F k) g ->
+  summable [set: nat] (fun i => \int[mu]_(x in F i) g x).
+Proof.
+move=> tF mF fi.
+rewrite /summable -(_ : [set _ | true] = setT); last exact/seteqP.
+rewrite -nneseries_esum//.
+case: (fi) => _; rewrite ge0_integral_bigcup//; last first.
+  by apply: integrable_abse => //; exact: bigcup_measurable.
+apply: le_lt_trans; apply: lee_lim.
+- exact: is_cvg_ereal_nneg_natsum_cond.
+- by apply: is_cvg_ereal_nneg_natsum_cond => n _ _; exact: integral_ge0.
+- apply: nearW => n; apply: lee_sum => m _; apply: le_abse_integral => //.
+  by apply: measurable_funS fi.1 => //; [exact: bigcup_measurable|
+                                        exact: bigcup_sup].
+Qed.
+
+Lemma integral_bigcup (F : (set _)^nat) (g : T -> \bar R) :
+  trivIset setT F -> (forall k, measurable (F k)) ->
+  mu.-integrable (\bigcup_k F k) g ->
+  (\int[mu]_(x in \bigcup_i F i) g x = \sum_(i <oo) \int[mu]_(x in F i) g x)%E.
+Proof.
+move=> tF mF fi.
+have ? : \int[mu]_(x in \bigcup_i F i) g x \is a fin_num.
+  rewrite fin_numElt -(lte_absl _ +oo).
+  apply: le_lt_trans fi.2; apply: le_abse_integral => //.
+    exact: bigcupT_measurable.
+  exact: fi.1.
+transitivity (\int[mu]_(x in \bigcup_i F i) g^\+ x -
+              \int[mu]_(x in \bigcup_i F i) g^\- x)%E.
+  rewrite -integralB; last 3 first.
+    - exact: bigcupT_measurable.
+    - by apply: integrable_funepos => //; exact: bigcupT_measurable.
+    -by apply: integrable_funeneg => //; exact: bigcupT_measurable.
+  by apply eq_integral => t Ft; rewrite [in LHS](funeposneg g).
+transitivity (\sum_(i <oo) (\int[mu]_(x in F i) g^\+ x -
+                            \int[mu]_(x in F i) g^\- x)); last first.
+  by apply: eq_nneseries => // i; rewrite [RHS]integralE.
+transitivity ((\sum_(i <oo) \int[mu]_(x in F i) g^\+ x) -
+              (\sum_(i <oo) \int[mu]_(x in F i) g^\- x))%E.
+  rewrite ge0_integral_bigcup//; last first.
+    by apply: integrable_funepos => //; exact: bigcupT_measurable.
+  by rewrite ge0_integral_bigcup//; apply: integrable_funepos => //;
+    [exact: bigcupT_measurable|exact: integrableN].
+rewrite [X in X - _]nneseries_esum; last by move=> n _; exact: integral_ge0.
+rewrite [X in _ - X]nneseries_esum; last by move=> n _; exact: integral_ge0.
+rewrite set_true -esumB//=; last 4 first.
+  - apply: integrable_summable => //; apply: integrable_funepos => //.
+    exact: bigcup_measurable.
+  - apply: integrable_summable => //; apply: integrable_funepos => //.
+    exact: bigcup_measurable.
+  - exact: integrableN.
+  - by move=> n _; exact: integral_ge0.
+  - by move=> n _; exact: integral_ge0.
+rewrite summable_nneseries; last first.
+  rewrite (_ : (fun i : nat => _) = (fun i => \int[mu]_(x in F i) g x)); last first.
+    by apply/funext => i; rewrite -integralE.
+  rewrite -(_ : [set: nat] = (fun=> true)); last exact/seteqP.
+  exact: integrable_summable.
+by congr (_ - _)%E; rewrite nneseries_esum// set_true.
+Qed.
+
+End subadditive_countable.
 
 Section dominated_convergence_lemma.
 Local Open Scope ereal_scope.
