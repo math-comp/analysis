@@ -657,7 +657,7 @@ Arguments ereal_of_itv_bound T !b.
 Lemma le_bnd_ereal (R : realDomainType) (a b : itv_bound R) :
   (a <= b)%O -> (a <= b)%E.
 Proof.
-move: a b => -[[] a|[]] [bb b|[]] //=; rewrite ?(lee_pinfty,lee_ninfty)//.
+move: a b => -[[] a|[]] [bb b|[]] //=; rewrite ?(leey,leNye)//.
   by rewrite bnd_simp.
 by move=> /lteifW.
 Qed.
@@ -687,8 +687,7 @@ Lemma Interval_ereal_mem (R : realDomainType) (r : R) (a b : itv_bound R) :
   r \in Interval a b -> (a <= r%:E <= b)%E.
 Proof.
 case: a b => [[] a|[]] [[] b|[]] => /[dup] rab /itvP rw//=;
-rewrite ?lee_fin ?rw//= ?lee_pinfty ?lee_ninfty//.
-by move: rab; rewrite in_itv//= andbF.
+by rewrite ?lee_fin ?rw//= ?leey ?leNye//; move: rab; rewrite in_itv//= andbF.
 Qed.
 
 Lemma ereal_mem_Interval (R : realDomainType) (r : R) (a b : itv_bound R) :

@@ -142,10 +142,10 @@ move=> ag0 bg0; apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite ub_ereal_sup//= => x [X XI] <-; rewrite big_split/=.
   by rewrite lee_add// ereal_sup_ub//=; exists X.
 wlog : a b ag0 bg0 / \esum_(i in I) a i \isn't a fin_num => [saoo|]; last first.
-  move=> /fin_numPn[->|/[dup] aoo ->]; first by rewrite /adde/= lee_ninfty.
+  move=> /fin_numPn[->|/[dup] aoo ->]; first by rewrite leNye.
   rewrite (@le_trans _ _ +oo)//; first by rewrite /adde/=; case: esum.
   rewrite lee_pinfty_eq; apply/eqP/eq_infty => y; rewrite esum_ge//.
-  have : y%:E < \esum_(i in I) a i by rewrite aoo// lte_pinfty.
+  have : y%:E < \esum_(i in I) a i by rewrite aoo// ltey.
   move=> /ereal_sup_gt[_ [X XI] <-] /ltW yle; exists X => //=.
   rewrite (le_trans yle)// big_split lee_addl// big_seq_cond sume_ge0 => // i.
   by rewrite andbT => /XI; apply: bg0.

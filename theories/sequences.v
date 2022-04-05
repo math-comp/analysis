@@ -1546,7 +1546,7 @@ Proof.
 move=> u0 Pk ukoo; apply/eqP; rewrite -lee_pinfty_eq.
 apply: le_trans (ereal_nneg_series_lim_ge k.+1 u0) => //.
 rewrite lee_pinfty_eq; apply/eqP/esum_pinftyP=> [i /u0|].
- by rewrite leNgt; apply: contra => /eqP ->; rewrite lte_ninfty_0.
+ by rewrite leNgt; apply: contra => /eqP ->.
 by exists k; split => //; rewrite mem_iota subn0 add0n ltnS leqnn.
 Qed.
 
@@ -1609,7 +1609,7 @@ case: l k => [l| |] [k| |] // in lu kv *.
   + by apply/cvg_ex; eexists; exact: vk.
   + near=> n => /=; rewrite -lee_fin fineK; last by near: n; apply realu.
     by rewrite fineK; [near: n; exact: uv|near: n; apply realv].
-- by rewrite lee_pinfty.
+- by rewrite leey.
 - exfalso.
   have /ereal_cvg_real [realu ul] : u_ --> l%:E by rewrite -lu.
   have /ereal_cvgPninfty voo : v_ --> -oo by rewrite -kv.
@@ -1642,7 +1642,7 @@ case: l k => [l| |] [k| |] // in lu kv *.
     by near: n; apply: voo; exact: ltrN10.
   rewrite (@lt_le_trans _ _ 1)// ?lte_fin ?ltr10//.
   by near: n; apply: uoo; exact: ltr01.
-- by rewrite lee_ninfty.
+- by rewrite leNye.
 Unshelve. all: by end_near. Qed.
 
 Lemma ereal_cvgD_pinfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
@@ -1811,29 +1811,29 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
   exact: cvgM.
 - move: f g a; abstract: apoo.
   move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
-  + rewrite mulrinfty ltr0_sg// ?mulN1e.
+  + rewrite mulry ltr0_sg// ?mulN1e.
     by under eq_fun do rewrite muleC; exact: (ereal_cvgM_lt0_pinfty a0).
-  + rewrite mulrinfty gtr0_sg// ?mul1e.
+  + rewrite mulry gtr0_sg// ?mul1e.
     by under eq_fun do rewrite muleC; exact: (ereal_cvgM_gt0_pinfty a0).
   + by rewrite /mule_def eqxx.
 - move: f g a; abstract: bnoo.
   move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
-  + rewrite mulrinfty ltr0_sg// ?mulN1e.
+  + rewrite mulrNy ltr0_sg// ?mulN1e.
     by under eq_fun do rewrite muleC; exact: (ereal_cvgM_lt0_ninfty a0).
-  + rewrite mulrinfty gtr0_sg// ?mul1e.
+  + rewrite mulrNy gtr0_sg// ?mul1e.
     by under eq_fun do rewrite muleC; exact: (ereal_cvgM_gt0_ninfty a0).
   + by rewrite /mule_def eqxx.
 - rewrite mule_defC => ? foo gb; rewrite muleC.
   by under eq_fun do rewrite muleC; exact: apoo.
 - move=> _; move: f g; abstract: poopoo.
   move=> {}f {}g /ereal_cvgPpinfty foo /ereal_cvgPpinfty goo.
-  rewrite mule_pinfty_pinfty; apply/ereal_cvgPpinfty => A A0; near=> n.
+  rewrite mulyy; apply/ereal_cvgPpinfty => A A0; near=> n.
   rewrite -(sqr_sqrtr (ltW A0)) expr2 EFinM lee_pmul// ?lee_fin ?sqrtr_ge0//.
     by near: n; apply: foo; rewrite sqrtr_gt0.
   by near: n; apply: goo; rewrite sqrtr_gt0.
 - move=> _; move: f g; abstract: poonoo.
   move=> {}f {}g /ereal_cvgPpinfty foo /ereal_cvgPninfty goo.
-  rewrite mule_pinfty_ninfty; apply/ereal_cvgPninfty => A A0; near=> n.
+  rewrite mulyNy; apply/ereal_cvgPninfty => A A0; near=> n.
   rewrite (@le_trans _ _ (g n))//; last by near: n; exact: goo.
   apply: lee_nemull; last by near: n; apply: foo.
   by rewrite (@le_trans _ _ (- 1)%:E)//; near: n; apply: goo; rewrite ltrN10.
@@ -1841,7 +1841,7 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
   by under eq_fun do rewrite muleC; exact: bnoo.
 - move=> _ foo goo.
   by under eq_fun do rewrite muleC; exact: poonoo.
-- move=> _ foo goo; rewrite mule_ninfty_ninfty -mule_pinfty_pinfty.
+- move=> _ foo goo; rewrite mulNyNy -mulyy.
   by under eq_fun do rewrite -muleNN; apply: poopoo;
     rewrite -/(- -oo); apply: ereal_cvgN.
 Unshelve. all: end_near. Qed.

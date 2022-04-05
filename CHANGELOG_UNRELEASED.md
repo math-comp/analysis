@@ -47,6 +47,42 @@
 - in `ereal.v`:
   + `num_abs_le` -> `num_abse_le`
   + `num_abs_lt` -> `num_abse_lt`
+  + `addooe` -> `addye`
+  + `addeoo` -> `addey`
+  + `mule_ninfty_pinfty` -> `mulNyy`
+  + `mule_pinfty_ninfty` -> `mulyNy`
+  + `mule_pinfty_pinfty` -> `mulyy`
+  + `mule_ninfty_ninfty` -> `mulNyNy`
+  + `lte_0_pinfty` -> `lt0y`
+  + `lte_ninfty_0` -> `ltNy0`
+  + `lee_0_pinfty` -> `le0y`
+  + `lee_ninfty_0` -> `leNy0`
+  + `lte_pinfty` -> `ltey`
+  + `lte_ninfty` -> `ltNye`
+  + `lee_pinfty` -> `leey`
+  + `lee_ninfty` -> `leNye`
+  + `mulrpinfty_real` -> `real_mulry`
+  + `mulpinftyr_real` -> `real_mulyr`
+  + `mulrninfty_real` -> `real_mulrNy`
+  + `mulninftyr_real` -> `real_mulNyr`
+  + `mulrpinfty` -> `mulry`
+  + `mulpinftyr` -> `mulyr`
+  + `mulrninfty` -> `mulrNy`
+  + `mulninftyr` -> `mulNyr`
+  + `gt0_mulpinfty` -> `gt0_mulye`
+  + `lt0_mulpinfty` -> `lt0_mulye`
+  + `gt0_mulninfty` -> `gt0_mulNye`
+  + `lt0_mulninfty` -> `lt0_mulNye`
+  + `maxe_pinftyl` -> `maxye`
+  + `maxe_pinftyr` -> `maxey`
+  + `maxe_ninftyl` -> `maxNye`
+  + `maxe_ninftyr` -> `maxeNy`
+  + `mine_ninftyl` -> `minNye`
+  + `mine_ninftyr` -> `mineNy`
+  + `mine_pinftyl` -> `minye`
+  + `mine_pinftyr` -> `miney`
+  + `mulrinfty_real` -> `real_mulr_infty`
+  + `mulrinfty` -> `mulr_infty`
 
 ### Removed
 

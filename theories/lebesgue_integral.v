@@ -1085,7 +1085,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
   have : (EFin \o g ^~ x) --> ereal_sup (range (EFin \o g ^~ x)).
     by apply: ereal_nondecreasing_cvg => p q pq /=; rewrite lee_fin; exact/nd_g.
   by move/cvg_lim => -> //; apply: ereal_sup_ub; exists n.
-have := lee_pinfty (\int (f x) 'd mu[x]).
+have := leey (\int (f x) 'd mu[x]).
 rewrite le_eqVlt => /predU1P[|] mufoo; last first.
   have : \int (f x) 'd mu[x] \is a fin_num.
     by rewrite ge0_fin_numE//; exact: integral_ge0.
@@ -1266,7 +1266,7 @@ Proof. exact: emeasurable_fun_c_infty. Qed.
 
 Let foo_B1 x n : D x -> f x = +oo%E -> x \in B n.
 Proof.
-by move=> Dx fxoo; rewrite /B inE /=; split => //=; rewrite /= fxoo lee_pinfty.
+by move=> Dx fxoo; rewrite /B inE /=; split => //=; rewrite /= fxoo leey.
 Qed.
 
 Let f0_B0 x n : f x = 0%:E -> n != 0%N -> (x \in B n) = false.
@@ -1472,7 +1472,7 @@ Lemma le_approx k x (f0 : forall x, (0 <= f x)%E) : D x ->
   ((approx k x)%:E <= f x)%E.
 Proof.
 move=> Dx; have [fixoo|] := ltP (f x) (+oo%E); last first.
-  by rewrite lee_pinfty_eq => /eqP ->; rewrite lee_pinfty.
+  by rewrite lee_pinfty_eq => /eqP ->; rewrite leey.
 have nd_ag : {homo approx ^~ x : n m / (n <= m)%N >-> n <= m}.
   by move=> m n mn; exact/lefP/nd_approx.
 have fi0 : forall x, D x -> (0 <= f x)%E by move=> *; exact: f0.
@@ -1490,7 +1490,7 @@ Lemma dvg_approx x : D x -> f x = +oo%E -> ~ cvg (approx^~ x : _ -> R^o).
 Proof.
 move=> Dx fxoo; have approx_x n : approx n x = n%:R.
   rewrite /approx foo_B1// mulr1 big1 ?add0r// => /= i _.
-  by rewrite fgen_A0 // ?mulr0 // fxoo lee_pinfty.
+  by rewrite fgen_A0 // ?mulr0 // fxoo leey.
 case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
 - move=> /cvg_distP/(_ _ ltr01); rewrite near_map => -[n _].
   move=> /(_ (`|ceil l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
@@ -1513,7 +1513,7 @@ Qed.
 Lemma ecvg_approx (f0 : forall x, D x -> (0 <= f x)%E) x :
   D x -> EFin \o approx^~x --> f x.
 Proof.
-move=> Dx; have := lee_pinfty (f x); rewrite le_eqVlt => /predU1P[|] fxoo.
+move=> Dx; have := leey (f x); rewrite le_eqVlt => /predU1P[|] fxoo.
 have dvg_approx := dvg_approx Dx fxoo.
   have : {homo approx ^~ x : n m / (n <= m)%N >-> n <= m}.
     by move=> m n mn; have := nd_approx mn => /lefP; exact.
@@ -1660,10 +1660,10 @@ apply: ereal_lim_le.
 near=> n; rewrite ge0_integralTE//; apply: ereal_sup_ub => /=.
 exists (g1 n) => // t; rewrite (le_trans _ (h12 _)) //.
 have := gh1 t.
-have := lee_pinfty (h1 t); rewrite le_eqVlt => /predU1P[->|ftoo].
-  by rewrite lee_pinfty.
+have := leey (h1 t); rewrite le_eqVlt => /predU1P[->|ftoo].
+  by rewrite leey.
 have h1tfin : h1 t \is a fin_num.
-  by rewrite fin_numE gt_eqF/= ?lt_eqF// (lt_le_trans _ (h10 t))// lte_ninfty.
+  by rewrite fin_numE gt_eqF/= ?lt_eqF// (lt_le_trans _ (h10 t)).
 have := gh1 t.
 rewrite -(fineK h1tfin) => /ereal_cvg_real[ft_near].
 set u_ := (X in X --> _) => u_h1 g1h1.
@@ -1781,8 +1781,8 @@ have mfg : measurable (D `&` [set x | f x *? g x]).
    apply/predeqP=> x; rewrite /preimage/= /mule_def !(negb_and, negb_or).
    rewrite !(rwP2 eqP idP) !(rwP2 negP idP) !(rwP2 orP idP).
    rewrite !(rwP2 negP idP) !(rwP2 orP idP) !(rwP2 andP idP).
-   rewrite eqe_absl lee_pinfty andbT (orbC (g x == +oo)).
-   by rewrite eqe_absl lee_pinfty andbT (orbC (f x == +oo)).
+   rewrite eqe_absl leey andbT (orbC (g x == +oo)).
+   by rewrite eqe_absl leey andbT (orbC (f x == +oo)).
 wlog fg : D mD mf mg mfg / forall x, D x -> f x *? g x => [hwlogM|]; last first.
   have [f_ f_cvg] := approximation_sfun mD mf.
   have [g_ g_cvg] := approximation_sfun mD mg.
@@ -1948,11 +1948,10 @@ have /cvg_ex[l g_l] := @is_cvg_max_g2 t.
 suff : l == f t by move=> /eqP <-.
 rewrite eq_le; apply/andP; split.
   by rewrite /f (le_trans _ (lim_max_g2_f _)) // (cvg_lim _ g_l).
-have := lee_pinfty l; rewrite le_eqVlt => /predU1P[->|loo].
-  by rewrite lee_pinfty.
+have := leey l; rewrite le_eqVlt => /predU1P[->|loo]; first by rewrite leey.
 rewrite -(cvg_lim _ g_l) //= ereal_lim_le => //.
 near=> n.
-have := lee_pinfty (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
+have := leey (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
 - have h := @dvg_approx _ _ setT _ t Logic.I fntoo.
   have g2oo : lim (EFin \o g2 n ^~ t) = +oo.
     apply/cvg_lim => //; apply/dvg_ereal_cvg.
@@ -1962,7 +1961,7 @@ have := lee_pinfty (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
     by move/nondecreasing_dvg_lt => /(_ h).
   have -> : lim (EFin \o max_g2 ^~ t) = +oo.
     by have := lim_g2_max_g2 t n; rewrite g2oo lee_pinfty_eq => /eqP.
-  by rewrite lee_pinfty.
+  by rewrite leey.
 - have approx_g_g := @cvg_approx _ _ setT _ t (fun t _ => g0 n t) Logic.I fntoo.
   have <- : lim (EFin \o g2 n ^~ t) = g n t.
     have /cvg_lim <- // : EFin \o (approx setT (g n)) ^~ t --> g n t.
@@ -2058,19 +2057,19 @@ pose h := fun x => lim (g^~ x).
 transitivity (\int_ D (lim (g^~ x)) 'd mu[x]).
   apply: eq_integral => x Dx; apply/esym/cvg_lim => //.
   have [fx0|fx0|fx0] := ltgtP 0 (f x).
-  - rewrite gt0_mulpinfty//; apply/ereal_cvgPpinfty => M M0.
+  - rewrite gt0_mulye//; apply/ereal_cvgPpinfty => M M0.
     rewrite /g; case: (f x) fx0 => [r|_|//]; last first.
       exists 1%N => // m /= m0.
-      by rewrite mulrinfty gtr0_sg// ?mul1e ?lee_pinfty// ltr0n.
+      by rewrite mulry gtr0_sg// ?mul1e ?leey// ltr0n.
     rewrite lte_fin => r0.
     near=> n; rewrite lee_fin -ler_pdivr_mulr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
     by rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// divr_ge0// ltW.
-  - rewrite lt0_mulpinfty//; apply/ereal_cvgPninfty => M M0.
+  - rewrite lt0_mulye//; apply/ereal_cvgPninfty => M M0.
     rewrite /g; case: (f x) fx0 => [r|//|_]; last first.
       exists 1%N => // m /= m0.
-      by rewrite mulrinfty gtr0_sg// ?ltr0n// mul1e ?lee_ninfty.
+      by rewrite mulrNy gtr0_sg// ?ltr0n// mul1e ?leNye.
     rewrite lte_fin => r0.
     near=> n; rewrite lee_fin -ler_ndivr_mulr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
@@ -2087,13 +2086,13 @@ have : 0 <= \int_ D (f x) 'd mu[x] by apply: integral_ge0.
 rewrite le_eqVlt => /predU1P[<-|if_gt0].
   rewrite mule0 (_ : (fun _ => _) = cst 0) ?lim_cst//.
   by under eq_fun do rewrite mule0.
-rewrite gt0_mulpinfty//; apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
+rewrite gt0_mulye//; apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
 near=> n; have [ifoo|] := ltP (\int_ D (f x) 'd mu[x]) +oo; last first.
-  rewrite lee_pinfty_eq => /eqP ->;  rewrite mulrinfty muleC.
-  rewrite gt0_mulpinfty ?lee_pinfty//.
+  rewrite lee_pinfty_eq => /eqP ->;  rewrite mulry muleC.
+  rewrite gt0_mulye ?leey//.
   by near: n; exists 1%N => // n /= n0; rewrite gtr0_sg// ?lte_fin// ltr0n.
 rewrite -(@fineK _ (\int_ D (f x) 'd mu[x])); last first.
-  by rewrite fin_numElt ifoo andbT (le_lt_trans _ if_gt0)// lee_ninfty.
+  by rewrite fin_numElt ifoo andbT (le_lt_trans _ if_gt0).
 rewrite -lee_pdivr_mulr//; last first.
   by move: if_gt0 ifoo; case: (\int_ D (f x) 'd mu[x]).
 near: n.
@@ -2215,7 +2214,7 @@ rewrite monotone_convergence //.
   apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
   have [muDoo|muDoo] := ltP (mu D) +oo; last first.
     exists 1%N => // m /= m0; move: muDoo; rewrite lee_pinfty_eq => /eqP ->.
-    by rewrite mulrinfty gtr0_sg ?mul1e ?lee_pinfty// ltr0n.
+    by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
   exists `|ceil (M / fine (mu D))|%N => // m /=.
   rewrite -(ler_nat R) => MDm.
   rewrite -(@fineK _ (mu D)); last by rewrite ge0_fin_numE// measure_ge0.
@@ -2480,7 +2479,7 @@ have [ET|ET] := eqVneq E setT.
   by rewrite funeqE => t; rewrite /= foo.
 suff: mu E = 0.
   move=> muE0; exists E; split => // t /= /not_implyP[Dt ftfin]; split => //.
-  apply/eqP; rewrite eqe_absl lee_pinfty andbT.
+  apply/eqP; rewrite eqe_absl leey andbT.
   by move/negP : ftfin; rewrite fin_numE negb_and 2!negbK orbC.
 have [->|/set0P E0] := eqVneq E set0; first by rewrite measure0.
 have [M M0 muM] : exists2 M, (0 <= M)%R &
@@ -2489,7 +2488,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
   move=> n.
   rewrite -integral_indic// -ge0_integralM//; last 2 first.
     - apply: measurable_fun_comp=> //; apply: (@measurable_funS _ _ setT)=>//.
-      by rewrite (_ : \1_ _ = indic_nnsfun R mE)//.
+      by rewrite (_ : \1_ _ = indic_nnsfun R mE).
     - by move=> *; rewrite lee_fin.
   rewrite fineK//; last first.
     by case: fint => _ foo; rewrite ge0_fin_numE//; exact: integral_ge0.
@@ -2502,7 +2501,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
   - by apply: measurable_fun_comp => //; case: fint.
   - move=> x Dx; rewrite /= indicE.
     have [|xE] := boolP (x \in E); last by rewrite mule0.
-    by rewrite /E inE /= => -[->]; rewrite lee_pinfty.
+    by rewrite /E inE /= => -[->]; rewrite leey.
 apply/eqP/negPn/negP => /eqP muED0.
 move/not_forallP : muM; apply.
 have [muEDoo|] := ltP (mu (E `&` D)) +oo; last first.
@@ -2850,10 +2849,10 @@ move=> mf; split=> [iDf0|Df0].
      \bigcup_n (D `&` [set x | `|f x| >= n.+1%:R^-1%:E])); last first.
     rewrite predeqE => t; split=> [[Dt ft0]|[n _ /= [Dt nft]]].
       have [ftoo|ftoo] := eqVneq `|f t| +oo%E.
-        by exists 0%N => //; split => //=; rewrite ftoo /= lee_pinfty.
+        by exists 0%N => //; split => //=; rewrite ftoo /= leey.
       pose m := `|ceil (fine `|f t|)^-1|%N.
       have ftfin : `|f t|%E \is a fin_num.
-        by rewrite fin_numE gt_eqF //= (lt_le_trans _ (abse_ge0 _))// lte_ninfty.
+        by rewrite fin_numE gt_eqF //= (lt_le_trans _ (abse_ge0 _)).
       exists m => //; split => //=.
       rewrite -(@fineK _ `|f t|) // lee_fin -ler_pinv; last 2 first.
         - rewrite inE unitfE fine_eq0 // abse_eq0 ft0/=; apply/lt0R.
@@ -3562,7 +3561,7 @@ have -> : phi (X `\` Y) = (fun x => phi X x - phi Y x)%E.
   - exact: measurable_xsection.
   - exact: measurable_xsection.
   - move: m2_bounded => [M m2M].
-    rewrite (lt_le_trans (m2M (xsection X x) _))// ?lee_pinfty//.
+    rewrite (lt_le_trans (m2M (xsection X x) _))// ?leey//.
     exact: measurable_xsection.
 exact: emeasurable_funB.
 Qed.
@@ -3606,7 +3605,7 @@ have -> : psi (X `\` Y) = (fun x => psi X x - psi Y x)%E.
   - exact: measurable_ysection.
   - exact: measurable_ysection.
   - move: m1_bounded => [M m1M].
-    rewrite (lt_le_trans (m1M (ysection X y) _))// ?lee_pinfty//.
+    rewrite (lt_le_trans (m1M (ysection X y) _))// ?leey//.
     exact: measurable_ysection.
 exact: emeasurable_funB.
 Qed.
