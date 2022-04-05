@@ -79,6 +79,7 @@
   + lemmas `integrable_neg_fin_num`, `integrable_pos_fin_num`
   + lemma `integral_measure_series`
   + lemmas `counting_dirac`, `summable_integral_dirac`, `integral_count`
+  + lemmas `integrable_abse`, `integrable_summable`, `integral_bigcup`
 
 ### Changed
 
