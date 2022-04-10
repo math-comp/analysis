@@ -31,6 +31,8 @@
   + lemma `discrete_bool`, `bool_compact`
 - in `reals.v`:
   + lemma `floor_natz`
+- in file `topology.v`:
+  + definition `frechet_filter`, instances `frechet_properfilter`, and `frechet_properfilter_nat`
 
 ### Changed
 

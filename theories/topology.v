@@ -3,6 +3,7 @@ From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
 From mathcomp Require Import seq fintype bigop order interval ssralg ssrnum rat.
 From mathcomp Require Import matrix finmap.
 Require Import mathcomp_extra boolp reals classical_sets signed functions.
+Require Import cardinality.
 
 (******************************************************************************)
 (*                  Filters and basic topological notions                     *)
@@ -98,6 +99,8 @@ Require Import mathcomp_extra boolp reals classical_sets signed functions.
 (*                           f `@ F == image of the canonical filter          *)
 (*                                     associated to F by the relation f.     *)
 (*                       globally A == filter of the sets containing A.       *)
+(*                @frechet_filter T := [set S : set T | finite_set (~` S)]    *)
+(*                                     a.k.a. cofinite filter                 *)
 (*                       at_point a == filter of the sets containing a.       *)
 (*                       within D F == restriction of the filter F to the     *)
 (*                                     domain D.                              *)
@@ -1323,17 +1326,37 @@ Definition globally {T : Type} (A : set T) : set (set T) :=
 Arguments globally {T} A _ /.
 
 Global Instance globally_filter {T : Type} (A : set T) :
-   Filter (globally A).
+  Filter (globally A).
 Proof.
 constructor => //= P Q; last by move=> PQ AP x /AP /PQ.
 by move=> AP AQ x Ax; split; [apply: AP|apply: AQ].
 Qed.
 
 Global Instance globally_properfilter {T : Type} (A : set T) a :
-   infer (A a) -> ProperFilter (globally A).
+  infer (A a) -> ProperFilter (globally A).
 Proof. by move=> Aa; apply: Build_ProperFilter' => /(_ a). Qed.
 
 (** ** Specific filters *)
+
+Section frechet_filter.
+Variable T : Type.
+
+Definition frechet_filter := [set S : set T | finite_set (~` S)].
+
+Global Instance frechet_properfilter : infinite_set [set: T] ->
+  ProperFilter frechet_filter.
+Proof.
+move=> infT; rewrite /frechet_filter.
+constructor; first by rewrite /= setC0; exact: infT.
+constructor; first by rewrite /= setCT.
+- by move=> ? ?; rewrite /= setCI finite_setU.
+- by move=> P Q PQ; exact/sub_finite_set/subsetC.
+Qed.
+
+End frechet_filter.
+
+Global Instance frechet_properfilter_nat : ProperFilter (@frechet_filter nat).
+Proof. by apply: frechet_properfilter; exact: infinite_nat. Qed.
 
 Section at_point.
 
