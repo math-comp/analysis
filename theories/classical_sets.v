@@ -1305,8 +1305,14 @@ Lemma preimage0 {T R} {f : T -> R} {A : set R} :
   A `&` range f `<=` set0 -> f @^-1` A = set0.
 Proof. by rewrite -subset0 => + x /= Afx => /(_ (f x))[]; split. Qed.
 
+Lemma preimage10P {T R} {f : T -> R} {x} : ~ range f x <-> f @^-1` [set x] = set0.
+Proof.
+split => [fx|]; first by rewrite preimage0// => ? [->].
+by apply: contraPnot => -[t _ <-] /seteqP[+ _] => /(_ t) /=.
+Qed.
+
 Lemma preimage10 {T R} {f : T -> R} {x} : ~ range f x -> f @^-1` [set x] = set0.
-Proof. by move=> fx; rewrite preimage0// => y [->]. Qed.
+Proof. by move/preimage10P. Qed.
 
 End image_lemmas.
 Arguments sub_image_setI {aT rT f A B} t _.

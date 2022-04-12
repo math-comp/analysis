@@ -22,6 +22,8 @@
   + lemma `integrableMr`
 - in `ereal.v`:
   + lemmas `muleCA`, `muleAC`, `muleACA`
+- in `classical_sets.v`:
+  + lemma `preimage10P`
 
 ### Changed
 
