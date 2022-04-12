@@ -34,6 +34,32 @@
   + lemma `fset_set_image`, `card_fset_set`, `geq_card_fset_set`,
     `leq_card_fset_set`, `infinite_set_fset`, `infinite_set_fsetP` and
     `fcard_eq`.
+  + notations `{posnum \bar R}` and `{nonneg \bar R}`
+  + notations `%:pos` and `%:nng` in `ereal_dual_scope` and `ereal_scope`
+  + variants `posnume_spec` and `nonnege_spec`
+  + definitions `posnume`, `nonnege`, `abse_reality_subdef`,
+    `ereal_sup_reality_subdef`, `ereal_inf_reality_subdef`
+  + lemmas `ereal_comparable`, `pinfty_snum_subproof`, `ninfty_snum_subproof`,
+    `EFin_snum_subproof`, `fine_snum_subproof`, `oppe_snum_subproof`,
+    `adde_snum_subproof`, `dadde_snum_subproof`, `mule_snum_subproof`,
+    `abse_reality_subdef`, `abse_snum_subproof`, `ereal_sup_snum_subproof`,
+    `ereal_inf_snum_subproof`, `num_abse_eq0`, `num_lee_maxr`, `num_lee_maxl`,
+    `num_lee_minr`, `num_lee_minl`, `num_lte_maxr`, `num_lte_maxl`,
+    `num_lte_minr`, `num_lte_minl`, `num_abs_le`, `num_abs_lt`,
+    `posnumeP`, `nonnegeP`
+  + signed instances `pinfty_snum`, `ninfty_snum`, `EFin_snum`, `fine_snum`,
+    `oppe_snum`, `adde_snum`, `dadde_snum`, `mule_snum`, `abse_snum`,
+    `ereal_sup_snum`, `ereal_inf_snum`
+- in `topology.v`:
+  + Definition `powerset_filter_from`
+  + globals `powerset_filter_from_filter`, 
+  + lemmas `near_small_set`, `small_set_sub`
+  + lemmas `withinET`, `closureEcvg`, `entourage_sym`, `fam_nbhs`
+  + generalize `cluster_cvgE`, `ptws_cvg_compact_family`
+  + lemma `near_compact_covering`
+  + rewrite `equicontinuous` and `pointwise_precompact` to use index 
+  + lemmas `ptws_cvg_entourage`, `equicontinuous_closure`, `ptws_compact_cvg`
+    `ptws_compact_closed`, `ascoli_forward`, `compact_equicontinuous`
 
 ### Changed
 
