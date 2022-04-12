@@ -415,31 +415,6 @@ Unset Printing Implicit Defensive.
 (* Making sure that [Program] does not automatically introduce *)
 Obligation Tactic := idtac.
 
-(* NB: these lemmas are in the recent versions of MathComp *)
-Section inj_can_sym_in_on.
-Variables (aT rT : predArgType) (aD : {pred aT}) (rD : {pred rT}).
-Variables (f : aT -> rT) (g : rT -> aT).
-
-Lemma inj_can_sym_in_on : {homo f : x / x \in aD >-> x \in rD} ->
-  {in aD, {on rD, cancel f & g}} ->
-  {in [pred x | x \in rD & g x \in aD], injective g} ->
-  {in rD, {on aD, cancel g & f}}.
-Proof. by move=> fD fK gI x x_rD gx_aD; apply: gI; rewrite ?inE ?fK ?fD. Qed.
-
-Lemma inj_can_sym_on : {in aD, cancel f g} ->
-  {in [pred x | g x \in aD], injective g} -> {on aD, cancel g & f}.
-Proof. by move=> fK gI x gx_aD; apply: gI; rewrite ?inE ?fK. Qed.
-
-Lemma inj_can_sym_in : {homo f \o g : x / x \in rD} -> {on rD, cancel f & g} ->
-  {in rD, injective g} ->  {in rD, cancel g f}.
-Proof. by move=> fgD fK gI x x_rD; apply: gI; rewrite ?fK ?fgD. Qed.
-
-End inj_can_sym_in_on.
-Arguments inj_can_sym_in_on {aT rT aD rD f g}.
-Arguments inj_can_sym_on {aT rT aD f g}.
-Arguments inj_can_sym_in {aT rT rD f g}.
-(* /NB: these lemmas are in the recent versions of MathComp *)
-
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
