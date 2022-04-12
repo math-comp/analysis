@@ -60,6 +60,8 @@
   + rewrite `equicontinuous` and `pointwise_precompact` to use index 
   + lemmas `ptws_cvg_entourage`, `equicontinuous_closure`, `ptws_compact_cvg`
     `ptws_compact_closed`, `ascoli_forward`, `compact_equicontinuous`
+- in file `ereal.v`:
+  + lemma `abse1`
 
 ### Changed
 
