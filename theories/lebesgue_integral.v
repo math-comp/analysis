@@ -460,8 +460,8 @@ Proof. by rewrite -(image_comp f g) fset_set_image. Qed.
 Lemma preimage_nnfun0 T (R : realDomainType) (f : {nnfun T >-> R}) t :
   t < 0 -> f @^-1` [set t] = set0.
 Proof.
-move=> t0; rewrite preimage10//= => -[x _].
-by apply: contraPnot t0 => <-; rewrite le_gtF.
+move=> t0.
+by apply/preimage10 => -[x _]; apply: contraPnot t0 => <-; rewrite le_gtF.
 Qed.
 
 Lemma preimage_cstM T (R : realFieldType) (x y : R) (f : T -> R) :
@@ -684,7 +684,7 @@ Lemma sintegralE f :
   sintegral mu f = \sum_(x \in range f) x%:E * mu (f @^-1` [set x]).
 Proof.
 rewrite (fsbig_widen (range f) setT)//= => x [_ Nfx] /=.
-by rewrite preimage10 ?measure0 ?mule0.
+by rewrite preimage10// measure0 mule0.
 Qed.
 
 Lemma sintegral0 : sintegral mu (cst 0%R) = 0.
@@ -720,7 +720,7 @@ Qed.
 End sintegral_lemmas.
 
 Lemma eq_sintegral d (T : measurableType d) (R : numDomainType)
-   (mu : set T -> \bar R) g f :
+     (mu : set T -> \bar R) g f :
    f =1 g -> sintegral mu f = sintegral mu g.
 Proof. by move=> /funext->. Qed.
 Arguments eq_sintegral {d T R mu} g.
