@@ -1042,6 +1042,9 @@ Proof. by move=> k; apply/val_inj. Qed.
 
 End InitialSegment.
 
+Lemma set_bool : [set: bool] = [set true; false].
+Proof. by rewrite eqEsubset; split => // [[]] // _; [left|right]. Qed.
+
 (* TODO: other lemmas that relate fset and classical sets *)
 Lemma fdisjoint_cset (T : choiceType) (A B : {fset T}) :
   [disjoint A & B]%fset = [disjoint [set` A] & [set` B]].

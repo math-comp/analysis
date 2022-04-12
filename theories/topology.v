@@ -101,6 +101,7 @@ Require Import mathcomp_extra boolp reals classical_sets signed functions.
 (*                       at_point a == filter of the sets containing a.       *)
 (*                       within D F == restriction of the filter F to the     *)
 (*                                     domain D.                              *)
+(*               principal_filter x == filter containing every superset of x. *)
 (*                subset_filter F D == similar to within D F, but with        *)
 (*                                     dependent types.                       *)
 (*           powerset_filter_from F == The filter of downward closed subsets  *)
@@ -214,6 +215,7 @@ Require Import mathcomp_extra boolp reals classical_sets signed functions.
 (*                locally_compact A == every point in A has a compact         *)
 (*                                     (and closed) neighborhood              *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
+(*                discrete_space T <-> every nbhs is a principal filter       *)
 (*              prod_topo_apply x f == application of f to x, f being in a    *)
 (*                                     product topology of a family K         *)
 (*                                     (K : X -> topologicalType)             *)
@@ -1616,6 +1618,21 @@ Qed.
 
 End NearSet.
 
+Section PrincipalFilters.
+
+Definition principal_filter {X : Type} (x : X) : set (set X) :=
+  globally [set x].
+
+Lemma principal_filterP {X} (x : X) (W : set X) : principal_filter x W <-> W x.
+Proof. by split=> [|? ? ->]; [exact|]. Qed.
+
+Lemma principal_filter_proper {X} (x : X) : ProperFilter (principal_filter x).
+Proof. exact: globally_properfilter. Qed.
+
+Canonical bool_discrete_filter := FilteredType bool bool principal_filter.
+
+End PrincipalFilters.
+
 (** * Topological spaces *)
 
 Module Topological.
@@ -2842,6 +2859,15 @@ move=> FF fsurj; apply Build_ProperFilter; last exact: filter_image.
 by move=> _ [A FA <-]; have /filter_ex [p Ap] := FA; exists (f p); exists p.
 Qed.
 
+Lemma principal_filter_ultra {T : Type} (x : T) :
+  UltraFilter (principal_filter x).
+Proof.
+split=> [|G [G0 xG] FG]; first exact: principal_filter_proper.
+rewrite eqEsubset; split => // U GU; apply/principal_filterP.
+have /(filterI GU): G [set x] by exact/FG/principal_filterP.
+by rewrite setIC set1I; case: ifPn => // /[!inE].
+Qed.
+
 Lemma in_ultra_setVsetC T (F : set (set T)) (A : set T) :
   UltraFilter F -> F A \/ F (~` A).
 Proof.
@@ -2920,6 +2946,15 @@ Section Precompact.
 
 Context {X : topologicalType}.
 
+Lemma compactU (A B : set X) : compact A -> compact B -> compact (A `|` B).
+Proof.
+rewrite compact_ultra => cptA cptB F UF FAB; rewrite setIUl.
+have [/cptA[x AFx]|] := in_ultra_setVsetC A UF; first by exists x; left.
+move=> /(filterI FAB); rewrite setIUl setIv set0U => FBA.
+have /cptB[x BFx] : F B by apply: filterS FBA; exact: subIsetr.
+by exists x; right.
+Qed.
+
 (* The closed condition here is neccessary to make this definition work in a  *)
 (* non-hausdorff setting.                                                     *)
 Definition compact_near (F : set (set X)) :=
@@ -2936,7 +2971,7 @@ apply: (subclosed_compact _ cptB); first exact: closed_closure.
 by move/closure_id: cB => ->; exact: closure_subset.
 Qed.
 
-Lemma precompact_subset (A B : set X) : 
+Lemma precompact_subset (A B : set X) :
   A `<=` B -> precompact B -> precompact A.
 Proof.
 by move=> AsubB [B' B'subB cptB']; exists B' => // ? ?; exact/B'subB/AsubB.
@@ -3457,6 +3492,62 @@ End connected_sets.
 Arguments connected {T}.
 Arguments connected_component {T}.
 
+Section DiscreteTopology.
+Section DiscreteMixin.
+Context {X : Type}.
+
+Lemma discrete_sing (p : X) (A : set X) : principal_filter p A -> A p.
+Proof. by move=> /principal_filterP. Qed.
+
+Lemma discrete_nbhs (p : X) (A : set X) :
+  principal_filter p A -> principal_filter p (principal_filter^~ A).
+Proof. by move=> ?; exact/principal_filterP. Qed.
+
+Definition discrete_topological_mixin :=
+  topologyOfFilterMixin principal_filter_proper discrete_sing discrete_nbhs.
+
+End DiscreteMixin.
+
+Definition discrete_space (X : topologicalType) :=
+  @nbhs X _ = @principal_filter X.
+
+Context {X : topologicalType} {dsc: discrete_space X}.
+
+Lemma discrete_open (A : set X) : open A.
+Proof.
+by rewrite openE => ? ?; rewrite /interior dsc; exact/principal_filterP.
+Qed.
+
+Lemma discrete_set1 (x : X) : nbhs x [set x].
+Proof. by apply open_nbhs_nbhs; split => //; exact: discrete_open. Qed.
+
+Lemma discrete_closed (A : set X) : closed A.
+Proof. by rewrite -[A]setCK closedC; exact: discrete_open. Qed.
+
+Lemma discrete_cvg (F : set (set X)) (x : X) :
+  Filter F -> F --> x <-> F [set x].
+Proof.
+rewrite /filter_of dsc nbhs_simpl; split; first by exact.
+by move=> Fx U /principal_filterP ?; apply: filterS Fx => ? ->.
+Qed.
+
+Lemma discrete_hausdorff : hausdorff_space X.
+Proof.
+by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q))[x [] -> ->].
+Qed.
+
+Canonical bool_discrete_topology : topologicalType :=
+  TopologicalType bool discrete_topological_mixin.
+
+Lemma discrete_bool : discrete_space bool_discrete_topology.
+Proof. by []. Qed.
+
+Lemma bool_compact : compact [set: bool].
+Proof. by rewrite set_bool; apply/compactU; exact: compact_set1. Qed.
+
+End DiscreteTopology.
+
+#[global] Hint Resolve discrete_bool : core.
 
 (** * Uniform spaces *)
 

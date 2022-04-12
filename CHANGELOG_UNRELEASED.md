@@ -16,6 +16,19 @@
     `ptws_compact_closed`, `ascoli_forward`
   + lemmas `precompact_pointwise_precompact`, `precompact_equicontinuous`,
     `ascoli_theorem`
+- in file `classical_sets.v`
+  + lemma `set_bool`
+- in file `topology.v`:
+  + definition `principal_filter` `discrete_space`
+  + lemma `principal_filterP`, `principal_filter_proper`, 
+      `principa;_filter_ultra`
+  + canonical `bool_discrete_filter`
+  + lemma `compactU`
+  + lemma `discrete_sing`, `discrete_nbhs`, `discrete_open`, `discrete_set1`,
+      `discrete_closed`, `discrete_cvg`, `discrete_hausdorff`
+  + canonical `bool_discrete_topology`
+  + definition `discrete_topological_mixin`
+  + lemma `discrete_bool`, `bool_compact`
 
 ### Changed
 
