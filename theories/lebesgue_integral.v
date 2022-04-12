@@ -33,7 +33,7 @@ Require Import lebesgue_measure fsbigop numfun.
 (*                           domain D with measure mu; this notation is       *)
 (*                           rendered as ∫ D (f x) 𝑑 mu[x] with company-coq   *)
 (*                           (U+222B and U+1D451)                             *)
-(*    \int (f x) 'd mu[x] := \int_ set (f x) 'd mu[x]; this notation is       *)
+(*    \int (f x) 'd mu[x] := \int_ setT (f x) 'd mu[x]; this notation is      *)
 (*                           rendered as ∫ (f x) 𝑑 mu[x] with company-coq     *)
 (*         dyadic_itv n k == the interval                                     *)
 (*                           `[(k%:R * 2 ^- n), (k.+1%:R * 2 ^- n)[           *)
