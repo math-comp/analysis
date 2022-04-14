@@ -45,6 +45,8 @@
 - in `classical_sets.v`:
   + lemmas `set_compose_subset`, `compose_diag`
   + notation `\;` for the composition of relations
+- OPAM package `coq-mathcomp-classical` containing `boolp.v`
+- file `all_classical.v`
 
 ### Changed
 - in `topology.v`
@@ -88,6 +90,7 @@
   + `lte_spdaddr` -> `lte_spdaddre`
 - in `topology.v`:
  + `pasting` -> `withinU_continuous`
+- file `theories/boolp.v` -> `classical/boolp.v`
 
 ### Deprecated
 

@@ -36,7 +36,8 @@
 (******************************************************************************)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-(* ------- *) Require Import mathcomp_extra boolp classical_sets.
+From mathcomp.classical Require Import boolp.
+Require Import mathcomp_extra classical_sets.
 
 Require Import Setoid.
 

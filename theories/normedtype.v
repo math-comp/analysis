@@ -1,7 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-Require Import boolp mathcomp_extra ereal reals cardinality.
+From mathcomp.classical Require Import boolp.
+Require Import mathcomp_extra ereal reals cardinality.
 Require Import classical_sets signed topology prodnormedzmodule.
 Require Import functions.
 

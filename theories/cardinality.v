@@ -2,7 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset.
-Require Import boolp mathcomp_extra classical_sets functions.
+From mathcomp.classical Require Import boolp.
+Require Import mathcomp_extra classical_sets functions.
 
 (******************************************************************************)
 (*                              Cardinality                                   *)

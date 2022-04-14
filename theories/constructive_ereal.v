@@ -10,8 +10,7 @@
    incorporate it into mathcomp proper where it could then be used for
    bounds of intervals*)
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-Require Import boolp mathcomp_extra classical_sets functions reals signed.
-Require Import topology.
+Require Import mathcomp_extra signed.
 
 (******************************************************************************)
 (*                         Extended real numbers                              *)

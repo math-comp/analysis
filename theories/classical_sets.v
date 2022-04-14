@@ -1,7 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg matrix finmap order ssrnum.
 From mathcomp Require Import ssrint interval.
-Require Import mathcomp_extra boolp.
+From mathcomp.classical Require Import boolp.
+Require Import mathcomp_extra.
 
 (******************************************************************************)
 (* This file develops a basic theory of sets and types equipped with a        *)
