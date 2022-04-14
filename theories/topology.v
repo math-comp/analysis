@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-From mathcomp.classical Require Import boolp classical_sets.
-Require Import mathcomp_extra reals signed functions cardinality.
+From mathcomp.classical Require Import boolp classical_sets functions.
+Require Import mathcomp_extra reals signed cardinality.
 
 (******************************************************************************)
 (*                  Filters and basic topological notions                     *)

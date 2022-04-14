@@ -47,8 +47,15 @@
   + notation `\;` for the composition of relations
 - OPAM package `coq-mathcomp-classical` containing `boolp.v`
 - file `all_classical.v`
-- in file `mathcomp_extra.v`:
+- file `classical/mathcomp_extra.v`
+- in file `classical/mathcomp_extra.v`:
   + lemmas `pred_oappE` and `pred_oapp_set` (from `classical_sets.v`)
+  + definition `olift` (from `mathcomp_extra.v`)
+  + definition `pred_oapp` (from `mathcomp_extra.v`)
+  + definition `mul_fun` and notation `f \* g` (from `mathcomp_extra.v`)
+  + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `compA`,
+    `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`,
+    `eqbRL` (from `mathcomp_extra.v`)
 
 ### Changed
 - in `topology.v`
@@ -94,6 +101,7 @@
  + `pasting` -> `withinU_continuous`
 - file `theories/boolp.v` -> `classical/boolp.v`
 - file `theories/classical_sets.v` -> `classical/classical_sets.v`
+- file `theories/functions.v` -> `classical/functions.v`
 
 ### Deprecated
 
@@ -103,7 +111,14 @@
 ### Removed
 
 - in file `classical_sets.v`:
-  + lemmas `pred_oappE` and `pred_oapp_set` (moved to `mathcomp_extra.v`)
+  + lemmas `pred_oappE` and `pred_oapp_set` (moved to `classical/mathcomp_extra.v`)
+- in file `mathcomp_extra.v`:
+  + definition `olift` (moved to `classical/mathcomp_extra.v`)
+  + definition `pred_oapp` (moved to `classical/mathcomp_extra.v`)
+  + definition `mul_fun` and notation `f \* g` (moved to `classical/mathcomp_extra.v`)
+  + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `compA`,
+    `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`, `eqbRL` (moved to
+    `classical/mathcomp_extra.v`)
 
 ### Infrastructure
 

@@ -32,7 +32,6 @@ measure.v
 numfun.v
 lebesgue_integral.v
 summability.v
-functions.v
 signed.v
 altreals/xfinmap.v
 altreals/discrete.v
