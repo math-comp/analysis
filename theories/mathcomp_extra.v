@@ -16,7 +16,6 @@ From mathcomp.classical Require Export mathcomp_extra.
 (******************************************************************************)
 (* This files contains lemmas and definitions missing from MathComp.          *)
 (*                                                                            *)
-(*                   \- f := fun x => - f x                                   *)
 (*               f \max g := fun x => Num.max (f x) (g x)                     *)
 (*     lteBSide, bnd_simp == multirule to simplify inequalities between       *)
 (*                           interval bounds                                  *)
@@ -28,8 +27,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Reserved Notation "f \- g" (at level 50, left associativity).
-Reserved Notation "\- f"  (at level 35, f at level 35).
 Reserved Notation "f \max g" (at level 50, left associativity).
 
 Lemma enum_ord0 : enum 'I_0 = [::].
@@ -97,10 +94,6 @@ Qed.
 
 Lemma eqbLR (b1 b2 : bool) : b1 = b2 -> b1 -> b2.
 Proof. by move->. Qed.
-
-Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
-Notation "\- f" := (opp_fun f) : ring_scope.
-Arguments opp_fun {T R} _ _ /.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

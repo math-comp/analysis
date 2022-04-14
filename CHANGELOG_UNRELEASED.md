@@ -56,6 +56,7 @@
   + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `compA`,
     `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`,
     `eqbRL` (from `mathcomp_extra.v`)
+  + definition `opp_fun` and notation `\- f` (from `mathcomp_extra.v`)
 
 ### Changed
 - in `topology.v`
@@ -102,6 +103,7 @@
 - file `theories/boolp.v` -> `classical/boolp.v`
 - file `theories/classical_sets.v` -> `classical/classical_sets.v`
 - file `theories/functions.v` -> `classical/functions.v`
+- file `theories/cardinality.v` -> `classical/cardinality.v`
 
 ### Deprecated
 
@@ -119,6 +121,7 @@
   + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `compA`,
     `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`, `eqbRL` (moved to
     `classical/mathcomp_extra.v`)
+  + definition `opp_fun` and notation `\- f` (moved to `classical/mathcomp_extra.v`)
 
 ### Infrastructure
 

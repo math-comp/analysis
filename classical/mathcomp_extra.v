@@ -12,6 +12,7 @@ Require Import boolp classical_sets.
 (*                oflit f := Some \o f                                        *)
 (*          pred_oapp T D := [pred x | oapp (mem D) false x]                  *)
 (*                 f \* g := fun x => f x * g x                               *)
+(*                   \- f := fun x => - f x                                   *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -20,6 +21,8 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Reserved Notation "f \* g" (at level 40, left associativity).
+Reserved Notation "f \- g" (at level 50, left associativity).
+Reserved Notation "\- f"  (at level 35, f at level 35).
 
 Lemma all_sig2_cond {I : Type} {T : Type} (D : pred I)
    (P Q : I -> T -> Prop) : T ->
@@ -88,3 +91,7 @@ Proof. by move->. Qed.
 Definition mul_fun T (R : ringType) (f g : T -> R) x := (f x * g x)%R.
 Notation "f \* g" := (mul_fun f g) : ring_scope.
 Arguments mul_fun {T R} _ _ _ /.
+
+Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
+Notation "\- f" := (opp_fun f) : ring_scope.
+Arguments opp_fun {T R} _ _ /.

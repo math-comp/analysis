@@ -21,7 +21,6 @@ sequences.v
 exp.v
 trigo.v
 nsatz_realtype.v
-cardinality.v
 esum.v
 fsbigop.v
 set_interval.v
