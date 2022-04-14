@@ -2,11 +2,11 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat.
 From mathcomp.classical Require Import boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality.
+From mathcomp.classical Require Import functions cardinality fsbigop.
 Require Import reals ereal signed topology numfun.
 Require Import mathcomp_extra normedtype.
 From HB Require Import structures.
-Require Import sequences esum measure fsbigop set_interval.
+Require Import sequences esum measure set_interval.
 Require Import realfun.
 
 (******************************************************************************)

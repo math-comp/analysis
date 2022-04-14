@@ -2933,6 +2933,10 @@ Export DualAddTheoryRealDomain.
 Export DualAddTheoryRealField.
 End DualAddTheory.
 
+Module ConstructiveDualAddTheory.
+Export DualAddTheory.
+End ConstructiveDualAddTheory.
+
 Definition posnume (R : numDomainType) of phant R := {> 0 : \bar R}.
 Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R))  : type_scope.
 Definition nonnege (R : numDomainType) of phant R := {>= 0 : \bar R}.

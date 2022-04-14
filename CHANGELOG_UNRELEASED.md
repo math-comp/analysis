@@ -57,6 +57,17 @@
     `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`,
     `eqbRL` (from `mathcomp_extra.v`)
   + definition `opp_fun` and notation `\- f` (from `mathcomp_extra.v`)
+  + lemma `sumr_le0`
+- in file `fsbigop.v`:
+  + lemmas `fsumr_ge0`, `fsumr_le0`, `fsumr_gt0`, `fsumr_lt0`, `pfsumr_eq0`,
+    `pair_fsbig`, `exchange_fsbig`
+- in file `ereal.v`:
+  + notation `\sum_(_ \in _) _` (from `fsbigop.v`)
+  + lemmas `fsume_ge0`, `fsume_le0`, `fsume_gt0`, `fsume_lt0`,
+    `pfsume_eq0`, `lee_fsum_nneg_subset`, `lee_fsum`,
+    `ge0_mule_fsumr`, `ge0_mule_fsuml` (from `fsbigop.v`)
+  + lemmas `finite_supportNe`, `dual_fsumeE`, `dfsume_ge0`, `dfsume_le0`,
+    `dfsume_gt0`, `dfsume_lt0`, `pdfsume_eq0`, `le0_mule_dfsumr`, `le0_mule_dfsuml`
 
 ### Changed
 - in `topology.v`
@@ -104,6 +115,7 @@
 - file `theories/classical_sets.v` -> `classical/classical_sets.v`
 - file `theories/functions.v` -> `classical/functions.v`
 - file `theories/cardinality.v` -> `classical/cardinality.v`
+- file `theories/fsbigop.v` -> `classical/fsbigop.v`
 
 ### Deprecated
 
@@ -122,6 +134,13 @@
     `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`, `eqbRL` (moved to
     `classical/mathcomp_extra.v`)
   + definition `opp_fun` and notation `\- f` (moved to `classical/mathcomp_extra.v`)
+- in file `fsbigop.v`:
+  + notation `\sum_(_ \in _) _` (moved to `ereal.v`)
+  + lemma `lee_fsum_nneg_subset`, `lee_fsum`, `ge0_mule_fsumr`,
+    `ge0_mule_fsuml`, `fsume_ge0`, `fsume_le0`, `fsume_gt0`,
+    `fsume_lt0`, `pfsume_eq0` (moved to `ereal.v`)
+  + lemma `pair_fsum` (subsumed by `pair_fsbig`)
+  + lemma `exchange_fsum` (subsumed by `exchange_fsbig`)
 
 ### Infrastructure
 

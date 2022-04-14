@@ -13,6 +13,7 @@ classical/classical_sets.v
 classical/mathcomp_extra.v
 classical/functions.v
 classical/cardinality.v
+classical/fsbigop.v
 theories/mathcomp_extra.v
 theories/constructive_ereal.v
 theories/ereal.v
@@ -28,7 +29,6 @@ theories/exp.v
 theories/trigo.v
 theories/nsatz_realtype.v
 theories/esum.v
-theories/fsbigop.v
 theories/set_interval.v
 theories/lebesgue_measure.v
 theories/forms.v

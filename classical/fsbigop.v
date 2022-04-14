@@ -1,9 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-From mathcomp.classical Require Import boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality.
-Require Import mathcomp_extra signed.
-Require Import reals ereal topology normedtype.
+Require Import mathcomp_extra boolp classical_sets functions cardinality.
 
 (******************************************************************************)
 (*                     Finitely-supported big operators                       *)
@@ -11,23 +8,26 @@ Require Import reals ereal topology normedtype.
 (*     finite_support idx D F := D `&` F @^-1` [set~ idx]                     *)
 (* \big[op/idx]_(i \in A) F i == iterated application of the operator op      *)
 (*                               with neutral idx over finite_support idx A F *)
-(*         \sum_(i \in A) F i == iterated addition, exists in ring_scope and  *)
-(*                               ereal_scope                                  *)
+(*         \sum_(i \in A) F i == iterated addition, in ring_scope             *)
 (*                                                                            *)
 (******************************************************************************)
+
+Reserved Notation "\big [ op / idx ]_ ( i '\in' A ) F"
+  (at level 36, F at level 36, op, idx at level 10, i, A at level 50,
+           format "'[' \big [ op / idx ]_ ( i  '\in'  A ) '/  '  F ']'").
+
+Reserved Notation "\sum_ ( i '\in' A ) F"
+  (at level 41, F at level 41, i, A at level 50,
+    format "'[' \sum_ ( i  '\in'  A ) '/  '  F ']'").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Reserved Notation "\big [ op / idx ]_ ( i '\in' A ) F"
-  (at level 36, F at level 36, op, idx at level 10, i, A at level 50,
-           format "'[' \big [ op / idx ]_ ( i  '\in'  A ) '/  '  F ']'").
 Notation "\big [ op / idx ]_ ( i '\in' A ) F" :=
   (\big[op/idx]_(i <- fset_set (A `&` ((fun i => F) @^-1` [set~ idx]))) F)
     (only parsing) : big_scope.
@@ -84,11 +84,7 @@ move=> i Pi NXi /=; have : (P `\` [set` X]) i by split=> //=; apply/negP.
 by rewrite -eqX /= => -[_]; apply: contra_notP.
 Qed.
 
-Reserved Notation "\sum_ ( i '\in' A ) F"
-  (at level 41, F at level 41, i, A at level 50,
-    format "'[' \sum_ ( i  '\in'  A ) '/  '  F ']'").
 Notation "\sum_ ( i '\in' A ) F" := (\big[+%R/0%R]_(i \in A) F) : ring_scope.
-Notation "\sum_ ( i '\in' A ) F" := (\big[+%E/0%E]_(i \in A) F) : ereal_scope.
 
 Lemma eq_fsbigl (R : Type) (idx : R) (op : R -> R -> R)
     (T : choiceType) (f : T -> R) (P Q : set T) :
@@ -366,6 +362,7 @@ Section fsbig2.
 Variables (R : Type) (idx : R) (op : Monoid.com_law idx).
 
 (* Lemma reindex_inside I F P ...  : finite_set (P `&` F @` [set~ id]) -> ... *)
+(* Isn't this reversed compared to reindex in bigop? *)
 Lemma reindex_fsbig {I J : choiceType} (h : I -> J) P Q
     (F : J -> R) : set_bij P Q h ->
   \big[op/idx]_(j \in Q) F j = \big[op/idx]_(i \in P) F (h i).
@@ -427,47 +424,6 @@ Arguments reindex_fsbigT {R idx op I J} _ _.
 #[deprecated(note="use reindex_fsbigT instead")]
 Notation reindex_inside_setT := reindex_fsbigT.
 
-Lemma lee_fsum_nneg_subset {R : realDomainType} [T : choiceType] [A B : set T]
-    [f : T -> \bar R] : finite_set A -> finite_set B ->
-    {subset A <= B} -> {in [predD B & A], forall t : T, 0 <= f t}%E ->
-  (\sum_(t \in A) f t <= \sum_(t \in B) f t)%E.
-Proof.
-move=> finA finB AB f0; rewrite !fsbig_finite//=; apply: lee_sum_nneg_subfset.
-  by apply/fsubsetP; rewrite -fset_set_sub//; apply/subsetP.
-by move=> t; rewrite !inE !in_fset_set// => /f0.
-Qed.
-
-Lemma lee_fsum [R : realDomainType] [T : choiceType] (I : set T)
-  (a b : T -> \bar R) : finite_set I ->
-  (forall i, I i -> a i <= b i)%E -> (\sum_(i \in I) a i <= \sum_(i \in I) b i)%E.
-Proof.
-move=> finI ab.
-rewrite !fsbig_finite// big_seq [in leRHS]big_seq lee_sum //.
-by move=> i; rewrite in_fset_set// inE; exact: ab.
-Qed.
-
-Lemma ge0_mule_fsumr (T : choiceType) (R : realDomainType) (x : \bar R)
-    (F : T -> \bar R) (P : set T) : (forall i : T, 0 <= F i)%E ->
-  (x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i)%E.
-Proof.
-move=> F0; have [->{x}|x0] := eqVneq x 0%E.
-  by rewrite mul0e big1// => ? _; rewrite mul0e.
-rewrite ge0_sume_distrr//; apply: eq_fbigl => y.
-rewrite !unlock; congr (_ \in fset_set _).
-apply/seteqP; rewrite /preimage; split=> [|] z/= [Pz Fz0];
-  split=> //; apply: contra_not Fz0.
-by move=> /eqP; rewrite mule_eq0 (negbTE x0)/= => /eqP.
-by move=> ->; rewrite mule0.
-Qed.
-
-Lemma ge0_mule_fsuml (T : choiceType) (R : realDomainType) (x : \bar R)
-    (F : T -> \bar R) (P : set T) : (forall i : T, 0 <= F i)%E ->
-  ((\sum_(i \in P) F i) * x = \sum_(i \in P) F i * x)%E.
-Proof.
-move=> F0; rewrite muleC ge0_mule_fsumr//.
-by apply: eq_fsbigr => i; rewrite muleC.
-Qed.
-
 Lemma fsbigN1 (R : eqType) (idx : R) (op : Monoid.com_law idx)
     (T1 T2 : choiceType) (Q : set T2) (f : T1 -> T2 -> R) (x : T1) :
   \big[op/idx]_(y \in Q) f x y != idx -> exists2 y, Q y & f x y != idx.
@@ -482,46 +438,45 @@ Lemma fsbig_split (T : choiceType) (R : eqType) (idx : R)
   op (\big[op/idx]_(x \in P) f x) (\big[op/idx]_(x \in P) g x).
 Proof. by move=> Pfin; rewrite !fsbig_finite// big_split. Qed.
 
-Lemma fsume_ge0 (R : numDomainType) (I : choiceType) (P : set I)
-    (F : I -> \bar R) :
-  (forall i, P i -> (0 <= F i)%E) -> (0 <= \sum_(i \in P) F i)%E.
+Lemma fsumr_ge0 (R : numDomainType) (I : choiceType) (P : set I) (F : I -> R) :
+  (forall i, P i -> 0 <= F i) -> 0 <= \sum_(i \in P) F i.
 Proof.
 move=> PF; case: finite_supportP; rewrite ?big_nil// => X XP F0 _.
-by rewrite big_seq_cond big_mkcondr sume_ge0// => i /XP/PF.
+by rewrite big_seq_cond big_mkcondr sumr_ge0// => i /XP/PF.
 Qed.
 
-Lemma fsume_le0 (R : numDomainType) (T : choiceType) (f : T -> \bar R) (P : set T) :
-  (forall t, P t -> (f t <= 0)%E) -> (\sum_(i \in P) f i <= 0)%E.
+Lemma fsumr_le0 (R : numDomainType) (I : choiceType) (P : set I) (F : I -> R) :
+  (forall i, P i -> F i <= 0) -> \sum_(i \in P) F i <= 0.
 Proof.
 move=> PF; case: finite_supportP; rewrite ?big_nil// => X XP F0 _.
-by rewrite big_seq_cond big_mkcondr sume_le0// => i /XP/PF.
+by rewrite big_seq_cond big_mkcondr sumr_le0// => i /XP/PF.
 Qed.
 
-Lemma fsume_gt0 (R : realDomainType) (I : choiceType) (P : set I)
-    (F : I -> \bar R) :
-  (0 < \sum_(i \in P) F i)%E -> exists2 i, P i & (0 < F i)%E.
+Lemma fsumr_gt0 (R : realDomainType) (I : choiceType) (r : seq I) (P : set I)
+    (F : I -> R) :
+  0 < \sum_(i \in P) F i -> exists2 i, P i & 0 < F i.
 Proof.
-apply: contraPP => /forall2NP xNPF; rewrite le_gtF// fsume_le0// => i Pi.
+apply: contraPP => /forall2NP xNPF; rewrite le_gtF// fsumr_le0// => i Pi.
 by case: (xNPF i) => // /negP; case: ltP.
 Qed.
 
-Lemma fsume_lt0 (R : realDomainType) (I : choiceType) (P : set I)
-    (F : I -> \bar R) :
-  (\sum_(i \in P) F i < 0)%E -> exists2 i, P i & (F i < 0)%E.
+Lemma fsumr_lt0 (R : realDomainType) (I : choiceType) (P : set I)
+    (F : I -> R) :
+  \sum_(i \in P) F i < 0 -> exists2 i, P i & F i < 0.
 Proof.
-apply: contraPP => /forall2NP xNPF; rewrite le_gtF// fsume_ge0// => i Pi.
+apply: contraPP => /forall2NP xNPF; rewrite le_gtF// fsumr_ge0// => i Pi.
 by case: (xNPF i) => // /negP; case: ltP.
 Qed.
 
-Lemma pfsume_eq0 (R : realDomainType) (I : choiceType) (P : set I)
-    (F : I -> \bar R) :
+Lemma pfsumr_eq0 (R : realDomainType) (I : choiceType) (P : set I)
+    (F : I -> R) :
   finite_set P ->
-  (forall i, P i -> 0 <= F i)%E ->
-  (\sum_(i \in P) F i = 0)%E -> (forall i, P i -> F i = 0%E).
+  (forall i, P i -> 0 <= F i) ->
+  \sum_(i \in P) F i = 0 -> forall i, P i -> F i = 0.
 Proof.
 move=> Pfin F0 /eqP; apply: contraTP => /existsPNP[i Pi /eqP Fi0].
-rewrite (fsbigD1 i)//= padde_eq0 ?F0 ?negb_and ?Fi0//.
-by rewrite fsume_ge0// => j [/F0->].
+rewrite (fsbigD1 i)//= paddr_eq0 ?F0 ?negb_and ?Fi0//.
+by rewrite fsumr_ge0// => j [/F0->].
 Qed.
 
 Lemma fsbig_setU {T} {I : choiceType} (A : set I) (F : I -> set T) :
@@ -529,10 +484,11 @@ Lemma fsbig_setU {T} {I : choiceType} (A : set I) (F : I -> set T) :
   \big[setU/set0]_(i \in A) F i = \bigcup_(i in A) F i.
 Proof. by move=> Afin; rewrite fsbig_finite// bigcup_fset_set. Qed.
 
-Lemma pair_fsum (T1 T2 : choiceType) (R : realDomainType)
-    (f : T1 -> T2 -> \bar R) (P : set T1) (Q : set T2) :
-    finite_set P -> finite_set Q ->
-  (\sum_(x \in P) \sum_(y \in Q) f x y = \sum_(x \in P `*` Q) f x.1 x.2)%E.
+Lemma pair_fsbig (R : Type) (idx : R) (op : Monoid.com_law idx)
+    (I J : choiceType) (P : set I) (Q : set J) (F : I -> J -> R) :
+  finite_set P -> finite_set Q ->
+  \big[op/idx]_(i \in P) \big[op/idx]_(j \in Q) F i j
+  = \big[op/idx]_(p \in P `*` Q) F p.1 p.2.
 Proof.
 move=> Pfin Qfin; have PQfin : finite_set (P `*` Q) by apply: finite_setM.
 rewrite !fsbig_finite//=; under eq_bigr do rewrite fsbig_finite//=.
@@ -543,13 +499,14 @@ move=> /andP[Pi Qi]; exists i; rewrite 2?inE ?andbT//.
 by exists j; rewrite 2?inE ?andbT.
 Qed.
 
-Lemma exchange_fsum (T1 T2 : choiceType) (R : realDomainType) (P : set T1) (Q : set T2)
-     (f : T1 -> T2 -> \bar R) :
-    finite_set P -> finite_set Q ->
-  (\sum_(i \in P) \sum_(j \in Q) f i j = \sum_(j \in Q) \sum_(i \in P) f i j)%E.
+Lemma exchange_fsbig (R : Type) (idx : R) (op : Monoid.com_law idx)
+    (I J : choiceType) (P : set I) (Q : set J) (F : I -> J -> R) :
+  finite_set P -> finite_set Q ->
+  \big[op/idx]_(i \in P) \big[op/idx]_(j \in Q) F i j
+  = \big[op/idx]_(j \in Q) \big[op/idx]_(i \in P) F i j.
 Proof.
-move=> Pfin Qfin; rewrite 2?pair_fsum//; pose swap (x : T2 * T1) := (x.2, x.1).
-apply: (reindex_fsbig swap).
+move=> Pfin Qfin; rewrite 2?pair_fsbig//; pose swap (x : I * J) := (x.2, x.1).
+apply/esym/(reindex_fsbig swap).
 split=> [? [? ?]//|[? ?] [? ?] /set_mem[? ?] /set_mem[? ?] [-> ->]//|].
 by move=> [i j] [? ?]; exists (j, i).
 Qed.

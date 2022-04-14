@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import ssreflect ssrbool ssrfun ssralg.
+From mathcomp Require Import ssreflect ssrbool ssrfun seq bigop ssralg ssrnum.
 Require Import boolp classical_sets.
 
 (***************************)
@@ -95,3 +95,9 @@ Arguments mul_fun {T R} _ _ _ /.
 Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
 Notation "\- f" := (opp_fun f) : ring_scope.
 Arguments opp_fun {T R} _ _ /.
+
+Import Num.Theory.
+
+Lemma sumr_le0 (R : numDomainType) I (r : seq I) (P : pred I) (F : I -> R) :
+  (forall i, P i -> F i <= 0)%R -> (\sum_(i <- r | P i) F i <= 0)%R.
+Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_naddl/F0. Qed.

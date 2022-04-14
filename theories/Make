@@ -22,7 +22,6 @@ exp.v
 trigo.v
 nsatz_realtype.v
 esum.v
-fsbigop.v
 set_interval.v
 lebesgue_measure.v
 forms.v
