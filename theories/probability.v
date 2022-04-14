@@ -14,10 +14,6 @@ Require Import esum measure lebesgue_measure lebesgue_integral functions numfun.
 (* This file provides a tentative definition of basic notions of probability  *)
 (* theory.                                                                    *)
 (*                                                                            *)
-(*       measure_dirac a == Dirac measure of a                                *)
-(* measure_image f mf mu == image of measure mu : {measure set T1 -> \bar R}  *)
-(*                          by f : T1 -> T2; mf is a proof that f is          *)
-(*                          measurable                                        *)
 (*       probability T R == a measure that sums to 1                          *)
 (*          {RV P >-> R} == real random variable, a measurable function from  *)
 (*                          the measurableType of the probability P to R      *)
@@ -39,31 +35,10 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(******************************************************************************)
-(*                             Probability (WIP)                              *)
-(*                                                                            *)
-(* measure_dirac                                                              *)
-(* measure_image                                                              *)
-(* probability                                                                *)
-(* random_variable                                                            *)
-(* expectation                                                                *)
-(* distribution                                                               *)
-(******************************************************************************)
-
-(* TODO: PR in progress *)
-Hint Extern 0 (measurable_fun _ normr) =>
+#[global] Hint Extern 0 (measurable_fun _ normr) =>
   solve [exact: measurable_fun_normr] : core.
 
-Definition sqe (R : numDomainType) (x : \bar R) := (x ^+ 2)%E.
-
-Lemma csum_set1 [R : realType] [T : choiceType] (t : T) (a : T -> \bar R) :
-  (forall t, 0 <= a t)%E ->
-  \esum_(i in [set t]) a i = a t.
-Proof.
-Admitted.
-(* /TODO: PR in progress *)
-
-Notation integralrM := integrableK.
+Notation integrablerM := integrableK.
 
 Section integrable.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
@@ -72,11 +47,10 @@ Lemma integrableMr (D : set T) : measurable D ->
   forall (k : R) (f : T -> \bar R), mu.-integrable D f ->
   mu.-integrable D (f \* cst k%:E)%E.
 Proof.
-move=> mD k f mf; apply: eq_integrable (integralrM mD k mf) => //.
+move=> mD k f mf; apply: eq_integrable (integrablerM mD k mf) => //.
 by move=> x _; rewrite muleC.
 Qed.
 
-(*NB: check eq_integrable may not need measurable D *)
 Lemma eq_integrable (D : set T) : measurable D -> forall f2 f1 : T -> \bar R,
   {in D, f1 =1 f2} -> mu.-integrable D f1 = mu.-integrable D f2.
 Proof.
@@ -87,58 +61,6 @@ Qed.
 
 End integrable.
 Arguments eq_integrable {T R mu D} _ f2 f1.
-(******************************************************************************)
-(* /TODO: backport                                                            *)
-(******************************************************************************)
-
-(* NB: PR in progress *)
-Section measure_dirac.
-Local Open Scope ereal_scope.
-Variables (T : measurableType) (a : T) (R : realType).
-
-Definition measure_dirac' (A : set T) : \bar R := (\1_A a)%:E.
-
-Lemma measure_dirac'0 : measure_dirac' set0 = 0.
-Proof. by rewrite /measure_dirac' indic0. Qed.
-
-Lemma measure_dirac'_ge0 B : 0 <= measure_dirac' B.
-Proof. by rewrite /measure_dirac' lee_fin. Qed.
-
-Lemma measure_dirac'_sigma_additive : semi_sigma_additive measure_dirac'.
-Proof.
-red.
-move=> F mF tF mUF; rewrite /measure_dirac' indicE.
-have [|aFn] /= := boolP (a \in \bigcup_n F n).
-  rewrite inE => -[n _ Fna].
-  have naF m : m != n -> a \notin F m.
-    move=> mn; rewrite notin_set => Fma.
-    move/trivIsetP : tF => /(_ _ _ Logic.I Logic.I mn).
-    by rewrite predeqE => /(_ a)[+ _]; exact.
-  apply/cvg_ballP => _/posnumP[e]; rewrite near_map; near=> m.
-  have mn : (n < m)%N by near: m; exists n.+1.
-  rewrite big_mkord (bigID (xpred1 (Ordinal mn)))//= big_pred1_eq/= big1/=.
-    by rewrite adde0 (indicE (F n) a) mem_set//; exact: ballxx.
-  by move=> j ij; rewrite indicE (negbTE (naF _ _)).
-rewrite [X in X --> _](_ : _ = cst 0%E); first exact: cvg_cst.
-rewrite funeqE => n /=; rewrite big1// => i _; rewrite indicE.
-have [|//] := boolP (a \in F i); rewrite inE => Fia.
-move: aFn; rewrite notin_set -[X in X -> _]/((~` (\bigcup_n0 F n0)) a).
-by rewrite setC_bigcup => /(_ i Logic.I).
-Unshelve. all: by end_near. Qed.
-
-Definition measure_dirac : {measure set T -> \bar R} :=
-  locked (Measure.Pack _ (Measure.Axioms
-    measure_dirac'0 measure_dirac'_ge0 measure_dirac'_sigma_additive)).
-
-Lemma measure_diracE A : measure_dirac A = (a \in A)%:R%:E.
-Proof. by rewrite /measure_dirac; unlock. Qed.
-
-End measure_dirac.
-Arguments measure_dirac {T} _ {R}.
-
-Reserved Notation "'\d_' a" (at level 9, format "'\d_'  a").
-
-Notation "\d_ a" := (measure_dirac a).
 
 From mathcomp.finmap Require Import finmap.
 
@@ -147,8 +69,8 @@ Lemma integralM_indic (T : measurableType) (R : realType)
   (k < 0 -> f k = set0) ->
   measurable (f k) ->
   measurable D ->
-  (\int_ D (k * \1_(f k) x)%:E 'd m[x] =
-   k%:E * \int_ D (\1_(f k) x)%:E 'd m[x])%E.
+  (\int[m]_(x in D) (k * \1_(f k) x)%:E =
+   k%:E * \int[m]_(x in D) (\1_(f k) x)%:E)%E.
 Proof.
 move=> fk0 mfk mD; have [k0|k0] := ltP k 0.
   rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0; last first.
@@ -166,82 +88,13 @@ Qed.
 Lemma integralM_indic' (T : measurableType) (R : realType)
     (m : {measure set T -> \bar R}) (D : set T) (f : {nnsfun T >-> R}) k :
   measurable D ->
-  (\int_ D (k * \1_(f @^-1` [set k]) x)%:E 'd m[x] =
-   k%:E * \int_ D (\1_(f @^-1` [set k]) x)%:E 'd m[x])%E.
+  (\int[m]_(x in D) (k * \1_(f @^-1` [set k]) x)%:E=
+   k%:E * \int[m]_(x in D) (\1_(f @^-1` [set k]) x)%:E)%E.
 Proof.
 move=> mD.
 rewrite (@integralM_indic _ _ _ _ (fun k => f @^-1` [set k]))// => k0.
 by rewrite preimage_nnfun0.
 Qed.
-
-Section integral_dirac.
-Variables (T : measurableType) (a : T) (R : realType).
-Variables (f : T -> R) (mf : measurable_fun setT (EFin \o f)).
-Hypothesis f0 : forall x, (0 <= f x)%R.
-
-Lemma integral_dirac :
-  (\int_ setT (f x)%:E 'd (\d_ a)[x] = (f a)%:E)%E.
-Proof.
-have [f_ [ndf_ f_f]] := approximation measurableT mf (fun t _ => f0 t).
-transitivity (lim (fun n => \int_ setT (f_ n x)%:E 'd (\d_ a)[x]))%E.
-  rewrite -monotone_convergence//.
-  - by apply: eq_integral => x _; apply/esym/cvg_lim => //; exact: f_f.
-  - by move=> n; apply/EFin_measurable_fun; exact/(@measurable_funS _ _ setT).
-  - by move=> *; rewrite lee_fin.
-  - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/ndf_.
-rewrite (_ : (fun _ => _) = (fun n => (f_ n a)%:E)).
-  by apply/cvg_lim => //; exact: f_f.
-rewrite funeqE => n.
-under eq_integral do rewrite fimfunE -sumEFin.
-rewrite ge0_integral_sum//; last 2 first.
-  - move=> r; apply/EFin_measurable_fun.
-    apply: measurable_funM => //; first exact: measurable_fun_cst.
-    by rewrite (_ : \1_ _ = mindic R (measurable_sfunP (f_ n) r)).
-  - by move=> r x _; rewrite muleindic_ge0.
-under eq_bigr; first by move=> r _; rewrite integralM_indic'//; over.
-rewrite /= (big_fsetD1 (f_ n a))/=; last first.
-  by rewrite in_fset_set// in_setE; exists a.
-rewrite integral_indic// measure_diracE setIT mem_set// mule1.
-rewrite big1_fset ?adde0// => r; rewrite !inE => /andP[rfna _] _.
-rewrite integral_indic// measure_diracE setIT memNset ?mule0//=.
-by move=> /esym; apply/eqP.
-Qed.
-
-End integral_dirac.
-
-Section measure_image.
-Local Open Scope ereal_scope.
-Variables (T1 T2 : measurableType) (f : T1 -> T2).
-Hypothesis mf : measurable_fun setT f.
-Variables (R : realType) (m : {measure set T1 -> \bar R}).
-
-Definition measure_image' A := m (f @^-1` A).
-
-Lemma measure_image'0 : measure_image' set0 = 0.
-Proof. by rewrite /measure_image' preimage_set0 measure0. Qed.
-
-Lemma measure_image'_ge0 A : 0 <= measure_image' A.
-Proof. by apply: measure_ge0; rewrite -[X in measurable X]setIT; apply: mf. Qed.
-
-Lemma measure_image'_sigma_additive : semi_sigma_additive measure_image'.
-Proof.
-move=> F mF tF mUF; rewrite /measure_image' preimage_bigcup.
-apply: measure_semi_sigma_additive.
-- by move=> n; rewrite -[X in measurable X]setTI; exact: mf.
-- apply/trivIsetP => /= i j _ _ ij; rewrite -preimage_setI.
-  by move/trivIsetP : tF => /(_ _ _ _ _ ij) ->//; rewrite preimage_set0.
-- by rewrite -preimage_bigcup -[X in measurable X]setTI; exact: mf.
-Qed.
-
-Definition measure_image : {measure set T2 -> \bar R} :=
-  locked (Measure.Pack _ (Measure.Axioms
-    measure_image'0 measure_image'_ge0 measure_image'_sigma_additive)).
-
-Lemma measure_imageE A : measure_image A = m (f @^-1` A).
-Proof. by rewrite /measure_image; unlock. Qed.
-
-End measure_image.
-(* /NB: PR in progress *)
 
 (* TODO: move to measure.v? *)
 Section transfer.
@@ -252,21 +105,20 @@ Variables (R : realType) (mu : {measure set T1 -> \bar R}).
 
 Lemma transfer (f : T2 -> \bar R) :
   measurable_fun setT f -> (forall y, 0 <= f y) ->
-  \int_ setT (f y) 'd (measure_image mphi mu)[y] =
-  \int_ setT ((f \o phi) x) 'd mu[x].
+  \int[pushforward_measure mphi mu]_y f y =
+  \int[mu]_x (f \o phi) x.
 Proof.
 move=> mf f0.
 pose pt2 := phi point.
 have [f_ [ndf_ f_f]] := approximation measurableT mf (fun t _ => f0 t).
 transitivity
-    (lim (fun n => \int_ setT (f_ n x)%:E 'd (measure_image mphi mu)[x])).
+    (lim (fun n => \int[pushforward_measure mphi mu]_x (f_ n x)%:E)).
   rewrite -monotone_convergence//.
   - by apply: eq_integral => y _; apply/esym/cvg_lim => //; exact: f_f.
   - by move=> n; exact/EFin_measurable_fun.
   - by move=> n y _; rewrite lee_fin.
   - by move=> y _ m n mn; rewrite lee_fin; apply/lefP/ndf_.
-rewrite (_ : (fun _ => _) =
-    (fun n => \int_ setT ((EFin \o f_ n \o phi) x) 'd mu[x])).
+rewrite (_ : (fun _ => _) = (fun n => \int[mu]_x (EFin \o f_ n \o phi) x)).
   rewrite -monotone_convergence//; last 3 first.
     - move=> n /=; apply: measurable_fun_comp; first exact: measurable_fun_EFin.
       by apply: measurable_fun_comp => //; exact: measurable_sfun.
@@ -278,8 +130,8 @@ have mfnphi : forall r, measurable (f_ n @^-1` [set r] \o phi).
   move=> r.
   rewrite -[_ \o _]/(phi @^-1` (f_ n @^-1` [set r])) -(setTI (_ @^-1` _)).
   exact/mphi.
-transitivity (\sum_(k <- fset_set [set of f_ n])
-  \int (k * \1_(((f_ n) @^-1` [set k]) \o phi) x)%:E 'd mu[x]).
+transitivity (\sum_(k <- fset_set (range (f_ n)))
+  \int[mu]_x (k * \1_(((f_ n) @^-1` [set k]) \o phi) x)%:E).
   under eq_integral do rewrite fimfunE -sumEFin.
   rewrite ge0_integral_sum//; last 2 first.
     - move=> y; apply/EFin_measurable_fun; apply: measurable_funM.
@@ -287,7 +139,7 @@ transitivity (\sum_(k <- fset_set [set of f_ n])
       by rewrite (_ : \1_ _ = mindic R (measurable_sfunP (f_ n) y)).
     - by move=> y x _; rewrite muleindic_ge0.
   apply eq_bigr => r _; rewrite integralM_indic'// integral_indic//.
-  rewrite measure_imageE.
+  rewrite /= /pushforward.
   rewrite (@integralM_indic _ _ _ _ (fun r => f_ n @^-1` [set r] \o phi))//.
     by congr (_ * _)%E; rewrite [RHS](@integral_indic).
   by move=> r0; rewrite preimage_nnfun0.
@@ -342,11 +194,10 @@ split; first exact/EFin_measurable_fun/measurable_fun_cst.
 have [k0|k0] := leP 0 k.
 - rewrite (eq_integral (EFin \o cst_mfun k))//; last first.
     by move=> x _ /=; rewrite ger0_norm.
-  by rewrite integral_cst// probability_setT mule1 lte_pinfty.
+  by rewrite integral_cst// probability_setT mule1 ltey.
 - rewrite (eq_integral (EFin \o cst_mfun (- k)))//; last first.
     by move=> x _ /=; rewrite ltr0_norm.
-  rewrite integral_cst//.
-  by rewrite probability_setT mule1 lte_pinfty.
+  by rewrite integral_cst// probability_setT mule1 ltey.
 Qed.
 
 End probability_lemmas.
@@ -451,7 +302,7 @@ Section expectation.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (P : probability T R).
 
-Definition expectation (X : {RV P >-> R}) := \int (X w)%:E 'd P[w].
+Definition expectation (X : {RV P >-> R}) := \int[P]_w (X w)%:E.
 End expectation.
 Notation "''E' X" := (expectation X).
 
@@ -485,7 +336,7 @@ Qed.
 
 Lemma expectationM (k : R) : 'E (k `cst* X) = k%:E * 'E X.
 Proof.
-rewrite /expectation.
+rewrite /expectation. (*TODO: expectationE lemma*)
 under eq_integral do rewrite EFinM.
 rewrite -integralM//.
 by under eq_integral do rewrite muleC.
@@ -510,10 +361,11 @@ Section square_integrable.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 
 Definition square_integrable (D : set T) (f : T -> R) :=
-  (\int_ D (`| f x | ^+ 2)%:E 'd mu[x] < +oo)%E.
+  (\int[mu]_(x in D) (`| f x | ^+ 2)%:E < +oo)%E.
+
 Lemma square_integrableP (D : set T) (f : T -> R) :
   measurable D -> measurable_fun D f ->
-  square_integrable D f <-> mu.-integrable D (EFin \o (fun x => `|f x| ^+ 2)).
+  square_integrable(*TODO: generalize*) D f <-> mu.-integrable D (EFin \o (fun x => `|f x| ^+ 2)).
 Proof.
 move=> mD mf; rewrite /square_integrable; split.
   move=> foo; split.
@@ -589,11 +441,11 @@ Section distribution.
 Variables (T : measurableType) (R : realType) (P : probability T R) (X : {RV P >-> R}).
 
 Definition distribution : {measure set R -> \bar R} :=
-  measure_image (@measurable_funP _ _ X) P.
+  pushforward_measure (@measurable_funP _ _ X) P.
 
 Lemma distribution_is_probability : distribution [set: R] = 1%:E.
 Proof.
-by rewrite /distribution /= measure_imageE preimage_setT probability_setT.
+by rewrite /distribution /= /pushforward /= preimage_setT probability_setT.
 Qed.
 
 Definition probability_of_distribution : probability _ R :=
@@ -607,11 +459,8 @@ Variables (T : measurableType) (R : realType) (P : probability T R) (X : {RV P >
 
 Lemma transfer_probability (f : R -> \bar R) :
   measurable_fun setT f -> (forall y, 0 <= f y) ->
-  \int_ setT (f y) 'd (distribution X)[y] =
-  \int_ setT ((f \o X) x) 'd P[x].
-Proof.
-by move=> mf f0; rewrite transfer.
-Qed.
+  \int[distribution X]_y f y = \int[P]_x (f \o X) x.
+Proof. by move=> mf f0; rewrite transfer. Qed.
 
 End transfer_probability.
 
@@ -623,7 +472,7 @@ Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 
 (* PR: in progress *)
-Lemma integral_set0 (f : T -> \bar R) : \int_ set0 (f x) 'd mu[x] = 0.
+Lemma integral_set0 (f : T -> \bar R) : \int[mu]_(x in set0) f x = 0.
 Proof.
 Admitted.
 
@@ -639,7 +488,7 @@ Lemma integral_bigsetU (F : (set T)^nat) (mF : forall n, measurable (F n))
   measurable_fun D f ->
   (forall x, D x -> 0 <= f x) ->
   trivIset `I_n F ->
-  \int_ D (f x) 'd mu[x] = \sum_(i < n) \int_ (F i) (f x) 'd mu[x].
+  \int[mu]_(x in D) f x = \sum_(i < n) \int[mu]_(x in F i) f x.
 Proof.
 Admitted.
 
@@ -648,8 +497,8 @@ Lemma ge0_integral_bigcup (F : (set _)^nat) (f : T -> \bar R) :
   trivIset setT F ->
   (forall k, measurable (F k)) ->
   mu.-integrable (\bigcup_k F k) f ->
-  (\int_ (\bigcup_i F i) (f x) 'd mu[x] =
-   \sum_(i <oo) \int_ (F i) (f x) 'd mu[x])%E.
+  (\int[mu]_(x in \bigcup_i F i) f x =
+   \sum_(i <oo) \int[mu]_(x in F i) f x)%E.
 Proof.
 Admitted.
 
@@ -680,45 +529,17 @@ Admitted.
 Lemma integrable_summable (F : (set T)^nat) (g : T -> \bar R):
   trivIset setT F -> (forall k, measurable (F k)) ->
   mu.-integrable (\bigcup_k F k) g ->
-  summable [set: nat] (fun i => \int_ (F i) g x 'd mu[x]).
+  summable [set: nat] (fun i => \int[mu]_(x in F i) g x).
 Proof.
 Admitted.
 
 Lemma integral_bigcup (F : (set _)^nat) (g : T -> \bar R) :
   trivIset setT F -> (forall k, measurable (F k)) ->
   mu.-integrable (\bigcup_k F k) g ->
-  (\int_ (\bigcup_i F i) (g x) 'd mu[x] = \sum_(i <oo) \int_ (F i) (g x) 'd mu[x])%E.
+  (\int[mu]_(x in \bigcup_i F i) g x = \sum_(i <oo) \int[mu]_(x in F i) g x)%E.
 Proof.
-(* /PR in progress *)
 Admitted.
 End subadditive_countable.
-
-Module DiscreteDistribution.
-Section discrete_distribution.
-Local Open Scope form_scope.
-Variables (T : measurableType) (R : realType) (P : probability T R)
-          (X : {RV P >-> R}).
-Record t := mk {
-  c : R^nat ; c0 : forall n, (0 <= c n)%R ; c1 : (\sum_(n <oo) (c n)%:E = 1)%E ;
-  a : {injfun [set: nat] >-> [set: R]} ;
-  E : distribution X =1 (fun A => \sum_(n <oo) (c n)%:E * (\d_ (a n) A))%E
-}.
-(*Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
-Record t := mk {
-  c : R^nat ; c0 : forall n, (0 <= c n)%R ; c1 : (\sum_(n <oo) (c n)%:E = 1)%E ;
-  a : {injfun [set: nat] >-> [set: T]} ;
-  E : mu =1 (fun A => \sum_(n <oo) (c n)%:E * (\d_ (a n) A))%E
-}.*)
-End discrete_distribution.
-Module Exports.
-Notation discrete_distribution := t.
-End Exports.
-End DiscreteDistribution.
-Export DiscreteDistribution.Exports.
-
-Lemma nneseries0 (R : realFieldType) (f : (\bar R)^nat) :
-  (forall i, f i = 0%E) -> (\sum_(i <oo) f i = 0)%E.
-Admitted. (*NB: this is in master*)
 
 Lemma preimage10' {T R : Type} {f : T -> R} {x : R} :
   f @^-1` [set x] = set0 -> ~ range f x.
@@ -728,81 +549,135 @@ apply: contraPnot => -[t _ <-].
 rewrite /preimage/=.
 by move/seteqP => -[+ _] => /(_ t) /=.
 Qed.
+(* /PR in progress *)
+
+(* Convoo? *)
+Module Convn.
+Record t (R : realType) := {
+  f : nat -> R ;
+  f0 : forall n, (0 <= f n)%R ;
+  f1 : (\sum_(n <oo) (f n)%:E = 1)%E }.
+End Convn.
+Notation convn := Convn.t.
+Coercion Convn.f : convn >-> Funclass.
+
+#[global] Hint Resolve Convn.f0 : core.
+
+Module DiscreteDistribution.
+Section discrete_distribution.
+Local Open Scope form_scope.
+Variables (T : measurableType) (R : realType) (P : probability T R)
+          (X : {RV P >-> R}).
+(*Record t := mk {
+  c : convn R ;
+  countableX : countable (range X) ;
+  _ : ... a ....
+
+  a : {injfun [set: nat] >-> [set: R]} ;
+  XA : forall t, exists n, X t = a n ;
+
+
+  support : distribution X =1
+            (fun A : set R => \sum_(n <oo) (c n)%:E * (\d_ (a n) A))%E
+}.*)
+Record t := mk {
+  c : convn R ;
+  a : {injfun [set: nat] >-> [set: R]} ;
+  XA : forall t, exists n, X t = a n ;
+  support : distribution X =1 (fun A : set R => \sum_(n <oo) (c n)%:E * (\d_ (a n) A))%E
+}.
+
+Definition values (d : t) := a d.
+
+Lemma inj_values (d : t) : {injfun [set: nat] >-> [set: R]}.
+Proof. by case: d. Qed.
+
+Lemma RV_values (d : t) : forall x, exists n, X x = values d n.
+Proof. by case: d. Qed.
+
+Lemma distribution_RV (d : t) :
+  distribution X =1
+    (fun A => \sum_(n <oo) (c d n)%:E * (\d_ (values d n) A))%E.
+Proof. by case: d. Qed.
+
+End discrete_distribution.
+Module Exports.
+Notation discrete_distribution := t.
+End Exports.
+End DiscreteDistribution.
+Export DiscreteDistribution.Exports.
 
 Section discrete_distribution.
 Variables (T : measurableType) (R : realType) (P : probability T R)
   (X : {RV P >-> R}) (d : discrete_distribution X).
 
-Notation C := (DiscreteDistribution.c d).
-Notation A := (DiscreteDistribution.a d).
+Import DiscreteDistribution.
+
+Notation C := (c d).
+Notation A := (values d).
 
 Lemma test0 r : P [set x | X x = r] = distribution X [set r].
-Proof. by rewrite /distribution /= measure_imageE. Qed.
+Proof. by rewrite /distribution /= /pushforward. Qed.
 
 Lemma test1 (n : nat) : distribution X [set A n] = (C n)%:E.
 Proof.
-rewrite (DiscreteDistribution.E d).
-rewrite ereal_pseries_esum; last first.
-  by move=> m _; rewrite mule_ge0// lee_fin DiscreteDistribution.c0.
+rewrite (distribution_RV d) nneseries_esum; last first.
+  by move=> m _; rewrite mule_ge0// lee_fin.
 rewrite (esumID [set n]); last first.
-  by move=> m _; rewrite mule_ge0// lee_fin DiscreteDistribution.c0.
+  by move=> m _; rewrite mule_ge0// lee_fin.
 rewrite addeC esum0 ?add0e; last first.
   move=> m [_ /= mn].
-  rewrite measure_diracE/=.
-  rewrite memNset ?mule0//=.
-  apply: contra_not mn.
-  exact/injT.
+  rewrite /dirac indicE memNset ?mule0//=.
+  by apply: contra_not mn; exact/injT.
 rewrite (_ : _ `&` _ = [set n]); last exact/seteqP.
-rewrite csum_set1.
-  by rewrite measure_diracE /= mem_set ?mule1//.
-move=> t.
-by rewrite mule_ge0// lee_fin DiscreteDistribution.c0.
+rewrite esum_set1.
+  by rewrite /= /dirac indicE mem_set// mule1.
+by rewrite mule_ge0// lee_fin.
 Qed.
 
-Lemma abse1 : `|1|%E = 1%E :> \bar R.
-Proof. by rewrite /abse normr1. Qed.
-
-Lemma discrete_expectation :
-   (forall t, exists n, X t = A n) (*X takes only the values A n*) ->
-   P.-integrable setT (EFin \o X) ->
+Lemma discrete_expectation : P.-integrable setT (EFin \o X) ->
   'E X = (\sum_(n <oo) (C n)%:E * (A n)%:E)%E.
 Proof.
-move=> XA ix.
+move=> ix.
 rewrite /expectation.
-have H1 : \bigcup_k X @^-1` [set A k] = setT.
+have <- : \bigcup_k X @^-1` [set A k] = setT.
   apply/seteqP; split => // t _.
   rewrite /bigcup /=.
-  by have [n XtAn] := XA t; exists n.
-rewrite -H1.
-have H2 : trivIset setT (fun k => [set A k]).
-  move=> i j _ _ [/= r []]; case: d => c c0 c1 /= a dXE rai raj.
-  by apply: (@injT _ _ a) => /=; rewrite -rai -raj.
-have H3 : trivIset [set: nat] (fun i : nat => X @^-1` [set A i]).
+  have [n XAtn] := RV_values d t.
+  by exists n.
+have tA : trivIset setT (fun k => [set A k]).
+  by move=> i j _ _ [/= r []] ->; exact/injT.
+have tXA : trivIset setT (fun i : nat => X @^-1` [set A i]).
   apply/trivIsetP => /= i j _ _ ij.
-  move/trivIsetP : H2 => /(_ i j Logic.I Logic.I ij) Aij.
+  move/trivIsetP : tA => /(_ i j Logic.I Logic.I ij) Aij.
   by rewrite -preimage_setI Aij preimage_set0.
 rewrite integral_bigcup//; last first.
-  apply: (integrableS measurableT) => //.
-  exact: bigcup_measurable.
-transitivity ((\sum_(i <oo) \int_ (X @^-1` [set A i]) (A i)%:E 'd P[x])%E).
-  apply eq_ereal_pseries => i.
-  apply eq_integral => t.
-  by rewrite in_setE/= => ->.
-transitivity ((\sum_(i <oo) (A i)%:E * \int_ (X @^-1` [set A i]) 1 'd P[x])%E).
-  apply eq_ereal_pseries => i.
+  by apply: (integrableS measurableT) => //; exact: bigcup_measurable.
+transitivity (\sum_(i <oo) \int[P]_(x in X @^-1` [set A i]) (A i)%:E)%E.
+  by apply eq_nneseries => i _; apply eq_integral => t; rewrite in_setE/= => ->.
+transitivity (\sum_(i <oo) (A i)%:E * \int[P]_(x in X @^-1` [set A i]) 1)%E.
+  apply eq_nneseries => i _.
   rewrite -integralM//; last first.
-    split => //.
-      exact: measurable_fun_cst.
+    split; first exact: measurable_fun_cst.
     rewrite (eq_integral (cst 1%E)); last by move=> x _; rewrite abse1.
-    rewrite integral_cst// mul1e (@le_lt_trans _ _ 1%E) ?lte_pinfty//.
+    rewrite integral_cst// mul1e (@le_lt_trans _ _ 1%E) ?ltey//.
     exact: probability_le1.
-  congr integral.
-  apply funext => y.
-  by rewrite mule1.
-apply eq_ereal_pseries => k.
-rewrite muleC.
-congr (_ * _)%E.
-by rewrite integral_cst//= mul1e test0 test1.
+  by apply eq_integral => y _; rewrite mule1.
+apply eq_nneseries => k _.
+by rewrite integral_cst//= mul1e test0 test1 muleC.
 Qed.
 
 End discrete_distribution.
+
+Module Density.
+Section density.
+Local Open Scope form_scope.
+Variables (R : realType) (P : probability (g_measurableType (@ocitv R)) R)
+          (X : {RV P >-> R}).
+Record t := mk {
+  f : {mfun (g_measurableType (@ocitv R)) >-> R} ;
+  f0 : forall r, 0 <= f r ;
+  support : distribution X =1 (fun A => \int[lebesgue_measure]_(x in A) (f x)%:E)%E
+}.
+End density.
+End Density.
