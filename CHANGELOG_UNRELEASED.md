@@ -97,6 +97,8 @@
   + generalize `eq_nneseries`, `nneseries0`
 - in `mathcomp_extra.v`:
   + generalize `card_fset_sum1`
+- in `lebesgue_integral.v`:
+  + change the notation `\int_`
 
 ### Renamed
 
