@@ -6,6 +6,7 @@ From mathcomp Require choice.
 Coercion choice.Choice.mixin : choice.Choice.class_of >-> choice.Choice.mixin_of.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
+From mathcomp.classical Require Import boolp classical_sets.
 
 (***************************)
 (* MathComp 1.15 additions *)
@@ -15,7 +16,7 @@ From mathcomp Require Import finset interval.
 (* This files contains lemmas and definitions missing from MathComp.          *)
 (*                                                                            *)
 (*                oflit f := Some \of                                         *)
-(*          pred_omap T D := [pred x | oapp (mem D) false x]                  *)
+(*          pred_oapp T D := [pred x | oapp (mem D) false x]                  *)
 (*                   \- f := fun x => - f x                                   *)
 (*                 f \* g := fun x => f x * g x                               *)
 (*               f \max g := fun x => Num.max (f x) (g x)                     *)
@@ -140,6 +141,22 @@ Proof.
 move=> hD fK hK c cD /=; rewrite -[RHS]hK/=; case hcE : (h c) => [b|]//=.
 have bD : b \in D by have := hD _ cD; rewrite hcE inE.
 by rewrite -[b in RHS]fK; case: (f b) => //=; have /hK := cD; rewrite hcE.
+Qed.
+
+Lemma pred_oappE {T : Type} (D : {pred T}) :
+  pred_oapp D = mem (some @` D)%classic.
+Proof.
+apply/funext=> -[x|]/=; apply/idP/idP; rewrite /pred_oapp/= inE //=.
+- by move=> xD; exists x.
+- by move=> [// + + [<-]].
+- by case.
+Qed.
+
+Lemma pred_oapp_set {T : Type} (D : set T) :
+  pred_oapp (mem D) = mem (some @` D)%classic.
+Proof.
+by rewrite pred_oappE; apply/funext => x/=; apply/idP/idP; rewrite ?inE;
+   move=> [y/= ]; rewrite ?in_setE; exists y; rewrite ?in_setE.
 Qed.
 
 Lemma eqbLR (b1 b2 : bool) : b1 = b2 -> b1 -> b2.

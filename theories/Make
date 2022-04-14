@@ -12,7 +12,6 @@ constructive_ereal.v
 ereal.v
 reals.v
 landau.v
-classical_sets.v
 Rstruct.v
 topology.v
 prodnormedzmodule.v

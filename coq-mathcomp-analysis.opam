@@ -19,11 +19,8 @@ build: [make "-C" "theories" "-j%{jobs}%"]
 install: [make "-C" "theories" "install"]
 depends: [
   "coq-mathcomp-classical" { = version}
-  "coq-mathcomp-fingroup" { (>= "1.13.0" & < "1.16~") | (= "dev") }
-  "coq-mathcomp-algebra"
-  "coq-mathcomp-solvable"
+  "coq-mathcomp-solvable" { (>= "1.13.0" & < "1.16~") | (= "dev") }
   "coq-mathcomp-field"
-  "coq-mathcomp-finmap" { (>= "1.5.1" & < "1.6~") | (= "dev") }
   "coq-mathcomp-bigenough" { (>= "1.0.0") }
   "coq-hierarchy-builder" { (>= "1.2.0") }
 ]

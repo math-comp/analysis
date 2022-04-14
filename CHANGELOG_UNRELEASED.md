@@ -47,6 +47,8 @@
   + notation `\;` for the composition of relations
 - OPAM package `coq-mathcomp-classical` containing `boolp.v`
 - file `all_classical.v`
+- in file `mathcomp_extra.v`:
+  + lemmas `pred_oappE` and `pred_oapp_set` (from `classical_sets.v`)
 
 ### Changed
 - in `topology.v`
@@ -91,6 +93,7 @@
 - in `topology.v`:
  + `pasting` -> `withinU_continuous`
 - file `theories/boolp.v` -> `classical/boolp.v`
+- file `theories/classical_sets.v` -> `classical/classical_sets.v`
 
 ### Deprecated
 
@@ -98,6 +101,9 @@
   + lemma `lte_spaddr`, renamed `lte_spaddre`
 
 ### Removed
+
+- in file `classical_sets.v`:
+  + lemmas `pred_oappE` and `pred_oapp_set` (moved to `mathcomp_extra.v`)
 
 ### Infrastructure
 

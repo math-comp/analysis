@@ -20,6 +20,9 @@ install: [make "-C" "classical" "install"]
 depends: [
   "coq" { (>= "8.14" & < "8.17~") | (= "dev") }
   "coq-mathcomp-ssreflect" { (>= "1.13.0" & < "1.16~") | (= "dev") }
+  "coq-mathcomp-fingroup"
+  "coq-mathcomp-algebra"
+  "coq-mathcomp-finmap" { (>= "1.5.1" & < "1.6~") | (= "dev") }
 ]
 
 tags: [

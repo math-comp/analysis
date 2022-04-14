@@ -372,8 +372,8 @@ Canonical R_rcfType := RcfType R Rreal_closed_axiom.
 End ssreal_struct.
 
 Local Open Scope ring_scope.
-From mathcomp.classical Require Import boolp.
-Require Import reals classical_sets.
+From mathcomp.classical Require Import boolp classical_sets.
+Require Import reals.
 
 Section ssreal_struct_contd.
 Implicit Type E : set R.

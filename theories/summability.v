@@ -2,9 +2,9 @@
 Require Reals.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import interval zmodp.
-From mathcomp.classical Require Import boolp.
+From mathcomp.classical Require Import boolp classical_sets.
 Require Import ereal reals.
-Require Import Rstruct classical_sets signed topology normedtype.
+Require Import Rstruct signed topology normedtype.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
