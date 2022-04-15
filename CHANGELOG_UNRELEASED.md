@@ -67,6 +67,8 @@
   + lemmas `lee_nneseries`
 - in file `esum.v`:
   + lemma `nnseries_interchange`
+- in file `ereal.v`:
+  + lemma `ltninfty_adde_def`
 
 ### Changed
 

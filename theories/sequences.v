@@ -1759,21 +1759,20 @@ Unshelve. all: by end_near. Qed.
 
 Section nneseries_split.
 
-Let ge0_lim_shift_cst (R : realFieldType) (u : (\bar R) ^nat) (l : \bar R) :
-  cvg u -> (forall n, 0 <= u n) -> 0 <= l -> lim (fun x => l + u x) = l + lim u.
+Let lim_shift_cst (R : realFieldType) (u : (\bar R) ^nat) (l : \bar R) :
+  cvg u -> (forall n, 0 <= u n) -> -oo < l -> lim (fun x => l + u x) = l + lim u.
 Proof.
-move=> cu u0 l0; apply/cvg_lim => //; apply: ereal_cvgD => //.
-  by rewrite ge0_adde_def// inE; apply: ereal_lim_ge => //; exact: nearW.
-exact: cvg_cst.
+move=> cu u0 hl; apply/cvg_lim => //; apply: ereal_cvgD (cu); last first.
+  exact: cvg_cst.
+rewrite ltninfty_adde_def// inE (@lt_le_trans _ _ 0)//.
+by apply: ereal_lim_ge => //; exact: nearW.
 Qed.
 
-Let lim_shift (R : realFieldType) (n : nat) (f g : nat -> nat -> \bar R) :
-  cvg (g n) -> (forall x, (n < x)%N -> f n x = g n x) ->
-  lim (fun x => f n x) = lim (fun x => g n x).
+Let near_eq_lim (R : realFieldType) (f g : nat -> \bar R) :
+  cvg g -> {near \oo, f =1 g} -> lim f = lim g.
 Proof.
-move=> cg h; suff: (fun x => f n x) --> lim (g n) by move=> fg; exact/cvg_lim.
-apply: cvg_trans cg; apply: near_eq_cvg; near=> x.
-by rewrite h//; near: x; exists n.+1.
+move=> cg fg; suff: f --> lim g by exact/cvg_lim.
+by apply: cvg_trans cg; apply: near_eq_cvg; near=> x; apply/esym; near: x.
 Unshelve. all: by end_near. Qed.
 
 Lemma nneseries_split (R : realType) (f : nat -> \bar R) n :
@@ -1782,14 +1781,13 @@ Lemma nneseries_split (R : realType) (f : nat -> \bar R) n :
 Proof.
 move=> f0; elim: n => [|n ih]; first by rewrite big_ord0 add0e.
 rewrite big_ord_recr/= -addeA [f n + _](_ : _ = \sum_(n <= k <oo) f k)//.
-rewrite -ge0_lim_shift_cst//; last 2 first.
-  - exact: is_cvg_ereal_nneg_natsum.
-  - by move=> m; exact: sume_ge0.
-apply: (@lim_shift R n (fun n x => f n + \sum_(n.+1 <= k < x) f k)
-                       (fun n x => \sum_(n <= k < x) f k)).
-  exact: is_cvg_ereal_nneg_natsum.
-by move=> x xn; rewrite -big_ltn.
-Qed.
+rewrite -lim_shift_cst; last by rewrite (@lt_le_trans _ _ 0).
+- apply: (@near_eq_lim _ (fun x => f n + _)).
+    exact: is_cvg_ereal_nneg_natsum.
+  by near=> x; rewrite -big_ltn//; near: x; exact: nbhs_infty_gt.
+- exact: is_cvg_ereal_nneg_natsum.
+- by move=> m; exact: sume_ge0.
+Unshelve. all: by end_near. Qed.
 
 End nneseries_split.
 
