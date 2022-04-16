@@ -323,9 +323,8 @@ apply/andP; split=> //; apply: contraTneq xbj => ->.
 by rewrite in_itv/= le_gtF// (itvP xabi).
 Qed.
 
-Canonical hlength_measure : {additive_measure set itvs -> \bar R}
-  := AdditiveMeasure (AdditiveMeasure.Axioms (@hlength0 _)
-     (@hlength_ge0') hlength_semi_additive).
+HB.instance Definition _ := isAdditiveMeasure.Build R _ hlength
+  (@hlength0 _) (@hlength_ge0') hlength_semi_additive.
 
 Hint Extern 0 (measurable _) => solve [apply: is_ocitv] : core.
 
@@ -356,7 +355,7 @@ move=> /[apply]-[i _|X _ Xc]; first exact: interval_open.
 have: `](a.1 + e%:num / 2), a.2] `<=` \bigcup_(i in [set` X]) Aoc i.
   move=> x /subset_itv_oc_cc /Xc [i /= Xi] Aooix.
   by exists i => //; apply: subset_itv_oo_oc Aooix.
-have /[apply] := @content_sub_fsum _ _ [additive_measure of hlength] _ [set` X].
+have /[apply] := @content_sub_fsum _ _ [the additive_measure _ _ of hlength] _ [set` X].
 move=> /(_ _ _ _)/Box[]//=; apply: le_le_trans.
   rewrite hlength_itv ?lte_fin -?EFinD/= -addrA -opprD.
   by case: ltP => //; rewrite lee_fin subr_le0.
@@ -383,8 +382,19 @@ Qed.
 
 Let gitvs := g_measurableType ocitv.
 
-Definition lebesgue_measure : {measure set gitvs -> \bar R} :=
-  Hahn_ext_measure hlength_sigma_sub_additive.
+Definition lebesgue_measure := Hahn_ext [the additive_measure _ _ of hlength].
+
+Let lebesgue_measure0 : lebesgue_measure set0 = 0%E.
+Proof. by[]. Qed.
+
+Let lebesgue_measure_ge0 : forall x, (0 <= lebesgue_measure x)%E.
+Proof. exact: measure.Hahn_ext_ge0. Qed.
+
+Let lebesgue_measure_semi_sigma_additive : semi_sigma_additive lebesgue_measure.
+Proof. exact/measure.Hahn_ext_sigma_additive/hlength_sigma_sub_additive. Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ lebesgue_measure
+  lebesgue_measure0 lebesgue_measure_ge0 lebesgue_measure_semi_sigma_additive.
 
 End itv_semiRingOfSets.
 Arguments lebesgue_measure {R}.
@@ -710,11 +720,11 @@ Proof.
 by rewrite -setCitvr; exact/measurableC/emeasurable_itv_bnd_pinfty.
 Qed.
 
-Definition elebesgue_measure' : set \bar R -> \bar R :=
+Definition elebesgue_measure : set \bar R -> \bar R :=
   fun S => lebesgue_measure (fine @` (S `\` [set -oo; +oo]%E)).
 
-Lemma elebesgue_measure'0 : elebesgue_measure' set0 = 0%E.
-Proof. by rewrite /elebesgue_measure' set0D image_set0 measure0. Qed.
+Lemma elebesgue_measure0 : elebesgue_measure set0 = 0%E.
+Proof. by rewrite /elebesgue_measure set0D image_set0 measure0. Qed.
 
 Lemma measurable_fine (X : set \bar R) : measurable X ->
   measurable [set fine x | x in X `\` [set -oo; +oo]%E].
@@ -737,19 +747,19 @@ case => Y mY [X' [ | <-{X} | <-{X} | <-{X} ]].
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
 Qed.
 
-Lemma elebesgue_measure'_ge0 X : (0 <= elebesgue_measure' X)%E.
+Lemma elebesgue_measure_ge0 X : (0 <= elebesgue_measure X)%E.
 Proof. exact/measure_ge0. Qed.
 
-Lemma semi_sigma_additive_elebesgue_measure' :
-  semi_sigma_additive elebesgue_measure'.
+Lemma semi_sigma_additive_elebesgue_measure :
+  semi_sigma_additive elebesgue_measure.
 Proof.
-move=> /= F mF tF mUF; rewrite /elebesgue_measure'.
+move=> /= F mF tF mUF; rewrite /elebesgue_measure.
 rewrite [X in lebesgue_measure X](_ : _ =
     \bigcup_n (fine @` (F n `\` [set -oo; +oo]%E))); last first.
   rewrite predeqE => r; split.
     by move=> [x [[n _ Fnx xoo <-]]]; exists n => //; exists x.
   by move=> [n _ [x [Fnx xoo <-{r}]]]; exists x => //; split => //; exists n.
-apply: (@measure_semi_sigma_additive _ _ (@lebesgue_measure R)
+apply: (@measure_semi_sigma_additive _ _ [the measure _ _ of (@lebesgue_measure R)]
   (fun n => fine @` (F n `\` [set -oo; +oo]%E))).
 - move=> n; have := mF n.
   move=> [X mX [X' mX']] XX'Fn.
@@ -804,12 +814,9 @@ apply: (@measure_semi_sigma_additive _ _ (@lebesgue_measure R)
     by exists n => //; exists r%:E => //; split => //; case.
 Qed.
 
-Definition elebesgue_measure_isMeasure : is_measure elebesgue_measure' :=
-  Measure.Axioms elebesgue_measure'0 elebesgue_measure'_ge0
-                 semi_sigma_additive_elebesgue_measure'.
-
-Definition elebesgue_measure : {measure set \bar R -> \bar R} :=
-  Measure.Pack _ elebesgue_measure_isMeasure.
+HB.instance Definition _ := isMeasure.Build _ _ elebesgue_measure
+  elebesgue_measure0 elebesgue_measure_ge0
+  semi_sigma_additive_elebesgue_measure.
 
 End salgebra_R_ssets.
 #[global]
@@ -820,7 +827,7 @@ Section lebesgue_measure_itv.
 Variable R : realType.
 
 Let lebesgue_measure_itvoc (a b : R) :
-  (lebesgue_measure `]a, b] = hlength `]a, b])%classic.
+  (lebesgue_measure (`]a, b] : set R) = hlength `]a, b])%classic.
 Proof.
 rewrite /lebesgue_measure/= /Hahn_ext measurable_mu_extE//; last first.
   by exists (a, b).
@@ -828,10 +835,10 @@ exact: hlength_sigma_sub_additive.
 Qed.
 
 Let lebesgue_measure_itvoo_subr1 (a : R) :
-  lebesgue_measure `]a - 1, a[%classic = 1%E.
+  lebesgue_measure (`]a - 1, a[%classic : set R) = 1%E.
 Proof.
 rewrite itv_bnd_open_bigcup//; transitivity (lim (lebesgue_measure \o
-    (fun k => `]a - 1, a - k.+1%:R^-1]%classic))).
+    (fun k => `]a - 1, a - k.+1%:R^-1]%classic : set R))).
   apply/esym/cvg_lim => //; apply: cvg_mu_inc.
   - by move=> ?; exact: measurable_itv.
   - by apply: bigcup_measurable => k _; exact: measurable_itv.
@@ -852,8 +859,8 @@ Unshelve. all: by end_near. Qed.
 
 Lemma lebesgue_measure_set1 (a : R) : lebesgue_measure [set a] = 0%E.
 Proof.
-suff : (lebesgue_measure `]a - 1, a]%classic%R =
-        lebesgue_measure `]a - 1, a[%classic%R +
+suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
+        lebesgue_measure (`]a - 1, a[%classic%R : set R) +
         lebesgue_measure [set a])%E.
   rewrite lebesgue_measure_itvoo_subr1 lebesgue_measure_itvoc => /eqP.
   rewrite hlength_itv lte_fin ltr_subl_addr ltr_addl ltr01.
@@ -867,7 +874,7 @@ by rewrite xa ltxx andbF.
 Qed.
 
 Let lebesgue_measure_itvoo (a b : R) :
-  (lebesgue_measure `]a, b[ = hlength `]a, b[)%classic.
+  (lebesgue_measure (`]a, b[ : set R) = hlength `]a, b[)%classic.
 Proof.
 have [ab|ba] := ltP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoc a b.
@@ -878,7 +885,7 @@ rewrite 2!hlength_itv => <-; rewrite -setUitv1// measureU//.
 Qed.
 
 Let lebesgue_measure_itvcc (a b : R) :
-  (lebesgue_measure `[a, b] = hlength `[a, b])%classic.
+  (lebesgue_measure (`[a, b] : set R) = hlength `[a, b])%classic.
 Proof.
 have [ab|ba] := leP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoc a b.
@@ -889,7 +896,7 @@ rewrite 2!hlength_itv => <-; rewrite -setU1itv// measureU//.
 Qed.
 
 Let lebesgue_measure_itvco (a b : R) :
-  (lebesgue_measure `[a, b[ = hlength `[a, b[)%classic.
+  (lebesgue_measure (`[a, b[ : set R) = hlength `[a, b[)%classic.
 Proof.
 have [ab|ba] := ltP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoo a b.
@@ -900,7 +907,7 @@ rewrite 2!hlength_itv => <-; rewrite -setU1itv// measureU//.
 Qed.
 
 Let lebesgue_measure_itv_bnd (x y : bool) (a b : R) :
-  lebesgue_measure [set` (Interval (BSide x a) (BSide y b))] =
+  lebesgue_measure ([set` (Interval (BSide x a) (BSide y b))] : set R) =
   hlength [set` (Interval (BSide x a) (BSide y b))].
 Proof.
 by move: x y => [|] [|]; [exact: lebesgue_measure_itvco |
@@ -916,10 +923,10 @@ by rewrite natr_absz (le_trans (ceil_ge _))// intr_norm ler_norm.
 Qed.
 
 Let lebesgue_measure_itv_bnd_infty x (a : R) :
-  lebesgue_measure [set` Interval (BSide x a) +oo%O] = +oo%E.
+  lebesgue_measure ([set` Interval (BSide x a) +oo%O] : set R) = +oo%E.
 Proof.
 rewrite itv_bnd_infty_bigcup; transitivity (lim (lebesgue_measure \o
-    (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))]))).
+    (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))] : set R))).
   apply/esym/cvg_lim => //; apply: cvg_mu_inc => //.
   + by move=> k; exact: measurable_itv.
   + by apply: bigcup_measurable => k _; exact: measurable_itv.
@@ -932,10 +939,10 @@ by rewrite ltr_addl ltr0n lt0n n0 EFinD addeAC EFinN subee ?add0e.
 Qed.
 
 Let lebesgue_measure_itv_infty_bnd y (b : R) :
-  lebesgue_measure [set` Interval -oo%O (BSide y b)] = +oo%E.
+  lebesgue_measure ([set` Interval -oo%O (BSide y b)] : set R) = +oo%E.
 Proof.
 rewrite itv_infty_bnd_bigcup; transitivity (lim (lebesgue_measure \o
-    (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)]))).
+    (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)] : set R))).
   apply/esym/cvg_lim => //; apply: cvg_mu_inc => //.
   + by move=> k; exact: measurable_itv.
   + by apply: bigcup_measurable => k _; exact: measurable_itv.
@@ -949,7 +956,7 @@ by rewrite add0e.
 Qed.
 
 Lemma lebesgue_measure_itv (i : interval R) :
-  lebesgue_measure [set` i] = hlength [set` i].
+  lebesgue_measure ([set` i] : set R) = hlength [set` i].
 Proof.
 move: i => [[x a|[|]]] [y b|[|]]; first exact: lebesgue_measure_itv_bnd.
 - by rewrite set_itvE ?measure0.
@@ -983,7 +990,7 @@ rewrite measure_bigcup//; last first.
   move=> /fmorph_inj.
   have /set_bij_inj /[apply] := bijpinv_bij (fun=> 0) bijf.
   by rewrite in_setE => /(_ Logic.I Logic.I); exact/eqP.
-by rewrite nneseries0// => n _; rewrite lebesgue_measure_set1.
+by rewrite nneseries0// => n _; exact: lebesgue_measure_set1.
 Qed.
 
 Section measurable_fun_measurable.
