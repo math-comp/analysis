@@ -134,6 +134,8 @@
 - in `mathcomp_extra.v`:
   + lemmas `natr_absz`, `ge_pinfty`, `le_ninfty`, `gt_pinfty`,
     `lt_ninfty`
+- in `classical_sets.v`:
+  + notation `[set of _]`
 
 ### Infrastructure
 
