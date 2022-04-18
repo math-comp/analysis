@@ -554,8 +554,7 @@ Canonical semiRingOfSets_ptType (T : semiRingOfSetsType) :=
   PointedType T ptclass.
 
 HB.mixin Record RingOfSets_from_semiRingOfSets T of isSemiRingOfSets T := {
-  measurableU : forall A B : set T,
-    measurable A -> measurable B -> measurable (A `|` B) }.
+  measurableU : setU_closed (@measurable [the semiRingOfSetsType of T]) }.
 
 HB.structure Definition RingOfSets := {T of RingOfSets_from_semiRingOfSets T &}.
 Notation ringOfSetsType := RingOfSets.type.
@@ -2832,7 +2831,7 @@ Qed.
 Section Rmu_ext.
 Import SetRing.
 
-Lemma Rmu_ext (R : realType) (T : semiRingOfSetsType) (rT := @SetRing.ring T)
+Lemma Rmu_ext (R : realType) (T : semiRingOfSetsType)
     (mu : {additive_measure set T -> \bar R}) :
   mu_ext (measure mu) = mu_ext mu.
 Proof.
@@ -2861,7 +2860,7 @@ End Rmu_ext.
 Lemma measurable_Rmu_extE (R : realType) (T : semiRingOfSetsType)
     (rT := @SetRing.ring T) (mu : {additive_measure set T -> \bar R}) X :
   sigma_sub_additive mu ->
-  measurable (X : set rT)  -> mu_ext mu X = SetRing.measure mu X.
+  measurable (X : set rT) -> mu_ext mu X = SetRing.measure mu X.
 Proof.
 move=> mu_sub Xm/=; rewrite -Rmu_ext/= measurable_mu_extE//.
 exact: ring_sigma_sub_additive.
