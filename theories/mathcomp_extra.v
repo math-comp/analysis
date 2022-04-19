@@ -1,4 +1,8 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+From mathcomp Require choice.
+(* Missing coercion (done before Import to avoid redeclaration error,
+   thanks to KS for the trick) *)
+Coercion choice.Choice.mixin : choice.Choice.class_of >-> choice.Choice.mixin_of.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
 
@@ -24,9 +28,6 @@ Reserved Notation "f \* g" (at level 40, left associativity).
 Reserved Notation "f \- g" (at level 50, left associativity).
 Reserved Notation "\- f"  (at level 35, f at level 35).
 Reserved Notation "f \max g" (at level 50, left associativity).
-
-(* Missing coercion *)
-Coercion Choice.mixin : Choice.class_of >-> Choice.mixin_of.
 
 Lemma all_sig2_cond {I : Type} {T : Type} (D : pred I)
    (P Q : I -> T -> Prop) : T ->
