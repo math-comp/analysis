@@ -224,7 +224,7 @@ Qed.
 
 Definition ocitv_display : Type -> measure_display. Proof. exact. Qed.
 
-HB.instance Definition _  : isSemiRingOfSets _ ocitv_type :=
+HB.instance Definition _ :=
   @isSemiRingOfSets.Build (ocitv_display R)
     ocitv_type (Pointed.class R) ocitv ocitv0 ocitvI ocitvD.
 

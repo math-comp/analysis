@@ -83,6 +83,17 @@
 - in `trigo.v`:
   + lemmas `cos1_gt0`, `pi_ge2`
   + lemmas `pihalf_ge1`, `pihalf_lt2`
+- in `measure.v`:
+  + inductive `measure_display`
+  + notation `_.-sigma`, `_.-sigma.-measurable`,
+             `_.-ring`, `_.-ring.-measurable`,
+             `_.-cara`, `_.-cara.-measurable`,
+             `_.-caratheodory`,
+             `_.-prod`. `_.-prod.-measurable`
+  + notation `_.-measurable`
+- in `lebesgue_measure.v`:
+  + notation `_.-ocitv`
+  + definition `ocitv_display`
 
 ### Changed
 
@@ -121,6 +132,14 @@
   + `integralK` -> `integralrM`
 - in `trigo.v`:
   + `cos_pihalf_uniq` -> `cos_02_uniq`
+- in `measure.v`:
+  + `sigma_algebraD` -> `sigma_algebraCD`
+  + `g_measurable` -> `salgebraType`
+  + `g_measurable_eqType` -> `salgebraType_eqType`
+  + `g_measurable_choiceType` -> `salgebraType_choiceType`
+  + `g_measurable_ptType` -> `salgebraType_ptType`
+- in `lebesgue_measure.v`:
+  + `itvs` -> `ocitv_type`
 
 ### Removed
 
@@ -144,6 +163,12 @@
     `outer_measure_of_measure`, `Hahn_ext_measure`
   + lemma `Rmu0`
   + lemma `measure_restrE`
+- in `measure.v`, several constructs now take a parameter of type `measure_display`
+- in `lebesgue_integral.v`, constructs with a parameter `measurableType` now
+  take an addititional parameter of type `measure_display`
+- in `measure.v`:
+  + definition `g_measurableType`
+  + notation `mu.-measurable`
 
 ### Infrastructure
 
