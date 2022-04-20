@@ -1031,7 +1031,7 @@ by rewrite /patch; case: ifP; rewrite // inE => /f0->.
 Qed.
 
 Lemma integral_nnsfun D (mD : measurable D) (h : {nnsfun T >-> R}) :
-  \int_(x in D) (EFin \o h) x = sintegral mu (h \_ D).
+  \int_(x in D) (h x)%:E = sintegral mu (h \_ D).
 Proof.
 rewrite mrestrict -nnintegral_nnsfun// -mrestrict ge0_integralE ?comp_patch//.
 by move=> x Dx /=; rewrite lee_fin; exact: fun_ge0.
@@ -1107,7 +1107,7 @@ Lemma integral_mkcond D f : \int[mu]_(x in D) f x = \int[mu]_x (f \_ D) x.
 Proof. by rewrite /integral patch_setT. Qed.
 
 Lemma integralT_nnsfun (h : {nnsfun T >-> R}) :
-  \int[mu]_x ((EFin \o h) x) = sintegral mu h.
+  \int[mu]_x (h x)%:E = sintegral mu h.
 Proof. by rewrite integral_nnsfun// patch_setT. Qed.
 
 Lemma integral_mkcondr D P f :
@@ -1661,8 +1661,8 @@ Hypothesis mf1 : measurable_fun D f1.
 Hypothesis f20 : forall x, D x -> 0 <= f2 x.
 Hypothesis mf2 : measurable_fun D f2.
 
-Lemma ge0_integralD : \int[mu]_(x in D) (f1 \+ f2) x =
-  \int[mu]_(x in D) (f1 x) + \int[mu]_(x in D) (f2 x).
+Lemma ge0_integralD : \int[mu]_(x in D) (f1 x + f2 x) =
+  \int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x.
 Proof.
 rewrite !(integral_mkcond D) erestrictD.
 set h1 := f1 \_ D; set h2 := f2 \_ D.
@@ -2203,7 +2203,7 @@ Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 
 Lemma integralN D (f : T -> \bar R) :
   \int[mu]_(x in D) f^\+ x +? (- \int[mu]_(x in D) f^\- x) ->
-  \int[mu]_(x in D) (-%E \o f) x = - \int[mu]_(x in D) f x.
+  \int[mu]_(x in D) - f x = - \int[mu]_(x in D) f x.
 Proof.
 have [f_fin _|] := boolP (\int[mu]_(x in D) f^\- x \is a fin_num).
   rewrite integralE// [in RHS]integralE// oppeD ?fin_numN// oppeK addeC.
@@ -2220,7 +2220,7 @@ Qed.
 
 Lemma integral_ge0N (D : set T) (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x) ->
-  \int[mu]_(x in D) (-%E \o f) x = - \int[mu]_(x in D) f x.
+  \int[mu]_(x in D) - f x = - \int[mu]_(x in D) f x.
 Proof.
 move=> f0; rewrite integralN // (eq_integral _ _ (ge0_funenegE _))// integral0.
 by rewrite oppe0 fin_num_adde_def.
@@ -2291,7 +2291,7 @@ Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D).
 
 Lemma integral_indic (E : set T) : measurable E ->
-  \int[mu]_(x in D) ((EFin \o \1_E) x) = mu (E `&` D).
+  \int[mu]_(x in D) (\1_E x)%:E = mu (E `&` D).
 Proof.
 move=> mE; rewrite (_ : \1_E = indic_nnsfun R mE)// integral_nnsfun//=.
 by rewrite restrict_indic sintegral_indic//; exact: measurableI.
@@ -2783,7 +2783,7 @@ Lemma integralB_EFin (R : realType) (T : measurableType)
   (mD : measurable D) :
   mu.-integrable D (EFin \o f1) -> mu.-integrable D (EFin \o f2) ->
   (\int[mu]_(x in D) ((f1 x)%:E - (f2 x)%:E)  =
-    (\int[mu]_(x in D) ((EFin \o f1) x)  - \int[mu]_(x in D) ((EFin \o f2) x) ))%E.
+    (\int[mu]_(x in D) (f1 x)%:E - \int[mu]_(x in D) (f2 x)%:E))%E.
 Proof.
 move=> if1 if2; rewrite (integralD_EFin mD if1); last first.
   by rewrite (_ : _ \o _ = (fun x => - (f2 x)%:E))%E; [exact: integrableN|by []].
@@ -3227,7 +3227,7 @@ Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
 Hypotheses (if1 : mu.-integrable D f1) (if2 : mu.-integrable D f2).
 
-Lemma integralD : \int[mu]_(x in D) (f1 \+ f2) x =
+Lemma integralD : \int[mu]_(x in D) (f1 x + f2 x) =
   \int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x.
 Proof.
 pose A := D `&` [set x | f1 x \is a fin_num].
@@ -3816,7 +3816,7 @@ Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis (sm2 : sigma_finite setT m2).
 Implicit Types A : set (T1 * T2).
 
-Let m A := \int[m1]_x (m2 \o xsection A) x.
+Let m A := \int[m1]_x m2 (xsection A x).
 
 Let m0 : m set0 = 0.
 Proof.
@@ -3925,7 +3925,7 @@ Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis (sm1 : sigma_finite setT m1).
 Implicit Types A : set (T1 * T2).
 
-Let m A := \int[m2]_x (m1 \o ysection A) x.
+Let m A := \int[m2]_x m1 (ysection A x).
 
 Let m0 : m set0 = 0.
 Proof.
@@ -4057,10 +4057,10 @@ Qed.
 Let mE : m A = \int[m1]_x F x.
 Proof. by rewrite /m /product_measure1 /= indic_fubini_tonelli_FE. Qed.
 
-Lemma indic_fubini_tonelli1 : \int[m]_z (EFin \o f) z = \int[m1]_x F x.
+Lemma indic_fubini_tonelli1 : \int[m]_z (f z)%:E = \int[m1]_x F x.
 Proof. by rewrite /f integral_indic// setIT indic_fubini_tonelli_FE. Qed.
 
-Lemma indic_fubini_tonelli2 : \int[m']_z (EFin \o f) z = \int[m2]_y G y.
+Lemma indic_fubini_tonelli2 : \int[m']_z (f z)%:E = \int[m2]_y G y.
  by rewrite /f integral_indic// setIT indic_fubini_tonelli_GE. Qed.
 
 Lemma indic_fubini_tonelli : \int[m1]_x F x = \int[m2]_y G y.
@@ -4131,12 +4131,13 @@ rewrite sfun_fubini_tonelli_GE//; apply: measurable_fun_sum => //.
   by apply: measurable_fun_ysection => //; rewrite inE.
 Qed.
 
-Lemma sfun_fubini_tonelli1 : \int[m]_z (EFin \o f) z = \int[m1]_x F x.
-Proof.
-have EFinf : EFin \o f = fun x =>
+Let EFinf x : (f x)%:E =
     (\sum_(k <- fset_set (range f)) k%:E * (\1_(f @^-1` [set k]) x)%:E).
-  by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
-rewrite EFinf ge0_integral_sum //; last 2 first.
+Proof.   by rewrite sumEFin /= fimfunE. Qed.
+
+Lemma sfun_fubini_tonelli1 : \int[m]_z (f z)%:E = \int[m1]_x F x.
+Proof.
+under eq_integral do rewrite EFinf; rewrite ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
     by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
   - by move=> r /= z _; exact: muleindic_ge0.
@@ -4163,12 +4164,9 @@ apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE.
 by apply eq_bigr => i _; rewrite indic_fubini_tonelli_FE.
 Qed.
 
-Lemma sfun_fubini_tonelli2 : \int[m']_z (EFin \o f) z = \int[m2]_y G y.
+Lemma sfun_fubini_tonelli2 : \int[m']_z (f z)%:E = \int[m2]_y G y.
 Proof.
-have EFinf : EFin \o f = (fun x => (\sum_(k <- fset_set (range f)) k%:E *
-    (\1_(f @^-1` [set k]) x)%:E)%E).
-  by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
-rewrite EFinf ge0_integral_sum //; last 2 first.
+under eq_integral do rewrite EFinf; rewrite ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
     by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
   - by move=> r /= z _; exact: muleindic_ge0.
@@ -4195,11 +4193,10 @@ apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE.
 by apply eq_bigr => i _; rewrite indic_fubini_tonelli_GE.
 Qed.
 
-Lemma sfun_fubini_tonelli : \int[m]_z (EFin \o f) z = \int[m']_z (EFin \o f) z.
+Lemma sfun_fubini_tonelli : \int[m]_z (f z)%:E = \int[m']_z (f z)%:E.
 Proof.
-rewrite (_ : _ \o _ = fun x => \sum_(k <- fset_set (range f)) k%:E *
-    (\1_(f @^-1` [set k]) x)%:E); last first.
-  by rewrite funeqE => t; rewrite sumEFin /= fimfunE.
+under eq_integral do rewrite EFinf.
+under [RHS]eq_integral do rewrite EFinf.
 rewrite ge0_integral_sum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun/measurable_funrM => //.
     by rewrite (_ : \1_ _ = mindic R (measurable_sfunP f i)).
@@ -4236,8 +4233,8 @@ Let T := [the measurableType of T1 * T2 : Type].
 Let F := fubini_F m2 f.
 Let G := fubini_G m1 f.
 
-Let F_ (g : {nnsfun T >-> R}^nat) n x := \int[m2]_y (EFin \o g n) (x, y).
-Let G_ (g : {nnsfun T >-> R}^nat) n y := \int[m1]_x (EFin \o g n) (x, y).
+Let F_ (g : {nnsfun T >-> R}^nat) n x := \int[m2]_y (g n (x, y))%:E.
+Let G_ (g : {nnsfun T >-> R}^nat) n y := \int[m1]_x (g n (x, y))%:E.
 
 Lemma measurable_fun_fubini_tonelli_F : measurable_fun setT F.
 Proof.
@@ -4355,7 +4352,7 @@ Hypothesis mf : measurable_fun setT f.
 Let m : {measure set (T1 * T2) -> \bar R} := product_measure1 m1 sf_m2.
 
 Lemma fubini1a :
-  m.-integrable setT f <-> \int[m1]_x (\int[m2]_y `|f (x, y)|) < +oo.
+  m.-integrable setT f <-> \int[m1]_x \int[m2]_y `|f (x, y)| < +oo.
 Proof.
 split=> [[_]|] ioo.
 - by rewrite -(fubini_tonelli1 _ (abse \o f))//=; exact: measurable_fun_comp.
@@ -4363,7 +4360,7 @@ split=> [[_]|] ioo.
 Qed.
 
 Lemma fubini1b :
-  m.-integrable setT f <-> \int[m2]_y (\int[m1]_x `|f (x, y)|) < +oo.
+  m.-integrable setT f <-> \int[m2]_y \int[m1]_x `|f (x, y)| < +oo.
 Proof.
 split=> [[_]|] ioo.
 - by rewrite -(fubini_tonelli2 _ _ (abse \o f))//=; exact: measurable_fun_comp.
@@ -4531,7 +4528,7 @@ by rewrite fubini_tonelli2//; exact: emeasurable_fun_funeneg.
 Qed.
 
 Theorem Fubini :
-  \int[m1]_x (\int[m2]_y f (x, y)) = \int[m2]_y (\int[m1]_x f (x, y)).
+  \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
 Proof. by rewrite fubini1 -fubini2. Qed.
 
 End fubini.
