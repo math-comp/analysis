@@ -60,6 +60,15 @@
   + rewrite `equicontinuous` and `pointwise_precompact` to use index 
   + lemmas `ptws_cvg_entourage`, `equicontinuous_closure`, `ptws_compact_cvg`
     `ptws_compact_closed`, `ascoli_forward`, `compact_equicontinuous`
+- in file `ereal.v`:
+  + lemma `abse1`
+- in file `sequences.v`:
+  + lemmas `nneseriesrM`, `ereal_series_cond`, `ereal_series`, `nneseries_split`
+  + lemmas `lee_nneseries`
+- in file `esum.v`:
+  + lemma `nnseries_interchange`
+- in file `ereal.v`:
+  + lemma `ltninfty_adde_def`
 
 ### Changed
 
@@ -67,6 +76,8 @@
   + remove one hypothesis in lemmas `reindex_esum`, `esum_image`
 - moved from `lebesgue_integral.v` to `lebesgue_measure.v` and generalized
   + hint `measurable_set1`/`emeasurable_set1`
+- in `sequences.v`:
+  + generalize `eq_nneseries`, `nneseries0`
 
 ### Renamed
 

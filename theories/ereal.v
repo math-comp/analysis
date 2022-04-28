@@ -730,10 +730,15 @@ Qed.
 Lemma ltpinfty_adde_def : {in [pred x | x < +oo] &, forall x y, x +? y}.
 Proof. by move=> [x| |] [y| |]. Qed.
 
+Lemma ltninfty_adde_def : {in [pred x | -oo < x] &, forall x y, x +? y}.
+Proof. by move=> [x| |] [y| |]. Qed.
+
 Lemma abse_eq0 x : (`|x| == 0) = (x == 0).
 Proof. by move: x => [| |] //= r; rewrite !eqe normr_eq0. Qed.
 
 Lemma abse0 : `|0| = 0 :> \bar R. Proof. by rewrite /abse normr0. Qed.
+
+Lemma abse1 : `|1| = 1 :> \bar R. Proof. by rewrite /abse normr1. Qed.
 
 Lemma abseN x : `|- x| = `|x|.
 Proof. by case: x => [r||]; rewrite //= normrN. Qed.

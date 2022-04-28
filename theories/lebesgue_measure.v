@@ -67,6 +67,9 @@ rewrite /hlength /= asboolT// sup_itvcc//= asboolT//.
 by rewrite asboolT inf_itvcc//= ?subee// inE.
 Qed.
 
+Lemma hlength_setT : hlength setT = +oo%E :> \bar R.
+Proof. by rewrite /hlength RhullT. Qed.
+
 Lemma hlength_itv i : hlength [set` i] = if i.2 > i.1 then i.2 - i.1 else 0.
 Proof.
 case: ltP => [/lt_ereal_bnd/neitvP i12|]; first by rewrite /hlength set_itvK.
@@ -80,9 +83,6 @@ case: i => -[ba a|[|]] [bb b|[|]] //=.
 - by move=> _; rewrite set_itvE hlength0.
 - by move=> _; rewrite set_itvE hlength0.
 Qed.
-
-Lemma hlength_setT : hlength setT = +oo%E :> \bar R.
-Proof. by rewrite -set_itv_infty_infty hlength_itv. Qed.
 
 Lemma hlength_finite_fin_num i : neitv i -> hlength [set` i] < +oo ->
   ((i.1 : \bar R) \is a fin_num) /\ ((i.2 : \bar R) \is a fin_num).
