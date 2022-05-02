@@ -165,6 +165,7 @@
   + `emeasurable_fun_funennp` -> `emeasurable_fun_funeneg`
 - in `lebesgue_integral.v`:
   + `integrable_funenng` -> `integrable_funepos`
+  + `integrable_funennp` -> `integrable_funeneg`
   + `integral_funennp_lt_pinfty` -> `integral_funeneg_lt_pinfty`
   + `integral_funenng_lt_pinfty` -> `integral_funepos_lt_pinfty`
   + `ae_eq_funenng_funennp` -> `ae_eq_funeposneg`
