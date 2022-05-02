@@ -71,6 +71,8 @@
   + lemma `ltninfty_adde_def`
 - in file `lebesgue_measure.v`:
   + lemma `emeasurable_funN`
+- in file `measure.v`:
+  + definition `pushforward` and canonical `pushforward_measure`
 
 ### Changed
 

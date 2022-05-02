@@ -60,6 +60,7 @@ From HB Require Import structures.
 (*                   of type T where R is expected to be a numFieldType such  *)
 (*                   that this function maps set0 to 0, is non-negative over  *)
 (*                   measurable sets and is semi-sigma-additive               *)
+(*   pushforward f m == pushforward/image measure of m by f                   *)
 (*   sigma_finite A f == the measure f is sigma-finite on A : set T with      *)
 (*                   T : ringOfSetsType.                                      *)
 (*   mu.-negligible A == A is mu negligible                                   *)
@@ -1348,6 +1349,35 @@ End measure_is_additive_measure.
 
 Coercion measure_additive_measure : Measure.map >-> AdditiveMeasure.map.
 
+Section pushforward_measure.
+Local Open Scope ereal_scope.
+Variables (T1 T2 : measurableType) (f : T1 -> T2).
+Hypothesis mf : measurable_fun setT f.
+Variables (R : realFieldType) (m : {measure set T1 -> \bar R}).
+
+Definition pushforward A := m (f @^-1` A).
+
+Let pushforward0 : pushforward set0 = 0.
+Proof. by rewrite /pushforward preimage_set0 measure0. Qed.
+
+Let pushforward_ge0 A : 0 <= pushforward A.
+Proof. by apply: measure_ge0; rewrite -[X in measurable X]setIT; apply: mf. Qed.
+
+Let pushforward_sigma_additive : semi_sigma_additive pushforward.
+Proof.
+move=> F mF tF mUF; rewrite /pushforward preimage_bigcup.
+apply: measure_semi_sigma_additive.
+- by move=> n; rewrite -[X in measurable X]setTI; exact: mf.
+- apply/trivIsetP => /= i j _ _ ij; rewrite -preimage_setI.
+  by move/trivIsetP : tF => /(_ _ _ _ _ ij) ->//; rewrite preimage_set0.
+- by rewrite -preimage_bigcup -[X in measurable X]setTI; exact: mf.
+Qed.
+
+Canonical pushforward_measure : {measure set T2 -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms pushforward0 pushforward_ge0
+                                 pushforward_sigma_additive).
+
+End pushforward_measure.
 
 Section measure_restr.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
