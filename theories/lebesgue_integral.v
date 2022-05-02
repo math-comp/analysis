@@ -2387,7 +2387,7 @@ apply: le_lt_trans foo; apply: ge0_le_integral => //.
 - by move=> t Dt; rewrite -/((abse \o f) t) fune_abse gee0_abs// lee_addl.
 Qed.
 
-Lemma integrable_funenego f : integrable f -> integrable f^\-.
+Lemma integrable_funeneg f : integrable f -> integrable f^\-.
 Proof.
 move=> [Df foo]; split; first exact: emeasurable_fun_funeneg.
 apply: le_lt_trans foo; apply: ge0_le_integral => //.
