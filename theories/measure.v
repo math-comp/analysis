@@ -1388,7 +1388,7 @@ HB.instance Definition _ := isMeasure.Build _ _
 End dirac_measure.
 Arguments dirac {T} _ {R}.
 
-Notation "\d_ a" := (dirac a) : ring_scope.
+Notation "\d_ a" := [the measure _ _ of dirac a] : ring_scope.
 
 Section dirac_lemmas.
 Local Open Scope ereal_scope.
@@ -1516,11 +1516,14 @@ HB.instance Definition _ := isMeasure.Build _ _ mseries
 End measure_series.
 Arguments mseries {T R}.
 
+Definition mrestr (T : measurableType) (R : realFieldType) (D : set T)
+  (f : set T -> \bar R) (mD : measurable D) := fun X => f (X `&` D).
+
 Section measure_restr.
 Variables (T : measurableType) (R : realFieldType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 
-Definition restr (X : set _) : \bar R := mu (X `&` D).
+Local Notation restr := (mrestr mu mD).
 
 Let restr0 : restr set0 = 0%E. Proof. by rewrite /restr set0I measure0. Qed.
 
@@ -1538,17 +1541,8 @@ have tFD : trivIset setT FD.
 by rewrite /restr setI_bigcupl; exact: measure_sigma_additive.
 Qed.
 
-HB.instance Definition restr_build := isMeasure.Build _ _
-  restr restr0 restr_ge0 restr_sigma_additive.
-
-Definition Restr : {measure set T -> \bar R}.
-apply: Measure.Pack.
-apply: Measure.Class.
-apply: isMeasure0.Axioms_.
-exact: restr_sigma_additive.
-Unshelve.
-exact: measure_Measure__to__measure_isAdditiveMeasure.
-Defined.
+HB.instance Definition _ := isMeasure.Build _ _ restr
+  restr0 restr_ge0 restr_sigma_additive.
 
 End measure_restr.
 
