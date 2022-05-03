@@ -3,7 +3,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 Require Import mathcomp_extra boolp classical_sets signed functions cardinality.
-Require Import reals ereal topology normedtype sequences measure.
+Require Import reals ereal topology normedtype sequences esum measure.
 Require Import lebesgue_measure fsbigop numfun.
 
 (******************************************************************************)
@@ -64,6 +64,9 @@ Reserved Notation "'\int_' D f ''d' mu [ x ]" (at level 36, D at level 0,
 Reserved Notation "'\int' f ''d' mu [ x ]" (at level 36, f at level 36,
   mu at level 0, x at level 3, format "'\int'  f  ''d'  mu [ x ]").
 Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
+Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_'  a").
+#[global]
+Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
 HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
@@ -2241,6 +2244,83 @@ by rewrite restrict_indic sintegral_indic//; exact: measurableI.
 Qed.
 
 End integral_ind.
+
+Section integralM_indic.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType) (m : {measure set T -> \bar R}).
+Variables (D : set T) (mD : measurable D).
+
+Lemma integralM_indic (f : R -> set T) (k : R) :
+  ((k < 0)%R -> f k = set0) -> measurable (f k) ->
+  \int_ D (k * \1_(f k) x)%:E 'd m[x] = k%:E * \int_ D (\1_(f k) x)%:E 'd m[x].
+Proof.
+move=> fk0 mfk; have [k0|k0] := ltP k 0%R.
+  rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0; last first.
+    by move=> x _; rewrite fk0// indic0 mulr0.
+  rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0// => x _.
+  by rewrite fk0// indic0.
+under eq_integral do rewrite EFinM.
+rewrite ge0_integralM//.
+- apply/EFin_measurable_fun/(@measurable_funS _ _ setT) => //.
+  by rewrite (_ : \1_(f k) = mindic R mfk).
+- by move=> y _; rewrite lee_fin.
+Qed.
+
+Lemma integralM_indic_nnsfun (f : {nnsfun T >-> R}) (k : R) :
+  \int_ D (k * \1_(f @^-1` [set k]) x)%:E 'd m[x] =
+  k%:E * \int_ D (\1_(f @^-1` [set k]) x)%:E 'd m[x].
+Proof.
+rewrite (@integralM_indic (fun k => f @^-1` [set k]))// => k0.
+by rewrite preimage_nnfun0.
+Qed.
+
+End integralM_indic.
+
+Section integral_dirac.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (a : T) (R : realType).
+Variables (D : set T) (mD : measurable D).
+
+Let ge0_integral_dirac (f : T -> \bar R) (mf : measurable_fun D f)
+    (f0 : forall x, D x -> 0 <= f x) :
+  D a -> \int_ D (f x) 'd (\d_ a)[x] = f a.
+Proof.
+move=> Da; have [f_ [ndf_ f_f]] := approximation mD mf f0.
+transitivity (lim (fun n => \int_ D (f_ n x)%:E 'd (\d_ a)[x])).
+  rewrite -monotone_convergence//.
+  - apply: eq_integral => x Dx; apply/esym/cvg_lim => //; apply: f_f.
+    by rewrite inE in Dx.
+  - by move=> n; apply/EFin_measurable_fun; exact/(@measurable_funS _ _ setT).
+  - by move=> *; rewrite lee_fin.
+  - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/ndf_.
+rewrite (_ : (fun _ => _) = (fun n => (f_ n a)%:E)).
+  by apply/cvg_lim => //; exact: f_f.
+apply/funext => n; under eq_integral do rewrite fimfunE -sumEFin.
+rewrite ge0_integral_sum//.
+- under eq_bigr; first by move=> r _; rewrite integralM_indic_nnsfun//; over.
+  rewrite /= (big_fsetD1 (f_ n a))/=; last first.
+    by rewrite in_fset_set// in_setE; exists a.
+  rewrite integral_indic//= /dirac indicE mem_set// mule1.
+  rewrite big1_fset ?adde0// => r; rewrite !inE => /andP[rfna _] _.
+  rewrite integral_indic//= /dirac indicE memNset ?mule0//.
+  by apply/not_andP; left; exact/nesym/eqP.
+- move=> r; apply/EFin_measurable_fun.
+  apply: measurable_funM => //; first exact: measurable_fun_cst.
+  apply: (@measurable_funS _ _ setT) => //.
+  by rewrite (_ : \1_ _ = mindic R (measurable_sfunP (f_ n) r)).
+- by move=> r x _; rewrite muleindic_ge0.
+Qed.
+
+Lemma integral_dirac (f : T -> \bar R) (mf : measurable_fun D f) :
+  D a -> \int_ D (f x) 'd (\d_ a)[x] = f a.
+Proof.
+move=> Da.
+rewrite integralE ge0_integral_dirac//; last exact/emeasurable_fun_funepos.
+rewrite ge0_integral_dirac//; last exact/emeasurable_fun_funeneg.
+by rewrite [in RHS](funeposneg f).
+Qed.
+
+End integral_dirac.
 
 Section subset_integral.
 Local Open Scope ereal_scope.
