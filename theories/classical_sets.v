@@ -2294,6 +2294,9 @@ Section partitions.
 Definition trivIset T I (D : set I) (F : I -> set T) :=
   forall i j : I, D i -> D j -> F i `&` F j !=set0 -> i = j.
 
+Lemma trivIset_set0 {I T} (D : set I) : trivIset D (fun=> set0 : set T).
+Proof. by move=> i j Di Dj; rewrite setI0 => /set0P; rewrite eqxx. Qed.
+
 Lemma trivIsetP {T} {I : eqType} {D : set I} {F : I -> set T} :
   trivIset D F <->
   forall i j : I, D i -> D j -> i != j -> F i `&` F j = set0.

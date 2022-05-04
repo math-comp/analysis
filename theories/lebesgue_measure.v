@@ -324,7 +324,7 @@ by rewrite in_itv/= le_gtF// (itvP xabi).
 Qed.
 
 HB.instance Definition _ := isAdditiveMeasure.Build R _ hlength
-  (@hlength0 _) (@hlength_ge0') hlength_semi_additive.
+  (@hlength_ge0') hlength_semi_additive.
 
 Hint Extern 0 (measurable _) => solve [apply: is_ocitv] : core.
 
