@@ -129,6 +129,8 @@
   + structures `AdditiveMeasure`, `Measure`, `OuterMeasure`
   + notations `additive_measure`, `measure`, `outer_measure`
   + definition `restr`
+- in file `classical_sets.v`:
+  + lemma `trivIset_set0`
 
 ### Changed
 
@@ -153,6 +155,8 @@
   + generalize `card_fset_sum1`
 - in `lebesgue_integral.v`:
   + change the notation `\int_`
+- in `measure.v`:
+  + `measure0` is now a lemma
 
 ### Renamed
 
@@ -181,6 +185,7 @@
   + coercions `measure_to_nadditive_measure`, `measure_additive_measure`
   + canonicals `measure_additive_measure`, `set_ring_measure`,
     `outer_measure_of_measure`, `Hahn_ext_measure`
+  + lemma `Rmu0`
 
 ### Infrastructure
 

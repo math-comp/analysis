@@ -1120,7 +1120,6 @@ Qed.
 
 HB.mixin Record isAdditiveMeasure
     (R : numFieldType) (T : semiRingOfSetsType) (mu : set T -> \bar R) := {
-  measure0 : mu set0 = 0 ;
   measure_ge0 : forall x, 0 <= mu x ;
   measure_semi_additive : semi_additive mu }.
 
@@ -1133,12 +1132,17 @@ Notation "{ 'additive_measure' 'set' T '->' '\bar' R }" :=
   (additive_measure R T) (at level 36, T, R at next level,
     format "{ 'additive_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
-Arguments measure0 {R T} _.
 Arguments measure_ge0 {R T} _.
 
 Section additive_measure_on_semiring_of_sets.
 Variables (R : realFieldType) (T : semiRingOfSetsType)
   (mu : {additive_measure set T -> \bar R}).
+
+Lemma measure0 : mu set0 = 0.
+Proof.
+have /[!big_ord0] ->// := @measure_semi_additive _ _ mu (fun=> set0) 0%N.
+exact: trivIset_set0.
+Qed.
 
 Hint Resolve measure0 : core.
 
@@ -1187,6 +1191,7 @@ Proof. exact/semi_additiveW. Qed.
 Hint Resolve measure_semi_additive2 : core.
 
 End additive_measure_on_semiring_of_sets.
+Arguments measure0 {R T} _.
 
 #[global] Hint Extern 0
   (is_true (0 <= (_ : {additive_measure set _ -> \bar _}) _)%E) =>
@@ -1277,7 +1282,7 @@ apply: semi_sigma_additive_is_additive.
 Qed.
 
 HB.instance Definition _ := isAdditiveMeasure.Build R T mu
-  measure0 measure_ge0 semi_additive_mu.
+  measure_ge0 semi_additive_mu.
 HB.instance Definition _ := isMeasure0.Build R T mu measure_semi_sigma_additive.
 HB.end.
 
@@ -1821,7 +1826,7 @@ move=> Am; rewrite -[A in LHS](@bigcup_set1 _ unit _ tt).
 by rewrite Rmu_fin_bigcup// ?fset_set1// ?big_seq_fset1// => -[].
 Qed.
 
-Lemma Rmu0 : Rmu set0 = 0.
+Let Rmu0 : Rmu set0 = 0.
 Proof.
 rewrite -(bigcup_set0 (fun _ : void => set0)).
 by rewrite Rmu_fin_bigcup// fset_set0 big_seq_fset0.
@@ -1848,7 +1853,7 @@ Qed.
 
 #[export]
 HB.instance Definition _ :=
-  isAdditiveMeasure.Build _ _ Rmu Rmu0 Rmu_ge0 Rmu_additive.
+  isAdditiveMeasure.Build _ _ Rmu Rmu_ge0 Rmu_additive.
 
 End additive_measure.
 
