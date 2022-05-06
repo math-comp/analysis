@@ -113,7 +113,7 @@ Reserved Notation "{ 'nnsfun' aT >-> T }"
   (at level 0, format "{ 'nnsfun'  aT  >->  T }").
 Reserved Notation "[ 'nnsfun' 'of' f ]"
   (at level 0, format "[ 'nnsfun'  'of'  f ]").
-Notation "{ 'nnsfun'  aT >-> T }" := (@NonNegSimpleFun.type aT T) : form_scope.
+Notation "{ 'nnsfun' aT >-> T }" := (@NonNegSimpleFun.type aT T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section ring.
@@ -1044,6 +1044,41 @@ End integral.
 Notation "\int_ D f 'd mu [ x ]" := (integral mu D (fun x => f)) : ereal_scope.
 Notation "\int f 'd mu [ x ]" := (\int_ setT f 'd mu[x])%E : ereal_scope.
 Arguments eq_integral {T R mu D} g.
+
+Section eq_measure_integral.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType) (D : set T).
+Implicit Types m : {measure set T -> \bar R}.
+
+Let eq_measure_integral0 m2 m1 (f : T -> \bar R) :
+  (forall A, A `<=` D -> m1 A = m2 A) ->
+  [set sintegral m1 h | h in
+    [set h : {nnsfun T >-> R} | (forall x, (h x)%:E <= (f \_ D) x)]] `<=`
+  [set sintegral m2 h | h in
+    [set h : {nnsfun T >-> R} | (forall x, (h x)%:E <= (f \_ D) x)]].
+Proof.
+move=> m12 _ [h hfD <-] /=; exists h => //; apply: eq_fsbigr => r _.
+have [hrD|hrD] := pselect (h @^-1` [set r] `<=` D); first by rewrite m12.
+suff : r = 0%R by move=> ->; rewrite !mul0e.
+apply: contra_notP hrD => /eqP r0 t/= htr.
+have := hfD t.
+rewrite /patch/=; case: ifPn; first by rewrite inE.
+move=> tD.
+move: r0; rewrite -htr => ht0.
+by rewrite le_eqVlt eqe (negbTE ht0)/= lte_fin// ltNge// fun_ge0.
+Qed.
+
+Lemma eq_measure_integral m2 m1 (f : T -> \bar R) :
+    (forall A, A `<=` D -> m1 A = m2 A) ->
+  \int_ D (f x) 'd m1[x] = \int_ D (f x) 'd m2[x].
+Proof.
+move=> m12; rewrite /integral funepos_restrict funeneg_restrict.
+by congr (ereal_sup _ - ereal_sup _)%E; rewrite eqEsubset; split;
+  apply: eq_measure_integral0 => A /m12.
+Qed.
+
+End eq_measure_integral.
+Arguments eq_measure_integral {T R D} m2 {m1 f}.
 
 Section integral_measure_zero.
 Local Open Scope ereal_scope.
@@ -2190,7 +2225,7 @@ Lemma integral_ge0N (D : set T) (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x) ->
   \int_ D ((-%E \o f) x) 'd mu[x] = - \int_ D (f x) 'd mu[x].
 Proof.
-move=> f0; rewrite integralN // (eq_integral _ _ (ge0_funenegE _))// integral0//.
+move=> f0; rewrite integralN // (eq_integral _ _ (ge0_funenegE _))// integral0.
 by rewrite oppe0 fin_num_adde_def.
 Qed.
 
@@ -2334,12 +2369,15 @@ rewrite ge0_integral_sum//.
 Qed.
 
 Lemma integral_dirac (f : T -> \bar R) (mf : measurable_fun D f) :
-  D a -> \int_ D (f x) 'd (\d_ a)[x] = f a.
+  \int_ D (f x) 'd (\d_ a)[x] = (\1_D a)%:E * f a.
 Proof.
-move=> Da.
-rewrite integralE ge0_integral_dirac//; last exact/emeasurable_fun_funepos.
-rewrite ge0_integral_dirac//; last exact/emeasurable_fun_funeneg.
-by rewrite [in RHS](funeposneg f).
+have [/[!inE] aD|aD] := boolP (a \in D).
+  rewrite integralE ge0_integral_dirac//; last exact/emeasurable_fun_funepos.
+  rewrite ge0_integral_dirac//; last exact/emeasurable_fun_funeneg.
+  by rewrite [in RHS](funeposneg f) indicE mem_set// mul1e.
+rewrite indicE (negbTE aD) mul0e -(integral_measure_zero D f)//.
+apply: eq_measure_integral => //= S DS; rewrite /dirac indicE memNset// => /DS.
+by rewrite notin_set in aD.
 Qed.
 
 End integral_dirac.
