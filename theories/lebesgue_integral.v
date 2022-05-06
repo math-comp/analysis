@@ -39,15 +39,10 @@ Require Import lebesgue_measure fsbigop numfun.
 (*     mu.-integrable D f == f is measurable over D and the integral of f     *)
 (*                           w.r.t. D is < +oo                                *)
 (*            ae_eq D f g == f is equal to g almost everywhere                *)
-(*     product_measure1 m1 m2 == product measure over T1 * T2, mi is a        *)
-(*                               measure over Ti; product_measure1 m1 m2 has  *)
-(*                               type: set (T1 * T2) -> \bar R                *)
-(*     Product_measure1 m1 sf == product measure over T1 * T2, mi is a        *)
-(*                               measure over Ti, sf is a proof that m2 is    *)
-(*                               sigma-finite; Product_measure1 m1 sf has     *)
-(*                               type {measure set (T1 * T2) -> \bar R}       *)
-(*     product_measure2 m1 m2 == product_measure1 mutatis mutandis            *)
-(*     Product_measure2 m2 sf == Product_measure1 mutatis mutandis            *)
+(* product_measure1 m1 s2 == product measure over T1 * T2, m1 is a measure    *)
+(*                           measure over T1, s2 is a proof that a measure m2 *)
+(*                           over T2 is sigma-finite                          *)
+(* product_measure2 s2 m2 == product_measure1 mutatis mutandis                *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -3756,7 +3751,7 @@ have CT : C setT by exists setT => //; exists setT => //; rewrite setMTT.
 have CB : C `<=` B.
   move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableM.
   have -> : psi (X1 `*` X2) = (fun x => m1 X1 * (\1_X2 x)%:E)%E.
-    rewrite funeqE => y; rewrite indicE /m1/= /psi/= /mrestr/=.
+    rewrite funeqE => y; rewrite indicE /psi /m1/= /mrestr.
     have [yX2|yX2] := boolP (y \in X2); first by rewrite mule1 in_ysectionM.
     by rewrite mule0 notin_ysectionM// set0I measure0.
   apply: emeasurable_funeM => //; apply/EFin_measurable_fun.
@@ -3804,8 +3799,8 @@ have m2'_bounded : exists M, forall X, measurable X -> (m2' X < M%:E)%E.
   exists (fine (m2' (F n)) + 1) => Y mY.
   rewrite [in ltRHS]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
   rewrite fineK; last first.
-    by rewrite ge0_fin_numE ?measure_ge0// /m2'/= /mrestr/= setIid.
-  rewrite /m2'/= /mrestr/= setIid; apply: le_measure => //; rewrite inE//.
+    by rewrite ge0_fin_numE ?measure_ge0//= /mrestr/= setIid.
+  rewrite /= /mrestr/= setIid; apply: le_measure => //; rewrite inE//.
   exact: measurableI.
 pose phi' A := m2' \o xsection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (phi' A)].
@@ -3870,7 +3865,7 @@ Section product_measure1.
 Local Open Scope ereal_scope.
 Variables (T1 T2 : measurableType) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypothesis (sm2 : sigma_finite setT m2).
+Hypothesis sm2 : sigma_finite setT m2.
 Implicit Types A : set (T1 * T2).
 
 Notation pm1 := (product_measure1 m1 sm2).
@@ -3984,7 +3979,7 @@ Section product_measure2.
 Local Open Scope ereal_scope.
 Variables (T1 T2 : measurableType) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypothesis (sm1 : sigma_finite setT m1).
+Hypothesis sm1 : sigma_finite setT m1.
 Implicit Types A : set (T1 * T2).
 
 Notation pm2 := (product_measure2 sm1 m2).
@@ -4014,7 +4009,7 @@ apply/cvg_closeP; split; last by rewrite closeE.
 by apply: is_cvg_nneseries => *; exact: integral_ge0.
 Qed.
 
-HB.instance Definition product_measure2_build := isMeasure.Build _ _ pm2
+HB.instance Definition _ := isMeasure.Build _ _ pm2
   pm20 pm2_ge0 pm2_sigma_additive.
 
 End product_measure2.

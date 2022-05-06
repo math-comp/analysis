@@ -77,12 +77,9 @@ From HB Require Import structures.
 (*   mseries mu n == the measure corresponding to the sum of the              *)
 (*                   measures mu_n, mu_{n+1}, ...                             *)
 (*   sigma_finite A f == the measure f is sigma-finite on A : set T with      *)
-(*                   T : ringOfSetsType.                                      *)
-(*   restr mu m == restriction of the measure mu to a set D; restr mu m       *)
-(*                 has type set T -> \bar R provided that m has type          *)
-(*                 {measure set T -> \bar R}                                  *)
-(*   Restr mu mD == same as restr mu D except that mD is a proof that D is    *)
-(*                  measurable; Restr mu mD has type {measure set T -> \bar R}*)
+(*                       T : ringOfSetsType.                                  *)
+(*   mrestr mu mD == restriction of the measure mu to a set D; mD is a proof  *)
+(*                   that D is measurable                                     *)
 (*   mu.-negligible A == A is mu negligible                                   *)
 (* 　{ae mu, forall x, P x} == P holds almost everywhere for the measure mu   *)
 (*                                                                            *)
@@ -1290,10 +1287,9 @@ Lemma eq_measure (T : measurableType) (R : realType)
   (m1 m2 : {measure set T -> \bar R}) :
   (m1 = m2 :> (set T -> \bar R)) -> m1 = m2.
 Proof.
-move: m1 m2 => [m1 [[m10 m1ge0 m1sa [m1ssa]]]] [m2 [[+ + + [+]]]] /= m1m2.
-rewrite -{}m1m2 => m10' m1ge0' m1sa' m1ssa'; f_equal.
-by rewrite (_ : m10' = m10)// (_ : m1ge0' = m1ge0)// (_ : m1sa' = m1sa)//
-  (_ : m1ssa' = m1ssa).
+move: m1 m2 => [m1 [[m10 m1ge0 [m1sa]]]] [m2 [[+ + [+]]]] /= m1m2.
+rewrite -{}m1m2 => m10' m1ge0' m1sa'; f_equal.
+by rewrite (_ : m10' = m10)// (_ : m1ge0' = m1ge0)// (_ : m1sa' = m1sa).
 Qed.
 
 Section measure_lemmas.
@@ -1532,7 +1528,7 @@ Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 
 Local Notation restr := (mrestr mu mD).
 
-Let restr0 : restr set0 = 0%E. Proof. by rewrite /restr set0I measure0. Qed.
+Let restr0 : restr set0 = 0%E. Proof. by rewrite /mrestr set0I measure0. Qed.
 
 Let restr_ge0 (A : set _) : (0 <= restr A)%E.
 Proof. by rewrite /restr; apply: measure_ge0; exact: measurableI. Qed.

@@ -128,7 +128,7 @@
   + mixins `isAdditiveMeasure`, `isMeasure0`, `isMeasure`, `isOuterMeasure`
   + structures `AdditiveMeasure`, `Measure`, `OuterMeasure`
   + notations `additive_measure`, `measure`, `outer_measure`
-  + definition `restr`
+  + definition `mrestr`
 - in file `classical_sets.v`:
   + lemma `trivIset_set0`
 
@@ -157,6 +157,9 @@
   + change the notation `\int_`
 - in `measure.v`:
   + `measure0` is now a lemma
+- in `lebesgue_integral.v`:
+  + `product_measure1` takes a proof that the second measure is sigma-finite
+  + `product_measure2` takes a proof that the first measure is sigma-finite
 
 ### Renamed
 
