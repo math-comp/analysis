@@ -85,6 +85,7 @@
   + definition `mseries` and canonical `measure_series'`
 - in file `lebesgue_integral.v`:
   + lemma `integral_measure_zero`
+  + lemma `eq_measure_integral`
 
 ### Changed
 
