@@ -611,7 +611,7 @@ Definition measurableTypeR :=
 
 Definition measurableR : set (set R) := @measurable measurableTypeR.
 
-HB.instance Definition R_isMeasurable : isMeasurable R :=
+HB.instance Definition _ : isMeasurable R :=
   isMeasurable.Build measurableTypeR (Pointed.class R)
     measurable0 (@measurableC _) (@bigcupT_measurable _).
 (*HB.instance (Real.sort R) R_isMeasurable.*)
