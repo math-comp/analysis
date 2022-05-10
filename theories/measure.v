@@ -1131,8 +1131,21 @@ Notation "{ 'additive_measure' 'set' T '->' '\bar' R }" :=
 
 Arguments measure_ge0 {R T} _.
 
+Section additive_measure_signed.
+Context (R : numFieldType) (T : semiRingOfSetsType).
+
+Variable mu : {additive_measure set T -> \bar R}.
+
+Lemma additive_measure_snum_subproof S : Signed.spec 0 ?=0 >=0 (mu S).
+Proof. exact: measure_ge0. Qed.
+
+Canonical additive_measure_snum S :=
+  Signed.mk (additive_measure_snum_subproof S).
+
+End additive_measure_signed.
+
 Section additive_measure_on_semiring_of_sets.
-Variables (R : realFieldType) (T : semiRingOfSetsType)
+Variables (R : numFieldType) (T : semiRingOfSetsType)
   (mu : {additive_measure set T -> \bar R}).
 
 Lemma measure0 : mu set0 = 0.
@@ -1261,6 +1274,18 @@ Notation measure := Measure.type.
 Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure R T)
   (at level 36, T, R at next level,
     format "{ 'measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+
+Section measure_signed.
+Variables (R : numFieldType) (T : semiRingOfSetsType).
+
+Variable mu : {measure set T -> \bar R}.
+
+Lemma measure_snum_subproof S : Signed.spec 0 ?=0 >=0 (mu S).
+Proof. exact: measure_ge0. Qed.
+
+Canonical measure_snum S := Signed.mk (measure_snum_subproof S).
+
+End measure_signed.
 
 HB.factory Record isMeasure
     (R : realFieldType) (T : semiRingOfSetsType) (mu : set T -> \bar R) := {
