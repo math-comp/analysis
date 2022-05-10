@@ -1268,7 +1268,7 @@ HB.mixin Record isMeasure0
 
 HB.structure Definition Measure
     (R : numFieldType) (T : semiRingOfSetsType) :=
-  {mu & isMeasure0 R T mu }.
+  {mu of isMeasure0 R T mu &}.
 
 Notation measure := Measure.type.
 Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure R T)
@@ -2599,7 +2599,7 @@ Definition caratheodory_type (R : realType) (T : Type)
 Section caratheodory_sigma_algebra.
 Variables (R : realType) (T : pointedType) (mu : {outer_measure set T -> \bar R}).
 
-HB.instance Definition caratheodory_mixin := @isMeasurable.Build
+HB.instance Definition _ := @isMeasurable.Build
   (caratheodory_type mu) (Pointed.class T) mu.-measurable
     (caratheodory_measurable_set0 mu)
     (@caratheodory_measurable_setC _ _ mu)

@@ -131,6 +131,9 @@
   + definition `mrestr`
 - in file `classical_sets.v`:
   + lemma `trivIset_set0`
+- in `measure.v`:
+  + lemmas `additive_measure_snum_subproof`, `measure_snum_subproof`
+  + canonicals `additive_measure_snum`, `measure_snum`
 
 ### Changed
 
