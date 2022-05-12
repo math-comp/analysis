@@ -106,10 +106,6 @@ split; first by move=> pxb; inversion pxb; subst; tauto.
 by move=>[??]; constructor.
 Qed.
 
-  
-
-
-
 Definition fixed_prefix (s : seq bool) (x : cantor_space) : Prop := 
   prefix x s.
 
@@ -134,6 +130,10 @@ Fixpoint prefix_of (x : cantor_space) (n : nat) : seq bool :=
   | 0 => nil
   | S m => x 0 :: prefix_of (pull x) m
   end.
+
+Lemma length_prefix_of (x : cantor_space) (n : nat) : 
+  length (prefix_of x n) = n.
+Proof.  by elim: n x => //= n IH x; congr( _ .+1); exact: IH. Qed.
 
 Lemma prefix_of_prefix (x : cantor_space) (i : nat) : fixed_prefix (prefix_of x i) x.
 Proof.
@@ -180,22 +180,28 @@ Qed.
 Lemma open_fixed (s : seq bool) : open (fixed_prefix s).
 Proof. rewrite fixed_helperE; exact: open_fixed_prefix. Qed.
 
-Lemma negb_neqP (a b : bool) : ~~ a = b <-> a <> b.
-Proof. by case: a; case: b => //=. Qed.
-
-Lemma closed_fixed (s : seq bool) (b : bool) :  
-  ~`(fixed_prefix (b :: s)) = fixed_prefix(map negb (b :: s)).
+Lemma fixed_prefix_unique (s1 s2 : seq bool) (x : cantor_space): 
+  length s1 = length s2 -> fixed_prefix s1 x -> fixed_prefix s2 x -> s1 = s2.
 Proof.
-move: b; elim s => //.
-  move=> b; rewrite eqEsubset; split => x => //.
-    move=> W; constructor; last constructor.
-    by apply/negb_neqP => Q; apply W; constructor => //; constructor.
-  by move=> /prefixP [] /negb_neqP W _ /prefixP [??]; apply W.
-move=> a l IH b; rewrite eqEsubset; split => x => //.
-  move=> //= /prefixP/not_andP [/negb_neqP nbx|].
-  apply/prefixP; split=> //=. move: (IH a) => //=; rewrite eqEsubset.
-  case => + _. apply.
+move: s2 x; elim s1. 
+  by move=> ? ? ? ? ?; apply sym_equal; apply List.length_zero_iff_nil.
+move=> a l1 IH [] //= b l2 x /eq_add_S lng /prefixP [] -> ? /prefixP [] -> ?. 
+by congr (_ :: _); apply: (IH _ (pull x)) => //=.
+Qed.
 
+Lemma closed_fixed (s : seq bool) : closed (fixed_prefix s).
+Proof.
+elim s; first by rewrite empty_prefix //.
+move=> b l clsFl x.
+pose B := fixed_prefix (prefix_of x ((length l) + 1)).
+move=> /(_ B) /=; case. 
+  suff: (open_nbhs x B) by rewrite open_nbhsE=> [[]].
+  by split; [exact: open_fixed | exact: prefix_of_prefix].
+move=> y [] pfy By /=; suff -> : (b :: l = (prefix_of x (length l + 1))).
+  exact: prefix_of_prefix.
+apply: (@fixed_prefix_unique _ _ y) => //=. 
+by rewrite length_prefix_of addn1.
+Qed.
 
 Section cantor_sets.
 
