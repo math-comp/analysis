@@ -2420,7 +2420,7 @@ move=> mf f0 AB; rewrite -(setDUK AB) integral_setU//; last 4 first.
 by apply: lee_addl; apply: integral_ge0 => x [Bx _]; apply: f0.
 Qed.
 
-Lemma integral_set0 (f : T -> \bar R) : \int_ set0 (f x) 'd mu[x] = 0.
+Lemma integral_set0 (f : T -> \bar R) : \int[mu]_(x in set0) f x = 0.
 Proof.
 rewrite integral_mkcond (eq_integral (cst 0)) ?integral0// => x _.
 by rewrite /restrict; case: ifPn => //; rewrite in_set0.
@@ -2432,7 +2432,7 @@ Lemma ge0_integral_bigsetU (F : (set T)^nat) (f : T -> \bar R) n :
   measurable_fun D f ->
   (forall x, D x -> 0 <= f x) ->
   trivIset `I_n F ->
-  \int_ D (f x) 'd mu[x] = \sum_(i < n) \int_ (F i) (f x) 'd mu[x].
+  \int[mu]_(x in D) f x = \sum_(i < n) \int[mu]_(x in F i) f x.
 Proof.
 move=> mF.
 elim: n => [|n ih] D mf f0 tF; first by rewrite /D 2!big_ord0 integral_set0.
@@ -2599,7 +2599,7 @@ Lemma ge0_integral_bigcup (F : (set _)^nat) (f : T -> \bar R) :
   let D := \bigcup_k F k in
   (forall x, D x -> 0 <= f x) -> trivIset setT F ->
   (forall k, measurable (F k)) -> mu.-integrable D f ->
-  \int_ D (f x) 'd mu[x] = \sum_(i <oo) \int_ (F i) (f x) 'd mu[x].
+  \int[mu]_(x in D) f x = \sum_(i <oo) \int[mu]_(x in F i) f x.
 Proof.
 move=> D f0 tF mF fi; pose f_ N := f \_ (\big[setU/set0]_(0 <= i < N) F i).
 have lim_f_ t : f_ ^~ t --> (f \_ D) t.
@@ -2615,7 +2615,7 @@ have lim_f_ t : f_ ^~ t --> (f \_ D) t.
   apply: ereal_nondecreasing_cvg => a b ab.
   rewrite /f_ !big_mkord restrict_lee //; last exact: subset_bigsetU.
   by move=> x Dx; apply: f0 => //; exact: bigsetU_bigcup Dx.
-transitivity (\int (lim (f_ ^~ x)) 'd mu[x]).
+transitivity (\int[mu]_x lim (f_ ^~ x)).
   rewrite integral_mkcond; apply eq_integral => x _.
   by apply/esym/cvg_lim => //; exact: lim_f_.
 rewrite monotone_convergence//; last 3 first.
@@ -2628,10 +2628,10 @@ rewrite monotone_convergence//; last 3 first.
   - move=> x _ a b ab; apply: restrict_lee.
       by move=> y; rewrite big_mkord => Dy; apply: f0; exact: bigsetU_bigcup Dy.
     by rewrite 2!big_mkord; apply: subset_bigsetU.
-transitivity (lim (fun N => \int_ (\big[setU/set0]_(i < N) F i) f x 'd mu[x])).
+transitivity (lim (fun N => \int[mu]_(x in \big[setU/set0]_(i < N) F i) f x)).
   congr (lim _); rewrite funeqE => n.
   by rewrite /f_ [in RHS]integral_mkcond big_mkord.
-congr (lim _); rewrite funeqE => /= n; rewrite ge0_integral_bigsetU// ?big_mkord//.
+congr (lim _); rewrite funeqE => /= n; rewrite ge0_integral_bigsetU ?big_mkord//.
 - case: fi => + _; apply: measurable_funS => //; first exact: bigcupT_measurable.
   exact: bigsetU_bigcup.
 - by move=> y Dy; apply: f0; exact: bigsetU_bigcup Dy.
