@@ -65,7 +65,7 @@ Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
-HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
+HB.mixin Record IsMeasurableFun (aT rT : measurableType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
 }.
 #[global] Hint Resolve fimfun_inP : core.
@@ -79,8 +79,8 @@ Notation "{ 'mfun'  aT >-> T }" := (@MeasurableFun.type aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 #[global] Hint Resolve measurable_funP : core.
 
-HB.structure Definition SimpleFun (aT (*rT*) : measurableType) (rT : realType) :=
-  {f of @IsMeasurableFun aT rT f & @FiniteImage aT rT f}.
+HB.structure Definition SimpleFun (aT : measurableType) (rT : realType) :=
+  {f of @IsMeasurableFun aT (measurableTypeR rT) f & @FiniteImage aT rT f}.
 Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
 Reserved Notation "[ 'sfun' 'of' f ]"
@@ -88,7 +88,8 @@ Reserved Notation "[ 'sfun' 'of' f ]"
 Notation "{ 'sfun'  aT >-> T }" := (@SimpleFun.type aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
-Lemma measurable_sfunP {aT : measurableType} {rT : realType} (f : {mfun aT >-> rT}) (y : rT) :
+Lemma measurable_sfunP {aT : measurableType} {rT : realType}
+    (f : {mfun aT >-> measurableTypeR rT}) (y : rT) :
   measurable (f @^-1` [set y]).
 Proof. by rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
 
@@ -208,14 +209,14 @@ HB.builders Context T R A f of @FiniteDecomp T R f.
 HB.end.
 
 Section mfun_pred.
-Context {aT : measurableType} {rT : realType}.
+Context {aT rT : measurableType}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
 Definition mfun_key : pred_key mfun. Proof. exact. Qed.
 Canonical mfun_keyed := KeyedPred mfun_key.
 End mfun_pred.
 
 Section mfun.
-Context {aT : measurableType} {rT : realType}.
+Context {aT rT : measurableType}.
 Notation T := {mfun aT >-> rT}.
 Notation mfun := (@mfun aT rT).
 Section Sub.
@@ -245,26 +246,39 @@ Canonical mfuneqType := EqType {mfun aT >-> rT} mfuneqMixin.
 Definition mfunchoiceMixin := [choiceMixin of {mfun aT >-> rT} by <:].
 Canonical mfunchoiceType := ChoiceType {mfun aT >-> rT} mfunchoiceMixin.
 
-Lemma cst_mfun_subproof x : @IsMeasurableFun aT rT (cst x).
+End mfun.
+
+Section mfun_realType.
+Context {aT : measurableType} {rT : realType}.
+
+Lemma cst_mfun_subproof x : @IsMeasurableFun aT (measurableTypeR rT) (cst x).
 Proof. by split; apply: measurable_fun_cst. Qed.
 HB.instance Definition _ x := @cst_mfun_subproof x.
-Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
+Definition cst_mfun x := [the {mfun aT >-> measurableTypeR rT} of cst x].
 
 Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 
-End mfun.
+End mfun_realType.
 
 Section ring.
 Context (aT : measurableType) (rT : realType).
 
-Lemma mfun_subring_closed : subring_closed (@mfun aT rT).
+Lemma mfun_subring_closed : subring_closed (@mfun aT (measurableTypeR rT)).
 Proof.
 split=> [|f g|f g]; rewrite !inE/=.
 - exact: measurable_fun_cst.
 - exact: measurable_funB.
 - exact: measurable_funM.
 Qed.
-Canonical mfun_add := AddrPred mfun_subring_closed.
+
+Lemma mfun_addr_closed : addr_closed (@mfun aT (measurableTypeR rT)).
+Proof.
+split; first by rewrite !inE/=; exact: measurable_fun_cst.
+by move=> a b /[!inE]/=; exact: measurable_funD.
+Qed.
+
+(*Canonical mfun_add := @AddrPred rT _ _ _ mfun_addr_closed.*)
+Canonical mfun_add := @AddrPred _ _ _ _ mfun_subring_closed.
 Canonical mfun_zmod := ZmodPred mfun_subring_closed.
 Canonical mfun_mul := MulrPred mfun_subring_closed.
 Canonical mfun_subring := SubringPred mfun_subring_closed.
