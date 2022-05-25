@@ -3617,6 +3617,7 @@ End uniformType1.
 Hint Extern 0 (entourage (split_ent _)) => exact: entourage_split_ent : core.
 #[global]
 Hint Extern 0 (entourage (get _)) => exact: entourage_split_ent : core.
+#[global]
 Hint Extern 0 (entourage (_^-1)%classic) => exact: entourage_inv : core.
 Arguments entourage_split {M} z {x y A}.
 #[global]
