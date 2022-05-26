@@ -962,6 +962,22 @@ Qed.
 
 End lebesgue_measure_itv.
 
+Lemma lebesgue_measure_rat (R : realType) :
+  lebesgue_measure (range ratr : set R) = 0%E.
+Proof.
+have /pcard_eqP/bijPex[f bijf] := card_rat; set f1 := 'pinv_(fun=> 0) setT f.
+rewrite (_ : range _ = \bigcup_n [set ratr (f1 n)]); last first.
+  apply/seteqP; split => [_ [q _ <-]|_ [n _ /= ->]]; last by exists (f1 n).
+  exists (f q) => //=; rewrite /f1 pinvKV// ?in_setE// => x y _ _.
+  by apply: bij_inj; rewrite -setTT_bijective.
+rewrite measure_bigcup//; last first.
+  apply/trivIsetP => i j _ _ ij; apply/seteqP; split => //= _ [/= ->].
+  move=> /fmorph_inj.
+  have /set_bij_inj /[apply] := bijpinv_bij (fun=> 0) bijf.
+  by rewrite in_setE => /(_ Logic.I Logic.I); exact/eqP.
+by rewrite nneseries0// => n _; rewrite lebesgue_measure_set1.
+Qed.
+
 Section measurable_fun_measurable.
 Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (D : set T) (f : T -> \bar R).

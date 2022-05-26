@@ -96,6 +96,7 @@
   + lemmas `itv_bnd_open_bigcup`, `itv_bnd_infty_bigcup`, `itv_infty_bnd_bigcup`
   + lemma `lebesgue_measure_set1`
   + lemma `lebesgue_measure_itv`
+  + lemma `lebesgue_measure_rat`
 
 ### Changed
 
