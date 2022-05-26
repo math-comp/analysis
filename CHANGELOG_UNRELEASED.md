@@ -92,6 +92,10 @@
   + lemma `restrict_lee`
 - in file `lebesgue_integral.v`:
   + lemmas `integral_set0`, `ge0_integral_bigsetU`, `ge0_integral_bigcup`
+- in file `lebesgue_measure.v`:
+  + lemmas `itv_bnd_open_bigcup`, `itv_bnd_infty_bigcup`, `itv_infty_bnd_bigcup`
+  + lemma `lebesgue_measure_set1`
+  + lemma `lebesgue_measure_itv`
 
 ### Changed
 
