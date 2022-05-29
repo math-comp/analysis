@@ -2,6 +2,7 @@
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 Require Import boolp classical_sets mathcomp_extra reals ereal signed.
 Require Import functions topology normedtype sequences cardinality esum fsbigop.
+Require Import numfun.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -60,6 +61,15 @@ From HB Require Import structures.
 (*                   of type T where R is expected to be a numFieldType such  *)
 (*                   that this function maps set0 to 0, is non-negative over  *)
 (*                   measurable sets and is semi-sigma-additive               *)
+(*   pushforward f m == pushforward/image measure of m by f                   *)
+(*   \d_a == Dirac measure                                                    *)
+(*   msum mu n == the measure corresponding to the sum of the measures        *)
+(*                   mu_0, ..., mu_{n-1}                                      *)
+(*   @mzero T R == the zero measure                                           *)
+(*   measure_add m1 m2 == the measure corresponding to the sum of the         *)
+(*                   measures m1 and m2                                       *)
+(*   mseries mu n == the measure corresponding to the sum of the              *)
+(*                   measures mu_n, mu_{n+1}, ...                             *)
 (*   sigma_finite A f == the measure f is sigma-finite on A : set T with      *)
 (*                   T : ringOfSetsType.                                      *)
 (*   mu.-negligible A == A is mu negligible                                   *)
@@ -1284,6 +1294,14 @@ End Exports.
 End Measure.
 Include Measure.Exports.
 
+Lemma eq_measure (T : measurableType) (R : realType)
+  (m1 m2 : {measure set T -> \bar R}) :
+  (m1 = m2 :> (set T -> \bar R)) -> m1 = m2.
+Proof.
+move: m1 m2 => [m1 [m10 m1ge0 m1sub]] [m2 [+ + +]] /= m1m2; rewrite -m1m2.
+by move=> m10' m1ge0' m1sub'; congr (Measure _).
+Qed.
+
 Section measure_lemmas.
 Variables (R : realFieldType) (T : semiRingOfSetsType).
 
@@ -1348,6 +1366,201 @@ End measure_is_additive_measure.
 
 Coercion measure_additive_measure : Measure.map >-> AdditiveMeasure.map.
 
+Section pushforward_measure.
+Local Open Scope ereal_scope.
+Variables (T1 T2 : measurableType) (f : T1 -> T2).
+Hypothesis mf : measurable_fun setT f.
+Variables (R : realFieldType) (m : {measure set T1 -> \bar R}).
+
+Definition pushforward A := m (f @^-1` A).
+
+Let pushforward0 : pushforward set0 = 0.
+Proof. by rewrite /pushforward preimage_set0 measure0. Qed.
+
+Let pushforward_ge0 A : 0 <= pushforward A.
+Proof. by apply: measure_ge0; rewrite -[X in measurable X]setIT; apply: mf. Qed.
+
+Let pushforward_sigma_additive : semi_sigma_additive pushforward.
+Proof.
+move=> F mF tF mUF; rewrite /pushforward preimage_bigcup.
+apply: measure_semi_sigma_additive.
+- by move=> n; rewrite -[X in measurable X]setTI; exact: mf.
+- apply/trivIsetP => /= i j _ _ ij; rewrite -preimage_setI.
+  by move/trivIsetP : tF => /(_ _ _ _ _ ij) ->//; rewrite preimage_set0.
+- by rewrite -preimage_bigcup -[X in measurable X]setTI; exact: mf.
+Qed.
+
+Canonical pushforward_measure : {measure set T2 -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms pushforward0 pushforward_ge0
+                                 pushforward_sigma_additive).
+
+End pushforward_measure.
+
+Section dirac_measure.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (a : T) (R : realFieldType).
+
+Definition dirac (A : set T) : \bar R := (\1_A a)%:E.
+
+Let dirac0 : dirac set0 = 0. Proof. by rewrite /dirac indic0. Qed.
+
+Let dirac_ge0 B : 0 <= dirac B. Proof. by rewrite /dirac indicE. Qed.
+
+Let dirac_sigma_additive : semi_sigma_additive dirac.
+Proof.
+move=> F mF tF mUF; rewrite /dirac indicE; have [|aFn] /= := boolP (a \in _).
+  rewrite inE => -[n _ Fna].
+  have naF m : m != n -> a \notin F m.
+    move=> mn; rewrite notin_set => Fma.
+    move/trivIsetP : tF => /(_ _ _ Logic.I Logic.I mn).
+    by rewrite predeqE => /(_ a)[+ _]; exact.
+  apply/cvg_ballP => _/posnumP[e]; rewrite near_map; near=> m.
+  have mn : (n < m)%N by near: m; exists n.+1.
+  rewrite big_mkord (bigID (xpred1 (Ordinal mn)))//= big_pred1_eq/= big1/=.
+    by rewrite adde0 indicE mem_set//; exact: ballxx.
+  by move=> j ij; rewrite indicE (negbTE (naF _ _)).
+rewrite [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
+apply/funext => n; rewrite big1// => i _; rewrite indicE; apply/eqP.
+by rewrite eqe pnatr_eq0 eqb0; apply: contra aFn => /[!inE] aFn; exists i.
+Unshelve. all: by end_near. Qed.
+
+Canonical dirac_measure : {measure set T -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms dirac0 dirac_ge0 dirac_sigma_additive).
+
+End dirac_measure.
+Arguments dirac {T} _ {R}.
+Arguments dirac_measure {T} _ {R}.
+
+Notation "\d_ a" := (dirac_measure a) : ring_scope.
+
+Section dirac_lemmas.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType).
+
+Lemma finite_card_dirac (A : set T) : finite_set A ->
+  \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
+Proof.
+move=> finA.
+rewrite -sum_fset_set// big_seq_cond (eq_bigr (fun=> 1)) -?big_seq_cond.
+  by rewrite card_fset_sum1// natr_sum -sumEFin.
+by move=> i; rewrite andbT in_fset_set//= /dirac indicE => ->.
+Qed.
+
+Lemma infinite_card_dirac (A : set T) : infinite_set A ->
+  \esum_(i in A) \d_ i A = +oo :> \bar R.
+Proof.
+move=> infA; apply/eq_pinftyP => r r0.
+have [B BA Br] := infinite_set_fset `|ceil r| infA.
+apply: esum_ge; exists B => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
+  by rewrite lee_fin natr_absz gtr0_norm ?ceil_gt0// ceil_ge.
+move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
+rewrite big_seq (eq_bigr (cst 1))/=; last first.
+  by move=> i Bi; rewrite /dirac indicE mem_set//; exact: BA.
+by rewrite -big_seq card_fset_sum1 sumEFin natr_sum.
+Qed.
+
+End dirac_lemmas.
+
+Section measure_sum.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType).
+Variables (m : {measure set T -> \bar R}^nat) (n : nat).
+
+Definition msum (A : set T) : \bar R := \sum_(k < n) m k A.
+
+Let msum0 : msum set0 = 0. Proof. by rewrite /msum big1. Qed.
+
+Let msum_ge0 B : 0 <= msum B. Proof. by rewrite /msum; apply: sume_ge0. Qed.
+
+Let msum_sigma_additive : semi_sigma_additive msum.
+Proof.
+move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
+    lim (fun n => \sum_(0 <= i < n) msum (F i))).
+  by apply: is_cvg_ereal_nneg_natsum => k _; exact: sume_ge0.
+rewrite nneseries_sum//; apply: eq_bigr => /= i _.
+exact: measure_semi_bigcup.
+Qed.
+
+Canonical measure_sum : {measure set T -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms msum0 msum_ge0 msum_sigma_additive).
+
+End measure_sum.
+Arguments msum {T R}.
+Arguments measure_sum {T R}.
+
+Section measure_zero.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType).
+
+Definition mzero (A : set T) : \bar R := 0.
+
+Let mzero0 : mzero set0 = 0. Proof. by []. Qed.
+
+Let mzero_ge0 B : 0 <= mzero B. Proof. by []. Qed.
+
+Let mzero_sigma_additive : semi_sigma_additive mzero.
+Proof.
+move=> F mF tF mUF; rewrite [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
+by apply/funext => n; rewrite big1.
+Qed.
+
+Canonical measure_zero : {measure set T -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms mzero0 mzero_ge0 mzero_sigma_additive).
+
+End measure_zero.
+Arguments mzero {T R}.
+Arguments measure_zero {T R}.
+
+Section measure_add.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType).
+Variables (m1 m2 : {measure set T -> \bar R}).
+
+Definition measure_add := measure_sum (fun n => if n is 0%N then m1 else m2) 2.
+
+Lemma measure_addE A : measure_add A = m1 A + m2 A.
+Proof. by rewrite /measure_add/= /msum 2!big_ord_recl/= big_ord0 adde0. Qed.
+
+End measure_add.
+
+Section measure_series.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType).
+Variables (m : {measure set T -> \bar R}^nat) (n : nat).
+
+Definition mseries (A : set T) : \bar R := \sum_(n <= k <oo) m k A.
+
+Let mseries0 : mseries set0 = 0.
+Proof. by rewrite /mseries ereal_series nneseries0. Qed.
+
+Let mseries_ge0 B : 0 <= mseries B.
+Proof.
+by rewrite /mseries ereal_series nneseries_esum//; exact: esum_ge0.
+Qed.
+
+Let mseries_sigma_additive : semi_sigma_additive mseries.
+Proof.
+move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
+  lim (fun n => \sum_(0 <= i < n) mseries (F i))); last first.
+  rewrite [in LHS]/mseries.
+  transitivity (\sum_(n <= k <oo) \sum_(i <oo) m k (F i)).
+    rewrite 2!ereal_series.
+    apply: (@eq_nneseries _ (fun k => m k (\bigcup_n0 F n0))) => i ni.
+    exact: measure_semi_bigcup.
+  rewrite ereal_series nneseries_interchange//.
+  apply: (@eq_nneseries R (fun j => \sum_(i <oo | (n <= i)%N) m i (F j))
+                          (fun i => \sum_(n <= k <oo) m k (F i))).
+  by move=> i _; rewrite ereal_series.
+apply: is_cvg_ereal_nneg_natsum => k _.
+by rewrite /mseries ereal_series; exact: nneseries_lim_ge0.
+Qed.
+
+Canonical measure_series : {measure set T -> \bar R} :=
+  Measure.Pack _ (Measure.Axioms mseries0 mseries_ge0 mseries_sigma_additive).
+
+End measure_series.
+Arguments mseries {T R}.
+Arguments measure_series {T R}.
 
 Section measure_restr.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).

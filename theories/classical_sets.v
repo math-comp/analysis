@@ -156,7 +156,6 @@ Reserved Notation "[ 'set' E | x 'in' A ]" (at level 0, E, x at level 99,
 Reserved Notation "[ 'set' E | x 'in' A & y 'in' B ]"
   (at level 0, E, x at level 99,
   format "[ '[hv' 'set'  E '/ '  |  x  'in'  A  &  y  'in'  B ] ']'").
-Reserved Notation "[ 'set' 'of' F ]" (at level 0, format "[ 'set'  'of'  F ]").
 Reserved Notation "[ 'set' a ]"
   (at level 0, a at level 99, format "[ 'set'  a ]").
 Reserved Notation "[ 'set' : T ]" (at level 0, format "[ 'set' :  T ]").
@@ -296,7 +295,6 @@ Arguments setML _ _ _ _ _ /.
 Arguments fst_set _ _ _ _ /.
 Arguments snd_set _ _ _ _ /.
 
-Notation "[ 'set' 'of' F ]" := [set F i | i in setT] : classical_set_scope.
 Notation range F := [set F i | i in setT].
 Notation "[ 'set' a ]" := (set1 a) : classical_set_scope.
 Notation "[ 'set' a : T ]" := [set (a : T)] : classical_set_scope.

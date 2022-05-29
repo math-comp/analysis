@@ -85,122 +85,118 @@ Proof. by apply/funext=> x; rewrite /patch/=; case: ifP; rewrite ?mule0. Qed.
 
 End erestrict_lemmas.
 
-Section funpos.
+Section funposneg.
 Local Open Scope ereal_scope.
 
-Definition funenng T (R : realDomainType) (f : T -> \bar R) :=
+Definition funepos T (R : realDomainType) (f : T -> \bar R) :=
   fun x => maxe (f x) 0.
-Definition funennp T (R : realDomainType) (f : T -> \bar R) :=
+Definition funeneg T (R : realDomainType) (f : T -> \bar R) :=
   fun x => maxe (- f x) 0.
-End funpos.
 
-Notation "f ^\+" := (funenng f) : ereal_scope.
-Notation "f ^\-" := (funennp f) : ereal_scope.
+End funposneg.
 
-Section funpos_lemmas.
+Notation "f ^\+" := (funepos f) : ereal_scope.
+Notation "f ^\-" := (funeneg f) : ereal_scope.
+
+Section funposneg_lemmas.
 Local Open Scope ereal_scope.
 Variables (T : Type) (R : realDomainType) (D : set T).
 Implicit Types (f g : T -> \bar R) (r : R).
 
-Lemma funenng_ge0 f x : 0 <= f^\+ x.
-Proof. by rewrite /funenng /= le_maxr lexx orbT. Qed.
+Lemma funepos_ge0 f x : 0 <= f^\+ x.
+Proof. by rewrite /funepos /= le_maxr lexx orbT. Qed.
 
-Lemma funennp_ge0 f x : 0 <= f^\- x.
-Proof. by rewrite /funennp le_maxr lexx orbT. Qed.
+Lemma funeneg_ge0 f x : 0 <= f^\- x.
+Proof. by rewrite /funeneg le_maxr lexx orbT. Qed.
 
-Lemma funenngN f : (\- f)^\+ = f^\-.
-Proof. by rewrite funeqE => x /=; rewrite /funenng /funennp. Qed.
+Lemma funeposN f : (\- f)^\+ = f^\-. Proof. exact/funext. Qed.
 
-Lemma funennpN f : (\- f)^\- = f^\+.
-Proof. by rewrite funeqE => x /=; rewrite /funenng /funennp oppeK. Qed.
+Lemma funenegN f : (\- f)^\- = f^\+.
+Proof. by apply/funext => x; rewrite /funeneg oppeK. Qed.
 
-Lemma funenng_restrict f : (f \_ D)^\+ = (f^\+) \_ D.
+Lemma funepos_restrict f : (f \_ D)^\+ = (f^\+) \_ D.
 Proof.
 by apply/funext => x; rewrite /patch/_^\+; case: ifP; rewrite //= maxxx.
 Qed.
 
-Lemma funennp_restrict f : (f \_ D)^\- = (f^\-) \_ D.
+Lemma funeneg_restrict f : (f \_ D)^\- = (f^\-) \_ D.
 Proof.
 by apply/funext => x; rewrite /patch/_^\-; case: ifP; rewrite //= oppr0 maxxx.
 Qed.
 
-Lemma ge0_funenngE f : (forall x, D x -> 0 <= f x) -> {in D, f^\+ =1 f}.
+Lemma ge0_funeposE f : (forall x, D x -> 0 <= f x) -> {in D, f^\+ =1 f}.
 Proof. by move=> f0 x; rewrite inE => Dx; apply/max_idPl/f0. Qed.
 
-Lemma ge0_funennpE f : (forall x, D x -> 0 <= f x) -> {in D, f^\- =1 cst 0}.
+Lemma ge0_funenegE f : (forall x, D x -> 0 <= f x) -> {in D, f^\- =1 cst 0}.
 Proof.
 by move=> f0 x; rewrite inE => Dx; apply/max_idPr; rewrite lee_oppl oppe0 f0.
 Qed.
 
-Lemma le0_funenngE f : (forall x, D x -> f x <= 0) -> {in D, f^\+ =1 cst 0}.
+Lemma le0_funeposE f : (forall x, D x -> f x <= 0) -> {in D, f^\+ =1 cst 0}.
 Proof. by move=> f0 x; rewrite inE => Dx; exact/max_idPr/f0. Qed.
 
-Lemma le0_funennpE f : (forall x, D x -> f x <= 0) -> {in D, f^\- =1 \- f}.
+Lemma le0_funenegE f : (forall x, D x -> f x <= 0) -> {in D, f^\- =1 \- f}.
 Proof.
 by move=> f0 x; rewrite inE => Dx; apply/max_idPl; rewrite lee_oppr oppe0 f0.
 Qed.
 
-Lemma gt0_funenngM r f : (0 < r)%R ->
+Lemma gt0_funeposM r f : (0 < r)%R ->
   (fun x => r%:E * f x)^\+ = (fun x => r%:E * (f^\+ x)).
-Proof. by move=> ?; rewrite funeqE => x; rewrite /funenng maxeMr// mule0. Qed.
+Proof. by move=> ?; rewrite funeqE => x; rewrite /funepos maxeMr// mule0. Qed.
 
-Lemma gt0_funennpM r f : (0 < r)%R ->
+Lemma gt0_funenegM r f : (0 < r)%R ->
   (fun x => r%:E * f x)^\- = (fun x => r%:E * (f^\- x)).
 Proof.
-by move=> r0; rewrite funeqE => x; rewrite /funennp -muleN maxeMr// mule0.
+by move=> r0; rewrite funeqE => x; rewrite /funeneg -muleN maxeMr// mule0.
 Qed.
 
-Lemma lt0_funenngM r f : (r < 0)%R ->
+Lemma lt0_funeposM r f : (r < 0)%R ->
   (fun x => r%:E * f x)^\+ = (fun x => - r%:E * (f^\- x)).
 Proof.
 move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funenngN gt0_funennpM -1?ltr_oppr ?oppr0.
+by rewrite funeposN gt0_funenegM -1?ltr_oppr ?oppr0.
 Qed.
 
-Lemma lt0_funennpM r f : (r < 0)%R ->
+Lemma lt0_funenegM r f : (r < 0)%R ->
   (fun x => r%:E * f x)^\- = (fun x => - r%:E * (f^\+ x)).
 Proof.
 move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funennpN gt0_funenngM -1?ltr_oppr ?oppr0.
+by rewrite funenegN gt0_funeposM -1?ltr_oppr ?oppr0.
 Qed.
 
 Lemma fune_abse f : abse \o f = f^\+ \+ f^\-.
 Proof.
 rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
-- rewrite lee0_abs// /funenng /funennp.
+- rewrite lee0_abs// /funepos /funeneg.
   move/max_idPr : (fx0) => ->; rewrite add0e.
   by move: fx0; rewrite -{1}oppr0 EFinN lee_oppr => /max_idPl ->.
-- rewrite gee0_abs// /funenng /funennp.
-  move/max_idPl : (fx0) => ->.
+- rewrite gee0_abs// /funepos /funeneg; move/max_idPl : (fx0) => ->.
   by move: fx0; rewrite -{1}oppr0 EFinN lee_oppl => /max_idPr ->; rewrite adde0.
 Qed.
 
-Lemma funenngnnp f : f = (fun x => f^\+ x - f^\- x)%E.
+Lemma funeposneg f : f = (fun x => f^\+ x - f^\- x).
 Proof.
-rewrite funeqE => x; rewrite /funenng /funennp.
-have [|/ltW] := leP (f x) 0%E.
+rewrite funeqE => x; rewrite /funepos /funeneg; have [|/ltW] := leP (f x) 0.
   by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite oppeK add0e.
 by rewrite -{1}oppe0 -lee_oppl => /max_idPr ->; rewrite sube0.
 Qed.
 
-Lemma add_def_funennpg f x : (f^\+ x +? - f^\- x)%E.
+Lemma add_def_funeposneg f x : (f^\+ x +? - f^\- x).
 Proof.
-rewrite /funennp /funenng; case: (f x) => [r| |].
-- by rewrite !maxEFin.
-- by rewrite /maxe /= ltNye.
-- by rewrite /maxe /= ltNye.
+by rewrite /funeneg /funepos; case: (f x) => [r| |];
+  [rewrite !maxEFin|rewrite /maxe /= ltNye|rewrite /maxe /= ltNye].
 Qed.
 
-Lemma funeD_Dnng f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
+Lemma funeD_Dpos f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
 Proof.
-apply/funext => x; rewrite /funenng /funennp; have [|/ltW] := leP 0 (f x + g x).
+apply/funext => x; rewrite /funepos /funeneg; have [|/ltW] := leP 0 (f x + g x).
 - by rewrite -{1}oppe0 -lee_oppl => /max_idPr ->; rewrite sube0.
 - by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite oppeK add0e.
 Qed.
 
-Lemma funeD_nngD f g : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
+Lemma funeD_posD f g : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
 Proof.
-apply/funext => x; rewrite /funenng /funennp.
+apply/funext => x; rewrite /funepos /funeneg.
 have [|fx0] := leP 0 (f x); last rewrite add0e.
 - rewrite -{1}oppe0 lee_oppl => /max_idPr ->; have [|/ltW] := leP 0 (g x).
     by rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0 sube0.
@@ -214,11 +210,11 @@ have [|fx0] := leP 0 (f x); last rewrite add0e.
   + by rewrite /maxe /=; case: (f x) fx0.
 Qed.
 
-End funpos_lemmas.
+End funposneg_lemmas.
 #[global]
-Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funenng_ge0] : core.
+Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
 #[global]
-Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funennp_ge0] : core.
+Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funeneg_ge0] : core.
 
 Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .

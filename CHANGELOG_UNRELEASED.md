@@ -69,6 +69,23 @@
   + lemma `nnseries_interchange`
 - in file `ereal.v`:
   + lemma `ltninfty_adde_def`
+- in file `lebesgue_measure.v`:
+  + lemma `emeasurable_funN`
+- in file `measure.v`:
+  + definition `pushforward` and canonical `pushforward_measure`
+  + definition `dirac` with notation `\d_` and canonical `dirac_measure`
+  + lemmas `finite_card_dirac`, `infinite_card_dirac`
+- in file `lebesgue_integral.v`:
+  + lemmas `integralM_indic`, `integralM_indic_nnsfun`, `integral_dirac`
+- in file `measure.v`:
+  + lemma `eq_measure`
+  + definition `msum` and canonical `measure_sum'`
+  + definition `mzero` and canonical `measure_zero'`
+  + definition `measure_add` and lemma `measure_addE`
+  + definition `mseries` and canonical `measure_series'`
+- in file `lebesgue_integral.v`:
+  + lemma `integral_measure_zero`
+  + lemma `eq_measure_integral`
 
 ### Changed
 
@@ -78,6 +95,10 @@
   + hint `measurable_set1`/`emeasurable_set1`
 - in `sequences.v`:
   + generalize `eq_nneseries`, `nneseries0`
+- in `mathcomp_extra.v`:
+  + generalize `card_fset_sum1`
+- in `lebesgue_integral.v`:
+  + change the notation `\int_`
 
 ### Renamed
 
@@ -137,12 +158,46 @@
   + `adde_def_nneg_series` -> `adde_def_nneseries`
 - in `esum.v`:
   + `ereal_pseries_esum` -> `nneseries_esum`
+- in `numfun.v`:
+  + `funenng` -> `funepos`
+  + `funennp` -> `funeneg`
+  + `funenng_ge0` -> `funepos_ge0`
+  + `funennp_ge0` -> `funeneg_ge0`
+  + `funenngN` -> `funeposN`
+  + `funennpN` -> `funenegN`
+  + `funenng_restrict` -> `funepos_restrict`
+  + `funennp_restrict` -> `funeneg_restrict`
+  + `ge0_funenngE` -> `ge0_funeposE`
+  + `ge0_funennpE` -> `ge0_funenegE`
+  + `le0_funenngE` -> `le0_funeposE`
+  + `le0_funennpE` -> `le0_funenegE`
+  + `gt0_funenngM` -> `gt0_funeposM`
+  + `gt0_funennpM` -> `gt0_funenegM`
+  + `lt0_funenngM` -> `lt0_funeposM`
+  + `lt0_funennpM` -> `lt0_funenegM`
+  + `funenngnnp` -> `funeposneg`
+  + `add_def_funennpg` -> `add_def_funeposneg`
+  + `funeD_Dnng` -> `funeD_Dpos`
+  + `funeD_nngD` -> `funeD_posD`
+- in `lebesgue_measure.v`:
+  + `emeasurable_fun_funenng` -> `emeasurable_fun_funepos`
+  + `emeasurable_fun_funennp` -> `emeasurable_fun_funeneg`
+- in `lebesgue_integral.v`:
+  + `integrable_funenng` -> `integrable_funepos`
+  + `integrable_funennp` -> `integrable_funeneg`
+  + `integral_funennp_lt_pinfty` -> `integral_funeneg_lt_pinfty`
+  + `integral_funenng_lt_pinfty` -> `integral_funepos_lt_pinfty`
+  + `ae_eq_funenng_funennp` -> `ae_eq_funeposneg`
 
 ### Removed
 
 - in `mathcomp_extra.v`:
   + lemmas `natr_absz`, `ge_pinfty`, `le_ninfty`, `gt_pinfty`,
     `lt_ninfty`
+- in `classical_sets.v`:
+  + notation `[set of _]`
+- in `topology.v`:
+  + lemmas `inj_can_sym_in_on`, `inj_can_sym_on`, `inj_can_sym_in`
 
 ### Infrastructure
 

@@ -1127,7 +1127,7 @@ by rewrite [(_ #<= _)%card]countableMR//=; apply/infiniteP/infiniteMRl.
 Qed.
 
 HB.mixin Record FiniteImage aT rT (f : aT -> rT) := {
-  fimfunP : finite_set [set of f]
+  fimfunP : finite_set (range f)
 }.
 HB.structure Definition FImFun aT rT := {f of @FiniteImage aT rT f}.
 
@@ -1141,13 +1141,13 @@ Notation "[ 'fimfun' 'of' f ]" := [the {fimfun _ >-> _} of f] : form_scope.
 
 Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
   finite_set (f @` D).
-Proof. by apply: (@sub_finite_set _ _ [set of f]) => // y [x]; exists x. Qed.
+Proof. by apply: (@sub_finite_set _ _ (range f)) => // y [x]; exists x. Qed.
 
 #[global] Hint Resolve fimfun_inP : core.
 
 Section fimfun_pred.
 Context {aT rT : Type}.
-Definition fimfun : {pred aT -> rT} := mem [set f | finite_set [set of f]].
+Definition fimfun : {pred aT -> rT} := mem [set f | finite_set (range f)].
 Definition fimfun_key : pred_key fimfun.
 Proof. exact. Qed.
 Canonical fimfun_keyed := KeyedPred fimfun_key.
@@ -1190,7 +1190,8 @@ Definition fimfunchoiceMixin aT (rT : choiceType) :=
 Canonical fimfunchoiceType aT (rT : choiceType) :=
   ChoiceType {fimfun aT >-> rT} (fimfunchoiceMixin aT rT).
 
-Lemma finite_image_cst {aT rT : Type} (x : rT) : finite_set [set of cst x : aT -> rT].
+Lemma finite_image_cst {aT rT : Type} (x : rT) :
+  finite_set (range (cst x : aT -> _)).
 Proof.
 elim/Ppointed: aT => aT; rewrite ?emptyE ?image_set0//.
 suff -> : cst x @` [set: aT] = [set x] by apply: finite_set1.

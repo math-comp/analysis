@@ -1,4 +1,3 @@
-(* -*- company-coq-local-symbols: (("`&`" . ?∩) ("`|`" . ?∪) ("set0" . ?∅)); -*- *)
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat.
@@ -354,7 +353,7 @@ have: `[a.1 + e%:num / 2, a.2] `<=` \bigcup_i Aoo i.
   move=> x /=; rewrite !in_itv /= => /andP[-> /le_lt_trans->]//=.
   by rewrite ltr_addl.
 have := @segment_compact _ (a.1 + e%:num / 2) a.2; rewrite compact_cover.
-move=> /[apply]-[i _|X _ Xc]; first by rewrite /Aoo//; apply: interval_open.
+move=> /[apply]-[i _|X _ Xc]; first exact: interval_open.
 have: `](a.1 + e%:num / 2), a.2] `<=` \bigcup_(i in [set` X]) Aoc i.
   move=> x /subset_itv_oc_cc /Xc [i /= Xi] Aooix.
   by exists i => //; apply: subset_itv_oo_oc Aooix.
@@ -1526,33 +1525,30 @@ by apply: measurableU; [exact/mf/emeasurable_itv_bnd_pinfty|
                         exact/mg/emeasurable_itv_bnd_pinfty].
 Qed.
 
-Lemma emeasurable_fun_funenng D (f : T -> \bar R) :
+Lemma emeasurable_funN D (f : T -> \bar R) :
+  measurable_fun D f -> measurable_fun D (\- f).
+Proof. by apply: measurable_fun_comp => //; exact: emeasurable_fun_minus. Qed.
+
+Lemma emeasurable_fun_funepos D (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\+.
 Proof.
-by move=> mf; apply: emeasurable_fun_max => //; apply: measurable_fun_cst.
+by move=> mf; apply: emeasurable_fun_max => //; exact: measurable_fun_cst.
 Qed.
 
-Lemma emeasurable_fun_funennp D (f : T -> \bar R) :
+Lemma emeasurable_fun_funeneg D (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\-.
 Proof.
-move=> mf; apply: emeasurable_fun_max => //; last exact: measurable_fun_cst.
-by apply: measurable_fun_comp => //; apply: emeasurable_fun_minus.
+by move=> mf; apply: emeasurable_fun_max => //;
+  [exact: emeasurable_funN|exact: measurable_fun_cst].
 Qed.
 
 Lemma emeasurable_fun_min D (f g : T -> \bar R) :
   measurable_fun D f -> measurable_fun D g ->
   measurable_fun D (fun x => mine (f x) (g x)).
 Proof.
-move=> mf mg mD; apply: (measurability (ErealGenCInfty.measurableE R)) => //.
-move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
-    (D `&` f @^-1` `[x, +oo[) `&` (D `&` g @^-1` `[x, +oo[)); last first.
-  rewrite predeqE => t /=; split.
-    rewrite !/= !in_itv /= !andbT le_minr => -[Dt /andP[xft xgt]].
-    tauto.
-  move=> []; rewrite !/= !in_itv/= !andbT le_minr=> -[Dt xft [_ xgt]].
-  by split => //; rewrite xft xgt.
-by apply: measurableI; [exact/mf/emeasurable_itv_bnd_pinfty|
-                        exact/mg/emeasurable_itv_bnd_pinfty].
+move=> /emeasurable_funN mf /emeasurable_funN mg.
+have /emeasurable_funN := emeasurable_fun_max mf mg.
+by apply eq_measurable_fun => i Di; rewrite -oppe_min oppeK.
 Qed.
 
 Lemma measurable_fun_elim_sup D (f : (T -> \bar R)^nat) :
