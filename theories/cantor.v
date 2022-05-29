@@ -77,20 +77,6 @@ Qed.
 Lemma cantor_space_hausdorff : hausdorff_space cantor_space.
 Proof. apply: hausdorff_product => ?; exact: bool_discrete_hausdorff. Qed.
 
-Definition min_diff (x y : cantor_space) n :=
-  x n != y n /\ (forall m, m < n -> x m == y m).
-
-Lemma cantor_space_neqP (x y : cantor_space) :
-  x != y <-> exists n, min_diff x y n.
-Proof.
-split. 
-  apply: contra_neqP=> /forallNP N; rewrite funeqE.
-  apply: (@well_founded_ind nat lt (Wf_nat.lt_wf) (fun q => x q = y q)) => n E.
-  move: (N n); apply contra_notP => xnNyn; split; first exact/eqP.
-  by move=> M Mn; apply/eqP; apply E; apply/ ssrnat.leP.
-case=> n [+ _]; apply: contraNN=> /eqP; rewrite funeqE => ?; exact/eqP.
-Qed.
-
 Definition pull (x : cantor_space) : cantor_space := fun n => x (S n).
 
 Inductive prefix (x : cantor_space) : seq bool -> Prop := 
@@ -158,7 +144,6 @@ rewrite -add1n ?addn0 addn1 => [[]] <- Q; split => //=.
 by apply/E; rewrite addn1.
 Qed.
 
-
 Local Lemma fixed_helperE (s : seq bool) : 
   fixed_prefix s = prefix_helper 0 s.
 Proof.
@@ -202,6 +187,148 @@ move=> y [] pfy By /=; suff -> : (b :: l = (prefix_of x (length l + 1))).
 apply: (@fixed_prefix_unique _ _ y) => //=. 
 by rewrite length_prefix_of addn1.
 Qed.
+
+Section cantor_space_metric.
+
+Definition is_min_diff (x y : cantor_space) (n : nat) : Prop :=
+  x n != y n /\ (forall m, m < n -> x m == y m).
+
+Lemma is_min_diff_sym (x y : cantor_space) (n : nat) : 
+  is_min_diff x y n <-> is_min_diff y x n.
+Proof.
+by split; move=> [? W]; (split; first by rewrite eq_sym) => m; rewrite eq_sym; exact: W.
+Qed.
+
+Lemma is_min_diff_unique (x y : cantor_space) (m n : nat) : 
+  is_min_diff x y n -> is_min_diff x y m  -> n = m.
+Proof.
+wlog : n m / (n <= m).
+  case (leqP n m); first by (move=> ? + ? ?; exact).
+  by move=> ? W ? ?; apply sym_equal; apply W => //; exact: ltnW.
+move=> W [neqN minN] [neqM minM]; apply/eqTleqif; first exact/leqif_geq.
+by case (leqP m n)=> // => /minM; move/negP: neqN.
+Qed.
+
+Lemma cantor_space_neqP (x y : cantor_space) :
+  x != y -> exists n, is_min_diff x y n.
+Proof.
+apply: contra_neqP=> /forallNP N; rewrite funeqE.
+apply: (@well_founded_ind nat lt (Wf_nat.lt_wf) (fun q => x q = y q)) => n E.
+move: (N n); apply contra_notP => /eqP; split => // M Mn; apply/eqP; apply E. 
+exact/ ssrnat.leP.
+Qed.
+
+Definition min_diff (x y : cantor_space) : nat :=
+  if pselect (x != y) is left neq
+  then (projT1 (cid ((@cantor_space_neqP x y) neq)))
+  else 0
+.
+
+Lemma min_diff_sym (x y : cantor_space) : 
+  min_diff x y = min_diff y x.
+Proof.
+rewrite /min_diff; case (eqVneq x y); first by move=> ->.
+move=> /[dup]; rewrite {2} eq_sym; (do 2 (case: pselect => //)).
+move=> ? ? ? ?; apply: (@is_min_diff_unique x y); first exact: projT2.
+by apply is_min_diff_sym; exact: projT2.
+Qed.
+
+Lemma min_diff_is_min_diff (x y : cantor_space) : 
+  x != y -> is_min_diff x y (min_diff x y).
+Proof. rewrite/ min_diff; case pselect => // ? ?; exact: projT2. Qed.
+
+
+Lemma min_diff_le (x y : cantor_space) (n : nat) : 
+  x != y ->
+  (forall m, m < n -> x m == y m) ->  n <= min_diff x y.
+Proof.
+move=> neq W. 
+have [_] := (@min_diff_is_min_diff x y neq).
+apply: projT2.
+rewrite /cantor_dist; case: (eqVneq x y) => //=; first by move=> ->.
+by rewrite min_diff_sym.
+Qed.
+
+Context {R : realType}.
+
+Definition cantor_dist (x y : cantor_space) : R := 
+  (if pselect (x != y) is left neq
+  then (((min_diff x y).+1)%:~R)^-1 else 0)%R.
+Proof.
+
+Lemma cantor_dist_sym (x y : cantor_space) : 
+  cantor_dist x y = cantor_dist y x.
+Proof.
+rewrite /cantor_dist; case: (eqVneq x y) => //=; first by move=> ->.
+by rewrite min_diff_sym.
+Qed.
+
+Lemma cantor_dist_refl (x : cantor_space) : 
+  cantor_dist x x = (0)%R.
+Proof.
+by rewrite /cantor_dist; case pselect => //= ?; exact: (@contra_neqP _ x x).
+Qed.
+
+Lemma cantor_dist_pos (x y : cantor_space) : 
+  (x != y -> 0 < (cantor_dist x y))%R.
+Proof.
+rewrite /cantor_dist; case pselect => //= ? _.
+by rewrite invr_gt0 => //; rewrite ltr0z.
+Qed.
+ 
+Lemma cantor_dist_nneg (x y : cantor_space) : (0 <= cantor_dist x y)%R.
+Proof.
+case E : (x != y); first by apply ltW; exact: cantor_dist_pos.
+by move/negbT/negPn/eqP: E => ->; rewrite cantor_dist_refl.
+Qed.
+
+Lemma foo (x y z : cantor_space) : 
+  Order.min (min_diff x y) (min_diff y z) <= min_diff x z .
+Proof.
+wlog yzLe : x y z / (min_diff x y <= min_diff y z).
+    case/orP: (@leq_total (min_diff y z) (min_diff x y)).
+    move=> ? E2; rewrite minC.
+    rewrite (min_diff_sym x z) (min_diff_sym y z) (min_diff_sym x y).
+    by apply: E2 => //=; rewrite (min_diff_sym y x) (min_diff_sym z y).
+  by move=> /[swap]; apply.
+rewrite min_l //.
+Search (Order.min) (Order.le).
+
+Lemma cantor_dist_triangle (x y z : cantor_space) : 
+  (cantor_dist x z <= cantor_dist x y + cantor_dist y z)%R.
+Proof.
+wlog yzLe : x y z / (min_diff x y <= min_diff y z).
+    case/orP: (@leq_total (min_diff y z) (min_diff x y)).
+    move=> ? E2; rewrite addrC.
+    rewrite (cantor_dist_sym x z) (cantor_dist_sym y z) (cantor_dist_sym x y).
+    by apply: E2 => //=; rewrite (min_diff_sym y x) (min_diff_sym z y).
+  by move=> /[swap]; apply.
+rewrite {1}/cantor_dist; case pselect; last first.
+  move=>/negP/negPn/eqP ->; apply addr_ge0; exact: cantor_dist_nneg.
+move=> xz; rewrite {1}/cantor_dist; case pselect; last first.
+  move=>/negP/negPn/eqP <-; rewrite add0r; rewrite /cantor_dist. 
+  by case pselect.
+move=> xy; rewrite /cantor_dist; case pselect; last first.
+  by move=>/negP/negPn/eqP ->; rewrite addr0.
+move=> yz. 
+
+  case: (min_diff y z < min_diff x y)
+
+Search ( negbK).
+by rewrite /cantor_dist; case pselect => //= ?; exact: (@contra_neqP _ x x).
+Qed.
+
+
+Definition cantor_ball (r : realType) (x : cantor_space) : set (cantor_space) := 
+  projT1 ((archimed r)).
+  
+Print Num.archimedean_axiom.
+Search "archim".
+
+Definition cantor_space_pseudo_metric : 
+  PseudoMetric.mixin_of R (@entourage_ R cantor_space cantor_space (ball_ (fun x => cantor_norm x))).
+
+End cantor_space_metric.
 
 Section cantor_sets.
 
