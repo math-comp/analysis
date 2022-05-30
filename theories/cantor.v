@@ -119,21 +119,6 @@ Fixpoint prefix_of (x : cantor_space) (n : nat) : seq bool :=
 Definition fixed_prefix (s : seq bool) (x : cantor_space) : Prop := 
   prefix x s.
 
-(*
-Lemma prefix_near (x : cantor_space) (n: nat): 
-  \forall y \near x, prefix_of y n = prefix_of x n.
-Proof.
-move: x; elim: n; first by move=>?; near=> y.
-move=> n IH x; near=> y => //=; congr(_ :: _).
-  near: y; pose U := (prod_topo_apply 0 @^-1` [set (x 0)]).
-  have : open_nbhs x U.
-    (split; last by []); apply: open_comp => //=; last exact: open_bool.
-    by move=> + _; exact: prod_topo_apply_continuous.
-  by rewrite open_nbhsE => [[_]].
-by near: y; near_simpl; have /continuous_pull := (IH (pull x)); exact.
-Unshelve. all: end_near. Qed.
-*)
-
 Lemma prefixP (x : cantor_space) (b : bool) (s : seq bool) : 
   prefix x (b :: s) <-> (b = x 0 /\ prefix (pull x) s).
 Proof.
@@ -199,54 +184,31 @@ have [] := (@subset_set2 _ W true false).
   exact: filterT.
 Qed.
 
-Lemma cantor_nbhs_prefix (x : cantor_space) (W : set cantor_space) : 
+Lemma nbhs_prefix (x : cantor_space) (W : set cantor_space) : 
   nbhs x W -> exists n, fixed_prefix (prefix_of x n) `<=` W.
+Proof. by move=> /prefix_cvg => /=; case=> n _ ?; exists n. Qed.
+
+Lemma prefix_nbhs (x : cantor_space) (n : nat) : 
+  nbhs x (fixed_prefix (prefix_of x n)).
 Proof.
-move=> nbhsW; move: (@prefix_cvg x _ nbhsW) => /=; rewrite nbhs_simpl.
-by case=> n _ ?; exists n.
-Qed.
+move: x; elim: n => //=; first by move=>?; rewrite empty_prefix; exact: filterT.
+move=> n IH x; near=> y; apply/prefixP; split.
+  apply/sym_equal.
+  near: y; near_simpl.
+  have : open_nbhs (x : cantor_space) (prod_topo_apply 0 @^-1` [set (x 0)]).
+    (split; last by []); apply: open_comp => //=; last exact: open_bool.
+    by move=> + _; exact: prod_topo_apply_continuous.
+  by rewrite open_nbhsE => [[_]]. 
+by near: y; near_simpl; have /continuous_pull := (IH (pull x)); exact.
+Unshelve. all: end_near. Qed.
 
-Lemma length_prefix_of (x : cantor_space) (n : nat) : 
-  length (prefix_of x n) = n.
-Proof.  by elim: n x => //= n IH x; congr( _ .+1); exact: IH. Qed.
-
-Local Fixpoint prefix_helper (i : nat) (s : seq bool) :=
-match s with 
-| nil => [set: cantor_space]
-| b :: l => prod_topo_apply i @^-1` [set b] `&` 
-    prefix_helper (S i) l
-end.
-
-Local Lemma prefix_helper_S (s : seq bool) j x :
-    prefix_helper j s (pull x) <-> 
-    prefix_helper (j + 1) s x.
+Lemma open_fixed (x : cantor_space) (n : nat) : 
+  open (fixed_prefix (prefix_of x n)).
 Proof.
-move: j; elim: s => //= b l; rewrite /prod_topo_apply/pull => E; split.
-by case=> <- Q; split; rewrite -add1n ?addn0 addn1 // addnC; apply/ E.
-rewrite -add1n ?addn0 addn1 => [[]] <- Q; split => //=.
-by apply/E; rewrite addn1.
-Qed.
-
-Local Lemma fixed_helperE (s : seq bool) : 
-  fixed_prefix s = prefix_helper 0 s.
-Proof.
-elim:s; first by rewrite empty_prefix.
-move=> b l => //=; rewrite ?eqEsubset => E; split => x //=.
-  move=> /prefixP [-> ?]; split; first by done.
-  by rewrite -[1]add0n; apply/prefix_helper_S;  apply E.
-rewrite -[1]add0n/prod_topo_apply => [[<-]] W. 
-by constructor => //=;  apply: (proj2 E); exact/prefix_helper_S.
-Qed.
-
-Local Lemma open_fixed_prefix i (s : seq bool) : open (prefix_helper i s).
-Proof.
-move: i; elim: s; first (move=> ? //=; exact: openT).
-move=> ???? //=; apply: openI => //; apply: open_comp; last exact: open_bool.
-by move=> + _; exact: prod_topo_apply_continuous.
-Qed.
-
-Lemma open_fixed (s : seq bool) : open (fixed_prefix s).
-Proof. rewrite fixed_helperE; exact: open_fixed_prefix. Qed.
+rewrite openE => z /fixed_prefixP xz; near=> y.
+apply/fixed_prefixP => i W; rewrite xz //; move: i W; apply/fixed_prefixP.
+by near: y; apply: prefix_nbhs.
+Unshelve. all: end_near. Qed.
 
 Lemma fixed_prefix_unique (s1 s2 : seq bool) (x : cantor_space): 
   length s1 = length s2 -> fixed_prefix s1 x -> fixed_prefix s2 x -> s1 = s2.
@@ -256,6 +218,10 @@ move: s2 x; elim s1.
 move=> a l1 IH [] //= b l2 x /eq_add_S lng /prefixP [] -> ? /prefixP [] -> ?. 
 by congr (_ :: _); apply: (IH _ (pull x)) => //=.
 Qed.
+
+Lemma length_prefix_of (x : cantor_space) (n : nat) : 
+  length (prefix_of x n) = n.
+Proof.  by elim: n x => //= n IH x; congr( _ .+1); exact: IH. Qed.
 
 Lemma closed_fixed (s : seq bool) : closed (fixed_prefix s).
 Proof.
@@ -270,7 +236,6 @@ move=> y [] pfy By /=; suff -> : (b :: l = (prefix_of x (length l + 1))).
 apply: (@fixed_prefix_unique _ _ y) => //=. 
 by rewrite length_prefix_of addn1.
 Qed.
-
 
 Section cantor_space_metric.
 
@@ -443,7 +408,7 @@ Definition cantor_space_pseudo_metric_mixin :
 
 Lemma cantor_space_uniformity : nbhs = nbhs_ (entourage_ cantor_ball).
 Proof.
-rewrite funeqE=> x; rewrite eqEsubset; split=> W /=.
+  (*this is the only part left*)
 Qed.
 
 Program Definition cantor_space_uniformity_mixin := 
