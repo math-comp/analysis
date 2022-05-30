@@ -64,20 +64,69 @@ move=> p q => //= /(_ [set p] [set q]) //=; case.
 - by move=> r //= [] ->.
 Qed.
 
+#[global] Hint Resolve bool_discrete_hausdorff : core.
+
 Definition cantor_space := 
   product_topologicalType (fun (_ : nat) => bool_discrete_topology).
 
 Lemma cantor_space_compact: compact [set: cantor_space].
 Proof.
-have := (@tychonoff _ (fun (_: nat) => bool_discrete_topology) _ 
-  (fun=> bool_compact)).
+have := (@tychonoff _ (fun (_: nat) => _) _ (fun=> bool_compact)).
 by congr (compact _) => //=; rewrite eqEsubset; split => b //=.
 Qed.
 
 Lemma cantor_space_hausdorff : hausdorff_space cantor_space.
 Proof. apply: hausdorff_product => ?; exact: bool_discrete_hausdorff. Qed.
 
+Definition common_prefix (n : nat) (x y : cantor_space) :=
+  (forall i, i < n -> x i == y i).
+
 Definition pull (x : cantor_space) : cantor_space := fun n => x (S n).
+
+Lemma common_prefixS (n : nat) (x y : cantor_space) :
+  common_prefix n.+1 x y <-> x 0 == y 0 /\ common_prefix n (pull x) (pull y).
+Proof.
+split; last by case=> ?? []. 
+by (move=> cmn; split; first exact: cmn) => i ?; apply: cmn.
+Qed.
+
+Lemma empty_prefix (x : cantor_space) : common_prefix 0 x = setT .
+Proof. by rewrite eqEsubset; split. Qed.
+
+Lemma prefix_of_prefix (x : cantor_space) (n : nat) : 
+  common_prefix n x x.
+Proof. by move=> ?. Qed.
+
+Lemma fixed_prefixW (x : cantor_space) (i j : nat) : 
+  i < j ->
+  common_prefix j x `<=` common_prefix i x.
+Proof. by move=> ij y + q ?; apply; apply: (ltn_trans _ ij). Qed.
+
+Lemma prefix_cvg (x : cantor_space) : 
+  filter_from [set: nat] (common_prefix^~ x) --> x.
+Proof.
+have ? : Filter (filter_from [set: nat] (common_prefix^~ x)).
+  apply: filter_from_filter; first by exists 0.
+  move=> i j _ _; exists (i.+1 + j.+1) => //; rewrite -[x in x `<=` _]setIid. 
+  by apply: setISS; apply: fixed_prefixW; [exact: ltn_addr| exact: ltn_addl].
+apply/cvg_sup => n; apply/cvg_image; first by (rewrite eqEsubset; split).
+move=> W /=; rewrite /nbhs /= => /principle_filterP.
+have [] := (@subset_set2 _ W true false). 
+- by rewrite -bool2E; exact: subsetT.
+- by move ->.
+- move => -> <-; exists (common_prefix (n.+1) x); first by exists (n.+1).
+  rewrite eqEsubset; split => y; first by case=> z P <-; apply/sym_equal/eqP/P.
+  by move=> ->; exists x => //=; exact: (prefix_of_prefix x (n.+1)).
+- move => -> <-; exists (common_prefix (n.+1) x); first by exists (n.+1).
+  rewrite eqEsubset; split => y; first by case=> z P <-; apply/sym_equal/eqP/P.
+  by move=> ->; exists x => //=; exact: (prefix_of_prefix x (n.+1)).
+- rewrite -bool2E => ->; exists setT; last by rewrite eqEsubset; split.
+  exact: filterT.
+Qed.
+
+Lemma nbhs_prefix (x : cantor_space) (W : set cantor_space) : 
+  nbhs x W -> exists n, common_prefix n x `<=` W.
+Proof. by move=> /prefix_cvg => /=; case=> n _ ?; exists n. Qed.
 
 Lemma pull_projection_preimage (n : nat) (b : bool) : 
   pull @^-1` (prod_topo_apply n @^-1` [set b]) = prod_topo_apply (n.+1) @^-1` [set b].
@@ -105,142 +154,41 @@ have [] := (@subset_set2 _ W true false).
   by rewrite /= preimage_setT; exact: filterT.
 Qed.
 
-Inductive prefix (x : cantor_space) : seq bool -> Prop := 
-  | NilPrefix : prefix x nil 
-  | ConsPrefix : forall b s, b = x 0 -> prefix (pull x) s -> prefix x (b :: s)
-.
-
-Fixpoint prefix_of (x : cantor_space) (n : nat) : seq bool :=
-  match n with 
-  | 0 => nil
-  | S m => x 0 :: prefix_of (pull x) m
-  end.
-
-Definition fixed_prefix (s : seq bool) (x : cantor_space) : Prop := 
-  prefix x s.
-
-Lemma prefixP (x : cantor_space) (b : bool) (s : seq bool) : 
-  prefix x (b :: s) <-> (b = x 0 /\ prefix (pull x) s).
+Lemma open_prefix (x : cantor_space) (n : nat) : 
+  open (common_prefix n x).
 Proof.
-(* TODO: Why does `case` discard the nil case?*)
-split; first by move=> pxb; inversion pxb; subst; tauto.
-by move=>[??]; constructor.
-Qed.
-
-Lemma empty_prefix : fixed_prefix nil = [set: cantor_space] .
-Proof. by rewrite eqEsubset; split => //= x _; constructor. Qed.
-
-
-Lemma prefix_of_prefix (x : cantor_space) (i : nat) : 
-  fixed_prefix (prefix_of x i) x.
-Proof.
-move:x; elim i=> //=; first (by move=> ?; rewrite empty_prefix).
-by move=> n ind x /=; constructor => //=; exact: ind.
-Qed.
-
-Lemma fixed_prefixP (x y : cantor_space) (j : nat) : 
-  fixed_prefix (prefix_of x j) y <->
-  (forall i, i < j -> x i = y i).
-Proof.
-split.
-  move=> + i; move: x y i; elim: j => //= j IH x y; case; first by move=> /prefixP [].
-  by move=> i /prefixP [_ ?] ?; rewrite -/(pull x i) -/(pull y i); exact: IH.
-move: x y; elim: j; first by move=> ? ? ?; rewrite empty_prefix.
-move=> n IH x y xy; apply/prefixP; split; first by apply: xy.
-by apply: IH => ? ?; apply: xy.
-Qed.
-
-Lemma fixed_prefixW (x y : cantor_space) (i j : nat) : 
-  i < j ->
-  fixed_prefix (prefix_of x j) y ->
-  fixed_prefix (prefix_of x i) y.
-Proof.
-move=> ij /fixed_prefixP P; apply/fixed_prefixP=> k ?; apply: P.
-exact: (ltn_trans _ ij).
-Qed.
-
-Lemma prefix_cvg (x : cantor_space) : 
-  filter_from [set: nat] (fun n => fixed_prefix (prefix_of x n)) --> x.
-Proof.
-have ? : Filter (filter_from [set: nat] (fun n => fixed_prefix(prefix_of x n))).
-  apply: filter_from_filter; first by exists 0.
-  move=> i j _ _; exists (i + j) => //.
-  move: x j; elim: i => //= i; first by move=> ?; rewrite empty_prefix setTI add0n.
-  move=> IH x j /=; rewrite -addnE => z /prefixP [] x0z0 /IH [??].
-  split; first by apply/prefixP; split => //.
-  by apply: (@fixed_prefixW _ _ _ (j.+1)) => //=; apply/prefixP; split.
-apply/cvg_sup => n; apply/cvg_image; first by (rewrite eqEsubset; split).
-move=> W /=; rewrite /nbhs /= => /principle_filterP Wxn.
-have [] := (@subset_set2 _ W true false). 
-- by rewrite -bool2E; exact: subsetT.
-- by move: Wxn => /[swap] ->.
-- move: Wxn => /[swap] -> <-; exists (fixed_prefix (prefix_of x (n.+1))); first by exists (n.+1).
-  rewrite eqEsubset; split => y; last (move=> -> /=; exists x => //=; exact: (prefix_of_prefix x (n.+1))).
-  by case=> z /fixed_prefixP/(_ n) P <-; simpl; apply/sym_equal/P.
-- move: Wxn => /[swap] -> <-; exists (fixed_prefix (prefix_of x (n.+1))); first by exists (n.+1).
-  rewrite eqEsubset; split => y; last (move=> -> /=; exists x => //=; exact: (prefix_of_prefix x (n.+1))).
-  by case=> z /fixed_prefixP/(_ n) P <-; simpl; apply/sym_equal/P.
-- rewrite -bool2E => ->; exists setT; last by rewrite eqEsubset; split.
-  exact: filterT.
-Qed.
-
-Lemma nbhs_prefix (x : cantor_space) (W : set cantor_space) : 
-  nbhs x W -> exists n, fixed_prefix (prefix_of x n) `<=` W.
-Proof. by move=> /prefix_cvg => /=; case=> n _ ?; exists n. Qed.
-
-Lemma prefix_nbhs (x : cantor_space) (n : nat) : 
-  nbhs x (fixed_prefix (prefix_of x n)).
-Proof.
-move: x; elim: n => //=; first by move=>?; rewrite empty_prefix; exact: filterT.
-move=> n IH x; near=> y; apply/prefixP; split.
-  apply/sym_equal.
-  near: y; near_simpl.
-  have : open_nbhs (x : cantor_space) (prod_topo_apply 0 @^-1` [set (x 0)]).
+move: x; elim: n; first by move=>?; rewrite empty_prefix; exact: openT.
+move=> n IH x; rewrite openE=> z /common_prefixS [/eqP x0z0] cmn; near=> y. 
+apply/common_prefixS; split. 
+  apply/eqP; rewrite x0z0; apply: sym_equal; near: y; near_simpl.
+  have : open_nbhs (z : cantor_space) (prod_topo_apply 0 @^-1` [set (z 0)]).
     (split; last by []); apply: open_comp => //=; last exact: open_bool.
     by move=> + _; exact: prod_topo_apply_continuous.
-  by rewrite open_nbhsE => [[_]]. 
-by near: y; near_simpl; have /continuous_pull := (IH (pull x)); exact.
+  by rewrite open_nbhsE => [[_]].
+by near: y; by move: (IH (pull x)); rewrite openE => /(_ _ cmn)/continuous_pull.
 Unshelve. all: end_near. Qed.
 
-Lemma open_fixed (x : cantor_space) (n : nat) : 
-  open (fixed_prefix (prefix_of x n)).
+Lemma closed_fixed  (x : cantor_space) (n : nat) : closed (common_prefix n x).
 Proof.
-rewrite openE => z /fixed_prefixP xz; near=> y.
-apply/fixed_prefixP => i W; rewrite xz //; move: i W; apply/fixed_prefixP.
-by near: y; apply: prefix_nbhs.
-Unshelve. all: end_near. Qed.
-
-Lemma fixed_prefix_unique (s1 s2 : seq bool) (x : cantor_space): 
-  length s1 = length s2 -> fixed_prefix s1 x -> fixed_prefix s2 x -> s1 = s2.
-Proof.
-move: s2 x; elim s1. 
-  by move=> ? ? ? ? ?; apply sym_equal; apply List.length_zero_iff_nil.
-move=> a l1 IH [] //= b l2 x /eq_add_S lng /prefixP [] -> ? /prefixP [] -> ?. 
-by congr (_ :: _); apply: (IH _ (pull x)) => //=.
-Qed.
-
-Lemma length_prefix_of (x : cantor_space) (n : nat) : 
-  length (prefix_of x n) = n.
-Proof.  by elim: n x => //= n IH x; congr( _ .+1); exact: IH. Qed.
-
-Lemma closed_fixed (s : seq bool) : closed (fixed_prefix s).
-Proof.
-elim s; first by rewrite empty_prefix //.
-move=> b l clsFl x.
-pose B := fixed_prefix (prefix_of x ((length l) + 1)).
-move=> /(_ B) /=; case. 
-  suff: (open_nbhs x B) by rewrite open_nbhsE=> [[]].
-  by split; [exact: open_fixed | exact: prefix_of_prefix].
-move=> y [] pfy By /=; suff -> : (b :: l = (prefix_of x (length l + 1))).
-  exact: prefix_of_prefix.
-apply: (@fixed_prefix_unique _ _ y) => //=. 
-by rewrite length_prefix_of addn1.
+move: x; elim: n; first by move=> ?; rewrite empty_prefix; exact: closedT.
+move=> n IH x.
+pose B1 := pull @^-1` common_prefix n (pull x).
+pose B2 := prod_topo_apply 0 @^-1` [set x 0].
+suff <- : B1 `&` B2 = common_prefix n.+1 x.
+  apply: closedI; apply: closed_comp.
+  - move=> + _; exact: continuous_pull.
+  - exact: IH.
+  - move=> + _; exact: prod_topo_apply_continuous.
+  - by apply: compact_closed => //; exact: compact_set1.
+rewrite eqEsubset; split => y /=; rewrite common_prefixS; case=> P Q. 
+(split => //; first (by apply/eqP)). 
+by move/eqP: P.
 Qed.
 
 Section cantor_space_metric.
 
 Definition is_min_diff (x y : cantor_space) (n : nat) : Prop :=
-  x n != y n /\ (forall m, m < n -> x m == y m).
+  x n != y n /\ common_prefix n x y.
 
 Lemma is_min_diff_sym (x y : cantor_space) (n : nat) : 
   is_min_diff x y n <-> is_min_diff y x n.
@@ -287,8 +235,7 @@ Lemma min_diff_is_min_diff (x y : cantor_space) :
 Proof. rewrite/ min_diff; case pselect => // ? ?; exact: projT2. Qed.
 
 Lemma min_diff_le (x y : cantor_space) (n : nat) : 
-  x != y ->
-  (forall m, m < n -> x m == y m) -> n <= min_diff x y.
+  x != y -> common_prefix n x y -> n <= min_diff x y.
 Proof.
 move=> xneqy; elim: n => // n IH Q.
 have: n <= min_diff x y by apply: IH=> ??; apply: Q; rewrite ltnS; apply ltnW.
@@ -402,13 +349,41 @@ rewrite /cantor_ball => L1 L2.
 by apply: (le_lt_trans (@cantor_dist_triangle x y z)); exact: ltr_add.
 Qed.
 
+Definition cantor_ball_prefix (x : cantor_space) (n : nat) (eps: R) : 
+  ((GRing.natmul (GRing.one R) (n.+1))^-1 <= eps)%R ->
+  common_prefix n.+1 x `<=` cantor_ball x eps.
+Proof.
+move=> bign y cmn; apply: (lt_le_trans _ bign).
+rewrite /cantor_dist; case pselect => //= xy.
+rewrite -ltr_pinv ?invrK; first last.
+  + rewrite inE; apply/andP; split;[rewrite unitfE; apply: lt0r_neq0|]; exact: gt0.
+  + rewrite inE; apply/andP; split;[rewrite unitfE; apply: lt0r_neq0|]; exact: gt0.
+rewrite ltr_nat; suff : (n < min_diff x y) by [].
+by apply: min_diff_le.
+Qed.
+
 Definition cantor_space_pseudo_metric_mixin : 
   (@PseudoMetric.mixin_of R cantor_space (entourage_ cantor_ball)) :=
   PseudoMetricMixin cantor_ball_center cantor_ball_sym cantor_ball_triangle erefl.
 
 Lemma cantor_space_uniformity : nbhs = nbhs_ (entourage_ cantor_ball).
 Proof.
-  (*this is the only part left*)
+rewrite funeqE => x; rewrite eqEsubset; split => W.
+  move=> /nbhs_prefix [n cmnN]; exists [set h | common_prefix n h.1 h.2] => //=.
+  exists ((GRing.natmul (GRing.one R) (n.+1))^-1)%R => //= [[p q]] /=.
+  rewrite /cantor_ball/cantor_dist. 
+  case: pselect; last by move=>/negP/negPn/eqP -> ?; exact: prefix_of_prefix.
+  move=> pq /=; rewrite ltr_pinv; first last.
+  + rewrite inE; apply/andP; split;[rewrite unitfE; apply: lt0r_neq0|]; exact: gt0.
+  + rewrite inE; apply/andP; split;[rewrite unitfE; apply: lt0r_neq0|]; exact: gt0.
+  rewrite ltr_nat => ?; apply: (@fixed_prefixW _ _ (min_diff p q)) => //.
+  by case: (min_diff_is_min_diff pq).
+case=> ent [eps] /= epsPos subent subW. 
+apply: (filterS subW); apply: (@filterS _ _ _ (cantor_ball x eps)).
+  by move=> y //= ?; apply: subent.
+case: (near_infty_natSinv_lt (PosNum epsPos))%R => n _ /(_ n) //=.
+move=> /(_ (ltac:(done)))/ltW/cantor_ball_prefix/filterS; apply.
+move: (open_prefix x (n.+1)); rewrite openE; apply; exact: prefix_of_prefix.
 Qed.
 
 Program Definition cantor_space_uniformity_mixin := 
@@ -419,7 +394,6 @@ Canonical cantor_space_uniform :=
 
 Canonical cantor_space_pseudo_metric := 
   PseudoMetricType cantor_space cantor_space_pseudo_metric_mixin.
-
 
 End cantor_space_metric.
 
