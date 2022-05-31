@@ -548,7 +548,7 @@ Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
   \bigcup_n [set` Interval (BSide b r) (BRight (s - n.+1%:R^-1))].
 Proof.
 apply/seteqP; split => [x/=|]; last first.
-  move=> x [n _ /=]; rewrite !in_itv => /andP[-> /le_lt_trans];  apply.
+  move=> x [n _ /=] /[!in_itv] /andP[-> /le_lt_trans]; apply.
   by rewrite ltr_subl_addr ltr_addl invr_gt0 ltr0n.
 rewrite in_itv/= => /andP[sx xs]; exists `|ceil ((s - x)^-1)|%N => //=.
 rewrite in_itv/= sx/= ler_subr_addl addrC -ler_subr_addl.
@@ -558,6 +558,17 @@ rewrite -[in X in _ <= X](invrK (s - x)) ler_pinv.
   by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?ler_addl// ceil_ge.
 - by rewrite inE unitfE ltr0n andbT pnatr_eq0.
 - by rewrite inE invr_gt0 subr_gt0 xs andbT unitfE invr_eq0 subr_eq0 gt_eqF.
+Qed.
+
+Lemma itv_open_bnd_bigcup (R : realType) b (r s : R) :
+  [set` Interval (BRight s) (BSide b r)] =
+  \bigcup_n [set` Interval (BLeft (s + n.+1%:R^-1)) (BSide b r)].
+Proof.
+have /(congr1 (fun x => -%R @` x)) := itv_bnd_open_bigcup (~~ b) (- r) (- s).
+rewrite opp_itv_bnd_bnd/= !opprK negbK => ->; rewrite -bigcup_oppr.
+apply eq_bigcupr => k _; apply/seteqP; split=> [_/= [y ysr] <-|x/= xsr].
+  by rewrite oppr_itv/= opprD.
+by exists (- x); rewrite ?oppr_itv//= opprK// negbK opprB opprK addrC.
 Qed.
 
 Lemma itv_bnd_infty_bigcup (R : realType) b (x : R) :
@@ -576,13 +587,11 @@ Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
   [set` Interval -oo%O (BSide b x)] =
   \bigcup_i [set` Interval (BLeft (x - i%:R)) (BSide b x)].
 Proof.
-apply/seteqP; split=> y /=; rewrite !in_itv/=.
-  move=> xy; exists `|ceil (x - y)|%N => //=.
-  rewrite in_itv/= xy andbT ler_subl_addl addrC -ler_subl_addl.
-  rewrite natr_absz ger0_norm// ?ceil_ge0 ?subr_ge0//; last first.
-    by case: b xy => //= /ltW.
-  by rewrite -RceilE Rceil_ge.
-by move=> [k _ /=]; rewrite in_itv/= => /andP[].
+have /(congr1 (fun x => -%R @` x)) := itv_bnd_infty_bigcup (~~ b) (- x).
+rewrite opp_itv_bnd_infty negbK opprK => ->; rewrite -bigcup_oppr.
+apply eq_bigcupr => k _; apply/seteqP; split=> [_ /= -[r rbxk <-]|y/= yxkb].
+   by rewrite oppr_itv/= opprB addrC.
+by exists (- y); [rewrite oppr_itv/= negbK opprD opprK|rewrite opprK].
 Qed.
 
 Section salgebra_R_ssets.
@@ -891,7 +900,7 @@ rewrite 2!hlength_itv => <-; rewrite -setU1itv// measureU//.
 - by apply/seteqP; split => // x [/= ->]; rewrite in_itv/= ltxx.
 Qed.
 
-Lemma lebesgue_measure_itv_bnd (x y : bool) (a b : R) :
+Let lebesgue_measure_itv_bnd (x y : bool) (a b : R) :
   lebesgue_measure [set` (Interval (BSide x a) (BSide y b))] =
   hlength [set` (Interval (BSide x a) (BSide y b))].
 Proof.

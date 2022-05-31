@@ -239,12 +239,24 @@ exists (- r); rewrite ?opprK //.
 by case: b xr; rewrite !in_itv/= andbT (ler_oppr, ltr_oppr).
 Qed.
 
-Lemma opp_itvoo (R : numDomainType) (x y : R) :
-  -%R @` `]x, y[%classic = `](- y), (- x)[%classic.
+Lemma opp_itv_infty_bnd (R : numDomainType) (x : R) b :
+  -%R @` [set` Interval -oo%O (BSide b x)] =
+  [set` Interval (BSide (negb b) (- x)) +oo%O].
+Proof.
+rewrite predeqE => /= r; split=> [[y xy <-]|xr].
+  by case: b xy; rewrite !in_itv/= andbT (ler_opp2, ltr_opp2).
+exists (- r); rewrite ?opprK //.
+by case: b xr; rewrite !in_itv/= andbT (ler_oppl, ltr_oppl).
+Qed.
+
+Lemma opp_itv_bnd_bnd (R : numDomainType) a b (x y : R) :
+  -%R @` [set` Interval (BSide a x) (BSide b y)] =
+  [set` Interval (BSide (~~ b) (- y)) (BSide (~~ a) (- x))].
 Proof.
 rewrite predeqE => /= r; split => [[{}r + <-]|].
-  by rewrite !in_itv/= !ltr_opp2 andbC.
-by exists (- r); rewrite ?opprK// !in_itv/= ltr_oppl ltr_oppr andbC.
+  by rewrite !in_itv/= 2!lteif_opp2 negbK andbC.
+rewrite in_itv/= negbK => yrab.
+by exists (- r); rewrite ?opprK// !in_itv lteif_oppr andbC lteif_oppl.
 Qed.
 
 Section interval_sup_inf.
@@ -298,7 +310,7 @@ Let inf_itv_bnd_o x y b : (BSide b x < BLeft y)%O ->
 Proof.
 case: b => xy.
   by rewrite -setU1itv// inf_setU ?inf1// => _ ? -> /andP[/ltW].
-by rewrite /inf opp_itvoo sup_itv_o_bnd ?opprK // ltr_oppl opprK.
+by rewrite /inf opp_itv_bnd_bnd sup_itv_o_bnd ?opprK // ltr_oppl opprK.
 Qed.
 
 Let inf_itv_bounded x y a b : (BSide a x < BSide b y)%O ->

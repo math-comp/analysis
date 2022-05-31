@@ -2703,6 +2703,13 @@ rewrite -Order.TotalTheory.ltNge => kn.
 by rewrite (Order.POrderTheory.le_trans _ (Am _ Ak)).
 Qed.
 
+Lemma bigcup_oppr (R : zmodType) (I : Type) (F : I -> set R) :
+  \bigcup_i (-%R @` F i) = -%R @` \bigcup_i F i.
+Proof.
+by apply/seteqP; split=> [_ [i _/= [r Fir <-]]|x/= [r [i _ Fir <-]]];
+  [exists r => //; exists i | exists i].
+Qed.
+
 (** ** Intersection of classes of set *)
 
 Definition meets T (F G : set (set T)) :=
