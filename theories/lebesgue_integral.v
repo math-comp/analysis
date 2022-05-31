@@ -2596,12 +2596,14 @@ Local Open Scope ereal_scope.
 Variables (T : measurableType) (R : realType) (mu : {measure set T -> \bar R}).
 
 Lemma ge0_integral_bigcup (F : (set _)^nat) (f : T -> \bar R) :
+  (forall k, measurable (F k)) ->
   let D := \bigcup_k F k in
-  (forall x, D x -> 0 <= f x) -> trivIset setT F ->
-  (forall k, measurable (F k)) -> mu.-integrable D f ->
+  mu.-integrable D f ->
+  (forall x, D x -> 0 <= f x) ->
+  trivIset setT F ->
   \int[mu]_(x in D) f x = \sum_(i <oo) \int[mu]_(x in F i) f x.
 Proof.
-move=> D f0 tF mF fi; pose f_ N := f \_ (\big[setU/set0]_(0 <= i < N) F i).
+move=> mF D fi f0 tF; pose f_ N := f \_ (\big[setU/set0]_(0 <= i < N) F i).
 have lim_f_ t : f_ ^~ t --> (f \_ D) t.
   rewrite [X in _ --> X](_ : _ = ereal_sup (range (f_ ^~ t))); last first.
     apply/eqP; rewrite eq_le; apply/andP; split.
