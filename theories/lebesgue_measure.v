@@ -385,7 +385,7 @@ Let gitvs := g_measurableType ocitv.
 Definition lebesgue_measure := Hahn_ext [the additive_measure _ _ of hlength].
 
 Let lebesgue_measure0 : lebesgue_measure set0 = 0%E.
-Proof. by[]. Qed.
+Proof. by []. Qed.
 
 Let lebesgue_measure_ge0 : forall x, (0 <= lebesgue_measure x)%E.
 Proof. exact: measure.Hahn_ext_ge0. Qed.
@@ -907,8 +907,8 @@ rewrite 2!hlength_itv => <-; rewrite -setU1itv// measureU//.
 Qed.
 
 Let lebesgue_measure_itv_bnd (x y : bool) (a b : R) :
-  lebesgue_measure ([set` (Interval (BSide x a) (BSide y b))] : set R) =
-  hlength [set` (Interval (BSide x a) (BSide y b))].
+  lebesgue_measure ([set` Interval (BSide x a) (BSide y b)] : set R) =
+  hlength [set` Interval (BSide x a) (BSide y b)].
 Proof.
 by move: x y => [|] [|]; [exact: lebesgue_measure_itvco |
   exact: lebesgue_measure_itvcc | exact: lebesgue_measure_itvoo |
