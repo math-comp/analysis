@@ -115,16 +115,6 @@
   + definition `dirac` with notation `\d_` and canonical `dirac_measure`
   + lemmas `finite_card_dirac`, `infinite_card_dirac`
 - in file `lebesgue_integral.v`:
-  + lemmas `integralM_indic`, `integralM_indic_nnsfun`, `integral_dirac`
-- in file `measure.v`:
-  + lemma `eq_measure`
-  + definition `msum`
-  + definition `mzero`
-  + definition `measure_add` and lemma `measure_addE`
-  + definition `mseries`
-- in file `lebesgue_integral.v`:
-  + lemma `integral_measure_zero`
-  + lemma `eq_measure_integral`
   + mixins `isAdditiveMeasure`, `isMeasure0`, `isMeasure`, `isOuterMeasure`
   + structures `AdditiveMeasure`, `Measure`, `OuterMeasure`
   + notations `additive_measure`, `measure`, `outer_measure`
@@ -134,6 +124,7 @@
 - in `measure.v`:
   + lemmas `additive_measure_snum_subproof`, `measure_snum_subproof`
   + canonicals `additive_measure_snum`, `measure_snum`
+  + definition `mscale`
 
 ### Changed
 
