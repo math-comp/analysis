@@ -628,7 +628,7 @@ apply/eqP; rewrite RfloorE eqr_int; apply/eqP/(@range1z_inj x) => //.
 by rewrite /range1/mkset -RfloorE mem_rg1_Rfloor.
 Qed.
 
-Lemma Rfloor_natz (n : int) : Rfloor n%:~R = n%:~R :> R.
+Lemma Rfloor_natz (z : int) : Rfloor z%:~R = z%:~R :> R.
 Proof. by apply/range1zP/range1rr. Qed.
 
 Lemma Rfloor0 : Rfloor 0 = 0 :> R.
@@ -655,6 +655,9 @@ Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
 
 Lemma Rfloor_lt0 x : x < 0 -> Rfloor x < 0.
 Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
+
+Lemma floor_natz n : floor (n%:R : R) = n%:~R :> int.
+Proof. by rewrite /floor (Rfloor_natz n) Rtointz intz. Qed.
 
 Lemma floor1 : floor (1 : R) = 1.
 Proof. by rewrite /floor Rfloor1 (_ : 1 = 1%:R) // Rtointn. Qed.

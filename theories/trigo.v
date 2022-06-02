@@ -150,11 +150,10 @@ Proof.
 apply: normed_cvg.
 apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
 - by move=> n; rewrite normr_ge0.
-- by move=> n; rewrite divr_ge0 ?exprn_ge0 // ler0n.
+- by move=> n; rewrite divr_ge0.
 - move=> n /=; rewrite /exp_coeff /sin_coeff /=.
   rewrite !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
-  case: odd; first by rewrite mul1r.
-  by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
+  by case: odd; [rewrite mul1r| rewrite !mul0r].
 Qed.
 
 Definition sin x : R := lim (series (sin_coeff x)).
@@ -234,12 +233,10 @@ Proof.
 apply: normed_cvg.
 apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
 - by move=> n; rewrite normr_ge0.
-- by move=> n; rewrite divr_ge0 ?exprn_ge0 // ler0n.
-- move=> n /=.
-  rewrite /exp_coeff /cos_coeff /=.
+- by move=> n; rewrite divr_ge0.
+- move=> n /=; rewrite /exp_coeff /cos_coeff /=.
   rewrite !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
-  case: odd; last by rewrite mul1r.
-  by rewrite !mul0r divr_ge0 ?exprn_ge0 // ler0n.
+  by case: odd; [rewrite !mul0r | rewrite mul1r].
 Qed.
 
 Definition cos x : R := lim (series (cos_coeff x)).
@@ -308,7 +305,7 @@ apply: (@pseries_snd_diffs _ _ (`|x| + 1)); rewrite /pseries.
 - rewrite /pseries (_ : (fun _ => _) = - sin_coeff (`|x| + 1)).
     by rewrite is_cvg_seriesN; exact: is_cvg_series_sin_coeff.
   by apply/funext => i; rewrite diffs_sin diffs_cos sin_coeffE !fctE !mulNr.
-- by rewrite [ltRHS]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+- by rewrite [ltRHS]ger0_norm// addrC -subr_gt0 addrK.
 Qed.
 
 Lemma derivable_sin x : derivable sin x 1.
@@ -340,7 +337,7 @@ apply: (@pseries_snd_diffs _ _ (`|x| + 1)).
     by rewrite is_cvg_seriesN; exact: is_cvg_series_cos_coeff.
   apply/funext => i; rewrite diffs_cos pseries_diffsN.
   by rewrite diffs_sin cos_coeffE mulNr.
-- by rewrite [ltRHS]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+- by rewrite [ltRHS]ger0_norm// addrC -subr_gt0 addrK.
 Qed.
 
 Lemma derivable_cos x : derivable cos x 1.
@@ -512,7 +509,7 @@ rewrite (_ : 4 = 2 * 2)%N // -(exprnP _ (2 * 2)) (exprM (-1)) sqrr_sign.
 rewrite mul1r [(-1) ^ 3](_ : _ = -1) ?mulN1r ?mulNr ?opprK; last first.
   by rewrite -exprnP 2!exprS expr1 mulrN1 opprK mulr1.
 rewrite subr_gt0.
-rewrite addnS doubleS -[X in 2 ^+ X]addn2 exprD -mulrA ltr_pmul2l ?exprn_gt0//.
+rewrite addnS doubleS -[X in 2 ^+ X]addn2 exprD -mulrA ltr_pmul2l//.
 rewrite factS factS 2!natrM mulrA invfM !mulrA.
 rewrite ltr_pdivr_mulr ?ltr0n ?fact_gt0// mulVf ?pnatr_eq0 ?gtn_eqF ?fact_gt0//.
 rewrite ltr_pdivr_mulr ?mul1r //.
@@ -811,7 +808,7 @@ Proof.
 rewrite /tan -cosBpihalf (splitr (pi / 2)) opprD addrA -mulrA -invfM -natrM.
 rewrite subrr sub0r cosN divff// gt_eqF// cos_gt0_pihalf//.
 rewrite ltr_pmul2l ?pi_gt0// ltf_pinv ?qualifE// ltr_nat andbT.
-by rewrite (@lt_trans _ _ 0)// ?oppr_lt0 ?divr_gt0 ?pi_gt0//.
+by rewrite (@lt_trans _ _ 0)// ?oppr_lt0 ?divr_gt0 ?pi_gt0.
 Qed.
 
 Lemma tanDpi x : tan (x + pi) = tan x.
@@ -1115,7 +1112,7 @@ have x1B : -1 <= x1 <= 1.
 case: (He (Num.sg x * acos x1)); split; last first.
   case: (x =P 0) => [->|/eqP xD0]; first by rewrite /tan sgr0 mul0r sin0 mul0r.
   rewrite /tan sin_sg cos_sg // acosK ?sin_acos //.
-  rewrite /x1 sqr_sqrtr ?invr_ge0 //.
+  rewrite /x1 sqr_sqrtr// ?invr_ge0 //.
   rewrite -{1}[_^-1 in X in X / _ = _]mul1r.
   rewrite -{1}[X in X - _](divff (_: 1 != 0)) //.
   rewrite -mulNr addf_div ?lt0r_neq0 //.
@@ -1145,7 +1142,7 @@ Lemma atan0 : atan 0 = 0 :> R.
 Proof.
 apply: tan_inj; last by rewrite atanK tan0.
 - by rewrite in_itv/= atan_gtNpi2 atan_ltpi2.
-- by rewrite in_itv/= oppr_cp0 divr_gt0 ?pi_gt0 // ltr0n.
+- by rewrite in_itv/= oppr_cp0 divr_gt0 ?pi_gt0.
 Qed.
 
 Lemma atan1 : atan 1 = pi / 4%:R :> R.
