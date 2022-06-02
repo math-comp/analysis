@@ -1876,7 +1876,7 @@ by rewrite Rmu_fin_bigcup// fset_set0 big_seq_fset0.
 Qed.
 
 Lemma Rmu_ge0 A : Rmu A >= 0.
-Proof. by rewrite sume_ge0//= => *; rewrite ?measure_ge0. Qed.
+Proof. by rewrite sume_ge0. Qed.
 
 Lemma Rmu_additive : semi_additive Rmu.
 Proof.
@@ -1920,7 +1920,7 @@ Proof.
 move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
   by rewrite lee_pinfty_eq => /eqP ->; rewrite leey.
 rewrite -[leRHS]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
-- by rewrite SetRing.RmuE ?lee_addl// ?measure_ge0.
+- by rewrite SetRing.RmuE ?lee_addl.
 - exact: sub_gen_smallest.
 - by apply: measurableD; exact: sub_gen_smallest.
 Qed.
@@ -2227,9 +2227,8 @@ Lemma measureD A B : measurable A -> measurable B ->
 Proof.
 move=> mA mB mAoo.
 rewrite (measureDI mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
-- rewrite (le_lt_trans _ mAoo)// le_measure // ?inE//.
-  + exact: measurableI.
-- by rewrite (lt_le_trans _ (measure_ge0 _ _))// ?lte_ninfty.
+- by rewrite (le_lt_trans _ mAoo)// le_measure // ?inE//; exact: measurableI.
+- by rewrite (lt_le_trans _ (measure_ge0 _ _)).
 Qed.
 
 End measureD.
@@ -2270,7 +2269,7 @@ Lemma null_set_setU (R : realFieldType) (T : ringOfSetsType)
   (mu : {measure set T -> \bar R}) (A B : set T) :
   measurable A -> measurable B -> mu A = 0%E -> mu B = 0%E -> mu (A `|` B) = 0%E.
 Proof.
-move=> mA mB A0 B0; rewrite measureUfinl ?A0 ?lte_pinfty//= ?B0 ?add0e.
+move=> mA mB A0 B0; rewrite measureUfinl ?A0//= ?B0 ?add0e.
 apply/eqP; rewrite oppe_eq0 -measure_le0/=; do ?exact: measurableI.
 by rewrite -A0 measureIl.
 Qed.

@@ -538,7 +538,7 @@ apply/seteqP; split=> [x ->|].
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
 apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
 have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE invr_gt0.
+rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
 rewrite -addn1 natrD natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW//.
 by rewrite -RfloorE lt_succ_Rfloor.
 Qed.
@@ -1248,8 +1248,7 @@ Proof.
 rewrite predeqE => x; split=> [|].
 - move: x => [s /=| _ n _|//].
   + rewrite in_itv /= andbT lee_fin => rs n _ /=.
-    rewrite in_itv /= andbT lte_fin.
-    by rewrite ltr_subl_addl (le_lt_trans rs)// ltr_addr invr_gt0.
+    by rewrite in_itv/= andbT lte_fin ltr_subl_addl (le_lt_trans rs)// ltr_addr.
   + by rewrite /= in_itv /= andbT ltey.
 - move: x => [s| |/(_ 0%N Logic.I)] //=; last by rewrite in_itv /= leey.
   move=> h; rewrite in_itv /= lee_fin leNgt andbT; apply/negP.
@@ -1264,7 +1263,7 @@ Proof.
 rewrite predeqE => x; split=> [|].
 - move: x => [s /=|//|_ n _].
   + rewrite in_itv /= lee_fin => sr n _; rewrite /= in_itv /=.
-    by rewrite -EFinD lee_fin (le_trans sr)// ler_addl invr_ge0.
+    by rewrite -EFinD lee_fin (le_trans sr)// ler_addl.
   + by rewrite /= in_itv /= -EFinD leNye.
 - move: x => [s|/(_ 0%N Logic.I)//|]/=; rewrite ?in_itv /= ?leNye//.
   move=> h; rewrite lee_fin leNgt; apply/negP => /ltr_add_invr[k rks].

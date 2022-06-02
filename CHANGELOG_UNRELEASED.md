@@ -29,6 +29,8 @@
   + canonical `bool_discrete_topology`
   + definition `discrete_topological_mixin`
   + lemma `discrete_bool`, `bool_compact`
+- in `reals.v`:
+  + lemma `floor_natz`
 
 ### Changed
 

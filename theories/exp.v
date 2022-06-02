@@ -49,8 +49,7 @@ Fact is_cvg_pseries_inside_norm f (x z : R) :
   cvg (pseries f x) -> `|z| < `|x| -> cvg (pseries (fun i => `|f i|) z).
 Proof.
 move=> Cx zLx; have [K [Kreal Kf]] := cvg_series_bounded Cx.
-have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n|.
-  by rewrite !mulr_ge0 ?invr_ge0 // ltW.
+have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n|  by rewrite !mulr_ge0.
 apply: normed_cvg.
 apply: series_le_cvg Kzxn _ _ => [//=| /= n|].
   rewrite (_ : `|_ * _| = `|f n * x ^+ n| * `|z ^+ n| / `|x ^+ n|); last first.
@@ -169,7 +168,7 @@ apply: le_trans (_ : d.+1%:R * K ^+ d <= _); last first.
 rewrite (le_trans (ler_norm_sum _ _ _))//.
 rewrite mulr_natl -[X in _ *+ X]subn0 -sumr_const_nat ler_sum_nat//= => j jd1.
 rewrite -[in leRHS](subnK (_ : j <= d)%nat) -1?ltnS // addnC exprD normrM.
-by rewrite ler_pmul// ?normr_ge0// normrX ler_expn2r// qualifE (le_trans _ zLK).
+by rewrite ler_pmul// normrX ler_expn2r// qualifE (le_trans _ zLK).
 Qed.
 
 Lemma pseries_snd_diffs (c : R^nat) K x :
@@ -343,7 +342,7 @@ apply: (@pseries_snd_diffs _ _ (`|x| + 1)); rewrite /pseries.
 - rewrite (_ : (fun _ => _) = exp_coeff (`|x| + 1)).
     exact: is_cvg_series_exp_coeff.
   by apply/funext => i; rewrite !pseries_diffs_inv_fact exp_coeffE.
-by rewrite [ltRHS]ger0_norm ?addr_ge0 // addrC -subr_gt0 addrK.
+by rewrite [ltRHS]ger0_norm// addrC -subr_gt0 addrK.
 Qed.
 
 Lemma derivable_expR x : derivable expR x 1.

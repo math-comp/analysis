@@ -705,7 +705,7 @@ Definition harmonic {R : fieldType} : R ^nat := [sequence n.+1%:R^-1]_n.
 Arguments harmonic {R} n /.
 
 Lemma harmonic_gt0 {R : numFieldType} i : 0 < harmonic i :> R.
-Proof. by rewrite /= invr_gt0 ltr0n. Qed.
+Proof. by rewrite /=. Qed.
 
 Lemma harmonic_ge0 {R : numFieldType} i : 0 <= harmonic i :> R.
 Proof. exact/ltW/harmonic_gt0. Qed.
@@ -734,7 +734,7 @@ rewrite sub_series_geq; last by near: m; apply: nbhs_infty_ge.
 rewrite -addrA sub_series_geq -addnn ?leq_addr// addnn.
 have sh_ge0 i j : 0 <= \sum_(i <= k < j) harmonic k :> R.
   by rewrite ?sumr_ge0//; move=> k _; apply: harmonic_ge0.
-by rewrite ger0_norm ?addr_ge0// ler_paddl// ge_half//; near: n.
+by rewrite ger0_norm// ler_paddl// ge_half//; near: n.
 Unshelve. all: by end_near. Qed.
 
 Definition arithmetic_mean (R : numDomainType) (u_ : R ^nat) : R ^nat :=
@@ -756,7 +756,7 @@ Proof.
 move=> u0_cvg; have ssplit v_ m n : (m <= n)%N -> `|n%:R^-1 * series v_ n| <=
     n%:R^-1 * `|series v_ m| + n%:R^-1 * `|\sum_(m <= i < n) v_ i|.
   move=> /subnK<-; rewrite series_addn mulrDr (le_trans (ler_norm_add _ _))//.
-  by rewrite !normrM ger0_norm ?invr_ge0 ?ler0n.
+  by rewrite !normrM ger0_norm.
 apply/cvg_distP=> _/posnumP[e]; rewrite near_simpl; near \oo => m; near=> n.
 have {}/ssplit -/(_ _ [sequence l - u_ n]_n) : (m.+1 <= n.+1)%nat.
   by near: n; exists m.
@@ -767,14 +767,14 @@ move=> /le_lt_trans->//; rewrite [e%:num]splitr ltr_add//.
     by rewrite normr0 mulr0.
   rewrite -ltr_pdivl_mulr ?normr_gt0//.
   rewrite -ltf_pinv ?qualifE// ?mulr_gt0 ?invr_gt0 ?normr_gt0// invrK.
-  rewrite (lt_le_trans (archi_boundP _))// ?(invr_ge0, mulr_ge0)// ler_nat leqW//.
+  rewrite (lt_le_trans (archi_boundP _))// ler_nat leqW//.
   by near: n; apply: nbhs_infty_ge.
 rewrite ltr_pdivr_mull ?ltr0n // (le_lt_trans (ler_norm_sum _ _ _)) //.
 rewrite (le_lt_trans (@ler_sum_nat _ _ _ _ (fun i => e%:num / 2) _))//; last first.
   by rewrite sumr_const_nat mulr_natl ltr_pmuln2l// ltn_subrL.
 move=> i /andP[mi _]; move: i mi; near: m.
 have : \forall x \near \oo, `|l - u_ x| < e%:num / 2.
-  by move/cvg_distP : u0_cvg; apply; rewrite divr_gt0.
+  by move/cvg_distP : u0_cvg; apply.
 move=> -[N _ Nu]; exists N => // k Nk i ki.
 by rewrite ltW// Nu//= (leq_trans Nk)// ltnW.
 Unshelve. all: by end_near. Qed.
@@ -795,7 +795,7 @@ have /andP[n0] : ((0 < n) && (m <= n.-1))%N.
   near: n; exists m.+1 => // k mk; rewrite (leq_trans _ mk) //=.
   by rewrite -(leq_add2r 1%N) !addn1 prednK // (leq_trans _ mk).
 move/mu => {mu}; rewrite sub0r normrN /= prednK //; apply: le_lt_trans.
-rewrite !normrM ler_wpmul2r // ger0_norm // ger0_norm // ?invr_ge0 // ?ler0n //.
+rewrite !normrM ler_wpmul2r // ger0_norm // ger0_norm //.
 by rewrite lef_pinv // ?ler_nat // posrE // ltr0n.
 Unshelve. all: by end_near. Qed.
 
@@ -822,7 +822,7 @@ suff abel : forall n,
     rewrite a_o.
     set h := 'o_[filter of \oo] harmonic.
     apply/eqoP => _/posnumP[e] /=.
-    near=> n; rewrite normr1 mulr1 normrM -ler_pdivl_mull ?normr_gt0 //.
+    near=> n; rewrite normr1 mulr1 normrM -ler_pdivl_mull// ?normr_gt0//.
     rewrite mulrC -normrV ?unitfE //.
     near: n.
     by case: (eqoP eventually_filterType harmonic h) => Hh _; apply Hh.
@@ -1085,7 +1085,7 @@ Definition exp_coeff x := [sequence x ^+ n / n`!%:R]_n.
 Local Notation exp := exp_coeff.
 
 Lemma exp_coeff_ge0 x n : 0 <= x -> 0 <= exp x n.
-Proof. by move=> x0; rewrite /exp divr_ge0 // ?exprn_ge0 // ler0n. Qed.
+Proof. by move=> x0; rewrite /exp divr_ge0 // exprn_ge0. Qed.
 
 Lemma series_exp_coeff0 n : series (exp 0) n.+1 = 1.
 Proof.
@@ -1110,7 +1110,7 @@ Qed.
 Let S0_ge0 N n : 0 <= S0 N n.
 Proof.
 rewrite mulr_ge0 // ?ler0n //; apply sumr_ge0 => i _.
-by rewrite exprn_ge0 // divr_ge0 // ?ler0n // ltW.
+by rewrite exprn_ge0 // divr_ge0 // ltW.
 Qed.
 
 Let S0_sup N n : x < N%:R -> S0 N n <= sup (range (S0 N)).
@@ -1336,7 +1336,7 @@ have [e1|e1] := lerP 1 e%:num.
   rewrite ltr_subl_addr addrC -ltr_subl_addr.
   have /le_lt_trans->// : (contract 1%:E < contract (u_ n)%:E)%R.
     by rewrite lt_contract lte_fin k1un//; near: n; exists k.
-  by rewrite (@le_trans _ _ 0%R) // ?subr_le0 //= normr1 divr_ge0.
+  by rewrite (@le_trans _ _ 0%R) // ?subr_le0 //= normr1.
 have onee1 : (`|1 - e%:num| < 1)%R.
   by rewrite gtr0_norm // ?subr_gt0 // ltr_subl_addl addrC -ltr_subl_addl subrr.
 have [k _ k1un] := uoo (fine (expand (1 - e%:num))%R); near=> n.
@@ -1898,7 +1898,7 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
 - move=> _; move: f g; abstract: poopoo.
   move=> {}f {}g /ereal_cvgPpinfty foo /ereal_cvgPpinfty goo.
   rewrite mulyy; apply/ereal_cvgPpinfty => A A0; near=> n.
-  rewrite -(sqr_sqrtr (ltW A0)) expr2 EFinM lee_pmul// ?lee_fin ?sqrtr_ge0//.
+  rewrite -(sqr_sqrtr (ltW A0)) expr2 EFinM lee_pmul//.
     by near: n; apply: foo; rewrite sqrtr_gt0.
   by near: n; apply: goo; rewrite sqrtr_gt0.
 - move=> _; move: f g; abstract: poonoo.
