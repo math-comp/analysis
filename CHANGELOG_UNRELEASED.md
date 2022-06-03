@@ -86,6 +86,12 @@
 - in file `lebesgue_integral.v`:
   + lemma `integral_measure_zero`
   + lemma `eq_measure_integral`
+- in file `classical_sets.v`:
+  + lemma `bigsetU_bigcup`
+- in file `numfun.v`:
+  + lemma `restrict_lee`
+- in file `lebesgue_integral.v`:
+  + lemmas `integral_set0`, `ge0_integral_bigsetU`, `ge0_integral_bigcup`
 
 ### Changed
 
