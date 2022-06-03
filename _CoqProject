@@ -27,6 +27,7 @@ theories/esum.v
 theories/fsbigop.v
 theories/set_interval.v
 theories/lebesgue_measure.v
+theories/lebesgue_stieltjes_measure.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
