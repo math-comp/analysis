@@ -98,8 +98,6 @@
   + lemma `lebesgue_measure_set1`
   + lemma `lebesgue_measure_itv`
   + lemma `lebesgue_measure_rat`
-- in file `classical_sets.v`:
-  + lemma `bigcup_oppr`
 - in file `set_interval.v`:
   + lemma `opp_itv_infty_bnd`
 
@@ -117,6 +115,8 @@
   + change the notation `\int_`
 - in `set_interval.v`:
   + generalize `opp_itvoo` to `opp_itv_bnd_bnd`
+- in `classical_sets.v`:
+  + lemma `some_bigcup` generalized and renamed to `image_bigcup`
 
 ### Renamed
 

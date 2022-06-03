@@ -1411,11 +1411,11 @@ apply: setC_inj; rewrite setC_bigcup setCK.
 by apply: eq_bigcapr => ?; rewrite setCK.
 Qed.
 
-Lemma some_bigcup P F :
-  some @` (\bigcup_(i in P) (F i)) = \bigcup_(i in P) some @` F i.
+Lemma image_bigcup rT P F (f : T -> rT) :
+  f @` (\bigcup_(i in P) (F i)) = \bigcup_(i in P) f @` F i.
 Proof.
-apply/seteqP; split; last by move=> _ [i ? [x ? <-]]; exists x => //; exists i.
-by move=> _ [x [i ? ?] <-]; exists i => //; exists x.
+apply/seteqP; split=> [_/= [x [i Pi Fix <-]]|]; first by exists i.
+by move=> _ [i Pi [x Fix <-]]; exists x => //; exists i.
 Qed.
 
 Lemma some_bigcap P F : some @` (\bigcap_(i in P) (F i)) =
@@ -2701,13 +2701,6 @@ case: (pselect (ubound A n)) => [/ih //|An {ih}] An1.
 exists n.+1; split => // m Am; case/existsNP : An => k /not_implyP[Ak /negP].
 rewrite -Order.TotalTheory.ltNge => kn.
 by rewrite (Order.POrderTheory.le_trans _ (Am _ Ak)).
-Qed.
-
-Lemma bigcup_oppr (R : zmodType) (I : Type) (F : I -> set R) :
-  \bigcup_i (-%R @` F i) = -%R @` \bigcup_i F i.
-Proof.
-by apply/seteqP; split=> [_ [i _/= [r Fir <-]]|x/= [r [i _ Fir <-]]];
-  [exists r => //; exists i | exists i].
 Qed.
 
 (** ** Intersection of classes of set *)

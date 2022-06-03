@@ -565,7 +565,7 @@ Lemma itv_open_bnd_bigcup (R : realType) b (r s : R) :
   \bigcup_n [set` Interval (BLeft (s + n.+1%:R^-1)) (BSide b r)].
 Proof.
 have /(congr1 (fun x => -%R @` x)) := itv_bnd_open_bigcup (~~ b) (- r) (- s).
-rewrite opp_itv_bnd_bnd/= !opprK negbK => ->; rewrite -bigcup_oppr.
+rewrite opp_itv_bnd_bnd/= !opprK negbK => ->; rewrite image_bigcup.
 apply eq_bigcupr => k _; apply/seteqP; split=> [_/= [y ysr] <-|x/= xsr].
   by rewrite oppr_itv/= opprD.
 by exists (- x); rewrite ?oppr_itv//= opprK// negbK opprB opprK addrC.
@@ -588,7 +588,7 @@ Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
   \bigcup_i [set` Interval (BLeft (x - i%:R)) (BSide b x)].
 Proof.
 have /(congr1 (fun x => -%R @` x)) := itv_bnd_infty_bigcup (~~ b) (- x).
-rewrite opp_itv_bnd_infty negbK opprK => ->; rewrite -bigcup_oppr.
+rewrite opp_itv_bnd_infty negbK opprK => ->; rewrite image_bigcup.
 apply eq_bigcupr => k _; apply/seteqP; split=> [_ /= -[r rbxk <-]|y/= yxkb].
    by rewrite oppr_itv/= opprB addrC.
 by exists (- y); [rewrite oppr_itv/= negbK opprD opprK|rewrite opprK].
