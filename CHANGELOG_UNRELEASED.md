@@ -92,6 +92,14 @@
   + lemma `restrict_lee`
 - in file `lebesgue_integral.v`:
   + lemmas `integral_set0`, `ge0_integral_bigsetU`, `ge0_integral_bigcup`
+- in file `lebesgue_measure.v`:
+  + lemmas `itv_bnd_open_bigcup`, `itv_bnd_infty_bigcup`, `itv_infty_bnd_bigcup`,
+    `itv_open_bnd_bigcup`
+  + lemma `lebesgue_measure_set1`
+  + lemma `lebesgue_measure_itv`
+  + lemma `lebesgue_measure_rat`
+- in file `set_interval.v`:
+  + lemma `opp_itv_infty_bnd`
 
 ### Changed
 
@@ -105,6 +113,10 @@
   + generalize `card_fset_sum1`
 - in `lebesgue_integral.v`:
   + change the notation `\int_`
+- in `set_interval.v`:
+  + generalize `opp_itvoo` to `opp_itv_bnd_bnd`
+- in `classical_sets.v`:
+  + lemma `some_bigcup` generalized and renamed to `image_bigcup`
 
 ### Renamed
 

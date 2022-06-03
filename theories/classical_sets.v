@@ -1411,11 +1411,11 @@ apply: setC_inj; rewrite setC_bigcup setCK.
 by apply: eq_bigcapr => ?; rewrite setCK.
 Qed.
 
-Lemma some_bigcup P F :
-  some @` (\bigcup_(i in P) (F i)) = \bigcup_(i in P) some @` F i.
+Lemma image_bigcup rT P F (f : T -> rT) :
+  f @` (\bigcup_(i in P) (F i)) = \bigcup_(i in P) f @` F i.
 Proof.
-apply/seteqP; split; last by move=> _ [i ? [x ? <-]]; exists x => //; exists i.
-by move=> _ [x [i ? ?] <-]; exists i => //; exists x.
+apply/seteqP; split=> [_/= [x [i Pi Fix <-]]|]; first by exists i.
+by move=> _ [i Pi [x Fix <-]]; exists x => //; exists i.
 Qed.
 
 Lemma some_bigcap P F : some @` (\bigcap_(i in P) (F i)) =
