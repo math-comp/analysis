@@ -41,16 +41,15 @@
   bundles."8.14".coqPackages.coq.override.version = "8.14";
   bundles."8.15".coqPackages.coq.override.version = "8.15";
 
-  # master is temporarily broken
-  # bundles."master".coqPackages = {
-  #   coq.override.version = "master";
-  #   coq-elpi.override.version = "coq-master";
-  #   hierarchy-builder.override.version = "v1.2.1";
-  #   mathcomp-bigenough.override.version = "1.0.1";
-  #   mathcomp-finmap.override.version = "1.5.1";
-  #   mathcomp-real-closed.override.version = "1.1.2";
-  #   mathcomp.override.version = "1.13.0";
-  # };
+  bundles."master".coqPackages = {
+    coq.override.version = "master";
+    coq-elpi.override.version = "coq-master";
+    hierarchy-builder.override.version = "coq-master";
+    mathcomp-bigenough.override.version = "1.0.1";
+    mathcomp-finmap.override.version = "1.5.1";
+    mathcomp-real-closed.override.version = "master";
+    mathcomp.override.version = "master";
+  };
 
   ## Cachix caches to use in CI
   ## Below we list some standard ones
