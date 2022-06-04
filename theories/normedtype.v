@@ -2839,7 +2839,7 @@ Proof.
 rewrite eqEsubset; split.
   by rewrite closureE; apply: smallest_sub => // ? /ltW.
 move=> v; rewrite /mkset le_eqVlt => /predU1P[<-{v}|]; last first.
-  move=> ?; exact: subset_closure.
+  by move=> ?; exact: subset_closure.
 apply/subset_limit_point/limit_pointP; exists (fun n => z + n.+1%:R^-1); split.
 - by move=> _ [] m _ <-; rewrite ltr_addl.
 - by move=> n; rewrite -subr_eq0 addrAC subrr add0r.
