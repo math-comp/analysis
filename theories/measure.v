@@ -135,6 +135,7 @@ Reserved Notation "'d<<' D '>>'".
 Reserved Notation "mu .-negligible" (at level 2, format "mu .-negligible").
 Reserved Notation "{ 'ae' m , P }" (at level 0, format "{ 'ae'  m ,  P }").
 Reserved Notation "mu .-measurable" (at level 2, format "mu .-measurable").
+Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_'  a").
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.

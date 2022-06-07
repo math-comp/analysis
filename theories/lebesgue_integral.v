@@ -62,7 +62,6 @@ Reserved Notation "\int [ mu ]_ i F"
   (at level 36, F at level 36, mu at level 10, i at level 0,
     right associativity, format "'[' \int [ mu ]_ i '/  '  F ']'").
 Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
-Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_'  a").
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
