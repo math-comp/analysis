@@ -2314,7 +2314,7 @@ Let ge0_integral_dirac (f : T -> \bar R) (mf : measurable_fun D f)
   D a -> \int[[the measure _ _ of \d_ a]]_(x in D) (f x) = f a.
 Proof.
 move=> Da; have [f_ [ndf_ f_f]] := approximation mD mf f0.
-transitivity (lim (fun n => \int[[the measure _ _ of \d_ a]]_(x in D) (f_ n x)%:E)).
+transitivity (lim (fun n => \int[\d_ a]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//.
   - apply: eq_integral => x Dx; apply/esym/cvg_lim => //; apply: f_f.
     by rewrite inE in Dx.
@@ -2340,7 +2340,7 @@ rewrite ge0_integral_sum//.
 Qed.
 
 Lemma integral_dirac (f : T -> \bar R) (mf : measurable_fun D f) :
-  \int[[the measure _ _ of \d_ a]]_(x in D) f x = (\1_D a)%:E * f a.
+  \int[\d_ a]_(x in D) f x = (\1_D a)%:E * f a.
 Proof.
 have [/[!inE] aD|aD] := boolP (a \in D).
   rewrite integralE ge0_integral_dirac//; last exact/emeasurable_fun_funepos.
