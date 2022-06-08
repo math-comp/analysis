@@ -522,12 +522,12 @@ move=> /andP[Pi Qi]; exists i; rewrite 2?inE ?andbT//.
 by exists j; rewrite 2?inE ?andbT.
 Qed.
 
-Lemma exchange_fsum (T : choiceType) (R : realDomainType) (P Q : set T)
-     (f : T -> T -> \bar R) :
+Lemma exchange_fsum (T1 T2 : choiceType) (R : realDomainType) (P : set T1) (Q : set T2)
+     (f : T1 -> T2 -> \bar R) :
     finite_set P -> finite_set Q ->
   (\sum_(i \in P) \sum_(j \in Q) f i j = \sum_(j \in Q) \sum_(i \in P) f i j)%E.
 Proof.
-move=> Pfin Qfin; rewrite 2?pair_fsum//; pose swap (x : T * T) := (x.2, x.1).
+move=> Pfin Qfin; rewrite 2?pair_fsum//; pose swap (x : T2 * T1) := (x.2, x.1).
 apply: (reindex_fsbig swap).
 split=> [? [? ?]//|[? ?] [? ?] /set_mem[? ?] /set_mem[? ?] [-> ->]//|].
 by move=> [i j] [? ?]; exists (j, i).

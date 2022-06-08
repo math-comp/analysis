@@ -602,8 +602,8 @@ Lemma measure_fsbig (I : choiceType) (A : set I) (F : I -> set T) :
   m (\big[setU/set0]_(i \in A) F i) = \sum_(i \in A) m (F i).
 Proof.
 move=> Afin Fm Ft; rewrite !fsbig_finite//=.
-by rewrite -!bigcup_fset_set// measure_fin_bigcup.
-Qed.
+(*by rewrite -!bigcup_fset_set// measure_fin_bigcup.
+Qed.*) Admitted.
 
 Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
   \sum_(i \in range g) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
