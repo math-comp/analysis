@@ -35,7 +35,7 @@ Require Import realfun.
 (* intervals.                                                                 *)
 (*                                                                            *)
 (* The modules ErealGenOInfty and ErealGenCInfty provide proofs of            *)
-(* equivalence between emeasurable and the sigmaa-algebras generated open     *)
+(* equivalence between emeasurable and the sigma-algebras generated open      *)
 (* rays and closed rays.                                                      *)
 (*                                                                            *)
 (******************************************************************************)
