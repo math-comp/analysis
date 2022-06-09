@@ -147,8 +147,7 @@ move=> /subset_itvP ij; apply: lee_sub => /=.
 have [lj /=|lj] := asboolP (has_lbound J); last by rewrite leNye.
 have [li /=|li] := asboolP (has_lbound I); last first.
   by move: li; have := subset_has_lbound ij lj.
-rewrite lee_fin ler_oppl opprK le_sup// ?has_inf_supN//; last first.
-  by case: I0 => x Ix; exists (- x)%R, x.
+rewrite lee_fin ler_oppl opprK le_sup// ?has_inf_supN//; last exact/nonemptyN.
 move=> r [r' Ir' <-{r}]; exists (- r')%R.
 by split => //; exists r' => //; apply: ij.
 Qed.
