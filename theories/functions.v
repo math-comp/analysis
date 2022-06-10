@@ -686,7 +686,7 @@ Lemma comp_surj_subproof (f : {surj A >-> B}) (g : {surj B >-> C}) :
 Proof.
 split; first exact: funS.
 apply: (@ocan_in_comp _ _ _ (mem B)) oinvK oinvK.
-by move=> ? /set_mem; rewrite pred_omap_set inE; apply: funS.
+by move=> ? /set_mem; rewrite pred_oapp_set inE; apply: funS.
 Qed.
 
 HB.instance Definition _ f g := comp_surj_subproof f g.
