@@ -50,6 +50,15 @@ Lemma kernel_measurable_fun_sum_of_kernels
     (k : (kernel R X Y)^nat) :
   forall U, measurable_fun setT ((sum_of_kernels k) ^~ U).
 Proof.
+move=> U; rewrite /sum_of_kernels /= /mseries.
+rewrite [X in measurable_fun _ X](_ : _ =
+  (fun x => elim_sup (fun n => \sum_(i < n) k i x U))); last first.
+  apply/funext => x.
+  rewrite -lim_mkord.
+  (* TODO: see cvg_lim_supE *)
+  admit.
+apply: measurable_fun_elim_sup => n.
+(*TODO: use measurable_funD *)
 Admitted.
 
 HB.instance Definition _
@@ -63,5 +72,50 @@ Lemma proposition1
   (k : (kernel R X Y)^nat) (f : Y -> \bar R) x :
  \int[sum_of_kernels k x]_y (f y) = \sum_(i <oo) \int[k i x]_y (f y).
 Proof.
+rewrite /sum_of_kernels/=.
 (* TODO *)
 Abort.
+
+HB.mixin Record isFiniteKernel
+    (R : realType) (X Y : measurableType)
+    (k : X -> {measure set Y -> \bar R})
+    of isKernel R X Y k := {
+  finite_kernel : exists r : R, forall x : X, k x setT < r%:E
+}.
+
+HB.structure Definition FiniteKernel
+    (R : realType) (X Y : measurableType) :=
+  {k & isFiniteKernel R X Y k }.
+
+HB.mixin Record isSFiniteKernel
+    (R : realType) (X Y : measurableType)
+    (k : X -> {measure set Y -> \bar R})
+    of isKernel R X Y k := {
+  finite_kernel : exists k_ : (X ^^> Y)^nat, forall x U,
+    k x U = \sum_(i <oo) k_ i x U
+}.
+
+#[short(type=sfinitekernel)]
+HB.structure Definition SFiniteKernel
+    (R : realType) (X Y : measurableType) :=
+  {k & isSFiniteKernel R X Y k}.
+
+Definition star_kernel' (R : realType) (X Y Z : measurableType)
+  (k : sfinitekernel R [the measurableType of (X * Y)%type] Z)
+  (l : sfinitekernel R X Y) : X -> set Z -> \bar R :=
+  fun x => fun U => \int[l x]_y k (x, y) U.
+
+Definition star_kernel (R : realType) (X Y Z : measurableType)
+  (k : sfinitekernel R [the measurableType of (X * Y)%type] Z)
+  (l : sfinitekernel R X Y) : X -> {measure set Z -> \bar R}.
+(* TODO *)
+Admitted.
+
+Lemma lemma3 (R : realType) (X Y Z : measurableType)
+  (k : sfinitekernel R [the measurableType of (X * Y)%type] Z)
+  (l : sfinitekernel R X Y) : forall x f,
+  \int[star_kernel k l x]_z f z =
+  \int[l x]_y (\int[k (x, y)]_z f z).
+Proof.
+(* TODO *)
+Admitted.
