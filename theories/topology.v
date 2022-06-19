@@ -276,6 +276,8 @@ Require Import cardinality.
 (*                                   an entourage E' such that E' \o E' is    *)
 (*                                   included in E when seen as a relation    *)
 (*                   unif_continuous f <-> f is uniformly continuous.         *)
+(*               weak_uniformType == the uniform space for weak topologies    *)
+(*                sup_uniformType == the uniform space for sup topologies     *)
 (*                                                                            *)
 (* * PseudoMetric spaces :                                                    *)
 (*                entourage_ ball == entourages defined using balls           *)
@@ -4017,7 +4019,7 @@ Let S := weak_topologicalType f.
 Definition weak_ent : set (set (S * S)) := 
   filter_from (@entourage U) (fun V => (map_pair f)@^-1` V).
 
-Definition weak_ent_filter : Filter weak_ent.
+Lemma weak_ent_filter : Filter weak_ent.
 Proof.
 apply: filter_from_filter; first by exists setT; exact: entourageT.
 by move=> P Q ??; (exists (P `&` Q); first exact: filterI) => ?.
@@ -4031,7 +4033,7 @@ Qed.
 Lemma weak_ent_inv A : weak_ent A -> weak_ent (A^-1)%classic.
 Proof.
 move=> [B ? sBA]; exists (B^-1)%classic; first exact: entourage_inv.
-by move=> ??; apply/sBA.
+by move=> ??; exact/sBA.
 Qed.
 
 Lemma weak_ent_split A : weak_ent A -> exists2 B, weak_ent B & B \o B `<=` A.
@@ -4047,7 +4049,7 @@ Proof.
 rewrite predeq2E => x V; split.
   case=> [? [[B  ? <-] [? BsubV]]]; have: nbhs (f x) B by apply: open_nbhs_nbhs.
   move=> /nbhsP [W ? WsubB]; exists ((map_pair f) @^-1` W); first by exists W.
-  by move=>??; apply/BsubV/WsubB.
+  by move=>??; exact/BsubV/WsubB.
 case=> W [V' entV' V'subW] /filterS; apply.
 have : nbhs (f x) to_set V' (f x) by apply/nbhsP; exists V'.
 rewrite (@nbhsE U) => [[O [[openU Ofx Osub]]]].
@@ -4055,7 +4057,7 @@ rewrite (@nbhsE U) => [[O [[openU Ofx Osub]]]].
 by move=> w ? ; apply: V'subW; exact: Osub.
 Qed.
 
-Definition weak_uniform_mixin:= 
+Definition weak_uniform_mixin := 
   @UniformMixin S nbhs weak_ent 
     weak_ent_filter weak_ent_refl weak_ent_inv weak_ent_split weak_ent_nbhs.
 
@@ -4109,7 +4111,7 @@ Lemma sup_ent_split A : sup_ent A -> exists2 B, sup_ent B & B \o B `<=` A.
 Proof.
 have spt : (forall ie : IEnt, ent_of ((projT1 ie).1,
     ((@split_ent (TS (projT1 ie).1) (projT1 ie).2)))).
-  by case=> [[/= ??] /asboolP/entourage_split_ent ?]; apply/asboolP.
+  by case=> [[/= ??] /asboolP/entourage_split_ent ?]; exact/asboolP.
 pose g : (IEnt -> IEnt) := fun x => exist ent_of _ (spt x).
 case => W [F _ <-] sA; exists (\bigcap_(x in [set` F]) (projT1 (g x)).2).
   exists (\bigcap_(ie in [set`F]) (projT1 (g ie)).2) => //.
@@ -4145,7 +4147,7 @@ rewrite predeq2E => x V; split.
     by move=> u ?; exact: in_setT.
   rewrite eqEsubset; split => y + z.
     by move=>/(_ (projT1 (f z))) => + ?; apply; apply/imfsetP; exists z.
-  by move=> Fgy /imfsetP [/= u uF ->]; apply Fgy.
+  by move=> Fgy /imfsetP [/= u uF ->]; exact: Fgy.
 case=> E [D [/= F FsubEnt <-] FsubE EsubV]; apply: (filterS EsubV). 
 pose f : IEnt -> set T := fun w => 
   @interior (TS (projT1 w).1) (to_set ((projT1 w).2) (x)).
@@ -4156,7 +4158,7 @@ exists (\bigcap_(w in [set` F]) f w); repeat split.
     by apply/mem_set; rewrite /f /=; exists i => //; exact: open_interior.
   by rewrite set_imfset bigcap_image //=.
 - by IEntP=> ? ? /open_nbhs_entourage entw ??; apply entw.
-- by move=> t /= Ifwt; apply: FsubE => it /Ifwt/interior_subset; rewrite /f.
+- by move=> t /= Ifwt; apply: FsubE => it /Ifwt/interior_subset.
 Qed.
 
 Definition sup_uniform_mixin:= 
