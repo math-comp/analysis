@@ -2632,3 +2632,123 @@ by move/cvg_lim : ul => ->.
 Qed.
 
 End elim_sup_inf.
+
+Section banach_contraction.
+
+Context {R : realType} {X : completeNormedModType R} (U : set X).
+Variables (f : {fun U >-> U}).
+
+Section contractions.
+Variables (q : {nonneg R}) (ctrf : contraction q) (base : X) (Ubase : U base).
+
+(* These proofs help integrate all the arithmetic with signed.v. The issue is *)
+(* Terms like `0 < 1-q` with subtraction don't work well. So we hide the      *)
+(* subtractions behind `PosNum` and `NngNum` constructors*)
+
+Local Lemma qlt1 : 0 < 1 - q%:num.
+Proof. by rewrite subr_gt0; case: ctrf. Qed.
+
+Local Lemma qsub1E : 1 - q%:num = (PosNum qlt1)%:num.
+Proof. by []. Qed.
+
+Local Lemma qpow_lt_1 m : 0 <= 1 - q%:num ^+ m.
+Proof.
+move: m => [|m]; first by rewrite expr0 subrr.
+by rewrite subr_ge0 expr_le1// ltW//; case: ctrf.
+Qed.
+
+Local Lemma qmsub1E m : (1 - q%:num ^+ m = (NngNum (qpow_lt_1 m))%:num).
+Proof. by []. Qed.
+
+Lemma contraction_dist (n m : nat) :
+  `| iter n f base - iter (n + m) f base| <=
+   (`|f base - base| / (1 - q%:num)) * q%:num ^+ n.
+Proof.
+case: ctrf => q1 ctrfq; pose y := fun n => iter n f base.
+have f1 k : `|y k.+1 - y k| <= q%:num ^+ k * `|f base - base|.
+  elim: k => [|k /(ler_wpmul2l [ge0 of q%:num])]; first by rewrite expr0 mul1r.
+  rewrite mulrA -exprS; apply: le_trans; rewrite ![y _.+1]iterS.
+  by apply: (ctrfq ((iter k.+1 f base), _)); split; exact: funS.
+have qlt1 := qlt1.
+have qn1 : 1 - q%:num != 0 by apply lt0r_neq0.
+have qne1 : q%:num != 1 by rewrite eq_sym -subr_eq0.
+have /le_trans -> // : `| y n - y (n + m)%N| <=
+    series (geometric (`|f base - base| * q%:num ^+ n) q%:num) m.
+  elim: m => [|m ih].
+    by rewrite geometric_seriesE //= addn0 subrr normr0 expr0 subrr mulr0 mul0r.
+  apply: le_trans; first exact: (ler_dist_add (y (n + m)%N)).
+  apply: (le_trans (ler_add ih _)); first by rewrite distrC addnS; exact: f1.
+  rewrite [_ * `|_|]mulrC exprD mulrA geometric_seriesE //= qsub1E qmsub1E.
+  rewrite -!mulrA -mulrDr ler_pmul // -mulrDr ler_pmul //.
+  rewrite -[x in _ + x]mulr1 -{3}(@divrr _ (PosNum qlt1)%:num) ?unitf_gt0 //.
+  rewrite mulrA -mulrDl ler_pdivr_mulr // mulrDr.
+  by rewrite divrK ?unitf_gt0 // mulr1 subrKA /= mulrN [_ * q%:num]mulrC -exprS.
+rewrite geometric_seriesE // /mk_sequence ?qsub1E ?qmsub1E.
+rewrite -?mulrA ler_pmul // [leRHS] mulrC ler_pmul //.
+by rewrite -ler_pdivl_mulr// divrr ?unitf_gt0// ler_subl_addr ler_addl.
+Qed.
+
+Lemma contraction_cvg : cvg (iter n f base @[n-->\oo]).
+Proof.
+apply/cauchy_cvgP; case: ctrf => q1 ctrfq.
+pose y := fun n => iter n f base; pose C := `|f base - base| / (1 - q%:num).
+apply/cauchy_ballP => _/posnumP[e]; near_simpl.
+have lt_min n m : `|y n - y m| <= C * q%:num ^+ minn n m.
+  wlog : n m / (n <= m)%N => W.
+    by case/orP: (leq_total n m) => /W //; rewrite distrC minnC.
+  rewrite -(@subnKC n m) //; apply: le_trans; first exact: contraction_dist.
+  by rewrite qsub1E ler_pmul// subnKC//; move/minn_idPl : W => ->.
+have [Cpos| |C0] := ltrgt0P C; last first.
+  - near=> n m => /=; rewrite -ball_normE.
+    by apply: (le_lt_trans (lt_min _ _)); rewrite C0 mul0r.
+  - by rewrite ltNge //; apply: contraNP => _; rewrite /C qsub1E.
+near=> n; rewrite -ball_normE /= (le_lt_trans (lt_min n.1 n.2)) //.
+rewrite // -ltr_pdivl_mull //.
+suff : ball 0 (C^-1 * e%:num) (q%:num ^+ minn n.1 n.2).
+  by rewrite /ball /= sub0r normrN ger0_norm.
+near: n; rewrite nbhs_simpl.
+pose g := fun w : nat * nat => q%:num ^+ minn w.1 w.2.
+have := @cvg_ball _ _ (g @ filter_prod \oo \oo) _ 0 _ (C^-1 * e%:num).
+move: (@cvg_geometric _ 1 q%:num); rewrite ger0_norm // => /(_ q1) geo.
+near_simpl; apply; last by rewrite mulr_gt0 // invr_gt0.
+apply/cvg_ballP => _/posnumP[delta]; near_simpl.
+have [N] : \forall N \near \oo, ball 0 delta%:num (geometric 1 q%:num N).
+  exact: (@cvg_ball R R _ _ 0 geo).
+move=> _ Q; exists ([set n | N <= n], [set n | N <= n])%N. 
+  by split; exists N.
+move=> [n m] [Nn Nm]; rewrite /ball /= sub0r normrN ger0_norm /g //.
+apply: le_lt_trans; last by apply: (Q N) => /=.
+rewrite sub0r normrN ger0_norm /geometric //= mul1r.
+by rewrite ler_wiexpn2l // ?ltW // leq_min Nn.
+Unshelve. all: end_near. Qed.
+
+Lemma contraction_cvg_fixed :
+  closed U -> let p := lim ((fun n => iter n f base) @ \oo) in p = f p.
+Proof.
+move=> clU ; apply: cvg_lim => //; case: ctrf => q1 ctrfq.
+apply/cvg_distP => _/posnumP[e]; near_simpl; apply: near_inftyS.
+have [q_gt0 | | q0] := ltrgt0P q%:num.
+- near=> n => /=; apply: (le_lt_trans (ctrfq (_, _) _)) => //=.
+  + split; last exact: funS. 
+    by apply: closed_cvg contraction_cvg => //; apply: nearW => ?; exact: funS.
+  + rewrite -ltr_pdivl_mull //; near: n; move/cvg_distP: contraction_cvg; apply.
+    by rewrite mulr_gt0 // invr_gt0.
+- by rewrite ltNge//; exact: contraNP.
+- apply: nearW => /= n; apply: (le_lt_trans (ctrfq (_, _) _)).
+  + split; last exact: funS.
+    by apply: closed_cvg contraction_cvg => //; apply: nearW => ?; exact: funS.
+  + by rewrite q0 mul0r.
+Unshelve. all: end_near. Qed.
+End contractions.
+
+Variable ctrf : is_contraction.
+
+Theorem banach_fixed_point : closed U -> U !=set0 -> exists2 p, U p & p = f p.
+Proof.
+case: ctrf => q ctrq ? [base Ubase]; exists (lim (iter n f base @[n -->\oo])).
+  apply: closed_cvg (contraction_cvg ctrq Ubase) => //.
+  by apply: nearW => ?; exact: funS.
+exact: (contraction_cvg_fixed ctrq).
+Unshelve. all: end_near. Qed.
+
+End banach_contraction.
