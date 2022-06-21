@@ -553,7 +553,7 @@ Qed.
 End puncture_ereal_itv.
 
 Lemma set1_bigcap_oc (R : realType) (r : R) :
-   [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
+  [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
 Proof.
 apply/seteqP; split=> [x ->|].
   by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
