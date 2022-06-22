@@ -45,6 +45,14 @@ Definition sum_of_kernels
     (k : (X ^^> Y)^nat) : X -> {measure set Y -> \bar R} :=
   fun x => [the {measure _ -> _} of mseries (k ^~ x) 0].
 
+(* PR in progress *)
+Lemma preimage_cst (aT rT : Type) (x : aT) (A : set aT) :
+  @cst rT _ x @^-1` A = if x \in A then setT else set0.
+Proof.
+apply/seteqP; rewrite /preimage; split; first by move=> *; rewrite mem_set.
+by case: ifPn => [/[!inE] ?//|_]; exact: sub0set.
+Qed.
+
 Lemma kernel_measurable_fun_sum_of_kernels
     (R : realType) (X Y : measurableType)
     (k : (kernel R X Y)^nat) :
@@ -52,14 +60,13 @@ Lemma kernel_measurable_fun_sum_of_kernels
 Proof.
 move=> U; rewrite /sum_of_kernels /= /mseries.
 rewrite [X in measurable_fun _ X](_ : _ =
-  (fun x => elim_sup (fun n => \sum_(i < n) k i x U))); last first.
-  apply/funext => x.
-  rewrite -lim_mkord.
-  (* TODO: see cvg_lim_supE *)
-  admit.
+  (fun x => elim_sup (fun n => \sum_(0 <= i < n) k i x U))); last first.
+  apply/funext => x; rewrite -lim_mkord is_cvg_elim_supE.
+    by rewrite -lim_mkord.
+  exact: is_cvg_nneseries.
 apply: measurable_fun_elim_sup => n.
-(*TODO: use measurable_funD *)
-Admitted.
+by apply: measurable_fun_sum => *; exact/kernel_measurable_fun.
+Qed.
 
 HB.instance Definition _
     (R : realType) (X Y : measurableType)
