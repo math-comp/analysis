@@ -2480,6 +2480,13 @@ Import GRing.Theory.
 
 Definition cst {T T' : Type} (x : T') : T -> T' := fun=> x.
 
+Lemma preimage_cst {aT rT : Type} (a : aT) (A : set aT) :
+  @cst rT _ a @^-1` A = if a \in A then setT else set0.
+Proof.
+apply/seteqP; rewrite /preimage; split; first by move=> *; rewrite mem_set.
+by case: ifPn => [/[!inE] ?//|_]; exact: sub0set.
+Qed.
+
 Obligation Tactic := idtac.
 
 Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
