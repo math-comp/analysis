@@ -45,14 +45,6 @@ Definition sum_of_kernels
     (k : (X ^^> Y)^nat) : X -> {measure set Y -> \bar R} :=
   fun x => [the {measure _ -> _} of mseries (k ^~ x) 0].
 
-(* PR in progress *)
-Lemma preimage_cst (aT rT : Type) (x : aT) (A : set aT) :
-  @cst rT _ x @^-1` A = if x \in A then setT else set0.
-Proof.
-apply/seteqP; rewrite /preimage; split; first by move=> *; rewrite mem_set.
-by case: ifPn => [/[!inE] ?//|_]; exact: sub0set.
-Qed.
-
 Lemma kernel_measurable_fun_sum_of_kernels
     (R : realType) (X Y : measurableType)
     (k : (kernel R X Y)^nat) :
@@ -107,16 +99,41 @@ HB.structure Definition SFiniteKernel
     (R : realType) (X Y : measurableType) :=
   {k & isSFiniteKernel R X Y k}.
 
-Definition star_kernel' (R : realType) (X Y Z : measurableType)
-  (k : sfinitekernel R [the measurableType of (X * Y)%type] Z)
-  (l : sfinitekernel R X Y) : X -> set Z -> \bar R :=
+Section starkernel.
+Variables (R : realType) (X Y Z : measurableType).
+Variable k : sfinitekernel R [the measurableType of (X * Y)%type] Z.
+Variable l : sfinitekernel R X Y.
+
+Definition star_kernel' : X -> set Z -> \bar R :=
   fun x => fun U => \int[l x]_y k (x, y) U.
 
-Definition star_kernel (R : realType) (X Y Z : measurableType)
-  (k : sfinitekernel R [the measurableType of (X * Y)%type] Z)
-  (l : sfinitekernel R X Y) : X -> {measure set Z -> \bar R}.
-(* TODO *)
-Admitted.
+Let star_kernel'0 (x : X) : star_kernel' x set0 = 0.
+Proof.
+rewrite /star_kernel' (eq_integral (cst 0)) ?integral0// => y _.
+by rewrite measure0.
+Qed.
+
+Let star_kernel'_ge0 (x : X) (U : set Z) : 0 <= star_kernel' x U.
+Proof. by apply: integral_ge0 => y _; exact: measure_ge0. Qed.
+
+Let star_kernel'_sigma_additive (x : X) : semi_sigma_additive (star_kernel' x).
+Proof.
+move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
+  \int[l x]_y (\sum_(n <oo) k (x, y) (F n)))%E; last first.
+  apply: eq_integral => U _.
+  by apply/esym/cvg_lim => //; apply/measure_semi_sigma_additive.
+apply/cvg_closeP; split.
+  by apply: is_cvg_nneseries => n _; exact: integral_ge0.
+rewrite closeE// integral_sum// => n.
+move: (@kernel_measurable_fun R _ _ k (F n)) => /measurable_fun_prod1.
+exact.
+Qed.
+
+Canonical star_kernel : X -> {measure set Z -> \bar R} :=
+  fun x => Measure.Pack _ (Measure.Axioms (star_kernel'0 x) (star_kernel'_ge0 x)
+    (@star_kernel'_sigma_additive x)).
+
+End starkernel.
 
 Lemma lemma3 (R : realType) (X Y Z : measurableType)
   (k : sfinitekernel R [the measurableType of (X * Y)%type] Z)
