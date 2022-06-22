@@ -800,7 +800,7 @@ End le_sintegral.
 
 Lemma is_cvg_sintegral (T : measurableType) (R : realType)
   (m : {measure set T -> \bar R}) (f : {nnsfun T >-> R}^nat) :
-  (forall x, nondecreasing_seq (f ^~ x)) -> cvg (fun n => sintegral m (f n)).
+  (forall x, nondecreasing_seq (f ^~ x)) -> cvg (sintegral m \o f).
 Proof.
 move=> nd_f; apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvg => a b ab.
 by apply: le_sintegral => // => x; exact/nd_f.
@@ -3888,11 +3888,9 @@ move=> F mF tF mUF; have -> : m (\bigcup_n F n) = \sum_(n <oo) (m (F n)).
     rewrite xsection_bigcup.
     apply: (measure_sigma_additive _ (trivIset_xsection tF)).
     by move=> ?; exact: measurable_xsection.
-  rewrite integral_sum // => n; apply: measurable_fun_xsection => //.
-  by rewrite inE.
-suff /cvg_ex[l cl] : cvg (fun n => (\sum_(0 <= i < n) m (F i))%E).
-  by move: (cl) => /cvg_lim; rewrite -lim_mkord => ->.
-by apply: is_cvg_ereal_nneg_natsum => n _; exact: integral_ge0.
+  by rewrite integral_sum // => n; apply: measurable_fun_xsection => // /[!inE].
+apply/cvg_closeP; split; last by rewrite closeE.
+by apply: is_cvg_nneseries => *; exact: integral_ge0.
 Qed.
 
 Definition product_measure1 : {measure set (T1 * T2) -> \bar R} :=
@@ -3998,11 +3996,9 @@ have -> : m (\bigcup_n F n) = \sum_(n <oo) (m (F n)).
     rewrite ysection_bigcup.
     apply: (measure_sigma_additive _ (trivIset_ysection tF)).
     by move=> ?; apply: measurable_ysection.
-  rewrite integral_sum // => n; apply: measurable_fun_ysection => //.
-  by rewrite inE.
-suff /cvg_ex[l cl] : cvg (fun n => \sum_(0 <= i < n) m (F i)).
-  by move: (cl) => /cvg_lim; rewrite -lim_mkord => ->.
-by apply: is_cvg_ereal_nneg_natsum => n _; exact: integral_ge0.
+  by rewrite integral_sum // => n; apply: measurable_fun_ysection => // /[!inE].
+apply/cvg_closeP; split; last by rewrite closeE.
+by apply: is_cvg_nneseries => *; exact: integral_ge0.
 Qed.
 
 Definition product_measure2 : {measure set (T1 * T2) -> \bar R} :=
