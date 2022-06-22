@@ -2459,6 +2459,13 @@ Implicit Type f : T -> \bar R.
 Definition integrable f :=
   measurable_fun D f /\ (\int[mu]_(x in D) `|f x| < +oo).
 
+Lemma integrable0 : integrable (cst 0).
+Proof.
+split; first exact: measurable_fun_cst.
+under eq_integral do rewrite (gee0_abs (lexx 0)).
+by rewrite integral0.
+Qed.
+
 Lemma eq_integrable f1 f2 : {in D, f1 =1 f2} ->
   integrable f1 -> integrable f2.
 Proof.
