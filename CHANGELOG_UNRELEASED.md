@@ -41,6 +41,8 @@
   + lemma `supremum1`
 - in `reals.v`:
   + lemma `opp_set_eq0`, `ubound0`, `lboundT`
+- in `lebesgue_integral.v`:
+  + lemma `integrable0`
 
 ### Changed
 
