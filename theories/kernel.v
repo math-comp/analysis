@@ -66,14 +66,28 @@ HB.instance Definition _
   isKernel.Build R X Y (sum_of_kernels k)
     (kernel_measurable_fun_sum_of_kernels k).
 
+(* PR in progress *)
+Section ge0_integral_measure_series.
+Local Open Scope ereal_scope.
+Variables (T : measurableType) (R : realType) (m_ : {measure set T -> \bar R}^nat).
+Let m := measure_series m_ O.
+
+Lemma ge0_integral_measure_series (D : set T) (mD : measurable D) (f : T -> \bar R) :
+  (forall t, D t -> 0 <= f t) ->
+  measurable_fun D f ->
+  \int[m]_(x in D) f x = \sum_(n <oo) \int[m_ n]_(x in D) f x.
+Admitted.
+End ge0_integral_measure_series.
+
 Lemma proposition1
   (R : realType) (X Y : measurableType)
   (k : (kernel R X Y)^nat) (f : Y -> \bar R) x :
- \int[sum_of_kernels k x]_y (f y) = \sum_(i <oo) \int[k i x]_y (f y).
+  (forall y, 0 <= f y) ->
+  measurable_fun setT f ->
+  \int[sum_of_kernels k x]_y (f y) = \sum_(i <oo) \int[k i x]_y (f y).
 Proof.
-rewrite /sum_of_kernels/=.
-(* TODO *)
-Abort.
+by move=> f0 mf; rewrite /sum_of_kernels/= ge0_integral_measure_series.
+Qed.
 
 HB.mixin Record isFiniteKernel
     (R : realType) (X Y : measurableType)
