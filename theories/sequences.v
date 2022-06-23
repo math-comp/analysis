@@ -1238,7 +1238,7 @@ Qed.
 
 Definition nseries (u : nat^nat) := (fun n => \sum_(0 <= k < n) u k)%N.
 
-Lemma le_nseries (u : nat^nat) : {homo nseries u : a b / (a <= b)%N}.
+Lemma le_nseries (u : nat^nat) : {homo nseries u : a b / a <= b}%N.
 Proof.
 move=> a b ab; rewrite /nseries [in X in (_ <= X)%N]/index_iota subn0.
 rewrite -[in X in (_ <= X)%N](subnKC ab) iotaD big_cat/= add0n.
