@@ -670,7 +670,7 @@ Context {R : numDomainType}.
 Lemma zero_snum_subproof : Signed.spec 0 ?=0 =0 (0 : R).
 Proof. exact: eqxx. Qed.
 
-Canonical zero_snum := Signed.mk (zero_snum_subproof).
+Canonical zero_snum := Signed.mk zero_snum_subproof.
 
 Lemma one_snum_subproof : Signed.spec 0 !=0 >=0 (1 : R).
 Proof. by rewrite /= oner_eq0 ler01. Qed.
@@ -930,10 +930,10 @@ Proof. by []. Qed.
 
 Canonical nat_snum n := Signed.mk (nat_snum_subproof n).
 
-Lemma zeron_snum_subproof n : Signed.spec 0 ?=0 =0 0.
+Lemma zeron_snum_subproof : Signed.spec 0 ?=0 =0 0.
 Proof. by []. Qed.
 
-Canonical zeron_snum n := Signed.mk (zeron_snum_subproof n).
+Canonical zeron_snum := Signed.mk zeron_snum_subproof.
 
 Lemma succn_snum_subproof n : Signed.spec 0 !=0 >=0 n.+1.
 Proof. by []. Qed.
