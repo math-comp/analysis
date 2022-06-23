@@ -1673,10 +1673,10 @@ move=> /(_ K (leqnn _)); rewrite leNgt => /negP; apply.
 rewrite sumFE lte_fin ltr_nat ltnS.
 have -> : k = #|` fset_set (\bigcup_n F n) |.
   by apply/esym/card_eq_fsetP; rewrite fset_setK//; exists k.
-apply/fsubset_leq_card/fset_set_sub => //.
+apply/fsubset_leq_card; rewrite -fset_set_sub //.
+- by move=> /= t; rewrite -bigcup_mkord => -[m _ Fmt]; exists m.
 - by rewrite -bigcup_mkord; exact: bigcup_finite.
 - by exists k.
-- by move=> /= t; rewrite -bigcup_mkord => -[m _ Fmt]; exists m.
 Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ counting
