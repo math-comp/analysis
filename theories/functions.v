@@ -1800,6 +1800,10 @@ End patch.
 Notation restrict := (patch (fun=> point)).
 Notation "f \_ D" := (restrict D f) : fun_scope.
 
+Lemma patch_pred {I T} (D : {pred I}) (d f : I -> T) :
+  patch d D f = fun i => if D i then f i else d i.
+Proof. by apply/funext => i; rewrite /patch mem_setE. Qed.
+
 Lemma preimage_restrict (aT : Type) (rT : pointedType)
      (f : aT -> rT) (D : set aT) (B : set rT) :
   (f \_ D) @^-1` B = (if point \in B then ~` D else set0) `|` D `&` f @^-1` B.
@@ -1834,6 +1838,18 @@ Lemma restrict_comp {aT} {rT sT : pointedType} (h : rT -> sT) (f : aT -> rT) D :
   h point = point -> (h \o f) \_ D = h \o (f \_ D).
 Proof. by move=> hp; apply/funext => x; rewrite /patch/=; case: ifP. Qed.
 Arguments restrict_comp {aT rT sT} h f D.
+
+Lemma trivIset_restr (T I : Type) (D D' : set I) (F : I -> set T) :
+    trivIset D' (F \_ D) = trivIset (D `&` D') F.
+Proof.
+apply/propext; split=> FDtriv i j.
+  move=> [Di D'i] [Dj D'j] [x [Fix Fjx]]; apply: FDtriv => //.
+  by exists x; split => /=; rewrite ?patchT ?in_setE.
+move=> D'i D'j [x []]; rewrite /patch.
+do 2![case: ifPn => //]; rewrite !in_setE => Di Dj Fix Fjx.
+by apply: FDtriv => //; exists x.
+Qed.
+
 
 (**************************************)
 (* Restriction of domain and codomain *)

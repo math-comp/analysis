@@ -1263,22 +1263,33 @@ Hint Resolve measure_ge0 : core.
 
 Hint Resolve measure_semi_additive : core.
 
-Lemma measure_semi_additive' (F : nat -> set T) (n : nat) :
+Lemma measure_semi_additive' (n : nat) (F : 'I_n -> set T) :
+  (forall (k : 'I_n), measurable (F k)) ->
+  trivIset setT F ->
+  measurable (\big[setU/set0]_(k < n) F k) ->
+  mu (\big[setU/set0]_(i < n) F i) = \sum_(i < n) mu (F i).
+Proof.
+move=> mF tF mUF; pose F' (i : nat) := oapp F set0 (insub i).
+have FE (i : 'I_n) : F i = (F' \o val) i by rewrite /F'/= valK/=.
+rewrite (eq_bigr (F' \o val))// (eq_bigr (mu \o F' \o val))//; last first.
+  by move=> i _; rewrite FE.
+rewrite -measure_semi_additive//.
+- by move=> k; rewrite /F'; case: insubP => /=.
+- apply/trivIsetP=> i j _ _; rewrite /F'.
+  do 2?[case: insubP; rewrite ?(set0I, setI0)//= => ? _ <-].
+  by move/trivIsetP: tF; apply.
+- by rewrite (eq_bigr (F' \o val)) in mUF.
+Qed.
+
+Lemma measure_semi_additive'' (F : nat -> set T) (n : nat) :
   (forall k, (k < n)%N -> measurable (F k)) ->
   trivIset `I_n F ->
   measurable (\big[setU/set0]_(k < n) F k) ->
   mu (\big[setU/set0]_(i < n) F i) = \sum_(i < n) mu (F i).
 Proof.
-move=> mF tF mUF; set F' := patch (fun=> set0) `I_n F.
-have FE (i : 'I_n) : F i = (F' \o val) i by rewrite /F'/= patchT// inE/=.
-rewrite (eq_bigr (F' \o val))// (eq_bigr (mu \o F' \o val))//; last first.
-  by move=> i _; rewrite FE.
-rewrite -measure_semi_additive//.
-- by move=> k; rewrite /F' /patch; case: ifPn => //; rewrite inE; exact: mF.
-- apply/trivIsetP => i j _ _ ij.
-  rewrite /F' /patch; case: ifPn; rewrite ?set0I// inE => ni.
-  by case: ifPn; rewrite ?setI0// inE => nj; move/trivIsetP : tF; exact.
-- by rewrite (eq_bigr (F' \o val)) in mUF.
+move=> mF tF; apply: measure_semi_additive'.
+  by move=> k; apply: mF.
+by rewrite trivIset_comp// ?(image_eq [surjfun of val])//; apply: 'inj_val.
 Qed.
 
 Lemma content_fin_bigcup (I : choiceType) (D : set I) (F : I -> set T) :
@@ -1291,17 +1302,10 @@ Proof.
 elim/choicePpointed: I => I in D F *.
   by rewrite !emptyE => *; rewrite fsbig_set0 bigcup0.
 move=> [n /ppcard_eqP[f]] Ftriv Fm UFm.
-rewrite -(image_eq [surjfun of f^-1%FUN])/=.
-rewrite bigcup_image fsbig_image//= bigcup_mkord -fsbig_ord/=.
-apply: (@measure_semi_additive' (F \o f^-1)) => /=.
-- by move=> k kn; apply: Fm; exact: funS.
-- apply/trivIsetP => /= i j ni nj ij; move/trivIsetP : Ftriv; apply => //.
-  + exact: funS.
-  + exact: funS.
-  + apply: contra ij => /eqP ij; apply/eqP; move: ij.
-    by apply/inj; rewrite !inE.
-- move: UFm; rewrite -{1}(image_eq [surjfun of f^-1%FUN])/=.
-  by rewrite -(bigcup_mkord _ (F \o f^-1%FUN)) bigcup_image.
+rewrite -(image_eq [surjfun of f^-1%FUN])/= in UFm Ftriv *.
+rewrite bigcup_image fsbig_image//= bigcup_mkord -fsbig_ord/= in UFm *.
+rewrite (@measure_semi_additive'' (F \o f^-1))//= 1?trivIset_comp//.
+by move=> k kn; apply: Fm; exact: funS.
 Qed.
 
 Lemma measure_semi_additive2 : semi_additive2 mu.
@@ -1342,23 +1346,11 @@ Lemma measure_bigsetU_ord_cond n (P : {pred 'I_n}) (F : 'I_n -> set T) :
   (forall i : 'I_n, P i -> measurable (F i)) -> trivIset P F ->
   mu (\big[setU/set0]_(i < n | P i) F i) = (\sum_(i < n | P i) mu (F i))%E.
 Proof.
-move=> mF tF; rewrite -bigcup_set_cond measure_fin_bigcup//=; last first.
-- by move=> i /andP[_ /mF].
-- by apply: sub_trivIset tF => i /andP[].
-rewrite (_ : [set _ | _] = [set i : 'I_n | `I_n i] `&` P); last first.
-  by apply/seteqP; split=> [i/= /andP[]//|x/= [xn Px] /[!mem_index_enum]].
-(* NB(rei): too long? *)
-rewrite fsbig_mkcondr/= [RHS]big_mkcond/= fsbig_finite/=; last first.
-  exact: finite_finset.
-rewrite (eq_bigr (fun i => if P i then mu (F i) else 0)); last first.
-  move=> i _; case: ifPn => /=.
-    by rewrite inE => ->.
-  by rewrite notin_set => Pi; rewrite ifF//; apply/negbTE/negP.
-apply: perm_big => /=.
-rewrite uniq_perm ?fset_uniq ?filter_uniq ?index_enum_uniq//=.
-move=> i; rewrite in_fset_set// ?mem_filter; last first.
-  exact: finite_finset.
-by apply/idP/idP => /=; rewrite !inE/= mem_index_enum.
+move=> mF tF; rewrite !(big_mkcond P)/= measure_semi_additive'//.
+- by apply: eq_bigr => i _; rewrite (fun_if mu) measure0.
+- by move=> k; case: ifP => //; apply: mF.
+- by rewrite -patch_pred trivIset_restr setIT.
+- by apply: bigsetU_measurable=> k _; case: ifP => //; apply: mF.
 Qed.
 
 Lemma measure_bigsetU_ord n (P : {pred 'I_n}) (F : 'I_n -> set T) :
