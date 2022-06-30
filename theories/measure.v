@@ -135,7 +135,7 @@ Reserved Notation "'d<<' D '>>'".
 Reserved Notation "mu .-negligible" (at level 2, format "mu .-negligible").
 Reserved Notation "{ 'ae' m , P }" (at level 0, format "{ 'ae'  m ,  P }").
 Reserved Notation "mu .-measurable" (at level 2, format "mu .-measurable").
-Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_'  a").
+Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_' a").
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -1417,7 +1417,11 @@ HB.instance Definition _ := isMeasure.Build _ _
 End dirac_measure.
 Arguments dirac {T} _ {R}.
 
-Notation "\d_ a" := [the measure _ _ of dirac a] : ring_scope.
+Notation "\d_ a" := (dirac a) : ring_scope.
+
+Lemma diracE (T : measurableType) (R : realFieldType) a (A : set T) :
+  \d_a A = (a \in A)%:R%:E :> \bar R.
+Proof. by rewrite /dirac indicE. Qed.
 
 Section dirac_lemmas.
 Local Open Scope ereal_scope.
