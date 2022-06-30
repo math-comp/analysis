@@ -566,7 +566,8 @@ Canonical semiRingOfSets_ptType (T : semiRingOfSetsType) :=
 HB.mixin Record RingOfSets_from_semiRingOfSets T of isSemiRingOfSets T := {
   measurableU : setU_closed (@measurable [the semiRingOfSetsType of T]) }.
 
-HB.structure Definition RingOfSets := {T of RingOfSets_from_semiRingOfSets T &}.
+HB.structure Definition RingOfSets :=
+  {T of RingOfSets_from_semiRingOfSets T & SemiRingOfSets T}.
 Notation ringOfSetsType := RingOfSets.type.
 
 Canonical ringOfSets_eqType (T : ringOfSetsType) := EqType T ptclass.
@@ -578,7 +579,7 @@ HB.mixin Record AlgebraOfSets_from_RingOfSets T of RingOfSets T := {
 }.
 
 HB.structure Definition AlgebraOfSets :=
-  {T of AlgebraOfSets_from_RingOfSets T &}.
+  {T of AlgebraOfSets_from_RingOfSets T & RingOfSets T}.
 Notation algebraOfSetsType := AlgebraOfSets.type.
 
 Canonical algebraOfSets_eqType (T : algebraOfSetsType) := EqType T ptclass.
@@ -592,7 +593,8 @@ HB.mixin Record Measurable_from_algebraOfSets T of AlgebraOfSets T := {
     measurable (\bigcup_i (F i))
 }.
 
-HB.structure Definition Measurable := {T of Measurable_from_algebraOfSets T &}.
+HB.structure Definition Measurable :=
+  {T of Measurable_from_algebraOfSets T & AlgebraOfSets T}.
 Notation measurableType := Measurable.type.
 
 Canonical measurable_eqType (T : measurableType) := EqType T ptclass.
