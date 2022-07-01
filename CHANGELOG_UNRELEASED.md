@@ -9,7 +9,7 @@
   + lemma `compact_near_coveringP`
   + lemma `continuous_localP`, `equicontinuous_subset_id`
   + lemmas `precompact_pointwise_precompact`, `precompact_equicontinuous`,
-    `ascoli_theorem`
+    `Ascoli`
 - in file `classical_sets.v`
   + lemma `set_bool`
 - in file `topology.v`:
@@ -110,6 +110,9 @@
   + generalize `nondecreasing_series`
 
 ### Renamed
+
+- in `lebesgue_integral.v`:
+  + `integralK` -> `integralrM`
 
 ### Removed
 
