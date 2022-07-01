@@ -2493,7 +2493,7 @@ move=> [mf foo]; split; last by rewrite /comp; under eq_fun do rewrite abseN.
 by rewrite /comp; apply: measurable_fun_comp =>//; exact: emeasurable_fun_minus.
 Qed.
 
-Lemma integrableK (k : R) f : mu_int f -> mu_int (fun x => k%:E * f x).
+Lemma integrablerM (k : R) f : mu_int f -> mu_int (fun x => k%:E * f x).
 Proof.
 move=> [mf foo]; split; first exact: emeasurable_funeM.
 under eq_fun do rewrite abseM.
@@ -3466,7 +3466,7 @@ rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
       \int[mu]_(x in D) - g_ n x)); last first.
     rewrite funeqE => n; rewrite integralB//.
     - by rewrite -integral_ge0N// => x Dx//; rewrite /g_.
-    - exact: integrableK.
+    - exact: integrablerM.
     - have integrable_normfn : mu.-integrable D (abse \o f_ n).
         apply: le_integrable ig => //.
         - exact: measurable_fun_comp.
