@@ -1263,7 +1263,7 @@ Hint Resolve measure_ge0 : core.
 
 Hint Resolve measure_semi_additive : core.
 
-Lemma measure_semi_additive' (n : nat) (F : 'I_n -> set T) :
+Lemma measure_semi_additive_ord (n : nat) (F : 'I_n -> set T) :
   (forall (k : 'I_n), measurable (F k)) ->
   trivIset setT F ->
   measurable (\big[setU/set0]_(k < n) F k) ->
@@ -1281,13 +1281,13 @@ rewrite -measure_semi_additive//.
 - by rewrite (eq_bigr (F' \o val)) in mUF.
 Qed.
 
-Lemma measure_semi_additive'' (F : nat -> set T) (n : nat) :
+Lemma measure_semi_additive_ord_I (F : nat -> set T) (n : nat) :
   (forall k, (k < n)%N -> measurable (F k)) ->
   trivIset `I_n F ->
   measurable (\big[setU/set0]_(k < n) F k) ->
   mu (\big[setU/set0]_(i < n) F i) = \sum_(i < n) mu (F i).
 Proof.
-move=> mF tF; apply: measure_semi_additive'.
+move=> mF tF; apply: measure_semi_additive_ord.
   by move=> k; apply: mF.
 by rewrite trivIset_comp// ?(image_eq [surjfun of val])//; apply: 'inj_val.
 Qed.
@@ -1304,7 +1304,7 @@ elim/choicePpointed: I => I in D F *.
 move=> [n /ppcard_eqP[f]] Ftriv Fm UFm.
 rewrite -(image_eq [surjfun of f^-1%FUN])/= in UFm Ftriv *.
 rewrite bigcup_image fsbig_image//= bigcup_mkord -fsbig_ord/= in UFm *.
-rewrite (@measure_semi_additive'' (F \o f^-1))//= 1?trivIset_comp//.
+rewrite (@measure_semi_additive_ord_I (F \o f^-1))//= 1?trivIset_comp//.
 by move=> k kn; apply: Fm; exact: funS.
 Qed.
 
@@ -1346,7 +1346,7 @@ Lemma measure_bigsetU_ord_cond n (P : {pred 'I_n}) (F : 'I_n -> set T) :
   (forall i : 'I_n, P i -> measurable (F i)) -> trivIset P F ->
   mu (\big[setU/set0]_(i < n | P i) F i) = (\sum_(i < n | P i) mu (F i))%E.
 Proof.
-move=> mF tF; rewrite !(big_mkcond P)/= measure_semi_additive'//.
+move=> mF tF; rewrite !(big_mkcond P)/= measure_semi_additive_ord//.
 - by apply: eq_bigr => i _; rewrite (fun_if mu) measure0.
 - by move=> k; case: ifP => //; apply: mF.
 - by rewrite -patch_pred trivIset_restr setIT.
@@ -2060,28 +2060,22 @@ Lemma Rmu_fin_bigcup (I : choiceType) (D : set I) (F : I -> set T) :
 Proof.
 move=> Dfin Ftriv Fm; rewrite /measure.
 have mUD : measurable (\bigcup_(i in D) F i : set rT).
-  apply: fin_bigcup_measurable => // ? ?; apply: sub_gen_smallest.
+  apply: fin_bigcup_measurable => // *; apply: sub_gen_smallest.
   exact/Fm/mem_set.
 have [->|/set0P[i0 Di0]] := eqVneq D set0.
   by rewrite bigcup_set0 decomp_set0 fsbig_set0 fsbig_set1.
-set E := (decomp _); have Em X := decomp_measurable mUD X.
+set E := decomp _; have Em X := decomp_measurable mUD X.
 transitivity (\sum_(X \in E) \sum_(i \in D) mu (X `&` F i)).
-  apply eq_fsbigr => /= X XE.
-  have {1}-> : X = \bigcup_(i in D) (X `&` F i).
+  apply eq_fsbigr => /= X XE; have XDF : X = \bigcup_(i in D) (X `&` F i).
     by rewrite -setI_bigcupr setIidl//; exact: decomp_sub.
-  rewrite content_fin_bigcup//.
-  - exact: trivIset_setI.
-  - by move=> i /mem_set Di; apply: measurableI; [exact: Em| exact: Fm].
-  - have <- : X = \bigcup_(i in D) (X `&` F i).
-      by rewrite -setI_bigcupr setIidl//; exact: decomp_sub.
-    exact: Em.
+  rewrite [in LHS]XDF content_fin_bigcup//; first exact: trivIset_setI.
+  - by move=> i /mem_set Di; apply: measurableI; [exact: Em|exact: Fm].
+  - by rewrite -XDF; exact: Em.
 rewrite exchange_fsum //; last exact: decomp_finite_set.
-apply eq_fsbigr => i Di.
-have Feq : F i = \bigcup_(X in E) (X `&` F i).
+apply eq_fsbigr => i Di; have Feq : F i = \bigcup_(X in E) (X `&` F i).
   rewrite -setI_bigcupl setIidr// cover_decomp.
   by apply/bigcup_sup; exact: set_mem.
-rewrite -content_fin_bigcup -?Feq//; last exact: Fm.
-- exact/decomp_finite_set.
+rewrite -content_fin_bigcup -?Feq//; [exact/decomp_finite_set| | |exact/Fm].
 - exact/trivIset_setIr/decomp_triv.
 - by move=> X /= XE; apply: measurableI; [apply: Em; rewrite inE | exact: Fm].
 Qed.
@@ -2112,8 +2106,7 @@ have AUBtriv : trivIset (A `|` B) id.
     by move=> [u [Xu Yu]]; case: (coverAB0 u); split; [exists X|exists Y].
   by move=> [u [Xu Yu]]; case: (coverAB0 u); split; [exists Y|exists X].
 rewrite -bigcup_setU !Rmu_fin_bigcup//=.
-- rewrite fsbigU//= => [X /= [XA XB]].
-  have [->//|/set0P[x Xx]] := eqVneq X set0.
+- rewrite fsbigU//= => [X /= [XA XB]]; have [->//|/set0P[x Xx]] := eqVneq X set0.
   by case: (coverAB0 x); split; exists X.
 - by move=> X /set_mem [|] /mem_set ?; [exact: Am|exact: Bm].
 Qed.
@@ -2263,55 +2256,53 @@ Import SetRing.
 Lemma ring_sigma_sub_additive : sigma_sub_additive mu -> sigma_sub_additive Rmu.
 Proof.
 move=> muS; move=> /= D A Am Dm Dsub.
-rewrite /Rmu -(eq_nneseries (fun _ _ => esum_fset _))//.
+rewrite /Rmu (eq_nneseries (fun _ _ => fsbig_esum _ _))//; last first.
+  by move=> *; exact: decomp_finite_set.
 rewrite nneseries_esum ?esum_esum//=; last by move=> *; rewrite esum_ge0.
 set K := _ `*`` _.
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
   apply: cardMR_eq_nat => [|i].
     by rewrite (_ : [set _ | true] = setT)//; exact/predeqP.
-  split=> //; apply/set0P.
-  (*by rewrite fset_setK ?decompN0//; exact: decomp_finite_set.*) admit.
+  split; first by apply/finite_set_countable; exact: decomp_finite_set.
+  exact/set0P/decompN0.
 have {Dsub} : D `<=` \bigcup_(k in K) k.2.
   apply: (subset_trans Dsub); apply: bigcup_sub => i _.
   rewrite -[A i]cover_decomp; apply: bigcup_sub => X/= XAi.
-  move=> x Xx; exists (i, X) => //=.
-  (*rewrite /K/= in_fset_set ?inE//; exact: decomp_finite_set.*) admit.
+  by move=> x Xx; exists (i, X).
 rewrite -(image_eq [bij of f^-1%FUN])/=.
 rewrite (esum_set_image _ f^-1)//= bigcup_image => Dsub.
 have DXsub X : X \in decomp D -> X `<=` \bigcup_i ((f^-1%FUN i).2 `&` X).
   move=> XD; rewrite -setI_bigcupl -[Y in Y `<=` _](setIidr (decomp_sub XD)).
   by apply: setSI.
 have mf i : measurable ((f^-1)%function i).2.
-  have [_] := 'invS_f (I : setT i).
-  (*rewrite fset_setK; last exact: decomp_finite_set.
-  by move=> /mem_set/decomp_measurable; apply; exact: Am.*) admit.
+  have [_ /mem_set/decomp_measurable] := 'invS_f (I : setT i).
+  by apply; exact: Am.
 have mfD i X : X \in decomp D -> measurable (((f^-1)%FUN i).2 `&` X : set T).
-  by move=> XD; apply: measurableI; [apply: mf|apply: (decomp_measurable _ XD)].
+  by move=> XD; apply: measurableI; [exact: mf|exact: (decomp_measurable _ XD)].
 apply: (@le_trans _ _
     (\sum_(i <oo) \sum_(X <- fset_set (decomp D)) mu ((f^-1%FUN i).2 `&` X))).
-  rewrite nneseries_sum// [leLHS]big_seq_cond [leRHS]big_seq_cond.
-  (*rewrite lee_sum// => X; rewrite andbT in_fset_set; last first.
-    exact: decomp_finite_set.
-  move=> XD.
-  have Xm : measurable X by exact: decomp_measurable XD.
-  by apply: muS => // [i|]; [apply: mfD | apply: DXsub].*)admit.
+  rewrite nneseries_sum// fsbig_finite/=; last exact: decomp_finite_set.
+  rewrite [leLHS]big_seq_cond [leRHS]big_seq_cond.
+  rewrite lee_sum// => X /[!(andbT,in_fset_set)]; last exact: decomp_finite_set.
+  move=> XD; have Xm := decomp_measurable Dm XD.
+  by apply: muS => // [i|]; [exact: mfD|exact: DXsub].
 apply: lee_lim => /=; do ?apply: is_cvg_nneseries=> //.
   by move=> n _; exact: sume_ge0.
 near=> n; rewrite [n in _ <= n]big_mkcond; apply: lee_sum => i _.
 rewrite ifT ?inE//.
 under eq_big_seq.
-  move=> x; rewrite in_fset_set; last exact: decomp_finite_set.
-  move=> xD.
-  rewrite -RmuE//; last by exact: mfD.
+  move=> x; rewrite in_fset_set=> [xD|]; last exact: decomp_finite_set.
+  rewrite -RmuE//; last exact: mfD.
   over.
-(*rewrite -measure_fin_bigcup//=.
+rewrite -fsbig_finite/=; last exact: decomp_finite_set.
+rewrite -measure_fin_bigcup//=.
 - rewrite -setI_bigcupr (cover_decomp D) -[leRHS]RmuE// ?le_measure ?inE//.
     by apply: measurableI => //; apply: sub_gen_smallest; apply: mf.
   by apply: sub_gen_smallest; apply: mf.
 - exact: decomp_finite_set.
 - by apply: trivIset_setI; apply: decomp_triv.
-- by move=> X /= XD; apply: sub_gen_smallest; apply: mfD; rewrite inE.*) admit.
-Unshelve. all: by end_near. Admitted.
+- by move=> X /= XD; apply: sub_gen_smallest; apply: mfD; rewrite inE.
+Unshelve. all: by end_near. Qed.
 
 Lemma ring_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive Rmu.
 Proof.
@@ -2340,14 +2331,10 @@ rewrite XE; move: (XE); rewrite seqDU_bigcup_eq.
 under eq_bigcupr do rewrite -[seqDU B _]cover_decomp//.
 rewrite bigcup_bigcup_dep; set K := _ `*`` _.
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
-  apply: cardMR_eq_nat=> // i; split.
-   rewrite -(fset_setK (decomp_finite_set _))//.
-   exact: countable_fset.
-  by apply/set0P; rewrite decompN0.
-pose f' := f^-1%FUN.
-rewrite -(image_eq [bij of f'])/= bigcup_image/=.
-pose g n := (f' n).2.
-have fVtriv : trivIset [set: nat] g.
+  apply: cardMR_eq_nat=> // i; split; last by apply/set0P; rewrite decompN0.
+  exact/finite_set_countable/decomp_finite_set.
+pose f' := f^-1%FUN; rewrite -(image_eq [bij of f'])/= bigcup_image/=.
+pose g n := (f' n).2; have fVtriv : trivIset [set: nat] g.
   move=> i j _ _; rewrite /g.
   have [/= _ f'iB] : K (f' i) by apply: funS.
   have [/= _ f'jB] : K (f' j) by apply: funS.
@@ -2357,11 +2344,10 @@ have fVtriv : trivIset [set: nat] g.
     by case: (f' i) (f' j) => [? ?] [? ?]//= -> ->.
   move=> [x [f'ix f'jx]]; have Bij := @trivIset_seqDU _ B (f' i).1 (f' j).1 I I.
   rewrite Bij ?eqxx// in f'ij; exists x; split.
-    by move/mem_set : f'iB => /decomp_sub; apply.
-  by move/mem_set : f'jB => /decomp_sub; apply.
+  - by move/mem_set : f'iB => /decomp_sub; apply.
+  - by move/mem_set : f'jB => /decomp_sub; apply.
 have g_inj : set_inj [set i | g i != set0] g.
-  apply: trivIset_inj=> [i /set0P//|].
-  by apply: sub_trivIset fVtriv.
+  by apply: trivIset_inj=> [i /set0P//|]; apply: sub_trivIset fVtriv.
 move=> XEbig; rewrite measure_semi_bigcup//= -?XEbig//; last first.
   move=> i; have [/= _ /mem_set] : K (f' i) by apply: funS.
   exact: decomp_measurable.
@@ -2370,7 +2356,7 @@ rewrite [leLHS](_ : _ = \sum_(i <oo | g i != set0) mu (g i)); last first.
   move=> i _; rewrite ifT ?inE//=; case: ifPn => //.
   by rewrite notin_set /= -/(g _) => /negP/negPn/eqP ->.
 rewrite -(esum_pred_image mu g)//.
-rewrite [esum _ _](_ : _ = \esum_(X in range g) mu X); last first.
+rewrite [leLHS](_ : _ = \esum_(X in range g) mu X); last first.
   rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum.
   move=> Y _; case: ifPn; rewrite ?(inE, notin_set)/=.
     by move=> [i giN0 giY]; rewrite ifT// ?inE//=; exists i.
@@ -2398,21 +2384,18 @@ rewrite esum_bigcup//; last first.
    apply: (@trivIset_seqDU _ B) => //; exists y.
    by split => //; [exact: YBi|exact: YBj].
 rewrite nneseries_esum// set_true le_esum// => i _.
-rewrite [X in X <= _](_ : _ = \sum_(j <- fset_set (decomp (seqDU B i))) mu j); last first.
-  by rewrite -esum_fset// fset_setK//; exact: decomp_finite_set.
-(*rewrite -SetRing.Rmu_fin_bigcup//=; last 3 first.
+rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j); last first.
+  by rewrite fsbig_esum//; exact: decomp_finite_set.
+rewrite -SetRing.Rmu_fin_bigcup//=; last 3 first.
   exact: decomp_finite_set.
   exact: decomp_triv.
   by move=> ?; exact: decomp_measurable.
-rewrite -[leRHS]SetRing.RmuE// le_measure //.
-- rewrite inE; apply: fin_bigcup_measurable.
-    exact: decomp_finite_set.
+rewrite -[leRHS]SetRing.RmuE// le_measure//; last by rewrite cover_decomp.
+- rewrite inE; apply: fin_bigcup_measurable; first exact: decomp_finite_set.
   move=> j /mem_set jdec; apply: sub_gen_smallest.
   exact: decomp_measurable jdec.
 - by rewrite inE; apply: sub_gen_smallest; exact: Am.
-- by rewrite cover_decomp.
-Qed.*) admit.
-Admitted.
+Qed.
 
 End more_premeasure_ring_lemmas.
 
@@ -3277,26 +3260,21 @@ rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lb//; last first.
   by rewrite (eq_nneseries (fun _ _ => RmuE _ (Fm _))).
 pose K := [set: nat] `*`` fun i => decomp (F i).
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
-  apply: cardMR_eq_nat => // i.
-  split.
-    by apply: finite_set_countable => //; exact: decomp_finite_set.
-  by apply/set0P; rewrite decompN0.
-pose g i := (f^-1%FUN i).2.
-exists g; first split.
+  apply: cardMR_eq_nat => // i; split; last by apply/set0P; rewrite decompN0.
+  by apply: finite_set_countable => //; exact: decomp_finite_set.
+pose g i := (f^-1%FUN i).2; exists g; first split.
 - move=> k; have [/= _ /mem_set] : K (f^-1%FUN k) by apply: funS.
   exact: decomp_measurable.
 - move=> i /XS [k _]; rewrite -[F k]cover_decomp => -[D /= DFk Di].
   by exists (f (k, D)) => //; rewrite /g invK// inE.
 rewrite !nneseries_esum//= /measure ?set_true.
-rewrite -[RHS](eq_esum (fun _ _ => esum_fset _))//.
-rewrite esum_esum//=.
-rewrite (reindex_esum K setT f) => //=.
-rewrite [X in _ `*`` X](_ : _ = decomp \o F); last first.
-  apply/funext => n/=.
-  (*rewrite fset_setK//.
-  exact: decomp_finite_set.*) admit.
+transitivity (\esum_(i in setT) \sum_(X0 \in decomp (F i)) mu X0); last first.
+  by apply eq_esum => /= k _; rewrite fsbig_finite//; exact: decomp_finite_set.
+rewrite (eq_esum (fun _ _ => fsbig_esum _ _))//; last first.
+  by move=> ? _; exact: decomp_finite_set.
+rewrite esum_esum//= (reindex_esum K setT f) => //=.
 by apply: eq_esum => i Ki; rewrite /g funK ?inE.
-Admitted.
+Qed.
 
 End Rmu_ext.
 
