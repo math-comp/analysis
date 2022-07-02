@@ -86,8 +86,6 @@
 - in `lebesgue_integral.v`:
   + definitions `integral` and `integrable` now take a function instead of a measure
   + remove one space in notation `\d_`
-- in `measure.v`:
-  + definition `measure_restr` made canonical
 
 ### Renamed
 
