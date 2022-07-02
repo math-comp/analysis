@@ -108,15 +108,6 @@
   + definitions `integral` and `integrable` now take a function instead of a measure
   + remove one space in notation `\d_`
   + generalize `nondecreasing_series`
-- in `measure.v`:
-  + definition `measure_restr` made canonical
-
-### Renamed
-
-- in `esumv`:
-  + remove one hypothesis in lemmas `reindex_esum`, `esum_image`
-- in `measure.v`:
-  + definition `measure_restr` made canonical
 
 ### Renamed
 
