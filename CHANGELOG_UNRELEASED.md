@@ -114,6 +114,19 @@
   + generalize `nondecreasing_series`
 - in `trigo.v`:
   + lemma `cos_exists`
+- in `set_interval.v`:
+  + generalize to numDomainType:
+    * `mem_1B_itvcc`, `conv`, `conv_id`, `convEl`, `convEr`,
+    `conv10`, `conv0`, conv1`, `conv_sym`, `conv_flat`, `leW_conv`,
+    `factor`, `leW_factor`, `factor_flat`, `factorl`, `ndconv`,
+    `ndconvE`
+  + generalize to numFieldType
+    * `factorr`, `factorK`, `convK`, `conv_inj`, `factor_inj`,
+    `conv_bij`, `factor_bij`, `le_conv`, `le_factor`, `lt_conv`,
+    `lt_factor`, `conv_itv_bij`, `factor_itv_bij`, `mem_conv_itv`,
+    `mem_conv_itvcc`, `range_conv`, `range_factor`
+  + generalize to realFieldType:
+    * `mem_factor_itv`
 
 ### Renamed
 

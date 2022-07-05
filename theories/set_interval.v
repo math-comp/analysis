@@ -443,13 +443,14 @@ Lemma set_itv_ge [disp : unit] [T : porderType disp] [b1 b2 : itv_bound T] :
   ~~ (b1 < b2)%O -> [set` Interval b1 b2] = set0.
 Proof. by move=> Nb12; rewrite -subset0 => x /=; rewrite itv_ge. Qed.
 
-Section conv_Rhull.
-Variable R : realType.
+Section conv_factor_numDomainType.
+Variable R : numDomainType.
 Implicit Types (a b t r : R) (A : set R).
 
-Definition conv a b t : R := (1 - t) * a + t * b.
+Lemma mem_1B_itvcc t : (1 - t \in `[0, 1]) = (t \in `[0, 1]).
+Proof. by rewrite !in_itv/= subr_ge0 ger_addl oppr_le0 andbC. Qed.
 
-Definition factor a b x := (x - a) / (b - a).
+Definition conv a b t : R := (1 - t) * a + t * b.
 
 Lemma conv_id : conv 0 1 = id.
 Proof. by apply/funext => t; rewrite /conv mulr0 add0r mulr1. Qed.
@@ -478,17 +479,34 @@ Proof. by rewrite /conv opprB addrCA subrr addr0 addrC. Qed.
 Lemma conv_flat a : conv a a = cst a.
 Proof. by apply/funext => t; rewrite convEl subrr mulr0 add0r. Qed.
 
-Lemma factorl a b : factor a b a = 0.
-Proof. by rewrite /factor subrr mul0r. Qed.
+Lemma leW_conv a b : a <= b -> {homo conv a b : x y / x <= y}.
+Proof. by move=> ? ? ? ?; rewrite !convEl ler_add ?ler_wpmul2r// subr_ge0. Qed.
 
-Lemma factorr a b : a != b -> factor a b b = 1.
-Proof. by move=> Nab; rewrite /factor divff// subr_eq0 eq_sym. Qed.
+Definition factor a b x := (x - a) / (b - a).
+
+Lemma leW_factor a b : a <= b -> {homo factor a b : x y / x <= y}.
+Proof.
+by move=> ? ? ? ?; rewrite /factor ler_wpmul2r ?ler_add// invr_ge0 subr_ge0.
+Qed.
 
 Lemma factor_flat a : factor a a = cst 0.
 Proof. by apply/funext => x; rewrite /factor subrr invr0 mulr0. Qed.
 
-Lemma mem_1B_itvcc t : (1 - t \in `[0, 1]) = (t \in `[0, 1]).
-Proof. by rewrite !in_itv/= subr_ge0 ger_addl oppr_le0 andbC. Qed.
+Lemma factorl a b : factor a b a = 0.
+Proof. by rewrite /factor subrr mul0r. Qed.
+
+Definition ndconv a b of a < b := conv a b.
+
+Lemma ndconvE a b (ab : a < b) : ndconv ab = conv a b. Proof. by []. Qed.
+
+End conv_factor_numDomainType.
+
+Section conv_factor_numFieldType.
+Variable R : numFieldType.
+Implicit Types (a b t r : R) (A : set R).
+
+Lemma factorr a b : a != b -> factor a b b = 1.
+Proof. by move=> Nab; rewrite /factor divff// subr_eq0 eq_sym. Qed.
 
 Lemma factorK a b : a != b -> cancel (factor a b) (conv a b).
 Proof. by move=> ? x; rewrite convEl mulfVK ?addrNK// subr_eq0 eq_sym. Qed.
@@ -508,14 +526,6 @@ Proof. by move=> ab; apply: Bijective (convK ab) (factorK ab). Qed.
 Lemma factor_bij a b : a != b -> bijective (factor a b).
 Proof. by move=> ab; apply: Bijective (factorK ab) (convK ab). Qed.
 
-Lemma leW_conv a b : a <= b -> {homo conv a b : x y / x <= y}.
-Proof. by move=> ? ? ? ?; rewrite !convEl ler_add ?ler_wpmul2r// subr_ge0. Qed.
-
-Lemma leW_factor a b : a <= b -> {homo factor a b : x y / x <= y}.
-Proof.
-by move=> ? ? ? ?; rewrite /factor ler_wpmul2r ?ler_add// invr_ge0 subr_ge0.
-Qed.
-
 Lemma le_conv a b : a < b -> {mono conv a b : x y / x <= y}.
 Proof.
 move=> ltab; have leab := ltW ltab.
@@ -533,10 +543,6 @@ Proof. by move/le_conv/leW_mono. Qed.
 
 Lemma lt_factor a b : a < b -> {mono factor a b : x y / x < y}.
 Proof. by move/le_factor/leW_mono. Qed.
-
-Definition ndconv a b of a < b := conv a b.
-
-Lemma ndconvE a b (ab : a < b) : ndconv ab = conv a b. Proof. by []. Qed.
 
 Let ltNeq a b : a < b -> a != b. Proof. by move=> /lt_eqF->. Qed.
 
@@ -569,16 +575,6 @@ Lemma mem_conv_itv ba bb a b : a < b ->
           [set` Interval (BSide ba a) (BSide bb b)] (conv a b).
 Proof. by case/(conv_itv_bij ba bb). Qed.
 
-Lemma mem_factor_itv ba bb a b :
-  set_fun [set` Interval (BSide ba a) (BSide bb b)]
-          [set` Interval (BSide ba 0) (BSide bb 1)] (factor a b).
-Proof.
-have [|leba] := ltP a b; first by case/(factor_itv_bij ba bb).
-move=> x /=; have [|/itv_ge->//] := (boolP (BSide ba a < BSide bb b)%O).
-rewrite lteBSide; case: ba bb => [] []//=; rewrite ?le_gtF//.
-by case: ltgtP leba => // -> _ _ _; rewrite factor_flat in_itv/= lexx ler01.
-Qed.
-
 Lemma mem_conv_itvcc a b : a <= b -> set_fun `[0, 1] `[a, b] (conv a b).
 Proof.
 rewrite le_eqVlt => /predU1P[<-|]; first by rewrite set_itv1 conv_flat.
@@ -594,6 +590,22 @@ Lemma range_factor ba bb a b : a < b ->
    factor a b @` [set` Interval (BSide ba a) (BSide bb b)] =
                  [set` Interval (BSide ba 0) (BSide bb 1)].
 Proof. by move=> /(factor_itv_bij ba bb)/Pbij[f ->]; rewrite image_eq. Qed.
+
+End conv_factor_numFieldType.
+
+Lemma mem_factor_itv (R : realFieldType) ba bb (a b : R) :
+  set_fun [set` Interval (BSide ba a) (BSide bb b)]
+          [set` Interval (BSide ba 0) (BSide bb 1)] (factor a b).
+Proof.
+have [|leba] := ltP a b; first by case/(factor_itv_bij ba bb).
+move=> x /=; have [|/itv_ge->//] := (boolP (BSide ba a < BSide bb b)%O).
+rewrite lteBSide; case: ba bb => [] []//=; rewrite ?le_gtF//.
+by case: ltgtP leba => // -> _ _ _; rewrite factor_flat in_itv/= lexx ler01.
+Qed.
+
+Section Rhull_lemmas.
+Variable R : realType.
+Implicit Types (a b t r : R) (A : set R).
 
 Lemma Rhull_smallest A : [set` Rhull A] = smallest (@is_interval R) A.
 Proof.
@@ -659,7 +671,7 @@ have [A0|/neitv_Rhull] := boolP (neitv (Rhull A)); first by rewrite set_itvK.
 by move=> ->; rewrite ?Rhull0 set_itvE Rhull0.
 Qed.
 
-End conv_Rhull.
+End Rhull_lemmas.
 
 Coercion ereal_of_itv_bound T (b : itv_bound T) : \bar T :=
   match b with BSide _ y => y%:E | +oo%O => +oo%E | -oo%O => -oo%E end.
