@@ -80,6 +80,9 @@
   + lemma `integral_measure_series`
   + lemmas `counting_dirac`, `summable_integral_dirac`, `integral_count`
   + lemmas `integrable_abse`, `integrable_summable`, `integral_bigcup`
+- in `trigo.v`:
+  + lemmas `cos1_gt0`, `pi_ge2`
+  + lemmas `pihalf_ge1`, `pihalf_lt2`
 
 ### Changed
 
@@ -109,11 +112,15 @@
   + definitions `integral` and `integrable` now take a function instead of a measure
   + remove one space in notation `\d_`
   + generalize `nondecreasing_series`
+- in `trigo.v`:
+  + lemma `cos_exists`
 
 ### Renamed
 
 - in `lebesgue_integral.v`:
   + `integralK` -> `integralrM`
+- in `trigo.v`:
+  + `cos_pihalf_uniq` -> `cos_02_uniq`
 
 ### Removed
 

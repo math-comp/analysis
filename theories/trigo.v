@@ -516,14 +516,6 @@ rewrite ltr_pdivr_mulr ?mul1r //.
 by rewrite expr2 -!natrM ltr_nat !mulSn !add2n mul0n !addnS.
 Qed.
 
-Lemma cos_exists : exists2 pih : R, 0 <= pih <= 2 & cos pih = 0.
-Proof.
-have /IVT[]// : minr (cos 0) (cos 2) <= (0 : R) <= maxr (cos 0) (cos 2).
-  by rewrite /minr /maxr cos0 ltNge cos_le1/= ler01 (ltW cos2_lt0).
-by move=> *; apply/continuous_subspaceT=> ? _; apply: continuous_cos.
-by move=> pih /itvP pihI chpi_eq0; exists pih; rewrite ?pihI.
-Qed.
-
 Lemma sin2_gt0 x : 0 < x < 2 -> 0 < sin x.
 Proof.
 move=> /andP[x_gt0 x_lt2].
@@ -550,7 +542,32 @@ rewrite {}/v !addnS addn0 !ffactnS ffactn0 muln1 /= natrM.
 by rewrite (ltr_pmul (ltW _ ) (ltW _)) // (lt_le_trans x_lt2) // ler_nat.
 Qed.
 
-Lemma cos_pihalf_uniq x y :
+Lemma cos1_gt0 : cos 1 > 0 :> R.
+Proof.
+have h := @cvg_cos_coeff' R 1; rewrite -(cvg_lim (@Rhausdorff R) h).
+apply: (@lt_trans _ _ (\sum_(0 <= i < 2) cos_coeff' 1 i)).
+  rewrite big_nat_recr//= big_nat_recr//= big_nil add0r.
+  rewrite /cos_coeff' expr0z expr1n fact0 !mul1r expr1n expr1z.
+  by rewrite !mulNr subr_gt0 mul1r div1r ltf_pinv ?posrE ?ltr0n// ltr_nat.
+rewrite lt_sum_lim_series //; [by move/cvgP in h|move=> d].
+rewrite /cos_coeff' !(expr1n,mulr1).
+rewrite -muln2 -mulSn muln2 -exprnP -signr_odd odd_double expr0.
+rewrite -exprnP -signr_odd oddD/= muln2 odd_double/= expr1 add2n.
+rewrite mulNr subr_gt0 2!div1r ltf_pinv ?posrE ?ltr0n ?fact_gt0//.
+by rewrite ltr_nat ltn_pfact//ltn_double doubleS.
+Qed.
+
+Lemma cos_exists : exists2 pih : R, 1 <= pih <= 2 & cos pih = 0.
+Proof.
+have /IVT[] : minr (cos 1) (cos 2) <= (0 : R) <= maxr (cos 1) (cos 2).
+  - rewrite /minr /maxr ltNge (ltW (lt_trans cos2_lt0 cos1_gt0))/=.
+    by rewrite (ltW cos2_lt0)/= (ltW cos1_gt0).
+  - by rewrite ler1n.
+  - by move=> *; apply/continuous_subspaceT=> ? _; exact: continuous_cos.
+by move=> pih /itvP pihI chpi_eq0; exists pih; rewrite ?pihI.
+Qed.
+
+Lemma cos_02_uniq x y :
   0 <= x <= 2 -> cos x = 0 -> 0 <= y <= 2 -> cos y = 0 -> x = y.
 Proof.
 wlog xLy : x y / x <= y => [H xB cx0 yB cy0|].
@@ -570,10 +587,12 @@ Qed.
 
 Lemma pihalf_02_cos_pihalf : 0 <= pi / 2 <= 2 /\ cos (pi / 2) = 0.
 Proof.
-have [x ? ?] := cos_exists; rewrite pihalfE.
-by case: xgetP => [_->[]//|/(_ x)/=]; tauto.
+have [x /andP[x1 x2] cs0] := cos_exists; rewrite pihalfE.
+case: xgetP => [_->[]//|/(_ x)/=].
+by rewrite cs0 (le_trans _ x1)// x2 => /not_andP[].
 Qed.
 
+#[deprecated(note="Use pihalf_ge1 and pihalf_lt2 instead")]
 Lemma pihalf_02 : 0 < pi / 2 < 2.
 Proof.
 have [pih02 cpih] := pihalf_02_cos_pihalf.
@@ -583,18 +602,34 @@ apply/eqP => pih0; have := @cos0 R.
 by rewrite pih0 cpih; apply/eqP; rewrite eq_sym oner_eq0.
 Qed.
 
-Lemma pi_gt0 : 0 < pi.
+Let pihalf_12 : 1 <= pi / 2 < 2.
 Proof.
-by rewrite -[pi](divfK (_ : 2 != 0)) // mulr_gt0 //; case/andP: pihalf_02.
+have [/andP[pih0 pih2] cpih] := pihalf_02_cos_pihalf.
+rewrite lt_neqAle andbA andbAC pih2 andbT; apply/andP; split; last first.
+  by apply/eqP => hpi2; have := cos2_lt0; rewrite -hpi2 cpih ltxx.
+rewrite leNgt; apply/negP => hpi1; have [x /andP[x1 x2] cs0] := cos_exists.
+have := @cos_02_uniq (pi / 2) x.
+rewrite pih0 pih2 cpih (le_trans _ x1)// x2 cs0 => /(_ erefl erefl erefl erefl).
+by move=> pih; move: hpi1; rewrite pih => /lt_le_trans/(_ x1); rewrite ltxx.
 Qed.
+
+Lemma pihalf_ge1 : 1 <= pi / 2.
+Proof. by have /andP[] := pihalf_12. Qed.
+
+Lemma pihalf_lt2 : pi / 2 < 2.
+Proof. by have /andP[] := pihalf_12. Qed.
+
+Lemma pi_ge2 : 2 <= pi.
+Proof. by  have := pihalf_ge1; rewrite ler_pdivl_mulr// mul1r. Qed.
+
+Lemma pi_gt0 : 0 < pi. Proof. by rewrite (lt_le_trans _ pi_ge2). Qed.
 
 Lemma pi_ge0 : 0 <= pi. Proof. exact: (ltW pi_gt0). Qed.
 
 Lemma sin_gt0_pihalf x : 0 < x < pi / 2 -> 0 < sin x.
 Proof.
-move=> /andP[x_gt0 xLpi].
-apply: sin2_gt0; rewrite x_gt0 /=.
-by apply: lt_trans xLpi _; have /andP[] := pihalf_02.
+move=> /andP[x_gt0 xLpi]; apply: sin2_gt0; rewrite x_gt0 /=.
+by apply: lt_trans xLpi _; exact: pihalf_lt2.
 Qed.
 
 Lemma cos_gt0_pihalf x : -(pi / 2) < x < pi / 2 -> 0 < cos x.
@@ -611,10 +646,9 @@ move=> x1 /itvP Hx1 cx1_eq0.
 suff x1E : x1 = pi/2.
   have : x1 < pi / 2 by apply: le_lt_trans xLpi2; rewrite Hx1.
   by rewrite x1E ltxx.
-have /andP[pi2_gt0 pi2L2] := pihalf_02.
-apply: cos_pihalf_uniq=> //; last by case pihalf_02_cos_pihalf => _ ->.
-  by rewrite Hx1 ltW // (lt_trans _ pi2L2) // (le_lt_trans _ xLpi2) // Hx1.
-by rewrite !ltW.
+apply: cos_02_uniq=> //; last by case pihalf_02_cos_pihalf => _ ->.
+  by rewrite Hx1 ltW // (lt_trans _ pihalf_lt2) // (le_lt_trans _ xLpi2) // Hx1.
+by rewrite divr_ge0 ?(ltW pihalf_lt2)// pi_ge0.
 Qed.
 
 Lemma cos_pihalf : cos (pi / 2) = 0. Proof. exact: pihalf_02_cos_pihalf.2. Qed.
@@ -624,8 +658,9 @@ Proof.
 have := cos2Dsin2 (pi / 2); rewrite cos_pihalf expr0n add0r.
 rewrite -[in X in _ = X -> _](expr1n _ 2%N) => /eqP; rewrite -subr_eq0 subr_sqr.
 rewrite mulf_eq0=> /orP[|]; first by rewrite subr_eq0=> /eqP.
-rewrite addr_eq0 => /eqP spi21.
-by have := sin2_gt0 pihalf_02; rewrite spi21 ltr0N1.
+rewrite addr_eq0 => /eqP spi21; have /sin2_gt0: 0 < pi / 2 < 2.
+  by rewrite pihalf_lt2 andbT (lt_le_trans _ pihalf_ge1).
+by rewrite spi21 ltr0N1.
 Qed.
 
 Lemma cos_ge0_pihalf x : -(pi / 2) <= x <= pi / 2 -> 0 <= cos x.
