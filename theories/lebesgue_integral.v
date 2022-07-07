@@ -65,7 +65,7 @@ Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
-HB.mixin Record IsMeasurableFun (aT : measurableType) (rT : realType) (f : aT -> rT) := {
+HB.mixin Record IsMeasurableFun (aT rT : measurableType) (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
 }.
 #[global] Hint Resolve fimfun_inP : core.
@@ -79,8 +79,8 @@ Notation "{ 'mfun'  aT >-> T }" := (@MeasurableFun.type aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 #[global] Hint Resolve measurable_funP : core.
 
-HB.structure Definition SimpleFun (aT (*rT*) : measurableType) (rT : realType) :=
-  {f of @IsMeasurableFun aT rT f & @FiniteImage aT rT f}.
+HB.structure Definition SimpleFun (aT : measurableType) (rT : realType) :=
+  {f of @IsMeasurableFun aT (measurableTypeR rT) f & @FiniteImage aT rT f}.
 Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
 Reserved Notation "[ 'sfun' 'of' f ]"
@@ -88,7 +88,8 @@ Reserved Notation "[ 'sfun' 'of' f ]"
 Notation "{ 'sfun'  aT >-> T }" := (@SimpleFun.type aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
-Lemma measurable_sfunP {aT : measurableType} {rT : realType} (f : {mfun aT >-> rT}) (y : rT) :
+Lemma measurable_sfunP {aT : measurableType} {rT : realType}
+    (f : {mfun aT >-> measurableTypeR rT}) (y : rT) :
   measurable (f @^-1` [set y]).
 Proof. by rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
 
@@ -208,14 +209,14 @@ HB.builders Context T R A f of @FiniteDecomp T R f.
 HB.end.
 
 Section mfun_pred.
-Context {aT : measurableType} {rT : realType}.
+Context {aT rT : measurableType}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
 Definition mfun_key : pred_key mfun. Proof. exact. Qed.
 Canonical mfun_keyed := KeyedPred mfun_key.
 End mfun_pred.
 
 Section mfun.
-Context {aT : measurableType} {rT : realType}.
+Context {aT rT : measurableType}.
 Notation T := {mfun aT >-> rT}.
 Notation mfun := (@mfun aT rT).
 Section Sub.
@@ -245,48 +246,65 @@ Canonical mfuneqType := EqType {mfun aT >-> rT} mfuneqMixin.
 Definition mfunchoiceMixin := [choiceMixin of {mfun aT >-> rT} by <:].
 Canonical mfunchoiceType := ChoiceType {mfun aT >-> rT} mfunchoiceMixin.
 
-Lemma cst_mfun_subproof x : @IsMeasurableFun aT rT (cst x).
+End mfun.
+
+Section mfun_realType.
+Context {aT : measurableType} {rT : realType}.
+
+Lemma cst_mfun_subproof x : @IsMeasurableFun aT (measurableTypeR rT) (cst x).
 Proof. by split; apply: measurable_fun_cst. Qed.
 HB.instance Definition _ x := @cst_mfun_subproof x.
-Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
+Definition cst_mfun x := [the {mfun aT >-> measurableTypeR rT} of cst x].
 
 Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 
-End mfun.
+End mfun_realType.
 
 Section ring.
 Context (aT : measurableType) (rT : realType).
 
-Lemma mfun_subring_closed : subring_closed (@mfun aT rT).
+Lemma mfun_subring_closed : subring_closed (@mfun aT (measurableTypeR rT)).
 Proof.
 split=> [|f g|f g]; rewrite !inE/=.
 - exact: measurable_fun_cst.
 - exact: measurable_funB.
 - exact: measurable_funM.
 Qed.
+
+Lemma mfun_addr_closed : addr_closed (@mfun aT (measurableTypeR rT)).
+Proof.
+split; first by rewrite !inE/=; exact: measurable_fun_cst.
+by move=> a b /[!inE]/=; exact: measurable_funD.
+Qed.
+
+Canonical measurableTypeR_eqType := Eval hnf in [eqType of measurableTypeR rT].
+Canonical measurableTypeR_choiceType := Eval hnf in [choiceType of measurableTypeR rT].
+Canonical measurableTypeR_zmodType := Eval hnf in [zmodType of measurableTypeR rT].
+Canonical measurableTypeR_ringType := Eval hnf in [ringType of measurableTypeR rT].
+
 Canonical mfun_add := AddrPred mfun_subring_closed.
 Canonical mfun_zmod := ZmodPred mfun_subring_closed.
 Canonical mfun_mul := MulrPred mfun_subring_closed.
 Canonical mfun_subring := SubringPred mfun_subring_closed.
-Definition mfun_zmodMixin := [zmodMixin of {mfun aT >-> rT} by <:].
-Canonical mfun_zmodType := ZmodType {mfun aT >-> rT} mfun_zmodMixin.
-Definition mfun_ringMixin := [ringMixin of {mfun aT >-> rT} by <:].
-Canonical mfun_ringType := RingType {mfun aT >-> rT} mfun_ringMixin.
-Definition mfun_comRingMixin := [comRingMixin of {mfun aT >-> rT} by <:].
-Canonical mfun_comRingType := ComRingType {mfun aT >-> rT} mfun_comRingMixin.
+Definition mfun_zmodMixin := [zmodMixin of {mfun aT >-> measurableTypeR rT} by <:].
+Canonical mfun_zmodType := ZmodType {mfun aT >-> measurableTypeR rT} mfun_zmodMixin.
+Definition mfun_ringMixin := [ringMixin of {mfun aT >-> measurableTypeR rT} by <:].
+Canonical mfun_ringType := RingType {mfun aT >-> measurableTypeR rT} mfun_ringMixin.
+Definition mfun_comRingMixin := [comRingMixin of {mfun aT >-> measurableTypeR rT} by <:].
+Canonical mfun_comRingType := ComRingType {mfun aT >-> measurableTypeR rT} mfun_comRingMixin.
 
-Implicit Types (f g : {mfun aT >-> rT}).
+Implicit Types (f g : {mfun aT >-> measurableTypeR rT}).
 
-Lemma mfun0 : (0 : {mfun aT >-> rT}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
-Lemma mfun1 : (1 : {mfun aT >-> rT}) =1 cst 1 :> (_ -> _). Proof. by []. Qed.
+Lemma mfun0 : (0 : {mfun aT >-> measurableTypeR rT}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
+Lemma mfun1 : (1 : {mfun aT >-> measurableTypeR rT}) =1 cst 1 :> (_ -> _). Proof. by []. Qed.
 Lemma mfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
 Lemma mfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
 Lemma mfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
 Lemma mfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
-Lemma mfun_sum I r (P : {pred I}) (f : I -> {mfun aT >-> rT}) (x : aT) :
+Lemma mfun_sum I r (P : {pred I}) (f : I -> {mfun aT >-> measurableTypeR rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
-Lemma mfun_prod I r (P : {pred I}) (f : I -> {mfun aT >-> rT}) (x : aT) :
+Lemma mfun_prod I r (P : {pred I}) (f : I -> {mfun aT >-> measurableTypeR rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 Lemma mfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
@@ -297,14 +315,14 @@ HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f).
 HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
 HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
 
-Definition mindic (D : set aT) of measurable D : aT -> rT := \1_D.
+Definition mindic (D : set aT) of measurable D : aT -> measurableTypeR rT := \1_D.
 Lemma mindicE (D : set aT) (mD : measurable D) :
   mindic mD = (fun x => (x \in D)%:R).
 Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
 HB.instance Definition _ (D : set aT) (mD : measurable D) :
-   @FImFun aT rT (mindic mD) := FImFun.on (mindic mD).
+   @FImFun aT (measurableTypeR rT) (mindic mD) := FImFun.on (mindic mD).
 Lemma indic_mfun_subproof (D : set aT) (mD : measurable D) :
-  @IsMeasurableFun aT rT (mindic mD).
+  @IsMeasurableFun aT (measurableTypeR rT) (mindic mD).
 Proof.
 split=> mA /= B mB; rewrite preimage_indic.
 case: ifPn => B1; case: ifPn => B0 //.
@@ -316,22 +334,25 @@ Qed.
 HB.instance Definition _ D mD := @indic_mfun_subproof D mD.
 
 Definition indic_mfun (D : set aT) (mD : measurable D) :=
-  [the {mfun aT >-> rT} of mindic mD].
+  [the {mfun aT >-> measurableTypeR rT} of mindic mD].
 
 HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_mfun k).
-Definition scale_mfun k f := [the {mfun aT >-> rT} of k \o* f].
+Definition scale_mfun k f := [the {mfun aT >-> measurableTypeR rT} of k \o* f].
 
-Lemma max_mfun_subproof f g : @IsMeasurableFun aT rT (f \max g).
-Proof. by split; apply: measurable_fun_max. Qed.
+Lemma max_mfun_subproof f g : @IsMeasurableFun aT (measurableTypeR rT)
+  (f \max g : aT -> measurableTypeR rT).
+Proof.
+by split; apply: measurable_fun_max; apply: (@measurable_funP _ (measurableTypeR _)).
+Qed.
 HB.instance Definition _ f g := max_mfun_subproof f g.
-Definition max_mfun f g := [the {mfun aT >-> _} of f \max g].
+Definition max_mfun f g := [the {mfun aT >-> measurableTypeR rT} of f \max g].
 
 End ring.
 Arguments indic_mfun {aT rT} _.
 
 Section sfun_pred.
 Context {aT : measurableType} {rT : realType}.
-Definition sfun : {pred _ -> _} := [predI @mfun aT rT & fimfun].
+Definition sfun : {pred _ -> _} := [predI @mfun aT (measurableTypeR rT) & fimfun].
 Definition sfun_key : pred_key sfun. Proof. exact. Qed.
 Canonical sfun_keyed := KeyedPred sfun_key.
 Lemma sub_sfun_mfun : {subset sfun <= mfun}. Proof. by move=> x /andP[]. Qed.
@@ -343,9 +364,9 @@ Context {aT : measurableType} {rT : realType}.
 Notation T := {sfun aT >-> rT}.
 Notation sfun := (@sfun aT rT).
 Section Sub.
-Context (f : aT -> rT) (fP : f \in sfun).
+Context (f : aT -> measurableTypeR rT) (fP : f \in sfun).
 Definition sfun_Sub1_subproof :=
-  @IsMeasurableFun.Build aT rT f (set_mem (sub_sfun_mfun fP)).
+  @IsMeasurableFun.Build aT (measurableTypeR rT) f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
 Definition sfun_Sub2_subproof :=
   @FiniteImage.Build aT rT f (set_mem (sub_sfun_fimfun fP)).
