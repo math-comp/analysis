@@ -94,6 +94,16 @@
 - in `lebesgue_measure.v`:
   + notation `_.-ocitv`
   + definition `ocitv_display`
+- in `classical_sets.v`:
+  + lemmas `trivIset_image`, `trivIset_comp`
+  + notation `trivIsets`
+- in `functions.v`:
+  + lemma `patch_pred`, `trivIset_restr`
+- in `measure.v`:
+  + lemma `measure_semi_additive_ord`, `measure_semi_additive_ord_I`
+  + lemma `decomp_finite_set`
+- in `esum.v`:
+  + lemma `fsbig_esum`
 
 ### Changed
 
@@ -140,6 +150,13 @@
     * `mem_factor_itv`
 - lemma `preimage_cst` generalized and moved from `lebesgue_integral.v`
   to `functions.v`
+- in `fsbig.v`:
+  + generalize `exchange_fsum`
++ in `measure.v`:
+  + statement of lemmas `content_fin_bigcup`, `measure_fin_bigcup`, `ring_fsets`,
+    `decomp_triv`, `cover_decomp`, `decomp_set0`, `decompN0`, `Rmu_fin_bigcup`
+  + definitions `decomp`, `measure`
++ lemma `fset_set_image` moved from `measure.v` to `cardinality.v`
 
 ### Renamed
 
@@ -156,6 +173,8 @@
 - in `lebesgue_measure.v`:
   + `itvs` -> `ocitv_type`
   + `measurable_fun_sum` -> `emeasurable_fun_sum`
+- in `classical_sets.v`:
+  + `trivIset_restr` -> `trivIset_widen`
 
 ### Removed
 

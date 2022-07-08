@@ -2346,6 +2346,22 @@ apply/trivIsetP => -[/=|]; rewrite /bigcup2 /=.
   by move=> [//|j _ _ _]; rewrite setI0.
 Qed.
 
+Lemma trivIset_image (T I I' : Type) (D : set I) (f : I -> I') (F : I' -> set T) :
+  trivIset D (F \o f) -> trivIset (f @` D) F.
+Proof.
+by move=> trivF i j [{}i Di <-] [{}j Dj <-] Ffij; congr (f _); apply: trivF.
+Qed.
+Arguments trivIset_image {T I I'} D f F.
+
+Lemma trivIset_comp (T I I' : Type) (D : set I) (f : I -> I') (F : I' -> set T) :
+    {in D &, injective f} ->
+  trivIset D (F \o f) = trivIset (f @` D) F.
+Proof.
+move=> finj; apply/propext; split; first exact: trivIset_image.
+move=> trivF i j Di Dj Ffij; apply: finj; rewrite ?in_setE//.
+by apply: trivF => //=; [exists i| exists j].
+Qed.
+
 Definition cover T I D (F : I -> set T) := \bigcup_(i in D) F i.
 
 Lemma cover_restr T I D' D (F : I -> set T) :
@@ -2380,11 +2396,13 @@ Definition pblock T (I : pointedType) D (F : I -> set T) (x : T) :=
 
 (* TODO: theory of trivIset, cover, partition, pblock_index and pblock *)
 
-Lemma trivIset_sets T I D (F : I -> set T) :
-  trivIset D F -> trivIset [set F i | i in D] id.
-Proof. by move=> DF A B [i Di <-{A}] [j Dj <-{B}] /DF ->. Qed.
+Notation trivIsets X := (trivIset X id).
 
-Lemma trivIset_restr T I D' D (F : I -> set T) :
+Lemma trivIset_sets T I D (F : I -> set T) :
+  trivIset D F -> trivIsets [set F i | i in D].
+Proof. exact: trivIset_image. Qed.
+
+Lemma trivIset_widen T I D' D (F : I -> set T) :
 (*  D `<=` D' -> (forall i, D i -> ~ D' i -> F i !=set0) ->*)
   D `<=` D' -> (forall i, D' i -> ~ D i -> F i = set0) ->
   trivIset D F = trivIset D' F.
