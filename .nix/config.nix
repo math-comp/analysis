@@ -31,13 +31,12 @@
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.14";
+  default-bundle = "8.15";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
-  bundles."8.13".coqPackages.coq.override.version = "8.13";
   bundles."8.14".coqPackages.coq.override.version = "8.14";
   bundles."8.15".coqPackages.coq.override.version = "8.15";
 
