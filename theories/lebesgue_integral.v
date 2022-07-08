@@ -464,13 +464,6 @@ move=> t0; rewrite preimage10//= => -[x _].
 by apply: contraPnot t0 => <-; rewrite le_gtF.
 Qed.
 
-Lemma preimage_cst T (R : eqType) (x y : R) :
-  @cst T _ x @^-1` [set y] = if x == y then setT else set0.
-Proof.
-apply/seteqP; rewrite /preimage; split => [z/= <-//|]; first by rewrite eqxx.
-by move=> z/=; case: ifPn => [/eqP|].
-Qed.
-
 Lemma preimage_cstM T (R : realFieldType) (x y : R) (f : T -> R) :
   x != 0 -> (cst x \* f) @^-1` [set y] = f @^-1` [set y / x].
 Proof.
@@ -696,8 +689,8 @@ Qed.
 
 Lemma sintegral0 : sintegral mu (cst 0%R) = 0.
 Proof.
-by rewrite sintegralE fsbig1// => r _; rewrite preimage_cst; case: ifPn;
-  rewrite ?measure0 ?mule0// => /eqP <-; rewrite mul0e.
+rewrite sintegralE fsbig1// => r _; rewrite preimage_cst.
+by case: ifPn => [/[!inE] <-|]; rewrite ?mul0e// measure0 mule0.
 Qed.
 
 Lemma sintegral_ge0 (f : {nnsfun T >-> R}) : 0 <= sintegral mu f.
@@ -1805,6 +1798,16 @@ apply: hwlogD => //.
 - by move=> ? [].
 Qed.
 
+Lemma emeasurable_fun_sum D I s (h : I -> (T -> \bar R)) :
+  (forall n, measurable_fun D (h n)) ->
+  measurable_fun D (fun x => \sum_(i <- s) h i x).
+Proof.
+elim: s => [|s t ih] mf.
+  by under eq_fun do rewrite big_nil; exact: measurable_fun_cst.
+under eq_fun do rewrite big_cons //=; apply: emeasurable_funD => //.
+exact: ih.
+Qed.
+
 Lemma emeasurable_funB D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \- g).
 Proof.
@@ -1872,20 +1875,6 @@ Qed.
 
 End emeasurable_fun.
 
-Section measurable_fun_sum.
-Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType) (D : set T) (I : Type).
-Variables (f : I -> (T -> \bar R)) (mf : forall n, measurable_fun D (f n)).
-
-Lemma measurable_fun_sum s : measurable_fun D (fun x => \sum_(i <- s) f i x).
-Proof.
-elim: s => [|h t ih].
-  by under eq_fun do rewrite big_nil; exact: measurable_fun_cst.
-under eq_fun do rewrite big_cons //=; apply: emeasurable_funD => // => x Dx.
-Qed.
-
-End measurable_fun_sum.
-
 Section ge0_integral_sum.
 Local Open Scope ereal_scope.
 Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
@@ -1903,7 +1892,7 @@ rewrite big_cons /= -ih -ge0_integralD//.
 - by apply: eq_integral => x Dx; rewrite big_cons.
 - by move=> *; apply: f0.
 - by move=> *; apply: sume_ge0 => // k _; exact: f0.
-- exact: measurable_fun_sum.
+- exact: emeasurable_fun_sum.
 Qed.
 
 End ge0_integral_sum.
@@ -2075,7 +2064,7 @@ rewrite monotone_convergence //.
 - rewrite -lim_mkord.
   rewrite (_ : (fun _ => _) = (fun n => (\sum_(k < n) \int[mu]_(x in D) f k x)))//.
   by rewrite funeqE => n; rewrite ge0_integral_sum// big_mkord.
-- by move=> n; exact: measurable_fun_sum.
+- by move=> n; exact: emeasurable_fun_sum.
 - by move=> n x Dx; apply: sume_ge0 => m _; exact: f0.
 - by move=> x Dx m n mn; apply: lee_sum_nneg_natr => // k _ _; exact: f0.
 Qed.
@@ -4598,7 +4587,7 @@ Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_F : measurable_fun setT F.
 Proof.
-rewrite sfun_fubini_tonelli_FE//; apply: measurable_fun_sum => // r.
+rewrite sfun_fubini_tonelli_FE//; apply: emeasurable_fun_sum => // r.
 by apply: emeasurable_funeM => //; apply: measurable_fun_xsection => // /[!inE].
 Qed.
 
@@ -4623,7 +4612,7 @@ Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_G : measurable_fun setT G.
 Proof.
-rewrite sfun_fubini_tonelli_GE//; apply: measurable_fun_sum => // r.
+rewrite sfun_fubini_tonelli_GE//; apply: emeasurable_fun_sum => // r.
 by apply: emeasurable_funeM => //; apply: measurable_fun_ysection => // /[!inE].
 Qed.
 

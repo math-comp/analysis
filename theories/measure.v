@@ -943,11 +943,7 @@ Qed.
 Lemma measurable_fun_cst (D : set T1) (r : T2) :
   measurable_fun D (cst r : T1 -> _).
 Proof.
-move=> mD A mA; have [rA|rA] := boolP (r \in A).
-- rewrite [X in measurable X](_ : _ = D) // predeqE => t; split=> [[]//|Dt].
-  by split => //; rewrite inE in rA.
-- rewrite [X in measurable X](_ : _ = set0)// predeqE.
-  by move=> t; split=> // -[]; rewrite notin_set in rA.
+by move=> mD /= Y mY; rewrite preimage_cst; case: ifPn; rewrite ?setIT ?setI0.
 Qed.
 
 Lemma measurable_funU (D E : set T1) (f : T1 -> T2) :

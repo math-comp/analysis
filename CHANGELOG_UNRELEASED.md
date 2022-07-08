@@ -138,6 +138,8 @@
     `mem_conv_itvcc`, `range_conv`, `range_factor`
   + generalize to realFieldType:
     * `mem_factor_itv`
+- lemma `preimage_cst` generalized and moved from `lebesgue_integral.v`
+  to `functions.v`
 
 ### Renamed
 
@@ -153,6 +155,7 @@
   + `g_measurable_ptType` -> `salgebraType_ptType`
 - in `lebesgue_measure.v`:
   + `itvs` -> `ocitv_type`
+  + `measurable_fun_sum` -> `emeasurable_fun_sum`
 
 ### Removed
 
