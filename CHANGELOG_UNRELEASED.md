@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- in file `boolp.v`:
+  + lemmas `iter_compl`, `iter_compr`, `iter0`
+- in file `functions.v`:
+  + lemmas `oinv_iter`, `some_iter_inv`, `inv_iter`,
+  + Instances for functions interfaces for `iter` (partial inverse up to 
+      bijective function) 
 
 - in `ereal.v`:
   + notations `_ < _ :> _` and `_ <= _ :> _`
