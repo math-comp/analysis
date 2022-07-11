@@ -1592,6 +1592,10 @@ move: x y a b => [x| |] [y| |] [a| |] [b| |] _ _ //=; rewrite ?(ltey, ltNye)//.
 by rewrite !lte_fin; exact: ltr_le_add.
 Qed.
 
+Lemma lee_lt_add a b x y : a \is a fin_num -> b \is a fin_num ->
+  a <= x -> b < y -> a + b < x + y.
+Proof. by move=> afin bin xa yb; rewrite (addeC a) (addeC x) lte_le_add. Qed.
+
 Lemma lee_sub x y z u : x <= y -> u <= z -> x - z <= y - u.
 Proof.
 move: x y z u => -[x| |] -[y| |] -[z| |] -[u| |] //=; rewrite ?(leey,leNye)//.
@@ -2712,6 +2716,18 @@ have xy : (0 < (x - y) / 2)%R by apply divr_gt0 => //; rewrite subr_gt0.
 exists (PosNum xy); apply/negP; rewrite -ltNge lte_fin -ltr_subr_addl.
 by rewrite ltr_pdivr_mulr // ltr_pmulr ?subr_gt0 // ltr1n.
 Qed.
+
+Lemma lee_paddl y x z : 0 <= x -> y <= z -> y <= x + z.
+Proof. by move=> *; rewrite -[y]add0e lee_add. Qed.
+
+Lemma lte_paddl y x z : 0 <= x -> y < z -> y < x + z.
+Proof. by move=> x0 /lt_le_trans; apply; rewrite lee_paddl. Qed.
+
+Lemma lee_paddr y x z : 0 <= x -> y <= z -> y <= z + x.
+Proof. by move=> *; rewrite addeC lee_paddl. Qed.
+
+Lemma lte_paddr y x z : 0 <= x -> y < z -> y < z + x.
+Proof. by move=> *; rewrite addeC lte_paddl. Qed.
 
 Lemma lte_spaddr z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
