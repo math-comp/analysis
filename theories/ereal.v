@@ -311,20 +311,21 @@ Notation "x <= y < z"  := ((x <= y) && (y < z)) : ereal_scope.
 Notation "x < y < z"   := ((x < y) && (y < z)) : ereal_dual_scope.
 Notation "x < y < z"   := ((x < y) && (y < z)) : ereal_scope.
 
-Lemma lee_fin (R : numDomainType) (x y : R) : (x%:E <= y%:E) = (x <= y)%R.
-Proof. by []. Qed.
-
-Lemma lte_fin (R : numDomainType) (x y : R) : (x%:E < y%:E) = (x < y)%R.
-Proof. by []. Qed.
-
-Lemma lee_ninfty_eq (R : numDomainType) (x : \bar R) : (x <= -oo) = (x == -oo).
-Proof. by case: x. Qed.
-
-Lemma lee_pinfty_eq (R : numDomainType) (x : \bar R) : (+oo <= x) = (x == +oo).
-Proof. by case: x. Qed.
-
 Section ERealOrder_numDomainType.
 Context {R : numDomainType}.
+Implicit Types x y : \bar R.
+
+Lemma lee_fin (r s : R) : (r%:E <= s%:E) = (r <= s)%R. Proof. by []. Qed.
+
+Lemma lte_fin (r s : R) : (r%:E < s%:E) = (r < s)%R. Proof. by []. Qed.
+
+Lemma lee01 : 0 <= (1 : \bar R). Proof. by rewrite lee_fin. Qed.
+
+Lemma lte01 : 0 < (1 : \bar R). Proof. by rewrite lte_fin. Qed.
+
+Lemma lee_ninfty_eq x : (x <= -oo) = (x == -oo). Proof. by case: x. Qed.
+
+Lemma lee_pinfty_eq x : (+oo <= x) = (x == +oo). Proof. by case: x. Qed.
 
 Lemma lt0y : (0 : \bar R) < +oo. Proof. exact: real0. Qed.
 
@@ -334,8 +335,7 @@ Lemma le0y : (0 : \bar R) <= +oo. Proof. exact: real0. Qed.
 
 Lemma leNy0 : -oo <= (0 : \bar R). Proof. exact: real0. Qed.
 
-Lemma ereal_comparable (x y : \bar R) : (0%E >=< x)%O -> (0%E >=< y)%O ->
-  (x >=< y)%O.
+Lemma ereal_comparable x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (x >=< y)%O.
 Proof.
 move: x y => [x||] [y||] //; rewrite /Order.comparable !lee_fin -!realE.
 - exact: real_comparable.
@@ -525,6 +525,12 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
 
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
+
+Lemma lee0N1 : (0 : \bar R) <= (-1)%:E = false.
+Proof. by rewrite lee_fin ler0N1. Qed.
+
+Lemma lte0N1 : (0 : \bar R) < (-1)%:E = false.
+Proof. by rewrite lte_fin ltr0N1. Qed.
 
 Lemma le0R x : 0 <= x -> (0 <= fine x)%R.
 Proof. by case: x. Qed.
@@ -947,11 +953,10 @@ Lemma mulNyNy : -oo * -oo = +oo :> \bar R. Proof. by []. Qed.
 
 Lemma real_mulry r : r \is Num.real -> r%:E * +oo = (Num.sg r)%:E * +oo.
 Proof.
-move=> rreal; rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|/negbT rn0].
-move: rreal => /orP[|]; rewrite le_eqVlt !lte_fin /Num.sg.
-  rewrite eq_sym (negbTE rn0)/= => rgt0.
-  by rewrite [(r < 0)%R]lt_def lt_geF// eq_sym rn0/= ltr01 rgt0.
-by rewrite (negbTE rn0)/= => rlt0; rewrite lt_def lt_geF// rn0 rlt0/= ltr0N1.
+move=> rreal; rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|rn0].
+move: rreal => /orP[|]; rewrite le_eqVlt.
+  by rewrite eq_sym rn0/= => rgt0; rewrite lte_fin rgt0 gtr0_sg// lte01.
+by rewrite rn0/= => rlt0; rewrite lt_def lt_geF// andbF ltr0_sg// lte0N1.
 Qed.
 
 Lemma real_mulyr r : r \is Num.real -> +oo * r%:E = (Num.sg r)%:E * +oo.
@@ -959,11 +964,10 @@ Proof. by move=> rreal; rewrite muleC real_mulry. Qed.
 
 Lemma real_mulrNy r : r \is Num.real -> r%:E * -oo = (Num.sg r)%:E * -oo.
 Proof.
-move=> rreal; rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|/negbT rn0].
-move: rreal => /orP[|]; rewrite le_eqVlt !lte_fin /Num.sg.
-  rewrite eq_sym (negbTE rn0)/= => rgt0.
-  by rewrite [(r < 0)%R]lt_def lt_geF// andbF ltr01 rgt0.
-by rewrite (negbTE rn0)/= => rlt0; rewrite lt_def lt_geF// andbF rlt0 ltr0N1.
+move=> rreal; rewrite /mule/= !eqe sgr_eq0; case: ifP => [//|rn0].
+move: rreal => /orP[|]; rewrite le_eqVlt.
+  by rewrite eq_sym rn0/= => rgt0; rewrite lte_fin rgt0 gtr0_sg// lte01.
+by rewrite rn0/= => rlt0; rewrite lt_def lt_geF// andbF ltr0_sg// lte0N1.
 Qed.
 
 Lemma real_mulNyr r : r \is Num.real -> -oo * r%:E = (Num.sg r)%:E * -oo.

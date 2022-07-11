@@ -2094,19 +2094,17 @@ transitivity (\int[mu]_(x in D) lim (g^~ x)).
   apply: eq_integral => x Dx; apply/esym/cvg_lim => //.
   have [fx0|fx0|fx0] := ltgtP 0 (f x).
   - rewrite gt0_mulye//; apply/ereal_cvgPpinfty => M M0.
-    rewrite /g; case: (f x) fx0 => [r|_|//]; last first.
+    rewrite /g; case: (f x) fx0 => [r r0|_|//]; last first.
       exists 1%N => // m /= m0.
       by rewrite mulry gtr0_sg// ?mul1e ?leey// ltr0n.
-    rewrite lte_fin => r0.
     near=> n; rewrite lee_fin -ler_pdivr_mulr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
     by rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// divr_ge0// ltW.
   - rewrite lt0_mulye//; apply/ereal_cvgPninfty => M M0.
-    rewrite /g; case: (f x) fx0 => [r|//|_]; last first.
+    rewrite /g; case: (f x) fx0 => [r r0|//|_]; last first.
       exists 1%N => // m /= m0.
       by rewrite mulrNy gtr0_sg// ?ltr0n// mul1e ?leNye.
-    rewrite lte_fin => r0.
     near=> n; rewrite lee_fin -ler_ndivr_mulr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
@@ -3822,16 +3820,14 @@ move: (f_f Dx); case: (f x) => [r|/=|/=].
   move/ereal_cvgPpinfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
   have : (fine (g x) + 1)%:E <= g x.
     by rewrite (le_trans h)// (le_trans _ (absfg n Dx))// lee_abs.
-  case: (g x) (fing Dx) => [r _| |]//.
-  by rewrite lee_fin /= leNgt ltr_addl// ltr01.
+  by case: (g x) (fing Dx) => [r _| |]//; rewrite leNgt EFinD lte_addl.
 - have gx1 : (- (fine (g x) + 1) < 0)%R.
     by rewrite ltr_oppl oppr0 ltr_spaddr//; exact/le0R/g0.
   move/ereal_cvgPninfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
   have : (fine (g x) + 1)%:E <= g x.
     move: h; rewrite EFinN lee_oppr => /le_trans ->//.
     by rewrite (le_trans _ (absfg n Dx))// -abseN lee_abs.
-  case: (g x) (fing Dx) => [r _| |]//.
-  by rewrite lee_fin /= leNgt ltr_addl// ltr01.
+  by case: (g x) (fing Dx) => [r _| |]//; rewrite leNgt EFinD lte_addl.
 Qed.
 
 Let gg_ n x : D x -> 0 <= 2%:E * g x - g_ n x.
