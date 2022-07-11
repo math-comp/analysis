@@ -2028,6 +2028,9 @@ move=> [y| |] [z| |]//.
   + by move=> _; rewrite mulNyy leNye.
 Qed.
 
+Lemma lee_wpmul2l x : 0 <= x -> {homo *%E x : y z / y <= z}.
+Proof. by move=> x0 y z yz; rewrite !(muleC x) lee_wpmul2r. Qed.
+
 Lemma ge0_sume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
   (forall i, P i -> 0 <= F i) ->
   (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
@@ -2253,6 +2256,64 @@ move: x => [x| |] ih.
 - by rewrite mulry gtr0_sg// mul1e enatmul_pinfty.
 - by rewrite mulrNy gtr0_sg// mul1e enatmul_ninfty.
 Qed.
+
+Lemma lte_pmul x1 y1 x2 y2 :
+  0 <= x1 -> 0 <= x2 -> x1 < y1 -> x2 < y2 -> x1 * x2 < y1 * y2.
+Proof.
+move: x1 y1 x2 y2 => [x1| |] [y1| |] [x2| |] [y2| |] //;
+    rewrite !(lte_fin,lee_fin).
+- by move=> *; rewrite ltr_pmul.
+- move=> x10 x20 xy1 xy2.
+  by rewrite mulry gtr0_sg ?mul1e -?EFinM ?ltey// (le_lt_trans _ xy1).
+- move=> x10 x20 xy1 xy2.
+  by rewrite mulyr gtr0_sg ?mul1e -?EFinM ?ltey// (le_lt_trans _ xy2).
+- by move=> *; rewrite mulyy -EFinM ltey.
+Qed.
+
+Lemma lee_pmul x1 y1 x2 y2 : 0 <= x1 -> 0 <= x2 -> x1 <= y1 -> x2 <= y2 ->
+  x1 * x2 <= y1 * y2.
+Proof.
+move: x1 y1 x2 y2 => [x1| |] [y1| |] [x2| |] [y2| |] //; rewrite !lee_fin.
+- exact: ler_pmul.
+- rewrite le_eqVlt => /predU1P[<- x20 y10 _|x10 x20 xy1 _].
+    by rewrite mul0e mule_ge0// leey.
+  by rewrite mulr_infty gtr0_sg// ?mul1e ?leey// (lt_le_trans x10).
+- rewrite le_eqVlt => /predU1P[<- _ y10 _|x10 _ xy1 _].
+    by rewrite mul0e mule_ge0// leey.
+  rewrite mulr_infty gtr0_sg// mul1e mulr_infty gtr0_sg// ?mul1e//.
+  exact: (lt_le_trans x10).
+- move=> x10; rewrite le_eqVlt => /predU1P[<- _ y20|x20 _ xy2].
+    by rewrite mule0 mulr_infty mule_ge0// ?leey// lee_fin sgr_ge0.
+  by rewrite mulr_infty gtr0_sg ?mul1e ?leey// (lt_le_trans x20).
+- by move=> x10 x20 _ _; rewrite mulyy leey.
+- rewrite le_eqVlt => /predU1P[<- _ _ _|x10 _ _ _].
+    by rewrite mulyy mul0e leey.
+  by rewrite mulyy mulr_infty gtr0_sg// mul1e.
+- move=> _; rewrite le_eqVlt => /predU1P[<- _ y20|x20 _ xy2].
+    by rewrite mule0 mulr_infty mule_ge0// ?leey// lee_fin sgr_ge0.
+  rewrite mulr_infty gtr0_sg// mul1e mulr_infty gtr0_sg ?mul1e//.
+  exact: (lt_le_trans x20).
+- move=> _; rewrite le_eqVlt => /predU1P[<- _ _|x20 _ _].
+    by rewrite mule0 mulyy leey.
+  by rewrite mulr_infty gtr0_sg// mul1e// mulyy.
+Qed.
+
+Lemma lee_pmul2l x : x \is a fin_num -> 0 < x -> {mono *%E x : x y / x <= y}.
+Proof.
+move: x => [x _|//|//] /[!(@lte_fin R)] x0 [y| |] [z| |].
+- by rewrite -2!EFinM 2!lee_fin ler_pmul2l.
+- by rewrite mulry gtr0_sg// mul1e 2!leey.
+- by rewrite mulrNy gtr0_sg// mul1e 2!lee_ninfty_eq.
+- by rewrite mulry gtr0_sg// mul1e 2!lee_pinfty_eq.
+- by rewrite mulry gtr0_sg// mul1e.
+- by rewrite mulry mulrNy gtr0_sg// mul1e mul1e.
+- by rewrite mulrNy gtr0_sg// mul1e 2!leNye.
+- by rewrite mulrNy mulry gtr0_sg// 2!mul1e.
+- by rewrite mulrNy gtr0_sg// mul1e.
+Qed.
+
+Lemma lee_pmul2r x : x \is a fin_num -> 0 < x -> {mono *%E^~ x : x y / x <= y}.
+Proof. by move=> xfin x0 y z; rewrite -2!(muleC x) lee_pmul2l. Qed.
 
 End ERealArithTh_realDomainType.
 Arguments lee_sum_nneg_ord {R}.
@@ -2733,34 +2794,6 @@ Qed.
 
 Lemma lte_ndivr_mulr r x y : (r < 0)%R -> (y * r^-1%:E < x) = (x * r%:E < y).
 Proof. by move=> r0; rewrite muleC lte_ndivr_mull// muleC. Qed.
-
-Lemma lee_pmul x1 y1 x2 y2 : 0 <= x1 -> 0 <= x2 -> x1 <= y1 -> x2 <= y2 ->
-  x1 * x2 <= y1 * y2.
-Proof.
-move: x1 y1 x2 y2 => [x1| |] [y1| |] [x2| |] [y2| |] //; rewrite !lee_fin.
-- exact: ler_pmul.
-- rewrite le_eqVlt => /predU1P[<- x20 y10 _|x10 x20 xy1 _].
-    by rewrite mul0e mule_ge0// leey.
-  by rewrite mulr_infty gtr0_sg// ?mul1e ?leey// (lt_le_trans x10).
-- rewrite le_eqVlt => /predU1P[<- _ y10 _|x10 _ xy1 _].
-    by rewrite mul0e mule_ge0// leey.
-  rewrite mulr_infty gtr0_sg// mul1e mulr_infty gtr0_sg// ?mul1e//.
-  exact: (lt_le_trans x10).
-- move=> x10; rewrite le_eqVlt => /predU1P[<- _ y20|x20 _ xy2].
-    by rewrite mule0 mulr_infty mule_ge0// ?leey// lee_fin sgr_ge0.
-  by rewrite mulr_infty gtr0_sg ?mul1e ?leey// (lt_le_trans x20).
-- by move=> x10 x20 _ _; rewrite mulyy leey.
-- rewrite le_eqVlt => /predU1P[<- _ _ _|x10 _ _ _].
-    by rewrite mulyy mul0e leey.
-  by rewrite mulyy mulr_infty gtr0_sg// mul1e.
-- move=> _; rewrite le_eqVlt => /predU1P[<- _ y20|x20 _ xy2].
-    by rewrite mule0 mulr_infty mule_ge0// ?leey// lee_fin sgr_ge0.
-  rewrite mulr_infty gtr0_sg// mul1e mulr_infty gtr0_sg ?mul1e//.
-  exact: (lt_le_trans x20).
-- move=> _; rewrite le_eqVlt => /predU1P[<- _ _|x20 _ _].
-    by rewrite mule0 mulyy leey.
-  by rewrite mulr_infty gtr0_sg// mul1e// mulyy.
-Qed.
 
 Lemma lee_pdivr_mull r x y : (0 < r)%R -> (r^-1%:E * y <= x) = (y <= r%:E * x).
 Proof.
