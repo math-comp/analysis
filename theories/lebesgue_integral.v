@@ -198,7 +198,7 @@ End fimfun_bin.
 HB.factory Record FiniteDecomp (T : pointedType) (R : ringType) (f : T -> R) :=
   { fimfunE : exists (r : seq R) (A_ : R -> set T),
       forall x, f x = \sum_(y <- r) (y * \1_(A_ y) x) }.
-HB.builders Context T R A f of @FiniteDecomp T R f.
+HB.builders Context T R f of @FiniteDecomp T R f.
   Lemma finite_subproof: @FiniteImage T R f.
   Proof.
   split; have [r [A_ fE]] := fimfunE.

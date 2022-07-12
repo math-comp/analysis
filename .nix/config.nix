@@ -31,7 +31,7 @@
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.15";
+  default-bundle = "8.16";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
@@ -40,14 +40,24 @@
   bundles."8.14".coqPackages.coq.override.version = "8.14";
   bundles."8.15".coqPackages.coq.override.version = "8.15";
 
+  bundles."8.16".coqPackages = {
+    coq.override.version = "8.16";
+    coq-elpi.override.version = "master";
+    hierarchy-builder.override.version = "context-section";
+    mathcomp-bigenough.override.version = "1.0.1";
+    mathcomp-finmap.override.version = "1.5.2";
+    mathcomp-real-closed.override.version = "1.1.3";
+    mathcomp.override.version = "mathcomp-1.15.0";
+  };
+
   bundles."master".coqPackages = {
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
-    hierarchy-builder.override.version = "coq-master";
+    hierarchy-builder.override.version = "context-section";
     mathcomp-bigenough.override.version = "1.0.1";
-    mathcomp-finmap.override.version = "1.5.1";
-    mathcomp-real-closed.override.version = "master";
-    mathcomp.override.version = "master";
+    mathcomp-finmap.override.version = "1.5.2";
+    mathcomp-real-closed.override.version = "1.1.3";
+    mathcomp.override.version = "mathcomp-1.15.0";
   };
 
   ## Cachix caches to use in CI
