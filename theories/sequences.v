@@ -1466,7 +1466,7 @@ move=> nd_u_; set S := u_ @` setT; set l := ereal_sup S.
 have [Spoo|Spoo] := pselect (S +oo).
   have [N Nu] : exists N, forall n, (n >= N)%nat -> u_ n = +oo.
     case: Spoo => N _ uNoo; exists N => n Nn.
-    by move: (nd_u_ _ _ Nn); rewrite uNoo lee_pinfty_eq => /eqP.
+    by move: (nd_u_ _ _ Nn); rewrite uNoo leye_eq => /eqP.
   have -> : l = +oo by rewrite /l /ereal_sup; exact: supremum_pinfty.
   rewrite -(cvg_shiftn N); set f := (X in X --> _).
   rewrite (_ : f = (fun=> +oo)); first exact: cvg_cst.
@@ -1487,8 +1487,9 @@ have [{lnoo}loo|lpoo] := eqVneq l +oo.
       apply/existsNP => uoo.
       by apply/Snoo; rewrite funeqE => ?; rewrite uoo.
     exists m => // k mk; apply: contra umoo => /eqP ukoo.
-    by move/nd_u_ : mk; rewrite ukoo lee_ninfty_eq.
-  rewrite loo ger0_norm ?subr_ge0; last by case/ler_normlP : (contract_le1 (u_ n)).
+    by move/nd_u_ : mk; rewrite ukoo leeNy_eq.
+  rewrite loo ger0_norm ?subr_ge0; last first.
+    by case/ler_normlP : (contract_le1 (u_ n)).
   have [e2|e2] := lerP 2 e%:num.
     rewrite /= ltr_subl_addr addrC -ltr_subl_addr.
     case/ler_normlP : (contract_le1 (u_ n)); rewrite ler_oppl => un1 _.
@@ -1503,8 +1504,8 @@ have [{lnoo}loo|lpoo] := eqVneq l +oo.
     have : l <= expand (contract +oo - e%:num)%R.
       apply: ub_ereal_sup => x [n _ <-{x}].
       rewrite leNgt; apply/negP/abs.
-      rewrite loo lee_pinfty_eq expand_eqoo ler_sub_addr addrC -ler_sub_addr.
-      by rewrite subrr; apply/negP; rewrite -ltNge.
+      rewrite loo leye_eq expand_eqoo ler_sub_addr addrC -ler_sub_addr subrr.
+      by apply/negP; rewrite -ltNge.
     have [e1|e1] := ltrP 1 e%:num.
       by rewrite ler_subl_addr (le_trans (ltW e2)).
     by rewrite ler_subl_addr ler_addl.
@@ -1517,7 +1518,7 @@ have [le1|le1] := (ltrP (`|contract l - e%:num|) 1)%R; last first.
       apply/existsNP => uoo.
       by apply/Snoo; rewrite funeqE => ?; rewrite uoo.
     exists m => // k mk; apply: contra umoo => /eqP ukoo.
-    by move/nd_u_ : mk; rewrite ukoo lee_ninfty_eq.
+    by move/nd_u_ : mk; rewrite ukoo leeNy_eq.
   rewrite ger0_norm ?subr_ge0 ?le_contract ?ereal_sup_ub//; last by exists n.
   have [l0|l0] := ger0P (contract l).
     have el : (e%:num > contract l)%R.
@@ -1655,9 +1656,9 @@ Lemma nneseries_pinfty (R : realType) (u_ : (\bar R)^nat)
   (P : pred nat) k : (forall n, P n -> 0 <= u_ n) -> P k ->
   u_ k = +oo -> \sum_(i <oo | P i) u_ i = +oo.
 Proof.
-move=> u0 Pk ukoo; apply/eqP; rewrite -lee_pinfty_eq.
+move=> u0 Pk ukoo; apply/eqP; rewrite -leye_eq.
 apply: le_trans (nneseries_lim_ge k.+1 u0) => //.
-rewrite lee_pinfty_eq; apply/eqP/esum_pinftyP=> [i /u0|].
+rewrite leye_eq; apply/eqP/esum_pinftyP=> [i /u0|].
  by rewrite leNgt; apply: contra => /eqP ->.
 by exists k; split => //; rewrite mem_iota subn0 add0n ltnS leqnn.
 Qed.
@@ -2550,11 +2551,10 @@ Qed.
 Lemma cvg_ninfty_elim_inf_sup u : u --> -oo ->
   (elim_inf u = -oo) * (elim_sup u = -oo).
 Proof.
-move=> unoo; suff: elim_sup u = -oo.
-  move=> {}unoo; split => //; apply/eqP.
-  by rewrite -lee_ninfty_eq -unoo elim_inf_sup.
+move=> uoo; suff: elim_sup u = -oo.
+  by move=> {}uoo; split => //; apply/eqP; rewrite -leeNy_eq -uoo elim_inf_sup.
 apply/cvg_lim => //=; apply/ereal_cvgPninfty => M M0.
-move: unoo => /ereal_cvgPninfty /(_ _ M0)[m _ h].
+move: uoo => /ereal_cvgPninfty /(_ _ M0)[m _ h].
 near=> n; apply ub_ereal_sup => _ [k /= nk] <-.
 by apply h => /=; rewrite (leq_trans _ nk) //; near: n; exists m.
 Unshelve. all: by end_near. Qed.
