@@ -1605,11 +1605,10 @@ move: x y z u => -[x| |] -[y| |] -[z| |] -[u| |] //=; rewrite ?(leey,leNye)//.
 by rewrite !lee_fin; exact: ler_sub.
 Qed.
 
-Lemma lte_le_sub z u x y : z \is a fin_num -> u \is a fin_num ->
+Lemma lte_le_sub z u x y : u \is a fin_num ->
   x < z -> u <= y -> x - y < z - u.
 Proof.
-move: z u => [z| |] [u| |] _ _ //.
-move: x y => [x| |] [y| |]; rewrite ?(ltey, ltNye)//.
+move: z u x y => [z| |] [u| |] [x| |] [y| |] _ //=; rewrite ?(ltey, ltNye)//.
 by rewrite !lte_fin => xltr tley; apply: ltr_le_add; rewrite // ler_oppl opprK.
 Qed.
 
@@ -2404,9 +2403,11 @@ Proof. rewrite !dual_addeE lee_opp -lee_opp; exact: lee_add2r. Qed.
 Lemma lee_dadd a b x y : a <= b -> x <= y -> a + x <= b + y.
 Proof. rewrite !dual_addeE lee_opp -lee_opp -(lee_opp y); exact: lee_add. Qed.
 
-Lemma lte_le_dadd a b x y : a \is a fin_num -> b \is a fin_num ->
-  a < x -> b <= y -> a + b < x + y.
-Proof. rewrite -fin_numN !dual_addeE lte_opp -lte_opp; exact: lte_le_sub. Qed.
+Lemma lte_le_dadd a b x y : b \is a fin_num -> a < x -> b <= y -> a + b < x + y.
+Proof. rewrite !dual_addeE lte_opp -lte_opp; exact: lte_le_sub. Qed.
+
+Lemma lee_lt_dadd a b x y : a \is a fin_num -> a <= x -> b < y -> a + b < x + y.
+Proof. by move=> afin xa yb; rewrite (daddeC a) (daddeC x) lte_le_dadd. Qed.
 
 Lemma lee_dsub x y z t : x <= y -> t <= z -> x - z <= y - t.
 Proof. rewrite !dual_addeE lee_oppl oppeK -lee_opp !oppeK; exact: lee_add. Qed.
@@ -2859,6 +2860,8 @@ End realFieldType_lemmas.
 
 Module DualAddTheoryRealField.
 
+Import DualAddTheoryNumDomain DualAddTheoryRealDomain.
+
 Section DualRealFieldType_lemmas.
 Local Open Scope ereal_dual_scope.
 Variable R : realFieldType.
@@ -2866,6 +2869,18 @@ Implicit Types x y : \bar R.
 
 Lemma lee_dadde x y : (forall e : {posnum R}, x <= y + e%:num%:E) -> x <= y.
 Proof. by move=> xye; apply: lee_adde => e; case: x {xye} (xye e). Qed.
+
+Lemma lee_pdaddl y x z : 0 <= x -> y <= z -> y <= x + z.
+Proof. by move=> *; rewrite -[y]dadd0e lee_dadd. Qed.
+
+Lemma lte_pdaddl y x z : 0 <= x -> y < z -> y < x + z.
+Proof. by move=> x0 /lt_le_trans; apply; rewrite lee_pdaddl. Qed.
+
+Lemma lee_pdaddr y x z : 0 <= x -> y <= z -> y <= z + x.
+Proof. by move=> *; rewrite daddeC lee_pdaddl. Qed.
+
+Lemma lte_pdaddr y x z : 0 <= x -> y < z -> y < z + x.
+Proof. by move=> *; rewrite daddeC lte_pdaddl. Qed.
 
 Lemma lte_spdaddr (r : R) x y : 0 < y -> r%:E <= x -> r%:E < x + y.
 Proof.
