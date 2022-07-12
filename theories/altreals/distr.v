@@ -564,7 +564,7 @@ apply/(@le_trans _ _ (\sum_(j <- J) f K j)); last first.
   have /(gerfinseq_psum uqJ) := summable_mu (f K).
   move/le_trans=> -/(_ _ (le1_mu (f K)))=> h.
   by apply/(le_trans _ h)/ler_sum=> i _; apply/ler_norm.
-apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >] => //.
+apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >]; [done|].
 by move=> _; apply/ge0_mu.
 Qed.
 
