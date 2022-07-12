@@ -698,8 +698,7 @@ Qed.
 
 Lemma itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
 Proof.
-rewrite set_itvE predeqE => t; split => /= [|<-//].
-by rewrite lee_pinfty_eq => /eqP.
+by rewrite set_itvE predeqE => t; split => /= [|<-//]; rewrite leye_eq => /eqP.
 Qed.
 
 Lemma itv_opinfty_pinfty : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
@@ -1385,7 +1384,7 @@ Qed.
 Lemma measurable_set1_pinfty : G.-sigma.-measurable [set +oo].
 Proof.
 apply: sub_sigma_algebra; exists +oo; rewrite predeqE => x; split => [->//|/=].
-by rewrite in_itv /= andbT lee_pinfty_eq => /eqP ->.
+by rewrite in_itv /= andbT leye_eq => /eqP ->.
 Qed.
 
 Lemma measurableE : emeasurable (R.-ocitv.-measurable) = G.-sigma.-measurable.

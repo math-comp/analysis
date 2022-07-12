@@ -2137,7 +2137,7 @@ Lemma le_measure d (R : realFieldType) (T : semiRingOfSetsType d)
   {in measurable &, {homo mu : A B / A `<=` B >-> (A <= B)%E}}.
 Proof.
 move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
-  by rewrite lee_pinfty_eq => /eqP ->; rewrite leey.
+  by rewrite leye_eq => /eqP ->; rewrite leey.
 rewrite -[leRHS]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
 - by rewrite SetRing.RmuE ?lee_addl.
 - exact: sub_gen_smallest.
@@ -2485,9 +2485,9 @@ Lemma eq_measureU d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
 Proof.
 move=> mA mB muA muB muAB; have [mu'ANoo|] := ltP (mu' A) +oo.
   by rewrite !measureUfinl ?muA ?muB ?muAB.
-rewrite lee_pinfty_eq => /eqP mu'A; transitivity (+oo : \bar R); apply/eqP.
-  by rewrite -lee_pinfty_eq -mu'A -muA le_measure ?inE//=; apply: measurableU.
-by rewrite eq_sym -lee_pinfty_eq -mu'A le_measure ?inE//=; apply: measurableU.
+rewrite leye_eq => /eqP mu'A; transitivity (+oo : \bar R); apply/eqP.
+  by rewrite -leye_eq -mu'A -muA le_measure ?inE//=; apply: measurableU.
+by rewrite eq_sym -leye_eq -mu'A le_measure ?inE//=; apply: measurableU.
 Qed.
 
 Lemma null_set_setU d (R : realFieldType) (T : ringOfSetsType d)
@@ -2816,7 +2816,7 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
   - rewrite -lee_subr_addr //; apply ub_ereal_sup => /= _ [n _] <-.
     by rewrite EFinN lee_subr_addr // -XAx XA.
   - suff : mu X = +oo by move=> ->; rewrite leey.
-    by apply/eqP; rewrite -lee_pinfty_eq -XAx le_outer_measure.
+    by apply/eqP; rewrite -leye_eq -XAx le_outer_measure.
   - by rewrite addeC /= leNye.
 move=> n.
 apply (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
@@ -3331,11 +3331,11 @@ have ? : cvg (eseries (Rmu \o B)) by exact/is_cvg_nneseries.
 have [def|] := boolP (adde_def (lim BA) (lim BNA)); last first.
   rewrite /adde_def negb_and !negbK=> /orP[/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
   - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite leey.
-    apply/eqP; rewrite -lee_pinfty_eq -(eqP BAoo); apply/lee_lim => //.
+    apply/eqP; rewrite -leye_eq -(eqP BAoo); apply/lee_lim => //.
     near=> n; apply: lee_sum => m _; apply: le_measure; rewrite /mkset; by
       [rewrite inE; exact: measurableI | rewrite inE | apply: subIset; left].
   - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite leey.
-    apply/eqP; rewrite -lee_pinfty_eq -(eqP BNAoo); apply/lee_lim => //.
+    apply/eqP; rewrite -leye_eq -(eqP BNAoo); apply/lee_lim => //.
     by near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure;
        rewrite /mkset ?inE//; apply: measurableD.
 rewrite -ereal_limD // (_ : (fun _ => _) =

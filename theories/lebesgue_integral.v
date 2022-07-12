@@ -1513,7 +1513,7 @@ Lemma le_approx k x (f0 : forall x, (0 <= f x)%E) : D x ->
   ((approx k x)%:E <= f x)%E.
 Proof.
 move=> Dx; have [fixoo|] := ltP (f x) (+oo%E); last first.
-  by rewrite lee_pinfty_eq => /eqP ->; rewrite leey.
+  by rewrite leye_eq => /eqP ->; rewrite leey.
 have nd_ag : {homo approx ^~ x : n m / (n <= m)%N >-> n <= m}.
   by move=> m n mn; exact/lefP/nd_approx.
 have fi0 y : D y -> (0 <= f y)%E by move=> ?; exact: f0.
@@ -1996,7 +1996,7 @@ have := leey (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
       exact/lef_at/nd_approx.
     by move/nondecreasing_dvg_lt => /(_ h).
   have -> : lim (EFin \o max_g2 ^~ t) = +oo.
-    by have := lim_g2_max_g2 t n; rewrite g2oo lee_pinfty_eq => /eqP.
+    by have := lim_g2_max_g2 t n; rewrite g2oo leye_eq => /eqP.
   by rewrite leey.
 - have approx_g_g := @cvg_approx _ _ _ setT _ t (fun t _ => g0 n t) Logic.I fntoo.
   have <- : lim (EFin \o g2 n ^~ t) = g n t.
@@ -2122,8 +2122,7 @@ rewrite le_eqVlt => /predU1P[<-|if_gt0].
   by under eq_fun do rewrite mule0.
 rewrite gt0_mulye//; apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
 near=> n; have [ifoo|] := ltP (\int[mu]_(x in D) (f x)) +oo; last first.
-  rewrite lee_pinfty_eq => /eqP ->;  rewrite mulry muleC.
-  rewrite gt0_mulye ?leey//.
+  rewrite leye_eq => /eqP ->; rewrite mulry muleC gt0_mulye ?leey//.
   by near: n; exists 1%N => // n /= n0; rewrite gtr0_sg// ?lte_fin// ltr0n.
 rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
   by rewrite fin_numElt ifoo andbT (le_lt_trans _ if_gt0).
@@ -2187,10 +2186,10 @@ have [f_fin _|] := boolP (\int[mu]_(x in D) f^\- x \is a fin_num).
   rewrite integralE// [in RHS]integralE// oppeD ?fin_numN// oppeK addeC.
   by rewrite funenegN.
 rewrite fin_numE negb_and 2!negbK => /orP[nfoo|/eqP nfoo].
-  exfalso; move/negP : nfoo; apply; rewrite -lee_ninfty_eq; apply/negP.
+  exfalso; move/negP : nfoo; apply; rewrite -leeNy_eq; apply/negP.
   by rewrite -ltNge (lt_le_trans _ (integral_ge0 _ _)).
 rewrite nfoo adde_defEninfty.
-rewrite -lee_pinfty_eq -ltNge lte_pinfty_eq => /orP[f_fin|/eqP pfoo].
+rewrite -leye_eq -ltNge lte_pinfty_eq => /orP[f_fin|/eqP pfoo].
   rewrite integralE// [in RHS]integralE// nfoo [in RHS]addeC oppeD//.
   by rewrite funenegN.
 by rewrite integralE// [in RHS]integralE// funeposN funenegN nfoo pfoo.
@@ -2208,7 +2207,8 @@ End integralN.
 
 Section integral_cst.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
+Variables (d : measure_display) (T : measurableType d) (R : realType)
+          (mu : {measure set T -> \bar R}).
 Variables (f : T -> \bar R) (D : set T) (mD : measurable D).
 
 Lemma sintegral_cst (x : {nonneg R}) :
@@ -2247,7 +2247,7 @@ rewrite monotone_convergence //.
     by rewrite funeqE => n; rewrite -integral_cst.
   apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
   have [muDoo|muDoo] := ltP (mu D) +oo; last first.
-    exists 1%N => // m /= m0; move: muDoo; rewrite lee_pinfty_eq => /eqP ->.
+    exists 1%N => // m /= m0; move: muDoo; rewrite leye_eq => /eqP ->.
     by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
   exists `|ceil (M / fine (mu D))|%N => // m /=.
   rewrite -(ler_nat R) => MDm.
@@ -2978,7 +2978,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
 apply/eqP/negPn/negP => /eqP muED0.
 move/not_forallP : muM; apply.
 have [muEDoo|] := ltP (mu (E `&` D)) +oo; last first.
-  by rewrite lee_pinfty_eq => /eqP ->; exists 1%N; rewrite mul1e lee_pinfty_eq.
+  by rewrite leye_eq => /eqP ->; exists 1%N; rewrite mul1e leye_eq.
 exists `|ceil (M * (fine (mu (E `&` D)))^-1)|%N.+1.
 apply/negP; rewrite -ltNge.
 rewrite -[X in _ * X](@fineK _ (mu (E `&` D))); last first.
