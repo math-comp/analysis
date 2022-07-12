@@ -2,9 +2,14 @@
 From mathcomp Require choice.
 (* Missing coercion (done before Import to avoid redeclaration error,
    thanks to KS for the trick) *)
+(* MathComp 1.15 addition *)
 Coercion choice.Choice.mixin : choice.Choice.class_of >-> choice.Choice.mixin_of.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
+
+(***************************)
+(* MathComp 1.15 additions *)
+(***************************)
 
 (******************************************************************************)
 (* This files contains lemmas and definitions missing from MathComp.          *)
@@ -40,7 +45,7 @@ Qed.
 Lemma enum_ord0 : enum 'I_0 = [::].
 Proof. by apply/eqP; rewrite -size_eq0 size_enum_ord. Qed.
 
-Lemma enum_ordS n : enum 'I_n.+1 =
+Lemma enum_ordSr n : enum 'I_n.+1 =
   rcons (map (widen_ord (leqnSn _)) (enum 'I_n)) ord_max.
 Proof.
 apply: (inj_map val_inj); rewrite val_enum_ord.
@@ -122,13 +127,13 @@ move=> fK hK c /=; rewrite -[RHS]hK/=; case hcE : (h c) => [b|]//=.
 by rewrite -[b in RHS]fK; case: (f b) => //=; have := hK c; rewrite hcE.
 Qed.
 
-Definition pred_omap T (D : {pred T}) : pred (option T) :=
+Definition pred_oapp T (D : {pred T}) : pred (option T) :=
   [pred x | oapp (mem D) false x].
 
 Lemma ocan_in_comp [A B C : Type] (D : {pred B}) (D' : {pred C})
     [f : B -> option A] [h : C -> option B]
     [f' : A -> B] [h' : B -> C] :
-  {homo h : x / x \in D' >-> x \in pred_omap D} ->
+  {homo h : x / x \in D' >-> x \in pred_oapp D} ->
   {in D, ocancel f f'} -> {in D', ocancel h h'} ->
   {in D', ocancel (obind f \o h) (h' \o f')}.
 Proof.
@@ -143,28 +148,9 @@ Proof. by move->. Qed.
 Lemma eqbRL (b1 b2 : bool) : b1 = b2 -> b2 -> b1.
 Proof. by move->. Qed.
 
-Lemma fset_nat_maximum (X : choiceType) (A : {fset X})
-    (f : X -> nat) : A != fset0 ->
-  (exists i, i \in A /\ forall j, j \in A -> f j <= f i)%nat.
-Proof.
-move=> /fset0Pn[x Ax].
-have [/= y _ /(_ _ isT) mf] := @arg_maxnP _ [` Ax]%fset xpredT (f \o val) isT.
-exists (val y); split; first exact: valP.
-by move=> z Az; have := mf [` Az]%fset.
-Qed.
-
-Lemma image_nat_maximum n (f : nat -> nat) :
-  (exists i, i <= n /\ forall j, j <= n -> f j <= f i)%N.
-Proof.
-have [i _ /(_ _ isT) mf] := @arg_maxnP _ (@ord0 n) xpredT f isT.
-by exists i; split; rewrite ?leq_ord// => j jn; have := mf (@Ordinal n.+1 j jn).
-Qed.
-
-Lemma card_fset_sum1 (T : choiceType) (A : {fset T}) : #|` A| = \sum_(i <- A) 1.
-Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
-
-Arguments big_rmcond {R idx op I r} P.
-Arguments big_rmcond_in {R idx op I r} P.
+(***************************)
+(* MathComp 1.15 additions *)
+(***************************)
 
 Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
 Notation "\- f" := (opp_fun f) : ring_scope.
@@ -195,7 +181,7 @@ Notation ltLHS := (X in (X < _)%O)%pattern.
 Notation ltRHS := (X in (_ < X)%O)%pattern.
 Inductive boxed T := Box of T.
 
-Lemma eq_big_supp [R : eqType] [idx : R] [op : Monoid.law idx] [I : Type]
+Lemma eq_bigl_supp [R : eqType] [idx : R] [op : Monoid.law idx] [I : Type]
   [r : seq I] [P1 : pred I] (P2 : pred I) (F : I -> R) :
   {in [pred x | F x != idx], P1 =1 P2} ->
   \big[op/idx]_(i <- r | P1 i) F i = \big[op/idx]_(i <- r | P2 i) F i.
@@ -421,3 +407,33 @@ by symmetry; rewrite inE/= -predC_itvl -predC_itvr.
 Qed.
 
 End itv_porderType.
+
+(**********************************)
+(* End of MathComp 1.15 additions *)
+(**********************************)
+
+(* To be backported to finmap *)
+
+Lemma fset_nat_maximum (X : choiceType) (A : {fset X})
+    (f : X -> nat) : A != fset0 ->
+  (exists i, i \in A /\ forall j, j \in A -> f j <= f i)%nat.
+Proof.
+move=> /fset0Pn[x Ax].
+have [/= y _ /(_ _ isT) mf] := @arg_maxnP _ [` Ax]%fset xpredT (f \o val) isT.
+exists (val y); split; first exact: valP.
+by move=> z Az; have := mf [` Az]%fset.
+Qed.
+
+Lemma image_nat_maximum n (f : nat -> nat) :
+  (exists i, i <= n /\ forall j, j <= n -> f j <= f i)%N.
+Proof.
+have [i _ /(_ _ isT) mf] := @arg_maxnP _ (@ord0 n) xpredT f isT.
+by exists i; split; rewrite ?leq_ord// => j jn; have := mf (@Ordinal n.+1 j jn).
+Qed.
+
+Lemma card_fset_sum1 (T : choiceType) (A : {fset T}) :
+  #|` A| = (\sum_(i <- A) 1)%N.
+Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
+
+Arguments big_rmcond {R idx op I r} P.
+Arguments big_rmcond_in {R idx op I r} P.
