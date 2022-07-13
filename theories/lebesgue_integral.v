@@ -1808,6 +1808,17 @@ under eq_fun do rewrite big_cons //=; apply: emeasurable_funD => //.
 exact: ih.
 Qed.
 
+Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) :
+  (forall k x, 0 <= h k x) -> (forall k, measurable_fun D (h k)) ->
+  measurable_fun D (fun x => \sum_(i <oo) h i x).
+Proof.
+move=> h0 mh; rewrite [X in measurable_fun _ X](_ : _ =
+    (fun x => elim_sup (fun n => \sum_(0 <= i < n) h i x))); last first.
+  apply/funext=> x; rewrite is_cvg_elim_supE//.
+  exact: is_cvg_ereal_nneg_natsum.
+by apply: measurable_fun_elim_sup => k; exact: emeasurable_fun_sum.
+Qed.
+
 Lemma emeasurable_funB D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \- g).
 Proof.
