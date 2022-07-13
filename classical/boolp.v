@@ -4,7 +4,7 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
-
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
 
 (******************************************************************************)
@@ -164,7 +164,7 @@ Proof. by move: x (x) y => /propT-> [] []. Qed.
 (* -------------------------------------------------------------------- *)
 Record mclassic := {
   _ : forall (P : Prop), {P} + {~P};
-  _ : forall T, Choice.mixin_of T
+  _ : forall T, hasChoice T
 }.
 
 Lemma choice X Y (P : X -> Y -> Prop) :
@@ -211,7 +211,7 @@ exists (fun (P : pred T) (n : nat) =>
 by exists 0; case: pselect => // -[]; exists x.
 Qed.
 
-Lemma gen_choiceMixin {T : Type} : Choice.mixin_of T.
+Lemma gen_choiceMixin (T : Type) : hasChoice T.
 Proof. by case: classic. Qed.
 
 Lemma pdegen (P : Prop): P = True \/ P = False.
@@ -322,28 +322,23 @@ Proof. by move=> [] []; rewrite ?(trueE, falseE) ?propeqE; tauto. Qed.
 Definition gen_eq (T : Type) (u v : T) := `[<u = v>].
 Lemma gen_eqP (T : Type) : Equality.axiom (@gen_eq T).
 Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
-Definition gen_eqMixin {T : Type} := EqMixin (@gen_eqP T).
+Definition gen_eqMixin (T : Type) : hasDecEq T :=
+  hasDecEq.Build T (@gen_eqP T).
 
-Canonical arrow_eqType (T : Type) (T' : eqType) :=
-  EqType (T -> T') gen_eqMixin.
-Canonical arrow_choiceType (T : Type) (T' : choiceType) :=
-  ChoiceType (T -> T') gen_choiceMixin.
+HB.instance Definition _ (T : Type) (T' : T -> eqType) :=
+  gen_eqMixin (forall t : T, T' t).
 
-Definition dep_arrow_eqType (T : Type) (T' : T -> eqType) :=
-  EqType (forall x : T, T' x) gen_eqMixin.
-Definition dep_arrow_choiceClass (T : Type) (T' : T -> choiceType) :=
-  Choice.Class (Equality.class (dep_arrow_eqType T')) gen_choiceMixin.
-Definition dep_arrow_choiceType (T : Type) (T' : T -> choiceType) :=
-  Choice.Pack (dep_arrow_choiceClass T').
+HB.instance Definition _ (T : Type) (T' : T -> choiceType) :=
+  gen_choiceMixin (forall t : T, T' t).
 
-Canonical Prop_eqType := EqType Prop gen_eqMixin.
-Canonical Prop_choiceType := ChoiceType Prop gen_choiceMixin.
+HB.instance Definition _ := gen_eqMixin Prop.
+HB.instance Definition _ := gen_choiceMixin Prop.
 
 Section classicType.
 Variable T : Type.
 Definition classicType := T.
-Canonical classicType_eqType := EqType classicType gen_eqMixin.
-Canonical classicType_choiceType := ChoiceType classicType gen_choiceMixin.
+HB.instance Definition _ := gen_eqMixin classicType.
+HB.instance Definition _ := gen_choiceMixin classicType.
 End classicType.
 Notation "'{classic' T }" := (classicType T)
  (format "'{classic'  T }") : type_scope.
@@ -351,8 +346,8 @@ Notation "'{classic' T }" := (classicType T)
 Section eclassicType.
 Variable T : eqType.
 Definition eclassicType : Type := T.
-Canonical eclassicType_eqType := EqType eclassicType (Equality.class T).
-Canonical eclassicType_choiceType := ChoiceType eclassicType gen_choiceMixin.
+HB.instance Definition _ := Equality.copy eclassicType T.
+HB.instance Definition _ := gen_choiceMixin eclassicType.
 End eclassicType.
 Notation "'{eclassic' T }" := (eclassicType T)
  (format "'{eclassic'  T }") : type_scope.
@@ -371,7 +366,10 @@ Proof. by apply: canon => T; exists  [eqType of {classic T}]. Qed.
 Lemma Pchoice : canonical Type choiceType.
 Proof. by apply: canon => T; exists [choiceType of {classic T}]. Qed.
 Lemma eqPchoice : canonical eqType choiceType.
-Proof. by apply: canon=> T; exists [choiceType of {eclassic T}]; case: T. Qed.
+Proof.
+apply: canon => T; exists [choiceType of {eclassic T}].
+by case: T => //= T [?]//.
+Qed.
 
 Lemma not_True : (~ True) = False. Proof. exact/propext. Qed.
 Lemma not_False : (~ False) = True. Proof. by apply/propext; split=> _. Qed.
@@ -715,10 +713,9 @@ move=> g f h /asboolP fg /asboolP gh; apply/asboolP => x.
 by rewrite (le_trans (fg x)).
 Qed.
 
-Definition porderMixin :=
-  @LePOrderMixin _ lef ltf ltf_def lef_refl lef_anti lef_trans.
-
-Canonical porderType := POrderType fun_display (aT -> T) porderMixin.
+#[export]
+HB.instance Definition _ := @Order.isPOrdered.Build
+  fun_display (aT -> T) lef ltf ltf_def lef_refl lef_anti lef_trans.
 
 End FunOrder.
 
@@ -755,15 +752,13 @@ apply/idP/idP => [/asboolP f_le_g|/eqP <-].
 - apply/asboolP => x; exact: leIr.
 Qed.
 
-Definition latticeMixin :=
-  LatticeMixin meetfC joinfC meetfA joinfA joinfKI meetfKU lef_meet.
-
-Canonical latticeType := LatticeType (aT -> T) latticeMixin.
+#[export]
+HB.instance Definition _ := Order.POrder_isLattice.Build _ (aT -> T)
+  meetfC joinfC meetfA joinfA joinfKI meetfKU lef_meet.
 
 End FunLattice.
 Module Exports.
-Canonical porderType.
-Canonical latticeType.
+HB.reexport.
 End Exports.
 End FunOrder.
 Export FunOrder.Exports.
@@ -788,4 +783,3 @@ Proof. by apply/funeqP => ?; rewrite iterSr. Qed.
 
 Lemma iter0 {T} (f : T -> T) : iter 0 f = id.
 Proof. by []. Qed.
-

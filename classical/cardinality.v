@@ -457,12 +457,6 @@ Lemma eq_countable T U (A : set T) (B : set U) :
   A #= B -> countable A = countable B.
 Proof. by move=> /card_le_eql leA; rewrite /countable leA. Qed.
 
-Lemma countable_setT_countMixin (T : Type) :
-  countable (@setT T) -> Countable.mixin_of T.
-Proof.
-by move=> /pcard_leP/unsquash f; exists f 'oinv_f; apply: in1TT 'funoK_f.
-Qed.
-
 Lemma countableP (T : countType) (A : set T) : countable A.
 Proof. by apply/card_leP; squash (to_setT \o choice.pickle). Qed.
 #[global] Hint Resolve countableP : core.
@@ -1094,7 +1088,7 @@ Qed.
 Lemma card_nat2 : [set: nat * nat] #= [set: nat].
 Proof. exact/eq_card_nat/infinite_prod_nat/countableP. Qed.
 
-Canonical rat_pointedType := PointedType rat 0.
+HB.instance Definition _ := isPointed.Build rat 0.
 
 Lemma infinite_rat : infinite_set [set: rat].
 Proof.
@@ -1109,7 +1103,9 @@ Lemma choicePcountable {T : choiceType} : countable [set: T] ->
   {T' : countType | T = T' :> Type}.
 Proof.
 move=> /pcard_leP/unsquash f.
-by exists (CountType T (CountMixin (in1TT 'funoK_f))).
+pose TcM := PcanCountMixin (in1TT 'funoK_f).
+pose TC : countType := HB.pack T TcM.
+by exists TC.
 Qed.
 
 Lemma eqPcountable {T : eqType} : countable [set: T] ->
@@ -1279,21 +1275,18 @@ Qed.
 Lemma fimfun_valP f (Pf : f \in fimfun) : fimfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
 
-Canonical fimfun_subType := SubType T _ _ fimfun_rect fimfun_valP.
+HB.instance Definition _ := isSub.Build _ _ T fimfun_rect fimfun_valP.
 End fimfun.
 
 Lemma fimfuneqP aT rT (f g : {fimfun aT >-> rT}) :
   f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
-Definition fimfuneqMixin aT (rT : eqType) :=
-  [eqMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfuneqType aT (rT : eqType) :=
-  EqType {fimfun aT >-> rT} (fimfuneqMixin aT rT).
-Definition fimfunchoiceMixin aT (rT : choiceType) :=
-  [choiceMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfunchoiceType aT (rT : choiceType) :=
-  ChoiceType {fimfun aT >-> rT} (fimfunchoiceMixin aT rT).
+HB.instance Definition _ aT (rT : eqType) :=
+  [Equality of {fimfun aT >-> rT} by <:].
+
+HB.instance Definition _ aT (rT : choiceType) :=
+  [Choice of {fimfun aT >-> rT} by <:].
 
 Lemma finite_image_cst {aT rT : Type} (x : rT) :
   finite_set (range (cst x : aT -> _)).
@@ -1322,10 +1315,10 @@ Proof.
 split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
 by move=> fA gA; apply: (finite_image11 (fun x y => x - y)).
 Qed.
-Canonical fimfun_add := AddrPred fimfun_zmod_closed.
-Canonical fimfun_zmod := ZmodPred fimfun_zmod_closed.
-Definition fimfun_zmodMixin := [zmodMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfun_zmodType := ZmodType {fimfun aT >-> rT} fimfun_zmodMixin.
+HB.instance Definition _ :=
+  GRing.isZmodClosed.Build [zmodType of aT -> rT] fimfun fimfun_zmod_closed.
+HB.instance Definition _ :=
+  [SubChoice_isSubZmodule of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 

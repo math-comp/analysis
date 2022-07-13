@@ -224,9 +224,10 @@ Qed.
 
 Definition ocitv_display : Type -> measure_display. Proof. exact. Qed.
 
+HB.instance Definition _ := Pointed.on ocitv_type.
 HB.instance Definition _ :=
   @isSemiRingOfSets.Build (ocitv_display R)
-    ocitv_type (Pointed.class R) ocitv ocitv0 ocitvI ocitvD.
+    ocitv_type ocitv ocitv0 ocitvI ocitvD.
 
 Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
 Notation "R .-ocitv.-measurable" := (measurable : set (set (ocitv_type))) :
@@ -266,7 +267,8 @@ Proof. by rewrite -hlength0 le_hlength. Qed.
 (* by rewrite lt_geF ?midf_lt//= andbF le_gtF ?midf_le//= ltW. *)
 (* Qed. *)
 
-Lemma hlength_semi_additive : semi_additive (hlength : set ocitv_type -> _).
+Lemma hlength_semi_additive :
+  measure.semi_additive (hlength : set ocitv_type -> _).
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.
@@ -503,9 +505,8 @@ rewrite predeqE => i /=; split=> [[r [n _ fn1r <-{i}]]|[n _ [r fn1r <-{i}]]];
  by [exists n => //; exists r | exists r => //; exists n].
 Qed.
 
-Definition ereal_isMeasurable :
-  isMeasurable default_measure_display (\bar R) :=
-  isMeasurable.Build _ _ (Pointed.class _)
+Definition ereal_isMeasurable : isMeasurable default_measure_display (\bar R) :=
+  isMeasurable.Build _ _
     emeasurable0 emeasurableC bigcupT_emeasurable.
 
 End salgebra_ereal.
@@ -558,9 +559,10 @@ apply/seteqP; split=> [x ->|].
   by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
 apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
-have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
-by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW// lt_succ_floor.
+have := rx `|floor e^-1|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
+rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE/=.
+rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW//.
+by rewrite lt_succ_floor.
 Qed.
 
 Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
@@ -598,8 +600,9 @@ Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
 move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
-rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
-by case: b xy => //= /ltW.
+rewrite !natr_absz/= ger0_norm ?ceil_ge0// ?subr_ge0//; last first.
+  by case: b xy => //= /ltW.
+by rewrite -RceilE Rceil_ge.
 Qed.
 
 Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
@@ -620,9 +623,10 @@ Definition measurableTypeR := salgebraType (R.-ocitv.-measurable).
 Definition measurableR : set (set R) :=
   (R.-ocitv.-measurable).-sigma.-measurable.
 
+HB.instance Definition _ := Pointed.on R.
 HB.instance Definition R_isMeasurable :
   isMeasurable default_measure_display R :=
-  @isMeasurable.Build _ measurableTypeR (Pointed.class R) measurableR
+  @isMeasurable.Build _ measurableTypeR measurableR
     measurable0 (@measurableC _ _) (@bigcupT_measurable _ _).
 (*HB.instance (Real.sort R) R_isMeasurable.*)
 
@@ -862,7 +866,7 @@ Qed.
 Let lebesgue_measure_itvoo_subr1 (a : R) :
   lebesgue_measure (`]a - 1, a[%classic : set R) = 1%E.
 Proof.
-rewrite itv_bnd_open_bigcup//; transitivity (lim (lebesgue_measure \o
+rewrite itv_bnd_open_bigcup//; transitivity (limn (lebesgue_measure \o
     (fun k => `]a - 1, a - k.+1%:R^-1]%classic : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   - by move=> ?; exact: measurable_itv.
@@ -877,7 +881,7 @@ rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
     by rewrite ler_lt_sub// invr_lt1 ?unitfE// ltr1n ltnS lt0n.
   by rewrite !(EFinB,EFinN) oppeB// addeAC addeA subee// add0e.
 apply/cvg_lim => //=; apply/fine_cvgP; split => /=; first exact: nearW.
-apply/(@cvgrPdist_lt _ [pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
+apply/(@cvgrPdist_lt _ [the pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
 near=> n; rewrite opprB addrCA subrr addr0 ger0_norm//.
 by near: n; exact: near_infty_natSinv_lt.
 Unshelve. all: by end_near. Qed.
@@ -940,13 +944,13 @@ by move: x y => [|] [|]; [exact: lebesgue_measure_itvco |
   exact: lebesgue_measure_itvoc].
 Qed.
 
-Let limnatR : lim (fun k => (k%:R)%:E : \bar R) = +oo%E.
+Let limnatR : lim (((k%:R)%:E : \bar R) @[k --> \oo]) = +oo%E.
 Proof. by apply/cvg_lim => //; apply/cvgenyP. Qed.
 
 Let lebesgue_measure_itv_bnd_infty x (a : R) :
   lebesgue_measure ([set` Interval (BSide x a) +oo%O] : set R) = +oo%E.
 Proof.
-rewrite itv_bnd_infty_bigcup; transitivity (lim (lebesgue_measure \o
+rewrite itv_bnd_infty_bigcup; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))] : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
@@ -962,7 +966,7 @@ Qed.
 Let lebesgue_measure_itv_infty_bnd y (b : R) :
   lebesgue_measure ([set` Interval -oo%O (BSide y b)] : set R) = +oo%E.
 Proof.
-rewrite itv_infty_bnd_bigcup; transitivity (lim (lebesgue_measure \o
+rewrite itv_infty_bnd_bigcup; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)] : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
@@ -1675,7 +1679,7 @@ Proof.
 move=> f_ub f_lb mf.
 have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
               =1 (fun x => lim_sup (h^~ x))}.
-  move=> t; rewrite inE => Dt; apply/esym/cvg_lim; first exact: Rhausdorff.
+  move=> t; rewrite inE => Dt; apply/esym/cvg_lim => //.
   rewrite [X in _ --> X](_ : _ = inf (range (sups (h^~t)))).
     by apply: cvg_sups_inf; [exact: f_ub|exact: f_lb].
   by congr (inf [set _ | _ in _]); rewrite predeqE.
@@ -1687,19 +1691,16 @@ by move=> k; exact: measurable_fun_sups.
 Qed.
 
 Lemma measurable_fun_cvg D (h : (T -> R)^nat) f :
-  (forall m, measurable_fun D (h m)) -> (forall x, D x -> h ^~ x --> f x) ->
+  (forall m, measurable_fun D (h m)) -> (forall x, D x -> h ^~ x @ \oo --> f x) ->
   measurable_fun D f.
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = lim_sup (h ^~ x).
   move=> Dx; have /cvg_lim  <-// := @cvg_sups _ (h ^~ x) (f x) (f_f _ Dx).
-  exact: Rhausdorff.
 apply: (@eq_measurable_fun _ _ _ _ D (fun x => lim_sup (h ^~ x))).
   by move=> x; rewrite inE => Dx; rewrite -fE.
 apply: (@measurable_fun_lim_sup _ h) => // t Dt.
-- apply/bounded_fun_has_ubound/(@cvg_seq_bounded _ [normedModType R of R^o]).
-  by apply/cvg_ex; eexists; exact: f_f.
-- apply/bounded_fun_has_lbound/(@cvg_seq_bounded _ [normedModType R of R^o]).
-  by apply/cvg_ex; eexists; exact: f_f.
+- by apply/bounded_fun_has_ubound/cvg_seq_bounded/cvg_ex; eexists; exact: f_f.
+- by apply/bounded_fun_has_lbound/cvg_seq_bounded/cvg_ex; eexists; exact: f_f.
 Qed.
 
 End measurable_fun_realType.
@@ -1861,7 +1862,7 @@ Notation measurable_fun_elim_sup := measurable_fun_lim_esup.
 
 Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall m, measurable_fun D (f_ m)) ->
-  (forall x, D x -> f_ ^~ x --> f x) -> measurable_fun D f.
+  (forall x, D x -> f_ ^~ x @ \oo --> f x) -> measurable_fun D f.
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = lim_esup (f_^~ x).
   by move=> Dx; have /cvg_lim  <-// := @cvg_esups _ (f_^~x) (f x) (f_f x Dx).

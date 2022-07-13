@@ -9,6 +9,7 @@
    (c.f. https://github.com/math-comp/real-closed/pull/29 ) and
    incorporate it into mathcomp proper where it could then be used for
    bounds of intervals*)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp.classical Require Import mathcomp_extra.
 Require Import signed.
@@ -137,8 +138,7 @@ Definition eq_ereal (x y : \bar R) :=
 Lemma ereal_eqP : Equality.axiom eq_ereal.
 Proof. by case=> [?||][?||]; apply: (iffP idP) => //= [/eqP|[]] ->. Qed.
 
-Definition ereal_eqMixin := Equality.Mixin ereal_eqP.
-Canonical ereal_eqType := Equality.Pack ereal_eqMixin.
+HB.instance Definition _ := hasDecEq.Build (\bar R) ereal_eqP.
 
 Lemma eqe (r1 r2 : R) : (r1%:E == r2%:E) = (r1 == r2). Proof. by []. Qed.
 
@@ -164,16 +164,14 @@ Definition decode (x : GenTree.tree R) : option (\bar R) :=
 
 Lemma codeK : pcancel code decode. Proof. by case. Qed.
 
-Definition ereal_choiceMixin := PcanChoiceMixin codeK.
-Canonical ereal_choiceType  := ChoiceType (extended R) ereal_choiceMixin.
+HB.instance Definition _ := Choice.copy (\bar R) (pcan_type codeK).
 
 End ERealChoice.
 
 Section ERealCount.
 Variable (R : countType).
 
-Definition ereal_countMixin := PcanCountMixin (@codeK R).
-Canonical ereal_countType := CountType (extended R) ereal_countMixin.
+HB.instance Definition _ := PcanCountMixin (@codeK R).
 
 End ERealCount.
 
@@ -216,11 +214,8 @@ Qed.
 
 Fact ereal_display : unit. Proof. by []. Qed.
 
-Definition ereal_porderMixin :=
-  LePOrderMixin lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
-
-Canonical ereal_porderType :=
-  POrderType ereal_display (extended R) ereal_porderMixin.
+HB.instance Definition _ := Order.isPOrdered.Build ereal_display (\bar R)
+  lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
 
 Lemma leEereal x y : (x <= y)%O = le_ereal x y. Proof. by []. Qed.
 Lemma ltEereal x y : (x < y)%O = lt_ereal x y. Proof. by []. Qed.
@@ -351,14 +346,13 @@ Definition lteey := (ltey, leey).
 
 Definition lteNye := (ltNye, leNye).
 
-Lemma le_total_ereal : totalPOrderMixin [porderType of \bar R].
+Lemma le_total_ereal : total (Order.le : rel (\bar R)).
 Proof.
 by move=> [?||][?||]//=; rewrite (ltEereal, leEereal)/= ?num_real ?le_total.
 Qed.
 
-Canonical ereal_latticeType := LatticeType (extended R) le_total_ereal.
-Canonical ereal_distrLatticeType :=  DistrLatticeType (extended R) le_total_ereal.
-Canonical ereal_orderType := OrderType (extended R) le_total_ereal.
+HB.instance Definition _ := Order.POrder_isTotal.Build ereal_display (\bar R)
+  le_total_ereal.
 
 End ERealOrder_realDomainType.
 
@@ -642,8 +636,8 @@ Proof. by move=> x; rewrite addeC adde0. Qed.
 Lemma addeA : associative (S := \bar R) +%E.
 Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
 
-Canonical adde_monoid := Monoid.Law addeA add0e adde0.
-Canonical adde_comoid := Monoid.ComLaw addeC.
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 0 +%E
+  addeA addeC add0e.
 
 Lemma addeAC : @right_commutative (\bar R) _ +%E.
 Proof. exact: Monoid.mulmAC. Qed.
@@ -715,7 +709,7 @@ Proof. by move: x => [r| |] //=; rewrite /mule/= ?mulr0// eqxx. Qed.
 Lemma mul0e x : 0 * x = 0.
 Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
-Canonical mule_mulmonoid := @Monoid.MulLaw _ _ mule mul0e mule0.
+HB.instance Definition _ := Monoid.isMulLaw.Build (\bar R) 0 mule mul0e mule0.
 
 Lemma expeS x n : x ^+ n.+1 = x * x ^+ n.
 Proof. by case: n => //=; rewrite mule1. Qed.
@@ -1171,8 +1165,8 @@ Proof. by move=> x;rewrite dual_addeE eqe_oppLRP oppe0 add0e. Qed.
 Lemma daddeA : associative (S := \bar R) +%dE.
 Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeA. Qed.
 
-Canonical dadde_monoid := Monoid.Law daddeA dadd0e dadde0.
-Canonical dadde_comoid := Monoid.ComLaw daddeC.
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 0 +%dE
+  daddeA daddeC dadd0e.
 
 Lemma daddeAC : right_commutative (S := \bar R) +%dE.
 Proof. exact: Monoid.mulmAC. Qed.
@@ -1989,8 +1983,8 @@ Qed.
 
 Local Open Scope ereal_scope.
 
-Canonical mule_monoid := Monoid.Law muleA mul1e mule1.
-Canonical mule_comoid := Monoid.ComLaw muleC.
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 1%E mule
+  muleA muleC mul1e.
 
 Lemma muleCA : left_commutative ( *%E : \bar R -> \bar R -> \bar R ).
 Proof. exact: Monoid.mulmCA. Qed.
@@ -2239,8 +2233,6 @@ Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge leNye. Qed.
 Lemma maxeNy : right_id (-oo : \bar R) maxe.
 Proof. by move=> x; rewrite maxC maxNye. Qed.
 
-Canonical maxe_monoid := Monoid.Law maxA maxNye maxeNy.
-Canonical maxe_comoid := Monoid.ComLaw maxC.
 
 Lemma minNye : left_zero (-oo : \bar R) mine.
 Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
@@ -2254,8 +2246,6 @@ Proof. by move=> x; have [//|] := leP x +oo; rewrite ltNge leey. Qed.
 Lemma miney : right_id (+oo : \bar R) mine.
 Proof. by move=> x; rewrite minC minye. Qed.
 
-Canonical mine_monoid := Monoid.Law minA minye miney.
-Canonical mine_comoid := Monoid.ComLaw minC.
 
 Lemma oppe_max : {morph -%E : x y / maxe x y >-> mine x y : \bar R}.
 Proof.
@@ -3371,7 +3361,7 @@ apply: le_mono; move=> -[r0 | | ] [r1 | _ | _] //=.
   rewrite mulrAC ltr_pdivl_mulr ?ltr_paddr// 2?mulrDr 2?mulr1.
   have [r10|?] := ler0P r1; last first.
     rewrite ltr_le_add // mulrC; have [r00|//] := ler0P r0.
-    by rewrite (@le_trans _ _ 0%R) // ?pmulr_lle0// mulr_ge0// ?oppr_ge0// ltW.
+    by rewrite (@le_trans _ _ 0%R) // ?pmulr_rle0// mulr_ge0// ?oppr_ge0// ltW.
   have [?|r00] := ler0P r0; first by rewrite ltr_le_add // 2!mulrN mulrC.
   by move: (le_lt_trans r10 (lt_trans r00 r0r1)); rewrite ltxx.
 - by rewrite ltr_pdivr_mulr ?ltr_paddr// mul1r ltr_spaddl // ler_norm.
@@ -3419,7 +3409,7 @@ Qed.
 End contract_expand.
 
 Section ereal_PseudoMetric.
-Variable R : realFieldType.
+Context {R : realFieldType}.
 Implicit Types (x y : \bar R) (r : R).
 
 Definition ereal_ball x r y := (`|contract x - contract y| < r)%R.

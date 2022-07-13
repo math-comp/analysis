@@ -1,3 +1,4 @@
+From HB Require Import structures.
 From mathcomp
 Require Import all_ssreflect ssralg fingroup zmodp poly ssrnum.
 From mathcomp
@@ -27,7 +28,7 @@ Reserved Notation "A ^_|_"    (at level 8, format "A ^_|_").
 Reserved Notation "A _|_ B" (at level 69, format "A  _|_  B").
 Reserved Notation "eps_theta .-sesqui" (at level 2, format "eps_theta .-sesqui").
 
-Notation "u '``_' i" := (u (GRing.zero (Zp_zmodType O)) i) : ring_scope.
+Notation "u '``_' i" := (u (GRing.zero [the zmodType of 'I_1]) i) : ring_scope.
 Notation "''e_' i" := (delta_mx 0 i)
  (format "''e_' i", at level 3) : ring_scope.
 
@@ -50,112 +51,69 @@ Lemma eq_map_mx_id (R : ringType) m n (M : 'M[R]_(m,n)) (f : R -> R) :
   f =1 id -> M ^ f = M.
 Proof. by move=> /eq_map_mx->; rewrite map_mx_id. Qed.
 
-Module Bilinear.
-
-Section ClassDef.
-
-Variables (R : ringType) (U U' : lmodType R) (V : zmodType) (s s' : R -> V -> V).
-Implicit Type phUU'V : phant (U -> U' -> V).
-
-Local Coercion GRing.Scale.op : GRing.Scale.law >-> Funclass.
-Definition axiom (f : U -> U' -> V) (s_law : GRing.Scale.law s) (eqs : s = s_law)
-                                    (s'_law : GRing.Scale.law s') (eqs' : s' = s'_law) :=
-  ((forall u', GRing.Linear.axiom (f^~ u') eqs)
-  * (forall u, GRing.Linear.axiom (f u) eqs'))%type.
-
-Record class_of (f : U -> U' -> V) : Prop := Class {
-  basel : forall u', GRing.Linear.class_of s (f^~ u');
-  baser : forall u, GRing.Linear.class_of s' (f u)
+HB.mixin Record isBilinear (R : ringType) (U U' : lmodType R) (V : zmodType)
+    (s : R -> V -> V) (s' : R -> V -> V) (f : U -> U' -> V) := {
+  additivel_subproof : forall u', additive (f^~ u');
+  additiver_subproof : forall u, additive (f u);
+  linearl_subproof : forall u', scalable_for s (f^~ u');
+  linearr_subproof : forall u, scalable_for s' (f u);
 }.
 
-Lemma class_of_axiom f s_law s'_law Ds Ds' :
-   @axiom f s_law Ds s'_law Ds' -> class_of f.
-Proof.
-by pose coa := GRing.Linear.class_of_axiom; move=> [/(_ _) /coa ? /(_ _) /coa].
-Qed.
+HB.structure Definition Bilinear (R : ringType) (U U' : lmodType R) (V : zmodType)
+    (s : R -> V -> V) (s' : R -> V -> V) :=
+  {f of isBilinear R U U' V s s' f}.
 
-Structure map phUU'V := Pack {apply; _ : class_of apply}.
-Local Coercion apply : map >-> Funclass.
+Definition bilinear_for (R : ringType) (U U' : lmodType R) (V : zmodType)
+    (s : GRing.Scale.law R V) (s' : GRing.Scale.law R V) (f : U -> U' -> V) :=
+  ((forall u', GRing.linear_for (s : R -> V -> V) (f^~ u'))
+  * (forall u, GRing.linear_for s' (f u)))%type.
 
-Definition class (phUU'V : _)  (cF : map phUU'V) :=
-   let: Pack _ c as cF' := cF return class_of cF' in c.
+HB.factory Record bilinear_isBilinear (R : ringType) (U U' : lmodType R) (V : zmodType)
+    (s : GRing.Scale.law R V) (s' : GRing.Scale.law R V) (f : U -> U' -> V) := {
+  bilinear_subproof : bilinear_for s s' f;
+}.
 
-Canonical additiver phU'V phUU'V (u : U) cF := GRing.Additive.Pack phU'V
-  (baser (@class phUU'V cF) u).
-Canonical linearr phU'V  phUU'V (u : U) cF := GRing.Linear.Pack phU'V
-  (baser (@class phUU'V cF) u).
+HB.builders Context R U U' V s s' f of bilinear_isBilinear R U U' V s s' f.
+HB.instance Definition _ := isBilinear.Build R U U' V s s' f
+    (fun u' => additive_linear (bilinear_subproof.1 u'))
+    (fun u => additive_linear (bilinear_subproof.2 u))
+    (fun u' => scalable_linear (bilinear_subproof.1 u'))
+    (fun u => scalable_linear (bilinear_subproof.2 u)).
+HB.end.
 
-(* Fact applyr_key : unit. Proof. exact. Qed. *)
-Definition applyr_head t (f : U -> U' -> V) u v := let: tt := t in f v u.
-Notation applyr := (@applyr_head tt).
-
-Canonical additivel phUV phUU'V (u' : U') (cF : map _) :=
-  @GRing.Additive.Pack _ _ phUV (applyr cF u') (basel (@class phUU'V cF) u').
-Canonical linearl phUV phUU'V  (u' : U') (cF : map _) :=
-  @GRing.Linear.Pack _ _ _ _ phUV (applyr cF u') (basel (@class phUU'V cF) u').
-
-Definition pack (phUV : phant (U -> V)) (phU'V : phant (U' -> V))
-           (revf : U' -> U -> V) (rf : revop revf) f (g : U -> U' -> V) of (g = fun_of_revop rf) :=
-  fun (bFl : U' -> GRing.Linear.map s phUV) flc of (forall u', revf u' = bFl u') &
-      (forall u', phant_id (GRing.Linear.class (bFl u')) (flc u')) =>
-  fun (bFr : U -> GRing.Linear.map s' phU'V) frc of (forall u, g u = bFr u) &
-      (forall u, phant_id (GRing.Linear.class (bFr u)) (frc u)) =>
-  @Pack (Phant _) f (Class flc frc).
-
-
-(* (* Support for right-to-left rewriting with the generic linearZ rule. *) *)
-(* Notation mapUV := (map (Phant (U -> U' -> V))). *)
-(* Definition map_class := mapUV. *)
-(* Definition map_at (a : R) := mapUV. *)
-(* Structure map_for a s_a := MapFor {map_for_map : mapUV; _ : s a = s_a}. *)
-(* Definition unify_map_at a (f : map_at a) := MapFor f (erefl (s a)). *)
-(* Structure wrapped := Wrap {unwrap : mapUV}. *)
-(* Definition wrap (f : map_class) := Wrap f. *)
-
-End ClassDef.
-
-Module Exports.
-Delimit Scope linear_ring_scope with linR.
-Notation bilinear_for s s' f := (axiom f (erefl s) (erefl s')).
+Module BilinearExports.
 Notation bilinear f := (bilinear_for *:%R *:%R f).
 Notation biscalar f := (bilinear_for *%R *%R f).
-Notation bilmorphism_for s s' f := (class_of s s' f).
-Notation bilmorphism f := (bilmorphism_for *:%R *:%R f).
-Coercion class_of_axiom : axiom >-> bilmorphism_for.
-Coercion baser : bilmorphism_for >-> Funclass.
-Coercion apply : map >-> Funclass.
-Notation "{ 'bilinear' fUV | s & s' }" := (map s s' (Phant fUV))
+Module Bilinear.
+Definition map (R : ringType) (U U' : lmodType R) (V : zmodType)
+    (s : R -> V -> V) (s' : R -> V -> V)
+    (phUU'V : phant (U -> U' -> V)) := Bilinear.type U U' s s'.
+End Bilinear.
+Notation "{ 'bilinear' fUV | s & s' }" := (Bilinear.map s s' (Phant fUV))
   (at level 0, format "{ 'bilinear'  fUV  |  s  &  s' }") : ring_scope.
-Notation "{ 'bilinear' fUV | s }" := (map s.1 s.2 (Phant fUV))
+Notation "{ 'bilinear' fUV | s }" := (Bilinear.map s.1 s.2 (Phant fUV))
   (at level 0, format "{ 'bilinear'  fUV  |  s }") : ring_scope.
 Notation "{ 'bilinear' fUV }" := {bilinear fUV | *:%R & *:%R}
   (at level 0, format "{ 'bilinear'  fUV }") : ring_scope.
 Notation "{ 'biscalar' U }" := {bilinear U -> U -> _ | *%R & *%R}
   (at level 0, format "{ 'biscalar'  U }") : ring_scope.
-Notation "[ 'bilinear' 'of' f 'as' g ]" :=
-  (@pack  _ _ _ _ _ _ _ _ _ _ f g erefl _ _
-         (fun=> erefl) (fun=> idfun) _ _ (fun=> erefl) (fun=> idfun)).
-Notation "[ 'bilinear' 'of' f ]" :=  [bilinear of f as f]
+Notation "[ 'bilinear' 'of' f 'as' g ]" := (Bilinear.clone _ _ _ _ _ _ f g)
+  (at level 0, format "[ 'bilinear'  'of'  f  'as'  g ]") : form_scope.
+Notation "[ 'bilinear' 'of' f ]" := (Bilinear.clone _ _ _ _ _ _ f _)
   (at level 0, format "[ 'bilinear'  'of'  f ]") : form_scope.
-Coercion additiver : map >-> GRing.Additive.map.
-Coercion linearr : map >->  GRing.Linear.map.
-Canonical additiver.
-Canonical linearr.
-Canonical additivel.
-Canonical linearl.
-Notation applyr := (@applyr_head _ _ _ _ tt).
-(* Canonical additive. *)
-(* (* Support for right-to-left rewriting with the generic linearZ rule. *) *)
-(* Coercion map_for_map : map_for >-> map. *)
-(* Coercion unify_map_at : map_at >-> map_for. *)
-(* Canonical unify_map_at. *)
-(* Coercion unwrap : wrapped >-> map. *)
-(* Coercion wrap : map_class >-> wrapped. *)
-(* Canonical wrap. *)
-End Exports.
+End BilinearExports.
+Export BilinearExports.
 
-End Bilinear.
-Include Bilinear.Exports.
+Section applyr.
+
+Variables (R : ringType) (U U' : lmodType R) (V : zmodType) (s s' : R -> V -> V).
+
+(* Fact applyr_key : unit. Proof. exact. Qed. *)
+Definition applyr_head t (f : U -> U' -> V) u v := let: tt := t in f v u.
+
+End applyr.
+
+Notation applyr := (applyr_head tt).
 
 Section BilinearTheory.
 
@@ -166,48 +124,74 @@ Section GenericProperties.
 Variables (U U' : lmodType R) (V : zmodType) (s : R -> V -> V) (s' : R -> V -> V).
 Variable f : {bilinear U -> U' -> V | s & s'}.
 
-Lemma linear0r z : f z 0 = 0. Proof. by rewrite raddf0. Qed.
-Lemma linearNr z : {morph f z : x / - x}. Proof. exact: raddfN. Qed.
-Lemma linearDr z : {morph f z : x y / x + y}. Proof. exact: raddfD. Qed.
-Lemma linearBr z : {morph f z : x y / x - y}. Proof. exact: raddfB. Qed.
-Lemma linearMnr z n : {morph f z : x / x *+ n}. Proof. exact: raddfMn. Qed.
-Lemma linearMNnr z n : {morph f z : x / x *- n}. Proof. exact: raddfMNn. Qed.
-Lemma linear_sumr z I r (P : pred I) E :
+Section GenericPropertiesr.
+
+Variable z : U.
+
+#[local, non_forgetful_inheritance]
+HB.instance Definition _ :=
+  GRing.isAdditive.Build _ _ (f z) (@additiver_subproof _ _ _ _ _ _ f z).
+#[local, non_forgetful_inheritance]
+HB.instance Definition _ :=
+  GRing.isScalable.Build _ _ _ _ (f z) (@linearr_subproof _ _ _ _ _ _ f z).
+
+Lemma linear0r : f z 0 = 0. Proof. by rewrite raddf0. Qed.
+Lemma linearNr : {morph f z : x / - x}. Proof. exact: raddfN. Qed.
+Lemma linearDr : {morph f z : x y / x + y}. Proof. exact: raddfD. Qed.
+Lemma linearBr : {morph f z : x y / x - y}. Proof. exact: raddfB. Qed.
+Lemma linearMnr n : {morph f z : x / x *+ n}. Proof. exact: raddfMn. Qed.
+Lemma linearMNnr n : {morph f z : x / x *- n}. Proof. exact: raddfMNn. Qed.
+Lemma linear_sumr I r (P : pred I) E :
   f z (\sum_(i <- r | P i) E i) = \sum_(i <- r | P i) f z (E i).
 Proof. exact: raddf_sum. Qed.
 
-Lemma linearZr_LR z : scalable_for s' (f z). Proof. exact: linearZ_LR. Qed.
-Lemma linearPr z a : {morph f z : u v / a *: u + v >-> s' a u + v}.
+Lemma linearZr_LR : scalable_for s' (f z). Proof. exact: linearZ_LR. Qed.
+Lemma linearPr a : {morph f z : u v / a *: u + v >-> s' a u + v}.
 Proof. exact: linearP. Qed.
+
+End GenericPropertiesr.
 
 Lemma applyrE x : applyr f x =1 f^~ x. Proof. by []. Qed.
 
-Lemma linear0l z : f 0 z = 0. Proof. by rewrite -applyrE raddf0. Qed.
-Lemma linearNl z : {morph f^~ z : x / - x}.
+Section GenericPropertiesl.
+
+Variable z : U'.
+
+#[local, non_forgetful_inheritance]
+HB.instance Definition _ :=
+  GRing.isAdditive.Build _ _ (applyr f z) (@additivel_subproof _ _ _ _ _ _ f z).
+#[local, non_forgetful_inheritance]
+HB.instance Definition _ :=
+  GRing.isScalable.Build _ _ _ _ (applyr f z) (@linearl_subproof _ _ _ _ _ _ f z).
+
+Lemma linear0l : f 0 z = 0. Proof. by rewrite -applyrE raddf0. Qed.
+Lemma linearNl : {morph f^~ z : x / - x}.
 Proof. by move=> ?; rewrite -applyrE raddfN. Qed.
-Lemma linearDl z : {morph f^~ z : x y / x + y}.
+Lemma linearDl : {morph f^~ z : x y / x + y}.
 Proof. by move=> ??; rewrite -applyrE raddfD. Qed.
-Lemma linearBl z : {morph f^~ z : x y / x - y}.
+Lemma linearBl : {morph f^~ z : x y / x - y}.
 Proof. by move=> ??; rewrite -applyrE raddfB. Qed.
-Lemma linearMnl z n : {morph f^~ z : x / x *+ n}.
+Lemma linearMnl n : {morph f^~ z : x / x *+ n}.
 Proof. by move=> ?; rewrite -applyrE raddfMn. Qed.
-Lemma linearMNnl z n : {morph f^~ z : x / x *- n}.
+Lemma linearMNnl n : {morph f^~ z : x / x *- n}.
 Proof. by move=> ?; rewrite -applyrE raddfMNn. Qed.
-Lemma linear_suml z I r (P : pred I) E :
+Lemma linear_suml I r (P : pred I) E :
   f (\sum_(i <- r | P i) E i) z = \sum_(i <- r | P i) f (E i) z.
 Proof. by rewrite -applyrE raddf_sum. Qed.
 
-Lemma linearZl_LR z : scalable_for s (f^~ z).
+Lemma linearZl_LR : scalable_for s (f^~ z).
 Proof. by move=> ??; rewrite -applyrE linearZ_LR. Qed.
-Lemma linearPl z a : {morph f^~ z : u v / a *: u + v >-> s a u + v}.
+Lemma linearPl a : {morph f^~ z : u v / a *: u + v >-> s a u + v}.
 Proof. by move=> ??; rewrite -applyrE linearP. Qed.
+
+End GenericPropertiesl.
 
 End GenericProperties.
 
 Section BidirectionalLinearZ.
 
 Variables (U : lmodType R) (V : zmodType) (s : R -> V -> V).
-Variables (S : ringType) (h : S -> V -> V) (h_law : GRing.Scale.law h).
+Variables (S : ringType) (h : GRing.Scale.law S V).
 
 (* Lemma linearZr z c a (h_c := GRing.Scale.op h_law c) (f : GRing.Linear.map_for U s a h_c) u : *)
 (*   f z (a *: u) = h_c (GRing.Linear.wrap (f z) u). *)
@@ -220,7 +204,21 @@ End BilinearTheory.
 Canonical rev_mulmx (R : ringType) m n p := @RevOp _ _ _ (@mulmxr R m n p)
   (@mulmx R m n p) (fun _ _ => erefl).
 
-Canonical mulmx_bilinear (R : comRingType) m n p := [bilinear of @mulmx R m n p].
+Lemma mulmx_is_bilinear (R : comRingType) m n p :
+  bilinear_for
+    (GRing.Scale.Law.clone _ _ *:%R _) (GRing.Scale.Law.clone _ _ *:%R _)
+    (@mulmx R m n p).
+Proof.
+split=> [u'|u] a x y /=.
+- by rewrite mulmxDl scalemxAl.
+- by rewrite mulmxDr scalemxAr.
+Qed.
+
+HB.instance Definition _ (R : comRingType) m n p :=
+  bilinear_isBilinear.Build R
+    [the lmodType R of 'M[R]_(m, n)] [the lmodType R of 'M[R]_(n, p)]
+    [the zmodType of 'M[R]_(m, p)] _ _ (@mulmx R m n p)
+    (mulmx_is_bilinear R m n p).
 
 (* Section classfun. *)
 (* Import mathcomp.character.classfun. *)
@@ -340,7 +338,7 @@ Proof.
 rewrite /form [M in LHS](sesquiP _) // -mulmxA !mxE rmorph_sum mulr_sumr.
 apply: eq_bigr => /= i _; rewrite !(mxE, mulr_sumr, mulr_suml, rmorph_sum).
 apply: eq_bigr => /= j _; rewrite !mxE !rmorphM  mulrCA -!mulrA.
-by congr (_ * _); rewrite mulrA mulrC thetaK.
+by congr (_ * _); rewrite mulrA mulrC /= thetaK.
 Qed.
 
 Lemma form_eq0C u v : ('[u, v] == 0) = ('[v, u] == 0).
@@ -485,7 +483,7 @@ Notation "eps_theta .-sesqui" := (sesqui _ eps_theta) : ring_scope.
 
 Notation symmetric_form := (false, [rmorphism of idfun]).-sesqui.
 Notation skew := (true, [rmorphism of idfun]).-sesqui.
-Notation hermitian := (false, @conjC _).-sesqui.
+Notation hermitian := (false, @Num.conj_op _).-sesqui.
 
 (* Section ClassificationForm. *)
 

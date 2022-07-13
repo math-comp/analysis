@@ -637,21 +637,15 @@ Qed.
 End dynkin_lemmas.
 
 HB.mixin Record isSemiRingOfSets (d : measure_display) T := {
-  ptclass : Pointed.class_of T;
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableI : setI_closed measurable;
   semi_measurableD : semi_setD_closed measurable;
 }.
 
-#[short(type=semiRingOfSetsType)]
-HB.structure Definition SemiRingOfSets d := {T of isSemiRingOfSets d T}.
-
-Canonical semiRingOfSets_eqType d (T : semiRingOfSetsType d) := EqType T ptclass.
-Canonical semiRingOfSets_choiceType d (T : semiRingOfSetsType d) :=
-  ChoiceType T ptclass.
-Canonical semiRingOfSets_ptType d (T : semiRingOfSetsType d) :=
-  PointedType T ptclass.
+#[short(type="semiRingOfSetsType")]
+HB.structure Definition SemiRingOfSets d :=
+  {T of Pointed T & isSemiRingOfSets d T}.
 
 Lemma measurable_curry (T1 T2 : Type) d (T : semiRingOfSetsType d)
     (G : T1 * T2 -> set T) (x : T1 * T2) :
@@ -662,46 +656,32 @@ Notation "d .-measurable" := (@measurable d%mdisp) : classical_set_scope.
 Notation "'measurable" :=
   (@measurable default_measure_display) : classical_set_scope.
 
-HB.mixin Record RingOfSets_from_semiRingOfSets d T of isSemiRingOfSets d T := {
-  measurableU : setU_closed (@measurable d [the semiRingOfSetsType d of T]) }.
+HB.mixin Record RingOfSets_from_semiRingOfSets d T of SemiRingOfSets d T := {
+  measurableU : @setU_closed T measurable
+}.
 
-#[short(type=ringOfSetsType)]
+#[short(type="ringOfSetsType")]
 HB.structure Definition RingOfSets d :=
   {T of RingOfSets_from_semiRingOfSets d T & SemiRingOfSets d T}.
-
-Canonical ringOfSets_eqType d (T : ringOfSetsType d) := EqType T ptclass.
-Canonical ringOfSets_choiceType d (T : ringOfSetsType d) := ChoiceType T ptclass.
-Canonical ringOfSets_ptType d (T : ringOfSetsType d) := PointedType T ptclass.
 
 HB.mixin Record AlgebraOfSets_from_RingOfSets d T of RingOfSets d T := {
   measurableT : measurable [set: T]
 }.
 
-#[short(type=algebraOfSetsType)]
+#[short(type="algebraOfSetsType")]
 HB.structure Definition AlgebraOfSets d :=
   {T of AlgebraOfSets_from_RingOfSets d T & RingOfSets d T}.
-
-Canonical algebraOfSets_eqType d (T : algebraOfSetsType d) := EqType T ptclass.
-Canonical algebraOfSets_choiceType d (T : algebraOfSetsType d) :=
-  ChoiceType T ptclass.
-Canonical algebraOfSets_ptType d (T : algebraOfSetsType d) :=
-  PointedType T ptclass.
 
 HB.mixin Record Measurable_from_algebraOfSets d T of AlgebraOfSets d T := {
   bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
     measurable (\bigcup_i (F i))
 }.
 
-#[short(type=measurableType)]
+#[short(type="measurableType")]
 HB.structure Definition Measurable d :=
   {T of Measurable_from_algebraOfSets d T & AlgebraOfSets d T}.
 
-Canonical measurable_eqType d (T : measurableType d) := EqType T ptclass.
-Canonical measurable_choiceType d (T : measurableType d) := ChoiceType T ptclass.
-Canonical measurable_ptType d (T : measurableType d) := PointedType T ptclass.
-
-HB.factory Record isRingOfSets (d : measure_display) T := {
-  ptclass : Pointed.class_of T;
+HB.factory Record isRingOfSets (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
@@ -722,15 +702,14 @@ by move=> X Y -> ->.
 Qed.
 
 HB.instance Definition T_isSemiRingOfSets :=
-  @isSemiRingOfSets.Build d T ptclass measurable measurable0 mI mD.
+  @isSemiRingOfSets.Build d T measurable measurable0 mI mD.
 
 HB.instance Definition T_isRingOfSets :=
   RingOfSets_from_semiRingOfSets.Build d T measurableU.
 
 HB.end.
 
-HB.factory Record isAlgebraOfSets (d : measure_display) T := {
-  ptclass : Pointed.class_of T;
+HB.factory Record isAlgebraOfSets (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
@@ -745,7 +724,7 @@ move=> A B mA mB; rewrite setDE -[A]setCK -setCU.
 by do ?[apply: measurableU | apply: measurableC].
 Qed.
 
-HB.instance Definition T_isRingOfSets := @isRingOfSets.Build d T ptclass
+HB.instance Definition T_isRingOfSets := @isRingOfSets.Build d T
   measurable measurable0 measurableU mD.
 
 Lemma measurableT : measurable (@setT T).
@@ -756,8 +735,7 @@ HB.instance Definition T_isAlgebraOfSets : AlgebraOfSets_from_RingOfSets d T :=
 
 HB.end.
 
-HB.factory Record isMeasurable (d : measure_display) T := {
-  ptclass : Pointed.class_of T;
+HB.factory Record isMeasurable (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableC : forall A, measurable A -> measurable (~` A) ;
@@ -777,8 +755,8 @@ Qed.
 
 Lemma mC : setC_closed measurable. Proof. by move=> *; apply: measurableC. Qed.
 
-HB.instance Definition T_isAlgebraOfSets :=
-  @isAlgebraOfSets.Build d T ptclass measurable measurable0 mU mC.
+HB.instance Definition T_isAlgebraOfSets := @isAlgebraOfSets.Build d T
+  measurable measurable0 mU mC.
 
 HB.instance Definition T_isMeasurable :=
   @Measurable_from_algebraOfSets.Build d T measurable_bigcup.
@@ -891,8 +869,10 @@ Let discrete_measurableU (F : (set unit)^nat) :
   discrete_measurable_unit (\bigcup_i F i).
 Proof. by []. Qed.
 
+HB.instance Definition _ := isPointed.Build unit tt.
+
 HB.instance Definition _ := @isMeasurable.Build default_measure_display unit
-  (Pointed.class _) discrete_measurable_unit discrete_measurable0
+  discrete_measurable_unit discrete_measurable0
   discrete_measurableC discrete_measurableU.
 
 End discrete_measurable_unit.
@@ -913,7 +893,7 @@ Let discrete_measurableU (F : (set bool)^nat) :
 Proof. by []. Qed.
 
 HB.instance Definition _ := @isMeasurable.Build default_measure_display bool
-  (Pointed.class _) discrete_measurable_bool discrete_measurable0
+  discrete_measurable_bool discrete_measurable0
   discrete_measurableC discrete_measurableU.
 
 End discrete_measurable_bool.
@@ -933,9 +913,8 @@ Let discrete_measurable_natU (F : (set nat)^nat) :
   discrete_measurable_nat (\bigcup_i F i).
 Proof. by []. Qed.
 
-HB.instance Definition _ := @isMeasurable.Build default_measure_display nat
-  (Pointed.class _) discrete_measurable_nat discrete_measurable_nat0
-  discrete_measurable_natC discrete_measurable_natU.
+HB.instance Definition _ := isMeasurable.Build default_measure_display nat
+  discrete_measurable_nat0 discrete_measurable_natC discrete_measurable_natU.
 
 End discrete_measurable_nat.
 
@@ -950,11 +929,9 @@ Variables (T : pointedType) (G : set (set T)).
 Lemma sigma_algebraC (A : set T) : <<s G >> A -> <<s G >> (~` A).
 Proof. by move=> sGA; rewrite -setTD; exact: sigma_algebraCD. Qed.
 
-Canonical salgebraType_eqType := EqType (salgebraType G) (Equality.class T).
-Canonical salgebraType_choiceType := ChoiceType (salgebraType G) (Choice.class T).
-Canonical salgebraType_ptType := PointedType (salgebraType G) (Pointed.class T).
+HB.instance Definition _ := Pointed.on (salgebraType G).
 HB.instance Definition _ := @isMeasurable.Build (sigma_display G)
-  (salgebraType G) (Pointed.class T)
+  (salgebraType G)
   <<s G >> (@sigma_algebra0 _ setT G) (@sigma_algebraC)
   (@sigma_algebra_bigcup _ setT G).
 
@@ -1215,7 +1192,7 @@ Definition semi_additive := forall F n,
 Definition semi_sigma_additive :=
   forall F, (forall i : nat, measurable (F i)) -> trivIset setT F ->
   measurable (\bigcup_n F n) ->
-  (fun n => \sum_(0 <= i < n) mu (F i)) --> mu (\bigcup_n F n).
+  (fun n => \sum_(0 <= i < n) mu (F i)) @ \oo --> mu (\bigcup_n F n).
 
 Definition additive2 := forall A B, measurable A -> measurable B ->
   A `&` B = set0 -> mu (A `|` B) = mu A + mu B.
@@ -1226,7 +1203,7 @@ Definition additive :=
 
 Definition sigma_additive :=
   forall F, (forall i : nat, measurable (F i)) -> trivIset setT F ->
-  (fun n => \sum_(0 <= i < n) mu (F i)) --> mu (\bigcup_n F n).
+  (fun n => \sum_(0 <= i < n) mu (F i)) @ \oo --> mu (\bigcup_n F n).
 
 Definition sub_additive := forall (A : set T) (F : nat -> set T) n,
  (forall k, `I_n k -> measurable (F k)) -> measurable A ->
@@ -1661,7 +1638,7 @@ move=> F mF tF mUF; rewrite /dirac indicE; have [|aFn] /= := boolP (a \in _).
   rewrite big_mkord (bigID (xpred1 (Ordinal mn)))//= big_pred1_eq/= big1/=.
     by rewrite adde0 indicE mem_set//; exact: ballxx.
   by move=> j ij; rewrite indicE (negbTE (naF _ _)).
-rewrite [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
+rewrite [X in X @ \oo --> _](_ : _ = cst 0); first exact: cvg_cst.
 apply/funext => n; rewrite big1// => i _; rewrite indicE; apply/eqP.
 by rewrite eqe pnatr_eq0 eqb0; apply: contra aFn => /[!inE] aFn; exists i.
 Unshelve. all: by end_near. Qed.
@@ -1730,7 +1707,7 @@ Let msum_ge0 B : 0 <= msum B. Proof. by rewrite /msum; apply: sume_ge0. Qed.
 Let msum_sigma_additive : semi_sigma_additive msum.
 Proof.
 move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
-    lim (fun n => \sum_(0 <= i < n) msum (F i))).
+    lim ((fun n => \sum_(0 <= i < n) msum (F i)) @ \oo)).
   by apply: is_cvg_ereal_nneg_natsum => k _; exact: sume_ge0.
 rewrite nneseries_sum//; apply: eq_bigr => /= i _.
 exact: measure_semi_bigcup.
@@ -1754,7 +1731,7 @@ Let mzero_ge0 B : 0 <= mzero B. Proof. by []. Qed.
 
 Let mzero_sigma_additive : semi_sigma_additive mzero.
 Proof.
-move=> F mF tF mUF; rewrite [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
+move=> F mF tF mUF; rewrite [X in X @ \oo--> _](_ : _ = cst 0); first exact: cvg_cst.
 by apply/funext => n; rewrite big1.
 Qed.
 
@@ -1795,11 +1772,11 @@ Proof. by rewrite /mscale mule_ge0. Qed.
 
 Let mscale_sigma_additive : semi_sigma_additive mscale.
 Proof.
-move=> F mF tF mUF; rewrite [X in X --> _](_ : _ =
+move=> F mF tF mUF; rewrite [X in X @ \oo --> _](_ : _ =
     (fun n => (r%:num)%:E * \sum_(0 <= i < n) m (F i))); last first.
   by apply/funext => k; rewrite ge0_sume_distrr.
 rewrite /mscale; have [->|r0] := eqVneq r%:num 0%R.
-  rewrite mul0e [X in X --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
+  rewrite mul0e [X in X @ \oo --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
 by apply: cvgeMl => //; exact: measure_semi_sigma_additive.
 Qed.
@@ -1828,7 +1805,7 @@ Qed.
 Let mseries_sigma_additive : semi_sigma_additive mseries.
 Proof.
 move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
-  lim (fun n => \sum_(0 <= i < n) mseries (F i))); last first.
+  lim ((fun n => \sum_(0 <= i < n) mseries (F i)) @ \oo)); last first.
   rewrite [in LHS]/mseries.
   transitivity (\sum_(n <= k <oo) \sum_(i <oo) m k (F i)).
     rewrite 2!ereal_series.
@@ -1909,7 +1886,7 @@ have sumFE n : \sum_(i < n) counting (F i) =
                #|` fset_set (\big[setU/set0]_(k < n) F k) |%:R%:E.
   rewrite -trivIset_sum_card// natr_sum -sumEFin.
   by apply: eq_bigr => // i _; rewrite /counting asboolT.
-have [cvg_u|dvg_u] := pselect (cvg (nseries u)).
+have [cvg_u|dvg_u] := pselect (cvg (nseries u @ \oo)).
   have [N _ Nu] : \forall n \near \oo, u n = 0%N by apply: cvg_nseries_near.
   rewrite [X in _ --> X](_ : _ = \sum_(i < N) counting (F i)); last first.
     have -> : \bigcup_i (F i) = \big[setU/set0]_(i < N) F i.
@@ -1925,7 +1902,7 @@ have [cvg_u|dvg_u] := pselect (cvg (nseries u)).
     by rewrite -{1}(subn0 N) big_mkord.
   rewrite add0n big_seq big1// => i /[!mem_iota] => /andP[NI iNn].
   by rewrite /counting asboolT//= -/(u _) Nu.
-have {dvg_u}cvg_F : (fun n => \sum_(i < n) counting (F i)) --> +oo.
+have {dvg_u}cvg_F : (fun n => \sum_(i < n) counting (F i)) @ \oo --> +oo.
   rewrite (_ : (fun n => _) = [sequence (\sum_(0 <= i < n) (u i))%:R%:E]_n).
     exact/cvgenyP/dvg_nseries.
   apply/funext => n /=; under eq_bigr.
@@ -2053,11 +2030,10 @@ Section SetRing.
 Context d {T : semiRingOfSetsType d}.
 
 Notation rT := (type T).
-Canonical ring_eqType := EqType rT ptclass.
-Canonical ring_choiceType := ChoiceType rT ptclass.
-Canonical ring_ptType := PointedType rT ptclass.
 #[export]
-HB.instance Definition _ := isRingOfSets.Build (display d) rT ptclass
+HB.instance Definition _ := Pointed.on rT.
+#[export]
+HB.instance Definition _ := isRingOfSets.Build (display d) rT
   (@setring0 T measurable) (@setringU T measurable) (@setringDI T measurable).
 
 Local Notation "d .-ring" := (display d) (at level 1, format "d .-ring").
@@ -2273,9 +2249,7 @@ End content.
 
 End SetRing.
 Module Exports.
-Canonical ring_eqType.
-Canonical ring_choiceType.
-Canonical ring_ptType.
+HB.reexport.
 HB.reexport SetRing.
 End Exports.
 End SetRing.
@@ -2657,7 +2631,7 @@ Lemma nondecreasing_cvg_mu d (R : realFieldType) (T : ringOfSetsType d)
   (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcup_n F n) ->
   nondecreasing_seq F ->
-  mu \o F --> mu (\bigcup_n F n).
+  mu \o F @ \oo --> mu (\bigcup_n F n).
 Proof.
 move=> mF mbigcupF ndF.
 have Binter : trivIset setT (seqD F) := trivIset_seqD ndF.
@@ -2667,8 +2641,8 @@ rewrite eq_bigcup_seqD.
 have mB i : measurable (seqD F i) by elim: i => * //=; apply: measurableD.
 apply: cvg_trans (measure_semi_sigma_additive _ mB Binter _); last first.
   by rewrite -eq_bigcup_seqD.
-apply: (@cvg_trans _ [filter of (fun n => \sum_(i < n.+1) mu (seqD F i))]).
-  rewrite [X in _ --> X](_ : _ = mu \o F) // funeqE => n.
+apply: (@cvg_trans _ ((fun n => \sum_(i < n.+1) mu (seqD F i)) @ \oo)).
+  rewrite [X in _ --> X @ \oo](_ : _ = mu \o F) // funeqE => n.
   by rewrite -measure_semi_additive // -?FE// => -[|k].
 move=> S [n _] nS; exists n => // m nm.
 under eq_fun do rewrite -(big_mkord predT (mu \o seqD F)).
@@ -2800,9 +2774,9 @@ Lemma le_outer_measureIC (R : realFieldType) T
   mu X <= mu (X `&` A) + mu (X `&` ~` A).
 Proof.
 pose B : (set T) ^nat := bigcup2 (X `&` A) (X `&` ~` A).
-have cvg_mu : (fun n => \sum_(i < n) mu (B i)) --> mu (B 0%N) + mu (B 1%N).
+have cvg_mu : (fun n => \sum_(i < n) mu (B i)) @ \oo --> mu (B 0%N) + mu (B 1%N).
   rewrite -2!cvg_shiftS /=.
-  rewrite [X in X --> _](_ : _ = (fun=> mu (B 0%N) + mu (B 1%N))); last first.
+  rewrite [X in X @ \oo --> _](_ : _ = (fun=> mu (B 0%N) + mu (B 1%N))); last first.
     rewrite funeqE => i; rewrite 2!big_ord_recl /= big1 ?adde0 // => j _.
     by rewrite /B /bigcup2 /=.
   exact: cvg_cst.
@@ -2861,12 +2835,12 @@ have /(lee_add2r (mu (X `&` ~` (A `|` B)))) :
     rewrite predeqE => t; split=> [[?|?]|[]]; [by exists O|by exists 1%N|].
     by move=> [_ ?|[_ ?|//]]; [left|right].
   rewrite (le_trans (outer_measure_sigma_subadditive mu Z)) //.
-  suff : ((fun n => \sum_(i < n) mu (Z i)) -->
+  suff : ((fun n => \sum_(i < n) mu (Z i)) @ \oo -->
       mu (X `&` A) + mu (X `&` B `&` ~` A)).
     move/cvg_lim => /=; under [in leLHS]eq_fun do rewrite big_mkord.
     by move=> ->.
   rewrite -(cvg_shiftn 2) /=; set l := (X in _ --> X).
-  rewrite [X in X --> _](_ : _ = cst l); first exact: cvg_cst.
+  rewrite [X in X @ \oo --> _](_ : _ = cst l); first exact: cvg_cst.
   rewrite funeqE => i; rewrite addn2 2!big_ord_recl big1 ?adde0 //.
   by move=> ? _; exact: outer_measure0.
 have /le_trans : mu (X `&` (A `|` B)) + mu (X `&` ~` (A `|` B)) <=
@@ -2958,7 +2932,7 @@ Proof.
 move=> MA tA X.
 set A' := \bigcup_k A k; set B := fun n => \big[setU/set0]_(k < n) (A k).
 suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
-  move=> XA; rewrite (_ : lim _ = ereal_sup
+  move=> XA; rewrite (_ : limn _ = ereal_sup
       ((fun n => \sum_(k < n) mu (X `&` A k)) @` setT)); last first.
     under eq_fun do rewrite big_mkord.
     apply/cvg_lim => //; apply/ereal_nondecreasing_cvg.
@@ -3011,8 +2985,9 @@ Proof. exact. Qed.
 Section caratheodory_sigma_algebra.
 Variables (R : realType) (T : pointedType) (mu : {outer_measure set T -> \bar R}).
 
+HB.instance Definition _ := Pointed.on (caratheodory_type mu).
 HB.instance Definition _ := @isMeasurable.Build (caratheodory_display mu)
-  (caratheodory_type mu) (Pointed.class T) mu.-caratheodory
+  (caratheodory_type mu) mu.-caratheodory
     (caratheodory_measurable_set0 mu)
     (@caratheodory_measurable_setC _ _ mu)
     (@caratheodory_measurable_bigcup _ _ mu).
@@ -3084,8 +3059,8 @@ Lemma epsilon_trick (R : realType) (A : (\bar R)^nat) e
   \sum_(i <oo | P i) A i + e%:E.
 Proof.
 move=> A0 /nonnegP[{}e].
-rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
-    \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E))) //.
+rewrite (@le_trans _ _ (lim ((fun n => (\sum_(0 <= i < n | P i) A i) +
+    \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) @ \oo))) //.
   rewrite nneseriesD // limeD //.
   - rewrite lee_add2l //; apply: lee_lim => //.
     + exact: is_cvg_nneseries.
@@ -3094,7 +3069,7 @@ rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
   - exact: is_cvg_nneseries.
   - exact: is_cvg_nneseries.
   - exact: adde_def_nneseries.
-suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) -->
+suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) @ \oo -->
     e%:num%:E.
   rewrite limeD //.
   - by rewrite lee_add2l // (cvg_lim _ cvggeo).
@@ -3266,11 +3241,11 @@ have setDE : setD_closed E.
 have ndE : ndseq_closed E.
   move=> A ndA EA; split; have mA n : measurable (A n) by have [] := EA n.
   - exact: bigcupT_measurable.
-  - transitivity (lim (m1 \o A)).
+  - transitivity (limn (m1 \o A)).
       apply/esym/cvg_lim=>//.
       exact/(nondecreasing_cvg_mu mA _ ndA)/bigcupT_measurable.
-    transitivity (lim (m2 \o A)).
-      by congr (lim _); rewrite funeqE => n; have [] := EA n.
+    transitivity (limn (m2 \o A)).
+      by apply/congr_lim/funext => n; have [] := EA n.
     apply/cvg_lim => //.
     exact/(nondecreasing_cvg_mu mA _ ndA)/bigcupT_measurable.
   - by apply: bigcup_sub => n; have [] := EA n.
@@ -3316,13 +3291,13 @@ have nd_g' : nondecreasing_seq g'.
   exact: leq_trans lemn.
 move=> A gA.
 have -> : A = \bigcup_n (g' n `&` A) by rewrite -setI_bigcupl g'_cover setTI.
-transitivity (lim (fun n => m1 (g' n `&` A))).
+transitivity (lim (m1 (g' n `&` A) @[n --> \oo])).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   - by move=> n; apply: measurableI; exact/sGm.
   - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
   - by move=> ? ? ?; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
-transitivity (lim (fun n => m2 (g' n `&` A))).
-  by congr (lim _); rewrite funeqE => x; apply: sG'm1m2 => //; exact/sGm.
+transitivity (lim (m2 (g' n `&` A) @[n --> \oo])).
+  by apply/congr_lim/funext => x; apply: sG'm1m2 => //; exact/sGm.
 apply/cvg_lim => //; apply: nondecreasing_cvg_mu.
 - by move=> k; apply: measurableI => //; exact/sGm.
 - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
@@ -3466,7 +3441,7 @@ rewrite -(eq_eseries (fun _ _ => SetRing.RmuE _ (mB _)))=> //.
 have RmB i : measurable (B i : set rT) by exact: sub_gen_smallest.
 set BA := eseries (fun n => Rmu (B n `&` A)).
 set BNA := eseries (fun n => Rmu (B n `&` ~` A)).
-apply: (@le_trans _ _ (lim BA + lim BNA)); [apply: lee_add|].
+apply: (@le_trans _ _ (limn BA + limn BNA)); [apply: lee_add|].
   - rewrite (_ : BA = eseries (fun n => mu_ext mu (B n `&` A))); last first.
       rewrite funeqE => n; apply: eq_bigr => k _.
       by rewrite /= measurable_Rmu_extE //; exact: measurableI.
@@ -3479,19 +3454,19 @@ apply: (@le_trans _ _ (lim BA + lim BNA)); [apply: lee_add|].
     apply: (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `\` A)))).
       by apply: le_mu_ext; rewrite -setI_bigcupl; exact: setISS.
     exact: outer_measure_sigma_subadditive.
-have ? : cvg BNA.
+have ? : cvgn BNA.
   apply/is_cvg_nneseries => n _.
   by rewrite -setDE; apply: measure_ge0 => //; exact: measurableD.
-have ? : cvg BA.
+have ? : cvgn BA.
   by apply/is_cvg_nneseries => n _; apply: measure_ge0 =>//; apply: measurableI.
-have ? : cvg (eseries (Rmu \o B)) by exact/is_cvg_nneseries.
-have [def|] := boolP (adde_def (lim BA) (lim BNA)); last first.
+have ? : cvgn (eseries (Rmu \o B)) by exact/is_cvg_nneseries.
+have [def|] := boolP (adde_def (lim (BA @ \oo)) (lim (BNA @ \oo))); last first.
   rewrite /adde_def negb_and !negbK=> /orP[/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
-  - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite leey.
+  - suff -> : limn (eseries (Rmu \o B)) = +oo by rewrite leey.
     apply/eqP; rewrite -leye_eq -(eqP BAoo); apply/lee_lim => //.
     near=> n; apply: lee_sum => m _; apply: le_measure; rewrite /mkset; by
       [rewrite inE; exact: measurableI | rewrite inE | apply: subIset; left].
-  - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite leey.
+  - suff -> : limn (eseries (Rmu \o B)) = +oo by rewrite leey.
     apply/eqP; rewrite -leye_eq -(eqP BNAoo); apply/lee_lim => //.
     by near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure;
        rewrite /mkset ?inE//; apply: measurableD.
@@ -3609,9 +3584,10 @@ Lemma prod_salgebra_bigcup (F : _^nat) : (forall i, preimage_classes f1 f2 (F i)
   preimage_classes f1 f2 (\bigcup_i (F i)).
 Proof. exact: sigma_algebra_bigcup. Qed.
 
+HB.instance Definition _ := Pointed.on (T1 * T2)%type.
 HB.instance Definition prod_salgebra_mixin :=
   @isMeasurable.Build (measure_prod_display (d1, d2))
-    (T1 * T2)%type (Pointed.class _) (preimage_classes f1 f2)
+    (T1 * T2)%type (preimage_classes f1 f2)
     (prod_salgebra_set0) (prod_salgebra_setC) (prod_salgebra_bigcup).
 
 End product_salgebra_instance.

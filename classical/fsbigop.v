@@ -316,8 +316,11 @@ have [->|a0] := eqVneq a zero.
 rewrite big_distrr [RHS](full_fsbigID (F @^-1` [set zero])); last first.
   apply: sub_finite_set finF => x /= [Px aFN0].
   by split=> //; apply: contra_not aFN0 => ->; rewrite Monoid.simpm.
-rewrite [X in plus X _](_ : _ = zero) ?Monoid.simpm; last first.
-  by rewrite fsbig1// => i [_ ->]; rewrite Monoid.simpm.
+set b0 := bigop _ _ _.
+set b1 := bigop _ _ _.
+set b2 := bigop _ _ _.
+rewrite (_ : b1 = zero) ?Monoid.simpm; last first.
+  by rewrite /b1 fsbig1// => i [_ ->]; rewrite Monoid.simpm.
 apply/esym/fsbig_fwiden => //.
   by move=> x [Px Fx0]; rewrite /= in_finite_support// inE.
 move=> i []; rewrite /preimage/= in_finite_support //.

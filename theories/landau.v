@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import mathcomp_extra.
@@ -295,24 +296,24 @@ Lemma showo : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). Proof. by []. Qed.
 Section Domination.
 Context {K : numDomainType} {T : Type} {V W : normedModType K}.
 
-Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let littleo_def (F : set_system T) (f : T -> V) (g : T -> W) :=
   forall eps, 0 < eps -> \forall x \near F, `|f x| <= eps * `|g x|.
 
-Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
+Structure littleo_type (F : set_system T) (g : T -> W) := Littleo {
   littleo_fun :> T -> V;
   _ : `[< littleo_def F littleo_fun g >]
 }.
 Notation "{o_ F f }" := (littleo_type F f).
 
-Canonical littleo_subtype (F : set (set T)) (g : T -> W) :=
-  [subType for (@littleo_fun F g)].
+HB.instance Definition _ (F : set_system T) (g : T -> W) :=
+  [isSub for @littleo_fun F g].
 
-Lemma littleo_class (F : set (set T)) (g : T -> W) (f : {o_F g}) :
+Lemma littleo_class (F : set_system T) (g : T -> W) (f : {o_F g}) :
   `[< littleo_def F f g >].
 Proof. by case: f => ?. Qed.
 Hint Resolve littleo_class : core.
 
-Definition littleo_clone (F : set (set T)) (g : T -> W) (f : T -> V) (fT : {o_F g}) c
+Definition littleo_clone (F : set_system T) (g : T -> W) (f : T -> V) (fT : {o_F g}) c
   of phant_id (littleo_class fT) c := @Littleo F g f c.
 Notation "[littleo 'of' f 'for' fT ]" := (@littleo_clone _ _ f fT _ idfun).
 Notation "[littleo 'of' f ]" := (@littleo_clone _ _ f _ _ idfun).
@@ -328,8 +329,8 @@ Canonical littleo0 (F : filter_on T) g :=
   Littleo (asboolT (@littleo0_subproof F g _)).
 
 Definition the_littleo (_ : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := littleo_fun (insubd (littleo0 F h) f).
-Notation PhantomF := (Phantom (set (set T))).
+  (phF : phantom (set_system T) F) f h := littleo_fun (insubd (littleo0 F h) f).
+Notation PhantomF := (Phantom (set_system T)).
 Arguments the_littleo : simpl never, clear implicits.
 
 Notation mklittleo tag x := (the_littleo tag _ (PhantomF x)).
@@ -372,7 +373,7 @@ Notation "fx == gx '+o_(' x \near F ')' hx" :=
 Notation "fx '==o_(' x \near F ')' hx" :=
   (fx == (mklittleo the_tag F (fun x => fx) (fun x => hx) x)).
 
-Lemma littleoP (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo_def F f g.
+Lemma littleoP (F : set_system T) (g : T -> W) (f : {o_F g}) : littleo_def F f g.
 Proof. exact/asboolP. Qed.
 Hint Extern 0 (littleo_def _ _ _) => solve[apply: littleoP] : core.
 Hint Extern 0 (nbhs _ _) => solve[apply: littleoP] : core.
@@ -380,17 +381,17 @@ Hint Extern 0 (prop_near1 _) => solve[apply: littleoP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: littleoP] : core.
 
 Lemma littleoE (tag : unit) (F : filter_on T)
-   (phF : phantom (set (set T)) F) f h :
+   (phF : phantom (set_system T) F) f h :
    littleo_def F f h -> the_littleo tag F phF f h = f.
 Proof. by move=> /asboolP?; rewrite /the_littleo /insubd insubT. Qed.
 
 Canonical the_littleo_littleo (tag : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := [littleo of the_littleo tag F phF f h].
+  (phF : phantom (set_system T) F) f h := [littleo of the_littleo tag F phF f h].
 
-Variant littleo_spec (F : set (set T)) (g : T -> W) : (T -> V) -> Type :=
+Variant littleo_spec (F : set_system T) (g : T -> W) : (T -> V) -> Type :=
   LittleoSpec f of littleo_def F f g : littleo_spec F g f.
 
-Lemma littleo (F : set (set T)) (g : T -> W) (f : {o_F g}) : littleo_spec F g f.
+Lemma littleo (F : set_system T) (g : T -> W) (f : {o_F g}) : littleo_spec F g f.
 Proof. by constructor; apply/(@littleoP F). Qed.
 
 Lemma opp_littleo_subproof (F : filter_on T) e (df : {o_F e}) :
@@ -461,13 +462,13 @@ End Domination.
 Section Domination_numFieldType.
 Context {K : numFieldType} {T : Type} {V W : normedModType K}.
 
-Let bigO_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let bigO_def (F : set_system T) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|f x| <= k * `|g x|.
 
-Let bigO_ex_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let bigO_ex_def (F : set_system T) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|f x| <= k * `|g x|.
 
-Lemma bigO_exP (F : set (set T)) (f : T -> V) (g : T -> W) :
+Lemma bigO_exP (F : set_system T) (f : T -> V) (g : T -> W) :
   Filter F -> bigO_ex_def F f g <-> bigO_def F f g.
 Proof.
 split=> [[k k0 fOg] | [k [kreal fOg]]].
@@ -479,21 +480,21 @@ apply: fOg; rewrite (@lt_le_trans _ _ `|k + 1|) //.
 by rewrite comparable_le_maxr ?real_comparable// lexx orbT.
 Unshelve. end_near. Qed.
 
-Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
+Structure bigO_type (F : set_system T) (g : T -> W) := BigO {
   bigO_fun :> T -> V;
   _ : `[< bigO_def F bigO_fun g >]
 }.
 Notation "{O_ F f }" := (bigO_type F f).
 
-Canonical bigO_subtype (F : set (set T)) (g : T -> W) :=
-  [subType for (@bigO_fun F g)].
+HB.instance Definition _ (F : set_system T) (g : T -> W) :=
+  [isSub for @bigO_fun F g].
 
-Lemma bigO_class (F : set (set T)) (g : T -> W) (f : {O_F g}) :
+Lemma bigO_class (F : set_system T) (g : T -> W) (f : {O_F g}) :
   `[< bigO_def F f g >].
 Proof. by case: f => ?. Qed.
 Hint Resolve bigO_class : core.
 
-Definition bigO_clone (F : set (set T)) (g : T -> W) (f : T -> V) (fT : {O_F g}) c
+Definition bigO_clone (F : set_system T) (g : T -> W) (f : T -> V) (fT : {O_F g}) c
   of phant_id (bigO_class fT) c := @BigO F g f c.
 Notation "[bigO 'of' f 'for' fT ]" := (@bigO_clone _ _ f fT _ idfun).
 Notation "[bigO 'of' f ]" := (@bigO_clone _ _ f _ _ idfun).
@@ -507,11 +508,11 @@ Unshelve. all: by end_near. Qed.
 Canonical bigO0 (F : filter_on T) g := BigO (asboolT (@bigO0_subproof F g _)).
 
 Definition the_bigO (u : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := bigO_fun (insubd (bigO0 F h) f).
+  (phF : phantom (set_system T) F) f h := bigO_fun (insubd (bigO0 F h) f).
 Arguments the_bigO : simpl never, clear implicits.
 
 (* duplicate from Section Domination *)
-Notation PhantomF := (Phantom (set (set T))).
+Notation PhantomF := (Phantom (set_system T)).
 Notation mkbigO tag x := (the_bigO tag _ (PhantomF x)).
 (* Parsing *)
 Notation "[O_ x e 'of' f ]" := (mkbigO gen_tag x f e).
@@ -552,21 +553,21 @@ Notation "fx == gx '+O_(' x \near F ')' hx" :=
 Notation "fx '==O_(' x \near F ')' hx" :=
   (fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 
-Lemma bigOP (F : set (set T)) (g : T -> W) (f : {O_F g}) : bigO_def F f g.
+Lemma bigOP (F : set_system T) (g : T -> W) (f : {O_F g}) : bigO_def F f g.
 Proof. exact/asboolP. Qed.
 Hint Extern 0 (bigO_def _ _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (nbhs _ _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near1 _) => solve[apply: bigOP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: bigOP] : core.
 
-Lemma bigOE (tag : unit) (F : filter_on T) (phF : phantom (set (set T)) F) f h :
+Lemma bigOE (tag : unit) (F : filter_on T) (phF : phantom (set_system T) F) f h :
    bigO_def F f h -> the_bigO tag F phF f h = f.
 Proof. by move=> /asboolP?; rewrite /the_bigO /insubd insubT. Qed.
 
 Canonical the_bigO_bigO (tag : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := [bigO of the_bigO tag F phF f h].
+  (phF : phantom (set_system T) F) f h := [bigO of the_bigO tag F phF f h].
 
-Variant bigO_spec (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
+Variant bigO_spec (F : set_system T) (g : T -> W) : (T -> V) -> Prop :=
   BigOSpec f (k : {posnum K})
     of (\forall x \near F, `|f x| <= k%:num * `|g x|) :
       bigO_spec F g f.
@@ -688,7 +689,7 @@ Proof. by apply: eqOE; rewrite littleo_eqo. Qed.
 Canonical littleo_is_bigO (F : filter_on T) (e : T -> W) (f : {o_F e}) :=
   BigO (asboolT (eqO_bigO (littleo_eqO f))).
 Canonical the_littleo_bigO (tag : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := [bigO of the_littleo tag phF f h].
+  (phF : phantom (set_system T) F) f h := [bigO of the_littleo tag phF f h].
 
 End Domination_numFieldType.
 
@@ -704,7 +705,7 @@ Notation "[bigO 'of' f ]" := (@bigO_clone _ _ _ _ _ _ f _ _ idfun).
 
 Arguments the_littleo {_ _ _ _} _ _ _ _ _ : simpl never.
 Arguments the_bigO {_ _ _ _} _ _ _ _ _ : simpl never.
-Local Notation PhantomF x := (Phantom _ [filter of x]).
+Local Notation PhantomF x := (Phantom _ (nbhs x)).
 
 Notation mklittleo tag x := (the_littleo tag _ (PhantomF x)).
 (* Parsing *)
@@ -813,7 +814,7 @@ Section Domination_numFieldType.
 Context {K : numFieldType} {T : Type} {V W : normedModType K}.
 
 (* duplicate from Section Domination *)
-Let littleo_def (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let littleo_def (F : set_system T) (f : T -> V) (g : T -> W) :=
   forall eps, 0 < eps -> \forall x \near F, `|f x| <= eps * `|g x|.
 
 Lemma add_littleo_subproof (F : filter_on T) e (df dg : {o_F e}) :
@@ -892,7 +893,7 @@ have lt_eps x : x <= (eps%:num / 2%:R) * `|1 : K^o|%real -> x < eps%:num.
   rewrite normr1 mulr1 => /le_lt_trans; apply.
   by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
 near=> x do rewrite [X in X x]fFl opprD addNKr normrN lt_eps //.
-by rewrite /= !near_simpl; apply: littleoP; rewrite divr_gt0.
+by apply: littleoP; rewrite divr_gt0.
 Unshelve. all: by end_near. Qed.
 
 Lemma eqolim (F : filter_on T) (f : T -> V) (l : V) e :
@@ -1066,7 +1067,7 @@ Lemma mulo_numClosedFieldType (F : filter_on pT) (h1 h2 f g : pT -> R^o) :
   [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
 Proof.
 rewrite [in RHS]littleoE // => _/posnumP[e]; near=> x.
-rewrite [`|_|]normrM -(sqrCK (ge0 e)) expr2 sqrtCM ?qualifE//.
+rewrite [`|_|]normrM -(sqrCK (ge0 e)) expr2 sqrtCM ?qualifE//=.
 rewrite (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x;
 by have [/= h] := littleo; apply.
 Unshelve. all: by end_near. Qed.
@@ -1084,7 +1085,7 @@ End rule_of_products_numClosedFieldType.
 
 Section Linear3.
 Context (R : realFieldType) (U : normedModType R) (V : normedModType R)
-        (s : R -> V -> V) (s_law : GRing.Scale.law s).
+        (s : GRing.Scale.law R V).
 Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 
 (* Split in multiple bits *)
@@ -1095,7 +1096,7 @@ Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 
 Local Notation "'+oo'" := (@pinfty_nbhs R).
 
-Lemma linear_for_continuous (f : {linear U -> V | GRing.Scale.op s_law}) :
+Lemma linear_for_continuous (f : {linear U -> V | GRing.Scale.Law.sort s}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
 move=> /eqO_exP [_/posnumP[k0] Of1] x.
@@ -1118,15 +1119,14 @@ have ky0 : 0 <= k0%:num / (k * `|y|).
 rewrite -[leRHS]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //.
 rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
-have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
-rewrite -linearZ fk //= distrC subr0 normrZ ger0_norm //.
+rewrite -linearZ fk //= /= distrC subr0 normmZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //.
 by rewrite -ltr_pdivr_mull//.
 Unshelve. all: by end_near. Qed.
 
 End Linear3.
 
-Arguments linear_for_continuous {R U V s s_law normm_s} f _.
+Arguments linear_for_continuous {R U V s normm_s} f _.
 
 Lemma linear_continuous (R : realFieldType) (U : normedModType R)
   (V : normedModType R) (f : {linear U -> V}) :
@@ -1134,7 +1134,7 @@ Lemma linear_continuous (R : realFieldType) (U : normedModType R)
 Proof. by apply: linear_for_continuous => ? ?; rewrite normrZ. Qed.
 
 Lemma linear_for_mul_continuous (R : realFieldType) (U : normedModType R)
-  (f : {linear U -> R | (@GRing.mul [ringType of R^o])}) :
+  (f : {linear U -> R^o | (@GRing.mul [ringType of R^o])}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ? ?; rewrite normrZ. Qed.
 
@@ -1198,25 +1198,25 @@ Section big_omega.
 Context {K : realFieldType} {T : Type} {V : normedModType K}.
 Implicit Types W : normedModType K.
 
-Let bigOmega_def W (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let bigOmega_def W (F : set_system T) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|f x| >= k * `|g x|.
 
-Structure bigOmega_type {W} (F : set (set T)) (g : T -> W) := BigOmega {
+Structure bigOmega_type {W} (F : set_system T) (g : T -> W) := BigOmega {
   bigOmega_fun :> T -> V;
   _ : `[< bigOmega_def F bigOmega_fun g >]
 }.
 
 Notation "{Omega_ F g }" := (@bigOmega_type _ F g).
 
-Canonical bigOmega_subtype {W} (F : set (set T)) (g : T -> W) :=
-  [subType for (@bigOmega_fun W F g)].
+HB.instance Definition _ {W} (F : set_system T) (g : T -> W) :=
+  [isSub for @bigOmega_fun W F g].
 
-Lemma bigOmega_class {W} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
+Lemma bigOmega_class {W} (F : set_system T) (g : T -> W) (f : {Omega_F g}) :
   `[< bigOmega_def F f g >].
 Proof. by case: f => ?. Qed.
 Hint Resolve bigOmega_class : core.
 
-Definition bigOmega_clone {W} (F : set (set T)) (g : T -> W) (f : T -> V)
+Definition bigOmega_clone {W} (F : set_system T) (g : T -> W) (f : T -> V)
   (fT : {Omega_F g}) c of phant_id (bigOmega_class fT) c := @BigOmega W F g f c.
 Notation "[bigOmega 'of' f 'for' fT ]" := (@bigOmega_clone _ _ _ f fT _ idfun).
 Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ f _ _ idfun).
@@ -1230,7 +1230,7 @@ Definition bigOmega_refl (F : filter_on T) g :=
   BigOmega (asboolT (@bigOmega_refl_subproof F g _)).
 
 Definition the_bigOmega (u : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f g :=
+  (phF : phantom (set_system T) F) f g :=
   bigOmega_fun (insubd (bigOmega_refl F g) f).
 Arguments the_bigOmega : simpl never, clear implicits.
 
@@ -1238,15 +1238,15 @@ Notation mkbigOmega tag x := (the_bigOmega tag _ (PhantomF x)).
 Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e). (* parsing *)
 Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
 
-Definition is_bigOmega {W} (F : set (set T)) (g : T -> W) :=
+Definition is_bigOmega {W} (F : set_system T) (g : T -> W) :=
   [qualify f : T -> V | `[< bigOmega_def F f g >] ].
-Fact is_bigOmega_key {W} (F : set (set T)) (g : T -> W) : pred_key (is_bigOmega F g).
+Fact is_bigOmega_key {W} (F : set_system T) (g : T -> W) : pred_key (is_bigOmega F g).
 Proof. by []. Qed.
-Canonical is_bigOmega_keyed {W} (F : set (set T)) (g : T -> W) :=
+Canonical is_bigOmega_keyed {W} (F : set_system T) (g : T -> W) :=
   KeyedQualifier (is_bigOmega_key F g).
 Notation "'Omega_ F g" := (is_bigOmega F g).
 
-Lemma bigOmegaP {W} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
+Lemma bigOmegaP {W} (F : set_system T) (g : T -> W) (f : {Omega_F g}) :
   bigOmega_def F f g.
 Proof. exact/asboolP. Qed.
 Hint Extern 0 (bigOmega_def _ _ _) => solve[apply: bigOmegaP] : core.
@@ -1257,9 +1257,9 @@ Hint Extern 0 (prop_near2 _) => solve[apply: bigOmegaP] : core.
 Notation "f '=Omega_' F h" := (f%function = mkbigOmega the_tag F f h).
 
 Canonical the_bigOmega_bigOmega (tag : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := [bigOmega of the_bigOmega tag F phF f h].
+  (phF : phantom (set_system T) F) f h := [bigOmega of the_bigOmega tag F phF f h].
 
-Variant bigOmega_spec {W} (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
+Variant bigOmega_spec {W} (F : set_system T) (g : T -> W) : (T -> V) -> Prop :=
   BigOmegaSpec f (k : {posnum K}) of
     (\forall x \near F, `|f x| >= k%:num * `|g x|) :
   bigOmega_spec F g f.
@@ -1337,26 +1337,26 @@ Section big_theta.
 Context {K : realFieldType} {T : Type} {V : normedModType K}.
 Implicit Types W : normedModType K.
 
-Let bigTheta_def W (F : set (set T)) (f : T -> V) (g : T -> W) :=
+Let bigTheta_def W (F : set_system T) (f : T -> V) (g : T -> W) :=
   exists2 k, (k.1 > 0) && (k.2 > 0) &
   \forall x \near F, k.1 * `|g x| <= `|f x| /\ `|f x| <= k.2 * `|g x|.
 
-Structure bigTheta_type {W} (F : set (set T)) (g : T -> W) := BigTheta {
+Structure bigTheta_type {W} (F : set_system T) (g : T -> W) := BigTheta {
   bigTheta_fun :> T -> V;
   _ : `[< bigTheta_def F bigTheta_fun g >]
 }.
 
 Notation "{Theta_ F g }" := (@bigTheta_type _ F g).
 
-Canonical bigTheta_subtype {W} (F : set (set T)) (g : T -> W) :=
-  [subType for (@bigTheta_fun W F g)].
+HB.instance Definition _ {W} (F : set_system T) (g : T -> W) :=
+  [isSub for @bigTheta_fun W F g].
 
-Lemma bigTheta_class {W} (F : set (set T)) (g : T -> W) (f : {Theta_F g}) :
+Lemma bigTheta_class {W} (F : set_system T) (g : T -> W) (f : {Theta_F g}) :
   `[< bigTheta_def F f g >].
 Proof. by case: f => ?. Qed.
 Hint Resolve bigTheta_class : core.
 
-Definition bigTheta_clone {W} (F : set (set T)) (g : T -> W) (f : T -> V)
+Definition bigTheta_clone {W} (F : set_system T) (g : T -> W) (f : T -> V)
   (fT : {Theta_F g}) c of phant_id (bigTheta_class fT) c := @BigTheta W F g f c.
 Notation "[bigTheta 'of' f 'for' fT ]" := (@bigTheta_clone _ _ _ f fT _ idfun).
 Notation "[bigTheta 'of' f ]" := (@bigTheta_clone _ _ _ f _ _ idfun).
@@ -1370,7 +1370,7 @@ Definition bigTheta_refl (F : filter_on T) g :=
   BigTheta (asboolT (@bigTheta_refl_subproof F g _)).
 
 Definition the_bigTheta (u : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f g :=
+  (phF : phantom (set_system T) F) f g :=
   bigTheta_fun (insubd (bigTheta_refl F g) f).
 Arguments the_bigOmega : simpl never, clear implicits.
 
@@ -1378,15 +1378,15 @@ Notation mkbigTheta tag x := (@the_bigTheta tag _ (PhantomF x)).
 Notation "[Theta_ x e 'of' f ]" := (mkbigTheta gen_tag x f e). (* parsing *)
 Notation "[Theta '_' x e 'of' f ]" := (the_bigTheta _ _ (PhantomF x) f e).
 
-Definition is_bigTheta {W} (F : set (set T)) (g : T -> W) :=
+Definition is_bigTheta {W} (F : set_system T) (g : T -> W) :=
   [qualify f : T -> V | `[< bigTheta_def F f g >] ].
-Fact is_bigTheta_key {W} (F : set (set T)) (g : T -> W) : pred_key (is_bigTheta F g).
+Fact is_bigTheta_key {W} (F : set_system T) (g : T -> W) : pred_key (is_bigTheta F g).
 Proof. by []. Qed.
-Canonical is_bigTheta_keyed {W} (F : set (set T)) (g : T -> W) :=
+Canonical is_bigTheta_keyed {W} (F : set_system T) (g : T -> W) :=
   KeyedQualifier (is_bigTheta_key F g).
 Notation "'Theta_ F g" := (@is_bigTheta _ F g).
 
-Lemma bigThetaP {W} (F : set (set T)) (g : T -> W) (f : {Theta_F g}) :
+Lemma bigThetaP {W} (F : set_system T) (g : T -> W) (f : {Theta_F g}) :
   bigTheta_def F f g.
 Proof. exact/asboolP. Qed.
 Hint Extern 0 (bigTheta_def _ _ _) => solve[apply: bigThetaP] : core.
@@ -1395,9 +1395,9 @@ Hint Extern 0 (prop_near1 _) => solve[apply: bigThetaP] : core.
 Hint Extern 0 (prop_near2 _) => solve[apply: bigThetaP] : core.
 
 Canonical the_bigTheta_bigTheta (tag : unit) (F : filter_on T)
-  (phF : phantom (set (set T)) F) f h := [bigTheta of @the_bigTheta tag F phF f h].
+  (phF : phantom (set_system T) F) f h := [bigTheta of @the_bigTheta tag F phF f h].
 
-Variant bigTheta_spec {W} (F : set (set T)) (g : T -> W) : (T -> V) -> Prop :=
+Variant bigTheta_spec {W} (F : set_system T) (g : T -> W) : (T -> V) -> Prop :=
     BigThetaSpec f (k1 : {posnum K}) (k2 : {posnum K}) of
       (\forall x \near F, k1%:num * `|g x| <= `|f x|) &
       (\forall x \near F, `|f x| <= k2%:num * `|g x|) :

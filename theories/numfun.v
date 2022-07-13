@@ -265,25 +265,6 @@ Proof. by apply/funext=> x; rewrite indicE in_setT. Qed.
 Lemma indic0 : \1_(@set0 T) = cst (0 : R).
 Proof. by apply/funext=> x; rewrite indicE in_set0. Qed.
 
-Lemma preimage_indic D (B : set R) :
-  \1_D @^-1` B = if 1 \in B then (if 0 \in B then setT else D)
-                            else (if 0 \in B then ~` D else set0).
-Proof.
-rewrite /preimage/= /indic; apply/seteqP; split => x;
-  case: ifPn => B1; case: ifPn => B0 //=.
-- have [|] := boolP (x \in D); first by rewrite inE.
-  by rewrite notin_set in B0.
-- have [|] := boolP (x \in D); last by rewrite notin_set.
-  by rewrite notin_set in B1.
-- by have [xD|xD] := boolP (x \in D);
-    [rewrite notin_set in B1|rewrite notin_set in B0].
-- by have [xD|xD] := boolP (x \in D); [rewrite inE in B1|rewrite inE in B0].
-- have [xD|] := boolP (x \in D); last by rewrite notin_set.
-  by rewrite inE in B1.
-- have [|xD] := boolP (x \in D); first by rewrite inE.
-  by rewrite inE in B0.
-Qed.
-
 Lemma image_indic D A :
   \1_D @` A = (if A `\` D != set0 then [set 0] else set0) `|`
               (if A `&` D != set0 then [set 1 : R] else set0).
@@ -309,6 +290,37 @@ Qed.
 
 End indic_lemmas.
 
+Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
+  \1_A = (1 : T -> R) \_ A.
+Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
+
+Lemma restrict_indic T (R : numFieldType) (E A : set T) :
+  ((\1_E : T -> R) \_ A) = \1_(E `&` A).
+Proof.
+apply/funext => x; rewrite /restrict 2!indicE.
+case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
+by rewrite in_setI (negbTE xA) andbF.
+Qed.
+
+Lemma preimage_indic (T : Type) (R : ringType) (D : set T) (B : set R) :
+  \1_D @^-1` B = if 1 \in B then (if 0 \in B then setT else D)
+                            else (if 0 \in B then ~` D else set0).
+Proof.
+rewrite /preimage/= /indic; apply/seteqP; split => x;
+  case: ifPn => B1; case: ifPn => B0 //=.
+- have [|] := boolP (x \in D); first by rewrite inE.
+  by rewrite notin_set in B0.
+- have [|] := boolP (x \in D); last by rewrite notin_set.
+  by rewrite notin_set in B1.
+- by have [xD|xD] := boolP (x \in D);
+    [rewrite notin_set in B1|rewrite notin_set in B0].
+- by have [xD|xD] := boolP (x \in D); [rewrite inE in B1|rewrite inE in B0].
+- have [xD|] := boolP (x \in D); last by rewrite notin_set.
+  by rewrite inE in B1.
+- have [|xD] := boolP (x \in D); first by rewrite inE.
+  by rewrite inE in B0.
+Qed.
+
 Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
   xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
@@ -325,18 +337,6 @@ by rewrite mem_ysection => ->.
 by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
 Qed.
 
-Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
-  \1_A = 1 \_ A :> (T -> R).
-Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
-
-Lemma restrict_indic T (R : numFieldType) (E A : set T) :
-  (\1_E \_ A) = \1_(E `&` A) :> (T -> R).
-Proof.
-apply/funext => x; rewrite /restrict 2!indicE.
-case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
-by rewrite in_setI (negbTE xA) andbF.
-Qed.
-
 Section ring.
 Context (aT : pointedType) (rT : ringType).
 
@@ -345,10 +345,10 @@ Proof.
 split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
 by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
 Qed.
-Canonical fimfun_mul := MulrPred fimfun_mulr_closed.
-Canonical fimfun_ring := SubringPred fimfun_mulr_closed.
-Definition fimfun_ringMixin := [ringMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfun_ringType := RingType {fimfun aT >-> rT} fimfun_ringMixin.
+
+HB.instance Definition _ :=
+   @GRing.isMulClosed.Build _ (@fimfun aT rT) fimfun_mulr_closed.
+HB.instance Definition _ := [SubZmodule_isSubRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 
@@ -378,9 +378,7 @@ Arguments indic_fimfun {aT rT} _.
 
 Section comring.
 Context (aT : pointedType) (rT : comRingType).
-Definition fimfun_comRingMixin := [comRingMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfun_comRingType :=
-  ComRingType {fimfun aT >-> rT} fimfun_comRingMixin.
+HB.instance Definition _ := [SubRing_isSubComRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).

@@ -4,7 +4,7 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
-
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp.classical Require Import boolp classical_sets functions fsbigop.
 From mathcomp.classical Require Import cardinality set_interval mathcomp_extra.
@@ -504,7 +504,7 @@ Qed.
 
 End ereal_supremum_realType.
 
-Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) 0%E.
+HB.instance Definition _ (R : numDomainType) := isPointed.Build (\bar R) 0%E.
 
 Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
   (abse \o f) \_ D = abse \o (f \_ D).
@@ -564,20 +564,19 @@ Context {R : numFieldType}.
 Local Open Scope ereal_scope.
 Local Open Scope classical_set_scope.
 
-Definition ereal_dnbhs (x : \bar R) (P : \bar R -> Prop) : Prop :=
-  match x with
+Definition ereal_dnbhs (x : \bar R) : set_system (\bar R) :=
+  [set P | match x with
     | r%:E => r^' (fun r => P r%:E)
     | +oo => exists M, M \is Num.real /\ forall y, M%:E < y -> P y
     | -oo => exists M, M \is Num.real /\ forall y, y < M%:E -> P y
-  end.
-Definition ereal_nbhs (x : \bar R) (P : \bar R -> Prop) : Prop :=
-  match x with
+  end].
+Definition ereal_nbhs (x : \bar R) : set_system (\bar R) :=
+  [set P | match x with
     | x%:E => nbhs x (fun r => P r%:E)
     | +oo => exists M, M \is Num.real /\ forall y, M%:E < y -> P y
     | -oo => exists M, M \is Num.real /\ forall y, y < M%:E -> P y
-  end.
-Canonical ereal_ereal_filter :=
-  FilteredType (extended R) (extended R) (ereal_nbhs).
+  end].
+HB.instance Definition _ := hasNbhs.Build (\bar R) ereal_nbhs.
 End ereal_nbhs.
 
 Section ereal_nbhs_instances.
@@ -742,10 +741,6 @@ move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
   by rewrite comparabler0 realB.
 Qed.
 
-Definition ereal_topologicalMixin : Topological.mixin_of (@ereal_nbhs R) :=
-  topologyOfFilterMixin _ ereal_nbhs_singleton ereal_nbhs_nbhs.
-Canonical ereal_topologicalType := TopologicalType _ ereal_topologicalMixin.
-
 End ereal_topologicalType.
 
 Local Open Scope classical_set_scope.
@@ -799,7 +794,8 @@ have : (-%E @` A) (- x) by exists x.
 by move/h => [y Sy] /eqP; rewrite eqe_opp => /eqP <-.
 Qed.
 
-Lemma oppe_continuous (R : realFieldType) : continuous (@oppe R).
+Lemma oppe_continuous (R : realFieldType) :
+  continuous (-%E : \bar R -> \bar R).
 Proof.
 move=> x S /= xS; apply nbhsNKe; rewrite image_preimage //.
 by rewrite predeqE => y; split => // _; exists (- y) => //; rewrite oppeK.
@@ -1290,18 +1286,8 @@ rewrite predeq2E => x A; split.
     by rewrite -ltNge => /nbhs_oo_down_1e; apply => ? ?; exact/sEA/reA.
 Qed.
 
-Definition ereal_pseudoMetricType_mixin :=
-  PseudoMetric.Mixin (@ereal_ball_center R) (@ereal_ball_sym R)
-                     (@ereal_ball_triangle R) erefl.
-
-Definition ereal_uniformType_mixin : @Uniform.mixin_of (\bar R) nbhs :=
-  uniformityOfBallMixin ereal_nbhsE ereal_pseudoMetricType_mixin.
-
-Canonical ereal_uniformType :=
-  UniformType (extended R) ereal_uniformType_mixin.
-
-Canonical ereal_pseudoMetricType :=
-  PseudoMetricType (extended R) ereal_pseudoMetricType_mixin.
+HB.instance Definition _ := Nbhs_isPseudoMetric.Build R (\bar R)
+  ereal_nbhsE ereal_ball_center ereal_ball_sym ereal_ball_triangle erefl.
 
 End ereal_PseudoMetric.
 
@@ -1337,13 +1323,13 @@ Definition ereal_loc_seq (R : numDomainType) (x : \bar R) (n : nat) :=
   end.
 
 Lemma cvg_ereal_loc_seq (R : realType) (x : \bar R) :
-  ereal_loc_seq x --> ereal_dnbhs x.
+  ereal_loc_seq x  @ \oo--> ereal_dnbhs x.
 Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 first.
     have /ZnatP [N Nfloor] : floor (Num.max d 0%R) \is a Znat.
       by rewrite Znat_def floor_ge0 le_maxr lexx orbC.
-    exists N.+1 => // n ltNn; apply: dP.
+    exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin.
     have /le_lt_trans : (d <= Num.max d 0)%R by rewrite le_maxr lexx.
     by apply; rewrite (lt_le_trans (lt_succ_floor _))// Nfloor natr1 ler_nat.
   have /ZnatP [N Nfloor] : floor (Num.max (- d)%R 0%R) \is a Znat.

@@ -1,5 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg matrix finmap order ssrnum.
+From HB Require Import structures.
+From mathcomp Require Import all_ssreflect ssralg matrix finmap ssrnum.
 From mathcomp Require Import ssrint interval.
 Require Import mathcomp_extra boolp.
 
@@ -1175,14 +1176,12 @@ Section SetMonoids.
 Variable (T : Type).
 
 Import Monoid.
-Canonical setU_monoid := Law (@setUA T) (@set0U T) (@setU0 T).
-Canonical setU_comoid := ComLaw (@setUC T).
-Canonical setU_mul_monoid := MulLaw (@setTU T) (@setUT T).
-Canonical setI_monoid := Law (@setIA T) (@setTI T) (@setIT T).
-Canonical setI_comoid := ComLaw (@setIC T).
-Canonical setI_mul_monoid := MulLaw (@set0I T) (@setI0 T).
-Canonical setU_add_monoid := AddLaw (@setUIl T) (@setUIr T).
-Canonical setI_add_monoid := AddLaw (@setIUl T) (@setIUr T).
+HB.instance Definition _ := isComLaw.Build (set T) set0 setU setUA setUC set0U.
+HB.instance Definition _ := isMulLaw.Build (set T) setT setU setTU setUT.
+HB.instance Definition _ := isComLaw.Build (set T) setT setI setIA setIC setTI.
+HB.instance Definition _ := isMulLaw.Build (set T) set0 setI set0I setI0.
+HB.instance Definition _ := isAddLaw.Build (set T) setU setI setUIl setUIr.
+HB.instance Definition _ := isAddLaw.Build (set T) setI setU setIUl setIUr.
 
 End SetMonoids.
 
@@ -2121,76 +2120,25 @@ Lemma inTT_bij [T1 T2 : Type] [f : T1 -> T2] :
   {in [set: T1], bijective f} -> bijective f.
 Proof. by case=> [g /in1TT + /in1TT +]; exists g. Qed.
 
-Module Pointed.
+HB.mixin Record isPointed T := { point : T }.
 
-Definition point_of (T : Type) := T.
+#[short(type=pointedType)]
+HB.structure Definition Pointed := {T of isPointed T & Choice T}.
 
-Record class_of (T : Type) := Class {
-  base : Choice.class_of T;
-  mixin : point_of T
-}.
+(* NB: was arrow_pointedType *)
+HB.instance Definition _ (T : Type) (T' : T -> pointedType) :=
+  isPointed.Build (forall t : T, T' t) (fun=> point).
 
-Section ClassDef.
-
-Structure type := Pack { sort; _ : class_of sort }.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c := cT return class_of cT in c.
-
-Definition clone c of phant_id class c := @Pack T c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of xT).
-Local Coercion base : class_of >-> Choice.class_of.
-
-Definition pack m :=
-  fun bT b of phant_id (Choice.class bT) b => @Pack T (Class b m).
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-
-End ClassDef.
-
-Module Exports.
-
-Coercion sort : type >-> Sortclass.
-Coercion base : class_of >-> Choice.class_of.
-Coercion mixin : class_of >-> point_of.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Notation pointedType := type.
-Notation PointedType T m := (@pack T m _ _ idfun).
-Notation "[ 'pointedType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
-  (at level 0, format "[ 'pointedType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'pointedType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'pointedType'  'of'  T ]") : form_scope.
-
-End Exports.
-
-End Pointed.
-
-Export Pointed.Exports.
-
-Definition point {M : pointedType} : M := Pointed.mixin (Pointed.class M).
-
-Canonical arrow_pointedType (T : Type) (T' : pointedType) :=
-  PointedType (T -> T') (fun=> point).
-
-Definition dep_arrow_pointedType (T : Type) (T' : T -> pointedType) :=
-  Pointed.Pack
-   (Pointed.Class (dep_arrow_choiceClass T') (fun i => @point (T' i))).
-
-Canonical unit_pointedType := PointedType unit tt.
-Canonical bool_pointedType := PointedType bool false.
-Canonical Prop_pointedType := PointedType Prop False.
-Canonical nat_pointedType := PointedType nat 0.
-Canonical prod_pointedType (T T' : pointedType) :=
-  PointedType (T * T') (point, point).
-Canonical matrix_pointedType m n (T : pointedType) :=
-  PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
-Canonical option_pointedType (T : choiceType) := PointedType (option T) None.
-Canonical pointed_fset {T : choiceType} := PointedType {fset T} fset0.
+HB.instance Definition _ := isPointed.Build unit tt.
+HB.instance Definition _ := isPointed.Build bool false.
+HB.instance Definition _ := isPointed.Build Prop False.
+HB.instance Definition _ := isPointed.Build nat 0.
+HB.instance Definition _ (T T' : pointedType) :=
+  isPointed.Build (T * T')%type (point, point).
+HB.instance Definition _ m n (T : pointedType) :=
+  isPointed.Build 'M[T]_(m, n) (\matrix_(_, _) point)%R.
+HB.instance Definition _ (T : choiceType) := isPointed.Build (option T) None.
+HB.instance Definition _ (T : choiceType) := isPointed.Build {fset T} fset0.
 
 Notation get := (xget point).
 Notation "[ 'get' x | E ]" := (get [set x | E])
@@ -2236,108 +2184,56 @@ Lemma unsquashK {T} : cancel (@unsquash T) squash. Proof. by move=> []. Qed.
 
 (* Empty types *)
 
-Module Empty.
+HB.mixin Record isEmpty T := {
+  axiom : T -> False
+}.
 
-Definition mixin_of T := T -> False.
+#[short(type="emptyType")]
+HB.structure Definition Empty := {T of isEmpty T & Finite T}.
 
-Section EqMixin.
-Variables (T : Type) (m : mixin_of T).
+HB.factory Record Choice_isEmpty T of Choice T := {
+  axiom : T -> False
+}.
+HB.builders Context T of Choice_isEmpty T.
+
+Definition pickle : T -> nat := fun=> 0%N.
+Definition unpickle : nat -> option T := fun=> None.
+Lemma pickleK : pcancel pickle unpickle.
+Proof. by move=> x; case: (axiom x). Qed.
+HB.instance Definition _ := isCountable.Build T pickleK.
+
+Lemma fin_axiom : Finite.axiom ([::] : seq T).
+Proof. by move=> /[dup]/axiom. Qed.
+HB.instance Definition _ := isFinite.Build T fin_axiom.
+
+HB.instance Definition _ := isEmpty.Build T axiom.
+HB.end.
+
+HB.factory Record Type_isEmpty T := {
+  axiom : T -> False
+}.
+HB.builders Context T of Type_isEmpty T.
 Definition eq_op (x y : T) := true.
-Lemma eq_opP : Equality.axiom eq_op. Proof. by []. Qed.
-Definition eqMixin := EqMixin eq_opP.
-End EqMixin.
+Lemma eq_opP : Equality.axiom eq_op. Proof. by move=> ? /[dup]/axiom. Qed.
+HB.instance Definition _ := hasDecEq.Build T eq_opP.
 
-Section ChoiceMixin.
-Variables (T : Type) (m : mixin_of T).
 Definition find of pred T & nat : option T := None.
 Lemma findP (P : pred T) (n : nat) (x : T) :  find P n = Some x -> P x.
 Proof. by []. Qed.
 Lemma ex_find (P : pred T) : (exists x : T, P x) -> exists n : nat, find P n.
-Proof. by case. Qed.
+Proof. by move=> [/[dup]/axiom]. Qed.
 Lemma eq_find (P Q : pred T) : P =1 Q -> find P =1 find Q.
 Proof. by []. Qed.
-Definition choiceMixin := Choice.Mixin findP ex_find eq_find.
-End ChoiceMixin.
+HB.instance Definition _ := hasChoice.Build T findP ex_find eq_find.
 
-Section CountMixin.
-Variables (T : Type) (m : mixin_of T).
-Definition pickle : T -> nat := fun=> 0.
-Definition unpickle : nat -> option T := fun=> None.
-Lemma pickleK : pcancel pickle unpickle. Proof. by []. Qed.
-Definition countMixin := CountMixin pickleK.
-End CountMixin.
+HB.instance Definition _ := Choice_isEmpty.Build T axiom.
+HB.end.
 
-Section FinMixin.
-Variables (T : countType) (m : mixin_of T).
-Lemma fin_axiom : Finite.axiom ([::] : seq T). Proof. by []. Qed.
-Definition finMixin := FinMixin fin_axiom.
-End FinMixin.
+HB.instance Definition _ := Type_isEmpty.Build False id.
 
-Section ClassDef.
+HB.instance Definition _ := isEmpty.Build void (@of_void _).
 
-Set Primitive Projections.
-Record class_of T := Class {
-  base : Finite.class_of T;
-  mixin : mixin_of T
-}.
-Unset Primitive Projections.
-Local Coercion base : class_of >-> Finite.class_of.
-
-Structure type : Type := Pack {sort; _ : class_of sort}.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c as cT' := cT return class_of cT' in c.
-Definition clone c of phant_id class c := @Pack T c.
-
-Definition pack (m0 : mixin_of T) :=
-  fun bT b & phant_id (Finite.class bT) b =>
-  fun m & phant_id m0 m => Pack (@Class T b m).
-
-Definition eqType := @Equality.Pack cT class.
-Definition choiceType := @Choice.Pack cT class.
-Definition countType := @Countable.Pack cT class.
-Definition finType := @Finite.Pack cT class.
-
-End ClassDef.
-
-Module Import Exports.
-Coercion base : class_of >-> Finite.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion sort : type >-> Sortclass.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion countType : type >-> Countable.type.
-Canonical countType.
-Coercion finType : type >-> Finite.type.
-Canonical finType.
-Notation emptyType := type.
-Notation EmptyType T m := (@pack T m _ _ id _ id).
-Notation "[ 'emptyType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
-  (at level 0, format "[ 'emptyType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'emptyType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'emptyType'  'of'  T ]") : form_scope.
-Coercion eqMixin : mixin_of >-> Equality.mixin_of.
-Coercion choiceMixin : mixin_of >-> Choice.mixin_of.
-Coercion countMixin : mixin_of >-> Countable.mixin_of.
-End Exports.
-
-End Empty.
-Export Empty.Exports.
-
-Definition False_emptyMixin : Empty.mixin_of False := id.
-Canonical False_eqType := EqType False False_emptyMixin.
-Canonical False_choiceType := ChoiceType False False_emptyMixin.
-Canonical False_countType := CountType False False_emptyMixin.
-Canonical False_finType := FinType False (Empty.finMixin False_emptyMixin).
-Canonical False_emptyType := EmptyType False False_emptyMixin.
-
-Definition void_emptyMixin : Empty.mixin_of void := @of_void _.
-Canonical void_emptyType := EmptyType void void_emptyMixin.
-
-Definition no {T : emptyType} : T -> False :=
-  let: Empty.Pack _ (Empty.Class _ f) := T in f.
+Definition no {T : emptyType} : T -> False := @axiom T.
 Definition any {T : emptyType} {U}  : T -> U := @False_rect _ \o no.
 
 Lemma empty_eq0 {T : emptyType} : all_equal_to (set0 : set T).
@@ -2357,13 +2253,17 @@ Arguments qcanon {T C sort alt} x.
 
 Lemma choicePpointed : quasi_canonical choiceType pointedType.
 Proof.
-apply: qcanon => T; have [/unsquash x|/(_ (squash _)) TF] := pselect $|T|.
-  by right; exists (PointedType T x); case: T x.
+apply: qcanon => -[Ts [Tc Te]].
+set T := Choice.Pack _.
+have [/unsquash x|/(_ (squash _)) TF] := pselect $|T|.
+  right.
+  pose Tp := isPointed.Build T x.
+  pose TT : pointedType := HB.pack T Te Tc Tp.
+  by exists TT.
 left.
-pose cT := CountType _ (TF : Empty.mixin_of T).
-pose fM := Empty.finMixin (TF : Empty.mixin_of cT).
-exists (EmptyType (FinType _ fM) TF) => //=.
-by case: T TF @cT @fM.
+pose TMixin := Choice_isEmpty.Build T TF.
+pose TT : emptyType := HB.pack T Te Tc TMixin.
+by exists TT.
 Qed.
 
 Lemma eqPpointed : quasi_canonical eqType pointedType.
@@ -2555,7 +2455,8 @@ Hypothesis (Rsucc : forall s, exists t, R s t /\ s <> t /\
 
 Let Teq := @gen_eqMixin T.
 Let Tch := @gen_choiceMixin T.
-Let Tp := Pointed.Pack (Pointed.Class (Choice.Class Teq Tch) t0).
+Let Tp : pointedType :=  (* FIXME: use HB.pack *)
+  Pointed.Pack (@Pointed.Class T (isPointed.Axioms_ t0) Tch Teq).
 Let lub := fun A : {A : set T | total_on A R} =>
   [get t : Tp | (forall s, sval A s -> R s t) /\
     forall r, (forall s, sval A s -> R s r) -> R t r].
@@ -2668,7 +2569,8 @@ Lemma ZL_preorder T (t0 : T) (R : T -> T -> Prop) :
   exists t, premaximal R t.
 Proof.
 set Teq := @gen_eqMixin T; set Tch := @gen_choiceMixin T.
-set Tp := Pointed.Pack (Pointed.Class (Choice.Class Teq Tch) t0).
+pose Tpo := isPointed.Build T t0.
+pose Tp : pointedType := HB.pack T Teq Tch Tpo.
 move=> Rrefl Rtrans tot_max.
 set eqR := fun s t => R s t /\ R t s; set ceqR := fun s => [set t | eqR s t].
 have eqR_trans r s t : eqR r s -> eqR s t -> eqR r t.
@@ -2918,13 +2820,14 @@ Proof. by rewrite setUC setKU. Qed.
 Lemma meetKU B A : A `|` (A `&` B) = A.
 Proof. by rewrite setIC setKI. Qed.
 
-Definition orderMixin := @MeetJoinMixin _ _ (fun A B => `[<proper A B>]) setI
-  setU le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _) joinKI meetKU
-  (@setIUl _) setIid.
+#[export]
+HB.instance Definition _ : Choice (set T) := Choice.copy _ (set T).
 
-Local Canonical porderType := POrderType set_display (set T) orderMixin.
-Local Canonical latticeType := LatticeType (set T) orderMixin.
-Local Canonical distrLatticeType := DistrLatticeType (set T) orderMixin.
+#[export]
+HB.instance Definition _ :=
+  Order.isMeetJoinDistrLattice.Build set_display (set T)
+    le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _)
+    joinKI meetKU (@setIUl _) setIid.
 
 Lemma SetOrder_sub0set A : (set0 <= A)%O.
 Proof. by apply/asboolP; apply: sub0set. Qed.
@@ -2932,12 +2835,13 @@ Proof. by apply/asboolP; apply: sub0set. Qed.
 Lemma SetOrder_setTsub A : (A <= setT)%O.
 Proof. exact/asboolP. Qed.
 
-Local Canonical bLatticeType :=
-  BLatticeType (set T) (Order.BLattice.Mixin SetOrder_sub0set).
-Local Canonical tbLatticeType :=
-  TBLatticeType (set T) (Order.TBLattice.Mixin SetOrder_setTsub).
-Local Canonical bDistrLatticeType := [bDistrLatticeType of set T].
-Local Canonical tbDistrLatticeType := [tbDistrLatticeType of set T].
+#[export]
+HB.instance Definition _ := Order.hasBottom.Build set_display (set T)
+  SetOrder_sub0set.
+
+#[export]
+HB.instance Definition _ := Order.hasTop.Build set_display (set T)
+  SetOrder_setTsub.
 
 Lemma subKI A B : B `&` (A `\` B) = set0.
 Proof. by rewrite setDE setICA setICr setI0. Qed.
@@ -2945,26 +2849,20 @@ Proof. by rewrite setDE setICA setICr setI0. Qed.
 Lemma joinIB A B : (A `&` B) `|` A `\` B = A.
 Proof. by rewrite setUC -setDDr setDv setD0. Qed.
 
-Local Canonical cbDistrLatticeType := CBDistrLatticeType (set T)
-  (@CBDistrLatticeMixin _ _ (fun A B => A `\` B) subKI joinIB).
+#[export]
+HB.instance Definition _ := Order.hasSub.Build set_display (set T) subKI joinIB.
 
-Local Canonical ctbDistrLatticeType := CTBDistrLatticeType (set T)
-  (@CTBDistrLatticeMixin _ _ _ (fun A => ~` A) (fun x => esym (setTD x))).
+#[export]
+HB.instance Definition _ := Order.hasCompl.Build set_display (set T)
+  (fun x => esym (setTD x)).
 
 End SetOrder.
+Module Exports. HB.reexport. End Exports.
 End Internal.
 
 Module Exports.
 
-Canonical Internal.porderType.
-Canonical Internal.latticeType.
-Canonical Internal.distrLatticeType.
-Canonical Internal.bLatticeType.
-Canonical Internal.tbLatticeType.
-Canonical Internal.bDistrLatticeType.
-Canonical Internal.tbDistrLatticeType.
-Canonical Internal.cbDistrLatticeType.
-Canonical Internal.ctbDistrLatticeType.
+Export Internal.Exports.
 
 Section exports.
 Context {T : Type}.
