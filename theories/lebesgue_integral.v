@@ -2709,6 +2709,11 @@ under eq_fun do rewrite abseM.
 by rewrite ge0_integralM// ?lte_mul_pinfty//; exact: measurable_fun_comp.
 Qed.
 
+Lemma integrableMr (k : R) f : mu_int f -> mu_int (f \* cst k%:E).
+Proof.
+by move=> mf; apply: eq_integrable (integrablerM k mf) => // x; rewrite muleC.
+Qed.
+
 Lemma integrableD f g : mu_int f -> mu_int g -> mu_int (f \+ g).
 Proof.
 move=> [mf foo] [mg goo]; split; first exact: emeasurable_funD.
@@ -2805,6 +2810,7 @@ Qed.
 
 End integrable.
 Notation "mu .-integrable" := (integrable mu) : type_scope.
+Arguments eq_integrable {d T R mu D} mD f.
 
 Section sequence_measure.
 Local Open Scope ereal_scope.
