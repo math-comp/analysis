@@ -1466,7 +1466,8 @@ Arguments measure_bigcup {d R T} mu A.
 
 Section pushforward_measure.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T1 T2 : measurableType d) (f : T1 -> T2).
+Variables (d d' : measure_display).
+Variables (T1 : measurableType d) (T2 : measurableType d') (f : T1 -> T2).
 Hypothesis mf : measurable_fun setT f.
 Variables (R : realFieldType) (m : {measure set T1 -> \bar R}).
 

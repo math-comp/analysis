@@ -17,6 +17,8 @@
 - in `ereal.v`:
   + generalize `lee_pmul`
   + simplify `lte_le_add`, `lte_le_dadd`, `lte_le_sub`, `lte_le_dsub`
+- in `measure.v`:
+  + generalize `pushforward`
 
 ### Renamed
 
