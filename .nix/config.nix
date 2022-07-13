@@ -38,8 +38,21 @@
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
   bundles."8.14".coqPackages.coq.override.version = "8.14";
-  bundles."8.15".coqPackages.coq.override.version = "8.15";
-  bundles."8.16".coqPackages.coq.override.version = "8.16";
+  bundles."8.15".coqPackages = {
+    coq.override.version = "8.15";
+    hierarchy-builder.override.version = "fun_instances";
+    mathcomp.override.version = "CohenCyril:hb-ssrnum";
+    mathcomp-bigenough.override.version = "1.0.1";
+    mathcomp-finmap.override.version = "proux01:hierarchy-builder";
+  };
+
+  bundles."8.16".coqPackages = {
+    coq.override.version = "8.16";
+    hierarchy-builder.override.version = "master";
+    mathcomp-bigenough.override.version = "1.0.1";
+    mathcomp-finmap.override.version = "1.5.2";
+    mathcomp.override.version = "CohenCyril:hb-ssrnum";
+  };
 
   bundles."master".coqPackages = {
     coq.override.version = "master";
@@ -55,17 +68,17 @@
   cachix.coq = {};
   cachix.math-comp.authToken = "CACHIX_AUTH_TOKEN";
   cachix.coq-community = {};
-  
+
   ## If you have write access to one of these caches you can
   ## provide the auth token or signing key through a secret
   ## variable on GitHub. Then, you should give the variable
   ## name here. For instance, coq-community projects can use
   ## the following line instead of the one above:
   # cachix.coq-community.authToken = "CACHIX_AUTH_TOKEN";
-  
+
   ## Or if you have a signing key for a given Cachix cache:
   # cachix.my-cache.signingKey = "CACHIX_SIGNING_KEY"
-  
+
   ## Note that here, CACHIX_AUTH_TOKEN and CACHIX_SIGNING_KEY
   ## are the names of secret variables. They are set in
   ## GitHub's web interface.
