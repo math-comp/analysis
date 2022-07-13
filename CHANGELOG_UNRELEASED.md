@@ -11,6 +11,8 @@
   + lemmas `lee_lt_add`, `lee_lt_dadd`, `lee_paddl`, `lee_pdaddl`,
     `lte_paddl`, `lte_pdaddl`, `lee_paddr`, `lee_pdaddr`,
     `lte_paddr`, `lte_pdaddr`
+- in `lebesgue_integral.v`:
+  + lemma `ge0_emeasurable_fun_sum`
 
 ### Changed
 
