@@ -13,6 +13,7 @@
     `lte_paddr`, `lte_pdaddr`
 - in `lebesgue_integral.v`:
   + lemma `ge0_emeasurable_fun_sum`
+  + lemma `integrableMr`
 
 ### Changed
 
@@ -21,6 +22,8 @@
   + simplify `lte_le_add`, `lte_le_dadd`, `lte_le_sub`, `lte_le_dsub`
 - in `measure.v`:
   + generalize `pushforward`
+- in `lebesgue_integral.v`
+  + change ~Arguments~ of ~eq_integrable~
 
 ### Renamed
 
