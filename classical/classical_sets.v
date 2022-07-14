@@ -1,5 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg matrix finmap order ssrnum.
+From HB Require Import structures.
+From mathcomp Require Import all_ssreflect ssralg matrix finmap ssrnum.
 From mathcomp Require Import ssrint interval.
 Require Import mathcomp_extra boolp.
 
@@ -2121,76 +2122,28 @@ Lemma inTT_bij [T1 T2 : Type] [f : T1 -> T2] :
   {in [set: T1], bijective f} -> bijective f.
 Proof. by case=> [g /in1TT + /in1TT +]; exists g. Qed.
 
-Module Pointed.
+HB.mixin Record isPointed (T : Type) of Choice T := { point : T }.
 
-Definition point_of (T : Type) := T.
+#[short(type=pointedType)]
+HB.structure Definition Pointed :=
+  {T of isPointed T & HasChoice T & HasDecEq T}.
 
-Record class_of (T : Type) := Class {
-  base : Choice.class_of T;
-  mixin : point_of T
-}.
+(* NB: was arrow_pointedType *)
+HB.instance Definition _ (T : Type) (T' : pointedType) :=
+  isPointed.Build (T -> T') (fun=> point).
 
-Section ClassDef.
+(* NB: was dep_arrow_pointedType *)
+HB.instance Definition _ (T : Type) (T' : T -> pointedType) :=
+  isPointed.Build (forall x : T, T' x) (fun i => @point (T' i)).
 
-Structure type := Pack { sort; _ : class_of sort }.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c := cT return class_of cT in c.
-
-Definition clone c of phant_id class c := @Pack T c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of xT).
-Local Coercion base : class_of >-> Choice.class_of.
-
-Definition pack m :=
-  fun bT b of phant_id (Choice.class bT) b => @Pack T (Class b m).
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-
-End ClassDef.
-
-Module Exports.
-
-Coercion sort : type >-> Sortclass.
-Coercion base : class_of >-> Choice.class_of.
-Coercion mixin : class_of >-> point_of.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Notation pointedType := type.
-Notation PointedType T m := (@pack T m _ _ idfun).
-Notation "[ 'pointedType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
-  (at level 0, format "[ 'pointedType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'pointedType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'pointedType'  'of'  T ]") : form_scope.
-
-End Exports.
-
-End Pointed.
-
-Export Pointed.Exports.
-
-Definition point {M : pointedType} : M := Pointed.mixin (Pointed.class M).
-
-Canonical arrow_pointedType (T : Type) (T' : pointedType) :=
-  PointedType (T -> T') (fun=> point).
-
-Definition dep_arrow_pointedType (T : Type) (T' : T -> pointedType) :=
-  Pointed.Pack
-   (Pointed.Class (dep_arrow_choiceClass T') (fun i => @point (T' i))).
-
-Canonical unit_pointedType := PointedType unit tt.
-Canonical bool_pointedType := PointedType bool false.
-Canonical Prop_pointedType := PointedType Prop False.
-Canonical nat_pointedType := PointedType nat 0.
-Canonical prod_pointedType (T T' : pointedType) :=
-  PointedType (T * T') (point, point).
-Canonical matrix_pointedType m n (T : pointedType) :=
-  PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
-Canonical option_pointedType (T : choiceType) := PointedType (option T) None.
-Canonical pointed_fset {T : choiceType} := PointedType {fset T} fset0.
+HB.instance Definition _ := isPointed.Build bool false.
+HB.instance Definition _ := isPointed.Build Prop False.
+HB.instance Definition _ := isPointed.Build nat 0.
+HB.instance Definition _ (T T' : pointedType) :=
+  isPointed.Build (T * T')%type (point, point).
+HB.instance Definition _ m n (T : pointedType) :=
+  isPointed.Build 'M[T]_(m, n) (\matrix_(_, _) point)%R.
+HB.instance Definition _ (T : choiceType) := isPointed.Build (option T) None.
 
 Notation get := (xget point).
 Notation "[ 'get' x | E ]" := (get [set x | E])
