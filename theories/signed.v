@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
 From mathcomp.classical Require Import mathcomp_extra.
@@ -315,13 +316,8 @@ Export Signed.Exports.
 Section POrder.
 Variables (d : unit) (T : porderType d) (x0 : T) (nz : nullity) (cond : reality).
 Local Notation sT := {compare x0 & nz & cond}.
-Canonical signed_subType := [subType for @Signed.r d T x0 nz cond].
-Definition signed_eqMixin := [eqMixin of sT by <:].
-Canonical signed_eqType := EqType sT signed_eqMixin.
-Definition signed_choiceMixin := [choiceMixin of sT by <:].
-Canonical signed_choiceType := ChoiceType sT signed_choiceMixin.
-Definition signed_porderMixin := [porderMixin of sT by <:].
-Canonical signed_porderType := POrderType d sT signed_porderMixin.
+HB.instance Definition _ := [IsSUB for @Signed.r d T x0 nz cond].
+HB.instance Definition _ := [POrder of sT by <:].
 End POrder.
 
 Lemma top_typ_subproof d (T : porderType d) (x0 x : T) :
@@ -538,12 +534,11 @@ Section Order.
 Variables (R : numDomainType) (nz : nullity) (r : real).
 Local Notation nR := {num R & nz & r}.
 
-Lemma signed_le_total : totalPOrderMixin [porderType of nR].
+Lemma signed_le_total : total (<=%O : rel nR).
 Proof. by move=> x y; apply: real_comparable => /=. Qed.
 
-Canonical signed_latticeType := LatticeType nR signed_le_total.
-Canonical signed_distrLatticeType := DistrLatticeType nR signed_le_total.
-Canonical signed_orderType := OrderType nR signed_le_total.
+HB.instance Definition _ := Order.POrder_IsTotal.Build ring_display nR
+  signed_le_total.
 
 End Order.
 
@@ -736,7 +731,7 @@ Proof.
 rewrite {}/rnz {}/rrl; apply/andP; split.
   move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
   by rewrite 1?addr_ss_eq0 ?(eq0F, ge0, le0, andbF, orbT).
-have addr_le0 a b : a <= 0 -> b <= 0 -> a + b <= 0.
+have addr_le0 (a b : R) : a <= 0 -> b <= 0 -> a + b <= 0.
   by rewrite -!oppr_ge0 opprD; apply: addr_ge0.
 move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
   do ?[by rewrite addr_ge0|by rewrite addr_le0|by rewrite -realE realD
