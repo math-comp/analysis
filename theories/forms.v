@@ -27,7 +27,7 @@ Reserved Notation "A ^_|_"    (at level 8, format "A ^_|_").
 Reserved Notation "A _|_ B" (at level 69, format "A  _|_  B").
 Reserved Notation "eps_theta .-sesqui" (at level 2, format "eps_theta .-sesqui").
 
-Notation "u '``_' i" := (u (GRing.zero (Zp_zmodType O)) i) : ring_scope.
+Notation "u '``_' i" := (u (GRing.zero [the zmodType of 'I_1]) i) : ring_scope.
 Notation "''e_' i" := (delta_mx 0 i)
  (format "''e_' i", at level 3) : ring_scope.
 
@@ -485,7 +485,7 @@ Notation "eps_theta .-sesqui" := (sesqui _ eps_theta) : ring_scope.
 
 Notation symmetric_form := (false, [rmorphism of idfun]).-sesqui.
 Notation skew := (true, [rmorphism of idfun]).-sesqui.
-Notation hermitian := (false, @conjC _).-sesqui.
+Notation hermitian := (false, @Num.conj_op _).-sesqui.
 
 (* Section ClassificationForm. *)
 
