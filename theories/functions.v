@@ -1167,7 +1167,7 @@ Proof.
 split; first exact: funS.
 elim: n=> // n IH; rewrite oinv_iter iterfSr iterfS.
 apply: (@ocan_in_comp _ _ _ (mem A)) => //; last exact: oinvK.
-elim: n {IH} => // n IH x Ax; move: (IH _ Ax); rewrite pred_omap_set ?inE.
+elim: n {IH} => // n IH x Ax; move: (IH _ Ax); rewrite pred_oapp_set ?inE.
 case=> y Ay /= ynf; case: (@oinvS _ _ _ _ f _ Ay) => z ? zfinv; exists z => //.
 by rewrite zfinv /= -ynf.
 Qed.
