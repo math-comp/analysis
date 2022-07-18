@@ -37,11 +37,11 @@
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
-  bundles."8.14".coqPackages.coq.override.version = "8.14";
   bundles."8.15".coqPackages = {
     coq.override.version = "8.15";
-    hierarchy-builder.override.version = "fun_instances";
-    mathcomp.override.version = "CohenCyril:hb-ssrnum";
+    # should be "fun_instances" but last commit is broken
+    hierarchy-builder.override.version = "ee1e54d1aef3cda07222e06ff9b99fbab0fec652";
+    mathcomp.override.version = "hierarchy-builder";
     mathcomp-bigenough.override.version = "1.0.1";
     mathcomp-finmap.override.version = "proux01:hierarchy-builder";
   };
@@ -49,18 +49,18 @@
   bundles."8.16".coqPackages = {
     coq.override.version = "8.16";
     hierarchy-builder.override.version = "master";
+    mathcomp.override.version = "hierarchy-builder";
     mathcomp-bigenough.override.version = "1.0.1";
-    mathcomp-finmap.override.version = "1.5.2";
-    mathcomp.override.version = "CohenCyril:hb-ssrnum";
+    mathcomp-finmap.override.version = "proux01:hierarchy-builder";
   };
 
   bundles."master".coqPackages = {
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
     hierarchy-builder.override.version = "coq-master";
-    mathcomp.override.version = "master";
+    mathcomp.override.version = "hierarchy-builder";
     mathcomp-bigenough.override.version = "1.0.1";
-    mathcomp-finmap.override.version = "1.5.2";
+    mathcomp-finmap.override.version = "proux01:hierarchy-builder";
   };
 
   ## Cachix caches to use in CI
