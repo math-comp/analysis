@@ -1,3 +1,4 @@
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum.
 Require Import signed.
 
@@ -39,19 +40,18 @@ Proof. by rewrite /norm pairMnE -mulr_natl maxr_pmulr ?mulr_natl ?normrMn. Qed.
 Lemma normrN x : norm (- x) = norm x.
 Proof. by rewrite /norm/= !normrN. Qed.
 
-Definition normedZmodMixin :
-  @Num.normed_mixin_of R [zmodType of U * V] (Num.NumDomain.class R) :=
-  @Num.NormedMixin _ _ _ norm normD norm_eq0 normMn normrN.
+#[export]
+HB.instance Definition _ := Num.Zmodule_IsNormed.Build R (U * V)%type
+  normD norm_eq0 normMn normrN.
 
-Canonical normedZmodType := NormedZmodType R (U * V) normedZmodMixin.
-
-Lemma prod_normE (x : normedZmodType) : `|x| = Num.max `|x.1| `|x.2|.
+Lemma prod_normE (x : [the normedZmodType R of (U * V)%type]) :
+  `|x| = Num.max `|x.1| `|x.2|.
 Proof. by []. Qed.
 
 End ProdNormedZmodule.
 
 Module Exports.
-Canonical normedZmodType.
+HB.reexport.
 Definition prod_normE := @prod_normE.
 End Exports.
 
