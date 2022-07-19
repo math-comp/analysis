@@ -4,6 +4,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
 (* -------------------------------------------------------------------- *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp.classical Require Import boolp.
 Require Import xfinmap reals.
@@ -39,27 +40,19 @@ Variable T : Type.
 Variable E : pred T.
 
 Record pred_sub : Type :=
-  PSubSub { rsval : T; rsvalP : rsval \in E }.
+  PSubSub { rsval :> T; rsvalP : rsval \in E }.
 
-Coercion rsval : pred_sub >-> T.
-
-Canonical pred_sub_subType := Eval hnf in [subType for rsval].
+HB.instance Definition _ := [IsSUB for rsval].
 End Def.
 
-Definition pred_sub_eqMixin (T : eqType) (E : pred T) :=
-  Eval hnf in [eqMixin of pred_sub E by <:].
-Canonical pred_sub_eqType (T : eqType) (E : pred T) :=
-  Eval hnf in EqType (@pred_sub T E) (pred_sub_eqMixin E).
+HB.instance Definition _ (T : eqType) (E : pred T) :=
+  [Equality of pred_sub E by <:].
 
-Definition pred_sub_choiceMixin (T : choiceType) (E : pred T) :=
-  Eval hnf in [choiceMixin of pred_sub E by <:].
-Canonical pred_sub_choiceType (T : choiceType) (E : pred T) :=
-  Eval hnf in ChoiceType (@pred_sub T E) (pred_sub_choiceMixin E).
+HB.instance Definition _ (T : choiceType) (E : pred T) :=
+  [Choice of pred_sub E by <:].
 
-Definition pred_sub_countMixin (T : countType) (E : pred T) :=
-  Eval hnf in [countMixin of pred_sub E by <:].
-Canonical pred_sub_countType (T : countType) (E : pred T) :=
-  Eval hnf in CountType (@pred_sub T E) (pred_sub_countMixin E).
+HB.instance Definition _ (T : countType) (E : pred T) :=
+  [Countable of pred_sub E by <:].
 End PredSubtype.
 
 Notation "[ 'psub' E ]" := (@pred_sub _ E)
@@ -77,7 +70,7 @@ End PIncl.
 Section Countable.
 Variable (T : Type) (E : pred T).
 
-CoInductive countable : Type :=
+Variant countable : Type :=
   Countable
     (rpickle : [psub E] -> nat)
     (runpickle : nat -> option [psub E])
@@ -113,19 +106,12 @@ End CanCountable.
 Section CountType.
 Variables (T : eqType) (E : pred T) (c : countable E).
 
-Definition countable_countMixin  := CountMixin (rpickleK c).
-Definition countable_choiceMixin := CountChoiceMixin countable_countMixin.
-
-Definition countable_choiceType :=
-  ChoiceType [psub E] countable_choiceMixin.
-
-Definition countable_countType :=
-  CountType countable_choiceType countable_countMixin.
+Definition countable_countMixin  := Countable.copy [psub E]
+  (pcan_type (rpickleK c)).
+Definition countable_choiceMixin := Choice.copy [psub E]
+  (pcan_type (rpickleK c)).
 End CountType.
 End CountableTheory.
-
-Notation "[ 'countable' 'of' c ]" := (countable_countType c)
-  (format "[ 'countable'  'of'  c ]").
 
 (* -------------------------------------------------------------------- *)
 Section Finite.
@@ -183,7 +169,7 @@ Variables (T : eqType) (E F : pred T).
 Lemma countable_sub: {subset E <= F} -> countable F -> countable E.
 Proof.
 move=> le_EF [f g fgK]; pose f' (x : [psub E]) := f (pincl le_EF x).
-pose g' x := obind (insub (sT := [subType of [psub E]])) (omap val (g x)).
+pose g' x := obind (insub (sT := [the subType _ of [psub E]])) (omap val (g x)).
 by exists f' g' => x; rewrite /f' /g' fgK /= valK.
 Qed.
 End CountSub.
@@ -196,7 +182,8 @@ Hypothesis cE : forall i, countable (E i).
 
 Lemma cunion_countable : countable [pred x | `[< exists i, x \in E i >]].
 Proof.
-pose S := { i : nat & [countable of cE i] }; set F := [pred x | _].
+pose Ci i : countType := HB.pack [psub (E i)] (countable_countMixin (cE i)).
+pose S := { i : nat & Ci i }; set F := [pred x | _].
 have H: forall (x : [psub F]), exists i : nat, val x \in E i.
   by case=> x /= /asboolP[i] Eix; exists i.
 have G: forall (x : S), val (tagged x) \in F.
