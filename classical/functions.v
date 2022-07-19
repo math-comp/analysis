@@ -2609,16 +2609,16 @@ Qed.
 Obligation Tactic := idtac.
 
 Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
-  @ZmodMixin (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g) _ _ _ _.
+  @GRing.IsZmodule.Build (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g)
+     _ _ _ _.
 Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
 Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
-Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
+HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M.
 
 Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
-  @RingMixin [zmodType of T -> M] (cst 1) (fun f g => f \* g)
-             _ _ _ _ _ _.
+  @GRing.Zmodule_IsRing.Build (T -> M) (cst 1) (fun f g => f \* g) _ _ _ _ _ _.
 Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
@@ -2627,25 +2627,30 @@ Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDr. Qed.
 Next Obligation.
 by move=> T M ; apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
 Qed.
-Canonical fct_ringType (T : pointedType) (M : ringType) :=
-  RingType (T -> M) (fct_ringMixin T M).
+HB.instance Definition _ (T : pointedType) (M : ringType) := fct_ringMixin T M.
 
-Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
-  ComRingType (T -> M) _.
-Next Obligation. by move=> T M f g; rewrite funeqE => x/=; rewrite mulrC. Qed.
-
-Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
-  := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
-Next Obligation. by move=> U R V k f v; rewrite funeqE=> x; exact: scalerA. Qed.
-Next Obligation. by move=> U R V f; rewrite funeqE=> x /=; rewrite scale1r. Qed.
+Program Definition fct_comRingType (T : pointedType) (M : comRingType) :=
+  GRing.Ring_HasCommutativeMul.Build (T -> M) _.
 Next Obligation.
-by move=> U R V f g h; rewrite funeqE => x /=; rewrite scalerDr.
+by move=> T M f g; rewrite funeqE => x; rewrite /GRing.mul/= mulrC.
+Qed.
+HB.instance Definition _ (T : pointedType) (M : comRingType) :=
+  fct_comRingType T M.
+
+Section fct_lmod.
+Variables (U : Type) (R : ringType) (V : lmodType R).
+Program Definition fct_lmodMixin := @GRing.Zmodule_IsLmodule.Build R (U -> V)
+  (fun k f => k \*: f) _ _ _ _.
+Next Obligation. by move=> k f v; rewrite funeqE=> x; exact: scalerA. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite scale1r. Qed.
+Next Obligation.
+by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr.
 Qed.
 Next Obligation.
-by move=> U R V f g h; rewrite funeqE => x /=; rewrite scalerDl.
+by move=> f g h; rewrite funeqE => x /=; rewrite scalerDl.
 Qed.
-Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
-  LmodType _ (U -> V) (fct_lmodMixin U V).
+HB.instance Definition _ := fct_lmodMixin.
+End fct_lmod.
 
 Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M)
     (x : T) :
