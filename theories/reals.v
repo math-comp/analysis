@@ -35,6 +35,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp.classical Require Import boolp classical_sets set_interval.
 From mathcomp.classical Require Import mathcomp_extra.
@@ -113,143 +114,19 @@ Qed.
 End has_bound_lemmas.
 
 (* -------------------------------------------------------------------- *)
-Module Real.
-Section Mixin.
 
-Variable (R : archiFieldType).
-
-Record mixin_of : Type := Mixin {
-   _  :
+HB.mixin Record ArchimedeanField_IsReal R of Num.ArchimedeanField R := {
+  sup_upper_bound_subdef :
     forall E : set (Num.ArchimedeanField.sort R),
       has_sup E -> ubound E (supremum 0 E) ;
-   _  :
+  sup_adherent_subdef :
     forall (E : set (Num.ArchimedeanField.sort R)) (eps : R), 0 < eps ->
       has_sup E -> exists2 e : R, E e & (supremum 0 E - eps) < e ;
 }.
 
-End Mixin.
-
-Definition EtaMixin R sup_upper_bound sup_adherent :=
-  let _ := @Mixin R sup_upper_bound sup_adherent in
-  @Mixin (Num.ArchimedeanField.Pack (Num.ArchimedeanField.class R))
-         sup_upper_bound sup_adherent.
-Section ClassDef.
-
-Record class_of (R : Type) : Type := Class {
-  base : Num.ArchimedeanField.class_of R;
-  mixin_rcf : Num.real_closed_axiom (Num.NumDomain.Pack base);
-  (* TODO: ajouter une structure de pseudoMetricNormedDomain *)
-  mixin : mixin_of (Num.ArchimedeanField.Pack base)
-}.
-
-Local Coercion base : class_of >-> Num.ArchimedeanField.class_of.
-Local Coercion base_rcf R (c : class_of R) : Num.RealClosedField.class_of R :=
-  @Num.RealClosedField.Class _ c (@mixin_rcf _ c).
-
-Structure type := Pack {sort; _ : class_of sort; _ : Type}.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c _ as cT' := cT return class_of cT' in c.
-Definition clone c of phant_id class c := @Pack T c T.
-Let xT := let: Pack T _ _ := cT in T.
-Notation xclass := (class : class_of xT).
-
-Definition rcf_axiom {R} (cR : Num.RealClosedField.class_of R) :
-   Num.real_closed_axiom (Num.NumDomain.Pack cR) :=
-  match cR with Num.RealClosedField.Class _ ax => ax end.
-Coercion rcf_axiom : Num.RealClosedField.class_of >-> Num.real_closed_axiom.
-
-Definition pack b0 (m0 : mixin_of (@Num.ArchimedeanField.Pack T b0)) :=
-  fun bT b & phant_id (Num.ArchimedeanField.class bT) b =>
-  fun (bTr : rcfType) (br : Num.RealClosedField.class_of bTr) &
-      phant_id (Num.RealClosedField.class bTr) br =>
-  fun  cra & phant_id (@rcf_axiom bTr br) cra =>
-  fun    m & phant_id m0 m => Pack (@Class T b cra m) T.
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition porderType := @Order.POrder.Pack ring_display cT xclass.
-Definition latticeType := @Order.Lattice.Pack ring_display cT xclass.
-Definition distrLatticeType := @Order.DistrLattice.Pack ring_display cT xclass.
-Definition orderType := @Order.Total.Pack ring_display cT xclass.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition ringType := @GRing.Ring.Pack cT xclass.
-Definition comRingType := @GRing.ComRing.Pack cT xclass.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
-Definition numDomainType := @Num.NumDomain.Pack cT xclass.
-Definition normedZmodType := NormedZmodType numDomainType cT xclass.
-Definition fieldType := @GRing.Field.Pack cT xclass.
-Definition realDomainType := @Num.RealDomain.Pack cT xclass.
-Definition numFieldType := @Num.NumField.Pack cT xclass.
-Definition realFieldType := @Num.RealField.Pack cT xclass.
-Definition archimedeanFieldType := @Num.ArchimedeanField.Pack cT xclass.
-Definition rcfType := @Num.RealClosedField.Pack cT xclass.
-Definition join_rcfType := @Num.RealClosedField.Pack archimedeanFieldType xclass.
-
-End ClassDef.
-
-Module Exports.
-Coercion base : class_of >-> Num.ArchimedeanField.class_of.
-Coercion base_rcf : class_of >-> Num.RealClosedField.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion sort : type >-> Sortclass.
-Bind Scope ring_scope with sort.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion porderType : type >-> Order.POrder.type.
-Canonical porderType.
-Coercion latticeType : type >-> Order.Lattice.type.
-Canonical latticeType.
-Coercion distrLatticeType : type >-> Order.DistrLattice.type.
-Canonical distrLatticeType.
-Coercion orderType : type >-> Order.Total.type.
-Canonical orderType.
-Coercion zmodType : type >-> GRing.Zmodule.type.
-Canonical zmodType.
-Coercion ringType : type >-> GRing.Ring.type.
-Canonical ringType.
-Coercion comRingType : type >-> GRing.ComRing.type.
-Canonical comRingType.
-Coercion unitRingType : type >-> GRing.UnitRing.type.
-Canonical unitRingType.
-Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
-Canonical comUnitRingType.
-Coercion idomainType : type >-> GRing.IntegralDomain.type.
-Canonical idomainType.
-Coercion numDomainType : type >-> Num.NumDomain.type.
-Canonical numDomainType.
-Coercion normedZmodType : type >-> Num.NormedZmodule.type.
-Canonical normedZmodType.
-Coercion realDomainType : type >-> Num.RealDomain.type.
-Canonical realDomainType.
-Coercion fieldType : type >-> GRing.Field.type.
-Canonical fieldType.
-Coercion numFieldType : type >-> Num.NumField.type.
-Canonical numFieldType.
-Coercion realFieldType : type >-> Num.RealField.type.
-Canonical realFieldType.
-Coercion archimedeanFieldType : type >-> Num.ArchimedeanField.type.
-Canonical archimedeanFieldType.
-Coercion rcfType : type >-> Num.RealClosedField.type.
-Canonical rcfType.
-Canonical join_rcfType.
-
-Notation realType := type.
-Notation RealType T m := (@pack T _ m _ _ id _ _ id _ id _ id).
-Notation RealMixin := EtaMixin.
-Notation "[ 'realType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
-  (at level 0, format "[ 'realType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'realType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'realType'  'of'  T ]") : form_scope.
-
-End Exports.
-End Real.
-
-Export Real.Exports.
+#[short(type=realType)]
+HB.structure Definition Real := {R of ArchimedeanField_IsReal R
+  & Num.ArchimedeanField R & Num.RealClosedField R}.
 
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := @supremum _ R 0.
@@ -260,11 +137,11 @@ Definition inf {R : realType} (E : set R) := - sup (-%R @` E).
 (* -------------------------------------------------------------------- *)
 Lemma sup_upper_bound {R : realType} (E : set R):
   has_sup E -> ubound E (sup E).
-Proof. by move=> supE; case: R E supE=> ? [? ? []]. Qed.
+Proof. exact: sup_upper_bound_subdef. Qed.
 
 Lemma sup_adherent {R : realType} (E : set R) (eps : R) : 0 < eps ->
   has_sup E -> exists2 e : R, E e & (sup E - eps) < e.
-Proof. by case: R E eps=> ? [? ? []]. Qed.
+Proof. exact: sup_adherent_subdef. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section IsInt.
