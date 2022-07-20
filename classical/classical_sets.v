@@ -2129,10 +2129,6 @@ HB.structure Definition Pointed := {T of isPointed T & Choice T}.
 HB.instance Definition _ (T : Type) (T' : pointedType) :=
   isPointed.Build (T -> T') (fun=> point).
 
-(* NB: was dep_arrow_pointedType *)
-HB.instance Definition _ (T : Type) (T' : T -> pointedType) :=
-  isPointed.Build (forall x : T, T' x) (fun i => @point (T' i)).
-
 HB.instance Definition _ := isPointed.Build bool false.
 HB.instance Definition _ := isPointed.Build Prop False.
 HB.instance Definition _ := isPointed.Build nat 0.
@@ -2815,42 +2811,28 @@ Proof. by rewrite setUC setKU. Qed.
 Lemma meetKU B A : A `|` (A `&` B) = A.
 Proof. by rewrite setIC setKI. Qed.
 
-Check [the choiceType of (set T)].
+#[export]
+HB.instance Definition _ : Choice (set T) := Choice.copy _ (set T).
 
-Check Order.isMeetJoinDistrLattice.Build set_display (set T)
+#[export]
+HB.instance Definition _ :=
+  Order.isMeetJoinDistrLattice.Build set_display (set T)
     le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _)
     joinKI meetKU (@setIUl _) setIid.
 
-(* FIXME: I would expect this to work rather than failing with
-   HB: cannot inhabit mixin Order_POrder_IsLattice on set T *)
-Fail HB.instance Definition _ :=
-  Order.IsMeetJoinDistrLattice.Build set_display (set T)
-    le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _)
-    joinKI meetKU (@setIUl _) setIid.
-
-(* was:
-Definition orderMixin := @MeetJoinMixin _ _ (fun A B => `[<proper A B>]) setI
-  setU le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _) joinKI meetKU
-  (@setIUl _) setIid.
-
-Local Canonical porderType := POrderType set_display (set T) orderMixin.
-Local Canonical latticeType := LatticeType (set T) orderMixin.
-Local Canonical distrLatticeType := DistrLatticeType (set T) orderMixin.
-*)
-
-(* TODO: port to HB
 Lemma SetOrder_sub0set A : (set0 <= A)%O.
 Proof. by apply/asboolP; apply: sub0set. Qed.
 
 Lemma SetOrder_setTsub A : (A <= setT)%O.
 Proof. exact/asboolP. Qed.
 
-Local Canonical bLatticeType :=
-  BLatticeType (set T) (Order.BLattice.Mixin SetOrder_sub0set).
-Local Canonical tbLatticeType :=
-  TBLatticeType (set T) (Order.TBLattice.Mixin SetOrder_setTsub).
-Local Canonical bDistrLatticeType := [bDistrLatticeType of set T].
-Local Canonical tbDistrLatticeType := [tbDistrLatticeType of set T].
+#[export]
+HB.instance Definition _ := Order.hasBottom.Build set_display (set T)
+  SetOrder_sub0set.
+
+#[export]
+HB.instance Definition _ := Order.hasTop.Build set_display (set T)
+  SetOrder_setTsub.
 
 Lemma subKI A B : B `&` (A `\` B) = set0.
 Proof. by rewrite setDE setICA setICr setI0. Qed.
@@ -2858,28 +2840,20 @@ Proof. by rewrite setDE setICA setICr setI0. Qed.
 Lemma joinIB A B : (A `&` B) `|` A `\` B = A.
 Proof. by rewrite setUC -setDDr setDv setD0. Qed.
 
-Local Canonical cbDistrLatticeType := CBDistrLatticeType (set T)
-  (@CBDistrLatticeMixin _ _ (fun A B => A `\` B) subKI joinIB).
+#[export]
+HB.instance Definition _ := Order.hasSub.Build set_display (set T) subKI joinIB.
 
-Local Canonical ctbDistrLatticeType := CTBDistrLatticeType (set T)
-  (@CTBDistrLatticeMixin _ _ _ (fun A => ~` A) (fun x => esym (setTD x))).
+#[export]
+HB.instance Definition _ := Order.hasCompl.Build set_display (set T)
+  (fun x => esym (setTD x)).
 
-*)
 End SetOrder.
+Module Exports. HB.reexport. End Exports.
 End Internal.
-(*
 
 Module Exports.
 
-Canonical Internal.porderType.
-Canonical Internal.latticeType.
-Canonical Internal.distrLatticeType.
-Canonical Internal.bLatticeType.
-Canonical Internal.tbLatticeType.
-Canonical Internal.bDistrLatticeType.
-Canonical Internal.tbDistrLatticeType.
-Canonical Internal.cbDistrLatticeType.
-Canonical Internal.ctbDistrLatticeType.
+Export Internal.Exports.
 
 Section exports.
 Context {T : Type}.
@@ -2911,9 +2885,7 @@ Proof. by apply: (iffP idP); rewrite properEset. Qed.
 
 End exports.
 End Exports.
-*)
 End SetOrder.
-(*
 Export SetOrder.Exports.
 
 Section product.
@@ -3064,4 +3036,3 @@ Proof.
 rewrite eqEsubset; split => [[_ _] [_ [_ _ [<- <-//]]]|[x y] Exy]/=.
 by exists x => //; exists x.
 Qed.
-*)
