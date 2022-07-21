@@ -2244,7 +2244,9 @@ Lemma choicePpointed : quasi_canonical choiceType pointedType.
 Proof.
 apply: qcanon => T; have [/unsquash x|/(_ (squash _)) TF] := pselect $|T|.
   right.
-  admit.  (* FIXME: isPointed.Build T x fails so we cannot use HB.pack *)
+  case: T x => T [Tc Te x].
+  by exists (Pointed.Pack (@Pointed.Class _ Tc Te (isPointed.Axioms_ x))).
+  (* FIXME: IsPointed.Build T x fails so we cannot use HB.pack *)
   (* was: "by right; exists (PointedType T x); case: T x." *)
 left.
 admit. (* FIXME: find a way to use HB.pack *)

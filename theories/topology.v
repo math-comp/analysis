@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import cardinality mathcomp_extra fsbigop.
@@ -505,14 +506,15 @@ Qed.
 
 Section Linear1.
 Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
-Canonical linear_eqType := EqType {linear U -> V | s} gen_eqMixin.
-Canonical linear_choiceType := ChoiceType {linear U -> V | s} gen_choiceMixin.
+HB.instance Definition _ := gen_eqMixin {linear U -> V | s}.
+HB.instance Definition _ := gen_choiceMixin {linear U -> V | s}.
 End Linear1.
 Section Linear2.
 Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V)
         (s_law : GRing.Scale.law s).
-Canonical linear_pointedType := PointedType {linear U -> V | GRing.Scale.op s_law}
-                                            (@GRing.null_fun_linear R U V s s_law).
+HB.instance Definition _ :=
+  IsPointed.Build {linear U -> V | GRing.Scale.op s_law}
+                  (@GRing.null_fun_linear R U V s s_law).
 End Linear2.
 
 Module Filtered.

@@ -1103,11 +1103,12 @@ Lemma choicePcountable {T : choiceType} : countable [set: T] ->
   {T' : countType | T = T' :> Type}.
 Proof.
 move=> /pcard_leP/unsquash f.
-Admitted.
+exact: (exist _ (Countable.Pack (Countable.Class
+  (gen_choiceMixin _) (gen_eqMixin _) (PcanCountMixin (in1TT 'funoK_f))))).
 (* FIXME: use HB.pack
-by exists (CountType T (CountMixin (in1TT 'funoK_f))).
-Qed.
+NB: was by exists (CountType T (CountMixin (in1TT 'funoK_f))).
 *)
+Qed.
 
 Lemma eqPcountable {T : eqType} : countable [set: T] ->
   {T' : countType | T = T' :> Type}.
