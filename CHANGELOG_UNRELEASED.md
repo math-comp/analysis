@@ -23,7 +23,7 @@
 - in `measure.v`:
   + generalize `pushforward`
 - in `lebesgue_integral.v`
-  + change ~Arguments~ of ~eq_integrable~
+  + change `Arguments` of `eq_integrable`
 
 ### Renamed
 
