@@ -4,7 +4,7 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
-
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp.classical Require Import boolp classical_sets functions fsbigop.
 From mathcomp.classical Require Import cardinality set_interval mathcomp_extra.
@@ -504,7 +504,7 @@ Qed.
 
 End ereal_supremum_realType.
 
-Canonical ereal_pointed (R : numDomainType) := PointedType (extended R) 0%E.
+HB.instance Definition _ (R : numDomainType) := IsPointed.Build (\bar R) 0%E.
 
 Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
   (abse \o f) \_ D = abse \o (f \_ D).
