@@ -34,6 +34,8 @@
   + change `Arguments` of `eq_integrable`
 - in `lebesgue_integral.v`:
   + fix pretty-printing of `{mfun _ >-> _}`, `{sfun _ >-> _}`, `{nnfun _ >-> _}`
+- in `lebesgue_integral.v`
+  + minor generalization of `eq_measure_integral`
 
 ### Renamed
 

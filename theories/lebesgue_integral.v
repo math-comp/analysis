@@ -1056,7 +1056,7 @@ Variables (d : measure_display) (T : measurableType d) (R : realType)
 Implicit Types m : {measure set T -> \bar R}.
 
 Let eq_measure_integral0 m2 m1 (f : T -> \bar R) :
-  (forall A, A `<=` D -> m1 A = m2 A) ->
+  (forall A, measurable A -> A `<=` D -> m1 A = m2 A) ->
   [set sintegral m1 h | h in
     [set h : {nnsfun T >-> R} | (forall x, (h x)%:E <= (f \_ D) x)]] `<=`
   [set sintegral m2 h | h in
@@ -1074,12 +1074,12 @@ by rewrite le_eqVlt eqe (negbTE ht0)/= lte_fin// ltNge// fun_ge0.
 Qed.
 
 Lemma eq_measure_integral m2 m1 (f : T -> \bar R) :
-    (forall A, A `<=` D -> m1 A = m2 A) ->
+    (forall A, measurable A -> A `<=` D -> m1 A = m2 A) ->
   \int[m1]_(x in D) f x = \int[m2]_(x in D) f x.
 Proof.
 move=> m12; rewrite /integral funepos_restrict funeneg_restrict.
 by congr (ereal_sup _ - ereal_sup _)%E; rewrite eqEsubset; split;
-  apply: eq_measure_integral0 => A /m12.
+  apply: eq_measure_integral0 => A /m12 // /[apply].
 Qed.
 
 End eq_measure_integral.
@@ -2362,7 +2362,7 @@ have [/[!inE] aD|aD] := boolP (a \in D).
   rewrite ge0_integral_dirac//; last exact/emeasurable_fun_funeneg.
   by rewrite [in RHS](funeposneg f) indicE mem_set// mul1e.
 rewrite indicE (negbTE aD) mul0e -(integral_measure_zero D f)//.
-apply: eq_measure_integral => //= S DS; rewrite /dirac indicE memNset// => /DS.
+apply: eq_measure_integral => //= S mS DS; rewrite /dirac indicE memNset// => /DS.
 by rewrite notin_set in aD.
 Qed.
 
