@@ -2146,6 +2146,123 @@ Unshelve. all: by end_near. Qed.
 
 End ge0_integralM.
 
+Section integral_indic.
+Local Open Scope ereal_scope.
+Variables (d : measure_display) (T : measurableType d) (R : realType)
+          (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+
+Lemma integral_indic (E : set T) : measurable E ->
+  \int[mu]_(x in D) (\1_E x)%:E = mu (E `&` D).
+Proof.
+move=> mE; rewrite (_ : \1_E = indic_nnsfun R mE)// integral_nnsfun//=.
+by rewrite restrict_indic sintegral_indic//; exact: measurableI.
+Qed.
+
+End integral_indic.
+
+Section integralM_indic.
+Local Open Scope ereal_scope.
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (m : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+
+Lemma integralM_indic (f : R -> set T) (k : R) :
+  ((k < 0)%R -> f k = set0) -> measurable (f k) ->
+  \int[m]_(x in D) (k * \1_(f k) x)%:E = k%:E * \int[m]_(x in D) (\1_(f k) x)%:E.
+Proof.
+move=> fk0 mfk; have [k0|k0] := ltP k 0%R.
+  rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0; last first.
+    by move=> x _; rewrite fk0// indic0 mulr0.
+  rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0// => x _.
+  by rewrite fk0// indic0.
+under eq_integral do rewrite EFinM.
+rewrite ge0_integralM//.
+- apply/EFin_measurable_fun/(@measurable_funS _ _ _ _ setT) => //.
+  by rewrite (_ : \1_(f k) = mindic R mfk).
+- by move=> y _; rewrite lee_fin.
+Qed.
+
+Lemma integralM_indic_nnsfun (f : {nnsfun T >-> R}) (k : R) :
+  \int[m]_(x in D) (k * \1_(f @^-1` [set k]) x)%:E =
+  k%:E * \int[m]_(x in D) (\1_(f @^-1` [set k]) x)%:E.
+Proof.
+rewrite (@integralM_indic (fun k => f @^-1` [set k]))// => k0.
+by rewrite preimage_nnfun0.
+Qed.
+
+End integralM_indic.
+
+Section integral_mscale.
+Local Open Scope ereal_scope.
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (m : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variables (k : {nonneg R}) (f : T -> \bar R).
+
+Let integral_mscale_indic E : measurable E ->
+  \int[mscale k m]_(x in D) (\1_E x)%:E =
+  k%:num%:E * \int[m]_(x in D) (\1_E x)%:E.
+Proof. by move=> ?; rewrite !integral_indic. Qed.
+
+Let integral_mscale_nnsfun (h : {nnsfun T >-> R}) :
+  \int[mscale k m]_(x in D) (h x)%:E = k%:num%:E * \int[m]_(x in D) (h x)%:E.
+Proof.
+rewrite -ge0_integralM//; last 2 first.
+  by apply/EFin_measurable_fun; exact: measurable_funS (@measurable_funP _ _ _ h).
+  by move=> x _; rewrite lee_fin.
+under [LHS]eq_integral do rewrite fimfunE -sumEFin.
+rewrite ge0_integral_sum//; last 2 first.
+  move=> r; apply/EFin_measurable_fun/measurable_funrM.
+  apply: (@measurable_funS _ _ _ _ setT) => //.
+  by rewrite (_ : \1__ = mindic R (@measurable_sfunP _ _ _ h r)).
+  by move=> n x Dx; rewrite EFinM muleindic_ge0.
+under [RHS]eq_integral.
+  move=> x xD; rewrite fimfunE -sumEFin ge0_sume_distrr//; last first.
+    by move=> r _; rewrite EFinM muleindic_ge0.
+  over.
+rewrite ge0_integral_sum//; last 2 first.
+  move=> r; apply/EFin_measurable_fun/measurable_funrM/measurable_funrM.
+  apply: (@measurable_funS _ _ _ _ setT) => //.
+  by rewrite (_ : \1__ = mindic R (@measurable_sfunP _ _ _ h r)).
+  by move=> n x Dx; rewrite EFinM mule_ge0// muleindic_ge0.
+apply eq_bigr => r _; rewrite ge0_integralM//.
+- by rewrite !integralM_indic_nnsfun//= integral_mscale_indic// muleCA.
+  apply/EFin_measurable_fun/measurable_funrM.
+  apply: (@measurable_funS _ _ _ _ setT) => //.
+  by rewrite (_ : \1__ = mindic R (@measurable_sfunP _ _ _ h r)).
+- by move=> t Dt; rewrite muleindic_ge0.
+Qed.
+
+Lemma ge0_integral_mscale (mf : measurable_fun D f) :
+    (forall x, D x -> 0 <= f x) ->
+  \int[mscale k m]_(x in D) f x = k%:num%:E * \int[m]_(x in D) f x.
+Proof.
+move=> f0; have [f_ [ndf_ f_f]] := approximation mD mf f0.
+transitivity (lim (fun n => \int[mscale k m]_(x in D) (f_ n x)%:E)).
+  rewrite -monotone_convergence//=.
+  - by apply eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //=; exact: f_f.
+  - move=> n; apply/EFin_measurable_fun.
+    exact: (@measurable_funS _ _ _ _ setT).
+  - by move=> n x Dx; rewrite lee_fin.
+  - by move=> x Dx a b /ndf_ /lefP; rewrite lee_fin.
+rewrite (_ : \int[m]_(x in D) _ =
+             lim (fun n => \int[m]_(x in D) (f_ n x)%:E)); last first.
+  rewrite -monotone_convergence//.
+  - by apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //; exact: f_f.
+  - move=> n; apply/EFin_measurable_fun.
+    exact: (@measurable_funS _ _ _ _ setT).
+  - by move=> n x Dx; rewrite lee_fin.
+  - by move=> x Dx a b /ndf_ /lefP; rewrite lee_fin.
+rewrite -ereal_limrM//.
+  by congr (lim _); apply/funext => n /=; rewrite integral_mscale_nnsfun.
+apply/ereal_nondecreasing_is_cvg => a b ab; apply ge0_le_integral => //.
+- by move=> x Dx; rewrite lee_fin.
+- exact/EFin_measurable_fun/(@measurable_funS _ _ _ _ setT).
+- by move=> x Dx; rewrite lee_fin.
+- exact/EFin_measurable_fun/(@measurable_funS _ _ _ _ setT).
+  by move=> x Dx; rewrite lee_fin; move/ndf_ : ab => /lefP.
+Qed.
+
+End integral_mscale.
+
 Section fatou.
 Local Open Scope ereal_scope.
 Variables (d : measure_display) (T : measurableType d) (R : realType).
@@ -2271,51 +2388,6 @@ rewrite monotone_convergence //.
 Qed.
 
 End integral_cst.
-
-Section integral_ind.
-Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-
-Lemma integral_indic (E : set T) : measurable E ->
-  \int[mu]_(x in D) (\1_E x)%:E = mu (E `&` D).
-Proof.
-move=> mE; rewrite (_ : \1_E = indic_nnsfun R mE)// integral_nnsfun//=.
-by rewrite restrict_indic sintegral_indic//; exact: measurableI.
-Qed.
-
-End integral_ind.
-
-Section integralM_indic.
-Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
-Variables (m : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-
-Lemma integralM_indic (f : R -> set T) (k : R) :
-  ((k < 0)%R -> f k = set0) -> measurable (f k) ->
-  \int[m]_(x in D) (k * \1_(f k) x)%:E = k%:E * \int[m]_(x in D) (\1_(f k) x)%:E.
-Proof.
-move=> fk0 mfk; have [k0|k0] := ltP k 0%R.
-  rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0; last first.
-    by move=> x _; rewrite fk0// indic0 mulr0.
-  rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0// => x _.
-  by rewrite fk0// indic0.
-under eq_integral do rewrite EFinM.
-rewrite ge0_integralM//.
-- apply/EFin_measurable_fun/(@measurable_funS _ _ _ _ setT) => //.
-  by rewrite (_ : \1_(f k) = mindic R mfk).
-- by move=> y _; rewrite lee_fin.
-Qed.
-
-Lemma integralM_indic_nnsfun (f : {nnsfun T >-> R}) (k : R) :
-  \int[m]_(x in D) (k * \1_(f @^-1` [set k]) x)%:E =
-  k%:E * \int[m]_(x in D) (\1_(f @^-1` [set k]) x)%:E.
-Proof.
-rewrite (@integralM_indic (fun k => f @^-1` [set k]))// => k0.
-by rewrite preimage_nnfun0.
-Qed.
-
-End integralM_indic.
 
 Section integral_dirac.
 Local Open Scope ereal_scope.

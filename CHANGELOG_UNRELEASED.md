@@ -27,6 +27,22 @@
   + lemmas `onem_PosNum`, `onemX_NngNum`
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_fine`
+  + lemma `big_const_idem`
+  + lemma `big_id_idem`
+  + lemma `big_rem_AC`
+  + lemma `bigD1_AC`
+  + lemma `big_mkcond_idem`
+  + lemma `big_split_idem`
+  + lemma `big_id_idem_AC`
+  + lemma `bigID_idem`
+- in `mathcomp_extra.v`:
+  + lemmas `bigmax_le` and `bigmax_lt`
+  + lemma `bigmin_idr`
+  + lemma `bigmax_idr`
+- in `classical_sets.v`:
+  + lemma `subset_refl`
+- in lemma `lebesgue_integral.v`:
+  + lemma `ge0_integral_mscale`
 
 ### Changed
 
