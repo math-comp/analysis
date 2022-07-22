@@ -14,6 +14,8 @@
 - in `lebesgue_integral.v`:
   + lemma `ge0_emeasurable_fun_sum`
   + lemma `integrableMr`
+- in `ereal.v`:
+  + lemmas `muleCA`, `muleAC`, `muleACA`
 
 ### Changed
 
