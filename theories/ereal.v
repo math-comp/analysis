@@ -1934,6 +1934,15 @@ Qed.
 
 Local Open Scope ereal_scope.
 
+Lemma muleCA : left_commutative ( *%E : \bar R -> \bar R -> \bar R ).
+Proof. by move=> x y z; rewrite muleC (muleC x) muleA. Qed.
+
+Lemma muleAC : right_commutative ( *%E : \bar R -> \bar R -> \bar R ).
+Proof. by move=> x y z; rewrite -muleA (muleC y) muleA. Qed.
+
+Lemma muleACA : interchange (@mule R) (@mule R).
+Proof. by move=> x y z t; rewrite -muleA (muleCA y) muleA. Qed.
+
 Lemma muleDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
 Proof.
 rewrite /mule/=; move: x y z => [x| |] [y| |] [z| |] //= _; try
