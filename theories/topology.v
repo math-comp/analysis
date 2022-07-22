@@ -517,86 +517,38 @@ HB.instance Definition _ :=
                   (@GRing.null_fun_linear R U V s s_law).
 End Linear2.
 
-Module Filtered.
-
-(* Index a family of filters on a type, one for each element of the type *)
-Definition nbhs_of U T := T -> set (set U).
-Record class_of U T := Class {
-  base : Pointed.class_of T;
-  nbhs_op : nbhs_of U T
+HB.mixin Record IsFiltered U T := {
+  nbhs : T -> set (set U)
 }.
 
-Section ClassDef.
-Variable U : Type.
+#[infer(R), short(type="filteredType")]
+HB.structure Definition Filtered (U : Type) := {T of Pointed T & IsFiltered U T}.
+Arguments nbhs {_ _} _ _ : simpl never.
 
-Structure type := Pack { sort; _ : class_of U sort }.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c := cT return class_of U cT in c.
-
-Definition clone c of phant_id class c := @Pack T c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of U xT).
-Local Coercion base : class_of >-> Pointed.class_of.
-
-Definition pack m :=
-  fun bT b of phant_id (Pointed.class bT) b => @Pack T (Class b m).
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition fpointedType := @Pointed.Pack cT xclass.
-
-End ClassDef.
-
-(* filter on arrow sources *)
-Structure source Z Y := Source {
-  source_type :> Type;
-  _ : (source_type -> Z) -> set (set Y)
+HB.mixin Record IsSource Z Y T := {
+  source_filter : (T -> Z) -> set (set Y)
 }.
-Definition source_filter Z Y (F : source Z Y) : (F -> Z) -> set (set Y) :=
-  let: Source X f := F in f.
 
-Module Exports.
-Coercion sort : type >-> Sortclass.
-Coercion base : class_of >-> Pointed.class_of.
-Coercion nbhs_op : class_of >-> nbhs_of.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion fpointedType : type >-> Pointed.type.
-Canonical fpointedType.
-Notation filteredType := type.
-Notation FilteredType U T m := (@pack U T m _ _ idfun).
-Notation "[ 'filteredType' U 'of' T 'for' cT ]" :=  (@clone U T cT _ idfun)
-  (at level 0, format "[ 'filteredType'  U  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'filteredType' U 'of' T ]" := (@clone U T _ _ id)
-  (at level 0, format "[ 'filteredType'  U  'of'  T ]") : form_scope.
+HB.structure Definition Source Z Y := {T of IsSource Z Y T}.
 
 (* The default filter for an arbitrary element is the one obtained *)
 (* from its type *)
-Canonical default_arrow_filter Y (Z : pointedType) (X : source Z Y) :=
-  FilteredType Y (X -> Z) (@source_filter _ _ X).
-Canonical source_filter_filter Y :=
-  @Source Prop _ (_ -> Prop) (fun x : (set (set Y)) => x).
-Canonical source_filter_filter' Y :=
-  @Source Prop _ (set _) (fun x : (set (set Y)) => x).
+HB.instance Definition _ Y (Z : pointedType) (X : Source.type Z Y) :=
+  IsFiltered.Build Y (X -> Z) (@source_filter _ _ X).
 
-End Exports.
-End Filtered.
-Export Filtered.Exports.
+HB.instance Definition _ Y := IsSource.Build Prop _ (_ -> Prop)
+  (fun x : set (set Y) => x).
 
-Definition nbhs {U} {T : filteredType U} : T -> set (set U) :=
-  Filtered.nbhs_op (Filtered.class T).
-Arguments nbhs {U T} _ _ : simpl never.
+HB.instance Definition _ Y := IsSource.Build Prop _ (set _)
+  (fun x : set (set Y) => x).
 
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) : set (set T) :=
   [set P | exists2 i, D i & B i `<=` P].
 
 (* the canonical filter on matrices on X is the product of the canonical filter
    on X *)
-Canonical matrix_filtered m n X (Z : filteredType X) : filteredType 'M[X]_(m, n) :=
-  FilteredType 'M[X]_(m, n) 'M[Z]_(m, n) (fun mx => filter_from
+HB.instance Definition _ m n X (Z : filteredType X) :=
+  IsFiltered.Build 'M[X]_(m, n) 'M[Z]_(m, n) (fun mx => filter_from
     [set P | forall i j, nbhs (mx i j) (P i j)]
     (fun P => [set my : 'M[X]_(m, n) | forall i j, P i j (my i j)])).
 
@@ -674,15 +626,16 @@ Definition type_of_filter {T} (F : set (set T)) := T.
 Definition lim_in {U : Type} (T : filteredType U) :=
   fun F : set (set U) => get (fun l : T => F --> l).
 Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T [filter of F]) : classical_set_scope.
-Notation lim F := [lim F in [filteredType _ of @type_of_filter _ [filter of F]]].
+Notation lim F :=
+  [lim F in [the filteredType _ of @type_of_filter _ [filter of F]]].
 Notation "[ 'cvg' F 'in' T ]" := (F --> [lim F in T]) : classical_set_scope.
-Notation cvg F := [cvg F in [filteredType _ of @type_of_filter _ [filter of F]]].
+Notation cvg F :=
+  [cvg F in [the filteredType _ of @type_of_filter _ [filter of F]]].
 
 Section FilteredTheory.
 
-Canonical filtered_prod X1 X2 (Z1 : filteredType X1)
-  (Z2 : filteredType X2) : filteredType (X1 * X2) :=
-  FilteredType (X1 * X2) (Z1 * Z2)
+HB.instance Definition _ X1 X2 (Z1 : filteredType X1) (Z2 : filteredType X2) :=
+  IsFiltered.Build (X1 * X2)%type (Z1 * Z2)%type
     (fun x => filter_prod (nbhs x.1) (nbhs x.2)).
 
 Lemma cvg_prod T {U U' V V' : filteredType T} (x : U) (l : U') (y : V) (k : V') :
@@ -812,13 +765,11 @@ Definition PFilterType {T} (F : (T -> Prop) -> Prop)
   PFilterPack F (Build_ProperFilter' fN0 fF).
 Arguments PFilterType {T} F {fF} fN0.
 
-Canonical filter_on_eqType T := EqType (filter_on T) gen_eqMixin.
-Canonical filter_on_choiceType T :=
-  ChoiceType (filter_on T) gen_choiceMixin.
-Canonical filter_on_PointedType T :=
-  PointedType (filter_on T) (FilterType _ (filter_setT T)).
-Canonical filter_on_FilteredType T :=
-  FilteredType T (filter_on T) (@filter T).
+HB.instance Definition _ T := gen_eqMixin (filter_on T).
+HB.instance Definition _ T := gen_choiceMixin (filter_on T).
+HB.instance Definition _ T := IsPointed.Build (filter_on T)
+  (FilterType _ (filter_setT T)).
+HB.instance Definition _ T := IsFiltered.Build T (filter_on T) (@filter T).
 
 Global Instance filter_on_Filter T (F : filter_on T) : Filter F.
 Proof. by case: F. Qed.
@@ -1579,11 +1530,39 @@ Proof. by split=> [|? ? ->]; [exact|]. Qed.
 Lemma principal_filter_proper {X} (x : X) : ProperFilter (principal_filter x).
 Proof. exact: globally_properfilter. Qed.
 
-Canonical bool_discrete_filter := FilteredType bool bool principal_filter.
+HB.instance Definition _ := IsFiltered.Build bool bool principal_filter.
 
 End PrincipalFilters.
 
-(** * Topological spaces *)
+HB.mixin Record Filtered_IsTopological (T : Type) of Filtered T T := {
+  open : set (set T) ;
+  topological_ax1 : forall p : T, ProperFilter (nbhs p) ;
+  topological_ax2 : forall p : T, nbhs p =
+    [set A : set T | exists B : set T, open B /\ B p /\ B `<=` A] ;
+  topological_ax3 : open = [set A : set T | A `<=` nbhs^~ A ]
+}.
+
+(* Fails with:
+Error:
+HB: cannot infer some information in 
+structures_eta__canonical__topology_Topological : topologicalType ?e0 := 
+{|
+  sort := eta T0;
+  class :=
+    {|
+      choice_HasChoice_mixin := Choice.EtaAndMixinExports.HB_unnamed_mixin_9 T0;
+      eqtype_HasDecEq_mixin :=
+        Equality.EtaAndMixinExports.HB_unnamed_mixin_4 T0;
+      classical_sets_IsPointed_mixin :=
+        Pointed.EtaAndMixinExports.HB_unnamed_mixin_6 T0;
+      topology_IsFiltered_mixin := HB_unnamed_mixin_104 T0;
+      topology_Filtered_IsTopological_mixin := HB_unnamed_mixin_246
+    |}
+|}
+*)
+#[short(type="topologicalType")]
+HB.structure Definition Topological (T : Type) :=
+  {T of Filtered T T & Filtered_IsTopological T}.
 
 Module Topological.
 
