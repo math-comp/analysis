@@ -641,13 +641,13 @@ Canonical adde_monoid := Monoid.Law addeA add0e adde0.
 Canonical adde_comoid := Monoid.ComLaw addeC.
 
 Lemma addeAC : @right_commutative (\bar R) _ +%E.
-Proof. by move=> x y z; rewrite -addeA (addeC y) addeA. Qed.
+Proof. exact: Monoid.mulmAC. Qed.
 
 Lemma addeCA : @left_commutative (\bar R) _ +%E.
-Proof. by move=> x y z; rewrite addeC -addeA (addeC x). Qed.
+Proof. exact: Monoid.mulmCA. Qed.
 
 Lemma addeACA : @interchange (\bar R) +%E +%E.
-Proof. by case=> [r||] [s||] [t||] [u||] //; rewrite /adde /= addrACA. Qed.
+Proof. exact: Monoid.mulmACA. Qed.
 
 Lemma adde_gt0 x y : 0 < x -> 0 < y -> 0 < x + y.
 Proof.
@@ -707,7 +707,7 @@ Proof. by move: x => [r| |] //=; rewrite /mule/= ?mulr0// eqxx. Qed.
 Lemma mul0e x : 0 * x = 0.
 Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
-Canonical mule_monoid := @Monoid.MulLaw _ _ mule mul0e mule0.
+Canonical mule_mulmonoid := @Monoid.MulLaw _ _ mule mul0e mule0.
 
 Definition mule_def x y :=
   ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
@@ -1148,13 +1148,13 @@ Canonical dadde_monoid := Monoid.Law daddeA dadd0e dadde0.
 Canonical dadde_comoid := Monoid.ComLaw daddeC.
 
 Lemma daddeAC : right_commutative (S := \bar R) +%dE.
-Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeAC. Qed.
+Proof. exact: Monoid.mulmAC. Qed.
 
 Lemma daddeCA : left_commutative (S := \bar R) +%dE.
-Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeCA. Qed.
+Proof. exact: Monoid.mulmCA. Qed.
 
 Lemma daddeACA : @interchange (\bar R) +%dE +%dE.
-Proof. by move=> x y z u; rewrite !dual_addeE !oppeK addeACA. Qed.
+Proof. exact: Monoid.mulmACA. Qed.
 
 Lemma realDed x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x + y)%O.
 Proof. case: x y => [x||] [y||] //; exact: realD. Qed.
@@ -1934,14 +1934,17 @@ Qed.
 
 Local Open Scope ereal_scope.
 
+Canonical mule_monoid := Monoid.Law muleA mul1e mule1.
+Canonical mule_comoid := Monoid.ComLaw muleC.
+
 Lemma muleCA : left_commutative ( *%E : \bar R -> \bar R -> \bar R ).
-Proof. by move=> x y z; rewrite muleC (muleC x) muleA. Qed.
+Proof. exact: Monoid.mulmCA. Qed.
 
 Lemma muleAC : right_commutative ( *%E : \bar R -> \bar R -> \bar R ).
-Proof. by move=> x y z; rewrite -muleA (muleC y) muleA. Qed.
+Proof. exact: Monoid.mulmAC. Qed.
 
 Lemma muleACA : interchange (@mule R) (@mule R).
-Proof. by move=> x y z t; rewrite -muleA (muleCA y) muleA. Qed.
+Proof. exact: Monoid.mulmACA. Qed.
 
 Lemma muleDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
 Proof.
