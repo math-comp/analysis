@@ -75,7 +75,7 @@ Reserved Notation "{ 'mfun' aT >-> T }"
   (at level 0, format "{ 'mfun'  aT  >->  T }").
 Reserved Notation "[ 'mfun' 'of' f ]"
   (at level 0, format "[ 'mfun'  'of'  f ]").
-Notation "{ 'mfun'  aT >-> T }" := (@MeasurableFun.type _ aT T) : form_scope.
+Notation "{ 'mfun' aT >-> T }" := (@MeasurableFun.type _ aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 #[global] Hint Resolve measurable_funP : core.
 
@@ -85,7 +85,7 @@ Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
 Reserved Notation "[ 'sfun' 'of' f ]"
   (at level 0, format "[ 'sfun'  'of'  f ]").
-Notation "{ 'sfun'  aT >-> T }" := (@SimpleFun.type _ aT T) : form_scope.
+Notation "{ 'sfun' aT >-> T }" := (@SimpleFun.type _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
 Lemma measurable_sfunP {d} {aT : measurableType d} {rT : realType} (f : {mfun aT >-> rT}) (y : rT) :
@@ -100,7 +100,7 @@ Reserved Notation "{ 'nnfun' aT >-> T }"
   (at level 0, format "{ 'nnfun'  aT  >->  T }").
 Reserved Notation "[ 'nnfun' 'of' f ]"
   (at level 0, format "[ 'nnfun'  'of'  f ]").
-Notation "{ 'nnfun'  aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
+Notation "{ 'nnfun' aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
 Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
 
@@ -457,7 +457,7 @@ Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) (D : set T1)
   [fset g x | x in fset_set [set f x | x in D]]%fset.
 Proof. by rewrite -(image_comp f g) fset_set_image. Qed.
 
-Lemma preimage_nnfun0 T (R : realDomainType) (f : {nnfun T >-> R }) t :
+Lemma preimage_nnfun0 T (R : realDomainType) (f : {nnfun T >-> R}) t :
   t < 0 -> f @^-1` [set t] = set0.
 Proof.
 move=> t0; rewrite preimage10//= => -[x _].

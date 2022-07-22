@@ -24,6 +24,8 @@
   + generalize `pushforward`
 - in `lebesgue_integral.v`
   + change `Arguments` of `eq_integrable`
+- in `lebesgue_integral.v`:
+  + fix pretty-printing of `{mfun _ >-> _}`, `{sfun _ >-> _}`, `{nnfun _ >-> _}`
 
 ### Renamed
 
