@@ -1275,7 +1275,7 @@ Lemma val_bij_subproof : OInv_Can2 sT T setT [set` P] val.
 Proof.
 apply: (OInv_Can2.Build _ _ _ _ val (fun x  _ => valP x)
         _ (in1W valK) (in1W (insubK _))).
-by move=> x Px /=; exists (Sub x Px) => //; rewrite oinv_val insubT.
+by move=> x Px /=; exists (sub x Px) => //; rewrite oinv_val insubT.
 Qed.
 HB.instance Definition _ := val_bij_subproof.
 
@@ -2609,7 +2609,7 @@ Qed.
 Obligation Tactic := idtac.
 
 Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
-  @GRing.IsZmodule.Build (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g)
+  @GRing.isZmodule.Build (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g)
      _ _ _ _.
 Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
 Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
@@ -2618,7 +2618,7 @@ Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
 HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M.
 
 Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
-  @GRing.Zmodule_IsRing.Build (T -> M) (cst 1) (fun f g => f \* g) _ _ _ _ _ _.
+  @GRing.Zmodule_isRing.Build (T -> M) (cst 1) (fun f g => f \* g) _ _ _ _ _ _.
 Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
@@ -2630,7 +2630,7 @@ Qed.
 HB.instance Definition _ (T : pointedType) (M : ringType) := fct_ringMixin T M.
 
 Program Definition fct_comRingType (T : pointedType) (M : comRingType) :=
-  GRing.Ring_HasCommutativeMul.Build (T -> M) _.
+  GRing.Ring_hasCommutativeMul.Build (T -> M) _.
 Next Obligation.
 by move=> T M f g; rewrite funeqE => x; rewrite /GRing.mul/= mulrC.
 Qed.
@@ -2639,7 +2639,7 @@ HB.instance Definition _ (T : pointedType) (M : comRingType) :=
 
 Section fct_lmod.
 Variables (U : Type) (R : ringType) (V : lmodType R).
-Program Definition fct_lmodMixin := @GRing.Zmodule_IsLmodule.Build R (U -> V)
+Program Definition fct_lmodMixin := @GRing.Zmodule_isLmodule.Build R (U -> V)
   (fun k f => k \*: f) _ _ _ _.
 Next Obligation. by move=> k f v; rewrite funeqE=> x; exact: scalerA. Qed.
 Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite scale1r. Qed.

@@ -147,9 +147,9 @@ Proof. exact: sup_adherent_subdef. Qed.
 Section IsInt.
 Context {R : realFieldType}.
 
-Definition Rint := [qualify a x : R | `[< exists z, x == z%:~R >]].
-Fact Rint_key : pred_key Rint. Proof. by []. Qed.
-Canonical Rint_keyed := KeyedQualifier Rint_key.
+Definition Rint_pred := fun x : R => `[< exists z, x == z%:~R >].
+Arguments Rint_pred _ /.
+Definition Rint := [qualify a x | Rint_pred x].
 
 Lemma Rint_def x : (x \is a Rint) = (`[< exists z, x == z%:~R >]).
 Proof. by []. Qed.
@@ -176,13 +176,8 @@ split=> // _ _ /RintP[x ->] /RintP[y ->]; apply/RintP.
 by exists (x - y); rewrite rmorphB. by exists (x * y); rewrite rmorphM.
 Qed.
 
-Canonical Rint_opprPred := OpprPred Rint_subring_closed.
-Canonical Rint_addrPred := AddrPred Rint_subring_closed.
-Canonical Rint_mulrPred := MulrPred Rint_subring_closed.
-Canonical Rint_zmodPred := ZmodPred Rint_subring_closed.
-Canonical Rint_semiringPred := SemiringPred Rint_subring_closed.
-Canonical Rint_smulrPred := SmulrPred Rint_subring_closed.
-Canonical Rint_subringPred := SubringPred Rint_subring_closed.
+HB.instance Definition _ := GRing.isSubringClosed.Build R Rint_pred
+  Rint_subring_closed.
 
 Lemma Rint_ler_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
   (x + 1 <= y) = (x < y).
@@ -198,6 +193,7 @@ by rewrite -intrD !(ltr_int, ler_int) ltz_addr1.
 Qed.
 
 End IsInt.
+Arguments Rint_pred _ _ /.
 
 (* -------------------------------------------------------------------- *)
 Section ToInt.
@@ -549,7 +545,7 @@ Proof. by rewrite Rfloor_ge_int RfloorE ler_int. Qed.
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
 move=> yx; exists `|floor (x - y)^-1|%N.
-rewrite -ltr_subr_addl -{2}(invrK (x - y)%R) ltf_pinv ?qualifE ?ltr0n//.
+rewrite -ltr_subr_addl -{2}(invrK (x - y)%R) ltf_pinv ?qualifE/= ?ltr0n//.
   by rewrite invr_gt0 subr_gt0.
 rewrite -natr1 natr_absz ger0_norm.
   by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.

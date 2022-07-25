@@ -1088,7 +1088,7 @@ Qed.
 Lemma card_nat2 : [set: nat * nat] #= [set: nat].
 Proof. exact/eq_card_nat/infinite_prod_nat/countableP. Qed.
 
-HB.instance Definition _ := IsPointed.Build rat 0.
+HB.instance Definition _ := isPointed.Build rat 0.
 
 Lemma infinite_rat : infinite_set [set: rat].
 Proof.
@@ -1277,7 +1277,7 @@ Qed.
 Lemma fimfun_valP f (Pf : f \in fimfun) : fimfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
 
-HB.instance Definition _ := IsSUB.Build _ _ T fimfun_rect fimfun_valP.
+HB.instance Definition _ := isSub.Build _ _ T fimfun_rect fimfun_valP.
 End fimfun.
 
 Lemma fimfuneqP aT rT (f g : {fimfun aT >-> rT}) :
@@ -1317,9 +1317,10 @@ Proof.
 split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
 by move=> fA gA; apply: (finite_image11 (fun x y => x - y)).
 Qed.
-Canonical fimfun_add := AddrPred fimfun_zmod_closed.
-Canonical fimfun_zmod := ZmodPred fimfun_zmod_closed.
-HB.instance Definition _ := [zmodMixin of {fimfun aT >-> rT} by <:].
+HB.instance Definition _ :=
+  GRing.isZmodClosed.Build [zmodType of aT -> rT] fimfun fimfun_zmod_closed.
+HB.instance Definition _ :=
+  [SubChoice_isSubZmodule of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 

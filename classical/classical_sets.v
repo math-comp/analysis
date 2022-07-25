@@ -2137,6 +2137,7 @@ HB.instance Definition _ (T T' : pointedType) :=
 HB.instance Definition _ m n (T : pointedType) :=
   isPointed.Build 'M[T]_(m, n) (\matrix_(_, _) point)%R.
 HB.instance Definition _ (T : choiceType) := isPointed.Build (option T) None.
+HB.instance Definition _ (T : choiceType) := isPointed.Build {fset T} fset0.
 
 Notation get := (xget point).
 Notation "[ 'get' x | E ]" := (get [set x | E])

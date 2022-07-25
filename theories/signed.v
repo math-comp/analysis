@@ -316,7 +316,7 @@ Export Signed.Exports.
 Section POrder.
 Variables (d : unit) (T : porderType d) (x0 : T) (nz : nullity) (cond : reality).
 Local Notation sT := {compare x0 & nz & cond}.
-HB.instance Definition _ := [IsSUB for @Signed.r d T x0 nz cond].
+HB.instance Definition _ := [isSub for @Signed.r d T x0 nz cond].
 HB.instance Definition _ := [POrder of sT by <:].
 End POrder.
 
@@ -537,7 +537,7 @@ Local Notation nR := {num R & nz & r}.
 Lemma signed_le_total : total (<=%O : rel nR).
 Proof. by move=> x y; apply: real_comparable => /=. Qed.
 
-HB.instance Definition _ := Order.POrder_IsTotal.Build ring_display nR
+HB.instance Definition _ := Order.POrder_isTotal.Build ring_display nR
   signed_le_total.
 
 End Order.

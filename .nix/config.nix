@@ -39,8 +39,7 @@
   ## will be created per bundle
   bundles."8.15".coqPackages = {
     coq.override.version = "8.15";
-    # should be "fun_instances" but last commit is broken
-    hierarchy-builder.override.version = "ee1e54d1aef3cda07222e06ff9b99fbab0fec652";
+    hierarchy-builder.override.version = "master";
     mathcomp.override.version = "hierarchy-builder";
     mathcomp-bigenough.override.version = "1.0.1";
     mathcomp-finmap.override.version = "proux01:hierarchy-builder";
