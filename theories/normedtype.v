@@ -113,8 +113,6 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Print nbhs_ball_.
-
 (* TODO_HB: used only in Rstruct.v
 Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
 
@@ -754,6 +752,8 @@ HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
 HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
 #[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
+#[export]
+HB.instance Definition _ := Num.RealField.copy R _.
 End realFieldType.
 
 Section numClosedFieldType.
@@ -764,6 +764,8 @@ HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
 HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
 #[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
+#[export]
+HB.instance Definition _ := Num.ClosedField.copy R _.
 End numClosedFieldType.
 
 Section numFieldType.
@@ -774,6 +776,8 @@ HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
 HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
 #[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
+#[export]
+HB.instance Definition _ := Num.NumField.copy R _.
 End numFieldType.
 
 Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.

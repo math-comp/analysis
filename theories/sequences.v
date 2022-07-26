@@ -754,7 +754,7 @@ Proof. by rewrite /=. Qed.
 Lemma harmonic_ge0 {R : numFieldType} i : 0 <= harmonic i :> R.
 Proof. exact/ltW/harmonic_gt0. Qed.
 
-Lemma cvg_harmonic {R : archiFieldType} : harmonic --> (0 : R).
+Lemma cvg_harmonic {R : archiFieldType} : @harmonic R --> 0.
 Proof.
 apply/cvgrPdist_le => _/posnumP[e]; near=> i.
 rewrite distrC subr0 ger0_norm//= -lef_pinv ?qualifE// invrK.
@@ -844,7 +844,7 @@ by rewrite lef_pinv // ?ler_nat // posrE // ltr0n.
 Unshelve. all: by end_near. Qed.
 
 Lemma cesaro_converse (u_ : R ^nat) (l : R) :
-  telescope u_ =o_\oo harmonic -> arithmetic_mean u_ --> l -> u_ --> l.
+  telescope u_ =o_\oo @harmonic R -> arithmetic_mean u_ --> l -> u_ --> l.
 Proof.
 pose a_ := telescope u_ => a_o u_l.
 suff abel : forall n,
@@ -864,12 +864,12 @@ suff abel : forall n,
   have {}a_o : [sequence n.+1%:R * telescope u_ n]_n --> (0 : R).
     apply: (@eqolim0 _ _ _ eventually_filterType).
     rewrite a_o.
-    set h := 'o_[filter of \oo] harmonic.
+    set h := 'o_[filter of \oo] (@harmonic R).
     apply/eqoP => _/posnumP[e] /=.
     near=> n; rewrite normr1 mulr1 normrM -ler_pdivl_mull// ?normr_gt0//.
     rewrite mulrC -normrV ?unitfE //.
     near: n.
-    by case: (eqoP eventually_filterType harmonic h) => Hh _; apply Hh.
+    by case: (eqoP eventually_filterType (@harmonic R) h) => Hh _; apply Hh.
   move: (cesaro a_o); rewrite /arithmetic_mean /series /= -/a_.
   exact: (@cesaro_converse_off_by_one (fun k => k.+1%:R * a_ k)).
 case => [|n].
