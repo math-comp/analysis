@@ -2250,7 +2250,7 @@ rewrite predeqE => s; split=> [[i _]|[i _]]; last by rewrite g_preim; exists i.
 by rewrite -[_ _]/((f @^-1` _) _) -g_preim; exists i.
 Qed.
 
-(* TODO find a way to port that
+(* TODO_HB find a way to port that
 Definition weak_topologicalTypeMixin := topologyOfOpenMixin wopT wopI wop_bigU.
 
 Let S_filteredClass := Filtered.Class (Pointed.class S) (nbhs_of_open wopen).
@@ -2281,7 +2281,7 @@ End Weak_Topology.
 
 (** ** Supremum of a family of topologies *)
 
-(* TODO find a way to port that
+(* TODO_HB find a way to port that
 Section Sup_Topology.
 
 Variable (T : pointedType) (I : Type) (Tc : I -> Topological.class_of T).
@@ -2324,7 +2324,7 @@ Section Product_Topology.
 
 Variable (I : Type) (T : I -> topologicalType).
 
-(* TODO find a way to port that
+(* TODO_HB find a way to port that
 Definition product_topologicalType :=
   sup_topologicalType (fun i => Topological.class
     (weak_topologicalType (fun f : dep_arrow_pointedType T => f i))).
@@ -2868,7 +2868,7 @@ rewrite preimage_setC image_preimage // => GnA.
 by have /filter_ex [? []] : G (A `&` (~` A)) by apply: filterI.
 Qed.
 
-(* TODO
+(* TODO_HB
 Lemma tychonoff (I : eqType) (T : I -> topologicalType)
   (A : forall i, set (T i)) :
   (forall i, compact (A i)) ->
@@ -2966,7 +2966,7 @@ Context {I : eqType} {K : I -> topologicalType}.
 (* This a helper function to prove products preserve hausdorff. In particular *)
 (* we use its continuity turn clustering in `product_topologicalType K` to    *)
 (* clustering in K x for each X.                                              *)
-(* TODO
+(* TODO_HB
 Definition prod_topo_apply x (f : product_topologicalType K) := f x.
 
 (* Note we have to give the signature explicitly because there's no canonical *)
@@ -3666,7 +3666,7 @@ HB.end.
 
 Lemma nbhs_entourageE {M : uniformType} : nbhs_ (@entourage M) = nbhs.
 Proof.
-Admitted.  (* TODO *)
+Admitted.  (* TODO_HB *)
 
 Lemma entourage_sym {X Y : Type} E (x : X) (y : Y) :
   E (x, y) <-> (E ^-1)%classic (y, x).
@@ -4037,7 +4037,7 @@ move=> fg [h spBfh spBhg].
 by apply: sBA => t; apply: entourage_split (spBfh t) (spBhg t).
 Qed.
 
-(* TODO: investigate the non forgetful inheritance warning *)
+(* TODO_HB: investigate the non forgetful inheritance warning *)
 HB.instance Definition _ := IsSource.Build _ _ _ (nbhs_ fct_ent).
 
 HB.instance Definition _ := Filtered_IsUniform.Build (T -> U)
@@ -4342,7 +4342,7 @@ HB.end.
 
 Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} : entourage_ (@ball R M) = entourage.
 Proof.
-Admitted.  (* TODO *)
+Admitted.  (* TODO_HB *)
 
 Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
   @filter_from R _ [set x : R | 0 < x]
@@ -4689,7 +4689,7 @@ Context {T : completeType}.
 Lemma cauchy_cvg (F : set (set T)) (FF : ProperFilter F) :
   cauchy F -> cvg F.
 Proof.
-Admitted.  (* TODO *)
+Admitted.  (* TODO_HB *)
 (* by case: T F FF => [? [?]]. Qed. *)
 
 Lemma cauchy_cvgP (F : set (set T)) (FF : ProperFilter F) : cauchy F <-> cvg F.
@@ -4972,7 +4972,7 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
-(* TODO find a way to port that
+(* TODO_HB find a way to port that
 Section RestrictedUniformTopology.
 Context {U : choiceType} (A : set U) {V : uniformType} .
 
@@ -5940,7 +5940,7 @@ Qed.
 
 End Subspace.
 
-(* TODO
+(* TODO_HB
 Global Instance subspace_filter {T : topologicalType}
      (A : set T) (x : subspace A) :
    Filter (nbhs_subspace x) := nbhs_subspace_filter x.
@@ -6157,7 +6157,7 @@ Qed.
 Next Obligation.
 rewrite eqEsubset; split; rewrite /subspace_ball.
 Admitted.
-(* TODO: fix
+(* TODO_HB: fix
   move=> U [W + subU]; rewrite -entourage_ballE => [[eps] nneg subW].
   exists eps => //; apply: (subset_trans _ subU).
   move=> [x y] /=; case: ifP => /asboolP ?.
@@ -6252,7 +6252,7 @@ have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
 by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply fcAfEb; split; exists t.
 Qed.
 
-(* TODO
+(* TODO_HB
 Lemma uniform_limit_continuous {U : topologicalType} {V : uniformType}
     (F : set (set (U -> V))) (f : U -> V) :
   ProperFilter F -> (\forall g \near F, continuous (g : U -> V)) ->
@@ -6385,7 +6385,7 @@ move=> WsubV + x => /(_ x) pcptV; apply: precompact_subset pcptV => y [i Wi <-].
 by case: (WsubV (fW i)); [exists i | move=> j Vj <-; exists j].
 Qed.
 
-(* TODO
+(* TODO_HB
 Lemma pointwise_precompact_precompact {I} (W : set I) (fW : I -> (X -> Y)) :
   pointwise_precompact W fW -> precompact ((fW @` W) : set {ptws X -> Y}).
 Proof.
