@@ -33,6 +33,22 @@
   + lemma `measurable_funTS`
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_indic`
+  + lemma `big_const_idem`
+  + lemma `big_id_idem`
+  + lemma `big_rem_AC`
+  + lemma `bigD1_AC`
+  + lemma `big_mkcond_idem`
+  + lemma `big_split_idem`
+  + lemma `big_id_idem_AC`
+  + lemma `bigID_idem`
+- in `mathcomp_extra.v`:
+  + lemmas `bigmax_le` and `bigmax_lt`
+  + lemma `bigmin_idr`
+  + lemma `bigmax_idr`
+- in `classical_sets.v`:
+  + lemma `subset_refl`
+- in `fsbigop.v`:
+  + lemma `lee_fsum_nneg_subset`
 
 ### Changed
 
