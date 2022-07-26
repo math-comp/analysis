@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import mathcomp_extra.
@@ -304,8 +305,8 @@ Structure littleo_type (F : set (set T)) (g : T -> W) := Littleo {
 }.
 Notation "{o_ F f }" := (littleo_type F f).
 
-Canonical littleo_subtype (F : set (set T)) (g : T -> W) :=
-  [subType for (@littleo_fun F g)].
+HB.instance Definition _ (F : set (set T)) (g : T -> W) :=
+  [IsSUB for @littleo_fun F g].
 
 Lemma littleo_class (F : set (set T)) (g : T -> W) (f : {o_F g}) :
   `[< littleo_def F f g >].
@@ -485,8 +486,8 @@ Structure bigO_type (F : set (set T)) (g : T -> W) := BigO {
 }.
 Notation "{O_ F f }" := (bigO_type F f).
 
-Canonical bigO_subtype (F : set (set T)) (g : T -> W) :=
-  [subType for (@bigO_fun F g)].
+HB.instance Definition _ (F : set (set T)) (g : T -> W) :=
+  [IsSUB for @bigO_fun F g].
 
 Lemma bigO_class (F : set (set T)) (g : T -> W) (f : {O_F g}) :
   `[< bigO_def F f g >].
@@ -1208,8 +1209,8 @@ Structure bigOmega_type {W} (F : set (set T)) (g : T -> W) := BigOmega {
 
 Notation "{Omega_ F g }" := (@bigOmega_type _ F g).
 
-Canonical bigOmega_subtype {W} (F : set (set T)) (g : T -> W) :=
-  [subType for (@bigOmega_fun W F g)].
+HB.instance Definition _ {W} (F : set (set T)) (g : T -> W) :=
+  [IsSUB for @bigOmega_fun W F g].
 
 Lemma bigOmega_class {W} (F : set (set T)) (g : T -> W) (f : {Omega_F g}) :
   `[< bigOmega_def F f g >].
@@ -1348,8 +1349,8 @@ Structure bigTheta_type {W} (F : set (set T)) (g : T -> W) := BigTheta {
 
 Notation "{Theta_ F g }" := (@bigTheta_type _ F g).
 
-Canonical bigTheta_subtype {W} (F : set (set T)) (g : T -> W) :=
-  [subType for (@bigTheta_fun W F g)].
+HB.instance Definition _ {W} (F : set (set T)) (g : T -> W) :=
+  [IsSUB for @bigTheta_fun W F g].
 
 Lemma bigTheta_class {W} (F : set (set T)) (g : T -> W) (f : {Theta_F g}) :
   `[< bigTheta_def F f g >].
