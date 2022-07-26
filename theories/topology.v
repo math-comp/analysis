@@ -4340,67 +4340,6 @@ HB.instance Definition _ := Uniform_IsPseudoMetric.Build R M
 
 HB.end.
 
-HB.factory Record Pointed_IsPseudoMetric (R : numFieldType) M of Pointed M := {
-  nbhs : M -> set (set M);
-  ent : set (set (M * M));
-  nbhsE : nbhs = nbhs_ ent;
-  ball : M -> R -> M -> Prop ;
-  pseudo_metric_ax1 : forall x (e : R), 0 < e -> ball x e x ;
-  pseudo_metric_ax2 : forall x y (e : R), ball x e y -> ball y e x ;
-  pseudo_metric_ax3 :
-    forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
-  pseudo_metric_ax4 : ent = entourage_ ball
-}.
-
-HB.builders Context R M of Pointed_IsPseudoMetric R M.
-
-Lemma my_ball_le x : {homo ball x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
-Proof.
-move=> e1 e2 le12 y xe1_y.
-move: le12; rewrite le_eqVlt => /orP [/eqP <- //|].
-rewrite -subr_gt0 => lt12.
-rewrite -[e2](subrK e1); apply: pseudo_metric_ax3 xe1_y.
-suff : ball x (PosNum lt12)%:num x by [].
-exact: pseudo_metric_ax1.
-Qed.
-
-Lemma uniform_ax1 : Filter ent.
-Proof.
-rewrite pseudo_metric_ax4; apply: filter_from_filter; first by exists 1 => /=.
-move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //=.
-by rewrite subsetI; split=> ?; apply: my_ball_le;
-   rewrite -leEsub// le_minl lexx ?orbT.
-Qed.
-
-Lemma uniform_ax2 A : ent A -> [set xy | xy.1 = xy.2] `<=` A.
-Proof.
-rewrite pseudo_metric_ax4; move=> [e egt0 sbeA] xy xey.
-apply: sbeA; rewrite /= xey; exact: pseudo_metric_ax1.
-Qed.
-
-Lemma uniform_ax3 A : ent A -> ent (A^-1)%classic.
-Proof.
-rewrite pseudo_metric_ax4 => - [e egt0 sbeA].
-by exists e => // xy xye; apply: sbeA; apply: pseudo_metric_ax2.
-Qed.
-
-Lemma uniform_ax4 A : ent A -> exists2 B, ent B & B \o B `<=` A.
-Proof.
-rewrite pseudo_metric_ax4; move=> [_/posnumP[e] sbeA].
-exists [set xy | ball xy.1 (e%:num / 2) xy.2].
-  by exists (e%:num / 2) => /=.
-move=> xy [z xzhe zyhe]; apply: sbeA.
-by rewrite [e%:num]splitr; apply: pseudo_metric_ax3 zyhe.
-Qed.
-
-HB.instance Definition _ := Pointed_IsUniform.Build M
-  uniform_ax1 uniform_ax2 uniform_ax3 uniform_ax4 nbhsE.
-
-HB.instance Definition _ := Uniform_IsPseudoMetric.Build R M
-  pseudo_metric_ax1 pseudo_metric_ax2 pseudo_metric_ax3 pseudo_metric_ax4.
-
-HB.end.
-
 Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} : entourage_ (@ball R M) = entourage.
 Proof.
 Admitted.  (* TODO *)
@@ -4941,7 +4880,7 @@ apply Build_Filter; [by exists 1 | move=> P Q | move=> P Q PQ]; rewrite /mkset.
 Qed.
 
 Section pseudoMetric_of_normedDomain.
-Variables (K : numDomainType) (R : normedZmodType K).
+Context {K : numDomainType} {R : normedZmodType K}.
 Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ Num.norm x e x.
 Proof. by move=> ? /=; rewrite subrr normr0. Qed.
 Lemma ball_norm_symmetric (x y : R) (e : K) :
@@ -4953,10 +4892,7 @@ Proof.
 move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
 by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
 Qed.
-(* TODO find a way to port that
-Definition pseudoMetric_of_normedDomain
-  : PseudoMetric.mixin_of K (@entourage_ K R R (ball_ (fun x => `|x|)))
-  := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+
 Lemma nbhs_ball_normE :
   @nbhs_ball_ K R R (ball_ Num.norm) = nbhs_ (entourage_ (ball_ Num.norm)).
 Proof.
@@ -4965,77 +4901,17 @@ rewrite /nbhs_ entourage_E predeq2E => x A; split.
   by exists [set xy | ball_ Num.norm xy.1 e xy.2] => //; exists e.
 by move=> [E [e egt0 sbeE] sEA]; exists e => // ??; apply/sEA/sbeE.
 Qed.
-*)
 End pseudoMetric_of_normedDomain.
 
-Module regular_topology.
-
-#[export]
 HB.instance Definition _ (R : zmodType) := Pointed.copy R^o
   [the pointedType of R : Type].
 
-#[export]
-HB.instance Definition _ (R : numDomainType) := isFiltered.Build R R^o
+HB.instance Definition _ (R : numDomainType) := IsFiltered.Build R R^o
   (nbhs_ball_ (ball_ (fun x => `|x|))).
 
-Section Test1.
-Variable R : numFieldType.
-
-
-
-HB.factory Record Pointed_IsPseudoMetric (R : numFieldType) M of Pointed M := {
-  nbhs : M -> set (set M);
-  ent : set (set (M * M));
-  nbhsE : nbhs = nbhs_ ent;
-  ball : M -> R -> M -> Prop ;
-  pseudo_metric_ax1 : forall x (e : R), 0 < e -> ball x e x ;
-  pseudo_metric_ax2 : forall x y (e : R), ball x e y -> ball y e x ;
-  pseudo_metric_ax3 :
-    forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
-  pseudo_metric_ax4 : ent = entourage_ ball
-}.
-
-
-
-
-Check [the filteredType _ of R^o].
-
-Check [the pointedType of R^o].
-
-HB.about isFiltered.Build.
-
-Check Pointed.copy R^o R.
-
-Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
-  : filteredType R := Filtered.Pack (Filtered.Class
-    (@Pointed.class (pointed_of_zmodule R))
-    (nbhs_ball_ (ball_ (fun x => `|x|)))).
-
-Section regular_topology.
-Local Canonical pointedType (R : zmodType) : pointedType :=
-  [pointedType of R^o for pointed_of_zmodule R].
-Local Canonical filteredType (R : numDomainType) : filteredType R :=
-  [filteredType R of R^o for filtered_of_normedZmod R].
-Local Canonical topologicalType (R : numFieldType) : topologicalType :=
-  TopologicalType R^o (topologyOfEntourageMixin (uniformityOfBallMixin
-      (@nbhs_ball_normE _ _) (pseudoMetric_of_normedDomain _))).
-Local Canonical uniformType (R : numFieldType) : uniformType :=
-  UniformType R^o (uniformityOfBallMixin
-                     (@nbhs_ball_normE _ _) (pseudoMetric_of_normedDomain _)).
-Local Canonical pseudoMetricType (R : numFieldType) :=
-  PseudoMetricType R^o (@pseudoMetric_of_normedDomain R R).
-End regular_topology.
-
-Module Exports.
-Canonical pointedType.
-Canonical filteredType.
-Canonical topologicalType.
-Canonical uniformType.
-Canonical pseudoMetricType.
-End Exports.
-
-End regular_topology.
-Export regular_topology.Exports.
+HB.instance Definition _ (R : numFieldType) :=
+  Filtered_IsPseudoMetric.Build R R^o
+    nbhs_ball_normE ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
 
 Module numFieldTopology.
 
