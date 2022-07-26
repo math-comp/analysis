@@ -4568,7 +4568,7 @@ move=> MN MN_min; apply: sPA => i j.
 have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
   by have [_/posnumP[e]] := entP i j; exists e.
 apply; apply: le_ball (MN_min i j).
-apply: le_trans (@bigmin_le _ [orderType of {posnum R}] _ _ i _) _.
+apply: le_trans (@bigmin_le _ [the orderType _ of {posnum R}] _ _ i _) _.
 exact: bigmin_le.
 Qed.
 
@@ -4917,323 +4917,47 @@ Module numFieldTopology.
 
 Section realType.
 Variable (R : realType).
-Local Canonical real_pointedType := [pointedType of R for [pointedType of R^o]].
-Local Canonical real_filteredType :=
-  [filteredType R of R for [filteredType R of R^o]].
-Local Canonical real_topologicalType :=
-  [topologicalType of R for [topologicalType of R^o]].
-Local Canonical real_uniformType := [uniformType of R for [uniformType of R^o]].
-Local Canonical real_pseudoMetricType :=
-  [pseudoMetricType R of R for [pseudoMetricType R of R^o]].
+#[export]
+HB.instance Definition _ := PseudoMetric.copy R
+  [the pseudoMetricType R of R^o].
 End realType.
 
 Section rcfType.
 Variable (R : rcfType).
-Local Canonical rcf_pointedType := [pointedType of R for [pointedType of R^o]].
-Local Canonical rcf_filteredType :=
-  [filteredType R of R for [filteredType R of R^o]].
-Local Canonical rcf_topologicalType :=
-  [topologicalType of R for [topologicalType of R^o]].
-Local Canonical rcf_uniformType := [uniformType of R for [uniformType of R^o]].
-Local Canonical rcf_pseudoMetricType :=
-  [pseudoMetricType R of R for [pseudoMetricType R of R^o]].
+#[export]
+HB.instance Definition _ := PseudoMetric.copy R
+  [the pseudoMetricType R of R^o].
 End rcfType.
 
 Section archiFieldType.
 Variable (R : archiFieldType).
-Local Canonical archiField_pointedType :=
-  [pointedType of R for [pointedType of R^o]].
-Local Canonical archiField_filteredType :=
-  [filteredType R of R for [filteredType R of R^o]].
-Local Canonical archiField_topologicalType :=
-  [topologicalType of R for [topologicalType of R^o]].
-Local Canonical archiField_uniformType :=
-  [uniformType of R for [uniformType of R^o]].
-Local Canonical archiField_pseudoMetricType :=
-  [pseudoMetricType R of R for [pseudoMetricType R of R^o]].
+#[export]
+HB.instance Definition _ := PseudoMetric.copy R
+  [the pseudoMetricType R of R^o].
 End archiFieldType.
 
 Section realFieldType.
 Variable (R : realFieldType).
-Local Canonical realField_pointedType :=
-  [pointedType of R for [pointedType of R^o]].
-Local Canonical realField_filteredType :=
-  [filteredType R of R for [filteredType R of R^o]].
-Local Canonical realField_topologicalType :=
-  [topologicalType of R for [topologicalType of R^o]].
-Local Canonical realField_uniformType :=
-  [uniformType of R for [uniformType of R^o]].
-Local Canonical realField_pseudoMetricType :=
-  [pseudoMetricType R of R for [pseudoMetricType R of R^o]].
-Definition pointed_latticeType := [latticeType of realField_pointedType].
-Definition pointed_distrLatticeType :=
-  [distrLatticeType of realField_pointedType].
-Definition pointed_orderType := [orderType of realField_pointedType].
-Definition pointed_realDomainType :=
-  [realDomainType of realField_pointedType].
-Definition filtered_latticeType := [latticeType of realField_filteredType].
-Definition filtered_distrLatticeType :=
-  [distrLatticeType of realField_filteredType].
-Definition filtered_orderType := [orderType of realField_filteredType].
-Definition filtered_realDomainType :=
-  [realDomainType of realField_filteredType].
-Definition topological_latticeType :=
-  [latticeType of realField_topologicalType].
-Definition topological_distrLatticeType :=
-  [distrLatticeType of realField_topologicalType].
-Definition topological_orderType := [orderType of realField_topologicalType].
-Definition topological_realDomainType :=
-  [realDomainType of realField_topologicalType].
-Definition uniform_latticeType := [latticeType of realField_uniformType].
-Definition uniform_distrLatticeType :=
-  [distrLatticeType of realField_uniformType].
-Definition uniform_orderType := [orderType of realField_uniformType].
-Definition uniform_realDomainType := [realDomainType of realField_uniformType].
-Definition pseudoMetric_latticeType :=
-  [latticeType of realField_pseudoMetricType].
-Definition pseudoMetric_distrLatticeType :=
-  [distrLatticeType of realField_pseudoMetricType].
-Definition pseudoMetric_orderType := [orderType of realField_pseudoMetricType].
-Definition pseudoMetric_realDomainType :=
-  [realDomainType of realField_pseudoMetricType].
+#[export]
+HB.instance Definition _ := PseudoMetric.copy R
+  [the pseudoMetricType R of R^o].
 End realFieldType.
 
 Section numClosedFieldType.
 Variable (R : numClosedFieldType).
-Local Canonical numClosedField_pointedType :=
-  [pointedType of R for [pointedType of R^o]].
-Local Canonical numClosedField_filteredType :=
-  [filteredType R of R for [filteredType R of R^o]].
-Local Canonical numClosedField_topologicalType :=
-  [topologicalType of R for [topologicalType of R^o]].
-Local Canonical numClosedField_uniformType :=
-  [uniformType of R for [uniformType of R^o]].
-Local Canonical numClosedField_pseudoMetricType :=
-  [pseudoMetricType R of R for [pseudoMetricType R of R^o]].
-Definition pointed_decFieldType :=
-  [decFieldType of numClosedField_pointedType].
-Definition pointed_closedFieldType :=
-  [closedFieldType of numClosedField_pointedType].
-Definition filtered_decFieldType :=
-  [decFieldType of numClosedField_filteredType].
-Definition filtered_closedFieldType :=
-  [closedFieldType of numClosedField_filteredType].
-Definition topological_decFieldType :=
-  [decFieldType of numClosedField_topologicalType].
-Definition topological_closedFieldType :=
-  [closedFieldType of numClosedField_topologicalType].
-Definition uniform_decFieldType := [decFieldType of numClosedField_uniformType].
-Definition uniform_closedFieldType :=
-  [closedFieldType of numClosedField_uniformType].
-Definition pseudoMetric_decFieldType :=
-  [decFieldType of numClosedField_pseudoMetricType].
-Definition pseudoMetric_closedFieldType :=
-  [closedFieldType of numClosedField_pseudoMetricType].
+#[export]
+HB.instance Definition _ := PseudoMetric.copy R
+  [the pseudoMetricType R of R^o].
 End numClosedFieldType.
 
 Section numFieldType.
 Variable (R : numFieldType).
-Local Canonical numField_pointedType :=
-  [pointedType of R for [pointedType of R^o]].
-Local Canonical numField_filteredType :=
-  [filteredType R of R for [filteredType R of R^o]].
-Local Canonical numField_topologicalType :=
-  [topologicalType of R for [topologicalType of R^o]].
-Local Canonical numField_uniformType :=
-  [uniformType of R for [uniformType of R^o]].
-Local Canonical numField_pseudoMetricType :=
-  [pseudoMetricType R of R for [pseudoMetricType R of R^o]].
-Definition pointed_ringType := [ringType of numField_pointedType].
-Definition pointed_comRingType := [comRingType of numField_pointedType].
-Definition pointed_unitRingType := [unitRingType of numField_pointedType].
-Definition pointed_comUnitRingType := [comUnitRingType of numField_pointedType].
-Definition pointed_idomainType := [idomainType of numField_pointedType].
-Definition pointed_fieldType := [fieldType of numField_pointedType].
-Definition pointed_porderType := [porderType of numField_pointedType].
-Definition pointed_numDomainType := [numDomainType of numField_pointedType].
-Definition filtered_ringType := [ringType of numField_filteredType].
-Definition filtered_comRingType := [comRingType of numField_filteredType].
-Definition filtered_unitRingType := [unitRingType of numField_filteredType].
-Definition filtered_comUnitRingType :=
-  [comUnitRingType of numField_filteredType].
-Definition filtered_idomainType := [idomainType of numField_filteredType].
-Definition filtered_fieldType := [fieldType of numField_filteredType].
-Definition filtered_porderType := [porderType of numField_filteredType].
-Definition filtered_numDomainType := [numDomainType of numField_filteredType].
-Definition topological_ringType := [ringType of numField_topologicalType].
-Definition topological_comRingType := [comRingType of numField_topologicalType].
-Definition topological_unitRingType :=
-  [unitRingType of numField_topologicalType].
-Definition topological_comUnitRingType :=
-  [comUnitRingType of numField_topologicalType].
-Definition topological_idomainType := [idomainType of numField_topologicalType].
-Definition topological_fieldType := [fieldType of numField_topologicalType].
-Definition topological_porderType := [porderType of numField_topologicalType].
-Definition topological_numDomainType :=
-  [numDomainType of numField_topologicalType].
-Definition uniform_ringType := [ringType of numField_uniformType].
-Definition uniform_comRingType := [comRingType of numField_uniformType].
-Definition uniform_unitRingType := [unitRingType of numField_uniformType].
-Definition uniform_comUnitRingType := [comUnitRingType of numField_uniformType].
-Definition uniform_idomainType := [idomainType of numField_uniformType].
-Definition uniform_fieldType := [fieldType of numField_uniformType].
-Definition uniform_porderType := [porderType of numField_uniformType].
-Definition uniform_numDomainType := [numDomainType of numField_uniformType].
-Definition pseudoMetric_ringType := [ringType of numField_pseudoMetricType].
-Definition pseudoMetric_comRingType :=
-  [comRingType of numField_pseudoMetricType].
-Definition pseudoMetric_unitRingType :=
-  [unitRingType of numField_pseudoMetricType].
-Definition pseudoMetric_comUnitRingType :=
-  [comUnitRingType of numField_pseudoMetricType].
-Definition pseudoMetric_idomainType :=
-  [idomainType of numField_pseudoMetricType].
-Definition pseudoMetric_fieldType := [fieldType of numField_pseudoMetricType].
-Definition pseudoMetric_porderType := [porderType of numField_pseudoMetricType].
-Definition pseudoMetric_numDomainType :=
-  [numDomainType of numField_pseudoMetricType].
+#[export]
+HB.instance Definition _ := PseudoMetric.copy R
+  [the pseudoMetricType R of R^o].
 End numFieldType.
 
-Module Exports.
-(* realType *)
-Canonical real_pointedType.
-Canonical real_filteredType.
-Canonical real_topologicalType.
-Canonical real_uniformType.
-Canonical real_pseudoMetricType.
-Coercion real_pointedType : realType >-> pointedType.
-Coercion real_filteredType : realType >-> filteredType.
-Coercion real_topologicalType : realType >-> topologicalType.
-Coercion real_uniformType : realType >-> uniformType.
-Coercion real_pseudoMetricType : realType >-> pseudoMetricType.
-(* rcfType *)
-Canonical rcf_pointedType.
-Canonical rcf_filteredType.
-Canonical rcf_topologicalType.
-Canonical rcf_uniformType.
-Canonical rcf_pseudoMetricType.
-Coercion rcf_pointedType : rcfType >-> pointedType.
-Coercion rcf_filteredType : rcfType >-> filteredType.
-Coercion rcf_topologicalType : rcfType >-> topologicalType.
-Coercion rcf_uniformType : rcfType >-> uniformType.
-Coercion rcf_pseudoMetricType : rcfType >-> pseudoMetricType.
-(* archiFieldType *)
-Canonical archiField_pointedType.
-Canonical archiField_filteredType.
-Canonical archiField_topologicalType.
-Canonical archiField_uniformType.
-Canonical archiField_pseudoMetricType.
-Coercion archiField_pointedType : archiFieldType >-> pointedType.
-Coercion archiField_filteredType : archiFieldType >-> filteredType.
-Coercion archiField_topologicalType : archiFieldType >-> topologicalType.
-Coercion archiField_uniformType : archiFieldType >-> uniformType.
-Coercion archiField_pseudoMetricType : archiFieldType >-> pseudoMetricType.
-(* realFieldType *)
-Canonical realField_pointedType.
-Canonical realField_filteredType.
-Canonical realField_topologicalType.
-Canonical realField_uniformType.
-Canonical realField_pseudoMetricType.
-Canonical pointed_latticeType.
-Canonical pointed_distrLatticeType.
-Canonical pointed_orderType.
-Canonical pointed_realDomainType.
-Canonical filtered_latticeType.
-Canonical filtered_distrLatticeType.
-Canonical filtered_orderType.
-Canonical filtered_realDomainType.
-Canonical topological_latticeType.
-Canonical topological_distrLatticeType.
-Canonical topological_orderType.
-Canonical topological_realDomainType.
-Canonical uniform_latticeType.
-Canonical uniform_distrLatticeType.
-Canonical uniform_orderType.
-Canonical uniform_realDomainType.
-Canonical pseudoMetric_latticeType.
-Canonical pseudoMetric_distrLatticeType.
-Canonical pseudoMetric_orderType.
-Canonical pseudoMetric_realDomainType.
-Coercion realField_pointedType : realFieldType >-> pointedType.
-Coercion realField_filteredType : realFieldType >-> filteredType.
-Coercion realField_topologicalType : realFieldType >-> topologicalType.
-Coercion realField_uniformType : realFieldType >-> uniformType.
-Coercion realField_pseudoMetricType : realFieldType >-> pseudoMetricType.
-(* numClosedFieldType *)
-Canonical numClosedField_pointedType.
-Canonical numClosedField_filteredType.
-Canonical numClosedField_topologicalType.
-Canonical numClosedField_uniformType.
-Canonical numClosedField_pseudoMetricType.
-Canonical pointed_decFieldType.
-Canonical pointed_closedFieldType.
-Canonical filtered_decFieldType.
-Canonical filtered_closedFieldType.
-Canonical topological_decFieldType.
-Canonical topological_closedFieldType.
-Canonical uniform_decFieldType.
-Canonical uniform_closedFieldType.
-Canonical pseudoMetric_decFieldType.
-Canonical pseudoMetric_closedFieldType.
-Coercion numClosedField_pointedType : numClosedFieldType >-> pointedType.
-Coercion numClosedField_filteredType : numClosedFieldType >-> filteredType.
-Coercion numClosedField_topologicalType :
-  numClosedFieldType >-> topologicalType.
-Coercion numClosedField_uniformType : numClosedFieldType >-> uniformType.
-Coercion numClosedField_pseudoMetricType :
-  numClosedFieldType >-> pseudoMetricType.
-(* numFieldType *)
-Canonical numField_pointedType.
-Canonical numField_filteredType.
-Canonical numField_topologicalType.
-Canonical numField_uniformType.
-Canonical numField_pseudoMetricType.
-Canonical pointed_ringType.
-Canonical pointed_comRingType.
-Canonical pointed_unitRingType.
-Canonical pointed_comUnitRingType.
-Canonical pointed_idomainType.
-Canonical pointed_fieldType.
-Canonical pointed_porderType.
-Canonical pointed_numDomainType.
-Canonical filtered_ringType.
-Canonical filtered_comRingType.
-Canonical filtered_unitRingType.
-Canonical filtered_comUnitRingType.
-Canonical filtered_idomainType.
-Canonical filtered_fieldType.
-Canonical filtered_porderType.
-Canonical filtered_numDomainType.
-Canonical topological_ringType.
-Canonical topological_comRingType.
-Canonical topological_unitRingType.
-Canonical topological_comUnitRingType.
-Canonical topological_idomainType.
-Canonical topological_fieldType.
-Canonical topological_porderType.
-Canonical topological_numDomainType.
-Canonical uniform_ringType.
-Canonical uniform_comRingType.
-Canonical uniform_unitRingType.
-Canonical uniform_comUnitRingType.
-Canonical uniform_idomainType.
-Canonical uniform_fieldType.
-Canonical uniform_porderType.
-Canonical uniform_numDomainType.
-Canonical pseudoMetric_ringType.
-Canonical pseudoMetric_comRingType.
-Canonical pseudoMetric_unitRingType.
-Canonical pseudoMetric_comUnitRingType.
-Canonical pseudoMetric_idomainType.
-Canonical pseudoMetric_fieldType.
-Canonical pseudoMetric_porderType.
-Canonical pseudoMetric_numDomainType.
-Coercion numField_pointedType : numFieldType >-> pointedType.
-Coercion numField_filteredType : numFieldType >-> filteredType.
-Coercion numField_topologicalType : numFieldType >-> topologicalType.
-Coercion numField_uniformType : numFieldType >-> uniformType.
-Coercion numField_pseudoMetricType : numFieldType >-> pseudoMetricType.
-End Exports.
+Module Exports. HB.reexport. End Exports.
 
 End numFieldTopology.
 Import numFieldTopology.Exports.
@@ -5248,6 +4972,7 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
+(* TODO find a way to port that
 Section RestrictedUniformTopology.
 Context {U : choiceType} (A : set U) {V : uniformType} .
 
@@ -5303,7 +5028,9 @@ by move: Efg => /= /(_ (@exist _ (fun x => in_mem x (mem A)) _ At)).
 Qed.
 
 End RestrictedUniformTopology.
+*)
 
+(*
 Notation "{ 'uniform`' A -> V }" := (@fct_RestrictedUniform _ A V) :
   classical_set_scope.
 Notation "{ 'uniform' U -> V }" := ({uniform` (@setT U) -> V}) :
@@ -5568,6 +5295,7 @@ apply: (iff_trans _ (iff_sym (fam_cvgP _ _ FF))); split.
 - by move=> CFf D [/uniform_subset_cvg + _]; apply.
 - by apply; split.
 Qed.
+*)
 
 Global Instance Proper_dnbhs_numFieldType (R : numFieldType) (x : R) :
   ProperFilter x^'.
@@ -5991,25 +5719,28 @@ case: nbhs_subspaceP => ?; last exact: globally_properfilter.
 by apply: within_nbhs_proper; apply: subset_closure.
 Qed.
 
-Definition subspace_pointedType := PointedType (subspace A) point.
+HB.instance Definition _ := Choice.copy (subspace A) _.
 
-Canonical subspace_filteredType :=
-  FilteredType (subspace A) (subspace A) nbhs_subspace.
+HB.instance Definition _ := IsPointed.Build (subspace A) point.
 
-Program Definition subspace_topologicalMixin :
-  Topological.mixin_of (nbhs_subspace) := @topologyOfFilterMixin
-    (subspace A) nbhs_subspace nbhs_subspace_filter _ _.
-Next Obligation.
-by move=> p A0; case: nbhs_subspaceP => ? => [/nbhs_singleton|]; apply.
+HB.instance Definition _ := IsFiltered.Build _ (subspace A) nbhs_subspace.
+
+HB.about Filtered_IsNbhsTopological.Build.
+
+Lemma nbhs_subspace_singleton (p : subspace A) B : nbhs p B -> B p.
+Proof.
+by rewrite /nbhs/=; case: nbhs_subspaceP => ? => [/nbhs_singleton|]; apply.
 Qed.
-Next Obligation.
-move=> p A0; case: nbhs_subspaceP => [|] Ap.
+
+Lemma nbhs_subspace_nbhs (p : subspace A) B : nbhs p B -> nbhs p (nbhs^~ B).
+Proof.
+rewrite /nbhs/=; case: nbhs_subspaceP => [|] Ap.
   by move=> /nbhs_interior; apply: filterS => y A0y Ay; case: nbhs_subspaceP.
 by move=> E x ->; case: nbhs_subspaceP.
 Qed.
 
-Canonical subspace_topologicalType :=
-  TopologicalType (subspace A) subspace_topologicalMixin.
+HB.instance Definition _ := Filtered_IsNbhsTopological.Build (subspace A)
+  nbhs_subspace_filter nbhs_subspace_singleton nbhs_subspace_nbhs.
 
 Lemma subspace_cvgP (F : set (set T)) (x : T) :
   Filter F -> A x ->
@@ -6074,7 +5805,9 @@ by rewrite eqEsubset; split => x; [move=> ?; exists x|case=> i ? ->].
 Qed.
 
 Lemma open_subspaceT : open (A : set (subspace A)).
-Proof. by move=> ?; case: nbhs_subspaceP => //= ? ?; apply: withinT. Qed.
+Proof.
+by move=> ?; rewrite /nbhs/=; case: nbhs_subspaceP => //= ? ?; apply: withinT.
+Qed.
 
 Lemma open_subspaceIT (U : set (subspace A)) : open (U `&` A) = open U.
 Proof.
@@ -6099,27 +5832,32 @@ Lemma open_subspaceP (U : set T) :
   open (U : set (subspace A)) <->
   exists V, open (V : set T) /\ V `&` A = U `&` A.
 Proof.
-split=> [|[V [oV UV]]]; first last.
-  rewrite -open_subspaceIT -UV => x //= []; case: nbhs_subspaceP => //=.
-  rewrite withinE /= => Ax Vx _; exists V; last by rewrite -setIA setIid.
-  by move: oV; rewrite openE; exact.
+split; first last.
+  case=> V [oV UV]; rewrite -open_subspaceIT -UV.
+  move=> x //= []; rewrite /nbhs/=; case: nbhs_subspaceP; rewrite //= withinE.
+  move=> ? ? _; exists V; last by rewrite -setIA setIid.
+  by move: oV; rewrite openE /interior; apply.
 rewrite -open_subspaceIT => oUA.
-have oxF x : (U `&` A) x -> exists2 V, open_nbhs x V & V `&` A `<=` U `&` A.
-  move=> /[dup] UAx [Ux Ax]; move: (oUA _ UAx); case: nbhs_subspaceP => // _.
-  rewrite withinE /= => -[V nbhsV]; rewrite -setIA setIid => UV.
-  exists V^°; rewrite ?open_nbhsE.
-  - by split; [exact: open_interior|exact: nbhs_interior].
-  - by rewrite UV => t [/interior_subset].
-pose f x :=
-  if pselect ((U `&` A) x) is left e then projT1 (cid2 (oxF x e)) else set0.
-exists (\bigcup_(x in U `&` A) f x); split.
-  apply: bigcup_open => i UAi; rewrite /f; case: pselect => // ?.
-  by case: (cid2 _) => //= W; rewrite open_nbhsE => -[].
-rewrite eqEsubset /f; split.
-  move=> t [[u UAu]] /=; case: pselect => //= ?.
-  by case: (cid2 _) => /= W _ + ? ?; exact.
-move=> t UAt; split; last by case: UAt.
-by exists t => //; case: pselect => //= -[Ut At]; case: (cid2 _) => //= W [].
+have oxF : (forall (x : T), (U `&` A) x ->
+    exists V, (open_nbhs (x : T) V) /\ (V `&` A `<=` U `&` A)).
+  move=> x /[dup] UAx /= [??]; move: (oUA _ UAx);
+    rewrite /nbhs/=; case: nbhs_subspaceP => // ?.
+  rewrite withinE /= => [[V nbhsV UV]]; rewrite -setIA setIid in UV.
+  exists V^°; split; first rewrite open_nbhsE; first split => //.
+  - exact: open_interior.
+  - exact: nbhs_interior.
+  - by rewrite UV=> t [/interior_subset] ??; split.
+pose f (x : T) :=
+  if pselect ((U `&` A) x) is left e then projT1 (cid (oxF x e)) else set0.
+set V := \bigcup_(x in (U `&` A)) (f x); exists V; split.
+  apply: bigcup_open => i UAi; rewrite /f; case: pselect => // ?; case: (cid _).
+  by move=> //= W; rewrite open_nbhsE=> -[[]].
+rewrite eqEsubset /V /f; split.
+  move=> t [[u]] UAu /=; case: pselect => //= ?.
+  by case: (cid _) => //= W [] _ + ? ?; apply; split.
+move=> t UAt; split => //; last by case: UAt.
+exists t => //; case: pselect => //= [[? ?]].
+by case: (cid _) => //= W [] [] _.
 Qed.
 
 Lemma closed_subspaceP (U : set T) :
@@ -6167,7 +5905,8 @@ Lemma closure_subspaceW (U : set T) :
   U `<=` A -> closure (U : set (subspace A)) = closure (U : set T) `&` A.
 Proof.
 have /closed_subspaceP := (@closed_closure _ (U : set (subspace A))).
-move=> [V] [clV VAclUA] /[dup] /(@closure_subset subspace_topologicalType).
+move=> [V] [clV VAclUA].
+move=> /[dup] /(@closure_subset [the topologicalType of subspace _]).
 have/closure_id <- := (closed_subspaceT) => /setIidr <-; rewrite setIC.
 move=> UsubA; rewrite eqEsubset; split.
   apply: setSI; rewrite closureE; apply: smallest_sub (@subset_closure _ U).
@@ -6178,7 +5917,7 @@ exact: (@subset_closure _ (U : set (subspace A))).
 Qed.
 
 Lemma subspace_hausdorff :
-  hausdorff_space T -> hausdorff_space [topologicalType of subspace A].
+  hausdorff_space T -> hausdorff_space [the topologicalType of subspace A].
 Proof.
 rewrite ?open_hausdorff => + x y xNy => /(_ x y xNy).
 move=> [[P Q]] /= [Px Qx] /= [/open_subspaceW oP /open_subspaceW oQ].
@@ -6201,6 +5940,7 @@ Qed.
 
 End Subspace.
 
+(* TODO
 Global Instance subspace_filter {T : topologicalType}
      (A : set T) (x : subspace A) :
    Filter (nbhs_subspace x) := nbhs_subspace_filter x.
@@ -6387,6 +6127,7 @@ Unshelve. all: by end_near. Qed.
 Canonical subspace_uniformType :=
   UniformType (subspace A) subspace_uniformMixin.
 End SubspaceUniform.
+*)
 
 Section SubspacePseudoMetric.
 Context {R : numDomainType} {X : pseudoMetricType R} (A : set X).
@@ -6395,8 +6136,8 @@ Definition subspace_ball (x : subspace A) (r : R) :=
   if x \in A then A `&` ball (x : X) r else [set x].
 
 Program Definition subspace_pseudoMetricType_mixin :=
-  @PseudoMetric.Mixin R (subspace A) (subspace_ent A) (subspace_ball)
-  _ _ _ _.
+  @Uniform_IsPseudoMetric.Build R [the uniformType of subspace A] subspace_ball
+    _ _ _ _.
 Next Obligation.
 move=> x e; rewrite /subspace_ball; case: ifP => //= /asboolP ? ?.
 by split=> //; exact: ballxx.
@@ -6415,6 +6156,8 @@ move=> x y z e1 e2; rewrite /subspace_ball; (repeat case: ifP => /asboolP).
 Qed.
 Next Obligation.
 rewrite eqEsubset; split; rewrite /subspace_ball.
+Admitted.
+(* TODO: fix
   move=> U [W + subU]; rewrite -entourage_ballE => [[eps] nneg subW].
   exists eps => //; apply: (subset_trans _ subU).
   move=> [x y] /=; case: ifP => /asboolP ?.
@@ -6426,9 +6169,10 @@ move=> [x y] /= [->|[]Ax []Ay xBy]; apply: subE => //=.
   by case: ifP => /asboolP; split => //; exact: ballxx.
 by case: ifP => /asboolP.
 Qed.
+*)
 
-Canonical subspace_pseudoMetricType :=
-  PseudoMetricType (subspace A) subspace_pseudoMetricType_mixin.
+(* FIXME: this should build a pseudoMetricType on subspace A *)
+HB.instance Definition _ := subspace_pseudoMetricType_mixin.
 
 End SubspacePseudoMetric.
 
@@ -6508,6 +6252,7 @@ have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
 by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply fcAfEb; split; exists t.
 Qed.
 
+(* TODO
 Lemma uniform_limit_continuous {U : topologicalType} {V : uniformType}
     (F : set (set (U -> V))) (f : U -> V) :
   ProperFilter F -> (\forall g \near F, continuous (g : U -> V)) ->
@@ -6535,6 +6280,7 @@ apply: (@uniform_limit_continuous
   by rewrite /restrict => ? ->.
 by apply (@uniform_restrict_cvg _ _ F ) => //; exact: PF.
 Qed.
+*)
 
 Lemma continuous_localP {X Y : topologicalType} (f : X -> Y) :
   continuous f <->
@@ -6552,6 +6298,7 @@ move/nbhs_singleton: nbhsU; move: x; apply/in_setP.
 by rewrite -continuous_open_subspace.
 Unshelve. end_near. Qed.
 
+(*
 Section UniformPointwise.
 Context {U : topologicalType} {V : uniformType}.
 
@@ -6580,6 +6327,7 @@ by move=> A [x _ <-]; exact: compact_set1.
 Qed.
 
 End UniformPointwise.
+*)
 
 Section ArzelaAscoli.
 Context {X : topologicalType}.
@@ -6637,6 +6385,7 @@ move=> WsubV + x => /(_ x) pcptV; apply: precompact_subset pcptV => y [i Wi <-].
 by case: (WsubV (fW i)); [exists i | move=> j Vj <-; exists j].
 Qed.
 
+(* TODO
 Lemma pointwise_precompact_precompact {I} (W : set I) (fW : I -> (X -> Y)) :
   pointwise_precompact W fW -> precompact ((fW @` W) : set {ptws X -> Y}).
 Proof.
@@ -6816,5 +6565,6 @@ move=> lcpt; split => [[Wid ectsW]|[fWf]pcptW].
 split; last exact: precompact_equicontinuous.
 exact: precompact_pointwise_precompact.
 Qed.
+*)
 
 End ArzelaAscoli.
