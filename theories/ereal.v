@@ -576,8 +576,7 @@ Definition ereal_nbhs (x : \bar R) (P : \bar R -> Prop) : Prop :=
     | +oo => exists M, M \is Num.real /\ forall y, M%:E < y -> P y
     | -oo => exists M, M \is Num.real /\ forall y, y < M%:E -> P y
   end.
-Canonical ereal_ereal_filter :=
-  FilteredType (extended R) (extended R) (ereal_nbhs).
+HB.instance Definition _ := IsFiltered.Build _ (\bar R) ereal_nbhs.
 End ereal_nbhs.
 
 Section ereal_nbhs_instances.
@@ -741,10 +740,6 @@ move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
     by rewrite /Order.comparable (ltW M'x).
   by rewrite comparabler0 realB.
 Qed.
-
-Definition ereal_topologicalMixin : Topological.mixin_of (@ereal_nbhs R) :=
-  topologyOfFilterMixin _ ereal_nbhs_singleton ereal_nbhs_nbhs.
-Canonical ereal_topologicalType := TopologicalType _ ereal_topologicalMixin.
 
 End ereal_topologicalType.
 
@@ -1290,18 +1285,8 @@ rewrite predeq2E => x A; split.
     by rewrite -ltNge => /nbhs_oo_down_1e; apply => ? ?; exact/sEA/reA.
 Qed.
 
-Definition ereal_pseudoMetricType_mixin :=
-  PseudoMetric.Mixin (@ereal_ball_center R) (@ereal_ball_sym R)
-                     (@ereal_ball_triangle R) erefl.
-
-Definition ereal_uniformType_mixin : @Uniform.mixin_of (\bar R) nbhs :=
-  uniformityOfBallMixin ereal_nbhsE ereal_pseudoMetricType_mixin.
-
-Canonical ereal_uniformType :=
-  UniformType (extended R) ereal_uniformType_mixin.
-
-Canonical ereal_pseudoMetricType :=
-  PseudoMetricType (extended R) ereal_pseudoMetricType_mixin.
+HB.instance Definition _ := Filtered_IsPseudoMetric.Build R (\bar R)
+  ereal_nbhsE ereal_ball_center ereal_ball_sym ereal_ball_triangle erefl.
 
 End ereal_PseudoMetric.
 
@@ -1343,7 +1328,7 @@ move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 first.
     have /ZnatP [N Nfloor] : floor (Num.max d 0%R) \is a Znat.
       by rewrite Znat_def floor_ge0 le_maxr lexx orbC.
-    exists N.+1 => // n ltNn; apply: dP.
+    exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin.
     have /le_lt_trans : (d <= Num.max d 0)%R by rewrite le_maxr lexx.
     by apply; rewrite (lt_le_trans (lt_succ_floor _))// Nfloor natr1 ler_nat.
   have /ZnatP [N Nfloor] : floor (Num.max (- d)%R 0%R) \is a Znat.

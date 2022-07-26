@@ -9,6 +9,7 @@
    (c.f. https://github.com/math-comp/real-closed/pull/29 ) and
    incorporate it into mathcomp proper where it could then be used for
    bounds of intervals*)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp.classical Require Import mathcomp_extra.
 Require Import signed.
@@ -137,8 +138,7 @@ Definition eq_ereal (x y : \bar R) :=
 Lemma ereal_eqP : Equality.axiom eq_ereal.
 Proof. by case=> [?||][?||]; apply: (iffP idP) => //= [/eqP|[]] ->. Qed.
 
-Definition ereal_eqMixin := Equality.Mixin ereal_eqP.
-Canonical ereal_eqType := Equality.Pack ereal_eqMixin.
+HB.instance Definition _ := hasDecEq.Build (\bar R) ereal_eqP.
 
 Lemma eqe (r1 r2 : R) : (r1%:E == r2%:E) = (r1 == r2). Proof. by []. Qed.
 
@@ -164,16 +164,14 @@ Definition decode (x : GenTree.tree R) : option (\bar R) :=
 
 Lemma codeK : pcancel code decode. Proof. by case. Qed.
 
-Definition ereal_choiceMixin := PcanChoiceMixin codeK.
-Canonical ereal_choiceType  := ChoiceType (extended R) ereal_choiceMixin.
+HB.instance Definition _ := Choice.copy (\bar R) (pcan_type codeK).
 
 End ERealChoice.
 
 Section ERealCount.
 Variable (R : countType).
 
-Definition ereal_countMixin := PcanCountMixin (@codeK R).
-Canonical ereal_countType := CountType (extended R) ereal_countMixin.
+HB.instance Definition _ := PcanCountMixin (@codeK R).
 
 End ERealCount.
 
@@ -216,11 +214,8 @@ Qed.
 
 Fact ereal_display : unit. Proof. by []. Qed.
 
-Definition ereal_porderMixin :=
-  LePOrderMixin lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
-
-Canonical ereal_porderType :=
-  POrderType ereal_display (extended R) ereal_porderMixin.
+HB.instance Definition _ := Order.isPOrdered.Build ereal_display (\bar R)
+  lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
 
 Lemma leEereal x y : (x <= y)%O = le_ereal x y. Proof. by []. Qed.
 Lemma ltEereal x y : (x < y)%O = lt_ereal x y. Proof. by []. Qed.
@@ -351,14 +346,19 @@ Definition lteey := (ltey, leey).
 
 Definition lteNye := (ltNye, leNye).
 
+Lemma gee0P x : 0 <= x <-> x = +oo \/ exists2 r, (r >= 0)%R & x = r%:E.
+Proof.
+split=> [|[->|[r r0 ->//]]]; last exact: leey.
+by case: x => [r r0 | _ |//]; [right; exists r|left].
+Qed.
+
 Lemma le_total_ereal : totalPOrderMixin [porderType of \bar R].
 Proof.
 by move=> [?||][?||]//=; rewrite (ltEereal, leEereal)/= ?num_real ?le_total.
 Qed.
 
-Canonical ereal_latticeType := LatticeType (extended R) le_total_ereal.
-Canonical ereal_distrLatticeType :=  DistrLatticeType (extended R) le_total_ereal.
-Canonical ereal_orderType := OrderType (extended R) le_total_ereal.
+HB.instance Definition _ := Order.POrder_isTotal.Build ereal_display (\bar R)
+  le_total_ereal.
 
 End ERealOrder_realDomainType.
 
@@ -3371,7 +3371,7 @@ apply: le_mono; move=> -[r0 | | ] [r1 | _ | _] //=.
   rewrite mulrAC ltr_pdivl_mulr ?ltr_paddr// 2?mulrDr 2?mulr1.
   have [r10|?] := ler0P r1; last first.
     rewrite ltr_le_add // mulrC; have [r00|//] := ler0P r0.
-    by rewrite (@le_trans _ _ 0%R) // ?pmulr_lle0// mulr_ge0// ?oppr_ge0// ltW.
+    by rewrite (@le_trans _ _ 0%R) // ?pmulr_rle0// mulr_ge0// ?oppr_ge0// ltW.
   have [?|r00] := ler0P r0; first by rewrite ltr_le_add // 2!mulrN mulrC.
   by move: (le_lt_trans r10 (lt_trans r00 r0r1)); rewrite ltxx.
 - by rewrite ltr_pdivr_mulr ?ltr_paddr// mul1r ltr_spaddl // ler_norm.
@@ -3419,7 +3419,7 @@ Qed.
 End contract_expand.
 
 Section ereal_PseudoMetric.
-Variable R : realFieldType.
+Context {R : realFieldType}.
 Implicit Types (x y : \bar R) (r : R).
 
 Definition ereal_ball x r y := (`|contract x - contract y| < r)%R.
