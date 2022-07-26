@@ -370,7 +370,7 @@ move=> /(_ _ _ _)/Box[]//=; apply: le_le_trans.
   rewrite hlength_itv ?lte_fin -?EFinD/= -addrA -opprD.
   by case: ltP => //; rewrite lee_fin subr_le0.
 rewrite nneseries_esum//; last by move=> *; rewrite adde_ge0//= ?lee_fin.
-rewrite esum_ge//; exists X => //; rewrite fsbig_finite// ?set_fsetK//=.
+rewrite esum_ge//; exists [set` X] => //; rewrite fsbig_finite// ?set_fsetK//=.
 rewrite lee_sum // => i _; rewrite ?AE// !hlength_itv/= ?lte_fin -?EFinD/=.
 do !case: ifPn => //= ?; do ?by rewrite ?adde_ge0 ?lee_fin// ?subr_ge0// ?ltW.
   by rewrite addrAC.

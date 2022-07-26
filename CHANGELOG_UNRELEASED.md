@@ -38,6 +38,43 @@
 
 - in `measure.v`:
   + generalize `measurable_uncurry`
+  + generalize `pushforward`
+- in `lebesgue_integral.v`
+  + change `Arguments` of `eq_integrable`
+- in `lebesgue_integral.v`:
+  + fix pretty-printing of `{mfun _ >-> _}`, `{sfun _ >-> _}`, `{nnfun _ >-> _}`
+- in `lebesgue_integral.v`
+  + minor generalization of `eq_measure_integral`
+- from `topology.v` to `mathcomp_extra.v`:
+  + generalize `ltr_bigminr` to `porderType` and rename to `bigmin_lt`
+  + generalize `bigminr_ler` to `orderType` and rename to `bigmin_le`
+- moved out of module `Bigminr` in `normedtype.v` to `mathcomp_extra.v` and generalized to `orderType`:
+  + lemma `bigminr_ler_cond`, renamed to `bigmin_le_cond`
+- moved out of module `Bigminr` in `normedtype.v` to `mathcomp_extra.v`:
+  + lemma `bigminr_maxr`
+- moved from from module `Bigminr` in `normedtype.v`
+  + to `mathcomp_extra.v` and generalized to `orderType`
+    * `bigminr_mkcond` -> `bigmin_mkcond`
+    * `bigminr_split` -> `bigmin_split`
+    * `bigminr_idl` -> `bigmin_idl`
+    * `bigminrID` -> `bigminID`
+    * `bigminrD1` -> `bigminD1`
+    * `bigminr_inf` -> `bigmin_inf`
+    * `bigminr_gerP` -> `bigmin_geP`
+    * `bigminr_gtrP` -> ``bigmin_gtP``
+    * `bigminr_eq_arg` -> `bigmin_eq_arg`
+    * `eq_bigminr` -> `eq_bigmin`
+  + to `topology.v` and generalized to `orderType`
+    * `bigminr_lerP` -> `bigmin_leP`
+    * `bigminr_ltrP` -> `bigmin_ltP`
+- moved from `topology.v` to `mathcomp_extra.v`:
+  + `bigmax_lerP` -> `bigmax_leP`
+  + `bigmax_ltrP` -> `bigmax_ltP`
+  + `ler_bigmax_cond` -> `le_bigmax_cond`
+  + `ler_bigmax` -> `le_bigmax`
+  + `le_bigmax` -> `homo_le_bigmax`
+- in `esum.v`:
+  + definition `esum`
 
 ### Renamed
 
@@ -62,6 +99,14 @@
   + `nnfun_mulem_ge0` -> `nnsfun_mulemu_ge0`
 
 ### Removed
+
+- in `normedtype.v` (module `Bigminr`)
+  + `bigminr_ler_cond`, `bigminr_ler`.
+  + `bigminr_seq1`, `bigminr_pred1_eq`, `bigminr_pred1`
+- in `topology.v`:
+  + `bigmax_seq1`, `bigmax_pred1_eq`, `bigmax_pred1`
+- in `esum.v`:
+  + lemma `fsetsP`, `sum_fset_set`
 
 ### Infrastructure
 

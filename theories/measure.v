@@ -1536,7 +1536,7 @@ Lemma finite_card_dirac (A : set T) : finite_set A ->
   \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
 Proof.
 move=> finA.
-rewrite -sum_fset_set// big_seq_cond (eq_bigr (fun=> 1)) -?big_seq_cond.
+rewrite esum_fset// big_seq_cond (eq_bigr (fun=> 1)) -?big_seq_cond.
   by rewrite card_fset_sum1// natr_sum -sumEFin.
 by move=> i; rewrite andbT in_fset_set//= /dirac indicE => ->.
 Qed.
@@ -1546,12 +1546,13 @@ Lemma infinite_card_dirac (A : set T) : infinite_set A ->
 Proof.
 move=> infA; apply/eq_pinftyP => r r0.
 have [B BA Br] := infinite_set_fset `|ceil r| infA.
-apply: esum_ge; exists B => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
+apply: esum_ge; exists [set` B] => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
   by rewrite lee_fin natr_absz gtr0_norm ?ceil_gt0// ceil_ge.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
 rewrite big_seq (eq_bigr (cst 1))/=; last first.
-  by move=> i Bi; rewrite /dirac indicE mem_set//; exact: BA.
-by rewrite -big_seq card_fset_sum1 sumEFin natr_sum.
+  move=> i; rewrite in_fset_set// inE/= => Bi; rewrite /dirac indicE mem_set//.
+  exact: BA.
+by rewrite -big_seq card_fset_sum1 sumEFin natr_sum// set_fsetK.
 Qed.
 
 End dirac_lemmas.
