@@ -234,7 +234,7 @@ move=> df; apply/eqaddoP => _/posnumP[e].
 rewrite -nbhs_nearE nbhs_simpl /= dnbhsE; split; last first.
   rewrite /at_point opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
   by rewrite addrA subrr add0r normrN scale0r !normr0 mulr0.
-have /eqolimP := df; rewrite -[lim _]/(derive _ _ _).
+have /eqolimP := df.
 move=> /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]).
 apply: filter_app; rewrite /= !near_simpl near_withinE; near=> h => hN0.
 rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
@@ -507,7 +507,7 @@ have hdf h :
   (f \o shift x = cst (f x) + h +o_ (0 : V) id) ->
   h = f \o shift x - cst (f x) +o_ (0 : V) id.
   move=> hdf; apply: eqaddoE.
-  rewrite hdf addrAC (addrC _ h) addrK.
+  rewrite hdf addrAC -!addrA addrC !addrA subrK.
   rewrite -[LHS]addr0 -addrA; congr (_ + _).
   by apply/eqP; rewrite eq_sym addrC addr_eq0 oppo.
 rewrite (hdf _ dxf).
@@ -820,7 +820,7 @@ Proof. by move=> ???; rewrite /Rmult_rev mulrDl scalerAl. Qed.
 Canonical Rmult_rev_linear y := Linear (Rmult_rev_is_linear y).
 
 Canonical Rmult_bilinear :=
-  [bilinear of (@GRing.mul [ringType of [lmodType R of R]])].
+  [bilinear of (@GRing.mul [ringType of [the lmodType R of R : Type]])].
 
 Global Instance is_diff_Rmult (p : R*R ) :
   is_diff p (fun q => q.1 * q.2) (fun q => p.1 * q.2 + q.1 * p.2).
@@ -940,6 +940,8 @@ have : `|h * h| <= `|x / 2| * (e%:num * `|x * x| * `|h|).
   rewrite !mulrA; near: h; exists (`|x / 2| * e%:num * `|x * x|).
     by rewrite /= !pmulr_rgt0 // normr_gt0 mulf_neq0.
   by move=> h /ltW; rewrite distrC subr0 [`|h * _|]normrM => /ler_pmul; apply.
+Admitted.
+(* TODO_HB
 move=> /le_trans-> //; rewrite [leLHS]mulrC ler_pmul ?mulr_ge0 //.
 near: h; exists (`|x| / 2); first by rewrite /= divr_gt0 ?normr_gt0.
 move=> h; rewrite /= distrC subr0 => lthhx; rewrite addrC -[h]opprK.
@@ -950,6 +952,7 @@ rewrite normrN [leRHS]ger0_norm; last first.
 rewrite ler_subr_addr -ler_subr_addl (splitr `|x|).
 by rewrite normrM normfV (@ger0_norm _ 2) // -addrA subrr addr0; apply: ltW.
 Unshelve. all: by end_near. Qed.
+*)
 
 Lemma diff_Rinv (x : R) : x != 0 ->
   'd GRing.inv x = (fun h : R => - x ^- 2 *: h) :> (R -> R).
@@ -1557,6 +1560,7 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
+(* TODO_HB
 Section is_derive_instances.
 Variables (R : numFieldType) (V : normedModType R).
 
@@ -1581,3 +1585,4 @@ End is_derive_instances.
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
   is_derive x 1 f x1 -> x1 = y1 -> is_derive x 1 f y1.
 Proof. by move=> Hi <-. Qed.
+*)

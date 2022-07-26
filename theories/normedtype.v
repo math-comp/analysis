@@ -719,11 +719,19 @@ Module numFieldNormedType.
 Section realType.
 Variable (R : realType).
 #[export]
+HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
+#[export]
+HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
+#[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End realType.
 
 Section rcfType.
 Variable (R : rcfType).
+#[export]
+HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
+#[export]
+HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
 #[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End rcfType.
@@ -731,11 +739,19 @@ End rcfType.
 Section archiFieldType.
 Variable (R : archiFieldType).
 #[export]
+HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
+#[export]
+HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
+#[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End archiFieldType.
 
 Section realFieldType.
 Variable (R : realFieldType).
+#[export]
+HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
+#[export]
+HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
 #[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End realFieldType.
@@ -743,16 +759,24 @@ End realFieldType.
 Section numClosedFieldType.
 Variable (R : numClosedFieldType).
 #[export]
+HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
+#[export]
+HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
+#[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End numClosedFieldType.
 
 Section numFieldType.
 Variable (R : numFieldType).
 #[export]
+HB.instance Definition _ := GRing.ComAlgebra.copy R [the comAlgType R of R^o].
+#[export]
+HB.instance Definition _ := Vector.copy R [the vectType R of R^o].
+#[export]
 HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End numFieldType.
 
-Module Exports. HB.reexport. End Exports.
+Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.
 
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
