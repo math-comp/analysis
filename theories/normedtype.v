@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
 From mathcomp.classical Require Import boolp classical_sets functions.
@@ -112,13 +113,18 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Print nbhs_ball_.
+
+(* TODO_HB: used only in Rstruct.v
 Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
 
 Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
   : filteredType R := Filtered.Pack (Filtered.Class
     (@Pointed.class (pointed_of_zmodule R))
     (nbhs_ball_ (ball_ (fun x => `|x|)))).
+*)
 
+(* TODO_HB: isn't this section redudnat with the one with the same name in topology.v? *)
 Section pseudoMetric_of_normedDomain.
 Variables (K : numDomainType) (R : normedZmodType K).
 Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ normr x e x.
@@ -132,9 +138,11 @@ Proof.
 move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA.
 by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
 Qed.
+(* TODO_HB: used only in Rstruct.v
 Definition pseudoMetric_of_normedDomain
   : PseudoMetric.mixin_of K (@entourage_ K R R (ball_ (fun x => `|x|)))
   := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+*)
 
 Lemma nbhs_ball_normE :
   @nbhs_ball_ K R R (ball_ normr) = nbhs_ (entourage_ (ball_ normr)).
@@ -182,125 +190,15 @@ move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
 by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
 Qed.
 
-Module PseudoMetricNormedZmodule.
-Section ClassDef.
-Variable R : numDomainType.
-Record mixin_of (T : normedZmodType R) (ent : set (set (T * T)))
-    (m : PseudoMetric.mixin_of R ent) := Mixin {
-  _ : PseudoMetric.ball m = ball_ (fun x => `| x |) }.
-
-Record class_of (T : Type) := Class {
-  base : Num.NormedZmodule.class_of R T;
-  pointed_mixin : Pointed.point_of T ;
-  nbhs_mixin : Filtered.nbhs_of T T ;
-  topological_mixin : @Topological.mixin_of T nbhs_mixin ;
-  uniform_mixin : @Uniform.mixin_of T nbhs_mixin ;
-  pseudoMetric_mixin :
-    @PseudoMetric.mixin_of R T (Uniform.entourage uniform_mixin) ;
-  mixin : @mixin_of (Num.NormedZmodule.Pack _ base) _ pseudoMetric_mixin
+HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
+    of Num.NormedZmodule R T & PseudoMetric R T := {
+  pseudo_metric_ball_norm : (@ball R T) = ball_ (fun x => `| x |)
 }.
-Local Coercion base : class_of >-> Num.NormedZmodule.class_of.
-Definition base2 T c := @PseudoMetric.Class _ _
-    (@Uniform.Class _
-      (@Topological.Class _
-        (Filtered.Class
-         (Pointed.Class (@base T c) (pointed_mixin c))
-         (nbhs_mixin c))
-        (topological_mixin c))
-      (uniform_mixin c))
-    (pseudoMetric_mixin c).
-Local Coercion base2 : class_of >-> PseudoMetric.class_of.
-(* TODO: base3? *)
 
-Structure type (phR : phant R) :=
-  Pack { sort; _ : class_of sort }.
-Local Coercion sort : type >-> Sortclass.
-
-Variables (phR : phant R) (T : Type) (cT : type phR).
-
-Definition class := let: Pack _ c := cT return class_of cT in c.
-Definition clone c of phant_id class c := @Pack phR T c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of xT).
-Definition pack (b0 : Num.NormedZmodule.class_of R T) lm0 um0
-  (m0 : @mixin_of (@Num.NormedZmodule.Pack R (Phant R) T b0) lm0 um0) :=
-  fun bT (b : Num.NormedZmodule.class_of R T)
-      & phant_id (@Num.NormedZmodule.class R (Phant R) bT) b =>
-  fun uT (u : PseudoMetric.class_of R T) & phant_id (@PseudoMetric.class R uT) u =>
-  fun (m : @mixin_of (Num.NormedZmodule.Pack _ b) _ u) & phant_id m m0 =>
-  @Pack phR T (@Class T b u u u u u m).
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition normedZmodType := @Num.NormedZmodule.Pack R phR cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass.
-Definition filteredType := @Filtered.Pack cT cT xclass.
-Definition topologicalType := @Topological.Pack cT xclass.
-Definition uniformType := @Uniform.Pack cT xclass.
-Definition pseudoMetricType := @PseudoMetric.Pack R cT xclass.
-Definition pointed_zmodType := @GRing.Zmodule.Pack pointedType xclass.
-Definition filtered_zmodType := @GRing.Zmodule.Pack filteredType xclass.
-Definition topological_zmodType := @GRing.Zmodule.Pack topologicalType xclass.
-Definition uniform_zmodType := @GRing.Zmodule.Pack uniformType xclass.
-Definition pseudoMetric_zmodType := @GRing.Zmodule.Pack pseudoMetricType xclass.
-Definition pointed_normedZmodType := @Num.NormedZmodule.Pack R phR pointedType xclass.
-Definition filtered_normedZmodType := @Num.NormedZmodule.Pack R phR filteredType xclass.
-Definition topological_normedZmodType := @Num.NormedZmodule.Pack R phR topologicalType xclass.
-Definition uniform_normedZmodType := @Num.NormedZmodule.Pack R phR uniformType xclass.
-Definition pseudoMetric_normedZmodType := @Num.NormedZmodule.Pack R phR pseudoMetricType xclass.
-
-End ClassDef.
-
-(*Definition numDomain_normedDomainType (R : numDomainType) : type (Phant R) :=
-  Pack (Phant R) (@Class R _ _ (NumDomain.normed_mixin (NumDomain.class R))).*)
-
-Module Exports.
-Coercion base : class_of >-> Num.NormedZmodule.class_of.
-Coercion base2 : class_of >-> PseudoMetric.class_of.
-Coercion sort : type >-> Sortclass.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion zmodType : type >-> GRing.Zmodule.type.
-Canonical zmodType.
-Coercion normedZmodType : type >-> Num.NormedZmodule.type.
-Canonical normedZmodType.
-Coercion pointedType : type >-> Pointed.type.
-Canonical pointedType.
-Coercion filteredType : type >-> Filtered.type.
-Canonical filteredType.
-Coercion topologicalType : type >-> Topological.type.
-Canonical topologicalType.
-Coercion uniformType : type >-> Uniform.type.
-Canonical uniformType.
-Coercion pseudoMetricType : type >-> PseudoMetric.type.
-Canonical pseudoMetricType.
-Canonical pointed_zmodType.
-Canonical filtered_zmodType.
-Canonical topological_zmodType.
-Canonical uniform_zmodType.
-Canonical pseudoMetric_zmodType.
-Canonical pointed_normedZmodType.
-Canonical filtered_normedZmodType.
-Canonical topological_normedZmodType.
-Canonical uniform_normedZmodType.
-Canonical pseudoMetric_normedZmodType.
-Notation pseudoMetricNormedZmodType R := (type (Phant R)).
-Notation PseudoMetricNormedZmodType R T m :=
-  (@pack _ (Phant R) T _ _ _ m _ _ idfun _ _ idfun _ idfun).
-Notation "[ 'pseudoMetricNormedZmodType' R 'of' T 'for' cT ]" :=
-  (@clone _ (Phant R) T cT _ idfun)
-  (at level 0, format "[ 'pseudoMetricNormedZmodType'  R  'of'  T  'for'  cT ]") :
-  form_scope.
-Notation "[ 'pseudoMetricNormedZmodType' R 'of' T ]" :=
-  (@clone _ (Phant R) T _ _ idfun)
-  (at level 0, format "[ 'pseudoMetricNormedZmodType'  R  'of'  T ]") : form_scope.
-End Exports.
-
-End PseudoMetricNormedZmodule.
-Export PseudoMetricNormedZmodule.Exports.
+#[short(type="pseudoMetricNormedZmodType")]
+HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
+  {T of Num.NormedZmodule R T & PseudoMetric R T
+   & NormedZmod_PseudoMetric_eq R T}.
 
 Section pseudoMetricnormedzmodule_lemmas.
 Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
@@ -308,7 +206,11 @@ Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
 Local Notation ball_norm := (ball_ (@normr K V)).
 
 Lemma ball_normE : ball_norm = ball.
-Proof. by case: V => ? [? ? ? ? ? ? []]. Qed.
+Proof.
+Admitted.
+(* TODO_HB
+ by case: V => ? [? ? ? ? ? ? []]. Qed.
+*)
 
 End pseudoMetricnormedzmodule_lemmas.
 
@@ -390,7 +292,6 @@ Notation "-oo" := (ninfty_nbhs _) : ring_scope.
 
 Section infty_nbhs_instances.
 Context {R : numFieldType}.
-Let R_topologicalType := [topologicalType of R].
 Implicit Types r : R.
 
 Global Instance proper_pinfty_nbhs : ProperFilter (pinfty_nbhs R).
@@ -792,775 +693,66 @@ Proof. by rewrite cvgeryP cvgrnyP. Qed.
 
 (** ** Modules with a norm *)
 
-Module NormedModule.
-
-Record mixin_of (K : numDomainType)
-  (V : pseudoMetricNormedZmodType K) (scale : K -> V -> V) := Mixin {
-  _ : forall (l : K) (x : V), `| scale l x | = `| l | * `| x |;
+HB.mixin Record PseudoMetricNormedZmod_Lmodule_IsNormedModule K V
+    of PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
+  normmZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
-Section ClassDef.
-
-Variable K : numDomainType.
-
-Record class_of (T : Type) := Class {
-  base : PseudoMetricNormedZmodule.class_of K T ;
-  lmodmixin : GRing.Lmodule.mixin_of K (GRing.Zmodule.Pack base) ;
-  mixin : @mixin_of K (PseudoMetricNormedZmodule.Pack (Phant K) base)
-                      (GRing.Lmodule.scale lmodmixin)
-}.
-Local Coercion base : class_of >-> PseudoMetricNormedZmodule.class_of.
-Local Coercion base2 T (c : class_of T) : GRing.Lmodule.class_of K T :=
-  @GRing.Lmodule.Class K T (base c) (lmodmixin c).
-Local Coercion mixin : class_of >-> mixin_of.
-
-Structure type (phK : phant K) :=
-  Pack { sort; _ : class_of sort }.
-Local Coercion sort : type >-> Sortclass.
-
-Variables (phK : phant K) (T : Type) (cT : type phK).
-
-Definition class := let: Pack _ c := cT return class_of cT in c.
-Definition clone c of phant_id class c := @Pack phK T c.
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of xT).
-
-Definition pack b0 l0
-                (m0 : @mixin_of K (@PseudoMetricNormedZmodule.Pack K (Phant K) T b0)
-                                (GRing.Lmodule.scale l0)) :=
-  fun bT b & phant_id (@PseudoMetricNormedZmodule.class K (Phant K) bT) b =>
-  fun l & phant_id l0 l =>
-  fun m & phant_id m0 m => Pack phK (@Class T b l m).
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition normedZmodType := @Num.NormedZmodule.Pack K phK cT xclass.
-Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass.
-Definition filteredType := @Filtered.Pack cT cT xclass.
-Definition topologicalType := @Topological.Pack cT xclass.
-Definition uniformType := @Uniform.Pack cT xclass.
-Definition pseudoMetricType := @PseudoMetric.Pack K cT xclass.
-Definition pseudoMetricNormedZmodType := @PseudoMetricNormedZmodule.Pack K phK cT xclass.
-Definition pointed_lmodType := @GRing.Lmodule.Pack K phK pointedType xclass.
-Definition filtered_lmodType := @GRing.Lmodule.Pack K phK filteredType xclass.
-Definition topological_lmodType := @GRing.Lmodule.Pack K phK topologicalType xclass.
-Definition uniform_lmodType := @GRing.Lmodule.Pack K phK uniformType xclass.
-Definition pseudoMetric_lmodType := @GRing.Lmodule.Pack K phK pseudoMetricType xclass.
-Definition normedZmod_lmodType := @GRing.Lmodule.Pack K phK normedZmodType xclass.
-Definition pseudoMetricNormedZmod_lmodType := @GRing.Lmodule.Pack K phK pseudoMetricNormedZmodType xclass.
-End ClassDef.
-
-Module Exports.
-
-Coercion base : class_of >-> PseudoMetricNormedZmodule.class_of.
-Coercion base2 : class_of >-> GRing.Lmodule.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion sort : type >-> Sortclass.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion zmodType : type >-> GRing.Zmodule.type.
-Canonical zmodType.
-Coercion normedZmodType : type >-> Num.NormedZmodule.type.
-Canonical normedZmodType.
-Coercion lmodType : type >-> GRing.Lmodule.type.
-Canonical lmodType.
-Coercion pointedType : type >-> Pointed.type.
-Canonical pointedType.
-Coercion filteredType : type >-> Filtered.type.
-Canonical filteredType.
-Coercion topologicalType : type >-> Topological.type.
-Canonical topologicalType.
-Coercion uniformType : type >-> Uniform.type.
-Canonical uniformType.
-Coercion pseudoMetricType : type >-> PseudoMetric.type.
-Canonical pseudoMetricType.
-Coercion pseudoMetricNormedZmodType : type >-> PseudoMetricNormedZmodule.type.
-Canonical pseudoMetricNormedZmodType.
-Canonical pointed_lmodType.
-Canonical filtered_lmodType.
-Canonical topological_lmodType.
-Canonical uniform_lmodType.
-Canonical pseudoMetric_lmodType.
-Canonical normedZmod_lmodType.
-Canonical pseudoMetricNormedZmod_lmodType.
-Notation normedModType K := (type (Phant K)).
-Notation NormedModType K T m := (@pack _ (Phant K) T _ _ m _ _ idfun _ idfun _ idfun).
-Notation NormedModMixin := Mixin.
-Notation "[ 'normedModType' K 'of' T 'for' cT ]" := (@clone _ (Phant K) T cT _ idfun)
-  (at level 0, format "[ 'normedModType'  K  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'normedModType' K 'of' T ]" := (@clone _ (Phant K) T _ _ id)
-  (at level 0, format "[ 'normedModType'  K  'of'  T ]") : form_scope.
-End Exports.
-
-End NormedModule.
-
-Export NormedModule.Exports.
-
-Module regular_topology.
+#[short(type="normedModType")]
+HB.structure Definition NormedModule (K : numDomainType) :=
+  {T of PseudoMetricNormedZmod K T & GRing.Lmodule K T
+   & PseudoMetricNormedZmod_Lmodule_IsNormedModule K T}.
 
 Section regular_topology.
-Local Canonical pseudoMetricNormedZmodType (R : numFieldType) :=
-  @PseudoMetricNormedZmodType
-    R R^o
-    (PseudoMetricNormedZmodule.Mixin (erefl : @ball _ R = ball_ Num.norm)).
-Local Canonical normedModType (R : numFieldType) :=
-  NormedModType R R^o (@NormedModMixin _ _ ( *:%R : R -> R^o -> _) (@normrM _)).
-End regular_topology.
 
-Module Exports.
-Canonical pseudoMetricNormedZmodType.
-Canonical normedModType.
-End Exports.
+Variable R : numFieldType.
+
+HB.instance Definition _ := Num.NormedZmodule.copy R^o _.
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
+HB.instance Definition _ :=
+  PseudoMetricNormedZmod_Lmodule_IsNormedModule.Build R R^o (@normrM _).
 
 End regular_topology.
-Export regular_topology.Exports.
 
 Module numFieldNormedType.
 
 Section realType.
 Variable (R : realType).
-Local Canonical real_lmodType := [lmodType R of R for [lmodType R of R^o]].
-Local Canonical real_lalgType := [lalgType R of R for [lalgType R of R^o]].
-Local Canonical real_algType := [algType R of R for [algType R of R^o]].
-Local Canonical real_comAlgType := [comAlgType R of R].
-Local Canonical real_unitAlgType := [unitAlgType R of R].
-Local Canonical real_comUnitAlgType := [comUnitAlgType R of R].
-Local Canonical real_vectType := [vectType R of R for [vectType R of R^o]].
-Local Canonical real_FalgType := [FalgType R of R].
-Local Canonical real_fieldExtType :=
-  [fieldExtType R of R for [fieldExtType R of R^o]].
-Local Canonical real_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of R for [pseudoMetricNormedZmodType R of R^o]].
-Local Canonical real_normedModType :=
-  [normedModType R of R for [normedModType R of R^o]].
+#[export]
+HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End realType.
 
 Section rcfType.
 Variable (R : rcfType).
-Local Canonical rcf_lmodType := [lmodType R of R for [lmodType R of R^o]].
-Local Canonical rcf_lalgType := [lalgType R of R for [lalgType R of R^o]].
-Local Canonical rcf_algType := [algType R of R for [algType R of R^o]].
-Local Canonical rcf_comAlgType := [comAlgType R of R].
-Local Canonical rcf_unitAlgType := [unitAlgType R of R].
-Local Canonical rcf_comUnitAlgType := [comUnitAlgType R of R].
-Local Canonical rcf_vectType := [vectType R of R for [vectType R of R^o]].
-Local Canonical rcf_FalgType := [FalgType R of R].
-Local Canonical rcf_fieldExtType :=
-  [fieldExtType R of R for [fieldExtType R of R^o]].
-Local Canonical rcf_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of R for [pseudoMetricNormedZmodType R of R^o]].
-Local Canonical rcf_normedModType :=
-  [normedModType R of R for [normedModType R of R^o]].
+#[export]
+HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End rcfType.
 
 Section archiFieldType.
 Variable (R : archiFieldType).
-Local Canonical archiField_lmodType :=
-  [lmodType R of R for [lmodType R of R^o]].
-Local Canonical archiField_lalgType :=
-  [lalgType R of R for [lalgType R of R^o]].
-Local Canonical archiField_algType := [algType R of R for [algType R of R^o]].
-Local Canonical archiField_comAlgType := [comAlgType R of R].
-Local Canonical archiField_unitAlgType := [unitAlgType R of R].
-Local Canonical archiField_comUnitAlgType := [comUnitAlgType R of R].
-Local Canonical archiField_vectType :=
-  [vectType R of R for [vectType R of R^o]].
-Local Canonical archiField_FalgType := [FalgType R of R].
-Local Canonical archiField_fieldExtType :=
-  [fieldExtType R of R for [fieldExtType R of R^o]].
-Local Canonical archiField_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of R for [pseudoMetricNormedZmodType R of R^o]].
-Local Canonical archiField_normedModType :=
-  [normedModType R of R for [normedModType R of R^o]].
+#[export]
+HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End archiFieldType.
 
 Section realFieldType.
 Variable (R : realFieldType).
-Local Canonical realField_lmodType := [lmodType R of R for [lmodType R of R^o]].
-Local Canonical realField_lalgType := [lalgType R of R for [lalgType R of R^o]].
-Local Canonical realField_algType := [algType R of R for [algType R of R^o]].
-Local Canonical realField_comAlgType := [comAlgType R of R].
-Local Canonical realField_unitAlgType := [unitAlgType R of R].
-Local Canonical realField_comUnitAlgType := [comUnitAlgType R of R].
-Local Canonical realField_vectType := [vectType R of R for [vectType R of R^o]].
-Local Canonical realField_FalgType := [FalgType R of R].
-Local Canonical realField_fieldExtType :=
-  [fieldExtType R of R for [fieldExtType R of R^o]].
-Local Canonical realField_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of R for [pseudoMetricNormedZmodType R of R^o]].
-Local Canonical realField_normedModType :=
-  [normedModType R of R for [normedModType R of R^o]].
-Definition lmod_latticeType := [latticeType of realField_lmodType].
-Definition lmod_distrLatticeType := [distrLatticeType of realField_lmodType].
-Definition lmod_orderType := [orderType of realField_lmodType].
-Definition lmod_realDomainType := [realDomainType of realField_lmodType].
-Definition lalg_latticeType := [latticeType of realField_lalgType].
-Definition lalg_distrLatticeType := [distrLatticeType of realField_lalgType].
-Definition lalg_orderType := [orderType of realField_lalgType].
-Definition lalg_realDomainType := [realDomainType of realField_lalgType].
-Definition alg_latticeType := [latticeType of realField_algType].
-Definition alg_distrLatticeType := [distrLatticeType of realField_algType].
-Definition alg_orderType := [orderType of realField_algType].
-Definition alg_realDomainType := [realDomainType of realField_algType].
-Definition comAlg_latticeType := [latticeType of realField_comAlgType].
-Definition comAlg_distrLatticeType :=
-  [distrLatticeType of realField_comAlgType].
-Definition comAlg_orderType := [orderType of realField_comAlgType].
-Definition comAlg_realDomainType := [realDomainType of realField_comAlgType].
-Definition unitAlg_latticeType := [latticeType of realField_unitAlgType].
-Definition unitAlg_distrLatticeType :=
-  [distrLatticeType of realField_unitAlgType].
-Definition unitAlg_orderType := [orderType of realField_unitAlgType].
-Definition unitAlg_realDomainType := [realDomainType of realField_unitAlgType].
-Definition comUnitAlg_latticeType := [latticeType of realField_comUnitAlgType].
-Definition comUnitAlg_distrLatticeType :=
-  [distrLatticeType of realField_comUnitAlgType].
-Definition comUnitAlg_orderType := [orderType of realField_comUnitAlgType].
-Definition comUnitAlg_realDomainType :=
-  [realDomainType of realField_comUnitAlgType].
-Definition vect_latticeType := [latticeType of realField_vectType].
-Definition vect_distrLatticeType := [distrLatticeType of realField_vectType].
-Definition vect_orderType := [orderType of realField_vectType].
-Definition vect_realDomainType := [realDomainType of realField_vectType].
-Definition Falg_latticeType := [latticeType of realField_FalgType].
-Definition Falg_distrLatticeType := [distrLatticeType of realField_FalgType].
-Definition Falg_orderType := [orderType of realField_FalgType].
-Definition Falg_realDomainType := [realDomainType of realField_FalgType].
-Definition fieldExt_latticeType := [latticeType of realField_fieldExtType].
-Definition fieldExt_distrLatticeType :=
-  [distrLatticeType of realField_fieldExtType].
-Definition fieldExt_orderType := [orderType of realField_fieldExtType].
-Definition fieldExt_realDomainType :=
-  [realDomainType of realField_fieldExtType].
-Definition pseudoMetricNormedZmod_latticeType :=
-  [latticeType of realField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_distrLatticeType :=
-  [distrLatticeType of realField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_orderType :=
-  [orderType of realField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_realDomainType :=
-  [realDomainType of realField_pseudoMetricNormedZmodType].
-Definition normedMod_latticeType := [latticeType of realField_normedModType].
-Definition normedMod_distrLatticeType :=
-  [distrLatticeType of realField_normedModType].
-Definition normedMod_orderType := [orderType of realField_normedModType].
-Definition normedMod_realDomainType :=
-  [realDomainType of realField_normedModType].
+#[export]
+HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End realFieldType.
 
 Section numClosedFieldType.
 Variable (R : numClosedFieldType).
-Local Canonical numClosedField_lmodType :=
-  [lmodType R of R for [lmodType R of R^o]].
-Local Canonical numClosedField_lalgType :=
-  [lalgType R of R for [lalgType R of R^o]].
-Local Canonical numClosedField_algType :=
-  [algType R of R for [algType R of R^o]].
-Local Canonical numClosedField_comAlgType := [comAlgType R of R].
-Local Canonical numClosedField_unitAlgType := [unitAlgType R of R].
-Local Canonical numClosedField_comUnitAlgType := [comUnitAlgType R of R].
-Local Canonical numClosedField_vectType :=
-  [vectType R of R for [vectType R of R^o]].
-Local Canonical numClosedField_FalgType := [FalgType R of R].
-Local Canonical numClosedField_fieldExtType :=
-  [fieldExtType R of R for [fieldExtType R of R^o]].
-Local Canonical numClosedField_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of R for [pseudoMetricNormedZmodType R of R^o]].
-Local Canonical numClosedField_normedModType :=
-  [normedModType R of R for [normedModType R of R^o]].
-Definition lmod_decFieldType := [decFieldType of numClosedField_lmodType].
-Definition lmod_closedFieldType := [closedFieldType of numClosedField_lmodType].
-Definition lalg_decFieldType := [decFieldType of numClosedField_lalgType].
-Definition lalg_closedFieldType := [closedFieldType of numClosedField_lalgType].
-Definition alg_decFieldType := [decFieldType of numClosedField_algType].
-Definition alg_closedFieldType := [closedFieldType of numClosedField_algType].
-Definition comAlg_decFieldType := [decFieldType of numClosedField_comAlgType].
-Definition comAlg_closedFieldType :=
-  [closedFieldType of numClosedField_comAlgType].
-Definition unitAlg_decFieldType := [decFieldType of numClosedField_unitAlgType].
-Definition unitAlg_closedFieldType :=
-  [closedFieldType of numClosedField_unitAlgType].
-Definition comUnitAlg_decFieldType :=
-  [decFieldType of numClosedField_comUnitAlgType].
-Definition comUnitAlg_closedFieldType :=
-  [closedFieldType of numClosedField_comUnitAlgType].
-Definition vect_decFieldType := [decFieldType of numClosedField_vectType].
-Definition vect_closedFieldType := [closedFieldType of numClosedField_vectType].
-Definition Falg_decFieldType := [decFieldType of numClosedField_FalgType].
-Definition Falg_closedFieldType := [closedFieldType of numClosedField_FalgType].
-Definition fieldExt_decFieldType :=
-  [decFieldType of numClosedField_fieldExtType].
-Definition fieldExt_closedFieldType :=
-  [closedFieldType of numClosedField_fieldExtType].
-Definition pseudoMetricNormedZmod_decFieldType :=
-  [decFieldType of numClosedField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_closedFieldType :=
-  [closedFieldType of numClosedField_pseudoMetricNormedZmodType].
-Definition normedMod_decFieldType :=
-  [decFieldType of numClosedField_normedModType].
-Definition normedMod_closedFieldType :=
-  [closedFieldType of numClosedField_normedModType].
+#[export]
+HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End numClosedFieldType.
 
 Section numFieldType.
 Variable (R : numFieldType).
-Local Canonical numField_lmodType := [lmodType R of R for [lmodType R of R^o]].
-Local Canonical numField_lalgType := [lalgType R of R for [lalgType R of R^o]].
-Local Canonical numField_algType := [algType R of R for [algType R of R^o]].
-Local Canonical numField_comAlgType := [comAlgType R of R].
-Local Canonical numField_unitAlgType := [unitAlgType R of R].
-Local Canonical numField_comUnitAlgType := [comUnitAlgType R of R].
-Local Canonical numField_vectType := [vectType R of R for [vectType R of R^o]].
-Local Canonical numField_FalgType := [FalgType R of R].
-Local Canonical numField_fieldExtType :=
-  [fieldExtType R of R for [fieldExtType R of R^o]].
-Local Canonical numField_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of R for [pseudoMetricNormedZmodType R of R^o]].
-Local Canonical numField_normedModType :=
-  [normedModType R of R for [normedModType R of R^o]].
-Definition lmod_porderType := [porderType of numField_lmodType].
-Definition lmod_numDomainType := [numDomainType of numField_lmodType].
-Definition lalg_pointedType := [pointedType of numField_lalgType].
-Definition lalg_filteredType := [filteredType R of numField_lalgType].
-Definition lalg_topologicalType := [topologicalType of numField_lalgType].
-Definition lalg_uniformType := [uniformType of numField_lalgType].
-Definition lalg_pseudoMetricType := [pseudoMetricType R of numField_lalgType].
-Definition lalg_normedZmodType := [normedZmodType R of numField_lalgType].
-Definition lalg_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of numField_lalgType].
-Definition lalg_normedModType := [normedModType R of numField_lalgType].
-Definition lalg_porderType := [porderType of numField_lalgType].
-Definition lalg_numDomainType := [numDomainType of numField_lalgType].
-Definition alg_pointedType := [pointedType of numField_algType].
-Definition alg_filteredType := [filteredType R of numField_algType].
-Definition alg_topologicalType := [topologicalType of numField_algType].
-Definition alg_uniformType := [uniformType of numField_algType].
-Definition alg_pseudoMetricType := [pseudoMetricType R of numField_algType].
-Definition alg_normedZmodType := [normedZmodType R of numField_algType].
-Definition alg_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of numField_algType].
-Definition alg_normedModType := [normedModType R of numField_algType].
-Definition alg_porderType := [porderType of numField_algType].
-Definition alg_numDomainType := [numDomainType of numField_algType].
-Definition comAlg_pointedType := [pointedType of numField_comAlgType].
-Definition comAlg_filteredType := [filteredType R of numField_comAlgType].
-Definition comAlg_topologicalType := [topologicalType of numField_comAlgType].
-Definition comAlg_uniformType := [uniformType of numField_comAlgType].
-Definition comAlg_pseudoMetricType :=
-  [pseudoMetricType R of numField_comAlgType].
-Definition comAlg_normedZmodType := [normedZmodType R of numField_comAlgType].
-Definition comAlg_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of numField_comAlgType].
-Definition comAlg_normedModType := [normedModType R of numField_comAlgType].
-Definition comAlg_porderType := [porderType of numField_comAlgType].
-Definition comAlg_numDomainType := [numDomainType of numField_comAlgType].
-Definition unitAlg_pointedType := [pointedType of numField_unitAlgType].
-Definition unitAlg_filteredType := [filteredType R of numField_unitAlgType].
-Definition unitAlg_topologicalType := [topologicalType of numField_unitAlgType].
-Definition unitAlg_uniformType := [uniformType of numField_unitAlgType].
-Definition unitAlg_pseudoMetricType :=
-  [pseudoMetricType R of numField_unitAlgType].
-Definition unitAlg_normedZmodType := [normedZmodType R of numField_unitAlgType].
-Definition unitAlg_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of numField_unitAlgType].
-Definition unitAlg_normedModType := [normedModType R of numField_unitAlgType].
-Definition unitAlg_porderType := [porderType of numField_unitAlgType].
-Definition unitAlg_numDomainType := [numDomainType of numField_unitAlgType].
-Definition comUnitAlg_pointedType := [pointedType of numField_comUnitAlgType].
-Definition comUnitAlg_filteredType :=
-  [filteredType R of numField_comUnitAlgType].
-Definition comUnitAlg_topologicalType :=
-  [topologicalType of numField_comUnitAlgType].
-Definition comUnitAlg_uniformType := [uniformType of numField_comUnitAlgType].
-Definition comUnitAlg_pseudoMetricType :=
-  [pseudoMetricType R of numField_comUnitAlgType].
-Definition comUnitAlg_normedZmodType :=
-  [normedZmodType R of numField_comUnitAlgType].
-Definition comUnitAlg_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of numField_comUnitAlgType].
-Definition comUnitAlg_normedModType :=
-  [normedModType R of numField_comUnitAlgType].
-Definition comUnitAlg_porderType := [porderType of numField_comUnitAlgType].
-Definition comUnitAlg_numDomainType :=
-  [numDomainType of numField_comUnitAlgType].
-Definition vect_pointedType := [pointedType of numField_vectType].
-Definition vect_filteredType := [filteredType R of numField_vectType].
-Definition vect_topologicalType := [topologicalType of numField_vectType].
-Definition vect_uniformType := [uniformType of numField_vectType].
-Definition vect_pseudoMetricType := [pseudoMetricType R of numField_vectType].
-Definition vect_normedZmodType := [normedZmodType R of numField_vectType].
-Definition vect_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of numField_vectType].
-Definition vect_normedModType := [normedModType R of numField_vectType].
-Definition vect_porderType := [porderType of numField_vectType].
-Definition vect_numDomainType := [numDomainType of numField_vectType].
-Definition Falg_pointedType := [pointedType of numField_FalgType].
-Definition Falg_filteredType := [filteredType R of numField_FalgType].
-Definition Falg_topologicalType := [topologicalType of numField_FalgType].
-Definition Falg_uniformType := [uniformType of numField_FalgType].
-Definition Falg_pseudoMetricType := [pseudoMetricType R of numField_FalgType].
-Definition Falg_normedZmodType := [normedZmodType R of numField_FalgType].
-Definition Falg_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of numField_FalgType].
-Definition Falg_normedModType := [normedModType R of numField_FalgType].
-Definition Falg_porderType := [porderType of numField_FalgType].
-Definition Falg_numDomainType := [numDomainType of numField_FalgType].
-Definition fieldExt_pointedType := [pointedType of numField_fieldExtType].
-Definition fieldExt_filteredType := [filteredType R of numField_fieldExtType].
-Definition fieldExt_topologicalType :=
-  [topologicalType of numField_fieldExtType].
-Definition fieldExt_uniformType := [uniformType of numField_fieldExtType].
-Definition fieldExt_pseudoMetricType :=
-  [pseudoMetricType R of numField_fieldExtType].
-Definition fieldExt_normedZmodType :=
-  [normedZmodType R of numField_fieldExtType].
-Definition fieldExt_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType R of numField_fieldExtType].
-Definition fieldExt_normedModType := [normedModType R of numField_fieldExtType].
-Definition fieldExt_porderType := [porderType of numField_fieldExtType].
-Definition fieldExt_numDomainType := [numDomainType of numField_fieldExtType].
-Definition pseudoMetricNormedZmod_ringType :=
-  [ringType of numField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_comRingType :=
-  [comRingType of numField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_unitRingType :=
-  [unitRingType of numField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_comUnitRingType :=
-  [comUnitRingType of numField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_idomainType :=
-  [idomainType of numField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_fieldType :=
-  [fieldType of numField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_porderType :=
-  [porderType of numField_pseudoMetricNormedZmodType].
-Definition pseudoMetricNormedZmod_numDomainType :=
-  [numDomainType of numField_pseudoMetricNormedZmodType].
-Definition normedMod_ringType := [ringType of numField_normedModType].
-Definition normedMod_comRingType := [comRingType of numField_normedModType].
-Definition normedMod_unitRingType := [unitRingType of numField_normedModType].
-Definition normedMod_comUnitRingType :=
-  [comUnitRingType of numField_normedModType].
-Definition normedMod_idomainType := [idomainType of numField_normedModType].
-Definition normedMod_fieldType := [fieldType of numField_normedModType].
-Definition normedMod_porderType := [porderType of numField_normedModType].
-Definition normedMod_numDomainType := [numDomainType of numField_normedModType].
+#[export]
+HB.instance Definition _ := NormedModule.copy R [the normedModType R of R^o].
 End numFieldType.
 
-Module Exports.
-Export topology.numFieldTopology.Exports.
-(* realType *)
-Canonical real_lmodType.
-Canonical real_lalgType.
-Canonical real_algType.
-Canonical real_comAlgType.
-Canonical real_unitAlgType.
-Canonical real_comUnitAlgType.
-Canonical real_vectType.
-Canonical real_FalgType.
-Canonical real_fieldExtType.
-Canonical real_pseudoMetricNormedZmodType.
-Canonical real_normedModType.
-Coercion real_lmodType : realType >-> lmodType.
-Coercion real_lalgType : realType >-> lalgType.
-Coercion real_algType : realType >-> algType.
-Coercion real_comAlgType : realType >-> comAlgType.
-Coercion real_unitAlgType : realType >-> unitAlgType.
-Coercion real_comUnitAlgType : realType >-> comUnitAlgType.
-Coercion real_vectType : realType >-> vectType.
-Coercion real_FalgType : realType >-> FalgType.
-Coercion real_fieldExtType : realType >-> fieldExtType.
-Coercion real_pseudoMetricNormedZmodType :
-  realType >-> pseudoMetricNormedZmodType.
-Coercion real_normedModType : realType >-> normedModType.
-(* rcfType *)
-Canonical rcf_lmodType.
-Canonical rcf_lalgType.
-Canonical rcf_algType.
-Canonical rcf_comAlgType.
-Canonical rcf_unitAlgType.
-Canonical rcf_comUnitAlgType.
-Canonical rcf_vectType.
-Canonical rcf_FalgType.
-Canonical rcf_fieldExtType.
-Canonical rcf_pseudoMetricNormedZmodType.
-Canonical rcf_normedModType.
-Coercion rcf_lmodType : rcfType >-> lmodType.
-Coercion rcf_lalgType : rcfType >-> lalgType.
-Coercion rcf_algType : rcfType >-> algType.
-Coercion rcf_comAlgType : rcfType >-> comAlgType.
-Coercion rcf_unitAlgType : rcfType >-> unitAlgType.
-Coercion rcf_comUnitAlgType : rcfType >-> comUnitAlgType.
-Coercion rcf_vectType : rcfType >-> vectType.
-Coercion rcf_FalgType : rcfType >-> FalgType.
-Coercion rcf_fieldExtType : rcfType >-> fieldExtType.
-Coercion rcf_pseudoMetricNormedZmodType :
-  rcfType >-> pseudoMetricNormedZmodType.
-Coercion rcf_normedModType : rcfType >-> normedModType.
-(* archiFieldType *)
-Canonical archiField_lmodType.
-Canonical archiField_lalgType.
-Canonical archiField_algType.
-Canonical archiField_comAlgType.
-Canonical archiField_unitAlgType.
-Canonical archiField_comUnitAlgType.
-Canonical archiField_vectType.
-Canonical archiField_FalgType.
-Canonical archiField_fieldExtType.
-Canonical archiField_pseudoMetricNormedZmodType.
-Canonical archiField_normedModType.
-Coercion archiField_lmodType : archiFieldType >-> lmodType.
-Coercion archiField_lalgType : archiFieldType >-> lalgType.
-Coercion archiField_algType : archiFieldType >-> algType.
-Coercion archiField_comAlgType : archiFieldType >-> comAlgType.
-Coercion archiField_unitAlgType : archiFieldType >-> unitAlgType.
-Coercion archiField_comUnitAlgType : archiFieldType >-> comUnitAlgType.
-Coercion archiField_vectType : archiFieldType >-> vectType.
-Coercion archiField_FalgType : archiFieldType >-> FalgType.
-Coercion archiField_fieldExtType : archiFieldType >-> fieldExtType.
-Coercion archiField_pseudoMetricNormedZmodType :
-  archiFieldType >-> pseudoMetricNormedZmodType.
-Coercion archiField_normedModType : archiFieldType >-> normedModType.
-(* realFieldType *)
-Canonical realField_lmodType.
-Canonical realField_lalgType.
-Canonical realField_algType.
-Canonical realField_comAlgType.
-Canonical realField_unitAlgType.
-Canonical realField_comUnitAlgType.
-Canonical realField_vectType.
-Canonical realField_FalgType.
-Canonical realField_fieldExtType.
-Canonical realField_pseudoMetricNormedZmodType.
-Canonical realField_normedModType.
-Canonical lmod_latticeType.
-Canonical lmod_distrLatticeType.
-Canonical lmod_orderType.
-Canonical lmod_realDomainType.
-Canonical lalg_latticeType.
-Canonical lalg_distrLatticeType.
-Canonical lalg_orderType.
-Canonical lalg_realDomainType.
-Canonical alg_latticeType.
-Canonical alg_distrLatticeType.
-Canonical alg_orderType.
-Canonical alg_realDomainType.
-Canonical comAlg_latticeType.
-Canonical comAlg_distrLatticeType.
-Canonical comAlg_orderType.
-Canonical comAlg_realDomainType.
-Canonical unitAlg_latticeType.
-Canonical unitAlg_distrLatticeType.
-Canonical unitAlg_orderType.
-Canonical unitAlg_realDomainType.
-Canonical comUnitAlg_latticeType.
-Canonical comUnitAlg_distrLatticeType.
-Canonical comUnitAlg_orderType.
-Canonical comUnitAlg_realDomainType.
-Canonical vect_latticeType.
-Canonical vect_distrLatticeType.
-Canonical vect_orderType.
-Canonical vect_realDomainType.
-Canonical Falg_latticeType.
-Canonical Falg_distrLatticeType.
-Canonical Falg_orderType.
-Canonical Falg_realDomainType.
-Canonical fieldExt_latticeType.
-Canonical fieldExt_distrLatticeType.
-Canonical fieldExt_orderType.
-Canonical fieldExt_realDomainType.
-Canonical pseudoMetricNormedZmod_latticeType.
-Canonical pseudoMetricNormedZmod_distrLatticeType.
-Canonical pseudoMetricNormedZmod_orderType.
-Canonical pseudoMetricNormedZmod_realDomainType.
-Canonical normedMod_latticeType.
-Canonical normedMod_distrLatticeType.
-Canonical normedMod_orderType.
-Canonical normedMod_realDomainType.
-Coercion realField_lmodType : realFieldType >-> lmodType.
-Coercion realField_lalgType : realFieldType >-> lalgType.
-Coercion realField_algType : realFieldType >-> algType.
-Coercion realField_comAlgType : realFieldType >-> comAlgType.
-Coercion realField_unitAlgType : realFieldType >-> unitAlgType.
-Coercion realField_comUnitAlgType : realFieldType >-> comUnitAlgType.
-Coercion realField_vectType : realFieldType >-> vectType.
-Coercion realField_FalgType : realFieldType >-> FalgType.
-Coercion realField_fieldExtType : realFieldType >-> fieldExtType.
-Coercion realField_pseudoMetricNormedZmodType :
-  Num.RealField.type >-> PseudoMetricNormedZmodule.type.
-Coercion realField_normedModType : Num.RealField.type >-> NormedModule.type.
-(* numClosedFieldType *)
-Canonical numClosedField_lmodType.
-Canonical numClosedField_lalgType.
-Canonical numClosedField_algType.
-Canonical numClosedField_comAlgType.
-Canonical numClosedField_unitAlgType.
-Canonical numClosedField_comUnitAlgType.
-Canonical numClosedField_vectType.
-Canonical numClosedField_FalgType.
-Canonical numClosedField_fieldExtType.
-Canonical numClosedField_pseudoMetricNormedZmodType.
-Canonical numClosedField_normedModType.
-Canonical lmod_decFieldType.
-Canonical lmod_closedFieldType.
-Canonical lalg_decFieldType.
-Canonical lalg_closedFieldType.
-Canonical alg_decFieldType.
-Canonical alg_closedFieldType.
-Canonical comAlg_decFieldType.
-Canonical comAlg_closedFieldType.
-Canonical unitAlg_decFieldType.
-Canonical unitAlg_closedFieldType.
-Canonical comUnitAlg_decFieldType.
-Canonical comUnitAlg_closedFieldType.
-Canonical vect_decFieldType.
-Canonical vect_closedFieldType.
-Canonical Falg_decFieldType.
-Canonical Falg_closedFieldType.
-Canonical fieldExt_decFieldType.
-Canonical fieldExt_closedFieldType.
-Canonical pseudoMetricNormedZmod_decFieldType.
-Canonical pseudoMetricNormedZmod_closedFieldType.
-Canonical normedMod_decFieldType.
-Canonical normedMod_closedFieldType.
-Coercion numClosedField_lmodType : numClosedFieldType >-> lmodType.
-Coercion numClosedField_lalgType : numClosedFieldType >-> lalgType.
-Coercion numClosedField_algType : numClosedFieldType >-> algType.
-Coercion numClosedField_comAlgType : numClosedFieldType >-> comAlgType.
-Coercion numClosedField_unitAlgType : numClosedFieldType >-> unitAlgType.
-Coercion numClosedField_comUnitAlgType : numClosedFieldType >-> comUnitAlgType.
-Coercion numClosedField_vectType : numClosedFieldType >-> vectType.
-Coercion numClosedField_FalgType : numClosedFieldType >-> FalgType.
-Coercion numClosedField_fieldExtType : numClosedFieldType >-> fieldExtType.
-Coercion numClosedField_pseudoMetricNormedZmodType :
-  numClosedFieldType >-> pseudoMetricNormedZmodType.
-Coercion numClosedField_normedModType : numClosedFieldType >-> normedModType.
-(* numFieldType *)
-Canonical numField_lmodType.
-Canonical numField_lalgType.
-Canonical numField_algType.
-Canonical numField_comAlgType.
-Canonical numField_unitAlgType.
-Canonical numField_comUnitAlgType.
-Canonical numField_vectType.
-Canonical numField_FalgType.
-Canonical numField_fieldExtType.
-Canonical numField_pseudoMetricNormedZmodType.
-Canonical numField_normedModType.
-Canonical lmod_porderType.
-Canonical lmod_numDomainType.
-Canonical lalg_pointedType.
-Canonical lalg_filteredType.
-Canonical lalg_topologicalType.
-Canonical lalg_uniformType.
-Canonical lalg_pseudoMetricType.
-Canonical lalg_normedZmodType.
-Canonical lalg_pseudoMetricNormedZmodType.
-Canonical lalg_normedModType.
-Canonical lalg_porderType.
-Canonical lalg_numDomainType.
-Canonical alg_pointedType.
-Canonical alg_filteredType.
-Canonical alg_topologicalType.
-Canonical alg_uniformType.
-Canonical alg_pseudoMetricType.
-Canonical alg_normedZmodType.
-Canonical alg_pseudoMetricNormedZmodType.
-Canonical alg_normedModType.
-Canonical alg_porderType.
-Canonical alg_numDomainType.
-Canonical comAlg_pointedType.
-Canonical comAlg_filteredType.
-Canonical comAlg_topologicalType.
-Canonical comAlg_uniformType.
-Canonical comAlg_pseudoMetricType.
-Canonical comAlg_normedZmodType.
-Canonical comAlg_pseudoMetricNormedZmodType.
-Canonical comAlg_normedModType.
-Canonical comAlg_porderType.
-Canonical comAlg_numDomainType.
-Canonical unitAlg_pointedType.
-Canonical unitAlg_filteredType.
-Canonical unitAlg_topologicalType.
-Canonical unitAlg_uniformType.
-Canonical unitAlg_pseudoMetricType.
-Canonical unitAlg_normedZmodType.
-Canonical unitAlg_pseudoMetricNormedZmodType.
-Canonical unitAlg_normedModType.
-Canonical unitAlg_porderType.
-Canonical unitAlg_numDomainType.
-Canonical comUnitAlg_pointedType.
-Canonical comUnitAlg_filteredType.
-Canonical comUnitAlg_topologicalType.
-Canonical comUnitAlg_uniformType.
-Canonical comUnitAlg_pseudoMetricType.
-Canonical comUnitAlg_normedZmodType.
-Canonical comUnitAlg_pseudoMetricNormedZmodType.
-Canonical comUnitAlg_normedModType.
-Canonical comUnitAlg_porderType.
-Canonical comUnitAlg_numDomainType.
-Canonical vect_pointedType.
-Canonical vect_filteredType.
-Canonical vect_topologicalType.
-Canonical vect_uniformType.
-Canonical vect_pseudoMetricType.
-Canonical vect_normedZmodType.
-Canonical vect_pseudoMetricNormedZmodType.
-Canonical vect_normedModType.
-Canonical vect_porderType.
-Canonical vect_numDomainType.
-Canonical Falg_pointedType.
-Canonical Falg_filteredType.
-Canonical Falg_topologicalType.
-Canonical Falg_uniformType.
-Canonical Falg_pseudoMetricType.
-Canonical Falg_normedZmodType.
-Canonical Falg_pseudoMetricNormedZmodType.
-Canonical Falg_normedModType.
-Canonical Falg_porderType.
-Canonical Falg_numDomainType.
-Canonical fieldExt_pointedType.
-Canonical fieldExt_filteredType.
-Canonical fieldExt_topologicalType.
-Canonical fieldExt_uniformType.
-Canonical fieldExt_pseudoMetricType.
-Canonical fieldExt_normedZmodType.
-Canonical fieldExt_pseudoMetricNormedZmodType.
-Canonical fieldExt_normedModType.
-Canonical fieldExt_porderType.
-Canonical fieldExt_numDomainType.
-Canonical pseudoMetricNormedZmod_ringType.
-Canonical pseudoMetricNormedZmod_comRingType.
-Canonical pseudoMetricNormedZmod_unitRingType.
-Canonical pseudoMetricNormedZmod_comUnitRingType.
-Canonical pseudoMetricNormedZmod_idomainType.
-Canonical pseudoMetricNormedZmod_fieldType.
-Canonical pseudoMetricNormedZmod_porderType.
-Canonical pseudoMetricNormedZmod_numDomainType.
-Canonical normedMod_ringType.
-Canonical normedMod_comRingType.
-Canonical normedMod_unitRingType.
-Canonical normedMod_comUnitRingType.
-Canonical normedMod_idomainType.
-Canonical normedMod_fieldType.
-Canonical normedMod_porderType.
-Canonical normedMod_numDomainType.
-Coercion numField_lmodType : numFieldType >-> lmodType.
-Coercion numField_lalgType : numFieldType >-> lalgType.
-Coercion numField_algType : numFieldType >-> algType.
-Coercion numField_comAlgType : numFieldType >-> comAlgType.
-Coercion numField_unitAlgType : numFieldType >-> unitAlgType.
-Coercion numField_comUnitAlgType : numFieldType >-> comUnitAlgType.
-Coercion numField_vectType : numFieldType >-> vectType.
-Coercion numField_FalgType : numFieldType >-> FalgType.
-Coercion numField_fieldExtType : numFieldType >-> fieldExtType.
-Coercion numField_pseudoMetricNormedZmodType :
-  numFieldType >-> pseudoMetricNormedZmodType.
-Coercion numField_normedModType : numFieldType >-> normedModType.
-End Exports.
+Module Exports. HB.reexport. End Exports.
 
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
@@ -2669,12 +1861,10 @@ elim/big_ind2 : _ => //= a a' b b' ->{a'} ->{b'}.
 by have [ab|ab] := leP a b; [rewrite max_r | rewrite max_l // ltW].
 Qed.
 
-Definition matrix_normedZmodMixin (K : numDomainType) (m n : nat) :=
-  @Num.NormedMixin _ _ _ (@mx_norm K m.+1 n.+1) (@ler_mx_norm_add _ _ _)
-    (@mx_norm_eq0 _ _ _) (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
-
-Canonical matrix_normedZmodType (K : numDomainType) (m n : nat) :=
-  NormedZmodType K 'M[K]_(m.+1, n.+1) (matrix_normedZmodMixin K m n).
+HB.instance Definition _ (K : numDomainType) (m n : nat) :=
+  Num.Zmodule_IsNormed.Build K 'M[K]_(m, n)
+    (@ler_mx_norm_add _ _ _) (@mx_norm_eq0 _ _ _)
+    (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
 
 Section matrix_NormedModule.
 Variables (K : numFieldType) (m n : nat).
@@ -2683,7 +1873,7 @@ Local Lemma ball_gt0 (x y : 'M[K]_(m.+1, n.+1)) e : ball x e y -> 0 < e.
 Proof. by move/(_ ord0 ord0); apply: le_lt_trans. Qed.
 
 Lemma mx_norm_ball :
-  @ball _ [pseudoMetricType K of 'M[K]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
+  @ball _ [the pseudoMetricType K of 'M[K]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
 Proof.
 rewrite /normr /ball_ predeq3E => x e y /=; rewrite mx_normE; split => xey.
 - have e_gt0 : 0 < e := ball_gt0 xey.
@@ -2696,10 +1886,8 @@ rewrite /normr /ball_ predeq3E => x e y /=; rewrite mx_normE; split => xey.
   by move: (xey (i, j)); rewrite !mxE; exact.
 Qed.
 
-Definition matrix_PseudoMetricNormedZmodMixin :=
-  PseudoMetricNormedZmodule.Mixin mx_norm_ball.
-Canonical matrix_pseudoMetricNormedZmodType :=
-  PseudoMetricNormedZmodType K 'M[K]_(m.+1, n.+1) matrix_PseudoMetricNormedZmodMixin.
+HB.instance Definition _ :=
+  NormedZmod_PseudoMetric_eq.Build K 'M[K]_(m.+1, n.+1) mx_norm_ball.
 
 Lemma mx_normZ (l : K) (x : 'M[K]_(m.+1, n.+1)) : `| l *: x | = `| l | * `| x |.
 Proof.
@@ -2710,9 +1898,9 @@ elim/big_ind2 : _ => // [|a b c d bE dE]; first by rewrite mulr0.
 by rewrite !num_max bE dE maxr_pmulr.
 Qed.
 
-Definition matrix_NormedModMixin := NormedModMixin mx_normZ.
-Canonical matrix_normedModType :=
-  NormedModType K 'M[K]_(m.+1, n.+1) matrix_NormedModMixin.
+HB.instance Definition _ :=
+  PseudoMetricNormedZmod_Lmodule_IsNormedModule.Build K 'M[K]_(m.+1, n.+1)
+    mx_normZ.
 
 End matrix_NormedModule.
 
@@ -2728,13 +1916,12 @@ rewrite /ball /= /prod_ball -!ball_normE /ball_ /=.
 by rewrite comparable_lt_maxl// ?real_comparable//; split=> /andP.
 Qed.
 
-Lemma prod_norm_ball : @ball _ [pseudoMetricType K of U * V] = ball_ (fun x => `|x|).
+Lemma prod_norm_ball :
+  @ball _ [the pseudoMetricType K of (U * V)%type] = ball_ (fun x => `|x|).
 Proof. by rewrite /= - ball_prod_normE. Qed.
 
-Definition prod_pseudoMetricNormedZmodMixin :=
-  PseudoMetricNormedZmodule.Mixin prod_norm_ball.
-Canonical prod_pseudoMetricNormedZmodType :=
-  PseudoMetricNormedZmodType K (U * V) prod_pseudoMetricNormedZmodMixin.
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
+  prod_norm_ball.
 
 End prod_PseudoMetricNormedZmodule.
 
@@ -2744,9 +1931,9 @@ Context {K : numDomainType} {U V : normedModType K}.
 Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pmulr. Qed.
 
-Definition prod_NormedModMixin := NormedModMixin prod_norm_scale.
-Canonical prod_normedModType :=
-  NormedModType K (U * V) prod_NormedModMixin.
+HB.instance Definition _ :=
+  PseudoMetricNormedZmod_Lmodule_IsNormedModule.Build K (U * V)%type
+    prod_norm_scale.
 
 End prod_NormedModule.
 
@@ -2883,7 +2070,7 @@ Proof. exact: scaler_continuous. Qed.
 Lemma mulrr_continuous (y : K) : continuous ( *%R^~ y).
 Proof. exact: scalel_continuous. Qed.
 
-Lemma inv_continuous (x : K) : x != 0 -> {for x, continuous GRing.inv}.
+Lemma inv_continuous (x : K) : x != 0 -> {for x, continuous (@GRing.inv K)}.
 Proof.
 move=> x_neq0; have nx_gt0 : `|x| > 0 by rewrite normr_gt0.
 apply/(@cvgrPdist_ltp _ _ _ (nbhs x)); near (0 : K)^'+ => d. near=> e.
@@ -3661,125 +2848,9 @@ End closure_left_right_open.
 
 (** ** Complete Normed Modules *)
 
-Module CompleteNormedModule.
-
-Section ClassDef.
-
-Variable K : numFieldType.
-
-Record class_of (T : Type) := Class {
-  base : NormedModule.class_of K T ;
-  mixin : Complete.axiom (PseudoMetric.Pack base)
-}.
-Local Coercion base : class_of >-> NormedModule.class_of.
-Definition base2 T (cT : class_of T) : CompletePseudoMetric.class_of K T :=
-  @CompletePseudoMetric.Class _ _ (@base T cT) (@mixin T cT).
-Local Coercion base2 : class_of >-> CompletePseudoMetric.class_of.
-
-Structure type (phK : phant K) := Pack { sort; _ : class_of sort }.
-Local Coercion sort : type >-> Sortclass.
-
-Variables (phK : phant K) (cT : type phK) (T : Type).
-
-Definition class := let: Pack _ c := cT return class_of cT in c.
-
-Definition pack :=
-  fun bT (b : NormedModule.class_of K T) & phant_id (@NormedModule.class K phK bT) b =>
-  fun mT m & phant_id (@Complete.class mT) (@Complete.Class T b m) =>
-    Pack phK (@Class T b m).
-Let xT := let: Pack T _ := cT in T.
-Notation xclass := (class : class_of xT).
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition normedZmodType := @Num.NormedZmodule.Pack K phK cT xclass.
-Definition lmodType := @GRing.Lmodule.Pack K phK cT xclass.
-Definition pointedType := @Pointed.Pack cT xclass.
-Definition filteredType := @Filtered.Pack cT cT xclass.
-Definition topologicalType := @Topological.Pack cT xclass.
-Definition uniformType := @Uniform.Pack cT xclass.
-Definition pseudoMetricType := @PseudoMetric.Pack K cT xclass.
-Definition pseudoMetricNormedZmodType :=
-  @PseudoMetricNormedZmodule.Pack K phK cT xclass.
-Definition normedModType := @NormedModule.Pack K phK cT xclass.
-Definition completeType := @Complete.Pack cT xclass.
-Definition completePseudoMetricType := @CompletePseudoMetric.Pack K cT xclass.
-Definition complete_zmodType := @GRing.Zmodule.Pack completeType xclass.
-Definition complete_lmodType := @GRing.Lmodule.Pack K phK completeType xclass.
-Definition complete_normedZmodType := @Num.NormedZmodule.Pack K phK completeType xclass.
-Definition complete_pseudoMetricNormedZmodType :=
-  @PseudoMetricNormedZmodule.Pack K phK completeType xclass.
-Definition complete_normedModType := @NormedModule.Pack K phK completeType xclass.
-Definition completePseudoMetric_lmodType : GRing.Lmodule.type phK :=
-  @GRing.Lmodule.Pack K phK (CompletePseudoMetric.sort completePseudoMetricType)
-  xclass.
-Definition completePseudoMetric_zmodType : GRing.Zmodule.type :=
-  @GRing.Zmodule.Pack (CompletePseudoMetric.sort completePseudoMetricType)
-  xclass.
-Definition completePseudoMetric_normedModType : NormedModule.type phK :=
-  @NormedModule.Pack K phK (CompletePseudoMetric.sort completePseudoMetricType)
-  xclass.
-Definition completePseudoMetric_normedZmodType : Num.NormedZmodule.type phK :=
-  @Num.NormedZmodule.Pack K phK
-  (CompletePseudoMetric.sort completePseudoMetricType) xclass.
-Definition completePseudoMetric_pseudoMetricNormedZmodType :
-  PseudoMetricNormedZmodule.type phK :=
-  @PseudoMetricNormedZmodule.Pack K phK
-  (CompletePseudoMetric.sort completePseudoMetricType) xclass.
-End ClassDef.
-
-Module Exports.
-
-Coercion base : class_of >-> NormedModule.class_of.
-Coercion base2 : class_of >-> CompletePseudoMetric.class_of.
-Coercion sort : type >-> Sortclass.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion zmodType : type >-> GRing.Zmodule.type.
-Canonical zmodType.
-Coercion pseudoMetricNormedZmodType : type >-> PseudoMetricNormedZmodule.type.
-Canonical pseudoMetricNormedZmodType.
-Coercion normedZmodType : type >-> Num.NormedZmodule.type.
-Canonical normedZmodType.
-Coercion lmodType : type >-> GRing.Lmodule.type.
-Canonical lmodType.
-Coercion pointedType : type >-> Pointed.type.
-Canonical pointedType.
-Coercion filteredType : type >-> Filtered.type.
-Canonical filteredType.
-Coercion topologicalType : type >-> Topological.type.
-Canonical topologicalType.
-Coercion uniformType : type >-> Uniform.type.
-Canonical uniformType.
-Coercion pseudoMetricType : type >-> PseudoMetric.type.
-Canonical pseudoMetricType.
-Coercion normedModType : type >-> NormedModule.type.
-Canonical normedModType.
-Coercion completeType : type >-> Complete.type.
-Canonical completeType.
-Coercion completePseudoMetricType : type >-> CompletePseudoMetric.type.
-Canonical completePseudoMetricType.
-Canonical complete_zmodType.
-Canonical complete_lmodType.
-Canonical complete_normedZmodType.
-Canonical complete_pseudoMetricNormedZmodType.
-Canonical complete_normedModType.
-Canonical completePseudoMetric_lmodType.
-Canonical completePseudoMetric_zmodType.
-Canonical completePseudoMetric_normedModType.
-Canonical completePseudoMetric_normedZmodType.
-Canonical completePseudoMetric_pseudoMetricNormedZmodType.
-Notation completeNormedModType K := (type (Phant K)).
-Notation "[ 'completeNormedModType' K 'of' T ]" := (@pack _ (Phant K) T _ _ idfun _ _ idfun)
-  (at level 0, format "[ 'completeNormedModType'  K  'of'  T ]") : form_scope.
-End Exports.
-
-End CompleteNormedModule.
-
-Export CompleteNormedModule.Exports.
+#[short(type="completeNormedModType")]
+HB.structure Definition CompleteNormedModule (K : numFieldType) :=
+  {T of NormedModule K T & Complete T}.
 
 (** * Extended Types *)
 
@@ -3815,15 +2886,11 @@ suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
 by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
 Unshelve. all: by end_near. Qed.
 
-Canonical R_regular_completeType (R : realType) :=
-  CompleteType R^o (@R_complete R). (*todo : delete*)
-Canonical R_regular_CompleteNormedModule (R : realType) :=
-  [completeNormedModType R of R^o]. (*todo : delete*)
+HB.instance Definition _ (R : realType) := Uniform_IsComplete.Build R^o
+  (@R_complete R). (* todo : delete *)
 
-Canonical R_completeType (R : realType) :=
-  [completeType of R for [completeType of R^o]].
-Canonical R_CompleteNormedModule (R : realType) :=
-  [completeNormedModType R of R].
+HB.instance Definition _ (R : realType) := Complete.copy R
+  [the completeType of R^o].
 (* new *)
 
 Section cvg_seq_bounded.
@@ -4774,6 +3841,8 @@ Lemma rV_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
 Proof.
 move=> Aico.
+Admitted.
+(* TODO_HB when product_topologicalType is ported in topology.v
 have : @compact (product_topologicalType _) [set f | forall i, A i (f i)].
   by apply: tychonoff.
 move=> Aco F FF FA.
@@ -4825,6 +3894,7 @@ move=> C D FC f_D; have {}f_D :
 have GC : G [set g | C (\row_j g j)] by exists C.
 by have [g []] := clGf _ _ GC f_D; exists (\row_j (g j : T)).
 Qed.
+*)
 
 Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n.+1) :
   bounded_set A -> closed A -> compact A.
