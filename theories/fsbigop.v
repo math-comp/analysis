@@ -425,6 +425,16 @@ Arguments reindex_fsbigT {R idx op I J} _ _.
 #[deprecated(note="use reindex_fsbigT instead")]
 Notation reindex_inside_setT := reindex_fsbigT.
 
+Lemma lee_fsum_nneg_subset {R : realDomainType} [T : choiceType] [A B : set T]
+    [f : T -> \bar R] : finite_set A -> finite_set B ->
+    {subset A <= B} -> {in [predD B & A], forall t : T, 0 <= f t}%E ->
+  (\sum_(t \in A) f t <= \sum_(t \in B) f t)%E.
+Proof.
+move=> finA finB AB f0; rewrite !fsbig_finite//=; apply: lee_sum_nneg_subfset.
+  by apply/fsubsetP; rewrite -fset_set_sub//; apply/subsetP.
+by move=> t; rewrite !inE !in_fset_set// => /f0.
+Qed.
+
 Lemma ge0_mule_fsumr (T : choiceType) (R : realDomainType) (x : \bar R)
     (F : T -> \bar R) (P : set T) : (forall i : T, 0 <= F i)%E ->
   (x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i)%E.
