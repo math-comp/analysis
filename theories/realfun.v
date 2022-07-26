@@ -539,7 +539,7 @@ by near: y; rewrite near_withinE /= near_simpl; near=> x1.
 Unshelve. all: by end_near. Qed.
 
 Lemma is_derive_0_is_cst (f : R -> R) x y :
-  (forall x, is_derive x 1 f 0) -> f x = f y.
+  (forall x, is_derive x (1 : R) f 0) -> f x = f y.
 Proof.
 move=> Hd.
 wlog xLy : x y / x <= y by move=> H; case: (leP x y) => [/H |/ltW /H].
