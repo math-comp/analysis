@@ -3608,22 +3608,27 @@ Lemma nbhs_E {T T'} (ent : set (set (T * T'))) x :
   nbhs_ ent x = filter_from ent (fun A => to_set A x).
 Proof. by []. Qed.
 
-HB.mixin Record HasEntourage M := {
-  entourage : (M * M -> Prop) -> Prop
-}.
-
-HB.structure Definition FilteredEntourage := {T of Filtered T T & HasEntourage T}.
-
-HB.mixin Record FilteredEntourage_IsUniform M of FilteredEntourage M := {
-  uniform_ax1 : Filter entourage ;
-  uniform_ax2 : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A ;
-  uniform_ax3 : forall A, entourage A -> entourage (A^-1)%classic ;
-  uniform_ax4 : forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A ;
-  uniform_ax5 : nbhs = nbhs_ entourage
+HB.mixin Record Filtered_IsUniform_mixin M of Filtered M M := {
+  entourage : (M * M -> Prop) -> Prop;
+  uniform_ax1 : Filter entourage;
+  uniform_ax2 : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A;
+  uniform_ax3 : forall A, entourage A -> entourage (A^-1)%classic;
+  uniform_ax4 : forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A;
+  uniform_ax5 : nbhs = nbhs_ entourage;
 }.
 
 #[short(type="uniformType")]
-HB.structure Definition Uniform := {T of Topological T & Filtered_IsUniform T}.
+HB.structure Definition Uniform :=
+  {T of Topological T & Filtered_IsUniform_mixin T}.
+
+HB.factory Record Filtered_IsUniform M of Filtered M M := {
+  entourage : (M * M -> Prop) -> Prop;
+  uniform_ax1 : Filter entourage;
+  uniform_ax2 : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A;
+  uniform_ax3 : forall A, entourage A -> entourage (A^-1)%classic;
+  uniform_ax4 : forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A;
+  uniform_ax5 : nbhs = nbhs_ entourage;
+}.
 
 HB.builders Context M of Filtered_IsUniform M.
 
@@ -3654,7 +3659,7 @@ Qed.
 HB.instance Definition _ := Filtered_IsNbhsTopological.Build M
   nbhs_filter nbhs_singleton nbhs_nbhs.
 
-HB.instance Definition _ := Filtered_IsUniform.Build M
+HB.instance Definition _ := Filtered_IsUniform_mixin.Build M
   uniform_ax1 uniform_ax2 uniform_ax3 uniform_ax4 uniform_ax5.
 
 HB.end.
@@ -4072,6 +4077,7 @@ Proof. by []. Qed.
 Definition map_pair {S U} (f : S -> U) (x : (S * S)) : (U * U) :=
   (f x.1, f x.2).
 
+(* TODO: port once weak topology is ported
 Section weak_uniform.
 
 Variable (pS : pointedType) (U : uniformType) (f : pS -> U).
@@ -4127,6 +4133,7 @@ Definition weak_uniformType :=
   UniformType S weak_uniform_mixin.
 
 End weak_uniform.
+*)
 
 Section sup_uniform.
 
@@ -4260,17 +4267,18 @@ HB.structure Definition PseudoMetric (R : Type) :=
 
 HB.mixin Record Uniform_IsPseudoMetric (R : numDomainType) M of Uniform M := {
   ball : M -> R -> M -> Prop ;
-  (* pseudo_metric_ax1 : forall x (e : R), 0 < e -> ball x e x ; *)
-  (* pseudo_metric_ax2 : forall x y (e : R), ball x e y -> ball y e x ; *)
-  (* pseudo_metric_ax3 : *)
-  (*   forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z; *)
-  (* pseudo_metric_ax4 : entourage = entourage_ ball *)
+  pseudo_metric_ax1 : forall x (e : R), 0 < e -> ball x e x ;
+  pseudo_metric_ax2 : forall x y (e : R), ball x e y -> ball y e x ;
+  pseudo_metric_ax3 :
+    forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
+  pseudo_metric_ax4 : entourage = entourage_ ball
 }.
 
 #[short(type="pseudoMetricType")]
 HB.structure Definition PseudoMetric (R : numDomainType) :=
   {T of Uniform T & Uniform_IsPseudoMetric R T}.
 
+(* was uniformityOfBallMixin *)
 HB.factory Record Filtered_IsPseudoMetric (R : numFieldType) M
     of Filtered M M := {
   ent : set (set (M * M));
@@ -4332,9 +4340,6 @@ HB.instance Definition _ := Uniform_IsPseudoMetric.Build R M
 
 HB.end.
 
-
-
-(* was uniformityOfBallMixin *)
 HB.factory Record Pointed_IsPseudoMetric (R : numFieldType) M of Pointed M := {
   nbhs : M -> set (set M);
   ent : set (set (M * M));
