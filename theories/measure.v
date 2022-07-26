@@ -632,8 +632,8 @@ HB.mixin Record isSemiRingOfSets (d : measure_display) T := {
   semi_measurableD : semi_setD_closed measurable;
 }.
 
+#[short(type=semiRingOfSetsType)]
 HB.structure Definition SemiRingOfSets d := {T of isSemiRingOfSets d T}.
-Notation semiRingOfSetsType := SemiRingOfSets.type.
 
 Canonical semiRingOfSets_eqType d (T : semiRingOfSetsType d) := EqType T ptclass.
 Canonical semiRingOfSets_choiceType d (T : semiRingOfSetsType d) :=
@@ -648,9 +648,9 @@ Notation "'measurable" :=
 HB.mixin Record RingOfSets_from_semiRingOfSets d T of isSemiRingOfSets d T := {
   measurableU : setU_closed (@measurable d [the semiRingOfSetsType d of T]) }.
 
+#[short(type=ringOfSetsType)]
 HB.structure Definition RingOfSets d :=
   {T of RingOfSets_from_semiRingOfSets d T & SemiRingOfSets d T}.
-Notation ringOfSetsType := RingOfSets.type.
 
 Canonical ringOfSets_eqType d (T : ringOfSetsType d) := EqType T ptclass.
 Canonical ringOfSets_choiceType d (T : ringOfSetsType d) := ChoiceType T ptclass.
@@ -660,9 +660,9 @@ HB.mixin Record AlgebraOfSets_from_RingOfSets d T of RingOfSets d T := {
   measurableT : measurable [set: T]
 }.
 
+#[short(type=algebraOfSetsType)]
 HB.structure Definition AlgebraOfSets d :=
   {T of AlgebraOfSets_from_RingOfSets d T & RingOfSets d T}.
-Notation algebraOfSetsType := AlgebraOfSets.type.
 
 Canonical algebraOfSets_eqType d (T : algebraOfSetsType d) := EqType T ptclass.
 Canonical algebraOfSets_choiceType d (T : algebraOfSetsType d) :=
@@ -675,9 +675,9 @@ HB.mixin Record Measurable_from_algebraOfSets d T of AlgebraOfSets d T := {
     measurable (\bigcup_i (F i))
 }.
 
+#[short(type=measurableType)]
 HB.structure Definition Measurable d :=
   {T of Measurable_from_algebraOfSets d T & AlgebraOfSets d T}.
-Notation measurableType := Measurable.type.
 
 Canonical measurable_eqType d (T : measurableType d) := EqType T ptclass.
 Canonical measurable_choiceType d (T : measurableType d) := ChoiceType T ptclass.
@@ -1377,11 +1377,11 @@ HB.mixin Record isMeasure0 d
     mu of isAdditiveMeasure d R T mu := {
   measure_semi_sigma_additive : semi_sigma_additive mu }.
 
+#[short(type=measure)]
 HB.structure Definition Measure d
     (R : numFieldType) (T : semiRingOfSetsType d) :=
   {mu of isMeasure0 d R T mu & AdditiveMeasure d mu}.
 
-Notation measure := Measure.type.
 Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure R T)
   (at level 36, T, R at next level,
     format "{ 'measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
@@ -2626,10 +2626,10 @@ HB.mixin Record isOuterMeasure
   le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B} ;
   outer_measure_sigma_subadditive : sigma_subadditive mu }.
 
+#[short(type=outer_measure)]
 HB.structure Definition OuterMeasure (R : numFieldType) (T : Type) :=
   {mu & isOuterMeasure R T mu}.
 
-Notation outer_measure := OuterMeasure.type.
 Notation "{ 'outer_measure' 'set' T '->' '\bar' R }" := (outer_measure R T)
   (at level 36, T, R at next level,
     format "{ 'outer_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
