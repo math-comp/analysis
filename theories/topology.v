@@ -524,6 +524,9 @@ HB.mixin Record isFiltered U T := {
 HB.structure Definition Filtered (U : Type) := {T of Pointed T & isFiltered U T}.
 Arguments nbhs {_ _} _ _ : simpl never.
 
+Notation "[ 'filteredType' U 'of' T ]" := (Filtered.clone U T _)
+  (at level 0, format "[ 'filteredType'  U  'of'  T ]") : form_scope.
+
 HB.mixin Record IsSource Z Y T := {
   source_filter : (T -> Z) -> set (set Y)
 }.
@@ -625,11 +628,9 @@ Definition type_of_filter {T} (F : set (set T)) := T.
 Definition lim_in {U : Type} (T : filteredType U) :=
   fun F : set (set U) => get (fun l : T => F --> l).
 Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T [filter of F]) : classical_set_scope.
-Notation lim F :=
-  [lim F in [the filteredType _ of @type_of_filter _ [filter of F]]].
+Notation lim F := [lim F in [filteredType _ of @type_of_filter _ [filter of F]]].
 Notation "[ 'cvg' F 'in' T ]" := (F --> [lim F in T]) : classical_set_scope.
-Notation cvg F :=
-  [cvg F in [the filteredType _ of @type_of_filter _ [filter of F]]].
+Notation cvg F := [cvg F in [filteredType _ of @type_of_filter _ [filter of F]]].
 
 Section FilteredTheory.
 
