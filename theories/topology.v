@@ -3665,10 +3665,7 @@ HB.instance Definition _ := Filtered_IsUniform_mixin.Build M
 HB.end.
 
 Lemma nbhs_entourageE {M : uniformType} : nbhs_ (@entourage M) = nbhs.
-Proof.
-by case: M => ? [? ? ? ? []].
-(* TODO_HB *)
-Qed.
+Proof. by case: M => ? [? ? ? ? []]. Qed.
 
 Lemma entourage_sym {X Y : Type} E (x : X) (y : Y) :
   E (x, y) <-> (E ^-1)%classic (y, x).
@@ -4343,10 +4340,7 @@ HB.instance Definition _ := Uniform_IsPseudoMetric.Build R M
 HB.end.
 
 Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} : entourage_ (@ball R M) = entourage.
-Proof.
-by case: M => ? [? ? ? ? ? ? []].
-(* TODO_HB *)
-Qed.
+Proof. by case: M => ? [? ? ? ? ? ? []]. Qed.
 
 Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
   @filter_from R _ [set x : R | 0 < x]
@@ -4692,10 +4686,7 @@ Context {T : completeType}.
 
 Lemma cauchy_cvg (F : set (set T)) (FF : ProperFilter F) :
   cauchy F -> cvg F.
-Proof.
-by case: T F FF => ? [? ? ? ? ? ? []].
-(* TODO_HB *)
-Qed.
+Proof. by case: T F FF => ? [? ? ? ? ? ? []]. Qed.
 
 Lemma cauchy_cvgP (F : set (set T)) (FF : ProperFilter F) : cauchy F <-> cvg F.
 Proof. by split=> [/cauchy_cvg|/cvg_cauchy]. Qed.
@@ -6068,6 +6059,7 @@ by move=> -> /nbhs_singleton ?; apply: nearW => ? ->.
 Qed.
 
 End SubspaceRelative.
+*)
 
 Section SubspaceUniform.
 Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
@@ -6077,21 +6069,31 @@ Definition subspace_ent :=
   filter_from (@entourage X)
   (fun E => [set xy | (xy.1 = xy.2) \/ (A xy.1 /\ A xy.2 /\ E xy)]).
 
-Program Definition subspace_uniformMixin :=
-  @Uniform.Mixin (subspace A) (@nbhs_subspace _ _) subspace_ent _ _ _ _ _.
-Next Obligation.
+Let Filter_subspace_ent : Filter subspace_ent.
+Proof.
 apply: filter_from_filter; first by (exists setT; exact: filterT).
 move=> P Q entP entQ; exists (P `&` Q); first exact: filterI.
 move=> [x y] /=; case; first (by move=> ->; split=> /=; left).
 by move=> [Ax [Ay [Pxy Qxy]]]; split=> /=; right.
 Qed.
-Next Obligation. by move=> ? + [x y]/= ->; case=> V entV; apply; left. Qed.
-Next Obligation.
+
+Let subspace_uniform_ax2 : forall X : set (subspace A * subspace A),
+  subspace_ent X -> [set xy | xy.1 = xy.2] `<=` X.
+Proof.
+by move=> ? + [x y]/= ->; case=> V entV; apply; left.
+Qed.
+
+Let subspace_uniform_ax3 : forall A : set (subspace A * subspace A),
+  subspace_ent A -> subspace_ent (A^-1)%classic.
+Proof.
 move=> ?; case=> V ? Vsub; exists (V^-1)%classic; first exact: entourage_inv.
 move=> [x y] /= G; apply: Vsub; case: G; first by (move=> <-; left).
 by move=> [? [? Vxy]]; right; repeat split => //.
 Qed.
-Next Obligation.
+
+Let subspace_uniform_ax4 : forall A : set (subspace A * subspace A),
+  subspace_ent A -> exists2 B, subspace_ent B & B \o B `<=` A.
+Proof.
 move=> ?; case=> E entE Esub.
 exists  [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2 /\ split_ent E xy].
   by exists (split_ent E).
@@ -6104,8 +6106,10 @@ move=> [x y] [z /= Ez zE] /=; case: Ez; case: zE.
   - move=> []? []? ?[]?[]??; apply Esub; right; repeat split => //=.
     by apply: subset_split_ent => //; exists z.
 Qed.
-Next Obligation.
-pose  EA := [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2].
+
+Let subspace_uniform_ax5 : nbhs_subspace (A := A) = nbhs_ subspace_ent.
+Proof.
+pose EA := [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2].
 have entEA : subspace_ent EA.
   exists setT; first exact: filterT.
   by move=> [??] /= [ ->|[?] [?]];[left|right].
@@ -6129,10 +6133,10 @@ case: (@nbhs_subspaceP X A x); rewrite propeqE; split => //=.
   by apply: subU; apply: subW; left.
 Unshelve. all: by end_near. Qed.
 
-Canonical subspace_uniformType :=
-  UniformType (subspace A) subspace_uniformMixin.
+HB.instance Definition _ := Filtered_IsUniform_mixin.Build (subspace A)
+  Filter_subspace_ent subspace_uniform_ax2 subspace_uniform_ax3 subspace_uniform_ax4 subspace_uniform_ax5.
+
 End SubspaceUniform.
-*)
 
 Section SubspacePseudoMetric.
 Context {R : numDomainType} {X : pseudoMetricType R} (A : set X).
@@ -6161,8 +6165,6 @@ move=> x y z e1 e2; rewrite /subspace_ball; (repeat case: ifP => /asboolP).
 Qed.
 Next Obligation.
 rewrite eqEsubset; split; rewrite /subspace_ball.
-Admitted.
-(* TODO_HB: fix
   move=> U [W + subU]; rewrite -entourage_ballE => [[eps] nneg subW].
   exists eps => //; apply: (subset_trans _ subU).
   move=> [x y] /=; case: ifP => /asboolP ?.
@@ -6174,7 +6176,6 @@ move=> [x y] /= [->|[]Ax []Ay xBy]; apply: subE => //=.
   by case: ifP => /asboolP; split => //; exact: ballxx.
 by case: ifP => /asboolP.
 Qed.
-*)
 
 (* FIXME: this should build a pseudoMetricType on subspace A *)
 HB.instance Definition _ := subspace_pseudoMetricType_mixin.
