@@ -265,7 +265,19 @@ Proof. by apply/funext=> x; rewrite indicE in_setT. Qed.
 Lemma indic0 : \1_(@set0 T) = cst (0 : R).
 Proof. by apply/funext=> x; rewrite indicE in_set0. Qed.
 
-Lemma preimage_indic D (B : set R) :
+Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
+  \1_A = (1 : T -> R) \_ A.
+Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
+
+Lemma restrict_indic T (R : numFieldType) (E A : set T) :
+  ((\1_E : T -> R) \_ A) = \1_(E `&` A).
+Proof.
+apply/funext => x; rewrite /restrict 2!indicE.
+case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
+by rewrite in_setI (negbTE xA) andbF.
+Qed.
+
+Lemma preimage_indic (T : Type) (R : ringType) (D : set T) (B : set R) :
   \1_D @^-1` B = if 1 \in B then (if 0 \in B then setT else D)
                             else (if 0 \in B then ~` D else set0).
 Proof.
