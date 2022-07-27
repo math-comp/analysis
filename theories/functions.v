@@ -1113,6 +1113,75 @@ Qed.
 HB.instance Definition _ T A := @Can2.Build T T A A idfun idfun
    (fun x y => y) (fun x y => y) (fun _ _ => erefl) (fun _ _ => erefl).
 
+(**********************************************************)
+(* Iteration preserves Fun, Injectivity, and Surjectivity *)
+(**********************************************************)
+Section iter_inv.
+
+Context {aT} {A : set aT}.
+
+Local Lemma iter_fun_subproof n (f : {fun A >-> A}) : IsFun _ _ A A (iter n f).
+Proof. 
+split => x; elim: n => // n /[apply] ?; apply/(fun_image_sub f).
+by exists (iter n f x).
+Qed.
+
+HB.instance Definition _ n f := iter_fun_subproof n f.
+
+Section OInv.
+Context {f : {oinv aT >-> aT}}.
+HB.instance Definition _ n := OInv.Build _ _ (iter n f) 
+  (iter n (obind 'oinv_f) \o some).
+Lemma oinv_iter n : 'oinv_(iter n f) = iter n (obind 'oinv_f) \o some.
+Proof. by []. Qed.
+End OInv.
+
+Section OInv.
+Context {f : {inv aT >-> aT}}.
+Lemma some_iter_inv n : olift (iter n f^-1) = 'oinv_(iter n f).
+Proof.
+elim: n => // n IH; rewrite iterfSr olift_comp IH ?oinv_iter -compA.
+rewrite (_ : Some \o f^-1 = 'oinv_f); first by rewrite iterfSr; congr (_ \o _).
+by apply/funeqP => ? /=; rewrite some_inv.
+Qed.
+HB.instance Definition _ n := OInv_Inv.Build _ _ (iter n f) (some_iter_inv n).
+Lemma inv_iter n : (iter n f)^-1 = iter n f^-1. Proof. by []. Qed.
+End OInv.
+
+Lemma iter_can_subproof n (f : {injfun A >-> A}) : OInv_Can aT aT A (iter n f).
+Proof. 
+split=> x Ax; rewrite oinv_iter /=; elim: n=> // n IH.
+rewrite iterfSr /= funoK //; exact: mem_fun. 
+Qed.
+
+HB.instance Definition _ f g := iter_can_subproof f g.
+HB.instance Definition _ n (f : {injfun A >-> A}) := Inject.on (iter n f).
+HB.instance Definition _ n (f : {splitinjfun A >-> A}) := Inject.on (iter n f).
+End iter_inv.
+
+Section iter_surj.
+Context {aT} {A : set aT}.
+
+Lemma iter_surj_subproof n (f : {surj A >-> A}) : OInv_CanV _ _ A A (iter n f).
+Proof.
+split; first exact: funS.
+elim: n=> // n IH; rewrite oinv_iter iterfSr iterfS.
+apply: (@ocan_in_comp _ _ _ (mem A)) => //; last exact: oinvK.
+elim: n {IH} => // n IH x Ax; move: (IH _ Ax); rewrite pred_oapp_set ?inE.
+case=> y Ay /= ynf; case: (@oinvS _ _ _ _ f _ Ay) => z ? zfinv; exists z => //.
+by rewrite zfinv /= -ynf.
+Qed.
+
+HB.instance Definition _ n f := iter_surj_subproof n f.
+HB.instance Definition _ n (f : {splitsurj A >-> A}) := Surject.on (iter n f).
+HB.instance Definition _ n (f : {surjfun A >-> A}) := Surject.on (iter n f).
+HB.instance Definition _ n (f : {splitsurjfun A >-> A}) :=
+  Surject.on (iter n f).
+HB.instance Definition _ n (f : {bij A >-> A}) := Surject.on (iter n f).
+HB.instance Definition _ n (f : {splitbij A >-> A}) := Surject.on (iter n f).
+
+End iter_surj.
+
 (**********)
 (* Unbind *)
 (**********)

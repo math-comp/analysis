@@ -779,3 +779,13 @@ Proof. by []. Qed.
 Lemma joinfE (aT : Type) d (T : latticeType d) (f g : aT -> T) x :
   ((f `|` g) x = f x `|` g x)%O.
 Proof. by []. Qed.
+
+Lemma iterfS {T} (f : T -> T) (n : nat) : iter n.+1 f = f \o iter n f.
+Proof. by []. Qed.
+
+Lemma iterfSr {T} (f : T -> T) (n : nat) : iter n.+1 f = iter n f \o f.
+Proof. by apply/funeqP => ?; rewrite iterSr. Qed.
+
+Lemma iter0 {T} (f : T -> T) : iter 0 f = id.
+Proof. by []. Qed.
+
