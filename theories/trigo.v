@@ -352,9 +352,12 @@ Proof.
 set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last by rewrite /f sin0 cos0 expr1n expr0n addr0.
 apply: is_derive_0_is_cst => {}x.
+Admitted.
+(* TODO_HB
 apply: trigger_derive; rewrite /GRing.scale /=.
 by rewrite mulrN ![sin x * _]mulrC -opprD addrC subrr.
 Qed.
+*)
 
 Lemma cos_max x : `| cos x | <= 1.
 Proof.
@@ -388,8 +391,11 @@ set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last first.
   by rewrite /f cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
 apply: is_derive_0_is_cst => {}x.
+Admitted.
+(* TODO_HB
 by apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
 Qed.
+*)
 
 Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
 Proof.
@@ -424,8 +430,11 @@ set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last first.
   by rewrite /f oppr0 cos0 sin0 !(addr0, subrr, expr0n).
 apply: is_derive_0_is_cst => {}x.
+Admitted.
+(* TODO_HB
 by apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
 Qed.
+*)
 
 Lemma sinN x : sin (- x) = - sin x.
 Proof.
@@ -488,7 +497,7 @@ Implicit Types (x y : R) (n k : nat).
 Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
 
 Lemma pihalfE : pi / 2 = get [set x | 0 <= x <= 2 /\ cos x = 0].
-Proof. by rewrite /pi -(mulr_natr (get _)) -mulrA divff ?mulr1. Qed.
+Proof. by rewrite /pi -[_ *+ 2]mulr_natr -mulrA divff ?mulr1. Qed.
 
 Lemma cos2_lt0 : cos 2 < 0 :> R.
 Proof.
@@ -522,6 +531,8 @@ have sinx := @cvg_sin_coeff' _ x.
 rewrite -(cvg_lim (@Rhausdorff R) sinx).
 rewrite [ltLHS](_ : 0 = \sum_(0 <= i < 0) sin_coeff' x i :> R); last first.
   by rewrite big_nil.
+Admitted.
+(* TODO_HB
 rewrite lt_sum_lim_series //; first by move/cvgP in sinx.
 move=> d.
 rewrite /sin_coeff' 2!exprzD_nat (exprSz _ d.*2) -[in (-1) ^ d.*2](muln2 d).
@@ -540,6 +551,7 @@ rewrite ltr_pmul2r; last by rewrite invr_gt0 (ltr_nat _ 0) ffact_gt0 leq_addl.
 rewrite {}/v !addnS addn0 !ffactnS ffactn0 muln1 /= natrM.
 by rewrite (ltr_pmul (ltW _ ) (ltW _)) // (lt_le_trans x_lt2) // ler_nat.
 Qed.
+*)
 
 Lemma cos1_gt0 : cos 1 > 0 :> R.
 Proof.
@@ -548,6 +560,8 @@ apply: (@lt_trans _ _ (\sum_(0 <= i < 2) cos_coeff' 1 i)).
   rewrite big_nat_recr//= big_nat_recr//= big_nil add0r.
   rewrite /cos_coeff' expr0z expr1n fact0 !mul1r expr1n expr1z.
   by rewrite !mulNr subr_gt0 mul1r div1r ltf_pinv ?posrE ?ltr0n// ltr_nat.
+Admitted.
+(* TODO_HB
 rewrite lt_sum_lim_series //; [by move/cvgP in h|move=> d].
 rewrite /cos_coeff' !(expr1n,mulr1).
 rewrite -muln2 -mulSn muln2 -exprnP -signr_odd odd_double expr0.
@@ -555,6 +569,7 @@ rewrite -exprnP -signr_odd oddD/= muln2 odd_double/= expr1 add2n.
 rewrite mulNr subr_gt0 2!div1r ltf_pinv ?posrE ?ltr0n ?fact_gt0//.
 by rewrite ltr_nat ltn_pfact//ltn_double doubleS.
 Qed.
+*)
 
 Lemma cos_exists : exists2 pih : R, 1 <= pih <= 2 & cos pih = 0.
 Proof.
@@ -676,8 +691,7 @@ Qed.
 
 Lemma sinpi : sin pi = 0.
 Proof.
-have := sinD (pi / 2) (pi / 2); rewrite cos_pihalf mulr0 mul0r.
-by rewrite -mulrDl -mulr2n -mulr_natr -mulrA divff// mulr1 addr0.
+by have := sinD (pi / 2) (pi / 2); rewrite cos_pihalf mulr0 mul0r -splitr addr0.
 Qed.
 
 Lemma cos2pi : cos (pi *+ 2) = 1.
@@ -857,11 +871,14 @@ Qed.
 Lemma is_derive_tan x :
   cos x != 0 -> is_derive x 1 tan ((cos x)^-2).
 Proof.
+Admitted.
+(* TODO_HB
 move=> cxNZ; apply: trigger_derive.
 rewrite /= ![_ *: - _]mulrN mulNr mulrN opprK [_^-1 *: _]mulVf //.
 rewrite mulrCA -expr2 [X in _ * X + _ = _]sin2cos2.
 by rewrite mulrBr mulr1 mulVf ?sqrf_eq0 // subrK.
 Qed.
+*)
 
 Lemma derivable_tan x : cos x != 0 -> derivable tan x 1.
 Proof. by move=> /is_derive_tan[]. Qed.
