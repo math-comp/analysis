@@ -2222,21 +2222,25 @@ End matrix_Topology.
 
 (** ** Weak topology by a function *)
 
+Definition weak_topology {S : pointedType} {T : topologicalType}
+  (f : S -> T) : Type := S.
+
 Section Weak_Topology.
 
 Variable (S : pointedType) (T : topologicalType) (f : S -> T).
+Local Notation W := (weak_topology f).
 
 Definition wopen := [set f @^-1` A | A in open].
 
-Lemma wopT : wopen setT.
+Lemma wopT : wopen [set: W].
 Proof. by exists setT => //; apply: openT. Qed.
 
-Lemma wopI (A B : set S) : wopen A -> wopen B -> wopen (A `&` B).
+Lemma wopI (A B : set W) : wopen A -> wopen B -> wopen (A `&` B).
 Proof.
 by move=> [C Cop <-] [D Dop <-]; exists (C `&` D) => //; apply: openI.
 Qed.
 
-Lemma wop_bigU (I : Type) (g : I -> set S) :
+Lemma wop_bigU (I : Type) (g : I -> set W) :
   (forall i, wopen (g i)) -> wopen (\bigcup_i g i).
 Proof.
 move=> gop.
@@ -2250,28 +2254,20 @@ rewrite predeqE => s; split=> [[i _]|[i _]]; last by rewrite g_preim; exists i.
 by rewrite -[_ _]/((f @^-1` _) _) -g_preim; exists i.
 Qed.
 
-(* was weak_topologicalTypeMixin *)
-Fail HB.instance Definition _ :=
-  Pointed_IsOpenTopological.Build wopen wopT (@wopI) (@wop_bigU).
+HB.instance Definition _ := Pointed.on W.
+HB.instance Definition _ :=
+  Pointed_IsOpenTopological.Build W wopT wopI wop_bigU.
 
-(* TODO_HB find a way to port that
-Definition weak_topologicalTypeMixin := topologyOfOpenMixin wopT wopI wop_bigU.
-
-Let S_filteredClass := Filtered.Class (Pointed.class S) (nbhs_of_open wopen).
-Definition weak_topologicalType :=
-  Topological.Pack (@Topological.Class _ S_filteredClass
-    weak_topologicalTypeMixin).
-
-Lemma weak_continuous : continuous (f : weak_topologicalType -> T).
+Lemma weak_continuous : continuous (f : W -> T).
 Proof. by apply/continuousP => A ?; exists A. Qed.
 
 Lemma cvg_image (F : set (set S)) (s : S) :
   Filter F -> f @` setT = setT ->
-  F --> (s : weak_topologicalType) <-> [set f @` A | A in F] --> f s.
+  F --> (s : W) <-> [set f @` A | A in F] --> f s.
 Proof.
 move=> FF fsurj; split=> [cvFs|cvfFfs].
   move=> A /weak_continuous [B [Bop [Bs sBAf]]].
-  have /cvFs FB : nbhs (s : weak_topologicalType) B by apply: open_nbhs_nbhs.
+  have /cvFs FB : nbhs (s : W) B by apply: open_nbhs_nbhs.
   rewrite nbhs_simpl; exists (f @^-1` A); first exact: filterS FB.
   exact: image_preimage.
 move=> A /= [_ [[B Bop <-] [Bfs sBfA]]].
@@ -2279,29 +2275,28 @@ have /cvfFfs [C FC fCeB] : nbhs (f s) B by rewrite nbhsE; exists B; split.
 rewrite nbhs_filterE; apply: filterS FC.
 by apply: subset_trans sBfA; rewrite -fCeB; apply: preimage_image.
 Qed.
-*)
 
 End Weak_Topology.
 
 (** ** Supremum of a family of topologies *)
 
-(* TODO_HB find a way to port that
+Definition sup_topology {T : pointedType} {I : Type}
+  (Tc : I -> Topological T) : Type := T.
+
 Section Sup_Topology.
 
-Variable (T : pointedType) (I : Type) (Tc : I -> Topological.class_of T).
+Variable (T : pointedType) (I : Type) (Tc : I -> Topological T).
+Local Notation S := (sup_topology Tc).
 
 Let TS := fun i => Topological.Pack (Tc i).
 
 Definition sup_subbase := \bigcup_i (@open (TS i) : set (set T)).
 
-Definition sup_topologicalTypeMixin := topologyOfSubbaseMixin sup_subbase id.
-
-Definition sup_topologicalType :=
-  Topological.Pack (@Topological.Class _ (Filtered.Class (Pointed.class T) _)
-  sup_topologicalTypeMixin).
+HB.instance Definition _ := Pointed.on S.
+HB.instance Definition _ := Pointed_IsSubBaseTopological.Build S sup_subbase id.
 
 Lemma cvg_sup (F : set (set T)) (t : T) :
-  Filter F -> F --> (t : sup_topologicalType) <-> forall i, F --> (t : TS i).
+  Filter F -> F --> (t : S) <-> forall i, F --> (t : TS i).
 Proof.
 move=> Ffilt; split=> cvFt.
   move=> i A /=; rewrite (@nbhsE (TS i)) => - [B [[Bop Bt] sBA]].
@@ -2310,7 +2305,7 @@ move=> Ffilt; split=> cvFt.
   move=> _ ->; exists [fset B]%fset.
     by move=> ?; rewrite inE inE => /eqP->; exists i.
   by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite /= inE // =>/eqP->.
-move=> A /=; rewrite (@nbhsE sup_topologicalType).
+move=> A /=; rewrite (@nbhsE [the topologicalType of S]).
 move=> [_ [[[B sB <-] [C BC Ct]] sUBA]].
 rewrite nbhs_filterE; apply: filterS sUBA _; apply: (@filterS _ _ _ C).
   by move=> ??; exists C.
@@ -2320,7 +2315,6 @@ by apply: (cvFt i); apply: Eop; move: Ct; rewrite -IDeC => /(_ _ DE).
 Qed.
 
 End Sup_Topology.
-*)
 
 (** ** Product topology *)
 
@@ -4903,8 +4897,7 @@ by move=> [E [e egt0 sbeE] sEA]; exists e => // ??; apply/sEA/sbeE.
 Qed.
 End pseudoMetric_of_normedDomain.
 
-HB.instance Definition _ (R : zmodType) := Pointed.copy R^o
-  [the pointedType of R : Type].
+HB.instance Definition _ (R : zmodType) := Pointed.on R^o.
 
 HB.instance Definition _ (R : numDomainType) := IsFiltered.Build R R^o
   (nbhs_ball_ (ball_ (fun x => `|x|))).
@@ -4915,12 +4908,8 @@ HB.instance Definition _ (R : numFieldType) :=
 
 Module numFieldTopology.
 
-Section realType.
-Variable (R : realType).
-#[export]
-HB.instance Definition _ := PseudoMetric.copy R
-  [the pseudoMetricType R of R^o].
-End realType.
+#[export, non_forgetful_inheritance]
+HB.instance Definition _ (R : realType) := PseudoMetric.copy R R^o.
 
 Section rcfType.
 Variable (R : rcfType).
