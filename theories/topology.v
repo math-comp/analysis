@@ -4911,40 +4911,20 @@ Module numFieldTopology.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ (R : realType) := PseudoMetric.copy R R^o.
 
-Section rcfType.
-Variable (R : rcfType).
-#[export]
-HB.instance Definition _ := PseudoMetric.copy R
-  [the pseudoMetricType R of R^o].
-End rcfType.
+#[export, non_forgetful_inheritance]
+HB.instance Definition _ (R : rcfType) := PseudoMetric.copy R R^o.
 
-Section archiFieldType.
-Variable (R : archiFieldType).
-#[export]
-HB.instance Definition _ := PseudoMetric.copy R
-  [the pseudoMetricType R of R^o].
-End archiFieldType.
+#[export, non_forgetful_inheritance]
+HB.instance Definition _ (R : archiFieldType) := PseudoMetric.copy R R^o.
 
-Section realFieldType.
-Variable (R : realFieldType).
-#[export]
-HB.instance Definition _ := PseudoMetric.copy R
-  [the pseudoMetricType R of R^o].
-End realFieldType.
+#[export, non_forgetful_inheritance]
+HB.instance Definition _ (R : realFieldType) := PseudoMetric.copy R R^o.
 
-Section numClosedFieldType.
-Variable (R : numClosedFieldType).
-#[export]
-HB.instance Definition _ := PseudoMetric.copy R
-  [the pseudoMetricType R of R^o].
-End numClosedFieldType.
+#[export, non_forgetful_inheritance]
+HB.instance Definition _ (R : numClosedFieldType) := PseudoMetric.copy R R^o.
 
-Section numFieldType.
-Variable (R : numFieldType).
-#[export]
-HB.instance Definition _ := PseudoMetric.copy R
-  [the pseudoMetricType R of R^o].
-End numFieldType.
+#[export, non_forgetful_inheritance]
+HB.instance Definition _ (R : numFieldType) := PseudoMetric.copy R R^o.
 
 Module Exports. HB.reexport. End Exports.
 
