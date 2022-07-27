@@ -37,7 +37,8 @@ Local Open Scope ring_scope.
 (* PR to mathcomp in progress *)
 Lemma normr_nneg (R : numDomainType) (x : R) : `|x| \is Num.nneg.
 Proof. by rewrite qualifE. Qed.
-#[global] Hint Resolve normr_nneg : core.
+#[global] Hint Extern 0 (is_true (@Num.norm _ _ _ \is Num.nneg)) =>
+  solve [apply: normr_nneg] : core.
 (* /PR to mathcomp in progress *)
 
 Section PseriesDiff.
@@ -177,7 +178,7 @@ Lemma pseries_snd_diffs (c : R^nat) K x :
   cvg (pseries (pseries_diffs c) K) ->
   cvg (pseries (pseries_diffs (pseries_diffs c)) K) ->
   `|x| < `|K| ->
-  is_derive x 1
+  is_derive x (1 : R)
     (fun x => lim (pseries c x))
     (lim (pseries (pseries_diffs c) x)).
 Proof.
@@ -209,7 +210,8 @@ suff Cc : lim (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> lim (series s).
     move=> t; rewrite /ball /= sub0r normrN => H tNZ.
     rewrite (lt_le_trans H)// ler_pdivr_mulr // mulr2n mulrDr mulr1.
     by rewrite ler_paddr // subr_ge0 ltW.
-  by rewrite limZr; [rewrite lim_seriesB|exact: is_cvg_seriesB].
+  rewrite limZr; last exact/is_cvg_seriesB/Csx.
+  by rewrite lim_seriesB; last exact: Csx.
 apply: cvg_zero => /=.
 suff Cc : lim
     (series (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
@@ -235,7 +237,8 @@ suff Cc : lim
   have Ckf := @is_cvg_seriesZ _ _ h^-1 C1.
   have Cu : (series (h^-1 *: (shx h - sx)) - series s1) x0 @[x0 --> \oo] -->
       lim (series (h^-1 *: (shx h - sx))) - lim (series s).
-    by apply: cvgB.
+    admit.  (* TODO_HB *)
+    (* by apply: cvgB. *)
   set w := (fun n : nat => _ in RHS).
   have -> : w = h^-1 *: (shx h - sx)  - s1.
     apply: funext => i; rewrite !fctE.
@@ -287,7 +290,9 @@ apply: (@lim_cvg_to_0_linear _
   rewrite normrM -!mulrA ler_wpmul2l //.
   rewrite (le_trans (pseries_diffs_P3 _ _ (ltW xLr) _))// ?mulrA -?normr_gt0//.
   by rewrite (le_trans (ler_norm_add _ _))// -(subrK `|x| r) ler_add2r ltW.
-Unshelve. all: by end_near. Qed.
+Unshelve. all: by end_near.
+Admitted.
+(* Qed. *)
 
 End PseriesDiff.
 
@@ -358,9 +363,12 @@ Proof.
 set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: etrans (_ : f x = f 0) _; last by rewrite /f add0r oppr0 expR0 mulr1.
 apply: is_derive_0_is_cst => x1.
+Admitted.
+(* TODO_HB
 apply: trigger_derive.
 by rewrite /GRing.scale /= mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
 Qed.
+*)
 
 Lemma expRxMexpNx_1 x : expR x * expR (- x) = 1.
 Proof. by rewrite -[X in _ X * _ = _]addr0 expRxDyMexpx expR0. Qed.
