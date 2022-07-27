@@ -107,6 +107,98 @@ Reserved Notation "[ 'nnsfun' 'of' f ]"
 Notation "{ 'nnsfun' aT >-> T }" := (@NonNegSimpleFun.type _ aT T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
+Section ring.
+Context (aT : pointedType) (rT : ringType).
+
+Lemma fimfun_mulr_closed : mulr_closed (@fimfun aT rT).
+Proof.
+split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
+by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
+Qed.
+Canonical fimfun_mul := MulrPred fimfun_mulr_closed.
+Canonical fimfun_ring := SubringPred fimfun_mulr_closed.
+HB.instance Definition _ := [ringMixin of {fimfun aT >-> rT} by <:].
+
+Implicit Types (f g : {fimfun aT >-> rT}).
+
+Lemma fimfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
+Lemma fimfun1 : (1 : {fimfun aT >-> rT}) = cst 1 :> (_ -> _). Proof. by []. Qed.
+Lemma fimfun_prod I r (P : {pred I}) (f : I -> {fimfun aT >-> rT}) (x : aT) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+Lemma fimfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
+Proof.
+by apply/funext => x; elim: n => [|n IHn]//; rewrite !exprS fimfunM/= IHn.
+Qed.
+
+Lemma indic_fimfun_subproof X : @FiniteImage aT rT \1_X.
+Proof.
+split; apply: (finite_subfset [fset 0; 1]%fset) => x [tt /=].
+by rewrite !inE indicE; case: (_ \in _) => _ <-; rewrite ?eqxx ?orbT.
+Qed.
+HB.instance Definition _ X := indic_fimfun_subproof X.
+Definition indic_fimfun (X : set aT) := [the {fimfun aT >-> rT} of \1_X].
+
+HB.instance Definition _ k f := FImFun.copy (k \o* f) (f * cst_fimfun k).
+Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k \o* f].
+
+End ring.
+Arguments indic_fimfun {aT rT} _.
+
+Section comring.
+Context (aT : pointedType) (rT : comRingType).
+HB.instance Definition _ := [comRingMixin of {fimfun aT >-> rT} by <:].
+
+Implicit Types (f g : {fimfun aT >-> rT}).
+HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
+End comring.
+
+Lemma fimfunE T (R : ringType) (f : {fimfun T >-> R}) x :
+  f x = \sum_(y \in range f) (y * \1_(f @^-1` [set y]) x).
+Proof.
+rewrite (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 ?addr0//.
+by move=> y [fy /= /nesym yfx]; rewrite indicE memNset ?mulr0.
+Qed.
+
+Lemma fimfunEord T (R : ringType) (f : {fimfun T >-> R})
+    (s := fset_set (f @` setT)) :
+  forall x, f x = \sum_(i < #|`s|) (s`_i * \1_(f @^-1` [set s`_i]) x).
+Proof.
+move=> x; rewrite fimfunE fsbig_finite//= (big_nth 0)/= big_mkord.
+exact: eq_bigr.
+Qed.
+
+Lemma trivIset_preimage1 {aT rT} D (f : aT -> rT) :
+  trivIset D (fun x => f @^-1` [set x]).
+Proof. by move=> y z _ _ [x [<- <-]]. Qed.
+
+Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT)
+  (f : aT -> rT) : trivIset D (fun x => A `&` f @^-1` [set x]).
+Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
+
+Section fimfun_bin.
+Variables (d : measure_display) (T : measurableType d).
+Variables (R : numDomainType) (f g : {fimfun T >-> R}).
+
+Lemma max_fimfun_subproof : @FiniteImage T R (f \max g).
+Proof. by split; apply: (finite_image11 maxr). Qed.
+HB.instance Definition _ := max_fimfun_subproof.
+
+End fimfun_bin.
+
+HB.factory Record FiniteDecomp (T : pointedType) (R : ringType) (f : T -> R) :=
+  { fimfunE : exists (r : seq R) (A_ : R -> set T),
+      forall x, f x = \sum_(y <- r) (y * \1_(A_ y) x) }.
+HB.builders Context T R f of @FiniteDecomp T R f.
+  Lemma finite_subproof: @FiniteImage T R f.
+  Proof.
+  split; have [r [A_ fE]] := fimfunE.
+  suff -> : f = \sum_(y <- r) cst_fimfun y * indic_fimfun (A_ y) by [].
+  by apply/funext=> x; rewrite fE fimfun_sum.
+  Qed.
+  HB.instance Definition _ := finite_subproof.
+HB.end.
+
 Section mfun_pred.
 Context {d} {aT : measurableType d} {rT : realType}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
@@ -135,15 +227,12 @@ Qed.
 Lemma mfun_valP f (Pf : f \in mfun) : mfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
 
-Canonical mfun_subType := SubType T _ _ mfun_rect mfun_valP.
+HB.instance Definition _ := IsSUB.Build _ _ T mfun_rect mfun_valP.
 
 Lemma mfuneqP (f g : {mfun aT >-> rT}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
-Definition mfuneqMixin := [eqMixin of {mfun aT >-> rT} by <:].
-Canonical mfuneqType := EqType {mfun aT >-> rT} mfuneqMixin.
-Definition mfunchoiceMixin := [choiceMixin of {mfun aT >-> rT} by <:].
-Canonical mfunchoiceType := ChoiceType {mfun aT >-> rT} mfunchoiceMixin.
+HB.instance Definition _ := [Choice of {mfun aT >-> rT} by <:].
 
 Lemma cst_mfun_subproof x : @isMeasurableFun d aT rT (cst x).
 Proof. by split; apply: measurable_fun_cst. Qed.
@@ -168,12 +257,9 @@ Canonical mfun_add := AddrPred mfun_subring_closed.
 Canonical mfun_zmod := ZmodPred mfun_subring_closed.
 Canonical mfun_mul := MulrPred mfun_subring_closed.
 Canonical mfun_subring := SubringPred mfun_subring_closed.
-Definition mfun_zmodMixin := [zmodMixin of {mfun aT >-> rT} by <:].
-Canonical mfun_zmodType := ZmodType {mfun aT >-> rT} mfun_zmodMixin.
-Definition mfun_ringMixin := [ringMixin of {mfun aT >-> rT} by <:].
-Canonical mfun_ringType := RingType {mfun aT >-> rT} mfun_ringMixin.
-Definition mfun_comRingMixin := [comRingMixin of {mfun aT >-> rT} by <:].
-Canonical mfun_comRingType := ComRingType {mfun aT >-> rT} mfun_comRingMixin.
+HB.instance Definition _ := [zmodMixin of {mfun aT >-> rT} by <:].
+HB.instance Definition _ := [ringMixin of {mfun aT >-> rT} by <:].
+HB.instance Definition _ := [comRingMixin of {mfun aT >-> rT} by <:].
 
 Implicit Types (f g : {mfun aT >-> rT}).
 
@@ -272,15 +358,12 @@ Qed.
 Lemma sfun_valP f (Pf : f \in sfun) : sfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
 
-Canonical sfun_subType := SubType T _ _ sfun_rect sfun_valP.
+HB.instance Definition _ := IsSUB.Build _ _ T sfun_rect sfun_valP.
 
 Lemma sfuneqP (f g : {sfun aT >-> rT}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
-Definition sfuneqMixin := [eqMixin of {sfun aT >-> rT} by <:].
-Canonical sfuneqType := EqType {sfun aT >-> rT} sfuneqMixin.
-Definition sfunchoiceMixin := [choiceMixin of {sfun aT >-> rT} by <:].
-Canonical sfunchoiceType := ChoiceType {sfun aT >-> rT} sfunchoiceMixin.
+HB.instance Definition _ := [Choice of {sfun aT >-> rT} by <:].
 
 (* TODO: BUG: HB *)
 (* HB.instance Definition _ (x : rT) := @cst_mfun_subproof aT rT x. *)
@@ -316,12 +399,9 @@ Canonical sfun_add := AddrPred sfun_subring_closed.
 Canonical sfun_zmod := ZmodPred sfun_subring_closed.
 Canonical sfun_mul := MulrPred sfun_subring_closed.
 Canonical sfun_subring := SubringPred sfun_subring_closed.
-Definition sfun_zmodMixin := [zmodMixin of {sfun aT >-> rT} by <:].
-Canonical sfun_zmodType := ZmodType {sfun aT >-> rT} sfun_zmodMixin.
-Definition sfun_ringMixin := [ringMixin of {sfun aT >-> rT} by <:].
-Canonical sfun_ringType := RingType {sfun aT >-> rT} sfun_ringMixin.
-Definition sfun_comRingMixin := [comRingMixin of {sfun aT >-> rT} by <:].
-Canonical sfun_comRingType := ComRingType {sfun aT >-> rT} sfun_comRingMixin.
+HB.instance Definition _ := [zmodMixin of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := [ringMixin of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := [comRingMixin of {sfun aT >-> rT} by <:].
 
 Implicit Types (f g : {sfun aT >-> rT}).
 
