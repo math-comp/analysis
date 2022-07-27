@@ -1872,6 +1872,9 @@ HB.end.
 
 (** ** Topology defined by open sets *)
 
+Definition nbhs_of_open (T : pointedType) (op : set T -> Prop) (p : T) (A : set T) :=
+  exists B, op B /\ B p /\ B `<=` A.
+
 (* was topologyOfOpenMixin *)
 HB.factory Record Pointed_IsOpenTopological T of Pointed T := {
   op : set T -> Prop;
@@ -1883,10 +1886,7 @@ HB.factory Record Pointed_IsOpenTopological T of Pointed T := {
 
 HB.builders Context T of Pointed_IsOpenTopological T.
 
-Definition nbhs_of_open (p : T) (A : set T) :=
-  exists B, op B /\ B p /\ B `<=` A.
-
-HB.instance Definition _ := isFiltered.Build T T nbhs_of_open.
+HB.instance Definition _ := isFiltered.Build T T (nbhs_of_open op).
 
 Lemma ax1 (p : T) : ProperFilter (nbhs p).
 Proof.
@@ -2249,6 +2249,10 @@ have g_preim i : g i = f @^-1` (get (opi i)).
 rewrite predeqE => s; split=> [[i _]|[i _]]; last by rewrite g_preim; exists i.
 by rewrite -[_ _]/((f @^-1` _) _) -g_preim; exists i.
 Qed.
+
+(* was weak_topologicalTypeMixin *)
+Fail HB.instance Definition _ :=
+  Pointed_IsOpenTopological.Build wopen wopT (@wopI) (@wop_bigU).
 
 (* TODO_HB find a way to port that
 Definition weak_topologicalTypeMixin := topologyOfOpenMixin wopT wopI wop_bigU.
