@@ -3666,7 +3666,9 @@ HB.end.
 
 Lemma nbhs_entourageE {M : uniformType} : nbhs_ (@entourage M) = nbhs.
 Proof.
-Admitted.  (* TODO_HB *)
+by case: M => ? [? ? ? ? []].
+(* TODO_HB *)
+Qed.
 
 Lemma entourage_sym {X Y : Type} E (x : X) (y : Y) :
   E (x, y) <-> (E ^-1)%classic (y, x).
@@ -4342,7 +4344,9 @@ HB.end.
 
 Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} : entourage_ (@ball R M) = entourage.
 Proof.
-Admitted.  (* TODO_HB *)
+by case: M => ? [? ? ? ? ? ? []].
+(* TODO_HB *)
+Qed.
 
 Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
   @filter_from R _ [set x : R | 0 < x]
@@ -4689,8 +4693,9 @@ Context {T : completeType}.
 Lemma cauchy_cvg (F : set (set T)) (FF : ProperFilter F) :
   cauchy F -> cvg F.
 Proof.
-Admitted.  (* TODO_HB *)
-(* by case: T F FF => [? [?]]. Qed. *)
+by case: T F FF => ? [? ? ? ? ? ? []].
+(* TODO_HB *)
+Qed.
 
 Lemma cauchy_cvgP (F : set (set T)) (FF : ProperFilter F) : cauchy F <-> cvg F.
 Proof. by split=> [/cauchy_cvg|/cvg_cauchy]. Qed.
