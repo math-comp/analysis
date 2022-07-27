@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 Require Reals.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import interval zmodp.
@@ -26,8 +27,8 @@ Local Open Scope fset_scope.
 Definition totally {I : choiceType} : set (set {fset I}) :=
   filter_from setT (fun A => [set B | A `<=` B]).
 
-Canonical totally_filter_source {I : choiceType} X :=
-  @Filtered.Source X _ {fset I} (fun f => f @ totally).
+HB.instance Definition _ {I : choiceType} X :=
+  IsSource.Build X _ {fset I} (fun f => f @ totally).
 
 Instance totally_filter {I : choiceType} : ProperFilter (@totally I).
 Proof.
