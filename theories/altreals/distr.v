@@ -70,7 +70,8 @@ Lemma summable_mu : summable mu.
 Proof. by case: mu. Qed.
 End DistrCoreTh.
 
-#[global] Hint Resolve ge0_mu le1_mu summable_mu : core.
+#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: ge0_mu] : core.
+#[global] Hint Resolve le1_mu summable_mu : core.
 
 (* -------------------------------------------------------------------- *)
 Section Clamp.
@@ -180,7 +181,7 @@ Qed.
 Lemma le1_mu1
   {R : realType} {T : choiceType} (mu : {distr T / R}) x : mu x <= 1.
 Proof.
-apply/(@le_trans _ _ (psum mu)) => //; rewrite -[mu x]ger0_norm //.
+apply/(@le_trans _ _ (psum mu)) => //; rewrite -[mu x]ger0_norm//.
 by apply/ger1_psum.
 Qed.
 
@@ -566,8 +567,7 @@ apply/(@le_trans _ _ (\sum_(j <- J) f K j)); last first.
   have /(gerfinseq_psum uqJ) := summable_mu (f K).
   move/le_trans=> -/(_ _ (le1_mu (f K)))=> h.
   by apply/(le_trans _ h)/ler_sum=> i _; apply/ler_norm.
-apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >]; [done|].
-by move=> _; apply/ge0_mu.
+by apply/ler_sum=> j _; rewrite /F; case/boolP: `[< _ >].
 Qed.
 
 Definition dlim T (f : nat -> distr T) :=
@@ -1212,7 +1212,7 @@ have nz_lij: li + l j != 0 by rewrite gt_eqF ?ltr_paddl.
 have/ih := eq1 => -/(_ _ z); rewrite [_ * (_ / _)]mulrC.
 rewrite mulfVK // => {}ih; apply/(le_trans (ih _)).
   by rewrite addr_ge0 ?ge0_l.
-rewrite ler_add2r {ih}/z mulrDl ![_*_/_]mulrAC.
+rewrite ler_add2r {ih}/z [_ / _]mulrDl ![_*_/_]mulrAC.
 set c1 : R := _ / _; set c2 : R := _ / _; have eqc2: c2 = 1 - c1.
   apply/(mulfI nz_lij); rewrite mulrBr mulr1 ![(li + l j)*_]mulrC.
   by apply/eqP; rewrite !mulfVK // eq_sym subr_eq addrC.
