@@ -122,8 +122,7 @@ have gt0_e: 0 < e by rewrite subr_gt0.
 move=> x y; rewrite !inE/= /eclamp pmulr_rle0 // invr_le0.
 rewrite lern0 /= !ltr_distl => /andP[_ lt1] /andP[lt2 _].
 apply/(lt_trans lt1)/(le_lt_trans _ lt2).
-rewrite ler_subr_addl addrCA -mulrDl -mulr2n -mulr_natr.
-by rewrite mulfK ?pnatr_eq0 //= /e addrCA subrr addr0.
+by rewrite ler_subr_addl addrCA -splitr /e addrCA subrr addr0.
 Qed.
 
 Lemma separable {R : realType} (l1 l2 : \bar R) :
@@ -248,7 +247,7 @@ rewrite inE opprD addrACA (le_lt_trans (ler_norm_add _ _)) //.
 move: (cu _ leu) (cv _ lev); rewrite !inE eclamp_id.
   by rewrite mulr_gt0 // invr_gt0 ltr0Sn.
 move=> cu' cv'; suff ->: e = z + z by rewrite ltr_add.
-by rewrite -mulrDl -mulr2n -mulr_natr mulfK ?pnatr_eq0.
+exact: splitr.
 Qed.
 
 Lemma ncvgN u lu : ncvg u lu -> ncvg (- u) (- lu).
