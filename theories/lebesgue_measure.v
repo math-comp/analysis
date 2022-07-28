@@ -597,13 +597,11 @@ Lemma itv_bnd_infty_bigcup (R : realType) b (x : R) :
 Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
-Admitted.
-(* TODO_HB
-move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
-rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
-by case: b xy => //= /ltW.
+move=> xy; exists `|ceil (y - x)%R|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
+rewrite !natr_absz/= ger0_norm ?ceil_ge0// ?subr_ge0//; last first.
+  by case: b xy => //= /ltW.
+by rewrite -RceilE Rceil_ge.
 Qed.
-*)
 
 Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
   [set` Interval -oo%O (BSide b x)] =
@@ -1696,18 +1694,14 @@ Lemma measurable_fun_cvg D (h : (T -> R)^nat) f :
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = lim_sup (h ^~ x).
   move=> Dx; have /cvg_lim  <-// := @cvg_sups _ (h ^~ x) (f x) (f_f _ Dx).
-Admitted.
-(* TODO_HB
-  exact: Rhausdorff.
 apply: (@eq_measurable_fun _ _ _ _ D (fun x => lim_sup (h ^~ x))).
   by move=> x; rewrite inE => Dx; rewrite -fE.
 apply: (@measurable_fun_lim_sup _ h) => // t Dt.
-- apply/bounded_fun_has_ubound/(@cvg_seq_bounded _ [normedModType R of R^o]).
+- apply/bounded_fun_has_ubound/(@cvg_seq_bounded _ [the normedModType R of R^o]).
   by apply/cvg_ex; eexists; exact: f_f.
-- apply/bounded_fun_has_lbound/(@cvg_seq_bounded _ [normedModType R of R^o]).
+- apply/bounded_fun_has_lbound/(@cvg_seq_bounded _ [the normedModType R of R^o]).
   by apply/cvg_ex; eexists; exact: f_f.
 Qed.
-*)
 
 End measurable_fun_realType.
 
