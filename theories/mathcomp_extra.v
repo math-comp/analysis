@@ -437,3 +437,87 @@ Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
 
 Arguments big_rmcond {R idx op I r} P.
 Arguments big_rmcond_in {R idx op I r} P.
+
+Lemma big_seq1E (T : Type) op I (i : I) (F : I -> T) x :
+  \big[op/x]_(j <- [:: i]) F j = op (F i) x.
+Proof. by rewrite big_cons big_nil. Qed.
+
+Lemma big_pred1_eqE (T : Type) op (I : finType) (i : I) (F : I -> T) x :
+  \big[op/x]_(j | j == i) F j = op (F i) x.
+Proof.
+have [e1 <- _ [e_enum _]] := big_enumP (pred1 i).
+by rewrite (perm_small_eq _ e_enum) enum1 ?big_seq1E.
+Qed.
+
+Lemma big_pred1E (T : Type) op (I : finType) i (P : pred I) (F : I -> T) x :
+  P =1 pred1 i -> \big[op/x]_(j | P j) F j = op (F i) x.
+Proof. by move/(eq_bigl _ _)->; apply: big_pred1_eqE. Qed.
+
+Lemma bigmaxmin_mkcond (T : Type) op I r (P : pred I) (F : I -> T) x :
+  idempotent op -> left_commutative op ->
+  \big[op/x]_(i <- r | P i) F i = \big[op/x]_(i <- r) (if P i then F i else x).
+Proof.
+move=> opxx opCA; elim: r x => [x|i r ih x]; first by rewrite 2!big_nil.
+rewrite 2!big_cons; case: ifPn => Pi; rewrite ih//.
+elim: r {ih} => [|j r ih]; first by rewrite big_nil opxx.
+by rewrite big_cons {1}ih opCA.
+Qed.
+
+Lemma bigmaxmin_split (T : Type) op I r (P : pred I) (F1 F2 : I -> T) x :
+  idempotent op -> interchange op op ->
+  \big[op/x]_(i <- r | P i) (op (F1 i) (F2 i)) =
+  op (\big[op/x]_(i <- r | P i) F1 i) (\big[op/x]_(i <- r | P i) F2 i).
+Proof. by move=> opxx minACA; elim/big_rec3: _ => [|i y z _ _ ->]. Qed.
+
+Lemma bigmaxmin_idl (T : Type) op I r (P : pred I) (F : I -> T) x :
+  idempotent op -> left_commutative op ->
+  \big[op/x]_(i <- r | P i) F i = op x (\big[op/x]_(i <- r | P i) F i).
+Proof.
+move=> opxx opCA.
+rewrite -big_filter; elim: [seq i <- r | P i] => [|i l ihl].
+  by rewrite big_nil opxx.
+by rewrite big_cons opCA -ihl.
+Qed.
+
+Lemma bigmaxminID (T : Type) op I r (a P : pred I) (F : I -> T) x :
+  idempotent op -> associative op -> commutative op ->
+  \big[op/x]_(i <- r | P i) F i =
+  op (\big[op/x]_(i <- r | P i && a i) F i)
+     (\big[op/x]_(i <- r | P i && ~~ a i) F i).
+Proof.
+move=> opxx opA opC.
+have opCA : left_commutative op by move=> u v w; rewrite opA (opC u) -opA.
+have opAC : right_commutative op by move=> u v w; rewrite -opA (opC v) opA.
+have opACA : interchange op op by move=> u v w t; rewrite -opA (opCA v) opA.
+under [in X in op X _]eq_bigl do rewrite andbC.
+under [in X in op _ X]eq_bigl do rewrite andbC.
+rewrite -!(big_filter _ (fun _ => _ && _)) !filter_predI !big_filter.
+rewrite ![in RHS](bigmaxmin_mkcond _ _ F)// !big_filter -bigmaxmin_split//.
+have eqop i : P i ->
+  op (if a i then F i else x) (if ~~ a i then F i else x) = op (F i) x.
+  by move=> _; case: (a i) => //=; rewrite opC.
+rewrite [RHS](eq_bigr _ eqop) -!(big_filter _ P).
+elim: [seq j <- r | P j] => [|j l ihl]; first by rewrite !big_nil.
+by rewrite !big_cons -opA -bigmaxmin_idl// ihl.
+Qed.
+
+Lemma bigmaxminD1 (T : Type) op (I : finType) j (P : pred I) (F : I -> T) x :
+  idempotent op -> associative op -> commutative op ->
+  P j -> \big[op/x]_(i | P i) F i
+    = op (F j) (\big[op/x]_(i | P i && (i != j)) F i).
+Proof.
+move=> opxx opA opC.
+have opCA : left_commutative op by move=> u v w; rewrite opA (opC u) -opA.
+move=> Pj; rewrite (bigmaxminID _ (pred1 j))// [in RHS]bigmaxmin_idl// opA.
+by congr op; apply: big_pred1E => i; rewrite /= andbC; case: eqP => //->.
+Qed.
+
+Section bigminr_maxr.
+Import Num.Def.
+
+Lemma bigminr_maxr (R : realDomainType) I r (P : pred I) (F : I -> R) x :
+  \big[minr/x]_(i <- r | P i) F i = - \big[maxr/- x]_(i <- r | P i) - F i.
+Proof.
+by elim/big_rec2: _ => [|i y _ _ ->]; rewrite ?oppr_max opprK.
+Qed.
+End bigminr_maxr.

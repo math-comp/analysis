@@ -1952,7 +1952,7 @@ Let nd_max_g2 : nondecreasing_seq (max_g2 : (T -> R)^nat).
 Proof.
 apply/nondecreasing_seqP => n; apply/lefP => x; rewrite 2!bigmax_nnsfunE.
 rewrite (@le_trans _ _ (\big[maxr/0]_(i < n) g2 i n.+1 x)%R) //.
-  apply: le_bigmax => i _; apply: (nondecreasing_seqP (g2 i ^~ x)).2 => a b ab.
+  apply: le_bigmax' => i _; apply: (nondecreasing_seqP (g2 i ^~ x)).2 => a b ab.
    by rewrite !nnsfun_approxE; exact/lefP/nd_approx.
 rewrite (bigmaxD1 ord_max)// le_maxr; apply/orP; right.
 rewrite [leRHS](eq_bigl (fun i => nat_of_ord i < n)%N); last first.
@@ -1971,9 +1971,9 @@ Let max_g2_g k x : ((max_g2 k x)%:E <= g k x)%O.
 Proof.
 rewrite bigmax_nnsfunE.
 apply: (@le_trans _ _ (\big[maxe/0%:E]_(i < k) g k x)); last first.
-  apply/bigmax_lerP; split => //; apply: g0D.
+  by apply/bigmax_leP; split => //; apply: g0D.
 rewrite (@big_morph _ _ EFin 0%:E maxe) //; last by move=> *; rewrite maxEFin.
-apply: le_bigmax => i _; rewrite nnsfun_approxE /=.
+apply: le_bigmax' => i _; rewrite nnsfun_approxE /=.
 by rewrite (le_trans (le_approx _ _ _)) => //; exact/nd_g/ltnW.
 Qed.
 

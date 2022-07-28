@@ -26,6 +26,17 @@
   + lemma `preimage10P`
 - in `classical_sets.v`:
   + lemma `setT_unit`
+- in `mathcomp_extra.v`:
+  + lemma `big_seq1E`
+  + lemma `big_pred1_eqE`
+  + lemma `big_pred1E`
+  + lemma `bigmaxmin_mkcond`
+  + lemma `bigmaxmin_split`
+  + lemma `bigmaxmin_idl`
+  + lemma `bigmaxminID`
+  + lemma `bigmaxminD1`
+- in `topogy.v`:
+  + lemmas `bigmax_le` and `bigmax_lt`
 
 ### Changed
 
@@ -41,14 +52,26 @@
 - in `lebesgue_integral.v`
   + minor generalization of `eq_measure_integral`
 - in `topology.v`:
-  + generalize `ltr_bigminr` to `porderType`
-  + generalize `bigminr_ler` to `orderType`
+  + generalize `ltr_bigminr` to `porderType` and rename to `bigmin_lt`
+  + generalize `bigminr_ler` to `orderType` and rename to `bigmin_le`
 - moved out of module `Bigminr` in `normedtype.v` to `topology.v` and generalizes to `orderType`:
-  + lemma `bigminr_ler_cond`
-- moved out of module `Bigminr` in `normedtype.v` and generalized to `orderType`:
-  + lemma `bigminr_mkcond`, `bigminr_split`, `bigminr_idl`, `bigminrID`
-
-bigminr_mkcond
+  + lemma `bigminr_ler_cond`, renamed to `bigmin_le_cond`
+- moved out of module `Bigminr` in `normedtype.v` to `mathcomp_extra.v`:
+  + lemma `bigminr_maxr`
+- moved from from module `Bigminr` in `normedtype.v` to `topology.v`
+  + and lemmas generalized to `orderType`
+    * `bigminr_mkcond` -> `bigmin_mkcond`
+    * `bigminr_split` -> `bigmin_split`
+    * `bigminr_idl` -> `bigmin_idl`
+    * `bigminrID` -> `bigminID`
+    * `bigminrD1` -> `bigminD1`
+    * `bigminr_inf` -> `bigmin_inf`
+    * `bigminr_gerP` -> `bigmin_geP`
+    * `bigminr_gtrP` -> ``bigmin_gtP``
+    * `bigminr_lerP` -> `bigmin_leP`
+    * `bigminr_ltrP` -> `bigmin_ltP`
+    * `bigminr_eq_arg` -> `bigmin_eq_arg`
+    * `eq_bigminr` -> `eq_bigmin`
 
 ### Renamed
 
@@ -57,11 +80,22 @@ bigminr_mkcond
   + `lee_ninfty_eq` -> `leeNy_eq`
 - in `classical_sets.v`:
   + `set_bool` -> `setT_bool`
+- in `topology.v`:
+  + `bigmax_lerP` -> `bigmax_leP`
+  + `bigmax_ltrP` -> `bigmax_ltP`
+  + `bigmax_gerP` -> `bigmax_geP`
+  + `bigmax_gtrP` -> `bigmax_gtP`
+  + `ler_bigmax_cond` -> `le_bigmax_cond`
+  + `ler_bigmax` -> `le_bigmax`
+  + `le_bigmax` -> `le_bigmax'`
 
 ### Removed
 
-- in `normedtype.v`
-  + `Bigminr.bigminr_ler_cond`, `Bigminr.bigminr_ler`
+- in `normedtype.v` (module `Bigminr`)
+  + `bigminr_ler_cond`, `bigminr_ler`.
+  + `bigminr_seq1`, `bigminr_pred1_eq`, `bigminr_pred1`
+- in `topology.v`:
+  + `bigmax_seq1`, `bigmax_pred1_eq`, `bigmax_pred1`
 
 ### Infrastructure
 
