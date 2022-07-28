@@ -190,7 +190,7 @@ Qed.
 
 HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
     of Num.NormedZmodule R T & PseudoMetric R T := {
-  pseudo_metric_ball_norm : (@ball R T) = ball_ (fun x => `| x |)
+  pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |)
 }.
 
 #[short(type="pseudoMetricNormedZmodType")]
@@ -1770,7 +1770,8 @@ End NbhsNorm.
 (* TODO: generalize to R : numFieldType *)
 Section hausdorff.
 
-Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
+Lemma Rhausdorff (R : realFieldType) :
+  hausdorff_space [the topologicalType of R : Type].
 Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/in_segment_addgt0Pr => _ /posnumP[e].
@@ -3511,27 +3512,27 @@ case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
     rewrite !(lteifF, lteifT).
   + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx].
     rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
-    apply: (@interior_subset R).
+    apply: (@interior_subset [the topologicalType of R : Type]).
     by rewrite interval_bounded_interior // /mkset infXx.
   + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx supXx].
-    apply: (@interior_subset R).
+    apply: (@interior_subset [the topologicalType of R : Type]).
     by rewrite interval_bounded_interior // /mkset infXx.
   + move=> /andP[infXx]; rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
-    apply: (@interior_subset R).
+    apply: (@interior_subset [the topologicalType of R : Type]).
     by rewrite interval_bounded_interior // /mkset infXx.
-  + move=> ?; apply: (@interior_subset R).
+  + move=> ?; apply: (@interior_subset [the topologicalType of R : Type]).
     by rewrite interval_bounded_interior // /mkset infXx.
 - case: asboolP => XinfX; rewrite !(lteifF, lteifT, andbT).
   + rewrite le_eqVlt => /orP[/eqP<-//|infXx].
-    apply: (@interior_subset R).
+    apply: (@interior_subset [the topologicalType of R : Type]).
     by rewrite interval_right_unbounded_interior.
-  + move=> infXx; apply: (@interior_subset R).
+  + move=> infXx; apply: (@interior_subset [the topologicalType of R : Type]).
     by rewrite interval_right_unbounded_interior.
 - case: asboolP => XsupX /=.
   + rewrite le_eqVlt => /orP[/eqP->//|xsupX].
-    apply: (@interior_subset R).
+    apply: (@interior_subset [the topologicalType of R : Type]).
     by rewrite interval_left_unbounded_interior.
-  + move=> xsupX; apply: (@interior_subset R).
+  + move=> xsupX; apply: (@interior_subset [the topologicalType of R : Type]).
     by rewrite interval_left_unbounded_interior.
 - by move=> _; rewrite (interval_unbounded_setT iX).
 Qed.

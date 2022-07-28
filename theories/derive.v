@@ -649,10 +649,10 @@ Qed.
 Global Instance is_diff_scalel (k : R) (x : V) :
   is_diff k ( *:%R ^~ x) ( *:%R ^~ x).
 Proof.
-have sx_lin : linear ( *:%R ^~ x) by move=> u y z; rewrite scalerDl scalerA.
-have -> : *:%R ^~ x = Linear sx_lin by rewrite funeqE.
-apply: DiffDef; first exact/linear_differentiable/scalel_continuous.
-by rewrite diff_lin//; apply: scalel_continuous.
+have -> : *:%R ^~ x = GRing.scale_linear [the lmodType _ of R : Type] x.
+  by rewrite funeqE => ? /=; rewrite [_ *: _]mulrC.
+apply: DiffDef; first exact/linear_differentiable/scaler_continuous.
+by rewrite diff_lin //; apply: scaler_continuous.
 Qed.
 
 Lemma differentiable_coord m n (M : 'M[R]_(m.+1, n.+1)) i j :

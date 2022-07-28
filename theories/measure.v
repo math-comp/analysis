@@ -657,7 +657,7 @@ Notation "'measurable" :=
   (@measurable default_measure_display) : classical_set_scope.
 
 HB.mixin Record RingOfSets_from_semiRingOfSets d T of SemiRingOfSets d T := {
-  measurableU : setU_closed (@measurable d T)
+  measurableU : @setU_closed T measurable
 }.
 
 #[short(type="ringOfSetsType")]
