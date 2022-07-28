@@ -40,6 +40,15 @@
   + fix pretty-printing of `{mfun _ >-> _}`, `{sfun _ >-> _}`, `{nnfun _ >-> _}`
 - in `lebesgue_integral.v`
   + minor generalization of `eq_measure_integral`
+- in `topology.v`:
+  + generalize `ltr_bigminr` to `porderType`
+  + generalize `bigminr_ler` to `orderType`
+- moved out of module `Bigminr` in `normedtype.v` to `topology.v` and generalizes to `orderType`:
+  + lemma `bigminr_ler_cond`
+- moved out of module `Bigminr` in `normedtype.v` and generalized to `orderType`:
+  + lemma `bigminr_mkcond`, `bigminr_split`, `bigminr_idl`, `bigminrID`
+
+bigminr_mkcond
 
 ### Renamed
 
@@ -50,6 +59,9 @@
   + `set_bool` -> `setT_bool`
 
 ### Removed
+
+- in `normedtype.v`
+  + `Bigminr.bigminr_ler_cond`, `Bigminr.bigminr_ler`
 
 ### Infrastructure
 

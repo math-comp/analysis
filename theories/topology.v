@@ -4409,6 +4409,33 @@ End entourages.
 
 (** ** Specific pseudoMetric spaces *)
 
+(* TODO: useful? see bigminr_gtrP in normedtype.v *)
+Lemma ltr_bigminr d (R : porderType d) (I : finType) (f : I -> R) (x0 x : R) :
+  (x < x0)%O -> (forall i, x < f i)%O -> (x < \big[Order.min/x0]_i f i)%O.
+Proof.
+move=> ltx0 ltxf; elim/big_ind: _ => // y z ltxy ltxz.
+by rewrite minElt; case: ifPn.
+Qed.
+
+(* TODO: see bigminr_ler in normedtype.v *)
+Lemma bigminr_ler_cond d (R : orderType d) (I : finType) (P : pred I) (f : I -> R) (x0 : R) i :
+  P i ->
+  (\big[Order.min/x0]_(j | P j) f j <= f i)%O.
+Proof.
+have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
+rewrite inE => /orP [/eqP-> Pi|/ihl leminlfi Pi].
+  by rewrite Pi le_minl lexx.
+case: ifPn => Pj.
+  by rewrite le_minl leminlfi// orbC.
+exact: leminlfi.
+Qed.
+Arguments bigminr_ler_cond {d R I P f}.
+
+Lemma bigminr_ler d (R : orderType d) (I : finType) (f : I -> R) (x0 : R) i :
+  (\big[Order.min/x0]_j f j <= f i)%O.
+Proof. exact: bigminr_ler_cond. Qed.
+Arguments bigminr_ler {d R I f}.
+
 (** matrices *)
 Section matrix_PseudoMetric.
 Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
@@ -4424,23 +4451,6 @@ Proof.
 by move=> xe1_y ye2_z ??; apply: ball_triangle; [apply: xe1_y| apply: ye2_z].
 Qed.
 
-(* TODO: useful? see bigminr_gtrP in normedtype.v *)
-Lemma ltr_bigminr (I : finType) (f : I -> {posnum R}) (x0 x : {posnum R}) :
-  x < x0 -> (forall i, x < f i) -> x < \big[Num.min/x0]_i f i.
-Proof.
-move=> ltx0 ltxf; elim/big_ind: _ => // y z ltxy ltxz.
-by rewrite lt_minr ltxy ltxz.
-Qed.
-
-(* TODO: see bigminr_ler in normedtype.v *)
-Lemma bigminr_ler (I : finType) (f : I -> {posnum R}) (x0 : {posnum R}) i :
-  \big[Num.min/x0]_j f j <= f i.
-Proof.
-have := mem_index_enum i; rewrite unlock; elim: (index_enum I) => //= j l ihl.
-by rewrite inE => /orP [/eqP->|/ihl leminlfi];
-  rewrite le_minl ?lexx // leminlfi orbC.
-Qed.
-
 Lemma mx_entourage : entourage = entourage_ mx_ball.
 Proof.
 rewrite predeqE=> A; split; last first.
@@ -4454,7 +4464,8 @@ move=> MN MN_min; apply: sPA => i j.
 have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
   by have [_/posnumP[e]] := entP i j; exists e.
 apply; apply: le_ball (MN_min i j).
-by apply: le_trans (bigminr_ler _ _ i) _; apply: bigminr_ler.
+apply: le_trans (@bigminr_ler _ [orderType of {posnum R}] _ _ _ i) _.
+exact: bigminr_ler.
 Qed.
 Definition matrix_pseudoMetricType_mixin :=
   PseudoMetric.Mixin mx_ball_center mx_ball_sym mx_ball_triangle mx_entourage.

@@ -1694,6 +1694,53 @@ rewrite near_map => /nbhs_ballP[_/posnumP[a]] + xl; apply.
 by move/cvg_ball : xl => /(_ _ (gt0 a))/nbhs_ballP[_/posnumP[b]]; apply.
 Qed.
 
+Lemma bigminr_mkcond d (R : orderType d) I r (P : pred I) (F : I -> R) x :
+  \big[Order.min/x]_(i <- r | P i) F i =
+     \big[Order.min/x]_(i <- r) (if P i then F i else x).
+Proof.
+elim: r x => [x|i r ih x]; first by rewrite 2!big_nil.
+rewrite 2!big_cons; case: ifPn => Pi; rewrite ih//.
+elim: r {ih} => [|j r ih]; first by rewrite big_nil minxx.
+by rewrite big_cons {1}ih minCA.
+Qed.
+Arguments bigminr_mkcond {d R I r}.
+
+Lemma bigminr_split d (R : orderType d) I r (P : pred I) (F1 F2 : I -> R) x :
+  \big[Order.min/x]_(i <- r | P i) (Order.min (F1 i) (F2 i)) =
+  Order.min (\big[Order.min/x]_(i <- r | P i) F1 i)
+            (\big[Order.min/x]_(i <- r | P i) F2 i).
+Proof.
+elim/big_rec3: _ => [|i y z _ _ ->]; rewrite ?minxx //.
+by rewrite minCA -!minA minCA.
+Qed.
+
+Lemma bigminr_idl d (R : orderType d) I r (P : pred I) (F : I -> R) x :
+  \big[Order.min/x]_(i <- r | P i) F i =
+  Order.min x (\big[Order.min/x]_(i <- r | P i) F i).
+Proof.
+rewrite -big_filter; elim: [seq i <- r | P i] => [|i l ihl].
+  by rewrite big_nil minxx.
+by rewrite big_cons minCA -ihl.
+Qed.
+
+Lemma bigminrID d (R : orderType d) I r (a P : pred I) (F : I -> R) x :
+  \big[Order.min/x]_(i <- r | P i) F i =
+  Order.min (\big[Order.min/x]_(i <- r | P i && a i) F i)
+            (\big[Order.min/x]_(i <- r | P i && ~~ a i) F i).
+Proof.
+under [in X in Order.min X _]eq_bigl do rewrite andbC.
+under [in X in Order.min _ X]eq_bigl do rewrite andbC.
+rewrite -!(big_filter _ (fun _ => _ && _)) !filter_predI !big_filter.
+rewrite ![in RHS](bigminr_mkcond _ F) !big_filter -bigminr_split.
+have eqmin i : P i ->
+  Order.min (if a i then F i else x) (if ~~ a i then F i else x) = Order.min (F i) x.
+  by move=> _; case: (a i) => //=; rewrite minC.
+rewrite [RHS](eq_bigr _ eqmin) -!(big_filter _ P).
+elim: [seq j <- r | P j] => [|j l ihl]; first by rewrite !big_nil.
+by rewrite !big_cons -minA -bigminr_idl ihl.
+Qed.
+Arguments bigminrID {d R I r}.
+
 Module Bigminr.
 Section bigminr.
 Variable (R : realDomainType).
@@ -1703,32 +1750,6 @@ Lemma bigminr_maxr I r (P : pred I) (F : I -> R) x :
 Proof.
 by elim/big_rec2: _ => [|i y _ _ ->]; rewrite ?oppr_max opprK.
 Qed.
-
-Lemma bigminr_mkcond I r (P : pred I) (F : I -> R) x :
-  \big[minr/x]_(i <- r | P i) F i =
-     \big[minr/x]_(i <- r) (if P i then F i else x).
-Proof.
-rewrite !bigminr_maxr bigmax_mkcond; congr (- _).
-by apply: eq_bigr => i _; case P.
-Qed.
-
-Lemma bigminr_split I r (P : pred I) (F1 F2 : I -> R) x :
-  \big[minr/x]_(i <- r | P i) (minr (F1 i) (F2 i)) =
-  minr (\big[minr/x]_(i <- r | P i) F1 i) (\big[minr/x]_(i <- r | P i) F2 i).
-Proof.
-rewrite !bigminr_maxr -oppr_max -bigmax_split; congr (- _).
-by apply: eq_bigr => i _; rewrite oppr_min.
-Qed.
-
-Lemma bigminr_idl I r (P : pred I) (F : I -> R) x :
-  \big[minr/x]_(i <- r | P i) F i = minr x (\big[minr/x]_(i <- r | P i) F i).
-Proof. by rewrite !bigminr_maxr {1}bigmax_idl oppr_max opprK. Qed.
-
-Lemma bigminrID I r (a P : pred I) (F : I -> R) x :
-  \big[minr/x]_(i <- r | P i) F i =
-  minr (\big[minr/x]_(i <- r | P i && a i) F i)
-    (\big[minr/x]_(i <- r | P i && ~~ a i) F i).
-Proof. by rewrite !bigminr_maxr -oppr_max -bigmaxID. Qed.
 
 Lemma bigminr_seq1 I (i : I) (F : I -> R) x :
   \big[minr/x]_(j <- [:: i]) F j = minr (F i) x.
@@ -1748,14 +1769,6 @@ Lemma bigminrD1 (I : finType) j (P : pred I) (F : I -> R) x :
 Proof.
 by move=> Pj; rewrite !bigminr_maxr (bigmaxD1 _ _ Pj) oppr_max opprK.
 Qed.
-
-Lemma bigminr_ler_cond (I : finType) (P : pred I) (F : I -> R) x i0 :
-  P i0 -> \big[minr/x]_(i | P i) F i <= F i0.
-Proof. by move=> Pi0; rewrite (bigminrD1 _ _ Pi0) le_minl lexx. Qed.
-
-Lemma bigminr_ler (I : finType) (F : I -> R) (i0 : I) x :
-  \big[minr/x]_i F i <= F i0.
-Proof. exact: bigminr_ler_cond. Qed.
 
 Lemma bigminr_gerP (I : finType) (P : pred I) m (F : I -> R) x :
   reflect (m <= x /\ forall i, P i -> m <= F i)
@@ -1817,12 +1830,8 @@ Proof. by move=> Pi0 Hx; rewrite (bigminr_eq_arg Pi0) //; eexists. Qed.
 
 End bigminr.
 Module Exports.
-Arguments bigminr_mkcond {R I r}.
-Arguments bigminrID {R I r}.
 Arguments bigminr_pred1 {R I} i {P F}.
 Arguments bigminrD1 {R I} j {P F}.
-Arguments bigminr_ler_cond {R I P F}.
-Arguments bigminr_ler {R I F}.
 Arguments bigminr_inf {R I} i0 {P m F}.
 Arguments bigminr_eq_arg {R I} i0 {P F}.
 Arguments eq_bigminr {R I} i0 {P F}.
