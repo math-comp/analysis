@@ -2564,7 +2564,7 @@ rewrite limeD//; do?[exact: cvg_f_]; last first.
 by congr (_ + _); (rewrite -monotone_convergence//; [
     apply eq_integral => t /[!inE] Dt; apply/cvg_lim => //; exact: f_f |
     move=> t Dt a b ab; rewrite lee_fin; exact/lefP/f_nd]).
-Admitted. (*TODO_HB*)
+Qed.
 
 End integral_mfun_measure_sum.
 
@@ -3010,14 +3010,13 @@ rewrite monotone_convergence//; last 3 first.
       by move=> y; rewrite big_mkord => Dy; apply: f0; exact: bigsetU_bigcup Dy.
     by rewrite 2!big_mkord; apply: subset_bigsetU.
 transitivity (lim (fun N => \int[mu]_(x in \big[setU/set0]_(i < N) F i) f x)).
-  congr (lim _); rewrite funeqE => n.
-  by rewrite /f_ [in RHS]integral_mkcond big_mkord.
-congr (lim _); rewrite funeqE => /= n; rewrite ge0_integral_bigsetU ?big_mkord//.
+  by apply/congr_lim/funext => n; rewrite /f_ [in RHS]integral_mkcond big_mkord.
+apply/congr_lim/funext => /= n; rewrite ge0_integral_bigsetU ?big_mkord//.
 - case: fi => + _; apply: measurable_funS => //; first exact: bigcup_measurable.
   exact: bigsetU_bigcup.
 - by move=> y Dy; apply: f0; exact: bigsetU_bigcup Dy.
 - exact: sub_trivIset tF.
-Admitted. (* TODO_HB *)
+Qed.
 
 Lemma integrableS (E D : set T) (f : T -> \bar R) :
   measurable E -> measurable D -> D `<=` E ->
@@ -4801,7 +4800,8 @@ rewrite [RHS](_ : _ = lim (fun n => \int[m1 \x m2]_z (EFin \o g n) z)).
   by apply: eq_integral => /= x _; apply/esym/cvg_lim => //; exact: g_f.
 rewrite [LHS](_ : _ =
     lim (fun n => \int[m1]_x (\int[m2]_y (EFin \o g n) (x, y)))).
-  by congr (lim _); rewrite funeqE => n; rewrite sfun_fubini_tonelli1.
+  set r := fun _ => _; set l := fun _ => _; have -> // : l = r.
+  by apply/funext  => n; rewrite /l /r sfun_fubini_tonelli1.
 rewrite [RHS](_ : _ = lim (fun n => \int[m1]_x F_ g n x))//.
 rewrite -monotone_convergence //; first exact: eq_integral.
 - by move=> n; exact: sfun_measurable_fun_fubini_tonelli_F.
@@ -4813,7 +4813,7 @@ rewrite -monotone_convergence //; first exact: eq_integral.
   + by move=> *; rewrite lee_fin; exact: fun_ge0.
   + exact/EFin_measurable_fun/measurable_fun_prod1.
   + by move=> y _; rewrite lee_fin; move/g_nd : ab => /lefP; exact.
-Admitted. (* TODO_HB *)
+Qed.
 
 Lemma fubini_tonelli2 : \int[m1 \x m2]_z f z = \int[m2]_y G y.
 Proof.
@@ -4834,8 +4834,8 @@ rewrite [RHS](_ : _ = lim (fun n => \int[m1 \x m2]_z (EFin \o g n) z)).
   by apply: eq_integral => /= x _; apply/esym/cvg_lim => //; exact: g_f.
 rewrite [LHS](_ : _ = lim
     (fun n => \int[m2]_y (\int[m1]_x (EFin \o g n) (x, y)))).
-  congr (lim _); rewrite funeqE => n.
-  by rewrite sfun_fubini_tonelli sfun_fubini_tonelli2.
+  set r := fun _ => _; set l := fun _ => _; have -> // : l = r.
+  by apply/funext => n; rewrite /l /r sfun_fubini_tonelli sfun_fubini_tonelli2.
 rewrite [RHS](_ : _ = lim (fun n => \int[m2]_y G_ g n y))//.
 rewrite -monotone_convergence //; first exact: eq_integral.
 - by move=> n; exact: sfun_measurable_fun_fubini_tonelli_G.
@@ -4846,7 +4846,7 @@ rewrite -monotone_convergence //; first exact: eq_integral.
   + by move=> *; rewrite lee_fin fun_ge0.
   + exact/EFin_measurable_fun/measurable_fun_prod2.
   + by move=> x _; rewrite lee_fin; move/g_nd : ab => /lefP; exact.
-Admitted. (* TODO_HB *)
+Qed.
 
 Lemma fubini_tonelli :
   \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
