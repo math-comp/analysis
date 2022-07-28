@@ -558,7 +558,7 @@ apply/seteqP; split=> [x ->|].
   by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
 apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
-have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
+have := rx `|floor e^-1|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
 rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
 by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW// lt_succ_floor.
 Qed.
@@ -597,7 +597,7 @@ Lemma itv_bnd_infty_bigcup (R : realType) b (x : R) :
 Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
-move=> xy; exists `|ceil (y - x)%R|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
+move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
 rewrite !natr_absz/= ger0_norm ?ceil_ge0// ?subr_ge0//; last first.
   by case: b xy => //= /ltW.
 by rewrite -RceilE Rceil_ge.

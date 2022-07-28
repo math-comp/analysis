@@ -128,6 +128,8 @@ HB.mixin Record ArchimedeanField_IsReal R of Num.ArchimedeanField R := {
 HB.structure Definition Real := {R of ArchimedeanField_IsReal R
   & Num.ArchimedeanField R & Num.RealClosedField R}.
 
+Bind Scope ring_scope with Real.sort.
+
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := @supremum _ R 0.
 (*Local Notation "-` E" := [pred x | - x \in E]

@@ -1199,7 +1199,7 @@ Lemma bigsetU_dyadic_itv n : `[n%:R, n.+1%:R[%classic =
   \big[setU/set0]_(n * 2 ^ n.+1 <= k < n.+1 * 2 ^ n.+1) [set` I n.+1 k].
 Proof.
 rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
-- rewrite -bigcup_set /=; exists `|floor (r * 2 ^+ n.+1)%R|%N.
+- rewrite -bigcup_set /=; exists `|floor (r * 2 ^+ n.+1)|%N.
     rewrite /= mem_index_iota; apply/andP; split.
       rewrite -ltez_nat gez0_abs ?floor_ge0; last first.
         by rewrite mulr_ge0// (le_trans _ nr).
@@ -1342,7 +1342,7 @@ rewrite pnatr_eq0 => /eqP.
 have [//|] := boolP (x \in B n).
 rewrite notin_set /B /setI /= => /not_andP[] // /negP.
 rewrite -ltNge => fxn _.
-have K : (`|floor (fine (f x) * 2 ^+ n)%R| < n * 2 ^ n)%N.
+have K : (`|floor (fine (f x) * 2 ^+ n)| < n * 2 ^ n)%N.
   rewrite -ltz_nat gez0_abs; last by rewrite floor_ge0 mulr_ge0// ltW.
   rewrite -(@ltr_int R); rewrite (le_lt_trans (floor_le _))// PoszM intrM.
   by rewrite -natrX ltr_pmul2r// -lte_fin (fineK fxfin).
@@ -2125,7 +2125,7 @@ rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
 rewrite -lee_pdivr_mulr//; last first.
   by move: if_gt0 ifoo; case: (\int[mu]_(x in D) f x).
 near: n.
-exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)%R|%N => //.
+exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
 rewrite lee_fin natr_absz ger0_norm ?ceil_ge// ceil_ge0//.
 by rewrite mulr_ge0// ?invr_ge0//; apply/fine_ge0/integral_ge0.
@@ -3091,7 +3091,7 @@ apply/eqP/negPn/negP => /eqP muED0.
 move/not_forallP : muM; apply.
 have [muEDoo|] := ltP (mu (E `&` D)) +oo; last first.
   by rewrite leye_eq => /eqP ->; exists 1%N; rewrite mul1e leye_eq.
-exists `|ceil (M * (fine (mu (E `&` D)))^-1)%R|%N.+1.
+exists `|ceil (M * (fine (mu (E `&` D)))^-1)|%N.+1.
 apply/negP; rewrite -ltNge.
 rewrite -[X in _ * X](@fineK _ (mu (E `&` D))); last first.
   by rewrite fin_numElt muEDoo (lt_le_trans _ (measure_ge0 _ _)).
