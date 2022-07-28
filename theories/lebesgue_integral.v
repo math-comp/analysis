@@ -930,7 +930,7 @@ Hypothesis nd_g : forall x, nondecreasing_seq (g^~ x).
 Hypothesis gf : forall x, g ^~ x --> f x.
 
 Let limg x : lim (g^~x) = f x.
-Proof. by apply/cvg_lim; [exact: Rhausdorff| exact: gf]. Qed.
+Proof. by apply/cvg_lim => //; exact: gf. Qed.
 
 Lemma nd_sintegral_lim : sintegral mu f = lim (sintegral mu \o g).
 Proof.
@@ -1199,7 +1199,7 @@ Lemma bigsetU_dyadic_itv n : `[n%:R, n.+1%:R[%classic =
   \big[setU/set0]_(n * 2 ^ n.+1 <= k < n.+1 * 2 ^ n.+1) [set` I n.+1 k].
 Proof.
 rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
-- rewrite -bigcup_set /=; exists `|floor (r * 2 ^+ n.+1)|%N.
+- rewrite -bigcup_set /=; exists `|floor (r * 2 ^+ n.+1)%R|%N.
     rewrite /= mem_index_iota; apply/andP; split.
       rewrite -ltez_nat gez0_abs ?floor_ge0; last first.
         by rewrite mulr_ge0// (le_trans _ nr).
@@ -1338,8 +1338,11 @@ rewrite /approx paddr_eq0//; last 2 first.
 rewrite psumr_eq0//; last by move=> i _; rewrite mulr_ge0.
 apply/negP => /andP[/allP An0]; rewrite mulf_eq0 => /orP[|].
   by apply/negP; near: n; exists 1%N => //= m /=; rewrite lt0n pnatr_eq0.
-rewrite indicE mem_set ?oner_eq0// /B /= leNgt; split=> //; apply/negP => fxn.
-have K : (`|floor (fine (f x) * 2 ^+ n)| < n * 2 ^ n)%N.
+rewrite pnatr_eq0 => /eqP.
+have [//|] := boolP (x \in B n).
+rewrite notin_set /B /setI /= => /not_andP[] // /negP.
+rewrite -ltNge => fxn _.
+have K : (`|floor (fine (f x) * 2 ^+ n)%R| < n * 2 ^ n)%N.
   rewrite -ltz_nat gez0_abs; last by rewrite floor_ge0 mulr_ge0// ltW.
   rewrite -(@ltr_int R); rewrite (le_lt_trans (floor_le _))// PoszM intrM.
   by rewrite -natrX ltr_pmul2r// -lte_fin (fineK fxfin).
@@ -1660,7 +1663,7 @@ have h1tfin : h1 t \is a fin_num.
 have := gh1 t.
 rewrite -(fineK h1tfin) => /fine_cvgP[ft_near].
 set u_ := (X in X --> _) => u_h1 g1h1.
-have <- : lim u_ = fine (h1 t) by apply/cvg_lim => //; exact: Rhausdorff.
+have <- : lim u_ = fine (h1 t) by exact/cvg_lim.
 rewrite lee_fin; apply: nondecreasing_cvg_le.
   by move=> // a b ab; rewrite /u_ /=; exact/lefP/nd_g1.
 by apply/cvg_ex; eexists; exact: u_h1.
@@ -2122,7 +2125,7 @@ rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
 rewrite -lee_pdivr_mulr//; last first.
   by move: if_gt0 ifoo; case: (\int[mu]_(x in D) f x).
 near: n.
-exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
+exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)%R|%N => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
 rewrite lee_fin natr_absz ger0_norm ?ceil_ge// ceil_ge0//.
 by rewrite mulr_ge0// ?invr_ge0//; apply/fine_ge0/integral_ge0.
@@ -2561,7 +2564,7 @@ rewrite limeD//; do?[exact: cvg_f_]; last first.
 by congr (_ + _); (rewrite -monotone_convergence//; [
     apply eq_integral => t /[!inE] Dt; apply/cvg_lim => //; exact: f_f |
     move=> t Dt a b ab; rewrite lee_fin; exact/lefP/f_nd]).
-Qed.
+Admitted. (*TODO_HB*)
 
 End integral_mfun_measure_sum.
 
@@ -3014,7 +3017,7 @@ congr (lim _); rewrite funeqE => /= n; rewrite ge0_integral_bigsetU ?big_mkord//
   exact: bigsetU_bigcup.
 - by move=> y Dy; apply: f0; exact: bigsetU_bigcup Dy.
 - exact: sub_trivIset tF.
-Qed.
+Admitted. (* TODO_HB *)
 
 Lemma integrableS (E D : set T) (f : T -> \bar R) :
   measurable E -> measurable D -> D `<=` E ->
@@ -3089,7 +3092,7 @@ apply/eqP/negPn/negP => /eqP muED0.
 move/not_forallP : muM; apply.
 have [muEDoo|] := ltP (mu (E `&` D)) +oo; last first.
   by rewrite leye_eq => /eqP ->; exists 1%N; rewrite mul1e leye_eq.
-exists `|ceil (M * (fine (mu (E `&` D)))^-1)|%N.+1.
+exists `|ceil (M * (fine (mu (E `&` D)))^-1)%R|%N.+1.
 apply/negP; rewrite -ltNge.
 rewrite -[X in _ * X](@fineK _ (mu (E `&` D))); last first.
   by rewrite fin_numElt muEDoo (lt_le_trans _ (measure_ge0 _ _)).
@@ -4810,7 +4813,7 @@ rewrite -monotone_convergence //; first exact: eq_integral.
   + by move=> *; rewrite lee_fin; exact: fun_ge0.
   + exact/EFin_measurable_fun/measurable_fun_prod1.
   + by move=> y _; rewrite lee_fin; move/g_nd : ab => /lefP; exact.
-Qed.
+Admitted. (* TODO_HB *)
 
 Lemma fubini_tonelli2 : \int[m1 \x m2]_z f z = \int[m2]_y G y.
 Proof.
@@ -4843,7 +4846,7 @@ rewrite -monotone_convergence //; first exact: eq_integral.
   + by move=> *; rewrite lee_fin fun_ge0.
   + exact/EFin_measurable_fun/measurable_fun_prod2.
   + by move=> x _; rewrite lee_fin; move/g_nd : ab => /lefP; exact.
-Qed.
+Admitted. (* TODO_HB *)
 
 Lemma fubini_tonelli :
   \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).

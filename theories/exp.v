@@ -237,8 +237,7 @@ suff Cc : lim
   have Ckf := @is_cvg_seriesZ _ _ h^-1 C1.
   have Cu : (series (h^-1 *: (shx h - sx)) - series s1) x0 @[x0 --> \oo] -->
       lim (series (h^-1 *: (shx h - sx))) - lim (series s).
-    admit.  (* TODO_HB *)
-    (* by apply: cvgB. *)
+    exact: cvgB Ckf Fs1.
   set w := (fun n : nat => _ in RHS).
   have -> : w = h^-1 *: (shx h - sx)  - s1.
     apply: funext => i; rewrite !fctE.
@@ -291,8 +290,7 @@ apply: (@lim_cvg_to_0_linear _
   rewrite (le_trans (pseries_diffs_P3 _ _ (ltW xLr) _))// ?mulrA -?normr_gt0//.
   by rewrite (le_trans (ler_norm_add _ _))// -(subrK `|x| r) ler_add2r ltW.
 Unshelve. all: by end_near.
-Admitted.
-(* Qed. *)
+Qed.
 
 End PseriesDiff.
 
@@ -363,12 +361,9 @@ Proof.
 set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: etrans (_ : f x = f 0) _; last by rewrite /f add0r oppr0 expR0 mulr1.
 apply: is_derive_0_is_cst => x1.
-Admitted.
-(* TODO_HB
 apply: trigger_derive.
 by rewrite /GRing.scale /= mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
 Qed.
-*)
 
 Lemma expRxMexpNx_1 x : expR x * expR (- x) = 1.
 Proof. by rewrite -[X in _ X * _ = _]addr0 expRxDyMexpx expR0. Qed.

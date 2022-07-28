@@ -204,11 +204,7 @@ Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
 Local Notation ball_norm := (ball_ (@normr K V)).
 
 Lemma ball_normE : ball_norm = ball.
-Proof.
-Admitted.
-(* TODO_HB
- by case: V => ? [? ? ? ? ? ? []]. Qed.
-*)
+Proof. by case: V => ? [? ? ? ? ? ? ? ? ? []]. Qed.
 
 End pseudoMetricnormedzmodule_lemmas.
 

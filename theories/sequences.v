@@ -2074,8 +2074,7 @@ Qed.
 
 Lemma is_cvg_infs u : cvg u -> cvg (infs u).
 Proof.
-move/is_cvgN/is_cvg_sups; rewrite supsN.
-by move/(@is_cvgN _ [the normedModType R of R^o]); rewrite opprK.
+by move/is_cvgN/is_cvg_sups; rewrite supsN; move/is_cvgN; rewrite opprK.
 Qed.
 
 Lemma infs_le_sups u n : cvg u -> infs u n <= sups u n.
@@ -2106,8 +2105,7 @@ move=> u_ub u_lb; have : sups (- u) --> inf (range (sups (- u))).
   - by move: u_ub => /has_ub_lbN; rewrite image_comp.
 rewrite /inf => /(@cvg_comp _ _ _ _ (fun x => - x)).
 rewrite supsN /comp /= -[in X in _ -> X --> _](opprK (infs u)); apply.
-rewrite image_comp /comp /= -(opprK (sup (range (infs u)))).
-apply: (@cvgN _ [the normedModType R of R^o]).
+rewrite image_comp /comp /= -(opprK (sup (range (infs u)))); apply: cvgN.
 by rewrite (_ : [set _ | _ in setT] = (range (infs u))) // opprK.
 Qed.
 
@@ -2174,23 +2172,21 @@ Definition lim_inf u := lim (infs u).
 
 Lemma lim_infN u : cvg u -> lim_inf (-%R \o u) = - lim_sup u.
 Proof.
-move=> cu_; rewrite /lim_inf infsN.
-rewrite (@limN _ [the normedModType R of R^o] _ _ _ (sups u)) //.
-exact: is_cvg_sups.
+by move=> cu_; rewrite /lim_inf infsN limN//; exact: is_cvg_sups.
 Qed.
 
 Lemma lim_supE u : bounded_fun u -> lim_sup u = inf (range (sups u)).
 Proof.
-move=> ba; apply/cvg_lim; first exact: Rhausdorff.
+move=> ba; apply/cvg_lim => //.
 by apply/cvg_sups_inf; [exact/bounded_fun_has_ubound|
                         exact/bounded_fun_has_lbound].
 Qed.
 
 Lemma lim_infE u : bounded_fun u -> lim_inf u = sup (range (infs u)).
 Proof.
-move=> ba; apply/cvg_lim; first exact: Rhausdorff.
-apply/cvg_infs_sup; [exact/bounded_fun_has_ubound|
-                     exact/bounded_fun_has_lbound].
+move=> ba; apply/cvg_lim => //.
+by apply/cvg_infs_sup; [exact/bounded_fun_has_ubound|
+                        exact/bounded_fun_has_lbound].
 Qed.
 
 Lemma lim_inf_le_lim_sup u : cvg u -> lim_inf u <= lim_sup u.
@@ -2265,11 +2261,11 @@ have cu : cvg (sups u).
 have cv : cvg (sups v).
   apply: nonincreasing_is_cvg; last exact: bounded_fun_has_lbound_sups.
   exact/nonincreasing_sups/bounded_fun_has_ubound.
-rewrite -(@limD _ [the normedModType R of R^o] _ _ _ _ _ cu cv); apply: ler_lim.
+rewrite -(limD cu cv); apply: ler_lim.
 - apply: nonincreasing_is_cvg; last first.
     exact/bounded_fun_has_lbound_sups/bounded_funD.
   exact/nonincreasing_sups/bounded_fun_has_ubound/bounded_funD.
-- exact: (@is_cvgD _ [the normedModType R of R^o] _ _ _ _ _ cu cv).
+- exact: is_cvgD cu cv.
 - exact: nearW.
 Qed.
 
@@ -2287,8 +2283,8 @@ have cu : cvg (infs u).
 have cv : cvg (infs v).
   apply: nondecreasing_is_cvg; last exact: bounded_fun_has_ubound_infs.
   exact/nondecreasing_infs/bounded_fun_has_lbound.
-rewrite -(@limD _ [the normedModType R of R^o] _ _ _ _ _ cu cv); apply: ler_lim.
-- exact: (@is_cvgD _ [the normedModType R of R^o] _ _ _ _ _ cu cv).
+rewrite -(limD cu cv); apply: ler_lim.
+- exact: is_cvgD cu cv.
 - apply: nondecreasing_is_cvg; last first.
     exact/bounded_fun_has_ubound_infs/bounded_funD.
   exact/nondecreasing_infs/bounded_fun_has_lbound/bounded_funD.

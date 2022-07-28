@@ -1677,7 +1677,7 @@ Proof.
 move=> f_ub f_lb mf.
 have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
               =1 (fun x => lim_sup (h^~ x))}.
-  move=> t; rewrite inE => Dt; apply/esym/cvg_lim; first exact: Rhausdorff.
+  move=> t; rewrite inE => Dt; apply/esym/cvg_lim => //.
   rewrite [X in _ --> X](_ : _ = inf (range (sups (h^~t)))).
     by apply: cvg_sups_inf; [exact: f_ub|exact: f_lb].
   by congr (inf [set _ | _ in _]); rewrite predeqE.
@@ -1697,10 +1697,8 @@ move=> mf_ f_f; have fE x : D x -> f x = lim_sup (h ^~ x).
 apply: (@eq_measurable_fun _ _ _ _ D (fun x => lim_sup (h ^~ x))).
   by move=> x; rewrite inE => Dx; rewrite -fE.
 apply: (@measurable_fun_lim_sup _ h) => // t Dt.
-- apply/bounded_fun_has_ubound/(@cvg_seq_bounded _ [the normedModType R of R^o]).
-  by apply/cvg_ex; eexists; exact: f_f.
-- apply/bounded_fun_has_lbound/(@cvg_seq_bounded _ [the normedModType R of R^o]).
-  by apply/cvg_ex; eexists; exact: f_f.
+- by apply/bounded_fun_has_ubound/cvg_seq_bounded/cvg_ex; eexists; exact: f_f.
+- by apply/bounded_fun_has_lbound/cvg_seq_bounded/cvg_ex; eexists; exact: f_f.
 Qed.
 
 End measurable_fun_realType.

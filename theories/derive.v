@@ -931,8 +931,7 @@ have hDx_neq0 : h + x != 0.
 rewrite addrC -[X in X * _]mulr1 -{2}[1](@mulfVK _ (h + x)) //.
 rewrite mulrA expr_div_n expr1n mulf_div mulr1 [_ ^+ 2 * _]mulrC -mulrA.
 rewrite -mulrDr mulrBr [1 / _ * _]mulrC normrM.
-rewrite mulrDl mulrDl opprD addrACA addrA [x * _]mulrC expr2.
-do 2 ?[rewrite -addrA [- _ + _]addrC subrr addr0].
+rewrite mulrDl mulrDl opprD addrACA addrA [x * _]mulrC expr2 2!subrK.
 rewrite div1r normfV [X in _ / X]normrM invfM [X in _ * X]mulrC.
 rewrite mulrA mulrAC ler_pdivr_mulr ?normr_gt0 ?mulf_neq0 //.
 rewrite mulrAC ler_pdivr_mulr ?normr_gt0 //.
@@ -940,9 +939,7 @@ have : `|h * h| <= `|x / 2| * (e%:num * `|x * x| * `|h|).
   rewrite !mulrA; near: h; exists (`|x / 2| * e%:num * `|x * x|).
     by rewrite /= !pmulr_rgt0 // normr_gt0 mulf_neq0.
   by move=> h /ltW; rewrite distrC subr0 [`|h * _|]normrM => /ler_pmul; apply.
-Admitted.
-(* TODO_HB
-move=> /le_trans-> //; rewrite [leLHS]mulrC ler_pmul ?mulr_ge0 //.
+move=> /le_trans -> //; rewrite [leLHS]mulrC ler_pmul ?mulr_ge0 //.
 near: h; exists (`|x| / 2); first by rewrite /= divr_gt0 ?normr_gt0.
 move=> h; rewrite /= distrC subr0 => lthhx; rewrite addrC -[h]opprK.
 apply: le_trans (@ler_dist_dist  _ R  _ _).
@@ -952,7 +949,6 @@ rewrite normrN [leRHS]ger0_norm; last first.
 rewrite ler_subr_addr -ler_subr_addl (splitr `|x|).
 by rewrite normrM normfV (@ger0_norm _ 2) // -addrA subrr addr0; apply: ltW.
 Unshelve. all: by end_near. Qed.
-*)
 
 Lemma diff_Rinv (x : R) : x != 0 ->
   'd GRing.inv x = (fun h : R => - x ^- 2 *: h) :> (R -> R).
@@ -1560,11 +1556,10 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
-(* TODO_HB
 Section is_derive_instances.
 Variables (R : numFieldType) (V : normedModType R).
 
-Lemma derivable_cst (x : V) : derivable (fun=> x) 0 1.
+Lemma derivable_cst (x : V) : derivable (fun=> x) 0 (1 : R^o(*TODO_HB: wasn't here before*)).
 Proof. exact/diff_derivable. Qed.
 
 Lemma derivable_id (x v : V) : derivable id x v.
@@ -1583,6 +1578,5 @@ End is_derive_instances.
 
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
-  is_derive x 1 f x1 -> x1 = y1 -> is_derive x 1 f y1.
+  is_derive x (1 : R^o (*TODO_HB: wasn't here before*)) f x1 -> x1 = y1 -> is_derive x 1 f y1.
 Proof. by move=> Hi <-. Qed.
-*)
