@@ -5695,8 +5695,6 @@ HB.instance Definition _ := IsPointed.Build (subspace A) point.
 
 HB.instance Definition _ := IsFiltered.Build _ (subspace A) nbhs_subspace.
 
-HB.about Filtered_IsNbhsTopological.Build.
-
 Lemma nbhs_subspace_singleton (p : subspace A) B : nbhs p B -> B p.
 Proof.
 by rewrite /nbhs/=; case: nbhs_subspaceP => ? => [/nbhs_singleton|]; apply.
