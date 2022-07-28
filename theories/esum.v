@@ -539,14 +539,11 @@ Lemma summable_nneseries_lim (P : pred nat) (f : (\bar R)^nat) :
 Proof.
 move=> f0 Pf; pose A_ n := (\sum_(0 <= k < n | P k) fine (f k))%R.
 transitivity (lim (EFin \o A_)).
-  congr (lim _); apply/funext => /= n; rewrite /A_ /= -sumEFin.
+  apply/congr_lim/funext => /= n; rewrite /A_ /= -sumEFin.
   apply eq_bigr => i Pi/=; rewrite fineK//.
   by rewrite fin_num_abs (@summable_pinfty _ _ P).
 by rewrite EFin_lim//; apply: summable_cvg.
-Admitted.
-(* TODO_HB: understand why Qed fails
 Qed.
-*)
 
 Lemma summable_nneseries (f : nat -> \bar R) (P : pred nat) : summable P f ->
   \sum_(i <oo | P i) (f i) =
