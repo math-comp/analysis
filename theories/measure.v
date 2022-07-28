@@ -911,9 +911,8 @@ Let discrete_measurable_natU (F : (set nat)^nat) :
   discrete_measurable_nat (\bigcup_i F i).
 Proof. by []. Qed.
 
-HB.instance Definition _ := @isMeasurable.Build default_measure_display nat
-  discrete_measurable discrete_measurable_nat0 discrete_measurableC
-  discrete_measurableU.
+HB.instance Definition _ := isMeasurable.Build default_measure_display nat
+  discrete_measurable_nat0 discrete_measurable_natC discrete_measurable_natU.
 
 End discrete_measurable_nat.
 
@@ -3244,17 +3243,14 @@ have ndE : ndseq_closed E.
       apply/esym/cvg_lim=>//.
       exact/(nondecreasing_cvg_mu mA _ ndA)/bigcupT_measurable.
     transitivity (lim (m2 \o A)).
-      by congr (lim _); rewrite funeqE => n; have [] := EA n.
+      by apply/congr_lim/funext => n; have [] := EA n.
     apply/cvg_lim => //.
     exact/(nondecreasing_cvg_mu mA _ ndA)/bigcupT_measurable.
   - by apply: bigcup_sub => n; have [] := EA n.
 have sDHE : <<s D, H >> `<=` E.
   by apply: monotone_class_subset => //; split => //; [move=> A []|exact/HE].
 by move=> X /sDHE[mX ?] _.
-Admitted.
-(* TODO_HB: understand why Qed fails
 Qed.
-*)
 
 End g_salgebra_measure_unique_trace.
 
@@ -3299,15 +3295,12 @@ transitivity (lim (fun n => m1 (g' n `&` A))).
   - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
   - by move=> ? ? ?; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
 transitivity (lim (fun n => m2 (g' n `&` A))).
-  by congr (lim _); rewrite funeqE => x; apply: sG'm1m2 => //; exact/sGm.
+  by apply/congr_lim/funext => x; apply: sG'm1m2 => //; exact/sGm.
 apply/cvg_lim => //; apply: nondecreasing_cvg_mu.
 - by move=> k; apply: measurableI => //; exact/sGm.
 - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
 - by move=> a b ab; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
-Admitted.
-(* TODO_HB: understand why Qed fails
 Qed.
-*)
 
 Hypothesis setIG : setI_closed G.
 Hypothesis m1m2 : forall A, G A -> m1 A = m2 A.
