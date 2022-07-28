@@ -3,8 +3,10 @@
 1. Install nix:
   - To install it on a single-user unix system where you have admin
     rights, just type:
+    > sh <(curl -L https://nixos.org/nix/install) --no-daemon
 
-    > sh <(curl https://nixos.org/nix/install)
+    The `--no-daemon` option is for a single-user installation.
+    (See the [nix install manual](https://nixos.org/download.html#nix-install-linux) for alternatives.)
 
     You should run this under your usual user account, not as
     root. The script will invoke `sudo` as needed.
