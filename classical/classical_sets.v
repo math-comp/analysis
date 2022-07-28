@@ -2183,17 +2183,35 @@ Lemma unsquashK {T} : cancel (@unsquash T) squash. Proof. by move=> []. Qed.
 
 (* Empty types *)
 
-HB.mixin Record IsEmpty T := {
+HB.mixin Record isEmpty T := {
   axiom : T -> False
 }.
 
 #[short(type="emptyType")]
-HB.structure Definition Empty := {T of IsEmpty T & Finite T}.
+HB.structure Definition Empty := {T of isEmpty T & Finite T}.
 
-HB.factory Record type_IsEmpty T := {
+HB.factory Record Choice_isEmpty T of Choice T := {
   axiom : T -> False
 }.
-HB.builders Context T of type_IsEmpty T.
+HB.builders Context T of Choice_isEmpty T.
+
+Definition pickle : T -> nat := fun=> 0%N.
+Definition unpickle : nat -> option T := fun=> None.
+Lemma pickleK : pcancel pickle unpickle.
+Proof. by move=> x; case: (axiom x). Qed.
+HB.instance Definition _ := IsCountable.Build T pickleK.
+
+Lemma fin_axiom : Finite.axiom ([::] : seq T).
+Proof. by move=> /[dup]/axiom. Qed.
+HB.instance Definition _ := IsFinite.Build T fin_axiom.
+
+HB.instance Definition _ := isEmpty.Build T axiom.
+HB.end.
+
+HB.factory Record Type_isEmpty T := {
+  axiom : T -> False
+}.
+HB.builders Context T of Type_isEmpty T.
 Definition eq_op (x y : T) := true.
 Lemma eq_opP : Equality.axiom eq_op. Proof. by move=> ? /[dup]/axiom. Qed.
 HB.instance Definition _ := hasDecEq.Build T eq_opP.
@@ -2207,21 +2225,12 @@ Lemma eq_find (P Q : pred T) : P =1 Q -> find P =1 find Q.
 Proof. by []. Qed.
 HB.instance Definition _ := hasChoice.Build T findP ex_find eq_find.
 
-Definition pickle : T -> nat := fun=> 0.
-Definition unpickle : nat -> option T := fun=> None.
-Lemma pickleK : pcancel pickle unpickle. Proof. by move=> /[dup]/axiom. Qed.
-HB.instance Definition _ := isCountable.Build T pickleK.
-
-Lemma fin_axiom : Finite.axiom ([::] : seq T).
-Proof. by move=> /[dup]/axiom. Qed.
-HB.instance Definition _ := isFinite.Build T fin_axiom.
-
-HB.instance Definition _ := IsEmpty.Build T axiom.
+HB.instance Definition _ := Choice_isEmpty.Build T axiom.
 HB.end.
 
-HB.instance Definition _ := type_IsEmpty.Build False id.
+HB.instance Definition _ := Type_isEmpty.Build False id.
 
-HB.instance Definition _ := IsEmpty.Build void (@of_void _).
+HB.instance Definition _ := isEmpty.Build void (@of_void _).
 
 Definition no {T : emptyType} : T -> False := @axiom T.
 Definition any {T : emptyType} {U}  : T -> U := @False_rect _ \o no.
@@ -2243,22 +2252,18 @@ Arguments qcanon {T C sort alt} x.
 
 Lemma choicePpointed : quasi_canonical choiceType pointedType.
 Proof.
-apply: qcanon => T; have [/unsquash x|/(_ (squash _)) TF] := pselect $|T|.
+apply: qcanon => -[Ts [Tc Te]].
+set T := Choice.Pack _.
+have [/unsquash x|/(_ (squash _)) TF] := pselect $|T|.
   right.
-  case: T x => T [Tc Te x].
-  by exists (Pointed.Pack (@Pointed.Class _ Tc Te (isPointed.Axioms_ x))).
-  (* FIXME: IsPointed.Build T x fails so we cannot use HB.pack *)
-  (* was: "by right; exists (PointedType T x); case: T x." *)
+  pose Tp := IsPointed.Build T x.
+  pose TT : pointedType := HB.pack T Te Tc Tp.
+  by exists TT.
 left.
-admit. (* FIXME: find a way to use HB.pack *)
-(* was:
-pose cT := CountType _ (TF : Empty.mixin_of T).
-pose fM := Empty.finMixin (TF : Empty.mixin_of cT).
-exists (EmptyType (FinType _ fM) TF) => //=.
-by case: T TF @cT @fM.
+pose TMixin := Choice_isEmpty.Build T TF.
+pose TT : emptyType := HB.pack T Te Tc TMixin.
+by exists TT.
 Qed.
-*)
-Admitted.
 
 Lemma eqPpointed : quasi_canonical eqType pointedType.
 Proof.
