@@ -41,6 +41,11 @@
 - in `measure.v`:
   + `ring_fsets` -> `ring_finite_set`
   + `discrete_measurable` -> `discrete_measurable_nat`
+- in `ereal.v`:
+  + `lee_pinfty_eq` -> `leye_eq`
+  + `lee_ninfty_eq` -> `leeNy_eq`
+- in `measure.v`:
+  + `cvg_mu_inc` -> `nondecreasing_cvg_mu`
 
 ### Removed
 
