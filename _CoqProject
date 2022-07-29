@@ -8,6 +8,7 @@
 
 theories/mathcomp_extra.v
 theories/boolp.v
+theories/constructive_ereal.v
 theories/ereal.v
 theories/reals.v
 theories/landau.v

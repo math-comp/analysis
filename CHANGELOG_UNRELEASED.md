@@ -50,3 +50,7 @@
 ### Infrastructure
 
 ### Misc
+
+- file `ereal.v` split in two files `constructive_ereal.v` and
+  `ereal.v` (the latter exports the former, so the "Require Import
+  ereal" can just be kept unchanged)
