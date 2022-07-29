@@ -3566,7 +3566,7 @@ Lemma discrete_bool : discrete_space bool_discrete_topology.
 Proof. by []. Qed.
 
 Lemma bool_compact : compact [set: bool].
-Proof. by rewrite set_bool; apply/compactU; exact: compact_set1. Qed.
+Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
 
 End DiscreteTopology.
 

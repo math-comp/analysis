@@ -3,13 +3,13 @@
 ## [Unreleased]
 
 ### Added
+
 - in file `boolp.v`:
   + lemmas `iter_compl`, `iter_compr`, `iter0`
 - in file `functions.v`:
   + lemmas `oinv_iter`, `some_iter_inv`, `inv_iter`,
   + Instances for functions interfaces for `iter` (partial inverse up to 
       bijective function) 
-
 - in `ereal.v`:
   + notations `_ < _ :> _` and `_ <= _ :> _`
   + lemmas `lee01`, `lte01`, `lee0N1`, `lte0N1`
@@ -24,6 +24,8 @@
   + lemmas `muleCA`, `muleAC`, `muleACA`
 - in `classical_sets.v`:
   + lemma `preimage10P`
+- in `classical_sets.v`:
+  + lemma `setT_unit`
 
 ### Changed
 
@@ -44,6 +46,8 @@
 - in `ereal.v`:
   + `lee_pinfty_eq` -> `leye_eq`
   + `lee_ninfty_eq` -> `leeNy_eq`
+- in `classical_sets.v`:
+  + `set_bool` -> `setT_bool`
 
 ### Removed
 
