@@ -384,7 +384,7 @@ apply Build_ProperFilter.
   by move=> P [M [Mreal MP]]; exists (M + 1); apply MP; rewrite ltr_addl.
 split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
 - by exists 0.
-- exists (Num.max MP MQ); split=> [|x]; first exact: max_real.
+- exists (maxr MP MQ); split=> [|x]; first exact: max_real.
   by rewrite comparable_lt_maxl ?real_comparable // => /andP[/gtMP ? /gtMQ].
 - by exists M; split => // ? /gtM /sPQ.
 Qed.
@@ -1694,12 +1694,6 @@ rewrite near_map => /nbhs_ballP[_/posnumP[a]] + xl; apply.
 by move/cvg_ball : xl => /(_ _ (gt0 a))/nbhs_ballP[_/posnumP[b]]; apply.
 Qed.
 
-Lemma bigminr_maxr (R : realDomainType) I r (P : pred I) (F : I -> R) x :
-  \big[minr/x]_(i <- r | P i) F i = - \big[maxr/- x]_(i <- r | P i) - F i.
-Proof.
-by elim/big_rec2: _ => [|i y _ _ ->]; rewrite ?oppr_max opprK.
-Qed.
-
 (** ** Matrices *)
 
 Section mx_norm.
@@ -1714,8 +1708,8 @@ Proof. by []. Qed.
 Lemma ler_mx_norm_add x y : mx_norm (x + y) <= mx_norm x + mx_norm y.
 Proof.
 rewrite !mx_normE [_ <= _%:num]num_le; apply/bigmax_leP.
-split; first exact: addr_ge0.
-move=> ij _; rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
+split=> [|ij _]; first exact: addr_ge0.
+rewrite mxE; apply: le_trans (ler_norm_add _ _) _.
 by rewrite ler_add// -[leLHS]nngE num_le; exact: le_bigmax.
 Qed.
 
@@ -1771,7 +1765,7 @@ Lemma mx_normrE (K : realDomainType) (m n : nat) (x : 'M[K]_(m, n)) :
 Proof.
 rewrite /mx_norm; apply/esym.
 elim/big_ind2 : _ => //= a a' b b' ->{a'} ->{b'}.
-case: (leP a b) => ab; by [rewrite max_r | rewrite max_l // ltW].
+by have [ab|ab] := leP a b; [rewrite max_r | rewrite max_l // ltW].
 Qed.
 
 Definition matrix_normedZmodMixin (K : numDomainType) (m n : nat) :=
