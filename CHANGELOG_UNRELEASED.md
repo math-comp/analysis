@@ -27,14 +27,14 @@
 - in `classical_sets.v`:
   + lemma `setT_unit`
 - in `mathcomp_extra.v`:
-  + lemma `big_idl`
-  + lemma `NoMondoiBigop.big_seq1`
-  + lemma `NoMondoiBigop.big_pred1_eq`
-  + lemma `NoMondoiBigop.big_pred1`
-  + lemma `NoMondoiBigop.big_mkcond`
-  + lemma `NoMondoiBigop.big_split`
-  + lemma `NoMondoiBigop.bigID`
-  + lemma `NoMondoiBigop.bigD1`
+  + lemma `big_const_idem`
+  + lemma `big_id_idem`
+  + lemma `big_rem_AC`
+  + lemma `bigD1_AC`
+  + lemma `big_mkcond_idem`
+  + lemma `big_split_idem`
+  + lemma `big_id_idem_AC`
+  + lemma `bigID_idem`
 - in `mathcomp_extra.v`:
   + lemmas `bigmax_le` and `bigmax_lt`
 

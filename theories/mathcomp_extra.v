@@ -453,80 +453,59 @@ Qed.
 End bigminr_maxr.
 
 Section SemiGroupProperties.
-
-Variable R : Type.
-
-Variable op : R -> R -> R.
-
+Variables (R : Type) (op : R -> R -> R).
 Hypothesis opA : associative op.
 
 Section Id.
-
 Variable x : R.
 Hypothesis opxx : op x x = x.
 
 Lemma big_const_idem I (r : seq I) P : \big[op/x]_(i <- r | P i) x = x.
-Proof.
-by elim: r => [|i r IHr]; rewrite ?big_nil// big_cons IHr; case: (P i).
-Qed.
+Proof. by elim/big_ind : _ => // _ _ -> ->. Qed.
 
 Lemma big_id_idem I (r : seq I) P F :
   op (\big[op/x]_(i <- r | P i) F i) x = \big[op/x]_(i <- r | P i) F i.
-Proof.
-elim: r => [|i r IHr]; first by rewrite big_nil opxx.
-by rewrite big_cons -[in RHS]IHr; case: (P i); rewrite // opA.
-Qed.
+Proof. by elim/big_rec : _ => // ? ? ?; rewrite -opA => ->. Qed.
 
 End Id.
 
 Section Abelian.
-
 Hypothesis opC : commutative op.
+
+Let opCA : left_commutative op. Proof. by move=> x *; rewrite !opA (opC x). Qed.
 
 Variable x : R.
 
-Local Lemma opCA : left_commutative op.
-Proof. by move=> x' y z; rewrite !opA [op x' y]opC. Qed.
-
 Lemma big_rem_AC (I : eqType) (r : seq I) z (P : pred I) F : z \in r ->
-  \big[op/x]_(y <- r | P y) F y
-    = if P z then op (F z) (\big[op/x]_(y <- rem z r | P y) F y)
-      else \big[op/x]_(y <- rem z r | P y) F y.
+  \big[op/x]_(y <- r | P y) F y =
+    if P z then op (F z) (\big[op/x]_(y <- rem z r | P y) F y)
+           else \big[op/x]_(y <- rem z r | P y) F y.
 Proof.
-elim: r => [//|i r IHr].
-rewrite big_cons rem_cons in_cons => /orP[/eqP -> /[!eqxx] //|zr].
-case: eqP => [-> //|]; rewrite IHr// big_cons.
-by case: (P i); case: (P z); rewrite // opCA.
+elim: r =>// i r ih; rewrite big_cons rem_cons inE =>/predU1P[-> /[!eqxx]//|zr].
+by case: eqP => [-> //|]; rewrite ih// big_cons; case: ifPn; case: ifPn.
 Qed.
 
-Lemma bigD1_AC (I : finType) j (P : pred I) F :
-  P j -> \big[op/x]_(i | P i) F i
-    = op (F j) (\big[op/x]_(i | P i && (i != j)) F i).
+Lemma bigD1_AC (I : finType) j (P : pred I) F : P j ->
+  \big[op/x]_(i | P i) F i = op (F j) (\big[op/x]_(i | P i && (i != j)) F i).
 Proof.
 rewrite (big_rem_AC _ _ (mem_index_enum j)) => ->.
 by rewrite rem_filter ?index_enum_uniq// big_filter_cond big_andbC.
 Qed.
-Arguments bigD1_AC [I] j [P F].
 
 Section Id.
-
 Hypothesis opxx : op x x = x.
 
 Lemma big_mkcond_idem I r (P : pred I) F :
   \big[op/x]_(i <- r | P i) F i = \big[op/x]_(i <- r) (if P i then F i else x).
 Proof.
-elim: r x opxx => [|i r ih] x' opxx'; first by rewrite 2!big_nil.
-rewrite 2!big_cons; case: ifPn => Pi; rewrite ih//.
-elim: r {ih} => [|j r ih]; first by rewrite big_nil opxx'.
-by rewrite big_cons {1}ih opCA.
+elim: r => [|i r]; rewrite ?(big_nil, big_cons)//.
+by case: ifPn => Pi ->//; rewrite -[in LHS]big_id_idem.
 Qed.
 
 Lemma big_split_idem I r (P : pred I) F1 F2 :
   \big[op/x]_(i <- r | P i) op (F1 i) (F2 i) =
     op (\big[op/x]_(i <- r | P i) F1 i) (\big[op/x]_(i <- r | P i) F2 i).
-Proof.
-by elim/big_rec3: _ => [|i x' y _ _ ->]; rewrite ?opxx// opCA -!opA opCA.
-Qed.
+Proof. by elim/big_rec3 : _ => [//|i ? ? _ _ ->]; rewrite // opCA -!opA opCA. Qed.
 
 Lemma big_id_idem_AC I (r : seq I) P F :
   \big[op/x]_(i <- r | P i) op (F i) x = \big[op/x]_(i <- r | P i) F i.
@@ -537,10 +516,9 @@ Lemma bigID_idem I r (a P : pred I) F :
     op (\big[op/x]_(i <- r | P i && a i) F i)
        (\big[op/x]_(i <- r | P i && ~~ a i) F i).
 Proof.
-rewrite -big_id_idem_AC big_mkcond_idem!(big_mkcond_idem _ _ F) -big_split_idem.
-by apply: eq_bigr => i; case: (P i) => _ //=; case: (a i).
+rewrite -big_id_idem_AC big_mkcond_idem !(big_mkcond_idem _ _ F) -big_split_idem.
+by apply: eq_bigr => i; case: ifPn => //=; case: ifPn.
 Qed.
-Arguments bigID_idem [I r].
 
 End Id.
 
