@@ -448,84 +448,101 @@ by elim/big_rec2: _ => [|i y _ _ ->]; rewrite ?oppr_max opprK.
 Qed.
 End bigminr_maxr.
 
-Lemma big_idl (T : Type) op I r (P : pred I) (F : I -> T) x :
-  idempotent op -> left_commutative op ->
-  \big[op/x]_(i <- r | P i) F i = op x (\big[op/x]_(i <- r | P i) F i).
+Section SemiGroupProperties.
+
+Variable R : Type.
+
+Variable op : R -> R -> R.
+
+Hypothesis opA : associative op.
+
+Section Id.
+
+Variable x : R.
+Hypothesis opxx : op x x = x.
+
+Lemma big_const_idem I (r : seq I) P : \big[op/x]_(i <- r | P i) x = x.
 Proof.
-move=> opxx opCA; rewrite -big_filter; elim: [seq i <- r | P i] => [|i l ihl].
-  by rewrite big_nil opxx.
-by rewrite big_cons opCA -ihl.
+by elim: r => [|i r IHr]; rewrite ?big_nil// big_cons IHr; case: (P i).
 Qed.
 
-(* this module duplicates lemmas from bigop without requiring op
-   to be of type Monoid.law idx or Monoid.com_law idx *)
-Module NoMonoidBigop.
-
-Lemma big_seq1 (T : Type) op I (i : I) (F : I -> T) x :
-  \big[op/x]_(j <- [:: i]) F j = op (F i) x.
-Proof. by rewrite big_cons big_nil. Qed.
-
-Lemma big_pred1_eq (T : Type) op (I : finType) (i : I) (F : I -> T) x :
-  \big[op/x]_(j | j == i) F j = op (F i) x.
+Lemma big_id_idem I (r : seq I) P F :
+  op (\big[op/x]_(i <- r | P i) F i) x = \big[op/x]_(i <- r | P i) F i.
 Proof.
-have [e1 <- _ [e_enum _]] := big_enumP (pred1 i).
-by rewrite (perm_small_eq _ e_enum) enum1 ?big_seq1.
+elim: r => [|i r IHr]; first by rewrite big_nil opxx.
+by rewrite big_cons -[in RHS]IHr; case: (P i); rewrite // opA.
 Qed.
 
-Lemma big_pred1 (T : Type) op (I : finType) i (P : pred I) (F : I -> T) x :
-  P =1 pred1 i -> \big[op/x]_(j | P j) F j = op (F i) x.
-Proof. by move/(eq_bigl _ _)->; apply: big_pred1_eq. Qed.
+End Id.
 
-Lemma big_mkcond (T : Type) op I r (P : pred I) (F : I -> T) x :
-  idempotent op -> left_commutative op ->
-  \big[op/x]_(i <- r | P i) F i = \big[op/x]_(i <- r) (if P i then F i else x).
+Section Abelian.
+
+Hypothesis opC : commutative op.
+
+Variable x : R.
+
+Local Lemma opCA : left_commutative op.
+Proof. by move=> x' y z; rewrite !opA [op x' y]opC. Qed.
+
+Lemma big_rem_AC (I : eqType) (r : seq I) z (P : pred I) F : z \in r ->
+  \big[op/x]_(y <- r | P y) F y
+    = if P z then op (F z) (\big[op/x]_(y <- rem z r | P y) F y)
+      else \big[op/x]_(y <- rem z r | P y) F y.
 Proof.
-move=> opxx opCA; elim: r x => [x|i r ih x]; first by rewrite 2!big_nil.
-rewrite 2!big_cons; case: ifPn => Pi; rewrite ih//.
-elim: r {ih} => [|j r ih]; first by rewrite big_nil opxx.
-by rewrite big_cons {1}ih opCA.
+elim: r => [//|i r IHr].
+rewrite big_cons rem_cons in_cons => /orP[/eqP -> /[!eqxx] //|zr].
+case: eqP => [-> //|]; rewrite IHr// big_cons.
+by case: (P i); case: (P z); rewrite // opCA.
 Qed.
 
-Lemma big_split (T : Type) op I r (P : pred I) (F1 F2 : I -> T) x :
-  idempotent op -> interchange op op ->
-  \big[op/x]_(i <- r | P i) (op (F1 i) (F2 i)) =
-  op (\big[op/x]_(i <- r | P i) F1 i) (\big[op/x]_(i <- r | P i) F2 i).
-Proof. by move=> opxx minACA; elim/big_rec3: _ => [|i y z _ _ ->]. Qed.
-
-Lemma bigID (T : Type) op I r (a P : pred I) (F : I -> T) x :
-  idempotent op -> associative op -> commutative op ->
-  \big[op/x]_(i <- r | P i) F i =
-  op (\big[op/x]_(i <- r | P i && a i) F i)
-     (\big[op/x]_(i <- r | P i && ~~ a i) F i).
-Proof.
-move=> opxx opA opC.
-have opCA : left_commutative op by move=> u v w; rewrite opA (opC u) -opA.
-have opAC : right_commutative op by move=> u v w; rewrite -opA (opC v) opA.
-have opACA : interchange op op by move=> u v w t; rewrite -opA (opCA v) opA.
-under [in X in op X _]eq_bigl do rewrite andbC.
-under [in X in op _ X]eq_bigl do rewrite andbC.
-rewrite -!(big_filter _ (fun _ => _ && _)) !filter_predI !big_filter.
-rewrite ![in RHS](big_mkcond _ _ F)// !big_filter -big_split//.
-have eqop i : P i ->
-  op (if a i then F i else x) (if ~~ a i then F i else x) = op (F i) x.
-  by move=> _; case: (a i) => //=; rewrite opC.
-rewrite [RHS](eq_bigr _ eqop) -!(big_filter _ P).
-elim: [seq j <- r | P j] => [|j l ihl]; first by rewrite !big_nil.
-by rewrite !big_cons -opA -big_idl// ihl.
-Qed.
-
-Lemma bigD1 (T : Type) op (I : finType) j (P : pred I) (F : I -> T) x :
-  idempotent op -> associative op -> commutative op ->
+Lemma bigD1_AC (I : finType) j (P : pred I) F :
   P j -> \big[op/x]_(i | P i) F i
     = op (F j) (\big[op/x]_(i | P i && (i != j)) F i).
 Proof.
-move=> opxx opA opC.
-have opCA : left_commutative op by move=> u v w; rewrite opA (opC u) -opA.
-move=> Pj; rewrite (bigID _ (pred1 j))// [in RHS]big_idl// opA.
-by congr op; apply: big_pred1 => i; rewrite /= andbC; case: eqP => //->.
+rewrite (big_rem_AC _ _ (mem_index_enum j)) => ->.
+by rewrite rem_filter ?index_enum_uniq// big_filter_cond big_andbC.
+Qed.
+Arguments bigD1_AC [I] j [P F].
+
+Section Id.
+
+Hypothesis opxx : op x x = x.
+
+Lemma big_mkcond_idem I r (P : pred I) F :
+  \big[op/x]_(i <- r | P i) F i = \big[op/x]_(i <- r) (if P i then F i else x).
+Proof.
+elim: r x opxx => [|i r ih] x' opxx'; first by rewrite 2!big_nil.
+rewrite 2!big_cons; case: ifPn => Pi; rewrite ih//.
+elim: r {ih} => [|j r ih]; first by rewrite big_nil opxx'.
+by rewrite big_cons {1}ih opCA.
 Qed.
 
-End NoMonoidBigop.
+Lemma big_split_idem I r (P : pred I) F1 F2 :
+  \big[op/x]_(i <- r | P i) op (F1 i) (F2 i) =
+    op (\big[op/x]_(i <- r | P i) F1 i) (\big[op/x]_(i <- r | P i) F2 i).
+Proof.
+by elim/big_rec3: _ => [|i x' y _ _ ->]; rewrite ?opxx// opCA -!opA opCA.
+Qed.
+
+Lemma big_id_idem_AC I (r : seq I) P F :
+  \big[op/x]_(i <- r | P i) op (F i) x = \big[op/x]_(i <- r | P i) F i.
+Proof. by rewrite big_split_idem big_const_idem ?big_id_idem. Qed.
+
+Lemma bigID_idem I r (a P : pred I) F :
+  \big[op/x]_(i <- r | P i) F i =
+    op (\big[op/x]_(i <- r | P i && a i) F i)
+       (\big[op/x]_(i <- r | P i && ~~ a i) F i).
+Proof.
+rewrite -big_id_idem_AC big_mkcond_idem!(big_mkcond_idem _ _ F) -big_split_idem.
+by apply: eq_bigr => i; case: (P i) => _ //=; case: (a i).
+Qed.
+Arguments bigID_idem [I r].
+
+End Id.
+
+End Abelian.
+
+End SemiGroupProperties.
 
 Section bigmaxmin.
 Local Notation max := Order.max.
@@ -571,31 +588,27 @@ Variables (d : unit) (T : orderType d).
 Lemma bigmax_mkcond I r (P : pred I) (F : I -> T) x :
   \big[max/x]_(i <- r | P i) F i =
      \big[max/x]_(i <- r) (if P i then F i else x).
-Proof. by rewrite NoMonoidBigop.big_mkcond//; [exact: maxxx|exact: maxCA]. Qed.
+Proof. rewrite big_mkcond_idem ?maxxx//; [exact: maxA|exact: maxC]. Qed.
 
 Lemma bigmax_split I r (P : pred I) (F1 F2 : I -> T) x :
   \big[max/x]_(i <- r | P i) (max (F1 i) (F2 i)) =
   max (\big[max/x]_(i <- r | P i) F1 i) (\big[max/x]_(i <- r | P i) F2 i).
-Proof. by rewrite NoMonoidBigop.big_split//; [exact: maxxx|exact: maxACA]. Qed.
+Proof. rewrite big_split_idem ?maxxx//; [exact: maxA|exact: maxC]. Qed.
 
 Lemma bigmax_idl I r (P : pred I) (F : I -> T) x :
   \big[max/x]_(i <- r | P i) F i = max x (\big[max/x]_(i <- r | P i) F i).
-Proof. by rewrite [in LHS]big_idl//; [exact: maxxx|exact: maxCA]. Qed.
+Proof. rewrite maxC big_id_idem ?maxxx//; exact: maxA. Qed.
 
 Lemma bigmaxID I r (a P : pred I) (F : I -> T) x :
   \big[max/x]_(i <- r | P i) F i =
   max (\big[max/x]_(i <- r | P i && a i) F i)
       (\big[max/x]_(i <- r | P i && ~~ a i) F i).
-Proof.
-by rewrite (NoMonoidBigop.bigID _ a)//; [exact: maxxx|exact: maxA|exact: maxC].
-Qed.
+Proof. by rewrite (bigID_idem maxA maxC _ _ a) ?maxxx. Qed.
 
 Lemma bigmaxD1 (I : finType) j (P : pred I) (F : I -> T) x :
   P j -> \big[max/x]_(i | P i) F i
     = max (F j) (\big[max/x]_(i | P i && (i != j)) F i).
-Proof.
-by apply: NoMonoidBigop.bigD1; [exact: maxxx|exact: maxA|exact: maxC].
-Qed.
+Proof. by move/(bigD1_AC maxA maxC _ _) ->. Qed.
 
 Local Open Scope order_scope.
 
@@ -669,31 +682,27 @@ Variables (d : _) (R : orderType d).
 Lemma bigmin_mkcond I r (P : pred I) (F : I -> R) x :
   \big[min/x]_(i <- r | P i) F i =
     \big[min/x]_(i <- r) (if P i then F i else x).
-Proof. by rewrite NoMonoidBigop.big_mkcond//; [exact: minxx|exact:minCA]. Qed.
+Proof. rewrite big_mkcond_idem ?minxx//; [exact: minA|exact: minC]. Qed.
 
 Lemma bigmin_split I r (P : pred I) (F1 F2 : I -> R) x :
   \big[min/x]_(i <- r | P i) (min (F1 i) (F2 i)) =
   min (\big[min/x]_(i <- r | P i) F1 i) (\big[min/x]_(i <- r | P i) F2 i).
-Proof. by rewrite NoMonoidBigop.big_split//; [exact: minxx|exact: minACA]. Qed.
+Proof. rewrite big_split_idem ?minxx//; [exact: minA|exact: minC]. Qed.
 
 Lemma bigmin_idl I r (P : pred I) (F : I -> R) x :
   \big[min/x]_(i <- r | P i) F i = min x (\big[min/x]_(i <- r | P i) F i).
-Proof. by rewrite [in LHS]big_idl//; [exact: minxx|exact: minCA]. Qed.
+Proof. rewrite minC big_id_idem ?minxx//; exact: minA. Qed.
 
 Lemma bigminID I r (a P : pred I) (F : I -> R) x :
   \big[min/x]_(i <- r | P i) F i =
   min (\big[min/x]_(i <- r | P i && a i) F i)
       (\big[min/x]_(i <- r | P i && ~~ a i) F i).
-Proof.
-by rewrite (NoMonoidBigop.bigID _ a)//; [exact: minxx|exact: minA|exact: minC].
-Qed.
+Proof. by rewrite (bigID_idem minA minC _ _ a) ?minxx. Qed.
 
 Lemma bigminD1 (I : finType) j (P : pred I) (F : I -> R) x :
   P j -> \big[min/x]_(i | P i) F i
     = min (F j) (\big[min/x]_(i | P i && (i != j)) F i).
-Proof.
-by apply: NoMonoidBigop.bigD1; [exact: minxx|exact: minA|exact: minC].
-Qed.
+Proof. by move/(bigD1_AC minA minC _ _) ->. Qed.
 
 Lemma bigmin_le_cond (I : finType) (P : pred I) (f : I -> R) (x0 : R) i :
   P i -> \big[min/x0]_(j | P j) f j <= f i.
