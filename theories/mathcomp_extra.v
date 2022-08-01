@@ -438,6 +438,10 @@ Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
 Arguments big_rmcond {R idx op I r} P.
 Arguments big_rmcond_in {R idx op I r} P.
 
+(*******************************)
+(* MathComp > 1.15.0 additions *)
+(*******************************)
+
 Section bigminr_maxr.
 Import Num.Def.
 
