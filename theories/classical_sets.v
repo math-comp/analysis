@@ -485,6 +485,8 @@ Proof. by apply/seteqP; split=> x/=; rewrite inE. Qed.
 Lemma mem_setE (P : pred T) : mem [set` P] = mem P.
 Proof. by congr Mem; apply/funext=> x; apply/asboolP/idP. Qed.
 
+Lemma subset_refl A : A `<=` A. Proof. by []. Qed.
+
 Lemma subset_trans B A C : A `<=` B -> B `<=` C -> A `<=` C.
 Proof. by move=> sAB sBC ? ?; apply/sBC/sAB. Qed.
 

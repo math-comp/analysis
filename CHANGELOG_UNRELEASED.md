@@ -39,6 +39,8 @@
   + lemmas `bigmax_le` and `bigmax_lt`
   + lemma `bigmin_idr`
   + lemma `bigmax_idr`
+- in `classical_sets.v`:
+  + lemma `subset_refl`
 
 ### Changed
 
