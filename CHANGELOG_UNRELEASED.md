@@ -41,6 +41,7 @@
   + lemma `bigmax_idr`
 - in `classical_sets.v`:
   + lemma `subset_refl`
+
 ### Changed
 
 - in `ereal.v`:
