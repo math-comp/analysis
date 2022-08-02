@@ -11,7 +11,7 @@
 
   ## If you want to select a different attribute (to build from the local sources as well)
   ## when calling `nix-shell` and `nix-build` without the `--argstr job` argument
-  # shell-attribute = "{{nix_name}}";
+  shell-attribute = "mathcomp-analysis-single";
 
   ## Maybe the shortname of the library is different from
   ## the name of the nixpkgs attribute, if so, set it here:
@@ -48,7 +48,6 @@
     mathcomp.override.version = "master";
     mathcomp-bigenough.override.version = "1.0.1";
     mathcomp-finmap.override.version = "1.5.2";
-    mathcomp-real-closed.override.version = "master";
   };
 
   ## Cachix caches to use in CI
