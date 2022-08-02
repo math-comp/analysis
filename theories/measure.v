@@ -959,7 +959,7 @@ split.
 Qed.
 
 Lemma measurable_funS (E D : set T1) (f : T1 -> T2) :
-     measurable E -> D `<=` E -> measurable_fun E f ->
+    measurable E -> D `<=` E -> measurable_fun E f ->
   measurable_fun D f.
 Proof.
 move=> mE DE mf mD; have mC : measurable (E `\` D) by exact: measurableD.
@@ -968,6 +968,10 @@ have := measurable_funU f mD mC.
 suff -> : D `|` (E `\` D) = E by move=> [[]] //.
 by rewrite setDUK.
 Qed.
+
+Lemma measurable_funTS (D : set T1) (f : T1 -> T2) :
+  measurable_fun setT f -> measurable_fun D f.
+Proof. exact: measurable_funS. Qed.
 
 Lemma measurable_fun_ext (D : set T1) (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.

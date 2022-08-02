@@ -27,22 +27,12 @@
   + lemmas `onem_PosNum`, `onemX_NngNum`
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_fine`
-  + lemma `big_const_idem`
-  + lemma `big_id_idem`
-  + lemma `big_rem_AC`
-  + lemma `bigD1_AC`
-  + lemma `big_mkcond_idem`
-  + lemma `big_split_idem`
-  + lemma `big_id_idem_AC`
-  + lemma `bigID_idem`
-- in `mathcomp_extra.v`:
-  + lemmas `bigmax_le` and `bigmax_lt`
-  + lemma `bigmin_idr`
-  + lemma `bigmax_idr`
-- in `classical_sets.v`:
-  + lemma `subset_refl`
-- in lemma `lebesgue_integral.v`:
+- in `lebesgue_integral.v`:
   + lemma `ge0_integral_mscale`
+- in `measure.v`:
+  + lemma `measurable_funTS`
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_indic`
 
 ### Changed
 
@@ -66,6 +56,10 @@
   + `lee_ninfty_eq` -> `leeNy_eq`
 - in `measure.v`:
   + `cvg_mu_inc` -> `nondecreasing_cvg_mu`
+- in `lebesgue_integral.v`:
+  + `muleindic_ge0` -> `nnfun_muleindic_ge0`
+  + `mulem_ge0` -> `mulemu_ge0`
+  + `nnfun_mulem_ge0` -> `nnsfun_mulemu_ge0`
 
 ### Removed
 
