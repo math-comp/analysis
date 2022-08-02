@@ -37,6 +37,8 @@
   + lemma `bigID_idem`
 - in `mathcomp_extra.v`:
   + lemmas `bigmax_le` and `bigmax_lt`
+  + lemma `bigmin_idr`
+  + lemma `bigmax_idr`
 
 ### Changed
 

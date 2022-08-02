@@ -1791,7 +1791,7 @@ rewrite /normr /ball_ predeq3E => x e y /=; rewrite mx_normE; split => xey.
   by rewrite -num_lt /=; split => // -[? ?] _; rewrite !mxE; exact: xey.
 - have e_gt0 : 0 < e by rewrite (le_lt_trans _ xey).
   move: e_gt0 (e_gt0) xey => /ltW/nonnegP[{}e] e_gt0.
-  move=> /(bigmax_ltP _ _ (fun _ => _%:sgn)) /= [e0 xey] i j.
+  move=> /(bigmax_ltP _ _ _ (fun _ => _%:sgn)) /= [e0 xey] i j.
   by move: (xey (i, j)); rewrite !mxE; exact.
 Qed.
 

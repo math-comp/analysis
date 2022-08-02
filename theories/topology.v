@@ -426,63 +426,54 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Section bigmax.
+Section bigmaxmin.
 Local Notation max := Order.max.
-Local Open Scope order_scope.
-Variables (d : unit) (T : orderType d).
-
-Lemma bigmax_geP (I : finType) (P : pred I) m (F : I -> T) x :
-  reflect (m <= x \/ exists2 i, P i & m <= F i)
-          (m <= \big[max/x]_(i | P i) F i).
-Proof.
-apply: (iffP idP) => [|[lemx|[i Pi lemFi]]].
-- rewrite leNgt => /bigmax_ltP /not_andP[/negP|]; first by rewrite -leNgt; left.
-  by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -leNgt; right; exists i.
-- by rewrite bigmax_idl le_maxr lemx.
-- by rewrite (bigmaxD1 _ _ Pi) le_maxr lemFi.
-Qed.
-
-Lemma bigmax_gtP (I : finType) (P : pred I) m (F : I -> T) x :
-  reflect (m < x \/ exists2 i, P i & m < F i)
-          (m < \big[max/x]_(i | P i) F i).
-Proof.
-apply: (iffP idP) => [|[ltmx|[i Pi ltmFi]]].
-- rewrite ltNge => /bigmax_leP /not_andP[/negP|]; first by rewrite -ltNge; left.
-  by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -ltNge; right; exists i.
-- by rewrite bigmax_idl lt_maxr ltmx.
-- by rewrite (bigmaxD1 _ _ Pi) lt_maxr ltmFi.
-Qed.
-
-End bigmax.
-
-Section bigmin.
 Local Notation min := Order.min.
 Local Open Scope order_scope.
-Variables (d : _) (R : orderType d).
+Variables (d : unit) (T : orderType d) (x : T) (I : finType) (P : pred I)
+          (m : T) (F : I -> T).
 
-Lemma bigmin_leP (I : finType) (P : pred I) m (F : I -> R) x :
-  reflect (x <= m \/ exists2 i, P i & F i <= m)
-          (\big[min/x]_(i | P i) F i <= m).
+Lemma bigmax_geP : reflect (m <= x \/ exists2 i, P i & m <= F i)
+                           (m <= \big[max/x]_(i | P i) F i).
 Proof.
-apply: (iffP idP) => [|[lemx|[i Pi lemFi]]].
+apply: (iffP idP) => [|[mx|[i Pi mFi]]].
+- rewrite leNgt => /bigmax_ltP /not_andP[/negP|]; first by rewrite -leNgt; left.
+  by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -leNgt; right; exists i.
+- by rewrite bigmax_idl le_maxr mx.
+- by rewrite (bigmaxD1 i)// le_maxr mFi.
+Qed.
+
+Lemma bigmax_gtP : reflect (m < x \/ exists2 i, P i & m < F i)
+                           (m < \big[max/x]_(i | P i) F i).
+Proof.
+apply: (iffP idP) => [|[mx|[i Pi mFi]]].
+- rewrite ltNge => /bigmax_leP /not_andP[/negP|]; first by rewrite -ltNge; left.
+  by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -ltNge; right; exists i.
+- by rewrite bigmax_idl lt_maxr mx.
+- by rewrite (bigmaxD1 i)// lt_maxr mFi.
+Qed.
+
+Lemma bigmin_leP : reflect (x <= m \/ exists2 i, P i & F i <= m)
+                           (\big[min/x]_(i | P i) F i <= m).
+Proof.
+apply: (iffP idP) => [|[xm|[i Pi Fim]]].
 - rewrite leNgt => /bigmin_gtP /not_andP[/negP|]; first by rewrite -leNgt; left.
   by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -leNgt; right; exists i.
-- by rewrite bigmin_idl le_minl lemx.
-- by rewrite (bigminD1 _ _ Pi) le_minl lemFi.
+- by rewrite bigmin_idl le_minl xm.
+- by rewrite (bigminD1 i)// le_minl Fim.
 Qed.
 
-Lemma bigmin_ltP (I : finType) (P : pred I) m (F : I -> R) x :
-  reflect (x < m \/ exists2 i, P i & F i < m)
-          (\big[min/x]_(i | P i) F i < m).
+Lemma bigmin_ltP : reflect (x < m \/ exists2 i, P i & F i < m)
+                           (\big[min/x]_(i | P i) F i < m).
 Proof.
-apply: (iffP idP) => [|[lemx|[i Pi lemFi]]].
+apply: (iffP idP) => [|[xm|[i Pi Fim]]].
 - rewrite ltNge => /bigmin_geP /not_andP[/negP|]; first by rewrite -ltNge; left.
   by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -ltNge; right; exists i.
-- by rewrite bigmin_idl lt_minl lemx.
-- by rewrite (bigminD1 _ _ Pi) lt_minl lemFi.
+- by rewrite bigmin_idl lt_minl xm.
+- by rewrite (bigminD1 _ _ _ Pi) lt_minl Fim.
 Qed.
 
-End bigmin.
+End bigmaxmin.
 
 Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
   {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
@@ -4334,7 +4325,7 @@ move=> MN MN_min; apply: sPA => i j.
 have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
   by have [_/posnumP[e]] := entP i j; exists e.
 apply; apply: le_ball (MN_min i j).
-apply: le_trans (@bigmin_le _ [orderType of {posnum R}] _ _ _ i) _.
+apply: le_trans (@bigmin_le _ [orderType of {posnum R}] _ _ i _) _.
 exact: bigmin_le.
 Qed.
 Definition matrix_pseudoMetricType_mixin :=
