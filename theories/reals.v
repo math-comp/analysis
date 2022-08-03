@@ -676,6 +676,9 @@ apply/idP/idP; last by move/le_trans => /(_ _ (Rfloor_le x)).
 by move/le_Rfloor; apply le_trans; rewrite Rfloor_natz.
 Qed.
 
+Lemma Rfloor_lt_int x (z : int) : (x < z%:~R) = (Rfloor x < z%:~R).
+Proof. by rewrite ltNge Rfloor_ge_int -ltNge. Qed.
+
 Lemma Rfloor_le0 x : x <= 0 -> Rfloor x <= 0.
 Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
 
@@ -708,6 +711,15 @@ apply/idP/orP => [|[x0|/le_floor r1]]; first rewrite neq_lt => /orP[x0|x0].
 - by rewrite lt_eqF//; apply: contra_lt x0; rewrite floor_ge0.
 - by rewrite gt_eqF// (lt_le_trans _ r1)// floor1.
 Qed.
+
+Lemma lt_succ_floor x : x < (floor x)%:~R + 1.
+Proof. by rewrite -RfloorE lt_succ_Rfloor. Qed.
+
+Lemma floor_lt_int x (z : int) : (x < z%:~R) = (floor x < z).
+Proof. by rewrite Rfloor_lt_int RfloorE ltr_int. Qed.
+
+Lemma floor_ge_int x (z : int) : (z%:~R <= x) = (z <= floor x).
+Proof. by rewrite Rfloor_ge_int RfloorE ler_int. Qed.
 
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.

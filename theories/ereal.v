@@ -1126,13 +1126,13 @@ case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 firs
       by rewrite Znat_def floor_ge0 le_maxr lexx orbC.
     exists N.+1 => // n ltNn; apply: dP.
     have /le_lt_trans : (d <= Num.max d 0)%R by rewrite le_maxr lexx.
-    apply; apply: lt_le_trans (lt_succ_Rfloor _) _; rewrite RfloorE Nfloor.
+    apply; apply: lt_le_trans (lt_succ_floor _) _; rewrite Nfloor.
     by rewrite -(@natrD R N 1) ler_nat addn1.
   have /ZnatP [N Nfloor] : floor (Num.max (- d)%R 0%R) \is a Znat.
     by rewrite Znat_def floor_ge0 le_maxr lexx orbC.
   exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin ltr_oppl.
   have /le_lt_trans : (- d <= Num.max (- d) 0)%R by rewrite le_maxr lexx.
-  apply; apply: lt_le_trans (lt_succ_Rfloor _) _; rewrite RfloorE Nfloor.
+  apply; apply: lt_le_trans (lt_succ_floor _) _; rewrite Nfloor.
   by rewrite -(@natrD R N 1) ler_nat addn1.
 have /ZnatP [N Nfloor] : floor (d%:num^-1) \is a Znat.
   by rewrite Znat_def floor_ge0.
@@ -1142,5 +1142,5 @@ apply: dP; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym; apply/invr_neq0/lt0r_neq0.
 rewrite /= opprD addrA subrr distrC subr0 gtr0_norm; last by rewrite invr_gt0.
 rewrite -[ltLHS]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
-by rewrite (lt_le_trans (lt_succ_Rfloor _))// RfloorE Nfloor ler_add// ler_nat.
+by rewrite (lt_le_trans (lt_succ_floor _))// Nfloor ler_add// ler_nat.
 Qed.

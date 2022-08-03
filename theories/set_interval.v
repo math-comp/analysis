@@ -415,8 +415,7 @@ rewrite predeqE => y; split=> /=; last first.
 rewrite in_itv /= andbT => xy; exists (`|floor y|%N.+1) => //=.
 rewrite in_itv /= xy /= -addn1 natrD.
 have [y0|y0] := ltP 0 y; last by rewrite (le_lt_trans y0)// ltr_spaddr.
-rewrite natr_absz ger0_norm; last by rewrite floor_ge0 ltW.
-by rewrite -RfloorE lt_succ_Rfloor.
+by rewrite natr_absz ger0_norm ?lt_succ_floor// floor_ge0 ltW.
 Qed.
 
 Lemma itv_o_inftyEbigcup x :
