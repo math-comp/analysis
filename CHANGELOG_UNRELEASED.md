@@ -94,6 +94,8 @@
 - in `topology.v`:
   + `bigmax_gerP` -> `bigmax_geP`
   + `bigmax_gtrP` -> `bigmax_gtP`
+- in `lebesgue_integral.v`:
+  + `emeasurable_funeM` -> `measurable_funeM`
 
 ### Removed
 

@@ -1877,7 +1877,7 @@ apply: hwlogM => //.
 - by move=> ? [].
 Qed.
 
-Lemma emeasurable_funeM D (f : T -> \bar R) (k : \bar R) :
+Lemma measurable_funeM D (f : T -> \bar R) (k : \bar R) :
   measurable_fun D f -> measurable_fun D (fun x => k * f x)%E.
 Proof.
 move=> mf; rewrite (_ : (fun x => k * f x) = (cst k) \* f)//.
@@ -2095,7 +2095,7 @@ Lemma ge0_integralM (k : \bar R) : (forall x, D x -> 0 <= f x) ->
 Proof.
 move=> f0; move: k => [k|_|//]; first exact: ge0_integralM_EFin.
 pose g : (T -> \bar R)^nat := fun n x => n%:R%:E * f x.
-have mg n : measurable_fun D (g n) by apply: emeasurable_funeM.
+have mg n : measurable_fun D (g n) by apply: measurable_funeM.
 have g0 n x : D x -> 0 <= g n x.
   by move=> Dx; apply: mule_ge0; [rewrite lee_fin|exact:f0].
 have nd_g x : D x -> nondecreasing_seq (g^~x).
@@ -2708,7 +2708,7 @@ Qed.
 
 Lemma integrablerM (k : R) f : mu_int f -> mu_int (fun x => k%:E * f x).
 Proof.
-move=> [mf foo]; split; first exact: emeasurable_funeM.
+move=> [mf foo]; split; first exact: measurable_funeM.
 under eq_fun do rewrite abseM.
 by rewrite ge0_integralM// ?lte_mul_pinfty//; exact: measurable_fun_comp.
 Qed.
@@ -3872,7 +3872,7 @@ Qed.
 
 Let mgg n : measurable_fun D (fun x => 2%:E * g x - g_ n x).
 Proof.
-apply/emeasurable_funB => //; first by apply: emeasurable_funeM; case: ig.
+apply/emeasurable_funB => //; first by apply: measurable_funeM; case: ig.
 by apply/measurable_fun_comp => //; exact: emeasurable_funB.
 Qed.
 
@@ -4157,7 +4157,7 @@ have CB : C `<=` B.
     rewrite funeqE => x; rewrite indicE /phi /m2/= /mrestr.
     have [xX1|xX1] := boolP (x \in X1); first by rewrite mule1 in_xsectionM.
     by rewrite mule0 notin_xsectionM// set0I measure0.
-  apply: emeasurable_funeM => //; apply/EFin_measurable_fun.
+  apply/measurable_funeM/EFin_measurable_fun.
   by rewrite (_ : \1_ _ = mindic R mX1).
 suff monoB : monotone_class setT B by exact: monotone_class_subset.
 split => //; [exact: CB| |exact: xsection_ndseq_closed].
@@ -4199,7 +4199,7 @@ have CB : C `<=` B.
     rewrite funeqE => y; rewrite indicE /psi /m1/= /mrestr.
     have [yX2|yX2] := boolP (y \in X2); first by rewrite mule1 in_ysectionM.
     by rewrite mule0 notin_ysectionM// set0I measure0.
-  apply: emeasurable_funeM => //; apply/EFin_measurable_fun.
+  apply/measurable_funeM/EFin_measurable_fun.
   by rewrite (_ : \1_ _ = mindic R mX2).
 suff monoB : monotone_class setT B by exact: monotone_class_subset.
 split => //; [exact: CB| |exact: ysection_ndseq_closed].
@@ -4612,7 +4612,7 @@ Qed.
 Lemma sfun_measurable_fun_fubini_tonelli_F : measurable_fun setT F.
 Proof.
 rewrite sfun_fubini_tonelli_FE//; apply: emeasurable_fun_sum => // r.
-by apply: emeasurable_funeM => //; apply: measurable_fun_xsection => // /[!inE].
+by apply/measurable_funeM/measurable_fun_xsection => // /[!inE].
 Qed.
 
 Lemma sfun_fubini_tonelli_GE : G = fun y =>
@@ -4637,7 +4637,7 @@ Qed.
 Lemma sfun_measurable_fun_fubini_tonelli_G : measurable_fun setT G.
 Proof.
 rewrite sfun_fubini_tonelli_GE//; apply: emeasurable_fun_sum => // r.
-by apply: emeasurable_funeM => //; apply: measurable_fun_ysection => // /[!inE].
+by apply/measurable_funeM/measurable_fun_ysection => // /[!inE].
 Qed.
 
 Let EFinf x : (f x)%:E =
@@ -4663,8 +4663,7 @@ transitivity (\sum_(k <- fset_set (range f))
   - exact: indic_measurable_fun_fubini_tonelli_F.
   - by move=> /= x _; exact: indic_fubini_tonelli_F_ge0.
 rewrite -ge0_integral_sum //; last 2 first.
-  - move=> /= r; apply: emeasurable_funeM => //.
-    exact: indic_measurable_fun_fubini_tonelli_F.
+  - by move=> r; apply/measurable_funeM/indic_measurable_fun_fubini_tonelli_F.
   - move=> r x _; rewrite /fubini_F.
     have [r0|r0] := leP 0%R r.
       by rewrite mule_ge0//; exact: indic_fubini_tonelli_F_ge0.
@@ -4693,8 +4692,7 @@ transitivity (\sum_(k <- fset_set (range f))
   - exact: indic_measurable_fun_fubini_tonelli_G.
   - by move=> /= x _; exact: indic_fubini_tonelli_G_ge0.
 rewrite -ge0_integral_sum //; last 2 first.
-  - move=> /= i; apply: emeasurable_funeM => //.
-    exact: indic_measurable_fun_fubini_tonelli_G.
+  - by move=> r; apply/measurable_funeM/indic_measurable_fun_fubini_tonelli_G.
   - move=> r x _; rewrite /fubini_G.
     have [r0|r0] := leP 0%R r.
       by rewrite mule_ge0//; exact: indic_fubini_tonelli_G_ge0.
