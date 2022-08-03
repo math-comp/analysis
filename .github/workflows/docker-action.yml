@@ -38,7 +38,6 @@ jobs:
               opam pin add -n -y -k path coq-mathcomp-classical $WORKDIR
               opam pin add -n -y -k path $PACKAGE $WORKDIR
               opam update -y
-              opam depext -y -u camlp5
               opam install -y -j 2 coq-mathcomp-classical --deps-only
             endGroup
 
