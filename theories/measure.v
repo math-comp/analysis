@@ -1208,16 +1208,6 @@ move=> mu0; rewrite -semi_sigma_additiveE -semi_additiveE.
 exact: semi_sigma_additive_is_additive.
 Qed.
 
-Lemma fset_set_image (T1 T2 : choiceType) (D : set T1) (f : T1 -> T2) :
-  finite_set D -> fset_set (f @` D) = (f @` (fset_set D))%fset.
-Proof.
-move=> Dfin; apply/fsetP => z; rewrite in_fset_set; last exact: finite_image.
-apply/idP/idP => [|/imfsetP[r /=]].
-  rewrite inE /= => -[x Dx <-{z}]; apply/imfsetP => /=; exists x => //.
-  by rewrite in_fset_set ?inE/=.
-by rewrite in_fset_set// inE => Dr ->; rewrite inE; exists r.
-Qed.
-
 HB.mixin Record isAdditiveMeasure d
     (R : numFieldType) (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
   measure_ge0 : forall x, 0 <= mu x ;
