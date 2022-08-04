@@ -435,6 +435,15 @@ move=> finA finB AB f0; rewrite !fsbig_finite//=; apply: lee_sum_nneg_subfset.
 by move=> t; rewrite !inE !in_fset_set// => /f0.
 Qed.
 
+Lemma lee_fsum [R : realDomainType] [T : choiceType] (I : set T)
+  (a b : T -> \bar R) : finite_set I ->
+  (forall i, I i -> a i <= b i)%E -> (\sum_(i \in I) a i <= \sum_(i \in I) b i)%E.
+Proof.
+move=> finI ab.
+rewrite !fsbig_finite// big_seq [in leRHS]big_seq lee_sum //.
+by move=> i; rewrite in_fset_set// inE; exact: ab.
+Qed.
+
 Lemma ge0_mule_fsumr (T : choiceType) (R : realDomainType) (x : \bar R)
     (F : T -> \bar R) (P : set T) : (forall i : T, 0 <= F i)%E ->
   (x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i)%E.

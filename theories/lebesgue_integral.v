@@ -3738,7 +3738,7 @@ Proof.
 have -> : \sum_(n <oo) \d_ n A = \esum_(i in A) \d_ i A :> \bar R.
   rewrite nneseries_esum// (_ : [set _ | _] = setT); last exact/seteqP.
   rewrite [in LHS](esumID A)// !setTI [X in _ + X](_ : _ = 0) ?adde0//.
-  by apply esum0 => i Ai; rewrite /= /dirac indicE memNset.
+  by apply esum1 => i Ai; rewrite /= /dirac indicE memNset.
 rewrite /counting/=; case: ifPn => /asboolP finA.
   by rewrite -finite_card_dirac.
 by rewrite infinite_card_dirac.
@@ -4082,29 +4082,19 @@ Variables (d1 d2 : measure_display).
 Variables (T1 : measurableType d1) (T2 : measurableType d2).
 Implicit Types (A : set (T1 * T2)).
 
-Lemma mem_set_pair1 x y A :
-  (y \in [set y' | (x, y') \in A]) = ((x, y) \in A).
-Proof. by apply/idP/idP => [|]; [rewrite inE|rewrite !inE /= inE]. Qed.
-
-Lemma mem_set_pair2 x y A :
-  (x \in [set x' | (x', y) \in A]) = ((x, y) \in A).
-Proof. by apply/idP/idP => [|]; [rewrite inE|rewrite 2!inE /= inE]. Qed.
-
 Variable R : realType.
 
 Lemma measurable_xsection A x : measurable A -> measurable (xsection A x).
 Proof.
 move=> mA.
 pose f : T1 * T2 -> \bar R := EFin \o indic_nnsfun R mA.
-have mf : measurable_fun setT f by apply/EFin_measurable_fun/measurable_funP.
+have mf : measurable_fun setT f by exact/EFin_measurable_fun/measurable_funP.
 have _ : (fun y => (y \in xsection A x)%:R%:E) = f \o (fun y => (x, y)).
-  rewrite funeqE => y /=; rewrite /xsection /f.
-  by rewrite /= /mindic indicE/= mem_set_pair1.
+  by apply/funext => y/=; rewrite mem_xsection.
 have -> : xsection A x = (fun y => f (x, y)) @^-1` [set 1%E].
-  rewrite predeqE => y; split; rewrite /xsection /preimage /= /f.
-    by rewrite /= /mindic indicE/= => ->.
-  rewrite /= /mindic indicE.
-  by case: (_ \in _) => //= -[] /eqP; rewrite eq_sym oner_eq0.
+  apply/funext => y/=; rewrite -(in_setE (xsection A x)) mem_xsection.
+  rewrite /f/= mindicE//; apply/propext; split=> [->//|[]].
+  by case: (_ \in _)=> // /esym/eqP; rewrite oner_eq0.
 by rewrite -(setTI (_ @^-1` _)); exact: measurable_fun_prod1.
 Qed.
 
@@ -4114,13 +4104,11 @@ move=> mA.
 pose f : T1 * T2 -> \bar R := EFin \o indic_nnsfun R mA.
 have mf : measurable_fun setT f by apply/EFin_measurable_fun/measurable_funP.
 have _ : (fun x => (x \in ysection A y)%:R%:E) = f \o (fun x => (x, y)).
-  rewrite funeqE => x /=; rewrite /ysection /f.
-  by rewrite /= /mindic indicE mem_set_pair2.
+  by apply/funext => x/=; rewrite mem_ysection.
 have -> : ysection A y = (fun x => f (x, y)) @^-1` [set 1%E].
-  rewrite predeqE => x; split; rewrite /ysection /preimage /= /f.
-    by rewrite /= /mindic indicE => ->.
-  rewrite /= /mindic indicE.
-  by case: (_ \in _) => //= -[] /eqP; rewrite eq_sym oner_eq0.
+  apply/funext => x/=; rewrite -(in_setE (ysection A y)) mem_ysection.
+  rewrite /f/= mindicE//; apply/propext; split=> [->//|[]].
+  by case: (_ \in _)=> // /esym/eqP; rewrite oner_eq0.
 by rewrite -(setTI (_ @^-1` _)); exact: measurable_fun_prod2.
 Qed.
 
@@ -4144,9 +4132,8 @@ have phiF x : (fun i => phi (F i) x) --> phi (\bigcup_i F i) x.
   rewrite /phi /= xsection_bigcup; apply: nondecreasing_cvg_mu.
   - by move=> n; apply: measurable_xsection; case: (BF n).
   - by apply: bigcupT_measurable => i; apply: measurable_xsection; case: (BF i).
-  - move=> m n mn; apply/subsetPset => y; rewrite /xsection/= !inE.
-    by have /subsetPset FmFn := ndF _ _ mn; exact: FmFn.
-apply: (emeasurable_fun_cvg (phi \o F)).
+  - by move=> m n mn; exact/subsetPset/le_xsection/subsetPset/ndF.
+apply: (emeasurable_fun_cvg (phi \o F)) => //.
 - by move=> i; have [] := BF i.
 - by move=> x _; exact: phiF.
 Qed.
@@ -4165,9 +4152,8 @@ have psiF x : (fun i => psi (F i) x) --> psi (\bigcup_i F i) x.
   rewrite /psi /= ysection_bigcup; apply: nondecreasing_cvg_mu.
   - by move=> n; apply: measurable_ysection; case: (BF n).
   - by apply: bigcupT_measurable => i; apply: measurable_ysection; case: (BF i).
-  - move=> m n mn; apply/subsetPset => y; rewrite /ysection/= !inE.
-    by have /subsetPset FmFn := ndF _ _ mn; exact: FmFn.
-apply: (emeasurable_fun_cvg (psi \o F)).
+  - by move=> m n mn; exact/subsetPset/le_ysection/subsetPset/ndF.
+apply: (emeasurable_fun_cvg (psi \o F)) => //.
 - by move=> i; have [] := BF i.
 - by move=> x _; exact: psiF.
 Qed.
@@ -4580,10 +4566,7 @@ rewrite funeqE => x; rewrite /= -(setTI (xsection _ _)).
 rewrite -integral_indic//; last exact: measurable_xsection.
 rewrite /F /fubini_F -(setTI (xsection _ _)).
 rewrite integral_setI_indic; [|exact: measurable_xsection|by []].
-apply: eq_integral => y _ /=; rewrite indicT mul1e /f !indicE.
-have [|] /= := boolP (y \in xsection _ _).
-  by rewrite inE /xsection /= => ->.
-by rewrite /xsection /= notin_set /= => /negP/negbTE ->.
+by apply: eq_integral => y _ /=; rewrite indicT mul1e /f !indicE mem_xsection.
 Qed.
 
 Lemma indic_fubini_tonelli_GE : G = m1 \o ysection A.
@@ -4592,10 +4575,7 @@ rewrite funeqE => y; rewrite /= -(setTI (ysection _ _)).
 rewrite -integral_indic//; last exact: measurable_ysection.
 rewrite /F /fubini_F -(setTI (ysection _ _)).
 rewrite integral_setI_indic; [|exact: measurable_ysection|by []].
-apply: eq_integral => x _ /=; rewrite indicT mul1e /f 2!indicE.
-have [|] /= := boolP (x \in ysection _ _).
-  by rewrite inE /xsection /= => ->.
-by rewrite /xsection /= notin_set /= => /negP/negbTE ->.
+by apply: eq_integral => x _ /=; rewrite indicT mul1e /f 2!indicE mem_ysection.
 Qed.
 
 Lemma indic_measurable_fun_fubini_tonelli_F : measurable_fun setT F.

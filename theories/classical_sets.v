@@ -2907,6 +2907,31 @@ End Exports.
 End SetOrder.
 Export SetOrder.Exports.
 
+Section product.
+Variables (T1 T2 : Type).
+Implicit Type A B : set (T1 * T2).
+
+Lemma subset_fst_set : {homo @fst_set T1 T2 : A B / A `<=` B}.
+Proof. by move=> A B AB x [y Axy]; exists y; exact/AB. Qed.
+
+Lemma subset_snd_set : {homo @snd_set T1 T2 : A B / A `<=` B}.
+Proof. by move=> A B AB x [y Axy]; exists y; exact/AB. Qed.
+
+Lemma fst_set_fst A : A `<=` A.`1 \o fst. Proof. by move=> [x y]; exists y. Qed.
+
+Lemma snd_set_snd A: A `<=` A.`2 \o snd. Proof. by move=> [x y]; exists x. Qed.
+
+Lemma fst_setM (X : set T1) (Y : set T2) : (X `*` Y).`1 `<=` X.
+Proof. by move=> x [y [//]]. Qed.
+
+Lemma snd_setM (X : set T1) (Y : set T2) : (X `*` Y).`2 `<=` Y.
+Proof. by move=> x [y [//]]. Qed.
+
+Lemma fst_setMR (X : set T1) (Y : T1 -> set T2) : (X `*`` Y).`1 `<=` X.
+Proof. by move=> x [y [//]]. Qed.
+
+End product.
+
 Section section.
 Variables (T1 T2 : Type).
 Implicit Types (A : set (T1 * T2)) (x : T1) (y : T2).
@@ -2914,6 +2939,18 @@ Implicit Types (A : set (T1 * T2)) (x : T1) (y : T2).
 Definition xsection A x := [set y | (x, y) \in A].
 
 Definition ysection A y := [set x | (x, y) \in A].
+
+Lemma xsection_snd_set A x : xsection A x `<=` A.`2.
+Proof. by move=> y Axy; exists x; rewrite /xsection/= inE in Axy. Qed.
+
+Lemma ysection_fst_set A y : ysection A y `<=` A.`1.
+Proof. by move=> x Axy; exists y; rewrite /ysection/= inE in Axy. Qed.
+
+Lemma mem_xsection x y A : (y \in xsection A x) = ((x, y) \in A).
+Proof. by apply/idP/idP => [|]; [rewrite inE|rewrite /xsection !inE /= inE]. Qed.
+
+Lemma mem_ysection x y A : (x \in ysection A y) = ((x, y) \in A).
+Proof. by apply/idP/idP => [|]; [rewrite inE|rewrite /ysection !inE /= inE]. Qed.
 
 Lemma xsection0 x : xsection set0 x = set0.
 Proof. by rewrite predeqE /xsection => y; split => //=; rewrite inE. Qed.
@@ -2923,16 +2960,14 @@ Proof. by rewrite predeqE /ysection => x; split => //=; rewrite inE. Qed.
 
 Lemma in_xsectionM X1 X2 x : x \in X1 -> xsection (X1 `*` X2) x = X2.
 Proof.
-move=> xX1; rewrite /xsection predeqE => y /=; split; rewrite inE.
-  by move=> [].
-by move=> X2y; split => //=; rewrite inE in xX1.
+move=> xX1; apply/seteqP; split=> [y /xsection_snd_set|]; first exact: snd_setM.
+by move=> y X2y; rewrite /xsection/= inE; split=> //=; rewrite inE in xX1.
 Qed.
 
 Lemma in_ysectionM X1 X2 y : y \in X2 -> ysection (X1 `*` X2) y = X1.
 Proof.
-move=> yX2; rewrite /ysection predeqE => x /=; split; rewrite inE.
-  by move=> [].
-by move=> X1x; split => //=; rewrite inE in yX2.
+move=> yX2; apply/seteqP; split=> [x /ysection_fst_set|]; first exact: fst_setM.
+by move=> x X1x; rewrite /ysection/= inE; split=> //=; rewrite inE in yX2.
 Qed.
 
 Lemma notin_xsectionM X1 X2 x : x \notin X1 -> xsection (X1 `*` X2) x = set0.
