@@ -1550,7 +1550,7 @@ apply: esum_ge; exists [set` B] => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
   by rewrite lee_fin natr_absz gtr0_norm ?ceil_gt0// ceil_ge.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
 rewrite fsbig_finite// big_seq (eq_bigr (cst 1))/=; last first.
-  move=> i; rewrite in_fset_set// inE/= => Bi; rewrite /dirac indicE mem_set//.
+  move=> i; rewrite in_fset_set// inE/= => Bi; rewrite diracE mem_set//.
   exact: BA.
 by rewrite -big_seq card_fset_sum1 sumEFin natr_sum// set_fsetK.
 Qed.
