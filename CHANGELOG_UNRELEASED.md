@@ -43,6 +43,7 @@
   + lemma `subset_refl`
 - in `reals.v`:
   + lemmas `Rfloor_lt_int`, `floor_lt_int`, `floor_ge_int`
+  + lemmas `ceil_ge_int`, `ceil_lt_int`
 
 ### Changed
 

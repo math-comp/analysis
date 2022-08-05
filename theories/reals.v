@@ -771,6 +771,12 @@ Proof. by move=> x0; rewrite -ler_oppl oppr0 floor_ge0 -ler_oppr oppr0. Qed.
 Lemma le_ceil : {homo @ceil R : x y / x <= y}.
 Proof. by move=> x y xy; rewrite ler_oppl opprK le_floor // ler_oppl opprK. Qed.
 
+Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (ceil x <= z).
+Proof. by rewrite /ceil ler_oppl -floor_ge_int// -ler_oppr mulrNz opprK. Qed.
+
+Lemma ceil_lt_int x (z : int) : (z%:~R < x) = (z < ceil x).
+Proof. by rewrite ltNge ceil_ge_int -ltNge. Qed.
+
 End CeilTheory.
 
 (* -------------------------------------------------------------------- *)
