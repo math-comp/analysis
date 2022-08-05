@@ -1161,9 +1161,8 @@ rewrite /series; near \oo => N; have xN : x < N%:R; last first.
   rewrite -(@is_cvg_series_restrict N.+1).
   by apply: (nondecreasing_is_cvg (incr_S1 N)); eexists; apply: S1_sup.
 near: N; exists (absz (floor x)).+1 => // m; rewrite /mkset -(@ler_nat R).
-move/lt_le_trans => -> //; rewrite (lt_le_trans (lt_succ_Rfloor x)) // -addn1.
-rewrite natrD (_ : 1%:R = 1%R) // ler_add2r RfloorE -(@gez0_abs (floor x)) //.
-by rewrite floor_ge0// ltW.
+move/lt_le_trans => -> //; rewrite (lt_le_trans (lt_succ_floor x)) // -addn1.
+by rewrite natrD ler_add2r -(@gez0_abs (floor x)) ?floor_ge0// ltW.
 Unshelve. all: by end_near. Qed.
 
 End exponential_series_cvg.

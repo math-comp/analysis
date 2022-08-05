@@ -1220,7 +1220,7 @@ rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
   rewrite /= in_itv /=; apply/andP; split.
     rewrite ler_pdivr_mulr// (le_trans _ (floor_le _))//.
     by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// (le_trans _ nr).
-  rewrite ltr_pdivl_mulr// (lt_le_trans (lt_succ_Rfloor _))// RfloorE.
+  rewrite ltr_pdivl_mulr// (lt_le_trans (lt_succ_floor _))//.
   rewrite -[in leRHS]addn1 natrD ler_add2r// -(@gez0_abs (floor _))// floor_ge0.
   by rewrite mulr_ge0// (le_trans _ nr).
 - rewrite -bigcup_set => -[/= k] /[!mem_index_iota] /andP[nk kn].
@@ -1373,7 +1373,7 @@ have xAnK : x \in A n (Ordinal K).
   rewrite in_itv /=; apply/andP; split.
     rewrite ler_pdivr_mulr// (le_trans _ (floor_le _))//.
     by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// ltW.
-  rewrite ltr_pdivl_mulr// (lt_le_trans (lt_succ_Rfloor _))// RfloorE.
+  rewrite ltr_pdivl_mulr// (lt_le_trans (lt_succ_floor _))//.
   rewrite -[in leRHS]addn1 natrD ler_add2r// -{1}(@gez0_abs (floor _))//.
   by rewrite floor_ge0// mulr_ge0// ltW.
 have /[!mem_index_enum]/(_ isT) := An0 (Ordinal K).
@@ -1492,7 +1492,7 @@ have : fine (f x) < n%:R.
   rewrite -(@ler_nat R); apply: lt_le_trans.
   rewrite -addn1 natrD (_ : `| _ |%:R  = (floor (fine (f x)))%:~R); last first.
     by rewrite -[in RHS](@gez0_abs (floor _))// floor_ge0 //; exact/le0R/f0.
-  by rewrite -RfloorE lt_succ_Rfloor.
+  by rewrite lt_succ_floor.
 rewrite -lte_fin (fineK fxfin) => fxn.
 have [approx_nx0|] := f_ub_approx fxn.
   by have := Hm _ mn; rewrite approx_nx0.

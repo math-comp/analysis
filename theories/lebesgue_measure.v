@@ -380,13 +380,11 @@ Qed.
 Lemma hlength_sigma_finite : sigma_finite [set: ocitv_type] hlength.
 Proof.
 exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
-  apply/esym; rewrite -subTset => /= x _ /=.
-  exists `|(floor `|x|%R + 1)%R|%N; rewrite //= in_itv/=.
-  rewrite !natr_absz intr_norm intrD -RfloorE.
-  suff: `|x| < `|Rfloor `|x| + 1| by rewrite ltr_norml => /andP[-> /ltW->].
-  rewrite [ltRHS]ger0_norm//.
-    by rewrite (le_lt_trans _ (lt_succ_Rfloor _))// ?ler_norm.
-  by rewrite addr_ge0// -Rfloor0 le_Rfloor.
+  apply/esym; rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
+  rewrite in_itv/= !natr_absz intr_norm intrD.
+  suff: `|x| < `|(floor `|x|)%:~R + 1| by rewrite ltr_norml => /andP[-> /ltW->].
+  rewrite [ltRHS]ger0_norm//; last by rewrite addr_ge0// ler0z floor_ge0.
+  by rewrite (le_lt_trans _ (lt_succ_floor _)) ?ler_norm.
 by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltey.
 Qed.
 
@@ -564,7 +562,7 @@ apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
 have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
 rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
 rewrite -addn1 natrD natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW//.
-by rewrite -RfloorE lt_succ_Rfloor.
+by rewrite lt_succ_floor.
 Qed.
 
 Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
@@ -602,9 +600,8 @@ Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
 move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
-rewrite !natr_absz/= ger0_norm ?ceil_ge0// ?subr_ge0//; last first.
-  by case: b xy => //= /ltW.
-by rewrite -RceilE Rceil_ge.
+rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
+by case: b xy => //= /ltW.
 Qed.
 
 Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
