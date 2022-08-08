@@ -4029,8 +4029,12 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
 
 Section xsection.
-Variables (pt2 : T2) (m2 : {measure set T2 -> \bar R}).
-Let phi A := m2 \o xsection A.
+Variables (pt2 : T2) (m2 : T1 -> {measure set T2 -> \bar R}).
+(* the generalization from m2 : {measure set T2 -> \bar R}t to
+   T1 -> {measure set T2 -> \bar R} is needed to develop the theory
+   of kernels; the original type was sufficient for the the development
+   of the theory of integration  *)
+Let phi A x := m2 x (xsection A x).
 Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
 
 Lemma xsection_ndseq_closed : ndseq_closed B.

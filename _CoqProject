@@ -36,6 +36,8 @@ theories/derive.v
 theories/measure.v
 theories/numfun.v
 theories/lebesgue_integral.v
+theories/kernel.v
+theories/prob_lang.v
 theories/summability.v
 theories/signed.v
 theories/itv.v
