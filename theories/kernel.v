@@ -997,15 +997,20 @@ End discrete_measurable_bool.
 
 Section nonneg_constants.
 Variable R : realType.
+(* 
 Let twoseven_proof : (0 <= 2 / 7 :> R)%R.
 Proof. by rewrite divr_ge0// ler0n. Qed.
+*)
 
-Definition twoseven : {nonneg R} := NngNum twoseven_proof.
+(* Check (2%:R / 7%:R)%:nng. *)
 
+(* Definition twoseven : {nonneg R} := (2%:R / 7%:R)%:nng. *)
+(*
 Let fiveseven_proof : (0 <= 5 / 7 :> R)%R.
 Proof. by rewrite divr_ge0// ler0n. Qed.
 
 Definition fiveseven : {nonneg R} := NngNum fiveseven_proof.
+ *)
 
 End nonneg_constants.
 
@@ -1020,12 +1025,19 @@ Proof. by rewrite /= diracE in_setT. Qed.
 Section bernoulli27.
 Variable R : realType.
 
+Local Open Scope ring_scope.
+Notation "'2/7'" := (2%:R / 7%:R)%:nng.
+Definition twoseven : {nonneg R} := (2%:R / 7%:R)%:nng.
+Definition fiveseven : {nonneg R} := (5%:R / 7%:R)%:nng.
+
 Definition bernoulli27 : set _ -> \bar R :=
   measure_add
-    [the measure _ _ of mscale (twoseven R) [the measure _ _ of dirac true]]
-    [the measure _ _ of mscale (fiveseven R) [the measure _ _ of dirac false]].
+    [the measure _ _ of mscale twoseven [the measure _ _ of dirac true]]
+    [the measure _ _ of mscale fiveseven [the measure _ _ of dirac false]].
 
 HB.instance Definition _ := Measure.on bernoulli27.
+
+Local Close Scope ring_scope.
 
 Lemma bernoulli27_setT : bernoulli27 [set: _] = 1.
 Proof.
@@ -1522,8 +1534,8 @@ Variables (R : realType) (d : _) (T : measurableType d).
    let _ = score (1/4! r^4 e^-r) in
    return x *)
 
-Definition k3' : T * bool -> R := cst 3.
-Definition k10' : T * bool -> R := cst 10.
+Definition k3' : T * bool -> R := cst 3%:R.
+Definition k10' : T * bool -> R := cst 10%:R.
 
 Lemma mk3 : measurable_fun setT k3'.
 exact: measurable_fun_cst.
