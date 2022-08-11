@@ -504,7 +504,7 @@ Qed.
 
 End ereal_supremum_realType.
 
-HB.instance Definition _ (R : numDomainType) := IsPointed.Build (\bar R) 0%E.
+HB.instance Definition _ (R : numDomainType) := isPointed.Build (\bar R) 0%E.
 
 Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
   (abse \o f) \_ D = abse \o (f \_ D).
@@ -576,7 +576,7 @@ Definition ereal_nbhs (x : \bar R) (P : \bar R -> Prop) : Prop :=
     | +oo => exists M, M \is Num.real /\ forall y, M%:E < y -> P y
     | -oo => exists M, M \is Num.real /\ forall y, y < M%:E -> P y
   end.
-HB.instance Definition _ := IsFiltered.Build _ (\bar R) ereal_nbhs.
+HB.instance Definition _ := isFiltered.Build _ (\bar R) ereal_nbhs.
 End ereal_nbhs.
 
 Section ereal_nbhs_instances.
@@ -1285,7 +1285,7 @@ rewrite predeq2E => x A; split.
     by rewrite -ltNge => /nbhs_oo_down_1e; apply => ? ?; exact/sEA/reA.
 Qed.
 
-HB.instance Definition _ := Filtered_IsPseudoMetric.Build R (\bar R)
+HB.instance Definition _ := Filtered_isPseudoMetric.Build R (\bar R)
   ereal_nbhsE ereal_ball_center ereal_ball_sym ereal_ball_triangle erefl.
 
 End ereal_PseudoMetric.

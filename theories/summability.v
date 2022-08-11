@@ -28,7 +28,7 @@ Definition totally {I : choiceType} : set (set {fset I}) :=
   filter_from setT (fun A => [set B | A `<=` B]).
 
 HB.instance Definition _ {I : choiceType} X :=
-  IsSource.Build X _ {fset I} (fun f => f @ totally).
+  isSource.Build X _ {fset I} (fun f => f @ totally).
 
 Instance totally_filter {I : choiceType} : ProperFilter (@totally I).
 Proof.

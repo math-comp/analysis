@@ -687,7 +687,7 @@ Proof. by rewrite cvgeryP cvgrnyP. Qed.
 
 (** ** Modules with a norm *)
 
-HB.mixin Record PseudoMetricNormedZmod_Lmodule_IsNormedModule K V
+HB.mixin Record PseudoMetricNormedZmod_Lmodule_isNormedModule K V
     of PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
   normmZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
@@ -695,7 +695,7 @@ HB.mixin Record PseudoMetricNormedZmod_Lmodule_IsNormedModule K V
 #[short(type="normedModType")]
 HB.structure Definition NormedModule (K : numDomainType) :=
   {T of PseudoMetricNormedZmod K T & GRing.Lmodule K T
-   & PseudoMetricNormedZmod_Lmodule_IsNormedModule K T}.
+   & PseudoMetricNormedZmod_Lmodule_isNormedModule K T}.
 
 Section regular_topology.
 
@@ -704,7 +704,7 @@ Variable R : numFieldType.
 HB.instance Definition _ := Num.NormedZmodule.on R^o.
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_IsNormedModule.Build R R^o (@normrM _).
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R R^o (@normrM _).
 
 End regular_topology.
 
@@ -1887,7 +1887,7 @@ by have [ab|ab] := leP a b; [rewrite max_r | rewrite max_l // ltW].
 Qed.
 
 HB.instance Definition _ (K : numDomainType) (m n : nat) :=
-  Num.Zmodule_IsNormed.Build K 'M[K]_(m, n)
+  Num.Zmodule_isNormed.Build K 'M[K]_(m, n)
     (@ler_mx_norm_add _ _ _) (@mx_norm_eq0 _ _ _)
     (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
 
@@ -1924,7 +1924,7 @@ by rewrite !num_max bE dE maxr_pmulr.
 Qed.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_IsNormedModule.Build K 'M[K]_(m.+1, n.+1)
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m.+1, n.+1)
     mx_normZ.
 
 End matrix_NormedModule.
@@ -1957,7 +1957,7 @@ Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pmulr. Qed.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_IsNormedModule.Build K (U * V)%type
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K (U * V)%type
     prod_norm_scale.
 
 End prod_NormedModule.
@@ -2911,7 +2911,7 @@ suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
 by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
 Unshelve. all: by end_near. Qed.
 
-HB.instance Definition _ (R : realType) := Uniform_IsComplete.Build R^o
+HB.instance Definition _ (R : realType) := Uniform_isComplete.Build R^o
   (@R_complete R). (* todo : delete *)
 
 HB.instance Definition _ (R : realType) := Complete.copy R

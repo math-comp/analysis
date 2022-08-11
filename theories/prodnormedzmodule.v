@@ -41,7 +41,7 @@ Lemma normrN x : norm (- x) = norm x.
 Proof. by rewrite /norm/= !normrN. Qed.
 
 #[export]
-HB.instance Definition _ := Num.Zmodule_IsNormed.Build R (U * V)%type
+HB.instance Definition _ := Num.Zmodule_isNormed.Build R (U * V)%type
   normD norm_eq0 normMn normrN.
 
 Lemma prod_normE (x : [the normedZmodType R of (U * V)%type]) :

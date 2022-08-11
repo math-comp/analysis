@@ -49,7 +49,7 @@ Proof.
 by move=> r1 r2; rewrite /eqr; case: Req_EM_T=> H; apply: (iffP idP).
 Qed.
 
-#[hnf] HB.instance Definition _ := HasDecEq.Build R eqrP.
+#[hnf] HB.instance Definition _ := hasDecEq.Build R eqrP.
 
 Fact inhR : inhabited R.
 Proof. exact: (inhabits 0). Qed.
@@ -72,13 +72,13 @@ by congr epsilon; apply: functional_extensionality=> x; rewrite PEQ.
 Qed.
 
 #[hnf]
-HB.instance Definition _ := HasChoice.Build R pickR_some pickR_ex pickR_ext.
+HB.instance Definition _ := hasChoice.Build R pickR_some pickR_ex pickR_ext.
 
 Fact RplusA : associative (Rplus).
 Proof. by move=> *; rewrite Rplus_assoc. Qed.
 
 #[hnf]
-HB.instance Definition _ := GRing.IsZmodule.Build R
+HB.instance Definition _ := GRing.isZmodule.Build R
   RplusA Rplus_comm Rplus_0_l Rplus_opp_l.
 
 Fact RmultA : associative (Rmult).
@@ -88,22 +88,23 @@ Fact R1_neq_0 : R1 != R0.
 Proof. by apply/eqP/R1_neq_R0. Qed.
 
 #[hnf]
-HB.instance Definition _ := GRing.Zmodule_IsRing.Build R
+HB.instance Definition _ := GRing.Zmodule_isRing.Build R
   RmultA Rmult_1_l Rmult_1_r Rmult_plus_distr_r Rmult_plus_distr_l R1_neq_0.
 
 #[hnf]
-HB.instance Definition _ := GRing.Ring_HasCommutativeMul.Build R Rmult_comm.
+HB.instance Definition _ := GRing.Ring_hasCommutativeMul.Build R Rmult_comm.
 
 Import Monoid.
 
-Canonical Radd_monoid := Law RplusA Rplus_0_l Rplus_0_r.
-Canonical Radd_comoid := ComLaw Rplus_comm.
+HB.instance Definition _ := isComLaw.Build R 0 Rplus
+  RplusA Rplus_comm Rplus_0_l.
 
-Canonical Rmul_monoid := Law RmultA Rmult_1_l Rmult_1_r.
-Canonical Rmul_comoid := ComLaw Rmult_comm.
+HB.instance Definition _ := isComLaw.Build R 1 Rmult
+  RmultA Rmult_comm Rmult_1_l.
 
-Canonical Rmul_mul_law := MulLaw Rmult_0_l Rmult_0_r.
-Canonical Radd_add_law := AddLaw Rmult_plus_distr_r Rmult_plus_distr_l.
+HB.instance Definition _ := isMulLaw.Build R 0 Rmult Rmult_0_l Rmult_0_r.
+HB.instance Definition _ := isAddLaw.Build R Rmult Rplus
+  Rmult_plus_distr_r Rmult_plus_distr_l.
 
 Definition Rinvx r := if (r != 0) then / r else r.
 
@@ -131,20 +132,20 @@ Lemma Rinvx_out : {in predC unit_R, Rinvx =1 id}.
 Proof. by move=> x; rewrite inE/= /Rinvx -if_neg => ->. Qed.
 
 #[hnf]
-HB.instance Definition _ := GRing.Ring_HasMulInverse.Build R
+HB.instance Definition _ := GRing.Ring_hasMulInverse.Build R
   RmultRinvx RinvxRmult intro_unit_R Rinvx_out.
 
 Lemma R_idomainMixin x y : x * y = 0 -> (x == 0) || (y == 0).
 Proof. by move=> /Rmult_integral []->; rewrite eqxx ?orbT. Qed.
 
 #[hnf]
-HB.instance Definition _ := GRing.ComUnitRing_IsIntegral.Build R
+HB.instance Definition _ := GRing.ComUnitRing_isIntegral.Build R
   R_idomainMixin.
 
 Lemma R_fieldMixin : GRing.field_axiom [unitRingType of R].
 Proof. by done. Qed.
 
-HB.instance Definition _ := GRing.IsField.Build R R_fieldMixin.
+HB.instance Definition _ := GRing.UnitRing_isField.Build R R_fieldMixin.
 
 (** Reflect the order on the reals to bool *)
 
@@ -215,7 +216,7 @@ move=> H; apply/andP; split; [apply/eqP|apply/RlebP].
 exact: Rlt_le.
 Qed.
 
-HB.instance Definition _ := Num.IntegralDomain_IsNumRing.Build R
+HB.instance Definition _ := Num.IntegralDomain_isNumRing.Build R
   Rleb_norm_add addr_Rgtb0 Rnorm0_eq0 Rleb_leVge RnormM Rleb_def Rltb_def.
 
 Lemma RleP : forall x y, reflect (Rle x y) (x <= y)%R.
@@ -240,7 +241,7 @@ move=> x y; case: (Rle_lt_dec x y) => [/RleP -> //|/Rlt_le/RleP ->];
   by rewrite orbT.
 Qed.
 
-HB.instance Definition _ := Order.POrder_IsTotal.Build _ R R_total.
+HB.instance Definition _ := Order.POrder_isTotal.Build _ R R_total.
 
 Lemma Rarchimedean_axiom :
   Num.archimedean_axiom [the numDomainType of R : Type].
@@ -285,7 +286,7 @@ rewrite /Rminus Rplus_assoc [- _ + _]Rplus_comm -Rplus_assoc -!/(Rminus _ _).
 exact: Rle_minus.
 Qed.
 
-HB.instance Definition _ := Num.RealField_IsArchimedean.Build R
+HB.instance Definition _ := Num.RealField_isArchimedean.Build R
   Rarchimedean_axiom.
 
 (** Here are the lemmas that we will use to prove that R has
@@ -350,7 +351,7 @@ apply:continuity_scal; apply: continuity_exp=> x esp Hesp.
 by exists esp; split=> // y [].
 Qed.
 
-HB.instance Definition _ := Num.RealField_IsClosed.Build R Rreal_closed_axiom.
+HB.instance Definition _ := Num.RealField_isClosed.Build R Rreal_closed_axiom.
 
 End ssreal_struct.
 
@@ -409,7 +410,7 @@ Proof.
 by move=> supE x Ex; apply/ge_supremum_Nmem => //; exact: Rsupremums_neq0.
 Qed.
 
-HB.instance Definition _ := ArchimedeanField_IsReal.Build R
+HB.instance Definition _ := ArchimedeanField_isReal.Build R
   (@Rsup_ub (0 : R)) (real_sup_adherent 0).
 
 Implicit Types (x y : R) (m n : nat).

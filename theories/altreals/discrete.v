@@ -42,7 +42,7 @@ Variable E : pred T.
 Record pred_sub : Type :=
   PSubSub { rsval :> T; rsvalP : rsval \in E }.
 
-HB.instance Definition _ := [IsSUB for rsval].
+HB.instance Definition _ := [isSub for rsval].
 End Def.
 
 HB.instance Definition _ (T : eqType) (E : pred T) :=

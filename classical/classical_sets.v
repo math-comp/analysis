@@ -2199,11 +2199,11 @@ Definition pickle : T -> nat := fun=> 0%N.
 Definition unpickle : nat -> option T := fun=> None.
 Lemma pickleK : pcancel pickle unpickle.
 Proof. by move=> x; case: (axiom x). Qed.
-HB.instance Definition _ := IsCountable.Build T pickleK.
+HB.instance Definition _ := isCountable.Build T pickleK.
 
 Lemma fin_axiom : Finite.axiom ([::] : seq T).
 Proof. by move=> /[dup]/axiom. Qed.
-HB.instance Definition _ := IsFinite.Build T fin_axiom.
+HB.instance Definition _ := isFinite.Build T fin_axiom.
 
 HB.instance Definition _ := isEmpty.Build T axiom.
 HB.end.
@@ -2256,7 +2256,7 @@ apply: qcanon => -[Ts [Tc Te]].
 set T := Choice.Pack _.
 have [/unsquash x|/(_ (squash _)) TF] := pselect $|T|.
   right.
-  pose Tp := IsPointed.Build T x.
+  pose Tp := isPointed.Build T x.
   pose TT : pointedType := HB.pack T Te Tc Tp.
   by exists TT.
 left.

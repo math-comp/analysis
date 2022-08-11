@@ -642,8 +642,8 @@ Proof. by move=> x; rewrite addeC adde0. Qed.
 Lemma addeA : associative (S := \bar R) +%E.
 Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
 
-Canonical adde_monoid := Monoid.Law addeA add0e adde0.
-Canonical adde_comoid := Monoid.ComLaw addeC.
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 0 +%E
+  addeA addeC add0e.
 
 Lemma addeAC : @right_commutative (\bar R) _ +%E.
 Proof. exact: Monoid.mulmAC. Qed.
@@ -715,7 +715,7 @@ Proof. by move: x => [r| |] //=; rewrite /mule/= ?mulr0// eqxx. Qed.
 Lemma mul0e x : 0 * x = 0.
 Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
-Canonical mule_mulmonoid := @Monoid.MulLaw _ _ mule mul0e mule0.
+HB.instance Definition _ := Monoid.isMulLaw.Build (\bar R) 0 mule mul0e mule0.
 
 Lemma expeS x n : x ^+ n.+1 = x * x ^+ n.
 Proof. by case: n => //=; rewrite mule1. Qed.
@@ -1171,8 +1171,8 @@ Proof. by move=> x;rewrite dual_addeE eqe_oppLRP oppe0 add0e. Qed.
 Lemma daddeA : associative (S := \bar R) +%dE.
 Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeA. Qed.
 
-Canonical dadde_monoid := Monoid.Law daddeA dadd0e dadde0.
-Canonical dadde_comoid := Monoid.ComLaw daddeC.
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 0 +%dE
+  daddeA daddeC dadd0e.
 
 Lemma daddeAC : right_commutative (S := \bar R) +%dE.
 Proof. exact: Monoid.mulmAC. Qed.
@@ -1989,8 +1989,8 @@ Qed.
 
 Local Open Scope ereal_scope.
 
-Canonical mule_monoid := Monoid.Law muleA mul1e mule1.
-Canonical mule_comoid := Monoid.ComLaw muleC.
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 1%E mule
+  muleA muleC mul1e.
 
 Lemma muleCA : left_commutative ( *%E : \bar R -> \bar R -> \bar R ).
 Proof. exact: Monoid.mulmCA. Qed.

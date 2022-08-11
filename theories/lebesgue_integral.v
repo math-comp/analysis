@@ -76,6 +76,13 @@ HB.mixin Record isMeasurableFun d (aT : measurableType d) (rT : realType)
 }.
 HB.structure Definition MeasurableFun d aT rT :=
   {f of @isMeasurableFun d aT rT f}.
+
+(* HB.mixin Record isMeasurableFun d (aT : measurableType d) (rT : realType) (f : aT -> rT) := { *)
+(*   measurable_funP : measurable_fun setT f *)
+(* }. *)
+(* #[global] Hint Resolve fimfun_inP : core. *)
+
+(* HB.structure Definition MeasurableFun d aT rT := {f of @isMeasurableFun d aT rT f}. *)
 Reserved Notation "{ 'mfun' aT >-> T }"
   (at level 0, format "{ 'mfun'  aT  >->  T }").
 Reserved Notation "[ 'mfun' 'of' f ]"
@@ -85,6 +92,7 @@ Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 #[global] Hint Resolve measurable_funP : core.
 
 HB.structure Definition SimpleFun d (aT : measurableType d) (rT : realType) :=
+(* HB.structure Definition SimpleFun d (aT (*rT*) : measurableType d) (rT : realType) := *)
   {f of @isMeasurableFun d aT rT f & @FiniteImage aT rT f}.
 Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
@@ -96,6 +104,21 @@ Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 Lemma measurable_sfunP {d} {aT : measurableType d} {rT : realType}
   (f : {mfun aT >-> rT}) (Y : set rT) : measurable Y -> measurable (f @^-1` Y).
 Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
+
+
+HB.mixin Record isNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
+  fun_ge0 : forall x, 0 <= f x
+}.
+HB.structure Definition NonNegFun aT rT := {f of @isNonNegFun aT rT f}.
+Reserved Notation "{ 'nnfun' aT >-> T }"
+  (at level 0, format "{ 'nnfun'  aT  >->  T }").
+Reserved Notation "[ 'nnfun' 'of' f ]"
+  (at level 0, format "[ 'nnfun'  'of'  f ]").
+Notation "{ 'nnfun' aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
+Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
+#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
+
+(* HB.structure Definition NonNegSimpleFun d (aT : measurableType d) (rT : realType) := *)
 
 HB.structure Definition NonNegSimpleFun
     d (aT : measurableType d) (rT : realType) :=
@@ -227,7 +250,7 @@ Qed.
 Lemma mfun_valP f (Pf : f \in mfun) : mfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
 
-HB.instance Definition _ := IsSUB.Build _ _ T mfun_rect mfun_valP.
+HB.instance Definition _ := isSub.Build _ _ T mfun_rect mfun_valP.
 
 Lemma mfuneqP (f g : {mfun aT >-> rT}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
@@ -358,7 +381,7 @@ Qed.
 Lemma sfun_valP f (Pf : f \in sfun) : sfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
 
-HB.instance Definition _ := IsSUB.Build _ _ T sfun_rect sfun_valP.
+HB.instance Definition _ := isSub.Build _ _ T sfun_rect sfun_valP.
 
 Lemma sfuneqP (f g : {sfun aT >-> rT}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
