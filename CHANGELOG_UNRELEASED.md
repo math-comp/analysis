@@ -13,6 +13,9 @@
 
 ### Changed
 
+- in `measure.v`:
+  + generalize `measurable_uncurry`
+
 ### Renamed
 
 - in `constructive_ereal.v`:
