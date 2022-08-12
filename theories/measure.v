@@ -2961,6 +2961,11 @@ Proof. by case. Qed.
 
 End measurable_cover.
 
+Lemma measurable_uncurry (T1 T2 : Type) (d : _) (T : semiRingOfSetsType d)
+    (G : T1 -> T2 -> set T) (x : T1 * T2) :
+  measurable (G x.1 x.2) <-> measurable (uncurry G x).
+Proof. by case: x. Qed.
+
 Section measure_extension.
 Variables (R : realType) (d : measure_display) (T : semiRingOfSetsType d).
 Variable mu : set T -> \bar R.
@@ -2991,10 +2996,6 @@ apply/eqP; rewrite eq_le; apply/andP; split; last exact/mu_ext_ge0.
 rewrite /mu_ext; apply ereal_inf_lb; exists (fun _ => set0); first by split.
 by apply: (@lim_near_cst _ _ _ _ _ 0) => //; near=> n => /=; rewrite big1.
 Unshelve. all: by end_near. Qed.
-
-Lemma measurable_uncurry (G : ((set T)^nat)^nat) (x : nat * nat) :
-  measurable (G x.1 x.2) -> measurable (uncurry G x).
-Proof. by case: x. Qed.
 
 Lemma mu_ext_sigma_subadditive : sigma_subadditive mu^*.
 Proof.

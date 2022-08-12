@@ -6,6 +6,9 @@
 
 ### Changed
 
+- in `measure.v`:
+  + generalize `measurable_uncurry`
+
 ### Renamed
 
 ### Removed
