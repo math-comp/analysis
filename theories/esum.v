@@ -344,7 +344,7 @@ Let nneseries_esum_prod (R : realType) (a : nat -> nat -> \bar R)
   \esum_(i in P `*` Q) a i.1 i.2.
 Proof.
 move=> a0; rewrite -(@esum_esum _ _ _ P (fun=> Q))//.
-rewrite nneseries_esum//; last by move=> n _; exact: nneseries_lim_ge0.
+rewrite nneseries_esum//; last by move=> n _; exact: nneseries_ge0.
 rewrite (_ : [set x | P x] = P); last by apply/seteqP; split.
 by apply eq_esum => i Pi; rewrite nneseries_esum.
 Qed.

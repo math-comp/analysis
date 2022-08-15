@@ -33,6 +33,8 @@
 
 - in `constructive_ereal.v`:
   + `lte_pinfty_eq` -> `ltey_eq`
+- in `sequences.v`:
+  + `nneseries_lim_ge0` -> `nneseries_ge0`
 
 ### Removed
 

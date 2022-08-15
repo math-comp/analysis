@@ -1676,7 +1676,7 @@ move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
                           (fun i => \sum_(n <= k <oo) m k (F i))).
   by move=> i _; rewrite ereal_series.
 apply: is_cvg_ereal_nneg_natsum => k _.
-by rewrite /mseries ereal_series; exact: nneseries_lim_ge0.
+by rewrite /mseries ereal_series; exact: nneseries_ge0.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ mseries
@@ -3022,7 +3022,7 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
     by rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul.
   - by have := Aoo n; rewrite /mu^* Soo.
   - suff : lbound S 0 by move/lb_ereal_inf; rewrite Soo.
-    by move=> /= _ [B [mB AnB] <-]; exact: nneseries_lim_ge0.
+    by move=> /= _ [B [mB AnB] <-]; exact: nneseries_ge0.
 have muG_ge0 x : 0 <= (mu \o uncurry G) x by exact/measure_ge0.
 apply (@le_trans _ _ (\esum_(i in setT) (mu \o uncurry G) i)).
   rewrite /mu_ext; apply: ereal_inf_lb => /=.
@@ -3054,7 +3054,7 @@ rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
   by congr esum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
 apply lee_lim.
 - apply: is_cvg_nneseries => n _.
-  by apply: nneseries_lim_ge0 => m _; exact: (muG_ge0 (n, m)).
+  by apply: nneseries_ge0 => m _; exact: (muG_ge0 (n, m)).
 - by apply: is_cvg_nneseries => n _; apply: adde_ge0 => //; exact: mu_ext_ge0.
 - by near=> n; apply: lee_sum => i _; exact: (PG i).2.
 Unshelve. all: by end_near. Qed.
