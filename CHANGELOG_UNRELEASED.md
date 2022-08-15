@@ -40,6 +40,7 @@
   + `lt0R` -> `fine_gt0`
 - in `measure.v`:
   + `ring_fsets` -> `ring_finite_set`
+  + `discrete_measurable` -> `discrete_measurable_nat`
 
 ### Removed
 

@@ -43,30 +43,30 @@ From HB Require Import structures.
 (*                            smallest dynkin G                               *)
 (*                                                                            *)
 (* * Mathematical structures for measure theory:                              *)
-(*     semiRingOfSetsType == the type of semirings of sets;                   *)
-(*                           the carrier is a set of sets A such that         *)
-(*                           "measurable A" holds;                            *)
-(*                           "measurable A" is printed as "d.-measurable A"   *)
-(*                           where d is a "display parameter" whose purpose   *)
-(*                           is to distinguish different measurable's within  *)
-(*                           the same context                                 *)
-(*         ringOfSetsType == the type of rings of sets                        *)
-(*                           <<r G >> is equipped with a canonical structure  *)
-(*                           of ring of sets                                  *)
-(*  G.-ring.-measurable A == A is measurable for the ring of sets <<r G >>    *)
-(*      algebraOfSetsType == the type of algebras of sets                     *)
-(*         measurableType == the type of sigma-algebras                       *)
-(*                           <<s G >> is equipped with a canonical structure  *)
-(*                           of measurableType                                *)
-(* G.-sigma.-measurable A == A is measurable for the sigma-algebra <<s G >>   *)
+(*      semiRingOfSetsType == the type of semirings of sets;                  *)
+(*                            the carrier is a set of sets A such that        *)
+(*                            "measurable A" holds;                           *)
+(*                            "measurable A" is printed as "d.-measurable A"  *)
+(*                            where d is a "display parameter" whose purpose  *)
+(*                            is to distinguish different measurable's within *)
+(*                            the same context                                *)
+(*          ringOfSetsType == the type of rings of sets                      *)
+(*                            <<r G >> is equipped with a canonical structure *)
+(*                            of ring of sets                                 *)
+(*   G.-ring.-measurable A == A is measurable for the ring of sets <<r G >>   *)
+(*       algebraOfSetsType == the type of algebras of sets                    *)
+(*          measurableType == the type of sigma-algebras                      *)
+(*                            <<s G >> is equipped with a canonical structure *)
+(*                            of measurableType                               *)
+(*  G.-sigma.-measurable A == A is measurable for the sigma-algebra <<s G >>  *)
 (*                                                                            *)
-(*    discrete_measurable == the measurableType corresponding to              *)
-(*                           [set: set nat]                                   *)
-(*         salgebraType G == the measurableType corresponding to <<s G >>     *)
+(* discrete_measurable_nat == the measurableType corresponding to             *)
+(*                            [set: set nat]                                  *)
+(*          salgebraType G == the measurableType corresponding to <<s G >>    *)
 (*                                                                            *)
-(*     measurable_fun D f == the function f with domain D is measurable       *)
-(*   preimage_class D f G == class of the preimages by f of sets in G         *)
-(*      image_class D f G == class of the sets with a preimage by f in G      *)
+(*      measurable_fun D f == the function f with domain D is measurable      *)
+(*    preimage_class D f G == class of the preimages by f of sets in G        *)
+(*       image_class D f G == class of the sets with a preimage by f in G     *)
 (*                                                                            *)
 (* * Measures:                                                                *)
 (*  {additive_measure set T -> \bar R} == type of a function over sets of     *)
@@ -860,27 +860,26 @@ move=> Fm; have /ppcard_eqP[f] := card_rat.
 by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
 Qed.
 
-Section discrete_measurable.
-(*Variable T : pointedType.*)
+Section discrete_measurable_nat.
 
-Definition discrete_measurable : set (set nat) := [set: set nat].
+Definition discrete_measurable_nat : set (set nat) := [set: set nat].
 
-Let discrete_measurable0 : discrete_measurable set0. Proof. by []. Qed.
+Let discrete_measurable_nat0 : discrete_measurable_nat set0. Proof. by []. Qed.
 
-Let discrete_measurableC X :
-  discrete_measurable X -> discrete_measurable (~` X).
+Let discrete_measurable_natC X :
+  discrete_measurable_nat X -> discrete_measurable_nat (~` X).
 Proof. by []. Qed.
 
-Let discrete_measurableU (F : (set nat)^nat) :
-  (forall i, discrete_measurable (F i)) ->
-  discrete_measurable (\bigcup_i F i).
+Let discrete_measurable_natU (F : (set nat)^nat) :
+  (forall i, discrete_measurable_nat (F i)) ->
+  discrete_measurable_nat (\bigcup_i F i).
 Proof. by []. Qed.
 
-HB.instance Definition _ := @isMeasurable.Build default_measure_display nat (Pointed.class _)
-  discrete_measurable discrete_measurable0 discrete_measurableC
-  discrete_measurableU.
+HB.instance Definition _ := @isMeasurable.Build default_measure_display nat
+  (Pointed.class _) discrete_measurable_nat discrete_measurable_nat0
+  discrete_measurable_natC discrete_measurable_natU.
 
-End discrete_measurable.
+End discrete_measurable_nat.
 
 Definition sigma_display {T} : set (set T) -> measure_display.
 Proof. exact. Qed.
