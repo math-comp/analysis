@@ -1958,7 +1958,7 @@ rewrite -bigcup2inE; apply: mdU => //; last by move=> [|[]]// _; apply: mdDI.
 by move=> [|[]]// [|[]]//= _ _ []; rewrite setDE ?setIA => X [] []//.
 Qed.
 
-Lemma ring_fsets (A : set rT) : measurable A -> exists B : set (set T),
+Lemma ring_finite_set (A : set rT) : measurable A -> exists B : set (set T),
   [/\ finite_set B,
       (forall X, B X -> X !=set0),
       trivIset B id,
@@ -1977,8 +1977,8 @@ Qed.
 
 Definition decomp (A : set rT) : set (set T) :=
   if A == set0 then [set set0] else
-  if pselect (measurable A) is left mA then projT1 (cid (ring_fsets mA)) else
-  [set A].
+  if pselect (measurable A) is left mA then projT1 (cid (ring_finite_set mA))
+  else [set A].
 
 Lemma decomp_finite_set (A : set rT) : finite_set (decomp A).
 Proof.
@@ -2088,8 +2088,8 @@ Proof. by rewrite sume_ge0. Qed.
 
 Lemma Rmu_additive : semi_additive Rmu.
 Proof.
-apply/(additive2P Rmu0) => // A B.
-move=> /ring_fsets[/= {}A [? _ Atriv Am ->]] /ring_fsets[/= {}B [? _ Btriv Bm ->]].
+apply/(additive2P Rmu0) => // A B /ring_finite_set[/= {}A [? _ Atriv Am ->]].
+move=> /ring_finite_set[/= {}B [? _ Btriv Bm ->]].
 rewrite -subset0 => coverAB0.
 have AUBfin : finite_set (A `|` B) by rewrite finite_setU.
 have AUBtriv : trivIset (A `|` B) id.

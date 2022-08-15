@@ -38,6 +38,8 @@
 - in `constructive_ereal.v`:
   + `le0R` -> `fine_ge0`
   + `lt0R` -> `fine_gt0`
+- in `measure.v`:
+  + `ring_fsets` -> `ring_finite_set`
 
 ### Removed
 
