@@ -1491,14 +1491,12 @@ have : fine (f x) < n%:R.
   exists `|floor (fine (f x))|.+1%N => //= p /=.
   rewrite -(@ler_nat R); apply: lt_le_trans.
   rewrite -addn1 natrD (_ : `| _ |%:R  = (floor (fine (f x)))%:~R); last first.
-    by rewrite -[in RHS](@gez0_abs (floor _))// floor_ge0 //; exact/le0R/f0.
+    by rewrite -[in RHS](@gez0_abs (floor _))// floor_ge0//; exact/fine_ge0/f0.
   by rewrite lt_succ_floor.
 rewrite -lte_fin (fineK fxfin) => fxn.
-have [approx_nx0|] := f_ub_approx fxn.
+have [approx_nx0|[k [/andP[k0 kn2n] ? ->]]] := f_ub_approx fxn.
   by have := Hm _ mn; rewrite approx_nx0.
-move=> [k [/andP[k0 kn2n] ? ->]].
-rewrite inE /= => -[r /=].
-rewrite in_itv /= => /andP[k1 k2] rfx.
+rewrite inE /= => -[r /=]; rewrite in_itv /= => /andP[k1 k2] rfx.
 rewrite (@le_lt_trans _ _ (1 / 2 ^+ n)) //.
   rewrite ler_norml; apply/andP; split.
     rewrite ler_subr_addl -mulrBl -lee_fin (fineK fxfin) -rfx lee_fin.
@@ -2142,9 +2140,8 @@ rewrite -lee_pdivr_mulr//; last first.
 near: n.
 exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
-rewrite lee_fin natr_absz ger0_norm ?ceil_ge//.
-rewrite ceil_ge0// mulr_ge0 //; first exact: ltW.
-by rewrite invr_ge0; exact/le0R/integral_ge0.
+rewrite lee_fin natr_absz ger0_norm ?ceil_ge// ceil_ge0//.
+by rewrite mulr_ge0// ?invr_ge0; [exact:ltW|exact/fine_ge0/integral_ge0].
 Unshelve. all: by end_near. Qed.
 
 End ge0_integralM.
@@ -2265,7 +2262,7 @@ rewrite monotone_convergence //.
   rewrite -(ler_nat R) => MDm.
   rewrite -(@fineK _ (mu D)); last by rewrite ge0_fin_numE//.
   rewrite -lee_pdivr_mulr; last first.
-    by apply: lt0R; rewrite muDoo andbT lt_neqAle measure_ge0// andbT eq_sym.
+    by apply: fine_gt0; rewrite muDoo lt_neqAle measure_ge0// !andbT eq_sym.
   rewrite lee_fin; apply: le_trans MDm.
   by rewrite natr_absz (le_trans (ceil_ge _))// ler_int ler_norm.
 - by move=> n; exact: measurable_fun_cst.
@@ -2843,15 +2840,13 @@ have fineKp : \sum_(n <oo) `|\int[m_ n]_(x in D) f^\+ x| =
           \sum_(n <oo) `|(fine (\int[m_ n]_(x in D) f^\+ x))%:E|.
   apply eq_nneseries => n _; congr abse; rewrite fineK//.
   exact: integrable_pos_fin_num.
-rewrite nneseries_esum; last by move=> n _; exact/le0R/integral_ge0.
-rewrite nneseries_esum; last by move=> n _; exact/le0R/integral_ge0.
+rewrite nneseries_esum; last by move=> n _; exact/fine_ge0/integral_ge0.
+rewrite nneseries_esum; last by move=> n _; exact/fine_ge0/integral_ge0.
 rewrite -esumB//; last 4 first.
   - by rewrite /= /summable -nneseries_esum// -fineKp.
-  - rewrite /summable /= -nneseries_esum.
-      by rewrite -fineKn; exact: fmoo.
-    by [].
-  - by move=> n _; exact/le0R/integral_ge0.
-  - by move=> n _; exact/le0R/integral_ge0.
+  - by rewrite /summable /= -nneseries_esum// -fineKn; exact: fmoo.
+  - by move=> n _; exact/fine_ge0/integral_ge0.
+  - by move=> n _; exact/fine_ge0/integral_ge0.
 rewrite -summable_nneseries_esum; last first.
   rewrite /summable.
   apply: (@le_lt_trans _ _ (\esum_(i in (fun=> true))
@@ -2979,7 +2974,7 @@ suff: mu E = 0.
 have [->|/set0P E0] := eqVneq E set0; first by rewrite measure0.
 have [M M0 muM] : exists2 M, (0 <= M)%R &
     forall n, n%:R%:E * mu (E `&` D) <= M%:E.
-  exists (fine (\int[mu]_(x in D) `|f x|)); first exact/le0R/integral_ge0.
+  exists (fine (\int[mu]_(x in D) `|f x|)); first exact/fine_ge0/integral_ge0.
   move=> n.
   rewrite -integral_indic// -ge0_integralM//; last 2 first.
     - apply: measurable_fun_comp=> //; apply: (@measurable_funS _ _ _ _ setT)=>//.
@@ -3334,7 +3329,7 @@ move=> mf; split=> [iDf0|Df0].
         by rewrite fin_numE gt_eqF //= (lt_le_trans _ (abse_ge0 _)).
       exists m => //; split => //=.
       rewrite -(@fineK _ `|f t|) // lee_fin -ler_pinv; last 2 first.
-        - rewrite inE unitfE fine_eq0 // abse_eq0 ft0/=; apply/lt0R.
+        - rewrite inE unitfE fine_eq0 // abse_eq0 ft0/=; apply/fine_gt0.
           by rewrite lt_neqAle abse_ge0 -ge0_fin_numE// eq_sym abse_eq0 ft0.
         - by rewrite inE unitfE invr_eq0 pnatr_eq0 /= invr_gt0.
       rewrite invrK /m -addn1 natrD natr_absz ger0_norm ?ceil_ge0//.
@@ -3843,13 +3838,13 @@ move=> Dx; rewrite -abse0; apply: cvg_abse.
 move: (f_f Dx); case: (f x) => [r|/=|/=].
 - by move=> f_r; apply/ereal_cvg_sub0.
 - have gx1 : (0 < fine (g x) + 1)%R.
-    by rewrite (@le_lt_trans _ _ (fine (g x))) ?ltr_addl//; exact/le0R/g0.
+    by rewrite (@le_lt_trans _ _ (fine (g x))) ?ltr_addl//; exact/fine_ge0/g0.
   move/ereal_cvgPpinfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
   have : (fine (g x) + 1)%:E <= g x.
     by rewrite (le_trans h)// (le_trans _ (absfg n Dx))// lee_abs.
   by case: (g x) (fing Dx) => [r _| |]//; rewrite leNgt EFinD lte_addl.
 - have gx1 : (- (fine (g x) + 1) < 0)%R.
-    by rewrite ltr_oppl oppr0 ltr_spaddr//; exact/le0R/g0.
+    by rewrite ltr_oppl oppr0 ltr_spaddr//; exact/fine_ge0/g0.
   move/ereal_cvgPninfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
   have : (fine (g x) + 1)%:E <= g x.
     move: h; rewrite EFinN lee_oppr => /le_trans ->//.

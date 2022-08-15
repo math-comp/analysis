@@ -542,8 +542,9 @@ Definition mlim T (f : nat -> distr T) : T -> R :=
   fun x => fine (nlim (fun n => f n x)).
 
 Lemma isd_mlim T (f : nat -> distr T) : isdistr (mlim f).
-Proof. split=> [x|J]; rewrite /mlim.
-+ case: nlimP=> // l cvSl; apply/le0R/(ncvg_geC _ cvSl).
+Proof.
+split=> [x|J]; rewrite /mlim.
+  case: nlimP=> // l cvSl; apply/fine_ge0/(ncvg_geC _ cvSl).
   by move=> n; apply/ge0_mu.
 move=> uqJ; pose F j :=
   if `[< iscvg (fun n => f n j) >] then fun n => f n j else 0%:S.

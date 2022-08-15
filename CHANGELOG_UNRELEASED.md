@@ -35,6 +35,9 @@
   + `lte_pinfty_eq` -> `ltey_eq`
 - in `sequences.v`:
   + `nneseries_lim_ge0` -> `nneseries_ge0`
+- in `constructive_ereal.v`:
+  + `le0R` -> `fine_ge0`
+  + `lt0R` -> `fine_gt0`
 
 ### Removed
 
