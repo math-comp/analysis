@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import mathcomp_extra.
@@ -614,7 +615,10 @@ Lemma diffZl (k : V -> R) (f : W) x : differentiable k x ->
 Proof.
 move=> df; set g := RHS; have glin : linear g.
   by move=> a u v; rewrite /g linearP /= scalerDl -scalerA.
-by apply:(@diff_unique _ _ _ (Linear glin)); have [] := dscalel f df.
+pose gaM := GRing.isAdditive.Build _ _ _ (additive_linear glin).
+pose glM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear glin).
+pose gL := GRing.Linear.Pack (GRing.Linear.Class gaM glM).
+by apply:(@diff_unique _ _ _ gL); have [] := dscalel f df.
 Qed.
 
 Lemma differentiableZl (k : V -> R) (f : W) x :
@@ -649,7 +653,7 @@ Qed.
 Global Instance is_diff_scalel (k : R) (x : V) :
   is_diff k ( *:%R ^~ x) ( *:%R ^~ x).
 Proof.
-have -> : *:%R ^~ x = GRing.scale_linear [the lmodType _ of R : Type] x.
+have -> : *:%R ^~ x = [linear of @GRing.scale _ [the lmodType _ of R : Type] x].
   by rewrite funeqE => ? /=; rewrite [_ *: _]mulrC.
 apply: DiffDef; first exact/linear_differentiable/scaler_continuous.
 by rewrite diff_lin //; apply: scaler_continuous.
@@ -659,7 +663,8 @@ Lemma differentiable_coord m n (M : 'M[R]_(m.+1, n.+1)) i j :
   differentiable (fun N : 'M[R]_(m.+1, n.+1) => N i j : R ) M.
 Proof.
 have @f : {linear 'M[R]_(m.+1, n.+1) -> R}.
-  by exists (fun N : 'M[R]_(_, _) => N i j); eexists; move=> ? ?; rewrite !mxE.
+  by exists (fun N : 'M[R]_(_, _) => N i j);
+    eexists; constructor=> ? ?; rewrite !mxE.
 rewrite (_ : (fun _ => _) = f) //; exact/linear_differentiable/coord_continuous.
 Qed.
 
@@ -796,7 +801,10 @@ Lemma diff_bilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
 Proof.
 move=> fc; have lind : linear (fun q => f p.1 q.2 + f q.1 p.2).
   by move=> ???; rewrite linearPr linearPl scalerDr addrACA.
-have -> : (fun q => f p.1 q.2 + f q.1 p.2) = Linear lind by [].
+pose daM := GRing.isAdditive.Build _ _ _ (additive_linear lind).
+pose dlM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear lind).
+pose dL := GRing.Linear.Pack (GRing.Linear.Class daM dlM).
+have -> : (fun q => f p.1 q.2 + f q.1 p.2) = dL by [].
 by apply/diff_unique; have [] := dbilin p fc.
 Qed.
 
@@ -813,14 +821,31 @@ Canonical rev_Rmult := @RevOp _ _ _ Rmult_rev (@GRing.mul [ringType of R])
 
 Lemma Rmult_is_linear x : linear (@GRing.mul [ringType of R] x : R -> R).
 Proof. by move=> ???; rewrite mulrDr scalerAr. Qed.
-Canonical Rmult_linear x := Linear (Rmult_is_linear x).
+HB.instance Definition _ x :=
+  GRing.linear_isLinear.Build R
+    [the lalgType R of R : Type] [ringType of R] _ ( *%R x) (Rmult_is_linear x).
 
 Lemma Rmult_rev_is_linear y : linear (Rmult_rev y : R -> R).
 Proof. by move=> ???; rewrite /Rmult_rev mulrDl scalerAl. Qed.
-Canonical Rmult_rev_linear y := Linear (Rmult_rev_is_linear y).
+HB.instance Definition _ y :=
+  GRing.linear_isLinear.Build R
+    [the lmodType R of R : Type] [the lalgType R of R : Type] _ (Rmult_rev y)
+    (Rmult_rev_is_linear y).
 
-Canonical Rmult_bilinear :=
-  [bilinear of (@GRing.mul [ringType of [the lmodType R of R : Type]])].
+Lemma Rmult_is_bilinear :
+  bilinear_for
+    (GRing.Scale.Law.clone _ _ *:%R _) (GRing.Scale.Law.clone _ _ *:%R _)
+    (@GRing.mul [ringType of R]).
+Proof.
+split=> [u'|u] a x y /=.
+- by rewrite mulrDl scalerAl.
+- by rewrite mulrDr scalerAr.
+Qed.
+
+HB.instance Definition _ :=
+  bilinear_isBilinear.Build R
+    [the lmodType R of R : Type]  [the lmodType R of R : Type] R _ _
+    (@GRing.mul R) Rmult_is_bilinear.
 
 Global Instance is_diff_Rmult (p : R*R ) :
   is_diff p (fun q => q.1 * q.2) (fun q => p.1 * q.2 + q.1 * p.2).
@@ -861,7 +886,10 @@ Proof.
 move=> df dg.
 have lin_pair : linear (fun y => ('d f x y, 'd g x y)).
   by move=> ???; rewrite !linearPZ.
-have -> : (fun y => ('d f x y, 'd g x y)) = Linear lin_pair by [].
+pose pairaM := GRing.isAdditive.Build _ _ _ (additive_linear lin_pair).
+pose pairlM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear lin_pair).
+pose pairL := GRing.Linear.Pack (GRing.Linear.Class pairaM pairlM).
+have -> : (fun y => ('d f x y, 'd g x y)) = pairL by [].
 by apply: diff_unique; have [] := dpair df dg.
 Qed.
 
@@ -954,7 +982,7 @@ Lemma diff_Rinv (x : R) : x != 0 ->
   'd GRing.inv x = (fun h : R => - x ^- 2 *: h) :> (R -> R).
 Proof.
 move=> xn0; have -> : (fun h : R => - x ^- 2 *: h) =
-  GRing.scale_linear _ (- x ^- 2) by [].
+  [linear of *:%R (- x ^- 2)] by [].
 by apply: diff_unique; have [] := dinv xn0.
 Qed.
 
@@ -1014,7 +1042,10 @@ Lemma deriv1E f x : derivable f x 1 -> 'd f x = ( *:%R^~ (f^`() x)) :> (R -> U).
 Proof.
 move=> df; have lin_scal : linear (fun h : R => h *: f^`() x).
   by move=> ? ? ?; rewrite scalerDl scalerA.
-have -> : (fun h => h *: f^`() x) = Linear lin_scal by [].
+pose scalaM := GRing.isAdditive.Build _ _ _ (additive_linear lin_scal).
+pose scallM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear lin_scal).
+pose scalL := GRing.Linear.Pack (GRing.Linear.Class scalaM scallM).
+have -> : (fun h => h *: f^`() x) = scalL by [].
 by apply: diff_unique; [apply: scalel_continuous|apply: der1].
 Qed.
 
@@ -1023,7 +1054,10 @@ Lemma diff1E f x :
 Proof.
 move=> df; have lin_scal : linear (fun h : R => h *: 'd f x 1).
   by move=> ? ? ?; rewrite scalerDl scalerA.
-have -> : (fun h => h *: f^`() x) = Linear lin_scal.
+pose scalaM := GRing.isAdditive.Build _ _ _ (additive_linear lin_scal).
+pose scallM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear lin_scal).
+pose scalL := GRing.Linear.Pack (GRing.Linear.Class scalaM scallM).
+have -> : (fun h => h *: f^`() x) = scalL.
   by rewrite derive1E'.
 apply: diff_unique; first exact: scalel_continuous.
 apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).

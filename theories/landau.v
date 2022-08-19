@@ -1085,7 +1085,7 @@ End rule_of_products_numClosedFieldType.
 
 Section Linear3.
 Context (R : realFieldType) (U : normedModType R) (V : normedModType R)
-        (s : R -> V -> V) (s_law : GRing.Scale.law s).
+        (s : GRing.Scale.law R V).
 Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 
 (* Split in multiple bits *)
@@ -1096,7 +1096,7 @@ Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 
 Local Notation "'+oo'" := (@pinfty_nbhs R).
 
-Lemma linear_for_continuous (f : {linear U -> V | GRing.Scale.op s_law}) :
+Lemma linear_for_continuous (f : {linear U -> V | GRing.Scale.Law.sort s}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
 move=> /eqO_exP [_/posnumP[k0] Of1] x.
@@ -1119,15 +1119,14 @@ have ky0 : 0 <= k0%:num / (k * `|y|).
 rewrite -[leRHS]mulr1 -ler_pdivr_mull ?pmulr_rgt0 //.
 rewrite -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
-have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
-rewrite -linearZ fk //= distrC subr0 normrZ ger0_norm //.
+rewrite -linearZ fk //= -ball_normE /= distrC subr0 normmZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //.
 by rewrite -ltr_pdivr_mull//.
 Unshelve. all: by end_near. Qed.
 
 End Linear3.
 
-Arguments linear_for_continuous {R U V s s_law normm_s} f _.
+Arguments linear_for_continuous {R U V s normm_s} f _.
 
 Lemma linear_continuous (R : realFieldType) (U : normedModType R)
   (V : normedModType R) (f : {linear U -> V}) :

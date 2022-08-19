@@ -5908,7 +5908,6 @@ Qed.
 
 End Subspace.
 
-(* TODO_HB
 Global Instance subspace_filter {T : topologicalType}
      (A : set T) (x : subspace A) :
    Filter (nbhs_subspace x) := nbhs_subspace_filter x.
@@ -6031,7 +6030,6 @@ by move=> -> /nbhs_singleton ?; apply: nearW => ? ->.
 Qed.
 
 End SubspaceRelative.
-*)
 
 Section SubspaceUniform.
 Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
