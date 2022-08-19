@@ -2201,8 +2201,7 @@ have [f_fin _|] := boolP (\int[mu]_(x in D) f^\- x \is a fin_num).
 rewrite fin_numE negb_and 2!negbK => /orP[nfoo|/eqP nfoo].
   exfalso; move/negP : nfoo; apply; rewrite -leeNy_eq; apply/negP.
   by rewrite -ltNge (lt_le_trans _ (integral_ge0 _ _)).
-rewrite nfoo adde_defEninfty.
-rewrite -leye_eq -ltNge lte_pinfty_eq => /orP[f_fin|/eqP pfoo].
+rewrite nfoo adde_defEninfty -leye_eq -ltNge ltey_eq => /orP[f_fin|/eqP pfoo].
   rewrite integralE// [in RHS]integralE// nfoo [in RHS]addeC oppeD//.
   by rewrite funenegN.
 by rewrite integralE// [in RHS]integralE// funeposN funenegN nfoo pfoo.
