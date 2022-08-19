@@ -437,6 +437,19 @@ Definition mite := [the sfinite_kernel _ _ _ of kernel_mfun R mf] \; ite'.
 
 End ite.
 
+Section normalize.
+Variables (d d' : _) (T : measurableType d) (T' : measurableType d')
+          (R : realType) (f : R.-sfker T ~> T') (Pdef : probability T' R).
+
+Definition Normalize := [the R.-pker T ~> T' of normalize_kernel f Pdef].
+
+Lemma NormalizeE x U : Normalize x U = normalize_kernel f Pdef x U.
+Proof.
+by [].
+Qed.
+
+End normalize.
+
 Section bernoulli27.
 Variable R : realType.
 Local Open Scope ring_scope.
@@ -462,6 +475,15 @@ Definition letin (d d' d3 : _)
   (k : R.-sfker [the measurableType (d, d').-prod of (X * Y)%type] ~> Z)
   : R.-sfker X ~> Z :=
   [the sfinite_kernel _ _ _ of l \; k].
+
+Lemma letinE (d d' d3 : _)
+  (X : measurableType d) (Y : measurableType d') (Z : measurableType d3)
+  (l : R.-sfker X ~> Y)
+  (k : R.-sfker [the measurableType (d, d').-prod of (X * Y)%type] ~> Z)
+  : forall x U, letin l k x U = \int[l x]_y k (x, y) U.
+Proof.
+by [].
+Qed.
 
 Definition Return (d d' : _) (T : measurableType d) (T' : measurableType d')
   (f : T -> T') (mf : measurable_fun setT f) : R.-sfker T ~> T' :=
@@ -597,6 +619,13 @@ move=> r0; rewrite /poisson mulr_ge0//.
 by rewrite ltW// expR_gt0.
 Qed.
 
+Lemma poisson_gt0 (R : realType) (r : R) k : (0 < r)%R -> (0 < poisson r k.+1)%R.
+Proof.
+move=> r0; rewrite /poisson mulr_gt0//.
+  by rewrite mulr_gt0// exprn_gt0.
+by rewrite expR_gt0.
+Qed.
+
 Lemma mpoisson (R : realType) k : measurable_fun setT (@poisson R ^~ k).
 Proof.
 apply: measurable_funM => /=.
@@ -693,11 +722,14 @@ Let munit := Datatypes_unit__canonical__measure_Measurable.
 Let mbool := Datatypes_bool__canonical__measure_Measurable.
 
 Notation var2_of2 := (@measurable_fun_snd _ _ _ _).
-Notation var2_of3 := (measurable_fun_comp (@measurable_fun_snd _ _ _ _) (@measurable_fun_fst _ _ _ _)).
+Notation var2_of3 := (measurable_fun_comp (@measurable_fun_snd _ _ _ _)
+                                          (@measurable_fun_fst _ _ _ _)).
 Notation var3_of3 := (@measurable_fun_snd _ _ _ _).
 
-Definition staton_bus' : R.-sfker T ~> mbool :=
-  letin
+Variable Pdef : probability mbool R.
+
+Definition staton_bus_measure' : R.-sfker T ~> mbool :=
+  (letin
     (sample_bernoulli27 R T : _.-sfker T ~> mbool)
     (letin
       (letin
@@ -710,25 +742,25 @@ Definition staton_bus' : R.-sfker T ~> mbool :=
        : _.-sfker [the measurableType _ of (T * bool)%type] ~> munit)
       (Return R var2_of3
        : _.-sfker [the measurableType _ of (T * bool * munit)%type] ~> mbool)
-     : _.-sfker [the measurableType _ of (T * bool)%type] ~> mbool).
+     : _.-sfker [the measurableType _ of (T * bool)%type] ~> mbool)).
 
-Definition staton_bus : R.-sfker T ~> mbool :=
-  letin (sample_bernoulli27 R T)
+Definition staton_bus_measure : R.-sfker T ~> mbool :=
+  (letin (sample_bernoulli27 R T)
   (letin
     (letin (Ite var2_of2
          (Return R (@k3 _ _ _))
          (Return R (@k10 _ _ _)))
      (Score (measurable_fun_comp (@mpoisson R 4) var3_of3)))
-    (Return R var2_of3)).
+    (Return R var2_of3))).
 
 (* true -> 5/7 * 0.019 = 5/7 * 10^4 e^-10 / 4! *)
 (* false -> 2/7 * 0.168 = 2/7 * 3^4 e^-3 / 4! *)
 
-Lemma staton_busE t U : staton_bus t U =
+Lemma staton_bus_measureE t U : staton_bus_measure t U =
   (twoseven R)%:num%:E * (poisson 3%:R 4)%:E * \d_true U +
   (fiveseven R)%:num%:E * (poisson 10%:R 4)%:E * \d_false U.
 Proof.
-rewrite /staton_bus.
+rewrite /staton_bus_measure.
 rewrite letin_sample_bernoulli27.
 rewrite -!muleA.
 congr (_ * _ + _ * _).
@@ -742,4 +774,88 @@ rewrite letin_returnu//.
 by rewrite ScoreE// => r r0; exact: poisson_ge0.
 Qed.
 
+Definition staton_bus : R.-pker T ~> mbool :=
+  Normalize staton_bus_measure Pdef.
+
+Lemma staton_busE t U :
+  let N := (fine (((twoseven R)%:num)%:E * (poisson 3 4)%:E + ((fiveseven R)%:num)%:E * (poisson 10 4)%:E)) in
+  staton_bus t U =
+  ((twoseven R)%:num%:E * (poisson 3%:R 4)%:E * \d_true U +
+   (fiveseven R)%:num%:E * (poisson 10%:R 4)%:E * \d_false U) * N^-1%:E.
+Proof.
+rewrite /staton_bus.
+rewrite NormalizeE /=.
+rewrite /normalize.
+rewrite !staton_bus_measureE.
+rewrite diracE mem_set// mule1.
+rewrite diracE mem_set// mule1.
+rewrite ifF //.
+apply/negbTE.
+by rewrite gt_eqF// lte_fin addr_gt0// mulr_gt0//= poisson_gt0.
+Qed.
+
 End staton_bus.
+
+(* wip *)
+
+Definition swap (T1 T2 : Type) (x : T1 * T2) := (x.2, x.1).
+
+Section letinC_example.
+
+Variables (d d' d3 d4 : _) (R : realType) (X : measurableType d)
+  (Y : measurableType d') (Z : measurableType d3) (U : measurableType d4).
+Let f (xyz : unit * X * X) := (xyz.1.2, xyz.2).
+Lemma mf : measurable_fun setT f.
+Proof.
+rewrite /=.
+apply/prod_measurable_funP => /=; split.
+  rewrite /f.
+  rewrite (_ : _ \o _ = (fun xyz : unit * X * X => xyz.1.2))//.
+  apply: measurable_fun_comp => /=.
+    exact: measurable_fun_snd.
+  exact: measurable_fun_fst.
+rewrite (_ : _ \o _ = (fun xyz : unit * X * X => xyz.2))//.
+apply: measurable_fun_comp => /=.
+  exact: measurable_fun_snd.
+exact: measurable_fun_id.
+Qed.
+
+Let measurable_fun_swap : measurable_fun [set: X * X] (swap (T2:=X)).
+Proof.
+apply/prod_measurable_funP => /=; split.
+  exact: measurable_fun_snd.
+exact: measurable_fun_fst.
+Qed.
+
+Let f' := @swap _ _ \o f.
+Lemma mf' : measurable_fun setT f'.
+Proof.
+rewrite /=.
+apply: measurable_fun_comp => /=.
+  exact: measurable_fun_swap.
+exact: mf.
+Qed.
+
+Variables (t : R.-sfker Datatypes_unit__canonical__measure_Measurable ~> X)
+          (t' : R.-sfker [the measurableType _ of (unit * X)%type] ~> X)
+          (u : R.-sfker Datatypes_unit__canonical__measure_Measurable ~> X)
+          (u' : R.-sfker [the measurableType _ of (unit * X)%type] ~> X)
+          (H1 : forall y, u tt = u' (tt, y))
+          (H2 : forall y, t tt = t' (tt, y)).
+Lemma letinC x A : measurable A ->
+  letin t (letin u' (Return R mf)) x A = letin u (letin t' (Return R mf')) x A.
+Proof.
+move=> mA.
+rewrite /letin /= /kcomp /= /kcomp /=.
+destruct x.
+rewrite /f/=.
+under eq_integral do rewrite -H1.
+rewrite (@sfinite_fubini _ _ X X R t u (fun x => (\d_(x.1, x.2) A)))//=.
+apply eq_integral => x _.
+  by rewrite -H2.
+apply/EFin_measurable_fun => /=.
+rewrite (_ : (fun x => _) = mindic R mA)//.
+by apply/funext => -[a b] /=.
+Qed.
+
+End letinC_example.
