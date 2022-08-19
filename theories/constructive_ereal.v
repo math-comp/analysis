@@ -1266,8 +1266,11 @@ Proof. by rewrite fin_numE -leye_eq -leeNy_eq -2!ltNge. Qed.
 Lemma fin_numPlt x : reflect (-oo < x < +oo) (x \is a fin_num).
 Proof. by rewrite fin_numElt; exact: idP. Qed.
 
-Lemma lte_pinfty_eq x : (x < +oo) = (x \is a fin_num) || (x == -oo).
+Lemma ltey_eq x : (x < +oo) = (x \is a fin_num) || (x == -oo).
 Proof. by case: x => // x //=; exact: ltey. Qed.
+
+Lemma ltNy_eq x : (-oo < x) = (x \is a fin_num) || (x == +oo).
+Proof. by case: x => // x //=; exact: ltNye. Qed.
 
 Lemma ge0_fin_numE x : 0 <= x -> (x \is a fin_num) = (x < +oo).
 Proof. by move: x => [x| |] => // x0; rewrite fin_numElt ltNye. Qed.
@@ -1765,6 +1768,13 @@ Qed.
 
 Lemma lee_suber_addl x y z : y \is a fin_num -> (x <= y - z) = (z + x <= y).
 Proof. by move=> ?; rewrite lee_suber_addr// addeC. Qed.
+
+Lemma sube_lt0 x y : (x \is a fin_num) || (y \is a fin_num) ->
+  (x - y < 0) = (x < y).
+Proof.
+move=> /orP[xfin|yfin]; first by rewrite lte_subel_addr// add0e.
+by rewrite lte_subl_addr// add0e.
+Qed.
 
 Lemma pmule_rge0 x y : 0 < x -> (x * y >= 0) = (y >= 0).
 Proof.
