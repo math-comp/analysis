@@ -65,6 +65,8 @@ Require Import functions.
 (*               k.-lipschitz_on f F == f is k.-lipschitz near F              *)
 (*                  k.-lipschitz_A f == f is k.-lipschitz on A                *)
 (*        [locally k.-lipschitz_A f] == f is locally k.-lipschitz on A        *)
+(*                   contraction q f == f is q.-lipschitz and q < 1           *)
+(*                  is_contraction f == exists q, f is q.-lipschitz and q < 1 *)
 (*                                                                            *)
 (*                     is_interval E == the set E is an interval              *)
 (*                bigcup_ointsub U q == union of open real interval included  *)
@@ -1525,6 +1527,27 @@ Qed.
 Lemma lipschitz_id (R : numFieldType) (V : normedModType R) : 1.-lipschitz (@id V).
 Proof. by move=> [/= x y] _; rewrite mul1r. Qed.
 Arguments lipschitz_id {R V}.
+
+Section contractions.
+Context {R : numDomainType} {X Y : normedModType R} {U : set X} {V : set Y}.
+
+Definition contraction (q : {nonneg R}) (f : {fun U >-> V}) :=
+  q%:num < 1 /\ q%:num.-lipschitz_U f.
+
+Definition is_contraction (f : {fun U >-> V}) := exists q, contraction q f.
+
+End contractions.
+
+Lemma contraction_fixpoint_unique {R : realDomainType}
+    {X : normedModType R} (U : set X) (f : {fun U >-> U}) (x y : X) :
+  is_contraction f -> U x -> U y -> x = f x -> y = f y -> x = y.
+Proof.
+case => q [q1 ctrfq] Ux Uy fixx fixy; apply/subr0_eq/normr0_eq0/eqP.
+have [->|xyneq] := eqVneq x y; first by rewrite subrr normr0.
+have xypos : 0 < `|x - y| by rewrite normr_gt0 subr_eq0.
+suff : `|x - y| <= q%:num * `|x - y| by rewrite ler_pmull // leNgt q1.
+by rewrite [in leLHS]fixx [in leLHS]fixy; exact: (ctrfq (_, _)).
+Qed.
 
 Section PseudoNormedZMod_numFieldType.
 Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).

@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- in `normedtype.v`:
+  + definitions `contraction` and `is_contraction`
+  + lemma `contraction_fixpoint_unique`
 
 - in `constructive_ereal.v`:
   + lemmas `ltNye_eq`, `sube_lt0`, `subre_lt0`, `suber_lt0`, `sube_ge0`
