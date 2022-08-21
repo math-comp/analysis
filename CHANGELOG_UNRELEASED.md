@@ -14,7 +14,6 @@
 - in `topology.v`:
   + lemma `near_inftyS`
 - in `sequences.v`:
-  + definition `contraction`, `is_contraction`
   + lemmas `contraction_dist`, `contraction_cvg`,
     `contraction_cvg_fixed`, `banach_fixed_point`,
     `contraction_unique`

@@ -2639,7 +2639,7 @@ Context {R : realType} {X : completeNormedModType R} (U : set X).
 Variables (f : {fun U >-> U}).
 
 Section contractions.
-Variables (q : {nonneg R}) (ctrf : contraction q) (base : X) (Ubase : U base).
+Variables (q : {nonneg R}) (ctrf : contraction q f) (base : X) (Ubase : U base).
 
 (* These proofs help integrate all the arithmetic with signed.v. The issue is *)
 (* Terms like `0 < 1-q` with subtraction don't work well. So we hide the      *)
@@ -2741,7 +2741,7 @@ have [q_gt0 | | q0] := ltrgt0P q%:num.
 Unshelve. all: end_near. Qed.
 End contractions.
 
-Variable ctrf : is_contraction.
+Variable ctrf : is_contraction f.
 
 Theorem banach_fixed_point : closed U -> U !=set0 -> exists2 p, U p & p = f p.
 Proof.
