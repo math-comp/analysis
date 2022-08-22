@@ -2645,22 +2645,19 @@ Variables (q : {nonneg R}) (ctrf : contraction q f) (base : X) (Ubase : U base).
 (* Terms like `0 < 1-q` with subtraction don't work well. So we hide the      *)
 (* subtractions behind `PosNum` and `NngNum` constructors*)
 
-Local Lemma qlt1 : 0 < 1 - q%:num.
+Let qlt1 : 0 < 1 - q%:num.
 Proof. by rewrite subr_gt0; case: ctrf. Qed.
 
-Local Lemma qsub1E : 1 - q%:num = (PosNum qlt1)%:num.
+Let qsub1E : 1 - q%:num = (PosNum qlt1)%:num.
 Proof. by []. Qed.
 
-Local Lemma qpow_lt_1 m : 0 <= 1 - q%:num ^+ m.
-Proof.
-move: m => [|m]; first by rewrite expr0 subrr.
-by rewrite subr_ge0 expr_le1// ltW//; case: ctrf.
-Qed.
+Let qpow_lt_1 m : 0 <= 1 - q%:num ^+ m.
+Proof. by rewrite subr_ge0 exprn_ile1// ltW//; case: ctrf. Qed.
 
-Local Lemma qmsub1E m : (1 - q%:num ^+ m = (NngNum (qpow_lt_1 m))%:num).
+Let qmsub1E m : 1 - q%:num ^+ m = (NngNum (qpow_lt_1 m))%:num.
 Proof. by []. Qed.
 
-Lemma contraction_dist (n m : nat) :
+Lemma contraction_dist n m :
   `| iter n f base - iter (n + m) f base| <=
    (`|f base - base| / (1 - q%:num)) * q%:num ^+ n.
 Proof.
@@ -2668,22 +2665,19 @@ case: ctrf => q1 ctrfq; pose y := fun n => iter n f base.
 have f1 k : `|y k.+1 - y k| <= q%:num ^+ k * `|f base - base|.
   elim: k => [|k /(ler_wpmul2l [ge0 of q%:num])]; first by rewrite expr0 mul1r.
   rewrite mulrA -exprS; apply: le_trans; rewrite ![y _.+1]iterS.
-  by apply: (ctrfq ((iter k.+1 f base), _)); split; exact: funS.
-have qlt1 := qlt1.
-have qn1 : 1 - q%:num != 0 by apply lt0r_neq0.
-have qne1 : q%:num != 1 by rewrite eq_sym -subr_eq0.
+  by apply: (ctrfq (iter k.+1 f base, _)); split; exact: funS.
 have /le_trans -> // : `| y n - y (n + m)%N| <=
     series (geometric (`|f base - base| * q%:num ^+ n) q%:num) m.
   elim: m => [|m ih].
-    by rewrite geometric_seriesE //= addn0 subrr normr0 expr0 subrr mulr0 mul0r.
+    by rewrite geometric_seriesE ?lt_eqF//= addn0 subrr normr0 subrr mulr0 mul0r.
   apply: le_trans; first exact: (ler_dist_add (y (n + m)%N)).
   apply: (le_trans (ler_add ih _)); first by rewrite distrC addnS; exact: f1.
-  rewrite [_ * `|_|]mulrC exprD mulrA geometric_seriesE //= qsub1E qmsub1E.
+  rewrite [_ * `|_|]mulrC exprD mulrA geometric_seriesE ?lt_eqF//= qsub1E qmsub1E.
   rewrite -!mulrA -mulrDr ler_pmul // -mulrDr ler_pmul //.
   rewrite -[x in _ + x]mulr1 -{3}(@divrr _ (PosNum qlt1)%:num) ?unitf_gt0 //.
   rewrite mulrA -mulrDl ler_pdivr_mulr // mulrDr.
   by rewrite divrK ?unitf_gt0 // mulr1 subrKA /= mulrN [_ * q%:num]mulrC -exprS.
-rewrite geometric_seriesE // /mk_sequence ?qsub1E ?qmsub1E.
+rewrite geometric_seriesE ?lt_eqF// /mk_sequence ?qsub1E ?qmsub1E.
 rewrite -?mulrA ler_pmul // [leRHS] mulrC ler_pmul //.
 by rewrite -ler_pdivl_mulr// divrr ?unitf_gt0// ler_subl_addr ler_addl.
 Qed.
@@ -2714,7 +2708,7 @@ near_simpl; apply; last by rewrite mulr_gt0 // invr_gt0.
 apply/cvg_ballP => _/posnumP[delta]; near_simpl.
 have [N] : \forall N \near \oo, ball 0 delta%:num (geometric 1 q%:num N).
   exact: (@cvg_ball R R _ _ 0 geo).
-move=> _ Q; exists ([set n | N <= n], [set n | N <= n])%N. 
+move=> _ Q; exists ([set n | N <= n], [set n | N <= n])%N.
   by split; exists N.
 move=> [n m] [Nn Nm]; rewrite /ball /= sub0r normrN ger0_norm /g //.
 apply: le_lt_trans; last by apply: (Q N) => /=.
@@ -2729,7 +2723,7 @@ move=> clU ; apply: cvg_lim => //; case: ctrf => q1 ctrfq.
 apply/cvg_distP => _/posnumP[e]; near_simpl; apply: near_inftyS.
 have [q_gt0 | | q0] := ltrgt0P q%:num.
 - near=> n => /=; apply: (le_lt_trans (ctrfq (_, _) _)) => //=.
-  + split; last exact: funS. 
+  + split; last exact: funS.
     by apply: closed_cvg contraction_cvg => //; apply: nearW => ?; exact: funS.
   + rewrite -ltr_pdivl_mull //; near: n; move/cvg_distP: contraction_cvg; apply.
     by rewrite mulr_gt0 // invr_gt0.
