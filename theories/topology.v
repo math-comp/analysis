@@ -1731,12 +1731,25 @@ Notation "A ^°" := (interior A) : classical_set_scope.
 
 Notation continuous f := (forall x, f%function @ x --> f%function x).
 
-Lemma continuousP (S T : topologicalType) (f : S -> T) :
-  continuous f <-> forall A, open A -> open (f @^-1` A).
+Lemma continuousP (S T : topologicalType) (f : S -> T) (D : set S) :
+  open D ->
+  {in D, continuous f} <-> (forall A, open A -> open (D `&` f @^-1` A)).
 Proof.
-split=> fcont; first by rewrite !openE => A Aop ? /Aop /fcont.
-move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [[Bop Bfs] sBA]].
-by exists (f @^-1` B); split; [split=> //; apply/fcont|move=> ? /sBA].
+move=> oD; split=> [fcont|fcont s /[!inE] sD A].
+  rewrite !openE => A Aop s [Ds] /Aop /fcont; rewrite inE => /(_ Ds) fsA.
+  by rewrite interiorI; split => //; move: oD; rewrite openE; exact.
+rewrite nbhs_simpl /= !nbhsE => - [B [[oB Bfs] BA]].
+by exists (D `&` f @^-1` B); split=> [|t [Dt] /BA//]; split => //; exact/fcont.
+Qed.
+
+Lemma continuousTP (S T : topologicalType) (f : S -> T) :
+  continuous f <-> (forall A, open A -> open (f @^-1` A)).
+Proof.
+split=> [cf A oA|cf].
+  rewrite -(setTI (_ @^-1` _)).
+  by move: A oA; apply/continuousP => //; exact/openT.
+apply: in1TT.
+by apply/continuousP; [exact: openT|move=> ? ?; rewrite setTI; exact: cf].
 Qed.
 
 Lemma continuous_comp (R S T : topologicalType) (f : R -> S) (g : S -> T) x :
@@ -2236,7 +2249,7 @@ Definition weak_topologicalType :=
     weak_topologicalTypeMixin).
 
 Lemma weak_continuous : continuous (f : weak_topologicalType -> T).
-Proof. by apply/continuousP => A ?; exists A. Qed.
+Proof. by apply/continuousTP => A ?; exists A. Qed.
 
 Lemma cvg_image (F : set (set S)) (s : S) :
   Filter F -> f @` setT = setT ->

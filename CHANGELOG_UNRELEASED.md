@@ -49,6 +49,10 @@
 - moved from `lebesgue_integral.v` to `classical_sets.v`:
   + `mem_set_pair1` -> `mem_xsection`
   + `mem_set_pair2` -> `mem_ysection`
+- in `topology.v`:
+  + generalize `continuousP`
+- in `lebesgue_measure.v`:
+  + generalize `continuous_measurable_fun`
 
 ### Renamed
 
@@ -73,6 +77,11 @@
   + `nnfun_mulem_ge0` -> `nnsfun_mulemu_ge0`
 - in `esum.v`:
   + `esum0` -> `esum1`
+
+- in `topology.v`:
+  + `continuousP` -> `continuousTP`
+- in `lebesgue_measure.v`:
+  + `continuous_measurable_fun` -> `continuousT_measurable_fun`
 
 ### Removed
 
