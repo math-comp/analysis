@@ -2706,10 +2706,9 @@ have := @cvg_ball _ _ (g @ filter_prod \oo \oo) _ 0 _ (C^-1 * e%:num).
 move: (@cvg_geometric _ 1 q%:num); rewrite ger0_norm // => /(_ q1) geo.
 near_simpl; apply; last by rewrite mulr_gt0 // invr_gt0.
 apply/cvg_ballP => _/posnumP[delta]; near_simpl.
-have [N] : \forall N \near \oo, ball 0 delta%:num (geometric 1 q%:num N).
+have [N _ Q] : \forall N \near \oo, ball 0 delta%:num (geometric 1 q%:num N).
   exact: (@cvg_ball R R _ _ 0 geo).
-move=> _ Q; exists ([set n | N <= n], [set n | N <= n])%N.
-  by split; exists N.
+exists ([set n | N <= n], [set n | N <= n])%N; first by split; exists N.
 move=> [n m] [Nn Nm]; rewrite /ball /= sub0r normrN ger0_norm /g //.
 apply: le_lt_trans; last by apply: (Q N) => /=.
 rewrite sub0r normrN ger0_norm /geometric //= mul1r.
