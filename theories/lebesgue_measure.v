@@ -1487,12 +1487,18 @@ move=> q; case: ifPn => // qfab; apply: is_interval_measurable => //.
 exact: is_interval_bigcup_ointsub.
 Qed.
 
-Lemma continuous_measurable_fun (f : R -> R) : continuous f ->
-  measurable_fun setT f.
+Lemma continuous_measurable_fun (f : R -> R) D :
+  open D -> {in D, continuous f} -> measurable_fun D f.
 Proof.
-move=> /continuousP cf; apply: (measurability (RGenOpens.measurableE R)).
-move=> _ [_ [a [b ->] <-]]; rewrite setTI.
+move=> oD /(continuousP _ oD) cf.
+apply: (measurability (RGenOpens.measurableE R)) => _ [_ [a [b ->] <-]].
 by apply: open_measurable; exact/cf/interval_open.
+Qed.
+
+Lemma continuousT_measurable_fun (f : R -> R) :
+  continuous f -> measurable_fun setT f.
+Proof.
+by move=> cf; apply: continuous_measurable_fun => //; exact: openT.
 Qed.
 
 End coutinuous_measurable.
@@ -1550,7 +1556,7 @@ Lemma measurable_funrM D f (k : R) : measurable_fun D f ->
   measurable_fun D (fun x => k * f x).
 Proof.
 apply: (@measurable_fun_comp _ _ _ _ _ _ ( *%R k)).
-by apply: continuous_measurable_fun; apply: mulrl_continuous.
+by apply: continuousT_measurable_fun; apply: mulrl_continuous.
 Qed.
 
 Lemma measurable_funN D f : measurable_fun D f -> measurable_fun D (-%R \o f).
@@ -1570,7 +1576,7 @@ Lemma measurable_fun_exprn D n f :
   measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
 Proof.
 apply: measurable_fun_comp ((@GRing.exp R)^~ n) _ _ _.
-by apply: continuous_measurable_fun; apply: exprn_continuous.
+by apply: continuousT_measurable_fun; apply: exprn_continuous.
 Qed.
 
 Lemma measurable_fun_sqr D f :

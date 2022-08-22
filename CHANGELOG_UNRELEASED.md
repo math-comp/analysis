@@ -61,6 +61,10 @@
   + change implicits of `integralM_indic`
 - in `derive.v`:
   + generalized `is_diff_scalel`
+- in `topology.v`:
+  + generalize `continuousP`
+- in `lebesgue_measure.v`:
+  + generalize `continuous_measurable_fun`
 
 ### Renamed
 
@@ -85,6 +89,11 @@
   + `nnfun_mulem_ge0` -> `nnsfun_mulemu_ge0`
 - in `esum.v`:
   + `esum0` -> `esum1`
+
+- in `topology.v`:
+  + `continuousP` -> `continuousTP`
+- in `lebesgue_measure.v`:
+  + `continuous_measurable_fun` -> `continuousT_measurable_fun`
 
 ### Removed
 
