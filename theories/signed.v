@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
-Require Import boolp.
+Require Import boolp mathcomp_extra.
 
 (******************************************************************************)
 (* This file develops tools to make the manipulation of numbers with a known  *)
@@ -1141,8 +1141,6 @@ CoInductive nonneg_spec (R : numDomainType) (x : R) : R -> bool -> Type :=
 Lemma nonnegP (R : numDomainType) (x : R) : 0 <= x -> nonneg_spec x x (0 <= x).
 Proof. by move=> xge0; rewrite xge0 -[x]/(NngNum xge0)%:num; constructor. Qed.
 
-
-
 (* Section PosnumOrder. *)
 (* Variables (R : numDomainType). *)
 (* Local Notation nR := {posnum R}. *)
@@ -1168,3 +1166,20 @@ Proof. by move=> xge0; rewrite xge0 -[x]/(NngNum xge0)%:num; constructor. Qed.
 (* Canonical nonneg_orderType := OrderType nR nonneg_le_total. *)
 
 (* End NonnegOrder. *)
+
+(* These proofs help integrate more arithmetic with signed.v. The issue is    *)
+(* Terms like `0 < 1-q` with subtraction don't work well. So we hide the      *)
+(* subtractions behind `PosNum` and `NngNum` constructors, see sequences.v    *)
+(* for examples.                                                              *)
+Section onem_signed.
+Variable R : numDomainType.
+Implicit Types r : R.
+
+Lemma onem_PosNum r (r1 : r < 1) : `1-r = (PosNum (onem_gt0 r1))%:num.
+Proof. by []. Qed.
+
+Lemma onemX_NngNum r (r1 : r <= 1) (r0 : 0 <= r) n :
+  `1-(r ^+ n) = (NngNum (onemX_ge0 n r0 r1))%:num.
+Proof. by []. Qed.
+
+End onem_signed.
