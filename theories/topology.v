@@ -2127,6 +2127,10 @@ move=> N_gt0 P [n _ Pn]; exists (n * N)%N => //= m.
 by rewrite /= -leq_divRL//; apply: Pn.
 Qed.
 
+Lemma near_inftyS (P : set nat) : 
+  (\forall x \near \oo, P (S x)) -> (\forall x \near \oo, P x).
+Proof. case=> N _ NPS; exists (S N) => // [[]]; rewrite /= ?ltn0 //. Qed.
+
 (** ** Topology on the product of two spaces *)
 
 Section Prod_Topology.

@@ -739,3 +739,51 @@ Arguments bigminD1 {d T I x} j.
 Arguments bigmin_inf {d T I x} j.
 Arguments bigmin_eq_arg {d T I} x j.
 Arguments eq_bigmin {d T I x} j.
+
+Reserved Notation "`1- r" (format "`1- r", at level 2).
+
+Section onem.
+Variable R : numDomainType.
+Implicit Types r : R.
+
+Definition onem r := 1 - r.
+Local Notation "`1- r" := (onem r).
+
+Lemma onem0 : `1-0 = 1. Proof. by rewrite /onem subr0. Qed.
+
+Lemma onem1 : `1-1 = 0. Proof. by rewrite /onem subrr. Qed.
+
+Lemma onemK r : `1-(`1-r) = r.
+Proof. by rewrite /onem opprB addrCA subrr addr0. Qed.
+
+Lemma onem_gt0 r : r < 1 -> 0 < `1-r. Proof. by rewrite subr_gt0. Qed.
+
+Lemma onem_ge0 r : r <= 1 -> 0 <= `1-r.
+Proof. by rewrite le_eqVlt => /predU1P[->|/onem_gt0/ltW]; rewrite ?onem1. Qed.
+
+Lemma onem_le1 r : 0 <= r -> `1-r <= 1.
+Proof. by rewrite ler_subl_addr ler_addl. Qed.
+
+Lemma onem_lt1 r : 0 < r -> `1-r < 1.
+Proof. by rewrite ltr_subl_addr ltr_addl. Qed.
+
+Lemma onemX_ge0 r n : 0 <= r -> r <= 1 -> 0 <= `1-(r ^+ n).
+Proof. by move=> ? ?; rewrite subr_ge0 exprn_ile1. Qed.
+
+Lemma onemX_lt1 r n : 0 < r -> `1-(r ^+ n) < 1.
+Proof. by move=> ?; rewrite onem_lt1// exprn_gt0. Qed.
+
+Lemma onemD r s : `1-(r + s) = `1-r - s.
+Proof. by rewrite /onem addrAC opprD addrA addrAC. Qed.
+
+Lemma onemMr r s : s * `1-r = s - s * r.
+Proof. by rewrite /onem mulrBr mulr1. Qed.
+
+Lemma onemM r s : `1-(r * s) = `1-r + `1-s - `1-r * `1-s.
+Proof.
+rewrite /onem mulrBr mulr1 mulrBl mul1r opprB -addrA.
+by rewrite (addrC (1 - r)) !addrA subrK opprB addrA subrK addrK.
+Qed.
+
+End onem.
+Notation "`1- r" := (onem r) : ring_scope.
