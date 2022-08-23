@@ -850,7 +850,7 @@ Let lebesgue_measure_itvoo_subr1 (a : R) :
 Proof.
 rewrite itv_bnd_open_bigcup//; transitivity (lim (lebesgue_measure \o
     (fun k => `]a - 1, a - k.+1%:R^-1]%classic : set R))).
-  apply/esym/cvg_lim => //; apply: cvg_mu_inc.
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   - by move=> ?; exact: measurable_itv.
   - by apply: bigcup_measurable => k _; exact: measurable_itv.
   - move=> n m nm; apply/subsetPset => x /=; rewrite !in_itv/= => /andP[->/=].
@@ -938,7 +938,7 @@ Let lebesgue_measure_itv_bnd_infty x (a : R) :
 Proof.
 rewrite itv_bnd_infty_bigcup; transitivity (lim (lebesgue_measure \o
     (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))] : set R))).
-  apply/esym/cvg_lim => //; apply: cvg_mu_inc => //.
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
   + by apply: bigcup_measurable => k _; exact: measurable_itv.
   + move=> m n mn; apply/subsetPset => r/=; rewrite !in_itv/= => /andP[->/=].
@@ -954,7 +954,7 @@ Let lebesgue_measure_itv_infty_bnd y (b : R) :
 Proof.
 rewrite itv_infty_bnd_bigcup; transitivity (lim (lebesgue_measure \o
     (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)] : set R))).
-  apply/esym/cvg_lim => //; apply: cvg_mu_inc => //.
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
   + by apply: bigcup_measurable => k _; exact: measurable_itv.
   + move=> m n mn; apply/subsetPset => r/=; rewrite !in_itv/= => /andP[+ ->].

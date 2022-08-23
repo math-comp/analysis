@@ -2489,7 +2489,7 @@ apply/eqP; rewrite oppe_eq0 -measure_le0/=; do ?exact: measurableI.
 by rewrite -A0 measureIl.
 Qed.
 
-Lemma cvg_mu_inc d (R : realFieldType) (T : ringOfSetsType d)
+Lemma nondecreasing_cvg_mu d (R : realFieldType) (T : ringOfSetsType d)
   (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcup_n F n) ->
   nondecreasing_seq F ->
@@ -3102,10 +3102,12 @@ have ndE : ndseq_closed E.
   move=> A ndA EA; split; have mA n : measurable (A n) by have [] := EA n.
   - exact: bigcupT_measurable.
   - transitivity (lim (m1 \o A)).
-      by apply/esym/cvg_lim=>//; exact/(cvg_mu_inc mA _ ndA)/bigcupT_measurable.
+      apply/esym/cvg_lim=>//.
+      exact/(nondecreasing_cvg_mu mA _ ndA)/bigcupT_measurable.
     transitivity (lim (m2 \o A)).
       by congr (lim _); rewrite funeqE => n; have [] := EA n.
-    by apply/cvg_lim => //; exact/(cvg_mu_inc mA _ ndA)/bigcupT_measurable.
+    apply/cvg_lim => //.
+    exact/(nondecreasing_cvg_mu mA _ ndA)/bigcupT_measurable.
   - by apply: bigcup_sub => n; have [] := EA n.
 have sDHE : <<s D, H >> `<=` E.
   by apply: monotone_class_subset => //; split => //; [move=> A []|exact/HE].
@@ -3137,10 +3139,9 @@ have sG'm1m2 n A : <<s G >> A -> m1 (g' n `&` A) = m2 (g' n `&` A).
   move=> sGA; rewrite setI_bigcupl bigcup_mkord.
   elim: n => [|n IHn] in A sGA *; rewrite (big_ord0, big_ord_recr) ?measure0//=.
   have sGgA i : <<s G >> (g i `&` A).
-    apply: (@measurableI _ GT) => //.
-    exact: sub_sigma_algebra.
+    by apply: (@measurableI _ GT) => //; exact: sub_sigma_algebra.
   apply: eq_measureU; rewrite ?sGm1m2 ?IHn//; last first.
-  - by rewrite -big_distrl -setIA big_distrl/= IHn// setICA setIid//.
+  - by rewrite -big_distrl -setIA big_distrl/= IHn// setICA setIid.
   - exact/sGm.
   - by apply: bigsetU_measurable => i _; apply/sGm.
 have g'_cover : \bigcup_k (g' k) = setT.
@@ -3151,13 +3152,13 @@ have nd_g' : nondecreasing_seq g'.
 move=> A gA.
 have -> : A = \bigcup_n (g' n `&` A) by rewrite -setI_bigcupl g'_cover setTI.
 transitivity (lim (fun n => m1 (g' n `&` A))).
-  apply/esym/cvg_lim => //; apply: cvg_mu_inc => //.
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   - by move=> n; apply: measurableI; exact/sGm.
   - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
   - by move=> ? ? ?; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
 transitivity (lim (fun n => m2 (g' n `&` A))).
   by congr (lim _); rewrite funeqE => x; apply: sG'm1m2 => //; exact/sGm.
-apply/cvg_lim => //; apply: cvg_mu_inc => //.
+apply/cvg_lim => //; apply: nondecreasing_cvg_mu.
 - by move=> k; apply: measurableI => //; exact/sGm.
 - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
 - by move=> a b ab; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
