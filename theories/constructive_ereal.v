@@ -489,10 +489,10 @@ Proof. by rewrite lee_fin ler0N1. Qed.
 Lemma lte0N1 : 0 < (-1)%:E :> \bar R = false.
 Proof. by rewrite lte_fin ltr0N1. Qed.
 
-Lemma le0R x : 0 <= x -> (0 <= fine x)%R.
+Lemma fine_ge0 x : 0 <= x -> (0 <= fine x)%R.
 Proof. by case: x. Qed.
 
-Lemma lt0R x : 0 < x < +oo -> (0 < fine x)%R.
+Lemma fine_gt0 x : 0 < x < +oo -> (0 < fine x)%R.
 Proof. by move: x => [x| |] //=; rewrite ?ltxx ?andbF// lte_fin => /andP[]. Qed.
 
 Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
@@ -1308,7 +1308,7 @@ have ? : (\sum_(i <- r | P i) (fine \o F) i == 0)%R.
     by have := rPF _ jr; rewrite Pj implyTb.
   by rewrite -big_seq_cond PF0.
 have /allP/(_ _ ir) : all (fun i => P i ==> ((fine \o F) i == 0))%R r.
-  by rewrite -psumr_eq0// => j Pj/=; apply/le0R/F0.
+  by rewrite -psumr_eq0// => j Pj/=; apply/fine_ge0/F0.
 rewrite Pi implyTb => /= => /eqP Fi0.
 rewrite -(@fineK _ (F i))//; last by have := rPF _ ir; rewrite Pi implyTb.
 by rewrite Fi0.

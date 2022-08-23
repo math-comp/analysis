@@ -344,7 +344,7 @@ Let nneseries_esum_prod (R : realType) (a : nat -> nat -> \bar R)
   \esum_(i in P `*` Q) a i.1 i.2.
 Proof.
 move=> a0; rewrite -(@esum_esum _ _ _ P (fun=> Q))//.
-rewrite nneseries_esum//; last by move=> n _; exact: nneseries_lim_ge0.
+rewrite nneseries_esum//; last by move=> n _; exact: nneseries_ge0.
 rewrite (_ : [set x | P x] = P); last by apply/seteqP; split.
 by apply eq_esum => i Pi; rewrite nneseries_esum.
 Qed.
@@ -512,7 +512,7 @@ Lemma summable_cvg (P : pred nat) (f : (\bar R)^nat) :
   cvg (fun n => \sum_(0 <= k < n | P k) fine (f k))%R.
 Proof.
 move=> f0 Pf; apply: nondecreasing_is_cvg.
-  by apply: nondecreasing_series => n Pn; exact/le0R/f0.
+  by apply: nondecreasing_series => n Pn; exact/fine_ge0/f0.
 exists (fine (\sum_(i <oo | P i) `|f i|)) => x /= [n _ <-].
 rewrite summable_fine_sum// -lee_fin fineK//; last first.
   by apply/sum_fin_numP => i ni Pi; rewrite fin_num_abs (summable_pinfty Pf).

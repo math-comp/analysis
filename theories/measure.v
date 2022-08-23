@@ -43,30 +43,30 @@ From HB Require Import structures.
 (*                            smallest dynkin G                               *)
 (*                                                                            *)
 (* * Mathematical structures for measure theory:                              *)
-(*     semiRingOfSetsType == the type of semirings of sets;                   *)
-(*                           the carrier is a set of sets A such that         *)
-(*                           "measurable A" holds;                            *)
-(*                           "measurable A" is printed as "d.-measurable A"   *)
-(*                           where d is a "display parameter" whose purpose   *)
-(*                           is to distinguish different measurable's within  *)
-(*                           the same context                                 *)
-(*         ringOfSetsType == the type of rings of sets                        *)
-(*                           <<r G >> is equipped with a canonical structure  *)
-(*                           of ring of sets                                  *)
-(*  G.-ring.-measurable A == A is measurable for the ring of sets <<r G >>    *)
-(*      algebraOfSetsType == the type of algebras of sets                     *)
-(*         measurableType == the type of sigma-algebras                       *)
-(*                           <<s G >> is equipped with a canonical structure  *)
-(*                           of measurableType                                *)
-(* G.-sigma.-measurable A == A is measurable for the sigma-algebra <<s G >>   *)
+(*      semiRingOfSetsType == the type of semirings of sets;                  *)
+(*                            the carrier is a set of sets A such that        *)
+(*                            "measurable A" holds;                           *)
+(*                            "measurable A" is printed as "d.-measurable A"  *)
+(*                            where d is a "display parameter" whose purpose  *)
+(*                            is to distinguish different measurable's within *)
+(*                            the same context                                *)
+(*          ringOfSetsType == the type of rings of sets                      *)
+(*                            <<r G >> is equipped with a canonical structure *)
+(*                            of ring of sets                                 *)
+(*   G.-ring.-measurable A == A is measurable for the ring of sets <<r G >>   *)
+(*       algebraOfSetsType == the type of algebras of sets                    *)
+(*          measurableType == the type of sigma-algebras                      *)
+(*                            <<s G >> is equipped with a canonical structure *)
+(*                            of measurableType                               *)
+(*  G.-sigma.-measurable A == A is measurable for the sigma-algebra <<s G >>  *)
 (*                                                                            *)
-(*    discrete_measurable == the measurableType corresponding to              *)
-(*                           [set: set nat]                                   *)
-(*         salgebraType G == the measurableType corresponding to <<s G >>     *)
+(* discrete_measurable_nat == the measurableType corresponding to             *)
+(*                            [set: set nat]                                  *)
+(*          salgebraType G == the measurableType corresponding to <<s G >>    *)
 (*                                                                            *)
-(*     measurable_fun D f == the function f with domain D is measurable       *)
-(*   preimage_class D f G == class of the preimages by f of sets in G         *)
-(*      image_class D f G == class of the sets with a preimage by f in G      *)
+(*      measurable_fun D f == the function f with domain D is measurable      *)
+(*    preimage_class D f G == class of the preimages by f of sets in G        *)
+(*       image_class D f G == class of the sets with a preimage by f in G     *)
 (*                                                                            *)
 (* * Measures:                                                                *)
 (*  {additive_measure set T -> \bar R} == type of a function over sets of     *)
@@ -860,27 +860,26 @@ move=> Fm; have /ppcard_eqP[f] := card_rat.
 by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
 Qed.
 
-Section discrete_measurable.
-(*Variable T : pointedType.*)
+Section discrete_measurable_nat.
 
-Definition discrete_measurable : set (set nat) := [set: set nat].
+Definition discrete_measurable_nat : set (set nat) := [set: set nat].
 
-Let discrete_measurable0 : discrete_measurable set0. Proof. by []. Qed.
+Let discrete_measurable_nat0 : discrete_measurable_nat set0. Proof. by []. Qed.
 
-Let discrete_measurableC X :
-  discrete_measurable X -> discrete_measurable (~` X).
+Let discrete_measurable_natC X :
+  discrete_measurable_nat X -> discrete_measurable_nat (~` X).
 Proof. by []. Qed.
 
-Let discrete_measurableU (F : (set nat)^nat) :
-  (forall i, discrete_measurable (F i)) ->
-  discrete_measurable (\bigcup_i F i).
+Let discrete_measurable_natU (F : (set nat)^nat) :
+  (forall i, discrete_measurable_nat (F i)) ->
+  discrete_measurable_nat (\bigcup_i F i).
 Proof. by []. Qed.
 
-HB.instance Definition _ := @isMeasurable.Build default_measure_display nat (Pointed.class _)
-  discrete_measurable discrete_measurable0 discrete_measurableC
-  discrete_measurableU.
+HB.instance Definition _ := @isMeasurable.Build default_measure_display nat
+  (Pointed.class _) discrete_measurable_nat discrete_measurable_nat0
+  discrete_measurable_natC discrete_measurable_natU.
 
-End discrete_measurable.
+End discrete_measurable_nat.
 
 Definition sigma_display {T} : set (set T) -> measure_display.
 Proof. exact. Qed.
@@ -1676,7 +1675,7 @@ move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
                           (fun i => \sum_(n <= k <oo) m k (F i))).
   by move=> i _; rewrite ereal_series.
 apply: is_cvg_ereal_nneg_natsum => k _.
-by rewrite /mseries ereal_series; exact: nneseries_lim_ge0.
+by rewrite /mseries ereal_series; exact: nneseries_ge0.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ mseries
@@ -1958,7 +1957,7 @@ rewrite -bigcup2inE; apply: mdU => //; last by move=> [|[]]// _; apply: mdDI.
 by move=> [|[]]// [|[]]//= _ _ []; rewrite setDE ?setIA => X [] []//.
 Qed.
 
-Lemma ring_fsets (A : set rT) : measurable A -> exists B : set (set T),
+Lemma ring_finite_set (A : set rT) : measurable A -> exists B : set (set T),
   [/\ finite_set B,
       (forall X, B X -> X !=set0),
       trivIset B id,
@@ -1977,8 +1976,8 @@ Qed.
 
 Definition decomp (A : set rT) : set (set T) :=
   if A == set0 then [set set0] else
-  if pselect (measurable A) is left mA then projT1 (cid (ring_fsets mA)) else
-  [set A].
+  if pselect (measurable A) is left mA then projT1 (cid (ring_finite_set mA))
+  else [set A].
 
 Lemma decomp_finite_set (A : set rT) : finite_set (decomp A).
 Proof.
@@ -2088,8 +2087,8 @@ Proof. by rewrite sume_ge0. Qed.
 
 Lemma Rmu_additive : semi_additive Rmu.
 Proof.
-apply/(additive2P Rmu0) => // A B.
-move=> /ring_fsets[/= {}A [? _ Atriv Am ->]] /ring_fsets[/= {}B [? _ Btriv Bm ->]].
+apply/(additive2P Rmu0) => // A B /ring_finite_set[/= {}A [? _ Atriv Am ->]].
+move=> /ring_finite_set[/= {}B [? _ Btriv Bm ->]].
 rewrite -subset0 => coverAB0.
 have AUBfin : finite_set (A `|` B) by rewrite finite_setU.
 have AUBtriv : trivIset (A `|` B) id.
@@ -3022,7 +3021,7 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
     by rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul.
   - by have := Aoo n; rewrite /mu^* Soo.
   - suff : lbound S 0 by move/lb_ereal_inf; rewrite Soo.
-    by move=> /= _ [B [mB AnB] <-]; exact: nneseries_lim_ge0.
+    by move=> /= _ [B [mB AnB] <-]; exact: nneseries_ge0.
 have muG_ge0 x : 0 <= (mu \o uncurry G) x by exact/measure_ge0.
 apply (@le_trans _ _ (\esum_(i in setT) (mu \o uncurry G) i)).
   rewrite /mu_ext; apply: ereal_inf_lb => /=.
@@ -3054,7 +3053,7 @@ rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
   by congr esum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
 apply lee_lim.
 - apply: is_cvg_nneseries => n _.
-  by apply: nneseries_lim_ge0 => m _; exact: (muG_ge0 (n, m)).
+  by apply: nneseries_ge0 => m _; exact: (muG_ge0 (n, m)).
 - by apply: is_cvg_nneseries => n _; apply: adde_ge0 => //; exact: mu_ext_ge0.
 - by near=> n; apply: lee_sum => i _; exact: (PG i).2.
 Unshelve. all: by end_near. Qed.

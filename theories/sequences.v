@@ -1632,7 +1632,7 @@ move=> f0; rewrite -ereal_limrM//; last exact: is_cvg_nneseries.
 by congr (lim _); apply/funext => /= n; rewrite ge0_sume_distrr.
 Qed.
 
-Lemma nneseries_lim_ge0 (R : realType) (u_ : (\bar R)^nat) (P : pred nat) :
+Lemma nneseries_ge0 (R : realType) (u_ : (\bar R)^nat) (P : pred nat) :
   (forall n, P n -> 0 <= u_ n) -> 0 <= \sum_(i <oo | P i) u_ i.
 Proof.
 move=> u0; apply: (ereal_lim_ge (is_cvg_nneseries _ _ u0)).
@@ -1644,11 +1644,9 @@ Lemma adde_def_nneseries (R : realType) (f g : (\bar R)^nat)
   (forall n, P n -> 0 <= f n) -> (forall n, Q n -> 0 <= g n) ->
   (\sum_(i <oo | P i) f i) +? (\sum_(i <oo | Q i) g i).
 Proof.
-move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split.
-- apply/orP; right; apply/eqP => Qg.
-  by have := nneseries_lim_ge0 g0; rewrite Qg.
-- apply/orP; left; apply/eqP => Pf.
-  by have := nneseries_lim_ge0 f0; rewrite Pf.
+move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split; apply/orP.
+- by right; apply/eqP => Qg; have := nneseries_ge0 g0; rewrite Qg.
+- by left; apply/eqP => Pf; have := nneseries_ge0 f0; rewrite Pf.
 Qed.
 
 Lemma nneseries_pinfty (R : realType) (u_ : (\bar R)^nat)
@@ -2031,7 +2029,7 @@ transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i +
   by congr (lim _); apply/funext => n; rewrite big_split.
 rewrite ereal_limD /adde_def //=; do ? exact: is_cvg_nneseries.
 by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
-           ?[_ < _]real0// nneseries_lim_ge0.
+           ?[_ < _]real0// nneseries_ge0.
 Qed.
 
 Lemma nneseries0 (R : realFieldType) (f : (\bar R)^nat) (P : pred nat) :
