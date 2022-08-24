@@ -834,6 +834,22 @@ End salgebra_R_ssets.
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1|
                                             apply: emeasurable_set1] : core.
 
+Lemma measurable_fun_fine (R : realType) (D : set (\bar R)) : measurable D ->
+  measurable_fun D fine.
+Proof.
+move=> mD _ /= B mB; rewrite [X in measurable X](_ : _ `&` _ = if 0%R \in B then
+    D `&` ((EFin @` B) `|` [set -oo; +oo]%E) else D `&` EFin @` B); last first.
+  apply/seteqP; split=> [[r [Dr Br]|[Doo B0]|[Doo B0]]|[r| |]].
+  - by case: ifPn => _; split => //; left; exists r.
+  - by rewrite mem_set//; split => //; right; right.
+  - by rewrite mem_set//; split => //; right; left.
+  - by case: ifPn => [_ [Dr [[s + [sr]]|[]//]]|_ [Dr [s + [sr]]]]; rewrite sr.
+  - by case: ifPn => [/[!inE] B0 [Doo [[]//|]] [//|_]|B0 [Doo//] []].
+  - by case: ifPn => [/[!inE] B0 [Doo [[]//|]] [//|_]|B0 [Doo//] []].
+case: ifPn => B0; apply/measurableI => //; last exact: measurable_EFin.
+by apply: measurableU; [exact: measurable_EFin|exact: measurableU].
+Qed.
+
 Section lebesgue_measure_itv.
 Variable R : realType.
 
