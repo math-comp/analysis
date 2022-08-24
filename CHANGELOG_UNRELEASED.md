@@ -25,6 +25,8 @@
     `onemX_ge0`, `onemX_lt1`, `onemD`, `onemMr`, `onemM`
 - in `signed.v`:
   + lemmas `onem_PosNum`, `onemX_NngNum`
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_fine`
 
 ### Changed
 
