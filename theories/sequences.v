@@ -769,7 +769,7 @@ have ge_half n : (0 < n)%N -> 2^-1 <= \sum_(n <= i < n.*2) harmonic i.
   rewrite (@le_trans _ _ (\sum_(n.+1 <= i < n.+1.*2) n.+1.*2%:R^-1)) //=.
     rewrite sumr_const_nat -addnn addnK addnn -mul2n natrM invfM.
     by rewrite -[_ *+ n.+1]mulr_natr divfK.
-  by apply: ler_sum_nat => i /andP[? ?]; rewrite lef_pinv ?qualifE ?ler_nat.
+  by apply: ler_sum_nat => i /andP[? ?]; rewrite lef_pinv ?qualifE/= ?ler_nat.
 move/cvg_cauchy/cauchy_ballP => /(_ _ [gt0 of 2^-1 : R]); rewrite !near_map2.
 rewrite -ball_normE => /nearP_dep hcvg; near \oo => n; near \oo => m.
 have: `|series harmonic n - series harmonic m| < 2^-1 :> R by near: m; near: n.
@@ -810,7 +810,7 @@ move=> /le_lt_trans->//; rewrite [e%:num]splitr ltr_add//.
   have [->|neq0] := eqVneq (\sum_(0 <= k < m.+1) (l - u_ k)) 0.
     by rewrite normr0 mulr0.
   rewrite -ltr_pdivl_mulr ?normr_gt0//.
-  rewrite -ltf_pinv ?qualifE// ?mulr_gt0 ?invr_gt0 ?normr_gt0// invrK.
+  rewrite -ltf_pinv ?qualifE//= ?mulr_gt0 ?invr_gt0 ?normr_gt0// invrK.
   rewrite (lt_le_trans (archi_boundP _))// ler_nat leqW//.
   by near: n; apply: nbhs_infty_ge.
 rewrite ltr_pdivr_mull ?ltr0n // (le_lt_trans (ler_norm_sum _ _ _)) //.
@@ -1183,7 +1183,7 @@ have [Ni|iN] := ltnP N i; last first.
   rewrite natrX -expfB_cond ?(negPf (lt0r_neq0 N_gt0))//.
   by rewrite exprn_ege1 // ler1n; case: (N) xN x0; case: ltrgt0P.
 rewrite /exp expr_div_n /= (fact_split Ni) mulrCA ler_pmul2l ?exprn_gt0// natrX.
-rewrite -invf_div -expfB // lef_pinv ?qualifE ?exprn_gt0//; last first.
+rewrite -invf_div -expfB // lef_pinv ?qualifE/= ?exprn_gt0//; last first.
   rewrite ltr0n muln_gt0 fact_gt0/= big_seq big_mkcond/= prodn_gt0// => j.
   by case: ifPn=>//; rewrite mem_index_iota => /andP[+ _]; exact: leq_ltn_trans.
 rewrite big_nat_rev/= -natrX ler_nat -prod_nat_const_nat big_add1 /= big_ltn //.
@@ -1939,7 +1939,7 @@ transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i +
   by apply/congr_lim/funext => n; rewrite big_split.
 rewrite limeD /adde_def //=; do ? exact: is_cvg_nneseries.
 by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
-           ?[_ < _]real0// nneseries_lim_ge0.
+           ?[_ < _]real0// nneseries_ge0.
 Qed.
 
 Lemma nneseries_sum_nat (R : realType) n (f : nat -> nat -> \bar R) :

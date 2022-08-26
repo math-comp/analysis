@@ -36,7 +36,7 @@ Local Open Scope ring_scope.
 
 (* PR to mathcomp in progress *)
 Lemma normr_nneg (R : numDomainType) (x : R) : `|x| \is Num.nneg.
-Proof. by rewrite qualifE. Qed.
+Proof. by rewrite qualifE/=. Qed.
 #[global] Hint Extern 0 (is_true (@Num.norm _ _ _ \is Num.nneg)) =>
   solve [apply: normr_nneg] : core.
 (* /PR to mathcomp in progress *)
@@ -163,14 +163,14 @@ rewrite -(subnK (_ : i <= n.-1)%nat) -/d; last first.
   by rewrite -ltnS prednK// (leq_ltn_trans _ ni).
 rewrite addnC exprD mulrAC -mulrA.
 apply: ler_pmul => //.
-  by rewrite normrX ler_expn2r// qualifE (le_trans _ zLK).
+  by rewrite normrX ler_expn2r// qualifE/= (le_trans _ zLK).
 apply: le_trans (_ : d.+1%:R * K ^+ d <= _); last first.
   rewrite ler_wpmul2r //; first by rewrite exprn_ge0 // (le_trans _ zLK).
   by rewrite ler_nat ltnS /d -subn1 -subnDA leq_subr.
 rewrite (le_trans (ler_norm_sum _ _ _))//.
 rewrite mulr_natl -[X in _ *+ X]subn0 -sumr_const_nat ler_sum_nat//= => j jd1.
 rewrite -[in leRHS](subnK (_ : j <= d)%nat) -1?ltnS // addnC exprD normrM.
-by rewrite ler_pmul// normrX ler_expn2r// qualifE (le_trans _ zLK).
+by rewrite ler_pmul// normrX ler_expn2r// qualifE/= (le_trans _ zLK).
 Qed.
 
 Lemma pseries_snd_diffs (c : R^nat) K x :
@@ -500,7 +500,7 @@ by apply/eqP/idP=> [<-|x0]; [exact: expR_gt0|rewrite lnK// in_itv/= x0].
 Qed.
 
 Lemma ln1 : ln 1 = 0.
-Proof. by apply/expR_inj; rewrite lnK// ?expR0// qualifE. Qed.
+Proof. by apply/expR_inj; rewrite lnK// ?expR0// qualifE/=. Qed.
 
 Lemma lnM : {in Num.pos &, {morph ln : x y / x * y >-> x + y}}.
 Proof.
@@ -514,7 +514,7 @@ Proof. by move=> x y /lnK {2}<- /lnK {2}<- ->. Qed.
 Lemma lnV : {in Num.pos, {morph ln : x / x ^-1 >-> - x}}.
 Proof.
 move=> x x0; apply: expR_inj; rewrite lnK// ?expRN ?lnK//.
-by move: x0; rewrite !qualifE invr_gt0.
+by move: x0; rewrite !qualifE/= invr_gt0.
 Qed.
 
 Lemma ln_div : {in Num.pos &, {morph ln : x y / x / y >-> x - y}}.
@@ -532,7 +532,7 @@ Proof. by move=> x y x_gt0 y_gt0; rewrite -ler_expR !lnK. Qed.
 Lemma lnX n x : 0 < x -> ln(x ^+ n) = ln x *+ n.
 Proof.
 move=> x_gt0; elim: n => [|n ih] /=; first by rewrite expr0 ln1 mulr0n.
-by rewrite !exprS lnM ?qualifE// ?exprn_gt0// mulrS ih.
+by rewrite !exprS lnM ?qualifE//= ?exprn_gt0// mulrS ih.
 Qed.
 
 Lemma le_ln1Dx x : 0 <= x -> ln (1 + x) <= x.
@@ -544,18 +544,18 @@ Qed.
 Lemma ln_sublinear x : 0 < x -> ln x < x.
 Proof.
 move=> x_gt0; apply: lt_le_trans (_ : ln (1 + x) <= _).
-  by rewrite -ltr_expR !lnK ?qualifE ?addr_gt0 // ltr_addr.
-by rewrite -ler_expR lnK ?qualifE ?addr_gt0// expR_ge1Dx // ltW.
+  by rewrite -ltr_expR !lnK ?qualifE/= ?addr_gt0 // ltr_addr.
+by rewrite -ler_expR lnK ?qualifE/= ?addr_gt0// expR_ge1Dx // ltW.
 Qed.
 
 Lemma ln_ge0 x : 1 <= x -> 0 <= ln x.
 Proof.
-by move=> x_ge1; rewrite -ler_expR expR0 lnK// qualifE (lt_le_trans _ x_ge1).
+by move=> x_ge1; rewrite -ler_expR expR0 lnK// qualifE/= (lt_le_trans _ x_ge1).
 Qed.
 
 Lemma ln_gt0 x : 1 < x -> 0 < ln x.
 Proof.
-by move=> x_gt1; rewrite -ltr_expR expR0 lnK // qualifE (lt_trans _ x_gt1).
+by move=> x_gt1; rewrite -ltr_expR expR0 lnK // qualifE/= (lt_trans _ x_gt1).
 Qed.
 
 Lemma continuous_ln x : 0 < x -> {for x, continuous ln}.

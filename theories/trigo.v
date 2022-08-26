@@ -839,7 +839,7 @@ Lemma tan_piquarter : tan (pi / 4%:R) = 1.
 Proof.
 rewrite /tan -cosBpihalf (splitr (pi / 2)) opprD addrA -mulrA -invfM -natrM.
 rewrite subrr sub0r cosN divff// gt_eqF// cos_gt0_pihalf//.
-rewrite ltr_pmul2l ?pi_gt0// ltf_pinv ?qualifE// ltr_nat andbT.
+rewrite ltr_pmul2l ?pi_gt0// ltf_pinv ?qualifE//= ltr_nat andbT.
 by rewrite (@lt_trans _ _ 0)// ?oppr_lt0 ?divr_gt0 ?pi_gt0.
 Qed.
 
@@ -1013,7 +1013,7 @@ apply: (@is_derive_inverse R cos).
   by near: z.
 - by near=> z; apply: continuous_cos.
 - rewrite oppr_eq0 sin_acos ?ltW // sqrtr_eq0 // -ltNge subr_gt0.
-  rewrite -real_normK ?qualifE; last by case: ltrgt0P.
+  rewrite -real_normK ?qualifE/=; last by case: ltrgt0P.
   by rewrite exprn_cp1 // ltr_norml x_gtN1.
 Unshelve. all: by end_near. Qed.
 
@@ -1112,7 +1112,7 @@ apply: (@is_derive_inverse R sin).
   by near: z.
 - by near=> z; exact: continuous_sin.
 - rewrite cos_asin ?ltW // sqrtr_eq0 // -ltNge subr_gt0.
-  rewrite -real_normK ?qualifE; last by case: ltrgt0P.
+  rewrite -real_normK ?qualifE/=; last by case: ltrgt0P.
   by rewrite exprn_cp1 // ltr_norml x_gtN1.
 Unshelve. all: by end_near. Qed.
 
@@ -1137,7 +1137,7 @@ have ox2_gt0 : 0 < 1 + x^2.
 have ox2_ge0 : 0 <= 1 + x^2 by rewrite ltW.
 have x1B : -1 <= x1 <= 1.
   rewrite -ler_norml /x1 ger0_norm ?sqrtr_ge0 // -[leRHS]sqrtr1.
-  by rewrite ler_psqrt ?qualifE ?invr_gte0 //= invf_cp1 // ler_addl sqr_ge0.
+  by rewrite ler_psqrt ?qualifE/= ?invr_gte0 //= invf_cp1 // ler_addl sqr_ge0.
 case: (He (Num.sg x * acos x1)); split; last first.
   case: (x =P 0) => [->|/eqP xD0]; first by rewrite /tan sgr0 mul0r sin0 mul0r.
   rewrite /tan sin_sg cos_sg // acosK ?sin_acos //.

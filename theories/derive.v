@@ -653,10 +653,13 @@ Qed.
 Global Instance is_diff_scalel (k : R) (x : V) :
   is_diff k ( *:%R ^~ x) ( *:%R ^~ x).
 Proof.
-have -> : *:%R ^~ x = [linear of @GRing.scale _ [the lmodType _ of R : Type] x].
-  by rewrite funeqE => ? /=; rewrite [_ *: _]mulrC.
-apply: DiffDef; first exact/linear_differentiable/scaler_continuous.
-by rewrite diff_lin //; apply: scaler_continuous.
+have sx_lin : linear ( *:%R ^~ x : [the lmodType R of R : Type] -> _).
+  by move=> u y z; rewrite scalerDl scalerA.
+pose sxlM := GRing.linear_isLinear.Build _ _ _ _ _ sx_lin.
+pose sxL : GRing.Linear.type _ _ := HB.pack ( *:%R ^~ x) sxlM.
+have -> : *:%R ^~ x = sxL by rewrite funeqE.
+apply: DiffDef; first exact/linear_differentiable/scalel_continuous.
+by rewrite diff_lin //; apply: scalel_continuous.
 Qed.
 
 Lemma differentiable_coord m n (M : 'M[R]_(m.+1, n.+1)) i j :
@@ -1367,7 +1370,7 @@ have [_ [t tab <-]] : exists2 y, imf y & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
 rewrite ltr_subl_addr -ltr_subl_addl.
 suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
-rewrite -[ltRHS]invrK ltf_pinv// ?qualifE ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
+rewrite -[ltRHS]invrK ltf_pinv// ?qualifE/= ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
 by rewrite (le_lt_trans (ler_norm _) _) ?imVfltk//; exact: imageP.
 Qed.
 

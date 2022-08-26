@@ -559,8 +559,9 @@ apply/seteqP; split=> [x ->|].
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
 apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
 have := rx `|floor e^-1|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
-by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW// lt_succ_floor.
+rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE/=.
+rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW//.
+by rewrite lt_succ_floor.
 Qed.
 
 Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :

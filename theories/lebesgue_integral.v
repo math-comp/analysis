@@ -138,9 +138,8 @@ Proof.
 split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
 by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
 Qed.
-Canonical fimfun_mul := MulrPred fimfun_mulr_closed.
-Canonical fimfun_ring := SubringPred fimfun_mulr_closed.
-HB.instance Definition _ := [ringMixin of {fimfun aT >-> rT} by <:].
+HB.instance Definition _ := GRing.isMulClosed.Build _ fimfun fimfun_mulr_closed.
+HB.instance Definition _ := [SubZmodule_isSubRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 
@@ -170,7 +169,7 @@ Arguments indic_fimfun {aT rT} _.
 
 Section comring.
 Context (aT : pointedType) (rT : comRingType).
-HB.instance Definition _ := [comRingMixin of {fimfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubRing_isSubComRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
@@ -276,13 +275,11 @@ split=> [|f g|f g]; rewrite !inE/=.
 - exact: measurable_funB.
 - exact: measurable_funM.
 Qed.
-Canonical mfun_add := AddrPred mfun_subring_closed.
-Canonical mfun_zmod := ZmodPred mfun_subring_closed.
-Canonical mfun_mul := MulrPred mfun_subring_closed.
-Canonical mfun_subring := SubringPred mfun_subring_closed.
-HB.instance Definition _ := [zmodMixin of {mfun aT >-> rT} by <:].
-HB.instance Definition _ := [ringMixin of {mfun aT >-> rT} by <:].
-HB.instance Definition _ := [comRingMixin of {mfun aT >-> rT} by <:].
+HB.instance Definition _ := GRing.isSubringClosed.Build _ mfun
+  mfun_subring_closed.
+HB.instance Definition _ := [SubChoice_isSubZmodule of {mfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubZmodule_isSubRing of {mfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubRing_isSubComRing of {mfun aT >-> rT} by <:].
 
 Implicit Types (f g : {mfun aT >-> rT}).
 
@@ -418,13 +415,11 @@ by split=> [|f g|f g]; rewrite ?inE/= ?rpred1//;
    move=> /andP[/= mf ff] /andP[/= mg fg]; rewrite !(rpredB, rpredM).
 Qed.
 
-Canonical sfun_add := AddrPred sfun_subring_closed.
-Canonical sfun_zmod := ZmodPred sfun_subring_closed.
-Canonical sfun_mul := MulrPred sfun_subring_closed.
-Canonical sfun_subring := SubringPred sfun_subring_closed.
-HB.instance Definition _ := [zmodMixin of {sfun aT >-> rT} by <:].
-HB.instance Definition _ := [ringMixin of {sfun aT >-> rT} by <:].
-HB.instance Definition _ := [comRingMixin of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := GRing.isSubringClosed.Build _ sfun
+  sfun_subring_closed.
+HB.instance Definition _ := [SubChoice_isSubZmodule of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubZmodule_isSubRing of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubRing_isSubComRing of {sfun aT >-> rT} by <:].
 
 Implicit Types (f g : {sfun aT >-> rT}).
 
