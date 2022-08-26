@@ -2196,6 +2196,7 @@ by rewrite preimage_nnfun0.
 Qed.
 
 End integralM_indic.
+Arguments integralM_indic {d T R m D} mD f.
 
 Section integral_mscale.
 Local Open Scope ereal_scope.
@@ -2388,6 +2389,57 @@ rewrite monotone_convergence //.
 Qed.
 
 End integral_cst.
+
+Section transfer.
+Local Open Scope ereal_scope.
+Variables (d1 d2 : _) (X : measurableType d1) (Y : measurableType d2).
+Variables (phi : X -> Y) (mphi : measurable_fun setT phi).
+Variables (R : realType) (mu : {measure set X -> \bar R}).
+
+Lemma integral_pushforward (f : Y -> \bar R) :
+  measurable_fun setT f -> (forall y, 0 <= f y) ->
+  \int[pushforward mu mphi]_y f y = \int[mu]_x (f \o phi) x.
+Proof.
+move=> mf f0.
+have [f_ [ndf_ f_f]] := approximation measurableT mf (fun t _ => f0 t).
+transitivity (lim (fun n => \int[pushforward mu mphi]_x (f_ n x)%:E)).
+  rewrite -monotone_convergence//.
+  - by apply: eq_integral => y _; apply/esym/cvg_lim => //; exact: f_f.
+  - by move=> n; exact/EFin_measurable_fun.
+  - by move=> n y _; rewrite lee_fin.
+  - by move=> y _ m n mn; rewrite lee_fin; apply/lefP/ndf_.
+rewrite (_ : (fun _ => _) = (fun n => \int[mu]_x (EFin \o f_ n \o phi) x)).
+  rewrite -monotone_convergence//; last 3 first.
+    - move=> n /=; apply: measurable_fun_comp; first exact: measurable_fun_EFin.
+      by apply: measurable_fun_comp => //; exact: measurable_sfun.
+    - by move=> n x _ /=; rewrite lee_fin.
+    - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/ndf_.
+  by apply: eq_integral => x _ /=; apply/cvg_lim => //; exact: f_f.
+apply/funext => n.
+have mfnphi r : measurable (f_ n @^-1` [set r] \o phi).
+  rewrite -[_ \o _]/(phi @^-1` (f_ n @^-1` [set r])) -(setTI (_ @^-1` _)).
+  exact/mphi.
+transitivity (\sum_(k <- fset_set (range (f_ n)))
+    \int[mu]_x (k * \1_((f_ n @^-1` [set k]) \o phi) x)%:E).
+  under eq_integral do rewrite fimfunE -sumEFin.
+  rewrite ge0_integral_sum//; last 2 first.
+    - move=> y; apply/EFin_measurable_fun; apply: measurable_funM.
+        exact: measurable_fun_cst.
+      by rewrite (_ : \1_ _ = mindic R (measurable_sfunP (f_ n) y)).
+    - by move=> y x _; rewrite nnfun_muleindic_ge0.
+  apply eq_bigr => r _; rewrite integralM_indic_nnsfun// integral_indic//=.
+  rewrite (integralM_indic _ (fun r => f_ n @^-1` [set r] \o phi))//.
+    by congr (_ * _); rewrite [RHS](@integral_indic).
+  by move=> r0; rewrite preimage_nnfun0.
+rewrite -ge0_integral_sum//; last 2 first.
+  - move=> r; apply/EFin_measurable_fun; apply: measurable_funM.
+      exact: measurable_fun_cst.
+    by rewrite (_ : \1_ _ = mindic R (mfnphi r)).
+  - by move=> r x _; rewrite nnfun_muleindic_ge0.
+by apply eq_integral => x _; rewrite sumEFin -fimfunE.
+Qed.
+
+End transfer.
 
 Section integral_dirac.
 Local Open Scope ereal_scope.

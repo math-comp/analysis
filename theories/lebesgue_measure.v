@@ -1521,6 +1521,9 @@ Qed.
 
 End standard_measurable_fun.
 
+#[global] Hint Extern 0 (measurable_fun _ normr) =>
+  solve [exact: measurable_fun_normr] : core.
+
 Section measurable_fun_realType.
 Variables (d : measure_display) (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> R).
