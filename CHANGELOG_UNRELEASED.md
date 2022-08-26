@@ -39,6 +39,10 @@
   + lemmas `subset_fst_set`, `subset_snd_set`, `fst_set_fst`, `snd_set_snd`,
     `fset_setM`, `snd_setM`, `fst_setMR`
   + lemmas `xsection_snd_set`, `ysection_fst_set`
+  + Hint about `measurable_fun_normr`
+- in `lebesgue_integral.v`:
+  + lemma `integral_pushforward`
+
 
 ### Changed
 
@@ -49,6 +53,10 @@
 - moved from `lebesgue_integral.v` to `classical_sets.v`:
   + `mem_set_pair1` -> `mem_xsection`
   + `mem_set_pair2` -> `mem_ysection`
+- in `lebesgue_measure.v`:
+  + `pushforward` requires a proof that its argument is measurable
+- in `lebesgue_integral.v`:
+  + change implicits of `integralM_indic`
 
 ### Renamed
 
