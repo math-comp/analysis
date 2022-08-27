@@ -2507,6 +2507,18 @@ by move=> /(filterI FAu_) => /filter_ex[t [Au_t u_Bt]]; exists (u_ t).
 Qed.
 Arguments closed_cvg {T V F FF u_} _ _ _ _ _.
 
+Lemma continuous_closedP (S T : topologicalType) (f : S -> T) :
+  continuous f <-> forall A, closed A -> closed (f @^-1` A).
+Proof.
+rewrite continuousP; split=> ctsf A => [clA | oA].
+  by rewrite -openC preimage_setC; apply ctsf; rewrite openC.
+by rewrite -closedC preimage_setC; apply ctsf; rewrite closedC.
+Qed.
+
+Lemma closedU (T : topologicalType) (D E : set T) :
+  closed D -> closed E -> closed (D `|` E).
+Proof. by rewrite -?openC setCU; exact: openI. Qed.
+
 Section closure_lemmas.
 Variable T : topologicalType.
 Implicit Types E A B U : set T.
@@ -5898,6 +5910,20 @@ Proof.
 rewrite openE continuous_subspace_in /= => oA; rewrite propeqE ?in_setP.
 by split => + x /[dup] Ax /oA Aox; rewrite /filter_of /= => /(_ _ Ax);
   rewrite -(nbhs_subspace_interior Aox).
+Qed.
+
+Lemma pasting {U} A B (f : T -> U) : closed A -> closed B -> 
+  {within A, continuous f} -> {within B, continuous f} ->
+  {within A `|` B, continuous f}.
+Proof.
+move=> clA clB ctsA ctsB; apply/continuous_closedP=> W oW.
+case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsA => V1 [oV1 V1W].
+case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsB => V2 [oV2 V2W].
+apply/closed_subspaceP; exists ((V1 `&` A) `|` (V2 `&` B)); split. 
+  by apply: closedU; exact: closedI.
+rewrite [RHS]setIUr -V2W -V1W eqEsubset; split => x.
+  by case=> [][][]?? [] ?;[left | left | right | right]; split.
+by case=> [][]??; split=>[]; [left;split | left | right;split | right ]. 
 Qed.
 
 End SubspaceRelative.
