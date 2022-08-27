@@ -5035,36 +5035,3 @@ Theorem Fubini :
 Proof. by rewrite fubini1 -fubini2. Qed.
 
 End fubini.
-
-Local Open Scope classical_set_scope.
-
-HB.mixin Record IsPath {R : realType} {V : topologicalType} (f : R -> V) :=
-  {
-    cts : {within `[0,1], continuous f}
-  }.
-
-HB.structure Definition Path {R : realType} {V : topologicalType} (B : set V) :=
-  { f of IsFun R V `[0,1] B f & IsPath _ _ f}
-.
-
-HB.mixin Record IsLoop {R : realType} {V : topologicalType} (f : R -> V) :=
-{
-  eqStartEnd : f 0 = f 1
-}.
-
-HB.structure Definition Loop {R : realType} {V : topologicalType} (B : set V) :=
-  { f of Path _ B f & IsLoop R V f}
-.
-
-
-
-
-(*
-
-HB.mixin Record OInv_Inv {aT rT} (f : aT -> rT) of OInv _ _ f := {
-  inv : rT -> aT;
-  oliftV : olift inv = 'oinv_f
-}.
-
-
-*)
