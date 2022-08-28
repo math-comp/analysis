@@ -29,18 +29,28 @@ Local Open Scope ring_scope.
 Notation right_continuous f :=
   (forall x, f%function @ at_right x --> f%function x).
 
+HB.mixin Record isCumulative (R : realType) (f : R -> R) := {
+  cumulative_is_nondecreasing : {homo f : x y / x <= y} ;
+  cumulative_is_right_continuous : right_continuous f }.
+
+#[short(type=cumulative)]
+HB.structure Definition CF (R : realType) := { f of isCumulative R f }.
+
+Arguments cumulative_is_nondecreasing {R} _.
+Arguments cumulative_is_right_continuous {R} _.
+
 Lemma nondecreasing_right_continuousP (R : realType) (a : R) (e : R)
-    (f : R -> R) (ndf : {homo f : x y / x <= y}) (rcf : (right_continuous f)) :
+    (f : cumulative R) :
   e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
 Proof.
-move=> e0; move: rcf => /(_ a)/(@cvg_dist _ [normedModType R of R^o]).
+move=> e0; move: (cumulative_is_right_continuous f) => /(_ a)/(@cvg_dist _ [normedModType R of R^o]).
 move=> /(_ _ e0)[] _ /posnumP[d] => h.
 exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
 rewrite opprD addrA subrr distrC subr0 ger0_norm //.
 rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n => /(_ erefl).
 rewrite ltr_addl divr_gt0// => /(_ erefl).
-rewrite ler0_norm; last by rewrite subr_le0 ndf// ler_addl.
+rewrite ler0_norm; last by rewrite subr_le0 (cumulative_is_nondecreasing f)// ler_addl.
 by rewrite opprB ltr_subl_addl => fa; exact: ltW.
 Qed.
 
@@ -66,8 +76,6 @@ Qed.
 Section hlength.
 Local Open Scope ereal_scope.
 Variables (R : realType) (f : R -> R).
-Hypothesis ndf : {homo f : x y / (x <= y)%R}.
-
 Let g : \bar R -> \bar R := EFinf f.
 
 Implicit Types i j : interval R.
@@ -149,7 +157,7 @@ rewrite hlength_itv; case: i => -[ba a|[]] [bb b|[]] //= => [|_|_|].
 - by right.
 Qed.
 
-Lemma hlength_ge0 i : 0 <= hlength [set` i].
+Lemma hlength_ge0 (ndf : {homo f : x y / (x <= y)%R}) i : 0 <= hlength [set` i].
 Proof.
 rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
 - by rewrite suber_ge0// => /ltW /(nondecreasing_EFinf ndf).
@@ -161,7 +169,7 @@ Local Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 Lemma hlength_Rhull (A : set R) : hlength [set` Rhull A] = hlength A.
 Proof. by rewrite /hlength Rhull_involutive. Qed.
 
-Lemma le_hlength_itv i j :
+Lemma le_hlength_itv (ndf : {homo f : x y / (x <= y)%R}) i j :
   {subset i <= j} -> hlength [set` i] <= hlength [set` j].
 Proof.
 set I := [set` i]; set J := [set` j].
@@ -183,9 +191,10 @@ move=> r [r' Ir' <-{r}]; exists (- r')%R.
 by split => //; exists r' => //; apply: ij.
 Qed.
 
-Lemma le_hlength : {homo hlength : A B / A `<=` B >-> A <= B}.
+Lemma le_hlength (ndf : {homo f : x y / (x <= y)%R}) :
+  {homo hlength : A B / A `<=` B >-> A <= B}.
 Proof.
-move=> a b /le_Rhull /le_hlength_itv.
+move=> a b /le_Rhull /(le_hlength_itv ndf).
 by rewrite (hlength_Rhull a) (hlength_Rhull b).
 Qed.
 
@@ -257,9 +266,7 @@ HB.instance Definition _ :=
 
 Definition itvs_semiRingOfSets := [the semiRingOfSetsType d of ocitv_type].
 
-Variable f : R -> R.
-
-Lemma hlength_semi_additive : semi_additive (hlength f : set ocitv_type -> _).
+Lemma hlength_semi_additive (f : R -> R) : semi_additive (hlength f : set ocitv_type -> _).
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.
@@ -326,7 +333,7 @@ Qed.
 
 Hint Extern 0 (measurable _) => solve [apply: is_ocitv] : core.
 
-Lemma hlength_sigma_finite : sigma_finite [set: ocitv_type] (hlength f).
+Lemma hlength_sigma_finite (f : R -> R) : sigma_finite [set: ocitv_type] (hlength f).
 Proof.
 exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
   apply/esym; rewrite -subTset => /= x _ /=.
@@ -339,23 +346,21 @@ exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
 by move=> k; split => //; rewrite hlength_itv /= -EFinB; case: ifP; rewrite ltey.
 Qed.
 
-Hypothesis ndf : {homo f : x y / (x <= y)%R}.
+Lemma hlength_ge0' (f : cumulative R) (I : set ocitv_type) : (0 <= hlength f I)%E.
+Proof. by rewrite -(hlength0 f) le_hlength//; exact: cumulative_is_nondecreasing. Qed.
 
-Lemma hlength_ge0' (I : set ocitv_type) : (0 <= hlength f I)%E.
-Proof. by rewrite -(hlength0 f) le_hlength. Qed.
-
-HB.instance Definition _ :=
+HB.instance Definition _ (f : cumulative R) :=
   isAdditiveMeasure.Build _ R _ (hlength f : set ocitv_type -> _)
-    hlength_ge0' hlength_semi_additive.
+    (hlength_ge0' f) (hlength_semi_additive f).
 
-Lemma hlength_content_sub_fsum (D : {fset nat}) a0 b0
+Lemma hlength_content_sub_fsum (f : cumulative R) (D : {fset nat}) a0 b0
     (a b : nat -> R) : (forall i, i \in D -> a i <= b i) ->
     `]a0, b0] `<=` \big[setU/set0]_(i <- D) `] a i, b i]%classic ->
   f b0 - f a0 <= \sum_(i <- D) (f (b i) - f (a i)).
 Proof.
 move=> Dab h; have [ab|ab] := leP a0 b0; last first.
-  apply (@le_trans _ _ 0); first by rewrite subr_le0 ndf// ltW.
-  by rewrite big_seq sumr_ge0// => i iD; rewrite subr_ge0 ndf// Dab.
+  apply (@le_trans _ _ 0); first by rewrite subr_le0 cumulative_is_nondecreasing// ltW.
+  by rewrite big_seq sumr_ge0// => i iD; rewrite subr_ge0 cumulative_is_nondecreasing// Dab.
 have mab k :
   [set` D] k -> @measurable d itvs_semiRingOfSets `]a k, b k]%classic by [].
 move: h; rewrite -bigcup_fset.
@@ -368,7 +373,7 @@ rewrite -sumEFin fsbig_finite//= set_fsetK// big_seq [in X in (_ <= X)%E]big_seq
 by apply: lee_sum => i iD; rewrite hlength_itv_bnd// Dab.
 Qed.
 
-Lemma hlength_sigma_sub_additive (rcf : right_continuous f) :
+Lemma hlength_sigma_sub_additive (f : cumulative R) :
   sigma_sub_additive (hlength f : set ocitv_type -> _).
 Proof.
 move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE.
@@ -395,7 +400,7 @@ wlog wlogh : b A AE lebig / forall n, (b n).1 <= (b n).2.
 apply: lee_adde => e.
 rewrite [e%:num]splitr [in leRHS]EFinD addeA -lee_subl_addr//.
 apply: le_trans (epsilon_trick _ _ _) => //=.
-have [c ce] := nondecreasing_right_continuousP a.1 ndf rcf [gt0 of e%:num / 2].
+have [c ce] := nondecreasing_right_continuousP a.1 f [gt0 of e%:num / 2].
 have [D De] : exists D : nat -> {posnum R}, forall i,
     f ((b i).2 + (D i)%:num) <= f ((b i).2) + (e%:num / 2) / 2 ^ i.+1.
   suff : forall i, exists di : {posnum R},
@@ -419,7 +424,7 @@ rewrite -EFinD.
 apply: (@le_trans _ _ (\sum_(i <- X) (hlength f `](b i).1, (b i).2]%classic) +
                        \sum_(i <- X) (f ((b i).2 + (D i)%:num)%R - f (b i).2)%:E)%E).
   apply: (@le_trans _ _ (f a.2 - f (a.1 + c%:num / 2))%:E).
-    rewrite lee_fin -addrA -opprD ler_sub// (le_trans _ ce)// ndf//.
+    rewrite lee_fin -addrA -opprD ler_sub// (le_trans _ ce)// cumulative_is_nondecreasing//.
     by rewrite ler_add2l ler_pdivr_mulr// ler_pmulr// ler1n.
   apply: (@le_trans _ _ (\sum_(i <- X) (f ((b i).2 + (D i)%:num) - f (b i).1)%:E)%E).
     rewrite sumEFin lee_fin hlength_content_sub_fsum//.
@@ -439,17 +444,16 @@ Qed.
 
 Let gitvs := [the measurableType _ of salgebraType ocitv].
 
-Definition lebesgue_stieltjes_measure :=
+Definition lebesgue_stieltjes_measure (f : cumulative R) :=
   Hahn_ext [the additive_measure _ _ of hlength f : set ocitv_type -> _ ].
 
 End itv_semiRingOfSets.
 Arguments lebesgue_stieltjes_measure {R}.
 
 Section lebesgue_stieltjes_measure_itv.
-Variables (d : measure_display) (R : realType) (f : R -> R).
-Hypotheses (ndf : {homo f : x y / x <= y}) (rcf : right_continuous f).
+Variables (d : measure_display) (R : realType) (f : cumulative R).
 
-Let m := lebesgue_stieltjes_measure d f ndf.
+Let m := lebesgue_stieltjes_measure d f.
 
 Let g : \bar R -> \bar R := EFinf f.
 
@@ -460,36 +464,5 @@ rewrite /m /lebesgue_stieltjes_measure /= /Hahn_ext measurable_mu_extE//; last f
   by exists (a, b).
 exact: hlength_sigma_sub_additive.
 Qed.
-
-Lemma set1Ebigcap (x : R) : [set x] = \bigcap_k `](x - k.+1%:R^-1)%R, x]%classic.
-Proof.
-apply/seteqP; split => [_ -> k _ /=|].
-  by rewrite in_itv/= lexx andbT ltr_subl_addl ltr_addr invr_gt0.
-move=> y h; apply/eqP/negPn/negP => yx.
-red in h.
-simpl in h.
-Admitted.
-
-Let lebesgue_stieltjes_measure_set1 (a : R) :
-  m [set a] = ((f a)%:E - (lim (f @ at_left a))%:E)%E.
-Proof.
-rewrite (set1Ebigcap a).
-Admitted.
-
-Let lebesgue_stieltjes_measure_itvoo (a b : R) : a <= b ->
-  m `]a, b[%classic = ((lim (f @ at_left b))%:E - (f a)%:E)%E.
-Proof.
-Admitted.
-
-Let lebesgue_stieltjes_measure_itvcc (a b : R) : a <= b ->
-  m `[a, b]%classic = ((f b)%:E - (lim (f @ at_left a))%:E)%E.
-Proof.
-Admitted.
-
-Let lebesgue_stieltjes_measure_itvco (a b : R) : a <= b ->
-  m `[a, b[%classic = ((lim (f @ at_left b))%:E - (lim (f @ at_left a))%:E)%E.
-Proof.
-Admitted.
-
 
 End lebesgue_stieltjes_measure_itv.
