@@ -5922,8 +5922,8 @@ case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsB => V2 [? V2W].
 apply/closed_subspaceP; exists ((V1 `&` A) `|` (V2 `&` B)); split.
   by apply: closedU; exact: closedI.
 rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
-  by case=> [[][]] ?? [] ?; [left | left | right | right]; split.
-by case=> [][] ??; split=> []; [left; split | left | right; split | right]. 
+  by case=> [[][]] ? ? [] ?; [left | left | right | right]; split.
+by case=> [][] ? ?; split=> []; [left; split | left | right; split | right]. 
 Qed.
 
 End SubspaceRelative.
