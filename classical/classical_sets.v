@@ -2120,7 +2120,7 @@ Lemma inTT_bij [T1 T2 : Type] [f : T1 -> T2] :
   {in [set: T1], bijective f} -> bijective f.
 Proof. by case=> [g /in1TT + /in1TT +]; exists g. Qed.
 
-HB.mixin Record isPointed (T : Type) of Choice T := { point : T }.
+HB.mixin Record isPointed T := { point : T }.
 
 #[short(type=pointedType)]
 HB.structure Definition Pointed := {T of isPointed T & Choice T}.
@@ -2455,7 +2455,7 @@ Hypothesis (Rsucc : forall s, exists t, R s t /\ s <> t /\
 Let Teq := @gen_eqMixin T.
 Let Tch := @gen_choiceMixin T.
 Let Tp : pointedType :=  (* FIXME: use HB.pack *)
-  Pointed.Pack (@Pointed.Class T Tch Teq (isPointed.Axioms_ t0)).
+  Pointed.Pack (@Pointed.Class T (isPointed.Axioms_ t0) Tch Teq).
 Let lub := fun A : {A : set T | total_on A R} =>
   [get t : Tp | (forall s, sval A s -> R s t) /\
     forall r, (forall s, sval A s -> R s r) -> R t r].
@@ -2568,8 +2568,8 @@ Lemma ZL_preorder T (t0 : T) (R : T -> T -> Prop) :
   exists t, premaximal R t.
 Proof.
 set Teq := @gen_eqMixin T; set Tch := @gen_choiceMixin T.
-set Tp : pointedType :=  (* FIXME: use HB.pack *)
-  Pointed.Pack (@Pointed.Class T Tch Teq (isPointed.Axioms_ t0)).
+pose Tpo := isPointed.Build T t0.
+pose Tp : pointedType := HB.pack T Teq Tch Tpo.
 move=> Rrefl Rtrans tot_max.
 set eqR := fun s t => R s t /\ R t s; set ceqR := fun s => [set t | eqR s t].
 have eqR_trans r s t : eqR r s -> eqR s t -> eqR r t.

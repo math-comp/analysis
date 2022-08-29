@@ -615,9 +615,8 @@ Lemma diffZl (k : V -> R) (f : W) x : differentiable k x ->
 Proof.
 move=> df; set g := RHS; have glin : linear g.
   by move=> a u v; rewrite /g linearP /= scalerDl -scalerA.
-pose gaM := GRing.isAdditive.Build _ _ _ (additive_linear glin).
-pose glM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear glin).
-pose gL := GRing.Linear.Pack (GRing.Linear.Class gaM glM).
+pose glM := GRing.linear_isLinear.Build _ _ _ _ _ glin.
+pose gL : GRing.Linear.type _ _ := HB.pack g glM.
 by apply:(@diff_unique _ _ _ gL); have [] := dscalel f df.
 Qed.
 
@@ -802,12 +801,12 @@ Lemma diff_bilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
   continuous (fun p => f p.1 p.2) -> 'd (fun q => f q.1 q.2) p =
   (fun q => f p.1 q.2 + f q.1 p.2) :> (U * V' -> W').
 Proof.
-move=> fc; have lind : linear (fun q => f p.1 q.2 + f q.1 p.2).
-  by move=> ???; rewrite linearPr linearPl scalerDr addrACA.
-pose daM := GRing.isAdditive.Build _ _ _ (additive_linear lind).
-pose dlM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear lind).
-pose dL := GRing.Linear.Pack (GRing.Linear.Class daM dlM).
-have -> : (fun q => f p.1 q.2 + f q.1 p.2) = dL by [].
+pose d q := f p.1 q.2 + f q.1 p.2.
+move=> fc; have lind : linear d.
+  by move=> ???; rewrite /d linearPr linearPl scalerDr addrACA.
+pose dlM := GRing.linear_isLinear.Build _ _ _ _ _ lind.
+pose dL : GRing.Linear.type _ _ := HB.pack d dlM.
+rewrite -/d -[d]/(dL : _ -> _).
 by apply/diff_unique; have [] := dbilin p fc.
 Qed.
 
@@ -887,12 +886,11 @@ Lemma diff_pair (U V' W' : normedModType R) (f : U -> V') (g : U -> W') x :
   (fun y => ('d f x y, 'd g x y)) :> (U -> V' * W').
 Proof.
 move=> df dg.
-have lin_pair : linear (fun y => ('d f x y, 'd g x y)).
-  by move=> ???; rewrite !linearPZ.
-pose pairaM := GRing.isAdditive.Build _ _ _ (additive_linear lin_pair).
-pose pairlM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear lin_pair).
-pose pairL := GRing.Linear.Pack (GRing.Linear.Class pairaM pairlM).
-have -> : (fun y => ('d f x y, 'd g x y)) = pairL by [].
+pose d y := ('d f x y, 'd g x y).
+have lin_pair : linear d by move=> ???; rewrite /d !linearPZ.
+pose pairlM := GRing.linear_isLinear.Build _ _ _ _ _ lin_pair.
+pose pairL : GRing.Linear.type _ _ := HB.pack d pairlM.
+rewrite -/d -[d]/(pairL : _ -> _).
 by apply: diff_unique; have [] := dpair df dg.
 Qed.
 
@@ -1043,25 +1041,22 @@ Qed.
 
 Lemma deriv1E f x : derivable f x 1 -> 'd f x = ( *:%R^~ (f^`() x)) :> (R -> U).
 Proof.
-move=> df; have lin_scal : linear (fun h : R => h *: f^`() x).
-  by move=> ? ? ?; rewrite scalerDl scalerA.
-pose scalaM := GRing.isAdditive.Build _ _ _ (additive_linear lin_scal).
-pose scallM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear lin_scal).
-pose scalL := GRing.Linear.Pack (GRing.Linear.Class scalaM scallM).
-have -> : (fun h => h *: f^`() x) = scalL by [].
+pose d (h : R) := h *: f^`() x.
+move=> df; have lin_scal : linear d by move=> ???; rewrite /d scalerDl scalerA.
+pose scallM := GRing.linear_isLinear.Build _ _ _ _ _ lin_scal.
+pose scalL : GRing.Linear.type _ _ := HB.pack d scallM.
+rewrite -/d -[d]/(scalL : _ -> _).
 by apply: diff_unique; [apply: scalel_continuous|apply: der1].
 Qed.
 
 Lemma diff1E f x :
   differentiable f x -> 'd f x = (fun h => h *: f^`() x) :> (R -> U).
 Proof.
-move=> df; have lin_scal : linear (fun h : R => h *: 'd f x 1).
-  by move=> ? ? ?; rewrite scalerDl scalerA.
-pose scalaM := GRing.isAdditive.Build _ _ _ (additive_linear lin_scal).
-pose scallM := GRing.isLinear.Build _ _ _ _ _ (scalable_linear lin_scal).
-pose scalL := GRing.Linear.Pack (GRing.Linear.Class scalaM scallM).
-have -> : (fun h => h *: f^`() x) = scalL.
-  by rewrite derive1E'.
+pose d (h : R) := h *: 'd f x 1.
+move=> df; have lin_scal : linear d by move=> ???; rewrite /d scalerDl scalerA.
+pose scallM := GRing.linear_isLinear.Build _ _ _ _ _ lin_scal.
+pose scalL : GRing.Linear.type _ _ := HB.pack d scallM.
+have -> : (fun h => h *: f^`() x) = scalL by rewrite derive1E'.
 apply: diff_unique; first exact: scalel_continuous.
 apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).
 by rewrite funeqE => h /=; rewrite -{1}[h]mulr1 linearZ.
