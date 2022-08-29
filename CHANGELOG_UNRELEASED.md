@@ -13,6 +13,8 @@
 
 - in `topology.v`:
   + lemma `near_inftyS`
+  + lemma `continuous_closedP`, `closedU`, `pasting`
+
 - in `sequences.v`:
   + lemmas `contraction_dist`, `contraction_cvg`,
     `contraction_cvg_fixed`, `banach_fixed_point`,
