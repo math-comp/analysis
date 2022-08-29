@@ -277,9 +277,7 @@ split=> [|f g|f g]; rewrite !inE/=.
 Qed.
 HB.instance Definition _ := GRing.isSubringClosed.Build _ mfun
   mfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubZmodule of {mfun aT >-> rT} by <:].
-HB.instance Definition _ := [SubZmodule_isSubRing of {mfun aT >-> rT} by <:].
-HB.instance Definition _ := [SubRing_isSubComRing of {mfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubChoice_isSubComRing of {mfun aT >-> rT} by <:].
 
 Implicit Types (f g : {mfun aT >-> rT}).
 
@@ -417,9 +415,7 @@ Qed.
 
 HB.instance Definition _ := GRing.isSubringClosed.Build _ sfun
   sfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubZmodule of {sfun aT >-> rT} by <:].
-HB.instance Definition _ := [SubZmodule_isSubRing of {sfun aT >-> rT} by <:].
-HB.instance Definition _ := [SubRing_isSubComRing of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubChoice_isSubComRing of {sfun aT >-> rT} by <:].
 
 Implicit Types (f g : {sfun aT >-> rT}).
 
