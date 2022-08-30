@@ -655,13 +655,13 @@ apply: DiffDef; first exact/linear_differentiable/scaler_continuous.
 by rewrite diff_lin //; apply: scaler_continuous.
 Qed.
 
-Global Instance is_diff_scalel (x k : R) :
+Global Instance is_diff_scalel (k : R) (x : V) :
   is_diff k ( *:%R ^~ x) ( *:%R ^~ x).
 Proof.
-have -> : *:%R ^~ x = GRing.scale_linear R x.
-  by rewrite funeqE => ? /=; rewrite [_ *: _]mulrC.
-apply: DiffDef; first exact/linear_differentiable/scaler_continuous.
-by rewrite diff_lin //; apply: scaler_continuous.
+have sx_lin : linear ( *:%R ^~ x) by move=> u y z; rewrite scalerDl scalerA.
+have -> : *:%R ^~ x = Linear sx_lin by rewrite funeqE.
+apply: DiffDef; first exact/linear_differentiable/scalel_continuous.
+by rewrite diff_lin//; apply: scalel_continuous.
 Qed.
 
 Lemma differentiable_coord m n (M : 'M[R]_(m.+1, n.+1)) i j :
@@ -1063,6 +1063,13 @@ Qed.
 Lemma derivableP (U : normedModType R) (f : V -> U) x v :
   derivable f x v -> is_derive x v f ('D_v f x).
 Proof. by move=> df; apply: DeriveDef. Qed.
+
+Lemma diff_derivable (f : V -> W) a v :
+  differentiable f a -> derivable f a v.
+Proof.
+move=> dfa; apply/derivable1P/derivable1_diffP.
+by apply: differentiable_comp; rewrite ?scale0r ?add0r.
+Qed.
 
 Global Instance is_derive_cst (U : normedModType R) (a : U) (x v : V) :
   is_derive x v (cst a) 0.

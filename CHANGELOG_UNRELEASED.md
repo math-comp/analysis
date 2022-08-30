@@ -43,6 +43,8 @@
 - in `lebesgue_integral.v`:
   + lemma `integral_pushforward`
 
+- in `derive.v`:
+  + lemma `diff_derivable`
 
 ### Changed
 
@@ -57,6 +59,8 @@
   + `pushforward` requires a proof that its argument is measurable
 - in `lebesgue_integral.v`:
   + change implicits of `integralM_indic`
+- in `derive.v`:
+  + generalized `is_diff_scalel`
 
 ### Renamed
 
