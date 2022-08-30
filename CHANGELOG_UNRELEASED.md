@@ -62,7 +62,7 @@
 - in `derive.v`:
   + generalized `is_diff_scalel`
 - in `topology.v`:
-  + generalize `continuousP`
+  + generalize `continuousP` and rename to `continuous_inP`
 - in `lebesgue_measure.v`:
   + generalize `continuous_measurable_fun`
 
@@ -90,8 +90,6 @@
 - in `esum.v`:
   + `esum0` -> `esum1`
 
-- in `topology.v`:
-  + `continuousP` -> `continuousTP`
 - in `lebesgue_measure.v`:
   + `continuous_measurable_fun` -> `continuousT_measurable_fun`
 
