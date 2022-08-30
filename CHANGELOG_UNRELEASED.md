@@ -45,6 +45,11 @@
 
 - in `derive.v`:
   + lemma `diff_derivable`
+- in `topology.v`:
+  + lemma `continuous_inP`
+- in `lebesgue_measure.v`:
+  + lemma `open_measurable_subspace`
+  + corollary `open_continuous_measurable_fun`
 
 ### Changed
 
@@ -89,7 +94,6 @@
   + `nnfun_mulem_ge0` -> `nnsfun_mulemu_ge0`
 - in `esum.v`:
   + `esum0` -> `esum1`
-
 - in `lebesgue_measure.v`:
   + `continuous_measurable_fun` -> `continuousT_measurable_fun`
 

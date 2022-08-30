@@ -1733,7 +1733,7 @@ Notation continuous f := (forall x, f%function @ x --> f%function x).
 
 Lemma continuous_inP (S T : topologicalType) (f : S -> T) (D : set S) :
   open D ->
-  {in D, continuous f} <-> (forall A, open A -> open (D `&` f @^-1` A)).
+  {in D, continuous f} <-> forall A, open A -> open (D `&` f @^-1` A).
 Proof.
 move=> oD; split=> [fcont|fcont s /[!inE] sD A].
   rewrite !openE => A Aop s [Ds] /Aop /fcont; rewrite inE => /(_ Ds) fsA.
@@ -1743,7 +1743,7 @@ by exists (D `&` f @^-1` B); split=> [|t [Dt] /BA//]; split => //; exact/fcont.
 Qed.
 
 Lemma continuousP (S T : topologicalType) (f : S -> T) :
-  continuous f <-> (forall A, open A -> open (f @^-1` A)).
+  continuous f <-> forall A, open A -> open (f @^-1` A).
 Proof.
 split=> [cf A oA|cf].
   rewrite -(setTI (_ @^-1` _)).

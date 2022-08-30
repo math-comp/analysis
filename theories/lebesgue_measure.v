@@ -1487,18 +1487,32 @@ move=> q; case: ifPn => // qfab; apply: is_interval_measurable => //.
 exact: is_interval_bigcup_ointsub.
 Qed.
 
-Lemma continuous_measurable_fun (f : R -> R) D :
+Lemma open_measurable_subspace (D : set R) (U : set (subspace D)) :
+  measurable D -> open U -> measurable (D `&` U).
+Proof.
+move=> mD /open_subspaceP [V [oV] VD]; rewrite setIC -VD.
+by apply: measurableI => //; exact: open_measurable.
+Qed.
+
+Lemma continuous_measurable_fun (D : set R) (f : subspace D -> R) :
+  measurable D -> continuous f -> measurable_fun D f.
+Proof.
+move=> mD /continuousP cf; apply: (measurability (RGenOpens.measurableE R)).
+move=> _ [_ [a [b ->] <-]]; apply: open_measurable_subspace => //.
+by exact/cf/interval_open.
+Qed.
+
+Corollary open_continuous_measurable_fun (D : set R) (f : R -> R) :
   open D -> {in D, continuous f} -> measurable_fun D f.
 Proof.
-move=> oD /(continuous_inP _ oD) cf.
-apply: (measurability (RGenOpens.measurableE R)) => _ [_ [a [b ->] <-]].
-by apply: open_measurable; exact/cf/interval_open.
+move=> oD; rewrite -(continuous_open_subspace f oD).
+by apply :continuous_measurable_fun; exact: open_measurable.
 Qed.
 
 Lemma continuousT_measurable_fun (f : R -> R) :
   continuous f -> measurable_fun setT f.
 Proof.
-by move=> cf; apply: continuous_measurable_fun => //; exact: openT.
+by move=> cf; apply: open_continuous_measurable_fun => //; exact: openT.
 Qed.
 
 End coutinuous_measurable.
