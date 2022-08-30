@@ -50,7 +50,7 @@
   + `mem_set_pair1` -> `mem_xsection`
   + `mem_set_pair2` -> `mem_ysection`
 - in `topology.v`:
-  + generalize `continuousP`
+  + generalize `continuousP` and rename to `continuous_inP`
 - in `lebesgue_measure.v`:
   + generalize `continuous_measurable_fun`
 
@@ -78,8 +78,6 @@
 - in `esum.v`:
   + `esum0` -> `esum1`
 
-- in `topology.v`:
-  + `continuousP` -> `continuousTP`
 - in `lebesgue_measure.v`:
   + `continuous_measurable_fun` -> `continuousT_measurable_fun`
 

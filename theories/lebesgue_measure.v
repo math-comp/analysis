@@ -1490,7 +1490,7 @@ Qed.
 Lemma continuous_measurable_fun (f : R -> R) D :
   open D -> {in D, continuous f} -> measurable_fun D f.
 Proof.
-move=> oD /(continuousP _ oD) cf.
+move=> oD /(continuous_inP _ oD) cf.
 apply: (measurability (RGenOpens.measurableE R)) => _ [_ [a [b ->] <-]].
 by apply: open_measurable; exact/cf/interval_open.
 Qed.
