@@ -39,6 +39,11 @@
   + lemmas `subset_fst_set`, `subset_snd_set`, `fst_set_fst`, `snd_set_snd`,
     `fset_setM`, `snd_setM`, `fst_setMR`
   + lemmas `xsection_snd_set`, `ysection_fst_set`
+- in `topology.v`:
+  + lemma `continuous_inP`
+- in `lebesgue_measure.v`:
+  + lemma `open_measurable_subspace`
+  + corollary `open_continuous_measurable_fun`
 
 ### Changed
 
@@ -49,8 +54,6 @@
 - moved from `lebesgue_integral.v` to `classical_sets.v`:
   + `mem_set_pair1` -> `mem_xsection`
   + `mem_set_pair2` -> `mem_ysection`
-- in `topology.v`:
-  + generalize `continuousP` and rename to `continuous_inP`
 - in `lebesgue_measure.v`:
   + generalize `continuous_measurable_fun`
 
@@ -77,7 +80,6 @@
   + `nnfun_mulem_ge0` -> `nnsfun_mulemu_ge0`
 - in `esum.v`:
   + `esum0` -> `esum1`
-
 - in `lebesgue_measure.v`:
   + `continuous_measurable_fun` -> `continuousT_measurable_fun`
 
