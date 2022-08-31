@@ -1007,10 +1007,11 @@ Proof. by move=> /differentiableP df; rewrite diff_val. Qed.
 
 End DifferentialR3_numFieldType.
 
-Section Derive.
-Variables (R : numFieldType) (V W : normedModType R).
+Section DeriveRU.
+Variables (R : numFieldType) (U : normedModType R).
+Implicit Types f : R -> U.
 
-Let der1 (U : normedModType R) (f : R -> U) x : derivable f x 1 ->
+Let der1 f x : derivable f x 1 ->
   f \o shift x = cst (f x) + ( *:%R^~ (f^`() x)) +o_ (0 : R) id.
 Proof.
 move=> df; apply/eqaddoE; have /derivable_nbhsP := df.
@@ -1019,20 +1020,19 @@ have -> : (fun h => (f \o shift x) h%:A) = f \o shift x.
 by rewrite derive1E =>->.
 Qed.
 
-Lemma deriv1E (U : normedModType R) (f : R -> U) x :
-  derivable f x 1 -> 'd f x = ( *:%R^~ (f^`() x)) :> (R -> U).
+Lemma deriv1E f x : derivable f x 1 -> 'd f x = ( *:%R^~ (f^`() x)) :> (R -> U).
 Proof.
 move=> df; have lin_scal : linear (fun h : R => h *: f^`() x).
-  by move=> ???; rewrite scalerDl scalerA.
+  by move=> ? ? ?; rewrite scalerDl scalerA.
 have -> : (fun h => h *: f^`() x) = Linear lin_scal by [].
 by apply: diff_unique; [apply: scalel_continuous|apply: der1].
 Qed.
 
-Lemma diff1E (U : normedModType R) (f : R -> U) x :
+Lemma diff1E f x :
   differentiable f x -> 'd f x = (fun h => h *: f^`() x) :> (R -> U).
 Proof.
 move=> df; have lin_scal : linear (fun h : R => h *: 'd f x 1).
-  by move=> ???; rewrite scalerDl scalerA.
+  by move=> ? ? ?; rewrite scalerDl scalerA.
 have -> : (fun h => h *: f^`() x) = Linear lin_scal.
   by rewrite derive1E'.
 apply: diff_unique; first exact: scalel_continuous.
@@ -1040,8 +1040,7 @@ apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).
 by rewrite funeqE => h /=; rewrite -{1}[h]mulr1 linearZ.
 Qed.
 
-Lemma derivable1_diffP (U : normedModType R) (f : R -> U) x :
-  derivable f x 1 <-> differentiable f x.
+Lemma derivable1_diffP f x : derivable f x 1 <-> differentiable f x.
 Proof.
 split=> dfx.
   by apply/diff_locallyP; rewrite deriv1E //; split;
@@ -1052,7 +1051,13 @@ have -> : (fun h => (f \o shift x) h%:A) = f \o shift x.
 by have /diff_locally := dfx; rewrite diff1E // derive1E =>->.
 Qed.
 
-Lemma derivable1P (U : normedModType R) (f : V -> U) x v :
+End DeriveRU.
+
+Section DeriveVW.
+Variables (R : numFieldType) (V W : normedModType R).
+Implicit Types f : V -> W.
+
+Lemma derivable1P f x v :
   derivable f x v <-> derivable (fun h : R => f (h *: v + x)) 0 1.
 Proof.
 rewrite /derivable; set g1 := fun h => h^-1 *: _; set g2 := fun h => h^-1 *: _.
@@ -1060,26 +1065,32 @@ suff -> : g1 = g2 by [].
 by rewrite funeqE /g1 /g2 => h /=; rewrite addr0 scale0r add0r [_%:A]mulr1.
 Qed.
 
-Lemma derivableP (U : normedModType R) (f : V -> U) x v :
-  derivable f x v -> is_derive x v f ('D_v f x).
+Lemma derivableP f x v : derivable f x v -> is_derive x v f ('D_v f x).
 Proof. by move=> df; apply: DeriveDef. Qed.
 
-Lemma diff_derivable (f : V -> W) a v :
-  differentiable f a -> derivable f a v.
+Lemma diff_derivable f a v : differentiable f a -> derivable f a v.
 Proof.
 move=> dfa; apply/derivable1P/derivable1_diffP.
 by apply: differentiable_comp; rewrite ?scale0r ?add0r.
 Qed.
 
-Global Instance is_derive_cst (U : normedModType R) (a : U) (x v : V) :
-  is_derive x v (cst a) 0.
+Global Instance is_derive_cst (a : W) (x v : V) : is_derive x v (cst a) 0.
 Proof.
 apply: DeriveDef; last by rewrite deriveE // diff_val.
-apply/derivable1P/derivable1_diffP.
-by have -> : (fun h => cst a (h *: v + x)) = cst a by rewrite funeqE.
+exact/diff_derivable.
 Qed.
 
-Fact der_add (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
+Lemma is_derive_eq f (x v : V) (df f' : W) :
+  is_derive x v f f' -> f' = df -> is_derive x v f df.
+Proof. by move=> ? <-. Qed.
+
+End DeriveVW.
+
+Section Derive_lemmasVW.
+Variables (R : numFieldType) (V W : normedModType R).
+Implicit Types f g : V -> W.
+
+Fact der_add f g (x v : V) : derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f + g) \o shift x) (h *: v) - (f + g) x)) @
   0^'  --> 'D_v f x + 'D_v g x.
 Proof.
@@ -1090,50 +1101,50 @@ evar (fg : R -> W); rewrite [X in X @ _](_ : _ = fg) /=; last first.
 exact: cvgD.
 Qed.
 
-Lemma deriveD (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
+Lemma deriveD f g (x v : V) : derivable f x v -> derivable g x v ->
   'D_v (f + g) x = 'D_v f x + 'D_v g x.
 Proof. by move=> df dg; apply: cvg_map_lim (der_add df dg). Qed.
 
-Lemma derivableD (f g : V -> W) (x v : V) :
+Lemma derivableD f g (x v : V) :
   derivable f x v -> derivable g x v -> derivable (f + g) x v.
 Proof.
 move=> df dg; apply/cvg_ex; exists (derive f x v + derive g x v).
 exact: der_add.
 Qed.
 
-Global Instance is_deriveD (f g : V -> W) (x v : V) (df dg : W) :
+Global Instance is_deriveD f g (x v : V) (df dg : W) :
   is_derive x v f df -> is_derive x v g dg -> is_derive x v (f + g) (df + dg).
 Proof.
 move=> dfx dgx; apply: DeriveDef; first exact: derivableD.
 by rewrite deriveD // !derive_val.
 Qed.
 
-Global Instance is_derive_sum n (f : 'I_n -> V -> W) (x v : V)
-  (df : 'I_n -> W) : (forall i, is_derive x v (f i) (df i)) ->
-  is_derive x v (\sum_(i < n) f i) (\sum_(i < n) df i).
+Global Instance is_derive_sum n (h : 'I_n -> V -> W) (x v : V)
+  (dh : 'I_n -> W) : (forall i, is_derive x v (h i) (dh i)) ->
+  is_derive x v (\sum_(i < n) h i) (\sum_(i < n) dh i).
 Proof.
-elim: n f df => [f df dfx|f df dfx n ihn].
+elim: n h dh => [h dh dhx|h dh dhx n ihn].
   by rewrite !big_ord0 //; apply: is_derive_cst.
 by rewrite !big_ord_recr /=; apply: is_deriveD.
 Qed.
 
-Lemma derivable_sum n (f : 'I_n -> V -> W) (x v : V) :
-  (forall i, derivable (f i) x v) -> derivable (\sum_(i < n) f i) x v.
+Lemma derivable_sum n (h : 'I_n -> V -> W) (x v : V) :
+  (forall i, derivable (h i) x v) -> derivable (\sum_(i < n) h i) x v.
 Proof.
-move=> df; suff : forall i, is_derive x v (f i) ('D_v (f i) x) by [].
+move=> df; suff : forall i, is_derive x v (h i) ('D_v (h i) x) by [].
 by move=> ?; apply: derivableP.
 Qed.
 
-Lemma derive_sum n (f : 'I_n -> V -> W) (x v : V) :
-  (forall i, derivable (f i) x v) ->
-  'D_v (\sum_(i < n) f i) x = \sum_(i < n) 'D_v (f i) x.
+Lemma derive_sum n (h : 'I_n -> V -> W) (x v : V) :
+  (forall i, derivable (h i) x v) ->
+  'D_v (\sum_(i < n) h i) x = \sum_(i < n) 'D_v (h i) x.
 Proof.
-move=> df; suff dfx : forall i, is_derive x v (f i) ('D_v (f i) x).
+move=> df; suff dfx : forall i, is_derive x v (h i) ('D_v (h i) x).
   by rewrite derive_val.
 by move=> ?; apply: derivableP.
 Qed.
 
-Fact der_opp (f : V -> W) (x v : V) : derivable f x v ->
+Fact der_opp f (x v : V) : derivable f x v ->
   (fun h => h^-1 *: (((- f) \o shift x) (h *: v) - (- f) x)) @
   0^' --> - 'D_v f x.
 Proof.
@@ -1142,65 +1153,67 @@ move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
 exact: cvgN.
 Qed.
 
-Lemma deriveN (f : V -> W) (x v : V) : derivable f x v ->
+Lemma deriveN f (x v : V) : derivable f x v ->
   'D_v (- f) x = - 'D_v f x.
 Proof. by move=> df; apply: cvg_map_lim (der_opp df). Qed.
 
-Lemma derivableN (f : V -> W) (x v : V) :
+Lemma derivableN f (x v : V) :
   derivable f x v -> derivable (- f) x v.
 Proof. by move=> df; apply/cvg_ex; exists (- 'D_v f x); apply: der_opp. Qed.
 
-Global Instance is_deriveN (f : V -> W) (x v : V) (df : W) :
+Global Instance is_deriveN f (x v : V) (df : W) :
   is_derive x v f df -> is_derive x v (- f) (- df).
 Proof.
 move=> dfx; apply: DeriveDef; first exact: derivableN.
 by rewrite deriveN // derive_val.
 Qed.
 
-Lemma is_derive_eq (V' W' : normedModType R) (f : V' -> W') (x v : V')
-  (df f' : W') : is_derive x v f f' -> f' = df -> is_derive x v f df.
-Proof. by move=> ? <-. Qed.
-
-Global Instance is_deriveB (f g : V -> W) (x v : V) (df dg : W) :
+Global Instance is_deriveB f g (x v : V) (df dg : W) :
   is_derive x v f df -> is_derive x v g dg -> is_derive x v (f - g) (df - dg).
 Proof. by move=> ??; apply: is_derive_eq. Qed.
 
-Lemma deriveB (f g : V -> W) (x v : V) : derivable f x v -> derivable g x v ->
+Lemma deriveB f g (x v : V) : derivable f x v -> derivable g x v ->
   'D_v (f - g) x = 'D_v f x - 'D_v g x.
 Proof. by move=> /derivableP df /derivableP dg; rewrite derive_val. Qed.
 
-Lemma derivableB (f g : V -> W) (x v : V) :
+Lemma derivableB f g (x v : V) :
   derivable f x v -> derivable g x v -> derivable (f - g) x v.
 Proof. by move=> /derivableP df /derivableP dg. Qed.
 
-Fact der_scal (f : V -> W) (k : R) (x v : V) : derivable f x v ->
+Fact der_scal f (k : R) (x v : V) : derivable f x v ->
   (fun h => h^-1 *: ((k \*: f \o shift x) (h *: v) - (k \*: f) x)) @
   (0 : R)^' --> k *: 'D_v f x.
 Proof.
-move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
-  rewrite funeqE => h.
-  by rewrite scalerBr !scalerA mulrC -!scalerA -!scalerBr /g.
+move=> df; evar (h : R -> W); rewrite [X in X @ _](_ : _ = h) /=; last first.
+  rewrite funeqE => r.
+  by rewrite scalerBr !scalerA mulrC -!scalerA -!scalerBr /h.
 exact: cvgZr.
 Qed.
 
-Lemma deriveZ (f : V -> W) (k : R) (x v : V) : derivable f x v ->
+Lemma deriveZ f (k : R) (x v : V) : derivable f x v ->
   'D_v (k \*: f) x = k *: 'D_v f x.
 Proof. by move=> df; apply: cvg_map_lim (der_scal df). Qed.
 
-Lemma derivableZ (f : V -> W) (k : R) (x v : V) :
+Lemma derivableZ f (k : R) (x v : V) :
   derivable f x v -> derivable (k \*: f) x v.
 Proof.
 by move=> df; apply/cvg_ex; exists (k *: 'D_v f x); apply: der_scal.
 Qed.
 
-Global Instance is_deriveZ (f : V -> W) (k : R) (x v : V) (df : W) :
+Global Instance is_deriveZ f (k : R) (x v : V) (df : W) :
   is_derive x v f df -> is_derive x v (k \*: f) (k *: df).
 Proof.
 move=> dfx; apply: DeriveDef; first exact: derivableZ.
 by rewrite deriveZ // derive_val.
 Qed.
 
-Fact der_mult (f g : V -> R) (x v : V) :
+End Derive_lemmasVW.
+
+Section Derive_lemmasVR.
+Variables (R : numFieldType) (V : normedModType R).
+Implicit Types f g : V -> R.
+
+Fact der_mult f g (x v : V) :
   derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f * g) \o shift x) (h *: v) - (f * g) x)) @
   (0 : R)^' --> f x *: 'D_v g x + g x *: 'D_v f x.
@@ -1217,22 +1230,21 @@ apply: cvgD; last exact: cvgZr df.
 apply: cvg_comp2 (@mul_continuous _ (_, _)) => /=; last exact: dg.
 suff : {for 0, continuous (fun h : R => f(h *: v + x))}.
   by move=> /continuous_withinNx; rewrite scale0r add0r.
-exact/differentiable_continuous/derivable1_diffP/derivable1P.
+exact/differentiable_continuous/derivable1_diffP/(derivable1P _ _ _).1.
 Qed.
 
-Lemma deriveM (f g : V -> R) (x v : V) :
-  derivable f x v -> derivable g x v ->
+Lemma deriveM f g (x v : V) : derivable f x v -> derivable g x v ->
   'D_v (f * g) x = f x *: 'D_v g x + g x *: 'D_v f x.
 Proof. by move=> df dg; apply: cvg_map_lim (der_mult df dg). Qed.
 
-Lemma derivableM (f g : V -> R) (x v : V) :
+Lemma derivableM f g (x v : V) :
   derivable f x v -> derivable g x v -> derivable (f * g) x v.
 Proof.
 move=> df dg; apply/cvg_ex; exists (f x *: 'D_v g x + g x *: 'D_v f x).
 exact: der_mult.
 Qed.
 
-Global Instance is_deriveM (f g : V -> R) (x v : V) (df dg : R) :
+Global Instance is_deriveM f g (x v : V) (df dg : R) :
   is_derive x v f df -> is_derive x v g dg ->
   is_derive x v (f * g) (f x *: dg + g x *: df).
 Proof.
@@ -1240,7 +1252,7 @@ move=> dfx dgx; apply: DeriveDef; first exact: derivableM.
 by rewrite deriveM // !derive_val.
 Qed.
 
-Global Instance is_deriveX (f : V -> R) n (x v : V) (df : R) :
+Global Instance is_deriveX f n (x v : V) (df : R) :
   is_derive x v f df -> is_derive x v (f ^+ n.+1) ((n.+1%:R * f x ^+n) *: df).
 Proof.
 move=> dfx; elim: n => [|n ihn]; first by rewrite expr1 expr0 mulr1 scale1r.
@@ -1249,17 +1261,14 @@ rewrite scalerA -scalerDl mulrCA -[f x * _]exprS.
 by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
 Qed.
 
-Lemma derivableX (f : V -> R) n (x v : V) :
-  derivable f x v -> derivable (f ^+ n.+1) x v.
+Lemma derivableX f n (x v : V) : derivable f x v -> derivable (f ^+ n.+1) x v.
 Proof. by move/derivableP. Qed.
 
-Lemma deriveX (f : V -> R) n (x v : V) :
-  derivable f x v ->
+Lemma deriveX f n (x v : V) : derivable f x v ->
   'D_v (f ^+ n.+1) x = (n.+1%:R * f x ^+ n) *: 'D_v f x.
 Proof. by move=> /derivableP df; rewrite derive_val. Qed.
 
-Fact der_inv (f : V -> R) (x v : V) :
-  f x != 0 -> derivable f x v ->
+Fact der_inv f (x v : V) : f x != 0 -> derivable f x v ->
   (fun h => h^-1 *: (((fun y => (f y)^-1) \o shift x) (h *: v) - (f x)^-1)) @
   (0 : R)^' --> - (f x) ^-2 *: 'D_v f x.
 Proof.
@@ -1288,22 +1297,21 @@ rewrite -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
 by rewrite mulrC -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
 Unshelve. all: by end_near. Qed.
 
-Lemma deriveV (f : V -> R) x v : f x != 0 -> derivable f x v ->
+Lemma deriveV f x v : f x != 0 -> derivable f x v ->
   'D_v (fun y => (f y)^-1) x = - (f x) ^- 2 *: 'D_v f x.
 Proof. by move=> fxn0 df; apply: cvg_map_lim (der_inv fxn0 df). Qed.
 
-Lemma derivableV (f : V -> R) (x v : V) :
+Lemma derivableV f (x v : V) :
   f x != 0 -> derivable f x v -> derivable (fun y => (f y)^-1) x v.
 Proof.
 move=> df dg; apply/cvg_ex; exists (- (f x) ^- 2 *: 'D_v f x).
 exact: der_inv.
 Qed.
 
-End Derive.
-
-Lemma derive1_cst (R : numFieldType) (V : normedModType R) (k : V) t :
-  (cst k)^`() t = 0.
+Lemma derive1_cst (k : V) t : (cst k)^`() t = 0.
 Proof. by rewrite derive1E derive_val. Qed.
+
+End Derive_lemmasVR.
 
 Lemma EVT_max (R : realType) (f : R -> R) (a b : R) : (* TODO : Filter not infered *)
   a <= b -> {within `[a, b], continuous f} -> exists2 c, c \in `[a, b]%R &
@@ -1576,13 +1584,10 @@ Section is_derive_instances.
 Variables (R : numFieldType) (V : normedModType R).
 
 Lemma derivable_cst (x : V) : derivable (fun=> x) 0 1.
-Proof. exact/derivable1_diffP/differentiable_cst. Qed.
+Proof. exact/diff_derivable. Qed.
 
 Lemma derivable_id (x v : V) : derivable id x v.
-Proof.
-apply/derivable1P/derivableD; last exact/derivable_cst.
-exact/derivable1_diffP/differentiableZl.
-Qed.
+Proof. exact/diff_derivable. Qed.
 
 Global Instance is_derive_id (x v : V) : is_derive x v id v.
 Proof.
@@ -1591,7 +1596,7 @@ by rewrite deriveE// (@diff_lin _ _ _ [linear of idfun]).
 Qed.
 
 Global Instance is_deriveNid (x v : V) : is_derive x v -%R (- v).
-Proof. by apply: is_deriveN. Qed.
+Proof. exact: is_deriveN. Qed.
 
 End is_derive_instances.
 
