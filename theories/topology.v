@@ -6107,13 +6107,6 @@ case: (y in _ @[_ --> y]) / (nbhs_subspaceP x) => Ax.
 by move=> ? /nbhs_singleton //= ?; rewrite nbhs_simpl => ? ->.
 Qed.
 
-Lemma subspace_eq_continuous {S : topologicalType} (f g : subspace A -> S) :
-  {in A, f =1 g} -> continuous f -> continuous g.
-Proof.
-rewrite ?subspace_continuousP=> feq L x Ax; rewrite -(feq x) ?inE //.
-by apply: cvg_trans _ (L x Ax); apply: fmap_within_eq=> ? ?; rewrite feq.
-Qed.
-
 Lemma continuous_subspace_in {U : topologicalType} (f : subspace A -> U) :
   continuous f = {in A, continuous f}.
 Proof.
@@ -6299,6 +6292,17 @@ Section SubspaceRelative.
 Context {T : topologicalType}.
 Implicit Types (U : topologicalType) (A B : set T).
 
+Lemma subspace_eq_continuous {U} A (f g : T -> U) :
+  {in A, f =1 g} -> {within A, continuous f} -> {within A, continuous g}.
+Proof.
+rewrite ?subspace_continuousP=> feq L x Ax; rewrite -(feq x) ?inE //.
+by apply: cvg_trans _ (L x Ax); apply: fmap_within_eq=> ? ?; rewrite feq.
+Qed.
+
+Lemma within_continuousE {U} A (f : T -> U) :
+  {within A, continuous f} = continuous (f : subspace A -> U).
+Proof. done. Qed.
+
 Lemma nbhs_subspace_subset A B (x : T) :
   A `<=` B -> nbhs (x : subspace B) `<=` nbhs (x : subspace A).
 Proof.
@@ -6346,6 +6350,13 @@ move=> ctsf; rewrite continuous_subspace_in => ? ?.
 exact: continuous_in_subspaceT.
 Qed.
 
+Lemma continuous_subspaceTE {U} (f : T -> U) : 
+  {within [set: T], continuous f} = continuous f.
+Proof. 
+rewrite propeqE; split; last exact: continuous_subspaceT. 
+by move=> + x Q nQ /= => /(_ x Q nQ) /=; rewrite nbhs_simpl /= ?nbhs_subspaceT.
+Qed.
+
 Lemma continuous_open_subspace {U} A (f : T -> U) :
   open A -> {within A, continuous f} = {in A, continuous f}.
 Proof.
@@ -6376,10 +6387,12 @@ rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
 by case=> [][] ? ?; split=> []; [left; split | left | right; split | right].
 Qed.
 
-Lemma subspaceT_continuous {U} A (B : set U) (f : {fun A >-> B}) :
-  {within A, continuous f} -> continuous (f : subspace A -> subspace B).
+Lemma subspaceT_continuous {U} A (B : set U) (f : T -> U) :
+  set_fun A B f ->
+  {within A, continuous f} -> 
+  continuous (f : subspace A -> subspace B).
 Proof.
-move=> /continuousP ctsf; apply/continuousP => O /open_subspaceP [V [oV VBOB]].
+move=> funS /continuousP ctsf; apply/continuousP => O /open_subspaceP [V [oV VBOB]].
 rewrite -open_subspaceIT; apply/open_subspaceP.
 case/open_subspaceP: (ctsf _ oV) => W [oW fVA]; exists W; split => //.
 rewrite fVA -setIA setIid eqEsubset; split => x [fVx Ax]; split => //.
