@@ -2127,7 +2127,7 @@ move=> N_gt0 P [n _ Pn]; exists (n * N)%N => //= m.
 by rewrite /= -leq_divRL//; apply: Pn.
 Qed.
 
-Lemma near_inftyS (P : set nat) : 
+Lemma near_inftyS (P : set nat) :
   (\forall x \near \oo, P (S x)) -> (\forall x \near \oo, P x).
 Proof. case=> N _ NPS; exists (S N) => // [[]]; rewrite /= ?ltn0 //. Qed.
 
@@ -5703,6 +5703,29 @@ Lemma closed_subspaceW (U : set T) :
   closed (U : set T) -> closed (U : set (subspace A)).
 Proof.  by move=> /closed_openC/open_subspaceW/open_closedC; rewrite setCK. Qed.
 
+Lemma open_setIS (U : set (subspace A)) : open A ->
+  open (U `&` A : set T) = open U.
+Proof.
+move=> oA; apply/propext; rewrite open_subspaceP.
+split=> [|[V [oV <-]]]; last exact: openI.
+by move=> oUA; exists (U `&` A); rewrite -setIA setIid.
+Qed.
+
+Lemma open_setSI (U : set (subspace A)) : open A -> open (A `&` U) = open U.
+Proof. by move=> oA; rewrite -setIC open_setIS. Qed.
+
+Lemma closed_setIS (U : set (subspace A)) : closed A ->
+  closed (U `&` A : set T) = closed U.
+Proof.
+move=> oA; apply/propext; rewrite closed_subspaceP.
+split=> [|[V [oV <-]]]; last exact: closedI.
+by move=> oUA; exists (U `&` A); rewrite -setIA setIid.
+Qed.
+
+Lemma closed_setSI (U : set (subspace A)) :
+  closed A -> closed (A `&` U) = closed U.
+Proof. by move=> oA; rewrite -setIC closed_setIS. Qed.
+
 Lemma closure_subspaceW (U : set T) :
   U `<=` A -> closure (U : set (subspace A)) = closure (U : set T) `&` A.
 Proof.
@@ -5740,6 +5763,92 @@ by apply: filterI; rewrite nbhs_simpl //; exact: Fp.
 Qed.
 
 End Subspace.
+
+Global Instance subspace_filter {T : topologicalType}
+     (A : set T) (x : subspace A) :
+   Filter (nbhs_subspace x) := nbhs_subspace_filter x.
+
+Global Instance subspace_proper_filter {T : topologicalType}
+     (A : set T) (x : subspace A) :
+   ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
+
+Notation "{ 'within'  A , 'continuous'  f }" :=
+  (continuous (f : (subspace A) -> _)).
+
+Section SubspaceRelative.
+Context {T : topologicalType}.
+Implicit Types (U : topologicalType) (A B : set T).
+
+Lemma nbhs_subspace_subset A B (x : T) :
+  A `<=` B -> nbhs (x : subspace B) `<=` nbhs (x : subspace A).
+Proof.
+rewrite /nbhs //= => AB; case: (nbhs_subspaceP A); case: (nbhs_subspaceP B).
+- by move=> ? ?; apply: within_subset => //=; exact: (nbhs_filter x).
+- by move=> ? /AB.
+- by move=> Bx ? W /nbhs_singleton /(_ Bx) ? ? ->.
+- by move=> ? ?.
+Qed.
+
+Lemma continuous_subspaceW {U} A B (f : T -> U) :
+  A `<=` B ->
+  {within B, continuous f} -> {within A, continuous f}.
+Proof.
+by move=> ? ctsF ? ? ?; apply: (@nbhs_subspace_subset A B) => //; exact: ctsF.
+Qed.
+
+Lemma nbhs_subspaceT (x : T) : nbhs (x : subspace setT) = nbhs x.
+Proof.
+rewrite {1}/nbhs //=; have [_|] := nbhs_subspaceP (@setT T); last by cbn.
+rewrite eqEsubset withinE; split => [W [V nbhsV]|W ?]; last by exists W.
+by rewrite 2!setIT => ->.
+Qed.
+
+Lemma continuous_subspaceT_for {U} A (f : T -> U) (x : T) :
+  A x -> {for x, continuous f} -> {for x, continuous (f : subspace A -> U)}.
+Proof.
+rewrite /filter_of/nbhs/=/prop_for => inA ctsf.
+have [_|//] := nbhs_subspaceP A x.
+apply: (cvg_trans _ ctsf); apply: cvg_fmap2; apply: cvg_within.
+by rewrite /subspace; exact: nbhs_filter.
+Qed.
+
+Lemma continuous_subspaceT {U} A (f : T -> U) :
+  {in A, continuous f} -> {within A, continuous f}.
+Proof.
+rewrite continuous_subspace_in ?in_setP => ctsf t At.
+by apply continuous_subspaceT_for => //=; apply: ctsf.
+Qed.
+
+Lemma continuous_open_subspace {U} A (f : T -> U) :
+  open A -> {within A, continuous f} = {in A, continuous f}.
+Proof.
+rewrite openE continuous_subspace_in /= => oA; rewrite propeqE ?in_setP.
+by split => + x /[dup] Ax /oA Aox; rewrite /filter_of /= => /(_ _ Ax);
+  rewrite -(nbhs_subspace_interior Aox).
+Qed.
+
+Lemma continuous_inP {U} A (f : T -> U) : open A ->
+  {in A, continuous f} <-> forall X, open X -> open (A `&` f @^-1` X).
+Proof.
+move=> oA; rewrite -continuous_open_subspace// continuousP.
+by under eq_forall do rewrite -open_setSI//.
+Qed.
+
+Lemma pasting {U} A B (f : T -> U) : closed A -> closed B ->
+  {within A, continuous f} -> {within B, continuous f} ->
+  {within A `|` B, continuous f}.
+Proof.
+move=> ? ? ctsA ctsB; apply/continuous_closedP => W oW.
+case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsA => V1 [? V1W].
+case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsB => V2 [? V2W].
+apply/closed_subspaceP; exists ((V1 `&` A) `|` (V2 `&` B)); split.
+  by apply: closedU; exact: closedI.
+rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
+  by case=> [[][]] ? ? [] ?; [left | left | right | right]; split.
+by case=> [][] ? ?; split=> []; [left; split | left | right; split | right].
+Qed.
+
+End SubspaceRelative.
 
 Section SubspaceUniform.
 Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
@@ -5848,85 +5957,6 @@ Canonical subspace_pseudoMetricType :=
   PseudoMetricType (subspace A)  subspace_pseudoMetricType_mixin.
 
 End SubspacePseudoMetric.
-
-Global Instance subspace_filter {T : topologicalType}
-     (A : set T) (x : subspace A) :
-   Filter (nbhs_subspace x) := nbhs_subspace_filter x.
-
-Global Instance subspace_proper_filter {T : topologicalType}
-     (A : set T) (x : subspace A) :
-   ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
-
-Notation "{ 'within'  A , 'continuous'  f }" :=
-  (continuous (f : (subspace A) -> _)).
-
-Section SubspaceRelative.
-Context {T : topologicalType}.
-Implicit Types (U : topologicalType) (A B : set T).
-
-Lemma nbhs_subspace_subset A B (x : T) :
-  A `<=` B -> nbhs (x : subspace B) `<=` nbhs (x : subspace A).
-Proof.
-rewrite /nbhs //= => AB; case: (nbhs_subspaceP A); case: (nbhs_subspaceP B).
-- by move=> ? ?; apply: within_subset => //=; exact: (nbhs_filter x).
-- by move=> ? /AB.
-- by move=> Bx ? W /nbhs_singleton /(_ Bx) ? ? ->.
-- by move=> ? ?.
-Qed.
-
-Lemma continuous_subspaceW {U} A B (f : T -> U) :
-  A `<=` B ->
-  {within B, continuous f} -> {within A, continuous f}.
-Proof.
-by move=> ? ctsF ? ? ?; apply: (@nbhs_subspace_subset A B) => //; exact: ctsF.
-Qed.
-
-Lemma nbhs_subspaceT (x : T) : nbhs (x : subspace setT) = nbhs (x) .
-Proof.
-rewrite {1}/nbhs //=; have [_|] := nbhs_subspaceP (@setT T); last by cbn.
-rewrite eqEsubset withinE; split => [W [V nbhsV]|W ?]; last by exists W.
-by rewrite 2!setIT => ->.
-Qed.
-
-Lemma continuous_subspaceT_for {U} A (f : T -> U) (x : T) :
-  A x -> {for x, continuous f} -> {for x, continuous (f : subspace A -> U)}.
-Proof.
-rewrite /filter_of/nbhs/=/prop_for => inA ctsf.
-have [_|//] := nbhs_subspaceP A x.
-apply: (cvg_trans _ ctsf); apply: cvg_fmap2; apply: cvg_within.
-by rewrite /subspace; exact: nbhs_filter.
-Qed.
-
-Lemma continuous_subspaceT {U} A (f : T -> U) :
-  {in A, continuous f} -> {within A, continuous f}.
-Proof.
-rewrite continuous_subspace_in ?in_setP => ctsf t At.
-by apply continuous_subspaceT_for => //=; apply: ctsf.
-Qed.
-
-Lemma continuous_open_subspace {U} A (f : T -> U) :
-  @open T A -> {within A, continuous f} = {in A, continuous f}.
-Proof.
-rewrite openE continuous_subspace_in /= => oA; rewrite propeqE ?in_setP.
-by split => + x /[dup] Ax /oA Aox; rewrite /filter_of /= => /(_ _ Ax);
-  rewrite -(nbhs_subspace_interior Aox).
-Qed.
-
-Lemma pasting {U} A B (f : T -> U) : closed A -> closed B ->
-  {within A, continuous f} -> {within B, continuous f} ->
-  {within A `|` B, continuous f}.
-Proof.
-move=> ? ? ctsA ctsB; apply/continuous_closedP => W oW.
-case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsA => V1 [? V1W].
-case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsB => V2 [? V2W].
-apply/closed_subspaceP; exists ((V1 `&` A) `|` (V2 `&` B)); split.
-  by apply: closedU; exact: closedI.
-rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
-  by case=> [[][]] ? ? [] ?; [left | left | right | right]; split.
-by case=> [][] ? ?; split=> []; [left; split | left | right; split | right]. 
-Qed.
-
-End SubspaceRelative.
 
 Lemma continuous_compact {T U : topologicalType} (f : T -> U) A :
   {within A, continuous f} -> compact A -> compact (f @` A).

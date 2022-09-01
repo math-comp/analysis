@@ -45,6 +45,14 @@
 
 - in `derive.v`:
   + lemma `diff_derivable`
+- in `topology.v`:
+  + lemma `continuous_inP`
+- in `lebesgue_measure.v`:
+  + lemma `open_measurable_subspace`
+  + lemma ``subspace_continuous_measurable_fun``
+  + corollary `open_continuous_measurable_fun`
+- in `topology.v`:
+  + lemmas `open_setIS`, `open_setSI`, `closed_setIS`, `closed_setSI`
 
 ### Changed
 
