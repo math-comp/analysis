@@ -42,7 +42,7 @@ apply/prod_measurable_funP => /=; split.
 exact: measurable_fun_fst.
 Qed.
 
-Lemma onem1 (R : numDomainType) (p : R) : (p + `1- p = 1)%R.
+Lemma onem1' (R : numDomainType) (p : R) : (p + `1- p = 1)%R.
 Proof. by rewrite /onem addrCA subrr addr0. Qed.
 
 Lemma onem_nonneg_proof (R : numDomainType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R) :
@@ -68,7 +68,7 @@ Local Close Scope ring_scope.
 Let mbernoulli_setT : mbernoulli [set: _] = 1.
 Proof.
 rewrite /mbernoulli/= /measure_add/= /msum 2!big_ord_recr/= big_ord0 add0e/=.
-by rewrite /mscale/= !diracE !in_setT !mule1 -EFinD onem1.
+by rewrite /mscale/= !diracE !in_setT !mule1 -EFinD onem1'.
 Qed.
 
 HB.instance Definition _ := @isProbability.Build _ _ R mbernoulli mbernoulli_setT.
@@ -81,35 +81,25 @@ Section mscore.
 Variables (d : _) (T : measurableType d).
 Variables (R : realType) (f : T -> R).
 
-Definition mscore t (U : set unit) : \bar R :=
-  if U == set0 then 0 else `| (f t)%:E |.
+Definition mscore t : {measure set _ -> \bar R} :=
+  let p := NngNum (@normr_ge0 _ _ (`| f t |)%R) in
+  [the measure _ _ of mscale p [the measure _ _ of dirac tt]].
 
-Let mscore0 t : mscore t (set0 : set unit) = 0 :> \bar R.
-Proof. by rewrite /mscore eqxx. Qed.
-
-Let mscore_ge0 t U : 0 <= mscore t U.
-Proof. by rewrite /mscore; case: ifP. Qed.
-
-Let mscore_sigma_additive t : semi_sigma_additive (mscore t).
+Lemma mscoreE t U : mscore t U = if U == set0 then 0 else `| (f t)%:E |.
 Proof.
-move=> /= F mF tF mUF; rewrite /mscore; case: ifPn => [/eqP/bigcup0P F0|].
-  rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
-  apply/funext => k.
-  under eq_bigr do rewrite F0// eqxx.
-  by rewrite big1.
-move=> /eqP/bigcup0P/existsNP[k /not_implyP[_ /eqP Fk0]].
-rewrite -(cvg_shiftn k.+1)/=.
-rewrite (_ : (fun _ => _) = cst `|(f t)%:E|); first exact: cvg_cst.
-apply/funext => n.
-rewrite big_mkord (bigD1 (widen_ord (leq_addl n _) (Ordinal (ltnSn k))))//=.
-rewrite (negbTE Fk0) big1 ?adde0// => i/= ik; rewrite ifT//.
-have [/eqP//|Fitt] := set_unit (F i).
-move/trivIsetP : tF => /(_ i k Logic.I Logic.I ik).
-by rewrite Fitt setTI => /eqP; rewrite (negbTE Fk0).
+rewrite /mscore/= /mscale/=; have [->|->] := set_unit U.
+  by rewrite eqxx diracE in_set0 mule0.
+rewrite diracE in_setT mule1 ifF// ?normr_id//.
+by apply/negbTE/set0P; exists tt.
 Qed.
 
-HB.instance Definition _ (t : T) := isMeasure.Build _ _ _
-  (mscore t) (mscore0 t) (mscore_ge0 t) (@mscore_sigma_additive t).
+Lemma measurable_fun_mscore U : measurable_fun setT f ->
+  measurable_fun setT (mscore ^~ U).
+Proof.
+move=> mr; under eq_fun do rewrite mscoreE/=.
+have [U0|U0] := eqVneq U set0; first exact: measurable_fun_cst.
+by apply: measurable_fun_comp => //; exact: measurable_fun_comp.
+Qed.
 
 End mscore.
 
@@ -138,39 +128,34 @@ Lemma k_sigma_additive i t : semi_sigma_additive (k mr i t).
 Proof.
 move=> /= F mF tF mUF; rewrite /k /=.
 have [F0|] := eqVneq (\bigcup_n F n) set0.
-  rewrite [in X in _ --> X]/mscore F0 eqxx.
-  rewrite (_ : (fun _ => _) = cst 0).
+  rewrite F0 measure0 (_ : (fun _ => _) = cst 0).
     by case: ifPn => _; exact: cvg_cst.
   apply/funext => k; rewrite big1// => n _.
-  move : F0 => /bigcup0P F0.
-  by rewrite /mscore F0// eqxx; case: ifP.
+  by move: F0 => /bigcup0P -> //; rewrite measure0; case: ifPn.
 move=> UF0; move: (UF0).
 move=> /eqP/bigcup0P/existsNP[m /not_implyP[_ /eqP Fm0]].
-rewrite [in X in _ --> X]/mscore (negbTE UF0).
+rewrite [in X in _ --> X]mscoreE (negbTE UF0).
 rewrite -(cvg_shiftn m.+1)/=.
 case: ifPn => ir.
   rewrite (_ : (fun _ => _) = cst `|(r t)%:E|); first exact: cvg_cst.
   apply/funext => n.
   rewrite big_mkord (bigD1 (widen_ord (leq_addl n _) (Ordinal (ltnSn m))))//=.
-  rewrite [in X in X + _]/mscore (negbTE Fm0) ir big1 ?adde0// => /= j jk.
-  rewrite /mscore.
-  have /eqP Fj0 : F j == set0.
+  rewrite [in X in X + _]mscoreE (negbTE Fm0) ir big1 ?adde0// => /= j jk.
+  rewrite mscoreE; have /eqP -> : F j == set0.
     have [/eqP//|Fjtt] := set_unit (F j).
     move/trivIsetP : tF => /(_ j m Logic.I Logic.I jk).
     by rewrite Fjtt setTI => /eqP; rewrite (negbTE Fm0).
-  rewrite Fj0 eqxx.
-  by case: ifP.
+  by rewrite eqxx; case: ifP.
 rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
 apply/funext => n.
 rewrite big_mkord (bigD1 (widen_ord (leq_addl n _) (Ordinal (ltnSn m))))//=.
-rewrite [in X in if X then _ else _]/mscore (negbTE Fm0) (negbTE ir) add0e.
+rewrite [in X in if X then _ else _]mscoreE (negbTE Fm0) (negbTE ir) add0e.
 rewrite big1//= => j jm.
-rewrite /mscore.
-have /eqP Fj0 : F j == set0.
+rewrite mscoreE; have /eqP -> : F j == set0.
   have [/eqP//|Fjtt] := set_unit (F j).
   move/trivIsetP : tF => /(_ j m Logic.I Logic.I jm).
   by rewrite Fjtt setTI => /eqP; rewrite (negbTE Fm0).
-by rewrite Fj0 eqxx; case: ifP.
+by rewrite eqxx; case: ifP.
 Qed.
 
 HB.instance Definition _ i t := isMeasure.Build _ _ _
@@ -181,16 +166,12 @@ Proof.
 move=> /= mU; rewrite /k /=.
 rewrite (_ : (fun x : T => _) = (fun x => if (i%:R)%:E <= x < (i.+1%:R)%:E then x else 0) \o
                              (mscore r ^~ U)) //.
-apply: measurable_fun_comp => /=; last first.
-  rewrite /mscore.
-  have [U0|U0] := eqVneq U set0; first exact: measurable_fun_cst.
-  by apply: measurable_fun_comp => //; exact/EFin_measurable_fun.
+apply: measurable_fun_comp => /=; last exact/measurable_fun_mscore.
 pose A : _ -> \bar R := (fun x => x * (\1_(`[i%:R%:E, i.+1%:R%:E [%classic : set (\bar R)) x)%:E).
 rewrite (_ : (fun x => _) = A); last first.
   apply/funext => x; rewrite /A; case: ifPn => ix.
     by rewrite indicE/= mem_set ?mule1//.
-  rewrite indicE/= memNset ?mule0//.
-  by rewrite /= in_itv/=; exact/negP.
+  by rewrite indicE/= memNset ?mule0// /= in_itv/=; exact/negP.
 rewrite {}/A.
 apply emeasurable_funM => /=; first exact: measurable_fun_id.
 apply/EFin_measurable_fun.
@@ -206,8 +187,7 @@ HB.instance Definition _ i :=
 
 Lemma mk_uub (i : nat) : measure_fam_uub (mk i).
 Proof.
-exists i.+1%:R => /= t.
-rewrite /k /mscore setT_unit.
+exists i.+1%:R => /= t; rewrite /k mscoreE setT_unit.
 rewrite (_ : [set tt] == set0 = false); last first.
   by apply/eqP => /seteqP[] /(_ tt) /(_ erefl).
 by case: ifPn => // /andP[].
@@ -228,11 +208,7 @@ Definition kscore (mr : measurable_fun setT r)
 Variable (mr : measurable_fun setT r).
 
 Let measurable_fun_kscore U : measurable U -> measurable_fun setT (kscore mr ^~ U).
-Proof.
-move=> /= mU; rewrite /mscore.
-have [U0|U0] := eqVneq U set0; first exact: measurable_fun_cst.
-by apply: measurable_fun_comp => //; exact/EFin_measurable_fun.
-Qed.
+Proof. by move=> /= _; exact: measurable_fun_mscore. Qed.
 
 HB.instance Definition _ := isKernel.Build _ _ T _
   (*Datatypes_unit__canonical__measure_Measurable*) R (kscore mr) measurable_fun_kscore.
@@ -245,9 +221,9 @@ Let sfinite_kscore : exists k : (R.-fker T ~> _)^nat,
 Proof.
 rewrite /=.
 exists (fun i => [the R.-fker _ ~> _ of mk mr i]) => /= t U mU.
-rewrite /mseries /mscore; case: ifPn => [/eqP U0|U0].
+rewrite /mseries /kscore/= mscoreE; case: ifPn => [/eqP U0|U0].
   by apply/esym/nneseries0 => i _; rewrite U0 measure0.
-rewrite /mk /= /k /= /mscore (negbTE U0).
+rewrite /mk /= /k /= mscoreE (negbTE U0).
 apply/esym/cvg_lim => //.
 rewrite -(cvg_shiftn `|floor (fine `|(r t)%:E|)|%N.+1)/=.
 rewrite (_ : (fun _ => _) = cst `|(r t)%:E|); first exact: cvg_cst.
@@ -438,10 +414,11 @@ Lemma scoreE (t : T) (U : set bool) (n : nat) (b : bool)
     (f0 : forall r, (0 <= r)%R -> (0 <= f r)%R)
     (mf : measurable_fun setT f) :
   score (measurable_fun_comp mf (@measurable_fun_snd _ _ _ _))
-    (t, b, n%:R) ((fun _ => (snd \o fst) (t, b, tt)) @^-1` U) =
+    (t, b, n%:R) (curry (snd \o fst) (t, b) @^-1` U) =
   (f n%:R)%:E * \d_b U.
 Proof.
-rewrite /score/= /mscore/= diracE.
+set x := score _.
+rewrite /score/= /kscore/= mscoreE diracE.
 have [U0|U0] := set_unit ((fun=> b) @^-1` U).
 - rewrite U0 eqxx memNset ?mule0// => Ub.
   by move: U0 => /seteqP[/(_ tt)] /(_ Ub).
@@ -827,7 +804,9 @@ Section letinC.
 
 Variables (d d' d3 d4 : _) (R : realType) (X : measurableType d)
   (Y : measurableType d') (Z : measurableType d3) (U : measurableType d4).
+
 Let f (xyz : unit * X * X) := (xyz.1.2, xyz.2).
+
 Lemma mf : measurable_fun setT f.
 Proof.
 rewrite /=.
