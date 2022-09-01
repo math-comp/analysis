@@ -51,7 +51,6 @@
   + lemma `open_measurable_subspace`
   + lemma ``subspace_continuous_measurable_fun``
   + corollary `open_continuous_measurable_fun`
-  + lemma `continuous_inP`
 - in `topology.v`:
   + lemmas `open_setIS`, `open_setSI`, `closed_setIS`, `closed_setSI`
 
