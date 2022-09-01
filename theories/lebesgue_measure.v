@@ -1494,7 +1494,7 @@ move=> mD /open_subspaceP [V [oV] VD]; rewrite setIC -VD.
 by apply: measurableI => //; exact: open_measurable.
 Qed.
 
-Lemma continuous_measurable_fun (D : set R) (f : subspace D -> R) :
+Lemma subspace_continuous_measurable_fun (D : set R) (f : subspace D -> R) :
   measurable D -> continuous f -> measurable_fun D f.
 Proof.
 move=> mD /continuousP cf; apply: (measurability (RGenOpens.measurableE R)).
@@ -1506,10 +1506,10 @@ Corollary open_continuous_measurable_fun (D : set R) (f : R -> R) :
   open D -> {in D, continuous f} -> measurable_fun D f.
 Proof.
 move=> oD; rewrite -(continuous_open_subspace f oD).
-by apply :continuous_measurable_fun; exact: open_measurable.
+by apply: subspace_continuous_measurable_fun; exact: open_measurable.
 Qed.
 
-Lemma continuousT_measurable_fun (f : R -> R) :
+Lemma continuous_measurable_fun (f : R -> R) :
   continuous f -> measurable_fun setT f.
 Proof.
 by move=> cf; apply: open_continuous_measurable_fun => //; exact: openT.
@@ -1570,7 +1570,7 @@ Lemma measurable_funrM D f (k : R) : measurable_fun D f ->
   measurable_fun D (fun x => k * f x).
 Proof.
 apply: (@measurable_fun_comp _ _ _ _ _ _ ( *%R k)).
-by apply: continuousT_measurable_fun; apply: mulrl_continuous.
+by apply: continuous_measurable_fun; apply: mulrl_continuous.
 Qed.
 
 Lemma measurable_funN D f : measurable_fun D f -> measurable_fun D (-%R \o f).
@@ -1590,7 +1590,7 @@ Lemma measurable_fun_exprn D n f :
   measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
 Proof.
 apply: measurable_fun_comp ((@GRing.exp R)^~ n) _ _ _.
-by apply: continuousT_measurable_fun; apply: exprn_continuous.
+by apply: continuous_measurable_fun; apply: exprn_continuous.
 Qed.
 
 Lemma measurable_fun_sqr D f :

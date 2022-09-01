@@ -5796,7 +5796,7 @@ Proof.
 by move=> ? ctsF ? ? ?; apply: (@nbhs_subspace_subset A B) => //; exact: ctsF.
 Qed.
 
-Lemma nbhs_subspaceT (x : T) : nbhs (x : subspace setT) = nbhs (x) .
+Lemma nbhs_subspaceT (x : T) : nbhs (x : subspace setT) = nbhs x.
 Proof.
 rewrite {1}/nbhs //=; have [_|] := nbhs_subspaceP (@setT T); last by cbn.
 rewrite eqEsubset withinE; split => [W [V nbhsV]|W ?]; last by exists W.
