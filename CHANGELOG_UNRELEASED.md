@@ -53,6 +53,8 @@
   + corollary `open_continuous_measurable_fun`
 - in `topology.v`:
   + lemmas `open_setIS`, `open_setSI`, `closed_setIS`, `closed_setSI`
+- in `mathcomp_extra.v`:
+  + lemmas `natrS`, `natSr`
 
 ### Changed
 

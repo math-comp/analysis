@@ -413,7 +413,7 @@ Proof.
 rewrite predeqE => y; split=> /=; last first.
   by move=> [n _]/=; rewrite in_itv => /andP[xy yn]; rewrite in_itv /= xy.
 rewrite in_itv /= andbT => xy; exists (`|floor y|%N.+1) => //=.
-rewrite in_itv /= xy /= -addn1 natrD.
+rewrite in_itv /= xy /= natrS.
 have [y0|y0] := ltP 0 y; last by rewrite (le_lt_trans y0)// ltr_spaddr.
 by rewrite natr_absz ger0_norm ?lt_succ_floor// floor_ge0 ltW.
 Qed.
