@@ -33,13 +33,16 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
 (* TODO: PR *)
+Lemma setT0 (T1 : pointedType) : setT != set0 :> set T1.
+Proof. by apply/eqP => /seteqP[] /(_ point) /(_ Logic.I). Qed.
+
 Definition swap (T1 T2 : Type) (x : T1 * T2) := (x.2, x.1).
 
-Lemma measurable_fun_swap d (X : measurableType d) : measurable_fun [set: X * X] (swap (T2:=X)).
+Lemma measurable_fun_swap d d' (X : measurableType d) (Y : measurableType d') :
+  measurable_fun [set: X * Y] (@swap X Y).
 Proof.
-apply/prod_measurable_funP => /=; split.
-  exact: measurable_fun_snd.
-exact: measurable_fun_fst.
+by apply/prod_measurable_funP => /=; split;
+  [exact: measurable_fun_snd|exact: measurable_fun_fst].
 Qed.
 
 Lemma onem1' (R : numDomainType) (p : R) : (p + `1- p = 1)%R.
@@ -89,8 +92,7 @@ Lemma mscoreE t U : mscore t U = if U == set0 then 0 else `| (f t)%:E |.
 Proof.
 rewrite /mscore/= /mscale/=; have [->|->] := set_unit U.
   by rewrite eqxx diracE in_set0 mule0.
-rewrite diracE in_setT mule1 ifF// ?normr_id//.
-by apply/negbTE/set0P; exists tt.
+by rewrite diracE in_setT mule1 (negbTE (setT0 _)) normr_id.
 Qed.
 
 Lemma measurable_fun_mscore U : measurable_fun setT f ->
@@ -264,7 +266,7 @@ move=> /= mcU; rewrite /kiteT.
 rewrite (_ : (fun _ => _) = (fun x => if x.2 then k x.1 U
                          else [the {measure set Y -> \bar R} of mzero] U)); last first.
   by apply/funext => -[t b]/=; case: ifPn.
-apply: (@measurable_fun_if _ _ _ _ (k ^~ U) (fun=> mzero U)).
+apply: (@measurable_fun_if_pair _ _ _ _ (k ^~ U) (fun=> mzero U)).
   exact/measurable_kernel.
 exact: measurable_fun_cst.
 Qed.
@@ -321,7 +323,7 @@ move=> /= mcU; rewrite /kiteF.
 rewrite (_ : (fun x => _) = (fun x => if x.2 then [the measure _ _ of mzero] U else k x.1 U)); last first.
   apply/funext => -[t b]/=.
   by rewrite if_neg//; case: ifPn.
-apply: (@measurable_fun_if _ _ _ _ (fun=> mzero U) (k ^~ U)).
+apply: (@measurable_fun_if_pair _ _ _ _ (fun=> mzero U) (k ^~ U)).
   exact: measurable_fun_cst.
 exact/measurable_kernel.
 Qed.
@@ -397,39 +399,6 @@ Definition kite :=
     [the R.-sfker _ ~> T' of kiteF u2] ].
 
 End ite.
-
-Section insn1.
-Variables (R : realType) (d : _) (X : measurableType d).
-
-Definition score (f : X -> R) (mf : measurable_fun setT f) :=
-  [the R.-sfker X ~> _ of kscore mf].
-
-End insn1.
-
-Section insn1_lemmas.
-Variables (R : realType) (d : _) (T : measurableType d).
-
-Lemma scoreE (t : T) (U : set bool) (n : nat) (b : bool)
-    (f : R -> R)
-    (f0 : forall r, (0 <= r)%R -> (0 <= f r)%R)
-    (mf : measurable_fun setT f) :
-  score (measurable_fun_comp mf (@measurable_fun_snd _ _ _ _))
-    (t, b, n%:R) (curry (snd \o fst) (t, b) @^-1` U) =
-  (f n%:R)%:E * \d_b U.
-Proof.
-set x := score _.
-rewrite /score/= /kscore/= mscoreE diracE.
-have [U0|U0] := set_unit ((fun=> b) @^-1` U).
-- rewrite U0 eqxx memNset ?mule0// => Ub.
-  by move: U0 => /seteqP[/(_ tt)] /(_ Ub).
-- rewrite U0 setT_unit ifF//; last first.
-    by apply/negbTE/negP => /eqP/seteqP[/(_ tt erefl)].
-  rewrite /= mem_set//; last first.
-    by move: U0 => /seteqP[_]/(_ tt)/=; exact.
-  by rewrite mule1 ger0_norm// f0.
-Qed.
-
-End insn1_lemmas.
 
 Section insn2.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
@@ -543,6 +512,70 @@ exact.
 Qed.
 
 End letin_return.
+
+Section insn1.
+Variables (R : realType) (d : _) (X : measurableType d).
+
+Definition score (f : X -> R) (mf : measurable_fun setT f) :=
+  [the R.-sfker X ~> _ of kscore mf].
+
+End insn1.
+
+Section insn1_lemmas.
+Variables (R : realType) (d : _) (T : measurableType d).
+
+Lemma scoreE' d' (T' : measurableType d') d2 (T2 : measurableType d2) (U : set T')
+    (g : R.-sfker [the measurableType _ of (T2 * unit)%type] ~> T') r fh (mh : measurable_fun setT fh) :
+  (score mh \; g) r U =
+  g (r, tt) U * `|fh r|%:E.
+Proof.
+rewrite [in LHS]/score [in LHS]/=.
+rewrite /kcomp.
+rewrite /kscore.
+rewrite [in LHS]/=.
+rewrite ge0_integral_mscale//=.
+rewrite integral_dirac// normr_id muleC.
+by rewrite indicE in_setT mul1e.
+Qed.
+
+Lemma scoreE (t : T) (U : set bool) (n : nat) (b : bool)
+    (f : R -> R)
+    (f0 : forall r, (0 <= r)%R -> (0 <= f r)%R)
+    (mf : measurable_fun setT f) :
+  score (measurable_fun_comp mf (@measurable_fun_snd _ _ _ _))
+    (t, b, n%:R) (curry (snd \o fst) (t, b) @^-1` U) =
+  (f n%:R)%:E * \d_b U.
+Proof.
+transitivity (letin (
+  score (measurable_fun_comp mf (measurable_fun_snd (T2:=Real_sort__canonical__measure_Measurable R)))
+  ) (
+ ret R (@measurable_fun_id _ _ _)
+) (t, b, n%:R) (curry (snd \o fst) (t, b) @^-1` U)).
+  rewrite letin_kret//.
+  rewrite /curry/=.
+  rewrite preimage_cst.
+  by case: ifPn => //.
+rewrite /letin.
+unlock.
+rewrite scoreE'//.
+rewrite retE.
+by rewrite ger0_norm// ?f0//= muleC.
+Qed.
+
+(* example of property *)
+Lemma score_score (f : R -> R) (g : R * unit -> R) (mf : measurable_fun setT f) (mg : measurable_fun setT g) x U :
+  letin (score mf) (score mg) x U = if U == set0 then 0 else `|g (x, tt)|%:E * `|f x|%:E.
+Proof.
+rewrite {1}/letin.
+unlock.
+rewrite scoreE'//=.
+rewrite /mscale/= diracE !normr_id.
+have [->|->]:= set_unit U.
+  by rewrite eqxx in_set0 mule0 mul0e.
+by rewrite in_setT mule1 (negbTE (setT0 _)).
+Qed.
+
+End insn1_lemmas.
 
 Section letin_ite.
 Variables (R : realType) (d d2 d3 : _) (T : measurableType d)
@@ -731,7 +764,7 @@ Variable P : probability mbool R.
 
 Import Notations.
 
-Definition staton_bus_annotated : R.-sfker T ~> mbool :=
+Definition staton_bus_annotated : R.-pker T ~> mbool :=
   normalize (letin
     (sample (bernoulli p27) : _.-sfker T ~> mbool)
     (letin
