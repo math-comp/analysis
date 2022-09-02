@@ -148,6 +148,12 @@ Proof. by move->. Qed.
 Lemma eqbRL (b1 b2 : bool) : b1 = b2 -> b2 -> b1.
 Proof. by move->. Qed.
 
+Lemma natrS (R : ringType) (n : nat) : (n.+1%:R = n%:R + 1 :> R)%R.
+Proof. by rewrite -addn1 GRing.natrD. Qed.
+
+Lemma natSr (R : ringType) (n : nat) : (n.+1%:R = 1 + n%:R :> R)%R.
+Proof. by rewrite -add1n GRing.natrD. Qed.
+
 (***************************)
 (* MathComp 1.15 additions *)
 (***************************)

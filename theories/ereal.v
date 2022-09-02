@@ -1127,13 +1127,13 @@ case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 firs
     exists N.+1 => // n ltNn; apply: dP.
     have /le_lt_trans : (d <= Num.max d 0)%R by rewrite le_maxr lexx.
     apply; apply: lt_le_trans (lt_succ_floor _) _; rewrite Nfloor.
-    by rewrite -(@natrD R N 1) ler_nat addn1.
+    by rewrite  -natrS ler_nat.
   have /ZnatP [N Nfloor] : floor (Num.max (- d)%R 0%R) \is a Znat.
     by rewrite Znat_def floor_ge0 le_maxr lexx orbC.
   exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin ltr_oppl.
   have /le_lt_trans : (- d <= Num.max (- d) 0)%R by rewrite le_maxr lexx.
   apply; apply: lt_le_trans (lt_succ_floor _) _; rewrite Nfloor.
-  by rewrite -(@natrD R N 1) ler_nat addn1.
+  by rewrite -natrS ler_nat.
 have /ZnatP [N Nfloor] : floor (d%:num^-1) \is a Znat.
   by rewrite Znat_def floor_ge0.
 exists N => // n leNn; have gt0Sn : (0 < n%:R + 1 :> R)%R.

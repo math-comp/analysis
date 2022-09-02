@@ -726,7 +726,7 @@ Proof.
 move=> yx; exists `|floor (x - y)^-1|%N.
 rewrite -ltr_subr_addl -{2}(invrK (x - y)%R) ltf_pinv ?qualifE ?ltr0n//.
   by rewrite invr_gt0 subr_gt0.
-rewrite -addn1 natrD natr_absz ger0_norm.
+rewrite natrS natr_absz ger0_norm.
   by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.
 by rewrite -RfloorE lt_succ_Rfloor.
 Qed.
