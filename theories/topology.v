@@ -5812,26 +5812,26 @@ apply: (cvg_trans _ ctsf); apply: cvg_fmap2; apply: cvg_within.
 by rewrite /subspace; exact: nbhs_filter.
 Qed.
 
-Lemma continuous_subspaceT {U} A (f : T -> U) :
+Lemma continuous_subspaceT_in {U} A (f : T -> U) :
   {in A, continuous f} -> {within A, continuous f}.
 Proof.
 rewrite continuous_subspace_in ?in_setP => ctsf t At.
 by apply continuous_subspaceT_for => //=; apply: ctsf.
 Qed.
 
+Lemma continuous_subspaceT {U} A (f : T -> U) :
+  continuous f -> {within A, continuous f}.
+Proof.
+move=> ctsf; rewrite continuous_subspace_in => ? ?. 
+by apply: continuous_subspaceT_in => ? ?.
+Qed.
+
 Lemma continuous_open_subspace {U} A (f : T -> U) :
-  open A -> {within A, continuous f} = {in A, continuous f}.
+  @open T A -> {within A, continuous f} = {in A, continuous f}.
 Proof.
 rewrite openE continuous_subspace_in /= => oA; rewrite propeqE ?in_setP.
 by split => + x /[dup] Ax /oA Aox; rewrite /filter_of /= => /(_ _ Ax);
   rewrite -(nbhs_subspace_interior Aox).
-Qed.
-
-Lemma continuous_inP {U} A (f : T -> U) : open A ->
-  {in A, continuous f} <-> forall X, open X -> open (A `&` f @^-1` X).
-Proof.
-move=> oA; rewrite -continuous_open_subspace// continuousP.
-by under eq_forall do rewrite -open_setSI//.
 Qed.
 
 Lemma pasting {U} A B (f : T -> U) : closed A -> closed B ->
@@ -5845,7 +5845,21 @@ apply/closed_subspaceP; exists ((V1 `&` A) `|` (V2 `&` B)); split.
   by apply: closedU; exact: closedI.
 rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
   by case=> [[][]] ? ? [] ?; [left | left | right | right]; split.
-by case=> [][] ? ?; split=> []; [left; split | left | right; split | right].
+by case=> [][] ? ?; split=> []; [left; split | left | right; split | right]. 
+Qed.
+
+Lemma subspace_continuous_restricted {U} (A : set T) (B : set U) 
+    (f : {fun A >-> B}) :
+  {within A, continuous f} -> continuous (f : subspace A -> subspace B).
+Proof.
+move=> /continuousP ctsf; apply/continuousP=> O /open_subspaceP [V].
+case=> ofV VAOA; rewrite -open_subspaceIT; apply/open_subspaceP.
+case/open_subspaceP: (ctsf _ ofV)=> W [] oW fvA; exists (W); split => //.
+rewrite fvA -setIA setIid eqEsubset; split=> x [] ? Ax; split=> //. 
+  have : ((V `&` B) (f x))  by split => //; exact: funS.
+  by rewrite VAOA => [][].
+have : ((O `&` B) (f x))  by split => //; exact: funS.
+by rewrite -VAOA => [][].
 Qed.
 
 End SubspaceRelative.
@@ -6051,7 +6065,7 @@ Lemma continuous_localP {X Y : topologicalType} (f : X -> Y) :
   forall (x : X), \forall U \near powerset_filter_from (nbhs x),
     {within U, continuous f}.
 Proof.
-split; first by move=> ? ?; near=> U; apply: continuous_subspaceT => ? ?; exact.
+split; first by move=> ? ?; near=> U; apply: continuous_subspaceT => ?; exact.
 move=> + x => /(_ x)/near_powerset_filter_fromP.
 case; first by move=> ? ?; exact: continuous_subspaceW.
 move=> U nbhsU wctsf; wlog oU : U wctsf nbhsU / open U.
@@ -6177,7 +6191,7 @@ Lemma precompact_pointwise_precompact (W : set {family compact, X -> Y}) :
 Proof.
 move=> + x; rewrite ?precompactE => pcptW.
 have : compact (prod_topo_apply x @` (closure W)).
-  apply: continuous_compact => //; apply: continuous_subspaceT => g _.
+  apply: continuous_compact => //; apply: continuous_subspaceT => g.
   move=> E nbhsE; have := (@prod_topo_apply_continuous _ _ x g E nbhsE).
   exact: (@pointwise_cvg_compact_family _ _ (nbhs g)).
 move=> /[dup]/(compact_closed hsdf)/closure_id -> /subclosed_compact.
@@ -6308,7 +6322,7 @@ apply/continuous_localP => x'; apply/near_powerset_filter_fromP.
   by move=> ? ?; exact: continuous_subspaceW.
 case: (@lcptX x') => // U; rewrite withinET => nbhsU [cptU _].
 exists U => //; apply: (uniform_limit_continuous_subspace PG _ _).
-  by near=> g; apply: continuous_subspaceT => + _; near: g; exact: GW.
+  by near=> g; apply: continuous_subspaceT; near: g; exact: GW.
 by move/fam_cvgP/(_ _ cptU) : Gf.
 Unshelve. end_near. Qed.
 
