@@ -5834,6 +5834,13 @@ by split => + x /[dup] Ax /oA Aox; rewrite /filter_of /= => /(_ _ Ax);
   rewrite -(nbhs_subspace_interior Aox).
 Qed.
 
+Lemma continuous_inP {U} A (f : T -> U) : open A ->
+  {in A, continuous f} <-> forall X, open X -> open (A `&` f @^-1` X).
+Proof.
+move=> oA; rewrite -continuous_open_subspace// continuousP.
+by under eq_forall do rewrite -open_setSI//.
+Qed.
+
 Lemma pasting {U} A B (f : T -> U) : closed A -> closed B ->
   {within A, continuous f} -> {within B, continuous f} ->
   {within A `|` B, continuous f}.
