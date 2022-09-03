@@ -5855,18 +5855,15 @@ rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
 by case=> [][] ? ?; split=> []; [left; split | left | right; split | right]. 
 Qed.
 
-Lemma subspace_continuous_restricted {U} (A : set T) (B : set U) 
-    (f : {fun A >-> B}) :
+Lemma subspace_continuous_restricted {U} A (B : set U) (f : {fun A >-> B}) :
   {within A, continuous f} -> continuous (f : subspace A -> subspace B).
 Proof.
 move=> /continuousP ctsf; apply/continuousP=> O /open_subspaceP [V].
 case=> ofV VAOA; rewrite -open_subspaceIT; apply/open_subspaceP.
-case/open_subspaceP: (ctsf _ ofV)=> W [] oW fvA; exists (W); split => //.
-rewrite fvA -setIA setIid eqEsubset; split=> x [] ? Ax; split=> //. 
-  have : ((V `&` B) (f x))  by split => //; exact: funS.
-  by rewrite VAOA => [][].
-have : ((O `&` B) (f x))  by split => //; exact: funS.
-by rewrite -VAOA => [][].
+case/open_subspaceP: (ctsf _ ofV) => W [] oW fvA; exists (W); split => //.
+rewrite fvA -setIA setIid eqEsubset; split=> x [] ? Ax; split=> //.
+  (have : (V `&` B) (f x) by split => //; exact: funS); by rewrite VAOA => [][].
+(have : (O `&` B) (f x) by split => //; exact: funS); by rewrite -VAOA => [][].
 Qed.
 
 End SubspaceRelative.
