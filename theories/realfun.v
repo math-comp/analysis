@@ -487,7 +487,7 @@ move=> Hd.
 wlog xLy : x y / x <= y by move=> H; case: (leP x y) => [/H |/ltW /H].
 rewrite -(subKr (f y) (f x)).
 have [| _ _] := MVT_segment xLy; last by rewrite mul0r => ->; rewrite subr0.
-apply/continuous_subspaceT => r.
+apply/subspace_restrict_domain => r.
 exact/differentiable_continuous/derivable1_diffP.
 Qed.
 

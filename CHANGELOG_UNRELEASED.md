@@ -15,7 +15,7 @@
   + lemma `near_inftyS`
   + lemma `continuous_closedP`, `closedU`, `pasting`
   + changed `continuous_subspaceT` to `continuous_subspaceT_in`
-  + lemmas `continuous_subspaceT`, `subspace_continuous_restricted`
+  + lemmas `subspace_restrict_domain`, `subspace_restrict_range`
 
 - in `sequences.v`:
   + lemmas `contraction_dist`, `contraction_cvg`,

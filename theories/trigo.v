@@ -563,7 +563,7 @@ have /IVT[] : minr (cos 1) (cos 2) <= (0 : R) <= maxr (cos 1) (cos 2).
   - rewrite /minr /maxr ltNge (ltW (lt_trans cos2_lt0 cos1_gt0))/=.
     by rewrite (ltW cos2_lt0)/= (ltW cos1_gt0).
   - by rewrite ler1n.
-  - by move=> *; apply/continuous_subspaceT=> ?; exact: continuous_cos.
+  - by move=> *; apply/subspace_restrict_domain=> ?; exact: continuous_cos.
 by move=> pih /itvP pihI chpi_eq0; exists pih; rewrite ?pihI.
 Qed.
 
@@ -577,7 +577,7 @@ case: (x =P y) => // /eqP xDy.
 have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
 have /(Rolle xLLs)[x1 _|x1|x1 x1I [_ x1D]] : cos x = cos y by rewrite cy0.
 - exact: derivable_cos.
-- by apply/continuous_subspaceT=> ?; exact: continuous_cos.
+- by apply/subspace_restrict_domain=> ?; exact: continuous_cos.
 - have [_ /esym/eqP] := is_derive_cos x1; rewrite x1D oppr_eq0 => /eqP Hs.
   suff : 0 < sin x1 by rewrite Hs ltxx.
   apply/sin2_gt0/andP; split.
@@ -641,7 +641,7 @@ wlog : x / 0 <= x => [Hw|x_ge0].
 move=> /andP[x_gt0 xLpi2]; case: (ler0P (cos x)) => // cx_le0.
 have /IVT[]// : minr (cos 0) (cos x) <= 0 <= maxr (cos 0) (cos x).
   by rewrite cos0 /minr /maxr !ifN ?cx_le0 //= -leNgt (le_trans cx_le0).
-- by move=> *; apply/continuous_subspaceT=> ?; apply: continuous_cos.
+- by move=> *; apply/subspace_restrict_domain=> ?; apply: continuous_cos.
 move=> x1 /itvP Hx1 cx1_eq0.
 suff x1E : x1 = pi/2.
   have : x1 < pi / 2 by apply: le_lt_trans xLpi2; rewrite Hx1.
@@ -732,7 +732,7 @@ move=> x y; rewrite !in_itv/= le_eqVlt; case: eqP => [<- _|_] /=.
   rewrite y_gt0; apply/idP.
   suff : cos y != 1 by case: ltrgtP (cos_le1 y).
   rewrite -cos0 eq_sym; apply/eqP => /Rolle [||x1|x1 /itvP x1I [_ x1D]] //.
-    by apply/continuous_subspaceT=> ?; exact: continuous_cos.
+    by apply/subspace_restrict_domain=> ?; exact: continuous_cos.
   case: (is_derive_cos x1) => _ /eqP; rewrite x1D eq_sym oppr_eq0 => /eqP s_eq0.
   suff : 0 < sin x1 by rewrite s_eq0 ltxx.
   by apply: sin_gt0_pi; rewrite x1I /= (lt_le_trans (_ : _ < y)) ?x1I // yI.
@@ -747,7 +747,7 @@ rewrite le_eqVlt; case: eqP => /= [-> _ | _ /andP[y_gt0 y_ltpi]].
   rewrite cospi x_ltpi; apply/idP.
   suff : cos x != -1 by case: ltrgtP (cos_geN1 x).
   rewrite -cospi; apply/eqP => /Rolle [||x1|x1 /itvP x1I [_ x1D]] //.
-    by apply/continuous_subspaceT=> ?; exact: continuous_cos.
+    by apply/subspace_restrict_domain=> ?; exact: continuous_cos.
   case: (is_derive_cos x1) => _ /eqP; rewrite x1D eq_sym oppr_eq0 => /eqP s_eq0.
   suff : 0 < sin x1 by rewrite s_eq0 ltxx.
   by apply: sin_gt0_pi; rewrite x1I /= (lt_le_trans (_ : _ < x)) ?x1I.
@@ -758,7 +758,7 @@ case: (x =P y) => [->| /eqP xDy]; first by rewrite ltxx.
 have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
 rewrite xLLs -subr_gt0 -opprB; rewrite -subr_gt0 in xLLs; apply/idP.
 have [x1|z /itvP zI ->] := @MVT_segment _ cos (-sin) _ _ xLy.
-  by apply/continuous_subspaceT=> ?; exact: continuous_cos.
+  by apply/subspace_restrict_domain=> ?; exact: continuous_cos.
 rewrite -mulNr opprK mulr_gt0 //; apply: sin_gt0_pi.
 by rewrite (lt_le_trans x_gt0) ?zI //= (le_lt_trans _ y_ltpi) ?zI.
 Qed.

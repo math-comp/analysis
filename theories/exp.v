@@ -442,7 +442,7 @@ Proof.
 move=> x_ge1; have x_ge0 : 0 <= x by apply: le_trans x_ge1.
 have [x1 x1Ix| |x1 _ /eqP] := @IVT _ (fun y => expR y - x) _ _ 0 x_ge0.
 - apply: continuousB => // y1; last exact: cst_continuous.
-  by apply/continuous_subspaceT=> ?; exact: continuous_expR.
+  by apply/subspace_restrict_domain=> ?; exact: continuous_expR.
 - rewrite expR0; have [_| |] := ltrgtP (1- x) (expR x - x).
   + by rewrite subr_le0 x_ge1 subr_ge0 (le_trans _ (expR_ge1Dx _)) ?ler_addr.
   + by rewrite ltr_add2r expR_lt1 ltNge x_ge0.
