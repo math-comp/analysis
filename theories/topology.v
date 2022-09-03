@@ -5803,7 +5803,7 @@ rewrite eqEsubset withinE; split => [W [V nbhsV]|W ?]; last by exists W.
 by rewrite 2!setIT => ->.
 Qed.
 
-Lemma subspace_restrict_domain_for {U} A (f : T -> U) (x : T) :
+Lemma continuous_subspaceT_for {U} A (f : T -> U) (x : T) :
   A x -> {for x, continuous f} -> {for x, continuous (f : subspace A -> U)}.
 Proof.
 rewrite /filter_of/nbhs/=/prop_for => inA ctsf.
@@ -5816,7 +5816,7 @@ Lemma continuous_subspaceT_in {U} A (f : T -> U) :
   {in A, continuous f} -> {within A, continuous f}.
 Proof.
 rewrite continuous_subspace_in ?in_setP => ctsf t At.
-by apply subspace_restrict_domain_for => //=; apply: ctsf.
+by apply continuous_subspaceT_for => //=; apply: ctsf.
 Qed.
 
 Lemma subspace_restrict_domain {U} A (f : T -> U) :

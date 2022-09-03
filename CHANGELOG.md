@@ -745,7 +745,7 @@ Lastest releases: [[0.5.4] - 2022-09-07](#055---2022-09-07) and [[0.5.3] - 2022-
   + lemmas `continuous_subspace_in`
   + lemmas`closed_subspaceP`, `closed_subspaceW`, `closure_subspaceW`
   + lemmas `nbhs_subspace_subset`, `continuous_subspaceW`, `nbhs_subspaceT`,
-    `subspace_restrict_domain_for`, `subspace_restrict_domain`, `continuous_open_subspace`
+    `continuous_subspaceT_for`, `continuous_subspaceT`, `continuous_open_subspace`
   + globals `subspace_filter`, `subspace_proper_filter`
   + notation `{within ..., continuous ...}`
   + definitions `compact_near`, `precompact`, `locally_compact`
