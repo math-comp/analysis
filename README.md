@@ -33,7 +33,7 @@ the Coq proof-assistant and using the Mathematical Components library.
   - Pierre-Yves Strub (initial)
   - Laurent Théry
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: Coq 8.14 to 8.15 (or dev)
+- Compatible Coq versions: Coq 8.14 to 8.16 (or dev)
 - Additional dependencies:
   - [MathComp ssreflect 1.13 or later](https://math-comp.github.io)
   - [MathComp fingroup 1.13 or later](https://math-comp.github.io)

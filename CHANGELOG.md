@@ -1,6 +1,96 @@
 # Changelog
 
-Lastest releases: [[0.5.3] - 2022-08-10](#053---2022-08-10) and [[0.5.2] - 2022-06-08](#052---2022-07-08)
+Lastest releases: [[0.5.4] - 2022-09-07](#055---2022-09-07) and [[0.5.3] - 2022-08-10](#053---2022-08-10)
+
+## [0.5.4] - 2022-09-07
+
+### Added
+
+- in `mathcomp_extra.v`:
+  + defintion `onem` and notation ``` `1- ```
+  + lemmas `onem0`, `onem1`, `onemK`, `onem_gt0`, `onem_ge0`, `onem_le1`, `onem_lt1`,
+    `onemX_ge0`, `onemX_lt1`, `onemD`, `onemMr`, `onemM`
+  + lemmas `natr1`, `nat1r`
+- in `classical_sets.v`:
+  + lemmas `subset_fst_set`, `subset_snd_set`, `fst_set_fst`, `snd_set_snd`,
+    `fset_setM`, `snd_setM`, `fst_setMR`
+  + lemmas `xsection_snd_set`, `ysection_fst_set`
+- in `constructive_ereal.v`:
+  + lemmas `ltNye_eq`, `sube_lt0`, `subre_lt0`, `suber_lt0`, `sube_ge0`
+  + lemmas `dsubre_gt0`, `dsuber_gt0`, `dsube_gt0`, `dsube_le0`
+- in `signed.v`:
+  + lemmas `onem_PosNum`, `onemX_NngNum`
+- in `fsbigop.v`:
+  + lemmas `lee_fsum_nneg_subset`, `lee_fsum`
+- in `topology.v`:
+  + lemma `near_inftyS`
+  + lemma `continuous_closedP`, `closedU`, `pasting`
+  + lemma `continuous_inP`
+  + lemmas `open_setIS`, `open_setSI`, `closed_setIS`, `closed_setSI`
+- in `normedtype.v`:
+  + definitions `contraction` and `is_contraction`
+  + lemma `contraction_fixpoint_unique`
+- in `sequences.v`:
+  + lemmas `contraction_dist`, `contraction_cvg`,
+    `contraction_cvg_fixed`, `banach_fixed_point`,
+    `contraction_unique`
+- in `derive.v`:
+  + lemma `diff_derivable`
+- in `measure.v`:
+  + lemma `measurable_funTS`
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_fine`
+  + lemma `open_measurable_subspace`
+  + lemma ``subspace_continuous_measurable_fun``
+  + corollary `open_continuous_measurable_fun`
+  + Hint about `measurable_fun_normr`
+- in `lebesgue_integral.v`:
+  + lemma `measurable_fun_indic`
+  + lemma `ge0_integral_mscale`
+  + lemma `integral_pushforward`
+
+### Changed
+
+- in `esum.v`:
+  + definition `esum`
+- moved from `lebesgue_integral.v` to `classical_sets.v`:
+  + `mem_set_pair1` -> `mem_xsection`
+  + `mem_set_pair2` -> `mem_ysection`
+- in `derive.v`:
+  + generalized `is_diff_scalel`
+- in `measure.v`:
+  + generalize `measurable_uncurry`
+- in `lebesgue_measure.v`:
+  + `pushforward` requires a proof that its argument is measurable
+- in `lebesgue_integral.v`:
+  + change implicits of `integralM_indic`
+
+### Renamed
+
+- in `constructive_ereal.v`:
+  + `lte_pinfty_eq` -> `ltey_eq`
+  + `le0R` -> `fine_ge0`
+  + `lt0R` -> `fine_gt0`
+- in `ereal.v`:
+  + `lee_pinfty_eq` -> `leye_eq`
+  + `lee_ninfty_eq` -> `leeNy_eq`
+- in `esum.v`:
+  + `esum0` -> `esum1`
+- in `sequences.v`:
+  + `nneseries_lim_ge0` -> `nneseries_ge0`
+- in `measure.v`:
+  + `ring_fsets` -> `ring_finite_set`
+  + `discrete_measurable` -> `discrete_measurable_nat`
+  + `cvg_mu_inc` -> `nondecreasing_cvg_mu`
+- in `lebesgue_integral.v`:
+  + `muleindic_ge0` -> `nnfun_muleindic_ge0`
+  + `mulem_ge0` -> `mulemu_ge0`
+  + `nnfun_mulem_ge0` -> `nnsfun_mulemu_ge0`
+
+### Removed
+
+- in `esum.v`:
+  + lemma `fsetsP`, `sum_fset_set`
 
 ## [0.5.3] - 2022-08-10
 
