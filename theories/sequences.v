@@ -1204,7 +1204,7 @@ have /uoo[N _ NuA] : \oo [set m | `|ceil A|.+1 <= m]%N by exists `|ceil A|.+1.
 near=> n; have /NuA : (N <= n)%N by near: n; exact: nbhs_infty_ge.
 rewrite /= -(ler_nat R); apply: le_trans.
 have [A0|A0] := leP 0%R A; last by rewrite (le_trans (ltW A0)).
-by rewrite natrS natr_absz ger0_norm// ?ceil_ge0// ler_paddr// ceil_ge.
+by rewrite -natr1 natr_absz ger0_norm// ?ceil_ge0// ler_paddr// ceil_ge.
 Unshelve. all: by end_near. Qed.
 
 Lemma nat_cvgPpinfty (u : nat^nat) :

@@ -54,7 +54,7 @@
 - in `topology.v`:
   + lemmas `open_setIS`, `open_setSI`, `closed_setIS`, `closed_setSI`
 - in `mathcomp_extra.v`:
-  + lemmas `natrS`, `natSr`
+  + lemmas `natr1`, `nat1r`
 
 ### Changed
 

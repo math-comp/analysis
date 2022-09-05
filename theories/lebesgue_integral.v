@@ -1228,7 +1228,7 @@ rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
     rewrite ler_pdivr_mulr// (le_trans _ (floor_le _))//.
     by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// (le_trans _ nr).
   rewrite ltr_pdivl_mulr// (lt_le_trans (lt_succ_floor _))//.
-  rewrite [in leRHS]natrS ler_add2r// -(@gez0_abs (floor _))// floor_ge0.
+  rewrite -[in leRHS]natr1 ler_add2r// -(@gez0_abs (floor _))// floor_ge0.
   by rewrite mulr_ge0// (le_trans _ nr).
 - rewrite -bigcup_set => -[/= k] /[!mem_index_iota] /andP[nk kn].
   rewrite in_itv /= => /andP[knr rkn]; rewrite in_itv /=; apply/andP; split.
@@ -1381,7 +1381,7 @@ have xAnK : x \in A n (Ordinal K).
     rewrite ler_pdivr_mulr// (le_trans _ (floor_le _))//.
     by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// ltW.
   rewrite ltr_pdivl_mulr// (lt_le_trans (lt_succ_floor _))//.
-  rewrite [in leRHS]natrS ler_add2r// -{1}(@gez0_abs (floor _))//.
+  rewrite -[in leRHS]natr1 ler_add2r// -{1}(@gez0_abs (floor _))//.
   by rewrite floor_ge0// mulr_ge0// ltW.
 have /[!mem_index_enum]/(_ isT) := An0 (Ordinal K).
 apply/negP.
@@ -1497,7 +1497,7 @@ have : fine (f x) < n%:R.
   near: n.
   exists `|floor (fine (f x))|.+1%N => //= p /=.
   rewrite -(@ler_nat R); apply: lt_le_trans.
-  rewrite natrS (_ : `| _ |%:R  = (floor (fine (f x)))%:~R); last first.
+  rewrite -natr1 (_ : `| _ |%:R  = (floor (fine (f x)))%:~R); last first.
     by rewrite -[in RHS](@gez0_abs (floor _))// floor_ge0//; exact/fine_ge0/f0.
   by rewrite lt_succ_floor.
 rewrite -lte_fin (fineK fxfin) => fxn.
@@ -1509,7 +1509,7 @@ rewrite (@le_lt_trans _ _ (1 / 2 ^+ n)) //.
     rewrite ler_subr_addl -mulrBl -lee_fin (fineK fxfin) -rfx lee_fin.
     rewrite (le_trans _ k1)// ler_pmul2r// -(@natrB _ _ 1) // ler_nat subn1.
     by rewrite leq_pred.
-  by rewrite ler_subl_addr -mulrDl -lee_fin -natSr fineK// ltW// -rfx lte_fin.
+  by rewrite ler_subl_addr -mulrDl -lee_fin nat1r fineK// ltW// -rfx lte_fin.
 by near: n; exact: near_infty_natSinv_expn_lt.
 Unshelve. all: by end_near. Qed.
 
@@ -3113,7 +3113,7 @@ apply/negP; rewrite -ltNge.
 rewrite -[X in _ * X](@fineK _ (mu (E `&` D))); last first.
   by rewrite fin_numElt muEDoo andbT (lt_le_trans _ (measure_ge0 _ _)).
 rewrite lte_fin -ltr_pdivr_mulr.
-  rewrite natrS natr_absz ger0_norm.
+  rewrite -natr1 natr_absz ger0_norm.
     by rewrite (le_lt_trans (ceil_ge _))// ltr_addl.
   by rewrite ceil_ge0// divr_ge0//; apply/le0R/measure_ge0; exact: measurableI.
 rewrite -lte_fin fineK.
@@ -3441,7 +3441,7 @@ move=> mf; split=> [iDf0|Df0].
         - rewrite inE unitfE fine_eq0 // abse_eq0 ft0/=; apply/fine_gt0.
           by rewrite lt_neqAle abse_ge0 -ge0_fin_numE// eq_sym abse_eq0 ft0.
         - by rewrite inE unitfE invr_eq0 pnatr_eq0 /= invr_gt0.
-      rewrite invrK /m natrS natr_absz ger0_norm ?ceil_ge0//.
+      rewrite invrK /m -natr1 natr_absz ger0_norm ?ceil_ge0//.
       apply: (@le_trans _ _ ((fine `|f t|)^-1 + 1)%R); first by rewrite ler_addl.
       by rewrite ler_add2r// ceil_ge.
     by split => //; apply: contraTN nft => /eqP ->; rewrite abse0 -ltNge.
