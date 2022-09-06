@@ -4086,8 +4086,8 @@ Hypothesis f_g : {ae mu, forall x n, D x -> `|f_ n x| <= g x}.
 Let g_ n x := `|f_ n x - f x|.
 
 Theorem dominated_convergence : [/\ mu.-integrable D f,
-  (fun n => \int[mu]_(x in D) (g_ n x) ) --> 0 &
-  (fun n => \int[mu]_(x in D) (f_ n x) ) --> \int[mu]_(x in D) (f x) ].
+  [sequence \int[mu]_(x in D) (g_ n x)]_n --> 0 &
+  [sequence \int[mu]_(x in D) (f_ n x)]_n --> \int[mu]_(x in D) (f x) ].
 Proof.
 have [N1 [mN1 N10 subN1]] := f_f.
 have [N2 [mN2 N20 subN2]] := f_g.
