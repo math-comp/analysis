@@ -165,19 +165,19 @@ HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
 End comring.
 
 Lemma fimfunE T (R : ringType) (f : {fimfun T >-> R}) x :
-  f x = \sum_(y <- fset_set (range f)) (y * \1_(f @^-1` [set y]) x).
+  f x = \sum_(y \in range f) (y * \1_(f @^-1` [set y]) x).
 Proof.
-have fxfA: f x \in fset_set (f @` setT) by rewrite in_fset_set// inE; exists x.
-rewrite (big_fsetD1 (f x))//= indicE (@id (_ \in _)) ?mulr1 ?inE//=.
-rewrite big_seq_cond ?big1 ?addr0// => y; rewrite ?andbT !inE eq_sym.
-move=> /andP[fxNy yA]; rewrite indicE [_ \in _]negbTE ?mulr0// notin_set.
-by move=> fxy; rewrite -fxy eqxx in fxNy.
+rewrite (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 ?addr0//.
+by move=> y [fy /= /nesym yfx]; rewrite indicE memNset ?mulr0.
 Qed.
 
 Lemma fimfunEord T (R : ringType) (f : {fimfun T >-> R})
     (s := fset_set (f @` setT)) :
   forall x, f x = \sum_(i < #|`s|) (s`_i * \1_(f @^-1` [set s`_i]) x).
-Proof. by move=> x; rewrite fimfunE /s // (big_nth 0) big_mkord. Qed.
+Proof.
+move=> x; rewrite fimfunE fsbig_finite//= (big_nth 0)/= big_mkord.
+exact: eq_bigr.
+Qed.
 
 Lemma trivIset_preimage1 {aT rT} D (f : aT -> rT) :
   trivIset D (fun x => f @^-1` [set x]).
@@ -1813,6 +1813,17 @@ under eq_fun do rewrite big_cons //=; apply: emeasurable_funD => //.
 exact: ih.
 Qed.
 
+Lemma emeasurable_fun_fsum D (I : choiceType) (A : set I)
+    (h : I -> (T -> \bar R)) : finite_set A ->
+    (forall n, measurable_fun D (h n)) ->
+  measurable_fun D (fun x => \sum_(i \in A) h i x).
+Proof.
+move=> fs mh.
+rewrite (_ : (fun x => _) = (fun x => \sum_(i <- fset_set A) h i x)).
+  exact: emeasurable_fun_sum.
+by apply/funext => t; rewrite fsbig_finite.
+Qed.
+
 Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) :
   (forall k x, 0 <= h k x) -> (forall k, measurable_fun D (h k)) ->
   measurable_fun D (fun x => \sum_(i <oo) h i x).
@@ -1893,8 +1904,9 @@ End emeasurable_fun.
 
 Section ge0_integral_sum.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
-Variables (D : set T) (mD : measurable D) (I : Type) (f : I -> (T -> \bar R)).
+Variables (d : _) (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variables (I : Type) (f : I -> (T -> \bar R)).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
 
@@ -1906,12 +1918,30 @@ elim: s => [|h t ih].
   by (under eq_fun do rewrite big_nil); rewrite big_nil integral0.
 rewrite big_cons /= -ih -ge0_integralD//.
 - by apply: eq_integral => x Dx; rewrite big_cons.
-- by move=> *; apply: f0.
+- by move=> *; exact: f0.
 - by move=> *; apply: sume_ge0 => // k _; exact: f0.
 - exact: emeasurable_fun_sum.
 Qed.
 
 End ge0_integral_sum.
+
+Section ge0_integral_fsum.
+Local Open Scope ereal_scope.
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variables (I : choiceType) (f : I -> (T -> \bar R)).
+Hypothesis mf : forall n, measurable_fun D (f n).
+Hypothesis f0 : forall n x, D x -> 0 <= f n x.
+
+Lemma ge0_integral_fsum (A : set I) : finite_set A ->
+  \int[mu]_(x in D) (\sum_(k \in A) f k x) =
+  \sum_(k \in A) \int[mu]_(x in D) f k x.
+Proof.
+move=> fs; rewrite fsbig_finite//= -ge0_integral_sum//.
+by apply eq_integral => x xD; rewrite fsbig_finite.
+Qed.
+
+End ge0_integral_fsum.
 
 Section monotone_convergence_theorem.
 Local Open Scope ereal_scope.
@@ -2213,8 +2243,8 @@ Proof. by move=> ?; rewrite !integral_indic. Qed.
 Let integral_mscale_nnsfun (h : {nnsfun T >-> R}) :
   \int[mscale k m]_(x in D) (h x)%:E = k%:num%:E * \int[m]_(x in D) (h x)%:E.
 Proof.
-under [LHS]eq_integral do rewrite fimfunE -sumEFin.
-rewrite [LHS]ge0_integral_sum//; last 2 first.
+under [LHS]eq_integral do rewrite fimfunE -fsumEFin//.
+rewrite [LHS]ge0_integral_fsum//; last 2 first.
   - move=> r.
     exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
   - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
@@ -2222,14 +2252,14 @@ rewrite -[RHS]ge0_integralM//; last 2 first.
   - exact/EFin_measurable_fun/measurable_funTS.
   - by move=> x _; rewrite lee_fin.
 under [RHS]eq_integral.
-  move=> x xD; rewrite fimfunE -sumEFin ge0_sume_distrr//; last first.
-    by move=> r _; rewrite EFinM nnfun_muleindic_ge0.
+  move=> x xD; rewrite fimfunE -fsumEFin// ge0_mule_fsumr; last first.
+    by move=> r; rewrite EFinM nnfun_muleindic_ge0.
   over.
-rewrite [RHS]ge0_integral_sum//; last 2 first.
+rewrite [RHS]ge0_integral_fsum//; last 2 first.
   - move=> r; apply/EFin_measurable_fun/measurable_funrM/measurable_funrM.
     exact/measurable_fun_indic.
   - by move=> n x _; rewrite EFinM mule_ge0// nnfun_muleindic_ge0.
-apply eq_bigr => r _; rewrite ge0_integralM//.
+apply eq_fsbigr => r _; rewrite ge0_integralM//.
 - by rewrite !integralM_indic_nnsfun//= integral_mscale_indic// muleCA.
 - exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
 - by move=> t _; rewrite nnfun_muleindic_ge0.
@@ -2420,24 +2450,24 @@ apply/funext => n.
 have mfnphi r : measurable (f_ n @^-1` [set r] \o phi).
   rewrite -[_ \o _]/(phi @^-1` (f_ n @^-1` [set r])) -(setTI (_ @^-1` _)).
   exact/mphi.
-transitivity (\sum_(k <- fset_set (range (f_ n)))
+transitivity (\sum_(k \in range (f_ n))
     \int[mu]_x (k * \1_((f_ n @^-1` [set k]) \o phi) x)%:E).
-  under eq_integral do rewrite fimfunE -sumEFin.
-  rewrite ge0_integral_sum//; last 2 first.
+  under eq_integral do rewrite fimfunE -fsumEFin//.
+  rewrite ge0_integral_fsum//; last 2 first.
     - move=> y; apply/EFin_measurable_fun; apply: measurable_funM.
         exact: measurable_fun_cst.
       by rewrite (_ : \1_ _ = mindic R (measurable_sfunP (f_ n) y)).
     - by move=> y x _; rewrite nnfun_muleindic_ge0.
-  apply eq_bigr => r _; rewrite integralM_indic_nnsfun// integral_indic//=.
+  apply eq_fsbigr => r _; rewrite integralM_indic_nnsfun// integral_indic//=.
   rewrite (integralM_indic _ (fun r => f_ n @^-1` [set r] \o phi))//.
     by congr (_ * _); rewrite [RHS](@integral_indic).
   by move=> r0; rewrite preimage_nnfun0.
-rewrite -ge0_integral_sum//; last 2 first.
+rewrite -ge0_integral_fsum//; last 2 first.
   - move=> r; apply/EFin_measurable_fun; apply: measurable_funM.
       exact: measurable_fun_cst.
     by rewrite (_ : \1_ _ = mindic R (mfnphi r)).
   - by move=> r x _; rewrite nnfun_muleindic_ge0.
-by apply eq_integral => x _; rewrite sumEFin -fimfunE.
+by apply eq_integral => x _; rewrite fsumEFin// -fimfunE.
 Qed.
 
 End transfer.
@@ -2461,15 +2491,15 @@ transitivity (lim (fun n => \int[\d_ a]_(x in D) (f_ n x)%:E)).
   - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/ndf_.
 rewrite (_ : (fun _ => _) = (fun n => (f_ n a)%:E)).
   by apply/cvg_lim => //; exact: f_f.
-apply/funext => n; under eq_integral do rewrite fimfunE -sumEFin.
-rewrite ge0_integral_sum//.
-- under eq_bigr; first by move=> r _; rewrite integralM_indic_nnsfun//; over.
-  rewrite /= (big_fsetD1 (f_ n a)); last first.
-    by rewrite in_fset_set// in_setE; exists a.
+apply/funext => n.
+under eq_integral do rewrite fimfunE// -fsumEFin//.
+rewrite ge0_integral_fsum//.
+- under eq_fsbigr; first by move=> r _; rewrite integralM_indic_nnsfun//; over.
+  rewrite /= (fsbigD1 (f_ n a))//=; last by exists a.
   rewrite integral_indic//= diracE mem_set// mule1.
-  rewrite big1_fset ?adde0// => r; rewrite !inE => /andP[rfna _] _.
-  rewrite integral_indic//= diracE memNset ?mule0//.
-  by apply/not_andP; left; exact/nesym/eqP.
+  rewrite fsbig1 ?adde0// => r /= [_ rfna].
+  rewrite integral_indic//= diracE memNset ?mule0//=.
+  by apply/not_andP; left; exact/nesym.
 - by move=> r; exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
 - by move=> r x _; rewrite nnfun_muleindic_ge0.
 Qed.
@@ -2505,17 +2535,17 @@ Qed.
 Let integralT_measure_sum (f : {nnsfun T >-> R}) :
   \int[m]_x (f x)%:E = \sum_(n < N) \int[m_ n]_x (f x)%:E.
 Proof.
-under eq_integral do rewrite fimfunE -sumEFin.
-rewrite ge0_integral_sum//; last 2 first.
+under eq_integral do rewrite fimfunE -fsumEFin//.
+rewrite ge0_integral_fsum//; last 2 first.
   - move=> r /=; apply: measurable_fun_comp => //.
     exact/measurable_funrM/measurable_fun_indic.
   - by move=> r t _; rewrite EFinM nnfun_muleindic_ge0.
-transitivity (\sum_(i <- fset_set (range f))
+transitivity (\sum_(i \in range f)
     (\sum_(n < N) i%:E * \int[m_ n]_x (\1_(f @^-1` [set i]) x)%:E)).
-  apply eq_bigr => r _.
+  apply eq_fsbigr => r _.
   rewrite integralM_indic_nnsfun// integral_measure_sum_indic//.
   by rewrite ge0_sume_distrr// => n _; apply integral_ge0 => t _; rewrite lee_fin.
-rewrite exchange_big/=; apply eq_bigr => i _.
+rewrite fsbig_finite//= exchange_big/=; apply eq_bigr => i _.
 rewrite integralT_nnsfun sintegralE fsbig_finite//=; apply eq_bigr => r _.
 by congr (_ * _); rewrite integral_indic// setIT.
 Qed.
@@ -2616,23 +2646,23 @@ Lemma integral_measure_series_nnsfun (D : set T) (mD : measurable D)
     (f : {nnsfun T >-> R}) :
   \int[m]_x (f x)%:E = \sum_(n <oo) \int[m_ n]_x (f x)%:E.
 Proof.
-under eq_integral do rewrite fimfunE -sumEFin.
-rewrite ge0_integral_sum//; last 2 first.
+under eq_integral do rewrite fimfunE -fsumEFin//.
+rewrite ge0_integral_fsum//; last 2 first.
   - move=> r /=; apply: measurable_fun_comp => //.
     exact/measurable_funrM/measurable_fun_indic.
   - by move=> r t _; rewrite EFinM nnfun_muleindic_ge0.
-transitivity (\sum_(i <- fset_set (range f))
+transitivity (\sum_(i \in range f)
     (\sum_(n <oo) i%:E * \int[m_ n]_x (\1_(f @^-1` [set i]) x)%:E)).
-  apply eq_bigr => r _.
+  apply eq_fsbigr => r _.
   rewrite integralM_indic_nnsfun// integral_measure_series_indic// nneseriesrM//.
   by move=> n _; apply integral_ge0 => t _; rewrite lee_fin.
-rewrite -nneseries_sum; last first.
+rewrite fsbig_finite//= -nneseries_sum; last first.
   move=> r j _.
   have [r0|r0] := leP 0%R r.
     by rewrite mule_ge0//; apply integral_ge0 => // t _; rewrite lee_fin.
   rewrite (eq_integral (cst 0)) ?integral0 ?mule0// => t _.
   by rewrite preimage_nnfun0// indicE in_set0.
-apply eq_nneseries => k _.
+apply: eq_nneseries => k _.
 rewrite integralT_nnsfun sintegralE fsbig_finite//=; apply eq_bigr => r _.
 by congr (_ * _); rewrite integral_indic// setIT.
 Qed.
@@ -4692,15 +4722,15 @@ Let F := fubini_F m2 (EFin \o f).
 Let G := fubini_G m1 (EFin \o f).
 
 Lemma sfun_fubini_tonelli_FE : F = fun x =>
-  \sum_(k <- fset_set (range f)) k%:E * m2 (xsection (f @^-1` [set k]) x).
+  \sum_(k \in range f) k%:E * m2 (xsection (f @^-1` [set k]) x).
 Proof.
 rewrite funeqE => x; rewrite /F /fubini_F [in LHS]/=.
-under eq_fun do rewrite fimfunE -sumEFin.
-rewrite ge0_integral_sum //; last 2 first.
+under eq_fun do rewrite fimfunE -fsumEFin//.
+rewrite ge0_integral_fsum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun => //; apply: measurable_funrM => //.
     exact/measurable_fun_prod1/measurable_fun_indic.
   - by move=> r y _; rewrite EFinM nnfun_muleindic_ge0.
-apply: eq_fbigr => i; rewrite in_fset_set// inE => -[/= t _ <-{i} _].
+apply: eq_fsbigr => i; rewrite inE => -[/= t _ <-{i}].
 under eq_fun do rewrite EFinM.
 rewrite ge0_integralM//; last by rewrite lee_fin.
 - by rewrite -/((m2 \o xsection _) x) -indic_fubini_tonelli_FE.
@@ -4710,20 +4740,20 @@ Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_F : measurable_fun setT F.
 Proof.
-rewrite sfun_fubini_tonelli_FE//; apply: emeasurable_fun_sum => // r.
+rewrite sfun_fubini_tonelli_FE//; apply: emeasurable_fun_fsum => // r.
 by apply/measurable_funeM/measurable_fun_xsection => // /[!inE].
 Qed.
 
 Lemma sfun_fubini_tonelli_GE : G = fun y =>
-  \sum_(k <- fset_set (range f)) k%:E * m1 (ysection (f @^-1` [set k]) y).
+  \sum_(k \in range f) k%:E * m1 (ysection (f @^-1` [set k]) y).
 Proof.
 rewrite funeqE => y; rewrite /G /fubini_G [in LHS]/=.
-under eq_fun do rewrite fimfunE -sumEFin.
-rewrite ge0_integral_sum //; last 2 first.
+under eq_fun do rewrite fimfunE -fsumEFin//.
+rewrite ge0_integral_fsum //; last 2 first.
   - move=> i; apply/EFin_measurable_fun => //; apply: measurable_funrM => //.
     exact/measurable_fun_prod2/measurable_fun_indic.
   - by move=> r x _; rewrite EFinM nnfun_muleindic_ge0.
-apply: eq_fbigr => i; rewrite in_fset_set// inE => -[/= t _ <-{i} _].
+apply: eq_fsbigr => i; rewrite inE => -[/= t _ <-{i}].
 under eq_fun do rewrite EFinM.
 rewrite ge0_integralM//; last by rewrite lee_fin.
 - by rewrite -/((m1 \o ysection _) y) -indic_fubini_tonelli_GE.
@@ -4733,24 +4763,24 @@ Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_G : measurable_fun setT G.
 Proof.
-rewrite sfun_fubini_tonelli_GE//; apply: emeasurable_fun_sum => // r.
+rewrite sfun_fubini_tonelli_GE//; apply: emeasurable_fun_fsum => // r.
 by apply/measurable_funeM/measurable_fun_ysection => // /[!inE].
 Qed.
 
 Let EFinf x : (f x)%:E =
-    \sum_(k <- fset_set (range f)) k%:E * (\1_(f @^-1` [set k]) x)%:E.
-Proof. by rewrite sumEFin /= fimfunE. Qed.
+    \sum_(k \in range f) k%:E * (\1_(f @^-1` [set k]) x)%:E.
+Proof. by rewrite fsumEFin //= fimfunE. Qed.
 
 Lemma sfun_fubini_tonelli1 : \int[m]_z (f z)%:E = \int[m1]_x F x.
 Proof.
 under [LHS]eq_integral
-  do rewrite EFinf; rewrite ge0_integral_sum //; last 2 first.
+  do rewrite EFinf; rewrite ge0_integral_fsum //; last 2 first.
   - move=> r.
     exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
   - by move=> r /= z _; exact: nnfun_muleindic_ge0.
-transitivity (\sum_(k <- fset_set (range f))
+transitivity (\sum_(k \in range f)
   \int[m1]_x (k%:E * (fubini_F m2 (EFin \o \1_(f @^-1` [set k])) x))).
-  apply: eq_fbigr => i; rewrite in_fset_set// inE => -[z _ <-{i} _].
+  apply: eq_fsbigr => i; rewrite inE => -[z _ <-{i}].
   rewrite ge0_integralM//; last 3 first.
     - exact/EFin_measurable_fun/measurable_fun_indic.
     - by move=> /= x _; rewrite lee_fin.
@@ -4758,7 +4788,7 @@ transitivity (\sum_(k <- fset_set (range f))
   rewrite indic_fubini_tonelli1// -ge0_integralM//; last by rewrite lee_fin.
   - exact: indic_measurable_fun_fubini_tonelli_F.
   - by move=> /= x _; exact: indic_fubini_tonelli_F_ge0.
-rewrite -ge0_integral_sum //; last 2 first.
+rewrite -ge0_integral_fsum //; last 2 first.
   - by move=> r; apply/measurable_funeM/indic_measurable_fun_fubini_tonelli_F.
   - move=> r x _; rewrite /fubini_F.
     have [r0|r0] := leP 0%R r.
@@ -4766,19 +4796,19 @@ rewrite -ge0_integral_sum //; last 2 first.
     rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0// => y _.
     by rewrite preimage_nnfun0//= indicE in_set0.
 apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE.
-by apply: eq_bigr => ? _; rewrite indic_fubini_tonelli_FE.
+by apply: eq_fsbigr => ? _; rewrite indic_fubini_tonelli_FE.
 Qed.
 
 Lemma sfun_fubini_tonelli2 : \int[m']_z (f z)%:E = \int[m2]_y G y.
 Proof.
 under [LHS]eq_integral
-  do rewrite EFinf; rewrite ge0_integral_sum //; last 2 first.
+  do rewrite EFinf; rewrite ge0_integral_fsum //; last 2 first.
   - move=> i.
     exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
   - by move=> r /= z _; exact: nnfun_muleindic_ge0.
-transitivity (\sum_(k <- fset_set (range f))
+transitivity (\sum_(k \in range f)
   \int[m2]_x (k%:E * (fubini_G m1 (EFin \o \1_(f @^-1` [set k])) x))).
-  apply: eq_fbigr => i; rewrite in_fset_set// inE => -[z _ <-{i} _].
+  apply: eq_fsbigr => i; rewrite inE => -[z _ <-{i}].
   rewrite ge0_integralM//; last 3 first.
     - exact/EFin_measurable_fun/measurable_fun_indic.
     - by move=> /= x _; rewrite lee_fin.
@@ -4786,7 +4816,7 @@ transitivity (\sum_(k <- fset_set (range f))
   rewrite indic_fubini_tonelli2// -ge0_integralM//; last by rewrite lee_fin.
   - exact: indic_measurable_fun_fubini_tonelli_G.
   - by move=> /= x _; exact: indic_fubini_tonelli_G_ge0.
-rewrite -ge0_integral_sum //; last 2 first.
+rewrite -ge0_integral_fsum //; last 2 first.
   - by move=> r; apply/measurable_funeM/indic_measurable_fun_fubini_tonelli_G.
   - move=> r x _; rewrite /fubini_G.
     have [r0|r0] := leP 0%R r.
@@ -4794,31 +4824,31 @@ rewrite -ge0_integral_sum //; last 2 first.
     rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0// => y _.
     by rewrite preimage_nnfun0//= indicE in_set0.
 apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE.
-by apply: eq_bigr => i _; rewrite indic_fubini_tonelli_GE.
+by apply: eq_fsbigr => i _; rewrite indic_fubini_tonelli_GE.
 Qed.
 
 Lemma sfun_fubini_tonelli : \int[m]_z (f z)%:E = \int[m']_z (f z)%:E.
 Proof.
 under eq_integral do rewrite EFinf.
 under [RHS]eq_integral do rewrite EFinf.
-rewrite ge0_integral_sum //; last 2 first.
+rewrite ge0_integral_fsum //; last 2 first.
   - move=> i.
     exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
   - by move=> r z _; exact: nnfun_muleindic_ge0.
-transitivity (\sum_(k <- fset_set (range f)) k%:E *
+transitivity (\sum_(k \in range f) k%:E *
     \int[m']_z ((EFin \o \1_(f @^-1` [set k])) z)).
-  apply: eq_fbigr => i; rewrite in_fset_set// inE => -[t _ <- _].
+  apply: eq_fsbigr => i; rewrite inE => -[t _ <-].
   rewrite ge0_integralM//; last 3 first.
     - exact/EFin_measurable_fun/measurable_fun_indic.
     - by move=> /= x _; rewrite lee_fin.
     - by rewrite lee_fin.
   rewrite indic_fubini_tonelli1// indic_fubini_tonelli//.
   by rewrite -indic_fubini_tonelli2.
-apply/esym; rewrite ge0_integral_sum //; last 2 first.
+apply/esym; rewrite ge0_integral_fsum //; last 2 first.
   - move=> i.
     exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
   - by move=> r z _; exact: nnfun_muleindic_ge0.
-apply: eq_fbigr => i; rewrite in_fset_set// inE => -[x _ <- _].
+apply: eq_fsbigr => i; rewrite inE => -[x _ <-].
 rewrite ge0_integralM//; last by rewrite lee_fin.
 - exact/EFin_measurable_fun/measurable_fun_indic.
 - by move=> /= y _; rewrite lee_fin.

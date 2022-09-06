@@ -129,6 +129,10 @@ move=> PF; case: finite_supportP; rewrite ?big_nil// => X XP F0 _.
 by rewrite big_seq_cond big_mkcondr sume_le0// => i /XP/PF.
 Qed.
 
+Lemma fsumEFin (I : choiceType) A (F : I -> R) : finite_set A ->
+  \sum_(i \in A) (F i)%:E = (\sum_(i \in A) F i)%:E.
+Proof. by move=> fs; rewrite fsbig_finite//= sumEFin -fsbig_finite. Qed.
+
 End ERealArithTh_numDomainType.
 
 Section ERealArithTh_realDomainType.

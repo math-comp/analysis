@@ -92,6 +92,10 @@
     (from `mathcomp_extra.v`)
 - in `classical_sets.v`:
   + lemma `bigsetU_sup`
+- in `lebesgue_integral.v`:
+  + lemmas `emeasurable_fun_fsum`, `ge0_integral_fsum`
+- in `ereal.v`:
+  + lemma `fsumEFin`
 
 ### Changed
 - in `topology.v`
@@ -126,6 +130,9 @@
      `segment_can_ge_continuous`, `segment_can_continuous`
      all have "{in I, continuous f}" replaced by "{within I, continuous f}"
 
+
+- in `lebesgue_measure.v`:
+  + definition `fimfunE` now uses fsbig
 
 ### Renamed
 
