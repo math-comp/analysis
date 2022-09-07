@@ -4,7 +4,6 @@
 
 ### Added
 - in `topology.v`:
-  + changed `continuous_subspaceT` to `continuous_subspaceT_in`
   + lemmas `subspace_restrict_domain`, `subspace_restrict_range`
 
 ### Changed
