@@ -15,7 +15,7 @@ Require Import lebesgue_measure fsbigop numfun lebesgue_integral kernel.
 (*           score mf == observe t from d, where f is the density of d and    *)
 (*                       t occurs in f                                        *)
 (*                       e.g., score (r e^(-r * t)) = observe t from exp(r)   *)
-(*      normalize k P == normalize the kernel k into a probability kernel,    *)
+(*     pnormalize k P == normalize the kernel k into a probability kernel,    *)
 (*                       P is a default probability in case normalization is  *)
 (*                       not possible                                         *)
 (*       ite mf k1 k2 == access the context with the boolean function f and   *)
@@ -408,10 +408,13 @@ Definition ret (f : X -> Y) (mf : measurable_fun setT f) :=
   locked [the R.-sfker X ~> Y of kdirac mf].
 
 Definition sample (P : probability Y R) :=
-  locked [the R.-sfker X ~> Y of kprobability P] .
+  locked [the R.-pker X ~> Y of kprobability P] .
 
-Definition normalize (k : R.-sfker X ~> Y) P :=
+Definition pnormalize (k : R.-sfker X ~> Y) P :=
   locked [the R.-pker X ~> Y of knormalize k P].
+
+Definition dnormalize t (k : R.-sfker X ~> Y) P :=
+  locked [the probability _ _ of mnormalize k P t].
 
 Definition ite (f : X -> bool) (mf : measurable_fun setT f)
     (k1 k2 : R.-sfker X ~> Y):=
@@ -431,12 +434,20 @@ Proof. by rewrite [in LHS]/ret; unlock. Qed.
 Lemma sampleE (P : probability Y R) (x : X) : sample P x = P.
 Proof. by rewrite [in LHS]/sample; unlock. Qed.
 
-Lemma normalizeE (f : R.-sfker X ~> Y) P x U :
-  normalize f P x U =
+Lemma pnormalizeE (f : R.-sfker X ~> Y) P x U :
+  pnormalize f P x U =
   if (f x [set: Y] == 0) || (f x [set: Y] == +oo) then P U
   else f x U * ((fine (f x [set: Y]))^-1)%:E.
 Proof.
-by rewrite /normalize; unlock => /=; rewrite /mnormalize; case: ifPn.
+by rewrite /pnormalize; unlock => /=; rewrite /mnormalize; case: ifPn.
+Qed.
+
+Lemma dnormalizeE (f : R.-sfker X ~> Y) P x U :
+  dnormalize x f P U =
+  if (f x [set: Y] == 0) || (f x [set: Y] == +oo) then P U
+  else f x U * ((fine (f x [set: Y]))^-1)%:E.
+Proof.
+by rewrite /dnormalize; unlock => /=; rewrite /mnormalize; case: ifPn.
 Qed.
 
 Lemma iteE (f : X -> bool) (mf : measurable_fun setT f)
@@ -563,8 +574,10 @@ by rewrite ger0_norm// ?f0//= muleC.
 Qed.
 
 (* example of property *)
-Lemma score_score (f : R -> R) (g : R * unit -> R) (mf : measurable_fun setT f) (mg : measurable_fun setT g) x U :
-  letin (score mf) (score mg) x U = if U == set0 then 0 else `|g (x, tt)|%:E * `|f x|%:E.
+Lemma score_score (f : R -> R) (g : R * unit -> R) (mf : measurable_fun setT f)
+    (mg : measurable_fun setT g) x U :
+  letin (score mf) (score mg) x U =
+  if U == set0 then 0 else `|f x|%:E * `|g (x, tt)|%:E.
 Proof.
 rewrite {1}/letin.
 unlock.
@@ -572,7 +585,7 @@ rewrite scoreE'//=.
 rewrite /mscale/= diracE !normr_id.
 have [->|->]:= set_unit U.
   by rewrite eqxx in_set0 mule0 mul0e.
-by rewrite in_setT mule1 (negbTE (setT0 _)).
+by rewrite in_setT mule1 (negbTE (setT0 _)) muleC.
 Qed.
 
 End insn1_lemmas.
@@ -765,7 +778,7 @@ Variable P : probability mbool R.
 Import Notations.
 
 Definition staton_bus_annotated : R.-pker T ~> mbool :=
-  normalize (letin
+  pnormalize (letin
     (sample (bernoulli p27) : _.-sfker T ~> mbool)
     (letin
       (letin
@@ -810,7 +823,7 @@ rewrite -!muleA; congr (_ * _ + _ * _).
   by rewrite scoreE// => r r0; exact: poisson_ge0.
 Qed.
 
-Definition staton_bus : R.-pker T ~> mbool := normalize staton_bus' P.
+Definition staton_bus : R.-pker T ~> mbool := pnormalize staton_bus' P.
 
 Lemma staton_busE t U :
   let N := ((2 / 7%:R)    * poisson 3%:R 4 +
@@ -820,7 +833,26 @@ Lemma staton_busE t U :
    (5%:R / 7%:R)%:E * (poisson 10%:R 4)%:E * \d_false U) * N^-1%:E.
 Proof.
 rewrite /staton_bus.
-rewrite normalizeE /=.
+rewrite pnormalizeE /=.
+rewrite !staton_bus'E.
+rewrite diracE mem_set// mule1.
+rewrite diracE mem_set// mule1.
+rewrite ifF //.
+apply/negbTE.
+by rewrite gt_eqF// lte_fin addr_gt0// mulr_gt0//= poisson_gt0.
+Qed.
+
+Definition dstaton_bus (t : T) : probability mbool R := dnormalize t staton_bus' P.
+
+Lemma dstaton_busE t U :
+  let N := ((2 / 7%:R)    * poisson 3%:R 4 +
+            (5%:R / 7%:R) * poisson 10%:R 4)%R in
+  dstaton_bus t U =
+  ((2 / 7%:R)%:E    * (poisson 3%:R 4)%:E * \d_true U +
+   (5%:R / 7%:R)%:E * (poisson 10%:R 4)%:E * \d_false U) * N^-1%:E.
+Proof.
+rewrite /staton_bus.
+rewrite dnormalizeE /=.
 rewrite !staton_bus'E.
 rewrite diracE mem_set// mule1.
 rewrite diracE mem_set// mule1.
@@ -831,69 +863,96 @@ Qed.
 
 End staton_bus.
 
-(* wip *)
+(* TODO: move *)
+Section measurable_fun_pair.
+Variables (d d' d3 : _) (X : measurableType d)
+  (Y : measurableType d') (Z : measurableType d3).
+
+Lemma measurable_fun_pair (f : X -> Y) (g : X -> Z) :
+  measurable_fun setT f ->
+  measurable_fun setT g ->
+  measurable_fun setT (fun x => (f x, g x)).
+Proof.
+by move=> mf mg; apply/prod_measurable_funP.
+Qed.
+
+End measurable_fun_pair.
+
+(* TODO: move *)
+Lemma finite_kernel_measure (d d' : _) (X : measurableType d)
+    (Y : measurableType d') (R : realType) (k : R.-fker X ~> Y) (x : X) :
+  finite_measure (k x).
+Proof.
+have [r k_r] := measure_uub k.
+by rewrite /finite_measure (@lt_trans _ _ r%:E) ?ltey.
+Qed.
+
+Lemma sfinite_kernel_measure (d d' : _) (X : measurableType d)
+    (Y : measurableType d') (R : realType) (k : R.-sfker X ~> Y) (x : X) :
+  sfinite_measure (k x).
+Proof.
+have [k_ k_E] := sfinite k.
+exists (fun n => k_ n x); split; last by move=> A mA; rewrite k_E.
+by move=> n; exact: finite_kernel_measure.
+Qed.
 
 Section letinC.
+Variables (d d1 : _) (X : measurableType d) (Y : measurableType d1).
+Variables (R : realType) (d' : _) (Z : measurableType d').
 
-Variables (d d' d3 d4 : _) (R : realType) (X : measurableType d)
-  (Y : measurableType d') (Z : measurableType d3) (U : measurableType d4).
+Notation var2_of3 := (measurable_fun_comp (@measurable_fun_snd _ _ _ _)
+                                          (@measurable_fun_fst _ _ _ _)).
+Notation var3_of3 := (@measurable_fun_snd _ _ _ _).
 
-Let f (xyz : unit * X * X) := (xyz.1.2, xyz.2).
+Variables (t : R.-sfker Z ~> X)
+          (t' : R.-sfker [the measurableType _ of (Z * Y)%type] ~> X)
+          (tt' : forall y, t =1 fun z => t' (z, y))
+          (u : R.-sfker Z ~> Y)
+          (u' : R.-sfker [the measurableType _ of (Z * X)%type] ~> Y)
+          (uu' : forall x, u =1 fun z => u' (z, x)).
 
-Lemma mf : measurable_fun setT f.
-Proof.
-rewrite /=.
-apply/prod_measurable_funP => /=; split.
-  rewrite /f.
-  rewrite (_ : _ \o _ = (fun xyz : unit * X * X => xyz.1.2))//.
-  apply: measurable_fun_comp => /=.
-    exact: measurable_fun_snd.
-  exact: measurable_fun_fst.
-rewrite (_ : _ \o _ = (fun xyz : unit * X * X => xyz.2))//.
-apply: measurable_fun_comp => /=.
-  exact: measurable_fun_snd.
-exact: measurable_fun_id.
-Qed.
-
-Let f' := @swap _ _ \o f.
-Lemma mf' : measurable_fun setT f'.
-Proof.
-rewrite /=.
-apply: measurable_fun_comp => /=.
-  exact: measurable_fun_swap.
-exact: mf.
-Qed.
-
-Variables (t : R.-sfker Datatypes_unit__canonical__measure_Measurable ~> X)
-          (t' : R.-sfker [the measurableType _ of (unit * X)%type] ~> X)
-          (u : R.-sfker Datatypes_unit__canonical__measure_Measurable ~> X)
-          (u' : R.-sfker [the measurableType _ of (unit * X)%type] ~> X)
-          (H1 : forall y, u tt = u' (tt, y))
-          (H2 : forall y, t tt = t' (tt, y)).
-
-Lemma letinC x A : measurable A ->
-  letin t (letin u' (ret R mf)) x A = letin u (letin t' (ret R mf')) x A.
+Lemma letinC z A : measurable A ->
+  letin t
+  (letin u'
+  (ret R (measurable_fun_pair var2_of3 var3_of3))) z A =
+  letin u
+  (letin t'
+  (ret R (measurable_fun_pair var3_of3 var2_of3))) z A.
 Proof.
 move=> mA.
 rewrite !letinE.
-destruct x.
-rewrite /f/=.
 under eq_integral.
   move=> x _.
-  rewrite letinE/=.
-  rewrite -H1.
+  rewrite letinE/= -uu'.
   under eq_integral do rewrite retE /=.
   over.
-rewrite /=.
-rewrite (@sfinite_fubini _ _ X X R t u (fun x => \d_(x.1, x.2) A ))//=.
-apply eq_integral => x _.
-  rewrite letinE/=.
-  rewrite -H2.
-  apply eq_integral => // x' _.
-  by rewrite retE.
-apply/EFin_measurable_fun => /=.
-rewrite (_ : (fun x => _) = mindic R mA)//.
-by apply/funext => -[a b] /=.
+rewrite (sfinite_fubini  _ _ (fun x => \d_(x.1, x.2) A ))//; last 3 first.
+  exact: sfinite_kernel_measure.
+  exact: sfinite_kernel_measure.
+  apply/EFin_measurable_fun => /=; rewrite (_ : (fun x => _) = mindic R mA)//.
+  by apply/funext => -[].
+apply eq_integral => y _.
+by rewrite letinE/= -tt'; apply eq_integral => // x _; rewrite retE.
 Qed.
 
 End letinC.
+
+Section dist_salgebra_instance.
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables p0 : probability T R.
+
+Definition prob_pointed := Pointed.Class
+  (Choice.Class gen_eqMixin (Choice.Class gen_eqMixin gen_choiceMixin)) p0.
+
+Canonical probability_eqType := EqType (probability T R) prob_pointed.
+Canonical probability_choiceType := ChoiceType (probability T R) prob_pointed.
+Canonical probability_ptType := PointedType (probability T R) prob_pointed.
+
+Definition mset (U : set T) (r : R) := [set mu : probability T R | mu U < r%:E].
+
+Definition pset : set (set (probability T R)) :=
+  [set mset U r | r in `[0%R,1%R]%classic & U in @measurable d T].
+
+Definition sset := [the measurableType pset.-sigma of salgebraType pset].
+
+End dist_salgebra_instance.

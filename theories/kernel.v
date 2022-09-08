@@ -8,14 +8,21 @@ Require Import lebesgue_measure fsbigop numfun lebesgue_integral.
 (******************************************************************************)
 (*                                  Kernels                                   *)
 (*                                                                            *)
-(*      R.-ker X ~> Y == kernel                                               *)
-(*    R.-sfker X ~> Y == s-finite kernel                                      *)
-(*     R.-fker X ~> Y == finite kernel                                        *)
-(*     R.-pker X ~> Y == probability kernel                                   *)
-(*     sum_of_kernels ==                                                      *)
-(*             l \; k == composition of kernels                               *)
-(*          kdirac mf == kernel defined by a measurable function              *)
-(*         kadd k1 k2 ==                                                      *)
+(* This file provides a formation of kernels and extends the theory of        *)
+(* measure with, e.g., Fubini's theorem for s-finite measures.                *)
+(*                                                                            *)
+(*       R.-ker X ~> Y == kernel                                              *)
+(*             kseries == countable sum of kernels                            *)
+(*     R.-sfker X ~> Y == s-finite kernel                                     *)
+(*      R.-fker X ~> Y == finite kernel                                       *)
+(*      R.-pker X ~> Y == probability kernel                                  *)
+(*   finite_measure mu == the measure mu is finite                            *)
+(*  sfinite_measure mu == the measure my is s-finite                          *)
+(*      kprobability m == kernel defined by a probability measure             *)
+(*           kdirac mf == kernel defined by a measurable function             *)
+(*          kadd k1 k2 == lifting of the addition of measures to kernels      *)
+(*        mnormalize f == normalization of a kernel to a probability          *)
+(*              l \; k == composition of kernels                              *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -256,12 +263,27 @@ apply: measurableU.
   exact: emeasurable_itv_ninfty_bnd.
 exact: emeasurable_itv_bnd_pinfty.
 Qed.
+
+Section fubini_tonelli. (* TODO: move to lebesgue_integral.v *)
+Local Open Scope ereal_scope.
+Variables (d1 d2 : measure_display).
+Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
+Hypotheses (sm1 : sigma_finite setT m1) (sm2 : sigma_finite setT m2).
+Variables (f : T1 * T2 -> \bar R) (f0 : forall xy, 0 <= f xy).
+Variables (mf : measurable_fun setT f).
+
+Lemma fubini_tonelli :
+  \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
+Proof. by rewrite -fubini_tonelli1// fubini_tonelli2. Qed.
+
+End fubini_tonelli.
 (*/ PR*)
 
-Reserved Notation "R .-ker X ~> Y" (at level 42).
-Reserved Notation "R .-fker X ~> Y" (at level 42).
-Reserved Notation "R .-sfker X ~> Y" (at level 42).
-Reserved Notation "R .-pker X ~> Y" (at level 42).
+Reserved Notation "R .-ker X ~> Y" (at level 42, format "R .-ker  X  ~>  Y").
+Reserved Notation "R .-fker X ~> Y" (at level 42, format "R .-fker  X  ~>  Y").
+Reserved Notation "R .-sfker X ~> Y" (at level 42, format "R .-sfker  X  ~>  Y").
+Reserved Notation "R .-pker X ~> Y" (at level 42, format "R .-pker  X  ~>  Y").
 
 HB.mixin Record isKernel d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) :=
@@ -275,42 +297,35 @@ Notation "R .-ker X ~> Y" := (kernel X Y R).
 
 Arguments measurable_kernel {_ _ _ _ _} _.
 
-Section sum_of_kernels.
+Section kseries.
 Variables (d d' : measure_display) (R : realType).
 Variables (X : measurableType d) (Y : measurableType d').
 Variable k : (R.-ker X ~> Y)^nat.
 
-Definition sum_of_kernels : X -> {measure set Y -> \bar R} :=
+Definition kseries : X -> {measure set Y -> \bar R} :=
   fun x => [the measure _ _ of mseries (k ^~ x) 0].
 
-Lemma kernel_measurable_fun_sum_of_kernels (U : set Y) :
+Lemma measurable_fun_kseries (U : set Y) :
   measurable U ->
-  measurable_fun setT (sum_of_kernels ^~ U).
+  measurable_fun setT (kseries ^~ U).
 Proof.
-move=> mU; rewrite /sum_of_kernels /= /mseries.
-rewrite [X in measurable_fun _ X](_ : _ =
-  (fun x => elim_sup (fun n => \sum_(0 <= i < n) k i x U))); last first.
-  apply/funext => x; rewrite -lim_mkord is_cvg_elim_supE.
-    by rewrite -lim_mkord.
-  exact: is_cvg_nneseries.
-apply: measurable_fun_elim_sup => n.
-by apply: emeasurable_fun_sum => *; exact/measurable_kernel.
+move=> mU; rewrite /kseries /= /mseries.
+by apply: ge0_emeasurable_fun_sum => // n; apply/measurable_kernel.
 Qed.
 
 HB.instance Definition _ :=
-  isKernel.Build _ _ _ _ _ sum_of_kernels
-    kernel_measurable_fun_sum_of_kernels.
+  isKernel.Build _ _ _ _ _ kseries measurable_fun_kseries.
 
-End sum_of_kernels.
+End kseries.
 
-Lemma integral_sum_of_kernels
+Lemma integral_kseries
   (d d' : _) (X : measurableType d) (Y : measurableType d')
   (R : realType) (k : (R.-ker X ~> Y)^nat) (f : Y -> \bar R) x :
   (forall y, 0 <= f y) ->
   measurable_fun setT f ->
-  \int[sum_of_kernels k x]_y (f y) = \sum_(i <oo) \int[k i x]_y (f y).
+  \int[kseries k x]_y (f y) = \sum_(i <oo) \int[k i x]_y (f y).
 Proof.
-by move=> f0 mf; rewrite /sum_of_kernels/= ge0_integral_measure_series.
+by move=> f0 mf; rewrite /kseries/= ge0_integral_measure_series.
 Qed.
 
 Section measure_fam_uub.
@@ -371,8 +386,7 @@ HB.mixin Record isSFinite
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) := {
   sfinite : exists s : (R.-fker X ~> Y)^nat,
-    forall x U, measurable U ->
-      k x U = [the measure _ _ of mseries (s ^~ x) 0] U }.
+    forall x U, measurable U -> k x U = kseries s x U }.
 
 #[short(type=sfinite_kernel)]
 HB.structure Definition SFiniteKernel
@@ -447,8 +461,9 @@ HB.end.
 
 (* see measurable_prod_subset in lebesgue_integral.v;
    the differences between the two are:
-   - m2 is a kernel instead of a measure
-   - m2D_bounded holds for all x *)
+   - m2 is a kernel instead of a measure (the proof uses the
+     measurability of each measure of the family)
+   - as a consequence, m2D_bounded holds for all x *)
 Section measurable_prod_subset_kernel.
 Variables (d1 d2 : _) (T1 : measurableType d1) (T2 : measurableType d2)
           (R : realType).
@@ -515,19 +530,14 @@ Lemma measurable_fun_xsection_finite_kernel A :
   A \in measurable -> measurable_fun setT (phi A).
 Proof.
 move: A; suff : measurable `<=` B by move=> + A; rewrite inE => /[apply] -[].
-move=> X mX.
-rewrite /B/=; split => //.
-rewrite /phi.
+move=> /= X mX; rewrite /B/=; split => //; rewrite /phi.
 rewrite -(_ : (fun x => mrestr (m2 x) measurableT (xsection X x)) =
-              (fun x => (m2 x) (xsection X x)))//; last first.
+              (fun x => m2 x (xsection X x)))//; last first.
   by apply/funext => x//=; rewrite /mrestr setIT.
-apply measurable_prod_subset_xsection_kernel => //.
-move=> x.
-have [r hr] := measure_uub m2.
-exists r => Y mY.
-apply: (le_lt_trans _ (hr x)) => //.
-rewrite /mrestr.
-by apply le_measure => //; rewrite inE//; exact: measurableI.
+apply measurable_prod_subset_xsection_kernel => // x.
+have [r hr] := measure_uub m2; exists r => Y mY.
+rewrite (le_lt_trans _ (hr x)) // /mrestr /= setIT.
+by apply: le_measure => //; rewrite inE.
 Qed.
 
 End measurable_fun_xsection_finite_kernel.
@@ -566,11 +576,11 @@ rewrite (_ : (fun x => _) =
   - by move=> y _ m n mn; rewrite lee_fin; exact/lefP/ndk_.
 apply: measurable_fun_elim_sup => n.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x => \int[l x]_y
-  (\sum_(r <- fset_set (range (k_ n)))
+  (\sum_(r <- fset_set (range (k_ n)))(*TODO: upd when the PR is merged*)
      r * \1_(k_ n @^-1` [set r]) (x, y))%:E)); last first.
   by apply/funext => x; apply: eq_integral => y _; rewrite fimfunE.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x =>
-  \sum_(r <- fset_set (range (k_ n)))
+  \sum_(r <- fset_set (range (k_ n)))(*TODO: upd when the PR is merged*)
     (\int[l x]_y (r * \1_(k_ n @^-1` [set r]) (x, y))%:E))); last first.
   apply/funext => x; rewrite -ge0_integral_sum//.
   - by apply: eq_integral => y _; rewrite sumEFin.
@@ -631,6 +641,367 @@ End measurable_fun_integral_finite_sfinite.
 Arguments measurable_fun_xsection_integral {_ _ _ _ _} l k.
 Arguments measurable_fun_integral_finite_kernel {_ _ _ _ _} l k.
 Arguments measurable_fun_integral_sfinite_kernel {_ _ _ _ _} l k.
+
+(*HB.mixin Record isFiniteMeasure d (R : numFieldType) (T : semiRingOfSetsType d)
+  (mu : set T -> \bar R) := {
+  finite_measure : mu setT < +oo
+}.
+
+#[short(type=fmeasure)]
+HB.structure Definition FiniteMeasure d (R : realFieldType)
+    (T : semiRingOfSetsType d) :=
+  {mu of isMeasure d R T mu & isFiniteMeasure d R T mu}.
+
+Notation "{ 'fmeasure' 'set' T '->' '\bar' R }" := (@fmeasure _ R T)
+  (at level 36, T, R at next level,
+    format "{ 'fmeasure'  'set'  T  '->'  '\bar'  R }") : ring_scope.*)
+
+Definition finite_measure d (T : measurableType d) (R : realType)
+    (mu : set T -> \bar R) :=
+  mu setT < +oo.
+
+Definition sfinite_measure d (T : measurableType d) (R : realType)
+    (mu : set T -> \bar R) :=
+  exists mu_ : {measure set T -> \bar R}^nat,
+    (forall n, finite_measure (mu_ n)) /\
+    (forall U, measurable U -> mu U = mseries mu_ 0 U).
+
+Lemma finite_measure_sigma_finite d (T : measurableType d) (R : realType)
+  (mu : {measure set T -> \bar R}) :
+  finite_measure mu -> sigma_finite setT mu.
+Proof.
+exists (fun i => if i \in [set 0%N] then setT else set0).
+  by rewrite -bigcup_mkcondr setTI bigcup_const//; exists 0%N.
+move=> n; split; first by case: ifPn.
+by case: ifPn => // _; rewrite ?measure0//; exact: finite_measure.
+Qed.
+
+Section sfinite_fubini.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d') (R : realType).
+Variables (m1 : {measure set X -> \bar R}) (sfm1 : sfinite_measure m1).
+Variables (m2 : {measure set Y -> \bar R}) (sfm2 : sfinite_measure m2).
+Variables (f : X * Y -> \bar R) (f0 : forall xy, 0 <= f xy).
+Variable (mf : measurable_fun setT f).
+
+Lemma sfinite_fubini :
+  \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
+Proof.
+have [m1_ [fm1 m1E]] := sfm1.
+have [m2_ [fm2 m2E]] := sfm2.
+rewrite [LHS](eq_measure_integral [the measure _ _ of mseries m1_ 0]); last first.
+  by move=> A mA _; rewrite m1E.
+transitivity (\int[[the measure _ _ of mseries m1_ 0]]_x
+    \int[[the measure _ _ of mseries m2_ 0]]_y f (x, y)).
+  by apply eq_integral => x _; apply: eq_measure_integral => U mA _; rewrite m2E.
+transitivity (\sum_(n <oo) \int[m1_ n]_x \sum_(m <oo) \int[m2_ m]_y f (x, y)).
+  rewrite ge0_integral_measure_series; [|by []| |]; last 2 first.
+    by move=> t _; exact: integral_ge0.
+    rewrite [X in measurable_fun _ X](_ : _ =
+        fun x => \sum_(n <oo) \int[m2_ n]_y f (x, y)); last first.
+      apply/funext => x.
+      by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
+    apply: ge0_emeasurable_fun_sum; first by move=> k x; exact: integral_ge0.
+    move=> k; apply: measurable_fun_fubini_tonelli_F => //=.
+    exact: finite_measure_sigma_finite.
+  apply: eq_nneseries => n _; apply eq_integral => x _.
+  by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
+transitivity (\sum_(n <oo) \sum_(m <oo) \int[m1_ n]_x \int[m2_ m]_y f (x, y)).
+  apply eq_nneseries => n _.
+  rewrite integral_sum(*TODO: rename to ge0_integral_sum*)//.
+    move=> m; apply: measurable_fun_fubini_tonelli_F => //=.
+    exact: finite_measure_sigma_finite.
+  by move=> m x _; exact: integral_ge0.
+transitivity (\sum_(n <oo) \sum_(m <oo) \int[m2_ m]_y \int[m1_ n]_x f (x, y)).
+  apply eq_nneseries => n _; apply eq_nneseries => m _.
+  by rewrite fubini_tonelli//; exact: finite_measure_sigma_finite.
+transitivity (\sum_(n <oo) \int[[the measure _ _ of mseries m2_ 0]]_y \int[m1_ n]_x f (x, y)).
+  apply eq_nneseries => n _ /=.  rewrite ge0_integral_measure_series//.
+    by move=> y _; exact: integral_ge0.
+  apply: measurable_fun_fubini_tonelli_G => //=.
+  by apply: finite_measure_sigma_finite; exact: fm1.
+transitivity (\int[[the measure _ _ of mseries m2_ 0]]_y \sum_(n <oo) \int[m1_ n]_x f (x, y)).
+  rewrite integral_sum//.
+    move=> n; apply: measurable_fun_fubini_tonelli_G => //=.
+    by apply: finite_measure_sigma_finite; exact: fm1.
+  by move=> n y _; exact: integral_ge0.
+transitivity (\int[[the measure _ _ of mseries m2_ 0]]_y
+              \int[[the measure _ _ of mseries m1_ 0]]_x f (x, y)).
+  apply eq_integral => y _.
+  by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod2.
+transitivity (\int[m2]_y \int[mseries m1_ 0]_x f (x, y)).
+  by apply eq_measure_integral => A mA _ /=; rewrite m2E.
+by apply eq_integral => y _; apply eq_measure_integral => A mA _ /=; rewrite m1E.
+Qed.
+
+End sfinite_fubini.
+Arguments sfinite_fubini {d d' X Y R m1} _ {m2} _ f.
+
+Lemma finite_kernel_finite_measure d (T : measurableType d) (R : realType)
+  (mu : R.-fker Datatypes_unit__canonical__measure_Measurable ~> T) :
+  mu tt setT < +oo.
+Proof.
+have [M muM] := measure_uub mu.
+by rewrite /finite_measure (lt_le_trans (muM tt))// leey.
+Qed.
+
+Section kprobability.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (m : probability Y R).
+
+Definition kprobability : X -> {measure set Y -> \bar R} := fun _ : X => m.
+
+Let measurable_fun_kprobability U : measurable U ->
+  measurable_fun setT (kprobability ^~ U).
+Proof. by move=> mU; exact: measurable_fun_cst. Qed.
+
+HB.instance Definition _ :=
+  @isKernel.Build _ _ X Y R kprobability measurable_fun_kprobability.
+
+Let kprobability_prob x : kprobability x setT = 1.
+Proof. by rewrite /kprobability/= probability_setT. Qed.
+
+HB.instance Definition _ :=
+  @isProbabilityKernel.Build _ _ X Y R kprobability kprobability_prob.
+
+End kprobability.
+
+Section kdirac.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (f : X -> Y).
+
+Definition kdirac (mf : measurable_fun setT f)
+    : X -> {measure set Y -> \bar R} :=
+  fun x : X => [the measure _ _ of dirac (f x)].
+
+Hypothesis mf : measurable_fun setT f.
+
+Let measurable_fun_kdirac U : measurable U ->
+  measurable_fun setT (kdirac mf ^~ U).
+Proof.
+move=> mU; apply/EFin_measurable_fun.
+by rewrite (_ : (fun x => _) = mindic R mU \o f)//; exact/measurable_fun_comp.
+Qed.
+
+HB.instance Definition _ := isKernel.Build _ _ _ _ _ (kdirac mf)
+  measurable_fun_kdirac.
+
+Let kdirac_prob x : kdirac mf x setT = 1.
+Proof. by rewrite /kdirac/= diracE in_setT. Qed.
+
+HB.instance Definition _ := isProbabilityKernel.Build _ _ _ _ _
+  (kdirac mf) kdirac_prob.
+
+End kdirac.
+Arguments kdirac {d d' X Y R f}.
+
+Section kadd.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (k1 k2 : R.-ker X ~> Y).
+
+Definition kadd : X -> {measure set Y -> \bar R} :=
+  fun x => [the measure _ _ of measure_add (k1 x) (k2 x)].
+
+Let measurable_fun_kadd U : measurable U ->
+  measurable_fun setT (kadd ^~ U).
+Proof.
+move=> mU; rewrite /kadd.
+rewrite (_ : (fun _ => _) = (fun x => k1 x U + k2 x U)); last first.
+  by apply/funext => x; rewrite -measure_addE.
+by apply: emeasurable_funD; exact/measurable_kernel.
+Qed.
+
+HB.instance Definition _ :=
+  @isKernel.Build _ _ _ _ _ kadd measurable_fun_kadd.
+End kadd.
+
+Section fkadd.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (k1 k2 : R.-fker X ~> Y).
+
+Let kadd_finite_uub : measure_fam_uub (kadd k1 k2).
+Proof.
+have [f1 hk1] := measure_uub k1; have [f2 hk2] := measure_uub k2.
+exists (f1 + f2)%R => x; rewrite /kadd /=.
+rewrite -/(measure_add (k1 x) (k2 x)).
+by rewrite measure_addE EFinD; exact: lte_add.
+Qed.
+
+HB.instance Definition _ t :=
+  isFiniteFam.Build _ _ _ _ R (kadd k1 k2) kadd_finite_uub.
+End fkadd.
+
+Section sfkadd.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (k1 k2 : R.-sfker X ~> Y).
+
+Let sfinite_kadd : exists k_ : (R.-fker _ ~> _)^nat,
+  forall x U, measurable U ->
+    kadd k1 k2 x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
+Proof.
+have [f1 hk1] := sfinite k1.
+have [f2 hk2] := sfinite k2.
+exists (fun n => [the finite_kernel _ _ _ of kadd (f1 n) (f2 n)]) => x U mU.
+rewrite /kadd/=.
+rewrite -/(measure_add (k1 x) (k2 x)) measure_addE.
+rewrite /mseries.
+rewrite hk1//= hk2//= /mseries.
+rewrite -nneseriesD//.
+apply: eq_nneseries => n _.
+by rewrite -/(measure_add (f1 n x) (f2 n x)) measure_addE.
+Qed.
+
+HB.instance Definition _ t :=
+  isSFinite.Build _ _ _ _ R (kadd k1 k2) sfinite_kadd.
+End sfkadd.
+
+Section kernel_measurable_preimage.
+Variables (d d' : _) (T : measurableType d) (T' : measurableType d').
+Variable R : realType.
+
+Lemma measurable_eq_cst (f : R.-ker T ~> T') k :
+  measurable [set t | f t setT == k].
+Proof.
+rewrite [X in measurable X](_ : _ = (f ^~ setT) @^-1` [set k]); last first.
+  by apply/seteqP; split => t/= /eqP.
+have /(_ measurableT [set k]) := measurable_kernel f setT measurableT.
+by rewrite setTI; exact.
+Qed.
+
+Lemma measurable_neq_cst (f : R.-ker T ~> T') k :
+  measurable [set t | f t setT != k].
+Proof.
+rewrite [X in measurable X](_ : _ = (f ^~ setT) @^-1` [set~ k]); last first.
+  by apply/seteqP; split => t /eqP.
+have /(_ measurableT [set~ k]) := measurable_kernel f setT measurableT.
+by rewrite setTI; apply => //; exact: measurableC.
+Qed.
+
+End kernel_measurable_preimage.
+
+Lemma measurable_fun_eq_cst (d d' : _) (T : measurableType d)
+    (T' : measurableType d') (R : realType) (f : R.-ker T ~> T') k :
+  measurable_fun setT (fun t => f t setT == k).
+Proof.
+move=> _ /= B mB; rewrite setTI.
+have [/eqP->|/eqP->|/eqP->|/eqP->] := set_boolE B.
+- exact: measurable_eq_cst.
+- rewrite (_ : _ @^-1` _ = [set b | f b setT != k]); last first.
+    by apply/seteqP; split => [t /negbT//|t /negbTE].
+  exact: measurable_neq_cst.
+- by rewrite preimage_set0.
+- by rewrite preimage_setT.
+Qed.
+
+Section mnormalize.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (f : X -> {measure set Y -> \bar R}).
+Variable P : probability Y R.
+
+Definition mnormalize x U :=
+  let evidence := f x [set: Y] in
+  if (evidence == 0) || (evidence == +oo) then P U
+  else f x U * (fine evidence)^-1%:E.
+
+Let mnormalize0 x : mnormalize x set0 = 0.
+Proof.
+by rewrite /mnormalize; case: ifPn => // _; rewrite measure0 mul0e.
+Qed.
+
+Let mnormalize_ge0 x U : 0 <= mnormalize x U.
+Proof. by rewrite /mnormalize; case: ifPn => //; case: ifPn. Qed.
+
+Lemma mnormalize_sigma_additive x : semi_sigma_additive (mnormalize x).
+Proof.
+move=> F mF tF mUF; rewrite /mnormalize/=.
+case: ifPn => [_|_].
+  exact: measure_semi_sigma_additive.
+rewrite (_ : (fun n => _) = ((fun n => \sum_(0 <= i < n) f x (F i)) \*
+                          cst ((fine (f x setT))^-1)%:E)); last first.
+  by apply/funext => n; rewrite -ge0_sume_distrl.
+by apply: ereal_cvgMr => //; exact: measure_semi_sigma_additive.
+Qed.
+
+HB.instance Definition _ x := isMeasure.Build _ _ _ (mnormalize x)
+  (mnormalize0 x) (mnormalize_ge0 x) (@mnormalize_sigma_additive x).
+
+Lemma mnormalize1 x : mnormalize x setT = 1.
+Proof.
+rewrite /mnormalize; case: ifPn; first by rewrite probability_setT.
+rewrite negb_or => /andP[ft0 ftoo].
+have ? : f x setT \is a fin_num.
+  by rewrite ge0_fin_numE// lt_neqAle ftoo/= leey.
+by rewrite -{1}(@fineK _ (f x setT))// -EFinM divrr// ?unitfE fine_eq0.
+Qed.
+
+HB.instance Definition _ x :=
+  isProbability.Build _ _ _ (mnormalize x) (mnormalize1 x).
+
+End mnormalize.
+
+Section knormalize.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (f : R.-ker X ~> Y).
+
+Definition knormalize (P : probability Y R) :=
+  fun t => [the measure _ _ of mnormalize f P t].
+
+Variable P : probability Y R.
+
+Let measurable_fun_knormalize U :
+  measurable U -> measurable_fun setT (knormalize P ^~ U).
+Proof.
+move=> mU; rewrite /knormalize/= /mnormalize /=.
+rewrite (_ : (fun _ => _) = (fun x =>
+     if f x setT == 0 then P U else if f x setT == +oo then P U
+     else f x U * ((fine (f x setT))^-1)%:E)); last first.
+  apply/funext => x; case: ifPn => [/orP[->//|->]|].
+    by case: ifPn.
+  by rewrite negb_or=> /andP[/negbTE -> /negbTE ->].
+apply: measurable_fun_if => //.
+- exact: measurable_fun_eq_cst.
+- exact: measurable_fun_cst.
+- apply: measurable_fun_if => //.
+  + rewrite setTI [X in measurable X](_ : _ = [set t | f t setT != 0]); last first.
+      by apply/seteqP; split => [x /negbT//|x /negbTE].
+    exact: measurable_neq_cst.
+  + exact: measurable_fun_eq_cst.
+  + exact: measurable_fun_cst.
+  + apply: emeasurable_funM.
+      by have := measurable_kernel f U mU; exact: measurable_funS.
+    apply/EFin_measurable_fun.
+    apply: (measurable_fun_comp' (F := [set r : R | r != 0%R])) => //.
+    * exact: open_measurable.
+    * move=> /= r [t] [] [_ H1] H2 H3.
+      apply/eqP => H4; subst r.
+      move/eqP : H4.
+      rewrite fine_eq0 ?H1//.
+      rewrite ge0_fin_numE//.
+      by rewrite lt_neqAle leey H2.
+    * apply: open_continuous_measurable_fun => //.
+      apply/in_setP => x /= x0.
+      by apply: inv_continuous.
+    * apply: measurable_fun_comp => /=.
+        exact: measurable_fun_fine.
+      by have := measurable_kernel f _ measurableT; exact: measurable_funS.
+Qed.
+
+HB.instance Definition _ := isKernel.Build _ _ _ _ R (knormalize P)
+  measurable_fun_knormalize.
+
+Let knormalize1 x : knormalize P x setT = 1.
+Proof.
+rewrite /knormalize/= /mnormalize.
+case: ifPn => [_|]; first by rewrite probability_setT.
+rewrite negb_or => /andP[fx0 fxoo].
+have ? : f x setT \is a fin_num by rewrite ge0_fin_numE// lt_neqAle fxoo/= leey.
+rewrite -{1}(@fineK _ (f x setT))//=.
+by rewrite -EFinM divrr// ?lte_fin ?ltr1n// ?unitfE fine_eq0.
+Qed.
+
+HB.instance Definition _ :=
+  @isProbabilityKernel.Build _ _ _ _ _ (knormalize P) knormalize1.
+
+End knormalize.
 
 Section kcomp_def.
 Variables (d1 d2 d3 : _) (X : measurableType d1) (Y : measurableType d2)
@@ -733,56 +1104,31 @@ Variable k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z.
 Import KCOMP_FINITE_KERNEL.
 
 Lemma mkcomp_sfinite : exists k_ : (R.-fker X ~> Z)^nat, forall x U, measurable U ->
-  (l \; k) x U = [the measure _ _ of mseries (k_ ^~ x) O] U.
+  (l \; k) x U = kseries k_ x U.
 Proof.
-have [k_ hk_] := sfinite k.
-have [l_ hl_] := sfinite l.
-pose K := [the kernel _ _ _ of sum_of_kernels k_].
-pose L := [the kernel _ _ _ of sum_of_kernels l_].
-have H1 x U : measurable U -> (l \; k) x U = (L \; K) x U.
-  move=> mU /=.
-  rewrite /kcomp /L /K /=.
-  (* TODO: lemma so that we can get away with a rewrite *)
-  transitivity (\int[
-    [the measure _ _ of mseries (l_ ^~ x) 0] ]_y k (x, y) U).
-    by apply eq_measure_integral => A mA _; rewrite hl_.
-  by apply eq_integral => y _; rewrite hk_.
-have H2 x U : (L \; K) x U =
-  \int[mseries (l_ ^~ x) 0]_y (\sum_(i <oo) k_ i (x, y) U).
-  exact: eq_integral.
-have H3 x U : measurable U ->
-     \int[mseries (l_ ^~ x) 0]_y (\sum_(i <oo) k_ i (x, y) U) =
-     \sum_(i <oo) \int[mseries (l_ ^~ x) 0]_y (k_ i (x, y) U).
-   move=> mU.
-   rewrite integral_sum//= => n.
-   have := measurable_kernel (k_ n) _ mU.
-   by move=> /measurable_fun_prod1; exact.
-have H4 x U : measurable U ->
-    \sum_(i <oo) \int[mseries (l_ ^~ x) 0]_y (k_ i (x, y) U) =
-    \sum_(i <oo) \sum_(j <oo) \int[l_ j x]_y k_ i (x, y) U.
-  move=> mU.
-  apply: eq_nneseries => i _.
-  rewrite integral_sum_of_kernels//.
-  have := measurable_kernel (k_ i) _ mU.
-  by move=> /measurable_fun_prod1; exact.
-have H5 x U : \sum_(i <oo) \sum_(j <oo) \int[l_ j x]_y k_ i (x, y) U =
-  \sum_(i <oo) \sum_(j <oo) (l_ j \; k_ i) x U.
-  by apply eq_nneseries => i _; exact: eq_nneseries.
-suff: exists k_0 : (R.-fker X ~> Z) ^nat, forall x U,
-    \esum_(i in setT) ((l_ i.2) \; (k_ i.1)) x U = \sum_(i <oo) k_0 i x U.
-  move=> [kl_ hkl_].
-  exists kl_ => x U mU.
-  rewrite /= H1// H2 H3// H4// H5// /mseries -hkl_/=.
-  rewrite (_ : setT = setT `*`` (fun=> setT)); last by apply/seteqP; split.
-  rewrite -(@esum_esum _ _ _ _ _ (fun i j => (l_ j \; k_ i) x U))//.
-  rewrite nneseries_esum; last by move=> n _; exact: nneseries_ge0.
-  by rewrite fun_true; apply: eq_esum => /= i _; rewrite nneseries_esum// fun_true.
-rewrite /=.
-have /ppcard_eqP[f] : ([set: nat] #= [set: nat * nat])%card.
-  by rewrite card_eq_sym; exact: card_nat2.
-exists (fun i => [the _.-fker _ ~> _ of (l_ (f i).2) \; (k_ (f i).1)]) => x U.
-rewrite (reindex_esum [set: nat] [set: nat * nat] f)//.
-by rewrite nneseries_esum// fun_true.
+have [k_ hk_] := sfinite k; have [l_ hl_] := sfinite l.
+have [kl hkl] : exists kl : (R.-fker X ~> Z) ^nat, forall x U,
+    \esum_(i in setT) (l_ i.2 \; k_ i.1) x U = \sum_(i <oo) kl i x U.
+  have /ppcard_eqP[f] : ([set: nat] #= [set: nat * nat])%card.
+    by rewrite card_eq_sym; exact: card_nat2.
+  exists (fun i => [the _.-fker _ ~> _ of l_ (f i).2 \; k_ (f i).1]) => x U.
+  by rewrite (reindex_esum [set: nat] _ f)// nneseries_esum// fun_true.
+exists kl => x U mU.
+transitivity (([the _.-ker _ ~> _ of kseries l_] \;
+               [the _.-ker _ ~> _ of kseries k_]) x U).
+  rewrite /= /kcomp [in RHS](eq_measure_integral (l x)); last first.
+    by move=> *; rewrite hl_.
+  by apply: eq_integral => y _; rewrite hk_.
+rewrite /= /kcomp/= integral_sum//=; last first.
+  by move=> n; have /measurable_fun_prod1 := measurable_kernel (k_ n) _ mU; exact.
+transitivity (\sum_(i <oo) \sum_(j <oo) (l_ j \; k_ i) x U).
+  apply: eq_nneseries => i _; rewrite integral_kseries//.
+  by have /measurable_fun_prod1 := measurable_kernel (k_ i) _ mU; exact.
+rewrite /mseries -hkl/=.
+rewrite (_ : setT = setT `*`` (fun=> setT)); last by apply/seteqP; split.
+rewrite -(@esum_esum _ _ _ _ _ (fun i j => (l_ j \; k_ i) x U))//.
+rewrite nneseries_esum; last by move=> n _; exact: nneseries_ge0.
+by rewrite fun_true; apply: eq_esum => /= i _; rewrite nneseries_esum// fun_true.
 Qed.
 
 Lemma measurable_fun_mkcomp_sfinite U : measurable U ->
@@ -995,386 +1341,3 @@ exact: f_f.
 Qed.
 
 End integral_kcomp.
-
-Definition finite_measure d (T : measurableType d) (R : realType) (mu : set T -> \bar R) :=
-  mu setT < +oo.
-
-Lemma finite_kernel_finite_measure d (T : measurableType d) (R : realType)
-  (mu : R.-fker Datatypes_unit__canonical__measure_Measurable ~> T) :
-  finite_measure (mu tt).
-Proof.
-have [M muM] := measure_uub mu.
-by rewrite /finite_measure (lt_le_trans (muM tt))// leey.
-Qed.
-
-Lemma finite_measure_sigma_finite d (T : measurableType d) (R : realType)
-  (mu : {measure set T -> \bar R}) :
-  finite_measure mu -> sigma_finite setT mu.
-Proof.
-rewrite /finite_measure => muoo.
-exists (fun i => if i \in [set 0%N] then setT else set0).
-  by rewrite -bigcup_mkcondr setTI bigcup_const//; exists 0%N.
-move=> n; split; first by case: ifPn.
-by case: ifPn => // _; rewrite measure0.
-Qed.
-
-Section finite_fubini.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d') (R : realType).
-Variables (mu : {measure set X -> \bar R}) (fmu : finite_measure mu).
-Variables (la : {measure set Y -> \bar R}) (fla : finite_measure la).
-Variables (f : X * Y -> \bar R) (f0 : forall xy, 0 <= f xy).
-Variables (mf : measurable_fun setT f).
-
-Lemma finite_fubini :
-  \int[mu]_x \int[la]_y f (x, y) = \int[la]_y \int[mu]_x f (x, y).
-Proof.
-rewrite -fubini_tonelli1//.
-  exact: finite_measure_sigma_finite.
-move=> H.
-rewrite fubini_tonelli2//.
-exact: finite_measure_sigma_finite.
-Qed.
-
-End finite_fubini.
-
-Section sfinite_fubini.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d') (R : realType).
-Variables (mu : R.-sfker Datatypes_unit__canonical__measure_Measurable ~> X).
-Variables (la : R.-sfker Datatypes_unit__canonical__measure_Measurable ~> Y).
-Variables (f : X * Y -> \bar R) (f0 : forall xy, 0 <= f xy).
-Variable (mf : measurable_fun setT f).
-
-Lemma sfinite_fubini :
-  \int[mu tt]_x \int[la tt]_y f (x, y) = \int[la tt]_y \int[mu tt]_x f (x, y).
-Proof.
-have [mu_ mu_E] := sfinite mu.
-have [la_ la_E] := sfinite la.
-transitivity (
-  \int[[the measure _ _ of mseries (fun i => mu_ i tt) 0]]_x
-  \int[la tt]_y f (x, y)).
-  apply: eq_measure_integral => U mU _. (* TODO: awkward *)
-  by rewrite mu_E.
-transitivity (
-  \int[[the measure _ _ of mseries (fun i => mu_ i tt) 0]]_x
-  \int[[the measure _ _ of mseries (fun i => la_ i tt) 0]]_y f (x, y)).
-  apply eq_integral => x _.
-  apply: eq_measure_integral => U mU _. (* TODO: awkward *)
-  by rewrite la_E.
-transitivity (\sum_(n <oo) \int[mu_ n tt]_x \sum_(m <oo) \int[la_ m tt]_y f (x, y)).
-  rewrite ge0_integral_measure_series; last 3 first.
-    by [].
-    by move=> t _; exact: integral_ge0 => x _.
-    rewrite [X in measurable_fun _ X](_ : _ =
-      fun x => \sum_(n <oo) \int[la_ n tt]_y f (x, y)); last first.
-      apply/funext => x.
-      rewrite ge0_integral_measure_series//.
-      exact/measurable_fun_prod1.
-    apply: ge0_emeasurable_fun_sum => //.
-      by move=> k x; exact: integral_ge0.
-    move=> k.
-    apply: measurable_fun_fubini_tonelli_F => //=.
-    apply: finite_measure_sigma_finite.
-    exact: finite_kernel_finite_measure.
-  apply: eq_nneseries => n _; apply eq_integral => x _.
-  rewrite ge0_integral_measure_series//.
-  exact/measurable_fun_prod1.
-transitivity (\sum_(n <oo) \sum_(m <oo) \int[mu_ n tt]_x \int[la_ m tt]_y f (x, y)).
-  apply eq_nneseries => n _.
-  rewrite integral_sum(*TODO: ge0_integral_sum*)//.
-    move=> m.
-    apply: measurable_fun_fubini_tonelli_F => //=.
-    apply: finite_measure_sigma_finite.
-    exact: finite_kernel_finite_measure.
-  by move=> m x _; exact: integral_ge0.
-transitivity (\sum_(n <oo) \sum_(m <oo) \int[la_ m tt]_y \int[mu_ n tt]_x f (x, y)).
-  apply eq_nneseries => n _; apply eq_nneseries => m _.
-  rewrite finite_fubini//.
-  exact: finite_kernel_finite_measure.
-  exact: finite_kernel_finite_measure.
-transitivity (\sum_(n <oo) \int[[the measure _ _ of mseries (fun i => la_ i tt) 0]]_y \int[mu_ n tt]_x f (x, y)).
-  apply eq_nneseries => n _.
-  rewrite /= ge0_integral_measure_series//.
-    by move=> y _; exact: integral_ge0.
-  apply: measurable_fun_fubini_tonelli_G => //=.
-  apply: finite_measure_sigma_finite.
-  exact: finite_kernel_finite_measure.
-rewrite /=.
-transitivity (\int[[the measure _ _ of mseries (fun i => la_ i tt) 0]]_y \sum_(n <oo) \int[mu_ n tt]_x f (x, y)).
-  rewrite integral_sum//.
-    move=> n.
-    apply: measurable_fun_fubini_tonelli_G => //=.
-    apply: finite_measure_sigma_finite.
-    exact: finite_kernel_finite_measure.
-  by move=> n y _; exact: integral_ge0.
-rewrite /=.
-transitivity (\int[[the measure _ _ of mseries (fun i => la_ i tt) 0]]_y \int[[the measure _ _ of mseries (fun i => mu_ i tt) 0]]_x f (x, y)).
-  apply eq_integral => y _.
-  rewrite ge0_integral_measure_series//.
-  exact/measurable_fun_prod2.
-rewrite /=.
-transitivity (\int[la tt]_y \int[mseries (fun i : nat => mu_ i tt) 0]_x f (x, y)).
-  apply eq_measure_integral => A mA _ /=.
-  by rewrite la_E.
-apply eq_integral => y _.
-apply eq_measure_integral => A mA _ /=.
-by rewrite mu_E.
-Qed.
-
-End sfinite_fubini.
-
-Section kprobability.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (m : probability Y R).
-
-Definition kprobability : X -> {measure set Y -> \bar R} := fun _ : X => m.
-
-Let measurable_fun_kprobability U : measurable U ->
-  measurable_fun setT (kprobability ^~ U).
-Proof. by move=> mU; exact: measurable_fun_cst. Qed.
-
-HB.instance Definition _ :=
-  @isKernel.Build _ _ X Y R kprobability measurable_fun_kprobability.
-
-Let kprobability_prob x : kprobability x setT = 1.
-Proof. by rewrite /kprobability/= probability_setT. Qed.
-
-HB.instance Definition _ :=
-  @isProbabilityKernel.Build _ _ X Y R kprobability kprobability_prob.
-
-End kprobability.
-
-Section kdirac.
-Variables (d d' : _) (T : measurableType d) (Y : measurableType d').
-Variables (R : realType) (f : T -> Y).
-
-Definition kdirac (mf : measurable_fun setT f) : T -> {measure set Y -> \bar R} :=
-  fun t => [the measure _ _ of dirac (f t)].
-
-Hypothesis mf : measurable_fun setT f.
-
-Let measurable_fun_kdirac U : measurable U -> measurable_fun setT (kdirac mf ^~ U).
-Proof.
-move=> mU; apply/EFin_measurable_fun.
-rewrite (_ : (fun x => _) = mindic R mU \o f)//.
-exact/measurable_fun_comp.
-Qed.
-
-HB.instance Definition _ := isKernel.Build _ _ _ _ R (kdirac mf)
-  measurable_fun_kdirac.
-
-Let kdirac_prob x : kdirac mf x setT = 1.
-Proof. by rewrite /kdirac/= diracE in_setT. Qed.
-
-HB.instance Definition _ :=
-  @isProbabilityKernel.Build _ _ _ _ _ (kdirac mf) kdirac_prob.
-
-End kdirac.
-Arguments kdirac {d d' T Y R f}.
-
-Section kadd.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k1 k2 : R.-ker X ~> Y).
-
-Definition kadd : X -> {measure set Y -> \bar R} :=
-  fun t => [the measure _ _ of measure_add (k1 t) (k2 t)].
-
-Let measurable_fun_kadd U : measurable U -> measurable_fun setT (kadd ^~ U).
-Proof.
-move=> mU; rewrite /kadd.
-rewrite (_ : (fun _ => _) = (fun x => k1 x U + k2 x U)); last first.
-  by apply/funext => x; rewrite -measure_addE.
-by apply: emeasurable_funD; exact/measurable_kernel.
-Qed.
-
-HB.instance Definition _ :=
-  @isKernel.Build _ _ _ _ _ kadd measurable_fun_kadd.
-End kadd.
-
-Section fkadd.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k1 k2 : R.-fker X ~> Y).
-
-Let kadd_finite_uub : measure_fam_uub (kadd k1 k2).
-Proof.
-have [f1 hk1] := measure_uub k1; have [f2 hk2] := measure_uub k2.
-exists (f1 + f2)%R => x; rewrite /kadd /=.
-rewrite -/(measure_add (k1 x) (k2 x)).
-by rewrite measure_addE EFinD; exact: lte_add.
-Qed.
-
-HB.instance Definition _ t :=
-  isFiniteFam.Build _ _ _ _ R (kadd k1 k2) kadd_finite_uub.
-End fkadd.
-
-Section sfkadd.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k1 k2 : R.-sfker X ~> Y).
-
-Let sfinite_kadd : exists k_ : (R.-fker _ ~> _)^nat,
-  forall x U, measurable U ->
-    kadd k1 k2 x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
-Proof.
-have [f1 hk1] := sfinite k1.
-have [f2 hk2] := sfinite k2.
-exists (fun n => [the finite_kernel _ _ _ of kadd (f1 n) (f2 n)]) => x U mU.
-rewrite /kadd/=.
-rewrite -/(measure_add (k1 x) (k2 x)) measure_addE.
-rewrite /mseries.
-rewrite hk1//= hk2//= /mseries.
-rewrite -nneseriesD//.
-apply: eq_nneseries => n _.
-by rewrite -/(measure_add (f1 n x) (f2 n x)) measure_addE.
-Qed.
-
-HB.instance Definition _ t :=
-  isSFinite.Build _ _ _ _ R (kadd k1 k2) sfinite_kadd.
-End sfkadd.
-
-Section kernel_measurable_preimage.
-Variables (d d' : _) (T : measurableType d) (T' : measurableType d').
-Variable R : realType.
-
-Lemma measurable_eq_cst (f : R.-ker T ~> T') k :
-  measurable [set t | f t setT == k].
-Proof.
-rewrite [X in measurable X](_ : _ = (f ^~ setT) @^-1` [set k]); last first.
-  by apply/seteqP; split => t/= /eqP.
-have /(_ measurableT [set k]) := measurable_kernel f setT measurableT.
-by rewrite setTI; exact.
-Qed.
-
-Lemma measurable_neq_cst (f : R.-ker T ~> T') k :
-  measurable [set t | f t setT != k].
-Proof.
-rewrite [X in measurable X](_ : _ = (f ^~ setT) @^-1` [set~ k]); last first.
-  by apply/seteqP; split => t /eqP.
-have /(_ measurableT [set~ k]) := measurable_kernel f setT measurableT.
-by rewrite setTI; apply => //; exact: measurableC.
-Qed.
-
-End kernel_measurable_preimage.
-
-Lemma measurable_fun_eq_cst (d d' : _) (T : measurableType d)
-    (T' : measurableType d') (R : realType) (f : R.-ker T ~> T') k :
-  measurable_fun setT (fun t => f t setT == k).
-Proof.
-move=> _ /= B mB; rewrite setTI.
-have [/eqP->|/eqP->|/eqP->|/eqP->] := set_boolE B.
-- exact: measurable_eq_cst.
-- rewrite (_ : _ @^-1` _ = [set b | f b setT != k]); last first.
-    by apply/seteqP; split => [t /negbT//|t /negbTE].
-  exact: measurable_neq_cst.
-- by rewrite preimage_set0.
-- by rewrite preimage_setT.
-Qed.
-
-Section mnormalize.
-Variables (d d' : _) (T : measurableType d) (Y : measurableType d').
-Variables (R : realType) (f : T -> {measure set Y -> \bar R}).
-Variable P : probability Y R.
-
-Definition mnormalize t U :=
-  let evidence := f t setT in
-  if (evidence == 0) || (evidence == +oo) then P U
-  else f t U * (fine evidence)^-1%:E.
-
-Let mnormalize0 t : mnormalize t set0 = 0.
-Proof.
-by rewrite /mnormalize; case: ifPn => // _; rewrite measure0 mul0e.
-Qed.
-
-Let mnormalize_ge0 t U : 0 <= mnormalize t U.
-Proof. by rewrite /mnormalize; case: ifPn => //; case: ifPn. Qed.
-
-Lemma mnormalize_sigma_additive t : semi_sigma_additive (mnormalize t).
-Proof.
-move=> F mF tF mUF; rewrite /mnormalize/=.
-case: ifPn => [_|_].
-  exact: measure_semi_sigma_additive.
-rewrite (_ : (fun n => _) = ((fun n => \sum_(0 <= i < n) f t (F i)) \*
-                          cst ((fine (f t setT))^-1)%:E)); last first.
-  by apply/funext => n; rewrite -ge0_sume_distrl.
-by apply: ereal_cvgMr => //; exact: measure_semi_sigma_additive.
-Qed.
-
-HB.instance Definition _ (t : T) := isMeasure.Build _ _ _ (mnormalize t)
-  (mnormalize0 t) (mnormalize_ge0 t) (@mnormalize_sigma_additive t).
-
-Lemma mnormalize1 t : mnormalize t setT = 1.
-Proof.
-rewrite /mnormalize; case: ifPn; first by rewrite probability_setT.
-rewrite negb_or => /andP[ft0 ftoo].
-have ? : f t setT \is a fin_num.
-  by rewrite ge0_fin_numE// lt_neqAle ftoo/= leey.
-by rewrite -{1}(@fineK _ (f t setT))// -EFinM divrr// ?unitfE fine_eq0.
-Qed.
-
-HB.instance Definition _ t :=
-  isProbability.Build _ _ _ (mnormalize t) (mnormalize1 t).
-
-End mnormalize.
-
-Section knormalize.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (f : R.-ker X ~> Y).
-
-Definition knormalize (P : probability Y R) :=
-  fun t => [the measure _ _ of mnormalize f P t].
-
-Variable P : probability Y R.
-
-Let measurable_fun_knormalize U :
-  measurable U -> measurable_fun setT (knormalize P ^~ U).
-Proof.
-move=> mU; rewrite /knormalize/= /mnormalize /=.
-rewrite (_ : (fun _ => _) = (fun x =>
-     if f x setT == 0 then P U else if f x setT == +oo then P U
-     else f x U * ((fine (f x setT))^-1)%:E)); last first.
-  apply/funext => x; case: ifPn => [/orP[->//|->]|].
-    by case: ifPn.
-  by rewrite negb_or=> /andP[/negbTE -> /negbTE ->].
-apply: measurable_fun_if => //.
-- exact: measurable_fun_eq_cst.
-- exact: measurable_fun_cst.
-- apply: measurable_fun_if => //.
-  + rewrite setTI [X in measurable X](_ : _ = [set t | f t setT != 0]); last first.
-      by apply/seteqP; split => [x /negbT//|x /negbTE].
-    exact: measurable_neq_cst.
-  + exact: measurable_fun_eq_cst.
-  + exact: measurable_fun_cst.
-  + apply: emeasurable_funM.
-      by have := measurable_kernel f U mU; exact: measurable_funS.
-    apply/EFin_measurable_fun.
-    apply: (measurable_fun_comp' (F := [set r : R | r != 0%R])) => //.
-    * exact: open_measurable.
-    * move=> /= r [t] [] [_ H1] H2 H3.
-      apply/eqP => H4; subst r.
-      move/eqP : H4.
-      rewrite fine_eq0 ?H1//.
-      rewrite ge0_fin_numE//.
-      by rewrite lt_neqAle leey H2.
-    * apply: open_continuous_measurable_fun => //.
-      apply/in_setP => x /= x0.
-      by apply: inv_continuous.
-    * apply: measurable_fun_comp => /=.
-        exact: measurable_fun_fine.
-      by have := measurable_kernel f _ measurableT; exact: measurable_funS.
-Qed.
-
-HB.instance Definition _ := isKernel.Build _ _ _ _ R (knormalize P)
-  measurable_fun_knormalize.
-
-Let knormalize1 x : knormalize P x setT = 1.
-Proof.
-rewrite /knormalize/= /mnormalize.
-case: ifPn => [_|]; first by rewrite probability_setT.
-rewrite negb_or => /andP[fx0 fxoo].
-have ? : f x setT \is a fin_num by rewrite ge0_fin_numE// lt_neqAle fxoo/= leey.
-rewrite -{1}(@fineK _ (f x setT))//=.
-by rewrite -EFinM divrr// ?lte_fin ?ltr1n// ?unitfE fine_eq0.
-Qed.
-
-HB.instance Definition _ :=
-  @isProbabilityKernel.Build _ _ _ _ _ (knormalize P) knormalize1.
-
-End knormalize.
