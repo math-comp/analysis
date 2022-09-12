@@ -11,7 +11,14 @@
   + lemmas `integral_fune_lt_pinfty`, `integral_fune_fin_num`
   + lemma `weak_subspace_open`
 
+- in `constructive_ereal.v`:
+  + lemmas `gte_addl`, `gte_addr`
+
 ### Changed
+
+- in `constructive_ereal.v`:
+  + lemmas `lee_paddl`, `lte_paddl`, `lee_paddr`, `lte_paddr`, `lte_spaddr` generalized to `realDomainType`
+
 
 ### Renamed
 

@@ -1523,6 +1523,12 @@ Qed.
 Lemma gte_subr y x : y \is a fin_num -> 0 < x -> - x + y < y.
 Proof. rewrite addeC; exact: gte_subl. Qed.
 
+Lemma gte_addl x y : x \is a fin_num -> y < 0 -> x + y < x.
+Proof. by move=> ? ?; rewrite -(oppeK y) gte_subl// lte_oppr oppe0. Qed.
+
+Lemma gte_addr x y : x \is a fin_num -> y < 0 -> y + x < x.
+Proof. rewrite addeC; exact: gte_addl. Qed.
+
 Lemma lte_add2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
 Proof.
 move: a b x => [a| |] [b| |] [x| |] _ //; rewrite ?(ltey, ltNye)//.
@@ -2299,6 +2305,24 @@ Qed.
 Lemma lee_pmul2r x : x \is a fin_num -> 0 < x -> {mono *%E^~ x : x y / x <= y}.
 Proof. by move=> xfin x0 y z; rewrite -2!(muleC x) lee_pmul2l. Qed.
 
+Lemma lee_paddl y x z : 0 <= x -> y <= z -> y <= x + z.
+Proof. by move=> *; rewrite -[y]add0e lee_add. Qed.
+
+Lemma lte_paddl y x z : 0 <= x -> y < z -> y < x + z.
+Proof. by move=> x0 /lt_le_trans; apply; rewrite lee_paddl. Qed.
+
+Lemma lee_paddr y x z : 0 <= x -> y <= z -> y <= z + x.
+Proof. by move=> *; rewrite addeC lee_paddl. Qed.
+
+Lemma lte_paddr y x z : 0 <= x -> y < z -> y < z + x.
+Proof. by move=> *; rewrite addeC lte_paddl. Qed.
+
+Lemma lte_spaddr z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
+Proof.
+move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin, lte_fin, ltey) //.
+exact: ltr_spaddr.
+Qed.
+
 End ERealArithTh_realDomainType.
 Arguments lee_sum_nneg_ord {R}.
 Arguments lee_sum_npos_ord {R}.
@@ -2713,24 +2737,6 @@ have xmy_gt0 : (0 < (x - y) / 2)%R by rewrite ltr_pdivl_mulr// mul0r subr_gt0.
 move: (xleye (PosNum xmy_gt0)); apply/negP; rewrite -ltNge /= -EFinD lte_fin.
 rewrite [Y in (Y + _)%R]splitr [X in (_ < X)%R]splitr.
 by rewrite -!mulrDl ltr_pmul2r// addrCA addrK ltr_add2l.
-Qed.
-
-Lemma lee_paddl y x z : 0 <= x -> y <= z -> y <= x + z.
-Proof. by move=> *; rewrite -[y]add0e lee_add. Qed.
-
-Lemma lte_paddl y x z : 0 <= x -> y < z -> y < x + z.
-Proof. by move=> x0 /lt_le_trans; apply; rewrite lee_paddl. Qed.
-
-Lemma lee_paddr y x z : 0 <= x -> y <= z -> y <= z + x.
-Proof. by move=> *; rewrite addeC lee_paddl. Qed.
-
-Lemma lte_paddr y x z : 0 <= x -> y < z -> y < z + x.
-Proof. by move=> *; rewrite addeC lte_paddl. Qed.
-
-Lemma lte_spaddr z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
-Proof.
-move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin, lte_fin, ltey) //.
-exact: ltr_spaddr.
 Qed.
 
 Lemma lee_mul01Pr x y : 0 <= x ->
