@@ -38,6 +38,7 @@ theories/numfun.v
 theories/lebesgue_integral.v
 theories/kernel.v
 theories/prob_lang.v
+theories/wip.v
 theories/summability.v
 theories/signed.v
 theories/itv.v

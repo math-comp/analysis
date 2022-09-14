@@ -313,9 +313,8 @@ Definition finite_measure d (T : measurableType d) (R : realType)
 
 Definition sfinite_measure d (T : measurableType d) (R : realType)
     (mu : set T -> \bar R) :=
-  exists mu_ : {measure set T -> \bar R}^nat,
-    (forall n, finite_measure (mu_ n)) /\
-    (forall U, measurable U -> mu U = mseries mu_ 0 U).
+  exists2 mu_ : {measure set T -> \bar R}^nat,
+    forall n, finite_measure (mu_ n) & forall U, measurable U -> mu U = mseries mu_ 0 U.
 
 Lemma finite_measure_sigma_finite d (T : measurableType d) (R : realType)
   (mu : {measure set T -> \bar R}) :
@@ -337,8 +336,8 @@ Variable (mf : measurable_fun setT f).
 Lemma sfinite_fubini :
   \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
 Proof.
-have [m1_ [fm1 m1E]] := sfm1.
-have [m2_ [fm2 m2E]] := sfm2.
+have [m1_ fm1 m1E] := sfm1.
+have [m2_ fm2 m2E] := sfm2.
 rewrite [LHS](eq_measure_integral [the measure _ _ of mseries m1_ 0]); last first.
   by move=> A mA _; rewrite m1E.
 transitivity (\int[[the measure _ _ of mseries m1_ 0]]_x
@@ -417,7 +416,7 @@ Lemma measurable_fun_kseries (U : set Y) :
   measurable_fun setT (kseries ^~ U).
 Proof.
 move=> mU; rewrite /kseries /= /mseries.
-by apply: ge0_emeasurable_fun_sum => // n; apply/measurable_kernel.
+by apply: ge0_emeasurable_fun_sum => // n; exact/measurable_kernel.
 Qed.
 
 HB.instance Definition _ :=
@@ -579,7 +578,7 @@ Lemma sfinite_kernel_measure (d d' : _) (X : measurableType d)
   sfinite_measure (k x).
 Proof.
 have [k_ k_E] := sfinite k.
-exists (fun n => k_ n x); split; last by move=> A mA; rewrite k_E.
+exists (fun n => k_ n x); last by move=> A mA; rewrite k_E.
 by move=> n; exact: finite_kernel_measure.
 Qed.
 
@@ -589,48 +588,51 @@ Qed.
      measurability of each measure of the family)
    - as a consequence, m2D_bounded holds for all x *)
 Section measurable_prod_subset_kernel.
-Variables (d1 d2 : _) (T1 : measurableType d1) (T2 : measurableType d2)
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d')
           (R : realType).
-Implicit Types A : set (T1 * T2).
+Implicit Types A : set (X * Y).
 
 Section xsection_kernel.
-Variable (m2 : R.-ker T1 ~> T2) (D : set T2) (mD : measurable D).
-Let m2D x := mrestr (m2 x) mD.
-HB.instance Definition _ x := Measure.on (m2D x).
-Let phi A := fun x => m2D x (xsection A x).
-Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
+Variable (k : R.-ker X ~> Y) (D : set Y) (mD : measurable D).
+Let kD x := mrestr (k x) mD.
+HB.instance Definition _ x := Measure.on (kD x).
+Let phi A := fun x => kD x (xsection A x).
+Let XY := [set A | measurable A /\ measurable_fun setT (phi A)].
 
-Lemma measurable_prod_subset_xsection_kernel
-    (m2D_bounded : forall x, exists M, forall X, measurable X -> (m2D x X < M%:E)%E) :
-  measurable `<=` B.
+Let phiM (A : set X) B : phi (A `*` B) = (fun x => kD x B * (\1_A x)%:E).
 Proof.
-rewrite measurable_prod_measurableType.
-set C := [set A1 `*` A2 | A1 in measurable & A2 in measurable].
+rewrite funeqE => x; rewrite indicE /phi/=.
+have [xA|xA] := boolP (x \in A); first by rewrite mule1 in_xsectionM.
+by rewrite mule0 notin_xsectionM// set0I measure0.
+Qed.
+
+Lemma measurable_prod_subset_xsection_kernel :
+    (forall x, exists M, forall X, measurable X -> kD x X < M%:E) ->
+  measurable `<=` XY.
+Proof.
+move=> kD_ub; rewrite measurable_prod_measurableType.
+set C := [set A `*` B | A in measurable & B in measurable].
 have CI : setI_closed C.
-  move=> X Y [X1 mX1 [X2 mX2 <-{X}]] [Y1 mY1 [Y2 mY2 <-{Y}]].
+  move=> _ _ [X1 mX1 [X2 mX2 <-]] [Y1 mY1 [Y2 mY2 <-]].
   exists (X1 `&` Y1); first exact: measurableI.
   by exists (X2 `&` Y2); [exact: measurableI|rewrite setMI].
 have CT : C setT by exists setT => //; exists setT => //; rewrite setMTT.
-have CB : C `<=` B.
-  move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableM.
-  have -> : phi (X1 `*` X2) = (fun x => m2D x X2 * (\1_X1 x)%:E)%E.
-    rewrite funeqE => x; rewrite indicE /phi /m2/= /mrestr.
-    have [xX1|xX1] := boolP (x \in X1); first by rewrite mule1 in_xsectionM.
-    by rewrite mule0 notin_xsectionM// set0I measure0.
+have CXY : C `<=` XY.
+  move=> _ [A mA [B mB <-]]; split; first exact: measurableM.
+  rewrite phiM.
   apply: emeasurable_funM => //; first exact/measurable_kernel/measurableI.
-  apply/EFin_measurable_fun.
-  by rewrite (_ : \1_ _ = mindic R mX1).
-suff monoB : monotone_class setT B by exact: monotone_class_subset.
-split => //; [exact: CB| |exact: xsection_ndseq_closed].
-move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
-suff : phi (X `\` Y) = (fun x => phi X x - phi Y x)%E.
+  by apply/EFin_measurable_fun; rewrite (_ : \1_ _ = mindic R mA).
+suff monoB : monotone_class setT XY by exact: monotone_class_subset.
+split => //; [exact: CXY| |exact: xsection_ndseq_closed].
+move=> A B BA [mA mphiA] [mB mphiB]; split; first exact: measurableD.
+suff : phi (A `\` B) = (fun x => phi A x - phi B x).
   by move=> ->; exact: emeasurable_funB.
-rewrite funeqE => x; rewrite /phi/= xsectionD// /m2D measureD.
+rewrite funeqE => x; rewrite /phi/= xsectionD// measureD.
 - by rewrite setIidr//; exact: le_xsection.
 - exact: measurable_xsection.
 - exact: measurable_xsection.
-- move: (m2D_bounded x) => [M m2M].
-  rewrite (lt_le_trans (m2M (xsection X x) _))// ?leey//.
+- have [M kM] := kD_ub x.
+  rewrite (lt_le_trans (kM (xsection A x) _)) ?leey//.
   exact: measurable_xsection.
 Qed.
 
@@ -642,26 +644,24 @@ End measurable_prod_subset_kernel.
    the difference is that this section uses a finite kernel m2
    instead of a sigma-finite measure m2 *)
 Section measurable_fun_xsection_finite_kernel.
-Variables (d1 d2 : _) (T1 : measurableType d1) (T2 : measurableType d2)
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d')
           (R : realType).
-Variable m2 : R.-fker T1 ~> T2.
-Implicit Types A : set (T1 * T2).
+Variable k : R.-fker X ~> Y.
+Implicit Types A : set (X * Y).
 
-Let phi A := fun x => m2 x (xsection A x).
-Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
+Let phi A := fun x => k x (xsection A x).
+Let XY := [set A | measurable A /\ measurable_fun setT (phi A)].
 
 Lemma measurable_fun_xsection_finite_kernel A :
   A \in measurable -> measurable_fun setT (phi A).
 Proof.
-move: A; suff : measurable `<=` B by move=> + A; rewrite inE => /[apply] -[].
-move=> /= X mX; rewrite /B/=; split => //; rewrite /phi.
-rewrite -(_ : (fun x => mrestr (m2 x) measurableT (xsection X x)) =
-              (fun x => m2 x (xsection X x)))//; last first.
+move: A; suff : measurable `<=` XY by move=> + A; rewrite inE => /[apply] -[].
+move=> /= A mA; rewrite /XY/=; split => //; rewrite (_ : phi _ =
+    (fun x => mrestr (k x) measurableT (xsection A x))); last first.
   by apply/funext => x//=; rewrite /mrestr setIT.
 apply measurable_prod_subset_xsection_kernel => // x.
-have [r hr] := measure_uub m2; exists r => Y mY.
-rewrite (le_lt_trans _ (hr x)) // /mrestr /= setIT.
-by apply: le_measure => //; rewrite inE.
+have [r hr] := measure_uub k; exists r => B mB.
+by rewrite (le_lt_trans _ (hr x)) // /mrestr /= setIT le_measure// inE.
 Qed.
 
 End measurable_fun_xsection_finite_kernel.

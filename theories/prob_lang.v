@@ -4,7 +4,6 @@ From mathcomp Require Import rat.
 Require Import mathcomp_extra boolp classical_sets signed functions cardinality.
 Require Import reals ereal topology normedtype sequences esum measure.
 Require Import lebesgue_measure fsbigop numfun lebesgue_integral exp kernel.
-Require Import exp.
 
 (******************************************************************************)
 (*      Semantics of a programming language PPL using s-finite kernels        *)
@@ -32,7 +31,7 @@ Require Import exp.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Def Num.ExtraDef Num.Theory.
 Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
@@ -84,14 +83,14 @@ Variables (d : _) (T : measurableType d).
 Variables (R : realType) (f : T -> R).
 
 Definition mscore t : {measure set _ -> \bar R} :=
-  let p := NngNum (@normr_ge0 _ _ (`| f t |)%R) in
+  let p := NngNum (normr_ge0 (f t)) in
   [the measure _ _ of mscale p [the measure _ _ of dirac tt]].
 
 Lemma mscoreE t U : mscore t U = if U == set0 then 0 else `| (f t)%:E |.
 Proof.
 rewrite /mscore/= /mscale/=; have [->|->] := set_unit U.
   by rewrite eqxx diracE in_set0 mule0.
-by rewrite diracE in_setT mule1 (negbTE (setT0 _)) normr_id.
+by rewrite diracE in_setT mule1 (negbTE (setT0 _)).
 Qed.
 
 Lemma measurable_fun_mscore U : measurable_fun setT f ->
@@ -566,7 +565,7 @@ Let kcomp_scoreE d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
   f (mf : measurable_fun setT f) r U :
   (score mf \; g) r U = `|f r|%:E * g (r, tt) U.
 Proof.
-rewrite /= /kcomp /kscore /= ge0_integral_mscale//= normr_id.
+rewrite /= /kcomp /kscore /= ge0_integral_mscale//=.
 by rewrite integral_dirac// indicE in_setT mul1e.
 Qed.
 
@@ -576,9 +575,7 @@ Lemma scoreE d' (T' : measurableType d') (x : T * T') (U : set T') (f : R -> R)
   score (measurable_fun_comp mf var2_of2)
     (x, r) (curry (snd \o fst) x @^-1` U) =
   (f r)%:E * \d_x.2 U.
-Proof.
-by rewrite /score/= /mscale/= normr_id ger0_norm// f0.
-Qed.
+Proof. by rewrite /score/= /mscale/= ger0_norm// f0. Qed.
 
 Lemma score_score (f : R -> R) (g : R * unit -> R)
     (mf : measurable_fun setT f)
@@ -588,7 +585,7 @@ Lemma score_score (f : R -> R) (g : R * unit -> R)
 Proof.
 rewrite {1}/letin.
 unlock.
-by rewrite kcomp_scoreE/= /mscale/= diracE !normr_id normrM muleA EFinM.
+by rewrite kcomp_scoreE/= /mscale/= diracE normrM muleA EFinM.
 Qed.
 
 End insn1_lemmas.
@@ -804,13 +801,13 @@ End sample_and_branch.
 
 Section staton_bus.
 Import Notations.
-Variables (R : realType) (d : _) (T : measurableType d) (density : R -> R).
-Hypothesis mdensity : measurable_fun setT density.
+Variables (R : realType) (d : _) (T : measurableType d) (h : R -> R).
+Hypothesis mh : measurable_fun setT h.
 Definition kstaton_bus : R.-sfker T ~> mbool :=
   letin (sample (bernoulli p27))
   (letin
     (letin (ite var2_of2 (ret k3) (ret k10))
-      (score (measurable_fun_comp mdensity var3_of3)))
+      (score (measurable_fun_comp mh var3_of3)))
     (ret var2_of3)).
 
 Definition staton_bus := normalize kstaton_bus.
