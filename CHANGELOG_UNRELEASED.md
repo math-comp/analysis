@@ -4,14 +4,14 @@
 
 ### Added
 - in `topology.v`:
-  + lemmas `subspace_restrict_domain`, `subspace_restrict_range`
+  + lemmas `continuous_subspaceT`, `subspaceT_continuous`
 
 ### Changed
 
 ### Renamed
 
 - in `topology.v`:
-  + renamed `continuous_subspaceT` to `continuous_subspaceT_in`
+  + renamed `continuous_subspaceT` to `continuous_in_subspaceT`
 
 ### Removed
 

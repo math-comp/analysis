@@ -5812,18 +5812,18 @@ apply: (cvg_trans _ ctsf); apply: cvg_fmap2; apply: cvg_within.
 by rewrite /subspace; exact: nbhs_filter.
 Qed.
 
-Lemma continuous_subspaceT_in {U} A (f : T -> U) :
+Lemma continuous_in_subspaceT {U} A (f : T -> U) :
   {in A, continuous f} -> {within A, continuous f}.
 Proof.
 rewrite continuous_subspace_in ?in_setP => ctsf t At.
 by apply continuous_subspaceT_for => //=; apply: ctsf.
 Qed.
 
-Lemma subspace_restrict_domain {U} A (f : T -> U) :
+Lemma continuous_subspaceT{U} A (f : T -> U) :
   continuous f -> {within A, continuous f}.
 Proof.
 move=> ctsf; rewrite continuous_subspace_in => ? ?. 
-by apply: continuous_subspaceT_in => ? ?.
+by apply: continuous_in_subspaceT => ? ?.
 Qed.
 
 Lemma continuous_open_subspace {U} A (f : T -> U) :
@@ -5855,7 +5855,7 @@ rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
 by case=> [][] ? ?; split=> []; [left; split | left | right; split | right]. 
 Qed.
 
-Lemma subspace_restrict_range {U} A (B : set U) (f : {fun A >-> B}) :
+Lemma subspaceT_continuous {U} A (B : set U) (f : {fun A >-> B}) :
   {within A, continuous f} -> continuous (f : subspace A -> subspace B).
 Proof.
 move=> /continuousP ctsf; apply/continuousP=> O /open_subspaceP [V].
@@ -6069,7 +6069,7 @@ Lemma continuous_localP {X Y : topologicalType} (f : X -> Y) :
   forall (x : X), \forall U \near powerset_filter_from (nbhs x),
     {within U, continuous f}.
 Proof.
-split; first by move=> ? ?; near=> U; apply: subspace_restrict_domain => ?; exact.
+split; first by move=> ? ?; near=> U; apply: continuous_subspaceT=> ?; exact.
 move=> + x => /(_ x)/near_powerset_filter_fromP.
 case; first by move=> ? ?; exact: continuous_subspaceW.
 move=> U nbhsU wctsf; wlog oU : U wctsf nbhsU / open U.
@@ -6195,7 +6195,7 @@ Lemma precompact_pointwise_precompact (W : set {family compact, X -> Y}) :
 Proof.
 move=> + x; rewrite ?precompactE => pcptW.
 have : compact (prod_topo_apply x @` (closure W)).
-  apply: continuous_compact => //; apply: subspace_restrict_domain => g.
+  apply: continuous_compact => //; apply: continuous_subspaceT=> g.
   move=> E nbhsE; have := (@prod_topo_apply_continuous _ _ x g E nbhsE).
   exact: (@pointwise_cvg_compact_family _ _ (nbhs g)).
 move=> /[dup]/(compact_closed hsdf)/closure_id -> /subclosed_compact.
@@ -6326,7 +6326,7 @@ apply/continuous_localP => x'; apply/near_powerset_filter_fromP.
   by move=> ? ?; exact: continuous_subspaceW.
 case: (@lcptX x') => // U; rewrite withinET => nbhsU [cptU _].
 exists U => //; apply: (uniform_limit_continuous_subspace PG _ _).
-  by near=> g; apply: subspace_restrict_domain; near: g; exact: GW.
+  by near=> g; apply: continuous_subspaceT; near: g; exact: GW.
 by move/fam_cvgP/(_ _ cptU) : Gf.
 Unshelve. end_near. Qed.
 

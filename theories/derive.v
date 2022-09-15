@@ -1507,7 +1507,7 @@ have gdrvbl x : x \in `]a, b[%R -> derivable g x 1.
   by move=> /fdrvbl dfx; apply: derivableB => //; exact/derivable1_diffP.
 have gcont : {within `[a, b], continuous g}.
   move=> x; apply: continuousD _ ; first by move=>?; exact: fcont.
-  by apply/continuousN/subspace_restrict_domain => ?; exact: scalel_continuous.
+  by apply/continuousN/continuous_subspaceT=> ?; exact: scalel_continuous.
 have gaegb : g a = g b.
   rewrite /g -![(_ - _ : _ -> _) _]/(_ - _).
   apply/eqP; rewrite -subr_eq /= opprK addrAC -addrA -scalerBl.
