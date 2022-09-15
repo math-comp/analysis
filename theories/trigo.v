@@ -560,10 +560,9 @@ Qed.
 Lemma cos_exists : exists2 pih : R, 1 <= pih <= 2 & cos pih = 0.
 Proof.
 have /IVT[] : minr (cos 1) (cos 2) <= (0 : R) <= maxr (cos 1) (cos 2).
-  - rewrite /minr /maxr ltNge (ltW (lt_trans cos2_lt0 cos1_gt0))/=.
-    by rewrite (ltW cos2_lt0)/= (ltW cos1_gt0).
+  - by rewrite le_maxr (ltW cos1_gt0) le_minl (ltW cos2_lt0) orbC.
   - by rewrite ler1n.
-  - by move=> *; apply/continuous_subspaceT=> ? _; exact: continuous_cos.
+  - by apply/continuous_subspaceT => ?; exact: continuous_cos.
 by move=> pih /itvP pihI chpi_eq0; exists pih; rewrite ?pihI.
 Qed.
 
@@ -577,7 +576,7 @@ case: (x =P y) => // /eqP xDy.
 have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
 have /(Rolle xLLs)[x1 _|x1|x1 x1I [_ x1D]] : cos x = cos y by rewrite cy0.
 - exact: derivable_cos.
-- by apply/continuous_subspaceT=> ? _; exact: continuous_cos.
+- by apply/continuous_subspaceT => ?; exact: continuous_cos.
 - have [_ /esym/eqP] := is_derive_cos x1; rewrite x1D oppr_eq0 => /eqP Hs.
   suff : 0 < sin x1 by rewrite Hs ltxx.
   apply/sin2_gt0/andP; split.
@@ -641,13 +640,13 @@ wlog : x / 0 <= x => [Hw|x_ge0].
 move=> /andP[x_gt0 xLpi2]; case: (ler0P (cos x)) => // cx_le0.
 have /IVT[]// : minr (cos 0) (cos x) <= 0 <= maxr (cos 0) (cos x).
   by rewrite cos0 /minr /maxr !ifN ?cx_le0 //= -leNgt (le_trans cx_le0).
-- by move=> *; apply/continuous_subspaceT=> ? _; apply: continuous_cos.
-move=> x1 /itvP Hx1 cx1_eq0.
+- by apply/continuous_subspaceT => ?; exact: continuous_cos.
+move=> x1 /itvP xx1 cx1_eq0.
 suff x1E : x1 = pi/2.
-  have : x1 < pi / 2 by apply: le_lt_trans xLpi2; rewrite Hx1.
+  have : x1 < pi / 2 by apply: le_lt_trans xLpi2; rewrite xx1.
   by rewrite x1E ltxx.
 apply: cos_02_uniq=> //; last by case pihalf_02_cos_pihalf => _ ->.
-  by rewrite Hx1 ltW // (lt_trans _ pihalf_lt2) // (le_lt_trans _ xLpi2) // Hx1.
+  by rewrite xx1 ltW // (lt_trans _ pihalf_lt2) // (le_lt_trans _ xLpi2) // xx1.
 by rewrite divr_ge0 ?(ltW pihalf_lt2)// pi_ge0.
 Qed.
 
@@ -732,7 +731,7 @@ move=> x y; rewrite !in_itv/= le_eqVlt; case: eqP => [<- _|_] /=.
   rewrite y_gt0; apply/idP.
   suff : cos y != 1 by case: ltrgtP (cos_le1 y).
   rewrite -cos0 eq_sym; apply/eqP => /Rolle [||x1|x1 /itvP x1I [_ x1D]] //.
-    by apply/continuous_subspaceT=> ? _; exact: continuous_cos.
+    by apply/continuous_subspaceT => ?; exact: continuous_cos.
   case: (is_derive_cos x1) => _ /eqP; rewrite x1D eq_sym oppr_eq0 => /eqP s_eq0.
   suff : 0 < sin x1 by rewrite s_eq0 ltxx.
   by apply: sin_gt0_pi; rewrite x1I /= (lt_le_trans (_ : _ < y)) ?x1I // yI.
@@ -747,7 +746,7 @@ rewrite le_eqVlt; case: eqP => /= [-> _ | _ /andP[y_gt0 y_ltpi]].
   rewrite cospi x_ltpi; apply/idP.
   suff : cos x != -1 by case: ltrgtP (cos_geN1 x).
   rewrite -cospi; apply/eqP => /Rolle [||x1|x1 /itvP x1I [_ x1D]] //.
-    by apply/continuous_subspaceT=> ? _; exact: continuous_cos.
+    by apply/continuous_subspaceT => ?; exact: continuous_cos.
   case: (is_derive_cos x1) => _ /eqP; rewrite x1D eq_sym oppr_eq0 => /eqP s_eq0.
   suff : 0 < sin x1 by rewrite s_eq0 ltxx.
   by apply: sin_gt0_pi; rewrite x1I /= (lt_le_trans (_ : _ < x)) ?x1I.
@@ -757,8 +756,8 @@ wlog xLy : x y x_gt0 x_ltpi y_gt0 y_ltpi / x <= y => [H | ].
 case: (x =P y) => [->| /eqP xDy]; first by rewrite ltxx.
 have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
 rewrite xLLs -subr_gt0 -opprB; rewrite -subr_gt0 in xLLs; apply/idP.
-have [x1|z /itvP zI ->] := @MVT_segment _ cos (-sin) _ _ xLy.
-  by apply/continuous_subspaceT=> ? _; exact: continuous_cos.
+have [x1|z /itvP zI ->] := @MVT_segment _ cos (- sin) _ _ xLy.
+  by apply/continuous_subspaceT => ?; exact: continuous_cos.
 rewrite -mulNr opprK mulr_gt0 //; apply: sin_gt0_pi.
 by rewrite (lt_le_trans x_gt0) ?zI //= (le_lt_trans _ y_ltpi) ?zI.
 Qed.
@@ -870,8 +869,7 @@ Proof. by move=> /is_derive_tan[]. Qed.
 
 Lemma ltr_tan : {in `](- (pi/2)), (pi/2)[ &, {mono tan : x y / x < y}}.
 Proof.
-move=> x y.
-wlog xLy : x y / x <= y => [H | ] xB yB.
+move=> x y; wlog xLy : x y / x <= y => [H xB yB|/itvP xB /itvP yB].
   case: (lerP x y) => [/H //->//|yLx].
   by rewrite !ltNge ltW ?(ltW yLx) // H // ltW.
 case: (x =P y) => [->| /eqP xDy]; first by rewrite ltxx.
@@ -879,16 +877,14 @@ have xLLs : x < y by rewrite le_eqVlt (negPf xDy) in xLy.
 rewrite -subr_gt0 xLLs; rewrite -subr_gt0 in xLLs; apply/idP.
 have [x1 /itvP x1I|z |] := @MVT_segment _ tan (fun x => (cos x) ^-2) _ _ xLy.
 - apply: is_derive_tan.
-  rewrite gt_eqF // cos_gt0_pihalf // (@lt_le_trans _  _ x) ?x1I ?(itvP xB)//=.
-  by rewrite (@le_lt_trans _  _ y) ?x1I ?(itvP yB).
-- apply/continuous_subspaceT=> ? inI; apply: continuous_tan.
-  rewrite /= inE /<=%O/= in inI; move/andP: inI => /= [? ?].
-  rewrite gt_eqF // cos_gt0_pihalf // (@lt_le_trans _  _ x) ?zI ?(itvP xB)//=.
-  rewrite (@le_lt_trans _  _ y) ?zI ?(itvP yB) //.
+  rewrite gt_eqF // cos_gt0_pihalf // (@lt_le_trans _  _ x) ?x1I ?xB//=.
+  by rewrite (@le_lt_trans _  _ y) ?x1I ?yB.
+- apply/continuous_in_subspaceT => ? -/[!(@mem_setE R)] /itvP inI.
+  apply: continuous_tan; rewrite gt_eqF// cos_gt0_pihalf//.
+  by rewrite (@lt_le_trans _  _ x) ?xB ?inI// (@le_lt_trans _  _ y) ?yB ?inI.
 - move=> x1 /itvP x1I ->.
   rewrite mulr_gt0 // invr_gt0 // exprn_gte0 // cos_gt0_pihalf //.
-  rewrite (@lt_le_trans _  _ x) ?x1I ?(itvP xB)//=.
-  by rewrite (@le_lt_trans _  _ y) ?x1I ?(itvP yB).
+  by rewrite (@lt_le_trans _  _ x) ?x1I ?xB//= (@le_lt_trans _  _ y) ?x1I ?yB.
 Qed.
 
 Lemma tan_inj : {in `](- (pi/2)), (pi/2)[ &, injective tan}.
@@ -917,7 +913,7 @@ have /(IVT (@pi_ge0 _))[] // : minr (f 0) (f pi) <= 0 <= maxr (f 0) (f pi).
   rewrite /f cos0 cospi /minr /maxr ltr_add2r -subr_lt0 opprK (_ : 1 + 1 = 2)//.
   by rewrite ltrn0 subr_le0 subr_ge0.
 - move=> y y0pi.
-  by apply: continuousB; apply/continuous_subspaceT=> ? ?;
+  by apply: continuousB; apply/continuous_in_subspaceT => ? ?;
     [exact: continuous_cos|exact: cst_continuous].
 - rewrite /f => x1 /itvP x1I /eqP; rewrite subr_eq0 => /eqP cosx1E.
   by case: (He x1); rewrite !x1I.
@@ -1043,7 +1039,7 @@ have /IVT[] // :
   rewrite /f sinN sin_pihalf /minr /maxr ltr_add2r -subr_gt0 opprK.
   by rewrite (_ : 1 + 1 = 2)// ltr0n/= subr_le0 subr_ge0.
 - by rewrite -subr_ge0 opprK -splitr pi_ge0.
-- by move=> *; apply: continuousB; apply/continuous_subspaceT=> ? ?;
+- by move=> *; apply: continuousB; apply/continuous_in_subspaceT => ? ?;
    [exact: continuous_sin| exact: cst_continuous].
 - rewrite /f => x1 /itvP x1I /eqP; rewrite subr_eq0 => /eqP sinx1E.
   by case: (He x1); rewrite !x1I.

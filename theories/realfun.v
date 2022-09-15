@@ -32,7 +32,7 @@ Implicit Types (a b : R) (f g : R -> R).
 Lemma continuous_subspace_itv (I : interval R) (f : R -> R) :
   {in I, continuous f} -> {within [set` I], continuous f}.
 Proof.
-move=> ctsf; apply: continuous_subspaceT => x Ix; apply: ctsf.
+move=> ctsf; apply: continuous_in_subspaceT => x Ix; apply: ctsf.
 by move: Ix; rewrite inE.
 Qed.
 
@@ -51,10 +51,10 @@ gen have main : f / forall c, {in I, continuous f} -> {in I &, injective f} ->
   have intP := interval_is_interval aI bI.
   have cI : c \in I by rewrite intP// (ltW aLc) ltW.
   have ctsACf : {within `[a, c], continuous f}.
-    apply: continuous_subspaceT => x; rewrite inE => /itvP axc; apply: fC.
+    apply: continuous_in_subspaceT => x; rewrite inE => /itvP axc; apply: fC.
     by rewrite intP// axc/= (le_trans _ (ltW cLb))// axc.
   have ctsCBf : {within `[c,b], continuous f}.
-    apply: continuous_subspaceT => x; rewrite inE => /itvP axc; apply: fC.
+    apply: continuous_in_subspaceT => x; rewrite inE => /itvP axc; apply: fC.
     by rewrite intP// axc andbT (le_trans (ltW aLc)) ?axc.
   have [aLb alb'] : a < b /\ a <= b by rewrite ltW (lt_trans aLc).
   have [faLfc|fcLfa|/eqP faEfc] /= := ltrgtP (f a) (f c).
@@ -487,7 +487,7 @@ move=> Hd.
 wlog xLy : x y / x <= y by move=> H; case: (leP x y) => [/H |/ltW /H].
 rewrite -(subKr (f y) (f x)).
 have [| _ _] := MVT_segment xLy; last by rewrite mul0r => ->; rewrite subr0.
-apply/continuous_subspaceT => r _.
+apply/continuous_subspaceT=> r.
 exact/differentiable_continuous/derivable1_diffP.
 Qed.
 
