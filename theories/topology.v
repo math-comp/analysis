@@ -5772,8 +5772,8 @@ Global Instance subspace_proper_filter {T : topologicalType}
      (A : set T) (x : subspace A) :
    ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
-Notation "{ 'within'  A , 'continuous'  f }" :=
-  (continuous (f : (subspace A) -> _)).
+Notation "{ 'within' A , 'continuous' f }" :=
+  (continuous (f : subspace A -> _)).
 
 Section SubspaceRelative.
 Context {T : topologicalType}.
@@ -5822,16 +5822,16 @@ Qed.
 Lemma subspace_restrict_domain {U} A (f : T -> U) :
   continuous f -> {within A, continuous f}.
 Proof.
-move=> ctsf; rewrite continuous_subspace_in => ? ?. 
-by apply: continuous_subspaceT_in => ? ?.
+move=> ctsf; rewrite continuous_subspace_in => ? ?.
+exact: continuous_subspaceT_in.
 Qed.
 
 Lemma continuous_open_subspace {U} A (f : T -> U) :
-  @open T A -> {within A, continuous f} = {in A, continuous f}.
+  open A -> {within A, continuous f} = {in A, continuous f}.
 Proof.
 rewrite openE continuous_subspace_in /= => oA; rewrite propeqE ?in_setP.
-by split => + x /[dup] Ax /oA Aox; rewrite /filter_of /= => /(_ _ Ax);
-  rewrite -(nbhs_subspace_interior Aox).
+by split => + x /[dup] Ax /oA Aox => /(_ _ Ax);
+  rewrite /filter_of -(nbhs_subspace_interior Aox).
 Qed.
 
 Lemma continuous_inP {U} A (f : T -> U) : open A ->
@@ -5852,18 +5852,18 @@ apply/closed_subspaceP; exists ((V1 `&` A) `|` (V2 `&` B)); split.
   by apply: closedU; exact: closedI.
 rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
   by case=> [[][]] ? ? [] ?; [left | left | right | right]; split.
-by case=> [][] ? ?; split=> []; [left; split | left | right; split | right]. 
+by case=> [][] ? ?; split=> []; [left; split | left | right; split | right].
 Qed.
 
 Lemma subspace_restrict_range {U} A (B : set U) (f : {fun A >-> B}) :
   {within A, continuous f} -> continuous (f : subspace A -> subspace B).
 Proof.
-move=> /continuousP ctsf; apply/continuousP=> O /open_subspaceP [V].
-case=> ofV VAOA; rewrite -open_subspaceIT; apply/open_subspaceP.
-case/open_subspaceP: (ctsf _ ofV) => W [] oW fvA; exists (W); split => //.
-rewrite fvA -setIA setIid eqEsubset; split=> x [] ? Ax; split=> //.
-  (have : (V `&` B) (f x) by split => //; exact: funS); by rewrite VAOA => [][].
-(have : (O `&` B) (f x) by split => //; exact: funS); by rewrite -VAOA => [][].
+move=> /continuousP ctsf; apply/continuousP => O /open_subspaceP [V [oV VBOB]].
+rewrite -open_subspaceIT; apply/open_subspaceP.
+case/open_subspaceP: (ctsf _ oV) => W [oW fVA]; exists W; split => //.
+rewrite fVA -setIA setIid eqEsubset; split => x [fVx Ax]; split => //.
+- by have /[!VBOB]-[] : (V `&` B) (f x) by split => //; exact: funS.
+- by have /[!esym VBOB]-[] : (O `&` B) (f x) by split => //; exact: funS.
 Qed.
 
 End SubspaceRelative.
