@@ -208,27 +208,27 @@ Qed.
 
 End measurable_fun_comp.
 
-Lemma measurable_fun_if (d d' : _) (T : measurableType d)
-    (T' : measurableType d') (x y : T -> T') D (md : measurable D)
-    (f : T -> bool) (mf : measurable_fun setT f) :
+Lemma measurable_fun_if (d d' : _) (X : measurableType d)
+    (Y : measurableType d') (x y : X -> Y) D (md : measurable D)
+    (f : X -> bool) (mf : measurable_fun setT f) :
   measurable_fun (D `&` (f @^-1` [set true])) x ->
   measurable_fun (D `&` (f @^-1` [set false])) y ->
   measurable_fun D (fun t => if f t then x t else y t).
 Proof.
-move=> mx my /= _ Y mY.
+move=> mx my /= _ B mB.
 have mDf : measurable (D `&` [set b | f b]).
   apply: measurableI => //.
   rewrite [X in measurable X](_ : _ = f @^-1` [set true])//.
   by have := mf measurableT [set true]; rewrite setTI; exact.
-have := mx mDf Y mY.
+have := mx mDf _ mB.
 have mDNf : measurable (D `&` f @^-1` [set false]).
   apply: measurableI => //.
   by have := mf measurableT [set false]; rewrite setTI; exact.
-have := my mDNf Y mY.
-move=> yY xY.
-rewrite (_ : _ @^-1` Y =
-    ((f @^-1` [set true]) `&` (x @^-1` Y) `&` (f @^-1` [set true])) `|`
-    ((f @^-1` [set false]) `&` (y @^-1` Y) `&` (f @^-1` [set false]))); last first.
+have := my mDNf _ mB.
+move=> yB xB.
+rewrite (_ : _ @^-1` B =
+    ((f @^-1` [set true]) `&` (x @^-1` B) `&` (f @^-1` [set true])) `|`
+    ((f @^-1` [set false]) `&` (y @^-1` B) `&` (f @^-1` [set false]))); last first.
   apply/seteqP; split=> [t /=| t].
     by case: ifPn => ft; [left|right].
   by move=> /= [|]; case: ifPn => ft; case=> -[].
@@ -239,8 +239,8 @@ rewrite setIUr; apply: measurableU.
   by apply: measurableI => //; rewrite setIA.
 Qed.
 
-Lemma measurable_fun_ifT (d d' : _) (T : measurableType d)
-    (T' : measurableType d') (x y : T -> T') (f : T -> bool)
+Lemma measurable_fun_ifT (d d' : _) (X : measurableType d)
+    (Y : measurableType d') (x y : X -> Y) (f : X -> bool)
     (mf : measurable_fun setT f) :
   measurable_fun setT x -> measurable_fun setT y ->
   measurable_fun setT (fun t => if f t then x t else y t).
@@ -249,15 +249,15 @@ by move=> mx my; apply: measurable_fun_if => //;
   [exact: measurable_funS mx|exact: measurable_funS my].
 Qed.
 
-Lemma measurable_fun_if_pair (d d' : _) (T : measurableType d)
-    (T' : measurableType d') (x y : T -> T') :
+Lemma measurable_fun_if_pair (d d' : _) (X : measurableType d)
+    (Y : measurableType d') (x y : X -> Y) :
   measurable_fun setT x -> measurable_fun setT y ->
   measurable_fun setT (fun tb => if tb.2 then x tb.1 else y tb.1).
 Proof.
 move=> mx my.
-have {}mx : measurable_fun [set: T * bool] (x \o fst).
+have {}mx : measurable_fun [set: X * bool] (x \o fst).
   by apply: measurable_fun_comp => //; exact: measurable_fun_fst.
-have {}my : measurable_fun [set: T * bool] (y \o fst).
+have {}my : measurable_fun [set: X * bool] (y \o fst).
   by apply: measurable_fun_comp => //; exact: measurable_fun_fst.
 by apply: measurable_fun_ifT => //=; exact: measurable_fun_snd.
 Qed.
@@ -450,7 +450,22 @@ Qed.
 
 End measure_fam_uub.
 
-HB.mixin Record isFiniteFam
+HB.mixin Record Kernel_isSFinite_subdef
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : X -> {measure set Y -> \bar R}) := {
+  sfinite_subdef : exists2 s : (R.-ker X ~> Y)^nat, forall n, measure_fam_uub (s n) &
+    forall x U, measurable U -> k x U = kseries s x U }.
+
+#[short(type=sfinite_kernel)]
+HB.structure Definition SFiniteKernel
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) :=
+  {k of Kernel_isSFinite_subdef _ _ X Y R k & isKernel d d' X Y R k }.
+Notation "R .-sfker X ~> Y" := (sfinite_kernel X Y R).
+
+Arguments sfinite_subdef {_ _ _ _ _} _.
+
+HB.mixin Record SFiniteKernel_isFinite
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) :=
   { measure_uub : measure_fam_uub k }.
@@ -459,71 +474,128 @@ HB.mixin Record isFiniteFam
 HB.structure Definition FiniteKernel
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) :=
-  {k of isFiniteFam _ _ X Y R k & isKernel _ _ X Y R k}.
+  {k of SFiniteKernel_isFinite _ _ X Y R k & @SFiniteKernel _ _ X Y R k }.
 Notation "R .-fker X ~> Y" := (finite_kernel X Y R).
 
 Arguments measure_uub {_ _ _ _ _} _.
 
-Section kernel_from_mzero.
-Variables (d : _) (T : measurableType d) (R : realType).
-Variables (d' : _) (T' : measurableType d').
+HB.factory Record Kernel_isFinite d d' (X : measurableType d)
+    (Y : measurableType d') (R : realType) (k : X -> {measure set Y -> \bar R}) of isKernel _ _ _ _ _ k := {
+  measure_uub : measure_fam_uub k }.
 
-Definition kernel_from_mzero : T' -> {measure set T -> \bar R} :=
-  fun _ : T' => [the measure _ _ of mzero].
+Section kzero.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variable R : realType.
 
-Lemma kernel_from_mzeroP : forall U, measurable U ->
-  measurable_fun setT (kernel_from_mzero ^~ U).
-Proof. by move=> U mU/=; exact: measurable_fun_cst. Qed.
+Definition kzero : X -> {measure set Y -> \bar R} :=
+  fun _ : X => [the measure _ _ of mzero].
+
+Let measurable_fun_kzero U : measurable U ->
+  measurable_fun setT (kzero ^~ U).
+Proof. by move=> ?/=; exact: measurable_fun_cst. Qed.
 
 HB.instance Definition _ :=
-  @isKernel.Build _ _ T' T R kernel_from_mzero
-  kernel_from_mzeroP.
+  @isKernel.Build _ _ X Y R kzero measurable_fun_kzero.
 
-Let kernel_from_mzero_uub : measure_fam_uub kernel_from_mzero.
+(*Let kernel_from_mzero_sfinite0 : exists2 s : (R.-ker T' ~> T)^nat, forall n, measure_fam_uub (s n) &
+    forall x U, measurable U -> kernel_from_mzero x U = kseries s x U.
+Proof.
+exists (fun=> [the _.-ker _ ~> _ of kernel_from_mzero]).
+  move=> _.
+  by exists 1%R => y; rewrite /= /mzero.
+by move=> t U mU/=; rewrite /mseries nneseries0.
+Qed.
+
+HB.instance Definition _ :=
+  @isSFinite0.Build _ _ _ T R kernel_from_mzero
+  kernel_from_mzero_sfinite0.*)
+
+Lemma kzero_uub : measure_fam_uub kzero.
 Proof. by exists 1%R => /= t; rewrite /mzero/=. Qed.
 
-HB.instance Definition _ :=
-  @isFiniteFam.Build _ _ _ T R kernel_from_mzero
-  kernel_from_mzero_uub.
+(*HB.instance Definition _ :=
+  @SFiniteKernel_isFinite.Build _ _ _ T R kernel_from_mzero
+  kernel_from_mzero_uub.*)
 
-End kernel_from_mzero.
+End kzero.
 
-HB.mixin Record isSFinite
-    d d' (X : measurableType d) (Y : measurableType d')
-    (R : realType) (k : X -> {measure set Y -> \bar R}) := {
-  sfinite : exists s : (R.-fker X ~> Y)^nat,
-    forall x U, measurable U -> k x U = kseries s x U }.
-
-#[short(type=sfinite_kernel)]
-HB.structure Definition SFiniteKernel
-    d d' (X : measurableType d) (Y : measurableType d')
-    (R : realType) :=
-  {k of isSFinite _ _ X Y R k & isKernel _ _ X Y _ k}.
-Notation "R .-sfker X ~> Y" := (sfinite_kernel X Y R).
-
-Arguments sfinite {_ _ _ _ _} _.
-
-(* a finite kernel is always an s-finite kernel *)
-Section finite_is_sfinite.
-Variables (d d' : _) (X : measurableType d) (T : measurableType d').
-Variables (R : realType) (k : R.-fker T ~> X).
+HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) k of Kernel_isFinite d d' X Y R k.
 
 Lemma sfinite_finite :
-  exists k_ : (R.-fker _ ~> _)^nat, forall x U, measurable U ->
-    k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
+  exists2 k_ : (R.-ker _ ~> _)^nat, forall n, measure_fam_uub (k_ n) &
+    forall x U, measurable U -> k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
 Proof.
-exists (fun n => if n is O then k else
-  [the finite_kernel _ _ _ of @kernel_from_mzero _ X R _ T]).
-move=> t U mU/=.
-rewrite /mseries.
+exists (fun n => if n is O then [the _.-ker _ ~> _ of k] else
+  [the _.-ker _ ~> _ of @kzero _ _ X Y R]).
+  by case => [|_]; [exact: measure_uub|exact: kzero_uub].
+move=> t U mU/=; rewrite /mseries.
 rewrite (nneseries_split 1%N)// big_ord_recl/= big_ord0 adde0.
 rewrite ereal_series (@eq_nneseries _ _ (fun=> 0%E)); last by case.
 by rewrite nneseries0// adde0.
 Qed.
 
-End finite_is_sfinite.
+HB.instance Definition _ := @Kernel_isSFinite_subdef.Build d d' X Y R k sfinite_finite.
 
-HB.mixin Record isProbabilityFam
+HB.instance Definition _ := @SFiniteKernel_isFinite.Build  d d' X Y R k measure_uub.
+
+HB.end.
+
+Section sfinite.
+Variables (d d' :  _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (k : R.-sfker X ~> Y).
+
+Let s : (X -> {measure set Y -> \bar R})^nat :=
+  let: exist2 x _ _ := cid2 (sfinite_subdef k) in x.
+
+Let ms n : @isKernel d d' X Y R (s n).
+Proof.
+split; rewrite /s; case: cid2 => /= s' s'_uub kE.
+exact: measurable_kernel.
+Qed.
+
+HB.instance Definition _ n := ms n.
+
+Let s_uub n : measure_fam_uub (s n).
+Proof. by rewrite /s; case: cid2. Qed.
+
+HB.instance Definition _ n :=
+  @Kernel_isFinite.Build d d' X Y R (s n) (s_uub n).
+
+Lemma sfinite : exists s : (R.-fker X ~> Y)^nat,
+  forall x U, measurable U -> k x U = kseries s x U.
+Proof.
+exists (fun n => [the _.-fker _ ~> _ of s n]) => x U mU.
+by rewrite /s /= /s; by case: cid2 => ? ? ->.
+Qed.
+
+End sfinite.
+
+HB.instance Definition _ (d d' : _) (X : measurableType d)
+    (Y : measurableType d') (R : realType) :=
+  @Kernel_isFinite.Build _ _ _ _ R (@kzero _ _ X Y R)
+                                   (@kzero_uub _ _ X Y R).
+
+HB.factory Record Kernel_isSFinite d d' (X : measurableType d)
+    (Y : measurableType d') (R : realType) (k : X -> {measure set Y -> \bar R})
+    of isKernel _ _ _ _ _ k := {
+  sfinite : exists s : (R.-fker X ~> Y)^nat,
+    forall x U, measurable U -> k x U = kseries s x U }.
+
+HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) k of Kernel_isSFinite d d' X Y R k.
+
+Lemma sfinite_subdef : Kernel_isSFinite_subdef d d' X Y R k.
+Proof.
+split; have [s sE] := sfinite; exists s => //.
+by move=> n; exact: measure_uub.
+Qed.
+
+HB.instance Definition _ := (*@isSFinite0.Build d d' X Y R k*) sfinite_subdef.
+
+HB.end.
+
+HB.mixin Record FiniteKernel_isProbability
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) :=
   { prob_kernel : forall x, k x [set: Y] = 1}.
@@ -532,36 +604,28 @@ HB.mixin Record isProbabilityFam
 HB.structure Definition ProbabilityKernel
     (d d' : _) (X : measurableType d) (Y : measurableType d')
     (R : realType) :=
-  {k of isProbabilityFam _ _ X Y R k & isKernel _ _ X Y R k &
-        isFiniteFam _ _ X Y R k & isSFinite _ _ X Y R k}.
+  {k of FiniteKernel_isProbability _ _ X Y R k &
+        @FiniteKernel _ _ X Y R k}.
 Notation "R .-pker X ~> Y" := (probability_kernel X Y R).
 
-HB.factory Record isProbabilityKernel
+HB.factory Record Kernel_isProbability
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) of isKernel _ _ X Y R k :=
-  { prob_kernel' : forall x, k x setT = 1 }.
+  { prob_kernel : forall x, k x setT = 1 }.
 
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
-    (R : realType) k of isProbabilityKernel d d' X Y R k.
+    (R : realType) k of Kernel_isProbability d d' X Y R k.
 
-Let is_finite_kernel : measure_fam_uub k.
+Let finite : @Kernel_isFinite d d' X Y R k.
 Proof.
+split.
 exists 2%R => /= ?.
-by rewrite (@le_lt_trans _ _ 1%:E) ?lte_fin ?ltr1n// prob_kernel'.
+by rewrite (@le_lt_trans _ _ 1%:E) ?lte_fin ?ltr1n// prob_kernel.
 Qed.
 
-HB.instance Definition _ := @isFiniteFam.Build _ _ _ _ _ _ is_finite_kernel.
+HB.instance Definition _ := finite.
 
-Lemma is_sfinite_kernel : exists k_ : (R.-fker _ ~> _)^nat, forall x U, measurable U ->
-  k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
-Proof. exact: sfinite_finite. Qed.
-
-HB.instance Definition _ := @isSFinite.Build _ _ _ _ _ _ is_sfinite_kernel.
-
-Lemma is_probability_kernel : forall x, k x setT = 1.
- exact/prob_kernel'. Qed.
-
-HB.instance Definition _ := @isProbabilityFam.Build _ _ _ _ _ _ is_probability_kernel.
+HB.instance Definition _ := @FiniteKernel_isProbability.Build _ _ _ _ _ k prob_kernel.
 
 HB.end.
 
@@ -579,7 +643,8 @@ Lemma sfinite_kernel_measure (d d' : _) (X : measurableType d)
 Proof.
 have [k_ k_E] := sfinite k.
 exists (fun n => k_ n x); last by move=> A mA; rewrite k_E.
-by move=> n; exact: finite_kernel_measure.
+move=> n; rewrite /finite_measure.
+exact: finite_kernel_measure.
 Qed.
 
 (* see measurable_prod_subset in lebesgue_integral.v;
@@ -646,7 +711,7 @@ End measurable_prod_subset_kernel.
 Section measurable_fun_xsection_finite_kernel.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d')
           (R : realType).
-Variable k : R.-fker X ~> Y.
+Variables (k : R.-fker X ~> Y).
 Implicit Types A : set (X * Y).
 
 Let phi A := fun x => k x (xsection A x).
@@ -783,7 +848,7 @@ Let kprobability_prob x : kprobability x setT = 1.
 Proof. by rewrite /kprobability/= probability_setT. Qed.
 
 HB.instance Definition _ :=
-  @isProbabilityKernel.Build _ _ X Y R kprobability kprobability_prob.
+  @Kernel_isProbability.Build _ _ X Y R kprobability kprobability_prob.
 
 End kprobability.
 
@@ -810,7 +875,7 @@ HB.instance Definition _ := isKernel.Build _ _ _ _ _ (kdirac mf)
 Let kdirac_prob x : kdirac mf x setT = 1.
 Proof. by rewrite /kdirac/= diracE in_setT. Qed.
 
-HB.instance Definition _ := isProbabilityKernel.Build _ _ _ _ _
+HB.instance Definition _ := Kernel_isProbability.Build _ _ _ _ _
   (kdirac mf) kdirac_prob.
 
 End kdirac.
@@ -836,6 +901,36 @@ HB.instance Definition _ :=
   @isKernel.Build _ _ _ _ _ kadd measurable_fun_kadd.
 End kadd.
 
+Section sfkadd.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (k1 k2 : R.-sfker X ~> Y).
+
+Let sfinite_kadd : exists2 k_ : (R.-ker _ ~> _)^nat, forall n, measure_fam_uub (k_ n) &
+  forall x U, measurable U ->
+    kadd k1 k2 x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
+Proof.
+have [f1 hk1] := sfinite k1.
+have [f2 hk2] := sfinite k2.
+exists (fun n => [the _.-ker _ ~> _ of kadd (f1 n) (f2 n)]).
+  move=> n.
+  have [r1 f1r1] := measure_uub (f1 n).
+  have [r2 f2r2] := measure_uub (f2 n).
+  exists (r1 + r2)%R => x/=.
+  by rewrite /msum !big_ord_recr/= big_ord0 add0e EFinD lte_add.
+move=> x U mU.
+rewrite /kadd/=.
+rewrite -/(measure_add (k1 x) (k2 x)) measure_addE.
+rewrite /mseries.
+rewrite hk1//= hk2//= /mseries.
+rewrite -nneseriesD//.
+apply: eq_nneseries => n _.
+by rewrite -/(measure_add (f1 n x) (f2 n x)) measure_addE.
+Qed.
+
+HB.instance Definition _ t :=
+  Kernel_isSFinite_subdef.Build _ _ _ _ R (kadd k1 k2) sfinite_kadd.
+End sfkadd.
+
 Section fkadd.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
 Variables (R : realType) (k1 k2 : R.-fker X ~> Y).
@@ -849,32 +944,8 @@ by rewrite measure_addE EFinD; exact: lte_add.
 Qed.
 
 HB.instance Definition _ t :=
-  isFiniteFam.Build _ _ _ _ R (kadd k1 k2) kadd_finite_uub.
+  Kernel_isFinite.Build _ _ _ _ R (kadd k1 k2) kadd_finite_uub.
 End fkadd.
-
-Section sfkadd.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k1 k2 : R.-sfker X ~> Y).
-
-Let sfinite_kadd : exists k_ : (R.-fker _ ~> _)^nat,
-  forall x U, measurable U ->
-    kadd k1 k2 x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
-Proof.
-have [f1 hk1] := sfinite k1.
-have [f2 hk2] := sfinite k2.
-exists (fun n => [the finite_kernel _ _ _ of kadd (f1 n) (f2 n)]) => x U mU.
-rewrite /kadd/=.
-rewrite -/(measure_add (k1 x) (k2 x)) measure_addE.
-rewrite /mseries.
-rewrite hk1//= hk2//= /mseries.
-rewrite -nneseriesD//.
-apply: eq_nneseries => n _.
-by rewrite -/(measure_add (f1 n x) (f2 n x)) measure_addE.
-Qed.
-
-HB.instance Definition _ t :=
-  isSFinite.Build _ _ _ _ R (kadd k1 k2) sfinite_kadd.
-End sfkadd.
 
 Section kernel_measurable_preimage.
 Variables (d d' : _) (T : measurableType d) (T' : measurableType d').
@@ -1021,7 +1092,7 @@ by rewrite -EFinM divrr// ?lte_fin ?ltr1n// ?unitfE fine_eq0.
 Qed.
 
 HB.instance Definition _ :=
-  @isProbabilityKernel.Build _ _ _ _ _ (knormalize P) knormalize1.
+  @Kernel_isProbability.Build _ _ _ _ _ (knormalize P) knormalize1.
 
 End knormalize.
 
@@ -1112,7 +1183,7 @@ by rewrite integral_cst//= EFinM lte_pmul2l.
 Qed.
 
 HB.instance Definition _ :=
-  isFiniteFam.Build _ _ X Z R (l \; k) mkcomp_finite.
+  Kernel_isFinite.Build _ _ X Z R (l \; k) mkcomp_finite.
 
 End kcomp_finite_kernel_finite.
 End KCOMP_FINITE_KERNEL.
@@ -1174,7 +1245,7 @@ HB.instance Definition _ :=
 
 #[export]
 HB.instance Definition _ :=
-  isSFinite.Build _ _ X Z R (l \; k) (mkcomp_sfinite l k).
+  Kernel_isSFinite.Build _ _ X Z R (l \; k) (mkcomp_sfinite l k).
 
 End kcomp_sfinite_kernel.
 End KCOMP_SFINITE_KERNEL.

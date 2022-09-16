@@ -193,7 +193,7 @@ rewrite (_ : [set tt] == set0 = false); last first.
 by case: ifPn => // /andP[].
 Qed.
 
-HB.instance Definition _ i := @isFiniteFam.Build _ _ _ _ R (mk i) (mk_uub i).
+HB.instance Definition _ i := @Kernel_isFinite.Build _ _ _ _ R (mk i) (mk_uub i).
 
 End score.
 End SCORE.
@@ -245,7 +245,7 @@ move: jk; rewrite neq_ltn/= => /orP[|] jr.
   by rewrite -floor_lt_int.
 Qed.
 
-HB.instance Definition _ := @isSFinite.Build _ _ _ _ _ (kscore mr) sfinite_kscore.
+HB.instance Definition _ := @Kernel_isSFinite.Build _ _ _ _ _ (kscore mr) sfinite_kscore.
 
 End kscore.
 
@@ -269,8 +269,47 @@ apply: (@measurable_fun_if_pair _ _ _ _ (k ^~ U) (fun=> mzero U)).
 exact: measurable_fun_cst.
 Qed.
 
+#[export]
 HB.instance Definition _ := isKernel.Build _ _ _ _ R kiteT measurable_fun_kiteT.
 End kiteT.
+
+Section sfkiteT.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (k : R.-sfker X ~> Y).
+
+Let sfinite_kiteT : exists2 k_ : (R.-ker _ ~> _)^nat,
+  forall n, measure_fam_uub (k_ n) &
+  forall x U, measurable U ->
+    kiteT k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
+Proof.
+have [k_ hk /=] := sfinite k.
+exists (fun n => [the _.-ker _ ~> _ of kiteT (k_ n)]) => /=.
+  move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
+  by exists r%:num => /= -[x []]; rewrite /kiteT//= /mzero//.
+move=> [x b] U mU; rewrite /kiteT; case: ifPn => hb.
+  by rewrite hk.
+by rewrite /mseries nneseries0.
+Qed.
+
+(*Let sfinite_kiteT : exists k_ : (R.-fker _ ~> _)^nat,
+  forall x U, measurable U ->
+    kiteT k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
+Proof.
+have [k_ hk /=] := sfinite k.
+exists (fun n => [the _.-fker _ ~> _ of kiteT (k_ n)]) => b U mU.
+rewrite /kiteT; case: ifPn => hb.
+  rewrite /mseries hk//= /mseries.
+  apply: eq_nneseries => n _.
+  by rewrite /kiteT hb.
+rewrite /= /mseries nneseries0// => n _.
+by rewrite /kiteT (negbTE hb).
+Qed.*)
+
+(* NB: we could also want to use Kernel_isSFinite *)
+#[export]
+HB.instance Definition _ t := @Kernel_isSFinite_subdef.Build _ _ _ _ _
+  (kiteT k) sfinite_kiteT.
+End sfkiteT.
 
 Section fkiteT.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
@@ -283,30 +322,9 @@ exists M%:num => /= -[]; rewrite /kiteT => t [|]/=; first exact: hM.
 by rewrite /= /mzero.
 Qed.
 
-HB.instance Definition _ t := isFiniteFam.Build _ _ _ _ R (kiteT k) kiteT_uub.
+#[export]
+HB.instance Definition _ t := Kernel_isFinite.Build _ _ _ _ R (kiteT k) kiteT_uub.
 End fkiteT.
-
-Section sfkiteT.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k : R.-sfker X ~> Y).
-
-Let sfinite_kiteT : exists k_ : (R.-fker _ ~> _)^nat,
-  forall x U, measurable U ->
-    kiteT k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
-Proof.
-have [k_ hk /=] := sfinite k.
-exists (fun n => [the _.-fker _ ~> _ of kiteT (k_ n)]) => b U mU.
-rewrite /kiteT; case: ifPn => hb.
-  rewrite /mseries hk//= /mseries.
-  apply: eq_nneseries => n _.
-  by rewrite /kiteT hb.
-rewrite /= /mseries nneseries0// => n _.
-by rewrite /kiteT (negbTE hb).
-Qed.
-
-HB.instance Definition _ t := @isSFinite.Build _ _ _ _ _ (kiteT k) sfinite_kiteT.
-
-End sfkiteT.
 
 Section kiteF.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
@@ -326,9 +344,46 @@ apply: (@measurable_fun_if_pair _ _ _ _ (fun=> mzero U) (k ^~ U)).
 exact/measurable_kernel.
 Qed.
 
+#[export]
 HB.instance Definition _ := isKernel.Build _ _ _ _ R kiteF measurable_fun_kiteF.
 
 End kiteF.
+
+Section sfkiteF.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (k : R.-sfker X ~> Y).
+
+Let sfinite_kiteF : exists2 k_ : (R.-ker _ ~> _)^nat,
+  forall n, measure_fam_uub (k_ n) &
+  forall x U, measurable U ->
+    kiteF k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
+Proof.
+have [k_ hk /=] := sfinite k.
+exists (fun n => [the _.-ker _ ~> _ of kiteF (k_ n)]) => /=.
+  move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
+  by exists r%:num => /= -[x []]; rewrite /kiteF//= /mzero//.
+move=> [x b] U mU; rewrite /kiteF; case: ifPn => hb.
+  by rewrite hk.
+by rewrite /mseries nneseries0.
+Qed.
+
+(*Let sfinite_kiteF : exists k_ : (R.-fker _ ~> _)^nat,
+  forall x U, measurable U ->
+    kiteF k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
+Proof.
+have [k_ hk] := sfinite k.
+exists (fun n => [the finite_kernel _ _ _ of kiteF (k_ n)]) => b U mU.
+rewrite /= /kiteF /=; case: ifPn => hb.
+  by rewrite /mseries hk//= /mseries/=.
+by rewrite /= /mseries nneseries0.
+Qed.
+*)
+
+#[export]
+HB.instance Definition _ := @Kernel_isSFinite_subdef.Build _ _ _ _ _
+  (kiteF k) sfinite_kiteF.
+
+End sfkiteF.
 
 Section fkiteF.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
@@ -341,29 +396,16 @@ exists M%:num => /= -[]; rewrite /kiteF/= => t.
 by case => //=; rewrite /mzero.
 Qed.
 
-HB.instance Definition _ := isFiniteFam.Build _ _ _ _ R (kiteF k) kiteF_uub.
+#[export]
+HB.instance Definition _ := Kernel_isFinite.Build _ _ _ _ R (kiteF k) kiteF_uub.
 
 End fkiteF.
 
-Section sfkiteF.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k : R.-sfker X ~> Y).
-
-Let sfinite_kiteF : exists k_ : (R.-fker _ ~> _)^nat,
-  forall x U, measurable U ->
-    kiteF k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
-Proof.
-have [k_ hk] := sfinite k.
-exists (fun n => [the finite_kernel _ _ _ of kiteF (k_ n)]) => b U mU.
-rewrite /= /kiteF /=; case: ifPn => hb.
-  by rewrite /mseries hk//= /mseries/=.
-by rewrite /= /mseries nneseries0.
-Qed.
-
-HB.instance Definition _ := @isSFinite.Build _ _ _ _ _ (kiteF k) sfinite_kiteF.
-
-End sfkiteF.
+(*Module Exports.
+HB.reexport.
+End Exports.*)
 End ITE.
+(*Export ITE.Exports.*)
 
 Section ite.
 Variables (d d' : _) (T : measurableType d) (T' : measurableType d').
