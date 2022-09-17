@@ -5656,42 +5656,38 @@ Qed.
 
 Lemma open_subspaceP (U : set T) :
   open (U : set (subspace A)) <->
-  exists V, (open (V : set T)) /\ V `&` A = U `&` A.
+  exists V, open (V : set T) /\ V `&` A = U `&` A.
 Proof.
-split; first last.
-  case=> V [oV UV]; rewrite -open_subspaceIT -UV.
-  move=> x //= []; case: nbhs_subspaceP => //=; rewrite withinE /=.
-  move=> ? ? _; exists V; last by rewrite -setIA setIid.
-  by move: oV; rewrite openE /interior; apply.
+split=> [|[V [oV UV]]]; first last.
+  rewrite -open_subspaceIT -UV => x //= []; case: nbhs_subspaceP => //=.
+  rewrite withinE /= => Ax Vx _; exists V; last by rewrite -setIA setIid.
+  by move: oV; rewrite openE; exact.
 rewrite -open_subspaceIT => oUA.
-have oxF : (forall (x : T), (U `&` A) x ->
-    exists V, (open_nbhs (x : T) V) /\ (V `&` A `<=` U `&` A)).
-  move=> x /[dup] UAx /= [??]; move: (oUA _ UAx); case: nbhs_subspaceP => // ?.
-  rewrite withinE /= => [[V nbhsV UV]]; rewrite -setIA setIid in UV.
-  exists V^°; split; first rewrite open_nbhsE; first split => //.
-  - exact: open_interior.
-  - exact: nbhs_interior.
-  - by rewrite UV=> t [/interior_subset] ??; split.
-pose f (x : T) :=
-  if pselect ((U `&` A) x) is left e then projT1 (cid (oxF x e)) else set0.
-set V := \bigcup_(x in (U `&` A)) (f x); exists V; split.
-  apply: bigcup_open => i UAi; rewrite /f; case: pselect => // ?; case: (cid _).
-  by move=> //= W; rewrite open_nbhsE=> -[[]].
-rewrite eqEsubset /V /f; split.
-  move=> t [[u]] UAu /=; case: pselect => //= ?.
-  by case: (cid _) => //= W [] _ + ? ?; apply; split.
-move=> t UAt; split => //; last by case: UAt.
-exists t => //; case: pselect => //= [[? ?]].
-by case: (cid _) => //= W [] [] _.
+have oxF x : (U `&` A) x -> exists2 V, open_nbhs x V & V `&` A `<=` U `&` A.
+  move=> /[dup] UAx [Ux Ax]; move: (oUA _ UAx); case: nbhs_subspaceP => // _.
+  rewrite withinE /= => -[V nbhsV]; rewrite -setIA setIid => UV.
+  exists V^°; rewrite ?open_nbhsE.
+  - by split; [exact: open_interior|exact: nbhs_interior].
+  - by rewrite UV => t [/interior_subset].
+pose f x :=
+  if pselect ((U `&` A) x) is left e then projT1 (cid2 (oxF x e)) else set0.
+exists (\bigcup_(x in U `&` A) f x); split.
+  apply: bigcup_open => i UAi; rewrite /f; case: pselect => // ?.
+  by case: (cid2 _) => //= W; rewrite open_nbhsE => -[].
+rewrite eqEsubset /f; split.
+  move=> t [[u UAu]] /=; case: pselect => //= ?.
+  by case: (cid2 _) => /= W _ + ? ?; exact.
+move=> t UAt; split; last by case: UAt.
+by exists t => //; case: pselect => //= -[Ut At]; case: (cid2 _) => //= W [].
 Qed.
 
 Lemma closed_subspaceP (U : set T) :
   closed (U : set (subspace A)) <->
-  exists V, (closed (V : set T)) /\ V `&` A = U `&` A.
+  exists V, closed (V : set T) /\ V `&` A = U `&` A.
 Proof.
 rewrite -openC open_subspaceP.
 under [X in _ <-> X] eq_exists => V do rewrite -openC.
-by split; move=> [V [? VU]]; exists (~` V); split; rewrite ?setCK //;
+by split => -[V [? VU]]; exists (~` V); split; rewrite ?setCK //;
   move/(congr1 setC): VU; rewrite ?eqEsubset ?setCI ?setCK; firstorder.
 Qed.
 
@@ -5819,11 +5815,11 @@ rewrite continuous_subspace_in ?in_setP => ctsf t At.
 by apply continuous_subspaceT_for => //=; apply: ctsf.
 Qed.
 
-Lemma continuous_subspaceT{U} A (f : T -> U) :
+Lemma continuous_subspaceT {U} A (f : T -> U) :
   continuous f -> {within A, continuous f}.
 Proof.
-move=> ctsf; rewrite continuous_subspace_in => ? ?. 
-exact: continuous_in_subspaceT => ? ?.
+move=> ctsf; rewrite continuous_subspace_in => ? ?.
+exact: continuous_in_subspaceT.
 Qed.
 
 Lemma continuous_open_subspace {U} A (f : T -> U) :
@@ -5972,9 +5968,25 @@ by case: ifP => /asboolP.
 Qed.
 
 Canonical subspace_pseudoMetricType :=
-  PseudoMetricType (subspace A)  subspace_pseudoMetricType_mixin.
+  PseudoMetricType (subspace A) subspace_pseudoMetricType_mixin.
 
 End SubspacePseudoMetric.
+
+Section SubspaceWeak.
+Context {T : topologicalType} {U : pointedType}.
+Variables (f : U -> T).
+
+Let U' := weak_topologicalType f.
+
+Lemma weak_subspace_open (A : set U') :
+  open A -> open (f @` A : set (subspace (range f))).
+Proof.
+case=> B oB <-; apply/open_subspaceP; exists B; split => //; rewrite eqEsubset.
+split => z [] /[swap]; first by case=> w _ <- ?; split; exists w.
+by case=> w _ <- [v] ? <-.
+Qed.
+
+End SubspaceWeak.
 
 Lemma continuous_compact {T U : topologicalType} (f : T -> U) A :
   {within A, continuous f} -> compact A -> compact (f @` A).
