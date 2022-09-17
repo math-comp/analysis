@@ -15,8 +15,9 @@ Require Import lebesgue_measure fsbigop numfun lebesgue_integral.
 (*  sfinite_measure mu == the measure mu is s-finite                          *)
 (*       R.-ker X ~> Y == kernel                                              *)
 (*             kseries == countable sum of kernels                            *)
-(*      R.-fker X ~> Y == finite kernel                                       *)
 (*     R.-sfker X ~> Y == s-finite kernel                                     *)
+(*      R.-fker X ~> Y == finite kernel                                       *)
+(*     R.-spker X ~> Y == subprobability kernel                               *)
 (*      R.-pker X ~> Y == probability kernel                                  *)
 (*      kprobability m == kernel defined by a probability measure             *)
 (*           kdirac mf == kernel defined by a measurable function             *)
@@ -387,8 +388,9 @@ End sfinite_fubini.
 Arguments sfinite_fubini {d d' X Y R m1} _ {m2} _ f.
 
 Reserved Notation "R .-ker X ~> Y" (at level 42, format "R .-ker  X  ~>  Y").
-Reserved Notation "R .-fker X ~> Y" (at level 42, format "R .-fker  X  ~>  Y").
 Reserved Notation "R .-sfker X ~> Y" (at level 42, format "R .-sfker  X  ~>  Y").
+Reserved Notation "R .-fker X ~> Y" (at level 42, format "R .-fker  X  ~>  Y").
+Reserved Notation "R .-spker X ~> Y" (at level 42, format "R .-spker  X  ~>  Y").
 Reserved Notation "R .-pker X ~> Y" (at level 42, format "R .-pker  X  ~>  Y").
 
 HB.mixin Record isKernel d d' (X : measurableType d) (Y : measurableType d')
@@ -415,7 +417,7 @@ Lemma measurable_fun_kseries (U : set Y) :
   measurable U ->
   measurable_fun setT (kseries ^~ U).
 Proof.
-move=> mU; rewrite /kseries /= /mseries.
+move=> mU.
 by apply: ge0_emeasurable_fun_sum => // n; exact/measurable_kernel.
 Qed.
 
@@ -453,7 +455,8 @@ End measure_fam_uub.
 HB.mixin Record Kernel_isSFinite_subdef
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) := {
-  sfinite_subdef : exists2 s : (R.-ker X ~> Y)^nat, forall n, measure_fam_uub (s n) &
+  sfinite_subdef : exists2 s : (R.-ker X ~> Y)^nat,
+    forall n, measure_fam_uub (s n) &
     forall x U, measurable U -> k x U = kseries s x U }.
 
 #[short(type=sfinite_kernel)]
@@ -595,7 +598,40 @@ HB.instance Definition _ := (*@isSFinite0.Build d d' X Y R k*) sfinite_subdef.
 
 HB.end.
 
-HB.mixin Record FiniteKernel_isProbability
+HB.mixin Record FiniteKernel_isSubProbability
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : X -> {measure set Y -> \bar R}) :=
+  { sprob_kernel : ereal_sup [set k x [set: Y] | x in setT] <= 1}.
+
+#[short(type=sprobability_kernel)]
+HB.structure Definition SubProbabilityKernel
+    (d d' : _) (X : measurableType d) (Y : measurableType d')
+    (R : realType) :=
+  {k of FiniteKernel_isSubProbability _ _ X Y R k &
+        @FiniteKernel _ _ X Y R k}.
+Notation "R .-spker X ~> Y" := (sprobability_kernel X Y R).
+
+HB.factory Record Kernel_isSubProbability
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : X -> {measure set Y -> \bar R}) of isKernel _ _ X Y R k :=
+  { sprob_kernel : ereal_sup [set k x [set: Y] | x in setT] <= 1}.
+
+HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) k of Kernel_isSubProbability d d' X Y R k.
+
+Let finite : @Kernel_isFinite d d' X Y R k.
+Proof.
+split; exists 2%R => /= ?; rewrite (@le_lt_trans _ _ 1%:E) ?lte_fin ?ltr1n//.
+by rewrite (le_trans _ sprob_kernel)//; exact: ereal_sup_ub.
+Qed.
+
+HB.instance Definition _ := finite.
+
+HB.instance Definition _ := @FiniteKernel_isSubProbability.Build _ _ _ _ _ k sprob_kernel.
+
+HB.end.
+
+HB.mixin Record SubProbability_isProbability
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) :=
   { prob_kernel : forall x, k x [set: Y] = 1}.
@@ -604,8 +640,8 @@ HB.mixin Record FiniteKernel_isProbability
 HB.structure Definition ProbabilityKernel
     (d d' : _) (X : measurableType d) (Y : measurableType d')
     (R : realType) :=
-  {k of FiniteKernel_isProbability _ _ X Y R k &
-        @FiniteKernel _ _ X Y R k}.
+  {k of SubProbability_isProbability _ _ X Y R k &
+        @SubProbabilityKernel _ _ X Y R k}.
 Notation "R .-pker X ~> Y" := (probability_kernel X Y R).
 
 HB.factory Record Kernel_isProbability
@@ -616,16 +652,14 @@ HB.factory Record Kernel_isProbability
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) k of Kernel_isProbability d d' X Y R k.
 
-Let finite : @Kernel_isFinite d d' X Y R k.
+Let sprob_kernel : @Kernel_isSubProbability d d' X Y R k.
 Proof.
-split.
-exists 2%R => /= ?.
-by rewrite (@le_lt_trans _ _ 1%:E) ?lte_fin ?ltr1n// prob_kernel.
+by split; apply: ub_ereal_sup => x [y _ <-{x}]; rewrite prob_kernel.
 Qed.
 
-HB.instance Definition _ := finite.
+HB.instance Definition _ := sprob_kernel.
 
-HB.instance Definition _ := @FiniteKernel_isProbability.Build _ _ _ _ _ k prob_kernel.
+HB.instance Definition _ := @SubProbability_isProbability.Build _ _ _ _ _ k prob_kernel.
 
 HB.end.
 
