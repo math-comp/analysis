@@ -2758,7 +2758,7 @@ move=> mg a0; have ? : measurable (D `&` [set x | (a%:E <= `|g x|)%E]).
 apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) `|g x|)).
   rewrite -integral_cst//; apply: ge0_le_integral => //.
   - by move=> x _ /=; rewrite ltW.
-  - exact/EFin_measurable_fun/measurbable_fun_cst.
+  - exact/EFin_measurable_fun/measurable_fun_cst.
   - by apply: measurable_fun_comp => //; exact: measurable_funS mg.
   - by move=> x /= [].
 by apply: subset_integral => //; exact: measurable_fun_comp.

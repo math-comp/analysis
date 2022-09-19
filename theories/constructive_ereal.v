@@ -3366,16 +3366,16 @@ Qed.
 
 Lemma fine_le: forall {R : numDomainType},
   {in fin_num &, {homo (@fine R) : x y / x <= y >-> (x <= y)%R}}.
-Proof. by move=> R  -[r [r'| |]| |] //. Qed.
+Proof. by move=> R  -[r [r'| |]| |]. Qed.
 
 Lemma fine_lt: forall {R : numDomainType},
   {in fin_num &, {homo (@fine R) : x y / (x < y)%E >-> (x < y)%R}}.
-Proof. by move=> R  -[r [r'| |]| |] //. Qed.
+Proof. by move=> R  -[r [r'| |]| |]. Qed.
 
 Lemma fine_abse: forall {R : numDomainType},
   {in fin_num, {morph (@fine R) : x / `|x| >-> (`|x|)%R}}.
-Proof. by move=> R -[r | |] //. Qed.
+Proof. by move=> R -[r | |]. Qed.
 
 Lemma abse_fin_num: forall {R : numDomainType} (x : \bar R),
  abse x \is a fin_num <-> x \is a fin_num.
-Proof. by move=> R -[r | |] //. Qed.
+Proof. by move=> R -[r | |]. Qed.
