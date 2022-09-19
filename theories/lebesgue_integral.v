@@ -3798,7 +3798,7 @@ Qed.
 
 Lemma integral_fune_fin_num (f : T -> \bar R) :
   (mu.-integrable D f) ->
-  \int[mu]_(x in D) f x \is a fin_num
+  \int[mu]_(x in D) f x \is a fin_num.
 Proof.
 move=> int; apply/fin_numPlt/andP; split; last exact: integral_fune_lt_pinfty.
 apply/lte_oppe_pinfty; rewrite -integralN.

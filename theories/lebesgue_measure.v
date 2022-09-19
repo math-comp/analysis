@@ -91,7 +91,7 @@ Lemma hlength_finite_fin_num i : neitv i -> hlength [set` i] < +oo ->
 Proof.
 move: i => [[ba a|[]] [bb b|[]]] /neitvP //=; do ?by rewrite ?set_itvE ?eqxx.
 by move=> _; rewrite hlength_itv /= ltey.
-by move=> _; rewrite hlength_itv /= ltNye.
+by move=> _; rewrite hlength_itv ltNye.
 by move=> _; rewrite hlength_itv.
 Qed.
 
