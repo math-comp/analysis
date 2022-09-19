@@ -2758,7 +2758,7 @@ move=> mg a0; have ? : measurable (D `&` [set x | (a%:E <= `|g x|)%E]).
 apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) `|g x|)).
   rewrite -integral_cst//; apply: ge0_le_integral => //.
   - by move=> x _ /=; rewrite ltW.
-  - exact/EFin_measurable_fun/measurable_fun_cst.
+  - exact/EFin_measurable_fun/measurbable_fun_cst.
   - by apply: measurable_fun_comp => //; exact: measurable_funS mg.
   - by move=> x /= [].
 by apply: subset_integral => //; exact: measurable_fun_comp.
@@ -3780,6 +3780,33 @@ Qed.
 
 End integralB.
 
+Section integrable_fune.
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Local Open Scope ereal_scope.
+
+Lemma integral_fune_lt_pinfty (f : T -> \bar R) :
+  (mu.-integrable D f) -> \int[mu]_(x in D) f x < +oo.
+Proof.
+move=> intf; rewrite (funeposneg f) integralB => //; first last.
+- exact: integrable_funeneg.
+- exact: integrable_funepos.
+apply: lte_add_pinfty; first exact: integral_funepos_lt_pinfty.
+apply/lte_oppe_pinfty; rewrite ltNye_eq; apply/orP; left.
+exact: integrable_neg_fin_num.
+Qed.
+
+Lemma integral_fune_fin_num (f : T -> \bar R) :
+  (mu.-integrable D f) ->
+  \int[mu]_(x in D) f x \is a fin_num
+Proof.
+move=> int; apply/fin_numPlt/andP; split; last exact: integral_fune_lt_pinfty.
+apply/lte_oppe_pinfty; rewrite -integralN.
+  by apply: integral_fune_lt_pinfty; exact: integrableN.
+by apply: fin_num_adde_def; rewrite fin_numN; exact:integrable_neg_fin_num.
+Qed.
+End integrable_fune.
+
 Section integral_counting.
 Local Open Scope ereal_scope.
 Variables (R : realType).
@@ -3905,6 +3932,21 @@ by congr (_ - _)%E; rewrite nneseries_esum// set_true.
 Qed.
 
 End subadditive_countable.
+
+Section rintegral_le.
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variables (f : T -> \bar R). 
+Hypotheses (fint : mu.-integrable D f).
+Lemma rintegral_le : `|Rintegral mu D f| <= Rintegral mu D (abse \o f).
+Proof.
+rewrite -fine_abse; [apply: fine_le | exact: integral_fune_fin_num].
+- exact/abse_fin_num/integral_fune_fin_num. 
+- exact/integral_fune_fin_num/integrable_abse.
+by apply: le_abse_integral; case: fint.
+Qed.
+
+End rintegral_le.
 
 Section dominated_convergence_lemma.
 Local Open Scope ereal_scope.
