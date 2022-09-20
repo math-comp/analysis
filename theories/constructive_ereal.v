@@ -785,6 +785,16 @@ Proof. by move: x y => [x| |] [y | |]. Qed.
 Lemma fineK x : x \is a fin_num -> (fine x)%:E = x.
 Proof. by case: x. Qed.
 
+Lemma sum_fine (I : Type) s (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> F i \is a fin_num) ->
+  (\sum_(i <- s | P i) fine (F i) = fine (\sum_(i <- s | P i) F i))%R.
+Proof.
+move=> h; apply: EFin_inj; rewrite -sumEFin fineK.
+  by apply eq_bigr => ? ?; rewrite fineK// h.
+rewrite sum_fin_num; apply/allP => x; elim: s => //= a b ih.
+by case: ifPn => // /h ? /[!inE] /predU1P[->//|]; exact: ih.
+Qed.
+
 Lemma telescope_sume n m (f : nat -> \bar R) :
   (forall i, (n <= i <= m)%N -> f i \is a fin_num) -> (n <= m)%N ->
   \sum_(n <= k < m) (f k.+1 - f k) = f m - f n.
