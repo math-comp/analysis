@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+
 - in `topology.v`:
   + lemmas `continuous_subspaceT`, `subspaceT_continuous`
 - in `constructive_ereal.v`
@@ -32,6 +33,8 @@
   + lemmas `gte_daddl`, `gte_daddr`
   + lemma `lte_spadder`, `lte_spaddre`
   + lemma `lte_spdadder`
+- in `constructive_ereal.v`:
+  + lemma `sum_fine`
 
 ### Changed
 - in `topology.v`
