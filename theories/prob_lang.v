@@ -584,6 +584,20 @@ Definition score (f : X -> R) (mf : measurable_fun setT f) :=
 
 End insn1.
 
+Section hard_constraint.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variable R : realType.
+
+Definition fail :=
+  letin (score (@measurable_fun_cst _ _ X _ setT (0%R : R)))
+        (ret (@measurable_fun_cst _ _ _ Y setT point)).
+
+Lemma failE x U : fail x U = 0.
+Proof. by rewrite /fail letinE ge0_integral_mscale//= normr0 mul0e. Qed.
+
+End hard_constraint.
+Arguments fail {d d' X Y R}.
+
 Module Notations.
 
 Notation var1of2 := (@measurable_fun_fst _ _ _ _).
@@ -599,6 +613,20 @@ Notation munit := Datatypes_unit__canonical__measure_Measurable.
 Notation mbool := Datatypes_bool__canonical__measure_Measurable.
 
 End Notations.
+
+Section cst_fun.
+Variables (R : realType) (d : _) (T : measurableType d).
+
+Definition kr (r : R) := @measurable_fun_cst _ _ T _ setT r.
+Definition k3 : measurable_fun _ _ := kr 3%:R.
+Definition k10 : measurable_fun _ _ := kr 10%:R.
+Definition ktt := @measurable_fun_cst _ _ T _ setT tt.
+
+End cst_fun.
+Arguments kr {R d T}.
+Arguments k3 {R d T}.
+Arguments k10 {R d T}.
+Arguments ktt {d T}.
 
 Section insn1_lemmas.
 Import Notations.
@@ -623,12 +651,28 @@ Proof. by rewrite /score/= /mscale/= ger0_norm// f0. Qed.
 
 Lemma score_score (f : R -> R) (g : R * unit -> R)
     (mf : measurable_fun setT f)
-    (mg : measurable_fun setT g) x U :
-  letin (score mf) (score mg) x U =
-  score (measurable_funM mf (measurable_fun_prod2 tt mg)) x U.
+    (mg : measurable_fun setT g) :
+  letin (score mf) (score mg) =
+  score (measurable_funM mf (measurable_fun_prod2 tt mg)).
 Proof.
+apply/eq_sfkernel => x U.
 rewrite {1}/letin; unlock.
 by rewrite kcomp_scoreE/= /mscale/= diracE normrM muleA EFinM.
+Qed.
+
+Import Notations.
+
+(* hard constraints to express score below 1 *)
+Lemma score_fail (r : {nonneg R}) (r1 : (r%:num <= 1)%R) :
+  score (kr r%:num) =
+  letin (sample (bernoulli r1) : R.-pker T ~> _)
+        (ite var2of2 (ret ktt) fail).
+Proof.
+apply/eq_sfkernel => x U.
+rewrite letinE/= /sample; unlock.
+rewrite integral_measure_add//= ge0_integral_mscale//= ge0_integral_mscale//=.
+rewrite integral_dirac//= integral_dirac//= !indicT/= !mul1e.
+by rewrite iteE//= iteE//= /mscale/= failE retE//= mule0 adde0 ger0_norm.
 Qed.
 
 End insn1_lemmas.
@@ -768,17 +812,6 @@ exact: measurable_fun_cst.
 Qed.
 
 End exponential.
-
-Section cst_fun.
-Variables (R : realType) (d : _) (T : measurableType d).
-
-Definition kn (n : nat) := @measurable_fun_cst _ _ T _ setT (n%:R : R).
-Definition k3 : measurable_fun _ _ := kn 3.
-Definition k10 : measurable_fun _ _ := kn 10.
-
-End cst_fun.
-Arguments k3 {R d T}.
-Arguments k10 {R d T}.
 
 Lemma letin_sample_bernoulli (R : realType) (d d' : _) (T : measurableType d)
     (T' : measurableType d') (r : {nonneg R}) (r1 : (r%:num <= 1)%R)

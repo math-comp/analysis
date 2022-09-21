@@ -405,6 +405,16 @@ Notation "R .-ker X ~> Y" := (kernel X Y R).
 
 Arguments measurable_kernel {_ _ _ _ _} _.
 
+Lemma eq_kernel d d' (T : measurableType d) (T' : measurableType d') (R : realType)
+    (k1 k2 : R.-ker T ~> T') :
+  (forall x U, k1 x U = k2 x U) -> k1 = k2.
+Proof.
+move: k1 k2 => [m1 [[?]]] [m2 [[?]]] /= k12.
+have ? : m1 = m2.
+  by apply/funext => t; apply/eq_measure; apply/funext => U; rewrite k12.
+by subst m1; f_equal; f_equal; f_equal; apply/Prop_irrelevance.
+Qed.
+
 Section kseries.
 Variables (d d' : measure_display) (R : realType).
 Variables (X : measurableType d) (Y : measurableType d').
@@ -468,6 +478,16 @@ Notation "R .-sfker X ~> Y" := (sfinite_kernel X Y R).
 
 Arguments sfinite_subdef {_ _ _ _ _} _.
 
+Lemma eq_sfkernel d d' (T : measurableType d) (T' : measurableType d') (R : realType)
+    (k1 k2 : R.-sfker T ~> T') :
+  (forall x U, k1 x U = k2 x U) -> k1 = k2.
+Proof.
+move: k1 k2 => [m1 [[?] [?]]] [m2 [[?] [?]]] /= k12.
+have ? : m1 = m2.
+  by apply/funext => t; apply/eq_measure; apply/funext => U; rewrite k12.
+by subst m1; f_equal; f_equal; f_equal; apply/Prop_irrelevance.
+Qed.
+
 HB.mixin Record SFiniteKernel_isFinite
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) :=
@@ -483,7 +503,8 @@ Notation "R .-fker X ~> Y" := (finite_kernel X Y R).
 Arguments measure_uub {_ _ _ _ _} _.
 
 HB.factory Record Kernel_isFinite d d' (X : measurableType d)
-    (Y : measurableType d') (R : realType) (k : X -> {measure set Y -> \bar R}) of isKernel _ _ _ _ _ k := {
+    (Y : measurableType d') (R : realType) (k : X -> {measure set Y -> \bar R})
+    of isKernel _ _ _ _ _ k := {
   measure_uub : measure_fam_uub k }.
 
 Section kzero.
@@ -500,25 +521,8 @@ Proof. by move=> ?/=; exact: measurable_fun_cst. Qed.
 HB.instance Definition _ :=
   @isKernel.Build _ _ X Y R kzero measurable_fun_kzero.
 
-(*Let kernel_from_mzero_sfinite0 : exists2 s : (R.-ker T' ~> T)^nat, forall n, measure_fam_uub (s n) &
-    forall x U, measurable U -> kernel_from_mzero x U = kseries s x U.
-Proof.
-exists (fun=> [the _.-ker _ ~> _ of kernel_from_mzero]).
-  move=> _.
-  by exists 1%R => y; rewrite /= /mzero.
-by move=> t U mU/=; rewrite /mseries nneseries0.
-Qed.
-
-HB.instance Definition _ :=
-  @isSFinite0.Build _ _ _ T R kernel_from_mzero
-  kernel_from_mzero_sfinite0.*)
-
 Lemma kzero_uub : measure_fam_uub kzero.
 Proof. by exists 1%R => /= t; rewrite /mzero/=. Qed.
-
-(*HB.instance Definition _ :=
-  @SFiniteKernel_isFinite.Build _ _ _ T R kernel_from_mzero
-  kernel_from_mzero_uub.*)
 
 End kzero.
 
