@@ -42,11 +42,12 @@ Local Open Scope ereal_scope.
 Lemma onem1' (R : numDomainType) (p : R) : (p + `1- p = 1)%R.
 Proof. by rewrite /onem addrCA subrr addr0. Qed.
 
-Lemma onem_nonneg_proof (R : numDomainType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R) :
-  (0 <= `1-(p%:num))%R.
+Lemma onem_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
+  (p%:num <= 1 -> 0 <= `1-(p%:num))%R.
 Proof. by rewrite /onem/= subr_ge0. Qed.
 
-Definition onem_nonneg (R : numDomainType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R) :=
+Definition onem_nonneg (R : numDomainType) (p : {nonneg R})
+   (p1 : (p%:num <= 1)%R) :=
   NngNum (onem_nonneg_proof p1).
 
 Lemma expR_ge0 (R : realType) (x : R) : (0 <= expR x)%R.
@@ -69,10 +70,11 @@ Local Close Scope ring_scope.
 Let mbernoulli_setT : mbernoulli [set: _] = 1.
 Proof.
 rewrite /mbernoulli/= /measure_add/= /msum 2!big_ord_recr/= big_ord0 add0e/=.
-by rewrite /mscale/= !diracE !in_setT !mule1 -EFinD onem1'.
+by rewrite /mscale/= !diracT !mule1 -EFinD onem1'.
 Qed.
 
-HB.instance Definition _ := @isProbability.Build _ _ R mbernoulli mbernoulli_setT.
+HB.instance Definition _ :=
+  @isProbability.Build _ _ R mbernoulli mbernoulli_setT.
 
 Definition bernoulli := [the probability _ _ of mbernoulli].
 
@@ -89,8 +91,8 @@ Definition mscore t : {measure set _ -> \bar R} :=
 Lemma mscoreE t U : mscore t U = if U == set0 then 0 else `| (f t)%:E |.
 Proof.
 rewrite /mscore/= /mscale/=; have [->|->] := set_unit U.
-  by rewrite eqxx diracE in_set0 mule0.
-by rewrite diracE in_setT mule1 (negbTE (setT0 _)).
+  by rewrite eqxx dirac0 mule0.
+by rewrite diracT mule1 (negbTE (setT0 _)).
 Qed.
 
 Lemma measurable_fun_mscore U : measurable_fun setT f ->
@@ -164,18 +166,19 @@ HB.instance Definition _ i t := isMeasure.Build _ _ _
 Lemma measurable_fun_k i U : measurable U -> measurable_fun setT (k mr i ^~ U).
 Proof.
 move=> /= mU; rewrite /k /=.
-rewrite (_ : (fun x : T => _) = (fun x => if (i%:R)%:E <= x < (i.+1%:R)%:E then x else 0) \o
-                             (mscore r ^~ U)) //.
+rewrite (_ : (fun x : T => _) =
+  (fun x => if i%:R%:E <= x < i.+1%:R%:E then x else 0) \o (mscore r ^~ U)) //.
 apply: measurable_fun_comp => /=; last exact/measurable_fun_mscore.
-pose A : _ -> \bar R := (fun x => x * (\1_(`[i%:R%:E, i.+1%:R%:E [%classic : set (\bar R)) x)%:E).
+pose A : _ -> \bar R :=
+ fun x => x * (\1_(`[i%:R%:E, i.+1%:R%:E [%classic : set (\bar R)) x)%:E.
 rewrite (_ : (fun x => _) = A); last first.
   apply/funext => x; rewrite /A; case: ifPn => ix.
-    by rewrite indicE/= mem_set ?mule1//.
+    by rewrite indicE/= mem_set ?mule1.
   by rewrite indicE/= memNset ?mule0// /= in_itv/=; exact/negP.
 rewrite {}/A.
 apply emeasurable_funM => /=; first exact: measurable_fun_id.
 apply/EFin_measurable_fun.
-have mi : measurable (`[(i%:R)%:E, (i.+1%:R)%:E[%classic : set (\bar R)).
+have mi : measurable (`[i%:R%:E, i.+1%:R%:E[%classic : set (\bar R)).
   exact: emeasurable_itv.
 by rewrite (_ : \1__ = mindic R mi).
 Qed.
@@ -188,12 +191,11 @@ HB.instance Definition _ i :=
 Lemma mk_uub (i : nat) : measure_fam_uub (mk i).
 Proof.
 exists i.+1%:R => /= t; rewrite /k mscoreE setT_unit.
-rewrite (_ : [set tt] == set0 = false); last first.
-  by apply/eqP => /seteqP[] /(_ tt) /(_ erefl).
-by case: ifPn => // /andP[].
+by case: ifPn => //; case: ifPn => // _ /andP[].
 Qed.
 
-HB.instance Definition _ i := @Kernel_isFinite.Build _ _ _ _ R (mk i) (mk_uub i).
+HB.instance Definition _ i :=
+  @Kernel_isFinite.Build _ _ _ _ R (mk i) (mk_uub i).
 
 End score.
 End SCORE.
@@ -207,7 +209,8 @@ Definition kscore (mr : measurable_fun setT r)
 
 Variable (mr : measurable_fun setT r).
 
-Let measurable_fun_kscore U : measurable U -> measurable_fun setT (kscore mr ^~ U).
+Let measurable_fun_kscore U : measurable U ->
+  measurable_fun setT (kscore mr ^~ U).
 Proof. by move=> /= _; exact: measurable_fun_mscore. Qed.
 
 HB.instance Definition _ := isKernel.Build _ _ T _ R
@@ -228,11 +231,13 @@ apply/esym/cvg_lim => //.
 rewrite -(cvg_shiftn `|floor (fine `|(r t)%:E|)|%N.+1)/=.
 rewrite (_ : (fun _ => _) = cst `|(r t)%:E|); first exact: cvg_cst.
 apply/funext => n.
-pose floor_r := widen_ord (leq_addl n `|floor `|r t| |.+1) (Ordinal (ltnSn `|floor `|r t| |)).
+pose floor_r := widen_ord (leq_addl n `|floor `|r t| |.+1)
+                          (Ordinal (ltnSn `|floor `|r t| |)).
 rewrite big_mkord (bigD1 floor_r)//= ifT; last first.
   rewrite lee_fin lte_fin; apply/andP; split.
     by rewrite natr_absz (@ger0_norm _ (floor `|r t|)) ?floor_ge0 ?floor_le.
-  by rewrite -addn1 natrD natr_absz (@ger0_norm _ (floor `|r t|)) ?floor_ge0 ?lt_succ_floor.
+  rewrite -addn1 natrD natr_absz.
+  by rewrite (@ger0_norm _ (floor `|r t|)) ?floor_ge0 ?lt_succ_floor.
 rewrite big1 ?adde0//= => j jk.
 rewrite ifF// lte_fin lee_fin.
 move: jk; rewrite neq_ltn/= => /orP[|] jr.
@@ -241,11 +246,12 @@ move: jk; rewrite neq_ltn/= => /orP[|] jr.
   move: jr; rewrite -lez_nat => /le_trans; apply.
   by rewrite -[leRHS](@ger0_norm _ (floor `|r t|)) ?floor_ge0.
 - suff : (`|r t| < j%:R)%R by rewrite ltNge => /negbTE ->.
-  move: jr; rewrite -ltz_nat -(@ltr_int R) (@gez0_abs (floor `|r t|)) ?floor_ge0// ltr_int.
-  by rewrite -floor_lt_int.
+  move: jr; rewrite -ltz_nat -(@ltr_int R) (@gez0_abs (floor `|r t|)) ?floor_ge0//.
+  by rewrite ltr_int -floor_lt_int.
 Qed.
 
-HB.instance Definition _ := @Kernel_isSFinite.Build _ _ _ _ _ (kscore mr) sfinite_kscore.
+HB.instance Definition _ :=
+  @Kernel_isSFinite.Build _ _ _ _ _ (kscore mr) sfinite_kscore.
 
 End kscore.
 
@@ -507,12 +513,9 @@ Lemma iteE (f : X -> bool) (mf : measurable_fun setT f)
 Proof.
 apply/eq_measure/funext => U.
 rewrite /ite; unlock => /=.
-rewrite /kcomp/=.
-rewrite integral_dirac//=.
-rewrite indicT.
-rewrite mul1e.
-rewrite -/(measure_add (ITE.kiteT k1 (x, f x))
-                       (ITE.kiteF k2 (x, f x))).
+rewrite /kcomp/= integral_dirac//=.
+rewrite indicT mul1e.
+rewrite -/(measure_add (ITE.kiteT k1 (x, f x)) (ITE.kiteF k2 (x, f x))).
 rewrite measure_addE.
 rewrite /ITE.kiteT /ITE.kiteF/=.
 by case: ifPn => fx /=; rewrite /mzero ?(adde0,add0e).
@@ -566,8 +569,7 @@ Lemma letin_retk
   x U : measurable U ->
   letin (ret mf) k x U = k (x, f x) U.
 Proof.
-move=> mU; rewrite letinE retE integral_dirac//.
-  by rewrite indicE mem_set// mul1e.
+move=> mU; rewrite letinE retE integral_dirac ?indicT ?mul1e//.
 have /measurable_fun_prod1 := measurable_kernel k _ mU.
 exact.
 Qed.
@@ -584,13 +586,13 @@ End insn1.
 
 Module Notations.
 
-Notation var1_of2 := (@measurable_fun_fst _ _ _ _).
-Notation var2_of2 := (@measurable_fun_snd _ _ _ _).
-Notation var1_of3 := (measurable_fun_comp (@measurable_fun_fst _ _ _ _)
-                                          (@measurable_fun_fst _ _ _ _)).
-Notation var2_of3 := (measurable_fun_comp (@measurable_fun_snd _ _ _ _)
-                                          (@measurable_fun_fst _ _ _ _)).
-Notation var3_of3 := (@measurable_fun_snd _ _ _ _).
+Notation var1of2 := (@measurable_fun_fst _ _ _ _).
+Notation var2of2 := (@measurable_fun_snd _ _ _ _).
+Notation var1of3 := (measurable_fun_comp (@measurable_fun_fst _ _ _ _)
+                                         (@measurable_fun_fst _ _ _ _)).
+Notation var2of3 := (measurable_fun_comp (@measurable_fun_snd _ _ _ _)
+                                         (@measurable_fun_fst _ _ _ _)).
+Notation var3of3 := (@measurable_fun_snd _ _ _ _).
 
 Notation mR := Real_sort__canonical__measure_Measurable.
 Notation munit := Datatypes_unit__canonical__measure_Measurable.
@@ -608,13 +610,13 @@ Let kcomp_scoreE d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
   (score mf \; g) r U = `|f r|%:E * g (r, tt) U.
 Proof.
 rewrite /= /kcomp /kscore /= ge0_integral_mscale//=.
-by rewrite integral_dirac// indicE in_setT mul1e.
+by rewrite integral_dirac// indicT mul1e.
 Qed.
 
 Lemma scoreE d' (T' : measurableType d') (x : T * T') (U : set T') (f : R -> R)
     (r : R) (r0 : (0 <= r)%R)
     (f0 : (forall r, 0 <= r -> 0 <= f r)%R) (mf : measurable_fun setT f) :
-  score (measurable_fun_comp mf var2_of2)
+  score (measurable_fun_comp mf var2of2)
     (x, r) (curry (snd \o fst) x @^-1` U) =
   (f r)%:E * \d_x.2 U.
 Proof. by rewrite /score/= /mscale/= ger0_norm// f0. Qed.
@@ -625,8 +627,7 @@ Lemma score_score (f : R -> R) (g : R * unit -> R)
   letin (score mf) (score mg) x U =
   score (measurable_funM mf (measurable_fun_prod2 tt mg)) x U.
 Proof.
-rewrite {1}/letin.
-unlock.
+rewrite {1}/letin; unlock.
 by rewrite kcomp_scoreE/= /mscale/= diracE normrM muleA EFinM.
 Qed.
 
@@ -661,9 +662,7 @@ Section letinC.
 Variables (d d1 : _) (X : measurableType d) (Y : measurableType d1).
 Variables (R : realType) (d' : _) (Z : measurableType d').
 
-Notation var2_of3 := (measurable_fun_comp (@measurable_fun_snd _ _ _ _)
-                                          (@measurable_fun_fst _ _ _ _)).
-Notation var3_of3 := (@measurable_fun_snd _ _ _ _).
+Import Notations.
 
 Variables (t : R.-sfker Z ~> X)
           (t' : R.-sfker [the measurableType _ of (Z * Y)%type] ~> X)
@@ -675,10 +674,10 @@ Variables (t : R.-sfker Z ~> X)
 Lemma letinC z A : measurable A ->
   letin t
   (letin u'
-  (ret (measurable_fun_pair var2_of3 var3_of3))) z A =
+  (ret (measurable_fun_pair var2of3 var3of3))) z A =
   letin u
   (letin t'
-  (ret (measurable_fun_pair var3_of3 var2_of3))) z A.
+  (ret (measurable_fun_pair var3of3 var2of3))) z A.
 Proof.
 move=> mA.
 rewrite !letinE.
@@ -788,11 +787,8 @@ Lemma letin_sample_bernoulli (R : realType) (d d' : _) (T : measurableType d)
   r%:num%:E * u (x, true) y + (`1- (r%:num : R))%:E * u (x, false) y.
 Proof.
 rewrite letinE/= sampleE.
-rewrite ge0_integral_measure_sum//.
-rewrite 2!big_ord_recl/= big_ord0 adde0/=.
-rewrite !ge0_integral_mscale//=.
-rewrite !integral_dirac//=.
-by rewrite indicE in_setT mul1e indicE in_setT mul1e.
+rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
+by rewrite !ge0_integral_mscale//= !integral_dirac//= indicT 2!mul1e.
 Qed.
 
 Section sample_and_return.
@@ -802,7 +798,7 @@ Variables (R : realType) (d : _) (T : measurableType d).
 Definition sample_and_return : R.-sfker T ~> _ :=
   letin
     (sample (bernoulli p27)) (* T -> B *)
-    (ret var2_of2) (* T * B -> B *).
+    (ret var2of2) (* T * B -> B *).
 
 Lemma sample_and_returnE t U : sample_and_return t U =
   (2 / 7)%:E * \d_true U + (5 / 7)%:E * \d_false U.
@@ -828,7 +824,7 @@ Definition sample_and_branch :
   R.-sfker T ~> mR R :=
   letin
     (sample (bernoulli p27)) (* T -> B *)
-    (ite var2_of2 (ret k3) (ret k10)).
+    (ite var2of2 (ret k3) (ret k10)).
 
 Lemma sample_and_branchE t U : sample_and_branch t U =
   (2 / 7)%:E * \d_(3 : R) U +
@@ -848,9 +844,9 @@ Hypothesis mh : measurable_fun setT h.
 Definition kstaton_bus : R.-sfker T ~> mbool :=
   letin (sample (bernoulli p27))
   (letin
-    (letin (ite var2_of2 (ret k3) (ret k10))
-      (score (measurable_fun_comp mh var3_of3)))
-    (ret var2_of3)).
+    (letin (ite var2of2 (ret k3) (ret k10))
+      (score (measurable_fun_comp mh var3of3)))
+    (ret var2of3)).
 
 Definition staton_bus := normalize kstaton_bus.
 
@@ -897,14 +893,9 @@ Lemma staton_busE P (t : R) U :
   ((2 / 7)%:E * (poisson4 3)%:E * \d_true U +
    (5 / 7)%:E * (poisson4 10)%:E * \d_false U) * N^-1%:E.
 Proof.
-rewrite /staton_bus.
-rewrite normalizeE /=.
-rewrite !kstaton_bus_poissonE.
-rewrite diracE mem_set// mule1.
-rewrite diracE mem_set// mule1.
-rewrite ifF //.
-apply/negbTE.
-by rewrite gt_eqF// lte_fin addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// poisson_gt0// ltr0n.
+rewrite /staton_bus normalizeE /= !kstaton_bus_poissonE !diracT !mule1 ifF //.
+apply/negbTE; rewrite gt_eqF// lte_fin.
+by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// poisson_gt0// ltr0n.
 Qed.
 
 End staton_bus_poisson.
@@ -953,13 +944,9 @@ Lemma staton_bus_exponentialE P (t : R) U :
    (5 / 7)%:E * (exp1560 10)%:E * \d_false U) * N^-1%:E.
 Proof.
 rewrite /staton_bus.
-rewrite normalizeE /=.
-rewrite !kstaton_bus_exponentialE.
-rewrite diracE mem_set// mule1.
-rewrite diracE mem_set// mule1.
-rewrite ifF //.
-apply/negbTE.
-by rewrite gt_eqF// lte_fin addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// exp_density_gt0 ?ltr0n.
+rewrite normalizeE /= !kstaton_bus_exponentialE !diracT !mule1 ifF //.
+apply/negbTE; rewrite gt_eqF// lte_fin.
+by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// exp_density_gt0 ?ltr0n.
 Qed.
 
 End staton_bus_exponential.

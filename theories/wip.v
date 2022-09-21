@@ -6,6 +6,11 @@ Require Import reals ereal topology normedtype sequences esum measure.
 Require Import lebesgue_measure fsbigop numfun lebesgue_integral exp kernel.
 Require Import trigo prob_lang.
 
+(******************************************************************************)
+(*    Semantics of a programming language PPL using s-finite kernels (wip)    *)
+(*                                                                            *)
+(******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -42,11 +47,6 @@ Proof. by rewrite /gauss01_density /gauss_density mul1r subr0 divr1. Qed.
 Definition mgauss01 (V : set R) :=
   \int[lebesgue_measure]_(x in V) (gauss01_density x)%:E.
 
-Lemma integral_gauss01_density :
-  \int[lebesgue_measure]_x (gauss01_density x)%:E = 1%E.
-Proof.
-Admitted.
-
 Lemma measurable_fun_gauss_density m s :
   measurable_fun setT (gauss_density m s).
 Proof.
@@ -68,6 +68,9 @@ Let mgauss01_ge0 A : (0 <= mgauss01 A)%E.
 Proof.
 by rewrite /mgauss01 integral_ge0//= => x _; rewrite lee_fin gauss_density_ge0.
 Qed.
+
+Axiom integral_gauss01_density :
+  \int[lebesgue_measure]_x (gauss01_density x)%:E = 1%E.
 
 Let mgauss01_sigma_additive : semi_sigma_additive mgauss01.
 Proof.
@@ -121,8 +124,8 @@ Variable mu : {measure set mR R -> \bar R}.
 Definition staton_lebesgue : R.-sfker T ~> _ :=
   letin (sample (@gauss01 R))
   (letin
-    (score (measurable_fun_comp mf1 var2_of2))
-    (ret var2_of3)).
+    (score (measurable_fun_comp mf1 var2of2))
+    (ret var2of3)).
 
 Lemma staton_lebesgueE x U : measurable U ->
   staton_lebesgue x U = lebesgue_measure U.
@@ -137,7 +140,7 @@ transitivity (\int[@mgauss01 R]_(y in U) (f1 y)%:E).
   apply: eq_integral => /= r _.
   rewrite letinE/= ge0_integral_mscale//= ger0_norm//; last first.
     by rewrite invr_ge0// gauss_density_ge0.
-  by rewrite integral_dirac// indicE in_setT mul1e retE/= diracE indicE.
+  by rewrite integral_dirac// indicT mul1e retE/= diracE indicE.
 transitivity (\int[lebesgue_measure]_(x in U) (gauss01_density x * f1 x)%:E).
   admit.
 transitivity (\int[lebesgue_measure]_(x in U) (\1_U x)%:E).
