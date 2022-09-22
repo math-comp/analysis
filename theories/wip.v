@@ -7,8 +7,8 @@ Require Import lebesgue_measure fsbigop numfun lebesgue_integral exp kernel.
 Require Import trigo prob_lang.
 
 (******************************************************************************)
-(*    Semantics of a programming language PPL using s-finite kernels (wip)    *)
-(*                                                                            *)
+(*  Semantics of a probabilistic programming language using s-finite kernels  *)
+(*                                (wip)                                       *)
 (******************************************************************************)
 
 Set Implicit Arguments.

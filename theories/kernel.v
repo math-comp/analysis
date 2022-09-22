@@ -314,8 +314,8 @@ Definition finite_measure d (T : measurableType d) (R : realType)
 
 Definition sfinite_measure d (T : measurableType d) (R : realType)
     (mu : set T -> \bar R) :=
-  exists2 mu_ : {measure set T -> \bar R}^nat,
-    forall n, finite_measure (mu_ n) & forall U, measurable U -> mu U = mseries mu_ 0 U.
+  exists2 s : {measure set T -> \bar R}^nat,
+    forall n, finite_measure (s n) & forall U, measurable U -> mu U = mseries s 0 U.
 
 Lemma finite_measure_sigma_finite d (T : measurableType d) (R : realType)
   (mu : {measure set T -> \bar R}) :
@@ -337,18 +337,17 @@ Variable (mf : measurable_fun setT f).
 Lemma sfinite_fubini :
   \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
 Proof.
-have [m1_ fm1 m1E] := sfm1.
-have [m2_ fm2 m2E] := sfm2.
-rewrite [LHS](eq_measure_integral [the measure _ _ of mseries m1_ 0]); last first.
+have [s1 fm1 m1E] := sfm1.
+have [s2 fm2 m2E] := sfm2.
+rewrite [LHS](eq_measure_integral [the measure _ _ of mseries s1 0]); last first.
   by move=> A mA _; rewrite m1E.
-transitivity (\int[[the measure _ _ of mseries m1_ 0]]_x
-    \int[[the measure _ _ of mseries m2_ 0]]_y f (x, y)).
-  by apply eq_integral => x _; apply: eq_measure_integral => U mA _; rewrite m2E.
-transitivity (\sum_(n <oo) \int[m1_ n]_x \sum_(m <oo) \int[m2_ m]_y f (x, y)).
+transitivity (\int[mseries s1 0]_x \int[mseries s2 0]_y f (x, y)).
+  by apply eq_integral => x _; apply: eq_measure_integral => ? ? _; rewrite m2E.
+transitivity (\sum_(n <oo) \int[s1 n]_x \sum_(m <oo) \int[s2 m]_y f (x, y)).
   rewrite ge0_integral_measure_series; [|by []| |]; last 2 first.
     by move=> t _; exact: integral_ge0.
     rewrite [X in measurable_fun _ X](_ : _ =
-        fun x => \sum_(n <oo) \int[m2_ n]_y f (x, y)); last first.
+        fun x => \sum_(n <oo) \int[s2 n]_y f (x, y)); last first.
       apply/funext => x.
       by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
     apply: ge0_emeasurable_fun_sum; first by move=> k x; exact: integral_ge0.
@@ -356,30 +355,29 @@ transitivity (\sum_(n <oo) \int[m1_ n]_x \sum_(m <oo) \int[m2_ m]_y f (x, y)).
     exact: finite_measure_sigma_finite.
   apply: eq_nneseries => n _; apply eq_integral => x _.
   by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
-transitivity (\sum_(n <oo) \sum_(m <oo) \int[m1_ n]_x \int[m2_ m]_y f (x, y)).
+transitivity (\sum_(n <oo) \sum_(m <oo) \int[s1 n]_x \int[s2 m]_y f (x, y)).
   apply eq_nneseries => n _.
   rewrite integral_sum//.
     move=> m; apply: measurable_fun_fubini_tonelli_F => //=.
     exact: finite_measure_sigma_finite.
   by move=> m x _; exact: integral_ge0.
-transitivity (\sum_(n <oo) \sum_(m <oo) \int[m2_ m]_y \int[m1_ n]_x f (x, y)).
+transitivity (\sum_(n <oo) \sum_(m <oo) \int[s2 m]_y \int[s1 n]_x f (x, y)).
   apply eq_nneseries => n _; apply eq_nneseries => m _.
   by rewrite fubini_tonelli//; exact: finite_measure_sigma_finite.
-transitivity (\sum_(n <oo) \int[[the measure _ _ of mseries m2_ 0]]_y \int[m1_ n]_x f (x, y)).
+transitivity (\sum_(n <oo) \int[mseries s2 0]_y \int[s1 n]_x f (x, y)).
   apply eq_nneseries => n _ /=.  rewrite ge0_integral_measure_series//.
     by move=> y _; exact: integral_ge0.
   apply: measurable_fun_fubini_tonelli_G => //=.
   by apply: finite_measure_sigma_finite; exact: fm1.
-transitivity (\int[[the measure _ _ of mseries m2_ 0]]_y \sum_(n <oo) \int[m1_ n]_x f (x, y)).
+transitivity (\int[mseries s2 0]_y \sum_(n <oo) \int[s1 n]_x f (x, y)).
   rewrite integral_sum//.
     move=> n; apply: measurable_fun_fubini_tonelli_G => //=.
     by apply: finite_measure_sigma_finite; exact: fm1.
   by move=> n y _; exact: integral_ge0.
-transitivity (\int[[the measure _ _ of mseries m2_ 0]]_y
-              \int[[the measure _ _ of mseries m1_ 0]]_x f (x, y)).
+transitivity (\int[mseries s2 0]_y \int[mseries s1 0]_x f (x, y)).
   apply eq_integral => y _.
   by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod2.
-transitivity (\int[m2]_y \int[mseries m1_ 0]_x f (x, y)).
+transitivity (\int[m2]_y \int[mseries s1 0]_x f (x, y)).
   by apply eq_measure_integral => A mA _ /=; rewrite m2E.
 by apply eq_integral => y _; apply eq_measure_integral => A mA _ /=; rewrite m1E.
 Qed.
@@ -867,26 +865,13 @@ Arguments measurable_fun_xsection_integral {_ _ _ _ _} k l.
 Arguments measurable_fun_integral_finite_kernel {_ _ _ _ _} k l.
 Arguments measurable_fun_integral_sfinite_kernel {_ _ _ _ _} k l.
 
-Section kprobability.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (P : probability Y R).
+Section pdirac.
+Variables (d : _) (T : measurableType d) (R : realType).
 
-Definition kprobability : X -> {measure set Y -> \bar R} := fun=> P.
+HB.instance Definition _ x :=
+  isProbability.Build _ _ _ (@dirac _ T x R) (diracT R x).
 
-Let measurable_fun_kprobability U : measurable U ->
-  measurable_fun setT (kprobability ^~ U).
-Proof. by move=> mU; exact: measurable_fun_cst. Qed.
-
-HB.instance Definition _ :=
-  @isKernel.Build _ _ X Y R kprobability measurable_fun_kprobability.
-
-Let kprobability_prob x : kprobability x setT = 1.
-Proof. by rewrite /kprobability/= probability_setT. Qed.
-
-HB.instance Definition _ :=
-  @Kernel_isProbability.Build _ _ X Y R kprobability kprobability_prob.
-
-End kprobability.
+End pdirac.
 
 Section kdirac.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
@@ -894,7 +879,7 @@ Variables (R : realType) (f : X -> Y).
 
 Definition kdirac (mf : measurable_fun setT f)
     : X -> {measure set Y -> \bar R} :=
-  fun x : X => [the measure _ _ of dirac (f x)].
+  fun x => [the measure _ _ of dirac (f x)].
 
 Hypothesis mf : measurable_fun setT f.
 
@@ -916,6 +901,49 @@ HB.instance Definition _ := Kernel_isProbability.Build _ _ _ _ _
 
 End kdirac.
 Arguments kdirac {d d' X Y R f}.
+
+Section dist_salgebra_instance.
+Variables (d : measure_display) (T : measurableType d) (R : realType).
+
+Let p0 : probability T R := [the probability T R of @dirac d T point R].
+
+Definition prob_pointed := Pointed.Class
+  (Choice.Class gen_eqMixin (Choice.Class gen_eqMixin gen_choiceMixin)) p0.
+
+Canonical probability_eqType := EqType (probability T R) prob_pointed.
+Canonical probability_choiceType := ChoiceType (probability T R) prob_pointed.
+Canonical probability_ptType := PointedType (probability T R) prob_pointed.
+
+Definition mset (U : set T) (r : R) := [set mu : probability T R | mu U < r%:E].
+
+Definition pset : set (set (probability T R)) :=
+  [set mset U r | r in `[0%R,1%R]%classic & U in @measurable d T].
+
+Definition pprobability := [the measurableType pset.-sigma of salgebraType pset].
+
+End dist_salgebra_instance.
+
+Section kprobability.
+Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
+Variables (R : realType) (P : probability Y R).
+
+Definition kprobability
+  : X -> {measure set Y -> \bar R} := fun=> P.
+
+Let measurable_fun_kprobability U : measurable U ->
+  measurable_fun setT (kprobability ^~ U).
+Proof. by move=> mU; exact: measurable_fun_cst. Qed.
+
+HB.instance Definition _ :=
+  @isKernel.Build _ _ X Y R kprobability measurable_fun_kprobability.
+
+Let kprobability_prob x : kprobability x setT = 1.
+Proof. by rewrite /kprobability/= probability_setT. Qed.
+
+HB.instance Definition _ :=
+  @Kernel_isProbability.Build _ _ X Y R kprobability kprobability_prob.
+
+End kprobability.
 
 Section kadd.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
@@ -1041,12 +1069,11 @@ Qed.
 Let mnormalize_ge0 x U : 0 <= mnormalize x U.
 Proof. by rewrite /mnormalize; case: ifPn => //; case: ifPn. Qed.
 
-Lemma mnormalize_sigma_additive x : semi_sigma_additive (mnormalize x).
+Let mnormalize_sigma_additive x : semi_sigma_additive (mnormalize x).
 Proof.
 move=> F mF tF mUF; rewrite /mnormalize/=.
-case: ifPn => [_|_].
-  exact: measure_semi_sigma_additive.
-rewrite (_ : (fun n => _) = ((fun n => \sum_(0 <= i < n) f x (F i)) \*
+case: ifPn => [_|_]; first exact: measure_semi_sigma_additive.
+rewrite (_ : (fun _ => _) = ((fun n => \sum_(0 <= i < n) f x (F i)) \*
                           cst ((fine (f x setT))^-1)%:E)); last first.
   by apply/funext => n; rewrite -ge0_sume_distrl.
 by apply: ereal_cvgMr => //; exact: measure_semi_sigma_additive.
@@ -1055,7 +1082,7 @@ Qed.
 HB.instance Definition _ x := isMeasure.Build _ _ _ (mnormalize x)
   (mnormalize0 x) (mnormalize_ge0 x) (@mnormalize_sigma_additive x).
 
-Lemma mnormalize1 x : mnormalize x setT = 1.
+Let mnormalize1 x : mnormalize x setT = 1.
 Proof.
 rewrite /mnormalize; case: ifPn; first by rewrite probability_setT.
 rewrite negb_or => /andP[ft0 ftoo].

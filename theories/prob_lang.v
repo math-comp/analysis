@@ -6,7 +6,7 @@ Require Import reals ereal topology normedtype sequences esum measure.
 Require Import lebesgue_measure fsbigop numfun lebesgue_integral exp kernel.
 
 (******************************************************************************)
-(*      Semantics of a programming language PPL using s-finite kernels        *)
+(*  Semantics of a probabilistic programming language using s-finite kernels  *)
 (*                                                                            *)
 (*       bernoulli r1 == Bernoulli probability with r1 a proof that           *)
 (*                       r : {nonneg R} is smaller than 1                     *)
@@ -108,38 +108,35 @@ End mscore.
 (* decomposition of score into finite kernels *)
 Module SCORE.
 Section score.
-Variables (R : realType) (d : _) (T : measurableType d).
-Variables (r : T -> R).
+Variables (d : _) (T : measurableType d) (R : realType) (f : T -> R).
 
-Definition k (mr : measurable_fun setT r) (i : nat) : T -> set unit -> \bar R :=
-  fun t U =>
-    if i%:R%:E <= mscore r t U < i.+1%:R%:E then
-      mscore r t U
+Definition k (mf : measurable_fun setT f) i t U :=
+    if i%:R%:E <= mscore f t U < i.+1%:R%:E then
+      mscore f t U
     else
       0.
 
-Hypothesis mr : measurable_fun setT r.
+Hypothesis mf : measurable_fun setT f.
 
-Lemma k0 i t : k mr i t (set0 : set unit) = 0 :> \bar R.
+Lemma k0 i t : k mf i t (set0 : set unit) = 0 :> \bar R.
 Proof. by rewrite /k measure0; case: ifP. Qed.
 
-Lemma k_ge0 i t B : 0 <= k mr i t B.
+Lemma k_ge0 i t B : 0 <= k mf i t B.
 Proof. by rewrite /k; case: ifP. Qed.
 
-Lemma k_sigma_additive i t : semi_sigma_additive (k mr i t).
+Lemma k_sigma_additive i t : semi_sigma_additive (k mf i t).
 Proof.
 move=> /= F mF tF mUF; rewrite /k /=.
-have [F0|] := eqVneq (\bigcup_n F n) set0.
+have [F0|UF0] := eqVneq (\bigcup_n F n) set0.
   rewrite F0 measure0 (_ : (fun _ => _) = cst 0).
     by case: ifPn => _; exact: cvg_cst.
   apply/funext => k; rewrite big1// => n _.
   by move: F0 => /bigcup0P -> //; rewrite measure0; case: ifPn.
-move=> UF0; move: (UF0).
-move=> /eqP/bigcup0P/existsNP[m /not_implyP[_ /eqP Fm0]].
+move: (UF0) => /eqP/bigcup0P/existsNP[m /not_implyP[_ /eqP Fm0]].
 rewrite [in X in _ --> X]mscoreE (negbTE UF0).
 rewrite -(cvg_shiftn m.+1)/=.
 case: ifPn => ir.
-  rewrite (_ : (fun _ => _) = cst `|(r t)%:E|); first exact: cvg_cst.
+  rewrite (_ : (fun _ => _) = cst `|(f t)%:E|); first exact: cvg_cst.
   apply/funext => n.
   rewrite big_mkord (bigD1 (widen_ord (leq_addl n _) (Ordinal (ltnSn m))))//=.
   rewrite [in X in X + _]mscoreE (negbTE Fm0) ir big1 ?adde0// => /= j jk.
@@ -152,8 +149,7 @@ rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
 apply/funext => n.
 rewrite big_mkord (bigD1 (widen_ord (leq_addl n _) (Ordinal (ltnSn m))))//=.
 rewrite [in X in if X then _ else _]mscoreE (negbTE Fm0) (negbTE ir) add0e.
-rewrite big1//= => j jm.
-rewrite mscoreE; have /eqP -> : F j == set0.
+rewrite big1//= => j jm; rewrite mscoreE; have /eqP -> : F j == set0.
   have [/eqP//|Fjtt] := set_unit (F j).
   move/trivIsetP : tF => /(_ j m Logic.I Logic.I jm).
   by rewrite Fjtt setTI => /eqP; rewrite (negbTE Fm0).
@@ -161,41 +157,35 @@ by rewrite eqxx; case: ifP.
 Qed.
 
 HB.instance Definition _ i t := isMeasure.Build _ _ _
-  (k mr i t) (k0 i t) (k_ge0 i t) (@k_sigma_additive i t).
+  (k mf i t) (k0 i t) (k_ge0 i t) (@k_sigma_additive i t).
 
-Lemma measurable_fun_k i U : measurable U -> measurable_fun setT (k mr i ^~ U).
+Lemma measurable_fun_k i U : measurable U -> measurable_fun setT (k mf i ^~ U).
 Proof.
-move=> /= mU; rewrite /k /=.
-rewrite (_ : (fun x : T => _) =
-  (fun x => if i%:R%:E <= x < i.+1%:R%:E then x else 0) \o (mscore r ^~ U)) //.
+move=> /= mU; rewrite /k /= (_ : (fun x => _) =
+  (fun x => if i%:R%:E <= x < i.+1%:R%:E then x else 0) \o (mscore f ^~ U)) //.
 apply: measurable_fun_comp => /=; last exact/measurable_fun_mscore.
-pose A : _ -> \bar R :=
- fun x => x * (\1_(`[i%:R%:E, i.+1%:R%:E [%classic : set (\bar R)) x)%:E.
-rewrite (_ : (fun x => _) = A); last first.
-  apply/funext => x; rewrite /A; case: ifPn => ix.
-    by rewrite indicE/= mem_set ?mule1.
+rewrite (_ : (fun x => _) = (fun x => x *
+    (\1_(`[i%:R%:E, i.+1%:R%:E [%classic : set _) x)%:E)); last first.
+  apply/funext => x; case: ifPn => ix; first by rewrite indicE/= mem_set ?mule1.
   by rewrite indicE/= memNset ?mule0// /= in_itv/=; exact/negP.
-rewrite {}/A.
 apply emeasurable_funM => /=; first exact: measurable_fun_id.
 apply/EFin_measurable_fun.
-have mi : measurable (`[i%:R%:E, i.+1%:R%:E[%classic : set (\bar R)).
-  exact: emeasurable_itv.
-by rewrite (_ : \1__ = mindic R mi).
+by rewrite (_ : \1__ = mindic R (emeasurable_itv R i)).
 Qed.
 
-Definition mk i t := [the measure _ _ of k mr i t].
+Definition mk i t := [the measure _ _ of k mf i t].
 
 HB.instance Definition _ i :=
-  isKernel.Build _ _ _ _ R (mk i) (measurable_fun_k i).
+  isKernel.Build _ _ _ _ _ (mk i) (measurable_fun_k i).
 
-Lemma mk_uub (i : nat) : measure_fam_uub (mk i).
+Lemma mk_uub i : measure_fam_uub (mk i).
 Proof.
 exists i.+1%:R => /= t; rewrite /k mscoreE setT_unit.
 by case: ifPn => //; case: ifPn => // _ /andP[].
 Qed.
 
 HB.instance Definition _ i :=
-  @Kernel_isFinite.Build _ _ _ _ R (mk i) (mk_uub i).
+  Kernel_isFinite.Build _ _ _ _ _ (mk i) (mk_uub i).
 
 End score.
 End SCORE.
@@ -257,9 +247,12 @@ End kscore.
 
 (* decomposition of ite into s-finite kernels *)
 Module ITE.
-Section kiteT.
+Section ite.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k : R.-ker X ~> Y).
+Variable R : realType.
+
+Section kiteT.
+Variable k : R.-ker X ~> Y.
 
 Definition kiteT : X * bool -> {measure set Y -> \bar R} :=
   fun xb => if xb.2 then k xb.1 else [the measure _ _ of mzero].
@@ -268,7 +261,7 @@ Let measurable_fun_kiteT U : measurable U -> measurable_fun setT (kiteT ^~ U).
 Proof.
 move=> /= mcU; rewrite /kiteT.
 rewrite (_ : (fun _ => _) = (fun x => if x.2 then k x.1 U
-                         else [the {measure set Y -> \bar R} of mzero] U)); last first.
+    else [the {measure set Y -> \bar R} of mzero] U)); last first.
   by apply/funext => -[t b]/=; case: ifPn.
 apply: (@measurable_fun_if_pair _ _ _ _ (k ^~ U) (fun=> mzero U)).
   exact/measurable_kernel.
@@ -276,12 +269,12 @@ exact: measurable_fun_cst.
 Qed.
 
 #[export]
-HB.instance Definition _ := isKernel.Build _ _ _ _ R kiteT measurable_fun_kiteT.
+HB.instance Definition _ := isKernel.Build _ _ _ _ _
+  kiteT measurable_fun_kiteT.
 End kiteT.
 
 Section sfkiteT.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k : R.-sfker X ~> Y).
+Variable k : R.-sfker X ~> Y.
 
 Let sfinite_kiteT : exists2 k_ : (R.-ker _ ~> _)^nat,
   forall n, measure_fam_uub (k_ n) &
@@ -292,34 +285,17 @@ have [k_ hk /=] := sfinite k.
 exists (fun n => [the _.-ker _ ~> _ of kiteT (k_ n)]) => /=.
   move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
   by exists r%:num => /= -[x []]; rewrite /kiteT//= /mzero//.
-move=> [x b] U mU; rewrite /kiteT; case: ifPn => hb.
-  by rewrite hk.
+move=> [x b] U mU; rewrite /kiteT; case: ifPn => hb; first by rewrite hk.
 by rewrite /mseries nneseries0.
 Qed.
 
-(*Let sfinite_kiteT : exists k_ : (R.-fker _ ~> _)^nat,
-  forall x U, measurable U ->
-    kiteT k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
-Proof.
-have [k_ hk /=] := sfinite k.
-exists (fun n => [the _.-fker _ ~> _ of kiteT (k_ n)]) => b U mU.
-rewrite /kiteT; case: ifPn => hb.
-  rewrite /mseries hk//= /mseries.
-  apply: eq_nneseries => n _.
-  by rewrite /kiteT hb.
-rewrite /= /mseries nneseries0// => n _.
-by rewrite /kiteT (negbTE hb).
-Qed.*)
-
-(* NB: we could also want to use Kernel_isSFinite *)
 #[export]
 HB.instance Definition _ t := @Kernel_isSFinite_subdef.Build _ _ _ _ _
   (kiteT k) sfinite_kiteT.
 End sfkiteT.
 
 Section fkiteT.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k : R.-fker X ~> Y).
+Variable k : R.-fker X ~> Y.
 
 Let kiteT_uub : measure_fam_uub (kiteT k).
 Proof.
@@ -329,12 +305,12 @@ by rewrite /= /mzero.
 Qed.
 
 #[export]
-HB.instance Definition _ t := Kernel_isFinite.Build _ _ _ _ R (kiteT k) kiteT_uub.
+HB.instance Definition _ t := Kernel_isFinite.Build _ _ _ _ _
+  (kiteT k) kiteT_uub.
 End fkiteT.
 
 Section kiteF.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k : R.-ker X ~> Y).
+Variable k : R.-ker X ~> Y.
 
 Definition kiteF : X * bool -> {measure set Y -> \bar R} :=
   fun xb => if ~~ xb.2 then k xb.1 else [the measure _ _ of mzero].
@@ -342,22 +318,22 @@ Definition kiteF : X * bool -> {measure set Y -> \bar R} :=
 Let measurable_fun_kiteF U : measurable U -> measurable_fun setT (kiteF ^~ U).
 Proof.
 move=> /= mcU; rewrite /kiteF.
-rewrite (_ : (fun x => _) = (fun x => if x.2 then [the measure _ _ of mzero] U else k x.1 U)); last first.
-  apply/funext => -[t b]/=.
-  by rewrite if_neg//; case: ifPn.
+rewrite (_ : (fun x => _) = (fun x => if x.2 then
+    [the measure _ _ of mzero] U else k x.1 U)); last first.
+  by apply/funext => -[t b]/=; rewrite if_neg//; case: ifPn.
 apply: (@measurable_fun_if_pair _ _ _ _ (fun=> mzero U) (k ^~ U)).
   exact: measurable_fun_cst.
 exact/measurable_kernel.
 Qed.
 
 #[export]
-HB.instance Definition _ := isKernel.Build _ _ _ _ R kiteF measurable_fun_kiteF.
+HB.instance Definition _ := isKernel.Build _ _ _ _ _
+  kiteF measurable_fun_kiteF.
 
 End kiteF.
 
 Section sfkiteF.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k : R.-sfker X ~> Y).
+Variable k : R.-sfker X ~> Y.
 
 Let sfinite_kiteF : exists2 k_ : (R.-ker _ ~> _)^nat,
   forall n, measure_fam_uub (k_ n) &
@@ -368,22 +344,9 @@ have [k_ hk /=] := sfinite k.
 exists (fun n => [the _.-ker _ ~> _ of kiteF (k_ n)]) => /=.
   move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
   by exists r%:num => /= -[x []]; rewrite /kiteF//= /mzero//.
-move=> [x b] U mU; rewrite /kiteF; case: ifPn => hb.
-  by rewrite hk.
+move=> [x b] U mU; rewrite /kiteF; case: ifPn => hb; first by rewrite hk.
 by rewrite /mseries nneseries0.
 Qed.
-
-(*Let sfinite_kiteF : exists k_ : (R.-fker _ ~> _)^nat,
-  forall x U, measurable U ->
-    kiteF k x U = [the measure _ _ of mseries (k_ ^~ x) 0] U.
-Proof.
-have [k_ hk] := sfinite k.
-exists (fun n => [the finite_kernel _ _ _ of kiteF (k_ n)]) => b U mU.
-rewrite /= /kiteF /=; case: ifPn => hb.
-  by rewrite /mseries hk//= /mseries/=.
-by rewrite /= /mseries nneseries0.
-Qed.
-*)
 
 #[export]
 HB.instance Definition _ := @Kernel_isSFinite_subdef.Build _ _ _ _ _
@@ -392,26 +355,21 @@ HB.instance Definition _ := @Kernel_isSFinite_subdef.Build _ _ _ _ _
 End sfkiteF.
 
 Section fkiteF.
-Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (k : R.-fker X ~> Y).
+Variable k : R.-fker X ~> Y.
 
 Let kiteF_uub : measure_fam_uub (kiteF k).
 Proof.
 have /measure_fam_uubP[M hM] := measure_uub k.
-exists M%:num => /= -[]; rewrite /kiteF/= => t.
-by case => //=; rewrite /mzero.
+by exists M%:num => /= -[]; rewrite /kiteF/= => t; case => //=; rewrite /mzero.
 Qed.
 
 #[export]
-HB.instance Definition _ := Kernel_isFinite.Build _ _ _ _ R (kiteF k) kiteF_uub.
+HB.instance Definition _ := Kernel_isFinite.Build _ _ _ _ _
+  (kiteF k) kiteF_uub.
 
 End fkiteF.
-
-(*Module Exports.
-HB.reexport.
-End Exports.*)
+End ite.
 End ITE.
-(*Export ITE.Exports.*)
 
 Section ite.
 Variables (d d' : _) (T : measurableType d) (T' : measurableType d').
@@ -423,10 +381,10 @@ Definition mite (mf : measurable_fun setT f) : T -> set T' -> \bar R :=
 Variables mf : measurable_fun setT f.
 
 Let mite0 t : mite mf t set0 = 0.
-Proof. by rewrite /mite; case: ifPn => //. Qed.
+Proof. by rewrite /mite; case: ifPn. Qed.
 
-Let mite_ge0 t (U : set _) : 0 <= mite mf t U.
-Proof. by rewrite /mite; case: ifPn => //. Qed.
+Let mite_ge0 t U : 0 <= mite mf t U.
+Proof. by rewrite /mite; case: ifPn. Qed.
 
 Let mite_sigma_additive t : semi_sigma_additive (mite mf t).
 Proof.
@@ -445,27 +403,6 @@ Definition kite :=
     [the R.-sfker _ ~> T' of kiteF u2] ].
 
 End ite.
-
-(* wip *)
-Section dist_salgebra_instance.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
-Variables p0 : probability T R.
-
-Definition prob_pointed := Pointed.Class
-  (Choice.Class gen_eqMixin (Choice.Class gen_eqMixin gen_choiceMixin)) p0.
-
-Canonical probability_eqType := EqType (probability T R) prob_pointed.
-Canonical probability_choiceType := ChoiceType (probability T R) prob_pointed.
-Canonical probability_ptType := PointedType (probability T R) prob_pointed.
-
-Definition mset (U : set T) (r : R) := [set mu : probability T R | mu U < r%:E].
-
-Definition pset : set (set (probability T R)) :=
-  [set mset U r | r in `[0%R,1%R]%classic & U in @measurable d T].
-
-Definition sset := [the measurableType pset.-sigma of salgebraType pset].
-
-End dist_salgebra_instance.
 
 Section insn2.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
