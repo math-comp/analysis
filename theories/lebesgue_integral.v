@@ -2771,10 +2771,13 @@ Local Open Scope ereal_scope.
 Variables (d : measure_display) (T : measurableType d) (R : realType)
           (mu : {measure set T -> \bar R}).
 
-Definition Rintegral (D : set T) (f : T -> \bar R) :=
-  fine (\int[mu]_(x in D) f x).
+Definition Rintegral (D : set T) (f : T -> R) :=
+  fine (\int[mu]_(x in D) (f x)%:E).
 
 End Rintegral.
+
+Notation "\int [ mu ]_ ( x 'in' D ) f" := (Rintegral mu D (fun x => f)) : ring_scope.
+Notation "\int [ mu ]_ x f" := ((Rintegral mu setT (fun x => f)))%E : ring_scope.
 
 Section integrable.
 Local Open Scope ereal_scope.
@@ -3932,21 +3935,6 @@ by congr (_ - _)%E; rewrite nneseries_esum// set_true.
 Qed.
 
 End subadditive_countable.
-
-Section rintegral_le.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variables (f : T -> \bar R). 
-Hypotheses (fint : mu.-integrable D f).
-Lemma rintegral_le : `|Rintegral mu D f| <= Rintegral mu D (abse \o f).
-Proof.
-rewrite -fine_abse; [apply: fine_le | exact: integral_fune_fin_num].
-- exact/abse_fin_num/integral_fune_fin_num. 
-- exact/integral_fune_fin_num/integrable_abse.
-by apply: le_abse_integral; case: fint.
-Qed.
-
-End rintegral_le.
 
 Section dominated_convergence_lemma.
 Local Open Scope ereal_scope.
