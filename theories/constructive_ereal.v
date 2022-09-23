@@ -2321,14 +2321,13 @@ Proof. by move=> *; rewrite addeC lte_paddl. Qed.
 
 Lemma lte_spaddre z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
-move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,lte_fin,ltey)//.
+move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltey)//.
 exact: ltr_spaddr.
 Qed.
 
 Lemma lte_spadder z x y : x \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
-move: z y x => [z| |] [y| |] [x| |] _ //=;
-  rewrite ?(lte_fin,lte_fin,ltey,ltNye)//.
+move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltey,ltNye)//.
 exact: ltr_spaddr.
 Qed.
 
@@ -2903,9 +2902,15 @@ Proof. by move=> *; rewrite daddeC lee_pdaddl. Qed.
 Lemma lte_pdaddr y x z : 0 <= x -> y < z -> y < z + x.
 Proof. by move=> *; rewrite daddeC lte_pdaddl. Qed.
 
-Lemma lte_spdaddr (r : R) x y : 0 < y -> r%:E <= x -> r%:E < x + y.
+Lemma lte_spdaddre z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
-move: y x => [y| |] [x| |] //=; rewrite ?lte_fin ?ltt_fin ?ltey //.
+move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltey,ltNye)//.
+exact: ltr_spaddr.
+Qed.
+
+Lemma lte_spdadder z x y : x \is a fin_num -> 0 < y -> z <= x -> z < x + y.
+Proof.
+move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltey,ltNye)//.
 exact: ltr_spaddr.
 Qed.
 

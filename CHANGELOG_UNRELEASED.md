@@ -15,6 +15,7 @@
   + lemmas `gte_addl`, `gte_addr`
   + lemmas `gte_daddl`, `gte_daddr`
   + lemma `lte_spadder`, `lte_spaddre`
+  + lemma `lte_spdadder`
 
 ### Changed
 
@@ -28,6 +29,9 @@
 
 - in `topology.v`:
   + renamed `continuous_subspaceT` to `continuous_in_subspaceT`
+- in `constructive_ereal.v`:
+  + `lte_spdaddr` -> `lte_spdaddre`
+
 ### Deprecated
 
 - in `constructive_ereal.v`:
