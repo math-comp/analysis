@@ -542,6 +542,18 @@ Section ERealArithTh_numDomainType.
 Context {R : numDomainType}.
 Implicit Types (x y z : \bar R) (r : R).
 
+Lemma fine_le : {in fin_num &, {homo @fine R : x y / x <= y >-> (x <= y)%R}}.
+Proof. by move=> [? [?| |]| |]. Qed.
+
+Lemma fine_lt : {in fin_num &, {homo @fine R : x y / x < y >-> (x < y)%R}}.
+Proof. by move=> [? [?| |]| |]. Qed.
+
+Lemma fine_abse : {in fin_num, {morph @fine R : x / `|x| >-> `|x|%R}}.
+Proof. by case. Qed.
+
+Lemma abse_fin_num x : `|x| \is a fin_num <-> x \is a fin_num.
+Proof. by case: x. Qed.
+
 Lemma fine_eq0 x : x \is a fin_num -> (fine x == 0%R) = (x == 0).
 Proof. by move: x => [//| |] /=; rewrite fin_numE. Qed.
 
