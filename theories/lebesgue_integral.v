@@ -3971,19 +3971,18 @@ Proof.
 move=> Dx; rewrite -abse0; apply: cvg_abse.
 move: (f_f Dx); case: (f x) => [r|/=|/=].
 - by move=> f_r; apply/ereal_cvg_sub0.
-- have gx1 : (0 < fine (g x) + 1)%R.
-    by rewrite (@le_lt_trans _ _ (fine (g x))) ?ltr_addl//; exact/fine_ge0/g0.
+- have gx1 : (0 < fine (g x) + 1)%R by rewrite ltr_paddl//; exact/fine_ge0/g0.
   move/ereal_cvgPpinfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
   have : (fine (g x) + 1)%:E <= g x.
     by rewrite (le_trans h)// (le_trans _ (absfg n Dx))// lee_abs.
-  by case: (g x) (fing Dx) => [r _| |]//; rewrite leNgt EFinD lte_addl.
+  by case: (g x) (fing Dx) => [r _| |]//; rewrite leNgt EFinD lte_addl ?lte01.
 - have gx1 : (- (fine (g x) + 1) < 0)%R.
     by rewrite ltr_oppl oppr0 ltr_spaddr//; exact/fine_ge0/g0.
   move/ereal_cvgPninfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
   have : (fine (g x) + 1)%:E <= g x.
     move: h; rewrite EFinN lee_oppr => /le_trans ->//.
     by rewrite (le_trans _ (absfg n Dx))// -abseN lee_abs.
-  by case: (g x) (fing Dx) => [r _| |]//; rewrite leNgt EFinD lte_addl.
+  by case: (g x) (fing Dx) => [r _| |]//; rewrite leNgt EFinD lte_addl ?lte01.
 Qed.
 
 Let gg_ n x : D x -> 0 <= 2%:E * g x - g_ n x.
@@ -4022,7 +4021,7 @@ have i2g : \int[mu]_(x in D) (2%:E * g x)  < +oo.
   apply: le_lt_trans; rewrite le_eqVlt; apply/orP; left; apply/eqP.
   by apply: eq_integral => t Dt; rewrite gee0_abs// g0//; rewrite inE in Dt.
 have ? : \int[mu]_(x in D) (2%:E * g x)  \is a fin_num.
-  by rewrite ge0_fin_numE// integral_ge0// => x Dx; rewrite mule_ge0 ?lee_fin ?g0.
+  by rewrite ge0_fin_numE// integral_ge0// => ? ?; rewrite mule_ge0 ?lee_fin ?g0.
 rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
     elim_sup (fun n => \int[mu]_(x in D) g_ n x)); last first.
   rewrite (_ : (fun _ => _) = (fun n => \int[mu]_(x in D) (2%:E * g x)  +
@@ -4352,8 +4351,7 @@ move=> n; rewrite -/B; have [? ?] := F_oo n.
 pose m2Fn := [the measure _ _ of mrestr m2 (F_oo n).1].
 have m2Fn_bounded : exists M, forall X, measurable X -> (m2Fn X < M%:E)%E.
   exists (fine (m2Fn (F n)) + 1) => Y mY.
-  rewrite [in ltRHS]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
-  rewrite fineK; last first.
+  rewrite [in ltRHS]EFinD lte_spadder// fineK; last first.
     by rewrite ge0_fin_numE ?measure_ge0//= /mrestr/= setIid.
   rewrite /= /mrestr/= setIid; apply: le_measure => //; rewrite inE//.
   exact: measurableI.
@@ -4393,8 +4391,7 @@ move=> n; have [? ?] := F_oo n; rewrite -/B.
 pose m1Fn := [the measure _ _ of mrestr m1 (F_oo n).1].
 have m1Fn_bounded : exists M, forall X, measurable X -> (m1Fn X < M%:E)%E.
   exists (fine (m1Fn (F n)) + 1) => Y mY.
-  rewrite [in ltRHS]EFinD (le_lt_trans _ (lte_addl _ _)) ?lte_fin//.
-  rewrite fineK; last first.
+  rewrite [in ltRHS]EFinD lte_spadder// fineK; last first.
     by rewrite ge0_fin_numE ?measure_ge0// /m1Fn/= /mrestr setIid.
   rewrite /m1Fn/= /mrestr setIid; apply: le_measure => //; rewrite inE//=.
   exact: measurableI.

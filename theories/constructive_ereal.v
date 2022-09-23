@@ -1506,27 +1506,29 @@ Qed.
 Lemma gee_addr x y : y <= 0 -> y + x <= x.
 Proof. rewrite addeC; exact: gee_addl. Qed.
 
-Lemma lte_addl y x : y \is a fin_num -> 0 < x -> y < y + x.
+Lemma lte_addl y x : y \is a fin_num -> (y < y + x) = (0 < x).
 Proof.
 by move: x y => [x| |] [y| |] _ //; rewrite ?ltey ?ltNye // !lte_fin ltr_addl.
 Qed.
 
-Lemma lte_addr y x : y \is a fin_num -> 0 < x -> y < x + y.
+Lemma lte_addr y x : y \is a fin_num -> (y < x + y) = (0 < x).
 Proof. rewrite addeC; exact: lte_addl. Qed.
 
-Lemma gte_subl y x : y \is a fin_num -> 0 < x -> y - x < y.
+Lemma gte_subl y x : y \is a fin_num -> (y - x < y) = (0 < x).
 Proof.
-move: y x => [x| |] [y| |] _ //; rewrite addeC /= ?ltNye //.
+move: y x => [x| |] [y| |] _ //; rewrite addeC /= ?ltNye ?ltey//.
 by rewrite !lte_fin gtr_addr ltr_oppl oppr0.
 Qed.
 
-Lemma gte_subr y x : y \is a fin_num -> 0 < x -> - x + y < y.
-Proof. rewrite addeC; exact: gte_subl. Qed.
+Lemma gte_subr y x : y \is a fin_num -> (- x + y < y) = (0 < x).
+Proof. by rewrite addeC; exact: gte_subl. Qed.
 
-Lemma gte_addl x y : x \is a fin_num -> y < 0 -> x + y < x.
-Proof. by move=> ? ?; rewrite -(oppeK y) gte_subl// lte_oppr oppe0. Qed.
+Lemma gte_addl x y : x \is a fin_num -> (x + y < x) = (y < 0).
+Proof.
+by move: x y => [r| |] [s| |]// _; [rewrite !lte_fin gtr_addl|rewrite !ltNye].
+Qed.
 
-Lemma gte_addr x y : x \is a fin_num -> y < 0 -> y + x < x.
+Lemma gte_addr x y : x \is a fin_num -> (y + x < x) = (y < 0).
 Proof. by rewrite addeC; exact: gte_addl. Qed.
 
 Lemma lte_add2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
@@ -2317,9 +2319,16 @@ Proof. by move=> *; rewrite addeC lee_paddl. Qed.
 Lemma lte_paddr y x z : 0 <= x -> y < z -> y < z + x.
 Proof. by move=> *; rewrite addeC lte_paddl. Qed.
 
-Lemma lte_spaddr z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
+Lemma lte_spaddre z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
-move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin, lte_fin, ltey) //.
+move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,lte_fin,ltey)//.
+exact: ltr_spaddr.
+Qed.
+
+Lemma lte_spadder z x y : x \is a fin_num -> 0 < y -> z <= x -> z < x + y.
+Proof.
+move: z y x => [z| |] [y| |] [x| |] _ //=;
+  rewrite ?(lte_fin,lte_fin,ltey,ltNye)//.
 exact: ltr_spaddr.
 Qed.
 
@@ -2331,6 +2340,9 @@ Arguments lee_sum_npos_natr {R}.
 Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
+
+#[deprecated(since="mathcomp-analysis 0.6", note="Use lte_spaddre instead.")]
+Notation lte_spaddr := lte_spaddre.
 
 Module DualAddTheoryRealDomain.
 
@@ -2378,24 +2390,24 @@ Proof. rewrite dual_addeE lee_oppl -oppe_ge0; exact: lee_addl. Qed.
 Lemma gee_daddr x y : y <= 0 -> y + x <= x.
 Proof. rewrite dual_addeE lee_oppl -oppe_ge0; exact: lee_addr. Qed.
 
-Lemma lte_daddl y x : y \is a fin_num -> 0 < x -> y < y + x.
-Proof. rewrite -fin_numN dual_addeE lte_oppr => ? ?; exact: gte_subl. Qed.
+Lemma lte_daddl y x : y \is a fin_num -> (y < y + x) = (0 < x).
+Proof. by rewrite -fin_numN dual_addeE lte_oppr; exact: gte_subl. Qed.
 
-Lemma lte_daddr y x : y \is a fin_num -> 0 < x -> y < x + y.
-Proof. rewrite -fin_numN dual_addeE lte_oppr addeC; exact: gte_subl. Qed.
+Lemma lte_daddr y x : y \is a fin_num -> (y < x + y) = (0 < x).
+Proof. by rewrite -fin_numN dual_addeE lte_oppr addeC; exact: gte_subl. Qed.
 
-Lemma gte_dsubl y x : y \is a fin_num -> 0 < x -> y - x < y.
-Proof. rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addl. Qed.
+Lemma gte_dsubl y x : y \is a fin_num -> (y - x < y) = (0 < x).
+Proof. by rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addl. Qed.
 
-Lemma gte_dsubr y x : y \is a fin_num -> 0 < x -> - x + y < y.
-Proof. rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addr. Qed.
+Lemma gte_dsubr y x : y \is a fin_num -> (- x + y < y) = (0 < x).
+Proof. by rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addr. Qed.
 
-Lemma gte_daddl x y : x \is a fin_num -> y < 0 -> x + y < x.
+Lemma gte_daddl x y : x \is a fin_num -> (x + y < x) = (y < 0).
 Proof.
-by rewrite -fin_numN dual_addeE -oppe0 lte_oppr lte_oppl; exact: lte_addl.
+by rewrite -fin_numN dual_addeE lte_oppl -oppe0 lte_oppr; exact: lte_addl.
 Qed.
 
-Lemma gte_daddr x y : x \is a fin_num -> y < 0 -> y + x < x.
+Lemma gte_daddr x y : x \is a fin_num -> (y + x < x) = (y < 0).
 Proof. by rewrite daddeC; exact: gte_daddl. Qed.
 
 Lemma lte_dadd2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
