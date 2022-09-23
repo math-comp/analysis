@@ -36,13 +36,14 @@ gen have fxy : f / {in I &, injective f} ->
     {in I &, forall x y, x < y -> f x != f y}.
   move=> fI x y xI yI xLy; apply/negP => /eqP /fI => /(_ xI yI) xy.
   by move: xLy; rewrite xy ltxx.
-gen have main : f / forall c, {within [set` I], continuous f} -> {in I &, injective f} ->
+gen have main : f / forall c, {within [set` I], continuous f} -> 
+    {in I &, injective f} ->
     {in I &, forall a b, f a < f b -> a < c -> c < b -> f a < f c /\ f c < f b}.
   move=> c fC fI a b aI bI faLfb aLc cLb.
   have intP := interval_is_interval aI bI.
   have cI : c \in I by rewrite intP// (ltW aLc) ltW.
   have ctsACf : {within `[a, c], continuous f}.
-    apply: (continuous_subspaceW _ fC) => x /=; rewrite inE => /itvP axc. 
+    apply: (continuous_subspaceW _ fC) => x; rewrite /= inE => /itvP axc.
     by rewrite intP// axc/= (le_trans _ (ltW cLb))// axc.
   have ctsCBf : {within `[c, b], continuous f}.
     apply: (continuous_subspaceW _ fC) => x /=; rewrite inE => /itvP axc.
@@ -80,7 +81,7 @@ have aux a c b : a \in I -> b \in I -> a < c -> c < b ->
   have fanfb : f a != f b by apply: (fxy f fI).
   have decr : f b  < f a -> f b < f c /\ f c < f a.
     have ofC : {within [set` I], continuous (-f)}.
-      move=> x; apply: continuous_comp; [exact: fC | exact: continuousN].
+      move=> ?; apply: continuous_comp; [exact: fC | exact: continuousN].
     have ofI : {in I &, injective (-f)} by move=>> ? ? /oppr_inj/fI ->.
     rewrite -[X in X < _ -> _](opprK (f b)) ltr_oppl => ofaLofb.
     have := main _ c ofC ofI a b aI bI ofaLofb aLc cLb.
@@ -194,11 +195,10 @@ Lemma segment_can_ge a b f g : a <= b ->
   {in `[f b, f a] &, {mono g : x y /~ x <= y}}.
 Proof.
 move=> aLb fC fK x y xfbfa yfbfa; rewrite -ler_opp2.
-apply: (@segment_can_le (- b) (- a) (f \o -%R) (- g));
-    rewrite /= ?ler_opp2 ?opprK//.
-  pose fun_neg : (subspace `[-b,-a] -> subspace `[a,b]) := 
-    ([fun of @GRing.opp R] : {fun `[-b,-a] >-> `[a,b]}).
-  move=> z; apply: (@continuous_comp _ _ _ fun_neg); last exact: fC.
+apply: (@segment_can_le (- b) (- a) (f \o -%R) (- g)); 
+    rewrite /= ?ler_opp2 ?opprK //.
+  pose fun_neg : (subspace `[-b,-a] -> subspace `[a,b]) := @GRing.opp R.
+  move=> z; apply: (@continuous_comp _ _ _ [fun of fun_neg]); last exact: fC.
   exact/subspaceT_continuous/continuous_subspaceT/opp_continuous.
 by move=> z zab; rewrite -[- g]/(@GRing.opp _ \o g)/= fK ?opprK// oppr_itvcc.
 Qed.
@@ -286,17 +286,17 @@ Lemma segment_inc_surj_continuous a b f :
 Proof.
 move=> fle f_surj; have [f_inj flt] := (inc_inj_in fle, leW_mono_in fle).
 have [aLb|bLa|] := ltgtP a b; first last.
-- move=> ->. 
-  rewrite (_ : (`[b,b])%classic = [set b]); first exact: continuous_subspace1.
-  rewrite eqEsubset; split=>z /=; rewrite itvxx; first by move=> ?; apply/eqP.
+- move=> ->; rewrite (_ : (`[b,b])%classic = [set b]). 
+    exact: continuous_subspace1.
+  rewrite eqEsubset; split => z; rewrite /= itvxx. 
+    by move=> ?; apply/eqP.
   by move=>/eqP.
 - rewrite continuous_subspace_in => z /set_mem /=; rewrite in_itv /=.
   by move=> /andP [az zb]; move: (le_trans az zb) bLa; rewrite ltNge => ->.
 have le_ab : a <= b by rewrite ltW.
 have [aab bab] : a \in `[a, b] /\ b \in `[a, b] by rewrite !bound_itvE ltW.
 have fab : f @` `[a, b] = `[f a, f b]%classic by exact:inc_surj_image_segment.
-pose g := pinv `[a, b] f.
-have fK : {in `[a, b], cancel f g}.
+pose g := pinv `[a, b] f; have fK : {in `[a, b], cancel f g}.
   by rewrite -[mem _]mem_setE; apply: pinvKV; rewrite !mem_setE.
 have gK : {in `[f a, f b], cancel g f} by move=> z zab; rewrite pinvK// fab inE.
 have gle : {in `[f a, f b] &, {mono g : x y / x <= y}}.
@@ -308,7 +308,7 @@ rewrite continuous_subspace_in;  move=> x xab.
 have xabcc : x \in `[a, b] by move: xab; rewrite mem_setE.
 have fxab : f x \in `[(f a), (f b)] by rewrite in_itv/= !fle.
 have fxabcc : f x \in `[f a, f b] by apply: subset_itv.
-move: (xabcc); rewrite  in_itv //= => /andP [ax xb].
+move: (xabcc); rewrite in_itv //= => /andP [ax xb].
 apply/cvg_distP => _ /posnumP[e]; rewrite !near_simpl; near=> y.
 rewrite (@le_lt_trans _ _ (e%:num / 2%:R))//; last first.
   by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
@@ -316,15 +316,15 @@ rewrite ler_distlC; near: y.
 pose u := minr (f x + e%:num / 2) (f b).
 pose l := maxr (f x - e%:num / 2) (f a).
 have ufab : u \in `[f a, f b].
-  rewrite !in_itv/= le_minl ?le_minr lexx ?fle// le_ab orbT ?andbT.
-  by rewrite ler_paddr// fle // ?(itvP xabcc).
+  rewrite !in_itv /= le_minl ?le_minr lexx ?fle // le_ab orbT ?andbT.
+  by rewrite ler_paddr // fle.
 have lfab : l \in `[f a, f b].
-  rewrite !in_itv/= le_maxl ?le_maxr lexx ?fle// le_ab orbT ?andbT/=.
-  by rewrite ler_subl_addr ler_paddr// fle ?(itvP xabcc)// lexx.
+  rewrite !in_itv/= le_maxl ?le_maxr lexx ?fle// le_ab orbT ?andbT.
+  by rewrite ler_subl_addr ler_paddr// fle // lexx.
 have guab : g u \in `[a, b].
-  rewrite !in_itv; apply/andP; split; move: (ufab); rewrite in_itv /= => /andP.
-    by case; rewrite -gle // ?fK // bound_itvE fle.
-  by case => _; rewrite -gle // ?fK // bound_itvE fle.
+  rewrite !in_itv; apply/andP; split; move: (ufab); rewrite in_itv => /andP.
+    by case; rewrite /= -gle // ?fK // bound_itvE fle.
+  by case => _; rewrite /= -gle // ?fK // bound_itvE fle.
 have glab : g l \in `[a, b].
   rewrite !in_itv; apply/andP; split; move: (lfab); rewrite in_itv /= => /andP.
     by case; rewrite -gle // ?fK // bound_itvE fle.
@@ -340,30 +340,31 @@ have lltfb : l < f b.
 case: pselect => // _; rewrite near_withinE; near_simpl.
 move: (ax); rewrite le_eqVlt => /orP [].
   rewrite eq_sym=> /eqP ? ; subst. 
-  near=> y => /[dup] yab; rewrite /= in_itv /= => /andP [ay yb].
-  apply/andP;split.
-    by apply (@le_trans _ _ (f a)); rewrite ?fle //ler_subl_addr; exact: ler_paddr.
+  near=> y => /[dup] yab; rewrite /= in_itv => /andP [? ?]; apply/andP; split.
+    apply (@le_trans _ _ (f a)); rewrite ?fle // ler_subl_addr. 
+    exact: ler_paddr.
   apply: ltW; suff : f y < u by rewrite lt_minr => /andP[->].
-  rewrite -?[f y < _]glt // ?fK //; first last. 
-    by rewrite in_itv /=; apply/andP; split; rewrite fle.
-  by near: y; near_simpl; apply: open_lt; rewrite /= -flt // ?gK. 
+  rewrite -?[f y < _]glt // ?fK //.
+    by near: y; near_simpl; apply: open_lt; rewrite /= -flt // ?gK.
+  by rewrite in_itv /=; apply/andP; split; rewrite fle.
 move: (xb); rewrite le_eqVlt => /orP [].
-  move=> /eqP ?; subst => _. 
-  near=> y => /[dup] yab; rewrite /= in_itv /= => /andP [ay yb].
+  move=> /eqP ?; subst => _.
+  near=> y => /[dup] yab; rewrite /= in_itv /= => /andP [? ?].
   apply/andP;split; first last.
     by apply (@le_trans _ _ (f b)); rewrite ?fle //; exact: ler_paddr.
   apply: ltW; suff : l < f y by rewrite lt_maxl => /andP[->].
-  rewrite -?[_ < f y]glt // ?fK //; first last. 
-    by rewrite in_itv /=; apply/andP; split; rewrite fle.
-  near: y; near_simpl; apply: open_gt; rewrite /= -flt // ?gK //. 
+  rewrite -?[_ < f y]glt // ?fK //.
+    by near: y; near_simpl; apply: open_gt; rewrite /= -flt // ?gK //.
+  by rewrite in_itv /=; apply/andP; split; rewrite fle.
 move=> ? ?; have xoab : x \in `]a, b[ by rewrite in_itv /=; apply/andP; split.
-near=> y; suff: l <= f y <= u by rewrite le_maxl le_minr -!andbA => /and4P[-> _ ->].
-have yab : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
+near=> y; suff: l <= f y <= u.
+  by rewrite le_maxl le_minr -!andbA => /and4P[-> _ ->].
+have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
 have fyab : f y \in `[f a, f b] by rewrite in_itv/= !fle// ?ltW.
 rewrite -[l <= _]gle -?[_ <= u]gle// ?fK //.
 apply: subset_itv_oo_cc; near: y; apply: near_in_itv; rewrite in_itv /=.
 rewrite -[x]fK // !glt//= lt_minr lt_maxl ?andbT ltr_subl_addr ltr_spaddr //.
-by apply/and3P; (split => //; last by rewrite flt); apply/andP; split; rewrite // flt.
+by apply/and3P; split; rewrite // flt.
 Unshelve. all: by end_near. Qed.
 
 Lemma segment_dec_surj_continuous a b f :
@@ -391,7 +392,6 @@ have leab : a <= b by rewrite (itvP xab).
 have fafb : f b <= f a by rewrite fge // ?bound_itvE.
 by apply: segment_dec_surj_continuous => //; case: ltrP f_surj fafb.
 Qed.
-
 
 Lemma segment_can_le_continuous a b f g : a <= b ->
   {within `[a, b], continuous f} ->

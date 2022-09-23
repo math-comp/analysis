@@ -38,6 +38,27 @@
 - in `constructive_ereal.v`:
   + generalize `lte_addl`, `lte_addr`, `gte_subl`, `gte_subr`,
     `lte_daddl`, `lte_daddr`, `gte_dsubl`, `gte_dsubr`
+- in `topology.v`:
+  + lemmas `continuous_subspace0`, `continuous_subspace1`
+
+- in `realfun.v`:
+  + Instance for `GRing.opp` over real intervals
+
+### Changed
+- in `realfun.v`
+  + lemmas `itv_continuous_inj_le`, `itv_continuous_inj_ge`,
+     `itv_continuous_inj_mono`, `segment_continuous_inj_le`,
+     `segment_continuous_inj_ge`, `segment_can_le` ,
+     `segment_can_ge`, `segment_can_mono`,
+     `segment_continuous_surjective`, `segment_continuous_le_surjective`,
+     `segment_continuous_ge_surjective`, `continuous_inj_image_segment`,
+     `continuous_inj_image_segmentP`, `segment_continuous_can_sym`,
+     `segment_continuous_le_can_sym`, `segment_continuous_ge_can_sym`,
+     `segment_inc_surj_continuous`, `segment_dec_surj_continuous`,
+     `segment_mono_surj_continuous`, `segment_can_le_continuous`,
+     `segment_can_ge_continuous`, `segment_can_continuous`
+     all have "{in I, continuous f}" replaced by "{within I, continuous f}"
+
 
 ### Renamed
 
@@ -52,6 +73,8 @@
   + lemma `lte_spaddr`, renamed `lte_spaddre`
 
 ### Removed
+- in `realFun.v`:
+  + removed `continuous_subspace_itv`
 
 ### Infrastructure
 
