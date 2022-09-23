@@ -8,8 +8,7 @@
 - in `constructive_ereal.v`
   + lemmas `lte_oppe_pinfty`, `fine_le`, `fine_lt`, `fine_abse`, `abse_fin_num`
 - in `lebesgue_integral.v`
-  + lemmas `lte_oppe_pinfty`, `fine_le`, `fine_lt`, `fine_abse`, `abse_fin_num`
-  + lemmas `integral_fune_lt_pinfty`, `integral_fune_fin_num`, `rintegral_le`
+  + lemmas `integral_fune_lt_pinfty`, `integral_fune_fin_num`
 
 ### Changed
 
