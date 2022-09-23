@@ -624,9 +624,7 @@ Proof. by rewrite predeqE => t; split => // -[]. Qed.
 Lemma setUv A : A `|` ~` A = setT.
 Proof. by apply/predeqP => x; split=> //= _; apply: lem. Qed.
 
-Lemma setIv A : A `&` ~` A = set0. Proof. by rewrite -setDE setDv. Qed.
 Lemma setvU A : ~` A `|` A = setT. Proof. by rewrite setUC setUv. Qed.
-Lemma setvI A : ~` A `&` A = set0. Proof. by rewrite setIC setIv. Qed.
 
 Lemma setUCK A B : (A `|` B) `|` ~` B = setT.
 Proof. by rewrite -setUA setUv setUT. Qed.
@@ -635,10 +633,10 @@ Lemma setUKC A B : ~` A `|` (A `|` B) = setT.
 Proof. by rewrite setUA setvU setTU. Qed.
 
 Lemma setICK A B : (A `&` B) `&` ~` B = set0.
-Proof. by rewrite -setIA setIv setI0. Qed.
+Proof. by rewrite -setIA setICr setI0. Qed.
 
 Lemma setIKC A B : ~` A `&` (A `&` B) = set0.
-Proof. by rewrite setIA setvI set0I. Qed.
+Proof. by rewrite setIA setICl set0I. Qed.
 
 Lemma setDIK A B : A `&` (B `\` A) = set0.
 Proof. by rewrite setDE setICA -setDE setDv setI0. Qed.
@@ -994,6 +992,10 @@ Qed.
 End basic_lemmas.
 #[global]
 Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
+#[deprecated(since="mathcomp-analysis 0.6", note="Use setICl instead.")]
+Notation setvI := setICl.
+#[deprecated(since="mathcomp-analysis 0.6", note="Use setICr instead.")]
+Notation setIv := setICr.
 
 Lemma image2E {TA TB rT : Type} (A : set TA) (B : set TB) (f : TA -> TB -> rT) :
   [set f x y | x in A & y in B] = uncurry f @` (A `*` B).

@@ -2658,7 +2658,7 @@ Definition near_covering (K : set X) :=
 Let near_covering_compact : near_covering `<=` compact.
 Proof.
 move=> K locK F PF FK; apply/set0P/eqP=> KclstF0; case: (PF) => + FF; apply.
-rewrite (_ : xpredp0 = set0)// -(setIv K); apply: filterI => //.
+rewrite (_ : xpredp0 = set0)// -(setICr K); apply: filterI => //.
 have /locK : forall x, K x ->
     \forall x' \near x & i \near powerset_filter_from F, (~` i) x'.
   move=> x Kx; have : ~ cluster F x.
@@ -2877,7 +2877,7 @@ Lemma compactU (A B : set X) : compact A -> compact B -> compact (A `|` B).
 Proof.
 rewrite compact_ultra => cptA cptB F UF FAB; rewrite setIUl.
 have [/cptA[x AFx]|] := in_ultra_setVsetC A UF; first by exists x; left.
-move=> /(filterI FAB); rewrite setIUl setIv set0U => FBA.
+move=> /(filterI FAB); rewrite setIUl setICr set0U => FBA.
 have /cptB[x BFx] : F B by apply: filterS FBA; exact: subIsetr.
 by exists x; right.
 Qed.

@@ -283,7 +283,7 @@ Lemma fsbigU (R : Type) (idx : R) (op : Monoid.com_law idx)
      op (\big[op/idx]_(i \in A) F i) (\big[op/idx]_(i \in B) F i).
 Proof.
 move=> Afin Bfin AB0; rewrite (fsbigID A) ?finite_setU; last by split.
-rewrite setUK -setDE; congr (op _ _); rewrite setDE setIUl setIv set0U.
+rewrite setUK -setDE; congr (op _ _); rewrite setDE setIUl setICr set0U.
 by apply: fsbig_widen => //; rewrite -setDE setDD setIC.
 Qed.
 Arguments fsbigU {R idx op I} [A B F].
