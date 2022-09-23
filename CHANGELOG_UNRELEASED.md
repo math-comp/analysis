@@ -13,6 +13,7 @@
 
 - in `constructive_ereal.v`:
   + lemmas `gte_addl`, `gte_addr`
+  + lemmas `gte_daddl`, `gte_daddr`
 
 ### Changed
 

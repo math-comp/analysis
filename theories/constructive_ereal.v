@@ -1527,7 +1527,7 @@ Lemma gte_addl x y : x \is a fin_num -> y < 0 -> x + y < x.
 Proof. by move=> ? ?; rewrite -(oppeK y) gte_subl// lte_oppr oppe0. Qed.
 
 Lemma gte_addr x y : x \is a fin_num -> y < 0 -> y + x < x.
-Proof. rewrite addeC; exact: gte_addl. Qed.
+Proof. by rewrite addeC; exact: gte_addl. Qed.
 
 Lemma lte_add2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
 Proof.
@@ -2389,6 +2389,14 @@ Proof. rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addl. Qed.
 
 Lemma gte_dsubr y x : y \is a fin_num -> 0 < x -> - x + y < y.
 Proof. rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addr. Qed.
+
+Lemma gte_daddl x y : x \is a fin_num -> y < 0 -> x + y < x.
+Proof.
+by rewrite -fin_numN dual_addeE -oppe0 lte_oppr lte_oppl; exact: lte_addl.
+Qed.
+
+Lemma gte_daddr x y : x \is a fin_num -> y < 0 -> y + x < x.
+Proof. by rewrite daddeC; exact: gte_daddl. Qed.
 
 Lemma lte_dadd2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
 Proof.
