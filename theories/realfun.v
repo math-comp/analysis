@@ -420,6 +420,7 @@ Lemma segment_can_ge_continuous a b f g : a <= b ->
   {in `[a, b], cancel f g} ->
   {within `[(f b), (f a)], continuous g}.
 Proof.
+  Search interior.
 move=> aLb ctf; rewrite continuous_subspace_in => fK x /set_mem /= xab.
 have fbLfa : f b <= f a by rewrite (itvP xab).
 apply: segment_dec_surj_continuous; first exact: segment_can_ge.
@@ -443,27 +444,28 @@ Proof.
 move=> fK fct; near (at_right (0 : R)) => e.
 have e_gt0 : 0 < e by near: e; exists 1 => /=.
 have xBeLxDe : x - e <= x + e by rewrite ler_add2l gt0_cp.
-have fcte : {within `[x - e, x + e], continuous f}.
-  near: e; apply/at_right_in_segment; admit.
+have fcte : {in `[x - e, x + e], continuous f}.
+  by near: e; apply/at_right_in_segment.
+have fwcte : {within `[x - e, x + e], continuous f}.
+  apply: continuous_in_subspaceT => y yI. 
+  by apply: fcte; move/set_mem: yI.
 have fKe : {in `[x - e, x + e], cancel f g}
   by near: e; apply/at_right_in_segment.
 have nearfx : \forall y \near f x, y \in f @`](x - e), (x + e)[.
   apply: near_in_itv; apply: mono_mem_image_itvoo; last first.
     by rewrite in_itv/= -ltr_distlC subrr normr0.
-  apply: itv_continuous_inj_mono; first exact: fcte.
+  apply: itv_continuous_inj_mono; first exact: fwcte.
   by apply: (@can_in_inj _ _ _ _ g); near: e; apply/at_right_in_segment.
+have fxI : f x \in f @`]x - e, x + e[ by exact: (nbhs_singleton nearfx).
 split; near=> y; first last.
   rewrite (@segment_continuous_can_sym (x - e) (x + e))//.
   by apply: subset_itv_oo_cc; near: y.
-move=> Q nQ.
-move: (@segment_can_continuous _ _ _ _ xBeLxDe fcte fKe y Q nQ).
-rewrite /= {1}/nbhs /= {1}/nbhs /= nbhs_simpl /=.
-have := (nbhs_subspace_interior _ [set` `[x-e, x+e]]).
-rewrite -nbhs_subspace_interior.
-  move=> /(_ y). 
-
-  apply.
-  (*apply: (@ (x - e) (x + e) f) => //; near: y.*)
+near: y; apply: (filter_app _ _ nearfx); near_simpl; near=> y => yfe.
+have : {within f @`]x - e, (x + e)[, continuous g}.
+  apply: continuous_subspaceW; last exact: (segment_can_continuous _ fwcte _).
+  exact: subset_itv_oo_cc.
+rewrite continuous_open_subspace; first by (apply;exact: mem_set).
+exact: interval_open.
 Unshelve. all: by end_near. Qed.
 
 Lemma near_can_continuous f g (x : R) :
@@ -496,11 +498,13 @@ move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
   near=> z; rewrite subr0 /=; apply: ltr0_sqrtr.
   rewrite -(opprK x) subr_lt0; apply: ltr_normlW.
   by near: z; apply: nbhs0_lt; rewrite ltr_oppr oppr0.
-- suff main b : 0 <= b -> {in `]0 ^+ 2, (b ^+ 2)[, continuous (@Num.sqrt R)}.
-    apply: (@main (x + 1)); rewrite ?ler_paddl// ?in_itv/= ?ltW// expr0n xgt0/=.
+- suff main b : 0 <= b -> {in [set` `]0 ^+ 2, (b ^+ 2)[], continuous (@Num.sqrt R)}.
+    apply: (@main (x + 1)); rewrite ?ler_paddl // ?mem_setE ?in_itv/= ?ltW// expr0n xgt0/=.
     by rewrite sqrrD1 ltr_paddr// ltr_paddl ?sqr_ge0// (ltr_pmuln2l _ 1%N 2%N).
-  move=> b0; apply: (@segment_can_le_continuous _ _ _ (@GRing.exp _^~ _)) => //.
-    by apply: in1W; apply: exprn_continuous.
+  move=> b0; rewrite -continuous_open_subspace; last exact: interval_open. 
+  apply: continuous_subspaceW; first exact: subset_itv_oo_cc.
+  apply: (@segment_can_le_continuous _ _ _ (@GRing.exp _^~ _)) => //.
+    by apply: continuous_subspaceT; exact: exprn_continuous.
   by move=> y y0b; rewrite sqrtr_sqr ger0_norm// (itvP y0b).
 - apply/cvg_distP => _ /posnumP[e]; rewrite !near_simpl /=; near=> y.
   rewrite sqrtr0 sub0r normrN ger0_norm ?sqrtr_ge0 //.
