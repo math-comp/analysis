@@ -6026,6 +6026,33 @@ rewrite fVA -setIA setIid eqEsubset; split => x [fVx Ax]; split => //.
 - by have /[!esym VBOB]-[] : (O `&` B) (f x) by split => //; exact: funS.
 Qed.
 
+
+Lemma continuous_subspace0 {U} (f : subspace (@set0 T) -> U) : 
+  continuous f.
+Proof.
+move=> x Q; rewrite nbhs_simpl /= {2}/nbhs /=. 
+by case: (nbhs_subspaceP (@set0 T) x) => // _ /nbhs_singleton /= ? ? ->.
+Qed.
+
+Lemma continuous_subspace1 {U} (a : T) (f : subspace [set a] -> U) : 
+  continuous f.
+Proof.
+move=> x Q; rewrite nbhs_simpl /= {2}/nbhs /=. 
+case: (nbhs_subspaceP [set a] x); last by move=> _ /nbhs_singleton /= ? ? ->.
+by move=> -> /nbhs_singleton ?; apply: nearW => ? ->.
+Qed.
+
+Lemma continuous_subspace1 {U} A (x: T) f : (subspace [set x] -> U) : 
+  continuous f.
+Proof.
+move=> /continuousP ctsf; apply/continuousP => O /open_subspaceP [V [oV VBOB]].
+rewrite -open_subspaceIT; apply/open_subspaceP.
+case/open_subspaceP: (ctsf _ oV) => W [oW fVA]; exists W; split => //.
+rewrite fVA -setIA setIid eqEsubset; split => x [fVx Ax]; split => //.
+- by have /[!VBOB]-[] : (V `&` B) (f x) by split => //; exact: funS.
+- by have /[!esym VBOB]-[] : (O `&` B) (f x) by split => //; exact: funS.
+Qed.
+
 End SubspaceRelative.
 
 Section SubspaceUniform.
