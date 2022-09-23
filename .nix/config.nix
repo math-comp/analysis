@@ -39,24 +39,16 @@
   ## will be created per bundle
   bundles."8.14".coqPackages.coq.override.version = "8.14";
   bundles."8.15".coqPackages.coq.override.version = "8.15";
-
-  bundles."8.16".coqPackages = {
-    coq.override.version = "8.16";
-    hierarchy-builder.override.version = "master";
-    mathcomp-bigenough.override.version = "1.0.1";
-    mathcomp-finmap.override.version = "1.5.2";
-    mathcomp-real-closed.override.version = "1.1.3";
-    mathcomp.override.version = "mathcomp-1.15.0";
-  };
+  bundles."8.16".coqPackages.coq.override.version = "8.16";
 
   bundles."master".coqPackages = {
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
     hierarchy-builder.override.version = "coq-master";
+    mathcomp.override.version = "master";
     mathcomp-bigenough.override.version = "1.0.1";
     mathcomp-finmap.override.version = "1.5.2";
-    mathcomp-real-closed.override.version = "1.1.3";
-    mathcomp.override.version = "mathcomp-1.15.0";
+    mathcomp-real-closed.override.version = "master";
   };
 
   ## Cachix caches to use in CI
