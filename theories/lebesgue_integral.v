@@ -2777,7 +2777,7 @@ Definition Rintegral (D : set T) (f : T -> R) :=
 End Rintegral.
 
 Notation "\int [ mu ]_ ( x 'in' D ) f" := (Rintegral mu D (fun x => f)) : ring_scope.
-Notation "\int [ mu ]_ x f" := ((Rintegral mu setT (fun x => f)))%E : ring_scope.
+Notation "\int [ mu ]_ x f" := (Rintegral mu setT (fun x => f)) : ring_scope.
 
 Section integrable.
 Local Open Scope ereal_scope.
@@ -3784,30 +3784,27 @@ Qed.
 End integralB.
 
 Section integrable_fune.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Variables (d : _) (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 Local Open Scope ereal_scope.
 
 Lemma integral_fune_lt_pinfty (f : T -> \bar R) :
-  (mu.-integrable D f) -> \int[mu]_(x in D) f x < +oo.
+  mu.-integrable D f -> \int[mu]_(x in D) f x < +oo.
 Proof.
-move=> intf; rewrite (funeposneg f) integralB => //; first last.
-- exact: integrable_funeneg.
-- exact: integrable_funepos.
-apply: lte_add_pinfty; first exact: integral_funepos_lt_pinfty.
-apply/lte_oppe_pinfty; rewrite ltNye_eq; apply/orP; left.
-exact: integrable_neg_fin_num.
+move=> intf; rewrite (funeposneg f) integralB//;
+  [|exact: integrable_funepos|exact: integrable_funeneg].
+rewrite lte_add_pinfty ?integral_funepos_lt_pinfty// lte_oppl ltNye_eq.
+by rewrite integrable_neg_fin_num.
 Qed.
 
 Lemma integral_fune_fin_num (f : T -> \bar R) :
-  (mu.-integrable D f) ->
-  \int[mu]_(x in D) f x \is a fin_num.
+  mu.-integrable D f -> \int[mu]_(x in D) f x \is a fin_num.
 Proof.
-move=> int; apply/fin_numPlt/andP; split; last exact: integral_fune_lt_pinfty.
-apply/lte_oppe_pinfty; rewrite -integralN.
-  by apply: integral_fune_lt_pinfty; exact: integrableN.
-by apply: fin_num_adde_def; rewrite fin_numN; exact:integrable_neg_fin_num.
+move=> h; apply/fin_numPlt; rewrite integral_fune_lt_pinfty// andbC/= -/(- +oo).
+rewrite lte_oppl -integralN; first exact/integral_fune_lt_pinfty/integrableN.
+by rewrite fin_num_adde_def// fin_numN integrable_neg_fin_num.
 Qed.
+
 End integrable_fune.
 
 Section integral_counting.

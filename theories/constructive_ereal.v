@@ -542,6 +542,18 @@ Section ERealArithTh_numDomainType.
 Context {R : numDomainType}.
 Implicit Types (x y z : \bar R) (r : R).
 
+Lemma fine_le : {in fin_num &, {homo @fine R : x y / x <= y >-> (x <= y)%R}}.
+Proof. by move=> [? [?| |]| |]. Qed.
+
+Lemma fine_lt : {in fin_num &, {homo @fine R : x y / x < y >-> (x < y)%R}}.
+Proof. by move=> [? [?| |]| |]. Qed.
+
+Lemma fine_abse : {in fin_num, {morph @fine R : x / `|x| >-> `|x|%R}}.
+Proof. by case. Qed.
+
+Lemma abse_fin_num x : `|x| \is a fin_num <-> x \is a fin_num.
+Proof. by case: x. Qed.
+
 Lemma fine_eq0 x : x \is a fin_num -> (fine x == 0%R) = (x == 0).
 Proof. by move: x => [//| |] /=; rewrite fin_numE. Qed.
 
@@ -1316,12 +1328,6 @@ Qed.
 
 Lemma lte_add_pinfty x y : x < +oo -> y < +oo -> x + y < +oo.
 Proof. by move: x y => -[r [r'| |]| |] // ? ?; rewrite -EFinD ltey. Qed.
-
-Lemma lte_oppe_pinfty x : -oo < x <-> -x < +oo.
-Proof.
-split; first by move: x => -[r | |] // ?; rewrite -EFinN ltey.
-by move: x => -[r | |] // ?; rewrite ltNye.
-Qed.
 
 Lemma lte_sum_pinfty I (s : seq I) (P : pred I) (f : I -> \bar R) :
   (forall i, P i -> f i < +oo) -> \sum_(i <- s | P i) f i < +oo.
@@ -3363,19 +3369,3 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
   by exists d => y /dP /andP[_ ->] /=; rewrite ltNye.
 - by exists 1%:pos%R => ? ?; rewrite ltNye ltey.
 Qed.
-
-Lemma fine_le: forall {R : numDomainType},
-  {in fin_num &, {homo (@fine R) : x y / x <= y >-> (x <= y)%R}}.
-Proof. by move=> R  -[r [r'| |]| |]. Qed.
-
-Lemma fine_lt: forall {R : numDomainType},
-  {in fin_num &, {homo (@fine R) : x y / (x < y)%E >-> (x < y)%R}}.
-Proof. by move=> R  -[r [r'| |]| |]. Qed.
-
-Lemma fine_abse: forall {R : numDomainType},
-  {in fin_num, {morph (@fine R) : x / `|x| >-> (`|x|)%R}}.
-Proof. by move=> R -[r | |]. Qed.
-
-Lemma abse_fin_num: forall {R : numDomainType} (x : \bar R),
- abse x \is a fin_num <-> x \is a fin_num.
-Proof. by move=> R -[r | |]. Qed.
