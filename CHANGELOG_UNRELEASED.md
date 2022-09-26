@@ -20,7 +20,9 @@
 ### Changed
 
 - in `constructive_ereal.v`:
-  + lemmas `lee_paddl`, `lte_paddl`, `lee_paddr`, `lte_paddr`, `lte_spaddr` generalized to `realDomainType`
+  + lemmas `lee_paddl`, `lte_paddl`, `lee_paddr`, `lte_paddr`,
+    `lte_spaddr`, `lee_pdaddl`, `lte_pdaddl`, `lee_pdaddr`,
+    `lte_pdaddr`, `lte_spdaddr` generalized to `realDomainType`
 - in `constructive_ereal.v`:
   + generalize `lte_addl`, `lte_addr`, `gte_subl`, `gte_subr`,
     `lte_daddl`, `lte_daddr`, `gte_dsubl`, `gte_dsubr`

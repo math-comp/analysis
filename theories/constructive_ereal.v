@@ -2716,6 +2716,30 @@ Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxr oppe_max. Qed.
 Lemma dmule_natl x n : n%:R%:E * x = x *+ n.
 Proof. by rewrite mule_natl ednatmulE. Qed.
 
+Lemma lee_pdaddl y x z : 0 <= x -> y <= z -> y <= x + z.
+Proof. by move=> *; rewrite -[y]dadd0e lee_dadd. Qed.
+
+Lemma lte_pdaddl y x z : 0 <= x -> y < z -> y < x + z.
+Proof. by move=> x0 /lt_le_trans; apply; rewrite lee_pdaddl. Qed.
+
+Lemma lee_pdaddr y x z : 0 <= x -> y <= z -> y <= z + x.
+Proof. by move=> *; rewrite daddeC lee_pdaddl. Qed.
+
+Lemma lte_pdaddr y x z : 0 <= x -> y < z -> y < z + x.
+Proof. by move=> *; rewrite daddeC lte_pdaddl. Qed.
+
+Lemma lte_spdaddre z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
+Proof.
+move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltey,ltNye)//.
+exact: ltr_spaddr.
+Qed.
+
+Lemma lte_spdadder z x y : x \is a fin_num -> 0 < y -> z <= x -> z < x + y.
+Proof.
+move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltey,ltNye)//.
+exact: ltr_spaddr.
+Qed.
+
 End DualERealArithTh_realDomainType.
 Arguments lee_dsum_nneg_ord {R}.
 Arguments lee_dsum_npos_ord {R}.
@@ -2889,30 +2913,6 @@ Implicit Types x y : \bar R.
 
 Lemma lee_dadde x y : (forall e : {posnum R}, x <= y + e%:num%:E) -> x <= y.
 Proof. by move=> xye; apply: lee_adde => e; case: x {xye} (xye e). Qed.
-
-Lemma lee_pdaddl y x z : 0 <= x -> y <= z -> y <= x + z.
-Proof. by move=> *; rewrite -[y]dadd0e lee_dadd. Qed.
-
-Lemma lte_pdaddl y x z : 0 <= x -> y < z -> y < x + z.
-Proof. by move=> x0 /lt_le_trans; apply; rewrite lee_pdaddl. Qed.
-
-Lemma lee_pdaddr y x z : 0 <= x -> y <= z -> y <= z + x.
-Proof. by move=> *; rewrite daddeC lee_pdaddl. Qed.
-
-Lemma lte_pdaddr y x z : 0 <= x -> y < z -> y < z + x.
-Proof. by move=> *; rewrite daddeC lte_pdaddl. Qed.
-
-Lemma lte_spdaddre z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
-Proof.
-move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltey,ltNye)//.
-exact: ltr_spaddr.
-Qed.
-
-Lemma lte_spdadder z x y : x \is a fin_num -> 0 < y -> z <= x -> z < x + y.
-Proof.
-move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltey,ltNye)//.
-exact: ltr_spaddr.
-Qed.
 
 End DualRealFieldType_lemmas.
 
