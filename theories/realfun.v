@@ -297,7 +297,7 @@ Lemma segment_inc_surj_continuous a b f :
 Proof.
 move=> fle f_surj; have [f_inj flt] := (inc_inj_in fle, leW_mono_in fle).
 have [aLb|bLa|] := ltgtP a b; first last.
-- move=> ->; rewrite (_ : (`[b,b])%classic = [set b]). 
+- move=> ->; rewrite (_ : (`[b, b])%classic = [set b]). 
     exact: continuous_subspace1.
   rewrite eqEsubset; split => z; rewrite /= itvxx. 
     by move=> ?; apply/eqP.
