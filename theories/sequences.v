@@ -1669,7 +1669,7 @@ split => [u_cvg _/posnumP[A]|u_ge X [A [Ar AX]]].
 rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
 apply: AX.
 rewrite (@lt_le_trans _ _ (maxr 0 A + 1)%:E) //.
-  by rewrite EFinD lte_spaddr // ?lte_fin// lee_fin le_maxr lexx orbT.
+  by rewrite EFinD lte_spaddre // ?lte_fin// lee_fin le_maxr lexx orbT.
 by near: x; apply: u_ge; rewrite ltr_spaddr // le_maxr lexx.
 Unshelve. all: by end_near. Qed.
 
