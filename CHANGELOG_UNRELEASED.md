@@ -19,6 +19,8 @@
   + definition `sup_ent`, `sup_uniform_mixin`, `sup_uniformType`
   + definition `product_uniformType`
   + lemma `uniform_entourage`
+  + definition `weak_ball`, `weak_pseudoMetricType`
+  + lemma `weak_ballE`
 
 - in `constructive_ereal.v`:
   + lemmas `gte_addl`, `gte_addr`
