@@ -421,7 +421,6 @@ Lemma segment_can_ge_continuous a b f g : a <= b ->
   {in `[a, b], cancel f g} ->
   {within `[(f b), (f a)], continuous g}.
 Proof.
-  Search interior.
 move=> aLb ctf; rewrite continuous_subspace_in => fK x /set_mem /= xab.
 have fbLfa : f b <= f a by rewrite (itvP xab).
 apply: segment_dec_surj_continuous; first exact: segment_can_ge.
