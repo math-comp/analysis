@@ -39,7 +39,6 @@
   + generalize `lte_addl`, `lte_addr`, `gte_subl`, `gte_subr`,
     `lte_daddl`, `lte_daddr`, `gte_dsubl`, `gte_dsubr`
 - in `topology.v`:
-  + lemma `weak_subspace_open`
   + lemmas `continuous_subspace0`, `continuous_subspace1`
 
 - in `realfun.v`:
@@ -74,8 +73,6 @@
   + lemma `lte_spaddr`, renamed `lte_spaddre`
 
 ### Removed
-- in `realFun.v`:
-  + removed `continuous_subspace_itv`
 
 ### Infrastructure
 

@@ -27,6 +27,17 @@ Section real_inverse_functions.
 Variable R : realType.
 Implicit Types (a b : R) (f g : R -> R).
 
+(* This lemma should be used with caution. Generally `{within I, continuous f}`
+   is what one would intend. So having `{in I, continuous f}` as a condition
+   may indicate potential issues at the endpoints of the interval.
+*)
+Lemma continuous_subspace_itv (I : interval R) (f : R -> R) :
+  {in I, continuous f} -> {within [set` I], continuous f}.
+Proof.
+move=> ctsf; apply: continuous_in_subspaceT => x Ix; apply: ctsf.
+by move: Ix; rewrite inE.
+Qed.
+
 Lemma itv_continuous_inj_le f (I : interval R) :
   (exists x y, [/\ x \in I, y \in I, x < y & f x <= f y]) ->
   {within [set` I], continuous f} -> {in I &, injective f} ->
