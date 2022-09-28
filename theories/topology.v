@@ -3680,6 +3680,17 @@ Lemma cvg_app_entourageP T (f : T -> M) F (FF : Filter F) p :
   f @ F --> p <-> forall A, entourage A -> \forall t \near F, A (p, f t).
 Proof. exact: cvg_entourageP. Qed.
 
+Lemma entourage_invI (E : set (M*M)) :
+  entourage E -> entourage (E `&` E^-1)%classic.
+Proof. by move=> ?; apply: filterI; last exact: entourage_inv. Qed.
+
+Lemma split_ent_subset (E : set (M*M)) : entourage E -> split_ent E `<=` E.
+Proof. 
+move=> entE; case=> x y splitxy; apply: subset_split_ent => //; exists y => //.
+by apply: entourage_refl; exact: entourage_split_ent.
+Qed.
+
+
 End uniformType1.
 
 #[global]
@@ -5719,6 +5730,135 @@ Lemma weak_ballE (e : R) (x : weak_pseudoMetricType) :
 Proof. by []. Qed.
 
 End weak_pseudoMetric.
+
+Section countable_uniform_aux. 
+Context {R : realType} {T : uniformType} (f_ : nat -> set (T*T)).
+
+Hypothesis countableBase : forall A, (@entourage T) A -> exists N, f_ N `<=` A.
+
+Hypothesis entF : forall n, entourage (f_ n).
+
+Fixpoint g_ (n : nat) : set (T*T) := 
+  match n with
+  | 0 => [set: T*T]
+  | S n => let W := (split_ent (split_ent (g_ n)) `&` f_ n) 
+           in W `&` (W^-1)
+  end .
+
+Lemma entG (n : nat) : entourage (g_ n).
+Proof.
+elim: n => /=; first exact: entourageT.
+by move=> n entg; apply/entourage_invI; exact: filterI.
+Qed.
+
+Lemma symG (n : nat) : ((g_ n)^-1)%classic = g_ n.
+Proof.
+by case: n => //= n; rewrite eqEsubset;  split; case=> ? ?; rewrite /= andC.
+Qed.
+
+Lemma descendG1 n : g_ n.+1 `<=` g_ n.
+Proof.
+apply: subIset; left; apply: subIset; left.
+apply: subset_trans. 
+  by apply: split_ent_subset; apply: entourage_split_ent; exact: entG.
+by apply: subset_trans; last by apply: split_ent_subset; exact: entG.
+Qed.
+
+Lemma descendG (n m: nat) : (m <= n)%N -> g_ n `<=` g_ m.
+Proof.
+elim: n; rewrite ?leqn0; first by move=>/eqP ->.
+move=> n IH. rewrite leq_eqVlt ltnS => /orP [/eqP <- //|] /IH.
+by apply: subset_trans; exact: descendG1.
+Qed.
+
+Lemma splitG n m : g_ m \o g_ n `<=` g_ (n + m).
+Proof.
+elim: n; first case=> x y /=.
+Definition n_close (n : nat) := 
+  \bigcup_(E in [set E | entourage E /\ E `<=` f_ n ]) E.
+
+Lemma n_close_diag (n : nat) (x:T) : n_close n (x,x).
+Proof. by exists (f_ n); [split=> // | exact: entourage_refl]. Qed.
+
+From mathcomp Require Import all_algebra.
+
+Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
+Definition distN (e : R) : nat := `|floor e^-1|%N.
+
+Lemma distN_le (e1 e2 : R) : (0 < e1) -> (0 < e2) -> 
+  (distN (e1 + e2) <= (distN e1) + (distN e2))%N.
+Proof.
+Admitted.
+
+Lemma distN_natE (N : nat) : distN N.+1%:R^-1 = N.+1.
+Proof.
+Admitted.
+
+Definition diagN (e : R) := 
+  if pselect (0 < e) then n_close (distN e) else set0.
+  
+Definition n_ball (x : T) (e : R) := [set y | diagN e (x,y)].
+
+Lemma entourage_nball (e : R) : 
+  0 < e -> entourage [set xy | n_ball xy.1 e xy.2].
+Proof.
+move=> epos; apply: (@filterS _ _ _ (f_ (distN e))) => // [[x y]] /=.
+rewrite /n_ball /= /diagN; case: pselect => //= _ fexy.
+by exists (f_ (distN e)) => //; split.
+Qed.
+
+Lemma n_ball_center (x : T) (e : R) : 0 < e -> n_ball x e x.
+Proof. 
+move=> epos; rewrite /n_ball /= /diagN; case: pselect => //.
+  by move=> ?; exact: n_close_diag.
+Qed.
+
+Lemma n_ball_sym (x y : T) (e : R) : n_ball x e y ->  n_ball y e x.
+Proof. 
+rewrite /n_ball /= /diagN; case: pselect => //=.
+move=> e01 [E /= [entE] Esubf] Exy; exists (E ^-1)%classic => //. 
+by split; first exact: entourage_inv; rewrite -symF => [[? ?]]; exact: Esubf.
+Qed.
+
+Lemma n_ball_triangle x y z (e1 e2 : R) :
+  n_ball x e1 y -> n_ball y e2 z -> n_ball x (e1 + e2) z.
+Proof.
+rewrite /n_ball /= /diagN; (repeat case: pselect => //); first last.
+  by move=> ? ? ?; suff : 0 < e1 + e2 by []; apply: addr_gt0.
+move=> e12pos e1pos e2pos /= [E1 [E1ent E1subf E1xy]] [E2 [E2ent E2subf E2yz]].
+exists (f_ (distN (e1 + e2))); first by split.
+apply: descendF; first exact: distN_le.
+apply: splitF; exists y; [exact: E1subf | exact: E2subf].
+Qed.
+
+Lemma n_ball_entourage : entourage = entourage_ n_ball.
+Proof.
+rewrite predeqE=> E; split; last first.
+  by case=> e /= epos esubE; apply: (filterS esubE); exact: entourage_nball.
+move=> /[dup] entE /countableBase [N] fNsubE. 
+have zltSn : (0:R) < N.+1%:R^-1 by rewrite invr_gt0 ltr0Sn.
+exists N.+1%:R^-1 => //; apply: (@subset_trans _ (f_ (N.+1))) ; first last.
+  by apply: (@subset_trans _ (f_ N)) => //; exact: descendF.
+case=> x y /=; rewrite /n_ball /= /diagN /= zltSn; case: pselect => //= _.
+case=> U [entU]; rewrite distN_natE; apply.
+Qed.
+
+Definition countable_uniform_pseudoMetricType_mixin :=
+  PseudoMetric.Mixin n_ball_center n_ball_sym n_ball_triangle n_ball_entourage.
+
+End countable_uniform_aux.
+
+Section countable_uniform.
+
+Context {R : realType} {T : uniformType} (f_ : nat -> set (T*T)).
+
+Hypothesis countableBase :
+  forall A, (@entourage T) A -> \forall B \near f_ @ \oo, B `<=` A.
+
+Hypothesis entF : forall n, entourage (f_ n).
+
+Definition symf (n : nat) := f_ n `&` ((f_ n)^-1)%classic.
 
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.
