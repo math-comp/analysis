@@ -5930,14 +5930,68 @@ move: x e z; elim: n => //.
   by apply: one_step_ball_center; apply: divr_gt0 => //.
 Admitted.
 
+Lemma invrlr_pos (e1 e2 : R) :
+  0 < e1 -> 0 < e2 -> (e1 <= e2) = (e2^-1 <= e1^-1).
+Proof.
+by move=> ? ?; rewrite -[e2^-1]mul1r ler_pdivr_mulr // ler_pdivl_mull // mulr1.
+Qed.
+
+Lemma distN_le e1 e2 : 
+  e1 <= e2 -> (distN e2 <= distN e1)%N.
+Admitted.
+
+Lemma OneStepBall_le n x e1 e2 : 
+  e1 <= e2 -> OneStepBall n x e1 `<=` OneStepBall n x e2.
+Proof.
+move: x e1 e2; elim: n.
+  move=> x e1 e2 e1e2 y [?] gxy; split; first exact: (lt_le_trans _ e1e2).
+  by (apply: descendG; last exact: gxy); apply: distN_le.
+move=> n IH x e1 e2 e1e2 z [y] [d1] [d2] [] /IH P d1pos d2pos gyz d1d2e1.
+have d1e1d2 : d1 = e1 - d2 by rewrite -d1d2e1 -addrA subrr addr0.
+have e2d2le : e1 - d2 <= e2 - d2 by exact: ler_sub.
+exists y; exists (e2-d2); exists d2; split => //.
+- by apply: P; apply: le_trans; last exact: e2d2le; rewrite d1e1d2.
+- by apply: lt_le_trans; last exact: e2d2le; rewrite -d1e1d2.
+- by rewrite -addrA [- _ + _]addrC subrr addr0.
+Qed.
+
+Lemma distN_half (n : nat) : n.+1%:R^-1 / (2:R) <= n.+2%:R^-1.
+Proof.
+rewrite -invrM //; [| apply: unitf_gt0 | apply: unitf_gt0] => //.
+rewrite invrlr_pos // !invrK -natrM ler_nat.
+rewrite -addn1 -addn1 -addnA mulnDr muln1 leq_add2r.
+by apply: leq_pmull.
+Qed.
+
+Lemma addn_le (p q r : nat) : (p + q = r)%N -> (p <= r)%N.
+Proof.  by move: q; elim: p => // p IH q <-; apply: ltn_addr. Qed.
+
+Lemma OneStepBall_le_g x n : 
+  OneStepBall 0 x n%:R^-1 `<=` [set y | g_ n (x,y)].
+Proof. by move=> y [] ?; rewrite distN_nat. Qed.
 
 Lemma subset_OneStepBall n x N : 
   OneStepBall n x N.+1%:R^-1 `<=` [set y | (g_ N) (x, y)].
 Proof.
-move: n x; elim: N => //= N IH1; elim=> //; first admit.
-move=> n IH2 x z /split_OneStepBall [t1] [t2] [a] [b] [].
-move=> /IH1.
-
+move: N x; elim: n {-2}n (leqnn n) => n.
+  rewrite leqn0 => /eqP -> N x.
+  apply: (@subset_trans _ [set y | (g_ N.+1) (x,y)]). 
+    exact: OneStepBall_le_g.
+  by move=> y ?; exact: descendG.
+move=> IH1 l ln1 N x1 x4 /split_OneStepBall [x2] [x3] [l1] [l2] [] + + + l1l2.
+have l1n : (l1 <= n)%N.
+  move: l1l2 ln1; case: l. 
+    by move=> //= /eqP; rewrite addn_eq0 => /andP [] /eqP ->.
+  by move=> l /= /addn_le; rewrite ltnS => P Q; apply: (leq_trans P).
+have l2n : (l2 <= n)%N.
+  rewrite addnC in l1l2; move: l1l2 ln1; case: l. 
+    by move=> //= /eqP; rewrite addn_eq0 => /andP [] /eqP ->.
+  by move=> l /= /addn_le; rewrite ltnS => P Q; apply: (leq_trans P).
+move=> + [] ?; rewrite distN_nat.
+move=> /(OneStepBall_le (distN_half N))/(IH1 _ l1n).
+move=> P1 P2 /(OneStepBall_le (distN_half N))/(IH1 _ l2n) P3.
+by apply: splitG3; exists x2 => //; exists x3 => //.
+Qed.
 
 Lemma n_ball_entourage : entourage = entourage_ NStepBall.
 Proof.
