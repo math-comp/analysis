@@ -3623,6 +3623,28 @@ Lemma nbhsP {M : uniformType} (x : M) P :
   nbhs x P <-> nbhs_ entourage x P.
 Proof. by rewrite nbhs_simpl. Qed.
 
+Lemma set_compose_diag {X : Type} (E : set (X * X)) :
+  E \o [set (x,x) | x in [set: X]] = E.
+Proof. 
+rewrite eqEsubset; split=> [][x y]. 
+  by case=> ? [?] _ /pair_equal_spec [] -> <-.
+by move=> ?; exists x => //; exists x.
+Qed.
+
+Lemma set_compose_subset {X : Type} (A B C D : set (X * X)) :
+  A `<=` C -> B `<=` D -> A \o B `<=` C \o D.
+Proof. 
+by move=> AC BD [x z] /= [y] Bxy Ayz; exists y; [exact: BD | exact: AC].
+Qed.
+
+Lemma set_composeA {X : Type} (A B C : set (X * X)) :
+  (A \o B) \o C = A \o (B \o C).
+Proof. 
+rewrite eqEsubset; split=> [][x w] [y /=] => [? [z] | [z] ?] ? ?.
+  by exists z => //; exists y.
+by exists z => //; exists y.
+Qed.
+
 Section uniformType1.
 Context {M : uniformType}.
 
@@ -5751,6 +5773,8 @@ elim: n => /=; first exact: entourageT.
 by move=> n entg; apply/entourage_invI; exact: filterI.
 Qed.
 
+#[local] Hint Resolve entG : core.
+
 Lemma symG (n : nat) : ((g_ n)^-1)%classic = g_ n.
 Proof.
 by case: n => //= n; rewrite eqEsubset;  split; case=> ? ?; rewrite /= andC.
@@ -5760,8 +5784,8 @@ Lemma descendG1 n : g_ n.+1 `<=` g_ n.
 Proof.
 apply: subIset; left; apply: subIset; left.
 apply: subset_trans. 
-  by apply: split_ent_subset; apply: entourage_split_ent; exact: entG.
-by apply: subset_trans; last by apply: split_ent_subset; exact: entG.
+  by apply: split_ent_subset; exact: entourage_split_ent.
+by apply: subset_trans; last exact: split_ent_subset.
 Qed.
 
 Lemma descendG (n m: nat) : (m <= n)%N -> g_ n `<=` g_ m.
@@ -5771,14 +5795,32 @@ move=> n IH. rewrite leq_eqVlt ltnS => /orP [/eqP <- //|] /IH.
 by apply: subset_trans; exact: descendG1.
 Qed.
 
-Lemma splitG n m : g_ m \o g_ n `<=` g_ (n + m).
+Lemma splitG2 n : g_ n.+1 \o g_ n.+1 `<=` g_ n.
 Proof.
-elim: n; first case=> x y /=.
-Definition n_close (n : nat) := 
-  \bigcup_(E in [set E | entourage E /\ E `<=` f_ n ]) E.
+apply: subset_trans; last exact: (subset_split_ent (entG n)).
+by apply: set_compose_subset; apply: subIset; left; apply: subIset; left;
+  apply: split_ent_subset; exact: entourage_split_ent.
+Qed.
 
-Lemma n_close_diag (n : nat) (x:T) : n_close n (x,x).
-Proof. by exists (f_ n); [split=> // | exact: entourage_refl]. Qed.
+Lemma splitG3 n : g_ n.+1 \o g_ n.+1 \o g_ n.+1 `<=` g_ n.
+Proof.
+suff g2split : g_ n.+1 \o g_ n.+1 `<=` split_ent (g_ n).
+  apply: subset_trans; last exact: (subset_split_ent (entG n)).
+  apply: set_compose_subset; rewrite // -[_ n.+1]set_compose_diag.
+  apply: subset_trans; last (exact: g2split); apply: set_compose_subset => //.
+  by case=> ? ? [? _] /pair_equal_spec [] <- <-; exact: entourage_refl.
+apply: subset_trans; last exact: subset_split_ent.
+by apply: set_compose_subset; apply: subIset; left; apply: subIset; left.
+Qed.
+
+Lemma gsubf n : g_ (n.+1) `<=` f_ n.
+Proof. by apply: subIset; left; apply: subIset; right. Qed.
+
+Lemma countableBaseG A : entourage A -> exists N, g_ N `<=` A.
+Proof.
+move=> /[dup] entA /countableBase [N] fnA; exists N.+1.
+apply: subset_trans fnA; exact: gsubf.
+Qed.
 
 From mathcomp Require Import all_algebra.
 
@@ -5786,55 +5828,126 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Definition distN (e : R) : nat := `|floor e^-1|%N.
 
-Lemma distN_le (e1 e2 : R) : (0 < e1) -> (0 < e2) -> 
-  (distN (e1 + e2) <= (distN e1) + (distN e2))%N.
-Proof.
-Admitted.
+Lemma distN0 : distN 0 = 0%N.
+Proof. by rewrite /distN invr0 (_ : 0 = (0%N)%:R) // floor_natz. Qed.
 
-Lemma distN_natE (N : nat) : distN N.+1%:R^-1 = N.+1.
-Proof.
-Admitted.
+Lemma distN_nat (n : nat): distN (n%:R^-1) = n.
+Proof. 
+by rewrite /distN invrK floor_natz -[RHS]distn0; congr absz; rewrite subr0 intz.
+Qed.
 
-Definition diagN (e : R) := 
-  if pselect (0 < e) then n_close (distN e) else set0.
-  
-Definition n_ball (x : T) (e : R) := [set y | diagN e (x,y)].
+Fixpoint OneStepBall n x e z := 
+  match n with 
+  | 0 => e > 0 /\ g_ (distN e) (x, z) 
+  | S n => exists y d1 d2, 
+    [/\ OneStepBall n x d1 y, 
+        0 < d1, 
+        0 < d2, 
+        g_ (distN d2) (y, z) &
+        d1 + d2 = e]
+  end.
+
+Definition NStepBall x e z := exists i, (OneStepBall i x e z).
+
+Lemma one_step_ball_pos n x e z : OneStepBall n x e z -> 0 < e.
+Proof. 
+by case :n => /= [[]|] // n; case=> [?] [?] [?] [] ???? <-; apply: addr_gt0.
+Qed.
+
+Lemma n_ball_pos x e z : NStepBall x e z -> 0 < e.
+Proof. by case => ?; exact: one_step_ball_pos. Qed.
 
 Lemma entourage_nball (e : R) : 
-  0 < e -> entourage [set xy | n_ball xy.1 e xy.2].
+  0 < e -> entourage [set xy | NStepBall xy.1 e xy.2].
 Proof.
-move=> epos; apply: (@filterS _ _ _ (f_ (distN e))) => // [[x y]] /=.
-rewrite /n_ball /= /diagN; case: pselect => //= _ fexy.
-by exists (f_ (distN e)) => //; split.
+move=> epos; apply: (@filterS _ _ _ (g_ (distN e))) => // [[x y]] /= ?.
+by exists 0%N.
 Qed.
 
-Lemma n_ball_center (x : T) (e : R) : 0 < e -> n_ball x e x.
+Lemma one_step_ball_center (x : T) (e : R) : 0 < e -> OneStepBall 0 x e x.
+Proof. by move=> epos; split => //; apply: entourage_refl. Qed.
+
+Lemma n_ball_center (x : T) (e : R) : 0 < e -> NStepBall x e x.
+Proof. by move=> epos; exists 0%N; split => //; apply: entourage_refl. Qed.
+
+Lemma one_step_ball_triangle n m x y z (d1 d2 : R) :
+  OneStepBall n x d1 y -> 
+  OneStepBall m y d2 z -> 
+  OneStepBall (n + m).+1 x (d1 + d2) z.
+Proof.
+move: n x y z d1 d2; elim: m => //=.
+  move=> n x y z d1 d2 Nxy [? ?]; exists y; exists d1; exists d2. 
+  by split; rewrite ?addn0 // (one_step_ball_pos Nxy).
+move=> n IH m x y z d1 d2 Oxy [w] [e1] [e2] [Oyw ? ? ? /[dup] E <-]. 
+exists w; exists (d1 + e1); exists e2; rewrite addnS addrA. 
+split => //; last by apply: addr_gt0 => //; exact: (one_step_ball_pos Oxy).
+case: (IH m x y w d1 e1 Oxy Oyw) => t [e3] [e4] []Oxt ? ? ? <-.
+exists t; exists e3; exists e4; split => //.
+Qed.
+
+Lemma n_ball_triangle x y z (d1 d2 : R) :
+  NStepBall x d1 y -> NStepBall y d2 z -> NStepBall x (d1 + d2) z.
+Proof.
+move=> [n Oxy] [m Oyz]; exists ((n + m).+1);
+exact: (one_step_ball_triangle Oxy Oyz).
+Qed.
+
+Lemma one_step_ball_sym n (x y : T) (e : R) : 
+  OneStepBall n x e y -> OneStepBall n y e x.
 Proof. 
-move=> epos; rewrite /n_ball /= /diagN; case: pselect => //.
-  by move=> ?; exact: n_close_diag.
+move: x y e; elim: n; first by move=> ? ? ?; rewrite /= -{1}symG.
+move=> n IH x y e [t] [d1] [d2] [] /IH Oty ? ?.
+rewrite addrC -symG -[n]add0n => gty <-.
+apply: one_step_ball_triangle; first by split => //; exact: gty.
+exact: Oty.
 Qed.
 
-Lemma n_ball_sym (x y : T) (e : R) : n_ball x e y ->  n_ball y e x.
-Proof. 
-rewrite /n_ball /= /diagN; case: pselect => //=.
-move=> e01 [E /= [entE] Esubf] Exy; exists (E ^-1)%classic => //. 
-by split; first exact: entourage_inv; rewrite -symF => [[? ?]]; exact: Esubf.
-Qed.
+Lemma n_ball_sym (x y : T) (e : R) : NStepBall x e y -> NStepBall y e x.
+Proof. by case=> n /one_step_ball_sym ?; exists n. Qed.
 
-Lemma n_ball_triangle x y z (e1 e2 : R) :
-  n_ball x e1 y -> n_ball y e2 z -> n_ball x (e1 + e2) z.
+Lemma OneStepBall_subset x N : 
+   [set y | (g_ N.+1) (x, y)] `<=` OneStepBall 0 x (N.+1%:R^-1).
+Proof. by move=> y gxy; split; rewrite ?distN_nat //. Qed.
+
+Lemma NStepBall_subset x N : 
+   [set y | (g_ N.+1) (x, y)] `<=` NStepBall x (N.+1%:R^-1).
+Proof. by move=> y gxy; exists 0%N; apply: OneStepBall_subset. Qed.
+
+Lemma split_OneStepBall n x e z : 
+  OneStepBall n x e z ->
+    exists t1 t2 a b,  
+    [/\
+      OneStepBall a x (e/2) t1,
+      OneStepBall 0 t1 e t2,
+      OneStepBall b t2 (e/2) z &
+      (a + b = n.-1)%N
+    ].
 Proof.
-rewrite /n_ball /= /diagN; (repeat case: pselect => //); first last.
-  by move=> ? ? ?; suff : 0 < e1 + e2 by []; apply: addr_gt0.
-move=> e12pos e1pos e2pos /= [E1 [E1ent E1subf E1xy]] [E2 [E2ent E2subf E2yz]].
-exists (f_ (distN (e1 + e2))); first by split.
-apply: descendF; first exact: distN_le.
-apply: splitF; exists y; [exact: E1subf | exact: E2subf].
-Qed.
+move: x e z; elim: n => //.
+  move=> x e z Oxz; have ? := one_step_ball_pos Oxz.
+  exists x; exists z; exists 0%N; exists 0%N; split => //.
+    by apply: one_step_ball_center; exact: divr_gt0.
+  by apply: one_step_ball_center; apply: divr_gt0 => //.
+Admitted.
 
-Lemma n_ball_entourage : entourage = entourage_ n_ball.
+
+Lemma subset_OneStepBall n x N : 
+  OneStepBall n x N.+1%:R^-1 `<=` [set y | (g_ N) (x, y)].
 Proof.
-rewrite predeqE=> E; split; last first.
+move: n x; elim: N => //= N IH1; elim=> //; first admit.
+move=> n IH2 x z /split_OneStepBall [t1] [t2] [a] [b] [].
+move=> /IH1.
+
+
+Lemma n_ball_entourage : entourage = entourage_ NStepBall.
+Proof.
+rewrite predeqE => E; split. 
+  move=> entE; case: (countableBase entE) => N fN. 
+  exists ((N.+1%:R)^-1); first by rewrite /= invr_gt0.
+  apply: (subset_trans _ fN); apply: subset_trans; last apply: gsubf.
+  case=> x y /=; case => n; rewrite ?distN_nat //.
+
+last first.
   by case=> e /= epos esubE; apply: (filterS esubE); exact: entourage_nball.
 move=> /[dup] entE /countableBase [N] fNsubE. 
 have zltSn : (0:R) < N.+1%:R^-1 by rewrite invr_gt0 ltr0Sn.
