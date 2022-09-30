@@ -28,6 +28,10 @@
      `countable_finite_subset`, `eq_card_fset_subset`, `fset_subset_countable`
 - in `classical_sets.v`
   + lemmas `IIDn`, `IISl`
+- in `mathcomp_extra.v`
+  + lemma `absz_le`
+- in `reals.v`
+  + lemma `invrlr_pos`
 - in `constructive_ereal.v`:
   + lemmas `gte_addl`, `gte_addr`
   + lemmas `gte_daddl`, `gte_daddr`
@@ -35,6 +39,10 @@
   + lemma `lte_spdadder`
 - in `constructive_ereal.v`:
   + lemma `sum_fine`
+- in `topology.v`
+  + lemmas `set_compose_diag`, `set_compose_subset`, `set_composeA`
+  + lemmas `entourage_invI` `split_ent_subset`
+  + definition `countable_uniform_pseudoMetricType_mixin`
 
 ### Changed
 - in `topology.v`
