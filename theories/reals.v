@@ -498,6 +498,12 @@ move=> S0; rewrite not_exists2P => + g; apply/negP; rewrite -leNgt.
 by apply sup_le_ub => // y Sy; move: (g y) => -[// | /negP]; rewrite leNgt.
 Qed.
 
+Lemma invrlr_pos (e1 e2 : R) :
+  0 < e1 -> 0 < e2 -> (e1 <= e2) = (e2^-1 <= e1^-1).
+Proof.
+by move=> ? ?; rewrite -[e2^-1]mul1r ler_pdivr_mulr // ler_pdivl_mull // mulr1.
+Qed.
+
 End RealLemmas.
 
 (* -------------------------------------------------------------------- *)
@@ -729,20 +735,6 @@ rewrite -ltr_subr_addl -{2}(invrK (x - y)%R) ltf_pinv ?qualifE ?ltr0n//.
 rewrite -natr1 natr_absz ger0_norm.
   by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.
 by rewrite -RfloorE lt_succ_Rfloor.
-Qed.
-
-Lemma ltr_between_invr (x : R) : 0 < x < 1 -> 
-  `|floor x^-1|%N.+1%:R^-1 < x <= `|floor x^-1|%N%:R^-1.
-Proof.
-move=> /andP [] xpos xlt1.
-have invGe0 : @GRing.zero R < (floor x^-1)%:~R.
-  apply: (@lt_le_trans _ _ (1)%:~R); rewrite ?ltr01 // -floor1 ler_int.
-  by apply/le_floor/ltW; rewrite invr_gt1 // unitfE; exact: lt0r_neq0.
-rewrite -{2}(invrK x) ?ltf_pinv ?qualifE ?ltr0n // ? invr_gt0 //.
-rewrite -?natr1 ?natr_absz ?ger0_norm.
-  by rewrite floor_ge0 invr_ge0; exact: ltW.
-apply/andP; split; first by rewrite -RfloorE lt_succ_Rfloor.
-by rewrite -{1}(invrK x) ?lef_pinv ?qualifE ?invr_gt0 // floor_le.
 Qed.
 
 End FloorTheory.
