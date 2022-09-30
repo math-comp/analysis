@@ -5753,14 +5753,13 @@ Proof. by []. Qed.
 
 End weak_pseudoMetric.
 (* This section proves that uniform spaces, with a countable base for their
-   entourage, are metrizable. Note that the metric itself should not matter.
-   The definition of this metric is rather arcane, and the proof is tough. 
-   The resulting metric and not intended to be used explicitly. Instead, 
-   this is typically used in applications like
+   entourage, are metrizable. The definition of this metric is rather arcane, 
+   and the proof is tough. That's ok because the resulting metric is not 
+   intended to be used explicitly. Instead, this is typically used in 
+   applications that do not depend on the metric:
    - `metric spaces are T4`
    - `in metric spaces, compactness and sequential compactness agree`
    - infinite products of metric spaces are metrizable
-   that do not depend on the metric itself.
 *)
 
 Section countable_uniform. 
@@ -5831,9 +5830,10 @@ move=> /countableBase [N] fnA; exists N.+1.
 by apply: subset_trans fnA; exact: gsubf.
 Qed.
 
-(* Step 2 is to build a sensible notion of balls for our metric.
+(* Step 2.
+   We build a sensible notion of balls for our metric.
    The naive attempt, 
-      `ball x e y := g_ (distN e) (x,y))
+                     `ball x e y := g_ (distN e) (x,y))
    doesn't respect triangle inequality. We need to cook triangle inequality
    into the balls themselves. So we define balls in terms of steps:
       `ball x e y := there are n steps x_0 = x,...,x_i,..., x_n.+1 = y and 
@@ -5934,11 +5934,20 @@ Qed.
 Local Lemma step_ball_sym x y e : step_ball x e y -> step_ball y e x.
 Proof. by case=> n /n_step_ball_sym ?; exists n. Qed.
 
-(* Step 3: the final step is to prove that this step_ball metric
-   respects the original entourage requires an induction on the length
-   of the steps, which is pretty tricky. The central lemma is 
-   `split_n_step_ball`, which lets us break a list into parts three parts, 
-   with control over the distance in each.
+(* Step 3: 
+   We prove that step_ball respects the original entourage. This requires an
+   induction on the length of the steps, which is pretty tricky. The central 
+   lemma is `split_n_step_ball`, which lets us break a list into parts three 
+   parts as: half + one_step + half. Then our we can break apart our n +1 path
+
+                         nlong + one_step 
+   into
+                  (half + one_step + half) + one_step
+                                =
+                  half + one_step + (half + one_step)
+
+   and we can we can use our (strong) induction hypothesis.
+   And lastly we finish with splitG3.
 *)
 
 Local Lemma n_step_ball_le n x e1 e2 : 
