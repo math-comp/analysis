@@ -2039,7 +2039,7 @@ Qed.
 Lemma finI_from_countable (I : pointedType) T (D : set I) (f : I -> set T) :
   countable D -> countable (finI_from D f).
 Proof.
-move=> ?; apply: (card_le_trans (card_image_le _ _)). 
+move=> ?; apply: (card_le_trans (card_image_le _ _)).
 exact: fset_subset_countable.
 Qed.
 

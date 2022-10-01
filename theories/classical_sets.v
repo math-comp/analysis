@@ -2118,6 +2118,7 @@ Canonical prod_pointedType (T T' : pointedType) :=
 Canonical matrix_pointedType m n (T : pointedType) :=
   PointedType 'M[T]_(m, n) (\matrix_(_, _) point)%R.
 Canonical option_pointedType (T : choiceType) := PointedType (option T) None.
+Canonical pointed_fset {T : choiceType} := PointedType {fset T} fset0.
 
 Notation get := (xget point).
 Notation "[ 'get' x | E ]" := (get [set x | E])
