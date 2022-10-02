@@ -21,7 +21,12 @@
   + lemma `uniform_entourage`
   + definition `weak_ball`, `weak_pseudoMetricType`
   + lemma `weak_ballE`
-
+  + lemma `finI_from_countable`
+- in `cardinality.v`
+  + lemmas `eq_card1`, `card_set1`, `card_eqSP`, `countable_n_subset`,
+     `countable_finite_subset`, `eq_card_fset_subset`, `fset_subset_countable`
+- in `classical_sets.v`
+  + lemmas `IIDn`, `IISl`
 - in `constructive_ereal.v`:
   + lemmas `gte_addl`, `gte_addr`
   + lemmas `gte_daddl`, `gte_daddr`
