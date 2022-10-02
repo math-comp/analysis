@@ -1021,10 +1021,9 @@ Section InitialSegment.
 
 Lemma II0 : `I_0 = set0. Proof. by rewrite predeqE. Qed.
 
-Lemma II1 : `I_1 = [set 0%N].
-Proof. by rewrite predeqE; case. Qed.
+Lemma II1 : `I_1 = [set 0]. Proof. by rewrite predeqE; case. Qed.
 
-Lemma IIn_eq0 n : `I_n = set0 -> n = 0%N.
+Lemma IIn_eq0 n : `I_n = set0 -> n = 0.
 Proof. by case: n => // n; rewrite predeqE; case/(_ 0%N); case. Qed.
 
 Lemma IIS n : `I_n.+1 = `I_n `|` [set n].
@@ -1710,23 +1709,23 @@ Arguments bigcup_setD1 {T I} x.
 Arguments bigcap_setD1 {T I} x.
 
 Definition bigcup2 T (A B : set T) : nat -> set T :=
-  fun i => if i == 0%N then A else if i == 1%N then B else set0.
+  fun i => if i == 0 then A else if i == 1 then B else set0.
 Arguments bigcup2 T A B n /.
 
 Lemma bigcup2E T (A B : set T) : \bigcup_i (bigcup2 A B) i = A `|` B.
 Proof.
-rewrite predeqE => t; split=> [|[At|Bt]]; [|by exists 0%N|by exists 1%N].
+rewrite predeqE => t; split=> [|[At|Bt]]; [|by exists 0|by exists 1].
 by case=> -[_ At|[_ Bt|//]]; [left|right].
 Qed.
 
 Lemma bigcup2inE T (A B : set T) : \bigcup_(i in `I_2) (bigcup2 A B) i = A `|` B.
 Proof.
-rewrite predeqE => t; split=> [|[At|Bt]]; [|by exists 0%N|by exists 1%N].
+rewrite predeqE => t; split=> [|[At|Bt]]; [|by exists 0|by exists 1].
 by case=> -[_ At|[_ Bt|//]]; [left|right].
 Qed.
 
 Definition bigcap2 T (A B : set T) : nat -> set T :=
-  fun i => if i == 0%N then A else if i == 1%N then B else setT.
+  fun i => if i == 0 then A else if i == 1 then B else setT.
 Arguments bigcap2 T A B n /.
 
 Lemma bigcap2E T (A B : set T) : \bigcap_i (bigcap2 A B) i = A `&` B.
@@ -1921,7 +1920,7 @@ Lemma bigsetI_bigcap2 (A B : set T) :
 Proof. by rewrite -bigcap_mkord bigcap2inE. Qed.
 
 Lemma bigcup_splitn n F :
-  \bigcup_i F i = \big[setU/set0]_(i < n) F i `|` \bigcup_i F (n + i)%N.
+  \bigcup_i F i = \big[setU/set0]_(i < n) F i `|` \bigcup_i F (n + i).
 Proof.
 rewrite -bigcup_mkord -(bigcup_image _ (addn n)) -bigcup_setU.
 apply: eq_bigcupl; split=> // k _.
@@ -1930,20 +1929,20 @@ by exists (k - n); rewrite // subnKC.
 Qed.
 
 Lemma bigcap_splitn n F :
-  \bigcap_i F i = \big[setI/setT]_(i < n) F i `&` \bigcap_i F (n + i)%N.
+  \bigcap_i F i = \big[setI/setT]_(i < n) F i `&` \bigcap_i F (n + i).
 Proof.
 by apply: setC_inj; rewrite setCI !setC_bigcap (bigcup_splitn n) setC_bigsetI.
 Qed.
 
 Lemma subset_bigsetU F :
-  {homo (fun n => \big[setU/set0]_(i < n) F i) : n m / (n <= m)%N >-> n `<=` m}.
+  {homo (fun n => \big[setU/set0]_(i < n) F i) : n m / (n <= m) >-> n `<=` m}.
 Proof.
 move=> m n mn; rewrite -!bigcup_mkord => x [i im Fix].
 by exists i => //=; rewrite (leq_trans im).
 Qed.
 
 Lemma subset_bigsetI F :
-  {homo (fun n => \big[setI/setT]_(i < n) F i) : n m / (n <= m)%N >-> m `<=` n}.
+  {homo (fun n => \big[setI/setT]_(i < n) F i) : n m / (n <= m) >-> m `<=` n}.
 Proof.
 move=> m n mn; rewrite -setCS !setC_bigsetI.
 exact: (@subset_bigsetU (setC \o F)).
@@ -1951,7 +1950,7 @@ Qed.
 
 Lemma subset_bigsetU_cond (P : pred nat) F :
   {homo (fun n => \big[setU/set0]_(i < n | P i) F i)
-    : n m / (n <= m)%N >-> n `<=` m}.
+    : n m / (n <= m) >-> n `<=` m}.
 Proof.
 move=> n m nm; rewrite big_mkcond [in X in _ `<=` X]big_mkcond/=.
 exact: (@subset_bigsetU (fun i => if P i then F i else _)).
@@ -1959,7 +1958,7 @@ Qed.
 
 Lemma subset_bigsetI_cond (P : pred nat) F :
   {homo (fun n => \big[setI/setT]_(i < n | P i) F i)
-    : n m / (n <= m)%N >-> m `<=` n}.
+    : n m / (n <= m) >-> m `<=` n}.
 Proof.
 move=> n m nm; rewrite big_mkcond [in X in _ `<=` X]big_mkcond/=.
 exact: (@subset_bigsetI (fun i => if P i then F i else _)).
@@ -2118,7 +2117,7 @@ Definition dep_arrow_pointedType (T : Type) (T' : T -> pointedType) :=
 
 Canonical bool_pointedType := PointedType bool false.
 Canonical Prop_pointedType := PointedType Prop False.
-Canonical nat_pointedType := PointedType nat 0%N.
+Canonical nat_pointedType := PointedType nat 0.
 Canonical prod_pointedType (T T' : pointedType) :=
   PointedType (T * T') (point, point).
 Canonical matrix_pointedType m n (T : pointedType) :=
@@ -2193,7 +2192,7 @@ End ChoiceMixin.
 
 Section CountMixin.
 Variables (T : Type) (m : mixin_of T).
-Definition pickle : T -> nat := fun=> 0%N.
+Definition pickle : T -> nat := fun=> 0.
 Definition unpickle : nat -> option T := fun=> None.
 Lemma pickleK : pcancel pickle unpickle. Proof. by []. Qed.
 Definition countMixin := CountMixin pickleK.
@@ -2359,7 +2358,7 @@ Proof. by move=> DD' Ftriv i j /DD' + /DD' + /Ftriv->//. Qed.
 Lemma trivIset_bigcup2 T (A B : set T) :
   (A `&` B = set0) = trivIset setT (bigcup2 A B).
 Proof.
-apply/propext; split=> [AB0|/trivIsetP/(_ 0%N 1%N Logic.I Logic.I erefl)//].
+apply/propext; split=> [AB0|/trivIsetP/(_ 0 1 Logic.I Logic.I erefl)//].
 apply/trivIsetP => -[/=|]; rewrite /bigcup2 /=.
 - by move=> [//|[_ _ _ //|j _ _ _]]; rewrite setI0.
 - move=> [[j _ _|]|i j _ _ _]; [by rewrite setIC| |by rewrite set0I].
@@ -2438,7 +2437,7 @@ by apply D'F => //; apply DD'.
 Qed.
 
 Lemma perm_eq_trivIset {T : eqType} (s1 s2 : seq (set T)) (D : set nat) :
-  [set k | (k < size s1)%N] `<=` D -> perm_eq s1 s2 ->
+  [set k | (k < size s1)] `<=` D -> perm_eq s1 s2 ->
   trivIset D (fun i => nth set0 s1 i) -> trivIset D (fun i => nth set0 s2 i).
 Proof.
 move=> s1D; rewrite perm_sym => /(perm_iotaP set0)[s ss1 s12] /trivIsetP ts1.
