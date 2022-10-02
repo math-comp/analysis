@@ -1034,6 +1034,12 @@ by rewrite ltnS leq_eqVlt => /orP[/eqP ->|]; by [left|right].
 by move/ltn_trans; apply.
 Qed.
 
+Lemma IISl n : `I_n.+1 = n |` `I_n.
+Proof. by rewrite setUC IIS. Qed.
+
+Lemma IIDn n : `I_n.+1 `\ n = `I_n.
+Proof. by rewrite IIS setUDK// => x [->/=]; rewrite ltnn. Qed.
+
 Lemma setI_II m n : `I_m `&` `I_n = `I_(minn m n).
 Proof.
 by case: leqP => mn; [rewrite setIidl// | rewrite setIidr//]

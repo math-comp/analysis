@@ -339,22 +339,14 @@ Proof. by rewrite card_eq_somel card_eq_somer. Qed.
 Lemma card_eq0 {T U} {A : set T} : (A #= @set0 U) = (A == set0).
 Proof. by rewrite card_eq_le card_le0 card_ge0 andbT. Qed.
 
-Lemma card_eq1 {T} (x : T) : [set x] #= `I_1.
+Lemma card_set1 {T} {x : T} : [set x] #= `I_1.
 Proof.
-pose f : nat -> T := fun=> x%N; have fE : f @` `I_1 = [set x].
-  rewrite eqEsubset; split => z; last by move=> ->; exists 0%N.
-  by case=> ? ? <-. 
-pose g : T -> nat := fun=> 0%N; have gE : g @` [set x] = `I_1.
-  rewrite eqEsubset; split; first by move=> z [] w -> <-.
-  by move=> z; rewrite /= ltnS leqn0 => /eqP ->; exists x.
-apply: Cantor_Bernstein; first by rewrite -fE; exact: card_image_le.
-by rewrite -gE; exact: card_image_le.
+apply/pcard_eqP; suff /Pbij[f]: set_bij [set x] `I_1 (fun=> 0%N) by squash f.
+by split=> [//|y z /[!in_setE]-> ->//|[]//]; exists x.
 Qed.
 
-Lemma card_eq_set1 {T U} (x : T) (y : U) : [set x] #= [set y].
-Proof.
-by apply: card_eq_trans; [exact: card_eq1 | rewrite card_eq_sym card_eq1].
-Qed.
+Lemma eq_card1 {T U} (x : T) (y : U) : [set x] #= [set y].
+Proof. by rewrite (card_eql card_set1) (card_eqr card_set1). Qed.
 
 Lemma card_eq_emptyr (T : emptyType) U (A : set T) (B : set U) :
   (B #= A) = (B == set0).
@@ -1173,50 +1165,42 @@ rewrite !card_eq_le => /andP[Acnt /infiniteP Ainfty] /all_and2[Bcnt Bn0].
 by rewrite [(_ #<= _)%card]countableMR//=; apply/infiniteP/infiniteMRl.
 Qed.
 
-Lemma IIDn n : `I_n.+1 `\ n = `I_n.
+Lemma eq_cardSP {T : Type} (A : set T) n :
+  reflect (exists2 x, A x & A `\ x #= `I_n) (A #= `I_n.+1).
 Proof.
-rewrite eqEsubset; split => k /=; rewrite ltnS.
-  by rewrite leq_eqVlt; case => /orP; case => // /eqP ->.
-by move=> kn; split; [exact: ltnW | move=> E; move: kn; rewrite E ltnn].
+elim/Ppointed: T A => T A.
+  rewrite !emptyE; apply: (iffP eqP) => [|[]//].
+  by move=> /(congr1 (@^~ 0%N))/=; rewrite -falseE ltnS leq0n => /is_true_inj.
+apply: (iffP idP) => [|[x Ax]].
+  move=> /ppcard_eqP[f]; exists (f^-1 n); first by apply: funS => /=.
+  by apply/card_esym/card_set_bijP; exists f^-1; apply: bij_II_D1.
+move=> /pcard_eqP[f]; have [//|||g _] := @super_bij _ _ _ A _ `I_n.+1 f.
+- by move=> k /=; apply: leq_trans.
+- by rewrite setDD (card_eqr card_IID) subSnn// setIidr ?card_set1// => ? ->.
+- by apply/pcard_eqP; squash g.
 Qed.
 
-Lemma finite_cardS {T : pointedType} (A : set T) n :
-  (A #= `I_n.+1) <-> (exists2 x, A x & A `\ x #= `I_n).
-Proof.
-split.
-  rewrite card_eq_sym => /pcard_eqP [f]; exists (f n); [by apply: funS => /=|].
-  by rewrite card_eq_sym; apply/card_set_bijP; exists f; exact: bij_II_D1.
-case=> x; have /pcard_eqP [g] : [set x] #= [set n] by exact: card_eq_set1.
-move=> Ax Axn; apply/pcard_eqP; case: (@super_bij T _ _ A _ `I_n.+1 g).
-- by move=> ? ->.
-- by move=> ? -> /=.
-- by rewrite IIDn.
-by move=> f ?; split; exact: f.
-Qed.
-
-Lemma countable_n_subset {T : pointedType} (D : set T) n :
+Lemma countable_n_subset {T : Type} (D : set T) n :
   countable D -> countable [set A | A `<=` D /\ A #= `I_n].
 Proof.
-move=> cD; elim: n.
-  rewrite ( _ : [set A | _ /\ _] = [set set0]) // eqEsubset II0.
-  by split => A; [rewrite /= card_eq0; case=> _ /eqP | move=> ->; split].
-move=> n /(countableM cD); apply: sub_countable.
-pose f : (T * set T) -> set T := (fun xy => xy.2 `|` [set xy.1]).
-apply: card_le_trans; last apply: (@card_image_le _ _ f).
-apply: subset_card_le => B [BD] /finite_cardS [x ? ?] /=; exists (x, B`\x).
-  by split; [exact: BD | split=> //; apply: subset_trans _ BD; exact: subDsetl].
-by apply: setDKU => ? ->.
+move=> Dcnt; elim: n => [|n].
+  rewrite [X in countable X]( _ : _ = [set set0])// eqEsubset II0.
+  by split=> A /=; [rewrite card_eq0; case=> _ /eqP | move->; split].
+move=> /(countableM Dcnt); apply: sub_countable.
+apply: card_le_trans (card_image_le (fun u => u.1 |` u.2) _).
+apply: subset_card_le => B [BD] /eq_cardSP [x Bx BDx].
+exists (x, B `\ x) => /=; last by apply: setDUK => ? ->.
+by do !split=> //; [exact: BD | apply: subset_trans _ BD; apply: subDsetl].
 Qed.
 
-Lemma countable_finite_subset {T : pointedType} (D : set T) :
+Lemma countable_finite_subset {T : Type} (D : set T) :
   countable D -> countable [set A | A `<=` D /\ finite_set A ].
 Proof.
-move=> Dc; suff -> : [set A | A `<=` D /\ finite_set A ] =
+move=> Dcnt; suff -> : [set A | A `<=` D /\ finite_set A ] =
     \bigcup_n [set A | A `<=` D /\ A #= `I_n ].
   by apply: bigcup_countable => // ? _; exact: countable_n_subset.
-rewrite eqEsubset; split => A [].
-  by move=> AD /finite_setP [n] An; exists n.
-by move=> n _ [? ?]; split => //; apply/finite_setP; exists n.
+rewrite eqEsubset; split=> [A [AD /finite_setP[n An]]|A]; first by exists n.
+by move=> [n _ [AD An]]; split=> //; apply/finite_setP; exists n.
 Qed.
 
 Lemma eq_card_fset_subset {T : pointedType} (D : set T) :
