@@ -303,6 +303,7 @@ Require Import cardinality.
 (*                                   pseudometric space                       *)
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
+(*          weak_pseudoMetricType == the metric space for weak topologies     *)
 (*                                                                            *)
 (* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
@@ -5676,6 +5677,53 @@ exists (ratr q) => //; split; last by exists q.
 apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
 by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
 Qed.
+
+Section weak_pseudoMetric.
+Context {R : realType} (pS : pointedType) (U : pseudoMetricType R) .
+Variable (f : pS -> U).
+
+Let S := weak_uniformType f.
+
+Definition weak_ball (x : S) (r : R) (y : S) := ball (f x) r (f y).
+
+Program Definition weak_pseudoMetricType_mixin :=
+  @PseudoMetric.Mixin R S entourage weak_ball
+  _ _ _ _.
+
+Next Obligation. by move=> ? _/posnumP[e]; exact: ball_center. Qed.
+Next Obligation. by move=> ? ? ?; exact: ball_sym. Qed.
+Next Obligation. move=> ? ? ? ? ?; exact: ball_triangle. Qed.
+Next Obligation.
+rewrite /entourage /= /weak_ent -entourage_ballE /entourage_.
+have -> : (fun e => [set xy | ball (f xy.1) e (f xy.2)]) = 
+   (preimage (map_pair f) \o fun e => [set xy | ball xy.1 e xy.2])%FUN.
+  by rewrite funeqE.
+rewrite eqEsubset; split; apply/filter_fromP. 
+- apply: filter_from_filter; first by exists 1 => /=.
+  move=> e1 e2 e1pos e2pos; wlog e1lee2 : e1 e2 e1pos e2pos / e1 <= e2.
+    by have [?|/ltW ?] := lerP e1 e2; [exact | rewrite setIC; exact].
+  exists e1 => //; rewrite -preimage_setI; apply: preimage_subset.
+  by move=> ? ?; split => //; apply: le_ball; first exact: e1lee2.
+- by move=> E [e ?] heE; exists e => //; apply: preimage_subset.
+- apply: filter_from_filter. 
+    by exists [set xy | (ball xy.1 1 xy.2)]; exists 1 => /=.
+  move=> E1 E2 [e1 e1pos he1E1] [e2 e2pos he2E2].
+  wlog ? : E1 E2 e1 e2 e1pos e2pos he1E1 he2E2 / e1 <= e2.
+    have [? /(_ _ _ e1 e2)|/ltW ? ] := lerP e1 e2; first exact.
+    by rewrite setIC => /(_ _ _ e2 e1); exact.
+  exists (E1 `&` E2) => //; exists e1 => // xy /= B; split; first exact: he1E1.
+  by apply/he2E2/le_ball; last exact: B.
+- by move=> e ?; exists ([set xy | ball xy.1 e xy.2]) => //; by exists e => /=.
+Qed.
+
+Definition weak_pseudoMetricType := 
+  PseudoMetricType S weak_pseudoMetricType_mixin.
+
+Lemma weak_ballE (e : R) (x : weak_pseudoMetricType) : 
+  f@^-1` (ball (f x) e) = ball x e.
+Proof. by []. Qed.
+
+End weak_pseudoMetric.
 
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.
