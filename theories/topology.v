@@ -4401,62 +4401,63 @@ Definition sup_uniform_mixin:=
 
 Definition sup_uniformType := UniformType Tt sup_uniform_mixin.
 
-End sup_uniform.
-
-Section sup_uniform_countable.
-
-Variable (T : pointedType) (Tc : nat -> Uniform.class_of T).
-
-Let TS := fun i => Uniform.Pack (Tc i).
-Let Tt := @sup_uniformType T nat Tc.
-Let ent_of (p : nat * set (T*T)) := `[< @entourage (TS p.1) p.2>].
-Let IEnt := ChoiceType {p : ({classic nat} * set (T*T)) | ent_of p} (sig_choiceMixin _).
-
-Variable countable_ent : forall n, exists M : set (set (T * T)), 
-  countable M /\
-  (M `<=` @entourage (TS n)) /\ 
-  (forall P, @entourage (TS n) P -> exists Q, M Q /\ Q `<=` P).
-
-Lemma countable_sup_ent : exists R,
+Lemma countable_sup_ent : 
+  countable [set: Ii] ->
+  (forall n, exists M : set (set (T * T)), 
+    countable M /\
+    (M `<=` @entourage (TS n)) /\ 
+    (forall P, @entourage (TS n) P -> exists Q, M Q /\ Q `<=` P)) ->
+  exists R,
   countable R /\
-  (R `<=` @entourage Tt) /\ 
-  (forall P, @entourage Tt P -> exists Q, R Q /\ Q `<=` P).
+  (R `<=` @entourage sup_uniformType) /\ 
+  (forall P, @entourage sup_uniformType P -> exists Q, R Q /\ Q `<=` P).
 Proof.
+move=> Icnt countable_ent.
 pose f := fun n => cid (countable_ent n).
-pose g : nat -> (set (set (T * T))) := fun n => projT1 (f n).
+pose g : Ii -> set (set (T * T)) := fun n => projT1 (f n).
+case (pselect ([set: I] = set0)) => [I0 | /eqP/set0P [i0 _]].
+  exists [set setT]; split; first apply countable1; split.
+    move=> A; rewrite /entourage /= => ->.
+    by exists setT => //; exists fset0 => //; rewrite set_fset0 bigcap_set0.
+  move=> P [w /= [A /= _]] <- subP; exists setT; split => //.
+  apply: (subset_trans _ subP) => t _ i iA.
+  by have : [set: I] (projT1 i).1 by []; rewrite I0.
 exists (finI_from (\bigcup_n (g n)) id); split;[|split].
-- apply: finI_from_countable; apply: bigcup_countable => //.
-  by move=> i _; have []:= (projT2 (f i)).
+- apply/finI_from_countable/bigcup_countable => // i _.
+  by have []:= (projT2 (f i)).
 - rewrite /entourage /= /sup_ent /= => E [A /= AsubGn AE]; exists E => //.
   have h : forall w, { p : IEnt | w \in A -> w = (projT1 p).2}.
-    move=> /= w; apply cid; case (pselect (w \in A)); first last.
-      by move=> ?; exists (exist ent_of _ (IEnt_pointT Tc 0%N)). 
+    move=> w; apply cid; case (pselect (w \in A)); first last.
+      by move=> ?; exists (exist ent_of _ (IEnt_pointT i0)). 
     move=> /[dup] /AsubGn/set_mem [n _ gnw] wA. 
     have [_ [subE Ebase]] := projT2 (f n).
     have ent : ent_of (n,w) by apply/asboolP; exact: (subE _ gnw).
-    by exists (exist ent_of (n, w) ent) => ?.
+    by exists (exist ent_of (n, w) ent).
   exists [fset (fun i => (projT1 (h i))) w | w in A]%fset.
     by move=> ?; rewrite mem_set //.
   rewrite -AE /=; rewrite eqEsubset; split => t Ia.
-    by move=> w Aw; have -> := (projT2 (h w) Aw); apply/Ia/imfsetP; exists w.
+    by move=> w Aw; have -> := projT2 (h w) Aw; apply/Ia/imfsetP; exists w.
   move=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia => //=.
   suff <- : x = w by []; have -> := (projT2 (h x) xA).
-  have -> : (projT1 (proj1_sig (h x))) = (projT1 (exist ent_of (n, w) p)).
-    by rewrite M.
-  by have -> : (projT1 (exist ent_of (n, w) p)) = (n,w) by [].
+  by rewrite (_ : projT1 (h x) = proj1_sig (h x)) // -M //.
 - move=> E [w] [/= A _ wIA wsubE]. 
   have ent_Ip : forall (i : IEnt), @entourage (TS (projT1 i).1) (projT1 i).2.
     by move=> i; apply/asboolP; apply: (projT2 i).
   pose h := fun i : IEnt => 
     cid ((proj2 (proj2 (projT2 (f ((projT1 i).1))))) ((projT1 i).2) (ent_Ip i)).
+  have ehi : forall i : IEnt, ent_of ((projT1 i).1, projT1 (h i)).
+    move=> i; apply/asboolP => /=; have [] := projT2 (h i).
+    have [_ [+ _] ? ?] := (projT2 (f (projT1 i).1)); exact.
   pose AH := [fset (fun i => (projT1 (h i))) w | w in A]%fset.
   exists (\bigcap_(i in [set` AH]) i); split.
     exists AH => // p /= /imfsetP [i /= iA pE]; rewrite mem_set //.
     by exists (projT1 i).1 => //; have [] := projT2 (h i); rewrite pE.
-  move=> t It; apply: wsubE; rewrite -wIA /= => i iA.
-  apply: It; apply/imfsetP; exists i => //.
+  apply: (subset_trans _ wsubE); rewrite -wIA => t It i Ai.
+  have [enthi] := (projT2 (h i)); apply; apply: It; apply/imfsetP.
+  by exists i .
+Qed.
 
-End sup_uniform_countable.
+End sup_uniform.
 
 Section product_uniform.
 
