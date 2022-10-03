@@ -2094,37 +2094,12 @@ rewrite predeqE => t; split=> [|fit]; first by apply; rewrite /= inE.
 by move=> ?; rewrite /= inE => /eqP->.
 Qed.
 
-Lemma finI_from_nat_bigcup T (f : nat -> set T) :
-  finI_from [set: nat] f = \bigcup_n (finI_from `I_n f).
-Proof.
-rewrite eqEsubset; split => E []; first last.
-  by move=> n _ [A An] <-; exists A => // ? _; rewrite mem_set.
-move=> A /= _; case : (pselect (A == fset0)).
-  by move=> /eqP ->; exists 0%N => //; exists fset0; rewrite // bigcap_set0.
-move=> /negP/fset_nat_maximum => /(_ id) [n] [nA] nub <-; exists n.+1 => //.
-by exists A => // k /nub ?; rewrite mem_set.
-Qed.
-
 Lemma finI_from_countable (I : pointedType) T (D : set I) (f : I -> set T) :
   countable D -> countable (finI_from D f).
 Proof.
 move=> ?; apply: (card_le_trans (card_image_le _ _)).
 exact: fset_subset_countable.
 Qed.
-
-(*
-Lemma finI_from_comp (I J : pointedType) T (D : set I) 
-    (g : I -> J) (f : J -> set T) :
-  finI_from D (f \o g) = finI_from (g @` D) f.
-Proof.
-rewrite eqEsubset; split => E [A /=] Asub <-.
-  exists (g @` A)%fset.
-    move=> q /= /imfsetP [w /= wA ->]; rewrite mem_set //; exists w => //.
-    by apply: set_mem; exact: Asub.
-  rewrite eqEsubset; split => t It x /= Ax.
-    by apply: (It (g x)); rewrite mksetE; apply/imfsetP; exists x.
-  by have /imfsetP [w Aw ->] := Ax; apply: It.
-  *)
 
 Section TopologyOfSubbase.
 
@@ -4454,7 +4429,7 @@ exists (finI_from (\bigcup_n (g n)) id); split;[|split].
     by exists (projT1 i).1 => //; have [] := projT2 (h i); rewrite pE.
   apply: (subset_trans _ wsubE); rewrite -wIA => t It i Ai.
   have [enthi] := (projT2 (h i)); apply; apply: It; apply/imfsetP.
-  by exists i .
+  by exists i.
 Qed.
 
 End sup_uniform.
