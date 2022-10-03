@@ -2094,12 +2094,37 @@ rewrite predeqE => t; split=> [|fit]; first by apply; rewrite /= inE.
 by move=> ?; rewrite /= inE => /eqP->.
 Qed.
 
+Lemma finI_from_nat_bigcup T (f : nat -> set T) :
+  finI_from [set: nat] f = \bigcup_n (finI_from `I_n f).
+Proof.
+rewrite eqEsubset; split => E []; first last.
+  by move=> n _ [A An] <-; exists A => // ? _; rewrite mem_set.
+move=> A /= _; case : (pselect (A == fset0)).
+  by move=> /eqP ->; exists 0%N => //; exists fset0; rewrite // bigcap_set0.
+move=> /negP/fset_nat_maximum => /(_ id) [n] [nA] nub <-; exists n.+1 => //.
+by exists A => // k /nub ?; rewrite mem_set.
+Qed.
+
 Lemma finI_from_countable (I : pointedType) T (D : set I) (f : I -> set T) :
   countable D -> countable (finI_from D f).
 Proof.
 move=> ?; apply: (card_le_trans (card_image_le _ _)).
 exact: fset_subset_countable.
 Qed.
+
+(*
+Lemma finI_from_comp (I J : pointedType) T (D : set I) 
+    (g : I -> J) (f : J -> set T) :
+  finI_from D (f \o g) = finI_from (g @` D) f.
+Proof.
+rewrite eqEsubset; split => E [A /=] Asub <-.
+  exists (g @` A)%fset.
+    move=> q /= /imfsetP [w /= wA ->]; rewrite mem_set //; exists w => //.
+    by apply: set_mem; exact: Asub.
+  rewrite eqEsubset; split => t It x /= Ax.
+    by apply: (It (g x)); rewrite mksetE; apply/imfsetP; exists x.
+  by have /imfsetP [w Aw ->] := Ax; apply: It.
+  *)
 
 Section TopologyOfSubbase.
 
@@ -4377,6 +4402,61 @@ Definition sup_uniform_mixin:=
 Definition sup_uniformType := UniformType Tt sup_uniform_mixin.
 
 End sup_uniform.
+
+Section sup_uniform_countable.
+
+Variable (T : pointedType) (Tc : nat -> Uniform.class_of T).
+
+Let TS := fun i => Uniform.Pack (Tc i).
+Let Tt := @sup_uniformType T nat Tc.
+Let ent_of (p : nat * set (T*T)) := `[< @entourage (TS p.1) p.2>].
+Let IEnt := ChoiceType {p : ({classic nat} * set (T*T)) | ent_of p} (sig_choiceMixin _).
+
+Variable countable_ent : forall n, exists M : set (set (T * T)), 
+  countable M /\
+  (M `<=` @entourage (TS n)) /\ 
+  (forall P, @entourage (TS n) P -> exists Q, M Q /\ Q `<=` P).
+
+Lemma countable_sup_ent : exists R,
+  countable R /\
+  (R `<=` @entourage Tt) /\ 
+  (forall P, @entourage Tt P -> exists Q, R Q /\ Q `<=` P).
+Proof.
+pose f := fun n => cid (countable_ent n).
+pose g : nat -> (set (set (T * T))) := fun n => projT1 (f n).
+exists (finI_from (\bigcup_n (g n)) id); split;[|split].
+- apply: finI_from_countable; apply: bigcup_countable => //.
+  by move=> i _; have []:= (projT2 (f i)).
+- rewrite /entourage /= /sup_ent /= => E [A /= AsubGn AE]; exists E => //.
+  have h : forall w, { p : IEnt | w \in A -> w = (projT1 p).2}.
+    move=> /= w; apply cid; case (pselect (w \in A)); first last.
+      by move=> ?; exists (exist ent_of _ (IEnt_pointT Tc 0%N)). 
+    move=> /[dup] /AsubGn/set_mem [n _ gnw] wA. 
+    have [_ [subE Ebase]] := projT2 (f n).
+    have ent : ent_of (n,w) by apply/asboolP; exact: (subE _ gnw).
+    by exists (exist ent_of (n, w) ent) => ?.
+  exists [fset (fun i => (projT1 (h i))) w | w in A]%fset.
+    by move=> ?; rewrite mem_set //.
+  rewrite -AE /=; rewrite eqEsubset; split => t Ia.
+    by move=> w Aw; have -> := (projT2 (h w) Aw); apply/Ia/imfsetP; exists w.
+  move=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia => //=.
+  suff <- : x = w by []; have -> := (projT2 (h x) xA).
+  have -> : (projT1 (proj1_sig (h x))) = (projT1 (exist ent_of (n, w) p)).
+    by rewrite M.
+  by have -> : (projT1 (exist ent_of (n, w) p)) = (n,w) by [].
+- move=> E [w] [/= A _ wIA wsubE]. 
+  have ent_Ip : forall (i : IEnt), @entourage (TS (projT1 i).1) (projT1 i).2.
+    by move=> i; apply/asboolP; apply: (projT2 i).
+  pose h := fun i : IEnt => 
+    cid ((proj2 (proj2 (projT2 (f ((projT1 i).1))))) ((projT1 i).2) (ent_Ip i)).
+  pose AH := [fset (fun i => (projT1 (h i))) w | w in A]%fset.
+  exists (\bigcap_(i in [set` AH]) i); split.
+    exists AH => // p /= /imfsetP [i /= iA pE]; rewrite mem_set //.
+    by exists (projT1 i).1 => //; have [] := projT2 (h i); rewrite pE.
+  move=> t It; apply: wsubE; rewrite -wIA /= => i iA.
+  apply: It; apply/imfsetP; exists i => //.
+
+End sup_uniform_countable.
 
 Section product_uniform.
 
