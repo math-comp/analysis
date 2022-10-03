@@ -2985,6 +2985,12 @@ Proof.
 by split; [exact: compact_near_covering| exact: near_covering_compact].
 Qed.
 
+Lemma compact_near_coveringE : compact = near_covering.
+Proof.
+apply/predeqP => E; have [P Q] := compact_near_coveringP.
+by split; [exact: P | exact: Q].
+Qed.
+
 End near_covering.
 
 Section Tychonoff.
@@ -3152,6 +3158,37 @@ split=> [i|]; first by have /getPex [] := cvpFA i.
 by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
+Lemma cluster_set1 {T : topologicalType} (x : T) F V : compact V -> 
+  nbhs x V -> ProperFilter F -> F V -> cluster F = [set x] -> F --> x.
+Proof.
+move=> cptV nxV PF FV clFx1 U/= nbhsU; rewrite nbhs_simpl.
+wlog UsubV : U nbhsU / U `<=` V.
+  move=> WH; apply: (@filterS _ _ _(V `&` U)) => //.
+  by apply: WH => //; exact: filterI.
+wlog oU : U UsubV nbhsU / open U.
+  rewrite nbhsE in nbhsU; case: nbhsU => O [oO OsubU] /(_ O) WH.
+  apply: (filterS OsubU). apply: WH => //; last by case: oO. 
+    exact: (subset_trans _ UsubV).
+  exact: open_nbhs_nbhs.
+apply: contrapT => nFU.
+pose G := filter_from [set A `\` U | A in F] id; have PG : ProperFilter G.
+  apply: filter_from_proper; first apply: filter_from_filter.
+  - by exists (V `\` U); exists V.
+  - move=> i j [A fA <-] [B fB <-]. 
+    rewrite setDE setDE -setIA [~` _ `&` _]setIC -setIA setIid setIA -setDE.
+    by exists (A`&`B `\` U) => //; exists (A `&` B); first exact: filterI.
+  - move=> A [B FB <-]; apply/set0P/eqP => M; rewrite setD_eq0 in M.
+    by apply: nFU; apply: (filterS M).
+have [//|] := cptV G; first by exists (V `\` U) => //; exists V.
+move=> w [Vw clGw].
+have wnx : w != x.
+  apply/eqP => E; have := clGw (V `\` U) U; rewrite setDKI ?E; case => //.
+  by exists (V `\` U) => //; exists V.
+have clFw : cluster F w.
+  by move=> A B FA nbhswB; apply: clGw => //; exists (A `\` U) => //; exists A.
+by move/negP: wnx; apply; apply/eqP; rewrite clFx1 in clFw.
+Qed.
+
 End Tychonoff.
 
 Lemma compact_cluster_set1 {T : topologicalType} (x : T) F V :
@@ -3194,6 +3231,14 @@ Lemma bigsetU_compact I (F : I -> set X) (s : seq I) (P : pred I) :
     (forall i, P i -> compact (F i)) ->
   compact (\big[setU/set0]_(i <- s | P i) F i).
 Proof. by move=> ?; elim/big_ind : _ =>//; [exact:compact0|exact:compactU]. Qed.
+
+Lemma finite_compact (A : set X) : finite_set A -> compact A.
+Proof. 
+case/finite_setP=> n; elim: n A.
+  move=> A; rewrite II0 card_eq0 => /eqP ->; exact: compact0.
+move=> n IHn A /eq_cardSP [] x Ax /IHn cAx; rewrite -(setD1K Ax). 
+by apply: compactU => //; exact: compact_set1.
+Qed.
 
 (* The closed condition here is neccessary to make this definition work in a  *)
 (* non-hausdorff setting.                                                     *)
@@ -5270,8 +5315,45 @@ Qed.
 Definition prod_pseudoMetricType_mixin :=
   PseudoMetric.Mixin prod_ball_center prod_ball_sym prod_ball_triangle prod_entourage.
 End prod_PseudoMetric.
+
 Canonical prod_pseudoMetricType (R : numDomainType) (U V : pseudoMetricType R) :=
   PseudoMetricType (U * V) (@prod_pseudoMetricType_mixin R U V).
+
+Section discrete_pseudoMetric.
+Context {R : numDomainType} {T : topologicalType} {dsc : discrete_space T}.
+Definition discrete_ball (x : T) (eps : R) y : Prop := x = y.
+
+Lemma discrete_ball_center x (eps : R) : 0 < eps -> discrete_ball x eps x.
+Proof. by []. Qed.
+
+Lemma discrete_ball_sym x y (eps : R) :
+   discrete_ball x eps y -> discrete_ball y eps x.
+Proof. by rewrite /discrete_ball => ->. Qed.
+
+Lemma discrete_ball_triangle x y z (e1 e2 : R) :
+  discrete_ball x e1 y -> discrete_ball y e2 z -> discrete_ball x (e1 + e2) z.
+Proof. by rewrite /discrete_ball => -> ->. Qed.
+
+Lemma discrete_entourage : 
+  @entourage (@discrete_uniformType _ dsc) = entourage_ discrete_ball.
+Proof.
+rewrite predeqE => P; split; last first.
+  by case=> e _ subP [a b] [i _] /pair_equal_spec [-> ->]; apply: subP. 
+move=> entP; exists 1 => //= z z12; apply: entP; exists z.1 => //=.
+by rewrite {2}z12 -surjective_pairing.
+Qed.
+
+Definition discrete_pseudoMetricType_mixin :=
+  PseudoMetric.Mixin discrete_ball_center discrete_ball_sym 
+    discrete_ball_triangle discrete_entourage.
+
+Definition discrete_pseudoMetricType := PseudoMetricType 
+  (@discrete_uniformType _ dsc) discrete_pseudoMetricType_mixin.
+
+End discrete_pseudoMetric.
+
+Definition pseudoMetric_bool {R : realType} :=
+  @discrete_pseudoMetricType R [topologicalType of bool] discrete_bool.
 
 Section Nbhs_fct2.
 Context {T : Type} {R : numDomainType} {U V : pseudoMetricType R}.
