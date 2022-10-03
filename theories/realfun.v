@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 Require Import boolp ereal reals mathcomp_extra functions.
 Require Import classical_sets signed topology prodnormedzmodule.
-Require Import cardinality normedtype derive.
+Require Import cardinality normedtype derive set_interval.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -47,7 +47,7 @@ gen have fxy : f / {in I &, injective f} ->
     {in I &, forall x y, x < y -> f x != f y}.
   move=> fI x y xI yI xLy; apply/negP => /eqP /fI => /(_ xI yI) xy.
   by move: xLy; rewrite xy ltxx.
-gen have main : f / forall c, {within [set` I], continuous f} -> 
+gen have main : f / forall c, {within [set` I], continuous f} ->
     {in I &, injective f} ->
     {in I &, forall a b, f a < f b -> a < c -> c < b -> f a < f c /\ f c < f b}.
   move=> c fC fI a b aI bI faLfb aLc cLb.
@@ -192,7 +192,7 @@ case: (ltrgtP (f a) (f b)) faLfb => // _ _ ivt.
 by have [[u uin <-] [v vin <-]] := (ivt _ xin, ivt _ yin); rewrite !fK// !fle.
 Qed.
 
-Section negation_itv. 
+Section negation_itv.
 Local Lemma opp_fun (a b : R) : set_fun `[-b, -a] `[a, b]  (@GRing.opp R).
 Proof. by move=> x /=; rewrite oppr_itvcc. Qed.
 
@@ -206,7 +206,7 @@ Lemma segment_can_ge a b f g : a <= b ->
   {in `[f b, f a] &, {mono g : x y /~ x <= y}}.
 Proof.
 move=> aLb fC fK x y xfbfa yfbfa; rewrite -ler_opp2.
-apply: (@segment_can_le (- b) (- a) (f \o -%R) (- g)); 
+apply: (@segment_can_le (- b) (- a) (f \o -%R) (- g));
     rewrite /= ?ler_opp2 ?opprK //.
   pose fun_neg : (subspace `[-b,-a] -> subspace `[a,b]) := @GRing.opp R.
   move=> z; apply: (@continuous_comp _ _ _ [fun of fun_neg]); last exact: fC.
@@ -297,13 +297,9 @@ Lemma segment_inc_surj_continuous a b f :
 Proof.
 move=> fle f_surj; have [f_inj flt] := (inc_inj_in fle, leW_mono_in fle).
 have [aLb|bLa|] := ltgtP a b; first last.
-- move=> ->; rewrite (_ : (`[b, b])%classic = [set b]). 
-    exact: continuous_subspace1.
-  rewrite eqEsubset; split => z; rewrite /= itvxx. 
-    by move=> ?; apply/eqP.
-  by move=>/eqP.
+- by move=> ->; rewrite set_itv1; exact: continuous_subspace1.
 - rewrite continuous_subspace_in => z /set_mem /=; rewrite in_itv /=.
-  by move=> /andP [az zb]; move: (le_trans az zb) bLa; rewrite ltNge => ->.
+  by move=> /andP[/le_trans] /[apply]; rewrite leNgt bLa.
 have le_ab : a <= b by rewrite ltW.
 have [aab bab] : a \in `[a, b] /\ b \in `[a, b] by rewrite !bound_itvE ltW.
 have fab : f @` `[a, b] = `[f a, f b]%classic by exact:inc_surj_image_segment.
@@ -315,10 +311,9 @@ have gle : {in `[f a, f b] &, {mono g : x y / x <= y}}.
   move=> z zfab; have {zfab} : `[f a, f b]%classic z by [].
   by rewrite -fab => -[x xab <-]; rewrite fK.
 have glt := leW_mono_in gle.
-rewrite continuous_subspace_in;  move=> x xab. 
+rewrite continuous_subspace_in => x xab.
 have xabcc : x \in `[a, b] by move: xab; rewrite mem_setE.
-have fxab : f x \in `[(f a), (f b)] by rewrite in_itv/= !fle.
-have fxabcc : f x \in `[f a, f b] by apply: subset_itv.
+have fxab : f x \in `[f a, f b] by rewrite in_itv/= !fle.
 move: (xabcc); rewrite in_itv //= => /andP [ax xb].
 apply/cvg_distP => _ /posnumP[e]; rewrite !near_simpl; near=> y.
 rewrite (@le_lt_trans _ _ (e%:num / 2%:R))//; last first.
@@ -341,18 +336,16 @@ have glab : g l \in `[a, b].
     by case; rewrite -gle // ?fK // bound_itvE fle.
   by case => _; rewrite -gle // ?fK // bound_itvE fle.
 have faltu : f a < u.
-  rewrite /u comparable_lt_minr // ?real_comparable // ?num_real //. 
-  apply/andP; split; last by rewrite flt.
-  by apply: (@le_lt_trans _ _ (f x)); rewrite ?fle // ltr_addl. 
+  rewrite /u comparable_lt_minr ?real_comparable ?num_real// flt// aLb andbT.
+  by rewrite (@le_lt_trans _ _ (f x)) ?fle// ltr_addl.
 have lltfb : l < f b.
-  rewrite /u comparable_lt_maxl // ?real_comparable // ?num_real //. 
-  apply/andP; split; last by rewrite flt.
-  by apply: (@lt_le_trans _ _ (f x)); rewrite ?fle // ltr_subl_addr ltr_addl.
+  rewrite /u comparable_lt_maxl ?real_comparable ?num_real// flt// aLb andbT.
+  by rewrite (@lt_le_trans _ _ (f x)) ?fle// ltr_subl_addr ltr_addl.
 case: pselect => // _; rewrite near_withinE; near_simpl.
-move: (ax); rewrite le_eqVlt => /orP [].
-  rewrite eq_sym=> /eqP ? ; subst. 
+move: (ax); rewrite le_eqVlt => /orP[].
+  rewrite eq_sym=> /eqP ? ; subst.
   near=> y => /[dup] yab; rewrite /= in_itv => /andP [? ?]; apply/andP; split.
-    apply (@le_trans _ _ (f a)); rewrite ?fle // ler_subl_addr. 
+    apply (@le_trans _ _ (f a)); rewrite ?fle // ler_subl_addr.
     exact: ler_paddr.
   apply: ltW; suff : f y < u by rewrite lt_minr => /andP[->].
   rewrite -?[f y < _]glt // ?fK //.
@@ -395,7 +388,7 @@ Lemma segment_mono_surj_continuous a b f :
     monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
   {within `[a, b], continuous f}.
 Proof.
-rewrite continuous_subspace_in => -[fle|fge] f_surj x /set_mem /= xab. 
+rewrite continuous_subspace_in => -[fle|fge] f_surj x /set_mem /= xab.
   have leab : a <= b by rewrite (itvP xab).
   have fafb : f a <= f b by rewrite fle // ?bound_itvE.
   by apply: segment_inc_surj_continuous => //; case: ltrP f_surj fafb.
@@ -447,7 +440,7 @@ have xBeLxDe : x - e <= x + e by rewrite ler_add2l gt0_cp.
 have fcte : {in `[x - e, x + e], continuous f}.
   by near: e; apply/at_right_in_segment.
 have fwcte : {within `[x - e, x + e], continuous f}.
-  apply: continuous_in_subspaceT => y yI. 
+  apply: continuous_in_subspaceT => y yI.
   by apply: fcte; move/set_mem: yI.
 have fKe : {in `[x - e, x + e], cancel f g}
   by near: e; apply/at_right_in_segment.
@@ -501,7 +494,7 @@ move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
 - suff main b : 0 <= b -> {in [set` `]0 ^+ 2, (b ^+ 2)[], continuous (@Num.sqrt R)}.
     apply: (@main (x + 1)); rewrite ?ler_paddl // ?mem_setE ?in_itv/= ?ltW// expr0n xgt0/=.
     by rewrite sqrrD1 ltr_paddr// ltr_paddl ?sqr_ge0// (ltr_pmuln2l _ 1%N 2%N).
-  move=> b0; rewrite -continuous_open_subspace; last exact: interval_open. 
+  move=> b0; rewrite -continuous_open_subspace; last exact: interval_open.
   apply: continuous_subspaceW; first exact: subset_itv_oo_cc.
   apply: (@segment_can_le_continuous _ _ _ (@GRing.exp _^~ _)) => //.
     by apply: continuous_subspaceT; exact: exprn_continuous.
