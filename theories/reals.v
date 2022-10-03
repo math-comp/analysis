@@ -498,12 +498,6 @@ move=> S0; rewrite not_exists2P => + g; apply/negP; rewrite -leNgt.
 by apply sup_le_ub => // y Sy; move: (g y) => -[// | /negP]; rewrite leNgt.
 Qed.
 
-Lemma invrlr_pos (e1 e2 : R) :
-  0 < e1 -> 0 < e2 -> (e1 <= e2) = (e2^-1 <= e1^-1).
-Proof.
-by move=> ? ?; rewrite -[e2^-1]mul1r ler_pdivr_mulr // ler_pdivl_mull // mulr1.
-Qed.
-
 End RealLemmas.
 
 (* -------------------------------------------------------------------- *)

@@ -3623,28 +3623,6 @@ Lemma nbhsP {M : uniformType} (x : M) P :
   nbhs x P <-> nbhs_ entourage x P.
 Proof. by rewrite nbhs_simpl. Qed.
 
-Lemma set_compose_diag {X : Type} (E : set (X * X)) :
-  E \o [set (x,x) | x in [set: X]] = E.
-Proof. 
-rewrite eqEsubset; split=> [][x y]. 
-  by case=> ? [?] _ /pair_equal_spec [] -> <-.
-by move=> ?; exists x => //; exists x.
-Qed.
-
-Lemma set_compose_subset {X : Type} (A B C D : set (X * X)) :
-  A `<=` C -> B `<=` D -> A \o B `<=` C \o D.
-Proof. 
-by move=> AC BD [x z] /= [y] Bxy Ayz; exists y; [exact: BD | exact: AC].
-Qed.
-
-Lemma set_composeA {X : Type} (A B C : set (X * X)) :
-  (A \o B) \o C = A \o (B \o C).
-Proof. 
-rewrite eqEsubset; split=> [][x w] [y /=] => [? [z] | [z] ?] ? ?.
-  by exists z => //; exists y.
-by exists z => //; exists y.
-Qed.
-
 Section uniformType1.
 Context {M : uniformType}.
 
@@ -3702,11 +3680,11 @@ Lemma cvg_app_entourageP T (f : T -> M) F (FF : Filter F) p :
   f @ F --> p <-> forall A, entourage A -> \forall t \near F, A (p, f t).
 Proof. exact: cvg_entourageP. Qed.
 
-Lemma entourage_invI (E : set (M*M)) :
+Lemma entourage_invI (E : set (M * M)) :
   entourage E -> entourage (E `&` E^-1)%classic.
 Proof. by move=> ?; apply: filterI; last exact: entourage_inv. Qed.
 
-Lemma split_ent_subset (E : set (M*M)) : entourage E -> split_ent E `<=` E.
+Lemma split_ent_subset (E : set (M * M)) : entourage E -> split_ent E `<=` E.
 Proof. 
 move=> entE; case=> x y splitxy; apply: subset_split_ent => //; exists y => //.
 by apply: entourage_refl; exact: entourage_split_ent.
@@ -4114,13 +4092,13 @@ Variable (T : pointedType) (Ii : Type) (Tc : Ii -> Uniform.class_of T).
 Let I : choiceType := classicType_choiceType Ii.
 Let TS := fun i => Uniform.Pack (Tc i).
 Let Tt := @sup_topologicalType T I Tc.
-Let ent_of (p : I * set (T*T)) := `[< @entourage (TS p.1) p.2>].
-Let IEnt := ChoiceType {p : (I * set (T*T)) | ent_of p} (sig_choiceMixin _).
+Let ent_of (p : I * set (T * T)) := `[< @entourage (TS p.1) p.2>].
+Let IEnt := ChoiceType {p : (I * set (T * T)) | ent_of p} (sig_choiceMixin _).
 
 Local Lemma IEnt_pointT (i : I) : ent_of (i, setT).
 Proof. by apply/asboolP; exact: entourageT. Qed.
 
-Definition sup_ent : (set (set (T*T))) := 
+Definition sup_ent : (set (set (T * T))) := 
   filter_from (finI_from [set: IEnt] (fun p => (projT1 p).2)) id.
 
 Ltac IEntP := move=> [[ /= + + /[dup] /asboolP]].
@@ -4141,7 +4119,7 @@ Proof.
 move=> [B [F ? FB] BA]; exists (B^-1)%classic; last by move=> ?; exact: BA.
 have inv : forall ie : IEnt, ent_of ((projT1 ie).1, ((projT1 ie).2)^-1)%classic.
   by IEntP=> ?? /entourage_inv ??; exact/asboolP.
-exists [fset (fun x => @exist (I * set (T*T)) _ _ (inv x)) w | w in F]%fset.
+exists [fset (fun x => @exist (I * set (T * T)) _ _ (inv x)) w | w in F]%fset.
   by move=> ? /imfsetP; IEntP => ???? ->; exact: in_setT.
 rewrite -FB eqEsubset; split; case=> x y + ie.
   by move=> /(_ (exist ent_of _ (inv ie))) + ?; apply; apply/imfsetP; exists ie.
@@ -5763,9 +5741,9 @@ End weak_pseudoMetric.
 *)
 
 Section countable_uniform. 
-Context {R : realType} {T : uniformType} (f_ : nat -> set (T*T)).
+Context {R : realType} {T : uniformType} (f_ : nat -> set (T * T)).
 
-Hypothesis countableBase : forall A, (@entourage T) A -> exists N, f_ N `<=` A.
+Hypothesis countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
 
 Hypothesis entF : forall n, entourage (f_ n).
 
@@ -5776,12 +5754,23 @@ Hypothesis entF : forall n, entourage (f_ n).
    - g_ n.+1 \o g_ n.+1 \o g_ n.+1 `<=` g_ n says the sets descend `quickly`
  *)
 
-Local Fixpoint g_ (n : nat) : set (T*T) := 
-  match n with
-  | 0 => [set: T*T]
-  | S n => let W := (split_ent (split_ent (g_ n)) `&` f_ n) 
-           in W `&` (W^-1)
-  end .
+Local Lemma set_compose_diag {X : Type} (E : set (X * X)) :
+  E \o [set (x, x) | x in [set: X]] = E.
+Proof. 
+rewrite eqEsubset; split=> [][x y]. 
+  by case=> ? [?] _ /pair_equal_spec [] -> <-.
+by move=> ?; exists x => //; exists x.
+Qed.
+
+Local Lemma set_compose_subset {X : Type} (A B C D : set (X * X)) :
+  A `<=` C -> B `<=` D -> A \o B `<=` C \o D.
+Proof. 
+by move=> AC BD [x z] /= [y] Bxy Ayz; exists y; [exact: BD | exact: AC].
+Qed.
+
+Local Fixpoint g_ (n : nat) : set (T * T) :=
+  if n is S n then let W := split_ent (split_ent (g_ n)) `&` f_ n in W `&` W^-1
+  else [set: T*T].
 
 Local Lemma entG (n : nat) : entourage (g_ n).
 Proof.
@@ -5859,23 +5848,21 @@ Qed.
 Local Lemma distN_le e1 e2 : 
   e1 > 0 -> e1 <= e2 -> (distN e2 <= distN e1)%N.
 Proof.
-move=> e1pos e1e2; rewrite /distN; apply: absz_le.
+move=> e1pos e1e2; rewrite /distN; apply: lez_abs2.
   rewrite floor_ge0; apply: ltW; rewrite invr_gt0. 
   exact: (lt_le_trans _ e1e2).
-apply: le_floor; rewrite invrlr_pos ?invrK // invr_gt0 //.
+apply: le_floor; rewrite lef_pinv ?invrK // ?invr_gt0 //.
 exact: (lt_le_trans _ e1e2).
 Qed.
 
 Local Fixpoint n_step_ball n x e z := 
-  match n with 
-  | 0 => e > 0 /\ g_ (distN e) (x, z) 
-  | S n => exists y d1 d2, 
+  if n is S n then exists y d1 d2, 
     [/\ n_step_ball n x d1 y, 
         0 < d1, 
         0 < d2, 
         g_ (distN d2) (y, z) &
         d1 + d2 = e]
-  end.
+  else e > 0 /\ g_ (distN e) (x, z).
 
 Local Definition step_ball x e z := exists i, (n_step_ball i x e z).
 
@@ -5972,9 +5959,8 @@ Proof. by move=> e1e2 ? [n P]; exists n; exact: (n_step_ball_le e1e2). Qed.
 Local Lemma distN_half (n : nat) : n.+1%:R^-1 / (2:R) <= n.+2%:R^-1.
 Proof.
 rewrite -invrM //; [| apply: unitf_gt0 | apply: unitf_gt0] => //.
-rewrite invrlr_pos // !invrK -natrM ler_nat.
-rewrite -addn1 -addn1 -addnA mulnDr muln1 leq_add2r.
-exact: leq_pmull.
+rewrite lef_pinv ?posrE // -?natrM ?ler_nat -addn1 -addn1 -addnA mulnDr.
+rewrite muln1 leq_add2r; exact: leq_pmull.
 Qed.
 
 Local Lemma split_n_step_ball n x e1 e2 z : 

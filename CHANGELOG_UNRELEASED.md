@@ -29,7 +29,7 @@
 - in `classical_sets.v`
   + lemmas `IIDn`, `IISl`
 - in `mathcomp_extra.v`
-  + lemma `absz_le`
+  + lemma `lez_abs2`
 - in `reals.v`
   + lemma `invrlr_pos`
 - in `constructive_ereal.v`:
