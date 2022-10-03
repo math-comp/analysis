@@ -62,7 +62,7 @@ gen have main : f / forall c, {within [set` I], continuous f} ->
   have [aLb alb'] : a < b /\ a <= b by rewrite ltW (lt_trans aLc).
   have [faLfc|fcLfa|/eqP faEfc] /= := ltrgtP (f a) (f c).
   - split; rewrite // lt_neqAle fxy // leNgt; apply/negP => fbLfc.
-    move: (fbLfc); suff /eqP -> : c == b by rewrite ltxx.
+    have := fbLfc; suff /eqP -> : c == b by rewrite ltxx.
     rewrite eq_le (ltW cLb) /=.
     have [d /andP[ad dc] fdEfb] : exists2 d, a <= d <= c & f d = f b.
       have aLc' : a <= c by rewrite ltW.
@@ -314,7 +314,7 @@ have glt := leW_mono_in gle.
 rewrite continuous_subspace_in => x xab.
 have xabcc : x \in `[a, b] by move: xab; rewrite mem_setE.
 have fxab : f x \in `[f a, f b] by rewrite in_itv/= !fle.
-move: (xabcc); rewrite in_itv //= => /andP [ax xb].
+have := xabcc; rewrite in_itv //= => /andP [ax xb].
 apply/cvg_distP => _ /posnumP[e]; rewrite !near_simpl; near=> y.
 rewrite (@le_lt_trans _ _ (e%:num / 2%:R))//; last first.
   by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
@@ -328,11 +328,11 @@ have lfab : l \in `[f a, f b].
   rewrite !in_itv/= le_maxl ?le_maxr lexx ?fle// le_ab orbT ?andbT.
   by rewrite ler_subl_addr ler_paddr// fle // lexx.
 have guab : g u \in `[a, b].
-  rewrite !in_itv; apply/andP; split; move: (ufab); rewrite in_itv => /andP.
+  rewrite !in_itv; apply/andP; split; have := ufab; rewrite in_itv => /andP.
     by case; rewrite /= -gle // ?fK // bound_itvE fle.
   by case => _; rewrite /= -gle // ?fK // bound_itvE fle.
 have glab : g l \in `[a, b].
-  rewrite !in_itv; apply/andP; split; move: (lfab); rewrite in_itv /= => /andP.
+  rewrite !in_itv; apply/andP; split; have := lfab; rewrite in_itv /= => /andP.
     by case; rewrite -gle // ?fK // bound_itvE fle.
   by case => _; rewrite -gle // ?fK // bound_itvE fle.
 have faltu : f a < u.
