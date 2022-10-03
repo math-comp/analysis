@@ -342,25 +342,19 @@ have lltfb : l < f b.
   rewrite /u comparable_lt_maxl ?real_comparable ?num_real// flt// aLb andbT.
   by rewrite (@lt_le_trans _ _ (f x)) ?fle// ltr_subl_addr ltr_addl.
 case: pselect => // _; rewrite near_withinE; near_simpl.
-move: (ax); rewrite le_eqVlt => /orP[].
-  rewrite eq_sym=> /eqP ? ; subst.
-  near=> y => /[dup] yab; rewrite /= in_itv => /andP [? ?]; apply/andP; split.
-    apply (@le_trans _ _ (f a)); rewrite ?fle // ler_subl_addr.
-    exact: ler_paddr.
+have := ax; rewrite le_eqVlt => /orP[/eqP|] {}ax.
+  near=> y => /[dup] yab; rewrite /= in_itv => /andP[ay yb]; apply/andP; split.
+    by rewrite (@le_trans _ _ (f a)) ?fle// ler_subl_addr ax ler_paddr.
   apply: ltW; suff : f y < u by rewrite lt_minr => /andP[->].
-  rewrite -?[f y < _]glt // ?fK //.
-    by near: y; near_simpl; apply: open_lt; rewrite /= -flt // ?gK.
-  by rewrite in_itv /=; apply/andP; split; rewrite fle.
-move: (xb); rewrite le_eqVlt => /orP [].
-  move=> /eqP ?; subst => _.
-  near=> y => /[dup] yab; rewrite /= in_itv /= => /andP [? ?].
-  apply/andP;split; first last.
-    by apply (@le_trans _ _ (f b)); rewrite ?fle //; exact: ler_paddr.
+  rewrite -?[f y < _]glt// ?fK//; last by rewrite in_itv /= !fle.
+  by near: y; near_simpl; apply: open_lt; rewrite /= -flt ?gK// -ax.
+have := xb; rewrite le_eqVlt => /orP[/eqP {}xb {ax}|{}xb].
+  near=> y => /[dup] yab; rewrite /= in_itv /= => /andP[ay yb].
+  apply/andP; split; last by rewrite (@le_trans _ _ (f b)) ?fle// xb ler_paddr.
   apply: ltW; suff : l < f y by rewrite lt_maxl => /andP[->].
-  rewrite -?[_ < f y]glt // ?fK //.
-    by near: y; near_simpl; apply: open_gt; rewrite /= -flt // ?gK //.
-  by rewrite in_itv /=; apply/andP; split; rewrite fle.
-move=> ? ?; have xoab : x \in `]a, b[ by rewrite in_itv /=; apply/andP; split.
+  rewrite -?[_ < f y]glt// ?fK//; last by rewrite in_itv /= !fle.
+  by near: y; near_simpl; apply: open_gt; rewrite /= -flt// gK// xb.
+have xoab : x \in `]a, b[ by rewrite in_itv /=; apply/andP; split.
 near=> y; suff: l <= f y <= u.
   by rewrite le_maxl le_minr -!andbA => /and4P[-> _ ->].
 have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
