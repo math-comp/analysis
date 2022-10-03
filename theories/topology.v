@@ -1,7 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype choice div.
-From mathcomp Require Import seq fintype bigop order interval ssralg ssrnum rat.
-From mathcomp Require Import matrix finmap all_algebra.
+From mathcomp Require Import all_ssreflect all_algebra fintype finmap.
 Require Import mathcomp_extra boolp reals classical_sets signed functions.
 Require Import cardinality.
 
@@ -5730,6 +5728,7 @@ Lemma weak_ballE (e : R) (x : weak_pseudoMetricType) :
 Proof. by []. Qed.
 
 End weak_pseudoMetric.
+
 (* This section proves that uniform spaces, with a countable base for their
    entourage, are metrizable. The definition of this metric is rather arcane, 
    and the proof is tough. That's ok because the resulting metric is not 
@@ -5739,7 +5738,6 @@ End weak_pseudoMetric.
    - `in metric spaces, compactness and sequential compactness agree`
    - infinite products of metric spaces are metrizable
 *)
-
 Section countable_uniform. 
 Context {R : realType} {T : uniformType} (f_ : nat -> set (T * T)).
 
@@ -5765,7 +5763,7 @@ Qed.
 Local Lemma set_compose_subset {X : Type} (A B C D : set (X * X)) :
   A `<=` C -> B `<=` D -> A \o B `<=` C \o D.
 Proof. 
-by move=> AC BD [x z] /= [y] Bxy Ayz; exists y; [exact: BD | exact: AC].
+move=> AsubC BD [x z] /= [y] Bxy Ayz; exists y; [exact: BD | exact: AsubC].
 Qed.
 
 Local Fixpoint g_ (n : nat) : set (T * T) :=
