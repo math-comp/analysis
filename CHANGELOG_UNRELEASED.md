@@ -98,6 +98,18 @@
   + lemma `fsumEFin`
 - in `lebesgue_measure.v`:
   + definition `ErealGenInftyO.R` and lemma `ErealGenInftyO.measurableE`
+  + lemma `sub1set`
+- in `constructive_ereal.v`:
+  + lemmas `lteN10`, `leeN10`
+  + lemmas `le0_fin_numE`
+  + lemmas `fine_lt0`, `fine_le0`
+- in `sequences.v`:
+  + lemmas `is_cvg_ereal_npos_natsum_cond`, `lee_npeseries`,
+    `is_cvg_npeseries_cond`, `is_cvg_npeseries`, `npeseries_le0`,
+    `is_cvg_ereal_npos_natsum`
+  + lemma `nnseries_is_cvg`
+- in `constructive_ereal.v`:
+  + lemma `fine_lt0E`
 
 ### Changed
 - in `topology.v`
@@ -135,6 +147,8 @@
 
 - in `lebesgue_measure.v`:
   + definition `fimfunE` now uses fsbig
+- in `sequence.v`:
+  + `nneseries_pinfty` generalized to `eseries_pinfty`
 
 ### Renamed
 
@@ -149,6 +163,11 @@
 - file `theories/functions.v` -> `classical/functions.v`
 - file `theories/cardinality.v` -> `classical/cardinality.v`
 - file `theories/fsbigop.v` -> `classical/fsbigop.v`
+- in `sequences.v`:
+  + `nneseries0` -> `eseries0`
+  + `nneseries_pred0` -> `eseries_pred0`
+  + `eq_nneseries` -> `eq_eseries`
+  + `nneseries_mkcond` -> `eseries_mkcond`
 
 ### Deprecated
 

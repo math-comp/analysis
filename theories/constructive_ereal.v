@@ -488,11 +488,23 @@ Proof. by rewrite lee_fin ler0N1. Qed.
 Lemma lte0N1 : 0 < (-1)%:E :> \bar R = false.
 Proof. by rewrite lte_fin ltr0N1. Qed.
 
+Lemma lteN10 : - 1%E < 0 :> \bar R.
+Proof. by rewrite lte_fin ltrN10. Qed.
+
+Lemma leeN10 : - 1%E <= 0 :> \bar R.
+Proof. by rewrite lee_fin lerN10. Qed.
+
 Lemma fine_ge0 x : 0 <= x -> (0 <= fine x)%R.
 Proof. by case: x. Qed.
 
 Lemma fine_gt0 x : 0 < x < +oo -> (0 < fine x)%R.
 Proof. by move: x => [x| |] //=; rewrite ?ltxx ?andbF// lte_fin => /andP[]. Qed.
+
+Lemma fine_lt0 x : -oo < x < 0 -> (fine x < 0)%R.
+Proof. by move: x => [x| |] //= /andP[_]; rewrite lte_fin. Qed.
+
+Lemma fine_le0 x : x <= 0 -> (fine x <= 0)%R.
+Proof. by case: x. Qed.
 
 Lemma lee_tofin (r0 r1 : R) : (r0 <= r1)%R -> r0%:E <= r1%:E.
 Proof. by []. Qed.
@@ -514,6 +526,7 @@ Lemma mule2n x : x *+ 2 = x + x. Proof. by []. Qed.
 Lemma expe2 x : x ^+ 2 = x * x. Proof. by []. Qed.
 
 End ERealOrderTheory.
+#[global] Hint Resolve leeN10 lteN10 : core.
 
 Section finNumPred.
 Context {R : numDomainType}.
@@ -1296,6 +1309,9 @@ Proof. by case: x => // x //=; exact: ltNye. Qed.
 Lemma ge0_fin_numE x : 0 <= x -> (x \is a fin_num) = (x < +oo).
 Proof. by move: x => [x| |] => // x0; rewrite fin_numElt ltNye. Qed.
 
+Lemma le0_fin_numE x : x <= 0 -> (x \is a fin_num) = (-oo < x).
+Proof. by move: x => [x| |]//=; rewrite lee_fin => x0; rewrite ltNye. Qed.
+
 Lemma eq_pinftyP x : x = +oo <-> (forall A, (0 < A)%R -> A%:E <= x).
 Proof.
 split=> [-> // A A0|Ax]; first by rewrite leey.
@@ -1661,7 +1677,7 @@ by rewrite lee_sum // => k ?; case: ifP => // _; exact: f0.
 Qed.
 
 Lemma lee_sum_npos_ord (f : nat -> \bar R) (P : pred nat) :
-  (forall n, P n -> f n <= 0)%E ->
+  (forall n, P n -> f n <= 0) ->
   {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
 move=> f0 m n ?; rewrite [leRHS](big_ord_widen_cond n) // big_mkcondr /=.
