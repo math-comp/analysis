@@ -3906,6 +3906,31 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
+(* This property is primarily useful only for metrizability on uniform spaces *)
+Definition countable_uniformity (T : uniformType) :=
+  exists R : set (set (T * T)), [/\
+    countable R,
+    R `<=` entourage &
+    forall P, entourage P -> exists Q, R Q /\ Q `<=` P].
+
+Lemma countable_uniformityP {T : uniformType} : 
+  countable_uniformity T <-> exists f : nat -> set (T * T), 
+    (forall A, entourage A -> exists N, f N `<=` A) /\
+    (forall n, entourage (f n)).
+Proof.
+split.
+  case=> M [] /pfcard_geP []. 
+    by move=> -> _ /(_ setT); case; [exact: entourageT | move=> ? []].
+  move=> [f] eM Msub; exists f; split; last by move=> n; apply: eM; exact: funS.
+  move=> ? /Msub [Q [MQ ?]]; have [n ? fQ] := (@surj _ _ _ _  f _ MQ).
+  by exists n; rewrite fQ.
+case => f [fsubE] entf; exists (f @` [set: nat]); split.
+- exact: card_image_le.
+- by move=> E [n _] <-; exact: entf.
+- move=> E entE; have [n fnA] := fsubE _ entE.
+  by exists (f n); split => //; exists n.
+Qed.
+
 Section uniform_closeness.
 
 Variable (U : uniformType).
@@ -4276,34 +4301,6 @@ Definition weak_uniformType :=
   UniformType S weak_uniform_mixin.
 
 End weak_uniform.
-
-Definition countable_uniformity (T : uniformType) :=
-  exists R : set (set (T * T)), [/\
-    countable R,
-    R `<=` entourage &
-   forall P, entourage P -> exists Q, R Q /\ Q `<=` P].
-
-Lemma countable_uniformityP {T : uniformType} : 
-  countable_uniformity T <-> 
-  (exists f : nat -> set (T * T), 
-   (forall A, entourage A -> exists N, f N `<=` A) 
-   /\
-  forall n, entourage (f n) 
-  ).
-Proof.
-split.
-  case=> M [] /pfcard_geP []. 
-    by move=> -> _ /(_ setT); case; [ exact: entourageT | move=> ? []].
-  move=> [f] entM Msub; exists f; split.
-    move=> ? /Msub [Q [MQ ?]]; have [n ? fQ] := (@surj _ _ _ _  f _ MQ).
-    by exists n; rewrite fQ.
-  by move=> n; apply: entM; apply: funS.
-case => f [fsubE] entf; exists (f@` [set: nat]); split.
-- exact: card_image_le.
-- by move=> E [n _] <-; exact: entf.
-- move=> E entE; have [n fnA] := fsubE _ entE.
-  by exists (f n); split => //; exists n.
-Qed.
 
 Section sup_uniform.
 
