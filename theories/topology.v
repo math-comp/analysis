@@ -285,6 +285,8 @@ Require Import reals signed.
 (*                   unif_continuous f <-> f is uniformly continuous.         *)
 (*               weak_uniformType == the uniform space for weak topologies    *)
 (*                sup_uniformType == the uniform space for sup topologies     *)
+(*         countable_uniformity T == T's entourage has a countable base. This *)
+(*                                   is equivalent to `T` being metrizable    *)
 (*                                                                            *)
 (* * PseudoMetric spaces :                                                    *)
 (*                entourage_ ball == entourages defined using balls           *)
@@ -4275,6 +4277,34 @@ Definition weak_uniformType :=
 
 End weak_uniform.
 
+Definition countable_uniformity (T : uniformType) :=
+  exists R : set (set (T * T)), [/\
+    countable R,
+    R `<=` entourage &
+   forall P, entourage P -> exists Q, R Q /\ Q `<=` P].
+
+Lemma countable_uniformityP {T : uniformType} : 
+  countable_uniformity T <-> 
+  (exists f : nat -> set (T * T), 
+   (forall A, entourage A -> exists N, f N `<=` A) 
+   /\
+  forall n, entourage (f n) 
+  ).
+Proof.
+split.
+  case=> M [] /pfcard_geP []. 
+    by move=> -> _ /(_ setT); case; [ exact: entourageT | move=> ? []].
+  move=> [f] entM Msub; exists f; split.
+    move=> ? /Msub [Q [MQ ?]]; have [n ? fQ] := (@surj _ _ _ _  f _ MQ).
+    by exists n; rewrite fQ.
+  by move=> n; apply: entM; apply: funS.
+case => f [fsubE] entf; exists (f@` [set: nat]); split.
+- exact: card_image_le.
+- by move=> E [n _] <-; exact: entf.
+- move=> E entE; have [n fnA] := fsubE _ entE.
+  by exists (f n); split => //; exists n.
+Qed.
+
 Section sup_uniform.
 
 Variable (T : pointedType) (Ii : Type) (Tc : Ii -> Uniform.class_of T).
@@ -4378,18 +4408,11 @@ Definition sup_uniformType := UniformType Tt sup_uniform_mixin.
 
 Lemma countable_sup_ent :
   countable [set: Ii] ->
-  (forall n, exists M : set (set (T * T)), 
-    [/\
-      countable M,
-      M `<=` @entourage (TS n) &
-      forall P, @entourage (TS n) P -> exists Q, M Q /\ Q `<=` P]) ->
-  exists R, [/\
-    countable R,
-    R `<=` @entourage sup_uniformType &
-   forall P, @entourage sup_uniformType P -> exists Q, R Q /\ Q `<=` P].
+  (forall n, countable_uniformity (TS n)) ->
+  countable_uniformity sup_uniformType.
 Proof.
 move=> Icnt countable_ent; pose f := fun n => cid (countable_ent n).
-pose g := fun n => projT1 (f n).
+pose g : Ii -> set (set (T * T)) := fun n => projT1 (f n).
 case (pselect ([set: I] = set0)) => [I0 | /eqP/set0P [i0 _]].
   exists [set setT]; split; first apply countable1.
     move=> A; rewrite /entourage /= => ->.
@@ -4397,6 +4420,7 @@ case (pselect ([set: I] = set0)) => [I0 | /eqP/set0P [i0 _]].
   move=> P [w [A _]] <- subP; exists setT; split => //.
   apply: (subset_trans _ subP) => t _ i iA.
   by suff : [set: I] (projT1 i).1 by rewrite I0.
+rewrite /countable_uniformity /=.
 exists (finI_from (\bigcup_n (g n)) id); split.
 - by apply/finI_from_countable/bigcup_countable => // i _; case: (projT2 (f i)).
 - move=> E [A AsubGn AE]; exists E => //.
@@ -4416,8 +4440,9 @@ exists (finI_from (\bigcup_n (g n)) id); split.
 - move=> E [w] [ A _ wIA wsubE]. 
   have ent_Ip : forall (i : IEnt), @entourage (TS (projT1 i).1) (projT1 i).2.
     by move=> i; apply/asboolP; apply: (projT2 i).
-  pose h := fun i : IEnt =>
-    cid ((and3_rec (fun _ _ P => P) (projT2 (f ((projT1 i).1)))) ((projT1 i).2) (ent_Ip i)).
+  pose h : forall i : IEnt, {x : set (T * T) | _} := fun i : IEnt =>
+    cid ((and3_rec (fun _ _ P => P)
+      (projT2 (f ((projT1 i).1)))) ((projT1 i).2) (ent_Ip i)).
   have ehi : forall i : IEnt, ent_of ((projT1 i).1, projT1 (h i)).
     move=> i; apply/asboolP => /=; have [] := projT2 (h i).
     by have [_ + _ ? ?] := (projT2 (f (projT1 i).1)); exact.
@@ -4757,6 +4782,20 @@ have fappF : Filter ((fun xy => (f xy.1, f xy.2)) @ entourage_ ball).
 by rewrite /unif_continuous -!entourage_ballE filter_fromP.
 Qed.
 End entourages.
+
+Lemma countable_uniformity_metric {R : realType} {T : pseudoMetricType R} :
+   countable_uniformity T.
+Proof.
+apply/countable_uniformityP; have ninvp : forall n, 0 < n.+1%:R^-1.
+  by move=> ? n; rewrite invr_gt0.
+exists (fun n => [set xy : T * T | ball xy.1 (PosNum (ninvp _ n))%:num xy.2]).
+split; last by move=> n; exact: entourage_ball.
+move=> E; rewrite -entourage_ballE => [[e]] ? subE.
+exists `|floor e^-1|%N; apply: (subset_trans _ subE) => xy; apply: le_ball.
+rewrite /= -{2}[e]invrK lef_pinv ?posrE ?invr_gt0 // ? natr_absz.
+apply: le_trans; first by apply: ltW; exact: lt_succ_floor.
+by rewrite -natr1 ler_add //= natr_absz ler_int ler_norm.
+Qed.
 
 (** ** Specific pseudoMetric spaces *)
 
