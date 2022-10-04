@@ -2638,7 +2638,7 @@ Let m := mseries m_ O.
 Let integral_measure_series_indic (D : set T) (mD : measurable D) :
   \int[m]_x (\1_D x)%:E = \sum_(n <oo) \int[m_ n]_x (\1_D x)%:E.
 Proof.
-rewrite integral_indic// setIT /m/= /mseries; apply: eq_nneseries => i _.
+rewrite integral_indic// setIT /m/= /mseries; apply: eq_eseries => i _.
 by rewrite integral_indic// setIT.
 Qed.
 
@@ -2662,7 +2662,7 @@ rewrite fsbig_finite//= -nneseries_sum; last first.
     by rewrite mule_ge0//; apply integral_ge0 => // t _; rewrite lee_fin.
   rewrite (eq_integral (cst 0)) ?integral0 ?mule0// => t _.
   by rewrite preimage_nnfun0// indicE in_set0.
-apply: eq_nneseries => k _.
+apply: eq_eseries => k _.
 rewrite integralT_nnsfun sintegralE fsbig_finite//=; apply eq_bigr => r _.
 by congr (_ * _); rewrite integral_indic// setIT.
 Qed.
@@ -2981,15 +2981,15 @@ rewrite ge0_integral_measure_series//; last exact/emeasurable_fun_funepos.
 rewrite ge0_integral_measure_series//; last exact/emeasurable_fun_funeneg.
 transitivity (\sum_(n <oo) (fine (\int[m_ n]_(x in D) f^\+ x))%:E -
               \sum_(n <oo) (fine (\int[m_ n]_(x in D) f^\- x))%:E).
-  by congr (_ - _); apply eq_nneseries => n _; rewrite fineK//;
+  by congr (_ - _); apply eq_eseries => n _; rewrite fineK//;
     [exact: integrable_pos_fin_num|exact: integrable_neg_fin_num].
 have fineKn : \sum_(n <oo) `|\int[m_ n]_(x in D) f^\- x| =
           \sum_(n <oo) `|(fine (\int[m_ n]_(x in D) f^\- x))%:E|.
-  apply eq_nneseries => n _; congr abse; rewrite fineK//.
+  apply eq_eseries => n _; congr abse; rewrite fineK//.
   exact: integrable_neg_fin_num.
 have fineKp : \sum_(n <oo) `|\int[m_ n]_(x in D) f^\+ x| =
           \sum_(n <oo) `|(fine (\int[m_ n]_(x in D) f^\+ x))%:E|.
-  apply eq_nneseries => n _; congr abse; rewrite fineK//.
+  apply eq_eseries => n _; congr abse; rewrite fineK//.
   exact: integrable_pos_fin_num.
 rewrite nneseries_esum; last by move=> n _; exact/fine_ge0/integral_ge0.
 rewrite nneseries_esum; last by move=> n _; exact/fine_ge0/integral_ge0.
@@ -3014,7 +3014,7 @@ rewrite -summable_nneseries_esum; last first.
     - exact: integrable_neg_fin_num.
   apply: lte_add_pinfty; first by rewrite -fineKp.
   by rewrite -fineKn; exact: fmoo.
-by apply eq_nneseries => k _; rewrite !fineK// -?integralE//;
+by apply eq_eseries => k _; rewrite !fineK// -?integralE//;
   [exact: integrable_neg_fin_num|exact: integrable_pos_fin_num].
 Qed.
 
@@ -3875,7 +3875,7 @@ transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).
   congr (integral _ _ _); apply/funext => A.
   by rewrite /= counting_dirac.
 rewrite (@integral_measure_series _ _ R (fun n => [the measure _ _ of \d_ n]) setT)//=.
-- apply: eq_nneseries => i _; rewrite integral_dirac//=.
+- apply: eq_eseries => i _; rewrite integral_dirac//=.
   by rewrite indicE mem_set// mul1e.
 - move=> n; split; first by [].
   by rewrite integral_dirac//= indicE mem_set// mul1e; exact: (summable_pinfty sa).
@@ -3938,7 +3938,7 @@ transitivity (\int[mu]_(x in \bigcup_i F i) g^\+ x -
   by apply eq_integral => t Ft; rewrite [in LHS](funeposneg g).
 transitivity (\sum_(i <oo) (\int[mu]_(x in F i) g^\+ x -
                             \int[mu]_(x in F i) g^\- x)); last first.
-  by apply: eq_nneseries => // i; rewrite [RHS]integralE.
+  by apply: eq_eseries => // i; rewrite [RHS]integralE.
 transitivity ((\sum_(i <oo) \int[mu]_(x in F i) g^\+ x) -
               (\sum_(i <oo) \int[mu]_(x in F i) g^\- x))%E.
   rewrite ge0_integral_bigcup//; last first.

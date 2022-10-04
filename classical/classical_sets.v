@@ -665,6 +665,9 @@ Proof. by rewrite eqEsubset propeqE; split=> [A0|[]//]; split. Qed.
 Lemma subTset A : (setT `<=` A) = (A = setT).
 Proof. by rewrite eqEsubset propeqE; split=> [|[]]. Qed.
 
+Lemma sub1set x A : ([set x] `<=` A) = (x \in A).
+Proof. by apply/propext; split=> [|/[!inE] xA _ ->//]; rewrite inE; exact. Qed.
+
 Lemma subsetT A : A `<=` setT. Proof. by []. Qed.
 
 Lemma subsetW {A B} : A = B -> A `<=` B. Proof. by move->. Qed.

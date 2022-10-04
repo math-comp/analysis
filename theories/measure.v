@@ -994,7 +994,7 @@ move=> mD mE DE; split => mf _ /= X mX.
     rewrite set0U => /(measurableI _ _ mD).
     by rewrite (setIA D) (setIidl DE) setIA setIid.
   rewrite setUIr setvU setTI => /(measurableI _ _ mD).
-  by rewrite setIA (setIidl DE) setIUr setIv set0U.
+  by rewrite setIA (setIidl DE) setIUr setICr set0U.
 Qed.
 
 End measurable_fun.
@@ -1662,7 +1662,7 @@ Variables (m : {measure set T -> \bar R}^nat) (n : nat).
 Definition mseries (A : set T) : \bar R := \sum_(n <= k <oo) m k A.
 
 Let mseries0 : mseries set0 = 0.
-Proof. by rewrite /mseries ereal_series nneseries0. Qed.
+Proof. by rewrite /mseries ereal_series eseries0. Qed.
 
 Let mseries_ge0 B : 0 <= mseries B.
 Proof.
@@ -1676,10 +1676,10 @@ move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
   rewrite [in LHS]/mseries.
   transitivity (\sum_(n <= k <oo) \sum_(i <oo) m k (F i)).
     rewrite 2!ereal_series.
-    apply: (@eq_nneseries _ (fun k => m k (\bigcup_n0 F n0))) => i ni.
+    apply: (@eq_eseries _ (fun k => m k (\bigcup_n0 F n0))) => i ni.
     exact: measure_semi_bigcup.
   rewrite ereal_series nneseries_interchange//.
-  apply: (@eq_nneseries R (fun j => \sum_(i <oo | (n <= i)%N) m i (F j))
+  apply: (@eq_eseries R (fun j => \sum_(i <oo | (n <= i)%N) m i (F j))
                           (fun i => \sum_(n <= k <oo) m k (F i))).
   by move=> i _; rewrite ereal_series.
 apply: is_cvg_ereal_nneg_natsum => k _.
@@ -2254,7 +2254,7 @@ Import SetRing.
 Lemma ring_sigma_sub_additive : sigma_sub_additive mu -> sigma_sub_additive Rmu.
 Proof.
 move=> muS; move=> /= D A Am Dm Dsub.
-rewrite /Rmu (eq_nneseries (fun _ _ => fsbig_esum _ _))//; last first.
+rewrite /Rmu (eq_eseries (fun _ _ => fsbig_esum _ _))//; last first.
   by move=> *; exact: decomp_finite_set.
 rewrite nneseries_esum ?esum_esum//=; last by move=> *; rewrite esum_ge0.
 set K := _ `*`` _.
@@ -3007,8 +3007,8 @@ Unshelve. all: by end_near. Qed.
 Lemma mu_ext_sigma_subadditive : sigma_subadditive mu^*.
 Proof.
 move=> A; have [[i ioo]|] := pselect (exists i, mu^* (A i) = +oo).
-  rewrite (nneseries_pinfty _ _ ioo)// ?leey// => n _.
-  exact: mu_ext_ge0.
+  rewrite (eseries_pinfty _ _ ioo)// ?leey// => n _.
+  by rewrite gt_eqF// (lt_le_trans _ (mu_ext_ge0 _)).
 rewrite -forallNE => Aoo.
 suff add2e : forall e : {posnum R},
     mu^* (\bigcup_n A n) <= \sum_(i <oo) mu^* (A i) + e%:num%:E.
@@ -3055,7 +3055,7 @@ rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
   rewrite (_ : setT = id @` xpredT); last first.
     by rewrite image_id funeqE => x; rewrite trueE.
   rewrite esum_pred_image //; last by move=> n _; exact: esum_ge0.
-  apply: eq_nneseries => /= j _.
+  apply: eq_eseries => /= j _.
   rewrite -(esum_pred_image (mu \o uncurry G) (pair j) predT)//=; last first.
     by move=> ? ? _ _; exact: (@can_inj _ _ _ snd).
   by congr esum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
@@ -3257,7 +3257,7 @@ Proof.
 apply/funeqP => /= X; rewrite /mu_ext/=; apply/eqP; rewrite eq_le.
 rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lb//; last first.
   exists F; first by split=> // i; apply: sub_gen_smallest.
-  by rewrite (eq_nneseries (fun _ _ => RmuE _ (Fm _))).
+  by rewrite (eq_eseries (fun _ _ => RmuE _ (Fm _))).
 pose K := [set: nat] `*`` fun i => decomp (F i).
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
   apply: cardMR_eq_nat => // i; split; last by apply/set0P; rewrite decompN0.
@@ -3305,7 +3305,7 @@ apply: smallest_sub.
                 by move=> u_ mu_; exact: bigcupT_measurable].
 move=> A mA; apply le_caratheodory_measurable => // X.
 apply lb_ereal_inf => _ [B [mB XB] <-].
-rewrite -(eq_nneseries (fun _ _ => SetRing.RmuE _ (mB _)))=> //.
+rewrite -(eq_eseries (fun _ _ => SetRing.RmuE _ (mB _)))=> //.
 have RmB i : measurable (B i : set rT) by exact: sub_gen_smallest.
 set BA := eseries (fun n => Rmu (B n `&` A)).
 set BNA := eseries (fun n => Rmu (B n `&` ~` A)).

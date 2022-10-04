@@ -1019,7 +1019,7 @@ rewrite measure_bigcup//; last first.
   move=> /fmorph_inj.
   have /set_bij_inj /[apply] := bijpinv_bij (fun=> 0) bijf.
   by rewrite in_setE => /(_ Logic.I Logic.I); exact/eqP.
-by rewrite nneseries0// => n _; exact: lebesgue_measure_set1.
+by rewrite eseries0// => n _; exact: lebesgue_measure_set1.
 Qed.
 
 Section measurable_fun_measurable.
