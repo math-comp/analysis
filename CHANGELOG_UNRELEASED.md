@@ -29,9 +29,7 @@
 - in `classical_sets.v`
   + lemmas `IIDn`, `IISl`
 - in `mathcomp_extra.v`
-  + lemma `lez_abs2`
-- in `reals.v`
-  + lemma `invrlr_pos`
+  + lemma `lez_abs2n`
 - in `constructive_ereal.v`:
   + lemmas `gte_addl`, `gte_addr`
   + lemmas `gte_daddl`, `gte_daddr`
