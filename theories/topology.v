@@ -5932,8 +5932,11 @@ Global Instance subspace_proper_filter {T : topologicalType}
      (A : set T) (x : subspace A) :
    ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
-Notation "{ 'within' A , 'continuous' f }" :=
-  (continuous (f : subspace A -> _)).
+(*Notation "{ 'within' A , 'continuous' f }" :=
+  (continuous (f : subspace A -> _)).*)
+Notation "{ 'within' A , 'continuous' f }" := (forall x,
+  cvg_to [filter of fmap f (filter_of (Phantom (subspace A) x))]
+         [filter of f x]).
 
 Section SubspaceRelative.
 Context {T : topologicalType}.
@@ -6026,18 +6029,17 @@ rewrite fVA -setIA setIid eqEsubset; split => x [fVx Ax]; split => //.
 - by have /[!esym VBOB]-[] : (O `&` B) (f x) by split => //; exact: funS.
 Qed.
 
-
-Lemma continuous_subspace0 {U} (f : subspace (@set0 T) -> U) : 
+Lemma continuous_subspace0 {U} (f : subspace (@set0 T) -> U) :
   continuous f.
 Proof.
-move=> x Q; rewrite nbhs_simpl /= {2}/nbhs /=. 
+move=> x Q; rewrite nbhs_simpl /= {2}/nbhs /=.
 by case: (nbhs_subspaceP (@set0 T) x) => // _ /nbhs_singleton /= ? ? ->.
 Qed.
 
-Lemma continuous_subspace1 {U} (a : T) (f : subspace [set a] -> U) : 
+Lemma continuous_subspace1 {U} (a : T) (f : subspace [set a] -> U) :
   continuous f.
 Proof.
-move=> x Q; rewrite nbhs_simpl /= {2}/nbhs /=. 
+move=> x Q; rewrite nbhs_simpl /= {2}/nbhs /=.
 case: (nbhs_subspaceP [set a] x); last by move=> _ /nbhs_singleton /= ? ? ->.
 by move=> -> /nbhs_singleton ?; apply: nearW => ? ->.
 Qed.
