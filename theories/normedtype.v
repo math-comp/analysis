@@ -2506,7 +2506,7 @@ Section at_left_right.
 Variable R : numFieldType.
 
 Definition at_left (x : R) := within (fun u => u < x) (nbhs x).
-Definition at_right (x : R) := within (fun u : R => x < u) (nbhs x).
+Definition at_right (x : R) := within (fun u => x < u) (nbhs x).
 
 (* :TODO: We should have filter notation ^- and ^+ for these *)
 
